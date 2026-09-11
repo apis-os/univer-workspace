@@ -269,6 +269,131 @@ describe("Comb INGEST pass-through", () => {
   });
 });
 
+describe("Comb Workspace Agent peer", () => {
+  test("JOIN joinRsp includes synthetic agent when a human is in the room", async () => {
+    const averyAtt = {
+      kind: "comb",
+      memberID: "member_avery",
+      userID: "user_admin",
+      name: "Avery Chen",
+      rooms: [] as string[]
+    };
+    const avery = fakeSocket(averyAtt);
+    const host = await createCombHost([avery]);
+
+    assert.equal(host.getRoomMembers("unit_welcome_sheet").length, 0);
+
+    await host.webSocketMessage(
+      avery as unknown as WebSocket,
+      encodeCombJson({
+        cmd: CombCmd.JOIN,
+        routeKey: "unit_welcome_sheet",
+        joinReq: { rooms: [{ roomID: "unit_welcome_sheet", args: "" }] }
+      })
+    );
+
+    const members = host.getRoomMembers("unit_welcome_sheet");
+    assert.equal(members.length, 2);
+    assert.ok(members.some((m) => m.memberID === "member_avery"));
+    const agent = members.find((m) => m.memberID === "agent_workspace");
+    assert.deepEqual(agent, {
+      memberID: "agent_workspace",
+      userID: "agent_workspace",
+      name: "Workspace Agent",
+      avatar: ""
+    });
+
+    const join = avery.sent
+      .filter((row) => typeof row === "string")
+      .map((row) => JSON.parse(String(row)))
+      .find((msg) => msg.cmd === CombCmd.JOIN);
+    assert.equal(join?.cmd, CombCmd.JOIN);
+    const roster = join?.joinRsp.roomInfos.unit_welcome_sheet.members as Array<{ memberID: string }>;
+    assert.ok(roster.some((m) => m.memberID === "agent_workspace"));
+  });
+
+  test("second member gets users_enter, update_cursor, and set-range new_changesets", async () => {
+    const averyAtt = {
+      kind: "comb",
+      memberID: "member_avery",
+      userID: "user_admin",
+      name: "Avery Chen",
+      rooms: [] as string[]
+    };
+    const jordanAtt = {
+      kind: "comb",
+      memberID: "member_jordan",
+      userID: "user_jordan",
+      name: "Jordan Lee",
+      rooms: [] as string[],
+      wire: "protobuf" as const
+    };
+    const avery = fakeSocket(averyAtt);
+    const jordan = fakeSocket(jordanAtt);
+    const host = await createCombHost([avery, jordan]);
+
+    await host.webSocketMessage(
+      avery as unknown as WebSocket,
+      encodeCombJson({
+        cmd: CombCmd.JOIN,
+        routeKey: "unit_welcome_sheet",
+        joinReq: { rooms: [{ roomID: "unit_welcome_sheet", args: "" }] }
+      })
+    );
+    jordan.sent.length = 0;
+    await host.webSocketMessage(
+      jordan as unknown as WebSocket,
+      encodeCombJson({
+        cmd: CombCmd.JOIN,
+        routeKey: "unit_welcome_sheet",
+        joinReq: { rooms: [{ roomID: "unit_welcome_sheet", args: "" }] }
+      })
+    );
+
+    (host as any).broadcastAgentCollab("unit_welcome_sheet", {
+      unitID: "unit_welcome_sheet",
+      memberID: "agent_workspace",
+      mutations: [
+        {
+          id: "sheet.mutation.set-range-values",
+          params: {
+            unitId: "unit_welcome_sheet",
+            subUnitId: "sheet_1",
+            cellValue: { "0": { "0": { v: "Hello from AI" } } }
+          }
+        }
+      ]
+    });
+
+    const jordanMsgs = jordan.sent.map((row) => decodeCombFrame(row));
+    const eventIDs = jordanMsgs.map((msg) => (msg.collaMsg as { eventID?: string } | undefined)?.eventID);
+    assert.ok(eventIDs.includes("users_enter"), `missing users_enter in ${JSON.stringify(eventIDs)}`);
+    assert.ok(eventIDs.includes("update_cursor"), `missing update_cursor in ${JSON.stringify(eventIDs)}`);
+    assert.ok(eventIDs.includes("new_changesets"), `missing new_changesets in ${JSON.stringify(eventIDs)}`);
+    assert.ok(!eventIDs.includes("users_leave"));
+
+    const enter = jordanMsgs.find((msg) => (msg.collaMsg as { eventID?: string })?.eventID === "users_enter");
+    assert.equal((enter?.collaMsg as { joinEvent?: { memberID?: string; name?: string } })?.joinEvent?.memberID, "agent_workspace");
+    assert.equal((enter?.collaMsg as { joinEvent?: { name?: string } })?.joinEvent?.name, "Workspace Agent");
+
+    const cursor = jordanMsgs.find((msg) => (msg.collaMsg as { eventID?: string })?.eventID === "update_cursor");
+    const selection = (cursor?.collaMsg as { updateCursorEvent?: { memberID?: string; selection?: { startRow: number; startColumn: number } } })
+      ?.updateCursorEvent;
+    assert.equal(selection?.memberID, "agent_workspace");
+    assert.equal(selection?.selection?.startRow, 0);
+    assert.equal(selection?.selection?.startColumn, 0);
+
+    const cursorIdx = eventIDs.indexOf("update_cursor");
+    const csIdx = eventIDs.indexOf("new_changesets");
+    assert.ok(cursorIdx >= 0 && csIdx > cursorIdx, "update_cursor must precede new_changesets");
+
+    const cs = jordanMsgs.find((msg) => (msg.collaMsg as { eventID?: string })?.eventID === "new_changesets");
+    const mutationId = (cs?.collaMsg as { newCsEvent?: { cs?: { mutations?: Array<{ id?: string }> } } })?.newCsEvent?.cs
+      ?.mutations?.[0]?.id;
+    assert.equal(mutationId, "sheet.mutation.set-range-values");
+  });
+});
+
 function fakeSocket(att: Record<string, unknown>) {
   const sent: Array<string | ArrayBuffer | ArrayBufferView> = [];
   return {

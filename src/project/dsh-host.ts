@@ -27,6 +27,7 @@ import {
   encodeCombJson,
   type CombFrame
 } from "../integrations/univer-comb-codec.ts";
+import { AGENT_MEMBER_ID, AGENT_USER_ID, AGENT_USER_NAME } from "../plugins/univer-facade-actions.ts";
 
 export interface CollabMemberAttachment {
   kind?: "comb";
@@ -40,6 +41,57 @@ export interface CollabMemberAttachment {
 export interface WorktreeFeedAttachment {
   kind: "worktree-feed";
   userID: string;
+}
+
+function agentPeerMember(): { memberID: string; userID: string; name: string; avatar: string } {
+  return {
+    memberID: AGENT_MEMBER_ID,
+    userID: AGENT_USER_ID,
+    name: AGENT_USER_NAME,
+    avatar: ""
+  };
+}
+
+function isAgentPeer(member: { memberID?: string; userID?: string } | null | undefined): boolean {
+  return member?.memberID === AGENT_MEMBER_ID || member?.userID === AGENT_USER_ID;
+}
+
+function agentUsersEnter(roomID: string): CombFrame {
+  return {
+    cmd: CombCmd.RECV,
+    code: CmdRspCode.OK,
+    reason: "success",
+    routeKey: roomID,
+    collaMsg: {
+      eventID: "users_enter",
+      joinEvent: agentPeerMember()
+    }
+  };
+}
+
+function cursorSelectionFromChangeset(
+  changeset: Record<string, unknown>
+): { startRow: number; startColumn: number; endRow: number; endColumn: number } | null {
+  const mutations = changeset.mutations;
+  if (!Array.isArray(mutations)) return null;
+  for (const mutation of mutations) {
+    if (!mutation || typeof mutation !== "object") continue;
+    const id = (mutation as { id?: unknown }).id;
+    if (id !== "sheet.mutation.set-range-values") continue;
+    const params = (mutation as { params?: { cellValue?: Record<string, Record<string, unknown>> } }).params;
+    const cellValue = params?.cellValue;
+    if (!cellValue || typeof cellValue !== "object") continue;
+    for (const [rowKey, cols] of Object.entries(cellValue)) {
+      const row = Number(rowKey);
+      if (!Number.isFinite(row) || !cols || typeof cols !== "object") continue;
+      const colKey = Object.keys(cols)[0];
+      if (colKey == null) continue;
+      const col = Number(colKey);
+      if (!Number.isFinite(col)) continue;
+      return { startRow: row, startColumn: col, endRow: row, endColumn: col };
+    }
+  }
+  return null;
 }
 
 export class DshHost extends HostBase<any> {
@@ -477,6 +529,36 @@ export class DshHost extends HostBase<any> {
     return { userID: "user_admin", name: "Administrator" };
   }
 
+  private broadcastAgentCollab(unitId: string, changeset: Record<string, unknown>): void {
+    const selection = cursorSelectionFromChangeset(changeset);
+    if (selection) {
+      this.broadcastToRoom(unitId, {
+        cmd: CombCmd.RECV,
+        code: CmdRspCode.OK,
+        reason: "success",
+        routeKey: unitId,
+        collaMsg: {
+          eventID: "update_cursor",
+          updateCursorEvent: {
+            unitID: unitId,
+            memberID: AGENT_MEMBER_ID,
+            selection
+          }
+        }
+      });
+    }
+    this.broadcastToRoom(unitId, {
+      cmd: CombCmd.RECV,
+      code: CmdRspCode.OK,
+      reason: "success",
+      routeKey: unitId,
+      collaMsg: {
+        eventID: "new_changesets",
+        newCsEvent: { cs: changeset }
+      }
+    });
+  }
+
   /**
    * Helper to retrieve active room members.
    */
@@ -485,7 +567,7 @@ export class DshHost extends HostBase<any> {
     for (const s of this.ctx.getWebSockets()) {
       try {
         const att = s.deserializeAttachment() as CollabMemberAttachment | null;
-        if (att && Array.isArray(att.rooms) && att.rooms.includes(roomID)) {
+        if (att && Array.isArray(att.rooms) && att.rooms.includes(roomID) && !isAgentPeer(att)) {
           list.push({
             memberID: att.memberID,
             userID: att.userID,
@@ -494,6 +576,9 @@ export class DshHost extends HostBase<any> {
           });
         }
       } catch {}
+    }
+    if (list.length >= 1) {
+      list.push(agentPeerMember());
     }
     return list;
   }
@@ -625,6 +710,13 @@ export class DshHost extends HostBase<any> {
                 members: membersInRoom
               };
 
+              const humans = membersInRoom.filter((member) => !isAgentPeer(member));
+              if (humans.length === 1) {
+                this.broadcastToRoom(roomID, agentUsersEnter(roomID));
+              } else if (humans.length > 1) {
+                this.sendComb(ws, att, agentUsersEnter(roomID));
+              }
+
               this.broadcastToRoom(
                 roomID,
                 {
@@ -658,7 +750,7 @@ export class DshHost extends HostBase<any> {
 
           case CombCmd.LEAVE: {
             const roomID = parsed.leaveReq?.roomID || routeKey;
-            if (roomID && att && Array.isArray(att.rooms)) {
+            if (roomID && att && Array.isArray(att.rooms) && !isAgentPeer(att)) {
               att.rooms = att.rooms.filter((r) => r !== roomID);
               ws.serializeAttachment(att);
               this.broadcastToRoom(
@@ -866,7 +958,7 @@ export class DshHost extends HostBase<any> {
   ): Promise<void> {
     try {
       const att = ws.deserializeAttachment() as CollabMemberAttachment | null;
-      if (att && Array.isArray(att.rooms)) {
+      if (att && Array.isArray(att.rooms) && !isAgentPeer(att)) {
         for (const roomID of att.rooms) {
           this.broadcastToRoom(
             roomID,

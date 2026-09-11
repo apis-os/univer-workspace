@@ -5,9 +5,9 @@
 import type { Context } from "@deepseek-ai/cordis";
 import type { ActionService } from "../kernel/action.ts";
 import type { WorkspaceActor } from "../control-plane/actor.ts";
-import { actorFromRequest, actorMemberId } from "../control-plane/actor.ts";
+import { actorFromRequest } from "../control-plane/actor.ts";
 import type { UniverCollabService } from "./univer-collab.ts";
-import { AGENT_USER_ID, registerFacadeActions } from "./univer-facade-actions.ts";
+import { AGENT_MEMBER_ID, AGENT_USER_ID, registerFacadeActions } from "./univer-facade-actions.ts";
 import { agentSystemPrompt, getAgentSkill, listAgentSkills } from "./univer-skills.ts";
 
 export const AI_GATEWAY_ID = "default";
@@ -177,7 +177,7 @@ async function executeTool(
   return action.execute(id, args, {
     unitId,
     userId: actor.userId,
-    clientId: actorMemberId(actor)
+    clientId: AGENT_MEMBER_ID
   });
 }
 
