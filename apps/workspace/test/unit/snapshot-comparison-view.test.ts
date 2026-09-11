@@ -27,6 +27,16 @@ describe("native Worktree comparison wiring", () => {
     expect(src).not.toMatch(/@univer\/unit-comparison-viewer\/styles\.css/);
   });
 
+  it("sources comparison-viewer package src from global.css without importing styles.css", () => {
+    const globalCssPath = join(root, "web/src/app/styles/global.css");
+    expect(existsSync(globalCssPath)).toBe(true);
+    const src = readFileSync(globalCssPath, "utf8");
+    expect(src).toMatch(
+      /@source\s+["'][^"']*unit-comparison-viewer\/src["']/
+    );
+    expect(src).not.toMatch(/@univer\/unit-comparison-viewer\/styles\.css/);
+  });
+
   it("mounts UnitComparisonViewer with createComparisonUniver", () => {
     const view = readWorkspace(
       "web/src/features/worktrees/snapshot-comparison-view.tsx"

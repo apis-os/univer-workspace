@@ -1,5 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { snapshotComparisonRows } from "../../web/src/features/worktrees/snapshot-comparison";
+import {
+  snapshotComparisonRows,
+  wrapComparisonUniverFactory,
+} from "../../web/src/features/worktrees/snapshot-comparison";
+
+const factoryOptions = {
+  container: {} as HTMLElement,
+  unitType: 2,
+  locale: "enUS",
+  darkMode: false,
+} as const;
 
 describe("snapshot comparison rows", () => {
   it("lists cell updates between trunk and worktree snapshots", () => {
@@ -34,5 +44,35 @@ describe("snapshot comparison rows", () => {
         items: [],
       })
     ).toEqual([]);
+  });
+});
+
+describe("wrapComparisonUniverFactory", () => {
+  it("runs onTableFallback and still rejects when the inner factory throws", async () => {
+    let fallbackCalls = 0;
+    const wrapped = wrapComparisonUniverFactory(async () => {
+      throw new Error("createUniver failed");
+    }, () => {
+      fallbackCalls += 1;
+    });
+
+    await expect(wrapped(factoryOptions)).rejects.toThrow();
+    expect(fallbackCalls).toBe(1);
+  });
+
+  it("returns the instance and does not call onTableFallback when the inner factory resolves", async () => {
+    const instance = {
+      univer: {},
+      dispose() {
+        return undefined;
+      },
+    };
+    let fallbackCalls = 0;
+    const wrapped = wrapComparisonUniverFactory(async () => instance, () => {
+      fallbackCalls += 1;
+    });
+
+    await expect(wrapped(factoryOptions)).resolves.toBe(instance);
+    expect(fallbackCalls).toBe(0);
   });
 });
