@@ -7,6 +7,16 @@ import { registerHooks } from "node:module";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
+function loadWrangler(): {
+  browser?: { binding?: string; remote?: boolean };
+  worker_loaders?: Array<{ binding?: string }>;
+  assets?: { run_worker_first?: string[] };
+} {
+  const raw = readFileSync(join(ROOT, "wrangler.jsonc"), "utf8");
+  const json = raw.replace(/\/\/.*$/gm, "").replace(/,(\s*[}\]])/g, "$1");
+  return JSON.parse(json);
+}
+
 registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier.startsWith("cloudflare:")) {
@@ -29,6 +39,21 @@ registerHooks({
 });
 
 describe("Cloudflare edge deploy contract", () => {
+  test("wrangler binds BROWSER and LOADER and keeps /uf plus /healthz.ai on the Worker", () => {
+    const cfg = loadWrangler();
+    assert.equal(cfg.browser?.binding, "BROWSER");
+    assert.equal(cfg.browser?.remote, true);
+    assert.equal(cfg.worker_loaders?.[0]?.binding, "LOADER");
+    const runWorkerFirst = cfg.assets?.run_worker_first ?? [];
+    for (const path of ["/healthz.ai", "/uf", "/uf/*"]) {
+      assert.ok(runWorkerFirst.includes(path), path);
+    }
+
+    const serverSrc = readFileSync(join(ROOT, "src/server.ts"), "utf8");
+    assert.match(serverSrc, /BROWSER\??:\s*Fetcher/);
+    assert.match(serverSrc, /LOADER\??:\s*WorkerLoader/);
+  });
+
   test("GET /healthz.ai.gateway is default and Env.AI is 3-arg", async () => {
     const serverSrc = readFileSync(join(ROOT, "src/server.ts"), "utf8");
     assert.match(serverSrc, /\/healthz\.ai/);

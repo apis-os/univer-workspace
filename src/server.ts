@@ -43,6 +43,8 @@ export interface Env {
     aiGatewayLogId?: string | null;
   };
   ASSETS?: Fetcher;
+  BROWSER?: Fetcher;
+  LOADER?: WorkerLoader;
 }
 
 let dbBooted = false;
