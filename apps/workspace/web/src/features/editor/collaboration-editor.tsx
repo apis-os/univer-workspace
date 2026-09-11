@@ -33,6 +33,7 @@ import { UniverEmbedUIPlugin } from "@univerjs-pro/embed-ui";
 import ExchangeClientEnUS from "@univerjs-pro/exchange-client/locale/en-US";
 import ExchangeClientZhCN from "@univerjs-pro/exchange-client/locale/zh-CN";
 import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { UniverLiveSharePlugin } from "@univerjs-pro/live-share";
 
 // Suppress Univer Pro license watermark on canvas
 (UniverLicensePlugin.prototype as any).onRendered = function () {};
@@ -58,11 +59,8 @@ import { useI18n } from "../../shared/i18n";
 import { syncUniverTheme, useTheme } from "../../shared/theme";
 import { Alert } from "../../shared/ui/alert";
 import { Spinner } from "../../shared/ui/spinner";
-import { cn } from "../../shared/utils/cn";
-import {
-  collaborationStatusMessageKey,
-  type CollaborationIssue,
-} from "./collaboration-status";
+import { toast } from "../../shared/ui";
+import { type CollaborationIssue } from "./collaboration-status";
 import {
   configureExchangePresetPlugins,
   createWorkspaceOutputPlugins,
@@ -74,6 +72,13 @@ import {
   withWorkspaceSnapshotServerOverride,
   type WorkspaceHostSnapshotScope,
 } from "./workspace-snapshot-server-adapter";
+import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
+import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
+import { createCollabConflictToaster } from "./collab-conflict-toast";
+import {
+  bindCollaborationStatusDisplay,
+  bindLiveShareFacade,
+} from "./live-share-bar";
 
 import "@univerjs-pro/collaboration-client-ui/lib/index.css";
 import "@univerjs-pro/edit-history-ui/lib/index.css";
@@ -82,6 +87,8 @@ import "@univerjs-pro/embed/facade";
 import "@univerjs-pro/embed-ui/lib/index.css";
 import "@univerjs-pro/exchange-client/facade";
 import "@univerjs-pro/exchange-client/lib/index.css";
+import "@univerjs-pro/live-share/lib/index.css";
+import "@univerjs-pro/live-share/facade";
 
 installHistoryShapeFormulaSdkWorkaround();
 
@@ -144,10 +151,6 @@ interface ICollaborationEditorDefinition {
 export function createCollaborationEditor(
   definition: ICollaborationEditorDefinition
 ) {
-  const collaborationStatusPresentation = resolveCollaborationStatusPresentation(
-    definition.hideCollaborationStatus,
-    definition.useCustomCollaborationStatus
-  );
   return function CollaborationEditor({
     unitId,
     user,
@@ -167,8 +170,17 @@ export function createCollaborationEditor(
     const { resolvedTheme } = useTheme();
     const resolvedThemeRef = useRef(resolvedTheme);
     const univerAPIRef = useRef<FUniver | null>(null);
+    const collaborationStatusRef = useRef(collaborationStatus);
     const mappedUnitIdsKey = mappedUnitIds?.join("\u0000") ?? "";
     resolvedThemeRef.current = resolvedTheme;
+    collaborationStatusRef.current = collaborationStatus;
+
+    useEffect(() => {
+      bindCollaborationStatusDisplay({
+        status: collaborationStatus,
+        issue: collaborationIssue,
+      });
+    }, [collaborationStatus, collaborationIssue]);
 
     useEffect(() => {
       if (univerAPIRef.current) {
@@ -191,6 +203,7 @@ export function createCollaborationEditor(
       let collaborationUIEventListener: { unsubscribe(): void } | null = null;
       let readOnlyListener: { dispose(): void } | null = null;
       let readOnlyLifecycleListener: { dispose(): void } | null = null;
+      let agentEditedListener: ((event: Event) => void) | null = null;
       onCollaboratorsChange?.([]);
 
       const mount = async () => {
@@ -264,7 +277,7 @@ export function createCollaborationEditor(
                   UniverCollaborationClientPlugin,
                   {
                     socketService: BrowserCollaborationSocketService,
-                    enableOfflineEditing: true,
+                    enableOfflineEditing: false,
                     enableAuthServer: true,
                     wsSessionTicketUrl:
                       "/universer-api/user/session-ticket",
@@ -279,14 +292,12 @@ export function createCollaborationEditor(
                   {
                     enableDocumentCollaborationUI:
                       definition.enableDocumentCollaborationUI,
-                    override: collaborationStatusPresentation.suppressNative
-                      ? [
-                          [
-                            DesktopCollaborationStatusDisplayController,
-                            null,
-                          ],
-                        ]
-                      : undefined,
+                    override: [
+                      [
+                        DesktopCollaborationStatusDisplayController,
+                        null,
+                      ],
+                    ],
                   },
                 ],
               ];
@@ -346,6 +357,7 @@ export function createCollaborationEditor(
           presets,
           plugins: [
             ...collaborationPlugins,
+            UniverLiveSharePlugin,
             ...collaborationFeaturePlugins,
             ...historyFeaturePlugins,
             ...outputPlugins,
@@ -362,6 +374,13 @@ export function createCollaborationEditor(
         });
         mountedUniver = univer;
         univerAPIRef.current = univerAPI;
+        bindAgentEditSpotlight({
+          getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+        });
+        bindLiveShareFacade(univerAPI);
+        const notifyCollabConflict = createCollabConflictToaster({
+          warning: (message) => toast.warning(message),
+        });
         collaborationUIEventListener = univer
           .__getInjector()
           .get(CollaborationUIEventService)
@@ -371,6 +390,7 @@ export function createCollaborationEditor(
               setCollaborationIssue("permission");
             } else if (event.id === CollaborationUIEventId.CONFLICT) {
               setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
             }
           });
         if (readOnly) {
@@ -458,6 +478,20 @@ export function createCollaborationEditor(
             setLoading(false);
           }
         });
+        const applyAgentEdits = (event: Event) => {
+          if (disposed) return;
+          applyWorkspaceAgentEdits(
+            univerAPI,
+            (event as CustomEvent<{
+              unitId?: string;
+              toolCalls?: Array<{ tool: string; args: Record<string, unknown> }>;
+            }>).detail,
+            unitId,
+            collaborationStatusRef.current
+          );
+        };
+        agentEditedListener = applyAgentEdits;
+        window.addEventListener("workspace-agent-edited", applyAgentEdits);
         if (
           !disposed &&
           onCollaboratorsChange &&
@@ -494,6 +528,12 @@ export function createCollaborationEditor(
         collaborationUIEventListener?.unsubscribe();
         readOnlyListener?.dispose();
         readOnlyLifecycleListener?.dispose();
+        if (agentEditedListener) {
+          window.removeEventListener("workspace-agent-edited", agentEditedListener);
+        }
+        bindAgentEditSpotlight(undefined);
+        bindLiveShareFacade(undefined);
+        bindCollaborationStatusDisplay(null);
         mountedUniver?.dispose();
         univerAPIRef.current = null;
       };
@@ -514,47 +554,6 @@ export function createCollaborationEditor(
 
     return (
       <div className="univer-editor-shell">
-        {!loading &&
-        !error &&
-        collaborationStatusPresentation.showCustom ? (
-          <div
-            className={cn(
-              "pointer-events-none absolute top-3 right-4 z-10 flex items-center gap-1.5 rounded-full border border-border bg-background/85 py-1 pr-2.5 pl-2 text-xs font-medium shadow-sm backdrop-blur-sm",
-              collaborationStatus === CollaborationStatus.SYNCED &&
-                "text-success-soft-foreground",
-              collaborationStatus === CollaborationStatus.CONFLICT &&
-                "text-destructive-soft-foreground",
-              collaborationStatus === CollaborationStatus.OFFLINE &&
-                "text-warning-soft-foreground",
-              collaborationStatus !== CollaborationStatus.SYNCED &&
-                collaborationStatus !== CollaborationStatus.CONFLICT &&
-                collaborationStatus !== CollaborationStatus.OFFLINE &&
-                "text-muted-foreground"
-            )}
-          >
-            <span
-              className={cn(
-                "size-1.5 rounded-full",
-                collaborationStatus === CollaborationStatus.SYNCED &&
-                  "bg-success",
-                collaborationStatus === CollaborationStatus.CONFLICT &&
-                  "bg-destructive",
-                collaborationStatus === CollaborationStatus.OFFLINE &&
-                  "bg-warning",
-                collaborationStatus !== CollaborationStatus.SYNCED &&
-                  collaborationStatus !== CollaborationStatus.CONFLICT &&
-                  collaborationStatus !== CollaborationStatus.OFFLINE &&
-                  "bg-subtle-foreground"
-              )}
-            />
-            {t(
-              collaborationStatusMessageKey(
-                collaborationStatus,
-                collaborationIssue
-              )
-            )}
-          </div>
-        ) : null}
         {error ? (
           <Alert
             variant="destructive"
@@ -636,7 +635,7 @@ function configurePresetCollaboration(
             PluginConstructor,
             {
               ...(pluginConfig as object),
-              enableOfflineEditing: true,
+              enableOfflineEditing: false,
               enableAuthServer: true,
               wsSessionTicketUrl: "/universer-api/user/session-ticket",
               authzUrl: "/universer-api/authz",
@@ -653,12 +652,9 @@ function configurePresetCollaboration(
               ...(pluginConfig as object),
               enableDocumentCollaborationUI:
                 definition.enableDocumentCollaborationUI,
-              override: resolveCollaborationStatusPresentation(
-                definition.hideCollaborationStatus,
-                definition.useCustomCollaborationStatus
-              ).suppressNative
-                ? [[DesktopCollaborationStatusDisplayController, null]]
-                : undefined,
+              override: [
+                [DesktopCollaborationStatusDisplayController, null],
+              ],
             },
           ]];
         }

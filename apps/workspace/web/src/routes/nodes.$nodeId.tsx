@@ -28,6 +28,10 @@ import {
 } from "./-workspace-layout";
 import { CollaboratorAvatars, ResourceEditor, AgentCollaborator } from "../features/editor";
 import {
+  CollaborationStatusChip,
+  LiveShareBar,
+} from "../features/editor/live-share-bar";
+import {
   AGENT_PANEL_ID,
   defaultAgentPanelOpen,
   readAgentPanelOpen,
@@ -283,6 +287,8 @@ function LoadedResourcePage({
               members={collaborators}
               currentUserId={session.data.user.id}
             />
+            <LiveShareBar />
+            <CollaborationStatusChip />
             <Tooltip content={agentOpen ? t("closeAgent") : t("openAgent")}>
               <Button
                 variant={agentOpen ? "secondary" : "ghost"}

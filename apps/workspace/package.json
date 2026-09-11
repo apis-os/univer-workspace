@@ -99,6 +99,7 @@
     "@univerjs-pro/ink": "1.0.0-insiders.20260907-70fc579",
     "@univerjs-pro/ink-ui": "1.0.0-insiders.20260907-70fc579",
     "@univerjs-pro/license": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/live-share": "1.0.0-insiders.20260907-70fc579",
     "@univerjs-pro/shape-editor": "1.0.0-insiders.20260907-70fc579",
     "@univerjs-pro/shape-editor-ui": "1.0.0-insiders.20260907-70fc579",
     "@univerjs-pro/sheets-history": "1.0.0-insiders.20260907-70fc579",
