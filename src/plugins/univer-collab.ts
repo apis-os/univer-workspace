@@ -138,7 +138,7 @@ export class UniverCollabService {
     }
   }
 
-  applyChangeset(payload: ChangesetPayload, clientId: string = "") {
+  async applyChangeset(payload: ChangesetPayload, clientId: string = "") {
     const now = Date.now();
     const unitId = payload.unitID || payload.unitId || "";
     const rev = payload.revision ?? payload.rev ?? 1;
@@ -170,7 +170,7 @@ export class UniverCollabService {
       unitId
     );
 
-    this.materializeChangesetSnapshot(unitId, rev, rawChangeset as Record<string, unknown>);
+    await this.materializeChangesetSnapshot(unitId, rev, rawChangeset as Record<string, unknown>);
 
     return { success: true, rev };
   }
@@ -179,11 +179,11 @@ export class UniverCollabService {
    * Keep the stored snapshot at the changeset revision so GET /snapshot
    * (and late-joining collab clients) see agent/human OT edits.
    */
-  private materializeChangesetSnapshot(
+  private async materializeChangesetSnapshot(
     unitId: string,
     rev: number,
     changeset: Record<string, unknown>
-  ): void {
+  ): Promise<void> {
     if (!unitId) return;
     const mutations = changeset.mutations;
     const hasMutations = Array.isArray(mutations) && mutations.length > 0;
@@ -195,13 +195,13 @@ export class UniverCollabService {
       this.saveSnapshot(unitId, rev, bumpSnapshotRevision(cloneSnapshot(base), rev));
       return;
     }
-    void Promise.resolve(applyChangesetMutations(base, { ...changeset, rev, revision: rev }))
-      .then((next) => {
-        if (next && typeof next === "object") this.saveSnapshot(unitId, rev, next);
-      })
-      .catch((err) => {
-        console.warn("materialize changeset failed", err);
-      });
+    try {
+      const next = await applyChangesetMutations(base, { ...changeset, rev, revision: rev });
+      if (next && typeof next === "object") this.saveSnapshot(unitId, rev, next);
+    } catch (err) {
+      this.saveSnapshot(unitId, rev, bumpSnapshotRevision(cloneSnapshot(base), rev));
+      console.warn("materialize changeset failed", err);
+    }
   }
 
   listChangesetEntries(unitId: string): Array<{

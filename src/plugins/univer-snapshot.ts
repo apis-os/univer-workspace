@@ -305,6 +305,40 @@ const requireCollabService = createRequire(
   fileURLToPath(new URL("../../apps/workspace/package.json", import.meta.url))
 );
 
+const FORMULA_RUST = "@univerjs-pro/engine-formula-rust";
+const FORMULA_JS = "@univerjs-pro/engine-formula";
+
+type NodeCjsModule = {
+  _load(request: string, parent: object | undefined, isMain: boolean): unknown;
+};
+
+/**
+ * collaboration-service CJS `require`s the rust formula plugin. Workerd cannot
+ * load that package or its native addon. Remap at this layer (not vendor `_0x`).
+ */
+function installWorkerdSafeFormulaEngine(): void {
+  if ((installWorkerdSafeFormulaEngine as { done?: boolean }).done) return;
+  const nodeModule = requireCollabService("node:module") as NodeCjsModule;
+  if (typeof nodeModule._load !== "function") return;
+  (installWorkerdSafeFormulaEngine as { done?: boolean }).done = true;
+  const originalLoad = nodeModule._load.bind(nodeModule);
+  nodeModule._load = function (request: string, parent: object | undefined, isMain: boolean) {
+    if (request === FORMULA_RUST) {
+      const jsEngine = originalLoad(FORMULA_JS, parent, isMain) as {
+        UniverProFormulaEnginePlugin?: unknown;
+        UniverRustFormulaEnginePlugin?: unknown;
+      };
+      if (jsEngine && jsEngine.UniverRustFormulaEnginePlugin == null) {
+        jsEngine.UniverRustFormulaEnginePlugin = jsEngine.UniverProFormulaEnginePlugin;
+      }
+      return jsEngine;
+    }
+    return originalLoad(request, parent, isMain);
+  };
+}
+
+installWorkerdSafeFormulaEngine();
+
 type UnitHandle = { readonly unitID: string; readonly type: number };
 
 type UniverUnitRuntimeInstance = {

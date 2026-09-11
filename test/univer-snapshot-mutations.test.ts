@@ -1,6 +1,7 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { Context } from "@deepseek-ai/cordis";
 import { DatabaseSync } from "node:sqlite";
@@ -15,6 +16,12 @@ import {
 
 const FORMULA = "=SUM(B2:D2)";
 const SNAPSHOT_SRC = fileURLToPath(new URL("../src/plugins/univer-snapshot.ts", import.meta.url));
+const nodeRequire = createRequire(import.meta.url);
+const NodeModule = nodeRequire("node:module") as {
+  _resolveFilename: (request: string, parent: object, isMain?: boolean, options?: object) => string;
+  _cache: Record<string, { filename?: string }>;
+};
+const FORMULA_RUST = "@univerjs-pro/engine-formula-rust";
 
 function createSqliteAdapter(): SqlExec {
   const db = new DatabaseSync(":memory:");
@@ -77,7 +84,15 @@ function insertColMutation(unitId: string, startColumn = 1): Record<string, unkn
   };
 }
 
-describe("T12 materialize Facade mutations onto collaborative snapshots", () => {
+function bustFormulaRustRequireCache(): void {
+  for (const key of Object.keys(NodeModule._cache)) {
+    if (key.includes("collaboration-service") || key.includes("engine-formula-rust")) {
+      delete NodeModule._cache[key];
+    }
+  }
+}
+
+describe("T12 materialize Facade mutations onto collaborative snapshots", { concurrency: false }, () => {
   test("applies via decoded collaboration-service helpers, not a third mutator", () => {
     const src = readFileSync(SNAPSHOT_SRC, "utf8");
     assert.match(src, /collaboration-service/);
@@ -171,7 +186,7 @@ describe("T12 materialize Facade mutations onto collaborative snapshots", () => 
       revision: 3,
       mutations: [{ id: "sheet.mutation.definitely-not-real", params: { smash: true } }]
     };
-    const result = collab.applyChangeset(unknown, "member_avery");
+    const result = await collab.applyChangeset(unknown, "member_avery");
     assert.equal(result.success, true);
     const stored = collab.getChangesetsSince(unitId, 2);
     assert.equal(stored.length, 1);
@@ -195,5 +210,54 @@ describe("T12 materialize Facade mutations onto collaborative snapshots", () => 
     assert.ok(projected.snapshot.workbook.blockMeta.sheet_1.blocks.length >= 1);
     assert.equal(projected.blocks[0]?.data["1"]["4"]?.f, FORMULA);
     assert.equal(projected.blocks[0]?.data["1"]["4"]?.v, 420);
+  });
+
+  test("applies mutations when engine-formula-rust cannot load", async () => {
+    const origResolve = NodeModule._resolveFilename.bind(NodeModule);
+    NodeModule._resolveFilename = (request: string, parent: object, isMain?: boolean, options?: object) => {
+      if (request === FORMULA_RUST) {
+        throw new Error("simulated missing @univerjs-pro/engine-formula-rust");
+      }
+      return origResolve(request, parent, isMain, options);
+    };
+    bustFormulaRustRequireCache();
+    try {
+      const unitId = "unit_no_rust";
+      const snapshot = generateDefaultSnapshot(unitId, 2, "NoRust") as Record<string, unknown>;
+      const next = await applyChangesetMutations(snapshot, {
+        unitID: unitId,
+        revision: 2,
+        mutations: [formulaMutation(unitId)]
+      });
+      const cell = getSheetCell(next, "E2");
+      assert.equal(cell?.f, FORMULA);
+      assert.equal(cell?.v, 420);
+    } finally {
+      NodeModule._resolveFilename = origResolve;
+      bustFormulaRustRequireCache();
+    }
+  });
+
+  test("applyChangeset awaits snapshot materialize before return", async () => {
+    const sql = createSqliteAdapter();
+    const collab = new UniverCollabService(new Context(), sql);
+    const unitId = "unit_await_materialize";
+    const snapshot = generateDefaultSnapshot(unitId, 2, "Await") as Record<string, unknown>;
+    collab.createUnit(unitId, 2, "Await", snapshot);
+    const result = await collab.applyChangeset(
+      {
+        id: "cs_await",
+        unitID: unitId,
+        revision: 2,
+        mutations: [formulaMutation(unitId)]
+      },
+      "member_avery"
+    );
+    assert.equal(result.success, true);
+    const stored = collab.getLatestSnapshot(unitId);
+    assert.ok(stored);
+    assert.equal(stored.rev, 2);
+    assert.equal(getSheetCell(stored.data, "E2")?.f, FORMULA);
+    assert.equal(getSheetCell(stored.data, "E2")?.v, 420);
   });
 });

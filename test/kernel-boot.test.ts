@@ -68,7 +68,7 @@ describe("Cordis Microkernel & Cloudflare Durable Object Kernel Boot", () => {
     assert.equal(snapshot.data.sheets.sheet1.name, "Q1 Projections");
 
     // Test Changeset persistence and retrieval
-    const changeRes = collab.applyChangeset({
+    const changeRes = await collab.applyChangeset({
       id: "cs_1",
       unitId: "doc_sheet_1",
       rev: 1,
