@@ -19,6 +19,12 @@ import {
   buildHistoryListBody,
   parsePositiveInt
 } from "../integrations/univer-history.ts";
+import {
+  decodeCombFrame,
+  encodeCombFrame,
+  encodeCombJson,
+  type CombFrame
+} from "../integrations/univer-comb-codec.ts";
 
 export interface CollabMemberAttachment {
   kind?: "comb";
@@ -26,6 +32,7 @@ export interface CollabMemberAttachment {
   userID: string;
   name: string;
   rooms: string[];
+  wire?: "protobuf" | "json";
 }
 
 export interface WorktreeFeedAttachment {
@@ -490,36 +497,46 @@ export class DshHost extends HostBase<any> {
   }
 
   /**
-   * Broadcasts a message to all members in a given room.
+   * Broadcasts a Comb message to all members in a given room, encoded per socket wire.
    */
   broadcastToRoom(roomID: string, msg: any, excludeMemberID?: string): void {
-    const str = typeof msg === "string" ? msg : JSON.stringify(msg);
     for (const s of this.ctx.getWebSockets()) {
       try {
         const att = s.deserializeAttachment() as CollabMemberAttachment | null;
         if (att && Array.isArray(att.rooms) && att.rooms.includes(roomID)) {
           if (excludeMemberID && att.memberID === excludeMemberID) continue;
-          s.send(str);
+          this.sendComb(s, att, msg);
         }
       } catch {}
     }
   }
 
   /**
-   * Sends a message to a specific member by memberID.
+   * Sends a Comb message to a specific member by memberID, encoded per socket wire.
    */
   sendToMember(memberID: string, msg: any): boolean {
-    const str = typeof msg === "string" ? msg : JSON.stringify(msg);
     for (const s of this.ctx.getWebSockets()) {
       try {
         const att = s.deserializeAttachment() as CollabMemberAttachment | null;
         if (att && att.memberID === memberID) {
-          s.send(str);
+          this.sendComb(s, att, msg);
           return true;
         }
       } catch {}
     }
     return false;
+  }
+
+  private sendComb(ws: WebSocket, att: CollabMemberAttachment | null | undefined, msg: unknown): void {
+    if (typeof msg === "string") {
+      ws.send(msg);
+      return;
+    }
+    if (att?.wire === "protobuf") {
+      ws.send(encodeCombFrame(msg as CombFrame));
+      return;
+    }
+    ws.send(encodeCombJson(msg as CombFrame));
   }
 
   /**
@@ -543,17 +560,28 @@ export class DshHost extends HostBase<any> {
 
       const kernel = await this.ensureKernel();
       let parsed: any;
+      const binaryFrame = typeof message !== "string";
       if (typeof message === "string") {
         try {
           parsed = JSON.parse(message);
         } catch {
           parsed = { raw: message };
         }
+      } else {
+        try {
+          parsed = decodeCombFrame(message);
+        } catch {
+          parsed = undefined;
+        }
       }
 
       // 1. Fast-path Univer Collaboration Protocol (CombCmd)
       if (typeof parsed?.cmd === "number") {
         const att = attachment as CollabMemberAttachment | null;
+        if (binaryFrame && att) {
+          att.wire = "protobuf";
+          ws.serializeAttachment(att);
+        }
         const memberID = att?.memberID || "unknown";
         const userID = att?.userID || "user_admin";
         const userName = att?.name || "Administrator";
@@ -562,15 +590,13 @@ export class DshHost extends HostBase<any> {
         switch (parsed.cmd) {
           case 1: // HELLO
           case 5: // HEARTBEAT
-            ws.send(
-              JSON.stringify({
-                cmd: parsed.cmd,
-                code: 1,
-                reason: "success",
-                routeKey,
-                infoRsp: { memberID }
-              })
-            );
+            this.sendComb(ws, att, {
+              cmd: parsed.cmd,
+              code: 1,
+              reason: "success",
+              routeKey,
+              infoRsp: { memberID }
+            });
             return;
 
           case 2: { // JOIN
@@ -618,15 +644,13 @@ export class DshHost extends HostBase<any> {
               );
             }
 
-            ws.send(
-              JSON.stringify({
-                cmd: 2,
-                code: 1,
-                reason: "success",
-                routeKey: routeKey || rooms[0] || "",
-                joinRsp: { roomInfos }
-              })
-            );
+            this.sendComb(ws, att, {
+              cmd: 2,
+              code: 1,
+              reason: "success",
+              routeKey: routeKey || rooms[0] || "",
+              joinRsp: { roomInfos }
+            });
             return;
           }
 
@@ -656,8 +680,11 @@ export class DshHost extends HostBase<any> {
             return;
           }
 
-          case 4: { // INGEST (Cursor / Presence update)
-            if (parsed.collaMsg?.eventID === "update_cursor" && routeKey) {
+          case 4: { // INGEST (cursor / presence / opaque collab events)
+            if (!routeKey || !parsed.collaMsg?.eventID) {
+              return;
+            }
+            if (parsed.collaMsg.eventID === "update_cursor") {
               this.broadcastToRoom(
                 routeKey,
                 {
@@ -673,6 +700,18 @@ export class DshHost extends HostBase<any> {
                       selection: parsed.collaMsg.updateCursorEvent?.selection
                     }
                   }
+                },
+                memberID
+              );
+            } else {
+              this.broadcastToRoom(
+                routeKey,
+                {
+                  cmd: 6,
+                  code: 1,
+                  reason: "success",
+                  routeKey,
+                  collaMsg: parsed.collaMsg
                 },
                 memberID
               );
