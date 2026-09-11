@@ -7,13 +7,13 @@ import { ensureDemoData, initControlPlaneSchema, seedControlPlane } from "../src
 import { verifyPassword } from "../src/control-plane/auth.ts";
 import {
   buildQ3ForecastSnapshot,
+  decodeOriginalMeta,
+  getSheetCell,
   resolveWelcomeUnitSnapshot,
   shouldSkipDemoSnapshot
 } from "../src/plugins/univer-demo-snapshot.ts";
 import { generateDefaultSnapshot } from "../src/plugins/univer-default-snapshots.ts";
 import { UniverCollabService } from "../src/plugins/univer-collab.ts";
-import { handleUniverserHttp } from "../src/integrations/univer-collab-http.ts";
-import { decodeOriginalMeta, getSheetCell } from "../src/plugins/univer-snapshot.ts";
 import type { SqlExec } from "../src/kernel/sql.ts";
 
 const WELCOME_UNIT_ID = "unit_welcome_sheet";
@@ -71,16 +71,6 @@ function createSqliteAdapter(): SqlExec {
   };
 }
 
-function collabHost(collab: UniverCollabService) {
-  return {
-    collab,
-    identity: { userID: "user_admin", name: "Avery Chen", avatar: "" },
-    mintSessionTicket() {
-      return "ticket_demo";
-    }
-  };
-}
-
 function emptyWelcomeSnapshot(): Record<string, unknown> {
   const empty = generateDefaultSnapshot("unit_blank_sheet", 2) as Record<string, unknown>;
   empty.unitID = WELCOME_UNIT_ID;
@@ -88,13 +78,6 @@ function emptyWelcomeSnapshot(): Record<string, unknown> {
   workbook.unitID = WELCOME_UNIT_ID;
   workbook.name = "Welcome Sheet";
   return empty;
-}
-
-async function getWelcomeSnapshot(collab: UniverCollabService) {
-  return handleUniverserHttp(
-    new Request("https://workspace.edge/universer-api/snapshot/2/unit/unit_welcome_sheet"),
-    collabHost(collab)
-  );
 }
 
 describe("Q3 Forecast demo seed", () => {
@@ -364,7 +347,7 @@ describe("Q3 Forecast demo seed", () => {
     assert.equal(getSheetCell(dirty, "A1")?.v, "already filled");
   });
 
-  test("GET snapshot hydrates empty welcome unit to Q3 and leaves dirty A1 unchanged", async () => {
+  test("ensureUnit hydrates empty welcome unit to Q3 and leaves dirty A1 unchanged", () => {
     const emptySql = createSqliteAdapter();
     const emptyCtx = new Context();
     emptyCtx.provide("host", { sql: emptySql });
@@ -372,10 +355,7 @@ describe("Q3 Forecast demo seed", () => {
     emptyCollab.createUnit(WELCOME_UNIT_ID, 2, "Welcome Sheet", emptyWelcomeSnapshot());
     assert.equal(getSheetCell(emptyCollab.getLatestSnapshot(WELCOME_UNIT_ID)!.data, "A1")?.v ?? null, null);
 
-    const emptyResponse = await getWelcomeSnapshot(emptyCollab);
-    assert.ok(emptyResponse);
-    const emptyBody = (await emptyResponse.json()) as { snapshot?: Record<string, unknown> };
-    assert.equal(getSheetCell(emptyBody.snapshot ?? {}, "A1")?.v, "Metric");
+    emptyCollab.ensureUnit(WELCOME_UNIT_ID, 2, "Welcome Sheet");
     const emptyStored = emptyCollab.getLatestSnapshot(WELCOME_UNIT_ID);
     assert.ok(emptyStored);
     assert.equal(getSheetCell(emptyStored.data, "A1")?.v, "Metric");
@@ -390,8 +370,7 @@ describe("Q3 Forecast demo seed", () => {
     workbookOf(dirty).sheets.sheet_1.cellData = { "0": { "0": { v: "already filled" } } };
     dirtyCollab.createUnit(WELCOME_UNIT_ID, 2, "Welcome Sheet", dirty);
 
-    const dirtyResponse = await getWelcomeSnapshot(dirtyCollab);
-    assert.ok(dirtyResponse);
+    dirtyCollab.ensureUnit(WELCOME_UNIT_ID, 2, "Welcome Sheet");
     const dirtyStored = dirtyCollab.getLatestSnapshot(WELCOME_UNIT_ID);
     assert.ok(dirtyStored);
     assert.equal(getSheetCell(dirtyStored.data, "A1")?.v, "already filled");

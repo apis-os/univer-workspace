@@ -2,14 +2,8 @@
  * Baked Q3 Forecast snapshot for the demo canvas.
  * Cells live on wrapper sheet.cellData; chart/CF/sparkline/named-range/validation
  * blobs live on workbook.resources. Workbook originalMeta stays thin.
+ * Cell/meta helpers live here so T4 stays loadable without untracked snapshot modules.
  */
-import {
-  a1ToRowCol,
-  decodeOriginalMeta,
-  encodeOriginalMeta,
-  getSheetRange,
-  type SheetCellValue
-} from "./univer-snapshot.ts";
 
 export const DEMO_WELCOME_UNIT_ID = "unit_welcome_sheet";
 export const DEMO_SHEET_ID = "sheet_1";
@@ -50,6 +44,91 @@ const WORKSHEET_META = {
   columnHeader: { height: 20, hidden: 0 },
   rightToLeft: 0
 };
+
+export interface SheetCellValue {
+  v?: string | number | boolean | null;
+  f?: string;
+  t?: number;
+}
+
+export function a1ToRowCol(a1: string): { row: number; col: number } {
+  const match = /^([A-Za-z]+)(\d+)$/.exec(String(a1).trim());
+  if (!match) {
+    throw new Error(`Invalid A1 address: ${a1}`);
+  }
+  const letters = match[1].toUpperCase();
+  let col = 0;
+  for (let i = 0; i < letters.length; i++) {
+    col = col * 26 + (letters.charCodeAt(i) - 64);
+  }
+  return { row: Number(match[2]) - 1, col: col - 1 };
+}
+
+export function encodeOriginalMeta(data: Record<string, unknown>): string {
+  return btoa(JSON.stringify(data));
+}
+
+export function decodeOriginalMeta(encoded: unknown): Record<string, unknown> | null {
+  if (typeof encoded !== "string" || !encoded) return null;
+  try {
+    return JSON.parse(atob(encoded)) as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function workbookOfSnapshot(snapshot: Record<string, unknown>): any {
+  const workbook = (snapshot as any).workbook ?? snapshot;
+  if (!workbook?.sheets) {
+    throw new Error("Snapshot is not a sheet workbook");
+  }
+  return workbook;
+}
+
+function sheetOf(snapshot: Record<string, unknown>, sheetId?: string): any {
+  const workbook = workbookOfSnapshot(snapshot);
+  const id = sheetId || workbook.sheetOrder?.[0];
+  const sheet = workbook.sheets?.[id];
+  if (!sheet) {
+    throw new Error(`Sheet not found: ${id || "(none)"}`);
+  }
+  if (!sheet.cellData || typeof sheet.cellData !== "object") {
+    sheet.cellData = {};
+  }
+  return sheet;
+}
+
+export function getSheetCell(
+  snapshot: Record<string, unknown>,
+  a1: string,
+  sheetId?: string
+): SheetCellValue | null {
+  const { row, col } = a1ToRowCol(a1);
+  const sheet = sheetOf(snapshot, sheetId);
+  const cell = sheet.cellData?.[String(row)]?.[String(col)] ?? sheet.cellData?.[row]?.[col];
+  return cell ? { ...cell } : null;
+}
+
+export function getSheetRange(
+  snapshot: Record<string, unknown>,
+  startA1: string,
+  endA1?: string,
+  sheetId?: string
+): Array<Array<SheetCellValue | null>> {
+  const start = a1ToRowCol(startA1);
+  const end = endA1 ? a1ToRowCol(endA1) : start;
+  const sheet = sheetOf(snapshot, sheetId);
+  const rows: Array<Array<SheetCellValue | null>> = [];
+  for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
+    const row: Array<SheetCellValue | null> = [];
+    for (let c = Math.min(start.col, end.col); c <= Math.max(start.col, end.col); c++) {
+      const cell = sheet.cellData?.[String(r)]?.[String(c)] ?? sheet.cellData?.[r]?.[c];
+      row.push(cell ? { ...cell } : null);
+    }
+    rows.push(row);
+  }
+  return rows;
+}
 
 type CellMatrix = Record<string, Record<string, SheetCellValue>>;
 

@@ -4,6 +4,11 @@
  */
 import type { Context } from "@deepseek-ai/cordis";
 import type { SqlExec } from "../kernel/sql.ts";
+import { generateDefaultSnapshot } from "./univer-default-snapshots.ts";
+import {
+  resolveWelcomeUnitSnapshot,
+  shouldSkipDemoSnapshot
+} from "./univer-demo-snapshot.ts";
 
 export const UNIVER_COLLAB_DDL = `
 CREATE TABLE IF NOT EXISTS univer_units (
@@ -246,6 +251,20 @@ export class UniverCollabService {
       inverseMutation: row.inverse_mutation ? JSON.parse(row.inverse_mutation) : {},
       createdAt: row.created_at
     };
+  }
+
+  ensureUnit(unitId: string, type: number, name: string) {
+    if (!this.getUnit(unitId)) {
+      const snapshot = generateDefaultSnapshot(unitId, type, name);
+      this.createUnit(unitId, type, name, snapshot);
+    }
+    if (unitId === "unit_welcome_sheet") {
+      const latest = this.getLatestSnapshot(unitId);
+      if (latest && !shouldSkipDemoSnapshot(latest.data)) {
+        this.saveSnapshot(unitId, latest.rev || 1, resolveWelcomeUnitSnapshot(unitId, latest.data));
+      }
+    }
+    return this.getUnit(unitId);
   }
 }
 
