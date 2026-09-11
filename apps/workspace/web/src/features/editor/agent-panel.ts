@@ -246,12 +246,67 @@ function asToolCall(
   return { tool, args };
 }
 
+function asStreamEvents(value: unknown): AgentStreamEvent[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (!item || typeof item !== "object") return [];
+    const type = "type" in item ? String(item.type ?? "") : "";
+    if (!type) return [];
+    const data =
+      "data" in item && item.data && typeof item.data === "object"
+        ? (item.data as Record<string, unknown>)
+        : {};
+    return [{ type, data }];
+  });
+}
+
+function agentErrorFromEvents(
+  events: readonly AgentStreamEvent[]
+): { message: string } | undefined {
+  for (const event of events) {
+    if (event.type !== "agent.error") continue;
+    const message = event.data.message;
+    if (typeof message === "string" && message.trim()) {
+      return { message };
+    }
+    return { message: "The agent could not complete that turn." };
+  }
+  return undefined;
+}
+
+export function liftAgentTurnBody(
+  body: Record<string, unknown>
+): Record<string, unknown> {
+  const events = asStreamEvents(body.events);
+  const next: Record<string, unknown> = { ...body };
+  for (const event of events) {
+    if (event.type !== "agent.done") continue;
+    if (next.aiGatewayLogId == null && event.data.aiGatewayLogId != null) {
+      next.aiGatewayLogId = event.data.aiGatewayLogId;
+    }
+    if (next.skipCache === undefined && event.data.skipCache !== undefined) {
+      next.skipCache = event.data.skipCache;
+    }
+    if (next.cache === undefined && event.data.cache !== undefined) {
+      next.cache = event.data.cache;
+    }
+    if (next.cacheHit === undefined && event.data.cacheHit !== undefined) {
+      next.cacheHit = event.data.cacheHit;
+    }
+  }
+  if (next.error == null) {
+    const error = agentErrorFromEvents(events);
+    if (error) next.error = error;
+  }
+  return next;
+}
+
 export async function consumeAgentTurnResponse(
   response: Response,
   onEvent?: (event: AgentStreamEvent) => void
 ): Promise<Record<string, unknown>> {
   if (!isSseContentType(response.headers.get("content-type"))) {
-    return readJsonBody(response);
+    return liftAgentTurnBody(await readJsonBody(response));
   }
   const events: AgentStreamEvent[] = [];
   const toolCalls: Array<{ tool: string; args: Record<string, unknown> }> =
@@ -273,7 +328,7 @@ export async function consumeAgentTurnResponse(
     }
   };
   await readSseEvents(response, emit);
-  return {
+  return liftAgentTurnBody({
     ...doneData,
     turnId: doneData.turnId,
     text,
@@ -281,7 +336,7 @@ export async function consumeAgentTurnResponse(
     rev: typeof doneData.rev === "number" ? doneData.rev : null,
     toolCalls,
     aiGatewayLogId: doneData.aiGatewayLogId ?? null,
-  };
+  });
 }
 
 export function readAgentMuxFrame(raw: string): AgentStreamEvent | null {

@@ -55,6 +55,19 @@ describe("in-editor AI collaboration UI", () => {
     expect(src).not.toMatch(/\{unitType\} · \{unitId\}/);
   });
 
+  it("does not treat HTTP agent.error as success or steal the E2-E4 walk", () => {
+    const src = readFileSync(
+      join(root, "web/src/features/editor/agent-collaborator.tsx"),
+      "utf8",
+    );
+    expect(src).toMatch(/pendingRef\.current\s*=\s*true/);
+    expect(src).not.toMatch(/pendingRef\.current\s*=\s*pending/);
+    expect(src).toMatch(/if\s*\([^)]*pendingRef\.current/);
+    expect(src).toMatch(/!res\.ok[\s\S]{0,80}body\.error/);
+    expect(src).not.toMatch(/cells:\s*cells\.length\s*\?\s*cells\s*:\s*undefined/);
+    expect(src).not.toMatch(/cells:\s*spotlightCells/);
+  });
+
   it("never posts turns or mux agent.prompt as a spectator", () => {
     const src = readFileSync(
       join(root, "web/src/features/editor/agent-collaborator.tsx"),

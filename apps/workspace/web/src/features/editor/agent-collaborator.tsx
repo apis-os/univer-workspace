@@ -103,7 +103,6 @@ export function AgentCollaborator({
   const suggestions = suggestionChipsForUnitType(unitType);
   const busy = pending || remoteBusy;
 
-  pendingRef.current = pending;
   streamTextRef.current = streamText;
   streamEventsRef.current = streamEvents;
 
@@ -168,13 +167,14 @@ export function AgentCollaborator({
     if (!open) return;
     const onEdited = (event: Event) => {
       const detail = (event as CustomEvent).detail ?? {};
-      const cells = spotlightCellsFromDetail(detail);
+      const changed = spotlightCellsFromDetail(detail);
       void activateAgentEditSpotlight({
         compact: compactViewport,
         reducedMotion,
-        cells: cells.length ? cells : undefined,
         activate: activateSpotlightCell,
-      }).then((result) => setSpotlightCells([...result.cells]));
+      }).then((result) =>
+        setSpotlightCells(changed.length ? changed : [...result.cells])
+      );
     };
     window.addEventListener("workspace-agent-edited", onEdited);
     return () => window.removeEventListener("workspace-agent-edited", onEdited);
@@ -203,7 +203,16 @@ export function AgentCollaborator({
         setStreamEvents(next);
         return;
       }
-      if (frame.type === "agent.done" || frame.type === "agent.error") {
+      if (frame.type === "agent.error") {
+        setRemoteBusy(false);
+        setError(String(frame.data.message ?? t("agentTurnFailed")));
+        streamTextRef.current = "";
+        streamEventsRef.current = [];
+        setStreamText("");
+        setStreamEvents([]);
+        return;
+      }
+      if (frame.type === "agent.done") {
         const turnId = String(frame.data.turnId ?? "");
         setRemoteBusy(false);
         if (turnId && turnId === lastTurnIdRef.current) return;
@@ -228,9 +237,6 @@ export function AgentCollaborator({
             detail: { unitId, rev, toolCalls: turn.toolCalls },
           })
         );
-        if (frame.type === "agent.error") {
-          setError(String(frame.data.message ?? t("agentTurnFailed")));
-        }
       }
     });
     return () => ws.close();
@@ -240,7 +246,8 @@ export function AgentCollaborator({
 
   const submit = async () => {
     const text = prompt.trim();
-    if (!text || pending || !shouldPostAgentTurn(spectator)) return;
+    if (!text || pendingRef.current || !shouldPostAgentTurn(spectator)) return;
+    pendingRef.current = true;
     setPending(true);
     setError(null);
     setPrompt("");
@@ -268,7 +275,7 @@ export function AgentCollaborator({
           );
         }
       });
-      if (!res.ok) {
+      if (!res.ok || body.error) {
         throw new Error(agentErrorMessage(body, t("agentTurnFailed")));
       }
       applyGatewayMeta(body, text);
@@ -299,6 +306,7 @@ export function AgentCollaborator({
     } catch (err) {
       setError(err instanceof Error ? err.message : t("agentTurnFailed"));
     } finally {
+      pendingRef.current = false;
       setPending(false);
     }
   };
@@ -307,9 +315,8 @@ export function AgentCollaborator({
     void replayAgentEditSpotlight({
       compact: compactViewport,
       reducedMotion,
-      cells: spotlightCells,
       activate: activateSpotlightCell,
-    }).then((result) => setSpotlightCells([...result.cells]));
+    });
   };
 
   return (

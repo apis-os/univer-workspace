@@ -108,10 +108,7 @@ export function spotlightCellsFromDetail(
 export async function activateAgentEditSpotlight(
   input: ActivateSpotlightInput = {}
 ): Promise<SpotlightResult> {
-  const cells =
-    input.cells && input.cells.length > 0
-      ? [...input.cells]
-      : [...AGENT_SPOTLIGHT_CELLS];
+  const cells = [...AGENT_SPOTLIGHT_CELLS];
   const storage = input.storage ?? browserSessionStorage();
   if (!input.force && storage?.getItem(AGENT_REPLAY_STORAGE_KEY) === "1") {
     return { walked: [], cells };

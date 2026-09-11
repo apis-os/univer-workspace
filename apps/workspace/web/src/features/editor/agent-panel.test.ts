@@ -95,6 +95,61 @@ describe("agent panel helpers", () => {
     });
   });
 
+  it("lifts aiGatewayLogId and cache flags from JSON agent.done events", async () => {
+    const response = new Response(
+      JSON.stringify({
+        turnId: "t-json",
+        text: "ok",
+        events: [
+          {
+            type: "agent.done",
+            data: {
+              turnId: "t-json",
+              aiGatewayLogId: "aig_json_fallback_id",
+              skipCache: false,
+            },
+          },
+        ],
+      }),
+      { headers: { "Content-Type": "application/json" } }
+    );
+    const body = await consumeAgentTurnResponse(response);
+    expect(body.aiGatewayLogId).toBe("aig_json_fallback_id");
+    expect(body.skipCache).toBe(false);
+    expect(truncateGatewayLogId(String(body.aiGatewayLogId))).toBe(
+      "aig_json_fa…"
+    );
+  });
+
+  it("surfaces JSON agent.error events as failure", async () => {
+    const response = new Response(
+      JSON.stringify({
+        turnId: "t-err",
+        text: "",
+        events: [
+          { type: "agent.error", data: { message: "Prompt is required" } },
+        ],
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+    const body = await consumeAgentTurnResponse(response);
+    expect(body.error).toEqual({ message: "Prompt is required" });
+    expect(agentErrorMessage(body, "failed")).toBe("Prompt is required");
+  });
+
+  it("surfaces SSE agent.error as failure even when HTTP 200", async () => {
+    const response = new Response(
+      'event: agent.error\ndata: {"message":"Agent is busy"}\n\n',
+      {
+        status: 200,
+        headers: { "Content-Type": "text/event-stream; charset=utf-8" },
+      }
+    );
+    const body = await consumeAgentTurnResponse(response);
+    expect(body.error).toEqual({ message: "Agent is busy" });
+    expect(agentErrorMessage(body, "failed")).toBe("Agent is busy");
+  });
+
   it("parses SSE agent.token thinking tool and done as they arrive", async () => {
     const seen: string[] = [];
     const encoder = new TextEncoder();
