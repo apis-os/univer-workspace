@@ -226,9 +226,9 @@ Monitor:
 
 Workers AI inference is routed through AI Gateway id `default` (`AI_GATEWAY_ID`). Smoke can assert `GET /healthz.ai` JSON `{ "gateway": "default" }`.
 
-- Tool-calling runs use `stream: false` and `skipCache: true`.
+- Tool-calling runs use `stream: false` and `skipCache: true`. LLM tool writes go through the same `recordTool` path as regex edits so they `broadcastCollab`.
 - Final text streams with `stream: true` and **no** `tools` (never `stream` + `tools` together).
-- Prompt `Explain the Q3 forecast in one sentence` (and canned full-sheet explain) uses `skipCache: false`, `cacheKey: "demo:explain-q3"`, `cacheTtl: 3600`.
+- Prompt `Explain the Q3 forecast in one sentence` (and canned full-sheet explain) skips the uncached tool loop and only runs cached `stream: true` inference (`skipCache: false`, `cacheKey: "demo:explain-q3"`, `cacheTtl: 3600`).
 - Live models: `@cf/meta/llama-3.3-70b-instruct-fp8-fast`, then `@cf/meta/llama-3.1-8b-instruct`. Do not call `@cf/openai/gpt-oss-120b` on the live path.
 - Gateway metadata is at most five keys: `product` (`univer-workspace`), `unitId`, `turnId`, `actorUserId` (prompting human, not `agent_workspace`), `step` (`tool` | `text` | `explain`).
 - `Accept: text/event-stream` streams turn events immediately; JSON remains the default for CLI.

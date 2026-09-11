@@ -244,69 +244,69 @@ async function tryWorkersAi(
   unitId: string,
   prompt: string,
   emit: (event: AgentEvent) => void,
-  actor: WorkspaceActor,
+  recordTool: (tool: string, args: Record<string, unknown>) => Promise<unknown>,
   ctx: { turnId: string; actorUserId: string }
 ): Promise<{ text: string; used: boolean; streamed: boolean }> {
   if (!env?.AI?.run) return { text: "", used: false, streamed: false };
-  const tools = action.getLlmTools().map((tool) => ({
-    type: "function",
-    function: {
-      name: tool.name,
-      description: tool.description,
-      parameters: tool.parameters
-    }
-  }));
+  const explain = isCachedExplainPrompt(prompt);
   const messages: Array<Record<string, unknown>> = [
     { role: "system", content: agentSystemPrompt(unitId) },
     { role: "user", content: prompt }
   ];
-  const explain = isCachedExplainPrompt(prompt);
   let lastError = "";
   let usedTools = false;
   for (const model of AI_GATEWAY_LIVE_MODELS) {
     try {
-      for (let step = 0; step < 6; step++) {
-        const result = await env.AI.run(
-          model,
-          { messages, tools },
-          gatewayOptions({
-            stream: false,
-            skipCache: true,
-            metadata: {
-              product: AI_GATEWAY_PRODUCT,
-              unitId,
-              turnId: ctx.turnId,
-              actorUserId: ctx.actorUserId,
-              step: "tool"
+      if (!explain) {
+        const tools = action.getLlmTools().map((tool) => ({
+          type: "function",
+          function: {
+            name: tool.name,
+            description: tool.description,
+            parameters: tool.parameters
+          }
+        }));
+        for (let step = 0; step < 6; step++) {
+          const result = await env.AI.run(
+            model,
+            { messages, tools },
+            gatewayOptions({
+              stream: false,
+              skipCache: true,
+              metadata: {
+                product: AI_GATEWAY_PRODUCT,
+                unitId,
+                turnId: ctx.turnId,
+                actorUserId: ctx.actorUserId,
+                step: "tool"
+              }
+            })
+          );
+          if (isReadableStream(result) || result instanceof Response) {
+            break;
+          }
+          const message = result?.response
+            ? { content: String(result.response), tool_calls: result.tool_calls }
+            : result;
+          const toolCalls = message?.tool_calls || result?.tool_calls;
+          if (Array.isArray(toolCalls) && toolCalls.length > 0) {
+            usedTools = true;
+            messages.push({ role: "assistant", content: message?.content ?? "", tool_calls: toolCalls });
+            for (const call of toolCalls) {
+              const name = call.function?.name || call.name;
+              const rawArgs = call.function?.arguments ?? call.arguments ?? {};
+              const args = typeof rawArgs === "string" ? JSON.parse(rawArgs) : rawArgs;
+              const toolResult = await recordTool(name, args);
+              messages.push({
+                role: "tool",
+                name,
+                content: JSON.stringify(toolResult)
+              });
             }
-          })
-        );
-        if (isReadableStream(result) || result instanceof Response) {
+            continue;
+          }
           break;
         }
-        const message = result?.response
-          ? { content: String(result.response), tool_calls: result.tool_calls }
-          : result;
-        const toolCalls = message?.tool_calls || result?.tool_calls;
-        if (Array.isArray(toolCalls) && toolCalls.length > 0) {
-          usedTools = true;
-          messages.push({ role: "assistant", content: message?.content ?? "", tool_calls: toolCalls });
-          for (const call of toolCalls) {
-            const name = call.function?.name || call.name;
-            const rawArgs = call.function?.arguments ?? call.arguments ?? {};
-            const args = typeof rawArgs === "string" ? JSON.parse(rawArgs) : rawArgs;
-            emit({ type: "agent.tool_call_start", data: { tool: name, args } });
-            const toolResult = await executeTool(action, name, args, unitId, actor);
-            emit({ type: "agent.tool_call_result", data: { tool: name, args, result: toolResult } });
-            messages.push({
-              role: "tool",
-              name,
-              content: JSON.stringify(toolResult)
-            });
-          }
-          continue;
-        }
-        break;
       }
 
       const streamed = await env.AI.run(
@@ -446,17 +446,8 @@ export async function runAgentTurn(
       action,
       unitId,
       prompt,
-      (event) => {
-        emit(event);
-        if (event.type === "agent.tool_call_result") {
-          toolCalls.push({
-            tool: String(event.data.tool),
-            args: (event.data.args as Record<string, unknown>) || {},
-            result: event.data.result
-          });
-        }
-      },
-      actor,
+      emit,
+      recordTool,
       { turnId, actorUserId }
     );
     streamedTokens = ai.streamed;

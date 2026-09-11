@@ -10,6 +10,7 @@ import {
   WORKTREE_CHANGE_NOTIFY_PATH,
   isWorktreeMutation
 } from "./integrations/worktree-change-feed.ts";
+import { AI_GATEWAY_ID } from "./plugins/univer-agent.ts";
 
 // Re-export Durable Objects
 export { DshHost, DshHost as ChatAgent } from "./project/dsh-host.ts";
@@ -114,7 +115,7 @@ export default {
       if (pathname === "/healthz.ai") {
         return applyCorsHeaders(
           request,
-          new Response(JSON.stringify({ status: "ok", gateway: "default" }), {
+          new Response(JSON.stringify({ status: "ok", gateway: AI_GATEWAY_ID }), {
             status: 200,
             headers: { "Content-Type": "application/json" }
           })

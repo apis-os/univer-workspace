@@ -164,8 +164,12 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     void action;
     registerFacadeActions(ctx);
 
+    const broadcasts: Array<{ unitId: string; changeset: Record<string, unknown> }> = [];
     const host = {
       kernel: ctx,
+      broadcastCollab: (unitId: string, changeset: Record<string, unknown>) => {
+        broadcasts.push({ unitId, changeset });
+      },
       env: {
         AI: {
           run: async () => ({
@@ -188,6 +192,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     const result = await runAgentTurn(host, { unitId: "unit_ai", prompt: "Fill the forecast please" });
     assert.ok(result.toolCalls.some((c) => c.tool === "univer.sheet.setRange" || c.tool === "univer_sheet_setRange"));
     assert.equal(getSheetCell(collab.getLatestSnapshot("unit_ai")!.data, "B2")?.v, "from-llm");
+    assert.ok(broadcasts.some((row) => row.unitId === "unit_ai"));
     const start = result.events.find((e) => e.type === "agent.tool_call_start");
     assert.equal((start?.data.args as any)?.cells?.[0]?.a1, "B2");
     const recorded = result.toolCalls.find(
@@ -325,9 +330,13 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
   test("Workers AI runs through gateway default; tools write; final stream has no tools", async () => {
     const { ctx, collab } = createHarness();
     const calls: AiCall[] = [];
+    const broadcasts: Array<{ unitId: string; changeset: Record<string, unknown> }> = [];
     const host = {
       kernel: ctx,
       actor: HUMAN_ACTOR,
+      broadcastCollab: (unitId: string, changeset: Record<string, unknown>) => {
+        broadcasts.push({ unitId, changeset });
+      },
       env: {
         AI: {
           aiGatewayLogId: null as string | null,
@@ -387,6 +396,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
 
     assert.ok(result.toolCalls.some((c) => c.tool === "univer.sheet.setRange" || c.tool === "univer_sheet_setRange"));
     assert.equal(getSheetCell(collab.getLatestSnapshot("unit_gateway")!.data, "B2")?.v, "from-llm");
+    assert.ok(broadcasts.some((row) => row.unitId === "unit_gateway"));
     const tokens = result.events.filter((e) => e.type === "agent.token").map((e) => e.data.delta);
     assert.deepEqual(tokens, ["Hel", "lo"]);
     const done = result.events.find((e) => e.type === "agent.done");
@@ -418,8 +428,10 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
       unitId: "unit_explain",
       prompt: "Explain the Q3 forecast in one sentence"
     });
+    assert.ok(calls.every((call) => !runHasTools(call.input)), "cached explain must skip the tool loop");
     const finalRun = calls.find((call) => runHasStream(call.input, call.options));
     assert.ok(finalRun);
+    assert.equal(calls.length, 1);
     assert.equal(runSkipCache(finalRun.options), false);
     assert.equal(runCacheKey(finalRun.options), "demo:explain-q3");
     assert.equal(runCacheTtl(finalRun.options), 3600);
@@ -432,8 +444,10 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
 
     calls.length = 0;
     await runAgentTurn(host, { unitId: "unit_explain", prompt: "Explain the full sheet in one sentence" });
+    assert.ok(calls.every((call) => !runHasTools(call.input)), "canned explain must skip the tool loop");
     const canned = calls.find((call) => runHasStream(call.input, call.options));
     assert.ok(canned);
+    assert.equal(calls.length, 1);
     assert.equal(runSkipCache(canned.options), false);
     assert.equal(runCacheKey(canned.options), "demo:explain-q3");
     assert.equal(runMetadata(canned.options).step, "explain");
