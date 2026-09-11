@@ -26,6 +26,16 @@ describe("presence color rings", () => {
     expect(presenceRingClassName("brand-600")).toBe("ring-brand-600");
   });
 
+  it("maps dashed seats onto real border-dashed or outline-dashed token classes", () => {
+    for (const token of PRESENCE_RING_TOKENS) {
+      const dashed = presenceRingClassName(token, { dashed: true });
+      expect(dashed).toMatch(/border-dashed|outline-dashed/);
+      expect(dashed).not.toMatch(/ring-dashed/);
+      expect(dashed).toMatch(new RegExp(`(?:border|outline)-${token}(?:\\s|$)`));
+      expect(presenceRingClassName(token)).toBe(`ring-${token}`);
+    }
+  });
+
   it("hashes userID onto the six tokens when color is missing", () => {
     const token = presenceRingToken({ userID: "user_admin" });
     expect(PRESENCE_RING_TOKENS).toContain(token);
@@ -52,9 +62,11 @@ describe("empty roster ghost Jordan and muted bot", () => {
     ]);
     expect(seats[1]?.name).toBe("Jordan Lee");
     expect(seats[2]?.bot).toBe(true);
-    expect(presenceRingClassName(seats[1]!.ringToken, { dashed: true })).toMatch(
-      /ring-dashed/
-    );
+    const ghostRing = presenceRingClassName(seats[1]!.ringToken, {
+      dashed: true,
+    });
+    expect(ghostRing).toMatch(/border-dashed|outline-dashed/);
+    expect(ghostRing).not.toMatch(/ring-dashed/);
   });
 
   it("keeps ghost Jordan and muted bot when only you are present", () => {

@@ -90,16 +90,22 @@ export function CollaboratorAvatars({
                 tabIndex={0}
                 aria-label={seatLabel(seat)}
                 className={cn(
-                  "relative inline-flex overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-background outline-offset-4 hover:z-10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring",
-                  presenceRingClassName(seat.ringToken, {
-                    dashed: seat.kind === "ghost",
-                  }),
+                  "relative inline-flex rounded-full outline-offset-4 hover:z-10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring",
+                  seat.kind === "ghost"
+                    ? cn(
+                        "size-7 sm:size-9",
+                        presenceRingClassName(seat.ringToken, { dashed: true })
+                      )
+                    : cn(
+                        "ring-2 ring-offset-2 ring-offset-background",
+                        presenceRingClassName(seat.ringToken)
+                      ),
                   seat.kind === "muted-bot" && "opacity-50",
                   shouldPulseBot({ bot: seat.bot, status: agentStatus }) &&
                     "animate-pulse"
                 )}
               >
-                {isBotCollaborator(seat.userID) ? (
+                {seat.kind === "ghost" ? null : isBotCollaborator(seat.userID) ? (
                   <span className="grid size-7 place-items-center bg-muted text-muted-foreground sm:size-9">
                     <Bot className="size-3.5 sm:size-4" />
                   </span>

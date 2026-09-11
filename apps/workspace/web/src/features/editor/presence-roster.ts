@@ -24,6 +24,15 @@ const RING_CLASS: Record<PresenceRingToken, string> = {
   baseunit: "ring-baseunit",
 };
 
+const DASHED_CLASS: Record<PresenceRingToken, string> = {
+  "brand-600": "border-2 border-dashed border-brand-600",
+  sheet: "border-2 border-dashed border-sheet",
+  board: "border-2 border-dashed border-board",
+  slide: "border-2 border-dashed border-slide",
+  warning: "border-2 border-dashed border-warning",
+  baseunit: "border-2 border-dashed border-baseunit",
+};
+
 export type PresenceMember = {
   readonly userID: string;
   readonly name?: string;
@@ -67,8 +76,7 @@ export function presenceRingClassName(
   token: PresenceRingToken,
   options?: { readonly dashed?: boolean }
 ): string {
-  const ring = RING_CLASS[token];
-  return options?.dashed ? `${ring} ring-dashed` : ring;
+  return options?.dashed ? DASHED_CLASS[token] : RING_CLASS[token];
 }
 
 export function readAgentPresenceStatus(event: {

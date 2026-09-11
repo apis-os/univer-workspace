@@ -32,9 +32,45 @@ describe("collaborator avatar rings, ghost Jordan, and bot pulse", () => {
     ]) {
       expect(src).toContain(token);
     }
-    expect(src).toMatch(/ring-dashed/);
+    expect(src).toMatch(/border-dashed|outline-dashed/);
+    expect(src).not.toMatch(/ring-dashed/);
     expect(src).toMatch(/ring-brand-600/);
     expect(src).toMatch(/ring-sheet/);
+    for (const token of [
+      "brand-600",
+      "sheet",
+      "board",
+      "slide",
+      "warning",
+      "baseunit",
+    ]) {
+      expect(src).toMatch(new RegExp(`(?:border|outline)-${token}\\b`));
+    }
+  });
+
+  it("renders ghost Jordan as an empty waiting circle without Avatar", () => {
+    const src = readWorkspace("web/src/features/editor/collaborator-avatars.tsx");
+    expect(src).toMatch(/waitingForJordan/);
+    const ghostBranch = src.match(
+      /seat\.kind\s*===\s*"ghost"\s*\?[\s\S]+?(?:isBotCollaborator|<Avatar)/
+    );
+    expect(ghostBranch?.[0]).toBeTruthy();
+    expect(ghostBranch?.[0]).not.toMatch(/<Avatar/);
+    expect(ghostBranch?.[0]).not.toMatch(/name=\{seat\.name\}/);
+  });
+
+  it("does not clip token rings with overflow-hidden on the ring wrapper", () => {
+    const src = readWorkspace("web/src/features/editor/collaborator-avatars.tsx");
+    const cnBlocks = [...src.matchAll(/className=\{cn\(([\s\S]*?)\)\}/g)].map(
+      (match) => match[1]
+    );
+    const ringed = cnBlocks.filter(
+      (block) => /\bring-2\b/.test(block) && /ring-offset-/.test(block)
+    );
+    expect(ringed.length).toBeGreaterThan(0);
+    for (const block of ringed) {
+      expect(block).not.toMatch(/\boverflow-hidden\b/);
+    }
   });
 
   it("uses a bot icon for agent_workspace and agent: ids and pulses on thinking", () => {
@@ -59,6 +95,8 @@ describe("presence legend popover", () => {
     expect(legend).not.toMatch(/univer-editor-container/);
     expect(legend).not.toMatch(/fixed\s+(bottom|top)-/);
     expect(avatars).not.toMatch(/absolute\s+(bottom|top)-\d/);
+    expect(legend).not.toMatch(/ring-dashed/);
+    expect(legend).toMatch(/item\.ringClassName/);
   });
 });
 

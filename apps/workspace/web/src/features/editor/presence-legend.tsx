@@ -53,9 +53,11 @@ export function PresenceLegend({
                 >
                   <span
                     className={cn(
-                      "size-2.5 shrink-0 rounded-full ring-2 ring-offset-1 ring-offset-background",
-                      item.ringClassName,
-                      item.dashed && "ring-dashed"
+                      "size-2.5 shrink-0 rounded-full",
+                      item.dashed
+                        ? undefined
+                        : "ring-2 ring-offset-1 ring-offset-background",
+                      item.ringClassName
                     )}
                     aria-hidden
                   />
