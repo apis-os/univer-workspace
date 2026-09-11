@@ -1,0 +1,56 @@
+function _0x4f06() {
+  const _0x4b351a = [
+    "10389464NXWoIr",
+    "Uložiť\x20ako",
+    "130172HEAUfK",
+    "85teHtvn",
+    "Súbor",
+    "1688840TRfVCR",
+    "5009900GYGkvt",
+    "9093XqcoXs",
+    "33612VfniJb",
+    "229229BExHdf",
+    "exports",
+    "Otvoriť\x20(súbor)",
+  ];
+  _0x4f06 = function () {
+    return _0x4b351a;
+  };
+  return _0x4f06();
+}
+const _0x551197 = _0xdf2f;
+(function (_0x39dfca, _0x5db620) {
+  const _0x3b491c = _0xdf2f,
+    _0x44e680 = _0x39dfca();
+  while (!![]) {
+    try {
+      const _0x16de33 =
+        -parseInt(_0x3b491c(0x12e)) / 0x1 +
+        parseInt(_0x3b491c(0x12a)) / 0x2 +
+        -parseInt(_0x3b491c(0x12c)) / 0x3 +
+        (-parseInt(_0x3b491c(0x133)) / 0x4) *
+          (parseInt(_0x3b491c(0x128)) / 0x5) +
+        -parseInt(_0x3b491c(0x12d)) / 0x6 +
+        -parseInt(_0x3b491c(0x12b)) / 0x7 +
+        parseInt(_0x3b491c(0x131)) / 0x8;
+      if (_0x16de33 === _0x5db620) break;
+      else _0x44e680["push"](_0x44e680["shift"]());
+    } catch (_0x4d5f14) {
+      _0x44e680["push"](_0x44e680["shift"]());
+    }
+  }
+})(_0x4f06, 0x9b596);
+const e = {
+  "docs-exchange-client": {
+    file: _0x551197(0x129),
+    upload: _0x551197(0x130),
+    download: _0x551197(0x132),
+  },
+};
+function _0xdf2f(_0x311e67, _0x201cec) {
+  _0x311e67 = _0x311e67 - 0x128;
+  const _0x4f069a = _0x4f06();
+  let _0xdf2f1a = _0x4f069a[_0x311e67];
+  return _0xdf2f1a;
+}
+module[_0x551197(0x12f)] = e;

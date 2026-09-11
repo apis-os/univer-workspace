@@ -1,0 +1,1 @@
+();const e={'boards-print':{'menu':{'print':'印刷','exportPng':"PNG",'exportJpeg':"JPEG"},'loading':{'print':"印刷の準備中…",'image':"画像をエクスポート中…"},'errors':{'printFailed':"このボードを印刷できません。",'exportFailed':"このボード画像をエクスポートできません。"}}};export{e as default};

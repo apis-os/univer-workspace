@@ -1,0 +1,22 @@
+{
+  "name": "@univerjs-pro/collaboration-worktree-service",
+  "type": "module",
+  "version": "1.0.0-insiders.20260907-70fc579",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@univerjs-pro/collaboration-service": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/protocol": "1.0.0-insiders.20260907-70fc579"
+  }
+}

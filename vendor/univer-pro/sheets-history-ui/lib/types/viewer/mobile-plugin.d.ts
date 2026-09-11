@@ -1,0 +1,16 @@
+import type { IUniverSheetsHistoryUIConfig } from '../config/config';
+import { IConfigService, Injector, Plugin } from '@univerjs/core';
+import { IRenderManagerService } from '@univerjs/engine-render';
+export declare class SheetsHistoryViewerMobilePlugin extends Plugin {
+    private readonly _config;
+    protected _injector: Injector;
+    private readonly _renderManagerService;
+    private readonly _configService;
+    static pluginName: string;
+    static packageName: string;
+    static version: string;
+    constructor(_config: IUniverSheetsHistoryUIConfig | undefined, _injector: Injector, _renderManagerService: IRenderManagerService, _configService: IConfigService);
+    onStarting(): void;
+    onRendered(): void;
+    onSteady(): void;
+}

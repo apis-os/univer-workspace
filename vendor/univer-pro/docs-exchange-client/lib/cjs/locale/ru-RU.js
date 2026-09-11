@@ -1,0 +1,57 @@
+const _0x58f130 = _0x50aa;
+(function (_0x6cc4ef, _0x3d8c59) {
+  const _0x1dfce4 = _0x50aa,
+    _0x1c2cd2 = _0x6cc4ef();
+  while (!![]) {
+    try {
+      const _0x137b0f =
+        (-parseInt(_0x1dfce4(0xdf)) / 0x1) * (parseInt(_0x1dfce4(0xde)) / 0x2) +
+        -parseInt(_0x1dfce4(0xe8)) / 0x3 +
+        (parseInt(_0x1dfce4(0xe7)) / 0x4) * (-parseInt(_0x1dfce4(0xdd)) / 0x5) +
+        (parseInt(_0x1dfce4(0xe0)) / 0x6) * (parseInt(_0x1dfce4(0xe4)) / 0x7) +
+        (parseInt(_0x1dfce4(0xe5)) / 0x8) * (parseInt(_0x1dfce4(0xe6)) / 0x9) +
+        parseInt(_0x1dfce4(0xdc)) / 0xa +
+        (-parseInt(_0x1dfce4(0xe2)) / 0xb) * (-parseInt(_0x1dfce4(0xe9)) / 0xc);
+      if (_0x137b0f === _0x3d8c59) break;
+      else _0x1c2cd2["push"](_0x1c2cd2["shift"]());
+    } catch (_0x547d05) {
+      _0x1c2cd2["push"](_0x1c2cd2["shift"]());
+    }
+  }
+})(_0x3dd2, 0x30899);
+const e = {
+  "docs-exchange-client": {
+    file: "Файл",
+    upload: _0x58f130(0xe3),
+    download: _0x58f130(0xe1),
+  },
+};
+module["exports"] = e;
+function _0x50aa(_0x3b9830, _0x20a3ee) {
+  _0x3b9830 = _0x3b9830 - 0xdc;
+  const _0x3dd282 = _0x3dd2();
+  let _0x50aad8 = _0x3dd282[_0x3b9830];
+  return _0x50aad8;
+}
+function _0x3dd2() {
+  const _0x3ce8ff = [
+    "12oGJEpP",
+    "709010QuQWOe",
+    "145EZVwCA",
+    "12678zkyavw",
+    "61wZHzmO",
+    "1026UYcygE",
+    "Сохранить\x20как",
+    "4122855WIvEFp",
+    "Открыть(Файл)",
+    "5285olmGrM",
+    "8tUxTvA",
+    "325197ZaGDsK",
+    "1868UkmdQo",
+    "35739qyqVFA",
+  ];
+  _0x3dd2 = function () {
+    return _0x3ce8ff;
+  };
+  return _0x3dd2();
+}

@@ -1,0 +1,61 @@
+const _0x5a894e = _0x2070;
+(function (_0x301633, _0x15942c) {
+  const _0x294256 = _0x2070,
+    _0x1ef3fc = _0x301633();
+  while (!![]) {
+    try {
+      const _0x1f4a35 =
+        (-parseInt(_0x294256(0x14c)) / 0x1) *
+          (-parseInt(_0x294256(0x145)) / 0x2) +
+        parseInt(_0x294256(0x146)) / 0x3 +
+        (-parseInt(_0x294256(0x13f)) / 0x4) *
+          (parseInt(_0x294256(0x141)) / 0x5) +
+        (-parseInt(_0x294256(0x144)) / 0x6) *
+          (-parseInt(_0x294256(0x14b)) / 0x7) +
+        -parseInt(_0x294256(0x148)) / 0x8 +
+        (-parseInt(_0x294256(0x147)) / 0x9) *
+          (parseInt(_0x294256(0x142)) / 0xa) +
+        parseInt(_0x294256(0x14a)) / 0xb;
+      if (_0x1f4a35 === _0x15942c) break;
+      else _0x1ef3fc["push"](_0x1ef3fc["shift"]());
+    } catch (_0x2065af) {
+      _0x1ef3fc["push"](_0x1ef3fc["shift"]());
+    }
+  }
+})(_0x5e99, 0x8ddfd);
+function _0x5e99() {
+  const _0x3e095b = [
+    "2533998qJUfpB",
+    "239958Uovjia",
+    "1330888JBYrkU",
+    "Abrir\x20(Arquivo)",
+    "3936702EvZhcZ",
+    "2331217JZciHc",
+    "1tfQxJd",
+    "120RkghFR",
+    "Arquivo",
+    "42640mUFtSM",
+    "230lJzXDb",
+    "Salvar\x20Como",
+    "6qOiytS",
+    "161930FjoOmh",
+  ];
+  _0x5e99 = function () {
+    return _0x3e095b;
+  };
+  return _0x5e99();
+}
+function _0x2070(_0x5978c8, _0x437bd4) {
+  _0x5978c8 = _0x5978c8 - 0x13f;
+  const _0x5e99b3 = _0x5e99();
+  let _0x207047 = _0x5e99b3[_0x5978c8];
+  return _0x207047;
+}
+const e = {
+  "docs-exchange-client": {
+    file: _0x5a894e(0x140),
+    upload: _0x5a894e(0x149),
+    download: _0x5a894e(0x143),
+  },
+};
+module["exports"] = e;

@@ -1,0 +1,1 @@
+();const e={'docs-print':{'menu':"Tlač"}};export{e as default};

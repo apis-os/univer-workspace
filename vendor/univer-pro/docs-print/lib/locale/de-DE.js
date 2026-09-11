@@ -1,0 +1,1 @@
+();const e={'docs-print':{'menu':"Drucken"}};export{e as default};

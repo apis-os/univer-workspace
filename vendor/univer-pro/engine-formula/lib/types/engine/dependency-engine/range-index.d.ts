@@ -1,0 +1,68 @@
+import type { IUnitRange } from '@univerjs/core';
+import type { CellCodec } from './cell-codec';
+import type { CalcNodeIndex } from './types';
+/**
+ * Reverse index from precedent ranges to dependent calculation nodes.
+ *
+ * The index does not expand ranges into cells. Whole rows / columns / sheets
+ * are stored in dedicated maps, normal ranges are indexed by their shorter
+ * side, and very large ranges use a fallback list.
+ */
+export declare class RangeIndex {
+    private readonly _codec;
+    private readonly _maxIndexedSpan;
+    private readonly _wholeSheet;
+    private readonly _wholeCol;
+    private readonly _wholeRow;
+    /**
+     * Normal ranges enter either row buckets or column buckets, never both.
+     */
+    private readonly _rowBuckets;
+    private readonly _colBuckets;
+    private readonly _largeRangeIds;
+    private _sheetArr;
+    private _startRowArr;
+    private _endRowArr;
+    private _startColArr;
+    private _endColArr;
+    private _nodeArr;
+    private _kindArr;
+    private _activeArr;
+    private _rangeSeenEpochArr;
+    private _rangeEpoch;
+    private _nextRangeId;
+    private readonly _freeRangeIds;
+    private readonly _nodeToRangeIds;
+    private readonly _nodeToWholeSheetKeys;
+    private readonly _nodeToWholeColKeys;
+    private readonly _nodeToWholeRowKeys;
+    constructor(_codec: CellCodec, initialCapacity: number, _maxIndexedSpan: number);
+    reserveCapacity(minCapacity: number): void;
+    addRange(nodeIndex: CalcNodeIndex, rangeInput: IUnitRange): void;
+    removeNode(nodeIndex: CalcNodeIndex): void;
+    /**
+     * Finds range-dependent nodes when one cell changes.
+     */
+    forEachPoint(unitId: string, sheetId: string, row: number, col: number, cb: (nodeIndex: CalcNodeIndex) => void): void;
+    forEachRangeIntersecting(changedInput: IUnitRange, cb: (nodeIndex: CalcNodeIndex) => void): void;
+    /**
+     * Finds range-dependent nodes intersecting a batch of changed ranges.
+     *
+     * A single range epoch deduplicates normal range IDs across the batch.
+     */
+    forEachRangesIntersecting(changedInputs: IUnitRange[], cb: (nodeIndex: CalcNodeIndex) => void): void;
+    private _allocRangeId;
+    private _ensureRangeCapacity;
+    private _setRangeMeta;
+    private _removeRangeId;
+    private _nextRangeEpoch;
+    private _wasRangeSeen;
+    private _markRangeSeen;
+    private _scanWholeCols;
+    private _scanWholeRows;
+    private _scanRowIndexedRanges;
+    private _scanColIndexedRanges;
+    private _scanRangeIdBucket;
+    private _rangeContainsPoint;
+    private _rangeIntersectsInput;
+}

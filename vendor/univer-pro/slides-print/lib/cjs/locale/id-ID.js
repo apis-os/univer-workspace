@@ -1,0 +1,104 @@
+const _0x1f6d49 = _0x3268;
+(function (_0x193e8e, _0x5d1d4) {
+  const _0x54229d = _0x3268,
+    _0x1d6eee = _0x193e8e();
+  while (!![]) {
+    try {
+      const _0xf293d1 =
+        (parseInt(_0x54229d(0x12a)) / 0x1) *
+          (parseInt(_0x54229d(0x134)) / 0x2) +
+        -parseInt(_0x54229d(0x123)) / 0x3 +
+        -parseInt(_0x54229d(0x11c)) / 0x4 +
+        parseInt(_0x54229d(0x11e)) / 0x5 +
+        parseInt(_0x54229d(0x133)) / 0x6 +
+        -parseInt(_0x54229d(0x132)) / 0x7 +
+        -parseInt(_0x54229d(0x12c)) / 0x8;
+      if (_0xf293d1 === _0x5d1d4) break;
+      else _0x1d6eee["push"](_0x1d6eee["shift"]());
+    } catch (_0x55460b) {
+      _0x1d6eee["push"](_0x1d6eee["shift"]());
+    }
+  }
+})(_0x3824, 0x19bf8);
+function _0x3268(_0x54d8d1, _0x34e83a) {
+  _0x54d8d1 = _0x54d8d1 - 0x117;
+  const _0x3824fc = _0x3824();
+  let _0x3268de = _0x3824fc[_0x54d8d1];
+  return _0x3268de;
+}
+const e = {
+  "slides-print": {
+    menu: "Cetak",
+    header: {
+      pages: _0x1f6d49(0x118),
+      cancel: "Batal",
+      next: _0x1f6d49(0x135),
+      printing: _0x1f6d49(0x125),
+    },
+    settings: {
+      range: _0x1f6d49(0x121),
+      rangePlaceholder: _0x1f6d49(0x120),
+      rangeInvalid: _0x1f6d49(0x11b),
+      layout: _0x1f6d49(0x128),
+      fullPage: _0x1f6d49(0x130),
+      notesPage: _0x1f6d49(0x129),
+      handout: _0x1f6d49(0x126),
+      slidesPerPage: _0x1f6d49(0x11a),
+      order: _0x1f6d49(0x117),
+      horizontal: _0x1f6d49(0x122),
+      vertical: _0x1f6d49(0x131),
+      paperSize: _0x1f6d49(0x124),
+      orientation: _0x1f6d49(0x12e),
+      portrait: "Potret",
+      landscape: _0x1f6d49(0x11f),
+      margin: _0x1f6d49(0x12b),
+      normal: "Normal",
+      narrow: _0x1f6d49(0x11d),
+      wide: _0x1f6d49(0x12d),
+      none: _0x1f6d49(0x12f),
+      formatting: _0x1f6d49(0x127),
+      frameSlides: "Beri\x20bingkai\x20pada\x20slide",
+      slideNumber: _0x1f6d49(0x119),
+    },
+  },
+};
+module["exports"] = e;
+function _0x3824() {
+  const _0x1938fc = [
+    "Tata\x20letak\x20cetak",
+    "Halaman\x20catatan",
+    "70159kcMnJS",
+    "Margin",
+    "2141024hkoAqC",
+    "Lebar",
+    "Orientasi",
+    "Tanpa\x20margin",
+    "Slide\x20satu\x20halaman\x20penuh",
+    "Vertikal",
+    "358337GwEvdX",
+    "1029540iXBugU",
+    "2TKedws",
+    "Berikutnya",
+    "Urutan\x20halaman",
+    "Total\x20{0}\x20halaman",
+    "Cetak\x20nomor\x20slide",
+    "Slide\x20per\x20halaman",
+    "Masukkan\x20nomor\x20slide\x20dalam\x20presentasi,\x20misalnya\x201-3,5.",
+    "11584SKbIrv",
+    "Sempit",
+    "998070nxRaCg",
+    "Lanskap",
+    "Semua\x20slide,\x20atau\x201-3,5",
+    "Rentang\x20cetak",
+    "Horizontal",
+    "42552cstQHd",
+    "Ukuran\x20kertas",
+    "Mencetak…",
+    "Handout",
+    "Pemformatan",
+  ];
+  _0x3824 = function () {
+    return _0x1938fc;
+  };
+  return _0x3824();
+}

@@ -1,0 +1,55 @@
+const _0x46eee5 = _0x109f;
+(function (_0xca129d, _0x1fc51f) {
+  const _0x2b6620 = _0x109f,
+    _0x1dc165 = _0xca129d();
+  while (!![]) {
+    try {
+      const _0x4cd533 =
+        parseInt(_0x2b6620(0x80)) / 0x1 +
+        parseInt(_0x2b6620(0x81)) / 0x2 +
+        parseInt(_0x2b6620(0x7c)) / 0x3 +
+        (parseInt(_0x2b6620(0x7b)) / 0x4) * (parseInt(_0x2b6620(0x7e)) / 0x5) +
+        -parseInt(_0x2b6620(0x7a)) / 0x6 +
+        (-parseInt(_0x2b6620(0x7f)) / 0x7) *
+          (-parseInt(_0x2b6620(0x83)) / 0x8) +
+        (-parseInt(_0x2b6620(0x84)) / 0x9) * (parseInt(_0x2b6620(0x7d)) / 0xa);
+      if (_0x4cd533 === _0x1fc51f) break;
+      else _0x1dc165["push"](_0x1dc165["shift"]());
+    } catch (_0x2db434) {
+      _0x1dc165["push"](_0x1dc165["shift"]());
+    }
+  }
+})(_0x1e57, 0x9716d);
+const e = {
+  "bases-exchange-client": {
+    file: "檔案",
+    upload: "開啟（檔案）",
+    download: "另存為",
+  },
+};
+module[_0x46eee5(0x82)] = e;
+function _0x109f(_0x389a6c, _0xa3009c) {
+  _0x389a6c = _0x389a6c - 0x7a;
+  const _0x1e5755 = _0x1e57();
+  let _0x109fc8 = _0x1e5755[_0x389a6c];
+  return _0x109fc8;
+}
+function _0x1e57() {
+  const _0x2a407d = [
+    "29617HDLzft",
+    "689160alvWkO",
+    "1666618Mymbgl",
+    "exports",
+    "888dpFtEh",
+    "231597IcVeTe",
+    "5945118MOhVIU",
+    "1868poSUee",
+    "2690097NjjBIc",
+    "580QoWAAi",
+    "2285TTTYYz",
+  ];
+  _0x1e57 = function () {
+    return _0x2a407d;
+  };
+  return _0x1e57();
+}

@@ -1,0 +1,35 @@
+import type { PluginCtor } from '@univerjs/core';
+import { Disposable, ICommandService, IConfigService, IPermissionService, IUniverInstanceService, LocaleService, ThemeService, Univer } from '@univerjs/core';
+import { RangeProtectionRuleModel } from '@univerjs/sheets';
+import { IDialogService, IMessageService, ISidebarService } from '@univerjs/ui';
+export declare const UNIVER_HISTORY_CONTAINER_ID = "univer-history-container-mobile";
+export declare class MobileHistoryLoaderService extends Disposable {
+    private readonly _localeService;
+    private readonly _univerInstanceService;
+    private readonly _configService;
+    private readonly _commandService;
+    private readonly _messageService;
+    private readonly _permissionService;
+    private _selectionProtectionRuleModel;
+    private readonly _dialogService;
+    private readonly _sidebarService;
+    private readonly _themeService;
+    private _historyUniver$;
+    readonly historyUniver$: import("rxjs").Observable<Univer | null>;
+    private readonly _disposableCollection;
+    private readonly _pluginMap;
+    private _internalWebWorker;
+    constructor(_localeService: LocaleService, _univerInstanceService: IUniverInstanceService, _configService: IConfigService, _commandService: ICommandService, _messageService: IMessageService, _permissionService: IPermissionService, _selectionProtectionRuleModel: RangeProtectionRuleModel, _dialogService: IDialogService, _sidebarService: ISidebarService, _themeService: ThemeService);
+    get historyUniver(): Univer | null;
+    private _init;
+    private _initContainer;
+    private _initPlugins;
+    dispose(): void;
+    registerPlugin<T extends PluginCtor>(ctor: T, config?: ConstructorParameters<T>[0], override?: false): void;
+    getAllPlugins(): [ctor: PluginCtor, config: object | undefined][];
+    mountHistoryContent(unitId: string, param?: unknown): void;
+    unMountHistoryContent(): void;
+    private _initUniver;
+    private _initListener;
+    private _checkCanRevert;
+}

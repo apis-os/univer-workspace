@@ -1,0 +1,72 @@
+const _0x3d8dd1 = _0x3769;
+(function (_0x90f225, _0x22dd8d) {
+  const _0x18407a = _0x3769,
+    _0x27dbc1 = _0x90f225();
+  while (!![]) {
+    try {
+      const _0x450434 =
+        parseInt(_0x18407a(0x1a6)) / 0x1 +
+        parseInt(_0x18407a(0x1ac)) / 0x2 +
+        (parseInt(_0x18407a(0x1a2)) / 0x3) *
+          (-parseInt(_0x18407a(0x1ae)) / 0x4) +
+        parseInt(_0x18407a(0x1a9)) / 0x5 +
+        (parseInt(_0x18407a(0x1aa)) / 0x6) *
+          (parseInt(_0x18407a(0x1a8)) / 0x7) +
+        (-parseInt(_0x18407a(0x1a7)) / 0x8) *
+          (-parseInt(_0x18407a(0x1b0)) / 0x9) +
+        (parseInt(_0x18407a(0x1a5)) / 0xa) *
+          (-parseInt(_0x18407a(0x1b1)) / 0xb);
+      if (_0x450434 === _0x22dd8d) break;
+      else _0x27dbc1["push"](_0x27dbc1["shift"]());
+    } catch (_0x504a3b) {
+      _0x27dbc1["push"](_0x27dbc1["shift"]());
+    }
+  }
+})(_0x1ae8, 0x36936);
+function _0x3769(_0x50b98a, _0x3202a2) {
+  _0x50b98a = _0x50b98a - 0x1a1;
+  const _0x1ae8e9 = _0x1ae8();
+  let _0x3769e6 = _0x1ae8e9[_0x50b98a];
+  return _0x3769e6;
+}
+const e = {
+  "boards-print": {
+    menu: {
+      print: _0x3d8dd1(0x1af),
+      exportPng: _0x3d8dd1(0x1ad),
+      exportJpeg: _0x3d8dd1(0x1a3),
+    },
+    loading: {
+      print: "Druck\x20wird\x20vorbereitet…",
+      image: _0x3d8dd1(0x1a4),
+    },
+    errors: { printFailed: _0x3d8dd1(0x1ab), exportFailed: _0x3d8dd1(0x1b2) },
+  },
+};
+function _0x1ae8() {
+  const _0xf3610e = [
+    "173454yWMEIk",
+    "Dieses\x20Board\x20kann\x20nicht\x20gedruckt\x20werden.",
+    "77436TDJEAw",
+    "PNG",
+    "4ERFOKS",
+    "Drucken",
+    "740898eVjolr",
+    "1763377llIkTp",
+    "Das\x20Bild\x20dieses\x20Boards\x20kann\x20nicht\x20exportiert\x20werden.",
+    "exports",
+    "657576MuIIDt",
+    "JPEG",
+    "Bild\x20wird\x20exportiert…",
+    "30jTEBGI",
+    "355803KBFUoQ",
+    "16YgnJco",
+    "35qPqVKv",
+    "1099725VcJrYO",
+  ];
+  _0x1ae8 = function () {
+    return _0xf3610e;
+  };
+  return _0x1ae8();
+}
+module[_0x3d8dd1(0x1a1)] = e;

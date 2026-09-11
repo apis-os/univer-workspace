@@ -1,0 +1,170 @@
+function _0x57fb(_0x49efae, _0x2752fe) {
+  _0x49efae = _0x49efae - 0x1c4;
+  const _0x2f67ec = _0x2f67();
+  let _0x57fb86 = _0x2f67ec[_0x49efae];
+  return _0x57fb86;
+}
+const _0x1b718d = _0x57fb;
+(function (_0x423444, _0x1269e5) {
+  const _0x325af8 = _0x57fb,
+    _0x355895 = _0x423444();
+  while (!![]) {
+    try {
+      const _0x56823d =
+        (parseInt(_0x325af8(0x1d5)) / 0x1) *
+          (-parseInt(_0x325af8(0x1f0)) / 0x2) +
+        (-parseInt(_0x325af8(0x1cd)) / 0x3) *
+          (parseInt(_0x325af8(0x1e1)) / 0x4) +
+        (-parseInt(_0x325af8(0x1e4)) / 0x5) *
+          (-parseInt(_0x325af8(0x1c7)) / 0x6) +
+        -parseInt(_0x325af8(0x1f7)) / 0x7 +
+        (parseInt(_0x325af8(0x1d6)) / 0x8) *
+          (parseInt(_0x325af8(0x1eb)) / 0x9) +
+        (-parseInt(_0x325af8(0x1dc)) / 0xa) *
+          (parseInt(_0x325af8(0x1d8)) / 0xb) +
+        parseInt(_0x325af8(0x1f3)) / 0xc;
+      if (_0x56823d === _0x1269e5) break;
+      else _0x355895["push"](_0x355895["shift"]());
+    } catch (_0x3ce314) {
+      _0x355895["push"](_0x355895["shift"]());
+    }
+  }
+})(_0x2f67, 0xd554f);
+function _0x2f67() {
+  const _0x4e4a8c = [
+    "تمت\x20إضافة\x20أعمدة\x20الجدول",
+    "تم\x20تحديث\x20رأس\x20الجدول",
+    "تم\x20فرز\x20الجدول",
+    "تم\x20تحديث\x20كتلة\x20التعليمات\x20البرمجية",
+    "exports",
+    "تم\x20توزيع\x20أعمدة\x20الجدول",
+    "تم\x20تحديث\x20الاقتباس",
+    "2KxaNAE",
+    "1162248nkNsIV",
+    "تم\x20تحديث\x20أعمدة\x20الجدول",
+    "1590259SOrscg",
+    "تم\x20تنسيق\x20النص",
+    "تم\x20حذف\x20الجدول",
+    "تم\x20تحديث\x20القائمة",
+    "100alckyy",
+    "تمت\x20إضافة\x20الجدول",
+    "تمت\x20إضافة\x20الصيغة",
+    "تم\x20حذف\x20أعمدة\x20الجدول",
+    "تم\x20تنسيق\x20الفقرة",
+    "1192PmYPRS",
+    "تم\x20توزيع\x20صفوف\x20الجدول",
+    "تم\x20نقل\x20الجدول",
+    "5waoLUM",
+    "تمت\x20إضافة\x20الاقتباس",
+    "تمت\x20إضافة\x20كتلة\x20التعليمات\x20البرمجية",
+    "تم\x20حذف\x20الصورة",
+    "تمت\x20إضافة\x20المخطط",
+    "تم\x20حذف\x20الشكل",
+    "تم\x20نقل\x20صفوف\x20الجدول",
+    "36sFSfhp",
+    "تمت\x20إعادة\x20تسمية\x20المستند",
+    "تمت\x20إضافة\x20وسيلة\x20الشرح",
+    "تم\x20حذف\x20الرابط",
+    "تم\x20حذف\x20الكتلة",
+    "1715544KxMxVt",
+    "تم\x20دمج\x20خلايا\x20الجدول",
+    "تم\x20حذف\x20النص",
+    "47888904hrmwFK",
+    "تمت\x20إضافة\x20صفوف\x20الجدول",
+    "تم\x20تغيير\x20حجم\x20صفوف\x20الجدول",
+    "تمت\x20إضافة\x20الفاصل",
+    "2461970iBcAwN",
+    "تم\x20تحديث\x20الصيغة",
+    "تم\x20تحديث\x20المخطط",
+    "تم\x20نقل\x20أعمدة\x20الجدول",
+    "تمت\x20إضافة\x20الصورة",
+    "تم\x20نقل\x20الكتلة",
+    "تم\x20تحديث\x20الصورة",
+    "تم\x20تحديث\x20الرأس\x20أو\x20التذييل",
+    "تم\x20تحرير\x20المستند",
+    "تمت\x20إضافة\x20الشكل",
+    "سجل\x20الإصدارات",
+    "تم\x20تحديث\x20تخطيط\x20الصفحة",
+    "3700818VcUVbZ",
+    "تم\x20حذف\x20الصيغة",
+    "تم\x20حذف\x20وسيلة\x20الشرح",
+    "تم\x20تغيير\x20حجم\x20أعمدة\x20الجدول",
+    "تمت\x20إضافة\x20الأعمدة",
+    "تم\x20تحرير\x20خلية\x20الجدول",
+    "8073RutRLo",
+  ];
+  _0x2f67 = function () {
+    return _0x4e4a8c;
+  };
+  return _0x2f67();
+}
+const e = {
+  "docs-history-ui": {
+    menu: { history: _0x1b718d(0x1c5) },
+    action: {
+      renameDocument: _0x1b718d(0x1ec),
+      insertText: "تمت\x20إضافة\x20النص",
+      deleteText: _0x1b718d(0x1f2),
+      deleteBlock: _0x1b718d(0x1ef),
+      formatText: _0x1b718d(0x1d9),
+      formatParagraph: _0x1b718d(0x1e0),
+      changeHeading: "تم\x20تغيير\x20العنوان",
+      updateList: _0x1b718d(0x1db),
+      moveBlock: _0x1b718d(0x1fc),
+      insertDivider: _0x1b718d(0x1f6),
+      deleteDivider: "تم\x20حذف\x20الفاصل",
+      updatePageLayout: _0x1b718d(0x1c6),
+      updateHeaderFooter: _0x1b718d(0x1fe),
+      insertLink: "تمت\x20إضافة\x20الرابط",
+      insertCustomRange: "تمت\x20إضافة\x20نطاق\x20مخصص",
+      updateLink: "تم\x20تحديث\x20الرابط",
+      deleteLink: _0x1b718d(0x1ee),
+      insertTable: _0x1b718d(0x1dd),
+      deleteTable: _0x1b718d(0x1da),
+      insertTableRows: _0x1b718d(0x1f4),
+      deleteTableRows: "تم\x20حذف\x20صفوف\x20الجدول",
+      moveTableRows: _0x1b718d(0x1ea),
+      resizeTableRows: _0x1b718d(0x1f5),
+      distributeTableRows: _0x1b718d(0x1e2),
+      insertTableColumns: _0x1b718d(0x1ce),
+      deleteTableColumns: _0x1b718d(0x1df),
+      moveTableColumns: _0x1b718d(0x1fa),
+      resizeTableColumns: _0x1b718d(0x1ca),
+      distributeTableColumns: _0x1b718d(0x1d3),
+      moveTable: _0x1b718d(0x1e3),
+      updateTableHeader: _0x1b718d(0x1cf),
+      updateTableColumns: _0x1b718d(0x1d7),
+      editTableCell: _0x1b718d(0x1cc),
+      formatTable: "تم\x20تنسيق\x20الجدول",
+      mergeTableCells: _0x1b718d(0x1f1),
+      unmergeTableCells: "تم\x20إلغاء\x20دمج\x20خلايا\x20الجدول",
+      sortTable: _0x1b718d(0x1d0),
+      insertImage: _0x1b718d(0x1fb),
+      deleteImage: _0x1b718d(0x1e7),
+      updateImage: _0x1b718d(0x1fd),
+      insertShape: _0x1b718d(0x1c4),
+      updateShape: "تم\x20تحديث\x20الشكل",
+      deleteShape: _0x1b718d(0x1e9),
+      updateDrawing: "تم\x20تحديث\x20العنصر\x20العائم",
+      insertChart: _0x1b718d(0x1e8),
+      deleteChart: "تم\x20حذف\x20المخطط",
+      updateChart: _0x1b718d(0x1f9),
+      insertCallout: _0x1b718d(0x1ed),
+      deleteCallout: _0x1b718d(0x1c9),
+      updateCallout: "تم\x20تحديث\x20وسيلة\x20الشرح",
+      insertCodeBlock: _0x1b718d(0x1e6),
+      deleteCodeBlock: "تم\x20حذف\x20كتلة\x20التعليمات\x20البرمجية",
+      updateCodeBlock: _0x1b718d(0x1d1),
+      insertQuote: _0x1b718d(0x1e5),
+      deleteQuote: "تم\x20حذف\x20الاقتباس",
+      updateQuote: _0x1b718d(0x1d4),
+      insertColumns: _0x1b718d(0x1cb),
+      updateColumns: "تم\x20تحديث\x20الأعمدة",
+      insertFormula: _0x1b718d(0x1de),
+      updateFormula: _0x1b718d(0x1f8),
+      deleteFormula: _0x1b718d(0x1c8),
+      editDocument: _0x1b718d(0x1ff),
+    },
+  },
+};
+module[_0x1b718d(0x1d2)] = e;

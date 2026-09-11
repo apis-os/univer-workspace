@@ -1,0 +1,1 @@
+();const e={'docs-exchange-client':{'file':"File",'upload':"Buka(File)",'download':'Simpan\x20Sebagai'}};export{e as default};

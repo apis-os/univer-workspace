@@ -1,0 +1,57 @@
+const _0x460f3f = _0x3cdb;
+(function (_0x326074, _0x557cc3) {
+  const _0x38c68b = _0x3cdb,
+    _0x31f8f4 = _0x326074();
+  while (!![]) {
+    try {
+      const _0x351a8c =
+        parseInt(_0x38c68b(0x166)) / 0x1 +
+        (parseInt(_0x38c68b(0x165)) / 0x2) *
+          (parseInt(_0x38c68b(0x161)) / 0x3) +
+        parseInt(_0x38c68b(0x16a)) / 0x4 +
+        -parseInt(_0x38c68b(0x168)) / 0x5 +
+        (parseInt(_0x38c68b(0x167)) / 0x6) *
+          (-parseInt(_0x38c68b(0x162)) / 0x7) +
+        -parseInt(_0x38c68b(0x169)) / 0x8 +
+        parseInt(_0x38c68b(0x163)) / 0x9;
+      if (_0x351a8c === _0x557cc3) break;
+      else _0x31f8f4["push"](_0x31f8f4["shift"]());
+    } catch (_0x1c1777) {
+      _0x31f8f4["push"](_0x31f8f4["shift"]());
+    }
+  }
+})(_0x23cb, 0xa24dd);
+function _0x23cb() {
+  const _0x45f8ab = [
+    "حفظ\x20باسم",
+    "exports",
+    "3ZUTUiu",
+    "21pJKSdL",
+    "9754281oVCbfL",
+    "فتح\x20(ملف)",
+    "885766SyTogD",
+    "27684GyuTuQ",
+    "535830cDMmGz",
+    "996155QPMFoK",
+    "6509296icuskg",
+    "1564916OIXqgh",
+  ];
+  _0x23cb = function () {
+    return _0x45f8ab;
+  };
+  return _0x23cb();
+}
+const e = {
+  "slides-exchange-client": {
+    file: "ملف",
+    upload: _0x460f3f(0x164),
+    download: _0x460f3f(0x15f),
+  },
+};
+function _0x3cdb(_0x4bc1b4, _0x4e6c09) {
+  _0x4bc1b4 = _0x4bc1b4 - 0x15f;
+  const _0x23cb7a = _0x23cb();
+  let _0x3cdb37 = _0x23cb7a[_0x4bc1b4];
+  return _0x3cdb37;
+}
+module[_0x460f3f(0x160)] = e;

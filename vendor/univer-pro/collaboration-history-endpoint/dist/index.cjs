@@ -1,0 +1,233 @@
+Object["defineProperty"](exports, Symbol["toStringTag"], { value: "Module" });
+let e = require("@univerjs-pro/collaboration-service"),
+  t = require("@univerjs-pro/collaboration-transport-node"),
+  n = require("@univerjs/protocol");
+var r = { code: n["ErrorCode"]["OK"], message: "" },
+  i = class {
+    ["_service"];
+    ["_disposed"] = !0x1;
+    constructor(_0x56a782) {
+      if (((this["_service"] = _0x56a782), !_0x56a782))
+        throw TypeError("UniverHistoryEndpoint\x20requires\x20a\x20service");
+    }
+    ["register"](_0x16c7fb) {
+      if (this["_disposed"])
+        throw new e["CollabError"](
+          "INTERNAL_ERROR",
+          "History\x20Endpoint\x20is\x20disposed",
+        );
+      for (let [_0x47ae10, _0x23a7e6] of [
+        ["list", "list"],
+        ["creators", "creators"],
+        ["cs", "changesets"],
+      ])
+        _0x16c7fb["get"](
+          "/universer-api/history/:unitID/" + _0x47ae10,
+          (_0x4589ca) =>
+            this["_handleHttp"](_0x4589ca, {
+              name: _0x23a7e6,
+              unitID: _0x4589ca["params"]["unitID"],
+            }),
+        );
+    }
+    async ["_handleHttp"](_0xc7dad6, _0x10d4b9) {
+      try {
+        if (this["_disposed"])
+          throw new e["CollabError"](
+            "INTERNAL_ERROR",
+            "History\x20Endpoint\x20is\x20disposed",
+          );
+        let _0x383d0f = new URL(
+          _0xc7dad6["incomingMessage"]["url"] ?? "/",
+          "http://localhost",
+        );
+        if (!_0xc7dad6["userID"])
+          throw new e["CollabError"](
+            "UNAUTHENTICATED",
+            "HTTP\x20user\x20is\x20not\x20authenticated",
+          );
+        let _0x32677b = {
+          userID: _0xc7dad6["userID"],
+          customData: _0xc7dad6["customData"],
+        };
+        switch (_0x10d4b9["name"]) {
+          case "list": {
+            let _0x5c2093 = await this["_service"]["getHistoryList"](
+              {
+                unitID: _0x10d4b9["unitID"],
+                length: o(_0x383d0f["searchParams"]["get"]("length")),
+                ...(_0x383d0f["searchParams"]["get"]("lastLabel")
+                  ? { lastLabel: _0x383d0f["searchParams"]["get"]("lastLabel") }
+                  : {}),
+                ...c(_0x383d0f["searchParams"]["get"]("origin")),
+                userIDs: _0x383d0f["searchParams"]
+                  ["getAll"]("userIds")
+                  ["filter"](Boolean),
+              },
+              _0x32677b,
+            );
+            d(_0xc7dad6["response"], 0xc8, { error: r, ...a(_0x5c2093) });
+            return;
+          }
+          case "creators": {
+            let _0x1e39d8 = await this["_service"]["listHistoryCreators"](
+              { unitID: _0x10d4b9["unitID"] },
+              _0x32677b,
+            );
+            d(_0xc7dad6["response"], 0xc8, {
+              error: r,
+              creators: _0x1e39d8["creators"]["map"](
+                ({ userID: _0x56579e, ..._0xad093c }) => ({
+                  ..._0xad093c,
+                  userId: _0x56579e,
+                }),
+              ),
+            });
+            return;
+          }
+          case "changesets": {
+            let _0x302555 = s(
+                _0x383d0f["searchParams"]["get"]("startRevision"),
+                "startRevision",
+              ),
+              _0xfa39ba = s(
+                _0x383d0f["searchParams"]["get"]("endRevision"),
+                "endRevision",
+              ),
+              _0x49dbe4 = await this["_service"]["getHistoryChangesets"](
+                {
+                  unitID: _0x10d4b9["unitID"],
+                  startRevision: _0x302555,
+                  endRevision: _0xfa39ba,
+                },
+                _0x32677b,
+              );
+            d(_0xc7dad6["response"], 0xc8, { error: r, ..._0x49dbe4 });
+            return;
+          }
+        }
+      } catch (_0x9ea860) {
+        l(_0xc7dad6["response"], _0x9ea860);
+      }
+    }
+    ["dispose"]() {
+      this["_disposed"] = !0x0;
+    }
+  };
+function a(_0x4f24a1) {
+  let _0x28e25f = Object["fromEntries"](
+    Object["entries"](_0x4f24a1["entities"]["datas"])["map"](
+      ([
+        _0x2f4262,
+        {
+          userID: _0x226261,
+          unitID: _0x1d543f,
+          userIDs: _0x2d08b5,
+          ..._0x1e5371
+        },
+      ]) => [
+        _0x2f4262,
+        {
+          ..._0x1e5371,
+          userId: _0x226261,
+          unitId: _0x1d543f,
+          userIds: _0x2d08b5,
+        },
+      ],
+    ),
+  );
+  return {
+    ..._0x4f24a1,
+    entities: { ..._0x4f24a1["entities"], datas: _0x28e25f },
+  };
+}
+function o(_0x1b4fa9) {
+  return _0x1b4fa9 === null || _0x1b4fa9 === "" ? 0x14 : s(_0x1b4fa9, "length");
+}
+function s(_0x1ba94c, _0x59d45d) {
+  if (!_0x1ba94c || !/^\d+$/["test"](_0x1ba94c))
+    throw new e["CollabError"](
+      "INVALID_REQUEST",
+      _0x59d45d + "\x20must\x20be\x20a\x20positive\x20integer",
+    );
+  let _0x10117c = Number(_0x1ba94c);
+  if (!Number["isSafeInteger"](_0x10117c) || _0x10117c < 0x1)
+    throw new e["CollabError"](
+      "INVALID_REQUEST",
+      _0x59d45d + "\x20must\x20be\x20a\x20positive\x20integer",
+    );
+  return _0x10117c;
+}
+function c(_0x4ec56f) {
+  if (_0x4ec56f === null || _0x4ec56f === "" || _0x4ec56f === "0") return {};
+  if (_0x4ec56f === "1" || _0x4ec56f === "2")
+    return { origin: Number(_0x4ec56f) };
+  throw new e["CollabError"](
+    "INVALID_REQUEST",
+    "origin\x20must\x20be\x200,\x201\x20or\x202",
+  );
+}
+function l(_0x95e6df, _0x30b52e) {
+  let _0x173693 = u(_0x30b52e);
+  d(_0x95e6df, _0x173693["status"], { error: _0x173693["error"] });
+}
+function u(_0x1ebe45) {
+  if (_0x1ebe45 instanceof t["NodeTransportError"])
+    return {
+      status:
+        _0x1ebe45["code"] === "REQUEST_BODY_TOO_LARGE"
+          ? 0x19d
+          : _0x1ebe45["code"] === "TRANSPORT_DISPOSED"
+            ? 0x1f7
+            : 0x190,
+      error: {
+        code:
+          _0x1ebe45["code"] === "TRANSPORT_DISPOSED"
+            ? n["ErrorCode"]["INTERNAL_ERROR"]
+            : n["ErrorCode"]["INVALID_ARGUMENT"],
+        message: _0x1ebe45["message"],
+      },
+    };
+  if (!(_0x1ebe45 instanceof e["CollabError"]))
+    return {
+      status: 0x1f4,
+      error: {
+        code: n["ErrorCode"]["INTERNAL_ERROR"],
+        message: "Internal\x20server\x20error",
+      },
+    };
+  let _0x3904f0 = {
+    UNAUTHENTICATED: { status: 0x191, code: n["ErrorCode"]["UNAUTHENTICATED"] },
+    INVALID_REQUEST: {
+      status: 0x190,
+      code: n["ErrorCode"]["INVALID_ARGUMENT"],
+    },
+    UNIT_NOT_FOUND: { status: 0x194, code: n["ErrorCode"]["NOT_FOUND"] },
+    PERMISSION_DENIED: {
+      status: 0x193,
+      code: n["ErrorCode"]["PERMISSION_DENIED"],
+    },
+    OT_CONFLICT: { status: 0x199, code: n["ErrorCode"]["APPLY_REJECT"] },
+    REVISION_MISMATCH: {
+      status: 0x199,
+      code: n["ErrorCode"]["CHANGESET_REVISION_CONFILICT"],
+    },
+    ADAPTER_FAILURE: { status: 0x1f7, code: n["ErrorCode"]["INTERNAL_ERROR"] },
+    INTERNAL_ERROR: { status: 0x1f4, code: n["ErrorCode"]["INTERNAL_ERROR"] },
+  }[_0x1ebe45["code"]];
+  return {
+    status: _0x3904f0["status"],
+    error: { code: _0x3904f0["code"], message: _0x1ebe45["message"] },
+  };
+}
+function d(_0x2cd629, _0x24cc11, _0x37e4b8) {
+  _0x2cd629["writableEnded"] ||
+    _0x2cd629["destroyed"] ||
+    ((_0x2cd629["statusCode"] = _0x24cc11),
+    _0x2cd629["setHeader"](
+      "content-type",
+      "application/json;\x20charset=utf-8",
+    ),
+    _0x2cd629["end"](JSON["stringify"](_0x37e4b8)));
+}
+exports["UniverHistoryEndpoint"] = i;

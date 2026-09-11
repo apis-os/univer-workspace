@@ -1,0 +1,77 @@
+const _0x3942ed = _0x4cfb;
+(function (_0x559289, _0x353a3e) {
+  const _0x538f74 = _0x4cfb,
+    _0xf32027 = _0x559289();
+  while (!![]) {
+    try {
+      const _0x47177a =
+        (-parseInt(_0x538f74(0x1dc)) / 0x1) *
+          (-parseInt(_0x538f74(0x1db)) / 0x2) +
+        parseInt(_0x538f74(0x1e6)) / 0x3 +
+        parseInt(_0x538f74(0x1da)) / 0x4 +
+        parseInt(_0x538f74(0x1d6)) / 0x5 +
+        parseInt(_0x538f74(0x1de)) / 0x6 +
+        (-parseInt(_0x538f74(0x1d7)) / 0x7) *
+          (-parseInt(_0x538f74(0x1e0)) / 0x8) +
+        (-parseInt(_0x538f74(0x1e2)) / 0x9) *
+          (parseInt(_0x538f74(0x1e3)) / 0xa);
+      if (_0x47177a === _0x353a3e) break;
+      else _0xf32027["push"](_0xf32027["shift"]());
+    } catch (_0x46c3e8) {
+      _0xf32027["push"](_0xf32027["shift"]());
+    }
+  }
+})(_0x5178, 0x56038);
+function _0x4cfb(_0x2c7f02, _0x2eef58) {
+  _0x2c7f02 = _0x2c7f02 - 0x1d5;
+  const _0x51789c = _0x5178();
+  let _0x4cfbfb = _0x51789c[_0x2c7f02];
+  return _0x4cfbfb;
+}
+function _0x5178() {
+  const _0x19d813 = [
+    "14jGRRra",
+    "内部未知错误",
+    "未知错误",
+    "374196LQfCdw",
+    "82454PSbSsT",
+    "17cjqmpV",
+    "下载成功",
+    "278754eeIxHU",
+    "数据流过大",
+    "2630464WuVwWC",
+    "文件上传成功",
+    "9kovbOY",
+    "19308610eEkxpY",
+    "请稍等...",
+    "{0}个文件上传成功",
+    "1345545rhwGLl",
+    "所选文件\x20[{0}]\x20不支持上传",
+    "再次上传",
+    "1680875hUEZaf",
+  ];
+  _0x5178 = function () {
+    return _0x19d813;
+  };
+  return _0x5178();
+}
+const e = {
+  "exchange-client": {
+    uploading: "上传中",
+    uploadSuccess: _0x3942ed(0x1e1),
+    uploadSuccessTip: _0x3942ed(0x1e5),
+    downloading: "下载中",
+    downloadSuccess: _0x3942ed(0x1dd),
+    unknownMistake: _0x3942ed(0x1d9),
+    networkError: "网络异常",
+    tooLarge: _0x3942ed(0x1df),
+    internalError: _0x3942ed(0x1d8),
+    interrupt: "网络连接中断，文件上传失败",
+    fileTypeError: _0x3942ed(0x1e7),
+    wait: _0x3942ed(0x1e4),
+    cancel: "取消",
+    confirm: "确认",
+    uploadAgain: _0x3942ed(0x1d5),
+  },
+};
+module["exports"] = e;

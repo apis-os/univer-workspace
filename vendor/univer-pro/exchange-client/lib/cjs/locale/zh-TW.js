@@ -1,0 +1,76 @@
+function _0x5a24() {
+  const _0xf254e1 = [
+    "420462kbiFFy",
+    "2058duLdAQ",
+    "檔案上傳成功",
+    "1747809ynKRkD",
+    "資料流過大",
+    "請稍等...",
+    "112QZdGCi",
+    "下載中",
+    "網路異常",
+    "18911320dvZvIx",
+    "494CleJig",
+    "未知錯誤",
+    "exports",
+    "上傳中",
+    "369ssWWAw",
+    "30648VCDWoS",
+    "下載成功",
+    "206444IdtKIM",
+    "網路連線中斷，檔案上傳失敗",
+    "再次上傳",
+    "3208850CQZwGs",
+  ];
+  _0x5a24 = function () {
+    return _0xf254e1;
+  };
+  return _0x5a24();
+}
+function _0x42fc(_0x37b8b8, _0x232d16) {
+  _0x37b8b8 = _0x37b8b8 - 0xbc;
+  const _0x5a247f = _0x5a24();
+  let _0x42fc27 = _0x5a247f[_0x37b8b8];
+  return _0x42fc27;
+}
+const _0xf9ecff = _0x42fc;
+(function (_0x36cd4b, _0x1a7f05) {
+  const _0xee6594 = _0x42fc,
+    _0x1a3654 = _0x36cd4b();
+  while (!![]) {
+    try {
+      const _0x52ff18 =
+        (-parseInt(_0xee6594(0xc9)) / 0x1) * (parseInt(_0xee6594(0xc0)) / 0x2) +
+        (parseInt(_0xee6594(0xcd)) / 0x3) * (-parseInt(_0xee6594(0xce)) / 0x4) +
+        parseInt(_0xee6594(0xbe)) / 0x5 +
+        parseInt(_0xee6594(0xbf)) / 0x6 +
+        (parseInt(_0xee6594(0xd0)) / 0x7) * (-parseInt(_0xee6594(0xc5)) / 0x8) +
+        -parseInt(_0xee6594(0xc2)) / 0x9 +
+        parseInt(_0xee6594(0xc8)) / 0xa;
+      if (_0x52ff18 === _0x1a7f05) break;
+      else _0x1a3654["push"](_0x1a3654["shift"]());
+    } catch (_0x2ce0c9) {
+      _0x1a3654["push"](_0x1a3654["shift"]());
+    }
+  }
+})(_0x5a24, 0x85172);
+const e = {
+  "exchange-client": {
+    uploading: _0xf9ecff(0xcc),
+    uploadSuccess: _0xf9ecff(0xc1),
+    uploadSuccessTip: "{0}個檔案上傳成功",
+    downloading: _0xf9ecff(0xc6),
+    downloadSuccess: _0xf9ecff(0xcf),
+    unknownMistake: _0xf9ecff(0xca),
+    networkError: _0xf9ecff(0xc7),
+    tooLarge: _0xf9ecff(0xc3),
+    internalError: "內部未知錯誤",
+    interrupt: _0xf9ecff(0xbc),
+    fileTypeError: "所選檔案\x20[{0}]\x20不支援上傳",
+    wait: _0xf9ecff(0xc4),
+    cancel: "取消",
+    confirm: "確認",
+    uploadAgain: _0xf9ecff(0xbd),
+  },
+};
+module[_0xf9ecff(0xcb)] = e;

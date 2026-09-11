@@ -1,0 +1,106 @@
+import type { ILogContext } from '@univerjs-pro/collaboration';
+import type { Nullable, Workbook } from '@univerjs/core';
+import type { IGetHistoryCsRequest, IGetHistoryCsResponse } from '@univerjs/protocol';
+import { CompressMutationService, ISnapshotServerService } from '@univerjs-pro/collaboration';
+import { Disposable, ICommandService, IConfigService, IPermissionService, IUniverInstanceService } from '@univerjs/core';
+import { IDrawingManagerService } from '@univerjs/drawing';
+import { HTTPService } from '@univerjs/network';
+import { SheetPermissionInitController } from '@univerjs/sheets';
+export interface IHistoryVersion {
+    unitId: string;
+    id: string;
+    startRev: number;
+    endRev: number;
+    time?: number;
+    user: string;
+    users: string[];
+    recoverTime?: number;
+    commands: string[];
+    isAnonymous: boolean;
+    additionalFields?: string;
+    startRevCreateTime?: number;
+    endRevCreateTime?: number;
+}
+export interface IServiceVersionsData {
+    hasMore: boolean;
+    lastLabel: string;
+    entities: {
+        datas: Record<string, IVersionItem>;
+        users: Record<string, IUser>;
+    };
+    historyIds: string[];
+}
+export interface IVersionItem {
+    unitId: string;
+    userId: string;
+    userIds: string[];
+    command: string[];
+    createTime: number;
+    startRevision: number;
+    endRevision: number;
+    recoverTime?: string;
+    additionalFields?: string;
+    startRevCreateTime: number;
+    endRevCreateTime: number;
+}
+export interface IUser {
+    userID: string;
+    name: string;
+    avatar: string;
+    anonymous: boolean;
+    canBindAnonymous: boolean;
+}
+/**
+ * @description The origin of the history
+ */
+export declare enum HistoryOrigin {
+    Unspecified = 0,
+    User = 1,
+    Character = 2
+}
+export interface IHistoryCreator {
+    userId: string;
+    name: string;
+    avatar: string;
+    origins: HistoryOrigin[];
+}
+export declare class HistoryFetchService extends Disposable {
+    private readonly _snapshotServerService;
+    private readonly _univerInstanceService;
+    private readonly _commandService;
+    private readonly _permissionService;
+    private readonly _drawingManagerService;
+    private readonly _configService;
+    private readonly _httpService;
+    private _compressMutationService;
+    private _sheetPermissionInitController;
+    /**
+     * ✅ LRU cache for workbookData by (unitID, rev).
+     * Key: `${unitID}:${rev}`
+     * Value: IWorkbookData
+     *
+     * No _inflight, no _loadToken — outer layer is assumed to serialize loadSheet calls.
+     */
+    private _workbookDataCache;
+    constructor(_snapshotServerService: ISnapshotServerService, _univerInstanceService: IUniverInstanceService, _commandService: ICommandService, _permissionService: IPermissionService, _drawingManagerService: IDrawingManagerService, _configService: IConfigService, _httpService: HTTPService, _compressMutationService: CompressMutationService, _sheetPermissionInitController: SheetPermissionInitController);
+    dispose(): void;
+    fetchCreatorList(unitID: string): Promise<IHistoryCreator[]>;
+    getVersions(unitID: string, params?: {
+        userIds?: string[];
+        lastLabel?: string;
+        origin?: HistoryOrigin;
+    }): Promise<Nullable<{
+        hasMore: boolean;
+        lastLabel: string;
+        versions: IHistoryVersion[];
+        members: Record<string, IUser>;
+    }>>;
+    getHistoryChangesets(_context: ILogContext, params: IGetHistoryCsRequest): Promise<IGetHistoryCsResponse>;
+    private _getAPIPrefix;
+    private _cacheKey;
+    loadSheet(unitID: string, rev: number, context?: ILogContext): Promise<boolean>;
+    private _applyWorkbookData;
+    private _createUnit;
+}
+export declare function disableHistoryWorkbookEditing(permissionService: IPermissionService, drawingManagerService: IDrawingManagerService, workbook: Workbook): void;
+export declare function convertEntitiesToVersions(data: IServiceVersionsData): IHistoryVersion[];

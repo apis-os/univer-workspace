@@ -1,0 +1,101 @@
+function _0x5984() {
+  const _0x4c1aba = [
+    "Połączenie\x20nieudane.\x20Sprawdź\x20swoją\x20sieć.",
+    "8liruyu",
+    "Błąd\x20uwierzytelniania",
+    "Zsynchronizowane",
+    "58624fDOHHr",
+    "Dokument\x20osiągnął\x20limit\x20współpracy.\x20Twoje\x20zmiany\x20zostaną\x20zapisane\x20w\x20pamięci\x20podręcznej\x20lokalnie.",
+    "Serwer\x20nie\x20odpowiada\x20na\x20Twoje\x20żądanie\x20współpracy.\x20Twoje\x20zmiany\x20zostaną\x20zapisane\x20lokalnie.",
+    "452970aixlQg",
+    "Brak\x20uprawnień\x20do\x20współpracy.\x20Twoje\x20zmiany\x20zostaną\x20zapisane\x20w\x20pamięci\x20podręcznej\x20lokalnie.",
+    "exports",
+    "134135BPIOYZ",
+    "Otworzyłeś\x20ten\x20sam\x20plik\x20w\x20innej\x20karcie.\x20W\x20przypadku\x20utraty\x20danych\x20nie\x20możesz\x20edytować\x20w\x20tej\x20karcie.",
+    "Plik\x20lokalny",
+    "Twoje\x20działania\x20są\x20sprzeczne\x20z\x20uprawnieniami\x20serwera.\x20Zapisz\x20lokalne\x20zmiany\x20w\x20innym\x20miejscu,\x20ponieważ\x20zostaną\x20odrzucone\x20po\x20odświeżeniu\x20strony.",
+    "56lzUmnO",
+    "Nie\x20udało\x20się\x20dołączyć\x20do\x20współpracy.\x20Spróbuj\x20ponownie\x20później.\x20Twoje\x20zmiany\x20zostaną\x20zapisane\x20w\x20pamięci\x20podręcznej\x20lokalnie.",
+    "1794233xdfkHP",
+    "Synchronizowanie\x20danych\x20serwera...",
+    "Połączenie\x20nieudane.\x20Spróbujemy\x20ponownie\x20za\x20chwilę.",
+    "31416shjHJs",
+    "Twoje\x20logowanie\x20wygasło,\x20kliknij\x20OK,\x20aby\x20zalogować\x20się\x20ponownie,\x20lub\x20Anuluj,\x20aby\x20zapisać\x20lokalne\x20zmiany.",
+    "Offline,\x20zmiany\x20zostaną\x20zapisane\x20lokalnie",
+    "Liczba\x20dokumentów\x20współpracy\x20przekracza\x20limit.\x20Twoje\x20zmiany\x20zostaną\x20zapisane\x20w\x20pamięci\x20podręcznej\x20lokalnie.",
+    "Kliknij,\x20aby\x20połączyć\x20ponownie",
+    "1475955vocyfA",
+    "208794tMECBY",
+    "Synchronizowanie...",
+  ];
+  _0x5984 = function () {
+    return _0x4c1aba;
+  };
+  return _0x5984();
+}
+function _0x591b(_0x41190d, _0x36f571) {
+  _0x41190d = _0x41190d - 0x1c0;
+  const _0x598401 = _0x5984();
+  let _0x591bb2 = _0x598401[_0x41190d];
+  return _0x591bb2;
+}
+const _0x1ce194 = _0x591b;
+(function (_0x5747a9, _0x56c0fe) {
+  const _0x55cf12 = _0x591b,
+    _0x163179 = _0x5747a9();
+  while (!![]) {
+    try {
+      const _0x51f242 =
+        -parseInt(_0x55cf12(0x1d9)) / 0x1 +
+        parseInt(_0x55cf12(0x1c4)) / 0x2 +
+        (parseInt(_0x55cf12(0x1d3)) / 0x3) *
+          (-parseInt(_0x55cf12(0x1ce)) / 0x4) +
+        -parseInt(_0x55cf12(0x1ca)) / 0x5 +
+        parseInt(_0x55cf12(0x1c7)) / 0x6 +
+        (-parseInt(_0x55cf12(0x1d0)) / 0x7) *
+          (-parseInt(_0x55cf12(0x1c1)) / 0x8) +
+        parseInt(_0x55cf12(0x1d8)) / 0x9;
+      if (_0x51f242 === _0x56c0fe) break;
+      else _0x163179["push"](_0x163179["shift"]());
+    } catch (_0x1bf339) {
+      _0x163179["push"](_0x163179["shift"]());
+    }
+  }
+})(_0x5984, 0x22e2c);
+const e = {
+  "collaboration-client": {
+    collabClient: { tooltip: { reconnect: _0x1ce194(0x1d7) } },
+    collabStatus: {
+      fetchMiss: _0x1ce194(0x1d1),
+      conflict: "Konflikty\x20edycji",
+      notCollab: _0x1ce194(0x1cc),
+      synced: _0x1ce194(0x1c3),
+      syncing: _0x1ce194(0x1da),
+      offline: _0x1ce194(0x1d5),
+    },
+    session: {
+      "connection-failed": _0x1ce194(0x1c0),
+      "will-retry": _0x1ce194(0x1d2),
+      "room-full": _0x1ce194(0x1c5),
+      "join-failed": _0x1ce194(0x1cf),
+      "room-not-exists":
+        "Nie\x20udało\x20się\x20dołączyć\x20do\x20współpracy.\x20Twoje\x20zmiany\x20zostaną\x20zapisane\x20w\x20pamięci\x20podręcznej\x20lokalnie.",
+      "room-permission-denied": _0x1ce194(0x1c8),
+      "room-cnt-exceeds": _0x1ce194(0x1d6),
+      "collaboration-timeout": _0x1ce194(0x1c6),
+    },
+    conflict: {
+      title: "Konflikt\x20współpracy",
+      content:
+        "Wystąpił\x20konflikt\x20między\x20Twoją\x20lokalną\x20kopią\x20a\x20kopią\x20na\x20serwerze.\x20Zapisz\x20lokalne\x20zmiany,\x20ponieważ\x20zostaną\x20utracone\x20po\x20odświeżeniu\x20strony.",
+    },
+    permission: { title: _0x1ce194(0x1c2), content: _0x1ce194(0x1cd) },
+    collaboration: {
+      "single-unit": { warning: _0x1ce194(0x1cb) },
+      closeRoom:
+        "Uprawnienia\x20do\x20edycji\x20zostały\x20cofnięte,\x20ponieważ\x20pokój\x20współpracy\x20został\x20zamknięty.",
+    },
+    auth: { needGotoLoginAlert: _0x1ce194(0x1d4) },
+  },
+};
+module[_0x1ce194(0x1c9)] = e;

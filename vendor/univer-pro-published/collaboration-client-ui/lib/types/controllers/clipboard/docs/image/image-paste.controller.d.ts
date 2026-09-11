@@ -1,0 +1,8 @@
+import { IImageIoService, RxDisposable } from '@univerjs/core';
+import { IDocClipboardService } from '@univerjs/docs-ui';
+export declare class ImagePasteController extends RxDisposable {
+    private _docClipboardService;
+    private _imageIoService;
+    constructor(_docClipboardService: IDocClipboardService, _imageIoService: IImageIoService);
+    private _init;
+}

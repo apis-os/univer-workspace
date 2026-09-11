@@ -1,0 +1,1 @@
+();const e={'slides-exchange-client':{'file':'檔案','upload':"開啟（檔案）",'download':"另存為"}};export{e as default};

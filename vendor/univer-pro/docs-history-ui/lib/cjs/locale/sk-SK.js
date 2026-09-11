@@ -1,0 +1,167 @@
+const _0x13b3fe = _0x5d2d;
+(function (_0x48d9a5, _0x3b773d) {
+  const _0x47571a = _0x5d2d,
+    _0x56e933 = _0x48d9a5();
+  while (!![]) {
+    try {
+      const _0x2d0fd7 =
+        -parseInt(_0x47571a(0x14f)) / 0x1 +
+        (-parseInt(_0x47571a(0x15d)) / 0x2) *
+          (parseInt(_0x47571a(0x16f)) / 0x3) +
+        -parseInt(_0x47571a(0x16d)) / 0x4 +
+        parseInt(_0x47571a(0x14a)) / 0x5 +
+        parseInt(_0x47571a(0x165)) / 0x6 +
+        parseInt(_0x47571a(0x13d)) / 0x7 +
+        (parseInt(_0x47571a(0x175)) / 0x8) * (parseInt(_0x47571a(0x170)) / 0x9);
+      if (_0x2d0fd7 === _0x3b773d) break;
+      else _0x56e933["push"](_0x56e933["shift"]());
+    } catch (_0x4481a6) {
+      _0x56e933["push"](_0x56e933["shift"]());
+    }
+  }
+})(_0x2ee0, 0xd4b12);
+function _0x5d2d(_0x2ce670, _0x55ebe5) {
+  _0x2ce670 = _0x2ce670 - 0x139;
+  const _0x2ee025 = _0x2ee0();
+  let _0x5d2d0a = _0x2ee025[_0x2ce670];
+  return _0x5d2d0a;
+}
+function _0x2ee0() {
+  const _0xf2af37 = [
+    "Pridané:\x20odkaz",
+    "5103835gXwhdm",
+    "Aktualizované:\x20zoznam",
+    "Odstránené:\x20text",
+    "Aktualizované:\x20obrázok",
+    "Aktualizované:\x20hlavička\x20alebo\x20päta",
+    "301523rXmvKO",
+    "Premenované:\x20dokument",
+    "Odstránené:\x20oddeľovač",
+    "Presunuté\x20stĺpce\x20tabuľky",
+    "Pridané\x20stĺpce\x20tabuľky",
+    "Odstránené:\x20obrázok",
+    "Presunuté\x20riadky\x20tabuľky",
+    "Pridané:\x20text",
+    "Upravené:\x20dokument",
+    "Odstránené:\x20tabuľka",
+    "Aktualizované:\x20citácia",
+    "Aktualizované:\x20zvýraznenie",
+    "Pridané\x20riadky\x20tabuľky",
+    "Formátované:\x20odsek",
+    "15058TZRRqT",
+    "Aktualizované:\x20plávajúci\x20objekt",
+    "Bunky\x20tabuľky\x20zlúčené",
+    "Aktualizované:\x20graf",
+    "Pridané:\x20graf",
+    "Odstránené:\x20graf",
+    "Rozložené\x20stĺpce\x20tabuľky",
+    "Pridané:\x20tabuľka",
+    "5556714WzSobC",
+    "Hlavička\x20tabuľky\x20aktualizovaná",
+    "Bunka\x20tabuľky\x20upravená",
+    "Presunuté:\x20blok",
+    "Pridané:\x20obrázok",
+    "Odstránené:\x20citácia",
+    "História\x20verzií",
+    "Aktualizované:\x20odkaz",
+    "6533480CXyOgV",
+    "Pridaný\x20vlastný\x20rozsah",
+    "537DJCHoB",
+    "230733bDOFcI",
+    "Zmenené:\x20nadpis",
+    "Aktualizované:\x20blok\x20kódu",
+    "exports",
+    "Aktualizované:\x20tvar",
+    "464wPNHbr",
+    "Aktualizované:\x20rozloženie\x20strany",
+    "Odstránené:\x20zvýraznenie",
+    "Formátované:\x20text",
+    "Odstránené\x20riadky\x20tabuľky",
+    "5039566rfoSrF",
+    "Odstránené:\x20tvar",
+    "Pridané:\x20tvar",
+    "Odstránené:\x20blok\x20kódu",
+    "Pridané:\x20vzorec",
+    "Stĺpce\x20tabuľky\x20aktualizované",
+    "Tabuľka\x20presunutá",
+    "Tabuľka\x20zoradená",
+    "Aktualizované:\x20vzorec",
+    "Zlúčenie\x20buniek\x20tabuľky\x20zrušené",
+    "Rozložené\x20riadky\x20tabuľky",
+    "Pridané:\x20citácia",
+  ];
+  _0x2ee0 = function () {
+    return _0xf2af37;
+  };
+  return _0x2ee0();
+}
+const e = {
+  "docs-history-ui": {
+    menu: { history: _0x13b3fe(0x16b) },
+    action: {
+      renameDocument: _0x13b3fe(0x150),
+      insertText: _0x13b3fe(0x156),
+      deleteText: _0x13b3fe(0x14c),
+      deleteBlock: "Odstránené:\x20blok",
+      formatText: _0x13b3fe(0x13b),
+      formatParagraph: _0x13b3fe(0x15c),
+      changeHeading: _0x13b3fe(0x171),
+      updateList: _0x13b3fe(0x14b),
+      moveBlock: _0x13b3fe(0x168),
+      insertDivider: "Pridané:\x20oddeľovač",
+      deleteDivider: _0x13b3fe(0x151),
+      updatePageLayout: _0x13b3fe(0x139),
+      updateHeaderFooter: _0x13b3fe(0x14e),
+      insertLink: _0x13b3fe(0x149),
+      insertCustomRange: _0x13b3fe(0x16e),
+      updateLink: _0x13b3fe(0x16c),
+      deleteLink: "Odstránené:\x20odkaz",
+      insertTable: _0x13b3fe(0x164),
+      deleteTable: _0x13b3fe(0x158),
+      insertTableRows: _0x13b3fe(0x15b),
+      deleteTableRows: _0x13b3fe(0x13c),
+      moveTableRows: _0x13b3fe(0x155),
+      resizeTableRows: "Zmenená\x20veľkosť\x20riadkov\x20tabuľky",
+      distributeTableRows: _0x13b3fe(0x147),
+      insertTableColumns: _0x13b3fe(0x153),
+      deleteTableColumns: "Odstránené\x20stĺpce\x20tabuľky",
+      moveTableColumns: _0x13b3fe(0x152),
+      resizeTableColumns: "Zmenená\x20veľkosť\x20stĺpcov\x20tabuľky",
+      distributeTableColumns: _0x13b3fe(0x163),
+      moveTable: _0x13b3fe(0x143),
+      updateTableHeader: _0x13b3fe(0x166),
+      updateTableColumns: _0x13b3fe(0x142),
+      editTableCell: _0x13b3fe(0x167),
+      formatTable: "Tabuľka\x20naformátovaná",
+      mergeTableCells: _0x13b3fe(0x15f),
+      unmergeTableCells: _0x13b3fe(0x146),
+      sortTable: _0x13b3fe(0x144),
+      insertImage: _0x13b3fe(0x169),
+      deleteImage: _0x13b3fe(0x154),
+      updateImage: _0x13b3fe(0x14d),
+      insertShape: _0x13b3fe(0x13f),
+      updateShape: _0x13b3fe(0x174),
+      deleteShape: _0x13b3fe(0x13e),
+      updateDrawing: _0x13b3fe(0x15e),
+      insertChart: _0x13b3fe(0x161),
+      deleteChart: _0x13b3fe(0x162),
+      updateChart: _0x13b3fe(0x160),
+      insertCallout: "Pridané:\x20zvýraznenie",
+      deleteCallout: _0x13b3fe(0x13a),
+      updateCallout: _0x13b3fe(0x15a),
+      insertCodeBlock: "Pridané:\x20blok\x20kódu",
+      deleteCodeBlock: _0x13b3fe(0x140),
+      updateCodeBlock: _0x13b3fe(0x172),
+      insertQuote: _0x13b3fe(0x148),
+      deleteQuote: _0x13b3fe(0x16a),
+      updateQuote: _0x13b3fe(0x159),
+      insertColumns: "Pridané:\x20stĺpce",
+      updateColumns: "Aktualizované:\x20stĺpce",
+      insertFormula: _0x13b3fe(0x141),
+      updateFormula: _0x13b3fe(0x145),
+      deleteFormula: "Odstránené:\x20vzorec",
+      editDocument: _0x13b3fe(0x157),
+    },
+  },
+};
+module[_0x13b3fe(0x173)] = e;

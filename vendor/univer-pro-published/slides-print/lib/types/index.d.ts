@@ -1,0 +1,10 @@
+import './global.css';
+export { OpenSlidePrintDialogOperation } from './commands/operations/slide-print-dialog.operation';
+export { SlidePrintOperation } from './commands/operations/slide-print.operation';
+export type { ISlidePrintOptions, ISlidePrintRange, SlidePrintSlidesPerPage } from './common/types';
+export { SlidePrintHandoutOrder, SlidePrintLayoutType } from './common/types';
+export { menuSchema as SlidesPrintMenuSchema } from './menu/schema';
+export { UniverSlidesPrintPlugin } from './plugin';
+export { SlidePrintDrawingTransformService } from './services/slide-print-drawing-transform.service';
+export type { ISlidePrintDrawingTransformContext, SlidePrintDrawingTransformer, } from './services/slide-print-drawing-transform.service';
+export type { ISlidePrintDrawingMap } from './views/slide-print-drawing-map';

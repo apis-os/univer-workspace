@@ -1,0 +1,1 @@
+();const e={'bases-exchange-client':{'file':"File",'upload':"Open(File)",'download':"Save As"}};export{e as default};

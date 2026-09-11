@@ -1,0 +1,164 @@
+function _0x5312(_0x472815, _0x594ed4) {
+  _0x472815 = _0x472815 - 0x9c;
+  const _0x337e57 = _0x337e();
+  let _0x53129d = _0x337e57[_0x472815];
+  return _0x53129d;
+}
+const _0x449cb9 = _0x5312;
+function _0x337e() {
+  const _0x34b7f5 = [
+    "Aggiunto\x20il\x20testo",
+    "Aggiunto\x20un\x20intervallo\x20personalizzato",
+    "2xaRgSn",
+    "Aggiunto\x20la\x20forma",
+    "Aggiornato\x20l\x27elenco",
+    "Aggiornato\x20la\x20formula",
+    "Eliminato\x20il\x20blocco\x20di\x20codice",
+    "3951879LQnotv",
+    "Righe\x20della\x20tabella\x20ridimensionate",
+    "Colonne\x20della\x20tabella\x20eliminate",
+    "Unione\x20delle\x20celle\x20della\x20tabella\x20annullata",
+    "Aggiornato\x20il\x20layout\x20di\x20pagina",
+    "Aggiunto\x20l\x27immagine",
+    "Modificato\x20il\x20documento",
+    "Aggiornato\x20l\x27immagine",
+    "6357246wmdVJk",
+    "Aggiunto\x20il\x20collegamento",
+    "Eliminato\x20il\x20grafico",
+    "Eliminato\x20il\x20blocco",
+    "Eliminato\x20il\x20riquadro",
+    "Colonne\x20della\x20tabella\x20distribuite",
+    "Aggiornato\x20il\x20blocco\x20di\x20codice",
+    "Formattato\x20il\x20testo",
+    "1308869JzUcmK",
+    "Aggiornato\x20la\x20forma",
+    "Colonne\x20della\x20tabella\x20aggiornate",
+    "Eliminata\x20la\x20forma",
+    "Aggiornato\x20l\x27oggetto\x20mobile",
+    "126955EHzQFY",
+    "Cella\x20della\x20tabella\x20modificata",
+    "exports",
+    "Eliminato\x20la\x20tabella",
+    "Aggiunto\x20la\x20tabella",
+    "Eliminato\x20la\x20formula",
+    "Eliminato\x20l\x27immagine",
+    "Colonne\x20della\x20tabella\x20aggiunte",
+    "Aggiornato\x20il\x20riquadro",
+    "Aggiornato\x20il\x20collegamento",
+    "Celle\x20della\x20tabella\x20unite",
+    "Aggiunto\x20il\x20blocco\x20di\x20codice",
+    "Aggiornato\x20le\x20colonne",
+    "76LpumLl",
+    "5903093FSVfKN",
+    "Righe\x20della\x20tabella\x20spostate",
+    "9515736QFuWFK",
+    "Modificato\x20il\x20titolo",
+    "Aggiunto\x20la\x20formula",
+    "Righe\x20della\x20tabella\x20eliminate",
+    "Aggiornato\x20l\x27intestazione\x20o\x20il\x20piè\x20di\x20pagina",
+    "Intestazione\x20della\x20tabella\x20aggiornata",
+    "Righe\x20della\x20tabella\x20distribuite",
+    "Rinominato\x20il\x20documento",
+    "Aggiunto\x20la\x20citazione",
+    "Aggiunto\x20il\x20separatore",
+    "Tabella\x20ordinata",
+    "4046048RlLMUJ",
+    "Formattato\x20il\x20paragrafo",
+    "Tabella\x20formattata",
+  ];
+  _0x337e = function () {
+    return _0x34b7f5;
+  };
+  return _0x337e();
+}
+(function (_0x373af0, _0x26fa41) {
+  const _0x3a296c = _0x5312,
+    _0x55f970 = _0x373af0();
+  while (!![]) {
+    try {
+      const _0x222485 =
+        (-parseInt(_0x3a296c(0xcc)) / 0x1) * (parseInt(_0x3a296c(0xb7)) / 0x2) +
+        parseInt(_0x3a296c(0xbc)) / 0x3 +
+        (-parseInt(_0x3a296c(0xa4)) / 0x4) *
+          (-parseInt(_0x3a296c(0xd1)) / 0x5) +
+        parseInt(_0x3a296c(0xc4)) / 0x6 +
+        parseInt(_0x3a296c(0xa5)) / 0x7 +
+        -parseInt(_0x3a296c(0xb2)) / 0x8 +
+        -parseInt(_0x3a296c(0xa7)) / 0x9;
+      if (_0x222485 === _0x26fa41) break;
+      else _0x55f970["push"](_0x55f970["shift"]());
+    } catch (_0x520213) {
+      _0x55f970["push"](_0x55f970["shift"]());
+    }
+  }
+})(_0x337e, 0xcaca9);
+const e = {
+  "docs-history-ui": {
+    menu: { history: "Cronologia\x20versioni" },
+    action: {
+      renameDocument: _0x449cb9(0xae),
+      insertText: _0x449cb9(0xb5),
+      deleteText: "Eliminato\x20il\x20testo",
+      deleteBlock: _0x449cb9(0xc7),
+      formatText: _0x449cb9(0xcb),
+      formatParagraph: _0x449cb9(0xb3),
+      changeHeading: _0x449cb9(0xa8),
+      updateList: _0x449cb9(0xb9),
+      moveBlock: "Spostato\x20il\x20blocco",
+      insertDivider: _0x449cb9(0xb0),
+      deleteDivider: "Eliminato\x20il\x20separatore",
+      updatePageLayout: _0x449cb9(0xc0),
+      updateHeaderFooter: _0x449cb9(0xab),
+      insertLink: _0x449cb9(0xc5),
+      insertCustomRange: _0x449cb9(0xb6),
+      updateLink: _0x449cb9(0xa0),
+      deleteLink: "Eliminato\x20il\x20collegamento",
+      insertTable: _0x449cb9(0xd5),
+      deleteTable: _0x449cb9(0xd4),
+      insertTableRows: "Righe\x20della\x20tabella\x20aggiunte",
+      deleteTableRows: _0x449cb9(0xaa),
+      moveTableRows: _0x449cb9(0xa6),
+      resizeTableRows: _0x449cb9(0xbd),
+      distributeTableRows: _0x449cb9(0xad),
+      insertTableColumns: _0x449cb9(0x9e),
+      deleteTableColumns: _0x449cb9(0xbe),
+      moveTableColumns: "Colonne\x20della\x20tabella\x20spostate",
+      resizeTableColumns: "Colonne\x20della\x20tabella\x20ridimensionate",
+      distributeTableColumns: _0x449cb9(0xc9),
+      moveTable: "Tabella\x20spostata",
+      updateTableHeader: _0x449cb9(0xac),
+      updateTableColumns: _0x449cb9(0xce),
+      editTableCell: _0x449cb9(0xd2),
+      formatTable: _0x449cb9(0xb4),
+      mergeTableCells: _0x449cb9(0xa1),
+      unmergeTableCells: _0x449cb9(0xbf),
+      sortTable: _0x449cb9(0xb1),
+      insertImage: _0x449cb9(0xc1),
+      deleteImage: _0x449cb9(0x9d),
+      updateImage: _0x449cb9(0xc3),
+      insertShape: _0x449cb9(0xb8),
+      updateShape: _0x449cb9(0xcd),
+      deleteShape: _0x449cb9(0xcf),
+      updateDrawing: _0x449cb9(0xd0),
+      insertChart: "Aggiunto\x20il\x20grafico",
+      deleteChart: _0x449cb9(0xc6),
+      updateChart: "Aggiornato\x20il\x20grafico",
+      insertCallout: "Aggiunto\x20il\x20riquadro",
+      deleteCallout: _0x449cb9(0xc8),
+      updateCallout: _0x449cb9(0x9f),
+      insertCodeBlock: _0x449cb9(0xa2),
+      deleteCodeBlock: _0x449cb9(0xbb),
+      updateCodeBlock: _0x449cb9(0xca),
+      insertQuote: _0x449cb9(0xaf),
+      deleteQuote: "Eliminato\x20la\x20citazione",
+      updateQuote: "Aggiornato\x20la\x20citazione",
+      insertColumns: "Aggiunto\x20le\x20colonne",
+      updateColumns: _0x449cb9(0xa3),
+      insertFormula: _0x449cb9(0xa9),
+      updateFormula: _0x449cb9(0xba),
+      deleteFormula: _0x449cb9(0x9c),
+      editDocument: _0x449cb9(0xc2),
+    },
+  },
+};
+module[_0x449cb9(0xd3)] = e;

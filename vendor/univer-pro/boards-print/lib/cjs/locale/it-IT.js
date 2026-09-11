@@ -1,0 +1,61 @@
+const _0xbccc73 = _0x7d39;
+(function (_0x1edd12, _0xfb01e9) {
+  const _0x5a2d4 = _0x7d39,
+    _0x209710 = _0x1edd12();
+  while (!![]) {
+    try {
+      const _0x17498f =
+        -parseInt(_0x5a2d4(0xd7)) / 0x1 +
+        -parseInt(_0x5a2d4(0xdb)) / 0x2 +
+        -parseInt(_0x5a2d4(0xd5)) / 0x3 +
+        (parseInt(_0x5a2d4(0xd4)) / 0x4) * (parseInt(_0x5a2d4(0xdc)) / 0x5) +
+        -parseInt(_0x5a2d4(0xd8)) / 0x6 +
+        (parseInt(_0x5a2d4(0xde)) / 0x7) * (-parseInt(_0x5a2d4(0xd6)) / 0x8) +
+        (parseInt(_0x5a2d4(0xe2)) / 0x9) * (parseInt(_0x5a2d4(0xe1)) / 0xa);
+      if (_0x17498f === _0xfb01e9) break;
+      else _0x209710["push"](_0x209710["shift"]());
+    } catch (_0x386165) {
+      _0x209710["push"](_0x209710["shift"]());
+    }
+  }
+})(_0x1b04, 0xeccd1);
+const e = {
+  "boards-print": {
+    menu: { print: _0xbccc73(0xe0), exportPng: "PNG", exportJpeg: "JPEG" },
+    loading: {
+      print: "Preparazione\x20della\x20stampa…",
+      image: _0xbccc73(0xdd),
+    },
+    errors: { printFailed: _0xbccc73(0xd9), exportFailed: _0xbccc73(0xda) },
+  },
+};
+function _0x7d39(_0x29ccc0, _0x17f662) {
+  _0x29ccc0 = _0x29ccc0 - 0xd4;
+  const _0x1b044a = _0x1b04();
+  let _0x7d39fc = _0x1b044a[_0x29ccc0];
+  return _0x7d39fc;
+}
+module[_0xbccc73(0xdf)] = e;
+function _0x1b04() {
+  const _0x558ac9 = [
+    "198395GrphaX",
+    "Esportazione\x20dell’immagine…",
+    "7FzGXiY",
+    "exports",
+    "Stampa",
+    "10mbDymF",
+    "51154524udgQKN",
+    "132blNWVk",
+    "4740858TixfTf",
+    "9230664ZgdVDd",
+    "298535ZVltga",
+    "7351704SvsNJs",
+    "Impossibile\x20stampare\x20questa\x20lavagna.",
+    "Impossibile\x20esportare\x20l’immagine\x20di\x20questa\x20lavagna.",
+    "3530736VmgkkE",
+  ];
+  _0x1b04 = function () {
+    return _0x558ac9;
+  };
+  return _0x1b04();
+}

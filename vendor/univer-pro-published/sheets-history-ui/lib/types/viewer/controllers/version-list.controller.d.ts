@@ -1,0 +1,14 @@
+import { Disposable, IConfigService, LocaleService } from '@univerjs/core';
+import { ISidebarService } from '@univerjs/ui';
+import { HistoryManagerService } from '../services/history-manager.service';
+export declare class VersionListController extends Disposable {
+    private readonly _sidebarService;
+    private readonly _localeService;
+    private readonly _historyManagerService;
+    private readonly _configService;
+    private _sidebarDisposable;
+    constructor(_sidebarService: ISidebarService, _localeService: LocaleService, _historyManagerService: HistoryManagerService, _configService: IConfigService);
+    private _init;
+    private _openPanel;
+    private _initPanel;
+}

@@ -1,0 +1,439 @@
+Object["defineProperty"](exports, Symbol["toStringTag"], { value: "Module" });
+var e = Object["create"],
+  t = Object["defineProperty"],
+  n = Object["getOwnPropertyDescriptor"],
+  r = Object["getOwnPropertyNames"],
+  i = Object["getPrototypeOf"],
+  a = Object["prototype"]["hasOwnProperty"],
+  o = (_0x2cc9da, _0x4f79c4, _0x323591, _0x1fdd2d) => {
+    if (
+      (_0x4f79c4 && typeof _0x4f79c4 == "object") ||
+      typeof _0x4f79c4 == "function"
+    ) {
+      for (
+        var _0x511ec1 = r(_0x4f79c4),
+          _0x2c2f97 = 0x0,
+          _0x2660c0 = _0x511ec1["length"],
+          _0x585398;
+        _0x2c2f97 < _0x2660c0;
+        _0x2c2f97++
+      )
+        ((_0x585398 = _0x511ec1[_0x2c2f97]),
+          !a["call"](_0x2cc9da, _0x585398) &&
+            _0x585398 !== _0x323591 &&
+            t(_0x2cc9da, _0x585398, {
+              get: ((_0x4002b8) => _0x4f79c4[_0x4002b8])["bind"](
+                null,
+                _0x585398,
+              ),
+              enumerable:
+                !(_0x1fdd2d = n(_0x4f79c4, _0x585398)) ||
+                _0x1fdd2d["enumerable"],
+            }));
+    }
+    return _0x2cc9da;
+  },
+  s = (_0x5c2ba2, _0x9caefe, _0x174c44) => (
+    (_0x174c44 = _0x5c2ba2 == null ? {} : e(i(_0x5c2ba2))),
+    o(
+      _0x9caefe || !_0x5c2ba2 || !_0x5c2ba2["__esModule"]
+        ? t(_0x174c44, "default", { value: _0x5c2ba2, enumerable: !0x0 })
+        : _0x174c44,
+      _0x5c2ba2,
+    )
+  );
+let c = require("node:crypto"),
+  l = require("libsql");
+l = s(l, 0x1);
+let u = require("@univerjs/protocol");
+var d = 0x1388,
+  f = "comment",
+  p = 0x1,
+  m = ["collaboration_comments"],
+  h = class {
+    ["_database"];
+    ["_disposed"] = !0x1;
+    constructor(_0x42a53b) {
+      (b(_0x42a53b),
+        (this["_database"] = new l["default"](_0x42a53b["filename"], {
+          timeout: _0x42a53b["busyTimeoutMs"] ?? d,
+        })));
+      try {
+        (this["_database"]["exec"](
+          "PRAGMA\x20busy_timeout\x20=\x20" +
+            (_0x42a53b["busyTimeoutMs"] ?? d) +
+            ";",
+        ),
+          this["_initializeSchema"]());
+      } catch (_0x2bb1f6) {
+        throw (this["_database"]["close"](), _0x2bb1f6);
+      }
+    }
+    async ["createRoot"](_0x4976cd, _0x49df0a) {
+      return (
+        this["_assertOpen"](),
+        this["_transaction"](() => {
+          if (this["_getByReply"](_0x4976cd["unitID"], _0x4976cd["threadID"]))
+            return { status: "duplicate" };
+          let _0x5aa591 = Date["now"]();
+          return (
+            this["_insert"]({
+              ..._0x4976cd,
+              replyID: _0x4976cd["threadID"],
+              solved: u["CommentSolvedStatus"]["OpenOrReOpen"],
+              createdAt: _0x5aa591,
+              updatedAt: _0x5aa591,
+              generation: (0x0, c["randomUUID"])(),
+            }),
+            {
+              status: "created",
+              record: this["_require"](
+                _0x4976cd["unitID"],
+                _0x4976cd["threadID"],
+              ),
+            }
+          );
+        })
+      );
+    }
+    async ["createReply"](_0x1dca71, _0x4815ed) {
+      return (
+        this["_assertOpen"](),
+        this["_transaction"](() => {
+          if (this["_getByReply"](_0x1dca71["unitID"], _0x1dca71["replyID"]))
+            return { status: "duplicate" };
+          let _0x594b98 = this["_getByReply"](
+            _0x1dca71["unitID"],
+            _0x1dca71["threadID"],
+          );
+          if (!_0x594b98 || _0x594b98["threadID"] !== _0x594b98["replyID"])
+            return { status: "not-found" };
+          if (_0x594b98["solved"] !== u["CommentSolvedStatus"]["OpenOrReOpen"])
+            return { status: "closed" };
+          let _0xd7263b = Date["now"]();
+          return (
+            this["_insert"]({
+              ..._0x1dca71,
+              solved: _0x594b98["solved"],
+              createdAt: _0xd7263b,
+              updatedAt: _0xd7263b,
+              generation: (0x0, c["randomUUID"])(),
+            }),
+            {
+              status: "created",
+              record: this["_require"](
+                _0x1dca71["unitID"],
+                _0x1dca71["replyID"],
+              ),
+            }
+          );
+        })
+      );
+    }
+    async ["getComment"](_0x3aa0be, _0x38db71) {
+      this["_assertOpen"]();
+      let _0x3f779e = this["_getByReply"](
+        _0x3aa0be["unitID"],
+        _0x3aa0be["replyID"],
+      );
+      return _0x3f779e?.["threadID"] === _0x3aa0be["threadID"]
+        ? _0x3f779e
+        : null;
+    }
+    async ["listThreads"](_0x591b91, _0x314603) {
+      this["_assertOpen"]();
+      let _0x118210 = [...new Set(_0x591b91["threadIDs"])];
+      return (
+        _0x118210["length"] === 0x0
+          ? this["_database"]
+              ["prepare"](g + "\x20WHERE\x20unit_id\x20=\x20?")
+              ["all"](_0x591b91["unitID"])
+          : this["_database"]
+              ["prepare"](
+                g +
+                  "\x20WHERE\x20unit_id\x20=\x20?\x20AND\x20thread_id\x20IN\x20(" +
+                  _0x118210["map"](() => "?")["join"](",") +
+                  ")",
+              )
+              ["all"](_0x591b91["unitID"], ..._0x118210)
+      )
+        ["map"](_)
+        ["sort"](v);
+    }
+    async ["editComment"](_0x2dde56, _0x23603b) {
+      return (
+        this["_assertOpen"](),
+        this["_transaction"](() => {
+          let _0x28d1eb = this["_getByReply"](
+              _0x2dde56["unitID"],
+              _0x2dde56["replyID"],
+            ),
+            _0x8ff277 = this["_getByReply"](
+              _0x2dde56["unitID"],
+              _0x2dde56["threadID"],
+            );
+          return !_0x28d1eb ||
+            _0x28d1eb["threadID"] !== _0x2dde56["threadID"] ||
+            !_0x8ff277
+            ? { status: "not-found" }
+            : _0x8ff277["solved"] === u["CommentSolvedStatus"]["OpenOrReOpen"]
+              ? _0x28d1eb["authorUserID"] === _0x2dde56["expectedAuthorUserID"]
+                ? _0x28d1eb["content"] === _0x2dde56["content"] &&
+                  y(_0x28d1eb["mentions"], _0x2dde56["mentions"])
+                  ? { status: "unchanged", record: _0x28d1eb }
+                  : (this["_database"]
+                      ["prepare"](
+                        "UPDATE\x20collaboration_comments\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20SET\x20content\x20=\x20?,\x20mentions_json\x20=\x20?,\x20updated_at\x20=\x20?\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20WHERE\x20unit_id\x20=\x20?\x20AND\x20thread_id\x20=\x20?\x20AND\x20reply_id\x20=\x20?",
+                      )
+                      ["run"](
+                        _0x2dde56["content"],
+                        JSON["stringify"](_0x2dde56["mentions"]),
+                        Math["max"](
+                          Date["now"](),
+                          _0x28d1eb["updatedAt"] + 0x1,
+                        ),
+                        _0x2dde56["unitID"],
+                        _0x2dde56["threadID"],
+                        _0x2dde56["replyID"],
+                      ),
+                    {
+                      status: "edited",
+                      record: this["_require"](
+                        _0x2dde56["unitID"],
+                        _0x2dde56["replyID"],
+                      ),
+                    })
+                : { status: "author-mismatch" }
+              : { status: "closed" };
+        })
+      );
+    }
+    async ["setThreadSolved"](_0x146faf, _0x41d7e8) {
+      return (
+        this["_assertOpen"](),
+        this["_transaction"](() => {
+          let _0x4fd71e = this["_getByReply"](
+            _0x146faf["unitID"],
+            _0x146faf["threadID"],
+          );
+          return !_0x4fd71e || _0x4fd71e["threadID"] !== _0x4fd71e["replyID"]
+            ? { status: "not-found" }
+            : _0x4fd71e["solved"] === _0x146faf["solved"]
+              ? { status: "unchanged" }
+              : (this["_database"]
+                  ["prepare"](
+                    "UPDATE\x20collaboration_comments\x20SET\x20solved\x20=\x20?,\x20updated_at\x20=\x20?\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20WHERE\x20unit_id\x20=\x20?\x20AND\x20reply_id\x20=\x20?",
+                  )
+                  ["run"](
+                    _0x146faf["solved"],
+                    Math["max"](Date["now"](), _0x4fd71e["updatedAt"] + 0x1),
+                    _0x146faf["unitID"],
+                    _0x146faf["threadID"],
+                  ),
+                { status: "updated" });
+        })
+      );
+    }
+    async ["deleteComment"](_0x4accdc, _0x5769ae) {
+      return (
+        this["_assertOpen"](),
+        this["_transaction"](() => {
+          let _0x477fa2 = _0x4accdc["replyID"] ?? _0x4accdc["threadID"],
+            _0x18a327 = this["_getByReply"](_0x4accdc["unitID"], _0x477fa2);
+          return !_0x18a327 || _0x18a327["threadID"] !== _0x4accdc["threadID"]
+            ? { status: "not-found" }
+            : _0x18a327["generation"] === _0x4accdc["expectedGeneration"]
+              ? (_0x4accdc["replyID"] === void 0x0
+                  ? this["_database"]
+                      ["prepare"](
+                        "DELETE\x20FROM\x20collaboration_comments\x20WHERE\x20unit_id\x20=\x20?\x20AND\x20thread_id\x20=\x20?",
+                      )
+                      ["run"](_0x4accdc["unitID"], _0x4accdc["threadID"])
+                  : this["_database"]
+                      ["prepare"](
+                        "DELETE\x20FROM\x20collaboration_comments\x20WHERE\x20unit_id\x20=\x20?\x20AND\x20thread_id\x20=\x20?\x20AND\x20reply_id\x20=\x20?\x20AND\x20generation\x20=\x20?",
+                      )
+                      ["run"](
+                        _0x4accdc["unitID"],
+                        _0x4accdc["threadID"],
+                        _0x4accdc["replyID"],
+                        _0x4accdc["expectedGeneration"],
+                      ),
+                { status: "delete d" })
+              : { status: "generation-mismatch" };
+        })
+      );
+    }
+    async ["dispose"]() {
+      this["_disposed"] ||
+        ((this["_disposed"] = !0x0), this["_database"]["close"]());
+    }
+    ["_initializeSchema"]() {
+      this["_transaction"](() => {
+        if (!this["_hasTable"]("collaboration_schema_versions")) {
+          if (this["_hasAnyOwnedTable"]())
+            throw x(
+              "SQLite\x20Comment\x20tables\x20exist\x20without\x20a\x20schema\x20version",
+            );
+          this["_database"]["exec"](
+            "\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20CREATE\x20TABLE\x20collaboration_schema_versions\x20(\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20component\x20TEXT\x20PRIMARY\x20KEY,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20version\x20INTEGER\x20NOT\x20NULL\x20CHECK\x20(version\x20>=\x201)\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20);\x0a\x20\x20\x20\x20\x20\x20\x20\x20",
+          );
+        }
+        let _0x37c03a = this["_database"]
+          ["prepare"](
+            "SELECT\x20version\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20FROM\x20collaboration_schema_versions\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20WHERE\x20component\x20=\x20?",
+          )
+          ["get"](f);
+        if (_0x37c03a) {
+          if (_0x37c03a["version"] !== p)
+            throw x(
+              "SQLite\x20Comment\x20schema\x20version\x20" +
+                _0x37c03a["version"] +
+                "\x20is\x20not\x20supported",
+            );
+          let _0x4b7ae6 = m["filter"](
+            (_0x5ea502) => !this["_hasTable"](_0x5ea502),
+          );
+          if (_0x4b7ae6["length"] > 0x0)
+            throw x(
+              "SQLite\x20Comment\x20schema\x20v1\x20is\x20incomplete:\x20missing\x20" +
+                _0x4b7ae6["join"](",\x20"),
+            );
+          return;
+        }
+        if (this["_hasAnyOwnedTable"]())
+          throw x(
+            "SQLite\x20Comment\x20tables\x20exist\x20without\x20a\x20schema\x20version",
+          );
+        this["_database"]["exec"](
+          "\x0a\x20\x20\x20\x20\x20\x20\x20\x20CREATE\x20TABLE\x20collaboration_comments\x20(\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20unit_id\x20TEXT\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20thread_id\x20TEXT\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20reply_id\x20TEXT\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20author_user_id\x20TEXT\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20content\x20TEXT\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20mentions_json\x20TEXT\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20solved\x20INTEGER\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20created_at\x20INTEGER\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20updated_at\x20INTEGER\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20generation\x20TEXT\x20NOT\x20NULL,\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20PRIMARY\x20KEY\x20(unit_id,\x20reply_id)\x0a\x20\x20\x20\x20\x20\x20\x20\x20);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20CREATE\x20INDEX\x20collaboration_comments_thread_lookup\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20ON\x20collaboration_comments(unit_id,\x20thread_id,\x20created_at,\x20reply_id);\x0a\x0a\x20\x20\x20\x20\x20\x20\x20\x20INSERT\x20INTO\x20collaboration_schema_versions\x20(component,\x20version)\x0a\x20\x20\x20\x20\x20\x20\x20\x20VALUES\x20(\x27comment\x27,\x201);\x0a\x20\x20\x20\x20\x20\x20",
+        );
+      });
+    }
+    ["_hasTable"](_0x1c2f80) {
+      return !!this["_database"]
+        ["prepare"](
+          "SELECT\x201\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20FROM\x20sqlite_schema\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20WHERE\x20type\x20=\x20\x27table\x27\x20AND\x20name\x20=\x20?",
+        )
+        ["get"](_0x1c2f80);
+    }
+    ["_hasAnyOwnedTable"]() {
+      return m["some"]((_0x424ea8) => this["_hasTable"](_0x424ea8));
+    }
+    ["_insert"](_0x1f5af5) {
+      this["_database"]
+        ["prepare"](
+          "INSERT\x20INTO\x20collaboration_comments\x0a\x20\x20\x20\x20\x20\x20\x20(unit_id,\x20thread_id,\x20reply_id,\x20author_user_id,\x20content,\x20mentions_json,\x0a\x20\x20\x20\x20\x20\x20\x20\x20solved,\x20created_at,\x20updated_at,\x20generation)\x0a\x20\x20\x20\x20\x20\x20\x20VALUES\x20(?,\x20?,\x20?,\x20?,\x20?,\x20?,\x20?,\x20?,\x20?,\x20?)",
+        )
+        ["run"](
+          _0x1f5af5["unitID"],
+          _0x1f5af5["threadID"],
+          _0x1f5af5["replyID"],
+          _0x1f5af5["authorUserID"],
+          _0x1f5af5["content"],
+          JSON["stringify"](_0x1f5af5["mentions"]),
+          _0x1f5af5["solved"],
+          _0x1f5af5["createdAt"],
+          _0x1f5af5["updatedAt"],
+          _0x1f5af5["generation"],
+        );
+    }
+    ["_getByReply"](_0x3b53c7, _0x5279e3) {
+      let _0x425ad5 = this["_database"]
+        ["prepare"](
+          g + "\x20WHERE\x20unit_id\x20=\x20?\x20AND\x20reply_id\x20=\x20?",
+        )
+        ["get"](_0x3b53c7, _0x5279e3);
+      return _0x425ad5 ? _(_0x425ad5) : null;
+    }
+    ["_require"](_0x22d0d8, _0x9a4d8f) {
+      let _0x328a9c = this["_getByReply"](_0x22d0d8, _0x9a4d8f);
+      if (!_0x328a9c)
+        throw Error(
+          "SQLite\x20Comment\x20write\x20did\x20not\x20persist\x20its\x20record",
+        );
+      return _0x328a9c;
+    }
+    ["_transaction"](_0x486c65) {
+      this["_database"]["exec"]("BEGIN\x20IMMEDIATE;");
+      try {
+        let _0x13da9e = _0x486c65();
+        return (this["_database"]["exec"]("COMMIT;"), _0x13da9e);
+      } catch (_0x22e99a) {
+        try {
+          this["_database"]["exec"]("ROLLBACK;");
+        } catch {}
+        throw _0x22e99a;
+      }
+    }
+    ["_assertOpen"]() {
+      if (this["_disposed"])
+        throw Error(
+          "SQLite\x20Comment\x20Database\x20Adapter\x20is\x20disposed",
+        );
+    }
+  },
+  g =
+    "SELECT\x20unit_id,\x20thread_id,\x20reply_id,\x20author_user_id,\x0a\x20\x20content,\x20mentions_json,\x20solved,\x20created_at,\x20updated_at,\x20generation\x0a\x20\x20FROM\x20collaboration_comments";
+function _(_0x129317) {
+  let _0x54e2ef = JSON["parse"](_0x129317["mentions_json"]);
+  if (
+    !Array["isArray"](_0x54e2ef) ||
+    _0x54e2ef["some"]((_0x5d61b8) => typeof _0x5d61b8 != "string")
+  )
+    throw Error("SQLite\x20Comment\x20contains\x20invalid\x20mentions");
+  if (
+    _0x129317["solved"] !== u["CommentSolvedStatus"]["OpenOrReOpen"] &&
+    _0x129317["solved"] !== u["CommentSolvedStatus"]["Solved"]
+  )
+    throw Error("SQLite\x20Comment\x20contains\x20invalid\x20solved\x20status");
+  return {
+    unitID: _0x129317["unit_id"],
+    threadID: _0x129317["thread_id"],
+    replyID: _0x129317["reply_id"],
+    authorUserID: _0x129317["author_user_id"],
+    content: _0x129317["content"],
+    mentions: _0x54e2ef,
+    solved: _0x129317["solved"],
+    createdAt: _0x129317["created_at"],
+    updatedAt: _0x129317["updated_at"],
+    generation: _0x129317["generation"],
+  };
+}
+function v(_0x4fe4bc, _0x36b057) {
+  let _0x3739c7 = _0x4fe4bc["threadID"]["localeCompare"](_0x36b057["threadID"]);
+  return _0x3739c7 === 0x0
+    ? _0x4fe4bc["replyID"] === _0x4fe4bc["threadID"]
+      ? -0x1
+      : _0x36b057["replyID"] === _0x36b057["threadID"]
+        ? 0x1
+        : _0x4fe4bc["createdAt"] - _0x36b057["createdAt"] ||
+          _0x4fe4bc["replyID"]["localeCompare"](_0x36b057["replyID"])
+    : _0x3739c7;
+}
+function y(_0x5ac502, _0x375372) {
+  return (
+    _0x5ac502["length"] === _0x375372["length"] &&
+    _0x5ac502["every"](
+      (_0xb45313, _0x5050e8) => _0xb45313 === _0x375372[_0x5050e8],
+    )
+  );
+}
+function b(_0xef698) {
+  if (!_0xef698?.["filename"])
+    throw TypeError(
+      "SQLiteCommentDatabaseAdapter\x20requires\x20a\x20filename",
+    );
+  if (
+    _0xef698["busyTimeoutMs"] !== void 0x0 &&
+    (!Number["isSafeInteger"](_0xef698["busyTimeoutMs"]) ||
+      _0xef698["busyTimeoutMs"] < 0x0)
+  )
+    throw TypeError(
+      "busyTimeoutMs\x20must\x20be\x20a\x20non-negative\x20safe\x20integer",
+    );
+}
+function x(_0x41f618) {
+  return Error(_0x41f618);
+}
+exports["SQLiteCommentDatabaseAdapter"] = h;

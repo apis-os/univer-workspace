@@ -1,0 +1,1 @@
+();const e={'boards-print':{'menu':{'print':'In','exportPng':"PNG",'exportJpeg':"JPEG"},'loading':{'print':"Đang chuẩn bị in…",'image':"Đang xuất hình ảnh…"},'errors':{'printFailed':"Không thể in bảng này.",'exportFailed':"Không thể xuất hình ảnh của bảng này."}}};export{e as default};

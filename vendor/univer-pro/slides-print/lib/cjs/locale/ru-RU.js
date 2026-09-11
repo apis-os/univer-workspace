@@ -1,0 +1,109 @@
+const _0x4b9b78 = _0x1c9c;
+(function (_0x48387f, _0x120679) {
+  const _0x322f95 = _0x1c9c,
+    _0x2e497f = _0x48387f();
+  while (!![]) {
+    try {
+      const _0x390595 =
+        -parseInt(_0x322f95(0x89)) / 0x1 +
+        (-parseInt(_0x322f95(0x93)) / 0x2) *
+          (-parseInt(_0x322f95(0x9b)) / 0x3) +
+        (parseInt(_0x322f95(0x9a)) / 0x4) * (parseInt(_0x322f95(0x8a)) / 0x5) +
+        -parseInt(_0x322f95(0x88)) / 0x6 +
+        (parseInt(_0x322f95(0xa3)) / 0x7) * (parseInt(_0x322f95(0xa0)) / 0x8) +
+        -parseInt(_0x322f95(0x9e)) / 0x9 +
+        (-parseInt(_0x322f95(0x8f)) / 0xa) * (parseInt(_0x322f95(0x90)) / 0xb);
+      if (_0x390595 === _0x120679) break;
+      else _0x2e497f["push"](_0x2e497f["shift"]());
+    } catch (_0x123b3f) {
+      _0x2e497f["push"](_0x2e497f["shift"]());
+    }
+  }
+})(_0x42d6, 0x3c6aa);
+function _0x1c9c(_0x440ddc, _0x483444) {
+  _0x440ddc = _0x440ddc - 0x80;
+  const _0x42d602 = _0x42d6();
+  let _0x1c9c08 = _0x42d602[_0x440ddc];
+  return _0x1c9c08;
+}
+const e = {
+  "slides-print": {
+    menu: _0x4b9b78(0x83),
+    header: {
+      pages: _0x4b9b78(0x9d),
+      cancel: _0x4b9b78(0x82),
+      next: _0x4b9b78(0x98),
+      printing: _0x4b9b78(0x97),
+    },
+    settings: {
+      range: _0x4b9b78(0x9f),
+      rangePlaceholder: _0x4b9b78(0x87),
+      rangeInvalid: _0x4b9b78(0x86),
+      layout: _0x4b9b78(0x99),
+      fullPage: _0x4b9b78(0x8d),
+      notesPage: "Страницы\x20заметок",
+      handout: _0x4b9b78(0x8b),
+      slidesPerPage: _0x4b9b78(0x80),
+      order: _0x4b9b78(0x92),
+      horizontal: _0x4b9b78(0x8e),
+      vertical: _0x4b9b78(0x85),
+      paperSize: _0x4b9b78(0x91),
+      orientation: "Ориентация",
+      portrait: _0x4b9b78(0xa1),
+      landscape: _0x4b9b78(0x84),
+      margin: "Поля",
+      normal: _0x4b9b78(0x8c),
+      narrow: _0x4b9b78(0xa2),
+      wide: _0x4b9b78(0x9c),
+      none: _0x4b9b78(0x94),
+      formatting: _0x4b9b78(0x81),
+      frameSlides: "Рамка\x20слайдов",
+      slideNumber: _0x4b9b78(0x96),
+    },
+  },
+};
+module[_0x4b9b78(0x95)] = e;
+function _0x42d6() {
+  const _0x377a5b = [
+    "Слайдов\x20на\x20странице",
+    "Форматирование",
+    "Отмена",
+    "Печать",
+    "Альбомная",
+    "По\x20вертикали",
+    "Введите\x20номера\x20слайдов\x20из\x20презентации,\x20например\x201-3,5.",
+    "Все\x20слайды\x20или\x201-3,5",
+    "582372mgrRXO",
+    "185706iFHdQm",
+    "3645mLPaBY",
+    "Выдачи",
+    "Обычные",
+    "Слайды\x20на\x20всю\x20страницу",
+    "По\x20горизонтали",
+    "314120LQsQuu",
+    "11boqsYs",
+    "Размер\x20бумаги",
+    "Порядок\x20страниц",
+    "6898vYuTwS",
+    "Нет",
+    "exports",
+    "Печатать\x20номера\x20слайдов",
+    "Печать…",
+    "Далее",
+    "Макет\x20печати",
+    "1324zNvlIT",
+    "123fYVFIE",
+    "Широкие",
+    "Всего\x20страниц:\x20{0}",
+    "981135LCFkxS",
+    "Диапазон\x20печати",
+    "2303624RkbFEW",
+    "Книжная",
+    "Узкие",
+    "7xDoFCu",
+  ];
+  _0x42d6 = function () {
+    return _0x377a5b;
+  };
+  return _0x42d6();
+}

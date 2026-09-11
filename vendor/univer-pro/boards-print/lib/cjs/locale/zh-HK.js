@@ -1,0 +1,65 @@
+const _0x260ec0 = _0x2875;
+(function (_0x212a6b, _0x173a68) {
+  const _0x162b8d = _0x2875,
+    _0x65775d = _0x212a6b();
+  while (!![]) {
+    try {
+      const _0x22b761 =
+        (parseInt(_0x162b8d(0x8c)) / 0x1) * (-parseInt(_0x162b8d(0x87)) / 0x2) +
+        parseInt(_0x162b8d(0x8d)) / 0x3 +
+        (-parseInt(_0x162b8d(0x8a)) / 0x4) *
+          (-parseInt(_0x162b8d(0x86)) / 0x5) +
+        parseInt(_0x162b8d(0x84)) / 0x6 +
+        parseInt(_0x162b8d(0x8b)) / 0x7 +
+        (-parseInt(_0x162b8d(0x80)) / 0x8) *
+          (-parseInt(_0x162b8d(0x7f)) / 0x9) +
+        -parseInt(_0x162b8d(0x88)) / 0xa;
+      if (_0x22b761 === _0x173a68) break;
+      else _0x65775d["push"](_0x65775d["shift"]());
+    } catch (_0x5ce7d7) {
+      _0x65775d["push"](_0x65775d["shift"]());
+    }
+  }
+})(_0x2806, 0x68971);
+function _0x2875(_0x361e2d, _0x27ca74) {
+  _0x361e2d = _0x361e2d - 0x7f;
+  const _0x280612 = _0x2806();
+  let _0x28753a = _0x280612[_0x361e2d];
+  return _0x28753a;
+}
+const e = {
+  "boards-print": {
+    menu: {
+      print: "列印",
+      exportPng: _0x260ec0(0x89),
+      exportJpeg: _0x260ec0(0x83),
+    },
+    loading: { print: "正在準備列印…", image: _0x260ec0(0x81) },
+    errors: { printFailed: _0x260ec0(0x85), exportFailed: _0x260ec0(0x8e) },
+  },
+};
+function _0x2806() {
+  const _0x23af4f = [
+    "exports",
+    "JPEG",
+    "44238HPETXd",
+    "無法列印此白板。",
+    "65LyrhKr",
+    "729266BWExJa",
+    "13986300kqVCNJ",
+    "PNG",
+    "250684wZNMic",
+    "4121075OwioSR",
+    "1NzByLX",
+    "1771236IQwBqT",
+    "無法匯出此白板圖片。",
+    "27RWMpqx",
+    "507816CCVtBT",
+    "正在匯出圖片…",
+  ];
+  _0x2806 = function () {
+    return _0x23af4f;
+  };
+  return _0x2806();
+}
+module[_0x260ec0(0x82)] = e;

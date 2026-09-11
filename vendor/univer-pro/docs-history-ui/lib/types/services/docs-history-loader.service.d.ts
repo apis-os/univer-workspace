@@ -1,0 +1,36 @@
+import { CollaborationController, DataLoaderService } from '@univerjs-pro/collaboration-client';
+import { HistoryRestoreService, HistoryUnitAdapterRegistryService } from '@univerjs-pro/edit-history';
+import { Disposable, IConfigService, IUniverInstanceService, LocaleService, ThemeService } from '@univerjs/core';
+import { IRenderManagerService } from '@univerjs/engine-render';
+export declare class DocsHistoryLoaderService extends Disposable {
+    private readonly _configService;
+    private readonly _restoreService;
+    private readonly _adapterRegistry;
+    private readonly _localeService;
+    private readonly _themeService;
+    private readonly _collaborationController;
+    private readonly _dataLoaderService;
+    private readonly _univerInstanceService;
+    private readonly _renderManagerService;
+    private _historyUniver;
+    private _opening;
+    private _openGeneration;
+    private readonly _sessionDisposables;
+    private _container;
+    private _ownsContainer;
+    private _unitId;
+    private _location;
+    private _suppressedHostUnitId;
+    constructor(_configService: IConfigService, _restoreService: HistoryRestoreService, _adapterRegistry: HistoryUnitAdapterRegistryService, _localeService: LocaleService, _themeService: ThemeService, _collaborationController: CollaborationController, _dataLoaderService: DataLoaderService, _univerInstanceService: IUniverInstanceService, _renderManagerService: IRenderManagerService);
+    open(unitId: string): Promise<void>;
+    private _open;
+    close(): void;
+    private _syncViewerServices;
+    restore(revision: number): Promise<void>;
+    private _ensureContainer;
+    private _registerChildPlugins;
+    private _createPlaceholderDocument;
+    private _suppressHostMenus;
+    private _restoreHostMenus;
+    dispose(): void;
+}

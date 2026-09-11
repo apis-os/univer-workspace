@@ -1,0 +1,172 @@
+const _0x1fec32 = _0x2dc8;
+(function (_0x1bc3a0, _0x571513) {
+  const _0xaddab7 = _0x2dc8,
+    _0x1642f4 = _0x1bc3a0();
+  while (!![]) {
+    try {
+      const _0x3b9bb3 =
+        parseInt(_0xaddab7(0x19e)) / 0x1 +
+        (-parseInt(_0xaddab7(0x1c2)) / 0x2) *
+          (-parseInt(_0xaddab7(0x1c9)) / 0x3) +
+        (parseInt(_0xaddab7(0x1c5)) / 0x4) *
+          (parseInt(_0xaddab7(0x1ab)) / 0x5) +
+        -parseInt(_0xaddab7(0x19a)) / 0x6 +
+        (parseInt(_0xaddab7(0x1bd)) / 0x7) *
+          (-parseInt(_0xaddab7(0x1c0)) / 0x8) +
+        (-parseInt(_0xaddab7(0x194)) / 0x9) *
+          (-parseInt(_0xaddab7(0x1cf)) / 0xa) +
+        (parseInt(_0xaddab7(0x1a1)) / 0xb) *
+          (-parseInt(_0xaddab7(0x193)) / 0xc);
+      if (_0x3b9bb3 === _0x571513) break;
+      else _0x1642f4["push"](_0x1642f4["shift"]());
+    } catch (_0x36fe57) {
+      _0x1642f4["push"](_0x1642f4["shift"]());
+    }
+  }
+})(_0x14cb, 0xd1f7e);
+const e = {
+  "docs-history-ui": {
+    menu: { history: _0x1fec32(0x1cd) },
+    action: {
+      renameDocument: _0x1fec32(0x1aa),
+      insertText: _0x1fec32(0x1af),
+      deleteText: _0x1fec32(0x19b),
+      deleteBlock: _0x1fec32(0x199),
+      formatText: "Formatted\x20text",
+      formatParagraph: _0x1fec32(0x19c),
+      changeHeading: _0x1fec32(0x1c8),
+      updateList: _0x1fec32(0x1a2),
+      moveBlock: _0x1fec32(0x1c6),
+      insertDivider: "Added\x20divider",
+      deleteDivider: _0x1fec32(0x1cb),
+      updatePageLayout: _0x1fec32(0x1b6),
+      updateHeaderFooter: "Updated\x20header\x20or\x20footer",
+      insertLink: "Added\x20link",
+      insertCustomRange: _0x1fec32(0x1c7),
+      updateLink: _0x1fec32(0x1bf),
+      deleteLink: _0x1fec32(0x1cc),
+      insertTable: "Added\x20table",
+      deleteTable: _0x1fec32(0x1bb),
+      insertTableRows: _0x1fec32(0x1c1),
+      deleteTableRows: _0x1fec32(0x1a4),
+      moveTableRows: _0x1fec32(0x195),
+      resizeTableRows: _0x1fec32(0x196),
+      distributeTableRows: _0x1fec32(0x1ac),
+      insertTableColumns: _0x1fec32(0x1b1),
+      deleteTableColumns: _0x1fec32(0x1a8),
+      moveTableColumns: _0x1fec32(0x1a0),
+      resizeTableColumns: "Resized\x20table\x20columns",
+      distributeTableColumns: _0x1fec32(0x1b4),
+      moveTable: _0x1fec32(0x1b9),
+      updateTableHeader: _0x1fec32(0x1ba),
+      updateTableColumns: "Updated\x20table\x20columns",
+      editTableCell: _0x1fec32(0x19f),
+      formatTable: _0x1fec32(0x1c3),
+      mergeTableCells: _0x1fec32(0x1b8),
+      unmergeTableCells: _0x1fec32(0x19d),
+      sortTable: _0x1fec32(0x1b5),
+      insertImage: _0x1fec32(0x1b0),
+      deleteImage: "Deleted\x20image",
+      updateImage: _0x1fec32(0x198),
+      insertShape: _0x1fec32(0x1c4),
+      updateShape: _0x1fec32(0x1ce),
+      deleteShape: _0x1fec32(0x1be),
+      updateDrawing: "Updated\x20floating\x20object",
+      insertChart: _0x1fec32(0x1b3),
+      deleteChart: "Deleted\x20chart",
+      updateChart: _0x1fec32(0x1a3),
+      insertCallout: _0x1fec32(0x1ae),
+      deleteCallout: _0x1fec32(0x1a6),
+      updateCallout: _0x1fec32(0x1a5),
+      insertCodeBlock: _0x1fec32(0x197),
+      deleteCodeBlock: _0x1fec32(0x1bc),
+      updateCodeBlock: _0x1fec32(0x1b7),
+      insertQuote: "Added\x20quote",
+      deleteQuote: _0x1fec32(0x1ca),
+      updateQuote: "Updated\x20quote",
+      insertColumns: "Added\x20columns",
+      updateColumns: "Updated\x20columns",
+      insertFormula: _0x1fec32(0x1a7),
+      updateFormula: _0x1fec32(0x1b2),
+      deleteFormula: _0x1fec32(0x1ad),
+      editDocument: _0x1fec32(0x1a9),
+    },
+  },
+};
+function _0x14cb() {
+  const _0xcdd9b6 = [
+    "Deleted\x20link",
+    "Version\x20history",
+    "Updated\x20shape",
+    "30RPcoFz",
+    "exports",
+    "24vwOQWC",
+    "1666818pNbSML",
+    "Moved\x20table\x20rows",
+    "Resized\x20table\x20rows",
+    "Added\x20code\x20block",
+    "Updated\x20image",
+    "Deleted\x20block",
+    "5518722CbjgNu",
+    "Deleted\x20text",
+    "Formatted\x20paragraph",
+    "Unmerged\x20table\x20cells",
+    "687061VsPvPu",
+    "Edited\x20table\x20cell",
+    "Moved\x20table\x20columns",
+    "3943874OeXnaj",
+    "Updated\x20list",
+    "Updated\x20chart",
+    "Deleted\x20table\x20rows",
+    "Updated\x20callout",
+    "Deleted\x20callout",
+    "Added\x20formula",
+    "Deleted\x20table\x20columns",
+    "Edited\x20document",
+    "Renamed\x20document",
+    "611615cGbFSa",
+    "Distributed\x20table\x20rows",
+    "Deleted\x20formula",
+    "Added\x20callout",
+    "Added\x20text",
+    "Added\x20image",
+    "Added\x20table\x20columns",
+    "Updated\x20formula",
+    "Added\x20chart",
+    "Distributed\x20table\x20columns",
+    "Sorted\x20table",
+    "Updated\x20page\x20layout",
+    "Updated\x20code\x20block",
+    "Merged\x20table\x20cells",
+    "Moved\x20table",
+    "Updated\x20table\x20header",
+    "Deleted\x20table",
+    "Deleted\x20code\x20block",
+    "259PHgfYb",
+    "Deleted\x20shape",
+    "Updated\x20link",
+    "62360vVtoAf",
+    "Added\x20table\x20rows",
+    "147242DlaaeT",
+    "Formatted\x20table",
+    "Added\x20shape",
+    "36dYRaSR",
+    "Moved\x20block",
+    "Added\x20custom\x20range",
+    "Changed\x20heading",
+    "18bZIHsB",
+    "Deleted\x20quote",
+    "Deleted\x20divider",
+  ];
+  _0x14cb = function () {
+    return _0xcdd9b6;
+  };
+  return _0x14cb();
+}
+function _0x2dc8(_0x2adf10, _0x287282) {
+  _0x2adf10 = _0x2adf10 - 0x192;
+  const _0x14cbcd = _0x14cb();
+  let _0x2dc81e = _0x14cbcd[_0x2adf10];
+  return _0x2dc81e;
+}
+module[_0x1fec32(0x192)] = e;

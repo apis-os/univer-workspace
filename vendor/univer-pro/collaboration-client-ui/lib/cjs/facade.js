@@ -1,0 +1,61 @@
+function _0x9f7d(_0x506375, _0x528f2a) {
+  _0x506375 = _0x506375 - 0x155;
+  const _0x542510 = _0x5425();
+  let _0x9f7d7b = _0x542510[_0x506375];
+  return _0x9f7d7b;
+}
+const _0x39ea6d = _0x9f7d;
+(function (_0x23b5ea, _0x8788a9) {
+  const _0x179a27 = _0x9f7d,
+    _0x405019 = _0x23b5ea();
+  while (!![]) {
+    try {
+      const _0x1f3a80 =
+        parseInt(_0x179a27(0x155)) / 0x1 +
+        (parseInt(_0x179a27(0x15f)) / 0x2) *
+          (parseInt(_0x179a27(0x157)) / 0x3) +
+        -parseInt(_0x179a27(0x161)) / 0x4 +
+        -parseInt(_0x179a27(0x15e)) / 0x5 +
+        -parseInt(_0x179a27(0x15c)) / 0x6 +
+        (-parseInt(_0x179a27(0x159)) / 0x7) *
+          (parseInt(_0x179a27(0x156)) / 0x8) +
+        parseInt(_0x179a27(0x15b)) / 0x9;
+      if (_0x1f3a80 === _0x8788a9) break;
+      else _0x405019["push"](_0x405019["shift"]());
+    } catch (_0x47311a) {
+      _0x405019["push"](_0x405019["shift"]());
+    }
+  }
+})(_0x5425, 0x82a09);
+let e = require("@univerjs-pro/collaboration-client-ui"),
+  t = require("@univerjs/core/facade");
+var n = class extends t[_0x39ea6d(0x160)] {
+  [_0x39ea6d(0x15d)](_0x30a987, _0x28d6d4, ..._0x5e8c2e) {
+    const _0x22b35a = _0x39ea6d;
+    return this["_injector"]
+      [_0x22b35a(0x158)](e[_0x22b35a(0x15a)])
+      [_0x22b35a(0x15d)](_0x30a987, _0x28d6d4, {}, ..._0x5e8c2e);
+  }
+};
+t[_0x39ea6d(0x160)]["extend"](n);
+function _0x5425() {
+  const _0x55075d = [
+    "934250lSEzrA",
+    "FUniver",
+    "1286792OgEpTV",
+    "947791ZqtSLe",
+    "144BZArJx",
+    "6hEnfwv",
+    "get",
+    "366653hgRkUs",
+    "RemoteUniscriptService",
+    "11208690gQkMKq",
+    "4582332BUXOqG",
+    "runOnServer",
+    "2820800BoNilO",
+  ];
+  _0x5425 = function () {
+    return _0x55075d;
+  };
+  return _0x5425();
+}

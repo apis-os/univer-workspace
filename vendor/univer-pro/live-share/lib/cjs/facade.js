@@ -1,0 +1,215 @@
+function _0x5cf4(_0x375d78, _0x1036dd) {
+  _0x375d78 = _0x375d78 - 0x199;
+  const _0x2a3efc = _0x2a3e();
+  let _0x5cf433 = _0x2a3efc[_0x375d78];
+  return _0x5cf433;
+}
+const _0xf42814 = _0x5cf4;
+(function (_0x5975e4, _0x7d9020) {
+  const _0x14590d = _0x5cf4,
+    _0x293526 = _0x5975e4();
+  while (!![]) {
+    try {
+      const _0x34a94d =
+        (-parseInt(_0x14590d(0x1c1)) / 0x1) *
+          (-parseInt(_0x14590d(0x19a)) / 0x2) +
+        parseInt(_0x14590d(0x1b9)) / 0x3 +
+        parseInt(_0x14590d(0x1b0)) / 0x4 +
+        (-parseInt(_0x14590d(0x1ac)) / 0x5) *
+          (parseInt(_0x14590d(0x1a9)) / 0x6) +
+        -parseInt(_0x14590d(0x1a0)) / 0x7 +
+        (-parseInt(_0x14590d(0x1ab)) / 0x8) *
+          (-parseInt(_0x14590d(0x1a4)) / 0x9) +
+        parseInt(_0x14590d(0x1a6)) / 0xa;
+      if (_0x34a94d === _0x7d9020) break;
+      else _0x293526["push"](_0x293526["shift"]());
+    } catch (_0x10e859) {
+      _0x293526["push"](_0x293526["shift"]());
+    }
+  }
+})(_0x2a3e, 0x2aa6d);
+let e = require("@univerjs-pro/live-share"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs/core/facade");
+function r(_0x518b10) {
+  "@babel/helpers - typeof";
+  const _0x2949ea = _0x5cf4;
+  return (
+    (r =
+      typeof Symbol == _0x2949ea(0x1c2) &&
+      typeof Symbol[_0x2949ea(0x1b1)] == _0x2949ea(0x1a7)
+        ? function (_0x1c0c90) {
+            return typeof _0x1c0c90;
+          }
+        : function (_0x50b50e) {
+            const _0x2b5ff2 = _0x2949ea;
+            return _0x50b50e &&
+              typeof Symbol == "function" &&
+              _0x50b50e["constructor"] === Symbol &&
+              _0x50b50e !== Symbol[_0x2b5ff2(0x1ad)]
+              ? _0x2b5ff2(0x1a7)
+              : typeof _0x50b50e;
+          }),
+    r(_0x518b10)
+  );
+}
+function i(_0x58becf, _0x2cd6da) {
+  const _0x3a1835 = _0x5cf4;
+  if (r(_0x58becf) != _0x3a1835(0x1b4) || !_0x58becf) return _0x58becf;
+  var _0x3f946b = _0x58becf[Symbol[_0x3a1835(0x1b5)]];
+  if (_0x3f946b !== void 0x0) {
+    var _0x897aad = _0x3f946b["call"](_0x58becf, _0x2cd6da || _0x3a1835(0x1be));
+    if (r(_0x897aad) != _0x3a1835(0x1b4)) return _0x897aad;
+    throw TypeError(_0x3a1835(0x1ae));
+  }
+  return (_0x2cd6da === _0x3a1835(0x1b8) ? String : Number)(_0x58becf);
+}
+function a(_0xfc2ff1) {
+  const _0x1f822b = _0x5cf4;
+  var _0x268332 = i(_0xfc2ff1, _0x1f822b(0x1b8));
+  return r(_0x268332) == _0x1f822b(0x1a7) ? _0x268332 : _0x268332 + "";
+}
+function o(_0x5bf566, _0x80fedb, _0x4f2e55) {
+  const _0x2b0e89 = _0x5cf4;
+  return (
+    (_0x80fedb = a(_0x80fedb)) in _0x5bf566
+      ? Object[_0x2b0e89(0x1a1)](_0x5bf566, _0x80fedb, {
+          value: _0x4f2e55,
+          enumerable: !0x0,
+          configurable: !0x0,
+          writable: !0x0,
+        })
+      : (_0x5bf566[_0x80fedb] = _0x4f2e55),
+    _0x5bf566
+  );
+}
+var s = class extends n[_0xf42814(0x1b6)] {
+  constructor(..._0x55de17) {
+    const _0x55f804 = _0xf42814;
+    (super(..._0x55de17), o(this, _0x55f804(0x19e), void 0x0));
+  }
+  [_0xf42814(0x1aa)](_0x574464) {
+    const _0x166f18 = _0xf42814;
+    this[_0x166f18(0x19e)] = _0x574464[_0x166f18(0x1b2)](e[_0x166f18(0x1bc)]);
+  }
+  ["getLiveShareStatus"]() {
+    const _0x2ca003 = _0xf42814;
+    let _0x89c317 = this["_injector"]
+      [_0x2ca003(0x1b2)](t[_0x2ca003(0x19b)])
+      [_0x2ca003(0x199)](t[_0x2ca003(0x1af)][_0x2ca003(0x1c0)]);
+    if (!_0x89c317) throw Error(_0x2ca003(0x1a5));
+    let _0x10505f = _0x89c317["getUnitId"](),
+      _0x6ffa61 = this["_liveShareController"][_0x2ca003(0x1a2)](_0x10505f);
+    return (
+      (_0x6ffa61 == null ? void 0x0 : _0x6ffa61["getStatus"]()) ??
+      e[_0x2ca003(0x1bb)][_0x2ca003(0x1bf)]
+    );
+  }
+  [_0xf42814(0x19d)]() {
+    const _0x26c9b1 = _0xf42814;
+    let _0x5e8b2e = this[_0x26c9b1(0x19f)]
+      [_0x26c9b1(0x1b2)](t[_0x26c9b1(0x19b)])
+      ["getCurrentUnitOfType"](t[_0x26c9b1(0x1af)][_0x26c9b1(0x1c0)]);
+    if (!_0x5e8b2e) throw Error(_0x26c9b1(0x1a5));
+    let _0x56641c = _0x5e8b2e[_0x26c9b1(0x1a8)](),
+      _0x1d2368 = this[_0x26c9b1(0x19e)][_0x26c9b1(0x1a2)](_0x56641c);
+    if (!_0x1d2368) throw Error(_0x26c9b1(0x1a3));
+    _0x1d2368[_0x26c9b1(0x19d)]();
+  }
+  [_0xf42814(0x1ba)]() {
+    const _0x348bef = _0xf42814;
+    let _0x38461f = this[_0x348bef(0x19f)]
+      [_0x348bef(0x1b2)](t[_0x348bef(0x19b)])
+      [_0x348bef(0x199)](t[_0x348bef(0x1af)][_0x348bef(0x1c0)]);
+    if (!_0x38461f) throw Error(_0x348bef(0x1a5));
+    let _0x1fc837 = _0x38461f[_0x348bef(0x1a8)](),
+      _0x54171d =
+        this[_0x348bef(0x19e)]["getLiveShareCoordinatorSync"](_0x1fc837);
+    if (!_0x54171d) throw Error(_0x348bef(0x1a3));
+    _0x54171d["stopFollowing"]();
+  }
+  ["startPresenting"]() {
+    const _0x9431b3 = _0xf42814;
+    let _0x501683 = this[_0x9431b3(0x19f)]
+      [_0x9431b3(0x1b2)](t[_0x9431b3(0x19b)])
+      [_0x9431b3(0x199)](t["UniverInstanceType"]["UNIVER_SHEET"]);
+    if (!_0x501683) throw Error(_0x9431b3(0x1a5));
+    let _0x446b31 = _0x501683[_0x9431b3(0x1a8)](),
+      _0xe3f447 = this[_0x9431b3(0x19e)][_0x9431b3(0x1a2)](_0x446b31);
+    if (!_0xe3f447) throw Error(_0x9431b3(0x1a3));
+    _0xe3f447["tryStartPresenting"]();
+  }
+  ["stopPresenting"]() {
+    const _0x29c7e0 = _0xf42814;
+    let _0x5e5d44 = this[_0x29c7e0(0x19f)]
+      ["get"](t[_0x29c7e0(0x19b)])
+      [_0x29c7e0(0x199)](t[_0x29c7e0(0x1af)][_0x29c7e0(0x1c0)]);
+    if (!_0x5e5d44) throw Error("No\x20active\x20workbook\x20found.");
+    let _0x15b387 = _0x5e5d44[_0x29c7e0(0x1a8)](),
+      _0x3f0dc9 =
+        this[_0x29c7e0(0x19e)]["getLiveShareCoordinatorSync"](_0x15b387);
+    if (!_0x3f0dc9)
+      throw Error(
+        "No\x20LiveShareCoordinator\x20found\x20for\x20the\x20active\x20workbook.",
+      );
+    _0x3f0dc9[_0x29c7e0(0x1b3)]();
+  }
+};
+function _0x2a3e() {
+  const _0x301ba3 = [
+    "IDLE",
+    "UNIVER_SHEET",
+    "33942UbSOQR",
+    "function",
+    "getCurrentUnitOfType",
+    "16uXOrOs",
+    "IUniverInstanceService",
+    "FEnum",
+    "startFollowing",
+    "_liveShareController",
+    "_injector",
+    "1620808DEzBkL",
+    "defineProperty",
+    "getLiveShareCoordinatorSync",
+    "No\x20LiveShareCoordinator\x20found\x20for\x20the\x20active\x20workbook.",
+    "374481LiwRtJ",
+    "No\x20active\x20workbook\x20found.",
+    "432170EIKejl",
+    "symbol",
+    "getUnitId",
+    "1821132trAgJt",
+    "_initialize",
+    "8DlSqhx",
+    "5JlEstN",
+    "prototype",
+    "@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.",
+    "UniverInstanceType",
+    "1105856HEiKha",
+    "iterator",
+    "get",
+    "stopPresenting",
+    "object",
+    "toPrimitive",
+    "FUniver",
+    "LiveShareStatusEnum",
+    "string",
+    "230823ehUYmx",
+    "stopFollowing",
+    "LiveShareStatus",
+    "LiveShareController",
+    "extend",
+    "default",
+  ];
+  _0x2a3e = function () {
+    return _0x301ba3;
+  };
+  return _0x2a3e();
+}
+n["FUniver"][_0xf42814(0x1bd)](s);
+var c = class extends n[_0xf42814(0x19c)] {
+  get [_0xf42814(0x1b7)]() {
+    const _0x2ff512 = _0xf42814;
+    return e[_0x2ff512(0x1bb)];
+  }
+};
+n[_0xf42814(0x19c)][_0xf42814(0x1bd)](c);

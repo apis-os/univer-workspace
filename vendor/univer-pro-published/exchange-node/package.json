@@ -1,0 +1,43 @@
+{
+    "author": "DreamNum Co., Ltd. <developer@univer.ai>",
+    "dependencies": {
+        "@univerjs-pro/collaboration": "1.0.0-insiders.20260907-70fc579",
+        "@univerjs-pro/exchange-node-binding": "0.1.1",
+        "@univerjs-pro/slides": "1.0.0-insiders.20260907-70fc579",
+        "@univerjs/core": "1.0.0-insiders.20260907-70fc579",
+        "@univerjs/protocol": "1.0.0-insiders.20260907-70fc579"
+    },
+    "description": "Node.js SDK for converting between Office formats, Univer unit data, and snapshots",
+    "files": [
+        "lib",
+        "README.md"
+    ],
+    "name": "@univerjs-pro/exchange-node",
+    "type": "module",
+    "version": "1.0.0-insiders.20260907-70fc579",
+    "main": "./lib/cjs/index.cjs",
+    "module": "./lib/es/index.js",
+    "types": "./lib/types/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./lib/types/index.d.ts",
+            "import": "./lib/es/index.js",
+            "require": "./lib/cjs/index.cjs",
+            "default": "./lib/es/index.js"
+        }
+    },
+    "publishConfig": {
+        "main": "./lib/cjs/index.cjs",
+        "module": "./lib/es/index.js",
+        "types": "./lib/types/index.d.ts",
+        "exports": {
+            ".": {
+                "types": "./lib/types/index.d.ts",
+                "import": "./lib/es/index.js",
+                "require": "./lib/cjs/index.cjs",
+                "default": "./lib/es/index.js"
+            }
+        },
+        "access": "public"
+    }
+}

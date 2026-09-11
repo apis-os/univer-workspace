@@ -1,0 +1,2111 @@
+Object["defineProperty"](exports, Symbol["toStringTag"], { value: "Module" });
+let e = require("node:crypto"),
+  t = require("node:util"),
+  n = require("@univerjs-pro/collaboration-service"),
+  r = require("@univerjs/protocol");
+var i = class extends Error {
+    ["code"];
+    ["retryable"];
+    ["details"];
+    constructor(_0x36e9b3, _0x970610, _0x1b94d2 = {}) {
+      (super(_0x970610, { cause: _0x1b94d2["cause"] }),
+        (this["name"] = "WorktreeError"),
+        (this["code"] = _0x36e9b3),
+        (this["retryable"] = _0x1b94d2["retryable"] ?? !0x1),
+        _0x1b94d2["details"] !== void 0x0 &&
+          (this["details"] = _0x1b94d2["details"]));
+    }
+  },
+  a = class {
+    ["_worktreeID"];
+    ["_trunk"];
+    ["_worktree"];
+    constructor(_0x5238dd, _0xfc88aa, _0x48579f) {
+      ((this["_worktreeID"] = _0x5238dd),
+        (this["_trunk"] = _0xfc88aa),
+        (this["_worktree"] = _0x48579f));
+    }
+    async ["getUnit"](_0x12085b, _0x599ba4) {
+      let _0x4c1b81 = await this["_worktree"]["getWorktreeUnit"](
+        _0x12085b,
+        this["_worktreeID"],
+        _0x599ba4,
+      );
+      return _0x4c1b81
+        ? {
+            unitID: _0x4c1b81["unitID"],
+            type: _0x4c1b81["type"],
+            headRevision: _0x4c1b81["draftHeadRevision"],
+          }
+        : null;
+    }
+    async ["getSnapshot"](_0x14439f, _0x16f107, _0x5876e3) {
+      let _0x4d355 = await this["_getUnitRecord"](_0x14439f, _0x16f107);
+      if (!_0x4d355) return null;
+      let _0x2f3e78 = _0x5876e3?.["revision"],
+        _0x3776a0 =
+          _0x2f3e78 === void 0x0 || _0x2f3e78 === 0x0
+            ? _0x4d355["draftHeadRevision"]
+            : Math["min"](_0x2f3e78, _0x4d355["draftHeadRevision"]);
+      if (_0x4d355["source"] === "worktree")
+        return (
+          (
+            await this["_worktree"]["getUnitSeed"](
+              _0x14439f,
+              this["_worktreeID"],
+              _0x16f107,
+            )
+          )?.["snapshot"] ?? null
+        );
+      let _0x569b24 = o(_0x4d355);
+      return this["_trunk"]["getSnapshot"](_0x14439f, _0x16f107, {
+        revision: Math["min"](_0x3776a0, _0x569b24),
+      });
+    }
+    async ["getChangesets"](_0x278ef2, _0x2a1237, _0x487407) {
+      let _0x261306 = await this["_getUnitRecord"](_0x278ef2, _0x2a1237);
+      if (!_0x261306) return { changesets: [], latestRevision: 0x0 };
+      let _0x3c98d1 =
+        _0x487407["to"] === 0x0
+          ? _0x261306["draftHeadRevision"]
+          : Math["min"](_0x487407["to"], _0x261306["draftHeadRevision"]);
+      if (_0x261306["source"] === "worktree")
+        return {
+          changesets: [
+            ...(_0x487407["from"] < _0x3c98d1
+              ? await this["_worktree"]["getDraftChangesets"](
+                  _0x278ef2,
+                  this["_worktreeID"],
+                  _0x2a1237,
+                  { from: Math["max"](_0x487407["from"], 0x1), to: _0x3c98d1 },
+                )
+              : { changesets: [] })["changesets"],
+          ],
+          latestRevision: _0x261306["draftHeadRevision"],
+        };
+      let _0x4c2fb8 = o(_0x261306),
+        _0x2351ca = Math["min"](_0x3c98d1, _0x4c2fb8),
+        _0x11b0b6 =
+          _0x487407["from"] < _0x2351ca
+            ? await this["_trunk"]["getChangesets"](_0x278ef2, _0x2a1237, {
+                from: _0x487407["from"],
+                to: _0x2351ca,
+              })
+            : { changesets: [] },
+        _0x497a40 = Math["max"](_0x487407["from"], _0x4c2fb8),
+        _0xec1c1c =
+          _0x497a40 < _0x3c98d1
+            ? await this["_worktree"]["getDraftChangesets"](
+                _0x278ef2,
+                this["_worktreeID"],
+                _0x2a1237,
+                { from: _0x497a40, to: _0x3c98d1 },
+              )
+            : { changesets: [] };
+      return {
+        changesets: [..._0x11b0b6["changesets"], ..._0xec1c1c["changesets"]],
+        latestRevision: _0x261306["draftHeadRevision"],
+      };
+    }
+    async ["createUnit"](_0xdad15b, _0x15446b) {
+      switch (
+        (
+          await this["_worktree"]["createUnit"](_0xdad15b, {
+            unit: {
+              worktreeID: this["_worktreeID"],
+              unitID: _0x15446b["record"]["unitID"],
+              type: _0x15446b["record"]["type"],
+              source: "worktree",
+              draftHeadRevision: 0x1,
+            },
+            seed: {
+              snapshot: _0x15446b["snapshot"],
+              ...(_0x15446b["sheetBlocks"] === void 0x0
+                ? {}
+                : { sheetBlocks: _0x15446b["sheetBlocks"] }),
+            },
+          })
+        )["status"]
+      ) {
+        case "created":
+          return { status: "created", record: _0x15446b["record"] };
+        case "already-created":
+          return { status: "already-exists", record: _0x15446b["record"] };
+        case "not-found":
+          throw new n["CollabError"](
+            "UNIT_NOT_FOUND",
+            "Worktree\x20" + this["_worktreeID"] + "\x20does\x20not\x20exist",
+          );
+        case "unit-exists":
+          throw new n["CollabError"](
+            "INVALID_REQUEST",
+            "Unit\x20" +
+              _0x15446b["record"]["unitID"] +
+              "\x20already\x20exists\x20in\x20the\x20Worktree",
+          );
+        case "status-mismatch":
+          throw new n["CollabError"](
+            "PERMISSION_DENIED",
+            "Worktree\x20" + this["_worktreeID"] + "\x20is\x20not\x20editable",
+          );
+      }
+    }
+    ["deleteUnits"](_0x546431, _0x340e0a) {
+      return Promise["reject"](
+        new n["CollabError"](
+          "INVALID_REQUEST",
+          "Cannot\x20delete\x20Units\x20through\x20a\x20Worktree\x20draft",
+        ),
+      );
+    }
+    ["recoverUnits"](_0x308965, _0x317bf4) {
+      return Promise["reject"](
+        new n["CollabError"](
+          "INVALID_REQUEST",
+          "Cannot\x20recover\x20Units\x20through\x20a\x20Worktree\x20draft",
+        ),
+      );
+    }
+    async ["commitChangeset"](_0x4fb42c, _0x3b53ca) {
+      let _0x2ab0cb = await this["_worktree"]["commitDraftChangeset"](
+        _0x4fb42c,
+        { worktreeID: this["_worktreeID"], changeset: _0x3b53ca["changeset"] },
+      );
+      switch (_0x2ab0cb["status"]) {
+        case "committed":
+        case "revision-mismatch":
+          return _0x2ab0cb;
+        case "not-found":
+          throw new n["CollabError"](
+            "UNIT_NOT_FOUND",
+            "Worktree\x20or\x20Worktree\x20Unit\x20does\x20not\x20exist",
+          );
+        case "not-editable":
+          throw new n["CollabError"](
+            "PERMISSION_DENIED",
+            "Worktree\x20is\x20" + _0x2ab0cb["worktreeStatus"],
+          );
+        case "unit-frozen":
+          throw new n["CollabError"](
+            "PERMISSION_DENIED",
+            "Worktree\x20Unit\x20has\x20already\x20been\x20merged",
+          );
+      }
+    }
+    ["saveSnapshot"](_0x34292d, _0x3965e3) {
+      return Promise["reject"](
+        new n["CollabError"](
+          "INTERNAL_ERROR",
+          "Worktree\x20draft\x20snapshots\x20are\x20disabled",
+        ),
+      );
+    }
+    async ["getSheetBlock"](_0x3d6346, _0xd8523b, _0x493227) {
+      let _0x52e236 = await this["_getUnitRecord"](_0x3d6346, _0xd8523b);
+      return _0x52e236
+        ? _0x52e236["source"] === "worktree"
+          ? ((
+              await this["_worktree"]["getUnitSeed"](
+                _0x3d6346,
+                this["_worktreeID"],
+                _0xd8523b,
+              )
+            )?.["sheetBlocks"]?.["find"](
+              (_0x12a931) => _0x12a931["id"] === _0x493227,
+            ) ?? null)
+          : this["_trunk"]["getSheetBlock"](_0x3d6346, _0xd8523b, _0x493227)
+        : null;
+    }
+    ["_getUnitRecord"](_0x133cdc, _0x326996) {
+      return this["_worktree"]["getWorktreeUnit"](
+        _0x133cdc,
+        this["_worktreeID"],
+        _0x326996,
+      );
+    }
+  };
+function o(_0xdbb4a6) {
+  if (
+    _0xdbb4a6["source"] !== "trunk" ||
+    !Number["isSafeInteger"](_0xdbb4a6["baselineTrunkRevision"]) ||
+    _0xdbb4a6["baselineTrunkRevision"] < 0x1
+  )
+    throw new n["CollabError"](
+      "ADAPTER_FAILURE",
+      "Trunk-sourced\x20Worktree\x20Unit\x20has\x20no\x20valid\x20baseline",
+    );
+  return _0xdbb4a6["baselineTrunkRevision"];
+}
+async function s(_0x50749b) {
+  let _0x21bfe9 = new n["UniverUnitRuntime"]({
+    dbAdapter: _0x50749b["dbAdapter"],
+    ...(_0x50749b["runtime"]?.["maxLoadedUnits"] === void 0x0
+      ? {}
+      : { maxLoadedUnits: _0x50749b["runtime"]["maxLoadedUnits"] }),
+    ...(_0x50749b["runtime"]?.["idleTimeoutMs"] === void 0x0
+      ? {}
+      : { idleTimeoutMs: _0x50749b["runtime"]["idleTimeoutMs"] }),
+  });
+  try {
+    let _0x47059d = await _0x21bfe9["ensureUnit"](
+      _0x50749b["context"],
+      _0x50749b["unitID"],
+      _0x50749b["type"],
+    );
+    try {
+      if (_0x47059d["revision"] !== _0x50749b["expectedRevision"])
+        throw c(
+          "Unit\x20Runtime\x20did\x20not\x20reach\x20the\x20frozen\x20Worktree\x20revision",
+        );
+      let _0x18578f = await _0x21bfe9["createSnapshot"](_0x47059d);
+      if (
+        _0x18578f["snapshot"]["unitID"] !== _0x50749b["unitID"] ||
+        _0x18578f["snapshot"]["type"] !== _0x50749b["type"] ||
+        _0x18578f["snapshot"]["rev"] !== _0x50749b["expectedRevision"]
+      )
+        throw c(
+          "Unit\x20Runtime\x20returned\x20an\x20invalid\x20Worktree\x20snapshot",
+        );
+      return _0x18578f;
+    } finally {
+      _0x21bfe9["releaseUnit"](_0x47059d);
+    }
+  } finally {
+    await _0x21bfe9["dispose"]();
+  }
+}
+function c(_0x3f77be) {
+  return new n["CollabError"]("ADAPTER_FAILURE", _0x3f77be, {
+    retryable: !0x0,
+  });
+}
+async function l(_0x2b90c1) {
+  let _0x3c7c5f = new n["UniverUnitRuntime"]({
+    dbAdapter: _0x2b90c1["dbAdapter"],
+    ...(_0x2b90c1["runtime"]?.["maxLoadedUnits"] === void 0x0
+      ? {}
+      : { maxLoadedUnits: _0x2b90c1["runtime"]["maxLoadedUnits"] }),
+    ...(_0x2b90c1["runtime"]?.["idleTimeoutMs"] === void 0x0
+      ? {}
+      : { idleTimeoutMs: _0x2b90c1["runtime"]["idleTimeoutMs"] }),
+  });
+  try {
+    let _0x311e01 = u(_0x3c7c5f, _0x2b90c1),
+      _0x2329c7 = await _0x3c7c5f["ensureUnit"](
+        _0x2b90c1["context"],
+        _0x2b90c1["unitID"],
+        _0x2b90c1["type"],
+      );
+    try {
+      if (_0x2329c7["revision"] !== _0x2b90c1["trunkHeadRevision"])
+        throw new n["CollabError"](
+          "REVISION_MISMATCH",
+          "Trunk\x20changed\x20while\x20materializing\x20Worktree\x20merge\x20preview",
+          { retryable: !0x0 },
+        );
+      if (
+        (await _0x3c7c5f["applyChangeset"](
+          _0x2b90c1["context"],
+          _0x2329c7,
+          _0x311e01,
+        ),
+        _0x2329c7["revision"] !== _0x311e01["revision"])
+      )
+        throw new n["CollabError"](
+          "INTERNAL_ERROR",
+          "Preview\x20Runtime\x20did\x20not\x20reach\x20the\x20merge\x20candidate\x20revision",
+          { retryable: !0x0 },
+        );
+      return await _0x3c7c5f["createSnapshot"](_0x2329c7);
+    } finally {
+      _0x3c7c5f["releaseUnit"](_0x2329c7);
+    }
+  } finally {
+    await _0x3c7c5f["dispose"]();
+  }
+}
+function u(_0x261ad4, _0xe85fb7) {
+  let _0x47a50c = _0x261ad4["changesetTransformer"]["parseClient"](
+    _0xe85fb7["original"],
+  );
+  return {
+    ..._0x261ad4["changesetTransformer"]["transform"](
+      _0x47a50c,
+      _0xe85fb7["trunkHistory"],
+    ),
+    unitID: _0xe85fb7["original"]["unitID"],
+    type: _0xe85fb7["original"]["type"],
+    baseRev: _0xe85fb7["trunkHeadRevision"],
+    revision: _0xe85fb7["trunkHeadRevision"] + 0x1,
+    sid: _0xe85fb7["original"]["sid"],
+    reqId: _0xe85fb7["original"]["reqId"],
+  };
+}
+var d = class {
+  ["_middlewares"] = new Map();
+  ["use"](_0x498f81, _0x4a1ff4) {
+    let _0x510280 = this["_middlewares"]["get"](_0x498f81) ?? [],
+      _0x598fbf = _0x4a1ff4;
+    (_0x510280["push"](_0x598fbf),
+      this["_middlewares"]["set"](_0x498f81, _0x510280));
+    let _0x4f0622 = !0x1;
+    return {
+      dispose: () => {
+        if (_0x4f0622) return;
+        _0x4f0622 = !0x0;
+        let _0x6e0c6f = _0x510280["indexOf"](_0x598fbf);
+        _0x6e0c6f >= 0x0 && _0x510280["splice"](_0x6e0c6f, 0x1);
+      },
+    };
+  }
+  async ["run"](_0x5c6c74, _0x2619c0, _0x439c01) {
+    let _0x2046cc = [...(this["_middlewares"]["get"](_0x5c6c74) ?? [])],
+      _0x155ece = async (_0x4d3f4d) => {
+        let _0x9cf58e = _0x2046cc[_0x4d3f4d];
+        if (!_0x9cf58e) {
+          await _0x439c01();
+          return;
+        }
+        let _0x3df5e1 = !0x1,
+          _0x2bcd40,
+          _0x5e6815 = () => {
+            if (_0x3df5e1)
+              throw Error(
+                "Middleware\x20for\x20action\x20" +
+                  String(_0x5c6c74) +
+                  "\x20called\x20next()\x20more\x20than\x20once",
+              );
+            return (
+              (_0x3df5e1 = !0x0),
+              (_0x2bcd40 = _0x155ece(_0x4d3f4d + 0x1)),
+              _0x2bcd40
+            );
+          };
+        try {
+          await _0x9cf58e(_0x2619c0, _0x5e6815);
+        } catch (_0x2236e3) {
+          if (_0x2bcd40)
+            try {
+              await _0x2bcd40;
+            } catch {}
+          throw _0x2236e3;
+        }
+        if (!_0x3df5e1)
+          throw Error(
+            "Middleware\x20for\x20action\x20" +
+              String(_0x5c6c74) +
+              "\x20completed\x20without\x20calling\x20next()",
+          );
+        await _0x2bcd40;
+      };
+    await _0x155ece(0x0);
+  }
+  ["clear"]() {
+    this["_middlewares"]["clear"]();
+  }
+};
+function f(_0x1d8640) {
+  return {
+    worktreeID: _0x1d8640["worktreeID"],
+    units: _0x1d8640["units"] ?? [],
+  };
+}
+function p(_0x24d26e) {
+  return { worktreeID: _0x24d26e["worktreeID"] };
+}
+function m(_0x258c72) {
+  return { worktreeID: _0x258c72["worktreeID"], unitID: _0x258c72["unitID"] };
+}
+function ee(_0x58ba0d) {
+  return { worktreeID: _0x58ba0d["worktreeID"] };
+}
+function te(_0x314097) {
+  return { worktreeID: _0x314097["worktreeID"] };
+}
+function h(_0x43bf6f) {
+  return { worktreeID: _0x43bf6f["worktreeID"] };
+}
+function g(_0x236555) {
+  return { worktreeID: _0x236555["worktreeID"] };
+}
+function _(_0x5d928c) {
+  return { worktreeID: _0x5d928c["worktreeID"], unitID: _0x5d928c["unitID"] };
+}
+function v(_0x195970) {
+  return {
+    worktreeID: _0x195970["worktreeID"],
+    unitID: _0x195970["unitID"],
+    removed: _0x195970["removed"],
+  };
+}
+var y = class {
+    ["_onListenerError"];
+    ["_listeners"] = new Map();
+    constructor(_0x297103) {
+      this["_onListenerError"] = _0x297103;
+    }
+    ["on"](_0x119cfa, _0x254dca) {
+      let _0x554ca5 = this["_listeners"]["get"](_0x119cfa) ?? [],
+        _0x5b2b1f = _0x254dca;
+      (_0x554ca5["push"](_0x5b2b1f),
+        this["_listeners"]["set"](_0x119cfa, _0x554ca5));
+      let _0x3c0f21 = !0x1;
+      return {
+        dispose: () => {
+          if (_0x3c0f21) return;
+          _0x3c0f21 = !0x0;
+          let _0x35278c = _0x554ca5["indexOf"](_0x5b2b1f);
+          _0x35278c >= 0x0 && _0x554ca5["splice"](_0x35278c, 0x1);
+        },
+      };
+    }
+    async ["emit"](_0x119ea9, _0x22c4a1) {
+      for (let _0x4518e7 of [...(this["_listeners"]["get"](_0x119ea9) ?? [])])
+        try {
+          await _0x4518e7(_0x22c4a1);
+        } catch (_0x2da6bd) {
+          try {
+            this["_onListenerError"](_0x2da6bd);
+          } catch {}
+        }
+    }
+    ["clear"]() {
+      this["_listeners"]["clear"]();
+    }
+  },
+  b = class {
+    ["_state"] = "running";
+    ["_activeCalls"] = 0x0;
+    ["_resolveDrain"];
+    ["_disposePromise"];
+    get ["state"]() {
+      return this["_state"];
+    }
+    ["run"](_0x42113c) {
+      return this["_state"] === "running"
+        ? ((this["_activeCalls"] += 0x1),
+          Promise["resolve"]()
+            ["then"](_0x42113c)
+            ["finally"](() => {
+              (--this["_activeCalls"],
+                this["_activeCalls"] === 0x0 &&
+                  (this["_resolveDrain"]?.(),
+                  (this["_resolveDrain"] = void 0x0)));
+            }))
+        : Promise["reject"](
+            new n["CollabError"](
+              "INTERNAL_ERROR",
+              "Worktree\x20Service\x20is\x20" + this["_state"],
+              { retryable: !0x0 },
+            ),
+          );
+    }
+    ["dispose"](_0x3b6fea) {
+      return this["_disposePromise"]
+        ? this["_disposePromise"]
+        : ((this["_state"] = "disposing"),
+          (this["_disposePromise"] = this["_finishDispose"](_0x3b6fea)),
+          this["_disposePromise"]);
+    }
+    async ["_finishDispose"](_0xebbfbb) {
+      this["_activeCalls"] > 0x0 &&
+        (await new Promise((_0x364840) => {
+          this["_resolveDrain"] = _0x364840;
+        }));
+      try {
+        await _0xebbfbb();
+      } finally {
+        this["_state"] = "disposed";
+      }
+    }
+  },
+  x = new Set([
+    r["UniverType"]["UNIVER_SHEET"],
+    r["UniverType"]["UNIVER_DOC"],
+    r["UniverType"]["UNIVER_SLIDE"],
+    r["UniverType"]["UNIVER_BOARD"],
+    r["UniverType"]["UNIVER_BASE"],
+  ]),
+  ne = class {
+    ["_trunkService"];
+    ["_trunkDbAdapter"];
+    ["_dbAdapter"];
+    ["_middleware"] = new d();
+    ["_events"];
+    ["_lifecycle"] = new b();
+    ["_logger"];
+    ["_metrics"];
+    ["_runtimeOptions"];
+    ["_maxRevisionRetries"];
+    ["_draftServices"] = new Map();
+    constructor(_0xdff9ae) {
+      if (
+        !_0xdff9ae?.["trunk"]?.["service"] ||
+        !_0xdff9ae["trunk"]["dbAdapter"]
+      )
+        throw TypeError(
+          "UniverCollabWorktreeService\x20requires\x20trunk\x20service\x20and\x20dbAdapter",
+        );
+      if (!_0xdff9ae["dbAdapter"])
+        throw TypeError(
+          "UniverCollabWorktreeService\x20requires\x20a\x20Worktree\x20dbAdapter",
+        );
+      if (
+        ((this["_trunkService"] = _0xdff9ae["trunk"]["service"]),
+        (this["_trunkDbAdapter"] = _0xdff9ae["trunk"]["dbAdapter"]),
+        (this["_dbAdapter"] = _0xdff9ae["dbAdapter"]),
+        (this["_runtimeOptions"] = _0xdff9ae["runtime"]),
+        (this["_maxRevisionRetries"] =
+          _0xdff9ae["submitChangeset"]?.["maxRevisionRetries"]),
+        this["_maxRevisionRetries"] !== void 0x0 &&
+          (!Number["isSafeInteger"](this["_maxRevisionRetries"]) ||
+            this["_maxRevisionRetries"] < 0x0))
+      )
+        throw TypeError(
+          "submitChangeset.maxRevisionRetries\x20must\x20be\x20a\x20non-negative\x20safe\x20integer",
+        );
+      ((this["_logger"] = re(_0xdff9ae["logger"])),
+        (this["_metrics"] = ie(_0xdff9ae["metrics"])),
+        (this["_events"] = new y((_0x31f1a5) => {
+          this["_logger"]["error"](
+            "Worktree\x20Service\x20event\x20listener\x20failed",
+            { error: $(_0x31f1a5) },
+          );
+        })));
+    }
+    ["use"](_0x260bbf, _0x2f10aa) {
+      return (
+        this["_assertRunning"](),
+        this["_middleware"]["use"](_0x260bbf, _0x2f10aa)
+      );
+    }
+    ["on"](_0x2ae7c1, _0x58e85c) {
+      return (
+        this["_assertRunning"](),
+        this["_events"]["on"](_0x2ae7c1, _0x58e85c)
+      );
+    }
+    ["createWorktree"](_0x1c35b8, _0x2f55b6) {
+      return this["_call"]("createWorktree", async () => {
+        let _0xe5d7d1 = C(_0x2f55b6),
+          _0xb203f4 = f(_0x1c35b8),
+          _0x3495ee = { ..._0xe5d7d1, request: _0xb203f4 },
+          _0x4d88dd;
+        return (
+          await this["_middleware"]["run"](
+            "createWorktree",
+            _0x3495ee,
+            async () => {
+              (S(_0x1c35b8["worktreeID"]), D(_0xb203f4["units"]));
+              let _0x27b6e2 = await Promise["all"](
+                  _0xb203f4["units"]["map"]((_0x268890) =>
+                    this["_requireTrunkUnit"](_0x3495ee, _0x268890),
+                  ),
+                ),
+                _0x228436 = await this["_database"](() =>
+                  this["_dbAdapter"]["createWorktree"](_0x3495ee, {
+                    record: {
+                      worktreeID: _0x1c35b8["worktreeID"],
+                      sid: (0x0, e["randomUUID"])(),
+                      status: "draft",
+                    },
+                    units: _0x27b6e2["map"]((_0x352a10) => ({
+                      worktreeID: _0x1c35b8["worktreeID"],
+                      unitID: _0x352a10["unitID"],
+                      type: _0x352a10["type"],
+                      source: "trunk",
+                      baselineTrunkRevision: _0x352a10["headRevision"],
+                      draftHeadRevision: _0x352a10["headRevision"],
+                    })),
+                  }),
+                ),
+                _0x3073cf = R(_0x228436["aggregate"], _0x1c35b8["worktreeID"]);
+              if (_0x228436["status"] === "already-exists")
+                throw new i(
+                  "WORKTREE_ALREADY_EXISTS",
+                  "Worktree\x20" +
+                    _0x1c35b8["worktreeID"] +
+                    "\x20already\x20exists",
+                );
+              (L(_0x3073cf, _0xb203f4["units"]),
+                (_0x4d88dd = { worktree: _0x3073cf }),
+                await this["_events"]["emit"]("worktreeCreated", {
+                  userID: _0xe5d7d1["userID"],
+                  customData: _0xe5d7d1["customData"],
+                  request: _0xb203f4,
+                  worktree: _0x3073cf,
+                  occurredAt: Date["now"](),
+                }));
+            },
+          ),
+          _0x4d88dd
+        );
+      });
+    }
+    ["getWorktree"](_0x3cbd05, _0x4a101f) {
+      return this["_call"]("getWorktree", async () => {
+        let _0x47e3e6 = C(_0x4a101f),
+          _0xeae2ef = p(_0x3cbd05),
+          _0x15bf35 = { ..._0x47e3e6, request: _0xeae2ef },
+          _0x16fed0;
+        return (
+          await this["_middleware"]["run"](
+            "readWorktreeData",
+            _0x15bf35,
+            async () => {
+              S(_0x3cbd05["worktreeID"]);
+              let _0x390457 = await this["_database"](() =>
+                this["_dbAdapter"]["getWorktree"](
+                  _0x15bf35,
+                  _0x3cbd05["worktreeID"],
+                ),
+              );
+              if (!_0x390457) throw Y(_0x3cbd05["worktreeID"]);
+              _0x16fed0 = { worktree: R(_0x390457, _0x3cbd05["worktreeID"]) };
+            },
+          ),
+          _0x16fed0
+        );
+      });
+    }
+    ["addUnit"](_0x3e9695, _0x311c69) {
+      return this["_call"]("addUnit", async () => {
+        let _0x1dcd7f = C(_0x311c69),
+          _0x5f1b5f = m(_0x3e9695),
+          _0x5ea54c = { ..._0x1dcd7f, request: _0x5f1b5f },
+          _0x422e8a;
+        return (
+          await this["_middleware"]["run"](
+            "addWorktreeUnit",
+            _0x5ea54c,
+            async () => {
+              if ((S(_0x3e9695["worktreeID"]), !_0x3e9695["unitID"]))
+                throw X("unitID\x20is\x20required");
+              let _0x2650aa = await this["_requireTrunkUnit"](
+                  _0x5ea54c,
+                  _0x3e9695["unitID"],
+                ),
+                _0x25774c = await this["_database"](() =>
+                  this["_dbAdapter"]["addUnit"](_0x5ea54c, {
+                    unit: {
+                      worktreeID: _0x3e9695["worktreeID"],
+                      unitID: _0x2650aa["unitID"],
+                      type: _0x2650aa["type"],
+                      source: "trunk",
+                      baselineTrunkRevision: _0x2650aa["headRevision"],
+                      draftHeadRevision: _0x2650aa["headRevision"],
+                    },
+                  }),
+                );
+              if (_0x25774c["status"] === "not-found")
+                throw Y(_0x3e9695["worktreeID"]);
+              let _0x1c7038 = R(
+                _0x25774c["aggregate"],
+                _0x3e9695["worktreeID"],
+              );
+              if (_0x25774c["status"] === "status-mismatch")
+                throw new i(
+                  "WORKTREE_NOT_EDITABLE",
+                  "Worktree\x20" +
+                    _0x3e9695["worktreeID"] +
+                    "\x20is\x20" +
+                    _0x1c7038["status"],
+                  { details: { status: _0x1c7038["status"] } },
+                );
+              if (
+                ((_0x422e8a = { worktree: _0x1c7038 }),
+                _0x25774c["status"] === "added")
+              ) {
+                let _0x1497a8 = U(_0x1c7038, _0x3e9695["unitID"]);
+                await this["_events"]["emit"]("worktreeUnitAdded", {
+                  userID: _0x1dcd7f["userID"],
+                  customData: _0x1dcd7f["customData"],
+                  request: _0x5f1b5f,
+                  worktree: _0x1c7038,
+                  unit: _0x1497a8,
+                  occurredAt: Date["now"](),
+                });
+              }
+            },
+          ),
+          _0x422e8a
+        );
+      });
+    }
+    ["setUnitRemoved"](_0x40dd7a, _0x56b839) {
+      return this["_call"]("setUnitRemoved", async () => {
+        let _0x1891e6 = C(_0x56b839),
+          _0x5529f1 = v(_0x40dd7a),
+          _0x2b2985 = { ..._0x1891e6, request: _0x5529f1 },
+          _0x5cc0f4;
+        return (
+          await this["_middleware"]["run"](
+            "setWorktreeUnitRemoved",
+            _0x2b2985,
+            async () => {
+              if (
+                (S(_0x5529f1["worktreeID"]),
+                !_0x5529f1["unitID"] ||
+                  typeof _0x5529f1["removed"] != "boolean")
+              )
+                throw X(
+                  "unitID\x20and\x20a\x20boolean\x20removed\x20flag\x20are\x20required",
+                );
+              let _0xec157a = await this["_database"](() =>
+                this["_dbAdapter"]["setUnitRemoved"](_0x2b2985, _0x5529f1),
+              );
+              if (_0xec157a["status"] === "not-found")
+                throw new i(
+                  "WORKTREE_UNIT_NOT_FOUND",
+                  "Unit\x20" +
+                    _0x5529f1["unitID"] +
+                    "\x20does\x20not\x20exist\x20in\x20Worktree\x20" +
+                    _0x5529f1["worktreeID"],
+                );
+              if (_0xec157a["status"] === "not-editable")
+                throw new i(
+                  "WORKTREE_NOT_EDITABLE",
+                  "Unit\x20removal\x20can\x20only\x20change\x20in\x20an\x20editable\x20draft",
+                );
+              let _0x349466 = R(
+                _0xec157a["aggregate"],
+                _0x5529f1["worktreeID"],
+              );
+              ((_0x5cc0f4 = { worktree: _0x349466 }),
+                _0xec157a["status"] === "updated" &&
+                  (await this["_events"]["emit"]("worktreeUnitRemovalChanged", {
+                    userID: _0x1891e6["userID"],
+                    customData: _0x1891e6["customData"],
+                    request: _0x5529f1,
+                    worktree: _0x349466,
+                    unit: U(_0x349466, _0x5529f1["unitID"]),
+                    occurredAt: Date["now"](),
+                  })));
+            },
+          ),
+          _0x5cc0f4
+        );
+      });
+    }
+    ["createUnitFromSnapshot"](_0x8f4cf4, _0x4d6daf) {
+      return this["_call"]("createUnitFromSnapshot", async () => {
+        S(_0x8f4cf4["worktreeID"]);
+        let _0x137904 = C(_0x4d6daf),
+          { worktreeID: _0x23f180, ..._0x104eab } = _0x8f4cf4;
+        await this["_draftService"](_0x23f180)["createUnitFromSnapshot"](
+          _0x104eab,
+          _0x137904,
+        );
+        let _0x1c7b6e = p({ worktreeID: _0x23f180 });
+        return {
+          worktree: R(
+            await this["_requireWorktreeAggregate"](
+              { ..._0x137904, request: _0x1c7b6e },
+              _0x23f180,
+            ),
+            _0x23f180,
+          ),
+        };
+      });
+    }
+    ["createUnitFromData"](_0x2d65f7, _0x4ee0f2) {
+      return this["_call"]("createUnitFromData", async () => {
+        S(_0x2d65f7["worktreeID"]);
+        let _0x17cecf = C(_0x4ee0f2),
+          { worktreeID: _0x2dba69, ..._0xdcd3e4 } = _0x2d65f7;
+        await this["_draftService"](_0x2dba69)["createUnitFromData"](
+          _0xdcd3e4,
+          _0x17cecf,
+        );
+        let _0x59b3e7 = p({ worktreeID: _0x2dba69 });
+        return {
+          worktree: R(
+            await this["_requireWorktreeAggregate"](
+              { ..._0x17cecf, request: _0x59b3e7 },
+              _0x2dba69,
+            ),
+            _0x2dba69,
+          ),
+        };
+      });
+    }
+    ["markReady"](_0x4340d6, _0x2db800) {
+      return this["_call"]("markReady", async () => {
+        let _0x49ca35 = C(_0x2db800),
+          _0x386cff = ee(_0x4340d6),
+          _0x5b52ce = { ..._0x49ca35, request: _0x386cff },
+          _0x455ce5;
+        return (
+          await this["_middleware"]["run"](
+            "markWorktreeReady",
+            _0x5b52ce,
+            async () => {
+              _0x455ce5 = await this["_transition"](
+                _0x4340d6["worktreeID"],
+                _0x49ca35,
+                _0x386cff,
+                () =>
+                  this["_dbAdapter"]["markReady"](
+                    _0x5b52ce,
+                    _0x4340d6["worktreeID"],
+                  ),
+              );
+            },
+          ),
+          _0x455ce5
+        );
+      });
+    }
+    ["reopenWorktree"](_0x5855fd, _0x364ad1) {
+      return this["_call"]("reopenWorktree", async () => {
+        let _0x43ca4c = C(_0x364ad1),
+          _0x53988c = te(_0x5855fd),
+          _0x48048e = { ..._0x43ca4c, request: _0x53988c },
+          _0x120485;
+        return (
+          await this["_middleware"]["run"](
+            "reopenWorktree",
+            _0x48048e,
+            async () => {
+              _0x120485 = await this["_transition"](
+                _0x5855fd["worktreeID"],
+                _0x43ca4c,
+                _0x53988c,
+                () =>
+                  this["_dbAdapter"]["reopenWorktree"](
+                    _0x48048e,
+                    _0x5855fd["worktreeID"],
+                  ),
+              );
+            },
+          ),
+          _0x120485
+        );
+      });
+    }
+    ["discardWorktree"](_0xc6aaee, _0x5ad777) {
+      return this["_call"]("discardWorktree", async () => {
+        let _0x43fd7d = C(_0x5ad777),
+          _0xa7eb92 = h(_0xc6aaee),
+          _0x5e8692 = { ..._0x43fd7d, request: _0xa7eb92 },
+          _0x1ebbbe;
+        return (
+          await this["_middleware"]["run"](
+            "discardWorktree",
+            _0x5e8692,
+            async () => {
+              _0x1ebbbe = await this["_transition"](
+                _0xc6aaee["worktreeID"],
+                _0x43fd7d,
+                _0xa7eb92,
+                () =>
+                  this["_dbAdapter"]["discardWorktree"](
+                    _0x5e8692,
+                    _0xc6aaee["worktreeID"],
+                  ),
+              );
+            },
+          ),
+          _0x1ebbbe
+        );
+      });
+    }
+    ["mergeWorktree"](_0xe8e861, _0x186da5) {
+      return this["_call"]("mergeWorktree", async () => {
+        let _0x5825 = w(_0x186da5),
+          _0x1ae64b = g(_0xe8e861),
+          _0x5b08fb = { ..._0x5825, request: _0x1ae64b },
+          _0x4aac7e;
+        return (
+          await this["_middleware"]["run"](
+            "mergeWorktree",
+            _0x5b08fb,
+            async () => {
+              S(_0xe8e861["worktreeID"]);
+              let _0x204c2a = await this["_database"](() =>
+                this["_dbAdapter"]["startOrResumeMerge"](
+                  _0x5b08fb,
+                  _0xe8e861["worktreeID"],
+                ),
+              );
+              if (_0x204c2a["status"] === "not-found")
+                throw Y(_0xe8e861["worktreeID"]);
+              let _0x85722c = _0x204c2a["aggregate"],
+                _0x1fb02a = R(_0x85722c, _0xe8e861["worktreeID"]);
+              if (_0x204c2a["status"] === "status-mismatch")
+                throw new i(
+                  "WORKTREE_STATUS_MISMATCH",
+                  "Worktree\x20" +
+                    _0xe8e861["worktreeID"] +
+                    "\x20cannot\x20merge\x20from\x20" +
+                    _0x1fb02a["status"],
+                  { details: { status: _0x1fb02a["status"] } },
+                );
+              if (_0x204c2a["status"] === "already-merged") {
+                _0x4aac7e = { worktree: _0x1fb02a };
+                return;
+              }
+              _0x204c2a["status"] === "started" &&
+                (await this["_events"]["emit"]("worktreeStatusChanged", {
+                  userID: _0x5825["userID"],
+                  customData: _0x5825["customData"],
+                  request: _0x1ae64b,
+                  worktree: _0x1fb02a,
+                  previousStatus: "ready",
+                  status: "merging",
+                  occurredAt: Date["now"](),
+                }));
+              for (let _0x299a3d of _0x85722c["units"]) {
+                if (J(_0x299a3d["mergeResult"])) continue;
+                let _0x51cf56 = await this["_mergeUnit"](
+                    _0x5b08fb,
+                    _0x85722c["worktree"]["sid"],
+                    _0x299a3d,
+                    _0x5825,
+                  ),
+                  _0x73f800 = await this["_database"](() =>
+                    this["_dbAdapter"]["recordUnitMergeResult"](_0x5b08fb, {
+                      worktreeID: _0xe8e861["worktreeID"],
+                      unitID: _0x299a3d["unitID"],
+                      readyDraftHeadRevision: O(_0x299a3d),
+                      mergeResult: _0x51cf56,
+                    }),
+                  );
+                if (_0x73f800["status"] === "not-found")
+                  throw Y(_0xe8e861["worktreeID"]);
+                if (_0x73f800["status"] === "stale-merge") {
+                  if (
+                    ((_0x85722c = await this["_requireWorktreeAggregate"](
+                      _0x5b08fb,
+                      _0xe8e861["worktreeID"],
+                    )),
+                    (_0x1fb02a = R(_0x85722c, _0xe8e861["worktreeID"])),
+                    _0x85722c["worktree"]["status"] !== "merging")
+                  )
+                    break;
+                  continue;
+                }
+                if (
+                  _0x73f800["status"] !== "recorded" &&
+                  _0x73f800["status"] !== "already-recorded"
+                )
+                  throw Z(
+                    "Database\x20returned\x20an\x20invalid\x20merge\x20result\x20status",
+                  );
+                ((_0x85722c = _0x73f800["aggregate"]),
+                  (_0x1fb02a = R(_0x85722c, _0xe8e861["worktreeID"])),
+                  _0x73f800["status"] === "recorded" &&
+                    (await this["_events"]["emit"](
+                      "worktreeUnitMergeResultRecorded",
+                      {
+                        userID: _0x5825["userID"],
+                        customData: _0x5825["customData"],
+                        request: _0x1ae64b,
+                        worktree: _0x1fb02a,
+                        unit: U(_0x1fb02a, _0x299a3d["unitID"]),
+                        occurredAt: Date["now"](),
+                      },
+                    )));
+              }
+              if (_0x85722c["worktree"]["status"] === "merging") {
+                let _0x5b8a74 = await this["_database"](() =>
+                  this["_dbAdapter"]["finishMerge"](
+                    _0x5b08fb,
+                    _0xe8e861["worktreeID"],
+                  ),
+                );
+                if (_0x5b8a74["status"] === "not-found")
+                  throw Y(_0xe8e861["worktreeID"]);
+                if (
+                  ((_0x85722c = _0x5b8a74["aggregate"]),
+                  (_0x1fb02a = R(_0x85722c, _0xe8e861["worktreeID"])),
+                  _0x5b8a74["status"] === "transitioned")
+                )
+                  await this["_events"]["emit"]("worktreeStatusChanged", {
+                    userID: _0x5825["userID"],
+                    customData: _0x5825["customData"],
+                    request: _0x1ae64b,
+                    worktree: _0x1fb02a,
+                    previousStatus: _0x5b8a74["previousStatus"],
+                    status: _0x1fb02a["status"],
+                    occurredAt: Date["now"](),
+                  });
+                else {
+                  if (
+                    _0x5b8a74["status"] === "status-mismatch" &&
+                    _0x1fb02a["status"] !== "ready" &&
+                    _0x1fb02a["status"] !== "merged"
+                  )
+                    throw new i(
+                      "WORKTREE_STALE_MERGE",
+                      "Worktree\x20" +
+                        _0xe8e861["worktreeID"] +
+                        "\x20merge\x20was\x20superseded",
+                      {
+                        retryable: !0x0,
+                        details: { status: _0x1fb02a["status"] },
+                      },
+                    );
+                }
+              }
+              _0x4aac7e = { worktree: _0x1fb02a };
+            },
+          ),
+          _0x4aac7e
+        );
+      });
+    }
+    ["evaluateWorktreeUnitMerge"](_0x263a1e, _0x45c3a5) {
+      return this["_call"]("evaluateWorktreeUnitMerge", async () => {
+        let _0x297153 = C(_0x45c3a5),
+          _0x3db9a6 = _(_0x263a1e),
+          _0xb9a1aa = { ..._0x297153, request: _0x3db9a6 },
+          _0xdcc4d4;
+        return (
+          await this["_middleware"]["run"](
+            "readUnitData",
+            _0xb9a1aa,
+            async () => {
+              if ((S(_0x263a1e["worktreeID"]), !_0x263a1e["unitID"]))
+                throw X("unitID\x20is\x20required");
+              let _0x292797 = await this["_requireWorktreeAggregate"](
+                _0xb9a1aa,
+                _0x263a1e["worktreeID"],
+              );
+              if (_0x292797["worktree"]["status"] !== "ready")
+                throw new i(
+                  "WORKTREE_STATUS_MISMATCH",
+                  "Worktree\x20" +
+                    _0x263a1e["worktreeID"] +
+                    "\x20cannot\x20preview\x20from\x20" +
+                    _0x292797["worktree"]["status"],
+                  { details: { status: _0x292797["worktree"]["status"] } },
+                );
+              let _0x3c3c52 = _0x292797["units"]["find"](
+                (_0x451a8d) => _0x451a8d["unitID"] === _0x263a1e["unitID"],
+              );
+              if (!_0x3c3c52)
+                throw new i(
+                  "WORKTREE_UNIT_NOT_FOUND",
+                  "Unit\x20" +
+                    _0x263a1e["unitID"] +
+                    "\x20does\x20not\x20exist\x20in\x20Worktree\x20" +
+                    _0x263a1e["worktreeID"],
+                );
+              if (_0x3c3c52["removed"]) {
+                _0xdcc4d4 = {
+                  status: "not-applicable",
+                  reason: "removed-unit",
+                  worktreeID: _0x263a1e["worktreeID"],
+                  unitID: _0x263a1e["unitID"],
+                };
+                return;
+              }
+              if (_0x3c3c52["source"] === "worktree") {
+                _0xdcc4d4 = {
+                  status: "not-applicable",
+                  reason: "worktree-created-unit",
+                  worktreeID: _0x263a1e["worktreeID"],
+                  unitID: _0x263a1e["unitID"],
+                };
+                return;
+              }
+              if (J(_0x3c3c52["mergeResult"])) {
+                _0xdcc4d4 = {
+                  status: "already-merged",
+                  worktreeID: _0x263a1e["worktreeID"],
+                  unitID: _0x263a1e["unitID"],
+                  mergeResult: q(_0x3c3c52["mergeResult"]),
+                };
+                return;
+              }
+              let _0x42056d = B(_0x3c3c52),
+                _0x3ea09e = O(_0x3c3c52),
+                _0x453247 = await this["_trunkService"]["getUnitLoadData"](
+                  {
+                    unitID: _0x3c3c52["unitID"],
+                    type: _0x3c3c52["type"],
+                    revision: 0x0,
+                  },
+                  _0x297153,
+                );
+              if (_0x453247["targetRevision"] === _0x42056d) {
+                _0xdcc4d4 = {
+                  status: "not-behind",
+                  worktreeID: _0x263a1e["worktreeID"],
+                  unitID: _0x263a1e["unitID"],
+                };
+                return;
+              }
+              if (_0x453247["targetRevision"] < _0x42056d)
+                throw Z(
+                  "Trunk\x20head\x20is\x20behind\x20the\x20Worktree\x20baseline",
+                );
+              let _0x12e38f = k(
+                  _0x3c3c52,
+                  _0x3ea09e,
+                  await this["_database"](() =>
+                    this["_dbAdapter"]["getDraftChangesets"](
+                      _0xb9a1aa,
+                      _0x3c3c52["worktreeID"],
+                      _0x3c3c52["unitID"],
+                      { from: _0x42056d, to: _0x3ea09e },
+                    ),
+                  ),
+                ),
+                _0x2cf98a = await this["_trunkService"]["getChangesets"](
+                  {
+                    unitID: _0x3c3c52["unitID"],
+                    type: _0x3c3c52["type"],
+                    from: _0x42056d,
+                    to: _0x453247["targetRevision"],
+                  },
+                  _0x297153,
+                );
+              try {
+                let _0x23bedf = {
+                    context: _0xb9a1aa,
+                    dbAdapter: this["_trunkDbAdapter"],
+                    unitID: _0x3c3c52["unitID"],
+                    type: _0x3c3c52["type"],
+                    ...(this["_runtimeOptions"] === void 0x0
+                      ? {}
+                      : { runtime: this["_runtimeOptions"] }),
+                  },
+                  _0x240cbc =
+                    _0x3ea09e === _0x42056d
+                      ? await s({
+                          ..._0x23bedf,
+                          expectedRevision: _0x453247["targetRevision"],
+                        })
+                      : await l({
+                          ..._0x23bedf,
+                          trunkHeadRevision: _0x453247["targetRevision"],
+                          original: A(
+                            _0x292797["worktree"]["sid"],
+                            _0x3c3c52,
+                            _0x3ea09e,
+                            _0x12e38f,
+                            {
+                              userID: _0x297153["userID"],
+                              memberID: "worktree-merge-preview",
+                            },
+                          ),
+                          trunkHistory: _0x2cf98a["changesets"],
+                        });
+                _0xdcc4d4 = {
+                  status: "preview",
+                  worktreeID: _0x263a1e["worktreeID"],
+                  unitID: _0x263a1e["unitID"],
+                  preview: _0x240cbc,
+                };
+              } catch (_0x3d94c3) {
+                if (
+                  _0x3d94c3 instanceof n["CollabError"] &&
+                  _0x3d94c3["code"] === "OT_CONFLICT"
+                ) {
+                  _0xdcc4d4 = {
+                    status: "conflict",
+                    worktreeID: _0x263a1e["worktreeID"],
+                    unitID: _0x263a1e["unitID"],
+                    error: M(_0x3d94c3),
+                  };
+                  return;
+                }
+                throw _0x3d94c3;
+              }
+            },
+          ),
+          _0xdcc4d4
+        );
+      });
+    }
+    ["getUnitLoadData"](_0x53e2bd, _0x44379b) {
+      return this["_call"](
+        "getUnitLoadData",
+        () => (
+          S(_0x53e2bd["worktreeID"]),
+          this["_draftService"](_0x53e2bd["worktreeID"])["getUnitLoadData"](
+            {
+              unitID: _0x53e2bd["unitID"],
+              type: _0x53e2bd["type"],
+              revision: _0x53e2bd["revision"],
+            },
+            C(_0x44379b),
+          )
+        ),
+      );
+    }
+    ["getChangesets"](_0x4818f5, _0xcf4a5d) {
+      return this["_call"](
+        "getChangesets",
+        () => (
+          S(_0x4818f5["worktreeID"]),
+          this["_draftService"](_0x4818f5["worktreeID"])["getChangesets"](
+            {
+              unitID: _0x4818f5["unitID"],
+              type: _0x4818f5["type"],
+              from: _0x4818f5["from"],
+              to: _0x4818f5["to"],
+            },
+            C(_0xcf4a5d),
+          )
+        ),
+      );
+    }
+    ["getSheetBlock"](_0x24be40, _0x19e126) {
+      return this["_call"](
+        "getSheetBlock",
+        () => (
+          S(_0x24be40["worktreeID"]),
+          this["_draftService"](_0x24be40["worktreeID"])["getSheetBlock"](
+            {
+              unitID: _0x24be40["unitID"],
+              type: _0x24be40["type"],
+              blockID: _0x24be40["blockID"],
+            },
+            C(_0x19e126),
+          )
+        ),
+      );
+    }
+    ["submitChangeset"](_0x464a46, _0x3cfa7a) {
+      return this["_call"](
+        "submitChangeset",
+        () => (
+          S(_0x464a46["worktreeID"]),
+          this["_draftService"](_0x464a46["worktreeID"])["submitChangeset"](
+            { changeset: _0x464a46["changeset"] },
+            w(_0x3cfa7a),
+          )
+        ),
+      );
+    }
+    ["dispose"]() {
+      return this["_lifecycle"]["dispose"](async () => {
+        (this["_middleware"]["clear"](), this["_events"]["clear"]());
+        let _0x77d61a = [...this["_draftServices"]["values"]()];
+        (this["_draftServices"]["clear"](),
+          await Promise["all"](
+            _0x77d61a["map"]((_0x381191) => _0x381191["dispose"]()),
+          ));
+      });
+    }
+    ["_draftService"](_0x1885ff) {
+      let _0x418977 = this["_draftServices"]["get"](_0x1885ff);
+      if (_0x418977) return _0x418977;
+      let _0xaa515b = new n["UniverCollabService"]({
+        dbAdapter: new a(
+          _0x1885ff,
+          this["_trunkDbAdapter"],
+          this["_dbAdapter"],
+        ),
+        snapshotPolicy: !0x1,
+        ...(this["_runtimeOptions"] === void 0x0
+          ? {}
+          : { runtime: this["_runtimeOptions"] }),
+        ...(this["_maxRevisionRetries"] === void 0x0
+          ? {}
+          : {
+              submitChangeset: {
+                maxRevisionRetries: this["_maxRevisionRetries"],
+              },
+            }),
+        logger: this["_logger"],
+        metrics: this["_metrics"],
+      });
+      return (
+        _0xaa515b["use"]("createUnit", (_0x4f7d1d, _0x2153cb) => {
+          let _0x3711a1 = E(_0x4f7d1d["request"], _0x1885ff);
+          return this["_middleware"]["run"](
+            "createWorktreeUnit",
+            {
+              userID: _0x4f7d1d["userID"],
+              customData: _0x4f7d1d["customData"],
+              request: _0x3711a1,
+            },
+            _0x2153cb,
+          );
+        }),
+        _0xaa515b["use"]("readUnitData", (_0x3a2fad, _0x140f3c) => {
+          let _0x3e64ab = E(_0x3a2fad["request"], _0x1885ff);
+          return this["_middleware"]["run"](
+            "readUnitData",
+            {
+              userID: _0x3a2fad["userID"],
+              customData: _0x3a2fad["customData"],
+              request: _0x3e64ab,
+            },
+            _0x140f3c,
+          );
+        }),
+        _0xaa515b["use"]("submitChangeset", (_0x1f47dd, _0x58cf9c) => {
+          let _0x38ded1 = E(_0x1f47dd["request"], _0x1885ff);
+          return this["_middleware"]["run"](
+            "submitChangeset",
+            {
+              userID: _0x1f47dd["userID"],
+              memberID: _0x1f47dd["memberID"],
+              customData: _0x1f47dd["customData"],
+              request: _0x38ded1,
+            },
+            _0x58cf9c,
+          );
+        }),
+        _0xaa515b["use"]("applyChangeset", (_0x55c20d, _0x1ee946) => {
+          let _0x333d3a = E(_0x55c20d["request"], _0x1885ff);
+          return this["_middleware"]["run"](
+            "applyChangeset",
+            {
+              userID: _0x55c20d["userID"],
+              memberID: _0x55c20d["memberID"],
+              customData: _0x55c20d["customData"],
+              request: _0x333d3a,
+              attempt: _0x55c20d["attempt"],
+              currentRevision: _0x55c20d["currentRevision"],
+              changeset: _0x55c20d["changeset"],
+              permissionRequirements: _0x55c20d["permissionRequirements"],
+            },
+            _0x1ee946,
+          );
+        }),
+        _0xaa515b["use"]("commitChangeset", (_0x368c02, _0x2e25da) => {
+          let _0x1cf56a = E(_0x368c02["request"], _0x1885ff);
+          return this["_middleware"]["run"](
+            "commitChangeset",
+            {
+              userID: _0x368c02["userID"],
+              memberID: _0x368c02["memberID"],
+              customData: _0x368c02["customData"],
+              request: _0x1cf56a,
+              attempt: _0x368c02["attempt"],
+              expectedHeadRevision: _0x368c02["expectedHeadRevision"],
+              changeset: _0x368c02["changeset"],
+            },
+            _0x2e25da,
+          );
+        }),
+        _0xaa515b["on"]("changesetCommitted", (_0x18cb31) => {
+          let _0x2b1138 = E(_0x18cb31["request"], _0x1885ff);
+          return this["_events"]["emit"]("changesetCommitted", {
+            userID: _0x18cb31["userID"],
+            memberID: _0x18cb31["memberID"],
+            customData: _0x18cb31["customData"],
+            request: _0x2b1138,
+            changeset: _0x18cb31["changeset"],
+            permissionRequirements: _0x18cb31["permissionRequirements"],
+            committedAt: _0x18cb31["committedAt"],
+          });
+        }),
+        _0xaa515b["on"]("unitCreated", async (_0x13f8fa) => {
+          let _0xa1e625 = E(_0x13f8fa["request"], _0x1885ff),
+            _0x1c0a0f = R(
+              await this["_requireWorktreeAggregate"](
+                {
+                  userID: _0x13f8fa["userID"],
+                  customData: _0x13f8fa["customData"],
+                  request: _0xa1e625,
+                },
+                _0x1885ff,
+              ),
+              _0x1885ff,
+            );
+          await this["_events"]["emit"]("worktreeUnitCreated", {
+            userID: _0x13f8fa["userID"],
+            customData: _0x13f8fa["customData"],
+            request: _0xa1e625,
+            worktree: _0x1c0a0f,
+            unit: U(_0x1c0a0f, _0x13f8fa["record"]["unitID"]),
+            occurredAt: _0x13f8fa["createdAt"],
+          });
+        }),
+        this["_draftServices"]["set"](_0x1885ff, _0xaa515b),
+        _0xaa515b
+      );
+    }
+    async ["_mergeUnit"](_0x4d686e, _0x513063, _0x15d42b, _0x520c69) {
+      try {
+        if (_0x15d42b["removed"]) return { status: "removed" };
+        if (_0x15d42b["source"] === "worktree")
+          return await this["_mergeCreatedUnit"](
+            _0x4d686e,
+            _0x15d42b,
+            _0x520c69,
+          );
+        let _0x13a30e = B(_0x15d42b),
+          _0x187cff = O(_0x15d42b);
+        if (_0x187cff === _0x13a30e) return { status: "unchanged" };
+        let _0x3a3fe7 = k(
+            _0x15d42b,
+            _0x187cff,
+            await this["_database"](() =>
+              this["_dbAdapter"]["getDraftChangesets"](
+                _0x4d686e,
+                _0x15d42b["worktreeID"],
+                _0x15d42b["unitID"],
+                { from: _0x13a30e, to: _0x187cff },
+              ),
+            ),
+          ),
+          _0x2792f3 = await this["_trunkService"]["submitChangeset"](
+            {
+              changeset: A(
+                _0x513063,
+                _0x15d42b,
+                _0x187cff,
+                _0x3a3fe7,
+                _0x520c69,
+              ),
+            },
+            _0x520c69,
+          );
+        return _0x2792f3["status"] === "committed" ||
+          _0x2792f3["status"] === "already-committed"
+          ? {
+              status: "merged",
+              trunkRevision: _0x2792f3["changeset"]["revision"],
+            }
+          : j(
+              "error" in _0x2792f3
+                ? _0x2792f3["error"]
+                : Error("Trunk\x20merge\x20failed"),
+            );
+      } catch (_0x40e267) {
+        return j(_0x40e267);
+      }
+    }
+    async ["_mergeCreatedUnit"](_0x10e3ba, _0xdbff3a, _0x227afa) {
+      let _0x497d99 = O(_0xdbff3a),
+        _0x42bcc5 = await this["_database"](() =>
+          this["_dbAdapter"]["getUnitMergeArtifact"](
+            _0x10e3ba,
+            _0xdbff3a["worktreeID"],
+            _0xdbff3a["unitID"],
+          ),
+        );
+      if (!_0x42bcc5) {
+        let _0x55eee9 = await s({
+          context: _0x10e3ba,
+          dbAdapter: new a(
+            _0xdbff3a["worktreeID"],
+            this["_trunkDbAdapter"],
+            this["_dbAdapter"],
+          ),
+          unitID: _0xdbff3a["unitID"],
+          type: _0xdbff3a["type"],
+          expectedRevision: _0x497d99,
+          ...(this["_runtimeOptions"] === void 0x0
+            ? {}
+            : { runtime: this["_runtimeOptions"] }),
+        });
+        if (
+          !(await this["_database"](() =>
+            this["_dbAdapter"]["getUnitSeed"](
+              _0x10e3ba,
+              _0xdbff3a["worktreeID"],
+              _0xdbff3a["unitID"],
+            ),
+          ))
+        )
+          throw Z("Worktree-created\x20Unit\x20seed\x20is\x20missing");
+        let _0x2c86f8 = await this["_database"](() =>
+          this["_dbAdapter"]["saveUnitMergeArtifact"](_0x10e3ba, {
+            worktreeID: _0xdbff3a["worktreeID"],
+            unitID: _0xdbff3a["unitID"],
+            artifact: {
+              readyDraftHeadRevision: _0x497d99,
+              unit: {
+                snapshot: H(_0x55eee9["snapshot"]),
+                ...(_0x55eee9["sheetBlocks"] === void 0x0
+                  ? {}
+                  : { sheetBlocks: _0x55eee9["sheetBlocks"] }),
+              },
+            },
+          }),
+        );
+        if (_0x2c86f8["status"] === "not-found")
+          throw Y(_0xdbff3a["worktreeID"]);
+        if (_0x2c86f8["status"] === "stale-merge")
+          throw new i(
+            "WORKTREE_STALE_MERGE",
+            "Worktree\x20Unit\x20changed\x20while\x20saving\x20its\x20merge\x20artifact",
+            { retryable: !0x0 },
+          );
+        if (!("artifact" in _0x2c86f8))
+          throw Z(
+            "Database\x20returned\x20an\x20invalid\x20merge\x20artifact\x20result",
+          );
+        _0x42bcc5 = _0x2c86f8["artifact"];
+      }
+      if (!_0x42bcc5)
+        throw Z("Worktree\x20Unit\x20merge\x20artifact\x20is\x20missing");
+      V(_0xdbff3a, _0x497d99, _0x42bcc5);
+      let _0x1b5fb1 = _0x42bcc5["unit"];
+      if (
+        (await this["_trunkService"]["createUnitFromSnapshot"](
+          {
+            snapshot: _0x1b5fb1["snapshot"],
+            sheetBlocks: [...(_0x1b5fb1["sheetBlocks"] ?? [])],
+          },
+          _0x227afa,
+        ),
+        !(await this["_matchesCreatedTrunkUnit"](
+          _0x10e3ba,
+          _0xdbff3a,
+          _0x1b5fb1,
+        )))
+      )
+        throw new P(
+          "Trunk\x20Unit\x20" +
+            _0xdbff3a["unitID"] +
+            "\x20already\x20exists\x20with\x20different\x20content",
+        );
+      return { status: "merged", trunkRevision: 0x1 };
+    }
+    async ["_matchesCreatedTrunkUnit"](_0x573ee8, _0x52ee4b, _0x4f80f3) {
+      let _0x229439 = await this["_database"](() =>
+        this["_trunkDbAdapter"]["getUnit"](_0x573ee8, _0x52ee4b["unitID"]),
+      );
+      if (
+        !_0x229439 ||
+        _0x229439["type"] !== _0x52ee4b["type"] ||
+        _0x229439["headRevision"] < 0x1 ||
+        !F(
+          await this["_database"](() =>
+            this["_trunkDbAdapter"]["getSnapshot"](
+              _0x573ee8,
+              _0x52ee4b["unitID"],
+              { revision: 0x1 },
+            ),
+          ),
+          _0x4f80f3["snapshot"],
+        )
+      )
+        return !0x1;
+      for (let _0x19da63 of _0x4f80f3["sheetBlocks"] ?? [])
+        if (
+          !F(
+            await this["_database"](() =>
+              this["_trunkDbAdapter"]["getSheetBlock"](
+                _0x573ee8,
+                _0x52ee4b["unitID"],
+                _0x19da63["id"],
+              ),
+            ),
+            _0x19da63,
+          )
+        )
+          return !0x1;
+      return !0x0;
+    }
+    async ["_requireWorktreeAggregate"](_0x4559bd, _0x2dc57d) {
+      let _0x3be9cf = await this["_database"](() =>
+        this["_dbAdapter"]["getWorktree"](_0x4559bd, _0x2dc57d),
+      );
+      if (!_0x3be9cf) throw Y(_0x2dc57d);
+      return (R(_0x3be9cf, _0x2dc57d), _0x3be9cf);
+    }
+    async ["_transition"](_0x6a7658, _0x1dc42b, _0x2d6069, _0x4357d3) {
+      S(_0x6a7658);
+      let _0x1aba44 = await this["_database"](_0x4357d3);
+      if (_0x1aba44["status"] === "not-found") throw Y(_0x6a7658);
+      let _0x345869 = R(_0x1aba44["aggregate"], _0x6a7658);
+      if (_0x1aba44["status"] === "status-mismatch")
+        throw new i(
+          "WORKTREE_STATUS_MISMATCH",
+          "Worktree\x20" +
+            _0x6a7658 +
+            "\x20cannot\x20transition\x20from\x20" +
+            _0x345869["status"],
+          { details: { status: _0x345869["status"] } },
+        );
+      return (
+        _0x1aba44["status"] === "transitioned" &&
+          (await this["_events"]["emit"]("worktreeStatusChanged", {
+            userID: _0x1dc42b["userID"],
+            customData: _0x1dc42b["customData"],
+            request: _0x2d6069,
+            worktree: _0x345869,
+            previousStatus: _0x1aba44["previousStatus"],
+            status: _0x345869["status"],
+            occurredAt: Date["now"](),
+          })),
+        { worktree: _0x345869 }
+      );
+    }
+    async ["_requireTrunkUnit"](_0x3acbab, _0x1de3cf) {
+      let _0xe0d5a = await this["_database"](() =>
+        this["_trunkDbAdapter"]["getUnit"](_0x3acbab, _0x1de3cf),
+      );
+      if (!_0xe0d5a)
+        throw new n["CollabError"](
+          "UNIT_NOT_FOUND",
+          "Trunk\x20Unit\x20" + _0x1de3cf + "\x20does\x20not\x20exist",
+        );
+      if (
+        _0xe0d5a["unitID"] !== _0x1de3cf ||
+        !x["has"](_0xe0d5a["type"]) ||
+        !Number["isSafeInteger"](_0xe0d5a["headRevision"]) ||
+        _0xe0d5a["headRevision"] < 0x1
+      )
+        throw Z("Trunk\x20Database\x20returned\x20invalid\x20Unit\x20metadata");
+      return _0xe0d5a;
+    }
+    async ["_database"](_0x37e8af) {
+      try {
+        return await _0x37e8af();
+      } catch (_0x23c640) {
+        throw _0x23c640 instanceof n["CollabError"] || _0x23c640 instanceof i
+          ? _0x23c640
+          : Z("Database\x20Adapter\x20failed", _0x23c640);
+      }
+    }
+    async ["_call"](_0x102c12, _0x20ab57) {
+      try {
+        return (
+          this["_metrics"]["increment"]("collaboration.worktree.service.call", {
+            operation: _0x102c12,
+          }),
+          await this["_lifecycle"]["run"](_0x20ab57)
+        );
+      } catch (_0x4fcf08) {
+        throw _0x4fcf08 instanceof n["CollabError"] || _0x4fcf08 instanceof i
+          ? _0x4fcf08
+          : (this["_logger"]["error"](
+              "Worktree\x20Service\x20operation\x20failed",
+              { operation: _0x102c12, error: $(_0x4fcf08) },
+            ),
+            new n["CollabError"](
+              "INTERNAL_ERROR",
+              "Worktree\x20Service\x20failed",
+              { retryable: !0x0, cause: _0x4fcf08 },
+            ));
+      }
+    }
+    ["_assertRunning"]() {
+      if (this["_lifecycle"]["state"] !== "running")
+        throw new n["CollabError"](
+          "INTERNAL_ERROR",
+          "Worktree\x20Service\x20is\x20" + this["_lifecycle"]["state"],
+          { retryable: !0x0 },
+        );
+    }
+  };
+function S(_0x5ddf72) {
+  if (!_0x5ddf72) throw X("worktreeID\x20is\x20required");
+}
+function C(_0x2a9747) {
+  return (
+    T(_0x2a9747),
+    {
+      userID: _0x2a9747["userID"],
+      customData: _0x2a9747["customData"] ?? Object["create"](null),
+    }
+  );
+}
+function w(_0x36db9d) {
+  if (
+    (T(_0x36db9d),
+    typeof _0x36db9d["memberID"] != "string" ||
+      _0x36db9d["memberID"]["length"] === 0x0)
+  )
+    throw X("memberID\x20must\x20be\x20a\x20non-empty\x20string");
+  return {
+    userID: _0x36db9d["userID"],
+    memberID: _0x36db9d["memberID"],
+    customData: _0x36db9d["customData"] ?? Object["create"](null),
+  };
+}
+function T(_0x28df3b) {
+  if (!_0x28df3b || typeof _0x28df3b != "object")
+    throw X("context\x20must\x20be\x20an\x20object");
+  if (
+    typeof _0x28df3b["userID"] != "string" ||
+    _0x28df3b["userID"]["length"] === 0x0
+  )
+    throw X("userID\x20must\x20be\x20a\x20non-empty\x20string");
+  if (
+    _0x28df3b["customData"] !== void 0x0 &&
+    (_0x28df3b["customData"] === null ||
+      typeof _0x28df3b["customData"] != "object" ||
+      Array["isArray"](_0x28df3b["customData"]))
+  )
+    throw X("customData\x20must\x20be\x20an\x20object");
+}
+function E(_0x5bc32f, _0x582893) {
+  let _0x3ee1ba = _0x5bc32f;
+  if (_0x3ee1ba["worktreeID"] !== void 0x0) {
+    if (_0x3ee1ba["worktreeID"] !== _0x582893)
+      throw new n["CollabError"](
+        "INTERNAL_ERROR",
+        "Draft\x20Request\x20is\x20bound\x20to\x20a\x20different\x20Worktree",
+        { retryable: !0x0 },
+      );
+    return _0x3ee1ba;
+  }
+  return (
+    Object["defineProperty"](_0x5bc32f, "worktreeID", {
+      value: _0x582893,
+      enumerable: !0x0,
+      configurable: !0x1,
+      writable: !0x1,
+    }),
+    _0x5bc32f
+  );
+}
+function D(_0x3f929b) {
+  if (_0x3f929b["some"]((_0x4db6ae) => !_0x4db6ae))
+    throw X("Initial\x20Unit\x20IDs\x20cannot\x20be\x20empty");
+  if (new Set(_0x3f929b)["size"] !== _0x3f929b["length"])
+    throw X("Initial\x20Unit\x20IDs\x20must\x20be\x20unique");
+}
+function O(_0x4797ff) {
+  let _0x2ced3b = _0x4797ff["readyDraftHeadRevision"],
+    _0x22f75a = _0x4797ff["source"] === "trunk" ? B(_0x4797ff) : 0x1;
+  if (
+    _0x2ced3b === void 0x0 ||
+    !Number["isSafeInteger"](_0x2ced3b) ||
+    _0x2ced3b < _0x22f75a
+  )
+    throw Z(
+      "Merging\x20Worktree\x20Unit\x20has\x20no\x20valid\x20frozen\x20draft\x20head",
+    );
+  return _0x2ced3b;
+}
+function k(_0x238e2e, _0x1714ba, _0x58a5c0) {
+  let _0x5ae254 = B(_0x238e2e);
+  if (
+    _0x58a5c0["latestRevision"] === void 0x0 ||
+    _0x58a5c0["latestRevision"] < _0x1714ba
+  )
+    throw new N(
+      "Frozen\x20Worktree\x20draft\x20history\x20is\x20no\x20longer\x20readable",
+    );
+  let _0x40f8c0 = _0x5ae254 + 0x1,
+    _0x353186 = [];
+  for (let _0x1cbfd6 of _0x58a5c0["changesets"]) {
+    if (
+      _0x1cbfd6["unitID"] !== _0x238e2e["unitID"] ||
+      _0x1cbfd6["type"] !== _0x238e2e["type"] ||
+      _0x1cbfd6["baseRev"] !== _0x40f8c0 - 0x1 ||
+      _0x1cbfd6["revision"] !== _0x40f8c0
+    )
+      throw new N(
+        "Frozen\x20Worktree\x20draft\x20history\x20is\x20not\x20contiguous",
+      );
+    (_0x353186["push"](...structuredClone(_0x1cbfd6["mutations"])),
+      (_0x40f8c0 += 0x1));
+  }
+  if (_0x40f8c0 - 0x1 !== _0x1714ba)
+    throw new N("Frozen\x20Worktree\x20draft\x20history\x20is\x20incomplete");
+  return _0x353186;
+}
+function A(_0x32977b, _0x19c006, _0x498be9, _0x302ad2, _0x41abef) {
+  let _0x477ede = B(_0x19c006);
+  return {
+    unitID: _0x19c006["unitID"],
+    type: _0x19c006["type"],
+    baseRev: _0x477ede,
+    revision: _0x477ede + 0x1,
+    userID: _0x41abef["userID"],
+    memberID: _0x41abef["memberID"],
+    sid: _0x32977b,
+    reqId: _0x498be9 - _0x477ede,
+    mutations: _0x302ad2,
+  };
+}
+function j(_0x3d66c4) {
+  let _0x47a1f0 = M(_0x3d66c4);
+  return _0x3d66c4 instanceof N ||
+    _0x3d66c4 instanceof P ||
+    (_0x3d66c4 instanceof n["CollabError"] &&
+      _0x3d66c4["code"] === "OT_CONFLICT")
+    ? { status: "conflict", error: _0x47a1f0 }
+    : { status: "failed", error: _0x47a1f0 };
+}
+function M(_0x159503) {
+  return _0x159503 instanceof N
+    ? {
+        code: "WORKTREE_DRAFT_HISTORY_INVALID",
+        message: _0x159503["message"],
+        retryable: !0x0,
+      }
+    : _0x159503 instanceof P
+      ? {
+          code: "WORKTREE_CREATE_CONFLICT",
+          message: _0x159503["message"],
+          retryable: !0x1,
+        }
+      : _0x159503 instanceof n["CollabError"] || _0x159503 instanceof i
+        ? {
+            code: _0x159503["code"],
+            message: _0x159503["message"],
+            retryable: _0x159503["retryable"],
+          }
+        : {
+            code: "INTERNAL_ERROR",
+            message:
+              _0x159503 instanceof Error
+                ? _0x159503["message"]
+                : "Merge\x20failed",
+            retryable: !0x0,
+          };
+}
+var N = class extends Error {
+    constructor(_0x46fe0e) {
+      (super(_0x46fe0e), (this["name"] = "FrozenDraftConflict"));
+    }
+  },
+  P = class extends Error {
+    constructor(_0x4fd145) {
+      (super(_0x4fd145), (this["name"] = "WorktreeCreateConflict"));
+    }
+  };
+function F(_0x4e68f1, _0x5f064d) {
+  return (0x0, t["isDeepStrictEqual"])(I(_0x4e68f1), I(_0x5f064d));
+}
+function I(_0x1ea470) {
+  if (_0x1ea470 !== void 0x0)
+    return JSON["parse"](
+      JSON["stringify"](_0x1ea470, (_0x43b7a9, _0x2fa0fe) =>
+        _0x2fa0fe instanceof Uint8Array
+          ? { __univerCollaborationBinary: [..._0x2fa0fe] }
+          : _0x2fa0fe,
+      ),
+    );
+}
+function L(_0x20399e, _0x431ecb) {
+  let _0x4c9508 = new Set(
+    _0x20399e["units"]["map"](({ unitID: _0x37b7ff }) => _0x37b7ff),
+  );
+  if (
+    _0x4c9508["size"] !== _0x431ecb["length"] ||
+    _0x431ecb["some"]((_0x5e6d2e) => !_0x4c9508["has"](_0x5e6d2e))
+  )
+    throw Z(
+      "Database\x20returned\x20incomplete\x20initial\x20Worktree\x20Units",
+    );
+}
+function R(_0x4d052a, _0x4a9cc5) {
+  let { worktree: _0x3ad082, units: _0x413912 } = _0x4d052a;
+  if (
+    _0x3ad082["worktreeID"] !== _0x4a9cc5 ||
+    !_0x3ad082["sid"] ||
+    !W(_0x3ad082["status"])
+  )
+    throw Z("Database\x20returned\x20invalid\x20Worktree\x20metadata");
+  let _0x35e396 = new Set(),
+    _0x20cdf4 = _0x413912["map"]((_0x27d88f) => {
+      let _0xf2aedf =
+        (_0x27d88f["source"] === "trunk" &&
+          Number["isSafeInteger"](_0x27d88f["baselineTrunkRevision"]) &&
+          _0x27d88f["baselineTrunkRevision"] >= 0x1 &&
+          _0x27d88f["draftHeadRevision"] >=
+            _0x27d88f["baselineTrunkRevision"]) ||
+        (_0x27d88f["source"] === "worktree" &&
+          _0x27d88f["baselineTrunkRevision"] === void 0x0 &&
+          _0x27d88f["draftHeadRevision"] >= 0x1);
+      if (
+        _0x27d88f["worktreeID"] !== _0x4a9cc5 ||
+        !_0x27d88f["unitID"] ||
+        _0x35e396["has"](_0x27d88f["unitID"]) ||
+        !x["has"](_0x27d88f["type"]) ||
+        !_0xf2aedf ||
+        !Number["isSafeInteger"](_0x27d88f["draftHeadRevision"]) ||
+        (_0x27d88f["readyDraftHeadRevision"] !== void 0x0 &&
+          _0x27d88f["readyDraftHeadRevision"] !==
+            _0x27d88f["draftHeadRevision"]) ||
+        (_0x27d88f["mergeResult"] !== void 0x0 &&
+          _0x27d88f["readyDraftHeadRevision"] === void 0x0) ||
+        (_0x27d88f["removed"] !== void 0x0 &&
+          typeof _0x27d88f["removed"] != "boolean") ||
+        !G(_0x27d88f["mergeResult"])
+      )
+        throw Z(
+          "Database\x20returned\x20invalid\x20Worktree\x20Unit\x20metadata",
+        );
+      return (_0x35e396["add"](_0x27d88f["unitID"]), z(_0x27d88f));
+    });
+  if (
+    _0x3ad082["status"] === "merged" &&
+    _0x20cdf4["some"](({ mergeResult: _0x3666cf }) => !J(_0x3666cf))
+  )
+    throw Z("Merged\x20Worktree\x20contains\x20an\x20incomplete\x20Unit");
+  return {
+    worktreeID: _0x3ad082["worktreeID"],
+    status: _0x3ad082["status"],
+    units: _0x20cdf4,
+  };
+}
+function z(_0x1e2f67) {
+  return {
+    unitID: _0x1e2f67["unitID"],
+    type: _0x1e2f67["type"],
+    source: _0x1e2f67["source"],
+    ...(_0x1e2f67["removed"] === void 0x0
+      ? {}
+      : { removed: _0x1e2f67["removed"] }),
+    ...(_0x1e2f67["baselineTrunkRevision"] === void 0x0
+      ? {}
+      : { baselineTrunkRevision: _0x1e2f67["baselineTrunkRevision"] }),
+    draftHeadRevision: _0x1e2f67["draftHeadRevision"],
+    ...(_0x1e2f67["readyDraftHeadRevision"] === void 0x0
+      ? {}
+      : { readyDraftHeadRevision: _0x1e2f67["readyDraftHeadRevision"] }),
+    ...(_0x1e2f67["mergeResult"] === void 0x0
+      ? {}
+      : { mergeResult: K(_0x1e2f67["mergeResult"]) }),
+  };
+}
+function B(_0x49c88d) {
+  if (
+    _0x49c88d["source"] !== "trunk" ||
+    !Number["isSafeInteger"](_0x49c88d["baselineTrunkRevision"]) ||
+    _0x49c88d["baselineTrunkRevision"] < 0x1
+  )
+    throw Z(
+      "Trunk-sourced\x20Worktree\x20Unit\x20has\x20no\x20valid\x20baseline",
+    );
+  return _0x49c88d["baselineTrunkRevision"];
+}
+function V(_0x31a217, _0x5157f9, _0x1b17a0) {
+  if (
+    _0x1b17a0["readyDraftHeadRevision"] !== _0x5157f9 ||
+    _0x1b17a0["unit"]["snapshot"]["unitID"] !== _0x31a217["unitID"] ||
+    _0x1b17a0["unit"]["snapshot"]["type"] !== _0x31a217["type"] ||
+    _0x1b17a0["unit"]["snapshot"]["rev"] !== 0x1
+  )
+    throw Z(
+      "Database\x20returned\x20an\x20invalid\x20Worktree\x20Unit\x20merge\x20artifact",
+    );
+}
+function H(_0x52e63a) {
+  let _0x4c6565 = { ..._0x52e63a, rev: 0x1 };
+  return _0x52e63a["workbook"]
+    ? { ..._0x4c6565, workbook: { ..._0x52e63a["workbook"], rev: 0x1 } }
+    : _0x52e63a["doc"]
+      ? { ..._0x4c6565, doc: { ..._0x52e63a["doc"], rev: 0x1 } }
+      : _0x52e63a["slide"]
+        ? { ..._0x4c6565, slide: { ..._0x52e63a["slide"], rev: 0x1 } }
+        : _0x52e63a["board"]
+          ? { ..._0x4c6565, board: { ..._0x52e63a["board"], rev: 0x1 } }
+          : _0x4c6565;
+}
+function U(_0x2fe745, _0xd1b13b) {
+  let _0x38a643 = _0x2fe745["units"]["find"](
+    (_0x1ab832) => _0x1ab832["unitID"] === _0xd1b13b,
+  );
+  if (!_0x38a643)
+    throw Z("Database\x20omitted\x20the\x20added\x20Worktree\x20Unit");
+  return _0x38a643;
+}
+function W(_0x14f13) {
+  return (
+    _0x14f13 === "draft" ||
+    _0x14f13 === "ready" ||
+    _0x14f13 === "merging" ||
+    _0x14f13 === "merged" ||
+    _0x14f13 === "discarded"
+  );
+}
+function G(_0x14926f) {
+  return _0x14926f === void 0x0
+    ? !0x0
+    : !_0x14926f || typeof _0x14926f != "object" || !("status" in _0x14926f)
+      ? !0x1
+      : _0x14926f["status"] === "unchanged" || _0x14926f["status"] === "removed"
+        ? !0x0
+        : _0x14926f["status"] === "merged" && "trunkRevision" in _0x14926f
+          ? typeof _0x14926f["trunkRevision"] == "number" &&
+            Number["isSafeInteger"](_0x14926f["trunkRevision"]) &&
+            _0x14926f["trunkRevision"] >= 0x1
+          : (_0x14926f["status"] !== "conflict" &&
+                _0x14926f["status"] !== "failed") ||
+              !("error" in _0x14926f) ||
+              !_0x14926f["error"] ||
+              typeof _0x14926f["error"] != "object" ||
+              !("code" in _0x14926f["error"]) ||
+              !("message" in _0x14926f["error"]) ||
+              !("retryable" in _0x14926f["error"])
+            ? !0x1
+            : typeof _0x14926f["error"]["code"] == "string" &&
+              !!_0x14926f["error"]["code"] &&
+              typeof _0x14926f["error"]["message"] == "string" &&
+              !!_0x14926f["error"]["message"] &&
+              typeof _0x14926f["error"]["retryable"] == "boolean";
+}
+function K(_0x30f77d) {
+  return _0x30f77d["status"] === "merged"
+    ? { status: "merged", trunkRevision: _0x30f77d["trunkRevision"] }
+    : _0x30f77d["status"] === "unchanged" || _0x30f77d["status"] === "removed"
+      ? { status: _0x30f77d["status"] }
+      : {
+          status: _0x30f77d["status"],
+          error: {
+            code: _0x30f77d["error"]["code"],
+            message: _0x30f77d["error"]["message"],
+            retryable: _0x30f77d["error"]["retryable"],
+          },
+        };
+}
+function q(_0x2228de) {
+  if (_0x2228de?.["status"] === "merged")
+    return { status: "merged", trunkRevision: _0x2228de["trunkRevision"] };
+  if (_0x2228de?.["status"] === "unchanged") return { status: "unchanged" };
+  throw Z("Worktree\x20Unit\x20merge\x20result\x20is\x20not\x20terminal");
+}
+function J(_0x4b1af6) {
+  return (
+    _0x4b1af6?.["status"] === "merged" ||
+    _0x4b1af6?.["status"] === "unchanged" ||
+    _0x4b1af6?.["status"] === "removed"
+  );
+}
+function Y(_0x38359b) {
+  return new i(
+    "WORKTREE_NOT_FOUND",
+    "Worktree\x20" + _0x38359b + "\x20does\x20not\x20exist",
+  );
+}
+function X(_0x3c0a95) {
+  return new n["CollabError"]("INVALID_REQUEST", _0x3c0a95);
+}
+function Z(_0x9be5f, _0x44c5b5) {
+  return new n["CollabError"]("ADAPTER_FAILURE", _0x9be5f, {
+    retryable: !0x0,
+    ...(_0x44c5b5 === void 0x0 ? {} : { cause: _0x44c5b5 }),
+  });
+}
+function re(_0xb6196e) {
+  return _0xb6196e
+    ? {
+        debug: (..._0x44bd3d) => Q(() => _0xb6196e["debug"](..._0x44bd3d)),
+        info: (..._0x1b8f21) => Q(() => _0xb6196e["info"](..._0x1b8f21)),
+        warn: (..._0x492220) => Q(() => _0xb6196e["warn"](..._0x492220)),
+        error: (..._0x2b7e0a) => Q(() => _0xb6196e["error"](..._0x2b7e0a)),
+      }
+    : {
+        debug: () => void 0x0,
+        info: () => void 0x0,
+        warn: () => void 0x0,
+        error: () => void 0x0,
+      };
+}
+function ie(_0x1ac5ca) {
+  return _0x1ac5ca
+    ? {
+        increment: (..._0x4c4c66) =>
+          Q(() => _0x1ac5ca["increment"](..._0x4c4c66)),
+        observe: (..._0x586536) => Q(() => _0x1ac5ca["observe"](..._0x586536)),
+      }
+    : { increment: () => void 0x0, observe: () => void 0x0 };
+}
+function Q(_0x4ff3cd) {
+  try {
+    _0x4ff3cd();
+  } catch {}
+}
+function $(_0x41045d) {
+  return _0x41045d instanceof Error ? _0x41045d["message"] : String(_0x41045d);
+}
+((exports["UniverCollabWorktreeService"] = ne), (exports["WorktreeError"] = i));

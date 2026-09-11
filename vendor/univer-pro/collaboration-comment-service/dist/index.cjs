@@ -1,0 +1,587 @@
+Object["defineProperty"](exports, Symbol["toStringTag"], { value: "Module" });
+let e = require("node:crypto"),
+  t = require("@univerjs-pro/collaboration-service"),
+  n = require("@univerjs/protocol");
+var r = class {
+    ["_middlewares"] = new Map();
+    ["use"](_0x975363, _0x343ef5) {
+      let _0x57cb86 = this["_middlewares"]["get"](_0x975363) ?? [],
+        _0x23d6c = _0x343ef5;
+      (_0x57cb86["push"](_0x23d6c),
+        this["_middlewares"]["set"](_0x975363, _0x57cb86));
+      let _0x29f424 = !0x1;
+      return {
+        dispose: () => {
+          if (_0x29f424) return;
+          _0x29f424 = !0x0;
+          let _0x248228 = _0x57cb86["indexOf"](_0x23d6c);
+          _0x248228 >= 0x0 && _0x57cb86["splice"](_0x248228, 0x1);
+        },
+      };
+    }
+    async ["run"](_0x2fa339, _0x482f34, _0x45771c) {
+      let _0x555c86 = [...(this["_middlewares"]["get"](_0x2fa339) ?? [])],
+        _0x5a9a81 = async (_0x5ce634) => {
+          let _0x3aec8a = _0x555c86[_0x5ce634];
+          if (!_0x3aec8a) return _0x45771c();
+          let _0x1c1764 = !0x1,
+            _0x31b878,
+            _0x3f60fb = () => {
+              if (_0x1c1764)
+                throw Error(
+                  "Middleware\x20for\x20action\x20" +
+                    _0x2fa339 +
+                    "\x20called\x20next()\x20more\x20than\x20once",
+                );
+              return (
+                (_0x1c1764 = !0x0),
+                (_0x31b878 = _0x5a9a81(_0x5ce634 + 0x1)),
+                _0x31b878
+              );
+            };
+          try {
+            await _0x3aec8a(_0x482f34, _0x3f60fb);
+          } catch (_0xa98225) {
+            throw (
+              _0x31b878 && (await _0x31b878["catch"](() => void 0x0)),
+              _0xa98225
+            );
+          }
+          if (!_0x1c1764)
+            throw Error(
+              "Middleware\x20for\x20action\x20" +
+                _0x2fa339 +
+                "\x20completed\x20without\x20calling\x20next()",
+            );
+          await _0x31b878;
+        };
+      await _0x5a9a81(0x0);
+    }
+    ["clear"]() {
+      this["_middlewares"]["clear"]();
+    }
+  },
+  i = class {
+    ["_middleware"] = new r();
+    ["_listeners"] = new Map();
+    ["_calls"] = new Set();
+    ["_database"];
+    ["_userProvider"];
+    ["_state"] = "running";
+    ["_disposePromise"];
+    constructor(_0x13b5b5) {
+      if (!_0x13b5b5?.["database"])
+        throw TypeError("UniverCommentService\x20requires\x20a\x20database");
+      ((this["_database"] = _0x13b5b5["database"]),
+        (this["_userProvider"] = _0x13b5b5["userProvider"]));
+    }
+    ["use"](_0xd7d67b, _0x5db83e) {
+      return (
+        this["_assertRunning"](),
+        this["_middleware"]["use"](_0xd7d67b, _0x5db83e)
+      );
+    }
+    ["on"](_0x587d85, _0x56104c) {
+      this["_assertRunning"]();
+      let _0x3cbfe2 = this["_listeners"]["get"](_0x587d85) ?? new Set(),
+        _0x1f9ae4 = _0x56104c;
+      (_0x3cbfe2["add"](_0x1f9ae4),
+        this["_listeners"]["set"](_0x587d85, _0x3cbfe2));
+      let _0x525ee6 = !0x1;
+      return {
+        dispose: () => {
+          _0x525ee6 || ((_0x525ee6 = !0x0), _0x3cbfe2["delete"](_0x1f9ae4));
+        },
+      };
+    }
+    ["addComment"](_0x2ede74, _0x4f181d) {
+      return this["_call"](async () => {
+        let _0xac11fb = s(_0x4f181d);
+        (m(_0x2ede74["unitID"]), h(_0x2ede74["content"]));
+        let _0x407c1e = a(_0x2ede74),
+          _0xd28277 = { ..._0xac11fb, request: _0x407c1e },
+          _0x5db6e3;
+        return (
+          await this["_middleware"]["run"](
+            "addComment",
+            _0xd28277,
+            async () => {
+              let _0x39a7e3 = await this["_databaseCall"](() =>
+                this["_database"]["createRoot"](
+                  {
+                    unitID: _0x2ede74["unitID"],
+                    threadID: (0x0, e["randomUUID"])(),
+                    authorUserID: _0xac11fb["userID"],
+                    content: _0x2ede74["content"],
+                    mentions: [..._0x2ede74["mentions"]],
+                  },
+                  _0xd28277,
+                ),
+              );
+              if (_0x39a7e3["status"] === "duplicate")
+                throw _("Comment\x20ID\x20already\x20exists");
+              ((_0x5db6e3 = u([_0x39a7e3["record"]])),
+                await this["_emitWrite"](
+                  _0xac11fb,
+                  _0x407c1e,
+                  await this["_createUpdate"](
+                    n["CommentUpdateEventType"]["Add"],
+                    _0x39a7e3["record"],
+                    _0xac11fb,
+                    _0x407c1e,
+                  ),
+                ));
+            },
+          ),
+          _0x5db6e3
+        );
+      });
+    }
+    ["listComments"](_0x14e4d5, _0x5ac856) {
+      return this["_call"](async () => {
+        let _0x4cb18a = o(_0x5ac856);
+        (m(_0x14e4d5["unitID"]),
+          _0x14e4d5["threadIDs"]["forEach"]((_0x5e1248) =>
+            g("threadID", _0x5e1248),
+          ));
+        let _0x3d8dc0 = a(_0x14e4d5),
+          _0x74e9e1 = { ..._0x4cb18a, request: _0x3d8dc0 },
+          _0x48e61d;
+        return (
+          await this["_middleware"]["run"](
+            "listComments",
+            _0x74e9e1,
+            async () => {
+              let _0x3d8ba3 = d(
+                  await this["_databaseCall"](() =>
+                    this["_database"]["listThreads"](
+                      {
+                        unitID: _0x14e4d5["unitID"],
+                        threadIDs: [...new Set(_0x14e4d5["threadIDs"])],
+                      },
+                      _0x74e9e1,
+                    ),
+                  ),
+                ),
+                _0x27e4df = Object["values"](_0x3d8ba3)["flatMap"](
+                  (_0x463d40) =>
+                    _0x463d40["replies"]["map"](
+                      (_0x50f595) => _0x50f595["userId"],
+                    ),
+                );
+              _0x48e61d = {
+                comments: _0x3d8ba3,
+                users: await this["_resolveUsers"](
+                  _0x27e4df,
+                  _0x4cb18a,
+                  _0x3d8dc0,
+                ),
+              };
+            },
+          ),
+          _0x48e61d
+        );
+      });
+    }
+    ["replyComment"](_0x55bf84, _0x57cac2) {
+      return this["_call"](async () => {
+        let _0x495d86 = s(_0x57cac2);
+        (m(_0x55bf84["unitID"]),
+          g("threadID", _0x55bf84["threadID"]),
+          h(_0x55bf84["content"]));
+        let _0x417d36 = a(_0x55bf84),
+          _0x155874 = { ..._0x495d86, request: _0x417d36 },
+          _0x2b3d65;
+        return (
+          await this["_middleware"]["run"](
+            "replyComment",
+            _0x155874,
+            async () => {
+              let _0x5498bf = await this["_databaseCall"](() =>
+                this["_database"]["createReply"](
+                  {
+                    unitID: _0x55bf84["unitID"],
+                    threadID: _0x55bf84["threadID"],
+                    replyID: (0x0, e["randomUUID"])(),
+                    authorUserID: _0x495d86["userID"],
+                    content: _0x55bf84["content"],
+                    mentions: [..._0x55bf84["mentions"]],
+                  },
+                  _0x155874,
+                ),
+              );
+              if (
+                _0x5498bf["status"] === "not-found" ||
+                _0x5498bf["status"] === "closed"
+              )
+                throw v("Open\x20Comment\x20thread\x20was\x20not\x20found");
+              if (_0x5498bf["status"] === "duplicate")
+                throw _("Comment\x20ID\x20already\x20exists");
+              ((_0x2b3d65 = l(_0x5498bf["record"])),
+                await this["_emitWrite"](
+                  _0x495d86,
+                  _0x417d36,
+                  await this["_createUpdate"](
+                    n["CommentUpdateEventType"]["Reply"],
+                    _0x5498bf["record"],
+                    _0x495d86,
+                    _0x417d36,
+                  ),
+                ));
+            },
+          ),
+          _0x2b3d65
+        );
+      });
+    }
+    ["editComment"](_0x516832, _0x2c2a75) {
+      return this["_call"](async () => {
+        let _0x2af7c2 = s(_0x2c2a75);
+        (p(_0x516832), h(_0x516832["content"]));
+        let _0x1baf78 = a(_0x516832),
+          _0x53438e = { ..._0x2af7c2, request: _0x1baf78 };
+        await this["_middleware"]["run"]("editComment", _0x53438e, async () => {
+          let _0x4d5380 = await this["_databaseCall"](() =>
+            this["_database"]["editComment"](
+              {
+                unitID: _0x516832["unitID"],
+                threadID: _0x516832["threadID"],
+                replyID: _0x516832["replyID"],
+                expectedAuthorUserID: _0x2af7c2["userID"],
+                content: _0x516832["content"],
+                mentions: [..._0x516832["mentions"]],
+              },
+              _0x53438e,
+            ),
+          );
+          if (_0x4d5380["status"] === "author-mismatch")
+            throw y("Only\x20the\x20Comment\x20author\x20can\x20edit\x20it");
+          if (
+            _0x4d5380["status"] === "not-found" ||
+            _0x4d5380["status"] === "closed"
+          )
+            throw v("Open\x20Comment\x20was\x20not\x20found");
+          _0x4d5380["status"] === "edited" &&
+            (await this["_emitWrite"](
+              _0x2af7c2,
+              _0x1baf78,
+              f(
+                n["CommentUpdateEventType"]["Edit"],
+                _0x4d5380["record"],
+                _0x2af7c2,
+              ),
+            ));
+        });
+      });
+    }
+    ["setThreadSolved"](_0x222a7e, _0xa4906f) {
+      return this["_call"](async () => {
+        let _0x37e99d = s(_0xa4906f);
+        if (
+          (m(_0x222a7e["unitID"]),
+          g("threadID", _0x222a7e["threadID"]),
+          _0x222a7e["solved"] !== n["CommentSolvedStatus"]["OpenOrReOpen"] &&
+            _0x222a7e["solved"] !== n["CommentSolvedStatus"]["Solved"])
+        )
+          throw _("solved\x20must\x20be\x20OpenOrReOpen\x20or\x20Solved");
+        let _0x4d27f2 = a(_0x222a7e),
+          _0x1e5683 = { ..._0x37e99d, request: _0x4d27f2 };
+        await this["_middleware"]["run"](
+          "setThreadSolved",
+          _0x1e5683,
+          async () => {
+            let _0x3fc319 = await this["_databaseCall"](() =>
+              this["_database"]["setThreadSolved"](_0x222a7e, _0x1e5683),
+            );
+            if (_0x3fc319["status"] === "not-found")
+              throw v("Comment\x20thread\x20was\x20not\x20found");
+            _0x3fc319["status"] === "updated" &&
+              (await this["_emitWrite"](_0x37e99d, _0x4d27f2, {
+                memberId: _0x37e99d["memberID"],
+                userId: _0x37e99d["userID"],
+                unitId: _0x222a7e["unitID"],
+                threadId: _0x222a7e["threadID"],
+                type: n["CommentUpdateEventType"]["Solve"],
+                solved: _0x222a7e["solved"],
+              }));
+          },
+        );
+      });
+    }
+    ["deleteComment"](_0x4f2808, _0x45e89c) {
+      return this["_call"](async () => {
+        let _0x4da6af = s(_0x45e89c);
+        (m(_0x4f2808["unitID"]),
+          g("threadID", _0x4f2808["threadID"]),
+          _0x4f2808["replyID"] !== void 0x0 &&
+            g("replyID", _0x4f2808["replyID"]));
+        let _0x53a38b =
+            _0x4f2808["replyID"] === _0x4f2808["threadID"]
+              ? void 0x0
+              : _0x4f2808["replyID"],
+          _0x367c65 = a({
+            unitID: _0x4f2808["unitID"],
+            threadID: _0x4f2808["threadID"],
+            ...(_0x53a38b === void 0x0 ? {} : { replyID: _0x53a38b }),
+          }),
+          _0x1e89bd = { ..._0x4da6af, request: _0x367c65 },
+          _0x196384 = await this["_databaseCall"](() =>
+            this["_database"]["getComment"](
+              {
+                unitID: _0x4f2808["unitID"],
+                threadID: _0x4f2808["threadID"],
+                replyID: _0x53a38b ?? _0x4f2808["threadID"],
+              },
+              _0x1e89bd,
+            ),
+          );
+        if (!_0x196384) throw v("Comment\x20was\x20not\x20found");
+        await this["_middleware"]["run"](
+          "deleteComment",
+          {
+            ..._0x1e89bd,
+            request: _0x367c65,
+            target: {
+              kind: _0x53a38b === void 0x0 ? "root" : "reply",
+              threadID: _0x196384["threadID"],
+              replyID: _0x196384["replyID"],
+              authorUserID: _0x196384["authorUserID"],
+              generation: _0x196384["generation"],
+            },
+          },
+          async () => {
+            let _0x2343ab = await this["_databaseCall"](() =>
+              this["_database"]["deleteComment"](
+                {
+                  unitID: _0x4f2808["unitID"],
+                  threadID: _0x4f2808["threadID"],
+                  ...(_0x53a38b === void 0x0 ? {} : { replyID: _0x53a38b }),
+                  expectedGeneration: _0x196384["generation"],
+                },
+                _0x1e89bd,
+              ),
+            );
+            if (_0x2343ab["status"] === "not-found")
+              throw v("Comment\x20was\x20not\x20found");
+            if (_0x2343ab["status"] === "generation-mismatch")
+              throw _("Comment\x20changed\x20before\x20deletion");
+            await this["_emitWrite"](_0x4da6af, _0x367c65, {
+              memberId: _0x4da6af["memberID"],
+              userId: _0x4da6af["userID"],
+              unitId: _0x4f2808["unitID"],
+              threadId: _0x4f2808["threadID"],
+              type: n["CommentUpdateEventType"]["Delete"],
+              ...(_0x53a38b === void 0x0 ? {} : { replyId: _0x53a38b }),
+            });
+          },
+        );
+      });
+    }
+    ["dispose"]() {
+      return this["_disposePromise"]
+        ? this["_disposePromise"]
+        : ((this["_state"] = "disposing"),
+          (this["_disposePromise"] = (async () => {
+            (await Promise["allSettled"]([...this["_calls"]]),
+              this["_middleware"]["clear"](),
+              this["_listeners"]["clear"](),
+              (this["_state"] = "disposed"));
+          })()),
+          this["_disposePromise"]);
+    }
+    async ["_createUpdate"](_0x21ded9, _0x1b4326, _0x2487d0, _0x3a7a00) {
+      let _0x231303 = await this["_resolveUsers"](
+        [_0x1b4326["authorUserID"]],
+        _0x2487d0,
+        _0x3a7a00,
+      );
+      return {
+        ...f(_0x21ded9, _0x1b4326, _0x2487d0),
+        ...(_0x231303[_0x1b4326["authorUserID"]]
+          ? { user: _0x231303[_0x1b4326["authorUserID"]] }
+          : {}),
+      };
+    }
+    async ["_resolveUsers"](_0x46c05c, _0x274b4f, _0x3f7f43) {
+      let _0x245b9f = [...new Set(_0x46c05c["filter"](Boolean))];
+      if (!this["_userProvider"] || _0x245b9f["length"] === 0x0) return {};
+      let _0x550ae2;
+      try {
+        _0x550ae2 = await this["_userProvider"]["getUsers"](_0x245b9f, {
+          ..._0x274b4f,
+          request: _0x3f7f43,
+        });
+      } catch {
+        return {};
+      }
+      let _0x5e2e0f = new Set(_0x245b9f),
+        _0x31e500 = {};
+      for (let _0x3f8a10 of _0x550ae2)
+        _0x3f8a10?.["userID"] &&
+          _0x5e2e0f["has"](_0x3f8a10["userID"]) &&
+          (_0x31e500[_0x3f8a10["userID"]] = _0x3f8a10);
+      return _0x31e500;
+    }
+    async ["_emitWrite"](_0x2a60d3, _0x29f79f, _0x22cd29) {
+      let _0x5e1038 = {
+        userID: _0x2a60d3["userID"],
+        memberID: _0x2a60d3["memberID"],
+        customData: _0x2a60d3["customData"],
+        request: _0x29f79f,
+        update: _0x22cd29,
+        committedAt: Date["now"](),
+      };
+      for (let _0x3fbeba of [
+        ...(this["_listeners"]["get"]("commentCommitted") ?? []),
+      ])
+        try {
+          await _0x3fbeba(_0x5e1038);
+        } catch {}
+    }
+    ["_call"](_0x279e2f) {
+      this["_assertRunning"]();
+      let _0x2278d2 = _0x279e2f();
+      return (
+        this["_calls"]["add"](_0x2278d2),
+        _0x2278d2["finally"](() => this["_calls"]["delete"](_0x2278d2))[
+          "catch"
+        ](() => void 0x0),
+        _0x2278d2
+      );
+    }
+    async ["_databaseCall"](_0x1c4885) {
+      try {
+        return await _0x1c4885();
+      } catch (_0x227d93) {
+        throw _0x227d93 instanceof t["CollabError"]
+          ? _0x227d93
+          : new t["CollabError"](
+              "ADAPTER_FAILURE",
+              "Comment\x20Database\x20Adapter\x20failed",
+              { retryable: !0x0, cause: _0x227d93 },
+            );
+      }
+    }
+    ["_assertRunning"]() {
+      if (this["_state"] !== "running")
+        throw new t["CollabError"](
+          "INTERNAL_ERROR",
+          "Comment\x20Service\x20is\x20" + this["_state"],
+          { retryable: !0x0 },
+        );
+    }
+  };
+function a(_0x2dc646) {
+  return { ..._0x2dc646 };
+}
+function o(_0x466f3b) {
+  return (
+    c(_0x466f3b),
+    {
+      userID: _0x466f3b["userID"],
+      customData: _0x466f3b["customData"] ?? Object["create"](null),
+    }
+  );
+}
+function s(_0x15f3ed) {
+  return (
+    c(_0x15f3ed),
+    g("memberID", _0x15f3ed["memberID"]),
+    {
+      userID: _0x15f3ed["userID"],
+      memberID: _0x15f3ed["memberID"],
+      customData: _0x15f3ed["customData"] ?? Object["create"](null),
+    }
+  );
+}
+function c(_0xafafc2) {
+  if (!_0xafafc2 || typeof _0xafafc2 != "object")
+    throw _("context\x20must\x20be\x20an\x20object");
+  if (
+    (g("userID", _0xafafc2["userID"]),
+    _0xafafc2["customData"] !== void 0x0 &&
+      (_0xafafc2["customData"] === null ||
+        typeof _0xafafc2["customData"] != "object" ||
+        Array["isArray"](_0xafafc2["customData"])))
+  )
+    throw _("customData\x20must\x20be\x20an\x20object");
+}
+function l(_0x5a37a8) {
+  return {
+    threadId: _0x5a37a8["threadID"],
+    replyId: _0x5a37a8["replyID"],
+    content: _0x5a37a8["content"],
+    userId: _0x5a37a8["authorUserID"],
+    createTimestamp: _0x5a37a8["createdAt"],
+  };
+}
+function u(_0xf8673b) {
+  let _0x26880c = _0xf8673b["find"](
+    (_0x38cbe9) => _0x38cbe9["replyID"] === _0x38cbe9["threadID"],
+  );
+  return {
+    threadId: _0x26880c["threadID"],
+    solved: _0x26880c["solved"],
+    replies: _0xf8673b["map"](l),
+  };
+}
+function d(_0x381af9) {
+  let _0x5d2a4e = new Map();
+  for (let _0x161854 of _0x381af9) {
+    let _0x1aebcc = _0x5d2a4e["get"](_0x161854["threadID"]) ?? [];
+    (_0x1aebcc["push"](_0x161854),
+      _0x5d2a4e["set"](_0x161854["threadID"], _0x1aebcc));
+  }
+  let _0x34b50c = {};
+  for (let [_0x197230, _0x58bbc5] of _0x5d2a4e)
+    _0x58bbc5["find"]((_0x1719d8) => _0x1719d8["replyID"] === _0x197230) &&
+      (_0x34b50c[_0x197230] = u(
+        [..._0x58bbc5]["sort"]((_0x1401cc, _0x26cc57) =>
+          _0x1401cc["replyID"] === _0x197230
+            ? -0x1
+            : _0x26cc57["replyID"] === _0x197230
+              ? 0x1
+              : _0x1401cc["createdAt"] - _0x26cc57["createdAt"] ||
+                _0x1401cc["replyID"]["localeCompare"](_0x26cc57["replyID"]),
+        ),
+      ));
+  return _0x34b50c;
+}
+function f(_0x19a7cf, _0xae2540, _0x4808c1) {
+  return {
+    memberId: _0x4808c1["memberID"],
+    userId: _0x4808c1["userID"],
+    unitId: _0xae2540["unitID"],
+    threadId: _0xae2540["threadID"],
+    type: _0x19a7cf,
+    replyId: _0xae2540["replyID"],
+    content: _0xae2540["content"],
+    createTimestamp: String(_0xae2540["createdAt"]),
+  };
+}
+function p(_0x116d2a) {
+  (m(_0x116d2a["unitID"]),
+    g("threadID", _0x116d2a["threadID"]),
+    g("replyID", _0x116d2a["replyID"]));
+}
+function m(_0x65d3b5) {
+  g("unitID", _0x65d3b5);
+}
+function h(_0x4b879d) {
+  if (typeof _0x4b879d != "string" || _0x4b879d["length"] === 0x0)
+    throw _("content\x20must\x20be\x20a\x20non-empty\x20string");
+}
+function g(_0x2c037d, _0x2d664b) {
+  if (typeof _0x2d664b != "string" || _0x2d664b["length"] === 0x0)
+    throw _(_0x2c037d + "\x20must\x20be\x20a\x20non-empty\x20string");
+}
+function _(_0x4d27db) {
+  return new t["CollabError"]("INVALID_REQUEST", _0x4d27db);
+}
+function v(_0x1d32f9) {
+  return new t["CollabError"]("UNIT_NOT_FOUND", _0x1d32f9);
+}
+function y(_0x253883) {
+  return new t["CollabError"]("PERMISSION_DENIED", _0x253883);
+}
+exports["UniverCommentService"] = i;
