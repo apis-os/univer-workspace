@@ -51,6 +51,7 @@ export default createCollaborationEditor({
   collaborationProvidedByPreset: true,
   exchangeProvidedByPreset: true,
   licenseProvidedByPreset: true,
+  useCustomCollaborationStatus: true,
   locales: sheetEditorLocales,
   createPresets: (container, license, collaborationScope) =>
     createSheetEditorPresets({

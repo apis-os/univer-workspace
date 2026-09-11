@@ -17,6 +17,8 @@ export type { LiveShareFacade } from "./live-share-commands";
 export {
   isLiveShareFacadeAvailable,
   liveShareCommands,
+  shouldBindCollaborationStatusDisplay,
+  shouldBindLiveShareFacade,
 } from "./live-share-commands";
 
 export interface CollaborationStatusSnapshot {

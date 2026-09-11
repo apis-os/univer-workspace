@@ -101,4 +101,40 @@ describe("Live Share bar and header status chip", () => {
     expect(route).toMatch(/headerActions=/);
     expect(route).toMatch(/spectator=\{!isEditing\}/);
   });
+
+  it("gates custom collaboration status bind on presentation flags", () => {
+    const src = readWorkspace("web/src/features/editor/collaboration-editor.tsx");
+    expect(src).toMatch(
+      /const collaborationStatusPresentation = resolveCollaborationStatusPresentation\(\s*definition\.hideCollaborationStatus,\s*definition\.useCustomCollaborationStatus/
+    );
+    const configure = src.slice(src.indexOf("function configurePresetCollaboration"));
+    expect(configure).toMatch(
+      /resolveCollaborationStatusPresentation\(\s*definition\.hideCollaborationStatus,\s*definition\.useCustomCollaborationStatus/
+    );
+    expect(src).toMatch(/collaborationStatusPresentation\.suppressNative/);
+    expect(configure).toMatch(/\.suppressNative/);
+    expect(src).toMatch(
+      /shouldBindCollaborationStatusDisplay|collaborationStatusPresentation\.showCustom/
+    );
+    expect(src).not.toMatch(
+      /useEffect\(\(\) => \{\s*bindCollaborationStatusDisplay\(\{\s*status: collaborationStatus,\s*issue: collaborationIssue,\s*\}\);/
+    );
+  });
+
+  it("binds Live Share facade after a sheet unit is loaded", () => {
+    const src = readWorkspace("web/src/features/editor/collaboration-editor.tsx");
+    const mountStart = src.indexOf("const mount = async");
+    const mountEnd = src.indexOf("mount().catch");
+    const mount = src.slice(mountStart, mountEnd);
+    const loadIdx = mount.indexOf("definition.load");
+    const bindIdx = mount.indexOf("bindLiveShareFacade(");
+    expect(loadIdx).toBeGreaterThan(-1);
+    expect(bindIdx).toBeGreaterThan(loadIdx);
+    expect(mount).toMatch(/shouldBindLiveShareFacade|getActiveWorkbook\(\)/);
+  });
+
+  it("enables the header collaboration chip on the sheet editor", () => {
+    const src = readWorkspace("web/src/features/editor/sheet-editor.tsx");
+    expect(src).toMatch(/useCustomCollaborationStatus:\s*true/);
+  });
 });

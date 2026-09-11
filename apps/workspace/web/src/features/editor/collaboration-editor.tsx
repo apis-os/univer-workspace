@@ -78,6 +78,8 @@ import { createCollabConflictToaster } from "./collab-conflict-toast";
 import {
   bindCollaborationStatusDisplay,
   bindLiveShareFacade,
+  shouldBindCollaborationStatusDisplay,
+  shouldBindLiveShareFacade,
 } from "./live-share-bar";
 
 import "@univerjs-pro/collaboration-client-ui/lib/index.css";
@@ -151,6 +153,10 @@ interface ICollaborationEditorDefinition {
 export function createCollaborationEditor(
   definition: ICollaborationEditorDefinition
 ) {
+  const collaborationStatusPresentation = resolveCollaborationStatusPresentation(
+    definition.hideCollaborationStatus,
+    definition.useCustomCollaborationStatus
+  );
   return function CollaborationEditor({
     unitId,
     user,
@@ -176,11 +182,19 @@ export function createCollaborationEditor(
     collaborationStatusRef.current = collaborationStatus;
 
     useEffect(() => {
-      bindCollaborationStatusDisplay({
-        status: collaborationStatus,
-        issue: collaborationIssue,
-      });
-    }, [collaborationStatus, collaborationIssue]);
+      bindCollaborationStatusDisplay(
+        shouldBindCollaborationStatusDisplay(
+          collaborationStatusPresentation.showCustom,
+          loading,
+          error
+        )
+          ? {
+              status: collaborationStatus,
+              issue: collaborationIssue,
+            }
+          : null
+      );
+    }, [collaborationStatus, collaborationIssue, loading, error]);
 
     useEffect(() => {
       if (univerAPIRef.current) {
@@ -292,12 +306,14 @@ export function createCollaborationEditor(
                   {
                     enableDocumentCollaborationUI:
                       definition.enableDocumentCollaborationUI,
-                    override: [
-                      [
-                        DesktopCollaborationStatusDisplayController,
-                        null,
-                      ],
-                    ],
+                    override: collaborationStatusPresentation.suppressNative
+                      ? [
+                          [
+                            DesktopCollaborationStatusDisplayController,
+                            null,
+                          ],
+                        ]
+                      : undefined,
                   },
                 ],
               ];
@@ -377,7 +393,6 @@ export function createCollaborationEditor(
         bindAgentEditSpotlight({
           getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
         });
-        bindLiveShareFacade(univerAPI);
         const notifyCollabConflict = createCollabConflictToaster({
           warning: (message) => toast.warning(message),
         });
@@ -476,6 +491,9 @@ export function createCollaborationEditor(
               collaboration.getCollaborationStatus(unitId)
             );
             setLoading(false);
+            bindLiveShareFacade(
+              shouldBindLiveShareFacade(univerAPI) ? univerAPI : undefined
+            );
           }
         });
         const applyAgentEdits = (event: Event) => {
@@ -652,9 +670,12 @@ function configurePresetCollaboration(
               ...(pluginConfig as object),
               enableDocumentCollaborationUI:
                 definition.enableDocumentCollaborationUI,
-              override: [
-                [DesktopCollaborationStatusDisplayController, null],
-              ],
+              override: resolveCollaborationStatusPresentation(
+                definition.hideCollaborationStatus,
+                definition.useCustomCollaborationStatus
+              ).suppressNative
+                ? [[DesktopCollaborationStatusDisplayController, null]]
+                : undefined,
             },
           ]];
         }
