@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   PRESENCE_RING_TOKENS,
@@ -102,6 +103,25 @@ describe("bot icon and thinking pulse", () => {
     expect(isBotCollaborator("agent_workspace")).toBe(true);
     expect(isBotCollaborator("agent:helper")).toBe(true);
     expect(isBotCollaborator("user_jordan")).toBe(false);
+  });
+
+  it("rounds the inner bot chrome without clipping token rings", () => {
+    const src = readFileSync(new URL("./collaborator-avatars.tsx", import.meta.url), "utf8");
+    const botChrome = src.match(
+      /isBotCollaborator\([^)]+\)\s*\?\s*\(\s*<span className="([^"]+)"[\s\S]*?<Bot\b/
+    );
+    expect(botChrome?.[1]).toMatch(/\bbg-muted\b/);
+    expect(botChrome?.[1]).toMatch(/\brounded-full\b/);
+    const cnBlocks = [...src.matchAll(/className=\{cn\(([\s\S]*?)\)\}/g)].map(
+      (match) => match[1]
+    );
+    const ringed = cnBlocks.filter(
+      (block) => /\bring-2\b/.test(block) && /ring-offset-/.test(block)
+    );
+    expect(ringed.length).toBeGreaterThan(0);
+    for (const block of ringed) {
+      expect(block).not.toMatch(/\boverflow-hidden\b/);
+    }
   });
 
   it("pulses the bot while workspace-agent-presence is thinking", () => {

@@ -106,7 +106,7 @@ export function CollaboratorAvatars({
                 )}
               >
                 {seat.kind === "ghost" ? null : isBotCollaborator(seat.userID) ? (
-                  <span className="grid size-7 place-items-center bg-muted text-muted-foreground sm:size-9">
+                  <span className="grid size-7 place-items-center rounded-full bg-muted text-muted-foreground sm:size-9">
                     <Bot className="size-3.5 sm:size-4" />
                   </span>
                 ) : (

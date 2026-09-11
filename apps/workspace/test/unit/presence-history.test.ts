@@ -73,6 +73,26 @@ describe("collaborator avatar rings, ghost Jordan, and bot pulse", () => {
     }
   });
 
+  it("rounds the inner bot chrome without clipping token rings", () => {
+    const src = readWorkspace("web/src/features/editor/collaborator-avatars.tsx");
+    const botChrome = src.match(
+      /isBotCollaborator\([^)]+\)\s*\?\s*\(\s*<span className="([^"]+)"[\s\S]*?<Bot\b/
+    );
+    expect(botChrome?.[1]).toMatch(/\bbg-muted\b/);
+    expect(botChrome?.[1]).toMatch(/\brounded-full\b/);
+
+    const cnBlocks = [...src.matchAll(/className=\{cn\(([\s\S]*?)\)\}/g)].map(
+      (match) => match[1]
+    );
+    const ringed = cnBlocks.filter(
+      (block) => /\bring-2\b/.test(block) && /ring-offset-/.test(block)
+    );
+    expect(ringed.length).toBeGreaterThan(0);
+    for (const block of ringed) {
+      expect(block).not.toMatch(/\boverflow-hidden\b/);
+    }
+  });
+
   it("uses a bot icon for agent_workspace and agent: ids and pulses on thinking", () => {
     const src = readWorkspace("web/src/features/editor/collaborator-avatars.tsx");
     expect(src).toMatch(/from "lucide-react"/);
