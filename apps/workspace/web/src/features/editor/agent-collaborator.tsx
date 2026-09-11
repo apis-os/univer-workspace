@@ -20,6 +20,7 @@ import {
   readAgentMuxFrame,
   readJsonBody,
   shouldPostAgentTurn,
+  shouldShowLiveAgentTurn,
   suggestionChipsForUnitType,
   truncateGatewayLogId,
   type AgentStreamEvent,
@@ -305,6 +306,11 @@ export function AgentCollaborator({
       onEdited?.(detail);
     } catch (err) {
       setError(err instanceof Error ? err.message : t("agentTurnFailed"));
+      streamTextRef.current = "";
+      streamEventsRef.current = [];
+      setPendingPrompt("");
+      setStreamText("");
+      setStreamEvents([]);
     } finally {
       pendingRef.current = false;
       setPending(false);
@@ -395,7 +401,7 @@ export function AgentCollaborator({
                 </div>
               </article>
             ))}
-            {pending || streamText || streamEvents.length > 0 ? (
+            {shouldShowLiveAgentTurn({ pending, streamText, streamEvents }) ? (
               <article className="grid gap-2">
                 {pendingPrompt ? (
                   <div className="rounded-lg bg-muted px-3 py-2 text-sm">{pendingPrompt}</div>

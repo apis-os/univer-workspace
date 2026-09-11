@@ -169,3 +169,66 @@ pnpm exec vitest run --config vitest.config.ts web/src/features/editor/agent-pan
 - Visual cell walk is still a no-op until T6 binds `getActiveWorkbook` in the collaboration host.
 - HTTP SSE turns are not fanned onto mux Channel 2 (intentionally out of scope).
 - T2 `agent.done` still often omits an explicit cache flag; absent flag → MISS except cached-explain prompts. JSON lift now carries `skipCache` when the event includes it.
+
+## Fix wave 2 — HTTP/SSE agent.error tears down the live turn
+
+**Status:** DONE_WITH_CONCERNS
+
+**Commit:** `fix(web): tear down live agent turn on HTTP error` (new commit, not amend of `9fd8dd6`)
+
+Did not touch `dsh-host.ts`, `collaboration-editor.tsx`, `collaborator-avatars.tsx`. Did not bind Univer. Did not fan mux.
+
+### Fix
+
+- HTTP `submit` `catch` mirrors mux: clears `pendingPrompt`, `streamText`, `streamEvents` (and stream refs). Turn commit / `workspace-agent-edited` stay skipped.
+- Live article uses `shouldShowLiveAgentTurn({ pending, streamText, streamEvents })`, which ignores `agent.error`-only events so leftover error frames cannot keep the turn mounted after `pending` drops.
+
+### TDD
+
+#### RED (watched fail)
+
+Command:
+
+```bash
+pnpm exec vitest run --config vitest.config.ts web/src/features/editor/agent-panel.test.ts web/src/features/editor/agent-edit-spotlight.test.ts test/unit/agent-collaborator.test.ts
+```
+
+Relevant output (exit 1):
+
+```
+ FAIL  web/src/features/editor/agent-panel.test.ts
+ TypeError: shouldShowLiveAgentTurn is not a function
+
+ FAIL  test/unit/agent-collaborator.test.ts
+ AssertionError: expected '…' to match /shouldShowLiveAgentTurn\(/
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  2 failed | 29 passed (31)
+```
+
+Failures were the missing helper and HTTP catch still only `setError` (live article stayed up via `pending || streamText || streamEvents.length > 0`), not typos.
+
+#### GREEN
+
+Command:
+
+```bash
+pnpm exec vitest run --config vitest.config.ts web/src/features/editor/agent-panel.test.ts web/src/features/editor/agent-edit-spotlight.test.ts test/unit/agent-collaborator.test.ts
+```
+
+```
+ Test Files  3 passed (3)
+      Tests  31 passed (31)
+```
+
+### Files
+
+- `apps/workspace/web/src/features/editor/agent-panel.ts` + `agent-panel.test.ts`
+- `apps/workspace/web/src/features/editor/agent-collaborator.tsx`
+- `apps/workspace/test/unit/agent-collaborator.test.ts`
+
+### Concerns (unchanged)
+
+- Visual cell walk is still a no-op until T6 binds `getActiveWorkbook` in the collaboration host.
+- HTTP SSE turns are not fanned onto mux Channel 2 (intentionally out of scope).
+- T2 `agent.done` still often omits an explicit cache flag; absent flag → MISS except cached-explain prompts.

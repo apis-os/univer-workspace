@@ -141,6 +141,16 @@ export function shouldPostAgentTurn(spectator?: boolean): boolean {
   return spectator !== true;
 }
 
+export function shouldShowLiveAgentTurn(input: {
+  readonly pending: boolean;
+  readonly streamText: string;
+  readonly streamEvents: readonly { readonly type: string }[];
+}): boolean {
+  if (input.pending) return true;
+  if (input.streamText) return true;
+  return input.streamEvents.some((event) => event.type !== "agent.error");
+}
+
 export function isSseContentType(contentType: string | null): boolean {
   return (contentType ?? "").includes("text/event-stream");
 }

@@ -11,6 +11,7 @@ import {
   readAgentPanelOpen,
   readJsonBody,
   shouldPostAgentTurn,
+  shouldShowLiveAgentTurn,
   suggestionChipsForUnitType,
   truncateGatewayLogId,
   writeAgentPanelOpen,
@@ -135,6 +136,49 @@ describe("agent panel helpers", () => {
     const body = await consumeAgentTurnResponse(response);
     expect(body.error).toEqual({ message: "Prompt is required" });
     expect(agentErrorMessage(body, "failed")).toBe("Prompt is required");
+  });
+
+  it("hides the live turn when only agent.error events remain after submit fails", () => {
+    expect(
+      shouldShowLiveAgentTurn({
+        pending: false,
+        streamText: "",
+        streamEvents: [{ type: "agent.error", data: { message: "Agent is busy" } }],
+      })
+    ).toBe(false);
+    expect(
+      shouldShowLiveAgentTurn({
+        pending: false,
+        streamText: "",
+        streamEvents: [],
+      })
+    ).toBe(false);
+    expect(
+      shouldShowLiveAgentTurn({
+        pending: true,
+        streamText: "",
+        streamEvents: [],
+      })
+    ).toBe(true);
+    expect(
+      shouldShowLiveAgentTurn({
+        pending: false,
+        streamText: "SUM",
+        streamEvents: [],
+      })
+    ).toBe(true);
+    expect(
+      shouldShowLiveAgentTurn({
+        pending: false,
+        streamText: "",
+        streamEvents: [
+          {
+            type: "agent.tool_call_start",
+            data: { tool: "univer.sheet.setRange" },
+          },
+        ],
+      })
+    ).toBe(true);
   });
 
   it("surfaces SSE agent.error as failure even when HTTP 200", async () => {

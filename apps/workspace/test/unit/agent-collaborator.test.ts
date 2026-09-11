@@ -68,6 +68,23 @@ describe("in-editor AI collaboration UI", () => {
     expect(src).not.toMatch(/cells:\s*spotlightCells/);
   });
 
+  it("tears down the live HTTP turn on agent.error instead of leaving it mounted", () => {
+    const src = readFileSync(
+      join(root, "web/src/features/editor/agent-collaborator.tsx"),
+      "utf8",
+    );
+    expect(src).toMatch(/shouldShowLiveAgentTurn\(/);
+    expect(src).not.toMatch(
+      /pending\s*\|\|\s*streamText\s*\|\|\s*streamEvents\.length\s*>\s*0/,
+    );
+    const catchBlock = src.match(/}\s*catch\s*\([^)]*\)\s*\{[\s\S]*?\n    \}/);
+    expect(catchBlock?.[0]).toMatch(/setPendingPrompt\(""\)/);
+    expect(catchBlock?.[0]).toMatch(/setStreamText\(""\)/);
+    expect(catchBlock?.[0]).toMatch(/setStreamEvents\(\[\]\)/);
+    expect(catchBlock?.[0]).not.toMatch(/workspace-agent-edited/);
+    expect(catchBlock?.[0]).not.toMatch(/setTurns/);
+  });
+
   it("never posts turns or mux agent.prompt as a spectator", () => {
     const src = readFileSync(
       join(root, "web/src/features/editor/agent-collaborator.tsx"),
