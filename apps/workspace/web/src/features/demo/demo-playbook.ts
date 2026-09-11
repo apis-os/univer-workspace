@@ -67,6 +67,12 @@ export function shouldShowPlaybook(input: {
   return input.play === "1" || input.storedEnabled;
 }
 
+export function shouldOfferDemoReset(input: {
+  readonly isolated?: boolean;
+}): boolean {
+  return input.isolated !== true;
+}
+
 export function playbookHeaderMode(input: {
   readonly compact: boolean;
   readonly enabled: boolean;

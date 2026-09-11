@@ -6,6 +6,7 @@ import {
   playbookHeaderMode,
   playbookKeyAdvances,
   readPlaybook,
+  shouldOfferDemoReset,
   shouldShowPlaybook,
   writePlaybook,
   type DemoPlaybookState,
@@ -71,5 +72,11 @@ describe("demo playbook", () => {
     expect(advancePlaybookStep(0, "j", true)).toBe(1);
     expect(advancePlaybookStep(0, "n", false)).toBe(0);
     expect(advancePlaybookStep(4, "n", true)).toBe(4);
+  });
+
+  it("hides reset after isolate so the flag is read", () => {
+    expect(shouldOfferDemoReset({ isolated: true })).toBe(false);
+    expect(shouldOfferDemoReset({ isolated: undefined })).toBe(true);
+    expect(shouldOfferDemoReset({ isolated: false })).toBe(true);
   });
 });

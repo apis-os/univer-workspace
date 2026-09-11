@@ -163,7 +163,25 @@ describe("safe demo reset", () => {
       expect(src).not.toMatch(/\/api\/demo\/reset/);
     }
   });
+
+  it("does not isolate from presence without an explicit reset attempt", () => {
+    const reset = readWorkspace("web/src/features/demo/demo-reset.ts");
+    const runtime = readWorkspace("web/src/features/demo/demo-runtime.tsx");
+    expect(reset).toMatch(/resolveDemoReset/);
+    expect(reset).toMatch(/attempted/);
+    expect(reset).toMatch(/action:\s*"noop"/);
+    expect(runtime).toMatch(/resetDemo|DEMO_RESET_EVENT|workspace-demo-reset/);
+    expect(runtime).toMatch(/attempted:\s*true/);
+    const onPresence = runtime.match(
+      /const onPresence = [\s\S]*?addEventListener\(DEMO_PRESENCE_EVENT/
+    )?.[0];
+    expect(onPresence).toBeTruthy();
+    expect(onPresence).not.toMatch(/toast\./);
+    expect(onPresence).not.toMatch(/isolated:\s*true/);
+    expect(onPresence).not.toMatch(/planDemoReset/);
+  });
 });
+
 
 describe("i18n keys for the presenter stage", () => {
   it("defines collabSameCell and demoResetBlocked in en-US and zh-CN", () => {

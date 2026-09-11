@@ -8,9 +8,11 @@ import {
   advancePlaybookStep,
   playbookHeaderMode,
   readPlaybook,
+  shouldOfferDemoReset,
   shouldShowPlaybook,
   writePlaybook,
 } from "./demo-playbook";
+import { requestDemoReset } from "./demo-reset";
 import { parseDemoSearch } from "./demo-search";
 
 export function DemoPlaybookBar() {
@@ -66,34 +68,45 @@ export function DemoPlaybookBar() {
   };
 
   return (
-    <ol
-      tabIndex={0}
-      aria-label={t("demoPlaybook")}
-      onKeyDown={onKeyDown}
-      className="flex h-9 min-w-0 items-center gap-1 overflow-x-auto rounded-full border border-border bg-muted/70 px-1.5"
-    >
-      {DEMO_PLAYBOOK_STEPS.map((step, index) => {
-        const current = index === state.step;
-        return (
-          <li key={step.id} className="flex min-w-0 items-center gap-1">
-            {index > 0 ? (
-              <span aria-hidden="true" className="text-[11px] text-subtle-foreground">
-                →
+    <div className="flex min-w-0 items-center gap-1.5">
+      <ol
+        tabIndex={0}
+        aria-label={t("demoPlaybook")}
+        onKeyDown={onKeyDown}
+        className="flex h-9 min-w-0 items-center gap-1 overflow-x-auto rounded-full border border-border bg-muted/70 px-1.5"
+      >
+        {DEMO_PLAYBOOK_STEPS.map((step, index) => {
+          const current = index === state.step;
+          return (
+            <li key={step.id} className="flex min-w-0 items-center gap-1">
+              {index > 0 ? (
+                <span aria-hidden="true" className="text-[11px] text-subtle-foreground">
+                  →
+                </span>
+              ) : null}
+              <span
+                className={cn(
+                  "truncate rounded-full px-2 py-0.5 text-[11px] whitespace-nowrap",
+                  current
+                    ? "bg-background font-medium text-foreground shadow-xs"
+                    : "text-subtle-foreground"
+                )}
+              >
+                {t(step.labelKey)}
               </span>
-            ) : null}
-            <span
-              className={cn(
-                "truncate rounded-full px-2 py-0.5 text-[11px] whitespace-nowrap",
-                current
-                  ? "bg-background font-medium text-foreground shadow-xs"
-                  : "text-subtle-foreground"
-              )}
-            >
-              {t(step.labelKey)}
-            </span>
-          </li>
-        );
-      })}
-    </ol>
+            </li>
+          );
+        })}
+      </ol>
+      {shouldOfferDemoReset({ isolated: state.isolated }) ? (
+        <button
+          type="button"
+          className="h-9 shrink-0 rounded-full border border-border bg-muted/70 px-2.5 text-[11px] text-subtle-foreground hover:text-foreground"
+          onClick={() => requestDemoReset()}
+        >
+          {t("demoReset")}
+        </button>
+      ) : null}
+    </div>
   );
 }

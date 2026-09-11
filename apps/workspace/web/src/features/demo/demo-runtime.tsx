@@ -9,7 +9,8 @@ import {
 } from "./demo-palette";
 import {
   DEMO_PRESENCE_EVENT,
-  planDemoReset,
+  DEMO_RESET_EVENT,
+  resolveDemoReset,
   type DemoPresenceMember,
 } from "./demo-reset";
 import { readPlaybook, writePlaybook } from "./demo-playbook";
@@ -30,7 +31,10 @@ export function DemoRuntime({
   const navigate = useNavigate();
   const { language, setLanguage, t } = useI18n();
   const ranScene = useRef<string>("");
-  const resetNotified = useRef(false);
+  const presence = useRef<{
+    members: readonly DemoPresenceMember[];
+    currentUserId: string;
+  }>({ members: [], currentUserId: "" });
 
   const actions: DemoPaletteActions = {
     openAvery: () => {
@@ -83,20 +87,30 @@ export function DemoRuntime({
         members?: readonly DemoPresenceMember[];
         currentUserId?: string;
       }>).detail;
-      const currentUserId = detail?.currentUserId;
-      if (!currentUserId || resetNotified.current) return;
-      const plan = planDemoReset({
-        members: detail.members ?? [],
-        currentUserId,
-      });
-      if (plan.action !== "isolate") return;
-      resetNotified.current = true;
-      const stored = readPlaybook();
-      writePlaybook({ ...stored, isolated: true });
-      toast.warning(t(plan.toastKey));
+      presence.current = {
+        members: detail?.members ?? [],
+        currentUserId: detail?.currentUserId ?? "",
+      };
     };
     window.addEventListener(DEMO_PRESENCE_EVENT, onPresence);
-    return () => window.removeEventListener(DEMO_PRESENCE_EVENT, onPresence);
+    const onReset = () => {
+      const stored = readPlaybook();
+      const plan = resolveDemoReset({
+        attempted: true,
+        members: presence.current.members,
+        currentUserId: presence.current.currentUserId,
+        isolated: stored.isolated === true,
+      });
+      if (plan.action !== "isolate") return;
+      writePlaybook({ ...stored, isolated: true });
+      toast.warning(t(plan.toastKey));
+      window.dispatchEvent(new Event("workspace-demo-playbook"));
+    };
+    window.addEventListener(DEMO_RESET_EVENT, onReset);
+    return () => {
+      window.removeEventListener(DEMO_PRESENCE_EVENT, onPresence);
+      window.removeEventListener(DEMO_RESET_EVENT, onReset);
+    };
   }, [t]);
 
   return <Palette actions={actions} />;
