@@ -126,4 +126,26 @@ describe("applyWorkspaceAgentEdits", () => {
     expect(result.applied).toBe(false);
     expect(result.ranges).toEqual([{ a1: "A1", value: "Hello from AI" }]);
   });
+
+  it("treats collaboration-client SYNCED enum as synced", () => {
+    const setValue = vi.fn();
+    const { workbook } = facadeWorkbook(setValue);
+    const result = applyWorkspaceAgentEdits(
+      { getActiveWorkbook: () => workbook },
+      {
+        unitId: "unit_welcome_sheet",
+        toolCalls: [
+          {
+            tool: "univer.sheet.setRange",
+            args: { cells: [{ a1: "B2", value: "skip" }] },
+          },
+        ],
+      },
+      "unit_welcome_sheet",
+      "synced"
+    );
+    expect(setValue).not.toHaveBeenCalled();
+    expect(result.applied).toBe(false);
+    expect(result.ranges).toEqual([{ a1: "B2", value: "skip" }]);
+  });
 });

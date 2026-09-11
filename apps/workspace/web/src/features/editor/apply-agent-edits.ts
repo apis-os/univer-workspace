@@ -55,11 +55,15 @@ export interface AgentEditRange {
   readonly value?: unknown;
 }
 
+function isCollaborationSyncedStatus(value: unknown): boolean {
+  return value === true || value === "SYNCED" || value === "synced";
+}
+
 function isSynced(collaboration?: AgentCollaborationState): boolean {
-  if (collaboration === true || collaboration === "SYNCED") return true;
+  if (isCollaborationSyncedStatus(collaboration)) return true;
   if (!collaboration || typeof collaboration !== "object") return false;
   if (collaboration.synced === true) return true;
-  return collaboration.status === "SYNCED";
+  return isCollaborationSyncedStatus(collaboration.status);
 }
 
 function sheetRangesFromDetail(detail: AgentEditDetail): AgentEditRange[] {
