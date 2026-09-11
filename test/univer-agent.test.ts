@@ -309,6 +309,16 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.match(src, /WebSocket upgrade required for Channel 2 agent\.prompt/);
   });
 
+  test("ChatAgent /agents and mux wire broadcastCollab to broadcastAgentCollab", () => {
+    const src = readFileSync(join(ROOT, "src/project/dsh-host.ts"), "utf8");
+    assert.match(src, /handleAgentHttp/);
+    assert.match(src, /handleAgentMuxPrompt/);
+    const wires = src.match(
+      /broadcastCollab:\s*\(unitId,\s*changeset\)\s*=>\s*this\.broadcastAgentCollab/g
+    );
+    assert.equal(wires?.length, 2);
+  });
+
   test("gateway forwards GET /agents to the ChatAgent singleton", () => {
     const src = readFileSync(join(ROOT, "src/server.ts"), "utf8");
     assert.match(src, /pathname === "\/agents"/);

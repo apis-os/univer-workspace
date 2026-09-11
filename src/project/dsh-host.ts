@@ -28,6 +28,12 @@ import {
   type CombFrame
 } from "../integrations/univer-comb-codec.ts";
 import { AGENT_MEMBER_ID, AGENT_USER_ID, AGENT_USER_NAME } from "../plugins/univer-facade-actions.ts";
+import { actorFromRequest, type WorkspaceActor } from "../control-plane/actor.ts";
+import {
+  handleAgentHttp,
+  handleAgentMuxPrompt,
+  muxFrame
+} from "../plugins/univer-agent.ts";
 
 export interface CollabMemberAttachment {
   kind?: "comb";
@@ -514,7 +520,43 @@ export class DshHost extends HostBase<any> {
       }
     }
 
+    if (url.pathname === "/agents" || url.pathname.startsWith("/agents/")) {
+      const kernel = await this.ensureKernel();
+      const agentRes = await handleAgentHttp(request, {
+        kernel,
+        env: this.env,
+        actor: actorFromRequest(request),
+        broadcastCollab: (unitId, changeset) => this.broadcastAgentCollab(unitId, changeset)
+      });
+      if (agentRes) return agentRes;
+    }
+
+    if (url.pathname === "/api/remote.mux") {
+      return new Response(
+        JSON.stringify({
+          error: { message: "WebSocket upgrade required for Channel 2 agent.prompt" },
+          protocol: { mux: "channel 2 agent.prompt on /api/remote.mux" }
+        }),
+        {
+          status: 426,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            Upgrade: "websocket"
+          }
+        }
+      );
+    }
+
     return new Response("Not found", { status: 404 });
+  }
+
+  private muxActor(attachment: CollabMemberAttachment | WorktreeFeedAttachment | null): WorkspaceActor | null {
+    if (!attachment || !("userID" in attachment) || !attachment.userID) return null;
+    if ("kind" in attachment && attachment.kind === "worktree-feed") {
+      return { userId: attachment.userID, name: attachment.userID, username: "" };
+    }
+    const member = attachment as CollabMemberAttachment;
+    return { userId: member.userID, name: member.name || member.userID, username: "" };
   }
 
   private consumeSessionTicket(ticketParam: string): { userID: string; name: string } {
@@ -901,13 +943,34 @@ export class DshHost extends HostBase<any> {
       }
 
       // Channel 2: Agent Streaming
-      if (parsed?.channel === 2) {
+      if (parsed?.channel === 2 || parsed?.ch === 2 || parsed?.type === "agent.prompt") {
         if (parsed.type === "agent.prompt") {
-          ws.send(JSON.stringify({
-            channel: 2,
-            type: "agent.thought",
-            content: "Analyzing workspace state and executing requested action..."
-          }));
+          let fallbackUnitId = "";
+          try {
+            const tags =
+              typeof (this.ctx as { getTags?: (socket: WebSocket) => string[] }).getTags === "function"
+                ? (this.ctx as { getTags: (socket: WebSocket) => string[] }).getTags(ws)
+                : [];
+            const unitTag = tags.find((tag) => tag.startsWith("unit:"));
+            if (unitTag) fallbackUnitId = unitTag.slice("unit:".length);
+          } catch {}
+          try {
+            await handleAgentMuxPrompt(
+              {
+                kernel,
+                env: this.env,
+                actor: this.muxActor(attachment),
+                broadcastCollab: (unitId, changeset) => this.broadcastAgentCollab(unitId, changeset)
+              },
+              ws,
+              parsed,
+              fallbackUnitId
+            );
+          } catch (err: any) {
+            try {
+              ws.send(JSON.stringify(muxFrame("agent.error", { message: err?.message || String(err) })));
+            } catch {}
+          }
           return;
         }
       }
