@@ -9,6 +9,11 @@ import {
   resolveWelcomeUnitSnapshot,
   shouldSkipDemoSnapshot
 } from "./univer-demo-snapshot.ts";
+import {
+  applyChangesetMutations,
+  bumpSnapshotRevision,
+  cloneSnapshot
+} from "./univer-snapshot.ts";
 
 export const UNIVER_COLLAB_DDL = `
 CREATE TABLE IF NOT EXISTS univer_units (
@@ -165,7 +170,38 @@ export class UniverCollabService {
       unitId
     );
 
+    this.materializeChangesetSnapshot(unitId, rev, rawChangeset as Record<string, unknown>);
+
     return { success: true, rev };
+  }
+
+  /**
+   * Keep the stored snapshot at the changeset revision so GET /snapshot
+   * (and late-joining collab clients) see agent/human OT edits.
+   */
+  private materializeChangesetSnapshot(
+    unitId: string,
+    rev: number,
+    changeset: Record<string, unknown>
+  ): void {
+    if (!unitId) return;
+    const mutations = changeset.mutations;
+    const hasMutations = Array.isArray(mutations) && mutations.length > 0;
+    const latest = this.getLatestSnapshot(unitId);
+    if (latest && latest.rev >= rev) return;
+    if (!hasMutations && !latest) return;
+    const base = latest?.data ?? generateDefaultSnapshot(unitId, this.getUnit(unitId)?.type ?? 2);
+    if (!hasMutations) {
+      this.saveSnapshot(unitId, rev, bumpSnapshotRevision(cloneSnapshot(base), rev));
+      return;
+    }
+    void Promise.resolve(applyChangesetMutations(base, { ...changeset, rev, revision: rev }))
+      .then((next) => {
+        if (next && typeof next === "object") this.saveSnapshot(unitId, rev, next);
+      })
+      .catch((err) => {
+        console.warn("materialize changeset failed", err);
+      });
   }
 
   listChangesetEntries(unitId: string): Array<{
