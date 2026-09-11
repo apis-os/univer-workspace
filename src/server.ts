@@ -20,7 +20,27 @@ export interface Env {
   WorkspaceDO: DurableObjectNamespace;
   DB: D1Database;
   BLOB_BUCKET?: R2Bucket;
-  AI?: any;
+  AI?: {
+    run: (
+      model: string,
+      input: unknown,
+      options?: {
+        gateway: { id: string };
+        stream?: boolean;
+        skipCache?: boolean;
+        cacheKey?: string;
+        cacheTtl?: number;
+        metadata?: {
+          product: string;
+          unitId: string;
+          turnId: string;
+          actorUserId: string;
+          step: string;
+        };
+      }
+    ) => Promise<any>;
+    aiGatewayLogId?: string | null;
+  };
   ASSETS?: Fetcher;
 }
 
@@ -85,6 +105,16 @@ export default {
         return applyCorsHeaders(
           request,
           new Response(JSON.stringify({ status: "ok", edge: "cloudflare-workers", time: Date.now() }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" }
+          })
+        );
+      }
+
+      if (pathname === "/healthz.ai") {
+        return applyCorsHeaders(
+          request,
+          new Response(JSON.stringify({ status: "ok", gateway: "default" }), {
             status: 200,
             headers: { "Content-Type": "application/json" }
           })
