@@ -1,14 +1,20 @@
 import { describe, test } from "node:test";
 import assert from "node:assert/strict";
+import { Context } from "@deepseek-ai/cordis";
+import { DatabaseSync } from "node:sqlite";
 import { createMockD1 } from "./mock-d1.ts";
 import { ensureDemoData, initControlPlaneSchema, seedControlPlane } from "../src/control-plane/schema.ts";
 import { verifyPassword } from "../src/control-plane/auth.ts";
 import {
   buildQ3ForecastSnapshot,
+  resolveWelcomeUnitSnapshot,
   shouldSkipDemoSnapshot
 } from "../src/plugins/univer-demo-snapshot.ts";
 import { generateDefaultSnapshot } from "../src/plugins/univer-default-snapshots.ts";
+import { UniverCollabService } from "../src/plugins/univer-collab.ts";
+import { handleUniverserHttp } from "../src/integrations/univer-collab-http.ts";
 import { decodeOriginalMeta, getSheetCell } from "../src/plugins/univer-snapshot.ts";
+import type { SqlExec } from "../src/kernel/sql.ts";
 
 const WELCOME_UNIT_ID = "unit_welcome_sheet";
 
@@ -45,8 +51,50 @@ function parseResource(snapshot: Record<string, unknown>, name: string): unknown
   }
 }
 
-function stringifyResources(snapshot: Record<string, unknown>): string {
-  return JSON.stringify(resourcesOf(snapshot));
+function createSqliteAdapter(): SqlExec {
+  const db = new DatabaseSync(":memory:");
+  return {
+    exec: (query: string, ...binds: unknown[]) => {
+      const trimmed = query.trim().toUpperCase();
+      if (trimmed.startsWith("CREATE") || trimmed.startsWith("ALTER") || trimmed.startsWith("DROP")) {
+        db.exec(query);
+        return { toArray: () => [] };
+      }
+      const stmt = db.prepare(query);
+      if (trimmed.startsWith("INSERT") || trimmed.startsWith("UPDATE") || trimmed.startsWith("DELETE")) {
+        stmt.run(...(binds as any[]));
+        return { toArray: () => [] };
+      }
+      const rows = stmt.all(...(binds as any[]));
+      return { toArray: () => rows as Record<string, unknown>[] };
+    }
+  };
+}
+
+function collabHost(collab: UniverCollabService) {
+  return {
+    collab,
+    identity: { userID: "user_admin", name: "Avery Chen", avatar: "" },
+    mintSessionTicket() {
+      return "ticket_demo";
+    }
+  };
+}
+
+function emptyWelcomeSnapshot(): Record<string, unknown> {
+  const empty = generateDefaultSnapshot("unit_blank_sheet", 2) as Record<string, unknown>;
+  empty.unitID = WELCOME_UNIT_ID;
+  const workbook = workbookOf(empty);
+  workbook.unitID = WELCOME_UNIT_ID;
+  workbook.name = "Welcome Sheet";
+  return empty;
+}
+
+async function getWelcomeSnapshot(collab: UniverCollabService) {
+  return handleUniverserHttp(
+    new Request("https://workspace.edge/universer-api/snapshot/2/unit/unit_welcome_sheet"),
+    collabHost(collab)
+  );
 }
 
 describe("Q3 Forecast demo seed", () => {
@@ -146,16 +194,28 @@ describe("Q3 Forecast demo seed", () => {
 
     const meta = decodedWorkbookMeta(snapshot);
     assert.ok(meta && typeof meta === "object");
-    const metaJson = JSON.stringify(meta);
+    assert.equal(meta.appVersion, "1.0.0-insiders.20260907-70fc579");
+    assert.equal(meta.locale, "enUS");
+    assert.equal(meta.dateSystem, "date1900");
+    assert.deepEqual(meta.styles, {});
+    assert.equal(meta.sheets, undefined);
+    assert.equal(meta.resources, undefined);
+    assert.equal(meta.id, undefined);
 
     assert.equal(getSheetCell(snapshot, "A1")?.v, "Metric");
     assert.equal(getSheetCell(snapshot, "B1")?.v, "Jul");
     assert.equal(getSheetCell(snapshot, "C1")?.v, "Aug");
     assert.equal(getSheetCell(snapshot, "D1")?.v, "Sep");
     assert.equal(getSheetCell(snapshot, "E1")?.v, "Q3");
-    assert.ok(getSheetCell(snapshot, "B2")?.v != null);
-    assert.ok(getSheetCell(snapshot, "C2")?.v != null);
-    assert.ok(getSheetCell(snapshot, "D2")?.v != null);
+    assert.equal(getSheetCell(snapshot, "B2")?.v, 120);
+    assert.equal(getSheetCell(snapshot, "C2")?.v, 140);
+    assert.equal(getSheetCell(snapshot, "D2")?.v, 160);
+    assert.equal(getSheetCell(snapshot, "B3")?.v, 72);
+    assert.equal(getSheetCell(snapshot, "C3")?.v, 78);
+    assert.equal(getSheetCell(snapshot, "D3")?.v, 85);
+    assert.equal(getSheetCell(snapshot, "B4")?.v, 48);
+    assert.equal(getSheetCell(snapshot, "C4")?.v, 61);
+    assert.equal(getSheetCell(snapshot, "D4")?.v, 90);
     assert.equal(getSheetCell(snapshot, "E2")?.v ?? null, null);
     assert.equal(getSheetCell(snapshot, "E2")?.f ?? null, null);
     assert.equal(getSheetCell(snapshot, "E3")?.v ?? null, null);
@@ -163,53 +223,105 @@ describe("Q3 Forecast demo seed", () => {
     assert.equal(getSheetCell(snapshot, "E4")?.v ?? null, null);
     assert.equal(getSheetCell(snapshot, "E4")?.f ?? null, null);
 
-    const named = parseResource(snapshot, "SHEET_DEFINED_NAME_PLUGIN");
-    const namedText = JSON.stringify(named);
-    assert.match(namedText, /"Sep"/);
-    assert.match(namedText, /D2:D4/);
+    const named = parseResource(snapshot, "SHEET_DEFINED_NAME_PLUGIN") as Record<string, { name?: string; formulaOrRefString?: string }>;
+    const namedSep = Object.values(named ?? {}).find((entry) => entry?.name === "Sep");
+    assert.ok(namedSep, "named range Sep must exist");
+    assert.match(String(namedSep?.formulaOrRefString), /D2:D4/);
 
-    const cf = parseResource(snapshot, "SHEET_CONDITIONAL_FORMATTING_PLUGIN");
-    const cfText = JSON.stringify(cf);
-    assert.match(cfText, /colorScale/);
+    const cf = parseResource(snapshot, "SHEET_CONDITIONAL_FORMATTING_PLUGIN") as {
+      sheet_1?: Array<{ rule?: { type?: string }; ranges?: Array<{ startRow: number; startColumn: number; endRow: number; endColumn: number }> }>;
+    };
+    const colorScale = cf?.sheet_1?.find((rule) => rule.rule?.type === "colorScale");
+    assert.ok(colorScale, "color scale CF must exist");
     assert.ok(
-      cfText.includes('"startRow":1') &&
-        cfText.includes('"startColumn":4') &&
-        cfText.includes('"endRow":3') &&
-        cfText.includes('"endColumn":4'),
+      colorScale?.ranges?.some(
+        (range) => range.startRow === 1 && range.startColumn === 4 && range.endRow === 3 && range.endColumn === 4
+      ),
       "color scale must cover E2:E4"
     );
 
-    const spark = parseResource(snapshot, "SHEET_SPARKLINE_PLUGIN");
-    const sparkText = JSON.stringify(spark);
-    assert.ok(
-      sparkText.includes("B2:D2") ||
-        (sparkText.includes('"startRow":1') &&
-          sparkText.includes('"startColumn":1') &&
-          sparkText.includes('"endColumn":3')),
-      "sparklines F2:F4 must source B2:D2…"
-    );
+    const spark = parseResource(snapshot, "SHEET_SPARKLINE_PLUGIN") as {
+      [unitId: string]: {
+        sheet_1?: {
+          spark_q3?: {
+            config?: { sourceA1?: unknown; type?: number };
+            sparklines?: Record<string, Record<string, { startRow: number; startColumn: number; endRow: number; endColumn: number }>>;
+          };
+        };
+      };
+    };
+    const sparkGroup = spark?.[WELCOME_UNIT_ID]?.sheet_1?.spark_q3;
+    assert.ok(sparkGroup, "sparkline group must be keyed by unit then sheet");
+    assert.equal(sparkGroup?.config?.sourceA1, undefined);
+    assert.deepEqual(sparkGroup?.sparklines?.["1"]?.["5"], {
+      startRow: 1,
+      startColumn: 1,
+      endRow: 1,
+      endColumn: 3
+    });
+    assert.deepEqual(sparkGroup?.sparklines?.["2"]?.["5"], {
+      startRow: 2,
+      startColumn: 1,
+      endRow: 2,
+      endColumn: 3
+    });
+    assert.deepEqual(sparkGroup?.sparklines?.["3"]?.["5"], {
+      startRow: 3,
+      startColumn: 1,
+      endRow: 3,
+      endColumn: 3
+    });
 
-    const drawings = parseResource(snapshot, "SHEET_DRAWING_PLUGIN");
-    const charts = parseResource(snapshot, "SHEET_CHART_PLUGIN");
-    const visualText = `${JSON.stringify(drawings)}\n${JSON.stringify(charts)}\n${stringifyResources(snapshot)}`;
-    assert.ok(
-      visualText.includes("SHEET_CONDITIONAL_FORMATTING_PLUGIN") ||
-        visualText.includes("drawingType") ||
-        visualText.includes("SHEET_CHART_PLUGIN") ||
-        visualText.includes('"chartType"'),
-      "snapshot must include CF or a chart drawing"
-    );
-    assert.ok(
-      visualText.includes("A1:D4") || visualText.includes('"chartType":4') || visualText.includes('"drawingType":2'),
-      "column chart of A1:D4 must be baked in"
-    );
+    const drawings = parseResource(snapshot, "SHEET_DRAWING_PLUGIN") as {
+      sheet_1?: { data?: { chart_q3?: { drawingType?: number; unitId?: string; sheetTransform?: { from?: { row?: number } } } }; order?: string[] };
+      [key: string]: unknown;
+    };
+    assert.equal(drawings?.[WELCOME_UNIT_ID], undefined, "drawings must not wrap by unitId");
+    assert.equal(drawings?.sheet_1?.data?.chart_q3?.drawingType, 2);
+    assert.equal(drawings?.sheet_1?.data?.chart_q3?.unitId, WELCOME_UNIT_ID);
+    assert.ok((drawings?.sheet_1?.data?.chart_q3?.sheetTransform?.from?.row ?? -1) >= 6, "chart drawing must sit below the table");
+    assert.deepEqual(drawings?.sheet_1?.order, ["chart_q3"]);
 
-    const validation = parseResource(snapshot, "SHEET_DATA_VALIDATION_PLUGIN");
-    const validationText = JSON.stringify(validation);
-    assert.match(validationText, /between/i);
-    assert.match(validationText, /"0"/);
-    assert.match(validationText, /"999"/);
-    assert.ok(metaJson.includes("Forecast"));
+    const charts = parseResource(snapshot, "SHEET_CHART_PLUGIN") as {
+      sheet_1?: Array<{
+        chartType?: number;
+        rangeInfo?: {
+          rangeInfo?: { range?: { startRow: number; startColumn: number; endRow: number; endColumn: number }; subUnitId?: string; unitId?: string };
+        };
+      }>;
+      version?: unknown;
+      dataSources?: unknown;
+    };
+    assert.equal(charts?.version, undefined);
+    assert.equal(charts?.dataSources, undefined);
+    assert.equal(charts?.sheet_1?.[0]?.chartType, 4);
+    assert.deepEqual(charts?.sheet_1?.[0]?.rangeInfo?.rangeInfo?.range, {
+      startRow: 0,
+      startColumn: 0,
+      endRow: 3,
+      endColumn: 3
+    });
+    assert.equal(charts?.sheet_1?.[0]?.rangeInfo?.rangeInfo?.subUnitId, "sheet_1");
+    assert.equal(charts?.sheet_1?.[0]?.rangeInfo?.rangeInfo?.unitId, WELCOME_UNIT_ID);
+
+    const validation = parseResource(snapshot, "SHEET_DATA_VALIDATION_PLUGIN") as {
+      sheet_1?: Array<{
+        operator?: string;
+        formula1?: string;
+        formula2?: string;
+        ranges?: Array<{ startRow: number; startColumn: number; endRow: number; endColumn: number }>;
+      }>;
+    };
+    const dv = validation?.sheet_1?.[0];
+    assert.equal(dv?.operator, "between");
+    assert.equal(dv?.formula1, "0");
+    assert.equal(dv?.formula2, "999");
+    assert.ok(
+      dv?.ranges?.some(
+        (range) => range.startRow === 1 && range.startColumn === 3 && range.endRow === 3 && range.endColumn === 3
+      ),
+      "data validation must cover D2:D4"
+    );
   });
 
   test("skip helper leaves empty units seedable and skips A1:E4 that already have values", () => {
@@ -230,5 +342,59 @@ describe("Q3 Forecast demo seed", () => {
     assert.equal(workbookOf(snapshot).name, "Q3 Forecast");
     assert.equal(getSheetCell(snapshot, "A1")?.v, "Metric");
     assert.equal(shouldSkipDemoSnapshot(snapshot), true);
+  });
+
+  test("resolveWelcomeUnitSnapshot upgrades empty units and skips dirty A1:E4", () => {
+    const created = resolveWelcomeUnitSnapshot(WELCOME_UNIT_ID);
+    assert.equal(workbookOf(created).name, "Q3 Forecast");
+    assert.equal(getSheetCell(created, "A1")?.v, "Metric");
+
+    const empty = emptyWelcomeSnapshot();
+    const upgraded = resolveWelcomeUnitSnapshot(WELCOME_UNIT_ID, empty);
+    assert.notEqual(upgraded, empty);
+    assert.equal(getSheetCell(upgraded, "A1")?.v, "Metric");
+    assert.equal(getSheetCell(upgraded, "B2")?.v, 120);
+
+    const seeded = buildQ3ForecastSnapshot(WELCOME_UNIT_ID) as Record<string, unknown>;
+    assert.equal(resolveWelcomeUnitSnapshot(WELCOME_UNIT_ID, seeded), seeded);
+
+    const dirty = emptyWelcomeSnapshot();
+    workbookOf(dirty).sheets.sheet_1.cellData = { "0": { "0": { v: "already filled" } } };
+    assert.equal(resolveWelcomeUnitSnapshot(WELCOME_UNIT_ID, dirty), dirty);
+    assert.equal(getSheetCell(dirty, "A1")?.v, "already filled");
+  });
+
+  test("GET snapshot hydrates empty welcome unit to Q3 and leaves dirty A1 unchanged", async () => {
+    const emptySql = createSqliteAdapter();
+    const emptyCtx = new Context();
+    emptyCtx.provide("host", { sql: emptySql });
+    const emptyCollab = new UniverCollabService(emptyCtx, emptySql);
+    emptyCollab.createUnit(WELCOME_UNIT_ID, 2, "Welcome Sheet", emptyWelcomeSnapshot());
+    assert.equal(getSheetCell(emptyCollab.getLatestSnapshot(WELCOME_UNIT_ID)!.data, "A1")?.v ?? null, null);
+
+    const emptyResponse = await getWelcomeSnapshot(emptyCollab);
+    assert.ok(emptyResponse);
+    const emptyBody = (await emptyResponse.json()) as { snapshot?: Record<string, unknown> };
+    assert.equal(getSheetCell(emptyBody.snapshot ?? {}, "A1")?.v, "Metric");
+    const emptyStored = emptyCollab.getLatestSnapshot(WELCOME_UNIT_ID);
+    assert.ok(emptyStored);
+    assert.equal(getSheetCell(emptyStored.data, "A1")?.v, "Metric");
+    assert.equal(getSheetCell(emptyStored.data, "B2")?.v, 120);
+    assert.equal(getSheetCell(emptyStored.data, "D4")?.v, 90);
+
+    const dirtySql = createSqliteAdapter();
+    const dirtyCtx = new Context();
+    dirtyCtx.provide("host", { sql: dirtySql });
+    const dirtyCollab = new UniverCollabService(dirtyCtx, dirtySql);
+    const dirty = emptyWelcomeSnapshot();
+    workbookOf(dirty).sheets.sheet_1.cellData = { "0": { "0": { v: "already filled" } } };
+    dirtyCollab.createUnit(WELCOME_UNIT_ID, 2, "Welcome Sheet", dirty);
+
+    const dirtyResponse = await getWelcomeSnapshot(dirtyCollab);
+    assert.ok(dirtyResponse);
+    const dirtyStored = dirtyCollab.getLatestSnapshot(WELCOME_UNIT_ID);
+    assert.ok(dirtyStored);
+    assert.equal(getSheetCell(dirtyStored.data, "A1")?.v, "already filled");
+    assert.equal(getSheetCell(dirtyStored.data, "B2")?.v ?? null, null);
   });
 });

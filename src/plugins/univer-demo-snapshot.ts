@@ -1,7 +1,7 @@
 /**
- * Baked Q3 Forecast IWorkbookData for the demo canvas.
- * Chart, CF, sparklines, named range, and validation live in decoded originalMeta
- * (and workbook.resources), not in live Facade after load.
+ * Baked Q3 Forecast snapshot for the demo canvas.
+ * Cells live on wrapper sheet.cellData; chart/CF/sparkline/named-range/validation
+ * blobs live on workbook.resources. Workbook originalMeta stays thin.
  */
 import {
   a1ToRowCol,
@@ -15,6 +15,13 @@ export const DEMO_WELCOME_UNIT_ID = "unit_welcome_sheet";
 export const DEMO_SHEET_ID = "sheet_1";
 
 const APP_VERSION = "1.0.0-insiders.20260907-70fc579";
+
+const THIN_WORKBOOK_ORIGINAL_META = {
+  appVersion: APP_VERSION,
+  locale: "enUS",
+  dateSystem: "date1900",
+  styles: {}
+};
 
 const HEADERS = ["Metric", "Jul", "Aug", "Sep", "Q3"] as const;
 const METRIC_ROWS: Array<[string, number, number, number]> = [
@@ -101,14 +108,16 @@ function pluginResources(unitId: string): Array<{ name: string; data: string }> 
     }
   };
 
+  const sheetTransform = {
+    from: { row: 6, column: 0, rowOffset: 0, columnOffset: 0 },
+    to: { row: 20, column: 6, rowOffset: 0, columnOffset: 0 }
+  };
+
   const sparklines = {
     [unitId]: {
       [DEMO_SHEET_ID]: {
         spark_q3: {
-          config: {
-            type: 1,
-            sourceA1: ["B2:D2", "B3:D3", "B4:D4"]
-          },
+          config: { type: 1 },
           sparklines: {
             "1": { "5": range(1, 1, 1, 3) },
             "2": { "5": range(2, 1, 2, 3) },
@@ -120,48 +129,36 @@ function pluginResources(unitId: string): Array<{ name: string; data: string }> 
   };
 
   const drawings = {
-    [unitId]: {
-      [DEMO_SHEET_ID]: {
-        data: {
-          chart_q3: {
-            unitId,
-            subUnitId: DEMO_SHEET_ID,
-            drawingId: "chart_q3",
-            drawingType: 2,
-            title: "Q3 Forecast",
-            sheetTransform: {
-              from: { row: 6, column: 0, rowOffset: 0, columnOffset: 0 },
-              to: { row: 20, column: 6, rowOffset: 0, columnOffset: 0 }
-            }
-          }
-        },
-        order: ["chart_q3"]
-      }
+    [DEMO_SHEET_ID]: {
+      data: {
+        chart_q3: {
+          unitId,
+          subUnitId: DEMO_SHEET_ID,
+          drawingId: "chart_q3",
+          drawingType: 2,
+          sheetTransform,
+          axisAlignSheetTransform: sheetTransform
+        }
+      },
+      order: ["chart_q3"]
     }
   };
 
   const charts = {
-    version: 2,
-    dataSources: {
-      ds_q3: {
-        id: "ds_q3",
-        name: "A1:D4",
-        values: [
-          ["Metric", "Jul", "Aug", "Sep"],
-          ["Revenue", 120, 140, 160],
-          ["Cost", 72, 78, 85],
-          ["Pipeline", 48, 61, 90]
-        ]
-      }
-    },
-    charts: {
-      chart_q3: {
+    [DEMO_SHEET_ID]: [
+      {
         id: "chart_q3",
-        dataSourceId: "ds_q3",
         chartType: 4,
-        context: { headerRow: 0, orient: "column", rangeA1: "A1:D4" }
+        rangeInfo: {
+          rangeInfo: {
+            range: range(0, 0, 3, 3),
+            subUnitId: DEMO_SHEET_ID,
+            unitId
+          },
+          headerRow: 0
+        }
       }
-    }
+    ]
   };
 
   const validation = {
@@ -186,29 +183,6 @@ function pluginResources(unitId: string): Array<{ name: string; data: string }> 
     { name: "SHEET_CHART_PLUGIN", data: JSON.stringify(charts) },
     { name: "SHEET_DATA_VALIDATION_PLUGIN", data: JSON.stringify(validation) }
   ];
-}
-
-function workbookData(unitId: string, cellData: CellMatrix, resources: Array<{ name: string; data: string }>) {
-  return {
-    id: unitId,
-    name: "Q3 Forecast",
-    appVersion: APP_VERSION,
-    locale: "enUS",
-    dateSystem: "date1900",
-    styles: {},
-    sheetOrder: [DEMO_SHEET_ID],
-    sheets: {
-      [DEMO_SHEET_ID]: {
-        id: DEMO_SHEET_ID,
-        name: "Forecast",
-        rowCount: 1000,
-        columnCount: 20,
-        cellData,
-        ...WORKSHEET_META
-      }
-    },
-    resources
-  };
 }
 
 function cellHasValue(cell: SheetCellValue | null | undefined): boolean {
@@ -262,10 +236,16 @@ export function shouldSkipDemoSnapshot(snapshot: unknown): boolean {
   return false;
 }
 
+export function resolveWelcomeUnitSnapshot(unitId: string, existing?: unknown): Record<string, unknown> {
+  if (existing != null && shouldSkipDemoSnapshot(existing)) {
+    return existing as Record<string, unknown>;
+  }
+  return buildQ3ForecastSnapshot(unitId);
+}
+
 export function buildQ3ForecastSnapshot(unitId: string): Record<string, unknown> {
   const cellData = buildCellData();
   const resources = pluginResources(unitId);
-  const data = workbookData(unitId, cellData, resources);
 
   return {
     unitID: unitId,
@@ -295,7 +275,7 @@ export function buildQ3ForecastSnapshot(unitId: string): Record<string, unknown>
         }
       },
       resources,
-      originalMeta: encodeOriginalMeta(data)
+      originalMeta: encodeOriginalMeta(THIN_WORKBOOK_ORIGINAL_META)
     }
   };
 }
