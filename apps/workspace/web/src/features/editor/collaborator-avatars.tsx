@@ -1,72 +1,139 @@
 import type { IMember } from "@univerjs/protocol";
+import { Bot } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useI18n } from "../../shared/i18n";
 import { Avatar, Tooltip } from "../../shared/ui";
+import { cn } from "../../shared/utils/cn";
+import { PresenceLegend } from "./presence-legend";
+import {
+  composePresenceRoster,
+  isBotCollaborator,
+  presenceRingClassName,
+  readAgentPresenceStatus,
+  shouldPulseBot,
+  type PresenceSeat,
+} from "./presence-roster";
 
 const VISIBLE_MEMBERS = 4;
+
+export type CollaboratorMember = IMember & { readonly color?: string };
 
 export function CollaboratorAvatars({
   members,
   currentUserId,
+  currentUserName,
+  currentUserAvatar,
 }: {
-  readonly members: readonly IMember[];
+  readonly members: readonly CollaboratorMember[];
   readonly currentUserId: string;
+  readonly currentUserName?: string;
+  readonly currentUserAvatar?: string | null;
 }) {
   const { t } = useI18n();
-  const users = [
-    ...new Map(members.map((member) => [member.userID, member])).values(),
-  ].sort((left, right) =>
-    Number(right.userID === currentUserId) - Number(left.userID === currentUserId)
-  );
-  if (users.length === 0) return null;
-  const memberLabel = (member: IMember) =>
-    member.userID === currentUserId
-      ? t("collaboratorYou", { name: member.name || member.userID })
-      : member.name || member.userID;
-  const overflow = users.slice(VISIBLE_MEMBERS);
-  const onlineLabel = t("collaboratorsOnline", { count: users.length });
+  const [agentStatus, setAgentStatus] = useState<"thinking" | "idle">("idle");
+  useEffect(() => {
+    const onPresence = (event: Event) => {
+      const status = readAgentPresenceStatus({
+        type: event.type,
+        detail: (event as CustomEvent<{ status?: unknown }>).detail,
+      });
+      if (status) setAgentStatus(status);
+    };
+    window.addEventListener("workspace-agent-presence", onPresence);
+    return () =>
+      window.removeEventListener("workspace-agent-presence", onPresence);
+  }, []);
+
+  const seats = composePresenceRoster({
+    members,
+    currentUserId,
+    currentUserName,
+    ...(currentUserAvatar ? { currentUserAvatar } : {}),
+  });
+  const seatLabel = (seat: PresenceSeat) => {
+    if (seat.kind === "ghost") return t("waitingForJordan");
+    if (seat.userID === currentUserId) {
+      return t("collaboratorYou", { name: seat.name });
+    }
+    return seat.name;
+  };
+  const overflow = seats.slice(VISIBLE_MEMBERS);
+  const onlineLabel = t("collaboratorsOnline", { count: seats.length });
 
   return (
-    <div
-      role="group"
-      aria-label={onlineLabel}
-      className="flex shrink-0 items-center px-1"
+    <PresenceLegend
+      title={t("presenceLegendTitle")}
+      items={seats.map((seat) => ({
+        id: seat.userID,
+        label: seatLabel(seat),
+        hint:
+          seat.bot && agentStatus === "thinking"
+            ? t("presenceThinking")
+            : undefined,
+        dashed: seat.kind === "ghost",
+        muted: seat.kind === "muted-bot",
+        thinking: shouldPulseBot({ bot: seat.bot, status: agentStatus }),
+        ringClassName: presenceRingClassName(seat.ringToken, {
+          dashed: seat.kind === "ghost",
+        }),
+      }))}
     >
-      <div className="flex -space-x-1.5 items-center">
-        {users.slice(0, VISIBLE_MEMBERS).map((member) => (
-          <Tooltip key={member.userID} content={memberLabel(member)}>
-            <span
-              tabIndex={0}
-              aria-label={memberLabel(member)}
-              className="relative inline-flex rounded-full ring-2 ring-background outline-offset-4 hover:z-10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring"
+      <div
+        role="group"
+        aria-label={onlineLabel}
+        className="flex shrink-0 cursor-pointer items-center px-1"
+      >
+        <div className="flex -space-x-1.5 items-center">
+          {seats.slice(0, VISIBLE_MEMBERS).map((seat) => (
+            <Tooltip key={seat.userID} content={seatLabel(seat)}>
+              <span
+                tabIndex={0}
+                aria-label={seatLabel(seat)}
+                className={cn(
+                  "relative inline-flex overflow-hidden rounded-full ring-2 ring-offset-2 ring-offset-background outline-offset-4 hover:z-10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring",
+                  presenceRingClassName(seat.ringToken, {
+                    dashed: seat.kind === "ghost",
+                  }),
+                  seat.kind === "muted-bot" && "opacity-50",
+                  shouldPulseBot({ bot: seat.bot, status: agentStatus }) &&
+                    "animate-pulse"
+                )}
+              >
+                {isBotCollaborator(seat.userID) ? (
+                  <span className="grid size-7 place-items-center bg-muted text-muted-foreground sm:size-9">
+                    <Bot className="size-3.5 sm:size-4" />
+                  </span>
+                ) : (
+                  <Avatar
+                    src={seat.avatar}
+                    name={seat.name}
+                    className="size-7 sm:size-9"
+                  />
+                )}
+              </span>
+            </Tooltip>
+          ))}
+          {overflow.length > 0 ? (
+            <Tooltip
+              content={
+                <ul className="max-h-48 overflow-y-auto">
+                  {overflow.map((seat) => (
+                    <li key={seat.userID}>{seatLabel(seat)}</li>
+                  ))}
+                </ul>
+              }
             >
-              <Avatar
-                src={member.avatar}
-                name={member.name}
-                className="size-7 sm:size-9"
-              />
-            </span>
-          </Tooltip>
-        ))}
-        {overflow.length > 0 ? (
-          <Tooltip
-            content={
-              <ul className="max-h-48 overflow-y-auto">
-                {overflow.map((member) => (
-                  <li key={member.userID}>{memberLabel(member)}</li>
-                ))}
-              </ul>
-            }
-          >
-            <span
-              tabIndex={0}
-              aria-label={overflow.map(memberLabel).join(", ")}
-              className="relative grid size-7 place-items-center rounded-full bg-muted text-xs font-medium text-muted-foreground ring-2 ring-background outline-offset-4 hover:z-10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring sm:size-9 sm:text-sm"
-            >
-              +{overflow.length}
-            </span>
-          </Tooltip>
-        ) : null}
+              <span
+                tabIndex={0}
+                aria-label={overflow.map(seatLabel).join(", ")}
+                className="relative grid size-7 place-items-center rounded-full bg-muted text-xs font-medium text-muted-foreground ring-2 ring-background outline-offset-4 hover:z-10 focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-ring sm:size-9 sm:text-sm"
+              >
+                +{overflow.length}
+              </span>
+            </Tooltip>
+          ) : null}
+        </div>
       </div>
-    </div>
+    </PresenceLegend>
   );
 }

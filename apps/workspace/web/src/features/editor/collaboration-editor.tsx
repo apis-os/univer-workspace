@@ -76,6 +76,11 @@ import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
 import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
 import { createCollabConflictToaster } from "./collab-conflict-toast";
 import {
+  applyHistoryNameUsers,
+  historyDisplayName,
+  overlayHistoryAdministrator,
+} from "./history-names";
+import {
   bindCollaborationStatusDisplay,
   bindLiveShareFacade,
   shouldBindCollaborationStatusDisplay,
@@ -452,7 +457,7 @@ export function createCollaborationEditor(
 
         const protocolUser: IUser = {
           userID: user.id,
-          name: user.displayName,
+          name: historyDisplayName(user.id, user.displayName),
           avatar: user.avatarUrl ?? "",
           anonymous: false,
           canBindAnonymous: false,
@@ -460,10 +465,9 @@ export function createCollaborationEditor(
           email: "",
           createTimestamp: 0,
         };
-        univer
-          .__getInjector()
-          .get(UserManagerService)
-          .setCurrentUser(protocolUser);
+        const userManager = univer.__getInjector().get(UserManagerService);
+        userManager.setCurrentUser(protocolUser);
+        applyHistoryNameUsers(userManager);
 
         const collaboration = univerAPI.getCollaboration();
         statusListener = univerAPI.addEvent(
@@ -616,8 +620,14 @@ function historyLocales(
   history: WorkspaceHistoryDefinition
 ): ILanguagePack[] {
   return language === "zh-CN"
-    ? [EditHistoryUIZhCN, history.locales[language]]
-    : [EditHistoryUIEnUS, history.locales[language]];
+    ? [
+        overlayHistoryAdministrator(EditHistoryUIZhCN),
+        overlayHistoryAdministrator(history.locales[language]),
+      ]
+    : [
+        overlayHistoryAdministrator(EditHistoryUIEnUS),
+        overlayHistoryAdministrator(history.locales[language]),
+      ];
 }
 
 function configurePresetCollaboration(

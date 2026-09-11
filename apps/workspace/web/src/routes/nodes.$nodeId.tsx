@@ -300,6 +300,8 @@ function LoadedResourcePage({
             <CollaboratorAvatars
               members={collaborators}
               currentUserId={session.data.user.id}
+              currentUserName={session.data.user.displayName}
+              currentUserAvatar={session.data.user.avatarUrl}
             />
             <LiveShareBar />
             <CollaborationStatusChip />
