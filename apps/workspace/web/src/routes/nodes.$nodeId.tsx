@@ -37,6 +37,8 @@ import {
   readAgentPanelOpen,
   writeAgentPanelOpen,
 } from "../features/editor/agent-panel";
+import { parseNodeDemoSearch } from "../features/demo/demo-search";
+import { DEMO_PRESENCE_EVENT } from "../features/demo/demo-reset";
 import { BlobPreview } from "../features/blobs";
 import { api } from "../shared/api/client";
 import { apiError } from "../shared/api/errors";
@@ -50,6 +52,7 @@ export const Route = createFileRoute("/nodes/$nodeId")({
     ...(typeof search.unit === "string" && search.unit
       ? { unit: search.unit }
       : {}),
+    ...parseNodeDemoSearch(search),
   }),
   loaderDeps: ({ search }) => ({ unit: search.unit }),
   loader: async ({ context, deps, params, location }) => {
@@ -183,6 +186,17 @@ function LoadedResourcePage({
   useEffect(() => {
     writeAgentPanelOpen(agentOpen);
   }, [agentOpen]);
+  useEffect(() => {
+    if (!session.data?.authenticated) return;
+    window.dispatchEvent(
+      new CustomEvent(DEMO_PRESENCE_EVENT, {
+        detail: {
+          members: collaborators,
+          currentUserId: session.data.user.id,
+        },
+      })
+    );
+  }, [collaborators, session.data]);
   const rename = useMutation({
     mutationFn: async (name: string) => {
       const { data: updated, error } = await api.PATCH(

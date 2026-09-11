@@ -1,0 +1,130 @@
+import { useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
+import { useI18n } from "../../shared/i18n";
+import { toast } from "../../shared/ui";
+import { DemoCommandPalette } from "./demo-command-palette";
+import {
+  openDemoPalette,
+  type DemoPaletteActions,
+} from "./demo-palette";
+import {
+  DEMO_PRESENCE_EVENT,
+  planDemoReset,
+  type DemoPresenceMember,
+} from "./demo-reset";
+import { readPlaybook, writePlaybook } from "./demo-playbook";
+import { parseDemoSearch, type DemoScene } from "./demo-search";
+import {
+  dispatchDemoScene,
+  focusAgentExplainChip,
+  focusAgentFillChip,
+  openAgentPanelFromHeader,
+  runDemoScene,
+} from "./demo-scenes";
+
+export function DemoRuntime({
+  palette: Palette = DemoCommandPalette,
+}: {
+  readonly palette?: typeof DemoCommandPalette;
+} = {}) {
+  const navigate = useNavigate();
+  const { language, setLanguage, t } = useI18n();
+  const ranScene = useRef<string>("");
+  const resetNotified = useRef(false);
+
+  const actions: DemoPaletteActions = {
+    openAvery: () => {
+      window.location.assign("/demo");
+    },
+    openJordan: () => {
+      window.location.assign("/demo?as=jordan");
+    },
+    runFillSum: () => {
+      runWithContext("fill", t, navigate);
+    },
+    runExplainQ3: () => {
+      openAgentPanelFromHeader();
+      window.setTimeout(() => focusAgentExplainChip(), 80);
+    },
+    present: () => {
+      const button = Array.from(document.querySelectorAll("button")).find(
+        (item) => item.textContent?.trim() === "Present"
+      );
+      button?.click();
+    },
+    followAgent: () => undefined,
+    whatIf: () => undefined,
+    exportXlsx: () => undefined,
+    toggleLanguage: () => {
+      setLanguage(language === "zh-CN" ? "en-US" : "zh-CN");
+    },
+  };
+
+  useEffect(() => {
+    const search = parseDemoSearch(
+      Object.fromEntries(new URLSearchParams(window.location.search).entries())
+    );
+    if (search.play === "1") {
+      const stored = readPlaybook();
+      if (!stored.enabled) writePlaybook({ ...stored, enabled: true });
+      window.dispatchEvent(new Event("workspace-demo-playbook"));
+    }
+    if (search.scene && ranScene.current !== search.scene) {
+      ranScene.current = search.scene;
+      window.setTimeout(() => {
+        runWithContext(search.scene as DemoScene, t, navigate);
+      }, 120);
+    }
+  }, [language, navigate, setLanguage, t]);
+
+  useEffect(() => {
+    const onPresence = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        members?: readonly DemoPresenceMember[];
+        currentUserId?: string;
+      }>).detail;
+      const currentUserId = detail?.currentUserId;
+      if (!currentUserId || resetNotified.current) return;
+      const plan = planDemoReset({
+        members: detail.members ?? [],
+        currentUserId,
+      });
+      if (plan.action !== "isolate") return;
+      resetNotified.current = true;
+      const stored = readPlaybook();
+      writePlaybook({ ...stored, isolated: true });
+      toast.warning(t(plan.toastKey));
+    };
+    window.addEventListener(DEMO_PRESENCE_EVENT, onPresence);
+    return () => window.removeEventListener(DEMO_PRESENCE_EVENT, onPresence);
+  }, [t]);
+
+  return <Palette actions={actions} />;
+}
+
+function runWithContext(
+  scene: DemoScene,
+  t: (key: "collabSameCell") => string,
+  navigate: ReturnType<typeof useNavigate>
+): void {
+  runDemoScene(scene, {
+    origin: window.location.origin,
+    dispatchScene: dispatchDemoScene,
+    openAgentPanel: () => openAgentPanelFromHeader(),
+    focusFillChip: () => {
+      window.setTimeout(() => focusAgentFillChip(), 80);
+    },
+    copyText: (text) => {
+      void navigator.clipboard?.writeText(text);
+    },
+    toast: (key) => {
+      toast.info(t(key));
+    },
+    navigate: (to) => {
+      void navigate({ to });
+    },
+    openPalette: (itemId) => {
+      openDemoPalette(itemId);
+    },
+  });
+}

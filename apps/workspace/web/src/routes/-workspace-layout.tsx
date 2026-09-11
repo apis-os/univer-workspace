@@ -46,6 +46,9 @@ import {
   useMediaQuery,
   useResizableSidebar,
 } from "../shared/resizable-sidebar";
+import { DemoPlaybookBar } from "../features/demo/demo-playbook-bar";
+import { DemoCommandPalette } from "../features/demo/demo-command-palette";
+import { DemoRuntime } from "../features/demo/demo-runtime";
 import {
   Avatar,
   Button,
@@ -405,10 +408,11 @@ export function WorkspaceLayout({
         {/* ---------------------------------------------------------- */}
         <div className="flex min-w-0 flex-1 flex-col bg-background">
           <header className="flex h-15 shrink-0 items-center justify-between gap-4 border-b border-border pr-4.5 pl-6 max-[720px]:px-3">
-            <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
               <h1 className="m-0 truncate text-[18px] font-semibold tracking-tight max-[720px]:hidden">
                 {pageTitle}
               </h1>
+              <DemoPlaybookBar />
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
               {headerContent}
@@ -521,6 +525,8 @@ export function WorkspaceLayout({
         open={passwordDialogOpen}
         onOpenChange={setPasswordDialogOpen}
       />
+
+      <DemoRuntime palette={DemoCommandPalette} />
 
       <Dialog
         open={appSettingsOpen}
