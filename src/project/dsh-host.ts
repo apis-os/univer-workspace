@@ -27,6 +27,7 @@ import {
   encodeCombJson,
   type CombFrame
 } from "../integrations/univer-comb-codec.ts";
+import { handleUniverserHttp } from "../integrations/univer-collab-http.ts";
 import { AGENT_MEMBER_ID, AGENT_USER_ID, AGENT_USER_NAME } from "../plugins/univer-facade-actions.ts";
 import { actorFromRequest, type WorkspaceActor } from "../control-plane/actor.ts";
 import {
@@ -203,6 +204,24 @@ export class DshHost extends HostBase<any> {
     if (url.pathname.startsWith("/universer-api/")) {
       const kernel = await this.ensureKernel();
       const collab = kernel.get("collab") as UniverCollabService | undefined;
+
+      const commentIdentity = {
+        userID:
+          request.headers.get("x-workspace-user-id")?.trim() ||
+          request.headers.get("x-workspace-actor-id")?.trim() ||
+          "user_admin",
+        name:
+          request.headers.get("x-workspace-user-name")?.trim() ||
+          request.headers.get("x-workspace-actor-name")?.trim() ||
+          "Avery Chen",
+        avatar: request.headers.get("x-workspace-user-avatar")?.trim() || ""
+      };
+      const commentRes = await handleUniverserHttp(request, {
+        collab,
+        identity: commentIdentity,
+        sql: this.getSqlExec()
+      });
+      if (commentRes) return commentRes;
 
       // GET /universer-api/user
       if (url.pathname === "/universer-api/user" && request.method === "GET") {
