@@ -1,0 +1,312 @@
+export const AGENT_PANEL_ID = "workspace-agent-panel";
+export const AGENT_PANEL_STORAGE_KEY = "univer-workspace-agent-panel-v1";
+
+export type AgentSuggestionKey =
+  | "agentChipFillQ3"
+  | "agentChipExplainQ3"
+  | "agentChipSetD4"
+  | "agentChipAppend"
+  | "agentChipSkills"
+  | "agentChipHistory";
+
+export interface AgentSuggestion {
+  readonly id: string;
+  readonly prompt: string;
+  readonly labelKey: AgentSuggestionKey;
+}
+
+export interface AgentStreamEvent {
+  readonly type: string;
+  readonly data: Record<string, unknown>;
+}
+
+type StorageLike = Pick<Storage, "getItem" | "setItem">;
+
+function browserStorage(): StorageLike | undefined {
+  try {
+    return globalThis.localStorage;
+  } catch {
+    return undefined;
+  }
+}
+
+export function readAgentPanelOpen(
+  fallback: boolean,
+  storage: StorageLike | undefined = browserStorage()
+): boolean {
+  const stored = storage?.getItem(AGENT_PANEL_STORAGE_KEY);
+  if (stored === "true") return true;
+  if (stored === "false") return false;
+  return fallback;
+}
+
+export function writeAgentPanelOpen(
+  open: boolean,
+  storage: StorageLike | undefined = browserStorage()
+): void {
+  storage?.setItem(AGENT_PANEL_STORAGE_KEY, String(open));
+}
+
+export function defaultAgentPanelOpen(
+  media: { matches: boolean } | undefined =
+    typeof window === "undefined"
+      ? undefined
+      : window.matchMedia("(max-width: 720px)")
+): boolean {
+  return media ? !media.matches : true;
+}
+
+export function agentExamplePrompt(unitType: string): string {
+  if (unitType === "doc") return "Append Hello from AI";
+  if (unitType === "sheet" || unitType === "base") {
+    return "Fill E2:E4 with SUM of Jul–Sep";
+  }
+  return "List available skills";
+}
+
+export function suggestionChipsForUnitType(
+  unitType: string
+): readonly AgentSuggestion[] {
+  const skills: AgentSuggestion = {
+    id: "skills",
+    prompt: "List available skills",
+    labelKey: "agentChipSkills",
+  };
+  const history: AgentSuggestion = {
+    id: "history",
+    prompt: "Show edit history",
+    labelKey: "agentChipHistory",
+  };
+  if (unitType === "doc") {
+    return [
+      {
+        id: "append",
+        prompt: "Append Hello from AI",
+        labelKey: "agentChipAppend",
+      },
+      skills,
+      history,
+    ];
+  }
+  if (unitType === "sheet" || unitType === "base") {
+    return [
+      {
+        id: "fill-q3",
+        prompt: "Fill E2:E4 with SUM of Jul–Sep",
+        labelKey: "agentChipFillQ3",
+      },
+      {
+        id: "explain-q3",
+        prompt: "Explain the Q3 forecast in one sentence",
+        labelKey: "agentChipExplainQ3",
+      },
+      {
+        id: "set-d4",
+        prompt: "Set D4 to 180",
+        labelKey: "agentChipSetD4",
+      },
+    ];
+  }
+  return [skills, history];
+}
+
+export async function readJsonBody(
+  response: Response
+): Promise<Record<string, unknown>> {
+  const raw = await response.text();
+  if (!raw.trim()) return {};
+  try {
+    return JSON.parse(raw) as Record<string, unknown>;
+  } catch {
+    return { error: { message: raw.slice(0, 240) } };
+  }
+}
+
+export function agentErrorMessage(
+  body: Record<string, unknown>,
+  fallback: string
+): string {
+  const error = body.error;
+  if (error && typeof error === "object" && "message" in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === "string" && message.trim()) return message;
+  }
+  if (typeof body.message === "string" && body.message.trim()) {
+    return body.message;
+  }
+  return fallback;
+}
+
+export function shouldPostAgentTurn(spectator?: boolean): boolean {
+  return spectator !== true;
+}
+
+export function isSseContentType(contentType: string | null): boolean {
+  return (contentType ?? "").includes("text/event-stream");
+}
+
+export function isCachedExplainPrompt(prompt: string): boolean {
+  const text = prompt.trim();
+  if (/^explain the q3 forecast(?: in one sentence)?$/i.test(text)) return true;
+  if (/^explain the full[- ]?sheet(?: in one sentence)?$/i.test(text)) {
+    return true;
+  }
+  return false;
+}
+
+export function gatewayCacheStatus(
+  meta: Record<string, unknown> | undefined,
+  prompt = ""
+): "HIT" | "MISS" {
+  const cache = meta?.cache;
+  if (cache === "HIT" || cache === "hit") return "HIT";
+  if (cache === "MISS" || cache === "miss") return "MISS";
+  if (meta?.cacheHit === true || meta?.cached === true) return "HIT";
+  if (meta?.cacheHit === false || meta?.cached === false) return "MISS";
+  if (meta?.skipCache === false) return "HIT";
+  if (meta?.skipCache === true) return "MISS";
+  if (isCachedExplainPrompt(prompt)) return "HIT";
+  return "MISS";
+}
+
+export function truncateGatewayLogId(
+  id: string | null | undefined,
+  max = 11
+): string {
+  if (!id) return "";
+  if (id.length <= max) return id;
+  return `${id.slice(0, max)}…`;
+}
+
+export function parseSseBlock(block: string): AgentStreamEvent | null {
+  let type = "message";
+  const dataLines: string[] = [];
+  for (const line of block.split(/\r?\n/)) {
+    if (line.startsWith("event:")) type = line.slice(6).trim();
+    else if (line.startsWith("data:")) dataLines.push(line.slice(5).trim());
+  }
+  if (dataLines.length === 0) return null;
+  const raw = dataLines.join("\n");
+  try {
+    const parsed = JSON.parse(raw) as unknown;
+    if (parsed && typeof parsed === "object") {
+      const obj = parsed as Record<string, unknown>;
+      if (typeof obj.type === "string" && obj.type.startsWith("agent.")) {
+        return {
+          type: obj.type,
+          data:
+            obj.data && typeof obj.data === "object"
+              ? (obj.data as Record<string, unknown>)
+              : obj,
+        };
+      }
+      return { type, data: obj };
+    }
+    return { type, data: { value: parsed } };
+  } catch {
+    return { type, data: { text: raw } };
+  }
+}
+
+async function readSseEvents(
+  response: Response,
+  onEvent: (event: AgentStreamEvent) => void
+): Promise<void> {
+  const reader = response.body?.getReader();
+  if (!reader) return;
+  const decoder = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const parts = buf.split(/\r?\n\r?\n/);
+    buf = parts.pop() ?? "";
+    for (const part of parts) {
+      const event = parseSseBlock(part);
+      if (event) onEvent(event);
+    }
+  }
+  buf += decoder.decode();
+  if (buf.trim()) {
+    const event = parseSseBlock(buf);
+    if (event) onEvent(event);
+  }
+}
+
+function asToolCall(
+  data: Record<string, unknown>
+): { tool: string; args: Record<string, unknown> } | null {
+  const tool = typeof data.tool === "string" ? data.tool : "";
+  if (!tool) return null;
+  const args =
+    data.args && typeof data.args === "object"
+      ? (data.args as Record<string, unknown>)
+      : {};
+  return { tool, args };
+}
+
+export async function consumeAgentTurnResponse(
+  response: Response,
+  onEvent?: (event: AgentStreamEvent) => void
+): Promise<Record<string, unknown>> {
+  if (!isSseContentType(response.headers.get("content-type"))) {
+    return readJsonBody(response);
+  }
+  const events: AgentStreamEvent[] = [];
+  const toolCalls: Array<{ tool: string; args: Record<string, unknown> }> =
+    [];
+  let text = "";
+  let doneData: Record<string, unknown> = {};
+  const emit = (event: AgentStreamEvent) => {
+    events.push(event);
+    onEvent?.(event);
+    if (event.type === "agent.token") {
+      text += String(event.data.delta ?? event.data.text ?? "");
+    }
+    if (event.type === "agent.tool_call_start") {
+      const call = asToolCall(event.data);
+      if (call) toolCalls.push(call);
+    }
+    if (event.type === "agent.done") {
+      doneData = event.data;
+    }
+  };
+  await readSseEvents(response, emit);
+  return {
+    ...doneData,
+    turnId: doneData.turnId,
+    text,
+    events,
+    rev: typeof doneData.rev === "number" ? doneData.rev : null,
+    toolCalls,
+    aiGatewayLogId: doneData.aiGatewayLogId ?? null,
+  };
+}
+
+export function readAgentMuxFrame(raw: string): AgentStreamEvent | null {
+  try {
+    const parsed = JSON.parse(raw) as Record<string, unknown>;
+    const ch = parsed.ch ?? parsed.channel;
+    if (ch !== 2) return null;
+    const type = parsed.type;
+    if (typeof type !== "string" || !type.startsWith("agent.")) return null;
+    const data =
+      parsed.data && typeof parsed.data === "object"
+        ? (parsed.data as Record<string, unknown>)
+        : parsed.payload && typeof parsed.payload === "object"
+          ? (parsed.payload as Record<string, unknown>)
+          : {};
+    return { type, data };
+  } catch {
+    return null;
+  }
+}
+
+export function agentMuxUrl(
+  unitId: string,
+  origin: { protocol: string; host: string } = globalThis.location
+): string {
+  const proto = origin.protocol === "https:" ? "wss:" : "ws:";
+  return `${proto}//${origin.host}/api/remote.mux?unitId=${encodeURIComponent(unitId)}`;
+}

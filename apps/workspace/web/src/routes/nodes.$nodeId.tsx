@@ -4,8 +4,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import { createFileRoute, notFound, redirect } from "@tanstack/react-router";
-import { Cloud, Download, Lock, Share2 } from "lucide-react";
-import { useState } from "react";
+import { Cloud, Download, Lock, Share2, Sparkles } from "lucide-react";
+import { useEffect, useState } from "react";
 import type { IMember } from "@univerjs/protocol";
 import type { components } from "../../../generated/http/schema.js";
 import {
@@ -26,7 +26,13 @@ import {
   WorkspaceHeaderSearch,
   WorkspaceLayout,
 } from "./-workspace-layout";
-import { CollaboratorAvatars, ResourceEditor } from "../features/editor";
+import { CollaboratorAvatars, ResourceEditor, AgentCollaborator } from "../features/editor";
+import {
+  AGENT_PANEL_ID,
+  defaultAgentPanelOpen,
+  readAgentPanelOpen,
+  writeAgentPanelOpen,
+} from "../features/editor/agent-panel";
 import { BlobPreview } from "../features/blobs";
 import { api } from "../shared/api/client";
 import { apiError } from "../shared/api/errors";
@@ -167,6 +173,12 @@ function LoadedResourcePage({
   const { t } = useI18n();
   const [shareOpen, setShareOpen] = useState(false);
   const [collaborators, setCollaborators] = useState<readonly IMember[]>([]);
+  const [agentOpen, setAgentOpen] = useState(() =>
+    readAgentPanelOpen(defaultAgentPanelOpen())
+  );
+  useEffect(() => {
+    writeAgentPanelOpen(agentOpen);
+  }, [agentOpen]);
   const rename = useMutation({
     mutationFn: async (name: string) => {
       const { data: updated, error } = await api.PATCH(
@@ -271,6 +283,19 @@ function LoadedResourcePage({
               members={collaborators}
               currentUserId={session.data.user.id}
             />
+            <Tooltip content={agentOpen ? t("closeAgent") : t("openAgent")}>
+              <Button
+                variant={agentOpen ? "secondary" : "ghost"}
+                size="icon"
+                aria-label={agentOpen ? t("closeAgent") : t("openAgent")}
+                aria-expanded={agentOpen}
+                aria-controls={AGENT_PANEL_ID}
+                aria-pressed={agentOpen}
+                onClick={() => setAgentOpen((open) => !open)}
+              >
+                <Sparkles />
+              </Button>
+            </Tooltip>
             <Tooltip content={modeLabel}>
               <span
                 aria-label={modeLabel}
@@ -293,13 +318,22 @@ function LoadedResourcePage({
           </>
         }
       >
-        <section className="flex h-full min-h-0 min-w-0 flex-1 flex-col bg-background">
-          <ResourceEditor
+        <section className="relative flex h-full min-h-0 min-w-0 flex-1 bg-background">
+          <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col">
+            <ResourceEditor
+              unitId={data.resource.unitId}
+              unitType={data.resource.unitType}
+              user={session.data.user}
+              readOnly={!isEditing}
+              onCollaboratorsChange={setCollaborators}
+            />
+          </div>
+          <AgentCollaborator
             unitId={data.resource.unitId}
             unitType={data.resource.unitType}
-            user={session.data.user}
-            readOnly={!isEditing}
-            onCollaboratorsChange={setCollaborators}
+            open={agentOpen}
+            onClose={() => setAgentOpen(false)}
+            spectator={!isEditing}
           />
         </section>
       </WorkspaceLayout>
