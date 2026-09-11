@@ -20,6 +20,8 @@ import {
   parsePositiveInt
 } from "../integrations/univer-history.ts";
 import {
+  CombCmd,
+  CmdRspCode,
   decodeCombFrame,
   encodeCombFrame,
   encodeCombJson,
@@ -279,8 +281,8 @@ export class DshHost extends HostBase<any> {
         // 1. Send ACK back to the author
         if (body.memberID) {
           this.sendToMember(body.memberID, {
-            cmd: 6,
-            code: 1,
+            cmd: CombCmd.RECV,
+            code: CmdRspCode.OK,
             reason: "success",
             routeKey: unitID,
             collaMsg: {
@@ -296,8 +298,8 @@ export class DshHost extends HostBase<any> {
         this.broadcastToRoom(
           unitID,
           {
-            cmd: 6,
-            code: 1,
+            cmd: CombCmd.RECV,
+            code: CmdRspCode.OK,
             reason: "success",
             routeKey: unitID,
             collaMsg: {
@@ -588,18 +590,18 @@ export class DshHost extends HostBase<any> {
         const routeKey = typeof parsed.routeKey === "string" ? parsed.routeKey : "";
 
         switch (parsed.cmd) {
-          case 1: // HELLO
-          case 5: // HEARTBEAT
+          case CombCmd.HELLO:
+          case CombCmd.HEARTBEAT:
             this.sendComb(ws, att, {
               cmd: parsed.cmd,
-              code: 1,
+              code: CmdRspCode.OK,
               reason: "success",
               routeKey,
               infoRsp: { memberID }
             });
             return;
 
-          case 2: { // JOIN
+          case CombCmd.JOIN: {
             const rooms: string[] = parsed.joinReq?.rooms
               ? parsed.joinReq.rooms.map((r: any) => r.roomID)
               : routeKey
@@ -626,8 +628,8 @@ export class DshHost extends HostBase<any> {
               this.broadcastToRoom(
                 roomID,
                 {
-                  cmd: 6,
-                  code: 1,
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
                   reason: "success",
                   routeKey: roomID,
                   collaMsg: {
@@ -645,8 +647,8 @@ export class DshHost extends HostBase<any> {
             }
 
             this.sendComb(ws, att, {
-              cmd: 2,
-              code: 1,
+              cmd: CombCmd.JOIN,
+              code: CmdRspCode.OK,
               reason: "success",
               routeKey: routeKey || rooms[0] || "",
               joinRsp: { roomInfos }
@@ -654,7 +656,7 @@ export class DshHost extends HostBase<any> {
             return;
           }
 
-          case 3: { // LEAVE
+          case CombCmd.LEAVE: {
             const roomID = parsed.leaveReq?.roomID || routeKey;
             if (roomID && att && Array.isArray(att.rooms)) {
               att.rooms = att.rooms.filter((r) => r !== roomID);
@@ -662,8 +664,8 @@ export class DshHost extends HostBase<any> {
               this.broadcastToRoom(
                 roomID,
                 {
-                  cmd: 6,
-                  code: 1,
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
                   reason: "success",
                   routeKey: roomID,
                   collaMsg: {
@@ -680,7 +682,7 @@ export class DshHost extends HostBase<any> {
             return;
           }
 
-          case 4: { // INGEST (cursor / presence / opaque collab events)
+          case CombCmd.INGEST: { // cursor / presence / opaque collab events
             if (!routeKey || !parsed.collaMsg?.eventID) {
               return;
             }
@@ -688,8 +690,8 @@ export class DshHost extends HostBase<any> {
               this.broadcastToRoom(
                 routeKey,
                 {
-                  cmd: 6,
-                  code: 1,
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
                   reason: "success",
                   routeKey,
                   collaMsg: {
@@ -707,8 +709,8 @@ export class DshHost extends HostBase<any> {
               this.broadcastToRoom(
                 routeKey,
                 {
-                  cmd: 6,
-                  code: 1,
+                  cmd: CombCmd.RECV,
+                  code: CmdRspCode.OK,
                   reason: "success",
                   routeKey,
                   collaMsg: parsed.collaMsg
@@ -869,8 +871,8 @@ export class DshHost extends HostBase<any> {
           this.broadcastToRoom(
             roomID,
             {
-              cmd: 6,
-              code: 1,
+              cmd: CombCmd.RECV,
+              code: CmdRspCode.OK,
               reason: "success",
               routeKey: roomID,
               collaMsg: {

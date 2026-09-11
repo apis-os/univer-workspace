@@ -1,22 +1,52 @@
 /**
- * Comb frame codec: protobuf binary + JSON.
+ * Comb frame codec: official JS Comb is JSON; binary is a proto3 wrapper.
  *
- * `@univerjs/protocol` ships CombCmd / CmdRspCode / ICollaMsg TypeScript types,
- * not a protobuf encoder. Official `@univerjs-pro/collaboration-client`
- * `serializeCombRequest` / `deserializeToCombResponse` speak JSON Comb
- * (`cmd`, `routeKey`, `joinReq` / `leaveReq` / `collaMsg` / `infoRsp` / `joinRsp`).
+ * Official `@univerjs-pro/collaboration-client` `serializeCombRequest` (vendor CJS
+ * `Ke`) is `JSON.stringify` of `{ cmd, routeKey, joinReq | leaveReq | collaMsg }`.
+ * `@univerjs/protocol` has CombCmd / CmdRspCode / ICollaMsg TypeScript types but NO
+ * Comb protobuf encoder and no Comb `.proto` in this package. Nested ICollaMsg
+ * protobuf tags are not invented here.
  *
- * Binary frames encode that same JSON envelope as proto3. Nested objects are
- * length-delimited JSON so opaque `eventID` values (including `"live_share"`)
- * round-trip without inventing ICollaMsg protobuf tags.
+ * `encodeCombJson` matches that serialize contract (`JSON.stringify`).
+ * `encodeCombFrame` wraps the same JSON envelope as proto3: varint cmd/code,
+ * length-delimited strings for reason/routeKey/routeType, and length-delimited
+ * JSON for nested objects (`infoRsp`, `joinReq`, `joinRsp`, `leaveReq`, `collaMsg`)
+ * because protocol has no Comb `.proto` to encode those nested messages.
+ * `decodeCombFrame` accepts JSON strings/bytes (`{`) or that proto3 envelope.
  *
- * Envelope field numbers follow the JSON Comb wire key order used by those
- * serialize helpers — not guessed ICollaMsg tags:
+ * Envelope field numbers follow JSON Comb key order from serializeCombRequest —
+ * not recovered nested ICollaMsg tags:
  *   1 cmd, 2 code, 3 reason, 4 routeKey, 5 routeType,
  *   6 infoRsp, 7 joinReq, 8 joinRsp, 9 leaveReq, 10 collaMsg
- *
- * CombCmd HELLO=1 JOIN=2 LEAVE=3 INGEST=4 HEARTBEAT=5 RECV=6; CmdRspCode.OK=1.
  */
+
+/**
+ * Copied verbatim from
+ * `apps/workspace/node_modules/@univerjs/protocol/lib/types/ts/universer/v1/comb.d.ts`.
+ * `@univerjs/protocol` is not a Worker root dependency; T1 must not add one.
+ */
+export const CombCmd = {
+  UNKNOWN_CMD: 0,
+  HELLO: 1,
+  JOIN: 2,
+  LEAVE: 3,
+  INGEST: 4,
+  HEARTBEAT: 5,
+  RECV: 6,
+  UNRECOGNIZED: -1
+} as const;
+
+/** Copied verbatim from the same `comb.d.ts` as CombCmd. */
+export const CmdRspCode = {
+  UNKNOWN_CODE: 0,
+  OK: 1,
+  FAIL: 2,
+  JOIN_ROOM_FULL: 1001,
+  JOIN_ROOM_NOT_EXISTS: 1002,
+  JOIN_ROOM_PERMISSION_DENIED: 1003,
+  GLOBAL_ROOMS_CNT_EXCEEDS: 1004,
+  UNRECOGNIZED: -1
+} as const;
 
 const textEncoder = new TextEncoder();
 const textDecoder = new TextDecoder();

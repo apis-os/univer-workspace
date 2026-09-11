@@ -2,6 +2,8 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import {
+  CombCmd,
+  CmdRspCode,
   decodeCombFrame,
   encodeCombFrame,
   encodeCombJson
@@ -32,15 +34,27 @@ registerHooks({
   }
 });
 
-const HELLO = { cmd: 1, routeKey: "hello" };
+describe("CombCmd / CmdRspCode protocol constants", () => {
+  test("CombCmd and CmdRspCode match @univerjs/protocol comb.d.ts", () => {
+    assert.equal(CombCmd.HELLO, 1);
+    assert.equal(CombCmd.JOIN, 2);
+    assert.equal(CombCmd.LEAVE, 3);
+    assert.equal(CombCmd.INGEST, 4);
+    assert.equal(CombCmd.HEARTBEAT, 5);
+    assert.equal(CombCmd.RECV, 6);
+    assert.equal(CmdRspCode.OK, 1);
+  });
+});
+
+const HELLO = { cmd: CombCmd.HELLO, routeKey: "hello" };
 const JOIN = {
-  cmd: 2,
+  cmd: CombCmd.JOIN,
   routeKey: "unit_welcome_sheet",
   joinReq: { rooms: [{ roomID: "unit_welcome_sheet", args: "" }] }
 };
 const USERS_ENTER = {
-  cmd: 6,
-  code: 1,
+  cmd: CombCmd.RECV,
+  code: CmdRspCode.OK,
   reason: "success",
   routeKey: "unit_welcome_sheet",
   collaMsg: {
@@ -54,8 +68,8 @@ const USERS_ENTER = {
   }
 };
 const NEW_CHANGESETS = {
-  cmd: 6,
-  code: 1,
+  cmd: CombCmd.RECV,
+  code: CmdRspCode.OK,
   reason: "success",
   routeKey: "unit_welcome_sheet",
   collaMsg: {
@@ -128,8 +142,8 @@ describe("Comb dual-path webSocketMessage", () => {
     assert.equal(socket.sent.length, 1);
     assert.equal(typeof socket.sent[0], "string");
     const reply = JSON.parse(socket.sent[0] as string);
-    assert.equal(reply.cmd, 1);
-    assert.equal(reply.code, 1);
+    assert.equal(reply.cmd, CombCmd.HELLO);
+    assert.equal(reply.code, CmdRspCode.OK);
     assert.equal(reply.infoRsp.memberID, "member_json");
     assert.notEqual(att.wire, "protobuf");
   });
@@ -155,8 +169,8 @@ describe("Comb dual-path webSocketMessage", () => {
     assert.equal(att.wire, "protobuf");
     assert.equal(socket.sent.length, 1);
     const reply = decodeCombFrame(socket.sent[0]);
-    assert.equal(reply.cmd, 1);
-    assert.equal(reply.code, 1);
+    assert.equal(reply.cmd, CombCmd.HELLO);
+    assert.equal(reply.code, CmdRspCode.OK);
     assert.equal((reply.infoRsp as { memberID: string }).memberID, "member_bin");
   });
 });
@@ -193,7 +207,7 @@ describe("Comb INGEST pass-through", () => {
     await host.webSocketMessage(
       avery as unknown as WebSocket,
       encodeCombFrame({
-        cmd: 4,
+        cmd: CombCmd.INGEST,
         routeKey: "unit_welcome_sheet",
         collaMsg: liveShare
       })
@@ -202,8 +216,54 @@ describe("Comb INGEST pass-through", () => {
     assert.equal(avery.sent.length, 0);
     assert.equal(jordan.sent.length, 1);
     const recv = decodeCombFrame(jordan.sent[0]);
-    assert.equal(recv.cmd, 6);
-    assert.equal(recv.code, 1);
+    assert.equal(recv.cmd, CombCmd.RECV);
+    assert.equal(recv.code, CmdRspCode.OK);
+    assert.equal(recv.routeKey, "unit_welcome_sheet");
+    assert.deepEqual(recv.collaMsg, liveShare);
+  });
+
+  test("protobuf INGEST is JSON-encoded for a JSON peer", async () => {
+    const liveShare = {
+      eventID: "live_share",
+      presenter: "user_admin",
+      viewport: { row: 1, col: 2 }
+    };
+
+    const averyAtt = {
+      kind: "comb",
+      memberID: "member_avery",
+      userID: "user_admin",
+      name: "Avery Chen",
+      rooms: ["unit_welcome_sheet"],
+      wire: "protobuf" as const
+    };
+    const jordanAtt = {
+      kind: "comb",
+      memberID: "member_jordan",
+      userID: "user_jordan",
+      name: "Jordan Lee",
+      rooms: ["unit_welcome_sheet"]
+    };
+
+    const avery = fakeSocket(averyAtt);
+    const jordan = fakeSocket(jordanAtt);
+    const host = await createCombHost([avery, jordan]);
+
+    await host.webSocketMessage(
+      avery as unknown as WebSocket,
+      encodeCombFrame({
+        cmd: CombCmd.INGEST,
+        routeKey: "unit_welcome_sheet",
+        collaMsg: liveShare
+      })
+    );
+
+    assert.equal(avery.sent.length, 0);
+    assert.equal(jordan.sent.length, 1);
+    assert.equal(typeof jordan.sent[0], "string");
+    const recv = JSON.parse(jordan.sent[0] as string);
+    assert.equal(recv.cmd, CombCmd.RECV);
+    assert.equal(recv.code, CmdRspCode.OK);
     assert.equal(recv.routeKey, "unit_welcome_sheet");
     assert.deepEqual(recv.collaMsg, liveShare);
   });
