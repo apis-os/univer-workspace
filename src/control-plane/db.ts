@@ -5,6 +5,7 @@ import { hashToken } from "./auth.ts";
 import type {
   BlobResource,
   BlobUploadSession,
+  CliAuthorization,
   LoginSession,
   NodeGrant,
   NodeItem,
@@ -184,6 +185,57 @@ export class ControlPlaneDb {
       .prepare("DELETE FROM login_sessions WHERE secret_hash = ?")
       .bind(secret_hash)
       .run();
+  }
+
+  // ==========================================
+  // CLI device-code authorizations
+  // ==========================================
+
+  async createCliAuthorization(input: {
+    userCode: string;
+    deviceCodeHash: string;
+    expiresAt: number;
+  }): Promise<CliAuthorization> {
+    const row: CliAuthorization = {
+      user_code: input.userCode,
+      device_code_hash: input.deviceCodeHash,
+      user_id: null,
+      status: "pending",
+      expires_at: input.expiresAt
+    };
+    await this.db
+      .prepare(
+        `INSERT INTO cli_authorizations (user_code, device_code_hash, user_id, status, expires_at)
+         VALUES (?, ?, NULL, 'pending', ?)`
+      )
+      .bind(row.user_code, row.device_code_hash, row.expires_at)
+      .run();
+    return row;
+  }
+
+  async getCliAuthorizationByUserCode(userCode: string): Promise<CliAuthorization | null> {
+    return this.db
+      .prepare("SELECT * FROM cli_authorizations WHERE user_code = ?")
+      .bind(userCode)
+      .first<CliAuthorization>();
+  }
+
+  async getCliAuthorizationByDeviceCodeHash(deviceCodeHash: string): Promise<CliAuthorization | null> {
+    return this.db
+      .prepare("SELECT * FROM cli_authorizations WHERE device_code_hash = ?")
+      .bind(deviceCodeHash)
+      .first<CliAuthorization>();
+  }
+
+  async approveCliAuthorization(userCode: string, userId: string): Promise<void> {
+    await this.db
+      .prepare("UPDATE cli_authorizations SET user_id = ?, status = 'approved' WHERE user_code = ?")
+      .bind(userId, userCode)
+      .run();
+  }
+
+  async deleteCliAuthorization(userCode: string): Promise<void> {
+    await this.db.prepare("DELETE FROM cli_authorizations WHERE user_code = ?").bind(userCode).run();
   }
 
   // ==========================================

@@ -32,6 +32,16 @@ CREATE TABLE IF NOT EXISTS login_sessions (
 CREATE INDEX IF NOT EXISTS idx_login_sessions_user ON login_sessions(user_id);
 CREATE INDEX IF NOT EXISTS idx_login_sessions_hash ON login_sessions(secret_hash);
 
+CREATE TABLE IF NOT EXISTS cli_authorizations (
+  user_code TEXT PRIMARY KEY,
+  device_code_hash TEXT NOT NULL UNIQUE,
+  user_id TEXT,
+  status TEXT NOT NULL,
+  expires_at INTEGER NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_cli_authorizations_device ON cli_authorizations(device_code_hash);
+
 CREATE TABLE IF NOT EXISTS spaces (
   id TEXT PRIMARY KEY,
   type TEXT NOT NULL CHECK (type IN ('personal', 'team')),

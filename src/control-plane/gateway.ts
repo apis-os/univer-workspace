@@ -6,6 +6,7 @@ import { ControlPlaneDb } from "./db.ts";
 import {
   generateSessionToken,
   hashPassword,
+  hashToken,
   parseCookie,
   serializeClearSessionCookie,
   serializeSessionCookie,
@@ -38,6 +39,78 @@ function formatUser(user: User) {
     displayName: user.display_name,
     avatarUrl: user.avatar_url
   };
+}
+
+function formatAuthenticatedSession(user: User) {
+  return {
+    authenticated: true as const,
+    githubOAuthEnabled: false,
+    discordOAuthEnabled: false,
+    user: formatUser(user),
+    authenticationMethods: {
+      password: true,
+      externalIdentities: [] as string[]
+    }
+  };
+}
+
+function formatEstablishedSession(
+  user: User,
+  token: string,
+  session: { id: string; expires_at: number }
+) {
+  return {
+    ...formatAuthenticatedSession(user),
+    sessionToken: token,
+    session: {
+      id: session.id,
+      expiresAt: new Date(session.expires_at).toISOString(),
+      token
+    }
+  };
+}
+
+const CLI_AUTHORIZATION_TTL_MS = 10 * 60 * 1000;
+const CLI_AUTHORIZATION_INTERVAL_SECONDS = 2;
+const CLI_USER_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+function generateCliDeviceCode(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary).replaceAll("+", "-").replaceAll("/", "_").replace(/=+$/g, "");
+}
+
+function createCliUserCode(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(8));
+  let characters = "";
+  for (const byte of bytes) {
+    characters += CLI_USER_CODE_ALPHABET.charAt(byte % CLI_USER_CODE_ALPHABET.length);
+  }
+  return `${characters.slice(0, 4)}-${characters.slice(4)}`;
+}
+
+function canonicalCliUserCode(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const compact = value.trim().toUpperCase().replaceAll("-", "");
+  if (!/^[A-HJ-NP-Z2-9]{8}$/u.test(compact)) return null;
+  return `${compact.slice(0, 4)}-${compact.slice(4)}`;
+}
+
+async function uniqueCliUserCode(db: ControlPlaneDb): Promise<string> {
+  for (let attempt = 0; attempt < 16; attempt += 1) {
+    const userCode = createCliUserCode();
+    if (!(await db.getCliAuthorizationByUserCode(userCode))) return userCode;
+  }
+  throw new Error("CLI browser login is temporarily unavailable. Try again shortly.");
+}
+
+function cliAuthorizationError(code: "CLI_AUTHORIZATION_INVALID" | "CLI_AUTHORIZATION_EXPIRED", status: number): Response {
+  const message =
+    code === "CLI_AUTHORIZATION_EXPIRED"
+      ? "The CLI login request has expired. Start login again from the CLI."
+      : "The CLI login request is invalid or has already been used.";
+  return jsonResponse({ error: { code, message } }, status, { "Cache-Control": "no-store" });
 }
 
 function spaceCapabilities(role: AccessRole) {
@@ -241,6 +314,7 @@ export async function handleControlPlaneRoutes(
   const { db, currentUser } = gwCtx;
   const path = url.pathname;
   const method = request.method.toUpperCase();
+  const secureCookie = url.protocol === "https:";
 
   // ==========================================
   // Session & Authentication
@@ -285,14 +359,9 @@ export async function handleControlPlaneRoutes(
       const token = generateSessionToken();
       const session = await db.createSession(user.id, token);
 
-      return jsonResponse(
-        {
-          user: formatUser(user),
-          session: { id: session.id, expiresAt: new Date(session.expires_at).toISOString() }
-        },
-        200,
-        { "Set-Cookie": serializeSessionCookie(token) }
-      );
+      return jsonResponse(formatEstablishedSession(user, token, session), 200, {
+        "Set-Cookie": serializeSessionCookie(token, 7 * 24 * 3600, secureCookie)
+      });
     } catch (err: any) {
       return jsonResponse({ error: { message: err.message } }, 500);
     }
@@ -324,14 +393,9 @@ export async function handleControlPlaneRoutes(
       const token = generateSessionToken();
       const session = await db.createSession(user.id, token);
 
-      return jsonResponse(
-        {
-          user: formatUser(user),
-          session: { id: session.id, expiresAt: new Date(session.expires_at).toISOString() }
-        },
-        200,
-        { "Set-Cookie": serializeSessionCookie(token) }
-      );
+      return jsonResponse(formatEstablishedSession(user, token, session), 200, {
+        "Set-Cookie": serializeSessionCookie(token, 7 * 24 * 3600, secureCookie)
+      });
     } catch (err: any) {
       return jsonResponse({ error: { message: err.message } }, 500);
     }
@@ -342,8 +406,90 @@ export async function handleControlPlaneRoutes(
       await db.deleteSession(gwCtx.rawSessionToken);
     }
     return jsonResponse({ success: true }, 200, {
-      "Set-Cookie": serializeClearSessionCookie()
+      "Set-Cookie": serializeClearSessionCookie(secureCookie)
     });
+  }
+
+  if (path === "/api/auth/cli/authorizations" && method === "POST") {
+    try {
+      const userCode = await uniqueCliUserCode(db);
+      const deviceCode = generateCliDeviceCode();
+      const deviceCodeHash = await hashToken(deviceCode);
+      const expiresAt = Date.now() + CLI_AUTHORIZATION_TTL_MS;
+      await db.createCliAuthorization({ userCode, deviceCodeHash, expiresAt });
+      return jsonResponse(
+        {
+          deviceCode,
+          userCode,
+          verificationUri: "/cli-login",
+          verificationUriComplete: `/cli-login?userCode=${encodeURIComponent(userCode)}`,
+          expiresIn: Math.floor(CLI_AUTHORIZATION_TTL_MS / 1000),
+          interval: CLI_AUTHORIZATION_INTERVAL_SECONDS
+        },
+        201,
+        { "Cache-Control": "no-store" }
+      );
+    } catch (err: any) {
+      return jsonResponse({ error: { message: err.message } }, 503, { "Cache-Control": "no-store" });
+    }
+  }
+
+  if (path === "/api/auth/cli/authorizations/approve" && method === "POST") {
+    if (!currentUser) {
+      return jsonResponse({ error: { message: "Authentication required" } }, 401);
+    }
+    try {
+      const body = (await request.json()) as { userCode?: unknown };
+      const userCode = canonicalCliUserCode(body.userCode);
+      if (!userCode) return cliAuthorizationError("CLI_AUTHORIZATION_INVALID", 400);
+      const authorization = await db.getCliAuthorizationByUserCode(userCode);
+      if (!authorization) return cliAuthorizationError("CLI_AUTHORIZATION_INVALID", 400);
+      if (authorization.expires_at <= Date.now()) {
+        await db.deleteCliAuthorization(authorization.user_code);
+        return cliAuthorizationError("CLI_AUTHORIZATION_EXPIRED", 401);
+      }
+      if (authorization.user_id && authorization.user_id !== currentUser.id) {
+        return jsonResponse(
+          { error: { message: "This CLI login request was already approved by another User." } },
+          409
+        );
+      }
+      await db.approveCliAuthorization(authorization.user_code, currentUser.id);
+      return jsonResponse(formatAuthenticatedSession(currentUser), 200, { "Cache-Control": "no-store" });
+    } catch (err: any) {
+      return jsonResponse({ error: { message: err.message } }, 500);
+    }
+  }
+
+  if (path === "/api/auth/cli/authorizations/exchange" && method === "POST") {
+    try {
+      const body = (await request.json()) as { deviceCode?: unknown };
+      const deviceCode = typeof body.deviceCode === "string" ? body.deviceCode : "";
+      if (!deviceCode) return cliAuthorizationError("CLI_AUTHORIZATION_INVALID", 400);
+      const authorization = await db.getCliAuthorizationByDeviceCodeHash(await hashToken(deviceCode));
+      if (!authorization) return cliAuthorizationError("CLI_AUTHORIZATION_INVALID", 400);
+      if (authorization.expires_at <= Date.now()) {
+        await db.deleteCliAuthorization(authorization.user_code);
+        return cliAuthorizationError("CLI_AUTHORIZATION_EXPIRED", 401);
+      }
+      if (!authorization.user_id || authorization.status !== "approved") {
+        return jsonResponse({ status: "pending" }, 202, { "Cache-Control": "no-store" });
+      }
+      const user = await db.getUserById(authorization.user_id);
+      if (!user) {
+        await db.deleteCliAuthorization(authorization.user_code);
+        return cliAuthorizationError("CLI_AUTHORIZATION_INVALID", 400);
+      }
+      const token = generateSessionToken();
+      const session = await db.createSession(user.id, token);
+      await db.deleteCliAuthorization(authorization.user_code);
+      return jsonResponse(formatEstablishedSession(user, token, session), 200, {
+        "Cache-Control": "no-store",
+        "Set-Cookie": serializeSessionCookie(token, 7 * 24 * 3600, secureCookie)
+      });
+    } catch (err: any) {
+      return jsonResponse({ error: { message: err.message } }, 500);
+    }
   }
 
   // Require authentication for all subsequent endpoints
