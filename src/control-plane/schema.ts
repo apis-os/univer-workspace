@@ -219,6 +219,7 @@ export async function seedControlPlane(db: D1Database): Promise<void> {
     .first<{ count: number }>();
 
   if (existing && existing.count > 0) {
+    await ensureDemoData(db);
     return;
   }
 
@@ -300,5 +301,64 @@ export async function seedControlPlane(db: D1Database): Promise<void> {
        VALUES (?, ?, ?)`
     )
     .bind(userId, resourceId, now)
+    .run();
+
+  await ensureDemoData(db);
+}
+
+/**
+ * Idempotent demo identities: Avery Chen, Jordan Lee, and the Q3 Forecast node name.
+ * Safe to call after seedControlPlane's empty-users early-return (live D1 already has Avery).
+ */
+export async function ensureDemoData(db: D1Database): Promise<void> {
+  await initControlPlaneSchema(db);
+  const now = Date.now();
+  const averyId = "user_admin";
+  const jordanId = "user_jordan";
+  const spaceId = "space_personal_admin";
+  const nodeId = "node_welcome_sheet";
+
+  await db
+    .prepare("UPDATE users SET display_name = ?, updated_at = ? WHERE id = ?")
+    .bind("Avery Chen", now, averyId)
+    .run();
+
+  const jordan = await db.prepare("SELECT id FROM users WHERE id = ?").bind(jordanId).first<{ id: string }>();
+  if (!jordan) {
+    await db
+      .prepare(
+        `INSERT INTO users (id, username, display_name, avatar_url, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?)`
+      )
+      .bind(jordanId, "jordan", "Jordan Lee", null, now, now)
+      .run();
+  }
+
+  const jordanCreds = await db
+    .prepare("SELECT user_id FROM password_credentials WHERE user_id = ?")
+    .bind(jordanId)
+    .first<{ user_id: string }>();
+  if (!jordanCreds) {
+    const passwordHash = await hashPassword("password123");
+    await db
+      .prepare(
+        `INSERT OR IGNORE INTO password_credentials (user_id, password_hash, created_at, updated_at)
+         VALUES (?, ?, ?, ?)`
+      )
+      .bind(jordanId, passwordHash, now, now)
+      .run();
+  }
+
+  await db
+    .prepare(
+      `INSERT OR IGNORE INTO space_members (space_id, user_id, role, granted_by, created_at, updated_at)
+       VALUES (?, ?, 'editor', ?, ?, ?)`
+    )
+    .bind(spaceId, jordanId, averyId, now, now)
+    .run();
+
+  await db
+    .prepare("UPDATE nodes SET name = ?, updated_at = ? WHERE id = ?")
+    .bind("Q3 Forecast", now, nodeId)
     .run();
 }
