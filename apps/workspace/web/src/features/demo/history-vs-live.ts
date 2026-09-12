@@ -1,4 +1,4 @@
-import { historyDisplayName } from "../editor/history-names";
+import { HISTORY_DISPLAY_NAMES, historyDisplayName } from "../editor/history-names";
 import type {
   SnapshotComparisonItem,
   WorktreeComparisonPayload,
@@ -277,6 +277,47 @@ export function diffWorkbooks(
   return items;
 }
 
+function changesetWriterId(cs: Record<string, unknown>): string {
+  if (typeof cs.userID === "string" && cs.userID.trim()) return cs.userID.trim();
+  if (typeof cs.clientId === "string" && cs.clientId.trim()) return cs.clientId.trim();
+  if (typeof cs.memberID === "string" && cs.memberID.trim()) return cs.memberID.trim();
+  return "";
+}
+
+export function historyOverlayWriterNames(
+  changesets: readonly Record<string, unknown>[]
+): string[] {
+  const names: string[] = [];
+  const seen = new Set<string>();
+  for (const cs of changesets) {
+    const writerId = changesetWriterId(cs);
+    if (!writerId || seen.has(writerId)) continue;
+    seen.add(writerId);
+    names.push(
+      writerId in HISTORY_DISPLAY_NAMES
+        ? HISTORY_DISPLAY_NAMES[writerId as keyof typeof HISTORY_DISPLAY_NAMES]
+        : historyDisplayName(writerId)
+    );
+  }
+  return names;
+}
+
+function overlaySideLabel(
+  kind: "history" | "live",
+  rev: number,
+  names: readonly string[],
+  targetWriter?: string
+): string {
+  const prefix =
+    kind === "history"
+      ? targetWriter
+        ? `History · r${rev} (${targetWriter})`
+        : `History · r${rev}`
+      : "Live Comb";
+  if (kind !== "history" || names.length === 0) return prefix;
+  return `${prefix} · ${names.join(" / ")}`;
+}
+
 export async function loadHistoryVsLive(
   input: LoadHistoryVsLiveInput
 ): Promise<WorktreeComparisonPayload> {
@@ -328,10 +369,13 @@ export async function loadHistoryVsLive(
     (typeof targetCs?.memberID === "string" && targetCs.memberID) ||
     "";
   const writerName = writerId ? historyDisplayName(writerId) : "";
-  const overlayNames = "Avery Chen / Jordan Lee / Workspace Agent";
-  const leftLabel = writerName
-    ? `History · r${input.rev} (${writerName}) · ${overlayNames}`
-    : `History · r${input.rev} · ${overlayNames}`;
+  const overlayNames = historyOverlayWriterNames(changesets);
+  const leftLabel = overlaySideLabel(
+    "history",
+    input.rev,
+    overlayNames,
+    writerName || undefined
+  );
   const rightLabel = "Live Comb";
 
   const rewinds = changesets

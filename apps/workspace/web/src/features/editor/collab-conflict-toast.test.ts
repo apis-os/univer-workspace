@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   COLLAB_CONFLICT_TOAST_DEBOUNCE_MS,
   createCollabConflictToaster,
+  shouldClearCollaborationIssueOnStatus,
 } from "./collab-conflict-toast";
 
 describe("createCollabConflictToaster", () => {
@@ -26,5 +27,15 @@ describe("createCollabConflictToaster", () => {
     now += 500;
     notify("Collaboration conflict: someone else edited the same cells.");
     expect(warning).toHaveBeenCalledTimes(2);
+  });
+
+  it("does not clear a conflict issue while Comb is still Syncing", () => {
+    expect(shouldClearCollaborationIssueOnStatus("pending")).toBe(false);
+    expect(shouldClearCollaborationIssueOnStatus("awaiting")).toBe(false);
+    expect(shouldClearCollaborationIssueOnStatus("awaiting_with_pending")).toBe(false);
+    expect(shouldClearCollaborationIssueOnStatus("fetch_missing")).toBe(false);
+    expect(shouldClearCollaborationIssueOnStatus("conflict")).toBe(false);
+    expect(shouldClearCollaborationIssueOnStatus("syncing")).toBe(false);
+    expect(shouldClearCollaborationIssueOnStatus("synced")).toBe(true);
   });
 });

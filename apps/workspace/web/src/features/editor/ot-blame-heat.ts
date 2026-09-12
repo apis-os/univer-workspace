@@ -142,10 +142,25 @@ export function a1sFromCommandExecuted(command: unknown): string[] {
     if (nestedA1s.length) return nestedA1s;
   }
   const params = asRecord(rec.params) ?? rec;
+  const nestedMutations = params.mutations ?? rec.mutations;
+  if (Array.isArray(nestedMutations)) {
+    const fromMutations = nestedMutations.flatMap((item) =>
+      a1sFromCommandExecuted(item)
+    );
+    if (fromMutations.length) return fromMutations;
+  }
   const id = String(rec.id ?? params.id ?? "");
-  const mutationId =
-    /set-range/i.test(id) || asRecord(params.cellValue) || params.range
-      ? id || "sheet.mutation.set-range-values"
+  const hasRangePayload = Boolean(
+    asRecord(params.cellValue) ||
+      params.range ||
+      rec.range ||
+      asRecord(params.value) ||
+      rec.value
+  );
+  const mutationId = /set-range/i.test(id)
+    ? id
+    : hasRangePayload
+      ? "sheet.mutation.set-range-values"
       : id;
   return a1FromSetRangeMutation({
     id: mutationId,
@@ -155,14 +170,57 @@ export function a1sFromCommandExecuted(command: unknown): string[] {
   });
 }
 
-export function commandFromCollab(command: unknown, options?: unknown): boolean {
+export function commandActor(command: unknown, options?: unknown): string {
   const rec = asRecord(command);
   const nested = rec ? asRecord(rec.command) : null;
   const opts =
     asRecord(options) ??
     asRecord(rec?.options) ??
     asRecord(nested?.options);
-  return opts?.fromCollab === true;
+  const params = asRecord(rec?.params) ?? asRecord(nested?.params);
+  const candidates = [
+    opts?.userID,
+    opts?.userId,
+    opts?.memberID,
+    opts?.memberId,
+    opts?.clientId,
+    rec?.userID,
+    rec?.userId,
+    rec?.memberID,
+    rec?.memberId,
+    rec?.clientId,
+    nested?.userID,
+    nested?.memberID,
+    params?.userID,
+    params?.memberID,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
+    }
+  }
+  return "";
+}
+
+export function commandFromCollab(
+  command: unknown,
+  options?: unknown,
+  context?: { readonly currentUserId?: string }
+): boolean {
+  const rec = asRecord(command);
+  const nested = rec ? asRecord(rec.command) : null;
+  const opts =
+    asRecord(options) ??
+    asRecord(rec?.options) ??
+    asRecord(nested?.options);
+  if (opts?.fromCollab === true) return true;
+  if (opts?.fromChangeset === true) {
+    const actor = commandActor(command, options);
+    const current = context?.currentUserId?.trim() ?? "";
+    if (current && actor && actor === current) return false;
+    return true;
+  }
+  return false;
 }
 
 export function blameFromChangesets(

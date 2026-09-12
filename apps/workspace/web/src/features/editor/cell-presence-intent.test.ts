@@ -1,12 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
   CELL_INTENT_EVENT_ID,
+  a1FromNameBoxValue,
   encodeCellIntentIngest,
   highlightIntent,
   isSameCellConflict,
+  localEditA1AfterCommand,
   readCellIntent,
   remoteChangesetConflictsLocal,
   shouldPublishIntent,
+  shouldToastRemoteCellOverlap,
   type CellIntent,
 } from "./cell-presence-intent";
 
@@ -203,5 +206,85 @@ describe("cell presence intent", () => {
         remoteA1s: ["D3"],
       })
     ).toBe(false);
+  });
+
+  it("toasts fromChangeset overlap on D3 even after the name box advances to D4", () => {
+    const remoteD3 = {
+      id: "sheet.mutation.set-range-values",
+      params: {
+        cellValue: {
+          "2": { "3": { v: 182 } },
+        },
+      },
+      options: { fromChangeset: true },
+    };
+    expect(
+      shouldToastRemoteCellOverlap({
+        command: remoteD3,
+        localA1s: ["D3"],
+        currentUserId: "user_admin",
+      })
+    ).toBe(true);
+    expect(
+      shouldToastRemoteCellOverlap({
+        command: remoteD3,
+        options: { fromChangeset: true, userID: "user_admin" },
+        localA1s: ["D3"],
+        currentUserId: "user_admin",
+      })
+    ).toBe(false);
+    expect(
+      shouldToastRemoteCellOverlap({
+        command: {
+          id: "sheet.mutation.set-range-values",
+          params: { cellValue: { "2": { "3": { v: 181 } } } },
+        },
+        localA1s: ["D3"],
+        currentUserId: "user_admin",
+      })
+    ).toBe(false);
+    expect(localEditA1AfterCommand({
+      isMutation: true,
+      commandA1s: ["D3"],
+      activeA1: "D4",
+      previousLocalEditA1: "D3",
+    })).toBe("D3");
+    expect(a1FromNameBoxValue("D3")).toBe("D3");
+    expect(a1FromNameBoxValue(" d4 ")).toBe("D4");
+    expect(a1FromNameBoxValue("Q3 Forecast")).toBe(null);
+    expect(localEditA1AfterCommand({
+      isMutation: true,
+      commandA1s: [],
+      activeA1: "D4",
+      previousLocalEditA1: "D3",
+    })).toBe("D3");
+    expect(localEditA1AfterCommand({
+      isMutation: false,
+      commandA1s: [],
+      activeA1: "D4",
+      previousLocalEditA1: "D3",
+    })).toBe("D3");
+    expect(localEditA1AfterCommand({
+      isMutation: true,
+      commandA1s: [],
+      activeA1: "D4",
+      previousLocalEditA1: null,
+      lastSelectedA1: "D3",
+    })).toBe("D3");
+    expect(
+      shouldToastRemoteCellOverlap({
+        command: {
+          id: "sheet.mutation.set-range-values",
+          params: {
+            cellValue: {
+              "2": { "3": { v: 182 } },
+            },
+          },
+        },
+        options: { fromChangeset: true },
+        localA1s: ["D3"],
+        currentUserId: "user_admin",
+      })
+    ).toBe(true);
   });
 });

@@ -43,6 +43,10 @@ describe("/render license and sheet capture", () => {
       shouldStubBrokenProIndex("/node_modules/@univerjs-pro/engine-chart/lib/es/locale/en-US.js"),
       false
     );
+    assert.equal(
+      shouldStubBrokenProIndex("/node_modules/@univerjs-pro/sheets-print/lib/es/index.js"),
+      true
+    );
   });
 
   test("boots Univer License instead of skipping plugins", () => {

@@ -1,5 +1,16 @@
 export const COLLAB_CONFLICT_TOAST_DEBOUNCE_MS = 800;
 
+export function shouldClearCollaborationIssueOnStatus(status: string): boolean {
+  switch (status) {
+    case "synced":
+    case "offline":
+    case "not_collab":
+      return true;
+    default:
+      return false;
+  }
+}
+
 export function createCollabConflictToaster(options: {
   readonly warning: (message: string) => void;
   readonly now?: () => number;

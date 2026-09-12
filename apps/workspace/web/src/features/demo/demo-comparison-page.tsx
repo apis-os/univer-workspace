@@ -79,7 +79,7 @@ export function DemoComparisonPage({
         {kind === "what-if" ? (
           <ConfirmDialog
             title={t("mergeConfirm")}
-            description={t("mergeDescription")}
+            description="Demo apply of +10% Sep to the live sheet (not a worktree /merge)."
             confirmText={t("confirmMerge")}
             cancelText={t("cancel")}
             disabled={merging}
@@ -87,7 +87,12 @@ export function DemoComparisonPage({
               void onMerge();
             }}
             trigger={
-              <Button size="sm" data-demo="confirm-merge" disabled={merging}>
+              <Button
+                size="sm"
+                data-demo="confirm-merge"
+                data-demo-merge="trunk-execute"
+                disabled={merging}
+              >
                 <CheckCircle2 />
                 {t("confirmMerge")}
               </Button>

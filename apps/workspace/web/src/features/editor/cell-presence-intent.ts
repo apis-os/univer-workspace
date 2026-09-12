@@ -1,5 +1,6 @@
 import type { PresenceRingToken } from "./presence-roster";
 import { highlightSheetRanges, type SheetHighlightHandle } from "./sheet-range-highlight";
+import { a1sFromCommandExecuted, commandActor, commandFromCollab } from "./ot-blame-heat";
 
 export type CellIntentKind = "selecting" | "editing" | "thinking";
 
@@ -103,6 +104,50 @@ export function isSameCellConflict(
 
 function normalizeA1(a1: string): string {
   return a1.replace(/\s/g, "").toUpperCase();
+}
+
+export function a1FromNameBoxValue(value: string | null | undefined): string | null {
+  const trimmed = String(value ?? "").replace(/\s/g, "").toUpperCase();
+  return /^[A-Z]+\d+$/.test(trimmed) ? trimmed : null;
+}
+
+export function localEditA1AfterCommand(input: {
+  readonly isMutation: boolean;
+  readonly commandA1s: readonly string[];
+  readonly activeA1: string | null;
+  readonly previousLocalEditA1: string | null;
+  readonly lastSelectedA1?: string | null;
+}): string | null {
+  if (input.commandA1s[0]) return normalizeA1(input.commandA1s[0]);
+  if (input.previousLocalEditA1) return input.previousLocalEditA1;
+  if (input.lastSelectedA1) return normalizeA1(input.lastSelectedA1);
+  if (input.activeA1) return normalizeA1(input.activeA1);
+  return null;
+}
+
+export function shouldToastRemoteCellOverlap(input: {
+  readonly command: unknown;
+  readonly options?: unknown;
+  readonly localA1s: readonly string[];
+  readonly currentUserId: string;
+}): boolean {
+  if (
+    !commandFromCollab(input.command, input.options, {
+      currentUserId: input.currentUserId,
+    })
+  ) {
+    return false;
+  }
+  const remoteA1s = a1sFromCommandExecuted(input.command);
+  if (remoteA1s.length === 0) return false;
+  const actor = commandActor(input.command, input.options);
+  return remoteChangesetConflictsLocal({
+    localA1s: input.localA1s,
+    remoteUserId: actor || "peer",
+    currentUserId: input.currentUserId,
+    remoteA1s,
+    treatMissingActorAsRemote: true,
+  });
 }
 
 export function remoteChangesetConflictsLocal(input: {

@@ -15,6 +15,7 @@ import {
 import type { UniverCollabService } from "../plugins/univer-collab.ts";
 import { generateDefaultSnapshot } from "../plugins/univer-default-snapshots.ts";
 import { getSheetBlockFromSnapshot, projectSheetBlocks } from "../plugins/univer-snapshot.ts";
+import { recordCellOverlap, type CellOverlapStore } from "./cell-overlap.ts";
 import {
   buildHistoryChangesetsBody,
   buildHistoryCreatorsBody,
@@ -41,6 +42,7 @@ const SNAPSHOT_BLOCK =
   /^\/universer-api\/snapshot(?:\/block)?\/([^/]+)\/unit\/([^/]+)\/block\/([^/]+)$/;
 const COMB_NEW_CHANGES = /^\/universer-api\/comb\/([^/]+)\/unit\/([^/]+)\/new_changes$/;
 const HISTORY_ACTION = /^\/universer-api\/history\/([^/]+)\/(list|creators|cs)$/;
+const cellOverlapStore: CellOverlapStore = { writes: new Map() };
 
 export async function handleUniverserHttp(
   request: Request,
@@ -81,6 +83,27 @@ export async function handleUniverserHttp(
       return jsonUniverser({ error: { code: 16, message: "unauthenticated" } }, 401);
     }
     return jsonUniverser({ error: { code: 0, message: "" }, ticket });
+  }
+
+  if (pathname === "/universer-api/cell-overlap" && method === "POST") {
+    const body = (await request.json().catch(() => ({}))) as {
+      unitId?: unknown;
+      a1s?: unknown;
+      userID?: unknown;
+    };
+    const a1s = Array.isArray(body.a1s)
+      ? body.a1s.filter((item): item is string => typeof item === "string")
+      : [];
+    const userID =
+      typeof body.userID === "string" && body.userID.trim()
+        ? body.userID.trim()
+        : host.identity.userID;
+    const result = recordCellOverlap(cellOverlapStore, {
+      unitId: typeof body.unitId === "string" ? body.unitId : "",
+      userID,
+      a1s
+    });
+    return jsonUniverser({ error: UNIVERSER_OK, ...result });
   }
 
   if (pathname === "/universer-api/authz/-/object/-/batch_allowed" && method === "POST") {

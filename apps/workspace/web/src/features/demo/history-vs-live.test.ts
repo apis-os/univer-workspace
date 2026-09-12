@@ -1,11 +1,20 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { historyVsLiveLabels } from "../worktrees/snapshot-comparison";
 import {
   diffWorkbooks,
+  historyOverlayWriterNames,
   loadHistoryVsLive,
   parseMutations,
   rowColToA1,
 } from "./history-vs-live";
+
+const historyVsLiveSrc = readFileSync(
+  join(dirname(fileURLToPath(import.meta.url)), "history-vs-live.ts"),
+  "utf8"
+);
 
 describe("historyVsLiveLabels", () => {
   it("returns officialVersion and agentVersion from i18n keys", () => {
@@ -16,6 +25,23 @@ describe("historyVsLiveLabels", () => {
       officialVersion: "History",
       agentVersion: "Live Comb",
     });
+  });
+
+  it("does not hardcode Avery Chen / Jordan Lee / Workspace Agent", () => {
+    expect(historyVsLiveSrc).not.toMatch(
+      /Avery Chen \/ Jordan Lee \/ Workspace Agent/
+    );
+  });
+
+  it("maps overlay names from history users via HISTORY_DISPLAY_NAMES", () => {
+    expect(
+      historyOverlayWriterNames([
+        { userID: "user_admin" },
+        { clientId: "user_jordan" },
+        { memberID: "agent_workspace" },
+        { userID: "user_admin" },
+      ])
+    ).toEqual(["Avery Chen", "Jordan Lee", "Workspace Agent"]);
   });
 });
 
@@ -138,8 +164,9 @@ describe("loadHistoryVsLive", () => {
     expect(payload.left.revision).toBe(4);
     expect(payload.left.label).toContain("History · r4");
     expect(payload.left.label).toContain("Avery Chen");
-    expect(payload.left.label).toContain("Jordan Lee");
     expect(payload.left.label).toContain("Workspace Agent");
+    expect(payload.left.label).not.toMatch(/Avery Chen \/ Jordan Lee \/ Workspace Agent/);
+    expect(payload.left.label).not.toContain("Jordan Lee");
     expect(payload.right.revision).toBe(5);
     expect(payload.right.label).toBe("Live Comb");
     expect(payload.result.fidelity).toBe("history");
@@ -222,6 +249,8 @@ describe("loadHistoryVsLive", () => {
     expect(leftData["0"]["0"]).toEqual({ v: "A1-rev2" });
     expect(leftData["0"]?.["1"]).toBeUndefined();
     expect(payload.left.label).toContain("Jordan Lee");
+    expect(payload.left.label).toContain("Workspace Agent");
+    expect(payload.left.label).not.toContain("Avery Chen");
   });
 });
 

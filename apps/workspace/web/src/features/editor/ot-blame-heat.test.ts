@@ -96,13 +96,54 @@ describe("OT blame heat", () => {
         },
       })
     ).toEqual(["D3"]);
+    expect(
+      a1sFromCommandExecuted({
+        id: "unknown.collab.mutation",
+        params: {
+          cellValue: {
+            "2": { "3": { v: 182 } },
+          },
+        },
+      })
+    ).toEqual(["D3"]);
+    expect(
+      a1sFromCommandExecuted({
+        id: "sheet.command.set-range-values",
+        params: {
+          mutations: [
+            {
+              id: "sheet.mutation.set-range-values",
+              params: {
+                cellValue: {
+                  "2": { "3": { v: 182 } },
+                },
+              },
+            },
+          ],
+        },
+      })
+    ).toEqual(["D3"]);
   });
 
   it("detects fromCollab CommandExecuted as a remote peer edit", () => {
     expect(commandFromCollab({ options: { fromCollab: true } })).toBe(true);
     expect(commandFromCollab({ command: { options: { fromCollab: true } } })).toBe(true);
     expect(commandFromCollab({ id: "sheet.mutation.set-range-values" }, { fromCollab: true })).toBe(true);
-    expect(commandFromCollab({ options: { fromChangeset: true } })).toBe(false);
+    expect(commandFromCollab({ options: { fromChangeset: true } })).toBe(true);
+    expect(
+      commandFromCollab(
+        { options: { fromChangeset: true, userID: "user_admin" } },
+        undefined,
+        { currentUserId: "user_admin" }
+      )
+    ).toBe(false);
+    expect(
+      commandFromCollab(
+        { options: { fromChangeset: true, userID: "user_jordan" } },
+        undefined,
+        { currentUserId: "user_admin" }
+      )
+    ).toBe(true);
     expect(commandFromCollab({ options: { fromCollab: false } })).toBe(false);
     expect(commandFromCollab({ id: "sheet.mutation.set-range-values" })).toBe(false);
   });

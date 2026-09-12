@@ -21,6 +21,7 @@ const BROKEN_INDEX = new Set([
   "shape-editor-ui",
   "chart-ui",
   "sheets-pivot",
+  "sheets-print",
   "bases-ui",
   "bases"
 ]);

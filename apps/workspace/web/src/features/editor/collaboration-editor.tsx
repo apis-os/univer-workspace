@@ -96,12 +96,15 @@ import {
   sendCellIntent,
 } from "./follow-agent-collab-socket";
 import {
+  a1FromNameBoxValue,
   CELL_INTENT_EVENT,
   highlightIntent,
   isSameCellConflict,
+  localEditA1AfterCommand,
   remoteChangesetConflictsLocal,
   readCellIntent,
   shouldPublishIntent,
+  shouldToastRemoteCellOverlap,
   type CellIntentKind,
 } from "./cell-presence-intent";
 import {
@@ -113,7 +116,7 @@ import {
   type BlameCell,
 } from "./ot-blame-heat";
 import { presenceRingToken } from "./presence-roster";
-import { createCollabConflictToaster } from "./collab-conflict-toast";
+import { createCollabConflictToaster, shouldClearCollaborationIssueOnStatus } from "./collab-conflict-toast";
 import {
   applyHistoryNameUsers,
   historyDisplayName,
@@ -274,6 +277,8 @@ export function createCollaborationEditor(
       let commandListener: { dispose(): void } | null = null;
       let commandServiceListener: { dispose(): void } | null = null;
       let cellIntentListener: ((event: Event) => void) | null = null;
+      let nameBoxListener: ((event: Event) => void) | null = null;
+      let overlapChannel: BroadcastChannel | null = null;
       let blameHandle: { dispose(): void } | null = null;
       let onChangesetForBlame: ((event: Event) => void) | null = null;
       let onBlameToggle: ((event: Event) => void) | null = null;
@@ -476,6 +481,22 @@ export function createCollaborationEditor(
         const notifyCollabConflict = createCollabConflictToaster({
           warning: (message) => toast.warning(message),
         });
+        const postCellOverlap = (a1s: readonly string[]) => {
+          if (a1s.length === 0) return;
+          void fetch("/universer-api/cell-overlap", {
+            method: "POST",
+            credentials: "include",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ unitId, a1s, userID: user.id }),
+          })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((body) => {
+              if (disposed || !body || body.conflict !== true) return;
+              setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
+            })
+            .catch(() => {});
+        };
         let localEditA1: string | null = null;
         let lastSelectedA1: string | null = null;
         const recentLocalEdits = new Map<string, number>();
@@ -490,6 +511,59 @@ export function createCollaborationEditor(
           [...recentLocalEdits.entries()]
             .filter(([, at]) => now - at < 30_000)
             .map(([cell]) => cell);
+        const captureNameBoxA1 = (event: Event) => {
+          const target = event.target;
+          if (!(target instanceof HTMLInputElement)) return;
+          if (!target.closest('[data-u-comp="defined-name"]')) return;
+          const a1 = a1FromNameBoxValue(target.value);
+          if (!a1) return;
+          lastSelectedA1 = a1;
+          rememberLocalA1s([a1]);
+          overlapChannel?.postMessage({
+            userID: user.id,
+            a1s: recentLocalA1s(),
+          });
+          postCellOverlap(recentLocalA1s());
+        };
+        document.addEventListener("keydown", captureNameBoxA1, true);
+        document.addEventListener("change", captureNameBoxA1, true);
+        nameBoxListener = captureNameBoxA1;
+        overlapChannel =
+          typeof BroadcastChannel === "undefined"
+            ? null
+            : new BroadcastChannel("workspace-cell-overlap");
+        overlapChannel?.addEventListener("message", (event) => {
+          if (disposed) return;
+          const data =
+            event.data && typeof event.data === "object"
+              ? (event.data as {
+                  readonly userID?: string;
+                  readonly a1?: string;
+                  readonly a1s?: readonly string[];
+                })
+              : null;
+          const remoteUser = data?.userID?.trim() ?? "";
+          const remoteA1s = [
+            ...(typeof data?.a1 === "string" ? [data.a1] : []),
+            ...(Array.isArray(data?.a1s) ? data.a1s : []),
+          ];
+          if (
+            remoteChangesetConflictsLocal({
+              localA1s: [
+                ...recentLocalA1s(),
+                ...(localEditA1 ? [localEditA1] : []),
+                ...(lastSelectedA1 ? [lastSelectedA1] : []),
+              ],
+              remoteUserId: remoteUser,
+              currentUserId: user.id,
+              remoteA1s,
+              treatMissingActorAsRemote: true,
+            })
+          ) {
+            setCollaborationIssue("conflict");
+            notifyCollabConflict(t("collabConflictToast"));
+          }
+        });
         collaborationUIEventListener = univer
           .__getInjector()
           .get(CollaborationUIEventService)
@@ -573,7 +647,7 @@ export function createCollaborationEditor(
               if (event.status === CollaborationStatus.CONFLICT) {
                 setCollaborationIssue("conflict");
                 notifyCollabConflict(t("collabConflictToast"));
-              } else if (event.status !== CollaborationStatus.CONFLICT) {
+              } else if (shouldClearCollaborationIssueOnStatus(event.status)) {
                 setCollaborationIssue(null);
               }
             }
@@ -649,57 +723,77 @@ export function createCollaborationEditor(
 
         const onLocalOrRemoteCommand = (commandEvent: unknown, options?: unknown) => {
             if (disposed) return;
+            try {
             const a1 = readActiveRangeA1({
               getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
             });
             const commandA1s = a1sFromCommandExecuted(commandEvent);
-            if (commandFromCollab(commandEvent, options)) {
-              if (
-                remoteChangesetConflictsLocal({
-                  localA1s: recentLocalA1s(),
-                  remoteUserId: "peer",
-                  currentUserId: user.id,
-                  remoteA1s: commandA1s.length ? commandA1s : lastSelectedA1 ? [lastSelectedA1] : [],
-                })
-              ) {
-                setCollaborationIssue("conflict");
-                notifyCollabConflict(t("collabConflictToast"));
-              }
+            if (
+              shouldToastRemoteCellOverlap({
+                command: commandEvent,
+                options,
+                localA1s: [
+                  ...recentLocalA1s(),
+                  ...(localEditA1 ? [localEditA1] : []),
+                  ...(lastSelectedA1 ? [lastSelectedA1] : []),
+                ],
+                currentUserId: user.id,
+              })
+            ) {
+              setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
               return;
             }
-            if (!a1 || !shouldPublishIntent({ kind: "member", a1 })) {
-              if (commandA1s.length === 0) return;
-              rememberLocalA1s(commandA1s);
-              sendCellIntent(unitId, {
-                memberID: user.id,
-                userID: user.id,
-                a1: commandA1s[0],
-                intent: "editing",
-              });
+            if (commandFromCollab(commandEvent, options, { currentUserId: user.id })) {
               return;
             }
             const isMutation =
               (commandEvent as { type?: number }).type === CommandType.MUTATION;
-            const intentKind: CellIntentKind = isMutation || commandA1s.length > 0 ? "editing" : "selecting";
+            const intentKind: CellIntentKind =
+              isMutation || commandA1s.length > 0 ? "editing" : "selecting";
+            localEditA1 = localEditA1AfterCommand({
+              isMutation: intentKind === "editing",
+              commandA1s,
+              activeA1: a1,
+              previousLocalEditA1: localEditA1,
+              lastSelectedA1,
+            });
             if (!isMutation && a1) {
-              localEditA1 = a1;
               lastSelectedA1 = a1;
             }
+            const nameBox = document.querySelector(
+              '[data-u-comp="defined-name"] input'
+            );
+            const nameBoxA1 =
+              nameBox instanceof HTMLInputElement
+                ? a1FromNameBoxValue(nameBox.value)
+                : null;
             const remembered = [
-              ...(lastSelectedA1 ? [lastSelectedA1] : []),
               ...(localEditA1 ? [localEditA1] : []),
               ...commandA1s,
-              ...(isMutation && a1 ? [a1] : []),
+              ...(a1 ? [a1] : []),
+              ...(lastSelectedA1 ? [lastSelectedA1] : []),
+              ...(nameBoxA1 ? [nameBoxA1] : []),
             ];
-            if (intentKind === "editing") {
-              rememberLocalA1s(remembered);
+            rememberLocalA1s(remembered);
+            overlapChannel?.postMessage({
+              userID: user.id,
+              a1s: recentLocalA1s(),
+            });
+            postCellOverlap(recentLocalA1s());
+            const publishA1 = commandA1s[0] || localEditA1 || lastSelectedA1 || a1;
+            if (!publishA1 || !shouldPublishIntent({ kind: "member", a1: publishA1 })) {
+              return;
             }
             sendCellIntent(unitId, {
               memberID: user.id,
               userID: user.id,
-              a1: commandA1s[0] || localEditA1 || lastSelectedA1 || a1,
+              a1: publishA1,
               intent: intentKind,
             });
+            } catch {
+              /* never break Univer command / Comb listeners */
+            }
         };
         commandListener = univerAPI.addEvent(
           univerAPI.Event.CommandExecuted,
@@ -710,12 +804,30 @@ export function createCollaborationEditor(
             );
           }
         );
-        commandServiceListener = univer
-          .__getInjector()
-          .get(ICommandService)
-          .onCommandExecuted((commandInfo, options) => {
+        const commandService = univer.__getInjector().get(ICommandService) as {
+          onCommandExecuted: (
+            listener: (command: unknown, options?: unknown) => void
+          ) => { dispose(): void };
+          onMutationExecutedForCollab?: (
+            listener: (command: unknown, options?: unknown) => void
+          ) => { dispose(): void };
+        };
+        const executedListener = commandService.onCommandExecuted(
+          (commandInfo, options) => {
             onLocalOrRemoteCommand(commandInfo, options);
-          });
+          }
+        );
+        const collabMutationListener = commandService.onMutationExecutedForCollab?.(
+          (commandInfo, options) => {
+            onLocalOrRemoteCommand(commandInfo, options);
+          }
+        );
+        commandServiceListener = {
+          dispose() {
+            executedListener.dispose();
+            collabMutationListener?.dispose();
+          },
+        };
 
         let blameCells: readonly BlameCell[] = [];
         let blameEnabled = false;
@@ -860,6 +972,11 @@ export function createCollaborationEditor(
         if (cellIntentListener) {
           window.removeEventListener(CELL_INTENT_EVENT, cellIntentListener);
         }
+        if (nameBoxListener) {
+          document.removeEventListener("keydown", nameBoxListener, true);
+          document.removeEventListener("change", nameBoxListener, true);
+        }
+        overlapChannel?.close();
         collaboratorsListener?.dispose();
         onCollaboratorsChange?.([]);
         statusListener?.dispose();
