@@ -365,5 +365,5 @@ Still abort `export { _0x123 }` with no `as`.
 - **engine-chart es/lib 11+11 `_0x5554c2`**: Identifier constructor refs with **no recovered binding** (prototype assignments + `;}(oO)`). Loose parse correctly skipped them; not strings.
 - Non-pivot is **saturated** aside from those 22 unbound constructor idents. Remaining mass is sheets-pivot (blocked on T9).
 
-Commit: pending this pass.
+Commit: `cd1c7fb1` `chore(vendor): loose-parse leftover Pro _0x without adding braces`.
 
