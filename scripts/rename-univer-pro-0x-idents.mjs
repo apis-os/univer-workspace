@@ -92,6 +92,7 @@ function parseSource(src) {
  * Does not rewrite `_0x` tokens; only rejoins `delete` + Ident that
  * unglueKeywords split, empty rotator IIFE residue, extra `};ident`
  * after a closed function, `;}(),ident=` IIFE-comma after `;}()`,
+ * extra `}` in `})(),ident=` (e.g. `})(),rd=function`) at brace depth < 0,
  * Object.entries / typeof== splits, and `for(var` residue that lost `fo`.
  */
 const STMT_AFTER_VALUE = ["function", "class", "const", "let", "var", "if", "for", "while", "switch", "try"];
@@ -148,6 +149,9 @@ export function healForParse(src) {
       .replace(/fromEntries\(Object\);\n\}\n\.entries\(/g, "fromEntries(Object.entries(")
       .replace(/\btypeof\s+([A-Za-z_$][\w$]*);\n==/g, "typeof $1==")
       .replace(/\n}\nr\(var /g, "\n}\nfor(var ")
+      // unglue + error-recovery generate can emit `fo;` then extra closers
+      // before the real `for(` body of the same method.
+      .replace(/\bfo;\s*\};(?:\s*\};)*\s*\}\s*for\(/g, "for(")
   );
 }
 
@@ -540,10 +544,12 @@ function walkCode(src, onCode) {
 /**
  * `;}(),ident=` is a grouping-paren IIFE that lost `)` (`(function(){...})(),ident=`).
  * Extra `};ident` after a closed function is a leftover `}` at brace depth < 0.
+ * Extra `}` in `})(),ident=` at brace < 0 is the same leftover after a pretty-printer
+ * already closed the IIFE (`})(),rd=function` on a mega-line fragment).
  * Walk skips strings/comments so Comb keys and literals stay intact.
  */
 function healIifeCommaAndExtraBrace(src) {
-  if (!src.includes(";}(),") && !src.includes("};")) return src;
+  if (!src.includes(";}(),") && !src.includes("};") && !src.includes("})(),")) return src;
   const splices = [];
   walkCode(src, (i, { brace, paren }) => {
     if (
@@ -556,6 +562,14 @@ function healIifeCommaAndExtraBrace(src) {
       /[A-Za-z_$]/.test(src[i + 5] || "")
     ) {
       splices.push({ start: i, end: i + 2, to: "})" });
+      return;
+    }
+    if (
+      brace < 0 &&
+      src.startsWith("})(),", i) &&
+      /[A-Za-z_$]/.test(src[i + 5] || "")
+    ) {
+      splices.push({ start: i, end: i + 1, to: "" });
       return;
     }
     if (src[i] !== "}" || brace >= 0 || src[i + 1] !== ";") return;

@@ -13,6 +13,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { healForParse } from "./rename-univer-pro-0x-idents.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const AST_REFACTOR = "/home/gabriel/Documentos/ast-refactor";
@@ -297,10 +298,38 @@ function readIdentAt(src, i) {
   return { name: src.slice(i, j), start: i, end: j };
 }
 
+function skipWs(src, i) {
+  while (src[i] === " " || src[i] === "\t" || src[i] === "\n" || src[i] === "\r") i += 1;
+  return i;
+}
+
+function keywordAt(src, i, word) {
+  if (!src.startsWith(word, i)) return false;
+  if (isIdentChar(src[i + word.length])) return false;
+  if (i > 0 && isIdentChar(src[i - 1])) return false;
+  return true;
+}
+
+function readDeclIdent(src, i) {
+  if (keywordAt(src, i, "function")) {
+    let j = skipWs(src, i + 8);
+    if (src[j] === "*") j = skipWs(src, j + 1);
+    return readIdentAt(src, j);
+  }
+  if (keywordAt(src, i, "class")) {
+    return readIdentAt(src, skipWs(src, i + 5));
+  }
+  if (keywordAt(src, i, "const") || keywordAt(src, i, "let")) {
+    const word = src.startsWith("const", i) ? "const" : "let";
+    return readIdentAt(src, skipWs(src, i + word.length));
+  }
+  return null;
+}
+
 /**
- * Duplicate `function fn_…sigD23F` decls from loc-slice Bloom collisions
- * make Babel throw before leftover vNNNN can infer. Rename 2nd+
- * same-scope function names only (skip strings/comments).
+ * Duplicate `function fn_…sigD23F` / `const var_…sig0D46` decls from loc-slice
+ * Bloom collisions make Babel throw before leftover vNNNN can infer. Rename 2nd+
+ * same-scope function/class/const/let names only (skip strings/comments).
  */
 export function uniqueifyCollidingInferredNames(src) {
   const used = new Set();
@@ -335,35 +364,26 @@ export function uniqueifyCollidingInferredNames(src) {
       i += 1;
       continue;
     }
-    if (
-      brace === 0 &&
-      paren <= 0 &&
-      src.startsWith("function", i) &&
-      !isIdentChar(src[i - 1]) &&
-      !isIdentChar(src[i + 8])
-    ) {
-      let j = i + 8;
-      while (src[j] === " " || src[j] === "\t" || src[j] === "\n" || src[j] === "\r") j += 1;
-      if (src[j] === "*") {
-        j += 1;
-        while (src[j] === " " || src[j] === "\t" || src[j] === "\n" || src[j] === "\r") j += 1;
-      }
-      const ident = readIdentAt(src, j);
+    if (brace === 0 && paren <= 0) {
+      const ident = readDeclIdent(src, i);
       if (ident) {
-        if (used.has(ident.name)) {
-          let n = 1;
-          let to;
-          do {
-            to = `${ident.name}_${n}`;
-            n += 1;
-          } while (used.has(to));
-          jobs.push({ start: ident.start, end: ident.end, to });
-          used.add(to);
-        } else {
-          used.add(ident.name);
+        const isFn = keywordAt(src, i, "function") || keywordAt(src, i, "class");
+        if (isFn || /^(?:fn_|var_)/.test(ident.name)) {
+          if (used.has(ident.name)) {
+            let n = 1;
+            let to;
+            do {
+              to = `${ident.name}_${n}`;
+              n += 1;
+            } while (used.has(to));
+            jobs.push({ start: ident.start, end: ident.end, to });
+            used.add(to);
+          } else {
+            used.add(ident.name);
+          }
+          i = ident.end;
+          continue;
         }
-        i = ident.end;
-        continue;
       }
     }
     i += 1;
@@ -374,6 +394,260 @@ export function uniqueifyCollidingInferredNames(src) {
     out = `${out.slice(0, job.start)}${job.to}${out.slice(job.end)}`;
   }
   return { src: out, changed: true, renamed: jobs.length };
+}
+
+const WRAP_SUFFIXES = ["", "}", "}}", "}}}", "})}", "})}}", "});", "})};", ")}", "})", ");", "();"];
+
+function parses(src) {
+  try {
+    parseSource(src);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function shortestWrap(src) {
+  for (const suffix of WRAP_SUFFIXES) {
+    if (parses(src + suffix)) return suffix;
+  }
+  return null;
+}
+
+function isIdentStartChar(c) {
+  return c != null && /[A-Za-z_$]/.test(c);
+}
+
+/**
+ * Statement-like mega-line cuts from source offsets (strings/comments skipped).
+ * Does not walk Babel/ESTree. Cut starts are the residue token (`})(),` / `;}(),` / `},ident=`).
+ */
+export function statementLikeCutOffsets(src) {
+  const cuts = [];
+  let i = 0;
+  while (i < src.length) {
+    const next = skipStringOrComment(src, i);
+    if (next !== i) {
+      i = next;
+      continue;
+    }
+    if (src.startsWith("})(),", i) && isIdentStartChar(src[i + 5])) {
+      cuts.push(i);
+    } else if (src.startsWith(")(),", i) && src[i - 1] !== "}" && isIdentStartChar(src[i + 4])) {
+      cuts.push(i);
+    } else if (src.startsWith(";}(),", i) && isIdentStartChar(src[i + 5])) {
+      cuts.push(i);
+    } else if (src[i] === "}" && src[i + 1] === ",") {
+      const ident = readIdentAt(src, i + 2);
+      if (ident) {
+        const after = src.slice(ident.end);
+        if (after.startsWith("=function") || after.startsWith("= function") || after.startsWith(".prototype")) {
+          cuts.push(i);
+        }
+      }
+    }
+    i += 1;
+  }
+  return [...new Set(cuts)].sort((a, b) => a - b);
+}
+
+function lstStatementOffsets(src, hintPath) {
+  try {
+    if (src.length > 80_000 && !parses(src)) return [];
+    const wrap = shortestWrap(src);
+    if (wrap === null) return [];
+    const lst = LosslessFusionParser.parse(src + wrap, {
+      sourcePath: hintPath || "piece.js",
+      errorRecovery: true
+    });
+    return (lst.statements || [])
+      .map((s) => s?.loc?.start)
+      .filter((off) => Number.isInteger(off) && off > 0 && off < src.length);
+  } catch {
+    return [];
+  }
+}
+
+function pieceCandidates(src) {
+  const out = [{ raw: src, prefix: "", sep: "" }];
+  const seps = ["})(),", ";}(),", "},"];
+  for (const sep of seps) {
+    if (!src.startsWith(sep)) continue;
+    const rest = src.slice(sep.length);
+    out.push({ raw: rest, prefix: "", sep });
+    if (/^[A-Za-z_$][\w$]*=/.test(rest)) {
+      out.push({ raw: `var ${rest}`, prefix: "var ", sep });
+    }
+  }
+  if (src.startsWith(")(),") && isIdentStartChar(src[4])) {
+    const rest = src.slice(4);
+    out.push({ raw: rest, prefix: "", sep: ")()," });
+    if (/^[A-Za-z_$][\w$]*=/.test(rest)) {
+      out.push({ raw: `var ${rest}`, prefix: "var ", sep: ")()," });
+    }
+  }
+  return out;
+}
+
+function restoreInferredPiece(inferred, cand) {
+  let body = inferred;
+  if (cand.wrap && body.endsWith(cand.wrap)) body = body.slice(0, -cand.wrap.length);
+  if (cand.prefix === "var ") body = body.replace(/^var\s+/, "");
+  return `${cand.sep}${body}`;
+}
+
+function tryInferPiece(src, hintPath) {
+  for (const cand of pieceCandidates(src)) {
+    if (cand.raw.length > 100_000 && !cand.sep && !cand.prefix) {
+      if (!parses(cand.raw)) continue;
+    }
+    const wrap = parses(cand.raw) ? "" : shortestWrap(cand.raw);
+    if (wrap === null && !parses(cand.raw)) continue;
+    const used = wrap ? cand.raw + wrap : cand.raw;
+    const inferred = inferMeaningfulIdents(used, { filePath: hintPath });
+    if (inferred.aborted) continue;
+    return {
+      ok: true,
+      src: restoreInferredPiece(inferred.src, { ...cand, wrap: wrap || "" })
+    };
+  }
+  return { ok: false };
+}
+
+function splitPieces(src, cuts) {
+  const pieces = [];
+  let prev = 0;
+  for (const c of cuts) {
+    if (c > prev) pieces.push(src.slice(prev, c));
+    prev = c;
+  }
+  if (prev < src.length) pieces.push(src.slice(prev));
+  return pieces.filter((p) => p.length);
+}
+
+function matchCompleteFunctionAt(src, start) {
+  if (!keywordAt(src, start, "function") && !keywordAt(src, start, "async")) return null;
+  let i = start;
+  if (keywordAt(src, i, "async")) {
+    i = skipWs(src, i + 5);
+    if (!keywordAt(src, i, "function")) return null;
+  }
+  i += 8;
+  if (src[i] === "*") i += 1;
+  i = skipWs(src, i);
+  const name = readIdentAt(src, i);
+  if (name) i = name.end;
+  i = skipWs(src, i);
+  if (src[i] !== "(") return null;
+  let paren = 0;
+  let brace = 0;
+  let bracket = 0;
+  let started = false;
+  for (; i < src.length; i += 1) {
+    const skipped = skipStringOrComment(src, i);
+    if (skipped !== i) {
+      i = skipped - 1;
+      continue;
+    }
+    const c = src[i];
+    if (c === "(") paren += 1;
+    else if (c === ")") paren -= 1;
+    else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") {
+      if (!started && paren === 0 && bracket === 0) {
+        started = true;
+        brace = 1;
+        continue;
+      }
+      if (started) brace += 1;
+    } else if (c === "}" && started) {
+      brace -= 1;
+      if (brace === 0) return { start, end: i + 1, name: name?.name || null };
+    }
+  }
+  return null;
+}
+
+function inferInnerCrypticFunctions(src, hintPath) {
+  let out = src;
+  let inferred = 0;
+  for (let pass = 0; pass < 12; pass += 1) {
+    const fns = [];
+    for (let i = 0; i < out.length; ) {
+      const next = skipStringOrComment(out, i);
+      if (next !== i) {
+        i = next;
+        continue;
+      }
+      if (keywordAt(out, i, "function") || keywordAt(out, i, "async")) {
+        const found = matchCompleteFunctionAt(out, i);
+        if (found) {
+          fns.push(found);
+          i = found.start + 1;
+          continue;
+        }
+      }
+      i += 1;
+    }
+    const innermost = fns.filter((f) => !fns.some((o) => o.start > f.start && o.end < f.end));
+    let passInferred = 0;
+    for (const f of innermost.sort((a, b) => b.start - a.start)) {
+      const piece = out.slice(f.start, f.end);
+      if (!/\bv\d+\b/.test(piece) && !/\box[0-9a-f]+\b/i.test(piece)) continue;
+      const result = inferMeaningfulIdents(piece, { filePath: `${hintPath}#fn${f.start}` });
+      if (result.aborted || !result.changed) continue;
+      out = `${out.slice(0, f.start)}${result.src}${out.slice(f.end)}`;
+      passInferred += 1;
+      inferred += 1;
+    }
+    if (passInferred === 0) break;
+  }
+  return { src: out, inferred };
+}
+
+/**
+ * Cut unparseable mega-lines at statement-like IIFE/assignment residue, infer each
+ * parseable piece (LST statement locs when a wrap parses), splice back.
+ */
+export function inferStatementLikePieces(src, hintPath = "index.js", depth = 0) {
+  if (!src) return { src, inferred: 0, failed: 0 };
+  if (depth === 0) src = healForParse(src);
+  const unique = uniqueifyCollidingInferredNames(src);
+  src = unique.src;
+  const whole = tryInferPiece(src, hintPath);
+  if (whole.ok) return { src: whole.src, inferred: 1, failed: 0 };
+  if (depth >= 8) {
+    const innerFns = inferInnerCrypticFunctions(src, hintPath);
+    return { src: innerFns.src, inferred: innerFns.inferred, failed: innerFns.inferred ? 0 : 1 };
+  }
+  const cuts = [...new Set([...statementLikeCutOffsets(src), ...lstStatementOffsets(src, hintPath)])].sort(
+    (a, b) => a - b
+  );
+  const pieces = splitPieces(src, cuts);
+  if (pieces.length <= 1) {
+    const innerFns = inferInnerCrypticFunctions(src, hintPath);
+    return {
+      src: innerFns.src,
+      inferred: innerFns.inferred,
+      failed: innerFns.inferred ? 0 : 1
+    };
+  }
+  let out = "";
+  let inferred = 0;
+  let failed = 0;
+  for (let i = 0; i < pieces.length; i += 1) {
+    const inner = inferStatementLikePieces(pieces[i], `${hintPath}.p${i}`, depth + 1);
+    out += inner.src;
+    inferred += inner.inferred;
+    failed += inner.failed;
+  }
+  if (/\bv\d+\b/.test(out) || /\box[0-9a-f]+\b/i.test(out)) {
+    const innerFns = inferInnerCrypticFunctions(out, hintPath);
+    out = innerFns.src;
+    inferred += innerFns.inferred;
+  }
+  return { src: out, inferred, failed };
 }
 
 export function functionBodyStatementSlices(src, hintPath = "fn.js") {
@@ -730,13 +1004,27 @@ export function processVendorFile(filePath, { write = false, apply = false, spli
   const original = fs.readFileSync(filePath, "utf8");
   const beforeV = countV(original);
   const before0x = count0x(original);
-  const inferred = inferMeaningfulIdents(original, { filePath });
-  if (inferred.aborted) {
-    return { rel: posixRel(filePath), aborted: true, reason: inferred.reason, beforeV, before0x };
-  }
+  let inferred = inferMeaningfulIdents(original, { filePath });
   let next = inferred.src;
+  let pieceInferred = 0;
+  if (inferred.aborted) {
+    const pieces = inferStatementLikePieces(original, filePath);
+    next = pieces.src;
+    pieceInferred = pieces.inferred || 0;
+    inferred = {
+      src: pieces.src,
+      changed: pieces.src !== original,
+      aborted: pieces.inferred === 0 && (pieces.failed || 0) > 0 && pieces.src === original,
+      reason: inferred.reason,
+      matchedPublicAs: 0,
+      renamed: pieces.inferred || 0
+    };
+    if (inferred.aborted) {
+      return { rel: posixRel(filePath), aborted: true, reason: inferred.reason, beforeV, before0x };
+    }
+  }
   let splitFiles = null;
-  if (split) {
+  if (split && parses(next)) {
     const result = splitHugeModule(next, { filePath, maxLines });
     splitFiles = result.files;
     const barrel = result.files.find((f) => f.rel === path.basename(filePath));
@@ -766,6 +1054,7 @@ export function processVendorFile(filePath, { write = false, apply = false, spli
     before0x,
     after0x: count0x(after),
     splitCount: splitFiles ? splitFiles.length : 1,
+    pieceInferred,
     written: Boolean(write)
   };
 }

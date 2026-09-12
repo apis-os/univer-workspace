@@ -114,6 +114,23 @@ test("heals IIFE comma after ;}() before a non-function assignment then parses",
   assert.doesNotMatch(src, /_0xbbb\b/);
 });
 
+test("heals extra } in })(),rd=function when the IIFE body is already closed", () => {
+  const original =
+    "function host(){return 1;}\n" +
+    "for(var v18483=1;v18483;)v18483=0;},v18485.prototype.x=function(_0xaaa){this._draggingTarget=null;},v18485})(),rd=function(_0xbbb){return _0xbbb+\"_0xdead\";}();\n" +
+    "export { rd as publicApi };\n";
+  const healed = healForParse(original);
+  assert.doesNotMatch(healed, /\}\)\(\),rd=function/);
+  assert.match(healed, /\)\(\),rd=function/);
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "})(),rd=function extra brace must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /"_0xdead"/);
+  assert.doesNotMatch(src, /_0xaaa\b/);
+  assert.doesNotMatch(src, /_0xbbb\b/);
+});
+
 test("heals extra };ident on the same line after a closed function then parses", () => {
   const original =
     "function _0xaaa(){ return \"_0xdead\"; }};xw=_0xaaa;\n" +
@@ -125,6 +142,26 @@ test("heals extra };ident on the same line after a closed function then parses",
   assert.doesNotMatch(src, /}};xw=/);
   assert.match(src, /"_0xdead"/);
   assert.match(src, /as publicApi/);
+});
+
+test("heals fo; truncated for-loop body then leftover IIFE comma", () => {
+  const original =
+    "var nd=(function(){function _0xaaa(){}\n" +
+    "  return _0xaaa.prototype.dragStart=function(_0xbbb){\n" +
+    "        fo;\n" +
+    "      };\n" +
+    "    };\n" +
+    "}\n" +
+    "for(var _0xccc=_0xbbb.target;_0xccc;);},_0xaaa})(),rd=function(){return \"_0xdead\";}();\n" +
+    "export { rd as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /for\(var /);
+  assert.doesNotMatch(healed, /(?<![\w$])fo;/);
+  const { src, aborted, changed } = rename0xIdents(healed);
+  assert.equal(aborted, false, "fo; truncated for-loop must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /"_0xdead"/);
 });
 
 test("heals Object.entries split, typeof==, and for(var residue then parses", () => {

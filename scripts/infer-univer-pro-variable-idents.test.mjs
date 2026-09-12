@@ -6,7 +6,9 @@ import { fileURLToPath } from "node:url";
 import {
   functionBodyStatementSlices,
   inferMeaningfulIdents,
+  inferStatementLikePieces,
   splitHugeModule,
+  statementLikeCutOffsets,
   uniqueifyCollidingInferredNames
 } from "./infer-univer-pro-variable-idents.mjs";
 
@@ -166,4 +168,56 @@ test("loc-slices inner statements of a function when they have locations", () =>
   assert.ok(slices.every((s) => Number.isInteger(s.start) && s.end > s.start));
   assert.match(slices.map((s) => s.code).join(""), /let v2/);
   assert.match(slices.map((s) => s.code).join(""), /function v3/);
+});
+
+test("cuts mega-line residue at })(),ident=function and },ident= using source offsets", () => {
+  const src =
+    "for(var v18483=1;v18483;)v18483=0;},v18485.prototype.x=function(v18473){this._draggingTarget=null;},v18485})(),rd=function(v18468){return v18468;}(),id=Math.log(2);";
+  const cuts = statementLikeCutOffsets(src);
+  assert.ok(
+    cuts.some((c) => src.slice(c).startsWith("})(),rd=function")),
+    "must cut at })(),rd=function"
+  );
+  assert.ok(
+    cuts.some((c) => src.slice(c).startsWith("},v18485.prototype") || src.slice(c).startsWith("v18485.prototype")),
+    "must cut at },ident.prototype or the following prototype assignment"
+  );
+});
+
+test("infers parseable statement-like pieces and splices them back", () => {
+  const original =
+    "for(var v18483=1;v18483;)v18483=0;},v18485.prototype.x=function(v18473){this._draggingTarget=null;},v18485})(),rd=function(v18468){return v18468+\"keep\";}();\n" +
+    "export { rd as publicApi };\n";
+  const { src, inferred } = inferStatementLikePieces(original, "vendor/univer-pro/engine-chart/lib/es/index.js");
+  assert.ok(inferred >= 1, "rd=function piece must infer");
+  assert.match(src, /as publicApi/);
+  assert.match(src, /"keep"/);
+  assert.doesNotMatch(src, /\bv18468\b/);
+});
+
+test("infers complete inner cryptic functions when the parent IIFE does not parse", () => {
+  const original =
+    "(function(){else{\nfunction v18468(v18467){return v18467+\"keep\";}\n}})();\n";
+  const { src, inferred } = inferStatementLikePieces(original, "vendor/univer-pro/engine-chart/lib/es/index.js");
+  assert.ok(inferred >= 1, "inner function v18468 must infer");
+  assert.match(src, /"keep"/);
+  assert.doesNotMatch(src, /\bv18467\b/);
+});
+
+test("unique-ifies colliding inferred const names so leftover bindings can parse", () => {
+  const dup = "var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46";
+  const original =
+    `const ${dup} = 1;\n` +
+    `const ${dup} = 2;\n` +
+    "function v3654(){ return 3; }\n" +
+    "export { host as publicApi };\n";
+  const unique = uniqueifyCollidingInferredNames(original);
+  assert.match(unique.src, new RegExp(`const\\s+${dup}\\s*=`));
+  assert.notEqual(unique.src, original);
+  const { src, aborted, changed } = inferMeaningfulIdents(original, {
+    filePath: "vendor/univer-pro/engine-chart/lib/es/index.js"
+  });
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.doesNotMatch(src, /function\s+v3654\b/);
 });
