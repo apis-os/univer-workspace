@@ -156,6 +156,23 @@ test("unique-ify does not rewrite colliding names inside string literals", () =>
   assert.equal(new Set(decls).size, 2);
 });
 
+test("unique-ify does not treat class extends as a class name", () => {
+  const original =
+    "var Mc = class extends kc { foo(){ return 1; } };\n" +
+    "var Nc = class extends kc { bar(){ return 2; } };\n" +
+    "function v3654(){ return 3; }\n" +
+    "export { host as publicApi };\n";
+  const unique = uniqueifyCollidingInferredNames(original);
+  assert.match(unique.src, /class extends kc/);
+  assert.doesNotMatch(unique.src, /class extends_\d+/);
+  const { src, aborted } = inferMeaningfulIdents(original, {
+    filePath: "vendor/univer-pro/engine-chart/lib/es/index.js"
+  });
+  assert.equal(aborted, false);
+  assert.doesNotMatch(src, /function\s+v3654\b/);
+  assert.match(src, /class extends /);
+});
+
 test("loc-slices inner statements of a function when they have locations", () => {
   const src =
     "function IM(v1){\n" +

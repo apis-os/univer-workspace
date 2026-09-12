@@ -317,7 +317,9 @@ function readDeclIdent(src, i) {
     return readIdentAt(src, j);
   }
   if (keywordAt(src, i, "class")) {
-    return readIdentAt(src, skipWs(src, i + 5));
+    const j = skipWs(src, i + 5);
+    if (src[j] === "{" || keywordAt(src, j, "extends")) return null;
+    return readIdentAt(src, j);
   }
   if (keywordAt(src, i, "const") || keywordAt(src, i, "let")) {
     const word = src.startsWith("const", i) ? "const" : "let";
