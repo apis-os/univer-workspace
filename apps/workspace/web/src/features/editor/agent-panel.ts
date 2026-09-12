@@ -4,10 +4,21 @@ export const AGENT_PANEL_STORAGE_KEY = "univer-workspace-agent-panel-v1";
 export type AgentSuggestionKey =
   | "agentChipFillQ3"
   | "agentChipExplainQ3"
+  | "agentChipExplainSelection"
   | "agentChipSetD4"
   | "agentChipAppend"
   | "agentChipSkills"
   | "agentChipHistory";
+
+export type ExplainSelectionToastKey = "selectARange";
+
+export type ExplainSelectionResult =
+  | { readonly action: "toast"; readonly toastKey: ExplainSelectionToastKey }
+  | { readonly action: "turn"; readonly prompt: string };
+
+export interface ExplainSelectionHost {
+  readonly getActiveWorkbook?: () => unknown;
+}
 
 export interface AgentSuggestion {
   readonly id: string;
@@ -22,12 +33,62 @@ export interface AgentStreamEvent {
 
 type StorageLike = Pick<Storage, "getItem" | "setItem">;
 
+let explainSelectionHost: ExplainSelectionHost | undefined;
+
 function browserStorage(): StorageLike | undefined {
   try {
     return globalThis.localStorage;
   } catch {
     return undefined;
   }
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
+export function bindExplainSelectionHost(
+  host: ExplainSelectionHost | undefined
+): void {
+  explainSelectionHost = host;
+}
+
+export function explainSelectionPrompt(range: string): string {
+  return `Explain ${range} in one sentence`;
+}
+
+export function explainSelectionFromRange(
+  range: string | null | undefined
+): ExplainSelectionResult {
+  const a1 = range?.trim() ?? "";
+  if (!a1) {
+    return { action: "toast", toastKey: "selectARange" };
+  }
+  return { action: "turn", prompt: explainSelectionPrompt(a1) };
+}
+
+export function readActiveRangeA1(
+  host: ExplainSelectionHost | undefined = explainSelectionHost
+): string | null {
+  const workbook = host?.getActiveWorkbook?.();
+  const wb = asRecord(workbook);
+  if (!wb) return null;
+  const getActiveRange = wb.getActiveRange;
+  if (typeof getActiveRange !== "function") return null;
+  const range = (getActiveRange as () => unknown).call(workbook);
+  if (range == null) return null;
+  if (typeof range === "string") {
+    const trimmed = range.trim();
+    return trimmed || null;
+  }
+  const obj = asRecord(range);
+  if (!obj) return null;
+  const getA1 = obj.getA1Notation;
+  if (typeof getA1 !== "function") return null;
+  const a1 = String((getA1 as () => unknown).call(range) ?? "").trim();
+  return a1 || null;
 }
 
 export function readAgentPanelOpen(
@@ -99,6 +160,11 @@ export function suggestionChipsForUnitType(
         id: "explain-q3",
         prompt: "Explain the Q3 forecast in one sentence",
         labelKey: "agentChipExplainQ3",
+      },
+      {
+        id: "explain-selection",
+        prompt: "",
+        labelKey: "agentChipExplainSelection",
       },
       {
         id: "set-d4",

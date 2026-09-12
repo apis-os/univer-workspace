@@ -73,6 +73,7 @@ import {
 } from "./workspace-snapshot-server-adapter";
 import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
 import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
+import { bindExplainSelectionHost } from "./agent-panel";
 import {
   AGENT_MEMBER_ID,
   bindFollowAgentHost,
@@ -405,6 +406,9 @@ export function createCollaborationEditor(
         bindAgentEditSpotlight({
           getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
         });
+        bindExplainSelectionHost({
+          getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+        });
         bindFollowAgentHost(createFollowAgentEditorHost(univerAPI));
         const notifyCollabConflict = createCollabConflictToaster({
           warning: (message) => toast.warning(message),
@@ -568,6 +572,7 @@ export function createCollaborationEditor(
           window.removeEventListener("workspace-agent-edited", agentEditedListener);
         }
         bindAgentEditSpotlight(undefined);
+        bindExplainSelectionHost(undefined);
         bindFollowAgentHost(undefined);
         bindLiveShareFacade(undefined);
         bindCollaborationStatusDisplay(null);

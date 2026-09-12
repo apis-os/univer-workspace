@@ -1,4 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   AGENT_PANEL_STORAGE_KEY,
   agentErrorMessage,
@@ -6,7 +9,11 @@ import {
   agentMuxUrl,
   consumeAgentTurnResponse,
   defaultAgentPanelOpen,
+  explainSelectionFromRange,
+  explainSelectionPrompt,
   gatewayCacheStatus,
+  isCachedExplainPrompt,
+  readActiveRangeA1,
   readAgentMuxFrame,
   readAgentPanelOpen,
   readJsonBody,
@@ -16,6 +23,9 @@ import {
   truncateGatewayLogId,
   writeAgentPanelOpen,
 } from "./agent-panel";
+
+const editorDir = dirname(fileURLToPath(import.meta.url));
+const webSrc = join(editorDir, "../..");
 
 class MemoryStorage {
   readonly #data = new Map<string, string>();
@@ -51,11 +61,13 @@ describe("agent panel helpers", () => {
     ).toEqual([
       "Fill E2:E4 with SUM of Jul–Sep",
       "Explain the Q3 forecast in one sentence",
+      "",
       "Set D4 to 180",
     ]);
     expect(suggestionChipsForUnitType("sheet").map((chip) => chip.id)).toEqual([
       "fill-q3",
       "explain-q3",
+      "explain-selection",
       "set-d4",
     ]);
     expect(suggestionChipsForUnitType("slide").map((chip) => chip.id)).toEqual([
@@ -297,5 +309,116 @@ describe("agent panel helpers", () => {
     ).toBe(
       "wss://univer-workspace.apisos.workers.dev/api/remote.mux?unitId=unit_welcome_sheet"
     );
+  });
+});
+
+function facadeWorkbook(a1: string | null) {
+  return {
+    getActiveRange: () =>
+      a1 == null
+        ? null
+        : {
+            getA1Notation: () => a1,
+          },
+  };
+}
+
+describe("Explain selection chip", () => {
+  it("lists an Explain selection chip on sheet and base units", () => {
+    for (const unitType of ["sheet", "base"] as const) {
+      const chips = suggestionChipsForUnitType(unitType);
+      const chip = chips.find((item) => item.id === "explain-selection");
+      expect(chip).toMatchObject({
+        id: "explain-selection",
+        labelKey: "agentChipExplainSelection",
+      });
+      const canned = chips.find((item) => item.id === "explain-q3");
+      expect(canned?.prompt).toBe("Explain the Q3 forecast in one sentence");
+    }
+    expect(
+      suggestionChipsForUnitType("doc").some(
+        (item) => item.id === "explain-selection"
+      )
+    ).toBe(false);
+  });
+
+  it("posts Explain ${range} in one sentence for the Facade A1 range", () => {
+    expect(explainSelectionPrompt("E2:E4")).toBe(
+      "Explain E2:E4 in one sentence"
+    );
+    expect(explainSelectionFromRange("B2")).toEqual({
+      action: "turn",
+      prompt: "Explain B2 in one sentence",
+    });
+    expect(
+      readActiveRangeA1({
+        getActiveWorkbook: () => facadeWorkbook("E2:E4"),
+      })
+    ).toBe("E2:E4");
+    const result = explainSelectionFromRange(
+      readActiveRangeA1({
+        getActiveWorkbook: () => facadeWorkbook("E2:E4"),
+      })
+    );
+    expect(result).toEqual({
+      action: "turn",
+      prompt: "Explain E2:E4 in one sentence",
+    });
+    expect(
+      isCachedExplainPrompt(result.action === "turn" ? result.prompt : "")
+    ).toBe(false);
+    expect(
+      isCachedExplainPrompt("Explain the Q3 forecast in one sentence")
+    ).toBe(true);
+  });
+
+  it("toasts selectARange and does not post a turn when the selection is empty", () => {
+    expect(explainSelectionFromRange(null)).toEqual({
+      action: "toast",
+      toastKey: "selectARange",
+    });
+    expect(explainSelectionFromRange("")).toEqual({
+      action: "toast",
+      toastKey: "selectARange",
+    });
+    expect(explainSelectionFromRange("   ")).toEqual({
+      action: "toast",
+      toastKey: "selectARange",
+    });
+    expect(
+      readActiveRangeA1({
+        getActiveWorkbook: () => facadeWorkbook(null),
+      })
+    ).toBeNull();
+    expect(
+      explainSelectionFromRange(
+        readActiveRangeA1({
+          getActiveWorkbook: () => undefined,
+        })
+      )
+    ).toEqual({
+      action: "toast",
+      toastKey: "selectARange",
+    });
+  });
+});
+
+describe("Explain selection panel wiring", () => {
+  it("clicks Explain selection, toasts empty ranges, and POSTs ad-hoc turns", () => {
+    const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
+    expect(src).toMatch(/explainSelectionFromRange/);
+    expect(src).toMatch(/readActiveRangeA1/);
+    expect(src).toMatch(/selectARange/);
+    expect(src).toMatch(/toast\.(info|warning)\(\s*t\("selectARange"\)/);
+    expect(src).toMatch(/explain-selection/);
+    expect(src).toMatch(/submit\(/);
+    const i18n = readFileSync(join(webSrc, "shared/i18n.tsx"), "utf8");
+    expect(i18n).toMatch(/agentChipExplainSelection:\s*"Explain selection"/);
+    expect(i18n).toMatch(/selectARange:/);
+    const editor = readFileSync(
+      join(editorDir, "collaboration-editor.tsx"),
+      "utf8"
+    );
+    expect(editor).toMatch(/bindExplainSelectionHost/);
   });
 });

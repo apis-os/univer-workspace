@@ -2,7 +2,7 @@ import { Bot, Send, Sparkles, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "../../shared/i18n";
 import { useMediaQuery } from "../../shared/resizable-sidebar";
-import { Button, Spinner } from "../../shared/ui";
+import { Button, Spinner, toast } from "../../shared/ui";
 import { cn } from "../../shared/utils/cn";
 import {
   activateAgentEditSpotlight,
@@ -16,7 +16,9 @@ import {
   agentExamplePrompt,
   agentMuxUrl,
   consumeAgentTurnResponse,
+  explainSelectionFromRange,
   gatewayCacheStatus,
+  readActiveRangeA1,
   readAgentMuxFrame,
   readJsonBody,
   shouldPostAgentTurn,
@@ -245,8 +247,8 @@ export function AgentCollaborator({
 
   if (!open) return null;
 
-  const submit = async () => {
-    const text = prompt.trim();
+  const submit = async (nextPrompt?: string) => {
+    const text = (nextPrompt ?? prompt).trim();
     if (!text || pendingRef.current || !shouldPostAgentTurn(spectator)) return;
     pendingRef.current = true;
     setPending(true);
@@ -450,7 +452,18 @@ export function AgentCollaborator({
                 type="button"
                 disabled={spectator}
                 className="rounded-full border border-border bg-muted/60 px-2.5 py-1 text-[11px] text-foreground transition-colors hover:border-brand-200 hover:bg-brand-50 disabled:opacity-60"
-                onClick={() => setPrompt(chip.prompt)}
+                onClick={() => {
+                  if (chip.id === "explain-selection") {
+                    const next = explainSelectionFromRange(readActiveRangeA1());
+                    if (next.action === "toast") {
+                      toast.info(t("selectARange"));
+                      return;
+                    }
+                    void submit(next.prompt);
+                    return;
+                  }
+                  setPrompt(chip.prompt);
+                }}
               >
                 {t(chip.labelKey)}
               </button>
