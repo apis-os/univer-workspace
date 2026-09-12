@@ -11,13 +11,17 @@ const LOCAL_UNIVERJS = /^@univerjs\/univer-workspace/;
 function isFrozenScope(name) {
   return (
     (name.startsWith("@univerjs/") && !LOCAL_UNIVERJS.test(name)) ||
-    name.startsWith("@univerjs-pro/")
+    name.startsWith("@univerjs-pro/") ||
+    name.startsWith("@univer-cli/")
   );
 }
 
 function vendorDirFor(name) {
   if (name.startsWith("@univerjs-pro/")) {
     return path.join(ROOT, "vendor/univer-pro", name.slice("@univerjs-pro/".length));
+  }
+  if (name.startsWith("@univer-cli/")) {
+    return path.join(ROOT, "vendor/univer-cli", name.slice("@univer-cli/".length));
   }
   return path.join(ROOT, "vendor/univer", name.slice("@univerjs/".length));
 }
@@ -26,7 +30,7 @@ function isFileVendorSpecifier(specifier) {
   return (
     typeof specifier === "string" &&
     (specifier.startsWith("file:") || specifier.startsWith("link:")) &&
-    /vendor\/univer(-pro)?\//.test(specifier)
+    /vendor\/univer(-pro|-cli)?\//.test(specifier)
   );
 }
 
@@ -51,7 +55,7 @@ function workspacePackageJsons(dir = ROOT, out = []) {
   return out;
 }
 
-test("workspace @univerjs and @univerjs-pro deps are file: vendor specifiers", () => {
+test("workspace @univerjs, @univerjs-pro, and @univer-cli deps are file: vendor specifiers", () => {
   const rootManifest = JSON.parse(readFileSync(path.join(ROOT, "package.json"), "utf8"));
   assert.match(String(rootManifest.scripts?.postinstall ?? ""), /deobfuscate-univer-pro/);
 
@@ -77,6 +81,10 @@ test("pnpm.overrides pin frozen Univer scopes to vendor", () => {
     workspace,
     /['"]@univerjs-pro\/license['"]\s*:\s*['"]file:vendor\/univer-pro\/license['"]/
   );
+  assert.match(
+    workspace,
+    /['"]@univer-cli\/config['"]\s*:\s*['"]file:vendor\/univer-cli\/config['"]/
+  );
 });
 
 test("lockfile importers and snapshots do not resolve frozen scopes from npm registries", () => {
@@ -84,7 +92,7 @@ test("lockfile importers and snapshots do not resolve frozen scopes from npm reg
   const importerHits = [];
   const importerBlock = lock.split("\npackages:\n")[0] ?? lock;
   const depRe =
-    /^(\s*)('(?:@univerjs(?:-pro)?\/[^']+)'|(?:@univerjs(?:-pro)?\/[^\s:]+)):\n\s+specifier: ([^\n]+)\n\s+version: ([^\n]+)/gm;
+    /^(\s*)('(?:@(?:univerjs(?:-pro)?|univer-cli)\/[^']+)'|(?:@(?:univerjs(?:-pro)?|univer-cli)\/[^\s:]+)):\n\s+specifier: ([^\n]+)\n\s+version: ([^\n]+)/gm;
   let match;
   while ((match = depRe.exec(importerBlock))) {
     const name = match[2].replaceAll("'", "");
@@ -99,7 +107,7 @@ test("lockfile importers and snapshots do not resolve frozen scopes from npm reg
 
   const registryHits = [];
   for (const host of ["insider-npm-registry.univer.work", "registry.npmjs.org"]) {
-    for (const scope of ["@univerjs/", "@univerjs-pro/"]) {
+    for (const scope of ["@univerjs/", "@univerjs-pro/", "@univer-cli/"]) {
       const needle = `https://${host}/${scope}`;
       if (lock.includes(needle)) registryHits.push(needle);
     }
@@ -111,12 +119,13 @@ test("lockfile importers and snapshots do not resolve frozen scopes from npm reg
   );
 });
 
-test(".npmrc does not send @univerjs or @univerjs-pro to insider-npm", () => {
+test(".npmrc does not send @univerjs, @univerjs-pro, or @univer-cli to insider-npm", () => {
   const npmrc = existsSync(path.join(ROOT, ".npmrc"))
     ? readFileSync(path.join(ROOT, ".npmrc"), "utf8")
     : "";
   assert.doesNotMatch(npmrc, /@univerjs:registry=/);
   assert.doesNotMatch(npmrc, /@univerjs-pro:registry=/);
+  assert.doesNotMatch(npmrc, /@univer-cli:registry=/);
 });
 
 test("OSS @univerjs/core is vendored locally", () => {
@@ -124,4 +133,11 @@ test("OSS @univerjs/core is vendored locally", () => {
   assert.ok(existsSync(path.join(dir, "package.json")), "vendor/univer/core");
   const manifest = JSON.parse(readFileSync(path.join(dir, "package.json"), "utf8"));
   assert.equal(manifest.name, "@univerjs/core");
+});
+
+test("@univer-cli/config is vendored locally", () => {
+  const dir = vendorDirFor("@univer-cli/config");
+  assert.ok(existsSync(path.join(dir, "package.json")), "vendor/univer-cli/config");
+  const manifest = JSON.parse(readFileSync(path.join(dir, "package.json"), "utf8"));
+  assert.equal(manifest.name, "@univer-cli/config");
 });

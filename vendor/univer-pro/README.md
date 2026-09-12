@@ -8,7 +8,7 @@ OSS `@univerjs` lives in `vendor/univer/` (not obfuscated).
 
 **Freeze:** workspace `package.json` files use `file:` specifiers, and
 `pnpm-workspace.yaml` `overrides` (pnpm 11 ignores `package.json#pnpm.overrides`)
-map `@univerjs/*` and `@univerjs-pro/*` to these directories.
+map `@univerjs/*`, `@univerjs-pro/*`, and `@univer-cli/*` to these directories.
 `.npmrc` does **not** send those scopes to insider-npm. After `pnpm install`,
 packages still come from vendor. `postinstall` runs this deobfuscator so install
 cannot forget the overlay.
@@ -22,8 +22,8 @@ node scripts/deobfuscate-univer-pro.mjs --fix-vendor # repair glued keywords + l
 node scripts/freeze-univer-vendor.mjs                # recopy from node_modules/.pnpm (rare)
 ```
 
-`pnpm install` may relink `node_modules` onto vendor; it must not fetch `@univerjs`
-or `@univerjs-pro` from a registry. Re-run `pnpm deobfuscate:pro` is safe: already
+`pnpm install` may relink `node_modules` onto vendor; it must not fetch `@univerjs`,
+`@univerjs-pro`, or `@univer-cli` from a registry. Re-run `pnpm deobfuscate:pro` is safe: already
 decoded files are skipped (`looksObfuscated` is false) unless published originals
 are copied again.
 

@@ -5,6 +5,30 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@univer-cli/api-reference': file:vendor/univer-cli/api-reference
+  '@univer-cli/api-reference-command': file:vendor/univer-cli/api-reference-command
+  '@univer-cli/config': file:vendor/univer-cli/config
+  '@univer-cli/config-command': file:vendor/univer-cli/config-command
+  '@univer-cli/content-execution': file:vendor/univer-cli/content-execution
+  '@univer-cli/content-inspection': file:vendor/univer-cli/content-inspection
+  '@univer-cli/content-inspection-command': file:vendor/univer-cli/content-inspection-command
+  '@univer-cli/daemon': file:vendor/univer-cli/daemon
+  '@univer-cli/daemon-command': file:vendor/univer-cli/daemon-command
+  '@univer-cli/doc-typst-facade': file:vendor/univer-cli/doc-typst-facade
+  '@univer-cli/generic-keyed-instance-pool': file:vendor/univer-cli/generic-keyed-instance-pool
+  '@univer-cli/headless-univer': file:vendor/univer-cli/headless-univer
+  '@univer-cli/resource-library': file:vendor/univer-cli/resource-library
+  '@univer-cli/resource-library-command': file:vendor/univer-cli/resource-library-command
+  '@univer-cli/svg-facade': file:vendor/univer-cli/svg-facade
+  '@univer-cli/unit-layout-lint': file:vendor/univer-cli/unit-layout-lint
+  '@univer-cli/unit-layout-lint-command': file:vendor/univer-cli/unit-layout-lint-command
+  '@univer-cli/unit-pdf-printer': file:vendor/univer-cli/unit-pdf-printer
+  '@univer-cli/unit-screenshot': file:vendor/univer-cli/unit-screenshot
+  '@univer-cli/unit-screenshot-command': file:vendor/univer-cli/unit-screenshot-command
+  '@univer-cli/univer-collaboration-runtime': file:vendor/univer-cli/univer-collaboration-runtime
+  '@univer-cli/univer-collaboration-runtime-pool': file:vendor/univer-cli/univer-collaboration-runtime-pool
+  '@univer-cli/univer-render-page': file:vendor/univer-cli/univer-render-page
+  '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime
   '@univerjs-pro/bases': file:vendor/univer-pro/bases
   '@univerjs-pro/bases-dashboard': file:vendor/univer-pro/bases-dashboard
   '@univerjs-pro/bases-dashboard-ui': file:vendor/univer-pro/bases-dashboard-ui
@@ -241,10 +265,6 @@ importers:
         version: 4.131.0(@types/node@24.13.3)
 
   apps/agent:
-    dependencies:
-      '@univerjs/univer-workspace-client-core':
-        specifier: workspace:*
-        version: link:../../packages/client-core
     devDependencies:
       '@deepseek-ai/cordis':
         specifier: 4.0.2
@@ -333,9 +353,6 @@ importers:
       esbuild:
         specifier: 0.27.7
         version: 0.27.7
-      tsx:
-        specifier: ^4.23.0
-        version: 4.23.12
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -371,53 +388,53 @@ importers:
   apps/cli:
     dependencies:
       '@univer-cli/api-reference':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/api-reference
+        version: file:vendor/univer-cli/api-reference
       '@univer-cli/api-reference-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/api-reference-command
+        version: file:vendor/univer-cli/api-reference-command(commander@15.0.0)
       '@univer-cli/config':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/config
+        version: file:vendor/univer-cli/config
       '@univer-cli/config-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/config-command
+        version: file:vendor/univer-cli/config-command(commander@15.0.0)
       '@univer-cli/content-execution':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/content-execution
+        version: file:vendor/univer-cli/content-execution
       '@univer-cli/content-inspection-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/content-inspection-command
+        version: file:vendor/univer-cli/content-inspection-command(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/daemon':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/daemon
+        version: file:vendor/univer-cli/daemon
       '@univer-cli/daemon-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/daemon-command
+        version: file:vendor/univer-cli/daemon-command(commander@15.0.0)
       '@univer-cli/headless-univer':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/headless-univer
+        version: file:vendor/univer-cli/headless-univer(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/resource-library':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/resource-library
+        version: file:vendor/univer-cli/resource-library
       '@univer-cli/resource-library-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/resource-library-command
+        version: file:vendor/univer-cli/resource-library-command(commander@15.0.0)
       '@univer-cli/unit-layout-lint-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-layout-lint-command
+        version: file:vendor/univer-cli/unit-layout-lint-command(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/unit-screenshot-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-screenshot-command
+        version: file:vendor/univer-cli/unit-screenshot-command(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/univer-collaboration-runtime':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-collaboration-runtime
+        version: file:vendor/univer-cli/univer-collaboration-runtime(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/univer-collaboration-runtime-pool':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-collaboration-runtime-pool
+        version: file:vendor/univer-cli/univer-collaboration-runtime-pool(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/univer-render-runtime':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-render-runtime
+        version: file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)
       '@univerjs-pro/bases':
         specifier: file:../../vendor/univer-pro/bases
         version: file:vendor/univer-pro/bases(react@19.2.8)(rxjs@7.8.2)
@@ -1213,38 +1230,38 @@ importers:
   packages/client-core:
     dependencies:
       '@univer-cli/content-execution':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/content-execution
+        version: file:vendor/univer-cli/content-execution
       '@univer-cli/doc-typst-facade':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/doc-typst-facade
+        version: file:vendor/univer-cli/doc-typst-facade
       '@univer-cli/headless-univer':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/headless-univer
+        version: file:vendor/univer-cli/headless-univer(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/svg-facade':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/svg-facade
+        version: file:vendor/univer-cli/svg-facade
       '@univer-cli/unit-layout-lint':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-layout-lint
+        version: file:vendor/univer-cli/unit-layout-lint(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/unit-pdf-printer':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-pdf-printer
+        version: file:vendor/univer-cli/unit-pdf-printer(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/unit-screenshot':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-screenshot
+        version: file:vendor/univer-cli/unit-screenshot(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/univer-collaboration-runtime':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-collaboration-runtime
+        version: file:vendor/univer-cli/univer-collaboration-runtime(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/univer-collaboration-runtime-pool':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-collaboration-runtime-pool
+        version: file:vendor/univer-cli/univer-collaboration-runtime-pool(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/univer-render-page':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(@univer-cli/univer-render-runtime@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-render-page
+        version: file:vendor/univer-cli/univer-render-page(@univer-cli/univer-render-runtime@file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rxjs@7.8.2)
       '@univer-cli/univer-render-runtime':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-render-runtime
+        version: file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)
       '@univerjs-pro/collaboration':
         specifier: file:../../vendor/univer-pro/collaboration
         version: file:vendor/univer-pro/collaboration(react@19.2.8)(rxjs@7.8.2)
@@ -1274,11 +1291,11 @@ importers:
   packages/dsh-univer-workspace-plugin:
     dependencies:
       '@univer-cli/content-execution':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/content-execution
+        version: file:vendor/univer-cli/content-execution
       '@univer-cli/content-inspection':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/content-inspection
+        version: file:vendor/univer-cli/content-inspection(react@18.3.1)(rxjs@7.8.2)
       '@univerjs-pro/boards-print':
         specifier: file:../../vendor/univer-pro/boards-print
         version: file:vendor/univer-pro/boards-print(@types/react-dom@18.3.7(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
@@ -1407,65 +1424,65 @@ importers:
         specifier: 8.18.1
         version: 8.18.1
       '@univer-cli/api-reference':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/api-reference
+        version: file:vendor/univer-cli/api-reference
       '@univer-cli/api-reference-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/api-reference-command
+        version: file:vendor/univer-cli/api-reference-command(commander@15.0.0)
       '@univer-cli/config':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/config
+        version: file:vendor/univer-cli/config
       '@univer-cli/config-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/config-command
+        version: file:vendor/univer-cli/config-command(commander@15.0.0)
       '@univer-cli/content-inspection-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/content-inspection-command
+        version: file:vendor/univer-cli/content-inspection-command(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/daemon':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/daemon
+        version: file:vendor/univer-cli/daemon
       '@univer-cli/daemon-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/daemon-command
+        version: file:vendor/univer-cli/daemon-command(commander@15.0.0)
       '@univer-cli/doc-typst-facade':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/doc-typst-facade
+        version: file:vendor/univer-cli/doc-typst-facade
       '@univer-cli/headless-univer':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/headless-univer
+        version: file:vendor/univer-cli/headless-univer(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/resource-library':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/resource-library
+        version: file:vendor/univer-cli/resource-library
       '@univer-cli/resource-library-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)
+        specifier: file:../../vendor/univer-cli/resource-library-command
+        version: file:vendor/univer-cli/resource-library-command(commander@15.0.0)
       '@univer-cli/svg-facade':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579
+        specifier: file:../../vendor/univer-cli/svg-facade
+        version: file:vendor/univer-cli/svg-facade
       '@univer-cli/unit-layout-lint':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-layout-lint
+        version: file:vendor/univer-cli/unit-layout-lint(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/unit-layout-lint-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-layout-lint-command
+        version: file:vendor/univer-cli/unit-layout-lint-command(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/unit-screenshot':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-screenshot
+        version: file:vendor/univer-cli/unit-screenshot(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/unit-screenshot-command':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/unit-screenshot-command
+        version: file:vendor/univer-cli/unit-screenshot-command(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/univer-collaboration-runtime':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-collaboration-runtime
+        version: file:vendor/univer-cli/univer-collaboration-runtime(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/univer-collaboration-runtime-pool':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-collaboration-runtime-pool
+        version: file:vendor/univer-cli/univer-collaboration-runtime-pool(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/univer-render-page':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(@types/react-dom@18.3.7(@types/react@18.3.18))(@types/react@18.3.18)(@univer-cli/univer-render-runtime@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-render-page
+        version: file:vendor/univer-cli/univer-render-page(@types/react-dom@18.3.7(@types/react@18.3.18))(@types/react@18.3.18)(@univer-cli/univer-render-runtime@file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@univer-cli/univer-render-runtime':
-        specifier: 1.0.0-insiders.20260907-70fc579
-        version: 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+        specifier: file:../../vendor/univer-cli/univer-render-runtime
+        version: file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2)
       '@univer/unit-comparison-viewer':
         specifier: file:../unit-comparison-viewer
         version: file:packages/unit-comparison-viewer(@types/react-dom@18.3.7(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)(tailwindcss@4.3.0)
@@ -5005,93 +5022,93 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@univer-cli/api-reference-command@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-wSf+TorY+6/FjHYr2tG5cr0wdhD3Gso8pdgyJD3Mx6n5hnioYqyrJkEqNUM/Yrs+SQmn40hZXJQg8pPsEhMPiA==}
+  '@univer-cli/api-reference-command@file:vendor/univer-cli/api-reference-command':
+    resolution: {directory: vendor/univer-cli/api-reference-command, type: directory}
     peerDependencies:
       commander: ^15.0.0
 
-  '@univer-cli/api-reference@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-QwSncArefs/JUrh+cgDvTXfghGe/dgUmy/ZDQQ3Os+BXzXUz71nl+NvkE41cHqJ7CpYnCtw4409oVD/+ABPHJg==}
+  '@univer-cli/api-reference@file:vendor/univer-cli/api-reference':
+    resolution: {directory: vendor/univer-cli/api-reference, type: directory}
 
-  '@univer-cli/config-command@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-GraAqWOtI02WEA2toikn8uYjgAEU7TjB23Iai9cazj0ByhOREGU7rwh8Bxpxm8SrnmriPAbSIBGPekgMuMPVQg==}
+  '@univer-cli/config-command@file:vendor/univer-cli/config-command':
+    resolution: {directory: vendor/univer-cli/config-command, type: directory}
     peerDependencies:
       commander: ^15.0.0
 
-  '@univer-cli/config@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-zJvpEGMoHhE1AharmMTncvHOna5oF7Hc8vyGCJbniB/Ud9J8qz/KL/hwYg/Gr1yJPvdZ5G4mQGCWl9qtRsVJNg==}
+  '@univer-cli/config@file:vendor/univer-cli/config':
+    resolution: {directory: vendor/univer-cli/config, type: directory}
 
-  '@univer-cli/content-execution@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-ZBVWkglm2EFNhOoqP/4N5DKnDx5Fsl8yQKtK+hZdutFBnoLaYQkIxbk+TyuNmMxmuctQpDM4tuMjLL47XtSOFg==}
+  '@univer-cli/content-execution@file:vendor/univer-cli/content-execution':
+    resolution: {directory: vendor/univer-cli/content-execution, type: directory}
 
-  '@univer-cli/content-inspection-command@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-GS31d16DQkwKuyh6IgEG/XXU/i5txbWel3fMMgnxymPTN1GJYS01fMTOSVi+9SgbJl2//dqHLu31SeFb5Y1wjQ==}
+  '@univer-cli/content-inspection-command@file:vendor/univer-cli/content-inspection-command':
+    resolution: {directory: vendor/univer-cli/content-inspection-command, type: directory}
     peerDependencies:
       commander: ^15.0.0
 
-  '@univer-cli/content-inspection@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-CFaJgjJF1gtPY49lEZoldleJUiderBvxc1iE0IJiZ2ukc3SbymyCsUSaiCgbbxAP8FqCvh87NY5BUUIr4Poflw==}
+  '@univer-cli/content-inspection@file:vendor/univer-cli/content-inspection':
+    resolution: {directory: vendor/univer-cli/content-inspection, type: directory}
 
-  '@univer-cli/daemon-command@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-6DRGmWIDbtDLfGbP0nfPJEJ/vsmeLPbVfF+BSFvXMsvDq5HHxO3yDBtBJM4lypbLiyBbcN4PAXERX6JerkTBNg==}
+  '@univer-cli/daemon-command@file:vendor/univer-cli/daemon-command':
+    resolution: {directory: vendor/univer-cli/daemon-command, type: directory}
     peerDependencies:
       commander: ^15.0.0
 
-  '@univer-cli/daemon@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-vAqTWJiwEbKuL41h+4Y7z97uwG3yJ3ozmY/WJi06X7EIkbVsaNFi6qVPiqJFdBpMyfvsg+lL5WTxYCQCBSFWig==}
+  '@univer-cli/daemon@file:vendor/univer-cli/daemon':
+    resolution: {directory: vendor/univer-cli/daemon, type: directory}
 
-  '@univer-cli/doc-typst-facade@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-slZqpho4g+KlhDkdUEq/vDqdn2Gil1FuPmDZk/qy/sqvubRxrgM9Jko/mGqkZpunvwcj/2Ud+lz/EpzSxOzwZg==}
+  '@univer-cli/doc-typst-facade@file:vendor/univer-cli/doc-typst-facade':
+    resolution: {directory: vendor/univer-cli/doc-typst-facade, type: directory}
 
-  '@univer-cli/generic-keyed-instance-pool@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-I8PmYpxyb44j6GvU6NPS1wuOkHd0X+clXW/uWTR50NSpmCgpafXORDaxe9tZENbfxVQJIOot3Wh9GDcP7eP5VA==}
+  '@univer-cli/generic-keyed-instance-pool@file:vendor/univer-cli/generic-keyed-instance-pool':
+    resolution: {directory: vendor/univer-cli/generic-keyed-instance-pool, type: directory}
 
-  '@univer-cli/headless-univer@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-OzevWwBgimI2hsctxdgj9p7GRhOPbz6+diNvnenEJ7DJP/6JiZGhusVm8srnoOlRs2LFzApvdNVLpO1X+WHLzg==}
+  '@univer-cli/headless-univer@file:vendor/univer-cli/headless-univer':
+    resolution: {directory: vendor/univer-cli/headless-univer, type: directory}
 
-  '@univer-cli/resource-library-command@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-nhjNjehe/detR8SSTeyV+jAGwAdwD9fmEHqxNA4iXXXbs9T84JF8lVHFjw/zsYlGxGEAvN1lVwgai/oGjez5Ww==}
+  '@univer-cli/resource-library-command@file:vendor/univer-cli/resource-library-command':
+    resolution: {directory: vendor/univer-cli/resource-library-command, type: directory}
     peerDependencies:
       commander: ^15.0.0
 
-  '@univer-cli/resource-library@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-LibQtuCBgW1Zdhv/3TPdUS/AYisIm8gAUXOab7ZUlVdaHIDC3eEAeSOWI2BThvvFV7pwHump8To250VhwUnLCA==}
+  '@univer-cli/resource-library@file:vendor/univer-cli/resource-library':
+    resolution: {directory: vendor/univer-cli/resource-library, type: directory}
 
-  '@univer-cli/svg-facade@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-s06El7L+LZuBRXQxebDwkP6OrVVGmmsYocwVcUeDugebjtUovgtl5Iq9mQum9zxo44k98+VVZ4qXRRYMJO4i9g==}
+  '@univer-cli/svg-facade@file:vendor/univer-cli/svg-facade':
+    resolution: {directory: vendor/univer-cli/svg-facade, type: directory}
 
-  '@univer-cli/unit-layout-lint-command@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-hQPsNB6W/RkvbwqcuyWuqh+SxgLd8sUvv3HvjuhQixKr75ulbu4gVht02Q15405cazNH1R5ik4Cq4CJrHal71g==}
+  '@univer-cli/unit-layout-lint-command@file:vendor/univer-cli/unit-layout-lint-command':
+    resolution: {directory: vendor/univer-cli/unit-layout-lint-command, type: directory}
     peerDependencies:
       commander: ^15.0.0
 
-  '@univer-cli/unit-layout-lint@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-xopZqGS0Nw0stO2BeTLL1g3KKyPXCJebOXrZuz36wYRMuwwx9wHucbNkkRGGaWI2KD8n3RmyQvYBF9GAF41ecA==}
+  '@univer-cli/unit-layout-lint@file:vendor/univer-cli/unit-layout-lint':
+    resolution: {directory: vendor/univer-cli/unit-layout-lint, type: directory}
 
-  '@univer-cli/unit-pdf-printer@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-YEeYLY8X/KJ3YcLHKITqfoCB8aSvGtNKovwRpJHxzIBiG8SuFreBo2D8reE7bKMdtmYdn8majngB8vpPrZEOtA==}
+  '@univer-cli/unit-pdf-printer@file:vendor/univer-cli/unit-pdf-printer':
+    resolution: {directory: vendor/univer-cli/unit-pdf-printer, type: directory}
 
-  '@univer-cli/unit-screenshot-command@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-NhdG2XS9GC+muXrW6uxdQm/Hl/JXshqiF5PVHZlsUYSM6hv1GsKYBwJyTHqshG2dVTWzbSzRAxwQOl9sVi3kLg==}
+  '@univer-cli/unit-screenshot-command@file:vendor/univer-cli/unit-screenshot-command':
+    resolution: {directory: vendor/univer-cli/unit-screenshot-command, type: directory}
     peerDependencies:
       commander: ^15.0.0
 
-  '@univer-cli/unit-screenshot@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-ZExbdB8AKoXwy4PPy5FxkGsjkXA0CoYpwr01gllHX1v6kyYU98sloRheNzpiJPXrbHPRHssoIR4973vqQ/EpCA==}
+  '@univer-cli/unit-screenshot@file:vendor/univer-cli/unit-screenshot':
+    resolution: {directory: vendor/univer-cli/unit-screenshot, type: directory}
 
-  '@univer-cli/univer-collaboration-runtime-pool@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-iIHmdYAgZ9Hm3wlu0kvlUjH0QfFFvkmbKNLIQqIeCE/9Bf0EuylvsDLD1S3wLQuSkx3H6gCwq82TrA/VHhAcLg==}
+  '@univer-cli/univer-collaboration-runtime-pool@file:vendor/univer-cli/univer-collaboration-runtime-pool':
+    resolution: {directory: vendor/univer-cli/univer-collaboration-runtime-pool, type: directory}
 
-  '@univer-cli/univer-collaboration-runtime@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-980wB0uKJ4dbhEWd2gPNfVrraQC08kqiHW5YoKi9CGyAfwlihKrC0CcxtFH5QiO1jpMqh9cgDPVSXxsHfXCsHw==}
+  '@univer-cli/univer-collaboration-runtime@file:vendor/univer-cli/univer-collaboration-runtime':
+    resolution: {directory: vendor/univer-cli/univer-collaboration-runtime, type: directory}
 
-  '@univer-cli/univer-render-page@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-wbjWTHNBbsvJf2LXAzrLFtfNZpp7lzpThzYE98xKVRTaRJYY+jlEmEhGgztG5ayNucinAwLbaTUhGCSVqg9ZVw==}
+  '@univer-cli/univer-render-page@file:vendor/univer-cli/univer-render-page':
+    resolution: {directory: vendor/univer-cli/univer-render-page, type: directory}
     peerDependencies:
       '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579
 
-  '@univer-cli/univer-render-runtime@1.0.0-insiders.20260907-70fc579':
-    resolution: {integrity: sha512-Jhk3/mU+dosSH2ky+hsavf2A+OXRwBMx4TbqkoTBPabeK2mJp8zazJfi+wp/VQ16z0uB3GCORAuB3vnylMxpBw==}
+  '@univer-cli/univer-render-runtime@file:vendor/univer-cli/univer-render-runtime':
+    resolution: {directory: vendor/univer-cli/univer-render-runtime, type: directory}
 
   '@univer/unit-comparison-viewer@file:packages/unit-comparison-viewer':
     resolution: {directory: packages/unit-comparison-viewer, type: directory}
@@ -11561,69 +11578,69 @@ snapshots:
   '@typescript/typescript-win32-x64@7.0.2':
     optional: true
 
-  '@univer-cli/api-reference-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)':
+  '@univer-cli/api-reference-command@file:vendor/univer-cli/api-reference-command(commander@15.0.0)':
     dependencies:
-      '@univer-cli/api-reference': 1.0.0-insiders.20260907-70fc579
+      '@univer-cli/api-reference': file:vendor/univer-cli/api-reference
       commander: 15.0.0
 
-  '@univer-cli/api-reference@1.0.0-insiders.20260907-70fc579': {}
+  '@univer-cli/api-reference@file:vendor/univer-cli/api-reference': {}
 
-  '@univer-cli/config-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)':
+  '@univer-cli/config-command@file:vendor/univer-cli/config-command(commander@15.0.0)':
     dependencies:
-      '@univer-cli/config': 1.0.0-insiders.20260907-70fc579
+      '@univer-cli/config': file:vendor/univer-cli/config
       commander: 15.0.0
 
-  '@univer-cli/config@1.0.0-insiders.20260907-70fc579':
+  '@univer-cli/config@file:vendor/univer-cli/config':
     dependencies:
       conf: 15.1.0
 
-  '@univer-cli/content-execution@1.0.0-insiders.20260907-70fc579': {}
+  '@univer-cli/content-execution@file:vendor/univer-cli/content-execution': {}
 
-  '@univer-cli/content-inspection-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/content-inspection-command@file:vendor/univer-cli/content-inspection-command(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/content-inspection': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+      '@univer-cli/content-inspection': file:vendor/univer-cli/content-inspection(react@18.3.1)(rxjs@7.8.2)
       commander: 15.0.0
     transitivePeerDependencies:
       - react
       - rxjs
 
-  '@univer-cli/content-inspection-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/content-inspection-command@file:vendor/univer-cli/content-inspection-command(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/content-inspection': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+      '@univer-cli/content-inspection': file:vendor/univer-cli/content-inspection(react@19.2.8)(rxjs@7.8.2)
       commander: 15.0.0
     transitivePeerDependencies:
       - react
       - rxjs
 
-  '@univer-cli/content-inspection@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/content-inspection@file:vendor/univer-cli/content-inspection(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@univerjs/core': file:vendor/univer/core(react@18.3.1)(rxjs@7.8.2)
     transitivePeerDependencies:
       - react
       - rxjs
 
-  '@univer-cli/content-inspection@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/content-inspection@file:vendor/univer-cli/content-inspection(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
       '@univerjs/core': file:vendor/univer/core(react@19.2.8)(rxjs@7.8.2)
     transitivePeerDependencies:
       - react
       - rxjs
 
-  '@univer-cli/daemon-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)':
+  '@univer-cli/daemon-command@file:vendor/univer-cli/daemon-command(commander@15.0.0)':
     dependencies:
-      '@univer-cli/daemon': 1.0.0-insiders.20260907-70fc579
+      '@univer-cli/daemon': file:vendor/univer-cli/daemon
       commander: 15.0.0
 
-  '@univer-cli/daemon@1.0.0-insiders.20260907-70fc579': {}
+  '@univer-cli/daemon@file:vendor/univer-cli/daemon': {}
 
-  '@univer-cli/doc-typst-facade@1.0.0-insiders.20260907-70fc579':
+  '@univer-cli/doc-typst-facade@file:vendor/univer-cli/doc-typst-facade':
     dependencies:
       '@univerjs-pro/doc-typst-native-binding': file:vendor/univer-pro/doc-typst-native-binding
       typescript: 5.9.3
 
-  '@univer-cli/generic-keyed-instance-pool@1.0.0-insiders.20260907-70fc579': {}
+  '@univer-cli/generic-keyed-instance-pool@file:vendor/univer-cli/generic-keyed-instance-pool': {}
 
-  '@univer-cli/headless-univer@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/headless-univer@file:vendor/univer-cli/headless-univer(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@univerjs-pro/bases': file:vendor/univer-pro/bases(react@18.3.1)(rxjs@7.8.2)
       '@univerjs-pro/boards': file:vendor/univer-pro/boards(react@18.3.1)(rxjs@7.8.2)
@@ -11683,7 +11700,7 @@ snapshots:
       - react
       - rxjs
 
-  '@univer-cli/headless-univer@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/headless-univer@file:vendor/univer-cli/headless-univer(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
       '@univerjs-pro/bases': file:vendor/univer-pro/bases(react@19.2.8)(rxjs@7.8.2)
       '@univerjs-pro/boards': file:vendor/univer-pro/boards(react@19.2.8)(rxjs@7.8.2)
@@ -11743,30 +11760,18 @@ snapshots:
       - react
       - rxjs
 
-  '@univer-cli/resource-library-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)':
+  '@univer-cli/resource-library-command@file:vendor/univer-cli/resource-library-command(commander@15.0.0)':
     dependencies:
-      '@univer-cli/resource-library': 1.0.0-insiders.20260907-70fc579
+      '@univer-cli/resource-library': file:vendor/univer-cli/resource-library
       commander: 15.0.0
 
-  '@univer-cli/resource-library@1.0.0-insiders.20260907-70fc579': {}
+  '@univer-cli/resource-library@file:vendor/univer-cli/resource-library': {}
 
-  '@univer-cli/svg-facade@1.0.0-insiders.20260907-70fc579': {}
+  '@univer-cli/svg-facade@file:vendor/univer-cli/svg-facade': {}
 
-  '@univer-cli/unit-layout-lint-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/unit-layout-lint-command@file:vendor/univer-cli/unit-layout-lint-command(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/unit-layout-lint': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
-      commander: 15.0.0
-    transitivePeerDependencies:
-      - bufferutil
-      - proxy-agent
-      - react
-      - rxjs
-      - utf-8-validate
-      - yauzl
-
-  '@univer-cli/unit-layout-lint-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)':
-    dependencies:
-      '@univer-cli/unit-layout-lint': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+      '@univer-cli/unit-layout-lint': file:vendor/univer-cli/unit-layout-lint(react@18.3.1)(rxjs@7.8.2)
       commander: 15.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -11776,43 +11781,9 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  '@univer-cli/unit-layout-lint@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/unit-layout-lint-command@file:vendor/univer-cli/unit-layout-lint-command(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
-    transitivePeerDependencies:
-      - bufferutil
-      - proxy-agent
-      - react
-      - rxjs
-      - utf-8-validate
-      - yauzl
-
-  '@univer-cli/unit-layout-lint@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
-    dependencies:
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
-    transitivePeerDependencies:
-      - bufferutil
-      - proxy-agent
-      - react
-      - rxjs
-      - utf-8-validate
-      - yauzl
-
-  '@univer-cli/unit-pdf-printer@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
-    dependencies:
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
-    transitivePeerDependencies:
-      - bufferutil
-      - proxy-agent
-      - react
-      - rxjs
-      - utf-8-validate
-      - yauzl
-
-  '@univer-cli/unit-screenshot-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)':
-    dependencies:
-      '@univer-cli/unit-screenshot': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+      '@univer-cli/unit-layout-lint': file:vendor/univer-cli/unit-layout-lint(react@19.2.8)(rxjs@7.8.2)
       commander: 15.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -11822,10 +11793,43 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  '@univer-cli/unit-screenshot-command@1.0.0-insiders.20260907-70fc579(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/unit-layout-lint@file:vendor/univer-cli/unit-layout-lint(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/unit-screenshot': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2)
+    transitivePeerDependencies:
+      - bufferutil
+      - proxy-agent
+      - react
+      - rxjs
+      - utf-8-validate
+      - yauzl
+
+  '@univer-cli/unit-layout-lint@file:vendor/univer-cli/unit-layout-lint(react@19.2.8)(rxjs@7.8.2)':
+    dependencies:
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)
+    transitivePeerDependencies:
+      - bufferutil
+      - proxy-agent
+      - react
+      - rxjs
+      - utf-8-validate
+      - yauzl
+
+  '@univer-cli/unit-pdf-printer@file:vendor/univer-cli/unit-pdf-printer(react@19.2.8)(rxjs@7.8.2)':
+    dependencies:
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)
+    transitivePeerDependencies:
+      - bufferutil
+      - proxy-agent
+      - react
+      - rxjs
+      - utf-8-validate
+      - yauzl
+
+  '@univer-cli/unit-screenshot-command@file:vendor/univer-cli/unit-screenshot-command(commander@15.0.0)(react@18.3.1)(rxjs@7.8.2)':
+    dependencies:
+      '@univer-cli/unit-screenshot': file:vendor/univer-cli/unit-screenshot(react@18.3.1)(rxjs@7.8.2)
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2)
       commander: 15.0.0
     transitivePeerDependencies:
       - bufferutil
@@ -11835,9 +11839,11 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  '@univer-cli/unit-screenshot@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/unit-screenshot-command@file:vendor/univer-cli/unit-screenshot-command(commander@15.0.0)(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+      '@univer-cli/unit-screenshot': file:vendor/univer-cli/unit-screenshot(react@19.2.8)(rxjs@7.8.2)
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)
+      commander: 15.0.0
     transitivePeerDependencies:
       - bufferutil
       - proxy-agent
@@ -11846,9 +11852,9 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  '@univer-cli/unit-screenshot@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/unit-screenshot@file:vendor/univer-cli/unit-screenshot(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2)
     transitivePeerDependencies:
       - bufferutil
       - proxy-agent
@@ -11857,25 +11863,36 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  '@univer-cli/univer-collaboration-runtime-pool@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/unit-screenshot@file:vendor/univer-cli/unit-screenshot(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/generic-keyed-instance-pool': 1.0.0-insiders.20260907-70fc579
-      '@univer-cli/univer-collaboration-runtime': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)
+    transitivePeerDependencies:
+      - bufferutil
+      - proxy-agent
+      - react
+      - rxjs
+      - utf-8-validate
+      - yauzl
+
+  '@univer-cli/univer-collaboration-runtime-pool@file:vendor/univer-cli/univer-collaboration-runtime-pool(react@18.3.1)(rxjs@7.8.2)':
+    dependencies:
+      '@univer-cli/generic-keyed-instance-pool': file:vendor/univer-cli/generic-keyed-instance-pool
+      '@univer-cli/univer-collaboration-runtime': file:vendor/univer-cli/univer-collaboration-runtime(react@18.3.1)(rxjs@7.8.2)
       '@univerjs/protocol': file:vendor/univer/protocol
     transitivePeerDependencies:
       - react
       - rxjs
 
-  '@univer-cli/univer-collaboration-runtime-pool@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/univer-collaboration-runtime-pool@file:vendor/univer-cli/univer-collaboration-runtime-pool(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/generic-keyed-instance-pool': 1.0.0-insiders.20260907-70fc579
-      '@univer-cli/univer-collaboration-runtime': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+      '@univer-cli/generic-keyed-instance-pool': file:vendor/univer-cli/generic-keyed-instance-pool
+      '@univer-cli/univer-collaboration-runtime': file:vendor/univer-cli/univer-collaboration-runtime(react@19.2.8)(rxjs@7.8.2)
       '@univerjs/protocol': file:vendor/univer/protocol
     transitivePeerDependencies:
       - react
       - rxjs
 
-  '@univer-cli/univer-collaboration-runtime@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/univer-collaboration-runtime@file:vendor/univer-cli/univer-collaboration-runtime(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@oxc-project/runtime': 0.142.0
       '@univerjs-pro/bases': file:vendor/univer-pro/bases(react@18.3.1)(rxjs@7.8.2)
@@ -11893,7 +11910,7 @@ snapshots:
       - react
       - rxjs
 
-  '@univer-cli/univer-collaboration-runtime@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/univer-collaboration-runtime@file:vendor/univer-cli/univer-collaboration-runtime(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
       '@oxc-project/runtime': 0.142.0
       '@univerjs-pro/bases': file:vendor/univer-pro/bases(react@19.2.8)(rxjs@7.8.2)
@@ -11911,9 +11928,9 @@ snapshots:
       - react
       - rxjs
 
-  '@univer-cli/univer-render-page@1.0.0-insiders.20260907-70fc579(@types/react-dom@18.3.7(@types/react@18.3.18))(@types/react@18.3.18)(@univer-cli/univer-render-runtime@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/univer-render-page@file:vendor/univer-cli/univer-render-page(@types/react-dom@18.3.7(@types/react@18.3.18))(@types/react@18.3.18)(@univer-cli/univer-render-runtime@file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2))(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2)
       '@univerjs-pro/bases': file:vendor/univer-pro/bases(react@18.3.1)(rxjs@7.8.2)
       '@univerjs-pro/bases-ui': file:vendor/univer-pro/bases-ui(@types/react-dom@18.3.7(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(rxjs@7.8.2)
       '@univerjs-pro/boards': file:vendor/univer-pro/boards(react@18.3.1)(rxjs@7.8.2)
@@ -12025,9 +12042,9 @@ snapshots:
       - react-dom
       - rxjs
 
-  '@univer-cli/univer-render-page@1.0.0-insiders.20260907-70fc579(@univer-cli/univer-render-runtime@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/univer-render-page@file:vendor/univer-cli/univer-render-page(@univer-cli/univer-render-runtime@file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
-      '@univer-cli/univer-render-runtime': 1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)
+      '@univer-cli/univer-render-runtime': file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)
       '@univerjs-pro/bases': file:vendor/univer-pro/bases(react@19.2.8)(rxjs@7.8.2)
       '@univerjs-pro/bases-ui': file:vendor/univer-pro/bases-ui(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(rxjs@7.8.2)
       '@univerjs-pro/boards': file:vendor/univer-pro/boards(react@19.2.8)(rxjs@7.8.2)
@@ -12139,7 +12156,7 @@ snapshots:
       - react-dom
       - rxjs
 
-  '@univer-cli/univer-render-runtime@1.0.0-insiders.20260907-70fc579(react@18.3.1)(rxjs@7.8.2)':
+  '@univer-cli/univer-render-runtime@file:vendor/univer-cli/univer-render-runtime(react@18.3.1)(rxjs@7.8.2)':
     dependencies:
       '@puppeteer/browsers': 3.2.1
       '@univerjs-pro/boards': file:vendor/univer-pro/boards(react@18.3.1)(rxjs@7.8.2)
@@ -12154,7 +12171,7 @@ snapshots:
       - utf-8-validate
       - yauzl
 
-  '@univer-cli/univer-render-runtime@1.0.0-insiders.20260907-70fc579(react@19.2.8)(rxjs@7.8.2)':
+  '@univer-cli/univer-render-runtime@file:vendor/univer-cli/univer-render-runtime(react@19.2.8)(rxjs@7.8.2)':
     dependencies:
       '@puppeteer/browsers': 3.2.1
       '@univerjs-pro/boards': file:vendor/univer-pro/boards(react@19.2.8)(rxjs@7.8.2)

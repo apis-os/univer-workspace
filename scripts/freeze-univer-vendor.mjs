@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * Copy installed @univerjs / @univerjs-pro packages into vendor/ and rewrite
- * workspace manifests + pnpm.overrides to file: specifiers.
+ * Copy installed @univerjs / @univerjs-pro / @univer-cli packages into vendor/
+ * and rewrite workspace manifests + pnpm.overrides to file: specifiers.
  *
  * Does not decode Pro packages — run `pnpm deobfuscate:pro` after this.
  * Never copies umd/ or nested node_modules (no pnpm-store in-place edits).
@@ -15,6 +15,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const PNPM = path.join(ROOT, "node_modules/.pnpm");
 const VENDOR_OSS = path.join(ROOT, "vendor/univer");
 const VENDOR_PRO = path.join(ROOT, "vendor/univer-pro");
+const VENDOR_CLI = path.join(ROOT, "vendor/univer-cli");
 const PUBLISHED = path.join(ROOT, "vendor/univer-pro-published");
 const LOCAL_UNIVERJS = /^@univerjs\/univer-workspace/;
 const DEP_FIELDS = [
@@ -37,14 +38,14 @@ function isNativeOrAssets(pkg) {
 function copyFilter(src) {
   const normalized = src.replaceAll("\\", "/");
   if (normalized.endsWith("/umd") || normalized.includes("/umd/")) return false;
-  const afterPkg = normalized.match(/\/node_modules\/@univerjs(?:-pro)?\/[^/]+\/(.*)$/);
+  const afterPkg = normalized.match(/\/node_modules\/@(?:univerjs(?:-pro)?|univer-cli)\/[^/]+\/(.*)$/);
   if (afterPkg && afterPkg[1].startsWith("node_modules")) return false;
   return true;
 }
 
 function listInstalled(scope) {
   if (!fs.existsSync(PNPM)) return new Map();
-  const prefix = scope === "@univerjs-pro" ? "@univerjs-pro+" : "@univerjs+";
+  const prefix = `${scope}+`;
   const found = new Map();
   for (const entry of fs.readdirSync(PNPM, { withFileTypes: true })) {
     if (!entry.isDirectory() || !entry.name.startsWith(prefix)) continue;
@@ -57,7 +58,7 @@ function listInstalled(scope) {
     const nested = path.join(PNPM, entry.name, "node_modules", scope, pkg);
     if (!fs.existsSync(nested)) continue;
     const prev = found.get(pkg);
-    const score = ver.includes("20260907-70fc579") ? 2 : ver.startsWith("1.38.0") ? 1 : 0;
+    const score = ver.includes("20260907-70fc579") ? 2 : ver.startsWith("file+") ? 1 : 0;
     const prevScore = prev?.score ?? -1;
     if (score >= prevScore) found.set(pkg, { dir: nested, ver, score });
   }
@@ -88,9 +89,14 @@ function discoverWorkspacePackages() {
   }));
 }
 
+function vendorRootFor(scope) {
+  if (scope === "@univerjs-pro") return VENDOR_PRO;
+  if (scope === "@univer-cli") return VENDOR_CLI;
+  return VENDOR_OSS;
+}
+
 function vendorFileSpecifier(fromDir, scope, pkg) {
-  const vendorRoot = scope === "@univerjs-pro" ? VENDOR_PRO : VENDOR_OSS;
-  const abs = path.join(vendorRoot, pkg);
+  const abs = path.join(vendorRootFor(scope), pkg);
   const rel = path.relative(fromDir, abs);
   return `file:${rel.split(path.sep).join("/")}`;
 }
@@ -109,6 +115,9 @@ function rewriteManifest(manifestPath) {
       if (name.startsWith("@univerjs-pro/")) {
         scope = "@univerjs-pro";
         pkg = name.slice("@univerjs-pro/".length);
+      } else if (name.startsWith("@univer-cli/")) {
+        scope = "@univer-cli";
+        pkg = name.slice("@univer-cli/".length);
       } else if (name.startsWith("@univerjs/")) {
         scope = "@univerjs";
         pkg = name.slice("@univerjs/".length);
@@ -134,7 +143,7 @@ function writeWorkspaceYamlOverrides(overrides) {
   const lines = [
     "",
     "# Frozen Univer: pnpm 11+ reads overrides here, not package.json#pnpm.",
-    "# Do not resolve @univerjs / @univerjs-pro from insider-npm or registry.npmjs.org.",
+    "# Do not resolve @univerjs / @univerjs-pro / @univer-cli from insider-npm or registry.npmjs.org.",
     "overrides:"
   ];
   for (const [name, spec] of Object.entries(overrides).sort(([a], [b]) => a.localeCompare(b))) {
@@ -143,7 +152,7 @@ function writeWorkspaceYamlOverrides(overrides) {
   fs.writeFileSync(yamlPath, `${yaml.replace(/\s+$/, "")}\n${lines.join("\n")}\n`);
 }
 
-function writeRootOverrides(oss, pro) {
+function writeRootOverrides(oss, pro, cli) {
   const pkgPath = path.join(ROOT, "package.json");
   const manifest = JSON.parse(fs.readFileSync(pkgPath, "utf8"));
   const overrides = {};
@@ -152,6 +161,9 @@ function writeRootOverrides(oss, pro) {
   }
   for (const pkg of pro.keys()) {
     overrides[`@univerjs-pro/${pkg}`] = `file:vendor/univer-pro/${pkg}`;
+  }
+  for (const pkg of cli.keys()) {
+    overrides[`@univer-cli/${pkg}`] = `file:vendor/univer-cli/${pkg}`;
   }
   delete manifest.pnpm;
   const scripts = manifest.scripts ?? {};
@@ -180,48 +192,85 @@ function writeNpmrc() {
     (line) =>
       line.trim() !== "" &&
       !line.startsWith("@univerjs:registry=") &&
-      !line.startsWith("@univerjs-pro:registry=")
+      !line.startsWith("@univerjs-pro:registry=") &&
+      !line.startsWith("@univer-cli:registry=")
   );
-  if (!kept.some((line) => line.startsWith("@univer-cli:registry="))) {
-    kept.unshift("@univer-cli:registry=https://insider-npm-registry.univer.work/");
+  fs.writeFileSync(npmrc, kept.length ? `${kept.filter(Boolean).join("\n")}\n` : "");
+}
+
+function mergeCliOverrides(cli) {
+  const yamlPath = path.join(ROOT, "pnpm-workspace.yaml");
+  let yaml = fs.readFileSync(yamlPath, "utf8");
+  yaml = yaml.replace(
+    /# Do not resolve @univerjs \/ @univerjs-pro from insider-npm or registry\.npmjs\.org\./,
+    "# Do not resolve @univerjs / @univerjs-pro / @univer-cli from insider-npm or registry.npmjs.org."
+  );
+  const additions = [];
+  for (const pkg of [...cli.keys()].sort()) {
+    const name = `@univer-cli/${pkg}`;
+    const spec = `file:vendor/univer-cli/${pkg}`;
+    const line = `  "${name}": "${spec}"`;
+    if (yaml.includes(`"${name}":`)) continue;
+    additions.push(line);
   }
-  fs.writeFileSync(npmrc, `${kept.filter(Boolean).join("\n")}\n`);
+  if (additions.length === 0) return;
+  yaml = yaml.replace(/^(overrides:\n)/m, `$1${additions.join("\n")}\n`);
+  fs.writeFileSync(yamlPath, `${yaml.replace(/\s+$/, "")}\n`);
 }
 
 function main() {
+  const cliOnly = process.argv.includes("--cli");
   const oss = listInstalled("@univerjs");
   const pro = listInstalled("@univerjs-pro");
-  if (oss.size === 0 || pro.size === 0) {
+  const cli = listInstalled("@univer-cli");
+  if (cli.size === 0) {
+    throw new Error("Installed @univer-cli packages not found under node_modules/.pnpm");
+  }
+  if (!cliOnly && (oss.size === 0 || pro.size === 0)) {
     throw new Error("Installed Univer packages not found under node_modules/.pnpm");
   }
-  fs.mkdirSync(VENDOR_OSS, { recursive: true });
-  fs.mkdirSync(VENDOR_PRO, { recursive: true });
-  fs.mkdirSync(PUBLISHED, { recursive: true });
 
-  console.log(`Copying ${oss.size} @univerjs packages -> vendor/univer`);
-  for (const [pkg, info] of oss) {
-    copyTree(info.dir, path.join(VENDOR_OSS, pkg));
-    console.log(`  @univerjs/${pkg}`);
+  if (!cliOnly) {
+    fs.mkdirSync(VENDOR_OSS, { recursive: true });
+    fs.mkdirSync(VENDOR_PRO, { recursive: true });
+    fs.mkdirSync(PUBLISHED, { recursive: true });
+
+    console.log(`Copying ${oss.size} @univerjs packages -> vendor/univer`);
+    for (const [pkg, info] of oss) {
+      copyTree(info.dir, path.join(VENDOR_OSS, pkg));
+      console.log(`  @univerjs/${pkg}`);
+    }
+
+    console.log(`Snapshot + copy ${pro.size} @univerjs-pro packages`);
+    for (const [pkg, info] of pro) {
+      const published = path.join(PUBLISHED, pkg);
+      if (!fs.existsSync(published)) {
+        copyTree(info.dir, published);
+        console.log(`  snapshot published ${pkg}`);
+      }
+      if (isNativeOrAssets(pkg) && !fs.existsSync(path.join(VENDOR_PRO, pkg))) {
+        copyTree(info.dir, path.join(VENDOR_PRO, pkg));
+        console.log(`  vendor native/assets ${pkg}`);
+      }
+    }
   }
 
-  console.log(`Snapshot + copy ${pro.size} @univerjs-pro packages`);
-  for (const [pkg, info] of pro) {
-    const published = path.join(PUBLISHED, pkg);
-    if (!fs.existsSync(published)) {
-      copyTree(info.dir, published);
-      console.log(`  snapshot published ${pkg}`);
-    }
-    if (isNativeOrAssets(pkg) && !fs.existsSync(path.join(VENDOR_PRO, pkg))) {
-      copyTree(info.dir, path.join(VENDOR_PRO, pkg));
-      console.log(`  vendor native/assets ${pkg}`);
-    }
+  fs.mkdirSync(VENDOR_CLI, { recursive: true });
+  console.log(`Copying ${cli.size} @univer-cli packages -> vendor/univer-cli`);
+  for (const [pkg, info] of cli) {
+    copyTree(info.dir, path.join(VENDOR_CLI, pkg));
+    console.log(`  @univer-cli/${pkg}`);
   }
 
   let rewritten = 0;
   for (const { manifestPath } of discoverWorkspacePackages()) {
     rewritten += rewriteManifest(manifestPath);
   }
-  writeRootOverrides(oss, pro);
+  if (cliOnly) {
+    mergeCliOverrides(cli);
+  } else {
+    writeRootOverrides(oss, pro, cli);
+  }
   writeNpmrc();
   console.log(`rewrote ${rewritten} dependency specifiers to file: vendor`);
 }

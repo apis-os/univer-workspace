@@ -100,6 +100,27 @@ test("decodes CJS wrappers that chain the rotator with a comma operator", () => 
   assert.match(src, /"hello"/);
 });
 
+const CJS_NESTED_HELPER_SNIPPET = [
+  "const _0x415b=_0x31f6;(function(_0x1b7e35,_0x4804ad){const _0x30a33f=_0x31f6,_0x3d88cb=_0x1b7e35();while(!![]){try{const _0x375649=0x1;if(_0x375649===_0x4804ad)break;else _0x3d88cb['push'](_0x3d88cb['shift']());}catch(_0x57ecbf){_0x3d88cb['push'](_0x3d88cb['shift']());}}}(_0x7faf,0x1),Object.defineProperty(exports,'msg',{value:_0x415b(0x0)}));",
+  "function keep(){function _0xaaaa(){return 1;}return 'ok';}",
+  "function _0x31f6(_0x5ee65b,_0x421204){_0x5ee65b=_0x5ee65b-0x0;const _0x7faff6=_0x7faf();let _0x31f6f1=_0x7faff6[_0x5ee65b];return _0x31f6f1;}",
+  "function _0x7faf(){const _0x21f56d=['hello','world'];_0x7faf=function(){return _0x21f56d;};return _0x7faf();}"
+].join("");
+
+test("does not keep CJS wrappers when a nested zero-arg helper sits before the string array", () => {
+  assert.equal(looksObfuscated(CJS_NESTED_HELPER_SNIPPET), true);
+  const { src, changed } = deobfuscateSource(CJS_NESTED_HELPER_SNIPPET);
+  assert.equal(changed, true);
+  assert.equal(looksObfuscated(src), false, "must not fall back to a still-wrapped decode");
+  assert.match(src, /"hello"/);
+  assert.match(src, /function keep\(/);
+  try {
+    new vm.Script(src);
+  } catch (err) {
+    assert.fail(`nested-helper CJS result must parse: ${err.message}`);
+  }
+});
+
 test("strips leftover empty (); left by rotator IIFE wrappers", () => {
   assert.doesNotMatch(unglueKeywords("();import x from 'y';"), /^\s*\(\s*\)\s*;/);
   assert.match(unglueKeywords("const a=1;();export const b=2;"), /const a=1;export const b=2;/);
@@ -181,6 +202,14 @@ test("collaboration-service CJS used by the Worker is decoded", () => {
   assert.equal(looksObfuscated(src), false, "collaboration-service CJS still has string-array wrappers");
 });
 
+test("leftover Pro CJS vendor files are decoded (no while(!![]) wrappers)", () => {
+  const leftover = [
+    "vendor/univer-pro/shape-editor-ui/lib/cjs/index.js",
+    "vendor/univer-pro/engine-chart/lib/cjs/index.js"
+  ].filter((rel) => looksObfuscated(readFileSync(path.join(ROOT, rel), "utf8")));
+  assert.equal(leftover.length, 0, leftover.join("\n"));
+});
+
 test("vendor collaboration-client ESM does not start with leftover ();", () => {
   const es = path.join(ROOT, "vendor/univer-pro/collaboration-client/lib/es/index.js");
   const src = readFileSync(es, "utf8");
@@ -217,7 +246,8 @@ test("git tracks vendored lib/ and dist/ (but not umd/)", () => {
     "vendor/univer-pro/collaboration-client/lib/es/index.js",
     "vendor/univer-pro-published/collaboration-client/lib/es/index.js",
     "vendor/univer-pro/collaboration-endpoint/dist/index.mjs",
-    "vendor/univer-pro-published/collaboration-endpoint/dist/index.mjs"
+    "vendor/univer-pro-published/collaboration-endpoint/dist/index.mjs",
+    "vendor/univer-cli/config/dist/index.mjs"
   ];
   const ignored = [
     "vendor/univer-pro-published/collaboration-client/lib/umd/index.js"

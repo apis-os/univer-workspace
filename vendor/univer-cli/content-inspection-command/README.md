@@ -1,0 +1,64 @@
+# @univer-cli/content-inspection-command
+
+English | [简体中文](./README.zh-CN.md)
+
+Provide a native Commander `inspect` command preset for `@univer-cli/content-inspection`, including selector parsing, default text or JSON output, and runtime lease acquisition and release.
+
+## Installation
+
+```bash
+pnpm add commander @univer-cli/content-inspection @univer-cli/content-inspection-command
+```
+
+Commander `^15.0.0` is a peer dependency. Requires Node.js 22.12 or higher.
+
+## Select preset
+
+The package provides two independent factories:
+
+- `createContentInspectionCommand()`: only receives Unit ID, no Worktree option appears;
+- `createWorktreeContentInspectionCommand()`: forces the caller to choose either `--trunk` or `--worktree <id>`.
+
+Ordinary applications should choose the former; use the latter only if the target model explicitly includes Worktree.
+
+## Quick Start
+
+```ts
+import { createContentInspectionCommand } from "@univer-cli/content-inspection-command";
+import { Command } from "commander";
+
+const program = new Command("my-cli");
+
+program.addCommand(
+  createContentInspectionCommand({
+    async acquireRuntime({ unitId }) {
+      const lease = await runtimes.acquire({
+        key: `unit:${unitId}`,
+        init: { unitId },
+      });
+
+      return {
+        unitId: lease.unitId,
+        unitType: "sheet",
+        execute: async (input) => await lease.execute(input),
+        invalidate: async () => await lease.invalidate(),
+        release: async () => await lease.release(),
+      };
+    },
+  }),
+);
+
+await program.parseAsync();
+```
+
+## Lifecycle
+
+The command acquires a runtime for each request and releases it on success or failure. The application provides that runtime and remains responsible for authentication and content loading.
+
+Board connector text output includes all ordered labels and their IDs; JSON output preserves their content, layout, placement, and style.
+
+## Input and output
+
+The command accepts a Unit ID, a Unit-specific selector, and `--json`. Default output is human-readable; JSON output contains the complete structured result.
+
+The factory returns a native `Command`, so you can continue to use Commander to customize its name, help, output, and exit behavior. This package does not create a root program.

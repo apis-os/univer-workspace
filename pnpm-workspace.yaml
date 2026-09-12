@@ -122,8 +122,32 @@ minimumReleaseAgeExclude:
   - oxfmt@0.66.0
 
 # Frozen Univer: pnpm 11+ reads overrides here, not package.json#pnpm.
-# Do not resolve @univerjs / @univerjs-pro from insider-npm or registry.npmjs.org.
+# Do not resolve @univerjs / @univerjs-pro / @univer-cli from insider-npm or registry.npmjs.org.
 overrides:
+  "@univer-cli/api-reference": "file:vendor/univer-cli/api-reference"
+  "@univer-cli/api-reference-command": "file:vendor/univer-cli/api-reference-command"
+  "@univer-cli/config": "file:vendor/univer-cli/config"
+  "@univer-cli/config-command": "file:vendor/univer-cli/config-command"
+  "@univer-cli/content-execution": "file:vendor/univer-cli/content-execution"
+  "@univer-cli/content-inspection": "file:vendor/univer-cli/content-inspection"
+  "@univer-cli/content-inspection-command": "file:vendor/univer-cli/content-inspection-command"
+  "@univer-cli/daemon": "file:vendor/univer-cli/daemon"
+  "@univer-cli/daemon-command": "file:vendor/univer-cli/daemon-command"
+  "@univer-cli/doc-typst-facade": "file:vendor/univer-cli/doc-typst-facade"
+  "@univer-cli/generic-keyed-instance-pool": "file:vendor/univer-cli/generic-keyed-instance-pool"
+  "@univer-cli/headless-univer": "file:vendor/univer-cli/headless-univer"
+  "@univer-cli/resource-library": "file:vendor/univer-cli/resource-library"
+  "@univer-cli/resource-library-command": "file:vendor/univer-cli/resource-library-command"
+  "@univer-cli/svg-facade": "file:vendor/univer-cli/svg-facade"
+  "@univer-cli/unit-layout-lint": "file:vendor/univer-cli/unit-layout-lint"
+  "@univer-cli/unit-layout-lint-command": "file:vendor/univer-cli/unit-layout-lint-command"
+  "@univer-cli/unit-pdf-printer": "file:vendor/univer-cli/unit-pdf-printer"
+  "@univer-cli/unit-screenshot": "file:vendor/univer-cli/unit-screenshot"
+  "@univer-cli/unit-screenshot-command": "file:vendor/univer-cli/unit-screenshot-command"
+  "@univer-cli/univer-collaboration-runtime": "file:vendor/univer-cli/univer-collaboration-runtime"
+  "@univer-cli/univer-collaboration-runtime-pool": "file:vendor/univer-cli/univer-collaboration-runtime-pool"
+  "@univer-cli/univer-render-page": "file:vendor/univer-cli/univer-render-page"
+  "@univer-cli/univer-render-runtime": "file:vendor/univer-cli/univer-render-runtime"
   "@univerjs-pro/bases": "file:vendor/univer-pro/bases"
   "@univerjs-pro/bases-dashboard": "file:vendor/univer-pro/bases-dashboard"
   "@univerjs-pro/bases-dashboard-ui": "file:vendor/univer-pro/bases-dashboard-ui"

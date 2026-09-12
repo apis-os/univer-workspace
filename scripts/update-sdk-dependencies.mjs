@@ -70,7 +70,7 @@ export function alignManifestSdkDependencies(
   return changed;
 }
 
-const VENDOR_FILE_RE = /^file:.*vendor\/univer(-pro)?\//;
+const VENDOR_FILE_RE = /^file:.*vendor\/univer(-pro|-cli)?\//;
 
 export function isVendorFileSpecifier(specifier) {
   return typeof specifier === "string" && VENDOR_FILE_RE.test(specifier);

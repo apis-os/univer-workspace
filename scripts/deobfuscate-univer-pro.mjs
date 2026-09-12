@@ -247,21 +247,25 @@ function looksObfuscated(src) {
 
 // Inner rotator IIFE. ESM wraps it as `(function ... (_0xarr, 0xnnn));`.
 // CJS chains it with a comma operator: `(function ... (_0xarr, 0xnnn), Object.defineProperty(...))`.
-const ROTATOR_RE =
-  /function\s*\(\s*_0x[a-f0-9]+\s*,\s*_0x[a-f0-9]+\s*\)\s*\{[\s\S]*?while\s*\(\s*!!\s*\[\s*\]\s*\)[\s\S]*?\}\s*\(\s*_0x[a-f0-9]+\s*,\s*0x[a-f0-9]+\s*\)/g;
+function rotatorRe() {
+  return /function\s*\(\s*_0x[a-f0-9]+\s*,\s*_0x[a-f0-9]+\s*\)\s*\{[\s\S]*?while\s*\(\s*!!\s*\[\s*\]\s*\)[\s\S]*?\}\s*\(\s*_0x[a-f0-9]+\s*,\s*0x[a-f0-9]+\s*\)/g;
+}
+
+function arrayFnRe() {
+  return new RegExp(
+    String.raw`function\s+(_0x[a-f0-9]+)\s*\(\s*\)\s*\{\s*(?:const|let|var)\s+_0x[a-f0-9]+\s*=\s*\[[\s\S]*?\];\s*\1\s*=\s*function\s*\(\s*\)\s*\{\s*return\s+_0x[a-f0-9]+\s*;\s*\}\s*;\s*return\s+\1\s*\(\s*\)\s*;\s*\}`,
+    "g"
+  );
+}
 
 function extractRuntime(src) {
-  const arrayFns = [
-    ...src.matchAll(
-      /function\s+(_0x[a-f0-9]+)\s*\(\s*\)\s*\{\s*(?:const|let|var)\s+_0x[a-f0-9]+\s*=\s*\[[\s\S]*?\];\s*\1\s*=\s*function\s*\(\s*\)\s*\{\s*return\s+_0x[a-f0-9]+\s*;\s*\}\s*;\s*return\s+\1\s*\(\s*\)\s*;\s*\}/g
-    )
-  ];
+  const arrayFns = [...src.matchAll(arrayFnRe())];
   const decoders = [
     ...src.matchAll(
       /function\s+(_0x[a-f0-9]+)\s*\(\s*_0x[a-f0-9]+\s*,\s*_0x[a-f0-9]+\s*\)\s*\{[\s\S]*?return\s+_0x[a-f0-9]+\s*;\s*\}/g
     )
   ].filter((m) => m[0].length < 1000 && /=\s*_0x[a-f0-9]+\s*-\s*0x[a-f0-9]+/.test(m[0]));
-  const rotators = [...src.matchAll(ROTATOR_RE)];
+  const rotators = [...src.matchAll(rotatorRe())];
   if (arrayFns.length === 0 || decoders.length === 0 || rotators.length === 0) return null;
   return [
     ...arrayFns.map((m) => m[0]),
@@ -402,16 +406,13 @@ function unglueKeywords(src) {
 
 function stripRuntime(src, decoderNames = []) {
   let out = src;
-  out = out.replace(
-    /function\s+_0x[a-f0-9]+\s*\(\s*\)\s*\{[\s\S]*?_0x[a-f0-9]+\s*=\s*function\s*\(\s*\)\s*\{\s*return\s+_0x[a-f0-9]+\s*;\s*\}\s*;\s*return\s+_0x[a-f0-9]+\s*\(\s*\)\s*;\s*\}/g,
-    ""
-  );
+  out = out.replace(arrayFnRe(), "");
   out = out.replace(
     /function\s+_0x[a-f0-9]+\s*\(\s*_0x[a-f0-9]+\s*,\s*_0x[a-f0-9]+\s*\)\s*\{[\s\S]*?return\s+_0x[a-f0-9]+\s*;\s*\}/g,
     (full) =>
       full.length < 1000 && /=\s*_0x[a-f0-9]+\s*-\s*0x[a-f0-9]+/.test(full) ? "" : full
   );
-  out = out.replace(ROTATOR_RE, "");
+  out = out.replace(rotatorRe(), "");
   out = out.replace(/\(\s*,/g, "(");
   out = stripEmptyInvocationResidue(out);
   // Only drop aliases of string-array decoders. Local aliases such as
@@ -432,6 +433,7 @@ function stripRuntime(src, decoderNames = []) {
 
 function formatFile(filePath) {
   try {
+    if (fs.statSync(filePath).size > 400_000) return false;
     execFileSync(
       "prettier",
       ["--write", "--parser", "babel", "--with-node-modules", "--ignore-path", "/dev/null", filePath],
@@ -494,12 +496,13 @@ function deobfuscateSource(src) {
   const cleaned = cleanupLiterals(stripped).replace(/\n{3,}/g, "\n\n");
   const candidates = [cleaned, stripped, next];
   for (const candidate of candidates) {
-    if (candidate !== src && canParseAsScript(candidate)) {
+    if (candidate !== src && !looksObfuscated(candidate) && canParseAsScript(candidate)) {
       return { src: candidate, changed: true };
     }
   }
   const isModule = /\bimport\b/.test(src) || /\bexport\b/.test(src);
   if (!isModule) return { src, changed: false };
+  if (looksObfuscated(cleaned)) return { src, changed: false };
   return { src: cleaned, changed: cleaned !== src };
 }
 
@@ -516,7 +519,13 @@ function processVendorPackage(pkg) {
   const files = walkJs(vendorDir);
   let changed = 0;
   for (const file of files) {
-    const original = fs.readFileSync(file, "utf8");
+    let original = fs.readFileSync(file, "utf8");
+    if (looksObfuscated(original)) {
+      const publishedFile = path.join(PUBLISHED_ROOT, pkg, path.relative(vendorDir, file));
+      if (fs.existsSync(publishedFile)) {
+        original = fs.readFileSync(publishedFile, "utf8");
+      }
+    }
     const result = deobfuscateSource(original);
     if (!result.changed) continue;
     writeUnlinked(file, result.src);

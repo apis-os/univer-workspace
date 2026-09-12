@@ -94,7 +94,7 @@ test("preserves file: vendor specifiers when aligning SDK versions", () => {
     dependencies: {
       "@univerjs/core": "file:../../vendor/univer/core",
       "@univerjs-pro/license": "file:../../vendor/univer-pro/license",
-      "@univer-cli/config": "1.0.0-insiders.old",
+      "@univer-cli/config": "file:../../vendor/univer-cli/config",
     },
   };
   const changed = alignManifestSdkDependencies(
@@ -102,10 +102,10 @@ test("preserves file: vendor specifiers when aligning SDK versions", () => {
     "1.0.0-insiders.new",
     new Set()
   );
-  assert.equal(changed, 1);
+  assert.equal(changed, 0);
   assert.equal(manifest.dependencies["@univerjs/core"], "file:../../vendor/univer/core");
   assert.equal(manifest.dependencies["@univerjs-pro/license"], "file:../../vendor/univer-pro/license");
-  assert.equal(manifest.dependencies["@univer-cli/config"], "1.0.0-insiders.new");
+  assert.equal(manifest.dependencies["@univer-cli/config"], "file:../../vendor/univer-cli/config");
 });
 
 test("rejects non-exact CLI SDK dependency versions", () => {
