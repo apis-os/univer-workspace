@@ -2,15 +2,20 @@
  * Chrome-less Univer boot for Browser Rendering (`/render?unitId=&worktreeId=&theme=`).
  */
 import { LocaleType, LogLevel } from "@univerjs/core";
+import { UniverExchangeClientPlugin } from "@univerjs-pro/exchange-client";
 import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { UniverSheetsCorePreset } from "@univerjs/preset-sheets-core";
 import { createUniver } from "@univerjs/presets";
 import { greenTheme } from "@univerjs/themes";
+import { createWorkspaceExchangeClientConfig } from "./features/editor/exchange-plugins";
 import { resolveUniverLicense } from "./features/editor/univer-license";
 import { hydrateRenderWorkbook } from "./render-hydrate";
 import { runUniverExecutePersist } from "./render-execute";
+import { runUniverExport, runUniverImport } from "./render-exchange";
 
 import "@univerjs/preset-sheets-core/lib/index.css";
+import "@univerjs-pro/exchange-client/facade";
+import "@univerjs-pro/exchange-client/lib/index.css";
 
 (UniverLicensePlugin.prototype as { onRendered?: () => void }).onRendered = function () {};
 
@@ -22,6 +27,8 @@ declare global {
       cells: Array<{ a1: string; value: unknown; sheetId: string }>;
       saved: unknown;
     }>;
+    __univerImport?: (payload: { format?: string; content?: string; unitId?: string }) => unknown;
+    __univerExport?: (payload: { format?: string; snapshot?: Record<string, unknown> }) => unknown;
   }
 }
 
@@ -58,7 +65,10 @@ async function boot(): Promise<void> {
         disableAutoFocus: true,
       }),
     ],
-    plugins: [[UniverLicensePlugin, { license: resolveUniverLicense() }]],
+    plugins: [
+      [UniverLicensePlugin, { license: resolveUniverLicense() }],
+      [UniverExchangeClientPlugin, createWorkspaceExchangeClientConfig(window.location.origin)],
+    ],
   });
 
   const api = univerAPI as UniverFacade;
@@ -67,7 +77,16 @@ async function boot(): Promise<void> {
     snapshot,
     createWorkbook: typeof api.createWorkbook === "function" ? api.createWorkbook.bind(api) : undefined
   });
-  if (!hydrated.ready) return;
+
+  window.__univerImport = (payload) => runUniverImport(payload);
+  window.__univerExport = (payload) => runUniverExport(payload);
+  if (!hydrated.ready) {
+    if (!unitId) {
+      window.univerAPI = univerAPI;
+      document.documentElement.dataset.univerReady = "1";
+    }
+    return;
+  }
 
   window.univerAPI = univerAPI;
   window.__univerLint = () => ({ findings: [] });

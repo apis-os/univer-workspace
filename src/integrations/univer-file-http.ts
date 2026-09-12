@@ -21,6 +21,14 @@ import {
   runFacadeAndPersist,
   type LoaderBinding
 } from "./univer-file-execute.ts";
+import { R2BlobStore } from "./r2-blob-store.ts";
+import {
+  decodeImportBytes,
+  exportViaBrowser,
+  importViaBrowser,
+  persistCompiledSvg,
+  putExchangeBlob
+} from "./univer-file-exchange.ts";
 
 export const DEMO_UNIVER_FILE = "workspace.univer";
 export const DEMO_UNIT_ID = "unit_welcome_sheet";
@@ -38,6 +46,12 @@ export interface UniverFileCollab {
     clientId?: string,
     userID?: string
   ): Promise<unknown> | unknown;
+  createUnit?(unitId: string, type: number, name: string, initialSnapshot?: Record<string, unknown>): unknown;
+  bindWorktreeUnit?(
+    worktreeId: string,
+    unitId: string,
+    options?: { trunkUnitId?: string | null; type?: number; name?: string }
+  ): void;
 }
 
 export interface UniverFileHttpHost {
@@ -47,6 +61,7 @@ export interface UniverFileHttpHost {
   browser?: BrowserBinding;
   loader?: LoaderBinding;
   executeAsAgent?: boolean;
+  blobStore?: R2BlobStore;
 }
 
 /** Encode a file path as base64url for `/uf/:key` URLs. */
@@ -133,6 +148,15 @@ export async function handleUniverFileHttp(
   }
   if (rest === "lint" && method === "POST") {
     return lintFileUnit(request, host, filePath, spaceId);
+  }
+  if (rest === "import" && method === "POST") {
+    return importFileUnit(request, host, filePath, spaceId);
+  }
+  if (rest === "export" && method === "POST") {
+    return exportFileUnit(request, host, filePath, spaceId);
+  }
+  if (rest === "compile-svg" && method === "POST") {
+    return compileSvgFileUnit(request, host, filePath, spaceId);
   }
 
   return jsonFile({ error: { message: `Not found: ${method} ${url.pathname}` } }, 404);
@@ -402,6 +426,177 @@ async function lintFileUnit(
     return jsonFile(await lintRenderPage(host.browser!, opened.renderUrl));
   } catch (err) {
     return jsonFile({ error: { message: err instanceof Error ? err.message : "Lint failed" } }, 502);
+  }
+}
+
+async function importFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string
+): Promise<Response> {
+  if (!isBrowserBound(host.browser)) {
+    return browserUnboundResponse();
+  }
+
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const format = typeof body.format === "string" ? body.format.trim() : "";
+  const content = typeof body.content === "string" ? body.content : "";
+  const worktreeId = typeof body.worktreeId === "string" ? body.worktreeId.trim() : "";
+  if (!format) {
+    return jsonFile({ error: { message: "format is required" } }, 400);
+  }
+  if (!content) {
+    return jsonFile({ error: { message: "content is required" } }, 400);
+  }
+  if (worktreeId && !(await canReviewFileWorktree(host, worktreeId, spaceId))) {
+    return jsonFile({ error: { message: "Worktree not found" } }, 404);
+  }
+  if (!host.collab?.createUnit) {
+    return jsonFile({ error: { message: "Collab service unavailable" } }, 503);
+  }
+
+  const unitId = `unit_${crypto.randomUUID()}`;
+  try {
+    const imported = await importViaBrowser(host.browser, request.url, { format, content, unitId });
+    const snapshot = imported.snapshot;
+    (snapshot as { unitID?: string }).unitID = unitId;
+    if ((snapshot as { workbook?: { unitID?: string } }).workbook) {
+      (snapshot as { workbook: { unitID?: string } }).workbook.unitID = unitId;
+    }
+    await putExchangeBlob(
+      host.blobStore,
+      `uf/${spaceId}/${unitId}/import.${format.toLowerCase()}`,
+      decodeImportBytes(content),
+      format.toLowerCase() === "csv" ? "text/csv" : "application/octet-stream"
+    );
+    const name = imported.name || `Imported ${format.toUpperCase()}`;
+    const node = await host.db.createNode({
+      spaceId,
+      name,
+      createdBy: host.currentUser!.id
+    });
+    const resource = await host.db.createResource({ nodeId: node.id, kind: "univer" });
+    await host.db.createUniverResource(resource.id, unitId, "sheet");
+    host.collab.createUnit(unitId, 2, name, snapshot);
+    if (worktreeId) {
+      await host.db.addWorktreeUnit({
+        worktreeId,
+        unitId,
+        trunkUnitId: null,
+        resourceId: resource.id,
+        nodeId: node.id,
+        name,
+        unitType: "sheet",
+        source: "worktree",
+        draftHeadRevision: 1,
+        baselineTrunkRevision: 0
+      });
+      host.collab.bindWorktreeUnit?.(worktreeId, unitId, { type: 2, name });
+    }
+    return jsonFile({ success: true, unitId, name, type: 2 });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Import failed";
+    if (message === "BROWSER unbound") {
+      return browserUnboundResponse();
+    }
+    return jsonFile({ error: { message } }, 502);
+  }
+}
+
+async function exportFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string
+): Promise<Response> {
+  if (!isBrowserBound(host.browser)) {
+    return browserUnboundResponse();
+  }
+
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const unitId = typeof body.unitId === "string" ? body.unitId.trim() : "";
+  const format = typeof body.format === "string" ? body.format.trim() : "";
+  const worktreeId = typeof body.worktreeId === "string" ? body.worktreeId.trim() : "";
+  if (!unitId) {
+    return jsonFile({ error: { message: "unitId is required" } }, 400);
+  }
+  if (!format) {
+    return jsonFile({ error: { message: "format is required" } }, 400);
+  }
+  if (worktreeId && !(await canReviewFileWorktree(host, worktreeId, spaceId))) {
+    return jsonFile({ error: { message: "Worktree not found" } }, 404);
+  }
+  if (!(await canInspectUnit(host, filePath, spaceId, unitId, worktreeId))) {
+    return jsonFile({ error: { message: "Unit not found" } }, 404);
+  }
+  if (!host.collab) {
+    return jsonFile({ error: { message: "Collab service unavailable" } }, 503);
+  }
+
+  const snapshotUnitId = resolveSnapshotUnitId(host.collab, unitId, worktreeId);
+  const snapshot = host.collab.getLatestSnapshot(snapshotUnitId);
+  if (!snapshot) {
+    return jsonFile({ error: { message: "Snapshot not found" } }, 404);
+  }
+
+  try {
+    const exported = await exportViaBrowser(host.browser, request.url, {
+      format,
+      snapshot: snapshot.data,
+      unitId: snapshotUnitId
+    });
+    await putExchangeBlob(
+      host.blobStore,
+      `uf/${spaceId}/${snapshotUnitId}/export.${format.toLowerCase()}`,
+      new TextEncoder().encode(exported.data),
+      exported.mediaType
+    );
+    return jsonFile({
+      mediaType: exported.mediaType,
+      data: exported.data,
+      byteSize: exported.byteSize
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Export failed";
+    if (message === "BROWSER unbound") {
+      return browserUnboundResponse();
+    }
+    return jsonFile({ error: { message } }, 502);
+  }
+}
+
+async function compileSvgFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string
+): Promise<Response> {
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const unitId = typeof body.unitId === "string" ? body.unitId.trim() : "";
+  const svg = typeof body.svg === "string" ? body.svg : "";
+  if (!unitId) {
+    return jsonFile({ error: { message: "unitId is required" } }, 400);
+  }
+  if (!svg.trim()) {
+    return jsonFile({ error: { message: "svg is required" } }, 400);
+  }
+  if (!(await canInspectUnit(host, filePath, spaceId, unitId, ""))) {
+    return jsonFile({ error: { message: "Unit not found" } }, 404);
+  }
+  if (!host.collab) {
+    return jsonFile({ error: { message: "Collab service unavailable" } }, 503);
+  }
+
+  try {
+    const persisted = persistCompiledSvg(host.collab, unitId, svg);
+    return jsonFile({ success: true, unitId, rev: persisted.rev });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "compile-svg failed";
+    if (message === "Snapshot not found") {
+      return jsonFile({ error: { message } }, 404);
+    }
+    return jsonFile({ error: { message } }, 502);
   }
 }
 

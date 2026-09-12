@@ -1196,10 +1196,303 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
   });
 });
 
+const TINY_CSV = "hello,qty\nalpha,1\nbeta,2";
+const TINY_SVG =
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 20"><rect width="40" height="20" fill="#4472c4"/></svg>';
+const EXCHANGE_SRC = join(ROOT, "src/integrations/univer-file-exchange.ts");
+const DSH_HOST_SRC = join(ROOT, "src/project/dsh-host.ts");
+
+describe("Univer File /uf import, export, compile-svg", () => {
+  test("decoded exchange-client runs in BROWSER /render, not exchange-node-binding", () => {
+    const renderMain = readFileSync(RENDER_MAIN, "utf8");
+    assert.match(renderMain, /@univerjs-pro\/exchange-client/);
+    assert.match(renderMain, /__univerImport/);
+    assert.match(renderMain, /__univerExport/);
+    const exchangeSrc = readFileSync(EXCHANGE_SRC, "utf8");
+    assert.match(exchangeSrc, /BLOB_BUCKET|R2BlobStore|blobStore/);
+    assert.doesNotMatch(exchangeSrc, /exchange-node-binding/);
+    assert.doesNotMatch(exchangeSrc, /collaboration-transport-node/);
+    const httpSrc = readFileSync(FILE_HTTP_SRC, "utf8");
+    assert.doesNotMatch(httpSrc, /exchange-node-binding/);
+    assert.doesNotMatch(httpSrc, /collaboration-transport-node/);
+    const hostSrc = readFileSync(DSH_HOST_SRC, "utf8");
+    assert.match(hostSrc, /BLOB_BUCKET/);
+    assert.match(hostSrc, /blobStore/);
+  });
+
+  test("missing BROWSER returns 503 for import/export and never invents workbook bytes", async () => {
+    const src = readFileSync(FILE_HTTP_SRC, "utf8");
+    assert.doesNotMatch(src, /hello,qty/);
+
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const host = { db: admin.db, currentUser: user, collab };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const imported = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/import"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format: "csv", content: TINY_CSV })
+      }),
+      host
+    );
+    assert.ok(imported, "POST /import must be handled");
+    assert.equal(imported.status, 503);
+    assert.deepEqual(await imported.json(), { error: "BROWSER unbound" });
+
+    const listed = await handleUniverFileHttp(new Request(ufUrl(key, "/units")), host);
+    assert.equal(listed?.status, 200);
+    const listedBody = (await listed!.json()) as { units?: Array<{ id?: string }> };
+    assert.equal(
+      listedBody.units?.some((unit) => unit.id && unit.id !== DEMO_UNIT_ID),
+      false,
+      "missing BROWSER must not invent an imported unit"
+    );
+
+    const exported = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/export"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID, format: "csv" })
+      }),
+      host
+    );
+    assert.ok(exported, "POST /export must be handled");
+    assert.equal(exported.status, 503);
+    assert.deepEqual(await exported.json(), { error: "BROWSER unbound" });
+  });
+
+  test("import tiny csv creates a unit that GET /units lists", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB });
+    const r2 = createFakeR2();
+    const host = {
+      db: admin.db,
+      currentUser: user,
+      collab,
+      browser: fake.browser,
+      blobStore: new (await import("../src/integrations/r2-blob-store.ts")).R2BlobStore(r2.bucket)
+    };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const imported = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/import"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format: "csv", content: TINY_CSV })
+      }),
+      host
+    );
+    assert.ok(imported);
+    assert.equal(imported.status, 200);
+    const importBody = (await imported.json()) as { unitId?: string; id?: string };
+    const unitId = importBody.unitId || importBody.id;
+    assert.ok(unitId, "import must return a unit id");
+
+    const listed = await handleUniverFileHttp(new Request(ufUrl(key, "/units")), host);
+    assert.equal(listed?.status, 200);
+    const listedBody = (await listed!.json()) as { units?: Array<{ id?: string }> };
+    assert.ok(
+      listedBody.units?.some((unit) => unit.id === unitId),
+      `GET /units must include imported unit ${unitId}`
+    );
+    assert.ok(r2.objects.size > 0, "import bytes must go through R2");
+    assert.ok(
+      fake.evaluatedExpressions.some((expression) => expression.includes("__univerImport")),
+      "BROWSER must evaluate exchange-client import on /render"
+    );
+  });
+
+  test("export csv returns bytes", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, snapshot });
+    const r2 = createFakeR2();
+    const host = {
+      db: admin.db,
+      currentUser: user,
+      collab,
+      browser: fake.browser,
+      blobStore: new (await import("../src/integrations/r2-blob-store.ts")).R2BlobStore(r2.bucket)
+    };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const exported = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/export"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID, format: "csv" })
+      }),
+      host
+    );
+    assert.ok(exported);
+    assert.equal(exported.status, 200);
+    const body = (await exported.json()) as { mediaType?: string; data?: string; byteSize?: number };
+    assert.equal(typeof body.data, "string");
+    assert.ok((body.data?.length ?? 0) > 0, "export csv must return bytes");
+    assert.ok(Buffer.from(body.data ?? "").length > 0);
+    assert.ok((body.byteSize ?? Buffer.from(body.data ?? "").length) > 0);
+    assert.ok(
+      fake.evaluatedExpressions.some((expression) => expression.includes("__univerExport")),
+      "BROWSER must evaluate exchange-client export on /render"
+    );
+    assert.ok(r2.objects.size > 0, "export bytes must go through R2");
+  });
+
+  test("compile-svg mutates the collaborative snapshot without Chromium", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const before = JSON.stringify(collab.getLatestSnapshot(DEMO_UNIT_ID)?.data);
+    const host = { db: admin.db, currentUser: user, collab };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const compiled = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/compile-svg"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID, svg: TINY_SVG })
+      }),
+      host
+    );
+    assert.ok(compiled, "POST /compile-svg must be handled");
+    assert.equal(compiled.status, 200);
+    const afterSnap = collab.getLatestSnapshot(DEMO_UNIT_ID);
+    assert.ok(afterSnap, "compile-svg must keep a snapshot");
+    const after = JSON.stringify(afterSnap?.data);
+    assert.notEqual(after, before, "compile-svg must mutate the collaborative snapshot");
+    assert.match(after, /svg|drawing|shape/i);
+    assert.match(after, /4472c4|#4472c4|rect/i);
+  });
+
+  test("ChatAgent /uf import uses env.BROWSER and BLOB_BUCKET without injecting them on the handler", async () => {
+    const { DshHost } = await import("../src/project/dsh-host.ts");
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const token = generateSessionToken();
+    await admin.db.createSession(user.id, token);
+    const collab = createCollab();
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB });
+    const r2 = createFakeR2();
+
+    class KernelHost extends DshHost {
+      override async ensureKernel() {
+        return { get: (name: string) => (name === "collab" ? collab : undefined) } as never;
+      }
+    }
+
+    const agent = new KernelHost(
+      {
+        id: { toString: () => "id_import", name: "univer_collab" },
+        storage: { sql: { exec: () => ({ toArray: () => [] }) } },
+        getWebSockets: () => [],
+        acceptWebSocket: () => {}
+      } as never,
+      { DB: admin.d1, BROWSER: fake.browser, BLOB_BUCKET: r2.bucket }
+    );
+
+    const key = fileKeyOf(DEMO_FILE);
+    const auth = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+    const created = await agent.fetch(new Request(ufUrl(key), { method: "POST", headers: auth }));
+    assert.equal(created.status, 200);
+
+    const imported = await agent.fetch(
+      new Request(ufUrl(key, "/import"), {
+        method: "POST",
+        headers: auth,
+        body: JSON.stringify({ format: "csv", content: TINY_CSV })
+      })
+    );
+    assert.equal(imported.status, 200);
+    const importBody = (await imported.json()) as { unitId?: string; id?: string };
+    const unitId = importBody.unitId || importBody.id;
+    assert.ok(unitId);
+    const listed = await agent.fetch(new Request(ufUrl(key, "/units"), { headers: auth }));
+    assert.equal(listed.status, 200);
+    const listedBody = (await listed.json()) as { units?: Array<{ id?: string }> };
+    assert.ok(listedBody.units?.some((unit) => unit.id === unitId));
+    assert.ok(fake.evaluatedExpressions.some((expression) => expression.includes("__univerImport")));
+    assert.ok(r2.objects.size > 0);
+  });
+});
+
 function parseUniverRunExecuteArg(expression: string): string {
   const match = /window\.__univerRunExecute\(([\s\S]*)\)\s*$/.exec(expression.trim());
   if (!match) throw new Error("missing __univerRunExecute");
   return JSON.parse(match[1]);
+}
+
+function parseUniverExchangeArg(expression: string): Record<string, unknown> {
+  const match = /window\.__univer(?:Import|Export)\(([\s\S]*)\)\s*$/.exec(expression.trim());
+  if (!match) throw new Error("missing __univerImport/__univerExport");
+  return JSON.parse(match[1]) as Record<string, unknown>;
+}
+
+function createFakeR2() {
+  const objects = new Map<string, Uint8Array>();
+  const bucket = {
+    async put(key: string, value: ArrayBuffer | ArrayBufferView | string) {
+      const bytes =
+        typeof value === "string"
+          ? new TextEncoder().encode(value)
+          : value instanceof Uint8Array
+            ? value
+            : new Uint8Array(value as ArrayBuffer);
+      objects.set(key, bytes);
+      return {
+        key,
+        size: bytes.byteLength,
+        etag: "etag",
+        httpEtag: '"etag"',
+        uploaded: new Date(),
+        checksums: {},
+        httpMetadata: {},
+        customMetadata: {},
+        writeHttpMetadata() {}
+      };
+    },
+    async get(key: string) {
+      const body = objects.get(key);
+      if (!body) return null;
+      return {
+        body: body,
+        size: body.byteLength,
+        httpEtag: '"etag"',
+        writeHttpMetadata() {}
+      };
+    },
+    async head(key: string) {
+      const body = objects.get(key);
+      if (!body) return null;
+      return { size: body.byteLength, httpEtag: '"etag"' };
+    },
+    async delete(key: string) {
+      objects.delete(key);
+    }
+  };
+  return { bucket: bucket as never, objects };
 }
 
 function createSnapshotFacade(snapshot: Record<string, unknown>) {
@@ -1376,6 +1669,33 @@ function createFakeBrowser(opts: {
           if (expression.includes("__univerRunExecute")) {
             const code = parseUniverRunExecuteArg(expression);
             void runUniverExecutePersist(createSnapshotFacade(opts.snapshot ?? {}), code).then(
+              (value) => {
+                for (const listener of listeners.get("message") ?? []) {
+                  listener({ data: JSON.stringify({ id: msg.id, result: { result: { value } } }) });
+                }
+              },
+              (err) => {
+                for (const listener of listeners.get("message") ?? []) {
+                  listener({
+                    data: JSON.stringify({
+                      id: msg.id,
+                      error: { message: err instanceof Error ? err.message : String(err) }
+                    })
+                  });
+                }
+              }
+            );
+            return;
+          } else if (expression.includes("__univerImport") || expression.includes("__univerExport")) {
+            void (async () => {
+              const { runUniverImport, runUniverExport } = await import(
+                "../apps/workspace/web/src/render-exchange.ts"
+              );
+              if (expression.includes("__univerImport")) {
+                return runUniverImport(parseUniverExchangeArg(expression));
+              }
+              return runUniverExport(parseUniverExchangeArg(expression));
+            })().then(
               (value) => {
                 for (const listener of listeners.get("message") ?? []) {
                   listener({ data: JSON.stringify({ id: msg.id, result: { result: { value } } }) });

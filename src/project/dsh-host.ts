@@ -31,6 +31,7 @@ import { ControlPlaneDb } from "../control-plane/db.ts";
 import { resolveGatewayContext } from "../control-plane/gateway.ts";
 import { handleUniverserHttp } from "../integrations/univer-collab-http.ts";
 import { handleUniverFileHttp } from "../integrations/univer-file-http.ts";
+import { R2BlobStore } from "../integrations/r2-blob-store.ts";
 import { AGENT_MEMBER_ID, AGENT_USER_ID, AGENT_USER_NAME } from "../plugins/univer-facade-actions.ts";
 import { actorFromRequest, type WorkspaceActor } from "../control-plane/actor.ts";
 import {
@@ -570,7 +571,8 @@ export class DshHost extends HostBase<any> {
         currentUser: session.currentUser,
         collab,
         browser: (this.env as { BROWSER?: { fetch?: typeof fetch } }).BROWSER,
-        loader: (this.env as { LOADER?: import("../integrations/univer-file-execute.ts").LoaderBinding }).LOADER
+        loader: (this.env as { LOADER?: import("../integrations/univer-file-execute.ts").LoaderBinding }).LOADER,
+        blobStore: new R2BlobStore((this.env as { BLOB_BUCKET?: R2Bucket }).BLOB_BUCKET)
       });
       if (fileRes) return fileRes;
     }
