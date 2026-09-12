@@ -1,3 +1,5 @@
+import { presenceRingToken, type PresenceRingToken } from "./presence-roster";
+
 export const HISTORY_DISPLAY_NAMES = {
   user_admin: "Avery Chen",
   user_jordan: "Jordan Lee",
@@ -54,4 +56,8 @@ export function applyHistoryNameUsers(userManager: {
   for (const user of historyUsers()) {
     userManager.addUser(user);
   }
+}
+
+export function blameActorRing(userID: string): PresenceRingToken {
+  return presenceRingToken({ userID });
 }

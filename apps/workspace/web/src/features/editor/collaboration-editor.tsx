@@ -73,7 +73,12 @@ import {
 } from "./workspace-snapshot-server-adapter";
 import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
 import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
-import { bindExplainSelectionHost, readActiveRangeA1 } from "./agent-panel";
+import {
+  COMB_CHANGESET_EVENT,
+  bindExplainSelectionHost,
+  readActiveRangeA1,
+  readCombChangesetActor,
+} from "./agent-panel";
 import { bindFormulaInspectorHost } from "../demo/formula-inspector";
 import {
   AGENT_MEMBER_ID,
@@ -92,6 +97,12 @@ import {
   shouldPublishIntent,
   type CellIntentKind,
 } from "./cell-presence-intent";
+import {
+  BLAME_HEAT_EVENT,
+  applyBlameHeat,
+  blameFromChangesets,
+  type BlameCell,
+} from "./ot-blame-heat";
 import { presenceRingToken } from "./presence-roster";
 import { createCollabConflictToaster } from "./collab-conflict-toast";
 import {
@@ -595,6 +606,88 @@ export function createCollaborationEditor(
           }
         );
 
+        let blameHandle: { dispose(): void } | null = null;
+        let blameCells: BlameCell[] = [];
+        let blameEnabled = false;
+
+        const refreshBlame = () => {
+          blameHandle?.dispose();
+          const reducedMotion =
+            typeof window !== "undefined" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          blameHandle = applyBlameHeat(
+            { getActiveWorkbook: () => univerAPI.getActiveWorkbook?.() },
+            blameCells,
+            reducedMotion,
+            blameEnabled
+          );
+        };
+
+        void fetch(`/universer-api/history/${encodeURIComponent(unitId)}/cs`, {
+          credentials: "include",
+        })
+          .then((res) => (res.ok ? res.json() : null))
+          .then((body) => {
+            if (
+              disposed ||
+              !body ||
+              !Array.isArray((body as { changesets?: unknown[] }).changesets)
+            ) {
+              return;
+            }
+            blameCells = blameFromChangesets(
+              (body as { changesets: readonly any[] }).changesets
+            );
+            refreshBlame();
+          })
+          .catch(() => {});
+
+        const onChangesetForBlame = (event: Event) => {
+          if (disposed) return;
+          const detail = (event as CustomEvent).detail as
+            | Record<string, unknown>
+            | undefined;
+          const collaMsg = (detail?.collaMsg ?? detail) as
+            | Record<string, unknown>
+            | undefined;
+          const newCsEvent = (collaMsg?.newCsEvent ?? detail?.newCsEvent) as
+            | Record<string, unknown>
+            | undefined;
+          const cs = (newCsEvent?.cs ?? collaMsg?.cs ?? detail?.cs) as
+            | Record<string, unknown>
+            | undefined;
+          if (cs) {
+            const actor =
+              readCombChangesetActor({ type: event.type, detail }) ??
+              "user_admin";
+            const rev =
+              typeof cs.revision === "number"
+                ? cs.revision
+                : typeof cs.rev === "number"
+                  ? cs.rev
+                  : 0;
+            const next = blameFromChangesets([
+              { clientId: actor, rev, changeset: cs },
+            ]);
+            const cellMap = new Map(blameCells.map((c) => [c.a1, c]));
+            for (const c of next) cellMap.set(c.a1, c);
+            blameCells = Array.from(cellMap.values());
+            refreshBlame();
+          }
+        };
+        window.addEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
+
+        const onBlameToggle = (event: Event) => {
+          if (disposed) return;
+          const detail = (event as CustomEvent<{ enabled?: boolean }>).detail;
+          blameEnabled =
+            typeof detail?.enabled === "boolean"
+              ? detail.enabled
+              : !blameEnabled;
+          refreshBlame();
+        };
+        window.addEventListener(BLAME_HEAT_EVENT, onBlameToggle);
+
         if (
           !disposed &&
           onCollaboratorsChange &&
@@ -625,6 +718,9 @@ export function createCollaborationEditor(
 
       return () => {
         disposed = true;
+        blameHandle?.dispose();
+        window.removeEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
+        window.removeEventListener(BLAME_HEAT_EVENT, onBlameToggle);
         commandListener?.dispose();
         intentHighlightHandle?.dispose();
         if (cellIntentListener) {
