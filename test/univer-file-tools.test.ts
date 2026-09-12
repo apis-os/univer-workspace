@@ -10,7 +10,13 @@ import { seedControlPlane } from "../src/control-plane/schema.ts";
 import { ControlPlaneDb } from "../src/control-plane/db.ts";
 import type { SqlExec } from "../src/kernel/sql.ts";
 import { ActionService } from "../src/kernel/action.ts";
+import { bootKernel } from "../src/kernel/boot.ts";
 import { getSeedTreeRows, PLUGIN_CATALOG } from "../src/kernel/catalog.ts";
+import {
+  listEnabledPluginTree,
+  migratePluginTree,
+  seedPluginTree
+} from "../src/kernel/tree.ts";
 import { UniverCollabService } from "../src/plugins/univer-collab.ts";
 import { generateDefaultSnapshot } from "../src/plugins/univer-default-snapshots.ts";
 import { registerFacadeActions } from "../src/plugins/univer-facade-actions.ts";
@@ -252,5 +258,41 @@ describe("Agent turns may call univer_execute", () => {
     const body = (await res.json()) as { tools?: Array<{ name?: string }> };
     const names = (body.tools ?? []).map((tool) => tool.name);
     assert.ok(names.includes("univer_execute"));
+  });
+
+  test("nonempty plugin_tree missing univer-file still exposes univer_execute after boot", async () => {
+    const sql = createSqliteAdapter();
+    migratePluginTree(sql);
+    const preexisting = getSeedTreeRows().filter(
+      (row) => row.id !== "univer-file" && row.name !== "univer-file"
+    );
+    assert.ok(preexisting.length > 0, "live ChatAgent tree must already have rows");
+    seedPluginTree(sql, preexisting);
+    assert.equal(
+      listEnabledPluginTree(sql).some((row) => row.name === "univer-file"),
+      false
+    );
+
+    const ctx = await bootKernel({
+      sql,
+      host: { name: "univer_collab", env: {}, sql, broadcast: () => {} },
+      env: {}
+    });
+
+    const action = ctx.get("action") as ActionService;
+    const toolNames = action.getLlmTools().map((tool) => tool.name);
+    assert.ok(toolNames.includes("univer_execute"), "getLlmTools must include univer_execute");
+
+    const res = await handleAgentHttp(new Request("https://workspace.test/agents"), {
+      kernel: ctx
+    });
+    assert.ok(res);
+    const body = (await res.json()) as { tools?: Array<{ name?: string }> };
+    assert.ok(
+      (body.tools ?? []).some((tool) => tool.name === "univer_execute"),
+      "GET /agents must list univer_execute after boot backfill"
+    );
+
+    await (ctx as any).dispose?.();
   });
 });

@@ -3,8 +3,16 @@ import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
 import type { SqlExec } from "../src/kernel/sql.ts";
 import { bootKernel } from "../src/kernel/boot.ts";
+import type { ActionService } from "../src/kernel/action.ts";
+import { getSeedTreeRows } from "../src/kernel/catalog.ts";
+import {
+  listEnabledPluginTree,
+  migratePluginTree,
+  seedPluginTree
+} from "../src/kernel/tree.ts";
 import { UniverCollabService } from "../src/plugins/univer-collab.ts";
 import { UniverToolsService } from "../src/plugins/univer-tools.ts";
+import { handleAgentHttp } from "../src/plugins/univer-agent.ts";
 
 function createSqliteAdapter(): SqlExec {
   const db = new DatabaseSync(":memory:");
@@ -100,6 +108,48 @@ describe("Cordis Microkernel & Cloudflare Durable Object Kernel Boot", () => {
     const wtChanges = worktrees.getWorktreeChanges("wt_draft_1");
     assert.equal(wtChanges.length, 1);
     assert.equal(wtChanges[0].mutation.value, "=SUM(A1:A10)");
+
+    await (ctx as any).dispose?.();
+  });
+
+  test("backfills univer-file onto a nonempty plugin_tree so getLlmTools and GET /agents see univer_execute", async () => {
+    const sql = createSqliteAdapter();
+    migratePluginTree(sql);
+    const preexisting = getSeedTreeRows().filter(
+      (row) => row.id !== "univer-file" && row.name !== "univer-file"
+    );
+    assert.ok(preexisting.length > 0, "live ChatAgent tree must already have rows");
+    seedPluginTree(sql, preexisting);
+    assert.equal(
+      listEnabledPluginTree(sql).some((row) => row.name === "univer-file"),
+      false,
+      "preexisting plugin_tree must omit univer-file"
+    );
+
+    const ctx = await bootKernel({
+      sql,
+      host: { name: "univer_collab", env: {}, sql, broadcast: () => {} },
+      env: {}
+    });
+
+    assert.ok(
+      listEnabledPluginTree(sql).some((row) => row.name === "univer-file"),
+      "boot must insert missing univer-file seed row"
+    );
+    const action = ctx.get("action") as ActionService | undefined;
+    assert.ok(action, "action service should be available on ctx");
+    const toolNames = action.getLlmTools().map((tool) => tool.name);
+    assert.ok(toolNames.includes("univer_execute"), "getLlmTools must include univer_execute");
+
+    const res = await handleAgentHttp(new Request("https://workspace.test/agents"), {
+      kernel: ctx
+    });
+    assert.ok(res);
+    const body = (await res.json()) as { tools?: Array<{ name?: string }> };
+    assert.ok(
+      (body.tools ?? []).some((tool) => tool.name === "univer_execute"),
+      "GET /agents must list univer_execute after backfill"
+    );
 
     await (ctx as any).dispose?.();
   });

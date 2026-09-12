@@ -7,6 +7,7 @@ import { registerPlugin, resolvePlugin, hasPlugin } from "./plugin-map.ts";
 import type { SqlExec } from "./sql.ts";
 import {
   assertPluginTreeIdentity,
+  ensurePluginTreeRow,
   listEnabledPluginTree,
   migratePluginTree,
   seedPluginTree
@@ -88,7 +89,11 @@ export async function registerCatalogPlugins(): Promise<void> {
  */
 export async function bootKernel(input: BootInput): Promise<Context> {
   migratePluginTree(input.sql);
-  seedPluginTree(input.sql, getSeedTreeRows());
+  const seedRows = getSeedTreeRows();
+  seedPluginTree(input.sql, seedRows);
+  for (const row of seedRows) {
+    ensurePluginTreeRow(input.sql, row);
+  }
   await registerCatalogPlugins();
 
   const ctx = new Context();
