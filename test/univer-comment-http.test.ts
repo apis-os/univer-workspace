@@ -37,10 +37,11 @@ function createSqliteAdapter(): SqlExec {
   };
 }
 
-function hostFor(sql: SqlExec, userID: string, name: string, collab: unknown = null) {
+function hostFor(sql: SqlExec, userID: string, name: string, collab: unknown = null, kernel?: Context) {
   return {
     sql,
     collab,
+    kernel,
     identity: { userID, name, avatar: "" },
     mintSessionTicket() {
       return "ticket_comment_test";
@@ -58,7 +59,7 @@ function agentCommentHarness() {
   void action;
   registerFacadeActions(ctx);
   collab.createUnit(UNIT_ID, 2, "Q3 Forecast", generateDefaultSnapshot(UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>);
-  return { sql, ctx, collab, host: hostFor(sql, "user_admin", "Avery Chen", collab) };
+  return { sql, ctx, collab, host: hostFor(sql, "user_admin", "Avery Chen", collab, ctx) };
 }
 
 function commentUrl(action: string): string {
@@ -248,4 +249,82 @@ describe("Universer thread comments", () => {
     assert.equal(agentReply?.threadId, threadId);
     assert.equal(listBody.users?.agent_workspace?.name, "Workspace Agent");
   });
+
+  test("@agent posts an agent_workspace error reply when kernel is missing", async () => {
+    const sql = createSqliteAdapter();
+    const host = hostFor(sql, "user_admin", "Avery Chen");
+    const unitId = "unit_missing_kernel";
+    const content = JSON.stringify({ dataStream: "@agent fill E2\r\n" });
+
+    const addRes = await handleUniverserHttp(
+      new Request(`https://workspace.edge/universer-api/comment/unit/${unitId}/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-workspace-user-id": "user_admin",
+          "x-workspace-user-name": "Avery Chen"
+        },
+        body: JSON.stringify({
+          unitId,
+          memberId: "member_avery",
+          content,
+          mention: ["agent_workspace"]
+        })
+      }),
+      host
+    );
+    assert.ok(addRes, "comment add must be handled");
+    assert.equal(addRes.status, 200);
+    const added = (await addRes.json()) as {
+      error?: { code?: number };
+      comment?: { threadId?: string };
+    };
+    assert.equal(added.error?.code, 1);
+    const threadId = added.comment?.threadId;
+    assert.ok(threadId);
+
+    const listRes = await handleUniverserHttp(
+      new Request(`https://workspace.edge/universer-api/comment/unit/${unitId}/list`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId, threadId: [threadId] })
+      }),
+      host
+    );
+    assert.ok(listRes);
+    const listBody = (await listRes.json()) as {
+      comments?: Record<
+        string,
+        { replies?: Array<{ userId?: string; content?: string; threadId?: string }> }
+      >;
+      users?: Record<string, { userID?: string; name?: string }>;
+    };
+    const replies = listBody.comments?.[threadId]?.replies ?? [];
+    const agentReply = replies.find((reply) => reply.userId === "agent_workspace");
+    assert.ok(agentReply, "missing kernel must still reply as agent_workspace");
+    assert.equal(agentReply?.threadId, threadId);
+    assert.equal(listBody.users?.agent_workspace?.name, "Workspace Agent");
+    const replyText = plainAgentReplyText(agentReply?.content);
+    assert.match(replyText, /unavailable|failed|kernel/i);
+
+    const turnsRes = await handleAgentHttp(new Request(`https://workspace.edge/agents/${unitId}/turns`), {
+      kernel: new Context()
+    });
+    assert.ok(turnsRes);
+    const turnsBody = (await turnsRes.json()) as { items?: unknown[] };
+    assert.equal(turnsBody.items?.length ?? 0, 0, "must not enqueue a Skill turn without a kernel");
+  });
 });
+
+function plainAgentReplyText(content: string | undefined): string {
+  if (!content) return "";
+  try {
+    const parsed = JSON.parse(content) as { dataStream?: unknown };
+    if (parsed && typeof parsed === "object" && typeof parsed.dataStream === "string") {
+      return parsed.dataStream;
+    }
+  } catch {
+    // raw comment body
+  }
+  return content;
+}

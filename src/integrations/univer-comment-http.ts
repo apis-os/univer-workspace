@@ -53,6 +53,7 @@ export interface CommentHttpHost {
   readonly userID: string;
   readonly name?: string;
   readonly avatar?: string;
+  readonly kernel?: Context;
   readonly collab?: unknown;
   waitUntil?(promise: Promise<unknown>): void;
   onNewChanges?(unitID: string, changeset: unknown, memberID?: string): void;
@@ -563,8 +564,11 @@ function enqueueAgentMentionTurn(
   if (host.userID === AGENT_USER_ID) return Promise.resolve();
   const prompt = promptFromAgentMention(content);
   if (!prompt) return Promise.resolve();
-  const kernel = kernelFromCollab(host.collab);
-  if (!kernel) return Promise.resolve();
+  const kernel = host.kernel;
+  if (!kernel) {
+    postAgentErrorReply(sql, unitId, threadId, "Workspace Agent is unavailable");
+    return Promise.resolve();
+  }
 
   const job = runMentionTurnAndReply(host, sql, kernel, unitId, threadId, prompt);
   const waitUntil = host.waitUntil ?? kernelHostWaitUntil(kernel);
@@ -604,18 +608,15 @@ async function runMentionTurnAndReply(
     addReply(sql, unitId, threadId, AGENT_USER_ID, agentReplyContent(replyTextFromTurn(result)), []);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    try {
-      addReply(
-        sql,
-        unitId,
-        threadId,
-        AGENT_USER_ID,
-        agentReplyContent(message || "Agent turn failed"),
-        []
-      );
-    } catch {
-      // mention turn must not fail the original comment write
-    }
+    postAgentErrorReply(sql, unitId, threadId, message || "Agent turn failed");
+  }
+}
+
+function postAgentErrorReply(sql: SqlExec, unitId: string, threadId: string, message: string): void {
+  try {
+    addReply(sql, unitId, threadId, AGENT_USER_ID, agentReplyContent(message), []);
+  } catch {
+    // mention turn must not fail the original comment write
   }
 }
 
@@ -641,11 +642,6 @@ function plainCommentText(content: string): string {
     // raw comment body
   }
   return content;
-}
-
-function kernelFromCollab(collab: unknown): Context | undefined {
-  if (!collab || typeof collab !== "object") return undefined;
-  return (collab as { ctx?: Context }).ctx;
 }
 
 function kernelDelegate(kernel: Context): { env?: unknown; waitUntil?: (promise: Promise<unknown>) => void } | undefined {

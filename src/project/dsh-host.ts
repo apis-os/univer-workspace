@@ -221,6 +221,7 @@ export class DshHost extends HostBase<any> {
         avatar: request.headers.get("x-workspace-user-avatar")?.trim() || ""
       };
       const commentRes = await handleUniverserHttp(request, {
+        kernel,
         collab,
         identity: commentIdentity,
         sql: this.getSqlExec()
