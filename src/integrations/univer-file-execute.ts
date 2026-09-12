@@ -23,8 +23,14 @@ export type LoaderBinding = {
   get?: (
     name: string | null,
     getCode: () => unknown
-  ) => { fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> };
-  load?: (code: unknown) => { fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> };
+  ) => {
+    fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+    getEntrypoint?: () => { fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> };
+  };
+  load?: (code: unknown) => {
+    fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
+    getEntrypoint?: () => { fetch?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response> };
+  };
 };
 
 export type FacadeCellWrite = {
@@ -71,12 +77,14 @@ export function executeMemberId(userId: string, executeAsAgent = false): string 
 }
 
 export const FACADE_EXECUTE_WORKER_CODE = {
-  compatibilityDate: "2024-09-02",
+  compatibilityDate: "2026-09-07",
   compatibilityFlags: ["nodejs_compat"],
+  globalOutbound: null,
   mainModule: "execute.js",
   modules: {
     "execute.js": `export default {
   async fetch(request) {
+    try {
     const body = await request.json();
     const code = typeof body.code === "string" ? body.code : "";
     const snapshot = body.snapshot && typeof body.snapshot === "object" ? body.snapshot : {};
@@ -92,6 +100,29 @@ export const FACADE_EXECUTE_WORKER_CODE = {
       let col = 0;
       for (let i = 0; i < letters.length; i++) col = col * 26 + (letters.charCodeAt(i) - 64);
       return { row: Number(match[2]) - 1, col: col - 1 };
+    };
+    const rowColToA1 = (row, col) => {
+      let n = col + 1;
+      let letters = "";
+      while (n > 0) {
+        const rem = (n - 1) % 26;
+        letters = String.fromCharCode(65 + rem) + letters;
+        n = Math.floor((n - 1) / 26);
+      }
+      return letters + (row + 1);
+    };
+    const expandA1 = (a1) => {
+      const range = /^([A-Za-z]+)(\\d+):([A-Za-z]+)(\\d+)$/.exec(String(a1).trim());
+      if (!range) return [a1];
+      const start = a1ToRowCol(range[1] + range[2]);
+      const end = a1ToRowCol(range[3] + range[4]);
+      const out = [];
+      for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
+        for (let c = Math.min(start.col, end.col); c <= Math.max(start.col, end.col); c++) {
+          out.push(rowColToA1(r, c));
+        }
+      }
+      return out;
     };
     const setCell = (a1, value) => {
       const sheet = (inner.sheets || {})[firstSheetId];
@@ -138,14 +169,7 @@ export const FACADE_EXECUTE_WORKER_CODE = {
               let total = 0;
               for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
                 for (let c = Math.min(start.col, end.col); c <= Math.max(start.col, end.col); c++) {
-                  let n = c + 1;
-                  let letters = "";
-                  while (n > 0) {
-                    const rem = (n - 1) % 26;
-                    letters = String.fromCharCode(65 + rem) + letters;
-                    n = Math.floor((n - 1) / 26);
-                  }
-                  const cell = getCell(letters + (r + 1));
+                  const cell = getCell(rowColToA1(r, c));
                   if (typeof cell?.v === "number") total += cell.v;
                 }
               }
@@ -156,12 +180,70 @@ export const FACADE_EXECUTE_WORKER_CODE = {
         };
       }
     };
-    const runner = new Function("api", "return (async () => { " + code + "\\n })()");
-    await runner(api);
+    const parseSetValueArg = (raw) => {
+      const s = String(raw).trim();
+      if ((s.startsWith("'") && s.endsWith("'")) || (s.startsWith('"') && s.endsWith('"'))) {
+        return s.slice(1, -1);
+      }
+      if (s.startsWith("{") && s.endsWith("}")) {
+        const jsonish = s
+          .replace(/'/g, '"')
+          .replace(/([{,]\\s*)([A-Za-z_][A-Za-z0-9_]*)\\s*:/g, '$1"$2":')
+          .replace(/(\\d+(?:\\.\\d+)?)\\s*\\*\\s*(\\d+(?:\\.\\d+)?)/g, (_, a, b) => String(Number(a) * Number(b)));
+        return JSON.parse(jsonish);
+      }
+      if (s === "true") return true;
+      if (s === "false") return false;
+      if (/^-?\\d+(\\.\\d+)?$/.test(s)) return Number(s);
+      throw new Error("Unsupported setValue argument");
+    };
+    const extractCalls = (src) => {
+      const re = /getRange\\(\\s*(['"])([^'"]+)\\1\\s*\\)\\s*\\.\\s*setValue\\(/g;
+      const calls = [];
+      let m;
+      while ((m = re.exec(src))) {
+        let i = m.index + m[0].length;
+        let depth = 1;
+        let quote = "";
+        const start = i;
+        while (i < src.length && depth > 0) {
+          const ch = src[i];
+          if (quote) {
+            if (ch === "\\\\") { i += 2; continue; }
+            if (ch === quote) quote = "";
+            i++;
+            continue;
+          }
+          if (ch === "'" || ch === '"') { quote = ch; i++; continue; }
+          if (ch === "(") depth++;
+          else if (ch === ")") depth--;
+          if (depth > 0) i++;
+        }
+        calls.push({ a1: m[2], raw: src.slice(start, i) });
+        re.lastIndex = i + 1;
+      }
+      return calls;
+    };
+    const calls = extractCalls(code);
+    if (calls.length === 0 && String(code).trim()) {
+      throw new Error("Unsupported Facade snippet");
+    }
+    for (const call of calls) {
+      const value = parseSetValueArg(call.raw);
+      for (const addr of expandA1(call.a1)) {
+        api.getActiveWorkbook().getActiveSheet().getRange(addr).setValue(value);
+      }
+    }
     await api.getFormula().executeCalculation();
     return new Response(JSON.stringify({ cells: writes, saved: inner }), {
       headers: { "content-type": "application/json; charset=utf-8" }
     });
+    } catch (err) {
+      return new Response(JSON.stringify({ error: String(err && err.message ? err.message : err) }), {
+        status: 500,
+        headers: { "content-type": "application/json; charset=utf-8" }
+      });
+    }
   }
 };
 `
@@ -177,20 +259,35 @@ export async function evaluateFacadeOnLoader(
     typeof loader.get === "function"
       ? loader.get("uf-execute", () => FACADE_EXECUTE_WORKER_CODE)
       : loader.load?.(FACADE_EXECUTE_WORKER_CODE);
-  if (typeof stub?.fetch !== "function") {
+  const fetchImpl = loaderStubFetch(stub);
+  if (!fetchImpl) {
     throw new Error("LOADER unbound");
   }
-  const res = await stub.fetch("https://uf-execute/execute", {
+  const res = await fetchImpl("https://uf-execute/execute", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code, snapshot })
   });
   if (!res.ok) {
-    throw new Error(`LOADER execute failed: ${res.status}`);
+    const text = await res.text().catch(() => "");
+    throw new Error(`LOADER execute failed: ${res.status} ${text}`);
   }
   const body = (await res.json()) as FacadeExecuteResult;
   if (Array.isArray(body?.cells)) return body;
   return { cells: [] };
+}
+
+function loaderStubFetch(
+  stub: { fetch?: typeof fetch; getEntrypoint?: () => { fetch?: typeof fetch } } | undefined
+): ((input: RequestInfo | URL, init?: RequestInit) => Promise<Response>) | null {
+  if (typeof stub?.fetch === "function") {
+    return (input, init) => stub.fetch!(input, init);
+  }
+  const entry = typeof stub?.getEntrypoint === "function" ? stub.getEntrypoint() : null;
+  if (typeof entry?.fetch === "function") {
+    return (input, init) => entry.fetch!(input, init);
+  }
+  return null;
 }
 
 export async function evaluateFacadeOnBrowser(
@@ -198,13 +295,15 @@ export async function evaluateFacadeOnBrowser(
   requestUrl: string,
   unitId: string,
   worktreeId: string,
-  code: string
+  code: string,
+  snapshot?: unknown
 ): Promise<FacadeExecuteResult> {
   const renderUrl = renderPageUrl(requestUrl, { unitId, worktreeId });
   const value = await evaluateOnRenderPage(
     browser,
     renderUrl,
-    `window.__univerRunExecute(${JSON.stringify(code)})`
+    `window.__univerRunExecute(${JSON.stringify(code)})`,
+    { snapshot }
   );
   return normalizeFacadeResult(value);
 }
@@ -333,8 +432,15 @@ export async function runFacadeAndPersist(input: {
       input.request.url,
       input.snapshotUnitId,
       input.worktreeId,
-      input.code
+      input.code,
+      snapshot.data
     );
+    const empty =
+      (result.cells?.length ?? 0) === 0 &&
+      (result.saved == null || typeof result.saved !== "object");
+    if (empty && isLoaderBound(input.loader)) {
+      result = await evaluateFacadeOnLoader(input.loader, input.code, snapshot.data);
+    }
   } else if (isLoaderBound(input.loader)) {
     result = await evaluateFacadeOnLoader(input.loader, input.code, snapshot.data);
   } else {

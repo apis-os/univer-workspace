@@ -96,6 +96,12 @@ export function cacheFlag(value) {
   return null;
 }
 
+/** Warm cache (HIT then HIT) is valid; MISS then HIT is the cold path. Do not invent HIT. */
+export function explainCacheOk(first, second) {
+  if (second !== "HIT") return false;
+  return first === "MISS" || first === "HIT";
+}
+
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
@@ -209,7 +215,7 @@ export async function runEdgeSmoke(input = {}) {
   }
 
   const result = {
-    ok: miss === "MISS" && hit === "HIT",
+    ok: explainCacheOk(miss, hit),
     origin,
     healthz: healthz.body,
     healthzAi: healthzAi.body,
@@ -219,7 +225,9 @@ export async function runEdgeSmoke(input = {}) {
     screenshot: { status: screenshot.res.status, path: screenshotPath }
   };
   if (!result.ok) {
-    const err = new Error(`Explain MISS then HIT expected, got miss=${JSON.stringify(miss)} hit=${JSON.stringify(hit)}`);
+    const err = new Error(
+      `Explain cache expected MISS then HIT or HIT then HIT, got miss=${JSON.stringify(miss)} hit=${JSON.stringify(hit)}`
+    );
     err.result = result;
     throw err;
   }

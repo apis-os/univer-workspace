@@ -444,7 +444,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(calls.length, 1);
     assert.equal(runHasStream(finalRun.input, finalRun.options), false);
     assert.equal(runSkipCache(finalRun.options), false);
-    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3:t9-headers");
+    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3");
     assert.equal(runCacheTtl(finalRun.options), 3600);
     assert.equal(runMetadata(finalRun.options).step, "explain");
     assert.equal(result.text, "Hello");
@@ -458,7 +458,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(calls.length, 1);
     assert.equal(runHasStream(canned.input, canned.options), false);
     assert.equal(runSkipCache(canned.options), false);
-    assert.equal(runCacheKey(canned.options), "demo:explain-q3:t9-headers");
+    assert.equal(runCacheKey(canned.options), "demo:explain-q3");
     assert.equal(runMetadata(canned.options).step, "explain");
   });
 

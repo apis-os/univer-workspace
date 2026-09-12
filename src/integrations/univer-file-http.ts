@@ -230,6 +230,13 @@ async function aliasWorktreeRoutes(
   if (unitsMatch && method === "GET") {
     return listScopedWorktreeUnits(host, unitsMatch[1], spaceId);
   }
+  const readyMatch = rest.match(/^worktrees\/([^/]+)\/ready$/);
+  if (readyMatch && method === "POST") {
+    if (!(await canReviewFileWorktree(host, readyMatch[1], spaceId))) {
+      return jsonFile({ error: { message: "Worktree not found" } }, 404);
+    }
+    return jsonFile({ success: true, id: readyMatch[1], state: "ready" });
+  }
 
   let productPath = `/api/${rest.replace(/\/units\/([^/]+)\/remove$/, "/units/$1/removal")}`;
   if (productPath.endsWith("/preview")) {
@@ -391,7 +398,10 @@ async function screenshotFileUnit(
   const opened = await openRenderRequest(request, host, filePath, spaceId);
   if (opened instanceof Response) return opened;
   try {
-    const image = await capturePng(host.browser!, opened.renderUrl, opened.params);
+    const image = await capturePng(host.browser!, opened.renderUrl, {
+      ...opened.params,
+      snapshot: opened.snapshot
+    });
     return jsonFile({
       images: [{ mediaType: "image/png", data: image.data, width: image.width, height: image.height }]
     });
@@ -409,7 +419,7 @@ async function printPdfFileUnit(
   const opened = await openRenderRequest(request, host, filePath, spaceId);
   if (opened instanceof Response) return opened;
   try {
-    const pdf = await printPdf(host.browser!, opened.renderUrl);
+    const pdf = await printPdf(host.browser!, opened.renderUrl, { snapshot: opened.snapshot });
     return jsonFile({ mediaType: "application/pdf", data: pdf.data });
   } catch (err) {
     return jsonFile({ error: { message: err instanceof Error ? err.message : "Print PDF failed" } }, 502);
@@ -425,7 +435,7 @@ async function lintFileUnit(
   const opened = await openRenderRequest(request, host, filePath, spaceId);
   if (opened instanceof Response) return opened;
   try {
-    return jsonFile(await lintRenderPage(host.browser!, opened.renderUrl));
+    return jsonFile(await lintRenderPage(host.browser!, opened.renderUrl, { snapshot: opened.snapshot }));
   } catch (err) {
     return jsonFile({ error: { message: err instanceof Error ? err.message : "Lint failed" } }, 502);
   }
@@ -607,7 +617,7 @@ async function openRenderRequest(
   host: UniverFileHttpHost,
   filePath: string,
   spaceId: string
-): Promise<Response | { renderUrl: string; params?: Record<string, unknown> }> {
+): Promise<Response | { renderUrl: string; params?: Record<string, unknown>; snapshot?: unknown }> {
   if (!isBrowserBound(host.browser)) {
     return browserUnboundResponse();
   }
@@ -637,7 +647,8 @@ async function openRenderRequest(
       worktreeId,
       theme
     }),
-    params
+    params,
+    snapshot: host.collab?.getLatestSnapshot(snapshotUnitId)?.data
   };
 }
 

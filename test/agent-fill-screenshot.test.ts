@@ -156,7 +156,15 @@ function createFakeBrowser(opts: { png: string; delay?: Promise<void> }) {
     fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       const method = (init?.method ?? "GET").toUpperCase();
-      if (url.endsWith("/v1/sessions") && method === "POST") {
+      const path = (() => {
+        try {
+          return new URL(url).pathname;
+        } catch {
+          return url;
+        }
+      })();
+      const upgrade = new Headers(init?.headers).get("Upgrade");
+      if (method === "POST" && path === "/v1/devtools/browser") {
         return new Response(
           JSON.stringify({
             sessionId: "mock-session",
@@ -165,13 +173,13 @@ function createFakeBrowser(opts: { png: string; delay?: Promise<void> }) {
           { headers: { "Content-Type": "application/json" } }
         );
       }
-      if (url.includes("/cdp")) {
-        return { ok: true, webSocket: createSocket() } as unknown as Response;
-      }
-      if (url.includes("/targets")) {
+      if (path.endsWith("/json/list")) {
         return new Response(JSON.stringify([{ id: "mock-target", type: "page" }]), {
           headers: { "Content-Type": "application/json" }
         });
+      }
+      if (upgrade === "websocket" || (method === "GET" && /\/v1\/devtools\/browser\/[^/]+$/.test(path))) {
+        return { ok: true, webSocket: createSocket() } as unknown as Response;
       }
       if (method === "DELETE") return new Response(null, { status: 204 });
       return new Response("not found", { status: 404 });

@@ -705,6 +705,43 @@ describe("Univer File /uf execute", () => {
     assert.equal(fakeLoader.got.length, 0, "stub LOADER must not run when BROWSER is bound");
   });
 
+  test("empty BROWSER execute falls back to LOADER so E2 still gets f and/or v", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const fakeBrowser = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, snapshot, emptyExecute: true });
+    const fakeLoader = createFakeLoader();
+    const host = {
+      db: admin.db,
+      currentUser: user,
+      collab,
+      browser: fakeBrowser.browser,
+      loader: fakeLoader.loader
+    };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/execute`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: EXECUTE_CODE })
+      }),
+      host
+    );
+    assert.equal(res?.status, 200);
+    assert.ok(fakeLoader.got.length > 0, "LOADER must run when BROWSER returns no cell writes");
+    const inspect = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/inspect?range=E2`)),
+      host
+    );
+    const inspectBody = (await inspect!.json()) as { f?: unknown; v?: unknown };
+    assert.ok(inspectBody.f != null || inspectBody.v != null, JSON.stringify(inspectBody));
+  });
+
   test("BROWSER execute runs posted Facade code with commas via __univerRunExecute persist", async () => {
     const admin = await seededHost(null);
     const user = await admin.db.getUserById("user_admin");
@@ -852,6 +889,8 @@ describe("Univer File /uf execute", () => {
   test("FACADE_EXECUTE_WORKER_CODE execute.js runs the posted Facade snippet", async () => {
     const source = FACADE_EXECUTE_WORKER_CODE.modules["execute.js"];
     assert.equal(typeof source, "string");
+    assert.equal(source.includes("new Function"), false, "Dynamic Workers disallow new Function");
+    assert.equal(source.includes("eval("), false, "Dynamic Workers disallow eval");
     const mod = (await import("data:text/javascript," + encodeURIComponent(source))) as {
       default: { fetch: (request: Request) => Promise<Response> };
     };
@@ -866,6 +905,17 @@ describe("Univer File /uf execute", () => {
     assert.equal(res.ok, true);
     const body = (await res.json()) as { cells?: Array<{ a1?: string; value?: { f?: unknown } }> };
     assert.ok(body.cells?.some((cell) => cell.a1 === "E2" && cell.value?.f === FORMULA));
+
+    const comma = await mod.default.fetch(
+      new Request("https://uf-execute/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: COMMA_CODE, snapshot })
+      })
+    );
+    assert.equal(comma.ok, true);
+    const commaBody = (await comma.json()) as { cells?: Array<{ a1?: string; value?: { f?: unknown; t?: unknown } }> };
+    assert.ok(commaBody.cells?.some((cell) => cell.a1 === "Z2" && cell.value?.f === FORMULA && cell.value?.t === 2));
   });
 
   test("persist emits per-sheet changesets and applies OT before snapshot save", async () => {
@@ -962,6 +1012,41 @@ describe("Univer File /uf execute", () => {
     );
   });
 
+  test("LOADER WorkerStub getEntrypoint.fetch is used when stub.fetch is absent", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const fake = createFakeLoader();
+    const loader = {
+      get(name: string | null, getCode: () => unknown) {
+        const stub = fake.loader.get(name, getCode);
+        return { getEntrypoint: () => stub };
+      }
+    };
+    const host = { db: admin.db, currentUser: user, collab, loader };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/execute`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: EXECUTE_CODE })
+      }),
+      host
+    );
+    assert.equal(res?.status, 200);
+    const inspect = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/inspect?range=E2`)),
+      host
+    );
+    const inspectBody = (await inspect!.json()) as { f?: unknown; v?: unknown };
+    assert.ok(inspectBody.f != null || inspectBody.v != null, JSON.stringify(inspectBody));
+  });
+
   test("ChatAgent /uf execute uses env.BROWSER without injecting it on the handler", async () => {
     const { DshHost } = await import("../src/project/dsh-host.ts");
     const admin = await seededHost(null);
@@ -1037,6 +1122,8 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
     assert.match(renderMain, /unitId/);
     assert.match(renderMain, /worktreeId/);
     assert.match(renderMain, /theme/);
+    assert.match(renderMain, /createUniver/);
+    assert.match(renderMain, /plugins:\s*\[\s*\]/);
     assert.doesNotMatch(renderMain, /workspace-layout|Live Share|command palette/i);
   });
 
@@ -1165,8 +1252,26 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
     assert.equal(created.length, 1);
     assert.deepEqual(created[0], snapshot);
 
+    created.length = 0;
+    const universer = {
+      unitID: DEMO_UNIT_ID,
+      rev: 1,
+      type: 2,
+      workbook: {
+        unitID: DEMO_UNIT_ID,
+        name: "Q3 Forecast",
+        sheetOrder: ["sheet_1"],
+        sheets: { sheet_1: { id: "sheet_1", name: "Sheet 1" } }
+      }
+    };
+    const fromEnvelope = hydrateRenderWorkbook({ snapshot: universer, createWorkbook });
+    assert.equal(fromEnvelope.ready, true);
+    assert.equal(created[0]?.id, DEMO_UNIT_ID);
+    assert.equal(created[0]?.unitID, DEMO_UNIT_ID);
+
     const renderMain = readFileSync(RENDER_MAIN, "utf8");
     assert.match(renderMain, /hydrateRenderWorkbook/);
+    assert.match(renderMain, /injectedRenderSnapshot/);
   });
 
   test("fake BROWSER print-pdf and lint load /render", async () => {
@@ -1706,6 +1811,7 @@ function createFakeBrowser(opts: {
   pdf: string;
   evaluateFailures?: number;
   snapshot?: Record<string, unknown>;
+  emptyExecute?: boolean;
 }) {
   const cdpMethods: string[] = [];
   const navigated: string[] = [];
@@ -1772,25 +1878,29 @@ function createFakeBrowser(opts: {
             return;
           }
           if (expression.includes("__univerRunExecute")) {
-            const code = parseUniverRunExecuteArg(expression);
-            void runUniverExecutePersist(createSnapshotFacade(opts.snapshot ?? {}), code).then(
-              (value) => {
-                for (const listener of listeners.get("message") ?? []) {
-                  listener({ data: JSON.stringify({ id: msg.id, result: { result: { value } } }) });
+            if (opts.emptyExecute) {
+              result = { result: { value: { cells: [] } } };
+            } else {
+              const code = parseUniverRunExecuteArg(expression);
+              void runUniverExecutePersist(createSnapshotFacade(opts.snapshot ?? {}), code).then(
+                (value) => {
+                  for (const listener of listeners.get("message") ?? []) {
+                    listener({ data: JSON.stringify({ id: msg.id, result: { result: { value } } }) });
+                  }
+                },
+                (err) => {
+                  for (const listener of listeners.get("message") ?? []) {
+                    listener({
+                      data: JSON.stringify({
+                        id: msg.id,
+                        error: { message: err instanceof Error ? err.message : String(err) }
+                      })
+                    });
+                  }
                 }
-              },
-              (err) => {
-                for (const listener of listeners.get("message") ?? []) {
-                  listener({
-                    data: JSON.stringify({
-                      id: msg.id,
-                      error: { message: err instanceof Error ? err.message : String(err) }
-                    })
-                  });
-                }
-              }
-            );
-            return;
+              );
+              return;
+            }
           } else if (expression.includes("__univerImport") || expression.includes("__univerExport")) {
             void (async () => {
               const { runUniverImport, runUniverExport } = await import(
@@ -1838,7 +1948,15 @@ function createFakeBrowser(opts: {
     fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = String(input);
       const method = (init?.method ?? "GET").toUpperCase();
-      if (url.endsWith("/v1/sessions") && method === "POST") {
+      const path = (() => {
+        try {
+          return new URL(url).pathname;
+        } catch {
+          return url;
+        }
+      })();
+      const upgrade = new Headers(init?.headers).get("Upgrade");
+      if (method === "POST" && path === "/v1/devtools/browser") {
         return new Response(
           JSON.stringify({
             sessionId: "mock-session",
@@ -1847,13 +1965,13 @@ function createFakeBrowser(opts: {
           { headers: { "Content-Type": "application/json" } }
         );
       }
-      if (url.includes("/cdp")) {
-        return { ok: true, webSocket: createSocket() } as unknown as Response;
-      }
-      if (url.includes("/targets")) {
+      if (path.endsWith("/json/list")) {
         return new Response(JSON.stringify([{ id: "mock-target", type: "page" }]), {
           headers: { "Content-Type": "application/json" }
         });
+      }
+      if (upgrade === "websocket" || (method === "GET" && /\/v1\/devtools\/browser\/[^/]+$/.test(path))) {
+        return { ok: true, webSocket: createSocket() } as unknown as Response;
       }
       if (method === "DELETE") {
         return new Response(null, { status: 204 });

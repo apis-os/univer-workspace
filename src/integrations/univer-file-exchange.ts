@@ -118,7 +118,8 @@ export async function exportViaBrowser(
   const value = await evaluateOnRenderPage(
     browser,
     renderUrl.toString(),
-    `window.__univerExport(${JSON.stringify({ format: payload.format, snapshot: payload.snapshot })})`
+    `window.__univerExport(${JSON.stringify({ format: payload.format, snapshot: payload.snapshot })})`,
+    { snapshot: payload.snapshot }
   );
   if (!value || typeof value !== "object") {
     throw new Error("Export did not return bytes");

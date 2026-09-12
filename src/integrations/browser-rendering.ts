@@ -33,6 +33,8 @@ type CdpSocket = {
 };
 
 const BROWSER_UNBOUND = "BROWSER unbound";
+/** Binding fetch host used by @cloudflare/puppeteer@1.4.0. The BROWSER binding ignores the hostname. */
+const FAKE_HOST = "https://fake.host";
 
 export function browserUnboundResponse(): Response {
   return new Response(JSON.stringify({ error: BROWSER_UNBOUND }), {
@@ -58,13 +60,13 @@ export function renderPageUrl(
 
 export async function createBrowserSession(
   browser: BrowserBinding,
-  options?: unknown
+  options?: { keep_alive?: number }
 ): Promise<{ sessionId: string; targets?: BrowserTargetInfo[] }> {
-  const res = await browser.fetch?.("http://localhost/v1/sessions", {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(options ?? {})
-  });
+  const searchParams = new URLSearchParams();
+  if (options?.keep_alive) searchParams.set("keep_alive", `${options.keep_alive}`);
+  const query = searchParams.toString();
+  const acquireUrl = `${FAKE_HOST}/v1/devtools/browser${query ? `?${query}` : ""}`;
+  const res = await browser.fetch?.(acquireUrl, { method: "POST" });
   if (!res || !res.ok) {
     const text = await res?.text().catch(() => "");
     throw new Error(`Failed to create browser session: ${res?.status ?? "no-response"} ${text}`);
@@ -76,7 +78,7 @@ export async function connectBrowserSession(
   browser: BrowserBinding,
   sessionId: string
 ): Promise<CdpClient> {
-  const res = (await browser.fetch?.(`http://localhost/v1/sessions/${sessionId}/cdp`, {
+  const res = (await browser.fetch?.(`${FAKE_HOST}/v1/devtools/browser/${sessionId}`, {
     headers: { Upgrade: "websocket" }
   })) as (Response & { webSocket?: CdpSocket }) | undefined;
 
@@ -156,14 +158,19 @@ export async function listBrowserTargets(
   browser: BrowserBinding,
   sessionId: string
 ): Promise<BrowserTargetInfo[]> {
-  const res = await browser.fetch?.(`http://localhost/v1/sessions/${sessionId}/targets`);
+  const res = await browser.fetch?.(`${FAKE_HOST}/v1/devtools/browser/${sessionId}/json/list`);
   if (!res || !res.ok) return [];
-  return (await res.json()) as BrowserTargetInfo[];
+  const body = (await res.json()) as unknown;
+  if (Array.isArray(body)) return body as BrowserTargetInfo[];
+  if (body && typeof body === "object" && Array.isArray((body as { value?: unknown }).value)) {
+    return (body as { value: BrowserTargetInfo[] }).value;
+  }
+  return [];
 }
 
 export async function closeBrowserSession(browser: BrowserBinding, sessionId: string): Promise<void> {
   try {
-    await browser.fetch?.(`http://localhost/v1/sessions/${sessionId}`, { method: "DELETE" });
+    await browser.fetch?.(`${FAKE_HOST}/v1/sessions/${sessionId}`, { method: "DELETE" });
   } catch {
     // ignore
   }
@@ -181,8 +188,15 @@ function cdpValue(payload: unknown): unknown {
 
 const RENDER_READY_EXPRESSION =
   "document.readyState === 'complete' && Boolean(window.univerAPI) && document.documentElement.dataset.univerReady === '1'";
-const RENDER_READY_TIMEOUT_MS = 30_000;
+const RENDER_DIAGNOSTIC_EXPRESSION =
+  "({ href: location.href, readyState: document.readyState, ready: document.documentElement.dataset.univerReady || null, hasApi: Boolean(window.univerAPI), err: document.documentElement.dataset.univerError || null, title: document.title })";
+const RENDER_READY_TIMEOUT_MS = 90_000;
 const RENDER_READY_POLL_MS = 100;
+const BROWSER_KEEP_ALIVE_MS = 180_000;
+
+export type OpenRenderPageOptions = {
+  snapshot?: unknown;
+};
 
 async function waitForRenderReady(cdp: CdpClient, pageSessionId: string): Promise<boolean> {
   const deadline = Date.now() + RENDER_READY_TIMEOUT_MS;
@@ -204,11 +218,25 @@ async function waitForRenderReady(cdp: CdpClient, pageSessionId: string): Promis
   return false;
 }
 
+async function renderReadyDiagnostic(cdp: CdpClient, pageSessionId: string): Promise<string> {
+  try {
+    const evaluated = await cdp.send(
+      "Runtime.evaluate",
+      { expression: RENDER_DIAGNOSTIC_EXPRESSION, returnByValue: true },
+      { sessionId: pageSessionId }
+    );
+    return JSON.stringify(cdpValue(evaluated));
+  } catch (err) {
+    return err instanceof Error ? err.message : String(err);
+  }
+}
+
 export async function openRenderPage(
   browser: BrowserBinding,
-  pageUrl: string
+  pageUrl: string,
+  options?: OpenRenderPageOptions
 ): Promise<{ cdp: CdpClient; pageSessionId: string; close: () => Promise<void> }> {
-  const created = await createBrowserSession(browser);
+  const created = await createBrowserSession(browser, { keep_alive: BROWSER_KEEP_ALIVE_MS });
   const sessionId = created.sessionId;
   const cdp = await connectBrowserSession(browser, sessionId);
   const close = async () => {
@@ -216,17 +244,35 @@ export async function openRenderPage(
     await closeBrowserSession(browser, sessionId);
   };
   try {
-    const targetId =
-      created.targets?.find((target) => target.id)?.id ??
-      (await listBrowserTargets(browser, sessionId)).find((target) => target.id)?.id;
+    const listedHttp = created.targets?.length ? created.targets : await listBrowserTargets(browser, sessionId);
+    let targetId =
+      listedHttp.find((target) => target.type === "page" && target.id)?.id ??
+      listedHttp.find((target) => target.id)?.id;
+    if (!targetId) {
+      const listed = (await cdp.send("Target.getTargets").catch(() => null)) as
+        | { targetInfos?: Array<{ targetId?: string; type?: string }> }
+        | null;
+      const infos = Array.isArray(listed?.targetInfos) ? listed.targetInfos : [];
+      targetId =
+        infos.find((info) => info.type === "page" && info.targetId)?.targetId ??
+        infos.find((info) => info.targetId)?.targetId;
+    }
     if (!targetId) throw new Error("Browser session has no page target");
     const pageSessionId = await cdp.attachToTarget(targetId);
     await cdp.send("Page.enable", {}, { sessionId: pageSessionId });
     await cdp.send("Runtime.enable", {}, { sessionId: pageSessionId }).catch(() => undefined);
+    if (options?.snapshot !== undefined) {
+      await cdp.send(
+        "Page.addScriptToEvaluateOnNewDocument",
+        { source: `window.__UNIVER_SNAPSHOT = ${JSON.stringify(options.snapshot)};` },
+        { sessionId: pageSessionId }
+      );
+    }
     await cdp.send("Page.navigate", { url: pageUrl }, { sessionId: pageSessionId });
     const ready = await waitForRenderReady(cdp, pageSessionId);
     if (!ready) {
-      throw new Error("window.univerAPI was not ready on /render");
+      const diag = await renderReadyDiagnostic(cdp, pageSessionId);
+      throw new Error(`window.univerAPI was not ready on /render ${diag}`);
     }
     return { cdp, pageSessionId, close };
   } catch (err) {
@@ -240,7 +286,7 @@ export async function capturePng(
   pageUrl: string,
   params?: Record<string, unknown>
 ): Promise<{ data: string; width: number; height: number }> {
-  const page = await openRenderPage(browser, pageUrl);
+  const page = await openRenderPage(browser, pageUrl, { snapshot: params?.snapshot });
   try {
     const clip = screenshotClip(params);
     const captured = (await page.cdp.send(
@@ -261,8 +307,12 @@ export async function capturePng(
   }
 }
 
-export async function printPdf(browser: BrowserBinding, pageUrl: string): Promise<{ data: string }> {
-  const page = await openRenderPage(browser, pageUrl);
+export async function printPdf(
+  browser: BrowserBinding,
+  pageUrl: string,
+  options?: OpenRenderPageOptions
+): Promise<{ data: string }> {
+  const page = await openRenderPage(browser, pageUrl, options);
   try {
     const printed = (await page.cdp.send(
       "Page.printToPDF",
@@ -279,9 +329,10 @@ export async function printPdf(browser: BrowserBinding, pageUrl: string): Promis
 
 export async function lintRenderPage(
   browser: BrowserBinding,
-  pageUrl: string
+  pageUrl: string,
+  options?: OpenRenderPageOptions
 ): Promise<{ findings: unknown[] }> {
-  const page = await openRenderPage(browser, pageUrl);
+  const page = await openRenderPage(browser, pageUrl, options);
   try {
     const evaluated = await page.cdp.send(
       "Runtime.evaluate",
@@ -305,9 +356,10 @@ export async function lintRenderPage(
 export async function evaluateOnRenderPage(
   browser: BrowserBinding,
   pageUrl: string,
-  expression: string
+  expression: string,
+  options?: OpenRenderPageOptions
 ): Promise<unknown> {
-  const page = await openRenderPage(browser, pageUrl);
+  const page = await openRenderPage(browser, pageUrl, options);
   try {
     const evaluated = await page.cdp.send(
       "Runtime.evaluate",

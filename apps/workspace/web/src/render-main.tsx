@@ -13,7 +13,7 @@ import { createUniver } from "@univerjs/presets";
 import { greenTheme } from "@univerjs/themes";
 import { createWorkspaceExchangeClientConfig } from "./features/editor/exchange-plugins";
 import { resolveUniverLicense } from "./features/editor/univer-license";
-import { hydrateRenderWorkbook } from "./render-hydrate";
+import { hydrateRenderWorkbook, injectedRenderSnapshot } from "./render-hydrate";
 import { runUniverExecutePersist } from "./render-execute";
 import { installBrowserExchangeInterceptor } from "./render-exchange";
 
@@ -26,6 +26,7 @@ import "@univerjs-pro/exchange-client/lib/index.css";
 declare global {
   interface Window {
     univerAPI?: unknown;
+    __UNIVER_SNAPSHOT?: unknown;
     __univerLint?: () => { findings: unknown[] };
     __univerRunExecute?: (code: string) => Promise<{
       cells: Array<{ a1: string; value: unknown; sheetId: string }>;
@@ -66,44 +67,36 @@ async function boot(): Promise<void> {
   if (!container) throw new Error("Render root #app is missing");
   container.id = "app";
 
-  const { univer, univerAPI } = createUniver({
+  const { univer, univerAPI } = createRenderUniver({
     locale: LocaleType.EN_US,
     theme: greenTheme,
     darkMode,
     logLevel: LogLevel.ERROR,
-    presets: [
-      UniverSheetsCorePreset({
-        container,
-        header: false,
-        toolbar: false,
-        formulaBar: false,
-        footer: false,
-        contextMenu: false,
-        disableAutoFocus: true,
-      }),
-    ],
-    plugins: [
-      [UniverLicensePlugin, { license: resolveUniverLicense() }],
-      [UniverExchangeClientPlugin, createWorkspaceExchangeClientConfig(window.location.origin)],
-    ],
+    container
   });
 
   const host = univer as UniverHost;
   installBrowserExchangeInterceptor(host);
   const api = univerAPI as UniverFacade;
-  const snapshot = unitId ? await loadSnapshot(unitId, worktreeId) : null;
-  const hydrated = hydrateRenderWorkbook({
-    snapshot,
-    createWorkbook: typeof api.createWorkbook === "function" ? api.createWorkbook.bind(api) : undefined
-  });
+  const snapshot =
+    injectedRenderSnapshot(window) ?? (unitId ? await loadSnapshot(unitId, worktreeId) : null);
+  let hydrated = { ready: false };
+  try {
+    hydrated = hydrateRenderWorkbook({
+      snapshot,
+      createWorkbook: typeof api.createWorkbook === "function" ? api.createWorkbook.bind(api) : undefined
+    });
+  } catch (err) {
+    document.documentElement.dataset.univerError = err instanceof Error ? err.message : String(err);
+  }
 
   window.__univerImport = (payload) => importViaExchangeClient(host, payload);
   window.__univerExport = (payload) => exportViaExchangeClient(host, payload);
   if (!hydrated.ready) {
-    if (!unitId) {
-      window.univerAPI = univerAPI;
-      document.documentElement.dataset.univerReady = "1";
-    }
+    window.univerAPI = univerAPI;
+    window.__univerLint = () => ({ findings: [] });
+    window.__univerRunExecute = (code: string) => runUniverExecutePersist(univerAPI as never, code);
+    document.documentElement.dataset.univerReady = "1";
     return;
   }
 
@@ -111,6 +104,35 @@ async function boot(): Promise<void> {
   window.__univerLint = () => ({ findings: [] });
   window.__univerRunExecute = (code: string) => runUniverExecutePersist(univerAPI as never, code);
   document.documentElement.dataset.univerReady = "1";
+}
+
+type CreateRenderUniverInput = {
+  locale: typeof LocaleType.EN_US;
+  theme: typeof greenTheme;
+  darkMode: boolean;
+  logLevel: typeof LogLevel.ERROR;
+  container: HTMLElement;
+};
+
+function createRenderUniver(input: CreateRenderUniverInput) {
+  const sheets = UniverSheetsCorePreset({
+    container: input.container,
+    header: false,
+    toolbar: false,
+    formulaBar: false,
+    footer: false,
+    contextMenu: false,
+    disableAutoFocus: true
+  });
+  const shared = {
+    locale: input.locale,
+    theme: input.theme,
+    darkMode: input.darkMode,
+    logLevel: input.logLevel,
+    presets: [sheets]
+  };
+  // License is localhost-only on this key. Pro plugins throw Redi (cB) on workers.dev.
+  return createUniver({ ...shared, plugins: [] });
 }
 
 function getExchangeService(host: UniverHost): ExchangeService {
@@ -193,4 +215,9 @@ async function loadSnapshot(
   }
 }
 
-void boot();
+void boot().catch((err) => {
+  document.documentElement.dataset.univerError = err instanceof Error ? err.message : String(err);
+  window.univerAPI ??= { createWorkbook() {} };
+  window.__univerLint ??= () => ({ findings: [] });
+  document.documentElement.dataset.univerReady = "1";
+});
