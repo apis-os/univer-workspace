@@ -108,10 +108,19 @@ export default {
       if (pathname === "/healthz") {
         return applyCorsHeaders(
           request,
-          new Response(JSON.stringify({ status: "ok", edge: "cloudflare-workers", time: Date.now() }), {
-            status: 200,
-            headers: { "Content-Type": "application/json" }
-          })
+          new Response(
+            JSON.stringify({
+              status: "ok",
+              edge: "cloudflare-workers",
+              time: Date.now(),
+              ai: env.AI ? "ok" : "off",
+              browser: env.BROWSER ? "ok" : "off"
+            }),
+            {
+              status: 200,
+              headers: { "Content-Type": "application/json" }
+            }
+          )
         );
       }
 

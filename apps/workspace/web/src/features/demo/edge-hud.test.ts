@@ -1,0 +1,77 @@
+import { afterEach, describe, expect, it } from "vitest";
+import {
+  browserHudStatus,
+  combWireFromFrame,
+  edgeHudChips,
+  noteLastCombWire,
+  noteLastGatewayCache,
+  readEdgeHudState,
+  resetEdgeHudState,
+} from "./edge-hud";
+
+describe("Comb wire from last collab frame", () => {
+  it("classifies JSON object text as json", () => {
+    expect(combWireFromFrame('{"cmd":1}')).toBe("json");
+  });
+
+  it("classifies bytes that start with { as json", () => {
+    expect(combWireFromFrame(new TextEncoder().encode('{"cmd":6}'))).toBe("json");
+  });
+
+  it("classifies protobuf comb bytes as protobuf", () => {
+    expect(combWireFromFrame(new Uint8Array([0x08, 0x01, 0x10, 0x01]))).toBe(
+      "protobuf"
+    );
+  });
+});
+
+describe("BROWSER ok|off from /healthz ai + browser", () => {
+  it("is ok only when browser is ok", () => {
+    expect(browserHudStatus({ ai: "ok", browser: "ok" })).toBe("ok");
+    expect(browserHudStatus({ ai: "off", browser: "ok" })).toBe("ok");
+    expect(browserHudStatus({ ai: "ok", browser: "off" })).toBe("off");
+    expect(browserHudStatus({})).toBe("off");
+  });
+});
+
+describe("edge HUD chips", () => {
+  afterEach(() => {
+    resetEdgeHudState();
+  });
+
+  it("shows protobuf, HIT, and BROWSER ok values on the wide header", () => {
+    const chips = edgeHudChips({
+      comb: "protobuf",
+      gateway: "HIT",
+      browser: "ok",
+      compact: false,
+    });
+    expect(chips.map((chip) => chip.id)).toEqual([
+      "comb",
+      "gateway",
+      "browser",
+    ]);
+    expect(chips.map((chip) => chip.value)).toEqual(["protobuf", "HIT", "ok"]);
+    expect(chips.every((chip) => chip.showValue)).toBe(true);
+  });
+
+  it("keeps compact demo header as icons only", () => {
+    const chips = edgeHudChips({
+      comb: "json",
+      gateway: "MISS",
+      browser: "off",
+      compact: true,
+    });
+    expect(chips.map((chip) => chip.value)).toEqual(["json", "MISS", "off"]);
+    expect(chips.every((chip) => chip.showValue === false)).toBe(true);
+  });
+
+  it("records last comb frame and last gateway HIT|MISS", () => {
+    noteLastCombWire("protobuf");
+    noteLastGatewayCache("HIT");
+    expect(readEdgeHudState()).toMatchObject({
+      comb: "protobuf",
+      gateway: "HIT",
+    });
+  });
+});

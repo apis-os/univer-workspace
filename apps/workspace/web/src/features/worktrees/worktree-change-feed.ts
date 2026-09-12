@@ -1,15 +1,19 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
+import { useI18n } from "../../shared/i18n";
+import { toast } from "../../shared/ui";
 import { worktreesQueryKey } from "./worktrees.queries";
 
 const RECONNECT_DELAY_MS = 1_000;
 
 type WorktreeChangeFeedMessage =
   | { readonly event: "worktreeChangeFeedReady" }
-  | { readonly event: "worktreesChanged" };
+  | { readonly event: "worktreesChanged" }
+  | { readonly event: "cliWroteCells" };
 
 export function useWorktreeChangeFeed(enabled: boolean): void {
   const queryClient = useQueryClient();
+  const { t } = useI18n();
 
   useEffect(() => {
     if (!enabled) return;
@@ -44,6 +48,11 @@ export function useWorktreeChangeFeed(enabled: boolean): void {
         socket.addEventListener("message", (event) => {
           const message = parseWorktreeChangeFeedMessage(event.data);
           if (!message) return;
+          const ticker = cliWriteTickerMessage(message);
+          if (ticker) {
+            toast.info(t(ticker));
+            return;
+          }
           void Promise.all([
             queryClient.invalidateQueries({ queryKey: worktreesQueryKey }),
             queryClient.invalidateQueries({ queryKey: ["nodes"] }),
@@ -65,7 +74,13 @@ export function useWorktreeChangeFeed(enabled: boolean): void {
       if (reconnectTimer) clearTimeout(reconnectTimer);
       socket?.close(1000, "Worktree change feed disposed");
     };
-  }, [enabled, queryClient]);
+  }, [enabled, queryClient, t]);
+}
+
+export function cliWriteTickerMessage(
+  message: { readonly event: string } | null
+): "cliWroteCells" | null {
+  return message?.event === "cliWroteCells" ? "cliWroteCells" : null;
 }
 
 export function parseWorktreeChangeFeedMessage(
@@ -76,7 +91,9 @@ export function parseWorktreeChangeFeedMessage(
       typeof value === "string" ? (JSON.parse(value) as unknown) : value;
     if (!parsed || typeof parsed !== "object") return null;
     const event = (parsed as { readonly event?: unknown }).event;
-    return event === "worktreeChangeFeedReady" || event === "worktreesChanged"
+    return event === "worktreeChangeFeedReady" ||
+      event === "worktreesChanged" ||
+      event === "cliWroteCells"
       ? { event }
       : null;
   } catch {

@@ -8,10 +8,13 @@ import type { UniverCollabService } from "../plugins/univer-collab.ts";
 import type { ActionService } from "../kernel/action.ts";
 import { generateDefaultSnapshot } from "../plugins/univer-default-snapshots.ts";
 import {
+  CLI_WROTE_CELLS,
   WORKTREE_CHANGE_FEED_PATH,
   WORKTREE_CHANGE_FEED_READY,
+  WORKTREE_CHANGE_FEED_TAG,
   WORKTREE_CHANGE_NOTIFY_PATH,
-  WORKTREES_CHANGED
+  isUfExecuteCommit,
+  worktreeFeedNotifyPayload
 } from "../integrations/worktree-change-feed.ts";
 import {
   buildHistoryChangesetsBody,
@@ -144,7 +147,7 @@ export class DshHost extends HostBase<any> {
           userID: ticket.userID
         };
         server.serializeAttachment(attachment);
-        this.acceptWebSocket(server, ["worktree-feed", `user:${ticket.userID}`]);
+        this.acceptWebSocket(server, [WORKTREE_CHANGE_FEED_TAG, `user:${ticket.userID}`]);
         try {
           server.send(JSON.stringify(WORKTREE_CHANGE_FEED_READY));
         } catch {}
@@ -511,8 +514,9 @@ export class DshHost extends HostBase<any> {
     }
 
     if (url.pathname === WORKTREE_CHANGE_NOTIFY_PATH && request.method === "POST") {
-      await request.json().catch(() => ({}));
-      this.broadcast(JSON.stringify(WORKTREES_CHANGED), "worktree-feed");
+      const body = (await request.json().catch(() => ({}))) as { event?: unknown };
+      const payload = worktreeFeedNotifyPayload(body);
+      this.broadcast(JSON.stringify(payload), WORKTREE_CHANGE_FEED_TAG);
       return new Response(JSON.stringify({ ok: true }), {
         headers: { "Content-Type": "application/json" }
       });
@@ -573,7 +577,11 @@ export class DshHost extends HostBase<any> {
         collab,
         browser: (this.env as { BROWSER?: { fetch?: typeof fetch } }).BROWSER,
         loader: (this.env as { LOADER?: import("../integrations/univer-file-execute.ts").LoaderBinding }).LOADER,
-        blobStore: new R2BlobStore((this.env as { BLOB_BUCKET?: R2Bucket }).BLOB_BUCKET)
+        blobStore: new R2BlobStore((this.env as { BLOB_BUCKET?: R2Bucket }).BLOB_BUCKET),
+        notifyCliWroteCells: () => {
+          if (!isUfExecuteCommit(url.pathname, request.method)) return;
+          this.broadcast(JSON.stringify(CLI_WROTE_CELLS), WORKTREE_CHANGE_FEED_TAG);
+        }
       });
       if (fileRes) return fileRes;
     }

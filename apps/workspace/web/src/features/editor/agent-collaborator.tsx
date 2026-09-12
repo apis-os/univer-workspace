@@ -10,6 +10,7 @@ import {
   replayAgentEditSpotlight,
   spotlightCellsFromDetail,
 } from "./agent-edit-spotlight";
+import { noteLastGatewayCache } from "../demo/edge-hud";
 import {
   AGENT_PANEL_ID,
   agentErrorMessage,
@@ -115,7 +116,9 @@ export function AgentCollaborator({
     meta: Record<string, unknown>,
     usedPrompt: string
   ) => {
-    setCacheStatus(gatewayCacheStatus(meta, usedPrompt));
+    const status = gatewayCacheStatus(meta, usedPrompt);
+    setCacheStatus(status);
+    noteLastGatewayCache(status);
     setGatewayLogId(
       truncateGatewayLogId(
         typeof meta.aiGatewayLogId === "string" ? meta.aiGatewayLogId : null

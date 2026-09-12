@@ -49,6 +49,7 @@ import {
 import { DemoPlaybookBar } from "../features/demo/demo-playbook-bar";
 import { DemoCommandPalette } from "../features/demo/demo-command-palette";
 import { DemoRuntime } from "../features/demo/demo-runtime";
+import { EdgeStatusStrip } from "../features/demo/edge-status-strip";
 import {
   Avatar,
   Button,
@@ -413,6 +414,7 @@ export function WorkspaceLayout({
                 {pageTitle}
               </h1>
               <DemoPlaybookBar />
+              <EdgeStatusStrip />
             </div>
             <div className="flex shrink-0 items-center gap-1.5">
               {headerContent}

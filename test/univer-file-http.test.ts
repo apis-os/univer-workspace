@@ -546,6 +546,64 @@ describe("Univer File /uf execute", () => {
     );
   });
 
+  test("POST execute notifies cliWroteCells when the commit succeeds", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, snapshot });
+    let notified = 0;
+    const host = {
+      db: admin.db,
+      currentUser: user,
+      collab,
+      browser: fake.browser,
+      notifyCliWroteCells: () => {
+        notified += 1;
+      }
+    };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/execute`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: EXECUTE_CODE })
+      }),
+      host
+    );
+    assert.equal(res?.status, 200);
+    assert.equal(notified, 1, "successful /uf execute must notify cliWroteCells");
+
+    const missingRuntime = await seededHost(null);
+    const missingUser = await missingRuntime.db.getUserById("user_admin");
+    assert.ok(missingUser);
+    let unboundNotified = 0;
+    const unboundHost = {
+      db: missingRuntime.db,
+      currentUser: missingUser,
+      collab,
+      notifyCliWroteCells: () => {
+        unboundNotified += 1;
+      }
+    };
+    await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), unboundHost);
+    const unbound = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/execute`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: EXECUTE_CODE })
+      }),
+      unboundHost
+    );
+    assert.equal(unbound?.status, 503);
+    assert.equal(unboundNotified, 0, "unbound execute must not toast CLI writes");
+  });
+
   test("worktree execute persists on the draft so inspect?worktreeId= shows f and/or v", async () => {
     const admin = await seededHost(null);
     const user = await admin.db.getUserById("user_admin");

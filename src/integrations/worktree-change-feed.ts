@@ -14,6 +14,22 @@ export const WORKTREES_CHANGED = {
   event: "worktreesChanged",
 } as const;
 
+export const CLI_WROTE_CELLS = {
+  event: "cliWroteCells",
+} as const;
+
+/** Hibernation tag on every `/api/worktree-events` socket (Jordan included). */
+export const WORKTREE_CHANGE_FEED_TAG = "worktree-feed";
+
+export function isUfExecuteCommit(pathname: string, method: string): boolean {
+  if (method.toUpperCase() !== "POST") return false;
+  return /^\/uf\/[^/]+\/(?:worktrees\/[^/]+\/)?units\/[^/]+\/execute$/.test(pathname);
+}
+
+export function worktreeFeedNotifyPayload(body: { event?: unknown }): typeof CLI_WROTE_CELLS | typeof WORKTREES_CHANGED {
+  return body.event === CLI_WROTE_CELLS.event ? CLI_WROTE_CELLS : WORKTREES_CHANGED;
+}
+
 export function isWorktreeMutation(pathname: string, method: string): boolean {
   const verb = method.toUpperCase();
   if (verb === "POST" && pathname === "/api/worktrees") return true;

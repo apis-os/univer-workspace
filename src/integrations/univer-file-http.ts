@@ -62,6 +62,7 @@ export interface UniverFileHttpHost {
   loader?: LoaderBinding;
   executeAsAgent?: boolean;
   blobStore?: R2BlobStore;
+  notifyCliWroteCells?: () => void;
 }
 
 /** Encode a file path as base64url for `/uf/:key` URLs. */
@@ -370,6 +371,7 @@ async function executeFileUnit(
       code,
       memberId: executeMemberId(host.currentUser!.id, host.executeAsAgent === true)
     });
+    host.notifyCliWroteCells?.();
     return jsonFile({ success: true, unitId, worktreeId: worktreeId || undefined, rev: persisted.rev });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Execute failed";
