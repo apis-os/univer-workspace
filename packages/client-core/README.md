@@ -7,6 +7,7 @@
 ## 职责
 
 - 提供 Workspace HTTP transport、错误和 result-unknown 语义。
+- 提供 Cloudflare `/uf` HTTP（execute/inspect/screenshot/import/export），不依赖本机 Chromium。
 - 提供 storage-neutral 的 password login、browser approval、`whoami` 和 remote logout 协议。
 - 提供 Space/Node 模型、严格响应解析和远程 workflow。
 - 提供 Worktree lifecycle、Worktree Unit membership 与 review URL workflow。
