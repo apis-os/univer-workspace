@@ -21,6 +21,10 @@ export const CLI_WROTE_CELLS = {
 /** Hibernation tag on every `/api/worktree-events` socket (Jordan included). */
 export const WORKTREE_CHANGE_FEED_TAG = "worktree-feed";
 
+export function worktreeChangeFeedTags(audienceUserIds: string[]): string[] {
+  return audienceUserIds.filter((id) => typeof id === "string" && id.length > 0).map((id) => `user:${id}`);
+}
+
 export function isUfExecuteCommit(pathname: string, method: string): boolean {
   if (method.toUpperCase() !== "POST") return false;
   return /^\/uf\/[^/]+\/(?:worktrees\/[^/]+\/)?units\/[^/]+\/execute$/.test(pathname);
