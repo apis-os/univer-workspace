@@ -48,6 +48,10 @@ export function resolveFollowAgentTarget(
   return AGENT_MEMBER_ID;
 }
 
+export function draftFollowHref(worktreeId: string, unitId: string): string {
+  return `/worktrees/${encodeURIComponent(worktreeId)}/units/${encodeURIComponent(unitId)}/draft?embedded=true`;
+}
+
 function cursorEventId(root: Record<string, unknown>): string | undefined {
   const collaMsg = asRecord(root.collaMsg);
   const data = asRecord(root.data);

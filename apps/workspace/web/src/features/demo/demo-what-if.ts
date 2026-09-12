@@ -15,7 +15,11 @@ export const WHAT_IF_EXECUTE_CODE = [
 ].join("\n");
 
 export type WhatIfToastKind = "busy" | "error";
-export type WhatIfToastKey = "demoWhatIfBusy" | "demoWhatIfError";
+export type WhatIfToastKey =
+  | "demoWhatIfBusy"
+  | "demoWhatIfError"
+  | "demoDraftBusy"
+  | "demoDraftError";
 
 export interface WhatIfHost {
   readonly fetch: typeof fetch;

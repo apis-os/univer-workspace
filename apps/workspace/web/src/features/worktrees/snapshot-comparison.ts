@@ -58,6 +58,8 @@ export interface WorktreeComparisonPayload {
 
 export const WHAT_IF_WORKTREE_NAME = "What-if +10% Sep";
 
+import { isAgentDraftWorktreeName } from "../demo/demo-agent-draft";
+
 export function isWhatIfWorktreeName(name: string | undefined): boolean {
   return name === WHAT_IF_WORKTREE_NAME;
 }
@@ -70,6 +72,7 @@ export function snapshotComparisonSideLabels(
       | "agentVersion"
       | "comparisonOfficial"
       | "comparisonWhatIf"
+      | "comparisonAgentDraft"
   ) => string
 ): {
   readonly officialVersion: string;
@@ -79,6 +82,12 @@ export function snapshotComparisonSideLabels(
     return {
       officialVersion: t("comparisonOfficial"),
       agentVersion: t("comparisonWhatIf"),
+    };
+  }
+  if (isAgentDraftWorktreeName(worktreeName)) {
+    return {
+      officialVersion: t("comparisonOfficial"),
+      agentVersion: t("comparisonAgentDraft"),
     };
   }
   return {
@@ -97,12 +106,12 @@ export function worktreeComparisonValue(
   return {
     result: payload.result,
     left: {
-      label: labels.officialVersion,
       ...payload.left,
+      label: labels.officialVersion,
     },
     right: {
-      label: labels.agentVersion,
       ...payload.right,
+      label: labels.agentVersion,
     },
   } as UnitComparisonViewerValue;
 }

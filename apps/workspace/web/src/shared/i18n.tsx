@@ -437,6 +437,9 @@ const messages = {
     intentSelecting: "正在选择",
     intentEditing: "正在编辑",
     intentThinking: "思考中",
+    demoDraftBusy: "正在创建智能体草稿...",
+    demoDraftError: "智能体草稿创建失败",
+    comparisonAgentDraft: "智能体草稿",
   },
   "en-US": {
     home: "Home",
@@ -891,6 +894,9 @@ const messages = {
     intentSelecting: "Selecting",
     intentEditing: "Editing",
     intentThinking: "Thinking",
+    demoDraftBusy: "Creating Agent draft...",
+    demoDraftError: "Failed to create Agent draft",
+    comparisonAgentDraft: "Agent draft",
   },
 } as const;
 
