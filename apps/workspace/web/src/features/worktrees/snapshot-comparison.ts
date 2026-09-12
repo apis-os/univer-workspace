@@ -96,6 +96,18 @@ export function snapshotComparisonSideLabels(
   };
 }
 
+export function historyVsLiveLabels(
+  t: (key: "comparisonHistory" | "comparisonLiveComb") => string
+): {
+  readonly officialVersion: string;
+  readonly agentVersion: string;
+} {
+  return {
+    officialVersion: t("comparisonHistory"),
+    agentVersion: t("comparisonLiveComb"),
+  };
+}
+
 export function worktreeComparisonValue(
   payload: WorktreeComparisonPayload,
   labels: {
@@ -104,6 +116,7 @@ export function worktreeComparisonValue(
   }
 ): UnitComparisonViewerValue {
   return {
+    ...payload,
     result: payload.result,
     left: {
       ...payload.left,

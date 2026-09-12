@@ -36,8 +36,17 @@ export function SnapshotComparisonView({
 }: SnapshotComparisonViewProps) {
   const { language, t } = useI18n();
   const { resolvedTheme } = useTheme();
-  const [useTable, setUseTable] = useState(false);
-  const resolvedLabels = labels ?? snapshotComparisonSideLabels(worktreeName, t);
+  const leftExplicitLabel = (comparison.left as { label?: string }).label;
+  const rightExplicitLabel = (comparison.right as { label?: string }).label;
+  const payloadLabels =
+    leftExplicitLabel && rightExplicitLabel
+      ? {
+          officialVersion: leftExplicitLabel,
+          agentVersion: rightExplicitLabel,
+        }
+      : undefined;
+  const resolvedLabels =
+    labels ?? payloadLabels ?? snapshotComparisonSideLabels(worktreeName, t);
   const value = worktreeComparisonValue(comparison, resolvedLabels);
   const createUniver = useMemo(
     () =>

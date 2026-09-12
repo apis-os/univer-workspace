@@ -442,6 +442,8 @@ const messages = {
     comparisonAgentDraft: "智能体草稿",
     edgeHudCombPending: "Comb: 等待连接",
     edgeHudGatewayTrace: "AI 网关追踪",
+    comparisonHistory: "历史版本",
+    comparisonLiveComb: "实时 Comb",
   },
   "en-US": {
     home: "Home",
@@ -901,6 +903,8 @@ const messages = {
     comparisonAgentDraft: "Agent draft",
     edgeHudCombPending: "Comb: pending connection",
     edgeHudGatewayTrace: "AI Gateway Trace",
+    comparisonHistory: "History",
+    comparisonLiveComb: "Live Comb",
   },
 } as const;
 
