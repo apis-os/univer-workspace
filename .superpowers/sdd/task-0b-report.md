@@ -323,3 +323,47 @@ Still abort `export { _0x123 }` with no `as`. Strings / Comb keys untouched.
 
 Commit: `0ec13b3f` `chore(vendor): extract inner hex functions and rename leftover Pro dist _0x`.
 
+## Loose parse (acorn-loose Identifier ranges)
+
+Date: 2026-09-12. Did **not** re-run extract-inner-function alone. T9 files not touched (`sheets-pivot*`, `collaboration-client-ui` skipped). No push. No `--all`.
+
+### New technique (TDD RED then GREEN)
+
+`node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **31/31**.
+
+1. **Parse-only acorn-loose tree** of unclosed / unparseable leftover source. Babel `@babel/parser` `errorRecovery` still throws on EOF / `?..`. Collect Identifier `start`/`end` for bound `_0xHEX` names (function/class ids, params, var/let/const, catch, import locals), then splice replacements into the **original** slices. Does not generate code and does not add a closing brace. Fixture: `function _0xcc01(a){ return a+_0xcc01` (no `}`). Strings, non-computed property keys, and `export … as Public` stay.
+2. Leftover Identifier in tiny files with a recovered binding is renamed (bases-ui 11, boards-ui 2, worktree-client 11). String / public export alias leftovers would be left.
+3. Worktree-client `dist/index.mjs`: same AST (loose), not regex. Kept `?..` residue and `export{x as WorktreeClient,…}`. Module-slice still logs `Export 'x' is not defined` then the loose pass mops the prefix bindings.
+
+Vendored `scripts/vendor/loose-parse/node_modules/{acorn,acorn-loose}` (force-added; root `node_modules/` gitignore).
+
+Still abort `export { _0x123 }` with no `as`.
+
+### Hits
+
+| | This session start (after `0ec13b3f`) | After this pass |
+| --- | ---: | ---: |
+| `lib/es` files / tokens | 4 / 4,569 (includes skipped sheets-pivot 4,445) | **2 / 4,456** (sheets-pivot 4,445 + engine-chart 11) |
+| Tree-wide files / tokens | 15 / 44,748 | **9 / 44,509** |
+
+### Targets
+
+| File | Hits before | Hits after |
+| --- | ---: | ---: |
+| `engine-chart/lib/es/index.js` | 111 | **11** |
+| `engine-chart/lib/index.js` | 111 | **11** |
+| `bases-ui/lib/es/index.js` | 11 | **0** |
+| `bases-ui/lib/index.js` | 11 | **0** |
+| `boards-ui/lib/es/index.js` | 2 | **0** |
+| `boards-ui/lib/cjs/index.js` | 2 | **0** |
+| `boards-ui/lib/index.js` | 2 | **0** |
+| `collaboration-worktree-client/dist/index.mjs` | 11 | **0** |
+
+### Still stuck (one-line why)
+
+- **sheets-pivot\***: skipped while T9 is live (~44k across es/cjs/lib-root/facade). Biggest leftover.
+- **engine-chart es/lib 11+11 `_0x5554c2`**: Identifier constructor refs with **no recovered binding** (prototype assignments + `;}(oO)`). Loose parse correctly skipped them; not strings.
+- Non-pivot is **saturated** aside from those 22 unbound constructor idents. Remaining mass is sheets-pivot (blocked on T9).
+
+Commit: pending this pass.
+

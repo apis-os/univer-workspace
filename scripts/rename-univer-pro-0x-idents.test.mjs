@@ -375,3 +375,44 @@ test("renames a hex var statement inside an unparseable else block", () => {
   assert.match(src, /as publicApi/);
   assert.doesNotMatch(src, /\b_0xaaa\b/);
 });
+
+test("loose-parses an unclosed hex function and renames both bindings without adding a brace", () => {
+  const original = "function _0xcc01(a){ return a+_0xcc01";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /function v\d+\(a\)/);
+  assert.match(src, /a\s*\+\s*v\d+/);
+  assert.doesNotMatch(src, /\b_0xcc01\b/);
+  assert.equal(src.includes("}"), false, "must not close the function in the written source");
+});
+
+test("loose-parse keeps string leftovers and export aliases while renaming bound identifiers", () => {
+  const original =
+    'function _0xcc01(a){ return a+_0xcc01+"_0xcc01"\n' +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xcc01"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /function\s+_0xcc01\b/);
+  assert.doesNotMatch(src, /\+_0xcc01/);
+  const open = (src.match(/\{/g) || []).length;
+  const close = (src.match(/\}/g) || []).length;
+  assert.equal(close, open - 1, "must not add a closing brace to the unclosed function");
+});
+
+test("loose-parses optional-chain residue and still renames import and let bindings", () => {
+  const original =
+    "import{ISnapshotServerService as _0xb1346a}from'x';\n" +
+    "function f(){let _0xec34fb=this.blocks?..find(v=>v);return _0xec34fb+_0xb1346a;}\n" +
+    "export { f as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /\?\.\./);
+  assert.doesNotMatch(src, /\b_0xb1346a\b/);
+  assert.doesNotMatch(src, /\b_0xec34fb\b/);
+});

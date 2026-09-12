@@ -31,6 +31,7 @@ const T9_SKIP = [
 const T0B_SKIP_PKGS = ["sheets-pivot", "sheets-pivot-ui", "collaboration-client-ui"];
 
 let babel = null;
+let acornLoose = null;
 
 function unwrap(mod) {
   return mod?.default ?? mod;
@@ -52,6 +53,16 @@ function loadBabel() {
     generate: unwrap(req("@babel/generator"))
   };
   return babel;
+}
+
+function loadAcornLoose() {
+  if (acornLoose) return acornLoose;
+  const pkg = path.join(ROOT, "scripts/vendor/loose-parse/node_modules/acorn-loose/package.json");
+  if (!fs.existsSync(pkg)) {
+    throw new Error("vendored acorn-loose not found; cannot loose-parse unclosed _0x functions");
+  }
+  acornLoose = createRequire(pkg)(".");
+  return acornLoose;
 }
 
 function countTokens(src) {
@@ -2087,6 +2098,184 @@ function renameOneUnit(src, counter) {
   return emitRenamed(parsed.src, parsed.ast, counter);
 }
 
+const LOOSE_DUMMY = "✖";
+
+function walkEstree(node, fn, parent = null) {
+  if (!node || typeof node !== "object") return;
+  fn(node, parent);
+  for (const key of Object.keys(node)) {
+    if (key === "start" || key === "end" || key === "loc" || key === "range" || key === "type") continue;
+    const val = node[key];
+    if (Array.isArray(val)) {
+      for (const child of val) {
+        if (child && typeof child === "object" && child.type) walkEstree(child, fn, node);
+      }
+    } else if (val && typeof val === "object" && val.type) {
+      walkEstree(val, fn, node);
+    }
+  }
+}
+
+function collectPatternIds(pat, into) {
+  if (!pat) return;
+  if (pat.type === "Identifier") {
+    if (pat.name && pat.name !== LOOSE_DUMMY && HEX_IDENT.test(pat.name)) into.add(pat.name);
+    return;
+  }
+  if (pat.type === "AssignmentPattern") {
+    collectPatternIds(pat.left, into);
+    return;
+  }
+  if (pat.type === "RestElement") {
+    collectPatternIds(pat.argument, into);
+    return;
+  }
+  if (pat.type === "ArrayPattern") {
+    for (const el of pat.elements || []) collectPatternIds(el, into);
+    return;
+  }
+  if (pat.type === "ObjectPattern") {
+    for (const prop of pat.properties || []) {
+      if (prop.type === "RestElement") collectPatternIds(prop.argument, into);
+      else collectPatternIds(prop.value, into);
+    }
+  }
+}
+
+function isNonRefIdentifier(node, parent) {
+  if (!parent) return false;
+  if (parent.type === "MemberExpression" && parent.property === node && !parent.computed) return true;
+  if (
+    (parent.type === "Property" ||
+      parent.type === "PropertyDefinition" ||
+      parent.type === "MethodDefinition" ||
+      parent.type === "ClassProperty") &&
+    parent.key === node &&
+    !parent.computed &&
+    !parent.shorthand
+  ) {
+    return true;
+  }
+  if (parent.type === "ExportSpecifier" && parent.exported === node && parent.exported !== parent.local) {
+    return true;
+  }
+  if (parent.type === "ImportSpecifier" && parent.imported === node && parent.imported !== parent.local) {
+    return true;
+  }
+  if (parent.type === "MetaProperty") return true;
+  return false;
+}
+
+function parseLooseAst(src) {
+  const loose = loadAcornLoose();
+  const opts = { ecmaVersion: "latest", allowAwaitOutsideFunction: true, allowHashBang: true };
+  try {
+    return loose.parse(src, { ...opts, sourceType: "module" });
+  } catch {
+    try {
+      return loose.parse(src, { ...opts, sourceType: "script" });
+    } catch {
+      return null;
+    }
+  }
+}
+
+function findLooseAbortReason(ast) {
+  let reason = null;
+  walkEstree(ast, (node) => {
+    if (reason || node.type !== "ExportNamedDeclaration") return;
+    for (const spec of node.specifiers || []) {
+      if (spec.type !== "ExportSpecifier") continue;
+      const exported = spec.exported?.type === "Identifier" ? spec.exported.name : null;
+      const local = spec.local?.type === "Identifier" ? spec.local.name : null;
+      if (exported && HEX_IDENT.test(exported) && exported === local) {
+        reason = `export { ${exported} } with no public alias`;
+        return;
+      }
+    }
+  });
+  return reason;
+}
+
+function allocLooseName(counter, used) {
+  let name;
+  do {
+    counter.value += 1;
+    name = `v${counter.value}`;
+  } while (used.has(name));
+  used.add(name);
+  return name;
+}
+
+/**
+ * Parse-only acorn-loose tree: collect Identifier ranges for bound `_0x`
+ * names, then splice replacements into the original source. Never generates
+ * code and never writes closing braces.
+ */
+function renameViaLooseParse(src, counter) {
+  if (countTokens(src) === 0) return { src, renamed: 0, changed: false, aborted: false };
+  const ast = parseLooseAst(src);
+  if (!ast) return { src, renamed: 0, changed: false, aborted: false };
+  const abort = findLooseAbortReason(ast);
+  if (abort) return { src, renamed: 0, changed: false, aborted: true, reason: abort };
+
+  const bound = new Set();
+  walkEstree(ast, (node) => {
+    if (
+      node.type === "FunctionDeclaration" ||
+      node.type === "FunctionExpression" ||
+      node.type === "ClassDeclaration" ||
+      node.type === "ClassExpression"
+    ) {
+      collectPatternIds(node.id, bound);
+    }
+    if (
+      node.type === "FunctionDeclaration" ||
+      node.type === "FunctionExpression" ||
+      node.type === "ArrowFunctionExpression"
+    ) {
+      for (const p of node.params || []) collectPatternIds(p, bound);
+    }
+    if (node.type === "VariableDeclarator") collectPatternIds(node.id, bound);
+    if (node.type === "CatchClause") collectPatternIds(node.param, bound);
+    if (
+      node.type === "ImportSpecifier" ||
+      node.type === "ImportDefaultSpecifier" ||
+      node.type === "ImportNamespaceSpecifier"
+    ) {
+      collectPatternIds(node.local, bound);
+    }
+  });
+  if (bound.size === 0) return { src, renamed: 0, changed: false, aborted: false };
+
+  const used = new Set();
+  walkEstree(ast, (node) => {
+    if (node.type === "Identifier" && node.name && node.name !== LOOSE_DUMMY) used.add(node.name);
+  });
+  const map = new Map();
+  for (const name of bound) {
+    map.set(name, allocLooseName(counter, used));
+  }
+
+  const spans = [];
+  walkEstree(ast, (node, parent) => {
+    if (node.type !== "Identifier") return;
+    const next = map.get(node.name);
+    if (!next) return;
+    if (typeof node.start !== "number" || typeof node.end !== "number") return;
+    if (src.slice(node.start, node.end) !== node.name) return;
+    if (isNonRefIdentifier(node, parent)) return;
+    spans.push({ start: node.start, end: node.end, name: node.name });
+  });
+  if (spans.length === 0) return { src, renamed: 0, changed: false, aborted: false };
+
+  let out = src;
+  for (const span of [...spans].sort((a, b) => b.start - a.start)) {
+    out = `${out.slice(0, span.start)}${map.get(span.name)}${out.slice(span.end)}`;
+  }
+  return { src: out, renamed: map.size, changed: out !== src, aborted: false };
+}
+
 export function rename0xIdents(src) {
   const original = src;
   const hitsBefore = countTokens(src);
@@ -2151,6 +2340,23 @@ export function rename0xIdents(src) {
   const unbound = renameUnboundHexIdents(next);
   next = unbound.src;
   renamed += unbound.renamed;
+
+  if (countTokens(next) > 0) {
+    const loose = renameViaLooseParse(next, counter);
+    if (loose.aborted) {
+      return {
+        src: original,
+        changed: false,
+        aborted: true,
+        reason: loose.reason,
+        hitsBefore,
+        hitsAfter: hitsBefore,
+        renamed: 0
+      };
+    }
+    next = loose.src;
+    renamed += loose.renamed;
+  }
 
   if (renamed === 0) {
     return {
