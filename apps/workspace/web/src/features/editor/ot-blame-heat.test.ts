@@ -1,9 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
   a1FromSetRangeMutation,
+  a1sFromCommandExecuted,
   applyBlameHeat,
   blameFromChangesets,
   calculateBlameHeatAlpha,
+  commandFromCollab,
   BLAME_HEAT_EVENT,
 } from "./ot-blame-heat";
 
@@ -50,6 +52,59 @@ describe("OT blame heat", () => {
         range: "A1",
       })
     ).toEqual([]);
+  });
+
+  it("reads D3 from a name-box CommandExecuted payload even after the name box advances", () => {
+    expect(
+      a1sFromCommandExecuted({
+        id: "sheet.command.set-range-values",
+        params: {
+          cellValue: {
+            "2": { "3": { v: 181 } },
+          },
+        },
+      })
+    ).toEqual(["D3"]);
+    expect(
+      a1sFromCommandExecuted({
+        params: {
+          cellValue: {
+            "2": { "3": { v: 182 } },
+          },
+        },
+      })
+    ).toEqual(["D3"]);
+    expect(
+      a1sFromCommandExecuted({
+        command: {
+          id: "sheet.mutation.set-range-values",
+          params: {
+            cellValue: {
+              "2": { "3": { v: 181 } },
+            },
+          },
+        },
+        options: { fromCollab: true },
+      })
+    ).toEqual(["D3"]);
+    expect(
+      a1sFromCommandExecuted({
+        id: "sheet.command.set-range-values",
+        params: {
+          range: { startRow: 2, startColumn: 3, endRow: 2, endColumn: 3 },
+          value: { v: 181 },
+        },
+      })
+    ).toEqual(["D3"]);
+  });
+
+  it("detects fromCollab CommandExecuted as a remote peer edit", () => {
+    expect(commandFromCollab({ options: { fromCollab: true } })).toBe(true);
+    expect(commandFromCollab({ command: { options: { fromCollab: true } } })).toBe(true);
+    expect(commandFromCollab({ id: "sheet.mutation.set-range-values" }, { fromCollab: true })).toBe(true);
+    expect(commandFromCollab({ options: { fromChangeset: true } })).toBe(false);
+    expect(commandFromCollab({ options: { fromCollab: false } })).toBe(false);
+    expect(commandFromCollab({ id: "sheet.mutation.set-range-values" })).toBe(false);
   });
 
   it("maps Avery D3 and agent E2 from set-range-values clientId", () => {

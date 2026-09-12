@@ -5,11 +5,37 @@
 export const HISTORY_OK = { code: 1, message: "" } as const;
 const DEFAULT_PAGE_SIZE = 20;
 const GROUP_INTERVAL_MS = 5 * 60 * 1000;
-const DEFAULT_USER = {
-  userID: "user_admin",
-  name: "Administrator",
-  avatar: ""
+export const HISTORY_DISPLAY_NAMES = {
+  user_admin: "Avery Chen",
+  user_jordan: "Jordan Lee",
+  agent_workspace: "Workspace Agent"
 } as const;
+
+const DEFAULT_USER_ID = "user_admin";
+
+export function historyUserName(userId: string): string {
+  if (userId in HISTORY_DISPLAY_NAMES) {
+    return HISTORY_DISPLAY_NAMES[userId as keyof typeof HISTORY_DISPLAY_NAMES];
+  }
+  if (!userId || userId === "unknown" || userId === "Administrator") {
+    return HISTORY_DISPLAY_NAMES.user_admin;
+  }
+  return userId;
+}
+
+function historyUser(userId: string): { userID: string; name: string; avatar: string } {
+  return { userID: userId, name: historyUserName(userId), avatar: "" };
+}
+
+function overlayHistoryUsers(
+  users: Record<string, { userID: string; name: string; avatar: string }>
+): Record<string, { userID: string; name: string; avatar: string }> {
+  const next = { ...users };
+  for (const [userId, name] of Object.entries(HISTORY_DISPLAY_NAMES)) {
+    next[userId] = { userID: userId, name, avatar: "" };
+  }
+  return next;
+}
 
 export interface HistoryChangesetEntry {
   readonly id: string;
@@ -68,10 +94,7 @@ export function buildHistoryListBody(
 
   for (const record of page) {
     historyIds.push(record.id);
-    users[record.userId] = {
-      ...DEFAULT_USER,
-      userID: record.userId
-    };
+    users[record.userId] = historyUser(record.userId);
     datas[record.id] = {
       userId: record.userId,
       unitId,
@@ -92,7 +115,7 @@ export function buildHistoryListBody(
     hasMore,
     lastLabel,
     historyIds,
-    entities: { datas, users }
+    entities: { datas, users: overlayHistoryUsers(users) }
   };
 }
 
@@ -100,8 +123,8 @@ export function buildHistoryCreatorsBody(
   unit: HistoryUnitInfo | null,
   entries: readonly HistoryChangesetEntry[]
 ): Record<string, unknown> {
-  const userIds = new Set<string>();
-  if (unit) userIds.add(DEFAULT_USER.userID);
+  const userIds = new Set<string>(Object.keys(HISTORY_DISPLAY_NAMES));
+  if (unit) userIds.add(DEFAULT_USER_ID);
   for (const entry of entries) {
     userIds.add(normalizeUserId(entry.clientId));
   }
@@ -109,7 +132,7 @@ export function buildHistoryCreatorsBody(
     error: HISTORY_OK,
     creators: [...userIds].map((userId) => ({
       userId,
-      name: userId === DEFAULT_USER.userID ? DEFAULT_USER.name : userId,
+      name: historyUserName(userId),
       avatar: "",
       origins: [1]
     }))
@@ -126,10 +149,10 @@ export function buildHistoryChangesetsBody(
     .filter((entry) => entry.rev >= startRevision && entry.rev <= endRevision)
     .sort((a, b) => a.rev - b.rev)
     .map((entry) => toProtocolChangeset(unitId, entry));
-  const users: Record<string, typeof DEFAULT_USER> = {};
+  const users: Record<string, ReturnType<typeof historyUser>> = overlayHistoryUsers({});
   for (const entry of entries) {
     const userId = normalizeUserId(entry.clientId);
-    users[userId] = { ...DEFAULT_USER, userID: userId };
+    users[userId] = historyUser(userId);
   }
   return {
     error: HISTORY_OK,
@@ -206,7 +229,7 @@ function buildHistoryRecords(
     groups.push({
       id: historyId(unitId, 1, 1, "created"),
       key: "created",
-      userId: DEFAULT_USER.userID,
+      userId: DEFAULT_USER_ID,
       startRevision: 1,
       endRevision: 1,
       createdAt: unit.createdAt,
@@ -244,5 +267,5 @@ function historyId(
 }
 
 function normalizeUserId(clientId: string): string {
-  return clientId && clientId !== "unknown" ? clientId : DEFAULT_USER.userID;
+  return clientId && clientId !== "unknown" ? clientId : DEFAULT_USER_ID;
 }

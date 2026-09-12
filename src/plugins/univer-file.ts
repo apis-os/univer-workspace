@@ -99,6 +99,26 @@ async function withCurrentUser(host: UniverFileHttpHost, meta: ActionMeta): Prom
   return { ...host, currentUser: found ?? syntheticUser(userId) };
 }
 
+export const PUBLIC_UF_ORIGIN = "https://univer-workspace.apisos.workers.dev";
+
+export function ufRequestOrigin(requestUrl?: string | null): string {
+  if (typeof requestUrl === "string" && requestUrl.trim()) {
+    try {
+      const origin = new URL(requestUrl).origin;
+      if (
+        origin &&
+        !origin.includes("univer-workspace.internal") &&
+        !origin.includes("fake.host")
+      ) {
+        return origin;
+      }
+    } catch {
+      // ignore invalid URLs
+    }
+  }
+  return PUBLIC_UF_ORIGIN;
+}
+
 async function invokeUf(
   ctx: Context,
   meta: ActionMeta,
@@ -111,14 +131,17 @@ async function invokeUf(
     executeAsAgent?: boolean;
   }
 ): Promise<unknown> {
+  const origin = ufRequestOrigin(
+    (safeGet(ctx, "host") as { requestUrl?: string } | undefined)?.requestUrl
+  );
   const host = await withCurrentUser(resolveFileHost(ctx, input.executeAsAgent === true), meta);
   const key = fileKeyFor(input.file);
   await handleUniverFileHttp(
-    new Request(`https://univer-workspace.internal/uf/${key}`, { method: "POST" }),
+    new Request(`${origin}/uf/${key}`, { method: "POST" }),
     host
   );
 
-  const url = new URL(`https://univer-workspace.internal/uf/${key}/${input.rest}`);
+  const url = new URL(`${origin}/uf/${key}/${input.rest}`);
   for (const [name, value] of Object.entries(input.query ?? {})) {
     if (value) url.searchParams.set(name, value);
   }

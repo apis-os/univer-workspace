@@ -13,6 +13,7 @@ import {
 } from "./demo-palette";
 import { runAgentDraftFill } from "./demo-agent-draft";
 import { loadHistoryVsLive } from "./history-vs-live";
+import { writeDemoComparison } from "./demo-comparison-session";
 import { FormulaInspectPopover } from "./formula-inspector-popover";
 import {
   FORMULA_INSPECT_RANGE,
@@ -109,6 +110,7 @@ export function DemoRuntime({
               worktree: worktreeId,
               unit: unitId,
               view: "comparison",
+              demo: "what-if",
             },
           });
         },
@@ -145,12 +147,19 @@ export function DemoRuntime({
         fetch: globalThis.fetch.bind(globalThis),
       })
         .then((comparison) => {
+          writeDemoComparison({
+            kind: "history",
+            worktreeId: "wt_history_vs_live",
+            unitId: FORMULA_INSPECT_UNIT_ID,
+            comparison,
+          });
           void navigate({
             to: "/worktrees",
             search: {
-              worktree: comparison.worktreeId,
-              unit: comparison.unitId,
+              worktree: "wt_history_vs_live",
+              unit: FORMULA_INSPECT_UNIT_ID,
               view: "comparison",
+              demo: "history",
             },
           });
         })

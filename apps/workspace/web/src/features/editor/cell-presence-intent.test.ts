@@ -3,7 +3,9 @@ import {
   CELL_INTENT_EVENT_ID,
   encodeCellIntentIngest,
   highlightIntent,
+  isSameCellConflict,
   readCellIntent,
+  remoteChangesetConflictsLocal,
   shouldPublishIntent,
   type CellIntent,
 } from "./cell-presence-intent";
@@ -119,5 +121,87 @@ describe("cell presence intent", () => {
 
     expect(capturedStyle?.fill).toBe("rgba(37,99,235,0)");
     expect(capturedStyle?.stroke).toBe("rgba(37,99,235,0.86)");
+  });
+
+  it("toasts same-cell conflict when a remote peer edits the local A1", () => {
+    expect(
+      isSameCellConflict("D3", {
+        userID: "user_jordan",
+        a1: "D3",
+        intent: "editing",
+      }, "user_admin")
+    ).toBe(true);
+    expect(
+      isSameCellConflict("d3", {
+        userID: "user_jordan",
+        a1: "D3",
+        intent: "selecting",
+      }, "user_admin")
+    ).toBe(false);
+    expect(
+      isSameCellConflict("D3", {
+        userID: "user_admin",
+        a1: "D3",
+        intent: "editing",
+      }, "user_admin")
+    ).toBe(false);
+    expect(
+      isSameCellConflict("E2", {
+        userID: "user_jordan",
+        a1: "D3",
+        intent: "editing",
+      }, "user_admin")
+    ).toBe(false);
+    expect(
+      isSameCellConflict(null, {
+        userID: "user_jordan",
+        a1: "D3",
+        intent: "editing",
+      }, "user_admin")
+    ).toBe(false);
+  });
+
+  it("toasts when a remote changeset touches a recently edited local cell even after the name box advances", () => {
+    expect(
+      remoteChangesetConflictsLocal({
+        localA1s: ["D3"],
+        remoteUserId: "user_jordan",
+        currentUserId: "user_admin",
+        remoteA1s: ["D3"],
+      })
+    ).toBe(true);
+    expect(
+      remoteChangesetConflictsLocal({
+        localA1s: ["D3"],
+        remoteUserId: "user_admin",
+        currentUserId: "user_admin",
+        remoteA1s: ["D3"],
+      })
+    ).toBe(false);
+    expect(
+      remoteChangesetConflictsLocal({
+        localA1s: ["D4"],
+        remoteUserId: "user_jordan",
+        currentUserId: "user_admin",
+        remoteA1s: ["D3"],
+      })
+    ).toBe(false);
+    expect(
+      remoteChangesetConflictsLocal({
+        localA1s: ["D3"],
+        remoteUserId: "",
+        currentUserId: "user_admin",
+        remoteA1s: ["D3"],
+        treatMissingActorAsRemote: true,
+      })
+    ).toBe(true);
+    expect(
+      remoteChangesetConflictsLocal({
+        localA1s: ["D3"],
+        remoteUserId: "",
+        currentUserId: "user_admin",
+        remoteA1s: ["D3"],
+      })
+    ).toBe(false);
   });
 });

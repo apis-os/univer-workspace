@@ -253,6 +253,21 @@ function combChangesetRecord(
   );
 }
 
+export function isCombChangesetFrame(event: unknown): boolean {
+  const root = asRecord(event);
+  if (!root) return false;
+  return isCombChangesetEventId(combChangesetEventId(root));
+}
+
+export function isCombNewChangesetsEvent(event: {
+  readonly type?: string;
+  readonly detail?: unknown;
+}): boolean {
+  const root = asRecord(event.detail) ?? asRecord(event);
+  if (!root) return false;
+  return combChangesetEventId(root) === "new_changesets";
+}
+
 export function readCombChangesetActor(event: {
   readonly type?: string;
   readonly detail?: unknown;
@@ -298,6 +313,7 @@ export function tapCollaborationSocketChangeset(
   if (!socket?.message$?.subscribe || !dest) return;
   socket.message$.subscribe((event) => {
     if (
+      !isCombChangesetFrame(event) &&
       !readCombChangesetActor({
         type: COMB_CHANGESET_EVENT,
         detail: event,

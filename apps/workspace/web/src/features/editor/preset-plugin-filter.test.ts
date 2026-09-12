@@ -244,6 +244,11 @@ describe("preset plugin filter", () => {
     );
     expect(src).toMatch(/UniverCollaborationClientUIPlugin/);
     expect(src).not.toMatch(/\b_0x[0-9a-fA-F]+\b/);
+    expect(src).toMatch(
+      /CollaborationStatus as v6,CollaborationUIEventId as v7/
+    );
+    expect(src).toMatch(/v6\.CONFLICT/);
+    expect(src).toMatch(/v7\.CONFLICT/);
   });
 
   it("skips leftover pivot CQ registerRenderModule so _createRender never sees it", () => {

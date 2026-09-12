@@ -69,7 +69,7 @@ describe("what-if comparison labels", () => {
       agentVersion: "What-if",
     });
     expect(whatIfComparisonHref("wt_1", "unit_wt_1")).toBe(
-      "/worktrees?worktree=wt_1&unit=unit_wt_1&view=comparison"
+      "/worktrees?worktree=wt_1&unit=unit_wt_1&view=comparison&demo=what-if"
     );
   });
 });
@@ -225,6 +225,64 @@ describe("runWhatIfWorktree", () => {
     expect(openComparison).not.toHaveBeenCalled();
     expect(invalidateWorktrees).not.toHaveBeenCalled();
   });
+
+  it("opens Official vs What-if comparison from the live snapshot when worktree APIs 404", async () => {
+    sessionStorage.clear();
+    const fetchImpl = vi.fn<typeof fetch>(async (input) => {
+      const href = typeof input === "string" ? input : String(input);
+      if (href.includes("/universer-api/snapshot/2/unit/unit_welcome_sheet")) {
+        return jsonResponse({
+          rev: 1,
+          snapshot: {
+            workbook: {
+              id: "unit_welcome_sheet",
+              name: "Q3 Forecast",
+              sheetOrder: ["sheet_1"],
+              sheets: {
+                sheet_1: {
+                  id: "sheet_1",
+                  name: "Forecast",
+                  cellData: {
+                    "1": { "3": { v: 160 } },
+                    "2": { "3": { v: 85 } },
+                    "3": { "3": { v: 90 } },
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+      return jsonResponse({ error: { message: "nope" } }, 404);
+    });
+    const toast = vi.fn();
+    const openComparison = vi.fn();
+    const invalidateWorktrees = vi.fn();
+
+    await runWhatIfWorktree({
+      fetch: fetchImpl,
+      toast,
+      openComparison,
+      invalidateWorktrees,
+    });
+
+    expect(openComparison).toHaveBeenCalledWith({
+      worktreeId: "wt_what_if_local",
+      unitId: "unit_welcome_sheet",
+    });
+    const stored = JSON.parse(
+      sessionStorage.getItem("univer-demo-comparison") ?? "null"
+    ) as {
+      kind?: string;
+      comparison?: { right?: { label?: string }; result?: { items?: Array<{ title?: string }> } };
+    };
+    expect(stored.kind).toBe("what-if");
+    expect(stored.comparison?.right?.label).toBe("What-if");
+    expect(stored.comparison?.result?.items?.some((item) => item.title === "D2")).toBe(
+      true
+    );
+    expect(toast).not.toHaveBeenCalledWith("error", "demoWhatIfError");
+  });
 });
 
 describe("what-if wiring", () => {
@@ -238,6 +296,18 @@ describe("what-if wiring", () => {
     expect(runtime).toMatch(/toast\.error/);
     expect(runtime).toMatch(/\/worktrees/);
     expect(runtime).toMatch(/comparison/);
+    expect(runtime).toMatch(/writeDemoComparison/);
+    expect(runtime).toMatch(/demo:\s*"what-if"/);
+    expect(runtime).toMatch(/demo:\s*"history"/);
+    const worktrees = readWorkspace("web/src/routes/worktrees.tsx");
+    expect(worktrees).toMatch(/DemoComparisonPage/);
+    expect(worktrees).toMatch(/demo/);
+    const overlay = readWorkspace(
+      "web/src/features/demo/demo-comparison-page.tsx"
+    );
+    expect(overlay).toMatch(/SnapshotComparisonView/);
+    expect(overlay).toMatch(/confirmMerge/);
+    expect(overlay).toMatch(/mergeWhatIfOnTrunk/);
 
     const view = readWorkspace(
       "web/src/features/worktrees/snapshot-comparison-view.tsx"

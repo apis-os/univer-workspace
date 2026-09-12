@@ -14,6 +14,8 @@ export function Toaster() {
       gap={8}
       richColors
       closeButton
+      visibleToasts={5}
+      style={{ zIndex: 2147483000 }}
       toastOptions={{
         classNames: {
           toast: "sonner-toast-custom",

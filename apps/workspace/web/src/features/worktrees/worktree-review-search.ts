@@ -10,6 +10,7 @@ export interface WorktreeDashboardSearch {
   readonly worktree?: string;
   readonly unit?: string;
   readonly view?: WorktreeReviewView;
+  readonly demo?: "what-if" | "history";
 }
 
 export function parseWorktreeDashboardSearch(
@@ -23,10 +24,15 @@ export function parseWorktreeDashboardSearch(
     typeof search.unit === "string" && search.unit
       ? search.unit
       : undefined;
+  const demo =
+    search.demo === "what-if" || search.demo === "history"
+      ? search.demo
+      : undefined;
   return {
     ...(worktree === undefined ? {} : { worktree }),
     ...(unit === undefined ? {} : { unit }),
     ...optionalReviewView(search.view),
+    ...(demo === undefined ? {} : { demo }),
   };
 }
 

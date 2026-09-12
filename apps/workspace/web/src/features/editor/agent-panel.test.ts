@@ -445,7 +445,7 @@ describe("Q3 fill Cloudflare screenshot card", () => {
       alt: "Q3 Forecast after agent fill",
     });
     const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
-    expect(src).toMatch(/alt=\{?["']Q3 Forecast after agent fill["']\}?|alt=\{Q3_FILL_SCREENSHOT_ALT\}/);
+    expect(src).toMatch(/alt=\{card\.alt\}/);
     expect(src).toMatch(/<img/);
     expect(src).not.toMatch(/iVBORw0KGgo/);
   });
@@ -598,6 +598,50 @@ describe("Undo last Workspace Agent turn", () => {
     const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
     expect(src).toMatch(/readCombChangesetActor/);
     expect(src).toMatch(/setLastReversible\(false\)/);
+  });
+
+  it("dispatches Comb new_changesets even when the changeset has no memberID", () => {
+    let emit: ((event: unknown) => void) | undefined;
+    const received: unknown[] = [];
+    const bus = new EventTarget();
+    bus.addEventListener(COMB_CHANGESET_EVENT, (event) => {
+      received.push((event as CustomEvent).detail);
+    });
+    tapCollaborationSocketChangeset(
+      {
+        message$: {
+          subscribe(next: (event: unknown) => void) {
+            emit = next;
+            return { unsubscribe() {} };
+          },
+        },
+      },
+      bus
+    );
+    const frame = {
+      collaMsg: {
+        eventID: "new_changesets",
+        newCsEvent: {
+          cs: {
+            mutations: [
+              {
+                id: "sheet.mutation.set-range-values",
+                params: { cellValue: { "2": { "3": { v: 182 } } } },
+              },
+            ],
+          },
+        },
+      },
+    };
+    expect(
+      readCombChangesetActor({
+        type: COMB_CHANGESET_EVENT,
+        detail: frame,
+      })
+    ).toBeNull();
+    emit?.(frame);
+    expect(received).toHaveLength(1);
+    expect(received[0]).toEqual(frame);
   });
 
   it("wires panel Undo to reverseLast with undoAgentTurn copy", () => {

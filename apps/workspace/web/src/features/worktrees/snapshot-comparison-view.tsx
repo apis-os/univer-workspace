@@ -36,6 +36,7 @@ export function SnapshotComparisonView({
 }: SnapshotComparisonViewProps) {
   const { language, t } = useI18n();
   const { resolvedTheme } = useTheme();
+  const [useTable, setUseTable] = useState(false);
   const leftExplicitLabel = (comparison.left as { label?: string }).label;
   const rightExplicitLabel = (comparison.right as { label?: string }).label;
   const payloadLabels =

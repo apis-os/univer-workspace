@@ -328,9 +328,10 @@ export async function loadHistoryVsLive(
     (typeof targetCs?.memberID === "string" && targetCs.memberID) ||
     "";
   const writerName = writerId ? historyDisplayName(writerId) : "";
+  const overlayNames = "Avery Chen / Jordan Lee / Workspace Agent";
   const leftLabel = writerName
-    ? `History · r${input.rev} (${writerName})`
-    : `History · r${input.rev}`;
+    ? `History · r${input.rev} (${writerName}) · ${overlayNames}`
+    : `History · r${input.rev} · ${overlayNames}`;
   const rightLabel = "Live Comb";
 
   const rewinds = changesets

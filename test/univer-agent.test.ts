@@ -414,9 +414,203 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(done?.data.aiGatewayLogId, "aig_tool_turn");
   });
 
-  test("Q3 Fill prompt captures a screenshot even when setRange is per-cell", () => {
+  test("Q3 Fill captures a screenshot after setRange and attaches a PNG", async () => {
     assert.equal(isQ3FillPrompt("Fill E2:E4 with SUM of Jul–Sep"), true);
     assert.equal(isQ3FillPrompt("Explain the Q3 forecast in one sentence"), false);
+
+    const { ctx } = createHarness();
+    const action = ctx.get("action") as ActionService;
+    const order: string[] = [];
+    const PNG =
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+    const originalExecute = action.execute.bind(action);
+    action.execute = (async (id: string, input: unknown, meta?: unknown) => {
+      order.push(id);
+      if (id === "univer.screenshot") {
+        return {
+          images: [{ mediaType: "image/png", data: PNG }]
+        };
+      }
+      return originalExecute(id, input, meta as never);
+    }) as typeof action.execute;
+
+    const host = {
+      kernel: ctx,
+      actor: HUMAN_ACTOR,
+      env: {
+        AI: {
+          run: async (_model: string, input: unknown) => {
+            if (runHasTools(input)) {
+              return {
+                tool_calls: [
+                  {
+                    function: {
+                      name: "univer_sheet_setRange",
+                      arguments: JSON.stringify({
+                        unitId: "unit_fill_shot",
+                        cells: [
+                          { a1: "E2", value: "=SUM(B2:D2)" },
+                          { a1: "E3", value: "=SUM(B3:D3)" },
+                          { a1: "E4", value: "=SUM(B4:D4)" }
+                        ]
+                      })
+                    }
+                  }
+                ]
+              };
+            }
+            return { response: "Filled E2:E4 with SUM of Jul–Sep." };
+          }
+        }
+      }
+    };
+
+    const result = await runAgentTurn(host, {
+      unitId: "unit_fill_shot",
+      prompt: "Fill E2:E4 with SUM of Jul–Sep"
+    });
+
+    const setRangeIdx = order.indexOf("univer.sheet.setRange");
+    const shotIdx = order.indexOf("univer.screenshot");
+    assert.ok(setRangeIdx >= 0, "Fill must write E2:E4 via setRange");
+    assert.ok(shotIdx >= 0, "Fill must invoke univer.screenshot");
+    assert.ok(
+      shotIdx > setRangeIdx,
+      `screenshot must run after setRange, got order=${order.join(",")}`
+    );
+    assert.equal(result.screenshot?.mediaType, "image/png");
+    assert.equal(result.screenshot?.data, PNG);
+    const done = result.events.find((e) => e.type === "agent.done");
+    assert.equal((done?.data.screenshot as { data?: string } | undefined)?.data, PNG);
+  });
+
+  test("Q3 Fill captures a screenshot after execute even when the tool is not setRange", async () => {
+    const { ctx } = createHarness();
+    const action = ctx.get("action") as ActionService;
+    const order: string[] = [];
+    const PNG =
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+    const originalExecute = action.execute.bind(action);
+    action.execute = (async (id: string, input: unknown, meta?: unknown) => {
+      order.push(id);
+      if (id === "univer.screenshot") {
+        return { images: [{ mediaType: "image/png", data: PNG }] };
+      }
+      return originalExecute(id, input, meta as never);
+    }) as typeof action.execute;
+
+    const host = {
+      kernel: ctx,
+      actor: HUMAN_ACTOR,
+      env: {
+        AI: {
+          run: async (_model: string, input: unknown) => {
+            if (runHasTools(input)) {
+              return {
+                tool_calls: [
+                  {
+                    function: {
+                      name: "univer_execute",
+                      arguments: JSON.stringify({
+                        unitId: "unit_fill_exec",
+                        code: "api.getActiveWorkbook().getActiveSheet().getRange('E2').setValue({ f: '=SUM(B2:D2)' });"
+                      })
+                    }
+                  }
+                ]
+              };
+            }
+            return { response: "Filled E2 via execute." };
+          }
+        }
+      }
+    };
+
+    const result = await runAgentTurn(host, {
+      unitId: "unit_fill_exec",
+      prompt: "Fill E2:E4 with SUM of Jul–Sep"
+    });
+
+    const execIdx = order.indexOf("univer.execute");
+    const shotIdx = order.indexOf("univer.screenshot");
+    assert.ok(execIdx >= 0, "Fill must run execute");
+    assert.ok(shotIdx >= 0, "Fill must invoke univer.screenshot after tools");
+    assert.ok(
+      shotIdx > execIdx,
+      `screenshot must run after execute, got order=${order.join(",")}`
+    );
+    assert.equal(result.screenshot?.data, PNG);
+  });
+
+  test("Q3 Fill captures a PNG from the public origin after setRange when screenshot tool errors", async () => {
+    const { ctx } = createHarness();
+    const action = ctx.get("action") as ActionService;
+    const order: string[] = [];
+    const origins: string[] = [];
+    const PNG =
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+    const originalExecute = action.execute.bind(action);
+    action.execute = (async (id: string, input: unknown, meta?: unknown) => {
+      order.push(id);
+      if (id === "univer.screenshot") {
+        return { error: { message: "window.univerAPI was not ready on /render" } };
+      }
+      return originalExecute(id, input, meta as never);
+    }) as typeof action.execute;
+
+    const host = {
+      kernel: ctx,
+      actor: HUMAN_ACTOR,
+      requestUrl: "https://univer-workspace.apisos.workers.dev/agents/unit_fill_origin/turns",
+      captureFillPng: async (input: { unitId: string; requestUrl: string }) => {
+        origins.push(input.requestUrl);
+        assert.equal(input.unitId, "unit_fill_origin");
+        return { mediaType: "image/png", data: PNG };
+      },
+      env: {
+        AI: {
+          run: async (_model: string, input: unknown) => {
+            if (runHasTools(input)) {
+              return {
+                tool_calls: [
+                  {
+                    function: {
+                      name: "univer_sheet_setRange",
+                      arguments: JSON.stringify({
+                        unitId: "unit_fill_origin",
+                        cells: [
+                          { a1: "E2", value: "=SUM(B2:D2)" },
+                          { a1: "E3", value: "=SUM(B3:D3)" },
+                          { a1: "E4", value: "=SUM(B4:D4)" }
+                        ]
+                      })
+                    }
+                  }
+                ]
+              };
+            }
+            return { response: "Filled E2:E4 with SUM of Jul–Sep." };
+          }
+        }
+      }
+    };
+
+    const result = await runAgentTurn(host, {
+      unitId: "unit_fill_origin",
+      prompt: "Fill E2:E4 with SUM of Jul–Sep"
+    });
+
+    const setRangeIdx = order.indexOf("univer.sheet.setRange");
+    const shotIdx = order.indexOf("univer.screenshot");
+    assert.ok(setRangeIdx >= 0, "Fill must write E2:E4 via setRange");
+    assert.ok(shotIdx > setRangeIdx, `screenshot after setRange, order=${order.join(",")}`);
+    assert.equal(origins.length, 1, "must wait for a public-origin PNG after the tool error");
+    assert.match(origins[0] ?? "", /^https:\/\/univer-workspace\.apisos\.workers\.dev\b/);
+    assert.doesNotMatch(origins[0] ?? "", /univer-workspace\.internal/);
+    assert.equal(result.screenshot?.mediaType, "image/png");
+    assert.equal(result.screenshot?.data, PNG);
+    const done = result.events.find((e) => e.type === "agent.done");
+    assert.equal((done?.data.screenshot as { data?: string } | undefined)?.data, PNG);
   });
 
   test("explain Q3 uses skipCache false and cacheKey demo:explain-q3", async () => {
@@ -450,9 +644,9 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(calls.length, 1);
     assert.equal(runHasStream(finalRun.input, finalRun.options), false);
     assert.equal(runSkipCache(finalRun.options), false);
-    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3:t9-fix4");
+    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3:t9-fix8");
     assert.equal(runCacheTtl(finalRun.options), 3600);
-    assert.equal(finalRun.options.extraHeaders?.["cf-aig-cache-key"], "demo:explain-q3:t9-fix4");
+    assert.equal(finalRun.options.extraHeaders?.["cf-aig-cache-key"], "demo:explain-q3:t9-fix8");
     assert.equal(finalRun.options.gateway?.collectLog, true);
     assert.equal(finalRun.options.extraHeaders?.["cf-aig-skip-cache"], undefined);
     assert.equal(runMetadata(finalRun.options).step, "explain");
@@ -467,7 +661,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(calls.length, 1);
     assert.equal(runHasStream(canned.input, canned.options), false);
     assert.equal(runSkipCache(canned.options), false);
-    assert.equal(runCacheKey(canned.options), "demo:explain-q3:t9-fix4");
+    assert.equal(runCacheKey(canned.options), "demo:explain-q3:t9-fix8");
     assert.equal(runMetadata(canned.options).step, "explain");
   });
 
@@ -503,7 +697,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(firstDone?.cache, "MISS");
     assert.equal(firstDone?.model, "@cf/meta/llama-3.3-70b-instruct-fp8-fast");
     assert.equal(firstDone?.aiGatewayLogId, "aig_explain_cache");
-    assert.equal(firstDone?.cacheKey, "demo:explain-q3:t9-fix4");
+    assert.equal(firstDone?.cacheKey, "demo:explain-q3:t9-fix8");
     assert.equal(typeof firstDone?.elapsedMs, "number");
     const second = await runAgentTurn(host, {
       unitId: "unit_explain_cache",

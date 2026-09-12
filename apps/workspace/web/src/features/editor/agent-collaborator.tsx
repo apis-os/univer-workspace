@@ -513,7 +513,7 @@ export function AgentCollaborator({
                     if (card.kind === "image") {
                       return (
                         <img
-                          alt="Q3 Forecast after agent fill"
+                          alt={card.alt}
                           src={`data:${card.mediaType};base64,${card.data}`}
                           className="mt-2 max-w-full rounded-md border border-border"
                         />

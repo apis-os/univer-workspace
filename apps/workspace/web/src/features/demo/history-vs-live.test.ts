@@ -138,6 +138,8 @@ describe("loadHistoryVsLive", () => {
     expect(payload.left.revision).toBe(4);
     expect(payload.left.label).toContain("History · r4");
     expect(payload.left.label).toContain("Avery Chen");
+    expect(payload.left.label).toContain("Jordan Lee");
+    expect(payload.left.label).toContain("Workspace Agent");
     expect(payload.right.revision).toBe(5);
     expect(payload.right.label).toBe("Live Comb");
     expect(payload.result.fidelity).toBe("history");

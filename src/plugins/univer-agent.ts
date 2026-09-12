@@ -9,6 +9,12 @@ import { actorFromRequest } from "../control-plane/actor.ts";
 import type { UniverCollabService } from "./univer-collab.ts";
 import { AGENT_MEMBER_ID, AGENT_USER_ID, registerFacadeActions } from "./univer-facade-actions.ts";
 import { agentSystemPrompt, getAgentSkill, listAgentSkills } from "./univer-skills.ts";
+import {
+  capturePng,
+  isBrowserBound,
+  renderPageUrl,
+  type BrowserBinding
+} from "../integrations/browser-rendering.ts";
 
 export const AI_GATEWAY_ID = "default";
 export const AI_GATEWAY_LIVE_MODELS = [
@@ -17,7 +23,7 @@ export const AI_GATEWAY_LIVE_MODELS = [
 ] as const;
 
 const AI_GATEWAY_PRODUCT = "univer-workspace";
-const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-fix4";
+const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-fix8";
 const EXPLAIN_CACHE_TTL = 3600;
 
 export type AgentGatewayStep = "tool" | "text" | "explain";
@@ -91,8 +97,10 @@ export interface AgentAi {
 
 export interface AgentHost {
   kernel: Context;
-  env?: { AI?: AgentAi };
+  env?: { AI?: AgentAi; BROWSER?: BrowserBinding };
   actor?: WorkspaceActor | null;
+  requestUrl?: string;
+  captureFillPng?: (input: { unitId: string; requestUrl: string }) => Promise<AgentScreenshot | null>;
   broadcastCollab?: (unitId: string, changeset: Record<string, unknown>, actor?: WorkspaceActor | null) => void;
   waitUntil?: (promise: Promise<unknown>) => void;
 }
@@ -364,7 +372,73 @@ function scheduleWaitUntil(host: AgentHost, promise: Promise<unknown>): void {
   }
 }
 
+const PUBLIC_FILL_ORIGIN = "https://univer-workspace.apisos.workers.dev/";
+
+function publicFillRequestUrl(host: AgentHost): string {
+  const candidates = [host.requestUrl];
+  try {
+    candidates.push((host.kernel.get("host") as { requestUrl?: string }).requestUrl);
+  } catch {
+    // no kernel host
+  }
+  for (const raw of candidates) {
+    if (typeof raw !== "string" || !raw.trim()) continue;
+    try {
+      const origin = new URL(raw).origin;
+      if (!origin || origin.includes("univer-workspace.internal") || origin.includes("fake.host")) {
+        continue;
+      }
+      return raw;
+    } catch {
+      continue;
+    }
+  }
+  return PUBLIC_FILL_ORIGIN;
+}
+
+function browserFrom(host: AgentHost): BrowserBinding | undefined {
+  if (isBrowserBound(host.env?.BROWSER)) return host.env.BROWSER;
+  try {
+    const env = (host.kernel.get("host") as { env?: { BROWSER?: BrowserBinding } }).env;
+    if (isBrowserBound(env?.BROWSER)) return env.BROWSER;
+  } catch {
+    // no kernel host
+  }
+  return undefined;
+}
+
+function bindAgentRequestUrl(host: AgentHost, requestUrl: string): AgentHost {
+  try {
+    const kernelHost = host.kernel.get("host") as { requestUrl?: string };
+    if (kernelHost && typeof kernelHost === "object") {
+      kernelHost.requestUrl = requestUrl;
+    }
+  } catch {
+    // no kernel host
+  }
+  return { ...host, requestUrl };
+}
+
+async function captureFillPngFromPublicOrigin(
+  host: AgentHost,
+  unitId: string,
+  requestUrl: string
+): Promise<AgentScreenshot | null> {
+  if (host.captureFillPng) {
+    return host.captureFillPng({ unitId, requestUrl });
+  }
+  const browser = browserFrom(host);
+  if (!isBrowserBound(browser) || !requestUrl) return null;
+  const collab = collabFrom(host);
+  const image = await capturePng(browser, renderPageUrl(requestUrl, { unitId }), {
+    snapshot: collab?.getLatestSnapshot(unitId)?.data
+  });
+  if (!image?.data) return null;
+  return { mediaType: "image/png", data: image.data };
+}
+
 async function captureQ3FillScreenshot(
+  host: AgentHost,
   action: ActionService,
   unitId: string,
   actor: WorkspaceActor
@@ -377,7 +451,13 @@ async function captureQ3FillScreenshot(
       unitId,
       actor
     );
-    return screenshotFromUf(result);
+    const parsed = screenshotFromUf(result);
+    if (parsed) return parsed;
+  } catch {
+    // Browser Rendering via the fake /uf host failed; try the public origin next.
+  }
+  try {
+    return await captureFillPngFromPublicOrigin(host, unitId, publicFillRequestUrl(host));
   } catch {
     return null;
   }
@@ -706,10 +786,6 @@ export async function runAgentTurn(
 
   try {
     emit({ type: "agent.thinking", data: { delta: "Loading Workspace Skills and unit snapshot…" } });
-    if (isQ3FillPrompt(prompt)) {
-      fillScreenshot = captureQ3FillScreenshot(action, unitId, actor);
-      scheduleWaitUntil(host, fillScreenshot.then(() => undefined));
-    }
 
   const recordTool = async (tool: string, args: Record<string, unknown>) => {
     emit({ type: "agent.tool_call_start", data: { tool, args } });
@@ -717,7 +793,7 @@ export async function runAgentTurn(
     emit({ type: "agent.tool_call_result", data: { tool, args, result } });
     toolCalls.push({ tool, args, result });
     if (!fillScreenshot && isQ3FillToolResult(tool, args)) {
-      fillScreenshot = captureQ3FillScreenshot(action, unitId, actor);
+      fillScreenshot = captureQ3FillScreenshot(host, action, unitId, actor);
       scheduleWaitUntil(host, fillScreenshot.then(() => undefined));
     }
     const changeset = (result as any)?.rev
@@ -805,14 +881,11 @@ export async function runAgentTurn(
       emit({ type: "agent.token", data: { delta: chunk } });
     }
   }
-  const screenshot = fillScreenshot
-    ? await Promise.race([
-        fillScreenshot,
-        new Promise<AgentScreenshot | null>((resolve) => {
-          setTimeout(() => resolve(null), 12_000);
-        })
-      ])
-    : undefined;
+  if (!fillScreenshot && isQ3FillPrompt(prompt)) {
+    fillScreenshot = captureQ3FillScreenshot(host, action, unitId, actor);
+    scheduleWaitUntil(host, fillScreenshot.then(() => undefined));
+  }
+  const screenshot = fillScreenshot ? await fillScreenshot : undefined;
   const unit = collab?.getUnit(unitId);
   const elapsedMs = aiElapsedMs ?? (Date.now() - turnStartedAt);
   const doneData: Record<string, unknown> = {
@@ -907,7 +980,7 @@ export async function handleAgentHttp(request: Request, host: AgentHost): Promis
   const url = new URL(request.url);
   const path = url.pathname.replace(/\/+$/u, "") || "/";
   const actor = actorFromRequest(request) ?? host.actor ?? null;
-  const liveHost: AgentHost = { ...host, actor };
+  const liveHost: AgentHost = bindAgentRequestUrl({ ...host, actor }, request.url);
 
   if (path === "/agents" && request.method === "GET") {
     registerFacadeActions(host.kernel);

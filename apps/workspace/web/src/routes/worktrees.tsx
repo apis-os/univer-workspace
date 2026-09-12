@@ -5,6 +5,7 @@ import {
 import { lazy, Suspense, useState } from "react";
 import { worktreeListQueryOptions } from "../features/worktrees";
 import { requireAuthenticatedSession } from "../features/auth";
+import { DemoComparisonPage } from "../features/demo/demo-comparison-page";
 import { useI18n } from "../shared/i18n";
 import { Spinner } from "../shared/ui";
 import {
@@ -44,6 +45,7 @@ function WorktreesPage() {
     worktree,
     unit,
     view = DEFAULT_WORKTREE_REVIEW_VIEW,
+    demo,
   } = Route.useSearch();
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -66,6 +68,9 @@ function WorktreesPage() {
           </div>
         }
       >
+        {demo === "what-if" || demo === "history" ? (
+          <DemoComparisonPage demo={demo} />
+        ) : (
         <WorktreeDashboard
           searchQuery={searchQuery}
           {...(worktree === undefined
@@ -86,6 +91,7 @@ function WorktreesPage() {
             });
           }}
         />
+        )}
       </Suspense>
     </WorkspaceLayout>
   );

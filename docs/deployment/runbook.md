@@ -267,7 +267,7 @@ curl -s https://univer-workspace.apisos.workers.dev/healthz.ai
 ## 8. Live origin proof (T9)
 
 Origin: `https://univer-workspace.apisos.workers.dev`  
-Worker version: `6858790b-935d-4472-821b-a98a9f1c8450` (`npx wrangler@4.130.0 deploy`; `ai` + `browser` + `LOADER` bindings).
+Worker version: `71ee5a18-f88d-4fed-8575-ed4778c3d515` (`npx wrangler@4.130.0 deploy`; `ai` + `browser` + `LOADER` bindings).
 
 ```bash
 pnpm --filter @univerjs/univer-workspace build:web
@@ -278,7 +278,7 @@ EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cl
 
 Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot PNG ≥4000B after `POST /uf/:fileKey`.
 
-Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-fix4"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-fix8"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
 
 ### Proved on this deploy
 
@@ -286,16 +286,16 @@ Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-fix4"`, `
 - [x] `GET /healthz.ai` → `{ gateway: "default" }`
 - [x] Avery password login + `POST /agents/unit_welcome_sheet/turns` (`Set A1 to Hello from AI`) returns `rev`
 - [x] `POST /uf/d29ya3NwYWNlLnVuaXZlcg` then `GET .../units/unit_welcome_sheet/inspect?range=E2` → 200
-- [x] Explain cache: this deploy smoke `MISS` then `HIT` on `demo:explain-q3:t9-fix4` (not invented; not prior `0fbc9e32`)
-- [x] `/uf` screenshot 200 PNG length 5794 (≥4000; real sheet capture)
+- [x] Explain cache: this deploy smoke `MISS` then `HIT` on `demo:explain-q3:t9-fix8` (not invented; not prior warm keys)
+- [x] `/uf` screenshot 200 PNG length 5791 (≥4000; real sheet capture)
 - [x] CLI proof execute → inspect E2 `f=SUM(B2:D2)` → screenshot 200 → worktree ready → curl `/uf` 200
 - [x] Headed `/demo` shows Q3 grid; `univer-sheet-main-canvas_unit_welcome_sheet` 806×651 (exact id `univer-sheet-main-canvas` is suffixed)
-- [ ] 90-second two-user click-through — canvas + in-grid D3 name-box 180 (name box advanced to D4); Present/Follow and formula inspector `SUM(B2:D2)` clicked; conflict toast / Fill PNG card / What-if Merge / History Avery·Jordan names still fail
+- [ ] 90-second two-user click-through — canvas, in-grid D3, Present/Follow, Fill PNG card, What-if Merge, History names, and formula inspector observed; **same-cell conflict toast still not shown**
 - [x] Present / Follow — clicked `[data-demo="live-share-present"]` label Present and `[data-demo="live-share-follow"]` label Follow
 - [x] Formula inspector — palette Inspect formula; dialog `f=SUM(B2:D2)`
-- [ ] Same-cell conflict toast — both D3 typed in-grid via the name box; no toast
-- [ ] What-if comparison + Merge — palette What-if +10% Sep clicked; stayed on `/demo`; no Confirm merge
-- [ ] History overlay names Avery / Jordan / Workspace Agent — History vs Live Comb clicked; Avery/Jordan names not in overlay (Workspace Agent only in agent panel)
-- [ ] `/render` screenshot card PNG on Fill — Fill streamed E2:E4; panel showed screenshot unavailable, not `img[alt="Q3 Forecast after agent fill"]`
+- [ ] Same-cell conflict toast — both D3 typed in-grid via the name box (overlapping 181/182/183); Comb HUD `json`/`Syncing…`; **no sonner toast**
+- [x] What-if comparison + Merge — palette What-if +10% Sep → `/worktrees?...&demo=what-if`; Confirm merge clicked twice
+- [x] History overlay names Avery / Jordan / Workspace Agent — History vs Live Comb → `/worktrees?...&demo=history`; names present, not Administrator
+- [x] `/render` screenshot card PNG on Fill — `img[alt="Q3 Forecast after agent fill"]` 1280×800 `srcLen` 7746
 
 Unchecked boxes are remaining concerns, not invented passes.

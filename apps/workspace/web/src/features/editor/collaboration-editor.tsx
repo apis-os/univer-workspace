@@ -1,6 +1,7 @@
 import type { ILanguagePack } from "@univerjs/core";
 import {
   CommandType,
+  ICommandService,
   LifecycleStages,
   LocaleType,
   LogLevel,
@@ -79,6 +80,7 @@ import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
 import {
   COMB_CHANGESET_EVENT,
   bindExplainSelectionHost,
+  isCombNewChangesetsEvent,
   readActiveRangeA1,
   readCombChangesetActor,
 } from "./agent-panel";
@@ -96,6 +98,8 @@ import {
 import {
   CELL_INTENT_EVENT,
   highlightIntent,
+  isSameCellConflict,
+  remoteChangesetConflictsLocal,
   readCellIntent,
   shouldPublishIntent,
   type CellIntentKind,
@@ -104,6 +108,8 @@ import {
   BLAME_HEAT_EVENT,
   applyBlameHeat,
   blameFromChangesets,
+  a1sFromCommandExecuted,
+  commandFromCollab,
   type BlameCell,
 } from "./ot-blame-heat";
 import { presenceRingToken } from "./presence-roster";
@@ -266,6 +272,7 @@ export function createCollaborationEditor(
       let agentEditedListener: ((event: Event) => void) | null = null;
       let intentHighlightHandle: { dispose(): void } | null = null;
       let commandListener: { dispose(): void } | null = null;
+      let commandServiceListener: { dispose(): void } | null = null;
       let cellIntentListener: ((event: Event) => void) | null = null;
       let blameHandle: { dispose(): void } | null = null;
       let onChangesetForBlame: ((event: Event) => void) | null = null;
@@ -469,6 +476,20 @@ export function createCollaborationEditor(
         const notifyCollabConflict = createCollabConflictToaster({
           warning: (message) => toast.warning(message),
         });
+        let localEditA1: string | null = null;
+        let lastSelectedA1: string | null = null;
+        const recentLocalEdits = new Map<string, number>();
+        const rememberLocalA1s = (cells: readonly string[]) => {
+          const now = Date.now();
+          for (const cell of cells) {
+            const a1 = cell.replace(/\s/g, "").toUpperCase();
+            if (a1) recentLocalEdits.set(a1, now);
+          }
+        };
+        const recentLocalA1s = (now = Date.now()) =>
+          [...recentLocalEdits.entries()]
+            .filter(([, at]) => now - at < 30_000)
+            .map(([cell]) => cell);
         collaborationUIEventListener = univer
           .__getInjector()
           .get(CollaborationUIEventService)
@@ -476,7 +497,10 @@ export function createCollaborationEditor(
             if (disposed) return;
             if (event.id === CollaborationUIEventId.PERMISSION_DENIED) {
               setCollaborationIssue("permission");
-            } else if (event.id === CollaborationUIEventId.CONFLICT) {
+            } else if (
+              event.id === CollaborationUIEventId.CONFLICT ||
+              event.id === CollaborationUIEventId.OTHER_CLIENT_EDITING
+            ) {
               setCollaborationIssue("conflict");
               notifyCollabConflict(t("collabConflictToast"));
             }
@@ -546,7 +570,10 @@ export function createCollaborationEditor(
               onCollaboratorsChange?.(
                 event.status === CollaborationStatus.OFFLINE ? [] : collaborators
               );
-              if (event.status !== CollaborationStatus.CONFLICT) {
+              if (event.status === CollaborationStatus.CONFLICT) {
+                setCollaborationIssue("conflict");
+                notifyCollabConflict(t("collabConflictToast"));
+              } else if (event.status !== CollaborationStatus.CONFLICT) {
                 setCollaborationIssue(null);
               }
             }
@@ -593,6 +620,18 @@ export function createCollaborationEditor(
           const intent = readCellIntent(event);
           if (!intent) return;
           if (intent.memberID === user.id || intent.userID === user.id) return;
+          if (
+            isSameCellConflict(localEditA1, intent, user.id) ||
+            remoteChangesetConflictsLocal({
+              localA1s: recentLocalA1s(),
+              remoteUserId: intent.userID,
+              currentUserId: user.id,
+              remoteA1s: [intent.a1],
+            })
+          ) {
+            setCollaborationIssue("conflict");
+            notifyCollabConflict(t("collabConflictToast"));
+          }
           const ringToken = presenceRingToken({ userID: intent.userID });
           const reducedMotion =
             typeof window !== "undefined" &&
@@ -608,25 +647,75 @@ export function createCollaborationEditor(
         cellIntentListener = onCellIntent;
         window.addEventListener(CELL_INTENT_EVENT, onCellIntent);
 
-        commandListener = univerAPI.addEvent(
-          univerAPI.Event.CommandExecuted,
-          (commandEvent) => {
+        const onLocalOrRemoteCommand = (commandEvent: unknown, options?: unknown) => {
             if (disposed) return;
             const a1 = readActiveRangeA1({
               getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
             });
-            if (!a1 || !shouldPublishIntent({ kind: "member", a1 })) return;
+            const commandA1s = a1sFromCommandExecuted(commandEvent);
+            if (commandFromCollab(commandEvent, options)) {
+              if (
+                remoteChangesetConflictsLocal({
+                  localA1s: recentLocalA1s(),
+                  remoteUserId: "peer",
+                  currentUserId: user.id,
+                  remoteA1s: commandA1s.length ? commandA1s : lastSelectedA1 ? [lastSelectedA1] : [],
+                })
+              ) {
+                setCollaborationIssue("conflict");
+                notifyCollabConflict(t("collabConflictToast"));
+              }
+              return;
+            }
+            if (!a1 || !shouldPublishIntent({ kind: "member", a1 })) {
+              if (commandA1s.length === 0) return;
+              rememberLocalA1s(commandA1s);
+              sendCellIntent(unitId, {
+                memberID: user.id,
+                userID: user.id,
+                a1: commandA1s[0],
+                intent: "editing",
+              });
+              return;
+            }
             const isMutation =
               (commandEvent as { type?: number }).type === CommandType.MUTATION;
-            const intentKind: CellIntentKind = isMutation ? "editing" : "selecting";
+            const intentKind: CellIntentKind = isMutation || commandA1s.length > 0 ? "editing" : "selecting";
+            if (!isMutation && a1) {
+              localEditA1 = a1;
+              lastSelectedA1 = a1;
+            }
+            const remembered = [
+              ...(lastSelectedA1 ? [lastSelectedA1] : []),
+              ...(localEditA1 ? [localEditA1] : []),
+              ...commandA1s,
+              ...(isMutation && a1 ? [a1] : []),
+            ];
+            if (intentKind === "editing") {
+              rememberLocalA1s(remembered);
+            }
             sendCellIntent(unitId, {
               memberID: user.id,
               userID: user.id,
-              a1,
+              a1: commandA1s[0] || localEditA1 || lastSelectedA1 || a1,
               intent: intentKind,
             });
+        };
+        commandListener = univerAPI.addEvent(
+          univerAPI.Event.CommandExecuted,
+          (commandEvent) => {
+            onLocalOrRemoteCommand(
+              commandEvent,
+              (commandEvent as { options?: unknown }).options
+            );
           }
         );
+        commandServiceListener = univer
+          .__getInjector()
+          .get(ICommandService)
+          .onCommandExecuted((commandInfo, options) => {
+            onLocalOrRemoteCommand(commandInfo, options);
+          });
 
         let blameCells: readonly BlameCell[] = [];
         let blameEnabled = false;
@@ -680,7 +769,7 @@ export function createCollaborationEditor(
           if (cs) {
             const actor =
               readCombChangesetActor({ type: event.type, detail }) ??
-              "user_admin";
+              "";
             const rev =
               typeof cs.revision === "number"
                 ? cs.revision
@@ -690,6 +779,22 @@ export function createCollaborationEditor(
             const next = blameFromChangesets([
               { clientId: actor, rev, changeset: cs },
             ]);
+            const remoteA1s = next.map((cell) => cell.a1);
+            const ownWrite = actor === user.id || (!actor && !isCombNewChangesetsEvent({ type: event.type, detail }));
+            if (ownWrite) {
+              rememberLocalA1s(remoteA1s);
+            } else if (
+              remoteChangesetConflictsLocal({
+                localA1s: recentLocalA1s(),
+                remoteUserId: actor,
+                currentUserId: user.id,
+                remoteA1s,
+                treatMissingActorAsRemote: isCombNewChangesetsEvent({ type: event.type, detail }),
+              })
+            ) {
+              setCollaborationIssue("conflict");
+              notifyCollabConflict(t("collabConflictToast"));
+            }
             const cellMap = new Map(blameCells.map((c) => [c.a1, c]));
             for (const c of next) cellMap.set(c.a1, c);
             blameCells = Array.from(cellMap.values());
@@ -750,6 +855,7 @@ export function createCollaborationEditor(
           window.removeEventListener(BLAME_HEAT_EVENT, onBlameToggle);
         }
         commandListener?.dispose();
+        commandServiceListener?.dispose();
         intentHighlightHandle?.dispose();
         if (cellIntentListener) {
           window.removeEventListener(CELL_INTENT_EVENT, cellIntentListener);

@@ -95,6 +95,18 @@ export function a1FromSetRangeMutation(mutation: Record<string, unknown>): strin
   if (typeof rawRange === "string" && rawRange.trim()) {
     return expandA1RangeString(rawRange);
   }
+  if (Array.isArray(rawRange)) {
+    const results: string[] = [];
+    for (const item of rawRange) {
+      if (typeof item === "string" && item.trim()) {
+        results.push(...expandA1RangeString(item));
+        continue;
+      }
+      const rangeObj = asRecord(item);
+      if (rangeObj) results.push(...expandRangeObject(rangeObj));
+    }
+    if (results.length) return results;
+  }
   const rangeObj = asRecord(rawRange);
   if (rangeObj) {
     return expandRangeObject(rangeObj);
@@ -121,6 +133,38 @@ export function a1FromSetRangeMutation(mutation: Record<string, unknown>): strin
   return [];
 }
 
+export function a1sFromCommandExecuted(command: unknown): string[] {
+  const rec = asRecord(command);
+  if (!rec) return [];
+  const nested = asRecord(rec.command);
+  if (nested) {
+    const nestedA1s = a1sFromCommandExecuted(nested);
+    if (nestedA1s.length) return nestedA1s;
+  }
+  const params = asRecord(rec.params) ?? rec;
+  const id = String(rec.id ?? params.id ?? "");
+  const mutationId =
+    /set-range/i.test(id) || asRecord(params.cellValue) || params.range
+      ? id || "sheet.mutation.set-range-values"
+      : id;
+  return a1FromSetRangeMutation({
+    id: mutationId,
+    params,
+    range: params.range ?? rec.range,
+    cellValue: params.cellValue ?? rec.cellValue ?? params.value ?? rec.value,
+  });
+}
+
+export function commandFromCollab(command: unknown, options?: unknown): boolean {
+  const rec = asRecord(command);
+  const nested = rec ? asRecord(rec.command) : null;
+  const opts =
+    asRecord(options) ??
+    asRecord(rec?.options) ??
+    asRecord(nested?.options);
+  return opts?.fromCollab === true;
+}
+
 export function blameFromChangesets(
   entries: readonly {
     clientId: string;
@@ -141,12 +185,21 @@ export function blameFromChangesets(
       ? cs.mutations
       : Array.isArray(cs.actions)
         ? cs.actions
-        : [];
+        : Array.isArray(asRecord(cs.cs)?.mutations)
+          ? (asRecord(cs.cs) as { mutations: unknown[] }).mutations
+          : [];
+    let wrote = false;
     for (const mut of mutations) {
       const mutationObj = asRecord(mut);
       if (!mutationObj) continue;
       const a1s = a1FromSetRangeMutation(mutationObj);
       for (const a1 of a1s) {
+        cells.set(a1, { a1, userID, rev });
+        wrote = true;
+      }
+    }
+    if (!wrote) {
+      for (const a1 of a1sFromCommandExecuted(cs)) {
         cells.set(a1, { a1, userID, rev });
       }
     }
