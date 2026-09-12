@@ -20650,8 +20650,8 @@ function IM(var_core_value_sig2B59) {
           return;
         }
         let countVal_0E5A = targetObj_BD18.clientX - var_core_value_sig8178,
-          countVal = targetObj_BD18.clientY - var_core_value_sigE9ED;
-        Math.hypot(countVal_0E5A, countVal) < 4 || (isFlag42 = true, options_0BE8.current = true, targetObj_BD18.current['beginDrag'](), targetObj_BD18.preventDefault());
+          v4543 = targetObj_BD18.clientY - var_core_value_sigE9ED;
+        Math.hypot(countVal_0E5A, v4543) < 4 || (isFlag42 = true, options_0BE8.current = true, targetObj_BD18.current['beginDrag'](), targetObj_BD18.preventDefault());
       }
       ;
       function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig92F81(targetObj_BD18) {
@@ -20938,12 +20938,12 @@ function IM(var_core_value_sig2B59) {
             return (targetObj_BD18 = (var_core_value_sig7144 = globalThis).dispatchEvent) == null ? undefined : targetObj_BD18.call(var_core_value_sig7144, var_core_value_sig89A0);
           },
           'requestFullscreen': () => {
-            var targetObj_BD18, targetObj10;
-            return (targetObj_BD18 = dP(var_core_value_sig54ED)) == null || (targetObj10 = targetObj_BD18.requestFullscreen) == null ? undefined : targetObj10.call(targetObj_BD18);
+            var targetObj_BD18, v4468;
+            return (targetObj_BD18 = dP(var_core_value_sig54ED)) == null || (v4468 = targetObj_BD18.requestFullscreen) == null ? undefined : v4468.call(targetObj_BD18);
           },
           'exitFullscreen': () => {
-            var targetObj_BD18, targetObj12;
-            return (targetObj_BD18 = globalThis.document) == null || (targetObj12 = targetObj_BD18.exitFullscreen) == null ? undefined : targetObj12.call(targetObj_BD18);
+            var targetObj_BD18, v4470;
+            return (targetObj_BD18 = globalThis.document) == null || (v4470 = targetObj_BD18.exitFullscreen) == null ? undefined : v4470.call(targetObj_BD18);
           },
           'getFullscreenElement': () => {
             var targetObj_BD18;
@@ -21279,15 +21279,15 @@ function IM(var_core_value_sig2B59) {
           return this._getOrCreateRemotePresenceSubject(var_core_value_sigEACD).asObservable();
         }
         setRemotePresence(targetObj_BD18) {
-          let targetObj14 = this._getOrCreateRemotePresenceSubject(targetObj_BD18.unitId),
-            itemsMap2 = new Map(targetObj14.getValue());
+          let v670 = this._getOrCreateRemotePresenceSubject(targetObj_BD18.unitId),
+            itemsMap2 = new Map(v670.getValue());
           itemsMap2.set(targetObj_BD18.memberId, {
             ...targetObj_BD18,
             'selectedIds': Array.from(targetObj_BD18.selectedIds),
             'pointer': targetObj_BD18.pointer ? {
               ...targetObj_BD18.pointer
             } : null
-          }), targetObj14.next(itemsMap2);
+          }), v670.next(itemsMap2);
         }
         removeRemotePresence(var_core_value_sig102B, var_core_value_sigA7DB) {
           let targetObj_BD18 = this._remotePresences['get'](var_core_value_sig102B);
@@ -21333,13 +21333,13 @@ function IM(var_core_value_sig2B59) {
       ;
       function OP(targetObj_BD18, var_core_value_sig7788, countVal_0E5A) {
         if (targetObj_BD18.measureText(var_core_value_sig7788).width <= countVal_0E5A) return var_core_value_sig7788;
-        let countVal2 = countVal_0E5A - targetObj_BD18.measureText("...").width,
+        let v4375 = countVal_0E5A - targetObj_BD18.measureText("...").width,
           strVal18 = '',
-          countVal3 = 0;
+          v4377 = 0;
         for (let var_core_value_sigC27E of var_core_value_sig7788) {
           let var_core_value_sig1632 = targetObj_BD18.measureText(var_core_value_sigC27E).width;
-          if (countVal3 + var_core_value_sig1632 > countVal2) break;
-          strVal18 += var_core_value_sigC27E, countVal3 += var_core_value_sig1632;
+          if (v4377 + var_core_value_sig1632 > v4375) break;
+          strVal18 += var_core_value_sigC27E, v4377 += var_core_value_sig1632;
         }
         return strVal18 + "...";
       }
@@ -21404,8 +21404,8 @@ function IM(var_core_value_sig2B59) {
           this.disposeWithMe(ox1db710(targetObj_BD18.addObject$["pipe"](ox3d6c19(this.dispose$)).subscribe(() => {
             this._isApplyingOverlays || this._scheduleRender();
           })));
-          let targetObj16 = targetObj_BD18.getEngine();
-          targetObj16 && this.disposeWithMe(ox1db710(targetObj16.onTransformChange$["subscribeEvent"](() => this._scheduleRender()))), this.disposeWithMe(this._boardElementService['elementAdd$'].pipe(ox3d6c19(this.dispose$)).subscribe(itemsList => {
+          let v628 = targetObj_BD18.getEngine();
+          v628 && this.disposeWithMe(ox1db710(v628.onTransformChange$["subscribeEvent"](() => this._scheduleRender()))), this.disposeWithMe(this._boardElementService['elementAdd$'].pipe(ox3d6c19(this.dispose$)).subscribe(itemsList => {
             itemsList.some(targetObj5 => targetObj5.unitId === this._context['unitId']) && this._scheduleRender();
           })), this.disposeWithMe(this._boardElementService["elementUpdate$"].pipe(ox3d6c19(this.dispose$)).subscribe(itemsList2 => {
             itemsList2.some(targetObj6 => targetObj6.unitId === this._context['unitId']) && this._scheduleRender();
@@ -21463,14 +21463,14 @@ function IM(var_core_value_sig2B59) {
         }
         _publishLocalPointer(targetObj_BD18) {
           if (!this._presenceAdapter["isActive"]() || "pointerType" in targetObj_BD18 && targetObj_BD18.pointerType === "touch") return;
-          let targetObj18 = this._boardUIStateService['getState'](),
-            countVal29 = Number.isFinite(targetObj18.zoomRatio) && targetObj18.zoomRatio > 0 ? targetObj18.zoomRatio : 1;
+          let v635 = this._boardUIStateService['getState'](),
+            countVal29 = Number.isFinite(v635.zoomRatio) && v635.zoomRatio > 0 ? v635.zoomRatio : 1;
           this._commandService["syncExecuteCommand"](FS.id, {
             'unitId': this._context['unitId'],
             'subUnitId': this._context["unit"].getActivePageId(),
             'pointer': {
-              'x': Math.round((targetObj_BD18.offsetX - targetObj18.viewportPanOffset['x']) / countVal29 * 10) / 10,
-              'y': Math.round((targetObj_BD18.offsetY - targetObj18.viewportPanOffset['y']) / countVal29 * 10) / 10
+              'x': Math.round((targetObj_BD18.offsetX - v635.viewportPanOffset['x']) / countVal29 * 10) / 10,
+              'y': Math.round((targetObj_BD18.offsetY - v635.viewportPanOffset['y']) / countVal29 * 10) / 10
             }
           });
         }
@@ -21701,16 +21701,16 @@ function IM(var_core_value_sig2B59) {
       function WP(targetObj_BD18) {
         let strVal28 = targetObj_BD18.maxViewportStart - targetObj_BD18.minViewportStart + targetObj_BD18.viewportSize,
           countVal_0E5A = strVal28 - targetObj_BD18.viewportSize,
-          countVal6 = Math.max(0, targetObj_BD18.availableEnd - targetObj_BD18.availableStart);
-        if (countVal6 <= 0 || countVal_0E5A <= RP || strVal28 <= RP) return null;
-        let countVal7 = Math.min(countVal6, Math.max(targetObj_BD18.minBarLength, countVal6 * targetObj_BD18.viewportSize / strVal28)),
-          countVal8 = Math.max(0, countVal6 - countVal7);
-        if (countVal8 <= RP) return null;
-        let countVal9 = BP((targetObj_BD18.viewportStart - targetObj_BD18.minViewportStart) / countVal_0E5A, 0, 1),
-          strVal29 = targetObj_BD18.availableStart + countVal9 * countVal8;
+          v4338 = Math.max(0, targetObj_BD18.availableEnd - targetObj_BD18.availableStart);
+        if (v4338 <= 0 || countVal_0E5A <= RP || strVal28 <= RP) return null;
+        let v4339 = Math.min(v4338, Math.max(targetObj_BD18.minBarLength, v4338 * targetObj_BD18.viewportSize / strVal28)),
+          v4340 = Math.max(0, v4338 - v4339);
+        if (v4340 <= RP) return null;
+        let v4341 = BP((targetObj_BD18.viewportStart - targetObj_BD18.minViewportStart) / countVal_0E5A, 0, 1),
+          strVal29 = targetObj_BD18.availableStart + v4341 * v4340;
         return {
           'barRect': targetObj_BD18.vertical ? {
-            'height': countVal7,
+            'height': v4339,
             'left': targetObj_BD18.barCrossStart,
             'top': strVal29,
             'width': targetObj_BD18.barSize
@@ -21718,11 +21718,11 @@ function IM(var_core_value_sig2B59) {
             'height': targetObj_BD18.barSize,
             'left': strVal29,
             'top': targetObj_BD18.barCrossStart,
-            'width': countVal7
+            'width': v4339
           },
           'maxViewportStart': targetObj_BD18.maxViewportStart,
           'minViewportStart': targetObj_BD18.minViewportStart,
-          'travelLength': countVal8,
+          'travelLength': v4340,
           'viewportStart': targetObj_BD18.viewportStart
         };
       }
@@ -21768,8 +21768,8 @@ function IM(var_core_value_sig2B59) {
       ;
       function KP(targetObj_BD18, countVal_0E5A) {
         if (targetObj_BD18.travelLength <= 0) return targetObj_BD18.viewportStart;
-        let countVal14 = targetObj_BD18.maxViewportStart - targetObj_BD18.minViewportStart;
-        return BP(targetObj_BD18.viewportStart + countVal_0E5A / targetObj_BD18.travelLength * countVal14, targetObj_BD18.minViewportStart, targetObj_BD18.maxViewportStart);
+        let v4325 = targetObj_BD18.maxViewportStart - targetObj_BD18.minViewportStart;
+        return BP(targetObj_BD18.viewportStart + countVal_0E5A / targetObj_BD18.travelLength * v4325, targetObj_BD18.minViewportStart, targetObj_BD18.maxViewportStart);
       }
       const qP = "boards-ui.viewport-bar";
       function JP(targetObj_BD18) {
@@ -21797,23 +21797,23 @@ function IM(var_core_value_sig2B59) {
           let var_core_value_sigE6D0 = (targetObj_BD18 = this._configService["getConfig"]("boards-ui.config")) == null ? undefined : targetObj_BD18.viewportBar;
           if (this._horizontalEnabled = (var_core_value_sigE6D0 == null ? undefined : var_core_value_sigE6D0.horizontal) !== false, this._verticalEnabled = (var_core_value_sigE6D0 == null ? undefined : var_core_value_sigE6D0.vertical) !== false, !this._horizontalEnabled && !this._verticalEnabled) return;
           let {
-              engine: targetObj20,
-              scene: targetObj21,
+              engine: v500,
+              scene: v501,
               unitId: var_core_value_sig7BB5
             } = this._renderContext,
             var_core_value_sig6AAD = this._instanceSrv["getUnit"](var_core_value_sig7BB5, ox2dc2f2.UNIVER_BOARD);
           if (!var_core_value_sig6AAD) return;
-          this._barObject = new LP(NP, this._createInitialObjectState()), targetObj21.addObject(this._barObject, PP), this.disposeWithMe(ox1db710(this._barObject["onPointerDown$"].subscribeEvent((var_core_value_sigB608, var_core_value_sigF866) => {
+          this._barObject = new LP(NP, this._createInitialObjectState()), v501.addObject(this._barObject, PP), this.disposeWithMe(ox1db710(this._barObject["onPointerDown$"].subscribeEvent((var_core_value_sigB608, var_core_value_sigF866) => {
             this._handleBarPointerDown(var_core_value_sigB608, var_core_value_sigF866);
-          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerDown$["subscribeEvent"](() => {
+          }))), this.disposeWithMe(ox1db710(v501.onPointerDown$["subscribeEvent"](() => {
             this._drag || (this._viewportPointerActive = true);
-          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerMove$["subscribeEvent"]((var_core_value_sig5EFB, var_core_value_sig3A85) => {
+          }))), this.disposeWithMe(ox1db710(v501.onPointerMove$["subscribeEvent"]((var_core_value_sig5EFB, var_core_value_sig3A85) => {
             this._handlePointerMove(var_core_value_sig5EFB, var_core_value_sig3A85);
-          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerUp$["subscribeEvent"]((var_core_value_sig2682, var_core_value_sig4BB5) => {
+          }))), this.disposeWithMe(ox1db710(v501.onPointerUp$["subscribeEvent"]((var_core_value_sig2682, var_core_value_sig4BB5) => {
             this._handlePointerEnd(var_core_value_sig2682, var_core_value_sig4BB5);
-          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerCancel$["subscribeEvent"]((var_core_value_sig6709, var_core_value_sig52CA) => {
+          }))), this.disposeWithMe(ox1db710(v501.onPointerCancel$["subscribeEvent"]((var_core_value_sig6709, var_core_value_sig52CA) => {
             this._handlePointerEnd(null, var_core_value_sig52CA);
-          }))), this._subscribeToWindowInputInterruptions(), this.disposeWithMe(ox1db710(targetObj20.onTransformChange$['subscribeEvent'](() => this._syncLayout(false))));
+          }))), this._subscribeToWindowInputInterruptions(), this.disposeWithMe(ox1db710(v500.onTransformChange$['subscribeEvent'](() => this._syncLayout(false))));
           let var_core_value_sig1157 = this._stateService['getSettings']().viewportBarEnabled;
           this.disposeWithMe(this._stateService['state$'].subscribe(targetObj29 => {
             let var_core_value_sig88F6 = !var_core_value_sig1157 && targetObj29.settings["viewportBarEnabled"];
@@ -21826,7 +21826,7 @@ function IM(var_core_value_sig2B59) {
             this._handleElementChanges(var_core_value_sig6AAD, var_core_value_sigE0A9);
           })), this.disposeWithMe(ox2eae45([this._themeService["currentTheme$"], this._themeService['darkMode$']]).subscribe(() => this._syncTheme())), this.disposeWithMe(ox1db710(() => {
             var targetObj31;
-            this._scheduledFrameId != null && typeof globalThis.cancelAnimationFrame == "function" && globalThis.cancelAnimationFrame(this._scheduledFrameId), this._scheduledFrameId = null, AE(targetObj21, qP), (targetObj31 = targetObj21.removeObjects) == null || targetObj31.call(targetObj21, [this._barObject].filter(var_core_value_sigEB43 => !!var_core_value_sigEB43)), this._barObject = null;
+            this._scheduledFrameId != null && typeof globalThis.cancelAnimationFrame == "function" && globalThis.cancelAnimationFrame(this._scheduledFrameId), this._scheduledFrameId = null, AE(v501, qP), (targetObj31 = v501.removeObjects) == null || targetObj31.call(v501, [this._barObject].filter(var_core_value_sigEB43 => !!var_core_value_sigEB43)), this._barObject = null;
           })), this._syncLayout(true), this._scheduleLayoutSync(false);
         }
         _subscribeToWindowInputInterruptions() {
@@ -21882,15 +21882,15 @@ function IM(var_core_value_sig2B59) {
           }
         }
         _syncLayout(var_core_value_sig555F) {
-          var targetObj_BD18, targetObj24, targetObj25;
-          let targetObj26 = this._barObject,
+          var targetObj_BD18, v511, v512;
+          let v513 = this._barObject,
             var_core_value_sig48EA = this._instanceSrv["getUnit"](this._renderContext["unitId"], ox2dc2f2.UNIVER_BOARD);
-          if (!targetObj26 || !var_core_value_sig48EA) return;
+          if (!v513 || !var_core_value_sig48EA) return;
           if (!this._stateService["getSettings"]().viewportBarEnabled) {
             this._contentBounds = null, this._layout = {
               'horizontal': null,
               'vertical': null
-            }, this._navigationBounds = null, targetObj26.updateState({
+            }, this._navigationBounds = null, v513.updateState({
               'activeAxis': null,
               'horizontalRect': null,
               'hoverAxis': null,
@@ -21899,41 +21899,41 @@ function IM(var_core_value_sig2B59) {
             return;
           }
           this._drag && var_core_value_sig555F ? this._pendingContentRefresh = true : var_core_value_sig555F && (this._contentBounds = this._resolveContentBounds(var_core_value_sig48EA));
-          let targetObj27 = this._stateService["getState"](),
-            countVal37 = Number.isFinite(targetObj27.zoomRatio) && targetObj27.zoomRatio > 0 ? targetObj27.zoomRatio : 1,
-            targetObj28 = this._resolveViewportPixelSize(),
-            targetObj29 = {
-              'height': targetObj28.height / countVal37,
-              'left': -targetObj27.viewportPanOffset['x'] / countVal37,
-              'top': -targetObj27.viewportPanOffset['y'] / countVal37,
-              'width': targetObj28.width / countVal37
+          let v515 = this._stateService["getState"](),
+            countVal37 = Number.isFinite(v515.zoomRatio) && v515.zoomRatio > 0 ? v515.zoomRatio : 1,
+            v517 = this._resolveViewportPixelSize(),
+            v518 = {
+              'height': v517.height / countVal37,
+              'left': -v515.viewportPanOffset['x'] / countVal37,
+              'top': -v515.viewportPanOffset['y'] / countVal37,
+              'width': v517.width / countVal37
             },
             var_core_value_sig1617 = VP((targetObj_BD18 = this._configService['getConfig']('boards-ui.config')) == null || (targetObj_BD18 = targetObj_BD18.viewportBar) == null ? undefined : targetObj_BD18.padding),
-            var_core_value_sig4169 = HP(this._contentBounds, targetObj29, var_core_value_sig1617);
+            var_core_value_sig4169 = HP(this._contentBounds, v518, var_core_value_sig1617);
           this._drag || (this._navigationBounds = this._viewportPointerActive && this._navigationBounds ? UP(this._navigationBounds, var_core_value_sig4169) : var_core_value_sig4169), this._navigationBounds ??= var_core_value_sig4169, this._layout = GP({
             'barSize': 6,
             'edgeOffset': 5,
             'horizontal': this._horizontalEnabled,
             'minBarLength': 40,
             'navigationBounds': this._navigationBounds,
-            'safeArea': this._resolveSafeArea(targetObj28),
+            'safeArea': this._resolveSafeArea(v517),
             'vertical': this._verticalEnabled,
-            'viewport': targetObj29,
-            'viewportPixelSize': targetObj28
-          }), targetObj26.updateState({
-            'horizontalRect': this._toWorldRect(((targetObj24 = this._layout["horizontal"]) == null ? undefined : targetObj24.barRect) ?? null, targetObj29, countVal37),
-            'verticalRect': this._toWorldRect(((targetObj25 = this._layout['vertical']) == null ? undefined : targetObj25.barRect) ?? null, targetObj29, countVal37),
+            'viewport': v518,
+            'viewportPixelSize': v517
+          }), v513.updateState({
+            'horizontalRect': this._toWorldRect(((v511 = this._layout["horizontal"]) == null ? undefined : v511.barRect) ?? null, v518, countVal37),
+            'verticalRect': this._toWorldRect(((v512 = this._layout['vertical']) == null ? undefined : v512.barRect) ?? null, v518, countVal37),
             'zoomRatio': countVal37
           }), this._renderContext["scene"].makeDirty(true);
         }
         _resolveViewportPixelSize() {
           let {
             engine: targetObj_BD18,
-            scene: targetObj36
+            scene: v522
           } = this._renderContext;
           return {
-            'height': Number.isFinite(targetObj_BD18.height) && targetObj_BD18.height > 0 ? targetObj_BD18.height : targetObj36.height,
-            'width': Number.isFinite(targetObj_BD18.width) && targetObj_BD18.width > 0 ? targetObj_BD18.width : targetObj36.width
+            'height': Number.isFinite(targetObj_BD18.height) && targetObj_BD18.height > 0 ? targetObj_BD18.height : v522.height,
+            'width': Number.isFinite(targetObj_BD18.width) && targetObj_BD18.width > 0 ? targetObj_BD18.width : v522.width
           };
         }
         _resolveContentBounds(targetObj_BD18) {
@@ -21952,26 +21952,26 @@ function IM(var_core_value_sig2B59) {
             }
           });
         }
-        _toWorldRect(targetObj_BD18, targetObj38, countVal39) {
+        _toWorldRect(targetObj_BD18, v527, countVal39) {
           return targetObj_BD18 ? {
             'height': targetObj_BD18.height / countVal39,
-            'left': targetObj38.left + targetObj_BD18.left / countVal39,
-            'top': targetObj38.top + targetObj_BD18.top / countVal39,
+            'left': v527.left + targetObj_BD18.left / countVal39,
+            'top': v527.top + targetObj_BD18.top / countVal39,
             'width': targetObj_BD18.width / countVal39
           } : null;
         }
         _resolveSafeArea(targetObj_BD18) {
-          var targetObj40, var_core_value_sigC9F5, targetObj41;
-          let var_core_value_sig59CE = (targetObj40 = (var_core_value_sigC9F5 = this._renderContext["engine"]).getCanvasElement) == null ? undefined : targetObj40.call(var_core_value_sigC9F5),
-            var_core_value_sig33C8 = var_core_value_sig59CE == null || (targetObj41 = var_core_value_sig59CE.closest) == null ? undefined : targetObj41.call(var_core_value_sig59CE, '[data-board-viewport-host=\x22true\x22]');
+          var v530, var_core_value_sigC9F5, v532;
+          let var_core_value_sig59CE = (v530 = (var_core_value_sigC9F5 = this._renderContext["engine"]).getCanvasElement) == null ? undefined : v530.call(var_core_value_sigC9F5),
+            var_core_value_sig33C8 = var_core_value_sig59CE == null || (v532 = var_core_value_sig59CE.closest) == null ? undefined : v532.call(var_core_value_sig59CE, '[data-board-viewport-host=\x22true\x22]');
           if (!var_core_value_sig33C8) return {};
-          let targetObj42 = var_core_value_sig33C8.getBoundingClientRect();
-          if (targetObj42.width <= 0 || targetObj42.height <= 0) return {};
-          let countVal41 = targetObj_BD18.width / targetObj42.width,
-            countVal42 = targetObj_BD18.height / targetObj42.height,
+          let v535 = var_core_value_sig33C8.getBoundingClientRect();
+          if (v535.width <= 0 || v535.height <= 0) return {};
+          let countVal41 = targetObj_BD18.width / v535.width,
+            countVal42 = targetObj_BD18.height / v535.height,
             countVal43 = targetObj_BD18.height - 5 - 6 / 2,
             countVal44 = targetObj_BD18.width - 5 - 6 / 2,
-            targetObj43 = {
+            v540 = {
               'horizontalEnd': targetObj_BD18.width - 5,
               'horizontalStart': 5,
               'verticalEnd': targetObj_BD18.height - 5,
@@ -21979,17 +21979,17 @@ function IM(var_core_value_sig2B59) {
             };
           return var_core_value_sig33C8.querySelectorAll(['[data-board-help-control=\x22true\x22]', "[data-board-left-toolbar=\"true\"]", "[data-board-top-right-menu=\"true\"]", "[data-board-zoom-controls=\"true\"]"].join(',')).forEach(targetObj39 => {
             let targetObj40 = targetObj39.getBoundingClientRect(),
-              countVal12 = (targetObj40.left - targetObj42.left) * countVal41,
-              countVal13 = (targetObj40.right - targetObj42.left) * countVal41,
-              countVal14 = (targetObj40.top - targetObj42.top) * countVal42,
-              countVal15 = (targetObj40.bottom - targetObj42.top) * countVal42;
-            countVal14 <= countVal43 + 7 && countVal15 >= countVal43 - 7 && ((countVal12 + countVal13) / 2 >= targetObj_BD18.width / 2 ? targetObj43.horizontalEnd = Math.min(targetObj43.horizontalEnd, countVal12 - 12) : targetObj43.horizontalStart = Math.max(targetObj43.horizontalStart, countVal13 + 12)), countVal12 <= countVal44 + 7 && countVal13 >= countVal44 - 7 && ((countVal14 + countVal15) / 2 >= targetObj_BD18.height / 2 ? targetObj43.verticalEnd = Math.min(targetObj43.verticalEnd, countVal14 - 12) : targetObj43.verticalStart = Math.max(targetObj43.verticalStart, countVal15 + 12));
-          }), targetObj43;
+              countVal12 = (targetObj40.left - v535.left) * countVal41,
+              countVal13 = (targetObj40.right - v535.left) * countVal41,
+              countVal14 = (targetObj40.top - v535.top) * countVal42,
+              countVal15 = (targetObj40.bottom - v535.top) * countVal42;
+            countVal14 <= countVal43 + 7 && countVal15 >= countVal43 - 7 && ((countVal12 + countVal13) / 2 >= targetObj_BD18.width / 2 ? v540.horizontalEnd = Math.min(v540.horizontalEnd, countVal12 - 12) : v540.horizontalStart = Math.max(v540.horizontalStart, countVal13 + 12)), countVal12 <= countVal44 + 7 && countVal13 >= countVal44 - 7 && ((countVal14 + countVal15) / 2 >= targetObj_BD18.height / 2 ? v540.verticalEnd = Math.min(v540.verticalEnd, countVal14 - 12) : v540.verticalStart = Math.max(v540.verticalStart, countVal15 + 12));
+          }), v540;
         }
-        _handleBarPointerDown(targetObj_BD18, targetObj48) {
-          var targetObj49, targetObj50;
+        _handleBarPointerDown(targetObj_BD18, v542) {
+          var v543, v544;
           if (typeof targetObj_BD18.button == 'number' && targetObj_BD18.button !== 0) return;
-          let var_core_value_sig0B4E = ((targetObj49 = this._barObject) == null ? undefined : targetObj49.resolveHitAxis(this._getBoardPoint(targetObj_BD18))) ?? null,
+          let var_core_value_sig0B4E = ((v543 = this._barObject) == null ? undefined : v543.resolveHitAxis(this._getBoardPoint(targetObj_BD18))) ?? null,
             var_core_value_sig0E9F = var_core_value_sig0B4E ? this._layout[var_core_value_sig0B4E] : null;
           if (!var_core_value_sig0B4E || !var_core_value_sig0E9F) return;
           let v547 = this._stateService["getState"](),
@@ -22007,10 +22007,10 @@ function IM(var_core_value_sig2B59) {
               ...v547.viewportPanOffset
             },
             'zoomRatio': Number.isFinite(v547.zoomRatio) && v547.zoomRatio > 0 ? v547.zoomRatio : 1
-          }, (targetObj50 = this._barObject) == null || targetObj50.updateState({
+          }, (v544 = this._barObject) == null || v544.updateState({
             'activeAxis': var_core_value_sig0B4E,
             'hoverAxis': var_core_value_sig0B4E
-          }), kE(this._renderContext['scene'], qP, true), this._setCursor(ox37711d.GRABBING), targetObj48.stopPropagation();
+          }), kE(this._renderContext['scene'], qP, true), this._setCursor(ox37711d.GRABBING), v542.stopPropagation();
         }
         _handlePointerMove(targetObj_BD18, v550) {
           let v551 = this._drag;
@@ -22142,10 +22142,10 @@ function IM(var_core_value_sig2B59) {
         };
         let v4299 = tF(targetObj_BD18),
           countVal_0E5A = Number.isFinite(targetObj_BD18.offsetX) ? targetObj_BD18.offsetX : v4299.x,
-          countVal16 = Number.isFinite(targetObj_BD18.offsetY) ? targetObj_BD18.offsetY : v4299.y;
+          v4301 = Number.isFinite(targetObj_BD18.offsetY) ? targetObj_BD18.offsetY : v4299.y;
         return {
           'left': v4299.x - countVal_0E5A,
-          'top': v4299.y - countVal16
+          'top': v4299.y - v4301
         };
       }
       ;
@@ -23113,24 +23113,24 @@ function IM(var_core_value_sig2B59) {
             'previewHostSize': targetObj_BD18 => {
               let var_core_value_sigF0F9 = options42.getElementById(targetObj_BD18.unitId, targetObj_BD18.subUnitId, targetObj_BD18.shapeId);
               if (!var_core_value_sigF0F9) return;
-              let targetObj = options43.resolveHostSize({
+              let v18 = options43.resolveHostSize({
                   'elementData': var_core_value_sigF0F9,
                   'params': targetObj_BD18
                 }) ?? targetObj_BD18,
-                targetObj1 = {
+                v19 = {
                   ...targetObj_BD18,
-                  'width': targetObj.width,
-                  'height': targetObj.height
+                  'width': v18.width,
+                  'height': v18.height
                 };
               options43.previewHostSize({
                 'elementData': var_core_value_sigF0F9,
-                'params': targetObj1
+                'params': v19
               }) || BI({
                 'elementData': var_core_value_sigF0F9,
-                'height': targetObj.height,
+                'height': v18.height,
                 'renderManagerService': var_core_value_sigD9551,
                 'unitId': targetObj_BD18.unitId,
-                'width': targetObj.width
+                'width': v18.width
               });
             },
             'allowHostSizeShrink': ({
@@ -23161,9 +23161,9 @@ function IM(var_core_value_sig2B59) {
               'main': z_
             },
             'getHostTransform': (var_core_value_sig0A4E, targetObj_BD18) => {
-              let targetObj4 = options42.getElementById(targetObj_BD18.unitId, targetObj_BD18.subUnitId, targetObj_BD18.shapeId);
-              return (targetObj4 == null ? undefined : targetObj4.element["type"]) === ox2cbbb0.Connector ? LI({
-                'elementData': targetObj4,
+              let v17 = options42.getElementById(targetObj_BD18.unitId, targetObj_BD18.subUnitId, targetObj_BD18.shapeId);
+              return (v17 == null ? undefined : v17.element["type"]) === ox2cbbb0.Connector ? LI({
+                'elementData': v17,
                 'elementDataMap': options42.getElementData(targetObj_BD18.unitId, targetObj_BD18.subUnitId),
                 'labelId': targetObj_BD18.labelId,
                 'renderManagerService': var_core_value_sigD9551,
@@ -23172,8 +23172,8 @@ function IM(var_core_value_sig2B59) {
               }) : null;
             },
             'getPositionOffset': (targetObj_BD18, var_core_value_sigBB9B, var_core_value_sigFC5C) => {
-              var targetObj6, var_core_value_sig2BCF;
-              return II((targetObj6 = (var_core_value_sig2BCF = targetObj_BD18.engine).getCanvasElement) == null ? undefined : targetObj6.call(var_core_value_sig2BCF), targetObj_BD18.positionRoot ?? var_core_value_sigFC5C ?? undefined);
+              var v15, var_core_value_sig2BCF;
+              return II((v15 = (var_core_value_sig2BCF = targetObj_BD18.engine).getCanvasElement) == null ? undefined : v15.call(var_core_value_sig2BCF), targetObj_BD18.positionRoot ?? var_core_value_sigFC5C ?? undefined);
             }
           }), [options42, targetObj_BD18.positionRoot, var_core_value_sigD9551])
         });
@@ -23208,8 +23208,8 @@ function IM(var_core_value_sig2B59) {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             var var_core_value_sig116D, targetObj_BD18;
-            let targetObj8 = options47.getRenderUnitById(var_core_value_sig1606),
-              var_core_value_sig05A7 = targetObj8 == null || (targetObj_BD18 = (var_core_value_sig116D = targetObj8.engine).getCanvasElement) == null ? undefined : targetObj_BD18.call(var_core_value_sig116D);
+            let v4168 = options47.getRenderUnitById(var_core_value_sig1606),
+              var_core_value_sig05A7 = v4168 == null || (targetObj_BD18 = (var_core_value_sig116D = v4168.engine).getCanvasElement) == null ? undefined : targetObj_BD18.call(var_core_value_sig116D);
             var_core_value_sig05A7 == null || var_core_value_sig05A7.focus({
               'preventScroll': true
             });
@@ -23223,10 +23223,10 @@ function IM(var_core_value_sig2B59) {
         if (!var_core_value_sigC2EF) return null;
         let var_core_value_sig2FD1 = v4160 == null ? undefined : v4160.getBoundingClientRect(),
           countVal_0E5A = var_core_value_sig2FD1 ? var_core_value_sig2FD1.left + ((v4160 == null ? undefined : v4160.clientLeft) ?? 0) - ((v4160 == null ? undefined : v4160.scrollLeft) ?? 0) : 0,
-          countVal18 = var_core_value_sig2FD1 ? var_core_value_sig2FD1.top + ((v4160 == null ? undefined : v4160.clientTop) ?? 0) - ((v4160 == null ? undefined : v4160.scrollTop) ?? 0) : 0;
+          v4165 = var_core_value_sig2FD1 ? var_core_value_sig2FD1.top + ((v4160 == null ? undefined : v4160.clientTop) ?? 0) - ((v4160 == null ? undefined : v4160.scrollTop) ?? 0) : 0;
         return {
           'left': var_core_value_sigC2EF.left - countVal_0E5A,
-          'top': var_core_value_sigC2EF.top - countVal18
+          'top': var_core_value_sigC2EF.top - v4165
         };
       }
       ;
@@ -23529,4 +23529,3 @@ function IM(var_core_value_sig2B59) {
     })
   };
 }
-
