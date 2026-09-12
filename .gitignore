@@ -26,6 +26,8 @@ skills-lock.json
 !vendor/univer-pro-published/**/lib/**
 !vendor/univer-pro-published/**/dist/
 !vendor/univer-pro-published/**/dist/**
+!vendor/univer-pro-0x-backup/**/lib/
+!vendor/univer-pro-0x-backup/**/lib/**
 !vendor/univer-cli/**/lib/
 !vendor/univer-cli/**/lib/**
 !vendor/univer-cli/**/dist/

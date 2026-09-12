@@ -85,7 +85,11 @@ export function healForParse(src) {
     .replace(/\bas\s+delete\s+([A-Z][A-Za-z0-9_]*)/g, "as delete$1")
     .replace(/([,{])delete\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "$1delete$2 as")
     .replace(/([{};,])\s*delete\s+([A-Z][A-Za-z0-9_]*)\s*\(/g, "$1delete$2(")
-    .replace(/\(function\s*\(\s*\)\s*\{\(\)\)/g, "(function(){})");
+    .replace(/\(function\s*\(\s*\)\s*\{\(\)\)/g, "(function(){})")
+    .replace(/\(function\s*\(\s*\)\s*\{,/g, "(function(){")
+    .replace(/\[\];,((?:'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"))\s*:/g, "{$1:")
+    .replace(/\}function\b/g, "};function")
+    .replace(/\}async\s+function\b/g, "};async function");
 }
 
 function exportedName(spec) {
@@ -175,7 +179,7 @@ function allocName(scope, counter) {
   return name;
 }
 
-function renameHexBindings(ast, traverse) {
+function renameHexBindings(ast, traverse, counter = { value: 0 }) {
   const jobs = [];
   const seen = new Set();
   traverse(ast, {
@@ -193,7 +197,6 @@ function renameHexBindings(ast, traverse) {
     }
   });
   jobs.sort((a, b) => b.depth - a.depth);
-  const counter = { value: 0 };
   for (const { scope, name } of jobs) {
     if (!scope.hasOwnBinding(name)) continue;
     scope.rename(name, allocName(scope, counter));
@@ -226,48 +229,211 @@ function renameHexLabels(ast, traverse) {
   return map.size;
 }
 
-export function rename0xIdents(src) {
-  const hitsBefore = countTokens(src);
-  if (hitsBefore === 0) {
-    return { src, changed: false, aborted: false, reason: null, hitsBefore, hitsAfter: 0, renamed: 0 };
+const CUT_AFTER_BRACE = /^(?:;?(?:async\s+)?function|class|var|let|const|export|import)\b/;
+
+export function splitTopLevel(src) {
+  const events = [];
+  let i = 0;
+  const n = src.length;
+  let paren = 0;
+  let brace = 0;
+  let bracket = 0;
+  let str = null;
+  while (i < n) {
+    const c = src[i];
+    if (str) {
+      if (c === "\\") {
+        i += 2;
+        continue;
+      }
+      if (c === str) str = null;
+      i += 1;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      i += 1;
+      continue;
+    }
+    if (c === "`") {
+      str = "`";
+      i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "/") {
+      i += 2;
+      while (i < n && src[i] !== "\n") i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "*") {
+      i += 2;
+      while (i < n - 1 && !(src[i] === "*" && src[i + 1] === "/")) i += 1;
+      i += 2;
+      continue;
+    }
+    if (c === "/" && /[=(,;:{[!&|?]$/.test(src[i - 1] ?? ";")) {
+      i += 1;
+      while (i < n) {
+        if (src[i] === "\\") {
+          i += 2;
+          continue;
+        }
+        if (src[i] === "/") {
+          i += 1;
+          while (i < n && /[gimsuy]/.test(src[i])) i += 1;
+          break;
+        }
+        if (src[i] === "\n") break;
+        i += 1;
+      }
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") paren -= 1;
+    else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") brace += 1;
+    else if (c === "}") {
+      brace -= 1;
+      if (paren === 0 && bracket === 0 && brace >= 0) {
+        const rest = src.slice(i + 1, i + 20);
+        if (CUT_AFTER_BRACE.test(rest)) events.push({ at: i + 1, depth: brace });
+      }
+    }
+    i += 1;
   }
-  let ast;
+  if (events.length === 0) return [src];
+  const depth0 = events.filter((e) => e.depth === 0);
+  const cutsAt = depth0.length > 0 ? depth0 : events.filter((e) => e.depth === Math.min(...events.map((x) => x.depth)));
+  const cuts = [0, ...cutsAt.map((e) => e.at), n];
+  const chunks = [];
+  for (let k = 0; k < cuts.length - 1; k += 1) {
+    const part = src.slice(cuts[k], cuts[k + 1]);
+    if (part.length) chunks.push(part);
+  }
+  return chunks.length ? chunks : [src];
+}
+
+function parseMaybeHealed(src) {
   try {
-    ast = parseSource(src);
+    return { ast: parseSource(src), src };
   } catch (firstErr) {
     const healed = healForParse(src);
+    if (healed === src) return { error: firstErr, src };
     try {
-      ast = parseSource(healed);
-      src = healed;
+      return { ast: parseSource(healed), src: healed };
     } catch {
-      return {
-        src,
-        changed: false,
-        aborted: true,
-        reason: `parse failed: ${firstErr.message}`,
-        hitsBefore,
-        hitsAfter: hitsBefore,
-        renamed: 0
-      };
+      return { error: firstErr, src };
     }
   }
+}
+
+function emitRenamed(src, ast, counter) {
   const { traverse, generate } = loadBabel();
   const abort = findAbortReason(ast, traverse);
-  if (abort) {
-    return { src, changed: false, aborted: true, reason: abort, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
-  }
-  const renamedBindings = renameHexBindings(ast, traverse);
-  const renamedLabels = renameHexLabels(ast, traverse);
-  const renamed = renamedBindings + renamedLabels;
-  if (renamed === 0) {
-    return { src, changed: false, aborted: false, reason: null, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
-  }
+  if (abort) return { aborted: true, reason: abort, src, renamed: 0 };
+  const renamed = renameHexBindings(ast, traverse, counter) + renameHexLabels(ast, traverse);
+  if (renamed === 0) return { aborted: false, src, renamed: 0, changed: false };
   const out = generate(ast, {
     comments: true,
     compact: true,
     jsescOption: { quotes: "double", minimal: true }
   }).code;
   const next = out.endsWith("\n") ? out : `${out}\n`;
+  return { aborted: false, src: next, renamed, changed: next !== src };
+}
+
+function renameOneUnit(src, counter) {
+  const parsed = parseMaybeHealed(src);
+  if (!parsed.ast) return { ...parsed, renamed: 0, changed: false, aborted: false };
+  return emitRenamed(parsed.src, parsed.ast, counter);
+}
+
+export function rename0xIdents(src) {
+  const hitsBefore = countTokens(src);
+  if (hitsBefore === 0) {
+    return { src, changed: false, aborted: false, reason: null, hitsBefore, hitsAfter: 0, renamed: 0 };
+  }
+  const counter = { value: 0 };
+  const whole = renameOneUnit(src, counter);
+  if (whole.aborted) {
+    return { src, changed: false, aborted: true, reason: whole.reason, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
+  }
+  if (whole.ast !== undefined || whole.renamed > 0 || whole.changed || !whole.error) {
+    if (!whole.error) {
+      if (whole.renamed === 0) {
+        return { src: whole.src, changed: false, aborted: false, reason: null, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
+      }
+      return {
+        src: whole.src,
+        changed: whole.changed ?? whole.src !== src,
+        aborted: false,
+        reason: null,
+        hitsBefore,
+        hitsAfter: countTokens(whole.src),
+        renamed: whole.renamed
+      };
+    }
+  }
+
+  const chunks = splitTopLevel(src);
+  if (chunks.length < 2) {
+    return {
+      src,
+      changed: false,
+      aborted: true,
+      reason: `parse failed: ${whole.error?.message ?? "unparseable"}`,
+      hitsBefore,
+      hitsAfter: hitsBefore,
+      renamed: 0
+    };
+  }
+  const out = [];
+  let renamed = 0;
+  let chunkAbort = null;
+  for (const chunk of chunks) {
+    const result = renameOneUnit(chunk, counter);
+    if (result.aborted) {
+      chunkAbort = result.reason;
+      break;
+    }
+    if (result.error) {
+      const inner = splitTopLevel(healForParse(chunk));
+      if (inner.length > 1) {
+        for (const part of inner) {
+          const innerResult = renameOneUnit(part, counter);
+          if (innerResult.aborted) {
+            chunkAbort = innerResult.reason;
+            break;
+          }
+          out.push(innerResult.error ? part : innerResult.src);
+          renamed += innerResult.renamed ?? 0;
+        }
+        if (chunkAbort) break;
+        continue;
+      }
+      out.push(chunk);
+      continue;
+    }
+    out.push(result.src);
+    renamed += result.renamed ?? 0;
+  }
+  if (chunkAbort) {
+    return { src, changed: false, aborted: true, reason: chunkAbort, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
+  }
+  if (renamed === 0) {
+    return {
+      src,
+      changed: false,
+      aborted: true,
+      reason: `parse failed: ${whole.error?.message ?? "unparseable chunks"}`,
+      hitsBefore,
+      hitsAfter: hitsBefore,
+      renamed: 0
+    };
+  }
+  let next = out.join("");
+  if (!next.endsWith("\n")) next += "\n";
   return {
     src: next,
     changed: next !== src,

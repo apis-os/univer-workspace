@@ -59,6 +59,31 @@ test("heals unglue-split delete methods and empty rotator IIFE residue", () => {
   assert.doesNotMatch(src, /_0x1a\b/);
 });
 
+test("heals leftover decoder object residue then renames locals", () => {
+  const original =
+    "function _0xaaa(){var _0xbbb=Df,_0xccc,_0xddd,_0xeee=0,_0xfff=[];_0xccc=[],_0xddd=[];,'quadraticIn':function(_0x1a){return _0x1a+\"_0xdead\";}},Hf=1;}\n" +
+    "export { _0xaaa as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "easing-map residue must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /"_0xdead"/);
+  assert.doesNotMatch(src, /_0x1a\b/);
+});
+
+test("heals let-list arrow then nested function and renames across in-memory chunks", () => {
+  const original =
+    "function _0xaaa(){let _0xbbb=()=>{return \"_0xdead\";}function _0xccc(_0x1a){return _0x1a;}return _0xccc;}\n" +
+    "export { _0xaaa as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "ASI }function residue must parse after heal or chunk split");
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /"_0xdead"/);
+  assert.doesNotMatch(src, /_0x1a\b/);
+  assert.doesNotMatch(src, /function\s+_0xaaa\b/);
+});
+
 test("dry-run keeps FFormula export on engine-formula facade without inventing string _0x keys", () => {
   const original = readFileSync(FACADE, "utf8");
   assert.match(original, /export\s*\{\s*_0x[0-9a-f]+\s+as\s+FFormula\s*\}/i);
