@@ -222,3 +222,56 @@ Small facade leftovers (11…1) still parse as wholes but leftover `_0x` are unb
 - T9 / wrangler / `/demo` sheet open
 - git push
 
+## Unbound decoder + inner-export slice + lib-root/cjs twins
+
+Date: 2026-09-12. Did **not** re-run the stalled class/IIFE healer alone. T9 files not touched (`sheets-pivot*` skipped). No push. No `--all`.
+
+### New techniques (TDD RED then GREEN)
+
+`node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **21/21**.
+
+1. **Unbound leftover decoder identifiers** — if `_0xHEX` has no `function`/`class`/`const|let|var`/import binding, rename every Identifier span (lexer `walkCode`, not string/regex). Unique `ox<hex>` names. Strings and `export … as Public` stay. Fixture: `foo(_0xdead01(1));` + `"_0xdead01"`; also `var v99=_0xdead01` (RHS is not a binding).
+2. **Inner `export`/`import` module slice** — first nested or trailing `export`/`import` (including `\nexport{`), split prefix/suffix, rename, splice. Suffix with no `_0x` kept unparsed (`Export 'Ui' is not defined` is parse-only).
+3. **Rotator windows beyond class bodies** — complete `for(;;)` statements, concise object methods, `({…})` object literals, unclosed `else{` tails wrapped as `function __uw()`. Inner `function _0xabcd` names still skipped.
+4. **`--lib-root-twins`** of es already 0 or rewritten (es hits < lib-root hits). Unlink-first + overlay. Backup if not already under `vendor/univer-pro-0x-backup/`.
+5. **`--dirty-cjs`** of remaining dirty giants with the same chunker (no regex).
+
+Still abort `export { _0x123 }` with no `as`.
+
+### Hits
+
+| | This session start (after `043f58f5`) | After this pass |
+| --- | ---: | ---: |
+| `lib/es` files / tokens | 26 / 26,422 | **6 / 9,165** (includes skipped sheets-pivot 4,445) |
+| `lib/cjs` tokens | 403,159 | **20,719** |
+| lib-root tokens | 286,970 | **24,171** |
+| Tree-wide files / tokens | 123 / 726,028 | **48 / 63,532** |
+
+### Giants
+
+| File | Hits before | Hits after |
+| --- | ---: | ---: |
+| `engine-chart/lib/es/index.js` | 11,944 | **4,508** |
+| `engine-chart/lib/index.js` | 118,168 | **4,508** |
+| `engine-chart/lib/cjs/index.js` | 193,007 | **0** |
+| `bases-ui/lib/es/index.js` | 3,223 | **25** |
+| `boards-ui/lib/es/index.js` | 2,705 | **155** |
+| `shape-editor-ui/lib/es/index.js` | 1,355 | **0** |
+| `chart-ui/lib/es/index.js` | 1,570 | **11** |
+| `sheets-print/lib/es/index.js` | 514 | **0** |
+| `embed-ui/lib/es/index.js` | 3 | **0** |
+| `engine-pivot/lib/cjs/index.js` | 2,856 | **0** |
+| `bases/lib/cjs/facade.js` | 1,090 | **0** |
+
+Small facades (docs-list/quote/callout/code/formula, history, thread-comment, print, sparkline-ui) went **0** on es + lib-root + cjs.
+
+### Still stuck (one-line why)
+
+- **sheets-pivot\***: skipped while T9 is live (~44k across es/cjs/lib-root).
+- **engine-chart es/lib 4,508**: missing-semicolon rotator IIFE; remaining names are *bound* inside unparseable `function _0x…` bodies (second pass UNCHANGED).
+- **boards-ui 155/79**: missing-semicolon residue after `else{`.
+- **bases-ui 25 / docs-print 21 / chart-ui 11**: inner export slice + unbound left a few bound names in unparseable prefix.
+- **collab `dist/*.cjs`**: not es/cjs/lib-root twins; left for a later dist pass.
+
+Commit: see git log after this section.
+

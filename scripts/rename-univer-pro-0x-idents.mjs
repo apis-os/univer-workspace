@@ -334,6 +334,14 @@ function isIdentChar(c) {
   return c != null && /[A-Za-z0-9_$]/.test(c);
 }
 
+function readIdent(src, i) {
+  if (i == null || i < 0 || i >= src.length) return null;
+  if (!isIdentChar(src[i]) || /[0-9]/.test(src[i])) return null;
+  let j = i + 1;
+  while (isIdentChar(src[j])) j += 1;
+  return src.slice(i, j);
+}
+
 function isKeywordAt(src, i, word) {
   if (i < 0 || i + word.length > src.length) return false;
   if (src.slice(i, i + word.length) !== word) return false;
@@ -890,12 +898,636 @@ function splitLastExport(src) {
   return [prefix, tail];
 }
 
+function splitAtInnerModuleSlice(src) {
+  let lastExport = -1;
+  let firstInner = -1;
+  walkCode(src, (i, depth) => {
+    const isExport = isKeywordAt(src, i, "export");
+    const isImport = isKeywordAt(src, i, "import");
+    if (!isExport && !isImport) return;
+    const nested = depth.brace !== 0 || depth.paren !== 0 || depth.bracket !== 0;
+    if (nested && firstInner < 0) firstInner = i;
+    if (isExport) lastExport = i;
+  });
+  const cut = firstInner > 0 ? firstInner : lastExport;
+  if (cut <= 0) return null;
+  const prefix = src.slice(0, cut);
+  const suffix = src.slice(cut);
+  if (!prefix.trim() || !suffix.trim()) return null;
+  if (!/^\s*(?:export|import)\b/.test(suffix)) return null;
+  if (countTokens(prefix) === 0 && !prefix.includes("else{")) return null;
+  return [prefix, suffix];
+}
+
+function scanHexIdentSpans(src) {
+  const spans = [];
+  walkCode(src, (i) => {
+    if (src[i] !== "_" || src[i + 1] !== "0" || (src[i + 2] !== "x" && src[i + 2] !== "X")) return;
+    if (isIdentChar(src[i - 1])) return;
+    let j = i + 3;
+    while (j < src.length && /[0-9a-fA-F]/.test(src[j])) j += 1;
+    if (j === i + 3) return;
+    if (isIdentChar(src[j])) return;
+    const name = src.slice(i, j);
+    if (!HEX_IDENT.test(name)) return;
+    spans.push({ start: i, end: j, name });
+  });
+  return spans;
+}
+
+function collectBoundHexNames(src) {
+  const names = new Set();
+  walkCode(src, (i) => {
+    if (isKeywordAt(src, i, "function")) {
+      let j = skipWs(src, i + 8);
+      if (src[j] === "*") j = skipWs(src, j + 1);
+      const id = readIdent(src, j);
+      if (id && HEX_IDENT.test(id)) names.add(id);
+      return;
+    }
+    if (isKeywordAt(src, i, "class")) {
+      let j = skipWs(src, i + 5);
+      if (isKeywordAt(src, j, "extends")) return;
+      const id = readIdent(src, j);
+      if (id && HEX_IDENT.test(id)) names.add(id);
+      return;
+    }
+    if (isKeywordAt(src, i, "const") || isKeywordAt(src, i, "let") || isKeywordAt(src, i, "var")) {
+      const kwLen = src.startsWith("const", i) ? 5 : 3;
+      collectDeclaratorHexNames(src, skipWs(src, i + kwLen), names);
+      return;
+    }
+    if (isKeywordAt(src, i, "import")) {
+      collectImportLocalHexNames(src, i, names);
+      return;
+    }
+    if (isKeywordAt(src, i, "catch")) {
+      let j = skipWs(src, i + 5);
+      if (src[j] === "(") {
+        const id = readIdent(src, skipWs(src, j + 1));
+        if (id && HEX_IDENT.test(id)) names.add(id);
+      }
+    }
+  });
+  return names;
+}
+
+function collectDeclaratorHexNames(src, start, names) {
+  let i = start;
+  let depth = 0;
+  let str = null;
+  let afterEq = false;
+  const n = src.length;
+  while (i < n) {
+    const c = src[i];
+    if (str) {
+      if (c === "\\") {
+        i += 2;
+        continue;
+      }
+      if (c === str) str = null;
+      i += 1;
+      continue;
+    }
+    if (c === "'" || c === '"' || c === "`") {
+      str = c;
+      i += 1;
+      continue;
+    }
+    if (c === "(" || c === "{" || c === "[") {
+      depth += 1;
+      i += 1;
+      continue;
+    }
+    if (c === ")" || c === "}" || c === "]") {
+      if (depth === 0) break;
+      depth -= 1;
+      i += 1;
+      continue;
+    }
+    if (depth === 0 && (c === ";" || (c === "\n" && afterEq))) break;
+    if (depth === 0 && c === ",") {
+      afterEq = false;
+      i += 1;
+      continue;
+    }
+    if (depth === 0 && c === "=") {
+      afterEq = true;
+      i += 1;
+      continue;
+    }
+    if (!afterEq && depth === 0 && isIdentChar(src[i]) && !isIdentChar(src[i - 1])) {
+      const id = readIdent(src, i);
+      if (id && HEX_IDENT.test(id)) names.add(id);
+      i += id ? id.length : 1;
+      continue;
+    }
+    i += 1;
+  }
+}
+
+function collectImportLocalHexNames(src, start, names) {
+  const fromAt = src.indexOf("from", start);
+  const slice = src.slice(start, fromAt > start ? fromAt : start + 200);
+  for (const m of slice.matchAll(/\bas\s+(_0x[0-9a-f]+)\b/gi)) names.add(m[1]);
+  const def = slice.match(/^import\s+(_0x[0-9a-f]+)\b/i);
+  if (def) names.add(def[1]);
+  const star = slice.match(/\*\s+as\s+(_0x[0-9a-f]+)\b/i);
+  if (star) names.add(star[1]);
+}
+
+function isExportAsPublicSpan(src, span) {
+  let k = span.start - 1;
+  while (k >= 0 && /\s/.test(src[k])) k -= 1;
+  if (k < 1) return false;
+  if (src.slice(k - 1, k + 1) === "as" && isKeywordAt(src, k - 1, "as")) return true;
+  return k >= 1 && src[k - 1] === "a" && src[k] === "s" && isKeywordAt(src, k - 1, "as");
+}
+
+function hasBareHexExport(src) {
+  let abort = false;
+  walkCode(src, (i) => {
+    if (abort || !isKeywordAt(src, i, "export")) return;
+    let j = skipWs(src, i + 6);
+    if (src[j] !== "{") return;
+    j = skipWs(src, j + 1);
+    while (j < src.length && src[j] !== "}") {
+      const id = readIdent(src, j);
+      if (!id) {
+        j += 1;
+        continue;
+      }
+      j = skipWs(src, j + id.length);
+      if (HEX_IDENT.test(id) && !isKeywordAt(src, j, "as")) {
+        abort = true;
+        return;
+      }
+      if (isKeywordAt(src, j, "as")) {
+        j = skipWs(src, j + 2);
+        const exported = readIdent(src, j);
+        j = skipWs(src, j + (exported?.length ?? 0));
+      }
+      if (src[j] === ",") j = skipWs(src, j + 1);
+      else break;
+    }
+  });
+  return abort;
+}
+
+function allocUnboundName(old, src, used) {
+  const hex = old.replace(/^_0x/i, "");
+  let candidate = `ox${hex}`;
+  let n = 0;
+  while (used.has(candidate) || identExistsInCode(src, candidate)) {
+    n += 1;
+    candidate = `ox${hex}_${n}`;
+  }
+  used.add(candidate);
+  return candidate;
+}
+
+function identExistsInCode(src, name) {
+  let found = false;
+  walkCode(src, (i) => {
+    if (found) return;
+    if (src.startsWith(name, i) && !isIdentChar(src[i - 1]) && !isIdentChar(src[i + name.length])) {
+      found = true;
+    }
+  });
+  return found;
+}
+
+export function renameUnboundHexIdents(src) {
+  const spans = scanHexIdentSpans(src);
+  if (spans.length === 0) return { src, renamed: 0, changed: false };
+  const bound = collectBoundHexNames(src);
+  const map = new Map();
+  const used = new Set();
+  for (const span of spans) {
+    if (bound.has(span.name)) continue;
+    if (isExportAsPublicSpan(src, span)) continue;
+    if (!map.has(span.name)) map.set(span.name, allocUnboundName(span.name, src, used));
+  }
+  if (map.size === 0) return { src, renamed: 0, changed: false };
+  let out = src;
+  for (const span of [...spans].sort((a, b) => b.start - a.start)) {
+    const next = map.get(span.name);
+    if (!next) continue;
+    out = out.slice(0, span.start) + next + out.slice(span.end);
+  }
+  return { src: out, renamed: map.size, changed: out !== src };
+}
+
+function matchBalancedBrace(src, openIndex) {
+  if (src[openIndex] !== "{") return null;
+  let brace = 0;
+  let paren = 0;
+  let bracket = 0;
+  let str = null;
+  const tmplExpr = [];
+  const n = src.length;
+  for (let i = openIndex; i < n; i += 1) {
+    const c = src[i];
+    if (str === "`") {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === "`") {
+        str = null;
+        continue;
+      }
+      if (c === "$" && src[i + 1] === "{") {
+        tmplExpr.push(brace);
+        brace += 1;
+        str = null;
+        i += 1;
+        continue;
+      }
+      continue;
+    }
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "`") {
+      str = "`";
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "/") {
+      i += 1;
+      while (i < n && src[i] !== "\n") i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "*") {
+      i += 1;
+      while (i < n - 1 && !(src[i] === "*" && src[i + 1] === "/")) i += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i) - 1;
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") paren -= 1;
+    else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") brace += 1;
+    else if (c === "}") {
+      brace -= 1;
+      if (tmplExpr.length && brace === tmplExpr[tmplExpr.length - 1]) {
+        tmplExpr.pop();
+        str = "`";
+        continue;
+      }
+      if (brace === 0 && paren === 0 && bracket === 0) return { start: openIndex, end: i + 1 };
+    }
+  }
+  return null;
+}
+
+function matchCompleteFor(src, start) {
+  if (!isKeywordAt(src, start, "for")) return null;
+  let i = skipWs(src, start + 3);
+  if (isKeywordAt(src, i, "await")) i = skipWs(src, i + 5);
+  if (src[i] !== "(") return null;
+  let paren = 0;
+  let brace = 0;
+  let bracket = 0;
+  let str = null;
+  const tmplExpr = [];
+  let started = false;
+  const n = src.length;
+  for (; i < n; i += 1) {
+    const c = src[i];
+    if (str === "`") {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === "`") {
+        str = null;
+        continue;
+      }
+      if (c === "$" && src[i + 1] === "{") {
+        tmplExpr.push(brace);
+        brace += 1;
+        str = null;
+        i += 1;
+        continue;
+      }
+      continue;
+    }
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "`") {
+      str = "`";
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "/") {
+      i += 1;
+      while (i < n && src[i] !== "\n") i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "*") {
+      i += 1;
+      while (i < n - 1 && !(src[i] === "*" && src[i + 1] === "/")) i += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i) - 1;
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") {
+      paren -= 1;
+      if (!started && paren === 0 && brace === 0 && bracket === 0) {
+        let j = skipWs(src, i + 1);
+        if (src[j] !== "{") return { start, end: j };
+        started = true;
+        i = j;
+        brace = 1;
+        continue;
+      }
+    } else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") {
+      if (started) brace += 1;
+    } else if (c === "}") {
+      if (started) {
+        brace -= 1;
+        if (tmplExpr.length && brace === tmplExpr[tmplExpr.length - 1]) {
+          tmplExpr.pop();
+          str = "`";
+          continue;
+        }
+        if (brace === 0) return { start, end: i + 1 };
+      }
+    }
+  }
+  return null;
+}
+
+const CONCISE_METHOD_SKIP = new Set([
+  "if",
+  "for",
+  "while",
+  "switch",
+  "catch",
+  "function",
+  "class",
+  "return",
+  "switch",
+  "with",
+  "do",
+  "else",
+  "try",
+  "finally",
+  "typeof",
+  "void",
+  "delete",
+  "new",
+  "await",
+  "yield",
+  "case",
+  "throw",
+  "in",
+  "of",
+  "instanceof",
+  "async"
+]);
+
+function matchConciseMethod(src, start) {
+  const id = readIdent(src, start);
+  if (!id || CONCISE_METHOD_SKIP.has(id)) return null;
+  let i = skipWs(src, start + id.length);
+  if (isKeywordAt(src, start, "async")) {
+    const next = readIdent(src, i);
+    if (!next || CONCISE_METHOD_SKIP.has(next) || next === "function") return null;
+    i = skipWs(src, i + next.length);
+  }
+  if (src[i] !== "(") return null;
+  const found = matchCompleteFunction(src, start);
+  if (found) return null;
+  let paren = 0;
+  let brace = 0;
+  let bracket = 0;
+  let str = null;
+  const tmplExpr = [];
+  let started = false;
+  const n = src.length;
+  for (; i < n; i += 1) {
+    const c = src[i];
+    if (str === "`") {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === "`") {
+        str = null;
+        continue;
+      }
+      if (c === "$" && src[i + 1] === "{") {
+        tmplExpr.push(brace);
+        brace += 1;
+        str = null;
+        i += 1;
+        continue;
+      }
+      continue;
+    }
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "`") {
+      str = "`";
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "/") {
+      i += 1;
+      while (i < n && src[i] !== "\n") i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "*") {
+      i += 1;
+      while (i < n - 1 && !(src[i] === "*" && src[i + 1] === "/")) i += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i) - 1;
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") {
+      paren -= 1;
+    } else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") {
+      if (!started && paren === 0 && bracket === 0) {
+        started = true;
+        brace = 1;
+        continue;
+      }
+      if (started) brace += 1;
+    } else if (c === "}") {
+      if (started) {
+        brace -= 1;
+        if (tmplExpr.length && brace === tmplExpr[tmplExpr.length - 1]) {
+          tmplExpr.pop();
+          str = "`";
+          continue;
+        }
+        if (brace === 0) return { start, end: i + 1 };
+      }
+    }
+  }
+  return null;
+}
+
+function scanCompleteFors(src) {
+  const out = [];
+  walkCode(src, (i) => {
+    if (!isKeywordAt(src, i, "for")) return;
+    const found = matchCompleteFor(src, i);
+    if (found && (out.length === 0 || out[out.length - 1].start !== found.start)) out.push(found);
+  });
+  return out;
+}
+
+function scanConciseMethods(src) {
+  const out = [];
+  walkCode(src, (i) => {
+    if (!isIdentChar(src[i]) || isIdentChar(src[i - 1])) return;
+    const found = matchConciseMethod(src, i);
+    if (found && (out.length === 0 || out[out.length - 1].start !== found.start)) out.push(found);
+  });
+  return out;
+}
+
+function scanObjectLiterals(src) {
+  const out = [];
+  walkCode(src, (i) => {
+    if (src[i] !== "{") return;
+    const found = matchBalancedBrace(src, i);
+    if (!found || found.end - found.start < 8) return;
+    if (out.length && out[out.length - 1].start === found.start) return;
+    out.push(found);
+  });
+  return out;
+}
+
+function tryRenameObjectLiteral(src, counter) {
+  if (countTokens(src) === 0) return { src, renamed: 0, changed: false };
+  const wrapped = `(${src});`;
+  const parsed = parseMaybeHealed(wrapped);
+  if (!parsed.ast) return { error: true, src, renamed: 0 };
+  const result = emitRenamed(parsed.src, parsed.ast, counter);
+  if (result.aborted) return result;
+  if (!result.renamed) return { src, renamed: 0, changed: false };
+  try {
+    const ast2 = parseSource(result.src);
+    const stmt = ast2.program.body[0];
+    if (!stmt || stmt.type !== "ExpressionStatement") return { error: true, src, renamed: 0 };
+    const { generate } = loadBabel();
+    return { src: generate(stmt.expression, GEN_OPTS).code, renamed: result.renamed, changed: true, aborted: false };
+  } catch {
+    return { error: true, src, renamed: 0 };
+  }
+}
+
+function processWindows(src, counter, scan, renamePiece, includeTop) {
+  const found = scan(src);
+  const candidates = includeTop ? found : found.filter((f) => !(f.start === 0 && f.end === src.length));
+  const tops = candidates.filter((f) => !candidates.some((o) => o.start < f.start && o.end > f.end));
+  let result = src;
+  let renamed = 0;
+  for (const f of [...tops].sort((a, b) => b.start - a.start)) {
+    const piece = result.slice(f.start, f.end);
+    const renamedPiece = renamePiece(piece, counter);
+    if (renamedPiece.aborted) continue;
+    if (renamedPiece.error || !(renamedPiece.renamed > 0)) continue;
+    renamed += renamedPiece.renamed ?? 0;
+    result = result.slice(0, f.start) + renamedPiece.src + result.slice(f.end);
+  }
+  return { src: result, renamed, changed: result !== src };
+}
+
+function processElseTails(src, counter) {
+  const tails = [];
+  walkCode(src, (i) => {
+    if (!isKeywordAt(src, i, "else")) return;
+    const j = skipWs(src, i + 4);
+    if (src[j] !== "{") return;
+    const balanced = matchBalancedBrace(src, j);
+    const end = balanced ? balanced.end : src.length;
+    const innerStart = j + 1;
+    const innerEnd = balanced ? balanced.end - 1 : src.length;
+    if (innerEnd <= innerStart) return;
+    tails.push({ start: innerStart, end: innerEnd });
+  });
+  const tops = tails.filter((f) => !tails.some((o) => o.start < f.start && o.end > f.end));
+  let result = src;
+  let renamed = 0;
+  for (const f of [...tops].sort((a, b) => b.start - a.start)) {
+    const piece = result.slice(f.start, f.end);
+    if (countTokens(piece) === 0) continue;
+    const wrapped = tryRenameWrappedFragment(piece, counter);
+    if (wrapped.aborted || wrapped.error || !(wrapped.renamed > 0)) continue;
+    renamed += wrapped.renamed;
+    result = result.slice(0, f.start) + wrapped.src + result.slice(f.end);
+  }
+  return { src: result, renamed, changed: result !== src };
+}
+
+function skipHexFunctionDeclNames(ast, traverse, extraSkip = new Set()) {
+  const skipNames = new Set(extraSkip);
+  traverse(ast, {
+    FunctionDeclaration(path) {
+      const name = path.node.id?.name;
+      if (name && HEX_IDENT.test(name)) skipNames.add(name);
+    }
+  });
+  return skipNames;
+}
+
 function tryRenameWrappedFragment(src, counter) {
   const wrapName = "__uw";
   const wrapped = `function ${wrapName}(){${src}\n}`;
   const parsed = parseMaybeHealed(wrapped);
   if (!parsed.ast) return { error: parsed.error, src, renamed: 0 };
-  const result = emitRenamed(parsed.src, parsed.ast, counter);
+  const { traverse } = loadBabel();
+  const skipNames = skipHexFunctionDeclNames(parsed.ast, traverse, new Set([wrapName]));
+  const result = emitRenamed(parsed.src, parsed.ast, counter, { skipNames });
   if (result.aborted) return result;
   if (!result.renamed) return { src, renamed: 0, changed: false };
   try {
@@ -926,41 +1558,49 @@ function tryRenameClassMethod(src, counter) {
   }
 }
 
+function joinRenamedParts(parts, counter, depth) {
+  let renamed = 0;
+  const out = [];
+  for (const part of parts) {
+    const r = renameChunkDeep(part, counter, depth + 1);
+    if (r.aborted) return r;
+    out.push(r.error && !(r.renamed > 0) && !r.changed ? part : r.src);
+    renamed += r.renamed ?? 0;
+  }
+  return { src: out.join(""), renamed, changed: renamed > 0, aborted: false };
+}
+
 function renameChunkDeep(src, counter, depth = 0) {
   const first = renameOneUnit(src, counter);
   if (!first.error && !first.aborted) return first;
   if (first.aborted) return first;
 
-  if (depth < 4) {
+  if (depth < 5) {
+    const innerMod = splitAtInnerModuleSlice(src);
+    if (innerMod) {
+      const joined = joinRenamedParts(innerMod, counter, depth);
+      if (joined.aborted) return joined;
+      if (joined.renamed > 0 || joined.src !== src) {
+        const unbound = renameUnboundHexIdents(joined.src);
+        return {
+          src: unbound.src,
+          renamed: joined.renamed + unbound.renamed,
+          changed: true,
+          aborted: false
+        };
+      }
+    }
     const parts = splitAtTopLevelExportImport(src);
     if (parts.length > 1) {
-      let renamed = 0;
-      const out = [];
-      for (const part of parts) {
-        const r = renameChunkDeep(part, counter, depth + 1);
-        if (r.aborted) return r;
-        out.push(r.error && !(r.renamed > 0) ? part : r.src);
-        renamed += r.renamed ?? 0;
-      }
-      if (renamed > 0) {
-        const next = out.join("");
-        return { src: next, renamed, changed: true, aborted: false };
-      }
+      const joined = joinRenamedParts(parts, counter, depth);
+      if (joined.aborted) return joined;
+      if (joined.renamed > 0) return { ...joined, changed: true };
     }
     const inner = splitTopLevel(healForParse(src));
     if (inner.length > 1) {
-      let renamed = 0;
-      const out = [];
-      for (const part of inner) {
-        const r = renameChunkDeep(part, counter, depth + 1);
-        if (r.aborted) return r;
-        out.push(r.error && !(r.renamed > 0) ? part : r.src);
-        renamed += r.renamed ?? 0;
-      }
-      if (renamed > 0) {
-        const next = out.join("");
-        return { src: next, renamed, changed: true, aborted: false };
-      }
+      const joined = joinRenamedParts(inner, counter, depth);
+      if (joined.aborted) return joined;
+      if (joined.renamed > 0) return { ...joined, changed: true };
     }
   }
 
@@ -972,6 +1612,24 @@ function renameChunkDeep(src, counter, depth = 0) {
   const nestedCls = processClassesIn(current, counter, true);
   renamed += nestedCls.renamed;
   current = nestedCls.src;
+  const methods = processWindows(current, counter, scanConciseMethods, tryRenameClassMethod, true);
+  renamed += methods.renamed;
+  current = methods.src;
+  const fors = processWindows(current, counter, scanCompleteFors, tryRenameWrappedFragment, true);
+  renamed += fors.renamed;
+  current = fors.src;
+  const objects = processWindows(
+    current,
+    counter,
+    (s) => scanObjectLiterals(s).filter((b) => b.end - b.start < 80_000),
+    tryRenameObjectLiteral,
+    true
+  );
+  renamed += objects.renamed;
+  current = objects.src;
+  const elseTails = processElseTails(current, counter);
+  renamed += elseTails.renamed;
+  current = elseTails.src;
 
   const again = renameOneUnit(current, counter);
   if (!again.error && !again.aborted) {
@@ -979,15 +1637,16 @@ function renameChunkDeep(src, counter, depth = 0) {
   }
   if (again.aborted) return again;
 
-  if (depth < 4) {
-    const exportParts = splitLastExport(current);
+  if (depth < 5) {
+    const exportParts = splitLastExport(current) ?? splitAtInnerModuleSlice(current);
     if (exportParts) {
       const [prefix, tail] = exportParts;
       const r = renameChunkDeep(prefix, counter, depth + 1);
       if (r.aborted) return r;
-      if ((r.renamed ?? 0) > 0 || (!r.error && r.changed)) {
-        renamed += r.renamed ?? 0;
-        current = (r.error ? prefix : r.src) + tail;
+      const prefixOut = (r.error && !(r.renamed > 0) ? prefix : r.src) + tail;
+      renamed += r.renamed ?? 0;
+      if ((r.renamed ?? 0) > 0 || prefixOut !== current) {
+        current = prefixOut;
         if (renamed > 0) {
           return { src: current, renamed, changed: true, aborted: false };
         }
@@ -1028,64 +1687,75 @@ export function rename0xIdents(src) {
   if (hitsBefore === 0) {
     return { src, changed: false, aborted: false, reason: null, hitsBefore, hitsAfter: 0, renamed: 0 };
   }
-  const counter = { value: 0 };
-  const whole = renameOneUnit(src, counter);
-  if (whole.aborted) {
-    return { src, changed: false, aborted: true, reason: whole.reason, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
-  }
-  if (whole.ast !== undefined || whole.renamed > 0 || whole.changed || !whole.error) {
-    if (!whole.error) {
-      if (whole.renamed === 0) {
-        return { src: whole.src, changed: false, aborted: false, reason: null, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
-      }
-      return {
-        src: whole.src,
-        changed: whole.changed ?? whole.src !== src,
-        aborted: false,
-        reason: null,
-        hitsBefore,
-        hitsAfter: countTokens(whole.src),
-        renamed: whole.renamed
-      };
-    }
-  }
-
-  const chunks = splitTopLevel(src);
-  const units = chunks.length > 1 ? chunks : [src];
-  const out = [];
-  let renamed = 0;
-  let chunkAbort = null;
-  for (const chunk of units) {
-    const result = renameChunkDeep(chunk, counter);
-    if (result.aborted) {
-      chunkAbort = result.reason;
-      break;
-    }
-    if (result.error && result.renamed === 0) {
-      const tok = chunk.match(TOKEN_RE)?.[0];
-      const msg = result.error?.message?.split("\n")[0] ?? "unparseable";
-      console.warn(`SKIP chunk ${tok ?? "?"} (${msg})`);
-      out.push(chunk);
-      continue;
-    }
-    out.push(result.src);
-    renamed += result.renamed ?? 0;
-  }
-  if (chunkAbort) {
-    return { src, changed: false, aborted: true, reason: chunkAbort, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
-  }
-  if (renamed === 0) {
+  if (hasBareHexExport(src)) {
+    const reason = "export { _0x } with no public alias";
+    const match = src.match(/\bexport\s*\{\s*(_0x[0-9a-f]+)/i);
     return {
       src,
       changed: false,
-      aborted: false,
-      reason: `parse failed: ${whole.error?.message ?? "unparseable chunks"}`,
+      aborted: true,
+      reason: match ? `export { ${match[1]} } with no public alias` : reason,
       hitsBefore,
       hitsAfter: hitsBefore,
       renamed: 0
     };
   }
-  let next = out.join("");
+  const counter = { value: 0 };
+  const whole = renameOneUnit(src, counter);
+  if (whole.aborted) {
+    return { src, changed: false, aborted: true, reason: whole.reason, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
+  }
+  let next = src;
+  let renamed = 0;
+  if (whole.ast !== undefined || whole.renamed > 0 || whole.changed || !whole.error) {
+    if (!whole.error) {
+      next = whole.src;
+      renamed = whole.renamed ?? 0;
+    }
+  }
+  if (whole.error) {
+    const chunks = splitTopLevel(src);
+    const units = chunks.length > 1 ? chunks : [src];
+    const out = [];
+    let chunkAbort = null;
+    renamed = 0;
+    for (const chunk of units) {
+      const result = renameChunkDeep(chunk, counter);
+      if (result.aborted) {
+        chunkAbort = result.reason;
+        break;
+      }
+      if (result.error && result.renamed === 0) {
+        const tok = chunk.match(TOKEN_RE)?.[0];
+        const msg = result.error?.message?.split("\n")[0] ?? "unparseable";
+        console.warn(`SKIP chunk ${tok ?? "?"} (${msg})`);
+        out.push(chunk);
+        continue;
+      }
+      out.push(result.src);
+      renamed += result.renamed ?? 0;
+    }
+    if (chunkAbort) {
+      return { src, changed: false, aborted: true, reason: chunkAbort, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
+    }
+    next = out.join("");
+  }
+
+  const unbound = renameUnboundHexIdents(next);
+  next = unbound.src;
+  renamed += unbound.renamed;
+
+  if (renamed === 0) {
+    return {
+      src,
+      changed: false,
+      aborted: false,
+      reason: whole.error ? `parse failed: ${whole.error?.message ?? "unparseable chunks"}` : null,
+      hitsBefore,
+      hitsAfter: hitsBefore,
+      renamed: 0
+    };
+  }
   if (!next.endsWith("\n")) next += "\n";
   return {
     src: next,
@@ -1170,6 +1840,9 @@ export function listCjsTwinsOfCleanEs() {
       for (const twin of [path.join(cjsDir, rel), path.join(libDir, rel)]) {
         if (!fs.existsSync(twin)) continue;
         if (twin.includes(`${path.sep}umd${path.sep}`)) continue;
+        if (twin.includes(`${path.sep}es${path.sep}`) || twin.includes(`${path.sep}cjs${path.sep}`)) {
+          if (twin !== path.join(cjsDir, rel)) continue;
+        }
         if (hitsForFile(twin) === 0) continue;
         twins.push(twin);
       }
@@ -1178,6 +1851,72 @@ export function listCjsTwinsOfCleanEs() {
   return twins
     .map((file) => ({ file, hits: hitsForFile(file), rel: posixRel(file) }))
     .sort((a, b) => b.hits - a.hits);
+}
+
+export function listLibRootTwinsOfRewrittenEs() {
+  const twins = [];
+  if (!fs.existsSync(VENDOR_PRO)) return twins;
+  for (const pkg of fs.readdirSync(VENDOR_PRO)) {
+    if (T0B_SKIP_PKGS.includes(pkg)) continue;
+    const esDir = path.join(VENDOR_PRO, pkg, "lib/es");
+    const libDir = path.join(VENDOR_PRO, pkg, "lib");
+    if (!fs.existsSync(esDir) || !fs.existsSync(libDir)) continue;
+    const esFiles = walkJs(esDir, []);
+    for (const esFile of esFiles) {
+      const rel = path.relative(esDir, esFile);
+      const twin = path.join(libDir, rel);
+      if (!fs.existsSync(twin)) continue;
+      if (twin.includes(`${path.sep}es${path.sep}`) || twin.includes(`${path.sep}cjs${path.sep}`)) continue;
+      const esHits = hitsForFile(esFile);
+      const libHits = hitsForFile(twin);
+      if (libHits === 0) continue;
+      if (esHits > libHits) continue;
+      if (esHits === libHits && esHits > 0) continue;
+      twins.push(twin);
+    }
+  }
+  return twins
+    .map((file) => ({ file, hits: hitsForFile(file), rel: posixRel(file) }))
+    .sort((a, b) => b.hits - a.hits);
+}
+
+export function listDirtyCjsTwins() {
+  const twins = [];
+  if (!fs.existsSync(VENDOR_PRO)) return twins;
+  for (const pkg of fs.readdirSync(VENDOR_PRO)) {
+    if (T0B_SKIP_PKGS.includes(pkg)) continue;
+    const esDir = path.join(VENDOR_PRO, pkg, "lib/es");
+    const cjsDir = path.join(VENDOR_PRO, pkg, "lib/cjs");
+    if (!fs.existsSync(esDir) || !fs.existsSync(cjsDir)) continue;
+    const esFiles = walkJs(esDir, []);
+    for (const esFile of esFiles) {
+      const rel = path.relative(esDir, esFile);
+      const twin = path.join(cjsDir, rel);
+      if (!fs.existsSync(twin)) continue;
+      const cjsHits = hitsForFile(twin);
+      if (cjsHits === 0) continue;
+      twins.push(twin);
+    }
+  }
+  return twins
+    .map((file) => ({ file, hits: hitsForFile(file), rel: posixRel(file) }))
+    .sort((a, b) => b.hits - a.hits);
+}
+
+const BACKUP_ROOT = path.join(ROOT, "vendor/univer-pro-0x-backup");
+
+function backupVendorFile(filePath) {
+  const rel = path.relative(VENDOR_PRO, path.resolve(filePath));
+  if (rel.startsWith("..") || rel.startsWith(`..${path.sep}`)) return false;
+  const dest = path.join(BACKUP_ROOT, rel);
+  if (fs.existsSync(dest)) return false;
+  const hits = hitsForFile(filePath);
+  const size = fs.statSync(filePath).size;
+  if (hits < 400 && size < 80_000) return false;
+  fs.mkdirSync(path.dirname(dest), { recursive: true });
+  fs.copyFileSync(filePath, dest);
+  console.warn(`BACKUP ${posixRel(dest)} hits=${hits}`);
+  return true;
 }
 
 export function listLibEsFiles() {
@@ -1233,6 +1972,7 @@ export function processVendorFile(filePath, { write = false, apply = false } = {
     return { rel, changed: false, hitsBefore: result.hitsBefore, hitsAfter: result.hitsAfter, ms };
   }
   if (write) {
+    backupVendorFile(filePath);
     writeUnlinked(filePath, result.src);
     if (apply) applyEsFileToNodeModules(filePath);
   }
@@ -1253,7 +1993,16 @@ export function processVendorFile(filePath, { write = false, apply = false } = {
 }
 
 function parseArgs(argv) {
-  const args = { write: false, apply: false, file: null, largestEs: null, cjsTwins: null, child: false };
+  const args = {
+    write: false,
+    apply: false,
+    file: null,
+    largestEs: null,
+    cjsTwins: null,
+    libRootTwins: null,
+    dirtyCjs: null,
+    child: false
+  };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === "--write") args.write = true;
@@ -1261,6 +2010,8 @@ function parseArgs(argv) {
     else if (a === "--file") args.file = argv[++i];
     else if (a === "--largest-es") args.largestEs = Number(argv[++i]);
     else if (a === "--cjs-twins") args.cjsTwins = Number(argv[++i]);
+    else if (a === "--lib-root-twins") args.libRootTwins = Number(argv[++i]);
+    else if (a === "--dirty-cjs") args.dirtyCjs = Number(argv[++i]);
     else if (a === "--child") args.child = true;
   }
   return args;
@@ -1321,11 +2072,13 @@ function processBatch(candidates, n, { write, apply, child }) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.file && !args.largestEs && !args.cjsTwins) {
+  if (!args.file && !args.largestEs && !args.cjsTwins && !args.libRootTwins && !args.dirtyCjs) {
     console.log(`Usage:
   node scripts/rename-univer-pro-0x-idents.mjs --file <path> [--write] [--apply]
   node scripts/rename-univer-pro-0x-idents.mjs --largest-es <n> [--write] [--apply]
   node scripts/rename-univer-pro-0x-idents.mjs --cjs-twins <n> [--write] [--apply]
+  node scripts/rename-univer-pro-0x-idents.mjs --lib-root-twins <n> [--write] [--apply]
+  node scripts/rename-univer-pro-0x-idents.mjs --dirty-cjs <n> [--write] [--apply]
 Default is dry-run. Never umd/, published, or OSS vendor.`);
     process.exitCode = 1;
     return;
@@ -1341,6 +2094,30 @@ Default is dry-run. Never umd/, published, or OSS vendor.`);
     const ordered = listCjsTwinsOfCleanEs();
     const candidates = ordered.slice(0, Math.max(n * 2, n));
     console.log(`cjs/lib twins of clean es: ${ordered.length} (target ${n} writes)`);
+    for (const row of candidates) {
+      console.log(`  ${row.hits} ${row.rel}`);
+    }
+    const written = processBatch(candidates, n, args);
+    console.log(`batch done: ${written} file(s) processed`);
+    return;
+  }
+  if (args.libRootTwins) {
+    const n = Number.isFinite(args.libRootTwins) && args.libRootTwins > 0 ? args.libRootTwins : 20;
+    const ordered = listLibRootTwinsOfRewrittenEs();
+    const candidates = ordered.slice(0, Math.max(n * 2, n)).filter((row) => !isForbiddenPath(row.file));
+    console.log(`lib-root twins of rewritten es: ${ordered.length} (target ${n} writes)`);
+    for (const row of candidates) {
+      console.log(`  ${row.hits} ${row.rel}`);
+    }
+    const written = processBatch(candidates, n, args);
+    console.log(`batch done: ${written} file(s) processed`);
+    return;
+  }
+  if (args.dirtyCjs) {
+    const n = Number.isFinite(args.dirtyCjs) && args.dirtyCjs > 0 ? args.dirtyCjs : 10;
+    const ordered = listDirtyCjsTwins();
+    const candidates = ordered.slice(0, Math.max(n * 2, n)).filter((row) => !isForbiddenPath(row.file));
+    console.log(`cjs twins still dirty: ${ordered.length} (target ${n} writes)`);
     for (const row of candidates) {
       console.log(`  ${row.hits} ${row.rel}`);
     }

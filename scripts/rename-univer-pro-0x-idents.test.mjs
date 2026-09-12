@@ -212,3 +212,67 @@ test("splits }export{ without semicolon and still renames constructor locals", (
   assert.match(src, /as PublicUi/);
   assert.doesNotMatch(src, /_0xaaa\b/);
 });
+
+test("renames unbound leftover decoder calls but keeps matching string literals", () => {
+  const original = 'foo(_0xdead01(1));\nconst k = "_0xdead01";\nexport { z as publicApi };\n';
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead01"/);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /foo\(oxdead01\(1\)\)/);
+  assert.doesNotMatch(src, /foo\(_0xdead01\(/);
+});
+
+test("renames an unbound decoder assigned into a non-hex local", () => {
+  const original =
+    'function f(){var v99=_0xdead01;return v99(1)+"_0xdead";}\nexport { f as publicApi };\n';
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /oxdead01/);
+  assert.doesNotMatch(src, /=\s*_0xdead01\b/);
+});
+
+test("splits a nested inner export from an unclosed IIFE and still renames prefix locals", () => {
+  const original =
+    "(function(){else{\n" +
+    'let _0xaaa=1;void(_0xaaa+"_0xdead");\n' +
+    "export { Ui as PublicUi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as PublicUi/);
+  assert.doesNotMatch(src, /\b_0xaaa\b/);
+});
+
+test("renames locals inside a for-loop window when the parent IIFE does not parse", () => {
+  const original =
+    "(function(){else{\n" +
+    'for(let _0xccc=0;_0xccc<1;_0xccc++){void(_0xccc+"_0xdead");}\n' +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /\b_0xccc\b/);
+});
+
+test("renames params inside a concise object method window when the parent IIFE does not parse", () => {
+  const original =
+    "(function(){else{\n" +
+    'const o={foo(_0xaaa){return _0xaaa+"_0xdead";}};\n' +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /\b_0xaaa\b/);
+});
