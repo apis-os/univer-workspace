@@ -355,7 +355,17 @@ export function inferMeaningfulIdents(src, options = {}) {
     return runInferMeaningfulIdents(src, options);
   } catch (err) {
     if (String(err.message || err).includes("Duplicate declaration") && !options.skipImportAlias) {
-      return runInferMeaningfulIdents(src, { ...options, skipImportAlias: true });
+      try {
+        return runInferMeaningfulIdents(src, { ...options, skipImportAlias: true });
+      } catch (retryErr) {
+        return {
+          src,
+          changed: false,
+          aborted: true,
+          reason: String(retryErr.message || retryErr),
+          matchedPublicAs: 0
+        };
+      }
     }
     return { src, changed: false, aborted: true, reason: String(err.message || err), matchedPublicAs: 0 };
   }
