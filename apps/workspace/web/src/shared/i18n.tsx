@@ -440,6 +440,8 @@ const messages = {
     demoDraftBusy: "正在创建智能体草稿...",
     demoDraftError: "智能体草稿创建失败",
     comparisonAgentDraft: "智能体草稿",
+    edgeHudCombPending: "Comb: 等待连接",
+    edgeHudGatewayTrace: "AI 网关追踪",
   },
   "en-US": {
     home: "Home",
@@ -897,6 +899,8 @@ const messages = {
     demoDraftBusy: "Creating Agent draft...",
     demoDraftError: "Failed to create Agent draft",
     comparisonAgentDraft: "Agent draft",
+    edgeHudCombPending: "Comb: pending connection",
+    edgeHudGatewayTrace: "AI Gateway Trace",
   },
 } as const;
 

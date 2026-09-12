@@ -138,7 +138,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.match(result.text, /Wrote A1=/);
   });
 
-  test("worktree clone isolates a draft snapshot until merge copies it back", () => {
+  test("worktree clone isolates a draft snapshot until merge copies it back", async () => {
     const sql = createSqliteAdapter();
     const ctx = new Context();
     ctx.provide("host", { sql });
@@ -148,7 +148,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     collab.cloneUnit("unit_trunk", "unit_draft", "Draft");
     applySheetCells(collab, "unit_draft", [{ a1: "A1", value: "draft" }]);
     assert.equal(getSheetCell(collab.getLatestSnapshot("unit_trunk")!.data, "A1")?.v, "trunk");
-    const copied = collab.copySnapshotTo("unit_draft", "unit_trunk");
+    const copied = await collab.copySnapshotTo("unit_draft", "unit_trunk");
     assert.equal(copied.copied, true);
     const trunk = collab.getLatestSnapshot("unit_trunk");
     assert.equal(getSheetCell(trunk!.data, "A1")?.v, "draft");
@@ -490,7 +490,12 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
       prompt: "Explain the Q3 forecast in one sentence"
     });
     assert.equal(first.cache, "MISS");
-    assert.equal(first.events.find((e) => e.type === "agent.done")?.data.cache, "MISS");
+    const firstDone = first.events.find((e) => e.type === "agent.done")?.data;
+    assert.equal(firstDone?.cache, "MISS");
+    assert.equal(firstDone?.model, "@cf/meta/llama-3.3-70b-instruct-fp8-fast");
+    assert.equal(firstDone?.aiGatewayLogId, "aig_explain_cache");
+    assert.equal(firstDone?.cacheKey, "demo:explain-q3");
+    assert.equal(typeof firstDone?.elapsedMs, "number");
     const second = await runAgentTurn(host, {
       unitId: "unit_explain_cache",
       prompt: "Explain the Q3 forecast in one sentence"

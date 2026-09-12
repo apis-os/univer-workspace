@@ -76,6 +76,19 @@ describe("edge HUD chips", () => {
       gateway: "HIT",
     });
   });
+
+  it("HUD chips stay pending until a real Gateway cache is noted", () => {
+    resetEdgeHudState();
+    expect(readEdgeHudState().gateway).toBeNull();
+    expect(
+      edgeHudChips({
+        comb: null,
+        gateway: null,
+        browser: "ok",
+        compact: false,
+      }).find((c) => c.id === "gateway")?.value
+    ).toBe("—");
+  });
 });
 
 describe("Comb connect URL matching", () => {

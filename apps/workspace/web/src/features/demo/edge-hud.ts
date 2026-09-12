@@ -1,16 +1,19 @@
+import type { GatewayTrace } from "./gateway-trace";
+
 export type CombWire = "protobuf" | "json";
 export type GatewayCache = "HIT" | "MISS";
 export type BrowserHud = "ok" | "off";
 
 export interface EdgeHudState {
-  readonly comb: CombWire;
-  readonly gateway: GatewayCache;
+  readonly comb: CombWire | null;
+  readonly gateway: GatewayCache | null;
+  readonly gatewayTrace?: GatewayTrace | null;
   readonly browser: BrowserHud;
 }
 
 export interface EdgeHudChip {
   readonly id: "comb" | "gateway" | "browser";
-  readonly value: CombWire | GatewayCache | BrowserHud;
+  readonly value: string;
   readonly showValue: boolean;
   readonly ariaLabel: string;
 }
@@ -20,8 +23,9 @@ const JSON_OBJECT_START = 0x7b;
 const listeners = new Set<() => void>();
 
 let hudState: EdgeHudState = {
-  comb: "json",
-  gateway: "MISS",
+  comb: null,
+  gateway: null,
+  gatewayTrace: null,
   browser: "off",
 };
 
@@ -34,7 +38,7 @@ export function readEdgeHudState(): EdgeHudState {
 }
 
 export function resetEdgeHudState(): void {
-  hudState = { comb: "json", gateway: "MISS", browser: "off" };
+  hudState = { comb: null, gateway: null, gatewayTrace: null, browser: "off" };
   emit();
 }
 
@@ -51,9 +55,18 @@ export function noteLastCombWire(wire: CombWire): void {
   emit();
 }
 
-export function noteLastGatewayCache(status: GatewayCache): void {
+export function noteLastGatewayCache(status: GatewayCache | null): void {
   if (hudState.gateway === status) return;
   hudState = { ...hudState, gateway: status };
+  emit();
+}
+
+export function noteGatewayTrace(trace: GatewayTrace): void {
+  hudState = {
+    ...hudState,
+    gateway: trace.cache,
+    gatewayTrace: trace,
+  };
   emit();
 }
 
@@ -89,24 +102,48 @@ export function browserHudStatus(healthz: {
 }
 
 export function edgeHudChips(input: {
-  readonly comb: CombWire;
-  readonly gateway: GatewayCache;
+  readonly comb: CombWire | null;
+  readonly gateway: GatewayCache | null;
+  readonly gatewayTrace?: GatewayTrace | null;
   readonly browser: BrowserHud;
   readonly compact: boolean;
 }): readonly EdgeHudChip[] {
   const showValue = !input.compact;
+  const combValue = input.comb ?? "—";
+  const combAria = input.comb ? `Comb ${input.comb}` : "Comb pending";
+
+  let gatewayValue = input.gateway ?? "—";
+  let gatewayAria = input.gateway ? `Gateway ${input.gateway}` : "Gateway pending";
+
+  if (input.gatewayTrace && !input.compact) {
+    const parts: string[] = [];
+    if (input.gatewayTrace.cache) parts.push(input.gatewayTrace.cache);
+    if (input.gatewayTrace.model) parts.push(input.gatewayTrace.model);
+    if (input.gatewayTrace.logId) {
+      const shortLog =
+        input.gatewayTrace.logId.length > 12
+          ? `${input.gatewayTrace.logId.slice(0, 10)}…`
+          : input.gatewayTrace.logId;
+      parts.push(shortLog);
+    }
+    if (parts.length > 0) {
+      gatewayValue = parts.join(" · ");
+      gatewayAria = `Gateway ${parts.join(" ")}`;
+    }
+  }
+
   return [
     {
       id: "comb",
-      value: input.comb,
+      value: combValue,
       showValue,
-      ariaLabel: `Comb ${input.comb}`,
+      ariaLabel: combAria,
     },
     {
       id: "gateway",
-      value: input.gateway,
+      value: gatewayValue,
       showValue,
-      ariaLabel: `Gateway ${input.gateway}`,
+      ariaLabel: gatewayAria,
     },
     {
       id: "browser",

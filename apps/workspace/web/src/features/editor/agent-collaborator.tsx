@@ -10,7 +10,8 @@ import {
   replayAgentEditSpotlight,
   spotlightCellsFromDetail,
 } from "./agent-edit-spotlight";
-import { noteLastGatewayCache } from "../demo/edge-hud";
+import { noteLastGatewayCache, noteGatewayTrace } from "../demo/edge-hud";
+import { gatewayTraceFromDone, type GatewayTrace } from "../demo/gateway-trace";
 import {
   AGENT_PANEL_ID,
   COMB_CHANGESET_EVENT,
@@ -102,6 +103,7 @@ export function AgentCollaborator({
   const [skills, setSkills] = useState<Array<{ id: string; name: string }>>([]);
   const [cacheStatus, setCacheStatus] = useState<"HIT" | "MISS" | null>(null);
   const [gatewayLogId, setGatewayLogId] = useState("");
+  const [gatewayTrace, setGatewayTrace] = useState<GatewayTrace | null>(null);
   const [spotlightCells, setSpotlightCells] = useState<string[]>([]);
   const [lastActor, setLastActor] = useState("");
   const [lastReversible, setLastReversible] = useState(false);
@@ -122,12 +124,17 @@ export function AgentCollaborator({
     meta: Record<string, unknown>,
     usedPrompt: string
   ) => {
-    const status = gatewayCacheStatus(meta, usedPrompt);
+    const trace = gatewayTraceFromDone(meta);
+    setGatewayTrace(trace);
+    if (trace.cache || trace.model || trace.logId) {
+      noteGatewayTrace(trace);
+    }
+    const status = trace.cache ?? gatewayCacheStatus(meta, usedPrompt);
     setCacheStatus(status);
     if (status) noteLastGatewayCache(status);
     setGatewayLogId(
       truncateGatewayLogId(
-        typeof meta.aiGatewayLogId === "string" ? meta.aiGatewayLogId : null
+        typeof meta.aiGatewayLogId === "string" ? meta.aiGatewayLogId : trace.logId
       )
     );
   };
@@ -631,7 +638,9 @@ export function AgentCollaborator({
             {cacheStatus === null
               ? t("agentCacheUnknown")
               : t(cacheStatus === "HIT" ? "agentCacheHit" : "agentCacheMiss")}
+            {gatewayTrace?.model ? ` · ${gatewayTrace.model}` : ""}
             {gatewayLogId ? ` · ${gatewayLogId}` : ""}
+            {gatewayTrace?.elapsedMs ? ` · ${gatewayTrace.elapsedMs}ms` : ""}
           </p>
           {spotlightCells.length > 0 ? (
             <div className="flex flex-wrap items-center gap-1.5">

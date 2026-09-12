@@ -74,6 +74,10 @@ export interface AgentTurnResult {
   actor?: { userId: string; name: string };
   screenshot?: AgentScreenshot | null;
   cache?: "HIT" | "MISS" | null;
+  model?: string | null;
+  aiGatewayLogId?: string | null;
+  cacheKey?: string | null;
+  elapsedMs?: number | null;
 }
 
 export interface AgentAi {
@@ -472,9 +476,20 @@ async function tryWorkersAi(
   prompt: string,
   emit: (event: AgentEvent) => void,
   recordTool: (tool: string, args: Record<string, unknown>) => Promise<unknown>,
-  ctx: { turnId: string; actorUserId: string }
-): Promise<{ text: string; used: boolean; streamed: boolean; cache: "HIT" | "MISS" | null }> {
-  if (!env?.AI?.run) return { text: "", used: false, streamed: false, cache: null };
+  ctx: { turnId: string; actorUserId: string; turnStartedAt?: number }
+): Promise<{
+  text: string;
+  used: boolean;
+  streamed: boolean;
+  cache: "HIT" | "MISS" | null;
+  model: string | null;
+  elapsedMs: number | null;
+  cacheKey: string | null;
+}> {
+  const startedAt = ctx.turnStartedAt ?? Date.now();
+  if (!env?.AI?.run) {
+    return { text: "", used: false, streamed: false, cache: null, model: null, elapsedMs: null, cacheKey: null };
+  }
   const explain = isCachedExplainPrompt(prompt);
   const messages: Array<Record<string, unknown>> = [
     { role: "system", content: agentSystemPrompt(unitId) },
@@ -559,7 +574,17 @@ async function tryWorkersAi(
         if (!cache) {
           cache = await cacheStatusFromGatewayLog(env, env.AI.aiGatewayLogId);
         }
-        if (text) return { text, used: true, streamed: false, cache };
+        if (text) {
+          return {
+            text,
+            used: true,
+            streamed: false,
+            cache,
+            model,
+            elapsedMs: Date.now() - startedAt,
+            cacheKey: EXPLAIN_CACHE_KEY
+          };
+        }
         continue;
       }
 
@@ -584,7 +609,17 @@ async function tryWorkersAi(
       if (!cache) {
         cache = await cacheStatusFromGatewayLog(env, env.AI.aiGatewayLogId);
       }
-      if (text || usedTools) return { text, used: true, streamed: didStream, cache };
+      if (text || usedTools) {
+        return {
+          text,
+          used: true,
+          streamed: didStream,
+          cache,
+          model,
+          elapsedMs: Date.now() - startedAt,
+          cacheKey: null
+        };
+      }
     } catch (err: any) {
       lastError = err?.message || String(err);
     }
@@ -592,7 +627,15 @@ async function tryWorkersAi(
   if (lastError) {
     emit({ type: "agent.thinking", data: { delta: `Workers AI unavailable (${lastError}); using Skill planner.` } });
   }
-  return { text: "", used: usedTools, streamed: false, cache: null };
+  return {
+    text: "",
+    used: usedTools,
+    streamed: false,
+    cache: null,
+    model: null,
+    elapsedMs: null,
+    cacheKey: null
+  };
 }
 
 export async function runAgentTurn(
@@ -623,6 +666,10 @@ export async function runAgentTurn(
   const unitId = input.unitId;
   const prompt = String(input.prompt || "").trim();
   const turnId = `turn_${crypto.randomUUID()}`;
+  const turnStartedAt = Date.now();
+  let aiModel: string | null = null;
+  let aiCacheKey: string | null = null;
+  let aiElapsedMs: number | null = null;
   const events: AgentEvent[] = [];
   const emit = (event: AgentEvent) => {
     events.push(event);
@@ -710,10 +757,13 @@ export async function runAgentTurn(
       prompt,
       emit,
       recordTool,
-      { turnId, actorUserId }
+      { turnId, actorUserId, turnStartedAt }
     );
     streamedTokens = ai.streamed;
     cache = ai.cache;
+    aiModel = ai.model;
+    aiCacheKey = ai.cacheKey;
+    aiElapsedMs = ai.elapsedMs;
     if (ai.used && ai.text) {
       text = ai.text;
     } else if (ai.used) {
@@ -746,12 +796,16 @@ export async function runAgentTurn(
   }
   const screenshot = fillScreenshot ? await fillScreenshot : undefined;
   const unit = collab?.getUnit(unitId);
+  const elapsedMs = aiElapsedMs ?? (Date.now() - turnStartedAt);
   const doneData: Record<string, unknown> = {
     turnId,
     rev: unit?.rev ?? null,
     actor: { userId: actor.userId, name: actor.name },
     aiGatewayLogId: host.env?.AI?.aiGatewayLogId ?? null,
-    cache
+    cache,
+    model: aiModel ?? null,
+    cacheKey: aiCacheKey ?? null,
+    elapsedMs
   };
   if (fillScreenshot) doneData.screenshot = screenshot ?? null;
   emit({
@@ -768,7 +822,11 @@ export async function runAgentTurn(
     rev: unit?.rev ?? null,
     actor: { userId: actor.userId, name: actor.name },
     screenshot: fillScreenshot ? screenshot ?? null : undefined,
-    cache
+    cache,
+    model: aiModel ?? null,
+    aiGatewayLogId: host.env?.AI?.aiGatewayLogId ?? null,
+    cacheKey: aiCacheKey ?? null,
+    elapsedMs
   };
   recordTurn(completed);
   return completed;

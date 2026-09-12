@@ -65,10 +65,16 @@ export function EdgeStatusStrip() {
     >
       {chips.map((chip) => {
         const Icon = CHIP_ICONS[chip.id];
+        let tooltipContent = chip.ariaLabel;
+        if (chip.id === "comb" && state.comb === null) {
+          tooltipContent = t("edgeHudCombPending");
+        } else if (chip.id === "gateway" && state.gatewayTrace) {
+          tooltipContent = `${t("edgeHudGatewayTrace")}: ${chip.ariaLabel}`;
+        }
         return (
-          <Tooltip key={chip.id} content={chip.ariaLabel}>
+          <Tooltip key={chip.id} content={tooltipContent}>
             <span
-              aria-label={chip.ariaLabel}
+              aria-label={tooltipContent}
               className={cn(
                 "inline-flex h-7 items-center gap-1 rounded-full px-1.5 text-[11px] text-subtle-foreground",
                 chip.showValue ? "pr-2" : "w-7 justify-center px-0"
