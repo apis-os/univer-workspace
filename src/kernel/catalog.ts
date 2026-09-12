@@ -81,6 +81,15 @@ export const PLUGIN_CATALOG: PluginDefinition[] = [
     isSeed: true,
     defaultConfig: {},
     load: async () => import("../plugins/univer-tools.ts")
+  },
+  {
+    id: "univer-file",
+    name: "univer-file",
+    description: "Wax-office univer_* tools wrapping ChatAgent /uf office routes",
+    category: "tools",
+    isSeed: true,
+    defaultConfig: {},
+    load: async () => import("../plugins/univer-file.ts")
   }
 ];
 
