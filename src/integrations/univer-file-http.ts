@@ -1,16 +1,27 @@
 /**
- * Univer File `/uf` gateway: fileKey → Space, unit list, and worktree aliases.
+ * Univer File `/uf` gateway: fileKey → Space, unit list, worktree aliases, and inspect.
  */
 import type { ControlPlaneDb } from "../control-plane/db.ts";
 import { handleControlPlaneRoutes, type GatewayContext } from "../control-plane/gateway.ts";
 import type { User } from "../control-plane/types.ts";
+import { getSheetRange, type SheetCellValue } from "../plugins/univer-snapshot.ts";
 
 export const DEMO_UNIVER_FILE = "workspace.univer";
 export const DEMO_UNIT_ID = "unit_welcome_sheet";
 
+export interface UniverFileCollab {
+  getLatestSnapshot(unitId: string): { rev: number; data: Record<string, unknown> } | null;
+  getWorktreeBinding(
+    worktreeId: string,
+    unitId: string
+  ): { unit_id: string; trunk_unit_id: string | null } | null;
+  listWorktreeBindings(worktreeId: string): Array<{ unit_id: string; trunk_unit_id: string | null }>;
+}
+
 export interface UniverFileHttpHost {
   db: ControlPlaneDb;
   currentUser: User | null;
+  collab?: UniverFileCollab;
 }
 
 /** Encode a file path as base64url for `/uf/:key` URLs. */
@@ -72,6 +83,11 @@ export async function handleUniverFileHttp(
 
   if (rest === "worktrees" || rest.startsWith("worktrees/")) {
     return aliasWorktreeRoutes(request, host, rest, spaceId);
+  }
+
+  const inspectMatch = rest.match(/^units\/([^/]+)\/inspect$/);
+  if (inspectMatch && method === "GET") {
+    return inspectFileUnit(request, host, filePath, spaceId, inspectMatch[1]);
   }
 
   return jsonFile({ error: { message: `Not found: ${method} ${url.pathname}` } }, 404);
@@ -182,13 +198,7 @@ async function listScopedWorktreeUnits(
   worktreeId: string,
   spaceId: string
 ): Promise<Response> {
-  const wt = await host.db.getWorktree(worktreeId);
-  const user = host.currentUser;
-  const canReview =
-    !!wt &&
-    !!user &&
-    (wt.creator_user_id === user.id || (wt.kind === "team" && wt.visibility === "space"));
-  if (!wt || !canReview || wt.team_space_id !== spaceId) {
+  if (!(await canReviewFileWorktree(host, worktreeId, spaceId))) {
     return jsonFile({ error: { message: "Worktree not found" } }, 404);
   }
   const rows = await host.db.listWorktreeUnits(worktreeId);
@@ -199,6 +209,145 @@ async function listScopedWorktreeUnits(
       type: unitTypeNumber(row.unit_type)
     }))
   });
+}
+
+async function inspectFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string,
+  unitId: string
+): Promise<Response> {
+  const url = new URL(request.url);
+  const rangeParam = url.searchParams.get("range")?.trim() ?? "";
+  const worktreeId = url.searchParams.get("worktreeId")?.trim() ?? "";
+
+  if (!rangeParam) {
+    return jsonFile({ error: { message: "range is required" } }, 400);
+  }
+  if (worktreeId && !(await canReviewFileWorktree(host, worktreeId, spaceId))) {
+    return jsonFile({ error: { message: "Worktree not found" } }, 404);
+  }
+  if (!(await canInspectUnit(host, filePath, spaceId, unitId, worktreeId))) {
+    return jsonFile({ error: { message: "Unit not found" } }, 404);
+  }
+  if (!host.collab) {
+    return jsonFile({ error: { message: "Collab service unavailable" } }, 503);
+  }
+
+  let parsed: { start: string; end?: string; sheetName?: string };
+  try {
+    parsed = parseInspectRange(rangeParam);
+  } catch (err) {
+    return jsonFile({ error: { message: err instanceof Error ? err.message : "Invalid range" } }, 400);
+  }
+
+  const snapshotUnitId = resolveSnapshotUnitId(host.collab, unitId, worktreeId);
+  const snapshot =
+    host.collab.getLatestSnapshot(snapshotUnitId) ??
+    (snapshotUnitId !== unitId ? host.collab.getLatestSnapshot(unitId) : null);
+  if (!snapshot) {
+    return jsonFile({ error: { message: "Snapshot not found" } }, 404);
+  }
+
+  let cells: Array<Array<SheetCellValue | null>>;
+  try {
+    const sheetId = sheetIdForRange(snapshot.data, parsed.sheetName);
+    cells = getSheetRange(snapshot.data, parsed.start, parsed.end, sheetId);
+  } catch (err) {
+    return jsonFile({ error: { message: err instanceof Error ? err.message : "Invalid range" } }, 400);
+  }
+
+  return jsonFile(inspectPayload(rangeParam, cells));
+}
+
+async function canReviewFileWorktree(
+  host: UniverFileHttpHost,
+  worktreeId: string,
+  spaceId: string
+): Promise<boolean> {
+  const wt = await host.db.getWorktree(worktreeId);
+  const user = host.currentUser;
+  return (
+    !!wt &&
+    !!user &&
+    (wt.creator_user_id === user.id || (wt.kind === "team" && wt.visibility === "space")) &&
+    wt.team_space_id === spaceId
+  );
+}
+
+async function canInspectUnit(
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string,
+  unitId: string,
+  worktreeId: string
+): Promise<boolean> {
+  if (filePath === DEMO_UNIVER_FILE && unitId === DEMO_UNIT_ID) {
+    const welcome = await host.db.getResourceByUnitId(DEMO_UNIT_ID);
+    if (welcome?.univer) return true;
+  }
+  const resource = await host.db.getResourceByUnitId(unitId);
+  if (resource?.univer && resource.node?.space_id === spaceId) return true;
+  if (worktreeId && host.collab) {
+    const direct = host.collab.getWorktreeBinding(worktreeId, unitId);
+    if (direct) return true;
+    return host.collab
+      .listWorktreeBindings(worktreeId)
+      .some((binding) => binding.unit_id === unitId || binding.trunk_unit_id === unitId);
+  }
+  return false;
+}
+
+function resolveSnapshotUnitId(
+  collab: UniverFileCollab,
+  unitId: string,
+  worktreeId: string
+): string {
+  if (!worktreeId) return unitId;
+  const direct = collab.getWorktreeBinding(worktreeId, unitId);
+  if (direct) return unitId;
+  const draft = collab.listWorktreeBindings(worktreeId).find((binding) => binding.trunk_unit_id === unitId);
+  return draft?.unit_id ?? unitId;
+}
+
+function parseInspectRange(range: string): { start: string; end?: string; sheetName?: string } {
+  const bang = range.lastIndexOf("!");
+  const sheetName = bang >= 0 ? range.slice(0, bang).replace(/^'+|'+$/g, "") : undefined;
+  const cells = bang >= 0 ? range.slice(bang + 1) : range;
+  const [start, end] = cells.split(":");
+  if (!start) throw new Error("Invalid range");
+  return { start, end, sheetName };
+}
+
+function sheetIdForRange(snapshot: Record<string, unknown>, sheetName?: string): string | undefined {
+  if (!sheetName) return undefined;
+  const workbook = (snapshot as { workbook?: { sheets?: Record<string, { name?: string }> } }).workbook ?? snapshot;
+  const sheets = (workbook as { sheets?: Record<string, { name?: string }> }).sheets;
+  if (!sheets) return sheetName;
+  if (sheets[sheetName]) return sheetName;
+  for (const [id, sheet] of Object.entries(sheets)) {
+    if (sheet?.name === sheetName) return id;
+  }
+  return sheetName;
+}
+
+function inspectPayload(
+  range: string,
+  cells: Array<Array<SheetCellValue | null>>
+): Record<string, unknown> {
+  const payload: Record<string, unknown> = { range, cells };
+  if (cells.length === 1 && cells[0]?.length === 1) {
+    const cell = cells[0][0];
+    if (cell) {
+      if ("v" in cell) payload.v = cell.v;
+      if ("f" in cell) payload.f = cell.f;
+      if ("t" in cell) payload.t = cell.t;
+    } else {
+      payload.v = null;
+    }
+  }
+  return payload;
 }
 
 function mapWorktreeBody(
