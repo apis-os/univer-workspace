@@ -32,6 +32,19 @@ test("aborts a bare export { _0x } with no alias and does not rewrite", () => {
   assert.match(String(reason), /_0x123/);
 });
 
+test("heals unglue-split delete Ident object keys then parses", () => {
+  const original =
+    "function _0xaaa(){let {pivotTableId:_0xbbb, delete Ids:_0xccc}=x;return _0xccc+\"_0xdead\";}\n" +
+    "export { _0xaaa as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "delete Ids key must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /deleteIds/);
+  assert.doesNotMatch(src, /delete Ids/);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+});
+
 test("heals unglue-split delete export aliases then renames locals", () => {
   const original =
     'function _0x12ab(){ return "_0xdead"; }\nexport { _0x12ab as delete SmartArtNode };\n';

@@ -137,7 +137,10 @@ export function healForParse(src) {
     .replace(/\(function\s*\(\s*\)\s*\{,/g, "(function(){")
     .replace(/\[\];,((?:'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"))\s*:/g, "{$1:")
     .replace(/\}function\b/g, "};function")
-    .replace(/\}async\s+function\b/g, "};async function");
+    .replace(/\}async\s+function\b/g, "};async function")
+    .replace(/([,{])\s*delete\s+([A-Za-z_$][\w$]*)\s*:/g, "$1delete$2:")
+    .replace(/async\s*'handler'/g, "async handler")
+    .replace(/async'handler'/g, "async handler");
 }
 
 function exportedName(spec) {
