@@ -15,6 +15,7 @@ import {
   agentErrorMessage,
   agentExamplePrompt,
   agentMuxUrl,
+  agentScreenshotCard,
   consumeAgentTurnResponse,
   explainSelectionFromRange,
   gatewayCacheStatus,
@@ -40,6 +41,7 @@ interface AgentTurn {
   events: AgentEvent[];
   rev: number | null;
   toolCalls: Array<{ tool: string; args: Record<string, unknown> }>;
+  screenshot?: unknown;
 }
 
 function dispatchPresence(status: "thinking" | "idle"): void {
@@ -218,7 +220,19 @@ export function AgentCollaborator({
       if (frame.type === "agent.done") {
         const turnId = String(frame.data.turnId ?? "");
         setRemoteBusy(false);
-        if (turnId && turnId === lastTurnIdRef.current) return;
+        if (turnId && turnId === lastTurnIdRef.current) {
+          if ("screenshot" in frame.data) {
+            setTurns((current) =>
+              current.map((turn) =>
+                turn.turnId === turnId
+                  ? { ...turn, screenshot: frame.data.screenshot }
+                  : turn
+              )
+            );
+          }
+          applyGatewayMeta(frame.data, lastPromptRef.current);
+          return;
+        }
         lastTurnIdRef.current = turnId;
         applyGatewayMeta(frame.data, lastPromptRef.current);
         const rev = typeof frame.data.rev === "number" ? frame.data.rev : null;
@@ -229,6 +243,7 @@ export function AgentCollaborator({
           events: streamEventsRef.current,
           rev,
           toolCalls: asToolCalls(frame.data.toolCalls),
+          screenshot: frame.data.screenshot,
         };
         setTurns((current) => [...current, turn]);
         streamTextRef.current = "";
@@ -291,6 +306,7 @@ export function AgentCollaborator({
           : liveEvents,
         rev: typeof body.rev === "number" ? body.rev : null,
         toolCalls: asToolCalls(body.toolCalls),
+        screenshot: body.screenshot,
       } satisfies AgentTurn;
       lastTurnIdRef.current = turn.turnId;
       setTurns((current) => [...current, turn]);
@@ -400,6 +416,26 @@ export function AgentCollaborator({
                       </p>
                     ))}
                   <p className="whitespace-pre-wrap">{turn.text}</p>
+                  {(() => {
+                    const card = agentScreenshotCard(turn.screenshot);
+                    if (card.kind === "image") {
+                      return (
+                        <img
+                          alt="Q3 Forecast after agent fill"
+                          src={`data:${card.mediaType};base64,${card.data}`}
+                          className="mt-2 max-w-full rounded-md border border-border"
+                        />
+                      );
+                    }
+                    if (card.kind === "unavailable") {
+                      return (
+                        <p className="mt-2 text-[11px] text-muted-foreground">
+                          {t("screenshotUnavailable")}
+                        </p>
+                      );
+                    }
+                    return null;
+                  })()}
                 </div>
               </article>
             ))}

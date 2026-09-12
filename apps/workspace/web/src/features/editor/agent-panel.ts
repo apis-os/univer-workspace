@@ -254,6 +254,38 @@ export function truncateGatewayLogId(
   return `${id.slice(0, max)}…`;
 }
 
+export const Q3_FILL_SCREENSHOT_ALT = "Q3 Forecast after agent fill";
+
+export type AgentScreenshotCard =
+  | {
+      readonly kind: "image";
+      readonly mediaType: string;
+      readonly data: string;
+      readonly alt: typeof Q3_FILL_SCREENSHOT_ALT;
+    }
+  | { readonly kind: "unavailable" }
+  | { readonly kind: "none" };
+
+export function agentScreenshotCard(screenshot: unknown): AgentScreenshotCard {
+  if (screenshot === undefined) return { kind: "none" };
+  if (screenshot === null || typeof screenshot !== "object") {
+    return { kind: "unavailable" };
+  }
+  const rec = screenshot as { mediaType?: unknown; data?: unknown };
+  const data = typeof rec.data === "string" ? rec.data : "";
+  if (!data) return { kind: "unavailable" };
+  const mediaType =
+    typeof rec.mediaType === "string" && rec.mediaType
+      ? rec.mediaType
+      : "image/png";
+  return {
+    kind: "image",
+    mediaType,
+    data,
+    alt: Q3_FILL_SCREENSHOT_ALT,
+  };
+}
+
 export function parseSseBlock(block: string): AgentStreamEvent | null {
   let type = "message";
   const dataLines: string[] = [];
@@ -368,6 +400,9 @@ export function liftAgentTurnBody(
     }
     if (next.cacheHit === undefined && event.data.cacheHit !== undefined) {
       next.cacheHit = event.data.cacheHit;
+    }
+    if (next.screenshot === undefined && event.data.screenshot !== undefined) {
+      next.screenshot = event.data.screenshot;
     }
   }
   if (next.error == null) {

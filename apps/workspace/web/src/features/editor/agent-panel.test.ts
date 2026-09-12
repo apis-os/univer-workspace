@@ -4,9 +4,11 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   AGENT_PANEL_STORAGE_KEY,
+  Q3_FILL_SCREENSHOT_ALT,
   agentErrorMessage,
   agentExamplePrompt,
   agentMuxUrl,
+  agentScreenshotCard,
   consumeAgentTurnResponse,
   defaultAgentPanelOpen,
   explainSelectionFromRange,
@@ -400,6 +402,59 @@ describe("Explain selection chip", () => {
       action: "toast",
       toastKey: "selectARange",
     });
+  });
+});
+
+describe("Q3 fill Cloudflare screenshot card", () => {
+  const PNG_1x1 =
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+
+  it("shows an img with the Q3 fill alt from agent.done screenshot payload", async () => {
+    expect(Q3_FILL_SCREENSHOT_ALT).toBe("Q3 Forecast after agent fill");
+    expect(
+      agentScreenshotCard({ mediaType: "image/png", data: PNG_1x1 })
+    ).toEqual({
+      kind: "image",
+      mediaType: "image/png",
+      data: PNG_1x1,
+      alt: "Q3 Forecast after agent fill",
+    });
+    const response = new Response(
+      [
+        'event: agent.token\ndata: {"delta":"Filled E2:E4"}\n\n',
+        `event: agent.done\ndata: ${JSON.stringify({
+          turnId: "t-fill",
+          screenshot: { mediaType: "image/png", data: PNG_1x1 },
+        })}\n\n`,
+      ].join(""),
+      { headers: { "Content-Type": "text/event-stream; charset=utf-8" } }
+    );
+    const body = await consumeAgentTurnResponse(response);
+    expect(agentScreenshotCard(body.screenshot)).toEqual({
+      kind: "image",
+      mediaType: "image/png",
+      data: PNG_1x1,
+      alt: "Q3 Forecast after agent fill",
+    });
+    const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
+    expect(src).toMatch(/alt=\{?["']Q3 Forecast after agent fill["']\}?|alt=\{Q3_FILL_SCREENSHOT_ALT\}/);
+    expect(src).toMatch(/<img/);
+    expect(src).not.toMatch(/iVBORw0KGgo/);
+  });
+
+  it("shows screenshotUnavailable when BROWSER fails and never uses a placeholder PNG", () => {
+    expect(agentScreenshotCard(null)).toEqual({ kind: "unavailable" });
+    expect(agentScreenshotCard({ mediaType: "image/png", data: "" })).toEqual({
+      kind: "unavailable",
+    });
+    expect(agentScreenshotCard(undefined)).toEqual({ kind: "none" });
+    const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
+    expect(src).toMatch(/screenshotUnavailable/);
+    expect(src).toMatch(/agentScreenshotCard/);
+    expect(src).not.toMatch(/iVBORw0KGgo/);
+    const i18n = readFileSync(join(webSrc, "shared/i18n.tsx"), "utf8");
+    expect(i18n).toMatch(/screenshotUnavailable:/);
+    expect(i18n).not.toMatch(/screenshotUnavailable:[\s\S]{0,40}iVBORw0KGgo/);
   });
 });
 

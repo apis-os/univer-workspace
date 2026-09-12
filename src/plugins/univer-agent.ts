@@ -56,6 +56,11 @@ export interface AgentEvent {
   data: Record<string, unknown>;
 }
 
+export interface AgentScreenshot {
+  mediaType: string;
+  data: string;
+}
+
 export interface AgentTurnResult {
   turnId: string;
   unitId: string;
@@ -65,6 +70,7 @@ export interface AgentTurnResult {
   toolCalls: Array<{ tool: string; args: Record<string, unknown>; result: unknown }>;
   rev: number | null;
   actor?: { userId: string; name: string };
+  screenshot?: AgentScreenshot | null;
 }
 
 export interface AgentAi {
@@ -77,7 +83,10 @@ export interface AgentHost {
   env?: { AI?: AgentAi };
   actor?: WorkspaceActor | null;
   broadcastCollab?: (unitId: string, changeset: Record<string, unknown>, actor?: WorkspaceActor | null) => void;
+  waitUntil?: (promise: Promise<unknown>) => void;
 }
+
+export const Q3_FILL_SCREENSHOT_RANGE = "A1:F12";
 
 const SET_CELL_RE =
   /(?:set|put|fill|write)\s+(?:cell\s+)?([A-Za-z]{1,3}\d+)\s+(?:to|with|=|:)\s+(.+?)(?=(?:\s+and\s+(?:set|put|fill|write)\s+)|\s*$)/gi;
@@ -164,6 +173,77 @@ function resolveActor(host: AgentHost): WorkspaceActor {
       username: "agent"
     }
   );
+}
+
+function canonicalToolName(tool: string): string {
+  return tool.includes(".") ? tool : tool.replace(/_/g, ".");
+}
+
+export function isQ3FillToolResult(tool: string, args: Record<string, unknown>): boolean {
+  const name = canonicalToolName(tool);
+  if (name === "univer.execute") {
+    const code = String(args.code ?? "");
+    return /E2\s*:\s*E4/i.test(code) || /getRange\(\s*['"]E[2-4]/i.test(code);
+  }
+  if (name === "univer.sheet.setRange") {
+    const range = String(args.range ?? "").toUpperCase();
+    if (range.includes("E2:E4")) return true;
+    const cells = Array.isArray(args.cells) ? args.cells : [];
+    return cells.some((cell) => {
+      if (!cell || typeof cell !== "object") return false;
+      const a1 = String((cell as { a1?: unknown }).a1 ?? "").toUpperCase();
+      return a1 === "E2" || a1 === "E3" || a1 === "E4" || a1.includes("E2:E4");
+    });
+  }
+  return false;
+}
+
+function screenshotFromUf(result: unknown): AgentScreenshot | null {
+  if (!result || typeof result !== "object") return null;
+  const rec = result as { error?: unknown; images?: unknown };
+  if (rec.error) return null;
+  if (!Array.isArray(rec.images) || rec.images.length === 0) return null;
+  const first = rec.images[0];
+  if (!first || typeof first !== "object") return null;
+  const data = typeof (first as { data?: unknown }).data === "string" ? (first as { data: string }).data : "";
+  if (!data) return null;
+  const mediaType =
+    typeof (first as { mediaType?: unknown }).mediaType === "string" && (first as { mediaType: string }).mediaType
+      ? (first as { mediaType: string }).mediaType
+      : "image/png";
+  return { mediaType, data };
+}
+
+function scheduleWaitUntil(host: AgentHost, promise: Promise<unknown>): void {
+  if (typeof host.waitUntil === "function") {
+    host.waitUntil(promise);
+    return;
+  }
+  try {
+    const kernelHost = host.kernel.get("host") as { waitUntil?: (promise: Promise<unknown>) => void };
+    kernelHost?.waitUntil?.(promise);
+  } catch {
+    // no ExecutionContext on this host
+  }
+}
+
+async function captureQ3FillScreenshot(
+  action: ActionService,
+  unitId: string,
+  actor: WorkspaceActor
+): Promise<AgentScreenshot | null> {
+  try {
+    const result = await executeTool(
+      action,
+      "univer.screenshot",
+      { unitId, params: { range: Q3_FILL_SCREENSHOT_RANGE } },
+      unitId,
+      actor
+    );
+    return screenshotFromUf(result);
+  } catch {
+    return null;
+  }
 }
 
 async function executeTool(
@@ -377,6 +457,7 @@ export async function runAgentTurn(
     }
   };
   const toolCalls: AgentTurnResult["toolCalls"] = [];
+  let fillScreenshot: Promise<AgentScreenshot | null> | undefined;
 
   if (!prompt) {
     emit({ type: "agent.error", data: { message: "Prompt is required" } });
@@ -401,6 +482,10 @@ export async function runAgentTurn(
     const result = await executeTool(action, tool, args, unitId, actor);
     emit({ type: "agent.tool_call_result", data: { tool, args, result } });
     toolCalls.push({ tool, args, result });
+    if (!fillScreenshot && isQ3FillToolResult(tool, args)) {
+      fillScreenshot = captureQ3FillScreenshot(action, unitId, actor);
+      scheduleWaitUntil(host, fillScreenshot.then(() => undefined));
+    }
     const changeset = (result as any)?.rev
       ? ((collab?.listChangesetEntries(unitId) ?? []).at(-1)?.changeset as Record<string, unknown> | undefined)
       : undefined;
@@ -481,15 +566,18 @@ export async function runAgentTurn(
       emit({ type: "agent.token", data: { delta: chunk } });
     }
   }
+  const screenshot = fillScreenshot ? await fillScreenshot : undefined;
   const unit = collab?.getUnit(unitId);
+  const doneData: Record<string, unknown> = {
+    turnId,
+    rev: unit?.rev ?? null,
+    actor: { userId: actor.userId, name: actor.name },
+    aiGatewayLogId: host.env?.AI?.aiGatewayLogId ?? null
+  };
+  if (fillScreenshot) doneData.screenshot = screenshot ?? null;
   emit({
     type: "agent.done",
-    data: {
-      turnId,
-      rev: unit?.rev ?? null,
-      actor: { userId: actor.userId, name: actor.name },
-      aiGatewayLogId: host.env?.AI?.aiGatewayLogId ?? null
-    }
+    data: doneData
   });
   const completed: AgentTurnResult = {
     turnId,
@@ -499,7 +587,8 @@ export async function runAgentTurn(
     text,
     toolCalls,
     rev: unit?.rev ?? null,
-    actor: { userId: actor.userId, name: actor.name }
+    actor: { userId: actor.userId, name: actor.name },
+    screenshot: fillScreenshot ? screenshot ?? null : undefined
   };
   recordTurn(completed);
   return completed;

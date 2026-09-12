@@ -49,7 +49,8 @@ export abstract class HostBase<Env = unknown> extends DurableObject<Env> {
         env: this.env,
         name: (this.ctx as any).id?.name ?? "default",
         sql,
-        broadcast: (payload: unknown) => this.broadcast(payload)
+        broadcast: (payload: unknown) => this.broadcast(payload),
+        waitUntil: (promise: Promise<unknown>) => this.ctx.waitUntil(promise)
       };
 
       const ctx = await bootKernel({
