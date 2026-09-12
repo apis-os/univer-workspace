@@ -273,5 +273,5 @@ Small facades (docs-list/quote/callout/code/formula, history, thread-comment, pr
 - **bases-ui 25 / docs-print 21 / chart-ui 11**: inner export slice + unbound left a few bound names in unparseable prefix.
 - **collab `dist/*.cjs`**: not es/cjs/lib-root twins; left for a later dist pass.
 
-Commit: see git log after this section.
+Commit: `5abf54b7` `chore(vendor): drop leftover Pro _0x via unbound decoder and module-slice heals`.
 
