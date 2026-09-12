@@ -186,7 +186,16 @@ curl -s -I http://localhost:8790/
 To publish the entire edge stack live to Cloudflare:
 
 ```bash
-pnpm exec wrangler deploy
+pnpm --filter @univerjs/univer-workspace build:web
+npx wrangler@4.130.0 deploy
+```
+
+This tree does not pin `wrangler` in the workspace `package.json`. Use Wrangler **4.130.0** (same pin as leftover CI). Production origin: `https://univer-workspace.apisos.workers.dev`.
+
+Then smoke:
+
+```bash
+EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev node scripts/edge-smoke.mjs
 ```
 
 **Deployment Output:**
@@ -228,7 +237,7 @@ Workers AI inference is routed through AI Gateway id `default` (`AI_GATEWAY_ID`)
 
 - Tool-calling runs use `stream: false` and `skipCache: true`. LLM tool writes go through the same `recordTool` path as regex edits so they `broadcastCollab`.
 - Final text streams with `stream: true` and **no** `tools` (never `stream` + `tools` together).
-- Prompt `Explain the Q3 forecast in one sentence` (and canned full-sheet explain) skips the uncached tool loop and only runs cached `stream: true` inference (`skipCache: false`, `cacheKey: "demo:explain-q3"`, `cacheTtl: 3600`).
+- Prompt `Explain the Q3 forecast in one sentence` (and canned full-sheet explain) skips the uncached tool loop and runs cached non-stream inference (`skipCache: false`, `cacheKey: "demo:explain-q3:t9-headers"`, `cacheTtl: 3600`, `returnRawResponse: true`) so `/turns` can forward `cf-aig-cache-status`. Streaming is not cacheable on this Gateway.
 - Live models: `@cf/meta/llama-3.3-70b-instruct-fp8-fast`, then `@cf/meta/llama-3.1-8b-instruct`. Do not call `@cf/openai/gpt-oss-120b` on the live path.
 - Gateway metadata is at most five keys: `product` (`univer-workspace`), `unitId`, `turnId`, `actorUserId` (prompting human, not `agent_workspace`), `step` (`tool` | `text` | `explain`).
 - `Accept: text/event-stream` streams turn events immediately; JSON remains the default for CLI.
@@ -252,3 +261,34 @@ curl -s https://univer-workspace.apisos.workers.dev/healthz.ai
 
 ### Issue: D1 Database Cold-Start Migration
 **Behavior**: On the first request to a newly deployed environment, `src/control-plane/schema.ts` initializes the schema and seeds the `admin` user automatically. No manual SQL migration files are required for bootstrapping.
+
+---
+
+## 8. Live origin proof (T9)
+
+Origin: `https://univer-workspace.apisos.workers.dev`  
+Worker version: `31d2a422-a1af-4789-8b2d-c57be7f85bb0` (`npx wrangler@4.130.0 deploy`; `ai` + `browser` bindings).
+
+```bash
+pnpm --filter @univerjs/univer-workspace build:web
+npx wrangler@4.130.0 deploy
+EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev node scripts/edge-smoke.mjs
+EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cli-edge-proof.mjs
+```
+
+Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot 200 after `POST /uf/:fileKey`.
+
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-headers"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header.
+
+### Proved on this deploy
+
+- [x] `GET /healthz` → `{ status: "ok", ai: "ok", browser: "ok" }`
+- [x] `GET /healthz.ai` → `{ gateway: "default" }`
+- [x] Avery password login + `POST /agents/unit_welcome_sheet/turns` (`Set A1 to Hello from AI`) returns `rev`
+- [x] `POST /uf/d29ya3NwYWNlLnVuaXZlcg` then `GET .../units/unit_welcome_sheet/inspect?range=E2` → 200
+- [ ] Explain MISS then HIT — **not proved**. Live turns forwarded `cache: "MISS"` then `cache: "MISS"`. Wrangler OAuth `GET` AI Gateway logs is **403** (error 10000). Do not treat HUD HIT as Gateway HIT.
+- [ ] `/uf` screenshot 200 — **failed** `502` Browser Rendering: `Invalid option` `params.action` (expected `screenshot|content|pdf|…`). Same 502 on T14 `cli-edge-proof.mjs` execute.
+- [ ] 90-second two-user click-through (`/demo` Avery + `/demo?as=jordan`) — **not run**. `cursor-ide-browser` created tabs (`viewId` returned) but `browser_navigate` then reported no tab / view not found. Did not fake PNG or clicks.
+- [ ] Present / Follow / Fill E2:E4 / History names / What-if / formula inspector / @agent — **not clicked**.
+
+Do not check the failed boxes until a later deploy fixes Browser Rendering sessions and a real two-browser pass.

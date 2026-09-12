@@ -4,7 +4,7 @@
  * Changeset apply uses decoded `@univerjs-pro/collaboration-service` `UniverUnitRuntime`.
  */
 import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 
 export interface SheetCellValue {
   v?: string | number | boolean | null;
@@ -301,9 +301,19 @@ export function getSheetBlockFromSnapshot(
   return blocks.find((block) => block.id === blockId) ?? null;
 }
 
-const requireCollabService = createRequire(
-  fileURLToPath(new URL("../../apps/workspace/package.json", import.meta.url))
-);
+function collabServiceRequire(): NodeRequire {
+  try {
+    const cwd = typeof process !== "undefined" && typeof process.cwd === "function" ? process.cwd() : "";
+    if (cwd) {
+      return createRequire(join(cwd, "apps/workspace/package.json"));
+    }
+  } catch {
+    // workerd has no apps/workspace package.json path
+  }
+  return createRequire("/apps/workspace/package.json");
+}
+
+const requireCollabService = collabServiceRequire();
 
 const FORMULA_RUST = "@univerjs-pro/engine-formula-rust";
 const FORMULA_JS = "@univerjs-pro/engine-formula";

@@ -17,7 +17,7 @@ export const AI_GATEWAY_LIVE_MODELS = [
 ] as const;
 
 const AI_GATEWAY_PRODUCT = "univer-workspace";
-const EXPLAIN_CACHE_KEY = "demo:explain-q3";
+const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-headers";
 const EXPLAIN_CACHE_TTL = 3600;
 
 export type AgentGatewayStep = "tool" | "text" | "explain";
@@ -42,6 +42,8 @@ export type AgentAiRunOptions = {
   skipCache?: boolean;
   cacheKey?: string;
   cacheTtl?: number;
+  returnRawResponse?: boolean;
+  extraHeaders?: Record<string, string>;
   metadata: AgentAiMetadata;
 };
 
@@ -71,11 +73,15 @@ export interface AgentTurnResult {
   rev: number | null;
   actor?: { userId: string; name: string };
   screenshot?: AgentScreenshot | null;
+  cache?: "HIT" | "MISS" | null;
 }
 
 export interface AgentAi {
   run: (model: string, input: unknown, options?: AgentAiRunOptions) => Promise<any>;
   aiGatewayLogId?: string | null;
+  gateway?: (gatewayId: string) => {
+    getLog(logId: string): Promise<{ cached?: boolean }>;
+  };
 }
 
 export interface AgentHost {
@@ -117,6 +123,7 @@ function gatewayOptions(input: {
   skipCache: boolean;
   cacheKey?: string;
   cacheTtl?: number;
+  returnRawResponse?: boolean;
   metadata: AgentAiMetadata;
 }): AgentAiRunOptions {
   const metadata = input.metadata;
@@ -131,13 +138,50 @@ function gatewayOptions(input: {
     skipCache: input.skipCache,
     metadata
   };
+  if (input.returnRawResponse) {
+    options.returnRawResponse = true;
+  }
   if (input.cacheKey) {
     gateway.cacheKey = input.cacheKey;
     gateway.cacheTtl = input.cacheTtl;
     options.cacheKey = input.cacheKey;
     options.cacheTtl = input.cacheTtl;
+    options.extraHeaders = {
+      "cf-aig-cache-key": input.cacheKey,
+      "cf-aig-cache-ttl": String(input.cacheTtl ?? EXPLAIN_CACHE_TTL)
+    };
   }
   return options;
+}
+
+function cacheStatusFromHeader(value: string | null | undefined): "HIT" | "MISS" | null {
+  const text = String(value || "").trim().toUpperCase();
+  if (text === "HIT" || text === "MISS") return text;
+  return null;
+}
+
+function cacheStatusFromAiResult(result: unknown): "HIT" | "MISS" | null {
+  if (result instanceof Response) {
+    return cacheStatusFromHeader(
+      result.headers.get("cf-aig-cache-status") || result.headers.get("cf-cache-status")
+    );
+  }
+  return null;
+}
+
+async function cacheStatusFromGatewayLog(
+  env: AgentHost["env"],
+  logId: string | null | undefined
+): Promise<"HIT" | "MISS" | null> {
+  if (!logId || !env?.AI?.gateway) return null;
+  try {
+    const log = await env.AI.gateway(AI_GATEWAY_ID).getLog(logId);
+    if (log?.cached === true) return "HIT";
+    if (log?.cached === false) return "MISS";
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 function collabFrom(host: AgentHost): UniverCollabService | undefined {
@@ -219,6 +263,13 @@ function json(data: unknown, status = 200, extra: HeadersInit = {}): Response {
     status,
     headers: { "Content-Type": "application/json; charset=utf-8", ...extra }
   });
+}
+
+function turnCacheHeaders(result: AgentTurnResult): HeadersInit {
+  if (result.cache === "HIT" || result.cache === "MISS") {
+    return { "cf-aig-cache-status": result.cache };
+  }
+  return {};
 }
 
 function parseCellsFromPrompt(prompt: string): Array<{ a1: string; value: string }> {
@@ -383,6 +434,27 @@ function isReadableStream(value: unknown): value is ReadableStream<Uint8Array> {
   return Boolean(value && typeof value === "object" && typeof (value as ReadableStream).getReader === "function");
 }
 
+async function consumeExplainResult(result: unknown): Promise<{ text: string; cache: "HIT" | "MISS" | null }> {
+  const cache = cacheStatusFromAiResult(result);
+  if (result instanceof Response) {
+    const raw = await result.text();
+    try {
+      const parsed = JSON.parse(raw) as { response?: unknown; content?: unknown };
+      return { text: String(parsed.response ?? parsed.content ?? "").trim(), cache };
+    } catch {
+      return { text: raw.trim(), cache };
+    }
+  }
+  return {
+    text: String(
+      (result as { response?: unknown; content?: unknown } | undefined)?.response
+        ?? (result as { content?: unknown } | undefined)?.content
+        ?? ""
+    ).trim(),
+    cache
+  };
+}
+
 async function consumeGatewayResult(result: unknown, emit: (event: AgentEvent) => void): Promise<string> {
   if (isReadableStream(result)) {
     return readSseTokenStream(result, emit);
@@ -401,8 +473,8 @@ async function tryWorkersAi(
   emit: (event: AgentEvent) => void,
   recordTool: (tool: string, args: Record<string, unknown>) => Promise<unknown>,
   ctx: { turnId: string; actorUserId: string }
-): Promise<{ text: string; used: boolean; streamed: boolean }> {
-  if (!env?.AI?.run) return { text: "", used: false, streamed: false };
+): Promise<{ text: string; used: boolean; streamed: boolean; cache: "HIT" | "MISS" | null }> {
+  if (!env?.AI?.run) return { text: "", used: false, streamed: false, cache: null };
   const explain = isCachedExplainPrompt(prompt);
   const messages: Array<Record<string, unknown>> = [
     { role: "system", content: agentSystemPrompt(unitId) },
@@ -464,14 +536,39 @@ async function tryWorkersAi(
         }
       }
 
+      if (explain) {
+        const result = await env.AI.run(
+          model,
+          { messages },
+          gatewayOptions({
+            stream: false,
+            skipCache: false,
+            cacheKey: EXPLAIN_CACHE_KEY,
+            cacheTtl: EXPLAIN_CACHE_TTL,
+            returnRawResponse: true,
+            metadata: {
+              product: AI_GATEWAY_PRODUCT,
+              unitId,
+              turnId: "explain-q3",
+              actorUserId: ctx.actorUserId,
+              step: "explain"
+            }
+          })
+        );
+        let { text, cache } = await consumeExplainResult(result);
+        if (!cache) {
+          cache = await cacheStatusFromGatewayLog(env, env.AI.aiGatewayLogId);
+        }
+        if (text) return { text, used: true, streamed: false, cache };
+        continue;
+      }
+
       const streamed = await env.AI.run(
         model,
         { messages, stream: true },
         gatewayOptions({
           stream: true,
-          skipCache: explain ? false : true,
-          cacheKey: explain ? EXPLAIN_CACHE_KEY : undefined,
-          cacheTtl: explain ? EXPLAIN_CACHE_TTL : undefined,
+          skipCache: true,
           metadata: {
             product: AI_GATEWAY_PRODUCT,
             unitId,
@@ -482,8 +579,12 @@ async function tryWorkersAi(
         })
       );
       const didStream = isReadableStream(streamed) || streamed instanceof Response;
+      let cache = cacheStatusFromAiResult(streamed);
       const text = (await consumeGatewayResult(streamed, emit)).trim();
-      if (text || usedTools) return { text, used: true, streamed: didStream };
+      if (!cache) {
+        cache = await cacheStatusFromGatewayLog(env, env.AI.aiGatewayLogId);
+      }
+      if (text || usedTools) return { text, used: true, streamed: didStream, cache };
     } catch (err: any) {
       lastError = err?.message || String(err);
     }
@@ -491,7 +592,7 @@ async function tryWorkersAi(
   if (lastError) {
     emit({ type: "agent.thinking", data: { delta: `Workers AI unavailable (${lastError}); using Skill planner.` } });
   }
-  return { text: "", used: usedTools, streamed: false };
+  return { text: "", used: usedTools, streamed: false, cache: null };
 }
 
 export async function runAgentTurn(
@@ -578,6 +679,7 @@ export async function runAgentTurn(
 
   let text = "";
   let streamedTokens = false;
+  let cache: "HIT" | "MISS" | null = null;
 
   if (wantSkills) {
     await recordTool("univer.skills.list", {});
@@ -611,6 +713,7 @@ export async function runAgentTurn(
       { turnId, actorUserId }
     );
     streamedTokens = ai.streamed;
+    cache = ai.cache;
     if (ai.used && ai.text) {
       text = ai.text;
     } else if (ai.used) {
@@ -647,7 +750,8 @@ export async function runAgentTurn(
     turnId,
     rev: unit?.rev ?? null,
     actor: { userId: actor.userId, name: actor.name },
-    aiGatewayLogId: host.env?.AI?.aiGatewayLogId ?? null
+    aiGatewayLogId: host.env?.AI?.aiGatewayLogId ?? null,
+    cache
   };
   if (fillScreenshot) doneData.screenshot = screenshot ?? null;
   emit({
@@ -663,7 +767,8 @@ export async function runAgentTurn(
     toolCalls,
     rev: unit?.rev ?? null,
     actor: { userId: actor.userId, name: actor.name },
-    screenshot: fillScreenshot ? screenshot ?? null : undefined
+    screenshot: fillScreenshot ? screenshot ?? null : undefined,
+    cache
   };
   recordTurn(completed);
   return completed;
@@ -776,7 +881,7 @@ export async function handleAgentHttp(request: Request, host: AgentHost): Promis
     }
     if (wantsSse(request)) return startTurnSse(liveHost, unitId, prompt);
     const result = await runAgentTurn(liveHost, { unitId, prompt });
-    return json(result);
+    return json(result, 200, turnCacheHeaders(result));
   }
 
   if (turnsMatch && request.method === "GET") {
@@ -815,7 +920,7 @@ export async function handleAgentHttp(request: Request, host: AgentHost): Promis
     const prompt = body.prompt || body.text || "";
     if (wantsSse(request)) return startTurnSse(liveHost, body.unitId, prompt);
     const result = await runAgentTurn(liveHost, { unitId: body.unitId, prompt });
-    return json(result);
+    return json(result, 200, turnCacheHeaders(result));
   }
 
   return null;

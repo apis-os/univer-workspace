@@ -428,7 +428,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
             if (runHasTools(input)) {
               return { response: "" };
             }
-            return mockSseHelLo();
+            return { response: "Hello" };
           }
         }
       }
@@ -439,28 +439,64 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
       prompt: "Explain the Q3 forecast in one sentence"
     });
     assert.ok(calls.every((call) => !runHasTools(call.input)), "cached explain must skip the tool loop");
-    const finalRun = calls.find((call) => runHasStream(call.input, call.options));
+    const finalRun = calls[0];
     assert.ok(finalRun);
     assert.equal(calls.length, 1);
+    assert.equal(runHasStream(finalRun.input, finalRun.options), false);
     assert.equal(runSkipCache(finalRun.options), false);
-    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3");
+    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3:t9-headers");
     assert.equal(runCacheTtl(finalRun.options), 3600);
     assert.equal(runMetadata(finalRun.options).step, "explain");
-    assert.deepEqual(
-      result.events.filter((e) => e.type === "agent.token").map((e) => e.data.delta),
-      ["Hel", "lo"]
-    );
+    assert.equal(result.text, "Hello");
     assert.equal(result.events.find((e) => e.type === "agent.done")?.data.aiGatewayLogId, "aig_explain");
 
     calls.length = 0;
     await runAgentTurn(host, { unitId: "unit_explain", prompt: "Explain the full sheet in one sentence" });
     assert.ok(calls.every((call) => !runHasTools(call.input)), "canned explain must skip the tool loop");
-    const canned = calls.find((call) => runHasStream(call.input, call.options));
+    const canned = calls[0];
     assert.ok(canned);
     assert.equal(calls.length, 1);
+    assert.equal(runHasStream(canned.input, canned.options), false);
     assert.equal(runSkipCache(canned.options), false);
-    assert.equal(runCacheKey(canned.options), "demo:explain-q3");
+    assert.equal(runCacheKey(canned.options), "demo:explain-q3:t9-headers");
     assert.equal(runMetadata(canned.options).step, "explain");
+  });
+
+  test("explain turn forwards cf-aig-cache-status onto the JSON body", async () => {
+    const { ctx } = createHarness();
+    let explainCalls = 0;
+    const host = {
+      kernel: ctx,
+      actor: HUMAN_ACTOR,
+      env: {
+        AI: {
+          aiGatewayLogId: "aig_explain_cache",
+          run: async (_model: string, input: unknown, options?: any) => {
+            if (runHasTools(input)) return { response: "" };
+            explainCalls += 1;
+            const cache = explainCalls === 1 ? "MISS" : "HIT";
+            return new Response(JSON.stringify({ response: "Q3 holds." }), {
+              headers: {
+                "content-type": "application/json",
+                "cf-aig-cache-status": cache
+              }
+            });
+          }
+        }
+      }
+    };
+    const first = await runAgentTurn(host, {
+      unitId: "unit_explain_cache",
+      prompt: "Explain the Q3 forecast in one sentence"
+    });
+    assert.equal(first.cache, "MISS");
+    assert.equal(first.events.find((e) => e.type === "agent.done")?.data.cache, "MISS");
+    const second = await runAgentTurn(host, {
+      unitId: "unit_explain_cache",
+      prompt: "Explain the Q3 forecast in one sentence"
+    });
+    assert.equal(second.cache, "HIT");
+    assert.equal(second.events.find((e) => e.type === "agent.done")?.data.cache, "HIT");
   });
 
   test("Accept text/event-stream writes immediately; JSON remains the default", async () => {
@@ -567,7 +603,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
           run: async (_model: string, input: unknown, options?: any) => {
             framesDuringRun = sent.map((row) => JSON.parse(row));
             if (runHasStream(input, options)) return mockSseHelLo();
-            return { response: "" };
+            return { response: "Hello" };
           }
         }
       }
@@ -589,7 +625,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.ok(frames.some((frame) => frame.type === "agent.token"));
     assert.ok(frames.some((frame) => frame.type === "agent.done"));
     const tokenDeltas = frames.filter((frame) => frame.type === "agent.token").map((frame) => (frame as any).data?.delta);
-    assert.deepEqual(tokenDeltas, ["Hel", "lo"]);
+    assert.deepEqual(tokenDeltas, ["Hello"]);
   });
 
   test("one in-flight turn per unitId emits Agent is busy", async () => {

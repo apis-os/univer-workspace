@@ -4,7 +4,7 @@
  * compile-svg uses DSH compileSvgToFacade from `@univer-cli/svg-facade` (no node:fs).
  */
 import { createRequire } from "node:module";
-import { fileURLToPath } from "node:url";
+import { join } from "node:path";
 import { R2BlobStore } from "./r2-blob-store.ts";
 import {
   evaluateOnRenderPage,
@@ -15,9 +15,19 @@ import { bumpSnapshotRevision, cloneSnapshot } from "../plugins/univer-snapshot.
 
 export const SVG_FACADE_PLUGIN = "SVG_FACADE";
 
-const requireSvgFacade = createRequire(
-  fileURLToPath(new URL("../../packages/client-core/package.json", import.meta.url))
-);
+function svgFacadeRequire(): NodeRequire {
+  try {
+    const cwd = typeof process !== "undefined" && typeof process.cwd === "function" ? process.cwd() : "";
+    if (cwd) {
+      return createRequire(join(cwd, "packages/client-core/package.json"));
+    }
+  } catch {
+    // workerd bundle has no client-core package.json path
+  }
+  return createRequire("/packages/client-core/package.json");
+}
+
+const requireSvgFacade = svgFacadeRequire();
 
 type CompileSvgToFacade = (
   svg: string
