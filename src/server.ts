@@ -3,6 +3,7 @@
  */
 import { ControlPlaneDb } from "./control-plane/db.ts";
 import { initControlPlaneSchema, seedControlPlane } from "./control-plane/schema.ts";
+import { attachActorHeaders } from "./control-plane/actor.ts";
 import { handleControlPlaneRoutes, resolveGatewayContext } from "./control-plane/gateway.ts";
 import { handleBlobRoutes, R2BlobStore } from "./integrations/r2-blob-store.ts";
 import {
@@ -145,7 +146,9 @@ export default {
       }
 
       // 5. WebSocket Mux & Realtime endpoints routed to ChatAgent Durable Object
+      const isUniverFile = pathname === "/uf" || pathname.startsWith("/uf/");
       if (
+        isUniverFile ||
         pathname === "/api/remote.mux" ||
         pathname === WORKTREE_CHANGE_FEED_PATH ||
         pathname.startsWith("/agents/") ||
@@ -154,9 +157,33 @@ export default {
         pathname === "/api/status" ||
         pathname.startsWith("/api/actions/")
       ) {
+        let forwarded = request;
+        if (isUniverFile) {
+          if (!env.DB) {
+            return applyCorsHeaders(
+              request,
+              new Response(JSON.stringify({ error: { message: "Authentication required" } }), {
+                status: 401,
+                headers: { "Content-Type": "application/json; charset=utf-8" }
+              })
+            );
+          }
+          const cpDb = new ControlPlaneDb(env.DB);
+          const session = await resolveGatewayContext(request, cpDb);
+          if (!session.currentUser) {
+            return applyCorsHeaders(
+              request,
+              new Response(JSON.stringify({ error: { message: "Authentication required" } }), {
+                status: 401,
+                headers: { "Content-Type": "application/json; charset=utf-8" }
+              })
+            );
+          }
+          forwarded = attachActorHeaders(request, session.currentUser);
+        }
         const id = env.ChatAgent.idFromName("univer_collab");
         const stub = env.ChatAgent.get(id);
-        const res = await stub.fetch(request);
+        const res = await stub.fetch(forwarded);
         return applyCorsHeaders(request, res);
       }
 
@@ -191,7 +218,9 @@ export default {
         pathname.startsWith("/api/") ||
         pathname.startsWith("/auth/") ||
         pathname.startsWith("/universer-api/") ||
-        pathname.startsWith("/agents/")
+        pathname.startsWith("/agents/") ||
+        pathname === "/uf" ||
+        pathname.startsWith("/uf/")
       ) {
         return applyCorsHeaders(
           request,

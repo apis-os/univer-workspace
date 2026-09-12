@@ -27,7 +27,10 @@ import {
   encodeCombJson,
   type CombFrame
 } from "../integrations/univer-comb-codec.ts";
+import { ControlPlaneDb } from "../control-plane/db.ts";
+import { resolveGatewayContext } from "../control-plane/gateway.ts";
 import { handleUniverserHttp } from "../integrations/univer-collab-http.ts";
+import { handleUniverFileHttp } from "../integrations/univer-file-http.ts";
 import { AGENT_MEMBER_ID, AGENT_USER_ID, AGENT_USER_NAME } from "../plugins/univer-facade-actions.ts";
 import { actorFromRequest, type WorkspaceActor } from "../control-plane/actor.ts";
 import {
@@ -548,6 +551,23 @@ export class DshHost extends HostBase<any> {
         broadcastCollab: (unitId, changeset) => this.broadcastAgentCollab(unitId, changeset)
       });
       if (agentRes) return agentRes;
+    }
+
+    if (url.pathname === "/uf" || url.pathname.startsWith("/uf/")) {
+      const dbBinding = (this.env as { DB?: D1Database }).DB;
+      if (!dbBinding) {
+        return new Response(JSON.stringify({ error: { message: "Control plane unavailable" } }), {
+          status: 503,
+          headers: { "Content-Type": "application/json; charset=utf-8" }
+        });
+      }
+      const db = new ControlPlaneDb(dbBinding);
+      const session = await resolveGatewayContext(request, db);
+      const fileRes = await handleUniverFileHttp(request, {
+        db,
+        currentUser: session.currentUser
+      });
+      if (fileRes) return fileRes;
     }
 
     if (url.pathname === "/api/remote.mux") {
