@@ -1,0 +1,34 @@
+import type { ResourceRefInput } from '../common/resource-ref';
+import type { IEmbedDescriptor, IEmbedResource } from '../types/embed';
+import { EmbedUnitLeaseService } from './embed-unit-lease.service';
+export declare class EmbedModelService {
+    private readonly _unitLeaseService;
+    private readonly _resources;
+    constructor(_unitLeaseService: EmbedUnitLeaseService);
+    addDescriptor(hostUnitId: string, descriptor: IEmbedDescriptor): void;
+    applyDescriptorMutation(hostUnitId: string, descriptor: IEmbedDescriptor): void;
+    getDescriptor(hostUnitId: string, embedId: string): IEmbedDescriptor | undefined;
+    getActiveDescriptors(hostUnitId: string): IEmbedDescriptor[];
+    getAllActiveDescriptors(): IEmbedDescriptor[];
+    getActiveDescriptorsByChildUnit(childUnitId: string): IEmbedDescriptor[];
+    getDescriptors(hostUnitId: string): IEmbedDescriptor[];
+    getDescriptorsByResourceRef(hostUnitId: string, ref: ResourceRefInput): IEmbedDescriptor[];
+    getActiveDescriptorsByResourceRef(hostUnitId: string, ref: ResourceRefInput): IEmbedDescriptor[];
+    countReferencesByResourceRef(hostUnitId: string, ref: ResourceRefInput): number;
+    countActiveReferencesByResourceRef(hostUnitId: string, ref: ResourceRefInput): number;
+    softDeleteDescriptor(hostUnitId: string, embedId: string): void;
+    restoreDescriptor(hostUnitId: string, embedId: string): void;
+    serializeUnit(unitId: string): IEmbedResource;
+    loadUnit(unitId: string, resource: IEmbedResource): void;
+    unloadUnit(unitId: string): void;
+    parseJson(json: string): IEmbedResource;
+    toJson(unitId: string): string;
+    private _normalizeDescriptor;
+    private _getDescriptorResourceRef;
+    private _getRuntimeChildUnitIdForMutation;
+    private _ensureResource;
+    private _createResource;
+    private _cloneResource;
+    private _toPersistedResource;
+    private _toPersistedDescriptor;
+}

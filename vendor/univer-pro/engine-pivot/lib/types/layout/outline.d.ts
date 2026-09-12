@@ -1,0 +1,40 @@
+import type { PivotTable } from '../pivot/pivot-table';
+import type { NodeTree } from '../summary/node-tree';
+import type { SummaryManager } from '../summary/summary-manager';
+import type { IPivotLayoutCtx, IPivotTableQueryData, IPivotViewInfo, IPivotViewValueType } from '../types';
+import type { PivotView } from './pivot-view';
+import { TabularLayout } from './tabular';
+export declare class OutlineLayout extends TabularLayout {
+    static layout(pivotTable: PivotTable, summaryManager: SummaryManager, queryData: IPivotTableQueryData): PivotView;
+    static layoutRowFields(ctx: IPivotLayoutCtx): void;
+    static shouldSplitRootByValues(ctx: IPivotLayoutCtx): boolean;
+    static layoutRowChildren(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIds: string[]): number;
+    static layoutRowNode(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIds: string[]): {
+        itemSize: number;
+        topTotalSize: number;
+        bottomTotalSize: number;
+    };
+    static layoutRowNodeToCursor(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIds: string[]): number;
+    static shouldWriteSubtotalAtBottom(ctx: IPivotLayoutCtx): boolean;
+    static shouldWriteMultiValueSubtotalAtBottom(ctx: IPivotLayoutCtx, nodeTree: NodeTree): boolean;
+    static writeParentItemRow(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number): number;
+    static writeValueHeaderRow(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueId: string): number;
+    static writeRootValueHeaderRow(ctx: IPivotLayoutCtx, row: number, valueId: string): number;
+    static writeParentRows(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIds: string[]): number;
+    static writeParentRow(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIndex: number, valueLabel?: string): void;
+    static writeBottomSubtotalRows(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIds: string[]): number;
+    static writeBottomSubtotalRow(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIndex: number, valueLabel?: string): void;
+    static writeLeafRows(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIds: string[]): number;
+    static shouldWriteLeafValuesUnderItem(ctx: IPivotLayoutCtx): boolean;
+    static writeLeafItemRow(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number): number;
+    static writeLeafValueRow(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIndex: number, valueLabel: string): void;
+    static writeGrandTotalRows(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, valueIds: string[]): number;
+    static layoutGrandTotalValues(ctx: IPivotLayoutCtx, nodeTree: NodeTree, row: number, measureIndex: number): void;
+    static createRowInfo(nodeTree: NodeTree, extra: Partial<IPivotViewInfo>): IPivotViewInfo;
+    static createGrandTotalInfo(nodeTree: NodeTree, valueIndex: number): IPivotViewInfo;
+    static getRowColCount(ctx: IPivotLayoutCtx): number;
+    static getRowLabelCol(ctx: IPivotLayoutCtx, nodeLevel: number): number;
+    static getValueLabelCol(ctx: IPivotLayoutCtx, nodeLevel: number): number;
+    static getNodeDisplayValue(nodeTree: NodeTree): IPivotViewValueType;
+    static applyNodeValueType(rowView: IPivotLayoutCtx['view']['rowView'], row: number, col: number, nodeTree: NodeTree): void;
+}

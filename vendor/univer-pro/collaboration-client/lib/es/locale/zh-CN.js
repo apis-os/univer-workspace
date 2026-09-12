@@ -1,1 +1,45 @@
-();const e={'collaboration-client':{'collabClient':{'tooltip':{'reconnect':"点击重新连接"}},'collabStatus':{'fetchMiss':"正在拉取服务端数据...",'conflict':'编辑冲突','notCollab':"本地文件",'synced':"已同步",'syncing':"保存中...",'offline':'已离线，编辑将在本地缓存'},'session':{'connection-failed':'连接失败，请检查你的网络','will-retry':"连接失败，将在一会儿之后重试连接",'room-full':"此文档协同人数已满，你的编辑将在本地缓存",'join-failed':"加入协同失败，请稍后重试，你的编辑将在本地缓存",'room-not-exists':'加入协同失败，你的编辑将在本地缓存','room-permission-denied':"没有协同权限，你的编辑将在本地缓存",'room-cnt-exceeds':"协同文档数量超过限制，你的编辑将在本地缓存",'collaboration-timeout':"服务器未响应，你的编辑将在本地缓存"},'conflict':{'title':"协同冲突",'content':'你的本地文档和服务器的文档存在冲突。请在别处保存你的本地编辑，本地编辑将在刷新页面后丢弃。'},'permission':{'title':"权限错误",'content':"你的操作和服务器的权限存在冲突。请在别处保存你的本地编辑，本地编辑将在刷新页面后丢弃。"},'collaboration':{'single-unit':{'warning':"你在另一个标签页打开了同一个文件。为了避免数据丢失，这个标签页的编辑行为将会被限制。"},'closeRoom':"由于协同房间被关闭,编辑权限被收回。"},'auth':{'needGotoLoginAlert':"你的登录已过期，点击确认重新登陆，点击取消去保存你的本地编辑。"}}};export{e as default};
+const e = {
+  "collaboration-client": {
+    collabClient: { tooltip: { reconnect: "点击重新连接" } },
+    collabStatus: {
+      fetchMiss: "正在拉取服务端数据...",
+      conflict: "编辑冲突",
+      notCollab: "本地文件",
+      synced: "已同步",
+      syncing: "保存中...",
+      offline: "已离线，编辑将在本地缓存",
+    },
+    session: {
+      "connection-failed": "连接失败，请检查你的网络",
+      "will-retry": "连接失败，将在一会儿之后重试连接",
+      "room-full": "此文档协同人数已满，你的编辑将在本地缓存",
+      "join-failed": "加入协同失败，请稍后重试，你的编辑将在本地缓存",
+      "room-not-exists": "加入协同失败，你的编辑将在本地缓存",
+      "room-permission-denied": "没有协同权限，你的编辑将在本地缓存",
+      "room-cnt-exceeds": "协同文档数量超过限制，你的编辑将在本地缓存",
+      "collaboration-timeout": "服务器未响应，你的编辑将在本地缓存",
+    },
+    conflict: {
+      title: "协同冲突",
+      content:
+        "你的本地文档和服务器的文档存在冲突。请在别处保存你的本地编辑，本地编辑将在刷新页面后丢弃。",
+    },
+    permission: {
+      title: "权限错误",
+      content:
+        "你的操作和服务器的权限存在冲突。请在别处保存你的本地编辑，本地编辑将在刷新页面后丢弃。",
+    },
+    collaboration: {
+      "single-unit": {
+        warning:
+          "你在另一个标签页打开了同一个文件。为了避免数据丢失，这个标签页的编辑行为将会被限制。",
+      },
+      closeRoom: "由于协同房间被关闭,编辑权限被收回。",
+    },
+    auth: {
+      needGotoLoginAlert:
+        "你的登录已过期，点击确认重新登陆，点击取消去保存你的本地编辑。",
+    },
+  },
+};
+export { e as default };

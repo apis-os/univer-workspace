@@ -1,58 +1,8 @@
-const _0x43ebbe = _0x270a;
-(function (_0x4559a9, _0xd40ade) {
-  const _0x20c785 = _0x270a,
-    _0x517504 = _0x4559a9();
-  while (!![]) {
-    try {
-      const _0x19f788 =
-        (-parseInt(_0x20c785(0x14a)) / 0x1) *
-          (parseInt(_0x20c785(0x143)) / 0x2) +
-        (parseInt(_0x20c785(0x147)) / 0x3) *
-          (-parseInt(_0x20c785(0x145)) / 0x4) +
-        -parseInt(_0x20c785(0x149)) / 0x5 +
-        -parseInt(_0x20c785(0x142)) / 0x6 +
-        -parseInt(_0x20c785(0x13f)) / 0x7 +
-        (-parseInt(_0x20c785(0x140)) / 0x8) *
-          (-parseInt(_0x20c785(0x146)) / 0x9) +
-        parseInt(_0x20c785(0x144)) / 0xa;
-      if (_0x19f788 === _0xd40ade) break;
-      else _0x517504["push"](_0x517504["shift"]());
-    } catch (_0x191b07) {
-      _0x517504["push"](_0x517504["shift"]());
-    }
-  }
-})(_0x19ea, 0x39574);
 const e = {
   "bases-exchange-client": {
     file: "File",
-    upload: _0x43ebbe(0x148),
+    upload: "Open(File)",
     download: "Save\x20As",
   },
 };
-module[_0x43ebbe(0x141)] = e;
-function _0x270a(_0x3be385, _0x235728) {
-  _0x3be385 = _0x3be385 - 0x13f;
-  const _0x19eaa8 = _0x19ea();
-  let _0x270aeb = _0x19eaa8[_0x3be385];
-  return _0x270aeb;
-}
-function _0x19ea() {
-  const _0x16ff5c = [
-    "1271389vzhHYN",
-    "8EhnLlP",
-    "exports",
-    "1917540WqDVuB",
-    "125482MxotIq",
-    "10538880amkBIa",
-    "44332IinQUa",
-    "3841461iHhtme",
-    "12BoTOuB",
-    "Open(File)",
-    "1305565GrqKHH",
-    "7SmePKv",
-  ];
-  _0x19ea = function () {
-    return _0x16ff5c;
-  };
-  return _0x19ea();
-}
+module.exports = e;

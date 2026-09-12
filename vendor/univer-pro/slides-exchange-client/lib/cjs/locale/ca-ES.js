@@ -1,59 +1,8 @@
-const _0x4118dc = _0x3d0c;
-(function (_0x50dd25, _0x48f3e3) {
-  const _0x2e0021 = _0x3d0c,
-    _0x395d0f = _0x50dd25();
-  while (!![]) {
-    try {
-      const _0x3ebe5b =
-        (-parseInt(_0x2e0021(0x18f)) / 0x1) *
-          (-parseInt(_0x2e0021(0x192)) / 0x2) +
-        -parseInt(_0x2e0021(0x194)) / 0x3 +
-        -parseInt(_0x2e0021(0x191)) / 0x4 +
-        -parseInt(_0x2e0021(0x198)) / 0x5 +
-        (parseInt(_0x2e0021(0x196)) / 0x6) *
-          (parseInt(_0x2e0021(0x195)) / 0x7) +
-        parseInt(_0x2e0021(0x18e)) / 0x8 +
-        (-parseInt(_0x2e0021(0x197)) / 0x9) *
-          (-parseInt(_0x2e0021(0x18d)) / 0xa);
-      if (_0x3ebe5b === _0x48f3e3) break;
-      else _0x395d0f["push"](_0x395d0f["shift"]());
-    } catch (_0x3f91cd) {
-      _0x395d0f["push"](_0x395d0f["shift"]());
-    }
-  }
-})(_0x2994, 0xdecc7);
-function _0x3d0c(_0x30310d, _0x2f82f9) {
-  _0x30310d = _0x30310d - 0x18d;
-  const _0x2994a4 = _0x2994();
-  let _0x3d0c8d = _0x2994a4[_0x30310d];
-  return _0x3d0c8d;
-}
 const e = {
   "slides-exchange-client": {
     file: "Fitxer",
-    upload: _0x4118dc(0x190),
-    download: _0x4118dc(0x199),
+    upload: "Obrir(Fitxer)",
+    download: "Anomena i desa",
   },
 };
-function _0x2994() {
-  const _0x3168d1 = [
-    "Obrir(Fitxer)",
-    "3476796OfTuOu",
-    "2pbZcpw",
-    "exports",
-    "329586iqedHh",
-    "91APlLXy",
-    "20892duMxqd",
-    "5347467jKbhcY",
-    "8873940MLGswa",
-    "Anomena\x20i\x20desa",
-    "10XVYWlI",
-    "13711392zkbxmV",
-    "1313079emKzHt",
-  ];
-  _0x2994 = function () {
-    return _0x3168d1;
-  };
-  return _0x2994();
-}
-module[_0x4118dc(0x193)] = e;
+module.exports = e;

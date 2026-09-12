@@ -1,0 +1,37 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-line-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M3.5 3.5L16.5 16.5",
+			"strokeLinecap": "round",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeLineIcon = (0, react.forwardRef)(function ShapeLineIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-line-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeLineIcon.displayName = "ShapeLineIcon";
+//#endregion
+exports.ShapeLineIcon = ShapeLineIcon;
+exports.default = ShapeLineIcon;

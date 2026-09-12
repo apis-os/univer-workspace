@@ -1,0 +1,34 @@
+import { ShapeFloatingToolbarService } from '@univerjs-pro/shape-editor-ui';
+import { ISlideDrawingService } from '@univerjs-pro/slides';
+import { Disposable } from '@univerjs/core';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { IMenuManagerService, IRibbonService } from '@univerjs/ui';
+import { ISlideEmbedFocusOwnerService } from '../embed-focus-owner';
+import { ISlideDrawingStateService } from '../services/slide-drawing-state.service';
+import { ISlideEmbedFloatingActiveService, ISlideEmbedMountService } from '../services/slide-embed-integration.service';
+export declare class SlideContextualRibbonController extends Disposable {
+    private readonly _menuManagerService;
+    private readonly _ribbonService;
+    private readonly _renderManagerService;
+    private readonly _slideDrawingStateService;
+    private readonly _slideDrawingService;
+    private readonly _shapeFloatingToolbarService;
+    private readonly _embedFocusOwnerService?;
+    private readonly _embedFloatingActiveService?;
+    private readonly _embedMountService?;
+    private _shapeFormatVisible;
+    private _smartArtVisible;
+    constructor(_menuManagerService: IMenuManagerService, _ribbonService: IRibbonService, _renderManagerService: IRenderManagerService, _slideDrawingStateService: ISlideDrawingStateService, _slideDrawingService: ISlideDrawingService, _shapeFloatingToolbarService: ShapeFloatingToolbarService, _embedFocusOwnerService?: ISlideEmbedFocusOwnerService | undefined, _embedFloatingActiveService?: ISlideEmbedFloatingActiveService | undefined, _embedMountService?: ISlideEmbedMountService | undefined);
+    dispose(): void;
+    private _initMenu;
+    private _listenSelection;
+    private _hasTableSelection;
+    private _isNonFullscreenFloatingEmbedChildSelection;
+    private _isIsolatedEmbedChildSelection;
+    private _isActiveFloatingEmbedHostSelection;
+    private _hideShapeFormatTab;
+    private _showShapeFormatTab;
+    private _isSmartArtSelection;
+    private _showSmartArtTab;
+    private _hideSmartArtTab;
+}

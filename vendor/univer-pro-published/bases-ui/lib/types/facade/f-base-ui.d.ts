@@ -1,0 +1,38 @@
+import type { BaseSelectionService, BaseUIStateService, IBasePeopleOption, IScrollToRecordOptions, IStartEditingCellInput } from '@univerjs-pro/bases-ui';
+import type { BaseSelection, IConfigService } from '@univerjs/core';
+import type { FBaseRenderedView } from './f-base-rendered-view';
+import { BaseEditorService } from '@univerjs-pro/bases-ui';
+export declare class FBaseUI {
+    private readonly _stateService;
+    private readonly _selectionService;
+    private readonly _editorService;
+    private readonly _configService?;
+    private _localConfig;
+    constructor(_stateService: BaseUIStateService, _selectionService: BaseSelectionService, _editorService?: BaseEditorService, _configService?: Pick<IConfigService, "getConfig" | "setConfig"> | undefined);
+    getActiveTableId(): string | null;
+    getActiveViewId(): string | null;
+    activateTable(tableId: string): Promise<void>;
+    activateView(viewId: string): Promise<void>;
+    getSelection(): BaseSelection | null;
+    setSelection(selection: BaseSelection | null): void;
+    scrollToRecord(_recordId: string, options?: IScrollToRecordOptions): void;
+    scrollToField(_fieldId: string, options?: IScrollToRecordOptions): void;
+    startEditingCell(input: IStartEditingCellInput): void;
+    stopEditingCell(): void;
+    openLeftSidebar(): void;
+    closeLeftSidebar(): void;
+    openRightSidebar(): void;
+    closeRightSidebar(): void;
+    openRecordDetail(recordId: string): void;
+    openDraftRecordDetail(values?: Record<string, unknown>): void;
+    closeRecordDetail(): void;
+    openFieldConfigPanel(fieldId: string): void;
+    openViewSettingsPanel(viewId: string): void;
+    getPersonOptions(): IBasePeopleOption[];
+    setPersonOptions(options: IBasePeopleOption[]): void;
+    getGroupOptions(): IBasePeopleOption[];
+    setGroupOptions(options: IBasePeopleOption[]): void;
+    getRenderedView(): FBaseRenderedView | null;
+    private _getBaseUIConfig;
+    private _updateBaseUIConfig;
+}

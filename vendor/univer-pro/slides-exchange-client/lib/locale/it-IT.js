@@ -1,1 +1,8 @@
-();const e={'slides-exchange-client':{'file':"File",'upload':"Apri (File)",'download':"Salva con nome"}};export{e as default};
+const e = {
+  "slides-exchange-client": {
+    file: "File",
+    upload: "Apri (File)",
+    download: "Salva con nome",
+  },
+};
+export { e as default };

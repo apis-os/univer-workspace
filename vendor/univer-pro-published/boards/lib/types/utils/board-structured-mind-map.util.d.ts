@@ -1,0 +1,10 @@
+import type { IBoardPageElement } from '../board.type';
+export declare const BOARD_MIND_MAP_MODE_ID = "mindmap";
+export declare const BOARD_MIND_MAP_CONTAINER_ROLE = "mindmap-container";
+export declare const BOARD_MIND_MAP_NODE_ROLE = "mindmap-node";
+export declare const BOARD_MIND_MAP_CONNECTOR_ROLE = "mindmap-tree-edge";
+export declare const BOARD_MIND_MAP_DECORATION_ROLE = "mindmap-node-decoration";
+export declare function isBoardMindMapStructuredElement(element: IBoardPageElement | null | undefined): boolean;
+export declare function isBoardMindMapNodeElement(element: IBoardPageElement | null | undefined): boolean;
+export declare function isBoardManagedMindMapConnectorElement(element: IBoardPageElement | null | undefined): boolean;
+export declare function remapBoardStructuredMindMapElementIdReferences(element: IBoardPageElement, idMap: ReadonlyMap<string, string>): IBoardPageElement;

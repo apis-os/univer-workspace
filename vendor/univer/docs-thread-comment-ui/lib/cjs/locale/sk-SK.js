@@ -1,0 +1,10 @@
+
+//#region src/locale/sk-SK.ts
+const locale = { "docs-thread-comment-ui": { panel: {
+	title: "Správa komentárov",
+	addComment: "Pridať komentár",
+	openComments: "Otvoriť komentáre"
+} } };
+
+//#endregion
+module.exports = locale;

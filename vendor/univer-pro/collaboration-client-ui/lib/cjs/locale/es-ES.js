@@ -1,92 +1,46 @@
-const _0x902673 = _0x1b63;
-function _0x1b63(_0x1e16aa, _0x1ab0ed) {
-  _0x1e16aa = _0x1e16aa - 0x1a9;
-  const _0x4adf68 = _0x4adf();
-  let _0x1b6324 = _0x4adf68[_0x1e16aa];
-  return _0x1b6324;
-}
-function _0x4adf() {
-  const _0x1ab729 = [
-    "1481380zDIRDx",
-    "Sus\x20acciones\x20entran\x20en\x20conflicto\x20con\x20los\x20permisos\x20del\x20servidor.\x20Guarde\x20sus\x20cambios\x20locales\x20en\x20otro\x20lugar,\x20ya\x20que\x20se\x20descartarán\x20después\x20de\x20actualizar\x20la\x20página.",
-    "Los\x20privilegios\x20de\x20edición\x20fueron\x20revocados\x20porque\x20la\x20sala\x20de\x20colaboración\x20fue\x20cerrada.",
-    "Error\x20de\x20conexión,\x20intentaremos\x20de\x20nuevo\x20en\x20un\x20momento.",
-    "Actualizar\x20página",
-    "3077808QRVusr",
-    "20216728sbsyUu",
-    "El\x20servidor\x20no\x20responde\x20a\x20su\x20solicitud\x20de\x20colaboración.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "Sincronizando\x20datos\x20del\x20servidor...",
-    "Sincronizando...",
-    "La\x20cola\x20de\x20cálculo\x20de\x20fórmulas\x20está\x20llena,\x20esperando\x20espacio\x20disponible...",
-    "La\x20sala\x20de\x20colaboración\x20está\x20llena.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "La\x20carga\x20de\x20datos\x20se\x20detuvo\x20en\x20{0}/{1}.\x20Actualiza\x20la\x20página\x20para\x20volver\x20a\x20intentarlo.",
-    "5146720dIACkm",
-    "Haga\x20clic\x20para\x20reconectar",
-    "Sincronizado",
-    "Archivo\x20local",
-    "Abrió\x20el\x20mismo\x20archivo\x20en\x20otra\x20pestaña.\x20Para\x20evitar\x20pérdida\x20de\x20datos,\x20no\x20puede\x20editar\x20en\x20esta\x20pestaña.",
-    "Conflicto\x20de\x20colaboración",
-    "156fZyKGH",
-    "Error\x20de\x20conexión,\x20verifique\x20su\x20red.",
-    "3598896hgTCnA",
-    "42112EbeiGA",
-    "Hay\x20un\x20conflicto\x20entre\x20su\x20copia\x20local\x20y\x20la\x20copia\x20en\x20el\x20servidor.\x20Guarde\x20sus\x20cambios\x20locales,\x20ya\x20que\x20se\x20perderán\x20cuando\x20recargue\x20la\x20página.",
-    "4488615CvmphI",
-    "Error\x20de\x20autenticación",
-    "exports",
-    "Desconectado,\x20los\x20cambios\x20se\x20guardarán\x20localmente",
-  ];
-  _0x4adf = function () {
-    return _0x1ab729;
-  };
-  return _0x4adf();
-}
-(function (_0x708173, _0x1f1d4b) {
-  const _0x2845e2 = _0x1b63,
-    _0x5de87c = _0x708173();
-  while (!![]) {
-    try {
-      const _0x1af9e8 =
-        -parseInt(_0x2845e2(0x1b4)) / 0x1 +
-        parseInt(_0x2845e2(0x1b9)) / 0x2 +
-        -parseInt(_0x2845e2(0x1ad)) / 0x3 +
-        -parseInt(_0x2845e2(0x1c1)) / 0x4 +
-        parseInt(_0x2845e2(0x1b0)) / 0x5 +
-        (-parseInt(_0x2845e2(0x1ab)) / 0x6) *
-          (parseInt(_0x2845e2(0x1ae)) / 0x7) +
-        parseInt(_0x2845e2(0x1ba)) / 0x8;
-      if (_0x1af9e8 === _0x1f1d4b) break;
-      else _0x5de87c["push"](_0x5de87c["shift"]());
-    } catch (_0x38f04e) {
-      _0x5de87c["push"](_0x5de87c["shift"]());
-    }
-  }
-})(_0x4adf, 0xccfba);
 const e = {
   "collaboration-client-ui": {
-    collabClient: { tooltip: { reconnect: _0x902673(0x1c2) } },
+    collabClient: { tooltip: { reconnect: "Haga clic para reconectar" } },
     collabStatus: {
-      fetchMiss: _0x902673(0x1bc),
+      fetchMiss: "Sincronizando datos del servidor...",
       conflict: "Conflictos\x20de\x20edición",
-      notCollab: _0x902673(0x1c4),
-      synced: _0x902673(0x1c3),
-      syncing: _0x902673(0x1bd),
-      offline: _0x902673(0x1b3),
+      notCollab: "Archivo local",
+      synced: "Sincronizado",
+      syncing: "Sincronizando...",
+      offline: "Desconectado, los cambios se guardarán localmente",
     },
-    snapshotLoading: { timeout: _0x902673(0x1c0), refresh: _0x902673(0x1b8) },
+    snapshotLoading: {
+      timeout:
+        "La carga de datos se detuvo en {0}/{1}. Actualiza la página para volver a intentarlo.",
+      refresh: "Actualizar página",
+    },
     session: {
-      "connection-failed": _0x902673(0x1ac),
-      "will-retry": _0x902673(0x1b7),
-      "room-full": _0x902673(0x1bf),
-      "collaboration-timeout": _0x902673(0x1bb),
+      "connection-failed": "Error de conexión, verifique su red.",
+      "will-retry": "Error de conexión, intentaremos de nuevo en un momento.",
+      "room-full":
+        "La sala de colaboración está llena. Sus cambios se guardarán localmente.",
+      "collaboration-timeout":
+        "El servidor no responde a su solicitud de colaboración. Sus cambios se guardarán localmente.",
     },
-    conflict: { title: _0x902673(0x1aa), content: _0x902673(0x1af) },
-    permission: { title: _0x902673(0x1b1), content: _0x902673(0x1b5) },
+    conflict: {
+      title: "Conflicto de colaboración",
+      content:
+        "Hay un conflicto entre su copia local y la copia en el servidor. Guarde sus cambios locales, ya que se perderán cuando recargue la página.",
+    },
+    permission: {
+      title: "Error de autenticación",
+      content:
+        "Sus acciones entran en conflicto con los permisos del servidor. Guarde sus cambios locales en otro lugar, ya que se descartarán después de actualizar la página.",
+    },
     collaboration: {
       "offline-data-not-saved":
         "Tiene\x20cambios\x20sin\x20guardar\x20en\x20el\x20servidor.\x20Verifique\x20su\x20red\x20e\x20inténtelo\x20de\x20nuevo.",
-      "single-unit": { warning: _0x902673(0x1a9) },
-      closeRoom: _0x902673(0x1b6),
+      "single-unit": {
+        warning:
+          "Abrió el mismo archivo en otra pestaña. Para evitar pérdida de datos, no puede editar en esta pestaña.",
+      },
+      closeRoom:
+        "Los privilegios de edición fueron revocados porque la sala de colaboración fue cerrada.",
     },
     auth: {
       needGotoLoginAlert:
@@ -95,11 +49,12 @@ const e = {
     formula: {
       calculation: {
         started: "Cálculo\x20de\x20fórmulas\x20iniciado.",
-        waiting: _0x902673(0x1be),
+        waiting:
+          "La cola de cálculo de fórmulas está llena, esperando espacio disponible...",
         unable:
           "No\x20se\x20puede\x20realizar\x20el\x20cálculo\x20de\x20fórmulas\x20en\x20este\x20momento.\x20Inténtelo\x20de\x20nuevo\x20más\x20tarde.",
       },
     },
   },
 };
-module[_0x902673(0x1b2)] = e;
+module.exports = e;

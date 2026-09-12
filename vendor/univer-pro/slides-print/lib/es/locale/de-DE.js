@@ -1,1 +1,38 @@
-();const e={'slides-print':{'menu':"Drucken",'header':{'pages':"Insgesamt {0} Seiten",'cancel':"Abbrechen",'next':'Weiter','printing':"Wird gedruckt…"},'settings':{'range':"Druckbereich",'rangePlaceholder':"Alle Folien oder 1-3,5",'rangeInvalid':'Geben\x20Sie\x20Foliennummern\x20aus\x20der\x20Präsentation\x20ein,\x20z.\x20B.\x201-3,5.','layout':"Drucklayout",'fullPage':"Ganzseitige Folien",'notesPage':"Notizseiten",'handout':"Handzettel",'slidesPerPage':"Folien pro Seite",'order':"Seitenreihenfolge",'horizontal':'Horizontal','vertical':'Vertikal','paperSize':'Papierformat','orientation':"Ausrichtung",'portrait':'Hochformat','landscape':"Querformat",'margin':"Ränder",'normal':"Normal",'narrow':'Schmal','wide':'Breit','none':"Keine",'formatting':"Formatierung",'frameSlides':"Folienrahmen",'slideNumber':"Foliennummern drucken"}}};export{e as default};
+const e = {
+  "slides-print": {
+    menu: "Drucken",
+    header: {
+      pages: "Insgesamt {0} Seiten",
+      cancel: "Abbrechen",
+      next: "Weiter",
+      printing: "Wird gedruckt…",
+    },
+    settings: {
+      range: "Druckbereich",
+      rangePlaceholder: "Alle Folien oder 1-3,5",
+      rangeInvalid:
+        "Geben\x20Sie\x20Foliennummern\x20aus\x20der\x20Präsentation\x20ein,\x20z.\x20B.\x201-3,5.",
+      layout: "Drucklayout",
+      fullPage: "Ganzseitige Folien",
+      notesPage: "Notizseiten",
+      handout: "Handzettel",
+      slidesPerPage: "Folien pro Seite",
+      order: "Seitenreihenfolge",
+      horizontal: "Horizontal",
+      vertical: "Vertikal",
+      paperSize: "Papierformat",
+      orientation: "Ausrichtung",
+      portrait: "Hochformat",
+      landscape: "Querformat",
+      margin: "Ränder",
+      normal: "Normal",
+      narrow: "Schmal",
+      wide: "Breit",
+      none: "Keine",
+      formatting: "Formatierung",
+      frameSlides: "Folienrahmen",
+      slideNumber: "Foliennummern drucken",
+    },
+  },
+};
+export { e as default };

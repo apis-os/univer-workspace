@@ -1,0 +1,36 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-input-output-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M6.02734 2H17.7373L13.9727 18H2.2627L6.02734 2Z",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartInputOutputIcon = (0, react.forwardRef)(function ShapeFlowChartInputOutputIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-input-output-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartInputOutputIcon.displayName = "ShapeFlowChartInputOutputIcon";
+//#endregion
+exports.ShapeFlowChartInputOutputIcon = ShapeFlowChartInputOutputIcon;
+exports.default = ShapeFlowChartInputOutputIcon;

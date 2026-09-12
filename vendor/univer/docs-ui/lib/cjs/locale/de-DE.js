@@ -1,0 +1,212 @@
+
+//#region src/locale/de-DE.ts
+const locale = { "docs-ui": {
+	objectPermission: {
+		paragraphPermission: "Berechtigungen",
+		title: "Berechtigungen",
+		paragraph: "Absatz",
+		section: "Abschnitt"
+	},
+	layout: {
+		progress: "Dokument wird formatiert…",
+		recovering: "Dokumentlayout wird wiederhergestellt…"
+	},
+	toolbar: {
+		font: "Schriftart",
+		fontSize: "Schriftgröße",
+		bold: "Fett",
+		italic: "Kursiv",
+		strikethrough: "Durchgestrichen",
+		subscript: "Tiefgestellt",
+		superscript: "Hochgestellt",
+		underline: "Unterstrichen",
+		textColor: { main: "Textfarbe" },
+		fillColor: { main: "Texthintergrundfarbe" },
+		table: {
+			main: "Tabelle",
+			insert: "Tabelle einfügen",
+			colCount: "Spaltenanzahl",
+			rowCount: "Zeilenanzahl"
+		},
+		resetColor: "Zurücksetzen",
+		order: "Nummerierte Liste",
+		unorder: "Aufzählungsliste",
+		checklist: "Aufgabenliste",
+		alignLeft: "Linksbündig",
+		alignCenter: "Zentriert",
+		alignRight: "Rechtsbündig",
+		alignJustify: "Blocksatz",
+		horizontalLine: "Horizontale Linie",
+		headerFooter: "Kopf- und Fußzeile",
+		pageSetup: "Seite einrichten",
+		breaks: "Umbrüche",
+		columnBreak: "Spaltenumbruch",
+		sectionBreakNextPage: "Abschnittsumbruch (Nächste Seite)",
+		sectionBreakContinuous: "Abschnittsumbruch (Fortlaufend)",
+		sectionBreakNextColumn: "Abschnittsumbruch (Nächste Spalte)",
+		sectionBreakEvenPage: "Abschnittsumbruch (Gerade Seite)",
+		sectionBreakOddPage: "Abschnittsumbruch (Ungerade Seite)",
+		heading: {
+			tooltip: "Überschrift",
+			normal: "Normaler Text",
+			leading1: "Überschrift 1",
+			leading2: "Überschrift 2",
+			leading3: "Überschrift 3",
+			leading4: "Überschrift 4",
+			leading5: "Überschrift 5",
+			title: "Titel",
+			subTitle: "Untertitel"
+		}
+	},
+	table: {
+		insert: "Einfügen",
+		insertRowAbove: "Zeile oben einfügen",
+		insertRowBelow: "Zeile unten einfügen",
+		insertColumnLeft: "Spalte links einfügen",
+		insertColumnRight: "Spalte rechts einfügen",
+		delete: "Löschen",
+		deleteRows: "Zeile löschen",
+		deleteColumns: "Spalte löschen",
+		deleteTable: "Tabelle löschen"
+	},
+	headerFooter: {
+		linkToPrevious: "Mit vorheriger verknüpfen",
+		header: "Kopfzeile",
+		footer: "Fußzeile",
+		panel: "Kopf- und Fußzeileneinstellungen",
+		firstPageCheckBox: "Andere erste Seite",
+		oddEvenCheckBox: "Unterschiedliche ungerade und gerade Seiten",
+		headerTopMargin: "Kopfzeilenoberer Rand (px)",
+		footerBottomMargin: "Fußzeilenunterer Rand (px)",
+		closeHeaderFooter: "Kopf- und Fußzeile schließen",
+		disableText: "Kopf- und Fußzeileneinstellungen sind deaktiviert"
+	},
+	statistics: {
+		title: "Dokumentstatistik",
+		open: "Dokumentstatistik anzeigen",
+		document: "Gesamtes Dokument",
+		selection: "Aktuelle Auswahl",
+		wordCount: "{0} Wörter",
+		selectedWords: "{0} von {1} Wörtern",
+		pages: "Seiten",
+		words: "Wörter",
+		charactersWithoutSpaces: "Zeichen (ohne Leerzeichen)",
+		charactersWithSpaces: "Zeichen (mit Leerzeichen)",
+		paragraphs: "Absätze",
+		lines: "Zeilen",
+		nonAsianWords: "Nicht-asiatische Wörter",
+		asianCharactersAndKoreanWords: "Asiatische Zeichen und koreanische Wörter"
+	},
+	placeholder: {
+		heading1: "Überschrift 1",
+		heading2: "Überschrift 2",
+		heading3: "Überschrift 3",
+		heading4: "Überschrift 4",
+		heading5: "Überschrift 5",
+		normalText: "Text eingeben oder \"/\" für Befehle drücken",
+		listItem: "Listenelement"
+	},
+	doc: {
+		blockMenu: { dragBlock: "Block ziehen" },
+		menu: {
+			paragraphSetting: "Absatzeinstellungen",
+			sectionSetting: "Abschnittseinstellungen"
+		},
+		slider: {
+			paragraphSetting: "Absatzeinstellungen",
+			sectionSetting: "Abschnittseinstellungen"
+		},
+		paragraphSetting: {
+			alignment: "Ausrichtung",
+			indentation: "Einzug",
+			left: "Links",
+			right: "Rechts",
+			firstLine: "Erste Zeile",
+			hanging: "Hängender Einzug",
+			spacing: "Abstand",
+			before: "Vor",
+			after: "Nach",
+			lineSpace: "Zeilenabstand",
+			multiSpace: "Mehrfacher Abstand",
+			atLeast: "Mindestens (px)",
+			exactly: "Genau (px)"
+		},
+		sectionSetting: {
+			selectedSections: "{0} Abschnitte ausgewählt",
+			multipleValues: "Mehrere Werte",
+			columnCount: "Spaltenanzahl",
+			columnGap: "Spaltenabstand",
+			columnSeparator: "Trennlinie",
+			none: "Keine",
+			betweenColumns: "Zwischen Spalten",
+			sectionStart: "Abschnittsbeginn",
+			unspecified: "Nicht angegeben",
+			continuous: "Fortlaufend",
+			nextColumn: "Nächste Spalte",
+			nextPage: "Nächste Seite",
+			evenPage: "Gerade Seite",
+			oddPage: "Ungerade Seite",
+			pageSetup: "Seiteneinrichtung",
+			pageWidth: "Seitenbreite",
+			pageHeight: "Seitenhöhe",
+			pageNumberStart: "Erste Seitenzahl"
+		}
+	},
+	rightClick: {
+		copy: "Kopieren",
+		cut: "Ausschneiden",
+		paste: "Einfügen",
+		delete: "Löschen",
+		bulletList: "Aufzählungsliste",
+		orderList: "Nummerierte Liste",
+		checkList: "Aufgabenliste",
+		insertBellow: "Unten einfügen"
+	},
+	paragraphMenu: {
+		alignAndIndent: "Ausrichtung und Einzug",
+		align: "Ausrichtung",
+		indent: "Einzug",
+		color: "Farben",
+		increase: "Vergrößern",
+		decrease: "Verkleinern",
+		increaseIndent: "Einzug vergrößern",
+		decreaseIndent: "Einzug verkleinern",
+		defaultTextColor: "Standardtextfarbe",
+		noBackground: "Kein Hintergrund"
+	},
+	"page-settings": {
+		"document-setting": "Dokumenteneinstellung",
+		"modern-width": "Inhaltsbreite",
+		"modern-width-narrow": "Schmal",
+		"modern-width-medium": "Mittel",
+		"modern-width-wide": "Breit",
+		"paper-size": "Papierformat",
+		"page-size": {
+			main: "Papierformat",
+			a4: "A4",
+			a3: "A3",
+			a5: "A5",
+			b4: "B4",
+			b5: "B5",
+			letter: "Letter",
+			legal: "Legal",
+			tabloid: "Tabloid",
+			statement: "Statement",
+			executive: "Executive",
+			folio: "Folio"
+		},
+		orientation: "Ausrichtung",
+		portrait: "Hochformat",
+		landscape: "Querformat",
+		"custom-paper-size": "Benutzerdefiniertes Papierformat",
+		top: "Oben",
+		bottom: "Unten",
+		left: "Links",
+		right: "Rechts",
+		cancel: "Abbrechen",
+		confirm: "Bestätigen"
+	}
+} };
+
+//#endregion
+module.exports = locale;

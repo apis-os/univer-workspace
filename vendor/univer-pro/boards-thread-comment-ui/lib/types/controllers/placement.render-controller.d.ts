@@ -1,0 +1,34 @@
+import type { BoardModel } from '@univerjs-pro/boards';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IBoardElementService } from '@univerjs-pro/boards';
+import { IBoardElementStateService, IBoardUIStateService } from '@univerjs-pro/boards-ui';
+import { ICommandService, IUniverInstanceService, RxDisposable, ThemeService } from '@univerjs/core';
+import { ThreadCommentModel } from '@univerjs/thread-comment';
+import { ThreadCommentDraftService, ThreadCommentPanelService } from '@univerjs/thread-comment-ui';
+export declare class BoardsThreadCommentPlacementRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _commandService;
+    private readonly _instanceService;
+    private readonly _elementService;
+    private readonly _elementStateService;
+    private readonly _uiStateService;
+    private readonly _draftService;
+    private readonly _commentModel;
+    private readonly _panelService;
+    private readonly _themeService;
+    private readonly _overlay;
+    constructor(_renderContext: IRenderContext<BoardModel>, _commandService: ICommandService, _instanceService: IUniverInstanceService, _elementService: IBoardElementService, _elementStateService: IBoardElementStateService, _uiStateService: IBoardUIStateService, _draftService: ThreadCommentDraftService, _commentModel: ThreadCommentModel, _panelService: ThreadCommentPanelService, _themeService: ThemeService);
+    private _listenToolSwitch;
+    private _placeElement;
+    private _onPointerDown;
+    private _onPointerMove;
+    private _onOverlayPointerDown;
+    private _syncOverlay;
+    private _getElementUnderline;
+    private _getElementOutline;
+    private _getFocusState;
+    private _hitTest;
+    private _getColors;
+    private _getModel;
+    private _toBoardPoint;
+}

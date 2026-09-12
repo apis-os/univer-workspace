@@ -1,0 +1,13 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_data_validation_locale_it_IT = require("@univerjs/data-validation/locale/it-IT");
+_univerjs_data_validation_locale_it_IT = require_rolldown_runtime.__toESM(_univerjs_data_validation_locale_it_IT);
+let _univerjs_sheets_data_validation_locale_it_IT = require("@univerjs/sheets-data-validation/locale/it-IT");
+_univerjs_sheets_data_validation_locale_it_IT = require_rolldown_runtime.__toESM(_univerjs_sheets_data_validation_locale_it_IT);
+let _univerjs_sheets_data_validation_ui_locale_it_IT = require("@univerjs/sheets-data-validation-ui/locale/it-IT");
+_univerjs_sheets_data_validation_ui_locale_it_IT = require_rolldown_runtime.__toESM(_univerjs_sheets_data_validation_ui_locale_it_IT);
+
+//#region src/locales/it-IT.ts
+var it_IT_default = Object.assign({}, _univerjs_data_validation_locale_it_IT.default, _univerjs_sheets_data_validation_locale_it_IT.default, _univerjs_sheets_data_validation_ui_locale_it_IT.default);
+
+//#endregion
+module.exports = it_IT_default;

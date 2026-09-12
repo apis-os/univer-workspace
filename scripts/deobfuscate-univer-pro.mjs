@@ -27,42 +27,120 @@ const VENDOR_ROOT = path.join(ROOT, "vendor/univer-pro");
 const PUBLISHED_ROOT = path.join(ROOT, "vendor/univer-pro-published");
 
 const DEFAULT_PACKAGES = [
+  "bases",
+  "bases-dashboard",
+  "bases-dashboard-ui",
+  "bases-exchange-client",
+  "bases-history",
+  "bases-history-ui",
+  "bases-thread-comment",
+  "bases-thread-comment-ui",
+  "bases-ui",
+  "boards",
+  "boards-chart",
+  "boards-chart-ui",
+  "boards-history",
+  "boards-history-ui",
+  "boards-mind",
+  "boards-mind-ui",
+  "boards-print",
+  "boards-table",
+  "boards-table-ui",
+  "boards-thread-comment",
+  "boards-thread-comment-ui",
+  "boards-ui",
+  "chart-ui",
   "collaboration",
   "collaboration-client",
   "collaboration-client-ui",
-  "collaboration-endpoint",
-  "collaboration-service",
-  "collaboration-database-sqlite",
-  "collaboration-transport-node",
-  "collaboration-worktree-client",
-  "collaboration-worktree-endpoint",
-  "collaboration-worktree-service",
-  "collaboration-worktree-database-sqlite",
+  "collaboration-comment-database-sqlite",
   "collaboration-comment-endpoint",
   "collaboration-comment-service",
-  "collaboration-comment-database-sqlite",
+  "collaboration-database-sqlite",
+  "collaboration-embed",
+  "collaboration-endpoint",
+  "collaboration-history-database-sqlite",
   "collaboration-history-endpoint",
   "collaboration-history-service",
-  "collaboration-history-database-sqlite",
-  "thread-comment-datasource",
-  "sheets-history",
-  "sheets-history-ui",
+  "collaboration-service",
+  "collaboration-transport-node",
+  "collaboration-worktree-client",
+  "collaboration-worktree-database-sqlite",
+  "collaboration-worktree-endpoint",
+  "collaboration-worktree-service",
+  "docs-callout",
+  "docs-callout-ui",
+  "docs-chart",
+  "docs-chart-ui",
+  "docs-code",
+  "docs-code-ui",
+  "docs-column",
+  "docs-column-ui",
+  "docs-exchange-client",
+  "docs-formula",
+  "docs-formula-ui",
   "docs-history",
   "docs-history-ui",
+  "docs-latex",
+  "docs-latex-ui",
+  "docs-list",
+  "docs-list-ui",
+  "docs-print",
+  "docs-quote",
+  "docs-quote-ui",
+  "docs-shape",
+  "docs-shape-ui",
+  "docs-table",
+  "docs-table-ui",
   "edit-history",
   "edit-history-ui",
-  "live-share",
+  "embed",
+  "embed-ui",
+  "embed-unit-ui",
+  "engine-chart",
   "engine-formula",
+  "engine-formula-rust",
+  "engine-pivot",
+  "engine-shape",
   "exchange-client",
-  "docs-exchange-client",
-  "slides-exchange-client",
-  "bases-exchange-client",
   "exchange-node",
+  "ink",
+  "ink-ui",
+  "license",
+  "live-share",
+  "pdfs",
+  "print",
+  "range-preprocess",
+  "shape-editor",
+  "shape-editor-ui",
+  "sheets-chart",
+  "sheets-chart-ui",
+  "sheets-exchange-client",
+  "sheets-history",
+  "sheets-history-ui",
+  "sheets-outline",
+  "sheets-outline-ui",
+  "sheets-pivot",
+  "sheets-pivot-ui",
   "sheets-print",
-  "docs-print",
+  "sheets-shape",
+  "sheets-shape-ui",
+  "sheets-sparkline",
+  "sheets-sparkline-ui",
+  "slides",
+  "slides-chart",
+  "slides-chart-ui",
+  "slides-exchange-client",
+  "slides-history",
+  "slides-history-ui",
   "slides-print",
-  "boards-print",
-  "license"
+  "slides-table",
+  "slides-table-ui",
+  "slides-thread-comment",
+  "slides-thread-comment-ui",
+  "slides-ui",
+  "thread-comment-datasource",
+  "thread-comment-resource"
 ];
 
 const METHOD_KEYWORDS = new Set(["async", "get", "set", "static"]);
@@ -102,6 +180,7 @@ const argv = process.argv.slice(2);
 const noApply = argv.includes("--no-apply");
 const fixVendor = argv.includes("--fix-vendor");
 const all = argv.includes("--all");
+const refresh = argv.includes("--refresh");
 const packages = argv
   .filter((a) => !a.startsWith("--"))
   .map((name) => name.replace(/^@univerjs-pro\//, ""));
@@ -174,14 +253,14 @@ const ROTATOR_RE =
 function extractRuntime(src) {
   const arrayFns = [
     ...src.matchAll(
-      /function\s+(_0x[a-f0-9]+)\s*\(\s*\)\s*\{\s*const\s+_0x[a-f0-9]+\s*=\s*\[[\s\S]*?\];\s*\1\s*=\s*function\s*\(\s*\)\s*\{\s*return\s+_0x[a-f0-9]+\s*;\s*\}\s*;\s*return\s+\1\s*\(\s*\)\s*;\s*\}/g
+      /function\s+(_0x[a-f0-9]+)\s*\(\s*\)\s*\{\s*(?:const|let|var)\s+_0x[a-f0-9]+\s*=\s*\[[\s\S]*?\];\s*\1\s*=\s*function\s*\(\s*\)\s*\{\s*return\s+_0x[a-f0-9]+\s*;\s*\}\s*;\s*return\s+\1\s*\(\s*\)\s*;\s*\}/g
     )
   ];
   const decoders = [
     ...src.matchAll(
       /function\s+(_0x[a-f0-9]+)\s*\(\s*_0x[a-f0-9]+\s*,\s*_0x[a-f0-9]+\s*\)\s*\{[\s\S]*?return\s+_0x[a-f0-9]+\s*;\s*\}/g
     )
-  ];
+  ].filter((m) => m[0].length < 1000 && /=\s*_0x[a-f0-9]+\s*-\s*0x[a-f0-9]+/.test(m[0]));
   const rotators = [...src.matchAll(ROTATOR_RE)];
   if (arrayFns.length === 0 || decoders.length === 0 || rotators.length === 0) return null;
   return [
@@ -197,7 +276,7 @@ function loadDecoders(src) {
   const sandbox = Object.create(null);
   sandbox.console = { log() {}, warn() {}, error() {} };
   try {
-    vm.runInNewContext(runtime, sandbox, { timeout: 5_000 });
+    vm.runInNewContext(runtime, sandbox, { timeout: 30_000 });
   } catch {
     return null;
   }
@@ -213,8 +292,9 @@ function loadDecoders(src) {
     }
   }
   const aliasRe = /(?:const|let|var)\s+(_0x[a-f0-9]+)\s*=\s*(_0x[a-f0-9]+)\s*;/g;
+  const header = src.slice(0, Math.min(src.length, 4096));
   let alias;
-  while ((alias = aliasRe.exec(src))) {
+  while ((alias = aliasRe.exec(header))) {
     if (decoders[alias[2]]) decoders[alias[1]] = decoders[alias[2]];
   }
   return Object.keys(decoders).length ? decoders : null;
@@ -279,8 +359,17 @@ function cleanupLiterals(src) {
   return unglueKeywords(out);
 }
 
-function unglueKeywords(src) {
+function stripEmptyInvocationResidue(src) {
+  // Rotator IIFEs are wrapped as `(function ... ());`. After stripping the
+  // function, leftover `();` is a parse error before `import`/`export`.
   return src
+    .replace(/^\s*\(\s*\)\s*;/, "")
+    .replace(/;\s*\(\s*\)\s*;/g, ";")
+    .replace(/\(\s*\)\s*;(?=\s*(?:import|export)\b)/g, "");
+}
+
+function unglueKeywords(src) {
+  return stripEmptyInvocationResidue(src)
     .replace(/\breturn\.([A-Za-z_$][\w$]*)\b/g, 'return ["$1"]')
     .replace(/\bthrow\.([A-Za-z_$][\w$]*)\b/g, "throw $1")
     .replace(/\breturn(true|false|null|undefined|this|new)\b/g, "return $1")
@@ -319,11 +408,12 @@ function stripRuntime(src, decoderNames = []) {
   );
   out = out.replace(
     /function\s+_0x[a-f0-9]+\s*\(\s*_0x[a-f0-9]+\s*,\s*_0x[a-f0-9]+\s*\)\s*\{[\s\S]*?return\s+_0x[a-f0-9]+\s*;\s*\}/g,
-    ""
+    (full) =>
+      full.length < 1000 && /=\s*_0x[a-f0-9]+\s*-\s*0x[a-f0-9]+/.test(full) ? "" : full
   );
   out = out.replace(ROTATOR_RE, "");
   out = out.replace(/\(\s*,/g, "(");
-  out = out.replace(/^\s*\(\s*\)\s*;/, "");
+  out = stripEmptyInvocationResidue(out);
   // Only drop aliases of string-array decoders. Local aliases such as
   // `let _0x407fad = _0x4763b7` (HTTP response) must stay.
   if (decoderNames.length > 0) {
@@ -400,20 +490,26 @@ function deobfuscateSource(src) {
   const decoders = loadDecoders(src);
   if (!decoders) return { src, changed: false };
   let next = replaceDecoderCalls(src, decoders);
-  next = stripRuntime(next, Object.keys(decoders));
-  next = cleanupLiterals(next);
-  next = next.replace(/\n{3,}/g, "\n\n");
-  if (next !== src && !canParseAsScript(next)) {
-    const isModule = /\bimport\b/.test(src) || /\bexport\b/.test(src);
-    if (!isModule) return { src, changed: false };
+  const stripped = stripRuntime(next, Object.keys(decoders));
+  const cleaned = cleanupLiterals(stripped).replace(/\n{3,}/g, "\n\n");
+  const candidates = [cleaned, stripped, next];
+  for (const candidate of candidates) {
+    if (candidate !== src && canParseAsScript(candidate)) {
+      return { src: candidate, changed: true };
+    }
   }
-  return { src: next, changed: next !== src };
+  const isModule = /\bimport\b/.test(src) || /\bexport\b/.test(src);
+  if (!isModule) return { src, changed: false };
+  return { src: cleaned, changed: cleaned !== src };
 }
 
 function processVendorPackage(pkg) {
   ensurePublishedOriginal(pkg);
-  const vendorDir = copyPackage(pkg);
-  if (!vendorDir) {
+  let vendorDir = path.join(VENDOR_ROOT, pkg);
+  if (refresh || !fs.existsSync(vendorDir)) {
+    vendorDir = copyPackage(pkg);
+  }
+  if (!vendorDir || !fs.existsSync(vendorDir)) {
     console.warn(`skip missing package @univerjs-pro/${pkg}`);
     return { pkg, files: 0, changed: 0 };
   }
@@ -436,6 +532,11 @@ function applyVendorToNodeModules(pkg) {
   const vendorDir = path.join(VENDOR_ROOT, pkg);
   const destDir = path.join(PRO_ROOT, pkg);
   if (!fs.existsSync(vendorDir) || !fs.existsSync(destDir)) return;
+  try {
+    if (fs.realpathSync(destDir) === fs.realpathSync(vendorDir)) return;
+  } catch {
+    return;
+  }
   for (const file of walkJs(vendorDir)) {
     const rel = path.relative(vendorDir, file);
     const dest = path.join(destDir, rel);

@@ -1,0 +1,11 @@
+export { SHAPE_EDITOR_PLUGIN_CONFIG_KEY } from './config/config';
+export type { IUniverShapeEditorConfig } from './config/config';
+export { createFormulaShapeData, createFormulaShapeDataFromShape, createShapeTextBoxShapeData, FORMULA_SHAPE_DEFAULT_TEXT_RECT_PADDING, } from './models/shape-data';
+export { applyQuickStyleToShapeData, cloneShapeDataForType, getShapeQuickStylePreset, getShapeQuickStylePresets, getShapeQuickStyleType, resolveActiveShapeQuickStylePresetId, SHAPE_LINE_QUICK_STYLE_PRESETS, SHAPE_QUICK_STYLE_PRESETS, } from './models/shape-quick-style';
+export type { IShapeLineQuickStylePreset, IShapeQuickStylePreset, IShapeTextQuickStylePreset, ShapeQuickStylePreset, ShapeQuickStyleType, } from './models/shape-quick-style';
+export { UniverShapeEditorPlugin } from './plugin';
+export { createShapeFormulaDocument } from './services/shape-formula-document';
+export { resolveShapeFormulaPresentation } from './services/shape-formula-presentation';
+export type { IShapeFormulaPresentation } from './services/shape-formula-presentation';
+export { FormulaShapeResultStatus, ShapeFormulaService } from './services/shape-formula.service';
+export type { IFormulaShapeResult, IShapeFormulaIdentity, IShapeFormulaPresentationChange, } from './services/shape-formula.service';

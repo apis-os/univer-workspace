@@ -1,0 +1,34 @@
+import type { UnitModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { IBoardElementService } from '@univerjs-pro/boards';
+import { BoardCanvasPopManagerService, BoardInteractionSurfaceService, IBoardElementStateService } from '@univerjs-pro/boards-ui';
+import { SlideTableResourceService } from '@univerjs-pro/slides-table';
+import { SlideTableSelectionService } from '@univerjs-pro/slides-table-ui';
+import { RxDisposable } from '@univerjs/core';
+export declare const BOARD_TABLE_FLOATING_TOOLBAR_OFFSET: number;
+export declare class BoardTableFloatingToolbarRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _boardCanvasPopManagerService;
+    private readonly _boardElementService;
+    private readonly _slideTableSelectionService;
+    private readonly _elementStateService;
+    private readonly _slideTableResourceService;
+    private readonly _interactionSurfaceService;
+    private _popupDisposable;
+    private _popupSelectionKey;
+    private readonly _eventDisposables;
+    constructor(_renderContext: IRenderContext<UnitModel>, _boardCanvasPopManagerService: BoardCanvasPopManagerService, _boardElementService: IBoardElementService, _slideTableSelectionService: SlideTableSelectionService, _elementStateService: IBoardElementStateService, _slideTableResourceService: SlideTableResourceService, _interactionSurfaceService: BoardInteractionSurfaceService);
+    dispose(): void;
+    private _init;
+    private _subscribe;
+    private _clearPopup;
+    private _clearPopupIfSelectionChanged;
+    private _isPopupSelectionStillActive;
+    private _buildPopupSelectionKey;
+    private _showPopupForSelection;
+    private _showPopupForTableSelection;
+    private _buildTableSelectionRangeKey;
+    private _resolveSelectionAnchorBoundResolver;
+    private _resolveTableSelectionObject;
+    private _resolveSelectedEntry;
+}

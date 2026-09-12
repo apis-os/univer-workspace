@@ -1,0 +1,65 @@
+const e = {
+  "embed-ui": {
+    deleteBlock: "임베드 블록 삭제",
+    fullscreen: { enter: "전체 화면", exit: "전체 화면 종료" },
+    slidesFloating: {
+      previousSlide: "이전",
+      nextSlide: "다음 슬라이드",
+      selectSlide: "슬라이드 미리 보기",
+    },
+    boardsFloating: {
+      fitContent: "콘텐츠에 맞추기",
+      zoomOut: "축소",
+      resetZoom: "확대/축소 초기화",
+      zoomIn: "확대",
+      delete: "삭제",
+    },
+    basesFloating: {
+      copySuffix: "복사",
+      delete: "삭제",
+      confirmDelete: {
+        viewTitle: "이 보기를 삭제하시겠습니까?",
+        viewDescription: "이 보기가 제거됩니다.",
+        tableTitle: "이 테이블을 삭제하시겠습니까?",
+        tableDescription: "이 테이블과 레코드가 제거됩니다.",
+      },
+      tableSidebar: { defaultTableName: "테이블 {0}" },
+      duplicateTable: { copyName: "{0} 복사본" },
+      viewSettings: {
+        title: "보기\x20설정",
+        addView: "보기 추가",
+        configureView: "보기 구성",
+        deleteView: "보기 삭제",
+      },
+    },
+    sheetsFloating: {
+      toolbar: {
+        formatPainter: "서식 페인트",
+        font: "글꼴",
+        fontSize: "글꼴 크기",
+        numberFormat: "숫자 서식",
+        bold: "굵게",
+        filter: "필터\x20토글",
+        resetColor: "초기화",
+        textColor: { main: "텍스트 색상" },
+        fillColor: { main: "채우기\x20색상" },
+        border: { main: "테두리" },
+        mergeCell: { main: "셀\x20병합" },
+        horizontalAlignMode: { main: "가로 정렬" },
+        verticalAlignMode: { main: "세로\x20정렬" },
+        textWrapMode: { main: "텍스트 줄바꿈" },
+      },
+      align: {
+        left: "왼쪽",
+        center: "가운데",
+        right: "오른쪽",
+        top: "위쪽",
+        middle: "가운데",
+        bottom: "아래쪽",
+      },
+      borderLine: { borderColor: "테두리 색상", borderSize: "테두리\x20크기" },
+      textWrap: { overflow: "넘침", wrap: "줄바꿈", clip: "자르기" },
+    },
+  },
+};
+module.exports = e;

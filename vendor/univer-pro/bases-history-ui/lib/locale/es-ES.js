@@ -1,0 +1,86 @@
+const e = {
+  "bases-history-ui": {
+    menu: { history: "Historial\x20de\x20versiones" },
+    action: {
+      renameBase: "Se cambió el nombre de la base",
+      createTable: "Se creó una tabla",
+      deleteTable: "Se eliminó una tabla",
+      renameTable: "Se\x20cambió\x20el\x20nombre\x20de\x20una\x20tabla",
+      createView: "Se creó una vista",
+      deleteView: "Se eliminó una vista",
+      createGridView: "Se creó una vista de cuadrícula",
+      deleteGridView: "Se eliminó una vista de cuadrícula",
+      createKanbanView: "Se creó una vista Kanban",
+      deleteKanbanView: "Se\x20eliminó\x20una\x20vista\x20Kanban",
+      createCalendarView: "Se creó una vista de calendario",
+      deleteCalendarView: "Se eliminó una vista de calendario",
+      createGanttView: "Se creó una vista de Gantt",
+      deleteGanttView: "Se\x20eliminó\x20una\x20vista\x20de\x20Gantt",
+      createGalleryView: "Se creó una vista de galería",
+      deleteGalleryView: "Se eliminó una vista de galería",
+      createPivotView: "Se creó una vista dinámica",
+      deletePivotView: "Se eliminó una vista dinámica",
+      renameView: "Se cambió el nombre de una vista",
+      moveView: "Se\x20movió\x20una\x20vista",
+      createRecord: "Se añadieron registros",
+      duplicateRecord: "Se duplicaron registros",
+      deleteRecord: "Se\x20eliminaron\x20registros",
+      moveRecord: "Se movieron registros",
+      updateValues: "Se actualizaron valores de registros",
+      createField: "Se añadieron campos",
+      duplicateField: "Se duplicaron campos",
+      deleteField: "Se eliminaron campos",
+      moveField: "Se movieron campos",
+      updateField: "Se actualizaron los campos",
+      changeFieldType: "Se cambió el tipo de campo",
+      updateFieldDescription: "Se actualizó la descripción del campo",
+      reorderFields: "Se reordenaron los campos",
+      updateFieldVisibility: "Se actualizó la visibilidad de los campos",
+      resizeFields: "Se cambió el tamaño de los campos",
+      updateFilter: "Se actualizaron los filtros",
+      updateGroup: "Se actualizó la agrupación",
+      updateSort: "Se actualizó la ordenación",
+      configureView: "Se\x20actualizó\x20la\x20vista",
+      updateConditionalColoring: "Se actualizó el formato condicional",
+      configureKanban: "Se actualizó el Kanban",
+      configureHierarchy: "Se actualizó la jerarquía",
+      updatePivotView: "Se actualizó una vista dinámica",
+      createDashboard: "Se creó un panel",
+      deleteDashboard: "Se eliminó un panel",
+      renameDashboard: "Se\x20cambió\x20el\x20nombre\x20del\x20panel",
+      reorderDashboardWidgets:
+        "Se\x20reordenaron\x20los\x20widgets\x20del\x20panel",
+      updateDashboard: "Se actualizó un panel",
+      createDashboardWidget: "Se\x20añadió\x20un\x20widget\x20del\x20panel",
+      updateDashboardWidget: "Se\x20actualizó\x20un\x20widget\x20del\x20panel",
+      removeDashboardWidget: "Se eliminó un widget del panel",
+      createDashboardPivotChartWidget:
+        "Se añadió un widget de gráfico dinámico",
+      updateDashboardPivotChartWidget:
+        "Se actualizó un widget de gráfico dinámico",
+      removeDashboardPivotChartWidget:
+        "Se\x20eliminó\x20un\x20widget\x20de\x20gráfico\x20dinámico",
+      createDashboardTableFilterWidget:
+        "Se añadió un widget de filtro de tabla",
+      updateDashboardTableFilterWidget:
+        "Se actualizó un widget de filtro de tabla",
+      removeDashboardTableFilterWidget:
+        "Se eliminó un widget de filtro de tabla",
+      createDashboardTextWidget: "Se\x20añadió\x20un\x20widget\x20de\x20texto",
+      updateDashboardTextWidget: "Se actualizó un widget de texto",
+      removeDashboardTextWidget: "Se eliminó un widget de texto",
+      createDashboardImageWidget:
+        "Se\x20añadió\x20un\x20widget\x20de\x20imagen",
+      updateDashboardImageWidget: "Se actualizó un widget de imagen",
+      removeDashboardImageWidget: "Se eliminó un widget de imagen",
+      createDashboardFormulaShapeWidget:
+        "Se añadió un widget de forma de fórmula",
+      updateDashboardFormulaShapeWidget:
+        "Se\x20actualizó\x20un\x20widget\x20de\x20forma\x20de\x20fórmula",
+      removeDashboardFormulaShapeWidget:
+        "Se eliminó un widget de forma de fórmula",
+      updateBase: "Se actualizó la base",
+    },
+  },
+};
+export { e as default };

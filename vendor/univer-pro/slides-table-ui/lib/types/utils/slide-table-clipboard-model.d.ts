@@ -1,0 +1,10 @@
+import type { ISlideTableSnapshot } from '@univerjs-pro/slides-table';
+import type { IDocumentData } from '@univerjs/core';
+import type { ISlideTableSelection } from '../services/slide-table-selection.service';
+export declare function serializeSlideTableSelectionToText(table: ISlideTableSnapshot | null | undefined, selection: ISlideTableSelection | null | undefined): string;
+export declare function serializeSlideTableSelectionToHtml(table: ISlideTableSnapshot | null | undefined, selection: ISlideTableSelection | null | undefined): string;
+export declare function serializeSlideTableCellStyleAttribute(cell: ISlideTableSnapshot['rows'][number]['cells'][number]): string;
+export declare function buildSlideTablePasteTextPatch(table: ISlideTableSnapshot | null | undefined, selection: ISlideTableSelection | null | undefined, text: string): Partial<ISlideTableSnapshot> | null;
+export declare function buildSlideTablePasteHtmlPatch(table: ISlideTableSnapshot | null | undefined, selection: ISlideTableSelection | null | undefined, html: string): Partial<ISlideTableSnapshot> | null;
+export declare function buildSlideTableClearTextPatch(table: ISlideTableSnapshot | null | undefined, selection: ISlideTableSelection | null | undefined): Partial<ISlideTableSnapshot> | null;
+export declare function extractSlideTableCellPlainText(documentData: IDocumentData | undefined): string;

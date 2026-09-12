@@ -1,1 +1,3 @@
-();import _0x42a1e4 from'./index.cjs';const facadeExport0=_0x42a1e4.SQLiteHistoryDatabaseAdapter;export{facadeExport0 as SQLiteHistoryDatabaseAdapter};
+import _0x42a1e4 from "./index.cjs";
+const facadeExport0 = _0x42a1e4.SQLiteHistoryDatabaseAdapter;
+export { facadeExport0 as SQLiteHistoryDatabaseAdapter };

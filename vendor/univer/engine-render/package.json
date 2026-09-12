@@ -1,0 +1,79 @@
+{
+  "name": "@univerjs/engine-render",
+  "version": "1.0.0-insiders.20260907-70fc579",
+  "private": false,
+  "description": "Canvas rendering engine for Univer documents, sheets, and slides.",
+  "author": "DreamNum Co., Ltd. <developer@univer.ai>",
+  "license": "Apache-2.0",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/univer"
+  },
+  "homepage": "https://univer.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dream-num/univer"
+  },
+  "bugs": {
+    "url": "https://github.com/dream-num/univer/issues"
+  },
+  "keywords": [
+    "univer",
+    "render-engine",
+    "canvas",
+    "layout",
+    "graphics"
+  ],
+  "exports": {
+    ".": {
+      "import": "./lib/es/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/types/index.d.ts"
+    },
+    "./*": {
+      "import": "./lib/es/*",
+      "require": "./lib/cjs/*",
+      "types": "./lib/types/index.d.ts"
+    },
+    "./lib/*": "./lib/*"
+  },
+  "main": "./lib/es/index.js",
+  "types": "./lib/types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "peerDependencies": {
+    "rxjs": ">=7.0.0"
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.8.0",
+    "@floating-ui/utils": "^0.2.12",
+    "franc-min": "^6.2.0",
+    "@univerjs/core": "1.0.0-insiders.20260907-70fc579"
+  },
+  "devDependencies": {
+    "jest-canvas-mock": "^2.5.8",
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "rxjs": "^7.8.2",
+    "tsdown": "^0.22.14",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.0",
+    "@univerjs-infra/shared": "1.0.0-beta.2"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "build:bundle": "univer-cli build --config tsdown.override.mts",
+    "build:types": "tsc -p tsconfig.node.json",
+    "build": "pnpm run build:bundle && pnpm run build:types"
+  },
+  "module": "./lib/es/index.js"
+}

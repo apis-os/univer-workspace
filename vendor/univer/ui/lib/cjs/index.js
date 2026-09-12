@@ -1,0 +1,28473 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+let _univerjs_core = require("@univerjs/core");
+let rxjs = require("rxjs");
+let react = require("react");
+let _univerjs_design = require("@univerjs/design");
+let _univerjs_engine_render = require("@univerjs/engine-render");
+let rxjs_operators = require("rxjs/operators");
+let _wendellhu_redi_react_bindings = require("@wendellhu/redi/react-bindings");
+let react_jsx_runtime = require("react/jsx-runtime");
+let react_dom = require("react-dom");
+let _univerjs_icons = require("@univerjs/icons");
+let _univerjs_protocol = require("@univerjs/protocol");
+
+//#region src/utils/embed-boundary.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const EMBED_INTERACTION_BOUNDARY_OWNER_ATTRIBUTE = "data-embed-interaction-boundary-owner";
+const EMBED_CHILD_UNIT_ID_ATTRIBUTE = "data-embed-child-unit-id";
+function getEmbedBoundaryOwner(target) {
+	if (!hasClosest(target)) return;
+	const ownerElement = target.closest(`[${EMBED_INTERACTION_BOUNDARY_OWNER_ATTRIBUTE}]`);
+	return getAttributeValue(target, "data-embed-interaction-boundary-owner") ?? getAttributeValue(ownerElement, "data-embed-interaction-boundary-owner") ?? void 0;
+}
+function isEmbedBoundaryTarget(target) {
+	return hasClosest(target) && target.closest(`[${"data-embed-interaction-boundary-owner"}]`) != null;
+}
+function getEmbedChildUnitId(target) {
+	if (!hasClosest(target)) return;
+	const childRuntime = target.closest(`[${EMBED_CHILD_UNIT_ID_ATTRIBUTE}]`);
+	return getAttributeValue(target, "data-embed-child-unit-id") ?? getAttributeValue(childRuntime, "data-embed-child-unit-id") ?? void 0;
+}
+function keepInteractionInsideSameEmbedBoundary(event) {
+	const owner = getEmbedBoundaryOwner(event.currentTarget);
+	if (!owner) return;
+	if (getEmbedBoundaryOwner(event.target) === owner) event.preventDefault();
+}
+function hasClosest(target) {
+	return !!target && typeof target.closest === "function";
+}
+function getAttributeValue(target, name) {
+	const getAttribute = target === null || target === void 0 ? void 0 : target.getAttribute;
+	return typeof getAttribute === "function" ? getAttribute.call(target, name) ?? void 0 : void 0;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/services/layout/layout.service.ts
+const FOCUSING_UNIVER = "FOCUSING_UNIVER";
+const givingBackFocusElements = [
+	"app-layout",
+	"button",
+	"sheet-bar-append-button",
+	"render-canvas",
+	"workbench-layout"
+];
+const ILayoutService = (0, _univerjs_core.createIdentifier)("ui.layout-service");
+let DesktopLayoutService = class DesktopLayoutService extends _univerjs_core.Disposable {
+	get isFocused() {
+		return this._isFocused;
+	}
+	constructor(_contextService, _univerInstanceService) {
+		super();
+		this._contextService = _contextService;
+		this._univerInstanceService = _univerInstanceService;
+		_defineProperty(this, "_rootContainerElement", null);
+		_defineProperty(this, "_isFocused", false);
+		_defineProperty(this, "_focusHandlers", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_contentElements", []);
+		_defineProperty(this, "_allContainers", []);
+		this._initUniverFocusListener();
+		this._initEditorStatus();
+	}
+	get rootContainerElement() {
+		return this._rootContainerElement;
+	}
+	focus() {
+		const currentFocused = this._univerInstanceService.getFocusedUnit();
+		if (!currentFocused) return;
+		let handler;
+		if (currentFocused instanceof _univerjs_core.Workbook) handler = this._focusHandlers.get(_univerjs_core.UniverInstanceType.UNIVER_SHEET);
+		else if (currentFocused instanceof _univerjs_core.DocumentDataModel) handler = this._focusHandlers.get(_univerjs_core.UniverInstanceType.UNIVER_DOC);
+		else if ((currentFocused === null || currentFocused === void 0 ? void 0 : currentFocused.type) === _univerjs_core.UniverInstanceType.UNIVER_SLIDE) handler = this._focusHandlers.get(_univerjs_core.UniverInstanceType.UNIVER_SLIDE);
+		if (handler) handler(currentFocused.getUnitId());
+	}
+	registerFocusHandler(type, handler) {
+		if (this._focusHandlers.has(type)) throw new Error(`[DesktopLayoutService]: handler of type ${type} bas been registered!`);
+		this._focusHandlers.set(type, handler);
+		return (0, _univerjs_core.toDisposable)(() => this._focusHandlers.delete(type));
+	}
+	registerContentElement(container) {
+		if (this._contentElements.indexOf(container) === -1) {
+			this._contentElements.push(container);
+			return (0, _univerjs_core.toDisposable)(() => (0, _univerjs_core.remove)(this._contentElements, container));
+		}
+		throw new Error("[DesktopLayoutService]: content container already registered!");
+	}
+	getContentElement() {
+		return this._contentElements[0];
+	}
+	registerRootContainerElement(container) {
+		if (this._rootContainerElement) throw new Error("[DesktopLayoutService]: root container already registered!");
+		this._rootContainerElement = container;
+		const dis = this.registerContainerElement(container);
+		return (0, _univerjs_core.toDisposable)(() => {
+			this._rootContainerElement = null;
+			dis.dispose();
+		});
+	}
+	registerContainerElement(container) {
+		if (this._allContainers.indexOf(container) === -1) {
+			this._allContainers.push(container);
+			return (0, _univerjs_core.toDisposable)(() => (0, _univerjs_core.remove)(this._allContainers, container));
+		}
+		throw new Error("[LayoutService]: container already registered!");
+	}
+	checkElementInCurrentContainers(element) {
+		return this._allContainers.some((container) => container.contains(element));
+	}
+	checkContentIsFocused() {
+		return this._contentElements.some((contentEl) => contentEl === document.activeElement || contentEl.contains(document.activeElement));
+	}
+	_initUniverFocusListener() {
+		this.disposeWithMe((0, rxjs.fromEvent)(window, "focusin").subscribe((event) => {
+			var _this$_rootContainerE;
+			const target = event.target;
+			if (((_this$_rootContainerE = this._rootContainerElement) === null || _this$_rootContainerE === void 0 ? void 0 : _this$_rootContainerE.contains(target)) && givingBackFocusElements.some((item) => target.dataset.uComp === item) && !isEmbedBoundaryTarget(target)) {
+				queueMicrotask(() => {
+					const targetUnitId = getFocusUnitIdFromElement(target);
+					if (targetUnitId && this._univerInstanceService.getUnit(targetUnitId)) this._univerInstanceService.focusUnit(targetUnitId);
+					this.focus();
+					this._isFocused = true;
+					this._contextService.setContextValue(FOCUSING_UNIVER, this._isFocused);
+					this._contextService.setContextValue(_univerjs_core.FOCUSING_UNIVER_EDITOR, getFocusingUniverEditorStatus());
+				});
+				return;
+			}
+			if (target && this.checkElementInCurrentContainers(target)) this._isFocused = true;
+			else this._isFocused = false;
+			this._contextService.setContextValue(FOCUSING_UNIVER, this._isFocused);
+			this._contextService.setContextValue(_univerjs_core.FOCUSING_UNIVER_EDITOR, getFocusingUniverEditorStatus());
+		}));
+	}
+	_initEditorStatus() {
+		this._contextService.setContextValue(_univerjs_core.FOCUSING_UNIVER_EDITOR, getFocusingUniverEditorStatus());
+	}
+};
+DesktopLayoutService = __decorate([__decorateParam(0, _univerjs_core.IContextService), __decorateParam(1, _univerjs_core.IUniverInstanceService)], DesktopLayoutService);
+function getFocusingUniverEditorStatus() {
+	var _document$activeEleme;
+	return ((_document$activeEleme = document.activeElement) === null || _document$activeEleme === void 0 ? void 0 : _document$activeEleme.dataset.uComp) === "editor";
+}
+function getFocusUnitIdFromElement(target) {
+	return target.dataset.uUnitId;
+}
+
+//#endregion
+//#region src/commands/operations/toggle-fullscreen.operation.ts
+const ToggleFullscreenOperation = {
+	id: "base-ui.operation.toggle-fullscreen",
+	type: _univerjs_core.CommandType.OPERATION,
+	handler: (accessor) => {
+		const root = accessor.get(ILayoutService).rootContainerElement;
+		if (!root) return false;
+		const document = root.ownerDocument;
+		try {
+			if (document.fullscreenElement) {
+				if (!document.exitFullscreen) return false;
+				document.exitFullscreen().catch(() => {});
+			} else {
+				if (!root.requestFullscreen) return false;
+				root.requestFullscreen().catch(() => {});
+			}
+			return true;
+		} catch {
+			return false;
+		}
+	}
+};
+
+//#endregion
+//#region src/services/shortcut/shortcut-panel.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var ShortcutPanelService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_open$", new rxjs.BehaviorSubject(false));
+		_defineProperty(this, "open$", this._open$.pipe((0, rxjs.distinctUntilChanged)()));
+	}
+	get isOpen() {
+		return this._open$.getValue();
+	}
+	dispose() {
+		super.dispose();
+		this._open$.next(false);
+		this._open$.complete();
+	}
+	open() {
+		this._open$.next(true);
+	}
+	close() {
+		this._open$.next(false);
+	}
+};
+
+//#endregion
+//#region src/services/sidebar/sidebar.service.ts
+const ILeftSidebarService = (0, _univerjs_core.createIdentifier)("ui.left-sidebar.service");
+const ISidebarService = (0, _univerjs_core.createIdentifier)("ui.sidebar.service");
+
+//#endregion
+//#region src/commands/operations/toggle-shortcut-panel.operation.ts
+const ShortcutPanelComponentName = "ShortcutPanel";
+const ToggleShortcutPanelOperation = {
+	id: "base-ui.operation.toggle-shortcut-panel",
+	type: _univerjs_core.CommandType.OPERATION,
+	handler: (accessor) => {
+		const shortcutPanelService = accessor.get(ShortcutPanelService);
+		const sidebarService = accessor.get(ISidebarService);
+		if (shortcutPanelService.isOpen) {
+			shortcutPanelService.close();
+			sidebarService.close();
+		} else {
+			shortcutPanelService.open();
+			sidebarService.open({
+				header: { title: "ui.shortcut-panel.title" },
+				children: { label: ShortcutPanelComponentName }
+			});
+		}
+		return true;
+	}
+};
+
+//#endregion
+//#region src/common/component-manager.ts
+let ComponentManager = class ComponentManager extends _univerjs_core.Disposable {
+	constructor(_logService) {
+		super();
+		this._logService = _logService;
+		_defineProperty(this, "_components", /* @__PURE__ */ new Map());
+		_defineProperty(this, "reactUtils", {
+			createElement: react.createElement,
+			useEffect: react.useEffect,
+			useRef: react.useRef
+		});
+		_defineProperty(this, "_handler", { react: (component) => {
+			return component;
+		} });
+	}
+	register(name, component, options) {
+		const { framework = "react" } = options || {};
+		if (framework === "vue3" && !this._handler.vue3) throw new Error("[ComponentManager] Vue3 support is no longer built-in since v0.9.0, please install @univerjs/ui-adapter-vue3 plugin.");
+		if (this._components.has(name)) {
+			var _this$_logService;
+			(_this$_logService = this._logService) === null || _this$_logService === void 0 || _this$_logService.warn("[ComponentManager]", `Component ${name} already exists.`);
+		}
+		this._components.set(name, {
+			framework,
+			component
+		});
+		return (0, _univerjs_core.toDisposable)(() => {
+			this._components.delete(name);
+		});
+	}
+	setHandler(framework, handler) {
+		this._handler[framework] = handler;
+	}
+	get(name) {
+		if (!name) return;
+		const value = this._components.get(name);
+		if (!value) return;
+		const frameworkHandler = this._handler[value.framework];
+		if (!frameworkHandler) throw new Error(`[ComponentManager] No handler found for framework: ${value.framework}`);
+		return frameworkHandler(value.component, name);
+	}
+	delete(name) {
+		this._components.delete(name);
+	}
+};
+ComponentManager = __decorate([__decorateParam(0, (0, _univerjs_core.Optional)(_univerjs_core.ILogService))], ComponentManager);
+
+//#endregion
+//#region src/common/icon-manager.ts
+const EmptyIcon = () => null;
+let IconManager = class IconManager extends _univerjs_core.Disposable {
+	constructor(_logService) {
+		super();
+		this._logService = _logService;
+		_defineProperty(this, "_icons", /* @__PURE__ */ new Map());
+	}
+	/**
+	* Check whether an icon name is currently registered.
+	*
+	* Prefer this for existence checks because `get()` always returns a renderable icon.
+	*/
+	has(name) {
+		return this._icons.has(name);
+	}
+	_register(name, icon) {
+		const existingIcon = this._icons.get(name);
+		if (existingIcon === icon) return (0, _univerjs_core.toDisposable)(() => {});
+		if (existingIcon) this._logService.warn("[IconManager]", `Icon ${name} already exists.`);
+		this._icons.set(name, icon);
+		return (0, _univerjs_core.toDisposable)(() => {
+			this._icons.delete(name);
+		});
+	}
+	register(nameOrIcons, icon) {
+		if (typeof nameOrIcons === "string") return this._register(nameOrIcons, icon);
+		const disposables = [];
+		for (const name in nameOrIcons) disposables.push(this._register(name, nameOrIcons[name]));
+		return (0, _univerjs_core.toDisposable)(() => {
+			disposables.forEach((disposable) => disposable.dispose());
+		});
+	}
+	/**
+	* Resolve an icon by name.
+	*
+	* Missing names are reported through the log service and return an empty component so
+	* render paths can safely use the result as `<Icon />`.
+	*/
+	get(name) {
+		const icon = this._icons.get(name);
+		if (icon) return icon;
+		else {
+			this._logService.warn("[IconManager]", `Icon ${name} does not exist.`);
+			return EmptyIcon;
+		}
+	}
+	/**
+	* Remove an icon registration if it exists.
+	*/
+	delete(name) {
+		this._icons.delete(name);
+	}
+};
+IconManager = __decorate([__decorateParam(0, _univerjs_core.ILogService)], IconManager);
+
+//#endregion
+//#region src/common/z-index-manager.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var ZIndexManager = class {
+	constructor() {
+		_defineProperty(this, "_list", /* @__PURE__ */ new Map());
+	}
+	setIndex(name, index) {
+		this._list.set(name, index);
+	}
+	getIndex(name) {
+		return this._list.get(name);
+	}
+	removeIndex(name) {
+		this._list.delete(name);
+	}
+	getMaxIndex() {
+		let max = -9999999;
+		this._list.forEach((item) => {
+			if (+item > max) max = +item;
+		});
+		return max;
+	}
+};
+
+//#endregion
+//#region src/common/menu-hidden-observable.ts
+function getMenuHiddenObservable(accessor, targetUniverType, matchUnitId, needHideUnitId) {
+	const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+	const getUnitType = (unitId) => _univerjs_core.SHEET_EDITOR_UNITS.includes(unitId) ? _univerjs_core.UniverInstanceType.UNIVER_SHEET : univerInstanceService.getUnitType(unitId);
+	return new rxjs.Observable((subscriber) => {
+		const subscription = univerInstanceService.focused$.subscribe((unitId) => {
+			if (unitId == null) return subscriber.next(true);
+			if (matchUnitId && matchUnitId !== unitId) return subscriber.next(true);
+			if (needHideUnitId && (Array.isArray(needHideUnitId) ? needHideUnitId.includes(unitId) : needHideUnitId === unitId)) return subscriber.next(true);
+			const univerType = getUnitType(unitId);
+			subscriber.next(univerType !== targetUniverType);
+		});
+		const focusedUniverInstance = univerInstanceService.getFocusedUnit();
+		if (focusedUniverInstance == null) {
+			const currentUnit = univerInstanceService.getCurrentUnitOfType(targetUniverType);
+			subscriber.next(currentUnit == null);
+		} else {
+			const univerType = getUnitType(focusedUniverInstance.getUnitId());
+			subscriber.next(univerType !== targetUniverType);
+		}
+		return () => subscription.unsubscribe();
+	});
+}
+function getHeaderFooterMenuHiddenObservable(accessor) {
+	const univerInstanceService = accessor.get(_univerjs_core.IUniverInstanceService);
+	return new rxjs.Observable((subscriber) => {
+		const subscription = univerInstanceService.focused$.subscribe((unitId) => {
+			if (unitId == null) return subscriber.next(true);
+			const docDataModel = univerInstanceService.getUnit(unitId, _univerjs_core.UniverInstanceType.UNIVER_DOC);
+			const documentFlavor = docDataModel === null || docDataModel === void 0 ? void 0 : docDataModel.getSnapshot().documentStyle.documentFlavor;
+			subscriber.next(documentFlavor !== _univerjs_core.DocumentFlavor.TRADITIONAL);
+		});
+		const docDataModel = univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_DOC);
+		if (docDataModel == null) subscriber.next(true);
+		else {
+			const documentFlavor = docDataModel === null || docDataModel === void 0 ? void 0 : docDataModel.getSnapshot().documentStyle.documentFlavor;
+			subscriber.next(documentFlavor !== _univerjs_core.DocumentFlavor.TRADITIONAL);
+		}
+		return () => subscription.unsubscribe();
+	});
+}
+
+//#endregion
+//#region src/common/menu-merge-configs.ts
+function mergeMenuConfigs(baseConfig, additionalConfig) {
+	if (!additionalConfig || !baseConfig) return baseConfig;
+	[
+		"type",
+		"icon",
+		"title",
+		"tooltip"
+	].forEach((prop) => {
+		if (additionalConfig[prop] !== void 0) baseConfig[prop] = additionalConfig[prop];
+	});
+	[
+		"hidden",
+		"disabled",
+		"activated"
+	].forEach((prop) => {
+		updateReactiveProperty(baseConfig, `${prop}$`, additionalConfig[prop]);
+	});
+	return baseConfig;
+}
+function updateReactiveProperty(baseConfig, key, value) {
+	if (value !== void 0) if (baseConfig[key]) baseConfig[key] = baseConfig[key].pipe((0, rxjs.switchMap)(() => new rxjs.BehaviorSubject(value)));
+	else baseConfig[key] = new rxjs.Observable((subscriber) => {
+		subscriber.next(value);
+	});
+}
+
+//#endregion
+//#region src/services/menu/menu.ts
+let MenuItemType = /* @__PURE__ */ function(MenuItemType) {
+	/** Button style menu item. */
+	MenuItemType[MenuItemType["BUTTON"] = 0] = "BUTTON";
+	/** Menu item with submenus. Submenus could be other IMenuItem or an ID of a registered component. */
+	MenuItemType[MenuItemType["SELECTOR"] = 1] = "SELECTOR";
+	/** Button style menu item with a dropdown menu. */
+	MenuItemType[MenuItemType["BUTTON_SELECTOR"] = 2] = "BUTTON_SELECTOR";
+	/** Submenus have to specific features and do not invoke commands. */
+	MenuItemType[MenuItemType["SUBITEMS"] = 3] = "SUBITEMS";
+	return MenuItemType;
+}({});
+function isMenuButtonSelectorItem(v) {
+	return v.type === 2;
+}
+
+//#endregion
+//#region src/services/workbench/workbench.service.ts
+const IWorkbenchService = (0, _univerjs_core.createIdentifier)("univer.ui.workbench.service");
+let WorkbenchService = class WorkbenchService extends _univerjs_core.Disposable {
+	constructor(univerInstanceService) {
+		super();
+		_defineProperty(this, "_tokens", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_subscriptions", new rxjs.Subscription());
+		_defineProperty(this, "_rootUnitId", null);
+		_defineProperty(this, "_rootUnitType$", new rxjs.BehaviorSubject(null));
+		_defineProperty(this, "_skeletonVisible$", new rxjs.BehaviorSubject(false));
+		_defineProperty(this, "rootUnitType$", this._rootUnitType$.asObservable());
+		_defineProperty(this, "skeletonVisible$", this._skeletonVisible$.asObservable());
+		this._subscriptions.add(univerInstanceService.unitAdded$.subscribe(({ unit, options }) => {
+			const unitId = unit.getUnitId();
+			if ((options === null || options === void 0 ? void 0 : options.makeCurrent) === false || !isWorkbenchRootUnit(unitId, options)) return;
+			this._setRootUnit(unitId, unit.type);
+		}));
+		this._subscriptions.add(univerInstanceService.focused$.subscribe((unitId) => {
+			if (!unitId) return;
+			const unit = univerInstanceService.getUnit(unitId);
+			if (unit && isWorkbenchRootUnit(unitId, univerInstanceService.getUnitCreateOptions(unitId) ?? void 0)) this._setRootUnit(unitId, unit.type);
+		}));
+		this._subscriptions.add(univerInstanceService.unitDisposed$.subscribe((unit) => {
+			const unitId = unit.getUnitId();
+			if (this._rootUnitId === unitId) this._setRootUnit(null, null);
+		}));
+	}
+	_setRootUnit(unitId, unitType) {
+		this._rootUnitId = unitId;
+		if (this._rootUnitType$.getValue() !== unitType) this._rootUnitType$.next(unitType);
+	}
+	acquireSkeleton() {
+		const token = Symbol("workbench-skeleton");
+		this._tokens.add(token);
+		if (this._tokens.size === 1) this._skeletonVisible$.next(true);
+		const disposable = (0, _univerjs_core.toDisposable)(() => {
+			if (!this._tokens.delete(token) || this._tokens.size > 0) return;
+			this._skeletonVisible$.next(false);
+		});
+		return this.disposeWithMe(disposable);
+	}
+	dispose() {
+		this._subscriptions.unsubscribe();
+		this._tokens.clear();
+		this._rootUnitId = null;
+		this._rootUnitType$.complete();
+		this._skeletonVisible$.complete();
+		super.dispose();
+	}
+};
+WorkbenchService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService))], WorkbenchService);
+function isWorkbenchRootUnit(unitId, options) {
+	return !(0, _univerjs_core.isInternalEditorID)(unitId) && !(options === null || options === void 0 ? void 0 : options.skipAutoRender) && !(options === null || options === void 0 ? void 0 : options.embeddedRender);
+}
+
+//#endregion
+//#region src/common/object-permission-menu.ts
+function objectPermissionMenuItemFactory(accessor, id, unitType, objectType) {
+	const instances = accessor.get(_univerjs_core.IUniverInstanceService);
+	const state$ = (0, rxjs.combineLatest)([accessor.get(IWorkbenchService).rootUnitType$, instances.getCurrentTypeOfUnit$(unitType)]).pipe((0, rxjs.switchMap)(([rootType, model]) => {
+		if (rootType !== unitType || !model || (0, _univerjs_core.isInternalEditorID)(model.getUnitId())) return (0, rxjs.of)({
+			hidden: true,
+			disabled: true
+		});
+		const permissions = accessor.get(_univerjs_core.ObjectPermissionService);
+		const unitId = model.getUnitId();
+		return permissions.changed$.pipe((0, rxjs.map)(() => ({
+			disabled: !permissions.canView({
+				unitId,
+				objectId: unitId,
+				objectType
+			}),
+			hidden: !permissions.supports({
+				unitId,
+				objectId: unitId,
+				objectType
+			})
+		})));
+	}));
+	return {
+		id,
+		type: 0,
+		icon: "ProtectIcon",
+		title: "ui.objectPermission.title",
+		tooltip: "ui.objectPermission.title",
+		disabled$: state$.pipe((0, rxjs.map)((state) => state.disabled)),
+		hidden$: state$.pipe((0, rxjs.map)((state) => state.hidden))
+	};
+}
+
+//#endregion
+//#region src/config/config.ts
+const UI_PLUGIN_CONFIG_KEY = "ui.config";
+const configSymbol = Symbol(UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/const.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* @ignore
+*/
+const UNI_DISABLE_CHANGING_FOCUS_KEY = "UNI_DISABLE_CHANGING_FOCUS";
+const MOBILE_UI_MODE = "MOBILE_UI_MODE";
+
+//#endregion
+//#region src/services/message/message.service.ts
+const IMessageService = (0, _univerjs_core.createIdentifier)("ui.message.service");
+
+//#endregion
+//#region src/controllers/error/error.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const PERMISSION_MESSAGE_ID = "ui.permission-denied";
+const PERMISSION_MESSAGE_DURATION = 3e3;
+let ErrorController = class ErrorController extends _univerjs_core.Disposable {
+	constructor(_errorService, _messageService, _permissionService, _localeService) {
+		super();
+		this._errorService = _errorService;
+		this._messageService = _messageService;
+		this._permissionService = _permissionService;
+		this._localeService = _localeService;
+		_defineProperty(this, "_lastPermissionAttempt", Number.NEGATIVE_INFINITY);
+		_defineProperty(this, "_lastPermissionTarget", void 0);
+		this.disposeWithMe(this._errorService.error$.subscribe((error) => {
+			if (error.code === "PERMISSION_DENIED") {
+				if (!this._permissionService.getShowComponents()) return;
+				const now = Date.now();
+				const repeated = error.permissionTarget === this._lastPermissionTarget && now - this._lastPermissionAttempt < PERMISSION_MESSAGE_DURATION;
+				this._lastPermissionAttempt = now;
+				this._lastPermissionTarget = error.permissionTarget;
+				if (!repeated) this._messageService.show({
+					id: PERMISSION_MESSAGE_ID,
+					content: this._localeService.t("ui.objectPermission.operationDenied"),
+					type: _univerjs_design.MessageType.Warning,
+					duration: PERMISSION_MESSAGE_DURATION
+				});
+				return;
+			}
+			this._messageService.show({
+				content: error.errorKey,
+				type: _univerjs_design.MessageType.Error
+			});
+		}));
+	}
+	dispose() {
+		this._messageService.remove(PERMISSION_MESSAGE_ID);
+		super.dispose();
+	}
+};
+ErrorController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.ErrorService)),
+	__decorateParam(1, IMessageService),
+	__decorateParam(2, _univerjs_core.IPermissionService),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService))
+], ErrorController);
+
+//#endregion
+//#region src/services/clipboard/clipboard.command.ts
+const CopyCommandName = "univer.command.copy";
+const CopyCommand = {
+	id: CopyCommandName,
+	name: CopyCommandName,
+	multi: true,
+	priority: 0,
+	type: _univerjs_core.CommandType.COMMAND,
+	preconditions: () => false,
+	handler: () => true
+};
+const CutCommandName = "univer.command.cut";
+const CutCommand = {
+	id: CutCommandName,
+	name: CutCommandName,
+	multi: true,
+	priority: 0,
+	type: _univerjs_core.CommandType.COMMAND,
+	preconditions: () => false,
+	handler: async () => true
+};
+const PasteCommandName = "univer.command.paste";
+const PasteCommand = {
+	id: PasteCommandName,
+	name: PasteCommandName,
+	multi: true,
+	priority: 0,
+	type: _univerjs_core.CommandType.COMMAND,
+	preconditions: () => false,
+	handler: () => true
+};
+const SheetPasteShortKeyCommandName = "sheet.command.paste-by-short-key";
+
+//#endregion
+//#region src/services/shortcut/keycode.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/** KeyCode that maps to browser standard keycode. */
+let KeyCode = /* @__PURE__ */ function(KeyCode) {
+	KeyCode[KeyCode["UNKNOWN"] = 0] = "UNKNOWN";
+	KeyCode[KeyCode["BACKSPACE"] = 8] = "BACKSPACE";
+	KeyCode[KeyCode["TAB"] = 9] = "TAB";
+	KeyCode[KeyCode["ENTER"] = 13] = "ENTER";
+	KeyCode[KeyCode["SHIFT"] = 16] = "SHIFT";
+	KeyCode[KeyCode["CTRL"] = 17] = "CTRL";
+	KeyCode[KeyCode["ESC"] = 27] = "ESC";
+	KeyCode[KeyCode["SPACE"] = 32] = "SPACE";
+	KeyCode[KeyCode["END"] = 35] = "END";
+	KeyCode[KeyCode["HOME"] = 36] = "HOME";
+	KeyCode[KeyCode["ARROW_LEFT"] = 37] = "ARROW_LEFT";
+	KeyCode[KeyCode["ARROW_UP"] = 38] = "ARROW_UP";
+	KeyCode[KeyCode["ARROW_RIGHT"] = 39] = "ARROW_RIGHT";
+	KeyCode[KeyCode["ARROW_DOWN"] = 40] = "ARROW_DOWN";
+	KeyCode[KeyCode["INSERT"] = 45] = "INSERT";
+	KeyCode[KeyCode["DELETE"] = 46] = "DELETE";
+	KeyCode[KeyCode["Digit0"] = 48] = "Digit0";
+	KeyCode[KeyCode["Digit1"] = 49] = "Digit1";
+	KeyCode[KeyCode["Digit2"] = 50] = "Digit2";
+	KeyCode[KeyCode["Digit3"] = 51] = "Digit3";
+	KeyCode[KeyCode["Digit4"] = 52] = "Digit4";
+	KeyCode[KeyCode["Digit5"] = 53] = "Digit5";
+	KeyCode[KeyCode["Digit6"] = 54] = "Digit6";
+	KeyCode[KeyCode["Digit7"] = 55] = "Digit7";
+	KeyCode[KeyCode["Digit8"] = 56] = "Digit8";
+	KeyCode[KeyCode["Digit9"] = 57] = "Digit9";
+	KeyCode[KeyCode["A"] = 65] = "A";
+	KeyCode[KeyCode["B"] = 66] = "B";
+	KeyCode[KeyCode["C"] = 67] = "C";
+	KeyCode[KeyCode["D"] = 68] = "D";
+	KeyCode[KeyCode["E"] = 69] = "E";
+	KeyCode[KeyCode["F"] = 70] = "F";
+	KeyCode[KeyCode["G"] = 71] = "G";
+	KeyCode[KeyCode["H"] = 72] = "H";
+	KeyCode[KeyCode["I"] = 73] = "I";
+	KeyCode[KeyCode["J"] = 74] = "J";
+	KeyCode[KeyCode["K"] = 75] = "K";
+	KeyCode[KeyCode["L"] = 76] = "L";
+	KeyCode[KeyCode["M"] = 77] = "M";
+	KeyCode[KeyCode["N"] = 78] = "N";
+	KeyCode[KeyCode["O"] = 79] = "O";
+	KeyCode[KeyCode["P"] = 80] = "P";
+	KeyCode[KeyCode["Q"] = 81] = "Q";
+	KeyCode[KeyCode["R"] = 82] = "R";
+	KeyCode[KeyCode["S"] = 83] = "S";
+	KeyCode[KeyCode["T"] = 84] = "T";
+	KeyCode[KeyCode["U"] = 85] = "U";
+	KeyCode[KeyCode["V"] = 86] = "V";
+	KeyCode[KeyCode["W"] = 87] = "W";
+	KeyCode[KeyCode["X"] = 88] = "X";
+	KeyCode[KeyCode["Y"] = 89] = "Y";
+	KeyCode[KeyCode["Z"] = 90] = "Z";
+	KeyCode[KeyCode["F1"] = 112] = "F1";
+	KeyCode[KeyCode["F2"] = 113] = "F2";
+	KeyCode[KeyCode["F3"] = 114] = "F3";
+	KeyCode[KeyCode["F4"] = 115] = "F4";
+	KeyCode[KeyCode["F5"] = 116] = "F5";
+	KeyCode[KeyCode["F6"] = 117] = "F6";
+	KeyCode[KeyCode["F7"] = 118] = "F7";
+	KeyCode[KeyCode["F8"] = 119] = "F8";
+	KeyCode[KeyCode["F9"] = 120] = "F9";
+	KeyCode[KeyCode["F10"] = 121] = "F10";
+	KeyCode[KeyCode["F11"] = 122] = "F11";
+	KeyCode[KeyCode["F12"] = 123] = "F12";
+	KeyCode[KeyCode["NUM_LOCK"] = 144] = "NUM_LOCK";
+	KeyCode[KeyCode["SCROLL_LOCK"] = 145] = "SCROLL_LOCK";
+	KeyCode[KeyCode["EQUAL"] = 187] = "EQUAL";
+	KeyCode[KeyCode["COMMA"] = 188] = "COMMA";
+	KeyCode[KeyCode["MINUS"] = 189] = "MINUS";
+	KeyCode[KeyCode["PERIOD"] = 190] = "PERIOD";
+	KeyCode[KeyCode["BACK_SLASH"] = 220] = "BACK_SLASH";
+	return KeyCode;
+}({});
+const KeyCodeToChar = {
+	[8]: "Backspace",
+	[9]: "Tab",
+	[13]: "Enter",
+	[46]: "Del",
+	[27]: "Esc",
+	[32]: "Space",
+	[36]: "Home",
+	[35]: "End",
+	[37]: "←",
+	[39]: "→",
+	[38]: "↑",
+	[40]: "↓",
+	[48]: "0",
+	[49]: "1",
+	[50]: "2",
+	[51]: "3",
+	[52]: "4",
+	[53]: "5",
+	[54]: "6",
+	[55]: "7",
+	[56]: "8",
+	[57]: "9",
+	[65]: "A",
+	[66]: "B",
+	[67]: "C",
+	[68]: "D",
+	[69]: "E",
+	[70]: "F",
+	[71]: "G",
+	[72]: "H",
+	[73]: "I",
+	[74]: "J",
+	[75]: "K",
+	[76]: "L",
+	[77]: "M",
+	[78]: "N",
+	[79]: "O",
+	[80]: "P",
+	[81]: "Q",
+	[82]: "R",
+	[83]: "S",
+	[84]: "T",
+	[85]: "U",
+	[86]: "V",
+	[87]: "W",
+	[88]: "X",
+	[89]: "Y",
+	[90]: "Z",
+	[112]: "F1",
+	[113]: "F2",
+	[114]: "F3",
+	[115]: "F4",
+	[116]: "F5",
+	[117]: "F6",
+	[118]: "F7",
+	[119]: "F8",
+	[120]: "F9",
+	[121]: "F10",
+	[122]: "F11",
+	[123]: "F12",
+	[189]: "-",
+	[187]: "=",
+	[190]: ".",
+	[188]: ",",
+	[220]: "\\"
+};
+/** Define meta key numbers. */
+let MetaKeys = /* @__PURE__ */ function(MetaKeys) {
+	MetaKeys[MetaKeys["SHIFT"] = 1024] = "SHIFT";
+	/** Option key on MacOS. Alt key on other systems. */
+	MetaKeys[MetaKeys["ALT"] = 2048] = "ALT";
+	/** Command key on MacOS. Ctrl key on other systems. */
+	MetaKeys[MetaKeys["CTRL_COMMAND"] = 4096] = "CTRL_COMMAND";
+	/** Ctrl key for MacOS. Not valid on other systems. */
+	MetaKeys[MetaKeys["MAC_CTRL"] = 8192] = "MAC_CTRL";
+	return MetaKeys;
+}({});
+
+//#endregion
+//#region src/common/lifecycle.ts
+function fromGlobalEvent(type, listener, options) {
+	window.addEventListener(type, listener, options);
+	return (0, _univerjs_core.toDisposable)(() => window.removeEventListener(type, listener, options));
+}
+
+//#endregion
+//#region src/services/platform/platform.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const IPlatformService = (0, _univerjs_core.createIdentifier)("ui.platform.service");
+var PlatformService = class {
+	get isMac() {
+		return /Mac/.test(navigator.appVersion);
+	}
+	get isWindows() {
+		return /Windows/.test(navigator.appVersion);
+	}
+	get isLinux() {
+		return /Linux/.test(navigator.appVersion);
+	}
+};
+
+//#endregion
+//#region src/services/runtime-scope/ui-runtime-scope.service.ts
+const IUIRuntimeScopeService = (0, _univerjs_core.createIdentifier)("ui.runtime-scope.service");
+var UIRuntimeScopeService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_scopes", /* @__PURE__ */ new Map());
+	}
+	register(scope) {
+		this._scopes.set(scope.unitId, scope);
+		return (0, _univerjs_core.toDisposable)(() => {
+			if (this._scopes.get(scope.unitId) === scope) this._scopes.delete(scope.unitId);
+		});
+	}
+	get(unitId) {
+		return unitId ? this._scopes.get(unitId) : void 0;
+	}
+};
+
+//#endregion
+//#region src/services/shortcut/shortcut.service.ts
+/**
+* Defines whether a Univer shortcut should yield to the browser's native behavior
+* when the keyboard event originates from an editable text element.
+*/
+let NativeTextEditorShortcutBehavior = /* @__PURE__ */ function(NativeTextEditorShortcutBehavior) {
+	NativeTextEditorShortcutBehavior[NativeTextEditorShortcutBehavior["ALLOW_NATIVE"] = 0] = "ALLOW_NATIVE";
+	NativeTextEditorShortcutBehavior[NativeTextEditorShortcutBehavior["OVERRIDE_NATIVE"] = 1] = "OVERRIDE_NATIVE";
+	return NativeTextEditorShortcutBehavior;
+}({});
+/**
+* The dependency injection identifier of the {@link IShortcutService}.
+*/
+const IShortcutService = (0, _univerjs_core.createIdentifier)("ui.shortcut.service");
+let ShortcutService = class ShortcutService extends _univerjs_core.Disposable {
+	constructor(_commandService, _platformService, _contextService, _runtimeScopeService, _layoutService) {
+		super();
+		this._commandService = _commandService;
+		this._platformService = _platformService;
+		this._contextService = _contextService;
+		this._runtimeScopeService = _runtimeScopeService;
+		this._layoutService = _layoutService;
+		_defineProperty(this, "_shortCutMapping", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_commandIDMapping", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_shortcutChanged$", new rxjs.Subject());
+		_defineProperty(this, "shortcutChanged$", this._shortcutChanged$.asObservable());
+		_defineProperty(this, "_forceEscaped", false);
+		_defineProperty(this, "_forceDisabled", false);
+		this.disposeWithMe(fromGlobalEvent("keydown", (e) => {
+			this._resolveKeyboardEvent(e);
+		}, { capture: true }));
+	}
+	getAllShortcuts() {
+		return Array.from(this._shortCutMapping.values()).map((v) => Array.from(v.values())).flat();
+	}
+	registerShortcut(shortcut) {
+		const binding = this._getBindingFromItem(shortcut);
+		if (!binding) return (0, _univerjs_core.toDisposable)(() => {});
+		const bindingSet = this._shortCutMapping.get(binding);
+		if (bindingSet) bindingSet.add(shortcut);
+		else this._shortCutMapping.set(binding, /* @__PURE__ */ new Set([shortcut]));
+		const commandID = shortcut.id;
+		const commandIDSet = this._commandIDMapping.get(commandID);
+		if (commandIDSet) commandIDSet.add(shortcut);
+		else this._commandIDMapping.set(commandID, /* @__PURE__ */ new Set([shortcut]));
+		this._emitShortcutChanged();
+		return (0, _univerjs_core.toDisposable)(() => {
+			var _this$_shortCutMappin, _this$_shortCutMappin2, _this$_commandIDMappi, _this$_commandIDMappi2;
+			(_this$_shortCutMappin = this._shortCutMapping.get(binding)) === null || _this$_shortCutMappin === void 0 || _this$_shortCutMappin.delete(shortcut);
+			if (((_this$_shortCutMappin2 = this._shortCutMapping.get(binding)) === null || _this$_shortCutMappin2 === void 0 ? void 0 : _this$_shortCutMappin2.size) === 0) this._shortCutMapping.delete(binding);
+			(_this$_commandIDMappi = this._commandIDMapping.get(commandID)) === null || _this$_commandIDMappi === void 0 || _this$_commandIDMappi.delete(shortcut);
+			if (((_this$_commandIDMappi2 = this._commandIDMapping.get(commandID)) === null || _this$_commandIDMappi2 === void 0 ? void 0 : _this$_commandIDMappi2.size) === 0) this._commandIDMapping.delete(commandID);
+			this._emitShortcutChanged();
+		});
+	}
+	getShortcutDisplayOfCommand(id) {
+		const set = this._commandIDMapping.get(id);
+		if (!set) return null;
+		const shortcut = set.values().next().value;
+		if (shortcut) return this.getShortcutDisplay(shortcut);
+		return null;
+	}
+	getShortcutDisplay(shortcut) {
+		const binding = this._getBindingFromItem(shortcut);
+		if (!binding) return null;
+		const ctrlKey = binding & 4096;
+		const shiftKey = binding & 1024;
+		const altKey = binding & 2048;
+		const macCtrl = binding & 8192;
+		const body = KeyCodeToChar[binding & 255] ?? "<->";
+		if (this._platformService.isMac) return `${ctrlKey ? "⌘+" : ""}${shiftKey ? "⇧+" : ""}${altKey ? "⌥+" : ""}${macCtrl ? "⌃+" : ""}${body}`;
+		return `${ctrlKey ? "Ctrl+" : ""}${shiftKey ? "Shift+" : ""}${altKey ? "Alt+" : ""}${body}`;
+	}
+	_emitShortcutChanged() {
+		this._shortcutChanged$.next();
+	}
+	forceEscape() {
+		this._forceEscaped = true;
+		return (0, _univerjs_core.toDisposable)(() => this._forceEscaped = false);
+	}
+	forceDisable() {
+		this._forceDisabled = true;
+		return (0, _univerjs_core.toDisposable)(() => {
+			this._forceDisabled = false;
+		});
+	}
+	_resolveKeyboardEvent(e) {
+		const candidate = this.dispatch(e);
+		if (candidate) {
+			var _this$_getRuntimeServ;
+			((_this$_getRuntimeServ = this._getRuntimeService(e, _univerjs_core.ICommandService)) === null || _this$_getRuntimeServ === void 0 ? void 0 : _this$_getRuntimeServ.executeCommand(candidate.id, candidate.staticParameters)) ?? this._commandService.executeCommand(candidate.id, candidate.staticParameters);
+			e.preventDefault();
+		}
+	}
+	dispatch(e) {
+		if (this._forceEscaped || this._forceDisabled) return;
+		if (this._layoutService && !this._layoutService.checkElementInCurrentContainers(e.target)) return;
+		const binding = this._deriveBindingFromEvent(e);
+		if (binding === null) return;
+		const shortcuts = this._shortCutMapping.get(binding);
+		if (shortcuts === void 0) return;
+		const contextService = this._getRuntimeService(e, _univerjs_core.IContextService) ?? this._contextService;
+		const candidateShortcut = Array.from(shortcuts).sort((s1, s2) => (s2.priority ?? 0) - (s1.priority ?? 0)).find((s) => {
+			var _s$eventPreconditions, _s$preconditions;
+			return (((_s$eventPreconditions = s.eventPreconditions) === null || _s$eventPreconditions === void 0 ? void 0 : _s$eventPreconditions.call(s, e)) ?? true) && (((_s$preconditions = s.preconditions) === null || _s$preconditions === void 0 ? void 0 : _s$preconditions.call(s, contextService)) ?? true);
+		});
+		if (this._shouldLetEmbedTextEditorHandleNativeShortcut(e, binding) && (candidateShortcut === null || candidateShortcut === void 0 ? void 0 : candidateShortcut.nativeTextEditorBehavior) !== 1) return;
+		return candidateShortcut;
+	}
+	_getBindingFromItem(item) {
+		if (this._platformService.isMac && item.mac) return item.mac;
+		if (this._platformService.isWindows && item.win) return item.win;
+		if (this._platformService.isLinux && item.linux) return item.linux;
+		return item.binding;
+	}
+	_deriveBindingFromEvent(e) {
+		const { shiftKey, metaKey, altKey, keyCode } = e;
+		let binding = keyCode;
+		if (shiftKey) binding |= 1024;
+		if (altKey) binding |= 2048;
+		if (this._platformService.isMac ? metaKey : e.ctrlKey) binding |= 4096;
+		if (this._platformService.isMac && e.ctrlKey) binding |= 8192;
+		return binding;
+	}
+	_shouldLetEmbedTextEditorHandleNativeShortcut(e, binding) {
+		if (binding !== (65 | 4096)) return false;
+		const target = e.target;
+		if (!(target instanceof HTMLElement)) return false;
+		return (target.isContentEditable || target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) && isEmbedBoundaryTarget(target);
+	}
+	_getRuntimeService(event, identifier) {
+		const childUnitId = getEmbedChildUnitId(event.target);
+		const runtimeScope = this._runtimeScopeService.get(childUnitId);
+		return (runtimeScope === null || runtimeScope === void 0 ? void 0 : runtimeScope.has(identifier)) ? runtimeScope.get(identifier) : void 0;
+	}
+};
+ShortcutService = __decorate([
+	__decorateParam(0, _univerjs_core.ICommandService),
+	__decorateParam(1, IPlatformService),
+	__decorateParam(2, _univerjs_core.IContextService),
+	__decorateParam(3, IUIRuntimeScopeService),
+	__decorateParam(4, (0, _univerjs_core.Optional)(ILayoutService))
+], ShortcutService);
+
+//#endregion
+//#region src/controllers/shared-shortcut.controller.ts
+function whenEditorFocused(contextService) {
+	return contextService.getContextValue(_univerjs_core.FOCUSING_UNIVER_EDITOR);
+}
+function whenEditorFocusedButNotCellEditor(contextService) {
+	return contextService.getContextValue(_univerjs_core.FOCUSING_UNIVER_EDITOR) && !(contextService.getContextValue(_univerjs_core.EDITOR_ACTIVATED) || contextService.getContextValue(_univerjs_core.FOCUSING_FX_BAR_EDITOR));
+}
+const CopyShortcutItem = {
+	id: CopyCommand.id,
+	description: "ui.shortcut.copy",
+	group: "1_common-edit",
+	groupTitle: "ui.common-edit",
+	binding: 67 | 4096,
+	preconditions: whenEditorFocused
+};
+const CutShortcutItem = {
+	id: CutCommand.id,
+	description: "ui.shortcut.cut",
+	group: "1_common-edit",
+	groupTitle: "ui.common-edit",
+	binding: 88 | 4096,
+	preconditions: whenEditorFocused
+};
+/**
+* This shortcut item is just for displaying shortcut info, do not use it.
+*/
+const OnlyDisplayPasteShortcutItem = {
+	id: PasteCommand.id,
+	description: "ui.shortcut.paste",
+	group: "1_common-edit",
+	groupTitle: "ui.common-edit",
+	binding: 86 | 4096,
+	preconditions: () => false
+};
+const UndoShortcutItem = {
+	id: _univerjs_core.UndoCommand.id,
+	description: "ui.shortcut.undo",
+	group: "1_common-edit",
+	groupTitle: "ui.common-edit",
+	binding: 90 | 4096,
+	preconditions: whenEditorFocusedButNotCellEditor
+};
+const RedoShortcutItem = {
+	id: _univerjs_core.RedoCommand.id,
+	description: "ui.shortcut.redo",
+	group: "1_common-edit",
+	groupTitle: "ui.common-edit",
+	binding: 89 | 4096,
+	preconditions: whenEditorFocusedButNotCellEditor
+};
+let SharedController = class SharedController extends _univerjs_core.Disposable {
+	constructor(_shortcutService, _commandService) {
+		super();
+		this._shortcutService = _shortcutService;
+		this._commandService = _commandService;
+		this.initialize();
+	}
+	initialize() {
+		this._registerCommands();
+		this._registerShortcuts();
+	}
+	_registerCommands() {
+		this.disposeWithMe(this._commandService.registerCommand(ToggleFullscreenOperation));
+		[
+			CutCommand,
+			CopyCommand,
+			PasteCommand
+		].forEach((command) => this.disposeWithMe(this._commandService.registerMultipleCommand(command)));
+	}
+	_registerShortcuts() {
+		const shortcutItems = [UndoShortcutItem, RedoShortcutItem];
+		shortcutItems.push(CutShortcutItem, CopyShortcutItem, OnlyDisplayPasteShortcutItem);
+		shortcutItems.forEach((shortcut) => this.disposeWithMe(this._shortcutService.registerShortcut(shortcut)));
+	}
+};
+SharedController = __decorate([__decorateParam(0, IShortcutService), __decorateParam(1, _univerjs_core.ICommandService)], SharedController);
+
+//#endregion
+//#region src/services/menu/types.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let MenuManagerPosition = /* @__PURE__ */ function(MenuManagerPosition) {
+	MenuManagerPosition["RIBBON"] = "ribbon";
+	MenuManagerPosition["CONTEXT_MENU"] = "contextMenu";
+	return MenuManagerPosition;
+}({});
+let FloatingObjectToolbarPosition = /* @__PURE__ */ function(FloatingObjectToolbarPosition) {
+	FloatingObjectToolbarPosition["SHEET"] = "floatingObjectToolbar.sheet";
+	FloatingObjectToolbarPosition["DOC"] = "floatingObjectToolbar.doc";
+	FloatingObjectToolbarPosition["SLIDE"] = "floatingObjectToolbar.slide";
+	FloatingObjectToolbarPosition["BOARD"] = "floatingObjectToolbar.board";
+	return FloatingObjectToolbarPosition;
+}({});
+let RibbonPosition = /* @__PURE__ */ function(RibbonPosition) {
+	RibbonPosition["START"] = "ribbon.start";
+	RibbonPosition["INSERT"] = "ribbon.insert";
+	RibbonPosition["FORMULAS"] = "ribbon.formulas";
+	RibbonPosition["DATA"] = "ribbon.data";
+	RibbonPosition["VIEW"] = "ribbon.view";
+	RibbonPosition["OTHERS"] = "ribbon.others";
+	return RibbonPosition;
+}({});
+let RibbonStartGroup = /* @__PURE__ */ function(RibbonStartGroup) {
+	RibbonStartGroup["HISTORY"] = "ribbon.start.history";
+	RibbonStartGroup["FORMAT"] = "ribbon.start.format";
+	RibbonStartGroup["LAYOUT"] = "ribbon.start.layout";
+	RibbonStartGroup["NUMBER"] = "ribbon.start.number";
+	RibbonStartGroup["OTHERS"] = "ribbon.start.others";
+	return RibbonStartGroup;
+}({});
+let RibbonInsertGroup = /* @__PURE__ */ function(RibbonInsertGroup) {
+	RibbonInsertGroup["EDIT"] = "ribbon.insert.edit";
+	RibbonInsertGroup["CELL"] = "ribbon.insert.cell";
+	RibbonInsertGroup["MEDIA"] = "ribbon.insert.media";
+	RibbonInsertGroup["OTHERS"] = "ribbon.insert.others";
+	return RibbonInsertGroup;
+}({});
+let RibbonFormulasGroup = /* @__PURE__ */ function(RibbonFormulasGroup) {
+	RibbonFormulasGroup["BASIC"] = "ribbon.formulas.basic";
+	RibbonFormulasGroup["OTHERS"] = "ribbon.formulas.others";
+	return RibbonFormulasGroup;
+}({});
+let RibbonDataGroup = /* @__PURE__ */ function(RibbonDataGroup) {
+	RibbonDataGroup["FORMULAS"] = "ribbon.data.formulas";
+	RibbonDataGroup["RULES"] = "ribbon.data.rules";
+	RibbonDataGroup["ORGANIZATION"] = "ribbon.data.organization";
+	RibbonDataGroup["OTHERS"] = "ribbon.data.others";
+	return RibbonDataGroup;
+}({});
+let RibbonViewGroup = /* @__PURE__ */ function(RibbonViewGroup) {
+	RibbonViewGroup["DISPLAY"] = "ribbon.view.display";
+	RibbonViewGroup["VISIBILITY"] = "ribbon.view.Visibility";
+	RibbonViewGroup["OTHERS"] = "ribbon.view.others";
+	return RibbonViewGroup;
+}({});
+let RibbonOthersGroup = /* @__PURE__ */ function(RibbonOthersGroup) {
+	RibbonOthersGroup["OTHERS"] = "ribbon.others.others";
+	return RibbonOthersGroup;
+}({});
+let ContextMenuPosition = /* @__PURE__ */ function(ContextMenuPosition) {
+	ContextMenuPosition["MAIN_AREA"] = "contextMenu.mainArea";
+	ContextMenuPosition["COL_HEADER"] = "contextMenu.colHeader";
+	ContextMenuPosition["ROW_HEADER"] = "contextMenu.rowHeader";
+	ContextMenuPosition["FOOTER_TABS"] = "contextMenu.footerTabs";
+	ContextMenuPosition["FOOTER_MENU"] = "contextMenu.footerMenu";
+	/**
+	* paragraph context menu in doc
+	*/
+	ContextMenuPosition["PARAGRAPH"] = "contextMenu.paragraph";
+	/**
+	* drawing context menu, now only used in drawing group operation
+	*/
+	ContextMenuPosition["DRAWING"] = "contextMenu.drawing";
+	return ContextMenuPosition;
+}({});
+let ContextMenuGroup = /* @__PURE__ */ function(ContextMenuGroup) {
+	/**
+	* quick context menu, displayed as icon
+	*/
+	ContextMenuGroup["QUICK"] = "contextMenu.quick";
+	ContextMenuGroup["FORMAT"] = "contextMenu.format";
+	ContextMenuGroup["LAYOUT"] = "contextMenu.layout";
+	ContextMenuGroup["DATA"] = "contextMenu.data";
+	ContextMenuGroup["OTHERS"] = "contextMenu.others";
+	return ContextMenuGroup;
+}({});
+
+//#endregion
+//#region src/services/menu/menu-manager.service.ts
+var _MenuManagerService;
+const IMenuManagerService = (0, _univerjs_core.createIdentifier)("univer.menu-manager-service");
+let MenuManagerService = _MenuManagerService = class MenuManagerService extends _univerjs_core.Disposable {
+	constructor(_injector, _configService) {
+		super();
+		this._injector = _injector;
+		this._configService = _configService;
+		_defineProperty(this, "menuChanged$", new rxjs.Subject());
+		_defineProperty(this, "_menu", {
+			["ribbon"]: {
+				["ribbon.start"]: {
+					order: 0,
+					title: "ui.ribbon.start",
+					["ribbon.start.history"]: { order: 0 },
+					["ribbon.start.format"]: { order: 1 },
+					["ribbon.start.layout"]: { order: 2 },
+					["ribbon.start.number"]: { order: 3 },
+					["ribbon.start.others"]: { order: 4 }
+				},
+				["ribbon.insert"]: {
+					order: 1,
+					title: "ui.ribbon.insert",
+					["ribbon.insert.edit"]: { order: 0 },
+					["ribbon.insert.media"]: { order: 1 },
+					["ribbon.insert.cell"]: { order: 2 },
+					["ribbon.insert.others"]: { order: 3 }
+				},
+				["ribbon.formulas"]: {
+					order: 2,
+					title: "ui.ribbon.formulas",
+					["ribbon.formulas.basic"]: { order: 0 },
+					["ribbon.formulas.others"]: { order: 1 }
+				},
+				["ribbon.data"]: {
+					order: 3,
+					title: "ui.ribbon.data",
+					["ribbon.data.formulas"]: { order: 0 },
+					["ribbon.data.rules"]: { order: 1 },
+					["ribbon.data.organization"]: { order: 2 },
+					["ribbon.data.others"]: { order: 3 }
+				},
+				["ribbon.view"]: {
+					order: 4,
+					title: "ui.ribbon.view",
+					["ribbon.view.display"]: { order: 0 },
+					["ribbon.view.Visibility"]: { order: 0 },
+					["ribbon.view.others"]: { order: 0 }
+				},
+				["ribbon.others"]: {
+					order: 5,
+					title: "ui.ribbon.others",
+					["ribbon.others.others"]: { order: 0 }
+				}
+			},
+			["contextMenu"]: {
+				["contextMenu.mainArea"]: {
+					order: 0,
+					["contextMenu.quick"]: {
+						order: -1,
+						quickLayout: "icon"
+					},
+					["contextMenu.format"]: { order: 0 },
+					["contextMenu.layout"]: { order: 1 },
+					["contextMenu.data"]: { order: 2 },
+					["contextMenu.others"]: { order: 3 }
+				},
+				["contextMenu.paragraph"]: {
+					order: 0,
+					["contextMenu.quick"]: {
+						order: -1,
+						quickLayout: "icon"
+					},
+					["contextMenu.format"]: { order: 0 },
+					["contextMenu.layout"]: { order: 1 },
+					["contextMenu.data"]: { order: 2 },
+					["contextMenu.others"]: { order: 3 }
+				},
+				["contextMenu.colHeader"]: {
+					order: 1,
+					["contextMenu.quick"]: {
+						order: -1,
+						quickLayout: "icon"
+					},
+					["contextMenu.format"]: { order: 0 },
+					["contextMenu.layout"]: { order: 1 },
+					["contextMenu.data"]: { order: 2 },
+					["contextMenu.others"]: { order: 3 }
+				},
+				["contextMenu.rowHeader"]: {
+					order: 2,
+					["contextMenu.quick"]: {
+						order: -1,
+						quickLayout: "icon"
+					},
+					["contextMenu.format"]: { order: 0 },
+					["contextMenu.layout"]: { order: 1 },
+					["contextMenu.data"]: { order: 2 },
+					["contextMenu.others"]: { order: 3 }
+				},
+				["contextMenu.footerTabs"]: {
+					order: 3,
+					["contextMenu.format"]: { order: 0 },
+					["contextMenu.layout"]: { order: 1 },
+					["contextMenu.data"]: { order: 2 },
+					["contextMenu.others"]: { order: 3 }
+				},
+				["contextMenu.footerMenu"]: {
+					order: 4,
+					["contextMenu.others"]: { order: 3 }
+				},
+				["contextMenu.drawing"]: {
+					order: 5,
+					["contextMenu.others"]: { order: 3 }
+				}
+			},
+			["floatingObjectToolbar.sheet"]: {},
+			["floatingObjectToolbar.doc"]: {},
+			["floatingObjectToolbar.slide"]: {},
+			["floatingObjectToolbar.board"]: {}
+		});
+	}
+	dispose() {
+		this.menuChanged$.complete();
+	}
+	/**
+	* Merge source menu to target menu recursively
+	* @param source
+	* @param target default is root menu
+	*/
+	mergeMenu(source, target) {
+		const _target = target ?? this._menu;
+		for (const [key, value] of Object.entries(_target)) if (key in source) {
+			const targetRecord = _target;
+			const sourceRecord = source;
+			targetRecord[key] = mergeMenuSchemaNode(targetRecord[key], sourceRecord[key]);
+			this.menuChanged$.next();
+		} else if (isMenuSchemaRecord(value)) this.mergeMenu(source, value);
+	}
+	appendRootMenu(source) {
+		this._menu = (0, _univerjs_core.merge)({}, this._menu, source);
+		this.menuChanged$.next();
+	}
+	createScoped(injector) {
+		const root = this;
+		const createScopedBuilder = () => {
+			const service = new _MenuManagerService(injector, root._configService);
+			service._menu = root._menu;
+			return service;
+		};
+		return {
+			menuChanged$: root.menuChanged$,
+			mergeMenu: (source, target) => root.mergeMenu(source, target),
+			appendRootMenu: (source) => root.appendRootMenu(source),
+			getMenuByPositionKey: (position) => createScopedBuilder().getMenuByPositionKey(position),
+			getFlatMenuByPositionKey: (position) => createScopedBuilder().getFlatMenuByPositionKey(position)
+		};
+	}
+	_buildMenuSchema(data) {
+		const result = [];
+		for (const [key, value] of Object.entries(data)) {
+			if (key === "replace") continue;
+			const menuItem = {
+				key,
+				order: value.order,
+				title: value.title,
+				contextual: value.contextual,
+				quickLayout: value.quickLayout,
+				quickColumns: value.quickColumns,
+				quickLayoutVariant: value.quickLayoutVariant,
+				tiny: value.tiny,
+				gridLayout: value.gridLayout
+			};
+			if (value.menuItemFactory) {
+				const item = this._injector.invoke(value.menuItemFactory);
+				if (item) {
+					const menuItemConfig = this._configService.getConfig("menu");
+					if (menuItemConfig && item.id in menuItemConfig) {
+						const _key = item.id;
+						menuItem.item = mergeMenuConfigs(item, menuItemConfig[_key]);
+					} else menuItem.item = item;
+				}
+			}
+			if (value.headerActionMenuItemFactory) menuItem.headerActionItem = this._injector.invoke(value.headerActionMenuItemFactory);
+			if (typeof value === "object") {
+				const children = this._buildMenuSchema(value);
+				if (children.length > 0) menuItem.children = children.sort((a, b) => a.order - b.order);
+				if (menuItem.item || menuItem.children) result.push(menuItem);
+			}
+		}
+		return result.sort((a, b) => normalizeMenuOrder(a.order) - normalizeMenuOrder(b.order));
+	}
+	/**
+	* Get menu schema by position key
+	* @param key
+	* @returns Menu schema array or empty array if not found
+	*/
+	getMenuByPositionKey(key) {
+		const findKey = (obj) => {
+			if (key in obj) return this._buildMenuSchema(obj[key]);
+			for (const k in obj) {
+				if (k === key) return this._buildMenuSchema(obj[k]);
+				if (typeof obj[k] === "object") {
+					const result = findKey(obj[k]);
+					if (result) return result;
+				}
+			}
+		};
+		return findKey(this._menu) ?? [];
+	}
+	/**
+	* Get flat menu schema by position key
+	* @param key
+	* @returns Flat menu schema array or empty array if not found
+	*/
+	getFlatMenuByPositionKey(key) {
+		const menu = this.getMenuByPositionKey(key);
+		function flatMenuItems(items) {
+			return items.reduce((acc, item) => {
+				if (item.children) return [
+					...acc,
+					item,
+					...flatMenuItems(item.children)
+				];
+				return [...acc, item];
+			}, []);
+		}
+		return flatMenuItems(menu);
+	}
+};
+MenuManagerService = _MenuManagerService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)), __decorateParam(1, _univerjs_core.IConfigService)], MenuManagerService);
+function normalizeMenuOrder(order) {
+	return order ?? 0;
+}
+function isMenuSchemaRecord(value) {
+	return value != null && typeof value === "object" && !Array.isArray(value);
+}
+function cloneMenuSchemaNode(source, preserveReplace = false) {
+	if (!isMenuSchemaRecord(source)) return source;
+	const result = {};
+	for (const [key, value] of Object.entries(source)) {
+		if (key === "replace" && !preserveReplace) continue;
+		result[key] = cloneMenuSchemaNode(value, preserveReplace);
+	}
+	return result;
+}
+function mergeMenuSchemaNode(target, source) {
+	if (!isMenuSchemaRecord(source) || !isMenuSchemaRecord(target)) return cloneMenuSchemaNode(source);
+	if (source.replace === true) return cloneMenuSchemaNode(source, true);
+	if (target.replace === true) return cloneMenuSchemaNode(target, true);
+	const result = (0, _univerjs_core.merge)({}, target);
+	for (const [key, value] of Object.entries(source)) {
+		if (key === "replace") continue;
+		result[key] = key in result ? mergeMenuSchemaNode(result[key], value) : cloneMenuSchemaNode(value, true);
+	}
+	return result;
+}
+
+//#endregion
+//#region src/controllers/shortcut-display/shortcut-panel.controller.ts
+const ToggleShortcutPanelShortcut = {
+	id: ToggleShortcutPanelOperation.id,
+	binding: 4096 | 220,
+	description: "ui.shortcut.shortcut-panel",
+	group: "10_global-shortcut",
+	groupTitle: "ui.global-shortcut"
+};
+let ShortcutPanelController = class ShortcutPanelController extends _univerjs_core.Disposable {
+	constructor(shortcutService, _menuManagerService, commandService) {
+		super();
+		this._menuManagerService = _menuManagerService;
+		this.disposeWithMe(commandService.registerCommand(ToggleShortcutPanelOperation));
+		this.disposeWithMe(shortcutService.registerShortcut(ToggleShortcutPanelShortcut));
+	}
+};
+ShortcutPanelController = __decorate([
+	__decorateParam(0, IShortcutService),
+	__decorateParam(1, IMenuManagerService),
+	__decorateParam(2, _univerjs_core.ICommandService)
+], ShortcutPanelController);
+
+//#endregion
+//#region src/services/dialog/dialog.service.ts
+const IDialogService = (0, _univerjs_core.createIdentifier)("univer.ui.dialog-service");
+
+//#endregion
+//#region src/services/ribbon/ribbon.service.ts
+const IRibbonService = (0, _univerjs_core.createIdentifier)("univer.ribbon-service");
+function isSameHiddenMap(previous, current) {
+	return previous.length === current.length && previous.every((hidden, index) => hidden === current[index]);
+}
+let DesktopRibbonService = class DesktopRibbonService extends _univerjs_core.Disposable {
+	constructor(_menuManagerService, _univerInstanceService) {
+		super();
+		this._menuManagerService = _menuManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		_defineProperty(this, "_ribbon$", new rxjs.BehaviorSubject([]));
+		_defineProperty(this, "ribbon$", this._ribbon$.asObservable());
+		_defineProperty(this, "_activatedTab$", new rxjs.BehaviorSubject("ribbon.start"));
+		_defineProperty(this, "activatedTab$", this._activatedTab$.asObservable());
+		_defineProperty(this, "_collapsedIds$", new rxjs.BehaviorSubject([]));
+		_defineProperty(this, "collapsedIds$", this._collapsedIds$.asObservable());
+		_defineProperty(this, "_fakeToolbarVisible$", new rxjs.BehaviorSubject(false));
+		_defineProperty(this, "fakeToolbarVisible$", this._fakeToolbarVisible$.asObservable());
+		_defineProperty(this, "_visibleContextualTabs", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_contextualTabs", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_lastNonContextualActivatedTab", "ribbon.start");
+		_defineProperty(this, "_hiddenSubscription", null);
+		this._initRibbonSubscription();
+	}
+	setActivatedTab(tab) {
+		if (!this._isContextualTab(tab)) this._lastNonContextualActivatedTab = tab;
+		this._activatedTab$.next(tab);
+	}
+	showContextualTab(tab, options) {
+		this._visibleContextualTabs.add(tab);
+		this._updateRibbon();
+		if (options === null || options === void 0 ? void 0 : options.activate) this.setActivatedTab(tab);
+	}
+	hideContextualTab(tab) {
+		if (!this._visibleContextualTabs.delete(tab)) return;
+		this._updateRibbon();
+	}
+	hideAllContextualTabs() {
+		if (this._visibleContextualTabs.size === 0) return;
+		this._visibleContextualTabs.clear();
+		this._updateRibbon();
+	}
+	setCollapsedIds(ids) {
+		this._collapsedIds$.next(ids);
+	}
+	setFakeToolbarVisible(visible) {
+		this._fakeToolbarVisible$.next(visible);
+	}
+	_initRibbonSubscription() {
+		this.disposeWithMe((0, rxjs.combineLatest)([this._menuManagerService.menuChanged$.pipe((0, rxjs_operators.startWith)(void 0)), this._univerInstanceService.focused$.pipe((0, rxjs_operators.startWith)(void 0), (0, rxjs_operators.distinctUntilChanged)())]).subscribe(() => {
+			this._updateRibbon();
+		}));
+	}
+	_updateRibbon() {
+		var _this$_hiddenSubscrip;
+		const ribbon = this._filterContextualTabs(this._menuManagerService.getMenuByPositionKey("ribbon"));
+		const hiddenObservableMap = [];
+		const hiddenKeyMap = [];
+		for (const group of ribbon) if (group.children) {
+			for (const item of group.children) if (item.children) for (const child of item.children) {
+				var _child$item;
+				if ((_child$item = child.item) === null || _child$item === void 0 ? void 0 : _child$item.hidden$) {
+					hiddenObservableMap.push(child.item.hidden$);
+					hiddenKeyMap.push(child.key);
+				}
+			}
+		}
+		(_this$_hiddenSubscrip = this._hiddenSubscription) === null || _this$_hiddenSubscrip === void 0 || _this$_hiddenSubscrip.unsubscribe();
+		this._hiddenSubscription = null;
+		if (hiddenObservableMap.length === 0) {
+			this._setRibbon(ribbon);
+			return;
+		}
+		this._hiddenSubscription = (0, rxjs.combineLatest)(hiddenObservableMap.map((hidden$) => hidden$.pipe((0, rxjs_operators.startWith)(false)))).pipe((0, rxjs_operators.distinctUntilChanged)(isSameHiddenMap)).subscribe((hiddenMap) => {
+			const newRibbon = [];
+			const hiddenPathMap = hiddenMap.map((hidden, index) => {
+				if (hidden) return hiddenKeyMap[index];
+				return null;
+			}).filter((item) => !!item);
+			for (const group of ribbon) {
+				var _group$children, _newGroup$children2;
+				const newGroup = {
+					...group,
+					children: []
+				};
+				if ((_group$children = group.children) === null || _group$children === void 0 ? void 0 : _group$children.length) for (const item of group.children) {
+					var _item$children;
+					const newItem = {
+						...item,
+						children: []
+					};
+					let shouldAddItem = true;
+					if ((_item$children = item.children) === null || _item$children === void 0 ? void 0 : _item$children.length) {
+						var _newItem$children2;
+						for (const child of item.children) if (!hiddenPathMap.includes(child.key)) {
+							var _newItem$children;
+							(_newItem$children = newItem.children) === null || _newItem$children === void 0 || _newItem$children.push(child);
+						}
+						if ((_newItem$children2 = newItem.children) === null || _newItem$children2 === void 0 ? void 0 : _newItem$children2.every((child) => {
+							var _child$children;
+							return ((_child$children = child.children) === null || _child$children === void 0 ? void 0 : _child$children.length) === 0;
+						})) shouldAddItem = false;
+					}
+					if (shouldAddItem) {
+						var _newGroup$children;
+						(_newGroup$children = newGroup.children) === null || _newGroup$children === void 0 || _newGroup$children.push(newItem);
+					}
+				}
+				if (((_newGroup$children2 = newGroup.children) === null || _newGroup$children2 === void 0 ? void 0 : _newGroup$children2.length) && newGroup.children.every((item) => {
+					var _item$children2;
+					return (_item$children2 = item.children) === null || _item$children2 === void 0 ? void 0 : _item$children2.length;
+				})) newRibbon.push(newGroup);
+			}
+			this._setRibbon(newRibbon);
+		});
+	}
+	_filterContextualTabs(ribbon) {
+		this._contextualTabs.clear();
+		ribbon.forEach((group) => {
+			if (group.contextual) this._contextualTabs.add(group.key);
+		});
+		return ribbon.filter((group) => !group.contextual || this._visibleContextualTabs.has(group.key));
+	}
+	_setRibbon(ribbon) {
+		const activatedTab = this._activatedTab$.getValue();
+		const activeGroup = ribbon.find((group) => group.key === activatedTab);
+		if (!activeGroup && this._contextualTabs.has(activatedTab)) {
+			const fallbackTab = ribbon.find((group) => group.key === this._lastNonContextualActivatedTab && !group.contextual) ?? ribbon.find((group) => group.key === "ribbon.start") ?? ribbon[0];
+			if (fallbackTab) this._activatedTab$.next(fallbackTab.key);
+		} else if (!activeGroup && ribbon.some((group) => group.key === "ribbon.start")) {
+			const fallbackTab = ribbon.find((group) => group.key === "ribbon.start");
+			this._activatedTab$.next(fallbackTab.key);
+			if (!fallbackTab.contextual) this._lastNonContextualActivatedTab = fallbackTab.key;
+		} else if (activeGroup && !activeGroup.contextual) this._lastNonContextualActivatedTab = activeGroup.key;
+		this._ribbon$.next(ribbon);
+	}
+	_isContextualTab(tab) {
+		return this._contextualTabs.has(tab) || this._ribbon$.getValue().some((group) => group.key === tab && group.contextual);
+	}
+	dispose() {
+		var _this$_hiddenSubscrip2;
+		(_this$_hiddenSubscrip2 = this._hiddenSubscription) === null || _this$_hiddenSubscrip2 === void 0 || _this$_hiddenSubscrip2.unsubscribe();
+		this._hiddenSubscription = null;
+		this._ribbon$.next([]);
+		this._ribbon$.complete();
+		this._activatedTab$.complete();
+		this._collapsedIds$.complete();
+		this._fakeToolbarVisible$.complete();
+		super.dispose();
+	}
+};
+DesktopRibbonService = __decorate([__decorateParam(0, IMenuManagerService), __decorateParam(1, _univerjs_core.IUniverInstanceService)], DesktopRibbonService);
+
+//#endregion
+//#region src/utils/di.ts
+function unwrap(o) {
+	if (typeof o === "function") return o();
+	return o;
+}
+function useObservableRef(observable, defaultValue) {
+	const ref = (0, react.useRef)(defaultValue);
+	(0, react.useEffect)(() => {
+		if (observable) {
+			const sub = unwrap(observable).subscribe((value) => {
+				ref.current = value;
+			});
+			return () => sub.unsubscribe();
+		}
+	}, [observable]);
+	return ref;
+}
+
+//#endregion
+//#region src/views/components/feature-search/FeatureSearch.tsx
+const FEATURE_SEARCH_COMPONENT = "FeatureSearch";
+const FEATURE_SEARCH_DIALOG_ID = "FEATURE_SEARCH_DIALOG";
+function resolveParams(item, value) {
+	return (typeof item.params === "function" ? item.params() : item.params) ?? (value === void 0 ? void 0 : { value });
+}
+function resolveOptionParams(option) {
+	return (typeof option.params === "function" ? option.params(option.value) : option.params) ?? (option.value === void 0 ? void 0 : { value: option.value });
+}
+function deduplicate(items) {
+	return items.filter((item, index) => items.findIndex((candidate) => candidate.commandId === item.commandId && _univerjs_core.Tools.diffValue(candidate.params, item.params)) === index);
+}
+function FeatureSearch() {
+	const menuManagerService = (0, _wendellhu_redi_react_bindings.useDependency)(IMenuManagerService);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const commandService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ICommandService);
+	const dialogService = (0, _wendellhu_redi_react_bindings.useDependency)(IDialogService);
+	const layoutService = (0, _wendellhu_redi_react_bindings.useDependency)(ILayoutService);
+	const ribbonService = (0, _wendellhu_redi_react_bindings.useDependency)(IRibbonService);
+	const items = (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => {
+		function getItemTitle(item) {
+			const titleKey = item.title ?? item.tooltip ?? item.description;
+			return titleKey ? localeService.t(titleKey) : "";
+		}
+		function collectCandidates(schemas, path, keyPath, ancestors = [], parentTitle) {
+			return schemas.flatMap((schema, index) => {
+				const schemaTitle = localeService.t(schema.title ?? "");
+				const schemaPath = schemaTitle ? [...path, schemaTitle] : path;
+				const schemaKeyPath = [...keyPath, `${schema.key}:${index}`];
+				const result = [];
+				if (schema.item) result.push({
+					key: `${schemaKeyPath.join("/")}:item`,
+					item: schema.item,
+					path: schemaPath,
+					ancestors,
+					parentTitle
+				});
+				if (schema.headerActionItem) result.push({
+					key: `${schemaKeyPath.join("/")}:header`,
+					item: schema.headerActionItem,
+					path: schemaPath,
+					ancestors,
+					parentTitle
+				});
+				if (schema.children) result.push(...collectCandidates(schema.children, schemaPath, schemaKeyPath, schema.item ? [...ancestors, schema.item] : ancestors, schema.item ? getItemTitle(schema.item) : parentTitle));
+				return result;
+			});
+		}
+		function observeCandidate(candidate) {
+			var _item$hidden$, _item$disabled$, _item$value$;
+			const { item } = candidate;
+			const hasOptions = item.type === 1 || item.type === 2;
+			const selections = hasOptions ? item.selections : void 0;
+			const selections$ = (0, rxjs.isObservable)(selections) ? selections.pipe((0, rxjs_operators.startWith)([])) : (0, rxjs.of)(selections ?? []);
+			return (0, rxjs.combineLatest)([
+				candidate.ancestors.length ? (0, rxjs.combineLatest)(candidate.ancestors.map((ancestor) => {
+					var _ancestor$hidden$;
+					return ((_ancestor$hidden$ = ancestor.hidden$) === null || _ancestor$hidden$ === void 0 ? void 0 : _ancestor$hidden$.pipe((0, rxjs_operators.startWith)(true))) ?? (0, rxjs.of)(false);
+				})).pipe((0, rxjs_operators.map)((states) => states.some(Boolean))) : (0, rxjs.of)(false),
+				candidate.ancestors.length ? (0, rxjs.combineLatest)(candidate.ancestors.map((ancestor) => {
+					var _ancestor$disabled$;
+					return ((_ancestor$disabled$ = ancestor.disabled$) === null || _ancestor$disabled$ === void 0 ? void 0 : _ancestor$disabled$.pipe((0, rxjs_operators.startWith)(true))) ?? (0, rxjs.of)(false);
+				})).pipe((0, rxjs_operators.map)((states) => states.some(Boolean))) : (0, rxjs.of)(false),
+				((_item$hidden$ = item.hidden$) === null || _item$hidden$ === void 0 ? void 0 : _item$hidden$.pipe((0, rxjs_operators.startWith)(true))) ?? (0, rxjs.of)(false),
+				((_item$disabled$ = item.disabled$) === null || _item$disabled$ === void 0 ? void 0 : _item$disabled$.pipe((0, rxjs_operators.startWith)(true))) ?? (0, rxjs.of)(false),
+				((_item$value$ = item.value$) === null || _item$value$ === void 0 ? void 0 : _item$value$.pipe((0, rxjs_operators.startWith)(void 0))) ?? (0, rxjs.of)(void 0),
+				selections$
+			]).pipe((0, rxjs_operators.map)(([ancestorHidden, ancestorDisabled, hidden, disabled, value, options]) => {
+				if (ancestorHidden || ancestorDisabled || hidden || disabled) return [];
+				const title = getItemTitle(item);
+				const path = candidate.path.join(" / ");
+				const result = [];
+				if (title && item.type !== 1 && item.type !== 3) result.push({
+					key: candidate.key,
+					title,
+					parentTitle: candidate.parentTitle,
+					description: localeService.t(item.description ?? ""),
+					path,
+					commandId: item.commandId ?? item.id,
+					params: resolveParams(item, value),
+					getParams: () => resolveParams(item, value)
+				});
+				if (hasOptions) options.forEach((option, index) => {
+					if (option.disabled || typeof option.label !== "string") return;
+					const commandId = option.commandId ?? option.id ?? item.selectionsCommandId ?? item.commandId ?? item.id;
+					result.push({
+						key: `${candidate.key}:option:${option.id ?? option.commandId ?? option.value ?? index}`,
+						title: localeService.t(option.label),
+						parentTitle: title,
+						description: "",
+						path,
+						commandId,
+						params: resolveOptionParams(option),
+						getParams: () => resolveOptionParams(option)
+					});
+				});
+				return result;
+			}));
+		}
+		return (0, rxjs.combineLatest)([ribbonService.ribbon$, (0, rxjs.merge)((0, rxjs.of)(void 0), menuManagerService.menuChanged$, localeService.localeChanged$)]).pipe((0, rxjs_operators.switchMap)(([ribbon]) => {
+			const candidates = [...collectCandidates(ribbon, [localeService.t("ui.featureSearch.ribbon")], ["ribbon"]), ...collectCandidates(menuManagerService.getMenuByPositionKey("contextMenu"), [localeService.t("ui.featureSearch.contextMenu")], ["contextMenu"])];
+			if (candidates.length === 0) return (0, rxjs.of)([]);
+			return (0, rxjs.combineLatest)(candidates.map(observeCandidate)).pipe((0, rxjs_operators.map)((items) => deduplicate(items.flat())));
+		}));
+	}, [
+		localeService,
+		menuManagerService,
+		ribbonService
+	]), []);
+	async function execute(item) {
+		layoutService.focus();
+		if (await commandService.executeCommand(item.commandId, item.getParams())) dialogService.close(FEATURE_SEARCH_DIALOG_ID);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.Command, {
+		label: localeService.t("ui.featureSearch.title"),
+		loop: true,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.CommandInput, {
+			autoFocus: true,
+			placeholder: localeService.t("ui.featureSearch.placeholder")
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.CommandList, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.CommandEmpty, { children: localeService.t("ui.featureSearch.empty") }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.CommandGroup, { children: items.map((item) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.CommandItem, {
+			value: item.key,
+			keywords: [
+				item.parentTitle ?? "",
+				item.title,
+				item.description,
+				item.path
+			],
+			onSelect: () => execute(item),
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+				className: "univer-flex univer-min-w-0 univer-flex-1 univer-items-center univer-gap-1",
+				children: [item.parentTitle && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-shrink-0",
+					children: item.parentTitle
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-text-gray-400",
+					children: "/"
+				})] }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-truncate",
+					children: item.title
+				})]
+			}), item.path && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-max-w-1/2 univer-truncate univer-text-xs univer-text-gray-400",
+				children: item.path
+			})]
+		}, item.key)) })] })]
+	});
+}
+
+//#endregion
+//#region src/commands/operations/open-feature-search.operation.ts
+const OpenFeatureSearchOperation = {
+	id: "ui.operation.open-feature-search",
+	type: _univerjs_core.CommandType.OPERATION,
+	handler: (accessor) => {
+		const dialogService = accessor.get(IDialogService);
+		const localeService = accessor.get(_univerjs_core.LocaleService);
+		dialogService.open({
+			id: FEATURE_SEARCH_DIALOG_ID,
+			width: 560,
+			title: { title: localeService.t("ui.featureSearch.title") },
+			children: { label: FEATURE_SEARCH_COMPONENT },
+			onClose: () => dialogService.close(FEATURE_SEARCH_DIALOG_ID)
+		});
+		return true;
+	}
+};
+
+//#endregion
+//#region src/menu/feature-search.menu.ts
+function FeatureSearchMenuItemFactory() {
+	return {
+		id: OpenFeatureSearchOperation.id,
+		title: "ui.featureSearch.title",
+		tooltip: "ui.featureSearch.title",
+		icon: "FeatureSearchIcon",
+		type: 0
+	};
+}
+
+//#endregion
+//#region src/menu/history.menu.ts
+const undoRedoDisableFactory$ = (accessor, isUndo) => {
+	const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+	const contextService = accessor.get(_univerjs_core.IContextService);
+	return (0, rxjs.combineLatest)([undoRedoService.undoRedoStatus$.pipe((0, rxjs_operators.map)((v) => isUndo ? v.undos <= 0 : v.redos <= 0)), (0, rxjs.merge)([(0, rxjs.of)({}), contextService.contextChanged$])]).pipe((0, rxjs_operators.map)(([undoDisable]) => {
+		return undoDisable || contextService.getContextValue(_univerjs_core.EDITOR_ACTIVATED) || contextService.getContextValue(_univerjs_core.FOCUSING_FX_BAR_EDITOR);
+	}));
+};
+const rtlIconFactory$ = (accessor, ltrIcon, rtlIcon) => {
+	return accessor.get(_univerjs_core.LocaleService).direction$.pipe((0, rxjs_operators.map)((direction) => direction === "rtl" ? rtlIcon : ltrIcon));
+};
+function UndoMenuItemFactory(accessor) {
+	return {
+		id: _univerjs_core.UndoCommand.id,
+		type: 0,
+		icon: rtlIconFactory$(accessor, "UndoIcon", "RedoIcon"),
+		title: "ui.shortcut.undo",
+		tooltip: "ui.shortcut.undo",
+		disabled$: undoRedoDisableFactory$(accessor, true)
+	};
+}
+function RedoMenuItemFactory(accessor) {
+	return {
+		id: _univerjs_core.RedoCommand.id,
+		type: 0,
+		icon: rtlIconFactory$(accessor, "RedoIcon", "UndoIcon"),
+		title: "ui.shortcut.redo",
+		tooltip: "ui.shortcut.redo",
+		disabled$: undoRedoDisableFactory$(accessor, false)
+	};
+}
+
+//#endregion
+//#region src/menu/shortcut-panel.menu.ts
+function ShortcutPanelMenuItemFactory() {
+	return {
+		id: ToggleShortcutPanelOperation.id,
+		title: "ui.toggle-shortcut-panel",
+		tooltip: "ui.toggle-shortcut-panel",
+		icon: "KeyboardIcon",
+		type: 0
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = {
+	["ribbon.start.history"]: {
+		[_univerjs_core.UndoCommand.id]: {
+			order: 0,
+			gridLayout: {
+				row: 1,
+				column: 1,
+				iconSize: 18
+			},
+			menuItemFactory: UndoMenuItemFactory
+		},
+		[_univerjs_core.RedoCommand.id]: {
+			order: 1,
+			gridLayout: {
+				row: 2,
+				column: 1,
+				iconSize: 18
+			},
+			menuItemFactory: RedoMenuItemFactory
+		}
+	},
+	["ribbon.start.others"]: {
+		[ToggleShortcutPanelOperation.id]: {
+			order: 1,
+			menuItemFactory: ShortcutPanelMenuItemFactory
+		},
+		[OpenFeatureSearchOperation.id]: {
+			order: 2,
+			menuItemFactory: FeatureSearchMenuItemFactory
+		}
+	}
+};
+
+//#endregion
+//#region src/services/parts/parts.service.ts
+let BuiltInUIPart = /* @__PURE__ */ function(BuiltInUIPart) {
+	BuiltInUIPart["GLOBAL"] = "global";
+	BuiltInUIPart["HEADER"] = "header";
+	BuiltInUIPart["HEADER_MENU"] = "header-menu";
+	BuiltInUIPart["CONTENT"] = "content";
+	BuiltInUIPart["FOOTER"] = "footer";
+	BuiltInUIPart["LEFT_SIDEBAR"] = "left-sidebar";
+	BuiltInUIPart["FLOATING"] = "floating";
+	BuiltInUIPart["UNIT"] = "unit";
+	BuiltInUIPart["CUSTOM_HEADER"] = "custom-header";
+	BuiltInUIPart["CUSTOM_LEFT"] = "custom-left";
+	BuiltInUIPart["CUSTOM_RIGHT"] = "custom-right";
+	BuiltInUIPart["CUSTOM_FOOTER"] = "custom-footer";
+	BuiltInUIPart["TOOLBAR"] = "toolbar";
+	return BuiltInUIPart;
+}({});
+const IUIPartsService = (0, _univerjs_core.createIdentifier)("ui.parts.service");
+var UIPartsService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_componentsByPart", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_disabledUIParts", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_componentRegistered$", new rxjs.Subject());
+		_defineProperty(this, "componentRegistered$", this._componentRegistered$.asObservable());
+		_defineProperty(this, "_uiVisible", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_uiVisibleChange$", new rxjs.Subject());
+		_defineProperty(this, "uiVisibleChange$", this._uiVisibleChange$.asObservable());
+	}
+	dispose() {
+		super.dispose();
+		this._componentsByPart.clear();
+		this._disabledUIParts.clear();
+		this._uiVisible.clear();
+		this._componentRegistered$.complete();
+		this._uiVisibleChange$.complete();
+	}
+	setUIVisible(part, visible) {
+		const wasVisible = this.isUIVisible(part);
+		this._uiVisible.set(part, visible);
+		const isVisible = this.isUIVisible(part);
+		if (wasVisible !== isVisible) this._uiVisibleChange$.next({
+			ui: part,
+			visible: isVisible
+		});
+	}
+	isUIVisible(part) {
+		var _this$_disabledUIPart;
+		return (this._uiVisible.get(part) ?? true) && !((_this$_disabledUIPart = this._disabledUIParts.get(part)) === null || _this$_disabledUIPart === void 0 ? void 0 : _this$_disabledUIPart.size);
+	}
+	registerDisabledUIParts(parts, disabled$) {
+		const uniqueParts = [...new Set(parts)];
+		const registration = Symbol("disabled-ui-parts");
+		let disabled = false;
+		const update = (nextDisabled) => {
+			if (disabled === nextDisabled) return;
+			disabled = nextDisabled;
+			uniqueParts.forEach((part) => {
+				const wasVisible = this.isUIVisible(part);
+				const registrations = this._disabledUIParts.get(part) ?? /* @__PURE__ */ new Set();
+				if (disabled) {
+					registrations.add(registration);
+					this._disabledUIParts.set(part, registrations);
+				} else {
+					registrations.delete(registration);
+					if (registrations.size === 0) this._disabledUIParts.delete(part);
+				}
+				const isVisible = this.isUIVisible(part);
+				if (wasVisible !== isVisible) this._uiVisibleChange$.next({
+					ui: part,
+					visible: isVisible
+				});
+			});
+		};
+		const subscription = disabled$.subscribe(update);
+		const disposable = (0, _univerjs_core.toDisposable)(() => {
+			subscription.unsubscribe();
+			update(false);
+		});
+		return this.disposeWithMe(disposable);
+	}
+	registerComponent(part, componentFactory) {
+		const componentType = componentFactory();
+		const components = (this._componentsByPart.get(part) || this._componentsByPart.set(part, /* @__PURE__ */ new Set()).get(part)).add(componentType);
+		this._componentRegistered$.next(part);
+		return (0, _univerjs_core.toDisposable)(() => {
+			components.delete(componentType);
+			if (components.size === 0) this._componentsByPart.delete(part);
+			this._componentRegistered$.next(part);
+		});
+	}
+	getComponents(part) {
+		return /* @__PURE__ */ new Set([...this._componentsByPart.get(part) || /* @__PURE__ */ new Set()]);
+	}
+};
+
+//#endregion
+//#region src/services/dom/canvas-dom-layer.service.ts
+function shouldForwardFloatDomEvents(layer) {
+	return layer.eventPassThrough !== false;
+}
+function shouldRenderFloatDomLayer(layer, currentUnitId) {
+	return layer.unitId === currentUnitId || layer.preserveOnFocusChange === true;
+}
+var CanvasFloatDomService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_domLayerMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_scopedRenderRootCount", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_domLayers$", new rxjs.BehaviorSubject([]));
+		_defineProperty(this, "domLayers$", this._domLayers$.asObservable());
+	}
+	get domLayers() {
+		return Array.from(this._domLayerMap.entries());
+	}
+	_notice() {
+		this._domLayers$.next(Array.from(this._domLayerMap.entries()));
+	}
+	updateFloatDom(id, item) {
+		const current = this._domLayerMap.get(id);
+		if (!current) return;
+		this._domLayerMap.set(id, {
+			...current,
+			...item
+		});
+		this._notice();
+	}
+	addFloatDom(item) {
+		this._domLayerMap.set(item.id, item);
+		this._notice();
+	}
+	hasScopedRenderRoot(unitId) {
+		return this._scopedRenderRootCount.has(unitId);
+	}
+	registerScopedRenderRoot(unitId) {
+		this._scopedRenderRootCount.set(unitId, (this._scopedRenderRootCount.get(unitId) ?? 0) + 1);
+		this._notice();
+		return (0, _univerjs_core.toDisposable)(() => {
+			const count = this._scopedRenderRootCount.get(unitId);
+			if (count == null) return;
+			if (count === 1) this._scopedRenderRootCount.delete(unitId);
+			else this._scopedRenderRootCount.set(unitId, count - 1);
+			this._notice();
+		});
+	}
+	removeFloatDom(id) {
+		if (this._domLayerMap.delete(id)) this._notice();
+	}
+	removeAll() {
+		this._domLayerMap.clear();
+		this._notice();
+	}
+	dispose() {
+		this._domLayerMap.clear();
+		this._scopedRenderRootCount.clear();
+		this._domLayers$.next([]);
+		this._domLayers$.complete();
+		super.dispose();
+	}
+};
+var CanvasFloatDomPreviewService = class extends _univerjs_core.Disposable {
+	constructor(..._args2) {
+		super(..._args2);
+		_defineProperty(this, "previewUpdated$", new rxjs.Subject());
+		_defineProperty(this, "previewRequested$", new rxjs.Subject());
+		_defineProperty(this, "_previewMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_requestMap", /* @__PURE__ */ new Map());
+	}
+	getPreview(id) {
+		return this._previewMap.get(id);
+	}
+	getPendingRequests() {
+		return Array.from(this._requestMap.values());
+	}
+	setPreview(preview) {
+		this._previewMap.set(preview.id, preview);
+		this._requestMap.delete(preview.id);
+		this.previewUpdated$.next(preview);
+	}
+	removePreview(id) {
+		this._previewMap.delete(id);
+		this._requestMap.delete(id);
+	}
+	requestPreview(request) {
+		this._requestMap.set(request.id, request);
+		this.previewRequested$.next(request);
+	}
+	dispose() {
+		this._previewMap.clear();
+		this._requestMap.clear();
+		this.previewUpdated$.complete();
+		this.previewRequested$.complete();
+		super.dispose();
+	}
+};
+
+//#endregion
+//#region src/views/components/dom/float-dom-layout.ts
+const LEGACY_WRAPPER_INSET = 2;
+const LEGACY_CONTENT_INSET = 4;
+function resolveFloatDomLayout(position, contentBox) {
+	const wrapperInset = (contentBox === null || contentBox === void 0 ? void 0 : contentBox.wrapperInset) ?? LEGACY_WRAPPER_INSET;
+	const contentInset = (contentBox === null || contentBox === void 0 ? void 0 : contentBox.contentInset) ?? LEGACY_CONTENT_INSET;
+	return {
+		wrapper: {
+			top: position.startY,
+			left: position.startX,
+			width: Math.max(position.endX - position.startX - wrapperInset, 0),
+			height: Math.max(position.endY - position.startY - wrapperInset, 0),
+			transform: `rotate(${position.rotate}deg)`,
+			opacity: position.opacity ?? 1
+		},
+		inner: {
+			width: position.width - contentInset,
+			height: position.height - contentInset,
+			left: position.absolute.left ? 0 : "auto",
+			top: position.absolute.top ? 0 : "auto",
+			right: position.absolute.left ? "auto" : 0,
+			bottom: position.absolute.top ? "auto" : 0
+		}
+	};
+}
+
+//#endregion
+//#region src/views/components/dom/FloatDom.tsx
+function applyFloatDomLayout(wrapper, inner, layout) {
+	const { wrapper: wrapperLayout, inner: innerLayout } = layout;
+	const wrapperStyle = wrapper.style;
+	wrapperStyle.top = `${wrapperLayout.top}px`;
+	wrapperStyle.left = `${wrapperLayout.left}px`;
+	wrapperStyle.width = `${wrapperLayout.width}px`;
+	wrapperStyle.height = `${wrapperLayout.height}px`;
+	wrapperStyle.transform = wrapperLayout.transform;
+	wrapperStyle.opacity = `${wrapperLayout.opacity}`;
+	const innerStyle = inner.style;
+	innerStyle.width = `${innerLayout.width}px`;
+	innerStyle.height = `${innerLayout.height}px`;
+	innerStyle.left = innerLayout.left === "auto" ? "auto" : `${innerLayout.left}px`;
+	innerStyle.top = innerLayout.top === "auto" ? "auto" : `${innerLayout.top}px`;
+	innerStyle.right = innerLayout.right === "auto" ? "auto" : `${innerLayout.right}px`;
+	innerStyle.bottom = innerLayout.bottom === "auto" ? "auto" : `${innerLayout.bottom}px`;
+}
+const FloatDomSingle = (0, react.memo)((props) => {
+	const { layer } = props;
+	return typeof layer.componentKey === "string" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RegisteredFloatDomSingle, {
+		...props,
+		componentKey: layer.componentKey
+	}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FloatDomSingleContent, {
+		...props,
+		Component: layer.componentKey
+	});
+});
+function RegisteredFloatDomSingle(props) {
+	const componentManager = (0, _wendellhu_redi_react_bindings.useDependency)(ComponentManager);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FloatDomSingleContent, {
+		...props,
+		Component: componentManager.get(props.componentKey)
+	});
+}
+function FloatDomSingleContent(props) {
+	var _layer$contentBox, _layer$contentBox2;
+	const { layer, id, Component } = props;
+	const univerInstanceService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IUniverInstanceService);
+	const position = (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => layer.position$.pipe((0, rxjs.first)()), [layer.position$]));
+	const domRef = (0, react.useRef)(null);
+	const innerDomRef = (0, react.useRef)(null);
+	const layerProps = (0, react.useMemo)(() => ({
+		data: layer.data,
+		...layer.props,
+		hostFloatDomLayout$: layer.position$
+	}), [
+		layer.data,
+		layer.position$,
+		layer.props
+	]);
+	const floatDomOverflow = resolveFloatDomOverflow(layerProps);
+	const wrapperInset = (_layer$contentBox = layer.contentBox) === null || _layer$contentBox === void 0 ? void 0 : _layer$contentBox.wrapperInset;
+	const contentInset = (_layer$contentBox2 = layer.contentBox) === null || _layer$contentBox2 === void 0 ? void 0 : _layer$contentBox2.contentInset;
+	(0, react.useEffect)(() => {
+		const subscription = layer.position$.subscribe((position) => {
+			if (domRef.current && innerDomRef.current) applyFloatDomLayout(domRef.current, innerDomRef.current, resolveFloatDomLayout(position, {
+				wrapperInset,
+				contentInset
+			}));
+		});
+		return () => {
+			subscription.unsubscribe();
+		};
+	}, [
+		contentInset,
+		layer.position$,
+		wrapperInset
+	]);
+	const instance = univerInstanceService.getUnit(layer.unitId);
+	const docDisabled = instance instanceof _univerjs_core.DocumentDataModel ? instance.getDisabled() : void 0;
+	const component = (0, react.useMemo)(() => Component ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Component, {
+		...layerProps,
+		unitId: layer.unitId,
+		unit: instance,
+		floatDomId: layer.id,
+		context: {
+			docDisabled,
+			root: innerDomRef
+		}
+	}) : null, [Component, layerProps]);
+	if (!position) return null;
+	const layout = resolveFloatDomLayout(position, layer.contentBox);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		ref: domRef,
+		className: "univer-absolute univer-z-10 univer-origin-center",
+		style: {
+			...layout.wrapper,
+			overflow: floatDomOverflow.outerOverflow
+		},
+		onPointerMove: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onPointerMove(e.nativeEvent);
+		},
+		onPointerDown: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onPointerDown(e.nativeEvent);
+		},
+		onPointerUp: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onPointerUp(e.nativeEvent);
+		},
+		onWheel: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onWheel(e.nativeEvent);
+		},
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			id,
+			ref: innerDomRef,
+			className: "univer-absolute univer-overflow-hidden",
+			style: {
+				...layout.inner,
+				overflow: floatDomOverflow.innerOverflow
+			},
+			children: component
+		})
+	});
+}
+const FloatDom = ({ unitId }) => {
+	const instanceService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IUniverInstanceService);
+	const domLayerService = (0, _wendellhu_redi_react_bindings.useDependency)(CanvasFloatDomService);
+	const layers = (0, _wendellhu_redi_react_bindings.useObservable)(domLayerService.domLayers$);
+	const currentUnitId = resolveFloatDomCurrentUnitId(unitId, (0, _wendellhu_redi_react_bindings.useObservable)(instanceService.focused$));
+	(0, react.useEffect)(() => {
+		if (typeof unitId !== "string") return;
+		const disposable = domLayerService.registerScopedRenderRoot(unitId);
+		return () => disposable.dispose();
+	}, [domLayerService, unitId]);
+	const visibleLayers = typeof unitId === "string" ? layers === null || layers === void 0 ? void 0 : layers.filter((layer) => layer[1].unitId === unitId) : layers === null || layers === void 0 ? void 0 : layers.filter((layer) => !domLayerService.hasScopedRenderRoot(layer[1].unitId) && shouldRenderFloatDomLayer(layer[1], currentUnitId));
+	return visibleLayers === null || visibleLayers === void 0 ? void 0 : visibleLayers.map((layer) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FloatDomSingle, {
+		id: layer[1].domId ?? layer[0],
+		layer: layer[1]
+	}, layer[0]));
+};
+function resolveFloatDomCurrentUnitId(unitId, focusedUnit) {
+	if (typeof unitId === "string") return unitId;
+	if (typeof focusedUnit === "string") return focusedUnit;
+	if (focusedUnit != null && typeof focusedUnit === "object" && "getUnitId" in focusedUnit && typeof focusedUnit.getUnitId === "function") {
+		const focusedUnitId = focusedUnit.getUnitId();
+		return typeof focusedUnitId === "string" ? focusedUnitId : null;
+	}
+	return null;
+}
+function resolveFloatDomOverflow(props) {
+	const viewport = props.customBlockRenderViewport;
+	if (!(Number.isFinite(viewport === null || viewport === void 0 ? void 0 : viewport.bleedWidth) && ((viewport === null || viewport === void 0 ? void 0 : viewport.bleedWidth) ?? 0) > 0)) return {
+		outerOverflow: "hidden",
+		innerOverflow: "hidden"
+	};
+	return {
+		outerOverflow: "visible",
+		innerOverflow: "visible"
+	};
+}
+
+//#endregion
+//#region src/services/popup/canvas-popup.service.ts
+const ICanvasPopupService = (0, _univerjs_core.createIdentifier)("ui.popup.service");
+var CanvasPopupService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_popupMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_popups$", new rxjs.BehaviorSubject([]));
+		_defineProperty(this, "popups$", this._popups$.asObservable());
+		_defineProperty(this, "_activePopupId", null);
+	}
+	get popups() {
+		return Array.from(this._popupMap.entries());
+	}
+	get activePopupId() {
+		return this._activePopupId;
+	}
+	_update() {
+		this._popups$.next(Array.from(this._popupMap.entries()));
+	}
+	dispose() {
+		super.dispose();
+		this._popups$.next([]);
+		this._popups$.complete();
+		this._popupMap.clear();
+	}
+	addPopup(item) {
+		const id = (0, _univerjs_core.generateRandomId)();
+		this._popupMap.set(id, {
+			...item,
+			onActiveChange: (active) => {
+				if (active) this._activePopupId = id;
+				else if (this._activePopupId === id) this._activePopupId = null;
+			}
+		});
+		this._update();
+		return id;
+	}
+	removePopup(id) {
+		if (this._popupMap.delete(id)) this._update();
+	}
+	removeAll() {
+		this._popupMap.clear();
+		this._update();
+	}
+};
+
+//#endregion
+//#region src/views/hooks/event.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function useEvent(func) {
+	const funcRef = (0, react.useRef)(func);
+	funcRef.current = func;
+	return (0, react.useCallback)(((...params) => {
+		var _funcRef$current;
+		return (_funcRef$current = funcRef.current) === null || _funcRef$current === void 0 ? void 0 : _funcRef$current.call(funcRef, ...params);
+	}), []);
+}
+
+//#endregion
+//#region src/views/components/popup/RectPopup.tsx
+const RectPopupContext = (0, react.createContext)({ current: void 0 });
+const RectPopupDirectionContext = (0, react.createContext)("vertical");
+/** The popup should have a minimum edge to the boundary. */
+const PUSHING_MINIMUM_GAP = 8;
+function resolvePopupDirection(layout) {
+	var _layout$boundaryInset;
+	const direction = layout.direction ?? "vertical";
+	const containerTop = (layout.containerTop ?? 0) + (((_layout$boundaryInset = layout.boundaryInsets) === null || _layout$boundaryInset === void 0 ? void 0 : _layout$boundaryInset.top) ?? 0);
+	const placeAbove = layout.position.top - containerTop >= (layout.containerTop ?? 0) + layout.containerHeight - layout.position.bottom;
+	switch (direction) {
+		case "vertical-center": return placeAbove ? "top-center" : "bottom-center";
+		case "vertical-left": return placeAbove ? "top-left" : "bottom-left";
+		case "vertical-right": return placeAbove ? "top-right" : "bottom-right";
+		default: return direction;
+	}
+}
+function calcPopupPosition(layout) {
+	var _layout$boundaryInset2, _layout$boundaryInset3;
+	const { position, width, height, containerHeight, containerWidth, noPushMinimumGap = false } = layout;
+	const direction = resolvePopupDirection(layout);
+	const boundaryLeft = layout.containerLeft ?? 0;
+	const boundaryTop = layout.containerTop ?? 0;
+	const containerLeft = boundaryLeft + (((_layout$boundaryInset2 = layout.boundaryInsets) === null || _layout$boundaryInset2 === void 0 ? void 0 : _layout$boundaryInset2.left) ?? 0);
+	const containerTop = boundaryTop + (((_layout$boundaryInset3 = layout.boundaryInsets) === null || _layout$boundaryInset3 === void 0 ? void 0 : _layout$boundaryInset3.top) ?? 0);
+	const containerRight = boundaryLeft + containerWidth;
+	const containerBottom = boundaryTop + containerHeight;
+	const minTop = noPushMinimumGap ? -Infinity : containerTop + PUSHING_MINIMUM_GAP;
+	const maxTop = noPushMinimumGap ? Infinity : containerBottom - height - PUSHING_MINIMUM_GAP;
+	const minLeft = noPushMinimumGap ? -Infinity : containerLeft + PUSHING_MINIMUM_GAP;
+	const maxLeft = noPushMinimumGap ? Infinity : containerRight - width - PUSHING_MINIMUM_GAP;
+	if (direction === "vertical" || direction.indexOf("top") === 0 || direction.indexOf("bottom") === 0) {
+		const { left: startX, top: startY, right: endX, bottom: endY } = position;
+		const verticalStyle = direction === "vertical" && endY > maxTop || direction.indexOf("top") > -1 ? { top: Math.max(Math.min(startY - height, maxTop), minTop) } : { top: Math.max(Math.min(endY, maxTop), minTop) };
+		let horizontalStyle;
+		if (direction.includes("center")) {
+			const offsetX = (endX - startX - width) / 2;
+			horizontalStyle = Math.max(startX + offsetX, minLeft) + width > containerRight ? { left: Math.max(Math.min(maxLeft, endX - width - offsetX), minLeft) } : { left: Math.max(minLeft, Math.min(startX + offsetX, maxLeft)) };
+		} else if (direction.includes("right")) horizontalStyle = { left: Math.max(Math.min(endX - width, maxLeft), minLeft) };
+		else if (direction.includes("left")) horizontalStyle = { left: Math.max(Math.min(startX, maxLeft), minLeft) };
+		else horizontalStyle = startX + width > containerRight ? Math.max(endX - width, minLeft) < PUSHING_MINIMUM_GAP ? { left: Math.max(Math.min(startX, maxLeft), minLeft) } : { left: Math.max(Math.min(endX - width, maxLeft), minLeft) } : { left: Math.max(Math.min(startX, maxLeft), minLeft) };
+		return {
+			...verticalStyle,
+			...horizontalStyle
+		};
+	}
+	const { left: startX, top: startY, right: endX, bottom: endY } = position;
+	const horizontalStyle = direction.includes("left") ? { left: Math.max(Math.min(startX - width, maxLeft), minLeft) } : { left: Math.max(Math.min(endX, maxLeft), minLeft) };
+	let verticalStyle;
+	if (direction.includes("center")) {
+		const offsetY = (endY - startY - height) / 2;
+		verticalStyle = Math.max(startY + offsetY, minTop) + height > containerBottom ? { top: Math.max(Math.min(maxTop, endY - height - offsetY), minTop) } : { top: Math.max(minTop, Math.min(startY + offsetY, maxTop)) };
+	} else if (direction.includes("top")) verticalStyle = { top: Math.max(Math.min(startY, maxTop), minTop) };
+	else if (direction.includes("bottom")) verticalStyle = { top: Math.max(Math.min(endY - height, maxTop), minTop) };
+	else verticalStyle = startY + height > containerBottom ? Math.max(endY - height, minTop) < PUSHING_MINIMUM_GAP ? { top: Math.max(Math.min(startY, maxTop), minTop) } : { top: Math.max(Math.min(endY - height, maxTop), minTop) } : { top: Math.max(Math.min(startY, maxTop), minTop) };
+	return {
+		...verticalStyle,
+		...horizontalStyle
+	};
+}
+function RectPopup(props) {
+	const { mask, portal, children, anchorRect$, direction = "vertical", onClickOutside, excludeOutside, excludeRects, onPointerEnter, onPointerLeave, onClick, hidden, onContextMenu, zIndex = 1020, maskZIndex = 100, onMaskClick, noPushMinimumGap, autoRelayout = true, boundaryElement, boundaryInsets } = props;
+	const nodeRef = (0, react.useRef)(null);
+	const clickOtherFn = useEvent(onClickOutside ?? (() => {}));
+	const contextMenuFn = useEvent(onContextMenu ?? (() => {}));
+	const positionRef = (0, react.useRef)({
+		top: -9999,
+		left: -9999
+	});
+	const excludeRectsRef = excludeRects;
+	const configService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IConfigService);
+	const anchorRectRef = (0, react.useRef)(void 0);
+	const [resolvedDirection, setResolvedDirection] = (0, react.useState)(direction);
+	const uiConfig = configService.getConfig("ui.config") ?? defaultPluginConfig;
+	const popupRootId = (uiConfig === null || uiConfig === void 0 ? void 0 : uiConfig.popupRootId) ?? "univer-popup-portal";
+	const updatePosition = useEvent((position) => {
+		requestAnimationFrame(() => {
+			if (!nodeRef.current) return;
+			const { clientWidth, clientHeight } = nodeRef.current;
+			const boundaryRect = boundaryElement === null || boundaryElement === void 0 ? void 0 : boundaryElement.getBoundingClientRect();
+			const containerLeft = Math.max((boundaryRect === null || boundaryRect === void 0 ? void 0 : boundaryRect.left) ?? 0, 0);
+			const containerTop = Math.max((boundaryRect === null || boundaryRect === void 0 ? void 0 : boundaryRect.top) ?? 0, 0);
+			const containerRight = Math.min((boundaryRect === null || boundaryRect === void 0 ? void 0 : boundaryRect.right) ?? window.innerWidth, window.innerWidth);
+			const containerBottom = Math.min((boundaryRect === null || boundaryRect === void 0 ? void 0 : boundaryRect.bottom) ?? window.innerHeight, window.innerHeight);
+			const containerWidth = Math.max(containerRight - containerLeft, 0);
+			const containerHeight = Math.max(containerBottom - containerTop, 0);
+			const minimumGap = noPushMinimumGap ? 0 : PUSHING_MINIMUM_GAP * 2;
+			const cannotFitBoundary = boundaryElement != null && (containerWidth <= 0 || containerHeight <= 0 || containerWidth < clientWidth + minimumGap || containerHeight < clientHeight + minimumGap);
+			nodeRef.current.style.visibility = cannotFitBoundary ? "hidden" : "";
+			if (cannotFitBoundary) return;
+			const layout = {
+				position,
+				width: clientWidth,
+				height: clientHeight,
+				containerLeft,
+				containerTop,
+				containerWidth,
+				containerHeight,
+				boundaryInsets,
+				direction,
+				noPushMinimumGap
+			};
+			const nextDirection = resolvePopupDirection(layout);
+			setResolvedDirection((currentDirection) => currentDirection === nextDirection ? currentDirection : nextDirection);
+			positionRef.current = calcPopupPosition({
+				...layout,
+				direction: nextDirection
+			});
+			nodeRef.current.style.top = `${positionRef.current.top}px`;
+			nodeRef.current.style.left = `${positionRef.current.left}px`;
+		});
+	});
+	(0, react.useEffect)(() => {
+		let observer;
+		if (nodeRef.current) {
+			observer = new ResizeObserver(() => {
+				if (!autoRelayout) return;
+				if (!anchorRectRef.current) return;
+				updatePosition(anchorRectRef.current);
+			});
+			observer.observe(nodeRef.current);
+		}
+		return () => {
+			observer === null || observer === void 0 || observer.disconnect();
+		};
+	}, [nodeRef.current, autoRelayout]);
+	(0, react.useEffect)(() => {
+		const anchorRectSub = anchorRect$.subscribe((anchorRect) => {
+			anchorRectRef.current = anchorRect;
+			updatePosition(anchorRect);
+		});
+		return () => anchorRectSub.unsubscribe();
+	}, [anchorRect$, direction]);
+	(0, react.useEffect)(() => {
+		const handleClickOther = (e) => {
+			if (excludeOutside && (excludeOutside.indexOf(e.target) > -1 || excludeOutside.some((item) => item.contains(e.target)))) return;
+			const x = e.clientX;
+			const y = e.clientY;
+			const rects = [...(excludeRectsRef === null || excludeRectsRef === void 0 ? void 0 : excludeRectsRef.current) ?? []];
+			if (anchorRectRef.current) rects.push(anchorRectRef.current);
+			for (const rect of rects) if (x <= rect.right && x >= rect.left && y <= rect.bottom && y >= rect.top) return;
+			clickOtherFn(e);
+		};
+		window.addEventListener("pointerdown", handleClickOther);
+		return () => {
+			window.removeEventListener("pointerdown", handleClickOther);
+		};
+	}, [
+		clickOtherFn,
+		excludeOutside,
+		excludeRectsRef
+	]);
+	(0, react.useEffect)(() => {
+		const handleContextMenu = (e) => {
+			if (e.ctrlKey && e.button === 0) return;
+			contextMenuFn();
+		};
+		window.addEventListener("contextmenu", handleContextMenu);
+		return () => {
+			window.removeEventListener("contextmenu", handleContextMenu);
+		};
+	}, [contextMenuFn]);
+	const dir = (0, _wendellhu_redi_react_bindings.useObservable)((0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService).direction$);
+	const ele = /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [mask && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-u-comp": "rect-popup-mask",
+		className: "univer-fixed univer-inset-0 univer-z-[100]",
+		style: { zIndex: maskZIndex },
+		onClick: onMaskClick
+	}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+		"data-u-comp": "rect-popup",
+		ref: nodeRef,
+		dir,
+		className: (0, _univerjs_design.clsx)("univer-pointer-events-auto univer-fixed univer-left-[-9999px] univer-top-[-9999px] univer-z-[1020]", {
+			"univer-hidden": hidden,
+			"univer-animate-in univer-fade-in-70": !hidden
+		}),
+		style: {
+			...positionRef.current,
+			zIndex
+		},
+		onPointerDown: (e) => e.stopPropagation(),
+		onClick,
+		onPointerEnter,
+		onPointerLeave,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RectPopupDirectionContext.Provider, {
+			value: resolvedDirection,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RectPopupContext.Provider, {
+				value: anchorRectRef,
+				children
+			})
+		})
+	})] });
+	return !portal ? ele : document.getElementById(popupRootId) ? (0, react_dom.createPortal)(ele, document.getElementById(popupRootId)) : null;
+}
+RectPopup.calcPopupPosition = calcPopupPosition;
+RectPopup.useContext = () => (0, react.useContext)(RectPopupContext);
+RectPopup.useDirection = () => (0, react.useContext)(RectPopupDirectionContext);
+
+//#endregion
+//#region src/views/components/popup/CanvasPopup.tsx
+const SingleCanvasPopup = ({ popup, children }) => {
+	const anchorRect$ = (0, react.useMemo)(() => popup.anchorRect$.pipe((0, rxjs.throttleTime)(0, rxjs.animationFrameScheduler), (0, rxjs.map)((anchorRect) => {
+		const { bottom, left, right, top } = anchorRect;
+		const [x = 0, y = 0] = popup.offset ?? [];
+		return {
+			left: left - x,
+			right: right + x,
+			top: top - y,
+			bottom: bottom + y
+		};
+	})), [popup.anchorRect$, popup.offset]);
+	const hiddenRects$ = (0, react.useMemo)(() => {
+		var _popup$hiddenRects$;
+		return ((_popup$hiddenRects$ = popup.hiddenRects$) === null || _popup$hiddenRects$ === void 0 ? void 0 : _popup$hiddenRects$.pipe((0, rxjs.throttleTime)(0, rxjs.animationFrameScheduler))) ?? (0, rxjs.of)([]);
+	}, [popup.hiddenRects$]);
+	const excludeRectsRef = useObservableRef((0, react.useMemo)(() => {
+		var _popup$excludeRects$;
+		return (_popup$excludeRects$ = popup.excludeRects$) === null || _popup$excludeRects$ === void 0 ? void 0 : _popup$excludeRects$.pipe((0, rxjs.throttleTime)(0, rxjs.animationFrameScheduler));
+	}, [popup.excludeRects$]), popup.excludeRects);
+	const { boundaryInsets, canvasElement, constrainToCanvas = false, hideOnInvisible = true, hiddenType = "destroy" } = popup;
+	const hidden = (0, _wendellhu_redi_react_bindings.useObservable)(hideOnInvisible ? () => (0, rxjs.combineLatest)([anchorRect$, hiddenRects$]).pipe((0, rxjs.map)(([rectWithOffset, hiddenRects]) => {
+		const { top, left, bottom, right } = canvasElement.getBoundingClientRect();
+		const insetTop = constrainToCanvas ? (boundaryInsets === null || boundaryInsets === void 0 ? void 0 : boundaryInsets.top) ?? 0 : 0;
+		const insetLeft = constrainToCanvas ? (boundaryInsets === null || boundaryInsets === void 0 ? void 0 : boundaryInsets.left) ?? 0 : 0;
+		const rectHeight = rectWithOffset.bottom - rectWithOffset.top;
+		const rectWidth = rectWithOffset.right - rectWithOffset.left;
+		const isInHiddenRect = hiddenRects.some((hiddenRect) => {
+			const bufferY = Math.min(.5 * rectHeight, 10);
+			const bufferX = Math.min(.5 * rectWidth, 10);
+			return rectWithOffset.top >= hiddenRect.top - bufferY && rectWithOffset.bottom <= hiddenRect.bottom + bufferY && rectWithOffset.left >= hiddenRect.left - bufferX && rectWithOffset.right <= hiddenRect.right + bufferX;
+		});
+		return rectWithOffset.bottom < top + insetTop || rectWithOffset.top > bottom || rectWithOffset.right < left + insetLeft || rectWithOffset.left > right || isInHiddenRect;
+	})) : null, false, false, [
+		anchorRect$,
+		boundaryInsets,
+		canvasElement,
+		constrainToCanvas,
+		hiddenRects$,
+		hideOnInvisible
+	]);
+	if (hidden && hiddenType === "destroy") return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RectPopup, {
+		...popup,
+		hidden,
+		anchorRect$,
+		boundaryElement: constrainToCanvas ? canvasElement : popup.boundaryElement,
+		direction: popup.direction,
+		onClickOutside: popup.onClickOutside,
+		excludeOutside: popup.excludeOutside,
+		excludeRects: excludeRectsRef,
+		...popup.customActive ? null : {
+			onPointerEnter: () => {
+				var _popup$onActiveChange;
+				return (_popup$onActiveChange = popup.onActiveChange) === null || _popup$onActiveChange === void 0 ? void 0 : _popup$onActiveChange.call(popup, true);
+			},
+			onPointerLeave: () => {
+				var _popup$onActiveChange2;
+				return (_popup$onActiveChange2 = popup.onActiveChange) === null || _popup$onActiveChange2 === void 0 ? void 0 : _popup$onActiveChange2.call(popup, false);
+			}
+		},
+		onClick: popup.onClick,
+		onContextMenu: popup.onContextMenu,
+		children
+	});
+};
+function CanvasPopup() {
+	const popupService = (0, _wendellhu_redi_react_bindings.useDependency)(ICanvasPopupService);
+	const componentManager = (0, _wendellhu_redi_react_bindings.useDependency)(ComponentManager);
+	return (0, _wendellhu_redi_react_bindings.useObservable)(popupService.popups$, void 0, true).map((item) => {
+		const [key, popup] = item;
+		const Component = componentManager.get(popup.componentKey);
+		const PopupComponent = Component && popup.connectorInjector ? (0, _wendellhu_redi_react_bindings.connectInjector)(Component, popup.connectorInjector) : Component;
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SingleCanvasPopup, {
+			popup,
+			children: PopupComponent && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(PopupComponent, { popup })
+		}, key);
+	});
+}
+
+//#endregion
+//#region src/services/ribbon/ribbon-override.service.ts
+const IRibbonOverrideService = (0, _univerjs_core.createIdentifier)("univer.ribbon-override-service");
+var RibbonOverrideService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_override$", new rxjs.BehaviorSubject(null));
+		_defineProperty(this, "override$", this._override$.asObservable());
+	}
+	getOverride() {
+		return this._override$.getValue();
+	}
+	activate(override) {
+		this._override$.next(override);
+	}
+	clear(id) {
+		const current = this.getOverride();
+		if (!current) return;
+		if (!id || current.id === id) this._override$.next(null);
+	}
+	dispose() {
+		this._override$.next(null);
+		this._override$.complete();
+		super.dispose();
+	}
+};
+
+//#endregion
+//#region src/views/components/ComponentContainer.tsx
+function ComponentContainer(props) {
+	const { components, fallback, sharedProps } = props;
+	if (!components || components.size === 0) return fallback ?? null;
+	return Array.from(components.values()).map((component, index) => {
+		return (0, react.createElement)(component, {
+			key: `${component.displayName ?? index}`,
+			...sharedProps
+		});
+	});
+}
+/**
+* Get a set of render functions to render components of a part.
+*
+* @param part The part name.
+* @param injector The injector to get the service. It is optional. However, you should not change this prop in a given
+* component.
+*/
+function useComponentsOfPart(part, injector) {
+	const injectedUIPartsService = (0, _wendellhu_redi_react_bindings.useDependency)(IUIPartsService);
+	const uiPartsService = (injector === null || injector === void 0 ? void 0 : injector.get(IUIPartsService)) ?? injectedUIPartsService;
+	const changeInfo = (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => uiPartsService.uiVisibleChange$.pipe((0, rxjs.filter)((ui) => ui.ui === part)), [part, uiPartsService]));
+	const updateCounterRef = (0, react.useRef)(0);
+	return (0, react.useMemo)(() => uiPartsService.isUIVisible(part) ? uiPartsService.getComponents(part) : /* @__PURE__ */ new Set(), [(0, _wendellhu_redi_react_bindings.useObservable)(() => uiPartsService.componentRegistered$.pipe((0, rxjs.filter)((key) => key === part), (0, rxjs.debounceTime)(200), (0, rxjs.map)(() => updateCounterRef.current += 1), (0, rxjs.startWith)(updateCounterRef.current += 1)), void 0, void 0, [
+		uiPartsService,
+		part,
+		changeInfo
+	])]);
+}
+
+//#endregion
+//#region src/views/components/ribbon/ribbon-menu/ClassicMenu.tsx
+function ClassicMenu({ ribbon, activatedTab, onSelectTab }) {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-flex univer-size-full univer-items-center univer-justify-center univer-gap-1 univer-overflow-x-auto univer-rounded-md univer-bg-gray-50 univer-px-3 dark:!univer-bg-gray-900",
+		role: "tablist",
+		children: ribbon.map((group) => {
+			const isActive = activatedTab === group.key;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				role: "tab",
+				"aria-selected": isActive,
+				title: localeService.t(group.title || group.key),
+				onClick: () => onSelectTab(group),
+				className: (0, _univerjs_design.clsx)("univer-focus:outline-none univer-focus:ring-2 univer-focus:ring-primary-500 dark:!univer-focus:ring-primary-300 univer-flex univer-cursor-pointer univer-appearance-none univer-items-center univer-gap-1 univer-rounded-sm univer-border-none univer-px-2 univer-py-1 univer-text-sm univer-transition-colors", isActive ? "univer-bg-primary-50 univer-font-semibold univer-text-primary-600 univer-shadow-sm dark:!univer-bg-primary-900 dark:!univer-text-primary-300" : "univer-hover:bg-gray-100 dark:!univer-hover:bg-gray-700 univer-bg-transparent univer-text-gray-700 dark:!univer-text-gray-200"),
+				children: localeService.t(group.title || group.key)
+			}, group.key);
+		})
+	});
+}
+
+//#endregion
+//#region src/views/components/ribbon/ribbon-menu/DefaultMenu.tsx
+const iconMap = {
+	["ribbon.start"]: _univerjs_icons.HomeIcon,
+	["ribbon.insert"]: _univerjs_icons.InsertIcon,
+	["ribbon.formulas"]: _univerjs_icons.FunctionIcon,
+	["ribbon.data"]: _univerjs_icons.DatabaseIcon,
+	["ribbon.view"]: _univerjs_icons.EyeIcon,
+	["ribbon.others"]: _univerjs_icons.MoreVerticalIcon
+};
+function DefaultMenu({ ribbon, activatedTab, onSelectTab }) {
+	var _ribbon$find;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const activatedTabTitle = ((_ribbon$find = ribbon.find((group) => group.key === activatedTab)) === null || _ribbon$find === void 0 ? void 0 : _ribbon$find.title) || activatedTab;
+	const [groupSelectorVisible, setGroupSelectorVisible] = (0, react.useState)(false);
+	function handleSelectTab(tab) {
+		onSelectTab(tab);
+		setGroupSelectorVisible(false);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.HoverCard, {
+		className: "univer-max-w-96 !univer-rounded-xl",
+		align: "start",
+		open: groupSelectorVisible,
+		overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-grid univer-gap-1 univer-px-2 univer-py-1",
+			children: ribbon.map((group) => {
+				const Icon = iconMap[group.key] ?? _univerjs_icons.MoreVerticalIcon;
+				return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("a", {
+					"data-u-comp": "ribbon-group-btn",
+					className: "univer-box-border univer-flex univer-cursor-pointer univer-items-center univer-gap-2.5 univer-rounded-lg univer-px-2 univer-py-1.5 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700",
+					role: "button",
+					onClick: () => handleSelectTab(group),
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: (0, _univerjs_design.clsx)("univer-box-border univer-flex univer-size-9 univer-flex-shrink-0 univer-items-center univer-justify-center univer-rounded-lg", _univerjs_design.borderClassName),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Icon, {
+							className: "univer-text-gray-500 dark:!univer-text-gray-300",
+							preserveStrokeWidth: true
+						})
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+						className: "univer-flex univer-flex-col",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("strong", {
+							className: "univer-text-sm univer-font-semibold univer-text-gray-800 dark:!univer-text-gray-200",
+							children: localeService.t(group.title || group.key)
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: "univer-text-xs univer-text-gray-400",
+							children: localeService.t(`${group.title || group.key}Desc`)
+						})]
+					})]
+				}, group.key);
+			})
+		}),
+		onOpenChange: setGroupSelectorVisible,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("a", {
+			className: "univer-mr-2 univer-flex univer-h-7 univer-cursor-pointer univer-items-center univer-gap-1.5 univer-whitespace-nowrap !univer-rounded-full univer-bg-gray-700 univer-pl-3 univer-pr-2 univer-text-sm univer-text-gray-0 dark:!univer-bg-gray-200 dark:!univer-text-gray-800",
+			onClick: () => setGroupSelectorVisible(true),
+			children: [localeService.t(activatedTabTitle), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, {
+				className: "univer-text-gray-200 dark:!univer-text-gray-500",
+				preserveStrokeWidth: true
+			})]
+		})
+	});
+}
+
+//#endregion
+//#region src/views/components/ribbon/ribbon-menu/RibbonGridMenu.tsx
+function RibbonGridMenu({ ribbon, activatedTab, onSelectTab }) {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-testid": "ribbon-grid-menu",
+		"data-u-comp": "ribbon-grid-menu",
+		className: "univer-flex univer-h-full univer-items-end univer-justify-start univer-overflow-x-auto univer-bg-gray-50 univer-px-2 dark:!univer-bg-gray-900",
+		role: "tablist",
+		children: ribbon.map((group) => {
+			const isActive = activatedTab === group.key;
+			const title = localeService.t(group.title || group.key);
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				role: "tab",
+				"aria-selected": isActive,
+				title,
+				onClick: () => onSelectTab(group),
+				className: (0, _univerjs_design.clsx)("univer-relative univer-flex univer-h-9 univer-cursor-pointer univer-items-center univer-whitespace-nowrap univer-border-0 univer-border-b-[3px] univer-bg-transparent univer-px-3 univer-text-base univer-font-semibold univer-text-gray-700 univer-transition-colors hover:univer-text-gray-900 focus-visible:univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-inset focus-visible:univer-ring-primary-500 dark:!univer-text-gray-200 dark:hover:!univer-text-gray-0", isActive ? "univer-border-primary-600 univer-text-primary-700 dark:!univer-text-primary-300" : "univer-border-transparent"),
+				children: title
+			}, group.key);
+		})
+	});
+}
+
+//#endregion
+//#region src/views/components/ribbon/ribbon-grid-layout.ts
+const RIBBON_GRID_ROWS = 2;
+function placeRibbonGridItems(items) {
+	const occupied = /* @__PURE__ */ new Set();
+	const placements = /* @__PURE__ */ new Map();
+	const fallbackItems = [];
+	for (const item of items) {
+		const layout = item.gridLayout;
+		if (!layout) {
+			fallbackItems.push({ item });
+			continue;
+		}
+		const rowSpan = layout.rowSpan ?? 1;
+		const columnSpan = layout.columnSpan ?? 1;
+		const cells = getCells(layout.row, layout.column, rowSpan, columnSpan);
+		if (!isValidGridGeometry(layout, rowSpan, cells)) {
+			fallbackItems.push({ item });
+			continue;
+		}
+		const placement = {
+			item,
+			row: layout.row,
+			column: layout.column,
+			rowSpan,
+			columnSpan,
+			showLabel: layout.showLabel ?? false,
+			width: layout.width,
+			iconSize: layout.iconSize
+		};
+		if (cells.some((cell) => occupied.has(cell))) {
+			fallbackItems.push({
+				item,
+				layout: placement
+			});
+			continue;
+		}
+		cells.forEach((cell) => occupied.add(cell));
+		placements.set(item, placement);
+	}
+	for (const { item, layout } of fallbackItems) {
+		const rowSpan = (layout === null || layout === void 0 ? void 0 : layout.rowSpan) ?? 1;
+		const columnSpan = (layout === null || layout === void 0 ? void 0 : layout.columnSpan) ?? 1;
+		const { row, column, cells } = findFirstAvailableCells(occupied, rowSpan, columnSpan);
+		cells.forEach((cell) => occupied.add(cell));
+		placements.set(item, {
+			item,
+			row,
+			column,
+			rowSpan,
+			columnSpan,
+			showLabel: (layout === null || layout === void 0 ? void 0 : layout.showLabel) ?? false,
+			width: layout === null || layout === void 0 ? void 0 : layout.width,
+			iconSize: layout === null || layout === void 0 ? void 0 : layout.iconSize
+		});
+	}
+	return items.map((item) => placements.get(item));
+}
+function isValidGridGeometry(layout, rowSpan, cells) {
+	return cells.length > 0 && layout.row + rowSpan - 1 <= RIBBON_GRID_ROWS && (layout.width === void 0 || Number.isFinite(layout.width) && layout.width > 0) && (layout.iconSize === void 0 || Number.isFinite(layout.iconSize) && layout.iconSize > 0);
+}
+function findFirstAvailableCells(occupied, rowSpan, columnSpan) {
+	for (let column = 1;; column++) for (let row = 1; row + rowSpan - 1 <= RIBBON_GRID_ROWS; row++) {
+		const cells = getCells(row, column, rowSpan, columnSpan);
+		if (cells.every((cell) => !occupied.has(cell))) return {
+			row,
+			column,
+			cells
+		};
+	}
+}
+function getCells(row, column, rowSpan, columnSpan) {
+	if (![
+		row,
+		column,
+		rowSpan,
+		columnSpan
+	].every(Number.isInteger) || Math.min(row, column, rowSpan, columnSpan) < 1) return [];
+	const cells = [];
+	for (let currentRow = row; currentRow < row + rowSpan; currentRow++) for (let currentColumn = column; currentColumn < column + columnSpan; currentColumn++) cells.push(`${currentRow}:${currentColumn}`);
+	return cells;
+}
+
+//#endregion
+//#region src/views/custom-label/CustomLabel.tsx
+/**
+* The component to render toolbar item label and menu item label.
+* @param props
+*/
+function CustomLabel(props) {
+	const { className, iconSize, preserveStrokeWidth, title, icon, label, value, value$ } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const componentManager = (0, _wendellhu_redi_react_bindings.useDependency)(ComponentManager);
+	const iconManager = (0, _wendellhu_redi_react_bindings.useDependency)(IconManager);
+	const subscribedValue = (0, _wendellhu_redi_react_bindings.useObservable)(value$ ?? null, value);
+	const subscribedIcon = (0, _wendellhu_redi_react_bindings.useObservable)((0, rxjs.isObservable)(icon) ? icon : null, "");
+	const realIcon = (0, rxjs.isObservable)(icon) ? subscribedIcon : icon ?? "";
+	const nodes = [];
+	let index = 0;
+	const realValue = (0, react.useMemo)(() => {
+		return value ?? subscribedValue;
+	}, [subscribedValue, value]);
+	const isValid = (0, react.useMemo)(() => {
+		if (realValue && typeof realValue === "string") return new _univerjs_core.ColorKit(realValue).isValid;
+		return false;
+	}, [realValue]);
+	if (realIcon) {
+		const Icon = iconManager.get(realIcon);
+		if (Icon) nodes.push(/* @__PURE__ */ (0, react_jsx_runtime.jsx)(Icon, {
+			className: "univer-text-base",
+			style: iconSize ? {
+				width: iconSize,
+				height: iconSize
+			} : void 0,
+			extend: { colorChannel1: isValid ? String(realValue) : "var(--univer-primary-600)" },
+			preserveStrokeWidth
+		}, index++));
+	}
+	if (label) {
+		const isStringLabel = typeof label === "string";
+		const customProps = isStringLabel ? { ...props } : {
+			...label === null || label === void 0 ? void 0 : label.props,
+			...props
+		};
+		const labelName = isStringLabel ? label : label === null || label === void 0 ? void 0 : label.name;
+		const CustomComponent = componentManager.get(labelName);
+		if (CustomComponent) nodes.push(/* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomComponent, {
+			...customProps,
+			className,
+			value: realValue
+		}, index++));
+		else nodes.push(/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className,
+			children: localeService.t(labelName)
+		}, index++));
+	}
+	if (title) nodes.push(/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		className,
+		children: typeof title === "string" ? localeService.t(title) : title
+	}, index++));
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(react_jsx_runtime.Fragment, { children: nodes });
+}
+
+//#endregion
+//#region src/views/components/ribbon/hook.ts
+/**
+* Subscribe to a menu item's status change and return the latest status.
+* @param menuItem The menu item
+* @returns The menu item's status
+*/
+function useToolbarItemStatus(menuItem) {
+	const { disabled$, hidden$, activated$, value$ } = menuItem;
+	let selectionsValue$;
+	if (isMenuButtonSelectorItem(menuItem)) {
+		const { selections } = menuItem;
+		if (Array.isArray(selections)) {
+			var _selections$;
+			selectionsValue$ = selections === null || selections === void 0 || (_selections$ = selections[0]) === null || _selections$ === void 0 ? void 0 : _selections$.value$;
+		}
+	}
+	const disabled = (0, _wendellhu_redi_react_bindings.useObservable)(disabled$ ?? null, false);
+	const activated = (0, _wendellhu_redi_react_bindings.useObservable)(activated$ ?? null, false);
+	const hidden = (0, _wendellhu_redi_react_bindings.useObservable)(hidden$ ?? null, false);
+	return {
+		disabled,
+		value: (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => (0, rxjs.merge)(value$ ?? rxjs.EMPTY, selectionsValue$ ?? rxjs.EMPTY), [selectionsValue$, value$])),
+		activated,
+		hidden,
+		selectionsValue: (0, _wendellhu_redi_react_bindings.useObservable)(selectionsValue$ ?? null)
+	};
+}
+function useToolbarShortcutDisplay({ id, commandId, shortcut }) {
+	const shortcutService = (0, _wendellhu_redi_react_bindings.useDependency)(IShortcutService);
+	const shortcutCommandId = commandId ?? id;
+	return (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => shortcut ? (0, rxjs.of)(shortcut) : shortcutService.shortcutChanged$.pipe((0, rxjs.map)(() => shortcutService.getShortcutDisplayOfCommand(shortcutCommandId)), (0, rxjs.startWith)(shortcutService.getShortcutDisplayOfCommand(shortcutCommandId))), [
+		shortcut,
+		shortcutService,
+		shortcutCommandId
+	]), null, true);
+}
+
+//#endregion
+//#region src/views/components/ribbon/ToolbarButton.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const toolbarButtonClassName = `
+univer-box-border univer-flex univer-h-6 univer-min-w-6 univer-cursor-pointer univer-items-center
+univer-justify-center univer-rounded univer-border-none univer-bg-transparent univer-p-0
+univer-text-gray-900 univer-outline-none univer-transition-colors univer-animate-in univer-fade-in
+dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700 dark:disabled:!univer-text-gray-600
+disabled:univer-cursor-not-allowed disabled:univer-text-gray-300 disabled:hover:univer-bg-transparent
+hover:univer-bg-gray-100 whitespace-nowrap univer-w-max
+`;
+const toolbarButtonVariants = (0, _univerjs_design.cva)(toolbarButtonClassName, {
+	variants: {
+		noIcon: {
+			true: "univer-px-2",
+			false: ""
+		},
+		active: {
+			true: "!univer-bg-gray-200 dark:!univer-bg-gray-500",
+			false: ""
+		}
+	},
+	defaultVariants: {
+		noIcon: false,
+		active: false
+	}
+});
+/**
+* Button Component
+*/
+function ToolbarButton(props) {
+	const { children, className, style, disabled = false, active = false, noIcon, onClick, onDoubleClick, ...restProps } = props;
+	const handleClick = (e) => {
+		if (disabled) {
+			e.preventDefault();
+			return;
+		}
+		onClick && onClick(e);
+	};
+	const handleDoubleClick = (e) => {
+		if (disabled) {
+			e.preventDefault();
+			return;
+		}
+		onDoubleClick && onDoubleClick(e);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		className: toolbarButtonVariants({
+			noIcon,
+			active,
+			className
+		}),
+		style,
+		disabled,
+		onClick: handleClick,
+		onDoubleClick: handleDoubleClick,
+		...restProps,
+		children
+	});
+}
+
+//#endregion
+//#region src/views/components/ribbon/TooltipButtonWrapper.tsx
+const TooltipWrapperContext = (0, react.createContext)({
+	dropdownVisible: false,
+	setDropdownVisible: (_visible) => {}
+});
+const ToolbarDropdownContext = (0, react.createContext)(null);
+/**
+* Keeps toolbar tooltips controlled while a related popup opens and closes.
+* The tooltip stays hidden after the popup closes until a new hover or focus interaction occurs.
+*/
+function ToolbarTooltip(props) {
+	const { popupOpen, ...tooltipProps } = props;
+	const [tooltipVisible, setTooltipVisible] = (0, react.useState)(false);
+	(0, react.useEffect)(() => {
+		if (popupOpen) setTooltipVisible(false);
+	}, [popupOpen]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Tooltip, {
+		...tooltipProps,
+		className: (0, _univerjs_design.clsx)("univer-fill-mode-backwards univer-delay-100", tooltipProps.className),
+		visible: !popupOpen && tooltipVisible,
+		onVisibleChange: (visible) => {
+			if (!popupOpen) setTooltipVisible(visible);
+		}
+	});
+}
+function ToolbarDropdownProvider(props) {
+	const [openDropdownKey, setOpenDropdownKey] = (0, react.useState)(null);
+	const contextValue = (0, react.useMemo)(() => ({
+		openDropdownKey,
+		setOpenDropdownKey
+	}), [openDropdownKey]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarDropdownContext.Provider, {
+		value: contextValue,
+		children: props.children
+	});
+}
+const TooltipWrapper = (0, react.forwardRef)((props, ref) => {
+	const { children, dropdownKey, ...tooltipProps } = props;
+	const spanRef = (0, react.useRef)(null);
+	const [localDropdownVisible, setLocalDropdownVisible] = (0, react.useState)(false);
+	const toolbarDropdownContext = (0, react.useContext)(ToolbarDropdownContext);
+	const dropdownVisible = dropdownKey && toolbarDropdownContext ? toolbarDropdownContext.openDropdownKey === dropdownKey : localDropdownVisible;
+	const handleChangeDropdownVisible = (0, react.useCallback)((visible) => {
+		if (dropdownKey && toolbarDropdownContext) toolbarDropdownContext.setOpenDropdownKey(visible ? dropdownKey : null);
+		else setLocalDropdownVisible(visible);
+	}, [dropdownKey, toolbarDropdownContext]);
+	const contextValue = (0, react.useMemo)(() => ({
+		dropdownVisible,
+		setDropdownVisible: handleChangeDropdownVisible
+	}), [dropdownVisible, handleChangeDropdownVisible]);
+	(0, react.useImperativeHandle)(ref, () => ({ el: spanRef.current }));
+	const content = /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		ref: spanRef,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(TooltipWrapperContext.Provider, {
+			value: contextValue,
+			children
+		})
+	});
+	return tooltipProps.title ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarTooltip, {
+		popupOpen: dropdownVisible,
+		...tooltipProps,
+		children: content
+	}) : content;
+});
+function DropdownWrapper(props) {
+	const { children, overlay, disabled, align } = props;
+	const { direction } = (0, react.useContext)(_univerjs_design.ConfigContext);
+	const { dropdownVisible, setDropdownVisible } = (0, react.useContext)(TooltipWrapperContext);
+	const triggerRef = (0, react.useRef)(null);
+	const overlayRef = (0, react.useRef)(null);
+	(0, react.useEffect)(() => {
+		if (disabled && dropdownVisible) setDropdownVisible(false);
+	}, [
+		disabled,
+		dropdownVisible,
+		setDropdownVisible
+	]);
+	(0, react.useEffect)(() => {
+		var _triggerRef$current;
+		const ownerDocument = (_triggerRef$current = triggerRef.current) === null || _triggerRef$current === void 0 ? void 0 : _triggerRef$current.ownerDocument;
+		if (!dropdownVisible || !ownerDocument) return;
+		const handlePointerDown = (event) => {
+			var _triggerRef$current2, _overlayRef$current;
+			const target = event.target;
+			if (!target || ((_triggerRef$current2 = triggerRef.current) === null || _triggerRef$current2 === void 0 ? void 0 : _triggerRef$current2.contains(target)) || ((_overlayRef$current = overlayRef.current) === null || _overlayRef$current === void 0 ? void 0 : _overlayRef$current.contains(target))) return;
+			setDropdownVisible(false);
+		};
+		ownerDocument.addEventListener("pointerdown", handlePointerDown, true);
+		return () => ownerDocument.removeEventListener("pointerdown", handlePointerDown, true);
+	}, [dropdownVisible, setDropdownVisible]);
+	function handleVisibleChange(visible) {
+		setDropdownVisible(visible);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+		align: align ?? (direction === "rtl" ? "end" : "start"),
+		overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			ref: overlayRef,
+			className: "univer-grid univer-gap-2",
+			children: overlay
+		}),
+		disabled,
+		open: dropdownVisible,
+		onOpenChange: handleVisibleChange,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			ref: triggerRef,
+			className: "univer-h-full",
+			onClick: (e) => e.stopPropagation(),
+			children
+		})
+	});
+}
+function DropdownMenuLabel({ icon, value, option, preserveStrokeWidth, onOptionSelect }) {
+	var _option$label;
+	const onChange = (v) => {
+		onOptionSelect === null || onOptionSelect === void 0 || onOptionSelect({
+			...option,
+			value: v
+		});
+	};
+	const hasCheckMark = typeof option.label === "string" || typeof option.label === "object" && ((_option$label = option.label) === null || _option$label === void 0 ? void 0 : _option$label.selectable) !== false;
+	const selected = hasCheckMark && String(value) === String(option.value);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-w-full univer-items-center univer-justify-between univer-gap-2",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-flex univer-min-w-0 univer-items-center univer-gap-2",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+				className: "univer-text-sm",
+				icon,
+				preserveStrokeWidth,
+				value$: option.value$,
+				value: option.value,
+				label: option.label,
+				onChange
+			})
+		}), hasCheckMark && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: "univer-ml-auto univer-flex univer-w-4 univer-flex-shrink-0 univer-justify-end",
+			children: selected && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, {
+				className: "univer-text-primary-600",
+				preserveStrokeWidth
+			})
+		})]
+	});
+}
+function getOptionKey(option) {
+	var _option$label2;
+	return String(option.id ?? option.commandId ?? option.value ?? (typeof option.label === "string" ? option.label : (_option$label2 = option.label) === null || _option$label2 === void 0 ? void 0 : _option$label2.name));
+}
+function DropdownMenuWrapper({ menuId, slot, value, options, children, disabled, preserveStrokeWidth, onOptionSelect }) {
+	const { dropdownVisible, setDropdownVisible } = (0, react.useContext)(TooltipWrapperContext);
+	(0, react.useEffect)(() => {
+		if (disabled && dropdownVisible) setDropdownVisible(false);
+	}, [
+		disabled,
+		dropdownVisible,
+		setDropdownVisible
+	]);
+	const menuManagerService = (0, _wendellhu_redi_react_bindings.useDependency)(IMenuManagerService);
+	const resolveMenuItems = () => menuId ? menuManagerService.getMenuByPositionKey(menuId) : [];
+	const menuItems = (0, _wendellhu_redi_react_bindings.useObservable)(() => menuManagerService.menuChanged$.pipe((0, rxjs.map)(resolveMenuItems), (0, rxjs.startWith)(resolveMenuItems())), resolveMenuItems(), false, [menuId, menuManagerService]);
+	const hiddenStates = (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => {
+		const itemStates = menuItems.map((item) => {
+			var _item$item;
+			return (item.children ? (0, rxjs.combineLatest)(item.children.map((subItem) => {
+				var _subItem$item;
+				return ((_subItem$item = subItem.item) === null || _subItem$item === void 0 ? void 0 : _subItem$item.hidden$) ?? (0, rxjs.of)(false);
+			})).pipe((0, rxjs.map)((hiddenValues) => hiddenValues.every(Boolean))) : ((_item$item = item.item) === null || _item$item === void 0 ? void 0 : _item$item.hidden$) ?? (0, rxjs.of)(false)).pipe((0, rxjs.map)((hidden) => [String(item.key), hidden]));
+		});
+		return itemStates.length ? (0, rxjs.merge)(...itemStates).pipe((0, rxjs.scan)((states, [key, hidden]) => ({
+			...states,
+			[key]: hidden
+		}), {}), (0, rxjs.startWith)({})) : (0, rxjs.of)({});
+	}, [menuItems]), {});
+	const filteredMenuItems = (0, react.useMemo)(() => {
+		return menuItems.filter((item) => {
+			var _item$key;
+			if (!item.children) return !hiddenStates[item.key];
+			const itemKey = ((_item$key = item.key) === null || _item$key === void 0 ? void 0 : _item$key.toString()) || "";
+			return !hiddenStates[itemKey];
+		});
+	}, [menuItems, hiddenStates]);
+	function handleVisibleChange(visible) {
+		setDropdownVisible(visible);
+	}
+	function handleEmbedBoundaryFocusOutside(event) {
+		keepInteractionInsideSameEmbedBoundary(event);
+	}
+	function handleOptionSelect(option) {
+		onOptionSelect(option);
+		setDropdownVisible(false);
+	}
+	if (slot) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownWrapper, {
+		disabled,
+		overlay: options.map((option) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuLabel, {
+			value,
+			option,
+			preserveStrokeWidth,
+			onOptionSelect: handleOptionSelect
+		}, getOptionKey(option))),
+		children
+	});
+	if (options === null || options === void 0 ? void 0 : options.length) {
+		var _options$0$label, _options$0$label$prop;
+		const isSingleEmbeddedCustomPanel = filteredMenuItems.length === 0 && options.length === 1 && typeof options[0].label === "object" && ((_options$0$label = options[0].label) === null || _options$0$label === void 0 ? void 0 : _options$0$label.hoverable) === false && ((_options$0$label$prop = options[0].label.props) === null || _options$0$label$prop === void 0 ? void 0 : _options$0$label$prop.embedded) === true;
+		const items = options.map((option) => {
+			var _option$label3;
+			return {
+				type: "item",
+				className: (0, _univerjs_design.clsx)({
+					"focus:univer-bg-gray-0 dark:focus:!univer-bg-gray-800": typeof option.label !== "string" && ((_option$label3 = option.label) === null || _option$label3 === void 0 ? void 0 : _option$label3.hoverable) === false,
+					"!univer-p-0": isSingleEmbeddedCustomPanel
+				}),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuLabel, {
+					icon: option.icon,
+					value,
+					option,
+					preserveStrokeWidth,
+					onOptionSelect: handleOptionSelect
+				}),
+				disabled: option.disabled,
+				onSelect: () => {
+					if (typeof option.value === "undefined") return;
+					handleOptionSelect({ ...option });
+				}
+			};
+		});
+		if (filteredMenuItems.length) items.push({ type: "separator" });
+		for (const menuItem of filteredMenuItems) {
+			if (!menuItem.item) continue;
+			const { title, id, commandId, icon } = menuItem.item;
+			if (!title) throw new Error("Menu item title is required");
+			items.push({
+				type: "item",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuLabel, {
+					icon,
+					value,
+					preserveStrokeWidth,
+					option: { label: {
+						name: title,
+						selectable: false
+					} }
+				}),
+				onSelect: () => {
+					handleOptionSelect({
+						commandId,
+						id
+					});
+				}
+			});
+		}
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.DropdownMenu, {
+			align: "start",
+			className: (0, _univerjs_design.clsx)({ "!univer-p-0": isSingleEmbeddedCustomPanel }),
+			items,
+			disabled,
+			open: dropdownVisible,
+			onOpenChange: handleVisibleChange,
+			onFocusOutside: handleEmbedBoundaryFocusOutside,
+			onInteractOutside: handleEmbedBoundaryFocusOutside,
+			children
+		});
+	} else {
+		const items = [];
+		for (const menuItem of filteredMenuItems) {
+			var _menuItem$children;
+			if (menuItem.item) {
+				const { title, id, commandId, icon } = menuItem.item;
+				if (!title) throw new Error("Menu item title is required");
+				items.push({
+					type: "item",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuLabel, {
+						icon,
+						value,
+						preserveStrokeWidth,
+						option: { label: {
+							name: title,
+							selectable: false
+						} }
+					}),
+					onSelect: () => {
+						handleOptionSelect({
+							commandId,
+							id
+						});
+					}
+				});
+			} else if ((_menuItem$children = menuItem.children) === null || _menuItem$children === void 0 ? void 0 : _menuItem$children.length) {}
+		}
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.DropdownMenu, {
+			align: "start",
+			items,
+			disabled,
+			open: dropdownVisible,
+			onOpenChange: handleVisibleChange,
+			onFocusOutside: handleEmbedBoundaryFocusOutside,
+			onInteractOutside: handleEmbedBoundaryFocusOutside,
+			children
+		});
+	}
+}
+
+//#endregion
+//#region src/views/components/ribbon/ToolbarItem.tsx
+const toolbarDisabledClassName = "univer-pointer-events-none univer-cursor-not-allowed univer-text-gray-300 dark:!univer-text-gray-600";
+const toolbarButtonSelectorRootVariants = (0, _univerjs_design.cva)("univer-toolbar-button-selector-root univer-animate-in univer-fade-in univer-group univer-relative univer-flex univer-h-6 univer-cursor-pointer univer-items-center univer-rounded univer-pr-5 univer-text-sm univer-transition-colors hover:univer-bg-gray-100 rtl:univer-pl-5 rtl:univer-pr-0 dark:hover:!univer-bg-gray-700", {
+	variants: { disabled: {
+		true: toolbarDisabledClassName,
+		false: "univer-text-gray-900 dark:!univer-text-gray-0"
+	} },
+	defaultVariants: { disabled: false }
+});
+const toolbarButtonSelectorMainVariants = (0, _univerjs_design.cva)("univer-toolbar-button-selector-main univer-relative univer-z-[1] univer-flex univer-h-full univer-items-center univer-rounded-l univer-px-1 univer-transition-colors hover:univer-bg-gray-200 rtl:univer-rounded-l-none rtl:univer-rounded-r dark:hover:!univer-bg-gray-600", {
+	variants: {
+		active: {
+			true: "univer-bg-gray-200 dark:!univer-bg-gray-500",
+			false: ""
+		},
+		disabled: {
+			true: "",
+			false: ""
+		}
+	},
+	compoundVariants: [{
+		active: true,
+		disabled: true,
+		class: "univer-bg-gray-100"
+	}],
+	defaultVariants: {
+		active: false,
+		disabled: false
+	}
+});
+const toolbarButtonSelectorTriggerVariants = (0, _univerjs_design.cva)("univer-toolbar-button-selector-trigger univer-absolute univer-right-0 univer-top-0 univer-box-border univer-flex univer-h-6 univer-w-5 univer-items-center univer-justify-center univer-rounded-r univer-transition-colors hover:univer-bg-gray-200 rtl:univer-left-0 rtl:univer-right-auto rtl:univer-rounded-l rtl:univer-rounded-r-none dark:hover:!univer-bg-gray-600", {
+	variants: {
+		disabled: {
+			true: toolbarDisabledClassName,
+			false: ""
+		},
+		active: {
+			true: "univer-bg-gray-200 dark:!univer-bg-gray-500",
+			false: ""
+		}
+	},
+	compoundVariants: [{
+		active: true,
+		disabled: true,
+		class: "univer-bg-gray-100"
+	}],
+	defaultVariants: {
+		disabled: false,
+		active: false
+	}
+});
+const toolbarSelectorRootVariants = (0, _univerjs_design.cva)("univer-toolbar-selector-root univer-animate-in univer-fade-in univer-relative univer-flex univer-h-6 univer-cursor-pointer univer-items-center univer-gap-2 univer-whitespace-nowrap univer-rounded univer-px-1 univer-transition-colors hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700", {
+	variants: {
+		disabled: {
+			true: toolbarDisabledClassName,
+			false: "univer-text-gray-900 dark:!univer-text-gray-0"
+		},
+		active: {
+			true: "univer-bg-gray-200",
+			false: ""
+		}
+	},
+	compoundVariants: [{
+		active: true,
+		disabled: true,
+		class: "univer-bg-gray-100"
+	}],
+	defaultVariants: {
+		disabled: false,
+		active: false
+	}
+});
+const toolbarSelectorTriggerVariants = (0, _univerjs_design.cva)("univer-toolbar-selector-trigger univer-flex univer-h-full univer-items-center", {
+	variants: { disabled: {
+		true: toolbarDisabledClassName,
+		false: ""
+	} },
+	defaultVariants: { disabled: false }
+});
+const ToolbarItem = (0, react.forwardRef)((props, ref) => {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const commandService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ICommandService);
+	const layoutService = (0, _wendellhu_redi_react_bindings.useDependency)(ILayoutService);
+	const componentManager = (0, _wendellhu_redi_react_bindings.useDependency)(ComponentManager);
+	const { value, hidden, disabled, activated } = useToolbarItemStatus(props);
+	const executeCommand = (commandId, params) => {
+		layoutService.focus();
+		commandService.executeCommand(commandId, params);
+	};
+	const { tooltip, shortcut, icon, title, label, id, commandId, type, slot, params, grid, large, showLabel, iconSize, iconColor, fullWidth, preserveStrokeWidth } = props;
+	const gridLabel = title ?? tooltip;
+	const shortcutDisplay = useToolbarShortcutDisplay({
+		id,
+		commandId,
+		shortcut
+	});
+	let tooltipTitle = tooltip ? localeService.t(tooltip) : "";
+	if (shortcutDisplay) tooltipTitle += ` (${shortcutDisplay})`;
+	const { selections } = props;
+	const options = (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => {
+		if ((0, rxjs.isObservable)(selections)) return selections;
+		else return new rxjs.Observable((subscribe) => {
+			subscribe.next(selections);
+		});
+	}, [selections]));
+	const iconToDisplay = (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => {
+		if ((0, rxjs.isObservable)(icon)) return icon;
+		else return new rxjs.Observable((subscribe) => {
+			var _options$find;
+			const v = (options === null || options === void 0 || (_options$find = options.find((o) => o.value === value)) === null || _options$find === void 0 ? void 0 : _options$find.icon) ?? icon;
+			subscribe.next(v);
+		});
+	}, [
+		icon,
+		options,
+		value
+	]), void 0, true);
+	function renderSelectorType(menuType) {
+		const selectionsCommandId = props.selectionsCommandId;
+		const bId = commandId ?? id;
+		const sId = selectionsCommandId ?? commandId ?? id;
+		const titleToDisplay = grid ? showLabel ? gridLabel : large ? void 0 : title : title;
+		function handleSelect(option) {
+			if (disabled) return;
+			let commandId = sId;
+			if (option.id) commandId = option.id;
+			const commandParams = typeof option.params === "function" ? option.params(option.value) : option.params;
+			executeCommand(commandId, commandParams ?? { value: option.value });
+		}
+		function handleSelectionsValueChange(value) {
+			if (disabled) return;
+			executeCommand(sId, { value });
+		}
+		function handleClick() {
+			if (disabled) return;
+			if (menuType === 2) {
+				const commandParams = typeof params === "function" ? params() : params;
+				executeCommand(bId, commandParams ?? { value });
+			}
+		}
+		if (menuType === 2) return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			"data-u-command": id,
+			"data-disabled": disabled,
+			className: (0, _univerjs_design.clsx)(toolbarButtonSelectorRootVariants({ disabled }), {
+				"univer-box-border univer-h-full univer-min-w-14 univer-flex-col !univer-pr-0": grid && large,
+				"univer-box-border univer-h-full": grid && !large
+			}),
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: (0, _univerjs_design.clsx)(toolbarButtonSelectorMainVariants({
+					active: activated,
+					disabled
+				}), {
+					"univer-h-full univer-w-full univer-flex-col univer-justify-center univer-rounded univer-px-1 univer-pb-4 [&>svg]:univer-size-8": grid && large,
+					"[&>svg]:univer-size-4": grid && !large
+				}),
+				onClick: handleClick,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+					icon: iconToDisplay,
+					iconSize,
+					preserveStrokeWidth,
+					title: titleToDisplay,
+					value: iconColor ?? value,
+					label,
+					onChange: handleSelectionsValueChange
+				})
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuWrapper, {
+				menuId: id,
+				slot,
+				value,
+				options,
+				disabled,
+				preserveStrokeWidth,
+				onOptionSelect: handleSelect,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: (0, _univerjs_design.clsx)(toolbarButtonSelectorTriggerVariants({
+						disabled,
+						active: activated
+					}), {
+						"!univer-top-auto univer-bottom-0 univer-h-4 univer-w-full univer-rounded-b univer-rounded-t-none": grid && large,
+						"univer-h-full": grid && !large
+					}),
+					"data-disabled": disabled,
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { preserveStrokeWidth })
+				})
+			})]
+		});
+		else return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DropdownMenuWrapper, {
+			menuId: id,
+			slot,
+			value,
+			options,
+			disabled,
+			preserveStrokeWidth,
+			onOptionSelect: handleSelect,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				"data-u-command": id,
+				className: (0, _univerjs_design.clsx)(toolbarSelectorRootVariants({
+					disabled,
+					active: activated
+				}), {
+					"univer-box-border univer-h-full univer-min-w-14 univer-flex-col univer-justify-center univer-gap-1 univer-px-1.5 univer-py-1 univer-text-xs [&>svg]:univer-size-8": grid && large,
+					"univer-box-border univer-h-full": grid && !large,
+					"univer-bg-gray-0 dark:!univer-bg-gray-800": grid && !large && !icon,
+					"[&>svg]:univer-size-4": grid && !large
+				}, grid && !large && !icon && _univerjs_design.borderClassName),
+				children: grid && large ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+					icon: iconToDisplay,
+					iconSize,
+					preserveStrokeWidth
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: (0, _univerjs_design.clsx)(toolbarSelectorTriggerVariants({ disabled }), "univer-h-4 univer-justify-center univer-gap-0.5"),
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+						title: titleToDisplay,
+						value,
+						label,
+						onChange: handleSelectionsValueChange
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { preserveStrokeWidth })]
+				})] }) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+					icon: iconToDisplay,
+					iconSize,
+					preserveStrokeWidth,
+					title: titleToDisplay,
+					value,
+					label,
+					onChange: handleSelectionsValueChange
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: (0, _univerjs_design.clsx)(toolbarSelectorTriggerVariants({ disabled }), { "univer-ml-auto rtl:univer-ml-0 rtl:univer-mr-auto": grid && !large && !icon }),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { preserveStrokeWidth })
+				})] })
+			})
+		});
+	}
+	function renderButtonType() {
+		const isCustomComponent = componentManager.get(typeof label === "string" ? label : (label === null || label === void 0 ? void 0 : label.name) ?? "");
+		const buttonClassName = (0, _univerjs_design.clsx)(grid && !large && "univer-h-full univer-min-w-8 [&>svg]:univer-size-4", grid && large ? "univer-h-full univer-min-w-14 univer-flex-col univer-gap-1 univer-px-1.5 univer-py-1 univer-text-xs [&>svg]:univer-size-8" : showLabel ? "univer-gap-1 univer-px-1.5 univer-text-sm" : "univer-text-sm", grid && fullWidth && isCustomComponent && "!univer-px-0");
+		const buttonStyle = grid && large ? {
+			textAlign: "center",
+			whiteSpace: "normal"
+		} : void 0;
+		if (isCustomComponent) {
+			const hoverable = typeof label === "string" || (label === null || label === void 0 ? void 0 : label.hoverable) !== false;
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				"data-u-command": id,
+				className: toolbarButtonVariants({
+					noIcon: !icon,
+					active: activated,
+					className: (0, _univerjs_design.clsx)(buttonClassName, !hoverable && "univer-cursor-default !univer-bg-transparent hover:!univer-bg-transparent dark:hover:!univer-bg-transparent")
+				}),
+				style: buttonStyle,
+				"aria-disabled": disabled,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+					className: grid && fullWidth ? "!univer-w-full" : void 0,
+					title: grid && showLabel ? gridLabel : title,
+					value,
+					label
+				})
+			});
+		}
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarButton, {
+			"data-u-command": id,
+			className: buttonClassName,
+			style: buttonStyle,
+			noIcon: !icon,
+			active: activated,
+			disabled,
+			onClick: () => {
+				const commandParams = typeof params === "function" ? params() : params;
+				executeCommand(props.commandId ?? props.id, commandParams ?? (typeof value === "undefined" ? void 0 : { value }));
+			},
+			onDoubleClick: () => props.subId && executeCommand(props.subId),
+			children: icon ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+				icon,
+				iconSize,
+				preserveStrokeWidth,
+				title: grid && (large || showLabel) ? gridLabel : void 0
+			}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, { title })
+		});
+	}
+	function renderItem() {
+		switch (type) {
+			case 2:
+			case 1:
+			case 3: return renderSelectorType(type);
+			case 0:
+			default: return renderButtonType();
+		}
+	}
+	return !hidden && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(TooltipWrapper, {
+		ref,
+		title: tooltipTitle,
+		placement: "bottom",
+		dropdownKey: id,
+		children: renderItem()
+	});
+});
+
+//#endregion
+//#region src/views/components/ribbon/RibbonGrid.tsx
+function RibbonGrid({ groups, title, className, ...props }) {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		...props,
+		"data-testid": "ribbon-grid-toolbar",
+		"data-u-comp": "ribbon-grid-toolbar",
+		className: (0, _univerjs_design.clsx)("univer-box-border univer-flex univer-h-[88px] univer-overflow-x-auto univer-overflow-y-hidden univer-bg-gray-50 univer-px-2 univer-text-sm dark:!univer-bg-gray-900", _univerjs_design.borderBottomClassName, _univerjs_design.scrollbarClassName, className),
+		role: "toolbar",
+		"aria-label": localeService.t(title),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarDropdownProvider, { children: groups.map((group) => {
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				"data-u-comp": "ribbon-grid-group",
+				className: "univer-relative univer-box-border univer-flex univer-min-w-16 univer-shrink-0 univer-flex-col univer-px-2",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"data-testid": "ribbon-grid-group-grid",
+					className: "univer-grid univer-min-h-0 univer-flex-1 univer-grid-flow-col univer-grid-rows-2 univer-content-center univer-gap-x-1 univer-gap-y-2 univer-py-2 [&>div>span>span]:univer-h-full",
+					children: placeRibbonGridItems(group.children ?? []).map((placement) => placement.item.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: (0, _univerjs_design.clsx)("univer-flex univer-items-stretch [&>span>button]:univer-h-full [&>span]:univer-h-full", placement.width && "[&>span>span]:univer-w-full [&>span]:univer-w-full [&_[data-u-command]]:univer-w-full"),
+						style: {
+							gridRow: `${placement.row} / span ${placement.rowSpan}`,
+							gridColumn: `${placement.column} / span ${placement.columnSpan}`,
+							width: placement.width
+						},
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, {
+							...placement.item.item,
+							grid: true,
+							large: placement.rowSpan > 1,
+							showLabel: placement.showLabel,
+							iconSize: placement.iconSize,
+							fullWidth: placement.width !== void 0,
+							preserveStrokeWidth: true
+						})
+					}, placement.item.key))
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					"data-testid": "ribbon-grid-group-divider",
+					className: (0, _univerjs_design.clsx)("univer-pointer-events-none univer-absolute univer-bottom-1.5 univer-right-0 univer-top-3.5 !univer-border-gray-300 univer-opacity-50 rtl:univer-left-0 rtl:univer-right-auto", _univerjs_design.borderRightClassName),
+					"aria-hidden": "true"
+				})]
+			}, group.key);
+		}) })
+	});
+}
+
+//#endregion
+//#region src/views/components/ribbon/Ribbon.tsx
+function Ribbon(props) {
+	const { ribbonType, headerMenuComponents, headerMenu = true, toolbarOnly = false, headerClassName } = props;
+	const defaultRibbonService = (0, _wendellhu_redi_react_bindings.useDependency)(IRibbonService);
+	const ribbonOverrideService = (0, _wendellhu_redi_react_bindings.useDependency)(IRibbonOverrideService);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const ribbonOverride = (0, _wendellhu_redi_react_bindings.useObservable)(ribbonOverrideService.override$, ribbonOverrideService.getOverride());
+	const ribbonService = (ribbonOverride === null || ribbonOverride === void 0 ? void 0 : ribbonOverride.ribbonService) ?? defaultRibbonService;
+	const containerRef = (0, react.useRef)(null);
+	const toolbarItemsRef = (0, react.useRef)({});
+	const ribbonData = (0, _wendellhu_redi_react_bindings.useObservable)(ribbonService.ribbon$, []);
+	const activatedTab = (0, _wendellhu_redi_react_bindings.useObservable)(ribbonService.activatedTab$, "ribbon.start");
+	const collapsedIds = (0, _wendellhu_redi_react_bindings.useObservable)(ribbonService.collapsedIds$, []);
+	const fakeToolbarVisible = (0, _wendellhu_redi_react_bindings.useObservable)(ribbonService.fakeToolbarVisible$, false);
+	const hideToolbar = (ribbonOverride === null || ribbonOverride === void 0 ? void 0 : ribbonOverride.hideToolbar) === true;
+	const ribbon = (0, react.useMemo)(() => {
+		if (ribbonType === "simple") {
+			const simpleRibbon = [{
+				key: "ribbon.start",
+				children: [],
+				order: 0
+			}];
+			ribbonData.forEach((group) => {
+				var _group$children;
+				(_group$children = group.children) === null || _group$children === void 0 || _group$children.forEach((item) => {
+					var _simpleRibbon$0$child;
+					(_simpleRibbon$0$child = simpleRibbon[0].children) === null || _simpleRibbon$0$child === void 0 || _simpleRibbon$0$child.push(item);
+				});
+			});
+			return simpleRibbon;
+		}
+		return ribbonData;
+	}, [ribbonType, ribbonData]);
+	const effectiveActivatedTab = ribbonType === "simple" ? "ribbon.start" : activatedTab;
+	const activatedTabTitle = (0, react.useMemo)(() => {
+		var _ribbon$find;
+		return ((_ribbon$find = ribbon.find((group) => group.key === effectiveActivatedTab)) === null || _ribbon$find === void 0 ? void 0 : _ribbon$find.title) || effectiveActivatedTab;
+	}, [ribbon, effectiveActivatedTab]);
+	const handleSelectTab = (0, react.useCallback)((group) => {
+		toolbarItemsRef.current = {};
+		ribbonService.setActivatedTab(group.key);
+	}, [ribbonService]);
+	const activeGroup = (0, react.useMemo)(() => {
+		var _ribbon$find2;
+		const allGroups = ((_ribbon$find2 = ribbon.find((group) => group.key === effectiveActivatedTab)) === null || _ribbon$find2 === void 0 ? void 0 : _ribbon$find2.children) ?? [];
+		const visibleGroups = [];
+		const hiddenGroups = [];
+		for (const item of allGroups) if (item.children) {
+			const visibleChildren = item.children.filter((child) => !collapsedIds.includes(child.key));
+			if (visibleChildren.length > 0) visibleGroups.push({
+				...item,
+				children: visibleChildren
+			});
+			if (visibleChildren.length < item.children.length) hiddenGroups.push({
+				...item,
+				children: item.children.filter((child) => collapsedIds.includes(child.key))
+			});
+		}
+		return {
+			allGroups,
+			visibleGroups,
+			hiddenGroups
+		};
+	}, [
+		collapsedIds,
+		ribbon,
+		effectiveActivatedTab
+	]);
+	(0, react.useEffect)(() => {
+		if (hideToolbar || ribbonType === "grid") {
+			toolbarItemsRef.current = {};
+			ribbonService.setCollapsedIds([]);
+			ribbonService.setFakeToolbarVisible(false);
+			return;
+		}
+		if (!containerRef.current) return;
+		let timer = null;
+		const observer = new ResizeObserver((0, _univerjs_core.throttle)((entries) => {
+			for (const entry of entries) {
+				ribbonService.setFakeToolbarVisible(true);
+				timer = requestAnimationFrame(() => {
+					var _ribbon$find3;
+					const { width: avaliableWidth } = entry.contentRect;
+					const sortedToolbarItems = Object.values(toolbarItemsRef.current).sort((a, b) => {
+						return a.order - b.order || a.groupOrder - b.groupOrder || a.itemOrder - b.itemOrder;
+					});
+					const newCollapsedIds = [];
+					let totalWidth = 32;
+					const gapWidth = ((((_ribbon$find3 = ribbon.find((group) => group.key === effectiveActivatedTab)) === null || _ribbon$find3 === void 0 ? void 0 : _ribbon$find3.children) ?? []).length - 1) * 8;
+					totalWidth += gapWidth;
+					for (const { el, key } of sortedToolbarItems) {
+						const { width } = el.getBoundingClientRect();
+						totalWidth += width + 8;
+						if (totalWidth > avaliableWidth) newCollapsedIds.push(key);
+					}
+					ribbonService.setCollapsedIds(newCollapsedIds);
+					ribbonService.setFakeToolbarVisible(false);
+				});
+			}
+		}, 10));
+		observer.observe(containerRef.current);
+		return () => {
+			timer && cancelAnimationFrame(timer);
+			observer.disconnect();
+		};
+	}, [
+		hideToolbar,
+		ribbon,
+		effectiveActivatedTab,
+		ribbonService,
+		ribbonType
+	]);
+	const fakeToolbar = (0, react.useMemo)(() => {
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			"aria-hidden": "true",
+			className: (0, _univerjs_design.clsx)("univer-invisible univer-absolute -univer-left-[99999] -univer-top-[99999] univer-box-border univer-flex univer-h-10 univer-min-w-min univer-items-center univer-px-3 univer-opacity-0", { "univer-hidden": !fakeToolbarVisible }, _univerjs_design.divideXClassName, _univerjs_design.borderBottomClassName),
+			children: activeGroup.allGroups.map((groupItem, index) => {
+				var _groupItem$children, _groupItem$children2;
+				return (((_groupItem$children = groupItem.children) === null || _groupItem$children === void 0 ? void 0 : _groupItem$children.length) || groupItem.item) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(react.Fragment, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-grid univer-shrink-0 univer-grid-flow-col univer-gap-2 univer-px-2 empty:univer-hidden",
+					children: groupItem.children && ((_groupItem$children2 = groupItem.children) === null || _groupItem$children2 === void 0 ? void 0 : _groupItem$children2.map((child) => child.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, {
+						...child.item,
+						preserveStrokeWidth: true,
+						ref: (ref) => {
+							if (ref === null || ref === void 0 ? void 0 : ref.el) toolbarItemsRef.current[child.key] = {
+								el: ref.el,
+								key: child.key,
+								order: index,
+								groupOrder: groupItem.order,
+								itemOrder: child.order
+							};
+						}
+					}, child.key)))
+				}) }, groupItem.key);
+			})
+		});
+	}, [activeGroup.allGroups, fakeToolbarVisible]);
+	const embedRibbonOverrideAttributes = ribbonOverride ? {
+		"data-embed-ribbon-override": "true",
+		"data-embed-id": ribbonOverride.id
+	} : {};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RibbonOverrideRuntimeProvider, {
+		override: ribbonOverride,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				"data-u-comp": "ribbon-header-menu",
+				...embedRibbonOverrideAttributes,
+				className: (0, _univerjs_design.clsx)("univer-relative univer-select-none", headerClassName, {
+					"univer-hidden": toolbarOnly,
+					"univer-h-9": !toolbarOnly && (ribbonType === "classic" || ribbonType === "grid" || headerMenuComponents && headerMenuComponents.size > 0)
+				}),
+				children: [
+					!toolbarOnly && (ribbonOverride === null || ribbonOverride === void 0 ? void 0 : ribbonOverride.placeholderTitle) && ribbon.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: (0, _univerjs_design.clsx)("univer-flex univer-h-9 univer-items-end univer-px-3", { "univer-justify-center": hideToolbar }),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: "univer-relative univer-inline-flex univer-h-8 univer-items-center univer-justify-center univer-rounded-t univer-bg-primary-50 univer-px-3 univer-text-sm univer-font-medium univer-text-primary-600",
+							children: ribbonOverride.placeholderTitle
+						})
+					}),
+					!toolbarOnly && ribbonType === "classic" && ribbon.length >= 1 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ClassicMenu, {
+						ribbon,
+						activatedTab,
+						onSelectTab: handleSelectTab
+					}),
+					!toolbarOnly && ribbonType === "grid" && ribbon.length >= 1 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RibbonGridMenu, {
+						ribbon,
+						activatedTab,
+						onSelectTab: handleSelectTab
+					}),
+					headerMenu && headerMenuComponents && headerMenuComponents.size > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-absolute univer-right-2 univer-top-0 univer-flex univer-h-full univer-flex-row univer-items-center univer-gap-2 rtl:univer-left-2 rtl:univer-right-auto [&>*]:univer-inline-flex [&>*]:univer-h-6 [&>*]:univer-items-center [&>*]:univer-rounded [&>*]:univer-px-1 [&>*]:univer-transition-colors hover:[&>*]:univer-bg-gray-100",
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: headerMenuComponents })
+					})
+				]
+			}),
+			!hideToolbar && ribbonType === "grid" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RibbonGrid, {
+				...embedRibbonOverrideAttributes,
+				groups: activeGroup.allGroups,
+				title: activatedTabTitle
+			}),
+			!hideToolbar && ribbonType !== "grid" && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				...embedRibbonOverrideAttributes,
+				className: (0, _univerjs_design.clsx)("univer-box-border univer-grid univer-h-10 univer-grid-flow-col univer-items-center univer-px-3 univer-text-sm", {
+					"univer-grid-cols-[1fr] univer-justify-center": ribbonType === "classic" || ribbon.length === 1,
+					"univer-grid-cols-[auto,1fr]": ribbon.length > 1 && ribbonType !== "classic"
+				}, _univerjs_design.borderBottomClassName),
+				children: [ribbonType === "collapsed" && ribbon.length >= 1 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DefaultMenu, {
+					ribbon,
+					activatedTab,
+					onSelectTab: handleSelectTab
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"data-u-comp": "ribbon-toolbar",
+					ref: containerRef,
+					className: (0, _univerjs_design.clsx)("univer-flex univer-overflow-hidden", _univerjs_design.divideXClassName, { "univer-justify-center": ribbonType === "classic" }),
+					role: "toolbar",
+					"aria-label": localeService.t(activatedTabTitle),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(ToolbarDropdownProvider, { children: [activeGroup.visibleGroups.map((groupItem) => {
+						var _groupItem$children3, _groupItem$children4;
+						return (((_groupItem$children3 = groupItem.children) === null || _groupItem$children3 === void 0 ? void 0 : _groupItem$children3.length) || groupItem.item) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(react.Fragment, { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: "univer-grid univer-shrink-0 univer-grid-flow-col univer-gap-2 univer-px-2 empty:univer-hidden",
+							children: groupItem.children && ((_groupItem$children4 = groupItem.children) === null || _groupItem$children4 === void 0 ? void 0 : _groupItem$children4.map((child) => child.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, {
+								...child.item,
+								preserveStrokeWidth: true
+							}, child.key)))
+						}) }, groupItem.key);
+					}), collapsedIds.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-pl-2 rtl:univer-pr-2",
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+							collisionPadding: {
+								right: 12,
+								left: 12
+							},
+							onOpenAutoFocus: (e) => e.preventDefault(),
+							overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: "univer-box-border univer-grid univer-max-w-[--radix-popper-available-width] univer-gap-2 univer-p-2",
+								children: activeGroup.hiddenGroups.map((groupItem) => {
+									var _groupItem$children5;
+									return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+										className: "univer-flex univer-items-center univer-gap-2",
+										children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+											className: "univer-flex univer-flex-wrap univer-gap-2",
+											children: groupItem.children ? (_groupItem$children5 = groupItem.children) === null || _groupItem$children5 === void 0 ? void 0 : _groupItem$children5.map((child) => child.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, {
+												...child.item,
+												preserveStrokeWidth: true
+											}, child.key)) : groupItem.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, {
+												...groupItem.item,
+												preserveStrokeWidth: true
+											}, groupItem.key)
+										})
+									}, groupItem.key);
+								})
+							}),
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								type: "button",
+								className: toolbarButtonClassName,
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreVerticalIcon, { preserveStrokeWidth: true })
+							})
+						})
+					})] }, effectiveActivatedTab)
+				})]
+			}),
+			ribbonType !== "grid" && fakeToolbar
+		] })
+	});
+}
+function RibbonOverrideRuntimeProvider(props) {
+	const { override, children } = props;
+	const config = (0, react.useContext)(_univerjs_design.ConfigContext);
+	const injector = override === null || override === void 0 ? void 0 : override.injector;
+	const ConnectedRibbonOverrideConfigProvider = (0, react.useMemo)(() => injector ? (0, _wendellhu_redi_react_bindings.connectInjector)(RibbonOverrideConfigProvider, injector) : null, [injector]);
+	if (!override || !ConnectedRibbonOverrideConfigProvider) return children;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ConnectedRibbonOverrideConfigProvider, {
+		locale: config.locale,
+		direction: config.direction,
+		mountContainer: override.portalContainer ?? config.mountContainer,
+		children
+	});
+}
+function RibbonOverrideConfigProvider(props) {
+	const { children, locale, direction, mountContainer } = props;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.ConfigProvider, {
+		locale,
+		direction,
+		mountContainer,
+		children
+	});
+}
+
+//#endregion
+//#region src/services/theme-switcher/theme-switcher.service.ts
+var ThemeSwitcherService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_styleSheetId", "univer-theme-css-variables");
+	}
+	injectThemeToHead(theme) {
+		function generateCSSVariables(theme, prefix = "--univer") {
+			const variables = [];
+			function traverse(obj, path = "") {
+				for (const key in obj) {
+					const value = obj[key];
+					const currentPath = path ? `${path}-${key}` : key;
+					if (typeof value === "object" && value !== null) traverse(value, currentPath);
+					else variables.push(`${prefix}-${currentPath}: ${value};`);
+				}
+			}
+			traverse(theme);
+			return variables.join("\n");
+		}
+		const cssVariables = generateCSSVariables(theme);
+		const existingStyleElement = document.getElementById(this._styleSheetId);
+		if (existingStyleElement) existingStyleElement.remove();
+		const styleElement = document.createElement("style");
+		styleElement.setAttribute("id", this._styleSheetId);
+		styleElement.textContent = `:root {\n${cssVariables}\n}`;
+		document.head.appendChild(styleElement);
+	}
+	dispose() {
+		super.dispose();
+	}
+};
+
+//#endregion
+//#region src/services/contextmenu/contextmenu.service.ts
+const IContextMenuService = (0, _univerjs_core.createIdentifier)("ui.contextmenu.service");
+var ContextMenuService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_currentHandler", null);
+		_defineProperty(this, "disabled", false);
+	}
+	get visible() {
+		var _this$_currentHandler;
+		return ((_this$_currentHandler = this._currentHandler) === null || _this$_currentHandler === void 0 ? void 0 : _this$_currentHandler.visible) ?? false;
+	}
+	disable() {
+		this.disabled = true;
+	}
+	enable() {
+		this.disabled = false;
+	}
+	triggerContextMenu(event, menuType, context) {
+		var _this$_currentHandler2;
+		event.stopPropagation();
+		if (this.disabled) return;
+		(_this$_currentHandler2 = this._currentHandler) === null || _this$_currentHandler2 === void 0 || _this$_currentHandler2.handleContextMenu(event, menuType, context);
+	}
+	hideContextMenu() {
+		var _this$_currentHandler3;
+		(_this$_currentHandler3 = this._currentHandler) === null || _this$_currentHandler3 === void 0 || _this$_currentHandler3.hideContextMenu();
+	}
+	registerContextMenuHandler(handler) {
+		if (this._currentHandler) throw new Error("There is already a context menu handler!");
+		this._currentHandler = handler;
+		return (0, _univerjs_core.toDisposable)(() => this._currentHandler = null);
+	}
+};
+
+//#endregion
+//#region src/services/contextmenu/contextmenu-host.service.ts
+const IContextMenuHostService = (0, _univerjs_core.createIdentifier)("ui.contextmenu.host.service");
+var ContextMenuHostService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_menuMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_activeMenuId$", new rxjs.BehaviorSubject(null));
+		_defineProperty(this, "activeMenuId$", this._activeMenuId$.asObservable());
+	}
+	get activeMenuId() {
+		return this._activeMenuId$.value;
+	}
+	registerMenu(menuId, hide) {
+		this._menuMap.set(menuId, hide);
+		return (0, _univerjs_core.toDisposable)(() => {
+			this._menuMap.delete(menuId);
+			if (this.activeMenuId === menuId) this._activeMenuId$.next(null);
+		});
+	}
+	activateMenu(menuId) {
+		this.hideActiveMenu(menuId);
+		this._activeMenuId$.next(menuId);
+	}
+	deactivateMenu(menuId) {
+		if (this.activeMenuId === menuId) this._activeMenuId$.next(null);
+	}
+	hideActiveMenu(exceptMenuId) {
+		const activeMenuId = this.activeMenuId;
+		if (!activeMenuId || activeMenuId === exceptMenuId) return;
+		const hide = this._menuMap.get(activeMenuId);
+		this._activeMenuId$.next(null);
+		hide === null || hide === void 0 || hide();
+	}
+	dispose() {
+		this._activeMenuId$.complete();
+		super.dispose();
+	}
+};
+
+//#endregion
+//#region src/views/hooks/layout.ts
+/**
+* These hooks are used for browser layout
+* Prefer to client-side
+*/
+/**
+* Allow the element to scroll when its height over the container height
+* @param element
+* Container means the window view that the element displays in.
+* Recommend pass the sheet mountContainer as container
+* @param container
+*/
+function useScrollYOverContainer(element, container) {
+	const updater = useEvent(() => {
+		if (!element || !container) return;
+		const elStyle = element.style;
+		const { y, height } = element.getBoundingClientRect();
+		const containerRect = container.getBoundingClientRect();
+		const scrolled = element.scrollHeight > height;
+		const isOverViewport = y < 0 || y + height > containerRect.height;
+		if (!isOverViewport && !scrolled) {
+			elStyle.overflowY = "";
+			elStyle.maxHeight = "";
+			return;
+		}
+		if (isOverViewport) {
+			elStyle.overflowY = "auto";
+			elStyle.maxHeight = y < 0 ? `${element.scrollHeight + y}px` : `${containerRect.height - y}px`;
+		}
+	});
+	(0, react.useEffect)(() => {
+		if (!(0, _univerjs_design.isBrowser)() || !element || !container) return;
+		updater();
+		const resizeObserver = new ResizeObserver(updater);
+		resizeObserver.observe(element);
+		return () => {
+			resizeObserver.disconnect();
+		};
+	}, [element, container]);
+}
+function useConfigValue(configKey) {
+	const configService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IConfigService);
+	return (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => configService.subscribeConfigValue$(configKey), [configService]), configService.getConfig(configKey));
+}
+
+//#endregion
+//#region src/views/hooks/prevent-browser-zoom.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function preventBrowserZoomInContainers(containers) {
+	const uniqueContainers = new Set(containers);
+	const handleWheel = (event) => {
+		if (event.ctrlKey || event.metaKey) event.preventDefault();
+	};
+	const handleGesture = (event) => event.preventDefault();
+	uniqueContainers.forEach((container) => {
+		container.addEventListener("wheel", handleWheel, {
+			capture: true,
+			passive: false
+		});
+		container.addEventListener("gesturestart", handleGesture, {
+			capture: true,
+			passive: false
+		});
+		container.addEventListener("gesturechange", handleGesture, {
+			capture: true,
+			passive: false
+		});
+	});
+	return () => {
+		uniqueContainers.forEach((container) => {
+			container.removeEventListener("wheel", handleWheel, true);
+			container.removeEventListener("gesturestart", handleGesture, true);
+			container.removeEventListener("gesturechange", handleGesture, true);
+		});
+	};
+}
+
+//#endregion
+//#region src/views/menu/desktop/DesignTinyMenuGroup.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const tinyMenuGroupVariants = (0, _univerjs_design.cva)("univer-menu-item-group univer-px-0", {
+	variants: {
+		variant: {
+			default: "univer-gap-1.5 univer-p-0.5",
+			paragraphT: "univer-gap-2 univer-p-1",
+			compactParagraph: "univer-gap-0.5 univer-p-0"
+		},
+		layout: {
+			grid: "univer-grid",
+			wrap: "univer-flex univer-flex-wrap"
+		},
+		columnsSix: {
+			true: "univer-grid-cols-6",
+			false: ""
+		}
+	},
+	compoundVariants: [{
+		variant: "compactParagraph",
+		layout: "grid",
+		class: "univer-justify-items-start"
+	}, {
+		variant: ["default", "paragraphT"],
+		layout: "grid",
+		class: "univer-justify-items-center"
+	}],
+	defaultVariants: {
+		variant: "default",
+		layout: "wrap",
+		columnsSix: false
+	}
+});
+const tinyMenuButtonVariants = (0, _univerjs_design.cva)("univer-flex univer-cursor-pointer univer-items-center univer-justify-center univer-border-none univer-bg-transparent univer-p-0 focus:univer-bg-gray-50 focus:univer-outline-none dark:focus:!univer-bg-gray-900", {
+	variants: {
+		variant: {
+			default: "univer-size-6 univer-rounded-md",
+			paragraphT: "univer-size-8 univer-rounded-lg",
+			compactParagraph: "univer-size-6 univer-rounded-sm"
+		},
+		hoverSuppressed: {
+			true: "",
+			false: "hover:univer-bg-gray-50 dark:hover:!univer-bg-gray-900"
+		},
+		active: {
+			true: "univer-bg-gray-50 dark:!univer-bg-gray-900",
+			false: ""
+		}
+	},
+	defaultVariants: {
+		variant: "default",
+		hoverSuppressed: false,
+		active: false
+	}
+});
+const tinyMenuIconVariants = (0, _univerjs_design.cva)("univer-text-gray-900 dark:!univer-text-gray-200", {
+	variants: { variant: {
+		default: "univer-size-4",
+		paragraphT: "univer-size-5",
+		compactParagraph: "univer-size-5"
+	} },
+	defaultVariants: { variant: "default" }
+});
+function getTinyMenuVariant(sizeVariant, layoutVariant) {
+	if (sizeVariant === "paragraph-t" && layoutVariant === "compact") return "compactParagraph";
+	if (sizeVariant === "paragraph-t") return "paragraphT";
+	return "default";
+}
+function getTinyMenuGridTemplateColumns(columns, variant) {
+	if (!columns || columns === 6 && variant !== "compactParagraph") return;
+	return `repeat(${columns}, max-content)`;
+}
+function DesignTinyMenuGroup({ items, columns, sizeVariant = "default", layoutVariant = "default", hoverSuppressed = false }) {
+	const variant = getTinyMenuVariant(sizeVariant, layoutVariant);
+	const isParagraphTVariant = variant !== "default";
+	const gridTemplateColumns = getTinyMenuGridTemplateColumns(columns, variant);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: tinyMenuGroupVariants({
+			variant,
+			layout: columns ? "grid" : "wrap",
+			columnsSix: columns === 6 && variant !== "compactParagraph"
+		}),
+		style: gridTemplateColumns ? { gridTemplateColumns } : void 0,
+		children: items.map((item) => {
+			const showTooltip = !isParagraphTVariant && item.tooltip;
+			const ele = /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				"aria-label": item.tooltip ?? item.key,
+				title: showTooltip ? item.tooltip : void 0,
+				className: tinyMenuButtonVariants({
+					variant,
+					hoverSuppressed,
+					active: item.active,
+					className: item.className
+				}),
+				onClick: () => item.onClick(),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(item.Icon, {
+					className: tinyMenuIconVariants({
+						variant,
+						className: item.iconClassName
+					}),
+					extend: { colorChannel1: "var(--univer-primary-600)" }
+				})
+			}, item.key);
+			return showTooltip ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Tooltip, {
+				className: "univer-fill-mode-backwards univer-delay-100",
+				title: item.tooltip,
+				children: ele
+			}, item.key) : ele;
+		})
+	});
+}
+
+//#endregion
+//#region src/views/menu/desktop/TinyMenuGroup.tsx
+const EMPTY_HIDDEN_ITEM_IDS = [];
+const EMPTY_TINY_MENU_CHILDREN = [];
+const quickTileMenuButtonVariants = (0, _univerjs_design.cva)("univer-relative univer-box-border univer-flex univer-size-12 univer-w-full univer-appearance-none univer-flex-col univer-items-center univer-justify-center univer-gap-0.5 univer-rounded-lg univer-border-none univer-bg-gray-0 univer-p-0 univer-font-medium univer-text-gray-700 univer-outline-none univer-transition-all focus-visible:univer-ring-2 focus-visible:univer-ring-primary-600 focus-visible:univer-ring-offset-0 dark:!univer-bg-gray-700 dark:!univer-text-gray-100", {
+	variants: {
+		disabled: {
+			true: "univer-cursor-not-allowed univer-opacity-60",
+			false: "univer-cursor-pointer hover:univer-bg-gray-50 dark:hover:!univer-bg-gray-600"
+		},
+		active: {
+			true: "univer-bg-primary-50 univer-text-primary-700 univer-ring-1 univer-ring-primary-600 dark:!univer-bg-primary-900 dark:!univer-text-primary-100",
+			false: ""
+		}
+	},
+	defaultVariants: {
+		disabled: false,
+		active: false
+	}
+});
+function resolveMenuItemActiveState(itemId, observableActive, activeItemIds) {
+	if (activeItemIds) return Boolean(itemId && activeItemIds.includes(itemId));
+	return observableActive;
+}
+function getTinyMenuChildStateKey(child) {
+	var _child$item;
+	return ((_child$item = child.item) === null || _child$item === void 0 ? void 0 : _child$item.id) ?? child.key;
+}
+function getVisibleTinyMenuChildren(children, hiddenItemKeys) {
+	const hiddenSet = new Set(hiddenItemKeys);
+	return children.filter((child) => !hiddenSet.has(getTinyMenuChildStateKey(child)));
+}
+function QuickTileMenuItem(props) {
+	const { menuSchema, activeItemIds, onOptionSelect } = props;
+	const iconManager = (0, _wendellhu_redi_react_bindings.useDependency)(IconManager);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const menuItem = menuSchema.item;
+	const disabled = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem === null || menuItem === void 0 ? void 0 : menuItem.disabled$, false);
+	const hidden = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem === null || menuItem === void 0 ? void 0 : menuItem.hidden$, false);
+	const activated = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem === null || menuItem === void 0 ? void 0 : menuItem.activated$, false);
+	if (!menuItem || hidden) return null;
+	const Icon = menuItem.icon ? iconManager.get(menuItem.icon) : null;
+	const active = resolveMenuItemActiveState(menuItem.id, activated, activeItemIds);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+		type: "button",
+		className: quickTileMenuButtonVariants({
+			disabled,
+			active
+		}),
+		disabled,
+		onClick: () => {
+			if (disabled) return;
+			onOptionSelect === null || onOptionSelect === void 0 || onOptionSelect({
+				label: menuItem.id ?? menuSchema.key,
+				commandId: menuItem.commandId,
+				id: menuItem.id,
+				params: menuItem.params,
+				value: menuItem.value,
+				tooltip: menuItem.tooltip && localeService.t(menuItem.tooltip)
+			});
+		},
+		children: [Icon && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Icon, {
+			className: "univer-text-base",
+			extend: { colorChannel1: "var(--univer-primary-600)" }
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: "univer-break-words univer-text-center univer-text-xs univer-leading-4",
+			children: menuItem.title ? localeService.t(menuItem.title) : menuSchema.key
+		})]
+	});
+}
+function UITinyMenuGroup(props) {
+	const { item, activeItemIds, hiddenItemIds = EMPTY_HIDDEN_ITEM_IDS, hoverSuppressed, columns, sizeVariant = "default", layoutVariant = "default", onOptionSelect } = props;
+	const iconManager = (0, _wendellhu_redi_react_bindings.useDependency)(IconManager);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const children = item.children ?? EMPTY_TINY_MENU_CHILDREN;
+	const activeItems$ = (0, react.useMemo)(() => children.length ? (0, rxjs.combineLatest)(children.map((child) => {
+		var _child$item2;
+		return (((_child$item2 = child.item) === null || _child$item2 === void 0 ? void 0 : _child$item2.activated$) ?? (0, rxjs.of)(false)).pipe((0, rxjs.startWith)(false));
+	})).pipe((0, rxjs.map)((states) => children.flatMap((child, index) => states[index] ? [getTinyMenuChildStateKey(child)] : []))) : (0, rxjs.of)([]), [children]);
+	const hiddenItems$ = (0, react.useMemo)(() => children.length ? (0, rxjs.combineLatest)(children.map((child) => {
+		var _child$item3;
+		return (((_child$item3 = child.item) === null || _child$item3 === void 0 ? void 0 : _child$item3.hidden$) ?? (0, rxjs.of)(false)).pipe((0, rxjs.startWith)(false));
+	})).pipe((0, rxjs.map)((states) => children.flatMap((child, index) => states[index] ? [getTinyMenuChildStateKey(child)] : []))) : (0, rxjs.of)([]), [children]);
+	const activeItems = (0, _wendellhu_redi_react_bindings.useObservable)(activeItems$, []);
+	const hiddenItems = (0, _wendellhu_redi_react_bindings.useObservable)(hiddenItems$, []);
+	const visibleChildren = (0, react.useMemo)(() => getVisibleTinyMenuChildren(item.children ?? [], [...hiddenItems, ...hiddenItemIds]), [
+		hiddenItemIds,
+		hiddenItems,
+		item.children
+	]);
+	if (!item.children) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DesignTinyMenuGroup, {
+		columns,
+		sizeVariant,
+		layoutVariant,
+		hoverSuppressed,
+		items: visibleChildren.map((child) => {
+			var _child$item4, _child$item12, _child$item13, _child$item14, _child$item15;
+			const Icon = ((_child$item4 = child.item) === null || _child$item4 === void 0 ? void 0 : _child$item4.icon) ? iconManager.get(child.item.icon) : void 0;
+			if (!Icon) return null;
+			return {
+				key: child.key,
+				onClick: () => {
+					var _child$item5, _child$item6, _child$item7, _child$item8, _child$item9, _child$item10, _child$item11;
+					onOptionSelect === null || onOptionSelect === void 0 || onOptionSelect({
+						label: ((_child$item5 = child.item) === null || _child$item5 === void 0 ? void 0 : _child$item5.id) ?? child.key,
+						commandId: (_child$item6 = child.item) === null || _child$item6 === void 0 ? void 0 : _child$item6.commandId,
+						id: (_child$item7 = child.item) === null || _child$item7 === void 0 ? void 0 : _child$item7.id,
+						params: (_child$item8 = child.item) === null || _child$item8 === void 0 ? void 0 : _child$item8.params,
+						value: (_child$item9 = child.item) === null || _child$item9 === void 0 ? void 0 : _child$item9.value,
+						tooltip: ((_child$item10 = child.item) === null || _child$item10 === void 0 ? void 0 : _child$item10.tooltip) && localeService.t((_child$item11 = child.item) === null || _child$item11 === void 0 ? void 0 : _child$item11.tooltip)
+					});
+				},
+				className: "",
+				iconClassName: ((_child$item12 = child.item) === null || _child$item12 === void 0 ? void 0 : _child$item12.icon) === "TextTypeIcon" ? sizeVariant === "paragraph-t" ? "!univer-size-4" : "!univer-size-3.5" : void 0,
+				Icon,
+				active: resolveMenuItemActiveState((_child$item13 = child.item) === null || _child$item13 === void 0 ? void 0 : _child$item13.id, activeItems.includes(((_child$item14 = child.item) === null || _child$item14 === void 0 ? void 0 : _child$item14.id) ?? ""), activeItemIds),
+				tooltip: ((_child$item15 = child.item) === null || _child$item15 === void 0 ? void 0 : _child$item15.tooltip) ? localeService.t(child.item.tooltip) : void 0
+			};
+		}).filter((child) => child != null)
+	});
+}
+function UIQuickTileMenuGroup(props) {
+	var _item$children;
+	const { item, activeItemIds, hiddenItemIds = EMPTY_HIDDEN_ITEM_IDS, onOptionSelect } = props;
+	if (!((_item$children = item.children) === null || _item$children === void 0 ? void 0 : _item$children.length)) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-item-center univer-grid univer-grid-cols-3 univer-gap-1.5 univer-py-1",
+		children: getVisibleTinyMenuChildren(item.children, hiddenItemIds).map((menuSchema) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(QuickTileMenuItem, {
+			menuSchema,
+			activeItemIds,
+			onOptionSelect
+		}, menuSchema.key))
+	});
+}
+
+//#endregion
+//#region src/views/components/context-menu/ContextMenuPanel.tsx
+const menuViewportPadding = 8;
+const submenuOverlapOffset = 2;
+const submenuVisualGap = 20;
+const CONTEXT_MENU_SUBMENU_CLOSE_DELAY = 500;
+const CONTEXT_MENU_SUBMENU_PORTAL_ATTR = "data-u-context-menu-submenu";
+const CONTEXT_MENU_CONNECTED_QUICK_GROUP_KEYS = /* @__PURE__ */ new Set(["quickTop", "quickBottom"]);
+const CONTEXT_MENU_HEADER_QUICK_GROUP_KEYS = /* @__PURE__ */ new Set(["quickTop", "quickBottom"]);
+const CONTEXT_MENU_NAVIGATION_KEYS = /* @__PURE__ */ new Set([
+	"ArrowDown",
+	"ArrowUp",
+	"ArrowLeft",
+	"ArrowRight"
+]);
+const contextMenuContentVariants = (0, _univerjs_design.cva)("univer-inline-flex univer-items-center", {
+	variants: { sizeVariant: {
+		default: "univer-gap-2",
+		"paragraph-t": "univer-gap-3"
+	} },
+	defaultVariants: { sizeVariant: "default" }
+});
+const contextMenuPanelVariants = (0, _univerjs_design.cva)("univer-box-border univer-grid univer-max-w-full univer-overflow-y-auto univer-overscroll-contain univer-rounded-md univer-bg-gray-0 univer-text-gray-900 univer-shadow-md dark:!univer-bg-gray-700 dark:!univer-text-gray-0", {
+	variants: { sizeVariant: {
+		default: "univer-min-w-52 univer-gap-1 univer-px-2 univer-py-1 univer-text-sm",
+		"paragraph-t": "univer-min-w-64 univer-gap-2 univer-px-3 univer-py-2 univer-text-base"
+	} },
+	defaultVariants: { sizeVariant: "default" }
+});
+const contextMenuGroupVariants = (0, _univerjs_design.cva)("univer-grid", {
+	variants: { sizeVariant: {
+		default: "univer-gap-1 univer-py-1",
+		"paragraph-t": "univer-gap-2 univer-py-2"
+	} },
+	defaultVariants: { sizeVariant: "default" }
+});
+const contextMenuQuickGroupVariants = (0, _univerjs_design.cva)("univer-grid", {
+	variants: {
+		sizeVariant: {
+			default: "univer-gap-1 univer-py-1",
+			"paragraph-t": "univer-gap-2 univer-py-2"
+		},
+		connection: {
+			none: "",
+			previous: "",
+			next: "",
+			both: ""
+		}
+	},
+	compoundVariants: [
+		{
+			sizeVariant: "paragraph-t",
+			connection: "previous",
+			class: "univer-pb-2 univer-pt-1"
+		},
+		{
+			sizeVariant: "paragraph-t",
+			connection: "next",
+			class: "univer-pb-1 univer-pt-2"
+		},
+		{
+			sizeVariant: "paragraph-t",
+			connection: "both",
+			class: "univer-pb-1 univer-pt-1"
+		}
+	],
+	defaultVariants: {
+		sizeVariant: "default",
+		connection: "none"
+	}
+});
+const contextMenuQuickGroupClusterVariants = (0, _univerjs_design.cva)("univer-grid", {
+	variants: { sizeVariant: {
+		default: "univer-gap-1 univer-py-1",
+		"paragraph-t": "univer-gap-0 univer-py-2"
+	} },
+	defaultVariants: { sizeVariant: "default" }
+});
+const contextMenuHeaderVariants = (0, _univerjs_design.cva)("univer-font-semibold univer-text-gray-600 dark:!univer-text-gray-300", {
+	variants: { sizeVariant: {
+		default: "univer-px-2 univer-text-xs",
+		"paragraph-t": "univer-px-3 univer-text-sm"
+	} },
+	defaultVariants: { sizeVariant: "default" }
+});
+const contextMenuHeaderRowVariants = (0, _univerjs_design.cva)("univer-flex univer-items-center univer-justify-between", {
+	variants: { sizeVariant: {
+		default: "univer-gap-1.5",
+		"paragraph-t": "univer-gap-2"
+	} },
+	defaultVariants: { sizeVariant: "default" }
+});
+const contextMenuSubmenuPanelVariants = (0, _univerjs_design.cva)("univer-overflow-y-auto univer-overscroll-contain univer-rounded-md univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-shadow-md dark:!univer-border-gray-600 dark:!univer-bg-gray-700", {
+	variants: { sizeVariant: {
+		default: "univer-p-1.5",
+		"paragraph-t": "univer-p-2"
+	} },
+	defaultVariants: { sizeVariant: "default" }
+});
+const contextMenuItemVariants = (0, _univerjs_design.cva)("univer-relative univer-flex univer-border-none univer-bg-transparent univer-text-left univer-text-gray-900 dark:!univer-text-gray-0", {
+	variants: {
+		sizeVariant: {
+			default: "",
+			"paragraph-t": ""
+		},
+		variant: {
+			default: "",
+			compact: "",
+			compactHeaderAction: ""
+		},
+		disabled: {
+			true: "univer-cursor-not-allowed univer-opacity-60",
+			false: "univer-cursor-pointer focus:univer-bg-gray-50 focus:univer-outline-none dark:focus:!univer-bg-gray-600"
+		},
+		hoverSuppressed: {
+			true: "",
+			false: ""
+		},
+		active: {
+			true: "univer-bg-gray-200 dark:!univer-bg-gray-600",
+			false: ""
+		}
+	},
+	compoundVariants: [
+		{
+			sizeVariant: "default",
+			variant: "default",
+			class: "univer-min-h-8 univer-w-full univer-items-center univer-justify-between univer-gap-3 univer-rounded-md univer-px-2 univer-text-sm"
+		},
+		{
+			sizeVariant: "default",
+			variant: "compact",
+			class: "univer-size-8 univer-items-center univer-justify-center univer-rounded-md univer-p-0 univer-text-sm"
+		},
+		{
+			sizeVariant: "default",
+			variant: "compactHeaderAction",
+			class: "univer-size-7 univer-items-center univer-justify-center univer-rounded-sm univer-p-0 univer-text-sm"
+		},
+		{
+			sizeVariant: "paragraph-t",
+			variant: "default",
+			class: "univer-min-h-10 univer-w-full univer-items-center univer-justify-between univer-gap-4 univer-rounded-lg univer-px-3 univer-text-base"
+		},
+		{
+			sizeVariant: "paragraph-t",
+			variant: "compact",
+			class: "univer-size-10 univer-items-center univer-justify-center univer-rounded-lg univer-p-0 univer-text-base"
+		},
+		{
+			sizeVariant: "paragraph-t",
+			variant: "compactHeaderAction",
+			class: "univer-size-8 univer-items-center univer-justify-center univer-rounded-md univer-p-0 univer-text-base"
+		},
+		{
+			disabled: false,
+			hoverSuppressed: false,
+			class: "hover:univer-bg-gray-50 dark:hover:!univer-bg-gray-600"
+		}
+	],
+	defaultVariants: {
+		sizeVariant: "default",
+		variant: "default",
+		disabled: false,
+		hoverSuppressed: false,
+		active: false
+	}
+});
+function isNonSelectableLabel(label) {
+	return typeof label === "object" && (label === null || label === void 0 ? void 0 : label.selectable) === false;
+}
+function isNonHoverableLabel(label) {
+	return typeof label === "object" && (label === null || label === void 0 ? void 0 : label.hoverable) === false;
+}
+function hasRenderableContextMenuSchema(menuSchema) {
+	var _menuSchema$children;
+	if (menuSchema.item) return true;
+	if (!((_menuSchema$children = menuSchema.children) === null || _menuSchema$children === void 0 ? void 0 : _menuSchema$children.length)) return false;
+	return menuSchema.children.some((childSchema) => Boolean(childSchema.item));
+}
+function shouldShowContextMenuGroupSeparator(visibleSchemas, index) {
+	if (index === visibleSchemas.length - 1) return false;
+	const currentSchema = visibleSchemas[index];
+	const nextSchema = visibleSchemas[index + 1];
+	if ((currentSchema === null || currentSchema === void 0 ? void 0 : currentSchema.quickLayout) && (nextSchema === null || nextSchema === void 0 ? void 0 : nextSchema.quickLayout) && CONTEXT_MENU_CONNECTED_QUICK_GROUP_KEYS.has(currentSchema.key) && CONTEXT_MENU_CONNECTED_QUICK_GROUP_KEYS.has(nextSchema.key)) return false;
+	return true;
+}
+function getContextMenuQuickGroupColumns(menuSchema) {
+	if ((0, _univerjs_core.isRealNum)(menuSchema.quickColumns)) return menuSchema.quickColumns;
+	if (menuSchema.quickLayout === "icon" && CONTEXT_MENU_HEADER_QUICK_GROUP_KEYS.has(menuSchema.key)) return 6;
+}
+function isContextMenuPointerLeaveTarget(nextTarget, owningMenuItemElement, rootMenuElement) {
+	if (!nextTarget) return true;
+	if ((owningMenuItemElement === null || owningMenuItemElement === void 0 ? void 0 : owningMenuItemElement.contains(nextTarget)) || (rootMenuElement === null || rootMenuElement === void 0 ? void 0 : rootMenuElement.contains(nextTarget))) return false;
+	return true;
+}
+function getContextMenuContentClassName(sizeVariant) {
+	return contextMenuContentVariants({ sizeVariant });
+}
+function getContextMenuPanelClassName(sizeVariant) {
+	return contextMenuPanelVariants({ sizeVariant });
+}
+function getContextMenuGroupClassName(sizeVariant) {
+	return contextMenuGroupVariants({ sizeVariant });
+}
+function isHeaderQuickGroup(menuSchema) {
+	return menuSchema.quickLayout === "icon" && CONTEXT_MENU_HEADER_QUICK_GROUP_KEYS.has(menuSchema.key);
+}
+function shouldClusterHeaderQuickGroups(currentSchema, nextSchema) {
+	return isHeaderQuickGroup(currentSchema) && !!nextSchema && isHeaderQuickGroup(nextSchema);
+}
+function getContextMenuQuickGroupClassName(menuSchema, visibleSchemas, index, sizeVariant) {
+	if (sizeVariant !== "paragraph-t" || !CONTEXT_MENU_HEADER_QUICK_GROUP_KEYS.has(menuSchema.key)) return getContextMenuGroupClassName(sizeVariant);
+	const previousSchema = index > 0 ? visibleSchemas[index - 1] : null;
+	const nextSchema = index < visibleSchemas.length - 1 ? visibleSchemas[index + 1] : null;
+	const connectedToPrevious = !!(previousSchema === null || previousSchema === void 0 ? void 0 : previousSchema.quickLayout) && CONTEXT_MENU_HEADER_QUICK_GROUP_KEYS.has(previousSchema.key);
+	const connectedToNext = !!(nextSchema === null || nextSchema === void 0 ? void 0 : nextSchema.quickLayout) && CONTEXT_MENU_HEADER_QUICK_GROUP_KEYS.has(nextSchema.key);
+	return contextMenuQuickGroupVariants({
+		sizeVariant,
+		connection: connectedToPrevious && connectedToNext ? "both" : connectedToPrevious ? "previous" : connectedToNext ? "next" : "none"
+	});
+}
+function getContextMenuQuickGroupClusterClassName(sizeVariant) {
+	return contextMenuQuickGroupClusterVariants({ sizeVariant });
+}
+function getMenuButtonCenter(button) {
+	const rect = button.getBoundingClientRect();
+	return {
+		x: rect.left + rect.width / 2,
+		y: rect.top + rect.height / 2
+	};
+}
+function getMenuButtonRows(buttons) {
+	const sortedButtons = [...buttons].sort((left, right) => {
+		const leftRect = left.getBoundingClientRect();
+		const rightRect = right.getBoundingClientRect();
+		return leftRect.top - rightRect.top || leftRect.left - rightRect.left;
+	});
+	const rows = [];
+	for (const button of sortedButtons) {
+		const rect = button.getBoundingClientRect();
+		const centerY = rect.top + rect.height / 2;
+		const row = rows.find((candidateRow) => {
+			const rowRect = candidateRow[0].getBoundingClientRect();
+			const rowCenterY = rowRect.top + rowRect.height / 2;
+			const tolerance = Math.max(4, Math.max(rowRect.height, rect.height) / 2);
+			return Math.abs(rowCenterY - centerY) <= tolerance;
+		});
+		if (row) row.push(button);
+		else rows.push([button]);
+	}
+	rows.forEach((row) => row.sort((left, right) => left.getBoundingClientRect().left - right.getBoundingClientRect().left));
+	return rows;
+}
+function getFirstMenuButtonByVisualOrder(buttons) {
+	return [...buttons].sort((left, right) => {
+		const leftRect = left.getBoundingClientRect();
+		const rightRect = right.getBoundingClientRect();
+		return leftRect.top - rightRect.top || leftRect.left - rightRect.left;
+	})[0];
+}
+function getNextMenuButtonByDirection(buttons, activeIndex, key) {
+	var _scoredCandidates$;
+	const direction = key === "ArrowDown" || key === "ArrowRight" ? 1 : -1;
+	const fallbackButton = buttons[activeIndex < 0 ? direction > 0 ? 0 : buttons.length - 1 : (activeIndex + direction + buttons.length) % buttons.length];
+	const activeButton = activeIndex >= 0 ? buttons[activeIndex] : null;
+	if (!activeButton) return fallbackButton;
+	const rows = getMenuButtonRows(buttons);
+	const activeRowIndex = rows.findIndex((row) => row.includes(activeButton));
+	const activeRow = rows[activeRowIndex];
+	if (activeRow && (key === "ArrowRight" || key === "ArrowLeft")) return activeRow[activeRow.indexOf(activeButton) + (key === "ArrowRight" ? 1 : -1)] ?? fallbackButton;
+	if (activeRow && (key === "ArrowDown" || key === "ArrowUp")) {
+		const nextRow = rows[activeRowIndex + (key === "ArrowDown" ? 1 : -1)];
+		if (nextRow) {
+			const activeCenter = getMenuButtonCenter(activeButton);
+			return [...nextRow].sort((left, right) => Math.abs(getMenuButtonCenter(left).x - activeCenter.x) - Math.abs(getMenuButtonCenter(right).x - activeCenter.x))[0] ?? fallbackButton;
+		}
+	}
+	const activeCenter = getMenuButtonCenter(activeButton);
+	return ((_scoredCandidates$ = buttons.filter((button) => button !== activeButton).map((button) => {
+		const center = getMenuButtonCenter(button);
+		const deltaX = center.x - activeCenter.x;
+		const deltaY = center.y - activeCenter.y;
+		if (!(key === "ArrowRight" ? deltaX > 0 : key === "ArrowLeft" ? deltaX < 0 : key === "ArrowDown" ? deltaY > 0 : deltaY < 0)) return null;
+		const primaryDistance = key === "ArrowRight" || key === "ArrowLeft" ? Math.abs(deltaX) : Math.abs(deltaY);
+		const secondaryDistance = key === "ArrowRight" || key === "ArrowLeft" ? Math.abs(deltaY) : Math.abs(deltaX);
+		return {
+			button,
+			score: primaryDistance * 1e3 + secondaryDistance
+		};
+	}).filter((candidate) => candidate != null).sort((left, right) => left.score - right.score)[0]) === null || _scoredCandidates$ === void 0 ? void 0 : _scoredCandidates$.button) ?? fallbackButton;
+}
+function getContextMenuSchemaRenderGroups(visibleSchemas, flowQuickGroups = false) {
+	const renderGroups = [];
+	for (let index = 0; index < visibleSchemas.length; index++) {
+		const menuSchema = visibleSchemas[index];
+		const nextSchema = visibleSchemas[index + 1];
+		if (flowQuickGroups && shouldClusterHeaderQuickGroups(menuSchema, nextSchema)) {
+			renderGroups.push({
+				startIndex: index,
+				endIndex: index + 1,
+				menuSchemas: [menuSchema, nextSchema]
+			});
+			index += 1;
+			continue;
+		}
+		renderGroups.push({
+			startIndex: index,
+			endIndex: index,
+			menuSchemas: [menuSchema]
+		});
+	}
+	return renderGroups;
+}
+function mergeContextMenuQuickGroupSchemas(menuSchemas) {
+	const firstSchema = menuSchemas[0];
+	return {
+		...firstSchema,
+		key: menuSchemas.map((schema) => schema.key).join("-"),
+		quickColumns: getContextMenuQuickGroupColumns(firstSchema),
+		children: menuSchemas.flatMap((schema) => schema.children ?? [])
+	};
+}
+function getContextMenuHeaderClassName(sizeVariant) {
+	return contextMenuHeaderVariants({ sizeVariant });
+}
+function getContextMenuHeaderRowClassName(sizeVariant) {
+	return contextMenuHeaderRowVariants({ sizeVariant });
+}
+function getContextMenuSubmenuPanelClassName(sizeVariant) {
+	return contextMenuSubmenuPanelVariants({ sizeVariant });
+}
+function ContextMenuPanel(props) {
+	var _layoutService$rootCo;
+	const { menuType, menuManagerService: providedMenuManagerService, layoutService: providedLayoutService, menuSessionVersion = 0, className, activeItemIds, hiddenItemIds, flowQuickGroups, sizeVariant = "default", autoFocus, autoFocusTarget = "first-item", suppressHoverUntilPointerMove = false, onCancel, onMenuPointerEnter, onMenuPointerLeave, onOptionSelect } = props;
+	const rootMenuManagerService = (0, _wendellhu_redi_react_bindings.useDependency)(IMenuManagerService);
+	const rootLayoutService = (0, _wendellhu_redi_react_bindings.useDependency)(ILayoutService);
+	const menuManagerService = providedMenuManagerService ?? rootMenuManagerService;
+	const layoutService = providedLayoutService ?? rootLayoutService;
+	const [menuElement, setMenuElement] = (0, react.useState)(null);
+	const [maxMenuHeight, setMaxMenuHeight] = (0, react.useState)(() => {
+		if (typeof window === "undefined") return 240;
+		return Math.max(120, window.innerHeight - menuViewportPadding * 2);
+	});
+	const [hoverSuppressed, setHoverSuppressed] = (0, react.useState)(suppressHoverUntilPointerMove);
+	const menuItems = (0, react.useMemo)(() => menuType ? menuManagerService.getMenuByPositionKey(menuType) : [], [
+		menuManagerService,
+		menuType,
+		(0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => menuManagerService.menuChanged$.pipe((0, rxjs.startWith)(void 0), (0, rxjs.scan)((version) => version + 1, 0)), [menuManagerService]), 0),
+		menuSessionVersion
+	]);
+	const submenuPortalContainer = ((_layoutService$rootCo = layoutService.rootContainerElement) === null || _layoutService$rootCo === void 0 || (_layoutService$rootCo = _layoutService$rootCo.ownerDocument) === null || _layoutService$rootCo === void 0 ? void 0 : _layoutService$rootCo.body) ?? (typeof document !== "undefined" ? document.body : null);
+	useScrollYOverContainer(menuElement, layoutService.rootContainerElement);
+	(0, react.useEffect)(() => {
+		if (!menuElement) return;
+		return preventBrowserZoomInContainers([menuElement]);
+	}, [menuElement]);
+	const getFocusableMenuButtons = (0, react.useCallback)((scope) => {
+		const menuScope = scope ?? menuElement;
+		if (!menuScope) return [];
+		return Array.from(menuScope.querySelectorAll("button:not(:disabled)"));
+	}, [menuElement]);
+	(0, react.useEffect)(() => {
+		if (!autoFocus || !menuElement) return;
+		const view = menuElement.ownerDocument.defaultView ?? window;
+		const frameId = view.requestAnimationFrame(() => {
+			if (autoFocusTarget === "container") {
+				menuElement.focus();
+				return;
+			}
+			(getFirstMenuButtonByVisualOrder(getFocusableMenuButtons()) ?? menuElement).focus();
+		});
+		return () => view.cancelAnimationFrame(frameId);
+	}, [
+		autoFocus,
+		autoFocusTarget,
+		getFocusableMenuButtons,
+		menuElement,
+		menuItems
+	]);
+	(0, react.useEffect)(() => {
+		setHoverSuppressed(suppressHoverUntilPointerMove);
+	}, [
+		menuSessionVersion,
+		menuType,
+		suppressHoverUntilPointerMove
+	]);
+	const handleKeyDown = (0, react.useCallback)((event) => {
+		if (event.key === "Escape") {
+			event.preventDefault();
+			event.stopPropagation();
+			onCancel === null || onCancel === void 0 || onCancel();
+			return;
+		}
+		if (!CONTEXT_MENU_NAVIGATION_KEYS.has(event.key) && event.key !== "Enter") return;
+		const activeElement = menuElement === null || menuElement === void 0 ? void 0 : menuElement.ownerDocument.activeElement;
+		const activeSubmenu = (activeElement === null || activeElement === void 0 ? void 0 : activeElement.closest(`[${"data-u-context-menu-submenu"}]`)) ?? null;
+		const focusableButtons = getFocusableMenuButtons(activeSubmenu);
+		if (!focusableButtons.length) return;
+		event.preventDefault();
+		event.stopPropagation();
+		const activeIndex = focusableButtons.findIndex((button) => button === activeElement);
+		if (event.key === "Enter") {
+			const button = activeIndex >= 0 ? focusableButtons[activeIndex] : getFirstMenuButtonByVisualOrder(focusableButtons);
+			if (!button) return;
+			button.click();
+			return;
+		}
+		getNextMenuButtonByDirection(focusableButtons, activeIndex, event.key).focus();
+	}, [
+		getFocusableMenuButtons,
+		menuElement,
+		onCancel
+	]);
+	(0, react.useEffect)(() => {
+		var _layoutService$rootCo2;
+		const defaultView = ((_layoutService$rootCo2 = layoutService.rootContainerElement) === null || _layoutService$rootCo2 === void 0 || (_layoutService$rootCo2 = _layoutService$rootCo2.ownerDocument) === null || _layoutService$rootCo2 === void 0 ? void 0 : _layoutService$rootCo2.defaultView) ?? (typeof window !== "undefined" ? window : null);
+		if (!defaultView) return;
+		let frameId = 0;
+		const updateMaxHeight = () => {
+			if (frameId) defaultView.cancelAnimationFrame(frameId);
+			frameId = defaultView.requestAnimationFrame(() => {
+				setMaxMenuHeight(Math.max(120, defaultView.innerHeight - menuViewportPadding * 2));
+			});
+		};
+		updateMaxHeight();
+		defaultView.addEventListener("resize", updateMaxHeight);
+		return () => {
+			if (frameId) defaultView.cancelAnimationFrame(frameId);
+			defaultView.removeEventListener("resize", updateMaxHeight);
+		};
+	}, [layoutService.rootContainerElement]);
+	if (!menuType) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		ref: setMenuElement,
+		tabIndex: -1,
+		className: (0, _univerjs_design.clsx)(getContextMenuPanelClassName(sizeVariant), _univerjs_design.borderClassName, _univerjs_design.scrollbarClassName, hoverSuppressed && "univer-context-menu-hover-suppressed", className),
+		style: { maxHeight: maxMenuHeight },
+		onKeyDown: handleKeyDown,
+		onPointerMove: () => {
+			if (hoverSuppressed) setHoverSuppressed(false);
+		},
+		onWheel: (event) => event.stopPropagation(),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextMenuMenu, {
+			menuSchemas: menuItems,
+			menuManagerService,
+			menuSessionVersion,
+			submenuPortalContainer,
+			rootMenuElement: menuElement,
+			activeItemIds,
+			hiddenItemIds,
+			flowQuickGroups,
+			hoverSuppressed,
+			sizeVariant,
+			onMenuPointerEnter,
+			onMenuPointerLeave,
+			onOptionSelect,
+			maxMenuHeight
+		})
+	});
+}
+function ContextMenuMenu(props) {
+	const { menuSchemas, menuManagerService, menuSessionVersion, submenuPortalContainer, rootMenuElement, activeItemIds, hiddenItemIds, flowQuickGroups, hoverSuppressed, sizeVariant, onMenuPointerEnter, onMenuPointerLeave, onOptionSelect, maxMenuHeight } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const hiddenGroupStates = useContextGroupHiddenStates$1(menuSchemas);
+	const [activeSubmenuKey, setActiveSubmenuKey] = (0, react.useState)(null);
+	const visibleSchemas = (0, react.useMemo)(() => {
+		return menuSchemas.filter((item) => {
+			if (!hasRenderableContextMenuSchema(item)) return false;
+			if (!item.children) return true;
+			return !hiddenGroupStates[item.key];
+		});
+	}, [hiddenGroupStates, menuSchemas]);
+	const renderGroups = (0, react.useMemo)(() => getContextMenuSchemaRenderGroups(visibleSchemas, flowQuickGroups), [flowQuickGroups, visibleSchemas]);
+	const renderQuickLayoutGroup = (menuSchema, index, renderAsClusterChild = false, hasSeparator = false) => {
+		const titleNode = renderMenuSchemaHeader(menuSchema);
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: (0, _univerjs_design.clsx)(renderAsClusterChild ? "univer-grid" : getContextMenuQuickGroupClassName(menuSchema, visibleSchemas, index, sizeVariant), hasSeparator && _univerjs_design.borderBottomClassName),
+			children: [titleNode, menuSchema.quickLayout === "tile" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(UIQuickTileMenuGroup, {
+				item: menuSchema,
+				activeItemIds,
+				hiddenItemIds,
+				hoverSuppressed,
+				onOptionSelect
+			}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(UITinyMenuGroup, {
+				item: menuSchema,
+				columns: getContextMenuQuickGroupColumns(menuSchema),
+				activeItemIds,
+				hiddenItemIds,
+				hoverSuppressed,
+				sizeVariant,
+				layoutVariant: menuSchema.quickLayoutVariant,
+				onOptionSelect
+			})]
+		}, menuSchema.key);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(react_jsx_runtime.Fragment, { children: renderGroups.map(({ menuSchemas: groupedSchemas, startIndex, endIndex }) => {
+		var _menuSchema$children2;
+		const menuSchema = groupedSchemas[0];
+		const hasSeparator = shouldShowContextMenuGroupSeparator(visibleSchemas, endIndex);
+		const titleNode = renderMenuSchemaHeader(menuSchema);
+		if (groupedSchemas.length > 1) {
+			const mergedMenuSchema = mergeContextMenuQuickGroupSchemas(groupedSchemas);
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: (0, _univerjs_design.clsx)(getContextMenuQuickGroupClusterClassName(sizeVariant), hasSeparator && _univerjs_design.borderBottomClassName),
+				children: renderQuickLayoutGroup(mergedMenuSchema, startIndex, true)
+			}, groupedSchemas.map((schema) => schema.key).join("-"));
+		}
+		if (menuSchema.item) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextMenuMenuItem, {
+			menuKey: menuSchema.key,
+			menuItem: menuSchema.item,
+			menuManagerService,
+			menuSessionVersion,
+			submenuPortalContainer,
+			rootMenuElement,
+			activeSubmenuKey,
+			setActiveSubmenuKey,
+			onOptionSelect,
+			maxMenuHeight,
+			hiddenItemIds,
+			hoverSuppressed,
+			sizeVariant,
+			onMenuPointerEnter,
+			onMenuPointerLeave
+		}, menuSchema.key);
+		if (!((_menuSchema$children2 = menuSchema.children) === null || _menuSchema$children2 === void 0 ? void 0 : _menuSchema$children2.length)) return null;
+		if (menuSchema.quickLayout) return renderQuickLayoutGroup(menuSchema, startIndex, false, hasSeparator);
+		if (menuSchema.tiny) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: (0, _univerjs_design.clsx)(sizeVariant === "paragraph-t" ? "univer-flex univer-items-center univer-gap-2 univer-py-2" : "univer-flex univer-items-center univer-gap-1 univer-py-1", hasSeparator && _univerjs_design.borderBottomClassName),
+			children: menuSchema.children.map((childSchema) => childSchema.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextMenuMenuItem, {
+				menuKey: childSchema.key,
+				menuItem: childSchema.item,
+				menuManagerService,
+				menuSessionVersion,
+				submenuPortalContainer,
+				rootMenuElement,
+				activeSubmenuKey,
+				setActiveSubmenuKey,
+				activeItemIds,
+				hiddenItemIds,
+				hoverSuppressed,
+				onMenuPointerEnter,
+				onMenuPointerLeave,
+				onOptionSelect,
+				maxMenuHeight,
+				compact: true,
+				sizeVariant
+			}, childSchema.key))
+		}, menuSchema.key);
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: (0, _univerjs_design.clsx)(getContextMenuGroupClassName(sizeVariant), hasSeparator && _univerjs_design.borderBottomClassName),
+			children: [titleNode, menuSchema.children.map((childSchema) => childSchema.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextMenuMenuItem, {
+				menuKey: childSchema.key,
+				menuItem: childSchema.item,
+				menuManagerService,
+				menuSessionVersion,
+				submenuPortalContainer,
+				rootMenuElement,
+				activeSubmenuKey,
+				setActiveSubmenuKey,
+				activeItemIds,
+				hiddenItemIds,
+				hoverSuppressed,
+				onMenuPointerEnter,
+				onMenuPointerLeave,
+				onOptionSelect,
+				maxMenuHeight,
+				sizeVariant
+			}, childSchema.key))]
+		}, menuSchema.key);
+	}) });
+	function renderMenuSchemaHeader(menuSchema) {
+		if (!menuSchema.title) return null;
+		const titleContent = /* @__PURE__ */ (0, react_jsx_runtime.jsx)("strong", {
+			className: getContextMenuHeaderClassName(sizeVariant),
+			children: localeService.t(menuSchema.title)
+		});
+		if (!menuSchema.headerActionItem) return titleContent;
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: getContextMenuHeaderRowClassName(sizeVariant),
+			children: [titleContent, /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextMenuMenuItem, {
+				menuKey: `${menuSchema.key}-header-action`,
+				menuItem: menuSchema.headerActionItem,
+				menuManagerService,
+				menuSessionVersion,
+				submenuPortalContainer,
+				rootMenuElement,
+				activeSubmenuKey,
+				setActiveSubmenuKey,
+				activeItemIds,
+				hiddenItemIds,
+				hoverSuppressed,
+				compact: true,
+				headerAction: true,
+				sizeVariant,
+				onMenuPointerEnter,
+				onMenuPointerLeave,
+				onOptionSelect,
+				maxMenuHeight
+			})]
+		});
+	}
+}
+function ContextMenuMenuItem(props) {
+	const { menuKey, menuItem, menuManagerService, menuSessionVersion, submenuPortalContainer, rootMenuElement, maxMenuHeight, activeSubmenuKey, setActiveSubmenuKey, activeItemIds, hiddenItemIds = [], hoverSuppressed = false, compact = false, headerAction = false, sizeVariant, onMenuPointerEnter, onMenuPointerLeave, onOptionSelect } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$);
+	const disabled = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem.disabled$, false);
+	const activated = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem.activated$, false);
+	const hidden = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem.hidden$, false);
+	const value = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem.value$);
+	const selectorItem = menuItem;
+	const selectionsFromObservable = (0, _wendellhu_redi_react_bindings.useObservable)((0, rxjs.isObservable)(selectorItem.selections) ? selectorItem.selections : void 0);
+	const [inputValue, setInputValue] = (0, react.useState)(value);
+	const [submenuPosition, setSubmenuPosition] = (0, react.useState)({
+		left: 0,
+		top: 0
+	});
+	const [submenuPositionReady, setSubmenuPositionReady] = (0, react.useState)(false);
+	const [submenuPlacement, setSubmenuPlacement] = (0, react.useState)("right");
+	const [keyboardSubmenuFocusRequested, setKeyboardSubmenuFocusRequested] = (0, react.useState)(false);
+	const menuItemElementRef = (0, react.useRef)(null);
+	const menuButtonRef = (0, react.useRef)(null);
+	const submenuElementRef = (0, react.useRef)(null);
+	const submenuCloseTimerRef = (0, react.useRef)(null);
+	const submenuId = (0, react.useId)();
+	const selections = (0, react.useMemo)(() => {
+		if (menuItem.type !== 1 && menuItem.type !== 2) return [];
+		if (selectionsFromObservable) return selectionsFromObservable;
+		return Array.isArray(selectorItem.selections) ? selectorItem.selections : [];
+	}, [
+		menuItem.type,
+		selectionsFromObservable,
+		selectorItem.selections
+	]);
+	const subMenuItems = (0, react.useMemo)(() => {
+		if (menuItem.type !== 3 || !menuItem.id) return [];
+		return menuManagerService.getMenuByPositionKey(menuItem.id);
+	}, [
+		menuItem.id,
+		menuItem.type,
+		menuManagerService,
+		menuSessionVersion
+	]);
+	const hasSelectionSubmenu = selections.length > 0;
+	const hasSubItemSubmenu = subMenuItems.length > 0;
+	const hasSubmenu = hasSelectionSubmenu || hasSubItemSubmenu;
+	const submenuVisible = hasSubmenu && activeSubmenuKey === menuKey;
+	const selectionsCommandId = selectorItem.selectionsCommandId;
+	const clearSubmenuCloseTimer = (0, react.useCallback)(() => {
+		if (submenuCloseTimerRef.current == null) return;
+		clearTimeout(submenuCloseTimerRef.current);
+		submenuCloseTimerRef.current = null;
+	}, []);
+	const closeSubmenu = (0, react.useCallback)(() => {
+		clearSubmenuCloseTimer();
+		setActiveSubmenuKey((currentKey) => currentKey === menuKey ? null : currentKey);
+	}, [
+		clearSubmenuCloseTimer,
+		menuKey,
+		setActiveSubmenuKey
+	]);
+	const scheduleSubmenuClose = (0, react.useCallback)(() => {
+		clearSubmenuCloseTimer();
+		submenuCloseTimerRef.current = setTimeout(() => {
+			submenuCloseTimerRef.current = null;
+			closeSubmenu();
+		}, 500);
+	}, [clearSubmenuCloseTimer, closeSubmenu]);
+	(0, react.useEffect)(() => {
+		setInputValue(value);
+	}, [value]);
+	(0, react.useEffect)(() => () => clearSubmenuCloseTimer(), [clearSubmenuCloseTimer]);
+	(0, react.useEffect)(() => {
+		if (disabled) closeSubmenu();
+	}, [closeSubmenu, disabled]);
+	(0, react.useEffect)(() => {
+		const submenuElement = submenuElementRef.current;
+		if (!submenuVisible || !submenuElement) return;
+		return preventBrowserZoomInContainers([submenuElement]);
+	}, [submenuVisible]);
+	(0, react.useLayoutEffect)(() => {
+		var _submenuElementRef$cu;
+		if (!submenuVisible || !submenuPositionReady || !keyboardSubmenuFocusRequested) return;
+		const firstEnabledButton = (_submenuElementRef$cu = submenuElementRef.current) === null || _submenuElementRef$cu === void 0 ? void 0 : _submenuElementRef$cu.querySelector("button:not(:disabled)");
+		firstEnabledButton === null || firstEnabledButton === void 0 || firstEnabledButton.focus();
+	}, [
+		keyboardSubmenuFocusRequested,
+		submenuPositionReady,
+		submenuVisible
+	]);
+	(0, react.useEffect)(() => {
+		if (!submenuVisible) {
+			setSubmenuPositionReady(false);
+			return;
+		}
+		const updateSubmenuPosition = () => {
+			const menuItemElement = menuItemElementRef.current;
+			const submenuElement = submenuElementRef.current;
+			if (!menuItemElement || !submenuElement) return;
+			const menuItemRect = menuItemElement.getBoundingClientRect();
+			const submenuRect = submenuElement.getBoundingClientRect();
+			const rightLeft = menuItemRect.right - submenuOverlapOffset;
+			const leftLeft = menuItemRect.left - submenuRect.width + submenuOverlapOffset;
+			const hasLeftSpace = leftLeft >= menuViewportPadding;
+			const hasRightSpace = rightLeft + submenuRect.width + menuViewportPadding <= window.innerWidth;
+			const useLeft = direction === "rtl" ? hasLeftSpace || !hasRightSpace : !hasRightSpace && hasLeftSpace;
+			const left = useLeft ? leftLeft : rightLeft;
+			setSubmenuPlacement(useLeft ? "left" : "right");
+			const maxTop = window.innerHeight - menuViewportPadding - submenuRect.height;
+			const top = maxTop < menuViewportPadding ? menuViewportPadding : Math.min(Math.max(menuItemRect.top, menuViewportPadding), maxTop);
+			setSubmenuPosition({
+				left,
+				top
+			});
+			setSubmenuPositionReady(true);
+		};
+		const frameId = window.requestAnimationFrame(updateSubmenuPosition);
+		window.addEventListener("resize", updateSubmenuPosition);
+		window.addEventListener("scroll", updateSubmenuPosition, true);
+		return () => {
+			window.cancelAnimationFrame(frameId);
+			window.removeEventListener("resize", updateSubmenuPosition);
+			window.removeEventListener("scroll", updateSubmenuPosition, true);
+		};
+	}, [
+		direction,
+		submenuVisible,
+		hasSelectionSubmenu,
+		hasSubItemSubmenu
+	]);
+	const hiddenById = menuItem.id != null && hiddenItemIds.includes(menuItem.id) || hiddenItemIds.includes(menuKey);
+	if (hidden || hiddenById) return null;
+	const onChange = (v) => {
+		const newValue = (0, _univerjs_core.isRealNum)(v) && typeof v === "string" ? Number.parseInt(v) : v;
+		setInputValue(newValue);
+	};
+	const onSubmenuOptionSelect = (option) => {
+		onOptionSelect === null || onOptionSelect === void 0 || onOptionSelect(option);
+		clearSubmenuCloseTimer();
+		setActiveSubmenuKey((currentKey) => currentKey === menuKey ? null : currentKey);
+	};
+	const itemClassName = contextMenuItemVariants({
+		sizeVariant,
+		variant: compact ? headerAction ? "compactHeaderAction" : "compact" : "default",
+		disabled,
+		hoverSuppressed,
+		active: resolveMenuItemActiveState(menuItem.id, activated, activeItemIds)
+	});
+	const contentNode = /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+		className: getContextMenuContentClassName(sizeVariant),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+			value: inputValue,
+			title: compact ? void 0 : menuItem.title,
+			label: menuItem.label,
+			icon: menuItem.icon,
+			onChange
+		}), menuItem.shortcut && ` (${menuItem.shortcut})`]
+	});
+	const canExecuteItem = menuItem.type === 0 || menuItem.type === 2;
+	const renderAsContainer = isNonSelectableLabel(menuItem.label);
+	const SubmenuAffordanceIcon = direction === "rtl" ? _univerjs_icons.MoreLeftIcon : _univerjs_icons.MoreRightIcon;
+	const interactiveItemClassName = (0, _univerjs_design.clsx)(itemClassName, isNonHoverableLabel(menuItem.label) && "hover:univer-bg-transparent dark:hover:!univer-bg-transparent");
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		ref: menuItemElementRef,
+		className: "univer-relative",
+		onMouseEnter: () => {
+			clearSubmenuCloseTimer();
+			if (hasSubmenu && !disabled && !hoverSuppressed) {
+				setKeyboardSubmenuFocusRequested(false);
+				setSubmenuPositionReady(false);
+				setActiveSubmenuKey(menuKey);
+				return;
+			}
+			if (!hasSubmenu && !hoverSuppressed) setActiveSubmenuKey(null);
+		},
+		onMouseLeave: (event) => {
+			if (hasSubmenu) {
+				var _submenuElementRef$cu2;
+				const nextTarget = event.relatedTarget;
+				if (nextTarget && ((_submenuElementRef$cu2 = submenuElementRef.current) === null || _submenuElementRef$cu2 === void 0 ? void 0 : _submenuElementRef$cu2.contains(nextTarget))) return;
+				if (isContextMenuPointerLeaveTarget(nextTarget, menuItemElementRef.current, rootMenuElement)) {
+					closeSubmenu();
+					return;
+				}
+				scheduleSubmenuClose();
+			}
+		},
+		children: [renderAsContainer ? /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: interactiveItemClassName,
+			"aria-disabled": disabled,
+			children: [contentNode, hasSubmenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SubmenuAffordanceIcon, { className: `
+                                  ${sizeVariant === "paragraph-t" ? "univer-size-4" : "univer-size-3.5"}
+                                  univer-text-gray-400
+                                  dark:!univer-text-gray-200
+                                ` })]
+		}) : /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+			ref: menuButtonRef,
+			type: "button",
+			className: interactiveItemClassName,
+			disabled,
+			title: typeof menuItem.tooltip === "string" ? localeService.t(menuItem.tooltip) : void 0,
+			"aria-haspopup": hasSubmenu ? "menu" : void 0,
+			"aria-expanded": hasSubmenu ? submenuVisible : void 0,
+			"aria-controls": hasSubmenu ? submenuId : void 0,
+			onKeyDown: (event) => {
+				const openDirection = direction === "rtl" ? "ArrowLeft" : "ArrowRight";
+				if (!hasSubmenu || event.key !== openDirection) return;
+				event.preventDefault();
+				event.stopPropagation();
+				clearSubmenuCloseTimer();
+				setKeyboardSubmenuFocusRequested(true);
+				setSubmenuPositionReady(false);
+				setActiveSubmenuKey(menuKey);
+			},
+			onClick: (event) => {
+				clearSubmenuCloseTimer();
+				if (hasSubmenu) {
+					if (headerAction) {
+						setKeyboardSubmenuFocusRequested(event.detail === 0);
+						setSubmenuPositionReady(false);
+						setActiveSubmenuKey(menuKey);
+						return;
+					}
+					if (canExecuteItem) {
+						const item = menuItem;
+						onOptionSelect === null || onOptionSelect === void 0 || onOptionSelect({
+							commandId: item.commandId,
+							params: item.params,
+							value: inputValue,
+							id: item.id,
+							label: menuKey
+						});
+						return;
+					}
+					setKeyboardSubmenuFocusRequested(event.detail === 0);
+					setSubmenuPositionReady(false);
+					setActiveSubmenuKey(menuKey);
+					return;
+				}
+				if (!canExecuteItem) return;
+				const item = menuItem;
+				onOptionSelect === null || onOptionSelect === void 0 || onOptionSelect({
+					commandId: item.commandId,
+					params: item.params,
+					value: inputValue,
+					id: item.id,
+					label: menuKey
+				});
+			},
+			children: [contentNode, hasSubmenu && !compact && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SubmenuAffordanceIcon, { className: `
+                                  ${sizeVariant === "paragraph-t" ? "univer-size-4" : "univer-size-3.5"}
+                                  univer-text-gray-400
+                                  dark:!univer-text-gray-200
+                                ` })]
+		}), hasSubmenu && submenuVisible && (submenuPortalContainer ? (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			ref: submenuElementRef,
+			id: submenuId,
+			dir: direction,
+			"data-u-context-menu-submenu": "true",
+			className: "univer-z-[1080] univer-w-max univer-max-w-[calc(100vw-16px)]",
+			style: {
+				position: "fixed",
+				left: submenuPosition.left,
+				top: submenuPosition.top,
+				paddingLeft: submenuPlacement === "right" ? submenuVisualGap : 0,
+				paddingRight: submenuPlacement === "left" ? submenuVisualGap : 0,
+				maxHeight: maxMenuHeight,
+				visibility: submenuPositionReady ? "visible" : "hidden",
+				pointerEvents: submenuPositionReady ? "auto" : "none"
+			},
+			onMouseEnter: () => {
+				clearSubmenuCloseTimer();
+				onMenuPointerEnter === null || onMenuPointerEnter === void 0 || onMenuPointerEnter();
+			},
+			onMouseLeave: (event) => {
+				var _menuItemElementRef$c;
+				const nextTarget = event.relatedTarget;
+				if (nextTarget && ((_menuItemElementRef$c = menuItemElementRef.current) === null || _menuItemElementRef$c === void 0 ? void 0 : _menuItemElementRef$c.contains(nextTarget))) return;
+				if (isContextMenuPointerLeaveTarget(nextTarget, menuItemElementRef.current, rootMenuElement)) {
+					closeSubmenu();
+					onMenuPointerLeave === null || onMenuPointerLeave === void 0 || onMenuPointerLeave();
+					return;
+				}
+				scheduleSubmenuClose();
+			},
+			onKeyDown: (event) => {
+				var _menuButtonRef$curren;
+				const closeDirection = direction === "rtl" ? "ArrowRight" : "ArrowLeft";
+				if (event.key !== closeDirection) return;
+				event.preventDefault();
+				event.stopPropagation();
+				closeSubmenu();
+				(_menuButtonRef$curren = menuButtonRef.current) === null || _menuButtonRef$curren === void 0 || _menuButtonRef$curren.focus();
+			},
+			onWheel: (event) => event.stopPropagation(),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: (0, _univerjs_design.clsx)(getContextMenuSubmenuPanelClassName(sizeVariant), _univerjs_design.scrollbarClassName),
+				style: { maxHeight: maxMenuHeight },
+				children: [hasSelectionSubmenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: sizeVariant === "paragraph-t" ? "univer-grid univer-gap-2" : "univer-grid univer-gap-1",
+					children: selections.map((option, index) => {
+						const optionKey = `${menuItem.id}-${option.label ?? option.id}-${index}`;
+						const optionSelected = typeof inputValue !== "undefined" && String(inputValue) === String(option.value);
+						const optionSelectable = !isNonSelectableLabel(option.label);
+						const optionHoverable = !isNonHoverableLabel(option.label);
+						const optionClassName = (0, _univerjs_design.clsx)("univer-text-gray-900 dark:!univer-text-gray-0", optionSelectable ? sizeVariant === "paragraph-t" ? "univer-relative univer-box-border univer-flex univer-min-h-10 univer-w-full univer-items-center univer-rounded-lg univer-border-none univer-bg-transparent univer-px-3 univer-text-left univer-text-base" : "univer-relative univer-box-border univer-flex univer-min-h-8 univer-w-full univer-items-center univer-rounded-md univer-border-none univer-bg-transparent univer-px-2 univer-text-left univer-text-sm" : "univer-relative univer-box-border univer-block univer-w-full univer-border-none univer-bg-transparent univer-p-0", option.disabled ? "univer-cursor-not-allowed univer-opacity-60" : optionHoverable && "univer-cursor-pointer hover:univer-bg-gray-50 dark:hover:!univer-bg-gray-600");
+						const optionContentNode = /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [optionSelectable && optionSelected && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: (0, _univerjs_design.clsx)("univer-absolute univer-left-0 univer-text-primary-600", sizeVariant === "paragraph-t" ? "univer-size-5" : "univer-size-4") }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: (0, _univerjs_design.clsx)(getContextMenuContentClassName(sizeVariant), optionSelectable && optionSelected && "univer-pl-4"),
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+								value$: option.value$,
+								value: option.value,
+								label: option.label,
+								icon: option.icon,
+								onChange: (optionValue) => {
+									onSubmenuOptionSelect === null || onSubmenuOptionSelect === void 0 || onSubmenuOptionSelect({
+										...option,
+										value: optionValue,
+										id: menuItem.id,
+										label: menuKey,
+										commandId: option.commandId ?? selectionsCommandId
+									});
+								}
+							})
+						})] });
+						return optionSelectable ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+							type: "button",
+							className: optionClassName,
+							disabled: option.disabled,
+							onClick: () => {
+								onSubmenuOptionSelect === null || onSubmenuOptionSelect === void 0 || onSubmenuOptionSelect({
+									...option,
+									id: menuItem.id,
+									label: menuKey,
+									commandId: option.commandId ?? selectionsCommandId
+								});
+							},
+							children: optionContentNode
+						}, optionKey) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: optionClassName,
+							"aria-disabled": option.disabled,
+							children: optionContentNode
+						}, optionKey);
+					})
+				}), hasSubItemSubmenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextMenuMenu, {
+					menuSchemas: subMenuItems,
+					menuManagerService,
+					menuSessionVersion,
+					submenuPortalContainer,
+					rootMenuElement,
+					activeItemIds,
+					hiddenItemIds,
+					hoverSuppressed,
+					sizeVariant,
+					onMenuPointerEnter,
+					onMenuPointerLeave,
+					onOptionSelect: onSubmenuOptionSelect,
+					maxMenuHeight
+				})]
+			})
+		}), submenuPortalContainer) : null)]
+	});
+}
+function useContextGroupHiddenStates$1(menuSchemas) {
+	return (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => {
+		const groupStates = menuSchemas.flatMap((menuSchema) => {
+			var _menuSchema$children3;
+			const hiddenObservables = ((_menuSchema$children3 = menuSchema.children) === null || _menuSchema$children3 === void 0 ? void 0 : _menuSchema$children3.map((childSchema) => {
+				var _childSchema$item;
+				return ((_childSchema$item = childSchema.item) === null || _childSchema$item === void 0 ? void 0 : _childSchema$item.hidden$) ?? (0, rxjs.of)(false);
+			})) ?? [];
+			return hiddenObservables.length ? [(0, rxjs.combineLatest)(hiddenObservables).pipe((0, rxjs.map)((values) => [menuSchema.key, values.every(Boolean)]))] : [];
+		});
+		return groupStates.length ? (0, rxjs.merge)(...groupStates).pipe((0, rxjs.scan)((states, [key, hidden]) => ({
+			...states,
+			[key]: hidden
+		}), {}), (0, rxjs.startWith)({})) : (0, rxjs.of)({});
+	}, [menuSchemas]), {});
+}
+
+//#endregion
+//#region src/views/components/context-menu/AnchoredContextMenu.tsx
+function AnchoredContextMenu(props) {
+	const { hostId, visible, anchorRect, menuType, anchorVertical = "bottom", autoFocus, menuOffset = 0, menuManagerService, layoutService, onRequestClose, onOptionSelect } = props;
+	const contentRef = (0, react.useRef)(null);
+	const contextMenuHostService = (0, _wendellhu_redi_react_bindings.useDependency)(IContextMenuHostService);
+	const onRequestCloseRef = (0, react.useRef)(onRequestClose);
+	const menuSessionVersionRef = (0, react.useRef)(0);
+	const visibleRef = (0, react.useRef)(visible);
+	const menuTypeRef = (0, react.useRef)(menuType);
+	const focusReturnTargetRef = (0, react.useRef)(null);
+	(0, react.useEffect)(() => {
+		onRequestCloseRef.current = onRequestClose;
+	}, [onRequestClose]);
+	if (visible && (!visibleRef.current || menuType !== menuTypeRef.current)) menuSessionVersionRef.current += 1;
+	visibleRef.current = visible;
+	menuTypeRef.current = menuType;
+	(0, react.useEffect)(() => {
+		const disposable = contextMenuHostService.registerMenu(hostId, () => {
+			onRequestCloseRef.current();
+		});
+		return () => {
+			disposable.dispose();
+			contextMenuHostService.deactivateMenu(hostId);
+		};
+	}, [contextMenuHostService, hostId]);
+	(0, react.useLayoutEffect)(() => {
+		var _contentRef$current3, _contentRef$current4;
+		if (visible) {
+			var _contentRef$current, _contentRef$current2, _ownerDocument$defaul;
+			const ownerDocument = ((_contentRef$current = contentRef.current) === null || _contentRef$current === void 0 ? void 0 : _contentRef$current.ownerDocument) ?? document;
+			const activeElement = ownerDocument.activeElement;
+			const isFocusInMenu = activeElement !== null && (((_contentRef$current2 = contentRef.current) === null || _contentRef$current2 === void 0 ? void 0 : _contentRef$current2.contains(activeElement)) || !!activeElement.closest(`[${"data-u-context-menu-submenu"}]`));
+			const HTMLElementConstructor = (_ownerDocument$defaul = ownerDocument.defaultView) === null || _ownerDocument$defaul === void 0 ? void 0 : _ownerDocument$defaul.HTMLElement;
+			if (!isFocusInMenu) focusReturnTargetRef.current = HTMLElementConstructor && activeElement instanceof HTMLElementConstructor ? activeElement : null;
+			contextMenuHostService.activateMenu(hostId);
+			return;
+		}
+		const activeElement = (((_contentRef$current3 = contentRef.current) === null || _contentRef$current3 === void 0 ? void 0 : _contentRef$current3.ownerDocument) ?? document).activeElement;
+		const isFocusInMenu = activeElement !== null && (((_contentRef$current4 = contentRef.current) === null || _contentRef$current4 === void 0 ? void 0 : _contentRef$current4.contains(activeElement)) || !!activeElement.closest(`[${"data-u-context-menu-submenu"}]`));
+		const focusReturnTarget = focusReturnTargetRef.current;
+		if (isFocusInMenu && (focusReturnTarget === null || focusReturnTarget === void 0 ? void 0 : focusReturnTarget.isConnected)) focusReturnTarget.focus();
+		focusReturnTargetRef.current = null;
+		contextMenuHostService.deactivateMenu(hostId);
+	}, [
+		contextMenuHostService,
+		hostId,
+		visible
+	]);
+	(0, react.useEffect)(() => {
+		if (!visible) return;
+		const isTargetInSubmenu = (target) => {
+			return target instanceof Element && target.closest(`[${"data-u-context-menu-submenu"}]`);
+		};
+		const handlePointerDown = (event) => {
+			if (isTargetInSubmenu(event.target)) return;
+			if (contentRef.current && !contentRef.current.contains(event.target)) onRequestCloseRef.current();
+		};
+		const handleEscape = (event) => {
+			if (event.key === "Escape") onRequestCloseRef.current();
+		};
+		const handleWheel = (event) => {
+			var _contentRef$current5;
+			if (isTargetInSubmenu(event.target)) {
+				event.stopPropagation();
+				return;
+			}
+			if ((_contentRef$current5 = contentRef.current) === null || _contentRef$current5 === void 0 ? void 0 : _contentRef$current5.contains(event.target)) {
+				event.stopPropagation();
+				return;
+			}
+			event.preventDefault();
+			event.stopPropagation();
+		};
+		document.addEventListener("pointerdown", handlePointerDown);
+		document.addEventListener("keydown", handleEscape);
+		document.addEventListener("wheel", handleWheel, {
+			capture: true,
+			passive: false
+		});
+		return () => {
+			document.removeEventListener("pointerdown", handlePointerDown);
+			document.removeEventListener("keydown", handleEscape);
+			document.removeEventListener("wheel", handleWheel, true);
+		};
+	}, [visible]);
+	const offset = (0, react.useMemo)(() => {
+		if (!anchorRect) return [0, 0];
+		const anchorY = anchorVertical === "top" ? anchorRect.top : anchorRect.bottom;
+		const offsetY = anchorVertical === "top" ? anchorY - menuOffset : anchorY + menuOffset;
+		return [anchorRect.left, offsetY];
+	}, [
+		anchorRect,
+		anchorVertical,
+		menuOffset
+	]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Popup, {
+		visible: visible && !!anchorRect,
+		offset,
+		overflowVisible: true,
+		placementY: anchorVertical === "top" ? "above" : "below",
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+			ref: contentRef,
+			children: menuType && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextMenuPanel, {
+				menuType,
+				autoFocus,
+				menuManagerService,
+				layoutService,
+				menuSessionVersion: menuSessionVersionRef.current,
+				onCancel: onRequestClose,
+				onOptionSelect
+			})
+		})
+	});
+}
+
+//#endregion
+//#region src/views/components/context-menu/ContextMenu.tsx
+const DESKTOP_CONTEXT_MENU_HOST_ID = "desktop-context-menu";
+function DesktopContextMenu() {
+	const [visible, setVisible] = (0, react.useState)(false);
+	const [menuType, setMenuType] = (0, react.useState)("");
+	const [anchorRect, setAnchorRect] = (0, react.useState)(null);
+	const [menuContext, setMenuContext] = (0, react.useState)();
+	const visibleRef = (0, react.useRef)(visible);
+	const contextMenuService = (0, _wendellhu_redi_react_bindings.useDependency)(IContextMenuService);
+	const commandService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ICommandService);
+	const layoutService = (0, _wendellhu_redi_react_bindings.useDependency)(ILayoutService);
+	const menuManagerService = (0, _wendellhu_redi_react_bindings.useDependency)(IMenuManagerService);
+	const runtimeScopeService = (0, _wendellhu_redi_react_bindings.useDependency)(IUIRuntimeScopeService);
+	visibleRef.current = visible;
+	(0, react.useEffect)(() => {
+		const disposables = contextMenuService.registerContextMenuHandler({
+			handleContextMenu,
+			hideContextMenu() {
+				handleClose();
+			},
+			get visible() {
+				return visibleRef.current;
+			}
+		});
+		return () => {
+			disposables.dispose();
+		};
+	}, [contextMenuService]);
+	/** A function to open context menu with given position and menu type. */
+	function handleContextMenu(event, menuType, context) {
+		setVisible(false);
+		requestAnimationFrame(() => {
+			setMenuType(menuType);
+			setMenuContext(context);
+			setAnchorRect({
+				left: event.clientX,
+				top: event.clientY,
+				bottom: event.clientY
+			});
+			setVisible(true);
+		});
+	}
+	function handleClose() {
+		setVisible(false);
+	}
+	const activeScope = runtimeScopeService.get(menuContext === null || menuContext === void 0 ? void 0 : menuContext.unitId);
+	const activeMenuManagerService = (activeScope === null || activeScope === void 0 ? void 0 : activeScope.has(IMenuManagerService)) ? activeScope.get(IMenuManagerService) : menuManagerService;
+	const activeCommandService = (activeScope === null || activeScope === void 0 ? void 0 : activeScope.has(_univerjs_core.ICommandService)) ? activeScope.get(_univerjs_core.ICommandService) : commandService;
+	const activeLayoutService = (activeScope === null || activeScope === void 0 ? void 0 : activeScope.has(ILayoutService)) ? activeScope.get(ILayoutService) : layoutService;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(AnchoredContextMenu, {
+		hostId: DESKTOP_CONTEXT_MENU_HOST_ID,
+		visible,
+		anchorRect,
+		menuType,
+		autoFocus: menuContext === null || menuContext === void 0 ? void 0 : menuContext.autoFocus,
+		menuManagerService: activeMenuManagerService,
+		layoutService: activeLayoutService,
+		onRequestClose: handleClose,
+		onOptionSelect: (params) => {
+			const { label: id, commandId, value } = params;
+			const rawParams = typeof params.params === "function" ? params.params() : params.params;
+			const commandParams = typeof rawParams === "undefined" ? { value } : rawParams;
+			if (activeCommandService) activeCommandService.executeCommand(commandId ?? id, commandParams);
+			activeLayoutService.focus();
+			handleClose();
+		}
+	});
+}
+
+//#endregion
+//#region src/views/components/sidebar/Sidebar.tsx
+function renderSidebarOptions(options) {
+	if (!options) return null;
+	const { children, footer, header, ...rest } = options;
+	const renderLabel = (label) => {
+		if (!label) return void 0;
+		const { key, ...props } = label;
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, { ...props }, key);
+	};
+	return {
+		...rest,
+		children: renderLabel(children),
+		footer: renderLabel(footer),
+		header: renderLabel(header)
+	};
+}
+const MIN_SIDEBAR_WIDTH = 280;
+const MAX_SIDEBAR_WIDTH = 800;
+function Sidebar() {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const sidebarService = (0, _wendellhu_redi_react_bindings.useDependency)(ISidebarService);
+	const sidebarOptions = (0, _wendellhu_redi_react_bindings.useObservable)(sidebarService.sidebarOptions$);
+	const scrollRef = (0, react.useRef)(null);
+	const sidebarRef = (0, react.useRef)(null);
+	const closeButtonRef = (0, react.useRef)(null);
+	const [isDragging, setIsDragging] = (0, react.useState)(false);
+	const dragWidthRef = (0, react.useRef)(null);
+	const options = (0, react.useMemo)(() => renderSidebarOptions(sidebarOptions), [sidebarOptions]);
+	(0, react.useEffect)(() => {
+		if ((options === null || options === void 0 ? void 0 : options.visible) && closeButtonRef.current) closeButtonRef.current.focus();
+	}, [options === null || options === void 0 ? void 0 : options.visible]);
+	(0, react.useEffect)(() => {
+		const handleKeyDown = (e) => {
+			if (e.key === "Escape" && sidebarService.visible) {
+				e.stopPropagation();
+				sidebarService.close();
+			}
+		};
+		document.addEventListener("keydown", handleKeyDown);
+		return () => document.removeEventListener("keydown", handleKeyDown);
+	}, [sidebarService]);
+	const handleResizeMouseDown = (0, react.useCallback)((e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		setIsDragging(true);
+		document.body.style.cursor = "col-resize";
+		document.body.style.userSelect = "none";
+	}, []);
+	(0, react.useEffect)(() => {
+		if (!isDragging) {
+			document.body.style.cursor = "";
+			document.body.style.userSelect = "";
+			return;
+		}
+		const handleMouseMove = (e) => {
+			if (!sidebarRef.current) return;
+			const newWidth = sidebarRef.current.getBoundingClientRect().right - e.clientX;
+			const clampedWidth = Math.max(MIN_SIDEBAR_WIDTH, Math.min(newWidth, MAX_SIDEBAR_WIDTH));
+			dragWidthRef.current = clampedWidth;
+			sidebarRef.current.style.width = `${clampedWidth}px`;
+		};
+		const handleMouseUp = () => {
+			setIsDragging(false);
+			if (dragWidthRef.current != null) {
+				sidebarService.setWidth(dragWidthRef.current);
+				dragWidthRef.current = null;
+			}
+		};
+		document.addEventListener("mousemove", handleMouseMove);
+		document.addEventListener("mouseup", handleMouseUp);
+		return () => {
+			document.removeEventListener("mousemove", handleMouseMove);
+			document.removeEventListener("mouseup", handleMouseUp);
+		};
+	}, [isDragging, sidebarService]);
+	(0, react.useEffect)(() => {
+		if (scrollRef.current) sidebarService.setContainer(scrollRef.current);
+		return () => {
+			sidebarService.setContainer(void 0);
+		};
+	}, [sidebarService]);
+	(0, react.useEffect)(() => {
+		const handleScroll = (e) => {
+			sidebarService.scrollEvent$.next(e);
+		};
+		const scrollElement = scrollRef.current;
+		if (scrollElement) scrollElement.addEventListener("scroll", handleScroll);
+		return () => {
+			scrollElement === null || scrollElement === void 0 || scrollElement.removeEventListener("scroll", handleScroll);
+		};
+	}, [sidebarService]);
+	const width = (0, react.useMemo)(() => {
+		if (isDragging && dragWidthRef.current != null) return `${dragWidthRef.current}px`;
+		if (!(options === null || options === void 0 ? void 0 : options.visible)) return 0;
+		const savedWidth = sidebarService.width;
+		if (savedWidth) return `${savedWidth}px`;
+		if (typeof options.width === "number") return `${options.width}px`;
+		return options.width;
+	}, [
+		isDragging,
+		options,
+		sidebarService
+	]);
+	function handleClose() {
+		sidebarService.close(sidebarOptions === null || sidebarOptions === void 0 ? void 0 : sidebarOptions.id);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+		ref: sidebarRef,
+		"data-u-comp": "sidebar",
+		role: "complementary",
+		"aria-expanded": !!(options === null || options === void 0 ? void 0 : options.visible),
+		"aria-label": localeService.t("ui.sidebar.panel"),
+		className: (0, _univerjs_design.clsx)("univer-relative univer-h-full univer-flex-shrink-0 univer-bg-gray-0 univer-text-gray-900 dark:!univer-bg-gray-900 dark:!univer-text-gray-0", {
+			"univer-w-96 univer-translate-x-0": options === null || options === void 0 ? void 0 : options.visible,
+			"univer-w-0 univer-translate-x-full": !(options === null || options === void 0 ? void 0 : options.visible)
+		}),
+		style: { width: isDragging ? void 0 : width },
+		children: [(options === null || options === void 0 ? void 0 : options.visible) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "hover:univer-bg-primary-500/30 active:univer-bg-primary-500/50 univer-absolute univer-left-0 univer-top-0 univer-z-20 univer-h-full univer-w-1 univer-cursor-col-resize univer-transition-colors",
+			onMouseDown: handleResizeMouseDown,
+			role: "separator",
+			"aria-orientation": "vertical",
+			"aria-label": localeService.t("ui.sidebar.resize"),
+			tabIndex: 0,
+			onKeyDown: (e) => {
+				if (!sidebarRef.current) return;
+				const currentWidth = sidebarRef.current.getBoundingClientRect().width;
+				let newWidth = currentWidth;
+				if (e.key === "ArrowLeft") {
+					e.preventDefault();
+					newWidth = Math.max(MIN_SIDEBAR_WIDTH, currentWidth - 20);
+				} else if (e.key === "ArrowRight") {
+					e.preventDefault();
+					newWidth = Math.min(MAX_SIDEBAR_WIDTH, currentWidth + 20);
+				}
+				if (newWidth !== currentWidth) {
+					sidebarRef.current.style.width = `${newWidth}px`;
+					sidebarService.setWidth(newWidth);
+				}
+			}
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+			ref: scrollRef,
+			className: (0, _univerjs_design.clsx)("univer-box-border univer-grid univer-h-0 univer-min-h-full univer-grid-rows-[auto_1fr_auto] univer-overflow-y-auto", _univerjs_design.borderLeftBottomClassName, _univerjs_design.scrollbarClassName),
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
+					className: "univer-sticky univer-top-0 univer-z-10 univer-box-border univer-flex univer-cursor-default univer-items-center univer-justify-between univer-bg-gray-0 univer-p-4 univer-pb-2 univer-text-base univer-font-medium univer-text-gray-800 dark:!univer-bg-gray-900 dark:!univer-text-gray-0",
+					children: [options === null || options === void 0 ? void 0 : options.header, /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						ref: closeButtonRef,
+						type: "button",
+						className: "focus:univer-ring-primary-500/50 univer-flex univer-size-6 univer-cursor-pointer univer-appearance-none univer-items-center univer-justify-center univer-rounded-sm univer-border-none univer-bg-transparent univer-p-0 univer-text-gray-500 focus:univer-outline-none focus:univer-ring-2 dark:!univer-text-gray-300",
+						onClick: handleClose,
+						"aria-label": localeService.t("ui.sidebar.close"),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, {})
+					})]
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+					className: "univer-box-border univer-min-w-0 univer-cursor-default univer-px-4",
+					children: options === null || options === void 0 ? void 0 : options.children
+				}),
+				(options === null || options === void 0 ? void 0 : options.footer) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("footer", {
+					className: "univer-sticky univer-bottom-0 univer-box-border univer-bg-gray-0 univer-p-4 dark:!univer-bg-gray-900",
+					children: options.footer
+				})
+			]
+		})]
+	});
+}
+
+//#endregion
+//#region src/views/components/workbench-skeleton/WorkbenchSkeleton.tsx
+function WorkbenchSkeleton({ darkMode, direction, overlay = false }) {
+	const shimmerClassName = `
+      univer-animate-pulse univer-bg-gray-100 motion-reduce:univer-animate-none
+      dark:!univer-bg-gray-700
+    `;
+	const shimmerStyle = { animationDuration: "1.2s" };
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"aria-busy": "true",
+		className: (0, _univerjs_design.clsx)("univer-flex univer-h-full univer-min-h-0 univer-flex-col univer-overflow-hidden univer-bg-gray-50 dark:!univer-bg-gray-900", {
+			"univer-absolute univer-inset-0 univer-z-50": overlay,
+			"univer-dark": darkMode
+		}),
+		dir: direction,
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
+				"data-u-comp": "workbench-skeleton-toolbar",
+				className: "univer-flex univer-h-11 univer-shrink-0 univer-items-center univer-gap-2 univer-border-0 univer-border-b univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-px-4 dark:!univer-border-gray-700 dark:!univer-bg-gray-800",
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						"data-u-comp": "workbench-skeleton-shimmer",
+						className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-h-4 univer-w-24 univer-rounded"),
+						style: shimmerStyle
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						"data-u-comp": "workbench-skeleton-shimmer",
+						className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-ml-2 univer-size-6 univer-rounded"),
+						style: shimmerStyle
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						"data-u-comp": "workbench-skeleton-shimmer",
+						className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-size-6 univer-rounded"),
+						style: shimmerStyle
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("main", {
+				"data-u-comp": "workbench-skeleton-content",
+				className: "univer-flex univer-min-h-0 univer-min-w-0 univer-flex-1 univer-flex-col univer-gap-4 univer-p-4",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"data-u-comp": "workbench-skeleton-shimmer",
+					className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-h-4 univer-w-1/3 univer-rounded"),
+					style: shimmerStyle
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"data-u-comp": "workbench-skeleton-shimmer",
+					className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-flex-1 univer-rounded-md"),
+					style: shimmerStyle
+				})]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("footer", {
+				"data-u-comp": "workbench-skeleton-footer",
+				className: "univer-flex univer-h-10 univer-shrink-0 univer-items-center univer-justify-between univer-border-0 univer-border-t univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-px-4 dark:!univer-border-gray-700 dark:!univer-bg-gray-800",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: "univer-flex univer-items-center univer-gap-2",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						"data-u-comp": "workbench-skeleton-shimmer",
+						className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-size-5 univer-rounded"),
+						style: shimmerStyle
+					}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						"data-u-comp": "workbench-skeleton-shimmer",
+						className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-h-5 univer-w-14 univer-rounded"),
+						style: shimmerStyle
+					})]
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: "univer-flex univer-items-center univer-gap-2",
+					children: [
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							"data-u-comp": "workbench-skeleton-shimmer",
+							className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-size-5 univer-rounded"),
+							style: shimmerStyle
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							"data-u-comp": "workbench-skeleton-shimmer",
+							className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-h-2 univer-w-24 univer-rounded-full"),
+							style: shimmerStyle
+						}),
+						/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							"data-u-comp": "workbench-skeleton-shimmer",
+							className: (0, _univerjs_design.clsx)(shimmerClassName, "univer-size-5 univer-rounded"),
+							style: shimmerStyle
+						})
+					]
+				})]
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/views/hooks/update-effect.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const useUpdateEffect = (effect, deps) => {
+	const hasMount = (0, react.useRef)(false);
+	(0, react.useEffect)(() => {
+		if (hasMount.current) return effect();
+		else hasMount.current = true;
+	}, deps);
+};
+
+//#endregion
+//#region src/views/hooks/use-click-out-side.ts
+function useClickOutSide(ref, opts) {
+	const handler = useEvent(opts.handler);
+	(0, react.useEffect)(() => {
+		const listener = (event) => {
+			if (ref.current && event.target && !ref.current.contains(event.target)) handler();
+		};
+		document.addEventListener("mousedown", listener);
+		return () => {
+			document.removeEventListener("mousedown", listener);
+		};
+	}, [handler, ref]);
+}
+
+//#endregion
+//#region src/views/hooks/use-debounce.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function useDebounceFn(fn, delay = 300) {
+	const timeoutRef = (0, react.useRef)(null);
+	return (0, react.useCallback)((...args) => {
+		if (timeoutRef.current) clearTimeout(timeoutRef.current);
+		timeoutRef.current = setTimeout(() => {
+			fn(...args);
+		}, delay);
+	}, [fn, delay]);
+}
+
+//#endregion
+//#region src/views/hooks/virtual-list.ts
+const isNumber = (value) => typeof value === "number";
+function useLatest(value) {
+	const ref = (0, react.useRef)(value);
+	ref.current = value;
+	return ref;
+}
+const useVirtualList = (list, options) => {
+	const { containerTarget, itemHeight, overscan = 5 } = options;
+	const itemHeightRef = useLatest(itemHeight);
+	const [size, setSize] = (0, react.useState)(null);
+	const scrollTriggerByScrollToFunc = (0, react.useRef)(false);
+	const [targetList, setTargetList] = (0, react.useState)([]);
+	const [wrapperStyle, setWrapperStyle] = (0, react.useState)({
+		height: void 0,
+		marginTop: void 0
+	});
+	const getVisibleCount = (containerHeight, fromIndex) => {
+		if (typeof itemHeightRef.current === "number") return Math.ceil(containerHeight / itemHeightRef.current);
+		let sum = 0;
+		let endIndex = 0;
+		for (let i = fromIndex; i < list.length; i++) {
+			const height = itemHeightRef.current(i, list[i]);
+			sum += height;
+			endIndex = i;
+			if (sum >= containerHeight) break;
+		}
+		return endIndex - fromIndex;
+	};
+	const getOffset = (scrollTop) => {
+		if (isNumber(itemHeightRef.current)) return Math.floor(scrollTop / itemHeightRef.current);
+		let sum = 0;
+		let offset = 0;
+		for (let i = 0; i < list.length; i++) {
+			const height = itemHeightRef.current(i, list[i]);
+			sum += height;
+			if (sum >= scrollTop) {
+				offset = i;
+				break;
+			}
+		}
+		return offset + 1;
+	};
+	const getDistanceTop = (index) => {
+		if (typeof itemHeightRef.current === "number") return index * itemHeightRef.current;
+		return list.slice(0, index).reduce((sum, _, i) => sum + itemHeightRef.current(i, list[i]), 0);
+	};
+	const totalHeight = (0, react.useMemo)(() => {
+		if (isNumber(itemHeightRef.current)) return list.length * itemHeightRef.current;
+		return list.reduce((sum, _, index) => sum + itemHeightRef.current(index, list[index]), 0);
+	}, [list]);
+	const calculateRange = () => {
+		const container = containerTarget.current;
+		if (container) {
+			const { scrollTop, clientHeight } = container;
+			const offset = getOffset(scrollTop);
+			const visibleCount = getVisibleCount(clientHeight, offset);
+			const start = Math.max(0, offset - overscan);
+			const end = Math.min(list.length, offset + visibleCount + overscan);
+			const offsetTop = getDistanceTop(start);
+			setWrapperStyle({
+				height: `${totalHeight - offsetTop}px`,
+				marginTop: `${offsetTop}px`
+			});
+			setTargetList(list.slice(start, end).map((ele, index) => ({
+				data: ele,
+				index: index + start
+			})));
+		}
+	};
+	(0, react.useEffect)(() => {
+		if (containerTarget.current) {
+			const getSize = () => {
+				const width = containerTarget.current.clientWidth;
+				const height = containerTarget.current.clientHeight;
+				if (width !== (size === null || size === void 0 ? void 0 : size.width) || height !== (size === null || size === void 0 ? void 0 : size.height)) setSize({
+					width,
+					height
+				});
+			};
+			getSize();
+			const ob = new ResizeObserver(getSize);
+			ob.observe(containerTarget.current);
+			return () => {
+				ob.disconnect();
+			};
+		}
+	}, []);
+	(0, react.useEffect)(() => {
+		if (!(size === null || size === void 0 ? void 0 : size.width) || !(size === null || size === void 0 ? void 0 : size.height)) return;
+		calculateRange();
+	}, [
+		size === null || size === void 0 ? void 0 : size.width,
+		size === null || size === void 0 ? void 0 : size.height,
+		list
+	]);
+	const scrollTo = (index) => {
+		const container = containerTarget.current;
+		if (container) {
+			scrollTriggerByScrollToFunc.current = true;
+			container.scrollTop = getDistanceTop(index);
+			calculateRange();
+		}
+	};
+	return [targetList, {
+		wrapperStyle,
+		scrollTo: useEvent(scrollTo),
+		containerProps: { onScroll: (e) => {
+			if (scrollTriggerByScrollToFunc.current) {
+				scrollTriggerByScrollToFunc.current = false;
+				return;
+			}
+			e.preventDefault();
+			calculateRange();
+		} }
+	}];
+};
+
+//#endregion
+//#region src/views/workbench/Workbench.tsx
+function DesktopWorkbench(props) {
+	const uiConfig = useConfigValue(UI_PLUGIN_CONFIG_KEY);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DesktopWorkbenchContent, {
+		...props,
+		...uiConfig
+	});
+}
+function mountDesktopWorkbench(injector, options, mountContainer, onRendered) {
+	(0, _univerjs_design.render)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)((0, _wendellhu_redi_react_bindings.connectInjector)(DesktopWorkbench, injector), {
+		...options,
+		mountContainer,
+		onRendered
+	}), mountContainer);
+}
+function DesktopWorkbenchContent(props) {
+	const { header = true, toolbar = true, footer = true, headerMenu = true, contextMenu = true, ribbonType = "classic", mountContainer, onRendered } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const lifecycleService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LifecycleService);
+	const workbenchService = (0, _wendellhu_redi_react_bindings.useDependency)(IWorkbenchService);
+	const themeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ThemeService);
+	const themeSwitcherService = (0, _wendellhu_redi_react_bindings.useDependency)(ThemeSwitcherService);
+	const contentRef = (0, react.useRef)(null);
+	const uiConfig = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IConfigService).getConfig(UI_PLUGIN_CONFIG_KEY);
+	const customHeaderComponents = useComponentsOfPart("custom-header");
+	const footerComponents = useComponentsOfPart("footer");
+	const headerComponents = useComponentsOfPart("header");
+	const headerMenuComponents = useComponentsOfPart("header-menu");
+	const contentComponents = useComponentsOfPart("content");
+	const leftSidebarComponents = useComponentsOfPart("left-sidebar");
+	const globalComponents = useComponentsOfPart("global");
+	const toolbarComponents = useComponentsOfPart("toolbar");
+	const lifecycleStage = (0, _wendellhu_redi_react_bindings.useObservable)(lifecycleService.lifecycle$, lifecycleService.stage);
+	const externalSkeletonVisible = (0, _wendellhu_redi_react_bindings.useObservable)(workbenchService.skeletonVisible$, void 0, true);
+	const ready = lifecycleStage >= _univerjs_core.LifecycleStages.Ready;
+	const popupRootId = (uiConfig === null || uiConfig === void 0 ? void 0 : uiConfig.popupRootId) ?? "univer-popup-portal";
+	(0, react.useLayoutEffect)(() => {
+		const sub = themeService.currentTheme$.subscribe((theme) => {
+			themeSwitcherService.injectThemeToHead(theme);
+		});
+		return () => {
+			sub.unsubscribe();
+		};
+	}, []);
+	const darkMode = (0, _wendellhu_redi_react_bindings.useObservable)(themeService.darkMode$, themeService.darkMode);
+	(0, react.useLayoutEffect)(() => {
+		if (darkMode) document.documentElement.classList.add("univer-dark");
+		else document.documentElement.classList.remove("univer-dark");
+	}, [darkMode]);
+	(0, react.useEffect)(() => {
+		if (ready && contentRef.current) onRendered === null || onRendered === void 0 || onRendered(contentRef.current);
+	}, [ready, onRendered]);
+	const locale = (0, _wendellhu_redi_react_bindings.useObservable)(() => localeService.localeChanged$.pipe((0, rxjs.map)(() => localeService.getLocales())), localeService.getLocales(), false, [localeService]);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$, localeService.getDirection());
+	const portalContainer = (0, react.useMemo)(() => document.createElement("div"), []);
+	(0, react.useEffect)(() => {
+		document.body.appendChild(portalContainer);
+		return () => {
+			document.body.removeChild(portalContainer);
+		};
+	}, [mountContainer, portalContainer]);
+	(0, react.useEffect)(() => {
+		portalContainer.dir = direction;
+	}, [direction, portalContainer]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.ConfigProvider, {
+		locale: locale === null || locale === void 0 ? void 0 : locale.design,
+		direction,
+		mountContainer: portalContainer,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-relative univer-h-full univer-min-h-0",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				"data-u-comp": "workbench-layout",
+				className: (0, _univerjs_design.clsx)("univer-flex univer-h-full univer-min-h-0 univer-flex-col univer-bg-gray-0 dark:!univer-bg-gray-800", { "univer-dark": darkMode }),
+				tabIndex: -1,
+				onBlur: (e) => e.stopPropagation(),
+				onContextMenu: (e) => e.preventDefault(),
+				dir: direction,
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-relative univer-flex univer-min-h-0 univer-flex-col univer-bg-gray-0 dark:!univer-bg-gray-800",
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: customHeaderComponents }, "custom-header")
+					}),
+					header && toolbar && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("header", {
+						"data-u-comp": "headerbar",
+						className: "univer-relative univer-z-10 univer-w-full univer-overflow-hidden",
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, {
+							components: toolbarComponents,
+							sharedProps: {
+								ribbonType,
+								headerMenuComponents,
+								headerMenu
+							}
+						}, "toolbar")
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+						className: "univer-relative univer-flex univer-min-h-0 univer-flex-1 univer-flex-col",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+							className: "univer-grid univer-h-full univer-grid-cols-[auto_1fr_auto] univer-grid-rows-[100%] univer-overflow-hidden",
+							children: [
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("aside", {
+									"data-u-comp": "left-sidebar",
+									className: "univer-h-full",
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: leftSidebarComponents }, "left-sidebar")
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+									className: (0, _univerjs_design.clsx)("univer-relative univer-grid univer-flex-1 univer-grid-rows-[auto_1fr] univer-overflow-hidden univer-bg-gray-0 dark:!univer-bg-gray-800", _univerjs_design.borderBottomClassName),
+									children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("header", { children: header && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: headerComponents }, "header") }), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+										className: "univer-relative univer-overflow-hidden dark:!univer-bg-gray-900",
+										ref: contentRef,
+										"data-range-selector": true,
+										onContextMenu: (e) => e.preventDefault(),
+										children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: contentComponents }, "content")
+									})]
+								}),
+								/* @__PURE__ */ (0, react_jsx_runtime.jsx)("aside", {
+									"data-u-comp": "right-sidebar",
+									className: "univer-z-[100] univer-h-full",
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Sidebar, {})
+								})
+							]
+						}), footer && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("footer", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, {
+							components: footerComponents,
+							sharedProps: { contextMenu }
+						}, "footer") })]
+					})
+				]
+			}), (!ready || externalSkeletonVisible) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(WorkbenchSkeleton, {
+				darkMode,
+				direction,
+				overlay: true
+			})]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			dir: direction,
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: globalComponents }, "global"),
+				contextMenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(DesktopContextMenu, {}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(FloatingContainer, {}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", { id: popupRootId })
+			]
+		})]
+	});
+}
+function FloatingContainer() {
+	const { mountContainer } = (0, react.useContext)(_univerjs_design.ConfigContext);
+	return (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: useComponentsOfPart("floating") }, "floating"), mountContainer);
+}
+
+//#endregion
+//#region src/controllers/ui/ui-shared.controller.ts
+const STEADY_TIMEOUT = 3e3;
+/**
+* @ignore
+*/
+var SingleUnitUIController = class extends _univerjs_core.Disposable {
+	constructor(_injector, _instanceService, _layoutService, _lifecycleService, _renderManagerService) {
+		super();
+		this._injector = _injector;
+		this._instanceService = _instanceService;
+		this._layoutService = _layoutService;
+		this._lifecycleService = _lifecycleService;
+		this._renderManagerService = _renderManagerService;
+		_defineProperty(this, "_steadyTimeout", void 0);
+		_defineProperty(this, "_renderTimeout", void 0);
+		_defineProperty(this, "_currentRenderId", null);
+	}
+	dispose() {
+		super.dispose();
+		clearTimeout(this._steadyTimeout);
+		clearTimeout(this._renderTimeout);
+		delete this._instanceService;
+		delete this._layoutService;
+		delete this._lifecycleService;
+		delete this._renderManagerService;
+	}
+	_bootstrapWorkbench() {
+		var _this$_injector$get;
+		const initialSkeleton = (_this$_injector$get = this._injector.get(IWorkbenchService, _univerjs_core.Quantity.OPTIONAL)) === null || _this$_injector$get === void 0 ? void 0 : _this$_injector$get.acquireSkeleton();
+		if (initialSkeleton) this.disposeWithMe(initialSkeleton);
+		this.disposeWithMe(this.bootstrap(async (contentElement, containerElement) => {
+			if (this._layoutService) {
+				this.disposeWithMe(this._layoutService.registerRootContainerElement(containerElement));
+				this.disposeWithMe(this._layoutService.registerContentElement(contentElement));
+			}
+			try {
+				await this._lifecycleService.onStage(_univerjs_core.LifecycleStages.Ready);
+				this._renderTimeout = window.setTimeout(() => {
+					const allRenders = this._renderManagerService.getRenderAll();
+					for (const [key] of allRenders) if (this._changeRenderUnit(key, contentElement)) break;
+					requestAnimationFrame(() => requestAnimationFrame(() => initialSkeleton === null || initialSkeleton === void 0 ? void 0 : initialSkeleton.dispose()));
+					this.disposeWithMe(this._instanceService.focused$.subscribe((unit) => {
+						if (unit) this._changeRenderUnit(unit, contentElement);
+					}));
+					this.disposeWithMe(this._renderManagerService.created$.subscribe((renderer) => {
+						var _this$_instanceServic;
+						if (renderer.unitId === ((_this$_instanceServic = this._instanceService.getFocusedUnit()) === null || _this$_instanceServic === void 0 ? void 0 : _this$_instanceServic.getUnitId())) this._changeRenderUnit(renderer.unitId, contentElement);
+					}));
+					this.disposeWithMe(this._renderManagerService.disposed$.subscribe((renderer) => {
+						if (this._currentRenderId === renderer) this._currentRenderId = null;
+					}));
+					this._lifecycleService.stage = _univerjs_core.LifecycleStages.Rendered;
+					this._steadyTimeout = window.setTimeout(() => {
+						this._lifecycleService.stage = _univerjs_core.LifecycleStages.Steady;
+					}, STEADY_TIMEOUT);
+				}, 300);
+			} catch (error) {
+				clearTimeout(this._steadyTimeout);
+				clearTimeout(this._renderTimeout);
+				if (error instanceof _univerjs_core.LifecycleUnreachableError) return;
+				throw error;
+			}
+		}));
+	}
+	_changeRenderUnit(rendererId, contentElement) {
+		const renderer = this._renderManagerService.getRenderUnitById(rendererId);
+		if (!renderer || !renderer.unitId || renderer.isMainScene === false || (0, _univerjs_core.isInternalEditorID)(renderer.unitId)) return false;
+		const canvas = renderer.engine.getCanvasElement();
+		const isCurrentRenderer = this._currentRenderId === rendererId;
+		if (isCurrentRenderer && contentElement.contains(canvas)) return false;
+		if (!isCurrentRenderer) {
+			const currentRenderer = this._currentRenderId ? this._renderManagerService.getRenderUnitById(this._currentRenderId) : null;
+			currentRenderer === null || currentRenderer === void 0 || currentRenderer.deactivate();
+			currentRenderer === null || currentRenderer === void 0 || currentRenderer.engine.unmount();
+		}
+		if (!contentElement.contains(canvas)) renderer.engine.mount(contentElement);
+		renderer.activate();
+		this._currentRenderId = rendererId;
+		return true;
+	}
+};
+
+//#endregion
+//#region src/controllers/ui/ui-desktop.controller.ts
+let DesktopUIController = class DesktopUIController extends SingleUnitUIController {
+	constructor(_config, injector, lifecycleService, renderManagerService, layoutService, instanceService, menuManagerService, uiPartsService) {
+		super(injector, instanceService, layoutService, lifecycleService, renderManagerService);
+		this._config = _config;
+		menuManagerService.mergeMenu(menuSchema);
+		this._initBuiltinComponents(uiPartsService);
+		this._bootstrapWorkbench();
+	}
+	dispose() {
+		super.dispose();
+	}
+	bootstrap(callback) {
+		return bootstrap$1(this._injector, this._config, callback);
+	}
+	_initBuiltinComponents(uiPartsService) {
+		this.disposeWithMe(uiPartsService.registerComponent("floating", () => (0, _wendellhu_redi_react_bindings.connectInjector)(CanvasPopup, this._injector)));
+		this.disposeWithMe(uiPartsService.registerComponent("content", () => (0, _wendellhu_redi_react_bindings.connectInjector)(FloatDom, this._injector)));
+		this.disposeWithMe(uiPartsService.registerComponent("toolbar", () => (0, _wendellhu_redi_react_bindings.connectInjector)(Ribbon, this._injector)));
+	}
+};
+DesktopUIController = __decorate([
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.LifecycleService)),
+	__decorateParam(3, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(4, ILayoutService),
+	__decorateParam(5, _univerjs_core.IUniverInstanceService),
+	__decorateParam(6, IMenuManagerService),
+	__decorateParam(7, IUIPartsService)
+], DesktopUIController);
+function bootstrap$1(injector, options, callback) {
+	let mountContainer;
+	const container = options.container;
+	if (typeof container === "string") {
+		const containerElement = document.getElementById(container);
+		if (!containerElement) mountContainer = createContainer$1(container);
+		else mountContainer = containerElement;
+	} else if (container instanceof HTMLElement) mountContainer = container;
+	else mountContainer = createContainer$1("univer");
+	const onRendered = (contentElement) => callback(contentElement, mountContainer);
+	function render() {
+		mountDesktopWorkbench(injector, options, mountContainer, onRendered);
+	}
+	render();
+	return (0, _univerjs_core.toDisposable)(() => {
+		(0, _univerjs_design.unmount)(mountContainer);
+	});
+}
+function createContainer$1(id) {
+	const element = document.createElement("div");
+	element.id = id;
+	return element;
+}
+
+//#endregion
+//#region src/controllers/ui/ui.controller.ts
+const IUIController = (0, _univerjs_core.createIdentifier)("univer.ui.ui-controller");
+
+//#endregion
+//#region package.json
+var name = "@univerjs/ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/views/color-picker/interface.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const COLOR_PICKER_COMPONENT = "UI_COLOR_PICKER_COMPONENT";
+
+//#endregion
+//#region src/views/CommonLabel.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const CommonLabel = (props) => {
+	const { value, selections } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-truncate univer-text-sm",
+		children: (0, react.useMemo)(() => {
+			var _selections$find;
+			if (value == null) return "";
+			return localeService.t(((_selections$find = selections.find((item) => item.value === value)) === null || _selections$find === void 0 ? void 0 : _selections$find.label) ?? "");
+		}, [value, selections])
+	});
+};
+const COMMON_LABEL_COMPONENT = "UI_PLUGIN_COMMON_LABEL_COMPONENT";
+
+//#endregion
+//#region src/views/components/shortcut-panel/ShortcutPanel.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* This component is responsible for rendering the shortcut panel on the desktop version of the app.
+*/
+function ShortcutPanel() {
+	const shortcutService = (0, _wendellhu_redi_react_bindings.useDependency)(IShortcutService);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const currentLocale = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.currentLocale$);
+	const [shortcutItems, setShortcutItems] = (0, react.useState)([]);
+	const updateShortcuts = (0, react.useCallback)(() => {
+		const shortcutGroups = /* @__PURE__ */ new Map();
+		const shortcuts = shortcutService.getAllShortcuts().filter((item) => !!item.group);
+		const groupTitles = /* @__PURE__ */ new Map();
+		for (const shortcut of shortcuts) {
+			const group = shortcut.group;
+			const shortcutItem = {
+				title: localeService.t(shortcut.description ?? shortcut.id),
+				shortcut: shortcutService.getShortcutDisplay(shortcut)
+			};
+			if (!/^\d+_/.test(group)) throw new Error(`[ShortcutPanel]: Invalid shortcut group: ${group}!`);
+			if (!shortcut.groupTitle) throw new Error(`[ShortcutPanel]: Shortcut group "${group}" must provide a groupTitle!`);
+			if (!groupTitles.has(group)) groupTitles.set(group, shortcut.groupTitle);
+			if (!shortcutGroups.has(group)) shortcutGroups.set(group, []);
+			shortcutGroups.get(group).push(shortcutItem);
+		}
+		const toRender = Array.from(shortcutGroups.entries()).map(([name, items]) => {
+			const groupSequence = name.split("_")[0];
+			const localeKey = groupTitles.get(name);
+			return {
+				sequence: +groupSequence,
+				name: localeService.t(localeKey),
+				items: (0, _univerjs_core.dedupeBy)(items, (item) => item.title + item.shortcut)
+			};
+		}).sort((a, b) => a.sequence - b.sequence);
+		setShortcutItems(toRender);
+	}, [
+		shortcutService,
+		localeService,
+		currentLocale
+	]);
+	(0, react.useEffect)(() => {
+		updateShortcuts();
+		const subscription = shortcutService.shortcutChanged$.subscribe(() => updateShortcuts());
+		return () => subscription.unsubscribe();
+	}, [shortcutService, updateShortcuts]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("ul", {
+		className: "univer-m-0 univer-list-none univer-p-0 univer-text-gray-900 dark:!univer-text-gray-0",
+		children: shortcutItems.map((group) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("li", { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-flex univer-h-10 univer-items-center univer-text-sm univer-font-semibold",
+			children: group.name
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("ul", {
+			className: (0, _univerjs_design.clsx)("univer-list-none univer-p-0", _univerjs_design.divideYClassName),
+			children: group.items.map((item) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("li", {
+				className: "univer-flex univer-h-10 univer-items-center univer-justify-between univer-py-0.5 univer-text-sm last:univer-border-b-0",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-line-clamp-2",
+					children: item.title
+				}), item.shortcut && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.KBD, { keyboard: item.shortcut })]
+			}, `${item.title}-${item.shortcut}`))
+		})] }, group.name))
+	});
+}
+
+//#endregion
+//#region src/views/emoji-picker/emojis.generated.ts
+const emojis = {
+	"frequent": [
+		{
+			"emoji": "👍",
+			"title": "Thumbs Up"
+		},
+		{
+			"emoji": "😀",
+			"title": "Grinning Face"
+		},
+		{
+			"emoji": "😘",
+			"title": "Face Blowing A Kiss"
+		},
+		{
+			"emoji": "😍",
+			"title": "Smiling Face With Heart-eyes"
+		},
+		{
+			"emoji": "😆",
+			"title": "Grinning Squinting Face"
+		},
+		{
+			"emoji": "😜",
+			"title": "Winking Face With Tongue"
+		},
+		{
+			"emoji": "😅",
+			"title": "Grinning Face With Sweat"
+		},
+		{
+			"emoji": "😂",
+			"title": "Face With Tears Of Joy"
+		},
+		{
+			"emoji": "😱",
+			"title": "Face Screaming In Fear"
+		},
+		{
+			"emoji": "😞",
+			"title": "Disappointed Face"
+		},
+		{
+			"emoji": "😒",
+			"title": "Unamused Face"
+		}
+	],
+	"people": [
+		{
+			"emoji": "😀",
+			"title": "Grinning Face"
+		},
+		{
+			"emoji": "😃",
+			"title": "Grinning Face With Big Eyes"
+		},
+		{
+			"emoji": "😄",
+			"title": "Grinning Face With Smiling Eyes"
+		},
+		{
+			"emoji": "😁",
+			"title": "Beaming Face With Smiling Eyes"
+		},
+		{
+			"emoji": "😆",
+			"title": "Grinning Squinting Face"
+		},
+		{
+			"emoji": "😅",
+			"title": "Grinning Face With Sweat"
+		},
+		{
+			"emoji": "🤣",
+			"title": "Rolling On The Floor Laughing"
+		},
+		{
+			"emoji": "😂",
+			"title": "Face With Tears Of Joy"
+		},
+		{
+			"emoji": "🙂",
+			"title": "Slightly Smiling Face"
+		},
+		{
+			"emoji": "🙃",
+			"title": "Upside-down Face"
+		},
+		{
+			"emoji": "🫠",
+			"title": "Melting Face"
+		},
+		{
+			"emoji": "😉",
+			"title": "Winking Face"
+		},
+		{
+			"emoji": "😊",
+			"title": "Smiling Face With Smiling Eyes"
+		},
+		{
+			"emoji": "😇",
+			"title": "Smiling Face With Halo"
+		},
+		{
+			"emoji": "🥰",
+			"title": "Smiling Face With Hearts"
+		},
+		{
+			"emoji": "😍",
+			"title": "Smiling Face With Heart-eyes"
+		},
+		{
+			"emoji": "🤩",
+			"title": "Star-struck"
+		},
+		{
+			"emoji": "😘",
+			"title": "Face Blowing A Kiss"
+		},
+		{
+			"emoji": "😗",
+			"title": "Kissing Face"
+		},
+		{
+			"emoji": "☺️",
+			"title": "Smiling Face"
+		},
+		{
+			"emoji": "😚",
+			"title": "Kissing Face With Closed Eyes"
+		},
+		{
+			"emoji": "😙",
+			"title": "Kissing Face With Smiling Eyes"
+		},
+		{
+			"emoji": "🥲",
+			"title": "Smiling Face With Tear"
+		},
+		{
+			"emoji": "😋",
+			"title": "Face Savoring Food"
+		},
+		{
+			"emoji": "😛",
+			"title": "Face With Tongue"
+		},
+		{
+			"emoji": "😜",
+			"title": "Winking Face With Tongue"
+		},
+		{
+			"emoji": "🤪",
+			"title": "Zany Face"
+		},
+		{
+			"emoji": "😝",
+			"title": "Squinting Face With Tongue"
+		},
+		{
+			"emoji": "🤑",
+			"title": "Money-mouth Face"
+		},
+		{
+			"emoji": "🤗",
+			"title": "Smiling Face With Open Hands"
+		},
+		{
+			"emoji": "🤭",
+			"title": "Face With Hand Over Mouth"
+		},
+		{
+			"emoji": "🫢",
+			"title": "Face With Open Eyes And Hand Over Mouth"
+		},
+		{
+			"emoji": "🫣",
+			"title": "Face With Peeking Eye"
+		},
+		{
+			"emoji": "🤫",
+			"title": "Shushing Face"
+		},
+		{
+			"emoji": "🤔",
+			"title": "Thinking Face"
+		},
+		{
+			"emoji": "🫡",
+			"title": "Saluting Face"
+		},
+		{
+			"emoji": "🤐",
+			"title": "Zipper-mouth Face"
+		},
+		{
+			"emoji": "🤨",
+			"title": "Face With Raised Eyebrow"
+		},
+		{
+			"emoji": "😐",
+			"title": "Neutral Face"
+		},
+		{
+			"emoji": "😑",
+			"title": "Expressionless Face"
+		},
+		{
+			"emoji": "😶",
+			"title": "Face Without Mouth"
+		},
+		{
+			"emoji": "🫥",
+			"title": "Dotted Line Face"
+		},
+		{
+			"emoji": "😶‍🌫️",
+			"title": "Face In Clouds"
+		},
+		{
+			"emoji": "😏",
+			"title": "Smirking Face"
+		},
+		{
+			"emoji": "😒",
+			"title": "Unamused Face"
+		},
+		{
+			"emoji": "🙄",
+			"title": "Face With Rolling Eyes"
+		},
+		{
+			"emoji": "😬",
+			"title": "Grimacing Face"
+		},
+		{
+			"emoji": "😮‍💨",
+			"title": "Face Exhaling"
+		},
+		{
+			"emoji": "🤥",
+			"title": "Lying Face"
+		},
+		{
+			"emoji": "🫨",
+			"title": "Shaking Face"
+		},
+		{
+			"emoji": "🙂‍↔️",
+			"title": "Head Shaking Horizontally"
+		},
+		{
+			"emoji": "🙂‍↕️",
+			"title": "Head Shaking Vertically"
+		},
+		{
+			"emoji": "😌",
+			"title": "Relieved Face"
+		},
+		{
+			"emoji": "😔",
+			"title": "Pensive Face"
+		},
+		{
+			"emoji": "😪",
+			"title": "Sleepy Face"
+		},
+		{
+			"emoji": "🤤",
+			"title": "Drooling Face"
+		},
+		{
+			"emoji": "😴",
+			"title": "Sleeping Face"
+		},
+		{
+			"emoji": "🫩",
+			"title": "Face With Bags Under Eyes"
+		},
+		{
+			"emoji": "😷",
+			"title": "Face With Medical Mask"
+		},
+		{
+			"emoji": "🤒",
+			"title": "Face With Thermometer"
+		},
+		{
+			"emoji": "🤕",
+			"title": "Face With Head-bandage"
+		},
+		{
+			"emoji": "🤢",
+			"title": "Nauseated Face"
+		},
+		{
+			"emoji": "🤮",
+			"title": "Face Vomiting"
+		},
+		{
+			"emoji": "🤧",
+			"title": "Sneezing Face"
+		},
+		{
+			"emoji": "🥵",
+			"title": "Hot Face"
+		},
+		{
+			"emoji": "🥶",
+			"title": "Cold Face"
+		},
+		{
+			"emoji": "🥴",
+			"title": "Woozy Face"
+		},
+		{
+			"emoji": "😵",
+			"title": "Face With Crossed-out Eyes"
+		},
+		{
+			"emoji": "😵‍💫",
+			"title": "Face With Spiral Eyes"
+		},
+		{
+			"emoji": "🤯",
+			"title": "Exploding Head"
+		},
+		{
+			"emoji": "🤠",
+			"title": "Cowboy Hat Face"
+		},
+		{
+			"emoji": "🥳",
+			"title": "Partying Face"
+		},
+		{
+			"emoji": "🥸",
+			"title": "Disguised Face"
+		},
+		{
+			"emoji": "😎",
+			"title": "Smiling Face With Sunglasses"
+		},
+		{
+			"emoji": "🤓",
+			"title": "Nerd Face"
+		},
+		{
+			"emoji": "🧐",
+			"title": "Face With Monocle"
+		},
+		{
+			"emoji": "😕",
+			"title": "Confused Face"
+		},
+		{
+			"emoji": "🫤",
+			"title": "Face With Diagonal Mouth"
+		},
+		{
+			"emoji": "😟",
+			"title": "Worried Face"
+		},
+		{
+			"emoji": "🙁",
+			"title": "Slightly Frowning Face"
+		},
+		{
+			"emoji": "☹️",
+			"title": "Frowning Face"
+		},
+		{
+			"emoji": "😮",
+			"title": "Face With Open Mouth"
+		},
+		{
+			"emoji": "😯",
+			"title": "Hushed Face"
+		},
+		{
+			"emoji": "😲",
+			"title": "Astonished Face"
+		},
+		{
+			"emoji": "😳",
+			"title": "Flushed Face"
+		},
+		{
+			"emoji": "🫪",
+			"title": "Distorted Face"
+		},
+		{
+			"emoji": "🥺",
+			"title": "Pleading Face"
+		},
+		{
+			"emoji": "🥹",
+			"title": "Face Holding Back Tears"
+		},
+		{
+			"emoji": "😦",
+			"title": "Frowning Face With Open Mouth"
+		},
+		{
+			"emoji": "😧",
+			"title": "Anguished Face"
+		},
+		{
+			"emoji": "😨",
+			"title": "Fearful Face"
+		},
+		{
+			"emoji": "😰",
+			"title": "Anxious Face With Sweat"
+		},
+		{
+			"emoji": "😥",
+			"title": "Sad But Relieved Face"
+		},
+		{
+			"emoji": "😢",
+			"title": "Crying Face"
+		},
+		{
+			"emoji": "😭",
+			"title": "Loudly Crying Face"
+		},
+		{
+			"emoji": "😱",
+			"title": "Face Screaming In Fear"
+		},
+		{
+			"emoji": "😖",
+			"title": "Confounded Face"
+		},
+		{
+			"emoji": "😣",
+			"title": "Persevering Face"
+		},
+		{
+			"emoji": "😞",
+			"title": "Disappointed Face"
+		},
+		{
+			"emoji": "😓",
+			"title": "Downcast Face With Sweat"
+		},
+		{
+			"emoji": "😩",
+			"title": "Weary Face"
+		},
+		{
+			"emoji": "😫",
+			"title": "Tired Face"
+		},
+		{
+			"emoji": "🥱",
+			"title": "Yawning Face"
+		},
+		{
+			"emoji": "😤",
+			"title": "Face With Steam From Nose"
+		},
+		{
+			"emoji": "😡",
+			"title": "Enraged Face"
+		},
+		{
+			"emoji": "😠",
+			"title": "Angry Face"
+		},
+		{
+			"emoji": "🤬",
+			"title": "Face With Symbols On Mouth"
+		},
+		{
+			"emoji": "😈",
+			"title": "Smiling Face With Horns"
+		},
+		{
+			"emoji": "👿",
+			"title": "Angry Face With Horns"
+		},
+		{
+			"emoji": "💀",
+			"title": "Skull"
+		},
+		{
+			"emoji": "☠️",
+			"title": "Skull And Crossbones"
+		},
+		{
+			"emoji": "💩",
+			"title": "Pile Of Poo"
+		},
+		{
+			"emoji": "🤡",
+			"title": "Clown Face"
+		},
+		{
+			"emoji": "👹",
+			"title": "Ogre"
+		},
+		{
+			"emoji": "👺",
+			"title": "Goblin"
+		},
+		{
+			"emoji": "👻",
+			"title": "Ghost"
+		},
+		{
+			"emoji": "👽",
+			"title": "Alien"
+		},
+		{
+			"emoji": "👾",
+			"title": "Alien Monster"
+		},
+		{
+			"emoji": "🤖",
+			"title": "Robot"
+		},
+		{
+			"emoji": "😺",
+			"title": "Grinning Cat"
+		},
+		{
+			"emoji": "😸",
+			"title": "Grinning Cat With Smiling Eyes"
+		},
+		{
+			"emoji": "😹",
+			"title": "Cat With Tears Of Joy"
+		},
+		{
+			"emoji": "😻",
+			"title": "Smiling Cat With Heart-eyes"
+		},
+		{
+			"emoji": "😼",
+			"title": "Cat With Wry Smile"
+		},
+		{
+			"emoji": "😽",
+			"title": "Kissing Cat"
+		},
+		{
+			"emoji": "🙀",
+			"title": "Weary Cat"
+		},
+		{
+			"emoji": "😿",
+			"title": "Crying Cat"
+		},
+		{
+			"emoji": "😾",
+			"title": "Pouting Cat"
+		},
+		{
+			"emoji": "🙈",
+			"title": "See-no-evil Monkey"
+		},
+		{
+			"emoji": "🙉",
+			"title": "Hear-no-evil Monkey"
+		},
+		{
+			"emoji": "🙊",
+			"title": "Speak-no-evil Monkey"
+		},
+		{
+			"emoji": "💌",
+			"title": "Love Letter"
+		},
+		{
+			"emoji": "💘",
+			"title": "Heart With Arrow"
+		},
+		{
+			"emoji": "💝",
+			"title": "Heart With Ribbon"
+		},
+		{
+			"emoji": "💖",
+			"title": "Sparkling Heart"
+		},
+		{
+			"emoji": "💗",
+			"title": "Growing Heart"
+		},
+		{
+			"emoji": "💓",
+			"title": "Beating Heart"
+		},
+		{
+			"emoji": "💞",
+			"title": "Revolving Hearts"
+		},
+		{
+			"emoji": "💕",
+			"title": "Two Hearts"
+		},
+		{
+			"emoji": "💟",
+			"title": "Heart Decoration"
+		},
+		{
+			"emoji": "❣️",
+			"title": "Heart Exclamation"
+		},
+		{
+			"emoji": "💔",
+			"title": "Broken Heart"
+		},
+		{
+			"emoji": "❤️‍🔥",
+			"title": "Heart On Fire"
+		},
+		{
+			"emoji": "❤️‍🩹",
+			"title": "Mending Heart"
+		},
+		{
+			"emoji": "❤️",
+			"title": "Red Heart"
+		},
+		{
+			"emoji": "🩷",
+			"title": "Pink Heart"
+		},
+		{
+			"emoji": "🧡",
+			"title": "Orange Heart"
+		},
+		{
+			"emoji": "💛",
+			"title": "Yellow Heart"
+		},
+		{
+			"emoji": "💚",
+			"title": "Green Heart"
+		},
+		{
+			"emoji": "💙",
+			"title": "Blue Heart"
+		},
+		{
+			"emoji": "🩵",
+			"title": "Light Blue Heart"
+		},
+		{
+			"emoji": "💜",
+			"title": "Purple Heart"
+		},
+		{
+			"emoji": "🤎",
+			"title": "Brown Heart"
+		},
+		{
+			"emoji": "🖤",
+			"title": "Black Heart"
+		},
+		{
+			"emoji": "🩶",
+			"title": "Grey Heart"
+		},
+		{
+			"emoji": "🤍",
+			"title": "White Heart"
+		},
+		{
+			"emoji": "💋",
+			"title": "Kiss Mark"
+		},
+		{
+			"emoji": "💯",
+			"title": "Hundred Points"
+		},
+		{
+			"emoji": "💢",
+			"title": "Anger Symbol"
+		},
+		{
+			"emoji": "🫯",
+			"title": "Fight Cloud"
+		},
+		{
+			"emoji": "💥",
+			"title": "Collision"
+		},
+		{
+			"emoji": "💫",
+			"title": "Dizzy"
+		},
+		{
+			"emoji": "💦",
+			"title": "Sweat Droplets"
+		},
+		{
+			"emoji": "💨",
+			"title": "Dashing Away"
+		},
+		{
+			"emoji": "🕳️",
+			"title": "Hole"
+		},
+		{
+			"emoji": "💬",
+			"title": "Speech Balloon"
+		},
+		{
+			"emoji": "👁️‍🗨️",
+			"title": "Eye In Speech Bubble"
+		},
+		{
+			"emoji": "🗨️",
+			"title": "Left Speech Bubble"
+		},
+		{
+			"emoji": "🗯️",
+			"title": "Right Anger Bubble"
+		},
+		{
+			"emoji": "💭",
+			"title": "Thought Balloon"
+		},
+		{
+			"emoji": "💤",
+			"title": "ZZZ"
+		},
+		{
+			"emoji": "👋",
+			"title": "Waving Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "👋🏻",
+					"title": "Waving Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "👋🏼",
+					"title": "Waving Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👋🏽",
+					"title": "Waving Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "👋🏾",
+					"title": "Waving Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👋🏿",
+					"title": "Waving Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤚",
+			"title": "Raised Back Of Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🤚🏻",
+					"title": "Raised Back Of Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🤚🏼",
+					"title": "Raised Back Of Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤚🏽",
+					"title": "Raised Back Of Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤚🏾",
+					"title": "Raised Back Of Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤚🏿",
+					"title": "Raised Back Of Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🖐️",
+			"title": "Hand With Fingers Splayed",
+			"skinToneVariants": [
+				{
+					"emoji": "🖐🏻",
+					"title": "Hand With Fingers Splayed: Light Skin Tone"
+				},
+				{
+					"emoji": "🖐🏼",
+					"title": "Hand With Fingers Splayed: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🖐🏽",
+					"title": "Hand With Fingers Splayed: Medium Skin Tone"
+				},
+				{
+					"emoji": "🖐🏾",
+					"title": "Hand With Fingers Splayed: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🖐🏿",
+					"title": "Hand With Fingers Splayed: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "✋",
+			"title": "Raised Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "✋🏻",
+					"title": "Raised Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "✋🏼",
+					"title": "Raised Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "✋🏽",
+					"title": "Raised Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "✋🏾",
+					"title": "Raised Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "✋🏿",
+					"title": "Raised Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🖖",
+			"title": "Vulcan Salute",
+			"skinToneVariants": [
+				{
+					"emoji": "🖖🏻",
+					"title": "Vulcan Salute: Light Skin Tone"
+				},
+				{
+					"emoji": "🖖🏼",
+					"title": "Vulcan Salute: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🖖🏽",
+					"title": "Vulcan Salute: Medium Skin Tone"
+				},
+				{
+					"emoji": "🖖🏾",
+					"title": "Vulcan Salute: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🖖🏿",
+					"title": "Vulcan Salute: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫱",
+			"title": "Rightwards Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🫱🏻",
+					"title": "Rightwards Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏼",
+					"title": "Rightwards Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏽",
+					"title": "Rightwards Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫱🏾",
+					"title": "Rightwards Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏿",
+					"title": "Rightwards Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫲",
+			"title": "Leftwards Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🫲🏻",
+					"title": "Leftwards Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🫲🏼",
+					"title": "Leftwards Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫲🏽",
+					"title": "Leftwards Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫲🏾",
+					"title": "Leftwards Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫲🏿",
+					"title": "Leftwards Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫳",
+			"title": "Palm Down Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🫳🏻",
+					"title": "Palm Down Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🫳🏼",
+					"title": "Palm Down Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫳🏽",
+					"title": "Palm Down Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫳🏾",
+					"title": "Palm Down Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫳🏿",
+					"title": "Palm Down Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫴",
+			"title": "Palm Up Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🫴🏻",
+					"title": "Palm Up Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🫴🏼",
+					"title": "Palm Up Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫴🏽",
+					"title": "Palm Up Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫴🏾",
+					"title": "Palm Up Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫴🏿",
+					"title": "Palm Up Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫷",
+			"title": "Leftwards Pushing Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🫷🏻",
+					"title": "Leftwards Pushing Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🫷🏼",
+					"title": "Leftwards Pushing Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫷🏽",
+					"title": "Leftwards Pushing Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫷🏾",
+					"title": "Leftwards Pushing Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫷🏿",
+					"title": "Leftwards Pushing Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫸",
+			"title": "Rightwards Pushing Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🫸🏻",
+					"title": "Rightwards Pushing Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🫸🏼",
+					"title": "Rightwards Pushing Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫸🏽",
+					"title": "Rightwards Pushing Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫸🏾",
+					"title": "Rightwards Pushing Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫸🏿",
+					"title": "Rightwards Pushing Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👌",
+			"title": "OK Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "👌🏻",
+					"title": "OK Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "👌🏼",
+					"title": "OK Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👌🏽",
+					"title": "OK Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "👌🏾",
+					"title": "OK Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👌🏿",
+					"title": "OK Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤌",
+			"title": "Pinched Fingers",
+			"skinToneVariants": [
+				{
+					"emoji": "🤌🏻",
+					"title": "Pinched Fingers: Light Skin Tone"
+				},
+				{
+					"emoji": "🤌🏼",
+					"title": "Pinched Fingers: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤌🏽",
+					"title": "Pinched Fingers: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤌🏾",
+					"title": "Pinched Fingers: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤌🏿",
+					"title": "Pinched Fingers: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤏",
+			"title": "Pinching Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🤏🏻",
+					"title": "Pinching Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🤏🏼",
+					"title": "Pinching Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤏🏽",
+					"title": "Pinching Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤏🏾",
+					"title": "Pinching Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤏🏿",
+					"title": "Pinching Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "✌️",
+			"title": "Victory Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "✌🏻",
+					"title": "Victory Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "✌🏼",
+					"title": "Victory Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "✌🏽",
+					"title": "Victory Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "✌🏾",
+					"title": "Victory Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "✌🏿",
+					"title": "Victory Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤞",
+			"title": "Crossed Fingers",
+			"skinToneVariants": [
+				{
+					"emoji": "🤞🏻",
+					"title": "Crossed Fingers: Light Skin Tone"
+				},
+				{
+					"emoji": "🤞🏼",
+					"title": "Crossed Fingers: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤞🏽",
+					"title": "Crossed Fingers: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤞🏾",
+					"title": "Crossed Fingers: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤞🏿",
+					"title": "Crossed Fingers: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫰",
+			"title": "Hand With Index Finger And Thumb Crossed",
+			"skinToneVariants": [
+				{
+					"emoji": "🫰🏻",
+					"title": "Hand With Index Finger And Thumb Crossed: Light Skin Tone"
+				},
+				{
+					"emoji": "🫰🏼",
+					"title": "Hand With Index Finger And Thumb Crossed: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫰🏽",
+					"title": "Hand With Index Finger And Thumb Crossed: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫰🏾",
+					"title": "Hand With Index Finger And Thumb Crossed: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫰🏿",
+					"title": "Hand With Index Finger And Thumb Crossed: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤟",
+			"title": "Love-you Gesture",
+			"skinToneVariants": [
+				{
+					"emoji": "🤟🏻",
+					"title": "Love-you Gesture: Light Skin Tone"
+				},
+				{
+					"emoji": "🤟🏼",
+					"title": "Love-you Gesture: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤟🏽",
+					"title": "Love-you Gesture: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤟🏾",
+					"title": "Love-you Gesture: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤟🏿",
+					"title": "Love-you Gesture: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤘",
+			"title": "Sign Of The Horns",
+			"skinToneVariants": [
+				{
+					"emoji": "🤘🏻",
+					"title": "Sign Of The Horns: Light Skin Tone"
+				},
+				{
+					"emoji": "🤘🏼",
+					"title": "Sign Of The Horns: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤘🏽",
+					"title": "Sign Of The Horns: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤘🏾",
+					"title": "Sign Of The Horns: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤘🏿",
+					"title": "Sign Of The Horns: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤙",
+			"title": "Call Me Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🤙🏻",
+					"title": "Call Me Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🤙🏼",
+					"title": "Call Me Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤙🏽",
+					"title": "Call Me Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤙🏾",
+					"title": "Call Me Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤙🏿",
+					"title": "Call Me Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👈",
+			"title": "Backhand Index Pointing Left",
+			"skinToneVariants": [
+				{
+					"emoji": "👈🏻",
+					"title": "Backhand Index Pointing Left: Light Skin Tone"
+				},
+				{
+					"emoji": "👈🏼",
+					"title": "Backhand Index Pointing Left: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👈🏽",
+					"title": "Backhand Index Pointing Left: Medium Skin Tone"
+				},
+				{
+					"emoji": "👈🏾",
+					"title": "Backhand Index Pointing Left: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👈🏿",
+					"title": "Backhand Index Pointing Left: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👉",
+			"title": "Backhand Index Pointing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "👉🏻",
+					"title": "Backhand Index Pointing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "👉🏼",
+					"title": "Backhand Index Pointing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👉🏽",
+					"title": "Backhand Index Pointing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "👉🏾",
+					"title": "Backhand Index Pointing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👉🏿",
+					"title": "Backhand Index Pointing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👆",
+			"title": "Backhand Index Pointing Up",
+			"skinToneVariants": [
+				{
+					"emoji": "👆🏻",
+					"title": "Backhand Index Pointing Up: Light Skin Tone"
+				},
+				{
+					"emoji": "👆🏼",
+					"title": "Backhand Index Pointing Up: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👆🏽",
+					"title": "Backhand Index Pointing Up: Medium Skin Tone"
+				},
+				{
+					"emoji": "👆🏾",
+					"title": "Backhand Index Pointing Up: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👆🏿",
+					"title": "Backhand Index Pointing Up: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🖕",
+			"title": "Middle Finger",
+			"skinToneVariants": [
+				{
+					"emoji": "🖕🏻",
+					"title": "Middle Finger: Light Skin Tone"
+				},
+				{
+					"emoji": "🖕🏼",
+					"title": "Middle Finger: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🖕🏽",
+					"title": "Middle Finger: Medium Skin Tone"
+				},
+				{
+					"emoji": "🖕🏾",
+					"title": "Middle Finger: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🖕🏿",
+					"title": "Middle Finger: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👇",
+			"title": "Backhand Index Pointing Down",
+			"skinToneVariants": [
+				{
+					"emoji": "👇🏻",
+					"title": "Backhand Index Pointing Down: Light Skin Tone"
+				},
+				{
+					"emoji": "👇🏼",
+					"title": "Backhand Index Pointing Down: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👇🏽",
+					"title": "Backhand Index Pointing Down: Medium Skin Tone"
+				},
+				{
+					"emoji": "👇🏾",
+					"title": "Backhand Index Pointing Down: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👇🏿",
+					"title": "Backhand Index Pointing Down: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "☝️",
+			"title": "Index Pointing Up",
+			"skinToneVariants": [
+				{
+					"emoji": "☝🏻",
+					"title": "Index Pointing Up: Light Skin Tone"
+				},
+				{
+					"emoji": "☝🏼",
+					"title": "Index Pointing Up: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "☝🏽",
+					"title": "Index Pointing Up: Medium Skin Tone"
+				},
+				{
+					"emoji": "☝🏾",
+					"title": "Index Pointing Up: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "☝🏿",
+					"title": "Index Pointing Up: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫵",
+			"title": "Index Pointing At The Viewer",
+			"skinToneVariants": [
+				{
+					"emoji": "🫵🏻",
+					"title": "Index Pointing At The Viewer: Light Skin Tone"
+				},
+				{
+					"emoji": "🫵🏼",
+					"title": "Index Pointing At The Viewer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫵🏽",
+					"title": "Index Pointing At The Viewer: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫵🏾",
+					"title": "Index Pointing At The Viewer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫵🏿",
+					"title": "Index Pointing At The Viewer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👍",
+			"title": "Thumbs Up",
+			"skinToneVariants": [
+				{
+					"emoji": "👍🏻",
+					"title": "Thumbs Up: Light Skin Tone"
+				},
+				{
+					"emoji": "👍🏼",
+					"title": "Thumbs Up: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👍🏽",
+					"title": "Thumbs Up: Medium Skin Tone"
+				},
+				{
+					"emoji": "👍🏾",
+					"title": "Thumbs Up: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👍🏿",
+					"title": "Thumbs Up: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👎",
+			"title": "Thumbs Down",
+			"skinToneVariants": [
+				{
+					"emoji": "👎🏻",
+					"title": "Thumbs Down: Light Skin Tone"
+				},
+				{
+					"emoji": "👎🏼",
+					"title": "Thumbs Down: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👎🏽",
+					"title": "Thumbs Down: Medium Skin Tone"
+				},
+				{
+					"emoji": "👎🏾",
+					"title": "Thumbs Down: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👎🏿",
+					"title": "Thumbs Down: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "✊",
+			"title": "Raised Fist",
+			"skinToneVariants": [
+				{
+					"emoji": "✊🏻",
+					"title": "Raised Fist: Light Skin Tone"
+				},
+				{
+					"emoji": "✊🏼",
+					"title": "Raised Fist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "✊🏽",
+					"title": "Raised Fist: Medium Skin Tone"
+				},
+				{
+					"emoji": "✊🏾",
+					"title": "Raised Fist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "✊🏿",
+					"title": "Raised Fist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👊",
+			"title": "Oncoming Fist",
+			"skinToneVariants": [
+				{
+					"emoji": "👊🏻",
+					"title": "Oncoming Fist: Light Skin Tone"
+				},
+				{
+					"emoji": "👊🏼",
+					"title": "Oncoming Fist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👊🏽",
+					"title": "Oncoming Fist: Medium Skin Tone"
+				},
+				{
+					"emoji": "👊🏾",
+					"title": "Oncoming Fist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👊🏿",
+					"title": "Oncoming Fist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤛",
+			"title": "Left-facing Fist",
+			"skinToneVariants": [
+				{
+					"emoji": "🤛🏻",
+					"title": "Left-facing Fist: Light Skin Tone"
+				},
+				{
+					"emoji": "🤛🏼",
+					"title": "Left-facing Fist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤛🏽",
+					"title": "Left-facing Fist: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤛🏾",
+					"title": "Left-facing Fist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤛🏿",
+					"title": "Left-facing Fist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤜",
+			"title": "Right-facing Fist",
+			"skinToneVariants": [
+				{
+					"emoji": "🤜🏻",
+					"title": "Right-facing Fist: Light Skin Tone"
+				},
+				{
+					"emoji": "🤜🏼",
+					"title": "Right-facing Fist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤜🏽",
+					"title": "Right-facing Fist: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤜🏾",
+					"title": "Right-facing Fist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤜🏿",
+					"title": "Right-facing Fist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👏",
+			"title": "Clapping Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "👏🏻",
+					"title": "Clapping Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "👏🏼",
+					"title": "Clapping Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👏🏽",
+					"title": "Clapping Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "👏🏾",
+					"title": "Clapping Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👏🏿",
+					"title": "Clapping Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙌",
+			"title": "Raising Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "🙌🏻",
+					"title": "Raising Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "🙌🏼",
+					"title": "Raising Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙌🏽",
+					"title": "Raising Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙌🏾",
+					"title": "Raising Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙌🏿",
+					"title": "Raising Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫶",
+			"title": "Heart Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "🫶🏻",
+					"title": "Heart Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "🫶🏼",
+					"title": "Heart Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫶🏽",
+					"title": "Heart Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫶🏾",
+					"title": "Heart Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫶🏿",
+					"title": "Heart Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👐",
+			"title": "Open Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "👐🏻",
+					"title": "Open Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "👐🏼",
+					"title": "Open Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👐🏽",
+					"title": "Open Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "👐🏾",
+					"title": "Open Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👐🏿",
+					"title": "Open Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤲",
+			"title": "Palms Up Together",
+			"skinToneVariants": [
+				{
+					"emoji": "🤲🏻",
+					"title": "Palms Up Together: Light Skin Tone"
+				},
+				{
+					"emoji": "🤲🏼",
+					"title": "Palms Up Together: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤲🏽",
+					"title": "Palms Up Together: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤲🏾",
+					"title": "Palms Up Together: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤲🏿",
+					"title": "Palms Up Together: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤝",
+			"title": "Handshake",
+			"skinToneVariants": [
+				{
+					"emoji": "🤝🏻",
+					"title": "Handshake: Light Skin Tone"
+				},
+				{
+					"emoji": "🤝🏼",
+					"title": "Handshake: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤝🏽",
+					"title": "Handshake: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤝🏾",
+					"title": "Handshake: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤝🏿",
+					"title": "Handshake: Dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏻‍🫲🏼",
+					"title": "Handshake: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏻‍🫲🏽",
+					"title": "Handshake: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🫱🏻‍🫲🏾",
+					"title": "Handshake: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏻‍🫲🏿",
+					"title": "Handshake: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏼‍🫲🏻",
+					"title": "Handshake: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏼‍🫲🏽",
+					"title": "Handshake: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🫱🏼‍🫲🏾",
+					"title": "Handshake: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏼‍🫲🏿",
+					"title": "Handshake: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏽‍🫲🏻",
+					"title": "Handshake: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏽‍🫲🏼",
+					"title": "Handshake: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏽‍🫲🏾",
+					"title": "Handshake: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏽‍🫲🏿",
+					"title": "Handshake: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏾‍🫲🏻",
+					"title": "Handshake: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏾‍🫲🏼",
+					"title": "Handshake: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏾‍🫲🏽",
+					"title": "Handshake: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🫱🏾‍🫲🏿",
+					"title": "Handshake: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🫱🏿‍🫲🏻",
+					"title": "Handshake: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏿‍🫲🏼",
+					"title": "Handshake: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫱🏿‍🫲🏽",
+					"title": "Handshake: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🫱🏿‍🫲🏾",
+					"title": "Handshake: Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙏",
+			"title": "Folded Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "🙏🏻",
+					"title": "Folded Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "🙏🏼",
+					"title": "Folded Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙏🏽",
+					"title": "Folded Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙏🏾",
+					"title": "Folded Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙏🏿",
+					"title": "Folded Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "✍️",
+			"title": "Writing Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "✍🏻",
+					"title": "Writing Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "✍🏼",
+					"title": "Writing Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "✍🏽",
+					"title": "Writing Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "✍🏾",
+					"title": "Writing Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "✍🏿",
+					"title": "Writing Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💅",
+			"title": "Nail Polish",
+			"skinToneVariants": [
+				{
+					"emoji": "💅🏻",
+					"title": "Nail Polish: Light Skin Tone"
+				},
+				{
+					"emoji": "💅🏼",
+					"title": "Nail Polish: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💅🏽",
+					"title": "Nail Polish: Medium Skin Tone"
+				},
+				{
+					"emoji": "💅🏾",
+					"title": "Nail Polish: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💅🏿",
+					"title": "Nail Polish: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤳",
+			"title": "Selfie",
+			"skinToneVariants": [
+				{
+					"emoji": "🤳🏻",
+					"title": "Selfie: Light Skin Tone"
+				},
+				{
+					"emoji": "🤳🏼",
+					"title": "Selfie: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤳🏽",
+					"title": "Selfie: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤳🏾",
+					"title": "Selfie: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤳🏿",
+					"title": "Selfie: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💪",
+			"title": "Flexed Biceps",
+			"skinToneVariants": [
+				{
+					"emoji": "💪🏻",
+					"title": "Flexed Biceps: Light Skin Tone"
+				},
+				{
+					"emoji": "💪🏼",
+					"title": "Flexed Biceps: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💪🏽",
+					"title": "Flexed Biceps: Medium Skin Tone"
+				},
+				{
+					"emoji": "💪🏾",
+					"title": "Flexed Biceps: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💪🏿",
+					"title": "Flexed Biceps: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦾",
+			"title": "Mechanical Arm"
+		},
+		{
+			"emoji": "🦿",
+			"title": "Mechanical Leg"
+		},
+		{
+			"emoji": "🦵",
+			"title": "Leg",
+			"skinToneVariants": [
+				{
+					"emoji": "🦵🏻",
+					"title": "Leg: Light Skin Tone"
+				},
+				{
+					"emoji": "🦵🏼",
+					"title": "Leg: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦵🏽",
+					"title": "Leg: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦵🏾",
+					"title": "Leg: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦵🏿",
+					"title": "Leg: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦶",
+			"title": "Foot",
+			"skinToneVariants": [
+				{
+					"emoji": "🦶🏻",
+					"title": "Foot: Light Skin Tone"
+				},
+				{
+					"emoji": "🦶🏼",
+					"title": "Foot: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦶🏽",
+					"title": "Foot: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦶🏾",
+					"title": "Foot: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦶🏿",
+					"title": "Foot: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👂",
+			"title": "Ear",
+			"skinToneVariants": [
+				{
+					"emoji": "👂🏻",
+					"title": "Ear: Light Skin Tone"
+				},
+				{
+					"emoji": "👂🏼",
+					"title": "Ear: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👂🏽",
+					"title": "Ear: Medium Skin Tone"
+				},
+				{
+					"emoji": "👂🏾",
+					"title": "Ear: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👂🏿",
+					"title": "Ear: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦻",
+			"title": "Ear With Hearing Aid",
+			"skinToneVariants": [
+				{
+					"emoji": "🦻🏻",
+					"title": "Ear With Hearing Aid: Light Skin Tone"
+				},
+				{
+					"emoji": "🦻🏼",
+					"title": "Ear With Hearing Aid: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦻🏽",
+					"title": "Ear With Hearing Aid: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦻🏾",
+					"title": "Ear With Hearing Aid: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦻🏿",
+					"title": "Ear With Hearing Aid: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👃",
+			"title": "Nose",
+			"skinToneVariants": [
+				{
+					"emoji": "👃🏻",
+					"title": "Nose: Light Skin Tone"
+				},
+				{
+					"emoji": "👃🏼",
+					"title": "Nose: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👃🏽",
+					"title": "Nose: Medium Skin Tone"
+				},
+				{
+					"emoji": "👃🏾",
+					"title": "Nose: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👃🏿",
+					"title": "Nose: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧠",
+			"title": "Brain"
+		},
+		{
+			"emoji": "🫀",
+			"title": "Anatomical Heart"
+		},
+		{
+			"emoji": "🫁",
+			"title": "Lungs"
+		},
+		{
+			"emoji": "🦷",
+			"title": "Tooth"
+		},
+		{
+			"emoji": "🦴",
+			"title": "Bone"
+		},
+		{
+			"emoji": "👀",
+			"title": "Eyes"
+		},
+		{
+			"emoji": "👁️",
+			"title": "Eye"
+		},
+		{
+			"emoji": "👅",
+			"title": "Tongue"
+		},
+		{
+			"emoji": "👄",
+			"title": "Mouth"
+		},
+		{
+			"emoji": "🫦",
+			"title": "Biting Lip"
+		},
+		{
+			"emoji": "👶",
+			"title": "Baby",
+			"skinToneVariants": [
+				{
+					"emoji": "👶🏻",
+					"title": "Baby: Light Skin Tone"
+				},
+				{
+					"emoji": "👶🏼",
+					"title": "Baby: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👶🏽",
+					"title": "Baby: Medium Skin Tone"
+				},
+				{
+					"emoji": "👶🏾",
+					"title": "Baby: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👶🏿",
+					"title": "Baby: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧒",
+			"title": "Child",
+			"skinToneVariants": [
+				{
+					"emoji": "🧒🏻",
+					"title": "Child: Light Skin Tone"
+				},
+				{
+					"emoji": "🧒🏼",
+					"title": "Child: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧒🏽",
+					"title": "Child: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧒🏾",
+					"title": "Child: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧒🏿",
+					"title": "Child: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👦",
+			"title": "Boy",
+			"skinToneVariants": [
+				{
+					"emoji": "👦🏻",
+					"title": "Boy: Light Skin Tone"
+				},
+				{
+					"emoji": "👦🏼",
+					"title": "Boy: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👦🏽",
+					"title": "Boy: Medium Skin Tone"
+				},
+				{
+					"emoji": "👦🏾",
+					"title": "Boy: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👦🏿",
+					"title": "Boy: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👧",
+			"title": "Girl",
+			"skinToneVariants": [
+				{
+					"emoji": "👧🏻",
+					"title": "Girl: Light Skin Tone"
+				},
+				{
+					"emoji": "👧🏼",
+					"title": "Girl: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👧🏽",
+					"title": "Girl: Medium Skin Tone"
+				},
+				{
+					"emoji": "👧🏾",
+					"title": "Girl: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👧🏿",
+					"title": "Girl: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑",
+			"title": "Person",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻",
+					"title": "Person: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼",
+					"title": "Person: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽",
+					"title": "Person: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾",
+					"title": "Person: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿",
+					"title": "Person: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👱",
+			"title": "Person: Blond Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👱🏻",
+					"title": "Person: Light Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏼",
+					"title": "Person: Medium-light Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏽",
+					"title": "Person: Medium Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏾",
+					"title": "Person: Medium-dark Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏿",
+					"title": "Person: Dark Skin Tone, Blond Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👨",
+			"title": "Man",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻",
+					"title": "Man: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼",
+					"title": "Man: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽",
+					"title": "Man: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾",
+					"title": "Man: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿",
+					"title": "Man: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧔",
+			"title": "Person: Beard",
+			"skinToneVariants": [
+				{
+					"emoji": "🧔🏻",
+					"title": "Person: Light Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏼",
+					"title": "Person: Medium-light Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏽",
+					"title": "Person: Medium Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏾",
+					"title": "Person: Medium-dark Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏿",
+					"title": "Person: Dark Skin Tone, Beard"
+				}
+			]
+		},
+		{
+			"emoji": "🧔‍♂️",
+			"title": "Man: Beard",
+			"skinToneVariants": [
+				{
+					"emoji": "🧔🏻‍♂️",
+					"title": "Man: Light Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏼‍♂️",
+					"title": "Man: Medium-light Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏽‍♂️",
+					"title": "Man: Medium Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏾‍♂️",
+					"title": "Man: Medium-dark Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏿‍♂️",
+					"title": "Man: Dark Skin Tone, Beard"
+				}
+			]
+		},
+		{
+			"emoji": "🧔‍♀️",
+			"title": "Woman: Beard",
+			"skinToneVariants": [
+				{
+					"emoji": "🧔🏻‍♀️",
+					"title": "Woman: Light Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏼‍♀️",
+					"title": "Woman: Medium-light Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏽‍♀️",
+					"title": "Woman: Medium Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏾‍♀️",
+					"title": "Woman: Medium-dark Skin Tone, Beard"
+				},
+				{
+					"emoji": "🧔🏿‍♀️",
+					"title": "Woman: Dark Skin Tone, Beard"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦰",
+			"title": "Man: Red Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦰",
+					"title": "Man: Light Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👨🏼‍🦰",
+					"title": "Man: Medium-light Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👨🏽‍🦰",
+					"title": "Man: Medium Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👨🏾‍🦰",
+					"title": "Man: Medium-dark Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👨🏿‍🦰",
+					"title": "Man: Dark Skin Tone, Red Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦱",
+			"title": "Man: Curly Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦱",
+					"title": "Man: Light Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👨🏼‍🦱",
+					"title": "Man: Medium-light Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👨🏽‍🦱",
+					"title": "Man: Medium Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👨🏾‍🦱",
+					"title": "Man: Medium-dark Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👨🏿‍🦱",
+					"title": "Man: Dark Skin Tone, Curly Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦳",
+			"title": "Man: White Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦳",
+					"title": "Man: Light Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👨🏼‍🦳",
+					"title": "Man: Medium-light Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👨🏽‍🦳",
+					"title": "Man: Medium Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👨🏾‍🦳",
+					"title": "Man: Medium-dark Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👨🏿‍🦳",
+					"title": "Man: Dark Skin Tone, White Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦲",
+			"title": "Man: Bald",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦲",
+					"title": "Man: Light Skin Tone, Bald"
+				},
+				{
+					"emoji": "👨🏼‍🦲",
+					"title": "Man: Medium-light Skin Tone, Bald"
+				},
+				{
+					"emoji": "👨🏽‍🦲",
+					"title": "Man: Medium Skin Tone, Bald"
+				},
+				{
+					"emoji": "👨🏾‍🦲",
+					"title": "Man: Medium-dark Skin Tone, Bald"
+				},
+				{
+					"emoji": "👨🏿‍🦲",
+					"title": "Man: Dark Skin Tone, Bald"
+				}
+			]
+		},
+		{
+			"emoji": "👩",
+			"title": "Woman",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻",
+					"title": "Woman: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼",
+					"title": "Woman: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽",
+					"title": "Woman: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾",
+					"title": "Woman: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿",
+					"title": "Woman: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦰",
+			"title": "Woman: Red Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦰",
+					"title": "Woman: Light Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👩🏼‍🦰",
+					"title": "Woman: Medium-light Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👩🏽‍🦰",
+					"title": "Woman: Medium Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👩🏾‍🦰",
+					"title": "Woman: Medium-dark Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "👩🏿‍🦰",
+					"title": "Woman: Dark Skin Tone, Red Hair"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦰",
+			"title": "Person: Red Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦰",
+					"title": "Person: Light Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "🧑🏼‍🦰",
+					"title": "Person: Medium-light Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "🧑🏽‍🦰",
+					"title": "Person: Medium Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "🧑🏾‍🦰",
+					"title": "Person: Medium-dark Skin Tone, Red Hair"
+				},
+				{
+					"emoji": "🧑🏿‍🦰",
+					"title": "Person: Dark Skin Tone, Red Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦱",
+			"title": "Woman: Curly Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦱",
+					"title": "Woman: Light Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👩🏼‍🦱",
+					"title": "Woman: Medium-light Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👩🏽‍🦱",
+					"title": "Woman: Medium Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👩🏾‍🦱",
+					"title": "Woman: Medium-dark Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "👩🏿‍🦱",
+					"title": "Woman: Dark Skin Tone, Curly Hair"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦱",
+			"title": "Person: Curly Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦱",
+					"title": "Person: Light Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "🧑🏼‍🦱",
+					"title": "Person: Medium-light Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "🧑🏽‍🦱",
+					"title": "Person: Medium Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "🧑🏾‍🦱",
+					"title": "Person: Medium-dark Skin Tone, Curly Hair"
+				},
+				{
+					"emoji": "🧑🏿‍🦱",
+					"title": "Person: Dark Skin Tone, Curly Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦳",
+			"title": "Woman: White Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦳",
+					"title": "Woman: Light Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👩🏼‍🦳",
+					"title": "Woman: Medium-light Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👩🏽‍🦳",
+					"title": "Woman: Medium Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👩🏾‍🦳",
+					"title": "Woman: Medium-dark Skin Tone, White Hair"
+				},
+				{
+					"emoji": "👩🏿‍🦳",
+					"title": "Woman: Dark Skin Tone, White Hair"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦳",
+			"title": "Person: White Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦳",
+					"title": "Person: Light Skin Tone, White Hair"
+				},
+				{
+					"emoji": "🧑🏼‍🦳",
+					"title": "Person: Medium-light Skin Tone, White Hair"
+				},
+				{
+					"emoji": "🧑🏽‍🦳",
+					"title": "Person: Medium Skin Tone, White Hair"
+				},
+				{
+					"emoji": "🧑🏾‍🦳",
+					"title": "Person: Medium-dark Skin Tone, White Hair"
+				},
+				{
+					"emoji": "🧑🏿‍🦳",
+					"title": "Person: Dark Skin Tone, White Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦲",
+			"title": "Woman: Bald",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦲",
+					"title": "Woman: Light Skin Tone, Bald"
+				},
+				{
+					"emoji": "👩🏼‍🦲",
+					"title": "Woman: Medium-light Skin Tone, Bald"
+				},
+				{
+					"emoji": "👩🏽‍🦲",
+					"title": "Woman: Medium Skin Tone, Bald"
+				},
+				{
+					"emoji": "👩🏾‍🦲",
+					"title": "Woman: Medium-dark Skin Tone, Bald"
+				},
+				{
+					"emoji": "👩🏿‍🦲",
+					"title": "Woman: Dark Skin Tone, Bald"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦲",
+			"title": "Person: Bald",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦲",
+					"title": "Person: Light Skin Tone, Bald"
+				},
+				{
+					"emoji": "🧑🏼‍🦲",
+					"title": "Person: Medium-light Skin Tone, Bald"
+				},
+				{
+					"emoji": "🧑🏽‍🦲",
+					"title": "Person: Medium Skin Tone, Bald"
+				},
+				{
+					"emoji": "🧑🏾‍🦲",
+					"title": "Person: Medium-dark Skin Tone, Bald"
+				},
+				{
+					"emoji": "🧑🏿‍🦲",
+					"title": "Person: Dark Skin Tone, Bald"
+				}
+			]
+		},
+		{
+			"emoji": "👱‍♀️",
+			"title": "Woman: Blond Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👱🏻‍♀️",
+					"title": "Woman: Light Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏼‍♀️",
+					"title": "Woman: Medium-light Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏽‍♀️",
+					"title": "Woman: Medium Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏾‍♀️",
+					"title": "Woman: Medium-dark Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏿‍♀️",
+					"title": "Woman: Dark Skin Tone, Blond Hair"
+				}
+			]
+		},
+		{
+			"emoji": "👱‍♂️",
+			"title": "Man: Blond Hair",
+			"skinToneVariants": [
+				{
+					"emoji": "👱🏻‍♂️",
+					"title": "Man: Light Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏼‍♂️",
+					"title": "Man: Medium-light Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏽‍♂️",
+					"title": "Man: Medium Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏾‍♂️",
+					"title": "Man: Medium-dark Skin Tone, Blond Hair"
+				},
+				{
+					"emoji": "👱🏿‍♂️",
+					"title": "Man: Dark Skin Tone, Blond Hair"
+				}
+			]
+		},
+		{
+			"emoji": "🧓",
+			"title": "Older Person",
+			"skinToneVariants": [
+				{
+					"emoji": "🧓🏻",
+					"title": "Older Person: Light Skin Tone"
+				},
+				{
+					"emoji": "🧓🏼",
+					"title": "Older Person: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧓🏽",
+					"title": "Older Person: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧓🏾",
+					"title": "Older Person: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧓🏿",
+					"title": "Older Person: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👴",
+			"title": "Old Man",
+			"skinToneVariants": [
+				{
+					"emoji": "👴🏻",
+					"title": "Old Man: Light Skin Tone"
+				},
+				{
+					"emoji": "👴🏼",
+					"title": "Old Man: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👴🏽",
+					"title": "Old Man: Medium Skin Tone"
+				},
+				{
+					"emoji": "👴🏾",
+					"title": "Old Man: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👴🏿",
+					"title": "Old Man: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👵",
+			"title": "Old Woman",
+			"skinToneVariants": [
+				{
+					"emoji": "👵🏻",
+					"title": "Old Woman: Light Skin Tone"
+				},
+				{
+					"emoji": "👵🏼",
+					"title": "Old Woman: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👵🏽",
+					"title": "Old Woman: Medium Skin Tone"
+				},
+				{
+					"emoji": "👵🏾",
+					"title": "Old Woman: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👵🏿",
+					"title": "Old Woman: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙍",
+			"title": "Person Frowning",
+			"skinToneVariants": [
+				{
+					"emoji": "🙍🏻",
+					"title": "Person Frowning: Light Skin Tone"
+				},
+				{
+					"emoji": "🙍🏼",
+					"title": "Person Frowning: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙍🏽",
+					"title": "Person Frowning: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙍🏾",
+					"title": "Person Frowning: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙍🏿",
+					"title": "Person Frowning: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙍‍♂️",
+			"title": "Man Frowning",
+			"skinToneVariants": [
+				{
+					"emoji": "🙍🏻‍♂️",
+					"title": "Man Frowning: Light Skin Tone"
+				},
+				{
+					"emoji": "🙍🏼‍♂️",
+					"title": "Man Frowning: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙍🏽‍♂️",
+					"title": "Man Frowning: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙍🏾‍♂️",
+					"title": "Man Frowning: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙍🏿‍♂️",
+					"title": "Man Frowning: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙍‍♀️",
+			"title": "Woman Frowning",
+			"skinToneVariants": [
+				{
+					"emoji": "🙍🏻‍♀️",
+					"title": "Woman Frowning: Light Skin Tone"
+				},
+				{
+					"emoji": "🙍🏼‍♀️",
+					"title": "Woman Frowning: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙍🏽‍♀️",
+					"title": "Woman Frowning: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙍🏾‍♀️",
+					"title": "Woman Frowning: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙍🏿‍♀️",
+					"title": "Woman Frowning: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙎",
+			"title": "Person Pouting",
+			"skinToneVariants": [
+				{
+					"emoji": "🙎🏻",
+					"title": "Person Pouting: Light Skin Tone"
+				},
+				{
+					"emoji": "🙎🏼",
+					"title": "Person Pouting: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙎🏽",
+					"title": "Person Pouting: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙎🏾",
+					"title": "Person Pouting: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙎🏿",
+					"title": "Person Pouting: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙎‍♂️",
+			"title": "Man Pouting",
+			"skinToneVariants": [
+				{
+					"emoji": "🙎🏻‍♂️",
+					"title": "Man Pouting: Light Skin Tone"
+				},
+				{
+					"emoji": "🙎🏼‍♂️",
+					"title": "Man Pouting: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙎🏽‍♂️",
+					"title": "Man Pouting: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙎🏾‍♂️",
+					"title": "Man Pouting: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙎🏿‍♂️",
+					"title": "Man Pouting: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙎‍♀️",
+			"title": "Woman Pouting",
+			"skinToneVariants": [
+				{
+					"emoji": "🙎🏻‍♀️",
+					"title": "Woman Pouting: Light Skin Tone"
+				},
+				{
+					"emoji": "🙎🏼‍♀️",
+					"title": "Woman Pouting: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙎🏽‍♀️",
+					"title": "Woman Pouting: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙎🏾‍♀️",
+					"title": "Woman Pouting: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙎🏿‍♀️",
+					"title": "Woman Pouting: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙅",
+			"title": "Person Gesturing NO",
+			"skinToneVariants": [
+				{
+					"emoji": "🙅🏻",
+					"title": "Person Gesturing NO: Light Skin Tone"
+				},
+				{
+					"emoji": "🙅🏼",
+					"title": "Person Gesturing NO: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙅🏽",
+					"title": "Person Gesturing NO: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙅🏾",
+					"title": "Person Gesturing NO: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙅🏿",
+					"title": "Person Gesturing NO: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙅‍♂️",
+			"title": "Man Gesturing NO",
+			"skinToneVariants": [
+				{
+					"emoji": "🙅🏻‍♂️",
+					"title": "Man Gesturing NO: Light Skin Tone"
+				},
+				{
+					"emoji": "🙅🏼‍♂️",
+					"title": "Man Gesturing NO: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙅🏽‍♂️",
+					"title": "Man Gesturing NO: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙅🏾‍♂️",
+					"title": "Man Gesturing NO: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙅🏿‍♂️",
+					"title": "Man Gesturing NO: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙅‍♀️",
+			"title": "Woman Gesturing NO",
+			"skinToneVariants": [
+				{
+					"emoji": "🙅🏻‍♀️",
+					"title": "Woman Gesturing NO: Light Skin Tone"
+				},
+				{
+					"emoji": "🙅🏼‍♀️",
+					"title": "Woman Gesturing NO: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙅🏽‍♀️",
+					"title": "Woman Gesturing NO: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙅🏾‍♀️",
+					"title": "Woman Gesturing NO: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙅🏿‍♀️",
+					"title": "Woman Gesturing NO: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙆",
+			"title": "Person Gesturing OK",
+			"skinToneVariants": [
+				{
+					"emoji": "🙆🏻",
+					"title": "Person Gesturing OK: Light Skin Tone"
+				},
+				{
+					"emoji": "🙆🏼",
+					"title": "Person Gesturing OK: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙆🏽",
+					"title": "Person Gesturing OK: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙆🏾",
+					"title": "Person Gesturing OK: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙆🏿",
+					"title": "Person Gesturing OK: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙆‍♂️",
+			"title": "Man Gesturing OK",
+			"skinToneVariants": [
+				{
+					"emoji": "🙆🏻‍♂️",
+					"title": "Man Gesturing OK: Light Skin Tone"
+				},
+				{
+					"emoji": "🙆🏼‍♂️",
+					"title": "Man Gesturing OK: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙆🏽‍♂️",
+					"title": "Man Gesturing OK: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙆🏾‍♂️",
+					"title": "Man Gesturing OK: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙆🏿‍♂️",
+					"title": "Man Gesturing OK: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙆‍♀️",
+			"title": "Woman Gesturing OK",
+			"skinToneVariants": [
+				{
+					"emoji": "🙆🏻‍♀️",
+					"title": "Woman Gesturing OK: Light Skin Tone"
+				},
+				{
+					"emoji": "🙆🏼‍♀️",
+					"title": "Woman Gesturing OK: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙆🏽‍♀️",
+					"title": "Woman Gesturing OK: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙆🏾‍♀️",
+					"title": "Woman Gesturing OK: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙆🏿‍♀️",
+					"title": "Woman Gesturing OK: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💁",
+			"title": "Person Tipping Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "💁🏻",
+					"title": "Person Tipping Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "💁🏼",
+					"title": "Person Tipping Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💁🏽",
+					"title": "Person Tipping Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "💁🏾",
+					"title": "Person Tipping Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💁🏿",
+					"title": "Person Tipping Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💁‍♂️",
+			"title": "Man Tipping Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "💁🏻‍♂️",
+					"title": "Man Tipping Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "💁🏼‍♂️",
+					"title": "Man Tipping Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💁🏽‍♂️",
+					"title": "Man Tipping Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "💁🏾‍♂️",
+					"title": "Man Tipping Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💁🏿‍♂️",
+					"title": "Man Tipping Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💁‍♀️",
+			"title": "Woman Tipping Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "💁🏻‍♀️",
+					"title": "Woman Tipping Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "💁🏼‍♀️",
+					"title": "Woman Tipping Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💁🏽‍♀️",
+					"title": "Woman Tipping Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "💁🏾‍♀️",
+					"title": "Woman Tipping Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💁🏿‍♀️",
+					"title": "Woman Tipping Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙋",
+			"title": "Person Raising Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🙋🏻",
+					"title": "Person Raising Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🙋🏼",
+					"title": "Person Raising Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙋🏽",
+					"title": "Person Raising Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙋🏾",
+					"title": "Person Raising Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙋🏿",
+					"title": "Person Raising Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙋‍♂️",
+			"title": "Man Raising Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🙋🏻‍♂️",
+					"title": "Man Raising Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🙋🏼‍♂️",
+					"title": "Man Raising Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙋🏽‍♂️",
+					"title": "Man Raising Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙋🏾‍♂️",
+					"title": "Man Raising Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙋🏿‍♂️",
+					"title": "Man Raising Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙋‍♀️",
+			"title": "Woman Raising Hand",
+			"skinToneVariants": [
+				{
+					"emoji": "🙋🏻‍♀️",
+					"title": "Woman Raising Hand: Light Skin Tone"
+				},
+				{
+					"emoji": "🙋🏼‍♀️",
+					"title": "Woman Raising Hand: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙋🏽‍♀️",
+					"title": "Woman Raising Hand: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙋🏾‍♀️",
+					"title": "Woman Raising Hand: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙋🏿‍♀️",
+					"title": "Woman Raising Hand: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧏",
+			"title": "Deaf Person",
+			"skinToneVariants": [
+				{
+					"emoji": "🧏🏻",
+					"title": "Deaf Person: Light Skin Tone"
+				},
+				{
+					"emoji": "🧏🏼",
+					"title": "Deaf Person: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧏🏽",
+					"title": "Deaf Person: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧏🏾",
+					"title": "Deaf Person: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧏🏿",
+					"title": "Deaf Person: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧏‍♂️",
+			"title": "Deaf Man",
+			"skinToneVariants": [
+				{
+					"emoji": "🧏🏻‍♂️",
+					"title": "Deaf Man: Light Skin Tone"
+				},
+				{
+					"emoji": "🧏🏼‍♂️",
+					"title": "Deaf Man: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧏🏽‍♂️",
+					"title": "Deaf Man: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧏🏾‍♂️",
+					"title": "Deaf Man: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧏🏿‍♂️",
+					"title": "Deaf Man: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧏‍♀️",
+			"title": "Deaf Woman",
+			"skinToneVariants": [
+				{
+					"emoji": "🧏🏻‍♀️",
+					"title": "Deaf Woman: Light Skin Tone"
+				},
+				{
+					"emoji": "🧏🏼‍♀️",
+					"title": "Deaf Woman: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧏🏽‍♀️",
+					"title": "Deaf Woman: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧏🏾‍♀️",
+					"title": "Deaf Woman: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧏🏿‍♀️",
+					"title": "Deaf Woman: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙇",
+			"title": "Person Bowing",
+			"skinToneVariants": [
+				{
+					"emoji": "🙇🏻",
+					"title": "Person Bowing: Light Skin Tone"
+				},
+				{
+					"emoji": "🙇🏼",
+					"title": "Person Bowing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙇🏽",
+					"title": "Person Bowing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙇🏾",
+					"title": "Person Bowing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙇🏿",
+					"title": "Person Bowing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙇‍♂️",
+			"title": "Man Bowing",
+			"skinToneVariants": [
+				{
+					"emoji": "🙇🏻‍♂️",
+					"title": "Man Bowing: Light Skin Tone"
+				},
+				{
+					"emoji": "🙇🏼‍♂️",
+					"title": "Man Bowing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙇🏽‍♂️",
+					"title": "Man Bowing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙇🏾‍♂️",
+					"title": "Man Bowing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙇🏿‍♂️",
+					"title": "Man Bowing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🙇‍♀️",
+			"title": "Woman Bowing",
+			"skinToneVariants": [
+				{
+					"emoji": "🙇🏻‍♀️",
+					"title": "Woman Bowing: Light Skin Tone"
+				},
+				{
+					"emoji": "🙇🏼‍♀️",
+					"title": "Woman Bowing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🙇🏽‍♀️",
+					"title": "Woman Bowing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🙇🏾‍♀️",
+					"title": "Woman Bowing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🙇🏿‍♀️",
+					"title": "Woman Bowing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤦",
+			"title": "Person Facepalming",
+			"skinToneVariants": [
+				{
+					"emoji": "🤦🏻",
+					"title": "Person Facepalming: Light Skin Tone"
+				},
+				{
+					"emoji": "🤦🏼",
+					"title": "Person Facepalming: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤦🏽",
+					"title": "Person Facepalming: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤦🏾",
+					"title": "Person Facepalming: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤦🏿",
+					"title": "Person Facepalming: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤦‍♂️",
+			"title": "Man Facepalming",
+			"skinToneVariants": [
+				{
+					"emoji": "🤦🏻‍♂️",
+					"title": "Man Facepalming: Light Skin Tone"
+				},
+				{
+					"emoji": "🤦🏼‍♂️",
+					"title": "Man Facepalming: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤦🏽‍♂️",
+					"title": "Man Facepalming: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤦🏾‍♂️",
+					"title": "Man Facepalming: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤦🏿‍♂️",
+					"title": "Man Facepalming: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤦‍♀️",
+			"title": "Woman Facepalming",
+			"skinToneVariants": [
+				{
+					"emoji": "🤦🏻‍♀️",
+					"title": "Woman Facepalming: Light Skin Tone"
+				},
+				{
+					"emoji": "🤦🏼‍♀️",
+					"title": "Woman Facepalming: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤦🏽‍♀️",
+					"title": "Woman Facepalming: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤦🏾‍♀️",
+					"title": "Woman Facepalming: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤦🏿‍♀️",
+					"title": "Woman Facepalming: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤷",
+			"title": "Person Shrugging",
+			"skinToneVariants": [
+				{
+					"emoji": "🤷🏻",
+					"title": "Person Shrugging: Light Skin Tone"
+				},
+				{
+					"emoji": "🤷🏼",
+					"title": "Person Shrugging: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤷🏽",
+					"title": "Person Shrugging: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤷🏾",
+					"title": "Person Shrugging: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤷🏿",
+					"title": "Person Shrugging: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤷‍♂️",
+			"title": "Man Shrugging",
+			"skinToneVariants": [
+				{
+					"emoji": "🤷🏻‍♂️",
+					"title": "Man Shrugging: Light Skin Tone"
+				},
+				{
+					"emoji": "🤷🏼‍♂️",
+					"title": "Man Shrugging: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤷🏽‍♂️",
+					"title": "Man Shrugging: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤷🏾‍♂️",
+					"title": "Man Shrugging: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤷🏿‍♂️",
+					"title": "Man Shrugging: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤷‍♀️",
+			"title": "Woman Shrugging",
+			"skinToneVariants": [
+				{
+					"emoji": "🤷🏻‍♀️",
+					"title": "Woman Shrugging: Light Skin Tone"
+				},
+				{
+					"emoji": "🤷🏼‍♀️",
+					"title": "Woman Shrugging: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤷🏽‍♀️",
+					"title": "Woman Shrugging: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤷🏾‍♀️",
+					"title": "Woman Shrugging: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤷🏿‍♀️",
+					"title": "Woman Shrugging: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍⚕️",
+			"title": "Health Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍⚕️",
+					"title": "Health Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍⚕️",
+					"title": "Health Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍⚕️",
+					"title": "Health Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍⚕️",
+					"title": "Health Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍⚕️",
+					"title": "Health Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍⚕️",
+			"title": "Man Health Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍⚕️",
+					"title": "Man Health Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍⚕️",
+					"title": "Man Health Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍⚕️",
+					"title": "Man Health Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍⚕️",
+					"title": "Man Health Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍⚕️",
+					"title": "Man Health Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍⚕️",
+			"title": "Woman Health Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍⚕️",
+					"title": "Woman Health Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍⚕️",
+					"title": "Woman Health Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍⚕️",
+					"title": "Woman Health Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍⚕️",
+					"title": "Woman Health Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍⚕️",
+					"title": "Woman Health Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🎓",
+			"title": "Student",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🎓",
+					"title": "Student: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🎓",
+					"title": "Student: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🎓",
+					"title": "Student: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🎓",
+					"title": "Student: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🎓",
+					"title": "Student: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🎓",
+			"title": "Man Student",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🎓",
+					"title": "Man Student: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🎓",
+					"title": "Man Student: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🎓",
+					"title": "Man Student: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🎓",
+					"title": "Man Student: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🎓",
+					"title": "Man Student: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🎓",
+			"title": "Woman Student",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🎓",
+					"title": "Woman Student: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🎓",
+					"title": "Woman Student: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🎓",
+					"title": "Woman Student: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🎓",
+					"title": "Woman Student: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🎓",
+					"title": "Woman Student: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🏫",
+			"title": "Teacher",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🏫",
+					"title": "Teacher: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🏫",
+					"title": "Teacher: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🏫",
+					"title": "Teacher: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🏫",
+					"title": "Teacher: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🏫",
+					"title": "Teacher: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🏫",
+			"title": "Man Teacher",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🏫",
+					"title": "Man Teacher: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🏫",
+					"title": "Man Teacher: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🏫",
+					"title": "Man Teacher: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🏫",
+					"title": "Man Teacher: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🏫",
+					"title": "Man Teacher: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🏫",
+			"title": "Woman Teacher",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🏫",
+					"title": "Woman Teacher: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🏫",
+					"title": "Woman Teacher: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🏫",
+					"title": "Woman Teacher: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🏫",
+					"title": "Woman Teacher: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🏫",
+					"title": "Woman Teacher: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍⚖️",
+			"title": "Judge",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍⚖️",
+					"title": "Judge: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍⚖️",
+					"title": "Judge: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍⚖️",
+					"title": "Judge: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍⚖️",
+					"title": "Judge: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍⚖️",
+					"title": "Judge: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍⚖️",
+			"title": "Man Judge",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍⚖️",
+					"title": "Man Judge: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍⚖️",
+					"title": "Man Judge: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍⚖️",
+					"title": "Man Judge: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍⚖️",
+					"title": "Man Judge: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍⚖️",
+					"title": "Man Judge: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍⚖️",
+			"title": "Woman Judge",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍⚖️",
+					"title": "Woman Judge: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍⚖️",
+					"title": "Woman Judge: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍⚖️",
+					"title": "Woman Judge: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍⚖️",
+					"title": "Woman Judge: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍⚖️",
+					"title": "Woman Judge: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🌾",
+			"title": "Farmer",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🌾",
+					"title": "Farmer: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🌾",
+					"title": "Farmer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🌾",
+					"title": "Farmer: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🌾",
+					"title": "Farmer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🌾",
+					"title": "Farmer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🌾",
+			"title": "Man Farmer",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🌾",
+					"title": "Man Farmer: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🌾",
+					"title": "Man Farmer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🌾",
+					"title": "Man Farmer: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🌾",
+					"title": "Man Farmer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🌾",
+					"title": "Man Farmer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🌾",
+			"title": "Woman Farmer",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🌾",
+					"title": "Woman Farmer: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🌾",
+					"title": "Woman Farmer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🌾",
+					"title": "Woman Farmer: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🌾",
+					"title": "Woman Farmer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🌾",
+					"title": "Woman Farmer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🍳",
+			"title": "Cook",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🍳",
+					"title": "Cook: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🍳",
+					"title": "Cook: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🍳",
+					"title": "Cook: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🍳",
+					"title": "Cook: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🍳",
+					"title": "Cook: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🍳",
+			"title": "Man Cook",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🍳",
+					"title": "Man Cook: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🍳",
+					"title": "Man Cook: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🍳",
+					"title": "Man Cook: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🍳",
+					"title": "Man Cook: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🍳",
+					"title": "Man Cook: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🍳",
+			"title": "Woman Cook",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🍳",
+					"title": "Woman Cook: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🍳",
+					"title": "Woman Cook: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🍳",
+					"title": "Woman Cook: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🍳",
+					"title": "Woman Cook: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🍳",
+					"title": "Woman Cook: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🔧",
+			"title": "Mechanic",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🔧",
+					"title": "Mechanic: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🔧",
+					"title": "Mechanic: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🔧",
+					"title": "Mechanic: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🔧",
+					"title": "Mechanic: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🔧",
+					"title": "Mechanic: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🔧",
+			"title": "Man Mechanic",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🔧",
+					"title": "Man Mechanic: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🔧",
+					"title": "Man Mechanic: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🔧",
+					"title": "Man Mechanic: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🔧",
+					"title": "Man Mechanic: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🔧",
+					"title": "Man Mechanic: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🔧",
+			"title": "Woman Mechanic",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🔧",
+					"title": "Woman Mechanic: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🔧",
+					"title": "Woman Mechanic: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🔧",
+					"title": "Woman Mechanic: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🔧",
+					"title": "Woman Mechanic: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🔧",
+					"title": "Woman Mechanic: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🏭",
+			"title": "Factory Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🏭",
+					"title": "Factory Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🏭",
+					"title": "Factory Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🏭",
+					"title": "Factory Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🏭",
+					"title": "Factory Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🏭",
+					"title": "Factory Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🏭",
+			"title": "Man Factory Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🏭",
+					"title": "Man Factory Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🏭",
+					"title": "Man Factory Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🏭",
+					"title": "Man Factory Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🏭",
+					"title": "Man Factory Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🏭",
+					"title": "Man Factory Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🏭",
+			"title": "Woman Factory Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🏭",
+					"title": "Woman Factory Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🏭",
+					"title": "Woman Factory Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🏭",
+					"title": "Woman Factory Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🏭",
+					"title": "Woman Factory Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🏭",
+					"title": "Woman Factory Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍💼",
+			"title": "Office Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍💼",
+					"title": "Office Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍💼",
+					"title": "Office Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍💼",
+					"title": "Office Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍💼",
+					"title": "Office Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍💼",
+					"title": "Office Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍💼",
+			"title": "Man Office Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍💼",
+					"title": "Man Office Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍💼",
+					"title": "Man Office Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍💼",
+					"title": "Man Office Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍💼",
+					"title": "Man Office Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍💼",
+					"title": "Man Office Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍💼",
+			"title": "Woman Office Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍💼",
+					"title": "Woman Office Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍💼",
+					"title": "Woman Office Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍💼",
+					"title": "Woman Office Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍💼",
+					"title": "Woman Office Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍💼",
+					"title": "Woman Office Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🔬",
+			"title": "Scientist",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🔬",
+					"title": "Scientist: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🔬",
+					"title": "Scientist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🔬",
+					"title": "Scientist: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🔬",
+					"title": "Scientist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🔬",
+					"title": "Scientist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🔬",
+			"title": "Man Scientist",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🔬",
+					"title": "Man Scientist: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🔬",
+					"title": "Man Scientist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🔬",
+					"title": "Man Scientist: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🔬",
+					"title": "Man Scientist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🔬",
+					"title": "Man Scientist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🔬",
+			"title": "Woman Scientist",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🔬",
+					"title": "Woman Scientist: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🔬",
+					"title": "Woman Scientist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🔬",
+					"title": "Woman Scientist: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🔬",
+					"title": "Woman Scientist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🔬",
+					"title": "Woman Scientist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍💻",
+			"title": "Technologist",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍💻",
+					"title": "Technologist: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍💻",
+					"title": "Technologist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍💻",
+					"title": "Technologist: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍💻",
+					"title": "Technologist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍💻",
+					"title": "Technologist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍💻",
+			"title": "Man Technologist",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍💻",
+					"title": "Man Technologist: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍💻",
+					"title": "Man Technologist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍💻",
+					"title": "Man Technologist: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍💻",
+					"title": "Man Technologist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍💻",
+					"title": "Man Technologist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍💻",
+			"title": "Woman Technologist",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍💻",
+					"title": "Woman Technologist: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍💻",
+					"title": "Woman Technologist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍💻",
+					"title": "Woman Technologist: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍💻",
+					"title": "Woman Technologist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍💻",
+					"title": "Woman Technologist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🎤",
+			"title": "Singer",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🎤",
+					"title": "Singer: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🎤",
+					"title": "Singer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🎤",
+					"title": "Singer: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🎤",
+					"title": "Singer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🎤",
+					"title": "Singer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🎤",
+			"title": "Man Singer",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🎤",
+					"title": "Man Singer: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🎤",
+					"title": "Man Singer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🎤",
+					"title": "Man Singer: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🎤",
+					"title": "Man Singer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🎤",
+					"title": "Man Singer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🎤",
+			"title": "Woman Singer",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🎤",
+					"title": "Woman Singer: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🎤",
+					"title": "Woman Singer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🎤",
+					"title": "Woman Singer: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🎤",
+					"title": "Woman Singer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🎤",
+					"title": "Woman Singer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🎨",
+			"title": "Artist",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🎨",
+					"title": "Artist: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🎨",
+					"title": "Artist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🎨",
+					"title": "Artist: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🎨",
+					"title": "Artist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🎨",
+					"title": "Artist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🎨",
+			"title": "Man Artist",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🎨",
+					"title": "Man Artist: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🎨",
+					"title": "Man Artist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🎨",
+					"title": "Man Artist: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🎨",
+					"title": "Man Artist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🎨",
+					"title": "Man Artist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🎨",
+			"title": "Woman Artist",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🎨",
+					"title": "Woman Artist: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🎨",
+					"title": "Woman Artist: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🎨",
+					"title": "Woman Artist: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🎨",
+					"title": "Woman Artist: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🎨",
+					"title": "Woman Artist: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍✈️",
+			"title": "Pilot",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍✈️",
+					"title": "Pilot: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍✈️",
+					"title": "Pilot: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍✈️",
+					"title": "Pilot: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍✈️",
+					"title": "Pilot: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍✈️",
+					"title": "Pilot: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍✈️",
+			"title": "Man Pilot",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍✈️",
+					"title": "Man Pilot: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍✈️",
+					"title": "Man Pilot: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍✈️",
+					"title": "Man Pilot: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍✈️",
+					"title": "Man Pilot: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍✈️",
+					"title": "Man Pilot: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍✈️",
+			"title": "Woman Pilot",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍✈️",
+					"title": "Woman Pilot: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍✈️",
+					"title": "Woman Pilot: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍✈️",
+					"title": "Woman Pilot: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍✈️",
+					"title": "Woman Pilot: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍✈️",
+					"title": "Woman Pilot: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🚀",
+			"title": "Astronaut",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🚀",
+					"title": "Astronaut: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🚀",
+					"title": "Astronaut: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🚀",
+					"title": "Astronaut: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🚀",
+					"title": "Astronaut: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🚀",
+					"title": "Astronaut: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🚀",
+			"title": "Man Astronaut",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🚀",
+					"title": "Man Astronaut: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🚀",
+					"title": "Man Astronaut: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🚀",
+					"title": "Man Astronaut: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🚀",
+					"title": "Man Astronaut: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🚀",
+					"title": "Man Astronaut: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🚀",
+			"title": "Woman Astronaut",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🚀",
+					"title": "Woman Astronaut: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🚀",
+					"title": "Woman Astronaut: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🚀",
+					"title": "Woman Astronaut: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🚀",
+					"title": "Woman Astronaut: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🚀",
+					"title": "Woman Astronaut: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🚒",
+			"title": "Firefighter",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🚒",
+					"title": "Firefighter: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🚒",
+					"title": "Firefighter: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🚒",
+					"title": "Firefighter: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🚒",
+					"title": "Firefighter: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🚒",
+					"title": "Firefighter: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🚒",
+			"title": "Man Firefighter",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🚒",
+					"title": "Man Firefighter: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🚒",
+					"title": "Man Firefighter: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🚒",
+					"title": "Man Firefighter: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🚒",
+					"title": "Man Firefighter: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🚒",
+					"title": "Man Firefighter: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🚒",
+			"title": "Woman Firefighter",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🚒",
+					"title": "Woman Firefighter: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🚒",
+					"title": "Woman Firefighter: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🚒",
+					"title": "Woman Firefighter: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🚒",
+					"title": "Woman Firefighter: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🚒",
+					"title": "Woman Firefighter: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👮",
+			"title": "Police Officer",
+			"skinToneVariants": [
+				{
+					"emoji": "👮🏻",
+					"title": "Police Officer: Light Skin Tone"
+				},
+				{
+					"emoji": "👮🏼",
+					"title": "Police Officer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👮🏽",
+					"title": "Police Officer: Medium Skin Tone"
+				},
+				{
+					"emoji": "👮🏾",
+					"title": "Police Officer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👮🏿",
+					"title": "Police Officer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👮‍♂️",
+			"title": "Man Police Officer",
+			"skinToneVariants": [
+				{
+					"emoji": "👮🏻‍♂️",
+					"title": "Man Police Officer: Light Skin Tone"
+				},
+				{
+					"emoji": "👮🏼‍♂️",
+					"title": "Man Police Officer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👮🏽‍♂️",
+					"title": "Man Police Officer: Medium Skin Tone"
+				},
+				{
+					"emoji": "👮🏾‍♂️",
+					"title": "Man Police Officer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👮🏿‍♂️",
+					"title": "Man Police Officer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👮‍♀️",
+			"title": "Woman Police Officer",
+			"skinToneVariants": [
+				{
+					"emoji": "👮🏻‍♀️",
+					"title": "Woman Police Officer: Light Skin Tone"
+				},
+				{
+					"emoji": "👮🏼‍♀️",
+					"title": "Woman Police Officer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👮🏽‍♀️",
+					"title": "Woman Police Officer: Medium Skin Tone"
+				},
+				{
+					"emoji": "👮🏾‍♀️",
+					"title": "Woman Police Officer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👮🏿‍♀️",
+					"title": "Woman Police Officer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🕵️",
+			"title": "Detective",
+			"skinToneVariants": [
+				{
+					"emoji": "🕵🏻",
+					"title": "Detective: Light Skin Tone"
+				},
+				{
+					"emoji": "🕵🏼",
+					"title": "Detective: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🕵🏽",
+					"title": "Detective: Medium Skin Tone"
+				},
+				{
+					"emoji": "🕵🏾",
+					"title": "Detective: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🕵🏿",
+					"title": "Detective: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🕵️‍♂️",
+			"title": "Man Detective",
+			"skinToneVariants": [
+				{
+					"emoji": "🕵🏻‍♂️",
+					"title": "Man Detective: Light Skin Tone"
+				},
+				{
+					"emoji": "🕵🏼‍♂️",
+					"title": "Man Detective: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🕵🏽‍♂️",
+					"title": "Man Detective: Medium Skin Tone"
+				},
+				{
+					"emoji": "🕵🏾‍♂️",
+					"title": "Man Detective: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🕵🏿‍♂️",
+					"title": "Man Detective: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🕵️‍♀️",
+			"title": "Woman Detective",
+			"skinToneVariants": [
+				{
+					"emoji": "🕵🏻‍♀️",
+					"title": "Woman Detective: Light Skin Tone"
+				},
+				{
+					"emoji": "🕵🏼‍♀️",
+					"title": "Woman Detective: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🕵🏽‍♀️",
+					"title": "Woman Detective: Medium Skin Tone"
+				},
+				{
+					"emoji": "🕵🏾‍♀️",
+					"title": "Woman Detective: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🕵🏿‍♀️",
+					"title": "Woman Detective: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💂",
+			"title": "Guard",
+			"skinToneVariants": [
+				{
+					"emoji": "💂🏻",
+					"title": "Guard: Light Skin Tone"
+				},
+				{
+					"emoji": "💂🏼",
+					"title": "Guard: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💂🏽",
+					"title": "Guard: Medium Skin Tone"
+				},
+				{
+					"emoji": "💂🏾",
+					"title": "Guard: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💂🏿",
+					"title": "Guard: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💂‍♂️",
+			"title": "Man Guard",
+			"skinToneVariants": [
+				{
+					"emoji": "💂🏻‍♂️",
+					"title": "Man Guard: Light Skin Tone"
+				},
+				{
+					"emoji": "💂🏼‍♂️",
+					"title": "Man Guard: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💂🏽‍♂️",
+					"title": "Man Guard: Medium Skin Tone"
+				},
+				{
+					"emoji": "💂🏾‍♂️",
+					"title": "Man Guard: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💂🏿‍♂️",
+					"title": "Man Guard: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💂‍♀️",
+			"title": "Woman Guard",
+			"skinToneVariants": [
+				{
+					"emoji": "💂🏻‍♀️",
+					"title": "Woman Guard: Light Skin Tone"
+				},
+				{
+					"emoji": "💂🏼‍♀️",
+					"title": "Woman Guard: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💂🏽‍♀️",
+					"title": "Woman Guard: Medium Skin Tone"
+				},
+				{
+					"emoji": "💂🏾‍♀️",
+					"title": "Woman Guard: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💂🏿‍♀️",
+					"title": "Woman Guard: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🥷",
+			"title": "Ninja",
+			"skinToneVariants": [
+				{
+					"emoji": "🥷🏻",
+					"title": "Ninja: Light Skin Tone"
+				},
+				{
+					"emoji": "🥷🏼",
+					"title": "Ninja: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🥷🏽",
+					"title": "Ninja: Medium Skin Tone"
+				},
+				{
+					"emoji": "🥷🏾",
+					"title": "Ninja: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🥷🏿",
+					"title": "Ninja: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👷",
+			"title": "Construction Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👷🏻",
+					"title": "Construction Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👷🏼",
+					"title": "Construction Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👷🏽",
+					"title": "Construction Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👷🏾",
+					"title": "Construction Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👷🏿",
+					"title": "Construction Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👷‍♂️",
+			"title": "Man Construction Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👷🏻‍♂️",
+					"title": "Man Construction Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👷🏼‍♂️",
+					"title": "Man Construction Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👷🏽‍♂️",
+					"title": "Man Construction Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👷🏾‍♂️",
+					"title": "Man Construction Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👷🏿‍♂️",
+					"title": "Man Construction Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👷‍♀️",
+			"title": "Woman Construction Worker",
+			"skinToneVariants": [
+				{
+					"emoji": "👷🏻‍♀️",
+					"title": "Woman Construction Worker: Light Skin Tone"
+				},
+				{
+					"emoji": "👷🏼‍♀️",
+					"title": "Woman Construction Worker: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👷🏽‍♀️",
+					"title": "Woman Construction Worker: Medium Skin Tone"
+				},
+				{
+					"emoji": "👷🏾‍♀️",
+					"title": "Woman Construction Worker: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👷🏿‍♀️",
+					"title": "Woman Construction Worker: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫅",
+			"title": "Person With Crown",
+			"skinToneVariants": [
+				{
+					"emoji": "🫅🏻",
+					"title": "Person With Crown: Light Skin Tone"
+				},
+				{
+					"emoji": "🫅🏼",
+					"title": "Person With Crown: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫅🏽",
+					"title": "Person With Crown: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫅🏾",
+					"title": "Person With Crown: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫅🏿",
+					"title": "Person With Crown: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤴",
+			"title": "Prince",
+			"skinToneVariants": [
+				{
+					"emoji": "🤴🏻",
+					"title": "Prince: Light Skin Tone"
+				},
+				{
+					"emoji": "🤴🏼",
+					"title": "Prince: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤴🏽",
+					"title": "Prince: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤴🏾",
+					"title": "Prince: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤴🏿",
+					"title": "Prince: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👸",
+			"title": "Princess",
+			"skinToneVariants": [
+				{
+					"emoji": "👸🏻",
+					"title": "Princess: Light Skin Tone"
+				},
+				{
+					"emoji": "👸🏼",
+					"title": "Princess: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👸🏽",
+					"title": "Princess: Medium Skin Tone"
+				},
+				{
+					"emoji": "👸🏾",
+					"title": "Princess: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👸🏿",
+					"title": "Princess: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👳",
+			"title": "Person Wearing Turban",
+			"skinToneVariants": [
+				{
+					"emoji": "👳🏻",
+					"title": "Person Wearing Turban: Light Skin Tone"
+				},
+				{
+					"emoji": "👳🏼",
+					"title": "Person Wearing Turban: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👳🏽",
+					"title": "Person Wearing Turban: Medium Skin Tone"
+				},
+				{
+					"emoji": "👳🏾",
+					"title": "Person Wearing Turban: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👳🏿",
+					"title": "Person Wearing Turban: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👳‍♂️",
+			"title": "Man Wearing Turban",
+			"skinToneVariants": [
+				{
+					"emoji": "👳🏻‍♂️",
+					"title": "Man Wearing Turban: Light Skin Tone"
+				},
+				{
+					"emoji": "👳🏼‍♂️",
+					"title": "Man Wearing Turban: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👳🏽‍♂️",
+					"title": "Man Wearing Turban: Medium Skin Tone"
+				},
+				{
+					"emoji": "👳🏾‍♂️",
+					"title": "Man Wearing Turban: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👳🏿‍♂️",
+					"title": "Man Wearing Turban: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👳‍♀️",
+			"title": "Woman Wearing Turban",
+			"skinToneVariants": [
+				{
+					"emoji": "👳🏻‍♀️",
+					"title": "Woman Wearing Turban: Light Skin Tone"
+				},
+				{
+					"emoji": "👳🏼‍♀️",
+					"title": "Woman Wearing Turban: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👳🏽‍♀️",
+					"title": "Woman Wearing Turban: Medium Skin Tone"
+				},
+				{
+					"emoji": "👳🏾‍♀️",
+					"title": "Woman Wearing Turban: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👳🏿‍♀️",
+					"title": "Woman Wearing Turban: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👲",
+			"title": "Person With Skullcap",
+			"skinToneVariants": [
+				{
+					"emoji": "👲🏻",
+					"title": "Person With Skullcap: Light Skin Tone"
+				},
+				{
+					"emoji": "👲🏼",
+					"title": "Person With Skullcap: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👲🏽",
+					"title": "Person With Skullcap: Medium Skin Tone"
+				},
+				{
+					"emoji": "👲🏾",
+					"title": "Person With Skullcap: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👲🏿",
+					"title": "Person With Skullcap: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧕",
+			"title": "Woman With Headscarf",
+			"skinToneVariants": [
+				{
+					"emoji": "🧕🏻",
+					"title": "Woman With Headscarf: Light Skin Tone"
+				},
+				{
+					"emoji": "🧕🏼",
+					"title": "Woman With Headscarf: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧕🏽",
+					"title": "Woman With Headscarf: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧕🏾",
+					"title": "Woman With Headscarf: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧕🏿",
+					"title": "Woman With Headscarf: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤵",
+			"title": "Person In Tuxedo",
+			"skinToneVariants": [
+				{
+					"emoji": "🤵🏻",
+					"title": "Person In Tuxedo: Light Skin Tone"
+				},
+				{
+					"emoji": "🤵🏼",
+					"title": "Person In Tuxedo: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤵🏽",
+					"title": "Person In Tuxedo: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤵🏾",
+					"title": "Person In Tuxedo: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤵🏿",
+					"title": "Person In Tuxedo: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤵‍♂️",
+			"title": "Man In Tuxedo",
+			"skinToneVariants": [
+				{
+					"emoji": "🤵🏻‍♂️",
+					"title": "Man In Tuxedo: Light Skin Tone"
+				},
+				{
+					"emoji": "🤵🏼‍♂️",
+					"title": "Man In Tuxedo: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤵🏽‍♂️",
+					"title": "Man In Tuxedo: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤵🏾‍♂️",
+					"title": "Man In Tuxedo: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤵🏿‍♂️",
+					"title": "Man In Tuxedo: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤵‍♀️",
+			"title": "Woman In Tuxedo",
+			"skinToneVariants": [
+				{
+					"emoji": "🤵🏻‍♀️",
+					"title": "Woman In Tuxedo: Light Skin Tone"
+				},
+				{
+					"emoji": "🤵🏼‍♀️",
+					"title": "Woman In Tuxedo: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤵🏽‍♀️",
+					"title": "Woman In Tuxedo: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤵🏾‍♀️",
+					"title": "Woman In Tuxedo: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤵🏿‍♀️",
+					"title": "Woman In Tuxedo: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👰",
+			"title": "Person With Veil",
+			"skinToneVariants": [
+				{
+					"emoji": "👰🏻",
+					"title": "Person With Veil: Light Skin Tone"
+				},
+				{
+					"emoji": "👰🏼",
+					"title": "Person With Veil: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👰🏽",
+					"title": "Person With Veil: Medium Skin Tone"
+				},
+				{
+					"emoji": "👰🏾",
+					"title": "Person With Veil: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👰🏿",
+					"title": "Person With Veil: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👰‍♂️",
+			"title": "Man With Veil",
+			"skinToneVariants": [
+				{
+					"emoji": "👰🏻‍♂️",
+					"title": "Man With Veil: Light Skin Tone"
+				},
+				{
+					"emoji": "👰🏼‍♂️",
+					"title": "Man With Veil: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👰🏽‍♂️",
+					"title": "Man With Veil: Medium Skin Tone"
+				},
+				{
+					"emoji": "👰🏾‍♂️",
+					"title": "Man With Veil: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👰🏿‍♂️",
+					"title": "Man With Veil: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👰‍♀️",
+			"title": "Woman With Veil",
+			"skinToneVariants": [
+				{
+					"emoji": "👰🏻‍♀️",
+					"title": "Woman With Veil: Light Skin Tone"
+				},
+				{
+					"emoji": "👰🏼‍♀️",
+					"title": "Woman With Veil: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👰🏽‍♀️",
+					"title": "Woman With Veil: Medium Skin Tone"
+				},
+				{
+					"emoji": "👰🏾‍♀️",
+					"title": "Woman With Veil: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👰🏿‍♀️",
+					"title": "Woman With Veil: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤰",
+			"title": "Pregnant Woman",
+			"skinToneVariants": [
+				{
+					"emoji": "🤰🏻",
+					"title": "Pregnant Woman: Light Skin Tone"
+				},
+				{
+					"emoji": "🤰🏼",
+					"title": "Pregnant Woman: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤰🏽",
+					"title": "Pregnant Woman: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤰🏾",
+					"title": "Pregnant Woman: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤰🏿",
+					"title": "Pregnant Woman: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫃",
+			"title": "Pregnant Man",
+			"skinToneVariants": [
+				{
+					"emoji": "🫃🏻",
+					"title": "Pregnant Man: Light Skin Tone"
+				},
+				{
+					"emoji": "🫃🏼",
+					"title": "Pregnant Man: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫃🏽",
+					"title": "Pregnant Man: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫃🏾",
+					"title": "Pregnant Man: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫃🏿",
+					"title": "Pregnant Man: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🫄",
+			"title": "Pregnant Person",
+			"skinToneVariants": [
+				{
+					"emoji": "🫄🏻",
+					"title": "Pregnant Person: Light Skin Tone"
+				},
+				{
+					"emoji": "🫄🏼",
+					"title": "Pregnant Person: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🫄🏽",
+					"title": "Pregnant Person: Medium Skin Tone"
+				},
+				{
+					"emoji": "🫄🏾",
+					"title": "Pregnant Person: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🫄🏿",
+					"title": "Pregnant Person: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤱",
+			"title": "Breast-feeding",
+			"skinToneVariants": [
+				{
+					"emoji": "🤱🏻",
+					"title": "Breast-feeding: Light Skin Tone"
+				},
+				{
+					"emoji": "🤱🏼",
+					"title": "Breast-feeding: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤱🏽",
+					"title": "Breast-feeding: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤱🏾",
+					"title": "Breast-feeding: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤱🏿",
+					"title": "Breast-feeding: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🍼",
+			"title": "Woman Feeding Baby",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🍼",
+					"title": "Woman Feeding Baby: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🍼",
+					"title": "Woman Feeding Baby: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🍼",
+					"title": "Woman Feeding Baby: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🍼",
+					"title": "Woman Feeding Baby: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🍼",
+					"title": "Woman Feeding Baby: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🍼",
+			"title": "Man Feeding Baby",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🍼",
+					"title": "Man Feeding Baby: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🍼",
+					"title": "Man Feeding Baby: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🍼",
+					"title": "Man Feeding Baby: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🍼",
+					"title": "Man Feeding Baby: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🍼",
+					"title": "Man Feeding Baby: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🍼",
+			"title": "Person Feeding Baby",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🍼",
+					"title": "Person Feeding Baby: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🍼",
+					"title": "Person Feeding Baby: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🍼",
+					"title": "Person Feeding Baby: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🍼",
+					"title": "Person Feeding Baby: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🍼",
+					"title": "Person Feeding Baby: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👼",
+			"title": "Baby Angel",
+			"skinToneVariants": [
+				{
+					"emoji": "👼🏻",
+					"title": "Baby Angel: Light Skin Tone"
+				},
+				{
+					"emoji": "👼🏼",
+					"title": "Baby Angel: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👼🏽",
+					"title": "Baby Angel: Medium Skin Tone"
+				},
+				{
+					"emoji": "👼🏾",
+					"title": "Baby Angel: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👼🏿",
+					"title": "Baby Angel: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🎅",
+			"title": "Santa Claus",
+			"skinToneVariants": [
+				{
+					"emoji": "🎅🏻",
+					"title": "Santa Claus: Light Skin Tone"
+				},
+				{
+					"emoji": "🎅🏼",
+					"title": "Santa Claus: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🎅🏽",
+					"title": "Santa Claus: Medium Skin Tone"
+				},
+				{
+					"emoji": "🎅🏾",
+					"title": "Santa Claus: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🎅🏿",
+					"title": "Santa Claus: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤶",
+			"title": "Mrs. Claus",
+			"skinToneVariants": [
+				{
+					"emoji": "🤶🏻",
+					"title": "Mrs. Claus: Light Skin Tone"
+				},
+				{
+					"emoji": "🤶🏼",
+					"title": "Mrs. Claus: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤶🏽",
+					"title": "Mrs. Claus: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤶🏾",
+					"title": "Mrs. Claus: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤶🏿",
+					"title": "Mrs. Claus: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🎄",
+			"title": "Mx Claus",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🎄",
+					"title": "Mx Claus: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🎄",
+					"title": "Mx Claus: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🎄",
+					"title": "Mx Claus: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🎄",
+					"title": "Mx Claus: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🎄",
+					"title": "Mx Claus: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦸",
+			"title": "Superhero",
+			"skinToneVariants": [
+				{
+					"emoji": "🦸🏻",
+					"title": "Superhero: Light Skin Tone"
+				},
+				{
+					"emoji": "🦸🏼",
+					"title": "Superhero: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦸🏽",
+					"title": "Superhero: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦸🏾",
+					"title": "Superhero: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦸🏿",
+					"title": "Superhero: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦸‍♂️",
+			"title": "Man Superhero",
+			"skinToneVariants": [
+				{
+					"emoji": "🦸🏻‍♂️",
+					"title": "Man Superhero: Light Skin Tone"
+				},
+				{
+					"emoji": "🦸🏼‍♂️",
+					"title": "Man Superhero: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦸🏽‍♂️",
+					"title": "Man Superhero: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦸🏾‍♂️",
+					"title": "Man Superhero: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦸🏿‍♂️",
+					"title": "Man Superhero: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦸‍♀️",
+			"title": "Woman Superhero",
+			"skinToneVariants": [
+				{
+					"emoji": "🦸🏻‍♀️",
+					"title": "Woman Superhero: Light Skin Tone"
+				},
+				{
+					"emoji": "🦸🏼‍♀️",
+					"title": "Woman Superhero: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦸🏽‍♀️",
+					"title": "Woman Superhero: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦸🏾‍♀️",
+					"title": "Woman Superhero: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦸🏿‍♀️",
+					"title": "Woman Superhero: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦹",
+			"title": "Supervillain",
+			"skinToneVariants": [
+				{
+					"emoji": "🦹🏻",
+					"title": "Supervillain: Light Skin Tone"
+				},
+				{
+					"emoji": "🦹🏼",
+					"title": "Supervillain: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦹🏽",
+					"title": "Supervillain: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦹🏾",
+					"title": "Supervillain: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦹🏿",
+					"title": "Supervillain: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦹‍♂️",
+			"title": "Man Supervillain",
+			"skinToneVariants": [
+				{
+					"emoji": "🦹🏻‍♂️",
+					"title": "Man Supervillain: Light Skin Tone"
+				},
+				{
+					"emoji": "🦹🏼‍♂️",
+					"title": "Man Supervillain: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦹🏽‍♂️",
+					"title": "Man Supervillain: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦹🏾‍♂️",
+					"title": "Man Supervillain: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦹🏿‍♂️",
+					"title": "Man Supervillain: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🦹‍♀️",
+			"title": "Woman Supervillain",
+			"skinToneVariants": [
+				{
+					"emoji": "🦹🏻‍♀️",
+					"title": "Woman Supervillain: Light Skin Tone"
+				},
+				{
+					"emoji": "🦹🏼‍♀️",
+					"title": "Woman Supervillain: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🦹🏽‍♀️",
+					"title": "Woman Supervillain: Medium Skin Tone"
+				},
+				{
+					"emoji": "🦹🏾‍♀️",
+					"title": "Woman Supervillain: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🦹🏿‍♀️",
+					"title": "Woman Supervillain: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧙",
+			"title": "Mage",
+			"skinToneVariants": [
+				{
+					"emoji": "🧙🏻",
+					"title": "Mage: Light Skin Tone"
+				},
+				{
+					"emoji": "🧙🏼",
+					"title": "Mage: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧙🏽",
+					"title": "Mage: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧙🏾",
+					"title": "Mage: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧙🏿",
+					"title": "Mage: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧙‍♂️",
+			"title": "Man Mage",
+			"skinToneVariants": [
+				{
+					"emoji": "🧙🏻‍♂️",
+					"title": "Man Mage: Light Skin Tone"
+				},
+				{
+					"emoji": "🧙🏼‍♂️",
+					"title": "Man Mage: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧙🏽‍♂️",
+					"title": "Man Mage: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧙🏾‍♂️",
+					"title": "Man Mage: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧙🏿‍♂️",
+					"title": "Man Mage: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧙‍♀️",
+			"title": "Woman Mage",
+			"skinToneVariants": [
+				{
+					"emoji": "🧙🏻‍♀️",
+					"title": "Woman Mage: Light Skin Tone"
+				},
+				{
+					"emoji": "🧙🏼‍♀️",
+					"title": "Woman Mage: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧙🏽‍♀️",
+					"title": "Woman Mage: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧙🏾‍♀️",
+					"title": "Woman Mage: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧙🏿‍♀️",
+					"title": "Woman Mage: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧚",
+			"title": "Fairy",
+			"skinToneVariants": [
+				{
+					"emoji": "🧚🏻",
+					"title": "Fairy: Light Skin Tone"
+				},
+				{
+					"emoji": "🧚🏼",
+					"title": "Fairy: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧚🏽",
+					"title": "Fairy: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧚🏾",
+					"title": "Fairy: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧚🏿",
+					"title": "Fairy: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧚‍♂️",
+			"title": "Man Fairy",
+			"skinToneVariants": [
+				{
+					"emoji": "🧚🏻‍♂️",
+					"title": "Man Fairy: Light Skin Tone"
+				},
+				{
+					"emoji": "🧚🏼‍♂️",
+					"title": "Man Fairy: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧚🏽‍♂️",
+					"title": "Man Fairy: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧚🏾‍♂️",
+					"title": "Man Fairy: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧚🏿‍♂️",
+					"title": "Man Fairy: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧚‍♀️",
+			"title": "Woman Fairy",
+			"skinToneVariants": [
+				{
+					"emoji": "🧚🏻‍♀️",
+					"title": "Woman Fairy: Light Skin Tone"
+				},
+				{
+					"emoji": "🧚🏼‍♀️",
+					"title": "Woman Fairy: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧚🏽‍♀️",
+					"title": "Woman Fairy: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧚🏾‍♀️",
+					"title": "Woman Fairy: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧚🏿‍♀️",
+					"title": "Woman Fairy: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧛",
+			"title": "Vampire",
+			"skinToneVariants": [
+				{
+					"emoji": "🧛🏻",
+					"title": "Vampire: Light Skin Tone"
+				},
+				{
+					"emoji": "🧛🏼",
+					"title": "Vampire: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧛🏽",
+					"title": "Vampire: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧛🏾",
+					"title": "Vampire: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧛🏿",
+					"title": "Vampire: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧛‍♂️",
+			"title": "Man Vampire",
+			"skinToneVariants": [
+				{
+					"emoji": "🧛🏻‍♂️",
+					"title": "Man Vampire: Light Skin Tone"
+				},
+				{
+					"emoji": "🧛🏼‍♂️",
+					"title": "Man Vampire: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧛🏽‍♂️",
+					"title": "Man Vampire: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧛🏾‍♂️",
+					"title": "Man Vampire: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧛🏿‍♂️",
+					"title": "Man Vampire: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧛‍♀️",
+			"title": "Woman Vampire",
+			"skinToneVariants": [
+				{
+					"emoji": "🧛🏻‍♀️",
+					"title": "Woman Vampire: Light Skin Tone"
+				},
+				{
+					"emoji": "🧛🏼‍♀️",
+					"title": "Woman Vampire: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧛🏽‍♀️",
+					"title": "Woman Vampire: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧛🏾‍♀️",
+					"title": "Woman Vampire: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧛🏿‍♀️",
+					"title": "Woman Vampire: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧜",
+			"title": "Merperson",
+			"skinToneVariants": [
+				{
+					"emoji": "🧜🏻",
+					"title": "Merperson: Light Skin Tone"
+				},
+				{
+					"emoji": "🧜🏼",
+					"title": "Merperson: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧜🏽",
+					"title": "Merperson: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧜🏾",
+					"title": "Merperson: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧜🏿",
+					"title": "Merperson: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧜‍♂️",
+			"title": "Merman",
+			"skinToneVariants": [
+				{
+					"emoji": "🧜🏻‍♂️",
+					"title": "Merman: Light Skin Tone"
+				},
+				{
+					"emoji": "🧜🏼‍♂️",
+					"title": "Merman: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧜🏽‍♂️",
+					"title": "Merman: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧜🏾‍♂️",
+					"title": "Merman: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧜🏿‍♂️",
+					"title": "Merman: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧜‍♀️",
+			"title": "Mermaid",
+			"skinToneVariants": [
+				{
+					"emoji": "🧜🏻‍♀️",
+					"title": "Mermaid: Light Skin Tone"
+				},
+				{
+					"emoji": "🧜🏼‍♀️",
+					"title": "Mermaid: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧜🏽‍♀️",
+					"title": "Mermaid: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧜🏾‍♀️",
+					"title": "Mermaid: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧜🏿‍♀️",
+					"title": "Mermaid: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧝",
+			"title": "Elf",
+			"skinToneVariants": [
+				{
+					"emoji": "🧝🏻",
+					"title": "Elf: Light Skin Tone"
+				},
+				{
+					"emoji": "🧝🏼",
+					"title": "Elf: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧝🏽",
+					"title": "Elf: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧝🏾",
+					"title": "Elf: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧝🏿",
+					"title": "Elf: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧝‍♂️",
+			"title": "Man Elf",
+			"skinToneVariants": [
+				{
+					"emoji": "🧝🏻‍♂️",
+					"title": "Man Elf: Light Skin Tone"
+				},
+				{
+					"emoji": "🧝🏼‍♂️",
+					"title": "Man Elf: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧝🏽‍♂️",
+					"title": "Man Elf: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧝🏾‍♂️",
+					"title": "Man Elf: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧝🏿‍♂️",
+					"title": "Man Elf: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧝‍♀️",
+			"title": "Woman Elf",
+			"skinToneVariants": [
+				{
+					"emoji": "🧝🏻‍♀️",
+					"title": "Woman Elf: Light Skin Tone"
+				},
+				{
+					"emoji": "🧝🏼‍♀️",
+					"title": "Woman Elf: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧝🏽‍♀️",
+					"title": "Woman Elf: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧝🏾‍♀️",
+					"title": "Woman Elf: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧝🏿‍♀️",
+					"title": "Woman Elf: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧞",
+			"title": "Genie"
+		},
+		{
+			"emoji": "🧞‍♂️",
+			"title": "Man Genie"
+		},
+		{
+			"emoji": "🧞‍♀️",
+			"title": "Woman Genie"
+		},
+		{
+			"emoji": "🧟",
+			"title": "Zombie"
+		},
+		{
+			"emoji": "🧟‍♂️",
+			"title": "Man Zombie"
+		},
+		{
+			"emoji": "🧟‍♀️",
+			"title": "Woman Zombie"
+		},
+		{
+			"emoji": "🧌",
+			"title": "Troll"
+		},
+		{
+			"emoji": "🫈",
+			"title": "Hairy Creature"
+		},
+		{
+			"emoji": "💆",
+			"title": "Person Getting Massage",
+			"skinToneVariants": [
+				{
+					"emoji": "💆🏻",
+					"title": "Person Getting Massage: Light Skin Tone"
+				},
+				{
+					"emoji": "💆🏼",
+					"title": "Person Getting Massage: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💆🏽",
+					"title": "Person Getting Massage: Medium Skin Tone"
+				},
+				{
+					"emoji": "💆🏾",
+					"title": "Person Getting Massage: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💆🏿",
+					"title": "Person Getting Massage: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💆‍♂️",
+			"title": "Man Getting Massage",
+			"skinToneVariants": [
+				{
+					"emoji": "💆🏻‍♂️",
+					"title": "Man Getting Massage: Light Skin Tone"
+				},
+				{
+					"emoji": "💆🏼‍♂️",
+					"title": "Man Getting Massage: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💆🏽‍♂️",
+					"title": "Man Getting Massage: Medium Skin Tone"
+				},
+				{
+					"emoji": "💆🏾‍♂️",
+					"title": "Man Getting Massage: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💆🏿‍♂️",
+					"title": "Man Getting Massage: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💆‍♀️",
+			"title": "Woman Getting Massage",
+			"skinToneVariants": [
+				{
+					"emoji": "💆🏻‍♀️",
+					"title": "Woman Getting Massage: Light Skin Tone"
+				},
+				{
+					"emoji": "💆🏼‍♀️",
+					"title": "Woman Getting Massage: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💆🏽‍♀️",
+					"title": "Woman Getting Massage: Medium Skin Tone"
+				},
+				{
+					"emoji": "💆🏾‍♀️",
+					"title": "Woman Getting Massage: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💆🏿‍♀️",
+					"title": "Woman Getting Massage: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💇",
+			"title": "Person Getting Haircut",
+			"skinToneVariants": [
+				{
+					"emoji": "💇🏻",
+					"title": "Person Getting Haircut: Light Skin Tone"
+				},
+				{
+					"emoji": "💇🏼",
+					"title": "Person Getting Haircut: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💇🏽",
+					"title": "Person Getting Haircut: Medium Skin Tone"
+				},
+				{
+					"emoji": "💇🏾",
+					"title": "Person Getting Haircut: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💇🏿",
+					"title": "Person Getting Haircut: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💇‍♂️",
+			"title": "Man Getting Haircut",
+			"skinToneVariants": [
+				{
+					"emoji": "💇🏻‍♂️",
+					"title": "Man Getting Haircut: Light Skin Tone"
+				},
+				{
+					"emoji": "💇🏼‍♂️",
+					"title": "Man Getting Haircut: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💇🏽‍♂️",
+					"title": "Man Getting Haircut: Medium Skin Tone"
+				},
+				{
+					"emoji": "💇🏾‍♂️",
+					"title": "Man Getting Haircut: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💇🏿‍♂️",
+					"title": "Man Getting Haircut: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💇‍♀️",
+			"title": "Woman Getting Haircut",
+			"skinToneVariants": [
+				{
+					"emoji": "💇🏻‍♀️",
+					"title": "Woman Getting Haircut: Light Skin Tone"
+				},
+				{
+					"emoji": "💇🏼‍♀️",
+					"title": "Woman Getting Haircut: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💇🏽‍♀️",
+					"title": "Woman Getting Haircut: Medium Skin Tone"
+				},
+				{
+					"emoji": "💇🏾‍♀️",
+					"title": "Woman Getting Haircut: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💇🏿‍♀️",
+					"title": "Woman Getting Haircut: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚶",
+			"title": "Person Walking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚶🏻",
+					"title": "Person Walking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏼",
+					"title": "Person Walking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏽",
+					"title": "Person Walking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚶🏾",
+					"title": "Person Walking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚶🏿",
+					"title": "Person Walking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚶‍♂️",
+			"title": "Man Walking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚶🏻‍♂️",
+					"title": "Man Walking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏼‍♂️",
+					"title": "Man Walking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏽‍♂️",
+					"title": "Man Walking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚶🏾‍♂️",
+					"title": "Man Walking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚶🏿‍♂️",
+					"title": "Man Walking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚶‍♀️",
+			"title": "Woman Walking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚶🏻‍♀️",
+					"title": "Woman Walking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏼‍♀️",
+					"title": "Woman Walking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏽‍♀️",
+					"title": "Woman Walking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚶🏾‍♀️",
+					"title": "Woman Walking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚶🏿‍♀️",
+					"title": "Woman Walking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚶‍➡️",
+			"title": "Person Walking Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🚶🏻‍➡️",
+					"title": "Person Walking Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏼‍➡️",
+					"title": "Person Walking Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏽‍➡️",
+					"title": "Person Walking Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚶🏾‍➡️",
+					"title": "Person Walking Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚶🏿‍➡️",
+					"title": "Person Walking Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚶‍♀️‍➡️",
+			"title": "Woman Walking Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🚶🏻‍♀️‍➡️",
+					"title": "Woman Walking Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏼‍♀️‍➡️",
+					"title": "Woman Walking Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏽‍♀️‍➡️",
+					"title": "Woman Walking Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚶🏾‍♀️‍➡️",
+					"title": "Woman Walking Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚶🏿‍♀️‍➡️",
+					"title": "Woman Walking Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚶‍♂️‍➡️",
+			"title": "Man Walking Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🚶🏻‍♂️‍➡️",
+					"title": "Man Walking Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏼‍♂️‍➡️",
+					"title": "Man Walking Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚶🏽‍♂️‍➡️",
+					"title": "Man Walking Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚶🏾‍♂️‍➡️",
+					"title": "Man Walking Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚶🏿‍♂️‍➡️",
+					"title": "Man Walking Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧍",
+			"title": "Person Standing",
+			"skinToneVariants": [
+				{
+					"emoji": "🧍🏻",
+					"title": "Person Standing: Light Skin Tone"
+				},
+				{
+					"emoji": "🧍🏼",
+					"title": "Person Standing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧍🏽",
+					"title": "Person Standing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧍🏾",
+					"title": "Person Standing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧍🏿",
+					"title": "Person Standing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧍‍♂️",
+			"title": "Man Standing",
+			"skinToneVariants": [
+				{
+					"emoji": "🧍🏻‍♂️",
+					"title": "Man Standing: Light Skin Tone"
+				},
+				{
+					"emoji": "🧍🏼‍♂️",
+					"title": "Man Standing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧍🏽‍♂️",
+					"title": "Man Standing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧍🏾‍♂️",
+					"title": "Man Standing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧍🏿‍♂️",
+					"title": "Man Standing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧍‍♀️",
+			"title": "Woman Standing",
+			"skinToneVariants": [
+				{
+					"emoji": "🧍🏻‍♀️",
+					"title": "Woman Standing: Light Skin Tone"
+				},
+				{
+					"emoji": "🧍🏼‍♀️",
+					"title": "Woman Standing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧍🏽‍♀️",
+					"title": "Woman Standing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧍🏾‍♀️",
+					"title": "Woman Standing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧍🏿‍♀️",
+					"title": "Woman Standing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧎",
+			"title": "Person Kneeling",
+			"skinToneVariants": [
+				{
+					"emoji": "🧎🏻",
+					"title": "Person Kneeling: Light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏼",
+					"title": "Person Kneeling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏽",
+					"title": "Person Kneeling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧎🏾",
+					"title": "Person Kneeling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧎🏿",
+					"title": "Person Kneeling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧎‍♂️",
+			"title": "Man Kneeling",
+			"skinToneVariants": [
+				{
+					"emoji": "🧎🏻‍♂️",
+					"title": "Man Kneeling: Light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏼‍♂️",
+					"title": "Man Kneeling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏽‍♂️",
+					"title": "Man Kneeling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧎🏾‍♂️",
+					"title": "Man Kneeling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧎🏿‍♂️",
+					"title": "Man Kneeling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧎‍♀️",
+			"title": "Woman Kneeling",
+			"skinToneVariants": [
+				{
+					"emoji": "🧎🏻‍♀️",
+					"title": "Woman Kneeling: Light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏼‍♀️",
+					"title": "Woman Kneeling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏽‍♀️",
+					"title": "Woman Kneeling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧎🏾‍♀️",
+					"title": "Woman Kneeling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧎🏿‍♀️",
+					"title": "Woman Kneeling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧎‍➡️",
+			"title": "Person Kneeling Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🧎🏻‍➡️",
+					"title": "Person Kneeling Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏼‍➡️",
+					"title": "Person Kneeling Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏽‍➡️",
+					"title": "Person Kneeling Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧎🏾‍➡️",
+					"title": "Person Kneeling Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧎🏿‍➡️",
+					"title": "Person Kneeling Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧎‍♀️‍➡️",
+			"title": "Woman Kneeling Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🧎🏻‍♀️‍➡️",
+					"title": "Woman Kneeling Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏼‍♀️‍➡️",
+					"title": "Woman Kneeling Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏽‍♀️‍➡️",
+					"title": "Woman Kneeling Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧎🏾‍♀️‍➡️",
+					"title": "Woman Kneeling Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧎🏿‍♀️‍➡️",
+					"title": "Woman Kneeling Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧎‍♂️‍➡️",
+			"title": "Man Kneeling Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🧎🏻‍♂️‍➡️",
+					"title": "Man Kneeling Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏼‍♂️‍➡️",
+					"title": "Man Kneeling Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧎🏽‍♂️‍➡️",
+					"title": "Man Kneeling Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧎🏾‍♂️‍➡️",
+					"title": "Man Kneeling Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧎🏿‍♂️‍➡️",
+					"title": "Man Kneeling Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦯",
+			"title": "Person With White Cane",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦯",
+					"title": "Person With White Cane: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🦯",
+					"title": "Person With White Cane: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🦯",
+					"title": "Person With White Cane: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🦯",
+					"title": "Person With White Cane: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🦯",
+					"title": "Person With White Cane: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦯‍➡️",
+			"title": "Person With White Cane Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦯‍➡️",
+					"title": "Person With White Cane Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🦯‍➡️",
+					"title": "Person With White Cane Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🦯‍➡️",
+					"title": "Person With White Cane Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🦯‍➡️",
+					"title": "Person With White Cane Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🦯‍➡️",
+					"title": "Person With White Cane Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦯",
+			"title": "Man With White Cane",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦯",
+					"title": "Man With White Cane: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🦯",
+					"title": "Man With White Cane: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🦯",
+					"title": "Man With White Cane: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🦯",
+					"title": "Man With White Cane: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🦯",
+					"title": "Man With White Cane: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦯‍➡️",
+			"title": "Man With White Cane Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦯‍➡️",
+					"title": "Man With White Cane Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🦯‍➡️",
+					"title": "Man With White Cane Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🦯‍➡️",
+					"title": "Man With White Cane Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🦯‍➡️",
+					"title": "Man With White Cane Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🦯‍➡️",
+					"title": "Man With White Cane Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦯",
+			"title": "Woman With White Cane",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦯",
+					"title": "Woman With White Cane: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🦯",
+					"title": "Woman With White Cane: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🦯",
+					"title": "Woman With White Cane: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🦯",
+					"title": "Woman With White Cane: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🦯",
+					"title": "Woman With White Cane: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦯‍➡️",
+			"title": "Woman With White Cane Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦯‍➡️",
+					"title": "Woman With White Cane Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🦯‍➡️",
+					"title": "Woman With White Cane Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🦯‍➡️",
+					"title": "Woman With White Cane Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🦯‍➡️",
+					"title": "Woman With White Cane Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🦯‍➡️",
+					"title": "Woman With White Cane Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦼",
+			"title": "Person In Motorized Wheelchair",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦼",
+					"title": "Person In Motorized Wheelchair: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🦼",
+					"title": "Person In Motorized Wheelchair: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🦼",
+					"title": "Person In Motorized Wheelchair: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🦼",
+					"title": "Person In Motorized Wheelchair: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🦼",
+					"title": "Person In Motorized Wheelchair: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦼‍➡️",
+			"title": "Person In Motorized Wheelchair Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦼‍➡️",
+					"title": "Person In Motorized Wheelchair Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🦼‍➡️",
+					"title": "Person In Motorized Wheelchair Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🦼‍➡️",
+					"title": "Person In Motorized Wheelchair Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🦼‍➡️",
+					"title": "Person In Motorized Wheelchair Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🦼‍➡️",
+					"title": "Person In Motorized Wheelchair Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦼",
+			"title": "Man In Motorized Wheelchair",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦼",
+					"title": "Man In Motorized Wheelchair: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🦼",
+					"title": "Man In Motorized Wheelchair: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🦼",
+					"title": "Man In Motorized Wheelchair: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🦼",
+					"title": "Man In Motorized Wheelchair: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🦼",
+					"title": "Man In Motorized Wheelchair: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦼‍➡️",
+			"title": "Man In Motorized Wheelchair Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦼‍➡️",
+					"title": "Man In Motorized Wheelchair Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🦼‍➡️",
+					"title": "Man In Motorized Wheelchair Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🦼‍➡️",
+					"title": "Man In Motorized Wheelchair Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🦼‍➡️",
+					"title": "Man In Motorized Wheelchair Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🦼‍➡️",
+					"title": "Man In Motorized Wheelchair Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦼",
+			"title": "Woman In Motorized Wheelchair",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦼",
+					"title": "Woman In Motorized Wheelchair: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🦼",
+					"title": "Woman In Motorized Wheelchair: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🦼",
+					"title": "Woman In Motorized Wheelchair: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🦼",
+					"title": "Woman In Motorized Wheelchair: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🦼",
+					"title": "Woman In Motorized Wheelchair: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦼‍➡️",
+			"title": "Woman In Motorized Wheelchair Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦼‍➡️",
+					"title": "Woman In Motorized Wheelchair Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🦼‍➡️",
+					"title": "Woman In Motorized Wheelchair Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🦼‍➡️",
+					"title": "Woman In Motorized Wheelchair Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🦼‍➡️",
+					"title": "Woman In Motorized Wheelchair Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🦼‍➡️",
+					"title": "Woman In Motorized Wheelchair Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦽",
+			"title": "Person In Manual Wheelchair",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦽",
+					"title": "Person In Manual Wheelchair: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🦽",
+					"title": "Person In Manual Wheelchair: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🦽",
+					"title": "Person In Manual Wheelchair: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🦽",
+					"title": "Person In Manual Wheelchair: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🦽",
+					"title": "Person In Manual Wheelchair: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🦽‍➡️",
+			"title": "Person In Manual Wheelchair Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🦽‍➡️",
+					"title": "Person In Manual Wheelchair Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🦽‍➡️",
+					"title": "Person In Manual Wheelchair Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🦽‍➡️",
+					"title": "Person In Manual Wheelchair Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🦽‍➡️",
+					"title": "Person In Manual Wheelchair Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🦽‍➡️",
+					"title": "Person In Manual Wheelchair Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦽",
+			"title": "Man In Manual Wheelchair",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦽",
+					"title": "Man In Manual Wheelchair: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🦽",
+					"title": "Man In Manual Wheelchair: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🦽",
+					"title": "Man In Manual Wheelchair: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🦽",
+					"title": "Man In Manual Wheelchair: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🦽",
+					"title": "Man In Manual Wheelchair: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍🦽‍➡️",
+			"title": "Man In Manual Wheelchair Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍🦽‍➡️",
+					"title": "Man In Manual Wheelchair Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🦽‍➡️",
+					"title": "Man In Manual Wheelchair Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🦽‍➡️",
+					"title": "Man In Manual Wheelchair Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🦽‍➡️",
+					"title": "Man In Manual Wheelchair Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🦽‍➡️",
+					"title": "Man In Manual Wheelchair Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦽",
+			"title": "Woman In Manual Wheelchair",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦽",
+					"title": "Woman In Manual Wheelchair: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🦽",
+					"title": "Woman In Manual Wheelchair: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🦽",
+					"title": "Woman In Manual Wheelchair: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🦽",
+					"title": "Woman In Manual Wheelchair: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🦽",
+					"title": "Woman In Manual Wheelchair: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍🦽‍➡️",
+			"title": "Woman In Manual Wheelchair Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍🦽‍➡️",
+					"title": "Woman In Manual Wheelchair Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🦽‍➡️",
+					"title": "Woman In Manual Wheelchair Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🦽‍➡️",
+					"title": "Woman In Manual Wheelchair Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🦽‍➡️",
+					"title": "Woman In Manual Wheelchair Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🦽‍➡️",
+					"title": "Woman In Manual Wheelchair Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏃",
+			"title": "Person Running",
+			"skinToneVariants": [
+				{
+					"emoji": "🏃🏻",
+					"title": "Person Running: Light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏼",
+					"title": "Person Running: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏽",
+					"title": "Person Running: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏃🏾",
+					"title": "Person Running: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏃🏿",
+					"title": "Person Running: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏃‍♂️",
+			"title": "Man Running",
+			"skinToneVariants": [
+				{
+					"emoji": "🏃🏻‍♂️",
+					"title": "Man Running: Light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏼‍♂️",
+					"title": "Man Running: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏽‍♂️",
+					"title": "Man Running: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏃🏾‍♂️",
+					"title": "Man Running: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏃🏿‍♂️",
+					"title": "Man Running: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏃‍♀️",
+			"title": "Woman Running",
+			"skinToneVariants": [
+				{
+					"emoji": "🏃🏻‍♀️",
+					"title": "Woman Running: Light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏼‍♀️",
+					"title": "Woman Running: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏽‍♀️",
+					"title": "Woman Running: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏃🏾‍♀️",
+					"title": "Woman Running: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏃🏿‍♀️",
+					"title": "Woman Running: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏃‍➡️",
+			"title": "Person Running Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🏃🏻‍➡️",
+					"title": "Person Running Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏼‍➡️",
+					"title": "Person Running Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏽‍➡️",
+					"title": "Person Running Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏃🏾‍➡️",
+					"title": "Person Running Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏃🏿‍➡️",
+					"title": "Person Running Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏃‍♀️‍➡️",
+			"title": "Woman Running Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🏃🏻‍♀️‍➡️",
+					"title": "Woman Running Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏼‍♀️‍➡️",
+					"title": "Woman Running Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏽‍♀️‍➡️",
+					"title": "Woman Running Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏃🏾‍♀️‍➡️",
+					"title": "Woman Running Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏃🏿‍♀️‍➡️",
+					"title": "Woman Running Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏃‍♂️‍➡️",
+			"title": "Man Running Facing Right",
+			"skinToneVariants": [
+				{
+					"emoji": "🏃🏻‍♂️‍➡️",
+					"title": "Man Running Facing Right: Light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏼‍♂️‍➡️",
+					"title": "Man Running Facing Right: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏃🏽‍♂️‍➡️",
+					"title": "Man Running Facing Right: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏃🏾‍♂️‍➡️",
+					"title": "Man Running Facing Right: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏃🏿‍♂️‍➡️",
+					"title": "Man Running Facing Right: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🩰",
+			"title": "Ballet Dancer",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🩰",
+					"title": "Ballet Dancer: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🩰",
+					"title": "Ballet Dancer: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🩰",
+					"title": "Ballet Dancer: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🩰",
+					"title": "Ballet Dancer: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🩰",
+					"title": "Ballet Dancer: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💃",
+			"title": "Woman Dancing",
+			"skinToneVariants": [
+				{
+					"emoji": "💃🏻",
+					"title": "Woman Dancing: Light Skin Tone"
+				},
+				{
+					"emoji": "💃🏼",
+					"title": "Woman Dancing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💃🏽",
+					"title": "Woman Dancing: Medium Skin Tone"
+				},
+				{
+					"emoji": "💃🏾",
+					"title": "Woman Dancing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💃🏿",
+					"title": "Woman Dancing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🕺",
+			"title": "Man Dancing",
+			"skinToneVariants": [
+				{
+					"emoji": "🕺🏻",
+					"title": "Man Dancing: Light Skin Tone"
+				},
+				{
+					"emoji": "🕺🏼",
+					"title": "Man Dancing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🕺🏽",
+					"title": "Man Dancing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🕺🏾",
+					"title": "Man Dancing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🕺🏿",
+					"title": "Man Dancing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🕴️",
+			"title": "Person In Suit Levitating",
+			"skinToneVariants": [
+				{
+					"emoji": "🕴🏻",
+					"title": "Person In Suit Levitating: Light Skin Tone"
+				},
+				{
+					"emoji": "🕴🏼",
+					"title": "Person In Suit Levitating: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🕴🏽",
+					"title": "Person In Suit Levitating: Medium Skin Tone"
+				},
+				{
+					"emoji": "🕴🏾",
+					"title": "Person In Suit Levitating: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🕴🏿",
+					"title": "Person In Suit Levitating: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👯",
+			"title": "People With Bunny Ears",
+			"skinToneVariants": [
+				{
+					"emoji": "👯🏻",
+					"title": "People With Bunny Ears: Light Skin Tone"
+				},
+				{
+					"emoji": "👯🏼",
+					"title": "People With Bunny Ears: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👯🏽",
+					"title": "People With Bunny Ears: Medium Skin Tone"
+				},
+				{
+					"emoji": "👯🏾",
+					"title": "People With Bunny Ears: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👯🏿",
+					"title": "People With Bunny Ears: Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🐰‍🧑🏼",
+					"title": "People With Bunny Ears: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🐰‍🧑🏽",
+					"title": "People With Bunny Ears: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🐰‍🧑🏾",
+					"title": "People With Bunny Ears: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🐰‍🧑🏿",
+					"title": "People With Bunny Ears: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🐰‍🧑🏻",
+					"title": "People With Bunny Ears: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🐰‍🧑🏽",
+					"title": "People With Bunny Ears: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🐰‍🧑🏾",
+					"title": "People With Bunny Ears: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🐰‍🧑🏿",
+					"title": "People With Bunny Ears: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🐰‍🧑🏻",
+					"title": "People With Bunny Ears: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🐰‍🧑🏼",
+					"title": "People With Bunny Ears: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🐰‍🧑🏾",
+					"title": "People With Bunny Ears: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🐰‍🧑🏿",
+					"title": "People With Bunny Ears: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🐰‍🧑🏻",
+					"title": "People With Bunny Ears: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🐰‍🧑🏼",
+					"title": "People With Bunny Ears: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🐰‍🧑🏽",
+					"title": "People With Bunny Ears: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🐰‍🧑🏿",
+					"title": "People With Bunny Ears: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🐰‍🧑🏻",
+					"title": "People With Bunny Ears: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🐰‍🧑🏼",
+					"title": "People With Bunny Ears: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🐰‍🧑🏽",
+					"title": "People With Bunny Ears: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🐰‍🧑🏾",
+					"title": "People With Bunny Ears: Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👯‍♂️",
+			"title": "Men With Bunny Ears",
+			"skinToneVariants": [
+				{
+					"emoji": "👯🏻‍♂️",
+					"title": "Men With Bunny Ears: Light Skin Tone"
+				},
+				{
+					"emoji": "👯🏼‍♂️",
+					"title": "Men With Bunny Ears: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👯🏽‍♂️",
+					"title": "Men With Bunny Ears: Medium Skin Tone"
+				},
+				{
+					"emoji": "👯🏾‍♂️",
+					"title": "Men With Bunny Ears: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👯🏿‍♂️",
+					"title": "Men With Bunny Ears: Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🐰‍👨🏼",
+					"title": "Men With Bunny Ears: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🐰‍👨🏽",
+					"title": "Men With Bunny Ears: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🐰‍👨🏾",
+					"title": "Men With Bunny Ears: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🐰‍👨🏿",
+					"title": "Men With Bunny Ears: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🐰‍👨🏻",
+					"title": "Men With Bunny Ears: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🐰‍👨🏽",
+					"title": "Men With Bunny Ears: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🐰‍👨🏾",
+					"title": "Men With Bunny Ears: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🐰‍👨🏿",
+					"title": "Men With Bunny Ears: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🐰‍👨🏻",
+					"title": "Men With Bunny Ears: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🐰‍👨🏼",
+					"title": "Men With Bunny Ears: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🐰‍👨🏾",
+					"title": "Men With Bunny Ears: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🐰‍👨🏿",
+					"title": "Men With Bunny Ears: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🐰‍👨🏻",
+					"title": "Men With Bunny Ears: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🐰‍👨🏼",
+					"title": "Men With Bunny Ears: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🐰‍👨🏽",
+					"title": "Men With Bunny Ears: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🐰‍👨🏿",
+					"title": "Men With Bunny Ears: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🐰‍👨🏻",
+					"title": "Men With Bunny Ears: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🐰‍👨🏼",
+					"title": "Men With Bunny Ears: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🐰‍👨🏽",
+					"title": "Men With Bunny Ears: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🐰‍👨🏾",
+					"title": "Men With Bunny Ears: Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👯‍♀️",
+			"title": "Women With Bunny Ears",
+			"skinToneVariants": [
+				{
+					"emoji": "👯🏻‍♀️",
+					"title": "Women With Bunny Ears: Light Skin Tone"
+				},
+				{
+					"emoji": "👯🏼‍♀️",
+					"title": "Women With Bunny Ears: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👯🏽‍♀️",
+					"title": "Women With Bunny Ears: Medium Skin Tone"
+				},
+				{
+					"emoji": "👯🏾‍♀️",
+					"title": "Women With Bunny Ears: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👯🏿‍♀️",
+					"title": "Women With Bunny Ears: Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🐰‍👩🏼",
+					"title": "Women With Bunny Ears: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🐰‍👩🏽",
+					"title": "Women With Bunny Ears: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🐰‍👩🏾",
+					"title": "Women With Bunny Ears: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🐰‍👩🏿",
+					"title": "Women With Bunny Ears: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🐰‍👩🏻",
+					"title": "Women With Bunny Ears: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🐰‍👩🏽",
+					"title": "Women With Bunny Ears: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🐰‍👩🏾",
+					"title": "Women With Bunny Ears: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🐰‍👩🏿",
+					"title": "Women With Bunny Ears: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🐰‍👩🏻",
+					"title": "Women With Bunny Ears: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🐰‍👩🏼",
+					"title": "Women With Bunny Ears: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🐰‍👩🏾",
+					"title": "Women With Bunny Ears: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🐰‍👩🏿",
+					"title": "Women With Bunny Ears: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🐰‍👩🏻",
+					"title": "Women With Bunny Ears: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🐰‍👩🏼",
+					"title": "Women With Bunny Ears: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🐰‍👩🏽",
+					"title": "Women With Bunny Ears: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🐰‍👩🏿",
+					"title": "Women With Bunny Ears: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🐰‍👩🏻",
+					"title": "Women With Bunny Ears: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🐰‍👩🏼",
+					"title": "Women With Bunny Ears: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🐰‍👩🏽",
+					"title": "Women With Bunny Ears: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🐰‍👩🏾",
+					"title": "Women With Bunny Ears: Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧖",
+			"title": "Person In Steamy Room",
+			"skinToneVariants": [
+				{
+					"emoji": "🧖🏻",
+					"title": "Person In Steamy Room: Light Skin Tone"
+				},
+				{
+					"emoji": "🧖🏼",
+					"title": "Person In Steamy Room: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧖🏽",
+					"title": "Person In Steamy Room: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧖🏾",
+					"title": "Person In Steamy Room: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧖🏿",
+					"title": "Person In Steamy Room: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧖‍♂️",
+			"title": "Man In Steamy Room",
+			"skinToneVariants": [
+				{
+					"emoji": "🧖🏻‍♂️",
+					"title": "Man In Steamy Room: Light Skin Tone"
+				},
+				{
+					"emoji": "🧖🏼‍♂️",
+					"title": "Man In Steamy Room: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧖🏽‍♂️",
+					"title": "Man In Steamy Room: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧖🏾‍♂️",
+					"title": "Man In Steamy Room: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧖🏿‍♂️",
+					"title": "Man In Steamy Room: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧖‍♀️",
+			"title": "Woman In Steamy Room",
+			"skinToneVariants": [
+				{
+					"emoji": "🧖🏻‍♀️",
+					"title": "Woman In Steamy Room: Light Skin Tone"
+				},
+				{
+					"emoji": "🧖🏼‍♀️",
+					"title": "Woman In Steamy Room: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧖🏽‍♀️",
+					"title": "Woman In Steamy Room: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧖🏾‍♀️",
+					"title": "Woman In Steamy Room: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧖🏿‍♀️",
+					"title": "Woman In Steamy Room: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧗",
+			"title": "Person Climbing",
+			"skinToneVariants": [
+				{
+					"emoji": "🧗🏻",
+					"title": "Person Climbing: Light Skin Tone"
+				},
+				{
+					"emoji": "🧗🏼",
+					"title": "Person Climbing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧗🏽",
+					"title": "Person Climbing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧗🏾",
+					"title": "Person Climbing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧗🏿",
+					"title": "Person Climbing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧗‍♂️",
+			"title": "Man Climbing",
+			"skinToneVariants": [
+				{
+					"emoji": "🧗🏻‍♂️",
+					"title": "Man Climbing: Light Skin Tone"
+				},
+				{
+					"emoji": "🧗🏼‍♂️",
+					"title": "Man Climbing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧗🏽‍♂️",
+					"title": "Man Climbing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧗🏾‍♂️",
+					"title": "Man Climbing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧗🏿‍♂️",
+					"title": "Man Climbing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧗‍♀️",
+			"title": "Woman Climbing",
+			"skinToneVariants": [
+				{
+					"emoji": "🧗🏻‍♀️",
+					"title": "Woman Climbing: Light Skin Tone"
+				},
+				{
+					"emoji": "🧗🏼‍♀️",
+					"title": "Woman Climbing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧗🏽‍♀️",
+					"title": "Woman Climbing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧗🏾‍♀️",
+					"title": "Woman Climbing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧗🏿‍♀️",
+					"title": "Woman Climbing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤺",
+			"title": "Person Fencing"
+		},
+		{
+			"emoji": "🏇",
+			"title": "Horse Racing",
+			"skinToneVariants": [
+				{
+					"emoji": "🏇🏻",
+					"title": "Horse Racing: Light Skin Tone"
+				},
+				{
+					"emoji": "🏇🏼",
+					"title": "Horse Racing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏇🏽",
+					"title": "Horse Racing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏇🏾",
+					"title": "Horse Racing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏇🏿",
+					"title": "Horse Racing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "⛷️",
+			"title": "Skier"
+		},
+		{
+			"emoji": "🏂",
+			"title": "Snowboarder",
+			"skinToneVariants": [
+				{
+					"emoji": "🏂🏻",
+					"title": "Snowboarder: Light Skin Tone"
+				},
+				{
+					"emoji": "🏂🏼",
+					"title": "Snowboarder: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏂🏽",
+					"title": "Snowboarder: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏂🏾",
+					"title": "Snowboarder: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏂🏿",
+					"title": "Snowboarder: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏌️",
+			"title": "Person Golfing",
+			"skinToneVariants": [
+				{
+					"emoji": "🏌🏻",
+					"title": "Person Golfing: Light Skin Tone"
+				},
+				{
+					"emoji": "🏌🏼",
+					"title": "Person Golfing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏌🏽",
+					"title": "Person Golfing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏌🏾",
+					"title": "Person Golfing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏌🏿",
+					"title": "Person Golfing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏌️‍♂️",
+			"title": "Man Golfing",
+			"skinToneVariants": [
+				{
+					"emoji": "🏌🏻‍♂️",
+					"title": "Man Golfing: Light Skin Tone"
+				},
+				{
+					"emoji": "🏌🏼‍♂️",
+					"title": "Man Golfing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏌🏽‍♂️",
+					"title": "Man Golfing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏌🏾‍♂️",
+					"title": "Man Golfing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏌🏿‍♂️",
+					"title": "Man Golfing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏌️‍♀️",
+			"title": "Woman Golfing",
+			"skinToneVariants": [
+				{
+					"emoji": "🏌🏻‍♀️",
+					"title": "Woman Golfing: Light Skin Tone"
+				},
+				{
+					"emoji": "🏌🏼‍♀️",
+					"title": "Woman Golfing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏌🏽‍♀️",
+					"title": "Woman Golfing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏌🏾‍♀️",
+					"title": "Woman Golfing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏌🏿‍♀️",
+					"title": "Woman Golfing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏄",
+			"title": "Person Surfing",
+			"skinToneVariants": [
+				{
+					"emoji": "🏄🏻",
+					"title": "Person Surfing: Light Skin Tone"
+				},
+				{
+					"emoji": "🏄🏼",
+					"title": "Person Surfing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏄🏽",
+					"title": "Person Surfing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏄🏾",
+					"title": "Person Surfing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏄🏿",
+					"title": "Person Surfing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏄‍♂️",
+			"title": "Man Surfing",
+			"skinToneVariants": [
+				{
+					"emoji": "🏄🏻‍♂️",
+					"title": "Man Surfing: Light Skin Tone"
+				},
+				{
+					"emoji": "🏄🏼‍♂️",
+					"title": "Man Surfing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏄🏽‍♂️",
+					"title": "Man Surfing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏄🏾‍♂️",
+					"title": "Man Surfing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏄🏿‍♂️",
+					"title": "Man Surfing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏄‍♀️",
+			"title": "Woman Surfing",
+			"skinToneVariants": [
+				{
+					"emoji": "🏄🏻‍♀️",
+					"title": "Woman Surfing: Light Skin Tone"
+				},
+				{
+					"emoji": "🏄🏼‍♀️",
+					"title": "Woman Surfing: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏄🏽‍♀️",
+					"title": "Woman Surfing: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏄🏾‍♀️",
+					"title": "Woman Surfing: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏄🏿‍♀️",
+					"title": "Woman Surfing: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚣",
+			"title": "Person Rowing Boat",
+			"skinToneVariants": [
+				{
+					"emoji": "🚣🏻",
+					"title": "Person Rowing Boat: Light Skin Tone"
+				},
+				{
+					"emoji": "🚣🏼",
+					"title": "Person Rowing Boat: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚣🏽",
+					"title": "Person Rowing Boat: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚣🏾",
+					"title": "Person Rowing Boat: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚣🏿",
+					"title": "Person Rowing Boat: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚣‍♂️",
+			"title": "Man Rowing Boat",
+			"skinToneVariants": [
+				{
+					"emoji": "🚣🏻‍♂️",
+					"title": "Man Rowing Boat: Light Skin Tone"
+				},
+				{
+					"emoji": "🚣🏼‍♂️",
+					"title": "Man Rowing Boat: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚣🏽‍♂️",
+					"title": "Man Rowing Boat: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚣🏾‍♂️",
+					"title": "Man Rowing Boat: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚣🏿‍♂️",
+					"title": "Man Rowing Boat: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚣‍♀️",
+			"title": "Woman Rowing Boat",
+			"skinToneVariants": [
+				{
+					"emoji": "🚣🏻‍♀️",
+					"title": "Woman Rowing Boat: Light Skin Tone"
+				},
+				{
+					"emoji": "🚣🏼‍♀️",
+					"title": "Woman Rowing Boat: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚣🏽‍♀️",
+					"title": "Woman Rowing Boat: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚣🏾‍♀️",
+					"title": "Woman Rowing Boat: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚣🏿‍♀️",
+					"title": "Woman Rowing Boat: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏊",
+			"title": "Person Swimming",
+			"skinToneVariants": [
+				{
+					"emoji": "🏊🏻",
+					"title": "Person Swimming: Light Skin Tone"
+				},
+				{
+					"emoji": "🏊🏼",
+					"title": "Person Swimming: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏊🏽",
+					"title": "Person Swimming: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏊🏾",
+					"title": "Person Swimming: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏊🏿",
+					"title": "Person Swimming: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏊‍♂️",
+			"title": "Man Swimming",
+			"skinToneVariants": [
+				{
+					"emoji": "🏊🏻‍♂️",
+					"title": "Man Swimming: Light Skin Tone"
+				},
+				{
+					"emoji": "🏊🏼‍♂️",
+					"title": "Man Swimming: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏊🏽‍♂️",
+					"title": "Man Swimming: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏊🏾‍♂️",
+					"title": "Man Swimming: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏊🏿‍♂️",
+					"title": "Man Swimming: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏊‍♀️",
+			"title": "Woman Swimming",
+			"skinToneVariants": [
+				{
+					"emoji": "🏊🏻‍♀️",
+					"title": "Woman Swimming: Light Skin Tone"
+				},
+				{
+					"emoji": "🏊🏼‍♀️",
+					"title": "Woman Swimming: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏊🏽‍♀️",
+					"title": "Woman Swimming: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏊🏾‍♀️",
+					"title": "Woman Swimming: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏊🏿‍♀️",
+					"title": "Woman Swimming: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "⛹️",
+			"title": "Person Bouncing Ball",
+			"skinToneVariants": [
+				{
+					"emoji": "⛹🏻",
+					"title": "Person Bouncing Ball: Light Skin Tone"
+				},
+				{
+					"emoji": "⛹🏼",
+					"title": "Person Bouncing Ball: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "⛹🏽",
+					"title": "Person Bouncing Ball: Medium Skin Tone"
+				},
+				{
+					"emoji": "⛹🏾",
+					"title": "Person Bouncing Ball: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "⛹🏿",
+					"title": "Person Bouncing Ball: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "⛹️‍♂️",
+			"title": "Man Bouncing Ball",
+			"skinToneVariants": [
+				{
+					"emoji": "⛹🏻‍♂️",
+					"title": "Man Bouncing Ball: Light Skin Tone"
+				},
+				{
+					"emoji": "⛹🏼‍♂️",
+					"title": "Man Bouncing Ball: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "⛹🏽‍♂️",
+					"title": "Man Bouncing Ball: Medium Skin Tone"
+				},
+				{
+					"emoji": "⛹🏾‍♂️",
+					"title": "Man Bouncing Ball: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "⛹🏿‍♂️",
+					"title": "Man Bouncing Ball: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "⛹️‍♀️",
+			"title": "Woman Bouncing Ball",
+			"skinToneVariants": [
+				{
+					"emoji": "⛹🏻‍♀️",
+					"title": "Woman Bouncing Ball: Light Skin Tone"
+				},
+				{
+					"emoji": "⛹🏼‍♀️",
+					"title": "Woman Bouncing Ball: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "⛹🏽‍♀️",
+					"title": "Woman Bouncing Ball: Medium Skin Tone"
+				},
+				{
+					"emoji": "⛹🏾‍♀️",
+					"title": "Woman Bouncing Ball: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "⛹🏿‍♀️",
+					"title": "Woman Bouncing Ball: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏋️",
+			"title": "Person Lifting Weights",
+			"skinToneVariants": [
+				{
+					"emoji": "🏋🏻",
+					"title": "Person Lifting Weights: Light Skin Tone"
+				},
+				{
+					"emoji": "🏋🏼",
+					"title": "Person Lifting Weights: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏋🏽",
+					"title": "Person Lifting Weights: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏋🏾",
+					"title": "Person Lifting Weights: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏋🏿",
+					"title": "Person Lifting Weights: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏋️‍♂️",
+			"title": "Man Lifting Weights",
+			"skinToneVariants": [
+				{
+					"emoji": "🏋🏻‍♂️",
+					"title": "Man Lifting Weights: Light Skin Tone"
+				},
+				{
+					"emoji": "🏋🏼‍♂️",
+					"title": "Man Lifting Weights: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏋🏽‍♂️",
+					"title": "Man Lifting Weights: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏋🏾‍♂️",
+					"title": "Man Lifting Weights: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏋🏿‍♂️",
+					"title": "Man Lifting Weights: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🏋️‍♀️",
+			"title": "Woman Lifting Weights",
+			"skinToneVariants": [
+				{
+					"emoji": "🏋🏻‍♀️",
+					"title": "Woman Lifting Weights: Light Skin Tone"
+				},
+				{
+					"emoji": "🏋🏼‍♀️",
+					"title": "Woman Lifting Weights: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🏋🏽‍♀️",
+					"title": "Woman Lifting Weights: Medium Skin Tone"
+				},
+				{
+					"emoji": "🏋🏾‍♀️",
+					"title": "Woman Lifting Weights: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🏋🏿‍♀️",
+					"title": "Woman Lifting Weights: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚴",
+			"title": "Person Biking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚴🏻",
+					"title": "Person Biking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚴🏼",
+					"title": "Person Biking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚴🏽",
+					"title": "Person Biking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚴🏾",
+					"title": "Person Biking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚴🏿",
+					"title": "Person Biking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚴‍♂️",
+			"title": "Man Biking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚴🏻‍♂️",
+					"title": "Man Biking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚴🏼‍♂️",
+					"title": "Man Biking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚴🏽‍♂️",
+					"title": "Man Biking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚴🏾‍♂️",
+					"title": "Man Biking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚴🏿‍♂️",
+					"title": "Man Biking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚴‍♀️",
+			"title": "Woman Biking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚴🏻‍♀️",
+					"title": "Woman Biking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚴🏼‍♀️",
+					"title": "Woman Biking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚴🏽‍♀️",
+					"title": "Woman Biking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚴🏾‍♀️",
+					"title": "Woman Biking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚴🏿‍♀️",
+					"title": "Woman Biking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚵",
+			"title": "Person Mountain Biking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚵🏻",
+					"title": "Person Mountain Biking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚵🏼",
+					"title": "Person Mountain Biking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚵🏽",
+					"title": "Person Mountain Biking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚵🏾",
+					"title": "Person Mountain Biking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚵🏿",
+					"title": "Person Mountain Biking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚵‍♂️",
+			"title": "Man Mountain Biking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚵🏻‍♂️",
+					"title": "Man Mountain Biking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚵🏼‍♂️",
+					"title": "Man Mountain Biking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚵🏽‍♂️",
+					"title": "Man Mountain Biking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚵🏾‍♂️",
+					"title": "Man Mountain Biking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚵🏿‍♂️",
+					"title": "Man Mountain Biking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🚵‍♀️",
+			"title": "Woman Mountain Biking",
+			"skinToneVariants": [
+				{
+					"emoji": "🚵🏻‍♀️",
+					"title": "Woman Mountain Biking: Light Skin Tone"
+				},
+				{
+					"emoji": "🚵🏼‍♀️",
+					"title": "Woman Mountain Biking: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🚵🏽‍♀️",
+					"title": "Woman Mountain Biking: Medium Skin Tone"
+				},
+				{
+					"emoji": "🚵🏾‍♀️",
+					"title": "Woman Mountain Biking: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🚵🏿‍♀️",
+					"title": "Woman Mountain Biking: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤸",
+			"title": "Person Cartwheeling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤸🏻",
+					"title": "Person Cartwheeling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤸🏼",
+					"title": "Person Cartwheeling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤸🏽",
+					"title": "Person Cartwheeling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤸🏾",
+					"title": "Person Cartwheeling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤸🏿",
+					"title": "Person Cartwheeling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤸‍♂️",
+			"title": "Man Cartwheeling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤸🏻‍♂️",
+					"title": "Man Cartwheeling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤸🏼‍♂️",
+					"title": "Man Cartwheeling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤸🏽‍♂️",
+					"title": "Man Cartwheeling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤸🏾‍♂️",
+					"title": "Man Cartwheeling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤸🏿‍♂️",
+					"title": "Man Cartwheeling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤸‍♀️",
+			"title": "Woman Cartwheeling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤸🏻‍♀️",
+					"title": "Woman Cartwheeling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤸🏼‍♀️",
+					"title": "Woman Cartwheeling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤸🏽‍♀️",
+					"title": "Woman Cartwheeling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤸🏾‍♀️",
+					"title": "Woman Cartwheeling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤸🏿‍♀️",
+					"title": "Woman Cartwheeling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤼",
+			"title": "People Wrestling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤼🏻",
+					"title": "People Wrestling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤼🏼",
+					"title": "People Wrestling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤼🏽",
+					"title": "People Wrestling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤼🏾",
+					"title": "People Wrestling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤼🏿",
+					"title": "People Wrestling: Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🫯‍🧑🏼",
+					"title": "People Wrestling: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🫯‍🧑🏽",
+					"title": "People Wrestling: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🫯‍🧑🏾",
+					"title": "People Wrestling: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🫯‍🧑🏿",
+					"title": "People Wrestling: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🫯‍🧑🏻",
+					"title": "People Wrestling: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🫯‍🧑🏽",
+					"title": "People Wrestling: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🫯‍🧑🏾",
+					"title": "People Wrestling: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🫯‍🧑🏿",
+					"title": "People Wrestling: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🫯‍🧑🏻",
+					"title": "People Wrestling: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🫯‍🧑🏼",
+					"title": "People Wrestling: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🫯‍🧑🏾",
+					"title": "People Wrestling: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🫯‍🧑🏿",
+					"title": "People Wrestling: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🫯‍🧑🏻",
+					"title": "People Wrestling: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🫯‍🧑🏼",
+					"title": "People Wrestling: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🫯‍🧑🏽",
+					"title": "People Wrestling: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🫯‍🧑🏿",
+					"title": "People Wrestling: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🫯‍🧑🏻",
+					"title": "People Wrestling: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🫯‍🧑🏼",
+					"title": "People Wrestling: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🫯‍🧑🏽",
+					"title": "People Wrestling: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🫯‍🧑🏾",
+					"title": "People Wrestling: Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤼‍♂️",
+			"title": "Men Wrestling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤼🏻‍♂️",
+					"title": "Men Wrestling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤼🏼‍♂️",
+					"title": "Men Wrestling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤼🏽‍♂️",
+					"title": "Men Wrestling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤼🏾‍♂️",
+					"title": "Men Wrestling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤼🏿‍♂️",
+					"title": "Men Wrestling: Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🫯‍👨🏼",
+					"title": "Men Wrestling: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🫯‍👨🏽",
+					"title": "Men Wrestling: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🫯‍👨🏾",
+					"title": "Men Wrestling: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🫯‍👨🏿",
+					"title": "Men Wrestling: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🫯‍👨🏻",
+					"title": "Men Wrestling: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🫯‍👨🏽",
+					"title": "Men Wrestling: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🫯‍👨🏾",
+					"title": "Men Wrestling: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🫯‍👨🏿",
+					"title": "Men Wrestling: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🫯‍👨🏻",
+					"title": "Men Wrestling: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🫯‍👨🏼",
+					"title": "Men Wrestling: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🫯‍👨🏾",
+					"title": "Men Wrestling: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🫯‍👨🏿",
+					"title": "Men Wrestling: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🫯‍👨🏻",
+					"title": "Men Wrestling: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🫯‍👨🏼",
+					"title": "Men Wrestling: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🫯‍👨🏽",
+					"title": "Men Wrestling: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🫯‍👨🏿",
+					"title": "Men Wrestling: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🫯‍👨🏻",
+					"title": "Men Wrestling: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🫯‍👨🏼",
+					"title": "Men Wrestling: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🫯‍👨🏽",
+					"title": "Men Wrestling: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🫯‍👨🏾",
+					"title": "Men Wrestling: Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤼‍♀️",
+			"title": "Women Wrestling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤼🏻‍♀️",
+					"title": "Women Wrestling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤼🏼‍♀️",
+					"title": "Women Wrestling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤼🏽‍♀️",
+					"title": "Women Wrestling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤼🏾‍♀️",
+					"title": "Women Wrestling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤼🏿‍♀️",
+					"title": "Women Wrestling: Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🫯‍👩🏼",
+					"title": "Women Wrestling: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🫯‍👩🏽",
+					"title": "Women Wrestling: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🫯‍👩🏾",
+					"title": "Women Wrestling: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🫯‍👩🏿",
+					"title": "Women Wrestling: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🫯‍👩🏻",
+					"title": "Women Wrestling: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🫯‍👩🏽",
+					"title": "Women Wrestling: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🫯‍👩🏾",
+					"title": "Women Wrestling: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🫯‍👩🏿",
+					"title": "Women Wrestling: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🫯‍👩🏻",
+					"title": "Women Wrestling: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🫯‍👩🏼",
+					"title": "Women Wrestling: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🫯‍👩🏾",
+					"title": "Women Wrestling: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🫯‍👩🏿",
+					"title": "Women Wrestling: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🫯‍👩🏻",
+					"title": "Women Wrestling: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🫯‍👩🏼",
+					"title": "Women Wrestling: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🫯‍👩🏽",
+					"title": "Women Wrestling: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🫯‍👩🏿",
+					"title": "Women Wrestling: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🫯‍👩🏻",
+					"title": "Women Wrestling: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🫯‍👩🏼",
+					"title": "Women Wrestling: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🫯‍👩🏽",
+					"title": "Women Wrestling: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🫯‍👩🏾",
+					"title": "Women Wrestling: Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤽",
+			"title": "Person Playing Water Polo",
+			"skinToneVariants": [
+				{
+					"emoji": "🤽🏻",
+					"title": "Person Playing Water Polo: Light Skin Tone"
+				},
+				{
+					"emoji": "🤽🏼",
+					"title": "Person Playing Water Polo: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤽🏽",
+					"title": "Person Playing Water Polo: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤽🏾",
+					"title": "Person Playing Water Polo: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤽🏿",
+					"title": "Person Playing Water Polo: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤽‍♂️",
+			"title": "Man Playing Water Polo",
+			"skinToneVariants": [
+				{
+					"emoji": "🤽🏻‍♂️",
+					"title": "Man Playing Water Polo: Light Skin Tone"
+				},
+				{
+					"emoji": "🤽🏼‍♂️",
+					"title": "Man Playing Water Polo: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤽🏽‍♂️",
+					"title": "Man Playing Water Polo: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤽🏾‍♂️",
+					"title": "Man Playing Water Polo: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤽🏿‍♂️",
+					"title": "Man Playing Water Polo: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤽‍♀️",
+			"title": "Woman Playing Water Polo",
+			"skinToneVariants": [
+				{
+					"emoji": "🤽🏻‍♀️",
+					"title": "Woman Playing Water Polo: Light Skin Tone"
+				},
+				{
+					"emoji": "🤽🏼‍♀️",
+					"title": "Woman Playing Water Polo: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤽🏽‍♀️",
+					"title": "Woman Playing Water Polo: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤽🏾‍♀️",
+					"title": "Woman Playing Water Polo: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤽🏿‍♀️",
+					"title": "Woman Playing Water Polo: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤾",
+			"title": "Person Playing Handball",
+			"skinToneVariants": [
+				{
+					"emoji": "🤾🏻",
+					"title": "Person Playing Handball: Light Skin Tone"
+				},
+				{
+					"emoji": "🤾🏼",
+					"title": "Person Playing Handball: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤾🏽",
+					"title": "Person Playing Handball: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤾🏾",
+					"title": "Person Playing Handball: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤾🏿",
+					"title": "Person Playing Handball: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤾‍♂️",
+			"title": "Man Playing Handball",
+			"skinToneVariants": [
+				{
+					"emoji": "🤾🏻‍♂️",
+					"title": "Man Playing Handball: Light Skin Tone"
+				},
+				{
+					"emoji": "🤾🏼‍♂️",
+					"title": "Man Playing Handball: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤾🏽‍♂️",
+					"title": "Man Playing Handball: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤾🏾‍♂️",
+					"title": "Man Playing Handball: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤾🏿‍♂️",
+					"title": "Man Playing Handball: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤾‍♀️",
+			"title": "Woman Playing Handball",
+			"skinToneVariants": [
+				{
+					"emoji": "🤾🏻‍♀️",
+					"title": "Woman Playing Handball: Light Skin Tone"
+				},
+				{
+					"emoji": "🤾🏼‍♀️",
+					"title": "Woman Playing Handball: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤾🏽‍♀️",
+					"title": "Woman Playing Handball: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤾🏾‍♀️",
+					"title": "Woman Playing Handball: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤾🏿‍♀️",
+					"title": "Woman Playing Handball: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤹",
+			"title": "Person Juggling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤹🏻",
+					"title": "Person Juggling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤹🏼",
+					"title": "Person Juggling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤹🏽",
+					"title": "Person Juggling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤹🏾",
+					"title": "Person Juggling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤹🏿",
+					"title": "Person Juggling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤹‍♂️",
+			"title": "Man Juggling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤹🏻‍♂️",
+					"title": "Man Juggling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤹🏼‍♂️",
+					"title": "Man Juggling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤹🏽‍♂️",
+					"title": "Man Juggling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤹🏾‍♂️",
+					"title": "Man Juggling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤹🏿‍♂️",
+					"title": "Man Juggling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🤹‍♀️",
+			"title": "Woman Juggling",
+			"skinToneVariants": [
+				{
+					"emoji": "🤹🏻‍♀️",
+					"title": "Woman Juggling: Light Skin Tone"
+				},
+				{
+					"emoji": "🤹🏼‍♀️",
+					"title": "Woman Juggling: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🤹🏽‍♀️",
+					"title": "Woman Juggling: Medium Skin Tone"
+				},
+				{
+					"emoji": "🤹🏾‍♀️",
+					"title": "Woman Juggling: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🤹🏿‍♀️",
+					"title": "Woman Juggling: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧘",
+			"title": "Person In Lotus Position",
+			"skinToneVariants": [
+				{
+					"emoji": "🧘🏻",
+					"title": "Person In Lotus Position: Light Skin Tone"
+				},
+				{
+					"emoji": "🧘🏼",
+					"title": "Person In Lotus Position: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧘🏽",
+					"title": "Person In Lotus Position: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧘🏾",
+					"title": "Person In Lotus Position: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧘🏿",
+					"title": "Person In Lotus Position: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧘‍♂️",
+			"title": "Man In Lotus Position",
+			"skinToneVariants": [
+				{
+					"emoji": "🧘🏻‍♂️",
+					"title": "Man In Lotus Position: Light Skin Tone"
+				},
+				{
+					"emoji": "🧘🏼‍♂️",
+					"title": "Man In Lotus Position: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧘🏽‍♂️",
+					"title": "Man In Lotus Position: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧘🏾‍♂️",
+					"title": "Man In Lotus Position: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧘🏿‍♂️",
+					"title": "Man In Lotus Position: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧘‍♀️",
+			"title": "Woman In Lotus Position",
+			"skinToneVariants": [
+				{
+					"emoji": "🧘🏻‍♀️",
+					"title": "Woman In Lotus Position: Light Skin Tone"
+				},
+				{
+					"emoji": "🧘🏼‍♀️",
+					"title": "Woman In Lotus Position: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧘🏽‍♀️",
+					"title": "Woman In Lotus Position: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧘🏾‍♀️",
+					"title": "Woman In Lotus Position: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧘🏿‍♀️",
+					"title": "Woman In Lotus Position: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🛀",
+			"title": "Person Taking Bath",
+			"skinToneVariants": [
+				{
+					"emoji": "🛀🏻",
+					"title": "Person Taking Bath: Light Skin Tone"
+				},
+				{
+					"emoji": "🛀🏼",
+					"title": "Person Taking Bath: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🛀🏽",
+					"title": "Person Taking Bath: Medium Skin Tone"
+				},
+				{
+					"emoji": "🛀🏾",
+					"title": "Person Taking Bath: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🛀🏿",
+					"title": "Person Taking Bath: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🛌",
+			"title": "Person In Bed",
+			"skinToneVariants": [
+				{
+					"emoji": "🛌🏻",
+					"title": "Person In Bed: Light Skin Tone"
+				},
+				{
+					"emoji": "🛌🏼",
+					"title": "Person In Bed: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🛌🏽",
+					"title": "Person In Bed: Medium Skin Tone"
+				},
+				{
+					"emoji": "🛌🏾",
+					"title": "Person In Bed: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🛌🏿",
+					"title": "Person In Bed: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "🧑‍🤝‍🧑",
+			"title": "People Holding Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "🧑🏻‍🤝‍🧑🏻",
+					"title": "People Holding Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🤝‍🧑🏼",
+					"title": "People Holding Hands: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🤝‍🧑🏽",
+					"title": "People Holding Hands: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🤝‍🧑🏾",
+					"title": "People Holding Hands: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍🤝‍🧑🏿",
+					"title": "People Holding Hands: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🤝‍🧑🏻",
+					"title": "People Holding Hands: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🤝‍🧑🏼",
+					"title": "People Holding Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🤝‍🧑🏽",
+					"title": "People Holding Hands: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🤝‍🧑🏾",
+					"title": "People Holding Hands: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍🤝‍🧑🏿",
+					"title": "People Holding Hands: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🤝‍🧑🏻",
+					"title": "People Holding Hands: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🤝‍🧑🏼",
+					"title": "People Holding Hands: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🤝‍🧑🏽",
+					"title": "People Holding Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🤝‍🧑🏾",
+					"title": "People Holding Hands: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍🤝‍🧑🏿",
+					"title": "People Holding Hands: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🤝‍🧑🏻",
+					"title": "People Holding Hands: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🤝‍🧑🏼",
+					"title": "People Holding Hands: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🤝‍🧑🏽",
+					"title": "People Holding Hands: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🤝‍🧑🏾",
+					"title": "People Holding Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍🤝‍🧑🏿",
+					"title": "People Holding Hands: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🤝‍🧑🏻",
+					"title": "People Holding Hands: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🤝‍🧑🏼",
+					"title": "People Holding Hands: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🤝‍🧑🏽",
+					"title": "People Holding Hands: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🤝‍🧑🏾",
+					"title": "People Holding Hands: Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍🤝‍🧑🏿",
+					"title": "People Holding Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👭",
+			"title": "Women Holding Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "👭🏻",
+					"title": "Women Holding Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👩🏼",
+					"title": "Women Holding Hands: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👩🏽",
+					"title": "Women Holding Hands: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👩🏾",
+					"title": "Women Holding Hands: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👩🏿",
+					"title": "Women Holding Hands: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👩🏻",
+					"title": "Women Holding Hands: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👭🏼",
+					"title": "Women Holding Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👩🏽",
+					"title": "Women Holding Hands: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👩🏾",
+					"title": "Women Holding Hands: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👩🏿",
+					"title": "Women Holding Hands: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👩🏻",
+					"title": "Women Holding Hands: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👩🏼",
+					"title": "Women Holding Hands: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👭🏽",
+					"title": "Women Holding Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👩🏾",
+					"title": "Women Holding Hands: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👩🏿",
+					"title": "Women Holding Hands: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👩🏻",
+					"title": "Women Holding Hands: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👩🏼",
+					"title": "Women Holding Hands: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👩🏽",
+					"title": "Women Holding Hands: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👭🏾",
+					"title": "Women Holding Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👩🏿",
+					"title": "Women Holding Hands: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👩🏻",
+					"title": "Women Holding Hands: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👩🏼",
+					"title": "Women Holding Hands: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👩🏽",
+					"title": "Women Holding Hands: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👩🏾",
+					"title": "Women Holding Hands: Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👭🏿",
+					"title": "Women Holding Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👫",
+			"title": "Woman And Man Holding Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "👫🏻",
+					"title": "Woman And Man Holding Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👨🏼",
+					"title": "Woman And Man Holding Hands: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👨🏽",
+					"title": "Woman And Man Holding Hands: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👨🏾",
+					"title": "Woman And Man Holding Hands: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍🤝‍👨🏿",
+					"title": "Woman And Man Holding Hands: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👨🏻",
+					"title": "Woman And Man Holding Hands: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👫🏼",
+					"title": "Woman And Man Holding Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👨🏽",
+					"title": "Woman And Man Holding Hands: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👨🏾",
+					"title": "Woman And Man Holding Hands: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍🤝‍👨🏿",
+					"title": "Woman And Man Holding Hands: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👨🏻",
+					"title": "Woman And Man Holding Hands: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👨🏼",
+					"title": "Woman And Man Holding Hands: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👫🏽",
+					"title": "Woman And Man Holding Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👨🏾",
+					"title": "Woman And Man Holding Hands: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍🤝‍👨🏿",
+					"title": "Woman And Man Holding Hands: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👨🏻",
+					"title": "Woman And Man Holding Hands: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👨🏼",
+					"title": "Woman And Man Holding Hands: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👨🏽",
+					"title": "Woman And Man Holding Hands: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👫🏾",
+					"title": "Woman And Man Holding Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍🤝‍👨🏿",
+					"title": "Woman And Man Holding Hands: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👨🏻",
+					"title": "Woman And Man Holding Hands: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👨🏼",
+					"title": "Woman And Man Holding Hands: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👨🏽",
+					"title": "Woman And Man Holding Hands: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍🤝‍👨🏾",
+					"title": "Woman And Man Holding Hands: Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👫🏿",
+					"title": "Woman And Man Holding Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👬",
+			"title": "Men Holding Hands",
+			"skinToneVariants": [
+				{
+					"emoji": "👬🏻",
+					"title": "Men Holding Hands: Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🤝‍👨🏼",
+					"title": "Men Holding Hands: Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🤝‍👨🏽",
+					"title": "Men Holding Hands: Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🤝‍👨🏾",
+					"title": "Men Holding Hands: Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍🤝‍👨🏿",
+					"title": "Men Holding Hands: Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🤝‍👨🏻",
+					"title": "Men Holding Hands: Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👬🏼",
+					"title": "Men Holding Hands: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🤝‍👨🏽",
+					"title": "Men Holding Hands: Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🤝‍👨🏾",
+					"title": "Men Holding Hands: Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍🤝‍👨🏿",
+					"title": "Men Holding Hands: Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🤝‍👨🏻",
+					"title": "Men Holding Hands: Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🤝‍👨🏼",
+					"title": "Men Holding Hands: Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👬🏽",
+					"title": "Men Holding Hands: Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🤝‍👨🏾",
+					"title": "Men Holding Hands: Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍🤝‍👨🏿",
+					"title": "Men Holding Hands: Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🤝‍👨🏻",
+					"title": "Men Holding Hands: Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🤝‍👨🏼",
+					"title": "Men Holding Hands: Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🤝‍👨🏽",
+					"title": "Men Holding Hands: Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👬🏾",
+					"title": "Men Holding Hands: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍🤝‍👨🏿",
+					"title": "Men Holding Hands: Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🤝‍👨🏻",
+					"title": "Men Holding Hands: Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🤝‍👨🏼",
+					"title": "Men Holding Hands: Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🤝‍👨🏽",
+					"title": "Men Holding Hands: Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍🤝‍👨🏾",
+					"title": "Men Holding Hands: Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👬🏿",
+					"title": "Men Holding Hands: Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💏",
+			"title": "Kiss",
+			"skinToneVariants": [
+				{
+					"emoji": "💏🏻",
+					"title": "Kiss: Light Skin Tone"
+				},
+				{
+					"emoji": "💏🏼",
+					"title": "Kiss: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💏🏽",
+					"title": "Kiss: Medium Skin Tone"
+				},
+				{
+					"emoji": "💏🏾",
+					"title": "Kiss: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💏🏿",
+					"title": "Kiss: Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍💋‍🧑🏼",
+					"title": "Kiss: Person, Person, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍💋‍🧑🏽",
+					"title": "Kiss: Person, Person, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍💋‍🧑🏾",
+					"title": "Kiss: Person, Person, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍💋‍🧑🏿",
+					"title": "Kiss: Person, Person, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍💋‍🧑🏻",
+					"title": "Kiss: Person, Person, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍💋‍🧑🏽",
+					"title": "Kiss: Person, Person, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍💋‍🧑🏾",
+					"title": "Kiss: Person, Person, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍💋‍🧑🏿",
+					"title": "Kiss: Person, Person, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍💋‍🧑🏻",
+					"title": "Kiss: Person, Person, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍💋‍🧑🏼",
+					"title": "Kiss: Person, Person, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍💋‍🧑🏾",
+					"title": "Kiss: Person, Person, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍💋‍🧑🏿",
+					"title": "Kiss: Person, Person, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍💋‍🧑🏻",
+					"title": "Kiss: Person, Person, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍💋‍🧑🏼",
+					"title": "Kiss: Person, Person, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍💋‍🧑🏽",
+					"title": "Kiss: Person, Person, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍💋‍🧑🏿",
+					"title": "Kiss: Person, Person, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍💋‍🧑🏻",
+					"title": "Kiss: Person, Person, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍💋‍🧑🏼",
+					"title": "Kiss: Person, Person, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍💋‍🧑🏽",
+					"title": "Kiss: Person, Person, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍💋‍🧑🏾",
+					"title": "Kiss: Person, Person, Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍❤️‍💋‍👨",
+			"title": "Kiss: Woman, Man",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Woman, Man, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Woman, Man, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Woman, Man, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Woman, Man, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Woman, Man, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Woman, Man, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Woman, Man, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Woman, Man, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Woman, Man, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Woman, Man, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Woman, Man, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Woman, Man, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Woman, Man, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Woman, Man, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Woman, Man, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Woman, Man, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Woman, Man, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Woman, Man, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Woman, Man, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Woman, Man, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Woman, Man, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Woman, Man, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Woman, Man, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Woman, Man, Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Woman, Man, Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍❤️‍💋‍👨",
+			"title": "Kiss: Man, Man",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Man, Man, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Man, Man, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Man, Man, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Man, Man, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Man, Man, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Man, Man, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Man, Man, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Man, Man, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Man, Man, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Man, Man, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Man, Man, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Man, Man, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Man, Man, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Man, Man, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Man, Man, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Man, Man, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Man, Man, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Man, Man, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Man, Man, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Man, Man, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍💋‍👨🏻",
+					"title": "Kiss: Man, Man, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍💋‍👨🏼",
+					"title": "Kiss: Man, Man, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍💋‍👨🏽",
+					"title": "Kiss: Man, Man, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍💋‍👨🏾",
+					"title": "Kiss: Man, Man, Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍💋‍👨🏿",
+					"title": "Kiss: Man, Man, Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍❤️‍💋‍👩",
+			"title": "Kiss: Woman, Woman",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👩🏻",
+					"title": "Kiss: Woman, Woman, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👩🏼",
+					"title": "Kiss: Woman, Woman, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👩🏽",
+					"title": "Kiss: Woman, Woman, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👩🏾",
+					"title": "Kiss: Woman, Woman, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍💋‍👩🏿",
+					"title": "Kiss: Woman, Woman, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👩🏻",
+					"title": "Kiss: Woman, Woman, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👩🏼",
+					"title": "Kiss: Woman, Woman, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👩🏽",
+					"title": "Kiss: Woman, Woman, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👩🏾",
+					"title": "Kiss: Woman, Woman, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍💋‍👩🏿",
+					"title": "Kiss: Woman, Woman, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👩🏻",
+					"title": "Kiss: Woman, Woman, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👩🏼",
+					"title": "Kiss: Woman, Woman, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👩🏽",
+					"title": "Kiss: Woman, Woman, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👩🏾",
+					"title": "Kiss: Woman, Woman, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍💋‍👩🏿",
+					"title": "Kiss: Woman, Woman, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👩🏻",
+					"title": "Kiss: Woman, Woman, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👩🏼",
+					"title": "Kiss: Woman, Woman, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👩🏽",
+					"title": "Kiss: Woman, Woman, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👩🏾",
+					"title": "Kiss: Woman, Woman, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍💋‍👩🏿",
+					"title": "Kiss: Woman, Woman, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👩🏻",
+					"title": "Kiss: Woman, Woman, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👩🏼",
+					"title": "Kiss: Woman, Woman, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👩🏽",
+					"title": "Kiss: Woman, Woman, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👩🏾",
+					"title": "Kiss: Woman, Woman, Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍💋‍👩🏿",
+					"title": "Kiss: Woman, Woman, Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "💑",
+			"title": "Couple With Heart",
+			"skinToneVariants": [
+				{
+					"emoji": "💑🏻",
+					"title": "Couple With Heart: Light Skin Tone"
+				},
+				{
+					"emoji": "💑🏼",
+					"title": "Couple With Heart: Medium-light Skin Tone"
+				},
+				{
+					"emoji": "💑🏽",
+					"title": "Couple With Heart: Medium Skin Tone"
+				},
+				{
+					"emoji": "💑🏾",
+					"title": "Couple With Heart: Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "💑🏿",
+					"title": "Couple With Heart: Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍🧑🏼",
+					"title": "Couple With Heart: Person, Person, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍🧑🏽",
+					"title": "Couple With Heart: Person, Person, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍🧑🏾",
+					"title": "Couple With Heart: Person, Person, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏻‍❤️‍🧑🏿",
+					"title": "Couple With Heart: Person, Person, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍🧑🏻",
+					"title": "Couple With Heart: Person, Person, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍🧑🏽",
+					"title": "Couple With Heart: Person, Person, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍🧑🏾",
+					"title": "Couple With Heart: Person, Person, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏼‍❤️‍🧑🏿",
+					"title": "Couple With Heart: Person, Person, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍🧑🏻",
+					"title": "Couple With Heart: Person, Person, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍🧑🏼",
+					"title": "Couple With Heart: Person, Person, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍🧑🏾",
+					"title": "Couple With Heart: Person, Person, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏽‍❤️‍🧑🏿",
+					"title": "Couple With Heart: Person, Person, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍🧑🏻",
+					"title": "Couple With Heart: Person, Person, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍🧑🏼",
+					"title": "Couple With Heart: Person, Person, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍🧑🏽",
+					"title": "Couple With Heart: Person, Person, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏾‍❤️‍🧑🏿",
+					"title": "Couple With Heart: Person, Person, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍🧑🏻",
+					"title": "Couple With Heart: Person, Person, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍🧑🏼",
+					"title": "Couple With Heart: Person, Person, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍🧑🏽",
+					"title": "Couple With Heart: Person, Person, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "🧑🏿‍❤️‍🧑🏾",
+					"title": "Couple With Heart: Person, Person, Dark Skin Tone, Medium-dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍❤️‍👨",
+			"title": "Couple With Heart: Woman, Man",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍❤️‍👨🏻",
+					"title": "Couple With Heart: Woman, Man, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👨🏼",
+					"title": "Couple With Heart: Woman, Man, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👨🏽",
+					"title": "Couple With Heart: Woman, Man, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👨🏾",
+					"title": "Couple With Heart: Woman, Man, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👨🏿",
+					"title": "Couple With Heart: Woman, Man, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👨🏻",
+					"title": "Couple With Heart: Woman, Man, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👨🏼",
+					"title": "Couple With Heart: Woman, Man, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👨🏽",
+					"title": "Couple With Heart: Woman, Man, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👨🏾",
+					"title": "Couple With Heart: Woman, Man, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👨🏿",
+					"title": "Couple With Heart: Woman, Man, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👨🏻",
+					"title": "Couple With Heart: Woman, Man, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👨🏼",
+					"title": "Couple With Heart: Woman, Man, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👨🏽",
+					"title": "Couple With Heart: Woman, Man, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👨🏾",
+					"title": "Couple With Heart: Woman, Man, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👨🏿",
+					"title": "Couple With Heart: Woman, Man, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👨🏻",
+					"title": "Couple With Heart: Woman, Man, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👨🏼",
+					"title": "Couple With Heart: Woman, Man, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👨🏽",
+					"title": "Couple With Heart: Woman, Man, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👨🏾",
+					"title": "Couple With Heart: Woman, Man, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👨🏿",
+					"title": "Couple With Heart: Woman, Man, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👨🏻",
+					"title": "Couple With Heart: Woman, Man, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👨🏼",
+					"title": "Couple With Heart: Woman, Man, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👨🏽",
+					"title": "Couple With Heart: Woman, Man, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👨🏾",
+					"title": "Couple With Heart: Woman, Man, Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👨🏿",
+					"title": "Couple With Heart: Woman, Man, Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍❤️‍👨",
+			"title": "Couple With Heart: Man, Man",
+			"skinToneVariants": [
+				{
+					"emoji": "👨🏻‍❤️‍👨🏻",
+					"title": "Couple With Heart: Man, Man, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍👨🏼",
+					"title": "Couple With Heart: Man, Man, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍👨🏽",
+					"title": "Couple With Heart: Man, Man, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍👨🏾",
+					"title": "Couple With Heart: Man, Man, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏻‍❤️‍👨🏿",
+					"title": "Couple With Heart: Man, Man, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍👨🏻",
+					"title": "Couple With Heart: Man, Man, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍👨🏼",
+					"title": "Couple With Heart: Man, Man, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍👨🏽",
+					"title": "Couple With Heart: Man, Man, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍👨🏾",
+					"title": "Couple With Heart: Man, Man, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏼‍❤️‍👨🏿",
+					"title": "Couple With Heart: Man, Man, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍👨🏻",
+					"title": "Couple With Heart: Man, Man, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍👨🏼",
+					"title": "Couple With Heart: Man, Man, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍👨🏽",
+					"title": "Couple With Heart: Man, Man, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍👨🏾",
+					"title": "Couple With Heart: Man, Man, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏽‍❤️‍👨🏿",
+					"title": "Couple With Heart: Man, Man, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍👨🏻",
+					"title": "Couple With Heart: Man, Man, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍👨🏼",
+					"title": "Couple With Heart: Man, Man, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍👨🏽",
+					"title": "Couple With Heart: Man, Man, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍👨🏾",
+					"title": "Couple With Heart: Man, Man, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏾‍❤️‍👨🏿",
+					"title": "Couple With Heart: Man, Man, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍👨🏻",
+					"title": "Couple With Heart: Man, Man, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍👨🏼",
+					"title": "Couple With Heart: Man, Man, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍👨🏽",
+					"title": "Couple With Heart: Man, Man, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍👨🏾",
+					"title": "Couple With Heart: Man, Man, Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👨🏿‍❤️‍👨🏿",
+					"title": "Couple With Heart: Man, Man, Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👩‍❤️‍👩",
+			"title": "Couple With Heart: Woman, Woman",
+			"skinToneVariants": [
+				{
+					"emoji": "👩🏻‍❤️‍👩🏻",
+					"title": "Couple With Heart: Woman, Woman, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👩🏼",
+					"title": "Couple With Heart: Woman, Woman, Light Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👩🏽",
+					"title": "Couple With Heart: Woman, Woman, Light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👩🏾",
+					"title": "Couple With Heart: Woman, Woman, Light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏻‍❤️‍👩🏿",
+					"title": "Couple With Heart: Woman, Woman, Light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👩🏻",
+					"title": "Couple With Heart: Woman, Woman, Medium-light Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👩🏼",
+					"title": "Couple With Heart: Woman, Woman, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👩🏽",
+					"title": "Couple With Heart: Woman, Woman, Medium-light Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👩🏾",
+					"title": "Couple With Heart: Woman, Woman, Medium-light Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏼‍❤️‍👩🏿",
+					"title": "Couple With Heart: Woman, Woman, Medium-light Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👩🏻",
+					"title": "Couple With Heart: Woman, Woman, Medium Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👩🏼",
+					"title": "Couple With Heart: Woman, Woman, Medium Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👩🏽",
+					"title": "Couple With Heart: Woman, Woman, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👩🏾",
+					"title": "Couple With Heart: Woman, Woman, Medium Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏽‍❤️‍👩🏿",
+					"title": "Couple With Heart: Woman, Woman, Medium Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👩🏻",
+					"title": "Couple With Heart: Woman, Woman, Medium-dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👩🏼",
+					"title": "Couple With Heart: Woman, Woman, Medium-dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👩🏽",
+					"title": "Couple With Heart: Woman, Woman, Medium-dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👩🏾",
+					"title": "Couple With Heart: Woman, Woman, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏾‍❤️‍👩🏿",
+					"title": "Couple With Heart: Woman, Woman, Medium-dark Skin Tone, Dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👩🏻",
+					"title": "Couple With Heart: Woman, Woman, Dark Skin Tone, Light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👩🏼",
+					"title": "Couple With Heart: Woman, Woman, Dark Skin Tone, Medium-light Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👩🏽",
+					"title": "Couple With Heart: Woman, Woman, Dark Skin Tone, Medium Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👩🏾",
+					"title": "Couple With Heart: Woman, Woman, Dark Skin Tone, Medium-dark Skin Tone"
+				},
+				{
+					"emoji": "👩🏿‍❤️‍👩🏿",
+					"title": "Couple With Heart: Woman, Woman, Dark Skin Tone"
+				}
+			]
+		},
+		{
+			"emoji": "👨‍👩‍👦",
+			"title": "Family: Man, Woman, Boy"
+		},
+		{
+			"emoji": "👨‍👩‍👧",
+			"title": "Family: Man, Woman, Girl"
+		},
+		{
+			"emoji": "👨‍👩‍👧‍👦",
+			"title": "Family: Man, Woman, Girl, Boy"
+		},
+		{
+			"emoji": "👨‍👩‍👦‍👦",
+			"title": "Family: Man, Woman, Boy, Boy"
+		},
+		{
+			"emoji": "👨‍👩‍👧‍👧",
+			"title": "Family: Man, Woman, Girl, Girl"
+		},
+		{
+			"emoji": "👨‍👨‍👦",
+			"title": "Family: Man, Man, Boy"
+		},
+		{
+			"emoji": "👨‍👨‍👧",
+			"title": "Family: Man, Man, Girl"
+		},
+		{
+			"emoji": "👨‍👨‍👧‍👦",
+			"title": "Family: Man, Man, Girl, Boy"
+		},
+		{
+			"emoji": "👨‍👨‍👦‍👦",
+			"title": "Family: Man, Man, Boy, Boy"
+		},
+		{
+			"emoji": "👨‍👨‍👧‍👧",
+			"title": "Family: Man, Man, Girl, Girl"
+		},
+		{
+			"emoji": "👩‍👩‍👦",
+			"title": "Family: Woman, Woman, Boy"
+		},
+		{
+			"emoji": "👩‍👩‍👧",
+			"title": "Family: Woman, Woman, Girl"
+		},
+		{
+			"emoji": "👩‍👩‍👧‍👦",
+			"title": "Family: Woman, Woman, Girl, Boy"
+		},
+		{
+			"emoji": "👩‍👩‍👦‍👦",
+			"title": "Family: Woman, Woman, Boy, Boy"
+		},
+		{
+			"emoji": "👩‍👩‍👧‍👧",
+			"title": "Family: Woman, Woman, Girl, Girl"
+		},
+		{
+			"emoji": "👨‍👦",
+			"title": "Family: Man, Boy"
+		},
+		{
+			"emoji": "👨‍👦‍👦",
+			"title": "Family: Man, Boy, Boy"
+		},
+		{
+			"emoji": "👨‍👧",
+			"title": "Family: Man, Girl"
+		},
+		{
+			"emoji": "👨‍👧‍👦",
+			"title": "Family: Man, Girl, Boy"
+		},
+		{
+			"emoji": "👨‍👧‍👧",
+			"title": "Family: Man, Girl, Girl"
+		},
+		{
+			"emoji": "👩‍👦",
+			"title": "Family: Woman, Boy"
+		},
+		{
+			"emoji": "👩‍👦‍👦",
+			"title": "Family: Woman, Boy, Boy"
+		},
+		{
+			"emoji": "👩‍👧",
+			"title": "Family: Woman, Girl"
+		},
+		{
+			"emoji": "👩‍👧‍👦",
+			"title": "Family: Woman, Girl, Boy"
+		},
+		{
+			"emoji": "👩‍👧‍👧",
+			"title": "Family: Woman, Girl, Girl"
+		},
+		{
+			"emoji": "🗣️",
+			"title": "Speaking Head"
+		},
+		{
+			"emoji": "👤",
+			"title": "Bust In Silhouette"
+		},
+		{
+			"emoji": "👥",
+			"title": "Busts In Silhouette"
+		},
+		{
+			"emoji": "🫂",
+			"title": "People Hugging"
+		},
+		{
+			"emoji": "👪",
+			"title": "Family"
+		},
+		{
+			"emoji": "🧑‍🧑‍🧒",
+			"title": "Family: Adult, Adult, Child"
+		},
+		{
+			"emoji": "🧑‍🧑‍🧒‍🧒",
+			"title": "Family: Adult, Adult, Child, Child"
+		},
+		{
+			"emoji": "🧑‍🧒",
+			"title": "Family: Adult, Child"
+		},
+		{
+			"emoji": "🧑‍🧒‍🧒",
+			"title": "Family: Adult, Child, Child"
+		},
+		{
+			"emoji": "👣",
+			"title": "Footprints"
+		},
+		{
+			"emoji": "🫆",
+			"title": "Fingerprint"
+		}
+	],
+	"nature": [
+		{
+			"emoji": "🐵",
+			"title": "Monkey Face"
+		},
+		{
+			"emoji": "🐒",
+			"title": "Monkey"
+		},
+		{
+			"emoji": "🦍",
+			"title": "Gorilla"
+		},
+		{
+			"emoji": "🦧",
+			"title": "Orangutan"
+		},
+		{
+			"emoji": "🐶",
+			"title": "Dog Face"
+		},
+		{
+			"emoji": "🐕",
+			"title": "Dog"
+		},
+		{
+			"emoji": "🦮",
+			"title": "Guide Dog"
+		},
+		{
+			"emoji": "🐕‍🦺",
+			"title": "Service Dog"
+		},
+		{
+			"emoji": "🐩",
+			"title": "Poodle"
+		},
+		{
+			"emoji": "🐺",
+			"title": "Wolf"
+		},
+		{
+			"emoji": "🦊",
+			"title": "Fox"
+		},
+		{
+			"emoji": "🦝",
+			"title": "Raccoon"
+		},
+		{
+			"emoji": "🐱",
+			"title": "Cat Face"
+		},
+		{
+			"emoji": "🐈",
+			"title": "Cat"
+		},
+		{
+			"emoji": "🐈‍⬛",
+			"title": "Black Cat"
+		},
+		{
+			"emoji": "🦁",
+			"title": "Lion"
+		},
+		{
+			"emoji": "🐯",
+			"title": "Tiger Face"
+		},
+		{
+			"emoji": "🐅",
+			"title": "Tiger"
+		},
+		{
+			"emoji": "🐆",
+			"title": "Leopard"
+		},
+		{
+			"emoji": "🐴",
+			"title": "Horse Face"
+		},
+		{
+			"emoji": "🫎",
+			"title": "Moose"
+		},
+		{
+			"emoji": "🫏",
+			"title": "Donkey"
+		},
+		{
+			"emoji": "🐎",
+			"title": "Horse"
+		},
+		{
+			"emoji": "🦄",
+			"title": "Unicorn"
+		},
+		{
+			"emoji": "🦓",
+			"title": "Zebra"
+		},
+		{
+			"emoji": "🦌",
+			"title": "Deer"
+		},
+		{
+			"emoji": "🦬",
+			"title": "Bison"
+		},
+		{
+			"emoji": "🐮",
+			"title": "Cow Face"
+		},
+		{
+			"emoji": "🐂",
+			"title": "Ox"
+		},
+		{
+			"emoji": "🐃",
+			"title": "Water Buffalo"
+		},
+		{
+			"emoji": "🐄",
+			"title": "Cow"
+		},
+		{
+			"emoji": "🐷",
+			"title": "Pig Face"
+		},
+		{
+			"emoji": "🐖",
+			"title": "Pig"
+		},
+		{
+			"emoji": "🐗",
+			"title": "Boar"
+		},
+		{
+			"emoji": "🐽",
+			"title": "Pig Nose"
+		},
+		{
+			"emoji": "🐏",
+			"title": "Ram"
+		},
+		{
+			"emoji": "🐑",
+			"title": "Ewe"
+		},
+		{
+			"emoji": "🐐",
+			"title": "Goat"
+		},
+		{
+			"emoji": "🐪",
+			"title": "Camel"
+		},
+		{
+			"emoji": "🐫",
+			"title": "Two-hump Camel"
+		},
+		{
+			"emoji": "🦙",
+			"title": "Llama"
+		},
+		{
+			"emoji": "🦒",
+			"title": "Giraffe"
+		},
+		{
+			"emoji": "🐘",
+			"title": "Elephant"
+		},
+		{
+			"emoji": "🦣",
+			"title": "Mammoth"
+		},
+		{
+			"emoji": "🦏",
+			"title": "Rhinoceros"
+		},
+		{
+			"emoji": "🦛",
+			"title": "Hippopotamus"
+		},
+		{
+			"emoji": "🐭",
+			"title": "Mouse Face"
+		},
+		{
+			"emoji": "🐁",
+			"title": "Mouse"
+		},
+		{
+			"emoji": "🐀",
+			"title": "Rat"
+		},
+		{
+			"emoji": "🐹",
+			"title": "Hamster"
+		},
+		{
+			"emoji": "🐰",
+			"title": "Rabbit Face"
+		},
+		{
+			"emoji": "🐇",
+			"title": "Rabbit"
+		},
+		{
+			"emoji": "🐿️",
+			"title": "Chipmunk"
+		},
+		{
+			"emoji": "🦫",
+			"title": "Beaver"
+		},
+		{
+			"emoji": "🦔",
+			"title": "Hedgehog"
+		},
+		{
+			"emoji": "🦇",
+			"title": "Bat"
+		},
+		{
+			"emoji": "🐻",
+			"title": "Bear"
+		},
+		{
+			"emoji": "🐻‍❄️",
+			"title": "Polar Bear"
+		},
+		{
+			"emoji": "🐨",
+			"title": "Koala"
+		},
+		{
+			"emoji": "🐼",
+			"title": "Panda"
+		},
+		{
+			"emoji": "🦥",
+			"title": "Sloth"
+		},
+		{
+			"emoji": "🦦",
+			"title": "Otter"
+		},
+		{
+			"emoji": "🦨",
+			"title": "Skunk"
+		},
+		{
+			"emoji": "🦘",
+			"title": "Kangaroo"
+		},
+		{
+			"emoji": "🦡",
+			"title": "Badger"
+		},
+		{
+			"emoji": "🐾",
+			"title": "Paw Prints"
+		},
+		{
+			"emoji": "🦃",
+			"title": "Turkey"
+		},
+		{
+			"emoji": "🐔",
+			"title": "Chicken"
+		},
+		{
+			"emoji": "🐓",
+			"title": "Rooster"
+		},
+		{
+			"emoji": "🐣",
+			"title": "Hatching Chick"
+		},
+		{
+			"emoji": "🐤",
+			"title": "Baby Chick"
+		},
+		{
+			"emoji": "🐥",
+			"title": "Front-facing Baby Chick"
+		},
+		{
+			"emoji": "🐦",
+			"title": "Bird"
+		},
+		{
+			"emoji": "🐧",
+			"title": "Penguin"
+		},
+		{
+			"emoji": "🕊️",
+			"title": "Dove"
+		},
+		{
+			"emoji": "🦅",
+			"title": "Eagle"
+		},
+		{
+			"emoji": "🦆",
+			"title": "Duck"
+		},
+		{
+			"emoji": "🦢",
+			"title": "Swan"
+		},
+		{
+			"emoji": "🦉",
+			"title": "Owl"
+		},
+		{
+			"emoji": "🦤",
+			"title": "Dodo"
+		},
+		{
+			"emoji": "🪶",
+			"title": "Feather"
+		},
+		{
+			"emoji": "🦩",
+			"title": "Flamingo"
+		},
+		{
+			"emoji": "🦚",
+			"title": "Peacock"
+		},
+		{
+			"emoji": "🦜",
+			"title": "Parrot"
+		},
+		{
+			"emoji": "🪽",
+			"title": "Wing"
+		},
+		{
+			"emoji": "🐦‍⬛",
+			"title": "Black Bird"
+		},
+		{
+			"emoji": "🪿",
+			"title": "Goose"
+		},
+		{
+			"emoji": "🐦‍🔥",
+			"title": "Phoenix"
+		},
+		{
+			"emoji": "🐸",
+			"title": "Frog"
+		},
+		{
+			"emoji": "🐊",
+			"title": "Crocodile"
+		},
+		{
+			"emoji": "🐢",
+			"title": "Turtle"
+		},
+		{
+			"emoji": "🦎",
+			"title": "Lizard"
+		},
+		{
+			"emoji": "🐍",
+			"title": "Snake"
+		},
+		{
+			"emoji": "🐲",
+			"title": "Dragon Face"
+		},
+		{
+			"emoji": "🐉",
+			"title": "Dragon"
+		},
+		{
+			"emoji": "🦕",
+			"title": "Sauropod"
+		},
+		{
+			"emoji": "🦖",
+			"title": "T-Rex"
+		},
+		{
+			"emoji": "🐳",
+			"title": "Spouting Whale"
+		},
+		{
+			"emoji": "🐋",
+			"title": "Whale"
+		},
+		{
+			"emoji": "🐬",
+			"title": "Dolphin"
+		},
+		{
+			"emoji": "🫍",
+			"title": "Orca"
+		},
+		{
+			"emoji": "🦭",
+			"title": "Seal"
+		},
+		{
+			"emoji": "🐟",
+			"title": "Fish"
+		},
+		{
+			"emoji": "🐠",
+			"title": "Tropical Fish"
+		},
+		{
+			"emoji": "🐡",
+			"title": "Blowfish"
+		},
+		{
+			"emoji": "🦈",
+			"title": "Shark"
+		},
+		{
+			"emoji": "🐙",
+			"title": "Octopus"
+		},
+		{
+			"emoji": "🐚",
+			"title": "Spiral Shell"
+		},
+		{
+			"emoji": "🪸",
+			"title": "Coral"
+		},
+		{
+			"emoji": "🪼",
+			"title": "Jellyfish"
+		},
+		{
+			"emoji": "🦀",
+			"title": "Crab"
+		},
+		{
+			"emoji": "🦞",
+			"title": "Lobster"
+		},
+		{
+			"emoji": "🦐",
+			"title": "Shrimp"
+		},
+		{
+			"emoji": "🦑",
+			"title": "Squid"
+		},
+		{
+			"emoji": "🦪",
+			"title": "Oyster"
+		},
+		{
+			"emoji": "🐌",
+			"title": "Snail"
+		},
+		{
+			"emoji": "🦋",
+			"title": "Butterfly"
+		},
+		{
+			"emoji": "🐛",
+			"title": "Bug"
+		},
+		{
+			"emoji": "🐜",
+			"title": "Ant"
+		},
+		{
+			"emoji": "🐝",
+			"title": "Honeybee"
+		},
+		{
+			"emoji": "🪲",
+			"title": "Beetle"
+		},
+		{
+			"emoji": "🐞",
+			"title": "Lady Beetle"
+		},
+		{
+			"emoji": "🦗",
+			"title": "Cricket"
+		},
+		{
+			"emoji": "🪳",
+			"title": "Cockroach"
+		},
+		{
+			"emoji": "🕷️",
+			"title": "Spider"
+		},
+		{
+			"emoji": "🕸️",
+			"title": "Spider Web"
+		},
+		{
+			"emoji": "🦂",
+			"title": "Scorpion"
+		},
+		{
+			"emoji": "🦟",
+			"title": "Mosquito"
+		},
+		{
+			"emoji": "🪰",
+			"title": "Fly"
+		},
+		{
+			"emoji": "🪱",
+			"title": "Worm"
+		},
+		{
+			"emoji": "🦠",
+			"title": "Microbe"
+		},
+		{
+			"emoji": "💐",
+			"title": "Bouquet"
+		},
+		{
+			"emoji": "🌸",
+			"title": "Cherry Blossom"
+		},
+		{
+			"emoji": "💮",
+			"title": "White Flower"
+		},
+		{
+			"emoji": "🪷",
+			"title": "Lotus"
+		},
+		{
+			"emoji": "🏵️",
+			"title": "Rosette"
+		},
+		{
+			"emoji": "🌹",
+			"title": "Rose"
+		},
+		{
+			"emoji": "🥀",
+			"title": "Wilted Flower"
+		},
+		{
+			"emoji": "🌺",
+			"title": "Hibiscus"
+		},
+		{
+			"emoji": "🌻",
+			"title": "Sunflower"
+		},
+		{
+			"emoji": "🌼",
+			"title": "Blossom"
+		},
+		{
+			"emoji": "🌷",
+			"title": "Tulip"
+		},
+		{
+			"emoji": "🪻",
+			"title": "Hyacinth"
+		},
+		{
+			"emoji": "🌱",
+			"title": "Seedling"
+		},
+		{
+			"emoji": "🪴",
+			"title": "Potted Plant"
+		},
+		{
+			"emoji": "🌲",
+			"title": "Evergreen Tree"
+		},
+		{
+			"emoji": "🌳",
+			"title": "Deciduous Tree"
+		},
+		{
+			"emoji": "🌴",
+			"title": "Palm Tree"
+		},
+		{
+			"emoji": "🌵",
+			"title": "Cactus"
+		},
+		{
+			"emoji": "🌾",
+			"title": "Sheaf Of Rice"
+		},
+		{
+			"emoji": "🌿",
+			"title": "Herb"
+		},
+		{
+			"emoji": "☘️",
+			"title": "Shamrock"
+		},
+		{
+			"emoji": "🍀",
+			"title": "Four Leaf Clover"
+		},
+		{
+			"emoji": "🍁",
+			"title": "Maple Leaf"
+		},
+		{
+			"emoji": "🍂",
+			"title": "Fallen Leaf"
+		},
+		{
+			"emoji": "🍃",
+			"title": "Leaf Fluttering In Wind"
+		},
+		{
+			"emoji": "🪹",
+			"title": "Empty Nest"
+		},
+		{
+			"emoji": "🪺",
+			"title": "Nest With Eggs"
+		},
+		{
+			"emoji": "🍄",
+			"title": "Mushroom"
+		},
+		{
+			"emoji": "🪾",
+			"title": "Leafless Tree"
+		}
+	],
+	"foods": [
+		{
+			"emoji": "🍇",
+			"title": "Grapes"
+		},
+		{
+			"emoji": "🍈",
+			"title": "Melon"
+		},
+		{
+			"emoji": "🍉",
+			"title": "Watermelon"
+		},
+		{
+			"emoji": "🍊",
+			"title": "Tangerine"
+		},
+		{
+			"emoji": "🍋",
+			"title": "Lemon"
+		},
+		{
+			"emoji": "🍋‍🟩",
+			"title": "Lime"
+		},
+		{
+			"emoji": "🍌",
+			"title": "Banana"
+		},
+		{
+			"emoji": "🍍",
+			"title": "Pineapple"
+		},
+		{
+			"emoji": "🥭",
+			"title": "Mango"
+		},
+		{
+			"emoji": "🍎",
+			"title": "Red Apple"
+		},
+		{
+			"emoji": "🍏",
+			"title": "Green Apple"
+		},
+		{
+			"emoji": "🍐",
+			"title": "Pear"
+		},
+		{
+			"emoji": "🍑",
+			"title": "Peach"
+		},
+		{
+			"emoji": "🍒",
+			"title": "Cherries"
+		},
+		{
+			"emoji": "🍓",
+			"title": "Strawberry"
+		},
+		{
+			"emoji": "🫐",
+			"title": "Blueberries"
+		},
+		{
+			"emoji": "🥝",
+			"title": "Kiwi Fruit"
+		},
+		{
+			"emoji": "🍅",
+			"title": "Tomato"
+		},
+		{
+			"emoji": "🫒",
+			"title": "Olive"
+		},
+		{
+			"emoji": "🥥",
+			"title": "Coconut"
+		},
+		{
+			"emoji": "🥑",
+			"title": "Avocado"
+		},
+		{
+			"emoji": "🍆",
+			"title": "Eggplant"
+		},
+		{
+			"emoji": "🥔",
+			"title": "Potato"
+		},
+		{
+			"emoji": "🥕",
+			"title": "Carrot"
+		},
+		{
+			"emoji": "🌽",
+			"title": "Ear Of Corn"
+		},
+		{
+			"emoji": "🌶️",
+			"title": "Hot Pepper"
+		},
+		{
+			"emoji": "🫑",
+			"title": "Bell Pepper"
+		},
+		{
+			"emoji": "🥒",
+			"title": "Cucumber"
+		},
+		{
+			"emoji": "🥬",
+			"title": "Leafy Green"
+		},
+		{
+			"emoji": "🥦",
+			"title": "Broccoli"
+		},
+		{
+			"emoji": "🧄",
+			"title": "Garlic"
+		},
+		{
+			"emoji": "🧅",
+			"title": "Onion"
+		},
+		{
+			"emoji": "🥜",
+			"title": "Peanuts"
+		},
+		{
+			"emoji": "🫘",
+			"title": "Beans"
+		},
+		{
+			"emoji": "🌰",
+			"title": "Chestnut"
+		},
+		{
+			"emoji": "🫚",
+			"title": "Ginger Root"
+		},
+		{
+			"emoji": "🫛",
+			"title": "Pea Pod"
+		},
+		{
+			"emoji": "🍄‍🟫",
+			"title": "Brown Mushroom"
+		},
+		{
+			"emoji": "🫜",
+			"title": "Root Vegetable"
+		},
+		{
+			"emoji": "🍞",
+			"title": "Bread"
+		},
+		{
+			"emoji": "🥐",
+			"title": "Croissant"
+		},
+		{
+			"emoji": "🥖",
+			"title": "Baguette Bread"
+		},
+		{
+			"emoji": "🫓",
+			"title": "Flatbread"
+		},
+		{
+			"emoji": "🥨",
+			"title": "Pretzel"
+		},
+		{
+			"emoji": "🥯",
+			"title": "Bagel"
+		},
+		{
+			"emoji": "🥞",
+			"title": "Pancakes"
+		},
+		{
+			"emoji": "🧇",
+			"title": "Waffle"
+		},
+		{
+			"emoji": "🧀",
+			"title": "Cheese Wedge"
+		},
+		{
+			"emoji": "🍖",
+			"title": "Meat On Bone"
+		},
+		{
+			"emoji": "🍗",
+			"title": "Poultry Leg"
+		},
+		{
+			"emoji": "🥩",
+			"title": "Cut Of Meat"
+		},
+		{
+			"emoji": "🥓",
+			"title": "Bacon"
+		},
+		{
+			"emoji": "🍔",
+			"title": "Hamburger"
+		},
+		{
+			"emoji": "🍟",
+			"title": "French Fries"
+		},
+		{
+			"emoji": "🍕",
+			"title": "Pizza"
+		},
+		{
+			"emoji": "🌭",
+			"title": "Hot Dog"
+		},
+		{
+			"emoji": "🥪",
+			"title": "Sandwich"
+		},
+		{
+			"emoji": "🌮",
+			"title": "Taco"
+		},
+		{
+			"emoji": "🌯",
+			"title": "Burrito"
+		},
+		{
+			"emoji": "🫔",
+			"title": "Tamale"
+		},
+		{
+			"emoji": "🥙",
+			"title": "Stuffed Flatbread"
+		},
+		{
+			"emoji": "🧆",
+			"title": "Falafel"
+		},
+		{
+			"emoji": "🥚",
+			"title": "Egg"
+		},
+		{
+			"emoji": "🍳",
+			"title": "Cooking"
+		},
+		{
+			"emoji": "🥘",
+			"title": "Shallow Pan Of Food"
+		},
+		{
+			"emoji": "🍲",
+			"title": "Pot Of Food"
+		},
+		{
+			"emoji": "🫕",
+			"title": "Fondue"
+		},
+		{
+			"emoji": "🥣",
+			"title": "Bowl With Spoon"
+		},
+		{
+			"emoji": "🥗",
+			"title": "Green Salad"
+		},
+		{
+			"emoji": "🍿",
+			"title": "Popcorn"
+		},
+		{
+			"emoji": "🧈",
+			"title": "Butter"
+		},
+		{
+			"emoji": "🧂",
+			"title": "Salt"
+		},
+		{
+			"emoji": "🥫",
+			"title": "Canned Food"
+		},
+		{
+			"emoji": "🍱",
+			"title": "Bento Box"
+		},
+		{
+			"emoji": "🍘",
+			"title": "Rice Cracker"
+		},
+		{
+			"emoji": "🍙",
+			"title": "Rice Ball"
+		},
+		{
+			"emoji": "🍚",
+			"title": "Cooked Rice"
+		},
+		{
+			"emoji": "🍛",
+			"title": "Curry Rice"
+		},
+		{
+			"emoji": "🍜",
+			"title": "Steaming Bowl"
+		},
+		{
+			"emoji": "🍝",
+			"title": "Spaghetti"
+		},
+		{
+			"emoji": "🍠",
+			"title": "Roasted Sweet Potato"
+		},
+		{
+			"emoji": "🍢",
+			"title": "Oden"
+		},
+		{
+			"emoji": "🍣",
+			"title": "Sushi"
+		},
+		{
+			"emoji": "🍤",
+			"title": "Fried Shrimp"
+		},
+		{
+			"emoji": "🍥",
+			"title": "Fish Cake With Swirl"
+		},
+		{
+			"emoji": "🥮",
+			"title": "Moon Cake"
+		},
+		{
+			"emoji": "🍡",
+			"title": "Dango"
+		},
+		{
+			"emoji": "🥟",
+			"title": "Dumpling"
+		},
+		{
+			"emoji": "🥠",
+			"title": "Fortune Cookie"
+		},
+		{
+			"emoji": "🥡",
+			"title": "Takeout Box"
+		},
+		{
+			"emoji": "🍦",
+			"title": "Soft Ice Cream"
+		},
+		{
+			"emoji": "🍧",
+			"title": "Shaved Ice"
+		},
+		{
+			"emoji": "🍨",
+			"title": "Ice Cream"
+		},
+		{
+			"emoji": "🍩",
+			"title": "Doughnut"
+		},
+		{
+			"emoji": "🍪",
+			"title": "Cookie"
+		},
+		{
+			"emoji": "🎂",
+			"title": "Birthday Cake"
+		},
+		{
+			"emoji": "🍰",
+			"title": "Shortcake"
+		},
+		{
+			"emoji": "🧁",
+			"title": "Cupcake"
+		},
+		{
+			"emoji": "🥧",
+			"title": "Pie"
+		},
+		{
+			"emoji": "🍫",
+			"title": "Chocolate Bar"
+		},
+		{
+			"emoji": "🍬",
+			"title": "Candy"
+		},
+		{
+			"emoji": "🍭",
+			"title": "Lollipop"
+		},
+		{
+			"emoji": "🍮",
+			"title": "Custard"
+		},
+		{
+			"emoji": "🍯",
+			"title": "Honey Pot"
+		},
+		{
+			"emoji": "🍼",
+			"title": "Baby Bottle"
+		},
+		{
+			"emoji": "🥛",
+			"title": "Glass Of Milk"
+		},
+		{
+			"emoji": "☕",
+			"title": "Hot Beverage"
+		},
+		{
+			"emoji": "🫖",
+			"title": "Teapot"
+		},
+		{
+			"emoji": "🍵",
+			"title": "Teacup Without Handle"
+		},
+		{
+			"emoji": "🍶",
+			"title": "Sake"
+		},
+		{
+			"emoji": "🍾",
+			"title": "Bottle With Popping Cork"
+		},
+		{
+			"emoji": "🍷",
+			"title": "Wine Glass"
+		},
+		{
+			"emoji": "🍸",
+			"title": "Cocktail Glass"
+		},
+		{
+			"emoji": "🍹",
+			"title": "Tropical Drink"
+		},
+		{
+			"emoji": "🍺",
+			"title": "Beer Mug"
+		},
+		{
+			"emoji": "🍻",
+			"title": "Clinking Beer Mugs"
+		},
+		{
+			"emoji": "🥂",
+			"title": "Clinking Glasses"
+		},
+		{
+			"emoji": "🥃",
+			"title": "Tumbler Glass"
+		},
+		{
+			"emoji": "🫗",
+			"title": "Pouring Liquid"
+		},
+		{
+			"emoji": "🥤",
+			"title": "Cup With Straw"
+		},
+		{
+			"emoji": "🧋",
+			"title": "Bubble Tea"
+		},
+		{
+			"emoji": "🧃",
+			"title": "Beverage Box"
+		},
+		{
+			"emoji": "🧉",
+			"title": "Mate"
+		},
+		{
+			"emoji": "🧊",
+			"title": "Ice"
+		},
+		{
+			"emoji": "🥢",
+			"title": "Chopsticks"
+		},
+		{
+			"emoji": "🍽️",
+			"title": "Fork And Knife With Plate"
+		},
+		{
+			"emoji": "🍴",
+			"title": "Fork And Knife"
+		},
+		{
+			"emoji": "🥄",
+			"title": "Spoon"
+		},
+		{
+			"emoji": "🔪",
+			"title": "Kitchen Knife"
+		},
+		{
+			"emoji": "🫙",
+			"title": "Jar"
+		},
+		{
+			"emoji": "🏺",
+			"title": "Amphora"
+		}
+	],
+	"activity": [
+		{
+			"emoji": "🎃",
+			"title": "Jack-o-lantern"
+		},
+		{
+			"emoji": "🎄",
+			"title": "Christmas Tree"
+		},
+		{
+			"emoji": "🎆",
+			"title": "Fireworks"
+		},
+		{
+			"emoji": "🎇",
+			"title": "Sparkler"
+		},
+		{
+			"emoji": "🧨",
+			"title": "Firecracker"
+		},
+		{
+			"emoji": "✨",
+			"title": "Sparkles"
+		},
+		{
+			"emoji": "🎈",
+			"title": "Balloon"
+		},
+		{
+			"emoji": "🎉",
+			"title": "Party Popper"
+		},
+		{
+			"emoji": "🎊",
+			"title": "Confetti Ball"
+		},
+		{
+			"emoji": "🎋",
+			"title": "Tanabata Tree"
+		},
+		{
+			"emoji": "🎍",
+			"title": "Pine Decoration"
+		},
+		{
+			"emoji": "🎎",
+			"title": "Japanese Dolls"
+		},
+		{
+			"emoji": "🎏",
+			"title": "Carp Streamer"
+		},
+		{
+			"emoji": "🎐",
+			"title": "Wind Chime"
+		},
+		{
+			"emoji": "🎑",
+			"title": "Moon Viewing Ceremony"
+		},
+		{
+			"emoji": "🧧",
+			"title": "Red Envelope"
+		},
+		{
+			"emoji": "🎀",
+			"title": "Ribbon"
+		},
+		{
+			"emoji": "🎁",
+			"title": "Wrapped Gift"
+		},
+		{
+			"emoji": "🎗️",
+			"title": "Reminder Ribbon"
+		},
+		{
+			"emoji": "🎟️",
+			"title": "Admission Tickets"
+		},
+		{
+			"emoji": "🎫",
+			"title": "Ticket"
+		},
+		{
+			"emoji": "🎖️",
+			"title": "Military Medal"
+		},
+		{
+			"emoji": "🏆",
+			"title": "Trophy"
+		},
+		{
+			"emoji": "🏅",
+			"title": "Sports Medal"
+		},
+		{
+			"emoji": "🥇",
+			"title": "1st Place Medal"
+		},
+		{
+			"emoji": "🥈",
+			"title": "2nd Place Medal"
+		},
+		{
+			"emoji": "🥉",
+			"title": "3rd Place Medal"
+		},
+		{
+			"emoji": "⚽",
+			"title": "Soccer Ball"
+		},
+		{
+			"emoji": "⚾",
+			"title": "Baseball"
+		},
+		{
+			"emoji": "🥎",
+			"title": "Softball"
+		},
+		{
+			"emoji": "🏀",
+			"title": "Basketball"
+		},
+		{
+			"emoji": "🏐",
+			"title": "Volleyball"
+		},
+		{
+			"emoji": "🏈",
+			"title": "American Football"
+		},
+		{
+			"emoji": "🏉",
+			"title": "Rugby Football"
+		},
+		{
+			"emoji": "🎾",
+			"title": "Tennis"
+		},
+		{
+			"emoji": "🥏",
+			"title": "Flying Disc"
+		},
+		{
+			"emoji": "🎳",
+			"title": "Bowling"
+		},
+		{
+			"emoji": "🏏",
+			"title": "Cricket Game"
+		},
+		{
+			"emoji": "🏑",
+			"title": "Field Hockey"
+		},
+		{
+			"emoji": "🏒",
+			"title": "Ice Hockey"
+		},
+		{
+			"emoji": "🥍",
+			"title": "Lacrosse"
+		},
+		{
+			"emoji": "🏓",
+			"title": "Ping Pong"
+		},
+		{
+			"emoji": "🏸",
+			"title": "Badminton"
+		},
+		{
+			"emoji": "🥊",
+			"title": "Boxing Glove"
+		},
+		{
+			"emoji": "🥋",
+			"title": "Martial Arts Uniform"
+		},
+		{
+			"emoji": "🥅",
+			"title": "Goal Net"
+		},
+		{
+			"emoji": "⛳",
+			"title": "Flag In Hole"
+		},
+		{
+			"emoji": "⛸️",
+			"title": "Ice Skate"
+		},
+		{
+			"emoji": "🎣",
+			"title": "Fishing Pole"
+		},
+		{
+			"emoji": "🤿",
+			"title": "Diving Mask"
+		},
+		{
+			"emoji": "🎽",
+			"title": "Running Shirt"
+		},
+		{
+			"emoji": "🎿",
+			"title": "Skis"
+		},
+		{
+			"emoji": "🛷",
+			"title": "Sled"
+		},
+		{
+			"emoji": "🥌",
+			"title": "Curling Stone"
+		},
+		{
+			"emoji": "🎯",
+			"title": "Bullseye"
+		},
+		{
+			"emoji": "🪀",
+			"title": "Yo-yo"
+		},
+		{
+			"emoji": "🪁",
+			"title": "Kite"
+		},
+		{
+			"emoji": "🔫",
+			"title": "Water Pistol"
+		},
+		{
+			"emoji": "🎱",
+			"title": "Pool 8 Ball"
+		},
+		{
+			"emoji": "🔮",
+			"title": "Crystal Ball"
+		},
+		{
+			"emoji": "🪄",
+			"title": "Magic Wand"
+		},
+		{
+			"emoji": "🎮",
+			"title": "Video Game"
+		},
+		{
+			"emoji": "🕹️",
+			"title": "Joystick"
+		},
+		{
+			"emoji": "🎰",
+			"title": "Slot Machine"
+		},
+		{
+			"emoji": "🎲",
+			"title": "Game Die"
+		},
+		{
+			"emoji": "🧩",
+			"title": "Puzzle Piece"
+		},
+		{
+			"emoji": "🧸",
+			"title": "Teddy Bear"
+		},
+		{
+			"emoji": "🪅",
+			"title": "Piñata"
+		},
+		{
+			"emoji": "🪩",
+			"title": "Mirror Ball"
+		},
+		{
+			"emoji": "🪆",
+			"title": "Nesting Dolls"
+		},
+		{
+			"emoji": "♠️",
+			"title": "Spade Suit"
+		},
+		{
+			"emoji": "♥️",
+			"title": "Heart Suit"
+		},
+		{
+			"emoji": "♦️",
+			"title": "Diamond Suit"
+		},
+		{
+			"emoji": "♣️",
+			"title": "Club Suit"
+		},
+		{
+			"emoji": "♟️",
+			"title": "Chess Pawn"
+		},
+		{
+			"emoji": "🃏",
+			"title": "Joker"
+		},
+		{
+			"emoji": "🀄",
+			"title": "Mahjong Red Dragon"
+		},
+		{
+			"emoji": "🎴",
+			"title": "Flower Playing Cards"
+		},
+		{
+			"emoji": "🎭",
+			"title": "Performing Arts"
+		},
+		{
+			"emoji": "🖼️",
+			"title": "Framed Picture"
+		},
+		{
+			"emoji": "🎨",
+			"title": "Artist Palette"
+		},
+		{
+			"emoji": "🧵",
+			"title": "Thread"
+		},
+		{
+			"emoji": "🪡",
+			"title": "Sewing Needle"
+		},
+		{
+			"emoji": "🧶",
+			"title": "Yarn"
+		},
+		{
+			"emoji": "🪢",
+			"title": "Knot"
+		}
+	],
+	"places": [
+		{
+			"emoji": "🌍",
+			"title": "Globe Showing Europe-Africa"
+		},
+		{
+			"emoji": "🌎",
+			"title": "Globe Showing Americas"
+		},
+		{
+			"emoji": "🌏",
+			"title": "Globe Showing Asia-Australia"
+		},
+		{
+			"emoji": "🌐",
+			"title": "Globe With Meridians"
+		},
+		{
+			"emoji": "🗺️",
+			"title": "World Map"
+		},
+		{
+			"emoji": "🗾",
+			"title": "Map Of Japan"
+		},
+		{
+			"emoji": "🧭",
+			"title": "Compass"
+		},
+		{
+			"emoji": "🏔️",
+			"title": "Snow-capped Mountain"
+		},
+		{
+			"emoji": "⛰️",
+			"title": "Mountain"
+		},
+		{
+			"emoji": "🛘",
+			"title": "Landslide"
+		},
+		{
+			"emoji": "🌋",
+			"title": "Volcano"
+		},
+		{
+			"emoji": "🗻",
+			"title": "Mount Fuji"
+		},
+		{
+			"emoji": "🏕️",
+			"title": "Camping"
+		},
+		{
+			"emoji": "🏖️",
+			"title": "Beach With Umbrella"
+		},
+		{
+			"emoji": "🏜️",
+			"title": "Desert"
+		},
+		{
+			"emoji": "🏝️",
+			"title": "Desert Island"
+		},
+		{
+			"emoji": "🏞️",
+			"title": "National Park"
+		},
+		{
+			"emoji": "🏟️",
+			"title": "Stadium"
+		},
+		{
+			"emoji": "🏛️",
+			"title": "Classical Building"
+		},
+		{
+			"emoji": "🏗️",
+			"title": "Building Construction"
+		},
+		{
+			"emoji": "🧱",
+			"title": "Brick"
+		},
+		{
+			"emoji": "🪨",
+			"title": "Rock"
+		},
+		{
+			"emoji": "🪵",
+			"title": "Wood"
+		},
+		{
+			"emoji": "🛖",
+			"title": "Hut"
+		},
+		{
+			"emoji": "🏘️",
+			"title": "Houses"
+		},
+		{
+			"emoji": "🏚️",
+			"title": "Derelict House"
+		},
+		{
+			"emoji": "🏠",
+			"title": "House"
+		},
+		{
+			"emoji": "🏡",
+			"title": "House With Garden"
+		},
+		{
+			"emoji": "🏢",
+			"title": "Office Building"
+		},
+		{
+			"emoji": "🏣",
+			"title": "Japanese Post Office"
+		},
+		{
+			"emoji": "🏤",
+			"title": "Post Office"
+		},
+		{
+			"emoji": "🏥",
+			"title": "Hospital"
+		},
+		{
+			"emoji": "🏦",
+			"title": "Bank"
+		},
+		{
+			"emoji": "🏨",
+			"title": "Hotel"
+		},
+		{
+			"emoji": "🏩",
+			"title": "Love Hotel"
+		},
+		{
+			"emoji": "🏪",
+			"title": "Convenience Store"
+		},
+		{
+			"emoji": "🏫",
+			"title": "School"
+		},
+		{
+			"emoji": "🏬",
+			"title": "Department Store"
+		},
+		{
+			"emoji": "🏭",
+			"title": "Factory"
+		},
+		{
+			"emoji": "🏯",
+			"title": "Japanese Castle"
+		},
+		{
+			"emoji": "🏰",
+			"title": "Castle"
+		},
+		{
+			"emoji": "💒",
+			"title": "Wedding"
+		},
+		{
+			"emoji": "🗼",
+			"title": "Tokyo Tower"
+		},
+		{
+			"emoji": "🗽",
+			"title": "Statue Of Liberty"
+		},
+		{
+			"emoji": "⛪",
+			"title": "Church"
+		},
+		{
+			"emoji": "🕌",
+			"title": "Mosque"
+		},
+		{
+			"emoji": "🛕",
+			"title": "Hindu Temple"
+		},
+		{
+			"emoji": "🕍",
+			"title": "Synagogue"
+		},
+		{
+			"emoji": "⛩️",
+			"title": "Shinto Shrine"
+		},
+		{
+			"emoji": "🕋",
+			"title": "Kaaba"
+		},
+		{
+			"emoji": "⛲",
+			"title": "Fountain"
+		},
+		{
+			"emoji": "⛺",
+			"title": "Tent"
+		},
+		{
+			"emoji": "🌁",
+			"title": "Foggy"
+		},
+		{
+			"emoji": "🌃",
+			"title": "Night With Stars"
+		},
+		{
+			"emoji": "🏙️",
+			"title": "Cityscape"
+		},
+		{
+			"emoji": "🌄",
+			"title": "Sunrise Over Mountains"
+		},
+		{
+			"emoji": "🌅",
+			"title": "Sunrise"
+		},
+		{
+			"emoji": "🌆",
+			"title": "Cityscape At Dusk"
+		},
+		{
+			"emoji": "🌇",
+			"title": "Sunset"
+		},
+		{
+			"emoji": "🌉",
+			"title": "Bridge At Night"
+		},
+		{
+			"emoji": "♨️",
+			"title": "Hot Springs"
+		},
+		{
+			"emoji": "🎠",
+			"title": "Carousel Horse"
+		},
+		{
+			"emoji": "🛝",
+			"title": "Playground Slide"
+		},
+		{
+			"emoji": "🎡",
+			"title": "Ferris Wheel"
+		},
+		{
+			"emoji": "🎢",
+			"title": "Roller Coaster"
+		},
+		{
+			"emoji": "💈",
+			"title": "Barber Pole"
+		},
+		{
+			"emoji": "🎪",
+			"title": "Circus Tent"
+		},
+		{
+			"emoji": "🚂",
+			"title": "Locomotive"
+		},
+		{
+			"emoji": "🚃",
+			"title": "Railway Car"
+		},
+		{
+			"emoji": "🚄",
+			"title": "High-speed Train"
+		},
+		{
+			"emoji": "🚅",
+			"title": "Bullet Train"
+		},
+		{
+			"emoji": "🚆",
+			"title": "Train"
+		},
+		{
+			"emoji": "🚇",
+			"title": "Metro"
+		},
+		{
+			"emoji": "🚈",
+			"title": "Light Rail"
+		},
+		{
+			"emoji": "🚉",
+			"title": "Station"
+		},
+		{
+			"emoji": "🚊",
+			"title": "Tram"
+		},
+		{
+			"emoji": "🚝",
+			"title": "Monorail"
+		},
+		{
+			"emoji": "🚞",
+			"title": "Mountain Railway"
+		},
+		{
+			"emoji": "🚋",
+			"title": "Tram Car"
+		},
+		{
+			"emoji": "🚌",
+			"title": "Bus"
+		},
+		{
+			"emoji": "🚍",
+			"title": "Oncoming Bus"
+		},
+		{
+			"emoji": "🚎",
+			"title": "Trolleybus"
+		},
+		{
+			"emoji": "🚐",
+			"title": "Minibus"
+		},
+		{
+			"emoji": "🚑",
+			"title": "Ambulance"
+		},
+		{
+			"emoji": "🚒",
+			"title": "Fire Engine"
+		},
+		{
+			"emoji": "🚓",
+			"title": "Police Car"
+		},
+		{
+			"emoji": "🚔",
+			"title": "Oncoming Police Car"
+		},
+		{
+			"emoji": "🚕",
+			"title": "Taxi"
+		},
+		{
+			"emoji": "🚖",
+			"title": "Oncoming Taxi"
+		},
+		{
+			"emoji": "🚗",
+			"title": "Automobile"
+		},
+		{
+			"emoji": "🚘",
+			"title": "Oncoming Automobile"
+		},
+		{
+			"emoji": "🚙",
+			"title": "Sport Utility Vehicle"
+		},
+		{
+			"emoji": "🛻",
+			"title": "Pickup Truck"
+		},
+		{
+			"emoji": "🚚",
+			"title": "Delivery Truck"
+		},
+		{
+			"emoji": "🚛",
+			"title": "Articulated Lorry"
+		},
+		{
+			"emoji": "🚜",
+			"title": "Tractor"
+		},
+		{
+			"emoji": "🏎️",
+			"title": "Racing Car"
+		},
+		{
+			"emoji": "🏍️",
+			"title": "Motorcycle"
+		},
+		{
+			"emoji": "🛵",
+			"title": "Motor Scooter"
+		},
+		{
+			"emoji": "🦽",
+			"title": "Manual Wheelchair"
+		},
+		{
+			"emoji": "🦼",
+			"title": "Motorized Wheelchair"
+		},
+		{
+			"emoji": "🛺",
+			"title": "Auto Rickshaw"
+		},
+		{
+			"emoji": "🚲",
+			"title": "Bicycle"
+		},
+		{
+			"emoji": "🛴",
+			"title": "Kick Scooter"
+		},
+		{
+			"emoji": "🛹",
+			"title": "Skateboard"
+		},
+		{
+			"emoji": "🛼",
+			"title": "Roller Skate"
+		},
+		{
+			"emoji": "🚏",
+			"title": "Bus Stop"
+		},
+		{
+			"emoji": "🛣️",
+			"title": "Motorway"
+		},
+		{
+			"emoji": "🛤️",
+			"title": "Railway Track"
+		},
+		{
+			"emoji": "🛢️",
+			"title": "Oil Drum"
+		},
+		{
+			"emoji": "⛽",
+			"title": "Fuel Pump"
+		},
+		{
+			"emoji": "🛞",
+			"title": "Wheel"
+		},
+		{
+			"emoji": "🚨",
+			"title": "Police Car Light"
+		},
+		{
+			"emoji": "🚥",
+			"title": "Horizontal Traffic Light"
+		},
+		{
+			"emoji": "🚦",
+			"title": "Vertical Traffic Light"
+		},
+		{
+			"emoji": "🛑",
+			"title": "Stop Sign"
+		},
+		{
+			"emoji": "🚧",
+			"title": "Construction"
+		},
+		{
+			"emoji": "⚓",
+			"title": "Anchor"
+		},
+		{
+			"emoji": "🛟",
+			"title": "Ring Buoy"
+		},
+		{
+			"emoji": "⛵",
+			"title": "Sailboat"
+		},
+		{
+			"emoji": "🛶",
+			"title": "Canoe"
+		},
+		{
+			"emoji": "🚤",
+			"title": "Speedboat"
+		},
+		{
+			"emoji": "🛳️",
+			"title": "Passenger Ship"
+		},
+		{
+			"emoji": "⛴️",
+			"title": "Ferry"
+		},
+		{
+			"emoji": "🛥️",
+			"title": "Motor Boat"
+		},
+		{
+			"emoji": "🚢",
+			"title": "Ship"
+		},
+		{
+			"emoji": "✈️",
+			"title": "Airplane"
+		},
+		{
+			"emoji": "🛩️",
+			"title": "Small Airplane"
+		},
+		{
+			"emoji": "🛫",
+			"title": "Airplane Departure"
+		},
+		{
+			"emoji": "🛬",
+			"title": "Airplane Arrival"
+		},
+		{
+			"emoji": "🪂",
+			"title": "Parachute"
+		},
+		{
+			"emoji": "💺",
+			"title": "Seat"
+		},
+		{
+			"emoji": "🚁",
+			"title": "Helicopter"
+		},
+		{
+			"emoji": "🚟",
+			"title": "Suspension Railway"
+		},
+		{
+			"emoji": "🚠",
+			"title": "Mountain Cableway"
+		},
+		{
+			"emoji": "🚡",
+			"title": "Aerial Tramway"
+		},
+		{
+			"emoji": "🛰️",
+			"title": "Satellite"
+		},
+		{
+			"emoji": "🚀",
+			"title": "Rocket"
+		},
+		{
+			"emoji": "🛸",
+			"title": "Flying Saucer"
+		},
+		{
+			"emoji": "🛎️",
+			"title": "Bellhop Bell"
+		},
+		{
+			"emoji": "🧳",
+			"title": "Luggage"
+		},
+		{
+			"emoji": "⌛",
+			"title": "Hourglass Done"
+		},
+		{
+			"emoji": "⏳",
+			"title": "Hourglass Not Done"
+		},
+		{
+			"emoji": "⌚",
+			"title": "Watch"
+		},
+		{
+			"emoji": "⏰",
+			"title": "Alarm Clock"
+		},
+		{
+			"emoji": "⏱️",
+			"title": "Stopwatch"
+		},
+		{
+			"emoji": "⏲️",
+			"title": "Timer Clock"
+		},
+		{
+			"emoji": "🕰️",
+			"title": "Mantelpiece Clock"
+		},
+		{
+			"emoji": "🕛",
+			"title": "Twelve O’clock"
+		},
+		{
+			"emoji": "🕧",
+			"title": "Twelve-thirty"
+		},
+		{
+			"emoji": "🕐",
+			"title": "One O’clock"
+		},
+		{
+			"emoji": "🕜",
+			"title": "One-thirty"
+		},
+		{
+			"emoji": "🕑",
+			"title": "Two O’clock"
+		},
+		{
+			"emoji": "🕝",
+			"title": "Two-thirty"
+		},
+		{
+			"emoji": "🕒",
+			"title": "Three O’clock"
+		},
+		{
+			"emoji": "🕞",
+			"title": "Three-thirty"
+		},
+		{
+			"emoji": "🕓",
+			"title": "Four O’clock"
+		},
+		{
+			"emoji": "🕟",
+			"title": "Four-thirty"
+		},
+		{
+			"emoji": "🕔",
+			"title": "Five O’clock"
+		},
+		{
+			"emoji": "🕠",
+			"title": "Five-thirty"
+		},
+		{
+			"emoji": "🕕",
+			"title": "Six O’clock"
+		},
+		{
+			"emoji": "🕡",
+			"title": "Six-thirty"
+		},
+		{
+			"emoji": "🕖",
+			"title": "Seven O’clock"
+		},
+		{
+			"emoji": "🕢",
+			"title": "Seven-thirty"
+		},
+		{
+			"emoji": "🕗",
+			"title": "Eight O’clock"
+		},
+		{
+			"emoji": "🕣",
+			"title": "Eight-thirty"
+		},
+		{
+			"emoji": "🕘",
+			"title": "Nine O’clock"
+		},
+		{
+			"emoji": "🕤",
+			"title": "Nine-thirty"
+		},
+		{
+			"emoji": "🕙",
+			"title": "Ten O’clock"
+		},
+		{
+			"emoji": "🕥",
+			"title": "Ten-thirty"
+		},
+		{
+			"emoji": "🕚",
+			"title": "Eleven O’clock"
+		},
+		{
+			"emoji": "🕦",
+			"title": "Eleven-thirty"
+		},
+		{
+			"emoji": "🌑",
+			"title": "New Moon"
+		},
+		{
+			"emoji": "🌒",
+			"title": "Waxing Crescent Moon"
+		},
+		{
+			"emoji": "🌓",
+			"title": "First Quarter Moon"
+		},
+		{
+			"emoji": "🌔",
+			"title": "Waxing Gibbous Moon"
+		},
+		{
+			"emoji": "🌕",
+			"title": "Full Moon"
+		},
+		{
+			"emoji": "🌖",
+			"title": "Waning Gibbous Moon"
+		},
+		{
+			"emoji": "🌗",
+			"title": "Last Quarter Moon"
+		},
+		{
+			"emoji": "🌘",
+			"title": "Waning Crescent Moon"
+		},
+		{
+			"emoji": "🌙",
+			"title": "Crescent Moon"
+		},
+		{
+			"emoji": "🌚",
+			"title": "New Moon Face"
+		},
+		{
+			"emoji": "🌛",
+			"title": "First Quarter Moon Face"
+		},
+		{
+			"emoji": "🌜",
+			"title": "Last Quarter Moon Face"
+		},
+		{
+			"emoji": "🌡️",
+			"title": "Thermometer"
+		},
+		{
+			"emoji": "☀️",
+			"title": "Sun"
+		},
+		{
+			"emoji": "🌝",
+			"title": "Full Moon Face"
+		},
+		{
+			"emoji": "🌞",
+			"title": "Sun With Face"
+		},
+		{
+			"emoji": "🪐",
+			"title": "Ringed Planet"
+		},
+		{
+			"emoji": "⭐",
+			"title": "Star"
+		},
+		{
+			"emoji": "🌟",
+			"title": "Glowing Star"
+		},
+		{
+			"emoji": "🌠",
+			"title": "Shooting Star"
+		},
+		{
+			"emoji": "🌌",
+			"title": "Milky Way"
+		},
+		{
+			"emoji": "☁️",
+			"title": "Cloud"
+		},
+		{
+			"emoji": "⛅",
+			"title": "Sun Behind Cloud"
+		},
+		{
+			"emoji": "⛈️",
+			"title": "Cloud With Lightning And Rain"
+		},
+		{
+			"emoji": "🌤️",
+			"title": "Sun Behind Small Cloud"
+		},
+		{
+			"emoji": "🌥️",
+			"title": "Sun Behind Large Cloud"
+		},
+		{
+			"emoji": "🌦️",
+			"title": "Sun Behind Rain Cloud"
+		},
+		{
+			"emoji": "🌧️",
+			"title": "Cloud With Rain"
+		},
+		{
+			"emoji": "🌨️",
+			"title": "Cloud With Snow"
+		},
+		{
+			"emoji": "🌩️",
+			"title": "Cloud With Lightning"
+		},
+		{
+			"emoji": "🌪️",
+			"title": "Tornado"
+		},
+		{
+			"emoji": "🌫️",
+			"title": "Fog"
+		},
+		{
+			"emoji": "🌬️",
+			"title": "Wind Face"
+		},
+		{
+			"emoji": "🌀",
+			"title": "Cyclone"
+		},
+		{
+			"emoji": "🌈",
+			"title": "Rainbow"
+		},
+		{
+			"emoji": "🌂",
+			"title": "Closed Umbrella"
+		},
+		{
+			"emoji": "☂️",
+			"title": "Umbrella"
+		},
+		{
+			"emoji": "☔",
+			"title": "Umbrella With Rain Drops"
+		},
+		{
+			"emoji": "⛱️",
+			"title": "Umbrella On Ground"
+		},
+		{
+			"emoji": "⚡",
+			"title": "High Voltage"
+		},
+		{
+			"emoji": "❄️",
+			"title": "Snowflake"
+		},
+		{
+			"emoji": "☃️",
+			"title": "Snowman"
+		},
+		{
+			"emoji": "⛄",
+			"title": "Snowman Without Snow"
+		},
+		{
+			"emoji": "☄️",
+			"title": "Comet"
+		},
+		{
+			"emoji": "🔥",
+			"title": "Fire"
+		},
+		{
+			"emoji": "💧",
+			"title": "Droplet"
+		},
+		{
+			"emoji": "🌊",
+			"title": "Water Wave"
+		}
+	],
+	"objects": [
+		{
+			"emoji": "👓",
+			"title": "Glasses"
+		},
+		{
+			"emoji": "🕶️",
+			"title": "Sunglasses"
+		},
+		{
+			"emoji": "🥽",
+			"title": "Goggles"
+		},
+		{
+			"emoji": "🥼",
+			"title": "Lab Coat"
+		},
+		{
+			"emoji": "🦺",
+			"title": "Safety Vest"
+		},
+		{
+			"emoji": "👔",
+			"title": "Necktie"
+		},
+		{
+			"emoji": "👕",
+			"title": "T-shirt"
+		},
+		{
+			"emoji": "👖",
+			"title": "Jeans"
+		},
+		{
+			"emoji": "🧣",
+			"title": "Scarf"
+		},
+		{
+			"emoji": "🧤",
+			"title": "Gloves"
+		},
+		{
+			"emoji": "🧥",
+			"title": "Coat"
+		},
+		{
+			"emoji": "🧦",
+			"title": "Socks"
+		},
+		{
+			"emoji": "👗",
+			"title": "Dress"
+		},
+		{
+			"emoji": "👘",
+			"title": "Kimono"
+		},
+		{
+			"emoji": "🥻",
+			"title": "Sari"
+		},
+		{
+			"emoji": "🩱",
+			"title": "One-piece Swimsuit"
+		},
+		{
+			"emoji": "🩲",
+			"title": "Briefs"
+		},
+		{
+			"emoji": "🩳",
+			"title": "Shorts"
+		},
+		{
+			"emoji": "👙",
+			"title": "Bikini"
+		},
+		{
+			"emoji": "👚",
+			"title": "Woman’s Clothes"
+		},
+		{
+			"emoji": "🪭",
+			"title": "Folding Hand Fan"
+		},
+		{
+			"emoji": "👛",
+			"title": "Purse"
+		},
+		{
+			"emoji": "👜",
+			"title": "Handbag"
+		},
+		{
+			"emoji": "👝",
+			"title": "Clutch Bag"
+		},
+		{
+			"emoji": "🛍️",
+			"title": "Shopping Bags"
+		},
+		{
+			"emoji": "🎒",
+			"title": "Backpack"
+		},
+		{
+			"emoji": "🩴",
+			"title": "Thong Sandal"
+		},
+		{
+			"emoji": "👞",
+			"title": "Man’s Shoe"
+		},
+		{
+			"emoji": "👟",
+			"title": "Running Shoe"
+		},
+		{
+			"emoji": "🥾",
+			"title": "Hiking Boot"
+		},
+		{
+			"emoji": "🥿",
+			"title": "Flat Shoe"
+		},
+		{
+			"emoji": "👠",
+			"title": "High-heeled Shoe"
+		},
+		{
+			"emoji": "👡",
+			"title": "Woman’s Sandal"
+		},
+		{
+			"emoji": "🩰",
+			"title": "Ballet Shoes"
+		},
+		{
+			"emoji": "👢",
+			"title": "Woman’s Boot"
+		},
+		{
+			"emoji": "🪮",
+			"title": "Hair Pick"
+		},
+		{
+			"emoji": "👑",
+			"title": "Crown"
+		},
+		{
+			"emoji": "👒",
+			"title": "Woman’s Hat"
+		},
+		{
+			"emoji": "🎩",
+			"title": "Top Hat"
+		},
+		{
+			"emoji": "🎓",
+			"title": "Graduation Cap"
+		},
+		{
+			"emoji": "🧢",
+			"title": "Billed Cap"
+		},
+		{
+			"emoji": "🪖",
+			"title": "Military Helmet"
+		},
+		{
+			"emoji": "⛑️",
+			"title": "Rescue Worker’s Helmet"
+		},
+		{
+			"emoji": "📿",
+			"title": "Prayer Beads"
+		},
+		{
+			"emoji": "💄",
+			"title": "Lipstick"
+		},
+		{
+			"emoji": "💍",
+			"title": "Ring"
+		},
+		{
+			"emoji": "💎",
+			"title": "Gem Stone"
+		},
+		{
+			"emoji": "🔇",
+			"title": "Muted Speaker"
+		},
+		{
+			"emoji": "🔈",
+			"title": "Speaker Low Volume"
+		},
+		{
+			"emoji": "🔉",
+			"title": "Speaker Medium Volume"
+		},
+		{
+			"emoji": "🔊",
+			"title": "Speaker High Volume"
+		},
+		{
+			"emoji": "📢",
+			"title": "Loudspeaker"
+		},
+		{
+			"emoji": "📣",
+			"title": "Megaphone"
+		},
+		{
+			"emoji": "📯",
+			"title": "Postal Horn"
+		},
+		{
+			"emoji": "🔔",
+			"title": "Bell"
+		},
+		{
+			"emoji": "🔕",
+			"title": "Bell With Slash"
+		},
+		{
+			"emoji": "🎼",
+			"title": "Musical Score"
+		},
+		{
+			"emoji": "🎵",
+			"title": "Musical Note"
+		},
+		{
+			"emoji": "🎶",
+			"title": "Musical Notes"
+		},
+		{
+			"emoji": "🎙️",
+			"title": "Studio Microphone"
+		},
+		{
+			"emoji": "🎚️",
+			"title": "Level Slider"
+		},
+		{
+			"emoji": "🎛️",
+			"title": "Control Knobs"
+		},
+		{
+			"emoji": "🎤",
+			"title": "Microphone"
+		},
+		{
+			"emoji": "🎧",
+			"title": "Headphone"
+		},
+		{
+			"emoji": "📻",
+			"title": "Radio"
+		},
+		{
+			"emoji": "🎷",
+			"title": "Saxophone"
+		},
+		{
+			"emoji": "🎺",
+			"title": "Trumpet"
+		},
+		{
+			"emoji": "🪊",
+			"title": "Trombone"
+		},
+		{
+			"emoji": "🪗",
+			"title": "Accordion"
+		},
+		{
+			"emoji": "🎸",
+			"title": "Guitar"
+		},
+		{
+			"emoji": "🎹",
+			"title": "Musical Keyboard"
+		},
+		{
+			"emoji": "🎻",
+			"title": "Violin"
+		},
+		{
+			"emoji": "🪕",
+			"title": "Banjo"
+		},
+		{
+			"emoji": "🥁",
+			"title": "Drum"
+		},
+		{
+			"emoji": "🪘",
+			"title": "Long Drum"
+		},
+		{
+			"emoji": "🪇",
+			"title": "Maracas"
+		},
+		{
+			"emoji": "🪈",
+			"title": "Flute"
+		},
+		{
+			"emoji": "🪉",
+			"title": "Harp"
+		},
+		{
+			"emoji": "📱",
+			"title": "Mobile Phone"
+		},
+		{
+			"emoji": "📲",
+			"title": "Mobile Phone With Arrow"
+		},
+		{
+			"emoji": "☎️",
+			"title": "Telephone"
+		},
+		{
+			"emoji": "📞",
+			"title": "Telephone Receiver"
+		},
+		{
+			"emoji": "📟",
+			"title": "Pager"
+		},
+		{
+			"emoji": "📠",
+			"title": "Fax Machine"
+		},
+		{
+			"emoji": "🔋",
+			"title": "Battery"
+		},
+		{
+			"emoji": "🪫",
+			"title": "Low Battery"
+		},
+		{
+			"emoji": "🔌",
+			"title": "Electric Plug"
+		},
+		{
+			"emoji": "💻",
+			"title": "Laptop"
+		},
+		{
+			"emoji": "🖥️",
+			"title": "Desktop Computer"
+		},
+		{
+			"emoji": "🖨️",
+			"title": "Printer"
+		},
+		{
+			"emoji": "⌨️",
+			"title": "Keyboard"
+		},
+		{
+			"emoji": "🖱️",
+			"title": "Computer Mouse"
+		},
+		{
+			"emoji": "🖲️",
+			"title": "Trackball"
+		},
+		{
+			"emoji": "💽",
+			"title": "Computer Disk"
+		},
+		{
+			"emoji": "💾",
+			"title": "Floppy Disk"
+		},
+		{
+			"emoji": "💿",
+			"title": "Optical Disk"
+		},
+		{
+			"emoji": "📀",
+			"title": "Dvd"
+		},
+		{
+			"emoji": "🧮",
+			"title": "Abacus"
+		},
+		{
+			"emoji": "🎥",
+			"title": "Movie Camera"
+		},
+		{
+			"emoji": "🎞️",
+			"title": "Film Frames"
+		},
+		{
+			"emoji": "📽️",
+			"title": "Film Projector"
+		},
+		{
+			"emoji": "🎬",
+			"title": "Clapper Board"
+		},
+		{
+			"emoji": "📺",
+			"title": "Television"
+		},
+		{
+			"emoji": "📷",
+			"title": "Camera"
+		},
+		{
+			"emoji": "📸",
+			"title": "Camera With Flash"
+		},
+		{
+			"emoji": "📹",
+			"title": "Video Camera"
+		},
+		{
+			"emoji": "📼",
+			"title": "Videocassette"
+		},
+		{
+			"emoji": "🔍",
+			"title": "Magnifying Glass Tilted Left"
+		},
+		{
+			"emoji": "🔎",
+			"title": "Magnifying Glass Tilted Right"
+		},
+		{
+			"emoji": "🕯️",
+			"title": "Candle"
+		},
+		{
+			"emoji": "💡",
+			"title": "Light Bulb"
+		},
+		{
+			"emoji": "🔦",
+			"title": "Flashlight"
+		},
+		{
+			"emoji": "🏮",
+			"title": "Red Paper Lantern"
+		},
+		{
+			"emoji": "🪔",
+			"title": "Diya Lamp"
+		},
+		{
+			"emoji": "📔",
+			"title": "Notebook With Decorative Cover"
+		},
+		{
+			"emoji": "📕",
+			"title": "Closed Book"
+		},
+		{
+			"emoji": "📖",
+			"title": "Open Book"
+		},
+		{
+			"emoji": "📗",
+			"title": "Green Book"
+		},
+		{
+			"emoji": "📘",
+			"title": "Blue Book"
+		},
+		{
+			"emoji": "📙",
+			"title": "Orange Book"
+		},
+		{
+			"emoji": "📚",
+			"title": "Books"
+		},
+		{
+			"emoji": "📓",
+			"title": "Notebook"
+		},
+		{
+			"emoji": "📒",
+			"title": "Ledger"
+		},
+		{
+			"emoji": "📃",
+			"title": "Page With Curl"
+		},
+		{
+			"emoji": "📜",
+			"title": "Scroll"
+		},
+		{
+			"emoji": "📄",
+			"title": "Page Facing Up"
+		},
+		{
+			"emoji": "📰",
+			"title": "Newspaper"
+		},
+		{
+			"emoji": "🗞️",
+			"title": "Rolled-up Newspaper"
+		},
+		{
+			"emoji": "📑",
+			"title": "Bookmark Tabs"
+		},
+		{
+			"emoji": "🔖",
+			"title": "Bookmark"
+		},
+		{
+			"emoji": "🏷️",
+			"title": "Label"
+		},
+		{
+			"emoji": "🪙",
+			"title": "Coin"
+		},
+		{
+			"emoji": "💰",
+			"title": "Money Bag"
+		},
+		{
+			"emoji": "🪎",
+			"title": "Treasure Chest"
+		},
+		{
+			"emoji": "💴",
+			"title": "Yen Banknote"
+		},
+		{
+			"emoji": "💵",
+			"title": "Dollar Banknote"
+		},
+		{
+			"emoji": "💶",
+			"title": "Euro Banknote"
+		},
+		{
+			"emoji": "💷",
+			"title": "Pound Banknote"
+		},
+		{
+			"emoji": "💸",
+			"title": "Money With Wings"
+		},
+		{
+			"emoji": "💳",
+			"title": "Credit Card"
+		},
+		{
+			"emoji": "🧾",
+			"title": "Receipt"
+		},
+		{
+			"emoji": "💹",
+			"title": "Chart Increasing With Yen"
+		},
+		{
+			"emoji": "✉️",
+			"title": "Envelope"
+		},
+		{
+			"emoji": "📧",
+			"title": "E-mail"
+		},
+		{
+			"emoji": "📨",
+			"title": "Incoming Envelope"
+		},
+		{
+			"emoji": "📩",
+			"title": "Envelope With Arrow"
+		},
+		{
+			"emoji": "📤",
+			"title": "Outbox Tray"
+		},
+		{
+			"emoji": "📥",
+			"title": "Inbox Tray"
+		},
+		{
+			"emoji": "📦",
+			"title": "Package"
+		},
+		{
+			"emoji": "📫",
+			"title": "Closed Mailbox With Raised Flag"
+		},
+		{
+			"emoji": "📪",
+			"title": "Closed Mailbox With Lowered Flag"
+		},
+		{
+			"emoji": "📬",
+			"title": "Open Mailbox With Raised Flag"
+		},
+		{
+			"emoji": "📭",
+			"title": "Open Mailbox With Lowered Flag"
+		},
+		{
+			"emoji": "📮",
+			"title": "Postbox"
+		},
+		{
+			"emoji": "🗳️",
+			"title": "Ballot Box With Ballot"
+		},
+		{
+			"emoji": "✏️",
+			"title": "Pencil"
+		},
+		{
+			"emoji": "✒️",
+			"title": "Black Nib"
+		},
+		{
+			"emoji": "🖋️",
+			"title": "Fountain Pen"
+		},
+		{
+			"emoji": "🖊️",
+			"title": "Pen"
+		},
+		{
+			"emoji": "🖌️",
+			"title": "Paintbrush"
+		},
+		{
+			"emoji": "🖍️",
+			"title": "Crayon"
+		},
+		{
+			"emoji": "📝",
+			"title": "Memo"
+		},
+		{
+			"emoji": "💼",
+			"title": "Briefcase"
+		},
+		{
+			"emoji": "📁",
+			"title": "File Folder"
+		},
+		{
+			"emoji": "📂",
+			"title": "Open File Folder"
+		},
+		{
+			"emoji": "🗂️",
+			"title": "Card Index Dividers"
+		},
+		{
+			"emoji": "📅",
+			"title": "Calendar"
+		},
+		{
+			"emoji": "📆",
+			"title": "Tear-off Calendar"
+		},
+		{
+			"emoji": "🗒️",
+			"title": "Spiral Notepad"
+		},
+		{
+			"emoji": "🗓️",
+			"title": "Spiral Calendar"
+		},
+		{
+			"emoji": "📇",
+			"title": "Card Index"
+		},
+		{
+			"emoji": "📈",
+			"title": "Chart Increasing"
+		},
+		{
+			"emoji": "📉",
+			"title": "Chart Decreasing"
+		},
+		{
+			"emoji": "📊",
+			"title": "Bar Chart"
+		},
+		{
+			"emoji": "📋",
+			"title": "Clipboard"
+		},
+		{
+			"emoji": "📌",
+			"title": "Pushpin"
+		},
+		{
+			"emoji": "📍",
+			"title": "Round Pushpin"
+		},
+		{
+			"emoji": "📎",
+			"title": "Paperclip"
+		},
+		{
+			"emoji": "🖇️",
+			"title": "Linked Paperclips"
+		},
+		{
+			"emoji": "📏",
+			"title": "Straight Ruler"
+		},
+		{
+			"emoji": "📐",
+			"title": "Triangular Ruler"
+		},
+		{
+			"emoji": "✂️",
+			"title": "Scissors"
+		},
+		{
+			"emoji": "🗃️",
+			"title": "Card File Box"
+		},
+		{
+			"emoji": "🗄️",
+			"title": "File Cabinet"
+		},
+		{
+			"emoji": "🗑️",
+			"title": "Wastebasket"
+		},
+		{
+			"emoji": "🔒",
+			"title": "Locked"
+		},
+		{
+			"emoji": "🔓",
+			"title": "Unlocked"
+		},
+		{
+			"emoji": "🔏",
+			"title": "Locked With Pen"
+		},
+		{
+			"emoji": "🔐",
+			"title": "Locked With Key"
+		},
+		{
+			"emoji": "🔑",
+			"title": "Key"
+		},
+		{
+			"emoji": "🗝️",
+			"title": "Old Key"
+		},
+		{
+			"emoji": "🔨",
+			"title": "Hammer"
+		},
+		{
+			"emoji": "🪓",
+			"title": "Axe"
+		},
+		{
+			"emoji": "⛏️",
+			"title": "Pick"
+		},
+		{
+			"emoji": "⚒️",
+			"title": "Hammer And Pick"
+		},
+		{
+			"emoji": "🛠️",
+			"title": "Hammer And Wrench"
+		},
+		{
+			"emoji": "🗡️",
+			"title": "Dagger"
+		},
+		{
+			"emoji": "⚔️",
+			"title": "Crossed Swords"
+		},
+		{
+			"emoji": "💣",
+			"title": "Bomb"
+		},
+		{
+			"emoji": "🪃",
+			"title": "Boomerang"
+		},
+		{
+			"emoji": "🏹",
+			"title": "Bow And Arrow"
+		},
+		{
+			"emoji": "🛡️",
+			"title": "Shield"
+		},
+		{
+			"emoji": "🪚",
+			"title": "Carpentry Saw"
+		},
+		{
+			"emoji": "🔧",
+			"title": "Wrench"
+		},
+		{
+			"emoji": "🪛",
+			"title": "Screwdriver"
+		},
+		{
+			"emoji": "🔩",
+			"title": "Nut And Bolt"
+		},
+		{
+			"emoji": "⚙️",
+			"title": "Gear"
+		},
+		{
+			"emoji": "🗜️",
+			"title": "Clamp"
+		},
+		{
+			"emoji": "⚖️",
+			"title": "Balance Scale"
+		},
+		{
+			"emoji": "🦯",
+			"title": "White Cane"
+		},
+		{
+			"emoji": "🔗",
+			"title": "Link"
+		},
+		{
+			"emoji": "⛓️‍💥",
+			"title": "Broken Chain"
+		},
+		{
+			"emoji": "⛓️",
+			"title": "Chains"
+		},
+		{
+			"emoji": "🪝",
+			"title": "Hook"
+		},
+		{
+			"emoji": "🧰",
+			"title": "Toolbox"
+		},
+		{
+			"emoji": "🧲",
+			"title": "Magnet"
+		},
+		{
+			"emoji": "🪜",
+			"title": "Ladder"
+		},
+		{
+			"emoji": "🪏",
+			"title": "Shovel"
+		},
+		{
+			"emoji": "⚗️",
+			"title": "Alembic"
+		},
+		{
+			"emoji": "🧪",
+			"title": "Test Tube"
+		},
+		{
+			"emoji": "🧫",
+			"title": "Petri Dish"
+		},
+		{
+			"emoji": "🧬",
+			"title": "Dna"
+		},
+		{
+			"emoji": "🔬",
+			"title": "Microscope"
+		},
+		{
+			"emoji": "🔭",
+			"title": "Telescope"
+		},
+		{
+			"emoji": "📡",
+			"title": "Satellite Antenna"
+		},
+		{
+			"emoji": "💉",
+			"title": "Syringe"
+		},
+		{
+			"emoji": "🩸",
+			"title": "Drop Of Blood"
+		},
+		{
+			"emoji": "💊",
+			"title": "Pill"
+		},
+		{
+			"emoji": "🩹",
+			"title": "Adhesive Bandage"
+		},
+		{
+			"emoji": "🩼",
+			"title": "Crutch"
+		},
+		{
+			"emoji": "🩺",
+			"title": "Stethoscope"
+		},
+		{
+			"emoji": "🩻",
+			"title": "X-ray"
+		},
+		{
+			"emoji": "🚪",
+			"title": "Door"
+		},
+		{
+			"emoji": "🛗",
+			"title": "Elevator"
+		},
+		{
+			"emoji": "🪞",
+			"title": "Mirror"
+		},
+		{
+			"emoji": "🪟",
+			"title": "Window"
+		},
+		{
+			"emoji": "🛏️",
+			"title": "Bed"
+		},
+		{
+			"emoji": "🛋️",
+			"title": "Couch And Lamp"
+		},
+		{
+			"emoji": "🪑",
+			"title": "Chair"
+		},
+		{
+			"emoji": "🚽",
+			"title": "Toilet"
+		},
+		{
+			"emoji": "🪠",
+			"title": "Plunger"
+		},
+		{
+			"emoji": "🚿",
+			"title": "Shower"
+		},
+		{
+			"emoji": "🛁",
+			"title": "Bathtub"
+		},
+		{
+			"emoji": "🪤",
+			"title": "Mouse Trap"
+		},
+		{
+			"emoji": "🪒",
+			"title": "Razor"
+		},
+		{
+			"emoji": "🧴",
+			"title": "Lotion Bottle"
+		},
+		{
+			"emoji": "🧷",
+			"title": "Safety Pin"
+		},
+		{
+			"emoji": "🧹",
+			"title": "Broom"
+		},
+		{
+			"emoji": "🧺",
+			"title": "Basket"
+		},
+		{
+			"emoji": "🧻",
+			"title": "Roll Of Paper"
+		},
+		{
+			"emoji": "🪣",
+			"title": "Bucket"
+		},
+		{
+			"emoji": "🧼",
+			"title": "Soap"
+		},
+		{
+			"emoji": "🫧",
+			"title": "Bubbles"
+		},
+		{
+			"emoji": "🪥",
+			"title": "Toothbrush"
+		},
+		{
+			"emoji": "🧽",
+			"title": "Sponge"
+		},
+		{
+			"emoji": "🧯",
+			"title": "Fire Extinguisher"
+		},
+		{
+			"emoji": "🛒",
+			"title": "Shopping Cart"
+		},
+		{
+			"emoji": "🚬",
+			"title": "Cigarette"
+		},
+		{
+			"emoji": "⚰️",
+			"title": "Coffin"
+		},
+		{
+			"emoji": "🪦",
+			"title": "Headstone"
+		},
+		{
+			"emoji": "⚱️",
+			"title": "Funeral Urn"
+		},
+		{
+			"emoji": "🧿",
+			"title": "Nazar Amulet"
+		},
+		{
+			"emoji": "🪬",
+			"title": "Hamsa"
+		},
+		{
+			"emoji": "🗿",
+			"title": "Moai"
+		},
+		{
+			"emoji": "🪧",
+			"title": "Placard"
+		},
+		{
+			"emoji": "🪪",
+			"title": "Identification Card"
+		}
+	],
+	"symbols": [
+		{
+			"emoji": "🏧",
+			"title": "ATM Sign"
+		},
+		{
+			"emoji": "🚮",
+			"title": "Litter In Bin Sign"
+		},
+		{
+			"emoji": "🚰",
+			"title": "Potable Water"
+		},
+		{
+			"emoji": "♿",
+			"title": "Wheelchair Symbol"
+		},
+		{
+			"emoji": "🚹",
+			"title": "Men’s Room"
+		},
+		{
+			"emoji": "🚺",
+			"title": "Women’s Room"
+		},
+		{
+			"emoji": "🚻",
+			"title": "Restroom"
+		},
+		{
+			"emoji": "🚼",
+			"title": "Baby Symbol"
+		},
+		{
+			"emoji": "🚾",
+			"title": "Water Closet"
+		},
+		{
+			"emoji": "🛂",
+			"title": "Passport Control"
+		},
+		{
+			"emoji": "🛃",
+			"title": "Customs"
+		},
+		{
+			"emoji": "🛄",
+			"title": "Baggage Claim"
+		},
+		{
+			"emoji": "🛅",
+			"title": "Left Luggage"
+		},
+		{
+			"emoji": "⚠️",
+			"title": "Warning"
+		},
+		{
+			"emoji": "🚸",
+			"title": "Children Crossing"
+		},
+		{
+			"emoji": "⛔",
+			"title": "No Entry"
+		},
+		{
+			"emoji": "🚫",
+			"title": "Prohibited"
+		},
+		{
+			"emoji": "🚳",
+			"title": "No Bicycles"
+		},
+		{
+			"emoji": "🚭",
+			"title": "No Smoking"
+		},
+		{
+			"emoji": "🚯",
+			"title": "No Littering"
+		},
+		{
+			"emoji": "🚱",
+			"title": "Non-potable Water"
+		},
+		{
+			"emoji": "🚷",
+			"title": "No Pedestrians"
+		},
+		{
+			"emoji": "📵",
+			"title": "No Mobile Phones"
+		},
+		{
+			"emoji": "🔞",
+			"title": "No One Under Eighteen"
+		},
+		{
+			"emoji": "☢️",
+			"title": "Radioactive"
+		},
+		{
+			"emoji": "☣️",
+			"title": "Biohazard"
+		},
+		{
+			"emoji": "⬆️",
+			"title": "Up Arrow"
+		},
+		{
+			"emoji": "↗️",
+			"title": "Up-right Arrow"
+		},
+		{
+			"emoji": "➡️",
+			"title": "Right Arrow"
+		},
+		{
+			"emoji": "↘️",
+			"title": "Down-right Arrow"
+		},
+		{
+			"emoji": "⬇️",
+			"title": "Down Arrow"
+		},
+		{
+			"emoji": "↙️",
+			"title": "Down-left Arrow"
+		},
+		{
+			"emoji": "⬅️",
+			"title": "Left Arrow"
+		},
+		{
+			"emoji": "↖️",
+			"title": "Up-left Arrow"
+		},
+		{
+			"emoji": "↕️",
+			"title": "Up-down Arrow"
+		},
+		{
+			"emoji": "↔️",
+			"title": "Left-right Arrow"
+		},
+		{
+			"emoji": "↩️",
+			"title": "Right Arrow Curving Left"
+		},
+		{
+			"emoji": "↪️",
+			"title": "Left Arrow Curving Right"
+		},
+		{
+			"emoji": "⤴️",
+			"title": "Right Arrow Curving Up"
+		},
+		{
+			"emoji": "⤵️",
+			"title": "Right Arrow Curving Down"
+		},
+		{
+			"emoji": "🔃",
+			"title": "Clockwise Vertical Arrows"
+		},
+		{
+			"emoji": "🔄",
+			"title": "Counterclockwise Arrows Button"
+		},
+		{
+			"emoji": "🔙",
+			"title": "BACK Arrow"
+		},
+		{
+			"emoji": "🔚",
+			"title": "END Arrow"
+		},
+		{
+			"emoji": "🔛",
+			"title": "ON! Arrow"
+		},
+		{
+			"emoji": "🔜",
+			"title": "SOON Arrow"
+		},
+		{
+			"emoji": "🔝",
+			"title": "TOP Arrow"
+		},
+		{
+			"emoji": "🛐",
+			"title": "Place Of Worship"
+		},
+		{
+			"emoji": "⚛️",
+			"title": "Atom Symbol"
+		},
+		{
+			"emoji": "🕉️",
+			"title": "Om"
+		},
+		{
+			"emoji": "✡️",
+			"title": "Star Of David"
+		},
+		{
+			"emoji": "☸️",
+			"title": "Wheel Of Dharma"
+		},
+		{
+			"emoji": "☯️",
+			"title": "Yin Yang"
+		},
+		{
+			"emoji": "✝️",
+			"title": "Latin Cross"
+		},
+		{
+			"emoji": "☦️",
+			"title": "Orthodox Cross"
+		},
+		{
+			"emoji": "☪️",
+			"title": "Star And Crescent"
+		},
+		{
+			"emoji": "☮️",
+			"title": "Peace Symbol"
+		},
+		{
+			"emoji": "🕎",
+			"title": "Menorah"
+		},
+		{
+			"emoji": "🔯",
+			"title": "Dotted Six-pointed Star"
+		},
+		{
+			"emoji": "🪯",
+			"title": "Khanda"
+		},
+		{
+			"emoji": "♈",
+			"title": "Aries"
+		},
+		{
+			"emoji": "♉",
+			"title": "Taurus"
+		},
+		{
+			"emoji": "♊",
+			"title": "Gemini"
+		},
+		{
+			"emoji": "♋",
+			"title": "Cancer"
+		},
+		{
+			"emoji": "♌",
+			"title": "Leo"
+		},
+		{
+			"emoji": "♍",
+			"title": "Virgo"
+		},
+		{
+			"emoji": "♎",
+			"title": "Libra"
+		},
+		{
+			"emoji": "♏",
+			"title": "Scorpio"
+		},
+		{
+			"emoji": "♐",
+			"title": "Sagittarius"
+		},
+		{
+			"emoji": "♑",
+			"title": "Capricorn"
+		},
+		{
+			"emoji": "♒",
+			"title": "Aquarius"
+		},
+		{
+			"emoji": "♓",
+			"title": "Pisces"
+		},
+		{
+			"emoji": "⛎",
+			"title": "Ophiuchus"
+		},
+		{
+			"emoji": "🔀",
+			"title": "Shuffle Tracks Button"
+		},
+		{
+			"emoji": "🔁",
+			"title": "Repeat Button"
+		},
+		{
+			"emoji": "🔂",
+			"title": "Repeat Single Button"
+		},
+		{
+			"emoji": "▶️",
+			"title": "Play Button"
+		},
+		{
+			"emoji": "⏩",
+			"title": "Fast-forward Button"
+		},
+		{
+			"emoji": "⏭️",
+			"title": "Next Track Button"
+		},
+		{
+			"emoji": "⏯️",
+			"title": "Play Or Pause Button"
+		},
+		{
+			"emoji": "◀️",
+			"title": "Reverse Button"
+		},
+		{
+			"emoji": "⏪",
+			"title": "Fast Reverse Button"
+		},
+		{
+			"emoji": "⏮️",
+			"title": "Last Track Button"
+		},
+		{
+			"emoji": "🔼",
+			"title": "Upwards Button"
+		},
+		{
+			"emoji": "⏫",
+			"title": "Fast Up Button"
+		},
+		{
+			"emoji": "🔽",
+			"title": "Downwards Button"
+		},
+		{
+			"emoji": "⏬",
+			"title": "Fast Down Button"
+		},
+		{
+			"emoji": "⏸️",
+			"title": "Pause Button"
+		},
+		{
+			"emoji": "⏹️",
+			"title": "Stop Button"
+		},
+		{
+			"emoji": "⏺️",
+			"title": "Record Button"
+		},
+		{
+			"emoji": "⏏️",
+			"title": "Eject Button"
+		},
+		{
+			"emoji": "🎦",
+			"title": "Cinema"
+		},
+		{
+			"emoji": "🔅",
+			"title": "Dim Button"
+		},
+		{
+			"emoji": "🔆",
+			"title": "Bright Button"
+		},
+		{
+			"emoji": "📶",
+			"title": "Antenna Bars"
+		},
+		{
+			"emoji": "🛜",
+			"title": "Wireless"
+		},
+		{
+			"emoji": "📳",
+			"title": "Vibration Mode"
+		},
+		{
+			"emoji": "📴",
+			"title": "Mobile Phone Off"
+		},
+		{
+			"emoji": "♀️",
+			"title": "Female Sign"
+		},
+		{
+			"emoji": "♂️",
+			"title": "Male Sign"
+		},
+		{
+			"emoji": "⚧️",
+			"title": "Transgender Symbol"
+		},
+		{
+			"emoji": "✖️",
+			"title": "Multiply"
+		},
+		{
+			"emoji": "➕",
+			"title": "Plus"
+		},
+		{
+			"emoji": "➖",
+			"title": "Minus"
+		},
+		{
+			"emoji": "➗",
+			"title": "Divide"
+		},
+		{
+			"emoji": "🟰",
+			"title": "Heavy Equals Sign"
+		},
+		{
+			"emoji": "♾️",
+			"title": "Infinity"
+		},
+		{
+			"emoji": "‼️",
+			"title": "Double Exclamation Mark"
+		},
+		{
+			"emoji": "⁉️",
+			"title": "Exclamation Question Mark"
+		},
+		{
+			"emoji": "❓",
+			"title": "Red Question Mark"
+		},
+		{
+			"emoji": "❔",
+			"title": "White Question Mark"
+		},
+		{
+			"emoji": "❕",
+			"title": "White Exclamation Mark"
+		},
+		{
+			"emoji": "❗",
+			"title": "Red Exclamation Mark"
+		},
+		{
+			"emoji": "〰️",
+			"title": "Wavy Dash"
+		},
+		{
+			"emoji": "💱",
+			"title": "Currency Exchange"
+		},
+		{
+			"emoji": "💲",
+			"title": "Heavy Dollar Sign"
+		},
+		{
+			"emoji": "⚕️",
+			"title": "Medical Symbol"
+		},
+		{
+			"emoji": "♻️",
+			"title": "Recycling Symbol"
+		},
+		{
+			"emoji": "⚜️",
+			"title": "Fleur-de-lis"
+		},
+		{
+			"emoji": "🔱",
+			"title": "Trident Emblem"
+		},
+		{
+			"emoji": "📛",
+			"title": "Name Badge"
+		},
+		{
+			"emoji": "🔰",
+			"title": "Japanese Symbol For Beginner"
+		},
+		{
+			"emoji": "⭕",
+			"title": "Hollow Red Circle"
+		},
+		{
+			"emoji": "✅",
+			"title": "Check Mark Button"
+		},
+		{
+			"emoji": "☑️",
+			"title": "Check Box With Check"
+		},
+		{
+			"emoji": "✔️",
+			"title": "Check Mark"
+		},
+		{
+			"emoji": "❌",
+			"title": "Cross Mark"
+		},
+		{
+			"emoji": "❎",
+			"title": "Cross Mark Button"
+		},
+		{
+			"emoji": "➰",
+			"title": "Curly Loop"
+		},
+		{
+			"emoji": "➿",
+			"title": "Double Curly Loop"
+		},
+		{
+			"emoji": "〽️",
+			"title": "Part Alternation Mark"
+		},
+		{
+			"emoji": "✳️",
+			"title": "Eight-spoked Asterisk"
+		},
+		{
+			"emoji": "✴️",
+			"title": "Eight-pointed Star"
+		},
+		{
+			"emoji": "❇️",
+			"title": "Sparkle"
+		},
+		{
+			"emoji": "©️",
+			"title": "Copyright"
+		},
+		{
+			"emoji": "®️",
+			"title": "Registered"
+		},
+		{
+			"emoji": "™️",
+			"title": "Trade Mark"
+		},
+		{
+			"emoji": "🫟",
+			"title": "Splatter"
+		},
+		{
+			"emoji": "#️⃣",
+			"title": "Keycap: #"
+		},
+		{
+			"emoji": "*️⃣",
+			"title": "Keycap: *"
+		},
+		{
+			"emoji": "0️⃣",
+			"title": "Keycap: 0"
+		},
+		{
+			"emoji": "1️⃣",
+			"title": "Keycap: 1"
+		},
+		{
+			"emoji": "2️⃣",
+			"title": "Keycap: 2"
+		},
+		{
+			"emoji": "3️⃣",
+			"title": "Keycap: 3"
+		},
+		{
+			"emoji": "4️⃣",
+			"title": "Keycap: 4"
+		},
+		{
+			"emoji": "5️⃣",
+			"title": "Keycap: 5"
+		},
+		{
+			"emoji": "6️⃣",
+			"title": "Keycap: 6"
+		},
+		{
+			"emoji": "7️⃣",
+			"title": "Keycap: 7"
+		},
+		{
+			"emoji": "8️⃣",
+			"title": "Keycap: 8"
+		},
+		{
+			"emoji": "9️⃣",
+			"title": "Keycap: 9"
+		},
+		{
+			"emoji": "🔟",
+			"title": "Keycap: 10"
+		},
+		{
+			"emoji": "🔠",
+			"title": "Input Latin Uppercase"
+		},
+		{
+			"emoji": "🔡",
+			"title": "Input Latin Lowercase"
+		},
+		{
+			"emoji": "🔢",
+			"title": "Input Numbers"
+		},
+		{
+			"emoji": "🔣",
+			"title": "Input Symbols"
+		},
+		{
+			"emoji": "🔤",
+			"title": "Input Latin Letters"
+		},
+		{
+			"emoji": "🅰️",
+			"title": "A Button (blood Type)"
+		},
+		{
+			"emoji": "🆎",
+			"title": "AB Button (blood Type)"
+		},
+		{
+			"emoji": "🅱️",
+			"title": "B Button (blood Type)"
+		},
+		{
+			"emoji": "🆑",
+			"title": "CL Button"
+		},
+		{
+			"emoji": "🆒",
+			"title": "COOL Button"
+		},
+		{
+			"emoji": "🆓",
+			"title": "FREE Button"
+		},
+		{
+			"emoji": "ℹ️",
+			"title": "Information"
+		},
+		{
+			"emoji": "🆔",
+			"title": "ID Button"
+		},
+		{
+			"emoji": "Ⓜ️",
+			"title": "Circled M"
+		},
+		{
+			"emoji": "🆕",
+			"title": "NEW Button"
+		},
+		{
+			"emoji": "🆖",
+			"title": "NG Button"
+		},
+		{
+			"emoji": "🅾️",
+			"title": "O Button (blood Type)"
+		},
+		{
+			"emoji": "🆗",
+			"title": "OK Button"
+		},
+		{
+			"emoji": "🅿️",
+			"title": "P Button"
+		},
+		{
+			"emoji": "🆘",
+			"title": "SOS Button"
+		},
+		{
+			"emoji": "🆙",
+			"title": "UP! Button"
+		},
+		{
+			"emoji": "🆚",
+			"title": "VS Button"
+		},
+		{
+			"emoji": "🈁",
+			"title": "Japanese “here” Button"
+		},
+		{
+			"emoji": "🈂️",
+			"title": "Japanese “service Charge” Button"
+		},
+		{
+			"emoji": "🈷️",
+			"title": "Japanese “monthly Amount” Button"
+		},
+		{
+			"emoji": "🈶",
+			"title": "Japanese “not Free Of Charge” Button"
+		},
+		{
+			"emoji": "🈯",
+			"title": "Japanese “reserved” Button"
+		},
+		{
+			"emoji": "🉐",
+			"title": "Japanese “bargain” Button"
+		},
+		{
+			"emoji": "🈹",
+			"title": "Japanese “discount” Button"
+		},
+		{
+			"emoji": "🈚",
+			"title": "Japanese “free Of Charge” Button"
+		},
+		{
+			"emoji": "🈲",
+			"title": "Japanese “prohibited” Button"
+		},
+		{
+			"emoji": "🉑",
+			"title": "Japanese “acceptable” Button"
+		},
+		{
+			"emoji": "🈸",
+			"title": "Japanese “application” Button"
+		},
+		{
+			"emoji": "🈴",
+			"title": "Japanese “passing Grade” Button"
+		},
+		{
+			"emoji": "🈳",
+			"title": "Japanese “vacancy” Button"
+		},
+		{
+			"emoji": "㊗️",
+			"title": "Japanese “congratulations” Button"
+		},
+		{
+			"emoji": "㊙️",
+			"title": "Japanese “secret” Button"
+		},
+		{
+			"emoji": "🈺",
+			"title": "Japanese “open For Business” Button"
+		},
+		{
+			"emoji": "🈵",
+			"title": "Japanese “no Vacancy” Button"
+		},
+		{
+			"emoji": "🔴",
+			"title": "Red Circle"
+		},
+		{
+			"emoji": "🟠",
+			"title": "Orange Circle"
+		},
+		{
+			"emoji": "🟡",
+			"title": "Yellow Circle"
+		},
+		{
+			"emoji": "🟢",
+			"title": "Green Circle"
+		},
+		{
+			"emoji": "🔵",
+			"title": "Blue Circle"
+		},
+		{
+			"emoji": "🟣",
+			"title": "Purple Circle"
+		},
+		{
+			"emoji": "🟤",
+			"title": "Brown Circle"
+		},
+		{
+			"emoji": "⚫",
+			"title": "Black Circle"
+		},
+		{
+			"emoji": "⚪",
+			"title": "White Circle"
+		},
+		{
+			"emoji": "🟥",
+			"title": "Red Square"
+		},
+		{
+			"emoji": "🟧",
+			"title": "Orange Square"
+		},
+		{
+			"emoji": "🟨",
+			"title": "Yellow Square"
+		},
+		{
+			"emoji": "🟩",
+			"title": "Green Square"
+		},
+		{
+			"emoji": "🟦",
+			"title": "Blue Square"
+		},
+		{
+			"emoji": "🟪",
+			"title": "Purple Square"
+		},
+		{
+			"emoji": "🟫",
+			"title": "Brown Square"
+		},
+		{
+			"emoji": "⬛",
+			"title": "Black Large Square"
+		},
+		{
+			"emoji": "⬜",
+			"title": "White Large Square"
+		},
+		{
+			"emoji": "◼️",
+			"title": "Black Medium Square"
+		},
+		{
+			"emoji": "◻️",
+			"title": "White Medium Square"
+		},
+		{
+			"emoji": "◾",
+			"title": "Black Medium-small Square"
+		},
+		{
+			"emoji": "◽",
+			"title": "White Medium-small Square"
+		},
+		{
+			"emoji": "▪️",
+			"title": "Black Small Square"
+		},
+		{
+			"emoji": "▫️",
+			"title": "White Small Square"
+		},
+		{
+			"emoji": "🔶",
+			"title": "Large Orange Diamond"
+		},
+		{
+			"emoji": "🔷",
+			"title": "Large Blue Diamond"
+		},
+		{
+			"emoji": "🔸",
+			"title": "Small Orange Diamond"
+		},
+		{
+			"emoji": "🔹",
+			"title": "Small Blue Diamond"
+		},
+		{
+			"emoji": "🔺",
+			"title": "Red Triangle Pointed Up"
+		},
+		{
+			"emoji": "🔻",
+			"title": "Red Triangle Pointed Down"
+		},
+		{
+			"emoji": "💠",
+			"title": "Diamond With A Dot"
+		},
+		{
+			"emoji": "🔘",
+			"title": "Radio Button"
+		},
+		{
+			"emoji": "🔳",
+			"title": "White Square Button"
+		},
+		{
+			"emoji": "🔲",
+			"title": "Black Square Button"
+		}
+	]
+};
+
+//#endregion
+//#region src/views/emoji-picker/emoji-picker-utils.ts
+const EMOJI_SKIN_TONES = [
+	"",
+	"🏻",
+	"🏼",
+	"🏽",
+	"🏾",
+	"🏿"
+];
+const EMOJI_SKIN_TONE_OPTIONS = [
+	{
+		emoji: "✋",
+		title: "Raised Hand",
+		value: ""
+	},
+	{
+		emoji: "✋🏻",
+		title: "Raised Hand: Light Skin Tone",
+		value: "🏻"
+	},
+	{
+		emoji: "✋🏼",
+		title: "Raised Hand: Medium-light Skin Tone",
+		value: "🏼"
+	},
+	{
+		emoji: "✋🏽",
+		title: "Raised Hand: Medium Skin Tone",
+		value: "🏽"
+	},
+	{
+		emoji: "✋🏾",
+		title: "Raised Hand: Medium-dark Skin Tone",
+		value: "🏾"
+	},
+	{
+		emoji: "✋🏿",
+		title: "Raised Hand: Dark Skin Tone",
+		value: "🏿"
+	}
+];
+const EMOJI_RECENT_LIMIT = 11;
+const EMOJI_CATEGORY_LABEL_KEYS = {
+	activity: "ui.emojiPicker.activities",
+	foods: "ui.emojiPicker.food",
+	nature: "ui.emojiPicker.animals",
+	objects: "ui.emojiPicker.objects",
+	people: "ui.emojiPicker.emojis",
+	places: "ui.emojiPicker.places",
+	symbols: "ui.emojiPicker.symbols"
+};
+const EMOJI_CATEGORIES = Object.keys(emojis).filter((category) => category !== "frequent").map((category) => ({
+	key: category,
+	titleKey: EMOJI_CATEGORY_LABEL_KEYS[category]
+}));
+const EMOJI_SKIN_TONE_MODIFIER_REGEX = /[\u{1F3FB}-\u{1F3FF}]/gu;
+const emojiFamilyByEmoji = /* @__PURE__ */ new Map();
+getEmojiFamilies().forEach((family) => {
+	[family, ...family.skinToneVariants ?? []].forEach((item) => {
+		emojiFamilyByEmoji.set(item.emoji, family);
+	});
+});
+function getDefaultRecentEmojis() {
+	return emojis.frequent.slice(0, 11);
+}
+function getAllEmojis() {
+	return getEmojiFamilies().flatMap((family) => [family, ...family.skinToneVariants ?? []]);
+}
+function searchEmojis(keyword, searchIndex) {
+	const query = keyword.trim().toLowerCase();
+	if (!query) return [];
+	return getEmojiFamilies().filter((item) => getEmojiSearchText(item, searchIndex).includes(query));
+}
+function promoteRecentEmoji(recents, item) {
+	const recentItem = {
+		emoji: item.emoji,
+		title: item.title
+	};
+	const familyKey = getEmojiFamilyKey(item.emoji);
+	return [recentItem, ...recents.filter((recent) => getEmojiFamilyKey(recent.emoji) !== familyKey).map((recent) => ({
+		emoji: recent.emoji,
+		title: recent.title
+	}))].slice(0, 11);
+}
+function parseStoredRecentEmojis(value) {
+	if (!value) return getDefaultRecentEmojis();
+	if (Array.isArray(value)) return normalizeStoredRecentEmojis(value);
+	try {
+		return normalizeStoredRecentEmojis(JSON.parse(value));
+	} catch {
+		return getDefaultRecentEmojis();
+	}
+}
+function getRandomEmoji(random = Math.random, skinTone = "") {
+	const families = getEmojiFamilies();
+	return applyEmojiSkinTone(families[Math.floor(random() * families.length)] ?? getDefaultRecentEmojis()[0], skinTone);
+}
+function applyEmojiSkinTone(item, skinTone) {
+	var _family$skinToneVaria;
+	const family = emojiFamilyByEmoji.get(item.emoji) ?? item;
+	if (!skinTone) return family;
+	const variant = (_family$skinToneVaria = family.skinToneVariants) === null || _family$skinToneVaria === void 0 ? void 0 : _family$skinToneVaria.find((candidate) => {
+		const modifiers = candidate.emoji.match(EMOJI_SKIN_TONE_MODIFIER_REGEX) ?? [];
+		return modifiers.length > 0 && modifiers.every((modifier) => modifier === skinTone);
+	});
+	return variant ? {
+		...variant,
+		skinToneVariants: family.skinToneVariants
+	} : family;
+}
+function getEmojiFamilyKey(emoji) {
+	var _emojiFamilyByEmoji$g;
+	return ((_emojiFamilyByEmoji$g = emojiFamilyByEmoji.get(emoji)) === null || _emojiFamilyByEmoji$g === void 0 ? void 0 : _emojiFamilyByEmoji$g.emoji) ?? emoji;
+}
+function getEmojiFamilyVariants(emoji) {
+	const family = emojiFamilyByEmoji.get(emoji);
+	return family ? [{
+		emoji: family.emoji,
+		title: family.title
+	}, ...family.skinToneVariants ?? []] : [];
+}
+function hasMixedSkinToneVariants(item) {
+	var _family$skinToneVaria2;
+	const family = emojiFamilyByEmoji.get(item.emoji) ?? item;
+	return Boolean((_family$skinToneVaria2 = family.skinToneVariants) === null || _family$skinToneVaria2 === void 0 ? void 0 : _family$skinToneVaria2.some((variant) => (variant.emoji.match(EMOJI_SKIN_TONE_MODIFIER_REGEX) ?? []).length > 1));
+}
+function parseStoredEmojiSkinTone(value) {
+	return EMOJI_SKIN_TONES.find((skinTone) => skinTone === value) ?? "";
+}
+function getLocalizedEmojiTitle(item, emojiTitles) {
+	return (emojiTitles === null || emojiTitles === void 0 ? void 0 : emojiTitles[item.emoji]) ?? item.title;
+}
+function getEmojiLocaleData(localeService) {
+	const localePack = localeService.getLocales();
+	const uiLocale = localePack === null || localePack === void 0 ? void 0 : localePack.ui;
+	const emojiPicker = uiLocale === null || uiLocale === void 0 ? void 0 : uiLocale.emojiPicker;
+	if (!emojiPicker || typeof emojiPicker !== "object" || Array.isArray(emojiPicker)) return {};
+	return emojiPicker;
+}
+function getEmojiSearchText(item, searchIndex) {
+	return [item, ...item.skinToneVariants ?? []].flatMap((candidate) => [candidate.title, searchIndex === null || searchIndex === void 0 ? void 0 : searchIndex[candidate.emoji]]).filter(Boolean).join(" ").toLowerCase();
+}
+function normalizeStoredRecentEmojis(value) {
+	if (!Array.isArray(value)) return getDefaultRecentEmojis();
+	const valid = value.filter((item) => typeof (item === null || item === void 0 ? void 0 : item.emoji) === "string" && typeof (item === null || item === void 0 ? void 0 : item.title) === "string");
+	const seenFamilies = /* @__PURE__ */ new Set();
+	const recents = valid.filter((item) => {
+		const familyKey = getEmojiFamilyKey(item.emoji);
+		if (seenFamilies.has(familyKey)) return false;
+		seenFamilies.add(familyKey);
+		return true;
+	}).map((item) => ({
+		emoji: item.emoji,
+		title: item.title
+	})).slice(0, 11);
+	return recents.length ? recents : getDefaultRecentEmojis();
+}
+function getEmojiFamilies() {
+	return EMOJI_CATEGORIES.flatMap((category) => emojis[category.key]);
+}
+
+//#endregion
+//#region src/views/emoji-picker/EmojiPicker.tsx
+const EMOJI_PICKER_COMPONENT = "ui.emoji-picker";
+const RECENTS_STORAGE_KEY = "univer.ui.recent-emojis";
+const SKIN_TONE_STORAGE_KEY = "univer.ui.emoji-skin-tone";
+const ACTIVE_SECTION_SCROLL_OFFSET = 28;
+const EMOJI_COLUMN_COUNT = 10;
+const EMOJI_ROW_HEIGHT = 32;
+const EMOJI_SECTION_HEADER_HEIGHT = 24;
+const EMOJI_VIRTUAL_OVERSCAN = 3;
+function EmojiPicker(props) {
+	var _props$popup;
+	const extraProps = (_props$popup = props.popup) === null || _props$popup === void 0 ? void 0 : _props$popup.extraProps;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const localStorageService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ILocalStorageService);
+	const currentLocale = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.currentLocale$, localeService.getCurrentLocale());
+	const scrollRef = (0, react.useRef)(void 0);
+	const pendingSectionRef = (0, react.useRef)(null);
+	const skinToneChangedRef = (0, react.useRef)(false);
+	const [query, setQuery] = (0, react.useState)("");
+	const [activeEmoji, setActiveEmoji] = (0, react.useState)(extraProps === null || extraProps === void 0 ? void 0 : extraProps.activeEmoji);
+	const [activeTab, setActiveTab] = (0, react.useState)("recent");
+	const [recents, setRecents] = (0, react.useState)(() => getDefaultRecentEmojis());
+	const [skinTone, setSkinTone] = (0, react.useState)("");
+	const [skinToneMenuOpen, setSkinToneMenuOpen] = (0, react.useState)(false);
+	const deferredQuery = (0, react.useDeferredValue)(query);
+	const emojiLocaleData = getEmojiLocaleData(localeService);
+	const searchResults = (0, react.useMemo)(() => searchEmojis(deferredQuery, emojiLocaleData.emojiSearchIndex), [deferredQuery, emojiLocaleData]);
+	const recentStorageKey = (extraProps === null || extraProps === void 0 ? void 0 : extraProps.recentStorageKey) ?? RECENTS_STORAGE_KEY;
+	const isSearching = deferredQuery.trim().length > 0;
+	const { rows, sectionPositions } = (0, react.useMemo)(() => {
+		const normalSections = [{
+			key: "recent",
+			title: localeService.t("ui.emojiPicker.recents"),
+			emojis: recents
+		}, ...EMOJI_CATEGORIES.map((category) => ({
+			key: category.key,
+			title: localeService.t(category.titleKey),
+			emojis: emojis[category.key].map((item) => applyEmojiSkinTone(item, skinTone))
+		}))];
+		return createEmojiVirtualRows(isSearching ? [{
+			key: "people",
+			title: localeService.t("ui.emojiPicker.searchResults"),
+			emojis: searchResults.map((item) => applyEmojiSkinTone(item, skinTone))
+		}] : normalSections, currentLocale);
+	}, [
+		currentLocale,
+		isSearching,
+		localeService,
+		recents,
+		searchResults,
+		skinTone
+	]);
+	const [virtualRows, { containerProps, scrollTo, wrapperStyle }] = useVirtualList(rows, {
+		containerTarget: scrollRef,
+		itemHeight: getEmojiVirtualRowHeight,
+		overscan: EMOJI_VIRTUAL_OVERSCAN
+	});
+	(0, react.useEffect)(() => {
+		let disposed = false;
+		localStorageService.getItem(recentStorageKey).then((storedRecents) => {
+			if (!disposed) setRecents(parseStoredRecentEmojis(storedRecents));
+		}).catch(() => void 0);
+		return () => {
+			disposed = true;
+		};
+	}, [localStorageService, recentStorageKey]);
+	(0, react.useEffect)(() => {
+		let disposed = false;
+		localStorageService.getItem(SKIN_TONE_STORAGE_KEY).then((storedSkinTone) => {
+			if (!disposed && !skinToneChangedRef.current) setSkinTone(parseStoredEmojiSkinTone(storedSkinTone));
+		}).catch(() => void 0);
+		return () => {
+			disposed = true;
+		};
+	}, [localStorageService]);
+	(0, react.useEffect)(() => {
+		const pendingSection = pendingSectionRef.current;
+		if (isSearching || !pendingSection) return;
+		const position = sectionPositions.find((item) => item.key === pendingSection);
+		if (position) scrollTo(position.rowIndex);
+		pendingSectionRef.current = null;
+	}, [
+		isSearching,
+		scrollTo,
+		sectionPositions
+	]);
+	const handleSelect = (item, options) => {
+		var _props$onChange, _extraProps$onSelect;
+		const nextRecents = promoteRecentEmoji(recents, item);
+		setActiveEmoji(item.emoji);
+		setRecents(nextRecents);
+		writeStorageItem(localStorageService, recentStorageKey, nextRecents);
+		(_props$onChange = props.onChange) === null || _props$onChange === void 0 || _props$onChange.call(props, item.emoji);
+		extraProps === null || extraProps === void 0 || (_extraProps$onSelect = extraProps.onSelect) === null || _extraProps$onSelect === void 0 || _extraProps$onSelect.call(extraProps, item.emoji, options);
+	};
+	const handleRandom = () => {
+		handleSelect(getRandomEmoji(Math.random, skinTone), { keepOpen: true });
+	};
+	const handleSkinToneChange = (nextSkinTone) => {
+		skinToneChangedRef.current = true;
+		setSkinTone(nextSkinTone);
+		writeStorageItem(localStorageService, SKIN_TONE_STORAGE_KEY, nextSkinTone);
+	};
+	const handleScroll = (event) => {
+		containerProps.onScroll(event);
+		if (isSearching) return;
+		setActiveTab(getActiveSectionByScrollTop(sectionPositions, event.currentTarget.scrollTop));
+	};
+	const scrollToSection = (section) => {
+		setQuery("");
+		setActiveTab(section);
+		const position = sectionPositions.find((item) => item.key === section);
+		if (!isSearching && position) {
+			scrollTo(position.rowIndex);
+			return;
+		}
+		pendingSectionRef.current = section;
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+		"data-u-comp": EMOJI_PICKER_COMPONENT,
+		onClick: (event) => {
+			event.stopPropagation();
+			setSkinToneMenuOpen(false);
+		},
+		className: (0, _univerjs_design.clsx)("univer-flex univer-h-[340px] univer-w-[420px] univer-flex-col univer-overflow-hidden", !props.embedded && "univer-rounded-[10px] univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-shadow-lg dark:!univer-border-gray-600 dark:!univer-bg-gray-900"),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-items-center univer-gap-1 univer-px-3 univer-pb-2 univer-pt-3",
+				children: [
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Input, {
+						"aria-label": localeService.t("ui.emojiPicker.search"),
+						placeholder: localeService.t("ui.emojiPicker.search"),
+						className: "univer-min-w-0 univer-flex-1",
+						value: query,
+						onChange: setQuery,
+						slot: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.SearchIcon, { className: "univer-size-4 univer-text-gray-500 dark:!univer-text-gray-400" })
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+						"aria-label": localeService.t("ui.emojiPicker.random"),
+						title: localeService.t("ui.emojiPicker.random"),
+						className: "univer-flex-shrink-0 univer-text-gray-500 dark:!univer-text-gray-400",
+						size: "icon",
+						onClick: handleRandom,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.RandomIcon, {})
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)(SkinToneDropdown, {
+						emojiTitles: emojiLocaleData.emojiTitles,
+						open: skinToneMenuOpen,
+						skinTone,
+						onChange: handleSkinToneChange,
+						onOpenChange: setSkinToneMenuOpen
+					})
+				]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				ref: scrollRef,
+				className: (0, _univerjs_design.clsx)("univer-relative univer-min-h-0 univer-flex-1 univer-overflow-y-auto univer-px-3", _univerjs_design.scrollbarClassName),
+				onScroll: handleScroll,
+				children: rows.length ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					style: wrapperStyle,
+					children: virtualRows.map(({ data: row }) => row.type === "header" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						style: { height: EMOJI_SECTION_HEADER_HEIGHT },
+						className: "univer-flex univer-items-center univer-text-xs univer-text-gray-500 dark:!univer-text-gray-400",
+						children: row.title
+					}, row.key) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(EmojiGrid, {
+						activeEmoji,
+						emojiTitles: emojiLocaleData.emojiTitles,
+						items: row.items,
+						keyPrefix: row.key,
+						moreTitle: localeService.t("ui.ribbon.more"),
+						onSelect: handleSelect
+					}, row.key))
+				}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-py-7 univer-text-center univer-text-sm univer-text-gray-400 dark:!univer-text-gray-500",
+					children: localeService.t("ui.emojiPicker.noResults")
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: (0, _univerjs_design.clsx)("univer-flex univer-h-10 univer-shrink-0 univer-items-center univer-border-gray-200 univer-px-2.5 dark:!univer-border-gray-600 [&_svg]:univer-size-5", _univerjs_design.borderTopClassName),
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(CategoryButton, {
+					selected: !isSearching && activeTab === "recent",
+					title: localeService.t("ui.emojiPicker.recents"),
+					onClick: () => scrollToSection("recent"),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.RecentIcon, {})
+				}), EMOJI_CATEGORIES.map((category) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CategoryButton, {
+					selected: !isSearching && activeTab === category.key,
+					title: localeService.t(category.titleKey),
+					onClick: () => scrollToSection(category.key),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CategoryIcon, { category: category.key })
+				}, category.key))]
+			})
+		]
+	});
+}
+function EmojiGrid(props) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-grid univer-grid-cols-10 univer-justify-between univer-gap-1",
+		style: { height: EMOJI_ROW_HEIGHT },
+		children: props.items.map((item) => {
+			return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(EmojiButton, {
+				activeEmoji: props.activeEmoji,
+				emojiTitles: props.emojiTitles,
+				item,
+				moreTitle: props.moreTitle,
+				onSelect: props.onSelect
+			}, `${props.keyPrefix}-${item.emoji}-${item.title}`);
+		})
+	});
+}
+function EmojiButton(props) {
+	const [variantsOpen, setVariantsOpen] = (0, react.useState)(false);
+	const title = getLocalizedEmojiTitle(props.item, props.emojiTitles);
+	const active = props.activeEmoji != null && getEmojiFamilyKey(props.activeEmoji) === getEmojiFamilyKey(props.item.emoji);
+	const mixedToneVariants = hasMixedSkinToneVariants(props.item);
+	const button = /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		"aria-label": title,
+		title,
+		className: (0, _univerjs_design.clsx)("univer-flex univer-size-7 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-lg univer-border-0 univer-bg-transparent univer-p-0 univer-text-lg focus-visible:univer-outline-none focus-visible:univer-ring-1 focus-visible:univer-ring-primary-600 dark:!univer-text-gray-200", active ? "univer-bg-primary-50 univer-shadow-sm dark:!univer-bg-gray-800 dark:!univer-shadow-sm" : "hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800"),
+		onClick: () => props.onSelect(props.item, { keepOpen: true }),
+		children: props.item.emoji
+	});
+	if (!mixedToneVariants) return button;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-relative univer-size-7",
+		children: [button, /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+			align: "end",
+			open: variantsOpen,
+			onOpenChange: setVariantsOpen,
+			overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				"data-u-comp": "ui.emoji-picker.skin-tone-variants",
+				className: "univer-grid univer-grid-cols-6 univer-gap-1 univer-p-1",
+				children: getEmojiFamilyVariants(props.item.emoji).map((variant) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(EmojiVariantButton, {
+					active: props.activeEmoji === variant.emoji,
+					emojiTitles: props.emojiTitles,
+					item: variant,
+					onSelect: (item) => {
+						setVariantsOpen(false);
+						props.onSelect(item, { keepOpen: true });
+					}
+				}, variant.emoji))
+			}),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				"aria-label": `${title}, ${props.moreTitle}`,
+				title: `${title}, ${props.moreTitle}`,
+				className: "univer-bg-gray-0/90 dark:!univer-bg-gray-800/90 univer-absolute univer-bottom-0 univer-right-0 univer-flex univer-size-3 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-sm univer-border-0 univer-p-0 univer-text-gray-500 hover:univer-bg-gray-100 hover:univer-text-gray-700 focus-visible:univer-outline-none focus-visible:univer-ring-1 focus-visible:univer-ring-primary-600 dark:!univer-text-gray-300 dark:hover:!univer-bg-gray-700",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { className: "!univer-size-2.5" })
+			})
+		})]
+	});
+}
+function EmojiVariantButton(props) {
+	const title = getLocalizedEmojiTitle(props.item, props.emojiTitles);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		"aria-label": title,
+		"aria-pressed": props.active,
+		title,
+		className: (0, _univerjs_design.clsx)("univer-flex univer-size-8 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-md univer-border-0 univer-bg-transparent univer-p-0 univer-text-lg hover:univer-bg-gray-100 focus-visible:univer-outline-none focus-visible:univer-ring-1 focus-visible:univer-ring-primary-600 dark:hover:!univer-bg-gray-700", { "univer-bg-primary-50 univer-ring-1 univer-ring-primary-600 dark:!univer-bg-gray-700": props.active }),
+		onClick: () => props.onSelect(props.item),
+		children: props.item.emoji
+	});
+}
+function SkinToneDropdown(props) {
+	const currentOption = EMOJI_SKIN_TONE_OPTIONS.find((option) => option.value === props.skinTone) ?? EMOJI_SKIN_TONE_OPTIONS[0];
+	const currentTitle = getLocalizedEmojiTitle(currentOption, props.emojiTitles);
+	const handleKeyDown = (event, index) => {
+		var _event$currentTarget$, _radioButtons$nextInd;
+		const direction = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1 : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+		if (!direction) return;
+		event.preventDefault();
+		const nextIndex = (index + direction + EMOJI_SKIN_TONE_OPTIONS.length) % EMOJI_SKIN_TONE_OPTIONS.length;
+		const nextOption = EMOJI_SKIN_TONE_OPTIONS[nextIndex];
+		props.onChange(nextOption.value);
+		const radioButtons = (_event$currentTarget$ = event.currentTarget.parentElement) === null || _event$currentTarget$ === void 0 ? void 0 : _event$currentTarget$.querySelectorAll("[role=\"radio\"]");
+		radioButtons === null || radioButtons === void 0 || (_radioButtons$nextInd = radioButtons[nextIndex]) === null || _radioButtons$nextInd === void 0 || _radioButtons$nextInd.focus();
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-flex-shrink-0",
+		onClick: (event) => event.stopPropagation(),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+			align: "end",
+			open: props.open,
+			onOpenChange: props.onOpenChange,
+			overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				"data-u-comp": "ui.emoji-picker.skin-tone-menu",
+				role: "radiogroup",
+				"aria-label": currentTitle,
+				className: "univer-flex univer-gap-1 univer-p-1",
+				children: EMOJI_SKIN_TONE_OPTIONS.map((option, index) => {
+					const title = getLocalizedEmojiTitle(option, props.emojiTitles);
+					const selected = option.value === props.skinTone;
+					return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						role: "radio",
+						"aria-checked": selected,
+						"aria-label": title,
+						title,
+						tabIndex: selected ? 0 : -1,
+						className: (0, _univerjs_design.clsx)("univer-flex univer-size-8 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-md univer-border-0 univer-bg-transparent univer-p-0 univer-text-lg hover:univer-bg-gray-100 focus-visible:univer-outline-none focus-visible:univer-ring-1 focus-visible:univer-ring-primary-600 dark:hover:!univer-bg-gray-700", { "univer-bg-primary-50 univer-ring-1 univer-ring-primary-600 dark:!univer-bg-gray-700": selected }),
+						onClick: () => {
+							props.onChange(option.value);
+							props.onOpenChange(false);
+						},
+						onKeyDown: (event) => handleKeyDown(event, index),
+						children: option.emoji
+					}, option.value || "default");
+				})
+			}),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.Button, {
+				"aria-label": currentTitle,
+				title: currentTitle,
+				className: "univer-relative univer-flex-shrink-0",
+				size: "icon",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-text-lg",
+					children: currentOption.emoji
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { className: "!univer-absolute !univer-bottom-0.5 !univer-right-0.5 !univer-size-2.5 univer-text-gray-500 dark:!univer-text-gray-300" })]
+			})
+		})
+	});
+}
+function CategoryButton(props) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		"aria-label": props.title,
+		"aria-selected": props.selected,
+		title: props.title,
+		className: (0, _univerjs_design.clsx)("univer-flex univer-h-[30px] univer-flex-1 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-lg univer-border-0 univer-bg-transparent univer-p-0 univer-text-gray-500 dark:!univer-text-gray-400", props.selected ? "univer-bg-primary-50 univer-text-primary-500 dark:!univer-bg-gray-800 dark:!univer-text-primary-400" : "hover:univer-bg-gray-50 hover:univer-text-gray-700 dark:hover:!univer-bg-gray-800 dark:hover:!univer-text-gray-300"),
+		onClick: props.onClick,
+		children: props.children
+	});
+}
+function writeStorageItem(localStorageService, storageKey, value) {
+	localStorageService.setItem(storageKey, value).catch(() => void 0);
+}
+function createEmojiVirtualRows(sections, locale) {
+	const rows = [];
+	const sectionPositions = [];
+	let top = 0;
+	sections.forEach((section) => {
+		if (!section.emojis.length) return;
+		sectionPositions.push({
+			key: section.key,
+			rowIndex: rows.length,
+			top
+		});
+		rows.push({
+			key: `${locale}-${section.key}-header`,
+			title: section.title,
+			type: "header"
+		});
+		top += EMOJI_SECTION_HEADER_HEIGHT;
+		for (let start = 0; start < section.emojis.length; start += EMOJI_COLUMN_COUNT) {
+			rows.push({
+				items: section.emojis.slice(start, start + EMOJI_COLUMN_COUNT),
+				key: `${locale}-${section.key}-${start / EMOJI_COLUMN_COUNT}`,
+				type: "emojis"
+			});
+			top += EMOJI_ROW_HEIGHT;
+		}
+	});
+	return {
+		rows,
+		sectionPositions
+	};
+}
+function getEmojiVirtualRowHeight(_index, row) {
+	return row.type === "header" ? EMOJI_SECTION_HEADER_HEIGHT : EMOJI_ROW_HEIGHT;
+}
+function getActiveSectionByScrollTop(sectionPositions, scrollTop) {
+	let active = "recent";
+	sectionPositions.forEach((position) => {
+		if (position.top <= scrollTop + ACTIVE_SECTION_SCROLL_OFFSET) active = position.key;
+	});
+	return active;
+}
+function CategoryIcon(props) {
+	switch (props.category) {
+		case "activity": return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ActivityIcon, {});
+		case "foods": return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.FoodsIcon, {});
+		case "nature": return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.NatureIcon, {});
+		case "objects": return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ObjectsIcon, {});
+		case "people": return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.PeopleIcon, {});
+		case "places": return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.PlacesIcon, {});
+		default: return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.SymbolsIcon, {});
+	}
+}
+
+//#endregion
+//#region src/services/font.service.ts
+const IFontService = (0, _univerjs_core.createIdentifier)("univer.font-service");
+const DEFAULT_FONT_LIST = [
+	"宋体",
+	"Arial",
+	"Baskerville",
+	"Comic Sans MS",
+	"Courier New",
+	"Helvetica",
+	"Times New Roman",
+	"Verdana",
+	"Apple LiGothic",
+	"Apple LiSung",
+	"Hei",
+	"Kai",
+	"LiHei Pro",
+	"LiSong Pro",
+	"STFangsong",
+	"STHeiti",
+	"STKaiti",
+	"STSong",
+	"报隶-繁",
+	"报隶-简",
+	"冬青黑体简体中文",
+	"黑体-繁",
+	"黑体-简",
+	"华文仿宋",
+	"华文楷体",
+	"华文宋体",
+	"楷体-繁",
+	"楷体-简",
+	"兰亭黑-繁",
+	"兰亭黑-简",
+	"隶变-繁",
+	"隶变-简",
+	"凌慧体-繁",
+	"凌慧体-简",
+	"翩翩体-繁",
+	"翩翩体-简",
+	"苹方-繁",
+	"苹方-港",
+	"苹方-简",
+	"手札体-繁",
+	"手札体-简",
+	"宋体-繁",
+	"宋体-简",
+	"娃娃体-繁",
+	"娃娃体-简",
+	"魏碑-繁",
+	"魏碑-简",
+	"行楷-繁",
+	"行楷-简",
+	"雅痞-繁",
+	"雅痞-简",
+	"圆体-繁",
+	"圆体-简",
+	"Arial Black",
+	"Big Caslon",
+	"Courier",
+	"Didot",
+	"Futura",
+	"Georgia",
+	"Helvetica Neue",
+	"Optima",
+	"Times",
+	"Tahoma",
+	"BIZ UDGothic",
+	"BIZ UDMincho",
+	"Hiragino Maru Gothic Pro",
+	"Hiragino Maru Gothic ProN",
+	"Hiragino Mincho Pro",
+	"Hiragino Mincho ProN",
+	"Hiragino Sans",
+	"Klee",
+	"Osaka",
+	"Toppan Bunkyu Gothic",
+	"Toppan Bunkyu Midashi Gothic",
+	"Toppan Bunkyu Midashi Mincho",
+	"Toppan Bunkyu Mincho",
+	"Tsukushi A Round Gothic",
+	"Tsukushi B Round Gothic",
+	"YuKyokasho",
+	"YuKyokasho Yoko",
+	"YuMincho +36p Kana",
+	"American Typewriter",
+	"Andale Mono",
+	"Apple Chancery",
+	"Apple SD Gothic Neo",
+	"Apple Symbols",
+	"AppleGothic",
+	"AppleMyungjo",
+	"Arial Unicode MS",
+	"Athelas",
+	"Avenir",
+	"Avenir Next",
+	"Avenir Next Condensed",
+	"Ayuthaya",
+	"Bangla MN",
+	"Bangla Sangam MN",
+	"Bauhaus 93",
+	"Bodoni 72",
+	"Bodoni 72 Oldstyle",
+	"Bodoni 72 Smallcaps",
+	"Bodoni Ornaments",
+	"Bookshelf Symbol 7",
+	"Bradley Hand",
+	"Chalkboard",
+	"Chalkboard SE",
+	"Chalkduster",
+	"Charter",
+	"Cochin",
+	"Copperplate",
+	"Devanagari Sangam MN",
+	"Din Alternate",
+	"Euphemia UCAS",
+	"Galvji",
+	"Geneva",
+	"Gill Sans",
+	"Gujarati Sangam MN",
+	"GungSeo",
+	"Gurmukhi MN",
+	"Gurmukhi Sangam MN",
+	"HeadLineA",
+	"Herculanum",
+	"Hiragino Kaku Gothic Pro",
+	"Hiragino Kaku Gothic ProN",
+	"Hiragino Kaku Gothic Std",
+	"Hiragino Kaku Gothic StdN",
+	"Hoefler Text",
+	"Impact",
+	"InaiMathi",
+	"Iowan Old Style",
+	"Kannada MN",
+	"Kannada Sangam MN",
+	"Kefa",
+	"Khmer MN",
+	"Khmer Sangam MN",
+	"Kohinoor Bangla",
+	"Kohinoor Devanagari",
+	"Kohinoor Telugu",
+	"Krungthep",
+	"Lao MN",
+	"Lao Sangam MN",
+	"Lucida Grande",
+	"Luminari",
+	"Malayalam MN",
+	"Malayalam Sangam MN",
+	"Marion",
+	"Marker Felt",
+	"Menlo",
+	"Microsoft Sans Serif",
+	"Modern No. 20",
+	"Monaco",
+	"Mukta Mahee",
+	"Nanum Brush Script",
+	"Nanum Gothic",
+	"Nanum Myeongjo",
+	"Nanum Pen Script",
+	"Noteworthy",
+	"Oriya MN",
+	"Oriya Sangam MN",
+	"Palatino",
+	"Papyrus",
+	"PCMyungjo",
+	"Phosphate",
+	"PilGi",
+	"Plantagenet Cherokee",
+	"PT Mono",
+	"PT Sans",
+	"PT Sans Caption",
+	"PT Serif",
+	"PT Serif Caption",
+	"Rockwell",
+	"Sathu",
+	"Savoye LET",
+	"Seravek",
+	"Shree Devanagari 714",
+	"SignPainter",
+	"Silom",
+	"Sinhala MN",
+	"Sinhala Sangam MN",
+	"Skia",
+	"Snell Roundhand",
+	"STIXGeneral",
+	"Sukhumvit Set",
+	"Superclarendon",
+	"Tamil MN",
+	"Tamil Sangam MN",
+	"Telugu MN",
+	"Telugu Sangam MN",
+	"Trattatello",
+	"Trebuchet MS",
+	"Webdings",
+	"Wingdings",
+	"Wingdings 2",
+	"Wingdings 3",
+	"YuGothic",
+	"YuGothic Light",
+	"YuGothic Medium",
+	"Zapfino"
+].map((value) => ({
+	value,
+	label: value
+}));
+let FontService = class FontService {
+	constructor(_configService) {
+		this._configService = _configService;
+		_defineProperty(this, "fonts$", new rxjs.BehaviorSubject([]));
+		const { customFontFamily } = this._configService.getConfig("ui.config") ?? {};
+		let fonts = [];
+		if (customFontFamily) if (Array.isArray(customFontFamily)) fonts = [...DEFAULT_FONT_LIST, ...customFontFamily];
+		else if (customFontFamily.override) fonts = [...customFontFamily.list];
+		else fonts = [...DEFAULT_FONT_LIST, ...customFontFamily.list];
+		else fonts = [...DEFAULT_FONT_LIST];
+		this.fonts$.next(fonts);
+	}
+	dispose() {
+		this.resetToDefaults();
+		this.fonts$.complete();
+	}
+	getFonts() {
+		return this.fonts$.getValue();
+	}
+	getFontByValue(value) {
+		return this.getFonts().find((font) => font.value === value);
+	}
+	/**
+	* Check if the current browser environment supports the font
+	* @param fontValue
+	* @returns boolean Whether the font is supported
+	*/
+	isFontSupported(fontValue) {
+		const context = document.createElement("canvas").getContext("2d");
+		if (!context) return false;
+		const text = "abcdefghijklmnopqrstuvwxyz0123456789";
+		const size = "72px";
+		const baseFonts = [
+			"monospace",
+			"serif",
+			"sans-serif"
+		];
+		const defaultWidths = {};
+		baseFonts.forEach((base) => {
+			context.font = `${size} ${base}`;
+			defaultWidths[base] = context.measureText(text).width;
+		});
+		return baseFonts.some((base) => {
+			context.font = `${size} "${fontValue}", ${base}`;
+			return context.measureText(text).width !== defaultWidths[base];
+		});
+	}
+	addFont(font) {
+		if (this.getFontByValue(font.value)) throw new Error(`[FontService]: Font with value "${font.value}" already exists.`);
+		const updatedFonts = [...this.getFonts(), font].sort();
+		this.fonts$.next(updatedFonts);
+	}
+	updateFont(value, updates) {
+		const fonts = this.getFonts();
+		const fontIndex = fonts.findIndex((font) => font.value === value);
+		if (fontIndex === -1) throw new Error(`Font with value "${value}" not found.`);
+		const updatedFont = {
+			...fonts[fontIndex],
+			...updates
+		};
+		const updatedFonts = [...fonts];
+		updatedFonts[fontIndex] = updatedFont;
+		this.fonts$.next(updatedFonts);
+	}
+	removeFont(value) {
+		const fonts = this.getFonts();
+		if (fonts.findIndex((font) => font.value === value) === -1) return false;
+		const updatedFonts = fonts.filter((font) => font.value !== value);
+		this.fonts$.next(updatedFonts);
+		return true;
+	}
+	resetToDefaults() {
+		this.fonts$.next([...DEFAULT_FONT_LIST]);
+	}
+};
+FontService = __decorate([__decorateParam(0, _univerjs_core.IConfigService)], FontService);
+
+//#endregion
+//#region src/views/font-family/use-font-list.ts
+function useFontList() {
+	const fontService = (0, _wendellhu_redi_react_bindings.useDependency)(IFontService);
+	return {
+		fonts: (0, _wendellhu_redi_react_bindings.useObservable)(fontService.fonts$, fontService.getFonts()),
+		fontService
+	};
+}
+
+//#endregion
+//#region src/views/font-family/FontFamily.tsx
+const FONT_FAMILY_COMPONENT = "UI_FONT_FAMILY_COMPONENT";
+const FontFamily = ({ className, disabled: disabledProp, value, disabled$, onChange }) => {
+	const disabledObservableValue = (0, _wendellhu_redi_react_bindings.useObservable)(disabled$);
+	const disabled = Boolean(disabledProp || disabledObservableValue);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const { fonts } = useFontList();
+	const [draftValue, setDraftValue] = (0, react.useState)(null);
+	const viewValue = (0, react.useMemo)(() => {
+		if (value == null) return "";
+		const font = fonts.find((font) => {
+			return font.value === value;
+		});
+		if (!font) return localeService.t(value);
+		return localeService.t(font.label);
+	}, [
+		value,
+		fonts,
+		localeService
+	]);
+	const inputValue = draftValue ?? viewValue;
+	function resetValue() {
+		setDraftValue(null);
+	}
+	function handleChangeSelection(e) {
+		setDraftValue(e.target.value);
+	}
+	function handleKeyDown(e) {
+		e.stopPropagation();
+		if (disabled) return;
+		if (e.key === "Enter") confirm();
+		else if (e.key === "Escape") {
+			e.preventDefault();
+			resetValue();
+		}
+	}
+	function handleBlur() {
+		if (draftValue !== null && inputValue !== viewValue) resetValue();
+	}
+	function confirm() {
+		const font = fonts.find((item) => {
+			return localeService.t(item.label).toLowerCase().includes(inputValue.trim().toLowerCase());
+		});
+		if (!font) {
+			resetValue();
+			return;
+		}
+		handleSelectFont(font.value);
+	}
+	function handleSelectFont(nextValue) {
+		resetValue();
+		onChange(nextValue);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: (0, _univerjs_design.clsx)("univer-w-32 univer-truncate univer-text-sm", className),
+		style: { fontFamily: value },
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("input", {
+			className: "univer-block univer-h-6 univer-border-none univer-bg-transparent univer-leading-6 univer-text-gray-900 focus:univer-outline-none dark:!univer-text-gray-0 [&_input:focus]:!univer-ring-0 [&_input]:univer-h-6 [&_input]:univer-w-7 [&_input]:univer-border-none [&_input]:!univer-bg-transparent [&_input]:univer-p-0 [&_input]:univer-text-sm",
+			type: "text",
+			value: inputValue,
+			onChange: handleChangeSelection,
+			onKeyDown: handleKeyDown,
+			onBlur: handleBlur,
+			disabled
+		})
+	});
+};
+
+//#endregion
+//#region src/views/font-family/FontFamilyItem.tsx
+const FONT_FAMILY_ITEM_COMPONENT = "UI_FONT_FAMILY_ITEM_COMPONENT";
+const FontFamilyItem = ({ value, onChange }) => {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$, localeService.getDirection());
+	const { fonts, fontService } = useFontList();
+	function handleSelectFont(nextValue) {
+		onChange(nextValue);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("ul", {
+		dir: direction,
+		className: "univer-m-0 univer-list-none univer-p-0 univer-text-sm",
+		style: { fontFamily: value },
+		children: fonts.map((font) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("li", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+			className: "univer-flex univer-h-7 univer-w-full univer-appearance-none univer-items-center univer-justify-between univer-gap-6 univer-rounded univer-border-none univer-bg-transparent univer-px-2 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",
+			style: { fontFamily: font.value },
+			type: "button",
+			onClick: () => handleSelectFont(font.value),
+			children: [localeService.t(font.label), !fontService.isFontSupported(font.value) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Tooltip, {
+				title: localeService.t("ui.fontFamily.not-supported"),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.InfoIcon, { className: "univer-text-gray-300 dark:!univer-text-gray-400" })
+			})]
+		}) }, font.value))
+	});
+};
+
+//#endregion
+//#region src/views/font-family/FontFamilyDropdown.tsx
+function FontFamilyDropdown(props) {
+	const { value, onChange, ariaLabel, className, disabled: disabledProp, disabled$, inputClassName, popupClassName, popupDataComponent, title, onMouseDown, onPointerDown } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$, localeService.getDirection());
+	const disabledObservableValue = (0, _wendellhu_redi_react_bindings.useObservable)(disabled$);
+	const disabled = Boolean(disabledProp || disabledObservableValue);
+	const [open, setOpen] = (0, react.useState)(false);
+	const popupDataAttributes = popupDataComponent ? { "data-u-comp": popupDataComponent } : void 0;
+	function handleChange(nextValue) {
+		setOpen(false);
+		onChange(nextValue);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dropdown, {
+		disabled,
+		open,
+		onOpenChange: setOpen,
+		overlay: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			dir: direction,
+			className: (0, _univerjs_design.clsx)("univer-max-h-72 univer-min-w-44 univer-overflow-y-auto univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-1 univer-shadow-lg dark:!univer-border-gray-700 dark:!univer-bg-gray-900", popupClassName),
+			...popupDataAttributes,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FontFamilyItem, {
+				value,
+				onChange: handleChange
+			})
+		}),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			"aria-disabled": disabled,
+			"aria-expanded": open,
+			"aria-label": ariaLabel,
+			dir: direction,
+			className: (0, _univerjs_design.clsx)("univer-flex univer-h-6 univer-min-w-0 univer-cursor-default univer-items-center univer-justify-between univer-gap-1 univer-rounded-md univer-px-1.5 univer-text-sm univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-100 dark:hover:!univer-bg-gray-700", { "univer-cursor-not-allowed univer-opacity-60": disabled }, className),
+			role: "combobox",
+			tabIndex: disabled ? -1 : 0,
+			title: typeof title === "string" ? title : void 0,
+			onMouseDown,
+			onPointerDown,
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(FontFamily, {
+				className: (0, _univerjs_design.clsx)("univer-min-w-0 univer-flex-1", inputClassName),
+				value,
+				disabled,
+				onChange: handleChange
+			}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreDownIcon, { className: "univer-flex-shrink-0 univer-text-xs univer-text-gray-500" })]
+		})
+	});
+}
+
+//#endregion
+//#region src/views/font-size/FontSize.tsx
+const FontSize = (props) => {
+	const { value, min, max, onChange, disabled$ } = props;
+	const disabled = (0, _wendellhu_redi_react_bindings.useObservable)(disabled$);
+	const [realValue, setRealValue] = (0, react.useState)(Number(value ?? 0));
+	const _value = (0, react.useMemo)(() => Number(value ?? realValue), [value]);
+	function handleChange(value) {
+		if (value === null) return;
+		setRealValue(value);
+	}
+	function handleStopPropagation(e) {
+		e.stopPropagation();
+		if (e.code === "Enter") onChange(realValue);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-h-6 univer-w-7 univer-text-sm",
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.InputNumber, {
+			className: "univer-block univer-h-6 univer-border-none univer-bg-transparent univer-leading-6 [&_input:focus]:!univer-ring-0 [&_input]:univer-h-6 [&_input]:univer-w-7 [&_input]:univer-border-none [&_input]:!univer-bg-transparent [&_input]:univer-p-0 [&_input]:univer-text-sm",
+			value: _value,
+			controls: false,
+			min,
+			max,
+			onKeyDown: handleStopPropagation,
+			onChange: handleChange,
+			disabled
+		})
+	});
+};
+
+//#endregion
+//#region src/views/font-size/interface.ts
+const FONT_SIZE_LIST = [
+	{
+		label: "9",
+		value: 9
+	},
+	{
+		label: "10",
+		value: 10
+	},
+	{
+		label: "11",
+		value: 11
+	},
+	{
+		label: "12",
+		value: 12
+	},
+	{
+		label: "14",
+		value: 14
+	},
+	{
+		label: "16",
+		value: 16
+	},
+	{
+		label: "18",
+		value: 18
+	},
+	{
+		label: "20",
+		value: 20
+	},
+	{
+		label: "22",
+		value: 22
+	},
+	{
+		label: "24",
+		value: 24
+	},
+	{
+		label: "26",
+		value: 26
+	},
+	{
+		label: "28",
+		value: 28
+	},
+	{
+		label: "36",
+		value: 36
+	},
+	{
+		label: "48",
+		value: 48
+	},
+	{
+		label: "72",
+		value: 72
+	}
+];
+const HEADING_LIST = [
+	{
+		label: "ui.toolbar.heading.normal",
+		value: _univerjs_core.NamedStyleType.NORMAL_TEXT
+	},
+	{
+		label: "ui.toolbar.heading.title",
+		value: _univerjs_core.NamedStyleType.TITLE
+	},
+	{
+		label: "ui.toolbar.heading.subTitle",
+		value: _univerjs_core.NamedStyleType.SUBTITLE
+	},
+	{
+		label: "ui.toolbar.heading.1",
+		value: _univerjs_core.NamedStyleType.HEADING_1
+	},
+	{
+		label: "ui.toolbar.heading.2",
+		value: _univerjs_core.NamedStyleType.HEADING_2
+	},
+	{
+		label: "ui.toolbar.heading.3",
+		value: _univerjs_core.NamedStyleType.HEADING_3
+	},
+	{
+		label: "ui.toolbar.heading.4",
+		value: _univerjs_core.NamedStyleType.HEADING_4
+	},
+	{
+		label: "ui.toolbar.heading.5",
+		value: _univerjs_core.NamedStyleType.HEADING_5
+	}
+];
+const FONT_SIZE_COMPONENT = "UI_FONT_SIZE_COMPONENT";
+
+//#endregion
+//#region src/views/HeadingItem.tsx
+const HeadingItem = (props) => {
+	var _style$cl;
+	const { value, text } = props;
+	const style = _univerjs_core.NAMED_STYLE_MAP[value];
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		className: (0, _univerjs_design.clsx)("univer-text-sm", { "univer-font-bold": style === null || style === void 0 ? void 0 : style.bl }),
+		style: {
+			fontSize: style === null || style === void 0 ? void 0 : style.fs,
+			color: (style === null || style === void 0 || (_style$cl = style.cl) === null || _style$cl === void 0 ? void 0 : _style$cl.rgb) ?? void 0
+		},
+		children: localeService.t(text)
+	});
+};
+const HEADING_ITEM_COMPONENT = "UI_COMPONENT_HEADING_ITEM";
+
+//#endregion
+//#region src/views/slider/ZoomInput.tsx
+function ZoomInput(props) {
+	const iconManager = (0, _wendellhu_redi_react_bindings.useDependency)(IconManager);
+	const { value = 100, min = 0, max = 400, shortcuts, disabled = false, className, onChange } = props;
+	const isEditingRef = (0, react.useRef)(false);
+	const [listVisible, setListVisible] = (0, react.useState)(false);
+	const [inputValue, setInputValue] = (0, react.useState)(() => `${value}%`);
+	(0, react.useEffect)(() => {
+		if (!isEditingRef.current) setInputValue(`${value}%`);
+	}, [value]);
+	function clampValue(value) {
+		return Math.min(Math.max(value, min), max);
+	}
+	function handleSelect(value) {
+		if (disabled) return;
+		setListVisible(false);
+		onChange === null || onChange === void 0 || onChange(value);
+	}
+	function parseInput(rawValue) {
+		const normalizedValue = rawValue.trim().replace(/%$/, "").trim();
+		if (normalizedValue === "") return null;
+		const parsedValue = Number(normalizedValue);
+		if (!Number.isFinite(parsedValue)) return null;
+		return Math.round(clampValue(parsedValue));
+	}
+	function handleFocus() {
+		if (disabled) return;
+		isEditingRef.current = true;
+		setInputValue(String(value));
+	}
+	function commitInput() {
+		if (disabled || !isEditingRef.current) return;
+		const parsedValue = parseInput(inputValue);
+		isEditingRef.current = false;
+		if (parsedValue == null) {
+			setInputValue(`${value}%`);
+			return;
+		}
+		setInputValue(`${parsedValue}%`);
+		if (parsedValue !== value) onChange === null || onChange === void 0 || onChange(parsedValue);
+	}
+	function handleKeyDown(e) {
+		e.stopPropagation();
+		if (e.key === "Enter") {
+			e.preventDefault();
+			commitInput();
+			e.currentTarget.blur();
+		}
+	}
+	const items = [{
+		type: "radio",
+		value: value.toString(),
+		options: shortcuts.map((item) => ({
+			value: item.toString(),
+			label: `${item}%`
+		})),
+		onSelect: (value) => handleSelect(+value)
+	}];
+	const MoreDownIcon = iconManager.get("MoreDownIcon");
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: (0, _univerjs_design.clsx)("univer-flex univer-h-6 univer-w-[68px] univer-flex-shrink-0 univer-items-center univer-overflow-hidden univer-rounded-md univer-border univer-border-gray-200 univer-bg-gray-0 dark:!univer-border-gray-600 dark:!univer-bg-gray-800", className, { "univer-opacity-60": disabled }),
+		onClick: (e) => e.stopPropagation(),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Input, {
+			className: "univer-box-border univer-h-6 univer-min-w-0 univer-flex-1 univer-border-none univer-bg-transparent [&_input:focus]:!univer-ring-0 [&_input]:univer-h-6 [&_input]:univer-w-full [&_input]:univer-border-none [&_input]:!univer-bg-transparent [&_input]:univer-px-1 [&_input]:univer-text-center [&_input]:univer-text-xs [&_input]:univer-tabular-nums",
+			inputClass: "univer-w-full",
+			size: "mini",
+			value: inputValue,
+			disabled,
+			type: "text",
+			onChange: setInputValue,
+			onFocus: handleFocus,
+			onBlur: commitInput,
+			onKeyDown: handleKeyDown
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.DropdownMenu, {
+			align: "end",
+			items,
+			open: listVisible,
+			disabled,
+			onOpenChange: setListVisible,
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				className: "univer-h-6 univer-w-4 univer-rounded-none univer-p-0",
+				size: "small",
+				variant: "text",
+				disabled,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MoreDownIcon, { className: "univer-size-3 univer-text-gray-500 dark:!univer-text-gray-300" })
+			})
+		})]
+	});
+}
+
+//#endregion
+//#region src/views/slider/Slider.tsx
+const SLIDER_WIDTH = 116;
+const DRAG_COMMIT_INTERVAL = 50;
+/**
+* Slider Component
+*/
+function Slider(props) {
+	const iconManager = (0, _wendellhu_redi_react_bindings.useDependency)(IconManager);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const { value, min = 0, max = 400, disabled = false, resetPoint = 100, shortcuts, onChange } = props;
+	const isRtl = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$, localeService.getDirection()) === "rtl";
+	const sliderInnerRailRef = (0, react.useRef)(null);
+	const dragValueRef = (0, react.useRef)(value);
+	const pendingDragValueRef = (0, react.useRef)(null);
+	const lastCommittedDragValueRef = (0, react.useRef)(value);
+	const dragCommitTimerRef = (0, react.useRef)(null);
+	const [isDragging, setIsDragging] = (0, react.useState)(false);
+	const [dragValue, setDragValue] = (0, react.useState)(value);
+	(0, react.useEffect)(() => () => {
+		clearDragCommitTimer();
+	}, []);
+	function clampValue(value) {
+		return Math.min(Math.max(value, min), max);
+	}
+	function handleReset() {
+		if (disabled) return;
+		onChange && onChange(resetPoint);
+	}
+	function handleStep(offset) {
+		if (disabled) return;
+		let result = value + offset;
+		if (value + offset <= min) result = min;
+		else if (value + offset >= max) result = max;
+		onChange && onChange(result);
+	}
+	function getSliderOffset(sliderValue) {
+		if (sliderValue <= resetPoint) {
+			const ratio = 50 / (resetPoint - min);
+			return (sliderValue - min) * ratio;
+		}
+		if (sliderValue <= max) return resetPoint * .5 + (sliderValue - resetPoint) / (max - resetPoint) * 50;
+	}
+	function getValueByClientX(clientX, rail) {
+		const railRect = rail.getBoundingClientRect();
+		const railWidth = railRect.width || SLIDER_WIDTH;
+		let offsetX = clientX - railRect.x;
+		if (offsetX <= 0) offsetX = 0;
+		else if (offsetX >= railWidth) offsetX = railWidth;
+		if (isRtl) offsetX = railWidth - offsetX;
+		const ratio = offsetX / railWidth;
+		if (ratio <= .5) return min + ratio * (resetPoint - min) * 2;
+		return resetPoint + (ratio - .5) * (max - resetPoint) * 2;
+	}
+	function getRoundedSliderValue(clientX, rail) {
+		return Math.ceil(clampValue(getValueByClientX(clientX, rail)));
+	}
+	function clearDragCommitTimer() {
+		if (dragCommitTimerRef.current != null) {
+			window.clearTimeout(dragCommitTimerRef.current);
+			dragCommitTimerRef.current = null;
+		}
+	}
+	function commitDragValue(nextValue) {
+		if (nextValue === lastCommittedDragValueRef.current) return;
+		lastCommittedDragValueRef.current = nextValue;
+		onChange && onChange(nextValue);
+	}
+	function flushDragCommit() {
+		clearDragCommitTimer();
+		const nextValue = pendingDragValueRef.current;
+		pendingDragValueRef.current = null;
+		if (nextValue != null) commitDragValue(nextValue);
+	}
+	function scheduleDragCommit(nextValue) {
+		pendingDragValueRef.current = nextValue;
+		if (dragCommitTimerRef.current != null) return;
+		dragCommitTimerRef.current = window.setTimeout(() => {
+			dragCommitTimerRef.current = null;
+			const pendingValue = pendingDragValueRef.current;
+			pendingDragValueRef.current = null;
+			if (pendingValue != null) commitDragValue(pendingValue);
+		}, DRAG_COMMIT_INTERVAL);
+	}
+	function updateDragValue(clientX, rail) {
+		const nextValue = getRoundedSliderValue(clientX, rail);
+		dragValueRef.current = nextValue;
+		setDragValue(nextValue);
+		return nextValue;
+	}
+	function handlePointerDown(e) {
+		if (disabled) return;
+		e.preventDefault();
+		e.stopPropagation();
+		const rail = sliderInnerRailRef.current;
+		let isDragging = true;
+		lastCommittedDragValueRef.current = value;
+		setIsDragging(true);
+		scheduleDragCommit(updateDragValue(e.clientX, rail));
+		function onPointerMove(e) {
+			if (isDragging) scheduleDragCommit(updateDragValue(e.clientX, rail));
+		}
+		function onPointerUp() {
+			isDragging = false;
+			setIsDragging(false);
+			window.removeEventListener("pointermove", onPointerMove);
+			window.removeEventListener("pointerup", onPointerUp);
+			window.removeEventListener("pointerout", onPointerOut);
+			flushDragCommit();
+		}
+		function onPointerOut(e) {
+			e.relatedTarget === null && onPointerUp();
+		}
+		window.addEventListener("pointermove", onPointerMove);
+		window.addEventListener("pointerup", onPointerUp);
+		window.addEventListener("pointerout", onPointerOut);
+	}
+	const visualValue = isDragging ? dragValue : value;
+	const sliderOffset = Math.min(Math.max(getSliderOffset(visualValue) ?? 0, 0), 100);
+	const handleOffset = isRtl ? 100 - sliderOffset : sliderOffset;
+	const ReduceIcon = iconManager.get("ReduceIcon");
+	const IncreaseIcon = iconManager.get("IncreaseIcon");
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: (0, _univerjs_design.clsx)("univer-flex univer-select-none univer-items-center univer-gap-1.5", { "univer-cursor-not-allowed": disabled }),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				className: "univer-size-6 univer-p-0",
+				size: "small",
+				variant: "text",
+				disabled: value <= min || disabled,
+				onClick: () => handleStep(-10),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ReduceIcon, { className: "univer-text-gray-500" })
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-hidden univer-h-6 univer-items-center sm:!univer-flex",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: (0, _univerjs_design.clsx)("univer-relative univer-h-1.5 univer-rounded-full univer-bg-gray-200 univer-px-1.5 univer-transition-colors dark:!univer-bg-gray-600", { "univer-opacity-60": disabled }),
+					style: { width: `${SLIDER_WIDTH}px` },
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						ref: sliderInnerRailRef,
+						role: "track",
+						className: "univer-relative univer-h-1.5 univer-bg-gray-200 dark:!univer-bg-gray-600",
+						onPointerDown: handlePointerDown,
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: (0, _univerjs_design.clsx)("univer-bg-primary-500/60 univer-absolute univer-top-0 univer-h-full univer-rounded-full", isRtl ? "univer-right-0" : "univer-left-0"),
+								style: { width: `${sliderOffset}%` }
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("a", {
+								className: "univer-absolute univer-left-1/2 univer-top-1/2 univer-box-border univer-block univer-size-1.5 -univer-translate-x-1/2 -univer-translate-y-1/2 univer-cursor-pointer univer-rounded-full univer-border univer-border-gray-0 univer-bg-gray-400 dark:!univer-border-gray-700 dark:!univer-bg-gray-300",
+								role: "button",
+								onClick: handleReset
+							}, "reset-button"),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+								className: (0, _univerjs_design.clsx)("univer-absolute univer-top-1/2 univer-size-3.5 -univer-translate-x-1/2 -univer-translate-y-1/2 univer-rounded-full univer-bg-gray-0 univer-shadow-sm univer-transition-all focus-visible:univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-primary-100 dark:!univer-bg-gray-800", _univerjs_design.borderClassName, {
+									"univer-cursor-pointer hover:univer-border-primary-600 hover:univer-shadow-md": !disabled,
+									"univer-cursor-not-allowed": disabled,
+									"univer-scale-105 univer-border-primary-600 univer-shadow-md": isDragging
+								}),
+								role: "slider",
+								"aria-valuemin": min,
+								"aria-valuemax": max,
+								"aria-valuenow": visualValue,
+								type: "button",
+								style: { left: `${handleOffset}%` },
+								onPointerDown: handlePointerDown
+							})
+						]
+					})
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				className: "univer-size-6 univer-p-0",
+				size: "small",
+				variant: "text",
+				disabled: value >= max || disabled,
+				onClick: () => handleStep(10),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(IncreaseIcon, { className: "univer-text-gray-500" })
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ZoomInput, {
+				value,
+				min,
+				max,
+				shortcuts,
+				disabled,
+				onChange
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/views/symbol-picker/symbols.ts
+const SYMBOL_CATEGORIES = [
+	{
+		key: "mathematics",
+		titleKey: "ui.symbolPicker.mathematics",
+		symbols: [
+			"+",
+			"−",
+			"×",
+			"÷",
+			"≠",
+			"≈",
+			"<",
+			">",
+			"≤",
+			"≥",
+			"≪",
+			"≫",
+			"≡",
+			"±",
+			"%",
+			"‰",
+			"‱",
+			"½",
+			"⅓",
+			"⅔",
+			"¼",
+			"¾",
+			"¹",
+			"²",
+			"³",
+			"ⁿ",
+			"₁",
+			"₂",
+			"₃",
+			"|a|",
+			"∟",
+			"∠",
+			"⊿",
+			"△",
+			"∥",
+			"⊥",
+			"∫",
+			"∬",
+			"∭",
+			"∮",
+			"∯",
+			"∰",
+			"∝",
+			"∞",
+			"∼",
+			"≌",
+			"∈",
+			"∉",
+			"⊆",
+			"⊂",
+			"∅",
+			"∩",
+			"∪",
+			"∧",
+			"∨",
+			"⋅",
+			"⋮",
+			"⋰",
+			"⋱",
+			"⋯",
+			"∏",
+			"∑",
+			"∃",
+			"∄",
+			"∀",
+			"∂",
+			"∆",
+			"⊙",
+			"⊕",
+			"%"
+		]
+	},
+	{
+		key: "greek",
+		titleKey: "ui.symbolPicker.greek",
+		symbols: [
+			"α",
+			"β",
+			"γ",
+			"δ",
+			"ε",
+			"ζ",
+			"η",
+			"θ",
+			"ι",
+			"κ",
+			"λ",
+			"μ",
+			"ν",
+			"ξ",
+			"ο",
+			"π",
+			"ρ",
+			"σ",
+			"τ",
+			"υ",
+			"φ",
+			"χ",
+			"ψ",
+			"ω",
+			"Α",
+			"Β",
+			"Γ",
+			"Δ",
+			"Ε",
+			"Ζ",
+			"Η",
+			"Θ",
+			"Ι",
+			"Κ",
+			"Λ",
+			"Μ",
+			"Ν",
+			"Ξ",
+			"Ο",
+			"Π",
+			"Ρ",
+			"Σ",
+			"Τ",
+			"Υ",
+			"Φ",
+			"Χ",
+			"Ψ",
+			"Ω"
+		]
+	},
+	{
+		key: "common",
+		titleKey: "ui.symbolPicker.common",
+		symbols: [
+			"kg",
+			"mm",
+			"cm",
+			"m²",
+			"°C",
+			"°",
+			"§",
+			"◎",
+			"©",
+			"®",
+			"{",
+			"⌜",
+			"〚",
+			"№",
+			"$",
+			"¥",
+			"@",
+			"&",
+			"*",
+			"|",
+			"#",
+			"※",
+			"√",
+			"×",
+			"…",
+			"①",
+			"②",
+			"③",
+			"↑",
+			"↓",
+			"←",
+			"→"
+		]
+	}
+];
+
+//#endregion
+//#region src/views/symbol-picker/SymbolPicker.tsx
+const SYMBOL_PICKER_COMPONENT = "ui.symbol-picker";
+function SymbolPicker(props) {
+	var _props$popup;
+	const extraProps = (_props$popup = props.popup) === null || _props$popup === void 0 ? void 0 : _props$popup.extraProps;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	(0, _wendellhu_redi_react_bindings.useObservable)(localeService.currentLocale$, localeService.getCurrentLocale());
+	const [activeSymbol, setActiveSymbol] = (0, react.useState)(extraProps === null || extraProps === void 0 ? void 0 : extraProps.activeSymbol);
+	const handleSelect = (symbol) => {
+		var _props$onChange, _extraProps$onSelect;
+		setActiveSymbol(symbol);
+		(_props$onChange = props.onChange) === null || _props$onChange === void 0 || _props$onChange.call(props, symbol);
+		extraProps === null || extraProps === void 0 || (_extraProps$onSelect = extraProps.onSelect) === null || _extraProps$onSelect === void 0 || _extraProps$onSelect.call(extraProps, symbol, { keepOpen: true });
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+		"data-u-comp": SYMBOL_PICKER_COMPONENT,
+		className: (0, _univerjs_design.clsx)("univer-flex univer-h-[340px] univer-w-[420px] univer-flex-col univer-overflow-hidden", !props.embedded && "univer-rounded-[10px] univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-shadow-lg dark:!univer-border-gray-600 dark:!univer-bg-gray-900", props.className),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: (0, _univerjs_design.clsx)("univer-min-h-0 univer-flex-1 univer-overflow-y-auto univer-p-4", _univerjs_design.scrollbarClassName),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-flex univer-flex-col univer-gap-5",
+				children: SYMBOL_CATEGORIES.map((category) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(SymbolSection, {
+					activeSymbol,
+					category,
+					onSelect: handleSelect
+				}, category.key))
+			})
+		})
+	});
+}
+function SymbolSection(props) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+		className: "univer-flex univer-flex-col univer-gap-2",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-text-sm univer-font-semibold univer-text-gray-900 dark:!univer-text-gray-100",
+			children: (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService).t(props.category.titleKey)
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-grid univer-grid-cols-10 univer-gap-1",
+			children: props.category.symbols.map((symbol, index) => {
+				const active = props.activeSymbol === symbol;
+				return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					"aria-label": symbol,
+					"aria-pressed": active,
+					title: symbol,
+					className: (0, _univerjs_design.clsx)("univer-flex univer-size-8 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-lg univer-border-0 univer-bg-transparent univer-p-0 univer-text-lg univer-text-gray-900 dark:!univer-text-gray-100", active ? "univer-bg-primary-50 univer-shadow-sm dark:!univer-bg-gray-800 dark:!univer-shadow-sm" : "hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800"),
+					onClick: () => props.onSelect(symbol),
+					children: symbol
+				}, `${props.category.key}-${symbol}-${index}`);
+			})
+		})]
+	});
+}
+
+//#endregion
+//#region src/views/object-permission/ObjectPermissionMembers.tsx
+function ObjectPermissionMembers({ unitId, value, disabled, onChange }) {
+	var _authz$getCfgEnableOb;
+	const locale = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const authz = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IAuthzIoService);
+	const userManager = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.UserManagerService);
+	const [query, setQuery] = (0, react.useState)("");
+	const [candidates, setCandidates] = (0, react.useState)([]);
+	const [loading, setLoading] = (0, react.useState)(true);
+	const [error, setError] = (0, react.useState)(false);
+	const [attempt, setAttempt] = (0, react.useState)(0);
+	const inheritOwner = ((_authz$getCfgEnableOb = authz.getCfgEnableObjInherit) === null || _authz$getCfgEnableOb === void 0 ? void 0 : _authz$getCfgEnableOb.call(authz)) ?? false;
+	(0, react.useEffect)(() => {
+		let cancelled = false;
+		authz.listCollaborators({
+			unitID: unitId,
+			objectID: unitId
+		}).then((users) => {
+			if (!cancelled) {
+				setCandidates(users.filter((user) => {
+					var _user$subject;
+					return ((_user$subject = user.subject) === null || _user$subject === void 0 ? void 0 : _user$subject.userID) !== userManager.getCurrentUser().userID;
+				}));
+				setLoading(false);
+			}
+		}).catch(() => {
+			if (!cancelled) {
+				setError(true);
+				setLoading(false);
+			}
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [
+		authz,
+		userManager,
+		unitId,
+		attempt
+	]);
+	const people = /* @__PURE__ */ new Map();
+	for (const user of candidates) {
+		var _user$subject2;
+		people.set(((_user$subject2 = user.subject) === null || _user$subject2 === void 0 ? void 0 : _user$subject2.userID) || user.id, user);
+	}
+	for (const user of value) {
+		var _user$subject3;
+		const userId = ((_user$subject3 = user.subject) === null || _user$subject3 === void 0 ? void 0 : _user$subject3.userID) || user.id;
+		if (!people.has(userId)) people.set(userId, user);
+	}
+	const selected = new Set(value.map((user) => {
+		var _user$subject4;
+		return ((_user$subject4 = user.subject) === null || _user$subject4 === void 0 ? void 0 : _user$subject4.userID) || user.id;
+	}));
+	const search = query.trim().toLocaleLowerCase();
+	const users = Array.from(people.values()).filter((user) => {
+		var _user$subject5, _user$subject6, _user$subject7;
+		return (selected.has(((_user$subject5 = user.subject) === null || _user$subject5 === void 0 ? void 0 : _user$subject5.userID) || user.id) || user.role === _univerjs_protocol.UnitRole.Owner || user.role === _univerjs_protocol.UnitRole.Editor) && [
+			(_user$subject6 = user.subject) === null || _user$subject6 === void 0 ? void 0 : _user$subject6.name,
+			(_user$subject7 = user.subject) === null || _user$subject7 === void 0 ? void 0 : _user$subject7.userID,
+			user.id
+		].some((text) => text === null || text === void 0 ? void 0 : text.toLocaleLowerCase().includes(search));
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: (0, _univerjs_design.clsx)("univer-flex univer-flex-col univer-gap-3 univer-rounded-lg univer-p-3", _univerjs_design.borderClassName),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Input, {
+				className: "univer-w-full",
+				value: query,
+				onChange: setQuery,
+				placeholder: locale.t("ui.objectPermission.searchPeople"),
+				"aria-label": locale.t("ui.objectPermission.searchPeople")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-text-xs univer-text-gray-500",
+				"aria-live": "polite",
+				children: locale.t("ui.objectPermission.selectedCount", String(selected.size))
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex univer-max-h-60 univer-flex-col univer-gap-3 univer-overflow-y-auto",
+				children: [
+					loading && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						role: "status",
+						children: locale.t("ui.objectPermission.loading")
+					}),
+					error && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						role: "alert",
+						children: [locale.t("ui.objectPermission.peopleError"), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+							onClick: () => {
+								setLoading(true);
+								setError(false);
+								setAttempt((value) => value + 1);
+							},
+							children: locale.t("ui.objectPermission.reload")
+						})]
+					}),
+					!loading && !error && users.length === 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+						role: "status",
+						className: "univer-text-sm univer-text-gray-500",
+						children: locale.t("ui.objectPermission.noMatchingPeople")
+					}),
+					users.map((user) => {
+						var _user$subject8, _user$subject9, _user$subject10;
+						const userId = ((_user$subject8 = user.subject) === null || _user$subject8 === void 0 ? void 0 : _user$subject8.userID) || user.id;
+						const name = ((_user$subject9 = user.subject) === null || _user$subject9 === void 0 ? void 0 : _user$subject9.name) || userId;
+						const inherited = inheritOwner && user.role === _univerjs_protocol.UnitRole.Owner;
+						let roleLabel = "ui.objectPermission.roleEditor";
+						if (user.role === _univerjs_protocol.UnitRole.Owner) roleLabel = "ui.objectPermission.roleOwner";
+						if (inherited) roleLabel = "ui.objectPermission.ownerInherit";
+						return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, {
+							disabled: disabled || loading || inherited,
+							checked: selected.has(userId),
+							onChange: (checked) => onChange(checked ? [...value, {
+								...user,
+								role: _univerjs_protocol.UnitRole.Editor
+							}] : value.filter((member) => {
+								var _member$subject;
+								return (((_member$subject = member.subject) === null || _member$subject === void 0 ? void 0 : _member$subject.userID) || member.id) !== userId;
+							})),
+							children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("span", {
+								className: "univer-flex univer-min-w-0 univer-items-center univer-gap-2",
+								children: [
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										"aria-hidden": "true",
+										children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Avatar, {
+											size: 24,
+											src: (_user$subject10 = user.subject) === null || _user$subject10 === void 0 ? void 0 : _user$subject10.avatar,
+											children: Array.from(name)[0]
+										})
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: "univer-min-w-0 univer-break-words",
+										title: name,
+										children: name
+									}),
+									/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+										className: "univer-rounded univer-bg-gray-100 univer-px-1.5 univer-py-0.5 univer-text-xs univer-text-gray-500",
+										children: locale.t(roleLabel)
+									})
+								]
+							})
+						}, userId);
+					})
+				]
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/views/object-permission/ObjectPermissionButton.tsx
+const OBJECT_PERMISSION_DIALOG = "ui.object-permission-dialog";
+/** Mount outside transient toolbars and context menus, retaining the original target until close. */
+function openObjectPermissionDialog(accessor, props) {
+	if (!accessor.get(_univerjs_core.ObjectPermissionService).canView(props.target) || props.exists && !props.exists()) return false;
+	const dialogs = accessor.get(IDialogService);
+	dialogs.open({
+		id: OBJECT_PERMISSION_DIALOG,
+		width: 400,
+		title: { label: accessor.get(_univerjs_core.LocaleService).t("ui.objectPermission.title") },
+		closable: false,
+		maskClosable: false,
+		keyboard: false,
+		children: { label: {
+			name: OBJECT_PERMISSION_DIALOG,
+			props: {
+				...props,
+				hosted: true,
+				onClose: () => dialogs.close(OBJECT_PERMISSION_DIALOG)
+			}
+		} }
+	});
+	return true;
+}
+/** Available only for explicitly capable Authz providers. The target remains fixed while the dialog is open. */
+function ObjectPermissionButton(props) {
+	const permissions = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ObjectPermissionService);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	(0, _wendellhu_redi_react_bindings.useObservable)(permissions.changed$, 0);
+	const [open, setOpen] = (0, react.useState)(false);
+	if (!permissions.supports(props.target)) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.StateIconButton, {
+		disabled: !permissions.canView(props.target),
+		active: permissions.hasPolicy(props.target),
+		emphasizeActive: true,
+		title: localeService.t("ui.objectPermission.title"),
+		"aria-label": localeService.t("ui.objectPermission.title"),
+		onClick: (event) => {
+			event.stopPropagation();
+			setOpen(true);
+		},
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ProtectIcon, {})
+	}), open && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ObjectPermissionDialog, {
+		...props,
+		onClose: () => setOpen(false)
+	})] });
+}
+const DEFAULT_ACTIONS = [_univerjs_protocol.UnitAction.Edit];
+function ObjectPermissionDialog({ target, name, commandId, actions = DEFAULT_ACTIONS, exists, onClose, hosted = false }) {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const permissions = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ObjectPermissionService);
+	const commandService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ICommandService);
+	const instances = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IUniverInstanceService);
+	const users = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.UserManagerService);
+	const currentUser = (0, _wendellhu_redi_react_bindings.useObservable)(users.currentUser$, users.getCurrentUser());
+	const [policy, setPolicy] = (0, react.useState)(null);
+	(0, _wendellhu_redi_react_bindings.useObservable)(permissions.changed$, 0);
+	const canView = permissions.canView(target);
+	const [canManage, setCanManage] = (0, react.useState)(false);
+	const [canDelete, setCanDelete] = (0, react.useState)(false);
+	const [saving, setSaving] = (0, react.useState)(false);
+	const [error, setError] = (0, react.useState)(false);
+	const [attempt, setAttempt] = (0, react.useState)(0);
+	const [dirty, setDirty] = (0, react.useState)(false);
+	const [conflict, setConflict] = (0, react.useState)(false);
+	const [loading, setLoading] = (0, react.useState)(true);
+	const { unitId, objectId, objectType } = target;
+	const editOptions = objectId === unitId ? ["all", "owner"] : [
+		"all",
+		"owner",
+		"members"
+	];
+	(0, react.useEffect)(() => {
+		const subscription = instances.unitDisposed$.subscribe((unit) => {
+			if (unit.getUnitId() === unitId) onClose();
+		});
+		return () => subscription.unsubscribe();
+	}, [
+		instances,
+		unitId,
+		onClose
+	]);
+	(0, react.useEffect)(() => {
+		let cancelled = false;
+		setLoading(true);
+		Promise.all([
+			permissions.read({
+				unitId,
+				objectId,
+				objectType
+			}),
+			permissions.canManage({
+				unitId,
+				objectId,
+				objectType
+			}),
+			permissions.canDelete({
+				unitId,
+				objectId,
+				objectType
+			})
+		]).then(([loaded, allowed, deletable]) => {
+			if (!cancelled) {
+				setPolicy(loaded);
+				setCanManage(allowed);
+				setCanDelete(deletable);
+				setDirty(false);
+				setConflict(false);
+				setError(false);
+				setLoading(false);
+			}
+		}).catch(() => {
+			if (!cancelled) {
+				setError(true);
+				setLoading(false);
+			}
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [
+		permissions,
+		unitId,
+		objectId,
+		objectType,
+		attempt,
+		currentUser.userID
+	]);
+	(0, react.useEffect)(() => {
+		const subscription = permissions.unitChanges$.subscribe((changedUnitId) => {
+			if (changedUnitId !== unitId) return;
+			if (!saving) if (dirty) setConflict(true);
+			else setAttempt((value) => value + 1);
+		});
+		return () => subscription.unsubscribe();
+	}, [
+		permissions,
+		unitId,
+		dirty,
+		saving
+	]);
+	const save = async (remove = false) => {
+		if (!policy || !canView || loading || saving || !(remove ? canDelete : canManage) || conflict) return;
+		setSaving(true);
+		setError(false);
+		try {
+			if (!instances.getUnit(unitId) || exists && !exists()) throw new Error("Object no longer exists.");
+			if (!await commandService.executeCommand(commandId, {
+				unitId,
+				objectId,
+				action: _univerjs_protocol.UnitAction.Edit,
+				value: policy.edit === "all",
+				policy: remove ? void 0 : policy,
+				remove
+			})) throw new Error("Permission command rejected.");
+			onClose();
+		} catch {
+			setError(true);
+		} finally {
+			setSaving(false);
+		}
+	};
+	const parentHints = {
+		[_univerjs_protocol.UnitObject.DocumentSection]: "ui.objectPermission.documentParent",
+		[_univerjs_protocol.UnitObject.DocumentParagraph]: "ui.objectPermission.paragraphParent",
+		[_univerjs_protocol.UnitObject.DocumentEntity]: "ui.objectPermission.documentObjectParent",
+		[_univerjs_protocol.UnitObject.SlidePage]: "ui.objectPermission.slideParent",
+		[_univerjs_protocol.UnitObject.SlideMaster]: "ui.objectPermission.slideParent",
+		[_univerjs_protocol.UnitObject.SlideElement]: "ui.objectPermission.slideObjectParent",
+		[_univerjs_protocol.UnitObject.BaseTable]: "ui.objectPermission.baseParent",
+		[_univerjs_protocol.UnitObject.BaseDashboard]: "ui.objectPermission.baseParent",
+		[_univerjs_protocol.UnitObject.BaseField]: "ui.objectPermission.baseObjectParent",
+		[_univerjs_protocol.UnitObject.BaseView]: "ui.objectPermission.baseObjectParent",
+		[_univerjs_protocol.UnitObject.BaseRecord]: "ui.objectPermission.recordParent",
+		[_univerjs_protocol.UnitObject.BoardElement]: "ui.objectPermission.boardParent"
+	};
+	const actionLabels = {
+		[_univerjs_protocol.UnitAction.Copy]: "ui.objectPermission.copy",
+		[_univerjs_protocol.UnitAction.Print]: "ui.objectPermission.print",
+		[_univerjs_protocol.UnitAction.Export]: "ui.objectPermission.export",
+		[_univerjs_protocol.UnitAction.Comment]: "ui.objectPermission.comment"
+	};
+	const footer = /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-justify-end univer-gap-2",
+		children: [
+			canDelete && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				disabled: !canView || loading || saving || conflict,
+				onClick: () => save(true),
+				children: localeService.t("ui.objectPermission.remove")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				disabled: saving,
+				onClick: onClose,
+				children: localeService.t("ui.objectPermission.cancel")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				variant: "primary",
+				disabled: !policy || !canManage || !canView || loading || saving || conflict || policy.edit === "members" && !policy.collaborators.length,
+				onClick: () => save(),
+				children: localeService.t(saving ? "ui.objectPermission.saving" : "ui.objectPermission.save")
+			})
+		]
+	});
+	const content = /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-flex-col univer-gap-4",
+		onClick: (event) => event.stopPropagation(),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-break-words univer-font-medium",
+				children: name
+			}),
+			!policy && !error && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+				role: "status",
+				children: localeService.t("ui.objectPermission.loading")
+			}),
+			(error || conflict) && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				role: "alert",
+				children: [localeService.t(conflict ? "ui.objectPermission.conflict" : "ui.objectPermission.error"), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+					disabled: saving,
+					onClick: () => setAttempt((value) => value + 1),
+					children: localeService.t("ui.objectPermission.reload")
+				})]
+			}),
+			policy && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [
+				(!canManage || !canView) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", { children: localeService.t("ui.objectPermission.denied") }),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.FormLayout, {
+					label: localeService.t("ui.objectPermission.edit"),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.RadioGroup, {
+						value: policy.edit,
+						disabled: !canManage || !canView || loading || saving || conflict,
+						onChange: (value) => {
+							setPolicy({
+								...policy,
+								edit: value
+							});
+							setDirty(true);
+						},
+						className: "univer-flex univer-flex-col univer-gap-2",
+						children: editOptions.map((value) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Radio, {
+							value,
+							children: localeService.t(`ui.objectPermission.${value}`)
+						}, value))
+					})
+				}),
+				objectId !== unitId && policy.edit === "members" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ObjectPermissionMembers, {
+					unitId,
+					value: policy.collaborators,
+					disabled: !canManage || !canView || loading || saving || conflict,
+					onChange: (collaborators) => {
+						setPolicy({
+							...policy,
+							collaborators
+						});
+						setDirty(true);
+					}
+				}, `${unitId}/${objectType}/${objectId}/${currentUser.userID}`),
+				actions.filter((action) => action !== _univerjs_protocol.UnitAction.Edit && actionLabels[action]).map((action) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Checkbox, {
+					disabled: !canManage || !canView || loading || saving || conflict,
+					checked: !policy.strategies.some((strategy) => strategy.action === action && strategy.role === _univerjs_protocol.UnitRole.Owner),
+					onChange: (checked) => {
+						setPolicy({
+							...policy,
+							strategies: [...policy.strategies.filter((strategy) => strategy.action !== action), {
+								action,
+								role: checked ? _univerjs_protocol.UnitRole.Editor : _univerjs_protocol.UnitRole.Owner
+							}]
+						});
+						setDirty(true);
+					},
+					children: localeService.t(actionLabels[action])
+				}, action)),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", {
+					className: "univer-text-sm univer-text-gray-500",
+					children: localeService.t(objectId === unitId ? "ui.objectPermission.fileHint" : parentHints[objectType] ?? "ui.objectPermission.parentHint")
+				})
+			] })
+		]
+	});
+	if (hosted) return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [content, /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-mt-4",
+		children: footer
+	})] });
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dialog, {
+		open: true,
+		width: 400,
+		title: localeService.t("ui.objectPermission.title"),
+		closable: !saving,
+		onClose: () => {
+			if (!saving) onClose();
+		},
+		footer,
+		children: content
+	});
+}
+
+//#endregion
+//#region src/views/object-permission/ObjectPermissionPanel.tsx
+const OBJECT_PERMISSION_PANEL = "ui.object-permission-panel";
+function openObjectPermissionPanel(accessor, props) {
+	if (!accessor.get(_univerjs_core.ObjectPermissionService).canView(props.target)) return false;
+	accessor.get(ISidebarService).open({
+		id: OBJECT_PERMISSION_PANEL,
+		width: 330,
+		header: { title: accessor.get(_univerjs_core.LocaleService).t("ui.objectPermission.title") },
+		children: { label: {
+			name: OBJECT_PERMISSION_PANEL,
+			props: {
+				unitId: props.unitId,
+				getTargets: props.getTargets,
+				expandable: props.expandable
+			}
+		} }
+	});
+	return true;
+}
+function ObjectPermissionPanelButton(props) {
+	const permissions = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ObjectPermissionService);
+	const accessor = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.Injector);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	(0, _wendellhu_redi_react_bindings.useObservable)(permissions.changed$, 0);
+	if (!permissions.supports(props.target)) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+		variant: "ghost",
+		size: "icon",
+		className: "univer-size-7 univer-shrink-0",
+		disabled: !permissions.canView(props.target),
+		title: localeService.t("ui.objectPermission.title"),
+		"aria-label": localeService.t("ui.objectPermission.title"),
+		onClick: () => openObjectPermissionPanel(accessor, props),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.ProtectIcon, {})
+	});
+}
+function ObjectPermissionPanel({ unitId, getTargets, expandable }) {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const permissions = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ObjectPermissionService);
+	const [query, setQuery] = (0, react.useState)("");
+	const [expanded, setExpanded] = (0, react.useState)(false);
+	const [limit, setLimit] = (0, react.useState)(50);
+	(0, _wendellhu_redi_react_bindings.useObservable)(permissions.changed$, 0);
+	const instances = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IUniverInstanceService);
+	const sidebar = (0, _wendellhu_redi_react_bindings.useDependency)(ISidebarService);
+	(0, react.useEffect)(() => {
+		const subscription = instances.unitDisposed$.subscribe((unit) => {
+			if (unit.getUnitId() === unitId) sidebar.close(OBJECT_PERMISSION_PANEL);
+		});
+		return () => subscription.unsubscribe();
+	}, [
+		instances,
+		sidebar,
+		unitId
+	]);
+	const kinds = {
+		[_univerjs_protocol.UnitObject.Document]: "ui.objectPermission.document",
+		[_univerjs_protocol.UnitObject.DocumentSection]: "ui.objectPermission.section",
+		[_univerjs_protocol.UnitObject.DocumentParagraph]: "ui.objectPermission.paragraph",
+		[_univerjs_protocol.UnitObject.DocumentEntity]: "ui.objectPermission.entity",
+		[_univerjs_protocol.UnitObject.Slide]: "ui.objectPermission.presentation",
+		[_univerjs_protocol.UnitObject.SlidePage]: "ui.objectPermission.page",
+		[_univerjs_protocol.UnitObject.SlideMaster]: "ui.objectPermission.master",
+		[_univerjs_protocol.UnitObject.SlideElement]: "ui.objectPermission.entity",
+		[_univerjs_protocol.UnitObject.Base]: "ui.objectPermission.base",
+		[_univerjs_protocol.UnitObject.BaseTable]: "ui.objectPermission.table",
+		[_univerjs_protocol.UnitObject.BaseField]: "ui.objectPermission.field",
+		[_univerjs_protocol.UnitObject.BaseRecord]: "ui.objectPermission.record",
+		[_univerjs_protocol.UnitObject.BaseView]: "ui.objectPermission.view",
+		[_univerjs_protocol.UnitObject.Board]: "ui.objectPermission.board",
+		[_univerjs_protocol.UnitObject.BoardElement]: "ui.objectPermission.entity"
+	};
+	const items = [];
+	let more = false;
+	let ordinal = 0;
+	const iterator = getTargets()[Symbol.iterator]();
+	while (true) {
+		if (expandable && !expanded && ordinal === 1) break;
+		const next = iterator.next();
+		if (next.done) break;
+		const item = next.value;
+		ordinal++;
+		const name = localeService.t("ui.objectPermission.objectName", localeService.t(kinds[item.target.objectType] ?? "ui.objectPermission.entity"), item.name || String(ordinal));
+		if (!permissions.supports(item.target) || (!expandable || expanded) && !name.toLocaleLowerCase().includes(query.toLocaleLowerCase())) continue;
+		if (items.length === limit) {
+			more = true;
+			break;
+		}
+		items.push({
+			...item,
+			name
+		});
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-h-full univer-flex-col univer-gap-3 univer-p-4",
+		children: [
+			expandable && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+				"aria-expanded": expanded,
+				onClick: () => setExpanded((value) => !value),
+				children: localeService.t(kinds[expandable] ?? "ui.objectPermission.entity")
+			}),
+			(!expandable || expanded) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Input, {
+				value: query,
+				onChange: (value) => {
+					setQuery(value);
+					setLimit(50);
+				},
+				placeholder: localeService.t("ui.objectPermission.search"),
+				"aria-label": localeService.t("ui.objectPermission.search")
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-flex-1 univer-overflow-auto",
+				children: [
+					items.map((item) => /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: "univer-flex univer-items-center univer-gap-2 univer-py-2",
+						children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+							className: "univer-min-w-0 univer-flex-1 univer-truncate",
+							title: item.name,
+							children: item.name
+						}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ObjectPermissionButton, { ...item })]
+					}, `${unitId}/${item.target.objectType}/${item.target.objectId}`)),
+					!items.length && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("p", { children: localeService.t("ui.objectPermission.empty") }),
+					more && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Button, {
+						onClick: () => setLimit((value) => value + 50),
+						children: localeService.t("ui.objectPermission.loadMore")
+					})
+				]
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ComponentsController = class ComponentsController extends _univerjs_core.Disposable {
+	constructor(_componentManager, _iconManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._iconManager = _iconManager;
+		this._registerIcons();
+		this._registerComponents();
+	}
+	_registerIcons() {
+		this.disposeWithMe(this._iconManager.register({
+			ExpandIcon: _univerjs_icons.ExpandIcon,
+			IncreaseIcon: _univerjs_icons.IncreaseIcon,
+			KeyboardIcon: _univerjs_icons.KeyboardIcon,
+			MoreDownIcon: _univerjs_icons.MoreDownIcon,
+			ProtectIcon: _univerjs_icons.ProtectIcon,
+			RedoIcon: _univerjs_icons.RedoIcon,
+			ReduceIcon: _univerjs_icons.ReduceIcon,
+			FeatureSearchIcon: _univerjs_icons.FeatureSearchIcon,
+			ShortcutIcon: _univerjs_icons.ShortcutIcon,
+			ShrinkIcon: _univerjs_icons.ShrinkIcon,
+			UndoIcon: _univerjs_icons.UndoIcon
+		}));
+	}
+	_registerComponents() {
+		[
+			[COMMON_LABEL_COMPONENT, CommonLabel],
+			[OBJECT_PERMISSION_DIALOG, ObjectPermissionDialog],
+			[OBJECT_PERMISSION_PANEL, ObjectPermissionPanel],
+			[HEADING_ITEM_COMPONENT, HeadingItem],
+			[FONT_FAMILY_COMPONENT, FontFamily],
+			[FONT_FAMILY_ITEM_COMPONENT, FontFamilyItem],
+			[FONT_SIZE_COMPONENT, FontSize],
+			[COLOR_PICKER_COMPONENT, _univerjs_design.ColorPicker],
+			[EMOJI_PICKER_COMPONENT, EmojiPicker],
+			[SYMBOL_PICKER_COMPONENT, SymbolPicker],
+			[FEATURE_SEARCH_COMPONENT, FeatureSearch]
+		].forEach(([key, comp]) => {
+			this.disposeWithMe(this._componentManager.register(key, comp));
+		});
+		this.disposeWithMe(this._componentManager.register(ShortcutPanelComponentName, ShortcutPanel));
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(ComponentManager)), __decorateParam(1, (0, _univerjs_core.Inject)(IconManager))], ComponentsController);
+
+//#endregion
+//#region src/controllers/feature-search/feature-search.controller.ts
+const FeatureSearchShortcut = {
+	id: OpenFeatureSearchOperation.id,
+	binding: 4096 | 1024 | 80,
+	description: "ui.featureSearch.title",
+	group: "10_global-shortcut",
+	groupTitle: "ui.global-shortcut"
+};
+let FeatureSearchController = class FeatureSearchController extends _univerjs_core.Disposable {
+	constructor(commandService, shortcutService) {
+		super();
+		this.disposeWithMe(commandService.registerCommand(OpenFeatureSearchOperation));
+		this.disposeWithMe(shortcutService.registerShortcut(FeatureSearchShortcut));
+	}
+};
+FeatureSearchController = __decorate([__decorateParam(0, _univerjs_core.ICommandService), __decorateParam(1, IShortcutService)], FeatureSearchController);
+
+//#endregion
+//#region src/views/components/ribbon/MobileRibbon.tsx
+const toolbarScrollOffset = 168;
+function MobileRibbon(props) {
+	const { headerMenuComponents, headerMenu = true } = props;
+	const ribbonService = (0, _wendellhu_redi_react_bindings.useDependency)(IRibbonService);
+	const workbenchService = (0, _wendellhu_redi_react_bindings.useDependency)(IWorkbenchService);
+	const ribbon = (0, _wendellhu_redi_react_bindings.useObservable)(ribbonService.ribbon$, []);
+	const activatedTab = (0, _wendellhu_redi_react_bindings.useObservable)(ribbonService.activatedTab$, "ribbon.start");
+	if ((0, _wendellhu_redi_react_bindings.useObservable)(workbenchService.rootUnitType$, null, true) === _univerjs_core.UniverInstanceType.UNIVER_SHEET) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileSheetTopBar, {
+		ribbon,
+		headerMenu,
+		headerMenuComponents
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileRibbonToolbar, {
+		ribbon,
+		activatedTab,
+		headerMenu,
+		headerMenuComponents
+	});
+}
+function MobileRibbonToolbar(props) {
+	const { ribbon, activatedTab, headerMenuComponents, headerMenu = true } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const ribbonService = (0, _wendellhu_redi_react_bindings.useDependency)(IRibbonService);
+	const activeIndex = (0, react.useMemo)(() => {
+		const index = ribbon.findIndex((group) => group.key === activatedTab);
+		return index === -1 ? 0 : index;
+	}, [activatedTab, ribbon]);
+	const activeGroup = ribbon[activeIndex];
+	const activeGroups = (activeGroup === null || activeGroup === void 0 ? void 0 : activeGroup.children) ?? [];
+	const hasHeaderMenu = !!(headerMenu && headerMenuComponents && headerMenuComponents.size > 0);
+	const toolbarScrollRef = (0, react.useRef)(null);
+	const [canScrollLeft, setCanScrollLeft] = (0, react.useState)(false);
+	const [canScrollRight, setCanScrollRight] = (0, react.useState)(false);
+	(0, react.useEffect)(() => {
+		if (!activeGroup && ribbon.length > 0) ribbonService.setActivatedTab(ribbon[0].key);
+	}, [
+		activeGroup,
+		ribbon,
+		ribbonService
+	]);
+	(0, react.useEffect)(() => {
+		const container = toolbarScrollRef.current;
+		if (!container) return;
+		const updateScrollState = () => {
+			const { scrollLeft, clientWidth, scrollWidth } = container;
+			setCanScrollLeft(scrollLeft > 4);
+			setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 4);
+		};
+		updateScrollState();
+		const resizeObserver = new ResizeObserver(updateScrollState);
+		resizeObserver.observe(container);
+		container.addEventListener("scroll", updateScrollState, { passive: true });
+		return () => {
+			resizeObserver.disconnect();
+			container.removeEventListener("scroll", updateScrollState);
+		};
+	}, [activeGroup]);
+	if (ribbon.length === 0 && !hasHeaderMenu) return null;
+	function selectTab(index) {
+		const nextGroup = ribbon[index];
+		if (!nextGroup) return;
+		ribbonService.setActivatedTab(nextGroup.key);
+	}
+	function scrollToolbar(direction) {
+		const container = toolbarScrollRef.current;
+		if (!container) return;
+		container.scrollBy({
+			left: direction === "left" ? -168 : toolbarScrollOffset,
+			behavior: "smooth"
+		});
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "mobile-ribbon",
+		className: (0, _univerjs_design.clsx)("univer-flex univer-flex-col univer-gap-1.5 univer-bg-gray-50 univer-px-3 univer-py-1.5 univer-text-sm dark:!univer-bg-gray-900", _univerjs_design.borderBottomClassName),
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-grid univer-grid-cols-[28px_minmax(0,1fr)_auto] univer-items-center univer-gap-1.5 univer-px-0.5 univer-py-0.5",
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-flex univer-items-center",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: (0, _univerjs_design.clsx)(_univerjs_design.resetButtonClassName, "univer-size-7 univer-rounded-md univer-text-gray-500 univer-transition-colors hover:univer-bg-gray-100 active:univer-bg-gray-200 dark:!univer-text-gray-300 dark:hover:!univer-bg-gray-700 dark:active:!univer-bg-gray-600", { "univer-opacity-40": activeIndex === 0 }),
+						disabled: activeIndex === 0,
+						"aria-label": localeService.t("ui.navigation.previous"),
+						onClick: () => selectTab(activeIndex - 1),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreLeftIcon, {
+							className: "univer-rotate-180 univer-text-sm",
+							preserveStrokeWidth: true
+						})
+					})
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-flex univer-min-w-0 univer-items-center univer-justify-center univer-gap-2.5",
+					children: ribbon.map((group, index) => {
+						const active = index === activeIndex;
+						return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+							type: "button",
+							role: "tab",
+							"aria-selected": active,
+							className: (0, _univerjs_design.clsx)(`
+                                  ${_univerjs_design.resetButtonClassName}
+                                  univer-relative univer-shrink-0 univer-px-1 univer-py-1 univer-text-sm
+                                  univer-font-semibold univer-transition-colors
+                                `, active ? "univer-text-primary-600 dark:!univer-text-primary-400" : "univer-text-gray-700 dark:!univer-text-gray-200"),
+							onClick: () => selectTab(index),
+							children: [localeService.t(group.title || group.key), active && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: "univer-absolute univer-bottom-0 univer-left-1/2 univer-h-0.5 univer-w-8 -univer-translate-x-1/2 univer-rounded-full univer-bg-primary-600 dark:!univer-bg-primary-400" })]
+						}, group.key);
+					})
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+					className: "univer-flex univer-items-center univer-gap-1",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						className: (0, _univerjs_design.clsx)(`
+                          ${_univerjs_design.resetButtonClassName}
+                          univer-size-7 univer-rounded-md univer-text-gray-500 univer-transition-colors
+                          hover:univer-bg-gray-100
+                          active:univer-bg-gray-200
+                          dark:!univer-text-gray-300
+                          dark:hover:!univer-bg-gray-700
+                          dark:active:!univer-bg-gray-600
+                        `, { "univer-opacity-40": activeIndex >= ribbon.length - 1 }),
+						disabled: activeIndex >= ribbon.length - 1,
+						"aria-label": localeService.t("ui.navigation.next"),
+						onClick: () => selectTab(activeIndex + 1),
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, {
+							className: "univer-text-sm",
+							preserveStrokeWidth: true
+						})
+					}), hasHeaderMenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-flex univer-items-center univer-gap-1 [&>*]:univer-m-0 [&>*]:univer-inline-flex [&>*]:univer-min-h-7 [&>*]:univer-min-w-7 [&>*]:univer-appearance-none [&>*]:univer-items-center [&>*]:univer-justify-center [&>*]:univer-rounded-md [&>*]:univer-border-0 [&>*]:univer-px-1.5 [&>*]:univer-leading-none [&>*]:univer-outline-none",
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: headerMenuComponents })
+					})]
+				})
+			]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: (0, _univerjs_design.clsx)("univer-grid univer-grid-cols-[22px_minmax(0,1fr)_22px] univer-items-center univer-gap-1.5 univer-rounded-xl univer-bg-gray-0 univer-px-2 univer-py-1 dark:!univer-bg-gray-800", _univerjs_design.borderClassName),
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					className: (0, _univerjs_design.clsx)(`
+                      ${_univerjs_design.resetButtonClassName}
+                      univer-h-8 univer-w-5 univer-text-gray-500 univer-transition-colors
+                      dark:!univer-text-gray-300
+                    `, { "univer-opacity-30": !canScrollLeft }),
+					disabled: !canScrollLeft,
+					"aria-label": localeService.t("ui.navigation.previous"),
+					onClick: () => scrollToolbar("left"),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreLeftIcon, {
+						className: "univer-text-sm",
+						preserveStrokeWidth: true
+					})
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					ref: toolbarScrollRef,
+					"data-u-comp": "mobile-ribbon-toolbar",
+					className: "univer-flex univer-min-w-0 univer-items-center univer-gap-1.5 univer-overflow-x-auto univer-scroll-smooth univer-px-0.5 [&::-webkit-scrollbar]:univer-hidden",
+					children: activeGroups.map((groupItem, groupIndex) => {
+						var _groupItem$children;
+						const groupItems = ((_groupItem$children = groupItem.children) === null || _groupItem$children === void 0 ? void 0 : _groupItem$children.filter((child) => !!child.item)) ?? [];
+						if (!groupItems.length) return null;
+						return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+							className: (0, _univerjs_design.clsx)("univer-flex univer-shrink-0 univer-items-center univer-gap-0.5 univer-pr-1.5 rtl:univer-pl-1.5 rtl:univer-pr-0", { [_univerjs_design.borderRightClassName]: groupIndex !== activeGroups.length - 1 }),
+							children: groupItems.map((child) => child.item && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+								className: (0, _univerjs_design.clsx)("[&_button]:!univer-font-inherit univer-flex univer-h-8 univer-shrink-0 univer-items-center univer-rounded-md [&_*]:univer-box-border [&_.univer-custom-label]:univer-text-sm [&_.univer-custom-label]:univer-leading-none [&_.univer-toolbar-button-selector-main]:!univer-h-8 [&_.univer-toolbar-button-selector-main]:!univer-rounded-none [&_.univer-toolbar-button-selector-main]:!univer-rounded-l-md [&_.univer-toolbar-button-selector-main]:!univer-px-1.5 [&_.univer-toolbar-button-selector-root]:!univer-h-8 [&_.univer-toolbar-button-selector-root]:univer-overflow-hidden [&_.univer-toolbar-button-selector-root]:!univer-rounded-md [&_.univer-toolbar-button-selector-root]:!univer-pr-0 [&_.univer-toolbar-button-selector-trigger]:!univer-static [&_.univer-toolbar-button-selector-trigger]:!univer-h-8 [&_.univer-toolbar-button-selector-trigger]:!univer-w-6 [&_.univer-toolbar-button-selector-trigger]:!univer-rounded-none [&_.univer-toolbar-button-selector-trigger]:!univer-rounded-r-md [&_.univer-toolbar-selector-root]:!univer-h-8 [&_.univer-toolbar-selector-root]:!univer-gap-1 [&_.univer-toolbar-selector-root]:!univer-rounded-md [&_.univer-toolbar-selector-root]:!univer-px-1.5 [&_.univer-toolbar-selector-trigger]:!univer-pl-0.5 [&_.univer-tooltip]:univer-inline-flex [&_.univer-tooltip]:univer-h-full [&_.univer-tooltip]:univer-items-center [&_[data-u-command]]:!univer-h-8 [&_[data-u-command]]:!univer-min-h-8 [&_[data-u-command]]:!univer-rounded-md [&_[data-u-command]]:!univer-px-1.5 [&_button]:!univer-m-0 [&_button]:!univer-h-8 [&_button]:!univer-min-w-8 [&_button]:!univer-appearance-none [&_button]:!univer-rounded-md [&_button]:!univer-border-0 [&_button]:!univer-bg-transparent [&_button]:!univer-p-0 [&_button]:!univer-px-1.5 [&_button]:!univer-leading-none [&_button]:!univer-outline-none [&_input]:!univer-m-0 [&_input]:!univer-appearance-none [&_input]:!univer-border-0 [&_input]:!univer-bg-transparent [&_input]:!univer-p-0 [&_input]:!univer-leading-none [&_input]:!univer-outline-none"),
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, {
+									...child.item,
+									preserveStrokeWidth: true
+								})
+							}, child.key))
+						}, groupItem.key);
+					})
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					className: (0, _univerjs_design.clsx)(`
+                      ${_univerjs_design.resetButtonClassName}
+                      univer-h-8 univer-w-5 univer-text-gray-500 univer-transition-colors
+                      dark:!univer-text-gray-300
+                    `, { "univer-opacity-30": !canScrollRight }),
+					disabled: !canScrollRight,
+					"aria-label": localeService.t("ui.navigation.next"),
+					onClick: () => scrollToolbar("right"),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, {
+						className: "univer-text-sm",
+						preserveStrokeWidth: true
+					})
+				})
+			]
+		})]
+	});
+}
+function MobileSheetTopBar(props) {
+	var _startGroup$children, _startGroup$children2, _moreTriggerRef$curre, _moreTriggerRef$curre2;
+	const { headerMenuComponents, headerMenu = true, ribbon } = props;
+	const [moreOpen, setMoreOpen] = (0, react.useState)(false);
+	const moreTriggerRef = (0, react.useRef)(null);
+	const { mountContainer } = (0, react.useContext)(_univerjs_design.ConfigContext);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const startGroup = ribbon.find((group) => group.key === "ribbon.start");
+	const historyItems = (startGroup === null || startGroup === void 0 || (_startGroup$children = startGroup.children) === null || _startGroup$children === void 0 || (_startGroup$children = _startGroup$children.find((group) => group.key === "ribbon.start.history")) === null || _startGroup$children === void 0 ? void 0 : _startGroup$children.children) ?? [];
+	const otherItems = (startGroup === null || startGroup === void 0 || (_startGroup$children2 = startGroup.children) === null || _startGroup$children2 === void 0 || (_startGroup$children2 = _startGroup$children2.find((group) => group.key === "ribbon.start.others")) === null || _startGroup$children2 === void 0 ? void 0 : _startGroup$children2.children) ?? [];
+	const items = historyItems.filter((schema) => schema.item);
+	const moreItems = otherItems.flatMap((schema) => {
+		var _schema$children;
+		return ((_schema$children = schema.children) === null || _schema$children === void 0 ? void 0 : _schema$children.length) ? schema.children : [schema];
+	}).filter((schema) => schema.item);
+	const hasHeaderMenu = !!(headerMenu && headerMenuComponents && headerMenuComponents.size > 0);
+	if (items.length === 0 && moreItems.length === 0 && !hasHeaderMenu) return null;
+	const triggerRect = moreOpen ? (_moreTriggerRef$curre = moreTriggerRef.current) === null || _moreTriggerRef$curre === void 0 ? void 0 : _moreTriggerRef$curre.getBoundingClientRect() : void 0;
+	const viewportWidth = ((_moreTriggerRef$curre2 = moreTriggerRef.current) === null || _moreTriggerRef$curre2 === void 0 || (_moreTriggerRef$curre2 = _moreTriggerRef$curre2.ownerDocument.defaultView) === null || _moreTriggerRef$curre2 === void 0 ? void 0 : _moreTriggerRef$curre2.innerWidth) ?? 0;
+	const moreMenu = moreOpen && mountContainer && (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		"aria-label": localeService.t("ui.rangeSelector.cancel"),
+		className: (0, _univerjs_design.clsx)(_univerjs_design.resetButtonClassName, "univer-fixed univer-inset-0 univer-z-[1390] !univer-rounded-none !univer-bg-transparent"),
+		onClick: () => setMoreOpen(false)
+	}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		"data-u-comp": "mobile-sheet-more-menu",
+		className: (0, _univerjs_design.clsx)("univer-fixed univer-z-[1400] univer-flex univer-w-60 univer-max-w-[calc(100vw-24px)] univer-flex-col univer-gap-1 univer-rounded-2xl univer-bg-gray-0 univer-p-2 univer-shadow-lg dark:!univer-bg-gray-800", _univerjs_design.borderClassName),
+		style: {
+			top: ((triggerRect === null || triggerRect === void 0 ? void 0 : triggerRect.bottom) ?? 48) + 8,
+			right: Math.max(12, viewportWidth - ((triggerRect === null || triggerRect === void 0 ? void 0 : triggerRect.right) ?? viewportWidth))
+		},
+		children: moreItems.map((schema) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-w-full [&>span]:univer-block [&>span]:univer-w-full [&_button]:!univer-h-12 [&_button]:!univer-w-full [&_button]:!univer-justify-start [&_button]:!univer-gap-3 [&_button]:!univer-rounded-xl [&_button]:!univer-px-4 [&_button]:!univer-text-base",
+			onClick: () => setMoreOpen(false),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, {
+				...schema.item,
+				grid: true,
+				showLabel: true,
+				preserveStrokeWidth: true
+			})
+		}, schema.key))
+	})] }), mountContainer);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		"data-u-comp": "mobile-sheet-top-bar",
+		className: (0, _univerjs_design.clsx)("univer-flex univer-h-12 univer-items-center univer-justify-end univer-gap-1 univer-bg-gray-0 univer-px-3 dark:!univer-bg-gray-800", _univerjs_design.borderBottomClassName),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-flex univer-items-center univer-gap-1 [&_button]:!univer-min-h-10 [&_button]:!univer-min-w-10 [&_button]:!univer-rounded-lg [&_button_svg]:!univer-size-5",
+				children: items.map((schema) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ToolbarItem, { ...schema.item }, schema.key))
+			}),
+			hasHeaderMenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-flex univer-items-center univer-gap-1 [&>*]:univer-m-0 [&>*]:univer-inline-flex [&>*]:univer-min-h-10 [&>*]:univer-min-w-10 [&>*]:univer-items-center [&>*]:univer-justify-center [&>*]:univer-rounded-lg",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: headerMenuComponents })
+			}),
+			moreItems.length > 0 && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				ref: moreTriggerRef,
+				type: "button",
+				"data-u-comp": "mobile-sheet-more-trigger",
+				"aria-label": localeService.t("ui.ribbon.more"),
+				"aria-expanded": moreOpen,
+				className: (0, _univerjs_design.clsx)(_univerjs_design.resetButtonClassName, "univer-flex univer-size-10 univer-items-center univer-justify-center univer-rounded-lg univer-text-gray-700 univer-transition-colors active:univer-bg-gray-100 dark:!univer-text-gray-200 dark:active:!univer-bg-gray-700"),
+				onClick: () => setMoreOpen((open) => !open),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreHorizontalIcon, {
+					className: "univer-size-5",
+					preserveStrokeWidth: true
+				})
+			})
+		]
+	}), moreMenu] });
+}
+
+//#endregion
+//#region src/views/menu/mobile/MobileMenu.tsx
+function MobileMenu(props) {
+	const { menuType, onOptionSelect, schemas: providedSchemas, menuManagerService: providedMenuManagerService, showHeader = true, presentation = "drawer", onNavigationChange } = props;
+	const rootMenuManagerService = (0, _wendellhu_redi_react_bindings.useDependency)(IMenuManagerService);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const menuManagerService = providedMenuManagerService ?? rootMenuManagerService;
+	const [viewStack, setViewStack] = (0, react.useState)([]);
+	const providedSchemaKey = providedSchemas === null || providedSchemas === void 0 ? void 0 : providedSchemas.map((schema) => schema.key).join("|");
+	const menuSchemas = (0, react.useMemo)(() => {
+		if (providedSchemas) return providedSchemas;
+		if (!menuType) return [];
+		return menuManagerService.getMenuByPositionKey(menuType);
+	}, [
+		providedSchemas,
+		menuManagerService,
+		(0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => {
+			return menuManagerService.menuChanged$.pipe((0, rxjs_operators.scan)((version) => version + 1, 0), (0, rxjs_operators.startWith)(0));
+		}, [menuManagerService]), 0),
+		menuType
+	]);
+	(0, react.useEffect)(() => {
+		setViewStack([]);
+	}, [menuType, providedSchemaKey]);
+	const currentView = viewStack[viewStack.length - 1] ?? null;
+	const closeView = (0, react.useCallback)(() => setViewStack((stack) => stack.slice(0, -1)), []);
+	(0, react.useEffect)(() => {
+		onNavigationChange === null || onNavigationChange === void 0 || onNavigationChange(currentView ? {
+			title: currentView.title,
+			onBack: closeView
+		} : null);
+	}, [
+		closeView,
+		currentView,
+		onNavigationChange
+	]);
+	if (!menuType && !providedSchemas) return null;
+	const openView = (view) => setViewStack((stack) => [...stack, view]);
+	if (presentation === "context-bar") return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileContextMenuBar, {
+		currentView,
+		menuSchemas,
+		menuManagerService,
+		onExecute: onOptionSelect,
+		onOpenView: openView,
+		onBack: closeView
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-flex univer-flex-col",
+		children: [showHeader && currentView && /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
+			className: "univer-grid univer-grid-cols-[32px_minmax(0,1fr)_32px] univer-items-center univer-gap-3 univer-border-0 univer-border-b univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-px-4 univer-py-3 dark:!univer-border-gray-700 dark:!univer-bg-gray-800",
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					"aria-label": localeService.t("ui.navigation.back"),
+					className: "univer-flex univer-size-8 univer-appearance-none univer-items-center univer-justify-center univer-rounded-full univer-border-0 univer-bg-transparent univer-p-0 univer-text-gray-700 hover:univer-bg-gray-100 active:univer-bg-gray-200 dark:!univer-text-gray-300 dark:hover:!univer-bg-gray-700 dark:active:!univer-bg-gray-600",
+					onClick: closeView,
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreLeftIcon, { className: "univer-text-base" })
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-min-w-0 univer-truncate univer-text-center univer-text-sm univer-font-semibold univer-text-gray-900 dark:!univer-text-gray-100",
+					children: currentView.title
+				}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-size-8",
+					"aria-hidden": "true"
+				})
+			]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "univer-pb-2 univer-pt-1",
+			children: [(currentView === null || currentView === void 0 ? void 0 : currentView.kind) !== "options" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-overflow-hidden univer-rounded-xl univer-bg-gray-0 dark:!univer-bg-gray-800",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileSchemaList, {
+					schemas: (currentView === null || currentView === void 0 ? void 0 : currentView.kind) === "schema" ? currentView.schemas : menuSchemas,
+					menuManagerService,
+					onExecute: onOptionSelect,
+					onOpenView: openView,
+					inheritedDisabled$: currentView === null || currentView === void 0 ? void 0 : currentView.disabled$
+				})
+			}), (currentView === null || currentView === void 0 ? void 0 : currentView.kind) === "options" && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-overflow-hidden univer-rounded-xl univer-bg-gray-0 dark:!univer-bg-gray-800",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileSelectionOptionsView, {
+					menuKey: currentView.menuKey,
+					menuItem: currentView.menuItem,
+					options: currentView.options,
+					currentValue: currentView.currentValue,
+					inheritedDisabled$: currentView.disabled$,
+					onExecute: onOptionSelect
+				})
+			})]
+		})]
+	});
+}
+function MobileContextMenuBar(props) {
+	const { currentView, menuSchemas, menuManagerService, onExecute, onOpenView, onBack } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const scrollerRef = (0, react.useRef)(null);
+	const [scrollState, setScrollState] = (0, react.useState)({
+		left: false,
+		right: false
+	});
+	const schemas = getContextBarSchemas((currentView === null || currentView === void 0 ? void 0 : currentView.kind) === "schema" ? currentView.schemas : menuSchemas);
+	const updateScrollState = (0, react.useCallback)(() => {
+		const scroller = scrollerRef.current;
+		if (!scroller) return;
+		setScrollState({
+			left: scroller.scrollLeft > 1,
+			right: scroller.scrollLeft + scroller.clientWidth < scroller.scrollWidth - 1
+		});
+	}, []);
+	(0, react.useLayoutEffect)(() => {
+		const scroller = scrollerRef.current;
+		if (scroller) scroller.scrollLeft = 0;
+		const frame = requestAnimationFrame(updateScrollState);
+		return () => cancelAnimationFrame(frame);
+	}, [
+		currentView,
+		menuSchemas,
+		updateScrollState
+	]);
+	const scroll = (direction) => {
+		const scroller = scrollerRef.current;
+		scroller === null || scroller === void 0 || scroller.scrollBy({
+			left: direction * scroller.clientWidth * .8,
+			behavior: "smooth"
+		});
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		role: "menu",
+		"data-u-comp": "mobile-context-menu-bar",
+		className: "univer-flex univer-h-12 univer-max-w-full univer-items-stretch univer-overflow-hidden univer-rounded-lg univer-bg-gray-0 univer-text-sm univer-text-gray-900 univer-shadow-lg dark:!univer-bg-gray-700 dark:!univer-text-gray-0",
+		children: [
+			(Boolean(currentView) || scrollState.left) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				"aria-label": localeService.t("ui.navigation.back"),
+				className: "univer-flex univer-w-11 univer-shrink-0 univer-items-center univer-justify-center univer-border-0 univer-border-r univer-border-solid univer-border-gray-200 univer-bg-transparent univer-text-base univer-text-gray-700 univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-inset focus-visible:univer-ring-primary-500 active:univer-bg-gray-100 dark:!univer-border-gray-600 dark:!univer-text-gray-200 dark:active:!univer-bg-gray-600",
+				onClick: () => scrollState.left ? scroll(-1) : onBack(),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreLeftIcon, {})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				ref: scrollerRef,
+				className: "univer-flex univer-min-w-0 univer-flex-1 univer-snap-x univer-snap-mandatory univer-overflow-x-auto univer-overflow-y-hidden",
+				style: { scrollbarWidth: "none" },
+				onScroll: updateScrollState,
+				children: (currentView === null || currentView === void 0 ? void 0 : currentView.kind) === "options" ? currentView.options.map((option, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileContextMenuOption, {
+					option,
+					menuKey: currentView.menuKey,
+					menuItem: currentView.menuItem,
+					currentValue: currentView.currentValue,
+					inheritedDisabled$: currentView.disabled$,
+					onExecute
+				}, `${currentView.menuKey}-${String(option.value ?? index)}`)) : schemas.map((schema) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileContextMenuItem, {
+					schema,
+					menuManagerService,
+					onExecute,
+					onOpenView,
+					inheritedDisabled$: currentView === null || currentView === void 0 ? void 0 : currentView.disabled$
+				}, schema.key))
+			}),
+			scrollState.right && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				type: "button",
+				"aria-label": localeService.t("ui.navigation.next"),
+				className: "univer-flex univer-w-11 univer-shrink-0 univer-items-center univer-justify-center univer-border-0 univer-border-l univer-border-solid univer-border-gray-200 univer-bg-transparent univer-text-base univer-text-gray-700 univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-inset focus-visible:univer-ring-primary-500 active:univer-bg-gray-100 dark:!univer-border-gray-600 dark:!univer-text-gray-200 dark:active:!univer-bg-gray-600",
+				onClick: () => scroll(1),
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, {})
+			})
+		]
+	});
+}
+function MobileContextMenuItem(props) {
+	const { schema, menuManagerService, onExecute, onOpenView, inheritedDisabled$ } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const interaction = useMobileSchemaInteraction({
+		schema,
+		menuManagerService,
+		onOpenView,
+		inheritedDisabled$
+	});
+	if (!interaction || interaction.hidden) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		role: "menuitem",
+		disabled: interaction.disabled,
+		className: "univer-flex univer-min-w-[72px] univer-shrink-0 univer-snap-start univer-items-center univer-justify-center univer-border-0 univer-border-r univer-border-solid univer-border-gray-200 univer-bg-transparent univer-px-4 univer-text-sm univer-text-gray-900 univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-inset focus-visible:univer-ring-primary-500 enabled:active:univer-bg-gray-100 disabled:univer-opacity-40 dark:!univer-border-gray-600 dark:!univer-text-gray-0 dark:enabled:active:!univer-bg-gray-600",
+		onClick: () => interaction.onPress(onExecute),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+			className: "univer-whitespace-nowrap",
+			children: getMenuSchemaTitle(schema, localeService)
+		})
+	});
+}
+function MobileContextMenuOption(props) {
+	const { option, menuKey, menuItem, currentValue, inheritedDisabled$, onExecute } = props;
+	const inheritedDisabled = (0, _wendellhu_redi_react_bindings.useObservable)(inheritedDisabled$, false);
+	const observableValue = (0, _wendellhu_redi_react_bindings.useObservable)(option.value$);
+	const displayValue = option.value ?? observableValue;
+	const disabled = inheritedDisabled || Boolean(option.disabled);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+		type: "button",
+		role: "menuitem",
+		"aria-pressed": displayValue === currentValue,
+		disabled,
+		className: "univer-flex univer-min-w-[72px] univer-shrink-0 univer-snap-start univer-items-center univer-justify-center univer-border-0 univer-border-r univer-border-solid univer-border-gray-200 univer-bg-transparent univer-px-4 univer-text-sm univer-text-gray-900 univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-inset focus-visible:univer-ring-primary-500 enabled:active:univer-bg-gray-100 disabled:univer-opacity-40 dark:!univer-border-gray-600 dark:!univer-text-gray-0 dark:enabled:active:!univer-bg-gray-600",
+		onClick: () => onExecute === null || onExecute === void 0 ? void 0 : onExecute({
+			...option,
+			value: displayValue,
+			id: menuItem.id,
+			label: menuKey,
+			commandId: option.commandId
+		}),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+			value$: option.value$,
+			value: displayValue,
+			label: option.label
+		})
+	});
+}
+function getContextBarSchemas(schemas) {
+	return schemas.flatMap((schema) => schema.item ? [schema] : getContextBarSchemas(schema.children ?? []));
+}
+function MobileSchemaList(props) {
+	const { schemas, menuManagerService, onExecute, onOpenView, inheritedDisabled$ } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const hiddenGroupStates = useContextGroupHiddenStates(schemas);
+	const visibleSchemas = (0, react.useMemo)(() => {
+		return schemas.filter((schema) => {
+			var _schema$children;
+			if (schema.item) return true;
+			if ((_schema$children = schema.children) === null || _schema$children === void 0 ? void 0 : _schema$children.length) return !hiddenGroupStates[schema.key];
+			return false;
+		});
+	}, [hiddenGroupStates, schemas]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(react_jsx_runtime.Fragment, { children: visibleSchemas.map((schema, index) => {
+		var _schema$children2;
+		if (schema.item) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileSchemaRow, {
+			schema,
+			menuManagerService,
+			onExecute,
+			onOpenView,
+			inheritedDisabled$,
+			bordered: index !== visibleSchemas.length - 1
+		}, schema.key);
+		if (!((_schema$children2 = schema.children) === null || _schema$children2 === void 0 ? void 0 : _schema$children2.length)) return null;
+		return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+			className: (0, _univerjs_design.clsx)("univer-grid", index !== visibleSchemas.length - 1 && _univerjs_design.borderBottomClassName),
+			children: [schema.title && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-px-4 univer-pb-1 univer-pt-3 univer-text-xs univer-font-medium univer-uppercase univer-tracking-[0.08em] univer-text-gray-500 dark:!univer-text-gray-400",
+				children: localeService.t(schema.title)
+			}), schema.children.map((childSchema, childIndex) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileSchemaRow, {
+				schema: childSchema,
+				menuManagerService,
+				onExecute,
+				onOpenView,
+				inheritedDisabled$,
+				bordered: childIndex !== schema.children.length - 1
+			}, childSchema.key))]
+		}, schema.key);
+	}) });
+}
+function MobileSchemaRow(props) {
+	const { schema, menuManagerService, onExecute, onOpenView, inheritedDisabled$, bordered } = props;
+	const interaction = useMobileSchemaInteraction({
+		schema,
+		menuManagerService,
+		onOpenView,
+		inheritedDisabled$
+	});
+	if (!interaction || interaction.hidden) return null;
+	const { menuItem, activated, disabled, value, currentValueText, hasSubmenu, onPress } = interaction;
+	if (typeof menuItem.label === "object" && menuItem.label) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		role: "group",
+		"aria-disabled": disabled,
+		className: (0, _univerjs_design.clsx)("univer-flex univer-min-h-12 univer-w-full univer-items-center univer-bg-gray-0 univer-px-4 univer-py-2 aria-disabled:univer-pointer-events-none aria-disabled:univer-opacity-40 dark:!univer-bg-gray-800 [&>div]:univer-box-border [&>div]:!univer-w-full", bordered && _univerjs_design.borderBottomClassName),
+		"data-u-command": menuItem.id,
+		onClick: (event) => {
+			if (event.target instanceof Element && event.target.closest("button, input, select, textarea, [role=\"button\"]")) return;
+			onPress(onExecute);
+		},
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+			value,
+			label: menuItem.label,
+			icon: menuItem.icon,
+			onChange: (nextValue) => {
+				if (disabled) return;
+				onExecute === null || onExecute === void 0 || onExecute({
+					commandId: menuItem.commandId,
+					value: nextValue,
+					id: menuItem.id,
+					label: schema.key,
+					params: menuItem.params
+				});
+			}
+		})
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+		type: "button",
+		className: (0, _univerjs_design.clsx)("univer-flex univer-min-h-12 univer-w-full univer-appearance-none univer-items-center univer-gap-3 univer-border-0 univer-bg-gray-0 univer-px-4 univer-py-2 univer-text-left univer-outline-none univer-transition-colors focus-visible:univer-ring-2 focus-visible:univer-ring-inset focus-visible:univer-ring-primary-500 enabled:hover:univer-bg-gray-50 enabled:active:univer-bg-gray-100 disabled:univer-cursor-not-allowed disabled:univer-opacity-40 dark:!univer-bg-gray-800 dark:hover:!univer-bg-gray-700 dark:active:!univer-bg-gray-600", bordered && _univerjs_design.borderBottomClassName),
+		"data-u-command": menuItem.id,
+		disabled,
+		"aria-pressed": menuItem.type === 2 ? activated : void 0,
+		onClick: () => onPress(onExecute),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-flex univer-min-w-0 univer-flex-1 univer-items-center univer-gap-3 univer-text-gray-900 dark:!univer-text-gray-100 [&>span]:univer-truncate [&>span]:univer-text-base [&>span]:univer-font-medium [&>svg]:univer-shrink-0 [&>svg]:univer-text-lg [&>svg]:univer-text-gray-700 dark:[&>svg]:!univer-text-gray-300",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+					value,
+					title: menuItem.title ?? menuItem.tooltip,
+					label: menuItem.label,
+					icon: menuItem.icon
+				})
+			}),
+			currentValueText && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+				className: "univer-max-w-[32%] univer-truncate univer-text-xs univer-font-medium univer-text-gray-400 dark:!univer-text-gray-500",
+				children: currentValueText
+			}),
+			activated && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: "univer-shrink-0 univer-text-primary-600" }),
+			hasSubmenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreRightIcon, { className: "univer-shrink-0 univer-text-base univer-text-gray-400 dark:!univer-text-gray-500" })
+		]
+	});
+}
+function MobileSelectionOptionsView(props) {
+	const { options, menuKey, menuItem, currentValue, inheritedDisabled$, onExecute } = props;
+	const inheritedDisabled = (0, _wendellhu_redi_react_bindings.useObservable)(inheritedDisabled$, false);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(react_jsx_runtime.Fragment, { children: options.map((option, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileSelectionOptionRow, {
+		option,
+		menuKey,
+		menuItem,
+		currentValue,
+		disabled: inheritedDisabled,
+		bordered: index !== options.length - 1,
+		onExecute
+	}, `${menuKey}-${String(option.value ?? index)}`)) });
+}
+function MobileSelectionOptionRow(props) {
+	const { option, menuKey, menuItem, currentValue, disabled, bordered, onExecute } = props;
+	const componentManager = (0, _wendellhu_redi_react_bindings.useDependency)(ComponentManager);
+	const optionValue = (0, _wendellhu_redi_react_bindings.useObservable)(option.value$);
+	const displayValue = option.value ?? optionValue;
+	const selected = displayValue === currentValue;
+	const optionDisabled = disabled || Boolean(option.disabled);
+	if (typeof option.label === "object" && option.label && componentManager.get(option.label.name)) return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		role: "group",
+		"data-u-comp": "mobile-custom-menu-option",
+		className: (0, _univerjs_design.clsx)("univer-w-full univer-bg-gray-0 dark:!univer-bg-gray-800 [&>div>*]:univer-box-border [&>div>*]:!univer-w-full [&>div]:univer-box-border [&>div]:!univer-w-full", bordered && _univerjs_design.borderBottomClassName),
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+			value$: option.value$,
+			value: displayValue,
+			label: option.label,
+			icon: option.icon,
+			onChange: (nextValue) => {
+				if (optionDisabled) return;
+				onExecute === null || onExecute === void 0 || onExecute({
+					...option,
+					value: nextValue,
+					id: menuItem.id,
+					label: menuKey,
+					commandId: option.commandId
+				});
+			}
+		})
+	});
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("button", {
+		type: "button",
+		"aria-pressed": selected,
+		className: (0, _univerjs_design.clsx)("univer-relative univer-flex univer-min-h-12 univer-w-full univer-appearance-none univer-items-center univer-gap-3 univer-border-0 univer-bg-gray-0 univer-px-4 univer-py-2 univer-text-left univer-outline-none univer-transition-colors focus-visible:univer-ring-2 focus-visible:univer-ring-inset focus-visible:univer-ring-primary-500 enabled:hover:univer-bg-gray-50 enabled:active:univer-bg-gray-100 disabled:univer-cursor-not-allowed disabled:univer-opacity-40 dark:!univer-bg-gray-800 dark:hover:!univer-bg-gray-700 dark:active:!univer-bg-gray-600", bordered && _univerjs_design.borderBottomClassName),
+		disabled: optionDisabled,
+		onClick: () => {
+			if (optionDisabled) return;
+			onExecute === null || onExecute === void 0 || onExecute({
+				...option,
+				value: displayValue,
+				id: menuItem.id,
+				label: menuKey,
+				commandId: option.commandId
+			});
+		},
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-flex univer-min-w-0 univer-flex-1 univer-items-center univer-gap-3 univer-text-gray-900 dark:!univer-text-gray-100 [&>span]:univer-truncate [&>span]:univer-text-base [&>span]:univer-font-medium [&>svg]:univer-shrink-0 [&>svg]:univer-text-lg [&>svg]:univer-text-gray-700 dark:[&>svg]:!univer-text-gray-300",
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, {
+				value$: option.value$,
+				value: displayValue,
+				label: option.label,
+				icon: option.icon
+			})
+		}), selected && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CheckMarkIcon, { className: "univer-shrink-0 univer-text-base univer-text-primary-600 dark:!univer-text-primary-400" })]
+	});
+}
+function useMobileSchemaInteraction(props) {
+	const { schema, menuManagerService, onOpenView, inheritedDisabled$ } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const menuItem = schema.item;
+	const selectorItem = (menuItem === null || menuItem === void 0 ? void 0 : menuItem.type) === 0 ? void 0 : menuItem;
+	const disabled$ = (0, react.useMemo)(() => {
+		const sources = [inheritedDisabled$, menuItem === null || menuItem === void 0 ? void 0 : menuItem.disabled$].filter((source) => Boolean(source));
+		return sources.length ? (0, rxjs.combineLatest)(sources.map((source) => source.pipe((0, rxjs_operators.startWith)(false)))).pipe((0, rxjs.map)((states) => states.some(Boolean))) : void 0;
+	}, [inheritedDisabled$, menuItem === null || menuItem === void 0 ? void 0 : menuItem.disabled$]);
+	const disabled = (0, _wendellhu_redi_react_bindings.useObservable)(disabled$, false);
+	const hidden = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem === null || menuItem === void 0 ? void 0 : menuItem.hidden$, false);
+	const activated = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem === null || menuItem === void 0 ? void 0 : menuItem.activated$, false);
+	const value = (0, _wendellhu_redi_react_bindings.useObservable)(menuItem === null || menuItem === void 0 ? void 0 : menuItem.value$);
+	const selectionsFromObservable = (0, _wendellhu_redi_react_bindings.useObservable)(selectorItem && (0, rxjs.isObservable)(selectorItem.selections) ? selectorItem.selections : void 0);
+	const schemaChildren = (0, react.useMemo)(() => schema.children ?? [], [schema.children]);
+	const visibleSchemaChildren = (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => getVisibleSchemaCount$(schemaChildren), [schemaChildren]), schemaChildren.length);
+	const selections = (0, react.useMemo)(() => {
+		if (!selectorItem || (menuItem === null || menuItem === void 0 ? void 0 : menuItem.type) !== 1 && (menuItem === null || menuItem === void 0 ? void 0 : menuItem.type) !== 2) return [];
+		if (selectionsFromObservable) return selectionsFromObservable;
+		return Array.isArray(selectorItem.selections) ? selectorItem.selections : [];
+	}, [
+		menuItem === null || menuItem === void 0 ? void 0 : menuItem.type,
+		selectionsFromObservable,
+		selectorItem
+	]);
+	const subMenuItems = (0, react.useMemo)(() => {
+		if (!menuItem || menuItem.type !== 3 || !menuItem.id) return [];
+		return menuManagerService.getMenuByPositionKey(menuItem.id);
+	}, [menuItem, menuManagerService]);
+	if (!menuItem) return null;
+	const hasSubmenu = visibleSchemaChildren > 0 || selections.length > 0 || subMenuItems.length > 0;
+	const effectivelyDisabled = disabled || menuItem.type === 3 && !hasSubmenu;
+	const currentValueText = typeof value === "string" || typeof value === "number" ? String(value) : "";
+	const onPress = (onExecute) => {
+		if (effectivelyDisabled) return;
+		if (schemaChildren.length > 0) {
+			const schemas = menuItem.type === 2 && selections.length === 0 ? [{
+				...schema,
+				children: void 0
+			}, ...schemaChildren] : schemaChildren;
+			onOpenView({
+				kind: "schema",
+				title: getMenuSchemaTitle(schema, localeService),
+				schemas,
+				disabled$
+			});
+			return;
+		}
+		if (selections.length > 0 && selectorItem) {
+			onOpenView({
+				kind: "options",
+				title: getMenuSchemaTitle(schema, localeService),
+				options: selections,
+				menuItem: selectorItem,
+				menuKey: schema.key,
+				currentValue: value,
+				disabled$
+			});
+			return;
+		}
+		if (subMenuItems.length > 0) {
+			onOpenView({
+				kind: "schema",
+				title: getMenuSchemaTitle(schema, localeService),
+				schemas: subMenuItems,
+				disabled$
+			});
+			return;
+		}
+		if (menuItem.type !== 0 && menuItem.type !== 2) return;
+		onExecute === null || onExecute === void 0 || onExecute({
+			commandId: menuItem.commandId,
+			value,
+			id: menuItem.id,
+			label: schema.key,
+			params: menuItem.params
+		});
+	};
+	return {
+		menuItem,
+		activated,
+		disabled: effectivelyDisabled,
+		hidden,
+		value,
+		currentValueText,
+		hasSubmenu,
+		onPress
+	};
+}
+function getVisibleSchemaCount$(schemas) {
+	const leafSchemas = getLeafItemSchemas(schemas);
+	if (leafSchemas.length === 0) return (0, rxjs.of)(0);
+	return (0, rxjs.combineLatest)(leafSchemas.map((schema) => {
+		var _schema$item;
+		return (((_schema$item = schema.item) === null || _schema$item === void 0 ? void 0 : _schema$item.hidden$) ?? (0, rxjs.of)(false)).pipe((0, rxjs_operators.startWith)(false));
+	})).pipe((0, rxjs.map)((hiddenStates) => hiddenStates.filter((hidden) => !hidden).length));
+}
+function getMenuSchemaTitle(schema, localeService) {
+	const menuItem = schema.item;
+	if (typeof (menuItem === null || menuItem === void 0 ? void 0 : menuItem.title) === "string") return localeService.t(menuItem.title);
+	if (typeof (menuItem === null || menuItem === void 0 ? void 0 : menuItem.label) === "string") return localeService.t(menuItem.label);
+	if (typeof (menuItem === null || menuItem === void 0 ? void 0 : menuItem.tooltip) === "string") return localeService.t(menuItem.tooltip);
+	if (typeof schema.title === "string") return localeService.t(schema.title);
+	return schema.key;
+}
+function useContextGroupHiddenStates(menuSchemas) {
+	return (0, _wendellhu_redi_react_bindings.useObservable)((0, react.useMemo)(() => {
+		const groupStates = menuSchemas.flatMap((menuSchema) => {
+			var _menuSchema$children;
+			const hiddenObservables = ((_menuSchema$children = menuSchema.children) === null || _menuSchema$children === void 0 ? void 0 : _menuSchema$children.length) ? getLeafItemSchemas(menuSchema.children).map((childSchema) => {
+				var _childSchema$item;
+				return ((_childSchema$item = childSchema.item) === null || _childSchema$item === void 0 ? void 0 : _childSchema$item.hidden$) ?? (0, rxjs.of)(false);
+			}) : [];
+			return hiddenObservables.length ? [(0, rxjs.combineLatest)(hiddenObservables).pipe((0, rxjs.map)((values) => [menuSchema.key, values.every(Boolean)]))] : [];
+		});
+		return groupStates.length ? (0, rxjs.merge)(...groupStates).pipe((0, rxjs_operators.scan)((states, [key, hidden]) => ({
+			...states,
+			[key]: hidden
+		}), {}), (0, rxjs_operators.startWith)({})) : (0, rxjs.of)({});
+	}, [menuSchemas]), {});
+}
+function getLeafItemSchemas(schemas) {
+	return schemas.reduce((acc, schema) => {
+		var _schema$children3;
+		if ((_schema$children3 = schema.children) === null || _schema$children3 === void 0 ? void 0 : _schema$children3.length) return [...acc, ...getLeafItemSchemas(schema.children)];
+		if (schema.item) return [...acc, schema];
+		return acc;
+	}, []);
+}
+
+//#endregion
+//#region src/views/components/mobile-drawer/MobileDrawer.tsx
+const MOBILE_DRAWER_COMPACT_PERCENT = 40;
+const MOBILE_DRAWER_EXPANDED_PERCENT = 80;
+function resolveMobileDrawerRelease(params) {
+	const { snap, deltaY, durationMs, percent } = params;
+	const velocity = deltaY / Math.max(durationMs, 1);
+	if (deltaY > 48 && velocity > .55 || percent < 20) return "closed";
+	if (snap === "expanded" && deltaY > 24) return "compact";
+	if (snap === "compact" && deltaY < -24) return "expanded";
+	return percent >= 60 ? "expanded" : "compact";
+}
+function MobileDrawer(props) {
+	const { snap, expandLabel, collapseLabel, onSnapChange, onClose, children, header, floatingActions, componentName = "mobile-drawer", panelRef, contentRef, panelClassName, contentClassName, footer, role, ariaLabel } = props;
+	const [dragPercent, setDragPercent] = (0, react.useState)(null);
+	const suppressHandleClickRef = (0, react.useRef)(false);
+	const dragRef = (0, react.useRef)(null);
+	const drawerPercent = dragPercent ?? (snap === "compact" ? MOBILE_DRAWER_COMPACT_PERCENT : MOBILE_DRAWER_EXPANDED_PERCENT);
+	function beginDrag(clientY) {
+		dragRef.current = {
+			startY: clientY,
+			startTime: performance.now(),
+			startPercent: drawerPercent,
+			currentPercent: drawerPercent,
+			moved: false
+		};
+	}
+	function moveDrag(clientY) {
+		const drag = dragRef.current;
+		if (!drag) return;
+		const deltaY = clientY - drag.startY;
+		const nextPercent = Math.max(0, Math.min(MOBILE_DRAWER_EXPANDED_PERCENT, drag.startPercent - deltaY / Math.max(window.innerHeight, 1) * 100));
+		drag.currentPercent = nextPercent;
+		drag.moved ||= Math.abs(deltaY) > 6;
+		setDragPercent(nextPercent);
+	}
+	function endDrag(clientY) {
+		const drag = dragRef.current;
+		if (!drag) return;
+		const result = resolveMobileDrawerRelease({
+			snap,
+			deltaY: clientY - drag.startY,
+			durationMs: performance.now() - drag.startTime,
+			percent: drag.currentPercent
+		});
+		suppressHandleClickRef.current = drag.moved;
+		dragRef.current = null;
+		setDragPercent(null);
+		if (result === "closed") onClose();
+		else onSnapChange(result);
+	}
+	function handlePointerDown(event) {
+		try {
+			event.currentTarget.setPointerCapture(event.pointerId);
+		} catch {}
+		beginDrag(event.clientY);
+	}
+	function handlePointerMove(event) {
+		moveDrag(event.clientY);
+	}
+	function handlePointerUp(event) {
+		endDrag(event.clientY);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(react_jsx_runtime.Fragment, { children: [floatingActions && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		className: "univer-pointer-events-none univer-absolute univer-right-4 univer-z-30",
+		style: { bottom: `calc(${drawerPercent}dvh + 12px)` },
+		children: floatingActions
+	}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+		ref: panelRef,
+		role,
+		"aria-modal": role === "dialog" || void 0,
+		"aria-label": ariaLabel,
+		"data-u-comp": componentName,
+		"data-snap": snap,
+		className: (0, _univerjs_design.clsx)("univer-absolute univer-inset-x-0 univer-bottom-0 univer-z-20 univer-flex univer-flex-col univer-overflow-hidden univer-rounded-t-[24px] univer-bg-gray-50 univer-shadow-2xl univer-transition-[height] univer-duration-200 dark:!univer-bg-gray-900", dragPercent != null && "!univer-transition-none", panelClassName),
+		style: {
+			height: `${drawerPercent}dvh`,
+			paddingBottom: "env(safe-area-inset-bottom, 0px)"
+		},
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-relative univer-flex univer-h-14 univer-shrink-0 univer-items-end univer-bg-gray-0 dark:!univer-bg-gray-800",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					"aria-label": snap === "compact" ? expandLabel : collapseLabel,
+					className: (0, _univerjs_design.clsx)(_univerjs_design.resetButtonClassName, "univer-absolute univer-left-1/2 univer-top-0 univer-z-10 univer-flex univer-h-6 univer-w-16 -univer-translate-x-1/2 univer-touch-none univer-items-center univer-justify-center"),
+					onPointerDown: handlePointerDown,
+					onPointerMove: handlePointerMove,
+					onPointerUp: handlePointerUp,
+					onPointerCancel: handlePointerUp,
+					onClick: () => {
+						if (suppressHandleClickRef.current) {
+							suppressHandleClickRef.current = false;
+							return;
+						}
+						onSnapChange(snap === "compact" ? "expanded" : "compact");
+					},
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: "univer-h-1 univer-w-10 univer-rounded-full univer-bg-gray-300 dark:!univer-bg-gray-600" })
+				}), header]
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				ref: contentRef,
+				className: (0, _univerjs_design.clsx)("univer-flex-1 univer-overflow-y-auto univer-overflow-x-hidden univer-p-3", _univerjs_design.scrollbarClassName, contentClassName),
+				children
+			}),
+			footer
+		]
+	})] });
+}
+
+//#endregion
+//#region src/views/menu/mobile/MobileMenuDrawer.tsx
+function MobileMenuDrawer(props) {
+	if (!props.visible) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileMenuDrawerContent, { ...props });
+}
+function MobileMenuDrawerContent(props) {
+	const { title, menuType, schemas, menuManagerService, onClose, onOptionSelect } = props;
+	const [navigation, setNavigation] = (0, react.useState)(null);
+	const [drawerSnap, setDrawerSnap] = (0, react.useState)("compact");
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const rootMenuManagerService = (0, _wendellhu_redi_react_bindings.useDependency)(IMenuManagerService);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$);
+	const { mountContainer } = (0, react.useContext)(_univerjs_design.ConfigContext);
+	if (!mountContainer) return null;
+	return (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		dir: direction,
+		className: "univer-fixed univer-inset-0 univer-z-[1080] univer-flex univer-items-end",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			type: "button",
+			"aria-label": localeService.t("ui.rangeSelector.cancel"),
+			className: (0, _univerjs_design.clsx)(_univerjs_design.resetButtonClassName, "!univer-absolute !univer-inset-0 !univer-m-0 !univer-block !univer-appearance-none !univer-rounded-none !univer-border-0 !univer-bg-black/35 !univer-p-0 univer-backdrop-blur-[2px]"),
+			onClick: onClose
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileDrawer, {
+			componentName: "mobile-menu-drawer",
+			snap: drawerSnap,
+			expandLabel: localeService.t("ui.ribbon.more"),
+			collapseLabel: localeService.t("ui.ribbon.more"),
+			onSnapChange: setDrawerSnap,
+			onClose,
+			role: "dialog",
+			ariaLabel: (navigation === null || navigation === void 0 ? void 0 : navigation.title) ?? title,
+			contentClassName: "univer-px-3 univer-pb-3",
+			header: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				className: "univer-grid univer-h-12 univer-flex-1 univer-grid-cols-[40px_minmax(0,1fr)_40px] univer-items-center univer-gap-3 univer-px-4",
+				children: [
+					navigation ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						"aria-label": localeService.t("ui.navigation.back"),
+						className: (0, _univerjs_design.clsx)(_univerjs_design.resetButtonClassName, "univer-size-10 univer-rounded-xl univer-text-gray-700 active:univer-bg-gray-200 dark:!univer-text-gray-300 dark:active:!univer-bg-gray-700"),
+						onClick: navigation.onBack,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.MoreLeftIcon, { className: "univer-size-5" })
+					}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+						className: "univer-size-10",
+						"aria-hidden": "true"
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+						className: "univer-min-w-0 univer-truncate univer-text-center univer-text-base univer-font-semibold univer-text-gray-900 dark:!univer-text-gray-100",
+						children: (navigation === null || navigation === void 0 ? void 0 : navigation.title) ?? title
+					}),
+					/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+						type: "button",
+						"aria-label": localeService.t("ui.rangeSelector.cancel"),
+						className: (0, _univerjs_design.clsx)(_univerjs_design.resetButtonClassName, "univer-size-10 univer-rounded-xl univer-text-gray-700 active:univer-bg-gray-200 dark:!univer-text-gray-300 dark:active:!univer-bg-gray-700"),
+						onClick: onClose,
+						children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, { className: "univer-size-5" })
+					})
+				]
+			}),
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileMenu, {
+				menuType,
+				schemas,
+				menuManagerService: menuManagerService ?? rootMenuManagerService,
+				showHeader: false,
+				onNavigationChange: setNavigation,
+				onOptionSelect
+			})
+		})]
+	}), mountContainer);
+}
+
+//#endregion
+//#region src/views/components/context-menu/MobileContextMenu.tsx
+const MOBILE_CONTEXT_MENU_HOST_ID = "mobile-context-menu";
+function MobileContextMenu() {
+	const [visible, setVisible] = (0, react.useState)(false);
+	const [menuType, setMenuType] = (0, react.useState)("");
+	const [menuContext, setMenuContext] = (0, react.useState)();
+	const [anchor, setAnchor] = (0, react.useState)({
+		x: 0,
+		y: 0
+	});
+	const visibleRef = (0, react.useRef)(visible);
+	const floatingMenuRef = (0, react.useRef)(null);
+	const contextMenuHostService = (0, _wendellhu_redi_react_bindings.useDependency)(IContextMenuHostService);
+	const contextMenuService = (0, _wendellhu_redi_react_bindings.useDependency)(IContextMenuService);
+	const commandService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ICommandService);
+	const layoutService = (0, _wendellhu_redi_react_bindings.useDependency)(ILayoutService);
+	const menuManagerService = (0, _wendellhu_redi_react_bindings.useDependency)(IMenuManagerService);
+	const runtimeScopeService = (0, _wendellhu_redi_react_bindings.useDependency)(IUIRuntimeScopeService);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const { mountContainer } = (0, react.useContext)(_univerjs_design.ConfigContext);
+	visibleRef.current = visible;
+	(0, react.useEffect)(() => {
+		const hostDisposable = contextMenuHostService.registerMenu(MOBILE_CONTEXT_MENU_HOST_ID, () => {
+			setVisible(false);
+		});
+		const disposables = contextMenuService.registerContextMenuHandler({
+			handleContextMenu,
+			hideContextMenu() {
+				handleClose();
+			},
+			get visible() {
+				return visibleRef.current;
+			}
+		});
+		return () => {
+			disposables.dispose();
+			hostDisposable.dispose();
+			contextMenuHostService.deactivateMenu(MOBILE_CONTEXT_MENU_HOST_ID);
+		};
+	}, [contextMenuHostService, contextMenuService]);
+	function handleContextMenu(event, nextMenuType, context) {
+		contextMenuHostService.activateMenu(MOBILE_CONTEXT_MENU_HOST_ID);
+		setMenuType(nextMenuType);
+		setMenuContext(context);
+		setAnchor({
+			x: event.clientX,
+			y: event.clientY
+		});
+		setVisible(true);
+	}
+	function handleClose() {
+		setVisible(false);
+		contextMenuHostService.deactivateMenu(MOBILE_CONTEXT_MENU_HOST_ID);
+	}
+	(0, react.useEffect)(() => {
+		if (!visible || menuType !== "contextMenu.mainArea" || !mountContainer) return;
+		const ownerDocument = mountContainer.ownerDocument;
+		const handleOutsidePointerDown = (event) => {
+			var _floatingMenuRef$curr;
+			if (!(event.target instanceof Node) || !((_floatingMenuRef$curr = floatingMenuRef.current) === null || _floatingMenuRef$curr === void 0 ? void 0 : _floatingMenuRef$curr.contains(event.target))) {
+				setVisible(false);
+				contextMenuHostService.deactivateMenu(MOBILE_CONTEXT_MENU_HOST_ID);
+			}
+		};
+		ownerDocument.addEventListener("pointerdown", handleOutsidePointerDown, true);
+		return () => ownerDocument.removeEventListener("pointerdown", handleOutsidePointerDown, true);
+	}, [
+		contextMenuHostService,
+		menuType,
+		mountContainer,
+		visible
+	]);
+	const sheetTitle = (0, react.useMemo)(() => {
+		switch (menuType) {
+			case "contextMenu.rowHeader": return localeService.t("ui.row");
+			case "contextMenu.colHeader": return localeService.t("ui.column");
+			default: return "";
+		}
+	}, [localeService, menuType]);
+	if (!mountContainer || !visible) return null;
+	const activeScope = runtimeScopeService.get(menuContext === null || menuContext === void 0 ? void 0 : menuContext.unitId);
+	const activeCommandService = (activeScope === null || activeScope === void 0 ? void 0 : activeScope.has(_univerjs_core.ICommandService)) ? activeScope.get(_univerjs_core.ICommandService) : commandService;
+	const activeLayoutService = (activeScope === null || activeScope === void 0 ? void 0 : activeScope.has(ILayoutService)) ? activeScope.get(ILayoutService) : layoutService;
+	const activeMenuManagerService = (activeScope === null || activeScope === void 0 ? void 0 : activeScope.has(IMenuManagerService)) ? activeScope.get(IMenuManagerService) : menuManagerService;
+	const handleOptionSelect = (params) => {
+		const commandId = params.commandId ?? params.id ?? (typeof params.label === "string" ? params.label : void 0);
+		const fallbackParams = typeof params.params === "function" ? params.params() : params.params;
+		const optionParams = typeof params.value === "undefined" ? fallbackParams : { value: params.value };
+		const commandParams = menuContext ? {
+			...menuContext,
+			...optionParams
+		} : optionParams;
+		if (!commandId) return;
+		activeLayoutService.focus();
+		activeCommandService.executeCommand(commandId, commandParams);
+		handleClose();
+	};
+	if (menuType === "contextMenu.mainArea") {
+		var _mountContainer$owner;
+		const viewportHeight = ((_mountContainer$owner = mountContainer.ownerDocument.defaultView) === null || _mountContainer$owner === void 0 ? void 0 : _mountContainer$owner.innerHeight) ?? 0;
+		const placeBelow = anchor.y < 72;
+		const top = placeBelow ? anchor.y + 12 : Math.min(anchor.y - 56, Math.max(8, viewportHeight - 56));
+		const pointerLeft = `clamp(20px, ${anchor.x - 8}px, calc(100% - 20px))`;
+		return (0, react_dom.createPortal)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			className: "univer-pointer-events-none univer-fixed univer-inset-x-2 univer-z-[1080] univer-flex univer-justify-center",
+			style: { top },
+			children: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				ref: floatingMenuRef,
+				className: "univer-pointer-events-auto univer-relative univer-min-w-0 univer-max-w-[560px] univer-flex-1",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileMenu, {
+					menuType,
+					menuManagerService: activeMenuManagerService,
+					presentation: "context-bar",
+					onOptionSelect: handleOptionSelect
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					"aria-hidden": "true",
+					className: placeBelow ? `
+                              univer-absolute -univer-top-1 univer-size-2 univer-rotate-45 univer-bg-gray-0
+                              dark:!univer-bg-gray-700
+                            ` : `
+                              univer-absolute -univer-bottom-1 univer-size-2 univer-rotate-45 univer-bg-gray-0
+                              dark:!univer-bg-gray-700
+                            `,
+					style: { left: pointerLeft }
+				})]
+			})
+		}), mountContainer);
+	}
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileMenuDrawer, {
+		visible: true,
+		title: sheetTitle,
+		menuType,
+		menuManagerService: activeMenuManagerService,
+		onClose: handleClose,
+		onOptionSelect: handleOptionSelect
+	});
+}
+
+//#endregion
+//#region src/views/components/sidebar/MobileSidebar.tsx
+function MobileSidebar() {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const sidebarService = (0, _wendellhu_redi_react_bindings.useDependency)(ISidebarService);
+	const sidebarOptions = (0, _wendellhu_redi_react_bindings.useObservable)(sidebarService.sidebarOptions$);
+	const scrollRef = (0, react.useRef)(null);
+	const closeButtonRef = (0, react.useRef)(null);
+	const [drawerSnap, setDrawerSnap] = (0, react.useState)("expanded");
+	const options = (0, react.useMemo)(() => renderSidebarOptions(sidebarOptions), [sidebarOptions]);
+	(0, react.useEffect)(() => {
+		var _closeButtonRef$curre;
+		if (options === null || options === void 0 ? void 0 : options.visible) (_closeButtonRef$curre = closeButtonRef.current) === null || _closeButtonRef$curre === void 0 || _closeButtonRef$curre.focus();
+	}, [options === null || options === void 0 ? void 0 : options.visible]);
+	(0, react.useEffect)(() => {
+		const scrollElement = scrollRef.current;
+		sidebarService.setContainer(scrollElement ?? void 0);
+		const handleScroll = (event) => sidebarService.scrollEvent$.next(event);
+		scrollElement === null || scrollElement === void 0 || scrollElement.addEventListener("scroll", handleScroll);
+		return () => {
+			scrollElement === null || scrollElement === void 0 || scrollElement.removeEventListener("scroll", handleScroll);
+			sidebarService.setContainer(void 0);
+		};
+	}, [options === null || options === void 0 ? void 0 : options.visible, sidebarService]);
+	if (!(options === null || options === void 0 ? void 0 : options.visible)) return null;
+	const close = () => sidebarService.close(sidebarOptions === null || sidebarOptions === void 0 ? void 0 : sidebarOptions.id);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-fixed univer-inset-0 univer-z-[1100]",
+		"data-u-comp": "mobile-sidebar",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			type: "button",
+			"aria-label": localeService.t("ui.sidebar.close"),
+			className: "univer-absolute univer-inset-0 univer-m-0 univer-appearance-none univer-rounded-none univer-border-0 univer-bg-black/35 univer-p-0",
+			onClick: close
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileDrawer, {
+			componentName: "mobile-sidebar-drawer",
+			snap: drawerSnap,
+			expandLabel: localeService.t("ui.ribbon.more"),
+			collapseLabel: localeService.t("ui.ribbon.more"),
+			onSnapChange: setDrawerSnap,
+			onClose: close,
+			role: "dialog",
+			ariaLabel: localeService.t("ui.sidebar.panel"),
+			contentRef: scrollRef,
+			panelClassName: "\n                  univer-bg-gray-0 univer-text-gray-900\n                  dark:!univer-bg-gray-900 dark:!univer-text-gray-0\n                ",
+			contentClassName: "univer-min-h-0 univer-px-4 univer-pb-4",
+			header: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
+				className: "univer-flex univer-h-12 univer-flex-1 univer-items-center univer-justify-between univer-px-4",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-min-w-0 univer-truncate univer-text-base univer-font-semibold",
+					children: options.header
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					ref: closeButtonRef,
+					type: "button",
+					className: "univer-flex univer-size-10 univer-shrink-0 univer-items-center univer-justify-center univer-rounded-full univer-border-0 univer-bg-transparent univer-text-xl univer-text-gray-600 univer-outline-none active:univer-bg-gray-100 dark:!univer-text-gray-300 dark:active:!univer-bg-gray-700",
+					onClick: close,
+					"aria-label": localeService.t("ui.sidebar.close"),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, {})
+				})]
+			}),
+			footer: options.footer ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("footer", {
+				className: "univer-shrink-0 univer-border-0 univer-border-t univer-border-solid univer-border-gray-200 univer-p-4 dark:!univer-border-gray-700",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.ActionRow, { children: options.footer })
+			}) : void 0,
+			children: options.children
+		})]
+	});
+}
+
+//#endregion
+//#region src/views/mobile-workbench/MobileWorkbench.tsx
+function mountMobileWorkbench(injector, options, mountContainer, onRendered) {
+	(0, _univerjs_design.render)(/* @__PURE__ */ (0, react_jsx_runtime.jsx)((0, _wendellhu_redi_react_bindings.connectInjector)(MobileWorkbench, injector), {
+		...options,
+		mountContainer,
+		onRendered
+	}), mountContainer);
+}
+function MobileWorkbench(props) {
+	const { header = true, toolbar = true, footer = true, headerMenu = true, ribbonType = "classic", contextMenu = true, mountContainer, onRendered } = props;
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const lifecycleService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LifecycleService);
+	const workbenchService = (0, _wendellhu_redi_react_bindings.useDependency)(IWorkbenchService);
+	const themeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ThemeService);
+	const themeSwitcherService = (0, _wendellhu_redi_react_bindings.useDependency)(ThemeSwitcherService);
+	const contentRef = (0, react.useRef)(null);
+	const viewportRef = (0, react.useRef)(null);
+	const footerComponents = useComponentsOfPart("footer");
+	const headerComponents = useComponentsOfPart("header");
+	const headerMenuComponents = useComponentsOfPart("header-menu");
+	const contentComponents = useComponentsOfPart("content");
+	const leftSidebarComponents = useComponentsOfPart("left-sidebar");
+	const globalComponents = useComponentsOfPart("global");
+	const toolbarComponents = useComponentsOfPart("toolbar");
+	const darkMode = (0, _wendellhu_redi_react_bindings.useObservable)(themeService.darkMode$, themeService.darkMode);
+	const lifecycleStage = (0, _wendellhu_redi_react_bindings.useObservable)(lifecycleService.lifecycle$, lifecycleService.stage);
+	const externalSkeletonVisible = (0, _wendellhu_redi_react_bindings.useObservable)(workbenchService.skeletonVisible$, void 0, true);
+	const ready = lifecycleStage >= _univerjs_core.LifecycleStages.Ready;
+	(0, react.useEffect)(() => {
+		if (ready && contentRef.current) onRendered === null || onRendered === void 0 || onRendered(contentRef.current);
+	}, [ready, onRendered]);
+	const locale = (0, _wendellhu_redi_react_bindings.useObservable)(() => localeService.localeChanged$.pipe((0, rxjs.map)(() => localeService.getLocales())), localeService.getLocales(), false, [localeService]);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$, localeService.getDirection());
+	const portalContainer = (0, react.useMemo)(() => document.createElement("div"), []);
+	(0, react.useLayoutEffect)(() => {
+		const sub = themeService.currentTheme$.subscribe((theme) => {
+			themeSwitcherService.injectThemeToHead(theme);
+		});
+		return () => {
+			sub.unsubscribe();
+		};
+	}, []);
+	(0, react.useEffect)(() => {
+		document.body.appendChild(portalContainer);
+		return () => {
+			document.body.removeChild(portalContainer);
+		};
+	}, [mountContainer, portalContainer]);
+	(0, react.useEffect)(() => {
+		portalContainer.dir = direction;
+	}, [direction, portalContainer]);
+	(0, react.useLayoutEffect)(() => {
+		document.documentElement.classList.toggle("univer-dark", darkMode);
+	}, [darkMode]);
+	(0, react.useEffect)(() => {
+		const visualViewport = window.visualViewport;
+		const viewportElement = viewportRef.current;
+		if (!viewportElement) return;
+		let stableHeight = Math.round(mountContainer.getBoundingClientRect().height || window.innerHeight);
+		let stableWidth = Math.round(mountContainer.getBoundingClientRect().width || window.innerWidth);
+		const updateKeyboardInset = () => {
+			const visibleBottom = visualViewport ? visualViewport.offsetTop + visualViewport.height : window.innerHeight;
+			viewportElement.style.setProperty("--univer-mobile-keyboard-inset", `${Math.max(0, Math.round(stableHeight - visibleBottom))}px`);
+		};
+		const updateStableViewport = () => {
+			const width = Math.round(mountContainer.getBoundingClientRect().width || window.innerWidth);
+			const activeElement = document.activeElement;
+			if (!(activeElement instanceof HTMLInputElement || activeElement instanceof HTMLTextAreaElement || (activeElement === null || activeElement === void 0 ? void 0 : activeElement.getAttribute("contenteditable")) === "true") || width !== stableWidth) {
+				stableHeight = Math.round(mountContainer.getBoundingClientRect().height || window.innerHeight);
+				stableWidth = width;
+				viewportElement.style.height = `${stableHeight}px`;
+			}
+			updateKeyboardInset();
+		};
+		viewportElement.style.height = `${stableHeight}px`;
+		updateKeyboardInset();
+		window.addEventListener("resize", updateStableViewport);
+		visualViewport === null || visualViewport === void 0 || visualViewport.addEventListener("resize", updateKeyboardInset);
+		visualViewport === null || visualViewport === void 0 || visualViewport.addEventListener("scroll", updateKeyboardInset);
+		return () => {
+			window.removeEventListener("resize", updateStableViewport);
+			visualViewport === null || visualViewport === void 0 || visualViewport.removeEventListener("resize", updateKeyboardInset);
+			visualViewport === null || visualViewport === void 0 || visualViewport.removeEventListener("scroll", updateKeyboardInset);
+		};
+	}, [mountContainer]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)(_univerjs_design.ConfigProvider, {
+		locale: locale === null || locale === void 0 ? void 0 : locale.design,
+		direction,
+		mountContainer: portalContainer,
+		disableTooltips: true,
+		mobile: true,
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			ref: viewportRef,
+			className: "univer-relative univer-h-full univer-min-h-0 [&_button:active]:!univer-opacity-70 [&_button]:univer-touch-manipulation",
+			children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+				"data-u-comp": "app-layout",
+				className: (0, _univerjs_design.clsx)("univer-relative univer-flex univer-h-full univer-min-h-0 univer-flex-col univer-bg-gray-0 dark:!univer-bg-gray-800", { "univer-dark": darkMode }),
+				tabIndex: -1,
+				onBlur: (e) => e.stopPropagation(),
+				onContextMenu: (e) => e.preventDefault(),
+				dir: direction,
+				children: [header && toolbar && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("header", {
+					"data-u-comp": "headerbar",
+					className: "univer-relative univer-z-10 univer-w-full univer-overflow-hidden",
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, {
+						components: toolbarComponents,
+						sharedProps: {
+							ribbonType,
+							headerMenuComponents,
+							headerMenu
+						}
+					}, "toolbar")
+				}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+					className: "univer-relative univer-flex univer-min-h-0 univer-flex-1 univer-flex-col",
+					children: [/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+						className: "univer-grid univer-h-full univer-grid-cols-[auto_1fr_auto] univer-grid-rows-[100%] univer-overflow-hidden",
+						children: [
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("aside", {
+								className: "univer-h-full",
+								children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: leftSidebarComponents }, "left-sidebar")
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsxs)("section", {
+								className: (0, _univerjs_design.clsx)("univer-relative univer-grid univer-flex-1 univer-grid-rows-[auto_1fr] univer-overflow-hidden univer-bg-gray-0 dark:!univer-bg-gray-800", _univerjs_design.borderBottomClassName),
+								children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("header", {
+									className: "univer-w-screen",
+									children: header && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: headerComponents }, "header")
+								}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)("section", {
+									ref: contentRef,
+									className: "univer-relative univer-overflow-hidden",
+									"data-range-selector": true,
+									onContextMenu: (e) => e.preventDefault(),
+									children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: contentComponents }, "content")
+								})]
+							}),
+							/* @__PURE__ */ (0, react_jsx_runtime.jsx)("aside", { className: "univer-h-full" })
+						]
+					}), footer && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("footer", { children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: footerComponents }, "footer") })]
+				})]
+			}), (!ready || externalSkeletonVisible) && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(WorkbenchSkeleton, {
+				darkMode,
+				direction,
+				overlay: true
+			})]
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+			className: "[&_button:active]:!univer-opacity-70 [&_button]:univer-touch-manipulation",
+			dir: direction,
+			children: [
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(ComponentContainer, { components: globalComponents }, "global"),
+				contextMenu && /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileContextMenu, {}),
+				/* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileSidebar, {})
+			]
+		})]
+	});
+}
+
+//#endregion
+//#region src/controllers/ui/ui-mobile.controller.ts
+let MobileUIController = class MobileUIController extends SingleUnitUIController {
+	constructor(_config, injector, lifecycleService, renderManagerService, layoutService, instanceService, menuManagerService, uiPartsService) {
+		super(injector, instanceService, layoutService, lifecycleService, renderManagerService);
+		this._config = _config;
+		menuManagerService.mergeMenu(menuSchema);
+		this._initBuiltinComponents(uiPartsService);
+		this._bootstrapWorkbench();
+	}
+	dispose() {
+		super.dispose();
+	}
+	bootstrap(callback) {
+		return bootstrap(this._injector, this._config, callback);
+	}
+	_initBuiltinComponents(uiPartsService) {
+		this.disposeWithMe(uiPartsService.registerComponent("content", () => (0, _wendellhu_redi_react_bindings.connectInjector)(CanvasPopup, this._injector)));
+		this.disposeWithMe(uiPartsService.registerComponent("content", () => (0, _wendellhu_redi_react_bindings.connectInjector)(FloatDom, this._injector)));
+		this.disposeWithMe(uiPartsService.registerComponent("toolbar", () => (0, _wendellhu_redi_react_bindings.connectInjector)(MobileRibbon, this._injector)));
+	}
+};
+MobileUIController = __decorate([
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.LifecycleService)),
+	__decorateParam(3, _univerjs_engine_render.IRenderManagerService),
+	__decorateParam(4, ILayoutService),
+	__decorateParam(5, _univerjs_core.IUniverInstanceService),
+	__decorateParam(6, IMenuManagerService),
+	__decorateParam(7, IUIPartsService)
+], MobileUIController);
+function bootstrap(injector, options, callback) {
+	let mountContainer;
+	const container = options.container;
+	if (typeof container === "string") {
+		const containerElement = document.getElementById(container);
+		if (!containerElement) mountContainer = createContainer(container);
+		else mountContainer = containerElement;
+	} else if (container instanceof HTMLElement) mountContainer = container;
+	else mountContainer = createContainer("univer");
+	const onRendered = (canvasElement) => callback(canvasElement, mountContainer);
+	function render() {
+		mountMobileWorkbench(injector, options, mountContainer, onRendered);
+	}
+	render();
+	return (0, _univerjs_core.toDisposable)(() => {
+		(0, _univerjs_design.unmount)(mountContainer);
+	});
+}
+function createContainer(id) {
+	const element = document.createElement("div");
+	element.id = id;
+	return element;
+}
+
+//#endregion
+//#region src/services/notification/notification.service.ts
+const INotificationService = (0, _univerjs_core.createIdentifier)("ui.notification.service");
+
+//#endregion
+//#region src/services/before-close/before-close.service.ts
+const IBeforeCloseService = (0, _univerjs_core.createIdentifier)("univer.ui.before-close-service");
+let DesktopBeforeCloseService = class DesktopBeforeCloseService extends _univerjs_core.Disposable {
+	constructor(_notificationService, _localeService) {
+		super();
+		this._notificationService = _notificationService;
+		this._localeService = _localeService;
+		_defineProperty(this, "_beforeUnloadCallbacks", []);
+		_defineProperty(this, "_onCloseCallbacks", []);
+		_defineProperty(this, "_beforeUnloadHandler", void 0);
+		_defineProperty(this, "_unloadHandler", void 0);
+		this._beforeUnloadHandler = (_event) => {
+			let event = _event;
+			const message = this._beforeUnloadCallbacks.map((callback) => callback()).filter((m) => !!m).join("\n");
+			if (message) {
+				this._notificationService.show({
+					type: "error",
+					title: this._localeService.t("ui.beforeClose.title"),
+					content: message
+				});
+				if (typeof event === "undefined") event = window.event;
+				event.returnValue = message;
+				return message;
+			}
+		};
+		this._unloadHandler = () => {
+			this._onCloseCallbacks.forEach((callback) => callback());
+		};
+		this._init();
+	}
+	dispose() {
+		window.removeEventListener("beforeunload", this._beforeUnloadHandler);
+		window.removeEventListener("unload", this._unloadHandler);
+		this._beforeUnloadCallbacks = [];
+		this._onCloseCallbacks = [];
+		super.dispose();
+	}
+	registerBeforeClose(callback) {
+		this._beforeUnloadCallbacks.push(callback);
+		return { dispose: () => {
+			this._beforeUnloadCallbacks = this._beforeUnloadCallbacks.filter((cb) => cb !== callback);
+		} };
+	}
+	registerOnClose(callback) {
+		this._onCloseCallbacks.push(callback);
+		return { dispose: () => {
+			this._onCloseCallbacks = this._onCloseCallbacks.filter((cb) => cb !== callback);
+		} };
+	}
+	_init() {
+		window.addEventListener("beforeunload", this._beforeUnloadHandler);
+		window.addEventListener("unload", this._unloadHandler);
+	}
+};
+DesktopBeforeCloseService = __decorate([__decorateParam(0, INotificationService), __decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService))], DesktopBeforeCloseService);
+
+//#endregion
+//#region src/utils/html.ts
+function sanitizeParsedHtml(root, options) {
+	root.querySelectorAll(options.strippedSelector).forEach((element) => element.remove());
+	root.querySelectorAll("*").forEach((element) => {
+		for (const { name } of Array.from(element.attributes)) if (name.startsWith("on")) element.removeAttribute(name);
+	});
+}
+function parseHtmlFragment(html, options) {
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	sanitizeParsedHtml(doc, options);
+	return doc.body;
+}
+function parseHtmlDocument(html, options) {
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	sanitizeParsedHtml(doc, options);
+	return doc;
+}
+
+//#endregion
+//#region src/services/clipboard/clipboard-utils.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* This function is used to check if the system supports full clipboard API,
+* especially for the clipboard.readText() API.
+*
+* @returns if the system supports clipboard API
+*/
+function supportClipboardAPI() {
+	return typeof navigator.clipboard !== "undefined" && typeof navigator.clipboard.readText !== "undefined";
+}
+
+//#endregion
+//#region src/services/clipboard/clipboard-interface.service.ts
+const PLAIN_TEXT_CLIPBOARD_MIME_TYPE = "text/plain";
+const HTML_CLIPBOARD_MIME_TYPE = "text/html";
+const FILE_PNG_CLIPBOARD_MIME_TYPE = "image/png";
+const FILE__JPEG_CLIPBOARD_MIME_TYPE = "image/jpeg";
+const FILE__BMP_CLIPBOARD_MIME_TYPE = "image/bmp";
+const FILE__WEBP_CLIPBOARD_MIME_TYPE = "image/webp";
+const FILE_SVG_XML_CLIPBOARD_MIME_TYPE = "image/svg+xml";
+const imageMimeTypeSet = /* @__PURE__ */ new Set([
+	FILE__BMP_CLIPBOARD_MIME_TYPE,
+	FILE__JPEG_CLIPBOARD_MIME_TYPE,
+	FILE__WEBP_CLIPBOARD_MIME_TYPE,
+	FILE_PNG_CLIPBOARD_MIME_TYPE
+]);
+const DROP_CONTENT_TAGS = /* @__PURE__ */ new Set([
+	"base",
+	"button",
+	"embed",
+	"form",
+	"frame",
+	"frameset",
+	"head",
+	"iframe",
+	"input",
+	"link",
+	"meta",
+	"object",
+	"script",
+	"select",
+	"style",
+	"template",
+	"textarea"
+]);
+const ALLOWED_HTML_TAGS = /* @__PURE__ */ new Set([
+	"a",
+	"b",
+	"blockquote",
+	"br",
+	"caption",
+	"code",
+	"col",
+	"colgroup",
+	"dd",
+	"div",
+	"dl",
+	"dt",
+	"em",
+	"font",
+	"h1",
+	"h2",
+	"h3",
+	"h4",
+	"h5",
+	"h6",
+	"hr",
+	"i",
+	"img",
+	"li",
+	"ol",
+	"p",
+	"pre",
+	"s",
+	"span",
+	"strike",
+	"strong",
+	"sub",
+	"sup",
+	"table",
+	"tbody",
+	"td",
+	"tfoot",
+	"th",
+	"thead",
+	"tr",
+	"u",
+	"ul"
+]);
+const ALLOWED_HTML_ATTRIBUTES = /* @__PURE__ */ new Set([
+	"align",
+	"alt",
+	"aria-colindex",
+	"aria-colspan",
+	"aria-label",
+	"aria-labelledby",
+	"aria-rowindex",
+	"aria-rowspan",
+	"bgcolor",
+	"border",
+	"cellpadding",
+	"cellspacing",
+	"class",
+	"colspan",
+	"color",
+	"dir",
+	"face",
+	"headers",
+	"height",
+	"href",
+	"lang",
+	"rel",
+	"role",
+	"rowspan",
+	"size",
+	"src",
+	"style",
+	"target",
+	"title",
+	"valign",
+	"width"
+]);
+const IClipboardInterfaceService = (0, _univerjs_core.createIdentifier)("univer.clipboard-interface-service");
+let BrowserClipboardService = class BrowserClipboardService extends _univerjs_core.Disposable {
+	get supportClipboard() {
+		return supportClipboardAPI();
+	}
+	constructor(_localeService, _logService, _notificationService) {
+		super();
+		this._localeService = _localeService;
+		this._logService = _logService;
+		this._notificationService = _notificationService;
+	}
+	async write(text, html, customData) {
+		if (!this.supportClipboard || typeof ClipboardItem === "undefined" || typeof navigator.clipboard.write !== "function") return this._legacyCopyHtml(text, html);
+		try {
+			return await navigator.clipboard.write([new ClipboardItem({
+				[PLAIN_TEXT_CLIPBOARD_MIME_TYPE]: new Blob([text], { type: PLAIN_TEXT_CLIPBOARD_MIME_TYPE }),
+				[HTML_CLIPBOARD_MIME_TYPE]: new Blob([html], { type: HTML_CLIPBOARD_MIME_TYPE }),
+				...Object.fromEntries(Object.entries(customData ?? {}).map(([type, value]) => [type, new Blob([value], { type })]))
+			})]);
+		} catch (error) {
+			if (customData && Object.keys(customData).length) try {
+				return await navigator.clipboard.write([new ClipboardItem({
+					[PLAIN_TEXT_CLIPBOARD_MIME_TYPE]: new Blob([text], { type: PLAIN_TEXT_CLIPBOARD_MIME_TYPE }),
+					[HTML_CLIPBOARD_MIME_TYPE]: new Blob([html], { type: HTML_CLIPBOARD_MIME_TYPE })
+				})]);
+			} catch (fallbackError) {
+				this._logService.error("[BrowserClipboardService]", fallbackError);
+				this._showClipboardAuthenticationNotification();
+				return;
+			}
+			this._logService.error("[BrowserClipboardService]", error);
+			this._showClipboardAuthenticationNotification();
+		}
+	}
+	async writeText(text) {
+		if (!this.supportClipboard) return this._legacyCopyText(text);
+		try {
+			return await navigator.clipboard.writeText(text);
+		} catch (error) {
+			this._logService.error("[BrowserClipboardService]", error);
+			this._showClipboardAuthenticationNotification();
+		}
+	}
+	async read() {
+		if (!this.supportClipboard) throw new Error("[BrowserClipboardService] read() is not supported on this platform.");
+		try {
+			return navigator.clipboard.read();
+		} catch (e) {
+			this._logService.error("[BrowserClipboardService]", e);
+			this._showClipboardAuthenticationNotification();
+			return [];
+		}
+	}
+	async readText() {
+		if (!this.supportClipboard) throw new Error("[BrowserClipboardService] read() is not supported on this platform.");
+		try {
+			return await navigator.clipboard.readText();
+		} catch (e) {
+			this._logService.error("[BrowserClipboardService]", e);
+			this._showClipboardAuthenticationNotification();
+			return "";
+		}
+	}
+	_legacyCopyHtml(text, html) {
+		const activeElement = document.activeElement;
+		const sanitizedHtml = serializeSanitizedHtmlForClipboard(html);
+		let handledByClipboardEvent = false;
+		const onCopy = (event) => {
+			if (!event.clipboardData) return;
+			event.preventDefault();
+			event.clipboardData.setData(PLAIN_TEXT_CLIPBOARD_MIME_TYPE, text);
+			event.clipboardData.setData(HTML_CLIPBOARD_MIME_TYPE, sanitizedHtml);
+			handledByClipboardEvent = true;
+		};
+		document.addEventListener("copy", onCopy);
+		try {
+			document.execCommand("copy");
+			if (!handledByClipboardEvent) {
+				const container = createCopyHtmlContainer();
+				document.body.appendChild(container);
+				container.innerHTML = sanitizedHtml;
+				try {
+					select(container);
+					document.execCommand("copy");
+				} finally {
+					document.body.removeChild(container);
+				}
+			}
+		} finally {
+			document.removeEventListener("copy", onCopy);
+			if (activeElement instanceof HTMLElement) activeElement.focus();
+		}
+	}
+	_legacyCopyText(text) {
+		const activeElement = document.activeElement;
+		const container = createCopyTextContainer();
+		document.body.appendChild(container);
+		container.value = text;
+		try {
+			select(container);
+			document.execCommand("copy");
+		} finally {
+			if (activeElement instanceof HTMLElement) activeElement.focus();
+			document.body.removeChild(container);
+		}
+	}
+	_showClipboardAuthenticationNotification() {
+		var _this$_notificationSe;
+		(_this$_notificationSe = this._notificationService) === null || _this$_notificationSe === void 0 || _this$_notificationSe.show({
+			type: "warning",
+			title: this._localeService.t("ui.clipboard.authentication.title"),
+			content: this._localeService.t("ui.clipboard.authentication.content")
+		});
+	}
+};
+BrowserClipboardService = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.LocaleService)),
+	__decorateParam(1, _univerjs_core.ILogService),
+	__decorateParam(2, (0, _univerjs_core.Optional)(INotificationService))
+], BrowserClipboardService);
+function createCopyTextContainer() {
+	const textArea = document.createElement("textarea");
+	textArea.style.position = "absolute";
+	textArea.style.height = "1px";
+	textArea.style.width = "1px";
+	textArea.style.opacity = "0";
+	textArea.readOnly = true;
+	return textArea;
+}
+function createCopyHtmlContainer() {
+	const div = document.createElement("div");
+	div.contentEditable = "true";
+	div.style.position = "absolute";
+	div.style.opacity = "0";
+	div.style.height = "1px";
+	div.style.width = "1px";
+	return div;
+}
+function sanitizeHtmlForClipboard(html) {
+	const doc = new DOMParser().parseFromString(html, HTML_CLIPBOARD_MIME_TYPE);
+	sanitizeParsedHtml(doc, { strippedSelector: "script, iframe, object, embed" });
+	const fragment = document.createDocumentFragment();
+	Array.from(doc.body.childNodes).forEach((node) => {
+		const sanitizedNode = sanitizeHtmlNode(node);
+		if (sanitizedNode) fragment.appendChild(sanitizedNode);
+	});
+	return fragment;
+}
+function serializeSanitizedHtmlForClipboard(html) {
+	const container = document.createElement("div");
+	container.appendChild(sanitizeHtmlForClipboard(html));
+	const sanitizedHtml = container.innerHTML;
+	if (!(html.includes("xmlns:x=\"urn:schemas-microsoft-com:office:excel\"") && html.includes("<meta name=\"ProgId\" content=\"Excel.Sheet\">") && html.includes("<meta name=\"Generator\" content=\"Univer\">"))) return sanitizedHtml;
+	return `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="ProgId" content="Excel.Sheet"><meta name="Generator" content="Univer"></head><body><!--StartFragment-->${sanitizedHtml}<!--EndFragment--></body></html>`;
+}
+function sanitizeHtmlNode(node) {
+	if (node.nodeType === Node.TEXT_NODE) return document.createTextNode(node.textContent ?? "");
+	if (node.nodeType !== Node.ELEMENT_NODE) return null;
+	const sourceElement = node;
+	const tagName = sourceElement.tagName.toLowerCase();
+	if (DROP_CONTENT_TAGS.has(tagName)) return null;
+	if (!ALLOWED_HTML_TAGS.has(tagName)) {
+		const fragment = document.createDocumentFragment();
+		Array.from(sourceElement.childNodes).forEach((childNode) => {
+			const sanitizedChildNode = sanitizeHtmlNode(childNode);
+			if (sanitizedChildNode) fragment.appendChild(sanitizedChildNode);
+		});
+		return fragment;
+	}
+	const sanitizedElement = document.createElement(tagName);
+	copySanitizedAttributes(sourceElement, sanitizedElement);
+	Array.from(sourceElement.childNodes).forEach((childNode) => {
+		const sanitizedChildNode = sanitizeHtmlNode(childNode);
+		if (sanitizedChildNode) sanitizedElement.appendChild(sanitizedChildNode);
+	});
+	return sanitizedElement;
+}
+function copySanitizedAttributes(sourceElement, targetElement) {
+	Array.from(sourceElement.attributes).forEach((attribute) => {
+		const attributeName = attribute.name.toLowerCase();
+		if (attributeName.startsWith("on")) return;
+		if (attributeName.startsWith("data-") || attributeName.startsWith("aria-")) {
+			targetElement.setAttribute(attribute.name, attribute.value);
+			return;
+		}
+		if (!ALLOWED_HTML_ATTRIBUTES.has(attributeName)) return;
+		if (attributeName === "href" || attributeName === "src") {
+			const sanitizedUrl = sanitizeHtmlUrl(attribute.value, attributeName === "src");
+			if (sanitizedUrl) targetElement.setAttribute(attribute.name, sanitizedUrl);
+			return;
+		}
+		if (attributeName === "style") {
+			const sanitizedStyle = sanitizeInlineStyle(attribute.value);
+			if (sanitizedStyle) targetElement.setAttribute(attribute.name, sanitizedStyle);
+			return;
+		}
+		targetElement.setAttribute(attribute.name, attribute.value);
+	});
+}
+function sanitizeHtmlUrl(value, allowDataImage) {
+	const trimmedValue = value.trim();
+	if (!trimmedValue) return null;
+	if (trimmedValue.startsWith("#")) return trimmedValue;
+	if (/^(?:https?:|mailto:|tel:)/i.test(trimmedValue)) return trimmedValue;
+	if (allowDataImage && /^data:image\/[a-z0-9.+-]+;base64,/i.test(trimmedValue)) return trimmedValue;
+	if (/^(?:\/|\.\/|\.\.\/)/.test(trimmedValue)) return trimmedValue;
+	return null;
+}
+function sanitizeInlineStyle(styleText) {
+	const probe = document.createElement("div");
+	probe.style.cssText = styleText;
+	const sanitizedDeclarations = [];
+	Array.from(probe.style).forEach((propertyName) => {
+		const propertyValue = probe.style.getPropertyValue(propertyName).trim();
+		if (!propertyValue || isUnsafeStyleValue(propertyValue)) return;
+		sanitizedDeclarations.push(`${propertyName}: ${propertyValue}`);
+	});
+	return sanitizedDeclarations.join("; ");
+}
+function isUnsafeStyleValue(styleValue) {
+	return /(expression\s*\(|url\s*\(|javascript:|vbscript:|mocha:|-moz-binding|behavior\s*:|@import)/i.test(styleValue);
+}
+function select(element) {
+	if (element instanceof HTMLTextAreaElement) {
+		const isReadOnly = element.hasAttribute("readonly");
+		if (!isReadOnly) element.setAttribute("readonly", "");
+		element.select();
+		element.setSelectionRange(0, element.value.length);
+		if (!isReadOnly) element.removeAttribute("readonly");
+		return element.value;
+	}
+	if (element.hasAttribute("contenteditable")) element.focus();
+	const range = document.createRange();
+	range.selectNodeContents(element);
+	const selection = window.getSelection();
+	if (!selection) throw new Error();
+	selection.removeAllRanges();
+	selection.addRange(range);
+	return selection.toString();
+}
+
+//#endregion
+//#region src/views/components/confirm-part/ConfirmPart.tsx
+const ContextConfirm = (props) => {
+	const { children, onClose, onConfirm } = props;
+	const [hooks] = (0, react.useState)({});
+	const childrenWithHooks = children ? (0, react.cloneElement)(children, { hooks }) : null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Confirm, {
+		...props,
+		children: childrenWithHooks,
+		onClose: () => {
+			const beforeClose = hooks.beforeClose;
+			if (beforeClose) {
+				const result = beforeClose();
+				if (result.cancel) return;
+				onClose === null || onClose === void 0 || onClose(result);
+				return;
+			}
+			onClose === null || onClose === void 0 || onClose();
+		},
+		onConfirm: () => {
+			const beforeConfirm = hooks.beforeConfirm;
+			if (beforeConfirm) {
+				const result = beforeConfirm();
+				if (result.cancel) return;
+				onConfirm === null || onConfirm === void 0 || onConfirm(result);
+				return;
+			}
+			onConfirm === null || onConfirm === void 0 || onConfirm();
+		}
+	});
+};
+function ConfirmPart() {
+	const props = (0, _wendellhu_redi_react_bindings.useObservable)((0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IConfirmService).confirmOptions$, []).map((options) => {
+		const { children, title, ...restProps } = options;
+		const confirmProps = restProps;
+		for (const key of ["children", "title"]) {
+			const k = key;
+			const props = options[k];
+			if (props) confirmProps[k] = /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, { ...props });
+		}
+		return confirmProps;
+	});
+	return props === null || props === void 0 ? void 0 : props.map((options, index) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(ContextConfirm, {
+		...options,
+		children: options.children
+	}, index));
+}
+
+//#endregion
+//#region src/services/confirm/desktop-confirm.service.ts
+let DesktopConfirmService = class DesktopConfirmService extends _univerjs_core.Disposable {
+	constructor(_injector, _uiPartsService) {
+		super();
+		this._injector = _injector;
+		this._uiPartsService = _uiPartsService;
+		_defineProperty(this, "_confirmOptions", []);
+		_defineProperty(this, "confirmOptions$", new rxjs.BehaviorSubject([]));
+		this._initUIPart();
+	}
+	open(option) {
+		if (this._confirmOptions.find((item) => item.id === option.id)) this._confirmOptions = this._confirmOptions.map((item) => ({
+			...item.id === option.id ? option : item,
+			visible: item.id === option.id ? true : item.visible
+		}));
+		else this._confirmOptions.push({
+			...option,
+			visible: true
+		});
+		this.confirmOptions$.next(this._confirmOptions);
+		return (0, _univerjs_core.toDisposable)(() => {
+			this._confirmOptions = [];
+			this.confirmOptions$.next([]);
+		});
+	}
+	confirm(params) {
+		return new Promise((resolve) => {
+			const disposeHandler = this.open({
+				...params,
+				onConfirm: () => {
+					disposeHandler.dispose();
+					resolve(true);
+				},
+				onClose: () => {
+					disposeHandler.dispose();
+					resolve(false);
+				}
+			});
+		});
+	}
+	close(id) {
+		this._confirmOptions = this._confirmOptions.map((item) => ({
+			...item,
+			visible: item.id === id ? false : item.visible
+		}));
+		this.confirmOptions$.next([...this._confirmOptions]);
+	}
+	_initUIPart() {
+		this.disposeWithMe(this._uiPartsService.registerComponent("global", () => (0, _wendellhu_redi_react_bindings.connectInjector)(ConfirmPart, this._injector)));
+	}
+};
+DesktopConfirmService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)), __decorateParam(1, IUIPartsService)], DesktopConfirmService);
+
+//#endregion
+//#region src/views/components/dialog-part/MobileDialogPart.tsx
+function toMobileDialogOptions(options) {
+	const { children, title, footer, ...rest } = options;
+	return {
+		...rest,
+		children: children ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, { ...children }) : void 0,
+		title: title ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, { ...title }) : void 0,
+		footer: footer ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, { ...footer }) : void 0
+	};
+}
+function MobileDialogPart() {
+	const dialogService = (0, _wendellhu_redi_react_bindings.useDependency)(IDialogService);
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const dialogOptions = (0, _wendellhu_redi_react_bindings.useObservable)(dialogService.getDialogs$(), []);
+	const options = (0, react.useMemo)(() => {
+		const activeDialogs = dialogOptions.filter((item) => item.open !== false);
+		const active = activeDialogs[activeDialogs.length - 1];
+		return active ? toMobileDialogOptions(active) : null;
+	}, [dialogOptions]);
+	const [drawerSnap, setDrawerSnap] = (0, react.useState)("expanded");
+	if (!options) return null;
+	const close = () => {
+		var _options$onClose, _options$onOpenChange;
+		dialogService.close(options.id);
+		(_options$onClose = options.onClose) === null || _options$onClose === void 0 || _options$onClose.call(options);
+		(_options$onOpenChange = options.onOpenChange) === null || _options$onOpenChange === void 0 || _options$onOpenChange.call(options, false);
+	};
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: "univer-fixed univer-inset-0 univer-z-[1200]",
+		"data-u-comp": "mobile-dialog",
+		children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+			type: "button",
+			"aria-label": localeService.t("ui.sidebar.close"),
+			className: "univer-absolute univer-inset-0 univer-m-0 univer-appearance-none univer-rounded-none univer-border-0 univer-bg-black/35 univer-p-0",
+			onClick: options.maskClosable === false ? void 0 : close
+		}), /* @__PURE__ */ (0, react_jsx_runtime.jsx)(MobileDrawer, {
+			componentName: "mobile-dialog-drawer",
+			snap: drawerSnap,
+			expandLabel: localeService.t("ui.sidebar.resize"),
+			collapseLabel: localeService.t("ui.sidebar.resize"),
+			onSnapChange: setDrawerSnap,
+			onClose: close,
+			role: "dialog",
+			panelClassName: "\n                  univer-bg-gray-0 univer-text-gray-900\n                  dark:!univer-bg-gray-900 dark:!univer-text-gray-0\n                ",
+			contentClassName: "univer-min-h-0 univer-px-4 univer-pb-4",
+			header: /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("header", {
+				className: "univer-flex univer-h-12 univer-flex-1 univer-items-center univer-justify-between univer-px-4",
+				children: [/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					className: "univer-min-w-0 univer-truncate univer-text-base univer-font-semibold",
+					children: options.title
+				}), options.closable !== false && /* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+					type: "button",
+					className: "univer-flex univer-size-10 univer-shrink-0 univer-items-center univer-justify-center univer-rounded-full univer-border-0 univer-bg-transparent univer-text-xl univer-text-gray-600 univer-outline-none active:univer-bg-gray-100 dark:!univer-text-gray-300 dark:active:!univer-bg-gray-700",
+					onClick: close,
+					"aria-label": localeService.t("ui.sidebar.close"),
+					children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, {})
+				})]
+			}),
+			footer: options.footer ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)("footer", {
+				className: "univer-shrink-0 univer-border-0 univer-border-t univer-border-solid univer-border-gray-200 univer-p-4 dark:!univer-border-gray-700",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.ActionRow, { children: options.footer })
+			}) : void 0,
+			children: options.children
+		})]
+	});
+}
+
+//#endregion
+//#region src/views/components/dialog-part/DialogPart.tsx
+function DialogPart() {
+	const dialogOptions = (0, _wendellhu_redi_react_bindings.useObservable)((0, _wendellhu_redi_react_bindings.useDependency)(IDialogService).getDialogs$(), []);
+	const attrs = (0, react.useMemo)(() => dialogOptions.map((options) => {
+		const { children, title, footer, ...restProps } = options;
+		const dialogProps = restProps;
+		for (const key of [
+			"children",
+			"title",
+			"footer"
+		]) {
+			const k = key;
+			const props = options[k];
+			if (props) {
+				const { key: itemKey, ...customLabelProps } = props;
+				dialogProps[k] = /* @__PURE__ */ (0, react_jsx_runtime.jsx)(CustomLabel, { ...customLabelProps }, itemKey);
+			}
+		}
+		return dialogProps;
+	}), [dialogOptions]);
+	return attrs === null || attrs === void 0 ? void 0 : attrs.map((options) => /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Dialog, { ...options }, options.id));
+}
+
+//#endregion
+//#region src/services/dialog/desktop-dialog.service.ts
+let DesktopDialogService = class DesktopDialogService extends _univerjs_core.Disposable {
+	constructor(_injector, _uiPartsService) {
+		super();
+		this._injector = _injector;
+		this._uiPartsService = _uiPartsService;
+		_defineProperty(this, "_dialogOptions", []);
+		_defineProperty(this, "_dialogOptions$", new rxjs.Subject());
+		this._initUIPart();
+	}
+	dispose() {
+		super.dispose();
+		this._dialogOptions = [];
+		this._dialogOptions$.complete();
+	}
+	open(option) {
+		if (this._dialogOptions.find((item) => item.id === option.id)) this._dialogOptions = this._dialogOptions.map((item) => ({
+			...item.id === option.id ? option : item,
+			open: item.id === option.id ? true : item.open
+		}));
+		else this._dialogOptions.push({
+			...option,
+			open: true
+		});
+		this._dialogOptions$.next(this._dialogOptions);
+		return (0, _univerjs_core.toDisposable)(() => {
+			this._dialogOptions = [];
+			this._dialogOptions$.next([]);
+		});
+	}
+	close(id) {
+		this._dialogOptions = this._dialogOptions.map((item) => ({
+			...item,
+			open: item.id === id ? false : item.open
+		}));
+		this._dialogOptions$.next([...this._dialogOptions]);
+	}
+	closeAll(expectIds) {
+		const expectIdSet = new Set(expectIds);
+		this._dialogOptions = this._dialogOptions.map((item) => ({
+			...item,
+			open: expectIdSet.has(item.id) ? item.open : false
+		}));
+		this._dialogOptions$.next([...this._dialogOptions]);
+	}
+	getDialogs$() {
+		return this._dialogOptions$.asObservable();
+	}
+	_initUIPart() {
+		this.disposeWithMe(this._uiPartsService.registerComponent("global", () => (0, _wendellhu_redi_react_bindings.connectInjector)(DialogPart, this._injector)));
+	}
+};
+DesktopDialogService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)), __decorateParam(1, IUIPartsService)], DesktopDialogService);
+
+//#endregion
+//#region src/services/dialog/mobile-dialog.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let MobileDialogService = class MobileDialogService extends DesktopDialogService {
+	constructor(injector, uiPartsService) {
+		super(injector, uiPartsService);
+	}
+	close(id) {
+		const dialog = this._dialogOptions.find((item) => item.id === id);
+		if (!dialog || dialog.open === false) return;
+		super.close(id);
+	}
+	_initUIPart() {
+		this.disposeWithMe(this._uiPartsService.registerComponent("global", () => (0, _wendellhu_redi_react_bindings.connectInjector)(MobileDialogPart, this._injector)));
+	}
+};
+MobileDialogService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)), __decorateParam(1, IUIPartsService)], MobileDialogService);
+
+//#endregion
+//#region src/services/gallery/gallery.service.ts
+const IGalleryService = (0, _univerjs_core.createIdentifier)("univer.ui.gallery-service");
+
+//#endregion
+//#region src/views/components/gallery-part/GalleryPart.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function GalleryPart() {
+	const gallery = (0, _wendellhu_redi_react_bindings.useObservable)((0, _wendellhu_redi_react_bindings.useDependency)(IGalleryService).gallery$);
+	if (!gallery) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Gallery, { ...gallery });
+}
+
+//#endregion
+//#region src/services/gallery/desktop-gallery.service.ts
+let DesktopGalleryService = class DesktopGalleryService extends _univerjs_core.Disposable {
+	constructor(_injector, _uiPartsService) {
+		super();
+		this._injector = _injector;
+		this._uiPartsService = _uiPartsService;
+		_defineProperty(this, "gallery$", new rxjs.ReplaySubject(1));
+		this._initUIPart();
+	}
+	dispose() {
+		super.dispose();
+	}
+	open(option) {
+		this.gallery$.next({
+			open: true,
+			...option
+		});
+		return (0, _univerjs_core.toDisposable)(() => {
+			this.gallery$.complete();
+		});
+	}
+	close() {
+		this.gallery$.next({
+			open: false,
+			images: []
+		});
+	}
+	_initUIPart() {
+		this.disposeWithMe(this._uiPartsService.registerComponent("global", () => (0, _wendellhu_redi_react_bindings.connectInjector)(GalleryPart, this._injector)));
+	}
+};
+DesktopGalleryService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)), __decorateParam(1, IUIPartsService)], DesktopGalleryService);
+
+//#endregion
+//#region src/services/local-file/desktop-local-file.service.ts
+var DesktopLocalFileService = class extends _univerjs_core.Disposable {
+	openFile(options) {
+		return new Promise((resolve) => {
+			const inputElement = document.createElement("input");
+			inputElement.type = "file";
+			inputElement.accept = (options === null || options === void 0 ? void 0 : options.accept) ?? "";
+			inputElement.multiple = (options === null || options === void 0 ? void 0 : options.multiple) ?? false;
+			inputElement.onchange = (event) => {
+				const fileList = event.target.files;
+				if (fileList) resolve(Array.from(fileList));
+			};
+			inputElement.click();
+		});
+	}
+	downloadFile(data, fileName) {
+		const a = document.createElement("a");
+		a.download = fileName;
+		a.href = window.URL.createObjectURL(data);
+		a.click();
+	}
+};
+
+//#endregion
+//#region src/services/local-file/local-file.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* This service is used to upload files.
+*/
+const ILocalFileService = (0, _univerjs_core.createIdentifier)("univer-ui.local-file.service");
+
+//#endregion
+//#region src/utils/storage-driver.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const DB_NAME = "UniverLocalStorage";
+const STORE_NAME = "kv";
+const DB_VERSION = 1;
+var IndexedDBDriver = class {
+	constructor() {
+		_defineProperty(this, "_db", void 0);
+		this._db = this._init();
+	}
+	_init() {
+		return new Promise((resolve, reject) => {
+			const req = indexedDB.open(DB_NAME, DB_VERSION);
+			req.onerror = () => reject(req.error);
+			req.onsuccess = () => resolve(req.result);
+			req.onupgradeneeded = () => {
+				req.result.createObjectStore(STORE_NAME);
+			};
+		});
+	}
+	_store(mode) {
+		return this._db.then((db) => {
+			return db.transaction(STORE_NAME, mode).objectStore(STORE_NAME);
+		});
+	}
+	async getItem(key) {
+		const store = await this._store("readonly");
+		return new Promise((resolve, reject) => {
+			const req = store.get(key);
+			req.onsuccess = () => resolve(req.result ?? null);
+			req.onerror = () => reject(req.error);
+		});
+	}
+	async setItem(key, value) {
+		const store = await this._store("readwrite");
+		return new Promise((resolve, reject) => {
+			const req = store.put(value, key);
+			req.onsuccess = () => resolve(value);
+			req.onerror = () => reject(req.error);
+		});
+	}
+	async removeItem(key) {
+		const store = await this._store("readwrite");
+		return new Promise((resolve, reject) => {
+			const req = store.delete(key);
+			req.onsuccess = () => resolve();
+			req.onerror = () => reject(req.error);
+		});
+	}
+	async clear() {
+		const store = await this._store("readwrite");
+		return new Promise((resolve, reject) => {
+			const req = store.clear();
+			req.onsuccess = () => resolve();
+			req.onerror = () => reject(req.error);
+		});
+	}
+	async key(index) {
+		const store = await this._store("readonly");
+		return new Promise((resolve, reject) => {
+			const req = store.openCursor();
+			let i = 0;
+			req.onsuccess = () => {
+				const cursor = req.result;
+				if (!cursor) return resolve(null);
+				if (i === index) return resolve(cursor.key);
+				i++;
+				cursor.continue();
+			};
+			req.onerror = () => reject(req.error);
+		});
+	}
+	async keys() {
+		const store = await this._store("readonly");
+		return new Promise((resolve, reject) => {
+			const req = store.openCursor();
+			const keys = [];
+			req.onsuccess = () => {
+				const cursor = req.result;
+				if (!cursor) return resolve(keys);
+				keys.push(cursor.key);
+				cursor.continue();
+			};
+			req.onerror = () => reject(req.error);
+		});
+	}
+	async iterate(iteratee) {
+		const store = await this._store("readonly");
+		return new Promise((resolve, reject) => {
+			const req = store.openCursor();
+			let i = 1;
+			let result = void 0;
+			req.onsuccess = () => {
+				const cursor = req.result;
+				if (!cursor) return resolve(result);
+				result = iteratee(cursor.value, cursor.key, i++);
+				if (result !== void 0) return resolve(result);
+				cursor.continue();
+			};
+			req.onerror = () => reject(req.error);
+		});
+	}
+};
+var LocalStorageDriver = class {
+	constructor() {
+		_defineProperty(this, "_prefix", `${DB_NAME}/`);
+	}
+	_key(key) {
+		return this._prefix + key;
+	}
+	_rawKey(key) {
+		return key.startsWith(this._prefix) ? key.slice(this._prefix.length) : key;
+	}
+	async getItem(key) {
+		try {
+			const item = localStorage.getItem(this._key(key));
+			return item ? JSON.parse(item) : null;
+		} catch {
+			return null;
+		}
+	}
+	async setItem(key, value) {
+		localStorage.setItem(this._key(key), JSON.stringify(value));
+		return value;
+	}
+	async removeItem(key) {
+		localStorage.removeItem(this._key(key));
+	}
+	async clear() {
+		const toRemove = [];
+		for (let i = 0; i < localStorage.length; i++) {
+			const k = localStorage.key(i);
+			if (k.startsWith(this._prefix)) toRemove.push(k);
+		}
+		toRemove.forEach((k) => localStorage.removeItem(k));
+	}
+	async key(index) {
+		return this._keys()[index] ?? null;
+	}
+	async keys() {
+		return this._keys();
+	}
+	_keys() {
+		const keys = [];
+		for (let i = 0; i < localStorage.length; i++) {
+			const k = localStorage.key(i);
+			if (k.startsWith(this._prefix)) keys.push(this._rawKey(k));
+		}
+		return keys;
+	}
+	async iterate(iteratee) {
+		const keys = this._keys();
+		for (let i = 0; i < keys.length; i++) {
+			const key = keys[i];
+			const result = iteratee(await this.getItem(key), key, i + 1);
+			if (result !== void 0) return result;
+		}
+	}
+};
+var FallbackStorageDriver = class {
+	constructor(_primary, _fallback) {
+		this._primary = _primary;
+		this._fallback = _fallback;
+		_defineProperty(this, "_fallbackEnabled", false);
+	}
+	async _run(primary, fallback) {
+		if (this._fallbackEnabled) return fallback();
+		try {
+			return await primary();
+		} catch {
+			this._fallbackEnabled = true;
+			return fallback();
+		}
+	}
+	getItem(key) {
+		return this._run(() => this._primary.getItem(key), () => this._fallback.getItem(key));
+	}
+	setItem(key, value) {
+		return this._run(() => this._primary.setItem(key, value), () => this._fallback.setItem(key, value));
+	}
+	removeItem(key) {
+		return this._run(() => this._primary.removeItem(key), () => this._fallback.removeItem(key));
+	}
+	clear() {
+		return this._run(() => this._primary.clear(), () => this._fallback.clear());
+	}
+	key(index) {
+		return this._run(() => this._primary.key(index), () => this._fallback.key(index));
+	}
+	keys() {
+		return this._run(() => this._primary.keys(), () => this._fallback.keys());
+	}
+	iterate(iteratee) {
+		return this._run(() => this._primary.iterate(iteratee), () => this._fallback.iterate(iteratee));
+	}
+};
+function createDriver() {
+	try {
+		if (typeof indexedDB !== "undefined") return new FallbackStorageDriver(new IndexedDBDriver(), new LocalStorageDriver());
+	} catch {}
+	return new LocalStorageDriver();
+}
+const browserStorage = createDriver();
+
+//#endregion
+//#region src/services/local-storage/local-storage.service.ts
+var DesktopLocalStorageService = class {
+	getItem(key) {
+		return browserStorage.getItem(key);
+	}
+	setItem(key, value) {
+		return browserStorage.setItem(key, value);
+	}
+	removeItem(key) {
+		return browserStorage.removeItem(key);
+	}
+	clear() {
+		return browserStorage.clear();
+	}
+	key(index) {
+		return browserStorage.key(index);
+	}
+	keys() {
+		return browserStorage.keys();
+	}
+	iterate(iteratee) {
+		return browserStorage.iterate(iteratee);
+	}
+};
+
+//#endregion
+//#region src/views/message/MessageContainer.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function MessageContainer() {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const darkMode = (0, _wendellhu_redi_react_bindings.useObservable)((0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ThemeService).darkMode$);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Messager, {
+		theme: darkMode ? "dark" : "light",
+		dir: direction
+	});
+}
+
+//#endregion
+//#region src/services/message/desktop-message.service.ts
+let messageId = 0;
+let DesktopMessageService = class DesktopMessageService extends _univerjs_core.Disposable {
+	constructor(_injector, _uiPartsService) {
+		super();
+		this._injector = _injector;
+		this._uiPartsService = _uiPartsService;
+		this._initUIPart();
+	}
+	_initUIPart() {
+		this.disposeWithMe(this._uiPartsService.registerComponent("global", () => (0, _wendellhu_redi_react_bindings.connectInjector)(MessageContainer, this._injector)));
+	}
+	dispose() {
+		super.dispose();
+		(0, _univerjs_design.removeMessage)();
+	}
+	show(options) {
+		const id = options.id ?? `message-${Date.now()}-${messageId}`;
+		messageId += 1;
+		(0, _univerjs_design.message)(Object.assign({}, options, { id }));
+		return (0, _univerjs_core.toDisposable)(() => (0, _univerjs_design.removeMessage)(id));
+	}
+	remove(id) {
+		(0, _univerjs_design.removeMessage)(id);
+	}
+	removeAll() {
+		(0, _univerjs_design.removeMessage)();
+	}
+};
+DesktopMessageService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)), __decorateParam(1, IUIPartsService)], DesktopMessageService);
+
+//#endregion
+//#region src/views/notification/Notification.tsx
+function Notification() {
+	const localeService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.LocaleService);
+	const darkMode = (0, _wendellhu_redi_react_bindings.useObservable)((0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.ThemeService).darkMode$);
+	const direction = (0, _wendellhu_redi_react_bindings.useObservable)(localeService.direction$);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Toaster, {
+		theme: darkMode ? "dark" : "light",
+		dir: direction
+	});
+}
+const notification = { show: (options) => {
+	const { type = "message", title, content, duration, closable = true, position = "top-right" } = options;
+	_univerjs_design.toast[type](title, {
+		position,
+		description: content,
+		duration,
+		closeButton: closable
+	});
+} };
+
+//#endregion
+//#region src/services/notification/desktop-notification.service.ts
+let DesktopNotificationService = class DesktopNotificationService extends _univerjs_core.Disposable {
+	constructor(_injector, _uiPartsService) {
+		super();
+		this._injector = _injector;
+		this._uiPartsService = _uiPartsService;
+		this._initUIPart();
+	}
+	show(params) {
+		notification.show(params);
+		return (0, _univerjs_core.toDisposable)(() => {});
+	}
+	_initUIPart() {
+		this.disposeWithMe(this._uiPartsService.registerComponent("global", () => (0, _wendellhu_redi_react_bindings.connectInjector)(Notification, this._injector)));
+	}
+};
+DesktopNotificationService = __decorate([__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_core.Injector)), __decorateParam(1, IUIPartsService)], DesktopNotificationService);
+
+//#endregion
+//#region src/services/presence/unit-presence-ui-adapter.service.ts
+const IUnitPresenceUIAdapterRegistry = (0, _univerjs_core.createIdentifier)("ui.unit-presence-adapter-registry");
+const EMPTY_ADAPTERS = Object.freeze([]);
+var UnitPresenceUIAdapterRegistry = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_adapters", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_adapters$", new rxjs.BehaviorSubject(EMPTY_ADAPTERS));
+		_defineProperty(this, "adapters$", this._adapters$.asObservable());
+	}
+	dispose() {
+		this._adapters.clear();
+		this._adapters$.complete();
+		super.dispose();
+	}
+	register(adapter) {
+		if (this._adapters.has(adapter.unitType)) throw new Error(`A unit presence adapter is already registered for UniverInstanceType "${adapter.unitType}".`);
+		this._adapters.set(adapter.unitType, adapter);
+		this._emitAdapters();
+		return (0, _univerjs_core.toDisposable)(() => {
+			if (this._adapters.get(adapter.unitType) !== adapter) return;
+			this._adapters.delete(adapter.unitType);
+			this._emitAdapters();
+		});
+	}
+	get(unitType) {
+		return this._adapters.get(unitType) ?? null;
+	}
+	getAll() {
+		return this._adapters$.getValue();
+	}
+	_emitAdapters() {
+		this._adapters$.next(Object.freeze(Array.from(this._adapters.values())));
+	}
+};
+
+//#endregion
+//#region src/services/sidebar/desktop-sidebar.service.ts
+var DesktopSidebarService = class extends _univerjs_core.Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_sidebarOptions", {});
+		_defineProperty(this, "sidebarOptions$", new rxjs.Subject());
+		_defineProperty(this, "scrollEvent$", new rxjs.Subject());
+		_defineProperty(this, "_container", void 0);
+		_defineProperty(this, "_openAnimationFrameId", null);
+		_defineProperty(this, "_width", void 0);
+	}
+	get visible() {
+		return this._sidebarOptions.visible || false;
+	}
+	get options() {
+		return this._sidebarOptions;
+	}
+	get width() {
+		return this._width;
+	}
+	setWidth(value) {
+		this._width = value;
+	}
+	dispose() {
+		super.dispose();
+		this.close();
+		this.sidebarOptions$.complete();
+		this.scrollEvent$.complete();
+	}
+	_clearPendingOpenFrame() {
+		if (this._openAnimationFrameId !== null) {
+			cancelAnimationFrame(this._openAnimationFrameId);
+			this._openAnimationFrameId = null;
+		}
+	}
+	open(params) {
+		this._sidebarOptions = {
+			...params,
+			id: params.id,
+			visible: true
+		};
+		this.sidebarOptions$.next(this._sidebarOptions);
+		this._clearPendingOpenFrame();
+		this._openAnimationFrameId = requestAnimationFrame(() => {
+			this._openAnimationFrameId = null;
+			this._sidebarOptions.onOpen && this._sidebarOptions.onOpen();
+		});
+		return (0, _univerjs_core.toDisposable)(() => {
+			this.close();
+		});
+	}
+	close(id) {
+		var _this$_sidebarOptions, _this$_sidebarOptions2;
+		if (id && this._sidebarOptions.id !== id) return;
+		this._clearPendingOpenFrame();
+		this._sidebarOptions = {
+			...this._sidebarOptions,
+			visible: false
+		};
+		this.sidebarOptions$.next(this._sidebarOptions);
+		(_this$_sidebarOptions = (_this$_sidebarOptions2 = this._sidebarOptions).onClose) === null || _this$_sidebarOptions === void 0 || _this$_sidebarOptions.call(_this$_sidebarOptions2);
+	}
+	getContainer() {
+		return this._container;
+	}
+	setContainer(element) {
+		this._container = element;
+	}
+};
+
+//#endregion
+//#region src/services/undo-redo/undo-redo-group.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const HISTORY_GROUP_WINDOW = 1e3;
+let UndoRedoGroupService = class UndoRedoGroupService {
+	constructor(_undoRedoService) {
+		this._undoRedoService = _undoRedoService;
+		_defineProperty(this, "_sessions", /* @__PURE__ */ new Map());
+	}
+	run(unitId, action, mode = "append") {
+		return this._run(unitId, (0, _univerjs_core.generateRandomId)(8), mode, action);
+	}
+	createRunner(unitId, mode = "append") {
+		const groupId = (0, _univerjs_core.generateRandomId)(8);
+		return (action) => this._run(unitId, groupId, mode, action);
+	}
+	runTimed(unitId, scope, action, mode = "replace") {
+		const now = Date.now();
+		const sessionKey = `${unitId}:${scope}`;
+		const current = this._sessions.get(sessionKey);
+		const groupId = current && current.expiresAt >= now ? current.id : (0, _univerjs_core.generateRandomId)(8);
+		this._sessions.set(sessionKey, {
+			id: groupId,
+			expiresAt: now + HISTORY_GROUP_WINDOW
+		});
+		if (this._sessions.size > 100) this._sessions.forEach((session, key) => {
+			if (session.expiresAt < now) this._sessions.delete(key);
+		});
+		return this._run(unitId, groupId, mode, action);
+	}
+	_run(unitId, groupId, mode, action) {
+		const group = this._undoRedoService.beginUndoRedoGroup(unitId, groupId, mode);
+		try {
+			return action();
+		} finally {
+			group.dispose();
+		}
+	}
+};
+UndoRedoGroupService = __decorate([__decorateParam(0, _univerjs_core.IUndoRedoService)], UndoRedoGroupService);
+
+//#endregion
+//#region src/mobile-plugin.ts
+const DISABLE_AUTO_FOCUS_KEY$1 = "DISABLE_AUTO_FOCUS";
+let UniverMobileUIPlugin = class UniverMobileUIPlugin extends _univerjs_core.Plugin {
+	constructor(_config = defaultPluginConfig, _contextService, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._contextService = _contextService;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { menu, ...rest } = (0, _univerjs_core.merge)({
+			popupRootId: `univer-popup-portal-${(0, _univerjs_core.generateRandomId)(6)}`,
+			disableAutoFocus: true
+		}, defaultPluginConfig, this._config);
+		if (rest.disableAutoFocus) this._contextService.setContextValue(DISABLE_AUTO_FOCUS_KEY$1, true);
+		this._contextService.setContextValue(MOBILE_UI_MODE, true);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		(0, _univerjs_core.registerDependencies)(this._injector, (0, _univerjs_core.mergeOverrideWithDependencies)([
+			[ComponentManager],
+			[IconManager],
+			[ComponentsController],
+			[ThemeSwitcherService],
+			[UndoRedoGroupService],
+			[IWorkbenchService, { useClass: WorkbenchService }],
+			[ZIndexManager],
+			[ShortcutPanelService],
+			[IUIPartsService, { useClass: UIPartsService }],
+			[ILayoutService, { useClass: DesktopLayoutService }],
+			[IRibbonService, { useClass: DesktopRibbonService }],
+			[IShortcutService, { useClass: ShortcutService }],
+			[IPlatformService, { useClass: PlatformService }],
+			[IUnitPresenceUIAdapterRegistry, { useClass: UnitPresenceUIAdapterRegistry }],
+			[IMenuManagerService, { useClass: MenuManagerService }],
+			[IContextMenuHostService, { useClass: ContextMenuHostService }],
+			[IContextMenuService, { useClass: ContextMenuService }],
+			[IUIRuntimeScopeService, { useClass: UIRuntimeScopeService }],
+			[IClipboardInterfaceService, {
+				useClass: BrowserClipboardService,
+				lazy: true
+			}],
+			[INotificationService, {
+				useClass: DesktopNotificationService,
+				lazy: true
+			}],
+			[IGalleryService, {
+				useClass: DesktopGalleryService,
+				lazy: true
+			}],
+			[IDialogService, {
+				useClass: MobileDialogService,
+				lazy: true
+			}],
+			[_univerjs_core.IConfirmService, {
+				useClass: DesktopConfirmService,
+				lazy: true
+			}],
+			[ISidebarService, {
+				useClass: DesktopSidebarService,
+				lazy: true
+			}],
+			[IMessageService, {
+				useClass: DesktopMessageService,
+				lazy: true
+			}],
+			[_univerjs_core.ILocalStorageService, {
+				useClass: DesktopLocalStorageService,
+				lazy: true
+			}],
+			[IBeforeCloseService, { useClass: DesktopBeforeCloseService }],
+			[ILocalFileService, { useClass: DesktopLocalFileService }],
+			[ICanvasPopupService, { useClass: CanvasPopupService }],
+			[IFontService, { useClass: FontService }],
+			[CanvasFloatDomService],
+			[CanvasFloatDomPreviewService],
+			[IUIController, {
+				useFactory: (injector) => injector.createInstance(MobileUIController, this._config),
+				deps: [_univerjs_core.Injector]
+			}],
+			[SharedController],
+			[ErrorController],
+			[FeatureSearchController],
+			[ShortcutPanelController]
+		], this._config.override));
+		(0, _univerjs_core.touchDependencies)(this._injector, [
+			[ComponentsController],
+			[IUIController],
+			[ErrorController]
+		]);
+	}
+	onReady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[SharedController], [FeatureSearchController]]);
+	}
+	onSteady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[ShortcutPanelController]]);
+	}
+};
+_defineProperty(UniverMobileUIPlugin, "pluginName", "UNIVER_MOBILE_UI_PLUGIN");
+_defineProperty(UniverMobileUIPlugin, "packageName", name);
+_defineProperty(UniverMobileUIPlugin, "version", version);
+UniverMobileUIPlugin = __decorate([
+	(0, _univerjs_core.DependentOn)(_univerjs_engine_render.UniverRenderEnginePlugin),
+	__decorateParam(1, _univerjs_core.IContextService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(3, _univerjs_core.IConfigService)
+], UniverMobileUIPlugin);
+
+//#endregion
+//#region src/plugin.ts
+const DISABLE_AUTO_FOCUS_KEY = "DISABLE_AUTO_FOCUS";
+let UniverUIPlugin = class UniverUIPlugin extends _univerjs_core.Plugin {
+	constructor(_config = defaultPluginConfig, _contextService, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._contextService = _contextService;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { menu, ...rest } = (0, _univerjs_core.merge)({ popupRootId: `univer-popup-portal-${(0, _univerjs_core.generateRandomId)(6)}` }, defaultPluginConfig, this._config);
+		if (rest.disableAutoFocus) this._contextService.setContextValue(DISABLE_AUTO_FOCUS_KEY, true);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		(0, _univerjs_core.registerDependencies)(this._injector, (0, _univerjs_core.mergeOverrideWithDependencies)([
+			[ComponentManager],
+			[IconManager],
+			[ComponentsController],
+			[ThemeSwitcherService],
+			[UndoRedoGroupService],
+			[ZIndexManager],
+			[ShortcutPanelService],
+			[IUIPartsService, { useClass: UIPartsService }],
+			[IWorkbenchService, { useClass: WorkbenchService }],
+			[ILayoutService, { useClass: DesktopLayoutService }],
+			[IRibbonService, { useClass: DesktopRibbonService }],
+			[IRibbonOverrideService, { useClass: RibbonOverrideService }],
+			[IShortcutService, { useClass: ShortcutService }],
+			[IPlatformService, { useClass: PlatformService }],
+			[IUnitPresenceUIAdapterRegistry, { useClass: UnitPresenceUIAdapterRegistry }],
+			[IMenuManagerService, { useClass: MenuManagerService }],
+			[IContextMenuHostService, { useClass: ContextMenuHostService }],
+			[IContextMenuService, { useClass: ContextMenuService }],
+			[IUIRuntimeScopeService, { useClass: UIRuntimeScopeService }],
+			[IClipboardInterfaceService, {
+				useClass: BrowserClipboardService,
+				lazy: true
+			}],
+			[INotificationService, {
+				useClass: DesktopNotificationService,
+				lazy: true
+			}],
+			[IGalleryService, {
+				useClass: DesktopGalleryService,
+				lazy: true
+			}],
+			[IDialogService, {
+				useClass: DesktopDialogService,
+				lazy: true
+			}],
+			[_univerjs_core.IConfirmService, {
+				useClass: DesktopConfirmService,
+				lazy: true
+			}],
+			[ISidebarService, {
+				useClass: DesktopSidebarService,
+				lazy: true
+			}],
+			[IMessageService, {
+				useClass: DesktopMessageService,
+				lazy: true
+			}],
+			[_univerjs_core.ILocalStorageService, {
+				useClass: DesktopLocalStorageService,
+				lazy: true
+			}],
+			[IBeforeCloseService, { useClass: DesktopBeforeCloseService }],
+			[ILocalFileService, { useClass: DesktopLocalFileService }],
+			[ICanvasPopupService, { useClass: CanvasPopupService }],
+			[IFontService, { useClass: FontService }],
+			[CanvasFloatDomService],
+			[CanvasFloatDomPreviewService],
+			[IUIController, {
+				useFactory: (injector) => injector.createInstance(DesktopUIController, this._config),
+				deps: [_univerjs_core.Injector]
+			}],
+			[SharedController],
+			[ErrorController],
+			[FeatureSearchController],
+			[ShortcutPanelController]
+		], this._config.override));
+		(0, _univerjs_core.touchDependencies)(this._injector, [
+			[ComponentsController],
+			[IUIController],
+			[ErrorController]
+		]);
+	}
+	onReady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[SharedController], [FeatureSearchController]]);
+	}
+	onSteady() {
+		(0, _univerjs_core.touchDependencies)(this._injector, [[ShortcutPanelController]]);
+	}
+};
+_defineProperty(UniverUIPlugin, "pluginName", "UNIVER_UI_PLUGIN");
+_defineProperty(UniverUIPlugin, "packageName", name);
+_defineProperty(UniverUIPlugin, "version", version);
+UniverUIPlugin = __decorate([
+	(0, _univerjs_core.DependentOn)(_univerjs_engine_render.UniverRenderEnginePlugin),
+	__decorateParam(1, _univerjs_core.IContextService),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(3, _univerjs_core.IConfigService)
+], UniverUIPlugin);
+
+//#endregion
+//#region src/services/message/__tests__/mock-message.service.ts
+/**
+* This is a mocked message service for testing purposes.
+*
+* @ignore
+*/
+var MockMessageService = class {
+	show(_options) {
+		return (0, _univerjs_core.toDisposable)(() => {});
+	}
+	remove(_id) {}
+	removeAll() {}
+	setContainer() {}
+	getContainer() {}
+};
+
+//#endregion
+//#region src/services/sidebar/hooks/use-sidebar-click.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Response panel to a click event.
+*/
+const useSidebarClick = (cb) => {
+	const container = (0, _wendellhu_redi_react_bindings.useDependency)(ISidebarService).getContainer();
+	(0, react.useEffect)(() => {
+		if (container) {
+			container.addEventListener("mousedown", cb);
+			return () => {
+				container.removeEventListener("mousedown", cb);
+			};
+		}
+	}, [cb, container]);
+};
+
+//#endregion
+//#region src/utils/util.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function textTrim(x) {
+	if (x.length === 0) return x;
+	return x.replace(/^\s+|\s+$/gm, "");
+}
+
+//#endregion
+//#region src/utils/cell.ts
+const PX_TO_PT_RATIO = .75;
+const MAX_FONT_SIZE = 78;
+const MIN_FONT_SIZE = 9;
+const HTML_SANITIZE_OPTIONS = { strippedSelector: "script, iframe, object, embed" };
+/**
+* The entire list of DOM spans is parsed into a rich-text JSON style sheet
+* @param $dom
+* @returns
+*/
+function handleDomToJson($dom) {
+	let nodeList = $dom.childNodes;
+	if (nodeList.length === 0) return $dom.textContent;
+	if (nodeList[0].nodeName === "DIV") nodeList = nodeList[0].childNodes;
+	if (nodeList.length === 1 && nodeList[0].nodeName === "#text") return nodeList[0].textContent;
+	const textRuns = [];
+	let st = 0;
+	let ed = 0;
+	let dataStream = $dom.textContent || "";
+	dataStream += "\r\n";
+	for (let i = 0; i < nodeList.length; i++) {
+		let span = nodeList[`${i}`];
+		let str;
+		if (span.nodeName === "#text") {
+			str = span.textContent ?? "";
+			span = span.parentElement;
+		} else str = span.innerText;
+		const textStyle = handleStringToStyle(span);
+		splitSpanText(str).forEach((item) => {
+			const length = item.length;
+			ed += length;
+			st = ed - length;
+			const sId = (0, _univerjs_core.generateRandomId)(6);
+			textRuns.push({
+				sId,
+				st,
+				ed: ed - 1,
+				ts: textStyle
+			});
+		});
+	}
+	return {
+		id: (0, _univerjs_core.generateRandomId)(6),
+		body: {
+			dataStream,
+			textRuns
+		},
+		documentStyle: {}
+	};
+}
+/**
+* A single span parses out the ITextStyle style sheet
+* @param $dom
+* @returns
+*/
+function handleStringToStyle($dom, cssStyle = "") {
+	var _$dom$style;
+	let cssText = ($dom === null || $dom === void 0 || (_$dom$style = $dom.style) === null || _$dom$style === void 0 ? void 0 : _$dom$style.cssText) ?? "";
+	cssText += cssStyle;
+	cssText = cssText.replace(/[\r\n]+/g, "");
+	if (cssText.length === 0) return {};
+	const cssTextArray = cssText.split(";");
+	const styleList = {};
+	const borderInfo = {
+		t: "",
+		r: "",
+		b: "",
+		l: ""
+	};
+	cssTextArray.forEach((originStr) => {
+		const s = originStr.toLowerCase();
+		const key = textTrim(s.substr(0, s.indexOf(":")));
+		const value = textTrim(s.substr(s.indexOf(":") + 1));
+		if (key === "font-weight") if (value === "bold" || value === "700") styleList.bl = 1;
+		else styleList.bl = 0;
+		else if (key === "font-style") if (value === "italic") styleList.it = 1;
+		else styleList.it = 0;
+		else if (key === "font-family") {
+			const fontFamily = extractFontFamily(textTrim(originStr));
+			styleList.ff = fontFamily;
+		} else if (key === "font-size") {
+			let fs = Number.parseInt(value);
+			if (cssText.indexOf("vertical-align") > -1 && (cssText.indexOf("sub") > -1 || cssText.indexOf("sup") > -1)) fs *= 2;
+			if (value.indexOf("px") !== -1) fs = getPtFontSizeByPx(Number.parseInt(value, 10));
+			styleList.fs = fs;
+		} else if (key === "color") {
+			const colorKit = new _univerjs_core.ColorKit(value);
+			styleList.cl = { rgb: colorKit.isValid ? colorKit.toRgbString() : "rgb(0,0,0)" };
+		} else if (key === "background" || key === "background-color") {
+			const colorKit = new _univerjs_core.ColorKit(value);
+			if (colorKit.isValid) styleList.bg = { rgb: colorKit.toRgbString() };
+		} else if (key === "text-decoration-line") {
+			if (value === "underline") {
+				if (!styleList.ul) styleList.ul = { s: 1 };
+				styleList.ul.s = 1;
+			} else if (value === "line-through") {
+				if (!styleList.st) styleList.st = { s: 1 };
+				styleList.st.s = 1;
+			} else if (value === "overline") {
+				if (!styleList.ol) styleList.ol = { s: 1 };
+				styleList.ol.s = 1;
+			}
+		} else if (key === "text-decoration-color") {
+			if (styleList.hasOwnProperty("ul")) {
+				if (!styleList.ul) styleList.ul = {
+					s: 1,
+					cl: { rgb: value }
+				};
+				styleList.ul.cl = { rgb: value };
+			}
+			if (styleList.hasOwnProperty("st")) {
+				if (!styleList.st) styleList.st = {
+					s: 1,
+					cl: { rgb: value }
+				};
+				styleList.st.cl = { rgb: value };
+			}
+			if (styleList.hasOwnProperty("ol")) {
+				if (!styleList.ol) styleList.ol = {
+					s: 1,
+					cl: { rgb: value }
+				};
+				styleList.ol.cl = { rgb: value };
+			}
+		} else if (key === "text-decoration-style") {
+			if (styleList.hasOwnProperty("ul")) {
+				if (!styleList.ul) styleList.ul = {
+					s: 1,
+					t: Number(value)
+				};
+				styleList.ul.t = Number(value);
+			}
+			if (styleList.hasOwnProperty("st")) {
+				if (!styleList.st) styleList.st = {
+					s: 1,
+					t: Number(value)
+				};
+				styleList.st.t = Number(value);
+			}
+			if (styleList.hasOwnProperty("ol")) {
+				if (!styleList.ol) styleList.ol = {
+					s: 1,
+					t: Number(value)
+				};
+				styleList.ol.t = Number(value);
+			}
+		} else if (key === "text-decoration" || key === "univer-strike") {
+			var _value$split;
+			const lineValue = (_value$split = value.split(" ")) === null || _value$split === void 0 ? void 0 : _value$split[0];
+			if (lineValue === "underline") {
+				if (!styleList.ul) styleList.ul = { s: 1 };
+				styleList.ul.s = 1;
+			} else if (lineValue === "line-through") {
+				if (!styleList.st) styleList.st = { s: 1 };
+				styleList.st.s = 1;
+			} else if (lineValue === "overline") {
+				if (!styleList.ol) styleList.ol = { s: 1 };
+				styleList.ol.s = 1;
+			}
+		}
+		if (key === "univer-underline") styleList.ul = { s: 1 };
+		if (key === "vertical-align") if (value === "sub") styleList.va = _univerjs_core.BaselineOffset.SUBSCRIPT;
+		else if (value === "super") styleList.va = _univerjs_core.BaselineOffset.SUPERSCRIPT;
+		else if (value === "top") styleList.vt = 1;
+		else if (value === "middle") styleList.vt = 2;
+		else if (value === "bottom") styleList.vt = 3;
+		else styleList.va = _univerjs_core.BaselineOffset.NORMAL;
+		if (key === "transform") {
+			const values = value.split(")");
+			const index = values.findIndex((item) => item.includes("rotate"));
+			if (index > -1) {
+				const match = values[index].match(/\d+/g);
+				let angle = 0;
+				let ver = 0;
+				if (match === null || match === void 0 ? void 0 : match.length) angle = +match[0];
+				if ($dom === null || $dom === void 0 ? void 0 : $dom.dataset.vertical) ver = +$dom.dataset.vertical;
+				styleList.tr = {
+					a: angle,
+					v: ver
+				};
+			}
+		}
+		if (key === "text-align") if (value === "left") styleList.ht = 1;
+		else if (value === "center") styleList.ht = 2;
+		else if (value === "right") styleList.ht = 3;
+		else if (value === "justify") styleList.ht = 4;
+		else styleList.ht = 0;
+		if (styleList.tb !== 1) {
+			if (key === "overflow-wrap" || key === "word-wrap") {
+				if (value === "break-word") styleList.tb = 3;
+			} else if (key === "text-overflow") {
+				if (value === "clip") styleList.tb = 2;
+			} else if (key === "text-break") {
+				if (value === "overflow") styleList.tb = 1;
+			}
+		}
+		if (key === "white-space") {
+			if (value === "nowrap") styleList.tb = 1;
+			else if (value === "normal") styleList.tb = 3;
+			else if (value === "clip") styleList.tb = 2;
+		}
+		if (key === "border-color") {
+			const colors = handleBorder(value, ")");
+			if (!styleList.bd) {
+				styleList.bd = {
+					b: {
+						cl: { rgb: "#000" },
+						s: 0
+					},
+					t: {
+						cl: { rgb: "#000" },
+						s: 0
+					},
+					l: {
+						cl: { rgb: "#000" },
+						s: 0
+					},
+					r: {
+						cl: { rgb: "#000" },
+						s: 0
+					}
+				};
+				for (const k in colors) styleList.bd[k].cl.rgb = colors[k];
+			} else for (const k in colors) styleList.bd[k].cl.rgb = colors[k];
+		}
+		if (key === "border-width" || key === "border-style") {
+			const width = handleBorder(value, " ");
+			for (const k in width) borderInfo[k] += ` ${width[k]}`;
+			if (!styleList.bd) styleList.bd = {
+				b: {
+					cl: { rgb: "#000" },
+					s: (0, _univerjs_core.getBorderStyleType)(borderInfo.b)
+				},
+				t: {
+					cl: { rgb: "#000" },
+					s: (0, _univerjs_core.getBorderStyleType)(borderInfo.t)
+				},
+				l: {
+					cl: { rgb: "#000" },
+					s: (0, _univerjs_core.getBorderStyleType)(borderInfo.l)
+				},
+				r: {
+					cl: { rgb: "#000" },
+					s: (0, _univerjs_core.getBorderStyleType)(borderInfo.r)
+				}
+			};
+			else {
+				styleList.bd.b.s = (0, _univerjs_core.getBorderStyleType)(borderInfo.b);
+				styleList.bd.t.s = (0, _univerjs_core.getBorderStyleType)(borderInfo.t);
+				styleList.bd.l.s = (0, _univerjs_core.getBorderStyleType)(borderInfo.l);
+				styleList.bd.r.s = (0, _univerjs_core.getBorderStyleType)(borderInfo.r);
+			}
+		}
+		if (key === "border-bottom" || key === "border-top" || key === "border-left" || key === "border-right" || key === "border") {
+			if (!styleList.bd) styleList.bd = {};
+			const arr = value.split(" ");
+			const type = `${arr[0]} ${arr[1]}`;
+			arr.splice(0, 2);
+			const color = arr.join("");
+			if ((0, _univerjs_core.getBorderStyleType)(type) !== _univerjs_core.BorderStyleTypes.NONE && color) {
+				const obj = {
+					cl: { rgb: color },
+					s: (0, _univerjs_core.getBorderStyleType)(type)
+				};
+				if (key === "border-bottom") styleList.bd.b = value === "none" ? null : obj;
+				else if (key === "border-top") styleList.bd.t = value === "none" ? null : obj;
+				else if (key === "border-left") styleList.bd.l = value === "none" ? null : obj;
+				else if (key === "border-right") styleList.bd.r = value === "none" ? null : obj;
+				else if (key === "border") styleList.bd = {
+					r: value === "none" ? null : obj,
+					t: value === "none" ? null : obj,
+					b: value === "none" ? null : obj,
+					l: value === "none" ? null : obj
+				};
+			}
+		} else if (key === "--data-rotate") {
+			const match = value.match(/[+-]?\d+/);
+			if (value === "(0deg ,1)") styleList.tr = {
+				a: 0,
+				v: 1
+			};
+			else if (match) styleList.tr = { a: Number(match[0]) };
+		}
+	});
+	Object.keys(styleList).forEach((key) => {
+		if (typeof styleList[key] === "object" && !Object.keys(styleList[key]).length) delete styleList[key];
+	});
+	return styleList;
+}
+function handleBorder(border, param) {
+	let arr;
+	if (param === " ") arr = border.trim().split(param);
+	else arr = border.trim().split(param).slice(0, -1);
+	arr.forEach((item) => `${item.trim()})`);
+	let obj = {};
+	if (arr.length === 1) obj = {
+		t: arr[0],
+		r: arr[0],
+		b: arr[0],
+		l: arr[0]
+	};
+	else if (arr.length === 2) obj = {
+		t: arr[0],
+		r: arr[1],
+		b: arr[0],
+		l: arr[1]
+	};
+	else if (arr.length === 3) obj = {
+		t: arr[0],
+		r: arr[1],
+		b: arr[2],
+		l: arr[1]
+	};
+	else if (arr.length === 4) obj = {
+		t: arr[0],
+		r: arr[1],
+		b: arr[2],
+		l: arr[3]
+	};
+	return obj;
+}
+/**
+* split span text
+* @param text
+* @returns
+*/
+function splitSpanText(text) {
+	if (text === "") return [text];
+	return text.match(/(?:(\n+.+)|(.+))/g).map((item) => item.replace(/\n/g, "\r\n"));
+}
+function handleTableColgroup(table) {
+	const content = parseHtmlFragment(table, HTML_SANITIZE_OPTIONS);
+	const data = [];
+	const colgroup = content.querySelectorAll("table col");
+	if (!colgroup.length) return [];
+	for (let i = 0; i < colgroup.length; i++) {
+		const col = colgroup[i];
+		const colSpan = col.getAttribute("span");
+		if (colSpan && +colSpan > 1) for (let j = 0; j < +colSpan; j++) {
+			const width = getTdHeight(col.getAttribute("width"), 72);
+			data.push(width);
+		}
+		else {
+			const width = getTdHeight(col.getAttribute("width"), 72);
+			data.push(width);
+		}
+	}
+	return data;
+}
+function getTdHeight(height, defaultHeight) {
+	if (!height) return defaultHeight;
+	let firstHeight;
+	if (height.includes("pt")) firstHeight = (0, _univerjs_engine_render.ptToPx)(Number.parseFloat(height));
+	else if (height.includes("px")) firstHeight = Number.parseFloat(height);
+	else firstHeight = Number.parseFloat(height) * 72 / 96;
+	return firstHeight;
+}
+function handleTableRowGroup(table) {
+	const content = parseHtmlFragment(table, HTML_SANITIZE_OPTIONS);
+	const data = [];
+	const rowGroup = content.querySelectorAll("table tr");
+	if (!rowGroup.length) return [];
+	for (let i = 0; i < rowGroup.length; i++) {
+		const tds = rowGroup[i].querySelectorAll("td");
+		let firstHeight = getTdHeight(tds[0].style.height, 19);
+		for (let k = 0; k < tds.length; k++) {
+			const rowSpan = tds[k].getAttribute("rowSpan");
+			if (rowSpan && +rowSpan > 1) continue;
+			firstHeight = getTdHeight(tds[k].style.height, 19);
+			break;
+		}
+		data.push(firstHeight);
+	}
+	return data;
+}
+function handelTableToJson(table) {
+	let data = [];
+	const content = parseHtmlFragment(table, HTML_SANITIZE_OPTIONS);
+	data = new Array(content.querySelectorAll("table tr").length);
+	if (!data.length) return [];
+	let colLen = 0;
+	const trs = content.querySelectorAll("table tr");
+	trs[0].querySelectorAll("td").forEach((item) => {
+		let colSpan = 0;
+		const attr = item.getAttribute("colSpan");
+		if (attr !== null) colSpan = +attr;
+		else colSpan = 1;
+		colLen += colSpan;
+	});
+	for (let i = 0; i < data.length; i++) data[i] = new Array(colLen);
+	let r = 0;
+	trs.forEach((item) => {
+		let c = 0;
+		item.querySelectorAll("td").forEach((td) => {
+			const cell = {};
+			if (td.querySelectorAll("span").length || td.querySelectorAll("font").length) {
+				const spanStyle = handleDomToJson(td);
+				if (typeof spanStyle !== "string") cell.p = spanStyle;
+			}
+			const txt = td.innerText;
+			if (txt.trim().length === 0) cell.v = "";
+			else cell.v = txt;
+			const style = handleStringToStyle(td);
+			if (_univerjs_core.Tools.isPlainObject(style)) cell.s = style;
+			while (c < colLen && data[r][c] != null) c++;
+			if (c === colLen) return;
+			if (data[r][c] == null) {
+				data[r][c] = cell;
+				const rowSpan = Number(td.getAttribute("rowSpan")) ?? 1;
+				const colSpan = Number(td.getAttribute("colSpan")) ?? 1;
+				if (rowSpan > 1 || colSpan > 1) {
+					const first = {
+						rs: +rowSpan - 1,
+						cs: +colSpan - 1,
+						r,
+						c
+					};
+					data[r][c].mc = first;
+					for (let rp = 0; rp < rowSpan; rp++) for (let cp = 0; cp < colSpan; cp++) {
+						if (rp === 0 && cp === 0) continue;
+						data[r + rp][c + cp] = { mc: null };
+					}
+				}
+			}
+			c++;
+		});
+		r++;
+	});
+	return data;
+}
+function handlePlainToJson(plain) {
+	const data = [];
+	const che = plain.replace(/\r/g, "").split("\n");
+	const colCheLen = che[0].split("	").length;
+	for (let i = 0; i < che.length; i++) {
+		if (che[i].split("	").length < colCheLen) continue;
+		data.push(che[i].split("	"));
+	}
+	for (let i = 0; i < data.length; i++) for (let j = 0; j < data[i].length; j++) if (data[i][j].length) data[i][j] = {
+		v: data[i][j] || "",
+		m: data[i][j] || ""
+	};
+	else data[i][j] = null;
+	return data;
+}
+function handleTableMergeData(data, selection) {
+	const copyH = data.length;
+	const copyC = data[0].length;
+	let minH = 0;
+	minH + copyH - 1;
+	let minC = 0;
+	minC + copyC - 1;
+	if (selection) {
+		minH = selection.startRow;
+		minH + copyH - 1;
+		minC = selection.startColumn;
+		minC + copyC - 1;
+	}
+	const mergeData = [];
+	for (let i = 0; i < data.length; i++) for (let j = 0; j < data[i].length; j++) if (data[i][j] && typeof data[i][j] === "object" && "mc" in data[i][j]) if (data[i][j].mc) {
+		const mc = data[i][j].mc;
+		const startRow = mc.r + minH;
+		const endRow = startRow + mc.rs;
+		const startColumn = mc.c + minC;
+		const endColumn = startColumn + mc.cs;
+		mergeData.push({
+			startRow,
+			endRow,
+			startColumn,
+			endColumn
+		});
+		delete data[i][j].mc;
+	} else data[i][j] = null;
+	return {
+		data,
+		mergeData
+	};
+}
+function handelExcelToJson(html) {
+	var _content$querySelecto;
+	let data = [];
+	const content = parseHtmlDocument(html, HTML_SANITIZE_OPTIONS);
+	const styleText = (_content$querySelecto = content.querySelector("style")) === null || _content$querySelecto === void 0 ? void 0 : _content$querySelecto.innerText;
+	if (!styleText) return;
+	const excelStyle = getStyles(styleText);
+	data = new Array(content.querySelectorAll("table tr").length);
+	if (!data.length) return [];
+	let colLen = 0;
+	const trs = content.querySelectorAll("table tr");
+	trs[0].querySelectorAll("td").forEach((item) => {
+		let colSpan = 0;
+		const attr = item.getAttribute("colSpan");
+		if (attr !== null) colSpan = +attr;
+		else colSpan = 1;
+		colLen += colSpan;
+	});
+	for (let i = 0; i < data.length; i++) data[i] = new Array(colLen);
+	let r = 0;
+	trs.forEach((item) => {
+		let c = 0;
+		item.querySelectorAll("td").forEach((td) => {
+			const cell = {};
+			if (td.querySelectorAll("span").length || td.querySelectorAll("font").length) {
+				const spanStyle = handleDomToJson(td);
+				if (typeof spanStyle !== "string") cell.p = spanStyle;
+			}
+			const txt = td.innerText;
+			if (txt.trim().length === 0) cell.v = "";
+			else cell.v = txt;
+			let cssText = "";
+			for (const attr in excelStyle) if (td.classList.contains(attr)) cssText += excelStyle[attr];
+			const style = handleStringToStyle(td, cssText);
+			if (_univerjs_core.Tools.isPlainObject(style)) cell.s = style;
+			while (c < colLen && data[r][c] != null) c++;
+			if (c === colLen) return;
+			if (data[r][c] == null) {
+				data[r][c] = cell;
+				const rowSpan = Number(td.getAttribute("rowSpan")) ?? 1;
+				const colSpan = Number(td.getAttribute("colSpan")) ?? 1;
+				if (rowSpan > 1 || colSpan > 1) {
+					const first = {
+						rs: +rowSpan - 1,
+						cs: +colSpan - 1,
+						r,
+						c
+					};
+					data[r][c].mc = first;
+					for (let rp = 0; rp < rowSpan; rp++) for (let cp = 0; cp < colSpan; cp++) {
+						if (rp === 0 && cp === 0) continue;
+						data[r + rp][c + cp] = { mc: null };
+					}
+				}
+			}
+			c++;
+		});
+		r++;
+	});
+	return data;
+}
+function getStyles(styleText) {
+	const output = {};
+	const string = styleText.replaceAll("<!--", "").replaceAll("-->", "").trim();
+	const style = string === null || string === void 0 ? void 0 : string.replaceAll("	", "").replaceAll("\n", "").split("}");
+	for (let i = 0; i < style.length; i++) {
+		if (!style[i]) continue;
+		let attr = style[i].split("{")[0].trim();
+		if (attr.includes(".")) attr = attr.slice(1);
+		output[attr] = style[i].split("{")[1].trim();
+	}
+	return output;
+}
+function getPtFontSizeByPx(size) {
+	const ptSize = Math.round(size * PX_TO_PT_RATIO);
+	if (ptSize < MIN_FONT_SIZE) return MIN_FONT_SIZE;
+	if (ptSize > MAX_FONT_SIZE) return MAX_FONT_SIZE;
+	return ptSize;
+}
+function extractFontFamily(styleStr) {
+	const matches = styleStr.match(/font-family:\s*(?:"([^"]+)"|'([^']+)'|([^;]+))/i);
+	return matches ? (matches[1] || matches[2] || matches[3]).trim() : null;
+}
+
+//#endregion
+//#region src/views/components/dom/Print.tsx
+const PrintFloatDomSingle = (0, react.memo)((props) => {
+	const { layer } = props;
+	return typeof layer.componentKey === "string" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(RegisteredPrintFloatDomSingle, {
+		...props,
+		componentKey: layer.componentKey
+	}) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(PrintFloatDomSingleContent, {
+		...props,
+		Component: layer.componentKey
+	});
+});
+function RegisteredPrintFloatDomSingle(props) {
+	const componentManager = (0, _wendellhu_redi_react_bindings.useDependency)(ComponentManager);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)(PrintFloatDomSingleContent, {
+		...props,
+		Component: componentManager.get(props.componentKey)
+	});
+}
+function PrintFloatDomSingleContent(props) {
+	const { layer, id, position, Component } = props;
+	const univerInstanceService = (0, _wendellhu_redi_react_bindings.useDependency)(_univerjs_core.IUniverInstanceService);
+	const domRef = (0, react.useRef)(null);
+	const innerDomRef = (0, react.useRef)(null);
+	const transformRef = (0, react.useRef)(`transform: rotate(${position === null || position === void 0 ? void 0 : position.rotate}deg) translate(${position === null || position === void 0 ? void 0 : position.startX}px, ${position === null || position === void 0 ? void 0 : position.startY}px)`);
+	const topRef = (0, react.useRef)((position === null || position === void 0 ? void 0 : position.startY) ?? 0);
+	const leftRef = (0, react.useRef)((position === null || position === void 0 ? void 0 : position.startX) ?? 0);
+	const layerProps = (0, react.useMemo)(() => ({
+		data: layer.data,
+		...layer.props
+	}), [layer.data, layer.props]);
+	const innerStyle = {
+		width: `${position.width - 4}px`,
+		height: `${position.height - 4}px`,
+		left: `${position.absolute.left ? 0 : "auto"}`,
+		top: `${position.absolute.top ? 0 : "auto"}`,
+		right: `${position.absolute.left ? "auto" : 0}`,
+		bottom: `${position.absolute.top ? "auto" : 0}`
+	};
+	transformRef.current = `rotate(${position.rotate}deg)`;
+	topRef.current = position.startY;
+	leftRef.current = position.startX;
+	const instance = univerInstanceService.getUnit(layer.unitId);
+	const component = (0, react.useMemo)(() => Component ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(Component, {
+		...layerProps,
+		unitId: layer.unitId,
+		unit: instance,
+		floatDomId: layer.id,
+		context: { root: innerDomRef }
+	}) : null, [Component, layerProps]);
+	if (!position) return null;
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+		ref: domRef,
+		className: "univer-absolute univer-z-10 univer-origin-center univer-overflow-hidden",
+		style: {
+			top: topRef.current,
+			left: leftRef.current,
+			width: Math.max(position.endX - position.startX - 2, 0),
+			height: Math.max(position.endY - position.startY - 2, 0),
+			transform: transformRef.current
+		},
+		onPointerMove: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onPointerMove(e.nativeEvent);
+		},
+		onPointerDown: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onPointerDown(e.nativeEvent);
+		},
+		onPointerUp: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onPointerUp(e.nativeEvent);
+		},
+		onWheel: (e) => {
+			if (shouldForwardFloatDomEvents(layer)) layer.onWheel(e.nativeEvent);
+		},
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+			ref: innerDomRef,
+			id,
+			className: "univer-absolute univer-overflow-hidden",
+			style: { ...innerStyle },
+			children: component
+		})
+	});
+}
+
+//#endregion
+//#region src/views/components/hover-track/HoverTrack.tsx
+const HOVER_TRACK_HOST_CLASS_NAME = "univer-group/hover-track";
+const HOVER_TRACK_MASK = "linear-gradient(currentColor 0 0) content-box, linear-gradient(currentColor 0 0)";
+const HOVER_TRACK_MASK_STYLE = {
+	WebkitMask: HOVER_TRACK_MASK,
+	WebkitMaskComposite: "xor",
+	mask: HOVER_TRACK_MASK,
+	maskComposite: "exclude"
+};
+function HoverTrack(props) {
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+		"aria-hidden": "true",
+		className: (0, _univerjs_design.clsx)("univer-pointer-events-none univer-absolute univer-inset-0 univer-box-border univer-overflow-hidden univer-rounded-[inherit] univer-p-px univer-opacity-0 univer-transition-opacity univer-duration-150 group-hover/hover-track:univer-opacity-100", props.className),
+		"data-u-comp": "hover-track",
+		style: HOVER_TRACK_MASK_STYLE,
+		children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", { className: "univer-absolute -univer-inset-full univer-bg-[conic-gradient(from_0deg,transparent_0deg,transparent_282deg,var(--univer-primary-700)_318deg,var(--univer-primary-500)_342deg,transparent_360deg)] motion-safe:group-hover/hover-track:univer-animate-[spin_5s_linear_infinite] motion-reduce:univer-bg-primary-700 dark:univer-bg-[conic-gradient(from_0deg,transparent_0deg,transparent_282deg,var(--univer-primary-300)_318deg,var(--univer-primary-500)_342deg,transparent_360deg)] dark:motion-reduce:univer-bg-primary-300" })
+	});
+}
+
+//#endregion
+//#region src/views/progress-bar/ProgressBar.tsx
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function ProgressBar(props) {
+	const { barColor, progress, onTerminate, onClearProgress } = props;
+	const { count, done, label = "" } = progress;
+	const progressBarInnerRef = (0, react.useRef)(null);
+	const [visible, setVisible] = (0, react.useState)(false);
+	(0, react.useEffect)(() => {
+		const progressBarInner = progressBarInnerRef.current;
+		if (count === 0 && done === 0) {
+			setVisible(false);
+			progressBarInner.style.width = "0%";
+			return;
+		} else if (count > 0) {
+			setVisible(true);
+			const width = Math.floor(done / count * 100);
+			if (done === count) requestAnimationFrame(() => {
+				progressBarInner.style.width = `${width - 1}%`;
+				requestAnimationFrame(() => {
+					progressBarInner.style.width = `${width}%`;
+				});
+			});
+			else progressBarInner.style.width = `${width}%`;
+		}
+		const handleTransitionEnd = () => {
+			if (done === count) {
+				setVisible(false);
+				onClearProgress && onClearProgress();
+			}
+		};
+		progressBarInner.addEventListener("transitionend", handleTransitionEnd);
+		return () => {
+			progressBarInner.removeEventListener("transitionend", handleTransitionEnd);
+		};
+	}, [count, done]);
+	return /* @__PURE__ */ (0, react_jsx_runtime.jsxs)("div", {
+		className: (0, _univerjs_design.clsx)("univer-mx-2 univer-flex univer-items-center univer-gap-2", {
+			"univer-flex": visible,
+			"univer-hidden univer-w-0": !visible
+		}),
+		children: [
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_design.Tooltip, {
+				showIfEllipsis: true,
+				title: label,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("span", {
+					className: "univer-w-24 univer-truncate univer-text-right univer-text-xs",
+					children: label
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+				className: "univer-h-1 univer-w-40 univer-overflow-hidden univer-rounded-lg univer-bg-gray-200",
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)("div", {
+					ref: progressBarInnerRef,
+					className: "univer-h-full univer-bg-primary-600 univer-transition-[width]",
+					style: { backgroundColor: barColor }
+				})
+			}),
+			/* @__PURE__ */ (0, react_jsx_runtime.jsx)("button", {
+				className: "univer-flex univer-size-4 univer-cursor-pointer univer-items-center univer-justify-center univer-border-none univer-bg-transparent univer-p-0 hover:univer-opacity-50",
+				type: "button",
+				onClick: onTerminate,
+				children: /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_univerjs_icons.CloseIcon, { className: "univer-size-3.5 dark:!univer-text-gray-0" })
+			})
+		]
+	});
+}
+
+//#endregion
+exports.AnchoredContextMenu = AnchoredContextMenu;
+Object.defineProperty(exports, 'BrowserClipboardService', {
+  enumerable: true,
+  get: function () {
+    return BrowserClipboardService;
+  }
+});
+exports.BuiltInUIPart = BuiltInUIPart;
+exports.COLOR_PICKER_COMPONENT = COLOR_PICKER_COMPONENT;
+exports.COMMON_LABEL_COMPONENT = COMMON_LABEL_COMPONENT;
+exports.CanvasFloatDomPreviewService = CanvasFloatDomPreviewService;
+exports.CanvasFloatDomService = CanvasFloatDomService;
+exports.CanvasPopup = CanvasPopup;
+exports.CanvasPopupService = CanvasPopupService;
+exports.CommonLabel = CommonLabel;
+exports.ComponentContainer = ComponentContainer;
+Object.defineProperty(exports, 'ComponentManager', {
+  enumerable: true,
+  get: function () {
+    return ComponentManager;
+  }
+});
+exports.ContextMenu = DesktopContextMenu;
+exports.ContextMenuGroup = ContextMenuGroup;
+exports.ContextMenuHostService = ContextMenuHostService;
+exports.ContextMenuPanel = ContextMenuPanel;
+exports.ContextMenuPosition = ContextMenuPosition;
+exports.ContextMenuService = ContextMenuService;
+exports.CopyCommand = CopyCommand;
+exports.CopyShortcutItem = CopyShortcutItem;
+exports.CustomLabel = CustomLabel;
+exports.CutCommand = CutCommand;
+exports.CutShortcutItem = CutShortcutItem;
+exports.DISABLE_AUTO_FOCUS_KEY = DISABLE_AUTO_FOCUS_KEY;
+Object.defineProperty(exports, 'DesktopBeforeCloseService', {
+  enumerable: true,
+  get: function () {
+    return DesktopBeforeCloseService;
+  }
+});
+Object.defineProperty(exports, 'DesktopConfirmService', {
+  enumerable: true,
+  get: function () {
+    return DesktopConfirmService;
+  }
+});
+Object.defineProperty(exports, 'DesktopDialogService', {
+  enumerable: true,
+  get: function () {
+    return DesktopDialogService;
+  }
+});
+Object.defineProperty(exports, 'DesktopGalleryService', {
+  enumerable: true,
+  get: function () {
+    return DesktopGalleryService;
+  }
+});
+Object.defineProperty(exports, 'DesktopLayoutService', {
+  enumerable: true,
+  get: function () {
+    return DesktopLayoutService;
+  }
+});
+exports.DesktopLocalFileService = DesktopLocalFileService;
+exports.DesktopLocalStorageService = DesktopLocalStorageService;
+Object.defineProperty(exports, 'DesktopMessageService', {
+  enumerable: true,
+  get: function () {
+    return DesktopMessageService;
+  }
+});
+Object.defineProperty(exports, 'DesktopNotificationService', {
+  enumerable: true,
+  get: function () {
+    return DesktopNotificationService;
+  }
+});
+Object.defineProperty(exports, 'DesktopRibbonService', {
+  enumerable: true,
+  get: function () {
+    return DesktopRibbonService;
+  }
+});
+exports.DesktopSidebarService = DesktopSidebarService;
+Object.defineProperty(exports, 'DesktopUIController', {
+  enumerable: true,
+  get: function () {
+    return DesktopUIController;
+  }
+});
+exports.EMBED_CHILD_UNIT_ID_ATTRIBUTE = EMBED_CHILD_UNIT_ID_ATTRIBUTE;
+exports.EMBED_INTERACTION_BOUNDARY_OWNER_ATTRIBUTE = EMBED_INTERACTION_BOUNDARY_OWNER_ATTRIBUTE;
+exports.EMOJI_CATEGORIES = EMOJI_CATEGORIES;
+exports.EMOJI_PICKER_COMPONENT = EMOJI_PICKER_COMPONENT;
+exports.EMOJI_RECENT_LIMIT = EMOJI_RECENT_LIMIT;
+exports.EmojiPicker = EmojiPicker;
+Object.defineProperty(exports, 'ErrorController', {
+  enumerable: true,
+  get: function () {
+    return ErrorController;
+  }
+});
+exports.FILE_PNG_CLIPBOARD_MIME_TYPE = FILE_PNG_CLIPBOARD_MIME_TYPE;
+exports.FILE_SVG_XML_CLIPBOARD_MIME_TYPE = FILE_SVG_XML_CLIPBOARD_MIME_TYPE;
+exports.FILE__BMP_CLIPBOARD_MIME_TYPE = FILE__BMP_CLIPBOARD_MIME_TYPE;
+exports.FILE__JPEG_CLIPBOARD_MIME_TYPE = FILE__JPEG_CLIPBOARD_MIME_TYPE;
+exports.FILE__WEBP_CLIPBOARD_MIME_TYPE = FILE__WEBP_CLIPBOARD_MIME_TYPE;
+exports.FONT_FAMILY_COMPONENT = FONT_FAMILY_COMPONENT;
+exports.FONT_FAMILY_ITEM_COMPONENT = FONT_FAMILY_ITEM_COMPONENT;
+exports.FONT_SIZE_COMPONENT = FONT_SIZE_COMPONENT;
+exports.FONT_SIZE_LIST = FONT_SIZE_LIST;
+exports.FloatDom = FloatDom;
+exports.FloatDomSingle = FloatDomSingle;
+exports.FloatingObjectToolbarPosition = FloatingObjectToolbarPosition;
+exports.FontFamily = FontFamily;
+exports.FontFamilyDropdown = FontFamilyDropdown;
+exports.FontFamilyItem = FontFamilyItem;
+Object.defineProperty(exports, 'FontService', {
+  enumerable: true,
+  get: function () {
+    return FontService;
+  }
+});
+exports.FontSize = FontSize;
+exports.HEADING_ITEM_COMPONENT = HEADING_ITEM_COMPONENT;
+exports.HEADING_LIST = HEADING_LIST;
+exports.HOVER_TRACK_HOST_CLASS_NAME = HOVER_TRACK_HOST_CLASS_NAME;
+exports.HTML_CLIPBOARD_MIME_TYPE = HTML_CLIPBOARD_MIME_TYPE;
+exports.HeadingItem = HeadingItem;
+exports.HoverTrack = HoverTrack;
+exports.IBeforeCloseService = IBeforeCloseService;
+exports.ICanvasPopupService = ICanvasPopupService;
+exports.IClipboardInterfaceService = IClipboardInterfaceService;
+exports.IContextMenuHostService = IContextMenuHostService;
+exports.IContextMenuService = IContextMenuService;
+exports.IDialogService = IDialogService;
+exports.IFontService = IFontService;
+exports.IGalleryService = IGalleryService;
+exports.ILayoutService = ILayoutService;
+exports.ILeftSidebarService = ILeftSidebarService;
+exports.ILocalFileService = ILocalFileService;
+exports.IMenuManagerService = IMenuManagerService;
+exports.IMessageService = IMessageService;
+exports.INotificationService = INotificationService;
+exports.IPlatformService = IPlatformService;
+exports.IRibbonOverrideService = IRibbonOverrideService;
+exports.IRibbonService = IRibbonService;
+exports.IShortcutService = IShortcutService;
+exports.ISidebarService = ISidebarService;
+exports.IUIController = IUIController;
+exports.IUIPartsService = IUIPartsService;
+exports.IUIRuntimeScopeService = IUIRuntimeScopeService;
+exports.IUnitPresenceUIAdapterRegistry = IUnitPresenceUIAdapterRegistry;
+exports.IWorkbenchService = IWorkbenchService;
+Object.defineProperty(exports, 'IconManager', {
+  enumerable: true,
+  get: function () {
+    return IconManager;
+  }
+});
+exports.KeyCode = KeyCode;
+exports.MOBILE_UI_MODE = MOBILE_UI_MODE;
+exports.MenuItemType = MenuItemType;
+exports.MenuManagerPosition = MenuManagerPosition;
+Object.defineProperty(exports, 'MenuManagerService', {
+  enumerable: true,
+  get: function () {
+    return MenuManagerService;
+  }
+});
+exports.MetaKeys = MetaKeys;
+exports.MobileContextMenu = MobileContextMenu;
+Object.defineProperty(exports, 'MobileDialogService', {
+  enumerable: true,
+  get: function () {
+    return MobileDialogService;
+  }
+});
+exports.MobileDrawer = MobileDrawer;
+exports.MobileMenu = MobileMenu;
+exports.MockMessageService = MockMessageService;
+exports.NativeTextEditorShortcutBehavior = NativeTextEditorShortcutBehavior;
+exports.ObjectPermissionButton = ObjectPermissionButton;
+exports.ObjectPermissionPanelButton = ObjectPermissionPanelButton;
+exports.PLAIN_TEXT_CLIPBOARD_MIME_TYPE = PLAIN_TEXT_CLIPBOARD_MIME_TYPE;
+exports.PasteCommand = PasteCommand;
+exports.PlatformService = PlatformService;
+exports.PrintFloatDomSingle = PrintFloatDomSingle;
+exports.ProgressBar = ProgressBar;
+exports.RectPopup = RectPopup;
+Object.defineProperty(exports, 'RediConsumer', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.RediConsumer;
+  }
+});
+Object.defineProperty(exports, 'RediContext', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.RediContext;
+  }
+});
+Object.defineProperty(exports, 'RediProvider', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.RediProvider;
+  }
+});
+exports.RedoShortcutItem = RedoShortcutItem;
+exports.Ribbon = Ribbon;
+exports.RibbonDataGroup = RibbonDataGroup;
+exports.RibbonFormulasGroup = RibbonFormulasGroup;
+exports.RibbonInsertGroup = RibbonInsertGroup;
+exports.RibbonOthersGroup = RibbonOthersGroup;
+exports.RibbonOverrideService = RibbonOverrideService;
+exports.RibbonPosition = RibbonPosition;
+exports.RibbonStartGroup = RibbonStartGroup;
+exports.RibbonViewGroup = RibbonViewGroup;
+exports.SYMBOL_CATEGORIES = SYMBOL_CATEGORIES;
+exports.SYMBOL_PICKER_COMPONENT = SYMBOL_PICKER_COMPONENT;
+Object.defineProperty(exports, 'SharedController', {
+  enumerable: true,
+  get: function () {
+    return SharedController;
+  }
+});
+exports.SheetPasteShortKeyCommandName = SheetPasteShortKeyCommandName;
+Object.defineProperty(exports, 'ShortcutPanelController', {
+  enumerable: true,
+  get: function () {
+    return ShortcutPanelController;
+  }
+});
+exports.ShortcutPanelService = ShortcutPanelService;
+Object.defineProperty(exports, 'ShortcutService', {
+  enumerable: true,
+  get: function () {
+    return ShortcutService;
+  }
+});
+exports.Sidebar = Sidebar;
+exports.SingleCanvasPopup = SingleCanvasPopup;
+exports.SingleUnitUIController = SingleUnitUIController;
+exports.Slider = Slider;
+exports.SymbolPicker = SymbolPicker;
+exports.ThemeSwitcherService = ThemeSwitcherService;
+exports.ToggleFullscreenOperation = ToggleFullscreenOperation;
+exports.ToggleShortcutPanelOperation = ToggleShortcutPanelOperation;
+exports.ToolbarButton = ToolbarButton;
+exports.ToolbarItem = ToolbarItem;
+exports.UIMenuSchema = menuSchema;
+exports.UIPartsService = UIPartsService;
+exports.UIRuntimeScopeService = UIRuntimeScopeService;
+exports.UI_PLUGIN_CONFIG_KEY = UI_PLUGIN_CONFIG_KEY;
+exports.UNI_DISABLE_CHANGING_FOCUS_KEY = UNI_DISABLE_CHANGING_FOCUS_KEY;
+Object.defineProperty(exports, 'UndoRedoGroupService', {
+  enumerable: true,
+  get: function () {
+    return UndoRedoGroupService;
+  }
+});
+exports.UndoShortcutItem = UndoShortcutItem;
+exports.UnitPresenceUIAdapterRegistry = UnitPresenceUIAdapterRegistry;
+Object.defineProperty(exports, 'UniverMobileUIPlugin', {
+  enumerable: true,
+  get: function () {
+    return UniverMobileUIPlugin;
+  }
+});
+Object.defineProperty(exports, 'UniverUIPlugin', {
+  enumerable: true,
+  get: function () {
+    return UniverUIPlugin;
+  }
+});
+Object.defineProperty(exports, 'WithDependency', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.WithDependency;
+  }
+});
+Object.defineProperty(exports, 'WorkbenchService', {
+  enumerable: true,
+  get: function () {
+    return WorkbenchService;
+  }
+});
+exports.ZIndexManager = ZIndexManager;
+exports.ZoomInput = ZoomInput;
+Object.defineProperty(exports, 'connectDependencies', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.connectDependencies;
+  }
+});
+Object.defineProperty(exports, 'connectInjector', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.connectInjector;
+  }
+});
+exports.getAllEmojis = getAllEmojis;
+exports.getDefaultRecentEmojis = getDefaultRecentEmojis;
+exports.getEmbedBoundaryOwner = getEmbedBoundaryOwner;
+exports.getEmbedChildUnitId = getEmbedChildUnitId;
+exports.getEmojiLocaleData = getEmojiLocaleData;
+exports.getHeaderFooterMenuHiddenObservable = getHeaderFooterMenuHiddenObservable;
+exports.getLocalizedEmojiTitle = getLocalizedEmojiTitle;
+exports.getMenuHiddenObservable = getMenuHiddenObservable;
+exports.getRandomEmoji = getRandomEmoji;
+exports.handelExcelToJson = handelExcelToJson;
+exports.handelTableToJson = handelTableToJson;
+exports.handleDomToJson = handleDomToJson;
+exports.handlePlainToJson = handlePlainToJson;
+exports.handleStringToStyle = handleStringToStyle;
+exports.handleTableColgroup = handleTableColgroup;
+exports.handleTableMergeData = handleTableMergeData;
+exports.handleTableRowGroup = handleTableRowGroup;
+exports.imageMimeTypeSet = imageMimeTypeSet;
+exports.isEmbedBoundaryTarget = isEmbedBoundaryTarget;
+exports.keepInteractionInsideSameEmbedBoundary = keepInteractionInsideSameEmbedBoundary;
+exports.mergeMenuConfigs = mergeMenuConfigs;
+exports.objectPermissionMenuItemFactory = objectPermissionMenuItemFactory;
+exports.openObjectPermissionDialog = openObjectPermissionDialog;
+exports.openObjectPermissionPanel = openObjectPermissionPanel;
+exports.parseHtmlDocument = parseHtmlDocument;
+exports.parseHtmlFragment = parseHtmlFragment;
+exports.parseStoredRecentEmojis = parseStoredRecentEmojis;
+exports.preventBrowserZoomInContainers = preventBrowserZoomInContainers;
+exports.promoteRecentEmoji = promoteRecentEmoji;
+exports.sanitizeParsedHtml = sanitizeParsedHtml;
+exports.searchEmojis = searchEmojis;
+exports.splitSpanText = splitSpanText;
+exports.supportClipboardAPI = supportClipboardAPI;
+exports.textTrim = textTrim;
+exports.useClickOutSide = useClickOutSide;
+exports.useComponentsOfPart = useComponentsOfPart;
+exports.useConfigValue = useConfigValue;
+exports.useDebounceFn = useDebounceFn;
+Object.defineProperty(exports, 'useDependency', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.useDependency;
+  }
+});
+exports.useEvent = useEvent;
+Object.defineProperty(exports, 'useInjector', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.useInjector;
+  }
+});
+Object.defineProperty(exports, 'useObservable', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.useObservable;
+  }
+});
+exports.useObservableRef = useObservableRef;
+exports.useScrollYOverContainer = useScrollYOverContainer;
+exports.useSidebarClick = useSidebarClick;
+exports.useToolbarItemStatus = useToolbarItemStatus;
+Object.defineProperty(exports, 'useUpdateBinder', {
+  enumerable: true,
+  get: function () {
+    return _wendellhu_redi_react_bindings.useUpdateBinder;
+  }
+});
+exports.useUpdateEffect = useUpdateEffect;
+exports.useVirtualList = useVirtualList;

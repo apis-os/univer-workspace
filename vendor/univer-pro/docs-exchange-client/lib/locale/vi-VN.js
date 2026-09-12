@@ -1,1 +1,8 @@
-();const e={'docs-exchange-client':{'file':"Tệp",'upload':"Mở (Tệp)",'download':"Lưu dưới dạng"}};export{e as default};
+const e = {
+  "docs-exchange-client": {
+    file: "Tệp",
+    upload: "Mở (Tệp)",
+    download: "Lưu dưới dạng",
+  },
+};
+export { e as default };

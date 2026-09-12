@@ -1,1 +1,38 @@
-();const e={'slides-print':{'menu':'Imprimer','header':{'pages':"Total : {0} pages",'cancel':"Annuler",'next':'Suivant','printing':"Impression en cours…"},'settings':{'range':"Plage d’impression",'rangePlaceholder':'Toutes\x20les\x20diapositives\x20ou\x201-3,5','rangeInvalid':'Saisissez\x20des\x20numéros\x20de\x20diapositives\x20de\x20la\x20présentation,\x20par\x20exemple\x201-3,5.','layout':"Disposition d’impression",'fullPage':"Diapositives pleine page",'notesPage':"Pages de notes",'handout':"Documents",'slidesPerPage':'Diapositives\x20par\x20page','order':"Ordre des pages",'horizontal':'Horizontal','vertical':"Vertical",'paperSize':'Format\x20du\x20papier','orientation':"Orientation",'portrait':'Portrait','landscape':'Paysage','margin':'Marges','normal':"Normales",'narrow':"Étroites",'wide':"Larges",'none':"Aucune",'formatting':"Mise en forme",'frameSlides':"Encadrer les diapositives",'slideNumber':'Imprimer\x20les\x20numéros\x20de\x20diapositive'}}};export{e as default};
+const e = {
+  "slides-print": {
+    menu: "Imprimer",
+    header: {
+      pages: "Total : {0} pages",
+      cancel: "Annuler",
+      next: "Suivant",
+      printing: "Impression en cours…",
+    },
+    settings: {
+      range: "Plage d’impression",
+      rangePlaceholder: "Toutes\x20les\x20diapositives\x20ou\x201-3,5",
+      rangeInvalid:
+        "Saisissez\x20des\x20numéros\x20de\x20diapositives\x20de\x20la\x20présentation,\x20par\x20exemple\x201-3,5.",
+      layout: "Disposition d’impression",
+      fullPage: "Diapositives pleine page",
+      notesPage: "Pages de notes",
+      handout: "Documents",
+      slidesPerPage: "Diapositives\x20par\x20page",
+      order: "Ordre des pages",
+      horizontal: "Horizontal",
+      vertical: "Vertical",
+      paperSize: "Format\x20du\x20papier",
+      orientation: "Orientation",
+      portrait: "Portrait",
+      landscape: "Paysage",
+      margin: "Marges",
+      normal: "Normales",
+      narrow: "Étroites",
+      wide: "Larges",
+      none: "Aucune",
+      formatting: "Mise en forme",
+      frameSlides: "Encadrer les diapositives",
+      slideNumber: "Imprimer\x20les\x20numéros\x20de\x20diapositive",
+    },
+  },
+};
+export { e as default };

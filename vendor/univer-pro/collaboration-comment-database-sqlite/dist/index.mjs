@@ -1,1 +1,3 @@
-();import _0x202742 from'./index.cjs';const facadeExport0=_0x202742.SQLiteCommentDatabaseAdapter;export{facadeExport0 as SQLiteCommentDatabaseAdapter};
+import _0x202742 from "./index.cjs";
+const facadeExport0 = _0x202742.SQLiteCommentDatabaseAdapter;
+export { facadeExport0 as SQLiteCommentDatabaseAdapter };

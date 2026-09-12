@@ -1,1 +1,59 @@
-();const e={'collaboration-client-ui':{'collabClient':{'tooltip':{'reconnect':"Klik untuk Menyambung Kembali"}},'collabStatus':{'fetchMiss':"Menyinkronkan data server...",'conflict':"Konflik edit",'notCollab':"File lokal",'synced':"Tersinkron",'syncing':"Menyinkronkan...",'offline':"Offline, edit akan disimpan secara lokal"},'snapshotLoading':{'timeout':'Pemuatan\x20data\x20berhenti\x20di\x20{0}/{1}.\x20Muat\x20ulang\x20halaman\x20untuk\x20mencoba\x20lagi.','refresh':"Muat ulang halaman"},'session':{'connection-failed':"Koneksi gagal, harap periksa jaringan Anda.",'will-retry':"Koneksi gagal, kami akan mencoba lagi sebentar lagi.",'room-full':"Ruang kolaborasi penuh. Edit Anda akan disimpan secara lokal.",'collaboration-timeout':'Server\x20tidak\x20merespons\x20permintaan\x20kolaborasi\x20Anda.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.'},'conflict':{'title':"Konflik Kolaborasi",'content':"Ada konflik antara salinan lokal Anda dan salinan di server. Harap simpan edit lokal Anda, karena akan hilang saat Anda memuat ulang halaman."},'permission':{'title':"Kesalahan Autentikasi",'content':"Tindakan Anda bertentangan dengan izin server. Harap simpan edit lokal Anda di tempat lain karena akan dibuang setelah menyegarkan halaman."},'collaboration':{'offline-data-not-saved':'Anda\x20memiliki\x20edit\x20offline\x20yang\x20belum\x20disimpan\x20ke\x20server.\x20Harap\x20periksa\x20jaringan\x20Anda\x20dan\x20coba\x20lagi.','single-unit':{'warning':'Anda\x20membuka\x20file\x20yang\x20sama\x20di\x20tab\x20lain.\x20Jika\x20terjadi\x20kehilangan\x20data,\x20Anda\x20tidak\x20dapat\x20mengedit\x20di\x20tab\x20ini.'},'closeRoom':"Hak edit dicabut karena ruang kolaboratif ditutup."},'auth':{'needGotoLoginAlert':'Login\x20Anda\x20telah\x20kedaluwarsa,\x20klik\x20OK\x20untuk\x20login\x20ulang,\x20klik\x20Batal\x20untuk\x20menyimpan\x20edit\x20lokal\x20Anda.'},'formula':{'calculation':{'started':"Perhitungan rumus dimulai.",'waiting':"Antrian perhitungan rumus penuh, menunggu slot yang tersedia...",'unable':'Tidak\x20dapat\x20melakukan\x20perhitungan\x20rumus\x20saat\x20ini.\x20Harap\x20coba\x20lagi\x20nanti.'}}}};export{e as default};
+const e = {
+  "collaboration-client-ui": {
+    collabClient: { tooltip: { reconnect: "Klik untuk Menyambung Kembali" } },
+    collabStatus: {
+      fetchMiss: "Menyinkronkan data server...",
+      conflict: "Konflik edit",
+      notCollab: "File lokal",
+      synced: "Tersinkron",
+      syncing: "Menyinkronkan...",
+      offline: "Offline, edit akan disimpan secara lokal",
+    },
+    snapshotLoading: {
+      timeout:
+        "Pemuatan\x20data\x20berhenti\x20di\x20{0}/{1}.\x20Muat\x20ulang\x20halaman\x20untuk\x20mencoba\x20lagi.",
+      refresh: "Muat ulang halaman",
+    },
+    session: {
+      "connection-failed": "Koneksi gagal, harap periksa jaringan Anda.",
+      "will-retry": "Koneksi gagal, kami akan mencoba lagi sebentar lagi.",
+      "room-full":
+        "Ruang kolaborasi penuh. Edit Anda akan disimpan secara lokal.",
+      "collaboration-timeout":
+        "Server\x20tidak\x20merespons\x20permintaan\x20kolaborasi\x20Anda.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
+    },
+    conflict: {
+      title: "Konflik Kolaborasi",
+      content:
+        "Ada konflik antara salinan lokal Anda dan salinan di server. Harap simpan edit lokal Anda, karena akan hilang saat Anda memuat ulang halaman.",
+    },
+    permission: {
+      title: "Kesalahan Autentikasi",
+      content:
+        "Tindakan Anda bertentangan dengan izin server. Harap simpan edit lokal Anda di tempat lain karena akan dibuang setelah menyegarkan halaman.",
+    },
+    collaboration: {
+      "offline-data-not-saved":
+        "Anda\x20memiliki\x20edit\x20offline\x20yang\x20belum\x20disimpan\x20ke\x20server.\x20Harap\x20periksa\x20jaringan\x20Anda\x20dan\x20coba\x20lagi.",
+      "single-unit": {
+        warning:
+          "Anda\x20membuka\x20file\x20yang\x20sama\x20di\x20tab\x20lain.\x20Jika\x20terjadi\x20kehilangan\x20data,\x20Anda\x20tidak\x20dapat\x20mengedit\x20di\x20tab\x20ini.",
+      },
+      closeRoom: "Hak edit dicabut karena ruang kolaboratif ditutup.",
+    },
+    auth: {
+      needGotoLoginAlert:
+        "Login\x20Anda\x20telah\x20kedaluwarsa,\x20klik\x20OK\x20untuk\x20login\x20ulang,\x20klik\x20Batal\x20untuk\x20menyimpan\x20edit\x20lokal\x20Anda.",
+    },
+    formula: {
+      calculation: {
+        started: "Perhitungan rumus dimulai.",
+        waiting:
+          "Antrian perhitungan rumus penuh, menunggu slot yang tersedia...",
+        unable:
+          "Tidak\x20dapat\x20melakukan\x20perhitungan\x20rumus\x20saat\x20ini.\x20Harap\x20coba\x20lagi\x20nanti.",
+      },
+    },
+  },
+};
+export { e as default };

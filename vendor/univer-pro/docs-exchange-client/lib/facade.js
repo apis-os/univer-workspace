@@ -1,1 +1,34 @@
-();import{IDocExchangeService as _0x3b8e07}from'@univerjs-pro/docs-exchange-client';import{FUniver as _0x264f66}from'@univerjs/core/facade';var n=class extends _0x264f66{importDocToUnitIdAsync(_0x54cfb7,_0x2283e8){return this._injector['get'](_0x3b8e07).importDocToUnitId(_0x54cfb7,_0x2283e8);}importDocToSnapshotAsync(_0x3accbb,_0x455604){return this._injector["get"](_0x3b8e07).importDocToSnapshot(_0x3accbb,_0x455604);}exportDocByUnitIdAsync(_0x57c050){return this._injector["get"](_0x3b8e07).exportDocByUnitId(_0x57c050);}exportDocBySnapshotAsync(_0x2e4fb1){return this._injector["get"](_0x3b8e07).exportDocBySnapshot(_0x2e4fb1);}transformSnapshotJsonToDocumentDataAsync(_0xb77bc6){return this._injector["get"](_0x3b8e07).transformSnapshotJsonToDocumentData(_0xb77bc6);}transformDocumentDataToSnapshotJsonAsync(_0x2acbcf){return this._injector["get"](_0x3b8e07).transformDocumentDataToSnapshotJson(_0x2acbcf);}};_0x264f66.extend(n);export{};
+import { IDocExchangeService as _0x3b8e07 } from "@univerjs-pro/docs-exchange-client";
+import { FUniver as _0x264f66 } from "@univerjs/core/facade";
+var n = class extends _0x264f66 {
+  importDocToUnitIdAsync(_0x54cfb7, _0x2283e8) {
+    return this._injector["get"](_0x3b8e07).importDocToUnitId(
+      _0x54cfb7,
+      _0x2283e8,
+    );
+  }
+  importDocToSnapshotAsync(_0x3accbb, _0x455604) {
+    return this._injector["get"](_0x3b8e07).importDocToSnapshot(
+      _0x3accbb,
+      _0x455604,
+    );
+  }
+  exportDocByUnitIdAsync(_0x57c050) {
+    return this._injector["get"](_0x3b8e07).exportDocByUnitId(_0x57c050);
+  }
+  exportDocBySnapshotAsync(_0x2e4fb1) {
+    return this._injector["get"](_0x3b8e07).exportDocBySnapshot(_0x2e4fb1);
+  }
+  transformSnapshotJsonToDocumentDataAsync(_0xb77bc6) {
+    return this._injector["get"](_0x3b8e07).transformSnapshotJsonToDocumentData(
+      _0xb77bc6,
+    );
+  }
+  transformDocumentDataToSnapshotJsonAsync(_0x2acbcf) {
+    return this._injector["get"](_0x3b8e07).transformDocumentDataToSnapshotJson(
+      _0x2acbcf,
+    );
+  }
+};
+_0x264f66.extend(n);
+export {};

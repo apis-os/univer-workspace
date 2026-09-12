@@ -1,108 +1,46 @@
-const _0xe00a6f = _0x176b;
-(function (_0x1d8087, _0x57416a) {
-  const _0x9a6307 = _0x176b,
-    _0x5035b3 = _0x1d8087();
-  while (!![]) {
-    try {
-      const _0x1d762a =
-        (-parseInt(_0x9a6307(0x1a7)) / 0x1) *
-          (parseInt(_0x9a6307(0x1a4)) / 0x2) +
-        -parseInt(_0x9a6307(0x1a1)) / 0x3 +
-        (parseInt(_0x9a6307(0x19e)) / 0x4) *
-          (parseInt(_0x9a6307(0x19c)) / 0x5) +
-        (-parseInt(_0x9a6307(0x191)) / 0x6) *
-          (-parseInt(_0x9a6307(0x192)) / 0x7) +
-        (parseInt(_0x9a6307(0x1af)) / 0x8) *
-          (parseInt(_0x9a6307(0x19f)) / 0x9) +
-        (-parseInt(_0x9a6307(0x198)) / 0xa) *
-          (parseInt(_0x9a6307(0x19b)) / 0xb) +
-        (parseInt(_0x9a6307(0x19a)) / 0xc) *
-          (-parseInt(_0x9a6307(0x19d)) / 0xd);
-      if (_0x1d762a === _0x57416a) break;
-      else _0x5035b3["push"](_0x5035b3["shift"]());
-    } catch (_0x276370) {
-      _0x5035b3["push"](_0x5035b3["shift"]());
-    }
-  }
-})(_0x4468, 0xd9a96);
-function _0x176b(_0x4944f9, _0x53b9ca) {
-  _0x4944f9 = _0x4944f9 - 0x18f;
-  const _0x446835 = _0x4468();
-  let _0x176b3e = _0x446835[_0x4944f9];
-  return _0x176b3e;
-}
-function _0x4468() {
-  const _0xc788eb = [
-    "77EZOwKE",
-    "Kết\x20nối\x20thất\x20bại.\x20Vui\x20lòng\x20kiểm\x20tra\x20mạng\x20của\x20bạn.",
-    "Tham\x20gia\x20cộng\x20tác\x20thất\x20bại.\x20Các\x20chỉnh\x20sửa\x20của\x20bạn\x20sẽ\x20được\x20lưu\x20cục\x20bộ.",
-    "Đã\x20đồng\x20bộ",
-    "Tài\x20liệu\x20đã\x20đạt\x20đến\x20giới\x20hạn\x20cộng\x20tác.\x20Các\x20chỉnh\x20sửa\x20của\x20bạn\x20sẽ\x20được\x20lưu\x20cục\x20bộ.",
-    "Số\x20lượng\x20tài\x20liệu\x20cộng\x20tác\x20vượt\x20quá\x20giới\x20hạn.\x20Các\x20chỉnh\x20sửa\x20của\x20bạn\x20sẽ\x20được\x20lưu\x20cục\x20bộ.",
-    "Xung\x20đột\x20cộng\x20tác",
-    "Bạn\x20đã\x20mở\x20cùng\x20một\x20tệp\x20trong\x20một\x20tab\x20khác.\x20Để\x20tránh\x20mất\x20dữ\x20liệu,\x20bạn\x20không\x20thể\x20chỉnh\x20sửa\x20trên\x20tab\x20này.",
-    "155336zfIjkc",
-    "Xung\x20đột\x20chỉnh\x20sửa",
-    "exports",
-    "598092UQeSYe",
-    "105QqacaR",
-    "Quyền\x20chỉnh\x20sửa\x20đã\x20bị\x20thu\x20hồi\x20vì\x20phòng\x20cộng\x20tác\x20đã\x20đóng.",
-    "Kết\x20nối\x20thất\x20bại.\x20Chúng\x20tôi\x20sẽ\x20thử\x20lại\x20sau\x20một\x20lát.",
-    "Tham\x20gia\x20cộng\x20tác\x20thất\x20bại.\x20Vui\x20lòng\x20thử\x20lại\x20sau.\x20Các\x20chỉnh\x20sửa\x20của\x20bạn\x20sẽ\x20được\x20lưu\x20cục\x20bộ.",
-    "Không\x20có\x20quyền\x20cộng\x20tác.\x20Các\x20chỉnh\x20sửa\x20của\x20bạn\x20sẽ\x20được\x20lưu\x20cục\x20bộ.",
-    "Ngoại\x20tuyến,\x20các\x20chỉnh\x20sửa\x20sẽ\x20được\x20lưu\x20cục\x20bộ",
-    "5251910uaHIcJ",
-    "Đang\x20đồng\x20bộ\x20dữ\x20liệu\x20máy\x20chủ...",
-    "2116200eMAQCA",
-    "11nTgYia",
-    "8593990SXfUXc",
-    "78fBIEJY",
-    "4KvBWIE",
-    "477yVrxhg",
-    "Lỗi\x20xác\x20thực",
-    "47559yzdigJ",
-    "Nhấp\x20để\x20kết\x20nối\x20lại",
-    "Đang\x20đồng\x20bộ...",
-    "45518moNTxk",
-    "Tệp\x20cục\x20bộ",
-    "Hành\x20động\x20của\x20bạn\x20xung\x20đột\x20với\x20quyền\x20của\x20máy\x20chủ.\x20Vui\x20lòng\x20lưu\x20các\x20chỉnh\x20sửa\x20cục\x20bộ\x20của\x20bạn\x20ở\x20nơi\x20khác\x20vì\x20chúng\x20sẽ\x20bị\x20hủy\x20sau\x20khi\x20làm\x20mới\x20trang.",
-  ];
-  _0x4468 = function () {
-    return _0xc788eb;
-  };
-  return _0x4468();
-}
 const e = {
   "collaboration-client": {
-    collabClient: { tooltip: { reconnect: _0xe00a6f(0x1a2) } },
+    collabClient: { tooltip: { reconnect: "Nhấp để kết nối lại" } },
     collabStatus: {
-      fetchMiss: _0xe00a6f(0x199),
-      conflict: _0xe00a6f(0x18f),
-      notCollab: _0xe00a6f(0x1a5),
-      synced: _0xe00a6f(0x1aa),
-      syncing: _0xe00a6f(0x1a3),
-      offline: _0xe00a6f(0x197),
+      fetchMiss: "Đang đồng bộ dữ liệu máy chủ...",
+      conflict: "Xung đột chỉnh sửa",
+      notCollab: "Tệp cục bộ",
+      synced: "Đã đồng bộ",
+      syncing: "Đang đồng bộ...",
+      offline: "Ngoại tuyến, các chỉnh sửa sẽ được lưu cục bộ",
     },
     session: {
-      "connection-failed": _0xe00a6f(0x1a8),
-      "will-retry": _0xe00a6f(0x194),
-      "room-full": _0xe00a6f(0x1ab),
-      "join-failed": _0xe00a6f(0x195),
-      "room-not-exists": _0xe00a6f(0x1a9),
-      "room-permission-denied": _0xe00a6f(0x196),
-      "room-cnt-exceeds": _0xe00a6f(0x1ac),
+      "connection-failed": "Kết nối thất bại. Vui lòng kiểm tra mạng của bạn.",
+      "will-retry": "Kết nối thất bại. Chúng tôi sẽ thử lại sau một lát.",
+      "room-full":
+        "Tài liệu đã đạt đến giới hạn cộng tác. Các chỉnh sửa của bạn sẽ được lưu cục bộ.",
+      "join-failed":
+        "Tham gia cộng tác thất bại. Vui lòng thử lại sau. Các chỉnh sửa của bạn sẽ được lưu cục bộ.",
+      "room-not-exists":
+        "Tham gia cộng tác thất bại. Các chỉnh sửa của bạn sẽ được lưu cục bộ.",
+      "room-permission-denied":
+        "Không có quyền cộng tác. Các chỉnh sửa của bạn sẽ được lưu cục bộ.",
+      "room-cnt-exceeds":
+        "Số lượng tài liệu cộng tác vượt quá giới hạn. Các chỉnh sửa của bạn sẽ được lưu cục bộ.",
       "collaboration-timeout":
         "Máy\x20chủ\x20không\x20phản\x20hồi\x20yêu\x20cầu\x20cộng\x20tác\x20của\x20bạn.\x20Các\x20chỉnh\x20sửa\x20của\x20bạn\x20sẽ\x20được\x20lưu\x20cục\x20bộ.",
     },
     conflict: {
-      title: _0xe00a6f(0x1ad),
+      title: "Xung đột cộng tác",
       content:
         "Có\x20sự\x20xung\x20đột\x20giữa\x20bản\x20sao\x20cục\x20bộ\x20của\x20bạn\x20và\x20bản\x20sao\x20trên\x20máy\x20chủ.\x20Vui\x20lòng\x20lưu\x20các\x20chỉnh\x20sửa\x20cục\x20bộ\x20của\x20bạn,\x20vì\x20chúng\x20sẽ\x20bị\x20mất\x20khi\x20bạn\x20tải\x20lại\x20trang.",
     },
-    permission: { title: _0xe00a6f(0x1a0), content: _0xe00a6f(0x1a6) },
+    permission: {
+      title: "Lỗi xác thực",
+      content:
+        "Hành động của bạn xung đột với quyền của máy chủ. Vui lòng lưu các chỉnh sửa cục bộ của bạn ở nơi khác vì chúng sẽ bị hủy sau khi làm mới trang.",
+    },
     collaboration: {
-      "single-unit": { warning: _0xe00a6f(0x1ae) },
-      closeRoom: _0xe00a6f(0x193),
+      "single-unit": {
+        warning:
+          "Bạn đã mở cùng một tệp trong một tab khác. Để tránh mất dữ liệu, bạn không thể chỉnh sửa trên tab này.",
+      },
+      closeRoom: "Quyền chỉnh sửa đã bị thu hồi vì phòng cộng tác đã đóng.",
     },
     auth: {
       needGotoLoginAlert:
@@ -110,4 +48,4 @@ const e = {
     },
   },
 };
-module[_0xe00a6f(0x190)] = e;
+module.exports = e;

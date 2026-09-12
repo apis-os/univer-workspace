@@ -1,0 +1,44 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { Disposable, IUniverInstanceService } from '@univerjs/core';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { SheetInterceptorService } from '@univerjs/sheets';
+import { ConditionalFormattingRangeIndexModel, ConditionalFormattingRuleModel, ConditionalFormattingService, ConditionalFormattingViewModel } from '@univerjs/sheets-conditional-formatting';
+export declare class SheetsCfRenderController extends Disposable {
+    private _sheetInterceptorService;
+    private _conditionalFormattingService;
+    private _univerInstanceService;
+    private _renderManagerService;
+    private _conditionalFormattingViewModel;
+    private _conditionalFormattingRuleModel;
+    private _conditionalFormattingRangeIndexModel;
+    /**
+     * When a set operation is triggered multiple times over a short period of time, it may result in some callbacks not being disposed,and caused a render cache exception.
+     * The solution here is to store all the asynchronous tasks and focus on processing after the last callback
+     */
+    private _ruleChangeCacheMap;
+    private _boundRenderExtensions;
+    constructor(_sheetInterceptorService: SheetInterceptorService, _conditionalFormattingService: ConditionalFormattingService, _univerInstanceService: IUniverInstanceService, _renderManagerService: IRenderManagerService, _conditionalFormattingViewModel: ConditionalFormattingViewModel, _conditionalFormattingRuleModel: ConditionalFormattingRuleModel, _conditionalFormattingRangeIndexModel: ConditionalFormattingRangeIndexModel);
+    private _initRenderRangeResolvers;
+    private _createRenderRangeResolver;
+    private _unbindRenderRangeResolvers;
+    private _collectDirtyRanges;
+    private _intersectDirtyRangesWithRenderedRange;
+    private _markDirtySkeleton;
+    private _markActiveSheetRulesDirty;
+    private _initSkeleton;
+    private _initViewModelInterceptor;
+}

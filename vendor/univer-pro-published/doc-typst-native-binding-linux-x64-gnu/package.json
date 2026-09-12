@@ -1,0 +1,17 @@
+{
+  "name": "@univerjs-pro/doc-typst-native-binding-linux-x64-gnu",
+  "version": "1.0.0-insiders.20260723-c21613b",
+  "cpu": [
+    "x64"
+  ],
+  "main": "doc-typst.linux-x64-gnu.node",
+  "files": [
+    "doc-typst.linux-x64-gnu.node"
+  ],
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "glibc"
+  ]
+}

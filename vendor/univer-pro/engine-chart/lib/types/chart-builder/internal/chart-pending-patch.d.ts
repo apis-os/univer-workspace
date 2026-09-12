@@ -1,0 +1,11 @@
+import type { DeepNullish, IChartHistogramSpec } from '../../types';
+import type { ChartPendingConfig, IChartDescription, IChartMappingSpec } from '../chart-types';
+import type { IPatchFieldSchema, PatchSchema } from './patch-interpreter';
+type MappingPatch = DeepNullish<IChartMappingSpec>;
+type HistogramPatch = DeepNullish<IChartHistogramSpec>;
+export declare const mappingPatchSchema: PatchSchema<IChartMappingSpec, MappingPatch>;
+export declare const histogramPatchSchema: PatchSchema<IChartHistogramSpec, HistogramPatch>;
+export declare function semanticField<TKey extends keyof IChartDescription, TPatchValue>(key: TKey, path: readonly string[]): IPatchFieldSchema<IChartDescription, TPatchValue>;
+export declare function appendCollectionField<TKey extends keyof IChartDescription, TValue>(key: TKey): IPatchFieldSchema<IChartDescription, TValue[] | null | undefined>;
+export declare const seriesField: IPatchFieldSchema<IChartDescription, ChartPendingConfig['series']>;
+export {};

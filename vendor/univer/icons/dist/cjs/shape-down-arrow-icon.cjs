@@ -1,0 +1,44 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-down-arrow-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "clipPath",
+		"attrs": { "id": "shape-down-arrow-icon-clip" },
+		"children": [{
+			"tag": "path",
+			"attrs": { "d": "M10 19.001L2 10.001H6.00098V1.00098L14.001 1.00098V10.001H18L10 19.001Z" }
+		}]
+	}, {
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M10 19.001L2 10.001H6.00098V1.00098L14.001 1.00098V10.001H18L10 19.001Z",
+			"strokeWidth": 3.2,
+			"clipPath": "url(#shape-down-arrow-icon-clip)"
+		}
+	}]
+};
+const ShapeDownArrowIcon = (0, react.forwardRef)(function ShapeDownArrowIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-down-arrow-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeDownArrowIcon.displayName = "ShapeDownArrowIcon";
+//#endregion
+exports.ShapeDownArrowIcon = ShapeDownArrowIcon;
+exports.default = ShapeDownArrowIcon;

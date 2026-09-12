@@ -1,0 +1,9 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_find_replace_locale_pl_PL = require("@univerjs/find-replace/locale/pl-PL");
+_univerjs_find_replace_locale_pl_PL = require_rolldown_runtime.__toESM(_univerjs_find_replace_locale_pl_PL);
+
+//#region src/locales/pl-PL.ts
+var pl_PL_default = Object.assign({}, _univerjs_find_replace_locale_pl_PL.default);
+
+//#endregion
+module.exports = pl_PL_default;

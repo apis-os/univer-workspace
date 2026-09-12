@@ -1,0 +1,38 @@
+import type { SlideModel } from '@univerjs-pro/slides';
+import type { ISlidePlaybackState } from '@univerjs-pro/slides-ui';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { ISlideDrawingService } from '@univerjs-pro/slides';
+import { ISlidePlaybackService, SlideHitTestService, SlideInsertService } from '@univerjs-pro/slides-ui';
+import { ICommandService, IUniverInstanceService, RxDisposable, ThemeService } from '@univerjs/core';
+import { ThreadCommentModel } from '@univerjs/thread-comment';
+import { ThreadCommentDraftService, ThreadCommentPanelService } from '@univerjs/thread-comment-ui';
+export declare function shouldShowSlideCommentOverlay(state: ISlidePlaybackState, unitId: string): boolean;
+export declare class SlidesThreadCommentPlacementRenderController extends RxDisposable implements IRenderModule {
+    private readonly _renderContext;
+    private readonly _commandService;
+    private readonly _instanceService;
+    private readonly _drawingService;
+    private readonly _draftService;
+    private readonly _commentModel;
+    private readonly _panelService;
+    private readonly _hitTestService;
+    private readonly _insertService;
+    private readonly _playbackService;
+    private readonly _themeService;
+    private readonly _overlay;
+    private _commentsVisible;
+    constructor(_renderContext: IRenderContext<SlideModel>, _commandService: ICommandService, _instanceService: IUniverInstanceService, _drawingService: ISlideDrawingService, _draftService: ThreadCommentDraftService, _commentModel: ThreadCommentModel, _panelService: ThreadCommentPanelService, _hitTestService: SlideHitTestService, _insertService: SlideInsertService, _playbackService: ISlidePlaybackService, _themeService: ThemeService);
+    private _initPlaybackVisibility;
+    private _onDrawingPointerDown;
+    private _onPointerDown;
+    private _onPointerMove;
+    private _onOverlayPointerDown;
+    private _syncOverlay;
+    private _getElementUnderline;
+    private _getElementOutline;
+    private _getFocusState;
+    private _getPageRect;
+    private _getColors;
+    private _getModel;
+    private _toScenePoint;
+}

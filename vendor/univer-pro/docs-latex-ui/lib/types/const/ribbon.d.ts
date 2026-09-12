@@ -1,0 +1,31 @@
+import type { FormulaTemplateCategory } from '../common/formula-templates';
+export declare const DOCS_LATEX_FORMULA_RIBBON_TAB = "docs-latex-ui.ribbon.formula";
+export declare const DOCS_LATEX_FORMULA_RIBBON_GROUP = "docs-latex-ui.ribbon.group.formula";
+export declare const DOCS_LATEX_FORMULA_CATEGORY_LOCALE_KEYS: {
+    fractions: "docs-latex-ui.ribbon.categories.fractions";
+    scripts: "docs-latex-ui.ribbon.categories.scripts";
+    radicals: "docs-latex-ui.ribbon.categories.radicals";
+    integrals: "docs-latex-ui.ribbon.categories.integrals";
+    'large-operators': "docs-latex-ui.ribbon.categories.largeOperators";
+    brackets: "docs-latex-ui.ribbon.categories.brackets";
+    functions: "docs-latex-ui.ribbon.categories.functions";
+    accents: "docs-latex-ui.ribbon.categories.accents";
+    'limits-logarithms': "docs-latex-ui.ribbon.categories.limitsLogarithms";
+    operators: "docs-latex-ui.ribbon.categories.operators";
+    matrices: "docs-latex-ui.ribbon.categories.matrices";
+};
+export declare const DOCS_LATEX_FORMULA_CATEGORY_ICONS: {
+    fractions: string;
+    scripts: string;
+    radicals: string;
+    integrals: string;
+    'large-operators': string;
+    brackets: string;
+    functions: string;
+    accents: string;
+    'limits-logarithms': string;
+    operators: string;
+    matrices: string;
+};
+export declare const getDocsLatexFormulaMenu: (category: FormulaTemplateCategory) => string;
+export declare const getDocsLatexFormulaGalleryComponent: (category: FormulaTemplateCategory) => string;

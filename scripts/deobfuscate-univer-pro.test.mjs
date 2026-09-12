@@ -27,12 +27,30 @@ const CJS_SNIPPET = [
   "function _0x7faf(){const _0x21f56d=['hello','world'];_0x7faf=function(){return _0x21f56d;};return _0x7faf();}"
 ].join("");
 
+const EXTRA_PRO_UI_PACKAGES = [
+  "bases",
+  "bases-ui",
+  "boards",
+  "boards-ui",
+  "chart-ui",
+  "embed",
+  "embed-ui",
+  "slides",
+  "slides-ui"
+];
+
 test("DEFAULT_PACKAGES includes Cloudflare formula and exchange packages", () => {
   assert.ok(DEFAULT_PACKAGES.includes("engine-formula"), "engine-formula");
   assert.ok(DEFAULT_PACKAGES.includes("exchange-client"), "exchange-client");
   assert.ok(DEFAULT_PACKAGES.includes("live-share"), "live-share");
   assert.ok(DEFAULT_PACKAGES.includes("collaboration-service"), "collaboration-service");
   assert.ok(DEFAULT_PACKAGES.includes("collaboration-transport-node"), "collaboration-transport-node");
+});
+
+test("DEFAULT_PACKAGES includes extra Pro UI packages still wrapped before freeze", () => {
+  for (const pkg of EXTRA_PRO_UI_PACKAGES) {
+    assert.ok(DEFAULT_PACKAGES.includes(pkg), pkg);
+  }
 });
 
 test("does not treat unrelated zero-arg helpers as the string-array function", () => {
@@ -45,6 +63,22 @@ test("does not treat unrelated zero-arg helpers as the string-array function", (
   const { src, changed } = deobfuscateSource(readFileSync(published, "utf8"));
   assert.equal(changed, true);
   assert.equal(looksObfuscated(src), false);
+});
+
+const VAR_SNIPPET = [
+  "function _0x148f(_0x30ac79,_0x58ef1d){_0x30ac79=_0x30ac79-0x0;var _0x5a44dd=_0x5a44();var _0x148ff1=_0x5a44dd[_0x30ac79];return _0x148ff1;}",
+  "function _0x5a44(){var _0x181117=['hello','world'];_0x5a44=function(){return _0x181117;};return _0x5a44();}",
+  "var _0x3e1e77=_0x148f;(function(_0x4b238b,_0x4e0903){var _0x357d12=_0x148f,_0x433c62=_0x4b238b();while(!![]){try{var _0x1895ee=0x1;if(_0x1895ee===_0x4e0903)break;else _0x433c62['push'](_0x433c62['shift']());}catch(_0x1f06d9){_0x433c62['push'](_0x433c62['shift']());}}}(_0x5a44,0x1));",
+  "export const msg=_0x3e1e77(0x0);"
+].join("");
+
+test("decodes var-style string-array wrappers used by Pro facade files", () => {
+  assert.equal(looksObfuscated(VAR_SNIPPET), true);
+  assert.ok(extractRuntime(VAR_SNIPPET), "var array function must extract");
+  const { src, changed } = deobfuscateSource(VAR_SNIPPET);
+  assert.equal(changed, true);
+  assert.equal(looksObfuscated(src), false);
+  assert.match(src, /export const msg\s*=\s*"hello"/);
 });
 
 test("decodes ESM javascript-obfuscator string-array wrappers", () => {
@@ -64,6 +98,11 @@ test("decodes CJS wrappers that chain the rotator with a comma operator", () => 
   assert.equal(looksObfuscated(src), false);
   assert.doesNotMatch(src, /^\s*,/);
   assert.match(src, /"hello"/);
+});
+
+test("strips leftover empty (); left by rotator IIFE wrappers", () => {
+  assert.doesNotMatch(unglueKeywords("();import x from 'y';"), /^\s*\(\s*\)\s*;/);
+  assert.match(unglueKeywords("const a=1;();export const b=2;"), /const a=1;export const b=2;/);
 });
 
 test("unglue keeps method names and splits infix in/instanceof", () => {
@@ -121,6 +160,41 @@ test("decoded ESM copies no longer carry string-array wrappers", () => {
   );
   const leftover = files.filter((file) => looksObfuscated(readFileSync(file, "utf8")));
   assert.equal(leftover.length, 0, leftover.map((file) => path.relative(ROOT, file)).join("\n"));
+});
+
+test("extra Pro UI vendor packages are decoded (no while(!![]) wrappers)", () => {
+  const leftover = [];
+  for (const pkg of EXTRA_PRO_UI_PACKAGES) {
+    const dir = path.join(ROOT, "vendor/univer-pro", pkg);
+    assert.ok(existsSync(dir), `vendor/univer-pro/${pkg} must exist`);
+    for (const file of walkJs(dir)) {
+      if (looksObfuscated(readFileSync(file, "utf8"))) leftover.push(path.relative(ROOT, file));
+    }
+  }
+  assert.equal(leftover.length, 0, leftover.join("\n"));
+});
+
+test("collaboration-service CJS used by the Worker is decoded", () => {
+  const cjs = path.join(ROOT, "vendor/univer-pro/collaboration-service/dist/index.cjs");
+  assert.ok(existsSync(cjs), "collaboration-service dist/index.cjs");
+  const src = readFileSync(cjs, "utf8");
+  assert.equal(looksObfuscated(src), false, "collaboration-service CJS still has string-array wrappers");
+});
+
+test("vendor collaboration-client ESM does not start with leftover ();", () => {
+  const es = path.join(ROOT, "vendor/univer-pro/collaboration-client/lib/es/index.js");
+  const src = readFileSync(es, "utf8");
+  assert.doesNotMatch(src, /^\s*\(\s*\)\s*;/);
+  try {
+    new vm.Script(src.replace(/^\s*import[\s\S]*?from\s*["'][^"']+["'];?/gm, "").replace(/\bexport\s+/g, ""));
+  } catch (err) {
+    if (!String(err?.message ?? err).includes("Cannot use import statement")) {
+      // leftover `();` is a SyntaxError even after neutralizing imports
+      if (/^Unexpected token/.test(String(err?.message ?? err))) {
+        assert.fail(`collaboration-client ESM parse: ${err.message}`);
+      }
+    }
+  }
 });
 
 test("keeps CJS originals when decode would produce invalid syntax", () => {

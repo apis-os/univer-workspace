@@ -1,1 +1,593 @@
-();import{etc as _0x3c3631,hashes as _0x4d4ce0,verify as _0x3ea7d8}from'@noble/ed25519';import{sha512 as _0x29a9ff}from'@noble/hashes/sha2.js';import{Disposable as _0x3afb86,IConfigService as _0x5e99ab,IUniverInstanceService as _0x43a18a,Inject as _0x5a5385,Injector as _0x70622d,LifecycleService as _0x578e24,Plugin as _0x36ab27,SHEET_EDITOR_UNITS as _0x5dd9a3,UniverInstanceType as _0x17a9bf,merge as _0x38c0b5}from'@univerjs/core';import{IRenderManagerService as _0x45b837}from'@univerjs/engine-render';import{take as _0x448d35}from'rxjs';function g(){return typeof globalThis<'u'&&globalThis||typeof window<'u'&&window||typeof global<'u'&&global;}let _=function(_0x5a3564){return _0x5a3564[_0x5a3564.DEV=1]="DEV",_0x5a3564[_0x5a3564.NO_COMMERCIAL=2]="NO_COMMERCIAL",_0x5a3564[_0x5a3564.COMMERCIAL=3]='COMMERCIAL',_0x5a3564;}({});const v=[[61,62,50,48,61,57,62,34,37],[96,99,102,127,97,127,97,127,96]];function y(_0x383f4d){return String.fromCharCode(..._0x383f4d.map(_0x364df5=>_0x364df5^81));}function b(_0x157965){return v.some(_0x4ba795=>y(_0x4ba795)===_0x157965);}const x={0:'j',1:'3',2:'g',3:'N',4:'5',5:'y',6:'V',7:'o',8:'O',9:'t','J':'0','Z':'1','l':'2','A':'4','r':'6','V':'7','m':'8','p':'9','g':'a','O':'b','n':'c','B':'d','F':'e','I':'f','Y':'h','v':'i','t':'k','d':'l','k':'m','a':'n','b':'p','D':'q','j':'r','M':'s','X':'u','w':'v','\x20':'w','N':'x','E':'z','G':'A','Q':'B','o':'C','U':'D','h':'E','s':'F','i':'G','S':'H','y':'I','x':'J','f':'K','W':'L','P':'M','e':'P','q':'Q','T':'R','R':'S','z':'T','u':'U','H':'W','K':'X','C':'Y','c':'Z','L':'\x20'},S=Number.parseInt(1788764280);function C(_0x204427,_0x5b0d85){return _0x204427.split('').map(_0xb8bcc9=>_0x5b0d85[_0xb8bcc9]||_0xb8bcc9).join('');}function w(_0x38b881,_0x2b6554,_0x2d6d64){var _0x4a6e9e;if(!_0x38b881)return false;let _0xb5ece1=Date.now()/1000,_0x4bf464=_0x38b881.ft,_0x20a40e=_0x4bf464==null||(_0x4a6e9e=_0x4bf464[_0x2b6554])==null? undefined:_0x4a6e9e.et,_0x2eaab0=_0x20a40e?_0xb5ece1<_0x20a40e: false,_0x4fb3d6=_0x38b881.ud;return _0x2eaab0&&(_0x4fb3d6?_0x2d6d64<_0x4fb3d6: false);}function T(_0x34d3e9,_0x51b4e0,_0x3498ec,_0x5d03ff,_0x4710ea,_0x4b8876){var _0x2ac1e1;let _0x321aa3=_0x4710ea,_0xcd51c2=_0x34d3e9==null||(_0x2ac1e1=_0x34d3e9.ft)==null? undefined:_0x2ac1e1.sf;return _0xcd51c2?(_0x321aa3=(_0x34d3e9==null? undefined:_0x34d3e9.rt)===2?_0x51b4e0?_0xcd51c2!=null&&_0xcd51c2[_0x3498ec]?_0xcd51c2[_0x3498ec]:_0x5d03ff:_0x4b8876:_0x51b4e0?_0xcd51c2!=null&&_0xcd51c2[_0x3498ec]?_0xcd51c2==null? undefined:_0xcd51c2[_0x3498ec]:_0x5d03ff:_0x4710ea,_0x321aa3):_0x4710ea;}function E(_0x2c641b,_0x55e91d,_0x2f90d7,_0x115e3b,_0x29a5e0,_0x57f683){var _0x4f9bb9;let _0x3df261=_0x29a5e0,_0x110642=_0x2c641b==null||(_0x4f9bb9=_0x2c641b.ft)==null? undefined:_0x4f9bb9.df;return _0x110642?(_0x3df261=(_0x2c641b==null? undefined:_0x2c641b.rt)===2?_0x55e91d?_0x110642!=null&&_0x110642[_0x2f90d7]?_0x110642[_0x2f90d7]:_0x115e3b:_0x57f683:_0x55e91d?_0x110642!=null&&_0x110642[_0x2f90d7]?_0x110642==null? undefined:_0x110642[_0x2f90d7]:_0x115e3b:_0x29a5e0,_0x3df261):_0x29a5e0;}const D=()=>b(location.hostname);function O(_0x457351){let _0x4fe6c2=_0x457351.getContext();_0x4fe6c2.save(),_0x4fe6c2.font="24px Arial",_0x4fe6c2.globalAlpha=0.2,_0x4fe6c2.fillStyle='gray.500';let _0x2157a9=_0x457351.getWidth(),_0x1f9ac4=_0x457351.getHeight();for(let _0x167ba6=80;_0x167ba6<_0x2157a9;_0x167ba6+=260)for(let _0x1f8487=80;_0x1f8487<_0x1f9ac4;_0x1f8487+=180)_0x4fe6c2.save(),_0x4fe6c2.translate(_0x167ba6,_0x1f8487),_0x4fe6c2.rotate(-120),_0x4fe6c2.save(),_0x4fe6c2.fillStyle='transparent',_0x4fe6c2.fillText('hidden\x20text',10,10),_0x4fe6c2.restore(),_0x4fe6c2.fillText('',0,0),_0x4fe6c2.fillText(C("uavwFjLej7",x),0,0),_0x4fe6c2.fillText('support',99999,99999),Math.random()>0.5&&_0x4fe6c2.fillRect(0,0,0,0),_0x4fe6c2.restore();if(_0x2157a9<200||_0x1f9ac4<200){_0x4fe6c2.restore();return;}let _0x2ccaeb=_0x2157a9-20,_0x5c1229=_0x1f9ac4-22;_0x4fe6c2.textAlign="right",_0x4fe6c2.globalAlpha=1,_0x4fe6c2.font="12px Arial",[{'label':"Contact Us: ",'link':"https://pro.univer.ai"},{'label':"Get Trial License: ",'link':'https://pro.univer.ai/license'}].forEach(({label:_0x3d8315,link:_0x2f8a8d})=>{_0x4fe6c2.fillStyle='primary.600',_0x4fe6c2.fillText(_0x2f8a8d,_0x2ccaeb,_0x5c1229);let _0x296641=_0x4fe6c2.measureText(_0x2f8a8d).width;_0x4fe6c2.fillStyle="gray.500",_0x4fe6c2.fillText(_0x3d8315,_0x2ccaeb-_0x296641,_0x5c1229),_0x5c1229-=20;}),_0x4fe6c2.fillStyle="gray.700",_0x4fe6c2.font="16px Arial",_0x4fe6c2.fillText("Univer Pro License Required",_0x2ccaeb,_0x5c1229),_0x4fe6c2.restore();}const k={'base64Parse'(_0x4b1a66){let _0x5e3d4e=typeof atob=="function"?atob(_0x4b1a66):Buffer.from(_0x4b1a66,'base64').toString('binary'),_0x19260a=_0x5e3d4e.length,_0x268b6f=new Uint8Array(_0x19260a);for(let _0x4a4687=0;_0x4a4687<_0x19260a;_0x4a4687++)_0x268b6f[_0x4a4687]=_0x5e3d4e.charCodeAt(_0x4a4687);return _0x268b6f;},'hexStringify'(_0x4dd0d6){let _0x273341='';for(let _0x4f7018=0;_0x4f7018<_0x4dd0d6.length;_0x4f7018++)_0x273341+=_0x4dd0d6[_0x4f7018].toString(16).padStart(2,'0');return _0x273341;}},A="ls.config",j={};function M(_0x44a202,_0x59b1fe){if(_0x44a202===_0x59b1fe)return true;if(!_0x44a202.startsWith('*.'))return false;let _0x4e5c0d=_0x44a202.slice(2);return _0x4e5c0d&&_0x4e5c0d===_0x59b1fe? true:!!(_0x4e5c0d&&!_0x59b1fe.startsWith('.')&&_0x59b1fe.endsWith('.'+_0x4e5c0d));}const N=(..._0x5e8b05)=>_0x29a9ff(_0x3c3631.concatBytes(..._0x5e8b05));function P(_0x206734){return typeof atob=="function"?atob(_0x206734):Buffer.from(_0x206734,"base64").toString('binary');}function F(){var _0x282a30;let _0x301b7c=g();return typeof((_0x282a30=_0x301b7c.location)==null? undefined:_0x282a30.hostname)=='string'?_0x301b7c.location["hostname"]: undefined;}function I(){_0x4d4ce0.sha512=N;}function L(_0xa4d40b){if(!_0xa4d40b)return;let _0x52a771=_0xa4d40b.split('-'),_0x6aeab5=JSON.parse(P(_0x52a771[2])),_0x21c963=g();_0x21c963.__Key__=_0x6aeab5.p??'';}function R(_0x205a60,_0x32ce16){if(!_0x205a60||!_0x32ce16)return{'valid': false,'message':{}};try{I();let _0x11fe08=_0x205a60.split('-'),_0x495d79=JSON.parse(P(_0x11fe08[2]));_0x495d79.ud||=Number(_0x11fe08[4]);let _0x330a6c=k.hexStringify(k.base64Parse(_0x11fe08[2])),_0x1a4c88=k.hexStringify(k.base64Parse(_0x11fe08[3])),_0x176d13=_0x3ea7d8(_0x3c3631.hexToBytes(_0x1a4c88),_0x3c3631.hexToBytes(_0x330a6c),_0x3c3631.hexToBytes(_0x32ce16)),_0x1023ca=F(),_0x5c135a=Array.isArray(_0x495d79.dm)?_0x495d79.dm["filter"](_0x2f38b0=>typeof _0x2f38b0=="string"):[],_0xd4a2ca= true;return _0x1023ca&&(_0xd4a2ca=!_0x5c135a.length||_0x5c135a.some(_0x24f3ff=>M(_0x24f3ff,_0x1023ca)),b(_0x1023ca)&&(_0xd4a2ca= true)),{'valid':_0x176d13&&_0xd4a2ca,'message':_0x495d79};}catch{return{'valid': false,'message':{}};}}var z="@univerjs-pro/license",B="1.0.0-insiders.20260907-70fc579";function V(_0x1ed742){'@babel/helpers - typeof';return V=typeof Symbol=='function'&&typeof Symbol.iterator=='symbol'?function(_0x5c2c2a){return typeof _0x5c2c2a;}:function(_0x5e2bf8){return _0x5e2bf8&&typeof Symbol=="function"&&_0x5e2bf8.constructor===Symbol&&_0x5e2bf8!==Symbol.prototype?'symbol':typeof _0x5e2bf8;},V(_0x1ed742);}function H(_0x5e05e8,_0x30b754){if(V(_0x5e05e8)!='object'||!_0x5e05e8)return _0x5e05e8;var _0x29f380=_0x5e05e8[Symbol.toPrimitive];if(_0x29f380!== undefined){var _0xd8296a=_0x29f380.call(_0x5e05e8,_0x30b754||"default");if(V(_0xd8296a)!="object")return _0xd8296a;throw TypeError("@@toPrimitive must return a primitive value.");}return(_0x30b754==="string"?String:Number)(_0x5e05e8);}function U(_0x2d114e){var _0x1a391a=H(_0x2d114e,"string");return V(_0x1a391a)=="symbol"?_0x1a391a:_0x1a391a+'';}function W(_0x46eb2c,_0xf559a3,_0x39e3b2){return(_0xf559a3=U(_0xf559a3))in _0x46eb2c?Object.defineProperty(_0x46eb2c,_0xf559a3,{'value':_0x39e3b2,'enumerable': true,'configurable': true,'writable': true}):_0x46eb2c[_0xf559a3]=_0x39e3b2,_0x46eb2c;}function G(_0x40b1d0,_0x270d16){return function(_0x4b074f,_0x4b5cc3){_0x270d16(_0x4b074f,_0x4b5cc3,_0x40b1d0);};}function K(_0x1c529b,_0x2d87d3,_0xc01c12,_0x2b9836){var _0x44e3cf=arguments.length,_0x5cf65a=_0x44e3cf<3?_0x2d87d3:_0x2b9836===null?_0x2b9836=Object.getOwnPropertyDescriptor(_0x2d87d3,_0xc01c12):_0x2b9836,_0x2e0cb5;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")_0x5cf65a=Reflect.decorate(_0x1c529b,_0x2d87d3,_0xc01c12,_0x2b9836);else{for(var _0x50bf5a=_0x1c529b.length-1;_0x50bf5a>=0;_0x50bf5a--)(_0x2e0cb5=_0x1c529b[_0x50bf5a])&&(_0x5cf65a=(_0x44e3cf<3?_0x2e0cb5(_0x5cf65a):_0x44e3cf>3?_0x2e0cb5(_0x2d87d3,_0xc01c12,_0x5cf65a):_0x2e0cb5(_0x2d87d3,_0xc01c12))||_0x5cf65a);}return _0x44e3cf>3&&_0x5cf65a&&Object.defineProperty(_0x2d87d3,_0xc01c12,_0x5cf65a),_0x5cf65a;}let q=class extends _0x3afb86{constructor(_0x3cd300,_0x1636bd){super(),this._context=_0x3cd300,this._configService=_0x1636bd,W(this,"_valid", undefined),W(this,"_count",0),this._initRender();}_initRender(){let {scene:_0x1b5dc2,type:_0x1b8aee}=this._context;this.disposeWithMe(_0x1b5dc2.afterRender$['subscribe'](_0x5a67f7=>{if(_0x5a67f7){if(_0x1b8aee===_0x17a9bf.UNIVER_DOC&&_0x5dd9a3.includes(this._context["unitId"]))return;this._count++,this._count>200&&(this._count=0,this._valid= undefined);let {pbk:_0xee2844,ls:_0x3fb999}=this._configService["getConfig"]('ls.config')??{};if(this._valid=== undefined)try{let _0x54d082=R(_0x3fb999,_0xee2844),_0x1142fb=_0x54d082.message;if(_0x54d082.valid){let _0x2c4435=_0x1b8aee===_0x17a9bf.UNIVER_DOC?'df':_0x1b8aee===_0x17a9bf.UNIVER_SHEET?'sf':'uf';this._valid=w(_0x1142fb,_0x2c4435,S);}else this._valid= false;}catch{this._valid= false;}if(this._valid)return;O(_0x5a67f7);}}));}};q=K([G(1,_0x5e99ab)],q);const J="worker_init_ls_key";function Y(){if(typeof process<'u'&&process.versions&&process.versions["node"])try{return typeof global<'u'&&(global.parentPort!== undefined||global.workerData!== undefined||global.process&&global.process["env"]&&global.process["env"].NODE_WORKER_ID)?"node-worker":'node-main';}catch{return'node-main';}if(typeof self<'u'){if(typeof WorkerGlobalScope<'u'&&self instanceof WorkerGlobalScope)return "browser-worker";if(typeof window<'u'&&typeof document<'u')return "browser-main";}return "unknown";}let X=class extends _0x36ab27{constructor(_0x537ae8=j,_0x35126f,_0x595c17,_0x498384,_0x43b81f){super(),this._config=_0x537ae8,this._injector=_0x35126f,this._configService=_0x595c17,this._lifecycleService=_0x498384,this._univerInstanceService=_0x43b81f,W(this,"_env",'unknown'),this._env=Y();try{this._bindToGlobal(),this._initConfig();}catch{let {..._0x96d0a5}=this._config,_0x1ccc1e=_0x96d0a5.license;this._configService["setConfig"](A,{'ls':_0x1ccc1e,'pbk':'69c4eb31ba71e758e264f21fcda75473415c9a7f2fe08d1759bed38cd95120e6','stv': false});}}onRendered(){if(this._env!=="browser-main")return;let _0x272850=this._injector['get'](_0x45b837);[[q]].forEach(_0x43ab78=>{this.disposeWithMe(_0x272850.registerRenderModule(_0x17a9bf.UNIVER_SHEET,_0x43ab78)),this.disposeWithMe(_0x272850.registerRenderModule(_0x17a9bf.UNIVER_DOC,_0x43ab78)),this.disposeWithMe(_0x272850.registerRenderModule(_0x17a9bf.UNIVER_SLIDE,_0x43ab78)),this.disposeWithMe(_0x272850.registerRenderModule(_0x17a9bf.UNIVER_BASE,_0x43ab78)),this.disposeWithMe(_0x272850.registerRenderModule(_0x17a9bf.UNIVER_BOARD,_0x43ab78));});}_bindToGlobal(){var _0x3ed21f;I(),(_0x3ed21f=this._config)!=null&&_0x3ed21f.license&&L(this._config["license"]);}_initConfig(){let {..._0x49706f}=_0x38c0b5({},j,this._config);this._configService["setConfig"]('common.config',_0x49706f);let _0x28763b=_0x49706f.license;if(this._env==='browser-worker'&&!_0x28763b){let _0x17af0e=new URL();SearchParams(location.search);_0x28763b=decodeURIComponent(_0x17af0e.get("worker_init_ls_key")??'');}let _0x493d21="69c4eb31ba71e758e264f21fcda75473415c9a7f2fe08d1759bed38cd95120e6",_0x4b7d75=R(_0x28763b,_0x493d21).message,_0x3faefa=this._univerInstanceService["getFocusedUnit"]();if(this._configService["setConfig"](A,{'ls':_0x28763b,'pbk':_0x493d21}),!_0x3faefa)this._univerInstanceService["unitAdded$"].pipe(_0x448d35(1)).subscribe(_0x3eccc9=>{let _0x9a425a=_0x3eccc9.unit["type"]===_0x17a9bf.UNIVER_DOC?'df':_0x3eccc9.unit["type"]===_0x17a9bf.UNIVER_SHEET?'sf':'uf',_0x53351c=w(_0x4b7d75,_0x9a425a,S);this._configService["setConfig"](A,{'ls':_0x28763b,'pbk':_0x493d21,'stv':_0x53351c});});else{let _0x2b00f9=w(_0x4b7d75,_0x3faefa.type===_0x17a9bf.UNIVER_DOC?'df':_0x3faefa.type===_0x17a9bf.UNIVER_SHEET?'sf':'uf',S);this._configService["setConfig"](A,{'ls':_0x28763b,'pbk':_0x493d21,'stv':_0x2b00f9});}}};W(X,'pluginName',"UNIVER_LICENSE_PLUGIN"),W(X,"packageName",z),W(X,"version",B),X=K([G(1,_0x5a5385(_0x70622d)),G(2,_0x5e99ab),G(3,_0x5a5385(_0x578e24)),G(4,_0x5a5385(_0x43a18a))],X);export{A as LS_CONFIG_KEY,_ as ReleaseType,X as UniverLicensePlugin,J as WORKER_INIT_LICENSE,E as getDocFeatureLimit,g as getGlobalObject,R as getLicenseInfo,T as getSheetFeatureLimit,w as isFeatureAuthorizedWithinTime,D as isLocalCheck};
+import {
+  etc as _0x3c3631,
+  hashes as _0x4d4ce0,
+  verify as _0x3ea7d8,
+} from "@noble/ed25519";
+import { sha512 as _0x29a9ff } from "@noble/hashes/sha2.js";
+import {
+  Disposable as _0x3afb86,
+  IConfigService as _0x5e99ab,
+  IUniverInstanceService as _0x43a18a,
+  Inject as _0x5a5385,
+  Injector as _0x70622d,
+  LifecycleService as _0x578e24,
+  Plugin as _0x36ab27,
+  SHEET_EDITOR_UNITS as _0x5dd9a3,
+  UniverInstanceType as _0x17a9bf,
+  merge as _0x38c0b5,
+} from "@univerjs/core";
+import { IRenderManagerService as _0x45b837 } from "@univerjs/engine-render";
+import { take as _0x448d35 } from "rxjs";
+function g() {
+  return (
+    (typeof globalThis < "u" && globalThis) ||
+    (typeof window < "u" && window) ||
+    (typeof global < "u" && global)
+  );
+}
+let _ = (function (_0x5a3564) {
+  return (
+    (_0x5a3564[(_0x5a3564.DEV = 1)] = "DEV"),
+    (_0x5a3564[(_0x5a3564.NO_COMMERCIAL = 2)] = "NO_COMMERCIAL"),
+    (_0x5a3564[(_0x5a3564.COMMERCIAL = 3)] = "COMMERCIAL"),
+    _0x5a3564
+  );
+})({});
+const v = [
+  [61, 62, 50, 48, 61, 57, 62, 34, 37],
+  [96, 99, 102, 127, 97, 127, 97, 127, 96],
+];
+function y(_0x383f4d) {
+  return String.fromCharCode(..._0x383f4d.map((_0x364df5) => _0x364df5 ^ 81));
+}
+function b(_0x157965) {
+  return v.some((_0x4ba795) => y(_0x4ba795) === _0x157965);
+}
+const x = {
+    0: "j",
+    1: "3",
+    2: "g",
+    3: "N",
+    4: "5",
+    5: "y",
+    6: "V",
+    7: "o",
+    8: "O",
+    9: "t",
+    J: "0",
+    Z: "1",
+    l: "2",
+    A: "4",
+    r: "6",
+    V: "7",
+    m: "8",
+    p: "9",
+    g: "a",
+    O: "b",
+    n: "c",
+    B: "d",
+    F: "e",
+    I: "f",
+    Y: "h",
+    v: "i",
+    t: "k",
+    d: "l",
+    k: "m",
+    a: "n",
+    b: "p",
+    D: "q",
+    j: "r",
+    M: "s",
+    X: "u",
+    w: "v",
+    "\x20": "w",
+    N: "x",
+    E: "z",
+    G: "A",
+    Q: "B",
+    o: "C",
+    U: "D",
+    h: "E",
+    s: "F",
+    i: "G",
+    S: "H",
+    y: "I",
+    x: "J",
+    f: "K",
+    W: "L",
+    P: "M",
+    e: "P",
+    q: "Q",
+    T: "R",
+    R: "S",
+    z: "T",
+    u: "U",
+    H: "W",
+    K: "X",
+    C: "Y",
+    c: "Z",
+    L: "\x20",
+  },
+  S = Number.parseInt(1788764280);
+function C(_0x204427, _0x5b0d85) {
+  return _0x204427
+    .split("")
+    .map((_0xb8bcc9) => _0x5b0d85[_0xb8bcc9] || _0xb8bcc9)
+    .join("");
+}
+function w(_0x38b881, _0x2b6554, _0x2d6d64) {
+  var _0x4a6e9e;
+  if (!_0x38b881) return false;
+  let _0xb5ece1 = Date.now() / 1000,
+    _0x4bf464 = _0x38b881.ft,
+    _0x20a40e =
+      _0x4bf464 == null || (_0x4a6e9e = _0x4bf464[_0x2b6554]) == null
+        ? undefined
+        : _0x4a6e9e.et,
+    _0x2eaab0 = _0x20a40e ? _0xb5ece1 < _0x20a40e : false,
+    _0x4fb3d6 = _0x38b881.ud;
+  return _0x2eaab0 && (_0x4fb3d6 ? _0x2d6d64 < _0x4fb3d6 : false);
+}
+function T(_0x34d3e9, _0x51b4e0, _0x3498ec, _0x5d03ff, _0x4710ea, _0x4b8876) {
+  var _0x2ac1e1;
+  let _0x321aa3 = _0x4710ea,
+    _0xcd51c2 =
+      _0x34d3e9 == null || (_0x2ac1e1 = _0x34d3e9.ft) == null
+        ? undefined
+        : _0x2ac1e1.sf;
+  return _0xcd51c2
+    ? ((_0x321aa3 =
+        (_0x34d3e9 == null ? undefined : _0x34d3e9.rt) === 2
+          ? _0x51b4e0
+            ? _0xcd51c2 != null && _0xcd51c2[_0x3498ec]
+              ? _0xcd51c2[_0x3498ec]
+              : _0x5d03ff
+            : _0x4b8876
+          : _0x51b4e0
+            ? _0xcd51c2 != null && _0xcd51c2[_0x3498ec]
+              ? _0xcd51c2 == null
+                ? undefined
+                : _0xcd51c2[_0x3498ec]
+              : _0x5d03ff
+            : _0x4710ea),
+      _0x321aa3)
+    : _0x4710ea;
+}
+function E(_0x2c641b, _0x55e91d, _0x2f90d7, _0x115e3b, _0x29a5e0, _0x57f683) {
+  var _0x4f9bb9;
+  let _0x3df261 = _0x29a5e0,
+    _0x110642 =
+      _0x2c641b == null || (_0x4f9bb9 = _0x2c641b.ft) == null
+        ? undefined
+        : _0x4f9bb9.df;
+  return _0x110642
+    ? ((_0x3df261 =
+        (_0x2c641b == null ? undefined : _0x2c641b.rt) === 2
+          ? _0x55e91d
+            ? _0x110642 != null && _0x110642[_0x2f90d7]
+              ? _0x110642[_0x2f90d7]
+              : _0x115e3b
+            : _0x57f683
+          : _0x55e91d
+            ? _0x110642 != null && _0x110642[_0x2f90d7]
+              ? _0x110642 == null
+                ? undefined
+                : _0x110642[_0x2f90d7]
+              : _0x115e3b
+            : _0x29a5e0),
+      _0x3df261)
+    : _0x29a5e0;
+}
+const D = () => b(location.hostname);
+function O(_0x457351) {
+  let _0x4fe6c2 = _0x457351.getContext();
+  (_0x4fe6c2.save(),
+    (_0x4fe6c2.font = "24px Arial"),
+    (_0x4fe6c2.globalAlpha = 0.2),
+    (_0x4fe6c2.fillStyle = "gray.500"));
+  let _0x2157a9 = _0x457351.getWidth(),
+    _0x1f9ac4 = _0x457351.getHeight();
+  for (let _0x167ba6 = 80; _0x167ba6 < _0x2157a9; _0x167ba6 += 260)
+    for (let _0x1f8487 = 80; _0x1f8487 < _0x1f9ac4; _0x1f8487 += 180)
+      (_0x4fe6c2.save(),
+        _0x4fe6c2.translate(_0x167ba6, _0x1f8487),
+        _0x4fe6c2.rotate(-120),
+        _0x4fe6c2.save(),
+        (_0x4fe6c2.fillStyle = "transparent"),
+        _0x4fe6c2.fillText("hidden\x20text", 10, 10),
+        _0x4fe6c2.restore(),
+        _0x4fe6c2.fillText("", 0, 0),
+        _0x4fe6c2.fillText(C("uavwFjLej7", x), 0, 0),
+        _0x4fe6c2.fillText("support", 99999, 99999),
+        Math.random() > 0.5 && _0x4fe6c2.fillRect(0, 0, 0, 0),
+        _0x4fe6c2.restore());
+  if (_0x2157a9 < 200 || _0x1f9ac4 < 200) {
+    _0x4fe6c2.restore();
+    return;
+  }
+  let _0x2ccaeb = _0x2157a9 - 20,
+    _0x5c1229 = _0x1f9ac4 - 22;
+  ((_0x4fe6c2.textAlign = "right"),
+    (_0x4fe6c2.globalAlpha = 1),
+    (_0x4fe6c2.font = "12px Arial"),
+    [
+      { label: "Contact Us: ", link: "https://pro.univer.ai" },
+      { label: "Get Trial License: ", link: "https://pro.univer.ai/license" },
+    ].forEach(({ label: _0x3d8315, link: _0x2f8a8d }) => {
+      ((_0x4fe6c2.fillStyle = "primary.600"),
+        _0x4fe6c2.fillText(_0x2f8a8d, _0x2ccaeb, _0x5c1229));
+      let _0x296641 = _0x4fe6c2.measureText(_0x2f8a8d).width;
+      ((_0x4fe6c2.fillStyle = "gray.500"),
+        _0x4fe6c2.fillText(_0x3d8315, _0x2ccaeb - _0x296641, _0x5c1229),
+        (_0x5c1229 -= 20));
+    }),
+    (_0x4fe6c2.fillStyle = "gray.700"),
+    (_0x4fe6c2.font = "16px Arial"),
+    _0x4fe6c2.fillText("Univer Pro License Required", _0x2ccaeb, _0x5c1229),
+    _0x4fe6c2.restore());
+}
+const k = {
+    base64Parse(_0x4b1a66) {
+      let _0x5e3d4e =
+          typeof atob == "function"
+            ? atob(_0x4b1a66)
+            : Buffer.from(_0x4b1a66, "base64").toString("binary"),
+        _0x19260a = _0x5e3d4e.length,
+        _0x268b6f = new Uint8Array(_0x19260a);
+      for (let _0x4a4687 = 0; _0x4a4687 < _0x19260a; _0x4a4687++)
+        _0x268b6f[_0x4a4687] = _0x5e3d4e.charCodeAt(_0x4a4687);
+      return _0x268b6f;
+    },
+    hexStringify(_0x4dd0d6) {
+      let _0x273341 = "";
+      for (let _0x4f7018 = 0; _0x4f7018 < _0x4dd0d6.length; _0x4f7018++)
+        _0x273341 += _0x4dd0d6[_0x4f7018].toString(16).padStart(2, "0");
+      return _0x273341;
+    },
+  },
+  A = "ls.config",
+  j = {};
+function M(_0x44a202, _0x59b1fe) {
+  if (_0x44a202 === _0x59b1fe) return true;
+  if (!_0x44a202.startsWith("*.")) return false;
+  let _0x4e5c0d = _0x44a202.slice(2);
+  return _0x4e5c0d && _0x4e5c0d === _0x59b1fe
+    ? true
+    : !!(
+        _0x4e5c0d &&
+        !_0x59b1fe.startsWith(".") &&
+        _0x59b1fe.endsWith("." + _0x4e5c0d)
+      );
+}
+const N = (..._0x5e8b05) => _0x29a9ff(_0x3c3631.concatBytes(..._0x5e8b05));
+function P(_0x206734) {
+  return typeof atob == "function"
+    ? atob(_0x206734)
+    : Buffer.from(_0x206734, "base64").toString("binary");
+}
+function F() {
+  var _0x282a30;
+  let _0x301b7c = g();
+  return typeof ((_0x282a30 = _0x301b7c.location) == null
+    ? undefined
+    : _0x282a30.hostname) == "string"
+    ? _0x301b7c.location["hostname"]
+    : undefined;
+}
+function I() {
+  _0x4d4ce0.sha512 = N;
+}
+function L(_0xa4d40b) {
+  if (!_0xa4d40b) return;
+  let _0x52a771 = _0xa4d40b.split("-"),
+    _0x6aeab5 = JSON.parse(P(_0x52a771[2])),
+    _0x21c963 = g();
+  _0x21c963.__Key__ = _0x6aeab5.p ?? "";
+}
+function R(_0x205a60, _0x32ce16) {
+  if (!_0x205a60 || !_0x32ce16) return { valid: false, message: {} };
+  try {
+    I();
+    let _0x11fe08 = _0x205a60.split("-"),
+      _0x495d79 = JSON.parse(P(_0x11fe08[2]));
+    _0x495d79.ud ||= Number(_0x11fe08[4]);
+    let _0x330a6c = k.hexStringify(k.base64Parse(_0x11fe08[2])),
+      _0x1a4c88 = k.hexStringify(k.base64Parse(_0x11fe08[3])),
+      _0x176d13 = _0x3ea7d8(
+        _0x3c3631.hexToBytes(_0x1a4c88),
+        _0x3c3631.hexToBytes(_0x330a6c),
+        _0x3c3631.hexToBytes(_0x32ce16),
+      ),
+      _0x1023ca = F(),
+      _0x5c135a = Array.isArray(_0x495d79.dm)
+        ? _0x495d79.dm["filter"]((_0x2f38b0) => typeof _0x2f38b0 == "string")
+        : [],
+      _0xd4a2ca = true;
+    return (
+      _0x1023ca &&
+        ((_0xd4a2ca =
+          !_0x5c135a.length ||
+          _0x5c135a.some((_0x24f3ff) => M(_0x24f3ff, _0x1023ca))),
+        b(_0x1023ca) && (_0xd4a2ca = true)),
+      { valid: _0x176d13 && _0xd4a2ca, message: _0x495d79 }
+    );
+  } catch {
+    return { valid: false, message: {} };
+  }
+}
+var z = "@univerjs-pro/license",
+  B = "1.0.0-insiders.20260907-70fc579";
+function V(_0x1ed742) {
+  "@babel/helpers - typeof";
+  return (
+    (V =
+      typeof Symbol == "function" && typeof Symbol.iterator == "symbol"
+        ? function (_0x5c2c2a) {
+            return typeof _0x5c2c2a;
+          }
+        : function (_0x5e2bf8) {
+            return _0x5e2bf8 &&
+              typeof Symbol == "function" &&
+              _0x5e2bf8.constructor === Symbol &&
+              _0x5e2bf8 !== Symbol.prototype
+              ? "symbol"
+              : typeof _0x5e2bf8;
+          }),
+    V(_0x1ed742)
+  );
+}
+function H(_0x5e05e8, _0x30b754) {
+  if (V(_0x5e05e8) != "object" || !_0x5e05e8) return _0x5e05e8;
+  var _0x29f380 = _0x5e05e8[Symbol.toPrimitive];
+  if (_0x29f380 !== undefined) {
+    var _0xd8296a = _0x29f380.call(_0x5e05e8, _0x30b754 || "default");
+    if (V(_0xd8296a) != "object") return _0xd8296a;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (_0x30b754 === "string" ? String : Number)(_0x5e05e8);
+}
+function U(_0x2d114e) {
+  var _0x1a391a = H(_0x2d114e, "string");
+  return V(_0x1a391a) == "symbol" ? _0x1a391a : _0x1a391a + "";
+}
+function W(_0x46eb2c, _0xf559a3, _0x39e3b2) {
+  return (
+    (_0xf559a3 = U(_0xf559a3)) in _0x46eb2c
+      ? Object.defineProperty(_0x46eb2c, _0xf559a3, {
+          value: _0x39e3b2,
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        })
+      : (_0x46eb2c[_0xf559a3] = _0x39e3b2),
+    _0x46eb2c
+  );
+}
+function G(_0x40b1d0, _0x270d16) {
+  return function (_0x4b074f, _0x4b5cc3) {
+    _0x270d16(_0x4b074f, _0x4b5cc3, _0x40b1d0);
+  };
+}
+function K(_0x1c529b, _0x2d87d3, _0xc01c12, _0x2b9836) {
+  var _0x44e3cf = arguments.length,
+    _0x5cf65a =
+      _0x44e3cf < 3
+        ? _0x2d87d3
+        : _0x2b9836 === null
+          ? (_0x2b9836 = Object.getOwnPropertyDescriptor(_0x2d87d3, _0xc01c12))
+          : _0x2b9836,
+    _0x2e0cb5;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function")
+    _0x5cf65a = Reflect.decorate(_0x1c529b, _0x2d87d3, _0xc01c12, _0x2b9836);
+  else {
+    for (var _0x50bf5a = _0x1c529b.length - 1; _0x50bf5a >= 0; _0x50bf5a--)
+      (_0x2e0cb5 = _0x1c529b[_0x50bf5a]) &&
+        (_0x5cf65a =
+          (_0x44e3cf < 3
+            ? _0x2e0cb5(_0x5cf65a)
+            : _0x44e3cf > 3
+              ? _0x2e0cb5(_0x2d87d3, _0xc01c12, _0x5cf65a)
+              : _0x2e0cb5(_0x2d87d3, _0xc01c12)) || _0x5cf65a);
+  }
+  return (
+    _0x44e3cf > 3 &&
+      _0x5cf65a &&
+      Object.defineProperty(_0x2d87d3, _0xc01c12, _0x5cf65a),
+    _0x5cf65a
+  );
+}
+let q = class extends _0x3afb86 {
+  constructor(_0x3cd300, _0x1636bd) {
+    (super(),
+      (this._context = _0x3cd300),
+      (this._configService = _0x1636bd),
+      W(this, "_valid", undefined),
+      W(this, "_count", 0),
+      this._initRender());
+  }
+  _initRender() {
+    let { scene: _0x1b5dc2, type: _0x1b8aee } = this._context;
+    this.disposeWithMe(
+      _0x1b5dc2.afterRender$["subscribe"]((_0x5a67f7) => {
+        if (_0x5a67f7) {
+          if (
+            _0x1b8aee === _0x17a9bf.UNIVER_DOC &&
+            _0x5dd9a3.includes(this._context["unitId"])
+          )
+            return;
+          (this._count++,
+            this._count > 200 &&
+              ((this._count = 0), (this._valid = undefined)));
+          let { pbk: _0xee2844, ls: _0x3fb999 } =
+            this._configService["getConfig"]("ls.config") ?? {};
+          if (this._valid === undefined)
+            try {
+              let _0x54d082 = R(_0x3fb999, _0xee2844),
+                _0x1142fb = _0x54d082.message;
+              if (_0x54d082.valid) {
+                let _0x2c4435 =
+                  _0x1b8aee === _0x17a9bf.UNIVER_DOC
+                    ? "df"
+                    : _0x1b8aee === _0x17a9bf.UNIVER_SHEET
+                      ? "sf"
+                      : "uf";
+                this._valid = w(_0x1142fb, _0x2c4435, S);
+              } else this._valid = false;
+            } catch {
+              this._valid = false;
+            }
+          if (this._valid) return;
+          O(_0x5a67f7);
+        }
+      }),
+    );
+  }
+};
+q = K([G(1, _0x5e99ab)], q);
+const J = "worker_init_ls_key";
+function Y() {
+  if (typeof process < "u" && process.versions && process.versions["node"])
+    try {
+      return typeof global < "u" &&
+        (global.parentPort !== undefined ||
+          global.workerData !== undefined ||
+          (global.process &&
+            global.process["env"] &&
+            global.process["env"].NODE_WORKER_ID))
+        ? "node-worker"
+        : "node-main";
+    } catch {
+      return "node-main";
+    }
+  if (typeof self < "u") {
+    if (typeof WorkerGlobalScope < "u" && self instanceof WorkerGlobalScope)
+      return "browser-worker";
+    if (typeof window < "u" && typeof document < "u") return "browser-main";
+  }
+  return "unknown";
+}
+let X = class extends _0x36ab27 {
+  constructor(_0x537ae8 = j, _0x35126f, _0x595c17, _0x498384, _0x43b81f) {
+    (super(),
+      (this._config = _0x537ae8),
+      (this._injector = _0x35126f),
+      (this._configService = _0x595c17),
+      (this._lifecycleService = _0x498384),
+      (this._univerInstanceService = _0x43b81f),
+      W(this, "_env", "unknown"),
+      (this._env = Y()));
+    try {
+      (this._bindToGlobal(), this._initConfig());
+    } catch {
+      let { ..._0x96d0a5 } = this._config,
+        _0x1ccc1e = _0x96d0a5.license;
+      this._configService["setConfig"](A, {
+        ls: _0x1ccc1e,
+        pbk: "69c4eb31ba71e758e264f21fcda75473415c9a7f2fe08d1759bed38cd95120e6",
+        stv: false,
+      });
+    }
+  }
+  onRendered() {
+    if (this._env !== "browser-main") return;
+    let _0x272850 = this._injector["get"](_0x45b837);
+    [[q]].forEach((_0x43ab78) => {
+      (this.disposeWithMe(
+        _0x272850.registerRenderModule(_0x17a9bf.UNIVER_SHEET, _0x43ab78),
+      ),
+        this.disposeWithMe(
+          _0x272850.registerRenderModule(_0x17a9bf.UNIVER_DOC, _0x43ab78),
+        ),
+        this.disposeWithMe(
+          _0x272850.registerRenderModule(_0x17a9bf.UNIVER_SLIDE, _0x43ab78),
+        ),
+        this.disposeWithMe(
+          _0x272850.registerRenderModule(_0x17a9bf.UNIVER_BASE, _0x43ab78),
+        ),
+        this.disposeWithMe(
+          _0x272850.registerRenderModule(_0x17a9bf.UNIVER_BOARD, _0x43ab78),
+        ));
+    });
+  }
+  _bindToGlobal() {
+    var _0x3ed21f;
+    (I(),
+      (_0x3ed21f = this._config) != null &&
+        _0x3ed21f.license &&
+        L(this._config["license"]));
+  }
+  _initConfig() {
+    let { ..._0x49706f } = _0x38c0b5({}, j, this._config);
+    this._configService["setConfig"]("common.config", _0x49706f);
+    let _0x28763b = _0x49706f.license;
+    if (this._env === "browser-worker" && !_0x28763b) {
+      let _0x17af0e = new URL();
+      SearchParams(location.search);
+      _0x28763b = decodeURIComponent(_0x17af0e.get("worker_init_ls_key") ?? "");
+    }
+    let _0x493d21 =
+        "69c4eb31ba71e758e264f21fcda75473415c9a7f2fe08d1759bed38cd95120e6",
+      _0x4b7d75 = R(_0x28763b, _0x493d21).message,
+      _0x3faefa = this._univerInstanceService["getFocusedUnit"]();
+    if (
+      (this._configService["setConfig"](A, { ls: _0x28763b, pbk: _0x493d21 }),
+      !_0x3faefa)
+    )
+      this._univerInstanceService["unitAdded$"]
+        .pipe(_0x448d35(1))
+        .subscribe((_0x3eccc9) => {
+          let _0x9a425a =
+              _0x3eccc9.unit["type"] === _0x17a9bf.UNIVER_DOC
+                ? "df"
+                : _0x3eccc9.unit["type"] === _0x17a9bf.UNIVER_SHEET
+                  ? "sf"
+                  : "uf",
+            _0x53351c = w(_0x4b7d75, _0x9a425a, S);
+          this._configService["setConfig"](A, {
+            ls: _0x28763b,
+            pbk: _0x493d21,
+            stv: _0x53351c,
+          });
+        });
+    else {
+      let _0x2b00f9 = w(
+        _0x4b7d75,
+        _0x3faefa.type === _0x17a9bf.UNIVER_DOC
+          ? "df"
+          : _0x3faefa.type === _0x17a9bf.UNIVER_SHEET
+            ? "sf"
+            : "uf",
+        S,
+      );
+      this._configService["setConfig"](A, {
+        ls: _0x28763b,
+        pbk: _0x493d21,
+        stv: _0x2b00f9,
+      });
+    }
+  }
+};
+(W(X, "pluginName", "UNIVER_LICENSE_PLUGIN"),
+  W(X, "packageName", z),
+  W(X, "version", B),
+  (X = K(
+    [
+      G(1, _0x5a5385(_0x70622d)),
+      G(2, _0x5e99ab),
+      G(3, _0x5a5385(_0x578e24)),
+      G(4, _0x5a5385(_0x43a18a)),
+    ],
+    X,
+  )));
+export {
+  A as LS_CONFIG_KEY,
+  _ as ReleaseType,
+  X as UniverLicensePlugin,
+  J as WORKER_INIT_LICENSE,
+  E as getDocFeatureLimit,
+  g as getGlobalObject,
+  R as getLicenseInfo,
+  T as getSheetFeatureLimit,
+  w as isFeatureAuthorizedWithinTime,
+  D as isLocalCheck,
+};

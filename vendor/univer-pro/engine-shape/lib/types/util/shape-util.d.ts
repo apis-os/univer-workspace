@@ -1,0 +1,10 @@
+import type { ILineType } from '../shape-type';
+import { ShapeTypeEnum } from '../shape-enum';
+/**
+ * Is the shape a connector shape
+ * @param {ShapeTypeEnum} shapeType  The shape type
+ * @returns {boolean} True if the shape is a connector shape, false otherwise
+ */
+export declare function isConnectorShape(shapeType: ShapeTypeEnum): shapeType is ILineType;
+export declare function isCurvedConnectorShape(shapeType: ShapeTypeEnum): boolean;
+export declare function getSketchSeed(shapeId: string): number;

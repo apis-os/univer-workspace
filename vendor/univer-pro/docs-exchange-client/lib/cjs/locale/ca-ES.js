@@ -1,58 +1,8 @@
-function _0x31e5() {
-  const _0x11b83b = [
-    "634271ojvSaZ",
-    "Anomena\x20i\x20desa",
-    "1159416iBFEkP",
-    "6pvBFTn",
-    "9567558WdPfJu",
-    "30FhhGGo",
-    "873psvUFc",
-    "4494459NjJUVn",
-    "exports",
-    "6103940pGTfsg",
-    "112856BrSlgJ",
-    "671152KiBQrQ",
-    "4oLmcTe",
-  ];
-  _0x31e5 = function () {
-    return _0x11b83b;
-  };
-  return _0x31e5();
-}
-const _0x2f8805 = _0x5b41;
-(function (_0x59ee3e, _0x4c7ad2) {
-  const _0x1177be = _0x5b41,
-    _0x2ffa02 = _0x59ee3e();
-  while (!![]) {
-    try {
-      const _0x1f2564 =
-        (-parseInt(_0x1177be(0xeb)) / 0x1) *
-          (-parseInt(_0x1177be(0xea)) / 0x2) +
-        parseInt(_0x1177be(0xe6)) / 0x3 +
-        -parseInt(_0x1177be(0xee)) / 0x4 +
-        (-parseInt(_0x1177be(0xe8)) / 0x5) *
-          (-parseInt(_0x1177be(0xef)) / 0x6) +
-        -parseInt(_0x1177be(0xf0)) / 0x7 +
-        (parseInt(_0x1177be(0xe9)) / 0x8) * (-parseInt(_0x1177be(0xe5)) / 0x9) +
-        (parseInt(_0x1177be(0xe4)) / 0xa) * (-parseInt(_0x1177be(0xec)) / 0xb);
-      if (_0x1f2564 === _0x4c7ad2) break;
-      else _0x2ffa02["push"](_0x2ffa02["shift"]());
-    } catch (_0x46e2b7) {
-      _0x2ffa02["push"](_0x2ffa02["shift"]());
-    }
-  }
-})(_0x31e5, 0xd2c03);
 const e = {
   "docs-exchange-client": {
     file: "Fitxer",
     upload: "Obrir(Fitxer)",
-    download: _0x2f8805(0xed),
+    download: "Anomena i desa",
   },
 };
-function _0x5b41(_0x465985, _0x40e3f6) {
-  _0x465985 = _0x465985 - 0xe4;
-  const _0x31e503 = _0x31e5();
-  let _0x5b4109 = _0x31e503[_0x465985];
-  return _0x5b4109;
-}
-module[_0x2f8805(0xe7)] = e;
+module.exports = e;

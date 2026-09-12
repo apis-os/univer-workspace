@@ -1,0 +1,19 @@
+import type { IPivotPerformCheckParams } from '../const/type';
+import { AsyncInterceptorManager, Disposable, InterceptorManager, LocaleService } from '@univerjs/core';
+import { SheetInterceptorService } from '@univerjs/sheets';
+import { SheetsPivotTableAdaptorModel } from '../models/sheets-pivot-table-adaptor-model';
+export declare class SheetsPivotTableService extends Disposable {
+    private _sheetInterceptorService;
+    private _sheetsPivotTableAdaptorModel;
+    private _localeService;
+    readonly asyncInterceptor: AsyncInterceptorManager<{
+        PIVOT_PERFORM_CHECK: import("@univerjs/core").IAsyncInterceptor<boolean, IPivotPerformCheckParams>;
+    }>;
+    readonly interceptor: InterceptorManager<{
+        PIVOT_MUTATION_GENERATE: import("@univerjs/core").IInterceptor<import("@univerjs/core").IUndoRedoCommandInfosByInterceptor, IPivotPerformCheckParams>;
+    }>;
+    constructor(_sheetInterceptorService: SheetInterceptorService, _sheetsPivotTableAdaptorModel: SheetsPivotTableAdaptorModel, _localeService: LocaleService);
+    private _init;
+    getPivotPerformCheck(params: IPivotPerformCheckParams): Promise<import("@univerjs/core").Nullable<boolean>>;
+    private _initViewModelBySheetInterceptor;
+}

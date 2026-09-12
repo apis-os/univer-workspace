@@ -1,0 +1,17 @@
+export type { ISlidePlaceholderRenderIcon, ISlidePlaceholderRenderProps, ISlidePlaceholderRenderText, } from './placeholder-object';
+export { SlidePlaceholderBaseObject } from './placeholder-object';
+export { SlidePlaceholderIconObject } from './placeholder-object';
+export { resolveSlidePlaceholderTextRect, SLIDE_PLACEHOLDER_TEXT_HORIZONTAL_INSET, SLIDE_PLACEHOLDER_TEXT_VERTICAL_INSET, } from './placeholder-object';
+export { SlidePlaceholderTextObject } from './placeholder-object';
+export { SlideChartDrawing } from './slide-chart-drawing';
+export { SlideConnectorDrawing } from './slide-connector-drawing';
+export { SlideDrawingBase } from './slide-drawing-base';
+export { SlideGroupDrawing } from './slide-group-drawing';
+export { SlideImageDrawing } from './slide-image-drawing';
+export { SlideImageObject } from './slide-image-object';
+export { SlidePageBackgroundObject } from './slide-page-background-object';
+export { SlidePageClipGroup } from './slide-page-clip-group';
+export { SlideShapeDrawing } from './slide-shape-drawing';
+export { SlideShapeObject } from './slide-shape-object';
+export { SlideTableObject } from './slide-table-object';
+export { SlideTextObject } from './slide-text-object';

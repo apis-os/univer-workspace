@@ -1,0 +1,9 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_find_replace_locale_ko_KR = require("@univerjs/find-replace/locale/ko-KR");
+_univerjs_find_replace_locale_ko_KR = require_rolldown_runtime.__toESM(_univerjs_find_replace_locale_ko_KR);
+
+//#region src/locales/ko-KR.ts
+var ko_KR_default = Object.assign({}, _univerjs_find_replace_locale_ko_KR.default);
+
+//#endregion
+module.exports = ko_KR_default;

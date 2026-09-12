@@ -1,0 +1,34 @@
+.univer-box-border {
+  box-sizing: border-box;
+}
+
+.univer-flex {
+  display: flex;
+}
+
+.univer-size-full {
+  width: 100%;
+  height: 100%;
+}
+
+.univer-items-center {
+  align-items: center;
+}
+
+.univer-justify-center {
+  justify-content: center;
+}
+
+.univer-px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.univer-text-sm {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+.univer-text-gray-500 {
+  color: var(--univer-gray-500);
+}

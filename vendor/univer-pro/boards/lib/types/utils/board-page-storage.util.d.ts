@@ -1,0 +1,11 @@
+import type { IBoardData, IBoardPage } from '../board.type';
+export declare function hasBoardPages(pages: IBoardData['pages'] | undefined): pages is IBoardData['pages'];
+export declare function hasBoardPageOrder(pageOrder: string[] | undefined): pageOrder is string[];
+export declare function hasLegacyBoardPageStorage(snapshot: Partial<IBoardData>): boolean;
+export declare function resolveBoardSnapshotPageOrder(snapshot: Partial<IBoardData>, fallbackPageOrder?: string[]): string[];
+export declare function resolveBoardSnapshotPages(snapshot: Partial<IBoardData>, fallbackPages?: IBoardData['pages']): IBoardData['pages'];
+export declare function resolveBoardSnapshotActivePageId(snapshot: Partial<IBoardData>, pageOrder: string[]): string | undefined;
+export declare function getBoardSnapshotPage(snapshot: IBoardData, pageId: string): IBoardPage | undefined;
+export declare function getBoardSnapshotActivePageId(snapshot: IBoardData): string | undefined;
+export declare function mirrorBoardPageStorage(snapshot: IBoardData, pageId: string, page: IBoardPage): void;
+export declare function mirrorBoardSnapshotPageStorage(snapshot: IBoardData): IBoardData;

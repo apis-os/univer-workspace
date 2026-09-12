@@ -1,0 +1,37 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-round2-diag-rect-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M1.8 3.8H16C17.215 3.8 18.2 4.785 18.2 6V16.2H4C2.785 16.2 1.8 15.215 1.8 14V3.8Z",
+			"strokeLinejoin": "round",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeRound2DiagRectIcon = (0, react.forwardRef)(function ShapeRound2DiagRectIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-round2-diag-rect-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeRound2DiagRectIcon.displayName = "ShapeRound2DiagRectIcon";
+//#endregion
+exports.ShapeRound2DiagRectIcon = ShapeRound2DiagRectIcon;
+exports.default = ShapeRound2DiagRectIcon;

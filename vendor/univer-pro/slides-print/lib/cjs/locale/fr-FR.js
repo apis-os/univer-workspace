@@ -1,108 +1,38 @@
-const _0x254fe8 = _0x4226;
-function _0x3327() {
-  const _0x5432bb = [
-    "Saisissez\x20des\x20numéros\x20de\x20diapositives\x20de\x20la\x20présentation,\x20par\x20exemple\x201-3,5.",
-    "Pages\x20de\x20notes",
-    "Mise\x20en\x20forme",
-    "1sognhD",
-    "16JvUwYy",
-    "5485581xDHrwE",
-    "Imprimer\x20les\x20numéros\x20de\x20diapositive",
-    "3054744TUIFLQ",
-    "Total\x20:\x20{0}\x20pages",
-    "48FGRbLV",
-    "710149iOnhnx",
-    "Documents",
-    "Diapositives\x20pleine\x20page",
-    "Vertical",
-    "Ordre\x20des\x20pages",
-    "Orientation",
-    "108QnSVjD",
-    "Suivant",
-    "276215Nfqllx",
-    "Horizontal",
-    "10IXkxYv",
-    "Diapositives\x20par\x20page",
-    "Toutes\x20les\x20diapositives\x20ou\x201-3,5",
-    "exports",
-    "Plage\x20d’impression",
-    "Marges",
-    "1763739TiQCVi",
-    "1528964AlTTGb",
-    "Impression\x20en\x20cours…",
-    "Format\x20du\x20papier",
-    "166684nIwzXo",
-  ];
-  _0x3327 = function () {
-    return _0x5432bb;
-  };
-  return _0x3327();
-}
-function _0x4226(_0x32826a, _0xd15d3e) {
-  _0x32826a = _0x32826a - 0x190;
-  const _0x3327ff = _0x3327();
-  let _0x42265a = _0x3327ff[_0x32826a];
-  return _0x42265a;
-}
-(function (_0x508b17, _0xeeb323) {
-  const _0x349fdd = _0x4226,
-    _0x5634a6 = _0x508b17();
-  while (!![]) {
-    try {
-      const _0x107fc8 =
-        (-parseInt(_0x349fdd(0x1a2)) / 0x1) *
-          (-parseInt(_0x349fdd(0x19b)) / 0x2) +
-        parseInt(_0x349fdd(0x19a)) / 0x3 +
-        (-parseInt(_0x349fdd(0x1a3)) / 0x4) *
-          (parseInt(_0x349fdd(0x192)) / 0x5) +
-        (parseInt(_0x349fdd(0x190)) / 0x6) *
-          (-parseInt(_0x349fdd(0x19e)) / 0x7) +
-        -parseInt(_0x349fdd(0x1a6)) / 0x8 +
-        (-parseInt(_0x349fdd(0x1a4)) / 0x9) *
-          (-parseInt(_0x349fdd(0x194)) / 0xa) +
-        (parseInt(_0x349fdd(0x1a9)) / 0xb) *
-          (-parseInt(_0x349fdd(0x1a8)) / 0xc);
-      if (_0x107fc8 === _0xeeb323) break;
-      else _0x5634a6["push"](_0x5634a6["shift"]());
-    } catch (_0x22965c) {
-      _0x5634a6["push"](_0x5634a6["shift"]());
-    }
-  }
-})(_0x3327, 0xa41ed);
 const e = {
   "slides-print": {
     menu: "Imprimer",
     header: {
-      pages: _0x254fe8(0x1a7),
+      pages: "Total : {0} pages",
       cancel: "Annuler",
-      next: _0x254fe8(0x191),
-      printing: _0x254fe8(0x19c),
+      next: "Suivant",
+      printing: "Impression en cours…",
     },
     settings: {
-      range: _0x254fe8(0x198),
-      rangePlaceholder: _0x254fe8(0x196),
-      rangeInvalid: _0x254fe8(0x19f),
+      range: "Plage d’impression",
+      rangePlaceholder: "Toutes les diapositives ou 1-3,5",
+      rangeInvalid:
+        "Saisissez des numéros de diapositives de la présentation, par exemple 1-3,5.",
       layout: "Disposition\x20d’impression",
-      fullPage: _0x254fe8(0x1ab),
-      notesPage: _0x254fe8(0x1a0),
-      handout: _0x254fe8(0x1aa),
-      slidesPerPage: _0x254fe8(0x195),
-      order: _0x254fe8(0x1ad),
-      horizontal: _0x254fe8(0x193),
-      vertical: _0x254fe8(0x1ac),
-      paperSize: _0x254fe8(0x19d),
-      orientation: _0x254fe8(0x1ae),
+      fullPage: "Diapositives pleine page",
+      notesPage: "Pages de notes",
+      handout: "Documents",
+      slidesPerPage: "Diapositives par page",
+      order: "Ordre des pages",
+      horizontal: "Horizontal",
+      vertical: "Vertical",
+      paperSize: "Format du papier",
+      orientation: "Orientation",
       portrait: "Portrait",
       landscape: "Paysage",
-      margin: _0x254fe8(0x199),
+      margin: "Marges",
       normal: "Normales",
       narrow: "Étroites",
       wide: "Larges",
       none: "Aucune",
-      formatting: _0x254fe8(0x1a1),
+      formatting: "Mise en forme",
       frameSlides: "Encadrer\x20les\x20diapositives",
-      slideNumber: _0x254fe8(0x1a5),
+      slideNumber: "Imprimer les numéros de diapositive",
     },
   },
 };
-module[_0x254fe8(0x197)] = e;
+module.exports = e;

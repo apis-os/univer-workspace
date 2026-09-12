@@ -1,0 +1,16 @@
+import type { IPermissionService } from '@univerjs/core';
+import { UnitAction } from '@univerjs/protocol';
+import { BoardCommentPermission } from './permission-point/board/comment';
+import { BoardCopyPermission } from './permission-point/board/copy';
+import { BoardEditablePermission } from './permission-point/board/editable';
+import { BoardExportPermission } from './permission-point/board/export';
+import { BoardPrintPermission } from './permission-point/board/print';
+import { BoardElementEditPermission } from './permission-point/element/edit';
+export declare const BOARD_UNIT_PERMISSION_ACTIONS: readonly [UnitAction.Edit, UnitAction.Copy, UnitAction.Print, UnitAction.Export, UnitAction.Comment];
+export type BoardUnitPermissionAction = typeof BOARD_UNIT_PERMISSION_ACTIONS[number];
+export declare function getBoardElementPermissionObjectId(pageId: string, elementId: string): string;
+export declare function createBoardPermissionPoint(unitId: string, objectId: string, action: UnitAction): BoardCommentPermission | BoardCopyPermission | BoardEditablePermission | BoardExportPermission | BoardPrintPermission | BoardElementEditPermission;
+export declare function getBoardPermissionValue(permissionService: IPermissionService, unitId: string, objectId: string, action: UnitAction): boolean;
+export declare function setBoardPermissionValue(permissionService: IPermissionService, unitId: string, objectId: string, action: UnitAction, value: boolean): void;
+export declare function clearBoardPermissionValuesForUnit(permissionService: IPermissionService, unitId: string): void;
+export declare function canEditBoardTargets(permissionService: IPermissionService, unitId: string, objectIds: Iterable<string>): boolean;

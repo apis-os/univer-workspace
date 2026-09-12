@@ -1,0 +1,43 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/show-toolbar-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 16 16",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"fill": "currentColor",
+			"d": "M2.5 3C1.94772 3 1.5 3.44772 1.5 4V12C1.5 12.5523 1.94772 13 2.5 13H13.5C14.0523 13 14.5 12.5523 14.5 12V4C14.5 3.44772 14.0523 3 13.5 3H2.5ZM2.8 4.3V11.7H13.2V4.3H2.8Z",
+			"fillRule": "evenodd",
+			"clipRule": "evenodd"
+		}
+	}, {
+		"tag": "path",
+		"attrs": {
+			"fill": "currentColor",
+			"d": "M9.6 5.8C9.6 5.46863 9.86863 5.2 10.2 5.2H11.7C12.0314 5.2 12.3 5.46863 12.3 5.8C12.3 6.13137 12.0314 6.4 11.7 6.4H10.2C9.86863 6.4 9.6 6.13137 9.6 5.8Z"
+		}
+	}]
+};
+const ShowToolbarIcon = (0, react.forwardRef)(function ShowToolbarIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "show-toolbar-icon",
+		ref,
+		icon: element
+	}));
+});
+ShowToolbarIcon.displayName = "ShowToolbarIcon";
+//#endregion
+exports.ShowToolbarIcon = ShowToolbarIcon;
+exports.default = ShowToolbarIcon;

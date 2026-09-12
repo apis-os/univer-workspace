@@ -1,0 +1,4474 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+let ts_a_icon_js = require("./a-icon.js");
+let ts_activity_icon_js = require("./activity-icon.js");
+let ts_add_digits_icon_js = require("./add-digits-icon.js");
+let ts_add_image_icon_js = require("./add-image-icon.js");
+let ts_add_note_icon_js = require("./add-note-icon.js");
+let ts_addition_and_subtraction_icon_js = require("./addition-and-subtraction-icon.js");
+let ts_align_bottom_icon_js = require("./align-bottom-icon.js");
+let ts_align_text_both_icon_js = require("./align-text-both-icon.js");
+let ts_align_top_icon_js = require("./align-top-icon.js");
+let ts_all_border_icon_js = require("./all-border-icon.js");
+let ts_amplify_icon_js = require("./amplify-icon.js");
+let ts_area_chart_icon_js = require("./area-chart-icon.js");
+let ts_arrow_down_icon_js = require("./arrow-down-icon.js");
+let ts_arrow_left_icon_js = require("./arrow-left-icon.js");
+let ts_arrow_right_icon_js = require("./arrow-right-icon.js");
+let ts_arrow_tilt_down_icon_js = require("./arrow-tilt-down-icon.js");
+let ts_arrow_tilt_up_icon_js = require("./arrow-tilt-up-icon.js");
+let ts_arrow_up_icon_js = require("./arrow-up-icon.js");
+let ts_ascending_icon_js = require("./ascending-icon.js");
+let ts_autowrap_icon_js = require("./autowrap-icon.js");
+let ts_ban_icon_js = require("./ban-icon.js");
+let ts_bar_chart_icon_js = require("./bar-chart-icon.js");
+let ts_bases_app_icon_js = require("./bases-app-icon.js");
+let ts_boards_app_icon_js = require("./boards-app-icon.js");
+let ts_bold_icon_js = require("./bold-icon.js");
+let ts_bottom_icon_js = require("./bottom-icon.js");
+let ts_boxplot_icon_js = require("./boxplot-icon.js");
+let ts_brush_icon_js = require("./brush-icon.js");
+let ts_bubble_icon_js = require("./bubble-icon.js");
+let ts_calendar_icon_js = require("./calendar-icon.js");
+let ts_callout_icon_js = require("./callout-icon.js");
+let ts_cancel_freeze_icon_js = require("./cancel-freeze-icon.js");
+let ts_cancel_merge_icon_js = require("./cancel-merge-icon.js");
+let ts_candlestick_chart_icon_js = require("./candlestick-chart-icon.js");
+let ts_catalogue_icon_js = require("./catalogue-icon.js");
+let ts_chart_icon_js = require("./chart-icon.js");
+let ts_check_mark_icon_js = require("./check-mark-icon.js");
+let ts_checkbox_icon_js = require("./checkbox-icon.js");
+let ts_chord_chart_icon_js = require("./chord-chart-icon.js");
+let ts_class_diagram_class_icon_js = require("./class-diagram-class-icon.js");
+let ts_class_diagram_dashed_filled_arrow_connector_icon_js = require("./class-diagram-dashed-filled-arrow-connector-icon.js");
+let ts_class_diagram_dashed_open_arrow_connector_icon_js = require("./class-diagram-dashed-open-arrow-connector-icon.js");
+let ts_class_diagram_filled_arrow_connector_icon_js = require("./class-diagram-filled-arrow-connector-icon.js");
+let ts_class_diagram_filled_diamond_connector_icon_js = require("./class-diagram-filled-diamond-connector-icon.js");
+let ts_class_diagram_hollow_diamond_connector_icon_js = require("./class-diagram-hollow-diamond-connector-icon.js");
+let ts_class_diagram_interface_icon_js = require("./class-diagram-interface-icon.js");
+let ts_clock_icon_js = require("./clock-icon.js");
+let ts_close_icon_js = require("./close-icon.js");
+let ts_cloud_outline_icon_js = require("./cloud-outline-icon.js");
+let ts_code_block_icon_js = require("./code-block-icon.js");
+let ts_code_icon_js = require("./code-icon.js");
+let ts_column_chart_icon_js = require("./column-chart-icon.js");
+let ts_column_icon_js = require("./column-icon.js");
+let ts_column_sparkline_icon_js = require("./column-sparkline-icon.js");
+let ts_combo_chart_icon_js = require("./combo-chart-icon.js");
+let ts_comment_icon_js = require("./comment-icon.js");
+let ts_component_diagram_assembly_connector_icon_js = require("./component-diagram-assembly-connector-icon.js");
+let ts_component_diagram_component_box_icon_js = require("./component-diagram-component-box-icon.js");
+let ts_component_diagram_component_icon_js = require("./component-diagram-component-icon.js");
+let ts_component_diagram_provided_interface_icon_js = require("./component-diagram-provided-interface-icon.js");
+let ts_component_diagram_required_interface_icon_js = require("./component-diagram-required-interface-icon.js");
+let ts_conditional_color_icon_js = require("./conditional-color-icon.js");
+let ts_configure_tab_icon_js = require("./configure-tab-icon.js");
+let ts_connection_line_icon_js = require("./connection-line-icon.js");
+let ts_connector_bar_crows_foot_marker_icon_js = require("./connector-bar-crows-foot-marker-icon.js");
+let ts_connector_bar_marker_icon_js = require("./connector-bar-marker-icon.js");
+let ts_connector_circle_bar_marker_icon_js = require("./connector-circle-bar-marker-icon.js");
+let ts_connector_circle_crows_foot_marker_icon_js = require("./connector-circle-crows-foot-marker-icon.js");
+let ts_connector_circle_marker_icon_js = require("./connector-circle-marker-icon.js");
+let ts_connector_cross_marker_icon_js = require("./connector-cross-marker-icon.js");
+let ts_connector_crows_foot_marker_icon_js = require("./connector-crows-foot-marker-icon.js");
+let ts_connector_filled_arrow_marker_icon_js = require("./connector-filled-arrow-marker-icon.js");
+let ts_connector_filled_circle_marker_icon_js = require("./connector-filled-circle-marker-icon.js");
+let ts_connector_filled_diamond_marker_icon_js = require("./connector-filled-diamond-marker-icon.js");
+let ts_connector_hollow_diamond_marker_icon_js = require("./connector-hollow-diamond-marker-icon.js");
+let ts_connector_hollow_triangle_marker_icon_js = require("./connector-hollow-triangle-marker-icon.js");
+let ts_connector_none_marker_icon_js = require("./connector-none-marker-icon.js");
+let ts_connector_open_arrow_marker_icon_js = require("./connector-open-arrow-marker-icon.js");
+let ts_connector_rounded_elbow_icon_js = require("./connector-rounded-elbow-icon.js");
+let ts_connector_swap_markers_icon_js = require("./connector-swap-markers-icon.js");
+let ts_connector_x_marker_icon_js = require("./connector-x-marker-icon.js");
+let ts_convert_icon_js = require("./convert-icon.js");
+let ts_convert_to_number_icon_js = require("./convert-to-number-icon.js");
+let ts_copy_icon_js = require("./copy-icon.js");
+let ts_create_copy_icon_js = require("./create-copy-icon.js");
+let ts_crop_icon_js = require("./crop-icon.js");
+let ts_cross_highlighting_icon_js = require("./cross-highlighting-icon.js");
+let ts_cross_icon_js = require("./cross-icon.js");
+let ts_cursors_icon_js = require("./cursors-icon.js");
+let ts_custom_sort_icon_js = require("./custom-sort-icon.js");
+let ts_cut_icon_js = require("./cut-icon.js");
+let ts_data_bar_icon_js = require("./data-bar-icon.js");
+let ts_data_flow_circle_icon_js = require("./data-flow-circle-icon.js");
+let ts_data_flow_data_storage1_icon_js = require("./data-flow-data-storage1-icon.js");
+let ts_data_flow_data_storage2_icon_js = require("./data-flow-data-storage2-icon.js");
+let ts_data_flow_data_storage3_icon_js = require("./data-flow-data-storage3-icon.js");
+let ts_data_flow_rounded_rectangle_icon_js = require("./data-flow-rounded-rectangle-icon.js");
+let ts_data_flow_rounded_square_icon_js = require("./data-flow-rounded-square-icon.js");
+let ts_data_validation_icon_js = require("./data-validation-icon.js");
+let ts_database_function_icon_js = require("./database-function-icon.js");
+let ts_database_icon_js = require("./database-icon.js");
+let ts_date_function_icon_js = require("./date-function-icon.js");
+let ts_date_picker_icon_js = require("./date-picker-icon.js");
+let ts_delete_empty_icon_js = require("./delete-empty-icon.js");
+let ts_delete_icon_js = require("./delete-icon.js");
+let ts_delete_note_icon_js = require("./delete-note-icon.js");
+let ts_descending_icon_js = require("./descending-icon.js");
+let ts_direct_export_icon_js = require("./direct-export-icon.js");
+let ts_divider_icon_js = require("./divider-icon.js");
+let ts_doc_setting_icon_js = require("./doc-setting-icon.js");
+let ts_docs_app_icon_js = require("./docs-app-icon.js");
+let ts_dollar_icon_js = require("./dollar-icon.js");
+let ts_dong_icon_js = require("./dong-icon.js");
+let ts_down_icon_js = require("./down-icon.js");
+let ts_download_icon_js = require("./download-icon.js");
+let ts_download_image_icon_js = require("./download-image-icon.js");
+let ts_dropdown_list_icon_js = require("./dropdown-list-icon.js");
+let ts_engineering_function_icon_js = require("./engineering-function-icon.js");
+let ts_entity_relationship_entity_icon_js = require("./entity-relationship-entity-icon.js");
+let ts_entity_relationship_field_type_icon_js = require("./entity-relationship-field-type-icon.js");
+let ts_entity_relationship_full_icon_js = require("./entity-relationship-full-icon.js");
+let ts_entity_relationship_key_field_icon_js = require("./entity-relationship-key-field-icon.js");
+let ts_error_icon_js = require("./error-icon.js");
+let ts_euro_icon_js = require("./euro-icon.js");
+let ts_exclamation_icon_js = require("./exclamation-icon.js");
+let ts_expand_ascending_icon_js = require("./expand-ascending-icon.js");
+let ts_expand_descending_icon_js = require("./expand-descending-icon.js");
+let ts_expand_icon_js = require("./expand-icon.js");
+let ts_exponential_icon_js = require("./exponential-icon.js");
+let ts_export_icon_js = require("./export-icon.js");
+let ts_eye_icon_js = require("./eye-icon.js");
+let ts_eyelash_icon_js = require("./eyelash-icon.js");
+let ts_feature_search_icon_js = require("./feature-search-icon.js");
+let ts_filter_icon_js = require("./filter-icon.js");
+let ts_financial_function_icon_js = require("./financial-function-icon.js");
+let ts_first_tab_icon_js = require("./first-tab-icon.js");
+let ts_flag_icon_js = require("./flag-icon.js");
+let ts_flip_horizontal_icon_js = require("./flip-horizontal-icon.js");
+let ts_flip_vertical_icon_js = require("./flip-vertical-icon.js");
+let ts_folder_icon_js = require("./folder-icon.js");
+let ts_font_size_increase_icon_js = require("./font-size-increase-icon.js");
+let ts_font_size_reduce_icon_js = require("./font-size-reduce-icon.js");
+let ts_foods_icon_js = require("./foods-icon.js");
+let ts_formula_accent_icon_js = require("./formula-accent-icon.js");
+let ts_formula_bracket_icon_js = require("./formula-bracket-icon.js");
+let ts_formula_fraction_icon_js = require("./formula-fraction-icon.js");
+let ts_formula_function_icon_js = require("./formula-function-icon.js");
+let ts_formula_integral_icon_js = require("./formula-integral-icon.js");
+let ts_formula_large_operator_icon_js = require("./formula-large-operator-icon.js");
+let ts_formula_limit_logarithm_icon_js = require("./formula-limit-logarithm-icon.js");
+let ts_formula_matrix_icon_js = require("./formula-matrix-icon.js");
+let ts_formula_operator_icon_js = require("./formula-operator-icon.js");
+let ts_formula_radical_icon_js = require("./formula-radical-icon.js");
+let ts_formula_script_icon_js = require("./formula-script-icon.js");
+let ts_fountain_pen_icon_js = require("./fountain-pen-icon.js");
+let ts_freeze_column_icon_js = require("./freeze-column-icon.js");
+let ts_freeze_row_icon_js = require("./freeze-row-icon.js");
+let ts_freeze_to_selected_icon_js = require("./freeze-to-selected-icon.js");
+let ts_function_icon_js = require("./function-icon.js");
+let ts_funnel_icon_js = require("./funnel-icon.js");
+let ts_fx_icon_js = require("./fx-icon.js");
+let ts_gauge_chart_icon_js = require("./gauge-chart-icon.js");
+let ts_graph_icon_js = require("./graph-icon.js");
+let ts_grid_icon_js = require("./grid-icon.js");
+let ts_grid_outline_icon_js = require("./grid-outline-icon.js");
+let ts_grip_horizontal_icon_js = require("./grip-horizontal-icon.js");
+let ts_grip_vertical_icon_js = require("./grip-vertical-icon.js");
+let ts_group_icon_js = require("./group-icon.js");
+let ts_group_sparkline_icon_js = require("./group-sparkline-icon.js");
+let ts_h1_icon_js = require("./h1-icon.js");
+let ts_h2_icon_js = require("./h2-icon.js");
+let ts_h3_icon_js = require("./h3-icon.js");
+let ts_h4_icon_js = require("./h4-icon.js");
+let ts_h5_icon_js = require("./h5-icon.js");
+let ts_h6_icon_js = require("./h6-icon.js");
+let ts_hand_icon_js = require("./hand-icon.js");
+let ts_header_footer_icon_js = require("./header-footer-icon.js");
+let ts_heatmap_icon_js = require("./heatmap-icon.js");
+let ts_help_icon_js = require("./help-icon.js");
+let ts_hide_gridlines_icon_js = require("./hide-gridlines-icon.js");
+let ts_hide_note_icon_js = require("./hide-note-icon.js");
+let ts_histogram_chart_icon_js = require("./histogram-chart-icon.js");
+let ts_history_icon_js = require("./history-icon.js");
+let ts_home_icon_js = require("./home-icon.js");
+let ts_horizontal_merge_icon_js = require("./horizontal-merge-icon.js");
+let ts_horizontally_icon_js = require("./horizontally-icon.js");
+let ts_import_icon_js = require("./import-icon.js");
+let ts_increase_icon_js = require("./increase-icon.js");
+let ts_info_icon_js = require("./info-icon.js");
+let ts_information_function_icon_js = require("./information-function-icon.js");
+let ts_insert_icon_js = require("./insert-icon.js");
+let ts_italic_icon_js = require("./italic-icon.js");
+let ts_keyboard_icon_js = require("./keyboard-icon.js");
+let ts_left_justifying_icon_js = require("./left-justifying-icon.js");
+let ts_left_rotation_forty_five_degrees_icon_js = require("./left-rotation-forty-five-degrees-icon.js");
+let ts_left_rotation_ninety_degrees_icon_js = require("./left-rotation-ninety-degrees-icon.js");
+let ts_line_chart_icon_js = require("./line-chart-icon.js");
+let ts_line_dashed_none_icon_js = require("./line-dashed-none-icon.js");
+let ts_line_double_open_arrow_icon_js = require("./line-double-open-arrow-icon.js");
+let ts_line_indent_decrease_icon_js = require("./line-indent-decrease-icon.js");
+let ts_line_indent_increase_icon_js = require("./line-indent-increase-icon.js");
+let ts_line_none_icon_js = require("./line-none-icon.js");
+let ts_line_open_arrow_icon_js = require("./line-open-arrow-icon.js");
+let ts_line_sparkline_icon_js = require("./line-sparkline-icon.js");
+let ts_linear_icon_js = require("./linear-icon.js");
+let ts_link_icon_js = require("./link-icon.js");
+let ts_live_share_icon_js = require("./live-share-icon.js");
+let ts_locate_fixed_icon_js = require("./locate-fixed-icon.js");
+let ts_lock_icon_js = require("./lock-icon.js");
+let ts_logarithmic_icon_js = require("./logarithmic-icon.js");
+let ts_logical_function_icon_js = require("./logical-function-icon.js");
+let ts_lookup_function_icon_js = require("./lookup-function-icon.js");
+let ts_math_function_icon_js = require("./math-function-icon.js");
+let ts_menu_icon_js = require("./menu-icon.js");
+let ts_merge_all_icon_js = require("./merge-all-icon.js");
+let ts_mermaid_diagram_icon_js = require("./mermaid-diagram-icon.js");
+let ts_mind_map_icon_js = require("./mind-map-icon.js");
+let ts_more_down_icon_js = require("./more-down-icon.js");
+let ts_more_horizontal_icon_js = require("./more-horizontal-icon.js");
+let ts_more_left_icon_js = require("./more-left-icon.js");
+let ts_more_right_icon_js = require("./more-right-icon.js");
+let ts_more_up_icon_js = require("./more-up-icon.js");
+let ts_more_vertical_icon_js = require("./more-vertical-icon.js");
+let ts_move_down_icon_js = require("./move-down-icon.js");
+let ts_move_up_icon_js = require("./move-up-icon.js");
+let ts_moving_average_icon_js = require("./moving-average-icon.js");
+let ts_nature_icon_js = require("./nature-icon.js");
+let ts_no_border_icon_js = require("./no-border-icon.js");
+let ts_no_rotation_icon_js = require("./no-rotation-icon.js");
+let ts_number_icon_js = require("./number-icon.js");
+let ts_object_layers_icon_js = require("./object-layers-icon.js");
+let ts_objects_icon_js = require("./objects-icon.js");
+let ts_off_line_icon_js = require("./off-line-icon.js");
+let ts_on_line_icon_js = require("./on-line-icon.js");
+let ts_one_to_one_icon_js = require("./one-to-one-icon.js");
+let ts_order_icon_js = require("./order-icon.js");
+let ts_overflow_icon_js = require("./overflow-icon.js");
+let ts_paint_icon_js = require("./paint-icon.js");
+let ts_pdf_app_icon_js = require("./pdf-app-icon.js");
+let ts_pdf_highlight_icon_js = require("./pdf-highlight-icon.js");
+let ts_pen_icon_js = require("./pen-icon.js");
+let ts_people_icon_js = require("./people-icon.js");
+let ts_percent_icon_js = require("./percent-icon.js");
+let ts_pie_chart_icon_js = require("./pie-chart-icon.js");
+let ts_piping_icon_js = require("./piping-icon.js");
+let ts_pivot_table_icon_js = require("./pivot-table-icon.js");
+let ts_places_icon_js = require("./places-icon.js");
+let ts_polynomial_icon_js = require("./polynomial-icon.js");
+let ts_power_line_icon_js = require("./power-line-icon.js");
+let ts_precise_selection_icon_js = require("./precise-selection-icon.js");
+let ts_print_icon_js = require("./print-icon.js");
+let ts_protect_icon_js = require("./protect-icon.js");
+let ts_quick_add_icon_js = require("./quick-add-icon.js");
+let ts_quote_icon_js = require("./quote-icon.js");
+let ts_radar_chart_icon_js = require("./radar-chart-icon.js");
+let ts_random_icon_js = require("./random-icon.js");
+let ts_rating_icon_js = require("./rating-icon.js");
+let ts_recent_icon_js = require("./recent-icon.js");
+let ts_record_icon_js = require("./record-icon.js");
+let ts_redo_icon_js = require("./redo-icon.js");
+let ts_reduce_digits_icon_js = require("./reduce-digits-icon.js");
+let ts_reduce_icon_js = require("./reduce-icon.js");
+let ts_relationship_icon_js = require("./relationship-icon.js");
+let ts_rename_icon_js = require("./rename-icon.js");
+let ts_reply_to_comment_icon_js = require("./reply-to-comment-icon.js");
+let ts_resources_icon_js = require("./resources-icon.js");
+let ts_restore_icon_js = require("./restore-icon.js");
+let ts_rhomboid_icon_js = require("./rhomboid-icon.js");
+let ts_rial_icon_js = require("./rial-icon.js");
+let ts_right_justifying_icon_js = require("./right-justifying-icon.js");
+let ts_right_rotation_forty_five_degrees_icon_js = require("./right-rotation-forty-five-degrees-icon.js");
+let ts_right_rotation_ninety_degrees_icon_js = require("./right-rotation-ninety-degrees-icon.js");
+let ts_rmb_icon_js = require("./rmb-icon.js");
+let ts_rouble_icon_js = require("./rouble-icon.js");
+let ts_roundness_icon_js = require("./roundness-icon.js");
+let ts_row_height_extra_tall_icon_js = require("./row-height-extra-tall-icon.js");
+let ts_row_height_medium_icon_js = require("./row-height-medium-icon.js");
+let ts_row_height_short_icon_js = require("./row-height-short-icon.js");
+let ts_row_height_tall_icon_js = require("./row-height-tall-icon.js");
+let ts_row_icon_js = require("./row-icon.js");
+let ts_ruler_icon_js = require("./ruler-icon.js");
+let ts_rupiah_icon_js = require("./rupiah-icon.js");
+let ts_sankey_icon_js = require("./sankey-icon.js");
+let ts_scatter_chart_icon_js = require("./scatter-chart-icon.js");
+let ts_search_icon_js = require("./search-icon.js");
+let ts_select_range_icon_js = require("./select-range-icon.js");
+let ts_sequence_activation_bar_icon_js = require("./sequence-activation-bar-icon.js");
+let ts_sequence_actor_lifeline_icon_js = require("./sequence-actor-lifeline-icon.js");
+let ts_sequence_alternative_fragment_icon_js = require("./sequence-alternative-fragment-icon.js");
+let ts_sequence_boundary_lifeline_icon_js = require("./sequence-boundary-lifeline-icon.js");
+let ts_sequence_collection_lifeline_icon_js = require("./sequence-collection-lifeline-icon.js");
+let ts_sequence_control_lifeline_icon_js = require("./sequence-control-lifeline-icon.js");
+let ts_sequence_direct_access_storage_lifeline_icon_js = require("./sequence-direct-access-storage-lifeline-icon.js");
+let ts_sequence_entity_lifeline_icon_js = require("./sequence-entity-lifeline-icon.js");
+let ts_sequence_fragment_icon_js = require("./sequence-fragment-icon.js");
+let ts_sequence_magnetic_disk_lifeline_icon_js = require("./sequence-magnetic-disk-lifeline-icon.js");
+let ts_sequence_object_lifeline_icon_js = require("./sequence-object-lifeline-icon.js");
+let ts_shape_accent_border_callout1_icon_js = require("./shape-accent-border-callout1-icon.js");
+let ts_shape_accent_border_callout2_icon_js = require("./shape-accent-border-callout2-icon.js");
+let ts_shape_accent_border_callout3_icon_js = require("./shape-accent-border-callout3-icon.js");
+let ts_shape_accent_callout1_icon_js = require("./shape-accent-callout1-icon.js");
+let ts_shape_accent_callout2_icon_js = require("./shape-accent-callout2-icon.js");
+let ts_shape_accent_callout3_icon_js = require("./shape-accent-callout3-icon.js");
+let ts_shape_action_button_back_previous_icon_js = require("./shape-action-button-back-previous-icon.js");
+let ts_shape_action_button_beginning_icon_js = require("./shape-action-button-beginning-icon.js");
+let ts_shape_action_button_blank_icon_js = require("./shape-action-button-blank-icon.js");
+let ts_shape_action_button_document_icon_js = require("./shape-action-button-document-icon.js");
+let ts_shape_action_button_end_icon_js = require("./shape-action-button-end-icon.js");
+let ts_shape_action_button_forward_next_icon_js = require("./shape-action-button-forward-next-icon.js");
+let ts_shape_action_button_help_icon_js = require("./shape-action-button-help-icon.js");
+let ts_shape_action_button_home_icon_js = require("./shape-action-button-home-icon.js");
+let ts_shape_action_button_information_icon_js = require("./shape-action-button-information-icon.js");
+let ts_shape_action_button_movie_icon_js = require("./shape-action-button-movie-icon.js");
+let ts_shape_action_button_return_icon_js = require("./shape-action-button-return-icon.js");
+let ts_shape_action_button_sound_icon_js = require("./shape-action-button-sound-icon.js");
+let ts_shape_arc_icon_js = require("./shape-arc-icon.js");
+let ts_shape_bent_arrow_icon_js = require("./shape-bent-arrow-icon.js");
+let ts_shape_bent_connector3_arrow1_icon_js = require("./shape-bent-connector3-arrow1-icon.js");
+let ts_shape_bent_connector3_arrow2_icon_js = require("./shape-bent-connector3-arrow2-icon.js");
+let ts_shape_bent_connector3_icon_js = require("./shape-bent-connector3-icon.js");
+let ts_shape_bent_up_arrow_icon_js = require("./shape-bent-up-arrow-icon.js");
+let ts_shape_bevel_icon_js = require("./shape-bevel-icon.js");
+let ts_shape_block_arc_icon_js = require("./shape-block-arc-icon.js");
+let ts_shape_border_callout1_icon_js = require("./shape-border-callout1-icon.js");
+let ts_shape_border_callout2_icon_js = require("./shape-border-callout2-icon.js");
+let ts_shape_border_callout3_icon_js = require("./shape-border-callout3-icon.js");
+let ts_shape_brace_pair_icon_js = require("./shape-brace-pair-icon.js");
+let ts_shape_bracket_pair_icon_js = require("./shape-bracket-pair-icon.js");
+let ts_shape_callout1_icon_js = require("./shape-callout1-icon.js");
+let ts_shape_callout2_icon_js = require("./shape-callout2-icon.js");
+let ts_shape_callout3_icon_js = require("./shape-callout3-icon.js");
+let ts_shape_can_icon_js = require("./shape-can-icon.js");
+let ts_shape_chart_plus_icon_js = require("./shape-chart-plus-icon.js");
+let ts_shape_chart_star_icon_js = require("./shape-chart-star-icon.js");
+let ts_shape_chart_x_icon_js = require("./shape-chart-x-icon.js");
+let ts_shape_chevron_icon_js = require("./shape-chevron-icon.js");
+let ts_shape_chord_icon_js = require("./shape-chord-icon.js");
+let ts_shape_circular_arrow_icon_js = require("./shape-circular-arrow-icon.js");
+let ts_shape_cloud_callout_icon_js = require("./shape-cloud-callout-icon.js");
+let ts_shape_cloud_icon_js = require("./shape-cloud-icon.js");
+let ts_shape_corner_icon_js = require("./shape-corner-icon.js");
+let ts_shape_corner_tabs_icon_js = require("./shape-corner-tabs-icon.js");
+let ts_shape_cube_icon_js = require("./shape-cube-icon.js");
+let ts_shape_curved_connector3_arrow1_icon_js = require("./shape-curved-connector3-arrow1-icon.js");
+let ts_shape_curved_connector3_arrow2_icon_js = require("./shape-curved-connector3-arrow2-icon.js");
+let ts_shape_curved_connector3_icon_js = require("./shape-curved-connector3-icon.js");
+let ts_shape_curved_down_arrow_icon_js = require("./shape-curved-down-arrow-icon.js");
+let ts_shape_curved_left_arrow_icon_js = require("./shape-curved-left-arrow-icon.js");
+let ts_shape_curved_right_arrow_icon_js = require("./shape-curved-right-arrow-icon.js");
+let ts_shape_curved_up_arrow_icon_js = require("./shape-curved-up-arrow-icon.js");
+let ts_shape_decagon_icon_js = require("./shape-decagon-icon.js");
+let ts_shape_diag_stripe_icon_js = require("./shape-diag-stripe-icon.js");
+let ts_shape_diamond_icon_js = require("./shape-diamond-icon.js");
+let ts_shape_dodecagon_icon_js = require("./shape-dodecagon-icon.js");
+let ts_shape_donut_icon_js = require("./shape-donut-icon.js");
+let ts_shape_double_wave_icon_js = require("./shape-double-wave-icon.js");
+let ts_shape_down_arrow_callout_icon_js = require("./shape-down-arrow-callout-icon.js");
+let ts_shape_down_arrow_icon_js = require("./shape-down-arrow-icon.js");
+let ts_shape_ellipse_icon_js = require("./shape-ellipse-icon.js");
+let ts_shape_ellipse_ribbon_icon_js = require("./shape-ellipse-ribbon-icon.js");
+let ts_shape_ellipse_ribbon2_icon_js = require("./shape-ellipse-ribbon2-icon.js");
+let ts_shape_flow_chart_alternate_process_icon_js = require("./shape-flow-chart-alternate-process-icon.js");
+let ts_shape_flow_chart_collate_icon_js = require("./shape-flow-chart-collate-icon.js");
+let ts_shape_flow_chart_connector_icon_js = require("./shape-flow-chart-connector-icon.js");
+let ts_shape_flow_chart_decision_icon_js = require("./shape-flow-chart-decision-icon.js");
+let ts_shape_flow_chart_delay_icon_js = require("./shape-flow-chart-delay-icon.js");
+let ts_shape_flow_chart_display_icon_js = require("./shape-flow-chart-display-icon.js");
+let ts_shape_flow_chart_document_icon_js = require("./shape-flow-chart-document-icon.js");
+let ts_shape_flow_chart_extract_icon_js = require("./shape-flow-chart-extract-icon.js");
+let ts_shape_flow_chart_input_output_icon_js = require("./shape-flow-chart-input-output-icon.js");
+let ts_shape_flow_chart_internal_storage_icon_js = require("./shape-flow-chart-internal-storage-icon.js");
+let ts_shape_flow_chart_magnetic_disk_icon_js = require("./shape-flow-chart-magnetic-disk-icon.js");
+let ts_shape_flow_chart_magnetic_drum_icon_js = require("./shape-flow-chart-magnetic-drum-icon.js");
+let ts_shape_flow_chart_magnetic_tape_icon_js = require("./shape-flow-chart-magnetic-tape-icon.js");
+let ts_shape_flow_chart_manual_input_icon_js = require("./shape-flow-chart-manual-input-icon.js");
+let ts_shape_flow_chart_manual_operation_icon_js = require("./shape-flow-chart-manual-operation-icon.js");
+let ts_shape_flow_chart_merge_icon_js = require("./shape-flow-chart-merge-icon.js");
+let ts_shape_flow_chart_multidocument_icon_js = require("./shape-flow-chart-multidocument-icon.js");
+let ts_shape_flow_chart_offline_storage_icon_js = require("./shape-flow-chart-offline-storage-icon.js");
+let ts_shape_flow_chart_offpage_connector_icon_js = require("./shape-flow-chart-offpage-connector-icon.js");
+let ts_shape_flow_chart_online_storage_icon_js = require("./shape-flow-chart-online-storage-icon.js");
+let ts_shape_flow_chart_or_icon_js = require("./shape-flow-chart-or-icon.js");
+let ts_shape_flow_chart_predefined_process_icon_js = require("./shape-flow-chart-predefined-process-icon.js");
+let ts_shape_flow_chart_preparation_icon_js = require("./shape-flow-chart-preparation-icon.js");
+let ts_shape_flow_chart_process_icon_js = require("./shape-flow-chart-process-icon.js");
+let ts_shape_flow_chart_punched_card_icon_js = require("./shape-flow-chart-punched-card-icon.js");
+let ts_shape_flow_chart_punched_tape_icon_js = require("./shape-flow-chart-punched-tape-icon.js");
+let ts_shape_flow_chart_sort_icon_js = require("./shape-flow-chart-sort-icon.js");
+let ts_shape_flow_chart_summing_junction_icon_js = require("./shape-flow-chart-summing-junction-icon.js");
+let ts_shape_flow_chart_terminator_icon_js = require("./shape-flow-chart-terminator-icon.js");
+let ts_shape_folder_corner_icon_js = require("./shape-folder-corner-icon.js");
+let ts_shape_format_setting_icon_js = require("./shape-format-setting-icon.js");
+let ts_shape_frame_icon_js = require("./shape-frame-icon.js");
+let ts_shape_funnel_icon_js = require("./shape-funnel-icon.js");
+let ts_shape_gear6_icon_js = require("./shape-gear6-icon.js");
+let ts_shape_gear9_icon_js = require("./shape-gear9-icon.js");
+let ts_shape_half_frame_icon_js = require("./shape-half-frame-icon.js");
+let ts_shape_heart_icon_js = require("./shape-heart-icon.js");
+let ts_shape_heptagon_icon_js = require("./shape-heptagon-icon.js");
+let ts_shape_hexagon_icon_js = require("./shape-hexagon-icon.js");
+let ts_shape_home_plate_icon_js = require("./shape-home-plate-icon.js");
+let ts_shape_horizontal_scroll_icon_js = require("./shape-horizontal-scroll-icon.js");
+let ts_shape_icon_js = require("./shape-icon.js");
+let ts_shape_irregular_seal1_icon_js = require("./shape-irregular-seal1-icon.js");
+let ts_shape_irregular_seal2_icon_js = require("./shape-irregular-seal2-icon.js");
+let ts_shape_left_arrow_callout_icon_js = require("./shape-left-arrow-callout-icon.js");
+let ts_shape_left_arrow_icon_js = require("./shape-left-arrow-icon.js");
+let ts_shape_left_brace_icon_js = require("./shape-left-brace-icon.js");
+let ts_shape_left_bracket_icon_js = require("./shape-left-bracket-icon.js");
+let ts_shape_left_circular_arrow_icon_js = require("./shape-left-circular-arrow-icon.js");
+let ts_shape_left_right_arrow_callout_icon_js = require("./shape-left-right-arrow-callout-icon.js");
+let ts_shape_left_right_arrow_icon_js = require("./shape-left-right-arrow-icon.js");
+let ts_shape_left_right_circular_arrow_icon_js = require("./shape-left-right-circular-arrow-icon.js");
+let ts_shape_left_right_ribbon_icon_js = require("./shape-left-right-ribbon-icon.js");
+let ts_shape_left_right_up_arrow_icon_js = require("./shape-left-right-up-arrow-icon.js");
+let ts_shape_left_up_arrow_icon_js = require("./shape-left-up-arrow-icon.js");
+let ts_shape_lightning_bolt_icon_js = require("./shape-lightning-bolt-icon.js");
+let ts_shape_line_icon_js = require("./shape-line-icon.js");
+let ts_shape_line_inv_icon_js = require("./shape-line-inv-icon.js");
+let ts_shape_math_divide_icon_js = require("./shape-math-divide-icon.js");
+let ts_shape_math_equal_icon_js = require("./shape-math-equal-icon.js");
+let ts_shape_math_minus_icon_js = require("./shape-math-minus-icon.js");
+let ts_shape_math_multiply_icon_js = require("./shape-math-multiply-icon.js");
+let ts_shape_math_not_equal_icon_js = require("./shape-math-not-equal-icon.js");
+let ts_shape_math_plus_icon_js = require("./shape-math-plus-icon.js");
+let ts_shape_moon_icon_js = require("./shape-moon-icon.js");
+let ts_shape_no_smoking_icon_js = require("./shape-no-smoking-icon.js");
+let ts_shape_non_isosceles_trapezoid_icon_js = require("./shape-non-isosceles-trapezoid-icon.js");
+let ts_shape_notched_right_arrow_icon_js = require("./shape-notched-right-arrow-icon.js");
+let ts_shape_octagon_icon_js = require("./shape-octagon-icon.js");
+let ts_shape_parallelogram_icon_js = require("./shape-parallelogram-icon.js");
+let ts_shape_pentagon_icon_js = require("./shape-pentagon-icon.js");
+let ts_shape_pie_icon_js = require("./shape-pie-icon.js");
+let ts_shape_pie_wedge_icon_js = require("./shape-pie-wedge-icon.js");
+let ts_shape_plaque_icon_js = require("./shape-plaque-icon.js");
+let ts_shape_plaque_tabs_icon_js = require("./shape-plaque-tabs-icon.js");
+let ts_shape_plus_icon_js = require("./shape-plus-icon.js");
+let ts_shape_quad_arrow_callout_icon_js = require("./shape-quad-arrow-callout-icon.js");
+let ts_shape_quad_arrow_icon_js = require("./shape-quad-arrow-icon.js");
+let ts_shape_rect_icon_js = require("./shape-rect-icon.js");
+let ts_shape_rect_textbox_horizontal_icon_js = require("./shape-rect-textbox-horizontal-icon.js");
+let ts_shape_rect_textbox_vertical_icon_js = require("./shape-rect-textbox-vertical-icon.js");
+let ts_shape_ribbon_icon_js = require("./shape-ribbon-icon.js");
+let ts_shape_ribbon2_icon_js = require("./shape-ribbon2-icon.js");
+let ts_shape_right_arrow_callout_icon_js = require("./shape-right-arrow-callout-icon.js");
+let ts_shape_right_arrow_icon_js = require("./shape-right-arrow-icon.js");
+let ts_shape_right_brace_icon_js = require("./shape-right-brace-icon.js");
+let ts_shape_right_bracket_icon_js = require("./shape-right-bracket-icon.js");
+let ts_shape_round_rect_icon_js = require("./shape-round-rect-icon.js");
+let ts_shape_round1_rect_icon_js = require("./shape-round1-rect-icon.js");
+let ts_shape_round2_diag_rect_icon_js = require("./shape-round2-diag-rect-icon.js");
+let ts_shape_round2_same_rect_icon_js = require("./shape-round2-same-rect-icon.js");
+let ts_shape_rt_triangle_icon_js = require("./shape-rt-triangle-icon.js");
+let ts_shape_smiley_face_icon_js = require("./shape-smiley-face-icon.js");
+let ts_shape_snip_round_rect_icon_js = require("./shape-snip-round-rect-icon.js");
+let ts_shape_snip1_rect_icon_js = require("./shape-snip1-rect-icon.js");
+let ts_shape_snip2_diag_rect_icon_js = require("./shape-snip2-diag-rect-icon.js");
+let ts_shape_snip2_same_rect_icon_js = require("./shape-snip2-same-rect-icon.js");
+let ts_shape_square_tabs_icon_js = require("./shape-square-tabs-icon.js");
+let ts_shape_star10_icon_js = require("./shape-star10-icon.js");
+let ts_shape_star12_icon_js = require("./shape-star12-icon.js");
+let ts_shape_star16_icon_js = require("./shape-star16-icon.js");
+let ts_shape_star24_icon_js = require("./shape-star24-icon.js");
+let ts_shape_star32_icon_js = require("./shape-star32-icon.js");
+let ts_shape_star4_icon_js = require("./shape-star4-icon.js");
+let ts_shape_star5_icon_js = require("./shape-star5-icon.js");
+let ts_shape_star6_icon_js = require("./shape-star6-icon.js");
+let ts_shape_star7_icon_js = require("./shape-star7-icon.js");
+let ts_shape_star8_icon_js = require("./shape-star8-icon.js");
+let ts_shape_straight_connector1_icon_js = require("./shape-straight-connector1-icon.js");
+let ts_shape_straight_connector2_icon_js = require("./shape-straight-connector2-icon.js");
+let ts_shape_striped_right_arrow_icon_js = require("./shape-striped-right-arrow-icon.js");
+let ts_shape_sun_icon_js = require("./shape-sun-icon.js");
+let ts_shape_swoosh_arrow_icon_js = require("./shape-swoosh-arrow-icon.js");
+let ts_shape_teardrop_icon_js = require("./shape-teardrop-icon.js");
+let ts_shape_trapezoid_icon_js = require("./shape-trapezoid-icon.js");
+let ts_shape_triangle_icon_js = require("./shape-triangle-icon.js");
+let ts_shape_up_arrow_callout_icon_js = require("./shape-up-arrow-callout-icon.js");
+let ts_shape_up_arrow_icon_js = require("./shape-up-arrow-icon.js");
+let ts_shape_up_down_arrow_callout_icon_js = require("./shape-up-down-arrow-callout-icon.js");
+let ts_shape_up_down_arrow_icon_js = require("./shape-up-down-arrow-icon.js");
+let ts_shape_uturn_arrow_icon_js = require("./shape-uturn-arrow-icon.js");
+let ts_shape_vertical_scroll_icon_js = require("./shape-vertical-scroll-icon.js");
+let ts_shape_wave_icon_js = require("./shape-wave-icon.js");
+let ts_shape_wedge_ellipse_callout_icon_js = require("./shape-wedge-ellipse-callout-icon.js");
+let ts_shape_wedge_rect_callout_icon_js = require("./shape-wedge-rect-callout-icon.js");
+let ts_shape_wedge_round_rect_callout_icon_js = require("./shape-wedge-round-rect-callout-icon.js");
+let ts_share_icon_js = require("./share-icon.js");
+let ts_share_range_icon_js = require("./share-range-icon.js");
+let ts_sheet_icon_js = require("./sheet-icon.js");
+let ts_sheets_app_icon_js = require("./sheets-app-icon.js");
+let ts_shortcut_icon_js = require("./shortcut-icon.js");
+let ts_show_dimensions_icon_js = require("./show-dimensions-icon.js");
+let ts_show_toolbar_icon_js = require("./show-toolbar-icon.js");
+let ts_shrink_icon_js = require("./shrink-icon.js");
+let ts_shrink_to_fit_icon_js = require("./shrink-to-fit-icon.js");
+let ts_slides_app_icon_js = require("./slides-app-icon.js");
+let ts_slideshow_play_icon_js = require("./slideshow-play-icon.js");
+let ts_slideshow_theme_icon_js = require("./slideshow-theme-icon.js");
+let ts_smart_art_icon_js = require("./smart-art-icon.js");
+let ts_smile_icon_js = require("./smile-icon.js");
+let ts_statistical_function_icon_js = require("./statistical-function-icon.js");
+let ts_status_diagram_final_state_icon_js = require("./status-diagram-final-state-icon.js");
+let ts_status_diagram_initial_state_icon_js = require("./status-diagram-initial-state-icon.js");
+let ts_status_diagram_state_bar_icon_js = require("./status-diagram-state-bar-icon.js");
+let ts_sticky_note_icon_js = require("./sticky-note-icon.js");
+let ts_strikethrough_icon_js = require("./strikethrough-icon.js");
+let ts_stroke_size1_icon_js = require("./stroke-size1-icon.js");
+let ts_stroke_size2_icon_js = require("./stroke-size2-icon.js");
+let ts_stroke_size3_icon_js = require("./stroke-size3-icon.js");
+let ts_stroke_size4_icon_js = require("./stroke-size4-icon.js");
+let ts_stroke_size5_icon_js = require("./stroke-size5-icon.js");
+let ts_subscript_icon_js = require("./subscript-icon.js");
+let ts_success_icon_js = require("./success-icon.js");
+let ts_success_outline_icon_js = require("./success-outline-icon.js");
+let ts_sunburst_chart_icon_js = require("./sunburst-chart-icon.js");
+let ts_superscript_icon_js = require("./superscript-icon.js");
+let ts_symbols_icon_js = require("./symbols-icon.js");
+let ts_table_border_style_dashed_icon_js = require("./table-border-style-dashed-icon.js");
+let ts_table_border_style_dotted_icon_js = require("./table-border-style-dotted-icon.js");
+let ts_table_border_style_icon_js = require("./table-border-style-icon.js");
+let ts_table_border_style_solid_icon_js = require("./table-border-style-solid-icon.js");
+let ts_table_border_width_icon_js = require("./table-border-width-icon.js");
+let ts_table_icon_js = require("./table-icon.js");
+let ts_text_function_icon_js = require("./text-function-icon.js");
+let ts_text_icon_js = require("./text-icon.js");
+let ts_text_type_icon_js = require("./text-type-icon.js");
+let ts_text_wrap_shape_icon_js = require("./text-wrap-shape-icon.js");
+let ts_topmost_icon_js = require("./topmost-icon.js");
+let ts_transitions_icon_js = require("./transitions-icon.js");
+let ts_treemap_chart_icon_js = require("./treemap-chart-icon.js");
+let ts_triangle_icon_js = require("./triangle-icon.js");
+let ts_truncation_icon_js = require("./truncation-icon.js");
+let ts_typography_icon_js = require("./typography-icon.js");
+let ts_underline_icon_js = require("./underline-icon.js");
+let ts_undo_icon_js = require("./undo-icon.js");
+let ts_ungroup_icon_js = require("./ungroup-icon.js");
+let ts_ungroup_sparkline_icon_js = require("./ungroup-sparkline-icon.js");
+let ts_univer_cli_icon_js = require("./univer-cli-icon.js");
+let ts_unlink_icon_js = require("./unlink-icon.js");
+let ts_unlock_icon_js = require("./unlock-icon.js");
+let ts_unorder_icon_js = require("./unorder-icon.js");
+let ts_up_icon_js = require("./up-icon.js");
+let ts_vertical_center_icon_js = require("./vertical-center-icon.js");
+let ts_vertical_integration_icon_js = require("./vertical-integration-icon.js");
+let ts_vertical_text_icon_js = require("./vertical-text-icon.js");
+let ts_warning_icon_js = require("./warning-icon.js");
+let ts_waterfall_chart_icon_js = require("./waterfall-chart-icon.js");
+let ts_winloss_sparkline_icon_js = require("./winloss-sparkline-icon.js");
+let ts_won_icon_js = require("./won-icon.js");
+let ts_write_icon_js = require("./write-icon.js");
+let ts_zloty_icon_js = require("./zloty-icon.js");
+let ts_zoom_in_icon_js = require("./zoom-in-icon.js");
+let ts_zoom_out_icon_js = require("./zoom-out-icon.js");
+let ts_ai_assistant_multi_icon_js = require("./ai-assistant-multi-icon.js");
+let ts_bases_multi_icon_js = require("./bases-multi-icon.js");
+let ts_boards_multi_icon_js = require("./boards-multi-icon.js");
+let ts_color_wheel_multi_icon_js = require("./color-wheel-multi-icon.js");
+let ts_docs_multi_icon_js = require("./docs-multi-icon.js");
+let ts_loading_multi_icon_js = require("./loading-multi-icon.js");
+let ts_pdf_multi_icon_js = require("./pdf-multi-icon.js");
+let ts_sheets_multi_icon_js = require("./sheets-multi-icon.js");
+let ts_slides_multi_icon_js = require("./slides-multi-icon.js");
+let ts_univer_sdk_multi_icon_js = require("./univer-sdk-multi-icon.js");
+let ts_adjust_height_double_icon_js = require("./adjust-height-double-icon.js");
+let ts_adjust_width_double_icon_js = require("./adjust-width-double-icon.js");
+let ts_auto_height_double_icon_js = require("./auto-height-double-icon.js");
+let ts_auto_width_double_icon_js = require("./auto-width-double-icon.js");
+let ts_autofill_double_icon_js = require("./autofill-double-icon.js");
+let ts_back_slash_double_icon_js = require("./back-slash-double-icon.js");
+let ts_cell_0_double_icon_js = require("./cell-0-double-icon.js");
+let ts_cell_100_double_icon_js = require("./cell-100-double-icon.js");
+let ts_cell_25_double_icon_js = require("./cell-25-double-icon.js");
+let ts_cell_50_double_icon_js = require("./cell-50-double-icon.js");
+let ts_cell_75_double_icon_js = require("./cell-75-double-icon.js");
+let ts_clear_format_double_icon_js = require("./clear-format-double-icon.js");
+let ts_conditions_double_icon_js = require("./conditions-double-icon.js");
+let ts_copy_double_icon_js = require("./copy-double-icon.js");
+let ts_correct_double_icon_js = require("./correct-double-icon.js");
+let ts_delete_cell_move_down_double_icon_js = require("./delete-cell-move-down-double-icon.js");
+let ts_delete_cell_shift_left_double_icon_js = require("./delete-cell-shift-left-double-icon.js");
+let ts_delete_cell_shift_right_double_icon_js = require("./delete-cell-shift-right-double-icon.js");
+let ts_delete_cell_shift_up_double_icon_js = require("./delete-cell-shift-up-double-icon.js");
+let ts_delete_column_double_icon_js = require("./delete-column-double-icon.js");
+let ts_delete_row_double_icon_js = require("./delete-row-double-icon.js");
+let ts_delete_table_double_icon_js = require("./delete-table-double-icon.js");
+let ts_dissatisfied_double_icon_js = require("./dissatisfied-double-icon.js");
+let ts_down_border_double_icon_js = require("./down-border-double-icon.js");
+let ts_font_color_double_icon_js = require("./font-color-double-icon.js");
+let ts_grouping_double_icon_js = require("./grouping-double-icon.js");
+let ts_guffaw_double_icon_js = require("./guffaw-double-icon.js");
+let ts_hide_double_icon_js = require("./hide-double-icon.js");
+let ts_horizontal_border_double_icon_js = require("./horizontal-border-double-icon.js");
+let ts_impatient_double_icon_js = require("./impatient-double-icon.js");
+let ts_indicate_double_icon_js = require("./indicate-double-icon.js");
+let ts_inner_border_double_icon_js = require("./inner-border-double-icon.js");
+let ts_insert_cell_down_double_icon_js = require("./insert-cell-down-double-icon.js");
+let ts_insert_cell_shift_right_double_icon_js = require("./insert-cell-shift-right-double-icon.js");
+let ts_insert_comment_double_icon_js = require("./insert-comment-double-icon.js");
+let ts_insert_double_icon_js = require("./insert-double-icon.js");
+let ts_insert_link_double_icon_js = require("./insert-link-double-icon.js");
+let ts_insert_row_above_double_icon_js = require("./insert-row-above-double-icon.js");
+let ts_insert_row_below_double_icon_js = require("./insert-row-below-double-icon.js");
+let ts_left_border_double_icon_js = require("./left-border-double-icon.js");
+let ts_left_double_diagonal_double_icon_js = require("./left-double-diagonal-double-icon.js");
+let ts_left_insert_column_double_icon_js = require("./left-insert-column-double-icon.js");
+let ts_left_tridiagonal_double_icon_js = require("./left-tridiagonal-double-icon.js");
+let ts_mistake_double_icon_js = require("./mistake-double-icon.js");
+let ts_no_color_double_icon_js = require("./no-color-double-icon.js");
+let ts_noninductive_double_icon_js = require("./noninductive-double-icon.js");
+let ts_outer_border_double_icon_js = require("./outer-border-double-icon.js");
+let ts_paint_bucket_double_icon_js = require("./paint-bucket-double-icon.js");
+let ts_paste_special_double_icon_js = require("./paste-special-double-icon.js");
+let ts_point_color_double_icon_js = require("./point-color-double-icon.js");
+let ts_progress_0_double_icon_js = require("./progress-0-double-icon.js");
+let ts_progress_100_double_icon_js = require("./progress-100-double-icon.js");
+let ts_progress_25_double_icon_js = require("./progress-25-double-icon.js");
+let ts_progress_50_double_icon_js = require("./progress-50-double-icon.js");
+let ts_progress_75_double_icon_js = require("./progress-75-double-icon.js");
+let ts_reduce_double_icon_js = require("./reduce-double-icon.js");
+let ts_right_border_double_icon_js = require("./right-border-double-icon.js");
+let ts_right_double_diagonal_double_icon_js = require("./right-double-diagonal-double-icon.js");
+let ts_right_insert_column_double_icon_js = require("./right-insert-column-double-icon.js");
+let ts_shape_background_color_double_icon_js = require("./shape-background-color-double-icon.js");
+let ts_shape_stroke_color_double_icon_js = require("./shape-stroke-color-double-icon.js");
+let ts_signal_0_double_icon_js = require("./signal-0-double-icon.js");
+let ts_signal_100_double_icon_js = require("./signal-100-double-icon.js");
+let ts_signal_25_double_icon_js = require("./signal-25-double-icon.js");
+let ts_signal_50_double_icon_js = require("./signal-50-double-icon.js");
+let ts_signal_75_double_icon_js = require("./signal-75-double-icon.js");
+let ts_slash_double_icon_js = require("./slash-double-icon.js");
+let ts_smile_double_icon_js = require("./smile-double-icon.js");
+let ts_star_empty_double_icon_js = require("./star-empty-double-icon.js");
+let ts_star_full_double_icon_js = require("./star-full-double-icon.js");
+let ts_star_incomplete_double_icon_js = require("./star-incomplete-double-icon.js");
+let ts_todo_list_double_icon_js = require("./todo-list-double-icon.js");
+let ts_up_border_double_icon_js = require("./up-border-double-icon.js");
+let ts_vertical_border_double_icon_js = require("./vertical-border-double-icon.js");
+let ts_warn_double_icon_js = require("./warn-double-icon.js");
+Object.defineProperty(exports, "AIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_a_icon_js.AIcon;
+	}
+});
+Object.defineProperty(exports, "ActivityIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_activity_icon_js.ActivityIcon;
+	}
+});
+Object.defineProperty(exports, "AddDigitsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_add_digits_icon_js.AddDigitsIcon;
+	}
+});
+Object.defineProperty(exports, "AddImageIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_add_image_icon_js.AddImageIcon;
+	}
+});
+Object.defineProperty(exports, "AddNoteIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_add_note_icon_js.AddNoteIcon;
+	}
+});
+Object.defineProperty(exports, "AdditionAndSubtractionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_addition_and_subtraction_icon_js.AdditionAndSubtractionIcon;
+	}
+});
+Object.defineProperty(exports, "AdjustHeightDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_adjust_height_double_icon_js.AdjustHeightDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "AdjustWidthDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_adjust_width_double_icon_js.AdjustWidthDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "AiAssistantMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_ai_assistant_multi_icon_js.AiAssistantMultiIcon;
+	}
+});
+Object.defineProperty(exports, "AlignBottomIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_align_bottom_icon_js.AlignBottomIcon;
+	}
+});
+Object.defineProperty(exports, "AlignTextBothIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_align_text_both_icon_js.AlignTextBothIcon;
+	}
+});
+Object.defineProperty(exports, "AlignTopIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_align_top_icon_js.AlignTopIcon;
+	}
+});
+Object.defineProperty(exports, "AllBorderIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_all_border_icon_js.AllBorderIcon;
+	}
+});
+Object.defineProperty(exports, "AmplifyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_amplify_icon_js.AmplifyIcon;
+	}
+});
+Object.defineProperty(exports, "AreaChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_area_chart_icon_js.AreaChartIcon;
+	}
+});
+Object.defineProperty(exports, "ArrowDownIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_arrow_down_icon_js.ArrowDownIcon;
+	}
+});
+Object.defineProperty(exports, "ArrowLeftIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_arrow_left_icon_js.ArrowLeftIcon;
+	}
+});
+Object.defineProperty(exports, "ArrowRightIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_arrow_right_icon_js.ArrowRightIcon;
+	}
+});
+Object.defineProperty(exports, "ArrowTiltDownIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_arrow_tilt_down_icon_js.ArrowTiltDownIcon;
+	}
+});
+Object.defineProperty(exports, "ArrowTiltUpIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_arrow_tilt_up_icon_js.ArrowTiltUpIcon;
+	}
+});
+Object.defineProperty(exports, "ArrowUpIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_arrow_up_icon_js.ArrowUpIcon;
+	}
+});
+Object.defineProperty(exports, "AscendingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_ascending_icon_js.AscendingIcon;
+	}
+});
+Object.defineProperty(exports, "AutoHeightDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_auto_height_double_icon_js.AutoHeightDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "AutoWidthDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_auto_width_double_icon_js.AutoWidthDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "AutofillDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_autofill_double_icon_js.AutofillDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "AutowrapIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_autowrap_icon_js.AutowrapIcon;
+	}
+});
+Object.defineProperty(exports, "BackSlashDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_back_slash_double_icon_js.BackSlashDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "BanIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_ban_icon_js.BanIcon;
+	}
+});
+Object.defineProperty(exports, "BarChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_bar_chart_icon_js.BarChartIcon;
+	}
+});
+Object.defineProperty(exports, "BasesAppIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_bases_app_icon_js.BasesAppIcon;
+	}
+});
+Object.defineProperty(exports, "BasesMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_bases_multi_icon_js.BasesMultiIcon;
+	}
+});
+Object.defineProperty(exports, "BoardsAppIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_boards_app_icon_js.BoardsAppIcon;
+	}
+});
+Object.defineProperty(exports, "BoardsMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_boards_multi_icon_js.BoardsMultiIcon;
+	}
+});
+Object.defineProperty(exports, "BoldIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_bold_icon_js.BoldIcon;
+	}
+});
+Object.defineProperty(exports, "BottomIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_bottom_icon_js.BottomIcon;
+	}
+});
+Object.defineProperty(exports, "BoxplotIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_boxplot_icon_js.BoxplotIcon;
+	}
+});
+Object.defineProperty(exports, "BrushIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_brush_icon_js.BrushIcon;
+	}
+});
+Object.defineProperty(exports, "BubbleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_bubble_icon_js.BubbleIcon;
+	}
+});
+Object.defineProperty(exports, "CalendarIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_calendar_icon_js.CalendarIcon;
+	}
+});
+Object.defineProperty(exports, "CalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_callout_icon_js.CalloutIcon;
+	}
+});
+Object.defineProperty(exports, "CancelFreezeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cancel_freeze_icon_js.CancelFreezeIcon;
+	}
+});
+Object.defineProperty(exports, "CancelMergeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cancel_merge_icon_js.CancelMergeIcon;
+	}
+});
+Object.defineProperty(exports, "CandlestickChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_candlestick_chart_icon_js.CandlestickChartIcon;
+	}
+});
+Object.defineProperty(exports, "CatalogueIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_catalogue_icon_js.CatalogueIcon;
+	}
+});
+Object.defineProperty(exports, "Cell0DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cell_0_double_icon_js.Cell0DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Cell100DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cell_100_double_icon_js.Cell100DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Cell25DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cell_25_double_icon_js.Cell25DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Cell50DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cell_50_double_icon_js.Cell50DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Cell75DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cell_75_double_icon_js.Cell75DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_chart_icon_js.ChartIcon;
+	}
+});
+Object.defineProperty(exports, "CheckMarkIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_check_mark_icon_js.CheckMarkIcon;
+	}
+});
+Object.defineProperty(exports, "CheckboxIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_checkbox_icon_js.CheckboxIcon;
+	}
+});
+Object.defineProperty(exports, "ChordChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_chord_chart_icon_js.ChordChartIcon;
+	}
+});
+Object.defineProperty(exports, "ClassDiagramClassIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_class_diagram_class_icon_js.ClassDiagramClassIcon;
+	}
+});
+Object.defineProperty(exports, "ClassDiagramDashedFilledArrowConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_class_diagram_dashed_filled_arrow_connector_icon_js.ClassDiagramDashedFilledArrowConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ClassDiagramDashedOpenArrowConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_class_diagram_dashed_open_arrow_connector_icon_js.ClassDiagramDashedOpenArrowConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ClassDiagramFilledArrowConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_class_diagram_filled_arrow_connector_icon_js.ClassDiagramFilledArrowConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ClassDiagramFilledDiamondConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_class_diagram_filled_diamond_connector_icon_js.ClassDiagramFilledDiamondConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ClassDiagramHollowDiamondConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_class_diagram_hollow_diamond_connector_icon_js.ClassDiagramHollowDiamondConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ClassDiagramInterfaceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_class_diagram_interface_icon_js.ClassDiagramInterfaceIcon;
+	}
+});
+Object.defineProperty(exports, "ClearFormatDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_clear_format_double_icon_js.ClearFormatDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ClockIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_clock_icon_js.ClockIcon;
+	}
+});
+Object.defineProperty(exports, "CloseIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_close_icon_js.CloseIcon;
+	}
+});
+Object.defineProperty(exports, "CloudOutlineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cloud_outline_icon_js.CloudOutlineIcon;
+	}
+});
+Object.defineProperty(exports, "CodeBlockIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_code_block_icon_js.CodeBlockIcon;
+	}
+});
+Object.defineProperty(exports, "CodeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_code_icon_js.CodeIcon;
+	}
+});
+Object.defineProperty(exports, "ColorWheelMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_color_wheel_multi_icon_js.ColorWheelMultiIcon;
+	}
+});
+Object.defineProperty(exports, "ColumnChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_column_chart_icon_js.ColumnChartIcon;
+	}
+});
+Object.defineProperty(exports, "ColumnIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_column_icon_js.ColumnIcon;
+	}
+});
+Object.defineProperty(exports, "ColumnSparklineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_column_sparkline_icon_js.ColumnSparklineIcon;
+	}
+});
+Object.defineProperty(exports, "ComboChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_combo_chart_icon_js.ComboChartIcon;
+	}
+});
+Object.defineProperty(exports, "CommentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_comment_icon_js.CommentIcon;
+	}
+});
+Object.defineProperty(exports, "ComponentDiagramAssemblyConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_component_diagram_assembly_connector_icon_js.ComponentDiagramAssemblyConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ComponentDiagramComponentBoxIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_component_diagram_component_box_icon_js.ComponentDiagramComponentBoxIcon;
+	}
+});
+Object.defineProperty(exports, "ComponentDiagramComponentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_component_diagram_component_icon_js.ComponentDiagramComponentIcon;
+	}
+});
+Object.defineProperty(exports, "ComponentDiagramProvidedInterfaceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_component_diagram_provided_interface_icon_js.ComponentDiagramProvidedInterfaceIcon;
+	}
+});
+Object.defineProperty(exports, "ComponentDiagramRequiredInterfaceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_component_diagram_required_interface_icon_js.ComponentDiagramRequiredInterfaceIcon;
+	}
+});
+Object.defineProperty(exports, "ConditionalColorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_conditional_color_icon_js.ConditionalColorIcon;
+	}
+});
+Object.defineProperty(exports, "ConditionsDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_conditions_double_icon_js.ConditionsDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ConfigureTabIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_configure_tab_icon_js.ConfigureTabIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectionLineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connection_line_icon_js.ConnectionLineIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorBarCrowsFootMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_bar_crows_foot_marker_icon_js.ConnectorBarCrowsFootMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorBarMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_bar_marker_icon_js.ConnectorBarMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorCircleBarMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_circle_bar_marker_icon_js.ConnectorCircleBarMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorCircleCrowsFootMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_circle_crows_foot_marker_icon_js.ConnectorCircleCrowsFootMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorCircleMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_circle_marker_icon_js.ConnectorCircleMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorCrossMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_cross_marker_icon_js.ConnectorCrossMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorCrowsFootMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_crows_foot_marker_icon_js.ConnectorCrowsFootMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorFilledArrowMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_filled_arrow_marker_icon_js.ConnectorFilledArrowMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorFilledCircleMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_filled_circle_marker_icon_js.ConnectorFilledCircleMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorFilledDiamondMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_filled_diamond_marker_icon_js.ConnectorFilledDiamondMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorHollowDiamondMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_hollow_diamond_marker_icon_js.ConnectorHollowDiamondMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorHollowTriangleMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_hollow_triangle_marker_icon_js.ConnectorHollowTriangleMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorNoneMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_none_marker_icon_js.ConnectorNoneMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorOpenArrowMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_open_arrow_marker_icon_js.ConnectorOpenArrowMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorRoundedElbowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_rounded_elbow_icon_js.ConnectorRoundedElbowIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorSwapMarkersIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_swap_markers_icon_js.ConnectorSwapMarkersIcon;
+	}
+});
+Object.defineProperty(exports, "ConnectorXMarkerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_connector_x_marker_icon_js.ConnectorXMarkerIcon;
+	}
+});
+Object.defineProperty(exports, "ConvertIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_convert_icon_js.ConvertIcon;
+	}
+});
+Object.defineProperty(exports, "ConvertToNumberIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_convert_to_number_icon_js.ConvertToNumberIcon;
+	}
+});
+Object.defineProperty(exports, "CopyDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_copy_double_icon_js.CopyDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "CopyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_copy_icon_js.CopyIcon;
+	}
+});
+Object.defineProperty(exports, "CorrectDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_correct_double_icon_js.CorrectDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "CreateCopyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_create_copy_icon_js.CreateCopyIcon;
+	}
+});
+Object.defineProperty(exports, "CropIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_crop_icon_js.CropIcon;
+	}
+});
+Object.defineProperty(exports, "CrossHighlightingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cross_highlighting_icon_js.CrossHighlightingIcon;
+	}
+});
+Object.defineProperty(exports, "CrossIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cross_icon_js.CrossIcon;
+	}
+});
+Object.defineProperty(exports, "CursorsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cursors_icon_js.CursorsIcon;
+	}
+});
+Object.defineProperty(exports, "CustomSortIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_custom_sort_icon_js.CustomSortIcon;
+	}
+});
+Object.defineProperty(exports, "CutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_cut_icon_js.CutIcon;
+	}
+});
+Object.defineProperty(exports, "DataBarIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_bar_icon_js.DataBarIcon;
+	}
+});
+Object.defineProperty(exports, "DataFlowCircleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_flow_circle_icon_js.DataFlowCircleIcon;
+	}
+});
+Object.defineProperty(exports, "DataFlowDataStorage1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_flow_data_storage1_icon_js.DataFlowDataStorage1Icon;
+	}
+});
+Object.defineProperty(exports, "DataFlowDataStorage2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_flow_data_storage2_icon_js.DataFlowDataStorage2Icon;
+	}
+});
+Object.defineProperty(exports, "DataFlowDataStorage3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_flow_data_storage3_icon_js.DataFlowDataStorage3Icon;
+	}
+});
+Object.defineProperty(exports, "DataFlowRoundedRectangleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_flow_rounded_rectangle_icon_js.DataFlowRoundedRectangleIcon;
+	}
+});
+Object.defineProperty(exports, "DataFlowRoundedSquareIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_flow_rounded_square_icon_js.DataFlowRoundedSquareIcon;
+	}
+});
+Object.defineProperty(exports, "DataValidationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_data_validation_icon_js.DataValidationIcon;
+	}
+});
+Object.defineProperty(exports, "DatabaseFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_database_function_icon_js.DatabaseFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "DatabaseIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_database_icon_js.DatabaseIcon;
+	}
+});
+Object.defineProperty(exports, "DateFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_date_function_icon_js.DateFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "DatePickerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_date_picker_icon_js.DatePickerIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteCellMoveDownDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_cell_move_down_double_icon_js.DeleteCellMoveDownDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteCellShiftLeftDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_cell_shift_left_double_icon_js.DeleteCellShiftLeftDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteCellShiftRightDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_cell_shift_right_double_icon_js.DeleteCellShiftRightDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteCellShiftUpDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_cell_shift_up_double_icon_js.DeleteCellShiftUpDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteColumnDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_column_double_icon_js.DeleteColumnDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteEmptyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_empty_icon_js.DeleteEmptyIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_icon_js.DeleteIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteNoteIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_note_icon_js.DeleteNoteIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteRowDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_row_double_icon_js.DeleteRowDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DeleteTableDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_delete_table_double_icon_js.DeleteTableDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DescendingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_descending_icon_js.DescendingIcon;
+	}
+});
+Object.defineProperty(exports, "DirectExportIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_direct_export_icon_js.DirectExportIcon;
+	}
+});
+Object.defineProperty(exports, "DissatisfiedDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_dissatisfied_double_icon_js.DissatisfiedDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DividerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_divider_icon_js.DividerIcon;
+	}
+});
+Object.defineProperty(exports, "DocSettingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_doc_setting_icon_js.DocSettingIcon;
+	}
+});
+Object.defineProperty(exports, "DocsAppIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_docs_app_icon_js.DocsAppIcon;
+	}
+});
+Object.defineProperty(exports, "DocsMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_docs_multi_icon_js.DocsMultiIcon;
+	}
+});
+Object.defineProperty(exports, "DollarIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_dollar_icon_js.DollarIcon;
+	}
+});
+Object.defineProperty(exports, "DongIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_dong_icon_js.DongIcon;
+	}
+});
+Object.defineProperty(exports, "DownBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_down_border_double_icon_js.DownBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "DownIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_down_icon_js.DownIcon;
+	}
+});
+Object.defineProperty(exports, "DownloadIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_download_icon_js.DownloadIcon;
+	}
+});
+Object.defineProperty(exports, "DownloadImageIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_download_image_icon_js.DownloadImageIcon;
+	}
+});
+Object.defineProperty(exports, "DropdownListIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_dropdown_list_icon_js.DropdownListIcon;
+	}
+});
+Object.defineProperty(exports, "EngineeringFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_engineering_function_icon_js.EngineeringFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "EntityRelationshipEntityIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_entity_relationship_entity_icon_js.EntityRelationshipEntityIcon;
+	}
+});
+Object.defineProperty(exports, "EntityRelationshipFieldTypeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_entity_relationship_field_type_icon_js.EntityRelationshipFieldTypeIcon;
+	}
+});
+Object.defineProperty(exports, "EntityRelationshipFullIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_entity_relationship_full_icon_js.EntityRelationshipFullIcon;
+	}
+});
+Object.defineProperty(exports, "EntityRelationshipKeyFieldIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_entity_relationship_key_field_icon_js.EntityRelationshipKeyFieldIcon;
+	}
+});
+Object.defineProperty(exports, "ErrorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_error_icon_js.ErrorIcon;
+	}
+});
+Object.defineProperty(exports, "EuroIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_euro_icon_js.EuroIcon;
+	}
+});
+Object.defineProperty(exports, "ExclamationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_exclamation_icon_js.ExclamationIcon;
+	}
+});
+Object.defineProperty(exports, "ExpandAscendingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_expand_ascending_icon_js.ExpandAscendingIcon;
+	}
+});
+Object.defineProperty(exports, "ExpandDescendingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_expand_descending_icon_js.ExpandDescendingIcon;
+	}
+});
+Object.defineProperty(exports, "ExpandIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_expand_icon_js.ExpandIcon;
+	}
+});
+Object.defineProperty(exports, "ExponentialIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_exponential_icon_js.ExponentialIcon;
+	}
+});
+Object.defineProperty(exports, "ExportIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_export_icon_js.ExportIcon;
+	}
+});
+Object.defineProperty(exports, "EyeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_eye_icon_js.EyeIcon;
+	}
+});
+Object.defineProperty(exports, "EyelashIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_eyelash_icon_js.EyelashIcon;
+	}
+});
+Object.defineProperty(exports, "FeatureSearchIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_feature_search_icon_js.FeatureSearchIcon;
+	}
+});
+Object.defineProperty(exports, "FilterIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_filter_icon_js.FilterIcon;
+	}
+});
+Object.defineProperty(exports, "FinancialFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_financial_function_icon_js.FinancialFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "FirstTabIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_first_tab_icon_js.FirstTabIcon;
+	}
+});
+Object.defineProperty(exports, "FlagIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_flag_icon_js.FlagIcon;
+	}
+});
+Object.defineProperty(exports, "FlipHorizontalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_flip_horizontal_icon_js.FlipHorizontalIcon;
+	}
+});
+Object.defineProperty(exports, "FlipVerticalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_flip_vertical_icon_js.FlipVerticalIcon;
+	}
+});
+Object.defineProperty(exports, "FolderIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_folder_icon_js.FolderIcon;
+	}
+});
+Object.defineProperty(exports, "FontColorDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_font_color_double_icon_js.FontColorDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "FontSizeIncreaseIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_font_size_increase_icon_js.FontSizeIncreaseIcon;
+	}
+});
+Object.defineProperty(exports, "FontSizeReduceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_font_size_reduce_icon_js.FontSizeReduceIcon;
+	}
+});
+Object.defineProperty(exports, "FoodsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_foods_icon_js.FoodsIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaAccentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_accent_icon_js.FormulaAccentIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaBracketIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_bracket_icon_js.FormulaBracketIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaFractionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_fraction_icon_js.FormulaFractionIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_function_icon_js.FormulaFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaIntegralIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_integral_icon_js.FormulaIntegralIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaLargeOperatorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_large_operator_icon_js.FormulaLargeOperatorIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaLimitLogarithmIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_limit_logarithm_icon_js.FormulaLimitLogarithmIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaMatrixIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_matrix_icon_js.FormulaMatrixIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaOperatorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_operator_icon_js.FormulaOperatorIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaRadicalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_radical_icon_js.FormulaRadicalIcon;
+	}
+});
+Object.defineProperty(exports, "FormulaScriptIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_formula_script_icon_js.FormulaScriptIcon;
+	}
+});
+Object.defineProperty(exports, "FountainPenIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_fountain_pen_icon_js.FountainPenIcon;
+	}
+});
+Object.defineProperty(exports, "FreezeColumnIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_freeze_column_icon_js.FreezeColumnIcon;
+	}
+});
+Object.defineProperty(exports, "FreezeRowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_freeze_row_icon_js.FreezeRowIcon;
+	}
+});
+Object.defineProperty(exports, "FreezeToSelectedIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_freeze_to_selected_icon_js.FreezeToSelectedIcon;
+	}
+});
+Object.defineProperty(exports, "FunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_function_icon_js.FunctionIcon;
+	}
+});
+Object.defineProperty(exports, "FunnelIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_funnel_icon_js.FunnelIcon;
+	}
+});
+Object.defineProperty(exports, "FxIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_fx_icon_js.FxIcon;
+	}
+});
+Object.defineProperty(exports, "GaugeChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_gauge_chart_icon_js.GaugeChartIcon;
+	}
+});
+Object.defineProperty(exports, "GraphIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_graph_icon_js.GraphIcon;
+	}
+});
+Object.defineProperty(exports, "GridIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_grid_icon_js.GridIcon;
+	}
+});
+Object.defineProperty(exports, "GridOutlineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_grid_outline_icon_js.GridOutlineIcon;
+	}
+});
+Object.defineProperty(exports, "GripHorizontalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_grip_horizontal_icon_js.GripHorizontalIcon;
+	}
+});
+Object.defineProperty(exports, "GripVerticalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_grip_vertical_icon_js.GripVerticalIcon;
+	}
+});
+Object.defineProperty(exports, "GroupIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_group_icon_js.GroupIcon;
+	}
+});
+Object.defineProperty(exports, "GroupSparklineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_group_sparkline_icon_js.GroupSparklineIcon;
+	}
+});
+Object.defineProperty(exports, "GroupingDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_grouping_double_icon_js.GroupingDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "GuffawDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_guffaw_double_icon_js.GuffawDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "H1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_h1_icon_js.H1Icon;
+	}
+});
+Object.defineProperty(exports, "H2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_h2_icon_js.H2Icon;
+	}
+});
+Object.defineProperty(exports, "H3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_h3_icon_js.H3Icon;
+	}
+});
+Object.defineProperty(exports, "H4Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_h4_icon_js.H4Icon;
+	}
+});
+Object.defineProperty(exports, "H5Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_h5_icon_js.H5Icon;
+	}
+});
+Object.defineProperty(exports, "H6Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_h6_icon_js.H6Icon;
+	}
+});
+Object.defineProperty(exports, "HandIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_hand_icon_js.HandIcon;
+	}
+});
+Object.defineProperty(exports, "HeaderFooterIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_header_footer_icon_js.HeaderFooterIcon;
+	}
+});
+Object.defineProperty(exports, "HeatmapIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_heatmap_icon_js.HeatmapIcon;
+	}
+});
+Object.defineProperty(exports, "HelpIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_help_icon_js.HelpIcon;
+	}
+});
+Object.defineProperty(exports, "HideDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_hide_double_icon_js.HideDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "HideGridlinesIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_hide_gridlines_icon_js.HideGridlinesIcon;
+	}
+});
+Object.defineProperty(exports, "HideNoteIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_hide_note_icon_js.HideNoteIcon;
+	}
+});
+Object.defineProperty(exports, "HistogramChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_histogram_chart_icon_js.HistogramChartIcon;
+	}
+});
+Object.defineProperty(exports, "HistoryIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_history_icon_js.HistoryIcon;
+	}
+});
+Object.defineProperty(exports, "HomeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_home_icon_js.HomeIcon;
+	}
+});
+Object.defineProperty(exports, "HorizontalBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_horizontal_border_double_icon_js.HorizontalBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "HorizontalMergeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_horizontal_merge_icon_js.HorizontalMergeIcon;
+	}
+});
+Object.defineProperty(exports, "HorizontallyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_horizontally_icon_js.HorizontallyIcon;
+	}
+});
+Object.defineProperty(exports, "ImpatientDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_impatient_double_icon_js.ImpatientDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ImportIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_import_icon_js.ImportIcon;
+	}
+});
+Object.defineProperty(exports, "IncreaseIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_increase_icon_js.IncreaseIcon;
+	}
+});
+Object.defineProperty(exports, "IndicateDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_indicate_double_icon_js.IndicateDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InfoIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_info_icon_js.InfoIcon;
+	}
+});
+Object.defineProperty(exports, "InformationFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_information_function_icon_js.InformationFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "InnerBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_inner_border_double_icon_js.InnerBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InsertCellDownDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_cell_down_double_icon_js.InsertCellDownDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InsertCellShiftRightDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_cell_shift_right_double_icon_js.InsertCellShiftRightDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InsertCommentDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_comment_double_icon_js.InsertCommentDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InsertDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_double_icon_js.InsertDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InsertIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_icon_js.InsertIcon;
+	}
+});
+Object.defineProperty(exports, "InsertLinkDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_link_double_icon_js.InsertLinkDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InsertRowAboveDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_row_above_double_icon_js.InsertRowAboveDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "InsertRowBelowDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_insert_row_below_double_icon_js.InsertRowBelowDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ItalicIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_italic_icon_js.ItalicIcon;
+	}
+});
+Object.defineProperty(exports, "KeyboardIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_keyboard_icon_js.KeyboardIcon;
+	}
+});
+Object.defineProperty(exports, "LeftBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_left_border_double_icon_js.LeftBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "LeftDoubleDiagonalDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_left_double_diagonal_double_icon_js.LeftDoubleDiagonalDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "LeftInsertColumnDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_left_insert_column_double_icon_js.LeftInsertColumnDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "LeftJustifyingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_left_justifying_icon_js.LeftJustifyingIcon;
+	}
+});
+Object.defineProperty(exports, "LeftRotationFortyFiveDegreesIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_left_rotation_forty_five_degrees_icon_js.LeftRotationFortyFiveDegreesIcon;
+	}
+});
+Object.defineProperty(exports, "LeftRotationNinetyDegreesIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_left_rotation_ninety_degrees_icon_js.LeftRotationNinetyDegreesIcon;
+	}
+});
+Object.defineProperty(exports, "LeftTridiagonalDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_left_tridiagonal_double_icon_js.LeftTridiagonalDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "LineChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_chart_icon_js.LineChartIcon;
+	}
+});
+Object.defineProperty(exports, "LineDashedNoneIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_dashed_none_icon_js.LineDashedNoneIcon;
+	}
+});
+Object.defineProperty(exports, "LineDoubleOpenArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_double_open_arrow_icon_js.LineDoubleOpenArrowIcon;
+	}
+});
+Object.defineProperty(exports, "LineIndentDecreaseIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_indent_decrease_icon_js.LineIndentDecreaseIcon;
+	}
+});
+Object.defineProperty(exports, "LineIndentIncreaseIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_indent_increase_icon_js.LineIndentIncreaseIcon;
+	}
+});
+Object.defineProperty(exports, "LineNoneIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_none_icon_js.LineNoneIcon;
+	}
+});
+Object.defineProperty(exports, "LineOpenArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_open_arrow_icon_js.LineOpenArrowIcon;
+	}
+});
+Object.defineProperty(exports, "LineSparklineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_line_sparkline_icon_js.LineSparklineIcon;
+	}
+});
+Object.defineProperty(exports, "LinearIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_linear_icon_js.LinearIcon;
+	}
+});
+Object.defineProperty(exports, "LinkIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_link_icon_js.LinkIcon;
+	}
+});
+Object.defineProperty(exports, "LiveShareIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_live_share_icon_js.LiveShareIcon;
+	}
+});
+Object.defineProperty(exports, "LoadingMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_loading_multi_icon_js.LoadingMultiIcon;
+	}
+});
+Object.defineProperty(exports, "LocateFixedIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_locate_fixed_icon_js.LocateFixedIcon;
+	}
+});
+Object.defineProperty(exports, "LockIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_lock_icon_js.LockIcon;
+	}
+});
+Object.defineProperty(exports, "LogarithmicIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_logarithmic_icon_js.LogarithmicIcon;
+	}
+});
+Object.defineProperty(exports, "LogicalFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_logical_function_icon_js.LogicalFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "LookupFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_lookup_function_icon_js.LookupFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "MathFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_math_function_icon_js.MathFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "MenuIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_menu_icon_js.MenuIcon;
+	}
+});
+Object.defineProperty(exports, "MergeAllIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_merge_all_icon_js.MergeAllIcon;
+	}
+});
+Object.defineProperty(exports, "MermaidDiagramIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_mermaid_diagram_icon_js.MermaidDiagramIcon;
+	}
+});
+Object.defineProperty(exports, "MindMapIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_mind_map_icon_js.MindMapIcon;
+	}
+});
+Object.defineProperty(exports, "MistakeDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_mistake_double_icon_js.MistakeDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "MoreDownIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_more_down_icon_js.MoreDownIcon;
+	}
+});
+Object.defineProperty(exports, "MoreHorizontalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_more_horizontal_icon_js.MoreHorizontalIcon;
+	}
+});
+Object.defineProperty(exports, "MoreLeftIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_more_left_icon_js.MoreLeftIcon;
+	}
+});
+Object.defineProperty(exports, "MoreRightIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_more_right_icon_js.MoreRightIcon;
+	}
+});
+Object.defineProperty(exports, "MoreUpIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_more_up_icon_js.MoreUpIcon;
+	}
+});
+Object.defineProperty(exports, "MoreVerticalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_more_vertical_icon_js.MoreVerticalIcon;
+	}
+});
+Object.defineProperty(exports, "MoveDownIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_move_down_icon_js.MoveDownIcon;
+	}
+});
+Object.defineProperty(exports, "MoveUpIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_move_up_icon_js.MoveUpIcon;
+	}
+});
+Object.defineProperty(exports, "MovingAverageIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_moving_average_icon_js.MovingAverageIcon;
+	}
+});
+Object.defineProperty(exports, "NatureIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_nature_icon_js.NatureIcon;
+	}
+});
+Object.defineProperty(exports, "NoBorderIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_no_border_icon_js.NoBorderIcon;
+	}
+});
+Object.defineProperty(exports, "NoColorDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_no_color_double_icon_js.NoColorDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "NoRotationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_no_rotation_icon_js.NoRotationIcon;
+	}
+});
+Object.defineProperty(exports, "NoninductiveDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_noninductive_double_icon_js.NoninductiveDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "NumberIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_number_icon_js.NumberIcon;
+	}
+});
+Object.defineProperty(exports, "ObjectLayersIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_object_layers_icon_js.ObjectLayersIcon;
+	}
+});
+Object.defineProperty(exports, "ObjectsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_objects_icon_js.ObjectsIcon;
+	}
+});
+Object.defineProperty(exports, "OffLineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_off_line_icon_js.OffLineIcon;
+	}
+});
+Object.defineProperty(exports, "OnLineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_on_line_icon_js.OnLineIcon;
+	}
+});
+Object.defineProperty(exports, "OneToOneIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_one_to_one_icon_js.OneToOneIcon;
+	}
+});
+Object.defineProperty(exports, "OrderIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_order_icon_js.OrderIcon;
+	}
+});
+Object.defineProperty(exports, "OuterBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_outer_border_double_icon_js.OuterBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "OverflowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_overflow_icon_js.OverflowIcon;
+	}
+});
+Object.defineProperty(exports, "PaintBucketDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_paint_bucket_double_icon_js.PaintBucketDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "PaintIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_paint_icon_js.PaintIcon;
+	}
+});
+Object.defineProperty(exports, "PasteSpecialDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_paste_special_double_icon_js.PasteSpecialDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "PdfAppIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_pdf_app_icon_js.PdfAppIcon;
+	}
+});
+Object.defineProperty(exports, "PdfHighlightIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_pdf_highlight_icon_js.PdfHighlightIcon;
+	}
+});
+Object.defineProperty(exports, "PdfMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_pdf_multi_icon_js.PdfMultiIcon;
+	}
+});
+Object.defineProperty(exports, "PenIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_pen_icon_js.PenIcon;
+	}
+});
+Object.defineProperty(exports, "PeopleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_people_icon_js.PeopleIcon;
+	}
+});
+Object.defineProperty(exports, "PercentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_percent_icon_js.PercentIcon;
+	}
+});
+Object.defineProperty(exports, "PieChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_pie_chart_icon_js.PieChartIcon;
+	}
+});
+Object.defineProperty(exports, "PipingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_piping_icon_js.PipingIcon;
+	}
+});
+Object.defineProperty(exports, "PivotTableIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_pivot_table_icon_js.PivotTableIcon;
+	}
+});
+Object.defineProperty(exports, "PlacesIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_places_icon_js.PlacesIcon;
+	}
+});
+Object.defineProperty(exports, "PointColorDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_point_color_double_icon_js.PointColorDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "PolynomialIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_polynomial_icon_js.PolynomialIcon;
+	}
+});
+Object.defineProperty(exports, "PowerLineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_power_line_icon_js.PowerLineIcon;
+	}
+});
+Object.defineProperty(exports, "PreciseSelectionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_precise_selection_icon_js.PreciseSelectionIcon;
+	}
+});
+Object.defineProperty(exports, "PrintIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_print_icon_js.PrintIcon;
+	}
+});
+Object.defineProperty(exports, "Progress0DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_progress_0_double_icon_js.Progress0DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Progress100DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_progress_100_double_icon_js.Progress100DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Progress25DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_progress_25_double_icon_js.Progress25DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Progress50DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_progress_50_double_icon_js.Progress50DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Progress75DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_progress_75_double_icon_js.Progress75DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ProtectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_protect_icon_js.ProtectIcon;
+	}
+});
+Object.defineProperty(exports, "QuickAddIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_quick_add_icon_js.QuickAddIcon;
+	}
+});
+Object.defineProperty(exports, "QuoteIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_quote_icon_js.QuoteIcon;
+	}
+});
+Object.defineProperty(exports, "RadarChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_radar_chart_icon_js.RadarChartIcon;
+	}
+});
+Object.defineProperty(exports, "RandomIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_random_icon_js.RandomIcon;
+	}
+});
+Object.defineProperty(exports, "RatingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_rating_icon_js.RatingIcon;
+	}
+});
+Object.defineProperty(exports, "RecentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_recent_icon_js.RecentIcon;
+	}
+});
+Object.defineProperty(exports, "RecordIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_record_icon_js.RecordIcon;
+	}
+});
+Object.defineProperty(exports, "RedoIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_redo_icon_js.RedoIcon;
+	}
+});
+Object.defineProperty(exports, "ReduceDigitsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_reduce_digits_icon_js.ReduceDigitsIcon;
+	}
+});
+Object.defineProperty(exports, "ReduceDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_reduce_double_icon_js.ReduceDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ReduceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_reduce_icon_js.ReduceIcon;
+	}
+});
+Object.defineProperty(exports, "RelationshipIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_relationship_icon_js.RelationshipIcon;
+	}
+});
+Object.defineProperty(exports, "RenameIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_rename_icon_js.RenameIcon;
+	}
+});
+Object.defineProperty(exports, "ReplyToCommentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_reply_to_comment_icon_js.ReplyToCommentIcon;
+	}
+});
+Object.defineProperty(exports, "ResourcesIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_resources_icon_js.ResourcesIcon;
+	}
+});
+Object.defineProperty(exports, "RestoreIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_restore_icon_js.RestoreIcon;
+	}
+});
+Object.defineProperty(exports, "RhomboidIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_rhomboid_icon_js.RhomboidIcon;
+	}
+});
+Object.defineProperty(exports, "RialIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_rial_icon_js.RialIcon;
+	}
+});
+Object.defineProperty(exports, "RightBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_right_border_double_icon_js.RightBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "RightDoubleDiagonalDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_right_double_diagonal_double_icon_js.RightDoubleDiagonalDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "RightInsertColumnDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_right_insert_column_double_icon_js.RightInsertColumnDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "RightJustifyingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_right_justifying_icon_js.RightJustifyingIcon;
+	}
+});
+Object.defineProperty(exports, "RightRotationFortyFiveDegreesIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_right_rotation_forty_five_degrees_icon_js.RightRotationFortyFiveDegreesIcon;
+	}
+});
+Object.defineProperty(exports, "RightRotationNinetyDegreesIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_right_rotation_ninety_degrees_icon_js.RightRotationNinetyDegreesIcon;
+	}
+});
+Object.defineProperty(exports, "RmbIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_rmb_icon_js.RmbIcon;
+	}
+});
+Object.defineProperty(exports, "RoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_rouble_icon_js.RoubleIcon;
+	}
+});
+Object.defineProperty(exports, "RoundnessIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_roundness_icon_js.RoundnessIcon;
+	}
+});
+Object.defineProperty(exports, "RowHeightExtraTallIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_row_height_extra_tall_icon_js.RowHeightExtraTallIcon;
+	}
+});
+Object.defineProperty(exports, "RowHeightMediumIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_row_height_medium_icon_js.RowHeightMediumIcon;
+	}
+});
+Object.defineProperty(exports, "RowHeightShortIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_row_height_short_icon_js.RowHeightShortIcon;
+	}
+});
+Object.defineProperty(exports, "RowHeightTallIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_row_height_tall_icon_js.RowHeightTallIcon;
+	}
+});
+Object.defineProperty(exports, "RowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_row_icon_js.RowIcon;
+	}
+});
+Object.defineProperty(exports, "RulerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_ruler_icon_js.RulerIcon;
+	}
+});
+Object.defineProperty(exports, "RupiahIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_rupiah_icon_js.RupiahIcon;
+	}
+});
+Object.defineProperty(exports, "SankeyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sankey_icon_js.SankeyIcon;
+	}
+});
+Object.defineProperty(exports, "ScatterChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_scatter_chart_icon_js.ScatterChartIcon;
+	}
+});
+Object.defineProperty(exports, "SearchIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_search_icon_js.SearchIcon;
+	}
+});
+Object.defineProperty(exports, "SelectRangeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_select_range_icon_js.SelectRangeIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceActivationBarIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_activation_bar_icon_js.SequenceActivationBarIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceActorLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_actor_lifeline_icon_js.SequenceActorLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceAlternativeFragmentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_alternative_fragment_icon_js.SequenceAlternativeFragmentIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceBoundaryLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_boundary_lifeline_icon_js.SequenceBoundaryLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceCollectionLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_collection_lifeline_icon_js.SequenceCollectionLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceControlLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_control_lifeline_icon_js.SequenceControlLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceDirectAccessStorageLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_direct_access_storage_lifeline_icon_js.SequenceDirectAccessStorageLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceEntityLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_entity_lifeline_icon_js.SequenceEntityLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceFragmentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_fragment_icon_js.SequenceFragmentIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceMagneticDiskLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_magnetic_disk_lifeline_icon_js.SequenceMagneticDiskLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "SequenceObjectLifelineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sequence_object_lifeline_icon_js.SequenceObjectLifelineIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeAccentBorderCallout1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_accent_border_callout1_icon_js.ShapeAccentBorderCallout1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeAccentBorderCallout2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_accent_border_callout2_icon_js.ShapeAccentBorderCallout2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeAccentBorderCallout3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_accent_border_callout3_icon_js.ShapeAccentBorderCallout3Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeAccentCallout1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_accent_callout1_icon_js.ShapeAccentCallout1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeAccentCallout2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_accent_callout2_icon_js.ShapeAccentCallout2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeAccentCallout3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_accent_callout3_icon_js.ShapeAccentCallout3Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonBackPreviousIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_back_previous_icon_js.ShapeActionButtonBackPreviousIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonBeginningIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_beginning_icon_js.ShapeActionButtonBeginningIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonBlankIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_blank_icon_js.ShapeActionButtonBlankIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonDocumentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_document_icon_js.ShapeActionButtonDocumentIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonEndIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_end_icon_js.ShapeActionButtonEndIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonForwardNextIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_forward_next_icon_js.ShapeActionButtonForwardNextIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonHelpIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_help_icon_js.ShapeActionButtonHelpIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonHomeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_home_icon_js.ShapeActionButtonHomeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonInformationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_information_icon_js.ShapeActionButtonInformationIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonMovieIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_movie_icon_js.ShapeActionButtonMovieIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonReturnIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_return_icon_js.ShapeActionButtonReturnIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeActionButtonSoundIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_action_button_sound_icon_js.ShapeActionButtonSoundIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeArcIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_arc_icon_js.ShapeArcIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeBackgroundColorDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_background_color_double_icon_js.ShapeBackgroundColorDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeBentArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_bent_arrow_icon_js.ShapeBentArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeBentConnector3Arrow1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_bent_connector3_arrow1_icon_js.ShapeBentConnector3Arrow1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeBentConnector3Arrow2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_bent_connector3_arrow2_icon_js.ShapeBentConnector3Arrow2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeBentConnector3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_bent_connector3_icon_js.ShapeBentConnector3Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeBentUpArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_bent_up_arrow_icon_js.ShapeBentUpArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeBevelIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_bevel_icon_js.ShapeBevelIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeBlockArcIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_block_arc_icon_js.ShapeBlockArcIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeBorderCallout1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_border_callout1_icon_js.ShapeBorderCallout1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeBorderCallout2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_border_callout2_icon_js.ShapeBorderCallout2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeBorderCallout3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_border_callout3_icon_js.ShapeBorderCallout3Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeBracePairIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_brace_pair_icon_js.ShapeBracePairIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeBracketPairIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_bracket_pair_icon_js.ShapeBracketPairIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCallout1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_callout1_icon_js.ShapeCallout1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeCallout2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_callout2_icon_js.ShapeCallout2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeCallout3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_callout3_icon_js.ShapeCallout3Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeCanIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_can_icon_js.ShapeCanIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeChartPlusIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_chart_plus_icon_js.ShapeChartPlusIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeChartStarIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_chart_star_icon_js.ShapeChartStarIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeChartXIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_chart_x_icon_js.ShapeChartXIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeChevronIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_chevron_icon_js.ShapeChevronIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeChordIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_chord_icon_js.ShapeChordIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCircularArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_circular_arrow_icon_js.ShapeCircularArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCloudCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_cloud_callout_icon_js.ShapeCloudCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCloudIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_cloud_icon_js.ShapeCloudIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCornerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_corner_icon_js.ShapeCornerIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCornerTabsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_corner_tabs_icon_js.ShapeCornerTabsIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCubeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_cube_icon_js.ShapeCubeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCurvedConnector3Arrow1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_curved_connector3_arrow1_icon_js.ShapeCurvedConnector3Arrow1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeCurvedConnector3Arrow2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_curved_connector3_arrow2_icon_js.ShapeCurvedConnector3Arrow2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeCurvedConnector3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_curved_connector3_icon_js.ShapeCurvedConnector3Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeCurvedDownArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_curved_down_arrow_icon_js.ShapeCurvedDownArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCurvedLeftArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_curved_left_arrow_icon_js.ShapeCurvedLeftArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCurvedRightArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_curved_right_arrow_icon_js.ShapeCurvedRightArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeCurvedUpArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_curved_up_arrow_icon_js.ShapeCurvedUpArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDecagonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_decagon_icon_js.ShapeDecagonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDiagStripeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_diag_stripe_icon_js.ShapeDiagStripeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDiamondIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_diamond_icon_js.ShapeDiamondIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDodecagonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_dodecagon_icon_js.ShapeDodecagonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDonutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_donut_icon_js.ShapeDonutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDoubleWaveIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_double_wave_icon_js.ShapeDoubleWaveIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDownArrowCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_down_arrow_callout_icon_js.ShapeDownArrowCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeDownArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_down_arrow_icon_js.ShapeDownArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeEllipseIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_ellipse_icon_js.ShapeEllipseIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeEllipseRibbon2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_ellipse_ribbon2_icon_js.ShapeEllipseRibbon2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeEllipseRibbonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_ellipse_ribbon_icon_js.ShapeEllipseRibbonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartAlternateProcessIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_alternate_process_icon_js.ShapeFlowChartAlternateProcessIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartCollateIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_collate_icon_js.ShapeFlowChartCollateIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_connector_icon_js.ShapeFlowChartConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartDecisionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_decision_icon_js.ShapeFlowChartDecisionIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartDelayIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_delay_icon_js.ShapeFlowChartDelayIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartDisplayIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_display_icon_js.ShapeFlowChartDisplayIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartDocumentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_document_icon_js.ShapeFlowChartDocumentIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartExtractIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_extract_icon_js.ShapeFlowChartExtractIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartInputOutputIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_input_output_icon_js.ShapeFlowChartInputOutputIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartInternalStorageIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_internal_storage_icon_js.ShapeFlowChartInternalStorageIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartMagneticDiskIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_magnetic_disk_icon_js.ShapeFlowChartMagneticDiskIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartMagneticDrumIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_magnetic_drum_icon_js.ShapeFlowChartMagneticDrumIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartMagneticTapeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_magnetic_tape_icon_js.ShapeFlowChartMagneticTapeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartManualInputIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_manual_input_icon_js.ShapeFlowChartManualInputIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartManualOperationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_manual_operation_icon_js.ShapeFlowChartManualOperationIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartMergeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_merge_icon_js.ShapeFlowChartMergeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartMultidocumentIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_multidocument_icon_js.ShapeFlowChartMultidocumentIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartOfflineStorageIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_offline_storage_icon_js.ShapeFlowChartOfflineStorageIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartOffpageConnectorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_offpage_connector_icon_js.ShapeFlowChartOffpageConnectorIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartOnlineStorageIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_online_storage_icon_js.ShapeFlowChartOnlineStorageIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartOrIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_or_icon_js.ShapeFlowChartOrIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartPredefinedProcessIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_predefined_process_icon_js.ShapeFlowChartPredefinedProcessIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartPreparationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_preparation_icon_js.ShapeFlowChartPreparationIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartProcessIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_process_icon_js.ShapeFlowChartProcessIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartPunchedCardIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_punched_card_icon_js.ShapeFlowChartPunchedCardIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartPunchedTapeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_punched_tape_icon_js.ShapeFlowChartPunchedTapeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartSortIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_sort_icon_js.ShapeFlowChartSortIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartSummingJunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_summing_junction_icon_js.ShapeFlowChartSummingJunctionIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFlowChartTerminatorIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_flow_chart_terminator_icon_js.ShapeFlowChartTerminatorIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFolderCornerIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_folder_corner_icon_js.ShapeFolderCornerIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFormatSettingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_format_setting_icon_js.ShapeFormatSettingIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFrameIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_frame_icon_js.ShapeFrameIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeFunnelIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_funnel_icon_js.ShapeFunnelIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeGear6Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_gear6_icon_js.ShapeGear6Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeGear9Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_gear9_icon_js.ShapeGear9Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeHalfFrameIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_half_frame_icon_js.ShapeHalfFrameIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeHeartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_heart_icon_js.ShapeHeartIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeHeptagonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_heptagon_icon_js.ShapeHeptagonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeHexagonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_hexagon_icon_js.ShapeHexagonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeHomePlateIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_home_plate_icon_js.ShapeHomePlateIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeHorizontalScrollIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_horizontal_scroll_icon_js.ShapeHorizontalScrollIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_icon_js.ShapeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeIrregularSeal1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_irregular_seal1_icon_js.ShapeIrregularSeal1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeIrregularSeal2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_irregular_seal2_icon_js.ShapeIrregularSeal2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftArrowCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_arrow_callout_icon_js.ShapeLeftArrowCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_arrow_icon_js.ShapeLeftArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftBraceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_brace_icon_js.ShapeLeftBraceIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftBracketIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_bracket_icon_js.ShapeLeftBracketIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftCircularArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_circular_arrow_icon_js.ShapeLeftCircularArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftRightArrowCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_right_arrow_callout_icon_js.ShapeLeftRightArrowCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftRightArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_right_arrow_icon_js.ShapeLeftRightArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftRightCircularArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_right_circular_arrow_icon_js.ShapeLeftRightCircularArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftRightRibbonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_right_ribbon_icon_js.ShapeLeftRightRibbonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftRightUpArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_right_up_arrow_icon_js.ShapeLeftRightUpArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLeftUpArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_left_up_arrow_icon_js.ShapeLeftUpArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLightningBoltIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_lightning_bolt_icon_js.ShapeLightningBoltIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_line_icon_js.ShapeLineIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeLineInvIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_line_inv_icon_js.ShapeLineInvIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeMathDivideIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_math_divide_icon_js.ShapeMathDivideIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeMathEqualIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_math_equal_icon_js.ShapeMathEqualIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeMathMinusIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_math_minus_icon_js.ShapeMathMinusIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeMathMultiplyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_math_multiply_icon_js.ShapeMathMultiplyIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeMathNotEqualIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_math_not_equal_icon_js.ShapeMathNotEqualIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeMathPlusIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_math_plus_icon_js.ShapeMathPlusIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeMoonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_moon_icon_js.ShapeMoonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeNoSmokingIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_no_smoking_icon_js.ShapeNoSmokingIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeNonIsoscelesTrapezoidIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_non_isosceles_trapezoid_icon_js.ShapeNonIsoscelesTrapezoidIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeNotchedRightArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_notched_right_arrow_icon_js.ShapeNotchedRightArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeOctagonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_octagon_icon_js.ShapeOctagonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeParallelogramIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_parallelogram_icon_js.ShapeParallelogramIcon;
+	}
+});
+Object.defineProperty(exports, "ShapePentagonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_pentagon_icon_js.ShapePentagonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapePieIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_pie_icon_js.ShapePieIcon;
+	}
+});
+Object.defineProperty(exports, "ShapePieWedgeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_pie_wedge_icon_js.ShapePieWedgeIcon;
+	}
+});
+Object.defineProperty(exports, "ShapePlaqueIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_plaque_icon_js.ShapePlaqueIcon;
+	}
+});
+Object.defineProperty(exports, "ShapePlaqueTabsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_plaque_tabs_icon_js.ShapePlaqueTabsIcon;
+	}
+});
+Object.defineProperty(exports, "ShapePlusIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_plus_icon_js.ShapePlusIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeQuadArrowCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_quad_arrow_callout_icon_js.ShapeQuadArrowCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeQuadArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_quad_arrow_icon_js.ShapeQuadArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_rect_icon_js.ShapeRectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRectTextboxHorizontalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_rect_textbox_horizontal_icon_js.ShapeRectTextboxHorizontalIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRectTextboxVerticalIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_rect_textbox_vertical_icon_js.ShapeRectTextboxVerticalIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRibbon2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_ribbon2_icon_js.ShapeRibbon2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeRibbonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_ribbon_icon_js.ShapeRibbonIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRightArrowCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_right_arrow_callout_icon_js.ShapeRightArrowCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRightArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_right_arrow_icon_js.ShapeRightArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRightBraceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_right_brace_icon_js.ShapeRightBraceIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRightBracketIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_right_bracket_icon_js.ShapeRightBracketIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRound1RectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_round1_rect_icon_js.ShapeRound1RectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRound2DiagRectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_round2_diag_rect_icon_js.ShapeRound2DiagRectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRound2SameRectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_round2_same_rect_icon_js.ShapeRound2SameRectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRoundRectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_round_rect_icon_js.ShapeRoundRectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeRtTriangleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_rt_triangle_icon_js.ShapeRtTriangleIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSmileyFaceIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_smiley_face_icon_js.ShapeSmileyFaceIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSnip1RectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_snip1_rect_icon_js.ShapeSnip1RectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSnip2DiagRectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_snip2_diag_rect_icon_js.ShapeSnip2DiagRectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSnip2SameRectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_snip2_same_rect_icon_js.ShapeSnip2SameRectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSnipRoundRectIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_snip_round_rect_icon_js.ShapeSnipRoundRectIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSquareTabsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_square_tabs_icon_js.ShapeSquareTabsIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar10Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star10_icon_js.ShapeStar10Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar12Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star12_icon_js.ShapeStar12Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar16Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star16_icon_js.ShapeStar16Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar24Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star24_icon_js.ShapeStar24Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar32Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star32_icon_js.ShapeStar32Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar4Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star4_icon_js.ShapeStar4Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar5Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star5_icon_js.ShapeStar5Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar6Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star6_icon_js.ShapeStar6Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar7Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star7_icon_js.ShapeStar7Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStar8Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_star8_icon_js.ShapeStar8Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStraightConnector1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_straight_connector1_icon_js.ShapeStraightConnector1Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStraightConnector2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_straight_connector2_icon_js.ShapeStraightConnector2Icon;
+	}
+});
+Object.defineProperty(exports, "ShapeStripedRightArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_striped_right_arrow_icon_js.ShapeStripedRightArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeStrokeColorDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_stroke_color_double_icon_js.ShapeStrokeColorDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSunIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_sun_icon_js.ShapeSunIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeSwooshArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_swoosh_arrow_icon_js.ShapeSwooshArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeTeardropIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_teardrop_icon_js.ShapeTeardropIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeTrapezoidIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_trapezoid_icon_js.ShapeTrapezoidIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeTriangleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_triangle_icon_js.ShapeTriangleIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeUpArrowCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_up_arrow_callout_icon_js.ShapeUpArrowCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeUpArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_up_arrow_icon_js.ShapeUpArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeUpDownArrowCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_up_down_arrow_callout_icon_js.ShapeUpDownArrowCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeUpDownArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_up_down_arrow_icon_js.ShapeUpDownArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeUturnArrowIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_uturn_arrow_icon_js.ShapeUturnArrowIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeVerticalScrollIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_vertical_scroll_icon_js.ShapeVerticalScrollIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeWaveIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_wave_icon_js.ShapeWaveIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeWedgeEllipseCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_wedge_ellipse_callout_icon_js.ShapeWedgeEllipseCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeWedgeRectCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_wedge_rect_callout_icon_js.ShapeWedgeRectCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShapeWedgeRoundRectCalloutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shape_wedge_round_rect_callout_icon_js.ShapeWedgeRoundRectCalloutIcon;
+	}
+});
+Object.defineProperty(exports, "ShareIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_share_icon_js.ShareIcon;
+	}
+});
+Object.defineProperty(exports, "ShareRangeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_share_range_icon_js.ShareRangeIcon;
+	}
+});
+Object.defineProperty(exports, "SheetIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sheet_icon_js.SheetIcon;
+	}
+});
+Object.defineProperty(exports, "SheetsAppIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sheets_app_icon_js.SheetsAppIcon;
+	}
+});
+Object.defineProperty(exports, "SheetsMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sheets_multi_icon_js.SheetsMultiIcon;
+	}
+});
+Object.defineProperty(exports, "ShortcutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shortcut_icon_js.ShortcutIcon;
+	}
+});
+Object.defineProperty(exports, "ShowDimensionsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_show_dimensions_icon_js.ShowDimensionsIcon;
+	}
+});
+Object.defineProperty(exports, "ShowToolbarIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_show_toolbar_icon_js.ShowToolbarIcon;
+	}
+});
+Object.defineProperty(exports, "ShrinkIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shrink_icon_js.ShrinkIcon;
+	}
+});
+Object.defineProperty(exports, "ShrinkToFitIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_shrink_to_fit_icon_js.ShrinkToFitIcon;
+	}
+});
+Object.defineProperty(exports, "Signal0DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_signal_0_double_icon_js.Signal0DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Signal100DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_signal_100_double_icon_js.Signal100DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Signal25DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_signal_25_double_icon_js.Signal25DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Signal50DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_signal_50_double_icon_js.Signal50DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "Signal75DoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_signal_75_double_icon_js.Signal75DoubleIcon;
+	}
+});
+Object.defineProperty(exports, "SlashDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_slash_double_icon_js.SlashDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "SlidesAppIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_slides_app_icon_js.SlidesAppIcon;
+	}
+});
+Object.defineProperty(exports, "SlidesMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_slides_multi_icon_js.SlidesMultiIcon;
+	}
+});
+Object.defineProperty(exports, "SlideshowPlayIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_slideshow_play_icon_js.SlideshowPlayIcon;
+	}
+});
+Object.defineProperty(exports, "SlideshowThemeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_slideshow_theme_icon_js.SlideshowThemeIcon;
+	}
+});
+Object.defineProperty(exports, "SmartArtIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_smart_art_icon_js.SmartArtIcon;
+	}
+});
+Object.defineProperty(exports, "SmileDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_smile_double_icon_js.SmileDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "SmileIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_smile_icon_js.SmileIcon;
+	}
+});
+Object.defineProperty(exports, "StarEmptyDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_star_empty_double_icon_js.StarEmptyDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "StarFullDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_star_full_double_icon_js.StarFullDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "StarIncompleteDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_star_incomplete_double_icon_js.StarIncompleteDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "StatisticalFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_statistical_function_icon_js.StatisticalFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "StatusDiagramFinalStateIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_status_diagram_final_state_icon_js.StatusDiagramFinalStateIcon;
+	}
+});
+Object.defineProperty(exports, "StatusDiagramInitialStateIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_status_diagram_initial_state_icon_js.StatusDiagramInitialStateIcon;
+	}
+});
+Object.defineProperty(exports, "StatusDiagramStateBarIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_status_diagram_state_bar_icon_js.StatusDiagramStateBarIcon;
+	}
+});
+Object.defineProperty(exports, "StickyNoteIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sticky_note_icon_js.StickyNoteIcon;
+	}
+});
+Object.defineProperty(exports, "StrikethroughIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_strikethrough_icon_js.StrikethroughIcon;
+	}
+});
+Object.defineProperty(exports, "StrokeSize1Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_stroke_size1_icon_js.StrokeSize1Icon;
+	}
+});
+Object.defineProperty(exports, "StrokeSize2Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_stroke_size2_icon_js.StrokeSize2Icon;
+	}
+});
+Object.defineProperty(exports, "StrokeSize3Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_stroke_size3_icon_js.StrokeSize3Icon;
+	}
+});
+Object.defineProperty(exports, "StrokeSize4Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_stroke_size4_icon_js.StrokeSize4Icon;
+	}
+});
+Object.defineProperty(exports, "StrokeSize5Icon", {
+	enumerable: true,
+	get: function() {
+		return ts_stroke_size5_icon_js.StrokeSize5Icon;
+	}
+});
+Object.defineProperty(exports, "SubscriptIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_subscript_icon_js.SubscriptIcon;
+	}
+});
+Object.defineProperty(exports, "SuccessIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_success_icon_js.SuccessIcon;
+	}
+});
+Object.defineProperty(exports, "SuccessOutlineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_success_outline_icon_js.SuccessOutlineIcon;
+	}
+});
+Object.defineProperty(exports, "SunburstChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_sunburst_chart_icon_js.SunburstChartIcon;
+	}
+});
+Object.defineProperty(exports, "SuperscriptIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_superscript_icon_js.SuperscriptIcon;
+	}
+});
+Object.defineProperty(exports, "SymbolsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_symbols_icon_js.SymbolsIcon;
+	}
+});
+Object.defineProperty(exports, "TableBorderStyleDashedIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_table_border_style_dashed_icon_js.TableBorderStyleDashedIcon;
+	}
+});
+Object.defineProperty(exports, "TableBorderStyleDottedIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_table_border_style_dotted_icon_js.TableBorderStyleDottedIcon;
+	}
+});
+Object.defineProperty(exports, "TableBorderStyleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_table_border_style_icon_js.TableBorderStyleIcon;
+	}
+});
+Object.defineProperty(exports, "TableBorderStyleSolidIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_table_border_style_solid_icon_js.TableBorderStyleSolidIcon;
+	}
+});
+Object.defineProperty(exports, "TableBorderWidthIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_table_border_width_icon_js.TableBorderWidthIcon;
+	}
+});
+Object.defineProperty(exports, "TableIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_table_icon_js.TableIcon;
+	}
+});
+Object.defineProperty(exports, "TextFunctionIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_text_function_icon_js.TextFunctionIcon;
+	}
+});
+Object.defineProperty(exports, "TextIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_text_icon_js.TextIcon;
+	}
+});
+Object.defineProperty(exports, "TextTypeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_text_type_icon_js.TextTypeIcon;
+	}
+});
+Object.defineProperty(exports, "TextWrapShapeIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_text_wrap_shape_icon_js.TextWrapShapeIcon;
+	}
+});
+Object.defineProperty(exports, "TodoListDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_todo_list_double_icon_js.TodoListDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "TopmostIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_topmost_icon_js.TopmostIcon;
+	}
+});
+Object.defineProperty(exports, "TransitionsIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_transitions_icon_js.TransitionsIcon;
+	}
+});
+Object.defineProperty(exports, "TreemapChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_treemap_chart_icon_js.TreemapChartIcon;
+	}
+});
+Object.defineProperty(exports, "TriangleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_triangle_icon_js.TriangleIcon;
+	}
+});
+Object.defineProperty(exports, "TruncationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_truncation_icon_js.TruncationIcon;
+	}
+});
+Object.defineProperty(exports, "TypographyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_typography_icon_js.TypographyIcon;
+	}
+});
+Object.defineProperty(exports, "UnderlineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_underline_icon_js.UnderlineIcon;
+	}
+});
+Object.defineProperty(exports, "UndoIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_undo_icon_js.UndoIcon;
+	}
+});
+Object.defineProperty(exports, "UngroupIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_ungroup_icon_js.UngroupIcon;
+	}
+});
+Object.defineProperty(exports, "UngroupSparklineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_ungroup_sparkline_icon_js.UngroupSparklineIcon;
+	}
+});
+Object.defineProperty(exports, "UniverCliIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_univer_cli_icon_js.UniverCliIcon;
+	}
+});
+Object.defineProperty(exports, "UniverSdkMultiIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_univer_sdk_multi_icon_js.UniverSdkMultiIcon;
+	}
+});
+Object.defineProperty(exports, "UnlinkIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_unlink_icon_js.UnlinkIcon;
+	}
+});
+Object.defineProperty(exports, "UnlockIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_unlock_icon_js.UnlockIcon;
+	}
+});
+Object.defineProperty(exports, "UnorderIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_unorder_icon_js.UnorderIcon;
+	}
+});
+Object.defineProperty(exports, "UpBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_up_border_double_icon_js.UpBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "UpIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_up_icon_js.UpIcon;
+	}
+});
+Object.defineProperty(exports, "VerticalBorderDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_vertical_border_double_icon_js.VerticalBorderDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "VerticalCenterIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_vertical_center_icon_js.VerticalCenterIcon;
+	}
+});
+Object.defineProperty(exports, "VerticalIntegrationIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_vertical_integration_icon_js.VerticalIntegrationIcon;
+	}
+});
+Object.defineProperty(exports, "VerticalTextIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_vertical_text_icon_js.VerticalTextIcon;
+	}
+});
+Object.defineProperty(exports, "WarnDoubleIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_warn_double_icon_js.WarnDoubleIcon;
+	}
+});
+Object.defineProperty(exports, "WarningIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_warning_icon_js.WarningIcon;
+	}
+});
+Object.defineProperty(exports, "WaterfallChartIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_waterfall_chart_icon_js.WaterfallChartIcon;
+	}
+});
+Object.defineProperty(exports, "WinlossSparklineIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_winloss_sparkline_icon_js.WinlossSparklineIcon;
+	}
+});
+Object.defineProperty(exports, "WonIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_won_icon_js.WonIcon;
+	}
+});
+Object.defineProperty(exports, "WriteIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_write_icon_js.WriteIcon;
+	}
+});
+Object.defineProperty(exports, "ZlotyIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_zloty_icon_js.ZlotyIcon;
+	}
+});
+Object.defineProperty(exports, "ZoomInIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_zoom_in_icon_js.ZoomInIcon;
+	}
+});
+Object.defineProperty(exports, "ZoomOutIcon", {
+	enumerable: true,
+	get: function() {
+		return ts_zoom_out_icon_js.ZoomOutIcon;
+	}
+});

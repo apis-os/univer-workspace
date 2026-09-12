@@ -11,5 +11,22 @@ coverage/
 .agents/
 .claude/
 skills-lock.json
-vendor/univer-pro/*
-!vendor/univer-pro/README.md
+# Keep decoded + published @univerjs-pro copies and frozen OSS @univerjs copies.
+# Root dist/ and lib/ would otherwise swallow every package build.
+!vendor/univer/**/lib/
+!vendor/univer/**/lib/**
+!vendor/univer/**/dist/
+!vendor/univer/**/dist/**
+!vendor/univer-pro/**/lib/
+!vendor/univer-pro/**/lib/**
+!vendor/univer-pro/**/dist/
+!vendor/univer-pro/**/dist/**
+!vendor/univer-pro-published/**/lib/
+!vendor/univer-pro-published/**/lib/**
+!vendor/univer-pro-published/**/dist/
+!vendor/univer-pro-published/**/dist/**
+# umd/ is huge and unused by the deobfuscator.
+vendor/univer/**/umd/
+vendor/univer-pro/**/umd/
+vendor/univer-pro-published/**/umd/
+.cache/

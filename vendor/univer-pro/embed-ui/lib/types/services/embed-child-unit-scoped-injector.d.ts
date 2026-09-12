@@ -1,0 +1,12 @@
+import type { Dependency } from '@univerjs/core';
+import type { IEmbedChildContainerContext } from '../types/embed-ui';
+import { IConfigService, Injector } from '@univerjs/core';
+import { IMenuManagerService } from '@univerjs/ui';
+export type IEmbedScopedConfigOverrides = ReadonlyMap<string | symbol, (config: unknown) => unknown>;
+type EmbedChildContainerSetupContext = Omit<IEmbedChildContainerContext, 'runtimeScope'>;
+export declare function createEmbedChildUnitScopedInjector(context: EmbedChildContainerSetupContext, scopedDependencies?: readonly Dependency[]): Injector | undefined;
+export declare function createEmbedScopedConfigInjector(parentInjector: Injector, configOverrides: IEmbedScopedConfigOverrides): Injector | undefined;
+export declare function createEmbedImportHiddenConfigService(configService: IConfigService): IConfigService;
+export declare function createEmbedScopedInjector(parentInjector: Injector, overrides: ReadonlyMap<unknown, unknown>, sharedRootInjector?: Injector): Injector;
+export declare function createEmbedImportHiddenMenuManager(menuManager: IMenuManagerService): IMenuManagerService;
+export {};

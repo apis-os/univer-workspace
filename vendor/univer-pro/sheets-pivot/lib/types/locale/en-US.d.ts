@@ -1,0 +1,70 @@
+declare const locale: {
+    'sheets-pivot': {
+        sheet: string;
+        blankValue: string;
+        otherValue: string;
+        columnName: string;
+        subTotalText: string;
+        grandTotalText: string;
+        valueText: string;
+        rowLabels: string;
+        columnLabels: string;
+        averageName: string;
+        countName: string;
+        countNumsName: string;
+        maxName: string;
+        minName: string;
+        productName: string;
+        stdDevName: string;
+        stdDevpName: string;
+        sumName: string;
+        varName: string;
+        varpName: string;
+        subTotal: string;
+        grandTotal: string;
+        value: string;
+        blank: string;
+        other: string;
+        renderText: {
+            valueField: string;
+            subtotal: string;
+            grandTotal: string;
+            multipleGrandTotal: string;
+            subtotalWithValue: string;
+        };
+        emptyPivot: {
+            filter: string;
+            row: string;
+            column: string;
+            values: string;
+        };
+        dateGroup: {
+            year: string;
+            month: string;
+            day: string;
+            date: string;
+            hour: string;
+            minute: string;
+            hourMinute: string;
+            quarter: string;
+            monthDate: string;
+            yearQuarter: string;
+            yearMonth: string;
+            yearMonthDate: string;
+        };
+        cellDateGroupDisplay: {
+            minute: string;
+            hour: string;
+            hourMinute: string;
+            date: string;
+            month: string;
+            monthDate: string;
+            quarter: string;
+            year: string;
+            yearMonth: string;
+            yearMonthDate: string;
+            yearQuarter: string;
+        };
+    };
+};
+export default locale;

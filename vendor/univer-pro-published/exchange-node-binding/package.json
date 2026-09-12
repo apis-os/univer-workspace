@@ -1,0 +1,29 @@
+{
+  "name": "@univerjs-pro/exchange-node-binding",
+  "version": "0.1.1",
+  "napi": {
+    "binaryName": "univer-exchange-node",
+    "targets": [
+      "aarch64-apple-darwin",
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-linux-gnu",
+      "x86_64-pc-windows-msvc"
+    ]
+  },
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "scripts": {
+    "artifacts": "napi artifacts"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^3.7.4"
+  },
+  "optionalDependencies": {
+    "@univerjs-pro/exchange-node-binding-darwin-arm64": "0.1.1",
+    "@univerjs-pro/exchange-node-binding-linux-x64-gnu": "0.1.1",
+    "@univerjs-pro/exchange-node-binding-linux-arm64-gnu": "0.1.1",
+    "@univerjs-pro/exchange-node-binding-win32-x64-msvc": "0.1.1"
+  }
+}

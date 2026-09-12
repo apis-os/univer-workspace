@@ -1,0 +1,114 @@
+.univer-absolute {
+  position: absolute;
+}
+
+.-univer-right-1\.5 {
+  right: -.375rem;
+}
+
+.-univer-top-1\.5 {
+  top: -.375rem;
+}
+
+.univer-z-\[4\] {
+  z-index: 4;
+}
+
+.univer-flex {
+  display: flex;
+}
+
+.univer-h-7 {
+  height: 1.75rem;
+}
+
+.univer-min-w-7 {
+  min-width: 1.75rem;
+}
+
+.univer-cursor-pointer {
+  cursor: pointer;
+}
+
+.univer-select-none {
+  user-select: none;
+}
+
+.univer-items-center {
+  align-items: center;
+}
+
+.univer-justify-center {
+  justify-content: center;
+}
+
+.univer-rounded-lg {
+  border-radius: .5rem;
+}
+
+.univer-border-2 {
+  border-width: 2px;
+}
+
+.univer-border-solid {
+  border-style: solid;
+}
+
+.univer-border-gray-0 {
+  border-color: var(--univer-gray-0);
+}
+
+.univer-bg-yellow-400 {
+  background-color: var(--univer-yellow-400);
+}
+
+.univer-px-1\.5 {
+  padding-left: .375rem;
+  padding-right: .375rem;
+}
+
+.univer-text-sm {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+.univer-font-semibold {
+  font-weight: 600;
+}
+
+.univer-leading-none {
+  line-height: 1;
+}
+
+.univer-text-gray-0 {
+  color: var(--univer-gray-0);
+}
+
+.univer-transition {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-duration: .15s;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .hover\:univer-brightness-95:hover {
+    --univer-tw-brightness: brightness(.95);
+    filter: var(--univer-tw-blur) var(--univer-tw-brightness) var(--univer-tw-contrast) var(--univer-tw-grayscale) var(--univer-tw-hue-rotate) var(--univer-tw-invert) var(--univer-tw-saturate) var(--univer-tw-sepia) var(--univer-tw-drop-shadow);
+  }
+}
+
+.focus-visible\:univer-outline-none:focus-visible {
+  outline-offset: 2px;
+  outline: 2px solid #0000;
+}
+
+.focus-visible\:univer-ring-2:focus-visible {
+  --univer-tw-ring-offset-shadow: var(--univer-tw-ring-inset) 0 0 0 var(--univer-tw-ring-offset-width) var(--univer-tw-ring-offset-color);
+  --univer-tw-ring-shadow: var(--univer-tw-ring-inset) 0 0 0 calc(2px + var(--univer-tw-ring-offset-width)) var(--univer-tw-ring-color);
+  box-shadow: var(--univer-tw-ring-offset-shadow), var(--univer-tw-ring-shadow), 0 0 #0000;
+  box-shadow: var(--univer-tw-ring-offset-shadow), var(--univer-tw-ring-shadow), var(--univer-tw-shadow, 0 0 #0000);
+}
+
+.focus-visible\:univer-ring-primary-500:focus-visible {
+  --univer-tw-ring-color: var(--univer-primary-500);
+}

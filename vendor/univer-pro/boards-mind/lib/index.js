@@ -1,0 +1,6306 @@
+import {
+  AddBoardElementMutation as _0x23a10e,
+  BOARD_MIND_MAP_CONNECTOR_ROLE as _0xd3ac53,
+  BOARD_MIND_MAP_CONTAINER_ROLE as _0x5f700a,
+  BOARD_MIND_MAP_DECORATION_ROLE as _0x3b0482,
+  BOARD_MIND_MAP_MODE_ID as _0x1935ea,
+  BOARD_MIND_MAP_NODE_ROLE as _0x5cd58e,
+  BoardElementType as _0x30113b,
+  IBoardElementService as _0x3d3c2a,
+  RemoveBoardElementMutation as _0xf049a6,
+  SetBoardElementOrderMutation as _0x305d9b,
+  UniverBoardsPlugin as _0x5f3b3f,
+  createAddBoardElementsMutationInfos as _0x49982e,
+  createBoardConnectorElement as _0x377a31,
+  createBoardContainerElement as _0x196e5c,
+  createBoardTextBoxShapeElement as _0x589d05,
+  createBoardTextBoxShapeTextData as _0x143bcc,
+  mergeBoardRichTextDocument as _0x48c073,
+  offsetBoardConnectorGeometry as _0x54c9d1,
+  resolveBoardElementLocalTransformForParent as _0x3c4868,
+  resolveBoardElementWorldBounds as _0x5df5fb,
+  resolveBoardElementWorldTransform as _0x52f077,
+  shapeTextToBoardDocumentTextStyle as _0x188d07,
+} from "@univerjs-pro/boards";
+import {
+  BooleanNumber as _0x4c8f1a,
+  CommandType as _0x135e78,
+  DependentOn as _0x2b8d11,
+  Disposable as _0x528b4a,
+  HorizontalAlign as _0x346bc5,
+  ICommandService as _0x200817,
+  IConfigService as _0x3642bc,
+  IUndoRedoService as _0xed9722,
+  IUniverInstanceService as _0xdfd12d,
+  Inject as _0x37644b,
+  Injector as _0x28e9fd,
+  Plugin as _0x8fc68d,
+  Tools as _0x470e98,
+  UniverInstanceType as _0x160c3f,
+  VerticalAlign as _0x1229d4,
+  WrapStrategy as _0x2edd3e,
+  createIdentifier as _0x22c050,
+  createInternalEditorID as _0xe9880,
+  generateRandomId as _0x18cb3c,
+  merge as _0x301107,
+  sequenceExecute as _0x48942c,
+} from "@univerjs/core";
+import {
+  ShapeFillEnum as _0x24dfc3,
+  ShapeLineTypeEnum as _0x3a1aca,
+  ShapeModel as _0x5d658b,
+  ShapeTypeEnum as _0x2f4153,
+} from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin as _0x324b1c } from "@univerjs-pro/license";
+const k = _0x1935ea,
+  ye = _0x5f700a,
+  A = _0x5cd58e,
+  j = _0xd3ac53,
+  be = _0x3b0482,
+  xe = "Add\x20text",
+  M = {
+    root: {
+      fillColor: "#4f7bcf",
+      strokeColor: "#4f7bcf",
+      textColor: "#ffffff",
+      fontSize: 24,
+    },
+    child: {
+      fillColor: "#ffffff",
+      strokeColor: "#4f7bcf",
+      textColor: "#111827",
+      fontSize: 18,
+    },
+    connector: { strokeColor: "#4f7bcf" },
+    container: {
+      fillColor: "rgba(255, 255, 255, 0)",
+      strokeColor: "rgba(0, 0, 0, 0)",
+    },
+  },
+  Se = {
+    root: { paddingX: 56, paddingY: 34 },
+    child: { paddingX: 40, paddingY: 22 },
+    lineHeightRatio: 1.35,
+  },
+  Ce = { left: 8, top: 8, right: 8, bottom: 8 },
+  N = {
+    direction: "both",
+    structureKind: "mindmap-horizontal",
+    branchLineType: "rounded-orthogonal",
+    horizontalGap: 96,
+    timelineAxisGap: 144,
+    siblingGap: 24,
+    branchGap: 40,
+  },
+  P = {
+    horizontalGap: { min: 80, max: 320 },
+    siblingGap: { min: 16, max: 120 },
+    branchGap: { min: 24, max: 180 },
+  },
+  F = {
+    rootWidth: 220,
+    rootHeight: 72,
+    nodeWidth: 160,
+    nodeHeight: 48,
+    containerPadding: 48,
+  };
+function I(_0x15dd39, _0x5c9b41) {
+  let _0x3bfbef = _0x15dd39.transform,
+    _0x3101ba = _0x3bfbef.left ?? 0,
+    _0x465133 = _0x3bfbef.top ?? 0,
+    _0x1b60f9 = _0x3bfbef.width ?? 0,
+    _0x3324bd = _0x3bfbef.height ?? 0;
+  return {
+    x:
+      _0x5c9b41 === "right"
+        ? _0x3101ba + _0x1b60f9
+        : _0x5c9b41 === "left"
+          ? _0x3101ba
+          : _0x3101ba + _0x1b60f9 / 2,
+    y:
+      _0x5c9b41 === "bottom"
+        ? _0x465133 + _0x3324bd
+        : _0x5c9b41 === "top"
+          ? _0x465133
+          : _0x465133 + _0x3324bd / 2,
+  };
+}
+function we(_0x138322, _0x3286fa, _0x5976ef) {
+  return {
+    kind: "shapeSite",
+    shapeId: _0x138322,
+    connectionSiteId:
+      _0x3286fa === "top"
+        ? 0
+        : _0x3286fa === "right"
+          ? 1
+          : _0x3286fa === "bottom"
+            ? 2
+            : 3,
+    ...(_0x5976ef ? { fallbackPoint: _0x5976ef } : null),
+  };
+}
+function Te(_0x290846) {
+  let _0x4d816c = _0x290846.parentNode["transform"].left ?? 0,
+    _0x3053d1 = _0x290846.parentNode["transform"].width ?? 0,
+    _0x1e94d4 = _0x290846.branchGap ?? N.branchGap;
+  return _0x290846.side === "right"
+    ? _0x4d816c + _0x3053d1 + _0x1e94d4
+    : _0x4d816c - _0x1e94d4;
+}
+function Ee(_0x3ff1e8) {
+  let _0x1855f8 = _0x3ff1e8.parentNode["transform"].top ?? 0,
+    _0x305113 = _0x3ff1e8.parentNode["transform"].height ?? 0,
+    _0x340d87 = _0x3ff1e8.branchGap ?? N.branchGap;
+  return _0x3ff1e8.side === "bottom"
+    ? _0x1855f8 + _0x305113 + _0x340d87
+    : _0x1855f8 - _0x340d87;
+}
+function L(_0x39cef5) {
+  return _0x39cef5 === "left"
+    ? { startSide: "left", endSide: "right" }
+    : _0x39cef5 === "top"
+      ? { startSide: "top", endSide: "bottom" }
+      : _0x39cef5 === "bottom"
+        ? { startSide: "bottom", endSide: "top" }
+        : { startSide: "right", endSide: "left" };
+}
+function De(_0x14b990) {
+  let { startSide: _0x1aa3c7, endSide: _0x25a7de } = L(_0x14b990.side),
+    _0x2fdc0f = I(_0x14b990.parentNode, _0x1aa3c7),
+    _0x4706a2 = I(_0x14b990.childNode, _0x25a7de),
+    _0x1fa225 = Te(_0x14b990),
+    _0x5a321f = Ee(_0x14b990),
+    _0xdbb27e =
+      _0x14b990.idPrefix ??
+      _0x14b990.parentNode["id"] + "-" + _0x14b990.childNode["id"];
+  return _0x14b990.side === "top" || _0x14b990.side === "bottom"
+    ? _0x2fdc0f.x === _0x4706a2.x && !_0x14b990.forceTrunk
+      ? []
+      : _0x2fdc0f.x === _0x4706a2.x
+        ? [
+            {
+              id: _0xdbb27e + "-route-0",
+              kind: "manual",
+              x: _0x2fdc0f.x,
+              y: _0x5a321f,
+            },
+          ]
+        : [
+            {
+              id: _0xdbb27e + "-route-0",
+              kind: "manual",
+              x: _0x2fdc0f.x,
+              y: _0x5a321f,
+            },
+            {
+              id: _0xdbb27e + "-route-1",
+              kind: "manual",
+              x: _0x4706a2.x,
+              y: _0x5a321f,
+            },
+          ]
+    : _0x2fdc0f.y === _0x4706a2.y && !_0x14b990.forceTrunk
+      ? []
+      : _0x2fdc0f.y === _0x4706a2.y
+        ? [
+            {
+              id: _0xdbb27e + "-route-0",
+              kind: "manual",
+              x: _0x1fa225,
+              y: _0x2fdc0f.y,
+            },
+          ]
+        : [
+            {
+              id: _0xdbb27e + "-route-0",
+              kind: "manual",
+              x: _0x1fa225,
+              y: _0x2fdc0f.y,
+            },
+            {
+              id: _0xdbb27e + "-route-1",
+              kind: "manual",
+              x: _0x1fa225,
+              y: _0x4706a2.y,
+            },
+          ];
+}
+function Oe(_0x39ec27) {
+  var _0x2e2b7a, _0x9ffec;
+  let { startSide: _0x15063c, endSide: _0x4e891b } = L(_0x39ec27.side),
+    _0x1f9977 = I(_0x39ec27.parentNode, _0x15063c),
+    _0x4082aa = I(_0x39ec27.childNode, _0x4e891b),
+    _0x2a6c9c = [
+      _0x1f9977,
+      ..._0x39ec27.routePoints,
+      ...(((_0x2e2b7a = _0x39ec27.curveData) == null
+        ? undefined
+        : _0x2e2b7a.controls) ?? []),
+      ...(((_0x9ffec = _0x39ec27.curveData) == null
+        ? undefined
+        : _0x9ffec.anchors) ?? []),
+      _0x4082aa,
+    ],
+    _0x467e71 = Math.min(..._0x2a6c9c.map((_0x5ef538) => _0x5ef538.x)),
+    _0x56492f = Math.min(..._0x2a6c9c.map((_0x42f8b9) => _0x42f8b9.y)),
+    _0x9c1ede = Math.max(..._0x2a6c9c.map((_0x2ae9bf) => _0x2ae9bf.x)),
+    _0x29de89 = Math.max(..._0x2a6c9c.map((_0x560521) => _0x560521.y));
+  return {
+    left: _0x467e71,
+    top: _0x56492f,
+    width: Math.max(1, _0x9c1ede - _0x467e71),
+    height: Math.max(1, _0x29de89 - _0x56492f),
+    rotation: 0,
+  };
+}
+function ke(_0x3ddcab) {
+  let _0x1e16c4 = Math.min(..._0x3ddcab.map((_0x30aa64) => _0x30aa64.x)),
+    _0xb411fb = Math.min(..._0x3ddcab.map((_0x5dbcf4) => _0x5dbcf4.y)),
+    _0x22d950 = Math.max(..._0x3ddcab.map((_0xe498d7) => _0xe498d7.x)),
+    _0x31dd15 = Math.max(..._0x3ddcab.map((_0x3b3432) => _0x3b3432.y));
+  return {
+    left: _0x1e16c4,
+    top: _0xb411fb,
+    width: Math.max(1, _0x22d950 - _0x1e16c4),
+    height: Math.max(1, _0x31dd15 - _0xb411fb),
+    rotation: 0,
+  };
+}
+function R(_0x18f51b) {
+  return _0x18f51b ?? N.branchLineType;
+}
+function Ae(_0x5234e4) {
+  let { startSide: _0x1e039a, endSide: _0x1f75b8 } = L(_0x5234e4.side),
+    _0x2b6902 = I(_0x5234e4.parentNode, _0x1e039a),
+    _0x15f2bb = I(_0x5234e4.childNode, _0x1f75b8),
+    _0xdddee = _0x5234e4.side === "left" || _0x5234e4.side === "right",
+    _0x1b4fdc = Math.abs(
+      _0xdddee ? _0x15f2bb.x - _0x2b6902.x : _0x15f2bb.y - _0x2b6902.y,
+    ),
+    _0x2f9a6e = Math.max(40, Math.min(72, _0x1b4fdc * 0.24)),
+    _0x327de5 = Math.max(48, Math.min(96, _0x1b4fdc * 0.35)),
+    _0x455946 = _0xdddee
+      ? {
+          x:
+            _0x2b6902.x + (_0x5234e4.side === "right" ? _0x2f9a6e : -_0x2f9a6e),
+          y: _0x2b6902.y + (_0x15f2bb.y - _0x2b6902.y) * 0.55,
+        }
+      : {
+          x: _0x2b6902.x + (_0x15f2bb.x - _0x2b6902.x) * 0.55,
+          y:
+            _0x2b6902.y +
+            (_0x5234e4.side === "bottom" ? _0x2f9a6e : -_0x2f9a6e),
+        },
+    _0x56c9b4 = _0xdddee
+      ? {
+          x:
+            _0x15f2bb.x + (_0x5234e4.side === "right" ? -_0x327de5 : _0x327de5),
+          y: _0x15f2bb.y,
+        }
+      : {
+          x: _0x15f2bb.x,
+          y:
+            _0x15f2bb.y +
+            (_0x5234e4.side === "bottom" ? -_0x327de5 : _0x327de5),
+        };
+  return {
+    controls: [
+      {
+        id: _0x5234e4.idPrefix + "-curve-control-0",
+        segmentIndex: 0,
+        kind: "manual",
+        ..._0x455946,
+      },
+      {
+        id: _0x5234e4.idPrefix + "-curve-control-1",
+        segmentIndex: 0,
+        kind: "manual",
+        ..._0x56c9b4,
+      },
+    ],
+    tension: 0.5,
+  };
+}
+function je(_0x2e114c) {
+  let _0x4b5f56 = _0x2e114c.side === "left" ? "left" : "right",
+    _0x342479 = "bottom",
+    _0x5d5f33 = _0x4b5f56 === "left" ? "right" : "left",
+    _0x36cecf = I(_0x2e114c.parentNode, _0x342479),
+    _0x337c6b = I(_0x2e114c.childNode, _0x5d5f33),
+    _0x4e0d5d = R(_0x2e114c.branchLineType),
+    _0x12232a = [
+      {
+        id: _0x2e114c.idPrefix + "-route-0",
+        kind: "manual",
+        x: _0x36cecf.x,
+        y: _0x337c6b.y,
+      },
+    ],
+    _0x27efe7 =
+      _0x4e0d5d === "curve"
+        ? (() => {
+            let _0x348519 = Math.max(
+                48,
+                Math.abs(_0x337c6b.y - _0x36cecf.y) / 2,
+              ),
+              _0x1b116a = Math.max(48, Math.abs(_0x337c6b.x - _0x36cecf.x) / 2);
+            return {
+              controls: [
+                {
+                  id: _0x2e114c.idPrefix + "-curve-control-0",
+                  segmentIndex: 0,
+                  kind: "manual",
+                  x: _0x36cecf.x,
+                  y: _0x36cecf.y + _0x348519,
+                },
+                {
+                  id: _0x2e114c.idPrefix + "-curve-control-1",
+                  segmentIndex: 0,
+                  kind: "manual",
+                  x:
+                    _0x337c6b.x +
+                    (_0x4b5f56 === "left" ? _0x1b116a : -_0x1b116a),
+                  y: _0x337c6b.y,
+                },
+              ],
+              tension: 0.5,
+            };
+          })()
+        : undefined;
+  return {
+    startSide: _0x342479,
+    endSide: _0x5d5f33,
+    startPoint: _0x36cecf,
+    endPoint: _0x337c6b,
+    routePoints: _0x12232a,
+    curveData: _0x27efe7,
+    transform: ke(
+      _0x4e0d5d === "curve"
+        ? [
+            _0x36cecf,
+            ...((_0x27efe7 == null ? undefined : _0x27efe7.controls) ?? []),
+            _0x337c6b,
+          ]
+        : [_0x36cecf, ..._0x12232a, _0x337c6b],
+    ),
+  };
+}
+function Me(_0x334c8a) {
+  let _0x1b0f85 = _0x334c8a.structureKind === "timeline-horizontal",
+    _0x359edc = _0x334c8a.childSide === "right" ? "right" : "left",
+    _0x4b7edd = _0x1b0f85 ? "right" : "bottom",
+    _0x282212 = _0x1b0f85 ? "left" : _0x359edc === "left" ? "right" : "left",
+    _0x2a3423 =
+      (_0x334c8a.parentNode["transform"].left ?? 0) +
+      (_0x334c8a.parentNode["transform"].width ?? 0) / 2,
+    _0x347cf5 = _0x334c8a.previousAxisNode
+      ? _0x1b0f85
+        ? I(_0x334c8a.previousAxisNode, _0x4b7edd)
+        : {
+            x: _0x2a3423,
+            y:
+              (_0x334c8a.previousAxisNode["transform"].top ?? 0) +
+              (_0x334c8a.previousAxisNode["transform"].height ?? 0) / 2,
+          }
+      : I(_0x334c8a.parentNode, _0x4b7edd),
+    _0x14f8dd = I(_0x334c8a.childNode, _0x282212),
+    _0x5a0313 = _0x334c8a.previousAxisNode
+      ? { kind: "free", ..._0x347cf5 }
+      : undefined,
+    _0x5be24f = R(_0x334c8a.branchLineType),
+    _0x599842 = _0x1b0f85
+      ? []
+      : [
+          {
+            id: _0x334c8a.idPrefix + "-route-0",
+            kind: "manual",
+            x: _0x2a3423,
+            y: _0x14f8dd.y,
+          },
+        ],
+    _0x25e81a =
+      _0x5be24f === "curve"
+        ? (() => {
+            let _0x597ad9 = Math.max(
+              48,
+              Math.abs(
+                _0x1b0f85
+                  ? _0x14f8dd.x - _0x347cf5.x
+                  : _0x14f8dd.y - _0x347cf5.y,
+              ) / 2,
+            );
+            return {
+              controls: [
+                {
+                  id: _0x334c8a.idPrefix + "-curve-control-0",
+                  segmentIndex: 0,
+                  kind: "manual",
+                  x: _0x1b0f85 ? _0x347cf5.x + _0x597ad9 : _0x347cf5.x,
+                  y: _0x1b0f85 ? _0x347cf5.y : _0x347cf5.y + _0x597ad9,
+                },
+                {
+                  id: _0x334c8a.idPrefix + "-curve-control-1",
+                  segmentIndex: 0,
+                  kind: "manual",
+                  x: _0x1b0f85 ? _0x14f8dd.x - _0x597ad9 : _0x14f8dd.x,
+                  y: _0x1b0f85 ? _0x14f8dd.y : _0x14f8dd.y - _0x597ad9,
+                },
+              ],
+              tension: 0.5,
+            };
+          })()
+        : undefined;
+  return {
+    startSide: _0x4b7edd,
+    endSide: _0x282212,
+    startPoint: _0x347cf5,
+    endPoint: _0x14f8dd,
+    startEndpoint: _0x5a0313,
+    routePoints: _0x599842,
+    curveData: _0x25e81a,
+    transform: ke([
+      _0x347cf5,
+      ...((_0x25e81a == null ? undefined : _0x25e81a.controls) ?? []),
+      _0x14f8dd,
+    ]),
+  };
+}
+function Ne(_0x22774e) {
+  if (!_0x22774e.parentIsAxisNode) {
+    let _0x3fb92f = "right",
+      _0x11e3e3 = "left",
+      _0x1b7192 = I(_0x22774e.parentNode, _0x3fb92f),
+      _0x4ae3ef = I(_0x22774e.childNode, _0x11e3e3),
+      _0x521062 = De({
+        idPrefix: _0x22774e.idPrefix,
+        parentNode: _0x22774e.parentNode,
+        childNode: _0x22774e.childNode,
+        side: "right",
+      }),
+      _0x334c33 =
+        R(_0x22774e.branchLineType) === "curve"
+          ? Ae({
+              idPrefix: _0x22774e.idPrefix,
+              parentNode: _0x22774e.parentNode,
+              childNode: _0x22774e.childNode,
+              side: "right",
+            })
+          : undefined;
+    return {
+      startSide: _0x3fb92f,
+      endSide: _0x11e3e3,
+      startPoint: _0x1b7192,
+      endPoint: _0x4ae3ef,
+      routePoints: _0x521062,
+      curveData: _0x334c33,
+      transform: ke([
+        _0x1b7192,
+        ..._0x521062,
+        ...((_0x334c33 == null ? undefined : _0x334c33.controls) ?? []),
+        _0x4ae3ef,
+      ]),
+    };
+  }
+  let _0x259886 = "left",
+    _0x320e15 = {
+      x:
+        (_0x22774e.parentNode["transform"].left ?? 0) +
+        (_0x22774e.parentNode["transform"].width ?? 0) / 2,
+      y:
+        (_0x22774e.parentNode["transform"].top ?? 0) +
+        (_0x22774e.parentNode["transform"].height ?? 0) / 2,
+    },
+    _0x5e508a = I(_0x22774e.childNode, _0x259886),
+    _0x3871c2 =
+      _0x320e15.y === _0x5e508a.y
+        ? []
+        : [
+            {
+              id: _0x22774e.idPrefix + "-route-0",
+              kind: "manual",
+              x: _0x320e15.x,
+              y: _0x5e508a.y,
+            },
+          ],
+    _0x339a7f =
+      R(_0x22774e.branchLineType) === "curve"
+        ? {
+            controls: [
+              {
+                id: _0x22774e.idPrefix + "-curve-control-0",
+                segmentIndex: 0,
+                kind: "manual",
+                x: _0x320e15.x,
+                y: _0x320e15.y + (_0x5e508a.y - _0x320e15.y) / 2,
+              },
+              {
+                id: _0x22774e.idPrefix + "-curve-control-1",
+                segmentIndex: 0,
+                kind: "manual",
+                x:
+                  _0x5e508a.x -
+                  Math.max(48, Math.abs(_0x5e508a.x - _0x320e15.x) / 2),
+                y: _0x5e508a.y,
+              },
+            ],
+            tension: 0.5,
+          }
+        : undefined;
+  return {
+    startSide: "left",
+    endSide: _0x259886,
+    startPoint: _0x320e15,
+    endPoint: _0x5e508a,
+    startEndpoint: { kind: "free", ..._0x320e15 },
+    routePoints: _0x3871c2,
+    curveData: _0x339a7f,
+    transform: ke([
+      _0x320e15,
+      ..._0x3871c2,
+      ...((_0x339a7f == null ? undefined : _0x339a7f.controls) ?? []),
+      _0x5e508a,
+    ]),
+  };
+}
+function Pe(_0xf9dd3f) {
+  let _0x556f03 = _0xf9dd3f.side === "left" ? "left" : "right";
+  if (!_0xf9dd3f.parentIsAxisNode) {
+    let { startSide: _0x15ed2a, endSide: _0x56581c } = L(_0x556f03),
+      _0x3de297 = I(_0xf9dd3f.parentNode, _0x15ed2a),
+      _0x32ce56 = I(_0xf9dd3f.childNode, _0x56581c),
+      _0x2b1f2a = De({
+        idPrefix: _0xf9dd3f.idPrefix,
+        parentNode: _0xf9dd3f.parentNode,
+        childNode: _0xf9dd3f.childNode,
+        side: _0x556f03,
+      }),
+      _0x309860 =
+        R(_0xf9dd3f.branchLineType) === "curve"
+          ? Ae({
+              idPrefix: _0xf9dd3f.idPrefix,
+              parentNode: _0xf9dd3f.parentNode,
+              childNode: _0xf9dd3f.childNode,
+              side: _0x556f03,
+            })
+          : undefined;
+    return {
+      startSide: _0x15ed2a,
+      endSide: _0x56581c,
+      startPoint: _0x3de297,
+      endPoint: _0x32ce56,
+      routePoints: _0x2b1f2a,
+      curveData: _0x309860,
+      transform: ke([
+        _0x3de297,
+        ..._0x2b1f2a,
+        ...((_0x309860 == null ? undefined : _0x309860.controls) ?? []),
+        _0x32ce56,
+      ]),
+    };
+  }
+  let { startSide: _0x44f69a, endSide: _0x5e1378 } = L(_0x556f03),
+    _0x36bd8d = I(_0xf9dd3f.parentNode, _0x44f69a),
+    _0x3bb906 = I(_0xf9dd3f.childNode, _0x5e1378),
+    _0x48fbea = De({
+      idPrefix: _0xf9dd3f.idPrefix,
+      parentNode: _0xf9dd3f.parentNode,
+      childNode: _0xf9dd3f.childNode,
+      side: _0x556f03,
+      forceTrunk: _0xf9dd3f.forceTrunk,
+    }),
+    _0x104aef =
+      R(_0xf9dd3f.branchLineType) === "curve"
+        ? Ae({
+            idPrefix: _0xf9dd3f.idPrefix,
+            parentNode: _0xf9dd3f.parentNode,
+            childNode: _0xf9dd3f.childNode,
+            side: _0x556f03,
+          })
+        : undefined;
+  return {
+    startSide: _0x44f69a,
+    endSide: _0x5e1378,
+    startPoint: _0x36bd8d,
+    endPoint: _0x3bb906,
+    routePoints: _0x48fbea,
+    curveData: _0x104aef,
+    transform: ke([
+      _0x36bd8d,
+      ..._0x48fbea,
+      ...((_0x104aef == null ? undefined : _0x104aef.controls) ?? []),
+      _0x3bb906,
+    ]),
+  };
+}
+function Fe(_0x161d54) {
+  var _0x4f265c;
+  let _0x37321c = _0x161d54.custom;
+  return (_0x37321c == null || (_0x4f265c = _0x37321c.structured) == null
+    ? undefined
+    : _0x4f265c.modeId) === k && _0x37321c.structured["semanticRole"] === A
+    ? (_0x37321c.mindmap ?? null)
+    : null;
+}
+const Ie = 1 / 0;
+function Le(_0x23e4f6) {
+  return /[\u2E80-\u9FFF\uF900-\uFAFF\uFF00-\uFFEF]/u.test(_0x23e4f6);
+}
+function Re(_0xa4206, _0x28af1b, _0x75c9d5) {
+  let _0x204d7d = 0,
+    _0x4aa0cb = _0x75c9d5 ? 1.08 : 1;
+  return (
+    Array.from(_0xa4206).forEach((_0x4f3eaf) => {
+      _0x4f3eaf === "\x20" || _0x4f3eaf === "\x09" || _0x4f3eaf === "\u00a0"
+        ? (_0x204d7d += _0x28af1b * 0.32)
+        : Le(_0x4f3eaf)
+          ? (_0x204d7d += _0x28af1b)
+          : /[\.,:;'"`!|ilI\[\]\(\)]/u.test(_0x4f3eaf)
+            ? (_0x204d7d += _0x28af1b * 0.42)
+            : (_0x204d7d += _0x28af1b * 0.72);
+    }),
+    _0x204d7d * _0x4aa0cb
+  );
+}
+function ze(_0x182496) {
+  let _0x247425 = _0x182496.replace(/\r\n/g, "\x0a").replace(/\r/g, "\x0a");
+  return _0x247425.length ? _0x247425.split("\x0a") : [""];
+}
+function Be(_0x2df707, _0x57f250) {
+  return Number.isFinite(_0x2df707) && _0x2df707 > 0 ? _0x2df707 : _0x57f250;
+}
+function Ve(_0x300a71) {
+  var _0x27d641, _0x42c963;
+  let _0x1e865d = !(_0x300a71 != null && _0x300a71.parentNodeId);
+  return {
+    minWidth:
+      (_0x300a71 == null || (_0x27d641 = _0x300a71.size) == null
+        ? undefined
+        : _0x27d641.minWidth) ?? (_0x1e865d ? F.rootWidth : F.nodeWidth),
+    minHeight:
+      (_0x300a71 == null || (_0x42c963 = _0x300a71.size) == null
+        ? undefined
+        : _0x42c963.minHeight) ?? (_0x1e865d ? F.rootHeight : F.nodeHeight),
+  };
+}
+function He(_0x4f0072) {
+  let _0x5c5841 = ze(_0x4f0072.text),
+    _0x2ea22d = Math.max(
+      0,
+      ..._0x5c5841.map((_0xd7a6ce) =>
+        Re(_0xd7a6ce, _0x4f0072.fontSize, _0x4f0072.bold),
+      ),
+    ),
+    _0x4375b3 = _0x4f0072.fontSize * Se.lineHeightRatio,
+    _0x2fe40a = _0x4f0072.minWidth >= F.rootWidth ? Se.root : Se.child,
+    _0x158f3f = _0x2fe40a.paddingX,
+    _0x1b326c = _0x2fe40a.paddingY,
+    _0x3ec9fd = Be(_0x4f0072.maxWidth ?? Ie, Ie),
+    _0x56573e = Be(_0x4f0072.maxHeight ?? 1 / 0, 1 / 0);
+  return {
+    width: Math.ceil(
+      Math.min(_0x3ec9fd, Math.max(_0x4f0072.minWidth, _0x2ea22d + _0x158f3f)),
+    ),
+    height: Math.ceil(
+      Math.min(
+        _0x56573e,
+        Math.max(_0x4f0072.minHeight, _0x5c5841.length * _0x4375b3 + _0x1b326c),
+      ),
+    ),
+  };
+}
+function Ue(_0x27e970) {
+  var _0x5a4999, _0x5b4b6f;
+  if (typeof _0x27e970.text == "string") return _0x27e970.text;
+  let _0x323f55 =
+      (_0x5a4999 = _0x27e970.dataModel) == null ? undefined : _0x5a4999.doc,
+    _0x1a2be2 =
+      _0x323f55 == null || (_0x5b4b6f = _0x323f55.body) == null
+        ? undefined
+        : _0x5b4b6f.dataStream;
+  return typeof _0x1a2be2 == "string"
+    ? _0x1a2be2.replace(/\r\n$/u, "").replace(/\n$/u, "").replace(/\r$/u, "")
+    : "";
+}
+function We(_0x414e57) {
+  var _0x25758f, _0x597da5, _0x4715c8;
+  let _0x4424e9 =
+      (_0x25758f = _0x414e57.custom) == null ? undefined : _0x25758f.mindmap,
+    _0x24101e = _0x414e57.shapeData["shapeText"] ?? {},
+    _0x180215 = !(_0x4424e9 != null && _0x4424e9.parentNodeId),
+    { minHeight: _0x1e3e3a, minWidth: _0x2de5c3 } = Ve(_0x4424e9),
+    _0x24f64b =
+      typeof _0x24101e.fontSize == "number"
+        ? _0x24101e.fontSize
+        : _0x180215
+          ? M.root["fontSize"]
+          : M.child["fontSize"];
+  return He({
+    bold: _0x24101e.bold === true,
+    fontSize: _0x24f64b,
+    maxHeight:
+      _0x4424e9 == null || (_0x597da5 = _0x4424e9.size) == null
+        ? undefined
+        : _0x597da5.maxHeight,
+    maxWidth:
+      _0x4424e9 == null || (_0x4715c8 = _0x4424e9.size) == null
+        ? undefined
+        : _0x4715c8.maxWidth,
+    minHeight: _0x1e3e3a,
+    minWidth: _0x2de5c3,
+    text: Ue(_0x24101e),
+  });
+}
+function Ge(_0x4a245f, _0x541d12) {
+  if (_0x4a245f.element["type"] !== _0x30113b.Shape) return null;
+  let _0x884672 = Fe(_0x4a245f.element);
+  if (!_0x884672) return null;
+  let { minHeight: _0x4e9cf0, minWidth: _0x4d87ac } = Ve(_0x884672);
+  return {
+    width: Math.max(_0x4d87ac, Math.ceil(_0x541d12.width)),
+    height: Math.max(_0x4e9cf0, Math.ceil(_0x541d12.height)),
+  };
+}
+const Ke = _0xe9880("BOARD_SHAPE_TEXT");
+function qe(_0xa6c004, _0x30fa1f) {
+  return _0x188d07({
+    ..._0xa6c004,
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.fontFamily) === undefined
+      ? null
+      : { fontFamily: _0x30fa1f.fontFamily }),
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.fontSize) === undefined
+      ? null
+      : { fontSize: _0x30fa1f.fontSize }),
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.color) === undefined
+      ? null
+      : { color: _0x30fa1f.color }),
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.bold) === undefined
+      ? null
+      : { bold: _0x30fa1f.bold }),
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.italic) === undefined
+      ? null
+      : { italic: _0x30fa1f.italic }),
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.underline) === undefined
+      ? null
+      : { underline: _0x30fa1f.underline }),
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.strikethrough) === undefined
+      ? null
+      : { strikethrough: _0x30fa1f.strikethrough }),
+    ...((_0x30fa1f == null ? undefined : _0x30fa1f.textFill) === undefined
+      ? null
+      : { textFill: _0x30fa1f.textFill }),
+  });
+}
+function Je(_0x779000) {
+  let _0x179d45 = _0x143bcc({
+      bold:
+        typeof _0x779000.shapeText["bold"] == "boolean"
+          ? _0x779000.shapeText["bold"]
+          : undefined,
+      color:
+        typeof _0x779000.shapeText["color"] == "string"
+          ? _0x779000.shapeText["color"]
+          : undefined,
+      fontFamily:
+        typeof _0x779000.shapeText["fontFamily"] == "string"
+          ? _0x779000.shapeText["fontFamily"]
+          : undefined,
+      fontSize:
+        typeof _0x779000.shapeText["fontSize"] == "number"
+          ? _0x779000.shapeText["fontSize"]
+          : undefined,
+      horizontal: true,
+      horizontalAlign: _0x779000.horizontalAlign,
+      id: Ke,
+      italic:
+        typeof _0x779000.shapeText["italic"] == "boolean"
+          ? _0x779000.shapeText["italic"]
+          : undefined,
+      strikethrough:
+        typeof _0x779000.shapeText["strikethrough"] == "boolean"
+          ? _0x779000.shapeText["strikethrough"]
+          : undefined,
+      text: _0x779000.text,
+      textFill: _0x779000.shapeText["textFill"],
+      textStyle: _0x779000.textStyle,
+      underline:
+        typeof _0x779000.shapeText["underline"] == "boolean"
+          ? _0x779000.shapeText["underline"]
+          : undefined,
+      verticalAlign: _0x779000.verticalAlign,
+      wrapStrategy: _0x2edd3e.CLIP,
+    }),
+    _0xf64be6 =
+      _0x179d45.dataModel && typeof _0x179d45.dataModel == "object"
+        ? _0x179d45.dataModel
+        : {},
+    _0x56a6e2 = _0xf64be6.doc,
+    _0x37b4ab = _0x779000.documentData
+      ? _0x48c073(_0x56a6e2, _0x779000.documentData)
+      : _0x56a6e2;
+  return {
+    ..._0x779000.shapeText,
+    ..._0x179d45,
+    isRichText: !!_0x779000.documentData,
+    dataModel: {
+      ...(_0x779000.currentDataModel ?? {}),
+      ..._0xf64be6,
+      ...(_0x37b4ab ? { doc: _0x37b4ab } : null),
+    },
+  };
+}
+const Ye = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+function Xe(_0x173f35, _0x26783b) {
+  let _0x85a126 = _0x173f35 ?? "",
+    _0x48d0c9 = _0x26783b ?? "",
+    _0x13e8b3 = Math.max(_0x85a126.length, _0x48d0c9.length);
+  for (let _0x32115e = 0; _0x32115e < _0x13e8b3; _0x32115e += 1) {
+    if (_0x32115e >= _0x85a126.length) return -1;
+    if (_0x32115e >= _0x48d0c9.length) return 1;
+    let _0xa3a11c = et(_0x85a126[_0x32115e]),
+      _0x4b6d4b = et(_0x48d0c9[_0x32115e]);
+    if (_0xa3a11c < 0 || _0x4b6d4b < 0)
+      return _0x85a126.localeCompare(_0x48d0c9);
+    if (_0xa3a11c !== _0x4b6d4b) return _0xa3a11c - _0x4b6d4b;
+  }
+  return 0;
+}
+function Ze(_0xd0fad5, _0x373311) {
+  let _0x235bea = $e(_0xd0fad5),
+    _0x54bfee = $e(_0x373311),
+    _0x210c40 = "";
+  for (let _0x25bf67 = 0; ; _0x25bf67 += 1) {
+    let _0x12c865 = _0x25bf67 < _0x235bea.length ? et(_0x235bea[_0x25bf67]) : 0,
+      _0x26a735 = _0x25bf67 < _0x54bfee.length ? et(_0x54bfee[_0x25bf67]) : 61;
+    if (_0x12c865 < 0 || _0x26a735 < 0) return Ze(undefined, undefined);
+    if (_0x26a735 - _0x12c865 > 1)
+      return "" + _0x210c40 + Ye[Math.floor((_0x12c865 + _0x26a735) / 2)];
+    _0x210c40 += Ye[_0x12c865];
+  }
+}
+function Qe(_0x39151d) {
+  let _0x5df207;
+  for (let _0x591d38 = 0; _0x591d38 <= _0x39151d; _0x591d38 += 1)
+    _0x5df207 = Ze(_0x5df207, undefined);
+  return _0x5df207 ?? Ze(undefined, undefined);
+}
+function $e(_0x11bd8a) {
+  return [...(_0x11bd8a ?? "")].every((_0x38f969) => et(_0x38f969) >= 0)
+    ? (_0x11bd8a ?? "")
+    : "";
+}
+function et(_0x41d367) {
+  return _0x41d367 === undefined ? -1 : Ye.indexOf(_0x41d367);
+}
+function z(_0x5e82e7) {
+  return (
+    _0x5e82e7 === "tree-right" ||
+    _0x5e82e7 === "tree-left" ||
+    _0x5e82e7 === "tree-alternate"
+  );
+}
+function B(_0x5a2e66) {
+  return (
+    _0x5a2e66 === "timeline-horizontal" || _0x5a2e66 === "timeline-vertical"
+  );
+}
+function tt(_0x39630d) {
+  return _0x39630d === "mindmap-horizontal" || _0x39630d === "mindmap-vertical";
+}
+function nt(_0xe39ecf, _0x13607a) {
+  let _0x5761e2 = _0x13607a ?? N.branchLineType;
+  return _0x5761e2 === "curve" && !tt(_0xe39ecf ?? N.structureKind)
+    ? N.branchLineType
+    : _0x5761e2;
+}
+function rt(_0x2269bf, _0x38ee88) {
+  return _0x2269bf.children["filter"](
+    (_0x1af4b7) =>
+      (_0x1af4b7.side ?? (_0x2269bf.parentId ? _0x38ee88 : "right")) ===
+      _0x38ee88,
+  );
+}
+function it(_0x17ca3e) {
+  return _0x17ca3e.children;
+}
+function at(_0x36e629, _0x4c2578, _0x3d4f02) {
+  if (_0x36e629.collapsed) return _0x36e629.height;
+  let _0x599b3e = rt(_0x36e629, _0x4c2578);
+  if (!_0x599b3e.length) return _0x36e629.height;
+  let _0x49b07e = _0x599b3e.map((_0x13f047) =>
+    at(_0x13f047, _0x4c2578, _0x3d4f02),
+  );
+  return Math.max(
+    _0x36e629.height,
+    _0x49b07e.reduce((_0x58308c, _0xb2f19d) => _0x58308c + _0xb2f19d, 0) +
+      Math.max(0, _0x49b07e.length - 1) * _0x3d4f02,
+  );
+}
+function ot(_0x30e93e, _0x427e3c, _0x44380d, _0x1119c9, _0x5ccf18, _0x5d35b5) {
+  if (
+    (_0x5ccf18.set(_0x30e93e.id, {
+      left: _0x44380d,
+      top: _0x1119c9 - _0x30e93e.height / 2,
+    }),
+    _0x30e93e.collapsed)
+  )
+    return;
+  let _0x46145d = rt(_0x30e93e, _0x427e3c);
+  if (!_0x46145d.length) return;
+  let _0x2eb7fe = _0x46145d.map((_0x31aafa) =>
+      at(_0x31aafa, _0x427e3c, _0x5d35b5.siblingGap),
+    ),
+    _0x45f249 =
+      _0x1119c9 -
+      (_0x2eb7fe.reduce((_0x1a8dff, _0x3ffbcc) => _0x1a8dff + _0x3ffbcc, 0) +
+        Math.max(0, _0x2eb7fe.length - 1) * _0x5d35b5.siblingGap) /
+        2;
+  _0x46145d.forEach((_0x203444, _0x2d976c) => {
+    let _0x193874 =
+        _0x427e3c === "right"
+          ? _0x44380d + _0x30e93e.width + _0x5d35b5.horizontalGap
+          : _0x44380d - _0x5d35b5.horizontalGap - _0x203444.width,
+      _0x5c624b = _0x2eb7fe[_0x2d976c];
+    (ot(
+      _0x203444,
+      _0x427e3c,
+      _0x193874,
+      _0x45f249 + _0x5c624b / 2,
+      _0x5ccf18,
+      _0x5d35b5,
+    ),
+      (_0x45f249 += _0x5c624b + _0x5d35b5.siblingGap));
+  });
+}
+function st(_0x3e7c61, _0x2f60e6, _0x493b87) {
+  if (_0x3e7c61.collapsed) return _0x3e7c61.width;
+  let _0x3f1c4b = rt(_0x3e7c61, _0x2f60e6);
+  if (!_0x3f1c4b.length) return _0x3e7c61.width;
+  let _0x4d2567 = _0x3f1c4b.map((_0x210ad2) =>
+    st(_0x210ad2, _0x2f60e6, _0x493b87),
+  );
+  return Math.max(
+    _0x3e7c61.width,
+    _0x4d2567.reduce((_0x223192, _0x1cf91f) => _0x223192 + _0x1cf91f, 0) +
+      Math.max(0, _0x4d2567.length - 1) * _0x493b87,
+  );
+}
+function ct(_0xc9a9e, _0x41af98, _0xb56000, _0x3ed3a3, _0x19fe1a, _0x18b468) {
+  if (
+    (_0x19fe1a.set(_0xc9a9e.id, {
+      left: _0xb56000 - _0xc9a9e.width / 2,
+      top: _0x3ed3a3,
+    }),
+    _0xc9a9e.collapsed)
+  )
+    return;
+  let _0x1afa29 = rt(_0xc9a9e, _0x41af98);
+  if (!_0x1afa29.length) return;
+  let _0x5d974b = _0x1afa29.map((_0x477d0b) =>
+      st(_0x477d0b, _0x41af98, _0x18b468.siblingGap),
+    ),
+    _0x24ef15 =
+      _0xb56000 -
+      (_0x5d974b.reduce((_0x13f404, _0x882f4) => _0x13f404 + _0x882f4, 0) +
+        Math.max(0, _0x5d974b.length - 1) * _0x18b468.siblingGap) /
+        2,
+    _0x58c6b9 =
+      _0x41af98 === "bottom"
+        ? _0x3ed3a3 + _0xc9a9e.height + _0x18b468.horizontalGap
+        : _0x3ed3a3 - _0x18b468.horizontalGap;
+  _0x1afa29.forEach((_0x1a25b6, _0x105d7b) => {
+    let _0x1592a6 = _0x5d974b[_0x105d7b],
+      _0x30c0d3 =
+        _0x41af98 === "bottom" ? _0x58c6b9 : _0x58c6b9 - _0x1a25b6.height;
+    (ct(
+      _0x1a25b6,
+      _0x41af98,
+      _0x24ef15 + _0x1592a6 / 2,
+      _0x30c0d3,
+      _0x19fe1a,
+      _0x18b468,
+    ),
+      (_0x24ef15 += _0x1592a6 + _0x18b468.siblingGap));
+  });
+}
+function lt(_0x2b38c6, _0x292a10) {
+  if (_0x2b38c6.collapsed || !_0x2b38c6.children["length"])
+    return _0x2b38c6.height;
+  let _0x4b8d30 = _0x2b38c6.children["map"]((_0x5e3d45) =>
+    lt(_0x5e3d45, _0x292a10),
+  );
+  return Math.max(
+    _0x2b38c6.height,
+    _0x4b8d30.reduce((_0x483ec9, _0x3fdbdb) => _0x483ec9 + _0x3fdbdb, 0) +
+      Math.max(0, _0x4b8d30.length - 1) * _0x292a10.siblingGap,
+  );
+}
+function ut(_0x545180, _0xe19af5, _0xf7fec9, _0x874c29, _0x4fd7d9) {
+  if (
+    (_0x874c29.set(_0x545180.id, {
+      left: _0xe19af5,
+      top: _0xf7fec9 - _0x545180.height / 2,
+    }),
+    _0x545180.collapsed || !_0x545180.children["length"])
+  )
+    return;
+  let _0x1a35ff = _0x545180.children["map"]((_0x42a9fc) =>
+      lt(_0x42a9fc, _0x4fd7d9),
+    ),
+    _0xf0808e =
+      _0xf7fec9 -
+      (_0x1a35ff.reduce((_0x1308ff, _0x16b2f4) => _0x1308ff + _0x16b2f4, 0) +
+        Math.max(0, _0x1a35ff.length - 1) * _0x4fd7d9.siblingGap) /
+        2,
+    _0x3976d0 = _0xe19af5 + _0x545180.width + _0x4fd7d9.horizontalGap;
+  _0x545180.children["forEach"]((_0x207fc3, _0x4979aa) => {
+    let _0x1339e3 = _0x1a35ff[_0x4979aa];
+    (ut(_0x207fc3, _0x3976d0, _0xf0808e + _0x1339e3 / 2, _0x874c29, _0x4fd7d9),
+      (_0xf0808e += _0x1339e3 + _0x4fd7d9.siblingGap));
+  });
+}
+function dt(_0x42aa59, _0x11d42b, _0x1ddbc6, _0x2c9ba9, _0xb0b332, _0x3e8cbc) {
+  if (_0x42aa59.collapsed || !_0x42aa59.children["length"]) return;
+  let _0x668043 = _0x42aa59.children["map"]((_0x576682) =>
+      lt(_0x576682, _0x3e8cbc),
+    ),
+    _0x5af842 =
+      _0x668043.reduce((_0x1e3c12, _0x12977a) => _0x1e3c12 + _0x12977a, 0) +
+      Math.max(0, _0x668043.length - 1) * _0x3e8cbc.siblingGap,
+    _0x376b04 =
+      _0x11d42b === "top"
+        ? _0x2c9ba9 - _0x3e8cbc.horizontalGap - _0x5af842
+        : _0x2c9ba9 + _0x42aa59.height + _0x3e8cbc.horizontalGap,
+    _0xd94a80 = _0x1ddbc6 + _0x42aa59.width + N.branchGap;
+  _0x42aa59.children["forEach"]((_0x15cc1a, _0x3f94e4) => {
+    let _0x4de7d8 = _0x668043[_0x3f94e4];
+    (ut(_0x15cc1a, _0xd94a80, _0x376b04 + _0x4de7d8 / 2, _0xb0b332, _0x3e8cbc),
+      (_0x376b04 += _0x4de7d8 + _0x3e8cbc.siblingGap));
+  });
+}
+function ft(_0x527197, _0x3a8095, _0xb4c887) {
+  let _0x2d8ca7 = new Map(),
+    _0x28bc3c = _0x3a8095.rootLeft + _0x527197.width / 2;
+  return (
+    _0x2d8ca7.set(_0x527197.id, {
+      left: _0x3a8095.rootLeft,
+      top: _0x3a8095.rootTop,
+    }),
+    ["top", "bottom"].forEach((_0x4bb654) => {
+      let _0x513e04 = rt(_0x527197, _0x4bb654);
+      if (!_0x513e04.length) return;
+      let _0x138590 = _0x513e04.map((_0x5e148b) =>
+          st(_0x5e148b, _0x4bb654, _0xb4c887.siblingGap),
+        ),
+        _0x4b7ca1 =
+          _0x138590.reduce((_0x135e25, _0xc3f62a) => _0x135e25 + _0xc3f62a, 0) +
+          Math.max(0, _0x138590.length - 1) * _0xb4c887.siblingGap,
+        _0x34e447 = _0x28bc3c - _0x4b7ca1 / 2,
+        _0x3e92b6 =
+          _0x4bb654 === "bottom"
+            ? _0x3a8095.rootTop + _0x527197.height + _0xb4c887.horizontalGap
+            : _0x3a8095.rootTop - _0xb4c887.horizontalGap;
+      _0x513e04.forEach((_0x4c0402, _0x5decae) => {
+        let _0x1393c1 = _0x138590[_0x5decae],
+          _0x222638 =
+            _0x4bb654 === "bottom" ? _0x3e92b6 : _0x3e92b6 - _0x4c0402.height;
+        (ct(
+          _0x4c0402,
+          _0x4bb654,
+          _0x34e447 + _0x1393c1 / 2,
+          _0x222638,
+          _0x2d8ca7,
+          _0xb4c887,
+        ),
+          (_0x34e447 += _0x1393c1 + _0xb4c887.siblingGap));
+      });
+    }),
+    _0x2d8ca7
+  );
+}
+function pt(_0x3ce1cd, _0x1a1333, _0x45f8dd, _0x37dc14, _0x2c7eef, _0x406c60) {
+  if (_0x1a1333 === "top" || _0x1a1333 === "bottom") {
+    ct(
+      _0x3ce1cd,
+      _0x1a1333,
+      _0x45f8dd + _0x3ce1cd.width / 2,
+      _0x37dc14,
+      _0x2c7eef,
+      _0x406c60,
+    );
+    return;
+  }
+  ot(
+    _0x3ce1cd,
+    _0x1a1333,
+    _0x45f8dd,
+    _0x37dc14 + _0x3ce1cd.height / 2,
+    _0x2c7eef,
+    _0x406c60,
+  );
+}
+function mt(_0x356a41, _0x224655, _0xb85b8f) {
+  let _0x300a7a = new Map(),
+    _0x4fa578 = it(_0x356a41),
+    _0xdb8657 = _0x224655.rootLeft + _0x356a41.width / 2,
+    _0x684244 = N.timelineAxisGap;
+  _0x300a7a.set(_0x356a41.id, {
+    left: _0x224655.rootLeft,
+    top: _0x224655.rootTop,
+  });
+  let _0x4112c6 = _0x224655.rootTop + _0x356a41.height + _0x684244;
+  return (
+    _0x4fa578.forEach((_0x391cc9) => {
+      let _0x2ff839 = _0x391cc9.side === "left" ? "left" : "right",
+        _0x3d5096 = at(_0x391cc9, _0x2ff839, _0xb85b8f.siblingGap);
+      (pt(
+        _0x391cc9,
+        _0x2ff839,
+        _0x2ff839 === "left"
+          ? _0xdb8657 - _0xb85b8f.horizontalGap - _0x391cc9.width
+          : _0xdb8657 + _0xb85b8f.horizontalGap,
+        _0x4112c6 + _0x3d5096 / 2 - _0x391cc9.height / 2,
+        _0x300a7a,
+        _0xb85b8f,
+      ),
+        (_0x4112c6 += _0x3d5096 + _0xb85b8f.siblingGap));
+    }),
+    _0x300a7a
+  );
+}
+function ht(_0x294a92, _0x5ded90, _0x51ab9e) {
+  let _0x209e72 = new Map(),
+    _0x16320b = it(_0x294a92),
+    _0x4d575f = _0x5ded90.rootTop + _0x294a92.height / 2,
+    _0x3fb6b4 = N.timelineAxisGap;
+  _0x209e72.set(_0x294a92.id, {
+    left: _0x5ded90.rootLeft,
+    top: _0x5ded90.rootTop,
+  });
+  let _0x512d68 = _0x5ded90.rootLeft + _0x294a92.width + _0x3fb6b4;
+  return (
+    _0x16320b.forEach((_0x4c87ce) => {
+      let _0x1b7b3d = _0x4c87ce.side === "bottom" ? "bottom" : "top",
+        _0x3a575d = _0x4d575f - _0x4c87ce.height / 2;
+      (_0x209e72.set(_0x4c87ce.id, { left: _0x512d68, top: _0x3a575d }),
+        dt(_0x4c87ce, _0x1b7b3d, _0x512d68, _0x3a575d, _0x209e72, _0x51ab9e),
+        (_0x512d68 += _0x4c87ce.width + _0x3fb6b4));
+    }),
+    _0x209e72
+  );
+}
+function gt(_0x220e7f, _0x199819, _0xa1488f) {
+  let _0x407b51 = new Map(),
+    _0x2f0f32 = it(_0x220e7f),
+    _0x1ed90b = _0x199819.rootLeft + _0x220e7f.width / 2,
+    _0x4627e4 = N.timelineAxisGap;
+  _0x407b51.set(_0x220e7f.id, {
+    left: _0x199819.rootLeft,
+    top: _0x199819.rootTop,
+  });
+  let _0x582448 = _0x199819.rootTop + _0x220e7f.height + _0x4627e4;
+  return (
+    _0x2f0f32.forEach((_0x5004cc) => {
+      let _0x5c5ae5 = _0x5004cc.side === "right" ? "right" : "left",
+        _0x14caa2 =
+          _0x5c5ae5 === "left"
+            ? _0x1ed90b - N.branchGap - _0x5004cc.width
+            : _0x1ed90b + N.branchGap;
+      if (
+        (_0x407b51.set(_0x5004cc.id, { left: _0x14caa2, top: _0x582448 }),
+        !_0x5004cc.collapsed)
+      ) {
+        let _0x881753 = rt(_0x5004cc, _0x5c5ae5),
+          _0x5d2d8a = _0x881753.map((_0x24d77d) =>
+            at(_0x24d77d, _0x5c5ae5, _0xa1488f.siblingGap),
+          ),
+          _0x38052e =
+            _0x5d2d8a.reduce(
+              (_0x41d8de, _0x560eb2) => _0x41d8de + _0x560eb2,
+              0,
+            ) +
+            Math.max(0, _0x5d2d8a.length - 1) * _0xa1488f.siblingGap,
+          _0x43e72c = _0x582448 + _0x5004cc.height / 2 - _0x38052e / 2;
+        _0x881753.forEach((_0x425192, _0xdfe060) => {
+          let _0x1e9a29 =
+              _0x5c5ae5 === "left"
+                ? _0x14caa2 - _0xa1488f.horizontalGap - _0x425192.width
+                : _0x14caa2 + _0x5004cc.width + _0xa1488f.horizontalGap,
+            _0x5ad105 = _0x5d2d8a[_0xdfe060];
+          (ot(
+            _0x425192,
+            _0x5c5ae5,
+            _0x1e9a29,
+            _0x43e72c + _0x5ad105 / 2,
+            _0x407b51,
+            _0xa1488f,
+          ),
+            (_0x43e72c += _0x5ad105 + _0xa1488f.siblingGap));
+        });
+      }
+      _0x582448 += _0x5004cc.height + _0x4627e4;
+    }),
+    _0x407b51
+  );
+}
+function _t(_0x2f27cc, _0x2db9e7) {
+  let _0x3f1e79 = {
+      horizontalGap: _0x2db9e7.horizontalGap ?? N.horizontalGap,
+      siblingGap: _0x2db9e7.siblingGap ?? N.siblingGap,
+    },
+    _0x55169f = _0x2db9e7.structureKind ?? N.structureKind;
+  if (_0x55169f === "mindmap-vertical")
+    return ft(_0x2f27cc, _0x2db9e7, _0x3f1e79);
+  if (
+    _0x55169f === "tree-right" ||
+    _0x55169f === "tree-left" ||
+    _0x55169f === "tree-alternate"
+  )
+    return mt(_0x2f27cc, _0x2db9e7, _0x3f1e79);
+  if (_0x55169f === "timeline-horizontal")
+    return ht(_0x2f27cc, _0x2db9e7, _0x3f1e79);
+  if (_0x55169f === "timeline-vertical")
+    return gt(_0x2f27cc, _0x2db9e7, _0x3f1e79);
+  let _0x144743 = new Map(),
+    _0x3997a7 = _0x2db9e7.rootTop + _0x2f27cc.height / 2;
+  return (
+    ot(_0x2f27cc, "right", _0x2db9e7.rootLeft, _0x3997a7, _0x144743, _0x3f1e79),
+    ot(_0x2f27cc, "left", _0x2db9e7.rootLeft, _0x3997a7, _0x144743, _0x3f1e79),
+    _0x144743
+  );
+}
+function vt(_0x13742e, _0xfab47e) {
+  return _0x13742e === "timeline-horizontal"
+    ? _0xfab47e % 2 == 0
+      ? "top"
+      : "bottom"
+    : _0x13742e === "timeline-vertical" && _0xfab47e % 2 == 0
+      ? "left"
+      : "right";
+}
+function yt(_0x646320, _0x44f78f) {
+  return { modeId: k, structureScopeId: _0x646320, semanticRole: _0x44f78f };
+}
+function bt(_0x16f242) {
+  let _0x394e54 = _0x16f242.structureKind ?? N.structureKind,
+    _0x385222 = nt(_0x394e54, _0x16f242.branchLineType),
+    _0x971069 = _0x196e5c({
+      id: _0x16f242.id,
+      left: _0x16f242.left,
+      top: _0x16f242.top,
+      width: _0x16f242.width,
+      height: _0x16f242.height,
+      title: "Mind Map",
+      fillColor: M.container["fillColor"],
+      strokeColor: M.container["strokeColor"],
+      strokeWidth: 0,
+      membershipLocked: true,
+    });
+  return (
+    (_0x971069.containerData = {
+      ..._0x971069.containerData,
+      titleVisible: false,
+      shapeData: {
+        ..._0x971069.containerData["shapeData"],
+        fill: {
+          ..._0x971069.containerData["shapeData"].fill,
+          fillType: _0x24dfc3.NoFill,
+        },
+        stroke: {
+          ..._0x971069.containerData["shapeData"].stroke,
+          lineStrokeType: _0x3a1aca.NoLine,
+        },
+      },
+      behavior: {
+        ..._0x971069.containerData["behavior"],
+        acceptsChildren: true,
+        acceptsContainer: false,
+        allowNested: false,
+        autoCapture: false,
+        autoResize: false,
+        membershipLocked: true,
+        clipChildren: false,
+        membershipAwareness: "structural",
+      },
+      capturePolicy: {
+        ..._0x971069.containerData["capturePolicy"],
+        enabled: false,
+        allowCaptureContainer: false,
+        allowCaptureFromAncestorContainer: false,
+        allowCaptureFromSiblingContainer: false,
+      },
+      custom: { ...(_0x971069.containerData["custom"] ?? {}) },
+    }),
+    (_0x971069.custom = {
+      structured: yt(_0x16f242.id, ye),
+      mindmap: {
+        presentation: "implicit",
+        boundsMode: "auto-fit",
+        rootNodeId: _0x16f242.rootNodeId,
+        layout: { ...N, structureKind: _0x394e54, branchLineType: _0x385222 },
+        themeId: "default",
+        structureRevision: 1,
+      },
+    }),
+    _0x971069
+  );
+}
+function xt(_0x3ff1d2) {
+  let _0x35abb4 = _0x589d05({
+      id: _0x3ff1d2.id,
+      parentId: _0x3ff1d2.parentId,
+      left: _0x3ff1d2.left,
+      top: _0x3ff1d2.top,
+      width: _0x3ff1d2.width,
+      height: _0x3ff1d2.height,
+      text: _0x3ff1d2.text,
+      horizontal: true,
+    }),
+    _0x47765e = _0x3ff1d2.parentNodeId ? M.child : M.root,
+    _0xacd4ce = _0x47765e.fillColor,
+    _0x5a0cb8 = _0x47765e.strokeColor,
+    _0xb7fe40 = _0x47765e.textColor,
+    _0x436831 = _0x47765e.fontSize,
+    _0x322ebf = { fs: _0x436831, cl: { rgb: _0xb7fe40 } },
+    _0x1d1300 = _0x3ff1d2.parentNodeId ? _0x346bc5.LEFT : _0x346bc5.CENTER,
+    _0x212ab8 = _0x1229d4.MIDDLE,
+    _0x3bec2b = {
+      ...Je({
+        horizontalAlign: _0x1d1300,
+        shapeText: { color: _0xb7fe40, fontSize: _0x436831 },
+        text: _0x3ff1d2.text,
+        documentData: _0x3ff1d2.textData,
+        textStyle: _0x322ebf,
+        verticalAlign: _0x212ab8,
+      }),
+      fontSize: _0x436831,
+      color: _0xb7fe40,
+      horizontalAlign: _0x1d1300,
+      verticalAlign: _0x212ab8,
+    };
+  return (
+    (_0x35abb4.shapeData = {
+      ..._0x35abb4.shapeData,
+      shapeType: _0x2f4153.RoundRect,
+      fill: { fillType: _0x24dfc3.SolidFill, color: _0xacd4ce },
+      stroke: {
+        lineStrokeType: _0x3a1aca.SolidLine,
+        color: _0x5a0cb8,
+        width: 2,
+      },
+      textRectPadding: { ...Ce },
+      isTextBox: true,
+      shapeText: _0x3bec2b,
+    }),
+    (_0x35abb4.custom = {
+      structured: yt(_0x3ff1d2.scopeId, A),
+      mindmap: {
+        parentNodeId: _0x3ff1d2.parentNodeId,
+        orderKey: _0x3ff1d2.orderKey,
+        ...(_0x3ff1d2.side ? { side: _0x3ff1d2.side } : null),
+        collapsed: _0x3ff1d2.collapsed ?? false,
+        size: {
+          minWidth: _0x3ff1d2.parentNodeId ? F.nodeWidth : F.rootWidth,
+          minHeight: _0x3ff1d2.parentNodeId ? F.nodeHeight : F.rootHeight,
+        },
+        ...(_0x3ff1d2.foreignAttributes
+          ? { foreignAttributes: _0x3ff1d2.foreignAttributes }
+          : null),
+        ...(_0x3ff1d2.branchColorKey
+          ? { branchColorKey: _0x3ff1d2.branchColorKey }
+          : null),
+      },
+    }),
+    _0x35abb4
+  );
+}
+function St(_0x820831) {
+  var _0x3e796d;
+  let _0x3a820b = !_0x820831.parentNodeId,
+    _0x469b44 = {
+      width: _0x3a820b ? F.rootWidth : F.nodeWidth,
+      height: _0x3a820b ? F.rootHeight : F.nodeHeight,
+    },
+    _0x11a583 =
+      ((_0x3e796d = _0x820831.textData) == null ||
+      (_0x3e796d = _0x3e796d.body) == null
+        ? undefined
+        : _0x3e796d.textRuns) ?? [],
+    _0xa0495f = _0x3a820b ? M.root["fontSize"] : M.child["fontSize"],
+    _0xf1de0b = _0x11a583.reduce((_0x595253, _0x99fd1a) => {
+      var _0x39288a;
+      return Math.max(
+        _0x595253,
+        ((_0x39288a = _0x99fd1a.ts) == null ? undefined : _0x39288a.fs) ??
+          _0x595253,
+      );
+    }, _0xa0495f);
+  return He({
+    bold: _0x11a583.some((_0x3c1245) => {
+      var _0x20a94b;
+      return (
+        ((_0x20a94b = _0x3c1245.ts) == null ? undefined : _0x20a94b.bl) ===
+        _0x4c8f1a.TRUE
+      );
+    }),
+    fontSize: _0xf1de0b,
+    minWidth: _0x469b44.width,
+    minHeight: _0x469b44.height,
+    text: _0x820831.text,
+  });
+}
+function Ct(_0x396b0e) {
+  let _0x3231dd = R(_0x396b0e.branchLineType),
+    _0x562f40 = H(_0x396b0e.parentNode),
+    _0x5c381d = _0x396b0e.timelineRootStructureKind
+      ? Me({
+          idPrefix: _0x396b0e.id,
+          parentNode: _0x396b0e.parentNode,
+          childNode: _0x396b0e.childNode,
+          previousAxisNode: _0x396b0e.timelinePreviousAxisNode,
+          structureKind: _0x396b0e.timelineRootStructureKind,
+          childSide: _0x396b0e.side,
+          branchLineType: _0x3231dd,
+        })
+      : _0x396b0e.timelineHorizontalRootNodeId &&
+          (_0x562f40 == null ? undefined : _0x562f40.parentNodeId) !== null
+        ? Ne({
+            idPrefix: _0x396b0e.id,
+            parentNode: _0x396b0e.parentNode,
+            childNode: _0x396b0e.childNode,
+            parentIsAxisNode:
+              (_0x562f40 == null ? undefined : _0x562f40.parentNodeId) ===
+              _0x396b0e.timelineHorizontalRootNodeId,
+            branchLineType: _0x3231dd,
+          })
+        : _0x396b0e.timelineVerticalRootNodeId &&
+            (_0x562f40 == null ? undefined : _0x562f40.parentNodeId) !== null
+          ? Pe({
+              idPrefix: _0x396b0e.id,
+              parentNode: _0x396b0e.parentNode,
+              childNode: _0x396b0e.childNode,
+              parentIsAxisNode:
+                (_0x562f40 == null ? undefined : _0x562f40.parentNodeId) ===
+                _0x396b0e.timelineVerticalRootNodeId,
+              side: _0x396b0e.side,
+              branchLineType: _0x3231dd,
+              forceTrunk: _0x396b0e.forceTrunk,
+            })
+          : _0x396b0e.treeRootTrunk
+            ? je({
+                idPrefix: _0x396b0e.id,
+                parentNode: _0x396b0e.parentNode,
+                childNode: _0x396b0e.childNode,
+                side: _0x396b0e.side,
+                branchLineType: _0x3231dd,
+              })
+            : null,
+    { startSide: _0x4911b0, endSide: _0x4a0a21 } =
+      _0x5c381d ?? L(_0x396b0e.side),
+    _0xa9de72 =
+      (_0x5c381d == null ? undefined : _0x5c381d.startPoint) ??
+      I(_0x396b0e.parentNode, _0x4911b0),
+    _0x381971 =
+      (_0x5c381d == null ? undefined : _0x5c381d.endPoint) ??
+      I(_0x396b0e.childNode, _0x4a0a21),
+    _0xcacff7 =
+      (_0x5c381d == null ? undefined : _0x5c381d.routePoints) ??
+      De({
+        idPrefix: _0x396b0e.id,
+        parentNode: _0x396b0e.parentNode,
+        childNode: _0x396b0e.childNode,
+        side: _0x396b0e.side,
+        forceTrunk: _0x396b0e.forceTrunk,
+      }),
+    _0x24f679 =
+      (_0x5c381d == null ? undefined : _0x5c381d.curveData) ??
+      (_0x3231dd === "curve"
+        ? Ae({
+            idPrefix: _0x396b0e.id,
+            parentNode: _0x396b0e.parentNode,
+            childNode: _0x396b0e.childNode,
+            side: _0x396b0e.side,
+          })
+        : undefined),
+    _0x17dff2 = _0x377a31({
+      id: _0x396b0e.id,
+      start:
+        (_0x5c381d == null ? undefined : _0x5c381d.startEndpoint) ??
+        we(_0x396b0e.parentNode["id"], _0x4911b0, _0xa9de72),
+      end:
+        (_0x5c381d == null ? undefined : _0x5c381d.endEndpoint) ??
+        we(_0x396b0e.childNode["id"], _0x4a0a21, _0x381971),
+      routing: _0x3231dd === "curve" ? "curve" : "orthogonal",
+      routingMode: "manual",
+      waypoints: _0x3231dd === "curve" ? [] : _0xcacff7,
+      orthogonalData:
+        _0x3231dd === "curve" ? undefined : { routePoints: _0xcacff7 },
+      curveData: _0x24f679,
+      transform:
+        (_0x5c381d == null ? undefined : _0x5c381d.transform) ??
+        Oe({
+          parentNode: _0x396b0e.parentNode,
+          childNode: _0x396b0e.childNode,
+          side: _0x396b0e.side,
+          routePoints: _0xcacff7,
+          curveData: _0x24f679,
+        }),
+      style: {
+        stroke: M.connector["strokeColor"],
+        strokeWidth: 2,
+        opacity: 1,
+        cornerStyle: _0x3231dd === "orthogonal" ? "miter" : "rounded",
+      },
+    });
+  return (
+    (_0x17dff2.parentId = _0x396b0e.scopeId),
+    (_0x17dff2.custom = {
+      structured: yt(_0x396b0e.scopeId, j),
+      mindmap: {
+        managed: true,
+        parentNodeId: _0x396b0e.parentNode["id"],
+        childNodeId: _0x396b0e.childNode["id"],
+      },
+    }),
+    _0x17dff2
+  );
+}
+function wt(_0x52a1d0, _0x1e4597) {
+  return {
+    ..._0x52a1d0,
+    transform: {
+      ..._0x52a1d0.transform,
+      left:
+        (_0x52a1d0.transform["left"] ?? 0) - (_0x1e4597.transform["left"] ?? 0),
+      top:
+        (_0x52a1d0.transform["top"] ?? 0) - (_0x1e4597.transform["top"] ?? 0),
+    },
+  };
+}
+function Tt(_0x1861de) {
+  return B(_0x1861de.structureKind)
+    ? [_0x1861de.container, ..._0x1861de.connectors, ..._0x1861de.nodes]
+    : [_0x1861de.container, ..._0x1861de.nodes, ..._0x1861de.connectors];
+}
+function Et(_0x39b2d1) {
+  let _0x4c8fa4 = _0x39b2d1.containerId ?? _0x18cb3c(6),
+    _0x23303c = _0x39b2d1.rootNodeId ?? _0x18cb3c(6),
+    _0x56554c = _0x39b2d1.children ?? [],
+    _0x2c697b = _0x39b2d1.rootText ?? "Add\x20text",
+    _0x10063f = nt(_0x39b2d1.structureKind, _0x39b2d1.branchLineType),
+    _0x54bc33 = St({ parentNodeId: null, text: _0x2c697b }),
+    _0x5c75af = F.containerPadding,
+    _0x3a457d = _0x56554c.map((_0x429ede, _0x4a7725) => ({
+      ..._0x429ede,
+      nodeId: _0x429ede.nodeId ?? _0x18cb3c(6),
+      connectorId: _0x429ede.connectorId ?? _0x18cb3c(6),
+      orderKey: _0x429ede.orderKey ?? Qe(_0x4a7725),
+      side: _0x429ede.side ?? vt(_0x39b2d1.structureKind, _0x4a7725),
+      text: _0x429ede.text ?? "Add\x20text",
+    })),
+    _0x25d7a0 = _t(
+      {
+        id: _0x23303c,
+        parentId: null,
+        width: _0x54bc33.width,
+        height: _0x54bc33.height,
+        children: _0x3a457d.map((_0x3fd4a6) => ({
+          id: _0x3fd4a6.nodeId,
+          parentId: _0x23303c,
+          side: _0x3fd4a6.side,
+          collapsed: _0x3fd4a6.collapsed,
+          ...St({
+            parentNodeId: _0x23303c,
+            text: _0x3fd4a6.text,
+            textData: _0x3fd4a6.textData,
+          }),
+          children: [],
+        })),
+      },
+      {
+        rootLeft: _0x39b2d1.left,
+        rootTop: _0x39b2d1.top,
+        structureKind: _0x39b2d1.structureKind,
+        horizontalGap: N.horizontalGap,
+        siblingGap: N.siblingGap,
+      },
+    ),
+    _0x2b2be7 = _0x25d7a0.get(_0x23303c) ?? {
+      left: _0x39b2d1.left,
+      top: _0x39b2d1.top,
+    },
+    _0x56eb95 = _0x3a457d.reduce(
+      (_0x4f3b1f, _0x3ab8f2) => ((_0x4f3b1f[_0x3ab8f2.side] += 1), _0x4f3b1f),
+      { left: 0, right: 0, top: 0, bottom: 0 },
+    ),
+    _0x1c6b2f = z(_0x39b2d1.structureKind),
+    _0x1b70ed = B(_0x39b2d1.structureKind)
+      ? _0x39b2d1.structureKind
+      : undefined,
+    _0x22c556 = xt({
+      id: _0x23303c,
+      scopeId: _0x4c8fa4,
+      parentId: _0x4c8fa4,
+      parentNodeId: null,
+      orderKey: "a0",
+      text: _0x2c697b,
+      left: _0x2b2be7.left,
+      top: _0x2b2be7.top,
+      width: _0x54bc33.width,
+      height: _0x54bc33.height,
+    }),
+    _0x55ce1f = _0x3a457d.map((_0x486b9e) => {
+      let _0x186f50 = _0x25d7a0.get(_0x486b9e.nodeId) ?? {
+        left: _0x39b2d1.left,
+        top: _0x39b2d1.top,
+      };
+      return xt({
+        id: _0x486b9e.nodeId,
+        scopeId: _0x4c8fa4,
+        parentId: _0x4c8fa4,
+        parentNodeId: _0x23303c,
+        orderKey: _0x486b9e.orderKey,
+        side: _0x486b9e.side,
+        text: _0x486b9e.text,
+        textData: _0x486b9e.textData,
+        left: _0x186f50.left,
+        top: _0x186f50.top,
+        ...St({
+          parentNodeId: _0x23303c,
+          text: _0x486b9e.text,
+          textData: _0x486b9e.textData,
+        }),
+        collapsed: _0x486b9e.collapsed,
+        foreignAttributes: _0x486b9e.foreignAttributes,
+        branchColorKey:
+          _0x486b9e.branchColorKey ?? "branch-" + _0x486b9e.orderKey,
+      });
+    }),
+    _0x5087d3 = _0x55ce1f.map((_0x3940bb, _0x893d7e) => {
+      var _0x37c24a;
+      let _0x2fd7a3 =
+        ((_0x37c24a = H(_0x3940bb)) == null ? undefined : _0x37c24a.side) ??
+        "right";
+      return Ct({
+        id: _0x3a457d[_0x893d7e].connectorId,
+        scopeId: _0x4c8fa4,
+        parentNode: _0x22c556,
+        childNode: _0x3940bb,
+        side: _0x2fd7a3,
+        branchLineType: _0x10063f,
+        forceTrunk: _0x56eb95[_0x2fd7a3] > 1,
+        treeRootTrunk: _0x1c6b2f,
+        timelineRootStructureKind: _0x1b70ed,
+        timelinePreviousAxisNode: _0x1b70ed
+          ? _0x55ce1f[_0x893d7e - 1]
+          : undefined,
+        timelineHorizontalRootNodeId:
+          _0x39b2d1.structureKind === "timeline-horizontal"
+            ? _0x23303c
+            : undefined,
+        timelineVerticalRootNodeId:
+          _0x39b2d1.structureKind === "timeline-vertical"
+            ? _0x23303c
+            : undefined,
+      });
+    }),
+    _0x22122c = [_0x22c556, ..._0x55ce1f].reduce(
+      (_0x581341, _0x2d11ae) => {
+        let _0x54508e = _0x2d11ae.transform["left"] ?? 0,
+          _0x54fa42 = _0x2d11ae.transform["top"] ?? 0,
+          _0x1cb961 = _0x54508e + (_0x2d11ae.transform["width"] ?? 0),
+          _0x108e55 = _0x54fa42 + (_0x2d11ae.transform["height"] ?? 0);
+        return {
+          left: Math.min(_0x581341.left, _0x54508e),
+          top: Math.min(_0x581341.top, _0x54fa42),
+          right: Math.max(_0x581341.right, _0x1cb961),
+          bottom: Math.max(_0x581341.bottom, _0x108e55),
+        };
+      },
+      { left: 1 / 0, top: 1 / 0, right: -1 / 0, bottom: -1 / 0 },
+    ),
+    _0x284123 = bt({
+      id: _0x4c8fa4,
+      rootNodeId: _0x23303c,
+      left: _0x22122c.left - _0x5c75af,
+      top: _0x22122c.top - _0x5c75af,
+      width: _0x22122c.right - _0x22122c.left + _0x5c75af * 2,
+      height: _0x22122c.bottom - _0x22122c.top + _0x5c75af * 2,
+      structureKind: _0x39b2d1.structureKind,
+      branchLineType: _0x10063f,
+    }),
+    _0x4541b8 = wt(_0x22c556, _0x284123),
+    _0x6b0876 = _0x55ce1f.map((_0x587f8f) => wt(_0x587f8f, _0x284123)),
+    _0x3b898d = _0x5087d3.map((_0x5cbd70) => wt(_0x5cbd70, _0x284123)),
+    _0x49f5c6 = [_0x4541b8, ..._0x6b0876];
+  return {
+    container: _0x284123,
+    rootNode: _0x4541b8,
+    nodes: _0x49f5c6,
+    connectors: _0x3b898d,
+    elements: Tt({
+      container: _0x284123,
+      nodes: _0x49f5c6,
+      connectors: _0x3b898d,
+      structureKind: _0x39b2d1.structureKind,
+    }),
+  };
+}
+function Dt(_0x22a692, _0xccf7b3) {
+  let _0x1219f7 = _0x22a692.children["map"]((_0xbd12eb, _0x5cb00) =>
+    Dt(_0xbd12eb, {
+      orderKey: _0xbd12eb.orderKey ?? Qe(_0x5cb00),
+      id: _0xbd12eb.nodeId ?? _0x18cb3c(6),
+      connectorId: _0xbd12eb.connectorId ?? _0x18cb3c(6),
+      parentId: _0xccf7b3.id,
+      side: _0xbd12eb.side ?? _0xccf7b3.side ?? "right",
+      branchColorKey:
+        _0xccf7b3.parentId === null
+          ? (_0xbd12eb.branchColorKey ??
+            "branch-" + (_0xbd12eb.orderKey ?? Qe(_0x5cb00)))
+          : (_0xbd12eb.branchColorKey ?? _0xccf7b3.branchColorKey),
+    }),
+  );
+  return {
+    blueprint: _0x22a692,
+    id: _0xccf7b3.id,
+    connectorId: _0xccf7b3.connectorId,
+    parentId: _0xccf7b3.parentId,
+    orderKey: _0xccf7b3.orderKey,
+    side: _0xccf7b3.side,
+    branchColorKey: _0x22a692.branchColorKey ?? _0xccf7b3.branchColorKey,
+    children: _0x1219f7,
+  };
+}
+function Ot(_0x3b59ea, _0x644f92) {
+  (_0x644f92(_0x3b59ea),
+    _0x3b59ea.children["forEach"]((_0x303db7) => Ot(_0x303db7, _0x644f92)));
+}
+function kt(_0x4a0e7a, _0x343c4a) {
+  let _0x1efff0 = St({
+    parentNodeId: _0x4a0e7a.parentId,
+    text: _0x4a0e7a.blueprint["text"],
+    textData: _0x4a0e7a.blueprint["textData"],
+  });
+  return {
+    id: _0x4a0e7a.id,
+    parentId: _0x4a0e7a.parentId,
+    side: _0x4a0e7a.side,
+    collapsed: _0x4a0e7a.blueprint["collapsed"],
+    width: _0x1efff0.width,
+    height: _0x1efff0.height,
+    children: _0x4a0e7a.children["map"]((_0x156542) =>
+      kt(_0x156542, _0x343c4a),
+    ),
+  };
+}
+function At(_0x4ae383) {
+  let _0x23b42f = _0x4ae383.containerId ?? _0x18cb3c(6),
+    _0x1702da =
+      _0x4ae383.rootNodeId ??
+      _0x4ae383.blueprint["root"].nodeId ??
+      _0x18cb3c(6),
+    _0x2a455f = nt(_0x4ae383.structureKind, _0x4ae383.branchLineType),
+    _0x172585 = Dt(_0x4ae383.blueprint["root"], {
+      id: _0x1702da,
+      parentId: null,
+      orderKey: "a0",
+    }),
+    _0x3d9492 = [];
+  Ot(_0x172585, (_0x2eb41f) => _0x3d9492.push(_0x2eb41f));
+  let _0x182d4d = _t(
+      kt(_0x172585, {
+        rootNodeId: _0x1702da,
+        structureKind: _0x4ae383.structureKind,
+      }),
+      {
+        rootLeft: _0x4ae383.left,
+        rootTop: _0x4ae383.top,
+        structureKind: _0x4ae383.structureKind,
+        horizontalGap: N.horizontalGap,
+        siblingGap: N.siblingGap,
+      },
+    ),
+    _0x2651de = new Map(),
+    _0x50829c = _0x3d9492.map((_0x51c0a3) => {
+      let _0x1b20bd = St({
+          parentNodeId: _0x51c0a3.parentId,
+          text: _0x51c0a3.blueprint["text"],
+          textData: _0x51c0a3.blueprint["textData"],
+        }),
+        _0x305754 = _0x182d4d.get(_0x51c0a3.id) ?? {
+          left: _0x4ae383.left,
+          top: _0x4ae383.top,
+        },
+        _0x5911c2 = xt({
+          id: _0x51c0a3.id,
+          scopeId: _0x23b42f,
+          parentId: _0x23b42f,
+          parentNodeId: _0x51c0a3.parentId,
+          orderKey: _0x51c0a3.orderKey,
+          side: _0x51c0a3.parentId ? (_0x51c0a3.side ?? "right") : undefined,
+          text: _0x51c0a3.blueprint["text"],
+          textData: _0x51c0a3.blueprint["textData"],
+          left: _0x305754.left,
+          top: _0x305754.top,
+          width: _0x1b20bd.width,
+          height: _0x1b20bd.height,
+          collapsed: _0x51c0a3.blueprint["collapsed"],
+          foreignAttributes: _0x51c0a3.blueprint["foreignAttributes"],
+          branchColorKey: _0x51c0a3.parentId
+            ? _0x51c0a3.branchColorKey
+            : undefined,
+        });
+      return (_0x2651de.set(_0x51c0a3.id, _0x5911c2), _0x5911c2);
+    }),
+    _0x287e04 = _0x50829c[0],
+    _0x1972ec = _0x3d9492.reduce((_0x20f3bf, _0x14a0a0) => {
+      if (!_0x14a0a0.parentId) return _0x20f3bf;
+      let _0x39d4d5 = _0x14a0a0.side ?? "right",
+        _0x211931 = _0x14a0a0.parentId + ":" + _0x39d4d5;
+      return (
+        _0x20f3bf.set(_0x211931, (_0x20f3bf.get(_0x211931) ?? 0) + 1),
+        _0x20f3bf
+      );
+    }, new Map()),
+    _0x22f322 = _0x3d9492
+      .filter((_0x118606) => !!_0x118606.parentId)
+      .map((_0x1cc27c) =>
+        Ct({
+          id: _0x1cc27c.connectorId ?? _0x18cb3c(6),
+          scopeId: _0x23b42f,
+          parentNode: _0x2651de.get(_0x1cc27c.parentId),
+          childNode: _0x2651de.get(_0x1cc27c.id),
+          side: _0x1cc27c.side ?? "right",
+          branchLineType: _0x2a455f,
+          forceTrunk:
+            (_0x1972ec.get(
+              _0x1cc27c.parentId + ":" + (_0x1cc27c.side ?? "right"),
+            ) ?? 0) > 1,
+          treeRootTrunk:
+            z(_0x4ae383.structureKind) && _0x1cc27c.parentId === _0x1702da,
+          timelineRootStructureKind:
+            B(_0x4ae383.structureKind) && _0x1cc27c.parentId === _0x1702da
+              ? _0x4ae383.structureKind
+              : undefined,
+          timelinePreviousAxisNode:
+            B(_0x4ae383.structureKind) && _0x1cc27c.parentId === _0x1702da
+              ? (() => {
+                  let _0x1f93ee = _0x3d9492
+                      .filter((_0x1f5a89) => _0x1f5a89.parentId === _0x1702da)
+                      .sort((_0x1064e5, _0x5c3cfe) =>
+                        _0x1064e5.orderKey["localeCompare"](_0x5c3cfe.orderKey),
+                      ),
+                    _0x302621 = _0x1f93ee.findIndex(
+                      (_0x1ab4a6) => _0x1ab4a6.id === _0x1cc27c.id,
+                    );
+                  return _0x302621 > 0
+                    ? _0x2651de.get(_0x1f93ee[_0x302621 - 1].id)
+                    : undefined;
+                })()
+              : undefined,
+          timelineHorizontalRootNodeId:
+            _0x4ae383.structureKind === "timeline-horizontal"
+              ? _0x1702da
+              : undefined,
+          timelineVerticalRootNodeId:
+            _0x4ae383.structureKind === "timeline-vertical"
+              ? _0x1702da
+              : undefined,
+        }),
+      ),
+    _0x10fddc = F.containerPadding,
+    _0x20fac1 =
+      Math.min(
+        ..._0x50829c.map((_0xbb8773) => _0xbb8773.transform["left"] ?? 0),
+      ) - _0x10fddc,
+    _0x624f09 =
+      Math.min(
+        ..._0x50829c.map((_0x47a679) => _0x47a679.transform["top"] ?? 0),
+      ) - _0x10fddc,
+    _0x5456cd =
+      Math.max(
+        ..._0x50829c.map(
+          (_0x2a0499) =>
+            (_0x2a0499.transform["left"] ?? 0) +
+            (_0x2a0499.transform["width"] ?? F.nodeWidth),
+        ),
+      ) + _0x10fddc,
+    _0xfa38d0 =
+      Math.max(
+        ..._0x50829c.map(
+          (_0x443a71) =>
+            (_0x443a71.transform["top"] ?? 0) +
+            (_0x443a71.transform["height"] ?? F.nodeHeight),
+        ),
+      ) + _0x10fddc,
+    _0xadaade = bt({
+      id: _0x23b42f,
+      rootNodeId: _0x1702da,
+      left: _0x20fac1,
+      top: _0x624f09,
+      width: _0x5456cd - _0x20fac1,
+      height: _0xfa38d0 - _0x624f09,
+      structureKind: _0x4ae383.structureKind,
+      branchLineType: _0x2a455f,
+    }),
+    _0xcaa5f = _0x50829c.map((_0x8c4414) => wt(_0x8c4414, _0xadaade)),
+    _0x3c8985 =
+      _0xcaa5f.find((_0xdf4cf1) => _0xdf4cf1.id === _0x287e04.id) ??
+      _0xcaa5f[0],
+    _0x779b0b = _0x22f322.map((_0x5e38b0) => wt(_0x5e38b0, _0xadaade));
+  return {
+    container: _0xadaade,
+    rootNode: _0x3c8985,
+    nodes: _0xcaa5f,
+    connectors: _0x779b0b,
+    elements: Tt({
+      container: _0xadaade,
+      nodes: _0xcaa5f,
+      connectors: _0x779b0b,
+      structureKind: _0x4ae383.structureKind,
+    }),
+  };
+}
+function jt(_0x1d22f4) {
+  let _0x48cd46 = _0x1d22f4.text ?? "Add\x20text",
+    _0x1a00c2 = St({
+      parentNodeId: _0x1d22f4.parentNode["id"],
+      text: _0x48cd46,
+      textData: _0x1d22f4.textData,
+    }),
+    _0x397730 = xt({
+      id: _0x1d22f4.nodeId ?? _0x18cb3c(6),
+      scopeId: _0x1d22f4.scopeId,
+      parentId: _0x1d22f4.scopeId,
+      parentNodeId: _0x1d22f4.parentNode["id"],
+      orderKey: _0x1d22f4.orderKey,
+      side: _0x1d22f4.side,
+      text: _0x48cd46,
+      textData: _0x1d22f4.textData,
+      left: _0x1d22f4.left,
+      top: _0x1d22f4.top,
+      width: _0x1a00c2.width,
+      height: _0x1a00c2.height,
+      branchColorKey: _0x1d22f4.branchColorKey,
+    }),
+    _0x592cfe = Ct({
+      id: _0x1d22f4.connectorId ?? _0x18cb3c(6),
+      scopeId: _0x1d22f4.scopeId,
+      parentNode: _0x1d22f4.parentNode,
+      childNode: _0x397730,
+      side: _0x1d22f4.side,
+      branchLineType: _0x1d22f4.branchLineType,
+      treeRootTrunk: _0x1d22f4.treeRootTrunk,
+      timelineRootStructureKind: _0x1d22f4.timelineRootStructureKind,
+      timelineHorizontalRootNodeId:
+        _0x1d22f4.timelineRootStructureKind === "timeline-horizontal"
+          ? _0x1d22f4.parentNode["id"]
+          : undefined,
+      timelineVerticalRootNodeId:
+        _0x1d22f4.timelineRootStructureKind === "timeline-vertical"
+          ? _0x1d22f4.parentNode["id"]
+          : undefined,
+    });
+  return {
+    node: _0x397730,
+    connector: _0x592cfe,
+    elements: _0x1d22f4.timelineRootStructureKind
+      ? [_0x592cfe, _0x397730]
+      : [_0x397730, _0x592cfe],
+  };
+}
+function V(_0x16348a) {
+  var _0x2d8fc5;
+  let _0x48f2b7 = _0x16348a == null ? undefined : _0x16348a.custom;
+  return !_0x48f2b7 ||
+    ((_0x2d8fc5 = _0x48f2b7.structured) == null
+      ? undefined
+      : _0x2d8fc5.modeId) !== k ||
+    _0x48f2b7.structured["semanticRole"] !== ye ||
+    typeof _0x48f2b7.structured["structureScopeId"] != "string"
+    ? null
+    : {
+        ..._0x48f2b7.mindmap,
+        modeId: k,
+        structureScopeId: _0x48f2b7.structured["structureScopeId"],
+        semanticRole: ye,
+      };
+}
+function H(_0x352cf0) {
+  var _0x14f0d2;
+  let _0x27b301 = _0x352cf0 == null ? undefined : _0x352cf0.custom;
+  return !_0x27b301 ||
+    ((_0x14f0d2 = _0x27b301.structured) == null
+      ? undefined
+      : _0x14f0d2.modeId) !== k ||
+    _0x27b301.structured["semanticRole"] !== A ||
+    typeof _0x27b301.structured["structureScopeId"] != "string"
+    ? null
+    : {
+        ..._0x27b301.mindmap,
+        modeId: k,
+        structureScopeId: _0x27b301.structured["structureScopeId"],
+        semanticRole: A,
+      };
+}
+function U(_0x58ac88) {
+  var _0xac4e58;
+  let _0x4da29d = _0x58ac88 == null ? undefined : _0x58ac88.custom;
+  return !_0x4da29d ||
+    ((_0xac4e58 = _0x4da29d.structured) == null
+      ? undefined
+      : _0xac4e58.modeId) !== k ||
+    _0x4da29d.structured["semanticRole"] !== j ||
+    typeof _0x4da29d.structured["structureScopeId"] != "string"
+    ? null
+    : {
+        ..._0x4da29d.mindmap,
+        modeId: k,
+        structureScopeId: _0x4da29d.structured["structureScopeId"],
+        semanticRole: j,
+      };
+}
+function W(_0x83bfcd) {
+  var _0xf389fa;
+  let _0x9469ff = _0x83bfcd == null ? undefined : _0x83bfcd.custom;
+  if (
+    !_0x9469ff ||
+    ((_0xf389fa = _0x9469ff.structured) == null
+      ? undefined
+      : _0xf389fa.modeId) !== k ||
+    _0x9469ff.structured["semanticRole"] !== be ||
+    typeof _0x9469ff.structured["structureScopeId"] != "string"
+  )
+    return null;
+  let _0x2e6635 = _0x9469ff.mindmap;
+  return typeof (_0x2e6635 == null ? undefined : _0x2e6635.ownerNodeId) !=
+    "string" ||
+    typeof _0x2e6635.offsetX != "number" ||
+    typeof _0x2e6635.offsetY != "number"
+    ? null
+    : {
+        ownerNodeId: _0x2e6635.ownerNodeId,
+        offsetX: _0x2e6635.offsetX,
+        offsetY: _0x2e6635.offsetY,
+        modeId: k,
+        structureScopeId: _0x9469ff.structured["structureScopeId"],
+        semanticRole: be,
+      };
+}
+function Mt(_0x75c00e) {
+  let _0x567b92 = _0x75c00e;
+  return {
+    redo: _0x567b92.redo,
+    objects: (_0x567b92.objects ?? []).map((_0x15aa3a) => ({
+      unitId: _0x15aa3a.unitId,
+      subUnitId: _0x15aa3a.subUnitId,
+      elementId: _0x15aa3a.drawingId,
+    })),
+  };
+}
+function Nt(_0x13101c) {
+  return !!(V(_0x13101c) || H(_0x13101c) || U(_0x13101c) || W(_0x13101c));
+}
+const G = {
+    id: "board.mutation.set-mind-map-element",
+    type: _0x135e78.MUTATION,
+    handler: (_0x581043, _0x242d2f) => {
+      if (
+        !(_0x242d2f != null && _0x242d2f.unitId) ||
+        !_0x242d2f.subUnitId ||
+        !_0x242d2f.elementId ||
+        _0x242d2f.element["id"] !== _0x242d2f.elementId
+      )
+        return false;
+      let _0x3278d5 = _0x581043.get(_0x3d3c2a),
+        _0x257bad = _0x3278d5.getElementByParam({
+          unitId: _0x242d2f.unitId,
+          subUnitId: _0x242d2f.subUnitId,
+          elementId: _0x242d2f.elementId,
+        });
+      if (!_0x257bad || !Nt(_0x257bad.element) || !Nt(_0x242d2f.element))
+        return false;
+      let _0x3427a6 = _0x581043
+          .get(_0xdfd12d)
+          .getUnit(_0x242d2f.unitId, _0x160c3f.UNIVER_BOARD),
+        _0x166844 =
+          _0x3427a6 == null
+            ? undefined
+            : _0x3427a6.getPage(_0x242d2f.subUnitId);
+      if (!_0x3427a6 || !_0x166844 || !_0x166844.elements[_0x242d2f.elementId])
+        return false;
+      _0x166844.elements = {
+        ..._0x166844.elements,
+        [_0x242d2f.elementId]: _0x242d2f.element,
+      };
+      let _0x30b5f0 = {
+          ..._0x257bad,
+          element: _0x242d2f.element,
+          transform: _0x242d2f.transform ?? _0x257bad.transform,
+          hidden: _0x242d2f.element["visible"] === false,
+        },
+        _0xa8e19b = Mt(_0x3278d5.getBatchUpdateElementOp([_0x30b5f0]));
+      return (
+        _0x3278d5.applyElementJson1(
+          _0x242d2f.unitId,
+          _0x242d2f.subUnitId,
+          _0xa8e19b.redo,
+        ),
+        _0x3278d5.updateElementNotification(_0xa8e19b.objects),
+        true
+      );
+    },
+  },
+  Pt = {
+    id: "board.operation.insert-mind-map",
+    type: _0x135e78.OPERATION,
+    handler: (_0x318f28, _0xe48b6a) => {
+      if (
+        !_0xe48b6a ||
+        !_0xe48b6a.unitId ||
+        !_0xe48b6a.subUnitId ||
+        !Number.isFinite(_0xe48b6a.left) ||
+        !Number.isFinite(_0xe48b6a.top)
+      )
+        return false;
+      let _0x17b8a5 = _0x318f28.get(_0x3d3c2a),
+        _0x3506a3 = _0x17b8a5.getElementData(
+          _0xe48b6a.unitId,
+          _0xe48b6a.subUnitId,
+        ),
+        _0x406a31 = _0x17b8a5.getElementOrder(
+          _0xe48b6a.unitId,
+          _0xe48b6a.subUnitId,
+        ),
+        _0x1fbf51 = _0xe48b6a.blueprint
+          ? At({
+              containerId: _0xe48b6a.containerId,
+              rootNodeId: _0xe48b6a.rootNodeId,
+              left: _0xe48b6a.left,
+              top: _0xe48b6a.top,
+              blueprint: _0xe48b6a.rootText
+                ? {
+                    ..._0xe48b6a.blueprint,
+                    root: {
+                      ..._0xe48b6a.blueprint["root"],
+                      text: _0xe48b6a.rootText,
+                    },
+                  }
+                : _0xe48b6a.blueprint,
+              structureKind: _0xe48b6a.structureKind,
+              branchLineType: _0xe48b6a.branchLineType,
+            })
+          : Et({
+              containerId: _0xe48b6a.containerId,
+              rootNodeId: _0xe48b6a.rootNodeId,
+              left: _0xe48b6a.left,
+              top: _0xe48b6a.top,
+              rootText: _0xe48b6a.rootText,
+              structureKind: _0xe48b6a.structureKind,
+              branchLineType: _0xe48b6a.branchLineType,
+              children: _0xe48b6a.children,
+            }),
+        _0x4792b7 = _0x49982e({
+          unitId: _0xe48b6a.unitId,
+          subUnitId: _0xe48b6a.subUnitId,
+          elements: _0x1fbf51.elements,
+          insertIndex: _0xe48b6a.insertIndex,
+          elementData: _0x3506a3,
+          elementOrder: _0x406a31,
+        });
+      if (!_0x4792b7) return false;
+      let _0x3cf0f7 = _0x318f28.get(_0x200817),
+        _0x16f17a = _0x48942c(_0x4792b7.redoMutations, _0x3cf0f7);
+      return _0x16f17a.result
+        ? (_0x318f28
+            .get(_0xed9722)
+            .pushUndoRedo({
+              unitID: _0xe48b6a.unitId,
+              redoMutations: _0x4792b7.redoMutations,
+              undoMutations: _0x4792b7.undoMutations,
+            }),
+          true)
+        : (Ft(_0x3cf0f7, _0x4792b7.undoMutations, _0x16f17a.index), false);
+    },
+  };
+function Ft(_0x58bf7a, _0x2a9442, _0x2698ae) {
+  let _0xef5cc2 = _0x2698ae < 0 ? _0x2a9442.length : _0x2698ae;
+  _0x2a9442.slice(-_0xef5cc2).forEach((_0x3823e1) => {
+    _0x58bf7a.syncExecuteCommand(_0x3823e1.id, _0x3823e1.params);
+  });
+}
+function It(_0x87f0bd) {
+  "@babel/helpers - typeof";
+  return (
+    (It =
+      typeof Symbol == "function" && typeof Symbol.iterator == "symbol"
+        ? function (_0x5d3c1d) {
+            return typeof _0x5d3c1d;
+          }
+        : function (_0x23ae19) {
+            return _0x23ae19 &&
+              typeof Symbol == "function" &&
+              _0x23ae19.constructor === Symbol &&
+              _0x23ae19 !== Symbol.prototype
+              ? "symbol"
+              : typeof _0x23ae19;
+          }),
+    It(_0x87f0bd)
+  );
+}
+function Lt(_0x5bcef7, _0x4aeb98) {
+  if (It(_0x5bcef7) != "object" || !_0x5bcef7) return _0x5bcef7;
+  var _0x28c620 = _0x5bcef7[Symbol.toPrimitive];
+  if (_0x28c620 !== undefined) {
+    var _0x5d7104 = _0x28c620.call(_0x5bcef7, _0x4aeb98 || "default");
+    if (It(_0x5d7104) != "object") return _0x5d7104;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (_0x4aeb98 === "string" ? String : Number)(_0x5bcef7);
+}
+function Rt(_0x5e6ea1) {
+  var _0xebb517 = Lt(_0x5e6ea1, "string");
+  return It(_0xebb517) == "symbol" ? _0xebb517 : _0xebb517 + "";
+}
+function zt(_0x2fd28f, _0x332d43, _0x29b768) {
+  return (
+    (_0x332d43 = Rt(_0x332d43)) in _0x2fd28f
+      ? Object.defineProperty(_0x2fd28f, _0x332d43, {
+          value: _0x29b768,
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        })
+      : (_0x2fd28f[_0x332d43] = _0x29b768),
+    _0x2fd28f
+  );
+}
+const Bt = _0x22c050("board.mind-map-clipboard.service");
+var Vt = class extends _0x528b4a {
+  constructor(..._0x2dfd24) {
+    (super(..._0x2dfd24), zt(this, "_payload", null));
+  }
+  setPayload(_0x1a778c) {
+    this._payload = _0x1a778c;
+  }
+  getPayload() {
+    return this._payload;
+  }
+  dispose() {
+    ((this._payload = null), super.dispose());
+  }
+};
+const Ht = M.root["fillColor"],
+  Ut = M.root["strokeColor"],
+  Wt = M.root["textColor"],
+  Gt = M.root["fontSize"],
+  Kt = M.child["fillColor"],
+  qt = M.child["strokeColor"],
+  Jt = M.child["textColor"],
+  Yt = M.child["fontSize"];
+function K(_0x59c331, _0x41757b) {
+  let _0x509b00 = _0x59c331[_0x41757b],
+    _0xa3957d = H(_0x509b00 == null ? undefined : _0x509b00.element);
+  return !_0x509b00 || !_0xa3957d ? null : { data: _0x509b00, meta: _0xa3957d };
+}
+function Xt(_0x1079d8, _0x4cb9a7, _0x2c1188) {
+  return Object.values(_0x1079d8)
+    .map((_0xe3055c) => {
+      let _0x1d142 = H(_0xe3055c.element);
+      return _0x1d142 &&
+        _0x1d142.structureScopeId === _0x4cb9a7 &&
+        _0x1d142.parentNodeId === _0x2c1188
+        ? { data: _0xe3055c, meta: _0x1d142 }
+        : null;
+    })
+    .filter((_0x55e0e2) => !!_0x55e0e2)
+    .sort(Qt);
+}
+function Zt(_0x4359d7) {
+  var _0x100dd3;
+  return Ze(
+    (_0x100dd3 = _0x4359d7[_0x4359d7.length - 1]) == null
+      ? undefined
+      : _0x100dd3.meta["orderKey"],
+    undefined,
+  );
+}
+function Qt(_0x13f4b3, _0x467b94) {
+  return (
+    Xe(_0x13f4b3.meta["orderKey"], _0x467b94.meta["orderKey"]) ||
+    _0x13f4b3.data["elementId"].localeCompare(_0x467b94.data["elementId"])
+  );
+}
+function q(_0x1dbd45) {
+  return _0x1dbd45 ?? N.structureKind;
+}
+function $t(_0xb578f1, _0x3cffea, _0x32c3f8) {
+  return _0xb578f1 % 2 == 0 ? _0x3cffea : _0x32c3f8;
+}
+function en(_0x2deb5c, _0xd74814, _0x59bcd3) {
+  return _0x2deb5c === "mindmap-vertical"
+    ? _0x59bcd3 === "top" || _0x59bcd3 === "bottom"
+      ? _0x59bcd3
+      : "bottom"
+    : _0x2deb5c === "tree-left"
+      ? "left"
+      : _0x2deb5c === "tree-right"
+        ? "right"
+        : _0x2deb5c === "tree-alternate"
+          ? $t(_0xd74814, "left", "right")
+          : _0x2deb5c === "timeline-horizontal"
+            ? $t(_0xd74814, "top", "bottom")
+            : _0x2deb5c === "timeline-vertical"
+              ? $t(_0xd74814, "left", "right")
+              : _0x59bcd3 === "left" || _0x59bcd3 === "right"
+                ? _0x59bcd3
+                : "right";
+}
+function tn(_0x58d7d0, _0x5e41b8) {
+  return (
+    _0x58d7d0 ||
+    (_0x5e41b8 === "mindmap-vertical" || _0x5e41b8 === "timeline-horizontal"
+      ? "bottom"
+      : "right")
+  );
+}
+function nn(_0x34e374, _0x428ebc, _0x18f402 = N.structureKind, _0x216346 = 0) {
+  return (
+    _0x428ebc ||
+    (_0x34e374.parentNodeId
+      ? tn(_0x34e374.side, _0x18f402)
+      : en(_0x18f402, _0x216346))
+  );
+}
+function rn(_0x1319e4, _0x2bcb9a, _0x344359) {
+  let _0x57898a = _0x1319e4.transform["left"] ?? 0,
+    _0x54ab8e = _0x1319e4.transform["top"] ?? 0,
+    _0x185d2a = _0x1319e4.transform["width"] ?? F.nodeWidth,
+    _0x7278f0 = F.nodeWidth,
+    _0x51cc19 = F.nodeHeight,
+    _0x129d13 = N.horizontalGap,
+    _0x264bec = N.siblingGap;
+  return {
+    left:
+      _0x2bcb9a === "right"
+        ? _0x57898a + _0x185d2a + _0x129d13
+        : _0x57898a - _0x129d13 - _0x7278f0,
+    top: _0x54ab8e + _0x344359 * (_0x51cc19 + _0x264bec),
+  };
+}
+function an(_0x344e86) {
+  return {
+    redoMutations: _0x344e86.elements["map"]((_0x14301b) => ({
+      id: _0x23a10e.id,
+      params: {
+        unitId: _0x344e86.unitId,
+        subUnitId: _0x344e86.subUnitId,
+        element: _0x470e98.deepClone(_0x14301b),
+        allowLockedParent: true,
+      },
+    })),
+    undoMutations: [..._0x344e86.elements]
+      .reverse()
+      .map((_0x3076df) => ({
+        id: _0xf049a6.id,
+        params: {
+          unitId: _0x344e86.unitId,
+          subUnitId: _0x344e86.subUnitId,
+          elementId: _0x3076df.id,
+          allowLockedParent: true,
+        },
+      })),
+  };
+}
+function J(_0x19c68e, _0x18a6e8, _0xecb776, _0x95c32e = {}) {
+  if (_0xecb776.redoMutations["length"] === 0) return true;
+  let _0x2f44fd = _0x19c68e.get(_0x200817),
+    _0x4a265d = _0x48942c(_0xecb776.redoMutations, _0x2f44fd);
+  return _0x4a265d.result
+    ? (_0x95c32e.skipUndo ||
+        _0x19c68e
+          .get(_0xed9722)
+          .pushUndoRedo({
+            unitID: _0x18a6e8,
+            redoMutations: _0xecb776.redoMutations,
+            undoMutations: _0xecb776.undoMutations,
+          }),
+      true)
+    : (sn(_0x2f44fd, _0xecb776.undoMutations, _0x4a265d.index), false);
+}
+function on(_0x27904d, _0x529020) {
+  if (Object.is(_0x27904d, _0x529020)) return true;
+  if (
+    !_0x27904d ||
+    !_0x529020 ||
+    typeof _0x27904d != "object" ||
+    typeof _0x529020 != "object"
+  )
+    return false;
+  if (Array.isArray(_0x27904d) || Array.isArray(_0x529020))
+    return (
+      Array.isArray(_0x27904d) &&
+      Array.isArray(_0x529020) &&
+      _0x27904d.length === _0x529020.length &&
+      _0x27904d.every((_0x424dca, _0x2c53f1) =>
+        on(_0x424dca, _0x529020[_0x2c53f1]),
+      )
+    );
+  let _0x5ca4aa = _0x27904d,
+    _0xfa6636 = _0x529020,
+    _0x59d706 = Object.keys(_0x5ca4aa).filter(
+      (_0x4b0ec0) => _0x5ca4aa[_0x4b0ec0] !== undefined,
+    ),
+    _0x11179a = Object.keys(_0xfa6636).filter(
+      (_0x2b731d) => _0xfa6636[_0x2b731d] !== undefined,
+    );
+  return (
+    _0x59d706.length === _0x11179a.length &&
+    _0x59d706.every(
+      (_0x12b35f) =>
+        Object.prototype["hasOwnProperty"].call(_0xfa6636, _0x12b35f) &&
+        on(_0x5ca4aa[_0x12b35f], _0xfa6636[_0x12b35f]),
+    )
+  );
+}
+function sn(_0x14c254, _0x1ea8de, _0x23b686) {
+  let _0x29fc30 = _0x23b686 < 0 ? _0x1ea8de.length : _0x23b686;
+  _0x1ea8de.slice(-_0x29fc30).forEach((_0x4a191a) => {
+    _0x14c254.syncExecuteCommand(_0x4a191a.id, _0x4a191a.params);
+  });
+}
+function cn(_0x3897cf, _0x34f223) {
+  var _0x175c1f, _0x5508ff, _0x663234;
+  let _0x334db0 = _0x3897cf
+      .get(_0x3d3c2a)
+      .getElementData(_0x34f223.unitId, _0x34f223.subUnitId),
+    _0x31a447 = K(_0x334db0, _0x34f223.parentNodeId);
+  if (!_0x31a447) return false;
+  let _0x539ab7 = Xt(
+      _0x334db0,
+      _0x31a447.meta["structureScopeId"],
+      _0x34f223.parentNodeId,
+    ),
+    _0x1c4f5f = V(
+      (_0x175c1f = _0x334db0[_0x31a447.meta["structureScopeId"]]) == null
+        ? undefined
+        : _0x175c1f.element,
+    ),
+    _0xf57723 = _0x1c4f5f == null ? undefined : _0x1c4f5f.rootNodeId,
+    _0x2fdb0c = _0xf57723 ? _0x5df5fb(_0x334db0, _0xf57723) : null,
+    _0x6cac56 = q(
+      _0x1c4f5f == null || (_0x5508ff = _0x1c4f5f.layout) == null
+        ? undefined
+        : _0x5508ff.structureKind,
+    ),
+    _0x154231 = nn(_0x31a447.meta, _0x34f223.side, _0x6cac56, _0x539ab7.length),
+    _0x214a7a = rn(_0x31a447.data["element"], _0x154231, _0x539ab7.length),
+    _0x112acc = wn(
+      _0x334db0,
+      _0x31a447.meta["structureScopeId"],
+      _0x34f223.parentNodeId,
+      _0x34f223.nodeId ?? "",
+      _0x34f223.orderKey,
+      _0x34f223.referenceNodeId,
+      _0x34f223.placement,
+    ),
+    _0x215f23 = jt({
+      nodeId: _0x34f223.nodeId,
+      connectorId: _0x34f223.connectorId,
+      scopeId: _0x31a447.meta["structureScopeId"],
+      parentNode: _0x31a447.data["element"],
+      orderKey: _0x112acc,
+      side: _0x154231,
+      text: _0x34f223.text,
+      textData: _0x34f223.textData,
+      branchColorKey:
+        _0x31a447.meta["parentNodeId"] === null
+          ? "branch-" + _0x112acc
+          : _0x31a447.meta["branchColorKey"],
+      branchLineType:
+        _0x1c4f5f == null || (_0x663234 = _0x1c4f5f.layout) == null
+          ? undefined
+          : _0x663234.branchLineType,
+      treeRootTrunk: z(_0x6cac56) && _0x31a447.meta["parentNodeId"] === null,
+      timelineRootStructureKind:
+        B(_0x6cac56) && _0x31a447.meta["parentNodeId"] === null
+          ? _0x6cac56
+          : undefined,
+      left: _0x214a7a.left,
+      top: _0x214a7a.top,
+    });
+  mn(_0x215f23, _0x34f223, _0x31a447, _0x539ab7, _0x334db0);
+  let _0x3e45fe = an({
+      unitId: _0x34f223.unitId,
+      subUnitId: _0x34f223.subUnitId,
+      elements: _0x215f23.elements,
+    }),
+    _0x3c0940 = { ..._0x334db0 };
+  _0x215f23.elements["forEach"]((_0x27cebc) => {
+    _0x3c0940[_0x27cebc.id] = qn(
+      _0x34f223.unitId,
+      _0x34f223.subUnitId,
+      _0x27cebc,
+    );
+  });
+  let _0x381acf = Z(_0x3c0940, _0x31a447.meta["structureScopeId"]),
+    _0x36a78d =
+      _0x2fdb0c && _0xf57723
+        ? $n(
+            _0x3c0940,
+            _0x31a447.meta["structureScopeId"],
+            _0xf57723,
+            _0x2fdb0c,
+          )
+        : null;
+  return J(_0x3897cf, _0x34f223.unitId, {
+    redoMutations: [
+      ..._0x3e45fe.redoMutations,
+      ...((_0x381acf == null ? undefined : _0x381acf.redoMutations) ?? []),
+      ...((_0x36a78d == null ? undefined : _0x36a78d.redoMutations) ?? []),
+    ],
+    undoMutations: [
+      ...((_0x36a78d == null ? undefined : _0x36a78d.undoMutations) ?? []),
+      ...((_0x381acf == null ? undefined : _0x381acf.undoMutations) ?? []),
+      ..._0x3e45fe.undoMutations,
+    ],
+  });
+}
+function ln(
+  _0x2b92e4,
+  _0x5b085b,
+  _0x2e09de,
+  _0x474191,
+  _0x1a5f6b,
+  _0x1a7128,
+  _0x256032 = un(_0x2b92e4, _0x5b085b),
+) {
+  Object.values(_0x2b92e4)
+    .map((_0x21245a) => {
+      let _0x4468d2 = U(_0x21245a.element);
+      return _0x4468d2 &&
+        _0x4468d2.structureScopeId === _0x5b085b &&
+        _0x4468d2.parentNodeId === _0x2e09de
+        ? { data: _0x21245a, meta: _0x4468d2 }
+        : null;
+    })
+    .filter((_0x3a03b5) => !!_0x3a03b5)
+    .forEach(({ data: _0x510edb, meta: _0x397543 }) => {
+      let _0x1b2710 = K(_0x2b92e4, _0x397543.childNodeId);
+      _0x1b2710 &&
+        (bn(_0x510edb, _0x474191, _0x1a5f6b, _0x1a7128),
+        bn(_0x1b2710.data, _0x474191, _0x1a5f6b, _0x1a7128),
+        (_0x256032.get(_0x1b2710.data["elementId"]) ?? []).forEach(
+          (_0x3c5cc6) => {
+            bn(_0x3c5cc6, _0x474191, _0x1a5f6b, _0x1a7128);
+          },
+        ),
+        ln(
+          _0x2b92e4,
+          _0x5b085b,
+          _0x1b2710.data["element"].id,
+          _0x474191 && !_0x1b2710.meta["collapsed"],
+          _0x1a5f6b,
+          _0x1a7128,
+          _0x256032,
+        ));
+    });
+}
+function un(_0x56282b, _0x5b8158) {
+  let _0x26f667 = new Map();
+  return (
+    Object.values(_0x56282b).forEach((_0x295587) => {
+      let _0x56d142 = W(_0x295587.element);
+      if (
+        (_0x56d142 == null ? undefined : _0x56d142.structureScopeId) !==
+        _0x5b8158
+      )
+        return;
+      let _0x158d6d = _0x26f667.get(_0x56d142.ownerNodeId);
+      _0x158d6d
+        ? _0x158d6d.push(_0x295587)
+        : _0x26f667.set(_0x56d142.ownerNodeId, [_0x295587]);
+    }),
+    _0x26f667
+  );
+}
+function dn(
+  _0x871d8f,
+  _0x2b04ee,
+  _0x410edf,
+  _0x300ee6 = new Set(),
+  _0x3d8e48 = un(_0x871d8f, _0x2b04ee),
+) {
+  return (
+    _0x300ee6.add(_0x410edf),
+    (_0x3d8e48.get(_0x410edf) ?? []).forEach((_0x4c46b3) => {
+      _0x300ee6.add(_0x4c46b3.elementId);
+    }),
+    Object.values(_0x871d8f).forEach((_0x5ec0c5) => {
+      let _0x5e3abf = U(_0x5ec0c5.element);
+      (_0x5e3abf == null ? undefined : _0x5e3abf.structureScopeId) ===
+        _0x2b04ee &&
+        _0x5e3abf.childNodeId === _0x410edf &&
+        _0x300ee6.add(_0x5ec0c5.elementId);
+    }),
+    Object.values(_0x871d8f).forEach((_0x44f175) => {
+      let _0x175e86 = H(_0x44f175.element);
+      (_0x175e86 == null ? undefined : _0x175e86.structureScopeId) ===
+        _0x2b04ee &&
+        _0x175e86.parentNodeId === _0x410edf &&
+        (Object.values(_0x871d8f).forEach((_0x2c8387) => {
+          let _0x3454a9 = U(_0x2c8387.element);
+          (_0x3454a9 == null ? undefined : _0x3454a9.structureScopeId) ===
+            _0x2b04ee &&
+            _0x3454a9.parentNodeId === _0x410edf &&
+            _0x3454a9.childNodeId === _0x44f175.elementId &&
+            _0x300ee6.add(_0x2c8387.elementId);
+        }),
+        dn(_0x871d8f, _0x2b04ee, _0x44f175.elementId, _0x300ee6, _0x3d8e48));
+    }),
+    _0x300ee6
+  );
+}
+function fn(_0x3d2df4, _0x3f159b, _0x3e8efe) {
+  for (let _0x4d64f6 of Object.values(_0x3d2df4)) {
+    let _0x4d0895 = U(_0x4d64f6.element);
+    if (
+      (_0x4d0895 == null ? undefined : _0x4d0895.structureScopeId) ===
+        _0x3f159b &&
+      _0x4d0895.childNodeId === _0x3e8efe
+    )
+      return _0x4d64f6;
+  }
+  return null;
+}
+function pn(_0x206bfe, _0x314c00, _0x12bce4) {
+  var _0x5b483f;
+  let _0x3f5a7e = ur(_0x314c00, {
+    nodeId: _0x314c00.data["elementId"],
+    text:
+      ((_0x5b483f = _0x206bfe.shapeData["shapeText"]) == null
+        ? undefined
+        : _0x5b483f.text) ?? "",
+    textData: _0x12bce4,
+  });
+  return !_0x3f5a7e || _0x3f5a7e.type !== _0x30113b.Shape
+    ? _0x206bfe
+    : { ..._0x206bfe, shapeData: _0x470e98.deepClone(_0x3f5a7e.shapeData) };
+}
+function mn(_0x42959b, _0x12125d, _0x7de7cc, _0x2db9a6, _0x282fc1) {
+  let _0x457c86 = _0x12125d.referenceNodeId
+    ? K(_0x282fc1, _0x12125d.referenceNodeId)
+    : _0x7de7cc.meta["parentNodeId"] === null
+      ? (_0x2db9a6[0] ?? null)
+      : _0x7de7cc;
+  if (!_0x457c86) return;
+  _0x42959b.node["shapeData"] = pn(
+    _0x42959b.node,
+    _0x457c86,
+    _0x12125d.textData,
+  ).shapeData;
+  let _0x4c4d6f = fn(
+    _0x282fc1,
+    _0x457c86.meta["structureScopeId"],
+    _0x457c86.data["elementId"],
+  );
+  (_0x4c4d6f == null ? undefined : _0x4c4d6f.element["type"]) ===
+    _0x30113b.Connector &&
+    (_0x42959b.connector["connectorData"].style = _0x470e98.deepClone(
+      _0x4c4d6f.element["connectorData"].style ?? {},
+    ));
+}
+function hn(_0x2c2046) {
+  if (_0x2c2046 === "dash") return [8, 6];
+  if (_0x2c2046 === "dot") return [1, 6];
+}
+function gn(_0x1de087, _0x4b6ed3, _0x4afdf0, _0x3ad6cd) {
+  try {
+    let _0x5c258e = new _0x5d658b(
+      _0x1de087,
+      "mind-map-node-size-probe",
+      _0x4b6ed3,
+    );
+    _0x5c258e.updateContext({ width: _0x4afdf0, height: _0x3ad6cd });
+    let _0x23ed3c = _0x5c258e.getShapeTextRect({
+      left: 0,
+      top: 0,
+      width: _0x4afdf0,
+      height: _0x3ad6cd,
+    });
+    return Number.isFinite(_0x23ed3c.width) && _0x23ed3c.width > 0
+      ? _0x23ed3c.width
+      : null;
+  } catch {
+    return null;
+  }
+}
+function _n(_0x16e91f, _0x144622, _0x1aac4c) {
+  if (!_0x1aac4c || _0x1aac4c === _0x16e91f.shapeData["shapeType"])
+    return _0x16e91f.transform;
+  let _0xf41912 = _0x16e91f.transform["width"] ?? F.nodeWidth,
+    _0x1da1ca = _0x16e91f.transform["height"] ?? F.nodeHeight;
+  if (
+    !Number.isFinite(_0xf41912) ||
+    !Number.isFinite(_0x1da1ca) ||
+    _0xf41912 <= 0 ||
+    _0x1da1ca <= 0
+  )
+    return _0x16e91f.transform;
+  let _0xf21601 = gn(
+      _0x16e91f.shapeData["shapeType"] ?? _0x2f4153.RoundRect,
+      _0x16e91f.shapeData,
+      _0xf41912,
+      _0x1da1ca,
+    ),
+    _0x1144c4 = gn(_0x1aac4c, _0x144622, _0xf41912, _0x1da1ca);
+  return !_0xf21601 || !_0x1144c4 || _0x1144c4 >= _0xf21601
+    ? _0x16e91f.transform
+    : {
+        ..._0x16e91f.transform,
+        width: Math.ceil((_0xf41912 * _0xf21601) / _0x1144c4),
+      };
+}
+function vn(_0x205bd8) {
+  return (
+    (_0x205bd8 == null ? undefined : _0x205bd8.fontSize) !== undefined ||
+    (_0x205bd8 == null ? undefined : _0x205bd8.bold) !== undefined
+  );
+}
+function yn(_0x14478d, _0xfc7ea1) {
+  if (!_0xfc7ea1) return _0x14478d.transform;
+  let _0x513ef2 = We(_0x14478d),
+    _0x5af375 = _0x14478d.transform["width"] ?? 0,
+    _0x474435 = _0x14478d.transform["height"] ?? 0;
+  return _0x5af375 === _0x513ef2.width && _0x474435 === _0x513ef2.height
+    ? _0x14478d.transform
+    : {
+        ..._0x14478d.transform,
+        width: _0x513ef2.width,
+        height: _0x513ef2.height,
+      };
+}
+function bn(_0x41abb5, _0x439ea4, _0x5dedd2, _0x3742d3) {
+  let _0x346409 = {
+    ..._0x470e98.deepClone(_0x41abb5.element),
+    visible: _0x439ea4,
+  };
+  (_0x5dedd2.push({
+    id: G.id,
+    params: {
+      unitId: _0x41abb5.unitId,
+      subUnitId: _0x41abb5.subUnitId,
+      elementId: _0x41abb5.elementId,
+      element: _0x346409,
+      transform: _0x41abb5.transform,
+    },
+  }),
+    _0x3742d3.unshift({
+      id: G.id,
+      params: {
+        unitId: _0x41abb5.unitId,
+        subUnitId: _0x41abb5.subUnitId,
+        elementId: _0x41abb5.elementId,
+        element: _0x470e98.deepClone(_0x41abb5.element),
+        transform: _0x41abb5.transform,
+      },
+    }));
+}
+function xn(_0x35522f, _0x1a30b0, _0xfb127b, _0x53cef6) {
+  var _0x51b1bc;
+  let _0x1744e3 = _0x470e98.deepClone(_0x35522f.element);
+  ((_0x1744e3.custom = {
+    ...(_0x1744e3.custom ?? {}),
+    mindmap: {
+      ...(((_0x51b1bc = _0x1744e3.custom) == null
+        ? undefined
+        : _0x51b1bc.mindmap) ?? {}),
+      collapsed: _0x1a30b0,
+    },
+  }),
+    _0xfb127b.push({
+      id: G.id,
+      params: {
+        unitId: _0x35522f.unitId,
+        subUnitId: _0x35522f.subUnitId,
+        elementId: _0x35522f.elementId,
+        element: _0x1744e3,
+        transform: _0x35522f.transform,
+      },
+    }),
+    _0x53cef6.unshift({
+      id: G.id,
+      params: {
+        unitId: _0x35522f.unitId,
+        subUnitId: _0x35522f.subUnitId,
+        elementId: _0x35522f.elementId,
+        element: _0x470e98.deepClone(_0x35522f.element),
+        transform: _0x35522f.transform,
+      },
+    }));
+}
+function Y(_0x3ea957, _0x475192) {
+  return {
+    redoMutation: {
+      id: G.id,
+      params: {
+        unitId: _0x3ea957.unitId,
+        subUnitId: _0x3ea957.subUnitId,
+        elementId: _0x3ea957.elementId,
+        element: _0x475192,
+        transform: _0x475192.transform,
+      },
+    },
+    undoMutation: {
+      id: G.id,
+      params: {
+        unitId: _0x3ea957.unitId,
+        subUnitId: _0x3ea957.subUnitId,
+        elementId: _0x3ea957.elementId,
+        element: _0x470e98.deepClone(_0x3ea957.element),
+        transform: _0x3ea957.transform,
+      },
+    },
+  };
+}
+function Sn(_0x329966, _0x577e0d, _0x472ec2, _0x357318) {
+  let _0x1fd2a6 = K(_0x329966, _0x472ec2);
+  for (; _0x1fd2a6 != null && _0x1fd2a6.meta["parentNodeId"];) {
+    if (_0x1fd2a6.meta["parentNodeId"] === _0x357318) return true;
+    if (
+      ((_0x1fd2a6 = K(_0x329966, _0x1fd2a6.meta["parentNodeId"])),
+      (_0x1fd2a6 == null ? undefined : _0x1fd2a6.meta["structureScopeId"]) !==
+        _0x577e0d)
+    )
+      return false;
+  }
+  return false;
+}
+function Cn(_0xc051d3, _0x5cea53, _0x59fe43) {
+  return [...dn(_0xc051d3, _0x5cea53, _0x59fe43)]
+    .map((_0x2b679c) => _0xc051d3[_0x2b679c])
+    .filter((_0x5a6739) => !!_0x5a6739);
+}
+function wn(
+  _0x59d911,
+  _0x3eeb05,
+  _0xcc5e8c,
+  _0x4dfec9,
+  _0x28d707,
+  _0x51ea24,
+  _0x55a3a6,
+) {
+  if (_0x28d707) return _0x28d707;
+  let _0x51e552 = Xt(_0x59d911, _0x3eeb05, _0xcc5e8c).filter(
+      (_0x136c82) => _0x136c82.data["elementId"] !== _0x4dfec9,
+    ),
+    _0x5b4fab = _0x51ea24
+      ? _0x51e552.findIndex(
+          (_0x4c3aa8) => _0x4c3aa8.data["elementId"] === _0x51ea24,
+        )
+      : -1;
+  if (_0x5b4fab >= 0 && _0x55a3a6) {
+    let _0x2c912b =
+        _0x55a3a6 === "before"
+          ? _0x51e552[_0x5b4fab - 1]
+          : _0x51e552[_0x5b4fab],
+      _0x5d1e2b =
+        _0x55a3a6 === "before"
+          ? _0x51e552[_0x5b4fab]
+          : _0x51e552[_0x5b4fab + 1];
+    return Ze(
+      _0x2c912b == null ? undefined : _0x2c912b.meta["orderKey"],
+      _0x5d1e2b == null ? undefined : _0x5d1e2b.meta["orderKey"],
+    );
+  }
+  return Zt(_0x51e552);
+}
+function Tn(_0xd796ae, _0x1c6214) {
+  let _0x3c1dfb = _0x470e98.deepClone(_0xd796ae.element),
+    _0x5c14bf = R(_0x1c6214.branchLineType),
+    _0x2809af = H(_0x1c6214.parentNode),
+    _0x198f04 = _0x1c6214.timelineRootStructureKind
+      ? En(
+          _0x1c6214.elementData,
+          _0x1c6214.parentNode["id"],
+          _0x1c6214.childNode["id"],
+        )
+      : undefined,
+    _0x270175 = _0x1c6214.timelineRootStructureKind
+      ? Me({
+          idPrefix: _0x3c1dfb.id,
+          parentNode: _0x1c6214.parentNode,
+          childNode: _0x1c6214.childNode,
+          previousAxisNode: _0x198f04,
+          structureKind: _0x1c6214.timelineRootStructureKind,
+          childSide: _0x1c6214.side,
+          branchLineType: _0x5c14bf,
+        })
+      : _0x1c6214.timelineHorizontalRootNodeId &&
+          (_0x2809af == null ? undefined : _0x2809af.parentNodeId) !== null
+        ? Ne({
+            idPrefix: _0x3c1dfb.id,
+            parentNode: _0x1c6214.parentNode,
+            childNode: _0x1c6214.childNode,
+            parentIsAxisNode:
+              (_0x2809af == null ? undefined : _0x2809af.parentNodeId) ===
+              _0x1c6214.timelineHorizontalRootNodeId,
+            branchLineType: _0x5c14bf,
+          })
+        : _0x1c6214.timelineVerticalRootNodeId &&
+            (_0x2809af == null ? undefined : _0x2809af.parentNodeId) !== null
+          ? Pe({
+              idPrefix: _0x3c1dfb.id,
+              parentNode: _0x1c6214.parentNode,
+              childNode: _0x1c6214.childNode,
+              parentIsAxisNode:
+                (_0x2809af == null ? undefined : _0x2809af.parentNodeId) ===
+                _0x1c6214.timelineVerticalRootNodeId,
+              side: _0x1c6214.side,
+              branchLineType: _0x5c14bf,
+              forceTrunk: _0x1c6214.forceTrunk,
+            })
+          : _0x1c6214.treeRootTrunk
+            ? je({
+                idPrefix: _0x3c1dfb.id,
+                parentNode: _0x1c6214.parentNode,
+                childNode: _0x1c6214.childNode,
+                side: _0x1c6214.side,
+                branchLineType: _0x5c14bf,
+              })
+            : null,
+    { startSide: _0x149a14, endSide: _0x13f66e } =
+      _0x270175 ?? L(_0x1c6214.side),
+    _0x3ca76e =
+      (_0x270175 == null ? undefined : _0x270175.routePoints) ??
+      De({
+        idPrefix: _0x3c1dfb.id,
+        parentNode: _0x1c6214.parentNode,
+        childNode: _0x1c6214.childNode,
+        side: _0x1c6214.side,
+        forceTrunk: _0x1c6214.forceTrunk,
+      }),
+    _0x2cd78a =
+      (_0x270175 == null ? undefined : _0x270175.curveData) ??
+      (_0x5c14bf === "curve"
+        ? Ae({
+            idPrefix: _0x3c1dfb.id,
+            parentNode: _0x1c6214.parentNode,
+            childNode: _0x1c6214.childNode,
+            side: _0x1c6214.side,
+          })
+        : undefined),
+    _0x1876f4 =
+      (_0x270175 == null ? undefined : _0x270175.transform) ??
+      Oe({
+        parentNode: _0x1c6214.parentNode,
+        childNode: _0x1c6214.childNode,
+        side: _0x1c6214.side,
+        routePoints: _0x3ca76e,
+        curveData: _0x2cd78a,
+      });
+  return (
+    (_0x3c1dfb.transform = _0x3c4868(_0x1c6214.elementData, {
+      parentId: _0x3c1dfb.parentId,
+      worldTransform: _0x1876f4,
+    })),
+    (_0x3c1dfb.connectorData = {
+      ..._0x3c1dfb.connectorData,
+      start:
+        (_0x270175 == null ? undefined : _0x270175.startEndpoint) ??
+        we(
+          _0x1c6214.parentNode["id"],
+          _0x149a14,
+          (_0x270175 == null ? undefined : _0x270175.startPoint) ??
+            I(_0x1c6214.parentNode, _0x149a14),
+        ),
+      end:
+        (_0x270175 == null ? undefined : _0x270175.endEndpoint) ??
+        we(
+          _0x1c6214.childNode["id"],
+          _0x13f66e,
+          (_0x270175 == null ? undefined : _0x270175.endPoint) ??
+            I(_0x1c6214.childNode, _0x13f66e),
+        ),
+      routing: _0x5c14bf === "curve" ? "curve" : "orthogonal",
+      routingMode: "manual",
+      waypoints: _0x5c14bf === "curve" ? [] : _0x3ca76e,
+      orthogonalData:
+        _0x5c14bf === "curve"
+          ? undefined
+          : {
+              ...(_0x3c1dfb.connectorData["orthogonalData"] ?? {}),
+              routePoints: _0x3ca76e,
+            },
+      curveData: _0x2cd78a,
+      style: {
+        ...(_0x3c1dfb.connectorData["style"] ?? {}),
+        cornerStyle: _0x5c14bf === "orthogonal" ? "miter" : "rounded",
+      },
+    }),
+    _0x5c14bf !== "curve" && delete _0x3c1dfb.connectorData["curveData"],
+    _0x5c14bf === "curve" && delete _0x3c1dfb.connectorData["orthogonalData"],
+    _0x3c1dfb
+  );
+}
+function En(_0xbdd273, _0x5326af, _0x4b75c9) {
+  var _0x44d9f8;
+  let _0x3bb5f2 = H(
+    (_0x44d9f8 = _0xbdd273[_0x5326af]) == null ? undefined : _0x44d9f8.element,
+  );
+  if (!_0x3bb5f2) return;
+  let _0x33cb44 = Xt(_0xbdd273, _0x3bb5f2.structureScopeId, _0x5326af),
+    _0x4bbdc1 = _0x33cb44.findIndex(
+      (_0x149659) => _0x149659.data["elementId"] === _0x4b75c9,
+    );
+  if (!(_0x4bbdc1 <= 0))
+    return (
+      Jn(_0xbdd273, _0x33cb44[_0x4bbdc1 - 1].data["elementId"]) ?? undefined
+    );
+}
+function Dn(_0xa433c6, _0x5b20df, _0x5c2fdc, _0x1cb5e8) {
+  return Object.values(_0xa433c6).filter((_0x422072) => {
+    let _0x1a8dca = H(_0x422072.element);
+    return (
+      (_0x1a8dca == null ? undefined : _0x1a8dca.structureScopeId) ===
+        _0x5b20df &&
+      _0x1a8dca.parentNodeId === _0x5c2fdc &&
+      (_0x1a8dca.side ?? _0x1cb5e8) === _0x1cb5e8
+    );
+  }).length;
+}
+function On(_0x52c148, _0xc3fdfd) {
+  var _0x60cb63, _0x4d6724;
+  let _0x5c00d6 = H(_0x52c148.element),
+    _0x235a59 = _0x470e98.deepClone(_0x52c148.element);
+  if (
+    ((_0x235a59.parentId = _0xc3fdfd.scopeId),
+    (_0x235a59.custom = {
+      ...(_0x235a59.custom ?? {}),
+      structured: {
+        ...(((_0x60cb63 = _0x235a59.custom) == null
+          ? undefined
+          : _0x60cb63.structured) ?? {}),
+        modeId: _0x5c00d6 == null ? undefined : _0x5c00d6.modeId,
+        semanticRole: _0x5c00d6 == null ? undefined : _0x5c00d6.semanticRole,
+        structureScopeId: _0xc3fdfd.scopeId,
+      },
+      mindmap: {
+        ...(((_0x4d6724 = _0x235a59.custom) == null
+          ? undefined
+          : _0x4d6724.mindmap) ?? {}),
+        parentNodeId: _0xc3fdfd.parentNodeId,
+        orderKey: _0xc3fdfd.orderKey,
+        collapsed:
+          (_0x5c00d6 == null ? undefined : _0x5c00d6.collapsed) ?? false,
+        ...(_0xc3fdfd.root
+          ? null
+          : {
+              side:
+                _0xc3fdfd.side ??
+                (_0x5c00d6 == null ? undefined : _0x5c00d6.side) ??
+                "right",
+            }),
+      },
+    }),
+    _0xc3fdfd.root &&
+      (delete _0x235a59.custom["mindmap"].side, "shapeData" in _0x235a59))
+  ) {
+    var _0xe6843;
+    let _0x281b8b = _0x235a59.shapeData["shapeText"] ?? {},
+      _0x4473b6 =
+        _0x281b8b.dataModel && typeof _0x281b8b.dataModel == "object"
+          ? _0x470e98.deepClone(_0x281b8b.dataModel)
+          : {},
+      _0x32a796 = typeof _0x281b8b.text == "string" ? _0x281b8b.text : "",
+      _0x3184bc = _0x346bc5.CENTER,
+      _0x1105cf = _0x1229d4.MIDDLE,
+      _0x19509c = Je({
+        currentDataModel: _0x4473b6,
+        horizontalAlign: _0x3184bc,
+        shapeText: { ..._0x281b8b, color: Wt, fontSize: Gt },
+        text: _0x32a796,
+        textStyle: qe({ ..._0x281b8b, color: Wt, fontSize: Gt }, undefined),
+        verticalAlign: _0x1105cf,
+      }),
+      _0x39297e = {
+        ..._0x281b8b,
+        ..._0x19509c,
+        color: Wt,
+        fontSize: Gt,
+        horizontalAlign: _0x3184bc,
+        verticalAlign: _0x1105cf,
+      };
+    ((_0x235a59.shapeData = {
+      ..._0x235a59.shapeData,
+      fill: { fillType: _0x24dfc3.SolidFill, color: Ht },
+      stroke: {
+        ...(_0x235a59.shapeData["stroke"] ?? {}),
+        lineStrokeType:
+          ((_0xe6843 = _0x235a59.shapeData["stroke"]) == null
+            ? undefined
+            : _0xe6843.lineStrokeType) ?? _0x3a1aca.SolidLine,
+        color: Ut,
+      },
+      textRectPadding: _0x235a59.shapeData["textRectPadding"] ?? { ...Ce },
+      shapeText: _0x39297e,
+    }),
+      (_0x235a59.custom["mindmap"] = {
+        ..._0x235a59.custom["mindmap"],
+        size: { minWidth: F.rootWidth, minHeight: F.rootHeight },
+      }));
+  }
+  if (_0xc3fdfd.demoteToChild && "shapeData" in _0x235a59) {
+    var _0x4611c1;
+    let _0x2bc5bc = _0x235a59.shapeData["shapeText"] ?? {},
+      _0x4eae8c =
+        _0x2bc5bc.dataModel && typeof _0x2bc5bc.dataModel == "object"
+          ? _0x470e98.deepClone(_0x2bc5bc.dataModel)
+          : {},
+      _0x53e08f = typeof _0x2bc5bc.text == "string" ? _0x2bc5bc.text : "",
+      _0x588527 = _0x346bc5.LEFT,
+      _0x348add = _0x1229d4.MIDDLE,
+      _0x135398 = Je({
+        currentDataModel: _0x4eae8c,
+        horizontalAlign: _0x588527,
+        shapeText: { ..._0x2bc5bc, color: Jt, fontSize: Yt },
+        text: _0x53e08f,
+        textStyle: qe({ ..._0x2bc5bc, color: Jt, fontSize: Yt }, undefined),
+        verticalAlign: _0x348add,
+      }),
+      _0x1ca3fc = {
+        ..._0x2bc5bc,
+        ..._0x135398,
+        color: Jt,
+        fontSize: Yt,
+        horizontalAlign: _0x588527,
+        verticalAlign: _0x348add,
+      };
+    ((_0x235a59.shapeData = {
+      ..._0x235a59.shapeData,
+      fill: { fillType: _0x24dfc3.SolidFill, color: Kt },
+      stroke: {
+        ...(_0x235a59.shapeData["stroke"] ?? {}),
+        lineStrokeType:
+          ((_0x4611c1 = _0x235a59.shapeData["stroke"]) == null
+            ? undefined
+            : _0x4611c1.lineStrokeType) ?? _0x3a1aca.SolidLine,
+        color: qt,
+      },
+      textRectPadding: _0x235a59.shapeData["textRectPadding"] ?? { ...Ce },
+      shapeText: _0x1ca3fc,
+    }),
+      (_0x235a59.custom["mindmap"] = {
+        ..._0x235a59.custom["mindmap"],
+        size: { minWidth: F.nodeWidth, minHeight: F.nodeHeight },
+      }));
+  }
+  return _0x235a59;
+}
+function kn(_0x231201, _0x3484a3) {
+  var _0x58c8c0;
+  let _0x403d21 = U(_0x231201.element),
+    _0x2b8aa4 = _0x470e98.deepClone(_0x231201.element);
+  if (
+    ((_0x2b8aa4.parentId = _0x3484a3.scopeId),
+    (_0x2b8aa4.custom = {
+      ...(_0x2b8aa4.custom ?? {}),
+      structured: {
+        ...(((_0x58c8c0 = _0x2b8aa4.custom) == null
+          ? undefined
+          : _0x58c8c0.structured) ?? {}),
+        modeId: _0x403d21 == null ? undefined : _0x403d21.modeId,
+        semanticRole: _0x403d21 == null ? undefined : _0x403d21.semanticRole,
+        structureScopeId: _0x3484a3.scopeId,
+      },
+      mindmap: {
+        managed: true,
+        parentNodeId: _0x3484a3.parentNodeId,
+        childNodeId: _0x3484a3.childNodeId,
+      },
+    }),
+    _0x3484a3.updateEndpoints)
+  ) {
+    let { startSide: _0x123138, endSide: _0x3c8894 } = L(
+      _0x3484a3.side ?? "right",
+    );
+    _0x2b8aa4.connectorData = {
+      ..._0x2b8aa4.connectorData,
+      start: we(_0x3484a3.parentNodeId, _0x123138),
+      end: we(_0x3484a3.childNodeId, _0x3c8894),
+    };
+  }
+  return _0x2b8aa4;
+}
+function An(_0x4ee862, _0x142c91, _0xbe7131, _0x406d90, _0x19af1f, _0x4ccf4c) {
+  _0x142c91.forEach((_0x51b0d4) => {
+    let _0x2d4550 = H(_0x51b0d4.element);
+    if (_0x2d4550) {
+      let _0x561082 = On(_0x51b0d4, {
+          scopeId: _0xbe7131.scopeId,
+          parentNodeId:
+            _0x51b0d4.elementId === _0xbe7131.rootNodeId
+              ? _0xbe7131.rootParentNodeId
+              : _0x2d4550.parentNodeId,
+          orderKey:
+            _0x51b0d4.elementId === _0xbe7131.rootNodeId
+              ? _0xbe7131.rootOrderKey
+              : _0x2d4550.orderKey,
+          side:
+            _0x51b0d4.elementId === _0xbe7131.rootNodeId
+              ? _0xbe7131.rootSide
+              : _0x2d4550.side,
+          root:
+            _0x51b0d4.elementId === _0xbe7131.rootNodeId &&
+            _0xbe7131.rootIsDetached,
+          demoteToChild:
+            _0x51b0d4.elementId === _0xbe7131.rootNodeId &&
+            _0xbe7131.rootIsDemoted,
+        }),
+        _0x1cee95 = Y(_0x51b0d4, _0x561082);
+      (_0x406d90.push(_0x1cee95.redoMutation),
+        _0x19af1f.unshift(_0x1cee95.undoMutation),
+        _0x4ccf4c &&
+          (_0x4ccf4c[_0x51b0d4.elementId] = X(_0x51b0d4, _0x561082)));
+      return;
+    }
+    let _0x5511a0 = U(_0x51b0d4.element);
+    if (_0x5511a0 && _0x51b0d4.elementId !== _0xbe7131.incomingConnectorId) {
+      let _0x42b729 = K(_0x4ee862, _0x5511a0.childNodeId),
+        _0x282c41 = kn(_0x51b0d4, {
+          scopeId: _0xbe7131.scopeId,
+          parentNodeId: _0x5511a0.parentNodeId,
+          childNodeId: _0x5511a0.childNodeId,
+          side: _0x42b729 == null ? undefined : _0x42b729.meta["side"],
+        }),
+        _0x685e9c = Y(_0x51b0d4, _0x282c41);
+      (_0x406d90.push(_0x685e9c.redoMutation),
+        _0x19af1f.unshift(_0x685e9c.undoMutation),
+        _0x4ccf4c &&
+          (_0x4ccf4c[_0x51b0d4.elementId] = X(_0x51b0d4, _0x282c41)));
+      return;
+    }
+    let _0x4152bb = W(_0x51b0d4.element);
+    if (_0x4152bb) {
+      var _0x61729d, _0x46bc75;
+      let _0xd25101 = _0x470e98.deepClone(_0x51b0d4.element);
+      ((_0xd25101.parentId = _0xbe7131.scopeId),
+        (_0xd25101.custom = {
+          ...(_0xd25101.custom ?? {}),
+          structured: {
+            ...(((_0x61729d = _0xd25101.custom) == null
+              ? undefined
+              : _0x61729d.structured) ?? {}),
+            modeId: _0x4152bb.modeId,
+            semanticRole: _0x4152bb.semanticRole,
+            structureScopeId: _0xbe7131.scopeId,
+          },
+          mindmap: {
+            ...(((_0x46bc75 = _0xd25101.custom) == null
+              ? undefined
+              : _0x46bc75.mindmap) ?? {}),
+            ownerNodeId: _0x4152bb.ownerNodeId,
+          },
+        }));
+      let _0x33a756 = Y(_0x51b0d4, _0xd25101);
+      (_0x406d90.push(_0x33a756.redoMutation),
+        _0x19af1f.unshift(_0x33a756.undoMutation),
+        _0x4ccf4c &&
+          (_0x4ccf4c[_0x51b0d4.elementId] = X(_0x51b0d4, _0xd25101)));
+    }
+  });
+}
+function jn(_0x5d8646, _0x4a9f36, _0x58871c, _0xfaf9ac, _0x5204fc) {
+  _0x58871c
+    .filter(
+      (_0x432103, _0x249932) => _0x58871c.indexOf(_0x432103) === _0x249932,
+    )
+    .forEach((_0x54b2a9) => {
+      var _0x3e647a, _0x663b72;
+      let _0x524849 =
+          (_0x3e647a = V(
+            (_0x663b72 = _0x4a9f36[_0x54b2a9]) == null
+              ? undefined
+              : _0x663b72.element,
+          )) == null
+            ? undefined
+            : _0x3e647a.rootNodeId,
+        _0x128212 = _0x524849 ? _0x5df5fb(_0x5d8646, _0x524849) : null,
+        _0x83d68f = Z(_0x4a9f36, _0x54b2a9);
+      if (!_0x83d68f) return;
+      let _0x3e8d56 =
+        _0x128212 && _0x524849
+          ? $n(_0x4a9f36, _0x54b2a9, _0x524849, _0x128212)
+          : null;
+      (_0xfaf9ac.push(
+        ..._0x83d68f.redoMutations,
+        ...((_0x3e8d56 == null ? undefined : _0x3e8d56.redoMutations) ?? []),
+      ),
+        _0x5204fc.unshift(
+          ...((_0x3e8d56 == null ? undefined : _0x3e8d56.undoMutations) ?? []),
+          ..._0x83d68f.undoMutations,
+        ));
+    });
+}
+function Mn(_0x3e36a0) {
+  let _0x5e6364 = _0x3e36a0
+      .filter((_0x502f9c) => !!H(_0x502f9c.element))
+      .map((_0x288397) => ({
+        left: _0x288397.element["transform"].left ?? 0,
+        top: _0x288397.element["transform"].top ?? 0,
+        right:
+          (_0x288397.element["transform"].left ?? 0) +
+          (_0x288397.element["transform"].width ?? F.nodeWidth),
+        bottom:
+          (_0x288397.element["transform"].top ?? 0) +
+          (_0x288397.element["transform"].height ?? F.nodeHeight),
+      })),
+    _0xce2677 = F.containerPadding,
+    _0x1245d6 =
+      Math.min(..._0x5e6364.map((_0x3f9bca) => _0x3f9bca.left)) - _0xce2677,
+    _0x4a193a =
+      Math.min(..._0x5e6364.map((_0x351244) => _0x351244.top)) - _0xce2677,
+    _0x287fa2 =
+      Math.max(..._0x5e6364.map((_0x223522) => _0x223522.right)) + _0xce2677,
+    _0x5d21a1 =
+      Math.max(..._0x5e6364.map((_0x41ba55) => _0x41ba55.bottom)) + _0xce2677;
+  return {
+    left: _0x1245d6,
+    top: _0x4a193a,
+    width: _0x287fa2 - _0x1245d6,
+    height: _0x5d21a1 - _0x4a193a,
+  };
+}
+function Nn(_0x2ff486, _0x5efa1b) {
+  let _0x356520 = H(_0x2ff486.element);
+  if (
+    (_0x356520 == null ? undefined : _0x356520.structureScopeId) === _0x5efa1b
+  )
+    return true;
+  let _0x38d931 = U(_0x2ff486.element);
+  if (
+    (_0x38d931 == null ? undefined : _0x38d931.structureScopeId) === _0x5efa1b
+  )
+    return true;
+  let _0x491c22 = W(_0x2ff486.element);
+  return (
+    (_0x491c22 == null ? undefined : _0x491c22.structureScopeId) ===
+      _0x5efa1b || _0x2ff486.element["id"] === _0x5efa1b
+  );
+}
+function Pn(_0x1392df, _0x246a86, _0x3b5c60) {
+  let _0x5c8c46 = _0x470e98.deepClone(_0x1392df.element);
+  return (
+    (_0x5c8c46.transform = {
+      ..._0x5c8c46.transform,
+      left: (_0x5c8c46.transform["left"] ?? 0) + _0x246a86,
+      top: (_0x5c8c46.transform["top"] ?? 0) + _0x3b5c60,
+    }),
+    _0x5c8c46
+  );
+}
+function Fn(_0x3cb904, _0x22351b) {
+  let _0x2654c8 = _0x3cb904[_0x22351b.scopeId],
+    _0xb7e5d8 = V(_0x2654c8 == null ? undefined : _0x2654c8.element);
+  if (!_0x2654c8 || !_0xb7e5d8) return null;
+  let _0x1a2505 = [],
+    _0x229464 = [],
+    _0xb586fa = { ..._0x3cb904 },
+    _0x20ef50 = new Set(_0x22351b.excludeElementIds ?? []),
+    _0x53124f = Pn(_0x2654c8, _0x22351b.deltaX, _0x22351b.deltaY),
+    _0x2a2e5c = Y(_0x2654c8, _0x53124f);
+  return (
+    _0x1a2505.push(_0x2a2e5c.redoMutation),
+    _0x229464.unshift(_0x2a2e5c.undoMutation),
+    (_0xb586fa[_0x2654c8.elementId] = X(_0x2654c8, _0x53124f)),
+    _0x22351b.preserveExcludedWorldTransforms &&
+      Object.values(_0x3cb904)
+        .filter(
+          (_0x56e7d3) =>
+            _0x20ef50.has(_0x56e7d3.elementId) &&
+            Nn(_0x56e7d3, _0x22351b.scopeId) &&
+            In(_0x56e7d3, _0x3cb904, _0x22351b.scopeId, _0x20ef50),
+        )
+        .forEach((_0x2f9827) => {
+          let _0x459960 = Pn(_0x2f9827, -_0x22351b.deltaX, -_0x22351b.deltaY),
+            _0x1e330e = Y(_0x2f9827, _0x459960);
+          (_0x1a2505.push(_0x1e330e.redoMutation),
+            _0x229464.unshift(_0x1e330e.undoMutation),
+            (_0xb586fa[_0x2f9827.elementId] = X(_0x2f9827, _0x459960)));
+        }),
+    Object.values(_0x3cb904).forEach((_0x25337c) => {
+      var _0x42a54b, _0x47faf6, _0x2ee5ac, _0xf1aa8f, _0x1e1898;
+      let _0x2cf1d4 = U(_0x25337c.element);
+      if (
+        (_0x2cf1d4 == null ? undefined : _0x2cf1d4.structureScopeId) !==
+          _0x22351b.scopeId ||
+        !("connectorData" in _0x25337c.element)
+      )
+        return;
+      let _0x52f683 = Jn(_0xb586fa, _0x2cf1d4.parentNodeId),
+        _0x302988 = Jn(_0xb586fa, _0x2cf1d4.childNodeId),
+        _0x4ca3d1 = H(_0x302988);
+      if (!_0x52f683 || !_0x302988 || !_0x4ca3d1) return;
+      let _0x36e7a7 = Tn(_0x25337c, {
+          parentNode: _0x52f683,
+          childNode: _0x302988,
+          side: _0x4ca3d1.side ?? "right",
+          elementData: _0xb586fa,
+          branchLineType:
+            (_0x42a54b = _0xb7e5d8.layout) == null
+              ? undefined
+              : _0x42a54b.branchLineType,
+          treeRootTrunk:
+            z(
+              (_0x47faf6 = _0xb7e5d8.layout) == null
+                ? undefined
+                : _0x47faf6.structureKind,
+            ) && _0x2cf1d4.parentNodeId === _0xb7e5d8.rootNodeId,
+          timelineRootStructureKind:
+            B(
+              (_0x2ee5ac = _0xb7e5d8.layout) == null
+                ? undefined
+                : _0x2ee5ac.structureKind,
+            ) && _0x2cf1d4.parentNodeId === _0xb7e5d8.rootNodeId
+              ? _0xb7e5d8.layout["structureKind"]
+              : undefined,
+          timelineHorizontalRootNodeId:
+            ((_0xf1aa8f = _0xb7e5d8.layout) == null
+              ? undefined
+              : _0xf1aa8f.structureKind) === "timeline-horizontal"
+              ? _0xb7e5d8.rootNodeId
+              : undefined,
+          timelineVerticalRootNodeId:
+            ((_0x1e1898 = _0xb7e5d8.layout) == null
+              ? undefined
+              : _0x1e1898.structureKind) === "timeline-vertical"
+              ? _0xb7e5d8.rootNodeId
+              : undefined,
+          forceTrunk:
+            Dn(
+              _0xb586fa,
+              _0x2cf1d4.structureScopeId,
+              _0x2cf1d4.parentNodeId,
+              _0x4ca3d1.side ?? "right",
+            ) > 1,
+        }),
+        _0x4da2ee = Y(_0x25337c, _0x36e7a7);
+      (_0x1a2505.push(_0x4da2ee.redoMutation),
+        _0x229464.unshift(_0x4da2ee.undoMutation),
+        (_0xb586fa[_0x25337c.elementId] = X(_0x25337c, _0x36e7a7)));
+    }),
+    { redoMutations: _0x1a2505, undoMutations: _0x229464 }
+  );
+}
+function In(_0x1bece9, _0x1d07ef, _0x4ad0ba, _0x44fa1b) {
+  let _0x2a5d98 = _0x1bece9.element["parentId"];
+  for (; _0x2a5d98;) {
+    let _0x128129 = _0x1d07ef[_0x2a5d98];
+    if (!_0x128129) return false;
+    if (Nn(_0x128129, _0x4ad0ba) && !_0x44fa1b.has(_0x128129.elementId))
+      return true;
+    _0x2a5d98 = _0x128129.element["parentId"];
+  }
+  return false;
+}
+function Ln(_0x45f8ab, _0x76255a, _0x40f049) {
+  let _0xc86dd4 = Cn(_0x45f8ab, _0x76255a, _0x40f049),
+    _0x709088 = new Set(
+      _0xc86dd4
+        .filter((_0x3c8735) => !!H(_0x3c8735.element))
+        .map((_0x12ccbb) => _0x12ccbb.elementId),
+    );
+  return _0xc86dd4
+    .filter((_0x55e965) => {
+      if (H(_0x55e965.element)) return true;
+      let _0x1050d4 = U(_0x55e965.element);
+      if (
+        _0x1050d4 &&
+        _0x709088.has(_0x1050d4.parentNodeId) &&
+        _0x709088.has(_0x1050d4.childNodeId)
+      )
+        return true;
+      let _0x5b4f82 = W(_0x55e965.element);
+      return !!_0x5b4f82 && _0x709088.has(_0x5b4f82.ownerNodeId);
+    })
+    .map((_0x1109d2) => _0x470e98.deepClone(_0x1109d2.element));
+}
+function Rn(_0x236959, _0x13a6b2) {
+  return (_0x13a6b2 == null ? undefined : _0x13a6b2[_0x236959]) ?? _0x18cb3c(6);
+}
+function zn(_0x434b8a, _0x1403f7) {
+  if (_0x434b8a.kind === "free") return _0x434b8a;
+  let _0x328b81 = _0x1403f7.get(_0x434b8a.shapeId);
+  return _0x328b81 ? { ..._0x434b8a, shapeId: _0x328b81 } : _0x434b8a;
+}
+function Bn(_0x432b29, _0x4b8f62) {
+  var _0x4cde1b, _0x562f84;
+  let _0x1bf939 = H(_0x432b29),
+    _0x3a1b6a = _0x470e98.deepClone(_0x432b29);
+  return (
+    (_0x3a1b6a.id = _0x4b8f62.id),
+    (_0x3a1b6a.parentId = _0x4b8f62.scopeId),
+    (_0x3a1b6a.transform = {
+      ..._0x3a1b6a.transform,
+      left: (_0x3a1b6a.transform["left"] ?? 0) + _0x4b8f62.deltaX,
+      top: (_0x3a1b6a.transform["top"] ?? 0) + _0x4b8f62.deltaY,
+    }),
+    (_0x3a1b6a.custom = {
+      ...(_0x3a1b6a.custom ?? {}),
+      structured: {
+        ...(((_0x4cde1b = _0x3a1b6a.custom) == null
+          ? undefined
+          : _0x4cde1b.structured) ?? {}),
+        modeId: _0x1bf939 == null ? undefined : _0x1bf939.modeId,
+        semanticRole: _0x1bf939 == null ? undefined : _0x1bf939.semanticRole,
+        structureScopeId: _0x4b8f62.scopeId,
+      },
+      mindmap: {
+        ...(((_0x562f84 = _0x3a1b6a.custom) == null
+          ? undefined
+          : _0x562f84.mindmap) ?? {}),
+        parentNodeId: _0x4b8f62.parentNodeId,
+        orderKey: _0x4b8f62.orderKey,
+        collapsed:
+          (_0x1bf939 == null ? undefined : _0x1bf939.collapsed) ?? false,
+        ...(_0x4b8f62.parentNodeId === null
+          ? null
+          : {
+              side:
+                _0x4b8f62.side ??
+                (_0x1bf939 == null ? undefined : _0x1bf939.side) ??
+                "right",
+            }),
+      },
+    }),
+    _0x4b8f62.parentNodeId === null && delete _0x3a1b6a.custom["mindmap"].side,
+    _0x3a1b6a
+  );
+}
+function Vn(_0x2a0313, _0x20c3bc) {
+  var _0x529598;
+  let _0x5a42ab = U(_0x2a0313),
+    _0x341b61 = _0x54c9d1(_0x470e98.deepClone(_0x2a0313), {
+      x: _0x20c3bc.deltaX,
+      y: _0x20c3bc.deltaY,
+    });
+  return (
+    (_0x341b61.id = _0x20c3bc.id),
+    (_0x341b61.parentId = _0x20c3bc.scopeId),
+    (_0x341b61.transform = {
+      ..._0x341b61.transform,
+      left: (_0x341b61.transform["left"] ?? 0) + _0x20c3bc.deltaX,
+      top: (_0x341b61.transform["top"] ?? 0) + _0x20c3bc.deltaY,
+    }),
+    (_0x341b61.connectorData = {
+      ..._0x341b61.connectorData,
+      start: zn(_0x341b61.connectorData["start"], _0x20c3bc.idMap),
+      end: zn(_0x341b61.connectorData["end"], _0x20c3bc.idMap),
+    }),
+    (_0x341b61.custom = {
+      ...(_0x341b61.custom ?? {}),
+      structured: {
+        ...(((_0x529598 = _0x341b61.custom) == null
+          ? undefined
+          : _0x529598.structured) ?? {}),
+        modeId: _0x5a42ab == null ? undefined : _0x5a42ab.modeId,
+        semanticRole: _0x5a42ab == null ? undefined : _0x5a42ab.semanticRole,
+        structureScopeId: _0x20c3bc.scopeId,
+      },
+      mindmap: {
+        managed: true,
+        parentNodeId: _0x20c3bc.parentNodeId,
+        childNodeId: _0x20c3bc.childNodeId,
+      },
+    }),
+    _0x341b61
+  );
+}
+function Hn(_0x4ef6f4, _0x532d53) {
+  var _0x441e39, _0x11fa2a;
+  let _0x93175 = W(_0x4ef6f4),
+    _0x56aa43 = _0x470e98.deepClone(_0x4ef6f4);
+  return (
+    (_0x56aa43.id = _0x532d53.id),
+    (_0x56aa43.parentId = _0x532d53.scopeId),
+    (_0x56aa43.transform = {
+      ..._0x56aa43.transform,
+      left: (_0x56aa43.transform["left"] ?? 0) + _0x532d53.deltaX,
+      top: (_0x56aa43.transform["top"] ?? 0) + _0x532d53.deltaY,
+    }),
+    (_0x56aa43.custom = {
+      ...(_0x56aa43.custom ?? {}),
+      structured: {
+        ...(((_0x441e39 = _0x56aa43.custom) == null
+          ? undefined
+          : _0x441e39.structured) ?? {}),
+        modeId: _0x93175 == null ? undefined : _0x93175.modeId,
+        semanticRole: _0x93175 == null ? undefined : _0x93175.semanticRole,
+        structureScopeId: _0x532d53.scopeId,
+      },
+      mindmap: {
+        ...(((_0x11fa2a = _0x56aa43.custom) == null
+          ? undefined
+          : _0x11fa2a.mindmap) ?? {}),
+        ownerNodeId: _0x532d53.ownerNodeId,
+      },
+    }),
+    _0x56aa43
+  );
+}
+function Un(_0x53472f, _0x14d397) {
+  return (
+    Object.values(_0x53472f)
+      .map((_0x12bb61) => {
+        let _0x1116a3 = H(_0x12bb61.element);
+        return (_0x1116a3 == null ? undefined : _0x1116a3.structureScopeId) ===
+          _0x14d397 && _0x1116a3.parentNodeId === null
+          ? { data: _0x12bb61, meta: _0x1116a3 }
+          : null;
+      })
+      .find((_0x386bfb) => !!_0x386bfb) ?? null
+  );
+}
+function Wn(_0xad18e5) {
+  return _0xad18e5.element["transform"].height ?? F.nodeHeight;
+}
+function Gn(_0x533d2d) {
+  return _0x533d2d.element["transform"].width ?? F.nodeWidth;
+}
+function Kn(_0x205fb9, _0x138af9, _0x18a9d4) {
+  let _0x5ca34a = _0x470e98.deepClone(_0x205fb9.element);
+  return (
+    (_0x5ca34a.transform = {
+      ..._0x5ca34a.transform,
+      left: _0x138af9,
+      top: _0x18a9d4,
+    }),
+    _0x5ca34a
+  );
+}
+function X(_0x1d9eba, _0x2abfe3) {
+  return { ..._0x1d9eba, element: _0x2abfe3, transform: _0x2abfe3.transform };
+}
+function qn(_0x26265c, _0x3899e7, _0x1d3509) {
+  return {
+    unitId: _0x26265c,
+    subUnitId: _0x3899e7,
+    elementId: _0x1d3509.id,
+    element: _0x1d3509,
+    transform: _0x1d3509.transform,
+    hidden: _0x1d3509.visible === false,
+  };
+}
+function Jn(_0x150fff, _0x57aa72) {
+  var _0x1ceb09;
+  let _0xa80e95 = _0x150fff[_0x57aa72],
+    _0x30c3ed = H(_0xa80e95 == null ? undefined : _0xa80e95.element);
+  if (!_0xa80e95 || !_0x30c3ed) return null;
+  let _0x2fd93b =
+    (_0x1ceb09 = _0x52f077(_0x150fff, _0x57aa72)) == null
+      ? undefined
+      : _0x1ceb09.worldTransform;
+  return _0x2fd93b
+    ? {
+        ..._0xa80e95.element,
+        transform: { ...(_0xa80e95.element["transform"] ?? {}), ..._0x2fd93b },
+      }
+    : _0xa80e95.element;
+}
+function Yn(_0x57e6df, _0x1899a8, _0x1d4621) {
+  return {
+    id: _0x1899a8.data["elementId"],
+    parentId: _0x1899a8.meta["parentNodeId"],
+    side: _0x1899a8.meta["side"],
+    collapsed: _0x1899a8.meta["collapsed"],
+    width: Gn(_0x1899a8.data),
+    height: Wn(_0x1899a8.data),
+    children: Xt(
+      _0x57e6df,
+      _0x1899a8.meta["structureScopeId"],
+      _0x1899a8.data["elementId"],
+    ).map((_0x79ed6e) => Yn(_0x57e6df, _0x79ed6e, _0x1d4621)),
+  };
+}
+function Xn(_0x184d05) {
+  let _0x16c61f = _0x184d05.filter((_0x35ea09) => !!H(_0x35ea09)),
+    _0x3c3a86 = F.containerPadding,
+    _0x5e11ff =
+      Math.min(
+        ..._0x16c61f.map((_0x225951) => _0x225951.transform["left"] ?? 0),
+      ) - _0x3c3a86,
+    _0x87ddd8 =
+      Math.min(
+        ..._0x16c61f.map((_0x2d2f3c) => _0x2d2f3c.transform["top"] ?? 0),
+      ) - _0x3c3a86,
+    _0x4c8bc5 =
+      Math.max(
+        ..._0x16c61f.map(
+          (_0x101dca) =>
+            (_0x101dca.transform["left"] ?? 0) +
+            (_0x101dca.transform["width"] ?? F.nodeWidth),
+        ),
+      ) + _0x3c3a86,
+    _0x3b8398 =
+      Math.max(
+        ..._0x16c61f.map(
+          (_0x259e7a) =>
+            (_0x259e7a.transform["top"] ?? 0) +
+            (_0x259e7a.transform["height"] ?? F.nodeHeight),
+        ),
+      ) + _0x3c3a86;
+  return {
+    left: _0x5e11ff,
+    top: _0x87ddd8,
+    width: _0x4c8bc5 - _0x5e11ff,
+    height: _0x3b8398 - _0x87ddd8,
+  };
+}
+function Zn(_0x1582d8, _0x5ae0a4) {
+  var _0x251ec3;
+  let _0x2634dd = Un(_0x1582d8, _0x5ae0a4),
+    _0x229df3 = _0x1582d8[_0x5ae0a4];
+  if (!_0x2634dd || !_0x229df3) return null;
+  let _0x527eb5 = V(_0x229df3.element),
+    _0x54a053 = (_0x527eb5 == null ? undefined : _0x527eb5.layout) ?? N,
+    _0x1180e3 = _0x2634dd.data["element"].transform["left"] ?? 0,
+    _0x3e93c4 = _0x2634dd.data["element"].transform["top"] ?? 0,
+    _0x5b14d9 =
+      ((_0x251ec3 = _0x52f077(_0x1582d8, _0x5ae0a4)) == null
+        ? undefined
+        : _0x251ec3.worldTransform) ?? _0x229df3.element["transform"],
+    _0x3dca83 = _0x5b14d9.left ?? 0,
+    _0x513652 = _0x5b14d9.top ?? 0,
+    _0x1a7593 = _t(
+      Yn(_0x1582d8, _0x2634dd, {
+        rootNodeId: _0x527eb5 == null ? undefined : _0x527eb5.rootNodeId,
+        structureKind: _0x54a053.structureKind,
+      }),
+      {
+        rootLeft: _0x1180e3,
+        rootTop: _0x3e93c4,
+        structureKind: _0x54a053.structureKind,
+        horizontalGap: _0x54a053.horizontalGap,
+        siblingGap: _0x54a053.siblingGap,
+      },
+    ),
+    _0x2816c9 = Object.values(_0x1582d8).filter((_0x3317bf) => {
+      let _0x26ecc7 = H(_0x3317bf.element);
+      return (
+        (_0x26ecc7 == null ? undefined : _0x26ecc7.structureScopeId) ===
+          _0x5ae0a4 && _0x3317bf.element["visible"] !== false
+      );
+    }),
+    _0x5ac4eb = _0x2816c9.map((_0x563df3) => {
+      let _0x1b3a55 = _0x1a7593.get(_0x563df3.elementId);
+      return _0x1b3a55
+        ? Kn(_0x563df3, _0x3dca83 + _0x1b3a55.left, _0x513652 + _0x1b3a55.top)
+        : _0x563df3.element;
+    });
+  if (!_0x5ac4eb.length) return null;
+  let _0x30320b = _0x470e98.deepClone(_0x229df3.element),
+    _0x15663a = Xn(_0x5ac4eb);
+  _0x30320b.transform = _0x3c4868(_0x1582d8, {
+    parentId: _0x30320b.parentId,
+    worldTransform: { ..._0x30320b.transform, ..._0x15663a },
+  });
+  let _0x412560 = { ..._0x1582d8 };
+  _0x412560[_0x5ae0a4] = X(_0x229df3, _0x30320b);
+  let _0x19c393 = [];
+  return (
+    _0x2816c9.forEach((_0x14acd9) => {
+      let _0x5213b9 = _0x1a7593.get(_0x14acd9.elementId);
+      if (!_0x5213b9) return;
+      let _0x5ce03d = Kn(
+        _0x14acd9,
+        _0x3dca83 + _0x5213b9.left,
+        _0x513652 + _0x5213b9.top,
+      );
+      ((_0x5ce03d.transform = _0x3c4868(_0x412560, {
+        parentId: _0x5ce03d.parentId,
+        worldTransform: { ..._0x5ce03d.transform },
+      })),
+        _0x19c393.push(_0x5ce03d),
+        (_0x412560[_0x14acd9.elementId] = X(_0x14acd9, _0x5ce03d)));
+    }),
+    Object.values(_0x1582d8).forEach((_0x5c37d6) => {
+      var _0x1270ec, _0x893a60;
+      let _0x44ddc4 = W(_0x5c37d6.element);
+      if (
+        (_0x44ddc4 == null ? undefined : _0x44ddc4.structureScopeId) !==
+        _0x5ae0a4
+      )
+        return;
+      let _0x1fec4a = _0x412560[_0x44ddc4.ownerNodeId],
+        _0x2f0752 =
+          (_0x1270ec = _0x52f077(_0x412560, _0x44ddc4.ownerNodeId)) == null
+            ? undefined
+            : _0x1270ec.worldTransform,
+        _0x30df72 =
+          (_0x893a60 = _0x52f077(_0x1582d8, _0x5c37d6.elementId)) == null
+            ? undefined
+            : _0x893a60.worldTransform;
+      if (!_0x1fec4a || !_0x2f0752 || !_0x30df72) return;
+      let _0x46c7ea = _0x470e98.deepClone(_0x5c37d6.element);
+      ((_0x46c7ea.visible = _0x1fec4a.element["visible"]),
+        (_0x46c7ea.transform = _0x3c4868(_0x412560, {
+          parentId: _0x46c7ea.parentId,
+          worldTransform: {
+            ..._0x30df72,
+            left: (_0x2f0752.left ?? 0) + _0x44ddc4.offsetX,
+            top: (_0x2f0752.top ?? 0) + _0x44ddc4.offsetY,
+          },
+        })),
+        _0x19c393.push(_0x46c7ea),
+        (_0x412560[_0x5c37d6.elementId] = X(_0x5c37d6, _0x46c7ea)));
+    }),
+    Object.values(_0x1582d8).forEach((_0x4ac271) => {
+      let _0x142958 = U(_0x4ac271.element);
+      if (
+        (_0x142958 == null ? undefined : _0x142958.structureScopeId) !==
+          _0x5ae0a4 ||
+        !("connectorData" in _0x4ac271.element)
+      )
+        return;
+      let _0x1b7f14 = Jn(_0x412560, _0x142958.parentNodeId),
+        _0x2b7353 = Jn(_0x412560, _0x142958.childNodeId),
+        _0x489892 = H(_0x2b7353);
+      if (!_0x1b7f14 || !_0x2b7353 || !_0x489892) return;
+      let _0xabc776 = Tn(_0x4ac271, {
+        parentNode: _0x1b7f14,
+        childNode: _0x2b7353,
+        side: _0x489892.side ?? "right",
+        elementData: _0x412560,
+        branchLineType: _0x54a053.branchLineType,
+        treeRootTrunk:
+          z(_0x54a053.structureKind) &&
+          _0x142958.parentNodeId ===
+            (_0x527eb5 == null ? undefined : _0x527eb5.rootNodeId),
+        timelineRootStructureKind:
+          B(_0x54a053.structureKind) &&
+          _0x142958.parentNodeId ===
+            (_0x527eb5 == null ? undefined : _0x527eb5.rootNodeId)
+            ? _0x54a053.structureKind
+            : undefined,
+        timelineHorizontalRootNodeId:
+          _0x54a053.structureKind === "timeline-horizontal"
+            ? _0x527eb5 == null
+              ? undefined
+              : _0x527eb5.rootNodeId
+            : undefined,
+        timelineVerticalRootNodeId:
+          _0x54a053.structureKind === "timeline-vertical"
+            ? _0x527eb5 == null
+              ? undefined
+              : _0x527eb5.rootNodeId
+            : undefined,
+        forceTrunk:
+          Dn(
+            _0x412560,
+            _0x142958.structureScopeId,
+            _0x142958.parentNodeId,
+            _0x489892.side ?? "right",
+          ) > 1,
+      });
+      (_0x19c393.push(_0xabc776),
+        (_0x412560[_0x4ac271.elementId] = X(_0x4ac271, _0xabc776)));
+    }),
+    _0x19c393.push(_0x30320b),
+    _0x19c393
+  );
+}
+function Qn(_0x1f9ed6, _0x3c6c68) {
+  let _0x457816 = Zn(_0x1f9ed6, _0x3c6c68);
+  if (!_0x457816) return null;
+  let _0x5d798d = { ..._0x1f9ed6 };
+  return (
+    _0x457816.forEach((_0x1ff30f) => {
+      let _0x5330b9 = _0x1f9ed6[_0x1ff30f.id];
+      _0x5330b9 && (_0x5d798d[_0x1ff30f.id] = X(_0x5330b9, _0x1ff30f));
+    }),
+    _0x5d798d
+  );
+}
+function $n(_0x25d6e1, _0x25b098, _0x1ff907, _0x5d0489) {
+  let _0x1726c9 = Qn(_0x25d6e1, _0x25b098);
+  if (!_0x1726c9) return null;
+  let _0x2fdb5f = _0x5df5fb(_0x1726c9, _0x1ff907);
+  if (!_0x2fdb5f) return null;
+  let _0x52479d = _0x5d0489.left - _0x2fdb5f.left,
+    _0xd7bc22 = _0x5d0489.top - _0x2fdb5f.top;
+  return _0x52479d === 0 && _0xd7bc22 === 0
+    ? null
+    : Fn(_0x1726c9, {
+        scopeId: _0x25b098,
+        deltaX: _0x52479d,
+        deltaY: _0xd7bc22,
+      });
+}
+function Z(_0xa68807, _0x1eec6b) {
+  let _0x12df49 = Zn(_0xa68807, _0x1eec6b);
+  if (!_0x12df49) return null;
+  let _0x1b7d58 = [],
+    _0xfcb2cb = [];
+  return (
+    _0x12df49.forEach((_0x5318a0) => {
+      let _0x2bb44a = _0xa68807[_0x5318a0.id];
+      if (!_0x2bb44a || on(_0x2bb44a.element, _0x5318a0)) return;
+      let _0x3d12b9 = Y(_0x2bb44a, _0x5318a0);
+      (_0x1b7d58.push(_0x3d12b9.redoMutation),
+        _0xfcb2cb.unshift(_0x3d12b9.undoMutation));
+    }),
+    { redoMutations: _0x1b7d58, undoMutations: _0xfcb2cb }
+  );
+}
+function er(_0x20c127) {
+  let _0x48e803 = _0x20c127.elementOrder["filter"]((_0x565972) => {
+    var _0x3ccaa2, _0x434e01, _0xd9f69b, _0xaff976, _0x593ca6;
+    let _0x47e4f0 =
+      (_0x3ccaa2 = _0x20c127.elementData[_0x565972]) == null
+        ? undefined
+        : _0x3ccaa2.element;
+    return (
+      ((_0x434e01 = V(_0x47e4f0)) == null
+        ? undefined
+        : _0x434e01.structureScopeId) === _0x20c127.scopeId ||
+      ((_0xd9f69b = H(_0x47e4f0)) == null
+        ? undefined
+        : _0xd9f69b.structureScopeId) === _0x20c127.scopeId ||
+      ((_0xaff976 = U(_0x47e4f0)) == null
+        ? undefined
+        : _0xaff976.structureScopeId) === _0x20c127.scopeId ||
+      ((_0x593ca6 = W(_0x47e4f0)) == null
+        ? undefined
+        : _0x593ca6.structureScopeId) === _0x20c127.scopeId
+    );
+  });
+  if (!_0x48e803.length) return null;
+  let _0x27cfa6 = _0x48e803.filter((_0x4aaed4) => {
+      var _0x478585;
+      return !!V(
+        (_0x478585 = _0x20c127.elementData[_0x4aaed4]) == null
+          ? undefined
+          : _0x478585.element,
+      );
+    }),
+    _0x18cf8e = _0x48e803.filter((_0x422240) => {
+      var _0x1b7457;
+      return !!U(
+        (_0x1b7457 = _0x20c127.elementData[_0x422240]) == null
+          ? undefined
+          : _0x1b7457.element,
+      );
+    }),
+    _0x276034 = _0x48e803.filter((_0x359548) => {
+      var _0x33eb53;
+      return !!H(
+        (_0x33eb53 = _0x20c127.elementData[_0x359548]) == null
+          ? undefined
+          : _0x33eb53.element,
+      );
+    }),
+    _0x3bae5d = _0x48e803.filter((_0x46fb19) => {
+      var _0x157d59;
+      return !!W(
+        (_0x157d59 = _0x20c127.elementData[_0x46fb19]) == null
+          ? undefined
+          : _0x157d59.element,
+      );
+    }),
+    _0x4978c3 = [..._0x27cfa6, ..._0x18cf8e, ..._0x276034, ..._0x3bae5d],
+    _0x1744ad = 0,
+    _0x5c826b = new Set(_0x48e803),
+    _0x55e2a8 = _0x20c127.elementOrder["map"]((_0x4204a0) =>
+      _0x5c826b.has(_0x4204a0)
+        ? (_0x4978c3[_0x1744ad++] ?? _0x4204a0)
+        : _0x4204a0,
+    );
+  return _0x55e2a8.every(
+    (_0x429b5e, _0x55b1cd) => _0x429b5e === _0x20c127.elementOrder[_0x55b1cd],
+  )
+    ? null
+    : {
+        redoMutation: {
+          id: _0x305d9b.id,
+          params: {
+            unitId: _0x20c127.unitId,
+            subUnitId: _0x20c127.subUnitId,
+            elementIds: _0x55e2a8,
+          },
+        },
+        undoMutation: {
+          id: _0x305d9b.id,
+          params: {
+            unitId: _0x20c127.unitId,
+            subUnitId: _0x20c127.subUnitId,
+            elementIds: _0x20c127.elementOrder,
+          },
+        },
+      };
+}
+function tr(_0x5cc172, _0x4dca30) {
+  return (
+    _0x5cc172 === undefined ||
+    (Number.isFinite(_0x5cc172) &&
+      _0x5cc172 >= _0x4dca30.min &&
+      _0x5cc172 <= _0x4dca30.max)
+  );
+}
+function nr(_0x22229a, _0xf59b87) {
+  if (
+    !Number.isFinite(_0x22229a.left) ||
+    !Number.isFinite(_0x22229a.top) ||
+    !Number.isFinite(_0x22229a.width) ||
+    !Number.isFinite(_0x22229a.height) ||
+    _0x22229a.width <= 0 ||
+    _0x22229a.height <= 0 ||
+    !Number.isFinite(_0xf59b87) ||
+    _0xf59b87 < 0
+  )
+    return null;
+  let _0x33e134 = _0x22229a.width - _0xf59b87 * 2,
+    _0x2b7133 = _0x22229a.height - _0xf59b87 * 2;
+  return _0x33e134 > 0 && _0x2b7133 > 0
+    ? {
+        left: _0x22229a.left + _0xf59b87,
+        top: _0x22229a.top + _0xf59b87,
+        width: _0x33e134,
+        height: _0x2b7133,
+      }
+    : null;
+}
+function rr(_0xf7cd60, _0x1a274e) {
+  return (
+    _0x1a274e.width <= _0xf7cd60.width && _0x1a274e.height <= _0xf7cd60.height
+  );
+}
+function ir(_0x2943f6, _0x1e59b7, _0xe77bc0) {
+  let _0x6e08a0 = q(
+    _0x1e59b7.structureKind ?? _0x2943f6.layout["structureKind"],
+  );
+  return {
+    ..._0x2943f6.layout,
+    direction:
+      _0x1e59b7.direction ??
+      (_0x6e08a0 === "mindmap-horizontal"
+        ? "both"
+        : _0x2943f6.layout["direction"]),
+    ...(_0x1e59b7.structureKind === undefined
+      ? null
+      : { structureKind: _0x1e59b7.structureKind }),
+    branchLineType: nt(
+      _0x6e08a0,
+      _0x1e59b7.branchLineType ?? _0x2943f6.layout["branchLineType"],
+    ),
+    horizontalGap: _0xe77bc0
+      ? P.horizontalGap["min"]
+      : (_0x1e59b7.horizontalGap ?? _0x2943f6.layout["horizontalGap"]),
+    siblingGap: _0xe77bc0
+      ? P.siblingGap["min"]
+      : (_0x1e59b7.siblingGap ?? _0x2943f6.layout["siblingGap"]),
+    branchGap: _0xe77bc0
+      ? P.branchGap["min"]
+      : (_0x1e59b7.branchGap ?? _0x2943f6.layout["branchGap"]),
+  };
+}
+function ar(_0x8211ef, _0x9dba6d, _0x4c382a) {
+  var _0x250485;
+  let _0x1a841c = _0x8211ef[_0x9dba6d.scopeId],
+    _0x2aed77 = V(_0x1a841c == null ? undefined : _0x1a841c.element);
+  if (!_0x1a841c || !_0x2aed77) return null;
+  let _0x4f37f6 = ir(_0x2aed77, _0x9dba6d, _0x4c382a),
+    _0x5a481e = q(_0x4f37f6.structureKind),
+    _0x42e005 = _0x4f37f6.direction,
+    _0x4b81ce = { ..._0x8211ef },
+    _0x2c3016 = _0x470e98.deepClone(_0x1a841c.element);
+  ((_0x2c3016.custom = {
+    ...(_0x2c3016.custom ?? {}),
+    mindmap: {
+      ...(((_0x250485 = _0x2c3016.custom) == null
+        ? undefined
+        : _0x250485.mindmap) ?? {}),
+      layout: _0x4f37f6,
+      structureRevision: (_0x2aed77.structureRevision ?? 0) + 1,
+    },
+  }),
+    (_0x4b81ce[_0x9dba6d.scopeId] = X(_0x1a841c, _0x2c3016)));
+  let _0x2e9cc8 = Object.values(_0x8211ef)
+      .map((_0x15b620) => {
+        let _0xbc9d5f = H(_0x15b620.element);
+        return (_0xbc9d5f == null ? undefined : _0xbc9d5f.structureScopeId) ===
+          _0x9dba6d.scopeId && _0xbc9d5f.parentNodeId !== null
+          ? { data: _0x15b620, meta: _0xbc9d5f }
+          : null;
+      })
+      .filter((_0x48ae66) => !!_0x48ae66),
+    _0x23b8cc = new Map();
+  (_0x2e9cc8.forEach((_0x47411b) => {
+    _0x23b8cc.set(_0x47411b.meta["parentNodeId"], [
+      ...(_0x23b8cc.get(_0x47411b.meta["parentNodeId"]) ?? []),
+      _0x47411b,
+    ]);
+  }),
+    _0x23b8cc.forEach((_0x34f82e) => _0x34f82e.sort(Qt)));
+  let _0x2893b5 = new Map(),
+    _0x1848b5 = (_0x2f4e90, _0x59e2cd) => {
+      (_0x23b8cc.get(_0x2f4e90) ?? []).forEach((_0x17f45a, _0x35b0aa) => {
+        let _0x2d470e =
+          _0x42e005 === "left" || _0x42e005 === "right"
+            ? _0x42e005
+            : _0x17f45a.meta["parentNodeId"] === _0x2aed77.rootNodeId
+              ? _0x5a481e === "mindmap-horizontal"
+                ? $t(_0x35b0aa, "right", "left")
+                : en(_0x5a481e, _0x35b0aa, _0x17f45a.meta["side"])
+              : tn(_0x59e2cd, _0x5a481e);
+        (_0x2893b5.set(_0x17f45a.data["elementId"], _0x2d470e),
+          _0x1848b5(_0x17f45a.data["elementId"], _0x2d470e));
+      });
+    };
+  return (
+    _0x1848b5(_0x2aed77.rootNodeId),
+    _0x2e9cc8.forEach(({ data: _0x105dac, meta: _0x2a40ac }) => {
+      let _0x1179bb = On(_0x105dac, {
+        scopeId: _0x9dba6d.scopeId,
+        parentNodeId: _0x2a40ac.parentNodeId,
+        orderKey: _0x2a40ac.orderKey,
+        side: _0x2893b5.get(_0x105dac.elementId) ?? _0x2a40ac.side ?? "right",
+      });
+      _0x4b81ce[_0x105dac.elementId] = X(_0x105dac, _0x1179bb);
+    }),
+    Qn(_0x4b81ce, _0x9dba6d.scopeId)
+  );
+}
+function or(_0x276d04, _0x2ce97f, _0x100525) {
+  let _0x11a7ee = _0x5df5fb(_0x276d04, _0x2ce97f),
+    _0x51a582 = _0x276d04[_0x2ce97f];
+  if (!_0x11a7ee || !_0x51a582) return null;
+  let _0x3126fa =
+      _0x100525.left + (_0x100525.width - _0x11a7ee.width) / 2 - _0x11a7ee.left,
+    _0x5b29b0 =
+      _0x100525.top + (_0x100525.height - _0x11a7ee.height) / 2 - _0x11a7ee.top,
+    _0x47e90c = Pn(_0x51a582, _0x3126fa, _0x5b29b0);
+  return {
+    elementData: { ..._0x276d04, [_0x2ce97f]: X(_0x51a582, _0x47e90c) },
+    bounds: {
+      left: _0x11a7ee.left + _0x3126fa,
+      top: _0x11a7ee.top + _0x5b29b0,
+      width: _0x11a7ee.width,
+      height: _0x11a7ee.height,
+    },
+  };
+}
+function sr(_0x3ef3f9, _0x5c2a87, _0x2119e4) {
+  let _0x456d28 = [],
+    _0x1a0a7e = [];
+  return (
+    Object.values(_0x3ef3f9).forEach((_0x5e1a5a) => {
+      var _0x30462f;
+      if (!Nn(_0x5e1a5a, _0x2119e4)) return;
+      let _0x2fa805 =
+        (_0x30462f = _0x5c2a87[_0x5e1a5a.elementId]) == null
+          ? undefined
+          : _0x30462f.element;
+      if (!_0x2fa805 || on(_0x5e1a5a.element, _0x2fa805)) return;
+      let _0x127ada = Y(_0x5e1a5a, _0x2fa805);
+      (_0x456d28.push(_0x127ada.redoMutation),
+        _0x1a0a7e.unshift(_0x127ada.undoMutation));
+    }),
+    { redoMutations: _0x456d28, undoMutations: _0x1a0a7e }
+  );
+}
+const cr = {
+    id: "board.operation.mind-map.add-child",
+    type: _0x135e78.OPERATION,
+    handler: (_0x41e022, _0x385ca9) =>
+      !(_0x385ca9 != null && _0x385ca9.unitId) ||
+      !_0x385ca9.subUnitId ||
+      !_0x385ca9.parentNodeId
+        ? false
+        : cn(_0x41e022, _0x385ca9),
+  },
+  lr = {
+    id: "board.operation.mind-map.add-sibling",
+    type: _0x135e78.OPERATION,
+    handler: (_0x52116c, _0x2f8bbe) => {
+      if (
+        !(_0x2f8bbe != null && _0x2f8bbe.unitId) ||
+        !_0x2f8bbe.subUnitId ||
+        !_0x2f8bbe.nodeId
+      )
+        return false;
+      let _0x30bbfa = K(
+        _0x52116c
+          .get(_0x3d3c2a)
+          .getElementData(_0x2f8bbe.unitId, _0x2f8bbe.subUnitId),
+        _0x2f8bbe.nodeId,
+      );
+      return _0x30bbfa != null && _0x30bbfa.meta["parentNodeId"]
+        ? cn(_0x52116c, {
+            unitId: _0x2f8bbe.unitId,
+            subUnitId: _0x2f8bbe.subUnitId,
+            parentNodeId: _0x30bbfa.meta["parentNodeId"],
+            nodeId: _0x2f8bbe.siblingNodeId,
+            connectorId: _0x2f8bbe.connectorId,
+            text: _0x2f8bbe.text,
+            textData: _0x2f8bbe.textData,
+            side: _0x30bbfa.meta["side"],
+            referenceNodeId: _0x2f8bbe.nodeId,
+            placement: _0x2f8bbe.placement,
+          })
+        : false;
+    },
+  };
+function ur(_0x34dae9, _0x41060d) {
+  var _0x5d98f6,
+    _0x383164,
+    _0x46abb1,
+    _0x3ab1a6,
+    _0x457818,
+    _0x571ff9,
+    _0x49ae1a,
+    _0x520b4e,
+    _0x2ec5b5,
+    _0x530f44,
+    _0x1226bf,
+    _0x1c685c,
+    _0x2ab218,
+    _0x4a5315,
+    _0x1b3bf9,
+    _0x4121f8,
+    _0x5c1561,
+    _0x5c5f5e,
+    _0x111c1c,
+    _0x468e72;
+  let _0x5026a7 = _0x470e98.deepClone(_0x34dae9.data["element"]);
+  if (!("shapeData" in _0x5026a7)) return null;
+  let _0xcd0449 = _0x5026a7.shapeData["shapeText"] ?? {},
+    { autoFit: _0x85bee3, ..._0x28e14d } = _0xcd0449,
+    _0x4e4398 =
+      _0xcd0449.dataModel && typeof _0xcd0449.dataModel == "object"
+        ? _0x470e98.deepClone(_0xcd0449.dataModel)
+        : {},
+    _0x3a5080 = _0x34dae9.meta["parentNodeId"]
+      ? _0x346bc5.LEFT
+      : _0x346bc5.CENTER,
+    _0x17c4d5 = _0x1229d4.MIDDLE,
+    _0x168044 = _0xcd0449.horizontalAlign,
+    _0x20b7b5 = _0xcd0449.verticalAlign,
+    _0x582c89 = _0x4e4398.ha,
+    _0x55cc3e = _0x4e4398.va,
+    _0x428683 =
+      ((_0x5d98f6 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x5d98f6.horizontalAlign) ??
+      _0x168044 ??
+      _0x582c89 ??
+      _0x3a5080,
+    _0x590ddf =
+      ((_0x383164 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x383164.verticalAlign) ??
+      _0x20b7b5 ??
+      _0x55cc3e ??
+      _0x17c4d5,
+    _0x38232b = _0x41060d.shapeText
+      ? _0x470e98.deepClone(_0x41060d.shapeText)
+      : null,
+    _0x36820e =
+      _0x38232b == null || (_0x46abb1 = _0x38232b.dataModel) == null
+        ? undefined
+        : _0x46abb1.doc,
+    _0x5db614 = _0x36820e
+      ? (
+          ((_0x3ab1a6 = _0x36820e.body) == null
+            ? undefined
+            : _0x3ab1a6.dataStream) ?? ""
+        )
+          .replace(/\r\n$/, "")
+          .replace(/\r/g, "\x0a")
+      : typeof (_0x38232b == null ? undefined : _0x38232b.text) == "string"
+        ? _0x38232b.text
+        : undefined,
+    _0x59535c =
+      _0x41060d.text ??
+      _0x5db614 ??
+      (typeof _0xcd0449.text == "string" ? _0xcd0449.text : ""),
+    _0xae5c85 = _0x4e4398.doc,
+    _0x3ee6c8 = _0xcd0449.isRichText === true,
+    _0x427688 =
+      _0x41060d.textData === undefined
+        ? _0x41060d.text === undefined && _0x3ee6c8
+          ? _0xae5c85
+          : undefined
+        : (_0x41060d.textData ?? undefined),
+    _0x3d46cc = qe(_0xcd0449, _0x41060d.textStyle),
+    _0x5dfa12 = Je({
+      currentDataModel: _0x4e4398,
+      documentData: _0x427688,
+      horizontalAlign: _0x428683,
+      shapeText: {
+        ..._0x28e14d,
+        ...(((_0x457818 = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x457818.color) === undefined
+          ? null
+          : { color: _0x41060d.textStyle["color"] }),
+        ...(((_0x571ff9 = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x571ff9.fontFamily) === undefined
+          ? null
+          : { fontFamily: _0x41060d.textStyle["fontFamily"] }),
+        ...(((_0x49ae1a = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x49ae1a.fontSize) === undefined
+          ? null
+          : { fontSize: _0x41060d.textStyle["fontSize"] }),
+        ...(((_0x520b4e = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x520b4e.bold) === undefined
+          ? null
+          : { bold: _0x41060d.textStyle["bold"] }),
+        ...(((_0x2ec5b5 = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x2ec5b5.italic) === undefined
+          ? null
+          : { italic: _0x41060d.textStyle["italic"] }),
+        ...(((_0x530f44 = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x530f44.underline) === undefined
+          ? null
+          : { underline: _0x41060d.textStyle["underline"] }),
+        ...(((_0x1226bf = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x1226bf.strikethrough) === undefined
+          ? null
+          : { strikethrough: _0x41060d.textStyle["strikethrough"] }),
+        ...(((_0x1c685c = _0x41060d.textStyle) == null
+          ? undefined
+          : _0x1c685c.textFill) === undefined
+          ? null
+          : { textFill: _0x41060d.textStyle["textFill"] }),
+      },
+      text: _0x59535c,
+      textStyle: _0x3d46cc,
+      verticalAlign: _0x590ddf,
+    }),
+    _0x1cd6fb = {
+      ..._0x28e14d,
+      ...(_0x38232b ?? _0x5dfa12),
+      ...(_0x38232b
+        ? { text: _0x59535c }
+        : { horizontalAlign: _0x428683, verticalAlign: _0x590ddf }),
+      ...(_0x41060d.text === undefined ? null : { text: _0x41060d.text }),
+      ...(((_0x2ab218 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x2ab218.color) === undefined
+        ? null
+        : { color: _0x41060d.textStyle["color"] }),
+      ...(((_0x4a5315 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x4a5315.fontFamily) === undefined
+        ? null
+        : { fontFamily: _0x41060d.textStyle["fontFamily"] }),
+      ...(((_0x1b3bf9 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x1b3bf9.fontSize) === undefined
+        ? null
+        : { fontSize: _0x41060d.textStyle["fontSize"] }),
+      ...(((_0x4121f8 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x4121f8.bold) === undefined
+        ? null
+        : { bold: _0x41060d.textStyle["bold"] }),
+      ...(((_0x5c1561 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x5c1561.italic) === undefined
+        ? null
+        : { italic: _0x41060d.textStyle["italic"] }),
+      ...(((_0x5c5f5e = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x5c5f5e.underline) === undefined
+        ? null
+        : { underline: _0x41060d.textStyle["underline"] }),
+      ...(((_0x111c1c = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x111c1c.strikethrough) === undefined
+        ? null
+        : { strikethrough: _0x41060d.textStyle["strikethrough"] }),
+      ...(((_0x468e72 = _0x41060d.textStyle) == null
+        ? undefined
+        : _0x468e72.textFill) === undefined
+        ? null
+        : { textFill: _0x41060d.textStyle["textFill"] }),
+    };
+  if (
+    ((_0x5026a7.shapeData = {
+      ..._0x5026a7.shapeData,
+      ...(_0x41060d.shapeType === undefined
+        ? null
+        : { shapeType: _0x41060d.shapeType }),
+      fill: {
+        ...(_0x5026a7.shapeData["fill"] ?? {}),
+        ...(_0x41060d.fill ?? { fillType: _0x24dfc3.SolidFill }),
+        ...(_0x41060d.fillColor === undefined
+          ? null
+          : { color: _0x41060d.fillColor }),
+      },
+      stroke: {
+        ...(_0x5026a7.shapeData["stroke"] ?? {}),
+        ...(_0x41060d.stroke ?? { lineStrokeType: _0x3a1aca.SolidLine }),
+        ...(_0x41060d.strokeColor === undefined
+          ? null
+          : { color: _0x41060d.strokeColor }),
+      },
+      textRectPadding: _0x5026a7.shapeData["textRectPadding"] ?? { ...Ce },
+      isTextBox: true,
+      shapeText: _0x1cd6fb,
+    }),
+    _0x41060d.foreignAttributes !== undefined)
+  ) {
+    var _0x13a47a;
+    let _0x3dd051 =
+      (_0x13a47a = _0x5026a7.custom) == null ? undefined : _0x13a47a.mindmap;
+    if (
+      !_0x3dd051 ||
+      !Object.prototype["hasOwnProperty"].call(_0x3dd051, "parentNodeId")
+    )
+      return null;
+    let _0x57ad26 = { ...(_0x3dd051.foreignAttributes ?? {}) };
+    Object.entries(_0x41060d.foreignAttributes).forEach(
+      ([_0x143339, _0x127130]) => {
+        _0x127130 == null
+          ? delete _0x57ad26[_0x143339]
+          : (_0x57ad26[_0x143339] = _0x127130);
+      },
+    );
+    let _0x4d433a = {
+      ..._0x3dd051,
+      ...(Object.keys(_0x57ad26).length > 0
+        ? { foreignAttributes: _0x57ad26 }
+        : { foreignAttributes: undefined }),
+    };
+    (_0x4d433a.foreignAttributes || delete _0x4d433a.foreignAttributes,
+      (_0x5026a7.custom = { ..._0x5026a7.custom, mindmap: _0x4d433a }));
+  }
+  ((_0x5026a7.transform = _n(
+    _0x34dae9.data["element"],
+    _0x5026a7.shapeData,
+    _0x41060d.shapeType,
+  )),
+    (_0x5026a7.transform = yn(
+      _0x5026a7,
+      _0x41060d.text !== undefined ||
+        _0x41060d.textData !== undefined ||
+        _0x41060d.shapeText !== undefined ||
+        vn(_0x41060d.textStyle),
+    )));
+  let _0xe23729 = _0x41060d.hostSize
+    ? Ge(X(_0x34dae9.data, _0x5026a7), _0x41060d.hostSize)
+    : null;
+  return (
+    _0xe23729 &&
+      (_0x5026a7.transform = {
+        ..._0x5026a7.transform,
+        width: _0xe23729.width,
+        height: _0xe23729.height,
+      }),
+    _0x5026a7
+  );
+}
+const dr = {
+    id: "board.operation.mind-map.update-node",
+    type: _0x135e78.OPERATION,
+    handler: (_0x301d22, _0x16f20b) => {
+      if (
+        !(_0x16f20b != null && _0x16f20b.unitId) ||
+        !_0x16f20b.subUnitId ||
+        !_0x16f20b.nodeId
+      )
+        return false;
+      let _0x453db3 = _0x301d22.get(_0x3d3c2a),
+        _0x3814ac = K(
+          _0x453db3.getElementData(_0x16f20b.unitId, _0x16f20b.subUnitId),
+          _0x16f20b.nodeId,
+        );
+      if (!_0x3814ac) return false;
+      let _0x154556 = ur(_0x3814ac, _0x16f20b);
+      if (!_0x154556) return false;
+      if (on(_0x3814ac.data["element"], _0x154556)) return true;
+      let _0x90181 = Y(_0x3814ac.data, _0x154556),
+        _0xf9063e = Z(
+          {
+            ..._0x453db3.getElementData(_0x16f20b.unitId, _0x16f20b.subUnitId),
+            [_0x16f20b.nodeId]: X(_0x3814ac.data, _0x154556),
+          },
+          _0x3814ac.meta["structureScopeId"],
+        );
+      return J(_0x301d22, _0x16f20b.unitId, {
+        redoMutations: [
+          _0x90181.redoMutation,
+          ...((_0xf9063e == null ? undefined : _0xf9063e.redoMutations) ?? []),
+        ],
+        undoMutations: [
+          ...((_0xf9063e == null ? undefined : _0xf9063e.undoMutations) ?? []),
+          _0x90181.undoMutation,
+        ],
+      });
+    },
+  },
+  fr = {
+    id: "board.operation.mind-map.update-nodes",
+    type: _0x135e78.OPERATION,
+    handler: (_0x3f762b, _0x38bb28) => {
+      if (
+        !(_0x38bb28 != null && _0x38bb28.unitId) ||
+        !_0x38bb28.subUnitId ||
+        !_0x38bb28.updates["length"]
+      )
+        return false;
+      let _0x204131 = _0x38bb28.updates["map"]((_0x12bd2e) => _0x12bd2e.nodeId);
+      if (
+        _0x204131.some((_0x3b1879) => !_0x3b1879) ||
+        new Set(_0x204131).size !== _0x204131.length
+      )
+        return false;
+      let _0x97683b = {
+          ..._0x3f762b
+            .get(_0x3d3c2a)
+            .getElementData(_0x38bb28.unitId, _0x38bb28.subUnitId),
+        },
+        _0x10d1ba = [],
+        _0x46903e = [],
+        _0x9e4166 = null;
+      for (let _0x143943 of _0x38bb28.updates) {
+        let _0x53e227 = K(_0x97683b, _0x143943.nodeId);
+        if (
+          !_0x53e227 ||
+          (_0x9e4166 !== null &&
+            _0x53e227.meta["structureScopeId"] !== _0x9e4166)
+        )
+          return false;
+        _0x9e4166 = _0x53e227.meta["structureScopeId"];
+        let _0x326e50 = ur(_0x53e227, _0x143943);
+        if (!_0x326e50) return false;
+        if (on(_0x53e227.data["element"], _0x326e50)) continue;
+        let _0x97319a = Y(_0x53e227.data, _0x326e50);
+        (_0x10d1ba.push(_0x97319a.redoMutation),
+          _0x46903e.unshift(_0x97319a.undoMutation),
+          (_0x97683b[_0x143943.nodeId] = X(_0x53e227.data, _0x326e50)));
+      }
+      if (_0x10d1ba.length === 0) return true;
+      let _0x1cb364 = _0x9e4166 ? Z(_0x97683b, _0x9e4166) : null;
+      return J(_0x3f762b, _0x38bb28.unitId, {
+        redoMutations: [
+          ..._0x10d1ba,
+          ...((_0x1cb364 == null ? undefined : _0x1cb364.redoMutations) ?? []),
+        ],
+        undoMutations: [
+          ...((_0x1cb364 == null ? undefined : _0x1cb364.undoMutations) ?? []),
+          ..._0x46903e,
+        ],
+      });
+    },
+  },
+  pr = {
+    id: "board.operation.mind-map.update-incoming-connector",
+    type: _0x135e78.OPERATION,
+    handler: (_0x5ef2a7, _0xcdd670) => {
+      if (
+        !(_0xcdd670 != null && _0xcdd670.unitId) ||
+        !_0xcdd670.subUnitId ||
+        !_0xcdd670.nodeId ||
+        !_0xcdd670.style
+      )
+        return false;
+      let _0x1db7f1 = _0x5ef2a7
+          .get(_0x3d3c2a)
+          .getElementData(_0xcdd670.unitId, _0xcdd670.subUnitId),
+        _0x46b34f = K(_0x1db7f1, _0xcdd670.nodeId);
+      if (!(_0x46b34f != null && _0x46b34f.meta["parentNodeId"])) return false;
+      let _0x1478a6 = fn(
+        _0x1db7f1,
+        _0x46b34f.meta["structureScopeId"],
+        _0xcdd670.nodeId,
+      );
+      if (!_0x1478a6 || !("connectorData" in _0x1478a6.element)) return false;
+      let _0x4ddb9a = _0x470e98.deepClone(_0x1478a6.element),
+        _0x389ddc = hn(_0xcdd670.style["lineType"]);
+      ((_0x4ddb9a.connectorData = {
+        ..._0x4ddb9a.connectorData,
+        style: {
+          ...(_0x4ddb9a.connectorData["style"] ?? {}),
+          ..._0xcdd670.style,
+          ...(_0xcdd670.style["lineType"] === undefined
+            ? null
+            : { dash: _0x389ddc }),
+        },
+      }),
+        delete _0x4ddb9a.connectorData["style"].lineType);
+      let _0x52239d = Y(_0x1478a6, _0x4ddb9a);
+      return J(_0x5ef2a7, _0xcdd670.unitId, {
+        redoMutations: [_0x52239d.redoMutation],
+        undoMutations: [_0x52239d.undoMutation],
+      });
+    },
+  },
+  mr = {
+    id: "board.operation.mind-map.delete-node",
+    type: _0x135e78.OPERATION,
+    handler: (_0x3d33d6, _0x2987dc) => {
+      var _0x2c563f;
+      if (
+        !(_0x2987dc != null && _0x2987dc.unitId) ||
+        !_0x2987dc.subUnitId ||
+        !_0x2987dc.nodeId
+      )
+        return false;
+      let _0x6b911f = _0x3d33d6.get(_0x3d3c2a),
+        _0x4f90ed = _0x6b911f.getElementData(
+          _0x2987dc.unitId,
+          _0x2987dc.subUnitId,
+        ),
+        _0x4fb6ff = K(_0x4f90ed, _0x2987dc.nodeId);
+      if (!_0x4fb6ff) return false;
+      let _0x34c774 = _0x6b911f.getElementOrder(
+          _0x2987dc.unitId,
+          _0x2987dc.subUnitId,
+        ),
+        _0xb9e90a = dn(
+          _0x4f90ed,
+          _0x4fb6ff.meta["structureScopeId"],
+          _0x2987dc.nodeId,
+        );
+      _0x4fb6ff.meta["parentNodeId"] ??
+        _0xb9e90a.add(_0x4fb6ff.meta["structureScopeId"]);
+      let _0x517cd1 = V(
+          (_0x2c563f = _0x4f90ed[_0x4fb6ff.meta["structureScopeId"]]) == null
+            ? undefined
+            : _0x2c563f.element,
+        ),
+        _0x1cb067 = _0x517cd1 == null ? undefined : _0x517cd1.rootNodeId,
+        _0x44ab97 = _0x1cb067 ? _0x5df5fb(_0x4f90ed, _0x1cb067) : null,
+        _0xec5d9d = { ..._0x4f90ed };
+      _0xb9e90a.forEach((_0x5b29dd) => delete _0xec5d9d[_0x5b29dd]);
+      let _0x1351fa =
+          _0x4fb6ff.meta["parentNodeId"] == null
+            ? null
+            : Z(_0xec5d9d, _0x4fb6ff.meta["structureScopeId"]),
+        _0x156553 =
+          _0x44ab97 && _0x1cb067
+            ? $n(
+                _0xec5d9d,
+                _0x4fb6ff.meta["structureScopeId"],
+                _0x1cb067,
+                _0x44ab97,
+              )
+            : null,
+        _0x17a624 = [..._0x34c774].filter((_0x29b4d2) =>
+          _0xb9e90a.has(_0x29b4d2),
+        ),
+        _0xc8dfdb = [..._0x17a624]
+          .reverse()
+          .map((_0x5a4e35) => ({
+            id: _0xf049a6.id,
+            params: {
+              unitId: _0x2987dc.unitId,
+              subUnitId: _0x2987dc.subUnitId,
+              elementId: _0x5a4e35,
+              allowLockedParent: true,
+            },
+          })),
+        _0x28b07e = _0x17a624.map((_0xadefd7) => ({
+          id: _0x23a10e.id,
+          params: {
+            unitId: _0x2987dc.unitId,
+            subUnitId: _0x2987dc.subUnitId,
+            element: _0x470e98.deepClone(_0x4f90ed[_0xadefd7].element),
+            insertIndex: _0x34c774.indexOf(_0xadefd7),
+            allowLockedParent: true,
+          },
+        }));
+      return J(_0x3d33d6, _0x2987dc.unitId, {
+        redoMutations: [
+          ..._0xc8dfdb,
+          ...((_0x1351fa == null ? undefined : _0x1351fa.redoMutations) ?? []),
+          ...((_0x156553 == null ? undefined : _0x156553.redoMutations) ?? []),
+        ],
+        undoMutations: [
+          ...((_0x156553 == null ? undefined : _0x156553.undoMutations) ?? []),
+          ...((_0x1351fa == null ? undefined : _0x1351fa.undoMutations) ?? []),
+          ..._0x28b07e,
+        ],
+      });
+    },
+  },
+  hr = {
+    id: "board.operation.mind-map.reparent-node",
+    type: _0x135e78.OPERATION,
+    handler: (_0x477f4e, _0x11c0db) => {
+      if (
+        !(_0x11c0db != null && _0x11c0db.unitId) ||
+        !_0x11c0db.subUnitId ||
+        !_0x11c0db.nodeId ||
+        !_0x11c0db.newParentNodeId
+      )
+        return false;
+      let _0x18fc69 = _0x477f4e.get(_0x3d3c2a),
+        _0x445632 = _0x18fc69.getElementData(
+          _0x11c0db.unitId,
+          _0x11c0db.subUnitId,
+        ),
+        _0x20f6a1 = K(_0x445632, _0x11c0db.nodeId),
+        _0x56fbf3 = K(_0x445632, _0x11c0db.newParentNodeId);
+      if (
+        !_0x20f6a1 ||
+        !_0x56fbf3 ||
+        _0x11c0db.nodeId === _0x11c0db.newParentNodeId
+      )
+        return false;
+      if (_0x20f6a1.meta["parentNodeId"] === null) {
+        var _0x1f4813, _0x55b790, _0x117de3, _0x127abd;
+        if (
+          _0x20f6a1.meta["structureScopeId"] ===
+          _0x56fbf3.meta["structureScopeId"]
+        )
+          return false;
+        let _0x2a5716 = _0x11c0db.incomingConnectorId ?? _0x18cb3c(6);
+        if (_0x445632[_0x2a5716]) return false;
+        let _0x4d3c23 = nn(
+            _0x56fbf3.meta,
+            _0x11c0db.side ?? _0x20f6a1.meta["side"],
+          ),
+          _0x504a9f = V(
+            (_0x1f4813 = _0x445632[_0x56fbf3.meta["structureScopeId"]]) == null
+              ? undefined
+              : _0x1f4813.element,
+          ),
+          _0x1992bc = wn(
+            _0x445632,
+            _0x56fbf3.meta["structureScopeId"],
+            _0x11c0db.newParentNodeId,
+            _0x11c0db.nodeId,
+            _0x11c0db.orderKey,
+            _0x11c0db.referenceNodeId,
+            _0x11c0db.placement,
+          ),
+          _0x23a21e = Cn(
+            _0x445632,
+            _0x20f6a1.meta["structureScopeId"],
+            _0x11c0db.nodeId,
+          ),
+          _0x181ce3 = [],
+          _0x16a592 = [],
+          _0x1135d4 = { ..._0x445632 };
+        An(
+          _0x445632,
+          _0x23a21e,
+          {
+            scopeId: _0x56fbf3.meta["structureScopeId"],
+            rootNodeId: _0x11c0db.nodeId,
+            rootParentNodeId: _0x11c0db.newParentNodeId,
+            rootOrderKey: _0x1992bc,
+            rootSide: _0x4d3c23,
+            rootIsDemoted: true,
+          },
+          _0x181ce3,
+          _0x16a592,
+          _0x1135d4,
+        );
+        let _0x4f5880 = jt({
+          nodeId: _0x11c0db.nodeId,
+          connectorId: _0x2a5716,
+          scopeId: _0x56fbf3.meta["structureScopeId"],
+          parentNode: _0x56fbf3.data["element"],
+          orderKey: _0x1992bc,
+          side: _0x4d3c23,
+          branchLineType:
+            _0x504a9f == null || (_0x55b790 = _0x504a9f.layout) == null
+              ? undefined
+              : _0x55b790.branchLineType,
+          treeRootTrunk:
+            z(
+              _0x504a9f == null || (_0x117de3 = _0x504a9f.layout) == null
+                ? undefined
+                : _0x117de3.structureKind,
+            ) && _0x56fbf3.meta["parentNodeId"] === null,
+          timelineRootStructureKind:
+            B(
+              _0x504a9f == null || (_0x127abd = _0x504a9f.layout) == null
+                ? undefined
+                : _0x127abd.structureKind,
+            ) && _0x56fbf3.meta["parentNodeId"] === null
+              ? _0x504a9f.layout["structureKind"]
+              : undefined,
+          left: _0x20f6a1.data["element"].transform["left"] ?? 0,
+          top: _0x20f6a1.data["element"].transform["top"] ?? 0,
+        }).connector;
+        (_0x181ce3.push({
+          id: _0x23a10e.id,
+          params: {
+            unitId: _0x11c0db.unitId,
+            subUnitId: _0x11c0db.subUnitId,
+            element: _0x4f5880,
+            allowLockedParent: true,
+          },
+        }),
+          _0x16a592.unshift({
+            id: _0xf049a6.id,
+            params: {
+              unitId: _0x11c0db.unitId,
+              subUnitId: _0x11c0db.subUnitId,
+              elementId: _0x4f5880.id,
+              allowLockedParent: true,
+            },
+          }),
+          (_0x1135d4[_0x4f5880.id] = qn(
+            _0x11c0db.unitId,
+            _0x11c0db.subUnitId,
+            _0x4f5880,
+          )));
+        let _0x3712fa = _0x445632[_0x20f6a1.meta["structureScopeId"]];
+        return (
+          _0x3712fa &&
+            (_0x181ce3.push({
+              id: _0xf049a6.id,
+              params: {
+                unitId: _0x11c0db.unitId,
+                subUnitId: _0x11c0db.subUnitId,
+                elementId: _0x3712fa.elementId,
+                allowLockedParent: true,
+              },
+            }),
+            _0x16a592.unshift({
+              id: _0x23a10e.id,
+              params: {
+                unitId: _0x11c0db.unitId,
+                subUnitId: _0x11c0db.subUnitId,
+                element: _0x470e98.deepClone(_0x3712fa.element),
+                insertIndex: _0x18fc69
+                  .getElementOrder(_0x11c0db.unitId, _0x11c0db.subUnitId)
+                  .indexOf(_0x3712fa.elementId),
+                allowLockedParent: true,
+              },
+            }),
+            delete _0x1135d4[_0x3712fa.elementId]),
+          jn(
+            _0x445632,
+            _0x1135d4,
+            [_0x56fbf3.meta["structureScopeId"]],
+            _0x181ce3,
+            _0x16a592,
+          ),
+          J(_0x477f4e, _0x11c0db.unitId, {
+            redoMutations: _0x181ce3,
+            undoMutations: _0x16a592,
+          })
+        );
+      }
+      if (
+        Sn(
+          _0x445632,
+          _0x20f6a1.meta["structureScopeId"],
+          _0x11c0db.newParentNodeId,
+          _0x11c0db.nodeId,
+        )
+      )
+        return false;
+      let _0x5c821a = fn(
+        _0x445632,
+        _0x20f6a1.meta["structureScopeId"],
+        _0x11c0db.nodeId,
+      );
+      if (!_0x5c821a) return false;
+      let _0x3696a9 = nn(
+          _0x56fbf3.meta,
+          _0x11c0db.side ?? _0x20f6a1.meta["side"],
+        ),
+        _0x1880c5 = [],
+        _0x246f80 = [],
+        _0x215ed7 = { ..._0x445632 };
+      An(
+        _0x445632,
+        Cn(_0x445632, _0x20f6a1.meta["structureScopeId"], _0x11c0db.nodeId),
+        {
+          scopeId: _0x56fbf3.meta["structureScopeId"],
+          rootNodeId: _0x11c0db.nodeId,
+          rootParentNodeId: _0x11c0db.newParentNodeId,
+          rootOrderKey: wn(
+            _0x445632,
+            _0x56fbf3.meta["structureScopeId"],
+            _0x11c0db.newParentNodeId,
+            _0x11c0db.nodeId,
+            _0x11c0db.orderKey,
+            _0x11c0db.referenceNodeId,
+            _0x11c0db.placement,
+          ),
+          rootSide: _0x3696a9,
+          incomingConnectorId: _0x5c821a.elementId,
+        },
+        _0x1880c5,
+        _0x246f80,
+        _0x215ed7,
+      );
+      let _0x50a4bc = kn(_0x5c821a, {
+          scopeId: _0x56fbf3.meta["structureScopeId"],
+          parentNodeId: _0x11c0db.newParentNodeId,
+          childNodeId: _0x11c0db.nodeId,
+          side: _0x3696a9,
+          updateEndpoints: true,
+        }),
+        _0x55076c = Y(_0x5c821a, _0x50a4bc);
+      return (
+        _0x1880c5.push(_0x55076c.redoMutation),
+        _0x246f80.unshift(_0x55076c.undoMutation),
+        (_0x215ed7[_0x5c821a.elementId] = X(_0x5c821a, _0x50a4bc)),
+        jn(
+          _0x445632,
+          _0x215ed7,
+          [
+            _0x20f6a1.meta["structureScopeId"],
+            _0x56fbf3.meta["structureScopeId"],
+          ],
+          _0x1880c5,
+          _0x246f80,
+        ),
+        J(_0x477f4e, _0x11c0db.unitId, {
+          redoMutations: _0x1880c5,
+          undoMutations: _0x246f80,
+        })
+      );
+    },
+  },
+  gr = {
+    id: "board.operation.mind-map.promote-node",
+    type: _0x135e78.OPERATION,
+    handler: (_0x155935, _0x13446e) => {
+      if (
+        !(_0x13446e != null && _0x13446e.unitId) ||
+        !_0x13446e.subUnitId ||
+        !_0x13446e.nodeId
+      )
+        return false;
+      let _0xb765e8 = _0x155935
+          .get(_0x3d3c2a)
+          .getElementData(_0x13446e.unitId, _0x13446e.subUnitId),
+        _0x5d1f92 = K(_0xb765e8, _0x13446e.nodeId);
+      if (!(_0x5d1f92 != null && _0x5d1f92.meta["parentNodeId"])) return false;
+      let _0x4f9222 = K(_0xb765e8, _0x5d1f92.meta["parentNodeId"]);
+      if (!(_0x4f9222 != null && _0x4f9222.meta["parentNodeId"])) return false;
+      let _0x8b6645 = K(_0xb765e8, _0x4f9222.meta["parentNodeId"]),
+        _0x5ea391 = fn(
+          _0xb765e8,
+          _0x5d1f92.meta["structureScopeId"],
+          _0x13446e.nodeId,
+        );
+      if (!_0x8b6645 || !_0x5ea391) return false;
+      let _0x471851 =
+          _0x4f9222.meta["parentNodeId"] === null
+            ? _0x5d1f92.meta["side"]
+            : (_0x4f9222.meta["side"] ?? _0x5d1f92.meta["side"] ?? "right"),
+        _0xb83b5d = wn(
+          _0xb765e8,
+          _0x5d1f92.meta["structureScopeId"],
+          _0x8b6645.data["elementId"],
+          _0x13446e.nodeId,
+        ),
+        _0x5b0662 = [],
+        _0x35687d = [],
+        _0x451630 = On(_0x5d1f92.data, {
+          scopeId: _0x5d1f92.meta["structureScopeId"],
+          parentNodeId: _0x8b6645.data["elementId"],
+          orderKey: _0xb83b5d,
+          side: _0x471851,
+        }),
+        _0x4b3dd9 = Y(_0x5d1f92.data, _0x451630);
+      (_0x5b0662.push(_0x4b3dd9.redoMutation),
+        _0x35687d.unshift(_0x4b3dd9.undoMutation));
+      let _0x3319b5 = Y(
+        _0x5ea391,
+        kn(_0x5ea391, {
+          scopeId: _0x5d1f92.meta["structureScopeId"],
+          parentNodeId: _0x8b6645.data["elementId"],
+          childNodeId: _0x13446e.nodeId,
+          side: _0x471851,
+          updateEndpoints: true,
+        }),
+      );
+      return (
+        _0x5b0662.push(_0x3319b5.redoMutation),
+        _0x35687d.unshift(_0x3319b5.undoMutation),
+        J(_0x155935, _0x13446e.unitId, {
+          redoMutations: _0x5b0662,
+          undoMutations: _0x35687d,
+        })
+      );
+    },
+  },
+  _r = {
+    id: "board.operation.mind-map.detach-node",
+    type: _0x135e78.OPERATION,
+    handler: (_0x351b8e, _0xfe9fcd) => {
+      if (
+        !(_0xfe9fcd != null && _0xfe9fcd.unitId) ||
+        !_0xfe9fcd.subUnitId ||
+        !_0xfe9fcd.nodeId
+      )
+        return false;
+      let _0x4d5a62 = _0x351b8e.get(_0x3d3c2a),
+        _0x294654 = _0x4d5a62.getElementData(
+          _0xfe9fcd.unitId,
+          _0xfe9fcd.subUnitId,
+        ),
+        _0x129f35 = K(_0x294654, _0xfe9fcd.nodeId);
+      if (!(_0x129f35 != null && _0x129f35.meta["parentNodeId"])) return false;
+      let _0xc82922 = fn(
+        _0x294654,
+        _0x129f35.meta["structureScopeId"],
+        _0xfe9fcd.nodeId,
+      );
+      if (!_0xc82922) return false;
+      let _0x3ef14b = Cn(
+          _0x294654,
+          _0x129f35.meta["structureScopeId"],
+          _0xfe9fcd.nodeId,
+        ),
+        _0x5dffb4 = _0xfe9fcd.containerId ?? _0x18cb3c(6);
+      if (_0x294654[_0x5dffb4]) return false;
+      let _0xe0e3bc = Mn(_0x3ef14b),
+        _0x2021b9 = _0x129f35.data["element"].transform["left"] ?? 0,
+        _0x305b0e = _0x129f35.data["element"].transform["top"] ?? 0,
+        _0x30d824 = bt({
+          id: _0x5dffb4,
+          rootNodeId: _0xfe9fcd.nodeId,
+          ..._0xe0e3bc,
+          ...(Number.isFinite(_0xfe9fcd.left)
+            ? { left: _0xfe9fcd.left - _0x2021b9 }
+            : null),
+          ...(Number.isFinite(_0xfe9fcd.top)
+            ? { top: _0xfe9fcd.top - _0x305b0e }
+            : null),
+        }),
+        _0x483d8e = [
+          {
+            id: _0x23a10e.id,
+            params: {
+              unitId: _0xfe9fcd.unitId,
+              subUnitId: _0xfe9fcd.subUnitId,
+              element: _0x30d824,
+              allowLockedParent: true,
+            },
+          },
+          {
+            id: _0xf049a6.id,
+            params: {
+              unitId: _0xfe9fcd.unitId,
+              subUnitId: _0xfe9fcd.subUnitId,
+              elementId: _0xc82922.elementId,
+              allowLockedParent: true,
+            },
+          },
+        ],
+        _0x4bceff = [
+          {
+            id: _0x23a10e.id,
+            params: {
+              unitId: _0xfe9fcd.unitId,
+              subUnitId: _0xfe9fcd.subUnitId,
+              element: _0x470e98.deepClone(_0xc82922.element),
+              insertIndex: _0x4d5a62
+                .getElementOrder(_0xfe9fcd.unitId, _0xfe9fcd.subUnitId)
+                .indexOf(_0xc82922.elementId),
+              allowLockedParent: true,
+            },
+          },
+          {
+            id: _0xf049a6.id,
+            params: {
+              unitId: _0xfe9fcd.unitId,
+              subUnitId: _0xfe9fcd.subUnitId,
+              elementId: _0x5dffb4,
+              allowLockedParent: true,
+            },
+          },
+        ];
+      return (
+        An(
+          _0x294654,
+          _0x3ef14b,
+          {
+            scopeId: _0x5dffb4,
+            rootNodeId: _0xfe9fcd.nodeId,
+            rootParentNodeId: null,
+            rootOrderKey: "a0",
+            rootIsDetached: true,
+            incomingConnectorId: _0xc82922.elementId,
+          },
+          _0x483d8e,
+          _0x4bceff,
+        ),
+        J(_0x351b8e, _0xfe9fcd.unitId, {
+          redoMutations: _0x483d8e,
+          undoMutations: _0x4bceff,
+        })
+      );
+    },
+  },
+  vr = {
+    id: "board.operation.mind-map.translate",
+    type: _0x135e78.OPERATION,
+    handler: (_0x3403d2, _0x1f19fc) => {
+      if (
+        !(_0x1f19fc != null && _0x1f19fc.unitId) ||
+        !_0x1f19fc.subUnitId ||
+        !_0x1f19fc.scopeId ||
+        !Number.isFinite(_0x1f19fc.deltaX) ||
+        !Number.isFinite(_0x1f19fc.deltaY) ||
+        (_0x1f19fc.deltaX === 0 && _0x1f19fc.deltaY === 0)
+      )
+        return false;
+      let _0xb1b2a5 = Fn(
+        _0x3403d2
+          .get(_0x3d3c2a)
+          .getElementData(_0x1f19fc.unitId, _0x1f19fc.subUnitId),
+        {
+          scopeId: _0x1f19fc.scopeId,
+          deltaX: _0x1f19fc.deltaX,
+          deltaY: _0x1f19fc.deltaY,
+          excludeElementIds: _0x1f19fc.excludeElementIds,
+          preserveExcludedWorldTransforms:
+            _0x1f19fc.preserveExcludedWorldTransforms,
+        },
+      );
+      return _0xb1b2a5 ? J(_0x3403d2, _0x1f19fc.unitId, _0xb1b2a5) : false;
+    },
+  },
+  yr = {
+    id: "board.operation.mind-map.layout",
+    type: _0x135e78.OPERATION,
+    handler: (_0x248bcc, _0xe9eb96) => {
+      if (
+        !(_0xe9eb96 != null && _0xe9eb96.unitId) ||
+        !_0xe9eb96.subUnitId ||
+        !_0xe9eb96.scopeId
+      )
+        return false;
+      let _0x12b7d4 = _0x248bcc
+          .get(_0x3d3c2a)
+          .getElementData(_0xe9eb96.unitId, _0xe9eb96.subUnitId),
+        _0x3676f6 = _0xe9eb96.anchorNodeId
+          ? _0x5df5fb(_0x12b7d4, _0xe9eb96.anchorNodeId)
+          : null,
+        _0x30ae04 = Z(_0x12b7d4, _0xe9eb96.scopeId);
+      if (!_0x30ae04) return false;
+      let _0x11a884 =
+        _0x3676f6 && _0xe9eb96.anchorNodeId
+          ? $n(_0x12b7d4, _0xe9eb96.scopeId, _0xe9eb96.anchorNodeId, _0x3676f6)
+          : null;
+      return J(
+        _0x248bcc,
+        _0xe9eb96.unitId,
+        {
+          redoMutations: [
+            ..._0x30ae04.redoMutations,
+            ...((_0x11a884 == null ? undefined : _0x11a884.redoMutations) ??
+              []),
+          ],
+          undoMutations: [
+            ...((_0x11a884 == null ? undefined : _0x11a884.undoMutations) ??
+              []),
+            ..._0x30ae04.undoMutations,
+          ],
+        },
+        { skipUndo: _0xe9eb96.skipUndo },
+      );
+    },
+  },
+  br = {
+    id: "board.operation.mind-map.change-layout",
+    type: _0x135e78.OPERATION,
+    handler: (_0x4def19, _0x3d3487) => {
+      var _0x24c79d;
+      if (
+        !(_0x3d3487 != null && _0x3d3487.unitId) ||
+        !_0x3d3487.subUnitId ||
+        !_0x3d3487.scopeId
+      )
+        return false;
+      let _0x48843e = _0x4def19.get(_0x3d3c2a),
+        _0x5910ed = _0x48843e.getElementData(
+          _0x3d3487.unitId,
+          _0x3d3487.subUnitId,
+        ),
+        _0x3d0fe5 = _0x48843e.getElementOrder(
+          _0x3d3487.unitId,
+          _0x3d3487.subUnitId,
+        ),
+        _0x3c3e99 = _0x5910ed[_0x3d3487.scopeId],
+        _0xed085 = V(_0x3c3e99 == null ? undefined : _0x3c3e99.element);
+      if (!_0x3c3e99 || !_0xed085) return false;
+      let _0x1f054c = nt(
+          q(_0x3d3487.structureKind ?? _0xed085.layout["structureKind"]),
+          _0x3d3487.branchLineType ?? _0xed085.layout["branchLineType"],
+        ),
+        _0x3e70b6 = {
+          ..._0xed085.layout,
+          ...(_0x3d3487.direction === undefined
+            ? null
+            : { direction: _0x3d3487.direction }),
+          ...(_0x3d3487.structureKind === undefined
+            ? null
+            : { structureKind: _0x3d3487.structureKind }),
+          branchLineType: _0x1f054c,
+          ...(_0x3d3487.horizontalGap === undefined
+            ? null
+            : { horizontalGap: _0x3d3487.horizontalGap }),
+          ...(_0x3d3487.siblingGap === undefined
+            ? null
+            : { siblingGap: _0x3d3487.siblingGap }),
+          ...(_0x3d3487.branchGap === undefined
+            ? null
+            : { branchGap: _0x3d3487.branchGap }),
+        },
+        _0x1dab3f = _0x470e98.deepClone(_0x3c3e99.element);
+      _0x1dab3f.custom = {
+        ...(_0x1dab3f.custom ?? {}),
+        mindmap: {
+          ...(((_0x24c79d = _0x1dab3f.custom) == null
+            ? undefined
+            : _0x24c79d.mindmap) ?? {}),
+          layout: _0x3e70b6,
+          structureRevision: (_0xed085.structureRevision ?? 0) + 1,
+        },
+      };
+      let _0x16e062 = [],
+        _0x29e222 = [],
+        _0x5cc20d = { ..._0x5910ed },
+        _0x405bfe = Y(_0x3c3e99, _0x1dab3f);
+      if (
+        (_0x16e062.push(_0x405bfe.redoMutation),
+        _0x29e222.unshift(_0x405bfe.undoMutation),
+        (_0x5cc20d[_0x3c3e99.elementId] = X(_0x3c3e99, _0x1dab3f)),
+        _0x3d3487.direction !== undefined || _0x3d3487.structureKind)
+      ) {
+        let _0x3c07ec = Object.values(_0x5910ed)
+            .map((_0x85ffb5) => {
+              let _0x1243b8 = H(_0x85ffb5.element);
+              return (_0x1243b8 == null
+                ? undefined
+                : _0x1243b8.structureScopeId) === _0x3d3487.scopeId &&
+                _0x1243b8.parentNodeId !== null
+                ? { data: _0x85ffb5, meta: _0x1243b8 }
+                : null;
+            })
+            .filter((_0x13449c) => !!_0x13449c),
+          _0x23a0ff = q(_0x3e70b6.structureKind),
+          _0x487236 = new Map(),
+          _0x44ba74 = new Map();
+        (_0x3c07ec.forEach((_0x1c49f3) => {
+          _0x44ba74.set(_0x1c49f3.meta["parentNodeId"], [
+            ...(_0x44ba74.get(_0x1c49f3.meta["parentNodeId"]) ?? []),
+            _0x1c49f3,
+          ]);
+        }),
+          _0x44ba74.forEach((_0x15133c) => _0x15133c.sort(Qt)));
+        let _0x11e1ac = (_0x3b8f6e, _0x796902) => {
+          (_0x44ba74.get(_0x3b8f6e) ?? []).forEach((_0x4fb244, _0x10a5da) => {
+            let _0x46cc47 =
+              _0x3d3487.direction === "left" || _0x3d3487.direction === "right"
+                ? _0x3d3487.direction
+                : _0x4fb244.meta["parentNodeId"] === _0xed085.rootNodeId
+                  ? _0x3d3487.direction === "both" &&
+                    _0x23a0ff === "mindmap-horizontal"
+                    ? $t(_0x10a5da, "right", "left")
+                    : en(_0x23a0ff, _0x10a5da, _0x4fb244.meta["side"])
+                  : tn(_0x796902, _0x23a0ff);
+            (_0x487236.set(_0x4fb244.data["elementId"], _0x46cc47),
+              _0x11e1ac(_0x4fb244.data["elementId"], _0x46cc47));
+          });
+        };
+        (_0x11e1ac(_0xed085.rootNodeId),
+          _0x3c07ec.forEach(({ data: _0x3a7d2a, meta: _0x564f48 }) => {
+            let _0x38c6f2 = On(_0x3a7d2a, {
+                scopeId: _0x3d3487.scopeId,
+                parentNodeId: _0x564f48.parentNodeId,
+                orderKey: _0x564f48.orderKey,
+                side:
+                  _0x487236.get(_0x3a7d2a.elementId) ??
+                  _0x564f48.side ??
+                  "right",
+              }),
+              _0x399147 = Y(_0x3a7d2a, _0x38c6f2);
+            (_0x16e062.push(_0x399147.redoMutation),
+              _0x29e222.unshift(_0x399147.undoMutation),
+              (_0x5cc20d[_0x3a7d2a.elementId] = X(_0x3a7d2a, _0x38c6f2)));
+          }),
+          Object.values(_0x5910ed).forEach((_0x10fbec) => {
+            let _0x3a45b6 = U(_0x10fbec.element);
+            if (
+              (_0x3a45b6 == null ? undefined : _0x3a45b6.structureScopeId) !==
+              _0x3d3487.scopeId
+            )
+              return;
+            let _0x40ea72 = kn(_0x10fbec, {
+                scopeId: _0x3d3487.scopeId,
+                parentNodeId: _0x3a45b6.parentNodeId,
+                childNodeId: _0x3a45b6.childNodeId,
+                side: _0x487236.get(_0x3a45b6.childNodeId) ?? "right",
+                updateEndpoints: true,
+              }),
+              _0x5fdb5 = Y(_0x10fbec, _0x40ea72);
+            (_0x16e062.push(_0x5fdb5.redoMutation),
+              _0x29e222.unshift(_0x5fdb5.undoMutation),
+              (_0x5cc20d[_0x10fbec.elementId] = X(_0x10fbec, _0x40ea72)));
+          }));
+      }
+      let _0x14656a = Z(_0x5cc20d, _0x3d3487.scopeId);
+      if (
+        (_0x14656a &&
+          (_0x16e062.push(..._0x14656a.redoMutations),
+          _0x29e222.unshift(..._0x14656a.undoMutations)),
+        B(q(_0x3e70b6.structureKind)))
+      ) {
+        let _0x21a459 = er({
+          unitId: _0x3d3487.unitId,
+          subUnitId: _0x3d3487.subUnitId,
+          scopeId: _0x3d3487.scopeId,
+          elementData: _0x5910ed,
+          elementOrder: [..._0x3d0fe5],
+        });
+        _0x21a459 &&
+          (_0x16e062.push(_0x21a459.redoMutation),
+          _0x29e222.unshift(_0x21a459.undoMutation));
+      }
+      return J(_0x4def19, _0x3d3487.unitId, {
+        redoMutations: _0x16e062,
+        undoMutations: _0x29e222,
+      });
+    },
+  };
+function Q(_0x2eec1f, _0x53279f = null, _0x318b43 = 1, _0x4aef4e) {
+  return {
+    success: false,
+    fits: false,
+    bounds: _0x53279f,
+    scale: _0x318b43,
+    reason: _0x2eec1f,
+    ...(_0x4aef4e ? { requiredBounds: _0x4aef4e } : null),
+  };
+}
+function xr(_0x447d94, _0x3e34ef, _0xaf1cff) {
+  let _0x28c990 = ar(_0x447d94, _0x3e34ef, false),
+    _0x427c4f = _0x28c990 && _0x5df5fb(_0x28c990, _0x3e34ef.scopeId);
+  return (
+    (!_0x427c4f || !rr(_0xaf1cff, _0x427c4f)) &&
+      _0x3e34ef.compact !== false &&
+      ((_0x28c990 = ar(_0x447d94, _0x3e34ef, true)),
+      (_0x427c4f = _0x28c990 && _0x5df5fb(_0x28c990, _0x3e34ef.scopeId))),
+    _0x28c990 && _0x427c4f
+      ? { elementData: _0x28c990, bounds: _0x427c4f }
+      : null
+  );
+}
+function Sr(_0x301222) {
+  var _0x3b68f0;
+  let _0x1e5f19 = V(
+    (_0x3b68f0 = _0x301222.preview[_0x301222.params["scopeId"]]) == null
+      ? undefined
+      : _0x3b68f0.element,
+  );
+  if (!B(q(_0x1e5f19 == null ? undefined : _0x1e5f19.layout["structureKind"])))
+    return;
+  let _0x20390a = er({
+    unitId: _0x301222.params["unitId"],
+    subUnitId: _0x301222.params["subUnitId"],
+    scopeId: _0x301222.params["scopeId"],
+    elementData: _0x301222.elementData,
+    elementOrder: _0x301222.elementOrder,
+  });
+  _0x20390a &&
+    (_0x301222.mutations["redoMutations"].push(_0x20390a.redoMutation),
+    _0x301222.mutations["undoMutations"].unshift(_0x20390a.undoMutation));
+}
+const Cr = {
+    id: "board.command.mind-map.reflow",
+    type: _0x135e78.COMMAND,
+    handler: (_0x2eda9f, _0x7ae9b9) => {
+      var _0x14256d;
+      if (
+        !(_0x7ae9b9 != null && _0x7ae9b9.unitId) ||
+        !_0x7ae9b9.subUnitId ||
+        !_0x7ae9b9.scopeId
+      )
+        return Q("invalid-options");
+      let _0x5f3fbf = _0x7ae9b9.padding ?? 0,
+        _0x540ab7 = nr(_0x7ae9b9.bounds, _0x5f3fbf);
+      if (
+        !_0x540ab7 ||
+        !tr(_0x7ae9b9.horizontalGap, P.horizontalGap) ||
+        !tr(_0x7ae9b9.siblingGap, P.siblingGap) ||
+        !tr(_0x7ae9b9.branchGap, P.branchGap)
+      )
+        return Q("invalid-options");
+      let _0x1a79f7 = _0x2eda9f.get(_0x3d3c2a),
+        _0x190eee = _0x1a79f7.getElementData(
+          _0x7ae9b9.unitId,
+          _0x7ae9b9.subUnitId,
+        ),
+        _0x129867 = _0x5df5fb(_0x190eee, _0x7ae9b9.scopeId);
+      if (
+        !_0x129867 ||
+        !V(
+          (_0x14256d = _0x190eee[_0x7ae9b9.scopeId]) == null
+            ? undefined
+            : _0x14256d.element,
+        )
+      )
+        return Q("mind-map-missing", _0x129867);
+      let _0x143cb2 = xr(_0x190eee, _0x7ae9b9, _0x540ab7);
+      if (!_0x143cb2) return Q("mind-map-missing", _0x129867);
+      if (!rr(_0x540ab7, _0x143cb2.bounds))
+        return Q(
+          "bounds-too-small",
+          _0x129867,
+          Math.min(
+            _0x540ab7.width / _0x143cb2.bounds["width"],
+            _0x540ab7.height / _0x143cb2.bounds["height"],
+          ),
+          _0x143cb2.bounds,
+        );
+      let _0x12ab24 = or(_0x143cb2.elementData, _0x7ae9b9.scopeId, _0x540ab7);
+      if (!_0x12ab24) return Q("mind-map-missing", _0x129867);
+      let _0x58d1a6 = sr(_0x190eee, _0x12ab24.elementData, _0x7ae9b9.scopeId);
+      return (
+        Sr({
+          elementData: _0x190eee,
+          elementOrder: [
+            ..._0x1a79f7.getElementOrder(_0x7ae9b9.unitId, _0x7ae9b9.subUnitId),
+          ],
+          mutations: _0x58d1a6,
+          params: _0x7ae9b9,
+          preview: _0x12ab24.elementData,
+        }),
+        J(_0x2eda9f, _0x7ae9b9.unitId, _0x58d1a6)
+          ? { success: true, fits: true, bounds: _0x12ab24.bounds, scale: 1 }
+          : Q("execution-failed", _0x129867)
+      );
+    },
+  },
+  wr = {
+    id: "board.operation.mind-map.change-branch-line-type",
+    type: _0x135e78.OPERATION,
+    handler: (_0x308806, _0x48cf00) =>
+      !(_0x48cf00 != null && _0x48cf00.unitId) ||
+      !_0x48cf00.subUnitId ||
+      !_0x48cf00.scopeId ||
+      !_0x48cf00.branchLineType
+        ? false
+        : br.handler(_0x308806, {
+            unitId: _0x48cf00.unitId,
+            subUnitId: _0x48cf00.subUnitId,
+            scopeId: _0x48cf00.scopeId,
+            branchLineType: _0x48cf00.branchLineType,
+          }),
+  },
+  Tr = {
+    id: "board.operation.mind-map.copy-node",
+    type: _0x135e78.OPERATION,
+    handler: (_0x5ee8d4, _0x11e5b5) => {
+      if (
+        !(_0x11e5b5 != null && _0x11e5b5.unitId) ||
+        !_0x11e5b5.subUnitId ||
+        !_0x11e5b5.nodeId
+      )
+        return false;
+      let _0x48781b = _0x5ee8d4
+          .get(_0x3d3c2a)
+          .getElementData(_0x11e5b5.unitId, _0x11e5b5.subUnitId),
+        _0x3ebe2f = K(_0x48781b, _0x11e5b5.nodeId);
+      if (!_0x3ebe2f) return false;
+      let _0x1f202c = Ln(
+        _0x48781b,
+        _0x3ebe2f.meta["structureScopeId"],
+        _0x11e5b5.nodeId,
+      );
+      return _0x1f202c.length
+        ? (_0x5ee8d4
+            .get(Bt)
+            .setPayload({ rootNodeId: _0x11e5b5.nodeId, elements: _0x1f202c }),
+          true)
+        : false;
+    },
+  },
+  Er = {
+    id: "board.operation.mind-map.paste-node",
+    type: _0x135e78.OPERATION,
+    handler: (_0x50fb26, _0x2b0b87) => {
+      var _0x2de74d, _0x356df6, _0x20758d, _0x8c4bf, _0x36c4;
+      if (
+        !(_0x2b0b87 != null && _0x2b0b87.unitId) ||
+        !_0x2b0b87.subUnitId ||
+        !_0x2b0b87.targetNodeId
+      )
+        return false;
+      let _0x1b6c18 = _0x50fb26.get(Bt).getPayload();
+      if (!_0x1b6c18) return false;
+      let _0x5672b4 = _0x50fb26
+          .get(_0x3d3c2a)
+          .getElementData(_0x2b0b87.unitId, _0x2b0b87.subUnitId),
+        _0x3ed969 = K(_0x5672b4, _0x2b0b87.targetNodeId);
+      if (!_0x3ed969) return false;
+      let _0x42fad5 = new Map(
+          _0x1b6c18.elements["map"]((_0x1b70a6) => [_0x1b70a6.id, _0x1b70a6]),
+        ).get(_0x1b6c18.rootNodeId),
+        _0xf498b8 = H(_0x42fad5);
+      if (!_0x42fad5 || !_0xf498b8) return false;
+      let _0x1a21ce = _0x1b6c18.elements["filter"](
+          (_0x52a181) => !!H(_0x52a181),
+        ),
+        _0x2d3450 = new Map(
+          _0x1a21ce.map((_0x35146d) => [
+            _0x35146d.id,
+            Rn(_0x35146d.id, _0x2b0b87.idMap),
+          ]),
+        );
+      _0x1b6c18.elements["forEach"]((_0x33cf11) => {
+        (U(_0x33cf11) || W(_0x33cf11)) &&
+          _0x2d3450.set(_0x33cf11.id, Rn(_0x33cf11.id, _0x2b0b87.idMap));
+      });
+      let _0x585cae = _0x2d3450.get(_0x1b6c18.rootNodeId);
+      if (!_0x585cae) return false;
+      let _0x5bed05 = Xt(
+          _0x5672b4,
+          _0x3ed969.meta["structureScopeId"],
+          _0x2b0b87.targetNodeId,
+        ),
+        _0x5bf1af = V(
+          (_0x2de74d = _0x5672b4[_0x3ed969.meta["structureScopeId"]]) == null
+            ? undefined
+            : _0x2de74d.element,
+        ),
+        _0x1a32c9 = nn(_0x3ed969.meta, _0xf498b8.side),
+        _0x3e7053 = rn(_0x3ed969.data["element"], _0x1a32c9, _0x5bed05.length),
+        _0x4becf3 = _0x3e7053.left - (_0x42fad5.transform["left"] ?? 0),
+        _0x1cf11b = _0x3e7053.top - (_0x42fad5.transform["top"] ?? 0),
+        _0x1075fd = Bn(_0x42fad5, {
+          id: _0x585cae,
+          scopeId: _0x3ed969.meta["structureScopeId"],
+          parentNodeId: _0x2b0b87.targetNodeId,
+          orderKey: Zt(_0x5bed05),
+          side: _0x1a32c9,
+          deltaX: _0x4becf3,
+          deltaY: _0x1cf11b,
+        }),
+        _0xdca4f3 = jt({
+          nodeId: _0x585cae,
+          connectorId: _0x2b0b87.incomingConnectorId ?? _0x18cb3c(6),
+          scopeId: _0x3ed969.meta["structureScopeId"],
+          parentNode: _0x3ed969.data["element"],
+          orderKey:
+            ((_0x356df6 = H(_0x1075fd)) == null
+              ? undefined
+              : _0x356df6.orderKey) ?? Zt(_0x5bed05),
+          side: _0x1a32c9,
+          branchLineType:
+            _0x5bf1af == null || (_0x20758d = _0x5bf1af.layout) == null
+              ? undefined
+              : _0x20758d.branchLineType,
+          treeRootTrunk:
+            z(
+              _0x5bf1af == null || (_0x8c4bf = _0x5bf1af.layout) == null
+                ? undefined
+                : _0x8c4bf.structureKind,
+            ) && _0x3ed969.meta["parentNodeId"] === null,
+          timelineRootStructureKind:
+            B(
+              _0x5bf1af == null || (_0x36c4 = _0x5bf1af.layout) == null
+                ? undefined
+                : _0x36c4.structureKind,
+            ) && _0x3ed969.meta["parentNodeId"] === null
+              ? _0x5bf1af.layout["structureKind"]
+              : undefined,
+          left: _0x1075fd.transform["left"] ?? _0x3e7053.left,
+          top: _0x1075fd.transform["top"] ?? _0x3e7053.top,
+        }).connector,
+        _0x2b17bd = _0x1a21ce
+          .filter((_0x35fcb1) => _0x35fcb1.id !== _0x1b6c18.rootNodeId)
+          .map((_0x561f50) => {
+            let _0x2c01f1 = H(_0x561f50),
+              _0x3cd655 = _0x2d3450.get(_0x561f50.id),
+              _0x51683f =
+                _0x2c01f1 != null && _0x2c01f1.parentNodeId
+                  ? _0x2d3450.get(_0x2c01f1.parentNodeId)
+                  : undefined;
+            return !_0x2c01f1 || !_0x3cd655 || !_0x51683f
+              ? null
+              : Bn(_0x561f50, {
+                  id: _0x3cd655,
+                  scopeId: _0x3ed969.meta["structureScopeId"],
+                  parentNodeId: _0x51683f,
+                  orderKey: _0x2c01f1.orderKey,
+                  side: _0x2c01f1.side,
+                  deltaX: _0x4becf3,
+                  deltaY: _0x1cf11b,
+                });
+          })
+          .filter((_0x39a6e9) => !!_0x39a6e9),
+        _0x15bbe2 = _0x1b6c18.elements["map"]((_0x32334f) => {
+          let _0x3320b8 = U(_0x32334f);
+          if (!_0x3320b8 || !("connectorData" in _0x32334f)) return null;
+          let _0x145910 = _0x2d3450.get(_0x32334f.id),
+            _0x3b6716 = _0x2d3450.get(_0x3320b8.parentNodeId),
+            _0x16f5a9 = _0x2d3450.get(_0x3320b8.childNodeId);
+          return !_0x145910 || !_0x3b6716 || !_0x16f5a9
+            ? null
+            : Vn(_0x32334f, {
+                id: _0x145910,
+                scopeId: _0x3ed969.meta["structureScopeId"],
+                parentNodeId: _0x3b6716,
+                childNodeId: _0x16f5a9,
+                idMap: _0x2d3450,
+                deltaX: _0x4becf3,
+                deltaY: _0x1cf11b,
+              });
+        }).filter((_0x14638c) => !!_0x14638c),
+        _0x393a06 = _0x1b6c18.elements["map"]((_0x556bf5) => {
+          let _0x40041a = W(_0x556bf5),
+            _0x2f48c8 = _0x2d3450.get(_0x556bf5.id),
+            _0x397abd = _0x40041a
+              ? _0x2d3450.get(_0x40041a.ownerNodeId)
+              : undefined;
+          return !_0x40041a || !_0x2f48c8 || !_0x397abd
+            ? null
+            : Hn(_0x556bf5, {
+                id: _0x2f48c8,
+                scopeId: _0x3ed969.meta["structureScopeId"],
+                ownerNodeId: _0x397abd,
+                deltaX: _0x4becf3,
+                deltaY: _0x1cf11b,
+              });
+        }).filter((_0x23ac8c) => !!_0x23ac8c);
+      return J(
+        _0x50fb26,
+        _0x2b0b87.unitId,
+        an({
+          unitId: _0x2b0b87.unitId,
+          subUnitId: _0x2b0b87.subUnitId,
+          elements: [
+            _0x1075fd,
+            ..._0x2b17bd,
+            _0xdca4f3,
+            ..._0x15bbe2,
+            ..._0x393a06,
+          ],
+        }),
+      );
+    },
+  },
+  Dr = {
+    id: "board.operation.mind-map.paste-as-new",
+    type: _0x135e78.OPERATION,
+    handler: (_0x21c19f, _0x1df508) => {
+      if (
+        !(_0x1df508 != null && _0x1df508.unitId) ||
+        !_0x1df508.subUnitId ||
+        !Number.isFinite(_0x1df508.left) ||
+        !Number.isFinite(_0x1df508.top)
+      )
+        return false;
+      let _0x5dfd18 = _0x21c19f.get(Bt).getPayload();
+      if (!_0x5dfd18) return false;
+      let _0x47367d = _0x21c19f
+          .get(_0x3d3c2a)
+          .getElementData(_0x1df508.unitId, _0x1df508.subUnitId),
+        _0x40ce19 = _0x1df508.containerId ?? _0x18cb3c(6);
+      if (_0x47367d[_0x40ce19]) return false;
+      let _0x1a2bda = new Map(
+          _0x5dfd18.elements["map"]((_0x45f46e) => [_0x45f46e.id, _0x45f46e]),
+        ).get(_0x5dfd18.rootNodeId),
+        _0x344536 = H(_0x1a2bda);
+      if (!_0x1a2bda || !_0x344536) return false;
+      let _0x5a264c = _0x5dfd18.elements["filter"](
+          (_0x203a51) => !!H(_0x203a51),
+        ),
+        _0x3688b9 = new Map(
+          _0x5a264c.map((_0x1dac72) => [
+            _0x1dac72.id,
+            Rn(_0x1dac72.id, _0x1df508.idMap),
+          ]),
+        );
+      _0x5dfd18.elements["forEach"]((_0x452e9d) => {
+        (U(_0x452e9d) || W(_0x452e9d)) &&
+          _0x3688b9.set(_0x452e9d.id, Rn(_0x452e9d.id, _0x1df508.idMap));
+      });
+      let _0x3ed896 = _0x3688b9.get(_0x5dfd18.rootNodeId);
+      if (!_0x3ed896) return false;
+      let _0x43ead0 = _0x1df508.left - (_0x1a2bda.transform["left"] ?? 0),
+        _0xf1430f = _0x1df508.top - (_0x1a2bda.transform["top"] ?? 0),
+        _0x528462 = Bn(_0x1a2bda, {
+          id: _0x3ed896,
+          scopeId: _0x40ce19,
+          parentNodeId: null,
+          orderKey: "a0",
+          deltaX: _0x43ead0,
+          deltaY: _0xf1430f,
+        }),
+        _0x89907c = _0x5a264c
+          .filter((_0x3f2717) => _0x3f2717.id !== _0x5dfd18.rootNodeId)
+          .map((_0x1ea823) => {
+            let _0x3a1fb2 = H(_0x1ea823),
+              _0x4899df = _0x3688b9.get(_0x1ea823.id),
+              _0x3aa249 =
+                _0x3a1fb2 != null && _0x3a1fb2.parentNodeId
+                  ? _0x3688b9.get(_0x3a1fb2.parentNodeId)
+                  : undefined;
+            return !_0x3a1fb2 || !_0x4899df || !_0x3aa249
+              ? null
+              : Bn(_0x1ea823, {
+                  id: _0x4899df,
+                  scopeId: _0x40ce19,
+                  parentNodeId: _0x3aa249,
+                  orderKey: _0x3a1fb2.orderKey,
+                  side: _0x3a1fb2.side,
+                  deltaX: _0x43ead0,
+                  deltaY: _0xf1430f,
+                });
+          })
+          .filter((_0x408813) => !!_0x408813),
+        _0x4f918f = _0x5dfd18.elements["map"]((_0x575d2d) => {
+          let _0x232b62 = U(_0x575d2d);
+          if (!_0x232b62 || !("connectorData" in _0x575d2d)) return null;
+          let _0x2ecdf4 = _0x3688b9.get(_0x575d2d.id),
+            _0x68964b = _0x3688b9.get(_0x232b62.parentNodeId),
+            _0x2e5300 = _0x3688b9.get(_0x232b62.childNodeId);
+          return !_0x2ecdf4 || !_0x68964b || !_0x2e5300
+            ? null
+            : Vn(_0x575d2d, {
+                id: _0x2ecdf4,
+                scopeId: _0x40ce19,
+                parentNodeId: _0x68964b,
+                childNodeId: _0x2e5300,
+                idMap: _0x3688b9,
+                deltaX: _0x43ead0,
+                deltaY: _0xf1430f,
+              });
+        }).filter((_0x5bd597) => !!_0x5bd597),
+        _0x5dee70 = _0x5dfd18.elements["map"]((_0x508e20) => {
+          let _0x13d333 = W(_0x508e20),
+            _0x4093db = _0x3688b9.get(_0x508e20.id),
+            _0x3ff975 = _0x13d333
+              ? _0x3688b9.get(_0x13d333.ownerNodeId)
+              : undefined;
+          return !_0x13d333 || !_0x4093db || !_0x3ff975
+            ? null
+            : Hn(_0x508e20, {
+                id: _0x4093db,
+                scopeId: _0x40ce19,
+                ownerNodeId: _0x3ff975,
+                deltaX: _0x43ead0,
+                deltaY: _0xf1430f,
+              });
+        }).filter((_0xbb6d37) => !!_0xbb6d37),
+        _0x4f1097 = [_0x528462, ..._0x89907c],
+        _0x5e9078 = bt({
+          id: _0x40ce19,
+          rootNodeId: _0x3ed896,
+          ...Xn(_0x4f1097),
+        });
+      return J(
+        _0x21c19f,
+        _0x1df508.unitId,
+        an({
+          unitId: _0x1df508.unitId,
+          subUnitId: _0x1df508.subUnitId,
+          elements: [_0x5e9078, ..._0x4f1097, ..._0x4f918f, ..._0x5dee70],
+        }),
+      );
+    },
+  },
+  Or = {
+    id: "board.operation.mind-map.toggle-collapse",
+    type: _0x135e78.OPERATION,
+    handler: (_0x4378c7, _0x4e63eb) => {
+      if (
+        !(_0x4e63eb != null && _0x4e63eb.unitId) ||
+        !_0x4e63eb.subUnitId ||
+        !_0x4e63eb.nodeId
+      )
+        return false;
+      let _0x2ffb30 = _0x4378c7
+          .get(_0x3d3c2a)
+          .getElementData(_0x4e63eb.unitId, _0x4e63eb.subUnitId),
+        _0x3c3fe7 = K(_0x2ffb30, _0x4e63eb.nodeId);
+      if (!_0x3c3fe7) return false;
+      let _0xa25217 = _0x4e63eb.collapsed ?? !_0x3c3fe7.meta["collapsed"],
+        _0xe97234 = [],
+        _0x18cddd = [];
+      return (
+        xn(_0x3c3fe7.data, _0xa25217, _0xe97234, _0x18cddd),
+        ln(
+          _0x2ffb30,
+          _0x3c3fe7.meta["structureScopeId"],
+          _0x4e63eb.nodeId,
+          !_0xa25217,
+          _0xe97234,
+          _0x18cddd,
+        ),
+        J(_0x4378c7, _0x4e63eb.unitId, {
+          redoMutations: _0xe97234,
+          undoMutations: _0x18cddd,
+        })
+      );
+    },
+  },
+  kr = [cr, lr, dr, fr, pr, mr, hr, gr, _r, vr, yr, Cr, wr, br, Tr, Er, Dr, Or],
+  Ar = /<!\s*(doctype|entity)\b/i,
+  jr = new Set(["text", "title"]);
+function Mr(_0x2f8462) {
+  return !!_0x2f8462 && _0x2f8462.nodeType === 1;
+}
+function Nr(_0x57eca7, _0x476e3f) {
+  return Array.from(_0x57eca7.children).filter(
+    (_0x5bc8b6) => _0x5bc8b6.tagName["toLowerCase"]() === _0x476e3f,
+  );
+}
+function Pr(_0x20e654, _0x1ec3ba) {
+  return Nr(_0x20e654, _0x1ec3ba)[0];
+}
+function Fr(_0xc58271) {
+  var _0x32c915;
+  return (
+    (_0xc58271 == null || (_0x32c915 = _0xc58271.textContent) == null
+      ? undefined
+      : _0x32c915.trim()) || undefined
+  );
+}
+function Ir(_0x1c9829) {
+  return (
+    _0x1c9829.getAttribute("text") ??
+    _0x1c9829.getAttribute("title") ??
+    "Add text"
+  );
+}
+function Lr(_0x3d3b7f) {
+  let _0x8311cd = {};
+  return (
+    Array.from(_0x3d3b7f.attributes).forEach((_0x305ab6) => {
+      jr.has(_0x305ab6.name) || (_0x8311cd[_0x305ab6.name] = _0x305ab6.value);
+    }),
+    Object.keys(_0x8311cd).length ? _0x8311cd : undefined
+  );
+}
+function Rr(_0x4a6338) {
+  return {
+    text: Ir(_0x4a6338),
+    foreignAttributes: Lr(_0x4a6338),
+    children: Nr(_0x4a6338, "outline").map(Rr),
+  };
+}
+function zr(_0x2da287, _0x77023e) {
+  return { text: _0x2da287 || _0x77023e || "导入的大纲", children: [] };
+}
+function Br(_0xf4339e, _0x3dd180) {
+  let _0x3cc64b = [];
+  if (Ar.test(_0xf4339e))
+    return {
+      diagnostics: [
+        {
+          severity: "error",
+          code: "unsafe-doctype",
+          message:
+            "OPML containing DOCTYPE or ENTITY declarations is not imported.",
+        },
+      ],
+    };
+  let _0x4f4948 = new DOMParser().parseFromString(_0xf4339e, "text/xml");
+  if (_0x4f4948.getElementsByTagName("parsererror").length > 0)
+    return {
+      diagnostics: [
+        {
+          severity: "error",
+          code: "invalid-xml",
+          message: "OPML\x20XML\x20could\x20not\x20be\x20parsed.",
+        },
+      ],
+    };
+  let _0x59eda6 = Pr(_0x4f4948.documentElement, "body")
+    ? _0x4f4948.documentElement
+    : _0x4f4948.getElementsByTagName("opml")[0];
+  if (!Mr(_0x59eda6))
+    return {
+      diagnostics: [
+        {
+          severity: "error",
+          code: "missing-opml",
+          message: "The document does not contain an OPML root element.",
+        },
+      ],
+    };
+  let _0x2ed837 = Pr(_0x59eda6, "head"),
+    _0xda5a08 = Pr(_0x59eda6, "body"),
+    _0x520d3e = Fr(Pr(_0x2ed837 ?? _0x59eda6, "title")),
+    _0x66746f = _0xda5a08 ? Nr(_0xda5a08, "outline").map(Rr) : [];
+  _0x66746f.length ||
+    _0x3cc64b.push({
+      severity: "warning",
+      code: "empty-body",
+      message: "The OPML body does not contain outline nodes.",
+    });
+  let _0x2a37a1 =
+    _0x66746f.length === 1
+      ? _0x66746f[0]
+      : {
+          ...zr(_0x520d3e, _0x3dd180 == null ? undefined : _0x3dd180.fileName),
+          children: _0x66746f,
+        };
+  return {
+    blueprint: { title: _0x520d3e ?? _0x2a37a1.text, root: _0x2a37a1 },
+    diagnostics: _0x3cc64b,
+  };
+}
+function Vr(_0x305147) {
+  return _0x305147
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+function Hr(_0x591c22) {
+  return _0x591c22
+    ? Object.entries(_0x591c22)
+        .map(
+          ([_0x9ae42f, _0x32e113]) =>
+            "\x20" + _0x9ae42f + "=\x22" + Vr(_0x32e113) + "\x22",
+        )
+        .join("")
+    : "";
+}
+function Ur(_0x4a3215, _0x4c1580) {
+  let _0x2babd2 = " "["repeat"](_0x4c1580),
+    _0x43e889 =
+      'text="' + Vr(_0x4a3215.text) + "\x22" + Hr(_0x4a3215.foreignAttributes);
+  return _0x4a3215.children["length"]
+    ? [
+        _0x2babd2 + "<outline " + _0x43e889 + ">",
+        ..._0x4a3215.children["map"]((_0x5fb78a) =>
+          Ur(_0x5fb78a, _0x4c1580 + 1),
+        ),
+        _0x2babd2 + "</outline>",
+      ].join("\x0a")
+    : _0x2babd2 + "<outline " + _0x43e889 + " />";
+}
+function Wr(_0x5c1d2a) {
+  let _0x59423d = _0x5c1d2a.title ?? _0x5c1d2a.root["text"],
+    _0x141937 = _0x5c1d2a.root["children"].length
+      ? _0x5c1d2a.root["children"]
+      : [_0x5c1d2a.root];
+  return [
+    '<?xml version="1.0" encoding="UTF-8"?>',
+    "<opml\x20version=\x222.0\x22>",
+    " <head>",
+    " <title>" + Vr(_0x59423d) + "</title>",
+    " </head>",
+    " <body>",
+    ..._0x141937.map((_0x593784) => Ur(_0x593784, 2)),
+    "\x20\x20</body>",
+    "</opml>",
+  ].join("\x0a");
+}
+function Gr(_0x17307d, _0x1def1b, _0x2c845c) {
+  let _0x4c4731 = _0x2c845c < 0 ? _0x1def1b.length : _0x2c845c;
+  _0x1def1b.slice(-_0x4c4731).forEach((_0x573ac8) => {
+    _0x17307d.syncExecuteCommand(_0x573ac8.id, _0x573ac8.params);
+  });
+}
+function Kr(_0x25cf1e, _0x588831) {
+  let _0x58e872 = At({
+    containerId: _0x25cf1e.containerId,
+    rootNodeId: _0x25cf1e.rootNodeId,
+    left: _0x25cf1e.left,
+    top: _0x25cf1e.top,
+    blueprint: _0x588831,
+  });
+  return (
+    (_0x58e872.container["custom"] = {
+      ..._0x58e872.container["custom"],
+      mindmap: {
+        ..._0x58e872.container["custom"].mindmap,
+        sourceProvenance: {
+          format: "opml",
+          ...(_0x25cf1e.fileName ? { fileName: _0x25cf1e.fileName } : null),
+          importedAt: Date.now(),
+        },
+      },
+    }),
+    _0x58e872.elements
+  );
+}
+const qr = {
+  id: "board.operation.mind-map.import-opml",
+  type: _0x135e78.OPERATION,
+  handler: (_0x291287, _0x3b5138) => {
+    var _0xa7b5d0;
+    if (
+      !(_0x3b5138 != null && _0x3b5138.unitId) ||
+      !_0x3b5138.subUnitId ||
+      !_0x3b5138.opml ||
+      !Number.isFinite(_0x3b5138.left) ||
+      !Number.isFinite(_0x3b5138.top)
+    )
+      return {
+        success: false,
+        diagnostics: [
+          {
+            severity: "error",
+            code: "invalid-params",
+            message: "Missing import parameters.",
+          },
+        ],
+      };
+    let _0x3a0c6e = Br(_0x3b5138.opml, { fileName: _0x3b5138.fileName });
+    if (!_0x3a0c6e.blueprint)
+      return { success: false, diagnostics: _0x3a0c6e.diagnostics };
+    let _0x20387b = Kr(_0x3b5138, _0x3a0c6e.blueprint),
+      _0x23aedd = _0x291287.get(_0x3d3c2a),
+      _0xf93c83 = _0x23aedd.getElementData(
+        _0x3b5138.unitId,
+        _0x3b5138.subUnitId,
+      ),
+      _0x865db1 = _0x23aedd.getElementOrder(
+        _0x3b5138.unitId,
+        _0x3b5138.subUnitId,
+      ),
+      _0x38ab9b = _0x49982e({
+        unitId: _0x3b5138.unitId,
+        subUnitId: _0x3b5138.subUnitId,
+        elements: _0x20387b,
+        insertIndex: _0x3b5138.insertIndex,
+        elementData: _0xf93c83,
+        elementOrder: _0x865db1,
+      });
+    if (!_0x38ab9b)
+      return {
+        success: false,
+        diagnostics: [
+          {
+            severity: "error",
+            code: "add-elements-failed",
+            message: "Unable to create board elements for imported OPML.",
+          },
+        ],
+      };
+    let _0x1a6e39 = _0x291287.get(_0x200817),
+      _0x25cda5 = _0x48942c(_0x38ab9b.redoMutations, _0x1a6e39);
+    return _0x25cda5.result
+      ? (_0x291287
+          .get(_0xed9722)
+          .pushUndoRedo({
+            unitID: _0x3b5138.unitId,
+            redoMutations: _0x38ab9b.redoMutations,
+            undoMutations: _0x38ab9b.undoMutations,
+          }),
+        {
+          success: true,
+          diagnostics: _0x3a0c6e.diagnostics,
+          containerId: _0x20387b[0].id,
+          rootNodeId:
+            (_0xa7b5d0 = V(_0x20387b[0])) == null
+              ? undefined
+              : _0xa7b5d0.rootNodeId,
+          nodeCount: _0x20387b.filter((_0x4c8bb8) => !!H(_0x4c8bb8)).length,
+        })
+      : (Gr(_0x1a6e39, _0x38ab9b.undoMutations, _0x25cda5.index),
+        {
+          success: false,
+          diagnostics: [
+            {
+              severity: "error",
+              code: "mutation-failed",
+              message: "Unable to add imported mind-map elements.",
+            },
+          ],
+        });
+  },
+};
+function Jr(_0x2c4097) {
+  let _0x19dedb =
+    "shapeData" in _0x2c4097 ? _0x2c4097.shapeData["shapeText"] : undefined;
+  return (_0x19dedb == null ? undefined : _0x19dedb.text) ?? "Add text";
+}
+function Yr(_0x2ac692, _0xd622a9, _0x12a64c) {
+  return Object.values(_0x2ac692)
+    .filter((_0xd39ca9) => {
+      let _0x3cc919 = H(_0xd39ca9.element);
+      return (
+        (_0x3cc919 == null ? undefined : _0x3cc919.structureScopeId) ===
+          _0xd622a9 && _0x3cc919.parentNodeId === _0x12a64c
+      );
+    })
+    .sort((_0x324ca8, _0x28bc72) => {
+      let _0x370e75 = H(_0x324ca8.element),
+        _0x3d7765 = H(_0x28bc72.element);
+      return (
+        Xe(
+          _0x370e75 == null ? undefined : _0x370e75.orderKey,
+          _0x3d7765 == null ? undefined : _0x3d7765.orderKey,
+        ) || _0x324ca8.elementId["localeCompare"](_0x28bc72.elementId)
+      );
+    });
+}
+function Xr(_0x4fba25, _0x297b6c, _0x468b09) {
+  let _0x47c323 = H(_0x468b09.element);
+  return {
+    text: Jr(_0x468b09.element),
+    foreignAttributes:
+      _0x47c323 == null ? undefined : _0x47c323.foreignAttributes,
+    collapsed: _0x47c323 == null ? undefined : _0x47c323.collapsed,
+    children: Yr(_0x4fba25, _0x297b6c, _0x468b09.elementId).map((_0x2e3145) =>
+      Xr(_0x4fba25, _0x297b6c, _0x2e3145),
+    ),
+  };
+}
+const Zr = {
+    id: "board.operation.mind-map.export-opml",
+    type: _0x135e78.OPERATION,
+    handler: (_0x21c91d, _0x2a359d) => {
+      if (
+        !(_0x2a359d != null && _0x2a359d.unitId) ||
+        !_0x2a359d.subUnitId ||
+        !_0x2a359d.scopeId
+      )
+        return false;
+      let _0x27f939 = _0x21c91d
+          .get(_0x3d3c2a)
+          .getElementData(_0x2a359d.unitId, _0x2a359d.subUnitId),
+        _0x499da3 = Object.values(_0x27f939).find((_0x551d28) => {
+          let _0x1fe44a = H(_0x551d28.element);
+          return (
+            (_0x1fe44a == null ? undefined : _0x1fe44a.structureScopeId) ===
+              _0x2a359d.scopeId && _0x1fe44a.parentNodeId === null
+          );
+        });
+      return _0x499da3
+        ? Wr({
+            title: Jr(_0x499da3.element),
+            root: Xr(_0x27f939, _0x2a359d.scopeId, _0x499da3),
+          })
+        : false;
+    },
+  },
+  Qr = [qr, Zr];
+var $r = "@univerjs-pro/boards-mind",
+  ei = "1.0.0-insiders.20260907-70fc579";
+const ti = {};
+function ni(_0x55a93e, _0x5ef24b) {
+  return function (_0x58ef1a, _0x8c5bd1) {
+    _0x5ef24b(_0x58ef1a, _0x8c5bd1, _0x55a93e);
+  };
+}
+function ri(_0x5e2642, _0x1404e5, _0x16fe9e, _0x198e4c) {
+  var _0x19fe26 = arguments.length,
+    _0x4add0b =
+      _0x19fe26 < 3
+        ? _0x1404e5
+        : _0x198e4c === null
+          ? (_0x198e4c = Object.getOwnPropertyDescriptor(_0x1404e5, _0x16fe9e))
+          : _0x198e4c,
+    _0xecdc90;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function")
+    _0x4add0b = Reflect.decorate(_0x5e2642, _0x1404e5, _0x16fe9e, _0x198e4c);
+  else {
+    for (var _0x5860d3 = _0x5e2642.length - 1; _0x5860d3 >= 0; _0x5860d3--)
+      (_0xecdc90 = _0x5e2642[_0x5860d3]) &&
+        (_0x4add0b =
+          (_0x19fe26 < 3
+            ? _0xecdc90(_0x4add0b)
+            : _0x19fe26 > 3
+              ? _0xecdc90(_0x1404e5, _0x16fe9e, _0x4add0b)
+              : _0xecdc90(_0x1404e5, _0x16fe9e)) || _0x4add0b);
+  }
+  return (
+    _0x19fe26 > 3 &&
+      _0x4add0b &&
+      Object.defineProperty(_0x1404e5, _0x16fe9e, _0x4add0b),
+    _0x4add0b
+  );
+}
+let $ = class extends _0x8fc68d {
+  constructor(_0x59a3af = ti, _0x27246e, _0x23162e, _0x2679d4) {
+    (super(),
+      (this._config = _0x59a3af),
+      (this._injector = _0x27246e),
+      (this._commandService = _0x23162e),
+      (this._configService = _0x2679d4));
+    let { ..._0x3a936c } = _0x301107({}, ti, this._config);
+    this._configService["setConfig"]("boards-mind.config", _0x3a936c);
+  }
+  onStarting() {
+    (this._injector["add"]([Bt, { useClass: Vt }]),
+      this.disposeWithMe(this._commandService["registerCommand"](G)),
+      this.disposeWithMe(this._commandService["registerCommand"](Pt)),
+      kr.forEach((_0x1bd61f) => {
+        this.disposeWithMe(this._commandService["registerCommand"](_0x1bd61f));
+      }),
+      Qr.forEach((_0x492aa8) => {
+        this.disposeWithMe(this._commandService["registerCommand"](_0x492aa8));
+      }));
+  }
+};
+(zt($, "pluginName", "UNIVER_BOARDS_MIND_PLUGIN"),
+  zt($, "packageName", $r),
+  zt($, "version", ei),
+  zt($, "type", _0x160c3f.UNIVER_BOARD),
+  ($ = ri(
+    [
+      _0x2b8d11(_0x324b1c, _0x5f3b3f),
+      ni(1, _0x37644b(_0x28e9fd)),
+      ni(2, _0x200817),
+      ni(3, _0x3642bc),
+    ],
+    $,
+  )));
+export {
+  cr as AddMindMapChildOperation,
+  lr as AddMindMapSiblingOperation,
+  wr as ChangeMindMapBranchLineTypeOperation,
+  br as ChangeMindMapLayoutOperation,
+  Tr as CopyMindMapNodeOperation,
+  mr as DeleteMindMapNodeOperation,
+  _r as DetachMindMapNodeOperation,
+  Zr as ExportMindMapOpmlOperation,
+  Bt as IMindMapClipboardService,
+  qr as ImportMindMapOpmlOperation,
+  Pt as InsertBoardMindMapOperation,
+  yr as LayoutMindMapOperation,
+  j as MIND_MAP_CONNECTOR_ROLE,
+  N as MIND_MAP_DEFAULT_LAYOUT,
+  F as MIND_MAP_DEFAULT_NODE_SIZE,
+  xe as MIND_MAP_DEFAULT_NODE_TEXT,
+  P as MIND_MAP_LAYOUT_SPACING_LIMITS,
+  k as MIND_MAP_MODE_ID,
+  A as MIND_MAP_NODE_ROLE,
+  Dr as PasteMindMapAsNewMindMapOperation,
+  Er as PasteMindMapNodeOperation,
+  gr as PromoteMindMapNodeOperation,
+  Cr as ReflowMindMapCommand,
+  hr as ReparentMindMapNodeOperation,
+  G as SetMindMapElementMutation,
+  Or as ToggleMindMapNodeCollapseOperation,
+  vr as TranslateMindMapOperation,
+  $ as UniverBoardsMindPlugin,
+  pr as UpdateMindMapIncomingConnectorOperation,
+  dr as UpdateMindMapNodeOperation,
+  fr as UpdateMindMapNodesOperation,
+  Xe as compareMindMapOrderKey,
+  Et as createMindMapElements,
+  At as createMindMapElementsFromBlueprint,
+  U as getMindMapConnectorMeta,
+  V as getMindMapContainerMeta,
+  Qe as getMindMapDefaultChildOrderKey,
+  H as getMindMapNodeMeta,
+  tt as isMindMapPlainStructureKind,
+  nt as resolveMindMapBranchLineTypeForStructure,
+  Qn as resolveMindMapLayoutPreview,
+  Ge as resolveMindMapNodeHostSize,
+};

@@ -1,0 +1,17 @@
+{
+  "name": "@univerjs-pro/engine-formula-rust-binding-linux-arm64-gnu",
+  "version": "1.0.0-insiders.20260829-2e3c387",
+  "cpu": [
+    "arm64"
+  ],
+  "main": "univer-formula.linux-arm64-gnu.node",
+  "files": [
+    "univer-formula.linux-arm64-gnu.node"
+  ],
+  "os": [
+    "linux"
+  ],
+  "libc": [
+    "glibc"
+  ]
+}

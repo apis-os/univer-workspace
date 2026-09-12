@@ -1,163 +1,70 @@
-function _0x5666() {
-  const _0x47a403 = [
-    "Codeblock\x20hinzugefügt",
-    "Tabellenspalten\x20gelöscht",
-    "11876940dLsYsI",
-    "7124724gybFKF",
-    "1252WGVuOQ",
-    "Verbindung\x20von\x20Tabellenzellen\x20aufgehoben",
-    "Formel\x20aktualisiert",
-    "exports",
-    "2561136bCtebV",
-    "7coBwjV",
-    "Tabelle\x20verschoben",
-    "5387264SONzjN",
-    "Seitenlayout\x20aktualisiert",
-    "Tabellenkopf\x20aktualisiert",
-    "11NlNVLB",
-    "Hinweisblock\x20gelöscht",
-    "Benutzerdefinierten\x20Bereich\x20hinzugefügt",
-    "Tabellenzeilen\x20verschoben",
-    "Zitat\x20hinzugefügt",
-    "Diagramm\x20hinzugefügt",
-    "Tabellenzelle\x20bearbeitet",
-    "Form\x20gelöscht",
-    "Link\x20hinzugefügt",
-    "Trennlinie\x20hinzugefügt",
-    "Absatz\x20formatiert",
-    "Zitat\x20gelöscht",
-    "8830bPLvLj",
-    "Dokument\x20umbenannt",
-    "Tabelle\x20hinzugefügt",
-    "Tabellenzellen\x20verbunden",
-    "Bild\x20aktualisiert",
-    "126432ZUulSi",
-    "Größe\x20der\x20Tabellenzeilen\x20geändert",
-    "Tabellenspalten\x20aktualisiert",
-    "Tabellenzeilen\x20gelöscht",
-    "45782HjRDRz",
-    "Versionsverlauf",
-    "Spalten\x20hinzugefügt",
-    "Tabellenspalten\x20verschoben",
-    "Hinweisblock\x20aktualisiert",
-    "Codeblock\x20aktualisiert",
-    "Tabellenzeilen\x20hinzugefügt",
-    "Tabellenspalten\x20verteilt",
-    "29VxwiHs",
-    "Tabellenzeilen\x20verteilt",
-    "Zitat\x20aktualisiert",
-    "Form\x20aktualisiert",
-    "Kopf-\x20oder\x20Fußzeile\x20aktualisiert",
-    "Tabellenspalten\x20hinzugefügt",
-    "Hinweisblock\x20hinzugefügt",
-    "Form\x20hinzugefügt",
-    "Schwebendes\x20Objekt\x20aktualisiert",
-    "Formel\x20hinzugefügt",
-    "Spalten\x20aktualisiert",
-    "Block\x20verschoben",
-  ];
-  _0x5666 = function () {
-    return _0x47a403;
-  };
-  return _0x5666();
-}
-function _0x5bef(_0x221062, _0x2a8b19) {
-  _0x221062 = _0x221062 - 0x1ed;
-  const _0x5666e3 = _0x5666();
-  let _0x5bef78 = _0x5666e3[_0x221062];
-  return _0x5bef78;
-}
-const _0x42bb25 = _0x5bef;
-(function (_0x1cb88c, _0x3d13b0) {
-  const _0x3a70dc = _0x5bef,
-    _0x11458f = _0x1cb88c();
-  while (!![]) {
-    try {
-      const _0x13c9d5 =
-        (parseInt(_0x3a70dc(0x209)) / 0x1) *
-          (-parseInt(_0x3a70dc(0x201)) / 0x2) +
-        parseInt(_0x3a70dc(0x21d)) / 0x3 +
-        (-parseInt(_0x3a70dc(0x219)) / 0x4) *
-          (-parseInt(_0x3a70dc(0x1f8)) / 0x5) +
-        parseInt(_0x3a70dc(0x1fd)) / 0x6 +
-        (parseInt(_0x3a70dc(0x21e)) / 0x7) *
-          (-parseInt(_0x3a70dc(0x220)) / 0x8) +
-        -parseInt(_0x3a70dc(0x218)) / 0x9 +
-        (parseInt(_0x3a70dc(0x217)) / 0xa) * (parseInt(_0x3a70dc(0x223)) / 0xb);
-      if (_0x13c9d5 === _0x3d13b0) break;
-      else _0x11458f["push"](_0x11458f["shift"]());
-    } catch (_0x2235c2) {
-      _0x11458f["push"](_0x11458f["shift"]());
-    }
-  }
-})(_0x5666, 0x76bd1);
 const e = {
   "docs-history-ui": {
-    menu: { history: _0x42bb25(0x202) },
+    menu: { history: "Versionsverlauf" },
     action: {
-      renameDocument: _0x42bb25(0x1f9),
+      renameDocument: "Dokument umbenannt",
       insertText: "Text\x20hinzugefügt",
       deleteText: "Text\x20gelöscht",
       deleteBlock: "Block\x20gelöscht",
       formatText: "Text\x20formatiert",
-      formatParagraph: _0x42bb25(0x1f6),
+      formatParagraph: "Absatz formatiert",
       changeHeading: "Überschrift\x20geändert",
       updateList: "Liste\x20aktualisiert",
-      moveBlock: _0x42bb25(0x214),
-      insertDivider: _0x42bb25(0x1f5),
+      moveBlock: "Block verschoben",
+      insertDivider: "Trennlinie hinzugefügt",
       deleteDivider: "Trennlinie\x20gelöscht",
-      updatePageLayout: _0x42bb25(0x221),
-      updateHeaderFooter: _0x42bb25(0x20d),
-      insertLink: _0x42bb25(0x1f4),
-      insertCustomRange: _0x42bb25(0x1ee),
+      updatePageLayout: "Seitenlayout aktualisiert",
+      updateHeaderFooter: "Kopf- oder Fußzeile aktualisiert",
+      insertLink: "Link hinzugefügt",
+      insertCustomRange: "Benutzerdefinierten Bereich hinzugefügt",
       updateLink: "Link\x20aktualisiert",
       deleteLink: "Link\x20gelöscht",
-      insertTable: _0x42bb25(0x1fa),
+      insertTable: "Tabelle hinzugefügt",
       deleteTable: "Tabelle\x20gelöscht",
-      insertTableRows: _0x42bb25(0x207),
-      deleteTableRows: _0x42bb25(0x200),
-      moveTableRows: _0x42bb25(0x1ef),
-      resizeTableRows: _0x42bb25(0x1fe),
-      distributeTableRows: _0x42bb25(0x20a),
-      insertTableColumns: _0x42bb25(0x20e),
-      deleteTableColumns: _0x42bb25(0x216),
-      moveTableColumns: _0x42bb25(0x204),
+      insertTableRows: "Tabellenzeilen hinzugefügt",
+      deleteTableRows: "Tabellenzeilen gelöscht",
+      moveTableRows: "Tabellenzeilen verschoben",
+      resizeTableRows: "Größe der Tabellenzeilen geändert",
+      distributeTableRows: "Tabellenzeilen verteilt",
+      insertTableColumns: "Tabellenspalten hinzugefügt",
+      deleteTableColumns: "Tabellenspalten gelöscht",
+      moveTableColumns: "Tabellenspalten verschoben",
       resizeTableColumns: "Größe\x20der\x20Tabellenspalten\x20geändert",
-      distributeTableColumns: _0x42bb25(0x208),
-      moveTable: _0x42bb25(0x21f),
-      updateTableHeader: _0x42bb25(0x222),
-      updateTableColumns: _0x42bb25(0x1ff),
-      editTableCell: _0x42bb25(0x1f2),
+      distributeTableColumns: "Tabellenspalten verteilt",
+      moveTable: "Tabelle verschoben",
+      updateTableHeader: "Tabellenkopf aktualisiert",
+      updateTableColumns: "Tabellenspalten aktualisiert",
+      editTableCell: "Tabellenzelle bearbeitet",
       formatTable: "Tabelle\x20formatiert",
-      mergeTableCells: _0x42bb25(0x1fb),
-      unmergeTableCells: _0x42bb25(0x21a),
+      mergeTableCells: "Tabellenzellen verbunden",
+      unmergeTableCells: "Verbindung von Tabellenzellen aufgehoben",
       sortTable: "Tabelle\x20sortiert",
       insertImage: "Bild\x20hinzugefügt",
       deleteImage: "Bild\x20gelöscht",
-      updateImage: _0x42bb25(0x1fc),
-      insertShape: _0x42bb25(0x210),
-      updateShape: _0x42bb25(0x20c),
-      deleteShape: _0x42bb25(0x1f3),
-      updateDrawing: _0x42bb25(0x211),
-      insertChart: _0x42bb25(0x1f1),
+      updateImage: "Bild aktualisiert",
+      insertShape: "Form hinzugefügt",
+      updateShape: "Form aktualisiert",
+      deleteShape: "Form gelöscht",
+      updateDrawing: "Schwebendes Objekt aktualisiert",
+      insertChart: "Diagramm hinzugefügt",
       deleteChart: "Diagramm\x20gelöscht",
       updateChart: "Diagramm\x20aktualisiert",
-      insertCallout: _0x42bb25(0x20f),
-      deleteCallout: _0x42bb25(0x1ed),
-      updateCallout: _0x42bb25(0x205),
-      insertCodeBlock: _0x42bb25(0x215),
+      insertCallout: "Hinweisblock hinzugefügt",
+      deleteCallout: "Hinweisblock gelöscht",
+      updateCallout: "Hinweisblock aktualisiert",
+      insertCodeBlock: "Codeblock hinzugefügt",
       deleteCodeBlock: "Codeblock\x20gelöscht",
-      updateCodeBlock: _0x42bb25(0x206),
-      insertQuote: _0x42bb25(0x1f0),
-      deleteQuote: _0x42bb25(0x1f7),
-      updateQuote: _0x42bb25(0x20b),
-      insertColumns: _0x42bb25(0x203),
-      updateColumns: _0x42bb25(0x213),
-      insertFormula: _0x42bb25(0x212),
-      updateFormula: _0x42bb25(0x21b),
+      updateCodeBlock: "Codeblock aktualisiert",
+      insertQuote: "Zitat hinzugefügt",
+      deleteQuote: "Zitat gelöscht",
+      updateQuote: "Zitat aktualisiert",
+      insertColumns: "Spalten hinzugefügt",
+      updateColumns: "Spalten aktualisiert",
+      insertFormula: "Formel hinzugefügt",
+      updateFormula: "Formel aktualisiert",
       deleteFormula: "Formel\x20gelöscht",
       editDocument: "Dokument\x20bearbeitet",
     },
   },
 };
-module[_0x42bb25(0x21c)] = e;
+module.exports = e;

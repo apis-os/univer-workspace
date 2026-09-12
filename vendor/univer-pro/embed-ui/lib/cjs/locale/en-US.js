@@ -1,0 +1,65 @@
+const e = {
+  "embed-ui": {
+    deleteBlock: "Delete embed block",
+    fullscreen: { enter: "Enter fullscreen", exit: "Exit fullscreen" },
+    slidesFloating: {
+      previousSlide: "Previous page",
+      nextSlide: "Next page",
+      selectSlide: "Select\x20page",
+    },
+    boardsFloating: {
+      fitContent: "Fit content",
+      zoomOut: "Zoom\x20out",
+      resetZoom: "Reset zoom",
+      zoomIn: "Zoom in",
+      delete: "Delete",
+    },
+    basesFloating: {
+      copySuffix: "Copy",
+      delete: "Delete",
+      confirmDelete: {
+        viewTitle: "Delete\x20this\x20view?",
+        viewDescription: "This view will be removed.",
+        tableTitle: "Delete this table?",
+        tableDescription: "This table and its records will be removed.",
+      },
+      tableSidebar: { defaultTableName: "Table {0}" },
+      duplicateTable: { copyName: "{0} Copy" },
+      viewSettings: {
+        title: "View Settings",
+        addView: "Add view",
+        configureView: "Configure View",
+        deleteView: "Delete view",
+      },
+    },
+    sheetsFloating: {
+      toolbar: {
+        formatPainter: "Paint format",
+        font: "Font",
+        fontSize: "Font\x20size",
+        numberFormat: "Number format",
+        bold: "Bold",
+        filter: "Toggle Filter",
+        resetColor: "Reset",
+        textColor: { main: "Text\x20color" },
+        fillColor: { main: "Fill\x20color" },
+        border: { main: "Border" },
+        mergeCell: { main: "Merge cells" },
+        horizontalAlignMode: { main: "Horizontal align" },
+        verticalAlignMode: { main: "Vertical\x20align" },
+        textWrapMode: { main: "Text\x20wrap" },
+      },
+      align: {
+        left: "left",
+        center: "center",
+        right: "right",
+        top: "top",
+        middle: "middle",
+        bottom: "bottom",
+      },
+      borderLine: { borderColor: "borderColor", borderSize: "borderSize" },
+      textWrap: { overflow: "Overflow", wrap: "Wrap", clip: "Clip" },
+    },
+  },
+};
+module.exports = e;

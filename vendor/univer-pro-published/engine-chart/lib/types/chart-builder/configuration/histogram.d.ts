@@ -1,0 +1,11 @@
+export declare const setHistogramField: (index: number) => import("./chart-config-operation").IChartConfigOperation;
+export declare const clearHistogramField: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setHistogramBinCount: (count: number) => import("./chart-config-operation").IChartConfigOperation;
+export declare const setHistogramBinWidth: (width: number) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetHistogramBinning: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setHistogramUnderflowThreshold: (value: number) => import("./chart-config-operation").IChartConfigOperation;
+export declare const clearHistogramUnderflowThreshold: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setHistogramOverflowThreshold: (value: number) => import("./chart-config-operation").IChartConfigOperation;
+export declare const clearHistogramOverflowThreshold: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setHistogramBinGap: (value: number) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetHistogramBinGap: () => import("./chart-config-operation").IChartConfigOperation;

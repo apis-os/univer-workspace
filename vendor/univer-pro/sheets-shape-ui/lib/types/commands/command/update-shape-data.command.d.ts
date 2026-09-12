@@ -1,0 +1,14 @@
+import type { IShapeData, ShapeTypeEnum } from '@univerjs-pro/engine-shape';
+import type { ICommand } from '@univerjs/core';
+import type { ISheetCommandSharedParams } from '@univerjs/sheets';
+export interface IUpdateSheetsShapeDataCommandParams extends ISheetCommandSharedParams {
+    shapeId: string;
+    shapeType?: ShapeTypeEnum;
+    shapeData?: IShapeData;
+    replaceShapeData?: boolean;
+    oldShapeJSON: {
+        oldShapeData?: IShapeData;
+        oldShapeType?: ShapeTypeEnum;
+    };
+}
+export declare const UpdateShapeDataCommand: ICommand;

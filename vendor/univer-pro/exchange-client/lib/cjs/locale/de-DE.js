@@ -1,75 +1,22 @@
-function _0x1339() {
-  const _0x4abdbb = [
-    "20500pdMYqJ",
-    "Wird\x20heruntergeladen",
-    "Die\x20ausgewählte\x20Datei\x20[{0}]\x20wird\x20für\x20den\x20Upload\x20nicht\x20unterstützt",
-    "Unbekannter\x20Fehler",
-    "259ugUZtM",
-    "4lusPrn",
-    "Abbrechen",
-    "2539040xEOidE",
-    "Daten\x20sind\x20zu\x20groß",
-    "Netzwerkfehler",
-    "Bestätigen",
-    "129469zSxaBi",
-    "Die\x20Netzwerkverbindung\x20wurde\x20unterbrochen\x20und\x20der\x20Datei-Upload\x20ist\x20fehlgeschlagen",
-    "75354LesUOp",
-    "380541bySsMo",
-    "905211rqYYhZ",
-    "2577510ceMfVR",
-    "Bitte\x20warten...",
-    "Wird\x20hochgeladen",
-    "92yyKBLx",
-  ];
-  _0x1339 = function () {
-    return _0x4abdbb;
-  };
-  return _0x1339();
-}
-function _0x382f(_0x22d8be, _0x5f14c0) {
-  _0x22d8be = _0x22d8be - 0x65;
-  const _0x1339eb = _0x1339();
-  let _0x382f0c = _0x1339eb[_0x22d8be];
-  return _0x382f0c;
-}
-const _0xf60ab0 = _0x382f;
-(function (_0xd4c5b0, _0x2a7c48) {
-  const _0xd8ca22 = _0x382f,
-    _0x2633f2 = _0xd4c5b0();
-  while (!![]) {
-    try {
-      const _0x1189ca =
-        (parseInt(_0xd8ca22(0x6c)) / 0x1) * (-parseInt(_0xd8ca22(0x66)) / 0x2) +
-        parseInt(_0xd8ca22(0x6f)) / 0x3 +
-        (parseInt(_0xd8ca22(0x74)) / 0x4) * (-parseInt(_0xd8ca22(0x75)) / 0x5) +
-        (parseInt(_0xd8ca22(0x6e)) / 0x6) * (parseInt(_0xd8ca22(0x65)) / 0x7) +
-        -parseInt(_0xd8ca22(0x68)) / 0x8 +
-        parseInt(_0xd8ca22(0x70)) / 0x9 +
-        parseInt(_0xd8ca22(0x71)) / 0xa;
-      if (_0x1189ca === _0x2a7c48) break;
-      else _0x2633f2["push"](_0x2633f2["shift"]());
-    } catch (_0x1d03ba) {
-      _0x2633f2["push"](_0x2633f2["shift"]());
-    }
-  }
-})(_0x1339, 0x442ca);
 const e = {
   "exchange-client": {
-    uploading: _0xf60ab0(0x73),
+    uploading: "Wird hochgeladen",
     uploadSuccess: "Datei\x20erfolgreich\x20hochgeladen",
     uploadSuccessTip: "{0}\x20Datei(en)\x20erfolgreich\x20hochgeladen",
-    downloading: _0xf60ab0(0x76),
+    downloading: "Wird heruntergeladen",
     downloadSuccess: "Download\x20erfolgreich",
-    unknownMistake: _0xf60ab0(0x78),
-    networkError: _0xf60ab0(0x6a),
-    tooLarge: _0xf60ab0(0x69),
+    unknownMistake: "Unbekannter Fehler",
+    networkError: "Netzwerkfehler",
+    tooLarge: "Daten sind zu groß",
     internalError: "Interner\x20unbekannter\x20Fehler",
-    interrupt: _0xf60ab0(0x6d),
-    fileTypeError: _0xf60ab0(0x77),
-    wait: _0xf60ab0(0x72),
-    cancel: _0xf60ab0(0x67),
-    confirm: _0xf60ab0(0x6b),
+    interrupt:
+      "Die Netzwerkverbindung wurde unterbrochen und der Datei-Upload ist fehlgeschlagen",
+    fileTypeError:
+      "Die ausgewählte Datei [{0}] wird für den Upload nicht unterstützt",
+    wait: "Bitte warten...",
+    cancel: "Abbrechen",
+    confirm: "Bestätigen",
     uploadAgain: "Erneut\x20hochladen",
   },
 };
-module["exports"] = e;
+module.exports = e;

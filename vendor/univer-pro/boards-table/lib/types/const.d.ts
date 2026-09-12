@@ -1,0 +1,10 @@
+export declare const BOARD_TABLE_PLUGIN_NAME = "BOARD_TABLE_PLUGIN";
+export declare const DEFAULT_BOARD_TABLE_ROWS = 3;
+export declare const DEFAULT_BOARD_TABLE_COLUMNS = 3;
+export declare const DEFAULT_BOARD_TABLE_COLUMN_WIDTH = 120;
+export declare const DEFAULT_BOARD_TABLE_ROW_HEIGHT = 48;
+export declare const DEFAULT_BOARD_TABLE_MIN_WIDTH = 240;
+export declare const DEFAULT_BOARD_TABLE_MIN_HEIGHT = 96;
+export declare const DEFAULT_BOARD_TABLE_WIDTH: number;
+export declare const DEFAULT_BOARD_TABLE_HEIGHT: number;
+export declare const DEFAULT_BOARD_TABLE_ROTATION = 0;

@@ -1,105 +1,35 @@
-function _0x1aa4() {
-  const _0x284b81 = [
-    "427lYlgSv",
-    "get",
-    "1601sLUAJQ",
-    "99143plaAkk",
-    "importSlideToUnitId",
-    "ISlideExchangeService",
-    "5qTNZgp",
-    "importSlideToSnapshotAsync",
-    "650aiOYVl",
-    "49743POgYoD",
-    "FUniver",
-    "59256jEZmrs",
-    "2801028ozEARt",
-    "90465LqmDwZ",
-    "24219696WAXogd",
-    "exportSlideByUnitId",
-    "transformSlideDataToSnapshotJsonAsync",
-    "_injector",
-    "transformSlideDataToSnapshotJson",
-    "exportSlideByUnitIdAsync",
-    "importSlideToSnapshot",
-    "exportSlideBySnapshotAsync",
-    "8qmlXET",
-    "654EIWqzy",
-  ];
-  _0x1aa4 = function () {
-    return _0x284b81;
-  };
-  return _0x1aa4();
-}
-function _0x597e(_0x54d597, _0x5cbede) {
-  _0x54d597 = _0x54d597 - 0x1c3;
-  const _0x1aa44c = _0x1aa4();
-  let _0x597e56 = _0x1aa44c[_0x54d597];
-  return _0x597e56;
-}
-const _0x6bdca1 = _0x597e;
-(function (_0x44f5ae, _0x2b7656) {
-  const _0x5e8ed9 = _0x597e,
-    _0x3be8f1 = _0x44f5ae();
-  while (!![]) {
-    try {
-      const _0x3d5bcf =
-        (-parseInt(_0x5e8ed9(0x1cf)) / 0x1) *
-          (parseInt(_0x5e8ed9(0x1cc)) / 0x2) +
-        (-parseInt(_0x5e8ed9(0x1da)) / 0x3) *
-          (-parseInt(_0x5e8ed9(0x1cb)) / 0x4) +
-        (-parseInt(_0x5e8ed9(0x1d3)) / 0x5) *
-          (parseInt(_0x5e8ed9(0x1d9)) / 0x6) +
-        (parseInt(_0x5e8ed9(0x1cd)) / 0x7) *
-          (-parseInt(_0x5e8ed9(0x1d8)) / 0x8) +
-        (-parseInt(_0x5e8ed9(0x1d6)) / 0x9) *
-          (parseInt(_0x5e8ed9(0x1d5)) / 0xa) +
-        parseInt(_0x5e8ed9(0x1d0)) / 0xb +
-        parseInt(_0x5e8ed9(0x1c3)) / 0xc;
-      if (_0x3d5bcf === _0x2b7656) break;
-      else _0x3be8f1["push"](_0x3be8f1["shift"]());
-    } catch (_0x576862) {
-      _0x3be8f1["push"](_0x3be8f1["shift"]());
-    }
-  }
-})(_0x1aa4, 0x45de8);
 let e = require("@univerjs-pro/slides-exchange-client"),
   t = require("@univerjs/core/facade");
-var n = class extends t[_0x6bdca1(0x1d7)] {
-  ["importSlideToUnitIdAsync"](_0x2280de) {
-    const _0x5634bb = _0x6bdca1;
-    return this[_0x5634bb(0x1c6)]
-      [_0x5634bb(0x1ce)](e[_0x5634bb(0x1d2)])
-      [_0x5634bb(0x1d1)](_0x2280de);
+var n = class extends t.FUniver {
+  importSlideToUnitIdAsync(_0x2280de) {
+    return this._injector["get"](e.ISlideExchangeService).importSlideToUnitId(
+      _0x2280de,
+    );
   }
-  [_0x6bdca1(0x1d4)](_0x14223b) {
-    const _0x1afb09 = _0x6bdca1;
-    return this[_0x1afb09(0x1c6)]
-      ["get"](e[_0x1afb09(0x1d2)])
-      [_0x1afb09(0x1c9)](_0x14223b);
+  importSlideToSnapshotAsync(_0x14223b) {
+    return this._injector["get"](e.ISlideExchangeService).importSlideToSnapshot(
+      _0x14223b,
+    );
   }
-  [_0x6bdca1(0x1c8)](_0x2ad696) {
-    const _0x5cb225 = _0x6bdca1;
-    return this["_injector"]
-      [_0x5cb225(0x1ce)](e[_0x5cb225(0x1d2)])
-      [_0x5cb225(0x1c4)](_0x2ad696);
+  exportSlideByUnitIdAsync(_0x2ad696) {
+    return this._injector["get"](e.ISlideExchangeService).exportSlideByUnitId(
+      _0x2ad696,
+    );
   }
-  [_0x6bdca1(0x1ca)](_0x467fa4) {
-    const _0x4e4073 = _0x6bdca1;
-    return this[_0x4e4073(0x1c6)]
-      ["get"](e[_0x4e4073(0x1d2)])
-      ["exportSlideBySnapshot"](_0x467fa4);
+  exportSlideBySnapshotAsync(_0x467fa4) {
+    return this._injector["get"](e.ISlideExchangeService).exportSlideBySnapshot(
+      _0x467fa4,
+    );
   }
-  ["transformSnapshotJsonToSlideDataAsync"](_0x5898f8) {
-    const _0x3ab061 = _0x6bdca1;
-    return this[_0x3ab061(0x1c6)]
-      ["get"](e[_0x3ab061(0x1d2)])
-      ["transformSnapshotJsonToSlideData"](_0x5898f8);
+  transformSnapshotJsonToSlideDataAsync(_0x5898f8) {
+    return this._injector["get"](
+      e.ISlideExchangeService,
+    ).transformSnapshotJsonToSlideData(_0x5898f8);
   }
-  [_0x6bdca1(0x1c5)](_0x219156) {
-    const _0x57c94c = _0x6bdca1;
-    return this[_0x57c94c(0x1c6)]
-      [_0x57c94c(0x1ce)](e[_0x57c94c(0x1d2)])
-      [_0x57c94c(0x1c7)](_0x219156);
+  transformSlideDataToSnapshotJsonAsync(_0x219156) {
+    return this._injector["get"](
+      e.ISlideExchangeService,
+    ).transformSlideDataToSnapshotJson(_0x219156);
   }
 };
-t[_0x6bdca1(0x1d7)]["extend"](n);
+t.FUniver["extend"](n);

@@ -1,0 +1,27874 @@
+import { BehaviorSubject, Observable, ReplaySubject, Subject, Subscription, combineLatest, debounceTime, distinctUntilChanged, filter, firstValueFrom, map, merge as merge$1, of, skip, take, takeWhile, tap, timer } from "rxjs";
+import { ObjectScope, UnitAction, UnitObject, UnitRole, UniverType as UniverInstanceType } from "@univerjs/protocol";
+import { debounceTime as debounceTime$1, filter as filter$1, first, map as map$1 } from "rxjs/operators";
+import { Inject, InjectSelf, Injector, LookUp, Many, Optional, Quantity, RediError, Self, SkipSelf, WithNew, createIdentifier, forwardRef, isAsyncDependencyItem, isAsyncHook, isClassDependencyItem, isCtor, isDisposable, isFactoryDependencyItem, isValueDependencyItem, setDependencies } from "@wendellhu/redi";
+import { debounce, get, merge, mergeWith, set, setWith } from "lodash-es";
+import RBush, { default as RBush$1 } from "rbush";
+import AsyncLock from "async-lock";
+import * as json1 from "ot-json1";
+import fastDiff from "fast-diff";
+import { defaultTheme } from "@univerjs/themes";
+import KDBush from "kdbush";
+
+//#region \0rolldown/runtime.js
+var __defProp = Object.defineProperty;
+var __exportAll = (all, no_symbols) => {
+	let target = {};
+	for (var name in all) {
+		__defProp(target, name, {
+			get: all[name],
+			enumerable: true
+		});
+	}
+	if (!no_symbols) {
+		__defProp(target, Symbol.toStringTag, { value: "Module" });
+	}
+	return target;
+};
+
+//#endregion
+//#region src/common/shims.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const glob = typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : window;
+/**
+* Polyfill for requestIdleCallback and cancelIdleCallback
+*/
+function installRequestIdleCallback() {
+	const TIME_WINDOW = 50;
+	const idleCallbacks = /* @__PURE__ */ new Map();
+	let currentId = 0;
+	if (typeof glob.requestIdleCallback !== "function") glob.requestIdleCallback = function shimRIC(callback) {
+		const start = Date.now();
+		const id = ++currentId;
+		const timeoutId = setTimeout(function rICCallback() {
+			idleCallbacks.delete(id);
+			const remaining = Math.max(0, TIME_WINDOW - (Date.now() - start));
+			callback({
+				didTimeout: remaining === 0,
+				timeRemaining() {
+					return remaining;
+				}
+			});
+		}, 1);
+		idleCallbacks.set(id, timeoutId);
+		return id;
+	};
+	if (typeof glob.cancelIdleCallback !== "function") glob.cancelIdleCallback = function shimCancelRIC(id) {
+		const timeoutId = idleCallbacks.get(id);
+		if (timeoutId !== void 0) {
+			clearTimeout(timeoutId);
+			idleCallbacks.delete(id);
+		}
+	};
+}
+/**
+* Polyfill for queueMicrotask
+*/
+function installQueueMicrotask() {
+	if (typeof glob.queueMicrotask !== "function") glob.queueMicrotask = function shimQueueMicrotask(callback) {
+		Promise.resolve().then(callback).catch((error) => {
+			setTimeout(() => {
+				throw error;
+			}, 0);
+		});
+	};
+}
+/**
+* Polyfill for Array.prototype.findLastIndex and Array.prototype.findLast
+*/
+function installArrayFindLastIndex() {
+	if (typeof glob.Array.prototype.findLastIndex !== "function") glob.Array.prototype.findLastIndex = function findLastIndex(callback, thisArg) {
+		if (this == null) throw new TypeError("Array.prototype.findLastIndex called on null or undefined");
+		if (typeof callback !== "function") throw new TypeError("callback must be a function");
+		const len = this.length >>> 0;
+		for (let i = len - 1; i >= 0; i--) if (i in this && callback.call(thisArg, this[i], i, this)) return i;
+		return -1;
+	};
+	if (typeof glob.Array.prototype.findLast !== "function") glob.Array.prototype.findLast = function findLast(callback, thisArg) {
+		const index = this.findLastIndex(callback, thisArg);
+		return index !== -1 ? this[index] : void 0;
+	};
+}
+/**
+* Polyfill for String.prototype.at
+*/
+function installStringAt() {
+	if (typeof glob.String.prototype.at !== "function") glob.String.prototype.at = function at(index) {
+		if (this == null) throw new TypeError("String.prototype.at called on null or undefined");
+		const len = this.length;
+		if (index < 0) index = len + index;
+		if (index < 0 || index >= len) return;
+		return this.charAt(index);
+	};
+}
+function installShims() {
+	installRequestIdleCallback();
+	installQueueMicrotask();
+	installArrayFindLastIndex();
+	installStringAt();
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region src/shared/lifecycle.ts
+function isSubscriptionLike(value) {
+	return value instanceof Subscription || value instanceof Subject || value && "closed" in value && typeof value.unsubscribe !== "undefined";
+}
+function toDisposable(v) {
+	let disposed = false;
+	if (!v) return toDisposable(() => {});
+	if (isSubscriptionLike(v)) return { dispose: () => v.unsubscribe() };
+	if (typeof v === "function") return { dispose: () => {
+		if (disposed) return;
+		disposed = true;
+		v();
+	} };
+	return v;
+}
+var DisposableCollection = class {
+	constructor() {
+		_defineProperty(this, "_disposables", /* @__PURE__ */ new Set());
+	}
+	add(disposable) {
+		const d = toDisposable(disposable);
+		this._disposables.add(d);
+		return { dispose: (notDisposeSelf = false) => {
+			if (!notDisposeSelf) d.dispose();
+			this._disposables.delete(d);
+		} };
+	}
+	dispose() {
+		this._disposables.forEach((item) => {
+			item.dispose();
+		});
+		this._disposables.clear();
+	}
+};
+var Disposable = class {
+	constructor() {
+		_defineProperty(this, "_disposed", false);
+		_defineProperty(this, "_collection", new DisposableCollection());
+	}
+	disposeWithMe(disposable) {
+		return this._collection.add(disposable);
+	}
+	ensureNotDisposed() {
+		if (this._disposed) throw new Error("[Disposable]: object is disposed!");
+	}
+	dispose() {
+		if (this._disposed) return;
+		this._disposed = true;
+		this._collection.dispose();
+	}
+};
+var RxDisposable = class extends Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "dispose$", new Subject());
+	}
+	dispose() {
+		super.dispose();
+		this.dispose$.next();
+		this.dispose$.complete();
+	}
+};
+var RCDisposable = class extends Disposable {
+	constructor(_rootDisposable) {
+		super();
+		this._rootDisposable = _rootDisposable;
+		_defineProperty(this, "_ref", 0);
+	}
+	inc() {
+		if (this._disposed) throw new Error("[RCDisposable]: should not ref to a disposed.");
+		this._ref += 1;
+	}
+	dec() {
+		this._ref -= 1;
+		if (this._ref === 0) {
+			this._rootDisposable.dispose();
+			this.dispose();
+		}
+	}
+};
+
+//#endregion
+//#region src/common/unit.ts
+/**
+* The base class for all units.
+*/
+var UnitModel = class extends Disposable {};
+
+//#endregion
+//#region src/common/url.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const topLevelDomainSet = /* @__PURE__ */ new Set([
+	"ac",
+	"ad",
+	"ae",
+	"aero",
+	"af",
+	"ag",
+	"ai",
+	"al",
+	"am",
+	"ao",
+	"aq",
+	"ar",
+	"arpa",
+	"as",
+	"asia",
+	"at",
+	"au",
+	"aw",
+	"ax",
+	"az",
+	"ba",
+	"bb",
+	"bd",
+	"be",
+	"bf",
+	"bg",
+	"bh",
+	"bi",
+	"biz",
+	"bj",
+	"bm",
+	"bn",
+	"bo",
+	"br",
+	"bs",
+	"bt",
+	"bv",
+	"bw",
+	"by",
+	"bz",
+	"ca",
+	"cat",
+	"cc",
+	"cd",
+	"cf",
+	"cg",
+	"ch",
+	"ci",
+	"ck",
+	"cl",
+	"cm",
+	"cn",
+	"co",
+	"com",
+	"coop",
+	"cr",
+	"cu",
+	"cv",
+	"cw",
+	"cx",
+	"cy",
+	"cz",
+	"de",
+	"dj",
+	"dk",
+	"dm",
+	"do",
+	"dz",
+	"ec",
+	"edu",
+	"ee",
+	"eg",
+	"er",
+	"es",
+	"et",
+	"eu",
+	"fi",
+	"fj",
+	"fk",
+	"fm",
+	"fo",
+	"fr",
+	"ga",
+	"gb",
+	"gd",
+	"ge",
+	"gf",
+	"gg",
+	"gh",
+	"gi",
+	"gl",
+	"gm",
+	"gn",
+	"gov",
+	"gp",
+	"gq",
+	"gr",
+	"gs",
+	"gt",
+	"gu",
+	"gw",
+	"gy",
+	"hk",
+	"hm",
+	"hn",
+	"hr",
+	"ht",
+	"hu",
+	"id",
+	"ie",
+	"il",
+	"im",
+	"in",
+	"info",
+	"int",
+	"io",
+	"iq",
+	"ir",
+	"is",
+	"it",
+	"je",
+	"jm",
+	"jo",
+	"jobs",
+	"jp",
+	"ke",
+	"kg",
+	"kh",
+	"ki",
+	"km",
+	"kn",
+	"kp",
+	"kr",
+	"kw",
+	"ky",
+	"kz",
+	"la",
+	"lb",
+	"lc",
+	"li",
+	"lk",
+	"lr",
+	"ls",
+	"lt",
+	"lu",
+	"lv",
+	"ly",
+	"ma",
+	"mc",
+	"md",
+	"me",
+	"mg",
+	"mh",
+	"mil",
+	"mk",
+	"ml",
+	"mm",
+	"mn",
+	"mo",
+	"mobi",
+	"mp",
+	"mq",
+	"mr",
+	"ms",
+	"mt",
+	"mu",
+	"museum",
+	"mv",
+	"mw",
+	"mx",
+	"my",
+	"mz",
+	"na",
+	"name",
+	"nc",
+	"ne",
+	"net",
+	"nf",
+	"ng",
+	"ni",
+	"nl",
+	"no",
+	"np",
+	"nr",
+	"nu",
+	"nz",
+	"om",
+	"onion",
+	"org",
+	"pa",
+	"pe",
+	"pf",
+	"pg",
+	"ph",
+	"pk",
+	"pl",
+	"pm",
+	"pn",
+	"post",
+	"pr",
+	"pro",
+	"ps",
+	"pt",
+	"pw",
+	"py",
+	"qa",
+	"re",
+	"ro",
+	"rs",
+	"ru",
+	"rw",
+	"sa",
+	"sb",
+	"sc",
+	"sd",
+	"se",
+	"sg",
+	"sh",
+	"si",
+	"sj",
+	"sk",
+	"sl",
+	"sm",
+	"sn",
+	"so",
+	"sr",
+	"ss",
+	"st",
+	"su",
+	"sv",
+	"sx",
+	"sy",
+	"sz",
+	"tc",
+	"td",
+	"tel",
+	"tf",
+	"tg",
+	"th",
+	"tj",
+	"tk",
+	"tl",
+	"tm",
+	"tn",
+	"to",
+	"tr",
+	"tt",
+	"tv",
+	"tw",
+	"tz",
+	"ua",
+	"ug",
+	"uk",
+	"us",
+	"uy",
+	"uz",
+	"va",
+	"vc",
+	"ve",
+	"vg",
+	"vi",
+	"vn",
+	"vu",
+	"wf",
+	"ws",
+	"yt",
+	"za",
+	"zm",
+	"zw"
+]);
+const re_weburl = /* @__PURE__ */ new RegExp("^(?:(?:(?:https?|ftp):)?\\/\\/)?(?:\\S+(?::\\S*)?@)?(?:(?:[1-9]\\d?|1\\d\\d|2[01]\\d|22[0-3])(?:\\.(?:1?\\d{1,2}|2[0-4]\\d|25[0-5])){2}(?:\\.(?:[1-9]\\d?|1\\d\\d|2[0-4]\\d|25[0-4]))|(?:(?:[a-z0-9\\u00a1-\\uffff][a-z0-9\\u00a1-\\uffff_-]{0,62})?[a-z0-9\\u00a1-\\uffff]\\.)+(?:[a-z\\u00a1-\\uffff]{2,}\\.?))(?::\\d{2,5})?(?:[/?#]\\S*)?$", "i");
+function isLegalUrl(url) {
+	if (!Number.isNaN(+url)) return false;
+	if (url.startsWith("http://localhost:5173") || url.startsWith("localhost:5173")) return true;
+	if (re_weburl.test(url)) if (hasProtocol(url)) return true;
+	else try {
+		const topLevelDomain = new URL(normalizeUrl(url)).hostname.split(".").pop();
+		if (topLevelDomain && topLevelDomainSet.has(topLevelDomain)) return true;
+	} catch {
+		return false;
+	}
+	return false;
+}
+function hasProtocol(urlString) {
+	return /^[a-zA-Z]+:\/\//.test(urlString);
+}
+function isEmail(url) {
+	return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(url);
+}
+function normalizeUrl(urlStr) {
+	return hasProtocol(urlStr) ? urlStr : isEmail(urlStr) ? `mailto://${urlStr}` : `https://${urlStr}`;
+}
+function isSafeUrl(url) {
+	if (!url || typeof url !== "string") return false;
+	try {
+		const base = typeof window !== "undefined" && window.location ? window.location.origin : "http://localhost";
+		const parsed = new URL(url, base);
+		return [
+			"http:",
+			"https:",
+			"mailto:"
+		].includes(parsed.protocol);
+	} catch {
+		return false;
+	}
+}
+/**
+* Resolve a URL with a base URL, ensuring the path from the base URL is preserved.
+* @param {string} url - The URL to resolve.
+* @param {string} baseURL - The base URL to use for resolution.
+* @returns {string} - The resolved URL.
+*/
+function resolveWithBasePath(url, baseURL) {
+	try {
+		const base = new URL(baseURL);
+		const basePath = base.pathname.endsWith("/") ? base.pathname : `${base.pathname}/`;
+		const cleanedUrl = url.startsWith("/") ? url.substring(1) : url;
+		return new URL(cleanedUrl, base.origin + basePath).toString();
+	} catch (error) {
+		console.error("Error resolving URL with base URL:", error);
+		return url;
+	}
+}
+
+//#endregion
+//#region src/shared/tools.ts
+/**
+* Deep diff between two object
+* @param oneValue The first test value
+* @param twoValue The second test value
+* @returns {boolean} If objects are different, return false, otherwise return true
+*/
+function isValueEqual(oneValue, twoValue) {
+	if (Tools.getValueType(oneValue) !== Tools.getValueType(twoValue)) return false;
+	if (Tools.isArray(oneValue)) return diffArrays(oneValue, twoValue);
+	if (Tools.isObject(oneValue)) return diffObject(oneValue, twoValue);
+	if (Tools.isDate(oneValue)) return oneValue.getTime() === twoValue.getTime();
+	if (Tools.isRegExp(oneValue)) return oneValue.toString() === twoValue.toString();
+	return oneValue === twoValue;
+}
+function diffArrays(oneArray, twoArray) {
+	if (oneArray.length !== twoArray.length) return false;
+	for (let i = 0, len = oneArray.length; i < len; i++) {
+		const oneValue = oneArray[i];
+		const twoValue = twoArray[i];
+		if (!isValueEqual(oneValue, twoValue)) return false;
+	}
+	return true;
+}
+function diffObject(oneObject, twoObject) {
+	const oneKeys = Object.keys(oneObject);
+	if (oneKeys.length !== Object.keys(twoObject).length) return false;
+	for (const key of oneKeys) {
+		if (!Object.prototype.propertyIsEnumerable.call(twoObject, key)) return false;
+		const oneValue = oneObject[key];
+		const twoValue = twoObject[key];
+		if (!isValueEqual(oneValue, twoValue)) return false;
+	}
+	return true;
+}
+/**
+* Universal tool library
+*/
+var Tools = class Tools {
+	static deleteNull(obj) {
+		for (const key in obj) if (obj[key] === null || obj[key] === void 0) delete obj[key];
+		return obj;
+	}
+	static getSystemType() {
+		const sUserAgent = navigator.userAgent;
+		const isWin = navigator.platform === "Win32" || navigator.platform === "Windows";
+		const isMac = navigator.platform === "Mac68K" || navigator.platform === "MacPPC" || navigator.platform === "Macintosh" || navigator.platform === "MacIntel";
+		if (isMac) return "Mac";
+		if (navigator.platform === "X11" && !isWin && !isMac) return "Unix";
+		if (String(navigator.platform).indexOf("Linux") > -1) return "Linux";
+		if (isWin) {
+			if (sUserAgent.indexOf("Windows NT 5.0") > -1 || sUserAgent.indexOf("Windows 2000") > -1) return "Windows 2000";
+			if (sUserAgent.indexOf("Windows NT 5.1") > -1 || sUserAgent.indexOf("Windows XP") > -1) return "Windows XP";
+			if (sUserAgent.indexOf("Windows NT 5.2") > -1 || sUserAgent.indexOf("Windows 2003") > -1) return "Windows 2003";
+			if (sUserAgent.indexOf("Windows NT 6.0") > -1 || sUserAgent.indexOf("Windows Vista") > -1) return "Windows Vista";
+			if (sUserAgent.indexOf("Windows NT 6.1") > -1 || sUserAgent.indexOf("Windows 7") > -1) return "Windows 7";
+			if (sUserAgent.indexOf("Windows NT 10") > -1 || sUserAgent.indexOf("Windows 10") > -1) return "Windows 10";
+			if (sUserAgent.indexOf("Windows NT 11") > -1 || sUserAgent.indexOf("Windows 11") > -1) return "Windows 11";
+		}
+		return "Unknown system";
+	}
+	static getBrowserType() {
+		const userAgent = navigator.userAgent;
+		const isOpera = userAgent.indexOf("Opera") > -1;
+		const isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera;
+		const isIE11 = userAgent.indexOf("Trident") > -1 && userAgent.indexOf("rv:11.0") > -1;
+		const isEdge = userAgent.indexOf("Edge") > -1;
+		const isFF = userAgent.indexOf("Firefox") > -1;
+		const isSafari = userAgent.indexOf("Safari") > -1 && userAgent.indexOf("Chrome") === -1;
+		const isChrome = userAgent.indexOf("Chrome") > -1 && userAgent.indexOf("Safari") > -1;
+		if (isIE) {
+			(/* @__PURE__ */ new RegExp("MSIE (\\d+\\.\\d+);")).test(userAgent);
+			const fIEVersion = Number.parseFloat(RegExp.$1);
+			if (fIEVersion === 7) return "IE7";
+			if (fIEVersion === 8) return "IE8";
+			if (fIEVersion === 9) return "IE9";
+			if (fIEVersion === 10) return "IE10";
+			return "0";
+		}
+		if (isFF) return "FF";
+		if (isOpera) return "Opera";
+		if (isSafari) return "Safari";
+		if (isChrome) return "Chrome";
+		if (isEdge) return "Edge";
+		if (isIE11) return "IE11";
+		return "Unknown browser";
+	}
+	static diffValue(one, two) {
+		return isValueEqual(one, two);
+	}
+	static deepClone(value) {
+		if (!this.isDefine(value)) return value;
+		if (this.isRegExp(value)) return new RegExp(value);
+		if (this.isDate(value)) return new Date(value);
+		if (this.isArray(value)) {
+			const clone = [];
+			value.forEach((item, index) => {
+				clone[index] = Tools.deepClone(item);
+			});
+			return clone;
+		}
+		if (this.isObject(value)) {
+			const source = value;
+			const clone = {};
+			for (const key in source) if (Object.prototype.hasOwnProperty.call(source, key)) clone[key] = Tools.deepClone(source[key]);
+			Object.setPrototypeOf(clone, Object.getPrototypeOf(value));
+			return clone;
+		}
+		return value;
+	}
+	static getValueType(value) {
+		return Object.prototype.toString.apply(value);
+	}
+	static isDefine(value) {
+		return value !== void 0 && value !== null;
+	}
+	static isBlank(value) {
+		if (!this.isDefine(value)) return true;
+		if (this.isString(value)) return value.trim() === "";
+		return false;
+	}
+	static isPlainObject(value) {
+		if (!this.isDefine(value)) return false;
+		return Object.getPrototypeOf(value) === Object.getPrototypeOf({});
+	}
+	static isDate(value) {
+		return this.getValueType(value) === "[object Date]";
+	}
+	static isRegExp(value) {
+		return this.getValueType(value) === "[object RegExp]";
+	}
+	static isArray(value) {
+		return this.getValueType(value) === "[object Array]";
+	}
+	static isString(value) {
+		return this.getValueType(value) === "[object String]";
+	}
+	static isNumber(value) {
+		return this.getValueType(value) === "[object Number]";
+	}
+	static isStringNumber(value) {
+		return !isNaN(Number.parseFloat(value)) && isFinite(value);
+	}
+	static isObject(value) {
+		return this.getValueType(value) === "[object Object]";
+	}
+	static isEmptyObject(value) {
+		for (const _key in value) return false;
+		return true;
+	}
+	static isTablet() {
+		return /ipad|android|android 3.0|xoom|sch-i800|playbook|tablet|kindle/i.test(navigator.userAgent.toLowerCase());
+	}
+	static isIPhone() {
+		return /iPhone/i.test(navigator.userAgent);
+	}
+	static isLegalUrl(url) {
+		return isLegalUrl(url);
+	}
+	static normalizeUrl(url) {
+		return normalizeUrl(url);
+	}
+	static topLevelDomainCombiningString() {
+		return [...topLevelDomainSet].join("|");
+	}
+	/**
+	* remove all null from object
+	* @param obj
+	* @returns
+	*/
+	static removeNull(value) {
+		if (this.isObject(value)) Object.keys(value).forEach((key) => {
+			const item = value[key];
+			if (item == null) delete value[key];
+			else Tools.removeNull(item);
+		});
+		return value;
+	}
+	static numToWord(x) {
+		let s = "";
+		while (x > 0) {
+			let m = x % 26;
+			m = m === 0 ? m = 26 : m;
+			s = String.fromCharCode(96 + m) + s;
+			x = (x - m) / 26;
+		}
+		return s.toLocaleUpperCase();
+	}
+	/**
+	* Column subscript letter to number
+	*
+	* @param a - Column subscript letter,e.g.,"A1"
+	* @returns Column subscript number,e.g.,0
+	*
+	*/
+	static ABCatNum(a) {
+		if (a == null || a.length === 0) return NaN;
+		const str = a.toLowerCase().split("");
+		const al = str.length;
+		let numOut = 0;
+		let charnum = 0;
+		for (let i = 0; i < al; i++) {
+			charnum = str[i].charCodeAt(0) - 96;
+			numOut += charnum * 26 ** (al - i - 1);
+		}
+		if (numOut === 0) return NaN;
+		return numOut - 1;
+	}
+	/**
+	* Column subscript number to letter
+	*
+	* @param n Column subscript number,e.g.,0
+	* @returns Column subscript letter,e.g.,"A1"
+	*/
+	static chatAtABC(n) {
+		const ord_a = "a".charCodeAt(0);
+		"z".charCodeAt(0);
+		const len = 26;
+		let s = "";
+		while (n >= 0) {
+			s = String.fromCharCode(n % len + ord_a) + s;
+			n = Math.floor(n / len) - 1;
+		}
+		return s.toUpperCase();
+	}
+	/**
+	* extend two objects
+	* @param originJson
+	* @param extendJson
+	* @returns
+	*/
+	static commonExtend(originJson, extendJson) {
+		const resultJsonObject = {};
+		for (const attr in originJson) resultJsonObject[attr] = originJson[attr];
+		for (const attr in extendJson) {
+			if (extendJson[attr] == null) continue;
+			resultJsonObject[attr] = extendJson[attr];
+		}
+		return resultJsonObject;
+	}
+	static hasIntersectionBetweenTwoRanges(range1Start, range1End, range2Start, range2End) {
+		return range1End >= range2Start && range2End >= range1Start;
+	}
+	static isStartValidPosition(name) {
+		return /^[A-Za-zА-Яа-яЁё_]/.test(name);
+	}
+	static isValidParameter(name) {
+		/**
+		*Validates that the name does not contain spaces or disallowed characters
+		*Assuming the set of disallowed characters includes some special characters,
+		*you can modify the regex below according to the actual requirements
+		*/
+		const containsInvalidChars = /[~!@#$%^&*()+=\-{}\[\]\|:;"'<>,?\/ ]+/.test(name);
+		const isValidLength = name.length <= 255;
+		return !containsInvalidChars && isValidLength;
+	}
+	static clamp(value, min, max) {
+		return Math.max(min, Math.min(max, value));
+	}
+	static now() {
+		if (performance && performance.now) return performance.now();
+		return Date.now();
+	}
+};
+/**
+* compose styles by priority, the latter will overwrite the former
+* @param { Nullable<IStyleData>[]} styles the styles to be composed
+* @returns  { Nullable<IStyleData>[]} Returns the composed style
+*/
+function composeStyles(...styles) {
+	const result = {};
+	const length = styles.length;
+	for (let i = length - 1; i >= 0; i--) {
+		const style = styles[i];
+		if (style) {
+			const keys = Object.keys(style);
+			for (const key of keys) if (result[key] === void 0) result[key] = style[key];
+		}
+	}
+	return result;
+}
+const isNodeEnv = () => {
+	return typeof process !== "undefined" && process.versions != null && process.versions.node != null;
+};
+
+//#endregion
+//#region src/types/enum/auto-fill-series.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let AutoFillSeries = /* @__PURE__ */ function(AutoFillSeries) {
+	/**
+	* Default. Auto-filling with this setting results in the empty cells in the expanded range being filled with increments of the existing values.
+	*/
+	AutoFillSeries[AutoFillSeries["DEFAULT_SERIES"] = 0] = "DEFAULT_SERIES";
+	/**
+	* Auto-filling with this setting results in the empty cells in the expanded range being filled with copies of the existing values.
+	*/
+	AutoFillSeries[AutoFillSeries["ALTERNATE_SERIES"] = 1] = "ALTERNATE_SERIES";
+	return AutoFillSeries;
+}({});
+
+//#endregion
+//#region src/types/enum/border-style-types.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Border style types enum
+*/
+let BorderStyleTypes = /* @__PURE__ */ function(BorderStyleTypes) {
+	BorderStyleTypes[BorderStyleTypes["NONE"] = 0] = "NONE";
+	BorderStyleTypes[BorderStyleTypes["THIN"] = 1] = "THIN";
+	BorderStyleTypes[BorderStyleTypes["HAIR"] = 2] = "HAIR";
+	BorderStyleTypes[BorderStyleTypes["DOTTED"] = 3] = "DOTTED";
+	BorderStyleTypes[BorderStyleTypes["DASHED"] = 4] = "DASHED";
+	BorderStyleTypes[BorderStyleTypes["DASH_DOT"] = 5] = "DASH_DOT";
+	BorderStyleTypes[BorderStyleTypes["DASH_DOT_DOT"] = 6] = "DASH_DOT_DOT";
+	BorderStyleTypes[BorderStyleTypes["DOUBLE"] = 7] = "DOUBLE";
+	BorderStyleTypes[BorderStyleTypes["MEDIUM"] = 8] = "MEDIUM";
+	BorderStyleTypes[BorderStyleTypes["MEDIUM_DASHED"] = 9] = "MEDIUM_DASHED";
+	BorderStyleTypes[BorderStyleTypes["MEDIUM_DASH_DOT"] = 10] = "MEDIUM_DASH_DOT";
+	BorderStyleTypes[BorderStyleTypes["MEDIUM_DASH_DOT_DOT"] = 11] = "MEDIUM_DASH_DOT_DOT";
+	BorderStyleTypes[BorderStyleTypes["SLANT_DASH_DOT"] = 12] = "SLANT_DASH_DOT";
+	BorderStyleTypes[BorderStyleTypes["THICK"] = 13] = "THICK";
+	return BorderStyleTypes;
+}({});
+let BorderType = /* @__PURE__ */ function(BorderType) {
+	BorderType["TOP"] = "top";
+	BorderType["BOTTOM"] = "bottom";
+	BorderType["LEFT"] = "left";
+	BorderType["RIGHT"] = "right";
+	BorderType["NONE"] = "none";
+	BorderType["ALL"] = "all";
+	BorderType["OUTSIDE"] = "outside";
+	BorderType["INSIDE"] = "inside";
+	BorderType["HORIZONTAL"] = "horizontal";
+	BorderType["VERTICAL"] = "vertical";
+	BorderType["TLBR"] = "tlbr";
+	BorderType["TLBC_TLMR"] = "tlbc_tlmr";
+	BorderType["TLBR_TLBC_TLMR"] = "tlbr_tlbc_tlmr";
+	BorderType["BLTR"] = "bl_tr";
+	BorderType["MLTR_BCTR"] = "mltr_bctr";
+	return BorderType;
+}({});
+
+//#endregion
+//#region src/types/enum/color-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ColorType = /* @__PURE__ */ function(ColorType) {
+	ColorType[ColorType["UNSUPPORTED"] = 0] = "UNSUPPORTED";
+	ColorType[ColorType["RGB"] = 1] = "RGB";
+	ColorType[ColorType["HEX"] = 2] = "HEX";
+	ColorType[ColorType["THEME"] = 3] = "THEME";
+	return ColorType;
+}({});
+
+//#endregion
+//#region src/types/enum/common-hide-types.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let CommonHideTypes = /* @__PURE__ */ function(CommonHideTypes) {
+	CommonHideTypes[CommonHideTypes["ON"] = 0] = "ON";
+	CommonHideTypes[CommonHideTypes["OFF"] = 1] = "OFF";
+	return CommonHideTypes;
+}({});
+
+//#endregion
+//#region src/types/enum/copy-paste-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let CopyPasteType = /* @__PURE__ */ function(CopyPasteType) {
+	CopyPasteType[CopyPasteType["PASTE_NORMAL"] = 0] = "PASTE_NORMAL";
+	CopyPasteType[CopyPasteType["PASTE_NO_BORDERS"] = 1] = "PASTE_NO_BORDERS";
+	CopyPasteType[CopyPasteType["PASTE_FORMAT"] = 2] = "PASTE_FORMAT";
+	CopyPasteType[CopyPasteType["PASTE_FORMULA"] = 3] = "PASTE_FORMULA";
+	CopyPasteType[CopyPasteType["PASTE_DATA_VALIDATION"] = 4] = "PASTE_DATA_VALIDATION";
+	CopyPasteType[CopyPasteType["PASTE_VALUES"] = 5] = "PASTE_VALUES";
+	CopyPasteType[CopyPasteType["PASTE_CONDITIONAL_FORMATTING"] = 6] = "PASTE_CONDITIONAL_FORMATTING";
+	CopyPasteType[CopyPasteType["PASTE_COLUMN_WIDTHS"] = 7] = "PASTE_COLUMN_WIDTHS";
+	return CopyPasteType;
+}({});
+
+//#endregion
+//#region src/types/enum/date-system.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/** Workbook date serial systems supported by Univer. */
+let DateSystem = /* @__PURE__ */ function(DateSystem) {
+	/** Serial 1 is 1900-01-01; serials 0 and 60 preserve Excel's compatibility-only dates. */
+	DateSystem["Date1900"] = "date1900";
+	/** Serial 0 is 1904-01-01. */
+	DateSystem["Date1904"] = "date1904";
+	return DateSystem;
+}({});
+
+//#endregion
+//#region src/types/enum/delete-direction.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DeleteDirection = /* @__PURE__ */ function(DeleteDirection) {
+	DeleteDirection[DeleteDirection["LEFT"] = 0] = "LEFT";
+	DeleteDirection[DeleteDirection["RIGHT"] = 1] = "RIGHT";
+	return DeleteDirection;
+}({});
+
+//#endregion
+//#region src/types/enum/developer-metadata-visibility.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DeveloperMetadataVisibility = /* @__PURE__ */ function(DeveloperMetadataVisibility) {
+	DeveloperMetadataVisibility[DeveloperMetadataVisibility["DOCUMENT"] = 0] = "DOCUMENT";
+	DeveloperMetadataVisibility[DeveloperMetadataVisibility["PROJECT"] = 1] = "PROJECT";
+	return DeveloperMetadataVisibility;
+}({});
+
+//#endregion
+//#region src/types/enum/dimension.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let Dimension = /* @__PURE__ */ function(Dimension) {
+	/**
+	* The column (vertical) dimension. move left or right
+	*/
+	Dimension[Dimension["COLUMNS"] = 0] = "COLUMNS";
+	/**
+	* The row (horizontal) dimension. move up or down
+	*/
+	Dimension[Dimension["ROWS"] = 1] = "ROWS";
+	return Dimension;
+}({});
+
+//#endregion
+//#region src/types/enum/direction.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let Direction = /* @__PURE__ */ function(Direction) {
+	Direction[Direction["UP"] = 0] = "UP";
+	Direction[Direction["RIGHT"] = 1] = "RIGHT";
+	Direction[Direction["DOWN"] = 2] = "DOWN";
+	Direction[Direction["LEFT"] = 3] = "LEFT";
+	return Direction;
+}({});
+function getReverseDirection(direction) {
+	switch (direction) {
+		case 3: return 1;
+		case 1: return 3;
+		case 0: return 2;
+		case 2: return 0;
+	}
+}
+
+//#endregion
+//#region src/types/enum/interpolation-point-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let InterpolationPointType = /* @__PURE__ */ function(InterpolationPointType) {
+	InterpolationPointType[InterpolationPointType["INTERPOLATION_POINT_TYPE_UNSPECIFIED"] = 0] = "INTERPOLATION_POINT_TYPE_UNSPECIFIED";
+	InterpolationPointType[InterpolationPointType["MIN"] = 1] = "MIN";
+	InterpolationPointType[InterpolationPointType["MAX"] = 2] = "MAX";
+	InterpolationPointType[InterpolationPointType["NUMBER"] = 3] = "NUMBER";
+	InterpolationPointType[InterpolationPointType["PERCENT"] = 4] = "PERCENT";
+	InterpolationPointType[InterpolationPointType["PERCENTILE"] = 5] = "PERCENTILE";
+	return InterpolationPointType;
+}({});
+
+//#endregion
+//#region src/types/enum/locale-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Built-in locales.
+*/
+let LocaleType = /* @__PURE__ */ function(LocaleType) {
+	LocaleType["EN_US"] = "enUS";
+	LocaleType["FR_FR"] = "frFR";
+	LocaleType["ZH_CN"] = "zhCN";
+	LocaleType["RU_RU"] = "ruRU";
+	LocaleType["ZH_TW"] = "zhTW";
+	LocaleType["ZH_HK"] = "zhHK";
+	LocaleType["VI_VN"] = "viVN";
+	LocaleType["FA_IR"] = "faIR";
+	LocaleType["JA_JP"] = "jaJP";
+	LocaleType["KO_KR"] = "koKR";
+	LocaleType["ES_ES"] = "esES";
+	LocaleType["CA_ES"] = "caES";
+	LocaleType["SK_SK"] = "skSK";
+	LocaleType["PT_BR"] = "ptBR";
+	LocaleType["DE_DE"] = "deDE";
+	LocaleType["IT_IT"] = "itIT";
+	LocaleType["ID_ID"] = "idID";
+	LocaleType["PL_PL"] = "plPL";
+	LocaleType["AR_SA"] = "arSA";
+	return LocaleType;
+}({});
+const LOCALE_META = {
+	["enUS"]: {
+		name: "English",
+		tag: "en-US",
+		direction: "ltr"
+	},
+	["frFR"]: {
+		name: "Français",
+		tag: "fr-FR",
+		direction: "ltr"
+	},
+	["zhCN"]: {
+		name: "简体中文",
+		tag: "zh-CN",
+		direction: "ltr"
+	},
+	["ruRU"]: {
+		name: "Русский",
+		tag: "ru-RU",
+		direction: "ltr"
+	},
+	["zhTW"]: {
+		name: "繁體中文",
+		tag: "zh-TW",
+		direction: "ltr"
+	},
+	["zhHK"]: {
+		name: "繁體中文（香港）",
+		tag: "zh-HK",
+		direction: "ltr"
+	},
+	["viVN"]: {
+		name: "Tiếng Việt",
+		tag: "vi-VN",
+		direction: "ltr"
+	},
+	["faIR"]: {
+		name: "فارسی",
+		tag: "fa-IR",
+		direction: "rtl",
+		numberingSystem: "arabext"
+	},
+	["jaJP"]: {
+		name: "日本語",
+		tag: "ja-JP",
+		direction: "ltr"
+	},
+	["koKR"]: {
+		name: "한국어",
+		tag: "ko-KR",
+		direction: "ltr"
+	},
+	["esES"]: {
+		name: "Español",
+		tag: "es-ES",
+		direction: "ltr"
+	},
+	["caES"]: {
+		name: "Català",
+		tag: "ca-ES",
+		direction: "ltr"
+	},
+	["skSK"]: {
+		name: "Slovenčina",
+		tag: "sk-SK",
+		direction: "ltr"
+	},
+	["ptBR"]: {
+		name: "Português (Brasil)",
+		tag: "pt-BR",
+		direction: "ltr"
+	},
+	["deDE"]: {
+		name: "Deutsch",
+		tag: "de-DE",
+		direction: "ltr"
+	},
+	["itIT"]: {
+		name: "Italiano",
+		tag: "it-IT",
+		direction: "ltr"
+	},
+	["idID"]: {
+		name: "Bahasa Indonesia",
+		tag: "id-ID",
+		direction: "ltr"
+	},
+	["plPL"]: {
+		name: "Polski",
+		tag: "pl-PL",
+		direction: "ltr"
+	},
+	["arSA"]: {
+		name: "العربية",
+		tag: "ar-SA",
+		direction: "rtl",
+		numberingSystem: "arab"
+	}
+};
+
+//#endregion
+//#region src/types/enum/mention-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let MentionType = /* @__PURE__ */ function(MentionType) {
+	MentionType[MentionType["PERSON"] = 0] = "PERSON";
+	MentionType[MentionType["FILE"] = 1] = "FILE";
+	MentionType[MentionType["DATE"] = 2] = "DATE";
+	MentionType[MentionType["LOCATION"] = 3] = "LOCATION";
+	MentionType[MentionType["EVENT"] = 4] = "EVENT";
+	return MentionType;
+}({});
+
+//#endregion
+//#region src/types/enum/protection-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ProtectionType = /* @__PURE__ */ function(ProtectionType) {
+	ProtectionType[ProtectionType["RANGE"] = 0] = "RANGE";
+	ProtectionType[ProtectionType["SHEET"] = 1] = "SHEET";
+	return ProtectionType;
+}({});
+
+//#endregion
+//#region src/types/enum/relative-date.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let RelativeDate = /* @__PURE__ */ function(RelativeDate) {
+	RelativeDate[RelativeDate["RELATIVE_DATE_UNSPECIFIED"] = 0] = "RELATIVE_DATE_UNSPECIFIED";
+	RelativeDate[RelativeDate["PAST_YEAR"] = 1] = "PAST_YEAR";
+	RelativeDate[RelativeDate["PAST_MONTH"] = 2] = "PAST_MONTH";
+	RelativeDate[RelativeDate["PAST_WEEK"] = 3] = "PAST_WEEK";
+	RelativeDate[RelativeDate["YESTERDAY"] = 4] = "YESTERDAY";
+	RelativeDate[RelativeDate["TODAY"] = 5] = "TODAY";
+	RelativeDate[RelativeDate["TOMORROW"] = 6] = "TOMORROW";
+	return RelativeDate;
+}({});
+
+//#endregion
+//#region src/types/enum/sheet-types.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let SheetTypes = /* @__PURE__ */ function(SheetTypes) {
+	SheetTypes[SheetTypes["GRID"] = 0] = "GRID";
+	SheetTypes[SheetTypes["KANBAN"] = 1] = "KANBAN";
+	SheetTypes[SheetTypes["GANTT"] = 2] = "GANTT";
+	return SheetTypes;
+}({});
+
+//#endregion
+//#region src/types/enum/text-style.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* An enum that specifies the text direction of a cell.
+*/
+let TextDirection = /* @__PURE__ */ function(TextDirection) {
+	TextDirection[TextDirection["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+	TextDirection[TextDirection["LEFT_TO_RIGHT"] = 1] = "LEFT_TO_RIGHT";
+	TextDirection[TextDirection["RIGHT_TO_LEFT"] = 2] = "RIGHT_TO_LEFT";
+	return TextDirection;
+}({});
+/**
+* Types of text decoration
+*/
+let TextDecoration = /* @__PURE__ */ function(TextDecoration) {
+	TextDecoration[TextDecoration["DASH"] = 0] = "DASH";
+	TextDecoration[TextDecoration["DASH_DOT_DOT_HEAVY"] = 1] = "DASH_DOT_DOT_HEAVY";
+	TextDecoration[TextDecoration["DASH_DOT_HEAVY"] = 2] = "DASH_DOT_HEAVY";
+	TextDecoration[TextDecoration["DASHED_HEAVY"] = 3] = "DASHED_HEAVY";
+	TextDecoration[TextDecoration["DASH_LONG"] = 4] = "DASH_LONG";
+	TextDecoration[TextDecoration["DASH_LONG_HEAVY"] = 5] = "DASH_LONG_HEAVY";
+	TextDecoration[TextDecoration["DOT_DASH"] = 6] = "DOT_DASH";
+	TextDecoration[TextDecoration["DOT_DOT_DASH"] = 7] = "DOT_DOT_DASH";
+	TextDecoration[TextDecoration["DOTTED"] = 8] = "DOTTED";
+	TextDecoration[TextDecoration["DOTTED_HEAVY"] = 9] = "DOTTED_HEAVY";
+	TextDecoration[TextDecoration["DOUBLE"] = 10] = "DOUBLE";
+	TextDecoration[TextDecoration["NONE"] = 11] = "NONE";
+	TextDecoration[TextDecoration["SINGLE"] = 12] = "SINGLE";
+	TextDecoration[TextDecoration["THICK"] = 13] = "THICK";
+	TextDecoration[TextDecoration["WAVE"] = 14] = "WAVE";
+	TextDecoration[TextDecoration["WAVY_DOUBLE"] = 15] = "WAVY_DOUBLE";
+	TextDecoration[TextDecoration["WAVY_HEAVY"] = 16] = "WAVY_HEAVY";
+	TextDecoration[TextDecoration["WORDS"] = 17] = "WORDS";
+	TextDecoration[TextDecoration["SINGLE_ACCOUNTING"] = 18] = "SINGLE_ACCOUNTING";
+	TextDecoration[TextDecoration["DOUBLE_ACCOUNTING"] = 19] = "DOUBLE_ACCOUNTING";
+	return TextDecoration;
+}({});
+/**
+* An enum that specifies the horizontal alignment of text.
+*/
+let HorizontalAlign = /* @__PURE__ */ function(HorizontalAlign) {
+	HorizontalAlign[HorizontalAlign["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+	HorizontalAlign[HorizontalAlign["LEFT"] = 1] = "LEFT";
+	HorizontalAlign[HorizontalAlign["CENTER"] = 2] = "CENTER";
+	HorizontalAlign[HorizontalAlign["RIGHT"] = 3] = "RIGHT";
+	HorizontalAlign[HorizontalAlign["JUSTIFIED"] = 4] = "JUSTIFIED";
+	HorizontalAlign[HorizontalAlign["BOTH"] = 5] = "BOTH";
+	HorizontalAlign[HorizontalAlign["DISTRIBUTED"] = 6] = "DISTRIBUTED";
+	return HorizontalAlign;
+}({});
+/**
+* An enum that specifies the vertical alignment of text.
+*/
+let VerticalAlign = /* @__PURE__ */ function(VerticalAlign) {
+	VerticalAlign[VerticalAlign["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+	VerticalAlign[VerticalAlign["TOP"] = 1] = "TOP";
+	VerticalAlign[VerticalAlign["MIDDLE"] = 2] = "MIDDLE";
+	VerticalAlign[VerticalAlign["BOTTOM"] = 3] = "BOTTOM";
+	return VerticalAlign;
+}({});
+/**
+* An enumeration of the strategies used to handle cell text wrapping.
+*/
+let WrapStrategy = /* @__PURE__ */ function(WrapStrategy) {
+	WrapStrategy[WrapStrategy["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+	/**
+	* Lines that are longer than the cell width will be written in the next cell over, so long as that cell is empty. If the next cell over is non-empty, this behaves the same as CLIP . The text will never wrap to the next line unless the user manually inserts a new line. Example:
+	* | First sentence. |
+	* | Manual newline that is very long. <- Text continues into next cell
+	* | Next newline.   |
+	*/
+	WrapStrategy[WrapStrategy["OVERFLOW"] = 1] = "OVERFLOW";
+	/**
+	* Lines that are longer than the cell width will be clipped. The text will never wrap to the next line unless the user manually inserts a new line. Example:
+	* | First sentence. |
+	* | Manual newline t| <- Text is clipped
+	* | Next newline.   |
+	*/
+	WrapStrategy[WrapStrategy["CLIP"] = 2] = "CLIP";
+	/**
+	* Words that are longer than a line are wrapped at the character level rather than clipped. Example:
+	* | Cell has a |
+	* | loooooooooo| <- Word is broken.
+	* | ong word.  |
+	*/
+	WrapStrategy[WrapStrategy["WRAP"] = 3] = "WRAP";
+	return WrapStrategy;
+}({});
+/**
+* FontItalic
+*/
+let FontItalic = /* @__PURE__ */ function(FontItalic) {
+	FontItalic[FontItalic["NORMAL"] = 0] = "NORMAL";
+	FontItalic[FontItalic["ITALIC"] = 1] = "ITALIC";
+	return FontItalic;
+}({});
+/**
+* FontWeight
+*/
+let FontWeight = /* @__PURE__ */ function(FontWeight) {
+	FontWeight[FontWeight["NORMAL"] = 0] = "NORMAL";
+	FontWeight[FontWeight["BOLD"] = 1] = "BOLD";
+	return FontWeight;
+}({});
+let BaselineOffset = /* @__PURE__ */ function(BaselineOffset) {
+	BaselineOffset[BaselineOffset["NORMAL"] = 1] = "NORMAL";
+	BaselineOffset[BaselineOffset["SUBSCRIPT"] = 2] = "SUBSCRIPT";
+	BaselineOffset[BaselineOffset["SUPERSCRIPT"] = 3] = "SUPERSCRIPT";
+	return BaselineOffset;
+}({});
+/**
+* General Boolean Enum
+*/
+let BooleanNumber = /* @__PURE__ */ function(BooleanNumber) {
+	BooleanNumber[BooleanNumber["FALSE"] = 0] = "FALSE";
+	BooleanNumber[BooleanNumber["TRUE"] = 1] = "TRUE";
+	return BooleanNumber;
+}({});
+/**
+* General Boolean Enum
+*/
+let CellValueType = /* @__PURE__ */ function(CellValueType) {
+	CellValueType[CellValueType["STRING"] = 1] = "STRING";
+	CellValueType[CellValueType["NUMBER"] = 2] = "NUMBER";
+	CellValueType[CellValueType["BOOLEAN"] = 3] = "BOOLEAN";
+	CellValueType[CellValueType["FORCE_STRING"] = 4] = "FORCE_STRING";
+	return CellValueType;
+}({});
+
+//#endregion
+//#region src/types/enum/theme-color-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Theme color type enum
+*/
+let ThemeColorType = /* @__PURE__ */ function(ThemeColorType) {
+	/**
+	* TEXT
+	*/
+	ThemeColorType[ThemeColorType["DARK1"] = 0] = "DARK1";
+	/**
+	* BACKGROUND
+	*/
+	ThemeColorType[ThemeColorType["LIGHT1"] = 1] = "LIGHT1";
+	ThemeColorType[ThemeColorType["DARK2"] = 2] = "DARK2";
+	ThemeColorType[ThemeColorType["LIGHT2"] = 3] = "LIGHT2";
+	ThemeColorType[ThemeColorType["ACCENT1"] = 4] = "ACCENT1";
+	ThemeColorType[ThemeColorType["ACCENT2"] = 5] = "ACCENT2";
+	ThemeColorType[ThemeColorType["ACCENT3"] = 6] = "ACCENT3";
+	ThemeColorType[ThemeColorType["ACCENT4"] = 7] = "ACCENT4";
+	ThemeColorType[ThemeColorType["ACCENT5"] = 8] = "ACCENT5";
+	ThemeColorType[ThemeColorType["ACCENT6"] = 9] = "ACCENT6";
+	/**
+	* LINK
+	*/
+	ThemeColorType[ThemeColorType["HYPERLINK"] = 10] = "HYPERLINK";
+	ThemeColorType[ThemeColorType["FOLLOWED_HYPERLINK"] = 11] = "FOLLOWED_HYPERLINK";
+	return ThemeColorType;
+}({});
+/**
+* Preset theme names.
+*/
+let ThemeColors = /* @__PURE__ */ function(ThemeColors) {
+	ThemeColors["OFFICE"] = "Office";
+	ThemeColors["OFFICE_2007_2010"] = "Office 2007-2010";
+	ThemeColors["GRAYSCALE"] = "Grayscale";
+	ThemeColors["BLUE_WARM"] = "Blue Warm";
+	ThemeColors["BLUE"] = "Blue";
+	ThemeColors["BLUE_II"] = "Blue II";
+	ThemeColors["BLUE_GREEN"] = "Blue Green";
+	ThemeColors["GREEN"] = "Green";
+	ThemeColors["GREEN_YELLOW"] = "Green Yellow";
+	ThemeColors["YELLOW"] = "Yellow";
+	ThemeColors["YELLOW_ORANGE"] = "Yellow Orange";
+	ThemeColors["ORANGE"] = "Orange";
+	ThemeColors["ORANGE_RED"] = "Orange Red";
+	ThemeColors["RED_ORANGE"] = "Red Orange";
+	ThemeColors["RED"] = "Red";
+	ThemeColors["RED_VIOLET"] = "Red Violet";
+	ThemeColors["VIOLET"] = "Violet";
+	ThemeColors["VIOLET_II"] = "Violet II";
+	ThemeColors["MEDIAN"] = "Median";
+	ThemeColors["PAPER"] = "Paper";
+	ThemeColors["MARQUEE"] = "Marquee";
+	ThemeColors["SLIPSTREAM"] = "Slipstream";
+	ThemeColors["Aspect"] = "Aspect";
+	return ThemeColors;
+}({});
+
+//#endregion
+//#region package.json
+var name = "@univerjs/core";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/common/array.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function remove(arr, item) {
+	const index = arr.indexOf(item);
+	if (index > -1) {
+		arr.splice(index, 1);
+		return true;
+	}
+	return false;
+}
+/**
+* Deduplicate an array.
+* @param arr The array to be dedupe.
+* @returns Return the deduplicated array.
+*/
+function dedupe(arr) {
+	const deduplicated = /* @__PURE__ */ new Set();
+	const result = [];
+	for (const element of arr) if (!deduplicated.has(element)) {
+		deduplicated.add(element);
+		result.push(element);
+	}
+	return result;
+}
+function dedupeBy(arr, keyFn) {
+	const deduplicated = /* @__PURE__ */ new Set();
+	const result = [];
+	for (const element of arr) {
+		const key = keyFn(element);
+		if (!deduplicated.has(key)) {
+			deduplicated.add(key);
+			result.push(element);
+		}
+	}
+	return result;
+}
+function findLast(arr, callback) {
+	for (let i = arr.length - 1; i > -1; i--) {
+		const item = arr[i];
+		if (callback(item, i)) return item;
+	}
+	return null;
+}
+/**
+* Rotate an array without mutating the original array.
+* @param arr the array to be rotated
+* @param steps how many steps to rotate
+* @returns the rotated array, it is another array, the original array is not mutated.
+*/
+function rotate(arr, steps) {
+	if (arr.length === 0) return arr;
+	const offset = steps % arr.length;
+	return arr.slice(offset).concat(arr.slice(0, offset));
+}
+function groupBy(arr, keyFn) {
+	const groups = /* @__PURE__ */ new Map();
+	arr.forEach((element) => {
+		const key = keyFn(element);
+		let group = groups.get(key);
+		if (!groups.has(key)) {
+			group = [];
+			groups.set(key, group);
+		}
+		group.push(element);
+	});
+	return groups;
+}
+function makeArray(thing) {
+	if (Array.isArray(thing)) return thing;
+	return [thing];
+}
+
+//#endregion
+//#region src/common/di.ts
+/**
+* Register the dependencies to the injector.
+* @param injector The injector to register the dependencies.
+* @param dependencies The dependencies to register.
+*/
+function registerDependencies(injector, dependencies) {
+	dependencies.forEach((d) => injector.add(d));
+}
+/**
+* Touch a group of dependencies to ensure they are instantiated.
+* @param injector The injector to touch the dependencies.
+* @param dependencies The dependencies to touch.
+*/
+function touchDependencies(injector, dependencies) {
+	dependencies.forEach(([d]) => {
+		if (injector.has(d)) injector.get(d);
+	});
+}
+
+//#endregion
+//#region src/common/error.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var CustomCommandExecutionError = class extends Error {
+	constructor(message) {
+		super(message);
+		this.name = "CustomCommandExecutionError";
+	}
+};
+var CanceledError = class extends CustomCommandExecutionError {
+	constructor() {
+		super("Canceled by facade");
+		this.name = "CanceledError";
+	}
+};
+
+//#endregion
+//#region src/common/sequence.ts
+/**
+* Execute promise tasks in sequence, if one of the tasks return false, the sequence will be stopped.
+* @param tasks All promise tasks that need to be triggered.
+* @returns Returns `true` if all tasks are executed successfully, otherwise `false` and index of the task that returns false.
+*/
+async function sequenceAsync(tasks) {
+	for (const [index, task] of tasks.entries()) try {
+		if (!await task()) return {
+			index,
+			result: false
+		};
+	} catch (e) {
+		return {
+			index,
+			result: false,
+			error: e
+		};
+	}
+	return {
+		result: true,
+		index: -1
+	};
+}
+/**
+* Execute tasks in sequence, if one of the tasks return false, the sequence will be stopped.
+* @param tasks All tasks that need to be triggered.
+* @returns Returns `true` if all tasks are executed successfully, otherwise `false` and index of the task that returns false.
+*/
+function sequence(tasks) {
+	for (const [index, task] of tasks.entries()) try {
+		if (!task()) return {
+			index,
+			result: false
+		};
+	} catch (e) {
+		return {
+			index,
+			result: false,
+			error: e
+		};
+	}
+	return {
+		result: true,
+		index: -1
+	};
+}
+
+//#endregion
+//#region src/services/config/config.service.ts
+/**
+* IConfig provides universal configuration for the whole application.
+*/
+const IConfigService = createIdentifier("univer.config-service");
+var ConfigService = class {
+	constructor() {
+		_defineProperty(this, "_configChanged$", new Subject());
+		_defineProperty(this, "configChanged$", this._configChanged$.asObservable());
+		_defineProperty(this, "_config", /* @__PURE__ */ new Map());
+	}
+	dispose() {
+		this._config.clear();
+		this._configChanged$.complete();
+	}
+	getConfig(id) {
+		return this._config.get(id);
+	}
+	setConfig(id, value, options) {
+		const { merge: isMerge = false } = options || {};
+		let nextValue = this._config.get(id) ?? {};
+		if (isMerge) nextValue = merge(nextValue, value);
+		else nextValue = value;
+		this._config.set(id, nextValue);
+		this._configChanged$.next({ [id]: nextValue });
+	}
+	deleteConfig(id) {
+		return this._config.delete(id);
+	}
+	subscribeConfigValue$(key) {
+		return new Observable((observer) => {
+			if (Object.prototype.hasOwnProperty.call(this._config, key)) observer.next(this._config.get(key));
+			const sub = this.configChanged$.pipe(filter((c) => Object.prototype.hasOwnProperty.call(c, key))).subscribe((c) => observer.next(c[key]));
+			return () => sub.unsubscribe();
+		});
+	}
+};
+
+//#endregion
+//#region src/services/context/context.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const IContextService = createIdentifier("univer.context-service");
+var ContextService = class extends Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_contextChanged$", new Subject());
+		_defineProperty(this, "contextChanged$", this._contextChanged$.asObservable());
+		_defineProperty(this, "_contextMap", /* @__PURE__ */ new Map());
+	}
+	dispose() {
+		super.dispose();
+		this._contextChanged$.complete();
+		this._contextMap.clear();
+	}
+	getContextValue(key) {
+		return this._contextMap.get(key) ?? false;
+	}
+	setContextValue(key, value) {
+		this._contextMap.set(key, value);
+		this._contextChanged$.next({ [key]: value });
+	}
+	subscribeContextValue$(key) {
+		return new Observable((observer) => {
+			const contextChangeSubscription = this._contextChanged$.pipe(filter((event) => typeof event[key] !== "undefined")).subscribe((event) => observer.next(event[key]));
+			if (this._contextMap.has(key)) observer.next(this._contextMap.get(key));
+			return () => contextChangeSubscription.unsubscribe();
+		});
+	}
+};
+
+//#endregion
+//#region src/services/log/log.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let LogLevel = /* @__PURE__ */ function(LogLevel) {
+	LogLevel[LogLevel["SILENT"] = 0] = "SILENT";
+	LogLevel[LogLevel["ERROR"] = 1] = "ERROR";
+	LogLevel[LogLevel["WARN"] = 2] = "WARN";
+	LogLevel[LogLevel["INFO"] = 3] = "INFO";
+	LogLevel[LogLevel["VERBOSE"] = 4] = "VERBOSE";
+	return LogLevel;
+}({});
+const ILogService = createIdentifier("univer.log");
+var DesktopLogService = class extends Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_logLevel", 3);
+		_defineProperty(this, "_deduction", /* @__PURE__ */ new Set());
+	}
+	dispose() {
+		super.dispose();
+		this._logLevel = 3;
+		this._deduction.clear();
+	}
+	debug(...args) {
+		if (this._logLevel >= 4) this._log(console.debug, ...args);
+	}
+	log(...args) {
+		if (this._logLevel >= 3) this._log(console.log, ...args);
+	}
+	warn(...args) {
+		if (this._logLevel >= 2) this._log(console.warn, ...args);
+	}
+	error(...args) {
+		if (this._logLevel >= 1) this._log(console.error, ...args);
+	}
+	deprecate(...args) {
+		if (this._logLevel >= 2) this._logWithDeduplication(console.error, ...args);
+	}
+	setLogLevel(logLevel) {
+		this._logLevel = logLevel;
+	}
+	_log(method, ...args) {
+		const firstArg = args[0];
+		if (/^\[(.*?)\]/g.test(firstArg)) method(`\x1B[97;104m${firstArg}\x1B[0m`, ...args.slice(1));
+		else method(...args);
+	}
+	_logWithDeduplication(method, ...args) {
+		const hashed = hashLogContent(...args);
+		if (this._deduction.has(hashed)) return;
+		this._deduction.add(hashed);
+		this._log(method, ...args);
+	}
+};
+function hashLogContent(...args) {
+	return args.map((a) => JSON.stringify(a)).join("");
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/services/command/command.service.ts
+/**
+* The config key for enabling command execution logging.
+* Set via `logCommandExecution` in `IUniverConfig` when calling `new Univer()`.
+* @default true
+*/
+const COMMAND_LOG_EXECUTION_CONFIG_KEY = "command.logExecution";
+/**
+* The type of a command.
+*/
+let CommandType = /* @__PURE__ */ function(CommandType) {
+	/**
+	* Responsible for creating, orchestrating, and executing MUTATION or OPERATION according to specific business
+	* logic. For example, a delete row COMMAND will generate a delete row MUTATION, an insert row MUTATION for undo,
+	* and a set cell content MUTATION.
+	*/
+	CommandType[CommandType["COMMAND"] = 0] = "COMMAND";
+	/**
+	* OPERATION is the change made to data that is not saved to snapshot, without conflict resolution,
+	* such as modifying scroll position, modifying sidebar state, etc.
+	*/
+	CommandType[CommandType["OPERATION"] = 1] = "OPERATION";
+	/**
+	* MUTATION is the change made to the data saved to snapshot, such as inserting rows and columns,
+	* modifying cell content, modifying filter ranges, etc. If you want to add collaborative editing capabilities to
+	* Univer, it is the smallest unit of conflict resolution.
+	*/
+	CommandType[CommandType["MUTATION"] = 2] = "MUTATION";
+	return CommandType;
+}({});
+/**
+* The identifier of the command service.
+*/
+const ICommandService = createIdentifier("univer.core.command-service");
+var CommandRegistry = class {
+	constructor() {
+		_defineProperty(this, "_commands", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_commandTypes", /* @__PURE__ */ new Map());
+	}
+	registerCommand(command) {
+		if (this._commands.has(command.id)) throw new Error(`[CommandRegistry]: command "${command.id}" has been registered before.`);
+		this._commands.set(command.id, command);
+		this._commandTypes.set(command.id, command.type);
+		return toDisposable(() => {
+			this.unregisterCommand(command.id);
+		});
+	}
+	unregisterCommand(commandId) {
+		this._commands.delete(commandId);
+		this._commandTypes.delete(commandId);
+	}
+	hasCommand(id) {
+		return this._commands.has(id);
+	}
+	getCommand(id) {
+		if (!this._commands.has(id)) return null;
+		return [this._commands.get(id)];
+	}
+	getCommandType(id) {
+		return this._commandTypes.get(id);
+	}
+};
+const NilCommand = {
+	id: "nil",
+	type: 0,
+	handler: () => true
+};
+let CommandService = class CommandService extends Disposable {
+	constructor(_injector, _logService, _configService) {
+		super();
+		this._injector = _injector;
+		this._logService = _logService;
+		this._configService = _configService;
+		_defineProperty(this, "_commandRegistry", void 0);
+		_defineProperty(this, "_beforeCommandExecutionListeners", []);
+		_defineProperty(this, "_commandExecutedListeners", []);
+		_defineProperty(this, "_collabMutationListeners", []);
+		_defineProperty(this, "_multiCommandDisposables", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_commandExecutingLevel", 0);
+		_defineProperty(this, "_commandExecutionStack", []);
+		this._commandRegistry = new CommandRegistry();
+		this.registerCommand(NilCommand);
+	}
+	dispose() {
+		super.dispose();
+		this._commandExecutedListeners.length = 0;
+		this._beforeCommandExecutionListeners.length = 0;
+		this._collabMutationListeners.length = 0;
+	}
+	disposed() {
+		return this._disposed;
+	}
+	_warnCommandSkippedAfterDisposed(id) {
+		this._logService.warn("[CommandService]", `command "${id}" skipped because CommandService is disposed.`);
+	}
+	hasCommand(commandId) {
+		return this._commandRegistry.hasCommand(commandId);
+	}
+	registerCommand(command) {
+		return this._commandRegistry.registerCommand(command);
+	}
+	unregisterCommand(commandId) {
+		var _this$_multiCommandDi;
+		this._commandRegistry.unregisterCommand(commandId);
+		(_this$_multiCommandDi = this._multiCommandDisposables.get(commandId)) === null || _this$_multiCommandDi === void 0 || _this$_multiCommandDi.dispose();
+	}
+	registerMultipleCommand(command) {
+		return this._registerMultiCommand(command);
+	}
+	beforeCommandExecuted(listener) {
+		if (this._beforeCommandExecutionListeners.indexOf(listener) === -1) {
+			this._beforeCommandExecutionListeners.push(listener);
+			return toDisposable(() => {
+				const index = this._beforeCommandExecutionListeners.indexOf(listener);
+				this._beforeCommandExecutionListeners.splice(index, 1);
+			});
+		}
+		throw new Error("[CommandService]: could not add a listener twice.");
+	}
+	onCommandExecuted(listener) {
+		if (this._commandExecutedListeners.indexOf(listener) === -1) {
+			this._commandExecutedListeners.push(listener);
+			return toDisposable(() => {
+				const index = this._commandExecutedListeners.indexOf(listener);
+				this._commandExecutedListeners.splice(index, 1);
+			});
+		}
+		throw new Error("[CommandService]: could not add a listener twice.");
+	}
+	onMutationExecutedForCollab(listener) {
+		if (this._collabMutationListeners.indexOf(listener) === -1) {
+			this._collabMutationListeners.push(listener);
+			return toDisposable(() => {
+				const index = this._collabMutationListeners.indexOf(listener);
+				this._collabMutationListeners.splice(index, 1);
+			});
+		}
+		throw new Error("[CommandService]: could not add a collab mutation listener twice.");
+	}
+	async executeCommand(id, params, options) {
+		if (this._disposed) {
+			this._warnCommandSkippedAfterDisposed(id);
+			return false;
+		}
+		try {
+			const item = this._commandRegistry.getCommand(id);
+			if (item) {
+				const [command] = item;
+				const commandInfo = {
+					id: command.id,
+					type: command.type,
+					params
+				};
+				this._attachMutationTrigger(command, params);
+				const stackItemDisposable = this._pushCommandExecutionStack(commandInfo);
+				const _options = options ?? {};
+				this._beforeCommandExecutionListeners.forEach((listener) => listener(commandInfo, _options));
+				if (this._disposed) {
+					stackItemDisposable.dispose();
+					this._warnCommandSkippedAfterDisposed(id);
+					return false;
+				}
+				const result = await this._execute(command, params, _options);
+				if (_options.syncOnly) {
+					if (command.type === 2) this._collabMutationListeners.forEach((listener) => listener(commandInfo, _options));
+				} else {
+					this._commandExecutedListeners.forEach((listener) => listener(commandInfo, _options));
+					if (command.type === 2) this._collabMutationListeners.forEach((listener) => listener(commandInfo, _options));
+				}
+				stackItemDisposable.dispose();
+				return result;
+			}
+			throw new Error(`[CommandService]: command "${id}" is not registered.`);
+		} catch (error) {
+			if (error instanceof CustomCommandExecutionError) return false;
+			else throw error;
+		}
+	}
+	syncExecuteCommand(id, params, options) {
+		if (this._disposed) {
+			this._warnCommandSkippedAfterDisposed(id);
+			return false;
+		}
+		try {
+			const item = this._commandRegistry.getCommand(id);
+			if (item) {
+				const [command] = item;
+				const commandInfo = {
+					id: command.id,
+					type: command.type,
+					params
+				};
+				this._attachMutationTrigger(command, params);
+				const stackItemDisposable = this._pushCommandExecutionStack(commandInfo);
+				const _options = options ?? {};
+				this._beforeCommandExecutionListeners.forEach((listener) => listener(commandInfo, _options));
+				if (this._disposed) {
+					stackItemDisposable.dispose();
+					this._warnCommandSkippedAfterDisposed(id);
+					return false;
+				}
+				const result = this._syncExecute(command, params, _options);
+				if (_options.syncOnly) {
+					if (command.type === 2) this._collabMutationListeners.forEach((listener) => listener(commandInfo, _options));
+				} else {
+					this._commandExecutedListeners.forEach((listener) => listener(commandInfo, _options));
+					if (command.type === 2) this._collabMutationListeners.forEach((listener) => listener(commandInfo, _options));
+				}
+				stackItemDisposable.dispose();
+				return result;
+			}
+			throw new Error(`[CommandService]: command "${id}" is not registered.`);
+		} catch (error) {
+			if (error instanceof CustomCommandExecutionError) return false;
+			else throw error;
+		}
+	}
+	_pushCommandExecutionStack(stackItem) {
+		this._commandExecutionStack.push(stackItem);
+		return toDisposable(() => remove(this._commandExecutionStack, stackItem));
+	}
+	_registerMultiCommand(command) {
+		const registry = this._commandRegistry.getCommand(command.id);
+		let multiCommand;
+		if (!registry) {
+			multiCommand = new MultiCommand(command.id);
+			const disposableCollection = new DisposableCollection();
+			disposableCollection.add(this._commandRegistry.registerCommand(multiCommand));
+			disposableCollection.add(toDisposable(() => {
+				this._multiCommandDisposables.delete(command.id);
+			}));
+			this._multiCommandDisposables.set(command.id, disposableCollection);
+		} else {
+			const registeredCommand = registry[0];
+			if (!(registeredCommand instanceof MultiCommand)) throw new TypeError("Command has registered as a single command.");
+			multiCommand = registeredCommand;
+		}
+		const implementationDisposable = multiCommand.registerImplementation(command);
+		return toDisposable(() => {
+			implementationDisposable.dispose();
+			if (!multiCommand.hasImplementations()) {
+				var _this$_multiCommandDi2;
+				(_this$_multiCommandDi2 = this._multiCommandDisposables.get(command.id)) === null || _this$_multiCommandDi2 === void 0 || _this$_multiCommandDi2.dispose();
+			}
+		});
+	}
+	_attachMutationTrigger(command, params) {
+		if (command.type !== 2 || !params) return;
+		const triggerCommand = findLast(this._commandExecutionStack, (item) => item.type === 0);
+		if (triggerCommand) {
+			this._setMutationTrigger(params, triggerCommand.id);
+			return;
+		}
+		if ("trigger" in params && params.trigger !== void 0) return;
+		const triggerOperation = findLast(this._commandExecutionStack, (item) => item.type === 1);
+		if (triggerOperation) this._setMutationTrigger(params, triggerOperation.id);
+	}
+	_setMutationTrigger(params, trigger) {
+		Object.assign(params, { trigger });
+	}
+	async _execute(command, params, options) {
+		if (options === null || options === void 0 ? void 0 : options.syncOnly) return true;
+		if (this._configService.getConfig("command.logExecution") !== false) this._logService.debug("[CommandService]", `${"|-".repeat(Math.max(this._commandExecutingLevel, 0))}executing command "${command.id}"`);
+		this._commandExecutingLevel++;
+		let result;
+		try {
+			result = await this._injector.invoke(command.handler, params, options);
+			this._commandExecutingLevel--;
+		} catch (e) {
+			result = false;
+			this._commandExecutingLevel = 0;
+			throw e;
+		}
+		return result;
+	}
+	_syncExecute(command, params, options) {
+		if (options === null || options === void 0 ? void 0 : options.syncOnly) return true;
+		if (this._configService.getConfig("command.logExecution") !== false) this._logService.debug("[CommandService]", `${"|-".repeat(Math.max(0, this._commandExecutingLevel))}executing command "${command.id}".`);
+		this._commandExecutingLevel++;
+		let result;
+		try {
+			result = this._injector.invoke(command.handler, params, options);
+			if (result instanceof Promise) throw new TypeError("[CommandService]: Command handler should not return a promise.");
+			this._commandExecutingLevel--;
+		} catch (e) {
+			result = false;
+			this._commandExecutingLevel = 0;
+			throw e;
+		}
+		return result;
+	}
+};
+CommandService = __decorate([
+	__decorateParam(0, Inject(Injector)),
+	__decorateParam(1, ILogService),
+	__decorateParam(2, IConfigService)
+], CommandService);
+var MultiCommand = class {
+	constructor(id) {
+		this.id = id;
+		_defineProperty(this, "name", void 0);
+		_defineProperty(this, "multi", true);
+		_defineProperty(this, "type", 0);
+		_defineProperty(this, "priority", 0);
+		_defineProperty(this, "_implementations", []);
+		_defineProperty(this, "handler", async (accessor, params) => {
+			if (!this._implementations.length) return false;
+			const logService = accessor.get(ILogService);
+			const contextService = accessor.get(IContextService);
+			const injector = accessor.get(Injector);
+			for (const item of this._implementations) {
+				const preconditions = item.command.preconditions;
+				if (!preconditions || preconditions && preconditions(contextService)) {
+					logService.debug("[MultiCommand]", `executing implementation "${item.command.name}".`);
+					if (await injector.invoke(item.command.handler, params)) return true;
+				}
+			}
+			return false;
+		});
+		this.name = id;
+	}
+	registerImplementation(implementation) {
+		const registry = { command: implementation };
+		this._implementations.push(registry);
+		this._implementations.sort((a, b) => b.command.priority - a.command.priority);
+		return toDisposable(() => {
+			const index = this._implementations.indexOf(registry);
+			this._implementations.splice(index, 1);
+		});
+	}
+	hasImplementations() {
+		return this._implementations.length > 0;
+	}
+};
+function sequenceExecute(tasks, commandService, options) {
+	return sequence(tasks.map((task) => () => commandService.syncExecuteCommand(task.id, task.params, options)));
+}
+function sequenceExecuteAsync(tasks, commandService, options) {
+	return sequenceAsync(tasks.map((task) => () => commandService.executeCommand(task.id, task.params, options)));
+}
+
+//#endregion
+//#region src/shared/rxjs.ts
+/**
+* Creates an observable from a callback function.
+*
+* @param callback The callback function that will be called when the observable is subscribed to. **Please not that the
+* if the callback function has `this` context, it will be lost when the callback is called. So you probably
+* should bind the callback to the correct context.**
+*
+* @returns The observable that will emit when the callback function gets called.
+*/
+function fromCallback(callback) {
+	return new Observable((subscriber) => {
+		const disposable = callback((...args) => subscriber.next(args));
+		return () => disposable === null || disposable === void 0 ? void 0 : disposable.dispose();
+	});
+}
+/**
+* An operator that would complete the stream once a condition is met. Consider it as a shortcut of `takeUntil`.
+*/
+function takeAfter(callback) {
+	return function complateAfter(source) {
+		return source.pipe(takeWhile((value) => !callback(value), true));
+	};
+}
+function bufferDebounceTime(time = 0) {
+	return (source) => {
+		let bufferedValues = [];
+		return source.pipe(tap((value) => bufferedValues.push(value)), debounceTime(time), map(() => bufferedValues), tap(() => bufferedValues = []));
+	};
+}
+function afterTime(ms) {
+	const subject = new ReplaySubject(1);
+	setTimeout(() => subject.next(), ms);
+	return subject.pipe(take(1));
+}
+function convertObservableToBehaviorSubject(observable, initValue) {
+	const subject = new BehaviorSubject(initValue);
+	const subscription = observable.subscribe(subject);
+	const originalComplete = subject.complete.bind(subject);
+	subject.complete = () => {
+		subscription.unsubscribe();
+		originalComplete();
+	};
+	return subject;
+}
+
+//#endregion
+//#region src/shared/after-init-apply.ts
+const afterInitApply = (commandService) => {
+	return new Promise((res) => {
+		merge$1(fromCallback(commandService.onCommandExecuted.bind(commandService)).pipe(filter$1(([info]) => {
+			return info.type === 2;
+		})), timer(300)).pipe(debounceTime$1(16), first()).subscribe(() => {
+			res();
+		});
+	});
+};
+
+//#endregion
+//#region src/shared/array-search.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Return the index of the first value in an ascending array that is greater than the target value. If there is no value greater than the target, return -1.
+*
+* Alternatively, you can consider inserting a number to ensure the array remains sorted, and return the position for insertion. If the target is the same as the maximum value, return arr.length -1
+* @param arr
+* @param target
+*/
+function searchInOrderedArray(arr, target) {
+	let left = 0;
+	let right = arr.length - 1;
+	if (target < arr[0]) return 0;
+	if (target >= arr[arr.length - 1]) return arr.length - 1;
+	while (left <= right) {
+		if (arr[left] === target) {
+			while (left < arr.length && arr[left] === target) left++;
+			return left;
+		}
+		if (target > arr[left] && target < arr[left + 1]) return left + 1;
+		if (arr[right] === target) {
+			while (right < arr.length && arr[right] === target) right++;
+			return right;
+		}
+		if (target > arr[right - 1] && target < arr[right]) return right;
+		left++;
+		right--;
+	}
+	return -1;
+}
+/**
+* Return the index of the first value in an ascending array that is greater than the target value. If there is no value greater than the target, return last index.
+*
+* @param arr
+* @param pos
+*/
+function binarySearchArray(arr, pos) {
+	let low = 0;
+	let high = arr.length - 1;
+	while (low <= high) {
+		const mid = Math.floor((high + low) / 2);
+		if (pos < arr[mid] && (mid === 0 || pos >= arr[mid - 1])) return mid;
+		if (pos >= arr[mid]) low = mid + 1;
+		else if (pos < arr[mid]) high = mid - 1;
+		else return -1;
+	}
+	return -1;
+}
+/**
+* Return the index of the last index in an ascending array which value is just greater than the target. If there is no value greater than the target, return arr.length - 1.
+*
+* Alternatively, you can consider inserting a number to ensure the array remains sorted, and return the position for insertion.
+*
+* @param arr
+* @param target
+*/
+function binSearchFirstGreaterThanTarget(arr, target) {
+	let left = 0;
+	let right = arr.length;
+	while (left < right) {
+		const mid = Math.floor((left + right) / 2);
+		if (arr[mid] <= target) left = mid + 1;
+		else right = mid;
+	}
+	return left < arr.length ? left : arr.length - 1;
+}
+/**
+* Find value in the data that is just greater than the target; if there are equal values greater than the target, select the last one.
+* If firstMatch is true, then return the index of the first number greater than the target.
+* see #univer/pull/3903
+*
+* @param arr ascending array
+* @param target value wants to find
+* @param firstMatch if true, return the first match when value > target in the array, otherwise return the last value > target. if not match,
+* @returns {number} index
+*/
+function searchArray(arr, target, firstMatch = false) {
+	let index = arr.length - 1;
+	if (target < 0 || target < arr[0]) return 0;
+	if (arr.length < 40 || target <= arr[20] || target >= arr[index - 20]) index = searchInOrderedArray(arr, target);
+	else index = binSearchFirstGreaterThanTarget(arr, target);
+	if (firstMatch) {
+		const val = arr[index];
+		return arr.indexOf(val);
+	}
+	return index;
+}
+
+//#endregion
+//#region src/shared/blob.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function codeToBlob(code) {
+	const blob = new Blob([code], { type: "text/javascript" });
+	return window.URL.createObjectURL(blob);
+}
+
+//#endregion
+//#region src/shared/check-if-move.ts
+const MOVE_BUFFER_VALUE = 2;
+const ROTATE_BUFFER_VALUE = 1;
+function checkIfMove(transform, previousTransform) {
+	if (previousTransform == null || transform == null) return true;
+	const { left: leftPrev = 0, top: topPrev = 0, height: heightPrev = 0, width: widthPrev = 0, angle: anglePrev = 0 } = previousTransform;
+	const { left = 0, top = 0, height = 0, width = 0, angle = 0 } = transform;
+	const allWidth = width;
+	const allHeight = height;
+	const allWidthPrev = widthPrev;
+	const allHeightPrev = heightPrev;
+	return Math.abs(left - leftPrev) > 2 || Math.abs(top - topPrev) > 2 || Math.abs(allWidth - allWidthPrev) > 2 || Math.abs(allHeight - allHeightPrev) > 2 || Math.abs(angle - anglePrev) > 1;
+}
+
+//#endregion
+//#region src/shared/color/color-kit.ts
+const RGB_PAREN = "rgb(";
+const RGBA_PAREN = "rgba(";
+const COLORS = {
+	aliceblue: [
+		240,
+		248,
+		255
+	],
+	antiquewhite: [
+		250,
+		235,
+		215
+	],
+	aqua: [
+		0,
+		255,
+		255
+	],
+	aquamarine: [
+		127,
+		255,
+		212
+	],
+	azure: [
+		240,
+		255,
+		255
+	],
+	beige: [
+		245,
+		245,
+		220
+	],
+	bisque: [
+		255,
+		228,
+		196
+	],
+	black: [
+		0,
+		0,
+		0
+	],
+	blanchealmond: [
+		255,
+		235,
+		205
+	],
+	blue: [
+		0,
+		0,
+		255
+	],
+	blueviolet: [
+		138,
+		43,
+		226
+	],
+	brown: [
+		165,
+		42,
+		42
+	],
+	burlywood: [
+		222,
+		184,
+		135
+	],
+	cadetblue: [
+		95,
+		158,
+		160
+	],
+	chartreuse: [
+		127,
+		255,
+		0
+	],
+	chocolate: [
+		210,
+		105,
+		30
+	],
+	coral: [
+		255,
+		127,
+		80
+	],
+	cornflowerblue: [
+		100,
+		149,
+		237
+	],
+	cornsilk: [
+		255,
+		248,
+		220
+	],
+	crimson: [
+		220,
+		20,
+		60
+	],
+	cyan: [
+		0,
+		255,
+		255
+	],
+	darkblue: [
+		0,
+		0,
+		139
+	],
+	darkcyan: [
+		0,
+		139,
+		139
+	],
+	darkgoldenrod: [
+		184,
+		132,
+		11
+	],
+	darkgray: [
+		169,
+		169,
+		169
+	],
+	darkgreen: [
+		0,
+		100,
+		0
+	],
+	darkgrey: [
+		169,
+		169,
+		169
+	],
+	darkkhaki: [
+		189,
+		183,
+		107
+	],
+	darkmagenta: [
+		139,
+		0,
+		139
+	],
+	darkolivegreen: [
+		85,
+		107,
+		47
+	],
+	darkorange: [
+		255,
+		140,
+		0
+	],
+	darkorchid: [
+		153,
+		50,
+		204
+	],
+	darkred: [
+		139,
+		0,
+		0
+	],
+	darksalmon: [
+		233,
+		150,
+		122
+	],
+	darkseagreen: [
+		143,
+		188,
+		143
+	],
+	darkslateblue: [
+		72,
+		61,
+		139
+	],
+	darkslategray: [
+		47,
+		79,
+		79
+	],
+	darkslategrey: [
+		47,
+		79,
+		79
+	],
+	darkturquoise: [
+		0,
+		206,
+		209
+	],
+	darkviolet: [
+		148,
+		0,
+		211
+	],
+	darkyellow: [
+		139,
+		128,
+		0
+	],
+	deeppink: [
+		255,
+		20,
+		147
+	],
+	deepskyblue: [
+		0,
+		191,
+		255
+	],
+	dimgray: [
+		105,
+		105,
+		105
+	],
+	dimgrey: [
+		105,
+		105,
+		105
+	],
+	dodgerblue: [
+		30,
+		144,
+		255
+	],
+	firebrick: [
+		178,
+		34,
+		34
+	],
+	floralwhite: [
+		255,
+		255,
+		240
+	],
+	forestgreen: [
+		34,
+		139,
+		34
+	],
+	fuchsia: [
+		255,
+		0,
+		255
+	],
+	gainsboro: [
+		220,
+		220,
+		220
+	],
+	ghostwhite: [
+		248,
+		248,
+		255
+	],
+	gold: [
+		255,
+		215,
+		0
+	],
+	goldenrod: [
+		218,
+		165,
+		32
+	],
+	gray: [
+		128,
+		128,
+		128
+	],
+	green: [
+		0,
+		128,
+		0
+	],
+	greenyellow: [
+		173,
+		255,
+		47
+	],
+	grey: [
+		128,
+		128,
+		128
+	],
+	honeydew: [
+		240,
+		255,
+		240
+	],
+	hotpink: [
+		255,
+		105,
+		180
+	],
+	indianred: [
+		205,
+		92,
+		92
+	],
+	indigo: [
+		75,
+		0,
+		130
+	],
+	ivory: [
+		255,
+		255,
+		240
+	],
+	khaki: [
+		240,
+		230,
+		140
+	],
+	lavender: [
+		230,
+		230,
+		250
+	],
+	lavenderblush: [
+		255,
+		240,
+		245
+	],
+	lawngreen: [
+		124,
+		252,
+		0
+	],
+	lemonchiffon: [
+		255,
+		250,
+		205
+	],
+	lightblue: [
+		173,
+		216,
+		230
+	],
+	lightcoral: [
+		240,
+		128,
+		128
+	],
+	lightcyan: [
+		224,
+		255,
+		255
+	],
+	lightgoldenrodyellow: [
+		250,
+		250,
+		210
+	],
+	lightgray: [
+		211,
+		211,
+		211
+	],
+	lightgreen: [
+		144,
+		238,
+		144
+	],
+	lightgrey: [
+		211,
+		211,
+		211
+	],
+	lightpink: [
+		255,
+		182,
+		193
+	],
+	lightsalmon: [
+		255,
+		160,
+		122
+	],
+	lightseagreen: [
+		32,
+		178,
+		170
+	],
+	lightskyblue: [
+		135,
+		206,
+		250
+	],
+	lightslategray: [
+		119,
+		136,
+		153
+	],
+	lightslategrey: [
+		119,
+		136,
+		153
+	],
+	lightsteelblue: [
+		176,
+		196,
+		222
+	],
+	lightyellow: [
+		255,
+		255,
+		224
+	],
+	lime: [
+		0,
+		255,
+		0
+	],
+	limegreen: [
+		50,
+		205,
+		50
+	],
+	linen: [
+		250,
+		240,
+		230
+	],
+	magenta: [
+		255,
+		0,
+		255
+	],
+	maroon: [
+		128,
+		0,
+		0
+	],
+	mediumaquamarine: [
+		102,
+		205,
+		170
+	],
+	mediumblue: [
+		0,
+		0,
+		205
+	],
+	mediumorchid: [
+		186,
+		85,
+		211
+	],
+	mediumpurple: [
+		147,
+		112,
+		219
+	],
+	mediumseagreen: [
+		60,
+		179,
+		113
+	],
+	mediumslateblue: [
+		123,
+		104,
+		238
+	],
+	mediumspringgreen: [
+		0,
+		250,
+		154
+	],
+	mediumturquoise: [
+		72,
+		209,
+		204
+	],
+	mediumvioletred: [
+		199,
+		21,
+		133
+	],
+	midbightblue: [
+		25,
+		25,
+		112
+	],
+	mintcream: [
+		245,
+		255,
+		250
+	],
+	mistyrose: [
+		255,
+		228,
+		225
+	],
+	moccasin: [
+		255,
+		228,
+		181
+	],
+	navajowhite: [
+		255,
+		222,
+		173
+	],
+	navy: [
+		0,
+		0,
+		128
+	],
+	oldlace: [
+		253,
+		245,
+		230
+	],
+	olive: [
+		128,
+		128,
+		0
+	],
+	olivedrab: [
+		107,
+		142,
+		35
+	],
+	orange: [
+		255,
+		165,
+		0
+	],
+	orangered: [
+		255,
+		69,
+		0
+	],
+	orchid: [
+		218,
+		112,
+		214
+	],
+	palegoldenrod: [
+		238,
+		232,
+		170
+	],
+	palegreen: [
+		152,
+		251,
+		152
+	],
+	paleturquoise: [
+		175,
+		238,
+		238
+	],
+	palevioletred: [
+		219,
+		112,
+		147
+	],
+	papayawhip: [
+		255,
+		239,
+		213
+	],
+	peachpuff: [
+		255,
+		218,
+		185
+	],
+	peru: [
+		205,
+		133,
+		63
+	],
+	pink: [
+		255,
+		192,
+		203
+	],
+	plum: [
+		221,
+		160,
+		203
+	],
+	powderblue: [
+		176,
+		224,
+		230
+	],
+	purple: [
+		128,
+		0,
+		128
+	],
+	rebeccapurple: [
+		102,
+		51,
+		153
+	],
+	red: [
+		255,
+		0,
+		0
+	],
+	rosybrown: [
+		188,
+		143,
+		143
+	],
+	royalblue: [
+		65,
+		105,
+		225
+	],
+	saddlebrown: [
+		139,
+		69,
+		19
+	],
+	salmon: [
+		250,
+		128,
+		114
+	],
+	sandybrown: [
+		244,
+		164,
+		96
+	],
+	seagreen: [
+		46,
+		139,
+		87
+	],
+	seashell: [
+		255,
+		245,
+		238
+	],
+	sienna: [
+		160,
+		82,
+		45
+	],
+	silver: [
+		192,
+		192,
+		192
+	],
+	skyblue: [
+		135,
+		206,
+		235
+	],
+	slateblue: [
+		106,
+		90,
+		205
+	],
+	slategray: [
+		119,
+		128,
+		144
+	],
+	slategrey: [
+		119,
+		128,
+		144
+	],
+	snow: [
+		255,
+		255,
+		250
+	],
+	springgreen: [
+		0,
+		255,
+		127
+	],
+	steelblue: [
+		70,
+		130,
+		180
+	],
+	tan: [
+		210,
+		180,
+		140
+	],
+	teal: [
+		0,
+		128,
+		128
+	],
+	thistle: [
+		216,
+		191,
+		216
+	],
+	transparent: [
+		255,
+		255,
+		255,
+		0
+	],
+	tomato: [
+		255,
+		99,
+		71
+	],
+	turquoise: [
+		64,
+		224,
+		208
+	],
+	violet: [
+		238,
+		130,
+		238
+	],
+	wheat: [
+		245,
+		222,
+		179
+	],
+	white: [
+		255,
+		255,
+		255
+	],
+	whitesmoke: [
+		245,
+		245,
+		245
+	],
+	yellow: [
+		255,
+		255,
+		0
+	],
+	yellowgreen: [
+		154,
+		205,
+		5
+	]
+};
+var ColorKit = class ColorKit {
+	static mix(color1, color2, amount) {
+		amount = Math.min(1, Math.max(0, amount));
+		const rgb1 = new ColorKit(color1).toRgb();
+		const rgb2 = new ColorKit(color2).toRgb();
+		const alpha1 = rgb1.a ?? 1;
+		const alpha2 = rgb2.a ?? 1;
+		const rgba = {
+			r: (rgb2.r - rgb1.r) * amount + rgb1.r,
+			g: (rgb2.g - rgb1.g) * amount + rgb1.g,
+			b: (rgb2.b - rgb1.b) * amount + rgb1.b,
+			a: (alpha2 - alpha1) * amount + alpha1
+		};
+		return new ColorKit(rgba);
+	}
+	static getContrastRatio(foreground, background) {
+		const lumA = new ColorKit(foreground).getLuminance();
+		const lumB = new ColorKit(background).getLuminance();
+		return (Math.max(lumA, lumB) + .05) / (Math.min(lumA, lumB) + .05);
+	}
+	constructor(color) {
+		_defineProperty(this, "_color", void 0);
+		_defineProperty(this, "_rgbColor", void 0);
+		_defineProperty(this, "_isValid", false);
+		if (color == null) {
+			this._setNullColor();
+			return;
+		}
+		if (color instanceof ColorKit) {
+			this._color = { ...color._color };
+			this._rgbColor = { ...color._rgbColor };
+			return;
+		}
+		const colorObject = toColor(color);
+		if (colorObject == null) {
+			this._setNullColor();
+			return;
+		}
+		this._color = colorObject;
+		const rgbColorObject = toRgbColor(this._color);
+		if (rgbColorObject == null) {
+			this._setNullColor();
+			return;
+		}
+		this._rgbColor = rgbColorObject;
+		this._isValid = true;
+	}
+	get isValid() {
+		return this._isValid;
+	}
+	toRgb() {
+		return this._rgbColor;
+	}
+	toRgbString() {
+		const { r, g, b, a = 1 } = this.toRgb();
+		const useAlpha = a < 1;
+		return `rgb${useAlpha ? "a" : ""}(${r},${g},${b}${useAlpha ? `,${a}` : ""})`;
+	}
+	toString() {
+		return this.toRgbString();
+	}
+	toHexString(allowShort) {
+		const { r, g, b, a = 1 } = this.toRgb();
+		const useAlpha = a < 1;
+		const hex = [
+			pad2(Math.round(r).toString(16)),
+			pad2(Math.round(g).toString(16)),
+			pad2(Math.round(b).toString(16)),
+			pad2(Math.round(a * 255).toString(16))
+		];
+		if (allowShort) {
+			if (hex[0][0] === hex[0][1] && hex[1][0] === hex[1][1] && hex[2][0] === hex[2][1] && hex[3][0] === hex[3][1]) return useAlpha ? `#${hex[0][0]}${hex[1][0]}${hex[2][0]}${hex[3][0]}` : `#${hex[0][0]}${hex[1][0]}${hex[2][0]}`;
+		}
+		return useAlpha ? `#${hex[0]}${hex[1]}${hex[2]}${hex[3]}` : `#${hex[0]}${hex[1]}${hex[2]}`;
+	}
+	toHsv() {
+		return rgb2Hsv(this.toRgb());
+	}
+	toHsl() {
+		return rgb2Hsl(this.toRgb());
+	}
+	lighten(amount = 10) {
+		const hsl = this.toHsl();
+		hsl.l += amount;
+		hsl.l = Math.min(Math.max(hsl.l, 0), 100);
+		return new ColorKit(hsl);
+	}
+	darken(amount = 10) {
+		const hsl = this.toHsl();
+		hsl.l -= amount;
+		hsl.l = Math.min(Math.max(hsl.l, 0), 100);
+		return new ColorKit(hsl);
+	}
+	setAlpha(value) {
+		return new ColorKit({
+			...this._rgbColor,
+			a: value
+		});
+	}
+	getLuminance() {
+		let { r, g, b } = this.toRgb();
+		r = rgbNormalize(r);
+		g = rgbNormalize(g);
+		b = rgbNormalize(b);
+		return Number((.2126 * r + .7152 * g + .0722 * b).toFixed(3));
+	}
+	getBrightness() {
+		const { r, g, b } = this.toRgb();
+		return (r * 299 + g * 587 + b * 114) / 1e3;
+	}
+	getAlpha() {
+		return this._color.a ?? 1;
+	}
+	isDark() {
+		return this.getBrightness() < 128;
+	}
+	isLight() {
+		return !this.isDark();
+	}
+	_setNullColor() {
+		this._isValid = false;
+		this._color = {
+			r: 0,
+			g: 0,
+			b: 0,
+			a: 0
+		};
+		this._rgbColor = {
+			r: 0,
+			g: 0,
+			b: 0,
+			a: 0
+		};
+	}
+};
+const pad2 = (v) => {
+	return v.length === 1 ? `0${v}` : v;
+};
+const rgbNormalize = (val) => {
+	val /= 255;
+	return val <= .03928 ? val / 12.92 : ((val + .055) / 1.055) ** 2.4;
+};
+const toColor = (color) => {
+	if (isObject(color)) {
+		if ("r" in color) {
+			const rgb = {
+				r: Math.round(color.r),
+				g: Math.round(color.g),
+				b: Math.round(color.b)
+			};
+			if (color.a !== void 0) rgb.a = color.a;
+			return rgb;
+		}
+		if ("l" in color) {
+			const hsl = {
+				h: Math.round(color.h),
+				s: color.s,
+				l: color.l
+			};
+			if (color.a !== void 0) hsl.a = color.a;
+			return hsl;
+		}
+		const hsv = {
+			h: Math.round(color.h),
+			s: color.s,
+			v: color.v
+		};
+		if (color.a !== void 0) hsv.a = color.a;
+		return hsv;
+	}
+	const parsedColor = color.trim().toLowerCase();
+	if (COLORS[parsedColor]) {
+		const colorArray = COLORS[parsedColor];
+		const rgb = {
+			r: Math.round(colorArray[0]),
+			g: Math.round(colorArray[1]),
+			b: Math.round(colorArray[2])
+		};
+		rgb.a = colorArray[3] || 1;
+		return rgb;
+	}
+	if (parsedColor.startsWith("#")) return hexToColor(parsedColor);
+	if (parsedColor.startsWith("rgb")) return rgbToColor(parsedColor);
+	if (parsedColor.startsWith("hsl")) return hslToColor(parsedColor);
+	if (parsedColor.startsWith("hsv")) return hsvToColor(parsedColor);
+};
+const hexToColor = (color) => {
+	const parsedColor = color.substring(1);
+	const re = new RegExp(`.{1,${parsedColor.length >= 6 ? 2 : 1}}`, "g");
+	let colors = parsedColor.match(re);
+	if (!colors || colors.length < 3) throw new Error(`The color '${color}' is illegal hex color`);
+	if (colors[0].length === 1) colors = colors.map((n) => n + n);
+	const rgbColor = {
+		r: Number.parseInt(colors[0], 16),
+		g: Number.parseInt(colors[1], 16),
+		b: Number.parseInt(colors[2], 16)
+	};
+	if (colors.length > 3) rgbColor.a = Number.parseInt(colors[3], 16) / 255;
+	return rgbColor;
+};
+const rgbToColor = (color) => {
+	const matcher = color.indexOf("(");
+	if (matcher === -1) throw new Error(`The color '${color}' is illegal rgb color`);
+	const values = color.substring(matcher + 1, color.length - 1).split(",");
+	if (values.length < 3) throw new Error(`The color '${color}' is illegal rgb color`);
+	const rgbColor = {
+		r: Number.parseInt(values[0], 10),
+		g: Number.parseInt(values[1], 10),
+		b: Number.parseInt(values[2], 10)
+	};
+	if (values.length > 3) rgbColor.a = Number.parseFloat(values[3]);
+	return rgbColor;
+};
+const hslToColor = (color) => {
+	const matcher = color.indexOf("(");
+	if (matcher === -1) throw new Error(`The color '${color}' is illegal hsl color`);
+	const values = color.substring(matcher + 1, color.length - 1).split(",");
+	if (values.length < 3) throw new Error(`The color '${color}' is illegal hsl color`);
+	const hslColor = {
+		h: Number.parseInt(values[0], 10),
+		s: Number.parseFloat(values[1]),
+		l: Number.parseFloat(values[2])
+	};
+	if (values.length > 3) hslColor.a = Number.parseFloat(values[3]);
+	return hslColor;
+};
+const hsvToColor = (color) => {
+	const matcher = color.indexOf("(");
+	if (matcher === -1) throw new Error(`The color '${color}' is illegal hsv color`);
+	const values = color.substring(matcher + 1, color.length - 1).split(",");
+	if (values.length < 3) throw new Error(`The color '${color}' is illegal hsv color`);
+	const hsvColor = {
+		h: Number.parseInt(values[0], 10),
+		s: Number.parseFloat(values[1]),
+		v: Number.parseFloat(values[2])
+	};
+	if (values.length > 3) hsvColor.a = Number.parseFloat(values[3]);
+	return hsvColor;
+};
+const toRgbColor = (color) => {
+	const obj = toColor(color);
+	if (obj == null) return;
+	if ("r" in obj) return obj;
+	if ("l" in obj) return hsl2Rgb(obj);
+	return hsv2Rgb(obj);
+};
+const hue2Rgb = (p, q, t) => {
+	if (t < 0) t += 1;
+	if (t > 1) t -= 1;
+	if (t < 1 / 6) return p + (q - p) * 6 * t;
+	if (t < 1 / 2) return q;
+	if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+	return p;
+};
+const hsl2Rgb = (color) => {
+	let { h, s, l } = color;
+	h /= 360;
+	s /= 100;
+	l /= 100;
+	let r = 0;
+	let g = 0;
+	let b = 0;
+	if (s === 0) r = g = b = l;
+	else {
+		const q = l < .5 ? l * (1 + s) : l + s - l * s;
+		const p = 2 * l - q;
+		r = hue2Rgb(p, q, h + 1 / 3);
+		g = hue2Rgb(p, q, h);
+		b = hue2Rgb(p, q, h - 1 / 3);
+	}
+	const IRgbColor = {
+		r: Math.round(r * 255),
+		g: Math.round(g * 255),
+		b: Math.round(b * 255)
+	};
+	if (color.a !== void 0) IRgbColor.a = color.a;
+	return IRgbColor;
+};
+const hsv2Rgb = (color) => {
+	let { h, s, v } = color;
+	h = h / 360 * 6;
+	s /= 100;
+	v /= 100;
+	const i = Math.floor(h);
+	const f = h - i;
+	const p = v * (1 - s);
+	const q = v * (1 - f * s);
+	const t = v * (1 - (1 - f) * s);
+	const mod = i % 6;
+	const r = [
+		v,
+		q,
+		p,
+		p,
+		t,
+		v
+	][mod];
+	const g = [
+		t,
+		v,
+		v,
+		q,
+		p,
+		p
+	][mod];
+	const b = [
+		p,
+		p,
+		t,
+		v,
+		v,
+		q
+	][mod];
+	const IRgbColor = {
+		r: r * 255,
+		g: g * 255,
+		b: b * 255
+	};
+	if (color.a !== void 0) IRgbColor.a = color.a;
+	return IRgbColor;
+};
+const rgb2Hsl = (color) => {
+	let { r, g, b } = color;
+	r /= 255;
+	g /= 255;
+	b /= 255;
+	const max = Math.max(r, g, b);
+	const min = Math.min(r, g, b);
+	const l = (max + min) / 2;
+	let h;
+	let s;
+	if (max === min) h = s = 0;
+	else {
+		const d = max - min;
+		s = l > .5 ? d / (2 - max - min) : d / (max + min);
+		switch (max) {
+			case r:
+				h = (g - b) / d + (g < b ? 6 : 0);
+				break;
+			case g:
+				h = (b - r) / d + 2;
+				break;
+			default:
+				h = (r - g) / d + 4;
+				break;
+		}
+		h /= 6;
+	}
+	const hslColor = {
+		h: Math.round(h * 360),
+		s: Math.round(s * 100),
+		l: Math.round(l * 100)
+	};
+	if (color.a !== void 0) hslColor.a = color.a;
+	return hslColor;
+};
+const rgb2Hsv = (color) => {
+	let { r, g, b } = color;
+	r /= 255;
+	g /= 255;
+	b /= 255;
+	const max = Math.max(r, g, b);
+	const min = Math.min(r, g, b);
+	let h;
+	const v = max;
+	const d = max - min;
+	const s = max === 0 ? 0 : d / max;
+	if (max === min) h = 0;
+	else {
+		switch (max) {
+			case r:
+				h = (g - b) / d + (g < b ? 6 : 0);
+				break;
+			case g:
+				h = (b - r) / d + 2;
+				break;
+			default:
+				h = (r - g) / d + 4;
+				break;
+		}
+		h /= 6;
+	}
+	const hsvColor = {
+		h: Math.round(h * 360),
+		s: Math.round(s * 100),
+		v: Math.round(v * 100)
+	};
+	if (color.a !== void 0) hsvColor.a = color.a;
+	return hsvColor;
+};
+const isUndefinedOrNull = (value) => value == null;
+const isObject = (value) => !isUndefinedOrNull(value) && typeof value === "object";
+function isBlackColor(color) {
+	const hexRegex = /^#(?:[0]{3}|[0]{6})\b/;
+	const rgbRegex = /^rgb\s*\(\s*0+\s*,\s*0+\s*,\s*0+\s*\)$/;
+	const rgbaRegex = /^rgba\s*\(\s*0+\s*,\s*0+\s*,\s*0+\s*,\s*(1|1\.0*|0?\.\d+)\)$/;
+	const hslRegex = /^hsl\s*\(\s*0*\s*,\s*0%*\s*,\s*0%*\s*\)$/;
+	const hslaRegex = /^hsla\s*\(\s*0*\s*,\s*0%*\s*,\s*0%*\s*,\s*(1|1\.0*|0?\.\d+)\)$/;
+	if (hexRegex.test(color)) return true;
+	if (rgbRegex.test(color)) return true;
+	if (rgbaRegex.test(color)) return true;
+	if (hslRegex.test(color)) return true;
+	if (hslaRegex.test(color)) return true;
+	return false;
+}
+function isWhiteColor(color) {
+	const hexRegex = /^#(?:[Ff]{3}|[Ff]{6})\b/;
+	const rgbRegex = /^rgb\s*\(\s*255\s*,\s*255\s*,\s*255\s*\)$/;
+	const rgbaRegex = /^rgba\s*\(\s*255\s*,\s*255\s*,\s*255\s*,\s*(1|1\.0*|0?\.\d+)\)$/;
+	const hslRegex = /^hsl\s*\(\s*0*\s*,\s*0%*\s*,\s*100%*\s*\)$/;
+	const hslaRegex = /^hsla\s*\(\s*0*\s*,\s*0%*\s*,\s*100%*\s*,\s*(1|1\.0*|0?\.\d+)\)$/;
+	if (hexRegex.test(color)) return true;
+	if (rgbRegex.test(color)) return true;
+	if (rgbaRegex.test(color)) return true;
+	if (hslRegex.test(color)) return true;
+	if (hslaRegex.test(color)) return true;
+	return false;
+}
+
+//#endregion
+//#region src/shared/command-enum.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let UpdateDocsAttributeType = /* @__PURE__ */ function(UpdateDocsAttributeType) {
+	UpdateDocsAttributeType[UpdateDocsAttributeType["COVER"] = 0] = "COVER";
+	UpdateDocsAttributeType[UpdateDocsAttributeType["REPLACE"] = 1] = "REPLACE";
+	return UpdateDocsAttributeType;
+}({});
+
+//#endregion
+//#region src/sheets/typedef.ts
+function isICellData(value) {
+	return value && (value.s !== void 0 || value.p !== void 0 || value.v !== void 0 || value.t !== void 0 || value.f !== void 0 || value.si !== void 0 || value.custom !== void 0);
+}
+function getCellValueType(cell) {
+	if (cell.t !== void 0) return cell.t;
+	if (typeof cell.v === "string") return 1;
+	if (typeof cell.v === "number") return 2;
+	if (typeof cell.v === "boolean") return 3;
+}
+function isNullCell(cell) {
+	if (cell == null) return true;
+	const { v, f, si, p } = cell;
+	if (!(v == null || typeof v === "string" && v.length === 0)) return false;
+	if (f != null && f.length > 0 || si != null && si.length > 0) return false;
+	if (p != null) return false;
+	return true;
+}
+function isCellV(cell) {
+	return cell != null && (typeof cell === "string" || typeof cell === "number" || typeof cell === "boolean");
+}
+let RANGE_TYPE = /* @__PURE__ */ function(RANGE_TYPE) {
+	RANGE_TYPE[RANGE_TYPE["NORMAL"] = 0] = "NORMAL";
+	RANGE_TYPE[RANGE_TYPE["ROW"] = 1] = "ROW";
+	RANGE_TYPE[RANGE_TYPE["COLUMN"] = 2] = "COLUMN";
+	RANGE_TYPE[RANGE_TYPE["ALL"] = 3] = "ALL";
+	return RANGE_TYPE;
+}({});
+/**
+* none: A1
+* row: A$1
+* column: $A1
+* all: $A$1
+*/
+let AbsoluteRefType = /* @__PURE__ */ function(AbsoluteRefType) {
+	AbsoluteRefType[AbsoluteRefType["NONE"] = 0] = "NONE";
+	AbsoluteRefType[AbsoluteRefType["ROW"] = 1] = "ROW";
+	AbsoluteRefType[AbsoluteRefType["COLUMN"] = 2] = "COLUMN";
+	AbsoluteRefType[AbsoluteRefType["ALL"] = 3] = "ALL";
+	return AbsoluteRefType;
+}({});
+/**
+* Transform an `IRange` object to an array.
+* @param range
+* @returns [rowStart, colStart, rowEnd, colEnd]
+*/
+function selectionToArray(range) {
+	return [
+		range.startRow,
+		range.startColumn,
+		range.endRow,
+		range.endColumn
+	];
+}
+let RANGE_DIRECTION = /* @__PURE__ */ function(RANGE_DIRECTION) {
+	RANGE_DIRECTION["NONE"] = "none";
+	RANGE_DIRECTION["BACKWARD"] = "backward";
+	RANGE_DIRECTION["FORWARD"] = "forward";
+	return RANGE_DIRECTION;
+}({});
+let DOC_RANGE_TYPE = /* @__PURE__ */ function(DOC_RANGE_TYPE) {
+	DOC_RANGE_TYPE["RECT"] = "RECT";
+	DOC_RANGE_TYPE["TEXT"] = "TEXT";
+	return DOC_RANGE_TYPE;
+}({});
+let CellModeEnum = /* @__PURE__ */ function(CellModeEnum) {
+	CellModeEnum["Raw"] = "raw";
+	CellModeEnum["Intercepted"] = "intercepted";
+	CellModeEnum["Both"] = "both";
+	return CellModeEnum;
+}({});
+
+//#endregion
+//#region src/types/const/theme-color-map.ts
+const THEME_COLORS = { ["Office"]: {
+	[4]: "#4472C4",
+	[5]: "#ED7D31",
+	[6]: "#A5A5A5",
+	[7]: "#70AD47",
+	[8]: "#5B9BD5",
+	[9]: "#70AD47",
+	[0]: "#000000",
+	[2]: "#44546A",
+	[1]: "#FFFFFF",
+	[3]: "#E7E6E6",
+	[10]: "#0563C1",
+	[11]: "#954F72"
+} };
+
+//#endregion
+//#region src/shared/numfmt/constants.ts
+const MIN_L_DATE = -694324;
+const MAX_L_DATE = 35830291;
+const TOKEN_GENERAL = "general";
+const TOKEN_HASH = "hash";
+const TOKEN_ZERO = "zero";
+const TOKEN_QMARK = "qmark";
+const TOKEN_SLASH = "slash";
+const TOKEN_GROUP = "group";
+const TOKEN_SCALE = "scale";
+const TOKEN_COMMA = "comma";
+const TOKEN_BREAK = "break";
+const TOKEN_TEXT = "text";
+const TOKEN_PLUS = "plus";
+const TOKEN_MINUS = "minus";
+const TOKEN_POINT = "point";
+const TOKEN_SPACE = "space";
+const TOKEN_PERCENT = "percent";
+const TOKEN_DIGIT = "digit";
+const TOKEN_CALENDAR = "calendar";
+const TOKEN_ERROR = "error";
+const TOKEN_DATETIME = "datetime";
+const TOKEN_DURATION = "duration";
+const TOKEN_CONDITION = "condition";
+const TOKEN_DBNUM = "dbnum";
+const TOKEN_NATNUM = "natnum";
+const TOKEN_LOCALE = "locale";
+const TOKEN_COLOR = "color";
+const TOKEN_MODIFIER = "modifier";
+const TOKEN_AMPM = "ampm";
+const TOKEN_ESCAPED = "escaped";
+const TOKEN_STRING = "string";
+const TOKEN_SKIP = "skip";
+const TOKEN_FILL = "fill";
+const TOKEN_PAREN = "paren";
+const TOKEN_CHAR = "char";
+const indexColors = [
+	"#000000",
+	"#FFFFFF",
+	"#FF0000",
+	"#00FF00",
+	"#0000FF",
+	"#FFFF00",
+	"#FF00FF",
+	"#00FFFF",
+	"#800000",
+	"#008000",
+	"#000080",
+	"#808000",
+	"#800080",
+	"#008080",
+	"#C0C0C0",
+	"#808080",
+	"#9999FF",
+	"#993366",
+	"#FFFFCC",
+	"#CCFFFF",
+	"#660066",
+	"#FF8080",
+	"#0066CC",
+	"#CCCCFF",
+	"#000080",
+	"#FF00FF",
+	"#FFFF00",
+	"#00FFFF",
+	"#800080",
+	"#800000",
+	"#008080",
+	"#0000FF",
+	"#00CCFF",
+	"#CCFFFF",
+	"#CCFFCC",
+	"#FFFF99",
+	"#99CCFF",
+	"#FF99CC",
+	"#CC99FF",
+	"#FFCC99",
+	"#3366FF",
+	"#33CCCC",
+	"#99CC00",
+	"#FFCC00",
+	"#FF9900",
+	"#FF6600",
+	"#666699",
+	"#969696",
+	"#003366",
+	"#339966",
+	"#003300",
+	"#333300",
+	"#993300",
+	"#993366",
+	"#333399",
+	"#333333"
+];
+const currencySymbols$1 = [
+	"¤",
+	"$",
+	"£",
+	"¥",
+	"֏",
+	"؋",
+	"৳",
+	"฿",
+	"៛",
+	"₡",
+	"₦",
+	"₩",
+	"₪",
+	"₫",
+	"€",
+	"₭",
+	"₮",
+	"₱",
+	"₲",
+	"₴",
+	"₸",
+	"₹",
+	"₺",
+	"₼",
+	"₽",
+	"₾",
+	"₿"
+];
+const reCurrencySymbols = new RegExp(`[${currencySymbols$1.join("")}]`);
+
+//#endregion
+//#region src/shared/numfmt/decimal.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SPREADSHEET_SIGNIFICANT_DIGITS = 15;
+function decimalFromNumber(value) {
+	if (!Number.isFinite(value)) throw new RangeError("decimalFromNumber requires a finite number");
+	const negative = value < 0 || Object.is(value, -0);
+	if (value === 0) return {
+		negative,
+		digits: "0",
+		exponent: 0
+	};
+	const [mantissa, exponentText] = Math.abs(value).toExponential(15 - 1).split("e");
+	return {
+		negative,
+		digits: mantissa.replace(".", "").replace(/0+$/, "") || "0",
+		exponent: Number(exponentText)
+	};
+}
+function shiftDecimal(value, power) {
+	return {
+		...value,
+		exponent: value.digits === "0" ? 0 : value.exponent + Math.trunc(power)
+	};
+}
+function incrementDigits(value) {
+	const characters = [...value];
+	for (let index = characters.length - 1; index >= 0; index--) {
+		if (characters[index] !== "9") {
+			characters[index] = String(Number(characters[index]) + 1);
+			return characters.join("");
+		}
+		characters[index] = "0";
+	}
+	return `1${characters.join("")}`;
+}
+function roundDecimal(value, places = 0) {
+	const normalizedPlaces = Math.trunc(places);
+	const keep = value.exponent + 1 + normalizedPlaces;
+	let units;
+	if (keep < 0) units = "0";
+	else if (keep === 0) units = value.digits[0] >= "5" ? "1" : "0";
+	else {
+		units = value.digits.slice(0, keep).padEnd(keep, "0") || "0";
+		if (keep < value.digits.length && value.digits[keep] >= "5") units = incrementDigits(units);
+	}
+	if (/^0+$/.test(units)) return {
+		negative: value.negative,
+		integer: "0",
+		fraction: "",
+		zero: true
+	};
+	if (normalizedPlaces <= 0) return {
+		negative: value.negative,
+		integer: units + "0".repeat(-normalizedPlaces),
+		fraction: "",
+		zero: false
+	};
+	const fixed = units.padStart(normalizedPlaces + 1, "0");
+	return {
+		negative: value.negative,
+		integer: fixed.slice(0, -normalizedPlaces),
+		fraction: fixed.slice(-normalizedPlaces).replace(/0+$/, ""),
+		zero: false
+	};
+}
+function decimalPartsToNumber(value) {
+	const magnitude = Number(value.fraction ? `${value.integer}.${value.fraction}` : value.integer);
+	return value.negative && !value.zero ? -magnitude : magnitude;
+}
+function decimalPartsToPlainString(value) {
+	return `${value.negative && !value.zero ? "-" : ""}${value.integer}${value.fraction ? `.${value.fraction}` : ""}`;
+}
+function roundScientificDecimal(value, integerDigits, hasIntegerPattern, fractionDigits) {
+	if (value.digits === "0") return {
+		exponent: 0,
+		rounded: roundDecimal(value, fractionDigits)
+	};
+	let exponent = integerDigits > 1 ? Math.floor(value.exponent / integerDigits) * integerDigits : value.exponent;
+	if (!hasIntegerPattern) exponent++;
+	let rounded = roundDecimal(shiftDecimal(value, -exponent), fractionDigits);
+	if (integerDigits === 1 && rounded.integer.length > 1) {
+		exponent++;
+		rounded = roundDecimal(shiftDecimal(value, -exponent), fractionDigits);
+	}
+	return {
+		exponent,
+		rounded
+	};
+}
+
+//#endregion
+//#region src/shared/numfmt/code-to-locale.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const codeToLocale = Object.freeze({
+	1078: "af",
+	1052: "sq",
+	1118: "am",
+	5121: "ar_DZ",
+	15361: "ar_BH",
+	3073: "ar_EG",
+	2049: "ar_IQ",
+	11265: "ar_JO",
+	13313: "ar_KW",
+	12289: "ar_LB",
+	4097: "ar_LY",
+	6145: "ar_MA",
+	8193: "ar_OM",
+	16385: "ar_QA",
+	1025: "ar_SA",
+	10241: "ar_SY",
+	7169: "ar_TN",
+	14337: "ar_AE",
+	9217: "ar_YE",
+	1067: "hy",
+	1101: "as",
+	2092: "az_AZ",
+	1068: "az_AZ",
+	1069: "eu",
+	1059: "be",
+	2117: "bn",
+	1093: "bn_IN",
+	5146: "bs",
+	1026: "bg",
+	1109: "my",
+	1027: "ca",
+	2052: "zh_CN",
+	3076: "zh_HK",
+	5124: "zh_MO",
+	4100: "zh_SG",
+	1028: "zh_TW",
+	1050: "hr",
+	1029: "cs",
+	1030: "da",
+	1125: "dv",
+	2067: "nl_BE",
+	1043: "nl_NL",
+	1126: "bin",
+	3081: "en_AU",
+	10249: "en_BZ",
+	4105: "en_CA",
+	9225: "en_CB",
+	2057: "en_GB",
+	16393: "en_IN",
+	6153: "en_IE",
+	8201: "en_JM",
+	5129: "en_NZ",
+	13321: "en_PH",
+	7177: "en_ZA",
+	11273: "en_TT",
+	1033: "en_US",
+	12297: "en_ZW",
+	1061: "et",
+	1071: "mk",
+	1080: "fo",
+	1065: "fa",
+	1124: "fil",
+	1035: "fi",
+	2060: "fr_BE",
+	11276: "fr_CM",
+	3084: "fr_CA",
+	9228: "fr_CG",
+	12300: "fr_CI",
+	1036: "fr_FR",
+	5132: "fr_LU",
+	13324: "fr_ML",
+	6156: "fr_MC",
+	14348: "fr_MA",
+	10252: "fr_SN",
+	4108: "fr_CH",
+	7180: "fr",
+	1122: "fy_NL",
+	2108: "gd_IE",
+	1084: "gd",
+	1110: "gl",
+	1079: "ka",
+	3079: "de_AT",
+	1031: "de_DE",
+	5127: "de_LI",
+	4103: "de_LU",
+	2055: "de_CH",
+	1032: "el",
+	1140: "gn",
+	1095: "gu",
+	1279: "en",
+	1037: "he",
+	1081: "hi",
+	1038: "hu",
+	1039: "is",
+	1136: "ig_NG",
+	1057: "id",
+	1040: "it_IT",
+	2064: "it_CH",
+	1041: "ja",
+	1099: "kn",
+	1120: "ks",
+	1087: "kk",
+	1107: "km",
+	1111: "kok",
+	1042: "ko",
+	1088: "ky",
+	1108: "lo",
+	1142: "la",
+	1062: "lv",
+	1063: "lt",
+	2110: "ms_BN",
+	1086: "ms_MY",
+	1100: "ml",
+	1082: "mt",
+	1112: "mni",
+	1153: "mi",
+	1102: "mr",
+	1104: "mn",
+	2128: "mn",
+	1121: "ne",
+	1044: "no_NO",
+	2068: "no_NO",
+	1096: "or",
+	1045: "pl",
+	1046: "pt_BR",
+	2070: "pt_PT",
+	1094: "pa",
+	1047: "rm",
+	2072: "ro_MO",
+	1048: "ro_RO",
+	1049: "ru",
+	2073: "ru_MO",
+	1083: "se",
+	1103: "sa",
+	3098: "sr_SP",
+	2074: "sr_SP",
+	1072: "st",
+	1074: "tn",
+	1113: "sd",
+	1115: "si",
+	1051: "sk",
+	1060: "sl",
+	1143: "so",
+	1070: "sb",
+	11274: "es_AR",
+	16394: "es_BO",
+	13322: "es_CL",
+	9226: "es_CO",
+	5130: "es_CR",
+	7178: "es_DO",
+	12298: "es_EC",
+	17418: "es_SV",
+	4106: "es_GT",
+	18442: "es_HN",
+	2058: "es_MX",
+	19466: "es_NI",
+	6154: "es_PA",
+	15370: "es_PY",
+	10250: "es_PE",
+	20490: "es_PR",
+	1034: "es_ES",
+	14346: "es_UY",
+	8202: "es_VE",
+	1089: "sw",
+	2077: "sv_FI",
+	1053: "sv_SE",
+	1114: "syc",
+	1064: "tg",
+	1097: "ta",
+	1092: "tt",
+	1098: "te",
+	1054: "th",
+	1105: "bo",
+	1073: "ts",
+	1055: "tr",
+	1090: "tk",
+	1058: "uk",
+	1056: "ur",
+	2115: "uz_UZ",
+	1091: "uz_UZ",
+	1075: "ve",
+	1066: "vi",
+	1106: "cy",
+	1076: "xh",
+	1085: "yi",
+	1077: "zu"
+});
+
+//#endregion
+//#region src/shared/numfmt/locale.ts
+const re_locale = /^([a-z\d]+)(?:[_-]([a-z\d]+))?(?:\.([a-z\d]+))?(?:@([a-z\d]+))?$/i;
+const locales = {};
+/**
+* Split a semicolon delimited string and replace instances of characters
+* @ignore
+* @param {string} str Semicolon delimited string
+* @param {string} [tilde] String to be inserted on every instance of ~
+* @returns {string[]} Array of strings
+*/
+const _ = (str, tilde = "") => str.replace(/~/g, tilde).split(";");
+const xm = (o, ml = 0, dl = 0) => {
+	if (!o.mmm) o.mmm = ml < 1 ? o.mmmm.concat() : o.mmmm.map((d) => {
+		const s = d.slice(0, ml % 10);
+		return s + (ml < 10 || d === s ? "" : ".");
+	});
+	if (!o.ddd) o.ddd = dl < 1 ? o.dddd.concat() : o.dddd.map((d) => {
+		const s = d.slice(0, dl % 10);
+		return s + (dl < 10 || d === s ? "" : ".");
+	});
+	if (!o.mmm6 && o.mmmm6) o.mmm6 = o.mmmm6;
+	return o;
+};
+/**
+* @typedef {object} LocaleData
+*   An object of properties used by a formatter when printing a number in a certain locale.
+* @property {string} group - Symbol used as a grouping separator (`1,000,000` uses `,`)
+* @property {string} decimal - Symbol used to separate integers from fractions (usually `.`)
+* @property {string} positive - Symbol used to indicate positive numbers (usually `+`)
+* @property {string} negative - Symbol used to indicate positive numbers (usually `-`)
+* @property {string} percent - Symbol used to indicate a percentage (usually `%`)
+* @property {string} exponent - Symbol used to indicate an exponent (usually `E`)
+* @property {string} nan - Symbol used to indicate NaN values (`NaN`)
+* @property {string} infinity - Symbol used to indicate infinite values (`∞`)
+* @property {Array<string>} ampm - How AM and PM should be presented
+* @property {Array<string>} mmmm6 - Long month names for the Islamic calendar (`Rajab`)
+* @property {Array<string>} mmm6 - Short month names for the Islamic calendar (`Raj.`)
+* @property {Array<string>} mmmm - Long month names for the Gregorian calendar (`November`)
+* @property {Array<string>} mmm - Short month names for the Gregorian calendar (`Nov`)
+* @property {Array<string>} dddd - Long day names (`Wednesday`)
+* @property {Array<string>} ddd - Shortened day names (`Wed`)
+* @property {Array<string>} bool - How TRUE and FALSE should be presented
+* @property {boolean} preferMDY - Is the prefered date format month first (12/31/2025) or day first (31/12/2025)
+*/
+/**
+* @ignore
+* @type {LocaleData}
+*/
+const baseLocaleData = {
+	group: "\xA0",
+	decimal: ".",
+	positive: "+",
+	negative: "-",
+	percent: "%",
+	exponent: "E",
+	nan: "NaN",
+	infinity: "∞",
+	ampm: _("AM;PM"),
+	mmmm6: _("Muharram;Safar;Rabiʻ I;Rabiʻ II;Jumada I;Jumada II;Rajab;Shaʻban;Ramadan;Shawwal;Dhuʻl-Qiʻdah;Dhuʻl-Hijjah"),
+	mmm6: _("Muh.;Saf.;Rab. I;Rab. II;Jum. I;Jum. II;Raj.;Sha.;Ram.;Shaw.;Dhuʻl-Q.;Dhuʻl-H."),
+	mmmm: _("January;February;March;April;May;June;July;August;September;October;November;December"),
+	mmm: _("Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sep;Oct;Nov;Dec"),
+	dddd: _("Sunday;Monday;Tuesday;Wednesday;Thursday;Friday;Saturday"),
+	ddd: _("Sun;Mon;Tue;Wed;Thu;Fri;Sat"),
+	bool: _("TRUE;FALSE"),
+	preferMDY: false
+};
+/**
+* @typedef {object} LocaleToken - An object of properties for a locale tag.
+* @property {string} lang - The basic tag such as `zh_CN` or `fi`
+* @property {string} language - The language section (`zh` for `zh_CN`)
+* @property {string} territory - The territory section (`CN` for `zh_CN`)
+*/
+/**
+* Parse a regular IETF BCP 47 locale tag and emit an object of its parts.
+* Irregular tags and subtags are not supported.
+*
+* @param {string} locale - A BCP 47 string tag of the locale.
+* @returns {LocaleToken} - An object describing the locale.
+*/
+function parseLocale(locale) {
+	const lm = re_locale.exec(locale);
+	if (!lm) throw new SyntaxError(`Malformed locale: ${locale}`);
+	return {
+		lang: lm[1] + (lm[2] ? `_${lm[2]}` : ""),
+		language: lm[1],
+		territory: lm[2] || ""
+	};
+}
+function resolveLocale(locale) {
+	if (typeof locale === "number") return codeToLocale[locale & 65535] || null;
+	const wincode = Number.parseInt(locale, 16);
+	if (Number.isFinite(wincode) && codeToLocale[wincode & 65535]) return codeToLocale[wincode & 65535] || null;
+	if (re_locale.test(locale)) return locale;
+	return null;
+}
+/**
+* Used by the formatter to pull a locate from its registered locales. If
+* subtag isn't available but the base language is, the base language is used.
+* So if `en-CA` is not found, the formatter tries to find `en` else it
+* returns a `null`.
+*
+* @param {string} locale - A BCP 47 string tag of the locale, or an Excel locale code.
+* @returns {LocaleData | null} - An object of format date properties.
+*/
+function getLocale(locale) {
+	const tag = resolveLocale(locale);
+	let obj = null;
+	if (tag) {
+		const c = parseLocale(tag);
+		obj = locales[c.lang] || locales[c.language] || null;
+	}
+	return obj;
+}
+function createLocale(settings) {
+	return Object.assign({}, baseLocaleData, settings);
+}
+/**
+* Register locale data for a language so for use when formatting.
+*
+* Any partial set of properties may be returned to have the defaults used where properties are missing.
+*
+* @see {LocaleData}
+* @param {object} settings - A collection of settings for a locale.
+* @param {string} [settings.group]
+*    Symbol used as a grouping separator (`1,000,000` uses `,`)
+* @param {string} [settings.decimal]
+*    Symbol used to separate integers from fractions (usually `.`)
+* @param {string} [settings.positive]
+*    Symbol used to indicate positive numbers (usually `+`)
+* @param {string} [settings.negative]
+*    Symbol used to indicate positive numbers (usually `-`)
+* @param {string} [settings.percent]
+*    Symbol used to indicate a percentage (usually `%`)
+* @param {string} [settings.exponent]
+*    Symbol used to indicate an exponent (usually `E`)
+* @param {string} [settings.nan]
+*    Symbol used to indicate NaN values (`NaN`)
+* @param {string} [settings.infinity]
+*    Symbol used to indicate infinite values (`∞`)
+* @param {Array<string>} [settings.ampm]
+*    How AM and PM should be presented.
+* @param {Array<string>} [settings.mmmm6]
+*    Long month names for the Islamic calendar (e.g. `Rajab`)
+* @param {Array<string>} [settings.mmm6]
+*    Short month names for the Islamic calendar (e.g. `Raj.`)
+* @param {Array<string>} [settings.mmmm]
+*    Long month names for the Gregorian calendar (e.g. `November`)
+* @param {Array<string>} [settings.mmm]
+*    Short month names for the Gregorian calendar (e.g. `Nov`)
+* @param {Array<string>} [settings.dddd]
+*    Long day names (e.g. `Wednesday`)
+* @param {Array<string>} [settings.ddd]
+*    Shortened day names (e.g. `Wed`)
+* @param {Array<string>} [settings.bool]
+*    How TRUE and FALSE should be presented.
+* @param {boolean} [settings.preferMDY]
+*    Is the prefered date format month first (12/31/2025) or day first (31/12/2025)
+* @param {string | LocaleToken} locale - A string BCP 47 tag or parsed locale token.
+* @returns {LocaleData} - A full collection of settings for a locale
+*/
+function addLocale(settings, locale) {
+	const c = typeof locale === "object" ? locale : parseLocale(locale);
+	locales[c.lang] = createLocale(settings);
+	if (c.language !== c.lang && !locales[c.language]) locales[c.language] = createLocale(settings);
+	return locales[c.lang];
+}
+const defaultLocale = createLocale({
+	group: ",",
+	preferMDY: true
+});
+defaultLocale.isDefault = true;
+addLocale({
+	group: ",",
+	ampm: _("上午;下午"),
+	mmmm: _("一月;二月;三月;四月;五月;六月;七月;八月;九月;十月;十一月;十二月"),
+	mmm: _("1月;2月;3月;4月;5月;6月;7月;8月;9月;10月;11月;12月"),
+	dddd: _("~日;~一;~二;~三;~四;~五;~六", "星期"),
+	ddd: _("周日;周一;周二;周三;周四;周五;周六")
+}, "zh_CN");
+const _zh = {
+	group: ",",
+	ampm: _("上午;下午"),
+	mmmm: _("1月;2月;3月;4月;5月;6月;7月;8月;9月;10月;11月;12月"),
+	mmm: _("1月;2月;3月;4月;5月;6月;7月;8月;9月;10月;11月;12月"),
+	dddd: _("~日;~一;~二;~三;~四;~五;~六", "星期"),
+	ddd: _("周日;周一;周二;周三;周四;周五;周六")
+};
+addLocale({
+	..._zh,
+	nan: "非數值",
+	dddd: _("~日;~一;~二;~三;~四;~五;~六", "星期")
+}, "zh_TW");
+addLocale({
+	..._zh,
+	dddd: _("~日;~一;~二;~三;~四;~五;~六", "星期")
+}, "zh_HK");
+addLocale({
+	..._zh,
+	ampm: _("午前;午後"),
+	dddd: _("日~;月~;火~;水~;木~;金~;土~", "曜日"),
+	ddd: _("日;月;火;水;木;金;土")
+}, "ja");
+addLocale({
+	group: ",",
+	ampm: _("오전;오후"),
+	mmmm: _("1월;2월;3월;4월;5월;6월;7월;8월;9월;10월;11월;12월"),
+	mmm: _("1월;2월;3월;4월;5월;6월;7월;8월;9월;10월;11월;12월"),
+	dddd: _("일요일;월요일;화요일;수요일;목요일;금요일;토요일"),
+	ddd: _("일;월;화;수;목;금;토")
+}, "ko");
+addLocale({
+	group: ",",
+	ampm: _("ก่อนเที่ยง;หลังเที่ยง"),
+	mmmm: _("มกร~;กุมภาพันธ์;มีน~;เมษายน;พฤษภ~;มิถุนายน;กรกฎ~;สิงห~;กันยายน;ตุล~;พฤศจิกายน;ธันว~", "าคม"),
+	mmm: _("ม.ค.;ก.พ.;มี.ค.;เม.ย.;พ.ค.;มิ.ย.;ก.ค.;ส.ค.;ก.ย.;ต.ค.;พ.ย.;ธ.ค."),
+	dddd: _("วันอาทิตย์;วันจันทร์;วันอังคาร;วันพุธ;วันพฤหัสบดี;วันศุกร์;วันเสาร์"),
+	ddd: _("อา.;จ.;อ.;พ.;พฤ.;ศ.;ส.")
+}, "th");
+addLocale(xm({
+	decimal: ",",
+	ampm: _("dop.;odp."),
+	mmmm: _("ledna;února;března;dubna;května;června;července;srpna;září;října;listopadu;prosince"),
+	mmm: _("I;II;III;IV;V;VI;VII;VIII;IX;X;XI;XII"),
+	dddd: _("neděle;pondělí;úterý;středa;čtvrtek;pátek;sobota"),
+	bool: _("PRAVDA;NEPRAVDA")
+}, -1, 2), "cs");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	mmmm: _("januar;februar;marts;april;maj;juni;juli;august;september;oktober;november;december"),
+	dddd: _("søn~;man~;tirs~;ons~;tors~;fre~;lør~", "dag"),
+	bool: _("SAND;FALSK")
+}, 13, 13), "da");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	ampm: _("a.m.;p.m."),
+	mmmm: _("januari;februari;maart;april;mei;juni;juli;augustus;september;oktober;november;december"),
+	mmm: _("jan.;feb.;mrt.;apr.;mei;jun.;jul.;aug.;sep.;okt.;nov.;dec."),
+	dddd: _("zondag;maandag;dinsdag;woensdag;donderdag;vrijdag;zaterdag"),
+	bool: _("WAAR;ONWAAR")
+}, -1, 2), "nl");
+addLocale({
+	group: ",",
+	preferMDY: true
+}, "en");
+addLocale({
+	group: ",",
+	preferMDY: true
+}, "en_US");
+addLocale({ group: "," }, "en_AU");
+addLocale({ group: "," }, "en_CA");
+addLocale({ group: "," }, "en_GB");
+addLocale({
+	group: ",",
+	mmm: _("Jan;Feb;Mar;Apr;May;Jun;Jul;Aug;Sept;Oct;Nov;Dec")
+}, "en_IE");
+addLocale(xm({
+	decimal: ",",
+	nan: "epäluku",
+	ampm: _("ap.;ip."),
+	mmmm: _("tammi~;helmi~;maalis~;huhti~;touko~;kesä~;heinä~;elo~;syys~;loka~;marras~;joulu~", "kuuta"),
+	mmm: _("tammik.;helmik.;maalisk.;huhtik.;toukok.;kesäk.;heinäk.;elok.;syysk.;lokak.;marrask.;jouluk."),
+	dddd: _("sunnun~;maanan~;tiis~;keskiviikkona;tors~;perjan~;lauan~", "taina"),
+	bool: _("TOSI;EPÄTOSI")
+}, -1, 2), "fi");
+const _fr = xm({
+	group: " ",
+	decimal: ",",
+	mmmm: _("janvier;février;mars;avril;mai;juin;juillet;août;septembre;octobre;novembre;décembre"),
+	mmm: _("janv.;févr.;mars;avr.;mai;juin;juil.;août;sept.;oct.;nov.;déc."),
+	dddd: _("~manche;lun~;mar~;mercre~;jeu~;vendre~;same~", "di"),
+	bool: _("VRAI;FAUX")
+}, -1, 13);
+addLocale({ ..._fr }, "fr");
+addLocale({
+	..._fr,
+	mmm: _("janv.;févr.;mars;avr.;mai;juin;juill.;août;sept.;oct.;nov.;déc.")
+}, "fr_CA");
+addLocale({
+	group: "'",
+	decimal: ".",
+	..._fr
+}, "fr_CH");
+const _de = xm({
+	mmmm: _("Januar;Februar;März;April;Mai;Juni;Juli;August;September;Oktober;November;Dezember"),
+	mmm: _("Jan.;Feb.;März;Apr.;Mai;Juni;Juli;Aug.;Sept.;Okt.;Nov.;Dez."),
+	dddd: _("Sonn~;Mon~;Diens~;Mittwoch;Donners~;Frei~;Sams~", "tag"),
+	bool: _("WAHR;FALSCH")
+}, -1, 12);
+addLocale({
+	group: ".",
+	decimal: ",",
+	..._de
+}, "de");
+addLocale({
+	group: "'",
+	decimal: ".",
+	..._de
+}, "de_CH");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	ampm: _("π.μ.;μ.μ."),
+	mmmm: _("Ιανουαρ~;Φεβρουαρ~;Μαρτ~;Απριλ~;Μαΐου;Ιουν~;Ιουλ~;Αυγούστου;Σεπτεμβρ~;Οκτωβρ~;Νοεμβρ~;Δεκεμβρ~", "ίου"),
+	mmm: _("Ιαν;Φεβ;Μαρ;Απρ;Μαΐ;Ιουν;Ιουλ;Αυγ;Σεπ;Οκτ;Νοε;Δεκ"),
+	dddd: _("Κυριακή;Δευτέρα;Τρίτη;Τετάρτη;Πέμπτη;Παρασκευή;Σάββατο")
+}, -1, 3), "el");
+addLocale({
+	decimal: ",",
+	ampm: _("de.;du."),
+	mmmm: _("január;február;március;április;május;június;július;augusztus;szeptember;október;november;december"),
+	mmm: _("jan.;febr.;márc.;ápr.;máj.;jún.;júl.;aug.;szept.;okt.;nov.;dec."),
+	dddd: _("vasárnap;hétfő;kedd;szerda;csütörtök;péntek;szombat"),
+	ddd: _("V;H;K;Sze;Cs;P;Szo"),
+	bool: _("IGAZ;HAMIS")
+}, "hu");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	ampm: _("f.h.;e.h."),
+	mmmm: _("janúar;febrúar;mars;apríl;maí;júní;júlí;ágúst;september;október;nóvember;desember"),
+	dddd: _("sunnu~;mánu~;þriðju~;miðviku~;fimmtu~;föstu~;laugar~", "dagur")
+}, 13, 13), "is");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	mmmm: _("Januari;Februari;Maret;April;Mei;Juni;Juli;Agustus;September;Oktober;November;Desember"),
+	dddd: _("Minggu;Senin;Selasa;Rabu;Kamis;Jumat;Sabtu")
+}, 3, 3), "id");
+const _it = xm({
+	mmmm: _("gennaio;febbraio;marzo;aprile;maggio;giugno;luglio;agosto;settembre;ottobre;novembre;dicembre"),
+	dddd: _("domenica;lunedì;martedì;mercoledì;giovedì;venerdì;sabato"),
+	bool: _("VERO;FALSO")
+}, 3, 3);
+addLocale({
+	group: ".",
+	decimal: ",",
+	..._it
+}, "it");
+addLocale({
+	group: "'",
+	decimal: ".",
+	..._it
+}, "it_CH");
+const _no = {
+	decimal: ",",
+	ampm: _("a.m.;p.m."),
+	mmmm: _("januar;februar;mars;april;mai;juni;juli;august;september;oktober;november;desember"),
+	mmm: _("jan.;feb.;mar.;apr.;mai;jun.;jul.;aug.;sep.;okt.;nov.;des."),
+	dddd: _("søn~;man~;tirs~;ons~;tors~;fre~;lør~", "dag"),
+	bool: _("SANN;USANN")
+};
+addLocale(xm({ ..._no }, -1, 13), "nb");
+addLocale(xm({ ..._no }, -1, 13), "no");
+addLocale(xm({
+	decimal: ",",
+	mmmm: _("stycznia;lutego;marca;kwietnia;maja;czerwca;lipca;sierpnia;września;października;listopada;grudnia"),
+	dddd: _("niedziela;poniedziałek;wtorek;środa;czwartek;piątek;sobota"),
+	ddd: _("niedz.;pon.;wt.;śr.;czw.;pt.;sob."),
+	bool: _("PRAWDA;FAŁSZ")
+}, 3, -1), "pl");
+const _pt = {
+	group: ".",
+	decimal: ",",
+	mmmm: _("janeiro;fevereiro;março;abril;maio;junho;julho;agosto;setembro;outubro;novembro;dezembro"),
+	dddd: _("domingo;segunda-feira;terça-feira;quarta-feira;quinta-feira;sexta-feira;sábado"),
+	bool: _("VERDADEIRO;FALSO")
+};
+addLocale(xm(_pt, 13, 13), "pt");
+addLocale(xm(_pt, 13, 13), "pt_BR");
+addLocale({
+	decimal: ",",
+	nan: "не\xA0число",
+	mmmm: _("января;февраля;марта;апреля;мая;июня;июля;августа;сентября;октября;ноября;декабря"),
+	mmm: _("янв.;февр.;мар.;апр.;мая;июн.;июл.;авг.;сент.;окт.;нояб.;дек."),
+	dddd: _("воскресенье;понедельник;вторник;среда;четверг;пятница;суббота"),
+	ddd: _("вс;пн;вт;ср;чт;пт;сб"),
+	mmmm6: _("рамадан;шавваль;зуль-каада;зуль-хиджжа;мухаррам;раби-уль-авваль;раби-уль-ахир;джумад-уль-авваль;джумад-уль-ахир;раджаб;шаабан;рамадан"),
+	mmm6: _("рам.;шав.;зуль-к.;зуль-х.;мух.;раб. I;раб. II;джум. I;джум. II;радж.;шааб.;рам."),
+	bool: _("ИСТИНА;ЛОЖЬ")
+}, "ru");
+addLocale(xm({
+	decimal: ",",
+	mmmm: _("januára;februára;marca;apríla;mája;júna;júla;augusta;septembra;októbra;novembra;decembra"),
+	dddd: _("nedeľa;pondelok;utorok;streda;štvrtok;piatok;sobota")
+}, 3, 2), "sk");
+const _es = {
+	group: ".",
+	decimal: ",",
+	ampm: _("a.\xA0m.;p.\xA0m."),
+	mmmm: _("enero;febrero;marzo;abril;mayo;junio;julio;agosto;septiem~;octu~;noviem~;diciem~", "bre"),
+	mmm: _("ene;feb;mar;abr;may;jun;jul;ago;sept;oct;nov;dic"),
+	dddd: _("domingo;lunes;martes;miércoles;jueves;viernes;sábado"),
+	ddd: _("dom;lun;mar;mié;jue;vie;sáb"),
+	bool: _("VERDADERO;FALSO")
+};
+const _esM3 = _("ene;feb;mar;abr;may;jun;jul;ago;sep;oct;nov;dic");
+const _esM13 = _("ene.;feb.;mar.;abr.;may.;jun.;jul.;ago.;sept.;oct.;nov.;dic.");
+addLocale({ ..._es }, "es");
+addLocale({ ..._es }, "es_AR");
+addLocale({ ..._es }, "es_BO");
+addLocale({ ..._es }, "es_CL");
+addLocale({ ..._es }, "es_CO");
+addLocale({ ..._es }, "es_EC");
+addLocale({
+	..._es,
+	mmm: _esM3,
+	ampm: _("a.m.;p.m.")
+}, "es_MX");
+addLocale({
+	..._es,
+	mmm: _esM13
+}, "es_PY");
+addLocale({
+	..._es,
+	mmm: _esM13
+}, "es_UY");
+addLocale({
+	..._es,
+	mmm: _esM13,
+	mmmm: _("enero;febrero;marzo;abril;mayo;junio;julio;agosto;setiembre;octubre;noviembre;diciembre")
+}, "es_VE");
+addLocale({
+	decimal: ",",
+	ampm: _("fm;em"),
+	mmmm: _("januari;februari;mars;april;maj;juni;juli;augusti;september;oktober;november;december"),
+	mmm: _("jan.;feb.;mars;apr.;maj;juni;juli;aug.;sep.;okt.;nov.;dec."),
+	dddd: _("sön~;mån~;tis~;ons~;tors~;fre~;lör~", "dag"),
+	ddd: _("sön;mån;tis;ons;tors;fre;lör")
+}, "sv");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	ampm: _("ÖÖ;ÖS"),
+	mmmm: _("Ocak;Şubat;Mart;Nisan;Mayıs;Haziran;Temmuz;Ağustos;Eylül;Ekim;Kasım;Aralık"),
+	mmm: _("Oca;Şub;Mar;Nis;May;Haz;Tem;Ağu;Eyl;Eki;Kas;Ara"),
+	dddd: _("Pazar;Pazartesi;Salı;Çarşamba;Perşembe;Cuma;Cumartesi"),
+	ddd: _("Paz;Pzt;Sal;Çar;Per;Cum;Cmt"),
+	bool: _("DOĞRU;YANLIŞ")
+}, 3, -1), "tr");
+addLocale({
+	group: ",",
+	ampm: _("yb;yh"),
+	mmmm: _("Ionawr;Chwefror;Mawrth;Ebrill;Mai;Mehefin;Gorffennaf;Awst;Medi;Hydref;Tachwedd;Rhagfyr"),
+	mmm: _("Ion;Chwef;Maw;Ebr;Mai;Meh;Gorff;Awst;Medi;Hyd;Tach;Rhag"),
+	dddd: _("Dydd Sul;Dydd Llun;Dydd Mawrth;Dydd Mercher;Dydd Iau;Dydd Gwener;Dydd Sadwrn"),
+	ddd: _("Sul;Llun;Maw;Mer;Iau;Gwen;Sad")
+}, "cy");
+addLocale({
+	group: ".",
+	decimal: ",",
+	mmmm: _("yanvar;fevral;mart;aprel;may;iyun;iyul;avqust;sentyabr;oktyabr;noyabr;dekabr"),
+	mmm: _("yan;fev;mar;apr;may;iyn;iyl;avq;sen;okt;noy;dek"),
+	dddd: _("bazar;bazar ertəsi;çərşənbə axşamı;çərşənbə;cümə axşamı;cümə;şənbə"),
+	ddd: _("B.;B.e.;Ç.a.;Ç.;C.a.;C.;Ş.")
+}, "az");
+addLocale(xm({
+	decimal: ",",
+	mmmm: _("студзеня;лютага;сакавіка;красавіка;мая;чэрвеня;ліпеня;жніўня;верасня;кастрычніка;лістапада;снежня"),
+	dddd: _("нядзеля;панядзелак;аўторак;серада;чацвер;пятніца;субота"),
+	ddd: _("нд;пн;аў;ср;чц;пт;сб")
+}, 3, -1), "be");
+addLocale({
+	decimal: ",",
+	ampm: _("пр.об.;сл.об."),
+	mmmm: _("януари;февруари;март;април;май;юни;юли;август;септември;октомври;ноември;декември"),
+	mmm: _("яну;фев;март;апр;май;юни;юли;авг;сеп;окт;ное;дек"),
+	dddd: _("неделя;понеделник;вторник;сряда;четвъртък;петък;събота"),
+	ddd: _("нд;пн;вт;ср;чт;пт;сб"),
+	bool: _("ИСТИНА;ЛОЖЬ")
+}, "bg");
+addLocale({
+	group: ".",
+	decimal: ",",
+	mmmm: _("de gener;de febrer;de març;d’abril;de maig;de juny;de juliol;d’agost;de setembre;d’octubre;de novembre;de desembre"),
+	mmm: _("de gen.;de febr.;de març;d’abr.;de maig;de juny;de jul.;d’ag.;de set.;d’oct.;de nov.;de des."),
+	dddd: _("diumenge;dilluns;dimarts;dimecres;dijous;divendres;dissabte"),
+	ddd: _("dg.;dl.;dt.;dc.;dj.;dv.;ds."),
+	ampm: _("a.\xA0m.;p.\xA0m.")
+}, "ca");
+addLocale(xm({
+	group: ",",
+	decimal: ".",
+	mmmm: _("Enero;Pebrero;Marso;Abril;Mayo;Hunyo;Hulyo;Agosto;Setyembre;Oktubre;Nobyembre;Disyembre"),
+	dddd: _("Linggo;Lunes;Martes;Miyerkules;Huwebes;Biyernes;Sabado")
+}, 3, 3), "fil");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("જાન્યુઆરી;ફેબ્રુઆરી;માર્ચ;એપ્રિલ;મે;જૂન;જુલાઈ;ઑગસ્ટ;સપ્ટેમ્બર;ઑક્ટોબર;નવેમ્બર;ડિસેમ્બર"),
+	mmm: _("જાન્યુ;ફેબ્રુ;માર્ચ;એપ્રિલ;મે;જૂન;જુલાઈ;ઑગસ્ટ;સપ્ટે;ઑક્ટો;નવે;ડિસે"),
+	dddd: _("રવિ~;સોમ~;મંગળ~;બુધ~;ગુરુ~;શુક્ર~;શનિ~", "વાર"),
+	ddd: _("રવિ;સોમ;મંગળ;બુધ;ગુરુ;શુક્ર;શનિ")
+}, "gu");
+addLocale({
+	group: ",",
+	decimal: ".",
+	ampm: _("לפנה״צ;אחה״צ"),
+	dddd: _("~ראשון;~שני;~שלישי;~רביעי;~חמישי;~שישי;~שבת", "יום "),
+	ddd: _("~א׳;~ב׳;~ג׳;~ד׳;~ה׳;~ו׳;שבת", "יום "),
+	mmmm: _("ינואר;פברואר;מרץ;אפריל;מאי;יוני;יולי;אוגוסט;ספטמבר;אוקטובר;נובמבר;דצמבר"),
+	mmm: _("ינו׳;פבר׳;מרץ;אפר׳;מאי;יוני;יולי;אוג׳;ספט׳;אוק׳;נוב׳;דצמ׳"),
+	mmmm6: _("רמדאן;שוואל;ד׳ו אל־קעדה;ד׳ו אל־חיג׳ה;מוחרם;רביע אל־אוול;רביע א־ת׳אני;ג׳ומאדא אל־אולא;ג׳ומאדא א־ת׳אניה;רג׳ב;שעבאן;רמדאן"),
+	mmm6: _("רמדאן;שוואל;ד׳ו אל־קעדה;ד׳ו אל־חיג׳ה;מוחרם;רביע א׳;רביע ב׳;ג׳ומאדא א׳;ג׳ומאדא ב׳;רג׳ב;שעבאן;רמדאן")
+}, "he");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	mmmm: _("siječnja;veljače;ožujka;travnja;svibnja;lipnja;srpnja;kolovoza;rujna;listopada;studenoga;prosinca"),
+	mmm: _("sij;velj;ožu;tra;svi;lip;srp;kol;ruj;lis;stu;pro"),
+	dddd: _("nedjelja;ponedjeljak;utorak;srijeda;četvrtak;petak;subota")
+}, -1, 3), "hr");
+addLocale({
+	decimal: ",",
+	mmmm: _("հունվարի;փետրվարի;մարտի;ապրիլի;մայիսի;հունիսի;հուլիսի;օգոստոսի;սեպտեմբերի;հոկտեմբերի;նոյեմբերի;դեկտեմբերի"),
+	mmm: _("հնվ;փտվ;մրտ;ապր;մյս;հնս;հլս;օգս;սեպ;հոկ;նոյ;դեկ"),
+	dddd: _("կիրակի;երկուշաբթի;երեքշաբթի;չորեքշաբթի;հինգշաբթի;ուրբաթ;շաբաթ"),
+	ddd: _("կիր;երկ;երք;չրք;հնգ;ուր;շբթ")
+}, "hy");
+addLocale(xm({
+	decimal: ",",
+	mmmm: _("იანვარი;თებერვალი;მარტი;აპრილი;მაისი;ივნისი;ივლისი;აგვისტო;სექტემბერი;ოქტომბერი;ნოემბერი;დეკემბერი"),
+	dddd: _("კვირა;ორშაბათი;სამშაბათი;ოთხშაბათი;ხუთშაბათი;პარასკევი;შაბათი")
+}, 3, 3), "ka");
+addLocale(xm({
+	decimal: ",",
+	mmmm: _("қаңтар;ақпан;наурыз;сәуір;мамыр;маусым;шілде;тамыз;қыркүйек;қазан;қараша;желтоқсан"),
+	dddd: _("жексенбі;дүйсенбі;сейсенбі;сәрсенбі;бейсенбі;жұма;сенбі"),
+	ddd: _("жс;дс;сс;ср;бс;жм;сб")
+}, 13, -1), "kk");
+addLocale({
+	group: ",",
+	mmmm: _("ಜನವರಿ;ಫೆಬ್ರವರಿ;ಮಾರ್ಚ್;ಏಪ್ರಿಲ್;ಮೇ;ಜೂನ್;ಜುಲೈ;ಆಗಸ್ಟ್;ಸೆಪ್ಟೆಂಬರ್;ಅಕ್ಟೋಬರ್;ನವೆಂಬರ್;ಡಿಸೆಂಬರ್"),
+	mmm: _("ಜನವರಿ;ಫೆಬ್ರವರಿ;ಮಾರ್ಚ್;ಏಪ್ರಿ;ಮೇ;ಜೂನ್;ಜುಲೈ;ಆಗಸ್ಟ್;ಸೆಪ್ಟೆಂ;ಅಕ್ಟೋ;ನವೆಂ;ಡಿಸೆಂ"),
+	dddd: _("ಭಾನು~;ಸೋಮ~;ಮಂಗಳ~;ಬುಧ~;ಗುರು~;ಶುಕ್ರ~;ಶನಿ~", "ವಾರ"),
+	ddd: _("ಭಾನು;ಸೋಮ;ಮಂಗಳ;ಬುಧ;ಗುರು;ಶುಕ್ರ;ಶನಿ"),
+	ampm: _("ಪೂರ್ವಾಹ್ನ;ಅಪರಾಹ್ನ")
+}, "kn");
+addLocale({
+	decimal: ",",
+	mmmm: _("sausio;vasario;kovo;balandžio;gegužės;birželio;liepos;rugpjūčio;rugsėjo;spalio;lapkričio;gruodžio"),
+	mmm: _("saus.;vas.;kov.;bal.;geg.;birž.;liep.;rugp.;rugs.;spal.;lapkr.;gruod."),
+	dddd: _("sekmadienis;pirmadienis;antradienis;trečiadienis;ketvirtadienis;penktadienis;šeštadienis"),
+	ddd: _("sk;pr;an;tr;kt;pn;št"),
+	ampm: _("priešpiet;popiet")
+}, "lt");
+addLocale({
+	decimal: ",",
+	mmmm: _("janvāris;februāris;marts;aprīlis;maijs;jūnijs;jūlijs;augusts;septembris;oktobris;novembris;decembris"),
+	mmm: _("janv.;febr.;marts;apr.;maijs;jūn.;jūl.;aug.;sept.;okt.;nov.;dec."),
+	dddd: _("svētdiena;pirmdiena;otrdiena;trešdiena;ceturtdiena;piektdiena;sestdiena"),
+	ddd: _("svētd.;pirmd.;otrd.;trešd.;ceturtd.;piektd.;sestd."),
+	ampm: _("priekšpusdienā;pēcpusdienā")
+}, "lv");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("ജനുവരി;ഫെബ്രുവരി;മാർച്ച്;ഏപ്രിൽ;മേയ്;ജൂൺ;ജൂലൈ;ഓഗസ്റ്റ്;സെപ്റ്റംബർ;ഒക്‌ടോബർ;നവംബർ;ഡിസംബർ"),
+	mmm: _("ജനു;ഫെബ്രു;മാർ;ഏപ്രി;മേയ്;ജൂൺ;ജൂലൈ;ഓഗ;സെപ്റ്റം;ഒക്ടോ;നവം;ഡിസം"),
+	dddd: _("ഞായറാഴ്‌ച;തിങ്കളാഴ്‌ച;ചൊവ്വാഴ്ച;ബുധനാഴ്‌ച;വ്യാഴാഴ്‌ച;വെള്ളിയാഴ്‌ച;ശനിയാഴ്‌ച"),
+	ddd: _("ഞായർ;തിങ്കൾ;ചൊവ്വ;ബുധൻ;വ്യാഴം;വെള്ളി;ശനി")
+}, "ml");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("нэгдүгээ~;хоёрдугаа~;гуравдугаа~;дөрөвдүгээ~;тавдугаа~;зургаадугаа~;долоодугаа~;наймдугаа~;есдүгээ~;аравдугаа~;арван нэгдүгээ~;арван хоёрдугаа~", "р сар"),
+	mmm: _("1~;2~;3~;4~;5~;6~;7~;8~;9~;10~;11~;12~", "-р сар"),
+	dddd: _("ням;даваа;мягмар;лхагва;пүрэв;баасан;бямба"),
+	ddd: _("Ня;Да;Мя;Лх;Пү;Ба;Бя"),
+	ampm: _("ү.ө.;ү.х.")
+}, "mn");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("जानेवारी;फेब्रुवारी;मार्च;एप्रिल;मे;जून;जुलै;ऑगस्ट;सप्टेंबर;ऑक्टोबर;नोव्हेंबर;डिसेंबर"),
+	mmm: _("जाने;फेब्रु;मार्च;एप्रि;मे;जून;जुलै;ऑग;सप्टें;ऑक्टो;नोव्हें;डिसें"),
+	dddd: _("रविवार;सोमवार;मंगळवार;बुधवार;गुरुवार;शुक्रवार;शनिवार"),
+	ddd: _("रवि;सोम;मंगळ;बुध;गुरु;शुक्र;शनि")
+}, "mr");
+addLocale(xm({
+	group: ",",
+	decimal: ".",
+	mmmm: _("ဇန်နဝါရီ;ဖေဖော်ဝါရီ;မတ်;ဧပြီ;မေ;ဇွန်;ဇူလိုင်;ဩဂုတ်;စက်တင်ဘာ;အောက်တိုဘာ;နိုဝင်ဘာ;ဒီဇင်ဘာ"),
+	mmm: _("ဇန်;ဖေ;မတ်;ဧ;မေ;ဇွန်;ဇူ;ဩ;စက်;အောက်;နို;ဒီ"),
+	dddd: _("တနင်္ဂနွေ;တနင်္လာ;အင်္ဂါ;ဗုဒ္ဓဟူး;ကြာသပတေး;သောကြာ;စနေ"),
+	ampm: _("နံနက်;ညနေ")
+}, -1, 0), "my");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("ਜਨਵਰੀ;ਫ਼ਰਵਰੀ;ਮਾਰਚ;ਅਪ੍ਰੈਲ;ਮਈ;ਜੂਨ;ਜੁਲਾਈ;ਅਗਸਤ;ਸਤੰਬਰ;ਅਕਤੂਬਰ;ਨਵੰਬਰ;ਦਸੰਬਰ"),
+	mmm: _("ਜਨ;ਫ਼ਰ;ਮਾਰਚ;ਅਪ੍ਰੈ;ਮਈ;ਜੂਨ;ਜੁਲਾ;ਅਗ;ਸਤੰ;ਅਕਤੂ;ਨਵੰ;ਦਸੰ"),
+	dddd: _("ਐਤਵਾਰ;ਸੋਮਵਾਰ;ਮੰਗਲਵਾਰ;ਬੁੱਧਵਾਰ;ਵੀਰਵਾਰ;ਸ਼ੁੱਕਰਵਾਰ;ਸ਼ਨਿੱਚਰਵਾਰ"),
+	ddd: _("ਐਤ;ਸੋਮ;ਮੰਗਲ;ਬੁੱਧ;ਵੀਰ;ਸ਼ੁੱਕਰ;ਸ਼ਨਿੱਚਰ"),
+	ampm: _("ਪੂ.ਦੁ.;ਬਾ.ਦੁ.")
+}, "pa");
+addLocale({
+	group: ".",
+	decimal: ",",
+	mmmm: _("ianuarie;februarie;martie;aprilie;mai;iunie;iulie;august;septem~;octom~;noiem~;decem~", "brie"),
+	mmm: _("ian.;feb.;mar.;apr.;mai;iun.;iul.;aug.;sept.;oct.;nov.;dec."),
+	dddd: _("duminică;luni;marți;miercuri;joi;vineri;sâmbătă"),
+	ddd: _("dum.;lun.;mar.;mie.;joi;vin.;sâm."),
+	ampm: _("a.m.;p.m.")
+}, "ro");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	mmmm: _("januar;februar;marec;april;maj;junij;julij;avgust;september;oktober;november;december"),
+	mmm: _("jan.;feb.;mar.;apr.;maj;jun.;jul.;avg.;sep.;okt.;nov.;dec."),
+	dddd: _("nedelja;ponedeljek;torek;sreda;četrtek;petek;sobota"),
+	ampm: _("dop.;pop.")
+}, -1, 13), "sl");
+addLocale(xm({
+	group: ".",
+	decimal: ",",
+	mmmm: _("јануар;фебруар;март;април;мај;јун;јул;август;септембар;октобар;новембар;децембар"),
+	dddd: _("недеља;понедељак;уторак;среда;четвртак;петак;субота")
+}, 3, 3), "sr");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("ஜனவரி;பிப்ரவரி;மார்ச்;ஏப்ரல்;மே;ஜூன்;ஜூலை;ஆகஸ்ட்;செப்டம்பர்;அக்டோபர்;நவம்பர்;டிசம்பர்"),
+	mmm: _("ஜன.;பிப்.;மார்.;ஏப்.;மே;ஜூன்;ஜூலை;ஆக.;செப்.;அக்.;நவ.;டிச."),
+	dddd: _("ஞாயிறு;திங்கள்;செவ்வாய்;புதன்;வியாழன்;வெள்ளி;சனி"),
+	ddd: _("ஞாயி.;திங்.;செவ்.;புத.;வியா.;வெள்.;சனி")
+}, "ta");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("జనవరి;ఫిబ్రవరి;మార్చి;ఏప్రిల్;మే;జూన్;జులై;ఆగస్టు;సెప్టెంబర్;అక్టోబర్;నవంబర్;డిసెంబర్"),
+	mmm: _("జన;ఫిబ్ర;మార్చి;ఏప్రి;మే;జూన్;జులై;ఆగ;సెప్టెం;అక్టో;నవం;డిసెం"),
+	dddd: _("ఆదివారం;సోమవారం;మంగళవారం;బుధవారం;గురువారం;శుక్రవారం;శనివారం"),
+	ddd: _("ఆది;సోమ;మంగళ;బుధ;గురు;శుక్ర;శని")
+}, "te");
+addLocale({
+	decimal: ",",
+	mmmm: _("січня;лютого;березня;квітня;травня;червня;липня;серпня;вересня;жовтня;листопада;грудня"),
+	mmm: _("січ.;лют.;бер.;квіт.;трав.;черв.;лип.;серп.;вер.;жовт.;лист.;груд."),
+	dddd: _("неділю;понеділок;вівторок;середу;четвер;пʼятницю;суботу"),
+	ddd: _("нд;пн;вт;ср;чт;пт;сб"),
+	ampm: _("дп;пп")
+}, "uk");
+addLocale({
+	group: ".",
+	decimal: ",",
+	mmmm: _("~1;~2;~3;~4;~5;~6;~7;~8;~9;~10;~11;~12", "tháng "),
+	mmm: _("~1;~2;~3;~4;~5;~6;~7;~8;~9;~10;~11;~12", "thg "),
+	dddd: _("Chủ Nhật;Thứ Hai;Thứ Ba;Thứ Tư;Thứ Năm;Thứ Sáu;Thứ Bảy"),
+	ddd: _("CN;Th 2;Th 3;Th 4;Th 5;Th 6;Th 7"),
+	ampm: _("SA;CH")
+}, "vi");
+addLocale(xm({
+	group: "٬",
+	decimal: "٫",
+	ampm: _("ص;م"),
+	mmmm: _("يناير;فبراير;مارس;أبريل;مايو;يونيو;يوليو;أغسطس;سبتمبر;أكتوبر;نوفمبر;ديسمبر"),
+	dddd: _("الأحد;الاثنين;الثلاثاء;الأربعاء;الخميس;الجمعة;السبت"),
+	mmmm6: _("رمضان;شوال;ذو القعدة;ذو الحجة;محرم;ربيع الأول;ربيع الآخرة;جمادى الأولى;جمادى الآخرة;رجب;شعبان;رمضان")
+}, 0, 0), "ar");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("জানুয়ারী;ফেব্রুয়ারী;মার্চ;এপ্রিল;মে;জুন;জুলাই;আগস্ট;সেপ্টেম্বর;অক্টোবর;নভেম্বর;ডিসেম্বর"),
+	mmm: _("জানু;ফেব;মার্চ;এপ্রি;মে;জুন;জুল;আগ;সেপ্টেঃ;অক্টোঃ;নভেঃ;ডিসেঃ"),
+	dddd: _("রবিবার;সোমবার;মঙ্গলবার;বুধবার;বৃহস্পতিবার;শুক্রবার;শনিবার"),
+	ddd: _("রবি;সোম;মঙ্গল;বুধ;বৃহস্পতি;শুক্র;শনি")
+}, "bn");
+addLocale({
+	group: ",",
+	decimal: ".",
+	mmmm: _("जनवरी;फ़रवरी;मार्च;अप्रैल;मई;जून;जुलाई;अगस्त;सितंबर;अक्तूबर;नवंबर;दिसंबर"),
+	mmm: _("जन॰;फ़र॰;मार्च;अप्रैल;मई;जून;जुल॰;अग॰;सित॰;अक्तू॰;नव॰;दिस॰"),
+	dddd: _("रविवार;सोमवार;मंगलवार;बुधवार;गुरुवार;शुक्रवार;शनिवार"),
+	ddd: _("रवि;सोम;मंगल;बुध;गुरु;शुक्र;शनि"),
+	ampm: _("am;pm")
+}, "hi");
+
+//#endregion
+//#region src/shared/numfmt/parse-format-section.ts
+function getNumberPattern(part, prefix) {
+	switch (prefix) {
+		case "int": return part.int_pattern;
+		case "frac": return part.frac_pattern;
+		case "man": return part.man_pattern;
+		case "den": return part.den_pattern;
+		case "num": return part.num_pattern;
+	}
+}
+function minMaxPad(str, part, prefix) {
+	const max = str.length;
+	const min = str.replace(/#/g, "").length;
+	switch (prefix) {
+		case "int":
+			part.int_max = max;
+			part.int_min = min;
+			break;
+		case "frac":
+			part.frac_max = max;
+			part.frac_min = min;
+			break;
+		case "man":
+			part.man_max = max;
+			part.man_min = min;
+			break;
+		case "den":
+			part.den_max = max;
+			part.den_min = min;
+			break;
+		case "num":
+			part.num_max = max;
+			part.num_min = min;
+			break;
+	}
+	return part;
+}
+function add(token, tokens) {
+	if (typeof token === "string") tokens.push({
+		type: "string",
+		value: token
+	});
+	else tokens.push(token);
+}
+function isNumOp$1(token, activePattern) {
+	const type = token === null || token === void 0 ? void 0 : token.type;
+	return type === "hash" || type === "zero" || type === "qmark" || type === "digit" && activePattern === "den";
+}
+function assertNumberChunk(token) {
+	if (token === null) throw new TypeError("Cannot read properties of null (reading 'num')");
+}
+function parseFormatSection(inputTokens) {
+	const outputTokens = [];
+	const part = {
+		scale: 1,
+		scaleExponent: 0,
+		percent: false,
+		text: false,
+		date: 0,
+		date_eval: false,
+		date_system: 1,
+		sec_decimals: 0,
+		general: false,
+		clock: 24,
+		int_pattern: [],
+		frac_pattern: [],
+		man_pattern: [],
+		den_pattern: [],
+		num_pattern: [],
+		tokens: outputTokens,
+		tokensUsed: 0,
+		pattern: "",
+		int_max: 0,
+		int_min: 0,
+		frac_max: 0,
+		frac_min: 0,
+		man_max: 0,
+		man_min: 0,
+		num_max: 0,
+		num_min: 0,
+		den_max: 0,
+		den_min: 0,
+		int_p: "",
+		man_p: "",
+		num_p: "",
+		den_p: "",
+		integer: false
+	};
+	let currentPattern = "int";
+	let lastNumberChunk = null;
+	const dateChunks = [];
+	let last;
+	let haveLocale = false;
+	let index = -1;
+	let partOver = false;
+	let patternSource = "";
+	let haveSlash = false;
+	while (++index < inputTokens.length && !partOver) {
+		var _inputTokens;
+		const token = inputTokens[index];
+		const type = token.type || "error";
+		patternSource += token.raw;
+		if (type === "general") {
+			part.general = true;
+			add(token, outputTokens);
+		} else if (isNumOp$1(token, currentPattern)) {
+			const pattern = getNumberPattern(part, currentPattern);
+			if (isNumOp$1(last, currentPattern) || (last === null || last === void 0 ? void 0 : last.type) === "group") {
+				pattern.push((pattern.pop() || "") + token.value);
+				assertNumberChunk(lastNumberChunk);
+				lastNumberChunk.num += token.value;
+			} else {
+				pattern.push(token.value);
+				lastNumberChunk = {
+					type: currentPattern,
+					num: token.value
+				};
+				add(lastNumberChunk, outputTokens);
+			}
+		} else if (type === "paren") {
+			if (token.value === "(") part.parens = true;
+			add(token.value, outputTokens);
+		} else if (type === "digit") add(token.value, outputTokens);
+		else if (type === "slash") {
+			haveSlash = true;
+			const pattern = getNumberPattern(part, currentPattern);
+			if (pattern.length) {
+				if (!lastNumberChunk) throw new SyntaxError("Format pattern is missing a numerator");
+				part.fractions = true;
+				const numerator = pattern.pop();
+				if (numerator === void 0) throw new SyntaxError("Format pattern is missing a numerator");
+				part.num_pattern.push(numerator);
+				lastNumberChunk.type = "num";
+				currentPattern = "den";
+				add({ type: "div" }, outputTokens);
+			} else add(token.value, outputTokens);
+		} else if (type === "comma") add(",", outputTokens);
+		else if (type === "scale") {
+			part.scale = .001 ** token.raw.length;
+			part.scaleExponent = -3 * token.raw.length;
+		} else if (type === "group") {
+			if (currentPattern === "int") part.grouping = true;
+			if (currentPattern === "den") throw new SyntaxError("Cannot group denominator digits");
+		} else if (type === "space") add(token, outputTokens);
+		else if (type === "break") {
+			partOver = true;
+			break;
+		} else if (type === "text") {
+			part.text = true;
+			add(token, outputTokens);
+		} else if (type === "plus" || type === "minus") add(token, outputTokens);
+		else if (type === "duration") {
+			const tokenValue = token.value.toLowerCase();
+			const startsWith = tokenValue[0];
+			const bit = {
+				type: "",
+				size: 0,
+				date: 1,
+				pad: tokenValue.length
+			};
+			if (startsWith === "h") {
+				bit.size = 16;
+				bit.type = "hour-elap";
+			} else if (startsWith === "m") {
+				bit.size = 32;
+				bit.type = "min-elap";
+			} else {
+				bit.size = 64;
+				bit.type = "sec-elap";
+			}
+			part.date = part.date | bit.size;
+			dateChunks.push(bit);
+			add(bit, outputTokens);
+		} else if (part.date && type === "point" && ((_inputTokens = inputTokens[index + 1]) === null || _inputTokens === void 0 ? void 0 : _inputTokens.type) === "zero") {
+			var _inputTokens2, _inputTokens3;
+			let decimals = 1;
+			index++;
+			let raw = "0";
+			if (((_inputTokens2 = inputTokens[index + 1]) === null || _inputTokens2 === void 0 ? void 0 : _inputTokens2.type) === "zero") {
+				raw += "0";
+				decimals = 2;
+				index++;
+			}
+			if (((_inputTokens3 = inputTokens[index + 1]) === null || _inputTokens3 === void 0 ? void 0 : _inputTokens3.type) === "zero") {
+				raw += "0";
+				decimals = 3;
+				index++;
+			}
+			patternSource += raw;
+			const size = [
+				64,
+				128,
+				256,
+				512
+			][decimals];
+			part.date = part.date | size;
+			part.date_eval = true;
+			part.sec_decimals = Math.max(part.sec_decimals, decimals);
+			add({
+				type: "subsec",
+				size,
+				decimals,
+				date: 1
+			}, outputTokens);
+		} else if (type === "calendar") {
+			if (!haveLocale) if (token.value === "B2" || token.value === "b2") part.date_system = 6;
+			else part.date_system = 1;
+		} else if (type === "datetime") {
+			const bit = {
+				type: "",
+				size: 0,
+				date: 1
+			};
+			const value = token.value.toLowerCase();
+			const startsWith = value[0];
+			if (value === "y" || value === "yy") {
+				bit.size = 2;
+				bit.type = "year-short";
+			} else if (startsWith === "y" || startsWith === "e") {
+				bit.size = 2;
+				bit.type = "year";
+			} else if (value === "b" || value === "bb") {
+				bit.size = 2;
+				bit.type = "b-year-short";
+			} else if (startsWith === "b") {
+				bit.size = 2;
+				bit.type = "b-year";
+			} else if (value === "d" || value === "dd") {
+				bit.size = 8;
+				bit.type = "day";
+				bit.pad = /dd/.test(value);
+			} else if (value === "ddd" || value === "aaa") {
+				bit.size = 8;
+				bit.type = "weekday-short";
+			} else if (startsWith === "d" || startsWith === "a") {
+				bit.size = 8;
+				bit.type = "weekday";
+			} else if (startsWith === "h") {
+				bit.size = 16;
+				bit.type = "hour";
+				bit.pad = /hh/i.test(value);
+			} else if (startsWith === "m") {
+				if (value.length === 3) {
+					bit.size = 4;
+					bit.type = "monthname-short";
+				} else if (value.length === 5) {
+					bit.size = 4;
+					bit.type = "monthname-single";
+				} else if (value.length >= 4) {
+					bit.size = 4;
+					bit.type = "monthname";
+				}
+				const lastDateChunk = dateChunks[dateChunks.length - 1];
+				if (!bit.type && lastDateChunk && !lastDateChunk.used && lastDateChunk.size & (16 | 64)) {
+					lastDateChunk.used = true;
+					bit.size = 32;
+					bit.type = "min";
+					bit.pad = /mm/.test(value);
+				}
+				if (!bit.type) {
+					bit.size = 4;
+					bit.type = "month";
+					bit.pad = /mm/.test(value);
+					bit.indeterminate = true;
+				}
+			} else if (startsWith === "s") {
+				bit.size = 64;
+				bit.type = "sec";
+				bit.pad = /ss/.test(value);
+				const lastDateChunk = dateChunks[dateChunks.length - 1];
+				if (lastDateChunk && lastDateChunk.size & 32) bit.used = true;
+				else if (lastDateChunk === null || lastDateChunk === void 0 ? void 0 : lastDateChunk.indeterminate) {
+					delete lastDateChunk.indeterminate;
+					lastDateChunk.size = 32;
+					lastDateChunk.type = "min";
+					bit.used = true;
+				}
+			} else if (startsWith === "g") {}
+			part.date = part.date | bit.size;
+			part.date_eval = true;
+			dateChunks.push(bit);
+			add(bit, outputTokens);
+		} else if (type === "ampm") {
+			part.clock = 12;
+			part.date = part.date | 16;
+			part.date_eval = true;
+			token.short = token.value === "A/P";
+			add(token, outputTokens);
+		} else if (type === "string" || type === "escaped" || type === "char") add(token.value, outputTokens);
+		else if (type === "condition") part.condition = [token.value[0], Number.parseFloat(token.value[1])];
+		else if (type === "locale") {
+			const bits = token.value.split("-");
+			const code = bits.length < 2 ? "" : bits.slice(1).join("-");
+			const currency = bits[0];
+			if (currency) add(currency, outputTokens);
+			const locale = resolveLocale(code);
+			if (locale) part.locale = locale;
+			const windowsCode = Number.parseInt(code, 16);
+			if (Number.isFinite(windowsCode) && windowsCode & 16711680) {
+				if ((windowsCode >> 16 & 255) === 6) part.date_system = 6;
+			}
+			haveLocale = true;
+		} else if (type === "color") {
+			const normalizedColor = token.value.toLowerCase();
+			let color = normalizedColor;
+			const colorMatch = /^color\s*(\d+)$/i.exec(normalizedColor);
+			if (colorMatch) color = Number.parseInt(colorMatch[1], 10);
+			part.color = color;
+		} else if (type === "percent") {
+			part.scale = 100;
+			part.scaleExponent = 2;
+			part.percent = true;
+			add("%", outputTokens);
+		} else if (type === "point") {
+			add(token, outputTokens);
+			if (!part.date) {
+				part.dec_fractions = true;
+				currentPattern = "frac";
+			}
+		} else if (type === "exp") {
+			part.exponential = true;
+			part.exp_plus = token.value.includes("+");
+			currentPattern = "man";
+			add({
+				type: "exp",
+				plus: part.exp_plus
+			}, outputTokens);
+		} else if (type === "skip" || type === "fill") add(token, outputTokens);
+		else if (type === "dbnum" || type === "natnum") {} else if (type === "error") throw new SyntaxError(`Illegal character: ${patternSource}`);
+		else throw new SyntaxError(`Unknown token ${type} in ${patternSource}`);
+		last = token;
+	}
+	part.tokensUsed = index;
+	part.pattern = patternSource;
+	if (/^((?:\[[^\]]+\])+)(;|$)/.test(part.pattern) && !/^\[(?:h+|m+|s+)\]/.test(part.pattern)) add({ type: "text" }, outputTokens);
+	if (part.fractions && part.dec_fractions || part.grouping && !part.int_pattern.length || part.fractions && part.exponential || part.fractions && part.den_pattern.length * part.num_pattern.length === 0 || haveSlash && !part.fractions && !part.date || part.exponential && (part.int_pattern.length || part.frac_pattern.length) * part.man_pattern.length === 0) throw new SyntaxError(`Invalid pattern: ${patternSource}`);
+	const intPattern = part.int_pattern.join("");
+	const manPattern = part.man_pattern.join("");
+	const fracPattern = part.frac_pattern.join("");
+	minMaxPad(intPattern, part, "int");
+	let min = 0;
+	for (let patternIndex = 0; patternIndex < intPattern.length; patternIndex++) {
+		const character = intPattern[intPattern.length - 1 - patternIndex];
+		if (/^[0-9?]/.test(character)) min = patternIndex + 1;
+	}
+	part.int_min = min;
+	minMaxPad(fracPattern, part, "frac");
+	minMaxPad(manPattern, part, "man");
+	let numeratorPattern = part.num_pattern.join("");
+	let denominatorPattern = part.den_pattern[0] || "";
+	if (denominatorPattern.includes("?") || numeratorPattern.includes("?")) {
+		denominatorPattern = denominatorPattern.replace(/\d/g, "?");
+		denominatorPattern = denominatorPattern.replace(/#$/g, "?");
+		minMaxPad(numeratorPattern, part, "num");
+		minMaxPad(denominatorPattern, part, "den");
+		numeratorPattern = numeratorPattern.replace(/#$/g, "?");
+	} else {
+		minMaxPad(numeratorPattern, part, "num");
+		minMaxPad(denominatorPattern, part, "den");
+	}
+	part.int_p = intPattern;
+	part.man_p = manPattern;
+	part.num_p = numeratorPattern;
+	part.den_p = denominatorPattern;
+	if (part.den_pattern.length) part.denominator = Number.parseInt(part.den_pattern.join("").replace(/\D/g, ""), 10);
+	part.integer = !!intPattern.length;
+	if (!part.integer && !part.exponential && fracPattern.length) {
+		const pointIndex = part.tokens.findIndex((token) => token.type === "point");
+		part.tokens.splice(pointIndex, 0, {
+			type: "int",
+			value: "#"
+		});
+		part.integer = true;
+		part.int_pattern = ["#"];
+		part.int_p = "#";
+	}
+	if (part.fractions) for (let tokenIndex = 0; tokenIndex < outputTokens.length - 1; tokenIndex++) {
+		const token = outputTokens[tokenIndex];
+		if (token.type !== "string" && token.type !== "space") continue;
+		const nextType = outputTokens[tokenIndex + 1].type;
+		if (nextType === "num") token.rule = "num+int";
+		else if (nextType === "div") token.rule = "num";
+		else if (nextType === "den") token.rule = "den";
+	}
+	if (part.grouping && part.int_pattern.length > 1) part.grouping = false;
+	return part;
+}
+
+//#endregion
+//#region src/shared/numfmt/clamp.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function clamp(number) {
+	if (number === 0) return number;
+	const d = Math.ceil(Math.log10(number < 0 ? -number : number));
+	const mag = 10 ** (16 - Math.floor(d));
+	return isFinite(mag) ? Math.round(number * mag) / mag : 0;
+}
+
+//#endregion
+//#region src/shared/numfmt/dec-to-frac.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const PRECISION = 1e-13;
+/**
+* Split a fractional number into a numerator and denominator for display as
+* vulgar fractions.
+*
+* @ignore
+* @param {number} number The value to split
+* @param {number} [numeratorMaxDigits] The maxdigits number
+* @param {number} [denominatorMaxDigits] The maxdigits de
+* @returns {Array<number>} Array of two numbers, numerator and denominator.
+*/
+function dec2frac(number, numeratorMaxDigits = 2, denominatorMaxDigits = 2) {
+	const sign = number < 0 ? -1 : 1;
+	const maxdigits_n = 10 ** (numeratorMaxDigits || 2);
+	const maxdigits_d = 10 ** (denominatorMaxDigits || 2);
+	let z = Math.abs(number);
+	let last_d = 0;
+	let last_n = 0;
+	let curr_n = 0;
+	let curr_d = 1;
+	let tmp;
+	let r;
+	number = z;
+	if (number % 1 === 0) r = [number * sign, 1];
+	else if (number < 1e-19) r = [sign, 0x8ac7230489e80000];
+	else if (number > 0x8ac7230489e80000) r = [0x8ac7230489e80000 * sign, 1];
+	else {
+		do {
+			z = 1 / (z - Math.floor(z));
+			tmp = curr_d;
+			curr_d = curr_d * Math.floor(z) + last_d;
+			last_d = tmp;
+			last_n = curr_n;
+			curr_n = Math.floor(number * curr_d + .5);
+			if (curr_n >= maxdigits_n || curr_d >= maxdigits_d) return [sign * last_n, last_d];
+		} while (Math.abs(number - curr_n / curr_d) >= PRECISION && z !== Math.floor(z));
+		r = [sign * curr_n, curr_d];
+	}
+	return r;
+}
+
+//#endregion
+//#region src/shared/numfmt/num-dec.ts
+const ZERO_DIGITS = {
+	total: 1,
+	sign: 0,
+	period: 0,
+	int: 1,
+	frac: 0
+};
+function numDec(value, includeSign = true) {
+	const decimal = decimalFromNumber(value);
+	if (decimal.digits === "0") return ZERO_DIGITS;
+	const decimalPoint = decimal.exponent + 1;
+	const intSize = Math.max(decimalPoint, 1);
+	const fracSize = Math.max(0, decimal.digits.length - decimalPoint);
+	const signSize = includeSign && decimal.negative ? 1 : 0;
+	const periodSize = fracSize > 0 ? 1 : 0;
+	return {
+		total: signSize + intSize + periodSize + fracSize,
+		digits: Math.max(decimalPoint, 0) + fracSize,
+		sign: signSize,
+		period: periodSize,
+		int: intSize,
+		frac: fracSize
+	};
+}
+
+//#endregion
+//#region src/shared/numfmt/number-props.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function getExponent(number, intMax = 0) {
+	const exponent = Math.floor(Math.log10(number));
+	return intMax > 1 ? Math.floor(exponent / intMax) * intMax : exponent;
+}
+function getSignificand(number, exponent = 1) {
+	if (exponent < -300) return Number.parseFloat(number.toExponential().split("e")[0]);
+	return number * 10 ** -exponent;
+}
+
+//#endregion
+//#region src/shared/numfmt/round.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function legacyRound$1(number, places = 0) {
+	if (number < 0) return -legacyRound$1(-number, places);
+	if (places) {
+		const power = 10 ** places || 1;
+		return legacyRound$1(number * power, 0) / power;
+	}
+	return Math.round(number);
+}
+function round(number, places = 0) {
+	if (typeof number !== "number") return number;
+	if (!Number.isFinite(number) || number === 0) return number === 0 ? 0 : number;
+	if (!Number.isFinite(places)) return legacyRound$1(number, places);
+	const normalizedPlaces = Math.trunc(places);
+	if (Number.isInteger(number) && normalizedPlaces >= 0 || normalizedPlaces > 324) return number;
+	const rounded = decimalPartsToNumber(roundDecimal(decimalFromNumber(number), normalizedPlaces));
+	return Number.isFinite(rounded) ? rounded : number;
+}
+
+//#endregion
+//#region src/shared/numfmt/general.ts
+function fixLocale(value, locale) {
+	return value.replace(/\./, locale.decimal);
+}
+function getAbsoluteDecimal(value) {
+	if (!value) return null;
+	return value.negative ? {
+		...value,
+		negative: false
+	} : value;
+}
+function getDecimalExponent(value) {
+	return (value === null || value === void 0 ? void 0 : value.exponent) ?? 0;
+}
+function usesShortestSignificand(value) {
+	return !value || value.exponent < -308;
+}
+function getExp(value, locale) {
+	const scientific = roundScientificDecimal(value, 1, true, 5);
+	const exponent = scientific.exponent;
+	const absoluteExponent = Math.abs(exponent);
+	return [
+		fixLocale(decimalPartsToPlainString(scientific.rounded), locale),
+		locale.exponent,
+		exponent < 0 ? locale.negative : locale.positive,
+		absoluteExponent < 10 ? "0" : "",
+		absoluteExponent
+	];
+}
+function getShortestExp(number, exponent, locale) {
+	const absoluteExponent = Math.abs(exponent);
+	const mantissa = number === 1 ? number : Math.round(number * 1e5) / 1e5;
+	return [
+		fixLocale(String(mantissa), locale),
+		locale.exponent,
+		exponent < 0 ? locale.negative : locale.positive,
+		absoluteExponent < 10 ? "0" : "",
+		absoluteExponent
+	];
+}
+function general(output, part, value, locale, decimalValue = null) {
+	const integer = typeof value === "number" ? value | 0 : 0;
+	if (typeof value === "string") output.push(value);
+	else if (value === integer) output.push(Math.abs(integer));
+	else {
+		const absoluteValue = Math.abs(value);
+		const absoluteDecimal = getAbsoluteDecimal(decimalValue);
+		let exponent = getDecimalExponent(absoluteDecimal);
+		let shortestSignificand = null;
+		if (usesShortestSignificand(absoluteDecimal)) {
+			exponent = getExponent(absoluteValue);
+			shortestSignificand = getSignificand(absoluteValue, exponent);
+			if (shortestSignificand === 10) {
+				shortestSignificand = 1;
+				exponent++;
+			}
+		}
+		const digits = numDec(absoluteValue);
+		if (exponent >= -4 && exponent <= -1) {
+			const formatted = absoluteValue.toPrecision(10 + exponent).replace(/\.?0+$/, "");
+			output.push(fixLocale(formatted, locale));
+		} else if (exponent === 10) {
+			const formatted = absoluteValue.toFixed(10).slice(0, 12).replace(/\.$/, "");
+			output.push(fixLocale(formatted, locale));
+		} else if (Math.abs(exponent) <= 9) if (digits.total <= 11) {
+			const formatted = round(absoluteValue, 9).toFixed(digits.frac);
+			output.push(fixLocale(formatted, locale));
+		} else if (exponent === 9) output.push(Math.floor(absoluteValue));
+		else if (exponent >= 0 && exponent < 9) output.push(fixLocale(String(round(absoluteValue, 9 - exponent)), locale));
+		else output.push(...shortestSignificand === null ? getExp(absoluteDecimal, locale) : getShortestExp(shortestSignificand, exponent, locale));
+		else if (digits.total >= 12) output.push(...shortestSignificand === null ? getExp(absoluteDecimal, locale) : getShortestExp(shortestSignificand, exponent, locale));
+		else output.push(fixLocale(round(absoluteValue, 9).toFixed(digits.frac), locale));
+	}
+	return output;
+}
+
+//#endregion
+//#region src/shared/numfmt/pad.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* @ignore
+* @param {string} char Instruction character (['#', '?', '0'])
+* @param {boolean} [nbsp] Use nonbreaking space or not?
+* @returns {string} Padding character
+*/
+function pad$1(char, nbsp = false) {
+	if (char === "0") return "0";
+	else if (char === "?") return nbsp ? "\xA0" : " ";
+	return "";
+}
+
+//#endregion
+//#region src/shared/numfmt/to-ymd.ts
+const floor$1 = Math.floor;
+function toYMD1900(serial, leap1900 = true) {
+	if (leap1900 && serial >= 0) {
+		if (serial === 0) return [
+			1900,
+			1,
+			0
+		];
+		if (serial === 60) return [
+			1900,
+			2,
+			29
+		];
+		if (serial < 60) return [
+			1900,
+			serial < 32 ? 1 : 2,
+			(serial - 1) % 31 + 1
+		];
+	}
+	let l = serial + 68569 + 2415019;
+	const n = floor$1(4 * l / 146097);
+	l -= floor$1((146097 * n + 3) / 4);
+	const i = floor$1(4e3 * (l + 1) / 1461001);
+	l = l - floor$1(1461 * i / 4) + 31;
+	const j = floor$1(80 * l / 2447);
+	const nDay = l - floor$1(2447 * j / 80);
+	l = floor$1(j / 11);
+	const nMonth = j + 2 - 12 * l;
+	return [
+		100 * (n - 49) + i + l | 0,
+		nMonth | 0,
+		nDay | 0
+	];
+}
+function toYMD1904(serial) {
+	return toYMD1900(serial + 1462);
+}
+function toYMD1317(serial) {
+	if (serial === 60) throw new Error("#VALUE!");
+	if (serial <= 1) return [
+		1317,
+		8,
+		29
+	];
+	if (serial < 60) return [
+		1317,
+		serial < 32 ? 9 : 10,
+		1 + (serial - 2) % 30
+	];
+	const y = 10631 / 30;
+	const shift1 = 8.01 / 60;
+	let z = serial + 466935;
+	const cyc = floor$1(z / 10631);
+	z -= 10631 * cyc;
+	const j = floor$1((z - shift1) / y);
+	z -= floor$1(j * y + shift1);
+	const m = floor$1((z + 28.5001) / 29.5);
+	if (m === 13) return [
+		30 * cyc + j,
+		12,
+		30
+	];
+	return [
+		30 * cyc + j,
+		m,
+		z - floor$1(29.5001 * m - 29)
+	];
+}
+function toYMD(serial, system = 0, leap1900 = true) {
+	const int = floor$1(serial);
+	if (system === 6) return toYMD1317(int);
+	if (system === -1) return toYMD1904(int);
+	return toYMD1900(int, leap1900);
+}
+
+//#endregion
+//#region src/shared/numfmt/serial-date.ts
+const floor = Math.floor;
+const DAYSIZE$1 = 86400;
+const MILLISECONDS_PER_DAY = DAYSIZE$1 * 1e3;
+const dateUTC = Date.UTC;
+const EXCEL_1904_OFFSET = 1462;
+const EXCEL_1900_MAX_SERIAL = 2958465;
+const MAX_YEAR = 9999;
+function getDateSystemMaxSerial(dateSystem = "date1900") {
+	return dateSystem === "date1904" ? EXCEL_1900_MAX_SERIAL - EXCEL_1904_OFFSET : EXCEL_1900_MAX_SERIAL;
+}
+function isLeapYear(year) {
+	return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+}
+function isValidGregorianDate(year, month, day) {
+	if (!Number.isInteger(year) || !Number.isInteger(month) || !Number.isInteger(day) || year < 1 || year > MAX_YEAR || month < 1 || month > 12) return false;
+	const daysInMonth = [
+		31,
+		isLeapYear(year) ? 29 : 28,
+		31,
+		30,
+		31,
+		30,
+		31,
+		31,
+		30,
+		31,
+		30,
+		31
+	];
+	return day >= 1 && day <= daysInMonth[month - 1];
+}
+function civilDateToUnixDays(year, month, day) {
+	const adjustedYear = year - (month <= 2 ? 1 : 0);
+	const era = Math.floor(adjustedYear / 400);
+	const yearOfEra = adjustedYear - era * 400;
+	const adjustedMonth = month + (month > 2 ? -3 : 9);
+	const dayOfYear = Math.floor((153 * adjustedMonth + 2) / 5) + day - 1;
+	const dayOfEra = yearOfEra * 365 + Math.floor(yearOfEra / 4) - Math.floor(yearOfEra / 100) + dayOfYear;
+	return era * 146097 + dayOfEra - 719468;
+}
+function datePartsToExcel1900Serial(year, month, day) {
+	if (year === 1900 && month === 1 && day === 0) return 0;
+	if (year === 1900 && month === 2 && day === 29) return 60;
+	if (!isValidGregorianDate(year, month, day)) return null;
+	const unixDays = civilDateToUnixDays(year, month, day);
+	return unixDays + (unixDays <= -25509 ? 25568 : 25569);
+}
+function excelSerialToDateTimeParts(serial, options) {
+	if (!Number.isFinite(serial) || serial < 0) return null;
+	const wholeDays = Math.floor(serial);
+	const [year, month, day] = toYMD(options.dateSystem === "date1904" ? wholeDays + EXCEL_1904_OFFSET : wholeDays, 0, true);
+	if (year > MAX_YEAR) return null;
+	const totalSeconds = (serial - wholeDays) * DAYSIZE$1;
+	const wholeSeconds = Math.floor(totalSeconds);
+	return {
+		year,
+		month,
+		day,
+		hours: Math.floor(wholeSeconds / 3600),
+		minutes: Math.floor(wholeSeconds / 60) % 60,
+		seconds: wholeSeconds % 60,
+		fractionalSecond: totalSeconds - wholeSeconds
+	};
+}
+function excelDateTimePartsToDate(parts, includeTime) {
+	const day = parts.year === 1900 && parts.month === 2 && parts.day === 29 ? 28 : parts.day;
+	return new Date(Date.UTC(parts.year, parts.month - 1, day, includeTime ? parts.hours : 0, includeTime ? parts.minutes : 0, includeTime ? parts.seconds : 0, includeTime ? Math.round(parts.fractionalSecond * 1e3) : 0));
+}
+/** Convert an Excel serial to a native UTC Date, keeping only its calendar date. Returns an invalid Date for invalid serials. */
+function excelSerialToDate(serial, dateSystem = "date1900") {
+	const parts = excelSerialToDateTimeParts(serial, { dateSystem });
+	return parts ? excelDateTimePartsToDate(parts, false) : /* @__PURE__ */ new Date(NaN);
+}
+/** Convert an Excel serial to a native UTC Date, including its time fraction. Returns an invalid Date for invalid serials. */
+function excelSerialToDateTime(serial, dateSystem = "date1900") {
+	const parts = excelSerialToDateTimeParts(serial, { dateSystem });
+	return parts ? excelDateTimePartsToDate(parts, true) : /* @__PURE__ */ new Date(NaN);
+}
+function excelDateTimePartsToSerial(parts, options) {
+	const { year, month, day, hours, minutes, seconds, fractionalSecond } = parts;
+	if (!Number.isInteger(hours) || hours < 0 || hours > 23 || !Number.isInteger(minutes) || minutes < 0 || minutes > 59 || !Number.isInteger(seconds) || seconds < 0 || seconds > 59 || !Number.isFinite(fractionalSecond) || fractionalSecond < 0 || fractionalSecond >= 1) return null;
+	if (options.dateSystem === "date1900" && year < 1900) return null;
+	let dateSerial = datePartsToExcel1900Serial(year, month, day);
+	if (dateSerial == null) return null;
+	if (options.dateSystem === "date1904") {
+		if (year === 1900 && month === 1 && day === 0 || year === 1900 && month === 2 && day === 29) return null;
+		dateSerial -= EXCEL_1904_OFFSET;
+	}
+	if (dateSerial < 0) return null;
+	return dateSerial + (hours * 3600 + minutes * 60 + seconds + fractionalSecond) / DAYSIZE$1;
+}
+function dateToExcelSerial(date, includeTime, dateSystem) {
+	if (!Number.isFinite(date.getTime())) return NaN;
+	const serial = excelDateTimePartsToSerial({
+		year: date.getUTCFullYear(),
+		month: date.getUTCMonth() + 1,
+		day: date.getUTCDate(),
+		hours: includeTime ? date.getUTCHours() : 0,
+		minutes: includeTime ? date.getUTCMinutes() : 0,
+		seconds: includeTime ? date.getUTCSeconds() : 0,
+		fractionalSecond: includeTime ? date.getUTCMilliseconds() / 1e3 : 0
+	}, { dateSystem });
+	if (serial != null) return serial;
+	return ((includeTime ? date.getTime() : Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())) - (dateSystem === "date1904" ? Date.UTC(1904, 0, 1) : Date.UTC(1899, 11, 31))) / MILLISECONDS_PER_DAY;
+}
+/** Convert a native UTC Date's calendar fields to an Excel date serial. */
+function excelDateSerial(date, dateSystem = "date1900") {
+	return dateToExcelSerial(date, false, dateSystem);
+}
+/** Convert a native UTC Date's calendar and clock fields to an Excel serial. */
+function excelDateTimeSerial(date, dateSystem = "date1900") {
+	return dateToExcelSerial(date, true, dateSystem);
+}
+/**
+* Convert a native JavaScript Date, or array to a spreadsheet serial date.
+*
+* Returns a serial date number if input was a Date object or an array of
+* numbers, or null.
+*/
+function dateToSerial(date, options) {
+	let timestamp = null;
+	if (Array.isArray(date)) {
+		const [year, month, day, hours, minutes, seconds] = date;
+		timestamp = dateUTC(year, month == null ? 0 : month - 1, day ?? 1, hours || 0, minutes || 0, seconds || 0);
+	} else if (date instanceof Date) {
+		timestamp = date.getTime();
+		if (!(options === null || options === void 0 ? void 0 : options.ignoreTimezone)) {
+			const localDate = /* @__PURE__ */ new Date();
+			localDate.setUTCFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+			localDate.setUTCHours(date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds());
+			timestamp = localDate.getTime();
+		}
+	}
+	if (timestamp != null && Number.isFinite(timestamp)) {
+		const days = timestamp / 864e5;
+		return days - (days <= -25509 ? -25568 : -25569);
+	}
+	return null;
+}
+/**
+* Convert a spreadsheet serial date to an array of date parts, accurate to a
+* second.
+*/
+function dateFromSerial(serial, options) {
+	let date = serial | 0;
+	const fractionalSeconds = DAYSIZE$1 * (serial - date);
+	let time = floor(fractionalSeconds);
+	if (fractionalSeconds - time > .9999) {
+		time += 1;
+		if (time === DAYSIZE$1) {
+			time = 0;
+			date += 1;
+		}
+	}
+	const normalizedTime = time < 0 ? DAYSIZE$1 + time : time;
+	const [year, month, day] = toYMD(serial, 0, options === null || options === void 0 ? void 0 : options.leap1900);
+	return [
+		year,
+		month,
+		day,
+		floor(normalizedTime / 60 / 60) % 60,
+		floor(normalizedTime / 60) % 60,
+		floor(normalizedTime) % 60
+	];
+}
+
+//#endregion
+//#region src/shared/numfmt/run-part.ts
+const DAYSIZE = 86400;
+function dateOverflows(inputValue, roundedValue, bigRange, dateSystem) {
+	if (bigRange) return inputValue < -694324 || roundedValue >= 35830291;
+	const maxDate = getDateSystemMaxSerial(dateSystem) + 1;
+	return inputValue < 0 || roundedValue >= maxDate;
+}
+function legacyRound(number, places = 0) {
+	if (number < 0) return -legacyRound(-number, places);
+	if (places) {
+		const power = 10 ** places || 1;
+		return legacyRound(number * power, 0) / power;
+	}
+	return Math.round(number);
+}
+function runPart(value, part, options, locale, decimalValue = null) {
+	const section = part;
+	let renderValue = value;
+	let numericValue = value;
+	let mantissa = "";
+	let mantissaSign = "";
+	let numerator = "";
+	let denominator = "";
+	let fraction = "";
+	let integer = "";
+	let exponent = 0;
+	let roundedNumber = null;
+	let date = 0;
+	if (typeof renderValue === "bigint") {
+		if (renderValue <= Number.MAX_SAFE_INTEGER && renderValue >= Number.MIN_SAFE_INTEGER) {
+			numericValue = Number(renderValue);
+			renderValue = numericValue;
+		} else return options.bigintErrorNumber ? String(renderValue) : options.overflow;
+		date = numericValue;
+	} else date = Math.trunc(numericValue);
+	let time = 0;
+	let year = 0;
+	let month = 1;
+	let day = 0;
+	let weekday = 0;
+	let hour = 0;
+	let minute = 0;
+	let second = 0;
+	let subsec = 0;
+	const l10n = locale || defaultLocale;
+	let decimal = decimalValue;
+	if (!decimal && typeof value === "number" && Number.isFinite(value)) decimal = decimalFromNumber(value);
+	if (decimal && !section.text && section.scaleExponent) decimal = shiftDecimal(decimal, section.scaleExponent);
+	if (!section.text && Number.isFinite(section.scale) && section.scale !== 1) {
+		numericValue = clamp(numericValue * section.scale);
+		renderValue = numericValue;
+	}
+	if (section.exponential && decimal && decimal.exponent >= -308) {
+		const scientific = roundScientificDecimal(decimal, section.int_max, Boolean(section.integer), section.frac_max);
+		exponent = scientific.exponent;
+		roundedNumber = scientific.rounded;
+		mantissa += Math.abs(exponent);
+	} else if (section.exponential) {
+		let significand = Math.abs(numericValue);
+		if (significand) exponent = getExponent(significand, section.int_max);
+		if (numericValue && !section.integer) exponent++;
+		significand = getSignificand(significand, exponent);
+		if (section.int_max === 1 && legacyRound(significand, section.frac_max) === 10) {
+			significand = 1;
+			exponent++;
+		}
+		numericValue = numericValue < 0 ? -significand : significand;
+		renderValue = numericValue;
+		mantissa += Math.abs(exponent);
+	}
+	const requiresDecimalRounding = !Number.isSafeInteger(numericValue) || Boolean(section.scaleExponent);
+	roundedNumber = roundedNumber || (decimal && requiresDecimalRounding && !section.date && !section.fractions && !section.exponential && (section.integer || section.dec_fractions) ? roundDecimal(decimal, section.frac_max) : null);
+	if (section.integer) if (roundedNumber) integer = roundedNumber.integer === "0" ? "" : roundedNumber.integer;
+	else {
+		const places = section.fractions ? 1 : section.frac_max;
+		const roundedInteger = Math.abs(Number.isSafeInteger(numericValue) && places === 0 ? numericValue : legacyRound(numericValue, places));
+		integer += roundedInteger < 1 ? "" : Math.floor(roundedInteger);
+	}
+	const primaryGroup = options.grouping[0] ?? 3;
+	const secondaryGroup = options.grouping[1] ?? primaryGroup;
+	if (section.dec_fractions) fraction = roundedNumber ? roundedNumber.fraction : String(legacyRound(numericValue, section.frac_max)).split(".")[1] || "";
+	const fixedSlash = !section.error && (section.num_p.includes("0") || section.den_p.includes("0"));
+	let haveFraction = fixedSlash;
+	if (section.fractions) {
+		haveFraction = fixedSlash || !!(numericValue % 1);
+		const decimal = Math.abs(section.integer ? numericValue % 1 : numericValue);
+		if (decimal) {
+			haveFraction = true;
+			if (section.denominator && Number.isFinite(section.denominator)) {
+				denominator += section.denominator;
+				numerator += legacyRound(decimal * section.denominator);
+				if (numerator === "0") {
+					numerator = "";
+					denominator = "";
+					haveFraction = fixedSlash;
+				}
+			} else {
+				const fractionParts = dec2frac(decimal, Infinity, section.den_max);
+				numerator += fractionParts[0];
+				denominator += fractionParts[1];
+				if (section.integer && numerator === "0") {
+					numerator = "";
+					denominator = "";
+					haveFraction = fixedSlash;
+				}
+			}
+		} else if (!numericValue && !section.integer) {
+			haveFraction = true;
+			numerator = "0";
+			denominator = "1";
+		}
+		if (section.integer && !haveFraction && !Math.trunc(numericValue)) integer = "0";
+	}
+	if (section.date) {
+		date = Math.trunc(numericValue);
+		const rawTime = DAYSIZE * (numericValue - date);
+		time = Math.floor(rawTime);
+		subsec = rawTime - time;
+		if (Math.abs(subsec) < 1e-6) subsec = 0;
+		else if (subsec > .9999) {
+			subsec = 0;
+			time += 1;
+			if (time === DAYSIZE) {
+				time = 0;
+				date += 1;
+			}
+		}
+		if (subsec) {
+			const minimumUnit = section.date & 512 || section.date & 256 || section.date & 128;
+			if (minimumUnit === 512 && subsec > .9995 || minimumUnit === 256 && subsec > .995 || minimumUnit === 128 && subsec > .95 || !minimumUnit && subsec >= .5) {
+				time++;
+				subsec = 0;
+			}
+		}
+		const dateSystem = section.date_system === 6 ? 6 : options.dateSystem === "date1904" ? -1 : section.date_system;
+		if (date || section.date_system) {
+			const dateOutput = toYMD(numericValue, dateSystem, options.leap1900);
+			year = dateOutput[0];
+			month = dateOutput[1];
+			day = dateOutput[2];
+		}
+		if (time) {
+			const normalizedTime = time < 0 ? DAYSIZE + time : time;
+			second = Math.floor(normalizedTime) % 60;
+			minute = Math.floor(normalizedTime / 60) % 60;
+			hour = Math.floor(normalizedTime / 60 / 60) % 60;
+		}
+		weekday = ((dateSystem === -1 ? 5 : 6) + date) % 7;
+		if (section.date_eval && dateOverflows(numericValue, date + time / DAYSIZE, options.dateSpanLarge, options.dateSystem)) {
+			if (options.dateErrorThrows) throw new Error("Date out of bounds");
+			if (options.dateErrorNumber) return general(numericValue < 0 ? [l10n.negative] : [], {}, numericValue, l10n, decimal).join("");
+			return options.overflow;
+		}
+	}
+	const questionPadding = pad$1("?", options.nbsp);
+	if (exponent < 0) mantissaSign = "-";
+	else if (section.exp_plus) mantissaSign = "+";
+	const output = [];
+	const digitsStart = (numberString, pattern, tokenPattern, offset) => {
+		let normalizedOffset = offset;
+		const length = !normalizedOffset && numberString.length > pattern.length ? tokenPattern.length + numberString.length - pattern.length : tokenPattern.length;
+		if (numberString.length < pattern.length) normalizedOffset += numberString.length - pattern.length;
+		for (let index = 0; index < length; index++) output.push(numberString[index + normalizedOffset] || pad$1(tokenPattern[index], options.nbsp));
+		return length;
+	};
+	let denominatorFixed = false;
+	const counter = {
+		int: 0,
+		frac: 0,
+		man: 0,
+		num: 0,
+		den: 0
+	};
+	for (let tokenIndex = 0, tokenLength = section.tokens.length; tokenIndex < tokenLength; tokenIndex++) {
+		const token = section.tokens[tokenIndex];
+		const tokenType = token.type;
+		const length = token.num ? token.num.length : 0;
+		if (tokenType === "string") {
+			const tokenValue = token.value;
+			if (token.rule) {
+				if (token.rule === "num") {
+					if (haveFraction) output.push(tokenValue.replace(/ /g, questionPadding));
+					else if (section.num_min > 0 || section.den_min > 0) output.push(tokenValue.replace(/./g, questionPadding));
+				} else if (token.rule === "num+int") {
+					if (haveFraction && integer) output.push(tokenValue.replace(/ /g, questionPadding));
+					else if (section.den_min > 0 && (integer || section.num_min)) output.push(tokenValue.replace(/./g, questionPadding));
+				} else if (token.rule === "den") {
+					if (haveFraction) output.push(tokenValue.replace(/ /g, questionPadding));
+					else if (section.den_min > 0) output.push(tokenValue.replace(/./g, questionPadding));
+				}
+			} else output.push(tokenValue.replace(/ /g, questionPadding));
+		} else if (tokenType === "space") if (token.rule === "num+int") {
+			if ((haveFraction || section.num_min || section.den_min) && (integer || section.num_min)) output.push(questionPadding);
+		} else output.push(questionPadding);
+		else if (tokenType === "error") output.push(options.invalid);
+		else if (tokenType === "point") output.push(section.date ? token.value : l10n.decimal);
+		else if (tokenType === "general") general(output, section, renderValue, l10n, decimal);
+		else if (tokenType === "exp") output.push(l10n.exponent);
+		else if (tokenType === "minus") if (token.volatile && section.date) {} else if (token.volatile && roundedNumber) {
+			if (roundedNumber.negative && !roundedNumber.zero) output.push(l10n.negative);
+		} else if (token.volatile && (numericValue >= 0 || typeof renderValue !== "number")) {} else if (token.volatile && !section.fractions && (section.integer || section.dec_fractions)) {
+			if (numericValue < 0 && !!integer && integer !== "0" || fraction) output.push(l10n.negative);
+		} else output.push(l10n.negative);
+		else if (tokenType === "plus") output.push(l10n.positive);
+		else if (tokenType === "text") output.push(renderValue);
+		else if (tokenType === "fill") {
+			if (options.fillChar) output.push(options.fillChar, token.value);
+		} else if (tokenType === "skip") if (options.skipChar) output.push(options.skipChar, token.value);
+		else output.push(options.nbsp ? "\xA0" : " ");
+		else if (tokenType === "div") if (haveFraction) output.push("/");
+		else if (section.num_min > 0 || section.den_min > 0) output.push(questionPadding);
+		else output.push(pad$1("#", options.nbsp));
+		else if (tokenType === "int") if (section.int_pattern.length === 1) {
+			const pattern = section.int_p;
+			const length = Math.max(section.int_min, integer.length);
+			let digits = "";
+			for (let index = length; index > 0; index--) {
+				const digit = integer.charAt(integer.length - index);
+				const patternDigit = digit ? "" : pattern.charAt(pattern.length - index) || pattern[0];
+				let separator = "";
+				if (section.grouping) {
+					const groupIndex = index - 1 - primaryGroup;
+					if (groupIndex >= 0 && !(groupIndex % secondaryGroup)) separator = digit || patternDigit === "0" ? l10n.group : pad$1("?", options.nbsp);
+				}
+				digits += (digit || pad$1(patternDigit, options.nbsp)) + separator;
+			}
+			output.push(digits);
+		} else counter.int += digitsStart(integer, section.int_p, token.num, counter.int);
+		else if (tokenType === "frac") {
+			const offset = counter.frac;
+			for (let index = 0; index < length; index++) output.push(fraction[index + offset] || pad$1(token.num[index], options.nbsp));
+			counter.frac += length;
+		} else if (tokenType === "man") {
+			if (!counter[tokenType] && !counter.man) output.push(mantissaSign);
+			counter.man += digitsStart(mantissa, section.man_p, token.num, counter.man);
+		} else if (tokenType === "num") counter.num += digitsStart(numerator, section.num_p, token.num, counter.num);
+		else if (tokenType === "den") {
+			const offset = counter.den;
+			for (let index = 0; index < length; index++) {
+				let digit = denominator[index + offset];
+				if (!digit) {
+					const char = token.num[index];
+					if ("123456789".includes(char) || denominatorFixed && char === "0") {
+						denominatorFixed = true;
+						digit = options.nbsp ? "\xA0" : " ";
+					} else if (!denominatorFixed && index === length - 1 && char === "0" && !denominator) digit = "1";
+					else digit = pad$1(char, options.nbsp);
+				}
+				output.push(digit);
+			}
+			counter.den += length;
+		} else if (tokenType === "year") {
+			if (year < 0) output.push(l10n.negative);
+			output.push(String(Math.abs(year)).padStart(4, "0"));
+		} else if (tokenType === "year-short") {
+			const shortYear = year % 100;
+			output.push(shortYear < 10 ? "0" : "", shortYear);
+		} else if (tokenType === "month") output.push(token.pad && month < 10 ? "0" : "", month);
+		else if (tokenType === "monthname-single") if (section.date_system === 6) output.push(l10n.mmmm6[month - 1].charAt(0));
+		else output.push(l10n.mmmm[month - 1].charAt(0));
+		else if (tokenType === "monthname-short") if (section.date_system === 6) output.push(l10n.mmm6[month - 1]);
+		else output.push(l10n.mmm[month - 1]);
+		else if (tokenType === "monthname") if (section.date_system === 6) output.push(l10n.mmmm6[month - 1]);
+		else output.push(l10n.mmmm[month - 1]);
+		else if (token.type === "weekday-short") output.push(l10n.ddd[weekday]);
+		else if (tokenType === "weekday") output.push(l10n.dddd[weekday]);
+		else if (tokenType === "day") output.push(token.pad && day < 10 ? "0" : "", day);
+		else if (tokenType === "hour") {
+			const displayHour = hour % section.clock || (section.clock < 24 ? section.clock : 0);
+			output.push(token.pad && displayHour < 10 ? "0" : "", displayHour);
+		} else if (tokenType === "min") output.push(token.pad && minute < 10 ? "0" : "", minute);
+		else if (tokenType === "sec") output.push(token.pad && second < 10 ? "0" : "", second);
+		else if (tokenType === "subsec") {
+			output.push(l10n.decimal);
+			const formattedSubseconds = subsec.toFixed(section.sec_decimals);
+			output.push(formattedSubseconds.slice(2, 2 + token.decimals));
+		} else if (tokenType === "ampm") {
+			const index = hour < 12 ? 0 : 1;
+			if (token.short && !locale) output.push("AP"[index]);
+			else output.push(l10n.ampm[index]);
+		} else if (tokenType === "hour-elap") {
+			if (numericValue < 0) output.push(l10n.negative);
+			const elapsedHours = date * 24 + Math.floor(Math.abs(time) / 3600);
+			output.push(String(Math.abs(elapsedHours)).padStart(token.pad, "0"));
+		} else if (tokenType === "min-elap") {
+			if (numericValue < 0) output.push(l10n.negative);
+			const elapsedMinutes = date * 1440 + Math.floor(Math.abs(time) / 60);
+			output.push(String(Math.abs(elapsedMinutes)).padStart(token.pad, "0"));
+		} else if (tokenType === "sec-elap") {
+			if (numericValue < 0) output.push(l10n.negative);
+			const elapsedSeconds = date * DAYSIZE + Math.abs(time);
+			output.push(String(Math.abs(elapsedSeconds)).padStart(token.pad, "0"));
+		} else if (tokenType === "b-year") output.push(year + 543);
+		else if (tokenType === "b-year-short") {
+			const shortYear = (year + 543) % 100;
+			output.push(shortYear < 10 ? "0" : "", shortYear);
+		}
+	}
+	return output.join("");
+}
+
+//#endregion
+//#region src/shared/numfmt/format-number.ts
+const defaultText = parseFormatSection([{
+	type: TOKEN_TEXT,
+	value: "@",
+	raw: "@"
+}]);
+function isParsedSection$2(part) {
+	return !!part && "scale" in part;
+}
+/** Select the same conditional/sign format section for both display formatting and editor-value formatting. */
+function getValueFormatSection(value, parts) {
+	for (let partIndex = 0; partIndex < 3; partIndex++) {
+		const part = parts[partIndex];
+		if (isParsedSection$2(part)) {
+			let condition;
+			if (part.condition) {
+				const operator = part.condition[0];
+				const operand = part.condition[1];
+				if (operator === "=") condition = value === operand;
+				else if (operator === ">") condition = value > operand;
+				else if (operator === "<") condition = value < operand;
+				else if (operator === ">=") condition = value >= operand;
+				else if (operator === "<=") condition = value <= operand;
+				else if (operator === "<>") condition = value !== operand;
+			} else condition = true;
+			if (condition) return part;
+		} else if (part) return part;
+	}
+}
+function formatColor$1(value, pattern, options) {
+	const parts = pattern.partitions;
+	let part = parts[3];
+	let color = null;
+	if ((typeof value === "number" || typeof value === "bigint") && isFinite(value)) part = getValueFormatSection(value, parts);
+	if (isParsedSection$2(part) && part.color) color = part.color;
+	if (color && typeof color === "number" && options.indexColors) color = indexColors[color - 1] || "#000";
+	return color;
+}
+function formatValue(value, pattern, options) {
+	const parts = pattern.partitions;
+	const locale = getLocale(pattern.locale || options.locale);
+	let renderValue = value;
+	const textPart = parts[3] ? parts[3] : defaultText;
+	if (typeof renderValue === "boolean") renderValue = (locale || defaultLocale).bool[renderValue ? 0 : 1];
+	if (renderValue == null) return "";
+	const isBigInt = typeof renderValue === "bigint";
+	if (typeof renderValue !== "number" && !isBigInt) return runPart(renderValue, textPart, options, locale);
+	if (!isBigInt && !Number.isFinite(renderValue)) {
+		const resolvedLocale = locale || defaultLocale;
+		if (Number.isNaN(renderValue)) return resolvedLocale.nan;
+		return (renderValue < 0 ? resolvedLocale.negative : "") + resolvedLocale.infinity;
+	}
+	const part = getValueFormatSection(value, parts);
+	const decimalValue = part && typeof value === "number" && Number.isFinite(value) ? decimalFromNumber(value) : null;
+	return part ? runPart(value, part, options, locale, decimalValue) : options.overflow;
+}
+
+//#endregion
+//#region src/shared/numfmt/date-time-edit-pattern.ts
+function isParsedSection$1(section) {
+	return !!section && "scale" in section;
+}
+function getDateComponent(token, tokenIndex) {
+	if (token.type === "year" || token.type === "year-short") return {
+		type: "year",
+		pattern: "yyyy",
+		tokenIndex
+	};
+	if (token.type === "month") return {
+		type: "month",
+		pattern: token.pad ? "mm" : "m",
+		tokenIndex
+	};
+	if (token.type === "day") return {
+		type: "day",
+		pattern: token.pad ? "dd" : "d",
+		tokenIndex
+	};
+	return null;
+}
+function isComplexDateToken(token) {
+	return token.type.startsWith("b-year") || token.type.startsWith("monthname") || token.type.startsWith("weekday");
+}
+function getSeparator(tokens, leftIndex, rightIndex) {
+	if (rightIndex !== leftIndex + 2) return null;
+	const token = tokens[leftIndex + 1];
+	return token.value === "-" || token.value === "/" ? token.value : null;
+}
+function getMissingComponentPattern(components, type) {
+	const related = components.find((component) => component.type === (type === "day" ? "month" : "day"));
+	const padded = (related === null || related === void 0 ? void 0 : related.pattern.length) === 2;
+	if (type === "day") return padded ? "dd" : "d";
+	return padded ? "mm" : "m";
+}
+function completeNumericDatePattern(components, separator) {
+	const types = components.map((component) => component.type).join("");
+	if (new Set(components.map((component) => component.type)).size !== components.length) return null;
+	const patterns = new Map(components.map((component) => [component.type, component.pattern]));
+	patterns.set("year", "yyyy");
+	if (!patterns.has("month")) patterns.set("month", getMissingComponentPattern(components, "month"));
+	if (!patterns.has("day")) patterns.set("day", getMissingComponentPattern(components, "day"));
+	const order = {
+		daymonth: [
+			"day",
+			"month",
+			"year"
+		],
+		daymonthyear: [
+			"day",
+			"month",
+			"year"
+		],
+		dayyear: [
+			"day",
+			"month",
+			"year"
+		],
+		monthday: [
+			"year",
+			"month",
+			"day"
+		],
+		monthdayyear: [
+			"month",
+			"day",
+			"year"
+		],
+		monthyear: [
+			"month",
+			"day",
+			"year"
+		],
+		yearmonth: [
+			"year",
+			"month",
+			"day"
+		],
+		yearmonthday: [
+			"year",
+			"month",
+			"day"
+		],
+		yearday: [
+			"year",
+			"month",
+			"day"
+		]
+	}[types];
+	return order ? order.map((type) => patterns.get(type)).join(separator) : null;
+}
+function getDatePattern(section) {
+	const components = section.tokens.map((token, tokenIndex) => getDateComponent(token, tokenIndex)).filter((component) => component !== null);
+	if (!components.length) return null;
+	if (components.length < 2 || components.length > 3 || section.locale || section.date_system !== 1 || section.tokens.some(isComplexDateToken)) return "yyyy/mm/dd";
+	const separators = components.slice(1).map((component, index) => getSeparator(section.tokens, components[index].tokenIndex, component.tokenIndex));
+	const separator = separators[0];
+	if (!separator || separators.some((item) => item !== separator)) return "yyyy/mm/dd";
+	return completeNumericDatePattern(components, separator) ?? "yyyy/mm/dd";
+}
+function getTimePattern(section) {
+	const hourIndex = section.tokens.findIndex((token) => token.type === "hour");
+	const minuteToken = section.tokens.find((token) => token.type === "min");
+	const ampmIndex = section.tokens.findIndex((token) => token.type === "ampm");
+	const ampmToken = ampmIndex < 0 ? void 0 : section.tokens[ampmIndex];
+	if (!(hourIndex >= 0 || !!minuteToken || section.tokens.some((token) => token.type === "sec") || !!ampmToken)) return null;
+	const hourToken = hourIndex < 0 ? void 0 : section.tokens[hourIndex];
+	const clock = `${(hourToken === null || hourToken === void 0 ? void 0 : hourToken.pad) ? "hh" : "h"}:${(minuteToken === null || minuteToken === void 0 ? void 0 : minuteToken.pad) === false ? "m" : "mm"}:ss`;
+	if (!ampmToken || typeof ampmToken.value !== "string") return clock;
+	return ampmIndex < hourIndex ? `${ampmToken.value} ${clock}` : `${clock} ${ampmToken.value}`;
+}
+function createDateTimeEditPattern(partitions, value) {
+	const section = getValueFormatSection(value, partitions);
+	if (!isParsedSection$1(section) || section.tokens.some((token) => token.type.endsWith("-elap"))) return null;
+	const datePattern = getDatePattern(section);
+	const timePattern = getTimePattern(section);
+	if (datePattern && timePattern) return `${datePattern} ${timePattern}`;
+	return datePattern ?? timePattern;
+}
+
+//#endregion
+//#region src/shared/numfmt/format-info.ts
+function isParsedSection(part) {
+	return !!part && "scale" in part;
+}
+function isGenerated(part) {
+	return !!part && "generated" in part && Boolean(part.generated);
+}
+function isPercent(partitions) {
+	return !!(isParsedSection(partitions[0]) && partitions[0].percent || isParsedSection(partitions[1]) && partitions[1].percent || isParsedSection(partitions[2]) && partitions[2].percent || isParsedSection(partitions[3]) && partitions[3].percent);
+}
+function isDate(partitions) {
+	return !!(isParsedSection(partitions[0]) && partitions[0].date || isParsedSection(partitions[1]) && partitions[1].date || isParsedSection(partitions[2]) && partitions[2].date || isParsedSection(partitions[3]) && partitions[3].date);
+}
+function isText(partitions) {
+	const [part1, part2, part3, part4] = partitions;
+	return !!((!part1 || isGenerated(part1)) && (!part2 || isGenerated(part2)) && (!part3 || isGenerated(part3)) && isParsedSection(part4) && part4.text && !isGenerated(part4));
+}
+const level = {
+	text: 15,
+	datetime: 10.8,
+	date: 10.8,
+	time: 10.8,
+	percent: 10.6,
+	currency: 10.4,
+	grouped: 10.2,
+	scientific: 6,
+	number: 4,
+	fraction: 2,
+	general: 0,
+	error: 0
+};
+const dateCodes = [
+	["DMY", 1],
+	["DM", 2],
+	["MY", 3],
+	["MDY", 4],
+	["MD", 5],
+	["hmsa", 6],
+	["hma", 7],
+	["hms", 8],
+	["hm", 9]
+];
+function info(partitions, currencyId = null) {
+	const [partPositive, partNegative] = partitions;
+	if (!partPositive) throw new TypeError("Cannot read properties of undefined (reading 'frac_max')");
+	const positive = isParsedSection(partPositive) ? partPositive : void 0;
+	const negative = isParsedSection(partNegative) ? partNegative : void 0;
+	const isError = "error" in partPositive;
+	const fracMax = positive === null || positive === void 0 ? void 0 : positive.frac_max;
+	const output = {
+		type: "general",
+		isDate: isDate(partitions),
+		isText: isText(partitions),
+		isPercent: isPercent(partitions),
+		maxDecimals: (positive === null || positive === void 0 ? void 0 : positive.general) ? 9 : fracMax ?? 0,
+		scale: (positive === null || positive === void 0 ? void 0 : positive.scale) ?? 1,
+		color: 0,
+		parentheses: 0,
+		grouped: (positive === null || positive === void 0 ? void 0 : positive.grouping) ? 1 : 0,
+		code: "",
+		level: 0
+	};
+	const isCurrency = !output.isDate && !output.isText && !isError && partPositive.tokens.some((token) => token.type === "string" && typeof token.value === "string" && (currencyId ? token.value === currencyId : reCurrencySymbols.test(token.value)));
+	let codeType = "G";
+	let codeNumber = fracMax !== void 0 && fracMax >= 0 ? Math.min(15, fracMax) : "";
+	let codeParentheses = "";
+	let codeDash = "";
+	if (negative === null || negative === void 0 ? void 0 : negative.color) {
+		codeDash = "-";
+		output.color = 1;
+	}
+	if (positive === null || positive === void 0 ? void 0 : positive.parens) {
+		codeParentheses = "()";
+		output.parentheses = 1;
+	}
+	if (isCurrency) {
+		codeType = "C";
+		output.type = "currency";
+	} else if (isError) {
+		output.type = "error";
+		output.maxDecimals = 0;
+	} else if (output.isDate) {
+		let haveTime = 0;
+		let haveDate = 0;
+		let order = "";
+		partPositive.tokens.forEach((token) => {
+			const type = token.type;
+			if (/^(b-)?year/.test(type)) {
+				order += "Y";
+				haveDate++;
+			} else if (type.startsWith("month")) {
+				order += "M";
+				haveDate++;
+			} else if (/^(week)?day/.test(type)) {
+				order += "D";
+				haveDate++;
+			} else if (type === "hour" || type === "min" || type === "sec" || type === "ampm") {
+				order += type[0];
+				haveTime++;
+			}
+		});
+		output.type = "date";
+		if (haveDate && haveTime) output.type = "datetime";
+		else if (!haveDate && haveTime) output.type = "time";
+		const code = dateCodes.find(([prefix]) => order.startsWith(prefix));
+		codeType = code ? "D" : "G";
+		codeNumber = code ? code[1] : "";
+	} else if (output.isText) {
+		codeType = "G";
+		output.type = "text";
+		codeNumber = "";
+		output.maxDecimals = 0;
+	} else if (positive === null || positive === void 0 ? void 0 : positive.general) {
+		codeType = "G";
+		output.type = "general";
+		codeNumber = "";
+	} else if (positive === null || positive === void 0 ? void 0 : positive.fractions) {
+		codeType = "G";
+		output.type = "fraction";
+		codeNumber = "";
+	} else if (positive === null || positive === void 0 ? void 0 : positive.exponential) {
+		codeType = "S";
+		output.type = "scientific";
+	} else if (output.isPercent) {
+		codeType = "P";
+		output.type = "percent";
+	} else if (positive === null || positive === void 0 ? void 0 : positive.grouping) {
+		codeType = ",";
+		output.type = "grouped";
+	} else if (positive && (positive.int_max || fracMax)) {
+		codeType = "F";
+		output.type = "number";
+	}
+	output.code = codeType + codeNumber + codeDash + codeParentheses;
+	output.level = level[output.type];
+	return Object.freeze(output);
+}
+function dateInfo(partitions) {
+	const [partPositive] = partitions;
+	if (!partPositive) throw new TypeError("Cannot read properties of undefined (reading 'date')");
+	const positive = isParsedSection(partPositive) ? partPositive : void 0;
+	const date = (positive === null || positive === void 0 ? void 0 : positive.date) ?? 0;
+	return {
+		year: !!(date & 2),
+		month: !!(date & 4),
+		day: !!(date & 8),
+		hours: !!(date & 16),
+		minutes: !!(date & 32),
+		seconds: !!(date & 64),
+		isDuration: (positive === null || positive === void 0 ? void 0 : positive.tokens.some((token) => token.type.endsWith("-elap"))) ?? false,
+		clockType: (positive === null || positive === void 0 ? void 0 : positive.clock) === 12 ? 12 : 24
+	};
+}
+
+//#endregion
+//#region src/shared/numfmt/options.ts
+const defaultOptions = {
+	overflow: "######",
+	dateErrorThrows: false,
+	dateErrorNumber: false,
+	bigintErrorNumber: false,
+	dateSpanLarge: false,
+	leap1900: true,
+	dateSystem: "date1900",
+	nbsp: false,
+	throws: true,
+	invalid: "######",
+	locale: "",
+	ignoreTimezone: false,
+	grouping: [3, 3],
+	indexColors: true,
+	skipChar: "",
+	fillChar: ""
+};
+
+//#endregion
+//#region src/shared/numfmt/tokenize.ts
+const tokenHandlers = [
+	[
+		TOKEN_GENERAL,
+		/^General/i,
+		0
+	],
+	[
+		TOKEN_HASH,
+		/^#/,
+		0
+	],
+	[
+		TOKEN_ZERO,
+		/^0/,
+		0
+	],
+	[
+		TOKEN_QMARK,
+		/^\?/,
+		0
+	],
+	[
+		TOKEN_SLASH,
+		/^\//,
+		0
+	],
+	[
+		TOKEN_BREAK,
+		/^;/,
+		0
+	],
+	[
+		TOKEN_TEXT,
+		/^@/,
+		0
+	],
+	[
+		TOKEN_PLUS,
+		/^\+/,
+		0
+	],
+	[
+		TOKEN_MINUS,
+		/^-/,
+		0
+	],
+	[
+		TOKEN_POINT,
+		/^\./,
+		0
+	],
+	[
+		TOKEN_SPACE,
+		/^ /,
+		0
+	],
+	[
+		TOKEN_PERCENT,
+		/^%/,
+		0
+	],
+	[
+		TOKEN_DIGIT,
+		/^[1-9]/,
+		0
+	],
+	[
+		TOKEN_CALENDAR,
+		/^(?:B[12])/i,
+		0
+	],
+	[
+		TOKEN_ERROR,
+		/^B$/,
+		0
+	],
+	[
+		TOKEN_DATETIME,
+		/^(?:[hH]+|[mM]+|[sS]+|[yY]+|[bB]+|[dD]+|[gG]+|[aA]{3,}|e+)/,
+		0
+	],
+	[
+		TOKEN_DURATION,
+		/^(?:\[(h+|m+|s+)\])/i,
+		1
+	],
+	[
+		TOKEN_CONDITION,
+		/^\[(<[=>]?|>=?|=)\s*(-?[.\d]+)\]/,
+		[1, 2]
+	],
+	[
+		TOKEN_DBNUM,
+		/^\[(DBNum[0-4]?\d)\]/i,
+		1
+	],
+	[
+		TOKEN_NATNUM,
+		/^\[(NatNum[0-4]?\d)\]/i,
+		1
+	],
+	[
+		TOKEN_LOCALE,
+		/^\[\$([^\]]+)\]/,
+		1
+	],
+	[
+		TOKEN_COLOR,
+		/^\[(black|blue|cyan|green|magenta|red|white|yellow|color\s*\d+)\]/i,
+		1
+	],
+	[
+		TOKEN_MODIFIER,
+		/^\[([^\]]+)\]/,
+		1
+	],
+	[
+		TOKEN_AMPM,
+		/^(?:AM\/PM|am\/pm|A\/P)/,
+		0
+	],
+	[
+		TOKEN_ESCAPED,
+		/^\\(.)/,
+		1
+	],
+	[
+		TOKEN_STRING,
+		/^"([^"]*?)"/,
+		1
+	],
+	[
+		TOKEN_SKIP,
+		/^_(\\.|.)/,
+		1
+	],
+	[
+		"exp",
+		/^[Ee]([+-])/,
+		1
+	],
+	[
+		TOKEN_FILL,
+		/^\*(\\.|.)/,
+		1
+	],
+	[
+		TOKEN_PAREN,
+		/^[()]/,
+		0
+	],
+	[
+		TOKEN_ERROR,
+		/^[EÈÉÊËèéêëĒēĔĕĖėĘęĚěȄȅȆȇȨȩNnÑñŃńŅņŇňǸǹ["*/\\_]/,
+		0
+	],
+	[
+		TOKEN_CHAR,
+		/^./,
+		0
+	]
+];
+const CODE_QMRK = 63;
+const CODE_HASH = 35;
+const CODE_ZERO = 48;
+const CODE_NINE = 57;
+const isNumOp = (char) => {
+	const code = (char || "\0").charCodeAt(0);
+	return code === CODE_QMRK || code === CODE_HASH || code >= CODE_ZERO && code <= CODE_NINE;
+};
+/**
+* Breaks a format pattern string into a list of tokens.
+*/
+function tokenize(pattern) {
+	let index = 0;
+	const tokens = [];
+	const unresolvedCommas = [];
+	while (index < pattern.length) {
+		const current = pattern.slice(index);
+		let step = 0;
+		const commaMatch = /^(,+)(.)?/.exec(current);
+		if (commaMatch) {
+			const raw = commaMatch[1];
+			step = raw.length;
+			const lookBehind = pattern[index - 1] || "";
+			let maybeGroup = false;
+			let maybeScale = false;
+			if (isNumOp(lookBehind)) {
+				maybeGroup = true;
+				maybeScale = true;
+			} else if (lookBehind === ".") maybeScale = true;
+			const lookAhead = commaMatch[2] || "";
+			if (maybeGroup && (!lookAhead || lookAhead === ";")) maybeGroup = false;
+			if (maybeScale && isNumOp(lookAhead)) maybeScale = false;
+			if (maybeGroup && !maybeScale) tokens.push({
+				type: TOKEN_GROUP,
+				value: ",",
+				raw
+			});
+			else if (!maybeGroup && maybeScale) tokens.push({
+				type: TOKEN_SCALE,
+				value: ",",
+				raw
+			});
+			else if (maybeGroup && maybeScale) {
+				const token = {
+					type: TOKEN_SCALE,
+					value: ",",
+					raw
+				};
+				tokens.push(token);
+				unresolvedCommas.push(token);
+			} else tokens.push({
+				type: TOKEN_COMMA,
+				value: ",",
+				raw
+			});
+		} else {
+			let token;
+			for (const [type, expression, group] of tokenHandlers) {
+				const match = expression.exec(current);
+				if (match) {
+					token = {
+						type,
+						value: typeof group !== "number" ? group.map((matchIndex) => match[matchIndex]) : match[group || 0],
+						raw: match[0]
+					};
+					tokens.push(token);
+					step = match[0].length;
+					break;
+				}
+			}
+			if (unresolvedCommas.length && (token === null || token === void 0 ? void 0 : token.raw) === ";") unresolvedCommas.length = 0;
+			if (unresolvedCommas.length && isNumOp(token === null || token === void 0 ? void 0 : token.raw)) {
+				unresolvedCommas.forEach((unresolved) => unresolved.type = TOKEN_GROUP);
+				unresolvedCommas.length = 0;
+			}
+		}
+		if (!step) {
+			const raw = current[0];
+			step = 1;
+			tokens.push({
+				type: TOKEN_CHAR,
+				value: raw,
+				raw
+			});
+		}
+		index += step;
+	}
+	return tokens;
+}
+
+//#endregion
+//#region src/shared/numfmt/parse-pattern.ts
+function maybeAddMinus(part) {
+	var _part$condition, _part$condition2;
+	const operator = (_part$condition = part.condition) === null || _part$condition === void 0 ? void 0 : _part$condition[0];
+	const value = (_part$condition2 = part.condition) === null || _part$condition2 === void 0 ? void 0 : _part$condition2[1];
+	if (!(typeof value === "number" && value < 0 && (operator === "<" || operator === "<=" || operator === "=") || value === 0 && operator === "<")) part.tokens.unshift({
+		type: "minus",
+		volatile: true
+	});
+}
+function clonePart(part, prefixToken = null) {
+	const result = {
+		...part,
+		int_pattern: [...part.int_pattern],
+		frac_pattern: [...part.frac_pattern],
+		man_pattern: [...part.man_pattern],
+		den_pattern: [...part.den_pattern],
+		num_pattern: [...part.num_pattern],
+		tokens: [...part.tokens]
+	};
+	if (part.condition) result.condition = [...part.condition];
+	if (prefixToken) result.tokens.unshift(prefixToken);
+	result.generated = true;
+	return result;
+}
+function parsePattern(pattern) {
+	const partitions = [];
+	let conditional = false;
+	let localeOverride;
+	let textPartition = null;
+	let more = 0;
+	let index = 0;
+	let conditions = 0;
+	let tokens = tokenize(pattern);
+	do {
+		var _tokens$part$tokensUs;
+		const part = parseFormatSection(tokens);
+		if ((part.date || part.general) && (part.int_pattern.length || part.frac_pattern.length || part.scale !== 1 || part.text)) throw new Error("Illegal format");
+		if (part.condition) {
+			conditions++;
+			conditional = true;
+		}
+		if (part.text) {
+			if (textPartition) throw new Error("Unexpected partition");
+			textPartition = part;
+		}
+		if (part.locale) localeOverride = resolveLocale(part.locale);
+		partitions.push(part);
+		more = ((_tokens$part$tokensUs = tokens[part.tokensUsed]) === null || _tokens$part$tokensUs === void 0 ? void 0 : _tokens$part$tokensUs.type) === "break" ? 1 : 0;
+		tokens = tokens.slice(part.tokensUsed + more);
+		index++;
+	} while (more && index < 4 && conditions < 3);
+	if (more) throw new Error("Unexpected partition");
+	if (conditions > 2) throw new Error("Unexpected condition");
+	const fourthPart = partitions[3];
+	if (fourthPart && (fourthPart.int_pattern.length || fourthPart.frac_pattern.length || fourthPart.date)) throw new Error("Unexpected partition");
+	if (conditional) {
+		if (!partitions[0].condition) partitions[0].condition = [">", 0];
+		const numberOfParts = partitions.length;
+		if (numberOfParts === 1) {
+			const fallback = parseFormatSection(tokenize("General"));
+			fallback.generated = true;
+			partitions[1] = fallback;
+		}
+		if (numberOfParts <= 2) {}
+		if (numberOfParts < 3) {
+			const firstPart = partitions[0];
+			const secondPart = partitions[1];
+			maybeAddMinus(firstPart);
+			if (secondPart.condition) maybeAddMinus(secondPart);
+			else {
+				const condition = firstPart.condition;
+				if ((condition === null || condition === void 0 ? void 0 : condition[0]) === "=" || typeof (condition === null || condition === void 0 ? void 0 : condition[1]) === "number" && condition[1] >= 0 && (condition[0] === ">" || condition[0] === ">=")) secondPart.tokens.unshift({
+					type: "minus",
+					volatile: true
+				});
+			}
+		} else partitions.forEach(maybeAddMinus);
+	} else {
+		if (partitions.length < 4 && textPartition) {
+			for (let partitionIndex = 0, length = partitions.length; partitionIndex < length; partitionIndex++) if (partitions[partitionIndex] === textPartition) partitions.splice(partitionIndex, 1);
+		}
+		if (partitions.length < 1 && textPartition) {
+			const positive = parseFormatSection(tokenize("General"));
+			positive.generated = true;
+			partitions[0] = positive;
+		}
+		if (partitions.length < 2) partitions.push(clonePart(partitions[0], {
+			type: "minus",
+			volatile: true
+		}));
+		if (partitions.length < 3) partitions.push(clonePart(partitions[0]));
+		if (partitions.length < 4) if (textPartition) partitions.push(textPartition);
+		else {
+			const text = parseFormatSection(tokenize("@"));
+			text.generated = true;
+			partitions.push(text);
+		}
+		partitions[0].condition = [">", 0];
+		partitions[1].condition = ["<", 0];
+		partitions[2].condition = null;
+	}
+	return {
+		pattern,
+		partitions,
+		locale: localeOverride
+	};
+}
+
+//#endregion
+//#region src/shared/numfmt/parse-value.ts
+const okDateFormats = [
+	"!d-m-y",
+	"!d-m-Y",
+	"!j-m-y",
+	"!j-m-Y",
+	"!d-n-y",
+	"!d-n-Y",
+	"!j-n-y",
+	"!j-n-Y",
+	"?m-d-y",
+	"?m-d-Y",
+	"?m-j-y",
+	"?m-j-Y",
+	"?n-d-y",
+	"?n-d-Y",
+	"?n-j-y",
+	"?n-j-Y",
+	"d-M-y",
+	"d-M-Y",
+	"j-M-y",
+	"j-M-Y",
+	"M-d-y",
+	"M-d-Y",
+	"M-j-y",
+	"M-j-Y",
+	"d-F-y",
+	"d-F-Y",
+	"F-d-y",
+	"F-d-Y",
+	"F-j-y",
+	"F-j-Y",
+	"j-F-y",
+	"j-F-Y",
+	"y-F-d",
+	"y-F-j",
+	"y-M-d",
+	"y-M-j",
+	"Y-F-d",
+	"Y-F-j",
+	"Y-M-d",
+	"Y-m-d",
+	"Y-M-j",
+	"Y-m-j",
+	"Y-n-d",
+	"Y-n-j",
+	"j-F",
+	"j-M",
+	"d-F",
+	"d-M",
+	"n-d",
+	"n-j",
+	"n-Y",
+	"m-d",
+	"m-j",
+	"m-Y",
+	"M-Y",
+	"M-y",
+	"F-y",
+	"F-Y",
+	"Y-M",
+	"Y-n",
+	"Y-m",
+	"Y-F",
+	"Y-M"
+];
+const tx0 = {
+	j: "d",
+	d: "d",
+	D: "ddd",
+	l: "dddd",
+	n: "m",
+	m: "m",
+	M: "mmm",
+	F: "mmmm",
+	y: "yy",
+	Y: "yyyy"
+};
+const tx00 = {
+	j: "dd",
+	d: "dd",
+	D: "ddd",
+	l: "dddd",
+	n: "mm",
+	m: "mm",
+	M: "mmm",
+	F: "mmmm",
+	y: "yy",
+	Y: "yyyy"
+};
+const dateTrieDM = {};
+const dateTrieMD = {};
+function packDate(format, node, allowType = 1) {
+	if (format) {
+		const char = format[0];
+		const next = format.slice(1);
+		if (char === "!") packDate(next, node, 4);
+		else if (char === "?") packDate(next, node, 2);
+		else {
+			let branch = node[char];
+			if (typeof branch !== "object") {
+				branch = {};
+				node[char] = branch;
+			}
+			packDate(next, branch, allowType);
+		}
+	} else node.$ = allowType;
+}
+function addFormatToTrie(format, trie) {
+	packDate(format, trie);
+	packDate(`${format} x`, trie);
+	packDate(`${format} l`, trie);
+	packDate(`${format} l x`, trie);
+	packDate(`l ${format}`, trie);
+	packDate(`l ${format} x`, trie);
+	packDate(`${format} D`, trie);
+	packDate(`${format} D x`, trie);
+	packDate(`D ${format}`, trie);
+	packDate(`D ${format} x`, trie);
+}
+okDateFormats.forEach((format) => {
+	if (!format.startsWith("?")) addFormatToTrie(format, dateTrieDM);
+	if (!format.startsWith("!")) addFormatToTrie(format, dateTrieMD);
+});
+const PT = ".";
+const CM = ",";
+const SP = " ";
+const NS = "\xA0";
+const NN = " ";
+const AP = "'";
+const AG = "٬";
+const dec2group = {
+	".": [
+		CM,
+		NS,
+		NN,
+		AP,
+		AG
+	],
+	",": [
+		PT,
+		NS,
+		NN,
+		AP,
+		AG
+	],
+	"٫": [
+		PT,
+		NS,
+		NN,
+		AP,
+		AG
+	]
+};
+const isDigit = (digit) => (digit === null || digit === void 0 ? void 0 : digit.length) === 1 && digit >= "0" && digit <= "9";
+/** Parse a numeric string and return its value and inferred format. */
+function parseNumber(value, options = {}) {
+	const l10n = getLocale(options.locale || "") || defaultLocale;
+	const decimal = l10n.decimal;
+	const groupingChars = [...dec2group[decimal] || [AP, AG]];
+	if (!groupingChars.includes(l10n.group) && l10n.group !== SP && l10n.group !== decimal) groupingChars.push(l10n.group);
+	let number = "";
+	let exponent = "";
+	let sign = 1;
+	let format = "";
+	let minus = false;
+	let openParen = false;
+	let closeParen = false;
+	let percent = false;
+	let currency = false;
+	let currencySymbol = "";
+	let currencyTrailing = false;
+	let index = 0;
+	const prefixChars = [
+		SP,
+		NS,
+		NN,
+		"+",
+		"%",
+		"(",
+		"-"
+	].concat(currencySymbols$1);
+	while (prefixChars.includes(value.charAt(index))) {
+		const char = value.charAt(index);
+		if (char === "-") {
+			if (minus || openParen) return null;
+			minus = true;
+			sign = -1;
+		} else if (reCurrencySymbols.test(char)) {
+			if (currency) return null;
+			currency = true;
+			currencySymbol = char;
+		} else if (char === "(") {
+			if (openParen || minus) return null;
+			openParen = true;
+			sign = -1;
+		} else if (char === "%") {
+			if (percent) return null;
+			percent = true;
+		}
+		index++;
+	}
+	let haveDecimal = false;
+	let grouping;
+	if (value.charAt(index) === decimal || isDigit(value.charAt(index))) while (index < value.length) {
+		const char = value.charAt(index);
+		if (!grouping && groupingChars.includes(char)) grouping = char;
+		else if (grouping && grouping === char) {} else if (char === decimal) {
+			if (haveDecimal) break;
+			number += ".";
+			haveDecimal = true;
+		} else if (isDigit(char)) number += char;
+		else break;
+		index++;
+	}
+	if (value.charAt(index) === "e" || value.charAt(index) === "E") {
+		exponent += value.charAt(index);
+		index++;
+		if (value.charAt(index) === "+" || value.charAt(index) === "-") {
+			exponent += value.charAt(index);
+			index++;
+		}
+		const exponentStart = index;
+		while (isDigit(value.charAt(index))) {
+			exponent += value.charAt(index);
+			index++;
+		}
+		if (exponentStart === index) return null;
+	}
+	const suffixChars = [
+		SP,
+		NS,
+		NN,
+		"%",
+		"$",
+		")"
+	].concat(currencySymbols$1);
+	while (suffixChars.includes(value.charAt(index))) {
+		const char = value.charAt(index);
+		if (reCurrencySymbols.test(char)) {
+			if (currency) return null;
+			currency = true;
+			currencySymbol = char;
+			currencyTrailing = true;
+		} else if (char === ")") {
+			if (closeParen || !openParen) return null;
+			closeParen = true;
+		} else if (char === "%") {
+			if (percent) return null;
+			percent = true;
+		}
+		index++;
+	}
+	if (index !== value.length) return null;
+	let numberValue = Number.parseFloat(number + exponent);
+	if (!Number.isFinite(numberValue)) return null;
+	if (exponent) {
+		if (percent || currency) return null;
+		format = "0.00E+00";
+	} else if (percent) {
+		if (currency) return null;
+		format = number.includes(".") ? "0.00%" : "0%";
+		numberValue *= .01;
+	} else if (currency) {
+		const currencyFormat = number.includes(".") ? "#,##0.00" : "#,##0";
+		format = currencyTrailing ? currencyFormat + currencySymbol : currencySymbol + currencyFormat;
+	} else if (grouping) format = number.includes(".") ? "#,##0.00" : "#,##0";
+	const result = { v: numberValue * sign };
+	if (format) result.z = format;
+	return result;
+}
+function isValidDate(year, month, day) {
+	if (day < 1) return false;
+	if (month < 1 || month > 12) return false;
+	if (month === 2) {
+		if (day > (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0 || year === 1900 ? 29 : 28)) return false;
+	} else if ((month === 4 || month === 6 || month === 9 || month === 11) && day > 30 || (month === 1 || month === 3 || month === 5 || month === 7 || month === 8 || month === 10 || month === 12) && day > 31) return false;
+	return true;
+}
+const dateLocaleLookupCache = /* @__PURE__ */ new WeakMap();
+const matchRec = (string, data, skipPeriod = false) => {
+	for (const item of data) if (string.startsWith(item[0])) {
+		let length = item[0].length;
+		if (skipPeriod && (item[2] === "D" || item[2] === "M") && string[length] === ".") length++;
+		return [string.slice(0, length), item];
+	}
+	return ["", null];
+};
+const nextToken = (string, node, data, localeData) => {
+	const path = data.path || "";
+	const matchOrder = Object.keys(node);
+	for (const token of matchOrder) {
+		const branch = node[token];
+		let result;
+		if (!branch) continue;
+		if (token === "$" || token === "€") {
+			if (!string) result = data;
+		} else {
+			if (typeof branch !== "object") continue;
+			if (token === "-") {
+				const match = /^(\s*([./-]|,\s)\s*|\s+)/.exec(string);
+				if (match) {
+					const separator = match[1] === "-" || match[1] === "/" || match[1] === "." ? match[1] : " ";
+					if (!data.sep || data.sep === separator) {
+						const normalizedSeparator = match[0].replace(/\s+/g, " ");
+						result = nextToken(string.slice(match[0].length), branch, {
+							...data,
+							sep: separator,
+							path: path + normalizedSeparator
+						}, localeData);
+					}
+				}
+			} else if (token === " ") {
+				const match = /^[,.]?\s+/.exec(string);
+				if (match) {
+					const normalizedSeparator = match[0].replace(/\s+/g, " ");
+					result = nextToken(string.slice(match[0].length), branch, {
+						...data,
+						path: path + normalizedSeparator
+					}, localeData);
+				}
+			} else if (token === "j" || token === "d") {
+				const match = /^(0{1,2}|0?[1-9]|1\d|2\d|3[01])\b/.exec(string);
+				if (match) result = nextToken(string.slice(match[0].length), branch, {
+					...data,
+					day: match[0],
+					path: path + token
+				}, localeData);
+			} else if (token === "n" || token === "m") {
+				const match = /^(0?[1-9]|1[012])\b/.exec(string);
+				if (match) result = nextToken(string.slice(match[0].length), branch, {
+					...data,
+					month: +match[0],
+					_mon: match[0],
+					path: path + token
+				}, localeData);
+			} else if (token === "F" || token === "M") {
+				const [matchedText, match] = matchRec(string, localeData.mon, localeData.mp);
+				if ((match === null || match === void 0 ? void 0 : match[2]) === token) result = nextToken(string.slice(matchedText.length), branch, {
+					...data,
+					month: match[1],
+					_mon: matchedText,
+					path: path + token
+				}, localeData);
+			} else if (token === "l" || token === "D") {
+				const [matchedText, match] = matchRec(string, localeData.day, localeData.dp);
+				if ((match === null || match === void 0 ? void 0 : match[2]) === token) result = nextToken(string.slice(matchedText.length), branch, {
+					...data,
+					path: path + token
+				}, localeData);
+			} else if (token === "y") {
+				const match = /^\d\d\b/.exec(string);
+				if (match) {
+					const year = +match[0] >= 30 ? +match[0] + 1900 : +match[0] + 2e3;
+					result = nextToken(string.slice(match[0].length), branch, {
+						...data,
+						year,
+						path: path + token
+					}, localeData);
+				}
+			} else if (token === "Y") {
+				const match = /^\d\d\d\d\b/.exec(string);
+				if (match) result = nextToken(string.slice(match[0].length), branch, {
+					...data,
+					year: +match[0],
+					path: path + token
+				}, localeData);
+			} else if (token === "x") {
+				const time = parseTime(string, { locale: localeData.locale });
+				if (time) result = nextToken("", branch, {
+					...data,
+					time: time.v,
+					tf: time.z,
+					path: path + token
+				}, localeData);
+			} else throw new Error(`Unknown date token "${token}"`);
+		}
+		const year = (result === null || result === void 0 ? void 0 : result.year) || 1916;
+		const month = (result === null || result === void 0 ? void 0 : result.month) || 1;
+		const day = (result === null || result === void 0 ? void 0 : result.day) ? +result.day : 1;
+		const isDate1900SerialZero = localeData.dateSystem === "date1900" && year === 1900 && month === 1 && day === 0;
+		if (result && (isDate1900SerialZero || isValidDate(year, month, day))) return result;
+	}
+};
+const normDateStr = (string) => string.replace(/\s+/g, " ").trim().replace(/’/, "'").replace(/\.$/, "").toLowerCase();
+const getLookups = (values, symbol) => {
+	const lookups = values.map((value, index) => [
+		normDateStr(value),
+		index + 1,
+		symbol
+	]);
+	lookups.sort((a, b) => b[0].length - a[0].length);
+	return lookups;
+};
+const tokensMatch = (values, cachedValues) => values.length === cachedValues.length && values.every((value, index) => value === cachedValues[index]);
+const getDateLocaleLookups = (locale) => {
+	let cached = dateLocaleLookupCache.get(locale);
+	if (!cached || !tokensMatch(locale.mmmm, cached.mmmm) || !tokensMatch(locale.mmm, cached.mmm) || !tokensMatch(locale.dddd, cached.dddd) || !tokensMatch(locale.ddd, cached.ddd)) {
+		cached = {
+			lookups: {
+				mon: getLookups(locale.mmmm, "F").concat(getLookups(locale.mmm, "M")),
+				mp: locale.mmm[0].endsWith("."),
+				day: getLookups(locale.dddd, "l").concat(getLookups(locale.ddd, "D")),
+				dp: locale.ddd[0].endsWith(".")
+			},
+			mmmm: [...locale.mmmm],
+			mmm: [...locale.mmm],
+			dddd: [...locale.dddd],
+			ddd: [...locale.ddd]
+		};
+		dateLocaleLookupCache.set(locale, cached);
+	}
+	return cached.lookups;
+};
+/** Parse a date or datetime string and return its serial value and format. */
+function parseDate(value, options = {}) {
+	const l10n = getLocale(options.locale || "") || defaultLocale;
+	const localeData = {
+		...getDateLocaleLookups(l10n),
+		locale: options.locale,
+		dateSystem: options.dateSystem ?? "date1900"
+	};
+	const date = nextToken(normDateStr(value), l10n.preferMDY ? dateTrieMD : dateTrieDM, { path: "" }, localeData);
+	if (!date) return null;
+	if (date.sep === "." && date.path.length === 3) return null;
+	if (date.month == null || date._mon == null) return null;
+	const year = +(date.year ?? (/* @__PURE__ */ new Date()).getUTCFullYear());
+	const day = date.day ?? "1";
+	const dateSystem = options.dateSystem ?? "date1900";
+	const dateSerial = excelDateTimePartsToSerial({
+		year,
+		month: date.month,
+		day: +day,
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+		fractionalSecond: 0
+	}, { dateSystem });
+	if (dateSerial == null) return null;
+	const dateValue = dateSerial + (date.time || 0);
+	if (dateValue >= excelDateTimePartsToSerial({
+		year: 9999,
+		month: 12,
+		day: 31,
+		hours: 0,
+		minutes: 0,
+		seconds: 0,
+		fractionalSecond: 0
+	}, { dateSystem }) + 1) return null;
+	const lead0 = date._mon[0] === "0" || day[0] === "0" || date._mon.length === 2 && day.length === 2;
+	return {
+		v: dateValue,
+		z: date.path.replace(/[jdlDnmMFyYx]/g, (token) => {
+			if (token === "x") return date.tf || "";
+			return (lead0 ? tx00[token] : tx0[token]) || token;
+		})
+	};
+}
+const normAMPMStr = (string) => string.replace(/\s+/g, "").trim().replace(/\./g, "").toLowerCase();
+/** Parse a time string and return its day fraction and inferred format. */
+function parseTime(value, options = {}) {
+	const l10n = getLocale(options.locale || "") || defaultLocale;
+	const parts = /^\s*([10]?\d|2[0-4])(?::([0-5]\d|\d))?(?::([0-5]\d|\d))?(\.\d{1,10})?(?=\s*[^\s\d]|$)/.exec(value);
+	let ampm = "";
+	if (parts) {
+		const tail = normAMPMStr(value.slice(parts[0].length));
+		if (tail === normAMPMStr(l10n.ampm[0]) || tail === "a" || tail === "am") ampm = "a";
+		else if (tail === normAMPMStr(l10n.ampm[1]) || tail === "p" || tail === "pm") ampm = "p";
+		else if (tail === ":") {
+			if (!parts[3]) parts[3] = "0";
+			if (!parts[2]) parts[2] = "0";
+		} else if (tail) return null;
+	}
+	if (!parts) return null;
+	const [, hoursPart, minutesPart, secondsPart, fractionPart] = parts;
+	if (fractionPart && !secondsPart) return null;
+	if (!ampm && !minutesPart && !secondsPart) return null;
+	let hours = +(hoursPart || 0);
+	if (ampm) {
+		if (hours >= 13) return null;
+		if (ampm === "a") {
+			if (hours === 12) hours = 0;
+		} else if (ampm === "p" && hours !== 12) hours += 12;
+	}
+	const minutes = +(minutesPart || 0);
+	const seconds = +(secondsPart || 0);
+	const milliseconds = +(fractionPart || 0);
+	const hourFormat = hoursPart.length === 2 ? "hh" : "h";
+	const secondsFormat = secondsPart ? ":ss" : "";
+	const ampmFormat = ampm ? " AM/PM" : "";
+	return {
+		v: (hours * 60 * 60 + minutes * 60 + seconds + milliseconds) / (3600 * 24),
+		z: `${hourFormat}:mm${secondsFormat}${ampmFormat}`
+	};
+}
+/** Parse a localized or English boolean string. */
+function parseBool(value, options = {}) {
+	const l10n = getLocale(options.locale || "") || defaultLocale;
+	const normalizedValue = value.trim().toLowerCase();
+	const localizedTrue = l10n.bool[0].toLowerCase();
+	if (normalizedValue === "true" || normalizedValue === localizedTrue) return { v: true };
+	const localizedFalse = l10n.bool[1].toLowerCase();
+	if (normalizedValue === "false" || normalizedValue === localizedFalse) return { v: false };
+	return null;
+}
+/** Parse a spreadsheet input as a number, date, time, or boolean. */
+function parseValue(value, options) {
+	return parseNumber(value, options) ?? parseDate(value, options) ?? parseTime(value, options) ?? parseBool(value, options);
+}
+
+//#endregion
+//#region src/shared/numfmt/api.ts
+var api_exports = /* @__PURE__ */ __exportAll({
+	addLocale: () => addLocale,
+	dateFromSerial: () => dateFromSerial,
+	dateToSerial: () => dateToSerial,
+	dec2frac: () => dec2frac,
+	format: () => format,
+	formatColor: () => formatColor,
+	getDateTimeEditPattern: () => getDateTimeEditPattern,
+	getFormatDateInfo: () => getFormatDateInfo,
+	getFormatInfo: () => getFormatInfo,
+	getLocale: () => getLocale,
+	isDateFormat: () => isDateFormat,
+	isPercentFormat: () => isPercentFormat,
+	isTextFormat: () => isTextFormat$1,
+	isValidFormat: () => isValidFormat,
+	parseBool: () => parseBool,
+	parseDate: () => parseDate,
+	parseLocale: () => parseLocale,
+	parseNumber: () => parseNumber,
+	parseTime: () => parseTime,
+	parseValue: () => parseValue,
+	round: () => round,
+	tokenTypes: () => tokenTypes,
+	tokenize: () => tokenize
+});
+const parseDataCache = Object.create({});
+function prepareFormatterData(pattern, shouldThrow = false) {
+	const normalizedPattern = pattern || "General";
+	let parseData = parseDataCache[normalizedPattern];
+	if (!parseData) try {
+		parseData = parsePattern(normalizedPattern);
+		parseDataCache[normalizedPattern] = parseData;
+	} catch (error) {
+		if (shouldThrow) throw error;
+		const message = error instanceof Error ? error.message : String(error);
+		const errorPart = {
+			tokens: [{ type: "error" }],
+			error: message
+		};
+		parseData = {
+			pattern: normalizedPattern,
+			partitions: [
+				errorPart,
+				errorPart,
+				errorPart,
+				errorPart
+			],
+			error: message,
+			locale: null
+		};
+	}
+	return parseData;
+}
+/**
+* Formats a value as a string and returns the result.
+*/
+function format(pattern, value, options = {}) {
+	const resolvedOptions = Object.assign({}, defaultOptions, options);
+	const data = prepareFormatterData(pattern, resolvedOptions.throws);
+	return formatValue(dateToSerial(value, resolvedOptions) ?? value, data, resolvedOptions);
+}
+/**
+* Find the color appropriate to a value as dictated by a format pattern.
+*/
+function formatColor(pattern, value, options) {
+	const resolvedOptions = Object.assign({}, defaultOptions, options);
+	const data = prepareFormatterData(pattern, resolvedOptions.throws);
+	return formatColor$1(dateToSerial(value, resolvedOptions) ?? value, data, resolvedOptions);
+}
+/** Determine if a given format pattern is a date pattern. */
+function isDateFormat(pattern) {
+	return isDate(prepareFormatterData(pattern, false).partitions);
+}
+/** Determine if a given format pattern is a percentage pattern. */
+function isPercentFormat(pattern) {
+	return isPercent(prepareFormatterData(pattern, false).partitions);
+}
+/** Determine if a given format pattern is a text only pattern. */
+function isTextFormat$1(pattern) {
+	return isText(prepareFormatterData(pattern, false).partitions);
+}
+/** Determine if a given format pattern is valid. */
+function isValidFormat(pattern) {
+	try {
+		prepareFormatterData(pattern, true);
+		return true;
+	} catch {
+		return false;
+	}
+}
+/** Returns metadata describing a parsed format pattern. */
+function getFormatInfo(pattern, options = {}) {
+	const data = prepareFormatterData(pattern, false);
+	if (!data.info) data.info = info(data.partitions, options === null || options === void 0 ? void 0 : options.currency);
+	return data.info;
+}
+/** Gets information about date codes used in a format string. */
+function getFormatDateInfo(pattern) {
+	const data = prepareFormatterData(pattern, false);
+	if (!data.dateInfo) data.dateInfo = dateInfo(data.partitions);
+	return data.dateInfo;
+}
+/** Completes omitted components in a calendar-date or clock pattern for editing; elapsed durations return null. */
+function getDateTimeEditPattern(pattern, value) {
+	return createDateTimeEditPattern(prepareFormatterData(pattern, false).partitions, value);
+}
+/** A dictionary of the types used to identify token variants. */
+const tokenTypes = Object.freeze({
+	AMPM: TOKEN_AMPM,
+	BREAK: TOKEN_BREAK,
+	CALENDAR: TOKEN_CALENDAR,
+	CHAR: TOKEN_CHAR,
+	COLOR: TOKEN_COLOR,
+	COMMA: TOKEN_COMMA,
+	CONDITION: TOKEN_CONDITION,
+	DATETIME: TOKEN_DATETIME,
+	DBNUM: TOKEN_DBNUM,
+	DIGIT: TOKEN_DIGIT,
+	DURATION: TOKEN_DURATION,
+	ERROR: TOKEN_ERROR,
+	ESCAPED: TOKEN_ESCAPED,
+	EXP: "exp",
+	FILL: TOKEN_FILL,
+	GENERAL: TOKEN_GENERAL,
+	GROUP: TOKEN_GROUP,
+	HASH: TOKEN_HASH,
+	LOCALE: TOKEN_LOCALE,
+	MINUS: TOKEN_MINUS,
+	MODIFIER: TOKEN_MODIFIER,
+	NATNUM: TOKEN_NATNUM,
+	PAREN: TOKEN_PAREN,
+	PERCENT: TOKEN_PERCENT,
+	PLUS: TOKEN_PLUS,
+	POINT: TOKEN_POINT,
+	QMARK: TOKEN_QMARK,
+	SCALE: TOKEN_SCALE,
+	SKIP: TOKEN_SKIP,
+	SLASH: TOKEN_SLASH,
+	SPACE: TOKEN_SPACE,
+	STRING: TOKEN_STRING,
+	TEXT: TOKEN_TEXT,
+	ZERO: TOKEN_ZERO
+});
+
+//#endregion
+//#region src/common/regexp/factory.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const REGEXP_FLAGS = /* @__PURE__ */ new Set([
+	"d",
+	"g",
+	"i",
+	"m",
+	"s",
+	"u",
+	"v",
+	"y"
+]);
+function createRegExpFromSafeFragment(fragment, flags) {
+	const safeFlags = normalizeRegExpFlags(flags);
+	return new RegExp(fragment, safeFlags);
+}
+function normalizeRegExpFlags(flags) {
+	if (flags === void 0) return;
+	const seen = /* @__PURE__ */ new Set();
+	for (const flag of flags) {
+		if (!REGEXP_FLAGS.has(flag) || seen.has(flag)) throw new SyntaxError(`Invalid regular expression flags: ${flags}`);
+		seen.add(flag);
+	}
+	return flags;
+}
+
+//#endregion
+//#region src/common/regexp/charset.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const MAX_CODE_POINT = 1114111;
+/**
+* Builds a normalized regular-expression character class.
+*
+* `Charset` is intended for dynamic character sets, especially when callers need set
+* operations that are hard to read or easy to get wrong with handwritten `[...]` strings.
+* Ranges are stored as inclusive Unicode code-point pairs and merged during construction.
+*/
+var Charset = class Charset {
+	constructor(...inputs) {
+		_defineProperty(this, "data", void 0);
+		this.data = normalizeData$1(inputs.flatMap((input) => inputToData(input)));
+	}
+	/**
+	* Returns a new charset containing this charset and all provided characters or ranges.
+	*/
+	union(...inputs) {
+		return new Charset(this, ...inputs);
+	}
+	/**
+	* Returns a new charset with the provided characters or ranges removed.
+	*/
+	subtract(...inputs) {
+		const subtractData = normalizeData$1(inputs.flatMap((input) => inputToData(input)));
+		let next = this.data.slice();
+		for (const [removeStart, removeEnd] of subtractData) {
+			const fragments = [];
+			for (const [start, end] of next) {
+				if (removeEnd < start || removeStart > end) {
+					fragments.push([start, end]);
+					continue;
+				}
+				if (removeStart > start) fragments.push([start, removeStart - 1]);
+				if (removeEnd < end) fragments.push([removeEnd + 1, end]);
+			}
+			next = fragments;
+		}
+		return new Charset(...next);
+	}
+	/**
+	* Returns a new charset containing only characters shared with the provided inputs.
+	*/
+	intersect(...inputs) {
+		const intersectData = normalizeData$1(inputs.flatMap((input) => inputToData(input)));
+		const next = [];
+		for (const [start, end] of this.data) for (const [intersectStart, intersectEnd] of intersectData) {
+			const nextStart = Math.max(start, intersectStart);
+			const nextEnd = Math.min(end, intersectEnd);
+			if (nextStart <= nextEnd) next.push([nextStart, nextEnd]);
+		}
+		return new Charset(...next);
+	}
+	/**
+	* Returns whether this charset would match no characters.
+	*/
+	isEmpty() {
+		return this.data.length === 0;
+	}
+	/**
+	* Serializes to a regex fragment, not a full anchored pattern.
+	*/
+	toString() {
+		if (this.isEmpty()) return "(?!)";
+		return `[${this.data.map(rangeToString).join("")}]`;
+	}
+	/**
+	* Creates a `RegExp` from this charset fragment with optional flags.
+	*/
+	toRegExp(flags) {
+		return createRegExpFromSafeFragment(this.toString(), flags);
+	}
+};
+/**
+* Convenience factory for `new Charset(...)`.
+*/
+const charset = (...inputs) => new Charset(...inputs);
+function inputToData(input) {
+	if (input instanceof Charset) return input.data;
+	if (Array.isArray(input)) {
+		const start = codePoint(input[0]);
+		const end = codePoint(input[1]);
+		return [[Math.min(start, end), Math.max(start, end)]];
+	}
+	const point = codePoint(input);
+	return [[point, point]];
+}
+function codePoint(input) {
+	if (typeof input === "number") {
+		if (!Number.isInteger(input) || input < 0 || input > MAX_CODE_POINT) throw new RangeError(`Invalid code point: ${input}`);
+		return input;
+	}
+	const point = input.codePointAt(0);
+	if (point == null || String.fromCodePoint(point) !== input) throw new RangeError(`Charset string inputs must contain exactly one code point: ${input}`);
+	return point;
+}
+function normalizeData$1(data) {
+	if (data.length === 0) return [];
+	const sorted = data.slice().sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+	const result = [];
+	for (const [start, end] of sorted) {
+		const last = result[result.length - 1];
+		if (!last || start > last[1] + 1) result.push([start, end]);
+		else last[1] = Math.max(last[1], end);
+	}
+	return result;
+}
+function rangeToString([start, end]) {
+	if (start === end) return escapeCharClassCodePoint(start);
+	return `${escapeCharClassCodePoint(start)}-${escapeCharClassCodePoint(end)}`;
+}
+function escapeCharClassCodePoint(point) {
+	const char = String.fromCodePoint(point);
+	if (char === "\\" || char === "]" || char === "-" || char === "^") return `\\${char}`;
+	if (point <= 31 || point === 127) return `\\u${point.toString(16).padStart(4, "0")}`;
+	return char;
+}
+
+//#endregion
+//#region src/common/regexp/escape.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Escapes text so it can be embedded in a regular-expression pattern as a literal.
+*/
+function escapeRegExp$1(value) {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+/**
+* Creates a `RegExp` that matches literal text rather than regular-expression syntax.
+*/
+function createLiteralRegExp(value, flags) {
+	return createRegExpFromSafeFragment(escapeRegExp$1(value), flags);
+}
+/**
+* Converts a spreadsheet-style wildcard pattern to an anchored regular expression.
+*
+* `*` matches any number of characters and `?` matches one character. All other
+* regular-expression syntax is treated as literal text. Matching is case-insensitive.
+*/
+function createFromWildcard(pattern) {
+	return createRegExpFromSafeFragment(`^${escapeRegExp$1(pattern).replace(/\\\*/g, ".*").replace(/\\\?/g, ".")}$`, "i");
+}
+
+//#endregion
+//#region src/common/regexp/or.ts
+/**
+* Builds a regex alternation from literal strings and character sets.
+*
+* Literal strings are escaped automatically. Character-set inputs are folded into one
+* `Charset`, so `or('SUM', charset('A', 'B'))` serializes to an alternation containing
+* both the string branch and the character-class branch.
+*/
+var Or = class Or {
+	constructor(...inputs) {
+		_defineProperty(this, "charset", void 0);
+		_defineProperty(this, "strings", void 0);
+		const charsetInputs = [];
+		const strings = [];
+		for (const input of inputs) if (input instanceof Or) {
+			charsetInputs.push(input.charset);
+			strings.push(...input.strings);
+		} else if (input instanceof Charset || typeof input === "number" || Array.isArray(input)) charsetInputs.push(input);
+		else strings.push(input);
+		this.charset = charset(...charsetInputs);
+		this.strings = Array.from(new Set(strings));
+	}
+	/**
+	* Returns a new alternation containing this instance and all provided inputs.
+	*/
+	union(...inputs) {
+		return new Or(this, ...inputs);
+	}
+	/**
+	* Returns a new alternation with matching string and charset inputs removed.
+	*/
+	subtract(...inputs) {
+		const other = new Or(...inputs);
+		const nextStrings = this.strings.filter((item) => !other.strings.includes(item));
+		return new Or(this.charset.subtract(other.charset), ...nextStrings);
+	}
+	/**
+	* Returns whether this alternation would match no branches.
+	*/
+	isEmpty() {
+		return this.charset.isEmpty() && this.strings.length === 0;
+	}
+	/**
+	* Serializes to a regex fragment, not a full anchored pattern.
+	*/
+	toString() {
+		if (this.isEmpty()) return "(?!)";
+		const alternatives = [...!this.charset.isEmpty() ? [this.charset.toString()] : [], ...this.strings.map(escapeRegExp$1)];
+		return alternatives.length === 1 ? alternatives[0] : `(?:${alternatives.join("|")})`;
+	}
+	/**
+	* Creates a `RegExp` from this alternation fragment with optional flags.
+	*/
+	toRegExp(flags) {
+		return createRegExpFromSafeFragment(this.toString(), flags);
+	}
+};
+/**
+* Convenience factory for `new Or(...)`.
+*/
+const or = (...inputs) => new Or(...inputs);
+
+//#endregion
+//#region src/common/regexp/index.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Namespace-style public API for regex helpers.
+*
+* Import this as `regexp` and call methods through the namespace, for example
+* `regexp.escapeRegExp(value)` or `regexp.or(...names)`. Do not export these
+* helpers individually from the package root; keeping one namespace avoids
+* scattered regex APIs and accidental name collisions.
+*/
+const regexp = {
+	Charset,
+	Or,
+	charset,
+	or,
+	createRegExpFromSafeFragment,
+	escapeRegExp: escapeRegExp$1,
+	createLiteralRegExp,
+	createFromWildcard
+};
+
+//#endregion
+//#region src/shared/numfmt/utils.ts
+const DEFAULT_TEXT_FORMAT = "@@@";
+const DEFAULT_TEXT_FORMAT_EXCEL = "@";
+const DEFAULT_NUMBER_FORMAT = "General";
+function isTextFormat(pattern) {
+	return pattern === "@@@" || pattern === "@";
+}
+function isDefaultFormat(pattern) {
+	return pattern === null || pattern === void 0 || pattern === "General";
+}
+function getNumfmtLocaleTag(locale) {
+	switch (locale) {
+		case "frFR": return "fr";
+		case "ruRU": return "ru";
+		case "viVN": return "vi";
+		case "zhCN": return "zh-CN";
+		case "koKR": return "ko";
+		case "zhTW": return "zh-TW";
+		case "zhHK": return "zh-HK";
+		case "esES":
+		case "caES": return "es";
+		case "skSK": return "sk";
+		case "jaJP": return "ja";
+		case "ptBR": return "pt";
+		case "deDE": return "de";
+		case "itIT": return "it";
+		case "idID": return "id";
+		case "plPL": return "pl";
+		case "arSA": return "ar";
+		case "enUS":
+		case "faIR":
+		default: return "en";
+	}
+}
+/**
+* Determines whether two patterns are equal, excluding differences in decimal places.
+* This function ignores the decimal part of the patterns and the positive color will be ignored but negative color will be considered.
+* more info can check the test case.
+*/
+const isPatternEqualWithoutDecimal = (patternA, patternB) => {
+	if (patternA && !patternB || !patternA && patternB) return false;
+	const getStringWithoutDecimal = (pattern) => {
+		const tokens = tokenize(pattern);
+		let result = "";
+		let isDecimalPart = false;
+		let isColorBefore = false;
+		for (const token of tokens) {
+			if (token.type === tokenTypes.POINT) {
+				isDecimalPart = true;
+				continue;
+			}
+			if (isColorBefore && token.type === tokenTypes.MINUS) continue;
+			if (token.type === tokenTypes.SKIP) continue;
+			if (token.type === tokenTypes.COLOR) {
+				isColorBefore = true;
+				continue;
+			} else isColorBefore = false;
+			if (isDecimalPart && token.type === tokenTypes.ZERO) continue;
+			else isDecimalPart = false;
+			if (!isDecimalPart) result += token.value || "";
+		}
+		return result;
+	};
+	return getStringWithoutDecimal(patternA) === getStringWithoutDecimal(patternB);
+};
+const ignoreCommonPatterns = /* @__PURE__ */ new Set(["m d"]);
+const ignoreAMPMPatterns = /* @__PURE__ */ new Set(["h:mm AM/PM", "hh:mm AM/PM"]);
+const currencySymbols = [
+	"Rp",
+	"zł",
+	"NT$",
+	"R$",
+	"HK$",
+	"$",
+	"£",
+	"¥",
+	"¤",
+	"֏",
+	"؋",
+	"৳",
+	"฿",
+	"៛",
+	"₡",
+	"₦",
+	"₩",
+	"₪",
+	"₫",
+	"€",
+	"₭",
+	"₮",
+	"₱",
+	"₲",
+	"₴",
+	"₸",
+	"₹",
+	"₺",
+	"₼",
+	"₽",
+	"₾",
+	"₿",
+	"﷼"
+];
+const CURRENCY_SYMBOL_PREFIX_REG = new RegExp(`^${regexp.charset(...Array.from(new Set(currencySymbols.join(""))))}+`);
+/**
+* Get the numfmt parse value, and filter out the parse error.
+*/
+const getNumfmtParseValueFilter = (value, options = {}) => {
+	const parseData = parseDate(value, options) ?? parseTime(value, options) ?? parseNumber(value, options);
+	if (!parseData) return null;
+	const { z } = parseData;
+	if (z) {
+		/**
+		* '1 23' => 'm d' ----- error
+		* '2/3' => 'm/d' ----- This is supported by Excel
+		*/
+		if (ignoreCommonPatterns.has(z)) return null;
+		/**
+		* If the pattern is 'h:mm AM/PM' or 'hh:mm AM/PM', we need to check if the value ends with ' A', ' P', ' AM', or ' PM'.
+		* '5A' => 'h:mm AM/PM' ----- error
+		* '5 A' => 'h:mm AM/PM' ----- This is supported by Excel
+		* '5:00 AM' => 'h:mm AM/PM' ----- correct
+		*/
+		if (ignoreAMPMPatterns.has(z) && !/\s(A|AM|P|PM)$/i.test(value)) return null;
+		/**
+		* Verify by formatting back to string
+		* '1000,' => '#,##0,' ----- error
+		* '1000,1.00' => '#,##0.00' ----- error
+		* '$1000' => '$#,##0' ----- true
+		*/
+		if (z.includes("#,##0")) {
+			if (/[.,]$/.test(value)) return null;
+			const normalized = value.replace(CURRENCY_SYMBOL_PREFIX_REG, "").trim();
+			if (normalized.includes(",")) {
+				if (!/^-?\d{1,3}(,\d{3})*(\.\d+)?$/.test(normalized)) return null;
+			}
+		}
+	}
+	return parseData;
+};
+
+//#endregion
+//#region src/shared/object-matrix.ts
+function mapObjectMatrix(o, callback) {
+	const result = {};
+	for (const row in o) {
+		const rowNumber = Number(row);
+		const columns = o[rowNumber];
+		for (const col in columns) {
+			const colNumber = Number(col);
+			const value = columns[colNumber];
+			const resultValue = callback(rowNumber, colNumber, value);
+			if (resultValue !== void 0) if (result[rowNumber]) result[rowNumber][colNumber] = resultValue;
+			else result[rowNumber] = { [colNumber]: resultValue };
+		}
+	}
+	return result;
+}
+function getArrayLength(o) {
+	let maxIndex = 0;
+	const keys = Object.keys(o);
+	for (const key of keys) {
+		const rowIndex = Number(key);
+		maxIndex = Math.max(maxIndex, rowIndex);
+	}
+	return maxIndex + 1;
+}
+const isEmptyValue = (value) => value === void 0 || value === null || typeof value === "object" && Object.keys(value).length === 0;
+function insertMatrixArray(index, value, o) {
+	const length = getArrayLength(o);
+	const array = o;
+	for (let i = length - 1; i >= index; i--) if (isEmptyValue(array[i])) delete array[i + 1];
+	else array[i + 1] = array[i];
+	if (!isEmptyValue(value)) array[index] = value;
+}
+function spliceArray(start, count, o) {
+	const length = Object.keys(o).reduce((max, key) => Math.max(max, Number.parseInt(key)), 0) + 1;
+	for (let i = start; i < length; i++) if (i < start + count) delete o[i];
+	else if (o[i] !== void 0) {
+		o[i - count] = o[i];
+		delete o[i];
+	}
+}
+function concatMatrixArray(source, target) {
+	const srcArray = source;
+	const srcKeys = Object.keys(srcArray);
+	const srcLength = srcKeys.length;
+	const targetArray = target;
+	const targetKeys = Object.keys(targetArray);
+	const targetLength = targetKeys.length;
+	const containerArray = {};
+	let master = 0;
+	for (let i = 0; i < srcLength; i++, master++) containerArray[master] = srcArray[srcKeys[i]];
+	for (let i = 0; i < targetLength; i++, master++) containerArray[master] = targetArray[targetKeys[i]];
+	return containerArray;
+}
+function sliceMatrixArray(start, end, matrixArray) {
+	const array = matrixArray;
+	if (getArrayLength(matrixArray) > 0) {
+		const fragment = {};
+		let effective = 0;
+		for (let i = start; i <= end; i++) if (array[i]) {
+			fragment[effective] = array[i];
+			effective++;
+		}
+		return fragment;
+	}
+	return {};
+}
+function moveMatrixArray(fromIndex, count, toIndex, o) {
+	const moveBackward = fromIndex > toIndex;
+	if (!moveBackward && fromIndex + count > toIndex) throw new Error("Invalid move operation");
+	if (moveBackward) _moveBackward(fromIndex, count, toIndex, o);
+	else _moveForward(fromIndex, count, toIndex, o);
+}
+function _moveBackward(fromIndex, count, toIndex, o) {
+	const array = o;
+	const toMove = [];
+	for (let i = fromIndex; i < fromIndex + count; i++) toMove.push(array[i]);
+	for (let i = fromIndex - 1; i >= toIndex; i--) {
+		const item = array[i];
+		array[i + count] = item;
+		if (item === void 0) delete array[i + count];
+	}
+	toMove.forEach((item, index) => {
+		array[toIndex + index] = item;
+		if (item === void 0) delete array[toIndex + index];
+	});
+}
+function _moveForward(fromIndex, count, toIndex, o) {
+	const array = o;
+	const toMove = [];
+	for (let i = fromIndex; i < fromIndex + count; i++) toMove.push(array[i]);
+	for (let i = fromIndex + count; i < toIndex; i++) {
+		const item = array[i];
+		array[i - count] = item;
+		if (item === void 0) delete array[i - count];
+	}
+	toMove.forEach((item, index) => {
+		array[toIndex + index - count] = item;
+		if (item === void 0) delete array[toIndex + index - count];
+	});
+}
+/**
+* A two-dimensional array represented by a two-level deep object and provides an array-like API
+*
+* @beta
+*/
+var ObjectMatrix = class ObjectMatrix {
+	constructor(matrix = {}) {
+		_defineProperty(this, "_matrix", void 0);
+		this._setOriginValue(matrix);
+	}
+	static MakeObjectMatrixSize(size) {
+		return new ObjectMatrix({ [size - 1]: {} });
+	}
+	getMatrix() {
+		return this._matrix;
+	}
+	forEach(callback) {
+		const matrix = this._matrix;
+		const matrixRow = Object.keys(matrix);
+		for (const row of matrixRow) {
+			const rowNumber = Number(row);
+			const columns = matrix[rowNumber];
+			if (callback(rowNumber, columns) === false) return this;
+		}
+		return this;
+	}
+	forRow(callback) {
+		const matrix = this._matrix;
+		const matrixRow = Object.keys(matrix);
+		for (const row of matrixRow) {
+			const rowNumber = Number(row);
+			const columns = matrix[rowNumber];
+			if (callback(rowNumber, Object.keys(columns).map((col) => {
+				return Number(col);
+			})) === false) return this;
+		}
+		return this;
+	}
+	/**
+	* Iterate the object matrix with row priority, which means it scan the whole range row by row.
+	*/
+	forValue(callback) {
+		const matrix = this._matrix;
+		for (const row in matrix) {
+			const rowNumber = Number(row);
+			const columns = matrix[rowNumber];
+			if (!columns) continue;
+			for (const column in columns) {
+				const colNumber = Number(column);
+				const value = columns[colNumber];
+				if (callback(rowNumber, colNumber, value) === false) return this;
+			}
+		}
+		return this;
+	}
+	swapRow(src, target) {
+		const srcRow = this._matrix[src];
+		const targetRow = this._matrix[target];
+		this._matrix[src] = targetRow;
+		this._matrix[target] = srcRow;
+	}
+	getRow(rowIndex) {
+		return this._matrix[rowIndex];
+	}
+	getRowOrCreate(rowIndex) {
+		let row = this.getRow(rowIndex);
+		if (row == null) {
+			row = {};
+			this._matrix[rowIndex] = row;
+		}
+		return row;
+	}
+	reset() {
+		this._setOriginValue({});
+	}
+	hasValue() {
+		const matrix = this._matrix;
+		const matrixRow = Object.keys(matrix);
+		if (matrixRow.length === 0) return false;
+		for (const row of matrixRow) {
+			const columns = matrix[Number(row)];
+			if (Object.keys(columns).length > 0) return true;
+		}
+		return false;
+	}
+	getValue(row, column) {
+		var _this$_matrix;
+		return (_this$_matrix = this._matrix) === null || _this$_matrix === void 0 || (_this$_matrix = _this$_matrix[row]) === null || _this$_matrix === void 0 ? void 0 : _this$_matrix[column];
+	}
+	setValue(row, column, value) {
+		const objectArray = this.getRowOrCreate(row);
+		objectArray[column] = value;
+	}
+	realDeleteValue(row, column) {
+		var _this$_matrix2;
+		(_this$_matrix2 = this._matrix) === null || _this$_matrix2 === void 0 || (_this$_matrix2 = _this$_matrix2[row]) === null || _this$_matrix2 === void 0 || delete _this$_matrix2[column];
+		if (this.getRow(row)) {
+			const objectArray = this.getRow(row);
+			if (objectArray == null) return;
+			if (Object.keys(objectArray).length === 0) {
+				var _this$_matrix3;
+				(_this$_matrix3 = this._matrix) === null || _this$_matrix3 === void 0 || delete _this$_matrix3[row];
+			}
+		}
+	}
+	setRow(rowNumber, row) {
+		this._matrix[rowNumber] = row;
+	}
+	moveRows(start, count, target) {
+		moveMatrixArray(start, count, target, this._matrix);
+	}
+	moveColumns(start, count, target) {
+		this.forEach((row, value) => {
+			moveMatrixArray(start, count, target, value);
+		});
+	}
+	insertRows(start, count) {
+		const rowKeys = Object.keys(this._matrix);
+		for (let i = rowKeys.length - 1; i >= 0; i--) {
+			const rowIndex = Number(rowKeys[i]);
+			if (rowIndex >= start) {
+				const rowObject = this._matrix[rowIndex];
+				delete this._matrix[rowIndex];
+				this._matrix[rowIndex + count] = rowObject;
+			}
+		}
+	}
+	insertColumns(start, count) {
+		const rowKeys = Object.keys(this._matrix);
+		for (let i = 0; i < rowKeys.length; i++) {
+			const rowIndex = Number(rowKeys[i]);
+			const rowObject = this._matrix[rowIndex];
+			const columnKeys = Object.keys(rowObject);
+			for (let j = columnKeys.length - 1; j >= 0; j--) {
+				const columnIndex = Number(columnKeys[j]);
+				if (columnIndex >= start) {
+					const value = rowObject[columnIndex];
+					delete rowObject[columnIndex];
+					rowObject[columnIndex + count] = value;
+				}
+			}
+		}
+	}
+	removeRows(start, count) {
+		spliceArray(start, count, this._matrix);
+	}
+	removeColumns(start, count) {
+		this.forEach((row, value) => {
+			if (value) spliceArray(start, count, value);
+		});
+	}
+	/**
+	* Return a fragment of the original data matrix. Note that the returned matrix's row matrix would start from
+	* 0 not `startRow`. Neither does its column matrix. If you want to get the original matrix, use `getSlice`.
+	*
+	* @param startRow
+	* @param endRow
+	* @param startColumn
+	* @param endColumn
+	* @returns
+	*/
+	getFragment(startRow, endRow, startColumn, endColumn) {
+		const objectMatrix = new ObjectMatrix();
+		let insertRow = 0;
+		for (let r = startRow; r <= endRow; r++) {
+			const row = {};
+			let insertColumn = 0;
+			for (let c = startColumn; c <= endColumn; c++) {
+				row[insertColumn] = this.getValue(r, c);
+				insertColumn++;
+			}
+			objectMatrix.setRow(insertRow, row);
+			insertRow++;
+		}
+		return objectMatrix;
+	}
+	/**
+	* Return a slice of the original data matrix. Note that the returned matrix's row matrix would start from
+	* `startRow` not 0, and the same does its column index. You may be looking for `getFragment` if you want
+	* both of the indexes start from 0.
+	*
+	* @param startRow
+	* @param endRow
+	* @param startColumn
+	* @param endColumn
+	* @returns
+	*/
+	getSlice(startRow, endRow, startColumn, endColumn) {
+		const objectMatrix = new ObjectMatrix();
+		for (let r = startRow; r <= endRow; r++) for (let c = startColumn; c <= endColumn; c++) {
+			const value = this.getValue(r, c);
+			if (value) objectMatrix.setValue(r, c, Tools.deepClone(value));
+		}
+		return objectMatrix;
+	}
+	getSliceDataAndCellCountByRows(startRow, endRow) {
+		const objectMatrix = new ObjectMatrix();
+		let cellCount = 0;
+		for (let r = startRow; r <= endRow; r++) {
+			const row = this.getRow(r);
+			if (row) {
+				objectMatrix.setRow(r, row);
+				cellCount += Object.keys(row).length;
+			}
+		}
+		return {
+			sliceData: objectMatrix,
+			cellCount
+		};
+	}
+	getSizeOf() {
+		return Object.keys(this._matrix).length;
+	}
+	getLength() {
+		return getArrayLength(this._matrix);
+	}
+	getRange() {
+		const startRow = 0;
+		const startColumn = 0;
+		const endRow = this.getLength() - 1;
+		let endColumn = 0;
+		const length = this.getLength();
+		for (let i = 0; i < length; i++) {
+			const row = this.getRow(i);
+			if (row) {
+				const columnLength = getArrayLength(row) - 1;
+				endColumn = columnLength > endColumn ? columnLength : endColumn;
+			}
+		}
+		return {
+			startRow,
+			startColumn,
+			endRow,
+			endColumn
+		};
+	}
+	getRealRange() {
+		const rows = Object.keys(this._matrix);
+		const rowLength = rows.length;
+		const startRow = rowLength > 0 ? Number(rows[0]) : 0;
+		const endRow = rowLength > 0 ? Number(rows[rowLength - 1]) : 0;
+		let startColumn = -Infinity;
+		let endColumn = 0;
+		for (const rowKey of rows) {
+			const row = this.getRow(Number(rowKey));
+			if (row) {
+				const columns = Object.keys(row);
+				if (columns.length > 0) {
+					const rowStartColumn = Number(columns[0]);
+					const rowEndColumn = Number(columns[columns.length - 1]);
+					if (startColumn === -Infinity || rowStartColumn < startColumn) startColumn = rowStartColumn;
+					if (rowEndColumn > endColumn) endColumn = rowEndColumn;
+				}
+			}
+		}
+		if (startColumn === -Infinity) startColumn = 0;
+		return {
+			startRow,
+			endRow,
+			startColumn,
+			endColumn
+		};
+	}
+	getRealRowRange() {
+		const rows = Object.keys(this._matrix);
+		const rowLength = rows.length;
+		return {
+			startRow: rowLength > 0 ? Number(rows[0]) : 0,
+			endRow: rowLength > 0 ? Number(rows[rowLength - 1]) : 0
+		};
+	}
+	toNativeArray() {
+		const native = new Array();
+		this.forValue((row, col, value) => {
+			native.push(value);
+		});
+		return native;
+	}
+	toArray() {
+		const array = [];
+		this.forRow((row, cols) => {
+			if (array[row] == null) array[row] = [];
+			cols.forEach((column) => {
+				array[row][column] = this.getValue(row, column);
+			});
+		});
+		return array;
+	}
+	toFullArray() {
+		const { endColumn, endRow } = this.getRange();
+		const array = [];
+		for (let i = 0; i <= endRow; i++) {
+			const subArr = new Array(endColumn + 1).fill(void 0);
+			array.push(subArr);
+		}
+		this.forValue((row, col, value) => {
+			array[row][col] = value;
+		});
+		return array;
+	}
+	clone() {
+		const json = JSON.stringify(this._matrix);
+		return JSON.parse(json);
+	}
+	getArrayData() {
+		let startRow = 0;
+		let startColumn = 0;
+		let initRow = false;
+		let initColumn = false;
+		const objectMatrix = new ObjectMatrix();
+		this.forEach((rowIndex, rowObject) => {
+			if (!initRow) {
+				initRow = true;
+				startRow = rowIndex;
+			}
+			Object.keys(rowObject).forEach((column) => {
+				const columnIndex = Number(column);
+				if (!initColumn) {
+					initColumn = true;
+					startColumn = columnIndex;
+				} else if (columnIndex < startColumn) startColumn = columnIndex;
+				const value = this.getValue(rowIndex, columnIndex);
+				objectMatrix.setValue(rowIndex - startRow, columnIndex - startColumn, value);
+			});
+		});
+		return objectMatrix.clone();
+	}
+	/**
+	* the function can only be used in all the row and column are positive integer
+	* @description the positive integer in V8 Object is stored in a fast memory space and it is sorted  when we get the keys
+	* @returns {IRange} the start and end scope of the matrix
+	*/
+	getStartEndScope() {
+		let startRow = -1;
+		let endRow = -1;
+		let startColumn = -1;
+		let endColumn = -1;
+		const rows = Object.keys(this._matrix);
+		if (rows.length > 0) {
+			startRow = +rows[0];
+			endRow = +rows[rows.length - 1];
+		}
+		for (const row of rows) {
+			const columns = Object.keys(this._matrix[row]);
+			if (columns.length > 0) {
+				startColumn = startColumn === -1 ? +columns[0] : Math.min(startColumn, +columns[0]);
+				endColumn = Math.max(endColumn, +columns[columns.length - 1]);
+			}
+		}
+		return {
+			startRow,
+			endRow,
+			startColumn,
+			endColumn
+		};
+	}
+	getDataRange() {
+		let startRow = 0;
+		let startColumn = 0;
+		let endColumn = 0;
+		let endRow = -1;
+		let initRow = false;
+		let initColumn = false;
+		this.forEach((rowIndex, row) => {
+			if (!initRow) {
+				initRow = true;
+				startRow = rowIndex;
+			}
+			if (row == null) return;
+			const rowSize = getArrayLength(row) - 1;
+			if (rowSize > endColumn) endColumn = rowSize;
+			Object.keys(row).forEach((column) => {
+				const columnIndex = Number(column);
+				if (!initColumn) {
+					initColumn = true;
+					startColumn = columnIndex;
+				} else if (columnIndex < startColumn) startColumn = columnIndex;
+			});
+			if (rowIndex > endRow) endRow = rowIndex;
+		});
+		return {
+			startRow,
+			startColumn,
+			endRow,
+			endColumn
+		};
+	}
+	getDiscreteRanges() {
+		const ranges = [];
+		this.forEach((r, row) => {
+			Object.keys(row).forEach((col) => {
+				const c = Number(col);
+				let merged = false;
+				for (const range of ranges) if (r >= range.startRow && r <= range.endRow + 1 && c >= range.startColumn && c <= range.endColumn + 1) {
+					range.endRow = Math.max(r, range.endRow);
+					range.endColumn = Math.max(c, range.endColumn);
+					merged = true;
+					break;
+				}
+				if (!merged) ranges.push({
+					startRow: r,
+					endRow: r,
+					startColumn: c,
+					endColumn: c
+				});
+			});
+		});
+		return ranges;
+	}
+	merge(newObject) {
+		this.forValue((row, column) => {
+			const cellValue = newObject.getValue(row, column);
+			if (cellValue != null) this.setValue(row, column, cellValue);
+		});
+	}
+	concatRows(newObject) {
+		const newMatrix = newObject.getMatrix();
+		for (const rowKey in newMatrix) {
+			const rowIndex = Number(rowKey);
+			this.setRow(rowIndex, newMatrix[rowIndex]);
+		}
+	}
+	_setOriginValue(matrix = {}) {
+		this._matrix = matrix;
+	}
+};
+
+//#endregion
+//#region src/shared/common.ts
+/**
+* Data type convert, convert ICellWithCoord to IRangeWithCoord
+* @param cellInfo
+* @returns IRangeWithCoord
+*/
+function convertCellToRange(cellInfo) {
+	const { actualRow, actualColumn, isMerged, isMergedMainCell, mergeInfo } = cellInfo;
+	let { startY, endY, startX, endX } = cellInfo;
+	let startRow = actualRow;
+	let startColumn = actualColumn;
+	let endRow = actualRow;
+	let endColumn = actualColumn;
+	if (isMerged && mergeInfo) {
+		const { startRow: mergeStartRow, startColumn: mergeStartColumn, endRow: mergeEndRow, endColumn: mergeEndColumn, startY: mergeStartY, endY: mergeEndY, startX: mergeStartX, endX: mergeEndX } = mergeInfo;
+		startRow = mergeStartRow;
+		startColumn = mergeStartColumn;
+		endRow = mergeEndRow;
+		endColumn = mergeEndColumn;
+		startY = mergeStartY;
+		endY = mergeEndY;
+		startX = mergeStartX;
+		endX = mergeEndX;
+	}
+	if (isMergedMainCell) {
+		startY = mergeInfo.startY;
+		endY = mergeInfo.endY;
+		startX = mergeInfo.startX;
+		endX = mergeInfo.endX;
+		endRow = mergeInfo.endRow;
+		endColumn = mergeInfo.endColumn;
+	}
+	return {
+		startRow,
+		startColumn,
+		endRow,
+		endColumn,
+		startY,
+		endY,
+		startX,
+		endX
+	};
+}
+function makeCellRangeToRangeData(cellInfo) {
+	if (!cellInfo) return;
+	const { actualRow, actualColumn, isMerged, isMergedMainCell, startRow: mergeStartRow, startColumn: mergeStartColumn, endRow: mergeEndRow, endColumn: mergeEndColumn } = cellInfo;
+	let startRow = actualRow;
+	let startColumn = actualColumn;
+	let endRow = actualRow;
+	let endColumn = actualColumn;
+	if (isMerged || isMergedMainCell) {
+		startRow = mergeStartRow;
+		startColumn = mergeStartColumn;
+		endRow = mergeEndRow;
+		endColumn = mergeEndColumn;
+	}
+	return {
+		startRow,
+		startColumn,
+		endRow,
+		endColumn
+	};
+}
+function isEmptyCell(cell) {
+	var _cell$v;
+	if (!cell) return true;
+	if (((cell === null || cell === void 0 || (_cell$v = cell.v) === null || _cell$v === void 0 ? void 0 : _cell$v.toString()) || "").length === 0 && !cell.p) return true;
+	return false;
+}
+function isCellCoverable(cell) {
+	return isEmptyCell(cell) && (cell === null || cell === void 0 ? void 0 : cell.coverable) !== false;
+}
+function getColorStyle(color) {
+	if (color) {
+		if (color.rgb) return new ColorKit(color.rgb).toHexString();
+		if (color.th != null) {
+			var _THEME_COLORS$ThemeCo;
+			const themeColor = (_THEME_COLORS$ThemeCo = THEME_COLORS["Office"]) === null || _THEME_COLORS$ThemeCo === void 0 ? void 0 : _THEME_COLORS$ThemeCo[color.th];
+			if (themeColor) return new ColorKit(themeColor).toRgbString();
+		}
+	}
+	return null;
+}
+/**
+* A string starting with an equal sign is a formula
+* @param value
+* @returns
+*/
+function isFormulaString(value) {
+	return Tools.isString(value) && value.substring(0, 1) === "=" && value.length > 1;
+}
+/**
+* any string
+* @param value
+* @returns
+*/
+function isFormulaId(value) {
+	return Tools.isString(value) && value.length > 0;
+}
+/**
+* transform style object to string
+* @param style
+* @returns
+*/
+function handleStyleToString(style, isCell = false) {
+	let str = "";
+	const styleMap = /* @__PURE__ */ new Map([
+		["ff", () => {
+			if (style.ff) str += `font-family: ${style.ff}; `;
+		}],
+		["fs", () => {
+			if (style.fs) {
+				let fs = style.fs;
+				if (style.va) fs /= 2;
+				str += `font-size: ${fs}pt; `;
+			}
+		}],
+		["it", () => {
+			if (style.it) str += "font-style: italic; ";
+		}],
+		["bl", () => {
+			if (style.bl) str += "font-weight: bold; ";
+		}],
+		["ul", () => {
+			var _style$ul;
+			if ((_style$ul = style.ul) === null || _style$ul === void 0 ? void 0 : _style$ul.s) {
+				if (str.indexOf("text-decoration-line") > -1) str = str.replace(/(text-decoration-line:\s*[^;]+)(?=;)/g, (_, p1) => `${p1} underline`);
+				else str += "text-decoration: underline; ";
+				if (style.ul.cl && str.indexOf("text-decoration-color") === -1) str += `text-decoration-color: ${getColorStyle(style.ul.cl)}; `;
+				if (style.ul.t && str.indexOf("text-decoration-style") === -1) str += `text-decoration-style: ${style.ul.t} `;
+			}
+		}],
+		["st", () => {
+			var _style$st;
+			if ((_style$st = style.st) === null || _style$st === void 0 ? void 0 : _style$st.s) {
+				if (str.indexOf("text-decoration-line") > -1) str = str.replace(/(text-decoration-line:\s*[^;]+)(?=;)/g, (_, p1) => `${p1} line-through`);
+				else str += "text-decoration-line: line-through; ";
+				if (style.st.cl && str.indexOf("text-decoration-color") === -1) str += `text-decoration-color: ${getColorStyle(style.st.cl)}; `;
+				if (style.st.t && str.indexOf("text-decoration-style") === -1) str += `text-decoration-style: ${style.st.t} `;
+			}
+		}],
+		["ol", () => {
+			var _style$ol;
+			if ((_style$ol = style.ol) === null || _style$ol === void 0 ? void 0 : _style$ol.s) {
+				if (str.indexOf("text-decoration-line") > -1) str = str.replace(/(text-decoration-line:\s*[^;]+)(?=;)/g, (_, p1) => `${p1} overline`);
+				else str += "text-decoration-line: overline; ";
+				if (style.ol.cl && str.indexOf("text-decoration-color") === -1) str += `text-decoration-color: ${getColorStyle(style.ol.cl)}; `;
+				if (style.ol.t && str.indexOf("text-decoration-style") === -1) str += `text-decoration-style: ${style.ol.t} `;
+			}
+		}],
+		["bg", () => {
+			if (style.bg) str += `background: ${getColorStyle(style.bg)}; `;
+		}],
+		["bd", () => {
+			var _style$bd, _style$bd3, _style$bd5, _style$bd7;
+			if ((_style$bd = style.bd) === null || _style$bd === void 0 ? void 0 : _style$bd.b) {
+				var _style$bd2;
+				str += `border-bottom: ${getBorderStyle((_style$bd2 = style.bd) === null || _style$bd2 === void 0 ? void 0 : _style$bd2.b.s)} ${getColorStyle(style.bd.b.cl) ?? ""}; `;
+			}
+			if ((_style$bd3 = style.bd) === null || _style$bd3 === void 0 ? void 0 : _style$bd3.t) {
+				var _style$bd4;
+				str += `border-top: ${getBorderStyle((_style$bd4 = style.bd) === null || _style$bd4 === void 0 ? void 0 : _style$bd4.t.s)} ${getColorStyle(style.bd.t.cl) ?? ""}; `;
+			}
+			if ((_style$bd5 = style.bd) === null || _style$bd5 === void 0 ? void 0 : _style$bd5.r) {
+				var _style$bd6;
+				str += `border-right: ${getBorderStyle((_style$bd6 = style.bd) === null || _style$bd6 === void 0 ? void 0 : _style$bd6.r.s)} ${getColorStyle(style.bd.r.cl) ?? ""}; `;
+			}
+			if ((_style$bd7 = style.bd) === null || _style$bd7 === void 0 ? void 0 : _style$bd7.l) {
+				var _style$bd8;
+				str += `border-left: ${getBorderStyle((_style$bd8 = style.bd) === null || _style$bd8 === void 0 ? void 0 : _style$bd8.l.s)} ${getColorStyle(style.bd.l.cl) ?? ""}; `;
+			}
+		}],
+		["cl", () => {
+			if (style.cl) str += `color: ${getColorStyle(style.cl)}; `;
+		}],
+		["va", () => {
+			if (style.va === 2) str += "vertical-align: sub; ";
+			else if (style.va === 3) str += "vertical-align: super; ";
+		}],
+		["td", () => {
+			if (style.td === 1) str += "direction: ltr; ";
+			else if (style.td === 2) str += "direction: rtl; ";
+		}],
+		["tr", () => {
+			if (style.tr) {
+				var _style$tr, _style$tr2, _style$tr3;
+				str += `--data-rotate: (${(_style$tr = style.tr) === null || _style$tr === void 0 ? void 0 : _style$tr.a}deg${((_style$tr2 = style.tr) === null || _style$tr2 === void 0 ? void 0 : _style$tr2.v) ? ` ,${(_style$tr3 = style.tr) === null || _style$tr3 === void 0 ? void 0 : _style$tr3.v}` : ""});`;
+			}
+		}],
+		["ht", () => {
+			if (style.ht === 1) str += "text-align: left; ";
+			else if (style.ht === 3) str += "text-align: right; ";
+			else if (style.ht === 2) str += "text-align: center; ";
+			else if (style.ht === 4) str += "text-align: justify; ";
+		}],
+		["vt", () => {
+			if (style.vt === 3) str += "vertical-align: bottom; ";
+			else if (style.vt === 1) str += "vertical-align: top; ";
+			else if (style.vt === 2) str += "vertical-align: middle; ";
+		}],
+		["tb", () => {
+			if (style.tb === 2) str += "white-space: nowrap; overflow-x: hidden; ";
+			else if (style.tb === 3) str += "white-space: normal;";
+		}],
+		["pd", () => {
+			var _style$pd, _style$pd2, _style$pd3, _style$pd4, _style$pd5, _style$pd6, _style$pd7, _style$pd8;
+			const b = `${(_style$pd = style.pd) === null || _style$pd === void 0 ? void 0 : _style$pd.b}pt`;
+			const t = `${(_style$pd2 = style.pd) === null || _style$pd2 === void 0 ? void 0 : _style$pd2.t}pt`;
+			const l = `${(_style$pd3 = style.pd) === null || _style$pd3 === void 0 ? void 0 : _style$pd3.l}pt`;
+			const r = `${(_style$pd4 = style.pd) === null || _style$pd4 === void 0 ? void 0 : _style$pd4.r}pt`;
+			if ((_style$pd5 = style.pd) === null || _style$pd5 === void 0 ? void 0 : _style$pd5.b) str += `padding-bottom: ${b}; `;
+			if ((_style$pd6 = style.pd) === null || _style$pd6 === void 0 ? void 0 : _style$pd6.t) str += `padding-top: ${t}; `;
+			if ((_style$pd7 = style.pd) === null || _style$pd7 === void 0 ? void 0 : _style$pd7.l) str += `padding-left: ${l}; `;
+			if ((_style$pd8 = style.pd) === null || _style$pd8 === void 0 ? void 0 : _style$pd8.r) str += `padding-right: ${r}; `;
+		}]
+	]);
+	const cellSkip = [
+		"bd",
+		"tr",
+		"tb"
+	];
+	for (const k in style) {
+		var _styleMap$get;
+		if (isCell && cellSkip.includes(k)) continue;
+		(_styleMap$get = styleMap.get(k)) === null || _styleMap$get === void 0 || _styleMap$get();
+	}
+	return str;
+}
+function getBorderStyle(type) {
+	let str = "";
+	if (type === 0) str = "none";
+	else if (type === 1) str = "0.5pt solid";
+	else if (type === 2) str = "0.5pt double";
+	else if (type === 3) str = "0.5pt dotted";
+	else if (type === 4) str = "0.5pt dashed";
+	else if (type === 5) str = "0.5pt dashed";
+	else if (type === 6) str = "0.5pt dotted";
+	else if (type === 7) str = "0.5pt double";
+	else if (type === 8) str = "1pt solid";
+	else if (type === 9) str = "1pt dashed";
+	else if (type === 10) str = "1pt dashed";
+	else if (type === 11) str = "1pt dotted";
+	else if (type === 12) str = "0.5pt dashed";
+	else if (type === 13) str = "1.5pt solid";
+	return str;
+}
+function getBorderStyleType(type) {
+	let str = 0;
+	type = type.trim();
+	if (type === "none") str = 0;
+	else if (type === "0.5pt solid") str = 1;
+	else if (type === "0.5pt double") str = 2;
+	else if (type === "0.5pt dotted") str = 3;
+	else if (type === "0.5pt dashed") str = 4;
+	else if (type === "1pt solid") str = 8;
+	else if (type === "1pt dashed") str = 9;
+	else if (type === "1pt dotted") str = 11;
+	else if (type === "1.5pt solid") str = 13;
+	else if (!type.includes("none")) str = 1;
+	else return 0;
+	return str;
+}
+function getDocsUpdateBody(model, segmentId) {
+	let body = model.body;
+	if (segmentId) {
+		const { headers, footers } = model;
+		if (headers === null || headers === void 0 ? void 0 : headers[segmentId]) body = headers[segmentId].body;
+		else if (footers === null || footers === void 0 ? void 0 : footers[segmentId]) body = footers[segmentId].body;
+	}
+	return body;
+}
+function isValidRange(range, worksheet) {
+	const { startRow, endRow, startColumn, endColumn, rangeType } = range;
+	if (startRow < 0 || startColumn < 0 || endRow < 0 || endColumn < 0) return false;
+	if (!(Number.isNaN(startRow) && Number.isNaN(endRow)) && rangeType === 2) return false;
+	if (!(Number.isNaN(startColumn) && Number.isNaN(endColumn)) && rangeType === 1) return false;
+	if (rangeType !== 1 && rangeType !== 2 && (Number.isNaN(startColumn) || Number.isNaN(startRow) || Number.isNaN(endColumn) || Number.isNaN(endRow))) return false;
+	if (worksheet) {
+		const rowCount = worksheet.getRowCount();
+		const colCount = worksheet.getColumnCount();
+		if (endRow >= rowCount || endColumn >= colCount) return false;
+	}
+	return true;
+}
+/**
+* Covert row/column to range object
+* @param row
+* @param col
+* @returns
+*/
+function cellToRange(row, col) {
+	return {
+		startRow: row,
+		endRow: row,
+		startColumn: col,
+		endColumn: col
+	};
+}
+/**
+* Covert cell value to cell data.
+* @param {CellValue | ICellData} value - The cell value.
+* @returns {ICellData} The cell data.
+*/
+function covertCellValue(value) {
+	if (isFormulaString(value)) return {
+		f: value,
+		v: null,
+		p: null
+	};
+	if (isCellV(value)) {
+		if (typeof value === "string") {
+			const parseData = getNumfmtParseValueFilter(value);
+			if (parseData && parseData.z) return {
+				v: parseData.v,
+				p: null,
+				f: null,
+				s: { n: { pattern: parseData.z || "General" } }
+			};
+		}
+		return {
+			v: value,
+			p: null,
+			f: null
+		};
+	}
+	if (isICellData(value)) return value;
+	return value;
+}
+/**
+* Covert cell value array or matrix to cell data.
+* @param {CellValue[][] | IObjectMatrixPrimitiveType<CellValue> | ICellData[][] | IObjectMatrixPrimitiveType<ICellData>} value - The cell value array or matrix.
+* @param {IRange} range - The range.
+* @returns {IObjectMatrixPrimitiveType<ICellData>} The cell data matrix.
+*/
+function covertCellValues(value, range) {
+	const cellValue = new ObjectMatrix();
+	const { startRow, startColumn, endRow, endColumn } = range;
+	if (Tools.isArray(value)) for (let r = 0; r <= endRow - startRow; r++) for (let c = 0; c <= endColumn - startColumn; c++) cellValue.setValue(r + startRow, c + startColumn, covertCellValue(value[r][c]));
+	else new ObjectMatrix(value).forValue((r, c, v) => {
+		cellValue.setValue(r, c, covertCellValue(v));
+	});
+	return cellValue.getMatrix();
+}
+
+//#endregion
+//#region src/shared/compare.ts
+function deepCompare(arg1, arg2) {
+	if (Object.prototype.toString.call(arg1) === Object.prototype.toString.call(arg2)) {
+		if (Object.prototype.toString.call(arg1) === "[object Object]" || Object.prototype.toString.call(arg1) === "[object Array]") {
+			if (Object.keys(arg1).length !== Object.keys(arg2).length) return false;
+			return Object.keys(arg1).every((key) => deepCompare(arg1[key], arg2[key]));
+		}
+		return arg1 === arg2;
+	}
+	return false;
+}
+function isSameStyleTextRun(tr1, tr2) {
+	const ts1 = tr1.ts || {};
+	const ts2 = tr2.ts || {};
+	if (tr1.sId !== tr2.sId) return false;
+	return deepCompare(ts1, ts2);
+}
+function checkForSubstrings(searchString, substrings) {
+	return substrings.some((substring) => searchString.indexOf(substring) > -1);
+}
+
+//#endregion
+//#region src/shared/date-kit.ts
+const SECOND = 1e3 * 1;
+const MINUTE = 60 * SECOND;
+const HOUR = 60 * MINUTE;
+const DAY = 24 * HOUR;
+const WEEK_START_DAY = 0;
+const MONTH_NAMES = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December"
+];
+const MONTH_NAMES_SHORT = [
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec"
+];
+const WEEKDAY_NAMES = [
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday"
+];
+const WEEKDAY_NAMES_SHORT = [
+	"Sun",
+	"Mon",
+	"Tue",
+	"Wed",
+	"Thu",
+	"Fri",
+	"Sat"
+];
+const WEEKDAY_NAMES_MIN = [
+	"Su",
+	"Mo",
+	"Tu",
+	"We",
+	"Th",
+	"Fr",
+	"Sa"
+];
+const LOCALIZED_FORMAT_MAP = {
+	L: "MM/DD/YYYY",
+	LL: "MMMM D, YYYY",
+	LLL: "MMMM D, YYYY h:mm A",
+	LLLL: "dddd, MMMM D, YYYY h:mm A",
+	l: "M/D/YYYY",
+	ll: "MMM D, YYYY",
+	lll: "MMM D, YYYY h:mm A",
+	llll: "ddd, MMM D, YYYY h:mm A"
+};
+const UNIT_ALIASES = {
+	millisecond: "millisecond",
+	milliseconds: "millisecond",
+	ms: "millisecond",
+	second: "second",
+	seconds: "second",
+	s: "second",
+	minute: "minute",
+	minutes: "minute",
+	m: "minute",
+	hour: "hour",
+	hours: "hour",
+	h: "hour",
+	day: "day",
+	days: "day",
+	d: "day",
+	week: "week",
+	weeks: "week",
+	w: "week",
+	month: "month",
+	months: "month",
+	M: "month",
+	year: "year",
+	years: "year",
+	y: "year"
+};
+var DateKitImpl = class DateKitImpl {
+	constructor(_date, _isUTC) {
+		this._date = _date;
+		this._isUTC = _isUTC;
+	}
+	isValid() {
+		return !Number.isNaN(this._date.getTime());
+	}
+	format(template = "YYYY-MM-DDTHH:mm:ssZ") {
+		if (!this.isValid()) return "Invalid Date";
+		return formatDate(this._date, template, this._isUTC);
+	}
+	formatIntl(locale, options = {}) {
+		if (!this.isValid()) return "Invalid Date";
+		if (typeof Intl === "undefined" || typeof Intl.DateTimeFormat !== "function") return this.format();
+		const formatOptions = this._isUTC && !options.timeZone ? {
+			...options,
+			timeZone: "UTC"
+		} : options;
+		return new Intl.DateTimeFormat(locale, formatOptions).format(this._date);
+	}
+	valueOf() {
+		return this._date.getTime();
+	}
+	toDate() {
+		return new Date(this.valueOf());
+	}
+	_clone() {
+		return new DateKitImpl(this.toDate(), this._isUTC);
+	}
+	add(value, unit = "millisecond") {
+		const normalizedUnit = normalizeUnit(unit);
+		if (!this.isValid() || !normalizedUnit || !Number.isFinite(value)) return this._clone();
+		return new DateKitImpl(addDate(this._date, value, normalizedUnit, this._isUTC), this._isUTC);
+	}
+	subtract(value, unit = "millisecond") {
+		return this.add(-value, unit);
+	}
+	startOf(unit) {
+		const normalizedUnit = normalizeUnit(unit);
+		if (!normalizedUnit || !this.isValid()) return this._clone();
+		return new DateKitImpl(startOf(this._date, normalizedUnit, this._isUTC), this._isUTC);
+	}
+	endOf(unit) {
+		const normalizedUnit = normalizeUnit(unit);
+		if (!normalizedUnit || !this.isValid()) return this._clone();
+		if (normalizedUnit === "millisecond") return this._clone();
+		return this.startOf(normalizedUnit).add(1, normalizedUnit).subtract(1, "millisecond");
+	}
+	utc() {
+		return new DateKitImpl(this.toDate(), true);
+	}
+	local() {
+		return new DateKitImpl(this.toDate(), false);
+	}
+	weekday(value) {
+		const current = (getDateParts(this._date, this._isUTC).dayOfWeek - WEEK_START_DAY + 7) % 7;
+		if (value === void 0) return current;
+		return this.add(value - current, "day");
+	}
+	week(value) {
+		const currentWeek = getWeekOfYear(this._date, this._isUTC);
+		if (value === void 0) return currentWeek;
+		return this.add((value - currentWeek) * 7, "day");
+	}
+};
+function pad(value, length = 2) {
+	return String(Math.abs(value)).padStart(length, "0");
+}
+function getDateParts(date, isUTC) {
+	return isUTC ? {
+		year: date.getUTCFullYear(),
+		month: date.getUTCMonth() + 1,
+		day: date.getUTCDate(),
+		hour: date.getUTCHours(),
+		minute: date.getUTCMinutes(),
+		second: date.getUTCSeconds(),
+		millisecond: date.getUTCMilliseconds(),
+		dayOfWeek: date.getUTCDay()
+	} : {
+		year: date.getFullYear(),
+		month: date.getMonth() + 1,
+		day: date.getDate(),
+		hour: date.getHours(),
+		minute: date.getMinutes(),
+		second: date.getSeconds(),
+		millisecond: date.getMilliseconds(),
+		dayOfWeek: date.getDay()
+	};
+}
+function toDate(input, isUTC) {
+	if (input instanceof DateKitImpl) return input.toDate();
+	if (input === void 0) return /* @__PURE__ */ new Date();
+	if (input === null) return /* @__PURE__ */ new Date(NaN);
+	if (input instanceof Date) return new Date(input.getTime());
+	if (typeof input === "number") return new Date(input);
+	if (typeof input === "string") return parseDateString(input, isUTC);
+	return /* @__PURE__ */ new Date(NaN);
+}
+function createDateWithParts(year, month, day, hour, minute, second, millisecond, isUTC) {
+	const parsed = isUTC ? new Date(Date.UTC(year, month - 1, day, hour, minute, second, millisecond)) : new Date(year, month - 1, day, hour, minute, second, millisecond);
+	const parts = getDateParts(parsed, isUTC);
+	if (parts.year !== year || parts.month !== month || parts.day !== day || parts.hour !== hour || parts.minute !== minute || parts.second !== second) return /* @__PURE__ */ new Date(NaN);
+	return parsed;
+}
+function parseDateString(input, isUTC) {
+	const text = input.trim();
+	if (!text) return /* @__PURE__ */ new Date(NaN);
+	const cjkMatch = text.match(/^(\d{4})年(\d{1,2})月(\d{1,2})日(?:\s+(\d{1,2})(?::(\d{1,2})(?::(\d{1,2}))?)?)?$/);
+	if (cjkMatch) {
+		const [, y, m, d, hh = "0", mm = "0", ss = "0"] = cjkMatch;
+		return createDateWithParts(Number(y), Number(m), Number(d), Number(hh), Number(mm), Number(ss), 0, isUTC);
+	}
+	const standardMatch = text.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[ T](\d{1,2})(?::(\d{1,2})(?::(\d{1,2})(?:\.(\d{1,3}))?)?)?)?$/);
+	if (standardMatch) {
+		const [, y, m, d, hh = "0", mm = "0", ss = "0", mss = "0"] = standardMatch;
+		return createDateWithParts(Number(y), Number(m), Number(d), Number(hh), Number(mm), Number(ss), Number(mss), isUTC);
+	}
+	if (/^-?\d+(\.\d+)?$/.test(text)) return new Date(Number(text));
+	return new Date(text);
+}
+function normalizeUnit(unit) {
+	return UNIT_ALIASES[unit] ?? UNIT_ALIASES[String(unit).toLowerCase()];
+}
+function daysInMonth(year, month, isUTC) {
+	return isUTC ? new Date(Date.UTC(year, month, 0)).getUTCDate() : new Date(year, month, 0).getDate();
+}
+function setDatePart(date, isUTC, part, value) {
+	const next = new Date(date.getTime());
+	if (isUTC) {
+		switch (part) {
+			case "year":
+				next.setUTCFullYear(value);
+				break;
+			case "month":
+				next.setUTCMonth(value);
+				break;
+			case "day":
+				next.setUTCDate(value);
+				break;
+			case "hour":
+				next.setUTCHours(value);
+				break;
+			case "minute":
+				next.setUTCMinutes(value);
+				break;
+			case "second":
+				next.setUTCSeconds(value);
+				break;
+			case "millisecond":
+				next.setUTCMilliseconds(value);
+				break;
+		}
+		return next;
+	}
+	switch (part) {
+		case "year":
+			next.setFullYear(value);
+			break;
+		case "month":
+			next.setMonth(value);
+			break;
+		case "day":
+			next.setDate(value);
+			break;
+		case "hour":
+			next.setHours(value);
+			break;
+		case "minute":
+			next.setMinutes(value);
+			break;
+		case "second":
+			next.setSeconds(value);
+			break;
+		case "millisecond":
+			next.setMilliseconds(value);
+			break;
+	}
+	return next;
+}
+function addDate(date, value, unit, isUTC) {
+	switch (unit) {
+		case "millisecond": return new Date(date.getTime() + value);
+		case "second": return new Date(date.getTime() + value * SECOND);
+		case "minute": return new Date(date.getTime() + value * MINUTE);
+		case "hour": return new Date(date.getTime() + value * HOUR);
+		case "day": return setDatePart(date, isUTC, "day", (isUTC ? date.getUTCDate() : date.getDate()) + value);
+		case "week": return setDatePart(date, isUTC, "day", (isUTC ? date.getUTCDate() : date.getDate()) + value * 7);
+		case "month": {
+			const current = getDateParts(date, isUTC);
+			const anchor = createDateWithParts(current.year, current.month, 1, current.hour, current.minute, current.second, current.millisecond, isUTC);
+			const moved = setDatePart(anchor, isUTC, "month", (isUTC ? anchor.getUTCMonth() : anchor.getMonth()) + value);
+			const movedParts = getDateParts(moved, isUTC);
+			const maxDay = daysInMonth(movedParts.year, movedParts.month, isUTC);
+			return setDatePart(moved, isUTC, "day", Math.min(current.day, maxDay));
+		}
+		case "year": return addDate(date, value * 12, "month", isUTC);
+	}
+}
+function startOf(date, unit, isUTC) {
+	const parts = getDateParts(date, isUTC);
+	switch (unit) {
+		case "year": return createDateWithParts(parts.year, 1, 1, 0, 0, 0, 0, isUTC);
+		case "month": return createDateWithParts(parts.year, parts.month, 1, 0, 0, 0, 0, isUTC);
+		case "week": {
+			const diff = (parts.dayOfWeek - WEEK_START_DAY + 7) % 7;
+			const anchor = createDateWithParts(parts.year, parts.month, parts.day, 0, 0, 0, 0, isUTC);
+			return setDatePart(anchor, isUTC, "day", (isUTC ? anchor.getUTCDate() : anchor.getDate()) - diff);
+		}
+		case "day": return createDateWithParts(parts.year, parts.month, parts.day, 0, 0, 0, 0, isUTC);
+		case "hour": return createDateWithParts(parts.year, parts.month, parts.day, parts.hour, 0, 0, 0, isUTC);
+		case "minute": return createDateWithParts(parts.year, parts.month, parts.day, parts.hour, parts.minute, 0, 0, isUTC);
+		case "second": return createDateWithParts(parts.year, parts.month, parts.day, parts.hour, parts.minute, parts.second, 0, isUTC);
+		default: return new Date(date.getTime());
+	}
+}
+function getWeekOfYear(date, isUTC) {
+	const currentWeekStart = startOf(date, "week", isUTC);
+	const firstWeekStart = startOf(startOf(date, "year", isUTC), "week", isUTC);
+	return Math.floor((currentWeekStart.getTime() - firstWeekStart.getTime()) / DAY / 7) + 1;
+}
+function getTimezoneString(date, isUTC, compact = false) {
+	if (isUTC) return compact ? "+0000" : "+00:00";
+	const offsetMinutes = -date.getTimezoneOffset();
+	const sign = offsetMinutes >= 0 ? "+" : "-";
+	const abs = Math.abs(offsetMinutes);
+	const hours = pad(Math.floor(abs / 60), 2);
+	const minutes = pad(abs % 60, 2);
+	return compact ? `${sign}${hours}${minutes}` : `${sign}${hours}:${minutes}`;
+}
+function ordinal(value) {
+	const v = value % 100;
+	if (v >= 11 && v <= 13) return `${value}th`;
+	switch (value % 10) {
+		case 1: return `${value}st`;
+		case 2: return `${value}nd`;
+		case 3: return `${value}rd`;
+		default: return `${value}th`;
+	}
+}
+function replaceLocalizedTokens(template) {
+	return template.replace(/LLLL|LLL|LL|L|llll|lll|ll|l/g, (token) => LOCALIZED_FORMAT_MAP[token] ?? token);
+}
+function formatDate(date, template, isUTC) {
+	const parts = getDateParts(date, isUTC);
+	const hour12Raw = parts.hour % 12;
+	const hour12 = hour12Raw === 0 ? 12 : hour12Raw;
+	const quarter = Math.ceil(parts.month / 3);
+	const tokenMap = {
+		YYYY: String(parts.year),
+		YY: pad(parts.year % 100, 2),
+		MMMM: MONTH_NAMES[parts.month - 1],
+		MMM: MONTH_NAMES_SHORT[parts.month - 1],
+		MM: pad(parts.month, 2),
+		M: String(parts.month),
+		DD: pad(parts.day, 2),
+		D: String(parts.day),
+		Do: ordinal(parts.day),
+		dddd: WEEKDAY_NAMES[parts.dayOfWeek],
+		ddd: WEEKDAY_NAMES_SHORT[parts.dayOfWeek],
+		dd: WEEKDAY_NAMES_MIN[parts.dayOfWeek],
+		d: String(parts.dayOfWeek),
+		HH: pad(parts.hour, 2),
+		H: String(parts.hour),
+		hh: pad(hour12, 2),
+		h: String(hour12),
+		mm: pad(parts.minute, 2),
+		m: String(parts.minute),
+		ss: pad(parts.second, 2),
+		s: String(parts.second),
+		SSS: pad(parts.millisecond, 3),
+		A: parts.hour >= 12 ? "PM" : "AM",
+		a: parts.hour >= 12 ? "pm" : "am",
+		Q: String(quarter),
+		Qo: ordinal(quarter),
+		X: String(Math.floor(date.getTime() / 1e3)),
+		x: String(date.getTime()),
+		Z: getTimezoneString(date, isUTC, false),
+		ZZ: getTimezoneString(date, isUTC, true)
+	};
+	const escapedBlocks = [];
+	return replaceLocalizedTokens(template.replace(/\[([^\]]+)]/g, (_, value) => {
+		return `\u0000${escapedBlocks.push(value) - 1}\u0000`;
+	})).replace(/YYYY|YY|MMMM|MMM|MM|M|DD|Do|D|dddd|ddd|dd|d|HH|H|hh|h|mm|m|ss|s|SSS|A|a|Qo|Q|X|x|ZZ|Z/g, (token) => tokenMap[token] ?? token).replace(/\u0000(\d+)\u0000/g, (_, indexText) => escapedBlocks[Number(indexText)] ?? "");
+}
+function createDateKit(input) {
+	return new DateKitImpl(toDate(input, false), false);
+}
+const dateKit = Object.assign(createDateKit, {
+	utc: (input) => new DateKitImpl(toDate(input, true), true),
+	isDateKit: (value) => value instanceof DateKitImpl,
+	unix: (timestamp) => createDateKit(timestamp * 1e3)
+});
+
+//#endregion
+//#region src/shared/doc-tool.ts
+function horizontalLineSegmentsSubtraction(aStart, aEnd, bStart, bEnd) {
+	if (aStart > aEnd) throw new Error("a1 should be less than a2");
+	if (bStart > bEnd) throw new Error("b1 should be less than b2");
+	if (aEnd < bStart || bEnd < aStart) return [aStart, aEnd];
+	if (bStart <= aStart && bEnd >= aEnd) return [];
+	const subLength = bEnd - bStart + 1;
+	if (aStart < bStart && aEnd > bEnd) return [aStart, aEnd - subLength];
+	if (bStart <= aStart && bEnd < aEnd) return [bEnd + 1 - subLength, aEnd - subLength];
+	if (bStart > aStart && bEnd >= aEnd) return [aStart, bStart - 1];
+	return [aStart, aEnd];
+}
+function checkParagraphHasBullet(paragraph) {
+	if (paragraph == null) return false;
+	const bullet = paragraph.bullet;
+	return (bullet === null || bullet === void 0 ? void 0 : bullet.listId) != null;
+}
+function checkParagraphHasIndent(paragraph) {
+	if (paragraph == null) return false;
+	const paragraphStyle = paragraph.paragraphStyle;
+	return checkParagraphHasIndentByStyle(paragraphStyle);
+}
+function checkParagraphHasIndentByStyle(paragraphStyle) {
+	var _paragraphStyle$hangi;
+	if (paragraphStyle == null) return false;
+	if ((paragraphStyle.indentStart == null || paragraphStyle.indentStart.v === 0) && paragraphStyle.hanging == null || ((_paragraphStyle$hangi = paragraphStyle.hanging) === null || _paragraphStyle$hangi === void 0 ? void 0 : _paragraphStyle$hangi.v) === 0) return false;
+	return true;
+}
+function insertTextToContent(content, start, text) {
+	return content.slice(0, start) + text + content.slice(start);
+}
+function deleteContent(content, start, end) {
+	if (start > end) return content;
+	return content.slice(0, start) + content.slice(end);
+}
+
+//#endregion
+//#region src/shared/generate.ts
+/**
+* Determine whether it is a pure number, "12" and "12e+3" are both true
+* @param val The number or string to be judged
+* @returns Result
+*/
+function isRealNum(val) {
+	if (val === null || val === void 0) return false;
+	if (typeof val === "boolean") return false;
+	if (typeof val === "number") return !isNaN(val);
+	if (typeof val === "string") {
+		const trimmedVal = val.trim();
+		if (trimmedVal === "") return false;
+		return !isNaN(Number(trimmedVal));
+	}
+	return false;
+}
+
+//#endregion
+//#region src/shared/hash-algorithm.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function hashAlgorithm(str) {
+	let hash = 0;
+	for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + (hash << 6) + (hash << 16) - hash;
+	return hash >>> 0;
+}
+
+//#endregion
+//#region src/shared/intervals.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function generateIntervalsByPoints(points) {
+	if (points.length === 0) return [];
+	const sortedPoints = points.slice().sort((a, b) => (Array.isArray(a) ? a[0] : a) - (Array.isArray(b) ? b[0] : b));
+	const intervals = [];
+	let currentStart = Array.isArray(sortedPoints[0]) ? sortedPoints[0][0] : sortedPoints[0];
+	let currentEnd = currentStart;
+	for (let i = 1; i < sortedPoints.length; i++) {
+		const point = sortedPoints[i];
+		let nextStart;
+		let nextEnd;
+		if (Array.isArray(point)) {
+			nextStart = point[0];
+			nextEnd = point[1];
+		} else {
+			nextStart = point;
+			nextEnd = point;
+		}
+		if (nextStart <= currentEnd + 1) currentEnd = Math.max(currentEnd, nextEnd);
+		else {
+			intervals.push([currentStart, currentEnd]);
+			currentStart = nextStart;
+			currentEnd = nextEnd;
+		}
+	}
+	intervals.push([currentStart, currentEnd]);
+	return intervals;
+}
+function mergeIntervals(intervals) {
+	if (intervals.length === 0) return [];
+	const sortedIntervals = intervals.slice().sort((a, b) => a[0] - b[0]);
+	const merged = [];
+	let [currentStart, currentEnd] = sortedIntervals[0];
+	for (let i = 1; i < sortedIntervals.length; i++) {
+		const [nextStart, nextEnd] = sortedIntervals[i];
+		if (nextStart <= currentEnd + 1) currentEnd = Math.max(currentEnd, nextEnd);
+		else {
+			merged.push([currentStart, currentEnd]);
+			currentStart = nextStart;
+			currentEnd = nextEnd;
+		}
+	}
+	merged.push([currentStart, currentEnd]);
+	return merged;
+}
+
+//#endregion
+//#region src/shared/locale.ts
+/**
+* Merges multiple locale objects into a single locale object.
+* It can accept either multiple locale objects as arguments or a single array of locale objects.
+* @param locales - An array of locale objects or multiple locale objects.
+* @returns A merged locale object containing all key-value pairs from the input locales.
+*/
+function mergeLocales(...locales) {
+	let mergedLocales;
+	if (locales.length === 1 && Array.isArray(locales[0])) mergedLocales = locales[0];
+	else mergedLocales = locales;
+	return Object.assign({}, ...mergedLocales);
+}
+
+//#endregion
+//#region src/shared/lru/lru-map.ts
+let _Symbol$iterator;
+let _Symbol$iterator2;
+let _Symbol$iterator3;
+let _Symbol$iterator4;
+const NEWER = Symbol("newer");
+const OLDER = Symbol("older");
+_Symbol$iterator = Symbol.iterator;
+var KeyIterator = class {
+	constructor(oldestEntry) {
+		_defineProperty(this, "entry", void 0);
+		this.entry = oldestEntry;
+	}
+	[_Symbol$iterator]() {
+		return this;
+	}
+	next() {
+		const ent = this.entry;
+		if (ent) {
+			this.entry = ent[NEWER];
+			return {
+				done: false,
+				value: ent.key
+			};
+		}
+		return {
+			done: true,
+			value: void 0
+		};
+	}
+};
+_Symbol$iterator2 = Symbol.iterator;
+var ValueIterator = class {
+	constructor(oldestEntry) {
+		_defineProperty(this, "entry", void 0);
+		this.entry = oldestEntry;
+	}
+	[_Symbol$iterator2]() {
+		return this;
+	}
+	next() {
+		const ent = this.entry;
+		if (ent) {
+			this.entry = ent[NEWER];
+			return {
+				done: false,
+				value: ent.value
+			};
+		}
+		return {
+			done: true,
+			value: void 0
+		};
+	}
+};
+_Symbol$iterator3 = Symbol.iterator;
+var EntryIterator = class {
+	constructor(oldestEntry) {
+		_defineProperty(this, "entry", void 0);
+		this.entry = oldestEntry;
+	}
+	[_Symbol$iterator3]() {
+		return this;
+	}
+	next() {
+		const ent = this.entry;
+		if (ent) {
+			this.entry = ent[NEWER];
+			return {
+				done: false,
+				value: [ent.key, ent.value]
+			};
+		}
+		return {
+			done: true,
+			value: void 0
+		};
+	}
+};
+var Entry = class {
+	constructor(key, value) {
+		_defineProperty(this, "key", void 0);
+		_defineProperty(this, "value", void 0);
+		_defineProperty(this, NEWER, void 0);
+		_defineProperty(this, OLDER, void 0);
+		this.key = key;
+		this.value = value;
+		this[NEWER] = void 0;
+		this[OLDER] = void 0;
+	}
+	toJSON() {
+		return {
+			key: this.key,
+			value: this.value
+		};
+	}
+};
+_Symbol$iterator4 = Symbol.iterator;
+var LRUMap = class {
+	onShift(callback) {
+		if (this._onShiftListeners.indexOf(callback) === -1) {
+			this._onShiftListeners.push(callback);
+			return toDisposable(() => remove(this._onShiftListeners, callback));
+		}
+		throw new Error("[LRUMap]: the listener has been registered!");
+	}
+	constructor(...parameter) {
+		_defineProperty(this, "_keymap", void 0);
+		_defineProperty(this, "size", 0);
+		_defineProperty(this, "limit", void 0);
+		_defineProperty(this, "oldest", void 0);
+		_defineProperty(this, "newest", void 0);
+		_defineProperty(this, "_onShiftListeners", []);
+		if (LRUHelper.hasLength(parameter, 1)) {
+			if (LRUHelper.isNumber(parameter[0])) {
+				const limit = parameter[0];
+				this._initialize(limit, void 0);
+				return;
+			}
+			if (LRUHelper.isIterable(parameter[0])) {
+				const entries = parameter[0];
+				this._initialize(0, entries);
+				return;
+			}
+			return;
+		}
+		if (LRUHelper.hasLength(parameter, 2)) {
+			const limit = parameter[0];
+			const entries = parameter[1];
+			this._initialize(limit, entries);
+		}
+	}
+	_initialize(limit, entries) {
+		this.oldest = void 0;
+		this.newest = void 0;
+		this.size = 0;
+		this.limit = limit;
+		this._keymap = /* @__PURE__ */ new Map();
+		if (entries) {
+			this.assign(entries);
+			if (limit < 1) this.limit = this.size;
+		}
+	}
+	_markEntryAsUsed(entry) {
+		if (entry === this.newest) return;
+		if (entry[NEWER]) {
+			if (entry === this.oldest) this.oldest = entry[NEWER];
+			entry[NEWER][OLDER] = entry[OLDER];
+		}
+		if (entry[OLDER]) entry[OLDER][NEWER] = entry[NEWER];
+		entry[NEWER] = void 0;
+		entry[OLDER] = this.newest;
+		if (this.newest) this.newest[NEWER] = entry;
+		this.newest = entry;
+	}
+	assign(entries) {
+		let entry;
+		let limit = this.limit || Number.MAX_VALUE;
+		this._keymap.clear();
+		const it = entries[Symbol.iterator]();
+		for (let itv = it.next(); !itv.done; itv = it.next()) {
+			const e = new Entry(itv.value[0], itv.value[1]);
+			this._keymap.set(e.key, e);
+			if (!entry) this.oldest = e;
+			else {
+				entry[NEWER] = e;
+				e[OLDER] = entry;
+			}
+			entry = e;
+			if (limit-- === 0) throw new Error("overflow");
+		}
+		this.newest = entry;
+		this.size = this._keymap.size;
+	}
+	set(key, value) {
+		let entry = this._keymap.get(key);
+		if (entry) {
+			entry.value = value;
+			this._markEntryAsUsed(entry);
+			return this;
+		}
+		this._keymap.set(key, entry = new Entry(key, value));
+		if (this.newest) {
+			this.newest[NEWER] = entry;
+			entry[OLDER] = this.newest;
+		} else this.oldest = entry;
+		this.newest = entry;
+		++this.size;
+		if (this.size > this.limit) this.shift();
+		return this;
+	}
+	shift() {
+		const entry = this.oldest;
+		if (entry) {
+			if (this.oldest && this.oldest[NEWER]) {
+				this.oldest = this.oldest[NEWER];
+				this.oldest[OLDER] = void 0;
+			} else {
+				this.oldest = void 0;
+				this.newest = void 0;
+			}
+			entry[NEWER] = entry[OLDER] = void 0;
+			this._keymap.delete(entry.key);
+			--this.size;
+			this._onShiftListeners.forEach((callback) => callback(entry));
+			return [entry.key, entry.value];
+		}
+	}
+	get(key) {
+		const entry = this._keymap.get(key);
+		if (!entry) return;
+		this._markEntryAsUsed(entry);
+		return entry.value;
+	}
+	has(key) {
+		return this._keymap.has(key);
+	}
+	find(key) {
+		const e = this._keymap.get(key);
+		return e ? e.value : void 0;
+	}
+	delete(key) {
+		const entry = this._keymap.get(key);
+		if (!entry) return;
+		this._keymap.delete(entry.key);
+		if (entry[NEWER] && entry[OLDER]) {
+			entry[OLDER][NEWER] = entry[NEWER];
+			entry[NEWER][OLDER] = entry[OLDER];
+		} else if (entry[NEWER]) {
+			entry[NEWER][OLDER] = void 0;
+			this.oldest = entry[NEWER];
+		} else if (entry[OLDER]) {
+			entry[OLDER][NEWER] = void 0;
+			this.newest = entry[OLDER];
+		} else this.oldest = this.newest = void 0;
+		this.size--;
+		return entry.value;
+	}
+	clear() {
+		this.oldest = void 0;
+		this.newest = void 0;
+		this.size = 0;
+		this._keymap.clear();
+	}
+	keys() {
+		return new KeyIterator(this.oldest);
+	}
+	values() {
+		return new ValueIterator(this.oldest);
+	}
+	entries() {
+		return this[Symbol.iterator]();
+	}
+	[_Symbol$iterator4]() {
+		return new EntryIterator(this.oldest);
+	}
+	forEach(fun, thisObj) {
+		if (typeof thisObj !== "object") thisObj = this;
+		let entry = this.oldest;
+		while (entry) {
+			fun.call(thisObj, entry.value, entry.key, this);
+			entry = entry[NEWER];
+		}
+	}
+	toJSON() {
+		const s = new Array(this.size);
+		let i = 0;
+		let entry = this.oldest;
+		while (entry) {
+			s[i++] = {
+				key: entry.key,
+				value: entry.value
+			};
+			entry = entry[NEWER];
+		}
+		return s;
+	}
+	toString() {
+		let s = String();
+		let entry = this.oldest;
+		while (entry) {
+			s += `${String(entry.key)}:${entry.value}`;
+			entry = entry[NEWER];
+			if (entry) s += " < ";
+		}
+		return s;
+	}
+};
+var LRUHelper = class {
+	static hasLength(array, size) {
+		return array.length === size;
+	}
+	static getValueType(value) {
+		return Object.prototype.toString.apply(value);
+	}
+	static isObject(value) {
+		return this.getValueType(value) === "[object Object]";
+	}
+	static isIterable(value) {
+		return value[Symbol.iterator] != null;
+	}
+	static isNumber(value) {
+		return this.getValueType(value) === "[object Number]";
+	}
+};
+
+//#endregion
+//#region src/shared/max-row-column.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Convert Excel column label to number
+* @param label Column label (e.g., "A", "Z", "AA", "XFD")
+* @returns Column number (e.g., 1, 26, 27, 16384)
+*/
+function columnLabelToNumber(label) {
+	let n = 0;
+	for (let i = 0; i < label.length; i++) {
+		const c = label.charCodeAt(i);
+		if (c < 65 || c > 90) return -1;
+		n = n * 26 + (c - 64);
+	}
+	return n;
+}
+/**
+* Maximum number of rows and columns in Excel
+* Rows: 1,048,576
+* Columns: 16,384 (equivalent to column XFD)
+*/
+const MAX_ROW_COUNT = 1048576;
+const MAX_COLUMN_COUNT = 16384;
+
+//#endregion
+//#region src/shared/random-id.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const URL_SAFE_ALPHABET = "useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict";
+function getRandomValues() {
+	const cryptoSource = typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function" ? crypto : typeof self !== "undefined" && self.crypto && typeof self.crypto.getRandomValues === "function" ? self.crypto : typeof window !== "undefined" && window.crypto && typeof window.crypto.getRandomValues === "function" ? window.crypto : void 0;
+	return cryptoSource === null || cryptoSource === void 0 ? void 0 : cryptoSource.getRandomValues.bind(cryptoSource);
+}
+function createIdByMathRandom(size, alphabet) {
+	let id = "";
+	for (let i = 0; i < size; i++) id += alphabet[Math.floor(Math.random() * alphabet.length)];
+	return id;
+}
+function createIdByCrypto(size, alphabet, getCryptoRandomValues) {
+	const safeByteCutoff = 256 - 256 % alphabet.length;
+	const step = Math.ceil(1.6 * 256 * size / safeByteCutoff);
+	let id = "";
+	while (id.length < size) {
+		const bytes = getCryptoRandomValues(new Uint8Array(step));
+		for (let i = 0; i < step && id.length < size; i++) {
+			const byte = bytes[i];
+			if (byte < safeByteCutoff) id += alphabet[byte % alphabet.length];
+		}
+	}
+	return id;
+}
+function createRandomId(size = 21, alphabet = URL_SAFE_ALPHABET) {
+	if (!size) return "";
+	const getCryptoRandomValues = getRandomValues();
+	if (!getCryptoRandomValues) return createIdByMathRandom(size, alphabet);
+	return createIdByCrypto(size, alphabet, getCryptoRandomValues);
+}
+function generateRandomId(n = 21, alphabet) {
+	return createRandomId(n, alphabet);
+}
+
+//#endregion
+//#region src/shared/rectangle.ts
+/**
+* This class provides a set of methods to calculate and manipulate rectangular ranges (IRange).
+* A range represents a rectangular area in a grid, defined by start/end rows and columns.
+* @example
+* ```typescript
+* // Example range representing cells from A1 to C3
+* const range: IRange = {
+*   startRow: 0,
+*   startColumn: 0,
+*   endRow: 2,
+*   endColumn: 2,
+*   rangeType: RANGE_TYPE.NORMAL
+* };
+* ```
+*/
+var Rectangle = class Rectangle {
+	/**
+	* Creates a deep copy of an IRange object
+	* @param src
+	* @example
+	* ```typescript
+	* const original = { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 };
+	* const copy = Rectangle.clone(original);
+	* // copy = { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 }
+	* ```
+	*/
+	static clone(src) {
+		if (src.rangeType !== void 0) return {
+			startRow: src.startRow,
+			startColumn: src.startColumn,
+			endRow: src.endRow,
+			endColumn: src.endColumn,
+			rangeType: src.rangeType
+		};
+		return {
+			startRow: src.startRow,
+			startColumn: src.startColumn,
+			endRow: src.endRow,
+			endColumn: src.endColumn
+		};
+	}
+	/**
+	* Checks if two ranges are equal by comparing their properties
+	* @param src
+	* @param target
+	* @example
+	* ```typescript
+	* const range1 = { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 };
+	* const range2 = { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 };
+	* const areEqual = Rectangle.equals(range1, range2); // true
+	* ```
+	*/
+	static equals(src, target) {
+		if (src == null || target == null) return false;
+		return src.endRow === target.endRow && src.endColumn === target.endColumn && src.startRow === target.startRow && src.startColumn === target.startColumn && (src.rangeType === target.rangeType || src.rangeType === void 0 && target.rangeType === 0 || target.rangeType === void 0 && src.rangeType === 0);
+	}
+	/**
+	* Quickly checks if two normal ranges intersect. For specialized range types,
+	* use the intersects() method instead.
+	* @param rangeA
+	* @param rangeB
+	* @example
+	* ```typescript
+	* const range1 = { startRow: 0, startColumn: 0, endRow: 2, endColumn: 2 };
+	* const range2 = { startRow: 1, startColumn: 1, endRow: 3, endColumn: 3 };
+	* const doIntersect = Rectangle.simpleRangesIntersect(range1, range2); // true
+	* ```
+	*/
+	static simpleRangesIntersect(rangeA, rangeB) {
+		const { startRow: startRowA, endRow: endRowA, startColumn: startColumnA, endColumn: endColumnA } = rangeA;
+		const { startRow: startRowB, endRow: endRowB, startColumn: startColumnB, endColumn: endColumnB } = rangeB;
+		return startRowA <= endRowB && endRowA >= startRowB && startColumnA <= endColumnB && endColumnA >= startColumnB;
+	}
+	/**
+	* Checks if two ranges intersect, handling special range types (ROW, COLUMN)
+	* @param src
+	* @param target
+	* @example
+	* ```typescript
+	* const rowRange = {
+	*   startRow: 0, endRow: 2,
+	*   startColumn: NaN, endColumn: NaN,
+	*   rangeType: RANGE_TYPE.ROW
+	* };
+	* const colRange = {
+	*   startRow: NaN, endRow: NaN,
+	*   startColumn: 0, endColumn: 2,
+	*   rangeType: RANGE_TYPE.COLUMN
+	* };
+	* const doIntersect = Rectangle.intersects(rowRange, colRange); // true
+	* ```
+	*/
+	static intersects(src, target) {
+		if (src.rangeType === 1 && target.rangeType === 2) return true;
+		if (src.rangeType === 2 && target.rangeType === 1) return true;
+		if (src.rangeType === 1 && target.rangeType === 1) return src.startRow <= target.endRow && src.endRow >= target.startRow;
+		if (src.rangeType === 2 && target.rangeType === 2) return src.startColumn <= target.endColumn && src.endColumn >= target.startColumn;
+		const currentStartRow = Number.isNaN(src.startRow) ? 0 : src.startRow;
+		const currentEndRow = Number.isNaN(src.endRow) ? MAX_ROW_COUNT - 1 : src.endRow;
+		const currentStartColumn = Number.isNaN(src.startColumn) ? 0 : src.startColumn;
+		const currentEndColumn = Number.isNaN(src.endColumn) ? MAX_COLUMN_COUNT - 1 : src.endColumn;
+		const incomingStartRow = Number.isNaN(target.startRow) ? 0 : target.startRow;
+		const incomingEndRow = Number.isNaN(target.endRow) ? MAX_ROW_COUNT - 1 : target.endRow;
+		const incomingStartColumn = Number.isNaN(target.startColumn) ? 0 : target.startColumn;
+		const incomingEndColumn = Number.isNaN(target.endColumn) ? MAX_COLUMN_COUNT - 1 : target.endColumn;
+		const zx = Math.abs(currentStartColumn + currentEndColumn - incomingStartColumn - incomingEndColumn);
+		const x = Math.abs(currentStartColumn - currentEndColumn) + Math.abs(incomingStartColumn - incomingEndColumn);
+		const zy = Math.abs(currentStartRow + currentEndRow - incomingStartRow - incomingEndRow);
+		const y = Math.abs(currentStartRow - currentEndRow) + Math.abs(incomingStartRow - incomingEndRow);
+		return zx <= x && zy <= y;
+	}
+	/**
+	* Checks if any of the ranges in the target array intersect with any of the ranges in the source array.
+	* Attention! Please make sure there is no NaN in the ranges.
+	* @param src
+	* @param target
+	* @example
+	* ```typescript
+	* const ranges1 = [
+	*   { startRow: 0, startColumn: 0, endRow: 2, endColumn: 2 },
+	*   { startRow: 3, startColumn: 3, endRow: 5, endColumn: 5 }
+	* ];
+	* const ranges2 = [
+	*   { startRow: 1, startColumn: 1, endRow: 4, endColumn: 4 },
+	*   { startRow: 6, startColumn: 6, endRow: 8, endColumn: 8 }
+	* ];
+	* const doIntersect = Rectangle.doAnyRangesIntersect(ranges1, ranges2); // true
+	* ```
+	*/
+	static doAnyRangesIntersect(src, target) {
+		const rbush = new RBush$1();
+		rbush.load(src.map((r) => ({
+			minX: r.startColumn,
+			minY: r.startRow,
+			maxX: r.endColumn,
+			maxY: r.endRow
+		})));
+		return target.some((r) => rbush.search({
+			minX: r.startColumn,
+			minY: r.startRow,
+			maxX: r.endColumn,
+			maxY: r.endRow
+		}).length > 0);
+	}
+	/**
+	* Checks if one range completely contains another range
+	* @param src
+	* @param target
+	* @example
+	* ```typescript
+	* const outer = { startRow: 0, startColumn: 0, endRow: 3, endColumn: 3 };
+	* const inner = { startRow: 1, startColumn: 1, endRow: 2, endColumn: 2 };
+	* const contains = Rectangle.contains(outer, inner); // true
+	* ```
+	*/
+	static contains(src, target) {
+		return src.startRow <= target.startRow && src.endRow >= target.endRow && src.startColumn <= target.startColumn && src.endColumn >= target.endColumn;
+	}
+	/**
+	* Checks if one range strictly contains another range (not equal)
+	* @param src
+	* @param target
+	* @example
+	* ```typescript
+	* const outer = { startRow: 0, startColumn: 0, endRow: 3, endColumn: 3 };
+	* const same = { startRow: 0, startColumn: 0, endRow: 3, endColumn: 3 };
+	* const realContains = Rectangle.realContain(outer, same); // false
+	* ```
+	*/
+	static realContain(src, target) {
+		return Rectangle.contains(src, target) && (src.startRow < target.startRow || src.endRow > target.endRow || src.startColumn < target.startColumn || src.endColumn > target.endColumn);
+	}
+	/**
+	* Creates a union range that encompasses all input ranges
+	* @param {...any} ranges
+	* @example
+	* ```typescript
+	* const range1 = { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 };
+	* const range2 = { startRow: 2, startColumn: 2, endRow: 3, endColumn: 3 };
+	* const union = Rectangle.union(range1, range2);
+	* // union = { startRow: 0, startColumn: 0, endRow: 3, endColumn: 3 }
+	* ```
+	*/
+	static union(...ranges) {
+		return ranges.reduce((acc, current) => ({
+			startRow: Math.min(acc.startRow, current.startRow),
+			startColumn: Math.min(acc.startColumn, current.startColumn),
+			endRow: Math.max(acc.endRow, current.endRow),
+			endColumn: Math.max(acc.endColumn, current.endColumn),
+			rangeType: 0
+		}), ranges[0]);
+	}
+	/**
+	* Creates a union range considering special range types (ROW, COLUMN)
+	* @param {...any} ranges
+	* @example
+	* ```typescript
+	* const rowRange = {
+	*   startRow: 0, endRow: 2,
+	*   rangeType: RANGE_TYPE.ROW
+	* };
+	* const normalRange = {
+	*   startRow: 1, startColumn: 1,
+	*   endRow: 3, endColumn: 3
+	* };
+	* const union = Rectangle.realUnion(rowRange, normalRange);
+	* // Result will have NaN for columns due to ROW type
+	* ```
+	*/
+	static realUnion(...ranges) {
+		const hasColRange = ranges.some((range) => range.rangeType === 2);
+		const hasRowRange = ranges.some((range) => range.rangeType === 1);
+		const res = Rectangle.union(...ranges);
+		return {
+			startColumn: hasRowRange ? NaN : res.startColumn,
+			endColumn: hasRowRange ? NaN : res.endColumn,
+			startRow: hasColRange ? NaN : res.startRow,
+			endRow: hasColRange ? NaN : res.endRow,
+			rangeType: hasRowRange ? 1 : hasColRange ? 2 : 0
+		};
+	}
+	/**
+	* Subtracts one range from another, returning the remaining areas as separate ranges
+	* @param range1
+	* @param range2
+	* @example
+	* ```typescript
+	* const range1 = { startRow: 0, startColumn: 0, endRow: 3, endColumn: 3 };
+	* const range2 = { startRow: 1, startColumn: 1, endRow: 2, endColumn: 2 };
+	* const result = Rectangle.subtract(range1, range2);
+	* // Results in up to 4 ranges representing the non-overlapping areas
+	* ```
+	*/
+	static subtract(range1, range2) {
+		if (range2.startRow > range1.endRow || range2.endRow < range1.startRow || range2.startColumn > range1.endColumn || range2.endColumn < range1.startColumn) return [range1];
+		const ranges = [];
+		if (range2.startRow >= range1.startRow) ranges.push({
+			startRow: range1.startRow,
+			startColumn: range1.startColumn,
+			endRow: range2.startRow - 1,
+			endColumn: range1.endColumn
+		});
+		if (range2.endRow <= range1.endRow) ranges.push({
+			startRow: range2.endRow + 1,
+			startColumn: range1.startColumn,
+			endRow: range1.endRow,
+			endColumn: range1.endColumn
+		});
+		const topBoundary = Math.max(range1.startRow, range2.startRow);
+		const bottomBoundary = Math.min(range1.endRow, range2.endRow);
+		if (range2.startColumn >= range1.startColumn) ranges.push({
+			startRow: topBoundary,
+			startColumn: range1.startColumn,
+			endRow: bottomBoundary,
+			endColumn: range2.startColumn - 1
+		});
+		if (range2.endColumn <= range1.endColumn) ranges.push({
+			startRow: topBoundary,
+			startColumn: range2.endColumn + 1,
+			endRow: bottomBoundary,
+			endColumn: range1.endColumn
+		});
+		return ranges.filter((range) => range.startRow <= range.endRow && range.startColumn <= range.endColumn);
+	}
+	/**
+	* Merges overlapping or adjacent ranges into larger ranges
+	* @param ranges
+	* @example
+	* ```typescript
+	* const ranges = [
+	*   { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 },
+	*   { startRow: 1, startColumn: 1, endRow: 2, endColumn: 2 }
+	* ];
+	* const merged = Rectangle.mergeRanges(ranges);
+	* // Combines overlapping ranges into larger ones
+	* ```
+	*/
+	static mergeRanges(ranges) {
+		return mergeRanges(ranges);
+	}
+	/**
+	* Splits overlapping ranges into a grid of non-overlapping ranges
+	* @param ranges
+	* @example
+	* ```typescript
+	* const ranges = [
+	*   { startRow: 0, startColumn: 0, endRow: 2, endColumn: 2 },
+	*   { startRow: 1, startColumn: 1, endRow: 3, endColumn: 3 }
+	* ];
+	* const grid = Rectangle.splitIntoGrid(ranges);
+	* // Splits into non-overlapping grid sections
+	* ```
+	*/
+	static splitIntoGrid(ranges) {
+		return splitIntoGrid(ranges);
+	}
+	/**
+	* Subtracts multiple ranges from multiple ranges
+	* @param ranges1
+	* @param ranges2
+	* @example
+	* ```typescript
+	* const ranges1 = [{ startRow: 0, startColumn: 0, endRow: 3, endColumn: 3 }];
+	* const ranges2 = [
+	*   { startRow: 1, startColumn: 1, endRow: 2, endColumn: 2 },
+	*   { startRow: 2, startColumn: 2, endRow: 3, endColumn: 3 }
+	* ];
+	* const result = Rectangle.subtractMulti(ranges1, ranges2);
+	* // Returns remaining non-overlapping areas
+	* ```
+	*/
+	static subtractMulti(ranges1, ranges2) {
+		if (!ranges2.length) return ranges1;
+		let res = ranges1;
+		ranges2.forEach((range) => {
+			res = multiSubtractSingleRange(res, range);
+		});
+		return res;
+	}
+	/**
+	* Checks if two rectangles defined by left, top, right, bottom coordinates intersect
+	* @param rect1
+	* @param rect2
+	* @example
+	* ```typescript
+	* const rect1 = { left: 0, top: 0, right: 10, bottom: 10 };
+	* const rect2 = { left: 5, top: 5, right: 15, bottom: 15 };
+	* const intersects = Rectangle.hasIntersectionBetweenTwoRect(rect1, rect2); // true
+	* ```
+	*/
+	static hasIntersectionBetweenTwoRect(rect1, rect2) {
+		if (rect1.left > rect2.right || rect1.right < rect2.left || rect1.top > rect2.bottom || rect1.bottom < rect2.top) return false;
+		return true;
+	}
+	/**
+	* Gets the intersection area between two rectangles defined by LTRB coordinates
+	* @param rect1
+	* @param rect2
+	* @example
+	* ```typescript
+	* const rect1 = { left: 0, top: 0, right: 10, bottom: 10 };
+	* const rect2 = { left: 5, top: 5, right: 15, bottom: 15 };
+	* const intersection = Rectangle.getIntersectionBetweenTwoRect(rect1, rect2);
+	* // Returns { left: 5, top: 5, right: 10, bottom: 10, width: 5, height: 5 }
+	* ```
+	*/
+	static getIntersectionBetweenTwoRect(rect1, rect2) {
+		const left = Math.max(rect1.left, rect2.left);
+		const right = Math.min(rect1.right, rect2.right);
+		const top = Math.max(rect1.top, rect2.top);
+		const bottom = Math.min(rect1.bottom, rect2.bottom);
+		if (right <= left || bottom <= top) return null;
+		return {
+			left,
+			right,
+			top,
+			bottom,
+			width: right - left,
+			height: bottom - top
+		};
+	}
+	/**
+	* Sorts an array of ranges by startRow, then by startColumn
+	* @param ranges
+	* @example
+	* ```typescript
+	* const ranges = [
+	*   { startRow: 1, startColumn: 0, endRow: 2, endColumn: 1 },
+	*   { startRow: 0, startColumn: 0, endRow: 1, endColumn: 1 }
+	* ];
+	* const sorted = Rectangle.sort(ranges);
+	* // Ranges will be sorted by startRow first, then startColumn
+	* ```
+	*/
+	static sort(ranges) {
+		return ranges.sort((a, b) => a.startRow - b.startRow || a.startColumn - b.startColumn);
+	}
+};
+_defineProperty(Rectangle, "getRelativeRange", (range, originRange) => ({
+	startRow: range.startRow - originRange.startRow,
+	endRow: range.endRow - range.startRow,
+	startColumn: range.startColumn - originRange.startColumn,
+	endColumn: range.endColumn - range.startColumn
+}));
+_defineProperty(Rectangle, "getPositionRange", (relativeRange, originRange, absoluteRange) => ({
+	...absoluteRange || {},
+	startRow: absoluteRange ? [1, 3].includes(absoluteRange.startAbsoluteRefType || 0) ? absoluteRange.startRow : relativeRange.startRow + originRange.startRow : relativeRange.startRow + originRange.startRow,
+	endRow: absoluteRange ? [1, 3].includes(absoluteRange.endAbsoluteRefType || 0) ? absoluteRange.endRow : relativeRange.endRow + relativeRange.startRow + originRange.startRow : relativeRange.endRow + relativeRange.startRow + originRange.startRow,
+	startColumn: absoluteRange ? [2, 3].includes(absoluteRange.startAbsoluteRefType || 0) ? absoluteRange.startColumn : relativeRange.startColumn + originRange.startColumn : relativeRange.startColumn + originRange.startColumn,
+	endColumn: absoluteRange ? [2, 3].includes(absoluteRange.endAbsoluteRefType || 0) ? absoluteRange.endColumn : relativeRange.endColumn + relativeRange.startColumn + originRange.startColumn : relativeRange.endColumn + relativeRange.startColumn + originRange.startColumn
+}));
+_defineProperty(Rectangle, "moveHorizontal", (range, step = 0, length = 0) => ({
+	...range,
+	startColumn: range.startColumn + step,
+	endColumn: range.endColumn + step + length
+}));
+_defineProperty(Rectangle, "moveVertical", (range, step = 0, length = 0) => ({
+	...range,
+	startRow: range.startRow + step,
+	endRow: range.endRow + step + length
+}));
+_defineProperty(Rectangle, "moveOffset", (range, offsetX, offsetY) => {
+	const _range = { ...range };
+	switch (range.startAbsoluteRefType) {
+		case 1:
+			_range.startColumn += offsetX;
+			break;
+		case 2:
+			_range.startRow += offsetY;
+			break;
+		case 3: break;
+		case 0:
+		default:
+			_range.startRow += offsetY;
+			_range.startColumn += offsetX;
+			break;
+	}
+	switch (range.endAbsoluteRefType) {
+		case 1:
+			_range.endColumn += offsetX;
+			break;
+		case 2:
+			_range.endRow += offsetY;
+			break;
+		case 3: break;
+		case 0:
+		default:
+			_range.endRow += offsetY;
+			_range.endColumn += offsetX;
+			break;
+	}
+	return _range;
+});
+
+//#endregion
+//#region src/shared/range.ts
+function moveRangeByOffset(range, refOffsetX, refOffsetY, ignoreAbsolute = false) {
+	if (refOffsetX === 0 && refOffsetY === 0) return range;
+	let newRange = { ...range };
+	const startAbsoluteRefType = newRange.startAbsoluteRefType || 0;
+	const endAbsoluteRefType = newRange.endAbsoluteRefType || 0;
+	const rangeType = newRange.rangeType || 0;
+	if (!ignoreAbsolute && startAbsoluteRefType === 3 && endAbsoluteRefType === 3) return newRange;
+	const start = moveRangeByRangeType(newRange.startRow, refOffsetY, newRange.startColumn, refOffsetX, rangeType);
+	const end = moveRangeByRangeType(newRange.endRow, refOffsetY, newRange.endColumn, refOffsetX, rangeType);
+	if (ignoreAbsolute || startAbsoluteRefType === 0 && endAbsoluteRefType === 0) return newRange = {
+		...newRange,
+		startRow: start.row,
+		startColumn: start.column,
+		endRow: end.row,
+		endColumn: end.column
+	};
+	if (startAbsoluteRefType === 0) newRange = {
+		...newRange,
+		startRow: start.row,
+		startColumn: start.column
+	};
+	else if (startAbsoluteRefType === 2) newRange = {
+		...newRange,
+		startRow: start.row
+	};
+	else if (startAbsoluteRefType === 1) newRange = {
+		...newRange,
+		startColumn: start.column
+	};
+	if (endAbsoluteRefType === 0) newRange = {
+		...newRange,
+		endRow: end.row,
+		endColumn: end.column
+	};
+	else if (endAbsoluteRefType === 2) newRange = {
+		...newRange,
+		endRow: end.row
+	};
+	else if (endAbsoluteRefType === 1) newRange = {
+		...newRange,
+		endColumn: end.column
+	};
+	return newRange;
+}
+function moveRangeByRangeType(row, rowOffset, column, columnOffset, rangeType) {
+	if (rangeType === 0) return {
+		row: row + rowOffset,
+		column: column + columnOffset
+	};
+	else if (rangeType === 1) return {
+		row: row + rowOffset,
+		column
+	};
+	else if (rangeType === 2) return {
+		row,
+		column: column + columnOffset
+	};
+	else return {
+		row,
+		column
+	};
+}
+/**
+* Split ranges into aligned smaller ranges
+* @param ranges no overlap ranges
+* @returns aligned smaller ranges
+*/
+function splitIntoGrid(ranges) {
+	const columns = /* @__PURE__ */ new Set();
+	const rows = /* @__PURE__ */ new Set();
+	for (const range of ranges) {
+		columns.add(range.startColumn);
+		columns.add(range.endColumn + 1);
+		rows.add(range.startRow);
+		rows.add(range.endRow + 1);
+	}
+	const sortedColumns = Array.from(columns).sort((a, b) => a - b);
+	const sortedRows = Array.from(rows).sort((a, b) => a - b);
+	ranges.sort((a, b) => a.startRow - b.startRow || a.startColumn - b.startColumn);
+	const result = [];
+	for (let i = 0; i < sortedRows.length - 1; i++) for (let j = 0; j < sortedColumns.length - 1; j++) {
+		const startColumn = sortedColumns[j];
+		const endColumn = sortedColumns[j + 1] - 1;
+		const startRow = sortedRows[i];
+		const endRow = sortedRows[i + 1] - 1;
+		for (const range of ranges) {
+			if (range.startRow > endRow) break;
+			if (range.startRow <= startRow && range.endRow >= endRow && range.startColumn <= startColumn && range.endColumn >= endColumn) {
+				result.push({
+					startColumn,
+					endColumn,
+					startRow,
+					endRow
+				});
+				break;
+			}
+		}
+	}
+	return result;
+}
+/**
+* Horizontal Merging
+* @param ranges no overlap ranges
+* @returns merged ranges
+*/
+function mergeHorizontalRanges(ranges) {
+	ranges.sort((a, b) => a.startRow - b.startRow || a.startColumn - b.startColumn);
+	const rowGroups = {};
+	for (const range of ranges) {
+		if (!rowGroups[range.startRow]) rowGroups[range.startRow] = [];
+		rowGroups[range.startRow].push(range);
+	}
+	const mergedRanges = [];
+	for (const row in rowGroups) {
+		const rangesInRow = rowGroups[+row];
+		rangesInRow.sort((a, b) => a.startColumn - b.startColumn);
+		let currentRange = rangesInRow[0];
+		for (let i = 1; i < rangesInRow.length; i++) {
+			const nextRange = rangesInRow[i];
+			if (nextRange.startColumn <= currentRange.endColumn + 1 && nextRange.startRow === currentRange.startRow && nextRange.endRow === currentRange.endRow) currentRange.endColumn = Math.max(currentRange.endColumn, nextRange.endColumn);
+			else {
+				mergedRanges.push(currentRange);
+				currentRange = nextRange;
+			}
+		}
+		mergedRanges.push(currentRange);
+	}
+	return mergedRanges;
+}
+/**
+* Vertical Merging
+* @param ranges no overlap ranges
+* @returns merged ranges
+*/
+function mergeVerticalRanges(ranges) {
+	ranges.sort((a, b) => a.startColumn - b.startColumn || a.startRow - b.startRow);
+	const columnGroups = {};
+	for (const range of ranges) {
+		if (!columnGroups[range.startColumn]) columnGroups[range.startColumn] = [];
+		columnGroups[range.startColumn].push(range);
+	}
+	const mergedRanges = [];
+	for (const col in columnGroups) {
+		const rangesInCol = columnGroups[+col];
+		rangesInCol.sort((a, b) => a.startRow - b.startRow);
+		let currentRange = rangesInCol[0];
+		for (let i = 1; i < rangesInCol.length; i++) {
+			const nextRange = rangesInCol[i];
+			if (nextRange.startRow <= currentRange.endRow + 1 && nextRange.startColumn === currentRange.startColumn && nextRange.endColumn === currentRange.endColumn) currentRange.endRow = Math.max(currentRange.endRow, nextRange.endRow);
+			else {
+				mergedRanges.push(currentRange);
+				currentRange = nextRange;
+			}
+		}
+		mergedRanges.push(currentRange);
+	}
+	return mergedRanges;
+}
+/**
+* Merge no overlap ranges
+* @param ranges no overlap ranges
+* @returns ranges
+*/
+function mergeRanges(ranges) {
+	return mergeVerticalRanges(mergeHorizontalRanges(splitIntoGrid(ranges)));
+}
+function multiSubtractSingleRange(ranges, toDelete) {
+	const res = [];
+	ranges.forEach((range) => {
+		res.push(...Rectangle.subtract(range, toDelete));
+	});
+	return Rectangle.mergeRanges(res);
+}
+/**
+* Computes the intersection of two ranges.
+* If there is an overlap between the two ranges, returns a new range representing the intersection.
+* If there is no overlap, returns null.
+*
+* @param src - The source range.
+* @param target - The target range.
+* @returns The intersected range or null if there is no intersection.
+*/
+function getIntersectRange(src, target) {
+	const rowOverlap = getOverlap1D(src.startRow, src.endRow, target.startRow, target.endRow);
+	const colOverlap = getOverlap1D(src.startColumn, src.endColumn, target.startColumn, target.endColumn);
+	if (!rowOverlap || !colOverlap) return null;
+	const [startRow, endRow] = rowOverlap;
+	const [startColumn, endColumn] = colOverlap;
+	return {
+		startRow,
+		endRow,
+		startColumn,
+		endColumn,
+		rangeType: determineRangeType(src.rangeType, target.rangeType, startRow, endRow, startColumn, endColumn)
+	};
+}
+/**
+* Computes the overlap between two one-dimensional ranges.
+* Treats NaN values as unbounded (from -Infinity to +Infinity).
+*
+* @param start1 - The start of the first range (inclusive). NaN indicates unbounded.
+* @param end1 - The end of the first range (exclusive). NaN indicates unbounded.
+* @param start2 - The start of the second range (inclusive). NaN indicates unbounded.
+* @param end2 - The end of the second range (exclusive). NaN indicates unbounded.
+* @returns A tuple containing the start and end of the overlap, or null if there is no overlap.
+*/
+function getOverlap1D(start1, end1, start2, end2) {
+	const s1 = isNaN(start1) ? -Infinity : start1;
+	const e1 = isNaN(end1) ? Infinity : end1;
+	const s2 = isNaN(start2) ? -Infinity : start2;
+	const e2 = isNaN(end2) ? Infinity : end2;
+	const start = Math.max(s1, s2);
+	const end = Math.min(e1, e2);
+	if (start <= end) return [start === -Infinity ? NaN : start, end === Infinity ? NaN : end];
+	else return null;
+}
+/**
+* Determines the rangeType of the intersection based on the rangeTypes of the input ranges and the overlap.
+* The logic prioritizes the input rangeTypes and determines the intersection's rangeType accordingly.
+*
+* @param src - The source range.
+* @param target - The target range.
+* @param startRow - The start row of the overlap.
+* @param endRow - The end row of the overlap.
+* @param startColumn - The start column of the overlap.
+* @param endColumn - The end column of the overlap.
+* @returns The rangeType of the intersection.
+*/
+function determineRangeType(srcType, targetType, startRow, endRow, startColumn, endColumn) {
+	const resolvedSrcType = srcType !== void 0 ? srcType : inferRangeType(startRow, endRow, startColumn, endColumn);
+	const resolvedTargetType = targetType !== void 0 ? targetType : inferRangeType(startRow, endRow, startColumn, endColumn);
+	if (resolvedSrcType === 3 || resolvedTargetType === 3) {
+		if (resolvedSrcType === resolvedTargetType) return resolvedSrcType;
+		return resolvedSrcType === 3 ? resolvedTargetType : resolvedSrcType;
+	} else if (resolvedSrcType === resolvedTargetType) return resolvedSrcType;
+	else if (resolvedSrcType === 0 || resolvedTargetType === 0) return 0;
+	else return 0;
+}
+/**
+* Infers the rangeType based on whether start and end rows or columns are NaN (unbounded).
+* Determines if the range represents rows, columns, normal range, or all cells.
+*
+* @param startRow - The start row of the range.
+* @param endRow - The end row of the range.
+* @param startColumn - The start column of the range.
+* @param endColumn - The end column of the range.
+* @returns The inferred rangeType.
+*/
+function inferRangeType(startRow, endRow, startColumn, endColumn) {
+	const hasRow = !isNaN(startRow) && !isNaN(endRow);
+	const hasColumn = !isNaN(startColumn) && !isNaN(endColumn);
+	if (hasRow && hasColumn) return 0;
+	else if (hasRow) return 1;
+	else if (hasColumn) return 2;
+	else return 3;
+}
+
+//#endregion
+//#region src/shared/ref-alias.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var RefAlias = class {
+	constructor(values, keys) {
+		_defineProperty(this, "_values", []);
+		_defineProperty(this, "_keys", []);
+		_defineProperty(this, "_keyMaps", /* @__PURE__ */ new Map());
+		this._values = values;
+		this._keys = keys;
+		values.forEach((item) => {
+			this._initKeyMap(item);
+		});
+	}
+	_initKeyMap(item) {
+		this._keys.forEach((key) => {
+			const value = item[key];
+			const keyMap = this._keyMaps.get(key) || /* @__PURE__ */ new Map();
+			keyMap.set(value, item);
+			this._keyMaps.set(key, keyMap);
+		});
+	}
+	/**
+	* If a key group is specified, the order of values is determined by the key group, otherwise it depends on the keys at initialization
+	* @param {string} key
+	* @param {K[]} [keyGroup]
+	* @return {*}
+	* @memberof RefAlias
+	*/
+	getValue(key, keyGroup) {
+		const keys = keyGroup || this._keys;
+		for (let index = 0; index < keys.length; index++) {
+			const keyMap = this._keyMaps.get(keys[index]);
+			if (keyMap === null || keyMap === void 0 ? void 0 : keyMap.has(key)) return keyMap.get(key);
+		}
+		return null;
+	}
+	hasValue(key) {
+		for (let index = 0; index < this._keys.length; index++) {
+			const keyMap = this._keyMaps.get(this._keys[index]);
+			if (keyMap === null || keyMap === void 0 ? void 0 : keyMap.has(key)) return true;
+		}
+		return false;
+	}
+	addValue(item) {
+		this._values.push(item);
+		this._initKeyMap(item);
+	}
+	setValue(key, attr, value) {
+		const item = this.getValue(key);
+		if (item) {
+			if (Object.prototype.hasOwnProperty.call(item, attr)) item[attr] = value;
+		}
+	}
+	deleteValue(key, keyGroup) {
+		const value = this.getValue(key, keyGroup);
+		if (value) {
+			this._keys.forEach((keyItem) => {
+				const keyMap = this._keyMaps.get(keyItem);
+				const _key = value[keyItem];
+				keyMap === null || keyMap === void 0 || keyMap.delete(_key);
+			});
+			const index = this._values.findIndex((item) => item === value);
+			this._values.splice(index, 1);
+		}
+	}
+	getValues() {
+		return this._values;
+	}
+	getKeyMap(key) {
+		var _this$_keyMaps$get;
+		return [...((_this$_keyMaps$get = this._keyMaps.get(key)) === null || _this$_keyMaps$get === void 0 ? void 0 : _this$_keyMaps$get.keys()) || []];
+	}
+	clear() {
+		this._values = [];
+		this._keys = [];
+		this._keyMaps.clear();
+	}
+};
+
+//#endregion
+//#region src/shared/row-col-iter.ts
+function createRowColIter(rowStart, rowEnd, colStart, colEnd) {
+	return { forEach(cb) {
+		for (let r = rowStart; r <= rowEnd; r++) for (let c = colStart; c <= colEnd; c++) cb(r, c);
+	} };
+}
+
+//#endregion
+//#region src/shared/sequence.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function ABCToNumber(a) {
+	if (a == null || a.length === 0) return NaN;
+	const str = a.toLowerCase().split("");
+	const al = str.length;
+	const getCharNumber = (charX) => charX.charCodeAt(0) - 96;
+	let numOut = 0;
+	let charnum = 0;
+	for (let i = 0; i < al; i++) {
+		charnum = getCharNumber(str[i]);
+		numOut += charnum * 26 ** (al - i - 1);
+	}
+	if (numOut === 0) return NaN;
+	return numOut - 1;
+}
+const orderA = "A".charCodeAt(0);
+"Z".charCodeAt(0);
+const order_a = "a".charCodeAt(0);
+/**
+* column subscript number to letters
+* @param n number
+* @returns
+*/
+function numberToABC(n) {
+	const len = 26;
+	let s = "";
+	while (n >= 0) {
+		s = String.fromCharCode(n % len + orderA) + s;
+		n = Math.floor(n / len) - 1;
+	}
+	return s;
+}
+/**
+* Repeats the given string (first argument) num times (second argument). If num is not positive, an empty string is returned.
+* @param string given string
+* @param times repeat times
+* @returns
+*/
+function repeatStringNumTimes(string, times) {
+	let repeatedString = "";
+	while (times > 0) {
+		repeatedString += string;
+		times--;
+	}
+	return repeatedString;
+}
+/**
+* Column subscript numbers are converted to list-style letters, for example, after 25, it means AA BB CC, not AA AB AC
+* @param n number
+* @param uppercase Is it a capital letter
+* @returns
+*/
+function numberToListABC(n, uppercase = false) {
+	const len = 26;
+	let order = order_a;
+	if (uppercase) order = orderA;
+	return repeatStringNumTimes(String.fromCharCode(n % len + order), Math.floor(n / len) + 1);
+}
+
+//#endregion
+//#region src/shared/sort-rules.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function sortRules(oa, ob) {
+	if (oa.zIndex > ob.zIndex) return 1;
+	if (oa.zIndex === ob.zIndex) return 0;
+	return -1;
+}
+function sortRulesByDesc(oa, ob) {
+	if (oa.zIndex > ob.zIndex) return -1;
+	if (oa.zIndex === ob.zIndex) return 0;
+	return 1;
+}
+/**
+*
+* @param key compare key
+* @param ruler 1:asc , 0:desc
+* @returns sort function
+*/
+function sortRulesFactory(key = "index", ruler = 1) {
+	return (oa, ob) => {
+		if (oa[key] > ob[key]) return ruler;
+		if (oa[key] === ob[key]) return 0;
+		return -ruler;
+	};
+}
+
+//#endregion
+//#region src/bases/typedef.ts
+let BaseFieldType = /* @__PURE__ */ function(BaseFieldType) {
+	BaseFieldType["Text"] = "text";
+	BaseFieldType["SingleSelect"] = "singleSelect";
+	BaseFieldType["MultiSelect"] = "multiSelect";
+	BaseFieldType["Person"] = "person";
+	BaseFieldType["Group"] = "group";
+	BaseFieldType["Date"] = "date";
+	BaseFieldType["Attachment"] = "attachment";
+	BaseFieldType["Number"] = "number";
+	BaseFieldType["Checkbox"] = "checkbox";
+	BaseFieldType["Link"] = "link";
+	BaseFieldType["Formula"] = "formula";
+	BaseFieldType["Numbering"] = "numbering";
+	BaseFieldType["Phone"] = "phone";
+	BaseFieldType["Email"] = "email";
+	BaseFieldType["Progress"] = "progress";
+	BaseFieldType["Currency"] = "currency";
+	BaseFieldType["Rating"] = "rating";
+	BaseFieldType["RecordLink"] = "recordLink";
+	BaseFieldType["RecordId"] = "recordId";
+	BaseFieldType["CreatedBy"] = "createdBy";
+	BaseFieldType["UpdatedBy"] = "updatedBy";
+	BaseFieldType["CreatedAt"] = "createdAt";
+	BaseFieldType["UpdatedAt"] = "updatedAt";
+	return BaseFieldType;
+}({});
+/** Semantic roles supported by Base RecordLink fields. */
+let BaseRecordLinkRole = /* @__PURE__ */ function(BaseRecordLinkRole) {
+	BaseRecordLinkRole["Parent"] = "parent";
+	return BaseRecordLinkRole;
+}({});
+let BaseViewType = /* @__PURE__ */ function(BaseViewType) {
+	BaseViewType["Grid"] = "grid";
+	BaseViewType["Kanban"] = "kanban";
+	BaseViewType["Calendar"] = "calendar";
+	BaseViewType["Gantt"] = "gantt";
+	BaseViewType["Gallery"] = "gallery";
+	BaseViewType["Pivot"] = "pivot";
+	return BaseViewType;
+}({});
+/** Where a Base conditional color is painted when its condition matches. */
+const BaseConditionalColorTarget = {
+	/** Paint only the cell in the rule's field. */
+	CELL: "cell",
+	/** Paint the complete record row. */
+	ROW: "row",
+	/** Paint the rule's field column unconditionally; operator, operand, and date mode are ignored. */
+	COLUMN: "column"
+};
+/**
+* Operators supported by Base conditional coloring rules.
+*
+* Text, select, person, and similar fields support equality, containment, and
+* empty checks. Number, currency, progress, and rating fields support equality,
+* numeric comparison, and empty checks. Date-like fields support equality,
+* before/after, and empty checks. Checkbox fields support equality only.
+*/
+const BaseConditionalColorOperator = {
+	IS: "is",
+	IS_NOT: "isNot",
+	CONTAINS: "contains",
+	NOT_CONTAINS: "notContains",
+	IS_EMPTY: "isEmpty",
+	IS_NOT_EMPTY: "isNotEmpty",
+	GREATER_THAN: "greaterThan",
+	LESS_THAN: "lessThan",
+	BEFORE: "before",
+	AFTER: "after"
+};
+/**
+* Relative or exact date windows supported by date conditional coloring rules.
+*
+* With `IS`, dates inside the selected window match. `IS_NOT` matches dates
+* outside it, `BEFORE` matches dates before its start, and `AFTER` matches
+* dates after its end. Relative windows do not use an operand; `EXACT` does.
+*/
+const BaseConditionalDateMode = {
+	EXACT: "exact",
+	TODAY: "today",
+	TOMORROW: "tomorrow",
+	YESTERDAY: "yesterday",
+	THIS_WEEK: "thisWeek",
+	LAST_WEEK: "lastWeek",
+	THIS_MONTH: "thisMonth",
+	LAST_MONTH: "lastMonth",
+	PAST_7_DAYS: "past7",
+	NEXT_7_DAYS: "next7",
+	PAST_30_DAYS: "past30",
+	NEXT_30_DAYS: "next30"
+};
+let BaseFilterOperator = /* @__PURE__ */ function(BaseFilterOperator) {
+	BaseFilterOperator["IS"] = "is";
+	BaseFilterOperator["IS_NOT"] = "isNot";
+	BaseFilterOperator["CONTAINS"] = "contains";
+	BaseFilterOperator["NOT_CONTAINS"] = "notContains";
+	BaseFilterOperator["IS_EMPTY"] = "isEmpty";
+	BaseFilterOperator["IS_NOT_EMPTY"] = "isNotEmpty";
+	BaseFilterOperator["GREATER_THAN"] = "greaterThan";
+	BaseFilterOperator["GREATER_THAN_OR_EQUAL"] = "greaterThanOrEqual";
+	BaseFilterOperator["LESS_THAN"] = "lessThan";
+	BaseFilterOperator["LESS_THAN_OR_EQUAL"] = "lessThanOrEqual";
+	BaseFilterOperator["BEFORE"] = "before";
+	BaseFilterOperator["AFTER"] = "after";
+	return BaseFilterOperator;
+}({});
+let BaseFilterConjunction = /* @__PURE__ */ function(BaseFilterConjunction) {
+	BaseFilterConjunction["AND"] = "and";
+	BaseFilterConjunction["OR"] = "or";
+	return BaseFilterConjunction;
+}({});
+let BaseSortDirection = /* @__PURE__ */ function(BaseSortDirection) {
+	BaseSortDirection["ASC"] = "asc";
+	BaseSortDirection["DESC"] = "desc";
+	return BaseSortDirection;
+}({});
+/** Why a stored Parent link cannot participate in the effective hierarchy. */
+let BaseHierarchyInvalidReason = /* @__PURE__ */ function(BaseHierarchyInvalidReason) {
+	BaseHierarchyInvalidReason["MissingParent"] = "missingParent";
+	BaseHierarchyInvalidReason["SelfParent"] = "selfParent";
+	BaseHierarchyInvalidReason["Cycle"] = "cycle";
+	BaseHierarchyInvalidReason["MaxDepth"] = "maxDepth";
+	return BaseHierarchyInvalidReason;
+}({});
+
+//#endregion
+//#region src/bases/record-identity.ts
+const BASE_RECORD_ID_FIELD_ID = "__record_id";
+const BASE_RECORD_ID_FIELD_NAME = "record-id";
+const BASE_RECORD_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+function createBaseRecordIdField() {
+	return {
+		id: BASE_RECORD_ID_FIELD_ID,
+		name: BASE_RECORD_ID_FIELD_NAME,
+		type: "recordId",
+		config: {},
+		system: true,
+		readonly: true
+	};
+}
+function isValidBaseRecordId(recordId) {
+	return BASE_RECORD_ID_PATTERN.test(recordId);
+}
+function isBaseRecordIdFieldName(name) {
+	return name.trim().toLowerCase() === BASE_RECORD_ID_FIELD_NAME;
+}
+function assertBaseTableRecordIdentity(table) {
+	const recordIdField = table.fields[BASE_RECORD_ID_FIELD_ID];
+	const recordIdFields = Object.values(table.fields).filter((field) => field.type === "recordId");
+	if (!recordIdField || recordIdFields.length !== 1 || recordIdField.type !== "recordId" || recordIdField.name !== "record-id" || recordIdField.system !== true || recordIdField.readonly !== true || table.fieldOrder[0] !== "__record_id" || table.primaryFieldId === "__record_id" || !table.fields[table.primaryFieldId]) throw new Error(`[BaseDataModel]: table "${table.id}" has an invalid record-id system field.`);
+	const conflictingField = Object.values(table.fields).find((field) => {
+		return field.id !== "__record_id" && isBaseRecordIdFieldName(field.name);
+	});
+	if (conflictingField) throw new Error(`[BaseDataModel]: field name "${conflictingField.name}" is reserved for the record-id system field.`);
+	for (const [recordKey, record] of Object.entries(table.records)) if (record.id !== recordKey || !isValidBaseRecordId(record.id) || record.values["__record_id"] !== record.id) throw new Error(`[BaseDataModel]: record "${recordKey}" has an invalid record-id projection.`);
+}
+
+//#endregion
+//#region src/bases/empty-snapshot.ts
+function createDefaultBaseTableSnapshot(options) {
+	const now = options.now ?? Date.now();
+	const primaryFieldId = options.primaryFieldId ?? generateRandomId(6);
+	const gridViewId = options.gridViewId ?? generateRandomId(6);
+	const recordCount = options.recordCount ?? 0;
+	const recordIdField = createBaseRecordIdField();
+	const primaryField = {
+		id: primaryFieldId,
+		name: options.primaryFieldName ?? "Name",
+		type: "text",
+		config: { placeholder: "bases.fieldConfig.textPlaceholder" }
+	};
+	const records = {};
+	const recordOrder = [];
+	const rowIndex = {};
+	const rowId = {};
+	const cellData = {};
+	for (let index = 0; index < recordCount; index++) {
+		const recordId = `${options.id}-record-${index + 1}`;
+		records[recordId] = {
+			id: recordId,
+			values: { [BASE_RECORD_ID_FIELD_ID]: recordId },
+			orderKey: String(index + 1).padStart(4, "0"),
+			createdAt: now,
+			updatedAt: now
+		};
+		recordOrder.push(recordId);
+		rowIndex[recordId] = index;
+		rowId[index] = recordId;
+		cellData[index] = { 0: {
+			v: recordId,
+			t: 1
+		} };
+	}
+	const gridView = {
+		id: gridViewId,
+		tableId: options.id,
+		name: "Grid",
+		type: "grid",
+		fieldOrder: [BASE_RECORD_ID_FIELD_ID, primaryFieldId],
+		fieldSettings: { [BASE_RECORD_ID_FIELD_ID]: { hidden: true } },
+		config: { frozenFieldCount: 1 }
+	};
+	return {
+		id: options.id,
+		name: options.name,
+		primaryFieldId,
+		fieldOrder: [BASE_RECORD_ID_FIELD_ID, primaryFieldId],
+		fields: {
+			[BASE_RECORD_ID_FIELD_ID]: recordIdField,
+			[primaryFieldId]: primaryField
+		},
+		records,
+		recordOrder,
+		rowIndex,
+		rowId,
+		colIndex: {
+			[BASE_RECORD_ID_FIELD_ID]: 0,
+			[primaryFieldId]: 1
+		},
+		colId: {
+			0: BASE_RECORD_ID_FIELD_ID,
+			1: primaryFieldId
+		},
+		cellData,
+		resources: {
+			attachmentSets: {},
+			attachments: {}
+		},
+		views: { [gridViewId]: gridView },
+		viewOrder: [gridViewId]
+	};
+}
+function getEmptySnapshot(unitId = generateRandomId(), name = "", locale = "zhCN") {
+	const now = Date.now();
+	const tableId = "table-1";
+	return {
+		id: unitId,
+		name,
+		locale,
+		appVersion: version,
+		schemaVersion: 2,
+		tableOrder: [tableId],
+		tables: { [tableId]: createDefaultBaseTableSnapshot({
+			id: tableId,
+			name: "Table 1",
+			now,
+			recordCount: 0
+		}) },
+		createdAt: now,
+		updatedAt: now
+	};
+}
+
+//#endregion
+//#region src/bases/base-data-model.ts
+const BASE_LIST_VALUE_SEPARATOR = ", ";
+const BASE_ATTACHMENT_RESOURCE_KEY_SEPARATOR = "";
+var BaseDataModel = class extends UnitModel {
+	constructor(snapshot = {}) {
+		super();
+		_defineProperty(this, "type", UniverInstanceType.UNIVER_BASE);
+		_defineProperty(this, "_name$", void 0);
+		_defineProperty(this, "name$", void 0);
+		_defineProperty(this, "_snapshot", void 0);
+		const defaultSnapshot = getEmptySnapshot();
+		this._snapshot = normalizeBaseSnapshot(Tools.commonExtend(defaultSnapshot, snapshot));
+		if (!this._snapshot.id) this._snapshot.id = `base-${Math.random().toString(36).slice(2, 10)}`;
+		this._name$ = new BehaviorSubject(this._snapshot.name);
+		this.name$ = this._name$.asObservable();
+	}
+	getUnitId() {
+		return this._snapshot.id;
+	}
+	setName(name) {
+		this._snapshot.name = name;
+		this._snapshot.updatedAt = Date.now();
+		this._name$.next(name);
+	}
+	getSnapshot() {
+		return this._snapshot;
+	}
+	/** Check if a table name already exists, ignoring case. */
+	checkTableName(name) {
+		return Object.values(this._snapshot.tables).some((table) => table.name.toLowerCase() === name.toLowerCase());
+	}
+	/** Generate a table name that does not conflict with existing tables. */
+	uniqueTableName(name) {
+		let output = name;
+		let count = 1;
+		while (this.checkTableName(output)) {
+			output = `${name}${count}`;
+			count++;
+		}
+		return output;
+	}
+	setSnapshot(snapshot) {
+		if (isNormalizedBaseSnapshot(snapshot)) this._snapshot = snapshot;
+		else this._snapshot = normalizeBaseSnapshot(snapshot);
+		this._name$.next(snapshot.name);
+	}
+	getRev() {
+		return this._snapshot.rev ?? 1;
+	}
+	incrementRev() {
+		this._snapshot.rev = this.getRev() + 1;
+	}
+	setRev(rev) {
+		this._snapshot.rev = rev;
+	}
+	dispose() {
+		super.dispose();
+		this._name$.complete();
+	}
+};
+function normalizeBaseSnapshot(snapshot) {
+	delete snapshot.compress;
+	delete snapshot.kind;
+	Object.values(snapshot.tables ?? {}).forEach((table) => {
+		assertBaseTableRecordIdentity(table);
+		normalizeBaseTable(table);
+		assertMaterializedRecordIdentity(table);
+	});
+	return snapshot;
+}
+function isNormalizedBaseSnapshot(snapshot) {
+	return Object.values(snapshot.tables ?? {}).every((table) => isNormalizedBaseTable(table));
+}
+function isNormalizedBaseTable(table) {
+	const records = table.records ?? {};
+	const fields = table.fields ?? {};
+	assertBaseTableRecordIdentity(table);
+	if (!Array.isArray(table.recordOrder) || !table.rowIndex || !table.rowId || !table.colIndex || !table.colId || !table.cellData || !table.resources || !table.resources.attachmentSets || !table.resources.attachments) return false;
+	if (Object.keys(records).length !== table.recordOrder.length) return false;
+	for (let index = 0; index < table.recordOrder.length; index++) {
+		var _table$cellData$index;
+		const recordId = table.recordOrder[index];
+		if (!records[recordId] || table.rowIndex[recordId] !== index || table.rowId[index] !== recordId || ((_table$cellData$index = table.cellData[index]) === null || _table$cellData$index === void 0 || (_table$cellData$index = _table$cellData$index[0]) === null || _table$cellData$index === void 0 ? void 0 : _table$cellData$index.v) !== recordId) return false;
+	}
+	for (let index = 0; index < table.fieldOrder.length; index++) {
+		const fieldId = table.fieldOrder[index];
+		if (!fields[fieldId]) continue;
+		if (table.colIndex[fieldId] !== index || table.colId[index] !== fieldId) return false;
+	}
+	return true;
+}
+function normalizeBaseTable(table) {
+	hydrateCompressedCellData(table);
+	const records = table.records ?? {};
+	const fields = table.fields ?? {};
+	const orderedRecordIds = getOrderedRecordIds(table, records);
+	const orderedFieldIds = getOrderedFieldIds(table, fields);
+	table.recordOrder = orderedRecordIds;
+	cloneBaseTableMutableMaps(table);
+	normalizeExistingCellData(table, fields);
+	rebuildRowIndexes(table, records, orderedRecordIds);
+	rebuildColumnIndexes(table, fields, orderedFieldIds);
+	hydrateRecordCellData(table, records, fields);
+}
+function hydrateCompressedCellData(table) {
+	const compressedCellData = table.cd;
+	if (compressedCellData && !table.cellData) {
+		table.cellData = Object.create(null);
+		compressedCellData.forEach(([row, col, cell]) => {
+			table.cellData[row] = table.cellData[row] ?? {};
+			const { c: _compressed, ...cellData } = cell;
+			table.cellData[row][col] = cellData;
+		});
+		delete table.cd;
+	}
+}
+function getOrderedRecordIds(table, records) {
+	var _table$recordOrder;
+	const orderedRecordIds = ((_table$recordOrder = table.recordOrder) === null || _table$recordOrder === void 0 ? void 0 : _table$recordOrder.filter((recordId) => records[recordId])) ?? [];
+	const orderedRecordIdSet = new Set(orderedRecordIds);
+	const missingRecords = Object.values(records).filter((record) => !orderedRecordIdSet.has(record.id));
+	if (!missingRecords.length) return orderedRecordIds;
+	return [...orderedRecordIds, ...missingRecords.sort((a, b) => a.orderKey.localeCompare(b.orderKey)).map((record) => record.id)];
+}
+function getOrderedFieldIds(table, fields) {
+	return table.fieldOrder.filter((fieldId) => fields[fieldId]);
+}
+function cloneBaseTableMutableMaps(table) {
+	table.rowIndex = { ...table.rowIndex };
+	table.rowId = { ...table.rowId };
+	table.colIndex = { ...table.colIndex };
+	table.colId = { ...table.colId };
+	table.cellData = { ...table.cellData };
+	table.resources = { ...table.resources };
+	table.resources.attachmentSets = { ...table.resources.attachmentSets };
+	table.resources.attachments = { ...table.resources.attachments };
+}
+function normalizeExistingCellData(table, fields) {
+	Object.entries(table.cellData ?? {}).forEach(([rowKey, rowData]) => {
+		const row = Number(rowKey);
+		table.cellData[row] = { ...rowData };
+		Object.entries(table.cellData[row] ?? {}).forEach(([colKey, cell]) => {
+			var _table$colId;
+			const col = Number(colKey);
+			const fieldId = (_table$colId = table.colId) === null || _table$colId === void 0 ? void 0 : _table$colId[col];
+			table.cellData[row][col] = normalizeBaseCellData(cell, fieldId ? fields[fieldId] : void 0);
+		});
+	});
+}
+function rebuildRowIndexes(table, records, orderedRecordIds) {
+	orderedRecordIds.forEach((recordId, index) => {
+		if (table.rowIndex[recordId] == null) table.rowIndex[recordId] = index;
+	});
+	Object.entries(table.rowIndex ?? {}).forEach(([recordId, row]) => {
+		if (records[recordId]) table.rowId[row] = recordId;
+	});
+}
+function rebuildColumnIndexes(table, fields, orderedFieldIds) {
+	orderedFieldIds.forEach((fieldId, index) => {
+		if (table.colIndex[fieldId] == null) table.colIndex[fieldId] = index;
+	});
+	Object.entries(table.colIndex ?? {}).forEach(([fieldId, col]) => {
+		if (fields[fieldId]) table.colId[col] = fieldId;
+	});
+}
+function hydrateRecordCellData(table, records, fields) {
+	const rowIndex = table.rowIndex ?? {};
+	const colIndex = table.colIndex ?? {};
+	const cellData = table.cellData ?? {};
+	table.rowIndex = rowIndex;
+	table.colIndex = colIndex;
+	table.cellData = cellData;
+	Object.values(records).forEach((record) => {
+		const row = rowIndex[record.id];
+		if (row == null) return;
+		cellData[row] = { ...cellData[row] };
+		cellData[row][0] = {
+			v: record.id,
+			t: 1
+		};
+		Object.entries(record.values ?? {}).forEach(([fieldId, value]) => {
+			const field = fields[fieldId];
+			if ((field === null || field === void 0 ? void 0 : field.type) === "attachment") writeAttachmentResources(table, record.id, fieldId, value);
+			const col = colIndex[fieldId];
+			if (col == null) return;
+			const existingCell = cellData[row][col];
+			if (existingCell != null) {
+				cellData[row][col] = normalizeBaseCellData(existingCell, field);
+				if (shouldRefreshCellDataFromRecord(existingCell, field, value)) cellData[row][col] = toBaseCellData(value, field);
+				return;
+			}
+			cellData[row][col] = toBaseCellData(value, field);
+		});
+	});
+}
+function assertMaterializedRecordIdentity(table) {
+	for (const record of Object.values(table.records)) {
+		var _table$rowIndex, _table$colIndex, _table$colId2, _table$cellData;
+		const row = (_table$rowIndex = table.rowIndex) === null || _table$rowIndex === void 0 ? void 0 : _table$rowIndex[record.id];
+		if (row == null || ((_table$colIndex = table.colIndex) === null || _table$colIndex === void 0 ? void 0 : _table$colIndex["__record_id"]) !== 0 || ((_table$colId2 = table.colId) === null || _table$colId2 === void 0 ? void 0 : _table$colId2[0]) !== "__record_id" || ((_table$cellData = table.cellData) === null || _table$cellData === void 0 || (_table$cellData = _table$cellData[row]) === null || _table$cellData === void 0 || (_table$cellData = _table$cellData[0]) === null || _table$cellData === void 0 ? void 0 : _table$cellData.v) !== record.id) throw new Error(`[BaseDataModel]: record "${record.id}" is missing its record-id cell projection.`);
+	}
+}
+function toBaseCellData(value, field) {
+	if (isBaseCellData(value)) {
+		if ((field === null || field === void 0 ? void 0 : field.type) === "attachment") return {
+			...value,
+			v: "",
+			t: 1
+		};
+		return normalizeBaseCellData(value, field);
+	}
+	if ((field === null || field === void 0 ? void 0 : field.type) === "attachment") return {
+		v: "",
+		t: 1
+	};
+	if (isListField(field)) return {
+		v: normalizeListValue(value).join(BASE_LIST_VALUE_SEPARATOR),
+		t: 1
+	};
+	if ((field === null || field === void 0 ? void 0 : field.type) === "link" && value && typeof value === "object" && !Array.isArray(value)) {
+		const link = value;
+		return {
+			v: String(link.text ?? link.url ?? ""),
+			t: 1
+		};
+	}
+	if (value === null || typeof value === "string" || typeof value === "number" || typeof value === "boolean") return {
+		v: value,
+		t: inferPrimitiveType(value)
+	};
+	return {
+		v: null,
+		t: null
+	};
+}
+function normalizeBaseCellData(cell, _field) {
+	const type = normalizeBaseCellValueType(cell.t, cell.v);
+	if (type === void 0) {
+		const { t: _t, ...rest } = cell;
+		return rest;
+	}
+	return {
+		...cell,
+		t: type
+	};
+}
+function isBaseCellData(value) {
+	return !!value && typeof value === "object" && (Object.prototype.hasOwnProperty.call(value, "v") || Object.prototype.hasOwnProperty.call(value, "t") || Object.prototype.hasOwnProperty.call(value, "p") || Object.prototype.hasOwnProperty.call(value, "f") || Object.prototype.hasOwnProperty.call(value, "si"));
+}
+function writeAttachmentResources(table, recordId, fieldId, value) {
+	const attachments = normalizeAttachmentValue(value);
+	table.resources = { ...table.resources };
+	table.resources.attachmentSets = { ...table.resources.attachmentSets };
+	table.resources.attachments = { ...table.resources.attachments };
+	const key = `${fieldId}${BASE_ATTACHMENT_RESOURCE_KEY_SEPARATOR}${recordId}`;
+	table.resources.attachmentSets[key] = attachments.map((attachment, index) => {
+		const id = String(attachment.id ?? `${key}${BASE_ATTACHMENT_RESOURCE_KEY_SEPARATOR}${index}`);
+		const normalizedAttachment = {
+			...attachment,
+			id
+		};
+		table.resources.attachments[id] = normalizedAttachment;
+		return id;
+	});
+}
+function normalizeAttachmentValue(value) {
+	if (value == null || value === "") return [];
+	if (isBaseCellData(value) && !("id" in value) && !("name" in value)) return [];
+	const values = Array.isArray(value) ? value : [value];
+	const attachments = [];
+	for (let i = 0; i < values.length; i++) {
+		const item = values[i];
+		if (item && typeof item === "object") {
+			const attachment = { ...item };
+			if (Object.keys(attachment).length > 0) attachments.push(attachment);
+			continue;
+		}
+		attachments.push({
+			id: `attachment-${i}`,
+			name: String(item)
+		});
+	}
+	return attachments;
+}
+function shouldRefreshCellDataFromRecord(cell, field, value) {
+	if ((field === null || field === void 0 ? void 0 : field.type) === "recordId") return cell.v !== value;
+	if ((field === null || field === void 0 ? void 0 : field.type) === "attachment") return cell.v !== "";
+	if (isListField(field)) return Array.isArray(value) && (cell.v == null || cell.v === "");
+	return false;
+}
+function isListField(field) {
+	return (field === null || field === void 0 ? void 0 : field.type) === "multiSelect" || (field === null || field === void 0 ? void 0 : field.type) === "person" || (field === null || field === void 0 ? void 0 : field.type) === "group";
+}
+function normalizeListValue(value) {
+	if (value == null || value === "") return [];
+	const result = [];
+	if (Array.isArray(value)) {
+		for (let i = 0; i < value.length; i++) {
+			const item = primitiveText(value[i]);
+			if (item) result.push(item);
+		}
+		return result;
+	}
+	const items = String(value).split(",");
+	for (let i = 0; i < items.length; i++) {
+		const item = items[i].trim();
+		if (item) result.push(item);
+	}
+	return result;
+}
+function primitiveText(value) {
+	if (value == null) return "";
+	if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return String(value);
+	if (typeof value === "object") {
+		const record = value;
+		return String(record.id ?? record.name ?? record.text ?? "");
+	}
+	return String(value);
+}
+function inferPrimitiveType(value) {
+	if (value == null) return null;
+	if (typeof value === "number") return 2;
+	if (typeof value === "boolean") return 3;
+	return 1;
+}
+function normalizeBaseCellValueType(type, value) {
+	if (type === 1 || type === 2 || type === 3 || type === 4 || type == null) return type;
+	return inferPrimitiveType(value ?? null);
+}
+
+//#endregion
+//#region src/bases/formula-table-name.ts
+function normalizeBaseFormulaTableName(displayName) {
+	const replaced = displayName.trim().replace(/[^A-Za-z0-9_.]+/g, "_");
+	const normalized = /[A-Za-z0-9]/.test(replaced) ? replaced : "Table";
+	const prefixed = /^[A-Za-z_]/.test(normalized) ? normalized : `_${normalized}`;
+	return (/^[RC]$/i.test(prefixed) || /^[A-Za-z]{1,3}[1-9]\d*$/.test(prefixed) || /^R(?:\d+)?C(?:\d+)?$/i.test(prefixed) ? `_${prefixed}` : prefixed).slice(0, 255);
+}
+function createBaseFormulaTableNameMap(snapshot) {
+	const result = /* @__PURE__ */ new Map();
+	const usedNames = /* @__PURE__ */ new Set();
+	const nextSuffixByBaseName = /* @__PURE__ */ new Map();
+	const tables = Object.values(snapshot.tables).sort((left, right) => left.id.localeCompare(right.id));
+	for (const table of tables) {
+		const formulaName = validBaseFormulaTableName(table.formulaName);
+		if (!formulaName || usedNames.has(formulaName.toLowerCase())) continue;
+		usedNames.add(formulaName.toLowerCase());
+		result.set(table.id, formulaName);
+	}
+	for (const table of tables) {
+		if (result.has(table.id)) continue;
+		const formulaName = allocateBaseFormulaTableNameFromSet(table.name, usedNames, table.formulaName, nextSuffixByBaseName);
+		usedNames.add(formulaName.toLowerCase());
+		result.set(table.id, formulaName);
+	}
+	return result;
+}
+function allocateBaseFormulaTableName(displayName, existingNames, preferredName) {
+	return allocateBaseFormulaTableNameFromSet(displayName, new Set(Array.from(existingNames, (name) => name.toLowerCase())), preferredName);
+}
+function allocateBaseFormulaTableNameFromSet(displayName, usedNames, preferredName, nextSuffixByBaseName = /* @__PURE__ */ new Map()) {
+	const validPreferredName = validBaseFormulaTableName(preferredName);
+	if (validPreferredName && !usedNames.has(validPreferredName.toLowerCase())) return validPreferredName;
+	const baseName = normalizeBaseFormulaTableName(displayName);
+	const baseNameKey = baseName.toLowerCase();
+	if (!usedNames.has(baseNameKey)) return baseName;
+	let suffixNumber = nextSuffixByBaseName.get(baseNameKey) ?? 2;
+	while (true) {
+		const suffix = `_${suffixNumber++}`;
+		const formulaName = `${baseName.slice(0, 255 - suffix.length)}${suffix}`;
+		if (!usedNames.has(formulaName.toLowerCase())) {
+			nextSuffixByBaseName.set(baseNameKey, suffixNumber);
+			return formulaName;
+		}
+	}
+}
+function getBaseFormulaTableName(table, snapshot) {
+	return createBaseFormulaTableNameMap(snapshot).get(table.id) ?? normalizeBaseFormulaTableName(table.name);
+}
+function normalizeBaseFormulaTableReferences(formula, snapshot) {
+	return createBaseFormulaTableReferenceNormalizer(snapshot)(formula);
+}
+function createBaseFormulaTableReferenceNormalizer(snapshot, formulaNames = createBaseFormulaTableNameMap(snapshot)) {
+	const compiledAliases = compileBaseFormulaTableAliases(createBaseFormulaTableAliases(snapshot, formulaNames));
+	return (formula) => rewriteFormulaTableAliases(formula, compiledAliases);
+}
+function migrateBaseFormulaTableNames(snapshot) {
+	const formulaNames = createBaseFormulaTableNameMap(snapshot);
+	const normalizeReferences = createBaseFormulaTableReferenceNormalizer(snapshot, formulaNames);
+	for (const table of Object.values(snapshot.tables)) table.formulaName = formulaNames.get(table.id) ?? normalizeBaseFormulaTableName(table.name);
+	for (const table of Object.values(snapshot.tables)) {
+		for (const field of Object.values(table.fields)) {
+			var _field$config;
+			if (field.type !== "formula" || typeof ((_field$config = field.config) === null || _field$config === void 0 ? void 0 : _field$config.formula) !== "string") continue;
+			field.config.formula = normalizeReferences(field.config.formula);
+		}
+		for (const row of Object.values(table.cellData ?? {})) for (const cell of Object.values(row ?? {})) if (cell && typeof cell.f === "string") cell.f = normalizeReferences(cell.f);
+	}
+}
+function createBaseFormulaTableAliases(snapshot, formulaNames = createBaseFormulaTableNameMap(snapshot)) {
+	const legacyFormulaNames = createLegacyBaseFormulaTableNameMap(snapshot);
+	const formulaNameOwners = new Map(Array.from(formulaNames, ([tableId, formulaName]) => [formulaName.toLowerCase(), tableId]));
+	const displayNameCounts = /* @__PURE__ */ new Map();
+	for (const table of Object.values(snapshot.tables)) {
+		const key = table.name.toLowerCase();
+		displayNameCounts.set(key, (displayNameCounts.get(key) ?? 0) + 1);
+	}
+	return Object.values(snapshot.tables).flatMap((table) => {
+		const formulaName = formulaNames.get(table.id) ?? normalizeBaseFormulaTableName(table.name);
+		const inputAliases = [
+			table.id,
+			createLegacyBaseFormulaTableName(table.id),
+			legacyFormulaNames.get(table.id),
+			table.formulaName
+		];
+		if (displayNameCounts.get(table.name.toLowerCase()) === 1) inputAliases.push(table.name);
+		return inputAliases.filter((alias) => Boolean(alias)).flatMap((alias) => [alias, quoteBaseFormulaTableAlias(alias)]).filter((alias) => Boolean(alias)).filter((alias) => alias.toLowerCase() !== formulaName.toLowerCase()).filter((alias) => {
+			const owner = formulaNameOwners.get(unquoteBaseFormulaTableAlias(alias).toLowerCase());
+			return owner == null || owner === table.id;
+		}).map((alias) => ({
+			alias,
+			formulaName
+		}));
+	}).sort((left, right) => right.alias.length - left.alias.length);
+}
+function createLegacyBaseFormulaTableNameMap(snapshot) {
+	const result = /* @__PURE__ */ new Map();
+	const usedNames = /* @__PURE__ */ new Set();
+	const nextSuffixByBaseName = /* @__PURE__ */ new Map();
+	const tables = Object.values(snapshot.tables).sort((left, right) => left.id.localeCompare(right.id));
+	for (const table of tables) {
+		const formulaName = allocateBaseFormulaTableNameFromSet(table.name, usedNames, void 0, nextSuffixByBaseName);
+		usedNames.add(formulaName.toLowerCase());
+		result.set(table.id, formulaName);
+	}
+	return result;
+}
+function validBaseFormulaTableName(value) {
+	const trimmed = value === null || value === void 0 ? void 0 : value.trim();
+	return trimmed && normalizeBaseFormulaTableName(trimmed) === trimmed ? trimmed : void 0;
+}
+function quoteBaseFormulaTableAlias(alias) {
+	return /[^A-Za-z0-9_.]/.test(alias) ? `'${alias.replaceAll("'", "''")}'` : void 0;
+}
+function unquoteBaseFormulaTableAlias(alias) {
+	return alias.startsWith("'") && alias.endsWith("'") ? alias.slice(1, -1).replaceAll("''", "'") : alias;
+}
+function compileBaseFormulaTableAliases(aliases) {
+	const formulaNameByAlias = /* @__PURE__ */ new Map();
+	for (const { alias, formulaName } of aliases) {
+		const key = alias.toLowerCase();
+		if (!formulaNameByAlias.has(key)) formulaNameByAlias.set(key, formulaName);
+	}
+	const orderedAliases = Array.from(formulaNameByAlias.keys()).sort((left, right) => right.length - left.length);
+	return {
+		formulaNameByAlias,
+		pattern: orderedAliases.length ? new RegExp(`(${orderedAliases.map(escapeRegExp).join("|")})(\\s*)\\[`, "gi") : void 0
+	};
+}
+function createLegacyBaseFormulaTableName(tableId) {
+	return `_T_${Array.from(tableId, (character) => {
+		var _character$codePointA;
+		return /[A-Za-z0-9]/.test(character) ? character : `_x${((_character$codePointA = character.codePointAt(0)) === null || _character$codePointA === void 0 ? void 0 : _character$codePointA.toString(16)) ?? "0"}_`;
+	}).join("")}`;
+}
+function rewriteFormulaTableAliases(formula, aliases) {
+	if (!aliases.pattern) return formula;
+	let scannedUntil = 0;
+	let inString = false;
+	aliases.pattern.lastIndex = 0;
+	return formula.replace(aliases.pattern, (match, alias, whitespace, offset) => {
+		inString = scanFormulaStringState(formula, scannedUntil, offset, inString);
+		scannedUntil = offset;
+		const previous = formula[offset - 1];
+		if (previous != null && /[A-Za-z0-9_.]/.test(previous) || previous === "!" || inString) return match;
+		const formulaName = aliases.formulaNameByAlias.get(alias.toLowerCase());
+		return formulaName ? `${formulaName}${whitespace}[` : match;
+	});
+}
+function escapeRegExp(value) {
+	return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+function scanFormulaStringState(formula, start, end, initialState) {
+	let inString = initialState;
+	for (let index = start; index < end; index++) {
+		if (formula[index] !== "\"") continue;
+		if (inString && formula[index + 1] === "\"") {
+			index++;
+			continue;
+		}
+		inString = !inString;
+	}
+	return inString;
+}
+
+//#endregion
+//#region src/common/async.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+
+//#endregion
+//#region src/common/boolean.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const BooleanStringSet = /* @__PURE__ */ new Set(["true", "false"]);
+function isBooleanString(str) {
+	return BooleanStringSet.has(str.toLowerCase());
+}
+
+//#endregion
+//#region src/common/const.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const PREFIX = "__INTERNAL_EDITOR__";
+const DOCS_NORMAL_EDITOR_UNIT_ID_KEY = `${PREFIX}DOCS_NORMAL`;
+const DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY = `${PREFIX}DOCS_FORMULA_BAR`;
+const DOCS_COMMENT_EDITOR_UNIT_ID_KEY = `${PREFIX}COMMENT_EDITOR`;
+const DEFAULT_EMPTY_DOCUMENT_VALUE = "\r\n";
+const IS_ROW_STYLE_PRECEDE_COLUMN_STYLE = "isRowStylePrecedeColumnStyle";
+const AUTO_HEIGHT_FOR_MERGED_CELLS = Symbol("AUTO_HEIGHT_FOR_MERGED_CELLS");
+function createInternalEditorID(id) {
+	return `${PREFIX}${id}`;
+}
+function isInternalEditorID(id) {
+	return id.startsWith(PREFIX);
+}
+function isCommentEditorID(id) {
+	return id.startsWith(DOCS_COMMENT_EDITOR_UNIT_ID_KEY);
+}
+
+//#endregion
+//#region src/types/interfaces/i-drawing.ts
+/**
+* The layer type of Drawing, used to distinguish between forward, backward, front, and back
+*/
+let ArrangeTypeEnum = /* @__PURE__ */ function(ArrangeTypeEnum) {
+	/**
+	* Move the current object one layer up, possibly covering other objects
+	*/
+	ArrangeTypeEnum[ArrangeTypeEnum["forward"] = 0] = "forward";
+	/**
+	* Move the current object one layer down, possibly being covered by other objects
+	*/
+	ArrangeTypeEnum[ArrangeTypeEnum["backward"] = 1] = "backward";
+	/**
+	* Move the current object to the top layer
+	*/
+	ArrangeTypeEnum[ArrangeTypeEnum["front"] = 2] = "front";
+	/**
+	* Move the current object to the bottom layer
+	*/
+	ArrangeTypeEnum[ArrangeTypeEnum["back"] = 3] = "back";
+	return ArrangeTypeEnum;
+}({});
+/**
+* Types of drawings, used to distinguish between images, shapes, charts, tables, SmartArt, videos, DrawingGroup, Unit, Dom, etc.
+*/
+let DrawingTypeEnum = /* @__PURE__ */ function(DrawingTypeEnum) {
+	/**
+	* Unrecognized drawing type, requires user to determine
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["UNRECOGNIZED"] = -1] = "UNRECOGNIZED";
+	/**
+	* Image
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_IMAGE"] = 0] = "DRAWING_IMAGE";
+	/**
+	* Shape, similar to shapes in Office, including circles, rectangles, lines, etc.
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_SHAPE"] = 1] = "DRAWING_SHAPE";
+	/**
+	* Chart
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_CHART"] = 2] = "DRAWING_CHART";
+	/**
+	* Table
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_TABLE"] = 3] = "DRAWING_TABLE";
+	/**
+	* SmartArt, similar to SmartArt in Office
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_SMART_ART"] = 4] = "DRAWING_SMART_ART";
+	/**
+	* Video
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_VIDEO"] = 5] = "DRAWING_VIDEO";
+	/**
+	* Drawing group
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_GROUP"] = 6] = "DRAWING_GROUP";
+	/**
+	* Univer object, allows inserting images, tables, documents, slides as floating objects into the document
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_UNIT"] = 7] = "DRAWING_UNIT";
+	/**
+	* Dom element, allows inserting HTML elements as floating objects into the document
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_DOM"] = 8] = "DRAWING_DOM";
+	/**
+	* Block element, allows host products to place embeddable unit-backed blocks as drawing objects.
+	*/
+	DrawingTypeEnum[DrawingTypeEnum["DRAWING_BLOCK"] = 9] = "DRAWING_BLOCK";
+	return DrawingTypeEnum;
+}({});
+
+//#endregion
+//#region src/common/drawing-order.ts
+/** Clamps a requested zero-based index to an available drawing order. */
+function normalizeDrawingOrderIndex(index, length) {
+	const lastIndex = Math.max(0, length - 1);
+	return Math.max(0, Math.min(Math.floor(index), lastIndex)) || 0;
+}
+/** Resolves a relative drawing arrangement to its zero-based target index. */
+function getDrawingOrderIndex(currentIndex, length, arrangeType) {
+	const index = normalizeDrawingOrderIndex(currentIndex, length);
+	if (arrangeType === 2) return normalizeDrawingOrderIndex(length - 1, length);
+	if (arrangeType === 0) return normalizeDrawingOrderIndex(index + 1, length);
+	if (arrangeType === 1) return normalizeDrawingOrderIndex(index - 1, length);
+	return 0;
+}
+
+//#endregion
+//#region src/common/equal.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function shallowEqual(objA, objB) {
+	if (Object.is(objA, objB)) return true;
+	if (typeof objA !== "object" || !objA || typeof objB !== "object" || !objB) return false;
+	const keysA = Object.keys(objA);
+	const keysB = Object.keys(objB);
+	if (keysA.length !== keysB.length) return false;
+	const bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
+	for (let idx = 0; idx < keysA.length; idx++) {
+		const key = keysA[idx];
+		if (!bHasOwnProperty(key)) return false;
+		if (objA[key] !== objB[key]) return false;
+	}
+	return true;
+}
+
+//#endregion
+//#region src/common/function.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* A no-op (no operation) function that does nothing.
+* Use this as a default placeholder for callbacks or optional handlers.
+*/
+function noop() {}
+function throttle(fn, wait = 16) {
+	let lastTime = 0;
+	let timer = null;
+	return function throttled(...args) {
+		const now = Date.now();
+		if (now - lastTime < wait) {
+			if (timer) clearTimeout(timer);
+			timer = setTimeout(() => {
+				lastTime = now;
+				fn.apply(this, args);
+			}, wait);
+		} else {
+			lastTime = now;
+			fn.apply(this, args);
+		}
+	};
+}
+
+//#endregion
+//#region src/common/interceptor.ts
+let InterceptorEffectEnum = /* @__PURE__ */ function(InterceptorEffectEnum) {
+	InterceptorEffectEnum[InterceptorEffectEnum["Style"] = 1] = "Style";
+	InterceptorEffectEnum[InterceptorEffectEnum["Value"] = 2] = "Value";
+	return InterceptorEffectEnum;
+}({});
+function createInterceptorKey(key) {
+	return `sheet_interceptor_${key}`;
+}
+/**
+* A helper to compose a certain type of interceptors.
+*/
+const composeInterceptors = (interceptors) => function(initialValue, context) {
+	let index = -1;
+	let value = initialValue;
+	let nextCalled = false;
+	const next = (nextValue) => {
+		nextCalled = true;
+		return nextValue;
+	};
+	for (let i = 0; i < interceptors.length; i++) {
+		if (i <= index) throw new Error("[SheetInterceptorService]: next() called multiple times!");
+		index = i;
+		const interceptor = interceptors[i];
+		nextCalled = false;
+		value = interceptor.handler(value, context, next);
+		if (!nextCalled) break;
+	}
+	return value;
+};
+var InterceptorManager = class {
+	constructor(interceptorPoints) {
+		_defineProperty(this, "_interceptorsByName", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_interceptorPoints", void 0);
+		this._interceptorPoints = interceptorPoints;
+	}
+	/**
+	* Get the interceptors.
+	* @param name Name of the intercepted point.
+	* @param filter A callback function to filter the interceptors.
+	* @returns It will return a composed interceptor function. If you will perform the interceptor repeatedly,
+	* you should cache the result instead of calling this function multiple times.
+	*/
+	fetchThroughInterceptors(name, filter) {
+		const key = name;
+		let interceptors = this._interceptorsByName.get(key);
+		if (filter) interceptors = interceptors.filter(filter);
+		return composeInterceptors(interceptors || []);
+	}
+	intercept(name, interceptor) {
+		const key = name;
+		if (!this._interceptorsByName.has(key)) this._interceptorsByName.set(key, []);
+		const interceptors = this._interceptorsByName.get(key);
+		interceptors.push(interceptor);
+		this._interceptorsByName.set(key, interceptors.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0)));
+		return () => remove(this._interceptorsByName.get(key), interceptor);
+	}
+	getInterceptPoints() {
+		return this._interceptorPoints;
+	}
+	dispose() {
+		this._interceptorsByName.clear();
+	}
+};
+function createAsyncInterceptorKey(key) {
+	return `sheet_async_interceptor_${key}`;
+}
+const composeAsyncInterceptors = (interceptors) => {
+	return async function(initialValue, context) {
+		let index = -1;
+		let value = initialValue;
+		for (let i = 0; i <= interceptors.length; i++) {
+			if (i <= index) throw new Error("[SheetInterceptorService]: next() called multiple times!");
+			index = i;
+			if (i === interceptors.length) return value;
+			const interceptor = interceptors[i];
+			let nextCalled = false;
+			value = await interceptor.handler(value, context, async (nextValue) => {
+				nextCalled = true;
+				return nextValue;
+			});
+			if (!nextCalled) break;
+		}
+		return value;
+	};
+};
+var AsyncInterceptorManager = class {
+	constructor(asyncInterceptorPoints) {
+		_defineProperty(this, "_asyncInterceptorsByName", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_asyncInterceptorPoints", void 0);
+		this._asyncInterceptorPoints = asyncInterceptorPoints;
+	}
+	/**
+	* Get the interceptors.
+	* @param name Name of the intercepted point.
+	* @param filter A callback function to filter the interceptors.
+	* @returns It will return a composed interceptor function. If you will perform the interceptor repeatedly,
+	* you should cache the result instead of calling this function multiple times.
+	*/
+	fetchThroughAsyncInterceptors(name, filter) {
+		const key = name;
+		let interceptors = this._asyncInterceptorsByName.get(key);
+		if (filter) interceptors = interceptors.filter(filter);
+		return composeAsyncInterceptors(interceptors || []);
+	}
+	async interceptAsync(name, interceptor) {
+		const key = name;
+		if (!this._asyncInterceptorsByName.has(key)) this._asyncInterceptorsByName.set(key, []);
+		const interceptors = this._asyncInterceptorsByName.get(key);
+		interceptors.push(interceptor);
+		this._asyncInterceptorsByName.set(key, interceptors.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0)));
+		return () => remove(this._asyncInterceptorsByName.get(key), interceptor);
+	}
+	getInterceptPoints() {
+		return this._asyncInterceptorPoints;
+	}
+	dispose() {
+		this._asyncInterceptorsByName.clear();
+	}
+};
+
+//#endregion
+//#region src/common/invert-color/utils.ts
+function normalizeRGBColor(color) {
+	return color.map((c) => c / 255);
+}
+function denormalizeRGBColor(color) {
+	return color.map((c) => Math.round(c * 255));
+}
+
+//#endregion
+//#region src/common/invert-color/invert-hsl.ts
+function rgbToHsl([r, g, b]) {
+	const max = Math.max(r, g, b);
+	const min = Math.min(r, g, b);
+	const l = (max + min) / 2;
+	let h = 0;
+	let s = 0;
+	if (max !== min) {
+		const d = max - min;
+		s = l > .5 ? d / (2 - max - min) : d / (max + min);
+		switch (max) {
+			case r:
+				h = (g - b) / d + (g < b ? 6 : 0);
+				break;
+			case g:
+				h = (b - r) / d + 2;
+				break;
+			case b:
+				h = (r - g) / d + 4;
+				break;
+		}
+		h /= 6;
+	}
+	return [
+		h,
+		s,
+		l
+	];
+}
+function getLuminance(r, g, b) {
+	const a = [
+		r,
+		g,
+		b
+	].map((v) => {
+		return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4;
+	});
+	return .2126 * a[0] + .7152 * a[1] + .0722 * a[2];
+}
+function getContrastRatio(luminance1, luminance2) {
+	return (Math.max(luminance1, luminance2) + .05) / (Math.min(luminance1, luminance2) + .05);
+}
+function hslToRgb(h, s, l) {
+	let r, g, b;
+	if (s === 0) r = g = b = l;
+	else {
+		const hue2rgb = (p, q, _t) => {
+			let t = _t;
+			if (t < 0) t += 1;
+			if (t > 1) t -= 1;
+			if (t < 1 / 6) return p + (q - p) * 6 * t;
+			if (t < 1 / 2) return q;
+			if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+			return p;
+		};
+		const q = l < .5 ? l * (1 + s) : l + s - l * s;
+		const p = 2 * l - q;
+		r = hue2rgb(p, q, h + 1 / 3);
+		g = hue2rgb(p, q, h);
+		b = hue2rgb(p, q, h - 1 / 3);
+	}
+	return [
+		r,
+		g,
+		b
+	];
+}
+const white = {
+	r: 1,
+	g: 1,
+	b: 1
+};
+const black = {
+	r: 0,
+	g: 0,
+	b: 0
+};
+const whiteLuminance = getLuminance(white.r, white.g, white.b);
+const blackLuminance = getLuminance(black.r, black.g, black.b);
+/**
+* Invert a color by HSL tunning method.
+* @param color The color to invert. Note that this color is already normalized.
+* @returns The inverted color.
+*/
+function invertNormalizedColorByHSL(color) {
+	const originalLuminance = getLuminance(color[0], color[1], color[2]);
+	const originalContrast = getContrastRatio(whiteLuminance, originalLuminance);
+	const hsl = rgbToHsl(color);
+	let l = 1 - hsl[2];
+	let newColor, newLuminance, newContrast;
+	do {
+		newColor = hslToRgb(hsl[0], hsl[1], l);
+		newLuminance = getLuminance(newColor[0], newColor[1], newColor[2]);
+		newContrast = getContrastRatio(newLuminance, blackLuminance);
+		l += .01;
+	} while (l <= 1 && l >= 0 && Math.abs(newContrast - originalContrast) < .01);
+	return newColor;
+}
+function invertColorByHSL(color) {
+	return denormalizeRGBColor(invertNormalizedColorByHSL(normalizeRGBColor(color)));
+}
+
+//#endregion
+//#region src/common/invert-color/invert-rgb.ts
+const matrix = [
+	[
+		.333,
+		-.667,
+		-.667,
+		0,
+		1
+	],
+	[
+		-.667,
+		.333,
+		-.667,
+		0,
+		1
+	],
+	[
+		-.667,
+		-.667,
+		.333,
+		0,
+		1
+	],
+	[
+		0,
+		0,
+		0,
+		1,
+		0
+	]
+];
+function invertNormalizedColorByMatrix(color) {
+	const r = color[0];
+	const g = color[1];
+	const b = color[2];
+	let newColor = [
+		matrix[0][0] * r + matrix[0][1] * g + matrix[0][2] * b + matrix[0][4],
+		matrix[1][0] * r + matrix[1][1] * g + matrix[1][2] * b + matrix[1][4],
+		matrix[2][0] * r + matrix[2][1] * g + matrix[2][2] * b + matrix[2][4]
+	];
+	newColor = newColor.map((c) => c > 1 ? 1 : c < 0 ? 0 : c);
+	return newColor;
+}
+/**
+* Invert a color by RGB matrix method.
+* @param color The color to invert. Note that this color is already normalized.
+* @returns The inverted color.
+*/
+function invertColorByMatrix(color) {
+	return denormalizeRGBColor(invertNormalizedColorByMatrix(normalizeRGBColor(color)));
+}
+
+//#endregion
+//#region src/common/memory-cursor.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var MemoryCursor = class {
+	constructor() {
+		_defineProperty(this, "cursor", 0);
+	}
+	reset() {
+		this.cursor = 0;
+		return this;
+	}
+	moveCursor(pos) {
+		this.cursor += pos;
+	}
+	moveCursorTo(pos) {
+		this.cursor = pos;
+	}
+};
+
+//#endregion
+//#region src/common/mixin.ts
+/**
+* Mixin some methods to targetObject as prototype, the static methods will not be mixed in
+* @param {T} targetClassPrototype The target class to mixin
+* @param {IMixinProperty<T>} mixin The mixin object which contains the methods to mixin.
+*/
+function mixinClass(targetClassPrototype, mixin) {
+	for (const key in mixin) if (mixin.hasOwnProperty(key)) targetClassPrototype[key] = mixin[key];
+}
+
+//#endregion
+//#region src/common/number.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function isNumeric(str) {
+	return /^-?\d+(\.\d+)?$/.test(str);
+}
+function isSafeNumeric(str) {
+	if (!isNumeric(str)) return false;
+	return Number(str) <= Number.MAX_SAFE_INTEGER;
+}
+/**
+* Whether the numeric string will lose precision when converted to a number.
+* e.g. '123456789123456789' -> 123456789123456780
+* e.g. '1212121212121212.2345' -> 1212121212121212.2
+*/
+function willLoseNumericPrecision(str) {
+	return Number(str) > Number.MAX_SAFE_INTEGER || str.length >= 18;
+}
+
+//#endregion
+//#region src/common/registry.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var Registry = class Registry {
+	constructor() {
+		_defineProperty(this, "_data", []);
+	}
+	static create() {
+		return new Registry();
+	}
+	add(dataInstance) {
+		if (this._data.indexOf(dataInstance) > -1) return;
+		this._data.push(dataInstance);
+	}
+	delete(dataInstance) {
+		const index = this._data.indexOf(dataInstance);
+		this._data.splice(index, 1);
+	}
+	getData() {
+		return this._data;
+	}
+};
+/**
+* Add extension modules statically when the plugin is initialized, so that the plugin can register these extension modules uniformly
+*
+* @privateRemarks
+* zh: 在插件初始化的时候静态添加扩展模块，方便插件统一注册这些扩展模块
+*/
+var RegistryAsMap = class RegistryAsMap {
+	constructor() {
+		_defineProperty(this, "_data", /* @__PURE__ */ new Map());
+	}
+	static create() {
+		return new RegistryAsMap();
+	}
+	add(id, dataInstance) {
+		if (this._data.has(id)) return;
+		this._data.set(id, dataInstance);
+	}
+	delete(id) {
+		this._data.delete(id);
+	}
+	getData() {
+		return this._data;
+	}
+};
+
+//#endregion
+//#region src/common/request-immediate-macro-task.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+function requestImmediateMacroTask(callback) {
+	const channel = new MessageChannel();
+	let cancelled = false;
+	const close = () => {
+		channel.port1.onmessage = null;
+		channel.port1.close();
+		channel.port2.close();
+	};
+	const handler = () => {
+		if (!cancelled) {
+			cancelled = true;
+			close();
+			callback();
+		}
+	};
+	channel.port1.onmessage = handler;
+	channel.port2.postMessage(null);
+	return () => {
+		if (cancelled) return;
+		cancelled = true;
+		close();
+	};
+}
+
+//#endregion
+//#region src/common/set.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Merge the second set to the first set.
+* @param s1 the first set
+* @param s2 the second set
+* @returns the merged set
+*/
+function mergeSets(s1, s2) {
+	s2.forEach((s) => s1.add(s));
+	return s1;
+}
+
+//#endregion
+//#region src/docs/section-break-id.ts
+const SECTION_ID_PREFIX = "section_";
+function createSectionId(existingIds) {
+	let sectionId = `${SECTION_ID_PREFIX}${generateRandomId(12)}`;
+	while (existingIds.has(sectionId)) sectionId = `${SECTION_ID_PREFIX}${generateRandomId(12)}`;
+	existingIds.add(sectionId);
+	return sectionId;
+}
+function cloneSectionBreakWithId(sectionBreak, existingIds, preserveId = true) {
+	const cloned = Tools.deepClone(sectionBreak);
+	if (preserveId && isValidSectionId(cloned.sectionId) && !existingIds.has(cloned.sectionId)) {
+		existingIds.add(cloned.sectionId);
+		return cloned;
+	}
+	cloned.sectionId = createSectionId(existingIds);
+	return cloned;
+}
+function isValidSectionId(value) {
+	return typeof value === "string" && value.startsWith("section_") && value.length > 8;
+}
+
+//#endregion
+//#region src/docs/data-model/types.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DataStreamTreeNodeType = /* @__PURE__ */ function(DataStreamTreeNodeType) {
+	DataStreamTreeNodeType["PARAGRAPH"] = "PARAGRAPH";
+	DataStreamTreeNodeType["SECTION_BREAK"] = "SECTION_BREAK";
+	DataStreamTreeNodeType["TABLE"] = "TABLE";
+	DataStreamTreeNodeType["TABLE_ROW"] = "TABLE_ROW";
+	DataStreamTreeNodeType["TABLE_CELL"] = "TABLE_CELL";
+	DataStreamTreeNodeType["COLUMN_GROUP"] = "COLUMN_GROUP";
+	DataStreamTreeNodeType["COLUMN"] = "COLUMN";
+	DataStreamTreeNodeType["BLOCK"] = "BLOCK";
+	DataStreamTreeNodeType["CUSTOM_BLOCK"] = "CUSTOM_BLOCK";
+	return DataStreamTreeNodeType;
+}({});
+let DataStreamTreeTokenType = /* @__PURE__ */ function(DataStreamTreeTokenType) {
+	DataStreamTreeTokenType["PARAGRAPH"] = "\r";
+	DataStreamTreeTokenType["SECTION_BREAK"] = "\n";
+	DataStreamTreeTokenType["TABLE_START"] = "";
+	DataStreamTreeTokenType["TABLE_ROW_START"] = "\x1B";
+	DataStreamTreeTokenType["TABLE_CELL_START"] = "";
+	DataStreamTreeTokenType["TABLE_CELL_END"] = "";
+	DataStreamTreeTokenType["TABLE_ROW_END"] = "";
+	DataStreamTreeTokenType["TABLE_END"] = "";
+	DataStreamTreeTokenType["COLUMN_GROUP_START"] = "";
+	DataStreamTreeTokenType["COLUMN_START"] = "";
+	DataStreamTreeTokenType["COLUMN_END"] = "";
+	DataStreamTreeTokenType["COLUMN_GROUP_END"] = "";
+	DataStreamTreeTokenType["BLOCK_START"] = "";
+	DataStreamTreeTokenType["BLOCK_END"] = "";
+	DataStreamTreeTokenType["CUSTOM_RANGE_START"] = "";
+	DataStreamTreeTokenType["CUSTOM_RANGE_END"] = "";
+	DataStreamTreeTokenType["COLUMN_BREAK"] = "\v";
+	DataStreamTreeTokenType["PAGE_BREAK"] = "\f";
+	DataStreamTreeTokenType["DOCS_END"] = "\0";
+	DataStreamTreeTokenType["TAB"] = "	";
+	DataStreamTreeTokenType["CUSTOM_BLOCK"] = "\b";
+	DataStreamTreeTokenType["LETTER"] = "";
+	DataStreamTreeTokenType["SPACE"] = " ";
+	return DataStreamTreeTokenType;
+}({});
+
+//#endregion
+//#region src/docs/data-model/document-statistics.ts
+const CONTROL_TOKENS = /* @__PURE__ */ new Set([
+	"\r",
+	"\n",
+	"",
+	"\x1B",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"\v",
+	"\f",
+	"\0",
+	"\b"
+]);
+const EAST_ASIAN_CHARACTER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Bopomofo}\u3000-\u303F\uFF00-\uFFEF]/u;
+const KOREAN_CHARACTER = /\p{Script=Hangul}/u;
+const YIELD_INTERVAL = 2e4;
+function emptyStatistics() {
+	return {
+		words: 0,
+		charactersWithoutSpaces: 0,
+		charactersWithSpaces: 0,
+		paragraphs: 0,
+		nonAsianWords: 0,
+		asianCharactersAndKoreanWords: 0
+	};
+}
+function throwIfAborted(signal) {
+	if (signal === null || signal === void 0 ? void 0 : signal.aborted) throw new Error("Document statistics calculation aborted");
+}
+function yieldExecution(signal) {
+	throwIfAborted(signal);
+	return new Promise((resolve) => {
+		setTimeout(resolve, 0);
+	});
+}
+function getRangeFragments(dataStream, ranges) {
+	if (!(ranges === null || ranges === void 0 ? void 0 : ranges.length)) return [dataStream];
+	const normalizedRanges = ranges.filter((range) => !range.collapsed).map((range) => ({
+		startOffset: Math.max(0, Math.min(range.startOffset, range.endOffset)),
+		endOffset: Math.min(dataStream.length, Math.max(range.startOffset, range.endOffset))
+	})).filter((range) => range.startOffset < range.endOffset).sort((a, b) => a.startOffset - b.startOffset || a.endOffset - b.endOffset);
+	const mergedRanges = [];
+	for (const range of normalizedRanges) {
+		const previous = mergedRanges.at(-1);
+		if (previous && range.startOffset <= previous.endOffset) previous.endOffset = Math.max(previous.endOffset, range.endOffset);
+		else mergedRanges.push({ ...range });
+	}
+	return mergedRanges.map((range) => dataStream.slice(range.startOffset, range.endOffset));
+}
+function isControlToken(segment) {
+	return Array.from(segment).every((character) => CONTROL_TOKENS.has(character));
+}
+async function calculateDocumentStatistics(dataStream, options) {
+	const { locale, ranges, signal } = options;
+	const localeTag = locale == null ? void 0 : LOCALE_META[locale].tag;
+	const graphemeSegmenter = new Intl.Segmenter(localeTag, { granularity: "grapheme" });
+	const wordSegmenter = new Intl.Segmenter(localeTag, { granularity: "word" });
+	const statistics = emptyStatistics();
+	await yieldExecution(signal);
+	throwIfAborted(signal);
+	for (const fragment of getRangeFragments(dataStream, ranges)) {
+		let processedCharacters = 0;
+		let paragraphHasContent = false;
+		for (const { segment } of graphemeSegmenter.segment(fragment)) {
+			throwIfAborted(signal);
+			if (segment.includes("\r")) {
+				if (paragraphHasContent) statistics.paragraphs += 1;
+				paragraphHasContent = false;
+			}
+			if (!isControlToken(segment)) {
+				statistics.charactersWithSpaces += 1;
+				if (!/^\s+$/u.test(segment)) {
+					statistics.charactersWithoutSpaces += 1;
+					paragraphHasContent = true;
+				}
+				if (EAST_ASIAN_CHARACTER.test(segment)) statistics.asianCharactersAndKoreanWords += 1;
+			}
+			processedCharacters += segment.length;
+			if (processedCharacters >= YIELD_INTERVAL) {
+				processedCharacters = 0;
+				await yieldExecution(signal);
+			}
+		}
+		let processedWordCharacters = 0;
+		for (const word of wordSegmenter.segment(fragment)) {
+			throwIfAborted(signal);
+			if (word.isWordLike && !EAST_ASIAN_CHARACTER.test(word.segment)) if (KOREAN_CHARACTER.test(word.segment)) statistics.asianCharactersAndKoreanWords += 1;
+			else statistics.nonAsianWords += 1;
+			processedWordCharacters += word.segment.length;
+			if (processedWordCharacters >= YIELD_INTERVAL) {
+				processedWordCharacters = 0;
+				await yieldExecution(signal);
+			}
+		}
+	}
+	throwIfAborted(signal);
+	statistics.words = statistics.nonAsianWords + statistics.asianCharactersAndKoreanWords;
+	return statistics;
+}
+
+//#endregion
+//#region src/types/interfaces/i-document-data.ts
+/**
+* The top-level block types in a document body.
+* These block types are used to represent the structure of the document and can be used to identify different sections or elements within the document.
+*/
+let DocumentBlockType = /* @__PURE__ */ function(DocumentBlockType) {
+	DocumentBlockType["PARAGRAPH"] = "paragraph";
+	DocumentBlockType["BLOCK_RANGE"] = "blockRange";
+	DocumentBlockType["TABLE"] = "table";
+	DocumentBlockType["CUSTOM_BLOCK"] = "customBlock";
+	DocumentBlockType["COLUMN_GROUP"] = "columnGroup";
+	return DocumentBlockType;
+}({});
+let DocStyleType = /* @__PURE__ */ function(DocStyleType) {
+	DocStyleType[DocStyleType["character"] = 0] = "character";
+	DocStyleType[DocStyleType["paragraph"] = 1] = "paragraph";
+	DocStyleType[DocStyleType["table"] = 2] = "table";
+	DocStyleType[DocStyleType["numbering"] = 3] = "numbering";
+	return DocStyleType;
+}({});
+/**
+* Follow the space after the list
+*/
+let FollowNumberWithType = /* @__PURE__ */ function(FollowNumberWithType) {
+	FollowNumberWithType[FollowNumberWithType["TAB"] = 0] = "TAB";
+	FollowNumberWithType[FollowNumberWithType["SPACE"] = 1] = "SPACE";
+	FollowNumberWithType[FollowNumberWithType["NOTHING"] = 2] = "NOTHING";
+	return FollowNumberWithType;
+}({});
+/**
+* An enumeration of the supported glyph types.
+*/
+let ListGlyphType = /* @__PURE__ */ function(ListGlyphType) {
+	ListGlyphType[ListGlyphType["BULLET"] = 0] = "BULLET";
+	ListGlyphType[ListGlyphType["NONE"] = 1] = "NONE";
+	ListGlyphType[ListGlyphType["DECIMAL"] = 2] = "DECIMAL";
+	ListGlyphType[ListGlyphType["DECIMAL_ZERO"] = 3] = "DECIMAL_ZERO";
+	ListGlyphType[ListGlyphType["UPPER_LETTER"] = 4] = "UPPER_LETTER";
+	ListGlyphType[ListGlyphType["LOWER_LETTER"] = 5] = "LOWER_LETTER";
+	ListGlyphType[ListGlyphType["UPPER_ROMAN"] = 6] = "UPPER_ROMAN";
+	ListGlyphType[ListGlyphType["LOWER_ROMAN"] = 7] = "LOWER_ROMAN";
+	/**
+	* Not yet achieved, aligned with Excel's standards.
+	* 17.18.59 ST_NumberFormat (Numbering Format)
+	*/
+	ListGlyphType[ListGlyphType["ORDINAL"] = 8] = "ORDINAL";
+	ListGlyphType[ListGlyphType["CARDINAL_TEXT"] = 9] = "CARDINAL_TEXT";
+	ListGlyphType[ListGlyphType["ORDINAL_TEXT"] = 10] = "ORDINAL_TEXT";
+	ListGlyphType[ListGlyphType["HEX"] = 11] = "HEX";
+	ListGlyphType[ListGlyphType["CHICAGO"] = 12] = "CHICAGO";
+	ListGlyphType[ListGlyphType["IDEOGRAPH_DIGITAL"] = 13] = "IDEOGRAPH_DIGITAL";
+	ListGlyphType[ListGlyphType["JAPANESE_COUNTING"] = 14] = "JAPANESE_COUNTING";
+	ListGlyphType[ListGlyphType["AIUEO"] = 15] = "AIUEO";
+	ListGlyphType[ListGlyphType["IROHA"] = 16] = "IROHA";
+	ListGlyphType[ListGlyphType["DECIMAL_FULL_WIDTH"] = 17] = "DECIMAL_FULL_WIDTH";
+	ListGlyphType[ListGlyphType["DECIMAL_HALF_WIDTH"] = 18] = "DECIMAL_HALF_WIDTH";
+	ListGlyphType[ListGlyphType["JAPANESE_LEGAL"] = 19] = "JAPANESE_LEGAL";
+	ListGlyphType[ListGlyphType["JAPANESE_DIGITAL_TEN_THOUSAND"] = 20] = "JAPANESE_DIGITAL_TEN_THOUSAND";
+	ListGlyphType[ListGlyphType["DECIMAL_ENCLOSED_CIRCLE"] = 21] = "DECIMAL_ENCLOSED_CIRCLE";
+	ListGlyphType[ListGlyphType["DECIMAL_FULL_WIDTH2"] = 22] = "DECIMAL_FULL_WIDTH2";
+	ListGlyphType[ListGlyphType["AIUEO_FULL_WIDTH"] = 23] = "AIUEO_FULL_WIDTH";
+	ListGlyphType[ListGlyphType["IROHA_FULL_WIDTH"] = 24] = "IROHA_FULL_WIDTH";
+	ListGlyphType[ListGlyphType["GANADA"] = 25] = "GANADA";
+	ListGlyphType[ListGlyphType["CHOSUNG"] = 26] = "CHOSUNG";
+	ListGlyphType[ListGlyphType["DECIMAL_ENCLOSED_FULLSTOP"] = 27] = "DECIMAL_ENCLOSED_FULLSTOP";
+	ListGlyphType[ListGlyphType["DECIMAL_ENCLOSED_PAREN"] = 28] = "DECIMAL_ENCLOSED_PAREN";
+	ListGlyphType[ListGlyphType["DECIMAL_ENCLOSED_CIRCLE_CHINESE"] = 29] = "DECIMAL_ENCLOSED_CIRCLE_CHINESE";
+	ListGlyphType[ListGlyphType["IDEOGRAPH_ENCLOSED_CIRCLE"] = 30] = "IDEOGRAPH_ENCLOSED_CIRCLE";
+	ListGlyphType[ListGlyphType["IDEOGRAPH_TRADITIONAL"] = 31] = "IDEOGRAPH_TRADITIONAL";
+	ListGlyphType[ListGlyphType["IDEOGRAPH_ZODIAC"] = 32] = "IDEOGRAPH_ZODIAC";
+	ListGlyphType[ListGlyphType["IDEOGRAPH_ZODIAC_TRADITIONAL"] = 33] = "IDEOGRAPH_ZODIAC_TRADITIONAL";
+	ListGlyphType[ListGlyphType["TAIWANESE_COUNTING"] = 34] = "TAIWANESE_COUNTING";
+	ListGlyphType[ListGlyphType["IDEOGRAPH_LEGAL_TRADITIONAL"] = 35] = "IDEOGRAPH_LEGAL_TRADITIONAL";
+	ListGlyphType[ListGlyphType["TAIWANESE_COUNTING_THOUSAND"] = 36] = "TAIWANESE_COUNTING_THOUSAND";
+	ListGlyphType[ListGlyphType["TAIWANESE_DIGITAL"] = 37] = "TAIWANESE_DIGITAL";
+	ListGlyphType[ListGlyphType["CHINESE_COUNTING"] = 38] = "CHINESE_COUNTING";
+	ListGlyphType[ListGlyphType["CHINESE_LEGAL_SIMPLIFIED"] = 39] = "CHINESE_LEGAL_SIMPLIFIED";
+	ListGlyphType[ListGlyphType["CHINESE_COUNTING_THOUSAND"] = 40] = "CHINESE_COUNTING_THOUSAND";
+	ListGlyphType[ListGlyphType["KOREAN_DIGITAL"] = 41] = "KOREAN_DIGITAL";
+	ListGlyphType[ListGlyphType["KOREAN_COUNTING"] = 42] = "KOREAN_COUNTING";
+	ListGlyphType[ListGlyphType["KOREAN_LEGAL"] = 43] = "KOREAN_LEGAL";
+	ListGlyphType[ListGlyphType["KOREAN_DIGITAL2"] = 44] = "KOREAN_DIGITAL2";
+	ListGlyphType[ListGlyphType["VIETNAMESE_COUNTING"] = 45] = "VIETNAMESE_COUNTING";
+	ListGlyphType[ListGlyphType["RUSSIAN_LOWER"] = 46] = "RUSSIAN_LOWER";
+	ListGlyphType[ListGlyphType["RUSSIAN_UPPER"] = 47] = "RUSSIAN_UPPER";
+	ListGlyphType[ListGlyphType["NUMBER_IN_DASH"] = 48] = "NUMBER_IN_DASH";
+	ListGlyphType[ListGlyphType["HEBREW1"] = 49] = "HEBREW1";
+	ListGlyphType[ListGlyphType["HEBREW2"] = 50] = "HEBREW2";
+	ListGlyphType[ListGlyphType["ARABIC_ALPHA"] = 51] = "ARABIC_ALPHA";
+	ListGlyphType[ListGlyphType["ARABIC_ABJAD"] = 52] = "ARABIC_ABJAD";
+	ListGlyphType[ListGlyphType["HINDI_VOWELS"] = 53] = "HINDI_VOWELS";
+	ListGlyphType[ListGlyphType["HINDI_CONSONANTS"] = 54] = "HINDI_CONSONANTS";
+	ListGlyphType[ListGlyphType["HINDI_NUMBERS"] = 55] = "HINDI_NUMBERS";
+	ListGlyphType[ListGlyphType["HINDI_COUNTING"] = 56] = "HINDI_COUNTING";
+	ListGlyphType[ListGlyphType["THAI_LETTERS"] = 57] = "THAI_LETTERS";
+	ListGlyphType[ListGlyphType["THAI_NUMBERS"] = 58] = "THAI_NUMBERS";
+	ListGlyphType[ListGlyphType["THAI_COUNTING"] = 59] = "THAI_COUNTING";
+	ListGlyphType[ListGlyphType["CUSTOM"] = 60] = "CUSTOM";
+	return ListGlyphType;
+}({});
+/**
+* The types of alignment for a bullet.
+*/
+let BulletAlignment = /* @__PURE__ */ function(BulletAlignment) {
+	BulletAlignment[BulletAlignment["BULLET_ALIGNMENT_UNSPECIFIED"] = 0] = "BULLET_ALIGNMENT_UNSPECIFIED";
+	BulletAlignment[BulletAlignment["START"] = 1] = "START";
+	BulletAlignment[BulletAlignment["CENTER"] = 2] = "CENTER";
+	BulletAlignment[BulletAlignment["END"] = 3] = "END";
+	BulletAlignment[BulletAlignment["BOTH"] = 4] = "BOTH";
+	return BulletAlignment;
+}({});
+let DocumentBlockRangeType = /* @__PURE__ */ function(DocumentBlockRangeType) {
+	DocumentBlockRangeType["CALLOUT"] = "callout";
+	DocumentBlockRangeType["QUOTE"] = "quote";
+	DocumentBlockRangeType["CODE"] = "code";
+	return DocumentBlockRangeType;
+}({});
+let CustomRangeType = /* @__PURE__ */ function(CustomRangeType) {
+	CustomRangeType[CustomRangeType["HYPERLINK"] = 0] = "HYPERLINK";
+	CustomRangeType[CustomRangeType["FIELD"] = 1] = "FIELD";
+	CustomRangeType[CustomRangeType["SDT"] = 2] = "SDT";
+	CustomRangeType[CustomRangeType["BOOKMARK"] = 3] = "BOOKMARK";
+	CustomRangeType[CustomRangeType["COMMENT"] = 4] = "COMMENT";
+	CustomRangeType[CustomRangeType["CUSTOM"] = 5] = "CUSTOM";
+	CustomRangeType[CustomRangeType["MENTION"] = 6] = "MENTION";
+	CustomRangeType[CustomRangeType["UNI_FORMULA"] = 7] = "UNI_FORMULA";
+	CustomRangeType[CustomRangeType["DELTED"] = 9999] = "DELTED";
+	return CustomRangeType;
+}({});
+let DocxBreakType = /* @__PURE__ */ function(DocxBreakType) {
+	DocxBreakType["COLUMN"] = "column";
+	DocxBreakType["TEXT_WRAPPING"] = "textWrapping";
+	return DocxBreakType;
+}({});
+let CustomDecorationType = /* @__PURE__ */ function(CustomDecorationType) {
+	CustomDecorationType[CustomDecorationType["COMMENT"] = 0] = "COMMENT";
+	CustomDecorationType[CustomDecorationType["DELETED"] = 9999] = "DELETED";
+	return CustomDecorationType;
+}({});
+/**
+* Type of block
+*/
+let BlockType = /* @__PURE__ */ function(BlockType) {
+	BlockType[BlockType["DRAWING"] = 0] = "DRAWING";
+	BlockType[BlockType["CUSTOM"] = 1] = "CUSTOM";
+	return BlockType;
+}({});
+let DocumentFlavor = /* @__PURE__ */ function(DocumentFlavor) {
+	DocumentFlavor[DocumentFlavor["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+	DocumentFlavor[DocumentFlavor["TRADITIONAL"] = 1] = "TRADITIONAL";
+	DocumentFlavor[DocumentFlavor["MODERN"] = 2] = "MODERN";
+	return DocumentFlavor;
+}({});
+let GridType = /* @__PURE__ */ function(GridType) {
+	GridType[GridType["DEFAULT"] = 0] = "DEFAULT";
+	GridType[GridType["LINES"] = 1] = "LINES";
+	GridType[GridType["LINES_AND_CHARS"] = 2] = "LINES_AND_CHARS";
+	GridType[GridType["SNAP_TO_CHARS"] = 3] = "SNAP_TO_CHARS";
+	return GridType;
+}({});
+/**
+* Represents how the start of the current section is positioned relative to the previous section.
+*/
+let SectionType = /* @__PURE__ */ function(SectionType) {
+	SectionType[SectionType["SECTION_TYPE_UNSPECIFIED"] = 0] = "SECTION_TYPE_UNSPECIFIED";
+	SectionType[SectionType["CONTINUOUS"] = 1] = "CONTINUOUS";
+	SectionType[SectionType["NEXT_COLUMN"] = 2] = "NEXT_COLUMN";
+	SectionType[SectionType["NEXT_PAGE"] = 3] = "NEXT_PAGE";
+	SectionType[SectionType["EVEN_PAGE"] = 4] = "EVEN_PAGE";
+	SectionType[SectionType["ODD_PAGE"] = 5] = "ODD_PAGE";
+	return SectionType;
+}({});
+/**
+* The style of column separators between columns.
+*/
+let ColumnSeparatorType = /* @__PURE__ */ function(ColumnSeparatorType) {
+	ColumnSeparatorType[ColumnSeparatorType["COLUMN_SEPARATOR_STYLE_UNSPECIFIED"] = 0] = "COLUMN_SEPARATOR_STYLE_UNSPECIFIED";
+	ColumnSeparatorType[ColumnSeparatorType["NONE"] = 1] = "NONE";
+	ColumnSeparatorType[ColumnSeparatorType["BETWEEN_EACH_COLUMN"] = 2] = "BETWEEN_EACH_COLUMN";
+	return ColumnSeparatorType;
+}({});
+/**
+* Direction of text
+*/
+let TextDirectionType = /* @__PURE__ */ function(TextDirectionType) {
+	TextDirectionType[TextDirectionType["NORMAL"] = 0] = "NORMAL";
+	TextDirectionType[TextDirectionType["TBRL"] = 1] = "TBRL";
+	TextDirectionType[TextDirectionType["LRTBV"] = 2] = "LRTBV";
+	return TextDirectionType;
+}({});
+let ParagraphElementType = /* @__PURE__ */ function(ParagraphElementType) {
+	ParagraphElementType[ParagraphElementType["TEXT_RUN"] = 0] = "TEXT_RUN";
+	ParagraphElementType[ParagraphElementType["AUTO_TEXT"] = 1] = "AUTO_TEXT";
+	ParagraphElementType[ParagraphElementType["PAGE_BREAK"] = 2] = "PAGE_BREAK";
+	ParagraphElementType[ParagraphElementType["COLUMN_BREAK"] = 3] = "COLUMN_BREAK";
+	ParagraphElementType[ParagraphElementType["FOOT_NOTE_REFERENCE"] = 4] = "FOOT_NOTE_REFERENCE";
+	ParagraphElementType[ParagraphElementType["HORIZONTAL_RULE"] = 5] = "HORIZONTAL_RULE";
+	ParagraphElementType[ParagraphElementType["EQUATION"] = 6] = "EQUATION";
+	ParagraphElementType[ParagraphElementType["DRAWING"] = 7] = "DRAWING";
+	ParagraphElementType[ParagraphElementType["PERSON"] = 8] = "PERSON";
+	ParagraphElementType[ParagraphElementType["RICH_LINK"] = 9] = "RICH_LINK";
+	return ParagraphElementType;
+}({});
+/**
+* Types of wrap text
+*/
+let WrapTextType = /* @__PURE__ */ function(WrapTextType) {
+	WrapTextType[WrapTextType["BOTH_SIDES"] = 0] = "BOTH_SIDES";
+	WrapTextType[WrapTextType["LEFT"] = 1] = "LEFT";
+	WrapTextType[WrapTextType["RIGHT"] = 2] = "RIGHT";
+	WrapTextType[WrapTextType["LARGEST"] = 3] = "LARGEST";
+	return WrapTextType;
+}({});
+/**
+* Controls how a positioned object participates in document text layout.
+*
+* `WRAP_NONE` does not by itself determine whether the object is in front of or behind text. Drawing data uses
+* `behindDoc` for that stacking choice.
+*/
+let PositionedObjectLayoutType = /* @__PURE__ */ function(PositionedObjectLayoutType) {
+	/** Places the object in the text flow like a character and lets it affect the containing line's metrics. */
+	PositionedObjectLayoutType[PositionedObjectLayoutType["INLINE"] = 0] = "INLINE";
+	/** Floats the object without reflowing text. The object and text can overlap. */
+	PositionedObjectLayoutType[PositionedObjectLayoutType["WRAP_NONE"] = 1] = "WRAP_NONE";
+	/** Floats the object and wraps text around the custom polygon defined by its wrap path. */
+	PositionedObjectLayoutType[PositionedObjectLayoutType["WRAP_POLYGON"] = 2] = "WRAP_POLYGON";
+	/** Floats the object and wraps text around its rectangular bounds. */
+	PositionedObjectLayoutType[PositionedObjectLayoutType["WRAP_SQUARE"] = 3] = "WRAP_SQUARE";
+	/** Floats the object and allows text to flow through eligible open regions in its wrap contour. */
+	PositionedObjectLayoutType[PositionedObjectLayoutType["WRAP_THROUGH"] = 4] = "WRAP_THROUGH";
+	/** Floats the object and wraps text closely around its contour instead of its rectangular bounds. */
+	PositionedObjectLayoutType[PositionedObjectLayoutType["WRAP_TIGHT"] = 5] = "WRAP_TIGHT";
+	/** Floats the object in a horizontal band, leaving text only above and below it. */
+	PositionedObjectLayoutType[PositionedObjectLayoutType["WRAP_TOP_AND_BOTTOM"] = 6] = "WRAP_TOP_AND_BOTTOM";
+	return PositionedObjectLayoutType;
+}({});
+/**
+* Types of name style
+*/
+let NamedStyleType = /* @__PURE__ */ function(NamedStyleType) {
+	NamedStyleType[NamedStyleType["NAMED_STYLE_TYPE_UNSPECIFIED"] = 0] = "NAMED_STYLE_TYPE_UNSPECIFIED";
+	NamedStyleType[NamedStyleType["NORMAL_TEXT"] = 1] = "NORMAL_TEXT";
+	NamedStyleType[NamedStyleType["TITLE"] = 2] = "TITLE";
+	NamedStyleType[NamedStyleType["SUBTITLE"] = 3] = "SUBTITLE";
+	NamedStyleType[NamedStyleType["HEADING_1"] = 4] = "HEADING_1";
+	NamedStyleType[NamedStyleType["HEADING_2"] = 5] = "HEADING_2";
+	NamedStyleType[NamedStyleType["HEADING_3"] = 6] = "HEADING_3";
+	NamedStyleType[NamedStyleType["HEADING_4"] = 7] = "HEADING_4";
+	NamedStyleType[NamedStyleType["HEADING_5"] = 8] = "HEADING_5";
+	return NamedStyleType;
+}({});
+let SpacingRule = /* @__PURE__ */ function(SpacingRule) {
+	/**
+	* Specifies that the line spacing of the parent object shall be automatically determined by the size of its contents, with no predetermined minimum or maximum size.
+	*/
+	SpacingRule[SpacingRule["AUTO"] = 0] = "AUTO";
+	/**
+	* Specifies that the height of the line shall be at least the value specified, but might be expanded to fit its content as needed.
+	*/
+	SpacingRule[SpacingRule["AT_LEAST"] = 1] = "AT_LEAST";
+	/**
+	* Specifies that the height of the line shall be exactly the value specified, regardless of the size of the contents of the contents.
+	*/
+	SpacingRule[SpacingRule["EXACT"] = 2] = "EXACT";
+	return SpacingRule;
+}({});
+/**
+* The kinds of dashes with which linear geometry can be rendered.
+*/
+let DashStyleType = /* @__PURE__ */ function(DashStyleType) {
+	DashStyleType[DashStyleType["DASH_STYLE_UNSPECIFIED"] = 0] = "DASH_STYLE_UNSPECIFIED";
+	DashStyleType[DashStyleType["SOLID"] = 1] = "SOLID";
+	DashStyleType[DashStyleType["DOT"] = 2] = "DOT";
+	DashStyleType[DashStyleType["DASH"] = 3] = "DASH";
+	return DashStyleType;
+}({});
+/**
+* The alignment of the tab stop.
+*/
+let TabStopAlignment = /* @__PURE__ */ function(TabStopAlignment) {
+	TabStopAlignment[TabStopAlignment["TAB_STOP_ALIGNMENT_UNSPECIFIED"] = 0] = "TAB_STOP_ALIGNMENT_UNSPECIFIED";
+	TabStopAlignment[TabStopAlignment["START"] = 1] = "START";
+	TabStopAlignment[TabStopAlignment["CENTER"] = 2] = "CENTER";
+	TabStopAlignment[TabStopAlignment["END"] = 3] = "END";
+	return TabStopAlignment;
+}({});
+let TabStopLeader = /* @__PURE__ */ function(TabStopLeader) {
+	TabStopLeader[TabStopLeader["TAB_STOP_LEADER_UNSPECIFIED"] = 0] = "TAB_STOP_LEADER_UNSPECIFIED";
+	TabStopLeader[TabStopLeader["NONE"] = 1] = "NONE";
+	TabStopLeader[TabStopLeader["DOT"] = 2] = "DOT";
+	TabStopLeader[TabStopLeader["HYPHEN"] = 3] = "HYPHEN";
+	TabStopLeader[TabStopLeader["UNDERSCORE"] = 4] = "UNDERSCORE";
+	TabStopLeader[TabStopLeader["HEAVY"] = 5] = "HEAVY";
+	TabStopLeader[TabStopLeader["MIDDLE_DOT"] = 6] = "MIDDLE_DOT";
+	return TabStopLeader;
+}({});
+let TableSizeType = /* @__PURE__ */ function(TableSizeType) {
+	TableSizeType[TableSizeType["UNSPECIFIED"] = 0] = "UNSPECIFIED";
+	TableSizeType[TableSizeType["SPECIFIED"] = 1] = "SPECIFIED";
+	return TableSizeType;
+}({});
+let TableAlignmentType = /* @__PURE__ */ function(TableAlignmentType) {
+	TableAlignmentType[TableAlignmentType["START"] = 0] = "START";
+	TableAlignmentType[TableAlignmentType["CENTER"] = 1] = "CENTER";
+	TableAlignmentType[TableAlignmentType["END"] = 2] = "END";
+	return TableAlignmentType;
+}({});
+let TableLayoutType = /* @__PURE__ */ function(TableLayoutType) {
+	TableLayoutType[TableLayoutType["AUTO_FIT"] = 0] = "AUTO_FIT";
+	TableLayoutType[TableLayoutType["FIXED"] = 1] = "FIXED";
+	return TableLayoutType;
+}({});
+let TableTextWrapType = /* @__PURE__ */ function(TableTextWrapType) {
+	TableTextWrapType[TableTextWrapType["NONE"] = 0] = "NONE";
+	TableTextWrapType[TableTextWrapType["WRAP"] = 1] = "WRAP";
+	return TableTextWrapType;
+}({});
+let ColumnLayoutType = /* @__PURE__ */ function(ColumnLayoutType) {
+	ColumnLayoutType["FIXED"] = "fixed";
+	ColumnLayoutType["AUTO"] = "auto";
+	return ColumnLayoutType;
+}({});
+let ColumnResponsiveType = /* @__PURE__ */ function(ColumnResponsiveType) {
+	ColumnResponsiveType["STACK"] = "stack";
+	ColumnResponsiveType["SHRINK"] = "shrink";
+	return ColumnResponsiveType;
+}({});
+let TableRowHeightRule = /* @__PURE__ */ function(TableRowHeightRule) {
+	TableRowHeightRule[TableRowHeightRule["AUTO"] = 0] = "AUTO";
+	TableRowHeightRule[TableRowHeightRule["AT_LEAST"] = 1] = "AT_LEAST";
+	TableRowHeightRule[TableRowHeightRule["EXACT"] = 2] = "EXACT";
+	return TableRowHeightRule;
+}({});
+/**
+* The content alignments for a Shape or TableCell. The supported alignments correspond to predefined text anchoring types from the ECMA-376 standard.
+*/
+let VerticalAlignmentType = /* @__PURE__ */ function(VerticalAlignmentType) {
+	VerticalAlignmentType[VerticalAlignmentType["CONTENT_ALIGNMENT_UNSPECIFIED"] = 0] = "CONTENT_ALIGNMENT_UNSPECIFIED";
+	VerticalAlignmentType[VerticalAlignmentType["BOTH"] = 1] = "BOTH";
+	VerticalAlignmentType[VerticalAlignmentType["TOP"] = 2] = "TOP";
+	VerticalAlignmentType[VerticalAlignmentType["CENTER"] = 3] = "CENTER";
+	VerticalAlignmentType[VerticalAlignmentType["BOTTOM"] = 4] = "BOTTOM";
+	return VerticalAlignmentType;
+}({});
+/**
+* Types of font style
+*/
+let FontStyleType = /* @__PURE__ */ function(FontStyleType) {
+	FontStyleType["NORMAL"] = "normal";
+	FontStyleType["BOLD"] = "bold";
+	FontStyleType["ITALIC"] = "italic";
+	return FontStyleType;
+}({});
+let ObjectRelativeFromH = /* @__PURE__ */ function(ObjectRelativeFromH) {
+	ObjectRelativeFromH[ObjectRelativeFromH["PAGE"] = 0] = "PAGE";
+	ObjectRelativeFromH[ObjectRelativeFromH["COLUMN"] = 1] = "COLUMN";
+	ObjectRelativeFromH[ObjectRelativeFromH["CHARACTER"] = 2] = "CHARACTER";
+	ObjectRelativeFromH[ObjectRelativeFromH["MARGIN"] = 3] = "MARGIN";
+	ObjectRelativeFromH[ObjectRelativeFromH["INSIDE_MARGIN"] = 4] = "INSIDE_MARGIN";
+	ObjectRelativeFromH[ObjectRelativeFromH["OUTSIDE_MARGIN"] = 5] = "OUTSIDE_MARGIN";
+	ObjectRelativeFromH[ObjectRelativeFromH["LEFT_MARGIN"] = 6] = "LEFT_MARGIN";
+	ObjectRelativeFromH[ObjectRelativeFromH["RIGHT_MARGIN"] = 7] = "RIGHT_MARGIN";
+	return ObjectRelativeFromH;
+}({});
+let ObjectRelativeFromV = /* @__PURE__ */ function(ObjectRelativeFromV) {
+	ObjectRelativeFromV[ObjectRelativeFromV["PAGE"] = 0] = "PAGE";
+	ObjectRelativeFromV[ObjectRelativeFromV["PARAGRAPH"] = 1] = "PARAGRAPH";
+	ObjectRelativeFromV[ObjectRelativeFromV["LINE"] = 2] = "LINE";
+	ObjectRelativeFromV[ObjectRelativeFromV["MARGIN"] = 3] = "MARGIN";
+	ObjectRelativeFromV[ObjectRelativeFromV["TOP_MARGIN"] = 4] = "TOP_MARGIN";
+	ObjectRelativeFromV[ObjectRelativeFromV["BOTTOM_MARGIN"] = 5] = "BOTTOM_MARGIN";
+	ObjectRelativeFromV[ObjectRelativeFromV["INSIDE_MARGIN"] = 6] = "INSIDE_MARGIN";
+	ObjectRelativeFromV[ObjectRelativeFromV["OUTSIDE_MARGIN"] = 7] = "OUTSIDE_MARGIN";
+	return ObjectRelativeFromV;
+}({});
+let NumberUnitType = /* @__PURE__ */ function(NumberUnitType) {
+	NumberUnitType[NumberUnitType["POINT"] = 0] = "POINT";
+	NumberUnitType[NumberUnitType["LINE"] = 1] = "LINE";
+	NumberUnitType[NumberUnitType["CHARACTER"] = 2] = "CHARACTER";
+	NumberUnitType[NumberUnitType["PIXEL"] = 3] = "PIXEL";
+	NumberUnitType[NumberUnitType["PERCENT"] = 4] = "PERCENT";
+	return NumberUnitType;
+}({});
+let AlignTypeH = /* @__PURE__ */ function(AlignTypeH) {
+	AlignTypeH[AlignTypeH["CENTER"] = 0] = "CENTER";
+	AlignTypeH[AlignTypeH["INSIDE"] = 1] = "INSIDE";
+	AlignTypeH[AlignTypeH["LEFT"] = 2] = "LEFT";
+	AlignTypeH[AlignTypeH["OUTSIDE"] = 3] = "OUTSIDE";
+	AlignTypeH[AlignTypeH["RIGHT"] = 4] = "RIGHT";
+	AlignTypeH[AlignTypeH["BOTH"] = 5] = "BOTH";
+	AlignTypeH[AlignTypeH["DISTRIBUTE"] = 6] = "DISTRIBUTE";
+	return AlignTypeH;
+}({});
+let AlignTypeV = /* @__PURE__ */ function(AlignTypeV) {
+	AlignTypeV[AlignTypeV["BOTTOM"] = 0] = "BOTTOM";
+	AlignTypeV[AlignTypeV["CENTER"] = 1] = "CENTER";
+	AlignTypeV[AlignTypeV["INSIDE"] = 2] = "INSIDE";
+	AlignTypeV[AlignTypeV["OUTSIDE"] = 3] = "OUTSIDE";
+	AlignTypeV[AlignTypeV["TOP"] = 4] = "TOP";
+	return AlignTypeV;
+}({});
+let characterSpacingControlType = /* @__PURE__ */ function(characterSpacingControlType) {
+	characterSpacingControlType[characterSpacingControlType["compressPunctuation"] = 0] = "compressPunctuation";
+	characterSpacingControlType[characterSpacingControlType["compressPunctuationAndJapaneseKana"] = 1] = "compressPunctuationAndJapaneseKana";
+	characterSpacingControlType[characterSpacingControlType["doNotCompress"] = 2] = "doNotCompress";
+	return characterSpacingControlType;
+}({});
+/**
+* Paper orientation, whether it's portrait (vertical) or landscape (horizontal)
+*/
+let PageOrientType = /* @__PURE__ */ function(PageOrientType) {
+	PageOrientType[PageOrientType["PORTRAIT"] = 0] = "PORTRAIT";
+	PageOrientType[PageOrientType["LANDSCAPE"] = 1] = "LANDSCAPE";
+	return PageOrientType;
+}({});
+let PaperType = /* @__PURE__ */ function(PaperType) {
+	PaperType["Letter"] = "Letter";
+	PaperType["Tabloid"] = "Tabloid";
+	PaperType["Legal"] = "Legal";
+	PaperType["Statement"] = "Statement";
+	PaperType["Executive"] = "Executive";
+	PaperType["Folio"] = "Folio";
+	PaperType["A3"] = "A3";
+	PaperType["A4"] = "A4";
+	PaperType["A5"] = "A5";
+	PaperType["B4"] = "B4";
+	PaperType["B5"] = "B5";
+	return PaperType;
+}({});
+const PAPER_TYPES = [
+	"A3",
+	"A4",
+	"A5",
+	"B4",
+	"B5",
+	"Letter",
+	"Tabloid",
+	"Legal",
+	"Statement",
+	"Executive",
+	"Folio"
+];
+
+//#endregion
+//#region src/types/interfaces/i-style-data.ts
+function defineExactKeys() {
+	return (keys) => keys;
+}
+/**
+* Exact keys of {@link ITextDecoration}.
+*/
+const TEXT_DECORATION_KEYS = defineExactKeys()([
+	"s",
+	"c",
+	"cl",
+	"t"
+]);
+/**
+* Exact keys of {@link IColorStyle}.
+*/
+const COLOR_STYLE_KEYS = defineExactKeys()(["rgb", "th"]);
+/**
+* Exact keys of {@link IBorderStyleData}.
+*/
+const BORDER_STYLE_KEYS = defineExactKeys()(["s", "cl"]);
+/**
+* Exact keys of {@link IBorderData}.
+*/
+const BORDER_KEYS = defineExactKeys()([
+	"t",
+	"r",
+	"b",
+	"l",
+	"tl_br",
+	"tl_bc",
+	"tl_mr",
+	"bl_tr",
+	"ml_tr",
+	"bc_tr"
+]);
+/**
+* Exact keys of {@link ITextRotation}.
+*/
+const TEXT_ROTATION_KEYS = defineExactKeys()(["a", "v"]);
+/**
+* Exact keys of {@link IPaddingData}.
+*/
+const PADDING_KEYS = defineExactKeys()([
+	"t",
+	"r",
+	"b",
+	"l"
+]);
+/**
+* Exact keys of {@link IStyleData}.
+*/
+const STYLE_KEYS = defineExactKeys()([
+	"ff",
+	"eastAsiaFontFamily",
+	"fs",
+	"it",
+	"bl",
+	"ul",
+	"bbl",
+	"st",
+	"ol",
+	"bg",
+	"bd",
+	"cl",
+	"va",
+	"n",
+	"stf",
+	"tr",
+	"td",
+	"ht",
+	"vt",
+	"tb",
+	"pd"
+]);
+
+//#endregion
+//#region src/types/const/const.ts
+/**
+* Used as an illegal range array return value
+*/
+const DEFAULT_RANGE_ARRAY = {
+	sheetId: "",
+	range: {
+		startRow: -1,
+		endRow: -1,
+		startColumn: -1,
+		endColumn: -1
+	}
+};
+/**
+* Used as an illegal range return value
+*/
+const DEFAULT_RANGE = {
+	startRow: -1,
+	startColumn: -1,
+	endRow: -1,
+	endColumn: -1
+};
+/**
+* Used as an init selection return value
+*/
+const DEFAULT_SELECTION = {
+	startRow: 0,
+	startColumn: 0,
+	endRow: 0,
+	endColumn: 0
+};
+/**
+* Used as an init cell return value
+*/
+const DEFAULT_CELL = {
+	row: 0,
+	column: 0
+};
+/**
+* Default styles.
+*/
+const DEFAULT_STYLES = {
+	/**
+	* fontFamily
+	*/
+	ff: "Arial",
+	/**
+	* fontSize
+	*/
+	fs: 11,
+	/**
+	* italic
+	* 0: false
+	* 1: true
+	*/
+	it: 0,
+	/**
+	* bold
+	* 0: false
+	* 1: true
+	*/
+	bl: 0,
+	/**
+	* underline
+	*/
+	ul: { s: 0 },
+	/**
+	* strikethrough
+	*/
+	st: { s: 0 },
+	/**
+	* overline
+	*/
+	ol: { s: 0 },
+	/**
+	* textRotation
+	*/
+	tr: {
+		a: 0,
+		/**
+		* true : 1
+		* false : 0
+		*/
+		v: 0
+	},
+	/**
+	* textDirection
+	*/
+	td: 0,
+	/**
+	* color
+	*/
+	cl: { rgb: "#000000" },
+	/**
+	* background
+	*/
+	bg: { rgb: "#fff" },
+	/**
+	* horizontalAlignment
+	*/
+	ht: 0,
+	/**
+	* verticalAlignment
+	*/
+	vt: 0,
+	/**
+	* wrapStrategy
+	*/
+	tb: 0,
+	/**
+	* padding
+	*/
+	pd: {
+		t: 0,
+		r: 0,
+		b: 0,
+		l: 0
+	},
+	n: null,
+	/**
+	* border
+	*/
+	bd: {
+		b: null,
+		l: null,
+		r: null,
+		t: null
+	}
+};
+const SHEET_EDITOR_UNITS = [DOCS_NORMAL_EDITOR_UNIT_ID_KEY, DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY];
+const NAMED_STYLE_MAP = {
+	[4]: {
+		fs: 20,
+		bl: 1
+	},
+	[5]: {
+		fs: 18,
+		bl: 1
+	},
+	[6]: {
+		fs: 16,
+		bl: 1
+	},
+	[7]: {
+		fs: 14,
+		bl: 1
+	},
+	[8]: {
+		fs: 12,
+		bl: 1
+	},
+	[1]: null,
+	[2]: {
+		fs: 26,
+		bl: 1
+	},
+	[3]: {
+		fs: 15,
+		cl: { rgb: "#999999" }
+	},
+	[0]: null
+};
+const DEFAULT_DOCUMENT_PARAGRAPH_LINE_SPACING = 1.5;
+const DEFAULT_DOCUMENT_PARAGRAPH_SPACE_ABOVE = 0;
+const DEFAULT_DOCUMENT_PARAGRAPH_SPACE_BELOW = 12;
+const NAMED_STYLE_SPACE_MAP = {
+	[4]: {
+		spaceAbove: { v: 20 },
+		spaceBelow: { v: 10 }
+	},
+	[5]: {
+		spaceAbove: { v: 18 },
+		spaceBelow: { v: 10 }
+	},
+	[6]: {
+		spaceAbove: { v: 16 },
+		spaceBelow: { v: 10 }
+	},
+	[7]: {
+		spaceAbove: { v: 14 },
+		spaceBelow: { v: 8 }
+	},
+	[8]: {
+		spaceAbove: { v: 12 },
+		spaceBelow: { v: 8 }
+	},
+	[1]: {
+		spaceAbove: { v: 0 },
+		spaceBelow: { v: 12 }
+	},
+	[2]: {
+		spaceAbove: { v: 0 },
+		spaceBelow: { v: 7 }
+	},
+	[3]: {
+		spaceAbove: { v: 0 },
+		spaceBelow: { v: 16 }
+	},
+	[0]: null
+};
+const DOC_DRAWING_PRINTING_COMPONENT_KEY = "univer-docs-drawing-printing";
+
+//#endregion
+//#region src/types/const/extension-names.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let EXTENSION_NAMES = /* @__PURE__ */ function(EXTENSION_NAMES) {
+	EXTENSION_NAMES["ARRAY_CONVERTOR"] = "ARRAY_CONVERTOR";
+	EXTENSION_NAMES["MATRIX_CONVERTOR"] = "MATRIX_CONVERTOR";
+	return EXTENSION_NAMES;
+}({});
+
+//#endregion
+//#region src/types/const/page-size.ts
+const PAGE_SIZE = {
+	["A3"]: {
+		width: 1123,
+		height: 1587
+	},
+	["A4"]: {
+		width: 794,
+		height: 1124
+	},
+	["A5"]: {
+		width: 559,
+		height: 794
+	},
+	["B4"]: {
+		width: 944,
+		height: 1344
+	},
+	["B5"]: {
+		width: 665,
+		height: 944
+	},
+	["Executive"]: {
+		width: 696,
+		height: 1008
+	},
+	["Folio"]: {
+		width: 816,
+		height: 1248
+	},
+	["Legal"]: {
+		width: 816,
+		height: 1344
+	},
+	["Letter"]: {
+		width: 816,
+		height: 1056
+	},
+	["Statement"]: {
+		width: 528,
+		height: 816
+	},
+	["Tabloid"]: {
+		width: 1056,
+		height: 1632
+	}
+};
+let ModernDocumentWidthMode = /* @__PURE__ */ function(ModernDocumentWidthMode) {
+	ModernDocumentWidthMode["NARROW"] = "narrow";
+	ModernDocumentWidthMode["MEDIUM"] = "medium";
+	ModernDocumentWidthMode["WIDE"] = "wide";
+	return ModernDocumentWidthMode;
+}({});
+const MODERN_DOCUMENT_WIDTH = {
+	["narrow"]: PAGE_SIZE["A4"].width,
+	["medium"]: 960,
+	["wide"]: PAGE_SIZE["A3"].width
+};
+const MODERN_DOCUMENT_DEFAULT_MARGIN = 50 / .75;
+/** Default margin for a paginated Traditional document, in 96-DPI layout pixels. */
+const TRADITIONAL_DOCUMENT_DEFAULT_MARGIN = 72;
+
+//#endregion
+//#region src/docs/paragraph-id.ts
+const PARAGRAPH_ID_PREFIX = "para_";
+function createParagraphId(existingIds) {
+	let paragraphId = `${PARAGRAPH_ID_PREFIX}${generateRandomId(12)}`;
+	while (existingIds.has(paragraphId)) paragraphId = `${PARAGRAPH_ID_PREFIX}${generateRandomId(12)}`;
+	existingIds.add(paragraphId);
+	return paragraphId;
+}
+function cloneBodyWithFreshParagraphIds(body, _scope) {
+	const cloned = cloneBody(body);
+	const existingIds = /* @__PURE__ */ new Set();
+	for (const paragraph of cloned.paragraphs ?? []) paragraph.paragraphId = createParagraphId(existingIds);
+	return cloned;
+}
+function cloneParagraphWithId(paragraph, existingIds, preserveId) {
+	const cloned = cloneParagraph(paragraph);
+	if (preserveId !== false && isValidParagraphId(cloned.paragraphId) && !existingIds.has(cloned.paragraphId)) {
+		existingIds.add(cloned.paragraphId);
+		return cloned;
+	}
+	cloned.paragraphId = createParagraphId(existingIds);
+	return cloned;
+}
+function isValidParagraphId(value) {
+	return typeof value === "string" && value.startsWith("para_") && value.length > 5;
+}
+function cloneBody(body) {
+	return JSON.parse(JSON.stringify(body));
+}
+function cloneParagraph(paragraph) {
+	return JSON.parse(JSON.stringify(paragraph));
+}
+
+//#endregion
+//#region src/docs/data-model/empty-snapshot.ts
+function getEmptySnapshot$1(unitID = generateRandomId(6), locale = "enUS", title = "", documentFlavor = 2) {
+	const EMPTY_DOCUMENT_DATA = {
+		id: unitID,
+		locale,
+		title,
+		tableSource: {},
+		drawings: {},
+		drawingsOrder: [],
+		headers: {},
+		footers: {},
+		body: {
+			dataStream: "\r\n",
+			textRuns: [],
+			customBlocks: [],
+			tables: [],
+			columnGroups: [],
+			blockRanges: [],
+			customRanges: [],
+			customDecorations: [],
+			paragraphs: [{
+				startIndex: 0,
+				paragraphId: createParagraphId(/* @__PURE__ */ new Set()),
+				paragraphStyle: { lineSpacing: 1 }
+			}],
+			sectionBreaks: [{
+				sectionId: createSectionId(/* @__PURE__ */ new Set()),
+				startIndex: 1
+			}]
+		},
+		documentStyle: {
+			pageSize: PAGE_SIZE["A4"],
+			documentFlavor,
+			marginTop: 72,
+			marginBottom: 72,
+			marginRight: 72,
+			marginLeft: 72,
+			autoHyphenation: 1,
+			doNotHyphenateCaps: 0,
+			consecutiveHyphenLimit: 2,
+			defaultHeaderId: "",
+			defaultFooterId: "",
+			evenPageHeaderId: "",
+			evenPageFooterId: "",
+			firstPageHeaderId: "",
+			firstPageFooterId: "",
+			evenAndOddHeaders: 0,
+			useFirstPageHeaderFooter: 0,
+			marginHeader: 30,
+			marginFooter: 30
+		},
+		settings: {}
+	};
+	if (documentFlavor === 2) {
+		EMPTY_DOCUMENT_DATA.body.paragraphs[0].paragraphStyle = {};
+		EMPTY_DOCUMENT_DATA.documentStyle.defaultParagraphStyle = {
+			spaceAbove: { v: 0 },
+			lineSpacing: DEFAULT_DOCUMENT_PARAGRAPH_LINE_SPACING,
+			spaceBelow: { v: 12 }
+		};
+		EMPTY_DOCUMENT_DATA.documentStyle.pageSize = {
+			width: MODERN_DOCUMENT_WIDTH["medium"],
+			height: 842 / .75
+		};
+		EMPTY_DOCUMENT_DATA.documentStyle.marginTop = 50;
+		EMPTY_DOCUMENT_DATA.documentStyle.marginBottom = 50;
+		EMPTY_DOCUMENT_DATA.documentStyle.marginRight = 50;
+		EMPTY_DOCUMENT_DATA.documentStyle.marginLeft = 50;
+		EMPTY_DOCUMENT_DATA.documentStyle.renderConfig = {
+			zeroWidthParagraphBreak: 0,
+			vertexAngle: 0,
+			centerAngle: 0,
+			background: { rgb: "#ccc" }
+		};
+	}
+	return EMPTY_DOCUMENT_DATA;
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/action-types.ts
+const PRESERVE_INSERTED_PARAGRAPH_IDS = "__textXPreserveParagraphIds";
+let TextXActionType = /* @__PURE__ */ function(TextXActionType) {
+	TextXActionType["RETAIN"] = "r";
+	TextXActionType["INSERT"] = "i";
+	TextXActionType["DELETE"] = "d";
+	return TextXActionType;
+}({});
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/range-interval.ts
+/** Converts persisted inclusive indexes `[startIndex, endIndex]` to `[startOffset, endOffset)`. */
+function getInclusiveRangeInterval(range) {
+	return {
+		startOffset: range.startIndex,
+		endOffset: range.endIndex + 1
+	};
+}
+/** Converts persisted half-open indexes `[startIndex, endIndex)` to the operational representation. */
+function getExclusiveRangeInterval(range) {
+	return {
+		startOffset: range.startIndex,
+		endOffset: range.endIndex
+	};
+}
+/** A table stores an exclusive end immediately after `TABLE_END`. */
+function getTableRangeInterval(table) {
+	return getExclusiveRangeInterval(table);
+}
+/** A document block stores an inclusive end that points at `BLOCK_END`. */
+function getBlockRangeInterval(blockRange) {
+	return getInclusiveRangeInterval(blockRange);
+}
+/** A column group stores an inclusive end that points at `COLUMN_GROUP_END`. */
+function getColumnGroupRangeInterval(columnGroup) {
+	return getInclusiveRangeInterval(columnGroup);
+}
+/** A custom range stores inclusive character indexes. */
+function getCustomRangeInterval(customRange) {
+	return getInclusiveRangeInterval(customRange);
+}
+/** A custom block occupies exactly one `CUSTOM_BLOCK` sentinel. */
+function getCustomBlockInterval(customBlock) {
+	return {
+		startOffset: customBlock.startIndex,
+		endOffset: customBlock.startIndex + 1
+	};
+}
+/** Returns the half-open token interval for a row that starts at `startOffset`. */
+function getTableRowTokenInterval(dataStream, startOffset) {
+	return getPairedTokenInterval(dataStream, startOffset, "\x1B", "");
+}
+/** Returns the half-open token interval for a cell that starts at `startOffset`. */
+function getTableCellTokenInterval(dataStream, startOffset) {
+	return getPairedTokenInterval(dataStream, startOffset, "", "");
+}
+/** Tests whether a stream index belongs to a half-open operational interval. */
+function containsStreamIndex(interval, index) {
+	return interval.startOffset <= index && index < interval.endOffset;
+}
+/**
+* Tests whether an insertion point is strictly inside a container.
+* Boundary insertion affinity must be decided by the caller.
+*/
+function containsInteriorInsertionOffset(interval, offset) {
+	return interval.startOffset < offset && offset < interval.endOffset;
+}
+/** Tests whether two half-open operational intervals overlap. */
+function intersectsOperationalIntervals(left, right) {
+	return Math.max(left.startOffset, right.startOffset) < Math.min(left.endOffset, right.endOffset);
+}
+/** Shifts or expands an inclusive persisted range for an insertion at `offset`. */
+function shiftInclusiveRangeOnInsert(range, offset, length) {
+	if (range.startIndex >= offset) return {
+		...range,
+		startIndex: range.startIndex + length,
+		endIndex: range.endIndex + length
+	};
+	if (range.endIndex >= offset) return {
+		...range,
+		endIndex: range.endIndex + length
+	};
+	return range;
+}
+/** Shifts or expands a half-open persisted range for an insertion at `offset`. */
+function shiftExclusiveRangeOnInsert(range, offset, length) {
+	if (range.startIndex >= offset) return {
+		...range,
+		startIndex: range.startIndex + length,
+		endIndex: range.endIndex + length
+	};
+	if (range.endIndex > offset) return {
+		...range,
+		endIndex: range.endIndex + length
+	};
+	return range;
+}
+/** Transforms an inclusive persisted range after deleting `[offset, offset + length)`. */
+function shiftInclusiveRangeOnDelete(range, offset, length) {
+	if (length <= 0 || range.endIndex < offset) return range;
+	const deleteEnd = offset + length;
+	if (range.startIndex >= deleteEnd) return {
+		...range,
+		startIndex: range.startIndex - length,
+		endIndex: range.endIndex - length
+	};
+	const keepsLeft = range.startIndex < offset;
+	const keepsRight = range.endIndex >= deleteEnd;
+	if (!keepsLeft && !keepsRight) return null;
+	const startIndex = keepsLeft ? range.startIndex : offset;
+	const endIndex = keepsRight ? range.endIndex - length : offset - 1;
+	return endIndex >= startIndex ? {
+		...range,
+		startIndex,
+		endIndex
+	} : null;
+}
+/** Transforms a half-open persisted range after deleting `[offset, offset + length)`. */
+function shiftExclusiveRangeOnDelete(range, offset, length) {
+	if (length <= 0 || range.endIndex <= offset) return range;
+	const deleteEnd = offset + length;
+	if (range.startIndex >= deleteEnd) return {
+		...range,
+		startIndex: range.startIndex - length,
+		endIndex: range.endIndex - length
+	};
+	const keepsLeft = range.startIndex < offset;
+	const keepsRight = range.endIndex > deleteEnd;
+	if (!keepsLeft && !keepsRight) return null;
+	const startIndex = keepsLeft ? range.startIndex : offset;
+	const endIndex = keepsRight ? range.endIndex - length : offset;
+	return endIndex > startIndex ? {
+		...range,
+		startIndex,
+		endIndex
+	} : null;
+}
+function getPairedTokenInterval(dataStream, startOffset, startToken, endToken) {
+	if (!Number.isInteger(startOffset) || startOffset < 0 || dataStream[startOffset] !== startToken) return null;
+	let depth = 0;
+	for (let offset = startOffset; offset < dataStream.length; offset++) {
+		const token = dataStream[offset];
+		if (token === startToken) depth++;
+		else if (token === endToken) {
+			depth--;
+			if (depth === 0) return {
+				startOffset,
+				endOffset: offset + 1
+			};
+		}
+	}
+	return null;
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/apply-utils/common.ts
+const RESTORE_INSERTED_PARAGRAPH_IDS = "__textXRestoreParagraphIds";
+function normalizeTextRuns(textRuns, reserveEmptyTextRun = false) {
+	const results = [];
+	for (const textRun of textRuns) {
+		const { st, ed, ts } = textRun;
+		if (textRun.sId === void 0) delete textRun.sId;
+		if (st === ed) continue;
+		if (!reserveEmptyTextRun && Tools.isEmptyObject(ts) && textRun.sId == null) continue;
+		if (results.length === 0) {
+			results.push(textRun);
+			continue;
+		}
+		const peak = results.pop();
+		if (isSameStyleTextRun(textRun, peak) && Tools.hasIntersectionBetweenTwoRanges(peak.st, peak.ed, textRun.st, textRun.ed)) results.push({
+			...textRun,
+			st: peak.st,
+			ed
+		});
+		else results.push(peak, textRun);
+	}
+	return results;
+}
+/**
+* Inserting styled text content into the current document model.
+* @param body The current content object of the document model.
+* @param insertBody The newly added content object that includes complete text and textRun style information.
+* @param textLength The length of the inserted content text.
+* @param currentIndex Determining the index where the content will be inserted into the current content.
+*/
+function insertTextRuns(body, insertBody, textLength, currentIndex) {
+	const { textRuns } = body;
+	if (textRuns == null) return;
+	const newTextRuns = [];
+	const len = textRuns.length;
+	let hasInserted = false;
+	const insertTextRuns = insertBody.textRuns ?? [];
+	if (insertTextRuns.length) for (const insertTextRun of insertTextRuns) {
+		insertTextRun.st += currentIndex;
+		insertTextRun.ed += currentIndex;
+	}
+	for (let i = 0; i < len; i++) {
+		const textRun = textRuns[i];
+		const { st, ed } = textRun;
+		if (ed <= currentIndex) newTextRuns.push(textRun);
+		else if (currentIndex > st && currentIndex < ed) {
+			hasInserted = true;
+			const firstSplitTextRun = {
+				...textRun,
+				ed: currentIndex
+			};
+			newTextRuns.push(firstSplitTextRun);
+			if (insertTextRuns.length) newTextRuns.push(...insertTextRuns);
+			const lastSplitTextRun = {
+				...textRun,
+				st: currentIndex + textLength,
+				ed: ed + textLength
+			};
+			newTextRuns.push(lastSplitTextRun);
+		} else {
+			textRun.st += textLength;
+			textRun.ed += textLength;
+			if (!hasInserted) {
+				hasInserted = true;
+				newTextRuns.push(...insertTextRuns);
+			}
+			newTextRuns.push(textRun);
+		}
+	}
+	if (!hasInserted) {
+		hasInserted = true;
+		newTextRuns.push(...insertTextRuns);
+	}
+	body.textRuns = normalizeTextRuns(newTextRuns);
+}
+/**
+* Based on the insertBody parameter, which includes a paragraph object,
+* you can add and adjust the position of paragraphs.
+* @param body The current content object of the document model.
+* @param insertBody The newly added content object that includes paragraph information.
+* @param textLength The length of the inserted content text.
+* @param currentIndex Determining the index where the content will be inserted into the current content.
+*/
+function insertParagraphs(body, insertBody, textLength, currentIndex, preserveMissingParagraphIds = false, originalDataStream = body.dataStream) {
+	var _insertBody$paragraph;
+	if (!body.paragraphs && !((_insertBody$paragraph = insertBody.paragraphs) === null || _insertBody$paragraph === void 0 ? void 0 : _insertBody$paragraph.length)) return;
+	body.paragraphs ??= [];
+	const { paragraphs } = body;
+	const { paragraphs: insertParagraphs } = insertBody;
+	normalizeInsertedParagraphIdsForDocument(paragraphs, insertParagraphs, currentIndex, {
+		freshenSplitParagraph: true,
+		preserveMissingParagraphIds,
+		preserveExplicitSplitParagraphIds: Boolean(insertBody[RESTORE_INSERTED_PARAGRAPH_IDS]),
+		preserveExplicitParagraphIds: Boolean(insertBody[PRESERVE_INSERTED_PARAGRAPH_IDS]),
+		dataStream: originalDataStream
+	});
+	const paragraphIndexList = [];
+	let firstInsertParagraphNextIndex = -1;
+	for (let i = 0, len = paragraphs.length; i < len; i++) {
+		const paragraph = paragraphs[i];
+		const { startIndex } = paragraph;
+		if (startIndex >= currentIndex) paragraph.startIndex += textLength;
+		if (firstInsertParagraphNextIndex === -1 && startIndex >= currentIndex) firstInsertParagraphNextIndex = i;
+		paragraphIndexList.push(paragraph.startIndex);
+	}
+	let deleteReptIndex = -1;
+	if (insertParagraphs) {
+		for (let i = 0, len = insertParagraphs.length; i < len; i++) {
+			const insertParagraph = insertParagraphs[i];
+			insertParagraph.startIndex += currentIndex;
+			const insertIndex = insertParagraph.startIndex;
+			deleteReptIndex = paragraphIndexList.indexOf(insertIndex);
+		}
+		if (deleteReptIndex !== -1) paragraphs.splice(deleteReptIndex, 1);
+		paragraphs.push(...insertParagraphs);
+		paragraphs.sort(sortRulesFactory("startIndex"));
+	}
+}
+function normalizeInsertedParagraphIdsForDocument(paragraphs, insertParagraphs, currentIndex, options) {
+	if (!paragraphs || !(insertParagraphs === null || insertParagraphs === void 0 ? void 0 : insertParagraphs.length)) return;
+	const splitParagraph = getParagraphSplitByInsert(paragraphs, currentIndex, options.dataStream);
+	const firstSplitInsertIndex = splitParagraph ? getFirstInsertedParagraphIndex(insertParagraphs) : -1;
+	const splitParagraphId = splitParagraph === null || splitParagraph === void 0 ? void 0 : splitParagraph.paragraphId;
+	const firstInsertedParagraphId = firstSplitInsertIndex === -1 ? void 0 : insertParagraphs[firstSplitInsertIndex].paragraphId;
+	const shouldPreserveExplicitSplitParagraphId = (options.preserveExplicitSplitParagraphIds || options.preserveExplicitParagraphIds) && firstInsertedParagraphId != null && firstInsertedParagraphId !== splitParagraphId;
+	const existingParagraphIds = collectParagraphIds(paragraphs);
+	const preservedInsertedParagraphIds = /* @__PURE__ */ new Set();
+	if (splitParagraphId) existingParagraphIds.delete(splitParagraphId);
+	for (const paragraphId of options.reservedParagraphIds ?? []) existingParagraphIds.add(paragraphId);
+	let splitRemainderParagraph;
+	if (splitParagraphId && firstSplitInsertIndex !== -1 && !shouldPreserveExplicitSplitParagraphId) {
+		const firstInsertParagraph = insertParagraphs[firstSplitInsertIndex];
+		splitRemainderParagraph = firstInsertedParagraphId != null && firstInsertedParagraphId !== splitParagraphId ? cloneInsertedParagraphWithId(firstInsertParagraph, existingParagraphIds, options.preserveMissingParagraphIds ?? false) : cloneParagraphWithId(firstInsertParagraph, existingParagraphIds, false);
+		if (options.freshenSplitParagraph && splitRemainderParagraph.paragraphId) splitParagraph.paragraphId = splitRemainderParagraph.paragraphId;
+	}
+	for (let i = 0, len = insertParagraphs.length; i < len; i++) {
+		const explicitParagraphId = insertParagraphs[i].paragraphId;
+		if (options.preserveExplicitParagraphIds && explicitParagraphId && !preservedInsertedParagraphIds.has(explicitParagraphId)) {
+			insertParagraphs[i] = { ...insertParagraphs[i] };
+			preservedInsertedParagraphIds.add(explicitParagraphId);
+			continue;
+		}
+		if (i !== firstSplitInsertIndex || splitParagraphId == null || shouldPreserveExplicitSplitParagraphId) {
+			insertParagraphs[i] = cloneInsertedParagraphWithId(insertParagraphs[i], existingParagraphIds, options.preserveMissingParagraphIds ?? false);
+			continue;
+		}
+		insertParagraphs[i] = options.freshenSplitParagraph || firstInsertedParagraphId == null || firstInsertedParagraphId === splitParagraphId ? cloneParagraphWithId({
+			...insertParagraphs[i],
+			paragraphId: splitParagraphId
+		}, existingParagraphIds) : splitRemainderParagraph;
+	}
+	for (const insertParagraph of insertParagraphs) if (insertParagraph.paragraphId) {
+		var _options$reservedPara;
+		(_options$reservedPara = options.reservedParagraphIds) === null || _options$reservedPara === void 0 || _options$reservedPara.add(insertParagraph.paragraphId);
+	}
+}
+function collectParagraphIds(paragraphs) {
+	const paragraphIds = /* @__PURE__ */ new Set();
+	for (const paragraph of paragraphs ?? []) if (paragraph.paragraphId) paragraphIds.add(paragraph.paragraphId);
+	return paragraphIds;
+}
+function cloneInsertedParagraphWithId(insertParagraph, existingParagraphIds, preserveMissingParagraphIds) {
+	if (preserveMissingParagraphIds && insertParagraph.paragraphId == null) return Tools.deepClone(insertParagraph);
+	return cloneParagraphWithId(insertParagraph, existingParagraphIds);
+}
+const PARAGRAPH_CONTAINER_TOKENS$1 = /* @__PURE__ */ new Set([
+	"\n",
+	"",
+	"\x1B",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	""
+]);
+function getParagraphSplitByInsert(paragraphs, currentIndex, dataStream) {
+	const sortedParagraphs = [...paragraphs].sort((left, right) => left.startIndex - right.startIndex);
+	for (let i = 0; i < sortedParagraphs.length; i++) {
+		const paragraph = sortedParagraphs[i];
+		let paragraphStart = i > 0 ? sortedParagraphs[i - 1].startIndex + 1 : 0;
+		while (paragraphStart < paragraph.startIndex) {
+			const token = dataStream === null || dataStream === void 0 ? void 0 : dataStream[paragraphStart];
+			if (!token || !PARAGRAPH_CONTAINER_TOKENS$1.has(token)) break;
+			paragraphStart++;
+		}
+		if (currentIndex > paragraphStart && currentIndex < paragraph.startIndex) return paragraph;
+	}
+}
+function getFirstInsertedParagraphIndex(insertParagraphs) {
+	let index = 0;
+	for (let i = 1; i < insertParagraphs.length; i++) if (insertParagraphs[i].startIndex < insertParagraphs[index].startIndex) index = i;
+	return index;
+}
+function insertSectionBreaks(body, insertBody, textLength, currentIndex) {
+	var _insertBody$sectionBr;
+	if (!body.sectionBreaks && !((_insertBody$sectionBr = insertBody.sectionBreaks) === null || _insertBody$sectionBr === void 0 ? void 0 : _insertBody$sectionBr.length)) return;
+	body.sectionBreaks ??= [];
+	const { sectionBreaks } = body;
+	const insertSectionBreaks = insertBody.sectionBreaks;
+	normalizeInsertedSectionIdsForDocument(sectionBreaks, insertSectionBreaks);
+	for (let i = 0, len = sectionBreaks.length; i < len; i++) {
+		const sectionBreak = sectionBreaks[i];
+		const { startIndex } = sectionBreak;
+		if (startIndex >= currentIndex)
+ /**
+		* Here, startIndex >= currentIndex means that the starting index of
+		* the new paragraph should be greater than or equal to the current index.
+		* This ensures that the paragraph is inserted at a position after the current paragraph.
+		* However, the accuracy of this condition depends on the specific context and
+		* implementation details, so it would be best to validate it further in your specific scenario.
+		*/
+		sectionBreak.startIndex += textLength;
+	}
+	if (insertSectionBreaks) {
+		for (let i = 0, len = insertSectionBreaks.length; i < len; i++) {
+			const sectionBreak = insertSectionBreaks[i];
+			sectionBreak.startIndex += currentIndex;
+		}
+		sectionBreaks.push(...insertSectionBreaks);
+		sectionBreaks.sort(sortRulesFactory("startIndex"));
+	}
+}
+function normalizeInsertedSectionIdsForDocument(sectionBreaks, insertSectionBreaks, reservedSectionIds = /* @__PURE__ */ new Set()) {
+	if (!(insertSectionBreaks === null || insertSectionBreaks === void 0 ? void 0 : insertSectionBreaks.length)) return;
+	const existingSectionIds = new Set((sectionBreaks === null || sectionBreaks === void 0 ? void 0 : sectionBreaks.map((sectionBreak) => sectionBreak.sectionId)) ?? []);
+	for (const sectionId of reservedSectionIds) existingSectionIds.add(sectionId);
+	for (let i = 0; i < insertSectionBreaks.length; i++) {
+		insertSectionBreaks[i] = cloneSectionBreakWithId(insertSectionBreaks[i], existingSectionIds);
+		reservedSectionIds.add(insertSectionBreaks[i].sectionId);
+	}
+}
+function insertCustomBlockMetadata(body, insertBody, textLength, currentIndex, field) {
+	if (body[field] == null && insertBody[field] == null) return;
+	const customBlocks = body[field] ?? [];
+	for (let i = 0, len = customBlocks.length; i < len; i++) {
+		const customBlock = customBlocks[i];
+		const { startIndex } = customBlock;
+		if (startIndex >= currentIndex) customBlock.startIndex += textLength;
+	}
+	const insertCustomBlocks = insertBody[field];
+	if (insertCustomBlocks) {
+		for (let i = 0, len = insertCustomBlocks.length; i < len; i++) {
+			const customBlock = insertCustomBlocks[i];
+			customBlock.startIndex += currentIndex;
+		}
+		customBlocks.push(...insertCustomBlocks);
+		customBlocks.sort(sortRulesFactory("startIndex"));
+	}
+	if (customBlocks.length && !body[field]) body[field] = customBlocks;
+}
+function insertCustomBlocks(body, insertBody, textLength, currentIndex) {
+	insertCustomBlockMetadata(body, insertBody, textLength, currentIndex, "customBlocks");
+}
+function insertDocxRawCustomBlocks(body, insertBody, textLength, currentIndex) {
+	insertCustomBlockMetadata(body, insertBody, textLength, currentIndex, "docxRawCustomBlocks");
+}
+function insertDocxRawBlocks(body, insertBody, textLength, currentIndex) {
+	if (body.docxRawBlocks == null && insertBody.docxRawBlocks == null) return;
+	const rawBlocks = body.docxRawBlocks ?? [];
+	rawBlocks.forEach((rawBlock) => {
+		if (rawBlock.startIndex >= currentIndex) rawBlock.startIndex += textLength;
+	});
+	rawBlocks.push(...(insertBody.docxRawBlocks ?? []).map((rawBlock) => ({
+		...rawBlock,
+		startIndex: rawBlock.startIndex + currentIndex
+	})));
+	rawBlocks.sort(sortRulesFactory("startIndex"));
+	body.docxRawBlocks = rawBlocks;
+}
+function mergeDocxExportExcludedRanges(ranges) {
+	const sorted = [...ranges].sort((left, right) => left.start - right.start || left.end - right.end);
+	const merged = [];
+	for (const range of sorted) {
+		const previous = merged[merged.length - 1];
+		if (previous && range.start <= previous.end) previous.end = Math.max(previous.end, range.end);
+		else if (range.end > range.start) merged.push({ ...range });
+	}
+	return merged;
+}
+function insertDocxExportExcludedRanges(body, insertBody, textLength, currentIndex) {
+	if (body.docxExportExcludedRanges == null && insertBody.docxExportExcludedRanges == null) return;
+	const shifted = (body.docxExportExcludedRanges ?? []).map((range) => {
+		const result = shiftExclusiveRangeOnInsert({
+			startIndex: range.start,
+			endIndex: range.end
+		}, currentIndex, textLength);
+		return {
+			start: result.startIndex,
+			end: result.endIndex
+		};
+	});
+	const inserted = (insertBody.docxExportExcludedRanges ?? []).map((range) => ({
+		start: range.start + currentIndex,
+		end: range.end + currentIndex
+	}));
+	body.docxExportExcludedRanges = mergeDocxExportExcludedRanges([...shifted, ...inserted]);
+}
+function insertTables(body, insertBody, textLength, currentIndex) {
+	var _insertBody$tables;
+	if (!body.tables && !((_insertBody$tables = insertBody.tables) === null || _insertBody$tables === void 0 ? void 0 : _insertBody$tables.length)) return;
+	if (!body.tables) body.tables = [];
+	const { tables } = body;
+	for (let i = 0, len = tables.length; i < len; i++) {
+		const table = tables[i];
+		Object.assign(table, shiftExclusiveRangeOnInsert(table, currentIndex, textLength));
+	}
+	const insertTables = insertBody.tables;
+	if (insertTables) {
+		for (let i = 0, len = insertTables.length; i < len; i++) {
+			const table = insertTables[i];
+			table.startIndex += currentIndex;
+			table.endIndex += currentIndex;
+		}
+		tables.push(...insertTables);
+		tables.sort(sortRulesFactory("startIndex"));
+	}
+}
+function insertColumnGroups(body, insertBody, textLength, currentIndex) {
+	var _insertBody$columnGro;
+	if (!body.columnGroups && !((_insertBody$columnGro = insertBody.columnGroups) === null || _insertBody$columnGro === void 0 ? void 0 : _insertBody$columnGro.length)) return;
+	if (!body.columnGroups) body.columnGroups = [];
+	const { columnGroups } = body;
+	for (let i = 0, len = columnGroups.length; i < len; i++) {
+		const columnGroup = columnGroups[i];
+		Object.assign(columnGroup, shiftInclusiveRangeOnInsert(columnGroup, currentIndex, textLength));
+	}
+	const insertColumnGroups = insertBody.columnGroups;
+	if (insertColumnGroups) {
+		for (let i = 0, len = insertColumnGroups.length; i < len; i++) {
+			const columnGroup = insertColumnGroups[i];
+			columnGroup.startIndex += currentIndex;
+			columnGroup.endIndex += currentIndex;
+		}
+		columnGroups.push(...insertColumnGroups);
+		columnGroups.sort(sortRulesFactory("startIndex"));
+	}
+}
+function insertBlockRanges(body, insertBody, textLength, currentIndex) {
+	var _insertBody$blockRang;
+	if (!body.blockRanges && !((_insertBody$blockRang = insertBody.blockRanges) === null || _insertBody$blockRang === void 0 ? void 0 : _insertBody$blockRang.length)) return;
+	if (!body.blockRanges) body.blockRanges = [];
+	const { blockRanges } = body;
+	for (let i = 0, len = blockRanges.length; i < len; i++) {
+		const blockRange = blockRanges[i];
+		Object.assign(blockRange, shiftInclusiveRangeOnInsert(blockRange, currentIndex, textLength));
+	}
+	const insertBlockRanges = insertBody.blockRanges;
+	if (insertBlockRanges) {
+		for (let i = 0, len = insertBlockRanges.length; i < len; i++) {
+			const blockRange = insertBlockRanges[i];
+			blockRange.startIndex += currentIndex;
+			blockRange.endIndex += currentIndex;
+		}
+		blockRanges.push(...insertBlockRanges);
+		blockRanges.sort(sortRulesFactory("startIndex"));
+	}
+}
+const ID_SPLIT_SYMBOL = "$";
+const getRootId = (id) => id.split(ID_SPLIT_SYMBOL)[0];
+function mergeContinuousRanges(ranges) {
+	if (ranges.length <= 1) return ranges;
+	ranges.sort((a, b) => a.startIndex - b.startIndex);
+	const mergedRanges = [];
+	let currentRange = { ...ranges[0] };
+	currentRange.rangeId = getRootId(currentRange.rangeId);
+	for (let i = 1; i < ranges.length; i++) {
+		const nextRange = ranges[i];
+		nextRange.rangeId = getRootId(nextRange.rangeId);
+		if (nextRange.rangeId === currentRange.rangeId && shallowEqual(currentRange.properties, nextRange.properties) && currentRange.endIndex + 1 >= nextRange.startIndex) currentRange.endIndex = nextRange.endIndex;
+		else {
+			mergedRanges.push(currentRange);
+			currentRange = { ...nextRange };
+		}
+	}
+	mergedRanges.push(currentRange);
+	const idMap = Object.create(null);
+	for (let i = 0, len = mergedRanges.length; i < len; i++) {
+		const range = mergedRanges[i];
+		const id = range.rangeId;
+		if (idMap[id]) {
+			range.rangeId = `${id}${ID_SPLIT_SYMBOL}${idMap[id]}`;
+			idMap[id] = idMap[id] + 1;
+		} else idMap[id] = 1;
+	}
+	return mergedRanges;
+}
+function splitCustomRangesByIndex(customRanges, currentIndex) {
+	const matchedCustomRangeIndex = customRanges.findIndex((c) => c.startIndex < currentIndex && c.endIndex >= currentIndex);
+	const matchedCustomRange = customRanges[matchedCustomRangeIndex];
+	if (matchedCustomRange) customRanges.splice(matchedCustomRangeIndex, 1, {
+		...matchedCustomRange,
+		startIndex: matchedCustomRange.startIndex,
+		endIndex: currentIndex - 1,
+		properties: { ...matchedCustomRange.properties }
+	}, {
+		...matchedCustomRange,
+		startIndex: currentIndex,
+		endIndex: matchedCustomRange.endIndex,
+		properties: { ...matchedCustomRange.properties }
+	});
+}
+function mergeContinuousDecorations(ranges) {
+	if (ranges.length <= 1) return ranges;
+	ranges.sort((a, b) => a.startIndex - b.startIndex);
+	const mergedRanges = [];
+	let currentRange = { ...ranges[0] };
+	for (let i = 1; i < ranges.length; i++) {
+		const nextRange = ranges[i];
+		if (nextRange.id === currentRange.id && currentRange.endIndex + 1 >= nextRange.startIndex) currentRange.endIndex = nextRange.endIndex;
+		else {
+			mergedRanges.push(currentRange);
+			currentRange = { ...nextRange };
+		}
+	}
+	mergedRanges.push(currentRange);
+	return mergedRanges;
+}
+function splitCustomDecoratesByIndex(customDecorations, currentIndex) {
+	customDecorations.filter((c) => c.startIndex < currentIndex && c.endIndex >= currentIndex).forEach((matched) => {
+		const index = customDecorations.indexOf(matched);
+		customDecorations.splice(index, 1, {
+			id: matched.id,
+			type: matched.type,
+			startIndex: matched.startIndex,
+			endIndex: currentIndex - 1
+		}, {
+			id: matched.id,
+			type: matched.type,
+			startIndex: currentIndex,
+			endIndex: matched.endIndex
+		});
+	});
+}
+function insertCustomRanges(body, insertBody, textLength, currentIndex) {
+	if (!body.customRanges) body.customRanges = [];
+	const { customRanges } = body;
+	splitCustomRangesByIndex(customRanges, currentIndex);
+	for (let i = 0, len = customRanges.length; i < len; i++) {
+		const customRange = customRanges[i];
+		const { startIndex } = customRange;
+		if (startIndex >= currentIndex) {
+			customRange.startIndex += textLength;
+			customRange.endIndex += textLength;
+		}
+	}
+	const insertRanges = [];
+	if (insertBody.customRanges) {
+		for (let i = 0, len = insertBody.customRanges.length; i < len; i++) {
+			const customRange = insertBody.customRanges[i];
+			customRange.startIndex += currentIndex;
+			customRange.endIndex += currentIndex;
+			insertRanges.push(customRange);
+		}
+		customRanges.push(...insertRanges);
+	}
+	body.customRanges = mergeContinuousRanges(customRanges);
+}
+function insertCustomDecorations(body, insertBody, textLength, currentIndex) {
+	if (!body.customDecorations) body.customDecorations = [];
+	const { customDecorations } = body;
+	splitCustomDecoratesByIndex(customDecorations, currentIndex);
+	for (let i = 0, len = customDecorations.length; i < len; i++) {
+		const customDecoration = customDecorations[i];
+		const { startIndex } = customDecoration;
+		if (startIndex >= currentIndex) {
+			customDecoration.startIndex += textLength;
+			customDecoration.endIndex += textLength;
+		}
+	}
+	const insertRanges = [];
+	if (insertBody.customDecorations) {
+		for (let i = 0, len = insertBody.customDecorations.length; i < len; i++) {
+			const customDecoration = insertBody.customDecorations[i];
+			customDecoration.startIndex += currentIndex;
+			customDecoration.endIndex += currentIndex;
+			insertRanges.push(customDecoration);
+		}
+		customDecorations.push(...insertRanges);
+	}
+	body.customDecorations = mergeContinuousDecorations(customDecorations);
+}
+function deleteTextRuns(body, textLength, currentIndex) {
+	const { textRuns } = body;
+	const startIndex = currentIndex;
+	const endIndex = currentIndex + textLength;
+	const removeTextRuns = [];
+	if (textRuns) {
+		const newTextRuns = [];
+		for (let i = 0, len = textRuns.length; i < len; i++) {
+			const textRun = textRuns[i];
+			const { st, ed } = textRun;
+			if (startIndex <= st && endIndex >= ed) {
+				/**
+				* If the selection range is larger than the current textRuns, it needs to be deleted.
+				*/
+				removeTextRuns.push({
+					...textRun,
+					st: st - startIndex,
+					ed: ed - startIndex
+				});
+				continue;
+			} else if (st <= startIndex && ed >= endIndex) {
+				/**
+				* If the selection range is smaller than the current textRun,
+				* it needs to be trimmed. After trimming, the two segments of textRun should be merged.
+				*/
+				removeTextRuns.push({
+					...textRun,
+					st: startIndex - startIndex,
+					ed: endIndex - startIndex
+				});
+				textRun.ed -= textLength;
+			} else if (startIndex >= st && startIndex < ed) {
+				/**
+				* If the cursor start position is within the textRun,
+				* the content on the right side of the textRun needs to be removed,
+				* leaving the content on the left
+				*/
+				removeTextRuns.push({
+					...textRun,
+					st: startIndex - startIndex,
+					ed: ed - startIndex
+				});
+				textRun.ed = startIndex;
+			} else if (endIndex > st && endIndex <= ed) {
+				/**
+				* If the cursor end position is within the textRun,
+				* the content on the left side of the textRun needs to be removed,
+				* leaving the content on the right.
+				*/
+				removeTextRuns.push({
+					...textRun,
+					st: st - startIndex,
+					ed: endIndex - startIndex
+				});
+				textRun.st = endIndex - textLength;
+				textRun.ed -= textLength;
+			} else if (st >= endIndex) {
+				/**
+				* TextRuns to the right of the selection content need to be moved as a whole
+				*/
+				textRun.st -= textLength;
+				textRun.ed -= textLength;
+			}
+			newTextRuns.push(textRun);
+		}
+		body.textRuns = newTextRuns;
+	}
+	if (removeTextRuns.length === 0) removeTextRuns.push({
+		st: 0,
+		ed: textLength,
+		ts: {}
+	});
+	return removeTextRuns;
+}
+function deleteParagraphs(body, textLength, currentIndex) {
+	const { paragraphs } = body;
+	const startIndex = currentIndex;
+	const endIndex = currentIndex + textLength;
+	const removeParagraphs = [];
+	let removeAfterFirstNew = null;
+	let isRemove = false;
+	if (paragraphs) {
+		const newParagraphs = [];
+		for (let i = 0, len = paragraphs.length; i < len; i++) {
+			const paragraph = paragraphs[i];
+			const { startIndex: index } = paragraph;
+			if (index >= startIndex && index < endIndex) {
+				removeParagraphs.push({
+					...paragraph,
+					startIndex: index - currentIndex
+				});
+				isRemove = true;
+				continue;
+			} else if (index >= endIndex) paragraph.startIndex -= textLength;
+			newParagraphs.push(paragraph);
+			if (removeAfterFirstNew == null && isRemove) removeAfterFirstNew = paragraph;
+		}
+		body.paragraphs = newParagraphs;
+	}
+	return removeParagraphs;
+}
+function deleteSectionBreaks(body, textLength, currentIndex) {
+	const { sectionBreaks } = body;
+	const startIndex = currentIndex;
+	const endIndex = currentIndex + textLength - 1;
+	const removeSectionBreaks = [];
+	if (sectionBreaks) {
+		const newSectionBreaks = [];
+		for (let i = 0, len = sectionBreaks.length; i < len; i++) {
+			const sectionBreak = sectionBreaks[i];
+			const { startIndex: index } = sectionBreak;
+			if (index >= startIndex && index <= endIndex) {
+				removeSectionBreaks.push({
+					...sectionBreak,
+					startIndex: index - currentIndex
+				});
+				continue;
+			} else if (index > endIndex) sectionBreak.startIndex -= textLength;
+			newSectionBreaks.push(sectionBreak);
+		}
+		body.sectionBreaks = newSectionBreaks;
+	}
+	return removeSectionBreaks;
+}
+function deleteCustomBlockMetadata(body, textLength, currentIndex, field) {
+	const customBlocks = body[field];
+	if (customBlocks == null) return;
+	const startIndex = currentIndex;
+	const endIndex = currentIndex + textLength - 1;
+	const removeCustomBlocks = [];
+	const newCustomBlocks = [];
+	for (let i = 0, len = customBlocks.length; i < len; i++) {
+		const customBlock = customBlocks[i];
+		const { startIndex: index } = customBlock;
+		if (index >= startIndex && index <= endIndex) {
+			removeCustomBlocks.push({
+				...customBlock,
+				startIndex: index - currentIndex
+			});
+			continue;
+		} else if (index > endIndex) customBlock.startIndex -= textLength;
+		newCustomBlocks.push(customBlock);
+	}
+	body[field] = newCustomBlocks;
+	if (customBlocks.length && !body[field]) body[field] = customBlocks;
+	return removeCustomBlocks;
+}
+function deleteCustomBlocks(body, textLength, currentIndex) {
+	body.customBlocks ??= [];
+	return deleteCustomBlockMetadata(body, textLength, currentIndex, "customBlocks");
+}
+function deleteDocxRawCustomBlocks(body, textLength, currentIndex) {
+	return deleteCustomBlockMetadata(body, textLength, currentIndex, "docxRawCustomBlocks");
+}
+function deleteDocxRawBlocks(body, textLength, currentIndex) {
+	if (body.docxRawBlocks == null) return;
+	const deleteEnd = currentIndex + textLength;
+	const removed = [];
+	const remaining = [];
+	for (const rawBlock of body.docxRawBlocks) if (rawBlock.startIndex >= currentIndex && rawBlock.startIndex < deleteEnd) removed.push({
+		...rawBlock,
+		startIndex: rawBlock.startIndex - currentIndex
+	});
+	else remaining.push(rawBlock.startIndex >= deleteEnd ? {
+		...rawBlock,
+		startIndex: rawBlock.startIndex - textLength
+	} : rawBlock);
+	body.docxRawBlocks = remaining;
+	return removed;
+}
+function deleteDocxExportExcludedRanges(body, textLength, currentIndex) {
+	if (body.docxExportExcludedRanges == null) return;
+	const deleteEnd = currentIndex + textLength;
+	const removed = [];
+	const remaining = [];
+	for (const range of body.docxExportExcludedRanges) {
+		const overlapStart = Math.max(range.start, currentIndex);
+		const overlapEnd = Math.min(range.end, deleteEnd);
+		if (overlapEnd > overlapStart) removed.push({
+			start: overlapStart - currentIndex,
+			end: overlapEnd - currentIndex
+		});
+		const shifted = shiftExclusiveRangeOnDelete({
+			startIndex: range.start,
+			endIndex: range.end
+		}, currentIndex, textLength);
+		if (shifted) remaining.push({
+			start: shifted.startIndex,
+			end: shifted.endIndex
+		});
+	}
+	body.docxExportExcludedRanges = mergeDocxExportExcludedRanges(remaining);
+	return removed;
+}
+function deleteTables(body, textLength, currentIndex) {
+	const { tables } = body;
+	const removeTables = [];
+	if (tables) {
+		const newTables = [];
+		for (let i = 0, len = tables.length; i < len; i++) {
+			const table = tables[i];
+			const transformed = shiftExclusiveRangeOnDelete(table, currentIndex, textLength);
+			if (!transformed) {
+				removeTables.push({
+					...table,
+					startIndex: table.startIndex - currentIndex,
+					endIndex: table.endIndex - currentIndex
+				});
+				continue;
+			}
+			Object.assign(table, transformed);
+			newTables.push(table);
+		}
+		body.tables = newTables;
+	}
+	return removeTables;
+}
+function deleteColumnGroups(body, textLength, currentIndex) {
+	const { columnGroups } = body;
+	const removeColumnGroups = [];
+	if (columnGroups) {
+		const newColumnGroups = [];
+		for (let i = 0, len = columnGroups.length; i < len; i++) {
+			const columnGroup = columnGroups[i];
+			const transformed = shiftInclusiveRangeOnDelete(columnGroup, currentIndex, textLength);
+			if (!transformed) {
+				removeColumnGroups.push({
+					...columnGroup,
+					startIndex: columnGroup.startIndex - currentIndex,
+					endIndex: columnGroup.endIndex - currentIndex
+				});
+				continue;
+			}
+			Object.assign(columnGroup, transformed);
+			newColumnGroups.push(columnGroup);
+		}
+		body.columnGroups = newColumnGroups;
+	}
+	return removeColumnGroups;
+}
+function deleteCustomRanges(body, textLength, currentIndex) {
+	const { customRanges } = body;
+	const removeCustomRanges = [];
+	if (customRanges) {
+		const newCustomRanges = [];
+		for (let i = 0, len = customRanges.length; i < len; i++) {
+			const customRange = customRanges[i];
+			const transformed = shiftInclusiveRangeOnDelete(customRange, currentIndex, textLength);
+			if (!transformed) {
+				removeCustomRanges.push(customRange);
+				continue;
+			}
+			Object.assign(customRange, transformed);
+			newCustomRanges.push(customRange);
+		}
+		body.customRanges = mergeContinuousRanges(newCustomRanges);
+	}
+	return removeCustomRanges;
+}
+function deleteBlockRanges(body, textLength, currentIndex) {
+	const { blockRanges } = body;
+	const removeBlockRanges = [];
+	if (blockRanges) {
+		const newBlockRanges = [];
+		for (let i = 0, len = blockRanges.length; i < len; i++) {
+			const blockRange = blockRanges[i];
+			const transformed = shiftInclusiveRangeOnDelete(blockRange, currentIndex, textLength);
+			if (!transformed) {
+				removeBlockRanges.push(blockRange);
+				continue;
+			}
+			Object.assign(blockRange, transformed);
+			newBlockRanges.push(blockRange);
+		}
+		body.blockRanges = newBlockRanges;
+	}
+	return removeBlockRanges;
+}
+function deleteCustomDecorations(body, textLength, currentIndex, needOffset = true) {
+	const { customDecorations } = body;
+	const startIndex = currentIndex;
+	const endIndex = currentIndex + textLength - 1;
+	const removeCustomDecorations = [];
+	if (customDecorations) {
+		const newCustomDecorations = [];
+		for (let i = 0, len = customDecorations.length; i < len; i++) {
+			const customDecoration = customDecorations[i];
+			const { startIndex: st, endIndex: ed } = customDecoration;
+			if (st >= startIndex && ed <= endIndex) {
+				removeCustomDecorations.push(customDecoration);
+				continue;
+			} else if (Math.max(startIndex, st) <= Math.min(endIndex, ed)) {
+				const segments = horizontalLineSegmentsSubtraction(st, ed, startIndex, endIndex);
+				if (segments.length === 0) continue;
+				customDecoration.startIndex = segments[0];
+				customDecoration.endIndex = segments[1];
+			} else if (endIndex < st) {
+				if (needOffset) {
+					customDecoration.startIndex -= textLength;
+					customDecoration.endIndex -= textLength;
+				}
+			}
+			newCustomDecorations.push(customDecoration);
+		}
+		body.customDecorations = newCustomDecorations;
+	}
+	return removeCustomDecorations;
+}
+
+//#endregion
+//#region src/docs/data-model/preset-list-type.ts
+let QuickListType = /* @__PURE__ */ function(QuickListType) {
+	QuickListType["ORDER_LIST_QUICK_1"] = "1.";
+	QuickListType["ORDER_LIST_QUICK_2"] = "a)";
+	QuickListType["ORDER_LIST_QUICK_3"] = "a.";
+	QuickListType["ORDER_LIST_QUICK_4"] = "i.";
+	QuickListType["ORDER_LIST_QUICK_5"] = "A.";
+	QuickListType["ORDER_LIST_QUICK_6"] = "I.";
+	QuickListType["ORDER_LIST_QUICK_7"] = "01.";
+	QuickListType["BULLET_LIST"] = "*";
+	return QuickListType;
+}({});
+let PresetListType = /* @__PURE__ */ function(PresetListType) {
+	/** Standard filled-circle bullet list. */
+	PresetListType["BULLET_LIST"] = "BULLET_LIST";
+	/** Decorative diamond and arrow bullet list. */
+	PresetListType["BULLET_LIST_1"] = "BULLET_LIST_1";
+	/** Checkmark-led bullet list for completed-item style content. */
+	PresetListType["BULLET_LIST_2"] = "BULLET_LIST_2";
+	/** Square and diamond bullet list. */
+	PresetListType["BULLET_LIST_3"] = "BULLET_LIST_3";
+	/** Star-like decorative bullet list. */
+	PresetListType["BULLET_LIST_4"] = "BULLET_LIST_4";
+	/** Arrow-led bullet list. */
+	PresetListType["BULLET_LIST_5"] = "BULLET_LIST_5";
+	/**
+	* Hierarchical ordered list using `1`, `a`, and `i` markers.
+	*/
+	PresetListType["ORDER_LIST"] = "ORDER_LIST";
+	/**
+	* Hierarchical ordered list using `1)`, `a)`, and `i)` markers.
+	*/
+	PresetListType["ORDER_LIST_1"] = "ORDER_LIST_1";
+	/**
+	* Outline list using compound markers such as `1.`, `1.1.`, and `1.1.1.`.
+	*/
+	PresetListType["ORDER_LIST_2"] = "ORDER_LIST_2";
+	/**
+	* Hierarchical ordered list using `A`, `a`, and `i` markers.
+	*/
+	PresetListType["ORDER_LIST_3"] = "ORDER_LIST_3";
+	/**
+	* Hierarchical ordered list using `A`, `1`, and `i` markers.
+	*/
+	PresetListType["ORDER_LIST_4"] = "ORDER_LIST_4";
+	/**
+	* Zero-padded ordered list using `01`, `a`, and `i` markers.
+	*/
+	PresetListType["ORDER_LIST_5"] = "ORDER_LIST_5";
+	/** Quick ordered list using closing-parenthesis markers. */
+	PresetListType["ORDER_LIST_QUICK_2"] = "ORDER_LIST_QUICK_2";
+	/** Quick ordered list using lowercase letter and period markers. */
+	PresetListType["ORDER_LIST_QUICK_3"] = "ORDER_LIST_QUICK_3";
+	/** Quick ordered list using lowercase Roman numeral markers. */
+	PresetListType["ORDER_LIST_QUICK_4"] = "ORDER_LIST_QUICK_4";
+	/** Quick ordered list using uppercase letter markers. */
+	PresetListType["ORDER_LIST_QUICK_5"] = "ORDER_LIST_QUICK_5";
+	/** Quick ordered list using uppercase Roman numeral markers. */
+	PresetListType["ORDER_LIST_QUICK_6"] = "ORDER_LIST_QUICK_6";
+	/** Unchecked task-list item. */
+	PresetListType["CHECK_LIST"] = "CHECK_LIST";
+	/** Checked task-list item. */
+	PresetListType["CHECK_LIST_CHECKED"] = "CHECK_LIST_CHECKED";
+	return PresetListType;
+}({});
+const orderListSymbolMap = {
+	"a)": {
+		glyphFormat: "%1)",
+		glyphType: 2
+	},
+	"1.": {
+		glyphFormat: "%1.",
+		glyphType: 2
+	},
+	"a.": {
+		glyphFormat: "%1.",
+		glyphType: 5
+	},
+	"A.": {
+		glyphFormat: "%1.",
+		glyphType: 4
+	},
+	"i.": {
+		glyphFormat: "%1.",
+		glyphType: 7
+	},
+	"I.": {
+		glyphFormat: "%1.",
+		glyphType: 4
+	}
+};
+const bulletListFactory = (symbols) => {
+	return [
+		...symbols,
+		...symbols,
+		...symbols
+	].map((templateSymbol, i) => ({
+		glyphFormat: ` %${i + 1}`,
+		glyphSymbol: templateSymbol,
+		bulletAlignment: 1,
+		startNumber: 0,
+		paragraphProperties: {
+			hanging: { v: 21 },
+			indentStart: { v: 21 * (i + 1) }
+		}
+	}));
+};
+const orderListFactory = (options) => {
+	return options.map((format, i) => ({
+		...format,
+		bulletAlignment: 1,
+		startNumber: 0,
+		paragraphProperties: {
+			hanging: { v: 21 },
+			indentStart: { v: 21 * (i + 1) }
+		}
+	}));
+};
+const checkListFactory = (symbol, textStyle) => {
+	return new Array(9).fill(0).map((_, i) => ({
+		glyphFormat: ` %${i + 1}`,
+		glyphSymbol: symbol,
+		bulletAlignment: 1,
+		startNumber: 0,
+		paragraphProperties: {
+			hanging: { v: 21 },
+			indentStart: { v: 21 * (i + 1) },
+			textStyle
+		}
+	}));
+};
+const PRESET_LIST_TYPE = {
+	["BULLET_LIST"]: {
+		listType: "BULLET_LIST",
+		nestingLevel: bulletListFactory([
+			"●",
+			"○",
+			"■"
+		])
+	},
+	["BULLET_LIST_1"]: {
+		listType: "BULLET_LIST",
+		nestingLevel: bulletListFactory([
+			"❖",
+			"➢",
+			"■"
+		])
+	},
+	["BULLET_LIST_2"]: {
+		listType: "BULLET_LIST",
+		nestingLevel: bulletListFactory([
+			"✔",
+			"●",
+			"◆"
+		])
+	},
+	["BULLET_LIST_3"]: {
+		listType: "BULLET_LIST",
+		nestingLevel: bulletListFactory([
+			"■",
+			"◆",
+			"○"
+		])
+	},
+	["BULLET_LIST_4"]: {
+		listType: "BULLET_LIST",
+		nestingLevel: bulletListFactory([
+			"✦",
+			"○",
+			"■"
+		])
+	},
+	["BULLET_LIST_5"]: {
+		listType: "BULLET_LIST",
+		nestingLevel: bulletListFactory([
+			"➢",
+			"○",
+			"◆"
+		])
+	},
+	["ORDER_LIST"]: {
+		listType: "ORDER_LIST",
+		nestingLevel: orderListFactory([
+			{
+				glyphFormat: "%1.",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%2.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%3.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%4.",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%5.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%6.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%7.",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%8.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%9.",
+				glyphType: 7
+			}
+		])
+	},
+	["ORDER_LIST_1"]: {
+		listType: "ORDER_LIST",
+		nestingLevel: orderListFactory([
+			{
+				glyphFormat: "%1)",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%2)",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%3)",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%4)",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%5)",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%6)",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%7)",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%8)",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%9)",
+				glyphType: 7
+			}
+		])
+	},
+	["ORDER_LIST_2"]: {
+		listType: "ORDER_LIST",
+		nestingLevel: orderListFactory([
+			"%1.",
+			"%1.%2.",
+			"%1.%2.%3.",
+			"%1.%2.%3.%4.",
+			"%1.%2.%3.%4.%5.",
+			"%1.%2.%3.%4.%5.%6.",
+			"%1.%2.%3.%4.%5.%6.%7."
+		].map((format) => ({
+			glyphFormat: format,
+			glyphType: 2
+		})))
+	},
+	["ORDER_LIST_3"]: {
+		listType: "ORDER_LIST",
+		nestingLevel: orderListFactory([
+			{
+				glyphFormat: "%1.",
+				glyphType: 4
+			},
+			{
+				glyphFormat: "%2.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%3.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%4.",
+				glyphType: 4
+			},
+			{
+				glyphFormat: "%5.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%6.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%7.",
+				glyphType: 4
+			},
+			{
+				glyphFormat: "%8.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%9.",
+				glyphType: 7
+			}
+		])
+	},
+	["ORDER_LIST_4"]: {
+		listType: "ORDER_LIST",
+		nestingLevel: orderListFactory([
+			{
+				glyphFormat: "%1.",
+				glyphType: 4
+			},
+			{
+				glyphFormat: "%2.",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%3.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%4.",
+				glyphType: 4
+			},
+			{
+				glyphFormat: "%5.",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%6.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%7.",
+				glyphType: 4
+			},
+			{
+				glyphFormat: "%8.",
+				glyphType: 2
+			},
+			{
+				glyphFormat: "%9.",
+				glyphType: 7
+			}
+		])
+	},
+	["ORDER_LIST_5"]: {
+		listType: "ORDER_LIST",
+		nestingLevel: orderListFactory([
+			{
+				glyphFormat: "%1.",
+				glyphType: 3
+			},
+			{
+				glyphFormat: "%2.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%3.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%4.",
+				glyphType: 3
+			},
+			{
+				glyphFormat: "%5.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%6.",
+				glyphType: 7
+			},
+			{
+				glyphFormat: "%7.",
+				glyphType: 3
+			},
+			{
+				glyphFormat: "%8.",
+				glyphType: 5
+			},
+			{
+				glyphFormat: "%9.",
+				glyphType: 7
+			}
+		])
+	},
+	["CHECK_LIST"]: {
+		listType: "CHECK_LIST",
+		nestingLevel: checkListFactory("☐")
+	},
+	["CHECK_LIST_CHECKED"]: {
+		listType: "CHECK_LIST_CHECKED",
+		nestingLevel: checkListFactory("☑", { st: { s: 1 } })
+	}
+};
+const generateOrderList = (opt) => {
+	const { glyphFormat, glyphType } = opt;
+	const data = Tools.deepClone(PRESET_LIST_TYPE["ORDER_LIST"]);
+	data.nestingLevel[0].glyphFormat = glyphFormat;
+	data.nestingLevel[0].glyphType = glyphType;
+	return data;
+};
+const QUICK_LIST_TYPE = {
+	["ORDER_LIST_QUICK_2"]: generateOrderList(orderListSymbolMap["a)"]),
+	["ORDER_LIST_QUICK_3"]: generateOrderList(orderListSymbolMap["a."]),
+	["ORDER_LIST_QUICK_4"]: generateOrderList(orderListSymbolMap["i."]),
+	["ORDER_LIST_QUICK_6"]: generateOrderList(orderListSymbolMap["I."])
+};
+Object.assign(PRESET_LIST_TYPE, QUICK_LIST_TYPE);
+const QuickListTypeMap = {
+	["1."]: "ORDER_LIST",
+	["a)"]: "ORDER_LIST_QUICK_2",
+	["a."]: "ORDER_LIST_QUICK_3",
+	["i."]: "ORDER_LIST_QUICK_4",
+	["A."]: "ORDER_LIST_3",
+	["I."]: "ORDER_LIST_QUICK_6",
+	["01."]: "ORDER_LIST_5",
+	["*"]: "BULLET_LIST"
+};
+
+//#endregion
+//#region src/docs/data-model/text-x/apply-utils/update-apply.ts
+function updateAttribute(body, updateBody, textLength, currentIndex, coverType) {
+	return {
+		dataStream: "",
+		textRuns: updateTextRuns(body, updateBody, textLength, currentIndex, coverType),
+		paragraphs: updateParagraphs(body, updateBody, textLength, currentIndex, coverType),
+		sectionBreaks: updateSectionBreaks(body, updateBody, textLength, currentIndex, coverType),
+		customBlocks: updateCustomBlocks(body, updateBody, textLength, currentIndex, coverType),
+		docxRawCustomBlocks: updateDocxRawCustomBlocks(body, updateBody, textLength, currentIndex, coverType),
+		tables: updateTables(body, updateBody, textLength, currentIndex, coverType),
+		columnGroups: updateColumnGroups(body, updateBody, textLength, currentIndex, coverType),
+		blockRanges: updateBlockRanges(body, updateBody, textLength, currentIndex, coverType),
+		customRanges: updateCustomRanges(body, updateBody, textLength, currentIndex, coverType),
+		customDecorations: updateCustomDecorations(body, updateBody, textLength, currentIndex, coverType)
+	};
+}
+function updateTextRuns(body, updateBody, textLength, currentIndex, coverType) {
+	const { textRuns } = body;
+	const { textRuns: updateTextRuns } = updateBody;
+	if (textRuns == null || updateTextRuns == null) return;
+	const removeTextRuns = deleteTextRuns(body, textLength, currentIndex);
+	if (coverType !== 1) updateBody.textRuns = coverTextRuns(updateTextRuns, removeTextRuns, coverType);
+	insertTextRuns(body, updateBody, textLength, currentIndex);
+	return removeTextRuns;
+}
+function coverTextRuns(updateDataTextRuns, originTextRuns, coverType) {
+	if (originTextRuns.length === 0) return updateDataTextRuns;
+	updateDataTextRuns = Tools.deepClone(updateDataTextRuns);
+	originTextRuns = Tools.deepClone(originTextRuns);
+	const newUpdateTextRuns = [];
+	const updateLength = updateDataTextRuns.length;
+	const removeLength = originTextRuns.length;
+	let updateIndex = 0;
+	let removeIndex = 0;
+	let pending = null;
+	function pushPendingAndReturnStatus() {
+		if (pending) {
+			newUpdateTextRuns.push(pending);
+			pending = null;
+			return true;
+		}
+		return false;
+	}
+	while (updateIndex < updateLength && removeIndex < removeLength) {
+		const { st: updateSt, ed: updateEd, ts: updateStyle } = updateDataTextRuns[updateIndex];
+		const { st: removeSt, ed: removeEd, ts: originStyle, sId } = originTextRuns[removeIndex];
+		let newTs;
+		if (coverType === 0) newTs = {
+			...originStyle,
+			...updateStyle
+		};
+		else newTs = { ...updateStyle };
+		if (updateEd < removeSt) {
+			if (!pushPendingAndReturnStatus()) newUpdateTextRuns.push(updateDataTextRuns[updateIndex]);
+			updateIndex++;
+		} else if (removeEd < updateSt) {
+			if (!pushPendingAndReturnStatus()) newUpdateTextRuns.push(originTextRuns[removeIndex]);
+			removeIndex++;
+		} else {
+			const newTextRun = {
+				st: Math.min(updateSt, removeSt),
+				ed: Math.max(updateSt, removeSt),
+				ts: updateSt < removeSt ? { ...updateStyle } : { ...originStyle },
+				sId: updateSt < removeSt ? void 0 : sId
+			};
+			if (newTextRun.ed > newTextRun.st) newUpdateTextRuns.push(newTextRun);
+			newUpdateTextRuns.push({
+				st: Math.max(updateSt, removeSt),
+				ed: Math.min(updateEd, removeEd),
+				ts: newTs,
+				sId
+			});
+			if (updateEd < removeEd) {
+				updateIndex++;
+				originTextRuns[removeIndex].st = updateEd;
+				if (originTextRuns[removeIndex].st === originTextRuns[removeIndex].ed) removeIndex++;
+			} else {
+				removeIndex++;
+				updateDataTextRuns[updateIndex].st = removeEd;
+				if (updateDataTextRuns[updateIndex].st === updateDataTextRuns[updateIndex].ed) updateIndex++;
+			}
+			const pendingTextRun = {
+				st: Math.min(updateEd, removeEd),
+				ed: Math.max(updateEd, removeEd),
+				ts: updateEd < removeEd ? { ...originStyle } : { ...updateStyle },
+				sId: updateEd < removeEd ? sId : void 0
+			};
+			pending = pendingTextRun.ed > pendingTextRun.st ? pendingTextRun : null;
+		}
+	}
+	pushPendingAndReturnStatus();
+	const tempTopTextRun = newUpdateTextRuns[newUpdateTextRuns.length - 1];
+	const updateLastTextRun = updateDataTextRuns[updateLength - 1];
+	const removeLastTextRun = originTextRuns[removeLength - 1];
+	if (tempTopTextRun && tempTopTextRun.ed !== Math.max(updateLastTextRun.ed, removeLastTextRun.ed)) if (updateLastTextRun.ed > removeLastTextRun.ed) newUpdateTextRuns.push(updateLastTextRun);
+	else newUpdateTextRuns.push(removeLastTextRun);
+	return normalizeTextRuns(newUpdateTextRuns);
+}
+function updateParagraphs(body, updateBody, textLength, currentIndex, coverType) {
+	const { paragraphs } = body;
+	const { paragraphs: updateDataParagraphs } = updateBody;
+	if (paragraphs == null || updateDataParagraphs == null) return;
+	const removeParagraphs = deleteParagraphs(body, textLength, currentIndex);
+	if (coverType !== 1) {
+		const newUpdateParagraphs = [];
+		for (const updateParagraph of updateDataParagraphs) {
+			const { startIndex: updateStartIndex, paragraphId: updateParagraphId, paragraphStyle: updateParagraphStyle, bullet: updateBullet } = updateParagraph;
+			let splitUpdateParagraphs = [];
+			for (const removeParagraph of removeParagraphs) {
+				const { startIndex: removeStartIndex, paragraphId: removeParagraphId, paragraphStyle: removeParagraphStyle, bullet: removeBullet } = removeParagraph;
+				let newParagraphStyle;
+				let newBullet;
+				if (coverType === 0) {
+					newParagraphStyle = {
+						...removeParagraphStyle,
+						...updateParagraphStyle
+					};
+					newBullet = {
+						listId: "",
+						listType: "BULLET_LIST",
+						nestingLevel: 0,
+						textStyle: {},
+						...removeBullet,
+						...updateBullet
+					};
+				} else {
+					newParagraphStyle = {
+						...updateParagraphStyle,
+						...removeParagraphStyle
+					};
+					newBullet = {
+						listId: "",
+						listType: "BULLET_LIST",
+						nestingLevel: 0,
+						textStyle: {},
+						...updateBullet,
+						...removeBullet
+					};
+				}
+				if (updateStartIndex === removeStartIndex) {
+					splitUpdateParagraphs.push({
+						startIndex: updateStartIndex,
+						paragraphId: updateParagraphId ?? removeParagraphId,
+						paragraphStyle: newParagraphStyle,
+						bullet: newBullet
+					});
+					break;
+				}
+			}
+			newUpdateParagraphs.push(...splitUpdateParagraphs);
+			splitUpdateParagraphs = [];
+		}
+		updateBody.paragraphs = newUpdateParagraphs;
+	} else for (const updateParagraph of updateDataParagraphs) {
+		const removeParagraph = removeParagraphs.find((paragraph) => paragraph.startIndex === updateParagraph.startIndex);
+		if (removeParagraph && updateParagraph.paragraphId == null) updateParagraph.paragraphId = removeParagraph.paragraphId;
+	}
+	insertParagraphs(body, updateBody, textLength, currentIndex, true);
+	return removeParagraphs;
+}
+function updateSectionBreaks(body, updateBody, textLength, currentIndex, coverType) {
+	const { sectionBreaks } = body;
+	const { sectionBreaks: updateDataSectionBreaks } = updateBody;
+	if (sectionBreaks == null || updateDataSectionBreaks == null) return;
+	const removeSectionBreaks = deleteSectionBreaks(body, textLength, currentIndex);
+	if (coverType !== 1) {
+		const newUpdateSectionBreaks = [];
+		for (const updateSectionBreak of updateDataSectionBreaks) {
+			const { startIndex: updateStartIndex } = updateSectionBreak;
+			let splitUpdateSectionBreaks = [];
+			for (const removeSectionBreak of removeSectionBreaks) {
+				const { startIndex: removeStartIndex } = removeSectionBreak;
+				if (updateStartIndex === removeStartIndex) {
+					if (coverType === 0) splitUpdateSectionBreaks.push({
+						...removeSectionBreak,
+						...updateSectionBreak
+					});
+					else splitUpdateSectionBreaks.push({
+						...updateSectionBreak,
+						...removeSectionBreak
+					});
+					break;
+				}
+			}
+			newUpdateSectionBreaks.push(...splitUpdateSectionBreaks);
+			splitUpdateSectionBreaks = [];
+		}
+		updateBody.sectionBreaks = newUpdateSectionBreaks.map((updateSectionBreak) => {
+			const removed = removeSectionBreaks.find((sectionBreak) => sectionBreak.startIndex === updateSectionBreak.startIndex);
+			return removed ? {
+				...updateSectionBreak,
+				sectionId: removed.sectionId
+			} : updateSectionBreak;
+		});
+	} else updateBody.sectionBreaks = updateDataSectionBreaks.map((updateSectionBreak) => {
+		const removed = removeSectionBreaks.find((sectionBreak) => sectionBreak.startIndex === updateSectionBreak.startIndex);
+		return removed ? {
+			...updateSectionBreak,
+			sectionId: removed.sectionId
+		} : updateSectionBreak;
+	});
+	insertSectionBreaks(body, updateBody, textLength, currentIndex);
+	return removeSectionBreaks;
+}
+function updateCustomBlocks(body, updateBody, textLength, currentIndex, coverType) {
+	const { customBlocks = [] } = body;
+	const { customBlocks: updateDataCustomBlocks } = updateBody;
+	if (customBlocks == null || updateDataCustomBlocks == null) return;
+	const removeCustomBlocks = deleteCustomBlocks(body, textLength, currentIndex) ?? [];
+	if (coverType !== 1) {
+		const newUpdateCustomBlocks = [];
+		for (const updateCustomBlock of updateDataCustomBlocks) {
+			const { startIndex: updateStartIndex } = updateCustomBlock;
+			let splitUpdateCustomBlocks = [];
+			for (const removeCustomBlock of removeCustomBlocks) {
+				const { startIndex: removeStartIndex } = removeCustomBlock;
+				if (updateStartIndex === removeStartIndex) {
+					if (coverType === 0) splitUpdateCustomBlocks.push({
+						...removeCustomBlock,
+						...updateCustomBlock
+					});
+					else splitUpdateCustomBlocks.push({
+						...updateCustomBlock,
+						...removeCustomBlock
+					});
+					break;
+				}
+			}
+			newUpdateCustomBlocks.push(...splitUpdateCustomBlocks);
+			splitUpdateCustomBlocks = [];
+		}
+		updateBody.customBlocks = newUpdateCustomBlocks;
+	}
+	insertCustomBlocks(body, updateBody, textLength, currentIndex);
+	if (customBlocks.length && !body.customBlocks) body.customBlocks = customBlocks;
+	return removeCustomBlocks;
+}
+function updateDocxRawCustomBlocks(body, updateBody, textLength, currentIndex, coverType) {
+	const customBlocks = body.docxRawCustomBlocks;
+	const updateDataCustomBlocks = updateBody.docxRawCustomBlocks;
+	if (customBlocks == null || updateDataCustomBlocks == null) return;
+	const removeCustomBlocks = deleteDocxRawCustomBlocks(body, textLength, currentIndex) ?? [];
+	if (coverType !== 1) {
+		const newUpdateCustomBlocks = [];
+		for (const updateCustomBlock of updateDataCustomBlocks) {
+			const removed = removeCustomBlocks.find((customBlock) => customBlock.startIndex === updateCustomBlock.startIndex);
+			if (removed) newUpdateCustomBlocks.push(coverType === 0 ? {
+				...removed,
+				...updateCustomBlock
+			} : {
+				...updateCustomBlock,
+				...removed
+			});
+		}
+		updateBody.docxRawCustomBlocks = newUpdateCustomBlocks;
+	}
+	insertDocxRawCustomBlocks(body, updateBody, textLength, currentIndex);
+	if (customBlocks.length && !body.docxRawCustomBlocks) body.docxRawCustomBlocks = customBlocks;
+	return removeCustomBlocks;
+}
+function updateTables(body, updateBody, textLength, currentIndex, coverType) {
+	const { tables } = body;
+	const { tables: updateDataTables } = updateBody;
+	if (tables == null || updateDataTables == null) return;
+	const removeTables = deleteTables(body, textLength, currentIndex);
+	if (coverType !== 1) {
+		const newUpdateTables = [];
+		for (const updateTable of updateDataTables) {
+			const { startIndex: updateStartIndex, endIndex: updateEndIndex } = updateTable;
+			let splitUpdateTables = [];
+			for (const removeTable of removeTables) {
+				const { startIndex: removeStartIndex, endIndex: removeEndIndex } = removeTable;
+				if (removeStartIndex >= updateStartIndex && removeEndIndex <= updateEndIndex) {
+					if (coverType === 0) splitUpdateTables.push({
+						...removeTable,
+						...updateTable
+					});
+					else splitUpdateTables.push({
+						...updateTable,
+						...removeTable
+					});
+					break;
+				}
+			}
+			newUpdateTables.push(...splitUpdateTables);
+			splitUpdateTables = [];
+		}
+		updateBody.tables = newUpdateTables;
+	}
+	insertTables(body, updateBody, textLength, currentIndex);
+	return removeTables;
+}
+function updateColumnGroups(body, updateBody, textLength, currentIndex, coverType) {
+	const { columnGroups } = body;
+	const { columnGroups: updateDataColumnGroups } = updateBody;
+	if (columnGroups == null || updateDataColumnGroups == null) return;
+	const removeColumnGroups = deleteColumnGroups(body, textLength, currentIndex);
+	if (coverType !== 1) {
+		const newUpdateColumnGroups = [];
+		for (const updateColumnGroup of updateDataColumnGroups) {
+			const { startIndex: updateStartIndex, endIndex: updateEndIndex } = updateColumnGroup;
+			let splitUpdateColumnGroups = [];
+			for (const removeColumnGroup of removeColumnGroups) {
+				const { startIndex: removeStartIndex, endIndex: removeEndIndex } = removeColumnGroup;
+				if (removeStartIndex >= updateStartIndex && removeEndIndex <= updateEndIndex) {
+					if (coverType === 0) splitUpdateColumnGroups.push({
+						...removeColumnGroup,
+						...updateColumnGroup
+					});
+					else splitUpdateColumnGroups.push({
+						...updateColumnGroup,
+						...removeColumnGroup
+					});
+					break;
+				}
+			}
+			newUpdateColumnGroups.push(...splitUpdateColumnGroups);
+			splitUpdateColumnGroups = [];
+		}
+		updateBody.columnGroups = newUpdateColumnGroups;
+	}
+	insertColumnGroups(body, updateBody, textLength, currentIndex);
+	return removeColumnGroups;
+}
+function updateBlockRanges(body, updateBody, textLength, currentIndex, coverType) {
+	const { blockRanges } = body;
+	const { blockRanges: updateDataBlockRanges } = updateBody;
+	if (blockRanges == null || updateDataBlockRanges == null) return;
+	const removeBlockRanges = deleteBlockRanges(body, textLength, currentIndex);
+	if (coverType !== 1) updateBody.blockRanges = updateDataBlockRanges.map((updateBlockRange) => {
+		const removeBlockRange = removeBlockRanges.find((blockRange) => blockRange.blockId === updateBlockRange.blockId);
+		return removeBlockRange ? {
+			...removeBlockRange,
+			...updateBlockRange
+		} : updateBlockRange;
+	});
+	insertBlockRanges(body, updateBody, textLength, currentIndex);
+	return removeBlockRanges;
+}
+function updateCustomRanges(body, updateBody, textLength, currentIndex, _coverType) {
+	if (!body.customRanges) body.customRanges = [];
+	splitCustomRangesByIndex(body.customRanges, currentIndex);
+	splitCustomRangesByIndex(body.customRanges, currentIndex + textLength);
+	const start = currentIndex;
+	const end = currentIndex + textLength - 1;
+	const { customRanges: updateDataCustomRanges } = updateBody;
+	const newCustomRanges = [];
+	const relativeCustomRanges = /* @__PURE__ */ new Map();
+	body.customRanges.forEach((customRange) => {
+		const { startIndex, endIndex } = customRange;
+		if (startIndex >= start && endIndex <= end) relativeCustomRanges.set(customRange.rangeId, customRange);
+		else newCustomRanges.push(customRange);
+	});
+	const removeCustomRanges = [];
+	if (!updateDataCustomRanges) return [];
+	updateDataCustomRanges.forEach((customRange) => {
+		const { startIndex, endIndex } = customRange;
+		newCustomRanges.push({
+			...customRange,
+			startIndex: startIndex + currentIndex,
+			endIndex: endIndex + currentIndex
+		});
+	});
+	body.customRanges = mergeContinuousRanges(newCustomRanges);
+	return removeCustomRanges;
+}
+function updateCustomDecorations(body, updateBody, textLength, currentIndex, coverType) {
+	if (!body.customDecorations) body.customDecorations = [];
+	splitCustomDecoratesByIndex(body.customDecorations, currentIndex);
+	splitCustomDecoratesByIndex(body.customDecorations, currentIndex + textLength);
+	const removeCustomDecorations = [];
+	const { customDecorations } = body;
+	const { customDecorations: updateDataCustomDecorations = [] } = updateBody;
+	if (coverType === 1) {
+		for (let index = 0; index < customDecorations.length; index++) {
+			const customDecoration = customDecorations[index];
+			const { startIndex, endIndex } = customDecoration;
+			if (startIndex >= currentIndex && endIndex <= currentIndex + textLength - 1) removeCustomDecorations.push(customDecoration);
+		}
+		updateDataCustomDecorations.forEach((customDecoration) => {
+			const { startIndex, endIndex } = customDecoration;
+			customDecorations.push({
+				...customDecoration,
+				startIndex: startIndex + currentIndex,
+				endIndex: endIndex + currentIndex
+			});
+		});
+	} else for (const updateCustomDecoration of updateDataCustomDecorations) {
+		const { id } = updateCustomDecoration;
+		if (updateCustomDecoration.type === 9999) {
+			const oldCustomDecorations = customDecorations.filter((d) => d.id === id);
+			if (oldCustomDecorations.length) removeCustomDecorations.push(...oldCustomDecorations);
+		} else customDecorations.push({
+			...updateCustomDecoration,
+			startIndex: updateCustomDecoration.startIndex + currentIndex,
+			endIndex: updateCustomDecoration.endIndex + currentIndex
+		});
+	}
+	for (const removeCustomDecoration of removeCustomDecorations) {
+		const { id } = removeCustomDecoration;
+		const index = customDecorations.findIndex((d) => d.id === id);
+		if (index !== -1) customDecorations.splice(index, 1);
+	}
+	body.customDecorations = mergeContinuousDecorations(customDecorations);
+	return removeCustomDecorations;
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/selection.ts
+function makeSelection(startOffset, endOffset) {
+	if (typeof endOffset === "undefined") return {
+		startOffset,
+		endOffset: startOffset,
+		collapsed: true
+	};
+	if (endOffset < startOffset) throw new Error(`Cannot make a doc selection when endOffset ${endOffset} is less than startOffset ${startOffset}.`);
+	return {
+		startOffset,
+		endOffset,
+		collapsed: startOffset === endOffset
+	};
+}
+function normalizeSelection(selection) {
+	const { startOffset, endOffset, collapsed } = selection;
+	return {
+		startOffset: Math.min(startOffset, endOffset),
+		endOffset: Math.max(startOffset, endOffset),
+		collapsed
+	};
+}
+function isSegmentIntersects(start, end, start2, end2) {
+	return Math.max(start, start2) <= Math.min(end, end2);
+}
+function getParagraphsInRange(activeRange, paragraphs, dataStream, paragraphRanges) {
+	const { startOffset, endOffset } = activeRange;
+	const fullParagraphs = paragraphRanges ?? transformParagraphs(paragraphs, dataStream);
+	const results = [];
+	let start = -1;
+	for (let i = 0; i < fullParagraphs.length; i++) {
+		const paragraph = fullParagraphs[i];
+		const { startIndex } = paragraph;
+		if (startOffset > start && startOffset <= startIndex || endOffset > start && endOffset <= startIndex) results.push(paragraph);
+		else if (startIndex >= startOffset && startIndex <= endOffset) results.push(paragraph);
+		start = startIndex;
+	}
+	return results;
+}
+function getParagraphsInRanges(ranges, paragraphs, dataStream) {
+	const results = [];
+	const fullParagraphs = transformParagraphs(paragraphs, dataStream);
+	for (const range of ranges) {
+		const ps = getParagraphsInRange(range, paragraphs, dataStream, fullParagraphs);
+		results.push(...ps);
+	}
+	return results;
+}
+const NOT_PARAGRAPH_TOKENS = [
+	"\r",
+	"",
+	"",
+	"\x1B",
+	"",
+	""
+];
+function transformParagraphs(paragraphs, dataStream) {
+	const results = [];
+	for (let i = 0; i < paragraphs.length; i++) {
+		const paragraph = paragraphs[i];
+		const { startIndex } = paragraph;
+		let j = startIndex - 1;
+		while (!NOT_PARAGRAPH_TOKENS.includes(dataStream[j]) && j >= 0) j--;
+		results.push({
+			...paragraph,
+			paragraphStart: j + 1,
+			paragraphEnd: paragraph.startIndex
+		});
+	}
+	return results;
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/paragraph.ts
+const switchParagraphBullet = (params) => {
+	var _docDataModel$getSelf;
+	const { paragraphs: currentParagraphs, segmentId, document: docDataModel } = params;
+	let listType = params.listType;
+	const paragraphs = ((_docDataModel$getSelf = docDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _docDataModel$getSelf === void 0 || (_docDataModel$getSelf = _docDataModel$getSelf.getBody()) === null || _docDataModel$getSelf === void 0 ? void 0 : _docDataModel$getSelf.paragraphs) ?? [];
+	const isAlreadyList = currentParagraphs.every((paragraph) => {
+		var _paragraph$bullet;
+		return ((_paragraph$bullet = paragraph.bullet) === null || _paragraph$bullet === void 0 ? void 0 : _paragraph$bullet.listType.indexOf(listType)) === 0;
+	});
+	let listId = generateRandomId(6);
+	if (currentParagraphs.length === 1) {
+		const curIndex = paragraphs.indexOf(currentParagraphs[0]);
+		const prevParagraph = paragraphs[curIndex - 1];
+		const nextParagraph = paragraphs[curIndex + 1];
+		if (prevParagraph && prevParagraph.bullet && prevParagraph.bullet.listType.indexOf(listType) === 0) {
+			listId = prevParagraph.bullet.listId;
+			if (listType !== "CHECK_LIST") listType = prevParagraph.bullet.listType;
+		} else if (nextParagraph && nextParagraph.bullet && nextParagraph.bullet.listType.indexOf(listType) === 0) {
+			listId = nextParagraph.bullet.listId;
+			if (listType !== "CHECK_LIST") listType = nextParagraph.bullet.listType;
+		}
+	}
+	const memoryCursor = new MemoryCursor();
+	memoryCursor.reset();
+	const textX = new TextX();
+	for (const paragraph of currentParagraphs) {
+		const { startIndex, paragraphId, paragraphStyle = {}, bullet } = paragraph;
+		textX.push({
+			t: "r",
+			len: startIndex - memoryCursor.cursor
+		});
+		textX.push({
+			t: "r",
+			len: 1,
+			body: {
+				dataStream: "",
+				paragraphs: [isAlreadyList ? {
+					paragraphId,
+					paragraphStyle,
+					startIndex: 0
+				} : {
+					startIndex: 0,
+					paragraphId,
+					paragraphStyle: { ...paragraphStyle },
+					bullet: {
+						nestingLevel: (bullet === null || bullet === void 0 ? void 0 : bullet.nestingLevel) ?? 0,
+						listType,
+						listId
+					}
+				}]
+			},
+			coverType: 1
+		});
+		memoryCursor.moveCursorTo(startIndex + 1);
+	}
+	return textX;
+};
+const toggleChecklistParagraph = (params) => {
+	var _docDataModel$getSelf2;
+	const { paragraphIndex, segmentId, document: docDataModel } = params;
+	const paragraphs = (_docDataModel$getSelf2 = docDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _docDataModel$getSelf2 === void 0 || (_docDataModel$getSelf2 = _docDataModel$getSelf2.getBody()) === null || _docDataModel$getSelf2 === void 0 ? void 0 : _docDataModel$getSelf2.paragraphs;
+	if (paragraphs == null) return false;
+	const currentParagraph = paragraphs.find((p) => p.startIndex === paragraphIndex);
+	if (!(currentParagraph === null || currentParagraph === void 0 ? void 0 : currentParagraph.bullet) || currentParagraph.bullet.listType.indexOf("CHECK_LIST") === -1) return false;
+	const memoryCursor = new MemoryCursor();
+	memoryCursor.reset();
+	const textX = new TextX();
+	const { startIndex, paragraphStyle = {} } = currentParagraph;
+	const listType = currentParagraph.bullet.listType === "CHECK_LIST" ? "CHECK_LIST_CHECKED" : "CHECK_LIST";
+	textX.push({
+		t: "r",
+		len: startIndex - memoryCursor.cursor
+	});
+	textX.push({
+		t: "r",
+		len: 1,
+		body: {
+			dataStream: "",
+			paragraphs: [{
+				...currentParagraph,
+				paragraphStyle,
+				startIndex: 0,
+				bullet: {
+					...currentParagraph.bullet,
+					listType
+				}
+			}]
+		},
+		coverType: 1
+	});
+	memoryCursor.moveCursorTo(startIndex + 1);
+	return textX;
+};
+const setParagraphBullet = (params) => {
+	var _docDataModel$getSelf3;
+	const { paragraphs: currentParagraphs, listType, listId: explicitListId, segmentId, document: docDataModel } = params;
+	if (((_docDataModel$getSelf3 = docDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _docDataModel$getSelf3 === void 0 || (_docDataModel$getSelf3 = _docDataModel$getSelf3.getBody()) === null || _docDataModel$getSelf3 === void 0 ? void 0 : _docDataModel$getSelf3.paragraphs) == null) return false;
+	const listId = explicitListId ?? generateRandomId(6);
+	const memoryCursor = new MemoryCursor();
+	memoryCursor.reset();
+	const textX = new TextX();
+	for (const paragraph of currentParagraphs) {
+		const { startIndex, paragraphId, paragraphStyle = {}, bullet } = paragraph;
+		textX.push({
+			t: "r",
+			len: startIndex - memoryCursor.cursor
+		});
+		textX.push({
+			t: "r",
+			len: 1,
+			body: {
+				dataStream: "",
+				paragraphs: [{
+					startIndex: 0,
+					paragraphId,
+					paragraphStyle,
+					bullet: {
+						nestingLevel: (bullet === null || bullet === void 0 ? void 0 : bullet.nestingLevel) ?? 0,
+						...(bullet === null || bullet === void 0 ? void 0 : bullet.listType) === listType && bullet.textStyle ? { textStyle: bullet.textStyle } : {},
+						listType,
+						listId
+					}
+				}]
+			},
+			coverType: 1
+		});
+		memoryCursor.moveCursorTo(startIndex + 1);
+	}
+	return textX;
+};
+function hasParagraphInTable(paragraph, tables) {
+	return tables.some((table) => {
+		const interval = getTableRangeInterval(table);
+		return paragraph.startIndex > interval.startOffset && containsStreamIndex(interval, paragraph.startIndex);
+	});
+}
+const PARAGRAPH_CONTAINER_TOKENS = /* @__PURE__ */ new Set([
+	"\n",
+	"",
+	"\x1B",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	""
+]);
+function getParagraphContentStartOffset(body, paragraph) {
+	let previousParagraph;
+	for (const candidate of body.paragraphs ?? []) if (candidate.startIndex < paragraph.startIndex && (!previousParagraph || candidate.startIndex > previousParagraph.startIndex)) previousParagraph = candidate;
+	let startOffset = previousParagraph ? previousParagraph.startIndex + 1 : 0;
+	while (startOffset < paragraph.startIndex && PARAGRAPH_CONTAINER_TOKENS.has(body.dataStream[startOffset])) startOffset++;
+	return startOffset;
+}
+function getParagraphContentStartOffsets(body) {
+	const startOffsets = /* @__PURE__ */ new Map();
+	const paragraphs = [...body.paragraphs ?? []].sort((left, right) => left.startIndex - right.startIndex);
+	for (let index = 0; index < paragraphs.length; index++) {
+		const paragraph = paragraphs[index];
+		let startOffset = index > 0 ? paragraphs[index - 1].startIndex + 1 : 0;
+		while (startOffset < paragraph.startIndex && PARAGRAPH_CONTAINER_TOKENS.has(body.dataStream[startOffset])) startOffset++;
+		startOffsets.set(paragraph.startIndex, startOffset);
+	}
+	return startOffsets;
+}
+function getParagraphFollowingBlockOffset(body, paragraph) {
+	const containingBlock = (body.blockRanges ?? []).find((blockRange) => {
+		const interval = getBlockRangeInterval(blockRange);
+		return paragraph.startIndex > interval.startOffset && paragraph.startIndex < interval.endOffset - 1;
+	});
+	return containingBlock ? getBlockRangeInterval(containingBlock).endOffset : paragraph.startIndex + 1;
+}
+const changeParagraphBulletNestLevel = (params) => {
+	var _docDataModel$getBody;
+	const { paragraphs: currentParagraphs, document: docDataModel, type } = params;
+	const memoryCursor = new MemoryCursor();
+	memoryCursor.reset();
+	const textX = new TextX();
+	const customLists = docDataModel.getSnapshot().lists ?? {};
+	const tables = ((_docDataModel$getBody = docDataModel.getBody()) === null || _docDataModel$getBody === void 0 ? void 0 : _docDataModel$getBody.tables) ?? [];
+	const lists = {
+		...PRESET_LIST_TYPE,
+		...customLists
+	};
+	for (const paragraph of currentParagraphs) {
+		const { startIndex, paragraphId, paragraphStyle = {}, bullet } = paragraph;
+		const isInTable = hasParagraphInTable(paragraph, tables);
+		textX.push({
+			t: "r",
+			len: startIndex - memoryCursor.cursor
+		});
+		if (bullet) {
+			let maxLevel = lists[bullet.listType].nestingLevel.length - 1;
+			if (isInTable) maxLevel = Math.min(maxLevel, 2);
+			textX.push({
+				t: "r",
+				len: 1,
+				body: {
+					dataStream: "",
+					paragraphs: [{
+						startIndex: 0,
+						paragraphId,
+						paragraphStyle: { ...paragraphStyle },
+						bullet: {
+							...bullet,
+							nestingLevel: Math.max(Math.min(bullet.nestingLevel + type, maxLevel), 0)
+						}
+					}]
+				},
+				coverType: 1
+			});
+		} else textX.push({
+			t: "r",
+			len: 1
+		});
+		memoryCursor.moveCursorTo(startIndex + 1);
+	}
+	return textX;
+};
+const setParagraphStyle = (params) => {
+	var _segment$getBody, _segment$getBody2;
+	const { textRanges, segmentId, document: docDataModel, style, paragraphTextRun, cursor, deleteLen, textX: _textX } = params;
+	const segment = docDataModel.getSelfOrHeaderFooterModel(segmentId);
+	const currentParagraphs = getParagraphsInRanges(textRanges, (segment === null || segment === void 0 || (_segment$getBody = segment.getBody()) === null || _segment$getBody === void 0 ? void 0 : _segment$getBody.paragraphs) ?? [], (segment === null || segment === void 0 || (_segment$getBody2 = segment.getBody()) === null || _segment$getBody2 === void 0 ? void 0 : _segment$getBody2.dataStream) ?? "");
+	const memoryCursor = new MemoryCursor();
+	if (cursor) memoryCursor.moveCursorTo(cursor);
+	const textX = _textX ?? new TextX();
+	currentParagraphs.sort((a, b) => a.startIndex - b.startIndex);
+	const start = Math.max(0, currentParagraphs[0].paragraphStart - 1);
+	if (start > memoryCursor.cursor) {
+		textX.push({
+			t: "r",
+			len: start - memoryCursor.cursor
+		});
+		memoryCursor.moveCursorTo(start);
+	}
+	if (deleteLen) textX.push({
+		t: "d",
+		len: deleteLen
+	});
+	for (const paragraph of currentParagraphs) {
+		const { startIndex, paragraphId, paragraphStyle = {} } = paragraph;
+		const len = startIndex - memoryCursor.cursor;
+		textX.push({
+			t: "r",
+			len,
+			...paragraphTextRun ? {
+				body: {
+					dataStream: "",
+					textRuns: [{
+						ts: paragraphTextRun,
+						st: 0,
+						ed: len
+					}]
+				},
+				coverType: 1
+			} : null
+		});
+		textX.push({
+			t: "r",
+			len: 1,
+			body: {
+				dataStream: "",
+				paragraphs: [{
+					startIndex: 0,
+					paragraphId,
+					paragraphStyle: {
+						...paragraphStyle,
+						...style
+					}
+				}]
+			},
+			coverType: 1
+		});
+		memoryCursor.moveCursorTo(startIndex + 1);
+	}
+	return textX;
+};
+
+//#endregion
+//#region src/docs/data-model/text-x/utils.ts
+let SliceBodyType = /* @__PURE__ */ function(SliceBodyType) {
+	SliceBodyType[SliceBodyType["copy"] = 0] = "copy";
+	SliceBodyType[SliceBodyType["cut"] = 1] = "cut";
+	return SliceBodyType;
+}({});
+function hasStructuralRangeInSlice(startIndex, endIndex, startOffset, endOffset, mode) {
+	if (mode === 1) return startIndex >= startOffset && endIndex <= endOffset;
+	if (mode === 2) return startIndex < endOffset && endIndex > startOffset && endIndex <= endOffset;
+	return Math.max(startIndex, startOffset) < Math.min(endIndex, endOffset);
+}
+function getSlicedStructuralRange(startIndex, endIndex, startOffset, endOffset, mode) {
+	if (mode === 0) return {
+		startIndex: Math.max(startIndex, startOffset) - startOffset,
+		endIndex: Math.min(endIndex, endOffset) - startOffset
+	};
+	return {
+		startIndex: startIndex - startOffset,
+		endIndex: endIndex - startOffset
+	};
+}
+function getTextRunSlice(body, startOffset, endOffset, returnEmptyTextRuns = true) {
+	const { textRuns } = body;
+	if (textRuns) {
+		const newTextRuns = [];
+		for (const textRun of textRuns) {
+			const { st, ed } = textRun;
+			if (Tools.hasIntersectionBetweenTwoRanges(st, ed, startOffset, endOffset)) {
+				const clonedTextRun = Tools.deepClone(textRun);
+				if (startOffset >= st && startOffset <= ed) newTextRuns.push({
+					...clonedTextRun,
+					st: startOffset,
+					ed: Math.min(endOffset, ed)
+				});
+				else if (endOffset >= st && endOffset <= ed) newTextRuns.push({
+					...clonedTextRun,
+					st: Math.max(startOffset, st),
+					ed: endOffset
+				});
+				else newTextRuns.push(clonedTextRun);
+			}
+		}
+		return normalizeTextRuns(newTextRuns.map((tr) => {
+			const { st, ed } = tr;
+			return {
+				...tr,
+				st: st - startOffset,
+				ed: ed - startOffset
+			};
+		}));
+	} else if (returnEmptyTextRuns) return [{
+		st: 0,
+		ed: endOffset - startOffset,
+		ts: {}
+	}];
+}
+function getTableSlice(body, startOffset, endOffset, mode = 0) {
+	const { tables = [] } = body;
+	const newTables = [];
+	for (const table of tables) {
+		const clonedTable = Tools.deepClone(table);
+		const { startIndex, endIndex } = clonedTable;
+		if (hasStructuralRangeInSlice(startIndex, endIndex, startOffset, endOffset, mode)) newTables.push({
+			...clonedTable,
+			...getSlicedStructuralRange(startIndex, endIndex, startOffset, endOffset, mode)
+		});
+	}
+	return newTables;
+}
+function getBlockRangeSlice(body, startOffset, endOffset, mode = 0) {
+	const { blockRanges = [] } = body;
+	const newBlockRanges = [];
+	for (const blockRange of blockRanges) {
+		const clonedBlockRange = Tools.deepClone(blockRange);
+		const { startIndex, endIndex } = clonedBlockRange;
+		if (hasStructuralRangeInSlice(startIndex, endIndex, startOffset, endOffset, mode)) newBlockRanges.push({
+			...clonedBlockRange,
+			...getSlicedStructuralRange(startIndex, endIndex, startOffset, endOffset, mode)
+		});
+	}
+	return newBlockRanges;
+}
+function getColumnGroupSlice(body, startOffset, endOffset, mode = 0) {
+	const { columnGroups = [] } = body;
+	const newColumnGroups = [];
+	for (const columnGroup of columnGroups) {
+		const clonedColumnGroup = Tools.deepClone(columnGroup);
+		const { startIndex, endIndex } = clonedColumnGroup;
+		if (body.dataStream[startIndex] !== "") continue;
+		if (hasStructuralRangeInSlice(startIndex, endIndex, startOffset, endOffset, mode)) newColumnGroups.push({
+			...clonedColumnGroup,
+			...getSlicedStructuralRange(startIndex, endIndex, startOffset, endOffset, mode)
+		});
+	}
+	return newColumnGroups;
+}
+function getParagraphsSlice(body, startOffset, endOffset, type = 1) {
+	const { paragraphs = [] } = body;
+	const newParagraphs = [];
+	if (type === 1) {
+		for (const paragraph of paragraphs) {
+			const { startIndex } = paragraph;
+			if (startIndex >= startOffset && startIndex < endOffset) newParagraphs.push(Tools.deepClone(paragraph));
+		}
+		if (newParagraphs.length) return newParagraphs.map((p) => ({
+			...p,
+			startIndex: p.startIndex - startOffset
+		}));
+		return;
+	}
+	const sortedParagraphs = [...paragraphs].sort((a, b) => a.startIndex - b.startIndex);
+	const paragraphStartOffsets = getParagraphContentStartOffsets(body);
+	for (const paragraph of sortedParagraphs) {
+		const paragraphStart = paragraphStartOffsets.get(paragraph.startIndex) ?? 0;
+		const paragraphEnd = paragraph.startIndex;
+		if (paragraphEnd >= startOffset && paragraphEnd < endOffset || Math.max(paragraphStart, startOffset) < Math.min(paragraphEnd, endOffset)) {
+			const copy = Tools.deepClone(paragraph);
+			copy.startIndex = Math.min(Math.max(paragraphEnd, startOffset), endOffset);
+			newParagraphs.push(copy);
+		}
+	}
+	if (newParagraphs.length) return newParagraphs.map((p) => ({
+		...p,
+		startIndex: p.startIndex - startOffset
+	}));
+}
+function getSectionBreakSlice(body, startOffset, endOffset) {
+	const { sectionBreaks = [] } = body;
+	const newSectionBreaks = [];
+	for (const sectionBreak of sectionBreaks) {
+		const { startIndex } = sectionBreak;
+		if (startIndex >= startOffset && startIndex <= endOffset) newSectionBreaks.push(Tools.deepClone(sectionBreak));
+	}
+	if (newSectionBreaks.length) return newSectionBreaks.map((sb) => ({
+		...sb,
+		startIndex: sb.startIndex - startOffset
+	}));
+}
+function getCustomBlockSlice(body, startOffset, endOffset) {
+	return getCustomBlockMetadataSlice(body.customBlocks ?? [], startOffset, endOffset);
+}
+function getDocxRawCustomBlockSlice(body, startOffset, endOffset) {
+	return getCustomBlockMetadataSlice(body.docxRawCustomBlocks ?? [], startOffset, endOffset);
+}
+function getCustomBlockMetadataSlice(customBlocks, startOffset, endOffset) {
+	const newCustomBlocks = [];
+	for (const block of customBlocks) {
+		const { startIndex } = block;
+		if (startIndex >= startOffset && startIndex < endOffset) newCustomBlocks.push(Tools.deepClone(block));
+	}
+	if (newCustomBlocks.length) return newCustomBlocks.map((b) => ({
+		...b,
+		startIndex: b.startIndex - startOffset
+	}));
+}
+function getDocxRawBlockSlice(body, startOffset, endOffset) {
+	return (body.docxRawBlocks ?? []).filter((rawBlock) => rawBlock.startIndex >= startOffset && rawBlock.startIndex < endOffset).map((rawBlock) => ({
+		...Tools.deepClone(rawBlock),
+		startIndex: rawBlock.startIndex - startOffset
+	}));
+}
+function getDocxExportExcludedRangeSlice(body, startOffset, endOffset) {
+	return (body.docxExportExcludedRanges ?? []).flatMap((range) => {
+		const start = Math.max(range.start, startOffset);
+		const end = Math.min(range.end, endOffset);
+		return end > start ? [{
+			start: start - startOffset,
+			end: end - startOffset
+		}] : [];
+	});
+}
+function getBodySlice(body, startOffset, endOffset, returnEmptyArray = true, type = 1, structuralRangeMode = 0) {
+	const { dataStream } = body;
+	const docBody = { dataStream: dataStream.slice(startOffset, endOffset) };
+	if (body["__textXPreserveParagraphIds"]) docBody[PRESERVE_INSERTED_PARAGRAPH_IDS] = true;
+	docBody.textRuns = getTextRunSlice(body, startOffset, endOffset, returnEmptyArray);
+	const newTables = getTableSlice(body, startOffset, endOffset, structuralRangeMode);
+	if (newTables.length) docBody.tables = newTables;
+	const newBlockRanges = getBlockRangeSlice(body, startOffset, endOffset, structuralRangeMode);
+	if (newBlockRanges.length) docBody.blockRanges = newBlockRanges;
+	const newColumnGroups = getColumnGroupSlice(body, startOffset, endOffset, structuralRangeMode);
+	if (newColumnGroups.length) docBody.columnGroups = newColumnGroups;
+	docBody.paragraphs = getParagraphsSlice(body, startOffset, endOffset, type);
+	const sectionBreaks = getSectionBreakSlice(body, startOffset, endOffset - 1);
+	if (sectionBreaks) docBody.sectionBreaks = sectionBreaks;
+	else if (returnEmptyArray) docBody.sectionBreaks = [];
+	if (type === 1) {
+		const customDecorations = getCustomDecorationSlice(body, startOffset, endOffset);
+		if (customDecorations) docBody.customDecorations = customDecorations;
+		else if (returnEmptyArray) docBody.customDecorations = [];
+	}
+	const { customRanges } = getCustomRangeSlice(body, startOffset, endOffset);
+	if (customRanges) docBody.customRanges = customRanges;
+	else if (returnEmptyArray) docBody.customRanges = [];
+	docBody.customBlocks = getCustomBlockSlice(body, startOffset, endOffset);
+	if (body.docxRawCustomBlocks != null) docBody.docxRawCustomBlocks = getDocxRawCustomBlockSlice(body, startOffset, endOffset) ?? [];
+	if (body.docxRawBlocks != null) docBody.docxRawBlocks = getDocxRawBlockSlice(body, startOffset, endOffset);
+	if (body.docxExportExcludedRanges != null) docBody.docxExportExcludedRanges = getDocxExportExcludedRangeSlice(body, startOffset, endOffset);
+	return docBody;
+}
+function getBodySliceForTextXAction(body, startOffset, endOffset, returnEmptyArray = true, type = 1) {
+	return getBodySlice(body, startOffset, endOffset, returnEmptyArray, type, 1);
+}
+function getBodySliceForSplitTextXAction(body, startOffset, endOffset, returnEmptyArray = true, type = 1) {
+	return getBodySlice(body, startOffset, endOffset, returnEmptyArray, type, 2);
+}
+function shiftBodyMetadata(body, leftOffset, rightOffset) {
+	var _body$textRuns, _body$paragraphs, _body$customBlocks, _body$docxRawCustomBl, _body$docxRawBlocks, _body$docxExportExclu, _body$customRanges, _body$customDecoratio, _body$tables, _body$columnGroups;
+	(_body$textRuns = body.textRuns) === null || _body$textRuns === void 0 || _body$textRuns.forEach((textRun) => {
+		textRun.st += leftOffset;
+		textRun.ed += leftOffset;
+	});
+	(_body$paragraphs = body.paragraphs) === null || _body$paragraphs === void 0 || _body$paragraphs.forEach((paragraph) => {
+		paragraph.startIndex += leftOffset;
+	});
+	(_body$customBlocks = body.customBlocks) === null || _body$customBlocks === void 0 || _body$customBlocks.forEach((customBlock) => {
+		customBlock.startIndex += leftOffset;
+	});
+	(_body$docxRawCustomBl = body.docxRawCustomBlocks) === null || _body$docxRawCustomBl === void 0 || _body$docxRawCustomBl.forEach((customBlock) => {
+		customBlock.startIndex += leftOffset;
+	});
+	(_body$docxRawBlocks = body.docxRawBlocks) === null || _body$docxRawBlocks === void 0 || _body$docxRawBlocks.forEach((rawBlock) => {
+		rawBlock.startIndex += leftOffset;
+	});
+	(_body$docxExportExclu = body.docxExportExcludedRanges) === null || _body$docxExportExclu === void 0 || _body$docxExportExclu.forEach((range) => {
+		range.start += leftOffset;
+		range.end += leftOffset;
+	});
+	(_body$customRanges = body.customRanges) === null || _body$customRanges === void 0 || _body$customRanges.forEach((range) => {
+		range.startIndex += leftOffset;
+		range.endIndex += leftOffset;
+	});
+	(_body$customDecoratio = body.customDecorations) === null || _body$customDecoratio === void 0 || _body$customDecoratio.forEach((decoration) => {
+		decoration.startIndex += leftOffset;
+		decoration.endIndex += rightOffset;
+	});
+	(_body$tables = body.tables) === null || _body$tables === void 0 || _body$tables.forEach((table) => {
+		table.startIndex += leftOffset;
+		table.endIndex += rightOffset;
+	});
+	(_body$columnGroups = body.columnGroups) === null || _body$columnGroups === void 0 || _body$columnGroups.forEach((columnGroup) => {
+		columnGroup.startIndex += leftOffset;
+		columnGroup.endIndex += rightOffset;
+	});
+}
+function normalizeBody(body) {
+	const { dataStream, textRuns, customRanges } = body;
+	let leftOffset = 0;
+	let rightOffset = 0;
+	customRanges === null || customRanges === void 0 || customRanges.forEach((range) => {
+		if (range.startIndex < 0) leftOffset = Math.max(leftOffset, -range.startIndex);
+		if (range.endIndex > dataStream.length - 1) rightOffset = Math.max(rightOffset, range.endIndex - dataStream.length + 1);
+	});
+	const newData = `${dataStream}`;
+	if (textRuns) {
+		if (textRuns[0]) textRuns[0].st = textRuns[0].st - leftOffset;
+		if (textRuns[textRuns.length - 1]) textRuns[textRuns.length - 1].ed = textRuns[textRuns.length - 1].ed + rightOffset;
+	}
+	shiftBodyMetadata(body, leftOffset, rightOffset);
+	return {
+		...body,
+		dataStream: newData
+	};
+}
+function getCustomRangeSlice(body, startOffset, endOffset) {
+	if (body.customRanges == null) return {};
+	const { customRanges } = body;
+	return {
+		customRanges: customRanges.filter((customRange) => Math.max(customRange.startIndex, startOffset) <= Math.min(customRange.endIndex, endOffset - 1)).map((range) => ({
+			...range,
+			startIndex: Math.max(range.startIndex, startOffset),
+			endIndex: Math.min(range.endIndex, endOffset - 1)
+		})).map((range) => ({
+			...range,
+			startIndex: range.startIndex - startOffset,
+			endIndex: range.endIndex - startOffset
+		})),
+		leftOffset: 0,
+		rightOffset: 0
+	};
+}
+function getCustomDecorationSlice(body, startOffset, endOffset) {
+	if (body.customDecorations == null) return;
+	const { customDecorations = [] } = body;
+	const customDecorationSlice = [];
+	customDecorations.forEach((range) => {
+		if (Math.max(range.startIndex, startOffset) <= Math.min(range.endIndex, endOffset - 1)) {
+			const copy = Tools.deepClone(range);
+			customDecorationSlice.push({
+				...copy,
+				startIndex: Math.max(copy.startIndex - startOffset, 0),
+				endIndex: Math.min(copy.endIndex, endOffset - 1) - startOffset
+			});
+		}
+	});
+	return customDecorationSlice;
+}
+function composeTextRuns(updateDataTextRuns, originTextRuns, coverType) {
+	if (updateDataTextRuns == null || originTextRuns == null) return updateDataTextRuns ?? originTextRuns;
+	return coverTextRuns(updateDataTextRuns, originTextRuns, coverType);
+}
+function composeCustomRanges(updateDataCustomRanges, originCustomRanges, coverType) {
+	if (updateDataCustomRanges == null || originCustomRanges == null) return updateDataCustomRanges ?? originCustomRanges;
+	if (originCustomRanges.length === 0 || updateDataCustomRanges.length === 0) return updateDataCustomRanges;
+	if (originCustomRanges.length > 1 || updateDataCustomRanges.length > 1) throw new Error("Cannot cover multiple customRanges");
+	if (coverType === 1) return [{ ...updateDataCustomRanges[0] }];
+	else return [{
+		...originCustomRanges[0],
+		...updateDataCustomRanges[0]
+	}];
+}
+function composeCustomDecorations(updateDataCustomDecorations, originCustomDecorations, coverType) {
+	if (originCustomDecorations.length === 0 || updateDataCustomDecorations.length === 0) return updateDataCustomDecorations;
+	if (coverType === 1) return updateDataCustomDecorations;
+	else return [...updateDataCustomDecorations, ...originCustomDecorations.filter((originCustomDecoration) => {
+		return !updateDataCustomDecorations.some((updateDataCustomDecoration) => {
+			return originCustomDecoration.id === updateDataCustomDecoration.id;
+		});
+	})];
+}
+function composeBody(thisBody, otherBody, coverType = 0) {
+	if (otherBody.dataStream !== "") throw new Error("Cannot compose other body with non-empty dataStream");
+	const retBody = { dataStream: thisBody.dataStream };
+	if (thisBody["__textXPreserveParagraphIds"] || otherBody["__textXPreserveParagraphIds"]) retBody[PRESERVE_INSERTED_PARAGRAPH_IDS] = true;
+	const { textRuns: thisTextRuns, paragraphs: thisParagraphs = [], customRanges: thisCustomRanges, customDecorations: thisCustomDecorations = [], columnGroups: thisColumnGroups = [], blockRanges: thisBlockRanges = [] } = thisBody;
+	const { textRuns: otherTextRuns, paragraphs: otherParagraphs = [], customRanges: otherCustomRanges, customDecorations: otherCustomDecorations = [], columnGroups: otherColumnGroups = [], blockRanges: otherBlockRanges = [] } = otherBody;
+	retBody.textRuns = composeTextRuns(otherTextRuns, thisTextRuns, coverType);
+	retBody.customRanges = composeCustomRanges(otherCustomRanges, thisCustomRanges, coverType);
+	const customDecorations = composeCustomDecorations(otherCustomDecorations, thisCustomDecorations, coverType);
+	if (customDecorations.length) retBody.customDecorations = customDecorations;
+	const paragraphs = [];
+	let thisIndex = 0;
+	let otherIndex = 0;
+	while (thisIndex < thisParagraphs.length && otherIndex < otherParagraphs.length) {
+		const thisParagraph = thisParagraphs[thisIndex];
+		const otherParagraph = otherParagraphs[otherIndex];
+		const { startIndex: thisStart } = thisParagraph;
+		const { startIndex: otherStart } = otherParagraph;
+		if (thisStart === otherStart) {
+			paragraphs.push(merge(thisParagraph, otherParagraph));
+			thisIndex++;
+			otherIndex++;
+		} else if (thisStart < otherStart) {
+			paragraphs.push(Tools.deepClone(thisParagraph));
+			thisIndex++;
+		} else {
+			paragraphs.push(Tools.deepClone(otherParagraph));
+			otherIndex++;
+		}
+	}
+	if (thisIndex < thisParagraphs.length) paragraphs.push(...thisParagraphs.slice(thisIndex));
+	if (otherIndex < otherParagraphs.length) paragraphs.push(...otherParagraphs.slice(otherIndex));
+	if (paragraphs.length) retBody.paragraphs = paragraphs;
+	const blockRanges = composeDocumentBlockRanges(thisBlockRanges, otherBlockRanges);
+	if (blockRanges.length) retBody.blockRanges = blockRanges;
+	const columnGroups = composeColumnGroups(thisColumnGroups, otherColumnGroups);
+	if (columnGroups.length) retBody.columnGroups = columnGroups;
+	return retBody;
+}
+function composeDocumentBlockRanges(thisRanges, otherRanges) {
+	if (!thisRanges.length) return otherRanges;
+	if (!otherRanges.length) return thisRanges;
+	const byId = new Map(thisRanges.map((range) => [range.blockId, Tools.deepClone(range)]));
+	otherRanges.forEach((range) => byId.set(range.blockId, Tools.deepClone(range)));
+	return Array.from(byId.values()).sort((left, right) => left.startIndex - right.startIndex);
+}
+function composeColumnGroups(thisRanges, otherRanges) {
+	if (!thisRanges.length) return otherRanges;
+	if (!otherRanges.length) return thisRanges;
+	const byId = new Map(thisRanges.map((range) => [range.columnGroupId, Tools.deepClone(range)]));
+	otherRanges.forEach((range) => byId.set(range.columnGroupId, Tools.deepClone(range)));
+	return Array.from(byId.values()).sort((left, right) => left.startIndex - right.startIndex);
+}
+function isUselessRetainAction(action) {
+	const { body } = action;
+	if (body == null) return true;
+	const { textRuns, paragraphs, customRanges, customBlocks, docxRawCustomBlocks, docxRawBlocks, docxExportExcludedRanges, customDecorations, tables, columnGroups, blockRanges } = body;
+	if (textRuns == null && paragraphs == null && customRanges == null && customBlocks == null && docxRawCustomBlocks == null && docxRawBlocks == null && docxExportExcludedRanges == null && customDecorations == null && tables == null && columnGroups == null && blockRanges == null) return true;
+	return false;
+}
+function getRichTextEditPath(docDataModel, segmentId = "") {
+	if (!segmentId) return ["body"];
+	const { headers, footers } = docDataModel.getSnapshot();
+	if (headers == null && footers == null) throw new Error("Document data model must have headers or footers when update by segment id");
+	if ((headers === null || headers === void 0 ? void 0 : headers[segmentId]) != null) return [
+		"headers",
+		segmentId,
+		"body"
+	];
+	else if ((footers === null || footers === void 0 ? void 0 : footers[segmentId]) != null) return [
+		"footers",
+		segmentId,
+		"body"
+	];
+	else throw new Error("Segment id not found in headers or footers");
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/action-iterator.ts
+var ActionIterator = class {
+	constructor(_actions) {
+		this._actions = _actions;
+		_defineProperty(this, "_index", 0);
+		_defineProperty(this, "_offset", 0);
+	}
+	hasNext() {
+		return this.peekLength() < Number.POSITIVE_INFINITY;
+	}
+	next(length) {
+		if (!length) length = Number.POSITIVE_INFINITY;
+		const nextAction = this._actions[this._index];
+		if (nextAction) {
+			const offset = this._offset;
+			const actionLength = nextAction.len;
+			if (length >= actionLength - offset) {
+				length = actionLength - offset;
+				this._index += 1;
+				this._offset = 0;
+			} else this._offset += length;
+			/**
+			* How to deal with it?
+			* 1. If it is of the delete type or retain(the body attribute is undefined)
+			*    1) Then change the len property and return the deepClone before action
+			* 2. If it is a retain, insert type
+			*    1) First of all, you need to change the len attribute to `length`
+			*    2) Slice the body and slice the range [offset, length]
+			*    3) Reassemble the returned action
+			*/
+			if (nextAction.t === "d" || nextAction.t === "r" && nextAction.body == null) return Tools.deepClone({
+				...nextAction,
+				len: length
+			});
+			else return Tools.deepClone({
+				...nextAction,
+				len: length,
+				body: getBodySliceForSplitTextXAction(nextAction.body, offset, offset + length, false)
+			});
+		} else return {
+			t: "r",
+			len: Number.POSITIVE_INFINITY
+		};
+	}
+	peek() {
+		return this._actions[this._index];
+	}
+	peekLength() {
+		if (this._actions[this._index]) return this._actions[this._index].len - this._offset;
+		else return Number.POSITIVE_INFINITY;
+	}
+	peekType() {
+		const action = this._actions[this._index];
+		if (action) return action.t;
+		return "r";
+	}
+	rest() {
+		if (!this.hasNext()) return [];
+		else if (this._offset === 0) return this._actions.slice(this._index);
+		else {
+			const offset = this._offset;
+			const index = this._index;
+			const next = this.next();
+			const restActions = this._actions.slice(this._index);
+			this._offset = offset;
+			this._index = index;
+			return [next].concat(restActions);
+		}
+	}
+};
+
+//#endregion
+//#region src/docs/data-model/text-x/apply-utils/delete-apply.ts
+function updateAttributeByDelete(body, textLength, currentIndex) {
+	const { dataStream } = body;
+	const startIndex = currentIndex;
+	const endIndex = currentIndex + textLength;
+	const removeTextRuns = deleteTextRuns(body, textLength, currentIndex);
+	const removeParagraphs = deleteParagraphs(body, textLength, currentIndex);
+	const removeSectionBreaks = deleteSectionBreaks(body, textLength, currentIndex);
+	const removeCustomBlocks = deleteCustomBlocks(body, textLength, currentIndex);
+	const removeDocxRawCustomBlocks = deleteDocxRawCustomBlocks(body, textLength, currentIndex);
+	const removeDocxRawBlocks = deleteDocxRawBlocks(body, textLength, currentIndex);
+	const removeDocxExportExcludedRanges = deleteDocxExportExcludedRanges(body, textLength, currentIndex);
+	const removeTables = deleteTables(body, textLength, currentIndex);
+	const removeColumnGroups = deleteColumnGroups(body, textLength, currentIndex);
+	const removeBlockRanges = deleteBlockRanges(body, textLength, currentIndex);
+	const removeCustomRanges = deleteCustomRanges(body, textLength, currentIndex);
+	const removeCustomDecorations = deleteCustomDecorations(body, textLength, currentIndex);
+	let removeDataStream = "";
+	if (dataStream) {
+		body.dataStream = deleteContent(dataStream, startIndex, endIndex);
+		removeDataStream = dataStream.slice(startIndex, endIndex);
+	}
+	return {
+		dataStream: removeDataStream,
+		textRuns: removeTextRuns,
+		paragraphs: removeParagraphs,
+		sectionBreaks: removeSectionBreaks,
+		customBlocks: removeCustomBlocks,
+		docxRawCustomBlocks: removeDocxRawCustomBlocks,
+		docxRawBlocks: removeDocxRawBlocks,
+		docxExportExcludedRanges: removeDocxExportExcludedRanges,
+		tables: removeTables,
+		columnGroups: removeColumnGroups,
+		blockRanges: removeBlockRanges,
+		customRanges: removeCustomRanges,
+		customDecorations: removeCustomDecorations
+	};
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/apply-utils/insert-apply.ts
+function updateAttributeByInsert(body, insertBody, textLength, currentIndex) {
+	const originalDataStream = body.dataStream;
+	body.dataStream = insertTextToContent(body.dataStream, currentIndex, insertBody.dataStream);
+	insertTextRuns(body, insertBody, textLength, currentIndex);
+	insertParagraphs(body, insertBody, textLength, currentIndex, false, originalDataStream);
+	insertSectionBreaks(body, insertBody, textLength, currentIndex);
+	insertCustomBlocks(body, insertBody, textLength, currentIndex);
+	insertDocxRawCustomBlocks(body, insertBody, textLength, currentIndex);
+	insertDocxRawBlocks(body, insertBody, textLength, currentIndex);
+	insertDocxExportExcludedRanges(body, insertBody, textLength, currentIndex);
+	insertTables(body, insertBody, textLength, currentIndex);
+	insertColumnGroups(body, insertBody, textLength, currentIndex);
+	insertBlockRanges(body, insertBody, textLength, currentIndex);
+	insertCustomRanges(body, insertBody, textLength, currentIndex);
+	insertCustomDecorations(body, insertBody, textLength, currentIndex);
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/apply.ts
+function updateApply(doc, updateBody, textLength, currentIndex, coverType = 0) {
+	return updateAttribute(doc, updateBody, textLength, currentIndex, coverType);
+}
+function deleteApply(doc, textLength, currentIndex) {
+	if (textLength <= 0) return { dataStream: "" };
+	return updateAttributeByDelete(doc, textLength, currentIndex);
+}
+function insertApply(doc, insertBody, textLength, currentIndex) {
+	if (textLength === 0) return;
+	updateAttributeByInsert(doc, insertBody, textLength, currentIndex);
+}
+function textXApply(doc, actions) {
+	const memoryCursor = new MemoryCursor();
+	memoryCursor.reset();
+	actions.forEach((action) => {
+		switch (action.t) {
+			case "r": {
+				const { coverType, body, len } = action;
+				if (body != null) updateApply(doc, Tools.deepClone(body), len, memoryCursor.cursor, coverType);
+				memoryCursor.moveCursor(len);
+				break;
+			}
+			case "i": {
+				const { body, len } = action;
+				insertApply(doc, onlyHasDataStream$1(body) ? body : Tools.deepClone(body), len, memoryCursor.cursor);
+				memoryCursor.moveCursor(len);
+				break;
+			}
+			case "d": {
+				const { len } = action;
+				deleteApply(doc, len, memoryCursor.cursor);
+				break;
+			}
+			default: throw new Error(`Unknown action type for action: ${action}.`);
+		}
+	});
+	return doc;
+}
+function onlyHasDataStream$1(body) {
+	return Object.keys(body).length === 1 && typeof body.dataStream === "string";
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/transform-utils.ts
+function transformTextRuns(originTextRuns, targetTextRuns, originCoverType, targetCoverType, transformType) {
+	if (originTextRuns == null || targetTextRuns == null) return targetTextRuns;
+	if (originTextRuns.length === 0 || targetTextRuns.length === 0) return [];
+	targetTextRuns = Tools.deepClone(targetTextRuns);
+	originTextRuns = Tools.deepClone(originTextRuns);
+	const newUpdateTextRuns = [];
+	const updateLength = targetTextRuns.length;
+	const removeLength = originTextRuns.length;
+	let updateIndex = 0;
+	let removeIndex = 0;
+	let pending = null;
+	function pushPendingAndReturnStatus() {
+		if (pending) {
+			newUpdateTextRuns.push(pending);
+			pending = null;
+			return true;
+		}
+		return false;
+	}
+	while (updateIndex < updateLength && removeIndex < removeLength) {
+		const { st: updateSt, ed: updateEd, ts: targetStyle } = targetTextRuns[updateIndex];
+		const { st: removeSt, ed: removeEd, ts: originStyle, sId } = originTextRuns[removeIndex];
+		let newTs = {};
+		if (transformType === 0) {
+			newTs = { ...targetStyle };
+			if (originCoverType === 0 && targetCoverType === 1 && originStyle) newTs = Object.assign({}, originStyle, newTs);
+		} else {
+			newTs = { ...targetStyle };
+			if (originCoverType === 1) {
+				if (targetCoverType === 1) newTs = { ...originStyle };
+				else if (targetStyle && originStyle) {
+					const keys = Object.keys(targetStyle);
+					for (const key of keys) if (originStyle[key]) delete newTs[key];
+				}
+			} else if (targetCoverType === 1) {
+				if (originStyle) {
+					const keys = Object.keys(originStyle);
+					for (const key of keys) if (originStyle[key] !== void 0) newTs[key] = originStyle[key];
+				}
+			} else if (originStyle) {
+				const keys = Object.keys(originStyle);
+				for (const key of keys) if (newTs[key] !== void 0) delete newTs[key];
+			}
+		}
+		if (updateEd < removeSt) {
+			if (!pushPendingAndReturnStatus()) newUpdateTextRuns.push(targetTextRuns[updateIndex]);
+			updateIndex++;
+		} else if (removeEd < updateSt) {
+			if (!pushPendingAndReturnStatus()) newUpdateTextRuns.push(originTextRuns[removeIndex]);
+			removeIndex++;
+		} else {
+			const newTextRun = {
+				st: Math.min(updateSt, removeSt),
+				ed: Math.max(updateSt, removeSt),
+				ts: updateSt < removeSt ? { ...targetStyle } : { ...originStyle },
+				sId: updateSt < removeSt ? void 0 : sId
+			};
+			if (newTextRun.ed > newTextRun.st) newUpdateTextRuns.push();
+			newUpdateTextRuns.push({
+				st: Math.max(updateSt, removeSt),
+				ed: Math.min(updateEd, removeEd),
+				ts: newTs,
+				sId
+			});
+			if (updateEd < removeEd) {
+				updateIndex++;
+				originTextRuns[removeIndex].st = updateEd;
+				if (originTextRuns[removeIndex].st === originTextRuns[removeIndex].ed) removeIndex++;
+			} else {
+				removeIndex++;
+				targetTextRuns[updateIndex].st = removeEd;
+				if (targetTextRuns[updateIndex].st === targetTextRuns[updateIndex].ed) updateIndex++;
+			}
+			const pendingTextRun = {
+				st: Math.min(updateEd, removeEd),
+				ed: Math.max(updateEd, removeEd),
+				ts: updateEd < removeEd ? { ...originStyle } : { ...targetStyle },
+				sId: updateEd < removeEd ? sId : void 0
+			};
+			pending = pendingTextRun.ed > pendingTextRun.st ? pendingTextRun : null;
+		}
+	}
+	pushPendingAndReturnStatus();
+	const tempTopTextRun = newUpdateTextRuns[newUpdateTextRuns.length - 1];
+	const updateLastTextRun = targetTextRuns[updateLength - 1];
+	const removeLastTextRun = originTextRuns[removeLength - 1];
+	if (tempTopTextRun.ed !== Math.max(updateLastTextRun.ed, removeLastTextRun.ed)) if (updateLastTextRun.ed > removeLastTextRun.ed) newUpdateTextRuns.push(updateLastTextRun);
+	else newUpdateTextRuns.push(removeLastTextRun);
+	return normalizeTextRuns(newUpdateTextRuns, true);
+}
+function transformCustomRanges(originCustomRanges, targetCustomRanges, originCoverType, targetCoverType, transformType) {
+	if (originCustomRanges == null || targetCustomRanges == null) return targetCustomRanges;
+	if (originCustomRanges.length === 0 || targetCustomRanges.length === 0) return [];
+	if (originCustomRanges.length > 1 || targetCustomRanges.length > 1) throw new Error("CustomRanges is only supported transform for length one now.");
+	const originCustomRange = originCustomRanges[0];
+	const targetCustomRange = targetCustomRanges[0];
+	if (originCoverType === 1) return transformType === 1 ? [Tools.deepClone(originCustomRange)] : [Tools.deepClone(targetCustomRange)];
+	else if (targetCoverType === 1) {
+		const customRange = Tools.deepClone(targetCustomRange);
+		if (transformType === 1) Object.assign(customRange, Tools.deepClone(originCustomRange));
+		return [customRange];
+	} else {
+		const customRange = Tools.deepClone(targetCustomRange);
+		if (transformType === 1) Object.assign(customRange, Tools.deepClone(originCustomRange));
+		return [customRange];
+	}
+}
+function transformParagraph(originParagraph, targetParagraph, originCoverType, targetCoverType, transformType) {
+	const paragraph = {
+		startIndex: targetParagraph.startIndex,
+		paragraphId: targetParagraph.paragraphId
+	};
+	if (targetParagraph.paragraphStyle) {
+		paragraph.paragraphStyle = Tools.deepClone(targetParagraph.paragraphStyle);
+		if (originParagraph.paragraphStyle) {
+			if (originCoverType === 1) if (targetCoverType === 1) {
+				if (transformType === 1) paragraph.paragraphStyle = { ...originParagraph.paragraphStyle };
+			} else if (transformType === 1) {
+				const keys = Object.keys(originParagraph.paragraphStyle);
+				for (const key of keys) if (originParagraph.paragraphStyle[key] !== void 0) paragraph.paragraphStyle[key] = originParagraph.paragraphStyle[key];
+			} else {
+				const keys = Object.keys(originParagraph.paragraphStyle);
+				for (const key of keys) if (paragraph.paragraphStyle[key] === void 0) paragraph.paragraphStyle[key] = originParagraph.paragraphStyle[key];
+			}
+			else if (targetCoverType === 1) if (transformType === 1) {
+				const keys = Object.keys(originParagraph.paragraphStyle);
+				for (const key of keys) if (originParagraph.paragraphStyle[key] !== void 0) paragraph.paragraphStyle[key] = originParagraph.paragraphStyle[key];
+			} else {
+				const keys = Object.keys(originParagraph.paragraphStyle);
+				for (const key of keys) if (paragraph.paragraphStyle[key] === void 0) paragraph.paragraphStyle[key] = originParagraph.paragraphStyle[key];
+			}
+			else if (transformType === 1) {
+				const keys = Object.keys(originParagraph.paragraphStyle);
+				for (const key of keys) if (paragraph.paragraphStyle[key]) delete paragraph.paragraphStyle[key];
+			}
+		}
+	}
+	if (originCoverType === 1 && targetCoverType === 1) paragraph.bullet = transformType === 1 ? Tools.deepClone(originParagraph.bullet) : Tools.deepClone(targetParagraph.bullet);
+	else if (originParagraph.bullet === void 0) paragraph.bullet = Tools.deepClone(targetParagraph.bullet);
+	else if (originCoverType === 1 || targetCoverType === 1) paragraph.bullet = transformType === 0 && targetParagraph.bullet ? Tools.deepClone(targetParagraph.bullet) : Tools.deepClone(originParagraph.bullet);
+	else if (transformType === 0 && targetParagraph.bullet !== void 0) paragraph.bullet = Tools.deepClone(targetParagraph.bullet);
+	if (paragraph.bullet === void 0) delete paragraph.bullet;
+	return paragraph;
+}
+function transformCustomDecorations(originCustomDecorations, targetCustomDecorations) {
+	if (originCustomDecorations == null || targetCustomDecorations == null) return targetCustomDecorations;
+	if (originCustomDecorations.length === 0 || targetCustomDecorations.length === 0) return Tools.deepClone(targetCustomDecorations);
+	const customDecorations = [];
+	for (const decoration of targetCustomDecorations) {
+		const { id, type } = decoration;
+		let pushed = false;
+		for (const originDecoration of originCustomDecorations) if (originDecoration.id === id) {
+			if (originDecoration.type === 9999 || type === 9999) {
+				pushed = true;
+				customDecorations.push({
+					...decoration,
+					type: 9999
+				});
+			}
+			break;
+		}
+		if (!pushed) customDecorations.push(decoration);
+	}
+	return customDecorations;
+}
+function transformBody(thisAction, otherAction, priority = false) {
+	const { body: thisBody, coverType: thisCoverType = 0 } = thisAction;
+	const { body: otherBody, coverType: otherCoverType = 0 } = otherAction;
+	if (thisBody == null || thisBody.dataStream !== "" || otherBody == null || otherBody.dataStream !== "") throw new Error("Data stream is not supported in retain transform.");
+	const retBody = { dataStream: "" };
+	const coverType = otherCoverType;
+	const { textRuns: thisTextRuns, paragraphs: thisParagraphs = [], blockRanges: thisBlockRanges = [], customRanges: thisCustomRanges, customDecorations: thisCustomDecorations } = thisBody;
+	const { textRuns: otherTextRuns, paragraphs: otherParagraphs = [], blockRanges: otherBlockRanges = [], customRanges: otherCustomRanges, customDecorations: otherCustomDecorations } = otherBody;
+	const textRuns = transformTextRuns(thisTextRuns, otherTextRuns, thisCoverType, otherCoverType, priority ? 1 : 0);
+	if (textRuns) retBody.textRuns = textRuns;
+	const customRanges = transformCustomRanges(thisCustomRanges, otherCustomRanges, thisCoverType, otherCoverType, priority ? 1 : 0);
+	if (customRanges) retBody.customRanges = customRanges;
+	const customDecorations = transformCustomDecorations(thisCustomDecorations, otherCustomDecorations);
+	if (customDecorations) retBody.customDecorations = customDecorations;
+	const paragraphs = [];
+	let thisIndex = 0;
+	let otherIndex = 0;
+	while (thisIndex < thisParagraphs.length && otherIndex < otherParagraphs.length) {
+		const thisParagraph = thisParagraphs[thisIndex];
+		const otherParagraph = otherParagraphs[otherIndex];
+		const { startIndex: thisStart } = thisParagraph;
+		const { startIndex: otherStart } = otherParagraph;
+		if (thisStart === otherStart) {
+			let paragraph = {
+				startIndex: thisStart,
+				paragraphId: otherParagraph.paragraphId
+			};
+			if (priority) paragraph = transformParagraph(thisParagraph, otherParagraph, thisCoverType, otherCoverType, 1);
+			else paragraph = transformParagraph(thisParagraph, otherParagraph, thisCoverType, otherCoverType, 0);
+			paragraphs.push(paragraph);
+			thisIndex++;
+			otherIndex++;
+		} else if (thisStart < otherStart) thisIndex++;
+		else {
+			paragraphs.push(Tools.deepClone(otherParagraph));
+			otherIndex++;
+		}
+	}
+	if (otherIndex < otherParagraphs.length) paragraphs.push(...otherParagraphs.slice(otherIndex));
+	if (paragraphs.length) retBody.paragraphs = paragraphs;
+	const blockRanges = transformBlockRanges(thisBlockRanges, otherBlockRanges, priority);
+	if (blockRanges.length) retBody.blockRanges = blockRanges;
+	return {
+		coverType,
+		body: retBody
+	};
+}
+function transformBlockRanges(thisBlockRanges, otherBlockRanges, priority) {
+	if (!thisBlockRanges.length) return otherBlockRanges;
+	if (!otherBlockRanges.length) return [];
+	return otherBlockRanges.map((otherBlockRange) => {
+		const thisBlockRange = thisBlockRanges.find((blockRange) => blockRange.blockId === otherBlockRange.blockId);
+		return thisBlockRange && priority ? merge(otherBlockRange, thisBlockRange) : otherBlockRange;
+	});
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/text-x.ts
+function onlyHasDataStream(body) {
+	return Object.keys(body).length === 1;
+}
+function normalizeInsertActionParagraphIds(body, doc, currentIndex, reservedParagraphIds) {
+	normalizeInsertedParagraphIdsForDocument(doc.paragraphs, body.paragraphs, currentIndex, {
+		freshenSplitParagraph: false,
+		preserveExplicitParagraphIds: Boolean(body[PRESERVE_INSERTED_PARAGRAPH_IDS]),
+		reservedParagraphIds,
+		dataStream: doc.dataStream
+	});
+}
+var TextX = class TextX {
+	constructor() {
+		_defineProperty(this, "_actions", []);
+	}
+	static apply(doc, actions) {
+		return textXApply(doc, actions);
+	}
+	static compose(thisActions, otherActions) {
+		const thisIter = new ActionIterator(thisActions);
+		const otherIter = new ActionIterator(otherActions);
+		const textX = new TextX();
+		while (thisIter.hasNext() || otherIter.hasNext()) if (otherIter.peekType() === "i") textX.push(otherIter.next());
+		else if (thisIter.peekType() === "d") textX.push(thisIter.next());
+		else {
+			const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
+			const thisAction = thisIter.next(length);
+			const otherAction = otherIter.next(length);
+			if (thisAction.t === "i" && otherAction.t === "r") if (otherAction.body == null) textX.push(thisAction);
+			else textX.push({
+				...thisAction,
+				body: composeBody(thisAction.body, otherAction.body, otherAction.coverType)
+			});
+			else if (thisAction.t === "r" && otherAction.t === "r") if (thisAction.body == null && otherAction.body == null) textX.push(thisAction.len !== Number.POSITIVE_INFINITY ? thisAction : otherAction);
+			else if (thisAction.body && otherAction.body) {
+				const coverType = thisAction.coverType === 1 || otherAction.coverType === 1 ? 1 : 0;
+				textX.push({
+					...thisAction,
+					t: "r",
+					coverType,
+					body: composeBody(thisAction.body, otherAction.body, otherAction.coverType)
+				});
+			} else textX.push(thisAction.body ? thisAction : otherAction);
+			else if (thisAction.t === "r" && otherAction.t === "d") textX.push(otherAction);
+			else if (thisAction.t === "i" && otherAction.t === "d") {}
+		}
+		textX.trimEndUselessRetainAction();
+		return textX.serialize();
+	}
+	/**
+	* |(this↓ \| other→) | **insert** | **retain** | **delete** |
+	* | ---------------- | ---------- | ---------- | ---------- |
+	* |    **insert**    |   Case 1   |   Case 2   |   Case 2   |
+	* |    **retain**    |   Case 1   |   Case 5   |   Case 4   |
+	* |    **delete**    |   Case 1   |   Case 3   |   Case 3   |
+	*
+	* Case 1: When the other action type is an insert operation,
+	*         the insert operation is retained regardless of the type of action this action
+	* Case 2: When this action type is an insert operation and the other action type is a
+	*         non-insert operation, you need to retain the length of this action insert
+	* Case 3: When this action is a delete operation, there are two scenarios:
+	*      1) When other is a delete operation, since it is a delete operation, this has
+	*         already been deleted, so the target does not need to be in delete, and it can
+	*         be continued directly
+	*      2) When other is the retain operation, although this action delete occurs first,
+	*         the delete priority is higher, so the delete operation is retained, and the origin
+	*         delete has been applied, so it is directly continued
+	* Case 4: other is the delete operation, this is the retain operation, and the target delete operation
+	*         is kept
+	* Case 5: When both other and this are retain operations
+	*      1) If the other body attribute does not exist, directly retain length
+	*      2) If the other body property exists, then execute the TransformBody logic to override it
+	*/
+	static transform(thisActions, otherActions, priority = "right") {
+		return this._transform(otherActions, thisActions, priority === "left" ? "right" : "left");
+	}
+	static _transform(thisActions, otherActions, priority = "right") {
+		const thisIter = new ActionIterator(thisActions);
+		const otherIter = new ActionIterator(otherActions);
+		const textX = new TextX();
+		while (thisIter.hasNext() || otherIter.hasNext()) if (thisIter.peekType() === "i" && (priority === "left" || otherIter.peekType() !== "i")) {
+			const thisAction = thisIter.next();
+			textX.retain(thisAction.len);
+		} else if (otherIter.peekType() === "i") textX.push(otherIter.next());
+		else {
+			const length = Math.min(thisIter.peekLength(), otherIter.peekLength());
+			const thisAction = thisIter.next(length);
+			const otherAction = otherIter.next(length);
+			if (thisAction.t === "d") continue;
+			if (otherAction.t === "d") {
+				textX.push(otherAction);
+				continue;
+			}
+			if (thisAction.body == null || otherAction.body == null) textX.push(otherAction);
+			else {
+				const { coverType, body } = transformBody(thisAction, otherAction, priority === "left");
+				textX.push({
+					...otherAction,
+					t: "r",
+					coverType,
+					body
+				});
+			}
+		}
+		textX.trimEndUselessRetainAction();
+		return textX.serialize();
+	}
+	/**
+	* Used to transform selection. Why not named transformSelection?
+	* Because Univer Doc supports multiple Selections in one document, user need to encapsulate transformSelections at the application layer.
+	*/
+	static transformPosition(thisActions, index, priority = false) {
+		const thisIter = new ActionIterator(thisActions);
+		let offset = 0;
+		while (thisIter.hasNext() && offset <= index) {
+			const length = thisIter.peekLength();
+			const nextType = thisIter.peekType();
+			thisIter.next();
+			if (nextType === "d") {
+				index -= Math.min(length, index - offset);
+				continue;
+			} else if (nextType === "i" && (offset < index || !priority)) index += length;
+			offset += length;
+		}
+		return index;
+	}
+	static isNoop(actions) {
+		return actions.length === 0;
+	}
+	static invert(actions) {
+		const invertedActions = [];
+		for (const action of actions) if (action.t === "i") invertedActions.push({
+			t: "d",
+			len: action.len,
+			body: action.body
+		});
+		else if (action.t === "d") {
+			var _action$body$paragrap;
+			if (action.body == null) throw new Error("Can not invert DELETE action without body property, makeInvertible must be called first.");
+			if ((_action$body$paragrap = action.body.paragraphs) === null || _action$body$paragrap === void 0 ? void 0 : _action$body$paragrap.length) {
+				action.body[RESTORE_INSERTED_PARAGRAPH_IDS] = true;
+				Reflect.set(action.body, PRESERVE_INSERTED_PARAGRAPH_IDS, true);
+			}
+			invertedActions.push({
+				t: "i",
+				body: action.body,
+				len: action.len
+			});
+		} else if (action.body != null) {
+			if (action.oldBody == null) throw new Error("Can not invert RETAIN action without oldBody property, makeInvertible must be called first.");
+			invertedActions.push({
+				t: "r",
+				body: action.oldBody,
+				oldBody: action.body,
+				len: action.len,
+				coverType: 1
+			});
+		} else invertedActions.push(action);
+		return invertedActions;
+	}
+	static makeInvertible(actions, doc) {
+		const invertibleActions = [];
+		let index = 0;
+		const reservedParagraphIds = /* @__PURE__ */ new Set();
+		const reservedSectionIds = /* @__PURE__ */ new Set();
+		for (const action of actions) {
+			if (action.t === "i") {
+				normalizeInsertActionParagraphIds(action.body, doc, index, reservedParagraphIds);
+				normalizeInsertedSectionIdsForDocument(doc.sectionBreaks, action.body.sectionBreaks, reservedSectionIds);
+			}
+			if (action.t === "d" && (action.body == null || action.body && action.body.dataStream.length !== action.len)) {
+				const body = getBodySliceForTextXAction(doc, index, index + action.len, false);
+				action.len = body.dataStream.length;
+				action.body = body;
+			}
+			if (action.t === "r" && action.body != null) {
+				const body = getBodySlice(doc, index, index + action.len, true);
+				for (const field of [
+					"tables",
+					"columnGroups",
+					"blockRanges"
+				]) if (action.body[field] == null) delete body[field];
+				action.oldBody = {
+					...body,
+					dataStream: ""
+				};
+				action.len = body.dataStream.length;
+			}
+			invertibleActions.push(action);
+			if (action.t !== "i") index += action.len;
+		}
+		return invertibleActions;
+	}
+	insert(len, body) {
+		const insertAction = {
+			t: "i",
+			body,
+			len
+		};
+		this.push(insertAction);
+		return this;
+	}
+	retain(len, body, coverType) {
+		const retainAction = {
+			t: "r",
+			len
+		};
+		if (body != null) retainAction.body = body;
+		if (coverType != null) retainAction.coverType = coverType;
+		this.push(retainAction);
+		return this;
+	}
+	delete(len) {
+		const deleteAction = {
+			t: "d",
+			len
+		};
+		this.push(deleteAction);
+		return this;
+	}
+	empty() {
+		this._actions = [];
+		return this;
+	}
+	serialize() {
+		return this._actions;
+	}
+	push(...args) {
+		if (args.length > 1) {
+			for (const ac of args) this.push(ac);
+			return this;
+		}
+		let index = this._actions.length;
+		let lastAction = this._actions[index - 1];
+		const newAction = Tools.deepClone(args[0]);
+		if (newAction.t === "r" && newAction.len === 0 && newAction.body == null) return this;
+		if (typeof lastAction === "object") {
+			if (lastAction.t === "d" && newAction.t === "d") {
+				lastAction.len += newAction.len;
+				return this;
+			}
+			if (lastAction.t === "d" && newAction.t === "i") {
+				index -= 1;
+				lastAction = this._actions[index - 1];
+				if (lastAction == null) {
+					this._actions.unshift(newAction);
+					return this;
+				}
+			}
+			if (lastAction.t === "r" && newAction.t === "r" && lastAction.body == null && newAction.body == null) {
+				lastAction.len += newAction.len;
+				return this;
+			}
+			if (lastAction.t === "i" && onlyHasDataStream(lastAction.body) && newAction.t === "i" && onlyHasDataStream(newAction.body)) {
+				lastAction.len += newAction.len;
+				lastAction.body.dataStream += newAction.body.dataStream;
+				return this;
+			}
+		}
+		if (index === this._actions.length) this._actions.push(newAction);
+		else this._actions.splice(index, 0, newAction);
+		return this;
+	}
+	trimEndUselessRetainAction() {
+		let lastAction = this._actions[this._actions.length - 1];
+		while (lastAction && lastAction.t === "r" && isUselessRetainAction(lastAction)) {
+			this._actions.pop();
+			lastAction = this._actions[this._actions.length - 1];
+		}
+		return this;
+	}
+};
+_defineProperty(TextX, "id", "text-x");
+_defineProperty(TextX, "uri", "https://github.com/dream-num/univer#text-x");
+Object.defineProperty(TextX, "name", { value: "text-x" });
+
+//#endregion
+//#region src/docs/data-model/json-x/json-x.ts
+var JSONX = class JSONX {
+	static registerSubtype(subType) {
+		var _this$_subTypes$get;
+		if (subType == null || this._subTypes.has(subType.name) && ((_this$_subTypes$get = this._subTypes.get(subType.name)) === null || _this$_subTypes$get === void 0 ? void 0 : _this$_subTypes$get.id) !== TextX.id) return;
+		this._subTypes.set(subType.name, subType);
+		json1.type.registerSubtype(subType);
+	}
+	static apply(doc, actions) {
+		if (json1.type.isNoop(actions)) return;
+		return json1.type.apply(doc, actions);
+	}
+	static compose(thisActions, otherActions) {
+		return json1.type.compose(thisActions, otherActions);
+	}
+	static transform(thisActions, otherActions, priority) {
+		return json1.type.transform(thisActions, otherActions, priority);
+	}
+	static transformPosition(thisActions, index, priority = "right") {
+		if (thisActions && thisActions.length === 2 && thisActions[0] === "body" && thisActions[1].et === TextX.name) return TextX.transformPosition(thisActions[1].e, index, priority === "left");
+		return index;
+	}
+	static invertWithDoc(actions, doc) {
+		return json1.type.invertWithDoc(actions, doc);
+	}
+	static isNoop(actions) {
+		return json1.type.isNoop(actions);
+	}
+	static getInstance() {
+		if (this._instance == null) this._instance = new JSONX();
+		return this._instance;
+	}
+	removeOp(path, value) {
+		return json1.removeOp(path, value);
+	}
+	moveOp(from, to) {
+		return json1.moveOp(from, to);
+	}
+	insertOp(path, value) {
+		return json1.insertOp(path, value);
+	}
+	replaceOp(path, oldVal, newVal) {
+		return json1.replaceOp(path, oldVal, newVal);
+	}
+	editOp(subOp, path = ["body"]) {
+		return json1.editOp(path, TextX.name, subOp);
+	}
+};
+_defineProperty(JSONX, "uri", "https://github.com/dream-num/univer#json-x");
+_defineProperty(JSONX, "_subTypes", /* @__PURE__ */ new Map());
+_defineProperty(JSONX, "_instance", null);
+JSONX.registerSubtype(TextX);
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/parse.ts
+const tags = [
+	"",
+	"\x1B",
+	"",
+	"",
+	"",
+	"",
+	"",
+	""
+];
+const getPlainText = (dataStream) => {
+	const text = tags.reduce((res, curr) => res.replaceAll(curr, ""), dataStream);
+	return text.endsWith("\r\n") ? text.slice(0, -2) : text;
+};
+const isEmptyDocument = (dataStream) => {
+	if (!dataStream) return true;
+	return getPlainText(dataStream).replaceAll("\r", "") === "";
+};
+const fromPlainText = (text) => {
+	const dataStream = text.replace(/\r\n?|\n/g, "\r");
+	const paragraphs = [];
+	const existingParagraphIds = /* @__PURE__ */ new Set();
+	const customRanges = [];
+	let cursor = 0;
+	let newDataStream = "";
+	const loopParagraph = (i, insertP = true) => {
+		const paragraphText = dataStream.slice(cursor, i);
+		if (Tools.isLegalUrl(paragraphText)) {
+			const id = generateRandomId();
+			const urlText = `${paragraphText}`;
+			const range = {
+				startIndex: cursor,
+				endIndex: cursor + urlText.length - 1,
+				rangeId: id,
+				rangeType: 0,
+				properties: { url: text }
+			};
+			customRanges.push(range);
+			newDataStream += urlText;
+			cursor = i + 1;
+			if (insertP) {
+				newDataStream += "\r";
+				paragraphs.push({
+					startIndex: i,
+					paragraphId: createParagraphId(existingParagraphIds)
+				});
+			}
+		} else {
+			newDataStream += dataStream.slice(cursor, i + 1);
+			cursor = i + 1;
+			if (insertP) paragraphs.push({
+				startIndex: i,
+				paragraphId: createParagraphId(existingParagraphIds)
+			});
+		}
+	};
+	let end = 0;
+	for (let i = 0; i < dataStream.length; i++) if (dataStream[i] === "\r") {
+		loopParagraph(i);
+		end = i;
+	}
+	if (end !== dataStream.length - 1 || dataStream.length === 1) loopParagraph(dataStream.length, false);
+	return {
+		dataStream: newDataStream,
+		paragraphs,
+		customRanges
+	};
+};
+
+//#endregion
+//#region src/docs/data-model/document-data-model.ts
+const DEFAULT_DOC = {
+	id: "default_doc",
+	documentStyle: {}
+};
+function normalizeLegacyPageBreakSectionMetadata(body) {
+	if ((body === null || body === void 0 ? void 0 : body.dataStream) == null || body.sectionBreaks == null) return body;
+	const compatibleSectionBreaks = body.sectionBreaks.filter(({ startIndex }) => body.dataStream[startIndex] === "\n" || startIndex <= 0 || body.dataStream[startIndex - 1] !== "\f");
+	const existingSectionIds = /* @__PURE__ */ new Set();
+	let didChange = compatibleSectionBreaks.length !== body.sectionBreaks.length;
+	const sectionBreaks = compatibleSectionBreaks.map((sectionBreak) => {
+		if (sectionBreak.sectionId && !existingSectionIds.has(sectionBreak.sectionId)) {
+			existingSectionIds.add(sectionBreak.sectionId);
+			return sectionBreak;
+		}
+		didChange = true;
+		return {
+			...sectionBreak,
+			sectionId: createSectionId(existingSectionIds)
+		};
+	});
+	return didChange ? {
+		...body,
+		sectionBreaks
+	} : body;
+}
+function createDocumentSnapshot(snapshot) {
+	var _snapshot$documentSty, _snapshot$documentSty2;
+	if (snapshot.id != null && isInternalEditorID(snapshot.id)) return {
+		...DEFAULT_DOC,
+		...snapshot
+	};
+	const defaultSnapshot = getEmptySnapshot$1(snapshot.id, snapshot.locale, snapshot.title, (_snapshot$documentSty = snapshot.documentStyle) === null || _snapshot$documentSty === void 0 ? void 0 : _snapshot$documentSty.documentFlavor);
+	if (Tools.isEmptyObject(snapshot)) return defaultSnapshot;
+	const mergedSnapshot = mergeWith({}, defaultSnapshot, snapshot, (_objValue, srcValue, key) => {
+		if (Array.isArray(srcValue)) return srcValue;
+		if (key === "body" && srcValue != null && typeof srcValue === "object") return srcValue;
+	});
+	if (snapshot.body != null && ((_snapshot$documentSty2 = snapshot.documentStyle) === null || _snapshot$documentSty2 === void 0 ? void 0 : _snapshot$documentSty2.defaultParagraphStyle) === void 0) delete mergedSnapshot.documentStyle.defaultParagraphStyle;
+	mergedSnapshot.body = normalizeLegacyPageBreakSectionMetadata(mergedSnapshot.body);
+	return mergedSnapshot;
+}
+var DocumentDataModelSimple = class extends UnitModel {
+	getUnitId() {
+		throw new Error("Method not implemented.");
+	}
+	constructor(snapshot) {
+		super();
+		_defineProperty(this, "type", UniverInstanceType.UNIVER_DOC);
+		_defineProperty(this, "_name$", new BehaviorSubject(""));
+		_defineProperty(this, "name$", this._name$.asObservable());
+		_defineProperty(this, "snapshot", void 0);
+		_defineProperty(this, "_mutationRevision", 0);
+		this.snapshot = createDocumentSnapshot(snapshot);
+		this._name$.next(this.snapshot.title ?? "No Title");
+	}
+	getRev() {
+		return this.snapshot.rev ?? 1;
+	}
+	incrementRev() {
+		this.snapshot.rev = this.getRev() + 1;
+	}
+	setRev(rev) {
+		this.snapshot.rev = rev;
+	}
+	setName(name) {
+		this.snapshot.title = name;
+		this._markMutation();
+		this._name$.next(name);
+	}
+	get drawings() {
+		return this.snapshot.drawings;
+	}
+	get documentStyle() {
+		return this.snapshot.documentStyle;
+	}
+	get lists() {
+		return this.snapshot.lists;
+	}
+	get zoomRatio() {
+		var _this$snapshot$settin;
+		return ((_this$snapshot$settin = this.snapshot.settings) === null || _this$snapshot$settin === void 0 ? void 0 : _this$snapshot$settin.zoomRatio) || 1;
+	}
+	resetDrawing(drawings, drawingsOrder) {
+		this.snapshot.drawings = drawings;
+		this.snapshot.drawingsOrder = drawingsOrder;
+		this._markMutation();
+	}
+	getBody() {
+		return this.snapshot.body;
+	}
+	getSnapshot() {
+		return this.snapshot;
+	}
+	getBulletPresetList() {
+		const customLists = this.snapshot.lists ?? {};
+		return {
+			...PRESET_LIST_TYPE,
+			...customLists
+		};
+	}
+	updateDocumentId(unitId) {
+		this.snapshot.id = unitId;
+	}
+	updateDocumentRenderConfig(config) {
+		const { documentStyle } = this.snapshot;
+		if (documentStyle.renderConfig == null) documentStyle.renderConfig = config;
+		else documentStyle.renderConfig = {
+			...documentStyle.renderConfig,
+			...config
+		};
+		this._markMutation();
+	}
+	getDocumentStyle() {
+		return this.snapshot.documentStyle;
+	}
+	updateDocumentStyle(config) {
+		if (this.snapshot.documentStyle == null) this.snapshot.documentStyle = config;
+		else this.snapshot.documentStyle = {
+			...this.snapshot.documentStyle,
+			...config
+		};
+		this._markMutation();
+	}
+	updateDocumentDataMargin(data) {
+		const { t, l, b, r } = data;
+		const { documentStyle } = this.snapshot;
+		if (t != null) documentStyle.marginTop = t;
+		if (l != null) documentStyle.marginLeft = l;
+		if (b != null) documentStyle.marginBottom = b;
+		if (r != null) documentStyle.marginRight = r;
+		this._markMutation();
+	}
+	updateDocumentDataPageSize(width, height) {
+		const { documentStyle } = this.snapshot;
+		if (!documentStyle.pageSize) {
+			documentStyle.pageSize = {
+				width: width ?? Number.POSITIVE_INFINITY,
+				height: height ?? Number.POSITIVE_INFINITY
+			};
+			this._markMutation();
+			return;
+		}
+		if (width !== void 0) documentStyle.pageSize.width = width;
+		if (height !== void 0) documentStyle.pageSize.height = height;
+		this._markMutation();
+	}
+	updateDrawing(id, config) {
+		const { drawings } = this;
+		const { width, height, left, top } = config;
+		const drawing = drawings === null || drawings === void 0 ? void 0 : drawings[id];
+		if (!drawing) return;
+		const objectTransform = drawing.docTransform;
+		objectTransform.size.width = width;
+		objectTransform.size.height = height;
+		objectTransform.positionH.posOffset = left;
+		objectTransform.positionV.posOffset = top;
+		this._markMutation();
+	}
+	setZoomRatio(zoomRatio = 1) {
+		if (!this.snapshot.settings) this.snapshot.settings = { zoomRatio };
+		else this.snapshot.settings.zoomRatio = zoomRatio;
+		this._markMutation();
+	}
+	setDisabled(disabled) {
+		this.snapshot.disabled = disabled;
+		this._markMutation();
+	}
+	getDisabled() {
+		return this.snapshot.disabled;
+	}
+	getTitle() {
+		return this.snapshot.title;
+	}
+	getMutationRevision() {
+		return this._mutationRevision;
+	}
+	_markMutation() {
+		this._mutationRevision++;
+	}
+};
+var DocumentDataModel = class DocumentDataModel extends DocumentDataModelSimple {
+	constructor(snapshot) {
+		super(Tools.isEmptyObject(snapshot) ? getEmptySnapshot$1() : snapshot);
+		_defineProperty(this, "_unitId", void 0);
+		_defineProperty(this, "headerModelMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "footerModelMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "change$", new BehaviorSubject(0));
+		const UNIT_ID_LENGTH = 6;
+		this._unitId = this.snapshot.id ?? generateRandomId(UNIT_ID_LENGTH);
+		this._initializeHeaderFooterModel();
+		this._name$.next(this.snapshot.title ?? "");
+	}
+	dispose() {
+		super.dispose();
+		this.headerModelMap.forEach((header) => {
+			header.dispose();
+		});
+		this.footerModelMap.forEach((footer) => {
+			footer.dispose();
+		});
+		this._name$.complete();
+	}
+	getDrawings() {
+		return this.snapshot.drawings;
+	}
+	getDrawingsOrder() {
+		return this.snapshot.drawingsOrder;
+	}
+	getCustomRanges() {
+		var _this$snapshot$body;
+		return (_this$snapshot$body = this.snapshot.body) === null || _this$snapshot$body === void 0 ? void 0 : _this$snapshot$body.customRanges;
+	}
+	getCustomDecorations() {
+		var _this$snapshot$body2;
+		return (_this$snapshot$body2 = this.snapshot.body) === null || _this$snapshot$body2 === void 0 ? void 0 : _this$snapshot$body2.customDecorations;
+	}
+	getSettings() {
+		return this.snapshot.settings;
+	}
+	reset(snapshot) {
+		if (snapshot.id && snapshot.id !== this._unitId) throw new Error("Cannot reset a document model with a different unit id!");
+		this.snapshot = createDocumentSnapshot(snapshot);
+		this._initializeHeaderFooterModel();
+		this._markMutation();
+		this.change$.next(this.change$.value + 1);
+	}
+	getSelfOrHeaderFooterModel(segmentId) {
+		if (segmentId === null || segmentId === void 0 || segmentId === "") return this;
+		if (this.headerModelMap.has(segmentId)) return this.headerModelMap.get(segmentId);
+		if (this.footerModelMap.has(segmentId)) return this.footerModelMap.get(segmentId);
+		return null;
+	}
+	getUnitId() {
+		return this._unitId;
+	}
+	apply(actions) {
+		if (JSONX.isNoop(actions)) return;
+		this.snapshot = JSONX.apply(this.snapshot, actions);
+		this._markMutation();
+		if (actions === null || actions === void 0 ? void 0 : actions.some((a) => Array.isArray(a) && ((a === null || a === void 0 ? void 0 : a[0]) === "headers" || (a === null || a === void 0 ? void 0 : a[0]) === "footers"))) {
+			this.headerModelMap.clear();
+			this.footerModelMap.clear();
+			this._initializeHeaderFooterModel();
+		}
+		this.change$.next(this.change$.value + 1);
+		return this.snapshot;
+	}
+	sliceBody(startOffset, endOffset, type = 0) {
+		const body = this.getBody();
+		if (body == null) return;
+		return getBodySlice(body, startOffset, endOffset, false, type);
+	}
+	_initializeHeaderFooterModel() {
+		const { headers, footers } = this.getSnapshot();
+		if (headers) for (const headerId in headers) {
+			const header = headers[headerId];
+			this.headerModelMap.set(headerId, new DocumentDataModel(header));
+			this.headerModelMap.get(headerId).updateDocumentId(this.getUnitId());
+		}
+		if (footers) for (const footerId in footers) {
+			const footer = footers[footerId];
+			this.footerModelMap.set(footerId, new DocumentDataModel(footer));
+			this.footerModelMap.get(footerId).updateDocumentId(this.getUnitId());
+		}
+	}
+	updateDocumentId(unitId) {
+		super.updateDocumentId(unitId);
+		this._unitId = unitId;
+	}
+	getPlainText() {
+		var _this$getBody;
+		return getPlainText(((_this$getBody = this.getBody()) === null || _this$getBody === void 0 ? void 0 : _this$getBody.dataStream) ?? "");
+	}
+	getStatistics(options = {}) {
+		var _this$getBody2;
+		return calculateDocumentStatistics(((_this$getBody2 = this.getBody()) === null || _this$getBody2 === void 0 ? void 0 : _this$getBody2.dataStream) ?? "", options);
+	}
+};
+
+//#endregion
+//#region src/docs/data-model/paragraph-style.ts
+function _definedStyle(style) {
+	if (style == null) return {};
+	const definedStyle = Tools.deepClone(style);
+	Tools.removeNull(definedStyle);
+	return definedStyle;
+}
+function _resolveNamedParagraphStyle(styles, styleId) {
+	if (!styles || !styleId) return {};
+	const visiting = /* @__PURE__ */ new Set();
+	const resolve = (currentStyleId) => {
+		if (visiting.has(currentStyleId)) return {};
+		const style = styles[currentStyleId];
+		if (!style || style.type !== 1) return {};
+		visiting.add(currentStyleId);
+		const base = style.basedOn ? resolve(style.basedOn) : {};
+		visiting.delete(currentStyleId);
+		return {
+			...base,
+			..._definedStyle(style.paragraphStyle)
+		};
+	};
+	return resolve(styleId);
+}
+function resolveDocumentParagraphStyle(documentStyle, paragraphStyle, options = {}) {
+	const legacyStyle = options.useLegacyModernDefaults ?? (documentStyle === null || documentStyle === void 0 ? void 0 : documentStyle.documentFlavor) === 2 ? {
+		lineSpacing: DEFAULT_DOCUMENT_PARAGRAPH_LINE_SPACING,
+		spaceAbove: { v: 0 },
+		spaceBelow: { v: 12 }
+	} : {};
+	const documentDefaults = {
+		...(documentStyle === null || documentStyle === void 0 ? void 0 : documentStyle.documentFlavor) === 1 ? { widowControl: 1 } : {},
+		...legacyStyle,
+		..._definedStyle(documentStyle === null || documentStyle === void 0 ? void 0 : documentStyle.defaultParagraphStyle)
+	};
+	if (options.excludeDocumentOuterSpacing) {
+		delete documentDefaults.spaceAbove;
+		delete documentDefaults.spaceBelow;
+	}
+	const definedParagraphStyle = _definedStyle(paragraphStyle);
+	const referencedParagraphStyle = _resolveNamedParagraphStyle(options.styles, options.paragraphStyleId);
+	const namedStyleType = definedParagraphStyle.namedStyleType ?? referencedParagraphStyle.namedStyleType;
+	const namedStyle = namedStyleType == null ? null : NAMED_STYLE_SPACE_MAP[namedStyleType];
+	return Tools.deepClone({
+		...documentDefaults,
+		...namedStyle,
+		...referencedParagraphStyle,
+		...definedParagraphStyle
+	});
+}
+
+//#endregion
+//#region src/docs/data-model/replacement.ts
+function replaceInDocumentBody(body, query, target, caseSensitive) {
+	if (query === "") return body;
+	const documentDataModel = new DocumentDataModel({
+		id: "mock-id",
+		body,
+		documentStyle: {}
+	});
+	const queryLen = query.length;
+	let index;
+	while ((index = (caseSensitive ? documentDataModel.getBody().dataStream : documentDataModel.getBody().dataStream.toLowerCase()).indexOf(query)) >= 0) {
+		const textX = new TextX();
+		const jsonX = JSONX.getInstance();
+		if (index > 0) textX.retain(index);
+		if (target.length > 0) {
+			var _sliceBody$customRang;
+			const sliceBody = documentDataModel.sliceBody(index, index + queryLen);
+			const replaceBody = { dataStream: target };
+			if (Array.isArray(sliceBody === null || sliceBody === void 0 ? void 0 : sliceBody.textRuns) && sliceBody.textRuns.length) replaceBody.textRuns = [{
+				...sliceBody.textRuns[0],
+				st: 0,
+				ed: target.length
+			}];
+			if (sliceBody === null || sliceBody === void 0 || (_sliceBody$customRang = sliceBody.customRanges) === null || _sliceBody$customRang === void 0 ? void 0 : _sliceBody$customRang.length) replaceBody.customRanges = [{
+				...sliceBody.customRanges[0],
+				startIndex: 0,
+				endIndex: target.length - 1
+			}];
+			textX.insert(target.length, replaceBody);
+		}
+		textX.delete(queryLen);
+		documentDataModel.apply(jsonX.editOp(textX.serialize()));
+	}
+	const newBody = documentDataModel.getBody();
+	documentDataModel.dispose();
+	return newBody;
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/custom-decoration.ts
+function addCustomDecorationTextX(param) {
+	const { ranges, id, type } = param;
+	const textX = new TextX();
+	let cursor = 0;
+	for (let i = 0; i < ranges.length; i++) {
+		const { startOffset: start, endOffset: end } = ranges[i];
+		if (start > 0) textX.push({
+			t: "r",
+			len: start - cursor
+		});
+		textX.push({
+			t: "r",
+			body: {
+				dataStream: "",
+				customDecorations: [{
+					id,
+					type,
+					startIndex: 0,
+					endIndex: end - start - 1
+				}]
+			},
+			len: end - start
+		});
+		cursor = end;
+	}
+	return textX;
+}
+function deleteCustomDecorationTextX(params) {
+	var _documentDataModel$ge;
+	const { id, segmentId, documentDataModel } = params;
+	const body = documentDataModel === null || documentDataModel === void 0 ? void 0 : documentDataModel.getBody();
+	if (!documentDataModel || !body) return false;
+	const decoration = (_documentDataModel$ge = documentDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _documentDataModel$ge === void 0 || (_documentDataModel$ge = _documentDataModel$ge.getBody()) === null || _documentDataModel$ge === void 0 || (_documentDataModel$ge = _documentDataModel$ge.customDecorations) === null || _documentDataModel$ge === void 0 ? void 0 : _documentDataModel$ge.find((d) => d.id === id);
+	if (!decoration) return false;
+	const textX = new TextX();
+	const { startIndex, endIndex } = decoration;
+	const len = endIndex - startIndex + 1;
+	textX.push({
+		t: "r",
+		len: startIndex
+	});
+	textX.push({
+		t: "r",
+		len,
+		body: {
+			dataStream: "",
+			customDecorations: [{
+				startIndex: 0,
+				endIndex: len - 1,
+				id,
+				type: 9999
+			}]
+		}
+	});
+	return textX;
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/custom-range.ts
+/**
+* Check if two ranges intersect
+* @param line1Start - The start of the first range
+* @param line1End - The end of the first range
+* @param line2Start - The start of the second range
+* @param line2End - The end of the second range
+* @returns True if the ranges intersect, false otherwise
+*/
+function isIntersecting(line1Start, line1End, line2Start, line2End) {
+	if (line1Start <= line2Start && line1End >= line2Start || line1Start >= line2Start && line1Start <= line2End) return true;
+	return false;
+}
+function getCustomRangesInterestsWithSelection(range, customRanges) {
+	const result = [];
+	for (let i = 0, len = customRanges.length; i < len; i++) {
+		const customRange = customRanges[i];
+		if (range.collapsed) {
+			if (containsInteriorInsertionOffset(getCustomRangeInterval(customRange), range.startOffset)) result.push(customRange);
+		} else if (intersectsOperationalIntervals({
+			startOffset: range.startOffset,
+			endOffset: range.endOffset
+		}, getCustomRangeInterval(customRange))) result.push(customRange);
+	}
+	return result;
+}
+function copyCustomRange(range) {
+	return {
+		...Tools.deepClone(range),
+		rangeId: generateRandomId()
+	};
+}
+function excludePointsFromRange(range, points) {
+	const newRanges = [];
+	let start = range[0];
+	for (const point of points) {
+		if (point < range[0] || point > range[1]) continue;
+		if (start < point) newRanges.push([start, point - 1]);
+		start = point + 1;
+	}
+	if (start <= range[1]) newRanges.push([start, range[1]]);
+	return newRanges;
+}
+function getIntersectingCustomRanges(startIndex, endIndex, customRanges, rangeType) {
+	const relativeCustomRanges = [];
+	const queryInterval = getInclusiveRangeInterval({
+		startIndex,
+		endIndex
+	});
+	for (let i = 0, len = customRanges.length; i < len; i++) {
+		const customRange = customRanges[i];
+		if ((rangeType === void 0 || customRange.rangeType === rangeType) && intersectsOperationalIntervals(queryInterval, getCustomRangeInterval(customRange))) relativeCustomRanges.push({ ...customRange });
+		if (customRange.startIndex > endIndex) break;
+	}
+	return relativeCustomRanges;
+}
+function getSelectionForAddCustomRange(range, body) {
+	var _ranges$, _ranges;
+	const ranges = getIntersectingCustomRanges(range.startOffset, range.collapsed ? range.startOffset : range.endOffset - 1, body.customRanges ?? []);
+	const startOffset = Math.min(range.startOffset, ((_ranges$ = ranges[0]) === null || _ranges$ === void 0 ? void 0 : _ranges$.startIndex) ?? Infinity);
+	const endOffset = Math.max(range.endOffset, (((_ranges = ranges[ranges.length - 1]) === null || _ranges === void 0 ? void 0 : _ranges.endIndex) ?? -Infinity) + 1);
+	return {
+		startOffset,
+		endOffset,
+		collapsed: startOffset === endOffset
+	};
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/text-x-utils.ts
+function deleteCustomRangeTextX(params) {
+	var _documentDataModel$ge;
+	const { rangeId, segmentId, documentDataModel, insert } = params;
+	const range = (_documentDataModel$ge = documentDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _documentDataModel$ge === void 0 || (_documentDataModel$ge = _documentDataModel$ge.getBody()) === null || _documentDataModel$ge === void 0 || (_documentDataModel$ge = _documentDataModel$ge.customRanges) === null || _documentDataModel$ge === void 0 ? void 0 : _documentDataModel$ge.find((r) => r.rangeId === rangeId);
+	if (!range) return false;
+	const { startIndex, endIndex } = range;
+	const textX = new TextX();
+	const len = endIndex - startIndex + 1;
+	textX.push({
+		t: "r",
+		len: startIndex
+	});
+	textX.push({
+		t: "r",
+		len,
+		body: {
+			dataStream: "",
+			customRanges: []
+		}
+	});
+	if (insert) textX.push({
+		t: "i",
+		body: insert,
+		len: insert.dataStream.length
+	});
+	const end = endIndex + 1 + ((insert === null || insert === void 0 ? void 0 : insert.dataStream.length) ?? 0);
+	textX.selections = [{
+		startOffset: end,
+		endOffset: end,
+		collapsed: true
+	}];
+	return textX;
+}
+function addCustomRangeTextX(param) {
+	const { ranges, rangeId, rangeType, wholeEntity, properties, body } = param;
+	let cursor = 0;
+	const textX = new TextX();
+	let changed = false;
+	ranges.forEach((range) => {
+		const actualRange = getSelectionForAddCustomRange(range, body);
+		if (!actualRange) return false;
+		if (!body) return false;
+		const { startOffset, endOffset } = actualRange;
+		const customRanges = body.customRanges ?? [];
+		const addCustomRange = (startIndex, endIndex, index) => {
+			var _relativeCustomRanges, _relativeCustomRanges2;
+			const relativeCustomRanges = getIntersectingCustomRanges(startIndex, endIndex, customRanges, rangeType);
+			const rangeStartIndex = Math.min(((_relativeCustomRanges = relativeCustomRanges[0]) === null || _relativeCustomRanges === void 0 ? void 0 : _relativeCustomRanges.startIndex) ?? Infinity, startIndex);
+			const rangeEndIndex = Math.max(((_relativeCustomRanges2 = relativeCustomRanges[relativeCustomRanges.length - 1]) === null || _relativeCustomRanges2 === void 0 ? void 0 : _relativeCustomRanges2.endIndex) ?? -Infinity, endIndex);
+			const customRange = {
+				rangeId: index ? `${rangeId}$${index}` : rangeId,
+				rangeType,
+				startIndex: 0,
+				endIndex: rangeEndIndex - rangeStartIndex,
+				wholeEntity,
+				properties: { ...properties }
+			};
+			textX.push({
+				t: "r",
+				len: rangeStartIndex - cursor
+			});
+			textX.push({
+				t: "r",
+				len: rangeEndIndex - rangeStartIndex + 1,
+				body: {
+					dataStream: "",
+					customRanges: [customRange]
+				},
+				coverType: 0
+			});
+			cursor = rangeEndIndex + 1;
+		};
+		const relativeParagraphs = (body.paragraphs ?? []).filter((p) => p.startIndex < endOffset && p.startIndex > startOffset);
+		const customBlocks = (body.customBlocks ?? []).filter((block) => block.startIndex < endOffset && block.startIndex > startOffset);
+		excludePointsFromRange([startOffset, endOffset - 1], [...relativeParagraphs.map((p) => p.startIndex), ...customBlocks.map((b) => b.startIndex)]).forEach(([start, end], i) => addCustomRange(start, end, i));
+		changed = true;
+		textX.selections = [{
+			startOffset: actualRange.endOffset,
+			endOffset: actualRange.endOffset,
+			collapsed: true
+		}];
+	});
+	return changed ? textX : false;
+}
+function isAtomicContainerDeleted(container, selections) {
+	return Boolean(container.atomicRange && selections.some((selection) => selection.startOffset <= container.atomicRange.startOffset && selection.endOffset >= container.atomicRange.endOffset));
+}
+const IMPLICIT_TEXT_SELECTION_TOKENS = /* @__PURE__ */ new Set(["\r", "\n"]);
+const IMPLICIT_COLUMN_SELECTION_TOKENS = /* @__PURE__ */ new Set([
+	...IMPLICIT_TEXT_SELECTION_TOKENS,
+	"",
+	"",
+	"",
+	""
+]);
+function mergeSelections(selections) {
+	const sortedSelections = selections.filter((selection) => selection.endOffset > selection.startOffset).map((selection) => ({
+		...selection,
+		collapsed: false
+	})).sort((left, right) => left.startOffset - right.startOffset || left.endOffset - right.endOffset);
+	const mergedSelections = [];
+	for (const selection of sortedSelections) {
+		const previous = mergedSelections[mergedSelections.length - 1];
+		if (previous && selection.startOffset <= previous.endOffset) {
+			previous.endOffset = Math.max(previous.endOffset, selection.endOffset);
+			continue;
+		}
+		mergedSelections.push(selection);
+	}
+	return mergedSelections;
+}
+function isIntervalCoveredBySelections(interval, selections, body, implicitTokens) {
+	let cursor = interval.startOffset;
+	for (const selection of selections) {
+		if (selection.endOffset <= cursor || selection.startOffset >= interval.endOffset) continue;
+		const selectionStart = Math.max(selection.startOffset, interval.startOffset);
+		const selectionEnd = Math.min(selection.endOffset, interval.endOffset);
+		for (let offset = cursor; offset < selectionStart; offset++) if (!implicitTokens.has(body.dataStream[offset])) return false;
+		cursor = Math.max(cursor, selectionEnd);
+		if (cursor >= interval.endOffset) return true;
+	}
+	for (let offset = cursor; offset < interval.endOffset; offset++) if (!implicitTokens.has(body.dataStream[offset])) return false;
+	return true;
+}
+function addCoveredIntervals(selections, intervals, body, implicitTokens) {
+	const expanded = [...selections];
+	const selectionTemplate = selections[0];
+	for (const interval of intervals) if (isIntervalCoveredBySelections(interval, expanded, body, implicitTokens)) expanded.push({
+		...selectionTemplate,
+		...interval,
+		collapsed: false
+	});
+	return mergeSelections(expanded);
+}
+function expandFullyCoveredStructuralSelections(selections, body) {
+	let expanded = mergeSelections(selections);
+	expanded = addCoveredIntervals(expanded, (body.blockRanges ?? []).map(getBlockRangeInterval), body, IMPLICIT_TEXT_SELECTION_TOKENS);
+	expanded = addCoveredIntervals(expanded, (body.customRanges ?? []).map(getCustomRangeInterval), body, IMPLICIT_TEXT_SELECTION_TOKENS);
+	expanded = addCoveredIntervals(expanded, (body.columnGroups ?? []).map(getColumnGroupRangeInterval), body, IMPLICIT_COLUMN_SELECTION_TOKENS);
+	const editableRootEnd = Math.max(0, body.dataStream.length - 2);
+	if (editableRootEnd > 0) expanded = addCoveredIntervals(expanded, [{
+		startOffset: 0,
+		endOffset: editableRootEnd
+	}], body, IMPLICIT_TEXT_SELECTION_TOKENS);
+	return expanded;
+}
+function isOffsetDeleted(offset, selections) {
+	return selections.some((selection) => offset >= selection.startOffset && offset < selection.endOffset);
+}
+function isInsertInContainer(insertOffset, container) {
+	return insertOffset >= container.startOffset && insertOffset <= container.endOffset;
+}
+function protectLastDeletedOffset(offsets, selections, protectedOffsets) {
+	if (offsets.length && offsets.every((offset) => isOffsetDeleted(offset, selections))) protectedOffsets.add(offsets[offsets.length - 1]);
+}
+function protectDeletedColumnBoundaryTokens(body, selections, protectedOffsets) {
+	const fullyDeletedColumnGroups = (body.columnGroups ?? []).map(getColumnGroupRangeInterval).filter((interval) => selections.some((selection) => selection.startOffset <= interval.startOffset && selection.endOffset >= interval.endOffset));
+	for (let i = 0; i < body.dataStream.length; i++) {
+		const char = body.dataStream[i];
+		if ((char === "" || char === "" || char === "" || char === "") && isOffsetDeleted(i, selections) && !fullyDeletedColumnGroups.some((interval) => i >= interval.startOffset && i < interval.endOffset)) protectedOffsets.add(i);
+	}
+}
+function protectPartiallyDeletedBlockBoundaryTokens(body, selections, protectedOffsets) {
+	for (const blockRange of body.blockRanges ?? []) {
+		const blockInterval = getBlockRangeInterval(blockRange);
+		if (selections.some((selection) => selection.startOffset <= blockInterval.startOffset && selection.endOffset >= blockInterval.endOffset)) continue;
+		if (isOffsetDeleted(blockRange.startIndex, selections)) protectedOffsets.add(blockRange.startIndex);
+		if (isOffsetDeleted(blockRange.endIndex, selections)) protectedOffsets.add(blockRange.endIndex);
+	}
+}
+function collectBlockTextContainers(body) {
+	const blockRanges = [...body.blockRanges ?? []].sort((left, right) => left.startIndex - right.startIndex);
+	const containers = blockRanges.map((blockRange) => {
+		const atomicRange = getBlockRangeInterval(blockRange);
+		return {
+			atomicRange,
+			startOffset: atomicRange.startOffset + 1,
+			endOffset: atomicRange.endOffset - 1,
+			paragraphs: [],
+			sectionBreaks: [],
+			require: "paragraph-or-section"
+		};
+	});
+	const assignPoint = (offset, key) => {
+		let low = 0;
+		let high = blockRanges.length - 1;
+		let index = -1;
+		while (low <= high) {
+			const middle = Math.floor((low + high) / 2);
+			const blockRange = blockRanges[middle];
+			if (offset <= blockRange.startIndex) high = middle - 1;
+			else if (offset >= blockRange.endIndex) low = middle + 1;
+			else {
+				index = middle;
+				break;
+			}
+		}
+		if (index >= 0) containers[index][key].push(offset);
+	};
+	(body.paragraphs ?? []).forEach((paragraph) => assignPoint(paragraph.startIndex, "paragraphs"));
+	(body.sectionBreaks ?? []).forEach((sectionBreak) => assignPoint(sectionBreak.startIndex, "sectionBreaks"));
+	return containers;
+}
+function collectStructuralTextContainers(body) {
+	const containers = [{
+		startOffset: 0,
+		endOffset: body.dataStream.length,
+		paragraphs: [],
+		sectionBreaks: [],
+		require: "paragraph-and-section"
+	}];
+	const columnStack = [];
+	const cellStack = [];
+	const getActiveContainer = () => {
+		if (cellStack.length) return cellStack[cellStack.length - 1];
+		if (columnStack.length) return columnStack[columnStack.length - 1];
+		return containers[0];
+	};
+	for (let i = 0; i < body.dataStream.length; i++) {
+		const char = body.dataStream[i];
+		if (char === "") columnStack.push({
+			atomicRange: {
+				startOffset: i,
+				endOffset: i + 1
+			},
+			startOffset: i + 1,
+			endOffset: i + 1,
+			paragraphs: [],
+			sectionBreaks: [],
+			require: "paragraph-or-section"
+		});
+		else if (char === "") {
+			const column = columnStack.pop();
+			if (column) {
+				column.endOffset = i;
+				if (column.atomicRange) column.atomicRange.endOffset = i + 1;
+				containers.push(column);
+			}
+		} else if (char === "") cellStack.push({
+			startOffset: i + 1,
+			endOffset: i + 1,
+			paragraphs: [],
+			sectionBreaks: [],
+			require: "paragraph-and-section"
+		});
+		else if (char === "") {
+			const cell = cellStack.pop();
+			if (cell) {
+				cell.endOffset = i;
+				containers.push(cell);
+			}
+		} else if (char === "\r") getActiveContainer().paragraphs.push(i);
+		else if (char === "\n") getActiveContainer().sectionBreaks.push(i);
+	}
+	containers.push(...collectBlockTextContainers(body));
+	return containers;
+}
+function protectRequiredContainerChildren(container, selections, insertBody, insertOffset, protectedOffsets) {
+	if (isAtomicContainerDeleted(container, selections)) return;
+	const insertAppliesToContainer = insertBody && isInsertInContainer(insertOffset, container);
+	const insertDataStream = (insertBody === null || insertBody === void 0 ? void 0 : insertBody.dataStream) ?? "";
+	const insertHasParagraph = insertDataStream.includes("\r");
+	const insertHasSectionBreak = insertDataStream.includes("\n");
+	if (container.require === "paragraph-or-section") {
+		const offsets = [...container.paragraphs, ...container.sectionBreaks].sort((a, b) => a - b);
+		if (!insertAppliesToContainer || !insertHasParagraph && !insertHasSectionBreak) protectLastDeletedOffset(offsets, selections, protectedOffsets);
+		return;
+	}
+	if (!insertAppliesToContainer || !insertHasParagraph) protectLastDeletedOffset(container.paragraphs, selections, protectedOffsets);
+	if (!insertAppliesToContainer || !insertHasSectionBreak) protectLastDeletedOffset(container.sectionBreaks, selections, protectedOffsets);
+}
+function normalizeSelectionsForStructuralSentinels(selections, body, insertBody) {
+	if (!selections.length) return selections;
+	const structuralSelections = insertBody == null ? expandFullyCoveredStructuralSelections(selections, body) : selections;
+	if (!structuralSelections.length) return selections;
+	const insertOffset = structuralSelections[0].startOffset;
+	const protectedOffsets = /* @__PURE__ */ new Set();
+	collectStructuralTextContainers(body).forEach((container) => {
+		protectRequiredContainerChildren(container, structuralSelections, insertBody, insertOffset, protectedOffsets);
+	});
+	protectDeletedColumnBoundaryTokens(body, structuralSelections, protectedOffsets);
+	protectPartiallyDeletedBlockBoundaryTokens(body, structuralSelections, protectedOffsets);
+	if (!protectedOffsets.size) return structuralSelections;
+	const normalizedSelections = [];
+	structuralSelections.forEach((selection) => {
+		let startOffset = selection.startOffset;
+		for (let offset = selection.startOffset; offset < selection.endOffset; offset++) {
+			if (!protectedOffsets.has(offset)) continue;
+			if (startOffset < offset) normalizedSelections.push({
+				...selection,
+				startOffset,
+				endOffset: offset,
+				collapsed: false
+			});
+			startOffset = offset + 1;
+		}
+		if (startOffset < selection.endOffset) normalizedSelections.push({
+			...selection,
+			startOffset,
+			endOffset: selection.endOffset,
+			collapsed: false
+		});
+	});
+	return normalizedSelections.length ? normalizedSelections : [{
+		...structuralSelections[0],
+		endOffset: structuralSelections[0].startOffset,
+		collapsed: true
+	}];
+}
+function deleteSelectionTextX(selections, body, memoryCursor = 0, insertBody = null, keepBullet = true) {
+	const normalizedSelections = normalizeSelectionsForStructuralSentinels([...selections].sort((a, b) => a.startOffset - b.startOffset), body, insertBody);
+	const dos = [];
+	const { paragraphs = [] } = body;
+	const paragraphInRange = paragraphs === null || paragraphs === void 0 ? void 0 : paragraphs.find((p) => p.startIndex >= normalizedSelections[0].startOffset && p.startIndex < normalizedSelections[0].endOffset);
+	let cursor = memoryCursor;
+	normalizedSelections.forEach((selection) => {
+		const { startOffset, endOffset } = selection;
+		if (startOffset > cursor) {
+			dos.push({
+				t: "r",
+				len: startOffset - cursor
+			});
+			cursor = startOffset;
+		}
+		if (cursor < endOffset) {
+			dos.push({
+				t: "d",
+				len: endOffset - cursor
+			});
+			cursor = endOffset;
+		}
+	});
+	if (insertBody) dos.push({
+		t: "i",
+		body: insertBody,
+		len: insertBody.dataStream.length
+	});
+	if ((paragraphInRange === null || paragraphInRange === void 0 ? void 0 : paragraphInRange.bullet) && keepBullet) {
+		const nextParagraph = paragraphs.find((p) => p.startIndex - memoryCursor >= normalizedSelections[normalizedSelections.length - 1].endOffset - 1);
+		if (nextParagraph) {
+			if (nextParagraph.startIndex > cursor) {
+				dos.push({
+					t: "r",
+					len: nextParagraph.startIndex - cursor
+				});
+				cursor = nextParagraph.startIndex;
+			}
+			dos.push({
+				t: "r",
+				len: 1,
+				body: {
+					dataStream: "",
+					paragraphs: [{
+						...nextParagraph,
+						startIndex: 0,
+						bullet: paragraphInRange === null || paragraphInRange === void 0 ? void 0 : paragraphInRange.bullet
+					}]
+				},
+				coverType: 0
+			});
+		}
+	}
+	return dos;
+}
+function retainSelectionTextX(selections, body, memoryCursor = 0) {
+	const dos = [];
+	let cursor = memoryCursor;
+	selections.forEach((selection) => {
+		const { startOffset, endOffset } = selection;
+		if (startOffset > cursor) {
+			dos.push({
+				t: "r",
+				len: startOffset - cursor
+			});
+			cursor = startOffset;
+		}
+		if (endOffset > cursor) {
+			dos.push({
+				t: "r",
+				len: endOffset - cursor,
+				body: {
+					...Tools.deepClone(body),
+					dataStream: ""
+				}
+			});
+			cursor = endOffset;
+		}
+	});
+	return dos;
+}
+const replaceSelectionTextX = (params) => {
+	var _doc$getSelfOrHeaderF;
+	const { selection, body: insertBody, doc } = params;
+	const segmentId = selection.segmentId;
+	const body = (_doc$getSelfOrHeaderF = doc.getSelfOrHeaderFooterModel(segmentId)) === null || _doc$getSelfOrHeaderF === void 0 ? void 0 : _doc$getSelfOrHeaderF.getBody();
+	if (!body) return false;
+	const normalizedSelections = normalizeSelectionsForStructuralSentinels([selection], body, insertBody);
+	if (normalizedSelections.length !== 1 || normalizedSelections[0].startOffset !== selection.startOffset || normalizedSelections[0].endOffset !== selection.endOffset) {
+		const textX = new TextX();
+		textX.push(...deleteSelectionTextX([selection], body, 0, insertBody));
+		return textX;
+	}
+	const oldBody = selection.collapsed ? null : getBodySlice(body, selection.startOffset, selection.endOffset);
+	const diffs = fastDiff(oldBody ? oldBody.dataStream : "", insertBody.dataStream);
+	let cursor = 0;
+	const actions = diffs.map(([type, text]) => {
+		switch (type) {
+			case 0: {
+				const action = {
+					t: "r",
+					body: {
+						...getBodySliceForTextXAction(insertBody, cursor, cursor + text.length, false),
+						dataStream: ""
+					},
+					len: text.length
+				};
+				cursor += text.length;
+				return action;
+			}
+			case 1: {
+				const action = {
+					t: "i",
+					body: getBodySliceForTextXAction(insertBody, cursor, cursor + text.length),
+					len: text.length
+				};
+				cursor += text.length;
+				return action;
+			}
+			default: return {
+				t: "d",
+				len: text.length
+			};
+		}
+	});
+	const textX = new TextX();
+	textX.push({
+		t: "r",
+		len: selection.startOffset
+	});
+	textX.push(...actions);
+	return textX;
+};
+function isTextRunsEqual(textRuns, oldTextRuns) {
+	if ((textRuns === null || textRuns === void 0 ? void 0 : textRuns.length) === (oldTextRuns === null || oldTextRuns === void 0 ? void 0 : oldTextRuns.length) && (textRuns === null || textRuns === void 0 ? void 0 : textRuns.every((textRun, index) => JSON.stringify(textRun) === JSON.stringify(oldTextRuns === null || oldTextRuns === void 0 ? void 0 : oldTextRuns[index])))) return true;
+	return false;
+}
+const replaceSelectionTextRuns = (params) => {
+	var _doc$getSelfOrHeaderF2;
+	const { selection, body: insertBody, doc, themeService } = params;
+	const segmentId = selection.segmentId;
+	const body = (_doc$getSelfOrHeaderF2 = doc.getSelfOrHeaderFooterModel(segmentId)) === null || _doc$getSelfOrHeaderF2 === void 0 ? void 0 : _doc$getSelfOrHeaderF2.getBody();
+	if (!body) return false;
+	const normalizedSelections = normalizeSelectionsForStructuralSentinels([selection], body, insertBody);
+	if (normalizedSelections.length !== 1 || normalizedSelections[0].startOffset !== selection.startOffset || normalizedSelections[0].endOffset !== selection.endOffset) {
+		const textX = new TextX();
+		textX.push(...deleteSelectionTextX([selection], body, 0, insertBody));
+		return textX;
+	}
+	const oldBody = selection.collapsed ? null : getBodySlice(body, selection.startOffset, selection.endOffset);
+	const diffs = fastDiff(oldBody ? oldBody.dataStream : "", insertBody.dataStream);
+	let cursor = 0;
+	const actions = diffs.map(([type, text]) => {
+		switch (type) {
+			case 0: {
+				const textRunsSlice = getTextRunSlice(insertBody, cursor, cursor + text.length, false);
+				const oldTextRunsSlice = getTextRunSlice(oldBody, cursor, cursor + text.length, false);
+				const action = {
+					t: "r",
+					body: isTextRunsEqual(textRunsSlice, oldTextRunsSlice) ? void 0 : {
+						textRuns: textRunsSlice === null || textRunsSlice === void 0 ? void 0 : textRunsSlice.map((textRun) => {
+							var _textRun$ts, _textRun$ts2, _textRun$ts3;
+							return {
+								...textRun,
+								ts: {
+									...textRun.ts,
+									cl: ((_textRun$ts = textRun.ts) === null || _textRun$ts === void 0 || (_textRun$ts = _textRun$ts.cl) === null || _textRun$ts === void 0 || (_textRun$ts = _textRun$ts.rgb) === null || _textRun$ts === void 0 ? void 0 : _textRun$ts.includes(".")) ? { rgb: themeService.getColorFromTheme(((_textRun$ts2 = textRun.ts) === null || _textRun$ts2 === void 0 || (_textRun$ts2 = _textRun$ts2.cl) === null || _textRun$ts2 === void 0 ? void 0 : _textRun$ts2.rgb) ?? "") } : (_textRun$ts3 = textRun.ts) === null || _textRun$ts3 === void 0 ? void 0 : _textRun$ts3.cl
+								}
+							};
+						}),
+						dataStream: ""
+					},
+					len: text.length
+				};
+				cursor += text.length;
+				return action;
+			}
+			case 1: {
+				const action = {
+					t: "i",
+					body: getBodySliceForTextXAction(insertBody, cursor, cursor + text.length),
+					len: text.length
+				};
+				cursor += text.length;
+				return action;
+			}
+			default: return {
+				t: "d",
+				len: text.length
+			};
+		}
+	});
+	if (actions.every((action) => action.t === "r" && !action.body)) return false;
+	const textX = new TextX();
+	textX.push({
+		t: "r",
+		len: selection.startOffset
+	});
+	textX.push(...actions);
+	return textX;
+};
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/drawings.ts
+function getCustomBlockIdsInSelections(body, selections) {
+	const customBlockIds = [];
+	const { customBlocks = [] } = body;
+	for (const selection of selections) {
+		const { startOffset, endOffset } = selection;
+		if (startOffset == null || endOffset == null) continue;
+		for (const customBlock of customBlocks) {
+			const { startIndex } = customBlock;
+			if (startIndex >= startOffset && startIndex < endOffset) customBlockIds.push(customBlock.blockId);
+		}
+	}
+	return customBlockIds;
+}
+function removeDrawingReferences(documentData, selections, body = documentData.body) {
+	if (!body) return [];
+	const drawings = documentData.drawings ?? {};
+	const drawingOrder = documentData.drawingsOrder ?? [];
+	const blockIds = [...new Set(getCustomBlockIdsInSelections(body, selections))].sort((left, right) => drawingOrder.indexOf(right) - drawingOrder.indexOf(left));
+	const jsonX = JSONX.getInstance();
+	const actions = [];
+	for (const blockId of blockIds) {
+		const drawing = drawings[blockId];
+		if (drawing != null) {
+			const removeDrawingAction = jsonX.removeOp(["drawings", blockId], drawing);
+			if (removeDrawingAction) actions.push(removeDrawingAction);
+		}
+		const drawingIndex = drawingOrder.indexOf(blockId);
+		if (drawingIndex >= 0) {
+			const removeDrawingOrderAction = jsonX.removeOp(["drawingsOrder", drawingIndex], blockId);
+			if (removeDrawingOrderAction) actions.push(removeDrawingOrderAction);
+		}
+	}
+	return actions;
+}
+const addDrawing = (param) => {
+	var _documentDataModel$ge, _documentDataModel$ge2;
+	const { selection, documentDataModel, drawings } = param;
+	const { collapsed, startOffset, segmentId } = selection;
+	const textX = new TextX();
+	const jsonX = JSONX.getInstance();
+	const rawActions = [];
+	const body = (_documentDataModel$ge = documentDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _documentDataModel$ge === void 0 ? void 0 : _documentDataModel$ge.getBody();
+	if (!body) return false;
+	const drawingOrderLength = ((_documentDataModel$ge2 = documentDataModel.getSnapshot().drawingsOrder) === null || _documentDataModel$ge2 === void 0 ? void 0 : _documentDataModel$ge2.length) ?? 0;
+	let removeDrawingLen = 0;
+	const insertOffset = collapsed ? normalizeDrawingInsertOffset(body, startOffset ?? 0) : startOffset ?? 0;
+	if (collapsed) {
+		if (insertOffset > 0) textX.push({
+			t: "r",
+			len: insertOffset
+		});
+	} else {
+		const dos = deleteSelectionTextX([selection], body, 0, null, false);
+		textX.push(...dos);
+		const removedCustomBlockIds = getCustomBlockIdsInSelections(body, [selection]);
+		const drawings = documentDataModel.getDrawings() ?? {};
+		const drawingOrder = documentDataModel.getDrawingsOrder() ?? [];
+		const sortedRemovedCustomBlockIds = removedCustomBlockIds.sort((a, b) => {
+			if (drawingOrder.indexOf(a) > drawingOrder.indexOf(b)) return -1;
+			else if (drawingOrder.indexOf(a) < drawingOrder.indexOf(b)) return 1;
+			return 0;
+		});
+		if (sortedRemovedCustomBlockIds.length > 0) for (const blockId of sortedRemovedCustomBlockIds) {
+			const drawing = drawings[blockId];
+			const drawingIndex = drawingOrder.indexOf(blockId);
+			if (drawing == null || drawingIndex < 0) continue;
+			const removeDrawingAction = jsonX.removeOp(["drawings", blockId], drawing);
+			const removeDrawingOrderAction = jsonX.removeOp(["drawingsOrder", drawingIndex], blockId);
+			rawActions.push(removeDrawingAction);
+			rawActions.push(removeDrawingOrderAction);
+			removeDrawingLen++;
+		}
+	}
+	const insertBody = buildDrawingInsertBody(body, drawings, insertOffset);
+	textX.push({
+		t: "i",
+		body: insertBody,
+		len: insertBody.dataStream.length
+	});
+	const path = getRichTextEditPath(documentDataModel, segmentId);
+	const placeHolderAction = jsonX.editOp(textX.serialize(), path);
+	rawActions.push(placeHolderAction);
+	for (const drawing of drawings) {
+		const { drawingId } = drawing;
+		const addDrawingAction = jsonX.insertOp(["drawings", drawingId], drawing);
+		const addDrawingOrderAction = jsonX.insertOp(["drawingsOrder", drawingOrderLength - removeDrawingLen], drawingId);
+		rawActions.push(addDrawingAction);
+		rawActions.push(addDrawingOrderAction);
+	}
+	return rawActions.reduce((acc, cur) => {
+		return JSONX.compose(acc, cur);
+	}, null);
+};
+function normalizeDrawingInsertOffset(body, offset) {
+	const { dataStream } = body;
+	if (offset === 0 && dataStream[0] === "\r") return 1;
+	if (dataStream[offset] === "\n" && dataStream[offset - 1] === "\r" && isInsideTableCell(dataStream, offset)) return offset - 1;
+	return offset;
+}
+function isInsideTableCell(dataStream, offset) {
+	let cellDepth = 0;
+	for (let index = 0; index < offset; index++) if (dataStream[index] === "") cellDepth++;
+	else if (dataStream[index] === "") cellDepth = Math.max(0, cellDepth - 1);
+	return cellDepth > 0;
+}
+function buildDrawingInsertBody(body, drawings, insertOffset) {
+	var _body$paragraphs;
+	const placeholders = "\b".repeat(drawings.length);
+	const needsTrailingParagraph = body.dataStream[insertOffset] === "\n" || body.dataStream[insertOffset] === void 0;
+	return {
+		dataStream: needsTrailingParagraph ? `${placeholders}${"\r"}` : placeholders,
+		customBlocks: drawings.map((drawing, i) => ({
+			startIndex: i,
+			blockId: drawing.drawingId
+		})),
+		...needsTrailingParagraph ? { paragraphs: [{
+			startIndex: placeholders.length,
+			paragraphId: createParagraphId(new Set((_body$paragraphs = body.paragraphs) === null || _body$paragraphs === void 0 ? void 0 : _body$paragraphs.map((paragraph) => paragraph.paragraphId)))
+		}] } : {}
+	};
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/data-stream-change.ts
+/**
+* Finds one contiguous dataStream change. Pure structural insertions and deletions
+* are anchored by their stable ids before falling back to string comparison.
+* This prevents an adjacent identical sentinel from being mistaken for an
+* unchanged prefix and keeps the structure metadata aligned with the TextX body.
+*/
+function getSingleDataStreamChange(previousBody, nextBody) {
+	if (previousBody == null || nextBody == null) return null;
+	const previousDataStream = previousBody.dataStream;
+	const nextDataStream = nextBody.dataStream;
+	if (previousDataStream === nextDataStream) return null;
+	const insertedLength = nextDataStream.length - previousDataStream.length;
+	if (insertedLength > 0) {
+		const structuralInsertion = findStructuralInsertion(previousBody, nextBody, previousDataStream, nextDataStream, insertedLength);
+		if (structuralInsertion) return structuralInsertion;
+	} else if (insertedLength < 0) {
+		const structuralDeletion = findStructuralDeletion(previousBody, nextBody, previousDataStream, nextDataStream, -insertedLength);
+		if (structuralDeletion) return structuralDeletion;
+	}
+	let start = 0;
+	while (start < previousDataStream.length && start < nextDataStream.length && previousDataStream[start] === nextDataStream[start]) start++;
+	let previousEnd = previousDataStream.length;
+	let nextEnd = nextDataStream.length;
+	while (previousEnd > start && nextEnd > start && previousDataStream[previousEnd - 1] === nextDataStream[nextEnd - 1]) {
+		previousEnd--;
+		nextEnd--;
+	}
+	return {
+		start,
+		deleteLength: previousEnd - start,
+		insertLength: nextEnd - start
+	};
+}
+function findStructuralDeletion(previousBody, nextBody, previousDataStream, nextDataStream, deletedLength) {
+	for (const start of collectNewStructuralStartOffsets(nextBody, previousBody)) if (previousDataStream.slice(0, start) === nextDataStream.slice(0, start) && previousDataStream.slice(start + deletedLength) === nextDataStream.slice(start)) return {
+		start,
+		deleteLength: deletedLength,
+		insertLength: 0
+	};
+	return null;
+}
+function findStructuralInsertion(previousBody, nextBody, previousDataStream, nextDataStream, insertedLength) {
+	for (const start of collectNewStructuralStartOffsets(previousBody, nextBody)) if (previousDataStream.slice(0, start) === nextDataStream.slice(0, start) && previousDataStream.slice(start) === nextDataStream.slice(start + insertedLength)) return {
+		start,
+		deleteLength: 0,
+		insertLength: insertedLength
+	};
+	return null;
+}
+function collectNewStructuralStartOffsets(previousBody, nextBody) {
+	const offsets = [
+		...collectNewStartOffsets(previousBody.blockRanges, nextBody.blockRanges, (item) => item.blockId),
+		...collectNewStartOffsets(previousBody.tables, nextBody.tables, (item) => item.tableId),
+		...collectNewStartOffsets(previousBody.columnGroups, nextBody.columnGroups, (item) => item.columnGroupId),
+		...collectNewStartOffsets(previousBody.customBlocks, nextBody.customBlocks, (item) => item.blockId)
+	];
+	return Array.from(new Set(offsets)).sort((left, right) => left - right);
+}
+function collectNewStartOffsets(previousItems, nextItems, getId) {
+	const previousIds = new Set((previousItems ?? []).map(getId));
+	return (nextItems ?? []).filter((item) => !previousIds.has(getId(item))).map((item) => item.startIndex);
+}
+
+//#endregion
+//#region src/docs/data-model/text-x/build-utils/index.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var BuildTextUtils = class {};
+_defineProperty(BuildTextUtils, "customRange", {
+	add: addCustomRangeTextX,
+	delete: deleteCustomRangeTextX,
+	copyCustomRange,
+	getCustomRangesInterestsWithSelection,
+	isIntersecting
+});
+_defineProperty(BuildTextUtils, "customDecoration", {
+	add: addCustomDecorationTextX,
+	delete: deleteCustomDecorationTextX
+});
+_defineProperty(BuildTextUtils, "selection", {
+	replace: replaceSelectionTextX,
+	makeSelection,
+	normalizeSelection,
+	delete: deleteSelectionTextX,
+	replaceTextRuns: replaceSelectionTextRuns,
+	retain: retainSelectionTextX
+});
+_defineProperty(BuildTextUtils, "range", {
+	isIntersects: isSegmentIntersects,
+	getParagraphsInRange,
+	getParagraphsInRanges
+});
+_defineProperty(BuildTextUtils, "transform", {
+	getPlainText,
+	fromPlainText,
+	isEmptyDocument
+});
+_defineProperty(BuildTextUtils, "paragraph", {
+	bullet: {
+		set: setParagraphBullet,
+		switch: switchParagraphBullet,
+		toggleChecklist: toggleChecklistParagraph,
+		changeNestLevel: changeParagraphBulletNestLevel
+	},
+	style: { set: setParagraphStyle },
+	util: {
+		transform: transformParagraphs,
+		getParagraphsInRange,
+		getParagraphsInRanges
+	}
+});
+_defineProperty(BuildTextUtils, "drawing", {
+	add: addDrawing,
+	remove: removeDrawingReferences
+});
+
+//#endregion
+//#region src/docs/data-model/rich-text-builder.ts
+const NON_EDITABLE_RICH_TEXT_TOKENS = new Set(Object.values(DataStreamTreeTokenType).filter((token) => token !== "" && token !== " "));
+function normalizeBody$1(body) {
+	if (!body.customRanges) body.customRanges = [];
+	if (!body.paragraphs) {
+		body.paragraphs = [];
+		const existingParagraphIds = /* @__PURE__ */ new Set();
+		for (let i = 0; i < body.dataStream.length; i++) if (body.dataStream[i] === "\r") body.paragraphs.push({
+			startIndex: i,
+			paragraphId: createParagraphId(existingParagraphIds)
+		});
+	}
+	if (!body.customBlocks) body.customBlocks = [];
+	if (!body.textRuns) body.textRuns = [];
+	if (!body.customDecorations) body.customDecorations = [];
+	if (!body.sectionBreaks) {
+		body.sectionBreaks = [];
+		const existingSectionIds = /* @__PURE__ */ new Set();
+		for (let i = 0; i < body.dataStream.length; i++) if (body.dataStream[i] === "\n") body.sectionBreaks.push({
+			startIndex: i,
+			sectionId: createSectionId(existingSectionIds)
+		});
+	}
+	if (!body.tables) body.tables = [];
+	return body;
+}
+function normalizeData(data) {
+	data.body = normalizeBody$1(data.body ?? { dataStream: "" });
+	if (!data.drawingsOrder) data.drawingsOrder = [];
+	if (!data.drawings) data.drawings = {};
+	if (!data.documentStyle) data.documentStyle = {};
+	return data;
+}
+function normalizeColorStyle(color) {
+	return typeof color === "string" ? { rgb: color } : color;
+}
+function normalizeRichTextSpanStyle(style) {
+	const { bold, italic, fontFamily, fontSize, color, background, ...rawStyle } = style;
+	const normalized = { ...rawStyle };
+	if (bold !== void 0) normalized.bl = bold ? 1 : 0;
+	if (italic !== void 0) normalized.it = italic ? 1 : 0;
+	if (fontFamily !== void 0) normalized.ff = fontFamily;
+	if (fontSize !== void 0) normalized.fs = fontSize;
+	if (color !== void 0) normalized.cl = normalizeColorStyle(color);
+	if (background !== void 0) normalized.bg = normalizeColorStyle(background);
+	return normalized;
+}
+function normalizeRichTextLength(value) {
+	return typeof value === "number" ? { v: value } : value;
+}
+function normalizeRichTextParagraphStyle(style) {
+	if (!style) return;
+	if (style instanceof ParagraphStyleBuilder) return style.build();
+	return {
+		horizontalAlign: style.align,
+		lineSpacing: style.lineHeight,
+		spacingRule: style.lineHeightRule,
+		indentFirstLine: normalizeRichTextLength(style.firstLineIndent),
+		hanging: normalizeRichTextLength(style.hangingIndent),
+		indentStart: normalizeRichTextLength(style.indentStart),
+		indentEnd: normalizeRichTextLength(style.indentEnd),
+		spaceAbove: normalizeRichTextLength(style.spaceBefore),
+		spaceBelow: normalizeRichTextLength(style.spaceAfter),
+		direction: style.direction,
+		wordWrap: style.wordWrap === void 0 ? void 0 : style.wordWrap ? 1 : 0,
+		keepLines: style.keepLines === void 0 ? void 0 : style.keepLines ? 1 : 0,
+		keepNext: style.keepNext === void 0 ? void 0 : style.keepNext ? 1 : 0
+	};
+}
+function hasRichTextContent(data) {
+	var _data$body;
+	return (((_data$body = data.body) === null || _data$body === void 0 ? void 0 : _data$body.dataStream) ?? "").replace(/\r|\n/g, "").length > 0;
+}
+/**
+* Represents a read-only font style value object.
+* This class provides access to font style properties without modification capabilities.
+*/
+var TextStyleValue = class TextStyleValue {
+	/**
+	* Creates an instance of TextStyleValue.
+	* @param {ITextStyle} style style object
+	* @returns {TextStyleValue} font style instance
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style);
+	* ```
+	*/
+	static create(style = {}) {
+		return new TextStyleValue(style);
+	}
+	/**
+	* Creates a new TextStyleValue instance
+	* @param {ITextStyle} style The initial style object
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style);
+	* ```
+	*/
+	constructor(style = {}) {
+		_defineProperty(this, "_style", void 0);
+		this._style = style;
+	}
+	/**
+	* Gets the font family
+	* @returns {Nullable<string>} The font family name or undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.fontFamily);
+	* ```
+	*/
+	get fontFamily() {
+		return this._style.ff;
+	}
+	/**
+	* Gets the font size in points
+	* @returns {number | undefined} The font size or undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.fontSize);
+	* ```
+	*/
+	get fontSize() {
+		return this._style.fs;
+	}
+	/**
+	* Gets whether the text is italic
+	* @returns {boolean} True if italic, false otherwise
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.italic);
+	* ```
+	*/
+	get italic() {
+		return this._style.it === 1;
+	}
+	/**
+	* Gets whether the text is bold
+	* @returns {boolean} True if bold, false otherwise
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.bold);
+	* ```
+	*/
+	get bold() {
+		return this._style.bl === 1;
+	}
+	/**
+	* Gets the underline decoration
+	* @returns {TextDecorationBuilder | undefined} The underline decoration or undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.underline);
+	* ```
+	*/
+	get underline() {
+		return this._style.ul && TextDecorationBuilder.create(this._style.ul);
+	}
+	/**
+	* Gets the bottom border line decoration
+	* @returns {TextDecorationBuilder | undefined} The bottom border line decoration or undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.bottomBorderLine);
+	* ```
+	*/
+	get bottomBorderLine() {
+		return this._style.bbl && TextDecorationBuilder.create(this._style.bbl);
+	}
+	/**
+	* Gets the strikethrough decoration
+	* @returns {TextDecorationBuilder | undefined} The strikethrough decoration or undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.strikethrough);
+	* ```
+	*/
+	get strikethrough() {
+		return this._style.st && TextDecorationBuilder.create(this._style.st);
+	}
+	/**
+	* Gets the overline decoration
+	* @returns {TextDecorationBuilder | undefined} The overline decoration or undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.overline);
+	* ```
+	*/
+	get overline() {
+		return this._style.ol && TextDecorationBuilder.create(this._style.ol);
+	}
+	/**
+	* Gets the background color
+	* @returns {Nullable<IColorStyle>} The background color or null/undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.background);
+	* ```
+	*/
+	get background() {
+		return this._style.bg;
+	}
+	/**
+	* Gets the border settings
+	* @returns {Nullable<IBorderData>} The border settings or null/undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.border);
+	* ```
+	*/
+	get border() {
+		return this._style.bd;
+	}
+	/**
+	* Gets the text color
+	* @returns {Nullable<IColorStyle>} The text color or null/undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.color);
+	* ```
+	*/
+	get color() {
+		return this._style.cl;
+	}
+	/**
+	* Gets the vertical alignment (subscript/superscript)
+	* @returns {Nullable<BaselineOffset>} The vertical alignment or null/undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.verticalAlign);
+	* ```
+	*/
+	get verticalAlign() {
+		return this._style.va;
+	}
+	/**
+	* Gets the number format pattern
+	* @returns {Nullable<{ pattern: string }>} The number format pattern or null/undefined
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.numberFormat);
+	* ```
+	*/
+	get numberFormat() {
+		return this._style.n;
+	}
+	/**
+	* Creates a copy of this font style as a builder
+	* @returns {TextStyleBuilder} A new TextStyleBuilder instance with the same style
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* const copy = style.copy();
+	* console.log(copy);
+	* ```
+	*/
+	copy() {
+		return TextStyleBuilder.create(Tools.deepClone(this._style));
+	}
+	/**
+	* Gets the raw style object
+	* @returns {ITextStyle} The underlying style object
+	* @example
+	* ```ts
+	* const style = TextStyleValue.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style.getValue());
+	* ```
+	*/
+	getValue() {
+		return { ...this._style };
+	}
+};
+/**
+* Builder class for creating and modifying font styles.
+* Extends TextStyleValue to provide setter methods for all style properties.
+*/
+var TextStyleBuilder = class TextStyleBuilder extends TextStyleValue {
+	/**
+	* Creates a new TextStyleBuilder instance
+	* @param {ITextStyle} style Initial style object
+	* @returns {TextStyleBuilder} A new TextStyleBuilder instance
+	* @example
+	* ```ts
+	* const style = TextStyleBuilder.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style);
+	* ```
+	*/
+	static create(style = {}) {
+		return new TextStyleBuilder(style);
+	}
+	/**
+	* Creates a new TextStyleBuilder instance
+	* @param {ITextStyle} style The initial style object
+	* @example
+	* ```ts
+	* const style = new TextStyleBuilder({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* console.log(style);
+	* ```
+	*/
+	constructor(style = {}) {
+		super(style);
+	}
+	/**
+	* Sets the font family
+	* @param {string} family The font family name
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* const style = TextStyleBuilder.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* style.setFontFamily('Times New Roman');
+	* console.log(style.fontFamily);
+	* ```
+	*/
+	setFontFamily(family) {
+		this._style.ff = family;
+		return this;
+	}
+	/**
+	* Sets the font size in points
+	* @param {number} size The font size
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* const style = TextStyleBuilder.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* style.setFontSize(14);
+	* console.log(style.fontSize);
+	* ```
+	*/
+	setFontSize(size) {
+		this._style.fs = size;
+		return this;
+	}
+	/**
+	* Sets the italic style
+	* @param {boolean} value True to make italic, false otherwise
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* const style = TextStyleBuilder.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* style.setItalic(true);
+	* console.log(style.italic);
+	* ```
+	*/
+	setItalic(value) {
+		this._style.it = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the bold style
+	* @param {boolean} value True to make bold, false otherwise
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* const style = TextStyleBuilder.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* style.setBold(true);
+	* console.log(style.bold);
+	* ```
+	*/
+	setBold(value) {
+		this._style.bl = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the underline decoration
+	* @param {TextDecorationBuilder} decoration The underline decoration settings
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* const style = TextStyleBuilder.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* style.setUnderline({ type: 'single', color: '#FF0000' });
+	* console.log(style.underline);
+	* ```
+	*/
+	setUnderline(decoration) {
+		this._style.ul = decoration.build();
+		return this;
+	}
+	/**
+	* Sets the bottom border line decoration
+	* @param {TextDecorationBuilder} decoration The bottom border line decoration settings
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* const style = TextStyleBuilder.create({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* style.setBottomBorderLine({ type: 'single', color: '#FF0000' });
+	* console.log(style.bottomBorderLine);
+	* ```
+	*/
+	setBottomBorderLine(decoration) {
+		this._style.bbl = decoration.build();
+		return this;
+	}
+	/**
+	* Sets the strikethrough decoration
+	* @param {TextDecorationBuilder} decoration The strikethrough decoration settings
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	*/
+	setStrikethrough(decoration) {
+		this._style.st = decoration.build();
+		return this;
+	}
+	/**
+	* Sets the overline decoration
+	* @param {TextDecorationBuilder} decoration The overline decoration settings
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	*/
+	setOverline(decoration) {
+		this._style.ol = decoration.build();
+		return this;
+	}
+	/**
+	* Sets the background color
+	* @param {IColorStyle | null} color The background color or null to remove
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	*/
+	setBackground(color) {
+		this._style.bg = color;
+		return this;
+	}
+	/**
+	* Sets the border settings
+	* @param {IBorderData | null} border The border settings or null to remove
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	*/
+	setBorder(border) {
+		this._style.bd = border;
+		return this;
+	}
+	/**
+	* Sets the text color
+	* @param {IColorStyle | null} color The text color or null to remove
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	*/
+	setColor(color) {
+		this._style.cl = color;
+		return this;
+	}
+	/**
+	* Sets the vertical alignment (subscript/superscript)
+	* @param {BaselineOffset | null} offset The vertical alignment or null to remove
+	* @returns {TextStyleBuilder} The builder instance for chaining
+	*/
+	setVerticalAlign(offset) {
+		this._style.va = offset;
+		return this;
+	}
+	/**
+	* Creates a copy of this font style builder
+	* @returns {TextStyleBuilder} A new TextStyleBuilder instance with the same style
+	*/
+	copy() {
+		return TextStyleBuilder.create(Tools.deepClone(this._style));
+	}
+	/**
+	* Builds and returns the final style object
+	* @returns {ITextStyle} The complete style object
+	*/
+	build() {
+		return this.getValue();
+	}
+};
+/**
+* Builder class for creating and modifying text decorations.
+* Provides a fluent interface for setting text decoration properties.
+*/
+var TextDecorationBuilder = class TextDecorationBuilder {
+	/**
+	* Creates an instance of TextDecorationBuilder.
+	* @param {ITextDecoration} decoration Initial decoration object
+	* @returns {TextDecorationBuilder} text decoration builder instance
+	* @example
+	* ```ts
+	* const decoration = TextDecorationBuilder.create({ s: 1, t: TextDecoration.SINGLE });
+	* console.log(decoration);
+	* ```
+	*/
+	static create(decoration = { s: 1 }) {
+		return new TextDecorationBuilder(decoration);
+	}
+	/**
+	* Creates a new TextDecorationBuilder instance
+	* @param {ITextDecoration} decoration The initial decoration object
+	* @example
+	* ```ts
+	* const decoration = new TextDecorationBuilder({ s: 1, t: TextDecoration.SINGLE });
+	* ```
+	*/
+	constructor(decoration = { s: 1 }) {
+		_defineProperty(this, "_decoration", void 0);
+		this._decoration = decoration;
+	}
+	/**
+	* Gets whether the decoration is shown
+	* @returns {boolean} True if the decoration is shown
+	*/
+	get show() {
+		return this._decoration.s === 1;
+	}
+	/**
+	* Gets whether the decoration color follows the font color
+	* @returns {boolean} True if the decoration color follows the font color
+	*/
+	get followFontColor() {
+		return this._decoration.c === 1;
+	}
+	/**
+	* Gets the decoration color
+	* @returns {Nullable<IColorStyle>} The decoration color
+	*/
+	get color() {
+		return this._decoration.cl;
+	}
+	/**
+	* Gets the decoration line type
+	* @returns {Nullable<TextDecoration>} The decoration line type
+	*/
+	get type() {
+		return this._decoration.t;
+	}
+	/**
+	* Sets whether the decoration is shown
+	* @param {boolean} value True to show the decoration
+	* @returns {TextDecorationBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* decoration.setShow(true);
+	* ```
+	*/
+	setShow(value) {
+		this._decoration.s = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets whether the decoration color follows the font color
+	* @param {boolean} value True to follow font color
+	* @returns {TextDecorationBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* decoration.setFollowFontColor(false);
+	* ```
+	*/
+	setFollowFontColor(value) {
+		this._decoration.c = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the decoration color
+	* @param {IColorStyle} color The color style
+	* @returns {TextDecorationBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* decoration.setColor({ rgb: '#FF0000' });
+	* ```
+	*/
+	setColor(color) {
+		this._decoration.cl = color;
+		return this;
+	}
+	/**
+	* Sets the decoration line type
+	* @param {TextDecoration} type The line type
+	* @returns {TextDecorationBuilder} The builder instance for chaining
+	* @example
+	* ```ts
+	* decoration.setLineType(TextDecoration.SINGLE);
+	* ```
+	*/
+	setLineType(type) {
+		this._decoration.t = type;
+		return this;
+	}
+	/**
+	* Creates a copy of this text decoration builder
+	* @returns {TextDecorationBuilder} A new TextDecorationBuilder instance with the same decoration
+	* @example
+	* ```ts
+	* const copy = decoration.copy();
+	* ```
+	*/
+	copy() {
+		return TextDecorationBuilder.create(Tools.deepClone(this._decoration));
+	}
+	/**
+	* Builds and returns the final decoration object
+	* @returns {ITextDecoration} The complete text decoration object
+	* @example
+	* ```ts
+	* const style = decoration.build();
+	* ```
+	*/
+	build() {
+		return { ...this._decoration };
+	}
+};
+var ParagraphStyleValue = class ParagraphStyleValue {
+	/**
+	* Creates a new ParagraphStyleValue instance
+	* @param {IParagraphStyle} style The initial style object
+	* @returns A new ParagraphStyleValue instance
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* ```
+	*/
+	static create(style = {}) {
+		return new ParagraphStyleValue(style);
+	}
+	constructor(style = {}) {
+		_defineProperty(this, "_style", void 0);
+		this._style = style;
+	}
+	/**
+	* Gets the first line indent
+	* @returns {Nullable<INumberUnit>} The first line indent
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.indentFirstLine);
+	* ```
+	*/
+	get indentFirstLine() {
+		return this._style.indentFirstLine;
+	}
+	/**
+	* Gets the hanging indent
+	* @returns {Nullable<INumberUnit>} The hanging indent
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.hanging);
+	* ```
+	*/
+	get hanging() {
+		return this._style.hanging;
+	}
+	/**
+	* Gets the indent start
+	* @returns {Nullable<INumberUnit>} The indent start
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.indentStart);
+	* ```
+	*/
+	get indentStart() {
+		return this._style.indentStart;
+	}
+	/**
+	* Gets the indent end
+	* @returns {Nullable<INumberUnit>} The indent end
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.indentEnd);
+	* ```
+	*/
+	get tabStops() {
+		return this._style.tabStops;
+	}
+	/**
+	* Gets the indent end
+	* @returns {Nullable<INumberUnit>} The indent end
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.indentEnd);
+	* ```
+	*/
+	get indentEnd() {
+		return this._style.indentEnd;
+	}
+	/**
+	* Gets the text style
+	* @returns {Nullable<ITextStyle>} The text style
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.textStyle);
+	* ```
+	*/
+	get textStyle() {
+		return this._style.textStyle;
+	}
+	/**
+	* Gets the heading id
+	* @returns {Nullable<string>} The heading id
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.headingId);
+	* ```
+	*/
+	get headingId() {
+		return this._style.headingId;
+	}
+	/**
+	* Gets the named style type
+	* @returns {Nullable<NamedStyleType>} The named style type
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.namedStyleType);
+	* ```
+	*/
+	get namedStyleType() {
+		return this._style.namedStyleType;
+	}
+	/**
+	* Gets the horizontal align
+	* @returns {Nullable<HorizontalAlign>} The horizontal align
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.horizontalAlign);
+	* ```
+	*/
+	get horizontalAlign() {
+		return this._style.horizontalAlign;
+	}
+	/**
+	* Gets the line spacing
+	* @returns {Nullable<number>} The line spacing
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.lineSpacing);
+	* ```
+	*/
+	get lineSpacing() {
+		return this._style.lineSpacing;
+	}
+	/**
+	* Gets the text direction
+	* @returns {Nullable<TextDirection>} The text direction
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.direction);
+	* ```
+	*/
+	get direction() {
+		return this._style.direction;
+	}
+	/**
+	* Gets the spacing rule
+	* @returns {Nullable<SpacingRule>} The spacing rule
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.spacingRule);
+	* ```
+	*/
+	get spacingRule() {
+		return this._style.spacingRule;
+	}
+	/**
+	* Gets the snap to grid
+	* @returns {Nullable<BooleanNumber>} The snap to grid
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.snapToGrid);
+	* ```
+	*/
+	get snapToGrid() {
+		return this._style.snapToGrid;
+	}
+	/**
+	* Gets the space above
+	* @returns {Nullable<INumberUnit>} The space above
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.spaceAbove);
+	* ```
+	*/
+	get spaceAbove() {
+		return this._style.spaceAbove;
+	}
+	/**
+	* Gets the space below
+	* @returns {Nullable<INumberUnit>} The space below
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.spaceBelow);
+	* ```
+	*/
+	get spaceBelow() {
+		return this._style.spaceBelow;
+	}
+	/**
+	* Gets the border between
+	* @returns {Nullable<IParagraphBorder>} The border between
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.borderBetween);
+	* ```
+	*/
+	get borderBetween() {
+		return this._style.borderBetween;
+	}
+	/**
+	* Gets the border top
+	* @returns {Nullable<IParagraphBorder>} The border top
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.borderTop);
+	* ```
+	*/
+	get borderTop() {
+		return this._style.borderTop;
+	}
+	/**
+	* Gets the border bottom
+	* @returns {Nullable<IParagraphBorder>} The border bottom
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.borderBottom);
+	* ```
+	*/
+	get borderBottom() {
+		return this._style.borderBottom;
+	}
+	/**
+	* Gets the border left
+	* @returns {Nullable<IParagraphBorder>} The border left
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.borderLeft);
+	* ```
+	*/
+	get borderLeft() {
+		return this._style.borderLeft;
+	}
+	/**
+	* Gets the border right
+	* @returns {Nullable<IParagraphBorder>} The border right
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.borderRight);
+	* ```
+	*/
+	get borderRight() {
+		return this._style.borderRight;
+	}
+	/**
+	* Gets the keep lines
+	* @returns {boolean} The keep lines
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.keepLines);
+	* ```
+	*/
+	get keepLines() {
+		return this._style.keepLines === 1;
+	}
+	/**
+	* Gets the keep next
+	* @returns {boolean} The keep next
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.keepNext);
+	* ```
+	*/
+	get keepNext() {
+		return this._style.keepNext === 1;
+	}
+	/**
+	* Gets the word wrap
+	* @returns {boolean} The word wrap
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.wordWrap);
+	* ```
+	*/
+	get wordWrap() {
+		return this._style.wordWrap === 1;
+	}
+	/**
+	* Gets the widow control
+	* @returns {boolean} The widow control
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.widowControl);
+	* ```
+	*/
+	get widowControl() {
+		return this._style.widowControl === 1;
+	}
+	/**
+	* Gets the shading
+	* @returns {Nullable<IShading>} The shading
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.shading);
+	* ```
+	*/
+	get shading() {
+		return this._style.shading;
+	}
+	/**
+	* Gets the suppress hyphenation
+	* @returns {boolean} The suppress hyphenation
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.suppressHyphenation);
+	* ```
+	*/
+	get suppressHyphenation() {
+		return this._style.suppressHyphenation === 1;
+	}
+	/**
+	* Creates a copy of the paragraph style
+	* @returns {ParagraphStyleBuilder} The copy
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* ```
+	*/
+	copy() {
+		return ParagraphStyleBuilder.create(Tools.deepClone(this._style));
+	}
+	/**
+	* Gets the value
+	* @returns {IParagraphStyle} The value
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* console.log(style.getValue());
+	* ```
+	*/
+	getValue() {
+		return this._style;
+	}
+};
+/**
+* Paragraph style builder
+*/
+var ParagraphStyleBuilder = class ParagraphStyleBuilder extends ParagraphStyleValue {
+	/**
+	* Creates a new paragraph style builder
+	* @param style The paragraph style
+	* @returns A new paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* ```
+	*/
+	static create(style = {}) {
+		return new ParagraphStyleBuilder(style);
+	}
+	constructor(style = {}) {
+		super(style);
+	}
+	/**
+	* Sets the indent first line
+	* @param value The indent first line
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setIndentFirstLine(10);
+	* ```
+	*/
+	setIndentFirstLine(value) {
+		this._style.indentFirstLine = value;
+		return this;
+	}
+	/**
+	* Sets the hanging
+	* @param value The hanging
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setHanging(10);
+	* ```
+	*/
+	setHanging(value) {
+		this._style.hanging = value;
+		return this;
+	}
+	/**
+	* Sets the indent start
+	* @param value The indent start
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setIndentStart(10);
+	* ```
+	*/
+	setIndentStart(value) {
+		this._style.indentStart = value;
+		return this;
+	}
+	/**
+	* Sets the tab stops
+	* @param value The tab stops
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setTabStops([{ value: 10 }]);
+	* ```
+	*/
+	setTabStops(value) {
+		this._style.tabStops = value;
+		return this;
+	}
+	/**
+	* Sets the indent end
+	* @param value The indent end
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setIndentEnd(10);
+	* ```
+	*/
+	setIndentEnd(value) {
+		this._style.indentEnd = value;
+		return this;
+	}
+	/**
+	* Sets the text style
+	* @param value The text style
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setTextStyle({ ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE });
+	* ```
+	*/
+	setTextStyle(value) {
+		this._style.textStyle = value;
+		return this;
+	}
+	/**
+	* Sets the heading id
+	* @param value The heading id
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setHeadingId('test');
+	* ```
+	*/
+	setHeadingId(value) {
+		this._style.headingId = value;
+		return this;
+	}
+	/**
+	* Sets the named style type
+	* @param value The named style type
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setNamedStyleType(NamedStyleType.CHAPTER);
+	* ```
+	*/
+	setNamedStyleType(value) {
+		this._style.namedStyleType = value;
+		return this;
+	}
+	/**
+	* Sets the vertical align
+	* @param value The vertical align
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setVerticalAlign(VerticalAlign.CENTER);
+	* ```
+	*/
+	setHorizontalAlign(value) {
+		this._style.horizontalAlign = value;
+		return this;
+	}
+	/**
+	* Sets the line spacing
+	* @param value The line spacing
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setLineSpacing(10);
+	* ```
+	*/
+	setLineSpacing(value) {
+		this._style.lineSpacing = value;
+		return this;
+	}
+	/**
+	* Sets the text direction
+	* @param value The text direction
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setTextDirection(TextDirection.RIGHT_TO_LEFT);
+	* ```
+	*/
+	setDirection(value) {
+		this._style.direction = value;
+		return this;
+	}
+	/**
+	* Sets the spacing rule
+	* @param value The spacing rule
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setSpacingRule(SpacingRule.AUTO);
+	* ```
+	*/
+	setSpacingRule(value) {
+		this._style.spacingRule = value;
+		return this;
+	}
+	/**
+	* Sets the snap to grid
+	* @param value The snap to grid
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setSnapToGrid(true);
+	* ```
+	*/
+	setSnapToGrid(value) {
+		this._style.snapToGrid = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the space above
+	* @param value The space above
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setSpaceAbove(10);
+	* ```
+	*/
+	setSpaceAbove(value) {
+		this._style.spaceAbove = value;
+		return this;
+	}
+	/**
+	* Sets the space below
+	* @param value The space below
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setSpaceBelow(10);
+	* ```
+	*/
+	setSpaceBelow(value) {
+		this._style.spaceBelow = value;
+		return this;
+	}
+	/**
+	* Sets the border between
+	* @param {IParagraphBorder} value The border between
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setBorderBetween({ color: 'red', width: 1 });
+	* ```
+	*/
+	setBorderBetween(value) {
+		this._style.borderBetween = value;
+		return this;
+	}
+	/**
+	* Sets the border top
+	* @param {IParagraphBorder} value The border top
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setBorderTop({ color: 'red', width: 1 });
+	* ```
+	*/
+	setBorderTop(value) {
+		this._style.borderTop = value;
+		return this;
+	}
+	/**
+	* Sets the border bottom
+	* @param {IParagraphBorder} value The border bottom
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setBorderBottom({ color: 'red', width: 1 });
+	* ```
+	*/
+	setBorderBottom(value) {
+		this._style.borderBottom = value;
+		return this;
+	}
+	/**
+	* Sets the border left
+	* @param {IParagraphBorder} value The border left
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setBorderLeft({ color: 'red', width: 1 });
+	* ```
+	*/
+	setBorderLeft(value) {
+		this._style.borderLeft = value;
+		return this;
+	}
+	/**
+	* Sets the border right
+	* @param {IParagraphBorder} value The border right
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setBorderRight({ color: 'red', width: 1 });
+	* ```
+	*/
+	setBorderRight(value) {
+		this._style.borderRight = value;
+		return this;
+	}
+	/**
+	* Sets the keep lines
+	* @param value The keep lines
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setKeepLines(true);
+	* ```
+	*/
+	setKeepLines(value) {
+		this._style.keepLines = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the keep next
+	* @param value The keep next
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setKeepNext(true);
+	* ```
+	*/
+	setKeepNext(value) {
+		this._style.keepNext = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the word wrap
+	* @param value The word wrap
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setWordWrap(true);
+	* ```
+	*/
+	setWordWrap(value) {
+		this._style.wordWrap = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the widow control
+	* @param {boolean} value The widow control value
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setWidowControl(true);
+	* ```
+	*/
+	setWidowControl(value) {
+		this._style.widowControl = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Sets the shading style
+	* @param {IShading} value The shading configuration
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setShading({ backgroundColor: '#f0f0f0' });
+	* ```
+	*/
+	setShading(value) {
+		this._style.shading = value;
+		return this;
+	}
+	/**
+	* Sets whether to suppress hyphenation
+	* @param {boolean} value The suppress hyphenation value
+	* @returns {ParagraphStyleBuilder} The paragraph style builder
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* copy.setSuppressHyphenation(true);
+	* ```
+	*/
+	setSuppressHyphenation(value) {
+		this._style.suppressHyphenation = value ? 1 : 0;
+		return this;
+	}
+	/**
+	* Creates a copy of the current paragraph style builder
+	* @returns {ParagraphStyleBuilder} A new instance of ParagraphStyleBuilder with the same settings
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const copy = style.copy();
+	* ```
+	*/
+	copy() {
+		return ParagraphStyleBuilder.create(Tools.deepClone(this._style));
+	}
+	/**
+	* Builds and returns the final paragraph style configuration
+	* @returns {IParagraphStyle} The constructed paragraph style object
+	* @example
+	* ```ts
+	* const style = ParagraphStyleValue.create({ textStyle: { ff: 'Arial', fs: 12, it: univerAPI.Enum.BooleanNumber.TRUE, bl: univerAPI.Enum.BooleanNumber.TRUE } });
+	* const finalStyle = style.build();
+	* ```
+	*/
+	build() {
+		return this.getValue();
+	}
+};
+/**
+* Represents a rich text value
+*/
+var RichTextValue = class RichTextValue {
+	/**
+	* Creates a new RichTextValue instance
+	* @param {IDocumentData} data The initial data for the rich text value
+	* @returns {RichTextValue} A new RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* ```
+	*/
+	static create(data) {
+		return new RichTextValue(data);
+	}
+	/**
+	* Creates a new RichTextValue instance
+	* @param {IDocumentBody} data The initial data for the rich text value
+	* @returns {RichTextValue} A new RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.createByBody({ dataStream: 'Hello World\r\n' });
+	* ```
+	*/
+	static createByBody(data) {
+		return new RichTextValue({
+			body: data,
+			id: "d",
+			documentStyle: {}
+		});
+	}
+	constructor(data) {
+		_defineProperty(this, "_data", void 0);
+		if (!data.body) throw new Error("Invalid document data, body is required");
+		this._data = normalizeData(data);
+	}
+	/**
+	* Creates a copy of the current RichTextValue instance
+	* @returns {RichTextValue} A new instance of RichTextValue with the same data
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const copy = richText.copy();
+	* ```
+	*/
+	copy() {
+		return RichTextBuilder.create(Tools.deepClone(this._data));
+	}
+	/**
+	* Slices the current RichTextValue instance
+	* @param {number} start The start index
+	* @param {number} end The end index
+	* @returns {RichTextBuilder} A new instance of RichTextBuilder with the sliced data
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const sliced = richText.slice(0, 5);
+	* ```
+	*/
+	slice(start, end) {
+		const { body, ...ext } = this._data;
+		return RichTextBuilder.create({
+			...Tools.deepClone(ext),
+			body: getBodySlice(body, start, end)
+		});
+	}
+	/**
+	* Converts the current RichTextValue instance to plain text
+	* @returns {string} The plain text representation of the current RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const plainText = richText.toPlainText();
+	* ```
+	*/
+	toPlainText() {
+		var _this$_data$body;
+		return BuildTextUtils.transform.getPlainText(((_this$_data$body = this._data.body) === null || _this$_data$body === void 0 ? void 0 : _this$_data$body.dataStream) ?? "").replaceAll("\r", "\n");
+	}
+	/**
+	* Gets the paragraph style of the current RichTextValue instance
+	* @returns {ParagraphStyleValue} The paragraph style of the current RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const style = richText.getParagraphStyle();
+	* ```
+	*/
+	getParagraphStyle() {
+		var _this$_data$body2;
+		return ParagraphStyleValue.create((_this$_data$body2 = this._data.body) === null || _this$_data$body2 === void 0 || (_this$_data$body2 = _this$_data$body2.paragraphs) === null || _this$_data$body2 === void 0 ? void 0 : _this$_data$body2[0].paragraphStyle);
+	}
+	/**
+	* Gets the paragraph bullet of the current RichTextValue instance
+	* @returns {ParagraphBulletValue} The paragraph bullet of the current RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const bullet = richText.getParagraphBullet();
+	* ```
+	*/
+	getParagraphBullet() {
+		var _this$_data$body3;
+		return (_this$_data$body3 = this._data.body) === null || _this$_data$body3 === void 0 || (_this$_data$body3 = _this$_data$body3.paragraphs) === null || _this$_data$body3 === void 0 ? void 0 : _this$_data$body3[0].bullet;
+	}
+	/**
+	* Gets the paragraphs of the current RichTextValue instance
+	* @returns {RichTextValue[]} The paragraphs of the current RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const paragraphs = richText.getParagraphs();
+	* ```
+	*/
+	getParagraphs() {
+		const body = this._data.body;
+		if (!body) return [];
+		const startOffsets = getParagraphContentStartOffsets(body);
+		return (body.paragraphs ?? []).map((paragraph) => RichTextBuilder.create(createParagraphSnapshot(this._data, paragraph.paragraphId, {
+			startOffset: startOffsets.get(paragraph.startIndex) ?? 0,
+			endOffset: paragraph.startIndex
+		})));
+	}
+	/**
+	* Gets the text runs of the current RichTextValue instance
+	* @returns {TextRunValue[]} The text runs of the current RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const textRuns = richText.getTextRuns();
+	* ```
+	*/
+	getTextRuns() {
+		var _this$_data$body4;
+		return (((_this$_data$body4 = this._data.body) === null || _this$_data$body4 === void 0 ? void 0 : _this$_data$body4.textRuns) ?? []).map((t) => ({
+			...t,
+			ts: t.ts ? TextStyleValue.create(t.ts) : null
+		}));
+	}
+	/**
+	* Gets the links of the current RichTextValue instance
+	* @returns {ICustomRange[]} The links of the current RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const links = richText.getLinks();
+	* ```
+	*/
+	getLinks() {
+		var _this$_data$body5;
+		return ((_this$_data$body5 = this._data.body) === null || _this$_data$body5 === void 0 || (_this$_data$body5 = _this$_data$body5.customRanges) === null || _this$_data$body5 === void 0 ? void 0 : _this$_data$body5.filter((r) => r.rangeType === 0)) ?? [];
+	}
+	/**
+	* Gets the data of the current RichTextValue instance
+	* @returns {IDocumentData} The data of the current RichTextValue instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const data = richText.getData();
+	* ```
+	*/
+	getData() {
+		return this._data;
+	}
+};
+/**
+* Represents a rich text builder
+*/
+var RichTextBuilder = class RichTextBuilder extends RichTextValue {
+	/**
+	* Allows optional feature packages to add semantic builder methods.
+	* @internal
+	*/
+	static extend(source) {
+		Object.getOwnPropertyNames(source.prototype).forEach((name) => {
+			if (name === "constructor") return;
+			const descriptor = Object.getOwnPropertyDescriptor(source.prototype, name);
+			if (descriptor) Object.defineProperty(this.prototype, name, descriptor);
+		});
+	}
+	static newEmptyData() {
+		return normalizeData({
+			id: "d",
+			documentStyle: {},
+			drawings: {},
+			drawingsOrder: [],
+			body: {
+				dataStream: "\r\n",
+				customBlocks: [],
+				customRanges: [],
+				paragraphs: [{
+					startIndex: 0,
+					paragraphId: createParagraphId(/* @__PURE__ */ new Set())
+				}],
+				textRuns: [],
+				tables: [],
+				sectionBreaks: []
+			}
+		});
+	}
+	/**
+	* Creates a new RichTextBuilder instance
+	* @param {IDocumentData} data The initial data for the rich text builder
+	* @returns {RichTextBuilder} A new RichTextBuilder instance
+	*/
+	static create(data) {
+		return new RichTextBuilder(data ?? RichTextBuilder.newEmptyData());
+	}
+	constructor(data) {
+		super(data);
+		_defineProperty(this, "_doc", void 0);
+		_defineProperty(this, "_trackedRanges", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_childHandleRevision", 0);
+		this._doc = new DocumentDataModel(data);
+	}
+	/**
+	* Returns editable paragraph handles backed by this detached rich-text builder.
+	*
+	* Paragraph boundaries come from the document model rather than splitting plain text. Handles stay aligned across
+	* edits made through their child run handles, so callers can safely iterate from the first paragraph to the last.
+	* Direct builder edits that change text or run boundaries invalidate previously returned paragraph and run handles;
+	* query them again after calling methods such as `insertText()`, `setStyle()`, `setLink()`, or `delete()`.
+	*
+	* @returns Editable paragraphs in document order.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .text('Quarterly Review')
+	*   .paragraph()
+	*   .text('Revenue increased by 18%.');
+	* for (const paragraph of richText.getParagraphs()) {
+	*   console.log(paragraph.getText());
+	* }
+	* ```
+	*/
+	getParagraphs() {
+		const body = this._data.body;
+		if (!body) return [];
+		const startOffsets = getParagraphContentStartOffsets(body);
+		return (body.paragraphs ?? []).map((paragraph) => this._createParagraphBuilder(paragraph.paragraphId, startOffsets.get(paragraph.startIndex) ?? 0, paragraph.startIndex));
+	}
+	/**
+	* Returns editable text-run handles for all paragraph text in this builder.
+	*
+	* Unlike the read-only value API, this method also returns unstyled gaps. Paragraph and section markers are never
+	* exposed as text runs. Prefer `getParagraphs()` when paragraph context matters.
+	*
+	* @returns Editable text runs in document order.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .text('Status: ')
+	*   .span('Ready', { bold: true, color: '#16a34a' });
+	* for (const run of richText.getTextRuns()) {
+	*   console.log(run.getText(), run.getTextStyle()?.getValue());
+	* }
+	* ```
+	*/
+	getTextRuns() {
+		return this.getParagraphs().flatMap((paragraph) => paragraph.getTextRuns());
+	}
+	/** @internal */
+	_createTextRunBuilders(range) {
+		const body = this._data.body;
+		if (!body || range.startOffset >= range.endOffset) return [];
+		const boundaries = /* @__PURE__ */ new Set([range.startOffset, range.endOffset]);
+		const addRangeBoundaries = (startOffset, endOffset) => {
+			const start = Math.max(startOffset, range.startOffset);
+			const end = Math.min(endOffset, range.endOffset);
+			if (start < end) {
+				boundaries.add(start);
+				boundaries.add(end);
+			}
+		};
+		for (const textRun of body.textRuns ?? []) addRangeBoundaries(textRun.st, textRun.ed);
+		for (const customRange of body.customRanges ?? []) addRangeBoundaries(customRange.startIndex, customRange.endIndex + 1);
+		for (const decoration of body.customDecorations ?? []) addRangeBoundaries(decoration.startIndex, decoration.endIndex + 1);
+		for (let offset = range.startOffset; offset < range.endOffset; offset++) if (NON_EDITABLE_RICH_TEXT_TOKENS.has(body.dataStream[offset])) {
+			boundaries.add(offset);
+			boundaries.add(offset + 1);
+		}
+		const offsets = [...boundaries].sort((left, right) => left - right);
+		const runs = [];
+		for (let index = 0; index < offsets.length - 1; index++) {
+			const startOffset = offsets[index];
+			const endOffset = offsets[index + 1];
+			if (startOffset >= endOffset || endOffset - startOffset === 1 && NON_EDITABLE_RICH_TEXT_TOKENS.has(body.dataStream[startOffset])) continue;
+			const sourceRun = (body.textRuns ?? []).find((textRun) => textRun.st <= startOffset && textRun.ed >= endOffset);
+			runs.push(new RichTextRunBuilder(this, this._trackRange(startOffset, endOffset), sourceRun === null || sourceRun === void 0 ? void 0 : sourceRun.ts, sourceRun === null || sourceRun === void 0 ? void 0 : sourceRun.sId, Boolean(sourceRun), this._childHandleRevision));
+		}
+		return runs;
+	}
+	/** @internal */
+	_replaceTextRun(range, text, textStyle, styleId, hasExplicitTextStyle) {
+		var _sourceBody$customRan, _sourceBody$customDec;
+		if (text.includes("\r") || text.includes("\n")) throw new RangeError("Rich text run replacement cannot contain paragraph or section breaks.");
+		const body = this._doc.getBody();
+		if (!body) throw new Error("Rich text body is not available.");
+		const { startOffset, endOffset } = range;
+		if (body.dataStream.slice(startOffset, endOffset) === text) return;
+		const sourceBody = getBodySlice(body, startOffset, endOffset);
+		const replacementBody = { dataStream: text };
+		if (text && hasExplicitTextStyle) replacementBody.textRuns = [{
+			st: 0,
+			ed: text.length,
+			sId: styleId,
+			ts: Tools.deepClone(textStyle)
+		}];
+		if (text && ((_sourceBody$customRan = sourceBody.customRanges) === null || _sourceBody$customRan === void 0 ? void 0 : _sourceBody$customRan.length)) replacementBody.customRanges = sourceBody.customRanges.map((customRange) => ({
+			...Tools.deepClone(customRange),
+			startIndex: 0,
+			endIndex: text.length - 1
+		}));
+		if (text && ((_sourceBody$customDec = sourceBody.customDecorations) === null || _sourceBody$customDec === void 0 ? void 0 : _sourceBody$customDec.length)) replacementBody.customDecorations = sourceBody.customDecorations.map((decoration) => ({
+			...Tools.deepClone(decoration),
+			startIndex: 0,
+			endIndex: text.length - 1
+		}));
+		const textX = BuildTextUtils.selection.replace({
+			doc: this._doc,
+			selection: {
+				startOffset,
+				endOffset,
+				collapsed: startOffset === endOffset
+			},
+			body: replacementBody
+		});
+		if (!textX) throw new Error("Replace rich text run failed.");
+		TextX.apply(body, textX.serialize());
+		this._rebaseTrackedRanges(startOffset, endOffset, text.length);
+	}
+	_createParagraphBuilder(paragraphId, startOffset, endOffset) {
+		return new RichTextParagraphBuilder(this, paragraphId, this._trackRange(startOffset, endOffset), this._childHandleRevision);
+	}
+	/** @internal */
+	_assertChildHandleRevision(revision) {
+		if (revision !== this._childHandleRevision) throw new Error("Rich text child handle is no longer valid.");
+	}
+	_trackRange(startOffset, endOffset) {
+		const range = {
+			startOffset,
+			endOffset
+		};
+		this._trackedRanges.add(range);
+		return range;
+	}
+	_rebaseTrackedRanges(startOffset, endOffset, replacementLength) {
+		const delta = replacementLength - (endOffset - startOffset);
+		const mapStart = (offset) => {
+			if (offset <= startOffset) return offset;
+			if (offset >= endOffset) return offset + delta;
+			return startOffset;
+		};
+		const mapEnd = (offset) => {
+			if (offset <= startOffset) return offset;
+			if (offset >= endOffset) return offset + delta;
+			return startOffset + replacementLength;
+		};
+		for (const trackedRange of this._trackedRanges) {
+			trackedRange.startOffset = mapStart(trackedRange.startOffset);
+			trackedRange.endOffset = mapEnd(trackedRange.endOffset);
+		}
+	}
+	_invalidateChildHandles() {
+		this._childHandleRevision++;
+		this._trackedRanges.clear();
+	}
+	/**
+	* Appends plain text to the rich text.
+	*
+	* This is an agent-friendly alias of `insertText(text)`. Use it when building rich text from left to right for
+	* shapes, comments, table cells, and document fragments.
+	*
+	* @param text Text to append.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .text('Priority: ')
+	*   .bold('High')
+	*   .text(' ')
+	*   .code('P0');
+	* ```
+	*/
+	text(text) {
+		return this.insertText(text);
+	}
+	/**
+	* Aligns the rich-text block inside its host container.
+	*
+	* This is the preferred facade-friendly API for alignment shared by shapes and table cells. It keeps callers away
+	* from `IDocumentData.documentStyle.renderConfig`. Use `paragraph({ align })` when individual paragraphs need
+	* different horizontal alignment.
+	*
+	* @param alignment Horizontal and/or vertical container alignment.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const text = univerAPI.newRichText()
+	*   .align({
+	*     horizontal: univerAPI.Enum.HorizontalAlign.CENTER,
+	*     vertical: univerAPI.Enum.VerticalAlign.MIDDLE,
+	*   })
+	*   .text('Centered text');
+	* ```
+	*/
+	align(alignment) {
+		const documentStyle = this._data.documentStyle ??= {};
+		const renderConfig = documentStyle.renderConfig ??= {};
+		if (alignment.horizontal !== void 0) {
+			var _this$_data$body6;
+			renderConfig.horizontalAlign = alignment.horizontal;
+			for (const paragraph of ((_this$_data$body6 = this._data.body) === null || _this$_data$body6 === void 0 ? void 0 : _this$_data$body6.paragraphs) ?? []) paragraph.paragraphStyle = {
+				...paragraph.paragraphStyle,
+				horizontalAlign: alignment.horizontal
+			};
+		}
+		if (alignment.vertical !== void 0) renderConfig.verticalAlign = alignment.vertical;
+		return this;
+	}
+	/**
+	* Sets the column layout for this rich-text document.
+	*
+	* Columns are stored in the rich-text document section layout. This creates text-flow columns, not table columns.
+	* The host renderer must support rich-text columns for the layout to be visible.
+	*
+	* @param options The column layout options.
+	* @param options.count The number of text columns. Must be a positive integer. Use `1` to clear multi-column layout.
+	* @param options.spacing The spacing between columns, in px. Defaults to `0`.
+	* @returns The current builder for chaining.
+	*
+	* @example
+	* ```ts
+	* const presentation = univerAPI.getActivePresentation();
+	* if (!presentation) throw new Error('No active presentation');
+	*
+	* const slide = presentation.getSlideByIndex(0);
+	* if (!slide) throw new Error('The presentation has no slides');
+	* const richText = univerAPI.newRichText()
+	*   .columns({ count: 2, spacing: 12 })
+	*   .text('Column text');
+	*
+	* const shapeInfo = slide.newShape()
+	*   .setRichText(richText)
+	*   .setAbsolutePosition(80, 80)
+	*   .setSize(360, 160)
+	*   .build();
+	*
+	* slide.insertShape(shapeInfo);
+	* ```
+	*/
+	columns(options) {
+		if (!Number.isInteger(options.count) || options.count < 1) throw new RangeError("Rich text column count must be a positive integer.");
+		const body = this._data.body ??= { dataStream: "\r\n" };
+		const sectionBreaks = body.sectionBreaks ??= [];
+		if (!sectionBreaks.length) {
+			var _body$dataStream;
+			sectionBreaks.push({
+				sectionId: createSectionId(/* @__PURE__ */ new Set()),
+				startIndex: Math.max(0, (((_body$dataStream = body.dataStream) === null || _body$dataStream === void 0 ? void 0 : _body$dataStream.length) ?? 0) - 1)
+			});
+		}
+		const spacing = Math.max(0, options.spacing ?? 0);
+		const columns = options.count === 1 ? void 0 : Array.from({ length: options.count }, (_, index) => ({
+			width: 0,
+			paddingEnd: index === options.count - 1 ? 0 : spacing
+		}));
+		for (const sectionBreak of sectionBreaks) if (columns) sectionBreak.columnProperties = columns.map((column) => ({ ...column }));
+		else delete sectionBreak.columnProperties;
+		return this;
+	}
+	/**
+	* Appends one text span with an optional style.
+	*
+	* Prefer this method when combining multiple styles, because the style object is local to the inserted text and does
+	* not leak into following calls.
+	*
+	* @param text Text to append.
+	* @param style Optional text style for this span. When omitted, the span is appended as unstyled text. Agent-friendly
+	* aliases such as `bold`, `italic`, `fontFamily`, `fontSize`, `color`, and `background` are supported alongside native
+	* document text style fields.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .text('Status: ')
+	*   .span('Important', { bold: true, italic: true, color: '#d92d20' });
+	* ```
+	*/
+	span(text, style) {
+		if (!text) return this;
+		return style ? this.insertText(text, normalizeRichTextSpanStyle(style)) : this.insertText(text);
+	}
+	/**
+	* Appends bold text.
+	*
+	* @param text Text to append.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText().text('This is ').bold('important');
+	* ```
+	*/
+	bold(text) {
+		return this.span(text, { bold: true });
+	}
+	/**
+	* Appends italic text.
+	*
+	* @param text Text to append.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText().text('Use ').italic('judgment');
+	* ```
+	*/
+	italic(text) {
+		return this.span(text, { italic: true });
+	}
+	/**
+	* Appends inline code-style text.
+	*
+	* This is intentionally an inline text style, not a block range. Use `paragraph().code('...')` when the code should
+	* occupy its own line.
+	*
+	* @param text Text to append as inline code.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .text('Run ')
+	*   .code('pnpm test')
+	*   .text(' before submitting.');
+	* ```
+	*/
+	code(text) {
+		return this.span(text, {
+			fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace",
+			background: "#f3f4f6"
+		});
+	}
+	/**
+	* Appends linked text.
+	*
+	* This is the agent-friendly alias of `insertLink(text, url)`. Use `setLink(start, end, url)` only when applying a
+	* link to text that is already present and numeric offsets are unavoidable.
+	*
+	* @param text Visible link text to append. An empty string is ignored.
+	* @param url Link destination.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .text('Read ')
+	*   .link('Univer documentation', 'https://docs.univer.ai')
+	*   .text(' for details.');
+	* ```
+	*/
+	link(text, url) {
+		return text ? this.insertLink(text, url) : this;
+	}
+	/**
+	* Appends one ordered, unordered, or checklist paragraph.
+	*
+	* Consecutive items with the same `type` automatically share a generated list id. Supply a semantic `listId` when
+	* an agent needs stable list identity across regeneration.
+	*
+	* @param text Plain item text.
+	* @param options List type, stable identity, nesting, and optional paragraph layout.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .listItem('Analyze requirements', {
+	*     type: univerAPI.Enum.PresetListType.BULLET_LIST,
+	*     listId: 'agent.tasks',
+	*   })
+	*   .listItem('Implement API', {
+	*     type: univerAPI.Enum.PresetListType.BULLET_LIST,
+	*     listId: 'agent.tasks',
+	*     level: 1,
+	*   });
+	* ```
+	*/
+	listItem(text, options = {}) {
+		var _this$_data$body7, _options$listId, _this$_data$body8;
+		const listType = options.type ?? "BULLET_LIST";
+		const currentParagraph = (_this$_data$body7 = this._data.body) === null || _this$_data$body7 === void 0 || (_this$_data$body7 = _this$_data$body7.paragraphs) === null || _this$_data$body7 === void 0 ? void 0 : _this$_data$body7.slice(-1)[0];
+		const currentBullet = currentParagraph === null || currentParagraph === void 0 ? void 0 : currentParagraph.bullet;
+		const listId = ((_options$listId = options.listId) === null || _options$listId === void 0 ? void 0 : _options$listId.trim()) || ((currentBullet === null || currentBullet === void 0 ? void 0 : currentBullet.listType) === listType ? currentBullet.listId : generateRandomId());
+		if (hasRichTextContent(this._data)) this.paragraph(options.paragraphStyle);
+		else if (options.paragraphStyle) this.paragraph(options.paragraphStyle);
+		const targetParagraph = (_this$_data$body8 = this._data.body) === null || _this$_data$body8 === void 0 || (_this$_data$body8 = _this$_data$body8.paragraphs) === null || _this$_data$body8 === void 0 ? void 0 : _this$_data$body8.slice(-1)[0];
+		if (targetParagraph) targetParagraph.bullet = {
+			listId,
+			listType,
+			nestingLevel: Math.max(0, Math.trunc(options.level ?? 0))
+		};
+		return this.text(text);
+	}
+	/**
+	* Starts a new paragraph before the next appended content.
+	*
+	* Calling `paragraph()` on an empty builder is a no-op, so agents can naturally start chains with
+	* `newRichText().paragraph().text('Title')` without creating a leading blank paragraph.
+	*
+	* @param paragraphStyle Optional agent-friendly paragraph options or an advanced paragraph style builder.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .paragraph({ lineHeight: 1.4, firstLineIndent: 16, spaceAfter: 8 })
+	*   .text('First paragraph')
+	*   .paragraph({ align: univerAPI.Enum.HorizontalAlign.CENTER })
+	*   .span('Second paragraph', { bold: true, italic: true });
+	* ```
+	*/
+	paragraph(paragraphStyle) {
+		var _this$_data$body10, _this$_data$body11, _this$_data$body12;
+		const nextParagraphStyle = normalizeRichTextParagraphStyle(paragraphStyle);
+		if (!hasRichTextContent(this._data)) {
+			if (nextParagraphStyle) {
+				var _this$_data$body9;
+				const firstParagraph = (_this$_data$body9 = this._data.body) === null || _this$_data$body9 === void 0 || (_this$_data$body9 = _this$_data$body9.paragraphs) === null || _this$_data$body9 === void 0 ? void 0 : _this$_data$body9[0];
+				if (firstParagraph) firstParagraph.paragraphStyle = nextParagraphStyle;
+			}
+			return this;
+		}
+		const currentParagraph = (_this$_data$body10 = this._data.body) === null || _this$_data$body10 === void 0 || (_this$_data$body10 = _this$_data$body10.paragraphs) === null || _this$_data$body10 === void 0 ? void 0 : _this$_data$body10.slice(-1)[0];
+		const currentParagraphStyle = Tools.deepClone(currentParagraph === null || currentParagraph === void 0 ? void 0 : currentParagraph.paragraphStyle);
+		const currentParagraphBullet = Tools.deepClone(currentParagraph === null || currentParagraph === void 0 ? void 0 : currentParagraph.bullet);
+		const startIndex = Math.max(0, (((_this$_data$body11 = this._data.body) === null || _this$_data$body11 === void 0 ? void 0 : _this$_data$body11.dataStream.length) ?? 2) - 2);
+		this.insertRichText(startIndex, RichTextValue.create({
+			id: "d",
+			documentStyle: {},
+			body: {
+				dataStream: "\r",
+				paragraphs: [{
+					startIndex: 0,
+					paragraphId: createParagraphId(/* @__PURE__ */ new Set()),
+					paragraphStyle: currentParagraphStyle,
+					bullet: currentParagraphBullet
+				}]
+			}
+		}));
+		const nextParagraph = (_this$_data$body12 = this._data.body) === null || _this$_data$body12 === void 0 || (_this$_data$body12 = _this$_data$body12.paragraphs) === null || _this$_data$body12 === void 0 ? void 0 : _this$_data$body12.slice(-1)[0];
+		if (nextParagraphStyle) {
+			if (nextParagraph) nextParagraph.paragraphStyle = nextParagraphStyle;
+		} else if (nextParagraph) delete nextParagraph.paragraphStyle;
+		if (nextParagraph) delete nextParagraph.bullet;
+		return this;
+	}
+	insertText(start, text, style) {
+		var _this$_data$body13;
+		let startIndex = (((_this$_data$body13 = this._data.body) === null || _this$_data$body13 === void 0 ? void 0 : _this$_data$body13.dataStream.length) ?? 2) - 2;
+		let insertText;
+		let insertStyle;
+		if (typeof start === "string") insertText = start;
+		else {
+			startIndex = Math.min(start, startIndex);
+			insertText = typeof text === "string" ? text : "";
+		}
+		if (typeof text === "object") insertStyle = text instanceof TextStyleBuilder ? text.build() : text;
+		else insertStyle = style instanceof TextStyleBuilder ? style.build() : style;
+		if (!insertText) return this;
+		const plainTextBody = BuildTextUtils.transform.fromPlainText(insertText);
+		const newBody = {
+			dataStream: plainTextBody.dataStream,
+			paragraphs: plainTextBody.paragraphs,
+			textRuns: insertStyle ? [{
+				ts: insertStyle,
+				st: 0,
+				ed: plainTextBody.dataStream.length
+			}] : []
+		};
+		const textX = BuildTextUtils.selection.replace({
+			doc: this._doc,
+			selection: {
+				startOffset: startIndex,
+				endOffset: startIndex,
+				collapsed: true
+			},
+			body: newBody
+		});
+		if (!textX) throw new Error("Insert text failed, please check.");
+		TextX.apply(this._doc.getBody(), textX.serialize());
+		this._invalidateChildHandles();
+		return this;
+	}
+	insertRichText(start, richText) {
+		var _this$_data$body14;
+		let startIndex = (((_this$_data$body14 = this._data.body) === null || _this$_data$body14 === void 0 ? void 0 : _this$_data$body14.dataStream.length) ?? 2) - 2;
+		let insertText;
+		if (typeof start === "object") insertText = start instanceof RichTextValue ? start.getData() : start;
+		else {
+			startIndex = Math.min(start, startIndex);
+			insertText = richText instanceof RichTextValue ? richText.getData() : richText;
+		}
+		const textX = BuildTextUtils.selection.replace({
+			doc: this._doc,
+			selection: {
+				startOffset: startIndex,
+				endOffset: startIndex,
+				collapsed: true
+			},
+			body: insertText.body
+		});
+		if (!textX) throw new Error("Insert text failed, please check.");
+		TextX.apply(this._doc.getBody(), textX.serialize());
+		this._invalidateChildHandles();
+		return this;
+	}
+	delete(start, count) {
+		var _this$_data$body15;
+		const terminalTokenLength = "\r".length + "\n".length;
+		const contentLength = Math.max(0, (((_this$_data$body15 = this._data.body) === null || _this$_data$body15 === void 0 ? void 0 : _this$_data$body15.dataStream.length) ?? terminalTokenLength) - terminalTokenLength);
+		let startOffset;
+		let deleteCount;
+		if (count === void 0) {
+			if (start < 0) throw new RangeError("Delete count cannot be negative.");
+			deleteCount = Math.min(start, contentLength);
+			startOffset = contentLength - deleteCount;
+		} else {
+			if (start < 0 || count < 0) throw new RangeError("Delete range cannot be negative.");
+			startOffset = Math.min(start, contentLength);
+			deleteCount = Math.min(count, contentLength - startOffset);
+		}
+		if (deleteCount > 0) {
+			const actions = BuildTextUtils.selection.delete([{
+				startOffset,
+				endOffset: startOffset + deleteCount,
+				collapsed: true
+			}], this._data.body);
+			TextX.apply(this._doc.getBody(), actions);
+			this._invalidateChildHandles();
+		}
+		return this;
+	}
+	/**
+	* Sets the style of the text at the specified start and end positions
+	* @param {number} start The start position of the text to set the style
+	* @param {number} end The end position of the text to set the style
+	* @param {TextStyleBuilder | ITextStyle} style The style to set
+	* @returns {RichTextBuilder} The current RichTextBuilder instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const newRichText = richText.setStyle(5, 10, { ff: 'Arial', fs: 12 });
+	* ```
+	*/
+	setStyle(start, end, style) {
+		const newBody = {
+			dataStream: "",
+			textRuns: [{
+				ts: style instanceof TextStyleBuilder ? style.build() : style,
+				st: 0,
+				ed: end - start
+			}]
+		};
+		const actions = BuildTextUtils.selection.retain([{
+			startOffset: start,
+			endOffset: end,
+			collapsed: true
+		}], newBody);
+		TextX.apply(this._doc.getBody(), actions);
+		this._invalidateChildHandles();
+		return this;
+	}
+	/**
+	* Sets the link of the text at the specified start and end positions
+	* @param {number} start The start position of the text to set the link
+	* @param {number} end The end position of the text to set the link
+	* @param {string} link The link to set
+	* @returns {RichTextBuilder} The current RichTextBuilder instance
+	* @example
+	* ```ts
+	* const richText = RichTextValue.create({ body: { dataStream: 'Hello World\r\n' } });
+	* const newRichText = richText.setLink(5, 10, 'https://www.example.com');
+	* ```
+	*/
+	setLink(start, end, link) {
+		const textX = BuildTextUtils.customRange.add({
+			rangeType: 0,
+			rangeId: generateRandomId(),
+			properties: { url: link },
+			ranges: [{
+				startOffset: start,
+				endOffset: end,
+				collapsed: false
+			}],
+			body: this._data.body
+		});
+		if (!textX) throw new Error("Insert text failed, please check.");
+		TextX.apply(this._doc.getBody(), textX.serialize());
+		this._invalidateChildHandles();
+		return this;
+	}
+	cancelLink(start, end) {
+		let changed = false;
+		if (typeof start === "string") {
+			const textX = BuildTextUtils.customRange.delete({
+				rangeId: start,
+				documentDataModel: this._doc
+			});
+			if (!textX) throw new Error("Insert text failed, please check.");
+			TextX.apply(this._doc.getBody(), textX.serialize());
+			changed = true;
+		} else this.slice(start, end).getLinks().forEach((l) => {
+			const textX = BuildTextUtils.customRange.delete({
+				rangeId: l.rangeId,
+				documentDataModel: this._doc
+			});
+			if (!textX) throw new Error("Insert text failed, please check.");
+			TextX.apply(this._doc.getBody(), textX.serialize());
+			changed = true;
+		});
+		if (changed) this._invalidateChildHandles();
+		return this;
+	}
+	/**
+	* Removes a link while preserving its visible text.
+	*
+	* Link ids are available from `getLinks()`. This readable alias avoids exposing text offsets for the common case.
+	* Use `cancelLink(start, end)` only when removing every link in a known text range.
+	*
+	* @param id Link range id returned by `getLinks()`.
+	* @returns The current builder for chaining.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText().link('Univer', 'https://univer.ai');
+	* const [link] = richText.getLinks();
+	* if (link) richText.removeLink(link.rangeId);
+	* ```
+	*/
+	removeLink(id) {
+		return this.cancelLink(id);
+	}
+	/**
+	* Updates a link destination while preserving its visible text.
+	* @param id Link range id returned by `getLinks()`.
+	* @param url New link destination.
+	* @returns The current builder for chaining.
+	*/
+	updateLink(id, url) {
+		var _this$_data$body16;
+		const current = (_this$_data$body16 = this._data.body) === null || _this$_data$body16 === void 0 || (_this$_data$body16 = _this$_data$body16.customRanges) === null || _this$_data$body16 === void 0 ? void 0 : _this$_data$body16.find((range) => range.rangeId === id);
+		if (!current) throw new Error("Link not found");
+		current.properties.url = url;
+		return this;
+	}
+	insertParagraph(start, paragraphStyle) {
+		let newBody;
+		let startIndex;
+		if (typeof start === "object") {
+			var _this$_data$body17;
+			newBody = {
+				dataStream: "\r",
+				paragraphs: [{
+					startIndex: 0,
+					paragraphId: createParagraphId(/* @__PURE__ */ new Set()),
+					paragraphStyle: start.build()
+				}]
+			};
+			startIndex = (((_this$_data$body17 = this._data.body) === null || _this$_data$body17 === void 0 ? void 0 : _this$_data$body17.dataStream.length) ?? 2) - 2;
+		} else {
+			startIndex = start;
+			newBody = {
+				dataStream: "\r",
+				paragraphs: [{
+					startIndex: 0,
+					paragraphId: createParagraphId(/* @__PURE__ */ new Set()),
+					paragraphStyle: paragraphStyle === null || paragraphStyle === void 0 ? void 0 : paragraphStyle.build()
+				}]
+			};
+		}
+		this.insertRichText(startIndex, RichTextValue.create({
+			body: newBody,
+			id: "d",
+			documentStyle: {}
+		}));
+		return this;
+	}
+	insertLink(start, text, url) {
+		let textStr = "";
+		let textUrl = "";
+		if (typeof start === "string") {
+			textStr = start;
+			textUrl = text;
+		} else {
+			textStr = text;
+			textUrl = url;
+		}
+		const rich = RichTextBuilder.createByBody({
+			dataStream: textStr,
+			customRanges: [{
+				rangeType: 0,
+				rangeId: generateRandomId(),
+				properties: { url: textUrl },
+				startIndex: 0,
+				endIndex: textStr.length - 1
+			}]
+		});
+		return typeof start === "number" ? this.insertRichText(start, rich) : this.insertRichText(rich);
+	}
+};
+/**
+* An editable paragraph handle owned by a detached {@link RichTextBuilder}.
+*
+* The paragraph is resolved by its persisted paragraph id, while its tracked range is rebased after every run edit.
+* This keeps paragraph traversal safe when earlier translated text becomes longer or shorter.
+*/
+var RichTextParagraphBuilder = class extends RichTextValue {
+	/** @hideconstructor */
+	constructor(_owner, _paragraphId, _range, _revision) {
+		super(createParagraphSnapshot(_owner.getData(), _paragraphId, _range));
+		this._owner = _owner;
+		this._paragraphId = _paragraphId;
+		this._range = _range;
+		this._revision = _revision;
+	}
+	/** Returns the persisted paragraph id. */
+	getId() {
+		this._assertActive();
+		return this._paragraphId;
+	}
+	/** Returns the current paragraph range without its trailing paragraph marker. */
+	getRange() {
+		this._assertActive();
+		return { ...this._range };
+	}
+	/**
+	* Returns the current paragraph text without its trailing paragraph marker.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText().text('Quarterly Review');
+	* const paragraph = richText.getParagraphs()[0];
+	* console.log(paragraph.getText());
+	* ```
+	*/
+	getText() {
+		var _this$_owner$getData$;
+		this._assertActive();
+		return (((_this$_owner$getData$ = this._owner.getData().body) === null || _this$_owner$getData$ === void 0 ? void 0 : _this$_owner$getData$.dataStream) ?? "").slice(this._range.startOffset, this._range.endOffset);
+	}
+	toPlainText() {
+		return this.getText();
+	}
+	/**
+	* Returns editable runs that cover all text in this paragraph, including unstyled gaps.
+	* @returns Editable text runs in document order.
+	*/
+	getTextRuns() {
+		this._assertActive();
+		return this._owner._createTextRunBuilders(this._range);
+	}
+	getParagraphStyle() {
+		this._assertActive();
+		return ParagraphStyleValue.create(this._getParagraph().paragraphStyle);
+	}
+	getParagraphBullet() {
+		this._assertActive();
+		return this._getParagraph().bullet;
+	}
+	getLinks() {
+		var _this$getData$body;
+		this._assertActive();
+		return ((_this$getData$body = this.getData().body) === null || _this$getData$body === void 0 || (_this$getData$body = _this$getData$body.customRanges) === null || _this$getData$body === void 0 ? void 0 : _this$getData$body.filter((range) => range.rangeType === 0)) ?? [];
+	}
+	/** Agent-friendly alias of `getParagraphBullet()`. */
+	getBullet() {
+		return this.getParagraphBullet();
+	}
+	getData() {
+		this._assertActive();
+		return createParagraphSnapshot(this._owner.getData(), this._paragraphId, this._range);
+	}
+	copy() {
+		return RichTextBuilder.create(Tools.deepClone(this.getData()));
+	}
+	_getParagraph() {
+		var _this$_owner$getData$2;
+		const paragraph = (_this$_owner$getData$2 = this._owner.getData().body) === null || _this$_owner$getData$2 === void 0 || (_this$_owner$getData$2 = _this$_owner$getData$2.paragraphs) === null || _this$_owner$getData$2 === void 0 ? void 0 : _this$_owner$getData$2.find((item) => item.paragraphId === this._paragraphId);
+		if (!paragraph) throw new Error(`Rich text paragraph "${this._paragraphId}" was not found.`);
+		return paragraph;
+	}
+	_assertActive() {
+		this._owner._assertChildHandleRevision(this._revision);
+	}
+};
+/**
+* An editable text-run handle owned by a detached {@link RichTextBuilder}.
+*
+* Calling {@link setText} replaces only the run text. The builder automatically updates this run, every later run,
+* paragraph indexes, hyperlinks, decorations, and other offset-based document metadata through TextX.
+*/
+var RichTextRunBuilder = class {
+	/** @hideconstructor */
+	constructor(_owner, _range, _textStyle, _styleId, _hasExplicitTextStyle, _revision) {
+		this._owner = _owner;
+		this._range = _range;
+		this._textStyle = _textStyle;
+		this._styleId = _styleId;
+		this._hasExplicitTextStyle = _hasExplicitTextStyle;
+		this._revision = _revision;
+		_defineProperty(this, "_active", true);
+	}
+	/** Inclusive start offset, kept for compatibility with existing `getTextRuns()` callers. */
+	get st() {
+		this._assertActive();
+		return this._range.startOffset;
+	}
+	/** Exclusive end offset, automatically updated after text replacement. */
+	get ed() {
+		this._assertActive();
+		return this._range.endOffset;
+	}
+	/** Optional persisted style id. This is not a stable run identity. */
+	get sId() {
+		this._assertActive();
+		return this._styleId;
+	}
+	/** Existing text-style value property exposed by `getTextRuns()`. */
+	get ts() {
+		this._assertActive();
+		return this._textStyle ? TextStyleValue.create(this._textStyle) : null;
+	}
+	/** Returns the current run range. */
+	getRange() {
+		this._assertActive();
+		return { ...this._range };
+	}
+	/** Returns the current run text. */
+	getText() {
+		var _this$_owner$getData$3;
+		this._assertActive();
+		return (((_this$_owner$getData$3 = this._owner.getData().body) === null || _this$_owner$getData$3 === void 0 ? void 0 : _this$_owner$getData$3.dataStream) ?? "").slice(this._range.startOffset, this._range.endOffset);
+	}
+	/** Returns this run's explicit text style, or `null` for an unstyled text segment. */
+	getTextStyle() {
+		return this.ts;
+	}
+	/** Returns whether this segment is backed by an explicit document text run. */
+	hasTextStyle() {
+		this._assertActive();
+		return this._hasExplicitTextStyle;
+	}
+	/**
+	* Replaces this run's text without changing its style or paragraph structure.
+	*
+	* Replacement text may be longer or shorter than the original. Offsets are updated automatically, so handles
+	* returned in the same `getTextRuns()` call remain safe to use in forward order. Paragraph and section breaks are
+	* rejected because a text run cannot create or remove paragraphs.
+	*
+	* @param text New text for this run.
+	* @returns This run handle for chaining. A handle becomes invalid after it is replaced with an empty string.
+	* @example
+	* ```ts
+	* const richText = univerAPI.newRichText()
+	*   .span('标题', { bold: true, fontSize: 24 })
+	*   .paragraph()
+	*   .text('正文内容');
+	* const replacements = ['Quarterly Review', 'Revenue increased by 18%.'];
+	* let index = 0;
+	* for (const run of richText.getTextRuns()) {
+	*   const replacement = replacements[index++];
+	*   if (replacement !== undefined) run.setText(replacement);
+	* }
+	* console.log(richText.toPlainText());
+	* ```
+	*/
+	setText(text) {
+		this._assertActive();
+		this._owner._replaceTextRun(this._range, text, this._textStyle, this._styleId, this._hasExplicitTextStyle);
+		if (!text) this._active = false;
+		return this;
+	}
+	_assertActive() {
+		if (!this._active) throw new Error("Rich text run handle is no longer valid.");
+		this._owner._assertChildHandleRevision(this._revision);
+	}
+};
+function createParagraphSnapshot(data, paragraphId, range) {
+	var _body$paragraphs;
+	const { body, ...documentData } = data;
+	if (!body) throw new Error("Rich text body is not available.");
+	const paragraph = (_body$paragraphs = body.paragraphs) === null || _body$paragraphs === void 0 ? void 0 : _body$paragraphs.find((item) => item.paragraphId === paragraphId);
+	if (!paragraph) throw new Error(`Rich text paragraph "${paragraphId}" was not found.`);
+	const paragraphBody = getBodySlice(body, range.startOffset, range.endOffset);
+	paragraphBody.paragraphs = [{
+		...Tools.deepClone(paragraph),
+		startIndex: range.endOffset - range.startOffset
+	}];
+	return {
+		...Tools.deepClone(documentData),
+		body: paragraphBody
+	};
+}
+
+//#endregion
+//#region src/docs/data-model/subdocument.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const DEFAULT_DOCUMENT_SUB_COMPONENT_ID = "__default_document_sub_component_id20231101__";
+
+//#endregion
+//#region src/docs/data-model/text-x/structure-validator.ts
+const DOCUMENT_STRUCTURAL_TOKEN_PATTERN_SOURCE = `[${[
+	"\r",
+	"\n",
+	"",
+	"\x1B",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"",
+	"\b"
+].join("")}]`;
+function createIssue(context, code, message, index) {
+	return {
+		...context,
+		code,
+		index,
+		message
+	};
+}
+function validateMinimumRootSentinels(scan, issues, context) {
+	if (!scan.hasRootParagraph) issues.push(createIssue(context, "missing-root-paragraph", "Document body must contain at least one paragraph sentinel."));
+	if (!scan.hasRootSectionBreak) issues.push(createIssue(context, "missing-root-section-break", "Document body must contain at least one section break sentinel."));
+}
+function validateParagraphMetadata(body, issues, context) {
+	const metadataCounts = /* @__PURE__ */ new Map();
+	for (const paragraph of body.paragraphs ?? []) if (body.dataStream[paragraph.startIndex] !== "\r") issues.push(createIssue(context, "paragraph-token-mismatch", "Paragraph metadata must point to a paragraph sentinel.", paragraph.startIndex));
+	else metadataCounts.set(paragraph.startIndex, (metadataCounts.get(paragraph.startIndex) ?? 0) + 1);
+	validatePointMetadataDuplicates(metadataCounts, {
+		context,
+		duplicateCode: "duplicate-paragraph-metadata",
+		duplicateMessage: "Paragraph sentinel must have exactly one paragraph metadata entry."
+	}, issues);
+}
+function validateSectionBreakMetadata(body, issues, context) {
+	const metadataCounts = /* @__PURE__ */ new Map();
+	const sectionIds = /* @__PURE__ */ new Map();
+	for (const sectionBreak of body.sectionBreaks ?? []) {
+		if (!sectionBreak.sectionId) issues.push(createIssue(context, "missing-section-id", "Section break metadata must have a stable section id.", sectionBreak.startIndex));
+		else sectionIds.set(sectionBreak.sectionId, (sectionIds.get(sectionBreak.sectionId) ?? 0) + 1);
+		if (body.dataStream[sectionBreak.startIndex] !== "\n") issues.push(createIssue(context, "section-break-token-mismatch", "Section break metadata must point to a section break sentinel.", sectionBreak.startIndex));
+		else metadataCounts.set(sectionBreak.startIndex, (metadataCounts.get(sectionBreak.startIndex) ?? 0) + 1);
+	}
+	validatePointMetadataDuplicates(metadataCounts, {
+		context,
+		duplicateCode: "duplicate-section-break-metadata",
+		duplicateMessage: "Section break sentinel must have exactly one section break metadata entry."
+	}, issues);
+	for (const [sectionId, count] of sectionIds) if (count > 1) issues.push(createIssue(context, "duplicate-section-id", `Section id "${sectionId}" must be unique within a document segment.`));
+}
+function validatePointMetadataDuplicates(metadataCounts, options, issues) {
+	for (const [index, count] of metadataCounts) if (count > 1) issues.push(createIssue(options.context, options.duplicateCode, options.duplicateMessage, index));
+}
+function sortStructuralRanges(ranges) {
+	for (let index = 1; index < ranges.length; index++) {
+		const previous = ranges[index - 1];
+		const current = ranges[index];
+		if (current.startIndex < previous.startIndex || current.startIndex === previous.startIndex && current.endIndex < previous.endIndex) return [...ranges].sort((left, right) => left.startIndex - right.startIndex || left.endIndex - right.endIndex);
+	}
+	return ranges;
+}
+function createPairedTokenRanges() {
+	return {
+		pairs: /* @__PURE__ */ new Map(),
+		unmatchedEnds: [],
+		unmatchedStarts: []
+	};
+}
+function closeTokenRange(ranges, index, exclusiveEnd) {
+	const startIndex = ranges.unmatchedStarts.pop();
+	if (startIndex === void 0) {
+		ranges.unmatchedEnds.push(index);
+		return;
+	}
+	ranges.pairs.set(startIndex, exclusiveEnd ? index + 1 : index);
+}
+function scanDocumentStructuralTokens(dataStream) {
+	const scan = {
+		hasRootParagraph: false,
+		hasRootSectionBreak: false,
+		tableRanges: createPairedTokenRanges(),
+		blockRanges: createPairedTokenRanges(),
+		columnGroupRanges: createPairedTokenRanges(),
+		customBlockIndexes: /* @__PURE__ */ new Set()
+	};
+	const tokenPattern = new RegExp(DOCUMENT_STRUCTURAL_TOKEN_PATTERN_SOURCE, "g");
+	for (const match of dataStream.matchAll(tokenPattern)) {
+		const index = match.index;
+		const token = match[0];
+		if (token === "\r") scan.hasRootParagraph = true;
+		else if (token === "\n") scan.hasRootSectionBreak = true;
+		else if (token === "") scan.tableRanges.unmatchedStarts.push(index);
+		else if (token === "") closeTokenRange(scan.tableRanges, index, true);
+		else if (token === "") scan.blockRanges.unmatchedStarts.push(index);
+		else if (token === "") closeTokenRange(scan.blockRanges, index, false);
+		else if (token === "") scan.columnGroupRanges.unmatchedStarts.push(index);
+		else if (token === "") closeTokenRange(scan.columnGroupRanges, index, false);
+		else if (token === "\b") scan.customBlockIndexes.add(index);
+	}
+	return scan;
+}
+function validateTableMetadata(body, scan, issues, context) {
+	const pairedTables = scan.tableRanges.pairs;
+	const metadataStarts = /* @__PURE__ */ new Set();
+	let previousTable;
+	const tables = sortStructuralRanges(body.tables ?? []);
+	for (const table of tables) {
+		metadataStarts.add(table.startIndex);
+		if (!Number.isInteger(table.startIndex) || body.dataStream[table.startIndex] !== "") issues.push(createIssue(context, "table-start-token-mismatch", "Table startIndex must point to a table start sentinel.", table.startIndex));
+		if (!Number.isInteger(table.endIndex) || table.endIndex <= table.startIndex || table.endIndex > body.dataStream.length || body.dataStream[table.endIndex - 1] !== "" || pairedTables.get(table.startIndex) !== table.endIndex) issues.push(createIssue(context, "table-end-token-mismatch", "Table endIndex must be the exclusive boundary immediately after a table end sentinel.", table.endIndex));
+		if (previousTable && intersectsOperationalIntervals(getTableRangeInterval(previousTable), getTableRangeInterval(table))) issues.push(createIssue(context, "overlapping-table", "Table ranges must not overlap.", table.startIndex));
+		previousTable = table;
+	}
+	for (const startIndex of pairedTables.keys()) if (!metadataStarts.has(startIndex)) issues.push(createIssue(context, "missing-table-metadata", "Table token range must have a table metadata entry.", startIndex));
+}
+function validateBlockRangeMetadata(body, scan, issues, context) {
+	const pairedBlocks = scan.blockRanges;
+	for (const index of [...pairedBlocks.unmatchedStarts, ...pairedBlocks.unmatchedEnds]) issues.push(createIssue(context, "unbalanced-block", "Block sentinel has no matching boundary.", index));
+	const blockRanges = sortStructuralRanges(body.blockRanges ?? []);
+	const metadataStarts = /* @__PURE__ */ new Set();
+	let previousBlockRange;
+	for (let i = 0; i < blockRanges.length; i++) {
+		const blockRange = blockRanges[i];
+		metadataStarts.add(blockRange.startIndex);
+		if (pairedBlocks.pairs.get(blockRange.startIndex) !== blockRange.endIndex) issues.push(createIssue(context, "block-range-token-mismatch", "Block range must point to its matching block start and end sentinels.", blockRange.startIndex));
+		if (previousBlockRange && intersectsOperationalIntervals(getBlockRangeInterval(previousBlockRange), getBlockRangeInterval(blockRange))) issues.push(createIssue(context, "overlapping-block-range", "Block ranges must not overlap or share structural sentinels.", blockRange.startIndex));
+		previousBlockRange = blockRange;
+	}
+	for (const startIndex of pairedBlocks.pairs.keys()) if (!metadataStarts.has(startIndex)) issues.push(createIssue(context, "missing-block-range-metadata", "Block token range must have a block metadata entry.", startIndex));
+}
+function validateColumnGroupMetadata(body, scan, issues, context) {
+	const pairedColumnGroups = scan.columnGroupRanges.pairs;
+	const metadataStarts = /* @__PURE__ */ new Set();
+	const columnGroups = sortStructuralRanges(body.columnGroups ?? []);
+	let previousColumnGroup;
+	for (const columnGroup of columnGroups) {
+		metadataStarts.add(columnGroup.startIndex);
+		const pairedEndIndex = pairedColumnGroups.get(columnGroup.startIndex);
+		if (pairedEndIndex !== columnGroup.endIndex) issues.push(createIssue(context, "column-group-range-token-mismatch", "Column group range must point to its matching start and end sentinels.", columnGroup.startIndex));
+		if (previousColumnGroup && intersectsOperationalIntervals(getColumnGroupRangeInterval(previousColumnGroup), getColumnGroupRangeInterval(columnGroup))) issues.push(createIssue(context, "overlapping-column-group", "Column group ranges must not overlap.", columnGroup.startIndex));
+		previousColumnGroup = columnGroup;
+		if (Array.isArray(columnGroup.columns)) {
+			let streamColumnCount = 0;
+			const scanEnd = pairedEndIndex ?? columnGroup.endIndex;
+			for (let index = columnGroup.startIndex + 1; index < scanEnd; index++) if (body.dataStream[index] === "") streamColumnCount++;
+			if (streamColumnCount !== columnGroup.columns.length) issues.push(createIssue(context, "column-group-column-count-mismatch", "Column group metadata column count must match the data stream.", columnGroup.startIndex));
+		}
+	}
+	for (const startIndex of pairedColumnGroups.keys()) if (!metadataStarts.has(startIndex)) issues.push(createIssue(context, "missing-column-group-metadata", "Column group token range must have a metadata entry.", startIndex));
+}
+function validateCustomBlockMetadata(body, scan, issues, context) {
+	const metadataCounts = /* @__PURE__ */ new Map();
+	const customBlocks = [...body.customBlocks ?? [], ...body.docxRawCustomBlocks ?? []];
+	for (const customBlock of customBlocks) {
+		const { startIndex } = customBlock;
+		if (!Number.isInteger(startIndex) || body.dataStream[startIndex] !== "\b") {
+			issues.push(createIssue(context, "custom-block-token-mismatch", "Custom block startIndex must point to a custom block sentinel.", startIndex));
+			continue;
+		}
+		metadataCounts.set(startIndex, (metadataCounts.get(startIndex) ?? 0) + 1);
+	}
+	validatePointMetadataDuplicates(metadataCounts, {
+		context,
+		duplicateCode: "duplicate-custom-block-metadata",
+		duplicateMessage: "Custom block sentinel must have exactly one custom block metadata entry."
+	}, issues);
+	for (const index of scan.customBlockIndexes) if (!metadataCounts.has(index)) issues.push(createIssue(context, "missing-custom-block-metadata", "Custom block sentinel must have a custom block metadata entry.", index));
+}
+function validateStructuralContainers(body, issues, context) {
+	const columnGroupStack = [];
+	const columnStack = [];
+	const tableStack = [];
+	const tableRowStack = [];
+	const tableCellStack = [];
+	const tokenPattern = new RegExp(DOCUMENT_STRUCTURAL_TOKEN_PATTERN_SOURCE, "g");
+	for (const match of body.dataStream.matchAll(tokenPattern)) {
+		const i = match.index;
+		const char = match[0];
+		const column = columnStack[columnStack.length - 1];
+		const cell = tableCellStack[tableCellStack.length - 1];
+		if (char === "\r") {
+			if (column) column.hasChild = true;
+			if (cell) cell.hasParagraph = true;
+		} else if (char === "\n") {
+			if (column) column.hasChild = true;
+			if (cell) cell.hasSectionBreak = true;
+		} else if (char === "") columnGroupStack.push(i);
+		else if (char === "") columnStack.push({
+			startIndex: i,
+			hasChild: false
+		});
+		else if (char === "") {
+			const closedColumn = columnStack.pop();
+			if (!closedColumn) issues.push(createIssue(context, "unbalanced-column-group", "Column end token has no matching column start.", i));
+			else if (!closedColumn.hasChild) issues.push(createIssue(context, "empty-column", "Column must contain at least one paragraph or section child.", closedColumn.startIndex));
+		} else if (char === "") if (columnStack.length > 0 || columnGroupStack.length === 0) {
+			issues.push(createIssue(context, "unbalanced-column-group", "Column group closes while a column is still open.", i));
+			columnStack.length = 0;
+		} else columnGroupStack.pop();
+		else if (char === "") tableStack.push(i);
+		else if (char === "\x1B") tableRowStack.push(i);
+		else if (char === "") tableCellStack.push({
+			startIndex: i,
+			hasParagraph: false,
+			hasSectionBreak: false
+		});
+		else if (char === "") {
+			const closedCell = tableCellStack.pop();
+			if (!closedCell) issues.push(createIssue(context, "unbalanced-table", "Table cell end token has no matching start.", i));
+			else if (!closedCell.hasParagraph || !closedCell.hasSectionBreak) issues.push(createIssue(context, "empty-table-cell", "Table cell must contain a paragraph and section break child.", closedCell.startIndex));
+		} else if (char === "") if (tableCellStack.length > 0 || tableRowStack.length === 0) {
+			issues.push(createIssue(context, "unbalanced-table", "Table row closes while a cell is still open.", i));
+			tableCellStack.length = 0;
+		} else tableRowStack.pop();
+		else if (char === "") if (tableCellStack.length > 0 || tableRowStack.length > 0 || tableStack.length === 0) {
+			issues.push(createIssue(context, "unbalanced-table", "Table closes while a row or cell is still open.", i));
+			tableCellStack.length = 0;
+			tableRowStack.length = 0;
+		} else tableStack.pop();
+	}
+	if (columnGroupStack.length > 0 || columnStack.length > 0) issues.push(createIssue(context, "unbalanced-column-group", "Column group or column token is not closed.", body.dataStream.length));
+	if (tableStack.length > 0 || tableRowStack.length > 0 || tableCellStack.length > 0) issues.push(createIssue(context, "unbalanced-table", "Table, row, or cell token is not closed.", body.dataStream.length));
+}
+function validateDocBodyStructure(body, context = { segmentType: "body" }) {
+	const issues = [];
+	const scan = scanDocumentStructuralTokens(body.dataStream);
+	validateMinimumRootSentinels(scan, issues, context);
+	validateParagraphMetadata(body, issues, context);
+	validateSectionBreakMetadata(body, issues, context);
+	validateTableMetadata(body, scan, issues, context);
+	validateBlockRangeMetadata(body, scan, issues, context);
+	validateColumnGroupMetadata(body, scan, issues, context);
+	validateCustomBlockMetadata(body, scan, issues, context);
+	validateStructuralContainers(body, issues, context);
+	return issues;
+}
+function validateDocumentStructure(snapshot) {
+	const issues = [];
+	if (snapshot.body) issues.push(...validateDocBodyStructure(snapshot.body, { segmentType: "body" }));
+	for (const [headerId, header] of Object.entries(snapshot.headers ?? {})) issues.push(...validateDocBodyStructure(header.body, {
+		segmentType: "header",
+		segmentId: headerId
+	}));
+	for (const [footerId, footer] of Object.entries(snapshot.footers ?? {})) issues.push(...validateDocBodyStructure(footer.body, {
+		segmentType: "footer",
+		segmentId: footerId
+	}));
+	return issues;
+}
+
+//#endregion
+//#region src/docs/section-header-footer.ts
+function getSectionHeaderFooterReferenceKey(kind, variant) {
+	return `${variant === "default" ? "default" : variant === "first" ? "firstPage" : "evenPage"}${kind === "header" ? "Header" : "Footer"}Id`;
+}
+/**
+* Resolves one OOXML header/footer reference for a document section.
+* A missing reference after the first section inherits the previous section.
+* Document-level references are defaults for the first section only.
+*/
+function resolveSectionHeaderFooterReference(documentStyle, sections, sectionIndex, key) {
+	if (sectionIndex < 0 || sectionIndex >= sections.length) return { linkedToPrevious: false };
+	const current = sections[sectionIndex];
+	const explicit = current[key];
+	if (typeof explicit === "string" && explicit) return {
+		segmentId: explicit,
+		linkedToPrevious: false,
+		sourceSectionId: current.sectionId
+	};
+	if (sectionIndex === 0) {
+		const documentDefault = documentStyle[key];
+		return {
+			...typeof documentDefault === "string" && documentDefault ? { segmentId: documentDefault } : {},
+			linkedToPrevious: false
+		};
+	}
+	const inherited = resolveSectionHeaderFooterReference(documentStyle, sections, sectionIndex - 1, key);
+	return {
+		...inherited.segmentId ? { segmentId: inherited.segmentId } : {},
+		linkedToPrevious: true,
+		sourceSectionId: inherited.sourceSectionId
+	};
+}
+function resolveSectionHeaderFooterReferences(documentStyle, sections, sectionIndex) {
+	const result = {};
+	for (const key of [
+		"defaultHeaderId",
+		"defaultFooterId",
+		"firstPageHeaderId",
+		"firstPageFooterId",
+		"evenPageHeaderId",
+		"evenPageFooterId"
+	]) {
+		const { segmentId } = resolveSectionHeaderFooterReference(documentStyle, sections, sectionIndex, key);
+		if (segmentId) result[key] = segmentId;
+	}
+	return result;
+}
+
+//#endregion
+//#region src/observer/observable.ts
+/**
+* A class serves as a medium between the observable and its observers
+*/
+var EventState = class {
+	constructor() {
+		_defineProperty(
+			this,
+			/**
+			* An WorkBookObserver can set this property to true to prevent subsequent observers of being notified
+			*/
+			"skipNextObservers",
+			false
+		);
+		_defineProperty(
+			this,
+			/**
+			* This will be populated with the return value of the last function that was executed.
+			* If it is the first function in the callback chain it will be the event data.
+			*/
+			"lastReturnValue",
+			void 0
+		);
+		_defineProperty(this, "isStopPropagation", false);
+	}
+	stopPropagation() {
+		this.isStopPropagation = true;
+	}
+};
+/**
+* This is a custom implementation of RxJS subject. It handles events on canvas elements.
+* In addition to the event, it also emits a state object that can be used to controls the
+* propagation of the event.
+*
+*/
+var EventSubject = class extends Subject {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_sortedObservers", []);
+	}
+	unsubscribe() {
+		super.unsubscribe();
+		this._sortedObservers.length = 0;
+	}
+	complete() {
+		super.complete();
+		this._sortedObservers.length = 0;
+	}
+	subscribeEvent(observer) {
+		let ob;
+		if (typeof observer === "function") ob = { next: ([evt, state]) => observer(evt, state) };
+		else ob = observer;
+		const subscription = super.subscribe(ob);
+		this._sortedObservers.push(ob);
+		this._sortedObservers.sort((a, b) => (a.priority ?? 0) - (b.priority ?? 0));
+		subscription.add(() => this._sortedObservers = this._sortedObservers.filter((o) => o !== ob));
+		return subscription;
+	}
+	clearObservers() {
+		this._sortedObservers.forEach((observer) => {
+			var _observer$complete;
+			return (_observer$complete = observer.complete) === null || _observer$complete === void 0 ? void 0 : _observer$complete.call(observer);
+		});
+		this._sortedObservers.length = 0;
+	}
+	emitEvent(event) {
+		if (!this.closed) {
+			const state = new EventState();
+			state.lastReturnValue = event;
+			for (const observer of this._sortedObservers) {
+				var _observer$next;
+				state.lastReturnValue = (_observer$next = observer.next) === null || _observer$next === void 0 ? void 0 : _observer$next.call(observer, [event, state]);
+				if (state.skipNextObservers) return {
+					handled: true,
+					lastReturnValue: state.lastReturnValue,
+					stopPropagation: state.isStopPropagation
+				};
+			}
+			return {
+				handled: this._sortedObservers.length > 0,
+				lastReturnValue: state.lastReturnValue,
+				stopPropagation: state.isStopPropagation
+			};
+		}
+		throw new Error("[EventSubject]: cannot emit event on a closed subject.");
+	}
+};
+function fromEventSubject(subject$) {
+	return new Observable((subscriber) => {
+		const ob = subject$.subscribeEvent((evt) => {
+			subscriber.next(evt);
+		});
+		return () => ob.unsubscribe();
+	});
+}
+
+//#endregion
+//#region src/services/resource-manager/type.ts
+const IResourceManagerService = createIdentifier("core.resource-manager.service");
+
+//#endregion
+//#region src/services/user-manager/const.ts
+const nameMap = {
+	[UnitRole.Editor]: "Editor",
+	[UnitRole.Owner]: "Owner",
+	[UnitRole.Reader]: "Reader",
+	[UnitRole.UNRECOGNIZED]: "UNRECOGNIZED"
+};
+const createDefaultUser = (type) => {
+	if (!type) return {
+		userID: "",
+		name: "",
+		avatar: "",
+		anonymous: true,
+		canBindAnonymous: false
+	};
+	return {
+		userID: `${nameMap[type]}_${generateRandomId(8)}`,
+		name: nameMap[type],
+		avatar: ""
+	};
+};
+const isDevRole = (userId, type) => {
+	return userId.startsWith(nameMap[type]);
+};
+
+//#endregion
+//#region src/services/user-manager/user-manager.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var UserManagerService = class extends Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_model", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_userChange$", new Subject());
+		_defineProperty(this, "userChange$", this._userChange$.asObservable());
+		_defineProperty(this, "_currentUser$", new BehaviorSubject(createDefaultUser()));
+		_defineProperty(this, "currentUser$", this._currentUser$.asObservable());
+	}
+	dispose() {
+		super.dispose();
+		this._model.clear();
+		this._userChange$.complete();
+		this._currentUser$.complete();
+	}
+	getCurrentUser() {
+		return this._currentUser$.getValue();
+	}
+	setCurrentUser(user) {
+		this.addUser(user);
+		this._currentUser$.next(user);
+	}
+	addUser(user) {
+		this._model.set(user.userID, user);
+		this._userChange$.next({
+			type: "add",
+			user
+		});
+	}
+	getUser(userId, callBack) {
+		const user = this._model.get(userId);
+		if (user) return user;
+		callBack && callBack();
+	}
+	delete(userId) {
+		const user = this.getUser(userId);
+		this._model.delete(userId);
+		user && this._userChange$.next({
+			type: "delete",
+			user
+		});
+	}
+	clear() {
+		this._model.clear();
+		this._userChange$.next({ type: "clear" });
+	}
+	list() {
+		return Array.from(this._model.values());
+	}
+};
+
+//#endregion
+//#region src/services/authz-io/authz-io-local.service.ts
+let AuthzIoLocalService = class AuthzIoLocalService {
+	constructor(_resourceManagerService, _userManagerService) {
+		this._resourceManagerService = _resourceManagerService;
+		this._userManagerService = _userManagerService;
+		_defineProperty(this, "_permissionMap", /* @__PURE__ */ new Map([]));
+		_defineProperty(this, "_permissionOverrides", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_cfgEnableObjInherit", false);
+		this._initSnapshot();
+		this._initDefaultUser();
+	}
+	_initDefaultUser() {
+		const currentUser = this._userManagerService.getCurrentUser();
+		if (!(currentUser && currentUser.userID)) this._userManagerService.setCurrentUser(createDefaultUser(UnitRole.Owner));
+	}
+	_getRole(type) {
+		const user = this._userManagerService.getCurrentUser();
+		if (!user) return false;
+		return isDevRole(user.userID, type);
+	}
+	_initSnapshot() {
+		this._resourceManagerService.registerPluginResource({
+			toJson: (_unitId) => {
+				const obj = [...this._permissionMap.keys()].reduce((r, k) => {
+					r[k] = this._permissionMap.get(k);
+					return r;
+				}, {});
+				return JSON.stringify(obj);
+			},
+			parseJson: (json) => {
+				return JSON.parse(json);
+			},
+			pluginName: "SHEET_AuthzIoMockService_PLUGIN",
+			businesses: [
+				UniverInstanceType.UNIVER_SHEET,
+				UniverInstanceType.UNIVER_DOC,
+				UniverInstanceType.UNIVER_SLIDE,
+				UniverInstanceType.UNIVER_BOARD
+			],
+			onLoad: (_unitId, resource) => {
+				for (const key in resource) this._permissionMap.set(key, resource[key]);
+			},
+			onUnLoad: () => {
+				this._permissionMap.clear();
+			}
+		});
+	}
+	async create(config) {
+		const objectID = generateRandomId(8);
+		const { objectType, selectRangeObject, worksheetObject } = config;
+		const rangeObject = selectRangeObject || worksheetObject;
+		const permissionData = {
+			objectType,
+			unitID: (rangeObject === null || rangeObject === void 0 ? void 0 : rangeObject.unitID) || "",
+			name: (rangeObject === null || rangeObject === void 0 ? void 0 : rangeObject.name) || "",
+			strategies: [
+				{
+					action: 6,
+					role: UnitRole.Owner
+				},
+				{
+					action: 16,
+					role: UnitRole.Owner
+				},
+				{
+					action: 17,
+					role: UnitRole.Owner
+				},
+				{
+					action: 18,
+					role: UnitRole.Owner
+				},
+				{
+					action: 19,
+					role: UnitRole.Owner
+				},
+				{
+					action: 33,
+					role: UnitRole.Owner
+				},
+				{
+					action: 34,
+					role: UnitRole.Owner
+				},
+				{
+					action: 35,
+					role: UnitRole.Owner
+				},
+				{
+					action: 36,
+					role: UnitRole.Owner
+				},
+				{
+					action: 37,
+					role: UnitRole.Owner
+				},
+				{
+					action: 38,
+					role: UnitRole.Owner
+				},
+				{
+					action: 39,
+					role: UnitRole.Owner
+				},
+				{
+					action: 40,
+					role: UnitRole.Owner
+				}
+			],
+			selectRangeObject
+		};
+		this._permissionMap.set(objectID, permissionData);
+		return objectID;
+	}
+	async allowed(config) {
+		const { objectID, actions } = config;
+		const permissionData = this._permissionMap.get(objectID);
+		if (!permissionData) return actions.map((action) => ({
+			action,
+			allowed: this._getRole(UnitRole.Owner) || this._getRole(UnitRole.Editor)
+		}));
+		return actions.map((action) => {
+			const overrideKey = `${objectID}:${action}`;
+			if (this._permissionOverrides.has(overrideKey)) return {
+				action,
+				allowed: this._permissionOverrides.get(overrideKey)
+			};
+			const strategy = permissionData.strategies.find((s) => s.action === action);
+			if (!strategy) return {
+				action,
+				allowed: this._getRole(UnitRole.Owner) || this._getRole(UnitRole.Editor)
+			};
+			return {
+				action,
+				allowed: this._getRole(strategy.role)
+			};
+		});
+	}
+	async batchAllowed(configs) {
+		const results = await Promise.all(configs.map((config) => this.allowed(config)));
+		return configs.map((config, index) => ({
+			unitID: config.unitID,
+			objectID: config.objectID,
+			actions: results[index]
+		}));
+	}
+	async list(config) {
+		const result = [];
+		const defaultStrategies = [
+			{
+				action: 6,
+				role: UnitRole.Owner
+			},
+			{
+				action: 16,
+				role: UnitRole.Owner
+			},
+			{
+				action: 17,
+				role: UnitRole.Owner
+			},
+			{
+				action: 18,
+				role: UnitRole.Owner
+			},
+			{
+				action: 19,
+				role: UnitRole.Owner
+			},
+			{
+				action: 33,
+				role: UnitRole.Owner
+			},
+			{
+				action: 34,
+				role: UnitRole.Owner
+			},
+			{
+				action: 35,
+				role: UnitRole.Owner
+			},
+			{
+				action: 36,
+				role: UnitRole.Owner
+			},
+			{
+				action: 37,
+				role: UnitRole.Owner
+			},
+			{
+				action: 38,
+				role: UnitRole.Owner
+			},
+			{
+				action: 39,
+				role: UnitRole.Owner
+			},
+			{
+				action: 40,
+				role: UnitRole.Owner
+			}
+		];
+		config.objectIDs.forEach((objectID) => {
+			const rule = this._permissionMap.get(objectID);
+			const strategies = (rule === null || rule === void 0 ? void 0 : rule.strategies) || defaultStrategies;
+			const item = {
+				objectID,
+				unitID: config.unitID,
+				objectType: (rule === null || rule === void 0 ? void 0 : rule.objectType) || 3,
+				name: (rule === null || rule === void 0 ? void 0 : rule.name) || "",
+				shareOn: false,
+				shareRole: UnitRole.Owner,
+				shareScope: -1,
+				scope: {
+					read: ObjectScope.AllCollaborator,
+					edit: ObjectScope.AllCollaborator
+				},
+				creator: createDefaultUser(UnitRole.Owner),
+				strategies: strategies.map((s) => ({
+					action: s.action,
+					role: s.role
+				})),
+				actions: config.actions.map((a) => {
+					const overrideKey = `${objectID}:${a}`;
+					if (this._permissionOverrides.has(overrideKey)) return {
+						action: a,
+						allowed: this._permissionOverrides.get(overrideKey)
+					};
+					const strategy = strategies.find((s) => s.action === a);
+					if (!strategy) return {
+						action: a,
+						allowed: this._getRole(UnitRole.Owner) || this._getRole(UnitRole.Editor)
+					};
+					return {
+						action: a,
+						allowed: this._getRole(strategy.role)
+					};
+				})
+			};
+			result.push(item);
+		});
+		return result;
+	}
+	async listCollaborators() {
+		return [];
+	}
+	async listRoles() {
+		return {
+			roles: [],
+			actions: []
+		};
+	}
+	async deleteCollaborator() {}
+	async update(config) {
+		const { objectID, strategies } = config;
+		const permissionData = this._permissionMap.get(objectID);
+		if (permissionData && strategies) {
+			permissionData.strategies = strategies.map((s) => ({
+				action: s.action,
+				role: s.role
+			}));
+			this._permissionMap.set(objectID, permissionData);
+			strategies.forEach((s) => {
+				if (s.role === UnitRole.Reader) this.setPermissionOverride(objectID, s.action, false);
+				else if (s.role === UnitRole.Owner || s.role === UnitRole.Editor) this.clearPermissionOverride(objectID, s.action);
+			});
+		}
+	}
+	/**
+	* Set an explicit permission override for a specific action on an object.
+	* This override takes precedence over strategies.
+	* @param objectID - The permission object ID
+	* @param action - The action number
+	* @param allowed - Whether the action is allowed
+	*/
+	setPermissionOverride(objectID, action, allowed) {
+		const key = `${objectID}:${action}`;
+		this._permissionOverrides.set(key, allowed);
+	}
+	/**
+	* Clear a specific permission override.
+	* @param objectID - The permission object ID
+	* @param action - The action number
+	*/
+	clearPermissionOverride(objectID, action) {
+		const key = `${objectID}:${action}`;
+		this._permissionOverrides.delete(key);
+	}
+	/**
+	* Clear all permission overrides for an object.
+	* @param objectID - The permission object ID
+	*/
+	clearAllOverrides(objectID) {
+		const keysToDelete = [];
+		this._permissionOverrides.forEach((_, key) => {
+			if (key.startsWith(`${objectID}:`)) keysToDelete.push(key);
+		});
+		keysToDelete.forEach((key) => this._permissionOverrides.delete(key));
+	}
+	async updateCollaborator() {}
+	async createCollaborator() {}
+	async putCollaborators(_config) {}
+	setCfgEnableObjInherit(enabled) {
+		this._cfgEnableObjInherit = enabled;
+	}
+	getCfgEnableObjInherit() {
+		return this._cfgEnableObjInherit;
+	}
+};
+AuthzIoLocalService = __decorate([__decorateParam(0, IResourceManagerService), __decorateParam(1, Inject(UserManagerService))], AuthzIoLocalService);
+
+//#endregion
+//#region src/services/authz-io/type.ts
+const IAuthzIoService = createIdentifier("IAuthzIoIoService");
+
+//#endregion
+//#region src/services/confirm/confirm.service.ts
+const IConfirmService = createIdentifier("univer.confirm-service");
+/**
+* This is a mock service for testing purposes.
+*/
+var TestConfirmService = class {
+	constructor() {
+		_defineProperty(this, "confirmOptions$", new Subject());
+	}
+	dispose() {
+		this.confirmOptions$.complete();
+	}
+	open(_params) {
+		throw new Error("This is not implemented in the test service!");
+	}
+	confirm(_params) {
+		return Promise.resolve(true);
+	}
+	close(_id) {
+		throw new Error("This is not implemented in the test service!");
+	}
+};
+
+//#endregion
+//#region src/services/context/context.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const FOCUSING_UNIT = "FOCUSING_UNIT";
+const FOCUSING_SHEET = "FOCUSING_SHEET";
+const FOCUSING_DOC = "FOCUSING_DOC";
+const FOCUSING_SLIDE = "FOCUSING_SLIDE";
+const FOCUSING_BOARD = "FOCUSING_BOARD";
+const EDITOR_ACTIVATED = "EDITOR_ACTIVATED";
+const FOCUSING_EDITOR_INPUT_FORMULA = "FOCUSING_EDITOR_INPUT_FORMULA";
+/** The focusing state of the formula editor (Fx bar). */
+const FOCUSING_FX_BAR_EDITOR = "FOCUSING_FX_BAR_EDITOR";
+/** The focusing state of the cell editor. */
+const FOCUSING_UNIVER_EDITOR = "FOCUSING_UNIVER_EDITOR";
+const FOCUSING_EDITOR_STANDALONE = "FOCUSING_EDITOR_INPUT_FORMULA";
+/** The focusing state of the comment editor. */
+const FOCUSING_COMMENT_EDITOR = "FOCUSING_COMMENT_EDITOR";
+/** The focusing state of the editor in side panel, such as Chart Editor Panel. */
+const FOCUSING_PANEL_EDITOR = "FOCUSING_PANEL_EDITOR";
+const FOCUSING_UNIVER_EDITOR_STANDALONE_SINGLE_MODE = "FOCUSING_UNIVER_EDITOR_STANDALONE_SINGLE_MODE";
+/**
+* The focusing state of the common drawings.
+*/
+const FOCUSING_COMMON_DRAWINGS = "FOCUSING_COMMON_DRAWINGS";
+/**
+* The focusing state of the shape text editor.
+*/
+const FOCUSING_SHAPE_TEXT_EDITOR = "FOCUSING_SHAPE_TEXT_EDITOR";
+const FORMULA_EDITOR_ACTIVATED = "FORMULA_EDITOR_ACTIVATED";
+
+//#endregion
+//#region src/services/error/error.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+var ErrorService = class extends Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_error$", new Subject());
+		_defineProperty(this, "error$", this._error$.asObservable());
+	}
+	dispose() {
+		this._error$.complete();
+	}
+	emitPermissionDenied(unitId, objectIds = []) {
+		this._error$.next({
+			errorKey: "Permission denied.",
+			code: "PERMISSION_DENIED",
+			permissionTarget: JSON.stringify([unitId, [...new Set(objectIds)].sort()])
+		});
+	}
+	emit(key) {
+		this._error$.next({ errorKey: key });
+	}
+};
+
+//#endregion
+//#region src/services/image-io/image-io.service.ts
+/**
+* The type of image data source
+*/
+let ImageSourceType = /* @__PURE__ */ function(ImageSourceType) {
+	/**
+	* The image source is a URL, for example: https://avatars.githubusercontent.com/u/61444807?s=48&v=4
+	*/
+	ImageSourceType["URL"] = "URL";
+	/**
+	* The image source is a UUID, this ID is generated by the Univer image hosting service. For specific generation rules, please refer to the Univer image hosting service API documentation.
+	*/
+	ImageSourceType["UUID"] = "UUID";
+	/**
+	* The image source is BASE64, for example: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAALCAYAAAB7ZJ...
+	*/
+	ImageSourceType["BASE64"] = "BASE64";
+	return ImageSourceType;
+}({});
+let ImageUploadStatusType = /* @__PURE__ */ function(ImageUploadStatusType) {
+	ImageUploadStatusType["SUCCUSS"] = "0";
+	ImageUploadStatusType["ERROR_EXCEED_SIZE"] = "1";
+	ImageUploadStatusType["ERROR_IMAGE_TYPE"] = "2";
+	ImageUploadStatusType["ERROR_UPLOAD_COUNT_LIMIT"] = "3";
+	ImageUploadStatusType["ERROR_IMAGE"] = "4";
+	return ImageUploadStatusType;
+}({});
+const IImageIoService = createIdentifier("core.image-io.service");
+
+//#endregion
+//#region src/services/image-io/url-image.service.ts
+const IURLImageService = createIdentifier("core.url-image.service");
+
+//#endregion
+//#region src/sheets/empty-snapshot.ts
+function getEmptySnapshot$2(unitID = "", locale = "zhCN", name = "") {
+	return {
+		id: unitID,
+		sheetOrder: [],
+		name,
+		appVersion: version,
+		locale,
+		dateSystem: "date1900",
+		styles: {},
+		sheets: {},
+		resources: []
+	};
+}
+
+//#endregion
+//#region src/sheets/styles.ts
+/**
+* Styles in a workbook, cells locate styles based on style IDs
+*
+*/
+var Styles = class {
+	constructor(styles = {}) {
+		_defineProperty(this, "_styles", void 0);
+		_defineProperty(this, "_cacheMap", new LRUMap(1e5));
+		this._styles = styles;
+		this._generateCacheMap();
+	}
+	each(callback) {
+		Object.entries(this._styles).forEach(callback);
+		return this;
+	}
+	search(data, styleObject) {
+		if (this._cacheMap.has(styleObject)) return this._cacheMap.get(styleObject);
+		const existingId = this._getExistingStyleId(data);
+		if (existingId) return existingId;
+		return "-1";
+	}
+	get(id) {
+		if (typeof id !== "string") return id;
+		id = String(id);
+		return this._styles[id];
+	}
+	add(data, styleObject) {
+		const id = generateRandomId(6);
+		this._styles[id] = data;
+		this._cacheMap.set(styleObject, id);
+		return id;
+	}
+	setValue(data) {
+		if (data == null) return;
+		const styleObject = JSON.stringify(data);
+		const result = this.search(data, styleObject);
+		if (result !== "-1") return result;
+		return this.add(data, styleObject);
+	}
+	addCustomStyle(id, data) {
+		if (data == null) return;
+		this._styles[id] = data;
+		this._cacheMap.set(JSON.stringify(data), id);
+	}
+	remove(id) {
+		const s = this._styles[id];
+		if (s) {
+			delete this._styles[id];
+			this._cacheMap.delete(JSON.stringify(s));
+		}
+	}
+	toJSON() {
+		return this._styles;
+	}
+	getStyleByCell(cell) {
+		let style;
+		if (cell && Tools.isObject(cell.s)) style = cell.s;
+		else style = (cell === null || cell === void 0 ? void 0 : cell.s) && this.get(cell.s);
+		const interceptStyle = cell === null || cell === void 0 ? void 0 : cell.interceptorStyle;
+		if (interceptStyle) return {
+			...style,
+			...interceptStyle
+		};
+		return style;
+	}
+	_generateCacheMap() {
+		const { _styles, _cacheMap } = this;
+		for (const id in _styles) {
+			const styleObject = JSON.stringify(_styles[id]);
+			_cacheMap.set(styleObject, id);
+		}
+	}
+	_getExistingStyleId(data) {
+		const { _styles } = this;
+		for (const id in _styles) if (Tools.diffValue(_styles[id], data)) return id;
+		return null;
+	}
+};
+
+//#endregion
+//#region src/sheets/util.ts
+const isRangesEqual = (oldRanges, ranges) => {
+	return ranges.length === oldRanges.length && !oldRanges.some((oldRange) => ranges.some((range) => !Rectangle.equals(range, oldRange)));
+};
+const isUnitRangesEqual = (oldRanges, ranges) => {
+	return ranges.length === oldRanges.length && oldRanges.every((oldRange, i) => {
+		const current = ranges[i];
+		return current.unitId === oldRange.unitId && current.sheetId === oldRange.sheetId && Rectangle.equals(oldRange.range, current.range);
+	});
+};
+const DEFAULT_PADDING_DATA = {
+	t: 0,
+	b: 2,
+	l: 2,
+	r: 2
+};
+const getDefaultBaselineOffset = (fontSize) => ({
+	sbr: .6,
+	sbo: fontSize,
+	spr: .6,
+	spo: fontSize
+});
+function createDocumentModelWithStyle(content, textStyle, config = {}) {
+	const contentLength = content.length;
+	const { textRotation, paddingData, horizontalAlign = 0, verticalAlign = 0, wrapStrategy = 0, cellValueType } = config;
+	const marginTop = (paddingData === null || paddingData === void 0 ? void 0 : paddingData.t) ?? DEFAULT_PADDING_DATA.t;
+	const marginRight = (paddingData === null || paddingData === void 0 ? void 0 : paddingData.r) ?? DEFAULT_PADDING_DATA.r;
+	const marginBottom = (paddingData === null || paddingData === void 0 ? void 0 : paddingData.b) ?? DEFAULT_PADDING_DATA.b;
+	const marginLeft = (paddingData === null || paddingData === void 0 ? void 0 : paddingData.l) ?? DEFAULT_PADDING_DATA.l;
+	const { vertexAngle, centerAngle } = convertTextRotation(textRotation);
+	return new DocumentDataModel({
+		id: "d",
+		body: {
+			dataStream: `${content}${"\r\n"}`,
+			textRuns: [{
+				ts: textStyle,
+				st: 0,
+				ed: contentLength
+			}],
+			paragraphs: [{
+				startIndex: contentLength,
+				paragraphId: createParagraphId(/* @__PURE__ */ new Set()),
+				paragraphStyle: { horizontalAlign }
+			}],
+			sectionBreaks: [{
+				sectionId: createSectionId(/* @__PURE__ */ new Set()),
+				startIndex: contentLength + 1
+			}]
+		},
+		documentStyle: {
+			textStyle: Tools.deepClone(textStyle),
+			defaultParagraphStyle: { horizontalAlign },
+			pageSize: {
+				width: Number.POSITIVE_INFINITY,
+				height: Number.POSITIVE_INFINITY
+			},
+			documentFlavor: 0,
+			marginTop,
+			marginBottom,
+			marginRight,
+			marginLeft,
+			paragraphLineGapDefault: 0,
+			renderConfig: {
+				horizontalAlign,
+				verticalAlign,
+				centerAngle,
+				vertexAngle,
+				wrapStrategy,
+				cellValueType
+			}
+		},
+		drawings: {},
+		drawingsOrder: []
+	});
+}
+function extractOtherStyle(style) {
+	if (!style) return {};
+	const { tr: textRotation, td: textDirection, ht: horizontalAlign, vt: verticalAlign, tb: wrapStrategy, pd: paddingData } = style;
+	return {
+		textRotation,
+		textDirection,
+		horizontalAlign,
+		verticalAlign,
+		wrapStrategy,
+		paddingData
+	};
+}
+/**
+* Pick font style from cell style.
+* Important note: Do not add attributes to this method arbitrarily.
+* @param format
+* @returns {IStyleBase} style
+*/
+function getFontFormat(format) {
+	if (!format) return {};
+	const { ff, fs, it, bl, ul, st, ol, cl } = format;
+	const style = {};
+	ff && (style.ff = ff);
+	fs && (style.fs = fs);
+	it && (style.it = it);
+	bl && (style.bl = bl);
+	ul && (style.ul = ul);
+	st && (style.st = st);
+	ol && (style.ol = ol);
+	cl && (style.cl = cl);
+	return style;
+}
+function addLinkToDocumentModel(documentModel, linkUrl, linkId) {
+	var _body$customRanges;
+	const body = documentModel.getBody();
+	if ((_body$customRanges = body.customRanges) === null || _body$customRanges === void 0 ? void 0 : _body$customRanges.some((range) => range.rangeType === 0)) return;
+	const textX = BuildTextUtils.customRange.add({
+		ranges: [{
+			startOffset: 0,
+			endOffset: body.dataStream.length - 1,
+			collapsed: false
+		}],
+		rangeId: linkId,
+		rangeType: 0,
+		body,
+		properties: {
+			url: linkUrl,
+			refId: linkId
+		}
+	});
+	if (!textX) return;
+	TextX.apply(body, textX.serialize());
+}
+function isNotNullOrUndefined(value) {
+	return value !== null && value !== void 0;
+}
+function getEmptyCell() {
+	return {
+		p: null,
+		s: null,
+		v: null,
+		t: null,
+		f: null,
+		si: null,
+		ref: null,
+		xf: null
+	};
+}
+
+//#endregion
+//#region src/docs/data-model/utils.ts
+const DEFAULT_FONTFACE_PLANE = "\"Helvetica Neue\", Helvetica, Arial, \"PingFang SC\", \"Hiragino Sans GB\", \"Heiti SC\", \"Microsoft YaHei\", \"WenQuanYi Micro Hei\", sans-serif";
+function getFontStyleString(textStyle) {
+	const defaultFont = DEFAULT_STYLES.ff;
+	const defaultFontSize = DEFAULT_STYLES.fs;
+	if (!textStyle) {
+		const fontString = `${defaultFontSize}pt  ${defaultFont}`;
+		return {
+			fontCache: fontString,
+			fontString,
+			fontSize: defaultFontSize,
+			originFontSize: defaultFontSize,
+			fontFamily: defaultFont
+		};
+	}
+	let italic = "italic";
+	if (textStyle.it === 0 || textStyle.it === void 0) italic = "normal";
+	let bold = "bold";
+	if (textStyle.bl === 0 || textStyle.bl === void 0) bold = "normal";
+	let originFontSize = defaultFontSize;
+	if (textStyle.fs) originFontSize = textStyle.fs;
+	const fontFamilyResult = normalizeFontFamily(textStyle.ff, defaultFont);
+	const { va: baselineOffset } = textStyle;
+	let fontSize = originFontSize;
+	if (baselineOffset === 2 || baselineOffset === 3) {
+		const { sbr, spr } = getBaselineOffsetInfo(fontFamilyResult, fontSize);
+		fontSize *= baselineOffset === 2 ? sbr : spr;
+	}
+	const fontStringPure = `${italic} ${bold} ${fontSize}pt ${fontFamilyResult}`;
+	return {
+		fontCache: fontStringPure,
+		fontString: `${fontStringPure}, ${DEFAULT_FONTFACE_PLANE} `,
+		fontSize,
+		originFontSize,
+		fontFamily: fontFamilyResult
+	};
+}
+function normalizeFontFamily(fontFamily, defaultFont) {
+	if (!(fontFamily === null || fontFamily === void 0 ? void 0 : fontFamily.trim())) return defaultFont;
+	return fontFamily.split(",").map((item) => {
+		const family = item.trim().replace(/^['"]|['"]$/g, "");
+		return family.includes(" ") ? `"${family}"` : family;
+	}).filter(Boolean).join(", ");
+}
+function getBaselineOffsetInfo(_fontFamily, fontSize) {
+	return getDefaultBaselineOffset(fontSize);
+}
+function convertTextRotation(textRotation) {
+	const { a: angle = 0, v: isVertical = 0 } = textRotation || {
+		a: 0,
+		v: 0
+	};
+	let centerAngle = 0;
+	let vertexAngle = angle;
+	if (isVertical === 1) {
+		centerAngle = 90;
+		vertexAngle = 90;
+	}
+	return {
+		centerAngle,
+		vertexAngle
+	};
+}
+
+//#endregion
+//#region src/sheets/column-manager.ts
+/**
+* Manage configuration information of all columns, get column width, column length, set column width, etc.
+*/
+var ColumnManager = class {
+	constructor(_config, data) {
+		this._config = _config;
+		_defineProperty(this, "_columnData", {});
+		this._columnData = data;
+	}
+	/**
+	* Get width and hidden status of columns in the sheet
+	* @returns {IObjectArrayPrimitiveType<Partial<IColumnData>>} Column data, including width, hidden status, etc.
+	*/
+	getColumnData() {
+		return this._columnData;
+	}
+	getColVisible(colPos) {
+		const { _columnData } = this;
+		const col = _columnData[colPos];
+		if (!col) return true;
+		return col.hd !== 1;
+	}
+	/**
+	* Get the column style
+	* @param {number} col Column index
+	* @returns {string | Nullable<IStyleData>} Style data, may be undefined
+	*/
+	getColumnStyle(col) {
+		var _this$_columnData$col;
+		return (_this$_columnData$col = this._columnData[col]) === null || _this$_columnData$col === void 0 ? void 0 : _this$_columnData$col.s;
+	}
+	/**
+	* Set the set column  default style
+	* @param {number} col Column index
+	* @param {string | Nullable<IStyleData>} style Style data
+	*/
+	setColumnStyle(col, style) {
+		const coldData = this.getColumnOrCreate(col);
+		coldData.s = style;
+	}
+	/**
+	* Get all hidden columns
+	* @param start Start index
+	* @param end End index
+	* @returns Hidden columns range list
+	*/
+	getHiddenCols(start = 0, end = this.getSize() - 1) {
+		const hiddenCols = [];
+		let inHiddenRange = false;
+		let startColumn = -1;
+		for (let i = start; i <= end; i++) {
+			const visible = this.getColVisible(i);
+			if (inHiddenRange && visible) {
+				inHiddenRange = false;
+				hiddenCols.push({
+					rangeType: 2,
+					startColumn,
+					endColumn: i - 1,
+					startRow: 0,
+					endRow: 0
+				});
+			} else if (!inHiddenRange && !visible) {
+				inHiddenRange = true;
+				startColumn = i;
+			}
+		}
+		if (inHiddenRange) hiddenCols.push({
+			startRow: 0,
+			endRow: 0,
+			startColumn,
+			endColumn: end,
+			rangeType: 2
+		});
+		return hiddenCols;
+	}
+	/**
+	* Get all visible columns
+	* @param start Start index
+	* @param end End index
+	* @returns Visible columns range list
+	*/
+	getVisibleCols(start = 0, end = this.getSize() - 1) {
+		const visibleCols = [];
+		let inVisibleRange = false;
+		let startColumn = -1;
+		for (let i = start; i <= end; i++) {
+			const visible = this.getColVisible(i);
+			if (inVisibleRange && !visible) {
+				inVisibleRange = false;
+				visibleCols.push({
+					rangeType: 2,
+					startColumn,
+					endColumn: i - 1,
+					startRow: 0,
+					endRow: 0
+				});
+			} else if (!inVisibleRange && visible) {
+				inVisibleRange = true;
+				startColumn = i;
+			}
+		}
+		if (inVisibleRange) visibleCols.push({
+			startRow: 0,
+			endRow: 0,
+			startColumn,
+			endColumn: end,
+			rangeType: 2
+		});
+		return visibleCols;
+	}
+	getColumnDatas(columnPos, numColumns) {
+		const columnData = {};
+		let index = 0;
+		for (let i = columnPos; i < columnPos + numColumns; i++) {
+			columnData[index] = this.getColumn(i) ?? {
+				w: this._config.defaultColumnWidth,
+				hd: 0
+			};
+			index++;
+		}
+		return columnData;
+	}
+	/**
+	* Get count of column in the sheet
+	* @returns {number} count of column
+	*/
+	getSize() {
+		return getArrayLength(this._columnData);
+	}
+	/**
+	* Get the width of column
+	* @param columnPos column index
+	* @returns {number} width of column
+	*/
+	getColumnWidth(columnPos) {
+		var _this$_columnData$col2;
+		return ((_this$_columnData$col2 = this._columnData[columnPos]) === null || _this$_columnData$col2 === void 0 ? void 0 : _this$_columnData$col2.w) ?? this._config.defaultColumnWidth;
+	}
+	/**
+	* Set the width of column
+	* @param columnPos column index
+	* @param width width of column
+	*/
+	setColumnWidth(columnPos, width) {
+		const column = this._columnData[columnPos];
+		if (width === this._config.defaultColumnWidth) {
+			if (column) {
+				delete column.w;
+				if (Object.keys(column).length === 0) delete this._columnData[columnPos];
+			}
+		} else this._columnData[columnPos] = column ? {
+			...column,
+			w: width
+		} : { w: width };
+	}
+	/**
+	* Get given column data
+	* @param columnPos column index
+	*/
+	getColumn(columnPos) {
+		return this._columnData[columnPos];
+	}
+	/**
+	* Insert columns data at given position
+	* @param {number} startColumn - start column index
+	* @param {number} endColumn - end column index
+	* @param {IObjectArrayPrimitiveType<IColumnData>} [columnDataInfo] - column data info
+	*/
+	insertColumnsWithData(startColumn, endColumn, columnDataInfo) {
+		const count = endColumn - startColumn + 1;
+		const columns = Object.keys(this._columnData);
+		for (let i = columns.length - 1; i >= 0; i--) {
+			const columnIndex = Number(columns[i]);
+			if (columnIndex >= startColumn) {
+				this._columnData[columnIndex + count] = this._columnData[columnIndex];
+				delete this._columnData[columnIndex];
+			}
+		}
+		for (let c = startColumn; c <= endColumn; c++) {
+			const columnData = columnDataInfo === null || columnDataInfo === void 0 ? void 0 : columnDataInfo[c - startColumn];
+			if (columnData !== void 0 && columnData !== null && Object.keys(columnData).length > 0) this._columnData[c] = { ...columnData };
+		}
+	}
+	/**
+	* Remove column data of given column
+	* @param columnPos
+	*/
+	removeColumn(columnPos) {
+		delete this._columnData[columnPos];
+	}
+	/**
+	* Get given column data or create a column data when it's null
+	* This method is used to ensure that the column data should not be null when setting column properties.
+	* To prevent data redundancy, if is not setting column properties, you can use `getColumn` method to get column data. don't use this method.
+	* @param columnPos column index
+	* @returns {Partial<IColumnData>} columnData
+	*/
+	getColumnOrCreate(columnPos) {
+		const { _columnData } = this;
+		const column = _columnData[columnPos];
+		if (column) return column;
+		const create = {};
+		this._columnData[columnPos] = create;
+		return create;
+	}
+	setCustomMetadata(index, custom) {
+		const row = this.getColumn(index);
+		if (row) row.custom = custom;
+	}
+	getCustomMetadata(index) {
+		var _this$getColumn;
+		return (_this$getColumn = this.getColumn(index)) === null || _this$getColumn === void 0 ? void 0 : _this$getColumn.custom;
+	}
+};
+
+//#endregion
+//#region src/sheets/range.ts
+function isAllFormatInTextRuns(key, body) {
+	const { textRuns = [] } = body;
+	let len = 0;
+	for (const textRun of textRuns) {
+		const { ts = {}, st, ed } = textRun;
+		if (ts[key] == null) return 0;
+		switch (key) {
+			case "bl":
+			case "it":
+				if (ts[key] === 0) return 0;
+				break;
+			case "ul":
+			case "st":
+				if (ts[key].s === 0) return 0;
+				break;
+			default: throw new Error(`unknown style key: ${key} in IStyleBase`);
+		}
+		len += ed - st;
+	}
+	return body.dataStream.indexOf("\r\n") === len ? 1 : 0;
+}
+/**
+* Access and modify spreadsheet ranges.
+*
+* @remarks
+* A range can be a single cell in a sheet or a group of adjacent cells in a sheet.
+*
+* Reference from: https://developers.google.com/apps-script/reference/spreadsheet/range
+*
+* @beta
+*/
+var Range = class Range {
+	constructor(workSheet, range, _deps) {
+		this._deps = _deps;
+		_defineProperty(this, "_range", void 0);
+		_defineProperty(this, "_worksheet", void 0);
+		this._range = range;
+		this._worksheet = workSheet;
+	}
+	static foreach(range, action) {
+		const { startRow, startColumn, endRow, endColumn } = range;
+		for (let i = startRow; i <= endRow; i++) for (let j = startColumn; j <= endColumn; j++) action(i, j);
+	}
+	/**
+	* get current range data
+	*
+	* @returns current range
+	*/
+	getRangeData() {
+		return this._range;
+	}
+	/**
+	* Returns the value of the top-left cell in the range. The value may be of type Number, Boolean, Date, or String
+	* depending on the value of the cell. Empty cells return an empty string.
+	* @returns  The value in this cell
+	*/
+	getValue() {
+		return this.getValues()[0][0];
+	}
+	/**
+	* Returns the rectangular grid of values for this range.
+	*
+	* Returns a two-dimensional array of values, indexed by row, then by column. The values may be of type Number,
+	* Boolean, Date, or String, depending on the value of the cell. Empty cells are represented by an empty string
+	* in the array. Remember that while a range index starts at 0, 0, same as the JavaScript array is indexed from [0][0].
+	*
+	* In web apps, a Date value isn't a legal parameter. getValues() fails to return data to a web app if the range
+	* contains a cell with a Date value. Instead, transform all the values retrieved from the sheet to a supported
+	* JavaScript primitive like a Number, Boolean, or String.
+	*
+	* @returns  A two-dimensional array of values.
+	*/
+	getValues() {
+		const { startRow, endRow, startColumn, endColumn } = this._range;
+		const range = [];
+		for (let r = startRow; r <= endRow; r++) {
+			const row = [];
+			for (let c = startColumn; c <= endColumn; c++) row.push(this.getMatrix().getValue(r, c) || null);
+			range.push(row);
+		}
+		return range;
+	}
+	/**
+	* get range matrix
+	*
+	* @returns range matrix
+	*/
+	getMatrix() {
+		const { startRow, endRow, startColumn, endColumn } = this._range;
+		const sheetMatrix = this._worksheet.getCellMatrix();
+		const rangeMatrix = new ObjectMatrix();
+		for (let r = startRow; r <= endRow; r++) for (let c = startColumn; c <= endColumn; c++) rangeMatrix.setValue(r, c, sheetMatrix.getValue(r, c) || null);
+		return rangeMatrix;
+	}
+	/**
+	* get range matrix object
+	*
+	* @returns range matrix object
+	*/
+	getMatrixObject() {
+		const { startRow, endRow, startColumn, endColumn } = this._range;
+		const sheetMatrix = this._worksheet.getCellMatrix();
+		const rangeMatrix = new ObjectMatrix();
+		for (let r = startRow; r <= endRow; r++) for (let c = startColumn; c <= endColumn; c++) rangeMatrix.setValue(r - startRow, c - startColumn, sheetMatrix.getValue(r, c) || {});
+		return rangeMatrix;
+	}
+	/**
+	* Returns a string description of the range, in A1 notation.
+	*
+	* @returns The string description of the range in A1 notation.
+	*/
+	getA1Notation() {
+		const { startRow, endRow, startColumn, endColumn } = this._range;
+		let start;
+		let end;
+		if (startColumn < endColumn) {
+			start = Tools.numToWord(startColumn + 1) + (startRow + 1);
+			end = Tools.numToWord(endColumn + 1) + (endRow + 1);
+		} else {
+			start = Tools.numToWord(endColumn + 1) + (endRow + 1);
+			end = Tools.numToWord(startColumn + 1) + (startRow + 1);
+		}
+		if (start === end) return `${start}`;
+		return `${start}:${end}`;
+	}
+	/**
+	* Returns the background color of the top-left cell in the range (for example, '#ffffff').
+	*
+	* @returns — The color code of the background.
+	*/
+	getBackground() {
+		return this.getBackgrounds()[0][0];
+	}
+	/**
+	* Returns the background colors of the cells in the range (for example, '#ffffff').
+	*
+	* @returns  — A two-dimensional array of color codes of the backgrounds.
+	*/
+	getBackgrounds() {
+		const styles = this._deps.getStyles();
+		return this.getValues().map((row) => row.map((cell) => {
+			var _rgbColor$bg;
+			const rgbColor = styles.getStyleByCell(cell);
+			return (rgbColor === null || rgbColor === void 0 || (_rgbColor$bg = rgbColor.bg) === null || _rgbColor$bg === void 0 ? void 0 : _rgbColor$bg.rgb) || DEFAULT_STYLES.bg.rgb;
+		}));
+	}
+	/**
+	* Returns a given cell within a range.
+	*
+	* The row and column here are relative to the range
+	* e.g. "B2:D4", getCell(0,0) in this code returns the cell at B2
+	* @returns  — A range containing a single cell at the specified coordinates.
+	*/
+	getCell(row, column) {
+		const { startRow, startColumn } = this._range;
+		const cell = {
+			startRow: startRow + row,
+			endRow: startRow + row,
+			startColumn: startColumn + column,
+			endColumn: startColumn + column
+		};
+		return new Range(this._worksheet, cell, this._deps);
+	}
+	/**
+	* Returns the starting column position for this range
+	*
+	* @returns  — The range's starting column position in the spreadsheet.
+	*/
+	getColumn() {
+		return this._range.startColumn;
+	}
+	/**
+	* Returns the data of the object structure, and can set whether to bring styles
+	*/
+	getObjectValue(options = {}) {
+		return this.getObjectValues(options)[0][0];
+	}
+	/**
+	* Returns the data of the object structure, and can set whether to bring styles
+	*
+	* @param options set whether to include style
+	* @returns Returns a value in object format
+	*/
+	getObjectValues(options = {}) {
+		const { startRow, endRow, startColumn, endColumn } = this._range;
+		const values = this._worksheet.getCellMatrix().getFragment(startRow, endRow, startColumn, endColumn).clone();
+		if (options.isIncludeStyle) {
+			const style = this._deps.getStyles();
+			for (let r = 0; r <= endRow - startRow; r++) for (let c = 0; c <= endColumn - startColumn; c++) {
+				var _values$r;
+				if (values == null || (values === null || values === void 0 || (_values$r = values[r]) === null || _values$r === void 0 ? void 0 : _values$r[c]) == null) continue;
+				const s = values[r][c].s;
+				if (s) values[r][c].s = style.get(s);
+			}
+		}
+		return values;
+	}
+	/**
+	* Returns the font color of the cell in the top-left corner of the range, in CSS notation
+	*/
+	getFontColor() {
+		return this.getFontColors()[0][0];
+	}
+	/**
+	* Returns the font colors of the cells in the range in CSS notation (such as '#ffffff' or 'white').
+	*/
+	getFontColors() {
+		const styles = this._deps.getStyles();
+		return this.getValues().map((row) => row.map((cell) => {
+			var _cellStyle$cl;
+			const cellStyle = styles.getStyleByCell(cell);
+			return (cellStyle === null || cellStyle === void 0 || (_cellStyle$cl = cellStyle.cl) === null || _cellStyle$cl === void 0 ? void 0 : _cellStyle$cl.rgb) || DEFAULT_STYLES.cl.rgb;
+		}));
+	}
+	/**
+	* Returns the font families of the cells in the range.
+	*/
+	getFontFamilies() {
+		return this._getStyles("ff");
+	}
+	/**
+	* Returns the font family of the cell in the top-left corner of the range.
+	*/
+	getFontFamily() {
+		return this.getFontFamilies()[0][0];
+	}
+	/**
+	* Returns the underlines of the cells in the range.
+	*/
+	getUnderlines() {
+		return this._getStyles("ul");
+	}
+	/**
+	* Returns the underline of the cells in the range.
+	*/
+	getUnderline() {
+		var _p$body;
+		const { p } = this.getValue() ?? {};
+		if (p && Array.isArray((_p$body = p.body) === null || _p$body === void 0 ? void 0 : _p$body.textRuns) && p.body.textRuns.length > 0) return isAllFormatInTextRuns("ul", p.body) === 1 ? { s: 1 } : { s: 0 };
+		return this.getUnderlines()[0][0];
+	}
+	/**
+	* Returns the overlines of the cells in the range.
+	*/
+	getOverlines() {
+		return this._getStyles("ol");
+	}
+	/**
+	* Returns the overline of the cells in the range.
+	*/
+	getOverline() {
+		return this.getOverlines()[0][0];
+	}
+	/**
+	* Returns the strikeThrough of the cells in the range.
+	*/
+	getStrikeThrough() {
+		var _p$body2;
+		const { p } = this.getValue() ?? {};
+		if (p && Array.isArray((_p$body2 = p.body) === null || _p$body2 === void 0 ? void 0 : _p$body2.textRuns) && p.body.textRuns.length > 0) return isAllFormatInTextRuns("st", p.body) === 1 ? { s: 1 } : { s: 0 };
+		return this.getStrikeThroughs()[0][0];
+	}
+	/**
+	* Returns the strikeThroughs of the cells in the range.
+	*/
+	getStrikeThroughs() {
+		return this._getStyles("st");
+	}
+	/**
+	* Returns the font size in point size of the cell in the top-left corner of the range.
+	*/
+	getFontSize() {
+		var _this$getValue, _p$body3;
+		const p = ((_this$getValue = this.getValue()) === null || _this$getValue === void 0 ? void 0 : _this$getValue.p) || {};
+		if (p && Array.isArray((_p$body3 = p.body) === null || _p$body3 === void 0 ? void 0 : _p$body3.textRuns) && p.body.textRuns.length > 0) if (p.body.textRuns.some((textRun) => {
+			var _textRun$ts;
+			return (textRun === null || textRun === void 0 || (_textRun$ts = textRun.ts) === null || _textRun$ts === void 0 ? void 0 : _textRun$ts.fs) != null;
+		})) return Math.max(...p.body.textRuns.map((textRun) => {
+			var _textRun$ts2;
+			return (textRun === null || textRun === void 0 || (_textRun$ts2 = textRun.ts) === null || _textRun$ts2 === void 0 ? void 0 : _textRun$ts2.fs) || 0;
+		}));
+		else return this.getFontSizes()[0][0];
+		return this.getFontSizes()[0][0];
+	}
+	/**
+	* Returns the font sizes of the cells in the range.
+	*/
+	getFontSizes() {
+		return this._getStyles("fs");
+	}
+	/**
+	* Returns the border info of the cells in the range.
+	*/
+	getBorder() {
+		return this.getBorders()[0][0];
+	}
+	getBorders() {
+		return this._getStyles("bd");
+	}
+	/**
+	* Returns the font style ('italic' or 'normal') of the cell in the top-left corner of the range.
+	*/
+	getFontStyle() {
+		var _p$body4;
+		const { p } = this.getValue() ?? {};
+		if (p && Array.isArray((_p$body4 = p.body) === null || _p$body4 === void 0 ? void 0 : _p$body4.textRuns) && p.body.textRuns.length > 0) return isAllFormatInTextRuns("it", p.body) === 1 ? 1 : 0;
+		return this._getFontStyles()[0][0];
+	}
+	/**
+	* Returns the font styles of the cells in the range.
+	*/
+	_getFontStyles() {
+		return this._getStyles("it");
+	}
+	/**
+	* Returns the font weight (normal/bold) of the cell in the top-left corner of the range.
+	* If the cell has rich text, the return value according to the textRuns of the rich text,
+	* when all styles of textRuns are bold, it will return FontWeight.BOLD,
+	* otherwise return FontWeight.NORMAL.
+	*/
+	getFontWeight() {
+		var _p$body5;
+		const { p } = this.getValue() ?? {};
+		if (p && Array.isArray((_p$body5 = p.body) === null || _p$body5 === void 0 ? void 0 : _p$body5.textRuns) && p.body.textRuns.length > 0) return isAllFormatInTextRuns("bl", p.body) === 1 ? 1 : 0;
+		return this._getFontWeights()[0][0];
+	}
+	/**
+	* Returns the font weights of the cells in the range.
+	*/
+	_getFontWeights() {
+		return this._getStyles("bl");
+	}
+	/**
+	* Returns the grid ID of the range's parent sheet.
+	*/
+	getGridId() {
+		return this._worksheet.getSheetId();
+	}
+	/**
+	* Returns the height of the range.
+	*/
+	getHeight() {
+		const { _range: _rangeData, _worksheet } = this;
+		const { startRow, endRow } = _rangeData;
+		let h = 0;
+		for (let i = 0; i <= endRow - startRow; i++) {
+			const hh = _worksheet.getRowHeight(i);
+			h += hh;
+		}
+		return h;
+	}
+	/**
+	*     Returns the horizontal alignment of the text (left/center/right) of the cell in the top-left corner of the range.
+	*/
+	getHorizontalAlignment() {
+		return this.getHorizontalAlignments()[0][0];
+	}
+	/**
+	*Returns the horizontal alignments of the cells in the range.
+	*/
+	getHorizontalAlignments() {
+		return this._getStyles("ht");
+	}
+	/**
+	* Returns the end column position.
+	*/
+	getLastColumn() {
+		return this._range.endColumn;
+	}
+	/**
+	*     Returns the end row position.
+	*/
+	getLastRow() {
+		return this._range.endRow;
+	}
+	/**
+	* Returns the number of columns in this range.
+	*/
+	getNumColumns() {
+		const { startColumn, endColumn } = this._range;
+		return endColumn - startColumn + 1;
+	}
+	/**
+	* Returns the number of rows in this range.
+	*/
+	getNumRows() {
+		const { startRow, endRow } = this._range;
+		return endRow - startRow + 1;
+	}
+	/**
+	* Returns the Rich Text value for the top left cell of the range, or null if the cell value is not text.
+	*/
+	getRichTextValue() {
+		return this.getRichTextValues()[0][0];
+	}
+	/**
+	* Returns the Rich Text values for the cells in the range.
+	*/
+	getRichTextValues() {
+		return this.getValues().map((row) => row.map((cell) => (cell === null || cell === void 0 ? void 0 : cell.p) || ""));
+	}
+	/**
+	* Returns the row position for this range.
+	*/
+	getRowIndex() {
+		return this._range.startRow;
+	}
+	/**
+	* Returns the sheet this range belongs to.
+	*/
+	getSheet() {
+		return this._worksheet;
+	}
+	/**
+	* Returns the text direction for the top left cell of the range.
+	*/
+	getTextDirection() {
+		return this.getTextDirections()[0][0];
+	}
+	/**
+	* Returns the text directions for the cells in the range.
+	*/
+	getTextDirections() {
+		return this._getStyles("td");
+	}
+	/**
+	* Returns the text rotation settings for the top left cell of the range.
+	*/
+	getTextRotation() {
+		return this.getTextRotations()[0][0];
+	}
+	/**
+	* Returns the text rotation settings for the cells in the range.
+	*/
+	getTextRotations() {
+		return this._getStyles("tr");
+	}
+	/**
+	*     Returns the text style for the top left cell of the range.
+	*/
+	getTextStyle() {
+		return this.getTextStyles()[0][0];
+	}
+	/**
+	* Returns the text styles for the cells in the range.
+	*/
+	getTextStyles() {
+		const styles = this._deps.getStyles();
+		return this.getValues().map((row) => row.map((cell) => styles.getStyleByCell(cell)));
+	}
+	/**
+	* Returns the vertical alignment (top/middle/bottom) of the cell in the top-left corner of the range.
+	*/
+	getVerticalAlignment() {
+		return this.getVerticalAlignments()[0][0];
+	}
+	/**
+	* Returns the vertical alignments of the cells in the range.
+	*/
+	getVerticalAlignments() {
+		return this._getStyles("vt");
+	}
+	/**
+	* Returns the width of the range in columns.
+	*/
+	getWidth() {
+		const { _range: _rangeData, _worksheet } = this;
+		const { startColumn, endColumn } = _rangeData;
+		let w = 0;
+		for (let i = 0; i <= endColumn - startColumn; i++) w += _worksheet.getColumnWidth(i);
+		return w;
+	}
+	/**
+	* Returns whether the text in the cell wraps.
+	*/
+	getWrap() {
+		return this.getWrapStrategy() === 3 ? 1 : 0;
+	}
+	/**
+	* Returns the text wrapping strategies for the cells in the range.
+	*/
+	getWrapStrategies() {
+		return this._getStyles("tb");
+	}
+	/**
+	* Returns the text wrapping strategy for the top left cell of the range.
+	*/
+	getWrapStrategy() {
+		return this.getWrapStrategies()[0][0];
+	}
+	forEach(action) {
+		Range.foreach(this._range, action);
+	}
+	/**
+	*
+	* @param arg Shorthand for the style that gets
+	* @returns style value
+	*/
+	_getStyles(styleKey) {
+		const styles = this._deps.getStyles();
+		return this.getValues().map((row) => row.map((cell) => {
+			const style = styles && styles.getStyleByCell(cell);
+			return style && style[styleKey] || DEFAULT_STYLES[styleKey];
+		}));
+	}
+};
+_defineProperty(Range, "transformRange", (range, worksheet) => {
+	const maxColumns = worksheet.getMaxColumns() - 1;
+	const maxRows = worksheet.getMaxRows() - 1;
+	if (range.rangeType === 3) return {
+		startColumn: 0,
+		startRow: 0,
+		endColumn: maxColumns,
+		endRow: maxRows
+	};
+	if (range.rangeType === 2) return {
+		startRow: 0,
+		endRow: maxRows,
+		startColumn: range.startColumn,
+		endColumn: range.endColumn
+	};
+	if (range.rangeType === 1) return {
+		startColumn: 0,
+		endColumn: maxColumns,
+		startRow: range.startRow,
+		endRow: range.endRow
+	};
+	return {
+		startColumn: range.startColumn,
+		endColumn: Math.min(range.endColumn, maxColumns),
+		startRow: range.startRow,
+		endRow: Math.min(range.endRow, maxRows)
+	};
+});
+
+//#endregion
+//#region src/sheets/row-manager.ts
+const MAXIMUM_ROW_HEIGHT = 2e3;
+/**
+* Manage configuration information of all rows, get row height, row length, set row height, etc.
+*/
+var RowManager = class {
+	constructor(_config, _viewModel, data) {
+		this._config = _config;
+		this._viewModel = _viewModel;
+		_defineProperty(this, "_rowData", void 0);
+		this._rowData = data;
+	}
+	/**
+	* Get height and hidden status of columns in the sheet
+	* @returns {IObjectArrayPrimitiveType<Partial<IRowData>>} Row data, including height, hidden status, etc.
+	*/
+	getRowData() {
+		return this._rowData;
+	}
+	/**
+	* Get the row style
+	* @param {number} row Row index
+	* @returns {string | Nullable<IStyleData>} Style data, may be undefined
+	*/
+	getRowStyle(row) {
+		var _this$_rowData$row;
+		return (_this$_rowData$row = this._rowData[row]) === null || _this$_rowData$row === void 0 ? void 0 : _this$_rowData$row.s;
+	}
+	/**
+	* Set row default style
+	* @param {number} row The row index
+	* @param {string | Nullable<IStyleData>} style The style data
+	*/
+	setRowStyle(row, style) {
+		const rowData = this.getRowOrCreate(row);
+		rowData.s = style;
+	}
+	getRowDatas(rowPos, numRows) {
+		const rowData = {};
+		let index = 0;
+		for (let i = rowPos; i < rowPos + numRows; i++) {
+			rowData[index] = this.getRow(i) ?? {
+				h: this._config.defaultRowHeight,
+				hd: 0
+			};
+			index++;
+		}
+		return rowData;
+	}
+	getRowHeight(rowPos, count = 1) {
+		const { _rowData } = this;
+		const config = this._config;
+		let height = 0;
+		for (let i = 0; i < count; i++) {
+			const { ia, ah, h = config.defaultRowHeight } = _rowData[i + rowPos] || {
+				hd: 0,
+				h: config.defaultRowHeight
+			};
+			height += (ia == null || ia === 1) && typeof ah === "number" ? ah : h;
+		}
+		return height;
+	}
+	/**
+	* Set row height of given row
+	* @param rowPos row index
+	* @param height row height
+	*/
+	setRowHeight(rowPos, height) {
+		const row = this._rowData[rowPos];
+		if (height === this._config.defaultRowHeight) {
+			if (row) {
+				delete row.h;
+				if (Object.keys(row).length === 0) delete this._rowData[rowPos];
+			}
+		} else {
+			const _height = Math.min(height, MAXIMUM_ROW_HEIGHT);
+			this._rowData[rowPos] = row ? {
+				...row,
+				h: _height
+			} : { h: _height };
+		}
+	}
+	/**
+	* Get row data of given row
+	* @param rowPos row index
+	* @returns {Nullable<Partial<IRowData>>} rowData
+	*/
+	getRow(rowPos) {
+		return this._rowData[rowPos];
+	}
+	/**
+	* Insert rows data at given position
+	* @param {number} startRow - start row index
+	* @param {number} endRow - end row index
+	* @param {IObjectArrayPrimitiveType<IRowData>} [rowDataInfo] - row data info
+	*/
+	insertRowsWithData(startRow, endRow, rowDataInfo) {
+		const count = endRow - startRow + 1;
+		const rows = Object.keys(this._rowData);
+		for (let i = rows.length - 1; i >= 0; i--) {
+			const rowIndex = Number(rows[i]);
+			if (rowIndex >= startRow) {
+				this._rowData[rowIndex + count] = this._rowData[rowIndex];
+				delete this._rowData[rowIndex];
+			}
+		}
+		for (let r = startRow; r <= endRow; r++) {
+			const rowData = rowDataInfo === null || rowDataInfo === void 0 ? void 0 : rowDataInfo[r - startRow];
+			if (rowData !== void 0 && rowData !== null && Object.keys(rowData).length > 0) this._rowData[r] = { ...rowData };
+		}
+	}
+	/**
+	* Remove row data of given row
+	* @param rowPos
+	*/
+	removeRow(rowPos) {
+		delete this._rowData[rowPos];
+	}
+	/**
+	* Get given row data or create a row data when it's null
+	* This method is used to ensure that the row data should not be null when setting row properties.
+	* To prevent data redundancy, if is not setting row properties, you can use `getRow` method to get row data. don't use this method.
+	* @param rowPos row index
+	* @returns {Partial<IRowData>} rowData
+	*/
+	getRowOrCreate(rowPos) {
+		const { _rowData } = this;
+		const row = _rowData[rowPos];
+		if (row) return row;
+		const create = {};
+		_rowData[rowPos] = create;
+		return create;
+	}
+	/**
+	* Get all hidden rows
+	* @param start Start index
+	* @param end End index
+	* @returns Hidden rows range list
+	*/
+	getHiddenRows(start = 0, end = this.getSize() - 1) {
+		const hiddenRows = [];
+		let inHiddenRange = false;
+		let startRow = -1;
+		for (let i = start; i <= end; i++) {
+			const visible = this.getRowRawVisible(i);
+			if (inHiddenRange && visible) {
+				inHiddenRange = false;
+				hiddenRows.push({
+					startRow,
+					endRow: i - 1,
+					startColumn: 0,
+					endColumn: 0,
+					rangeType: 1
+				});
+			} else if (!inHiddenRange && !visible) {
+				inHiddenRange = true;
+				startRow = i;
+			}
+		}
+		if (inHiddenRange) hiddenRows.push({
+			startRow,
+			endRow: end,
+			startColumn: 0,
+			endColumn: 0,
+			rangeType: 1
+		});
+		return hiddenRows;
+	}
+	/**
+	* Get all visible rows
+	* @param start Start index
+	* @param end End index
+	* @returns Visible rows range list
+	*/
+	getVisibleRows(start = 0, end = this.getSize() - 1) {
+		const visibleRows = [];
+		let inVisibleRange = false;
+		let startRow = -1;
+		for (let i = start; i <= end; i++) {
+			const visible = this.getRowRawVisible(i);
+			if (inVisibleRange && !visible) {
+				inVisibleRange = false;
+				visibleRows.push({
+					startRow,
+					endRow: i - 1,
+					startColumn: 0,
+					endColumn: 0,
+					rangeType: 1
+				});
+			} else if (!inVisibleRange && visible) {
+				inVisibleRange = true;
+				startRow = i;
+			}
+		}
+		if (inVisibleRange) visibleRows.push({
+			startRow,
+			endRow: end,
+			startColumn: 0,
+			endColumn: 0,
+			rangeType: 1
+		});
+		return visibleRows;
+	}
+	getRowRawVisible(row) {
+		const rowData = this.getRow(row);
+		if (!rowData) return true;
+		return rowData.hd !== 1;
+	}
+	/**
+	* Get count of row in the sheet
+	* @returns {number} row count
+	*/
+	getSize() {
+		return getArrayLength(this._rowData);
+	}
+	setCustomMetadata(index, custom) {
+		const row = this.getRow(index);
+		if (row) row.custom = custom;
+	}
+	getCustomMetadata(index) {
+		var _this$getRow;
+		return (_this$getRow = this.getRow(index)) === null || _this$getRow === void 0 ? void 0 : _this$getRow.custom;
+	}
+};
+
+//#endregion
+//#region src/sheets/sheet-snapshot-utils.ts
+const DEFAULT_WORKSHEET_ROW_COUNT_KEY = "DEFAULT_WORKSHEET_ROW_COUNT";
+const DEFAULT_WORKSHEET_ROW_COUNT = 1e3;
+const DEFAULT_WORKSHEET_COLUMN_COUNT_KEY = "DEFAULT_WORKSHEET_COLUMN_COUNT";
+const DEFAULT_WORKSHEET_COLUMN_COUNT = 20;
+const DEFAULT_WORKSHEET_ROW_HEIGHT_KEY = "DEFAULT_WORKSHEET_ROW_HEIGHT";
+const DEFAULT_WORKSHEET_ROW_HEIGHT = 24;
+const DEFAULT_WORKSHEET_COLUMN_WIDTH_KEY = "DEFAULT_WORKSHEET_COLUMN_WIDTH";
+const DEFAULT_WORKSHEET_COLUMN_WIDTH = 88;
+const DEFAULT_WORKSHEET_ROW_TITLE_WIDTH_KEY = "DEFAULT_WORKSHEET_ROW_TITLE_WIDTH";
+const DEFAULT_WORKSHEET_ROW_TITLE_WIDTH = 46;
+const DEFAULT_WORKSHEET_COLUMN_TITLE_HEIGHT_KEY = "DEFAULT_WORKSHEET_COLUMN_TITLE_HEIGHT";
+const DEFAULT_WORKSHEET_COLUMN_TITLE_HEIGHT = 20;
+/**
+* This function is used to merge the user passed in snapshot with the default snapshot
+* without changing the user's snapshot's reference.
+*
+* @param snapshot user passed in snapshot
+* @returns merged snapshot
+*/
+function mergeWorksheetSnapshotWithDefault(snapshot) {
+	const defaultSnapshot = {
+		name: "Sheet1",
+		id: "sheet-01",
+		tabColor: "",
+		hidden: 0,
+		rowCount: DEFAULT_WORKSHEET_ROW_COUNT,
+		columnCount: 20,
+		zoomRatio: 1,
+		freeze: {
+			xSplit: 0,
+			ySplit: 0,
+			startRow: -1,
+			startColumn: -1
+		},
+		scrollTop: 0,
+		scrollLeft: 0,
+		defaultColumnWidth: 88,
+		defaultRowHeight: 24,
+		mergeData: [],
+		cellData: {},
+		rowData: {},
+		columnData: {},
+		showGridlines: 1,
+		rowHeader: {
+			width: 46,
+			hidden: 0
+		},
+		columnHeader: {
+			height: 20,
+			hidden: 0
+		},
+		rightToLeft: 0
+	};
+	Object.keys(defaultSnapshot).forEach((_key) => {
+		const key = _key;
+		if (typeof snapshot[key] === "undefined") snapshot[key] = defaultSnapshot[key];
+	});
+	const freeze = snapshot.freeze;
+	freeze.xSplit = freeze.xSplit ?? defaultSnapshot.freeze.xSplit;
+	freeze.ySplit = freeze.ySplit ?? defaultSnapshot.freeze.ySplit;
+	freeze.startRow = freeze.ySplit === 0 ? defaultSnapshot.freeze.startRow : freeze.startRow ?? defaultSnapshot.freeze.startRow;
+	freeze.startColumn = freeze.xSplit === 0 ? defaultSnapshot.freeze.startColumn : freeze.startColumn ?? defaultSnapshot.freeze.startColumn;
+	return snapshot;
+}
+
+//#endregion
+//#region src/sheets/span-model.ts
+var SpanModel = class extends Disposable {
+	constructor(mergeData) {
+		super();
+		_defineProperty(this, "_cellCache", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_rowCache", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_columnCache", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_hasRow", false);
+		_defineProperty(this, "_hasColumn", false);
+		_defineProperty(this, "_hasAll", false);
+		_defineProperty(this, "_allIndex", -1);
+		_defineProperty(this, "_mergeData", void 0);
+		_defineProperty(this, "_rangeMap", new LRUMap(5e4));
+		this._init(mergeData.concat());
+	}
+	_init(mergeData) {
+		this._mergeData = mergeData;
+		this._createCache(mergeData);
+	}
+	_clearCache() {
+		this._cellCache.clear();
+		this._rowCache.clear();
+		this._columnCache.clear();
+		this._hasAll = false;
+		this._allIndex = -1;
+		this._rangeMap.clear();
+		this._hasColumn = false;
+		this._hasRow = false;
+	}
+	_createCache(mergeData) {
+		let index = 0;
+		for (const range of mergeData) {
+			const { rangeType } = range;
+			if (rangeType === 1) this._createRowCache(range, index);
+			else if (rangeType === 2) this._createColumnCache(range, index);
+			else if (rangeType === 3) this._createCellAllCache(index);
+			else this._createCellCache(range, index);
+			index++;
+		}
+	}
+	/**
+	* Rebuild the merge data cache when the merge data is changed.
+	* @param {IRange[]} mergeData
+	*/
+	rebuild(mergeData) {
+		this._clearCache();
+		this._init(mergeData.concat());
+	}
+	_createRowCache(range, index) {
+		const { startRow, endRow } = range;
+		for (let i = startRow; i <= endRow; i++) {
+			this._rowCache.set(i, index);
+			this._hasRow = true;
+		}
+	}
+	_createColumnCache(range, index) {
+		const { startColumn, endColumn } = range;
+		for (let i = startColumn; i <= endColumn; i++) {
+			this._columnCache.set(i, index);
+			this._hasColumn = true;
+		}
+	}
+	_createCellAllCache(index) {
+		this._hasAll = true;
+		this._allIndex = index;
+	}
+	_createCellCache(range, index) {
+		for (let i = range.startRow; i <= range.endRow; i++) {
+			let columnCache = this._cellCache.get(i);
+			if (columnCache == null) {
+				columnCache = /* @__PURE__ */ new Map();
+				this._cellCache.set(i, columnCache);
+			}
+			for (let j = range.startColumn; j <= range.endColumn; j++) columnCache.set(j, index);
+		}
+	}
+	add(range) {
+		this._mergeData.push(range);
+		this._clearCache();
+		this._createCache(this._mergeData);
+	}
+	remove(row, column) {
+		const index = this._getMergeDataIndex(row, column);
+		if (index !== -1) {
+			this._mergeData.splice(index, 1);
+			this._clearCache();
+			this._createCache(this._mergeData);
+		}
+	}
+	getMergedCell(row, column) {
+		const index = this._getMergeDataIndex(row, column);
+		if (index !== -1) return this._mergeData[index];
+		return null;
+	}
+	/**
+	* Return index of merge data if (row,col) is in merge range. -1 means not in merge range.
+	* @param row
+	* @param column
+	* @returns {number} index of merge range.
+	*/
+	getMergeDataIndex(row, column) {
+		return this._getMergeDataIndex(row, column);
+	}
+	isRowContainsMergedCell(row) {
+		if (this._hasAll) return true;
+		if (!Tools.isEmptyObject(this._columnCache)) return true;
+		return this._mergeData.some((mergedCell) => mergedCell.startRow <= row && row <= mergedCell.endRow);
+	}
+	isColumnContainsMergedCell(column) {
+		if (this._hasAll) return true;
+		if (!Tools.isEmptyObject(this._rowCache)) return true;
+		return this._mergeData.some((mergedCell) => mergedCell.startColumn <= column && column <= mergedCell.endColumn);
+	}
+	getMergedCellRange(startRow, startColumn, endRow, endColumn) {
+		const ranges = [];
+		const key = `${startRow}-${startColumn}-${endRow}-${endColumn}`;
+		if (this._rangeMap.has(key)) return this._getRangeFromCache(key);
+		let index = 0;
+		const indexes = [];
+		for (const range of this._mergeData || []) {
+			if (Rectangle.intersects(range, {
+				startRow,
+				endRow,
+				startColumn,
+				endColumn
+			})) {
+				ranges.push({ ...range });
+				indexes.push(index);
+			}
+			index++;
+		}
+		this._rangeMap.set(key, indexes);
+		return ranges;
+	}
+	_getRangeFromCache(key) {
+		const indexes = this._rangeMap.get(key) || [];
+		const ranges = [];
+		for (const index of indexes) ranges.push({ ...this._mergeData[index] });
+		return ranges;
+	}
+	_getMergeDataIndex(row, column) {
+		var _this$_cellCache$get;
+		if (this._hasAll) return this._allIndex;
+		if (this._hasRow) {
+			const rowValue = this._rowCache.get(row);
+			if (rowValue !== void 0) return rowValue;
+		}
+		if (this._hasColumn) {
+			const columnValue = this._columnCache.get(column);
+			if (columnValue !== void 0) return columnValue;
+		}
+		const cellValue = (_this$_cellCache$get = this._cellCache.get(row)) === null || _this$_cellCache$get === void 0 ? void 0 : _this$_cellCache$get.get(column);
+		if (cellValue !== void 0) return cellValue;
+		return -1;
+	}
+	getMergeDataSnapshot() {
+		return this._mergeData;
+	}
+	dispose() {
+		this._clearCache();
+		this._mergeData = [];
+	}
+};
+
+//#endregion
+//#region src/sheets/view-model.ts
+/**
+* @internal
+*/
+var SheetViewModel = class extends Disposable {
+	constructor(getRawCell) {
+		super();
+		this.getRawCell = getRawCell;
+		_defineProperty(this, "_cellContentInterceptor", null);
+		_defineProperty(this, "_rowFilteredInterceptor", null);
+	}
+	dispose() {
+		super.dispose();
+		this._cellContentInterceptor = null;
+		this._rowFilteredInterceptor = null;
+	}
+	getCell(row, col, key, filter) {
+		if (this._cellContentInterceptor) return this._cellContentInterceptor.getCell(row, col, 2 | 1, key, filter);
+		return this.getRawCell(row, col);
+	}
+	getCellValueOnly(row, col) {
+		if (this._cellContentInterceptor) return this._cellContentInterceptor.getCell(row, col, 2);
+		return this.getRawCell(row, col);
+	}
+	getCellStyleOnly(row, col) {
+		if (this._cellContentInterceptor) return this._cellContentInterceptor.getCell(row, col, 1);
+		return this.getRawCell(row, col);
+	}
+	getRowFiltered(row) {
+		var _this$_rowFilteredInt;
+		return ((_this$_rowFilteredInt = this._rowFilteredInterceptor) === null || _this$_rowFilteredInt === void 0 ? void 0 : _this$_rowFilteredInt.getRowFiltered(row)) ?? false;
+	}
+	registerCellContentInterceptor(interceptor) {
+		if (this._cellContentInterceptor) throw new Error("[SheetViewModel]: Interceptor already registered.");
+		this._cellContentInterceptor = interceptor;
+		return toDisposable(() => this._cellContentInterceptor = null);
+	}
+	registerRowFilteredInterceptor(interceptor) {
+		if (this._rowFilteredInterceptor) throw new Error("[SheetViewModel]: Interceptor already registered.");
+		this._rowFilteredInterceptor = interceptor;
+		return toDisposable(() => this._rowFilteredInterceptor = null);
+	}
+};
+
+//#endregion
+//#region src/sheets/worksheet.ts
+const DEFAULT_CELL_DOCUMENT_MODEL_OPTION = {
+	isDeepClone: false,
+	displayRawFormula: false,
+	ignoreTextRotation: false
+};
+/**
+* The model of a Worksheet.
+*/
+var Worksheet = class {
+	constructor(unitId, snapshot, _styles) {
+		this.unitId = unitId;
+		this._styles = _styles;
+		_defineProperty(this, "_sheetId", void 0);
+		_defineProperty(this, "_snapshot", void 0);
+		_defineProperty(this, "_cellData", void 0);
+		_defineProperty(this, "_rowManager", void 0);
+		_defineProperty(this, "_columnManager", void 0);
+		_defineProperty(this, "_viewModel", void 0);
+		_defineProperty(this, "_spanModel", void 0);
+		_defineProperty(this, "_isRowStylePrecedeColumnStyle", true);
+		_defineProperty(this, "_getCellHeight", void 0);
+		this._snapshot = mergeWorksheetSnapshotWithDefault(snapshot);
+		const { columnData, rowData, cellData } = this._snapshot;
+		this._sheetId = this._snapshot.id ?? generateRandomId(6);
+		this._cellData = new ObjectMatrix(cellData);
+		this._viewModel = new SheetViewModel((row, col) => this.getCellRaw(row, col));
+		this._rowManager = new RowManager(this._snapshot, this._viewModel, rowData);
+		this._columnManager = new ColumnManager(this._snapshot, columnData);
+		this._spanModel = new SpanModel(this._snapshot.mergeData);
+	}
+	/**
+	* @internal
+	* @param callback
+	*/
+	__interceptViewModel(callback) {
+		callback(this._viewModel);
+	}
+	/**
+	* @internal
+	* this is an internal method, please do not use it
+	*/
+	__registerGetCellHeight(callback) {
+		this._getCellHeight = callback;
+		return toDisposable(() => {
+			this._getCellHeight = null;
+		});
+	}
+	getSnapshot() {
+		return this._snapshot;
+	}
+	getCellHeight(row, col) {
+		if (this._getCellHeight) return this._getCellHeight(row, col);
+		return this.getRowHeight(row);
+	}
+	/**
+	* Set the merge data of the sheet, all the merged cells will be rebuilt.
+	* @param mergeData
+	*/
+	setMergeData(mergeData) {
+		this._snapshot.mergeData = mergeData;
+		this.getSpanModel().rebuild(mergeData);
+	}
+	getSpanModel() {
+		return this._spanModel;
+	}
+	setIsRowStylePrecedeColumnStyle(isRowStylePrecedeColumnStyle) {
+		this._isRowStylePrecedeColumnStyle = isRowStylePrecedeColumnStyle;
+	}
+	getStyleDataByHash(hash) {
+		return { ...this._styles.get(hash) };
+	}
+	setStyleData(style) {
+		return this._styles.setValue(style);
+	}
+	getColumnStyle(column, keepRaw = false) {
+		if (keepRaw) return this._columnManager.getColumnStyle(column);
+		return this._styles.get(this._columnManager.getColumnStyle(column));
+	}
+	/**
+	* Set the style of the column.
+	* @param {number} column The column index
+	* @param {string|Nullable<IStyleData>} style The style to be set
+	*/
+	setColumnStyle(column, style) {
+		this._columnManager.setColumnStyle(column, style);
+	}
+	getRowStyle(row, keepRaw = false) {
+		if (keepRaw) return this._rowManager.getRowStyle(row);
+		return this._styles.get(this._rowManager.getRowStyle(row));
+	}
+	/**
+	* Set the style of the row.
+	* @param {number} row
+	* @param {string|Nullable<IStyleData>} style The style to be set
+	*/
+	setRowStyle(row, style) {
+		this._rowManager.setRowStyle(row, style);
+	}
+	/**
+	* Get the default style of the worksheet.
+	* @returns {Nullable<IStyleData>} Default Style
+	*/
+	getDefaultCellStyle() {
+		return this._snapshot.defaultStyle;
+	}
+	getDefaultCellStyleInternal() {
+		const style = this._snapshot.defaultStyle;
+		return this._styles.get(style);
+	}
+	/**
+	* Set Default Style, if the style has been set, all cells style will be base on this style.
+	* @param {Nullable<IStyleData>} style The style to be set as default style
+	*/
+	setDefaultCellStyle(style) {
+		this._snapshot.defaultStyle = style;
+	}
+	getCellStyle(row, col) {
+		const cell = this.getCell(row, col);
+		if (cell) {
+			const style = cell.s;
+			if (typeof style === "string") return this._styles.get(style);
+			return style;
+		}
+		return null;
+	}
+	/**
+	* Get the composed style of the cell. If you want to get the style of the cell without merging row style,
+	* col style and default style, please use {@link getCellStyle} instead.
+	*
+	* @param {number} row The row index of the cell
+	* @param {number} col The column index of the cell
+	* @param {boolean} [rowPriority] If true, row style will precede column style, otherwise use this._isRowStylePrecedeColumnStyle
+	* @returns {IStyleData} The composed style of the cell
+	*/
+	getComposedCellStyle(row, col, rowPriority) {
+		const defaultStyle = this.getDefaultCellStyleInternal();
+		const rowStyle = this.getRowStyle(row);
+		const colStyle = this.getColumnStyle(col);
+		const cell = this.getCell(row, col);
+		const cellStyle = this._styles.getStyleByCell(cell);
+		return rowPriority ?? this._isRowStylePrecedeColumnStyle ? composeStyles(defaultStyle, colStyle, rowStyle, cell === null || cell === void 0 ? void 0 : cell.themeStyle, cellStyle) : composeStyles(defaultStyle, rowStyle, colStyle, cell === null || cell === void 0 ? void 0 : cell.themeStyle, cellStyle);
+	}
+	/**
+	* Get the composed style of the cell. If you want to get the style of the cell without merging row style,
+	* col style and default style, please use {@link getCellStyle} instead.
+	* For performance reason, if you already have the cell data, you can use this method to avoid getting the cell data again.
+	*
+	* @param {number} row The row index of the cell
+	* @param {number} col The column index of the cell
+	* @param {Nullable<ICellDataForSheetInterceptor>} cellData The cell data of the cell.
+	* @param {boolean} [rowPriority] If true, row style will precede column style, otherwise use this._isRowStylePrecedeColumnStyle
+	* @returns {IStyleData} The composed style of the cell
+	*/
+	getComposedCellStyleByCellData(row, col, cellData, rowPriority) {
+		const defaultStyle = this.getDefaultCellStyleInternal();
+		const rowStyle = this.getRowStyle(row);
+		const colStyle = this.getColumnStyle(col);
+		const cellStyle = this._styles.getStyleByCell(cellData);
+		return rowPriority ?? this._isRowStylePrecedeColumnStyle ? composeStyles(defaultStyle, colStyle, rowStyle, cellData === null || cellData === void 0 ? void 0 : cellData.themeStyle, cellStyle) : composeStyles(defaultStyle, rowStyle, colStyle, cellData === null || cellData === void 0 ? void 0 : cellData.themeStyle, cellStyle);
+	}
+	/**
+	* Get the composed style of the cell without its own style.
+	* @param {number} row The row index of the cell
+	* @param {number} col The column index of the cell
+	* @param {Nullable<ICellDataForSheetInterceptor>} [cellData] The cell data of the cell.
+	* @param {boolean} [rowPriority] If true, row style will precede column style, otherwise use this._isRowStylePrecedeColumnStyle
+	* @returns {IStyleData} The composed style of the cell without its own style
+	*/
+	getComposedCellStyleWithoutSelf(row, col, cellData, rowPriority) {
+		const composedCellStyle = cellData === void 0 ? this.getComposedCellStyle(row, col, rowPriority) : this.getComposedCellStyleByCellData(row, col, cellData, rowPriority);
+		const cellDataRaw = this.getCellRaw(row, col);
+		if (!cellDataRaw || !cellDataRaw.s) return composedCellStyle;
+		const style = typeof cellDataRaw.s === "string" ? this._styles.get(cellDataRaw.s) : cellDataRaw.s;
+		if (!style) return composedCellStyle;
+		for (const key in style) if (key in composedCellStyle) delete composedCellStyle[key];
+		return composedCellStyle;
+	}
+	/**
+	* Returns WorkSheet Cell Data Matrix
+	* @returns WorkSheet Cell Data Matrix
+	*/
+	getCellMatrix() {
+		return this._cellData;
+	}
+	/**
+	* Get worksheet printable cell range.
+	* @returns
+	*/
+	getCellMatrixPrintRange() {
+		const matrix = this.getCellMatrix();
+		const mergedCells = this.getMergeData();
+		let startRow = -1;
+		let endRow = -1;
+		let startColumn = -1;
+		let endColumn = -1;
+		let rowInitd = false;
+		let columnInitd = false;
+		matrix.forEach((rowIndex, row) => {
+			Object.keys(row).forEach((colIndexStr) => {
+				const colIndex = +colIndexStr;
+				const cellValue = matrix.getValue(rowIndex, colIndex);
+				const style = (cellValue === null || cellValue === void 0 ? void 0 : cellValue.s) ? this._styles.get(cellValue.s) : null;
+				const isLegalBorder = (style === null || style === void 0 ? void 0 : style.bd) && (style.bd.b || style.bd.l || style.bd.r || style.bd.t || style.bd.bc_tr || style.bd.bl_tr || style.bd.ml_tr || style.bd.tl_bc || style.bd.tl_br || style.bd.tl_mr);
+				if (cellValue && (cellValue.v !== null && cellValue.v !== void 0 && cellValue.v !== "" || cellValue.p) || (style === null || style === void 0 ? void 0 : style.bg) || isLegalBorder) {
+					if (rowInitd) startRow = Math.min(startRow, rowIndex);
+					else {
+						startRow = rowIndex;
+						rowInitd = true;
+					}
+					endRow = Math.max(endRow, rowIndex);
+					if (columnInitd) startColumn = Math.min(startColumn, colIndex);
+					else {
+						columnInitd = true;
+						startColumn = colIndex;
+					}
+					endColumn = Math.max(endColumn, colIndex);
+				}
+			});
+		});
+		mergedCells.forEach((mergedCell) => {
+			if (rowInitd) startRow = Math.min(startRow, mergedCell.startRow);
+			else {
+				startRow = mergedCell.startRow;
+				rowInitd = true;
+			}
+			endRow = Math.max(endRow, mergedCell.endRow);
+			if (columnInitd) startColumn = Math.min(startColumn, mergedCell.startColumn);
+			else {
+				startColumn = mergedCell.startColumn;
+				rowInitd = true;
+			}
+			endColumn = Math.max(endColumn, mergedCell.endColumn);
+		});
+		if (!rowInitd || !columnInitd) return null;
+		return {
+			startColumn,
+			startRow,
+			endColumn,
+			endRow
+		};
+	}
+	/**
+	* Returns Row Manager
+	* @returns Row Manager
+	*/
+	getRowManager() {
+		return this._rowManager;
+	}
+	/**
+	* Returns the ID of its parent unit.
+	*/
+	getUnitId() {
+		return this.unitId;
+	}
+	/**
+	* Returns the ID of the sheet represented by this object.
+	* @returns ID of the sheet
+	*/
+	getSheetId() {
+		return this._sheetId;
+	}
+	/**
+	* Returns Column Manager
+	* @returns Column Manager
+	*/
+	getColumnManager() {
+		return this._columnManager;
+	}
+	/**
+	* Returns the name of the sheet.
+	* @returns name of the sheet
+	*/
+	getName() {
+		return this._snapshot.name;
+	}
+	/**
+	* Get the merged cell list of the sheet.
+	* @returns {IRange[]} merged cell list
+	*/
+	getMergeData() {
+		return this._spanModel.getMergeDataSnapshot();
+	}
+	/**
+	* Get the merged cell Range of the sheet cell.
+	* If (row, col) is not in a merged cell, return null
+	*
+	* @param {number} row The row index of test cell
+	* @param {number} col The column index of test cell
+	* @returns {Nullable<IRange>} The merged cell range of the cell, if the cell is not in a merged cell, return null
+	*/
+	getMergedCell(row, col) {
+		return this._spanModel.getMergedCell(row, col);
+	}
+	/**
+	* Get the merged cell info list which has intersection with the given range.
+	* @param {number} startRow The start row index of the range
+	* @param {number} startColumn The start column index of the range
+	* @param {number} endRow The end row index of the range
+	* @param {number} endColumn The end column index of the range
+	* @returns {IRange} The merged cell info list which has intersection with the given range or empty array if no merged cell in the range
+	*/
+	getMergedCellRange(startRow, startColumn, endRow, endColumn) {
+		return this._spanModel.getMergedCellRange(startRow, startColumn, endRow, endColumn);
+	}
+	/**
+	* Get if the row contains merged cell
+	* @param {number} row The row index
+	* @returns {boolean} Is merge cell across row
+	*/
+	isRowContainsMergedCell(row) {
+		return this._spanModel.isRowContainsMergedCell(row);
+	}
+	/**
+	* Get if the column contains merged cell
+	* @param {number} column The column index
+	* @returns {boolean} Is merge cell across column
+	*/
+	isColumnContainsMergedCell(column) {
+		return this._spanModel.isColumnContainsMergedCell(column);
+	}
+	/**
+	* Get cell info with merge data
+	* @param {number} row - The row index of the cell.
+	* @param {number} column - The column index of the cell.
+	* @type {selectionCell}
+	* @property {number} actualRow - The actual row index of the cell
+	* @property {number} actualColumn - The actual column index of the cell
+	* @property {boolean} isMergedMainCell - Whether the cell is the main cell of the merged cell, only the upper left cell in the merged cell returns true here
+	* @property {boolean} isMerged - Whether the cell is in a merged cell, the upper left cell in the merged cell returns false here
+	* @property {number} endRow - The end row index of the merged cell
+	* @property {number} endColumn - The end column index of the merged cell
+	* @property {number} startRow - The start row index of the merged cell
+	* @property {number} startColumn - The start column index of the merged cell
+	* @returns  {selectionCell} - The cell info with merge data
+	*/
+	getCellInfoInMergeData(row, column) {
+		const mergeRange = this.getMergedCell(row, column);
+		let isMerged = false;
+		let isMergedMainCell = false;
+		let mergeEndRow = row;
+		let mergeEndColumn = column;
+		let mergeStartRow = row;
+		let mergeStartColumn = column;
+		if (mergeRange) {
+			const { startRow: startRowMerge, endRow: endRowMerge, startColumn: startColumnMerge, endColumn: endColumnMerge } = mergeRange;
+			if (row === startRowMerge && column === startColumnMerge) {
+				mergeEndRow = endRowMerge;
+				mergeEndColumn = endColumnMerge;
+				mergeStartRow = startRowMerge;
+				mergeStartColumn = startColumnMerge;
+				isMergedMainCell = true;
+			} else if (row >= startRowMerge && row <= endRowMerge && column >= startColumnMerge && column <= endColumnMerge) {
+				mergeEndRow = endRowMerge;
+				mergeEndColumn = endColumnMerge;
+				mergeStartRow = startRowMerge;
+				mergeStartColumn = startColumnMerge;
+				isMerged = true;
+			}
+		}
+		return {
+			actualRow: row,
+			actualColumn: column,
+			isMergedMainCell,
+			isMerged,
+			endRow: mergeEndRow,
+			endColumn: mergeEndColumn,
+			startRow: mergeStartRow,
+			startColumn: mergeStartColumn
+		};
+	}
+	/**
+	* Get cellData, includes cellData, customRender, markers, dataValidate, etc.
+	*
+	* WARNING: All sheet CELL_CONTENT interceptors will be called in this method, cause performance issue.
+	* example: this._sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT);
+	*
+	* @param row
+	* @param col
+	* @returns ICellDataForSheetInterceptor
+	*/
+	getCell(row, col) {
+		if (row < 0 || col < 0) return null;
+		return this._viewModel.getCell(row, col);
+	}
+	/**
+	* Get cellData only use effect on value interceptor
+	* @param {number} number row The row index of the cell.
+	* @param {number} number col The column index of the cell.
+	* @returns {Nullable<ICellDataForSheetInterceptor>} The cell data only use effect on value interceptor
+	*/
+	getCellValueOnly(row, col) {
+		if (row < 0 || col < 0) return null;
+		return this._viewModel.getCellValueOnly(row, col);
+	}
+	/**
+	* Get cellData only use effect on style interceptor
+	* @param {number} row The row index of the cell.
+	* @param {number} col The column index of the cell.
+	* @returns {Nullable<ICellDataForSheetInterceptor>} The cell data only use effect on style interceptor
+	*/
+	getCellStyleOnly(row, col) {
+		if (row < 0 || col < 0) return null;
+		return this._viewModel.getCellStyleOnly(row, col);
+	}
+	getCellRaw(row, col) {
+		return this.getCellMatrix().getValue(row, col);
+	}
+	getCellWithFilteredInterceptors(row, col, key, filter) {
+		return this._viewModel.getCell(row, col, key, filter);
+	}
+	getRowFiltered(row) {
+		return this._viewModel.getRowFiltered(row);
+	}
+	/**
+	* Get the filtered out rows in a given range. used for remove rows operation, etc.
+	* @param range - The range to get filtered rows from.
+	* @returns {number[]} An array of row indices that are filtered out within the specified range.
+	*/
+	getRangeFilterRows(range) {
+		const rangeFilteredRows = [];
+		for (let r = range.startRow; r <= range.endRow; r++) if (this.getRowFiltered(r)) rangeFilteredRows.push(r);
+		return rangeFilteredRows;
+	}
+	getMatrixWithMergedCells(row, col, endRow, endCol, dataMode = "raw") {
+		const matrix = this.getCellMatrix();
+		const mergedCellsInRange = this._spanModel.getMergedCellRange(row, col, endRow, endCol);
+		const returnCellMatrix = new ObjectMatrix();
+		createRowColIter(row, endRow, col, endCol).forEach((row, col) => {
+			let cellData;
+			if (dataMode === "raw") cellData = this.getCellRaw(row, col);
+			else if (dataMode === "intercepted") cellData = this.getCell(row, col);
+			else if (dataMode === "both") {
+				const cellDataRaw = this.getCellRaw(row, col);
+				if (cellDataRaw) {
+					var _this$getCell;
+					cellData = { ...cellDataRaw };
+					const displayV = (_this$getCell = this.getCell(row, col)) === null || _this$getCell === void 0 ? void 0 : _this$getCell.v;
+					if (isNotNullOrUndefined(displayV) && cellData) cellData.displayV = String(displayV);
+				}
+			}
+			if (cellData) returnCellMatrix.setValue(row, col, cellData);
+		});
+		mergedCellsInRange.forEach((mergedCell) => {
+			const { startColumn, startRow, endColumn, endRow } = mergedCell;
+			createRowColIter(startRow, endRow, startColumn, endColumn).forEach((row, col) => {
+				if (row === startRow && col === startColumn) returnCellMatrix.setValue(row, col, {
+					...matrix.getValue(row, col),
+					rowSpan: endRow - startRow + 1,
+					colSpan: endColumn - startColumn + 1
+				});
+				if (row !== startRow || col !== startColumn) returnCellMatrix.realDeleteValue(row, col);
+			});
+		});
+		return returnCellMatrix;
+	}
+	getRange(startRowOrRange, startColumn, endRow, endColumn) {
+		if (typeof startRowOrRange === "object") return new Range(this, startRowOrRange, { getStyles: () => this._styles });
+		return new Range(this, {
+			startRow: startRowOrRange,
+			startColumn,
+			endColumn: endColumn || startColumn,
+			endRow: endRow || startRowOrRange
+		}, { getStyles: () => this._styles });
+	}
+	getScrollLeftTopFromSnapshot() {
+		return {
+			scrollLeft: this._snapshot.scrollLeft,
+			scrollTop: this._snapshot.scrollTop
+		};
+	}
+	/**
+	* Return WorkSheetZoomRatio
+	* @return zoomRatio
+	*/
+	getZoomRatio() {
+		return this._snapshot.zoomRatio || 1;
+	}
+	/**
+	* Returns WorkSheet Configures
+	* @returns WorkSheet Configures
+	*/
+	getConfig() {
+		return this._snapshot;
+	}
+	/**
+	* Returns  frozen.
+	* @returns  frozen
+	*/
+	getFreeze() {
+		return this._snapshot.freeze;
+	}
+	/**
+	* Returns the current number of columns in the sheet, regardless of content.
+	* @returns the current number of columns in the sheet, regardless of content
+	*/
+	getMaxColumns() {
+		const { _snapshot: _config } = this;
+		const { columnCount } = _config;
+		return columnCount;
+	}
+	/**
+	* Returns the current number of rows in the sheet, regardless of content.
+	* @returns the current number of rows in the sheet, regardless of content
+	*/
+	getMaxRows() {
+		const { _snapshot: _config } = this;
+		const { rowCount } = _config;
+		return rowCount;
+	}
+	getRowCount() {
+		return this._snapshot.rowCount;
+	}
+	setRowCount(count) {
+		this._snapshot.rowCount = count;
+	}
+	getColumnCount() {
+		return this._snapshot.columnCount;
+	}
+	setColumnCount(count) {
+		this._snapshot.columnCount = count;
+	}
+	/**
+	* isSheetHidden
+	* @returns hidden status of sheet
+	*/
+	isSheetHidden() {
+		return this._snapshot.hidden;
+	}
+	/**
+	* Returns true if the sheet's gridlines are hidden; otherwise returns false. Gridlines are visible by default.
+	* @returns {boolean} Gridlines Hidden Status.
+	*/
+	hasHiddenGridlines() {
+		const { _snapshot: _config } = this;
+		const { showGridlines } = _config;
+		if (showGridlines === 0) return true;
+		return false;
+	}
+	/**
+	* Returns the color of the gridlines, or undefined if the gridlines are not colored.
+	* @returns {string | undefined} returns the color of the gridlines, or undefined if the gridlines are default.
+	*/
+	getGridlinesColor() {
+		return this.getConfig().gridlinesColor;
+	}
+	/**
+	* Gets the sheet tab color, or null if the sheet tab has no color.
+	* @returns the sheet tab color or null
+	*/
+	getTabColor() {
+		const { _snapshot: _config } = this;
+		const { tabColor } = _config;
+		return tabColor;
+	}
+	/**
+	* Gets the width in pixels of the given column.
+	* @param columnPosition column index
+	* @returns Gets the width in pixels of the given column.
+	*/
+	getColumnWidth(columnPosition) {
+		return this.getColumnManager().getColumnWidth(columnPosition);
+	}
+	/**
+	* Gets the height in pixels of the given row.
+	* @param row row index
+	* @returns Gets the height in pixels of the given row.
+	*/
+	getRowHeight(row) {
+		if (this._viewModel.getRowFiltered(row)) return 0;
+		return this.getRowManager().getRowHeight(row);
+	}
+	/**
+	* Row is filtered out, that means this row is invisible.
+	* @param row
+	* @returns {boolean} is row hidden by filter
+	*/
+	isRowFiltered(row) {
+		return this._viewModel.getRowFiltered(row);
+	}
+	/**
+	* Get if the row is visible. It may be affected by features like filter and view.
+	* @param row the row index
+	* @returns {boolean} if the row in visible to the user
+	*/
+	getRowVisible(row) {
+		return !this.isRowFiltered(row) && this.getRowRawVisible(row);
+	}
+	/**
+	* Get if the row does not have `hidden` property. This value won't affected by features like filter and view.
+	* @param row the row index
+	* @returns if the row does not have `hidden` property
+	*/
+	getRowRawVisible(row) {
+		return this.getRowManager().getRowRawVisible(row);
+	}
+	getHiddenRows(start, end) {
+		const lastColumn = this.getMaxColumns() - 1;
+		const ranges = this._rowManager.getHiddenRows(start, end);
+		ranges.forEach((range) => range.endColumn = lastColumn);
+		return ranges;
+	}
+	getColVisible(col) {
+		return this._columnManager.getColVisible(col);
+	}
+	getHiddenCols(start, end) {
+		const lastRow = this.getMaxRows() - 1;
+		const ranges = this._columnManager.getHiddenCols(start, end);
+		ranges.forEach((range) => range.endRow = lastRow);
+		return ranges;
+	}
+	/**
+	* Get all visible rows in the sheet.(not include filter & view, like getRawVisibleRows)
+	* @returns Visible rows range list
+	*/
+	getVisibleRows() {
+		const rowCount = this.getRowCount();
+		return this._rowManager.getVisibleRows(0, rowCount - 1);
+	}
+	/**
+	* Get all visible columns in the sheet.(not include filter & view)
+	* @returns Visible columns range list
+	*/
+	getVisibleCols() {
+		const columnCount = this.getColumnCount();
+		return this._columnManager.getVisibleCols(0, columnCount - 1);
+	}
+	/**
+	* Returns true if this sheet layout is right-to-left. Returns false if the sheet uses the default left-to-right layout.
+	* @returns true if this sheet layout is right-to-left. Returns false if the sheet uses the default left-to-right layout.
+	*/
+	isRightToLeft() {
+		const { _snapshot: _config } = this;
+		const { rightToLeft } = _config;
+		return rightToLeft;
+	}
+	/**
+	* Returns the position of the last row that has content.
+	* @returns the position of the last row that has content.
+	*/
+	getLastRowWithContent() {
+		return this._cellData.getRealRowRange().endRow;
+	}
+	/**
+	* Returns the position of the last column that has content.
+	* @returns the position of the last column that has content.
+	*/
+	getLastColumnWithContent() {
+		return this.getDataRealRange().endColumn;
+	}
+	getDataRealRange() {
+		return this._cellData.getRealRange();
+	}
+	getDataRangeScope() {
+		return this._cellData.getStartEndScope();
+	}
+	cellHasValue(value) {
+		return value && (value.v !== void 0 || value.f !== void 0 || value.p !== void 0);
+	}
+	/**
+	* Iterate a range row by row.
+	*
+	* Performance intensive.
+	*
+	* @param range the iterate range
+	* @param skipEmpty whether to skip empty cells, default to be `true`
+	*/
+	iterateByRow(range, skipEmpty = true) {
+		const { startRow, startColumn, endRow, endColumn } = range;
+		const worksheet = this;
+		return { [Symbol.iterator]: () => {
+			let rowIndex = startRow;
+			let columnIndex = startColumn;
+			return { next() {
+				while (true) {
+					if (columnIndex > endColumn) {
+						rowIndex += 1;
+						columnIndex = startColumn;
+					}
+					if (rowIndex > endRow) return {
+						done: true,
+						value: void 0
+					};
+					const cellValue = worksheet.getCell(rowIndex, columnIndex);
+					const isEmptyCell = !cellValue;
+					const mergedCell = worksheet.getMergedCell(rowIndex, columnIndex);
+					if (mergedCell) {
+						if (rowIndex !== mergedCell.startRow || columnIndex !== mergedCell.startColumn) {
+							columnIndex = mergedCell.endColumn + 1;
+							continue;
+						}
+						if (isEmptyCell && skipEmpty) {
+							columnIndex = mergedCell.endColumn + 1;
+							continue;
+						}
+						const value = {
+							row: rowIndex,
+							col: columnIndex,
+							value: cellValue
+						};
+						value.colSpan = mergedCell.endColumn - mergedCell.startColumn + 1;
+						value.rowSpan = mergedCell.endRow - mergedCell.startRow + 1;
+						columnIndex = mergedCell.endColumn + 1;
+						return {
+							done: false,
+							value
+						};
+					}
+					if (isEmptyCell && skipEmpty) columnIndex += 1;
+					else {
+						const value = {
+							row: rowIndex,
+							col: columnIndex,
+							value: cellValue
+						};
+						columnIndex += 1;
+						return {
+							done: false,
+							value
+						};
+					}
+				}
+			} };
+		} };
+	}
+	/**
+	* Iterate a range column by column. This is pretty similar to `iterateByRow` but with different order.
+	*
+	* Performance intensive.
+	*
+	* @param range The iterate range.
+	* @param skipEmpty Whether to skip empty cells, default to be `true`.
+	* @param skipNonTopLeft Whether to skip non-top-left cells of merged cells, default to be `true`. If the
+	* parameter is set to `false`, the iterator will return cells in the top row.
+	*/
+	iterateByColumn(range, skipEmpty = true, skipNonTopLeft = true) {
+		const { startRow, startColumn, endRow, endColumn } = range;
+		const worksheet = this;
+		return { [Symbol.iterator]: () => {
+			let rowIndex = startRow;
+			let columnIndex = startColumn;
+			return { next() {
+				while (true) {
+					if (rowIndex > endRow) {
+						columnIndex += 1;
+						rowIndex = startRow;
+					}
+					if (columnIndex > endColumn) return {
+						done: true,
+						value: void 0
+					};
+					const mergedCell = worksheet.getMergedCell(rowIndex, columnIndex);
+					if (mergedCell) {
+						const isNotTop = rowIndex !== mergedCell.startRow;
+						const isNotTopLeft = isNotTop || columnIndex !== mergedCell.startColumn;
+						if (skipNonTopLeft && isNotTopLeft || !skipNonTopLeft && isNotTop) {
+							rowIndex = mergedCell.endRow + 1;
+							continue;
+						}
+						const cellValue = worksheet.getCell(mergedCell.startRow, mergedCell.startColumn);
+						if (!cellValue && skipEmpty) {
+							rowIndex = mergedCell.endRow + 1;
+							continue;
+						}
+						const value = {
+							row: rowIndex,
+							col: mergedCell.startColumn,
+							value: cellValue
+						};
+						value.colSpan = mergedCell.endColumn - mergedCell.startColumn + 1;
+						value.rowSpan = mergedCell.endRow - mergedCell.startRow + 1;
+						rowIndex = mergedCell.endRow + 1;
+						return {
+							done: false,
+							value
+						};
+					}
+					const cellValue = worksheet.getCell(rowIndex, columnIndex);
+					if (!cellValue && skipEmpty) rowIndex += 1;
+					else {
+						const value = {
+							row: rowIndex,
+							col: columnIndex,
+							value: cellValue
+						};
+						rowIndex += 1;
+						return {
+							done: false,
+							value
+						};
+					}
+				}
+			} };
+		} };
+	}
+	/**
+	* This method generates a document model based on the cell's properties and handles the associated styles and configurations.
+	* If the cell does not exist, it will return null.
+	* PS: This method has significant impact on performance.
+	* @param cell
+	* @param options
+	*/
+	getCellDocumentModel(cell, style, options = DEFAULT_CELL_DOCUMENT_MODEL_OPTION) {
+		var _style$bg;
+		if (!cell) return;
+		const { isDeepClone, displayRawFormula, ignoreTextRotation } = {
+			...DEFAULT_CELL_DOCUMENT_MODEL_OPTION,
+			...options
+		};
+		let documentModel;
+		let fontString = "document";
+		const cellOtherConfig = extractOtherStyle(style);
+		const textRotation = ignoreTextRotation ? DEFAULT_STYLES.tr : cellOtherConfig.textRotation || DEFAULT_STYLES.tr;
+		let horizontalAlign = cellOtherConfig.horizontalAlign || DEFAULT_STYLES.ht;
+		const verticalAlign = cellOtherConfig.verticalAlign || DEFAULT_STYLES.vt;
+		const wrapStrategy = cellOtherConfig.wrapStrategy || DEFAULT_STYLES.tb;
+		const paddingData = cellOtherConfig.paddingData || DEFAULT_PADDING_DATA;
+		if (cell.f && displayRawFormula) {
+			documentModel = createDocumentModelWithStyle(cell.f.toString(), {}, { verticalAlign });
+			horizontalAlign = DEFAULT_STYLES.ht;
+		} else if (cell.p) {
+			const { centerAngle, vertexAngle } = convertTextRotation(textRotation);
+			documentModel = this._updateConfigAndGetDocumentModel(isDeepClone ? Tools.deepClone(cell.p) : cell.p, horizontalAlign, paddingData, {
+				horizontalAlign,
+				verticalAlign,
+				centerAngle,
+				vertexAngle,
+				wrapStrategy,
+				zeroWidthParagraphBreak: 1
+			});
+		} else if (cell.v != null) {
+			const textStyle = getFontFormat(style);
+			fontString = getFontStyleString(textStyle).fontCache;
+			let cellText = extractPureTextFromCell(cell);
+			if (cell.t === 4 && displayRawFormula) cellText = `'${cellText}`;
+			documentModel = createDocumentModelWithStyle(cellText, textStyle, {
+				...cellOtherConfig,
+				textRotation,
+				cellValueType: cell.t
+			});
+		}
+		if (documentModel && cell.linkUrl && cell.linkId) addLinkToDocumentModel(documentModel, cell.linkUrl, cell.linkId);
+		/**
+		* the alignment mode is returned with respect to the offset of the sheet cell,
+		* because the document needs to render the layout for cells and
+		* support alignment across multiple cells (e.g., horizontal alignment of long text in overflow mode).
+		* The alignment mode of the document itself cannot meet this requirement,
+		* so an additional renderConfig needs to be added during the rendering of the document component.
+		* This means that there are two coexisting alignment modes.
+		* In certain cases, such as in an editor, conflicts may arise,
+		* requiring only one alignment mode to be retained.
+		* By removing the relevant configurations in renderConfig,
+		* the alignment mode of the sheet cell can be modified.
+		* The alternative alignment mode is applied to paragraphs within the document.
+		*/
+		return {
+			documentModel,
+			fontString,
+			textRotation,
+			wrapStrategy,
+			verticalAlign,
+			horizontalAlign,
+			paddingData,
+			fill: style === null || style === void 0 || (_style$bg = style.bg) === null || _style$bg === void 0 ? void 0 : _style$bg.rgb
+		};
+	}
+	_updateConfigAndGetDocumentModel(documentData, horizontalAlign, paddingData, renderConfig) {
+		var _documentData$body;
+		if (!renderConfig) return;
+		if (!((_documentData$body = documentData.body) === null || _documentData$body === void 0 ? void 0 : _documentData$body.dataStream)) return;
+		if (!documentData.documentStyle) documentData.documentStyle = {};
+		documentData.documentStyle.marginTop = paddingData.t ?? 0;
+		documentData.documentStyle.marginBottom = paddingData.b ?? 2;
+		documentData.documentStyle.marginLeft = paddingData.l ?? 2;
+		documentData.documentStyle.marginRight = paddingData.r ?? 2;
+		documentData.documentStyle.pageSize = {
+			width: Number.POSITIVE_INFINITY,
+			height: Number.POSITIVE_INFINITY
+		};
+		documentData.documentStyle.documentFlavor = 0;
+		documentData.documentStyle.paragraphLineGapDefault = 0;
+		documentData.documentStyle.renderConfig = {
+			...documentData.documentStyle.renderConfig,
+			...renderConfig
+		};
+		const paragraphs = documentData.body.paragraphs || [];
+		for (const paragraph of paragraphs) {
+			if (!paragraph.paragraphStyle) paragraph.paragraphStyle = {};
+			paragraph.paragraphStyle.horizontalAlign = horizontalAlign;
+		}
+		return new DocumentDataModel(documentData);
+	}
+	/**
+	* Only used for cell edit, and no need to rotate text when edit cell content!
+	*/
+	getBlankCellDocumentModel(cell, row, column) {
+		const style = this.getComposedCellStyleByCellData(row, column, cell);
+		const textStyle = getFontFormat(style);
+		const documentModelObject = this.getCellDocumentModel(cell, style, { ignoreTextRotation: true });
+		if (documentModelObject != null) {
+			if (documentModelObject.documentModel == null) documentModelObject.documentModel = createDocumentModelWithStyle("", textStyle);
+			return documentModelObject;
+		}
+		const content = "";
+		let fontString = "document";
+		const textRotation = DEFAULT_STYLES.tr;
+		const horizontalAlign = DEFAULT_STYLES.ht;
+		const verticalAlign = DEFAULT_STYLES.vt;
+		const wrapStrategy = DEFAULT_STYLES.tb;
+		const paddingData = DEFAULT_PADDING_DATA;
+		fontString = getFontStyleString({}).fontCache;
+		return {
+			documentModel: createDocumentModelWithStyle(content, textStyle),
+			fontString,
+			textRotation,
+			wrapStrategy,
+			verticalAlign,
+			horizontalAlign,
+			paddingData
+		};
+	}
+	getCellDocumentModelWithFormula(cell, row, column) {
+		const style = this.getComposedCellStyleByCellData(row, column, cell);
+		return this.getCellDocumentModel(cell, style, {
+			isDeepClone: true,
+			displayRawFormula: true,
+			ignoreTextRotation: true
+		});
+	}
+	/**
+	* Get custom metadata of worksheet
+	* @returns {CustomData | undefined} custom metadata
+	*/
+	getCustomMetadata() {
+		return this._snapshot.custom;
+	}
+	/**
+	* Set custom metadata of workbook
+	* @param {CustomData | undefined} custom custom metadata
+	*/
+	setCustomMetadata(custom) {
+		this._snapshot.custom = custom;
+	}
+};
+/**
+* Get pure text in a cell.
+* @param cell
+* @returns pure text in this cell
+*/
+function extractPureTextFromCell(cell) {
+	var _cell$p;
+	if (!cell) return "";
+	const richTextValue = (_cell$p = cell.p) === null || _cell$p === void 0 || (_cell$p = _cell$p.body) === null || _cell$p === void 0 ? void 0 : _cell$p.dataStream;
+	if (richTextValue) return BuildTextUtils.transform.getPlainText(richTextValue);
+	const rawValue = cell.v;
+	if (typeof rawValue === "string") {
+		if (cell.t === 3) return rawValue.toUpperCase();
+		return rawValue.replace(/[\r\n]/g, "");
+	}
+	if (typeof rawValue === "number") {
+		if (cell.t === 3) return rawValue ? "TRUE" : "FALSE";
+		return rawValue.toString();
+	}
+	if (typeof rawValue === "boolean") return rawValue ? "TRUE" : "FALSE";
+	return "";
+}
+function getDisplayValueFromCell(cell) {
+	var _cell$p2;
+	if (!cell) return "";
+	const richTextValue = (_cell$p2 = cell.p) === null || _cell$p2 === void 0 || (_cell$p2 = _cell$p2.body) === null || _cell$p2 === void 0 ? void 0 : _cell$p2.dataStream;
+	if (richTextValue) return BuildTextUtils.transform.getPlainText(richTextValue);
+	const displayValue = cell.v;
+	if (displayValue === null || displayValue === void 0) return "";
+	if (cell.t === 3) {
+		if (typeof displayValue === "string") return displayValue.toUpperCase();
+		if (typeof displayValue === "number") return displayValue ? "TRUE" : "FALSE";
+	}
+	if (typeof displayValue === "boolean") return displayValue ? "TRUE" : "FALSE";
+	return String(displayValue);
+}
+function getOriginCellValue(cell) {
+	if (cell === null) return "";
+	if (cell === null || cell === void 0 ? void 0 : cell.p) {
+		const body = cell === null || cell === void 0 ? void 0 : cell.p.body;
+		if (body == null) return "";
+		const data = body.dataStream;
+		return BuildTextUtils.transform.getPlainText(data);
+	}
+	return cell === null || cell === void 0 ? void 0 : cell.v;
+}
+
+//#endregion
+//#region src/sheets/workbook.ts
+function getWorksheetUID(workbook, worksheet) {
+	return `${workbook.getUnitId()}|${worksheet.getSheetId()}`;
+}
+let Workbook = class Workbook extends UnitModel {
+	get _activeSheet() {
+		return this._activeSheet$.getValue();
+	}
+	get name() {
+		return this._name$.getValue();
+	}
+	static isIRangeType(range) {
+		return typeof range === "string" || "startRow" in range || "row" in range;
+	}
+	constructor(workbookData = {}, _logService) {
+		super();
+		this._logService = _logService;
+		_defineProperty(this, "type", UniverInstanceType.UNIVER_SHEET);
+		_defineProperty(this, "_sheetCreated$", new Subject());
+		_defineProperty(this, "sheetCreated$", this._sheetCreated$.asObservable());
+		_defineProperty(this, "_sheetDisposed$", new Subject());
+		_defineProperty(this, "sheetDisposed$", this._sheetDisposed$.asObservable());
+		_defineProperty(this, "_activeSheet$", new BehaviorSubject(null));
+		_defineProperty(this, "activeSheet$", this._activeSheet$.asObservable());
+		_defineProperty(this, "_worksheets", void 0);
+		_defineProperty(this, "_styles", void 0);
+		_defineProperty(this, "_snapshot", void 0);
+		_defineProperty(this, "_unitId", void 0);
+		_defineProperty(this, "_count", void 0);
+		_defineProperty(this, "_name$", void 0);
+		_defineProperty(this, "name$", void 0);
+		const DEFAULT_WORKBOOK = getEmptySnapshot$2();
+		if (Tools.isEmptyObject(workbookData)) this._snapshot = DEFAULT_WORKBOOK;
+		else {
+			this._snapshot = Tools.commonExtend(DEFAULT_WORKBOOK, workbookData);
+			if (workbookData.dateSystem == null) delete this._snapshot.dateSystem;
+			else if (workbookData.dateSystem !== "date1900" && workbookData.dateSystem !== "date1904") {
+				this._logService.warn("[Workbook]", `Unknown date system "${String(workbookData.dateSystem)}"; falling back to Excel 1900.`);
+				this._snapshot.dateSystem = "date1900";
+			}
+		}
+		const { styles } = this._snapshot;
+		if (this._snapshot.id == null || this._snapshot.id.length === 0) this._snapshot.id = generateRandomId(6);
+		this._unitId = this._snapshot.id;
+		this._styles = new Styles(styles);
+		this._count = 1;
+		this._worksheets = /* @__PURE__ */ new Map();
+		this._name$ = new BehaviorSubject(workbookData.name || "");
+		this.name$ = this._name$.asObservable();
+		this._parseWorksheetSnapshots();
+	}
+	dispose() {
+		super.dispose();
+		this._sheetCreated$.complete();
+		this._sheetDisposed$.complete();
+		this._activeSheet$.complete();
+		this._name$.complete();
+		Array.from(this._worksheets.keys()).forEach((id) => {
+			this._removeSheet(id);
+		});
+	}
+	/**
+	* Create a clone of the current snapshot.
+	* Call resourceLoaderService.saveWorkbook to save the data associated with the current plugin if needed.
+	* @memberof Workbook
+	*/
+	save() {
+		return Tools.deepClone(this._snapshot);
+	}
+	/**
+	* Get current snapshot reference.
+	* Call resourceLoaderService.saveWorkbook to save the data associated with the current plugin if needed.
+	* @return {*}  {IWorkbookData}
+	* @memberof Workbook
+	*/
+	getSnapshot() {
+		return this._snapshot;
+	}
+	setName(name) {
+		this._name$.next(name);
+		this._snapshot.name = name;
+	}
+	getUnitId() {
+		return this._unitId;
+	}
+	getDateSystem() {
+		return this._snapshot.dateSystem === "date1904" ? "date1904" : "date1900";
+	}
+	getRev() {
+		return this._snapshot.rev ?? 1;
+	}
+	incrementRev() {
+		this._snapshot.rev = this.getRev() + 1;
+	}
+	setRev(rev) {
+		this._snapshot.rev = rev;
+	}
+	/**
+	* Add a Worksheet into Workbook.
+	*/
+	addWorksheet(id, index, worksheetSnapshot) {
+		const { sheets, sheetOrder } = this._snapshot;
+		if (sheets[id]) return false;
+		sheets[id] = worksheetSnapshot;
+		sheetOrder.splice(index, 0, id);
+		this.ensureSheetOrderUnique();
+		const worksheet = new Worksheet(this._unitId, worksheetSnapshot, this._styles);
+		this._worksheets.set(id, worksheet);
+		this._sheetCreated$.next(worksheet);
+		return true;
+	}
+	getSheetOrders() {
+		return this._snapshot.sheetOrder;
+	}
+	ensureSheetOrderUnique() {
+		const seen = /* @__PURE__ */ new Set();
+		const result = [];
+		for (const item of this._snapshot.sheetOrder) if (!seen.has(item)) {
+			seen.add(item);
+			result.push(item);
+		}
+		this._snapshot.sheetOrder = result;
+		seen.clear();
+	}
+	getWorksheets() {
+		return this._worksheets;
+	}
+	getActiveSpreadsheet() {
+		return this;
+	}
+	getStyles() {
+		return this._styles;
+	}
+	addStyles(styles) {
+		Object.entries(styles).forEach(([id, data]) => {
+			this._styles.addCustomStyle(id, data);
+		});
+	}
+	removeStyles(ids) {
+		ids.forEach((id) => {
+			this._styles.remove(id);
+		});
+	}
+	getConfig() {
+		return this._snapshot;
+	}
+	getIndexBySheetId(sheetId) {
+		const { sheetOrder } = this._snapshot;
+		return sheetOrder.findIndex((id) => id === sheetId);
+	}
+	getActiveSheet(allowNull) {
+		if (!this._activeSheet && typeof allowNull === "undefined") throw new Error(`[Workbook]: no active Worksheet on Workbook ${this._unitId}!`);
+		return this._activeSheet;
+	}
+	/**
+	* If there is no active sheet, the first sheet would
+	* be set active.
+	* @returns
+	*/
+	ensureActiveSheet() {
+		const currentActive = this._activeSheet;
+		if (currentActive) return currentActive;
+		/**
+		* If the first sheet is hidden, we should set the first unhidden sheet to be active.
+		*/
+		const sheetOrder = this._snapshot.sheetOrder;
+		for (let i = 0, len = sheetOrder.length; i < len; i++) {
+			const worksheet = this._worksheets.get(sheetOrder[i]);
+			if (worksheet && worksheet.isSheetHidden() !== 1) {
+				this.setActiveSheet(worksheet);
+				return worksheet;
+			}
+		}
+		const worksheet = this._worksheets.get(sheetOrder[0]);
+		this.setActiveSheet(worksheet);
+		return worksheet;
+	}
+	/**
+	* ActiveSheet should not be null!
+	* There is at least one sheet in a workbook. You can not delete all sheets in a workbook.
+	* @param worksheet
+	*/
+	setActiveSheet(worksheet) {
+		this._activeSheet$.next(worksheet);
+	}
+	_removeSheet(sheetId) {
+		const sheetToRemove = this._worksheets.get(sheetId);
+		if (!sheetToRemove) return false;
+		this._worksheets.delete(sheetId);
+		this._snapshot.sheetOrder.splice(this._snapshot.sheetOrder.indexOf(sheetId), 1);
+		this.ensureSheetOrderUnique();
+		this._sheetDisposed$.next(sheetToRemove);
+		return true;
+	}
+	removeSheet(sheetId) {
+		const success = this._removeSheet(sheetId);
+		if (success) delete this._snapshot.sheets[sheetId];
+		return success;
+	}
+	getActiveSheetIndex() {
+		const { sheetOrder } = this._snapshot;
+		return sheetOrder.findIndex((sheetId) => {
+			return this._worksheets.get(sheetId) === this._activeSheet;
+		});
+	}
+	getSheetSize() {
+		return this._snapshot.sheetOrder.length;
+	}
+	getSheets() {
+		const { sheetOrder } = this._snapshot;
+		return sheetOrder.map((sheetId) => this._worksheets.get(sheetId));
+	}
+	getSheetsName() {
+		const { sheetOrder } = this._snapshot;
+		const names = [];
+		sheetOrder.forEach((sheetId) => {
+			const worksheet = this._worksheets.get(sheetId);
+			if (worksheet) names.push(worksheet.getName());
+		});
+		return names;
+	}
+	getSheetIndex(sheet) {
+		const { sheetOrder } = this._snapshot;
+		return sheetOrder.findIndex((sheetId) => {
+			if (sheet.getSheetId() === sheetId) return true;
+			return false;
+		});
+	}
+	getSheetBySheetName(name) {
+		const { sheetOrder } = this._snapshot;
+		const sheetId = sheetOrder.find((sheetId) => {
+			return this._worksheets.get(sheetId).getName() === name;
+		});
+		return this._worksheets.get(sheetId);
+	}
+	getSheetBySheetId(sheetId) {
+		return this._worksheets.get(sheetId);
+	}
+	getSheetByIndex(index) {
+		const { sheetOrder } = this._snapshot;
+		return this._worksheets.get(sheetOrder[index]);
+	}
+	getHiddenWorksheets() {
+		return this.getSheets().filter((s) => s.getConfig().hidden === 1).map((s) => s.getConfig().id);
+	}
+	getUnhiddenWorksheets() {
+		return this.getSheets().filter((s) => s.getConfig().hidden !== 1).map((s) => s.getConfig().id);
+	}
+	load(config) {
+		this._snapshot = config;
+	}
+	/**
+	* Check if sheet name is unique, ignore case sensitivity
+	* @param name sheet name
+	* @returns True if sheet name is unique
+	*/
+	checkSheetName(name) {
+		return this.getSheetsName().some((sheetName) => sheetName.toLowerCase() === name.toLowerCase());
+	}
+	/**
+	*  Check whether the sheet name is unique and generate a new unique sheet name
+	* @param name sheet name
+	* @returns Unique sheet name
+	*/
+	uniqueSheetName(name = "Sheet1") {
+		let output = name;
+		while (this.checkSheetName(output)) {
+			output = name + this._count;
+			this._count++;
+		}
+		return output;
+	}
+	/**
+	* Automatically generate new sheet name
+	* @param name sheet name
+	* @returns New sheet name
+	*/
+	generateNewSheetName(name) {
+		let output = name + this._count;
+		while (this.checkSheetName(output)) {
+			output = name + this._count;
+			this._count++;
+		}
+		return output;
+	}
+	/**
+	* Get Default Sheet
+	*/
+	_parseWorksheetSnapshots() {
+		const { _snapshot, _worksheets } = this;
+		const { sheets, sheetOrder } = _snapshot;
+		if (Tools.isEmptyObject(sheets)) {
+			const firstSheetId = generateRandomId();
+			sheets[firstSheetId] = { id: firstSheetId };
+		}
+		for (const sheetId in sheets) {
+			const worksheetSnapshot = sheets[sheetId];
+			const { name } = worksheetSnapshot;
+			worksheetSnapshot.name = this.uniqueSheetName(name);
+			if (worksheetSnapshot.name !== name) this._logService.debug("[Workbook]", `The worksheet name ${name} is duplicated, we changed it to ${worksheetSnapshot.name}. Please fix the problem in your snapshot.`);
+			const worksheet = new Worksheet(this._unitId, worksheetSnapshot, this._styles);
+			_worksheets.set(sheetId, worksheet);
+			if (!sheetOrder.includes(sheetId)) sheetOrder.push(sheetId);
+		}
+		this.ensureSheetOrderUnique();
+		this.ensureActiveSheet();
+	}
+	/**
+	* Get custom metadata of workbook
+	* @returns {CustomData | undefined} custom metadata
+	*/
+	getCustomMetadata() {
+		return this._snapshot.custom;
+	}
+	/**
+	* Set custom metadata of workbook
+	* @param {CustomData | undefined} custom custom metadata
+	*/
+	setCustomMetadata(custom) {
+		this._snapshot.custom = custom;
+	}
+};
+Workbook = __decorate([__decorateParam(1, ILogService)], Workbook);
+
+//#endregion
+//#region src/services/instance/instance.service.ts
+const IUniverInstanceService = createIdentifier("univer.current");
+let UniverInstanceService = class UniverInstanceService extends Disposable {
+	constructor(_injector, _contextService, _logService) {
+		super();
+		this._injector = _injector;
+		this._contextService = _contextService;
+		this._logService = _logService;
+		_defineProperty(this, "_unitsByType", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_unitCreateOptions", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_createHandler", void 0);
+		_defineProperty(this, "_ctorByType", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_currentUnits", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_currentUnits$", new BehaviorSubject(this._currentUnits));
+		_defineProperty(this, "currentUnits$", this._currentUnits$.asObservable());
+		_defineProperty(this, "_unitAdded$", new Subject());
+		_defineProperty(this, "unitAdded$", this._unitAdded$.asObservable());
+		_defineProperty(this, "_unitDisposed$", new Subject());
+		_defineProperty(this, "unitDisposed$", this._unitDisposed$.asObservable());
+		_defineProperty(this, "_focused$", new BehaviorSubject(null));
+		_defineProperty(this, "focused$", this._focused$.asObservable());
+	}
+	dispose() {
+		super.dispose();
+		this._focused$.complete();
+		this._currentUnits$.complete();
+		this._unitAdded$.complete();
+		this._currentUnits.forEach((unit) => unit === null || unit === void 0 ? void 0 : unit.dispose());
+		this._currentUnits.clear();
+		this._unitsByType.clear();
+		this._unitCreateOptions.clear();
+	}
+	__setCreateHandler(handler) {
+		this._createHandler = handler;
+	}
+	createUnit(type, data, options) {
+		return this._createHandler(type, data, this._ctorByType.get(type), options);
+	}
+	registerCtorForType(type, ctor) {
+		this._ctorByType.set(type, ctor);
+		return { dispose: () => {
+			this._ctorByType.delete(type);
+		} };
+	}
+	__getCtorByType(type) {
+		return this._ctorByType.get(type);
+	}
+	getCurrentTypeOfUnit$(type) {
+		return this.currentUnits$.pipe(map((units) => units.get(type) ?? null), distinctUntilChanged());
+	}
+	getCurrentUnitOfType(type) {
+		return this._currentUnits.get(type);
+	}
+	setCurrentUnitForType(unitId) {
+		const result = this._getUnitById(unitId);
+		if (!result) throw new Error(`[UniverInstanceService]: no document with unitId ${unitId}!`);
+		if (this._currentUnits.get(result[1]) === result[0]) return;
+		this._currentUnits.set(result[1], result[0]);
+		this._currentUnits$.next(this._currentUnits);
+	}
+	getTypeOfUnitAdded$(type) {
+		return this._unitAdded$.pipe(filter((event) => event.unit.type === type));
+	}
+	/**
+	* Add a unit into Univer.
+	*
+	* @ignore
+	*
+	* @param unit The unit to be added.
+	*/
+	__addUnit(unit, options) {
+		this._logService.debug(`[UniverInstanceService]: Adding unit with id ${unit.getUnitId()}`);
+		const type = unit.type;
+		if (!this._unitsByType.has(type)) this._unitsByType.set(type, []);
+		const units = this._unitsByType.get(type);
+		const newUnitId = unit.getUnitId();
+		if (units.findIndex((u) => u.getUnitId() === newUnitId) !== -1) throw new Error(`[UniverInstanceService]: cannot create a unit with the same unit id: ${newUnitId}.`);
+		units.push(unit);
+		if (options) this._unitCreateOptions.set(newUnitId, { ...options });
+		this._unitAdded$.next({
+			unit,
+			options
+		});
+		if ((options === null || options === void 0 ? void 0 : options.makeCurrent) ?? true) this.setCurrentUnitForType(unit.getUnitId());
+	}
+	getTypeOfUnitDisposed$(type) {
+		return this.unitDisposed$.pipe(filter((unit) => unit.type === type));
+	}
+	getUnit(id, type) {
+		var _this$_getUnitById;
+		const unit = (_this$_getUnitById = this._getUnitById(id)) === null || _this$_getUnitById === void 0 ? void 0 : _this$_getUnitById[0];
+		if (type && (unit === null || unit === void 0 ? void 0 : unit.type) !== type) return null;
+		return unit;
+	}
+	getUnitCreateOptions(unitId) {
+		return this._unitCreateOptions.get(unitId) ?? null;
+	}
+	getAllUnitsForType(type) {
+		return this._unitsByType.get(type) ?? [];
+	}
+	get focused() {
+		var _this$_getUnitById2;
+		const id = this._focused$.getValue();
+		if (!id) return null;
+		return (_this$_getUnitById2 = this._getUnitById(id)) === null || _this$_getUnitById2 === void 0 ? void 0 : _this$_getUnitById2[0];
+	}
+	focusUnit(id) {
+		var _this$focused, _this$focused2;
+		if (this._focused$.getValue() === id) return;
+		this._focused$.next(id);
+		if (this.focused instanceof Workbook) {
+			this._contextService.setContextValue(FOCUSING_UNIT, true);
+			this._contextService.setContextValue(FOCUSING_DOC, false);
+			this._contextService.setContextValue(FOCUSING_SHEET, true);
+			this._contextService.setContextValue(FOCUSING_SLIDE, false);
+			this._contextService.setContextValue(FOCUSING_BOARD, false);
+			this.setCurrentUnitForType(id);
+		} else if (this.focused instanceof DocumentDataModel) {
+			this._contextService.setContextValue(FOCUSING_UNIT, true);
+			this._contextService.setContextValue(FOCUSING_DOC, true);
+			this._contextService.setContextValue(FOCUSING_SHEET, false);
+			this._contextService.setContextValue(FOCUSING_SLIDE, false);
+			this._contextService.setContextValue(FOCUSING_BOARD, false);
+			this.setCurrentUnitForType(id);
+		} else if (((_this$focused = this.focused) === null || _this$focused === void 0 ? void 0 : _this$focused.type) === UniverInstanceType.UNIVER_SLIDE) {
+			this._contextService.setContextValue(FOCUSING_UNIT, true);
+			this._contextService.setContextValue(FOCUSING_DOC, false);
+			this._contextService.setContextValue(FOCUSING_SHEET, false);
+			this._contextService.setContextValue(FOCUSING_SLIDE, true);
+			this._contextService.setContextValue(FOCUSING_BOARD, false);
+			this.setCurrentUnitForType(id);
+		} else if (((_this$focused2 = this.focused) === null || _this$focused2 === void 0 ? void 0 : _this$focused2.type) === UniverInstanceType.UNIVER_BOARD) {
+			this._contextService.setContextValue(FOCUSING_UNIT, true);
+			this._contextService.setContextValue(FOCUSING_DOC, false);
+			this._contextService.setContextValue(FOCUSING_SHEET, false);
+			this._contextService.setContextValue(FOCUSING_SLIDE, false);
+			this._contextService.setContextValue(FOCUSING_BOARD, true);
+			this.setCurrentUnitForType(id);
+		} else {
+			this._contextService.setContextValue(FOCUSING_UNIT, false);
+			this._contextService.setContextValue(FOCUSING_DOC, false);
+			this._contextService.setContextValue(FOCUSING_SHEET, false);
+			this._contextService.setContextValue(FOCUSING_SLIDE, false);
+			this._contextService.setContextValue(FOCUSING_BOARD, false);
+		}
+	}
+	getFocusedUnit() {
+		return this.focused;
+	}
+	getUnitType(unitId) {
+		const result = this._getUnitById(unitId);
+		if (!result) return UniverInstanceType.UNRECOGNIZED;
+		return result[1];
+	}
+	disposeUnit(unitId) {
+		this._logService.debug(`[UniverInstanceService]: Disposing unit with id ${unitId}`);
+		const result = this._getUnitById(unitId);
+		if (!result) {
+			this._logService.debug(`[UniverInstanceService]: No unit found with id ${unitId}`);
+			return false;
+		}
+		const [unit, type] = result;
+		const units = this._unitsByType.get(type);
+		const index = units.indexOf(unit);
+		units.splice(index, 1);
+		this._tryResetCurrentOnRemoval(unitId, type);
+		this._tryResetFocusOnRemoval(unitId);
+		this._unitDisposed$.next(unit);
+		this._unitCreateOptions.delete(unitId);
+		unit.dispose();
+		return true;
+	}
+	_tryResetCurrentOnRemoval(unitId, type) {
+		const current = this.getCurrentUnitOfType(type);
+		if ((current === null || current === void 0 ? void 0 : current.getUnitId()) === unitId) {
+			this._currentUnits.set(type, null);
+			this._currentUnits$.next(this._currentUnits);
+		}
+	}
+	_tryResetFocusOnRemoval(unitId) {
+		var _this$focused3;
+		if (((_this$focused3 = this.focused) === null || _this$focused3 === void 0 ? void 0 : _this$focused3.getUnitId()) === unitId) this._focused$.next(null);
+	}
+	_getUnitById(unitId) {
+		for (const [type, units] of this._unitsByType) {
+			const unit = units.find((unit) => unit.getUnitId() === unitId);
+			if (unit) return [unit, type];
+		}
+	}
+};
+UniverInstanceService = __decorate([
+	__decorateParam(0, Inject(Injector)),
+	__decorateParam(1, IContextService),
+	__decorateParam(2, Inject(ILogService))
+], UniverInstanceService);
+
+//#endregion
+//#region src/services/lifecycle/lifecycle.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* This enum defines multiple lifecycle stages in Univer SDK.
+*/
+let LifecycleStages = /* @__PURE__ */ function(LifecycleStages) {
+	/**
+	* Register plugins to Univer.
+	*/
+	LifecycleStages[LifecycleStages["Starting"] = 0] = "Starting";
+	/**
+	* Univer business instances (UniverDoc / UniverSheet / UniverSlide) are created and services or controllers provided by
+	* plugins get initialized. The application is ready to do the first-time rendering.
+	*/
+	LifecycleStages[LifecycleStages["Ready"] = 1] = "Ready";
+	/**
+	* First-time rendering is completed.
+	*/
+	LifecycleStages[LifecycleStages["Rendered"] = 2] = "Rendered";
+	/**
+	* All lazy tasks are completed. The application is fully ready to provide features to users.
+	*/
+	LifecycleStages[LifecycleStages["Steady"] = 3] = "Steady";
+	return LifecycleStages;
+}({});
+const LifecycleNameMap = {
+	[0]: "Starting",
+	[1]: "Ready",
+	[2]: "Rendered",
+	[3]: "Steady"
+};
+
+//#endregion
+//#region src/services/lifecycle/lifecycle.service.ts
+/**
+* An error that indicates a lifecycle stage will never be reached, mostly due to the Univer instance is
+* disposed.
+*/
+var LifecycleUnreachableError = class extends Error {
+	constructor(stage) {
+		super(`[LifecycleService]: lifecycle stage "${LifecycleNameMap[stage]}" will never be reached!`);
+		this.name = "LifecycleUnreachableError";
+	}
+};
+let LifecycleService = class LifecycleService extends Disposable {
+	constructor(_logService) {
+		super();
+		this._logService = _logService;
+		_defineProperty(this, "_lifecycle$", new BehaviorSubject(0));
+		_defineProperty(this, "lifecycle$", this._lifecycle$.asObservable());
+		_defineProperty(this, "_lock", false);
+		this._reportProgress(0);
+	}
+	get stage() {
+		return this._lifecycle$.getValue();
+	}
+	set stage(stage) {
+		if (this._lock) throw new Error("[LifecycleService]: cannot set new stage when related logic is all handled!");
+		if (stage < this.stage) throw new Error("[LifecycleService]: lifecycle stage cannot go backward!");
+		if (stage === this.stage) return;
+		this._lock = true;
+		this._reportProgress(stage);
+		this._lifecycle$.next(stage);
+		this._lock = false;
+	}
+	dispose() {
+		this._lifecycle$.complete();
+		super.dispose();
+	}
+	/**
+	* Wait for a specific lifecycle stage to be reached.
+	* @param stage The lifecycle stage to wait for.
+	* If the current stage is already at or beyond the specified stage, it will
+	* resolve immediately.
+	* If the specified stage is unreachable, it will reject with a
+	* `LifecycleUnreachableError`.
+	* @returns A promise that resolves when the specified stage is reached.
+	*/
+	onStage(stage) {
+		return firstValueFrom(this.lifecycle$.pipe(filter((s) => s >= stage), takeAfter((s) => s === stage), map(() => void 0))).catch((err) => {
+			if (err.name === "EmptyError") return Promise.reject(new LifecycleUnreachableError(stage));
+			return Promise.reject(err);
+		});
+	}
+	/**
+	* Subscribe to lifecycle changes and all previous stages and the current
+	* stage will be emitted immediately.
+	* @returns An observable that emits the lifecycle stages, including the current
+	*/
+	subscribeWithPrevious() {
+		return merge$1(getLifecycleStagesAndBefore(this.stage), this._lifecycle$.pipe(skip(1))).pipe(takeAfter((s) => s === 3));
+	}
+	_reportProgress(stage) {
+		this._logService.debug("[LifecycleService]", `lifecycle progressed to "${LifecycleNameMap[stage]}".`);
+	}
+};
+LifecycleService = __decorate([__decorateParam(0, ILogService)], LifecycleService);
+function getLifecycleStagesAndBefore(lifecycleStage) {
+	switch (lifecycleStage) {
+		case 0: return of(0);
+		case 1: return of(0, 1);
+		case 2: return of(0, 1, 2);
+		default: return of(0, 1, 2, 3);
+	}
+}
+
+//#endregion
+//#region src/services/local-storage/local-storage.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const ILocalStorageService = createIdentifier("ILocalStorageService");
+
+//#endregion
+//#region src/services/locale/locale.service.ts
+/**
+* This service provides i18n and timezone / location features to other modules.
+*/
+var LocaleService = class extends Disposable {
+	get _currentLocale() {
+		return this._currentLocale$.value;
+	}
+	constructor() {
+		super();
+		_defineProperty(this, "_currentLocale$", new BehaviorSubject("zhCN"));
+		_defineProperty(this, "currentLocale$", this._currentLocale$.asObservable());
+		_defineProperty(this, "_direction$", new BehaviorSubject("ltr"));
+		_defineProperty(this, "direction$", this._direction$.asObservable());
+		_defineProperty(this, "_locales", null);
+		_defineProperty(this, "localeChanged$", new Subject());
+		_defineProperty(
+			this,
+			/**
+			* Translate a key to the current locale
+			*
+			* @param {string} key the key to translate
+			* @param {string[]} args optional arguments to replace in the translated string
+			* @returns {string} the translated string
+			*
+			* @example
+			* const locales = {
+			*   [LocaleType.EN_US]: {
+			*     foo: {
+			*       bar: 'Hello'
+			*    }
+			* }
+			* t('foo.bar') => 'Hello'
+			*
+			* @example
+			* const locales = {
+			*   [LocaleType.EN_US]: {
+			*     foo: {
+			*       bar: 'Hello {0}'
+			*    }
+			* }
+			* t('foo.bar', 'World') => 'Hello World'
+			*/
+			"t",
+			(key, ...args) => {
+				if (!this._locales) throw new Error("[LocaleService]: Locale not initialized");
+				const keys = key.split(".");
+				const resolvedValue = this.resolveKeyPath(this._locales[this._currentLocale], keys);
+				if (typeof resolvedValue === "string") {
+					let result = resolvedValue;
+					args.forEach((arg, index) => {
+						result = result.replace(`{${index}}`, arg);
+					});
+					return result;
+				} else return key;
+			}
+		);
+		this.disposeWithMe(toDisposable(() => {
+			this._locales = null;
+			this._currentLocale$.complete();
+			this._direction$.complete();
+			this.localeChanged$.complete();
+		}));
+	}
+	/**
+	* Load more locales after init.
+	*
+	* @param locales - Locale object
+	*/
+	load(locales) {
+		this._locales = merge(this._locales ?? {}, locales);
+	}
+	setLocale(locale) {
+		this._currentLocale$.next(locale);
+		this.localeChanged$.next();
+	}
+	getLocales() {
+		var _this$_locales;
+		return (_this$_locales = this._locales) === null || _this$_locales === void 0 ? void 0 : _this$_locales[this._currentLocale];
+	}
+	getCurrentLocale() {
+		return this._currentLocale;
+	}
+	setDirection(direction) {
+		this._direction$.next(direction);
+	}
+	getDirection() {
+		return this._direction$.value;
+	}
+	resolveKeyPath(obj, keys) {
+		const currentKey = keys.shift();
+		if (currentKey && obj && currentKey in obj) {
+			const nextObj = obj[currentKey];
+			if (keys.length > 0 && (typeof nextObj === "object" || Array.isArray(nextObj))) return this.resolveKeyPath(nextObj, keys);
+			else return nextObj;
+		}
+		return null;
+	}
+};
+
+//#endregion
+//#region src/services/mention-io/mention-io-local.service.ts
+let MentionIOLocalService = class MentionIOLocalService {
+	constructor(_userManagerService) {
+		this._userManagerService = _userManagerService;
+	}
+	async list(params) {
+		return {
+			list: [{
+				type: 0,
+				mentions: [{
+					objectType: 0,
+					objectId: this._userManagerService.getCurrentUser().userID,
+					label: this._userManagerService.getCurrentUser().name,
+					metadata: { icon: this._userManagerService.getCurrentUser().avatar }
+				}],
+				metadata: {},
+				title: "PEOPLE"
+			}],
+			page: params.page,
+			size: params.size,
+			total: 1
+		};
+	}
+};
+MentionIOLocalService = __decorate([__decorateParam(0, Inject(UserManagerService))], MentionIOLocalService);
+
+//#endregion
+//#region src/services/mention-io/type.ts
+const IMentionIOService = createIdentifier("univer.service.mention-io");
+
+//#endregion
+//#region src/services/permission/object-permission-rule.model.ts
+/** Shared storage only; each product owns its rule type, resource name and mutation. */
+var ObjectPermissionRuleModel = class extends Disposable {
+	constructor(resources, name, business, _objectTypes) {
+		super();
+		this._objectTypes = _objectTypes;
+		_defineProperty(this, "_rules", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_changes", new Subject());
+		_defineProperty(this, "changed$", this._changes.asObservable());
+		this.disposeWithMe(resources.registerPluginResource({
+			pluginName: name,
+			businesses: [business],
+			toJson: (unitId) => JSON.stringify(this.getRules(unitId)),
+			parseJson: (json) => {
+				const rules = JSON.parse(json);
+				if (!Array.isArray(rules) || rules.some((rule) => !rule || typeof rule.objectId !== "string" || typeof rule.permissionId !== "string" || !rule.permissionId || !this._objectTypes.includes(rule.objectType))) throw new Error("Invalid object permission resource.");
+				return rules;
+			},
+			onLoad: (unitId, rules) => {
+				this._rules.set(unitId, new Map(rules.map((rule) => [this._key(rule.objectType, rule.objectId), Tools.deepClone(rule)])));
+				this._changes.next(unitId);
+			},
+			onUnLoad: (unitId) => {
+				this._rules.delete(unitId);
+				this._changes.next(unitId);
+			}
+		}));
+		this.disposeWithMe(() => {
+			this._rules.clear();
+			this._changes.complete();
+		});
+	}
+	getRules(unitId) {
+		var _this$_rules$get;
+		return [...((_this$_rules$get = this._rules.get(unitId)) === null || _this$_rules$get === void 0 ? void 0 : _this$_rules$get.values()) ?? []].map((rule) => Tools.deepClone(rule));
+	}
+	getRule(unitId, objectType, objectId) {
+		var _this$_rules$get2;
+		const rule = (_this$_rules$get2 = this._rules.get(unitId)) === null || _this$_rules$get2 === void 0 ? void 0 : _this$_rules$get2.get(this._key(objectType, objectId));
+		return rule && Tools.deepClone(rule);
+	}
+	setRule(unitId, objectType, objectId, rule) {
+		if (!unitId || !objectId || !this._objectTypes.includes(objectType) || rule !== null && (!rule || rule.objectId !== objectId || rule.objectType !== objectType || typeof rule.permissionId !== "string" || !rule.permissionId)) return false;
+		let rules = this._rules.get(unitId);
+		if (!rules) {
+			rules = /* @__PURE__ */ new Map();
+			this._rules.set(unitId, rules);
+		}
+		if (rule) rules.set(this._key(objectType, objectId), Tools.deepClone(rule));
+		else rules.delete(this._key(objectType, objectId));
+		this._changes.next(unitId);
+		return true;
+	}
+	_key(objectType, objectId) {
+		return `${objectType}/${objectId}`;
+	}
+};
+
+//#endregion
+//#region src/services/undoredo/undoredo.service.ts
+const IUndoRedoService = createIdentifier("univer.undo-redo.service");
+const DEFAULT_UNDO_REDO_HISTORY_LIMIT = 50;
+const UNDO_REDO_HISTORY_LIMIT_CONFIG_KEY = "undoRedo.historyLimit";
+var MultiImplementationCommand = class {
+	dispose() {}
+	async dispatchToHandlers() {
+		return false;
+	}
+};
+const RedoCommandId = "univer.command.redo";
+const UndoCommandId = "univer.command.undo";
+const UndoCommand = new class extends MultiImplementationCommand {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "type", 0);
+		_defineProperty(this, "id", UndoCommandId);
+	}
+	handler(accessor) {
+		const undoRedoService = accessor.get(IUndoRedoService);
+		const element = undoRedoService.pitchTopUndoElement();
+		if (!element) return false;
+		const commandService = accessor.get(ICommandService);
+		if (sequenceExecute(element.undoMutations, commandService).result) {
+			undoRedoService.popUndoToRedo();
+			return true;
+		}
+		return false;
+	}
+}();
+const RedoCommand = new class extends MultiImplementationCommand {
+	constructor(..._args2) {
+		super(..._args2);
+		_defineProperty(this, "type", 0);
+		_defineProperty(this, "id", RedoCommandId);
+	}
+	handler(accessor) {
+		const undoRedoService = accessor.get(IUndoRedoService);
+		const element = undoRedoService.pitchTopRedoElement();
+		if (!element) return false;
+		const commandService = accessor.get(ICommandService);
+		if (sequenceExecute(element.redoMutations, commandService).result) {
+			undoRedoService.popRedoToUndo();
+			return true;
+		}
+		return false;
+	}
+}();
+let LocalUndoRedoService = class LocalUndoRedoService extends Disposable {
+	constructor(_univerInstanceService, _commandService, _contextService, configService) {
+		super();
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		this._contextService = _contextService;
+		_defineProperty(this, "undoRedoStatus$", void 0);
+		_defineProperty(this, "_undoRedoStatus$", new BehaviorSubject({
+			undos: 0,
+			redos: 0
+		}));
+		_defineProperty(this, "_undoStacks", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_redoStacks", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_batchingStatus", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_activeGroups", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_itemGroups", /* @__PURE__ */ new WeakMap());
+		_defineProperty(this, "_historyLimit", void 0);
+		this._historyLimit = configService.getConfig("undoRedo.historyLimit") ?? 50;
+		this.undoRedoStatus$ = this._undoRedoStatus$.asObservable();
+		this.disposeWithMe(this._commandService.registerCommand(UndoCommand));
+		this.disposeWithMe(this._commandService.registerCommand(RedoCommand));
+		this.disposeWithMe(toDisposable(() => this._undoRedoStatus$.complete()));
+		this.disposeWithMe(toDisposable(this._univerInstanceService.focused$.subscribe(() => this._updateStatus())));
+	}
+	pushUndoRedo(item) {
+		const { unitID } = item;
+		const redoStack = this._getRedoStack(unitID, true);
+		const undoStack = this._getUndoStack(unitID, true);
+		const historyLimit = this._historyLimit;
+		redoStack.length = 0;
+		const activeGroup = this._activeGroups.get(unitID);
+		const lastItem = this._pitchUndoElement(unitID);
+		if (activeGroup) if (lastItem && this._itemGroups.get(lastItem) === activeGroup.id) if (activeGroup.mode === "replace") lastItem.redoMutations = item.redoMutations;
+		else {
+			lastItem.redoMutations.push(...item.redoMutations);
+			lastItem.undoMutations.unshift(...item.undoMutations);
+		}
+		else {
+			appendNewItem(item);
+			this._itemGroups.set(item, activeGroup.id);
+		}
+		else if (this._batchingStatus.has(item.unitID)) if (this._batchingStatus.get(item.unitID) === 0 || !lastItem) {
+			appendNewItem(item);
+			this._batchingStatus.set(item.unitID, 1);
+		} else this._tryBatchingElements(lastItem, item);
+		else appendNewItem(item);
+		function appendNewItem(item) {
+			undoStack.push(item);
+			if (undoStack.length > historyLimit) undoStack.splice(0, 1);
+		}
+		this._updateStatus();
+	}
+	beginUndoRedoGroup(unitId, groupId, mode = "replace") {
+		if (this._activeGroups.has(unitId) || this._batchingStatus.has(unitId)) throw new Error("[LocalUndoRedoService]: cannot group undo redo twice at the same time!");
+		const group = {
+			id: groupId,
+			mode
+		};
+		this._activeGroups.set(unitId, group);
+		return toDisposable(() => {
+			if (this._activeGroups.get(unitId) === group) this._activeGroups.delete(unitId);
+		});
+	}
+	clearUndoRedo(unitID) {
+		const redoStack = this._getRedoStack(unitID);
+		if (redoStack) redoStack.length = 0;
+		const undoStack = this._getUndoStack(unitID);
+		if (undoStack) undoStack.length = 0;
+		this._updateStatus();
+	}
+	pitchTopUndoElement() {
+		const unitID = this._getFocusedUnitId();
+		return this._pitchUndoElement(unitID);
+	}
+	pitchTopRedoElement() {
+		const unitID = this._getFocusedUnitId();
+		return this._pitchRedoElement(unitID);
+	}
+	_pitchUndoElement(unitId) {
+		const stack = this._getUndoStack(unitId);
+		return (stack === null || stack === void 0 ? void 0 : stack.length) ? stack[stack.length - 1] : null;
+	}
+	_pitchRedoElement(unitId) {
+		const stack = this._getRedoStack(unitId);
+		return (stack === null || stack === void 0 ? void 0 : stack.length) ? stack[stack.length - 1] : null;
+	}
+	popUndoToRedo() {
+		const element = this._getUndoStackForFocused().pop();
+		if (element) {
+			this._itemGroups.delete(element);
+			if (element.redoMutations.length > 0) this._getRedoStackForFocused().push(element);
+			this._updateStatus();
+		}
+	}
+	popRedoToUndo() {
+		const element = this._getRedoStackForFocused().pop();
+		if (element) {
+			this._itemGroups.delete(element);
+			this._getUndoStackForFocused().push(element);
+			this._updateStatus();
+		}
+	}
+	rollback(id, unitID) {
+		const unitId = unitID || this._getFocusedUnitId();
+		const stack = this._getUndoStack(unitId);
+		const item = stack === null || stack === void 0 ? void 0 : stack[(stack === null || stack === void 0 ? void 0 : stack.length) - 1];
+		if (item && item.id === id) {
+			stack.pop();
+			this._itemGroups.delete(item);
+			sequenceExecute(item.undoMutations, this._commandService);
+		}
+	}
+	__tempBatchingUndoRedo(unitId) {
+		if (this._batchingStatus.has(unitId) || this._activeGroups.has(unitId)) throw new Error("[LocalUndoRedoService]: cannot batching undo redo twice at the same time!");
+		this._batchingStatus.set(unitId, 0);
+		return toDisposable(() => this._batchingStatus.delete(unitId));
+	}
+	_updateStatus() {
+		var _this$_undoStacks$get, _this$_redoStacks$get;
+		const unitID = this._getFocusedUnitId();
+		const undos = unitID && ((_this$_undoStacks$get = this._undoStacks.get(unitID)) === null || _this$_undoStacks$get === void 0 ? void 0 : _this$_undoStacks$get.length) || 0;
+		const redos = unitID && ((_this$_redoStacks$get = this._redoStacks.get(unitID)) === null || _this$_redoStacks$get === void 0 ? void 0 : _this$_redoStacks$get.length) || 0;
+		this._undoRedoStatus$.next({
+			undos,
+			redos
+		});
+	}
+	_getUndoStack(unitId, createAsNeeded = false) {
+		let stack = this._undoStacks.get(unitId);
+		if (!stack && createAsNeeded) {
+			stack = [];
+			this._undoStacks.set(unitId, stack);
+		}
+		return stack || null;
+	}
+	_getRedoStack(unitId, createAsNeeded = false) {
+		let stack = this._redoStacks.get(unitId);
+		if (!stack && createAsNeeded) {
+			stack = [];
+			this._redoStacks.set(unitId, stack);
+		}
+		return stack || null;
+	}
+	_getUndoStackForFocused() {
+		const unitID = this._getFocusedUnitId();
+		if (!unitID) throw new Error("No focused univer instance!");
+		return this._getUndoStack(unitID, true);
+	}
+	_getRedoStackForFocused() {
+		const unitID = this._getFocusedUnitId();
+		if (!unitID) throw new Error("No focused univer instance!");
+		return this._getRedoStack(unitID, true);
+	}
+	_tryBatchingElements(item, newItem) {
+		item.redoMutations.push(...newItem.redoMutations);
+		item.undoMutations.push(...newItem.undoMutations);
+	}
+	_getFocusedUnitId() {
+		let unitID = "";
+		const isFocusSheet = this._contextService.getContextValue(FOCUSING_SHEET);
+		const isFocusFormulaEditor = this._contextService.getContextValue(FOCUSING_FX_BAR_EDITOR);
+		const isFocusEditor = this._contextService.getContextValue(EDITOR_ACTIVATED);
+		if (isFocusSheet) if (isFocusFormulaEditor) unitID = DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY;
+		else if (isFocusEditor) unitID = DOCS_NORMAL_EDITOR_UNIT_ID_KEY;
+		else {
+			var _this$_univerInstance;
+			unitID = ((_this$_univerInstance = this._univerInstanceService.getFocusedUnit()) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getUnitId()) ?? "";
+		}
+		else {
+			var _this$_univerInstance2;
+			unitID = ((_this$_univerInstance2 = this._univerInstanceService.getFocusedUnit()) === null || _this$_univerInstance2 === void 0 ? void 0 : _this$_univerInstance2.getUnitId()) ?? "";
+		}
+		return unitID;
+	}
+};
+LocalUndoRedoService = __decorate([
+	__decorateParam(0, IUniverInstanceService),
+	__decorateParam(1, ICommandService),
+	__decorateParam(2, IContextService),
+	__decorateParam(3, IConfigService)
+], LocalUndoRedoService);
+
+//#endregion
+//#region src/services/permission/type.ts
+let PermissionStatus = /* @__PURE__ */ function(PermissionStatus) {
+	PermissionStatus["INIT"] = "init";
+	PermissionStatus["FETCHING"] = "fetching";
+	PermissionStatus["DONE"] = "done";
+	return PermissionStatus;
+}({});
+const IPermissionService = createIdentifier("univer.permission-service");
+
+//#endregion
+//#region src/services/permission/object-permission.service.ts
+/** Frontend opt-in; does not change the Authz service interface or existing local setters. */
+const OBJECT_PERMISSION_CONFIG_KEY = "objectPermissionTypes";
+const ROOT_OBJECT_TYPES = {
+	[UnitObject.Document]: UnitObject.Document,
+	[UnitObject.DocumentSection]: UnitObject.Document,
+	[UnitObject.DocumentParagraph]: UnitObject.Document,
+	[UnitObject.DocumentEntity]: UnitObject.Document,
+	[UnitObject.Slide]: UnitObject.Slide,
+	[UnitObject.SlidePage]: UnitObject.Slide,
+	[UnitObject.SlideElement]: UnitObject.Slide,
+	[UnitObject.SlideMaster]: UnitObject.Slide,
+	[UnitObject.Base]: UnitObject.Base,
+	[UnitObject.BaseTable]: UnitObject.Base,
+	[UnitObject.BaseField]: UnitObject.Base,
+	[UnitObject.BaseRecord]: UnitObject.Base,
+	[UnitObject.BaseView]: UnitObject.Base,
+	[UnitObject.BaseDashboard]: UnitObject.Base,
+	[UnitObject.Board]: UnitObject.Board,
+	[UnitObject.BoardElement]: UnitObject.Board
+};
+let ObjectPermissionService = class ObjectPermissionService extends Disposable {
+	constructor(_injector, _permissions, _logService, _users, _config, _commands) {
+		super();
+		this._injector = _injector;
+		this._permissions = _permissions;
+		this._logService = _logService;
+		this._users = _users;
+		this._config = _config;
+		this._commands = _commands;
+		_defineProperty(this, "_models", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_initialized", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_policies", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_generations", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_nextGeneration", 0);
+		_defineProperty(this, "_revision", new BehaviorSubject(0));
+		_defineProperty(this, "changed$", this._revision.asObservable());
+		_defineProperty(this, "_unitChanges", new Subject());
+		_defineProperty(this, "unitChanges$", this._unitChanges.asObservable());
+		this.disposeWithMe(this._permissions.permissionPointUpdate$.subscribe((point) => {
+			if (point.subType === UnitAction.Edit && ROOT_OBJECT_TYPES[point.type] === point.type) this._revision.next(this._revision.value + 1);
+		}));
+		this.disposeWithMe(() => {
+			this._initialized.clear();
+			this._policies.clear();
+			this._generations.clear();
+			this._revision.complete();
+			this._unitChanges.complete();
+		});
+	}
+	get _authz() {
+		return this._injector.get(IAuthzIoService);
+	}
+	registerRuleModel(rootType, model, mutationId) {
+		if (this._models.has(rootType)) throw new Error("Object permission rule model already registered.");
+		this._models.set(rootType, {
+			model,
+			mutationId
+		});
+		const subscription = model.changed$.subscribe((unitId) => {
+			this._generations.delete(unitId);
+			this._policies.delete(unitId);
+			model.getRules(unitId).forEach((rule) => {
+				if (!this.supports({
+					unitId,
+					objectId: rule.objectId,
+					objectType: rule.objectType
+				})) return;
+				const id = `${rule.objectType}.${UnitAction.Edit}_${unitId}_${rule.objectId}`;
+				if (!this._permissions.getPermissionPoint(id)) this._permissions.addPermissionPoint({
+					id,
+					type: rule.objectType,
+					subType: UnitAction.Edit,
+					value: false,
+					status: "init",
+					unitId,
+					objectId: rule.objectId
+				});
+				else this._permissions.updatePermissionPoint(id, false);
+			});
+			this._revision.next(this._revision.value + 1);
+			if (this._initialized.has(unitId)) this.refreshUnit(unitId).catch((error) => this._logService.error(error));
+		});
+		return this.disposeWithMe(toDisposable(() => {
+			subscription.unsubscribe();
+			this._models.delete(rootType);
+		}));
+	}
+	_getRule(target) {
+		var _this$_models$get;
+		return (_this$_models$get = this._models.get(ROOT_OBJECT_TYPES[target.objectType])) === null || _this$_models$get === void 0 ? void 0 : _this$_models$get.model.getRule(target.unitId, target.objectType, target.objectId);
+	}
+	_getAuthzId(target) {
+		var _this$_getRule;
+		return target.objectId === target.unitId ? target.unitId : (_this$_getRule = this._getRule(target)) === null || _this$_getRule === void 0 ? void 0 : _this$_getRule.permissionId;
+	}
+	initializeUnit(target) {
+		if (!this.supports(target) || this._initialized.has(target.unitId)) return;
+		this._initialized.add(target.unitId);
+		const ids = [];
+		this._permissions.getAllPermissionPoint().forEach((point$) => {
+			point$.subscribe((point) => {
+				if ("unitId" in point && point.unitId === target.unitId) ids.push(point.id);
+			}).unsubscribe();
+		});
+		ids.forEach((id) => this._permissions.updatePermissionPoint(id, false));
+		this.refreshUnit(target.unitId).catch((error) => {
+			this._logService.error(error);
+		});
+	}
+	supports(target) {
+		var _this$_config$getConf;
+		return ((_this$_config$getConf = this._config.getConfig("objectPermissionTypes")) === null || _this$_config$getConf === void 0 ? void 0 : _this$_config$getConf.includes(target.objectType)) === true && this._models.has(ROOT_OBJECT_TYPES[target.objectType]);
+	}
+	getPolicies(unitId) {
+		return this._policies.get(unitId) ?? [];
+	}
+	hasPolicy(target) {
+		var _policy$scope, _policy$scope2;
+		const policy = this.getPolicies(target.unitId).find((item) => item.objectID === target.objectId && item.objectType === target.objectType);
+		return !!policy && (((_policy$scope = policy.scope) === null || _policy$scope === void 0 ? void 0 : _policy$scope.edit) === ObjectScope.OneSelf || ((_policy$scope2 = policy.scope) === null || _policy$scope2 === void 0 ? void 0 : _policy$scope2.edit) === ObjectScope.SomeCollaborator || policy.strategies.some((strategy) => strategy.role === UnitRole.Owner));
+	}
+	/** Match Sheet's permission-list entry: require effective file editing, not child editing. */
+	canView(target) {
+		var _this$_permissions$ge;
+		const rootType = ROOT_OBJECT_TYPES[target.objectType];
+		return this.supports(target) && rootType !== void 0 && ((_this$_permissions$ge = this._permissions.getPermissionPoint(`${rootType}.${UnitAction.Edit}_${target.unitId}`)) === null || _this$_permissions$ge === void 0 ? void 0 : _this$_permissions$ge.value) === true;
+	}
+	async canManage(target) {
+		if (!this.supports(target)) return false;
+		const object = await this._getPolicy(target);
+		if (!this._getRule(target) && target.objectId !== target.unitId) {
+			const rootType = ROOT_OBJECT_TYPES[target.objectType];
+			return rootType !== void 0 && this._allowed({
+				...target,
+				objectId: target.unitId,
+				objectType: rootType
+			}, UnitAction.CreatePermissionObject);
+		}
+		return (target.objectId === target.unitId || !!object) && this._canChangeRule(target, object, UnitAction.ManageCollaborator);
+	}
+	async canDelete(target) {
+		if (!this.supports(target) || target.objectId === target.unitId) return false;
+		const object = await this._getPolicy(target);
+		return !!object && this._canChangeRule(target, object, UnitAction.Delete);
+	}
+	/** Must be called from a product permission Command; removal restores inheritance by detaching the rule. */
+	async remove(target) {
+		var _this$_getRule2;
+		const permissionId = (_this$_getRule2 = this._getRule(target)) === null || _this$_getRule2 === void 0 ? void 0 : _this$_getRule2.permissionId;
+		if (!await this.canDelete(target)) throw new Error("Object permission deletion denied.");
+		await this._commitRule(target, null, permissionId);
+		await this.refreshUnit(target.unitId);
+	}
+	async _commitRule(target, rule, expectedId) {
+		const registration = this._models.get(ROOT_OBJECT_TYPES[target.objectType]);
+		if (!registration) throw new Error("Object permission rule model is not registered.");
+		const previous = this._getRule(target) ?? null;
+		if ((previous === null || previous === void 0 ? void 0 : previous.permissionId) !== expectedId) throw new Error("Object permission binding changed during the request.");
+		const redo = {
+			id: registration.mutationId,
+			params: {
+				...target,
+				rule
+			}
+		};
+		const undo = {
+			id: registration.mutationId,
+			params: {
+				...target,
+				rule: previous
+			}
+		};
+		if (!await this._commands.executeCommand(redo.id, redo.params)) throw new Error("Could not update the object permission binding.");
+		this._injector.get(IUndoRedoService).pushUndoRedo({
+			unitID: target.unitId,
+			redoMutations: [redo],
+			undoMutations: [undo]
+		});
+	}
+	async _getPolicy(target) {
+		const objectID = this._getAuthzId(target);
+		if (!objectID) return;
+		return (await this._authz.list({
+			unitID: target.unitId,
+			objectIDs: [objectID],
+			actions: []
+		})).find((item) => item.unitID === target.unitId && item.objectID === objectID && item.objectType === target.objectType);
+	}
+	async _allowed(target, action) {
+		const objectID = this._getAuthzId(target);
+		if (!objectID) return false;
+		return (await this._authz.allowed({
+			unitID: target.unitId,
+			objectID,
+			objectType: target.objectType,
+			actions: [action]
+		})).some((item) => item.action === action && item.allowed === true);
+	}
+	async _canChangeRule(target, object, action) {
+		var _object$creator;
+		if (await this._allowed(target, action)) return true;
+		const creatorId = object === null || object === void 0 || (_object$creator = object.creator) === null || _object$creator === void 0 ? void 0 : _object$creator.userID;
+		return !!creatorId && creatorId === this._users.getCurrentUser().userID;
+	}
+	async read(target) {
+		var _object$scope, _object$scope2;
+		const objectID = this._getAuthzId(target);
+		if (!objectID) return {
+			edit: "all",
+			collaborators: [],
+			strategies: []
+		};
+		const [object, collaborators] = await Promise.all([this._getPolicy(target), target.objectId === target.unitId ? [] : this._authz.listCollaborators({
+			unitID: target.unitId,
+			objectID
+		})]);
+		let edit = "all";
+		if ((object === null || object === void 0 || (_object$scope = object.scope) === null || _object$scope === void 0 ? void 0 : _object$scope.edit) === ObjectScope.OneSelf) edit = "owner";
+		else if ((object === null || object === void 0 || (_object$scope2 = object.scope) === null || _object$scope2 === void 0 ? void 0 : _object$scope2.edit) === ObjectScope.SomeCollaborator) edit = "members";
+		else if (object === null || object === void 0 ? void 0 : object.strategies.some((strategy) => strategy.action === UnitAction.Edit && strategy.role === UnitRole.Owner)) edit = "owner";
+		return {
+			edit,
+			collaborators,
+			strategies: (object === null || object === void 0 ? void 0 : object.strategies) ?? []
+		};
+	}
+	async setPoint(target, point, value) {
+		if (!this.supports(target)) {
+			if (!this._permissions.getPermissionPoint(point.id)) this._permissions.addPermissionPoint(point);
+			this._permissions.updatePermissionPoint(point.id, value);
+			return;
+		}
+		this._assertSupported(target);
+		const policy = await this.read(target);
+		policy.strategies = policy.strategies.filter((strategy) => strategy.action !== point.subType);
+		policy.strategies.push({
+			action: point.subType,
+			role: value ? UnitRole.Editor : UnitRole.Owner
+		});
+		if (point.subType === UnitAction.Edit) policy.edit = value ? "all" : "owner";
+		await this.save(target, policy);
+	}
+	/** Must be called from a product permission Command. */
+	async save(target, policy) {
+		var _this$_getRule3, _previous$scope;
+		this._assertSupported(target);
+		const permissionId = (_this$_getRule3 = this._getRule(target)) === null || _this$_getRule3 === void 0 ? void 0 : _this$_getRule3.permissionId;
+		if (!await this.canManage(target)) throw new Error("Object permission management denied.");
+		if (target.objectId === target.unitId && policy.edit === "members") throw new Error("File membership must be managed through the sharing service.");
+		if (policy.edit === "members" && !policy.collaborators.length) throw new Error("Select at least one collaborator.");
+		const previous = await this._getPolicy(target);
+		const strategies = policy.strategies.filter((strategy) => strategy.action !== UnitAction.Edit);
+		strategies.push({
+			action: UnitAction.Edit,
+			role: policy.edit === "owner" ? UnitRole.Owner : UnitRole.Editor
+		});
+		let editScope = ObjectScope.AllCollaborator;
+		if (policy.edit === "members") editScope = ObjectScope.SomeCollaborator;
+		else if (policy.edit === "owner") editScope = ObjectScope.OneSelf;
+		const scope = {
+			read: (previous === null || previous === void 0 || (_previous$scope = previous.scope) === null || _previous$scope === void 0 ? void 0 : _previous$scope.read) ?? ObjectScope.AllCollaborator,
+			edit: editScope
+		};
+		let objectID = this._getAuthzId(target);
+		if (!objectID) {
+			const payload = {
+				unitID: target.unitId,
+				name: target.objectId,
+				strategies,
+				scope,
+				collaborators: policy.edit === "members" ? policy.collaborators : []
+			};
+			const request = { objectType: target.objectType };
+			switch (ROOT_OBJECT_TYPES[target.objectType]) {
+				case UnitObject.Document:
+					request.documentObject = payload;
+					break;
+				case UnitObject.Slide:
+					request.slideObject = payload;
+					break;
+				case UnitObject.Base:
+					request.baseObject = payload;
+					break;
+				case UnitObject.Board:
+					request.boardObject = payload;
+					break;
+				default: throw new Error("Unsupported object permission type.");
+			}
+			objectID = await this._authz.create(request);
+			if (!objectID) throw new Error("Authz did not return a permission ID.");
+			await this._commitRule(target, {
+				objectId: target.objectId,
+				objectType: target.objectType,
+				permissionId: objectID
+			}, permissionId);
+		} else {
+			var _this$_getRule4;
+			if (((_this$_getRule4 = this._getRule(target)) === null || _this$_getRule4 === void 0 ? void 0 : _this$_getRule4.permissionId) !== permissionId) throw new Error("Object permission binding changed during the request.");
+			await this._authz.update({
+				unitID: target.unitId,
+				objectID,
+				objectType: target.objectType,
+				name: (previous === null || previous === void 0 ? void 0 : previous.name) ?? target.objectId,
+				share: void 0,
+				strategies,
+				scope,
+				collaborators: target.objectId === target.unitId ? void 0 : { collaborators: policy.edit === "members" ? policy.collaborators : [] }
+			});
+		}
+		await this.refreshUnit(target.unitId);
+	}
+	async refreshUnit(unitId) {
+		if (this._disposed) return;
+		const bindings = [...this._models.values()].flatMap(({ model }) => model.getRules(unitId));
+		const bindingMap = new Map(bindings.map((rule) => [`${rule.objectType}/${rule.objectId}`, rule]));
+		const requests = /* @__PURE__ */ new Map();
+		const include = (objectID, objectType, targetId, actions) => {
+			if (!this.supports({
+				unitId,
+				objectId: targetId,
+				objectType
+			})) return;
+			const key = `${objectType}/${objectID}`;
+			const previous = requests.get(key);
+			requests.set(key, {
+				unitID: unitId,
+				objectID,
+				objectType,
+				targetId,
+				actions: [.../* @__PURE__ */ new Set([...(previous === null || previous === void 0 ? void 0 : previous.actions) ?? [], ...actions])]
+			});
+		};
+		const inheritedPoints = [];
+		bindings.forEach((rule) => include(rule.permissionId, rule.objectType, rule.objectId, [UnitAction.Edit]));
+		this._permissions.getAllPermissionPoint().forEach((point$) => {
+			point$.subscribe((point) => {
+				if (!("unitId" in point) || point.unitId !== unitId) return;
+				const objectId = "objectId" in point && typeof point.objectId === "string" ? point.objectId : unitId;
+				const binding = bindingMap.get(`${point.type}/${objectId}`);
+				if (objectId === unitId) include(unitId, point.type, unitId, [point.subType]);
+				else if (binding) include(binding.permissionId, point.type, objectId, [point.subType]);
+				else if (this.supports({
+					unitId,
+					objectId,
+					objectType: point.type
+				})) inheritedPoints.push(point.id);
+			}).unsubscribe();
+		});
+		inheritedPoints.forEach((id) => this._permissions.updatePermissionPoint(id, true));
+		const generation = ++this._nextGeneration;
+		this._generations.set(unitId, generation);
+		const values = [...requests.values()];
+		if (values.length) this._initialized.add(unitId);
+		const policies = [];
+		const results = [];
+		for (let offset = 0; offset < values.length; offset += 100) {
+			const batch = values.slice(offset, offset + 100);
+			const batchPolicies = await this._authz.list({
+				unitID: unitId,
+				objectIDs: batch.map((item) => item.objectID),
+				actions: []
+			});
+			policies.push(...batchPolicies);
+			batch.forEach((request) => {
+				const policy = batchPolicies.find((item) => item.objectID === request.objectID && item.objectType === request.objectType);
+				request.actions = [.../* @__PURE__ */ new Set([...request.actions, ...(policy === null || policy === void 0 ? void 0 : policy.strategies.map((strategy) => strategy.action)) ?? []])];
+			});
+			results.push(...await this._authz.batchAllowed(batch.map(({ targetId, ...request }) => request)));
+		}
+		if (this._disposed || this._generations.get(unitId) !== generation) return;
+		const resultMap = new Map(results.filter((item) => item.unitID === unitId).map((item) => [item.objectID, item]));
+		const policyMap = new Map(policies.filter((item) => item.unitID === unitId).map((item) => [`${item.objectType}/${item.objectID}`, item]));
+		values.forEach((request) => {
+			const result = resultMap.get(request.objectID);
+			const policy = policyMap.get(`${request.objectType}/${request.objectID}`);
+			[.../* @__PURE__ */ new Set([...request.actions, ...(policy === null || policy === void 0 ? void 0 : policy.strategies.map((strategy) => strategy.action)) ?? []])].forEach((action) => {
+				const id = `${request.objectType}.${action}_${unitId}${request.targetId === unitId ? "" : `_${request.targetId}`}`;
+				if (!this._permissions.getPermissionPoint(id)) this._permissions.addPermissionPoint({
+					id,
+					type: request.objectType,
+					subType: action,
+					status: "done",
+					value: false,
+					unitId,
+					objectId: request.targetId
+				});
+				this._permissions.updatePermissionPoint(id, (result === null || result === void 0 ? void 0 : result.actions.some((item) => item.action === action && item.allowed === true)) ?? false);
+			});
+		});
+		this._policies.set(unitId, policies.filter((policy) => policy.unitID === unitId).map((policy) => {
+			var _requests$get;
+			return {
+				...policy,
+				objectID: ((_requests$get = requests.get(`${policy.objectType}/${policy.objectID}`)) === null || _requests$get === void 0 ? void 0 : _requests$get.targetId) ?? policy.objectID
+			};
+		}));
+		this._revision.next(this._revision.value + 1);
+		this._unitChanges.next(unitId);
+	}
+	clearUnit(unitId) {
+		this._initialized.delete(unitId);
+		this._generations.delete(unitId);
+		this._policies.delete(unitId);
+		this._revision.next(this._revision.value + 1);
+		this._unitChanges.next(unitId);
+	}
+	_assertSupported(target) {
+		if (!this.supports(target)) throw new Error("Object permission management is not supported by this Authz provider.");
+	}
+};
+ObjectPermissionService = __decorate([
+	__decorateParam(0, Inject(Injector)),
+	__decorateParam(1, IPermissionService),
+	__decorateParam(2, ILogService),
+	__decorateParam(3, Inject(UserManagerService)),
+	__decorateParam(4, IConfigService),
+	__decorateParam(5, ICommandService)
+], ObjectPermissionService);
+
+//#endregion
+//#region src/services/permission/permission.service.ts
+var PermissionService = class extends Disposable {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "_permissionPointMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_permissionPointUpdate$", new Subject());
+		_defineProperty(this, "permissionPointUpdate$", this._permissionPointUpdate$.asObservable());
+		_defineProperty(this, "_showComponents", true);
+	}
+	setShowComponents(showComponents) {
+		this._showComponents = showComponents;
+	}
+	getShowComponents() {
+		return this._showComponents;
+	}
+	deletePermissionPoint(permissionId) {
+		const permissionPoint = this._permissionPointMap.get(permissionId);
+		if (permissionPoint) {
+			permissionPoint.complete();
+			this._permissionPointMap.delete(permissionId);
+		}
+	}
+	addPermissionPoint(_item) {
+		const isSubject = _item instanceof BehaviorSubject;
+		const item = isSubject ? _item.getValue() : _item;
+		if (!item.id) return false;
+		if (this._permissionPointMap.get(item.id)) {
+			console.warn(`${item.id} PermissionPoint already exists`);
+			return false;
+		}
+		this._permissionPointMap.set(item.id, isSubject ? _item : new BehaviorSubject(item));
+		this._permissionPointUpdate$.next(item);
+		return true;
+	}
+	updatePermissionPoint(permissionId, value) {
+		const permissionPoint = this._permissionPointMap.get(permissionId);
+		if (!permissionPoint) return;
+		const subject = permissionPoint.getValue();
+		subject.value = value;
+		subject.status = "done";
+		permissionPoint.next(subject);
+		this._permissionPointUpdate$.next(subject);
+	}
+	clearPermissionMap() {
+		this._permissionPointMap.clear();
+	}
+	getPermissionPoint(permissionId) {
+		const permissionPoint = this._permissionPointMap.get(permissionId);
+		if (!permissionPoint) return;
+		return permissionPoint.getValue();
+	}
+	getPermissionPoint$(permissionId) {
+		const permissionPoint = this._permissionPointMap.get(permissionId);
+		if (!permissionPoint) return;
+		return permissionPoint;
+	}
+	composePermission$(permissionIdList) {
+		return combineLatest(permissionIdList.map((id) => {
+			var _this$_permissionPoin;
+			const subject = (_this$_permissionPoin = this._permissionPointMap) === null || _this$_permissionPoin === void 0 ? void 0 : _this$_permissionPoin.get(id);
+			if (!subject) throw new Error(`[PermissionService]: ${id} permissionPoint does not exist!`);
+			return subject.asObservable();
+		})).pipe(map$1((list) => {
+			return list;
+		}));
+	}
+	composePermission(permissionIdList) {
+		return permissionIdList.map((id) => {
+			var _this$_permissionPoin2;
+			const subject = (_this$_permissionPoin2 = this._permissionPointMap) === null || _this$_permissionPoin2 === void 0 ? void 0 : _this$_permissionPoin2.get(id);
+			if (!subject) throw new Error(`[PermissionService]: ${id} permissionPoint does not exist!`);
+			return subject.getValue();
+		});
+	}
+	getAllPermissionPoint() {
+		const cacheMap = /* @__PURE__ */ new Map();
+		this._permissionPointMap.forEach((v, key) => {
+			cacheMap.set(key, v);
+		});
+		return cacheMap;
+	}
+};
+
+//#endregion
+//#region src/services/plugin/plugin-override.ts
+function mergeOverrideWithDependencies(dependencies, override) {
+	if (!override) return dependencies;
+	const result = [];
+	for (const dependency of dependencies) {
+		const overrideItem = override.find(([identifier]) => identifier === dependency[0]);
+		if (overrideItem) {
+			if (overrideItem[1] === null) continue;
+			result.push([dependency[0], overrideItem[1]]);
+		} else result.push(dependency);
+	}
+	return result;
+}
+
+//#endregion
+//#region src/services/plugin/plugin.service.ts
+const INIT_LAZY_PLUGINS_TIMEOUT = 4;
+const DependentOnSymbol = Symbol("DependentOn");
+/**
+* Plug-in base class, all plug-ins must inherit from this base class. Provide basic methods.
+*/
+var Plugin = class extends Disposable {
+	onStarting() {}
+	onReady() {}
+	onRendered() {}
+	onSteady() {}
+	getUnitType() {
+		return this.constructor.type;
+	}
+	getPluginName() {
+		return this.constructor.pluginName;
+	}
+};
+_defineProperty(Plugin, "pluginName", void 0);
+_defineProperty(Plugin, "packageName", name);
+_defineProperty(Plugin, "version", version);
+_defineProperty(Plugin, "type", UniverInstanceType.UNIVER_UNKNOWN);
+/**
+* Store plugin instances.
+*/
+var PluginStore = class {
+	constructor() {
+		_defineProperty(this, "_plugins", []);
+	}
+	addPlugin(plugin) {
+		this._plugins.push(plugin);
+	}
+	removePlugins() {
+		const plugins = this._plugins.slice();
+		this._plugins.length = 0;
+		return plugins;
+	}
+	forEachPlugin(callback) {
+		this._plugins.forEach(callback);
+	}
+};
+/**
+* Use this decorator to declare dependencies among plugins. If a dependent plugin is not registered yet,
+* Univer will automatically register it with no configuration.
+*
+* For example:
+*
+* ```ts
+* ⁣@DependentOn(UniverDrawingPlugin, UniverDrawingUIPlugin, UniverSheetsDrawingPlugin)
+* export class UniverSheetsDrawingUIPlugin extends Plugin {
+* }
+* ```
+*/
+function DependentOn(...plugins) {
+	return function(target) {
+		target[DependentOnSymbol] = plugins;
+	};
+}
+let PluginService = class PluginService {
+	constructor(_injector, _lifecycleService, _logService) {
+		this._injector = _injector;
+		this._lifecycleService = _lifecycleService;
+		this._logService = _logService;
+		_defineProperty(this, "_pluginRegistry", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_pluginStore", new PluginStore());
+		_defineProperty(this, "_seenPlugins", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_loadedPlugins", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_loadedPluginTypes", /* @__PURE__ */ new Set([UniverInstanceType.UNIVER_UNKNOWN]));
+		_defineProperty(this, "_flushTimerByType", /* @__PURE__ */ new Map());
+	}
+	dispose() {
+		this._pluginStore.removePlugins().forEach((p) => p.dispose());
+		this._flushTimerByType.forEach((timer) => clearTimeout(timer));
+	}
+	/**
+	* Register a plugin into univer.
+	* @param {PluginCtor} ctor The plugin's constructor.
+	* @param {ConstructorParameters} [config] The configuration for the plugin.
+	*/
+	registerPlugin(ctor, config) {
+		this._assertPluginValid(ctor);
+		const item = {
+			plugin: ctor,
+			options: config
+		};
+		this._pluginRegistry.set(ctor.pluginName, item);
+		this._logService.debug("[PluginService]", `Plugin "${ctor.pluginName}" registered.`);
+		const { type } = ctor;
+		if (this._loadedPluginTypes.has(type)) if (type === UniverInstanceType.UNIVER_UNKNOWN) this._loadFromPlugins([item]);
+		else this._flushType(type);
+	}
+	startPluginsForType(type) {
+		if (this._loadedPluginTypes.has(type)) return;
+		this._loadPluginsForType(type);
+	}
+	_loadPluginsForType(type) {
+		const keys = Array.from(this._pluginRegistry.keys());
+		const allPluginsOfThisType = [];
+		keys.forEach((key) => {
+			const item = this._pluginRegistry.get(key);
+			if (item.plugin.type === type) allPluginsOfThisType.push(item);
+		});
+		this._loadFromPlugins(allPluginsOfThisType);
+		this._loadedPluginTypes.add(type);
+	}
+	_assertPluginValid(ctor) {
+		const { type, pluginName, packageName, version } = ctor;
+		if (type === UniverInstanceType.UNRECOGNIZED) throw new Error(`[PluginService]: invalid plugin type for ${ctor.name}. Please assign a "type" to your plugin.`);
+		if (!pluginName) throw new Error(`[PluginService]: no plugin name for ${ctor.name}. Please assign a "pluginName" to your plugin.`);
+		if (version && version !== Plugin.version) this._logService.error("[PluginService]", [
+			"Plugin version mismatch.",
+			`  plugin: "${pluginName || ctor.name}"`,
+			`  package: "${packageName}"`,
+			`  plugin version: "${version}"`,
+			`  core version: "${Plugin.version}"`,
+			"  registration will continue, but please make sure all @univerjs packages use the same version."
+		].join("\n"));
+		if (this._seenPlugins.has(pluginName)) throw new Error(`[PluginService]: duplicated plugin name for "${pluginName}". Maybe a plugin that dependents on "${pluginName} has already registered it. In that case please register "${pluginName}" before the that plugin.`);
+		this._seenPlugins.add(ctor.pluginName);
+	}
+	_flushType(type) {
+		if (this._flushTimerByType.get(type) === void 0) this._flushTimerByType.set(type, setTimeout(() => {
+			this._loadPluginsForType(type);
+			this._flushTimerByType.delete(type);
+		}, INIT_LAZY_PLUGINS_TIMEOUT));
+	}
+	_loadFromPlugins(plugins) {
+		const finalPlugins = [];
+		const visited = /* @__PURE__ */ new Set();
+		const dfs = (item) => {
+			const { plugin } = item;
+			const { pluginName } = plugin;
+			if (this._loadedPlugins.has(pluginName) || visited.has(pluginName)) return;
+			visited.add(pluginName);
+			this._pluginRegistry.delete(pluginName);
+			const dependents = plugin[DependentOnSymbol];
+			if (dependents) dependents.forEach((d) => {
+				const dItem = this._pluginRegistry.get(d.pluginName);
+				if (dItem) dfs(dItem);
+				else if (!this._seenPlugins.has(d.pluginName) && !visited.has(d.pluginName)) {
+					if (plugin.type === UniverInstanceType.UNIVER_UNKNOWN && d.type !== UniverInstanceType.UNIVER_UNKNOWN) throw new Error(`[PluginService]: cannot register a plugin with Univer type that depends on a plugin with other type. The dependent is ${plugin.pluginName} and the dependency is ${d.pluginName}.`);
+					if (plugin.type !== d.type && d.type !== UniverInstanceType.UNIVER_UNKNOWN) this._logService.debug("[PluginService]", `Plugin "${pluginName}" depends on "${d.pluginName}" which has different type.`);
+					this._logService.debug("[PluginService]", `Plugin "${pluginName}" depends on "${d.pluginName}" which is not registered. Univer will automatically register it with default configuration.`);
+					this._assertPluginValid(d);
+					dfs({
+						plugin: d,
+						options: void 0
+					});
+				}
+			});
+			finalPlugins.push(item);
+		};
+		plugins.forEach((p) => dfs(p));
+		const pluginInstances = finalPlugins.map((p) => this._initPlugin(p.plugin, p.options));
+		this._pluginsRunLifecycle(pluginInstances);
+	}
+	_pluginsRunLifecycle(plugins) {
+		const currentStage = this._lifecycleService.stage;
+		getLifecycleStagesAndBefore(currentStage).subscribe((stage) => this._runStage(plugins, stage));
+		if (currentStage !== 3) {
+			const subscription = this._lifecycleService.lifecycle$.pipe(skip(1)).subscribe((stage) => {
+				this._runStage(plugins, stage);
+				if (stage === 3) subscription.unsubscribe();
+			});
+		}
+	}
+	_runStage(plugins, stage) {
+		plugins.forEach((p) => {
+			switch (stage) {
+				case 0:
+					p.onStarting();
+					break;
+				case 1:
+					p.onReady();
+					break;
+				case 2:
+					p.onRendered();
+					break;
+				case 3:
+					p.onSteady();
+					break;
+			}
+		});
+	}
+	_initPlugin(plugin, options) {
+		const pluginInstance = this._injector.createInstance(plugin, options);
+		this._pluginStore.addPlugin(pluginInstance);
+		this._loadedPlugins.add(plugin.pluginName);
+		this._logService.debug("[PluginService]", `Plugin "${pluginInstance.getPluginName()}" loaded.`);
+		return pluginInstance;
+	}
+};
+PluginService = __decorate([
+	__decorateParam(0, Inject(Injector)),
+	__decorateParam(1, Inject(LifecycleService)),
+	__decorateParam(2, ILogService)
+], PluginService);
+
+//#endregion
+//#region src/services/region/region.service.ts
+let RegionService = class RegionService extends Disposable {
+	constructor(_localeService) {
+		super();
+		this._localeService = _localeService;
+		_defineProperty(this, "_currentRegion$", void 0);
+		_defineProperty(this, "currentRegion$", void 0);
+		_defineProperty(this, "_hasExplicitRegion", false);
+		this._currentRegion$ = new BehaviorSubject(this._localeService.getCurrentLocale());
+		this.currentRegion$ = this._currentRegion$.asObservable();
+		this.disposeWithMe(this._localeService.currentLocale$.subscribe((locale) => {
+			if (!this._hasExplicitRegion && locale !== this._currentRegion$.value) this._currentRegion$.next(locale);
+		}));
+		this.disposeWithMe(toDisposable(() => this._currentRegion$.complete()));
+	}
+	setRegion(region) {
+		this._hasExplicitRegion = true;
+		this._currentRegion$.next(region);
+	}
+	getCurrentRegion() {
+		return this._currentRegion$.value;
+	}
+};
+RegionService = __decorate([__decorateParam(0, Inject(LocaleService))], RegionService);
+
+//#endregion
+//#region src/services/resource-loader/type.ts
+const IResourceLoaderService = createIdentifier("resource-loader-service");
+
+//#endregion
+//#region src/services/resource-manager/resource-manager.service.ts
+let ResourceManagerService = class ResourceManagerService extends Disposable {
+	constructor(_logService) {
+		super();
+		this._logService = _logService;
+		_defineProperty(this, "_resourceMap", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_register$", new Subject());
+		_defineProperty(this, "register$", this._register$.asObservable());
+	}
+	getAllResourceHooks() {
+		return [...this._resourceMap.values()];
+	}
+	getResources(unitId, type) {
+		if (type) return this.getResourcesByType(unitId, type);
+		return this.getAllResourceHooks().map((resourceHook) => {
+			const data = resourceHook.toJson(unitId);
+			return {
+				name: resourceHook.pluginName,
+				data
+			};
+		});
+	}
+	getResourcesByType(unitId, type) {
+		const resourceHooks = this.getAllResourceHooks();
+		const resources = [];
+		for (let i = 0; i < resourceHooks.length; i++) {
+			const resourceHook = resourceHooks[i];
+			if (!resourceHook.businesses.includes(type)) continue;
+			const data = resourceHook.toJson(unitId);
+			resources.push({
+				name: resourceHook.pluginName,
+				data
+			});
+		}
+		return resources;
+	}
+	registerPluginResource(hook) {
+		const resourceName = hook.pluginName;
+		if (this._resourceMap.has(resourceName)) throw new Error(`the pluginName is registered {${resourceName}}`);
+		this._resourceMap.set(resourceName, hook);
+		this._register$.next(hook);
+		return toDisposable(() => this._resourceMap.delete(resourceName));
+	}
+	disposePluginResource(pluginName) {
+		this._resourceMap.delete(pluginName);
+	}
+	loadResources(unitId, resources) {
+		const hooks = this.getAllResourceHooks();
+		for (let i = 0; i < hooks.length; i++) {
+			var _resources$find;
+			const hook = hooks[i];
+			const data = resources === null || resources === void 0 || (_resources$find = resources.find((resource) => resource.name === hook.pluginName)) === null || _resources$find === void 0 ? void 0 : _resources$find.data;
+			if (data) try {
+				const model = hook.parseJson(data);
+				hook.onLoad(unitId, model);
+			} catch (err) {
+				this._logService.error("[ResourceManagerService]", "loadResources error", err);
+			}
+		}
+	}
+	unloadResources(unitId, type) {
+		const hooks = this.getAllResourceHooks();
+		for (let i = 0; i < hooks.length; i++) {
+			const hook = hooks[i];
+			if (!hook.businesses.includes(type)) continue;
+			hook.onUnLoad(unitId);
+		}
+	}
+	dispose() {
+		this._register$.complete();
+		this._resourceMap.clear();
+	}
+};
+ResourceManagerService = __decorate([__decorateParam(0, ILogService)], ResourceManagerService);
+
+//#endregion
+//#region src/services/theme/theme.service.ts
+var ThemeService = class extends Disposable {
+	get darkMode() {
+		return this._darkMode$.getValue();
+	}
+	constructor() {
+		super();
+		_defineProperty(this, "_darkMode$", new BehaviorSubject(false));
+		_defineProperty(this, "darkMode$", this._darkMode$.asObservable());
+		_defineProperty(this, "_validColorCache", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_currentTheme", defaultTheme);
+		_defineProperty(this, "_currentTheme$", new BehaviorSubject(this._currentTheme));
+		_defineProperty(this, "currentTheme$", this._currentTheme$.asObservable());
+		this.disposeWithMe(toDisposable(() => {
+			this._currentTheme = defaultTheme;
+			this._currentTheme$.complete();
+			this._darkMode$.complete();
+		}));
+	}
+	/**
+	* Whether the given color is a valid theme color.
+	* A valid theme color can be a direct key in the theme object or a nested key with a dot notation.
+	* For example:
+	* @param {string} color - The color string to validate.
+	* @returns {boolean} True if the color is valid, false otherwise.
+	* @example
+	* isValidThemeColor('primary.600'); // true
+	* isValidThemeColor('blue'); // false
+	*/
+	isValidThemeColor(color) {
+		if (this._validColorCache.has(color)) return this._validColorCache.get(color);
+		let isValid = false;
+		const parts = color.split(".");
+		if (parts.length === 1) isValid = color in defaultTheme;
+		else if (parts.length === 2) {
+			const [baseColor, shade] = parts;
+			isValid = baseColor in defaultTheme && shade in this._currentTheme[baseColor];
+		}
+		this._validColorCache.set(color, isValid);
+		return isValid;
+	}
+	/**
+	* Get the current theme.
+	* @returns The current theme.
+	*/
+	getCurrentTheme() {
+		return this._currentTheme;
+	}
+	/**
+	* Set the current theme.
+	* @param theme - The new theme to set.
+	*/
+	setTheme(theme) {
+		this._currentTheme = theme;
+		this._currentTheme$.next(theme);
+	}
+	/**
+	* Get the current theme as an observable.
+	* @param {boolean} darkMode - Whether to set the theme in dark mode.
+	*/
+	setDarkMode(darkMode) {
+		this._darkMode$.next(darkMode);
+	}
+	/**
+	* Get a color from the current theme.
+	* @param {string} color - The color key to retrieve.
+	* @returns The value from the current theme.
+	*/
+	getColorFromTheme(color) {
+		return get(this._currentTheme, color);
+	}
+};
+
+//#endregion
+//#region src/shared/cache/image-cache.ts
+var ImageCacheMap = class {
+	constructor(_injector, maxSize = 1e3) {
+		this._injector = _injector;
+		_defineProperty(this, "_imageCacheMap", void 0);
+		this._imageCacheMap = new LRUMap(maxSize);
+	}
+	_getImageCacheKey(imageSourceType, source) {
+		return `${imageSourceType}-${source}`;
+	}
+	getImage(imageSourceType, source, onLoad, onError) {
+		const imageCacheKey = this._getImageCacheKey(imageSourceType, source);
+		const imageElement = this._imageCacheMap.get(imageCacheKey);
+		if (imageElement) return imageElement;
+		else {
+			(async () => {
+				const newImageElement = new Image();
+				const imageIoService = this._injector.has(IImageIoService) ? this._injector.get(IImageIoService) : null;
+				const urlImageService = this._injector.has(IURLImageService) ? this._injector.get(IURLImageService) : null;
+				if (imageSourceType === "UUID") try {
+					newImageElement.src = await (imageIoService === null || imageIoService === void 0 ? void 0 : imageIoService.getImage(source)) || "";
+				} catch (error) {
+					console.error(error);
+				}
+				else if (imageSourceType === "URL") try {
+					newImageElement.src = await (urlImageService === null || urlImageService === void 0 ? void 0 : urlImageService.getImage(source)) || source;
+				} catch (error) {
+					newImageElement.src = source;
+				}
+				else newImageElement.src = source;
+				newImageElement.onload = () => {
+					newImageElement.removeAttribute("data-error");
+					onLoad === null || onLoad === void 0 || onLoad();
+				};
+				newImageElement.onerror = () => {
+					newImageElement.setAttribute("data-error", "true");
+					onError === null || onError === void 0 || onError();
+				};
+				this._imageCacheMap.set(imageCacheKey, newImageElement);
+			})();
+			return null;
+		}
+	}
+};
+
+//#endregion
+//#region src/shared/name.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* The name you entered for the worksheet or chart is invalid. Please ensure:
+
+The name is no more than 31 characters.
+The first and last characters cannot be '
+The name does not contain any of the following characters: : \ / ? * [ or ].
+The name is not empty.
+* @param name
+* @returns {boolean} Returns true if the name is valid, false otherwise.
+*/
+function nameCharacterCheck(name) {
+	if (name.length === 0) return false;
+	if (name.length > 31) return false;
+	if (name.startsWith("'") || name.endsWith("'")) return false;
+	if (/[:\\\/\?\*\[\]]/.test(name)) return false;
+	return true;
+}
+/**
+* Checks if the custom table name or custom name is valid based on the following criteria:
+* - The name cannot conflict with existing sheet names.
+* - The name cannot be empty.
+* - The name must start with a letter or underscore or a unicode letter (e.g., Chinese).
+* - The name cannot be a simple A1-style reference (e.g., A1, $A$1, AB123).
+* - The name cannot be an R1C1-style reference (e.g., R1C1).
+* - The name cannot be purely numeric.
+* - The name cannot exceed 255 characters in length.
+* The name cannot contain spaces or invalid characters (e.g., :, \, /, ?, *, [, ]).
+* @param name The name need to check
+* @param sheetNameSet The set of existing sheet names to check against
+* @returns {boolean} Returns true if the name is valid, false otherwise.
+*/
+function customNameCharacterCheck(name, sheetNameSet) {
+	if (!name || name.length === 0) return false;
+	if (name.length > 255) return false;
+	if (sheetNameSet.has(name)) return false;
+	if (/[ :\\\/\?\*\[\]]/.test(name)) return false;
+	if (!/^[\p{L}_]/u.test(name)) return false;
+	if (/^\$?[A-Za-z]{1,3}\$?[0-9]+$/.test(name)) return false;
+	if (/^[rR]\d+[cC]\d+$/.test(name)) return false;
+	if (/^\d+$/.test(name)) return false;
+	return true;
+}
+
+//#endregion
+//#region src/shared/r-tree.ts
+var RTree = class {
+	constructor(_enableOneCellCache = false) {
+		this._enableOneCellCache = _enableOneCellCache;
+		_defineProperty(this, "_tree", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_oneCellCache", /* @__PURE__ */ new Map());
+		_defineProperty(this, "_kdTree", /* @__PURE__ */ new Map());
+	}
+	dispose() {
+		this.clear();
+	}
+	getTree(unitId, subUnitId) {
+		if (!this._tree.has(unitId)) this._tree.set(unitId, /* @__PURE__ */ new Map());
+		if (!this._tree.get(unitId).has(subUnitId)) this._tree.get(unitId).set(subUnitId, new RBush());
+		return this._tree.get(unitId).get(subUnitId);
+	}
+	_getOneCellCache(unitId, subUnitId, row, column) {
+		if (!this._oneCellCache.has(unitId)) this._oneCellCache.set(unitId, /* @__PURE__ */ new Map());
+		if (!this._oneCellCache.get(unitId).has(subUnitId)) this._oneCellCache.get(unitId).set(subUnitId, /* @__PURE__ */ new Map());
+		if (!this._oneCellCache.get(unitId).get(subUnitId).has(row)) this._oneCellCache.get(unitId).get(subUnitId).set(row, /* @__PURE__ */ new Map());
+		if (!this._oneCellCache.get(unitId).get(subUnitId).get(row).has(column)) this._oneCellCache.get(unitId).get(subUnitId).get(row).set(column, /* @__PURE__ */ new Set());
+		return this._oneCellCache.get(unitId).get(subUnitId).get(row).get(column);
+	}
+	_removeOneCellCache(unitId, subUnitId, row, column, id) {
+		const unitCache = this._oneCellCache.get(unitId);
+		if (!unitCache) return;
+		const subUnitCache = unitCache.get(subUnitId);
+		if (!subUnitCache) return;
+		const rowCache = subUnitCache.get(row);
+		if (!rowCache) return;
+		const cellCache = rowCache.get(column);
+		if (!cellCache) return;
+		cellCache.delete(id);
+	}
+	_removeCellCacheByRange(search) {
+		const { unitId, sheetId: subUnitId, range, id } = search;
+		const unitCache = this._oneCellCache.get(unitId);
+		if (!unitCache) return;
+		const subUnitCache = unitCache.get(subUnitId);
+		if (!subUnitCache) return;
+		const { startRow, startColumn, endRow, endColumn } = range;
+		for (let row = startRow; row <= endRow; row++) {
+			const rowCache = subUnitCache.get(row);
+			if (!rowCache) continue;
+			for (let column = startColumn; column <= endColumn; column++) {
+				const cellCache = rowCache.get(column);
+				if (!cellCache) continue;
+				cellCache.delete(id);
+			}
+		}
+	}
+	_insertOneCellCache(unitId, subUnitId, row, column, id) {
+		this._getOneCellCache(unitId, subUnitId, row, column).add(id);
+	}
+	_getRdTreeItems(map) {
+		const items = [];
+		for (const [y, innerMap] of map) for (const [x, ids] of innerMap) items.push({
+			x,
+			y,
+			ids
+		});
+		return items;
+	}
+	_searchByOneCellCache(search) {
+		var _this$_kdTree$get;
+		const { unitId, sheetId: subUnitId, range } = search;
+		const { startRow, startColumn, endRow, endColumn } = range;
+		const searchObject = (_this$_kdTree$get = this._kdTree.get(unitId)) === null || _this$_kdTree$get === void 0 ? void 0 : _this$_kdTree$get.get(subUnitId);
+		if (!searchObject) return [];
+		const { tree, items } = searchObject;
+		const indexes = tree.range(startColumn, startRow, endColumn, endRow);
+		const result = [];
+		for (const index of indexes) {
+			const item = items[index];
+			result.push(...Array.from(item.ids));
+		}
+		return result;
+	}
+	/**
+	* Open the kd-tree search state.
+	* The kd-tree is used to search for data in a single cell.
+	*/
+	openKdTree() {
+		for (const [unitId, map1] of this._oneCellCache) {
+			if (!this._kdTree.has(unitId)) this._kdTree.set(unitId, /* @__PURE__ */ new Map());
+			for (const [subUnitId, map2] of map1) {
+				var _this$_kdTree$get2;
+				const items = this._getRdTreeItems(map2);
+				const tree = new KDBush(items.length);
+				(_this$_kdTree$get2 = this._kdTree.get(unitId)) === null || _this$_kdTree$get2 === void 0 || _this$_kdTree$get2.set(subUnitId, {
+					tree,
+					items
+				});
+				for (const item of items) tree.add(item.x, item.y);
+				tree.finish();
+			}
+		}
+	}
+	closeKdTree() {
+		for (const [unitId, map1] of this._oneCellCache) for (const [subUnitId, map2] of map1) {
+			var _this$_kdTree$get3;
+			(_this$_kdTree$get3 = this._kdTree.get(unitId)) === null || _this$_kdTree$get3 === void 0 || _this$_kdTree$get3.set(subUnitId, void 0);
+		}
+	}
+	insert(item) {
+		const { unitId, sheetId: subUnitId, range, id } = item;
+		if (!unitId || unitId.length === 0) return;
+		let { startRow: rangeStartRow, endRow: rangeEndRow, startColumn: rangeStartColumn, endColumn: rangeEndColumn } = range;
+		if (this._enableOneCellCache && rangeStartRow === rangeEndRow && rangeStartColumn === rangeEndColumn) {
+			this._insertOneCellCache(unitId, subUnitId, rangeStartRow, rangeStartColumn, id);
+			return;
+		}
+		const tree = this.getTree(unitId, subUnitId);
+		if (Number.isNaN(rangeStartRow)) rangeStartRow = 0;
+		if (Number.isNaN(rangeStartColumn)) rangeStartColumn = 0;
+		if (Number.isNaN(rangeEndRow)) rangeEndRow = Number.POSITIVE_INFINITY;
+		if (Number.isNaN(rangeEndColumn)) rangeEndColumn = Number.POSITIVE_INFINITY;
+		tree.insert({
+			minX: rangeStartColumn,
+			minY: rangeStartRow,
+			maxX: rangeEndColumn,
+			maxY: rangeEndRow,
+			id
+		});
+	}
+	bulkInsert(items) {
+		for (const item of items) this.insert(item);
+	}
+	*searchGenerator(search) {
+		var _this$_tree$get;
+		const { unitId, sheetId: subUnitId, range } = search;
+		if (this._enableOneCellCache) {
+			const oneCellResults = this._searchByOneCellCache(search);
+			for (const result of oneCellResults) yield result;
+		}
+		const tree = (_this$_tree$get = this._tree.get(unitId)) === null || _this$_tree$get === void 0 ? void 0 : _this$_tree$get.get(subUnitId);
+		if (!tree) return;
+		const searchData = tree.search({
+			minX: range.startColumn,
+			minY: range.startRow,
+			maxX: range.endColumn,
+			maxY: range.endRow
+		});
+		for (const item of searchData) yield item.id;
+	}
+	bulkSearch(searchList, exceptTreeIds) {
+		const result = /* @__PURE__ */ new Set();
+		for (const search of searchList) for (const item of this.searchGenerator(search)) {
+			if ((exceptTreeIds === null || exceptTreeIds === void 0 ? void 0 : exceptTreeIds.has(item)) === true) continue;
+			result.add(item);
+		}
+		return result;
+	}
+	removeById(unitId, subUnitId) {
+		if (subUnitId) {
+			var _this$_tree$get2, _this$_oneCellCache$g;
+			(_this$_tree$get2 = this._tree.get(unitId)) === null || _this$_tree$get2 === void 0 || _this$_tree$get2.delete(subUnitId);
+			(_this$_oneCellCache$g = this._oneCellCache.get(unitId)) === null || _this$_oneCellCache$g === void 0 || _this$_oneCellCache$g.delete(subUnitId);
+		} else {
+			this._tree.delete(unitId);
+			this._oneCellCache.delete(unitId);
+		}
+	}
+	_removeRTreeItem(search) {
+		const { unitId, sheetId: subUnitId, range, id } = search;
+		const tree = this.getTree(unitId, subUnitId);
+		const items = tree.search({
+			minX: range.startColumn,
+			minY: range.startRow,
+			maxX: range.endColumn,
+			maxY: range.endRow
+		});
+		for (let i = 0; i < items.length; i++) if (items[i].id === id) tree.remove(items[i]);
+	}
+	remove(search) {
+		const { unitId, sheetId: subUnitId, range, id } = search;
+		const { startRow, startColumn, endRow, endColumn } = range;
+		if (this._enableOneCellCache) if (startRow === endRow && startColumn === endColumn) this._removeOneCellCache(unitId, subUnitId, range.startRow, range.startColumn, id);
+		else {
+			this._removeCellCacheByRange(search);
+			this._removeRTreeItem(search);
+		}
+		else this._removeRTreeItem(search);
+	}
+	bulkRemove(searchList) {
+		for (const search of searchList) this.remove(search);
+	}
+	clear() {
+		this._tree.clear();
+		this._oneCellCache.clear();
+	}
+	toJSON() {
+		const result = {};
+		this._tree.forEach((subTree, unitId) => {
+			result[unitId] = {};
+			subTree.forEach((tree, subUnitId) => {
+				result[unitId][subUnitId] = tree.toJSON();
+			});
+		});
+		return result;
+	}
+	fromJSON(data) {
+		this._tree.clear();
+		for (const unitId in data) {
+			this._tree.set(unitId, /* @__PURE__ */ new Map());
+			for (const subUnitId in data[unitId]) {
+				const tree = new RBush();
+				tree.fromJSON(data[unitId][subUnitId]);
+				this._tree.get(unitId).set(subUnitId, tree);
+			}
+		}
+	}
+};
+
+//#endregion
+//#region src/shared/timer.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+/**
+* Returns a Promise that resolves after the specified number of milliseconds.
+* Use this to pause execution for a given duration.
+*
+* @param ms The number of milliseconds to wait before resolving.
+* @returns A Promise that resolves after `ms` milliseconds.
+*/
+function awaitTime(ms) {
+	return new Promise((resolve) => setTimeout(resolve, ms));
+}
+/**
+* Returns a Promise that resolves after the specified number of animation frames.
+* Use this to wait for the browser to complete one or more rendering cycles.
+*
+* @param frames The number of animation frames to wait before resolving. Defaults to `1`.
+* @returns A Promise that resolves after `frames` animation frames.
+*/
+function delayAnimationFrame(frames = 1) {
+	return new Promise((resolve) => {
+		let count = 0;
+		const callback = () => {
+			count++;
+			if (count >= frames) resolve();
+			else requestAnimationFrame(callback);
+		};
+		requestAnimationFrame(callback);
+	});
+}
+
+//#endregion
+//#region src/sheets/clone.ts
+/**
+* Fast clone for primitive values and simple objects.
+* Avoids type checking overhead when we know the structure.
+*/
+function cloneValue(value) {
+	if (value === null || value === void 0) return value;
+	if (typeof value !== "object") return value;
+	if (Array.isArray(value)) {
+		const len = value.length;
+		const result = new Array(len);
+		for (let i = 0; i < len; i++) result[i] = cloneValue(value[i]);
+		return result;
+	}
+	const result = {};
+	const keys = Object.keys(value);
+	for (let i = 0, len = keys.length; i < len; i++) {
+		const key = keys[i];
+		result[key] = cloneValue(value[key]);
+	}
+	return result;
+}
+/**
+* Fast clone for ICellData. Optimized for the known structure.
+* @param cell - The cell data to clone
+* @returns A deep clone of the cell data
+*/
+function cloneCellData(cell) {
+	if (cell === null || cell === void 0) return cell;
+	const result = {};
+	if (cell.p !== void 0) result.p = cell.p === null ? null : cloneValue(cell.p);
+	if (cell.s !== void 0) if (cell.s === null || typeof cell.s === "string") result.s = cell.s;
+	else result.s = cloneValue(cell.s);
+	if (cell.v !== void 0) result.v = cell.v;
+	if (cell.t !== void 0) result.t = cell.t;
+	if (cell.f !== void 0) result.f = cell.f;
+	if (cell.ref !== void 0) result.ref = cell.ref;
+	if (cell.xf !== void 0) result.xf = cell.xf;
+	if (cell.si !== void 0) result.si = cell.si;
+	if (cell.custom !== void 0) result.custom = cell.custom === null ? null : cloneValue(cell.custom);
+	return result;
+}
+/**
+* Fast clone for ICellDataWithSpanAndDisplay. Optimized for the known structure.
+* This extends cloneCellData with additional span and display properties.
+* @param cell - The cell data with span and display info to clone
+* @returns A deep clone of the cell data
+*/
+function cloneCellDataWithSpanAndDisplay(cell) {
+	if (cell === null || cell === void 0) return cell;
+	const result = {};
+	if (cell.p !== void 0) result.p = cell.p === null ? null : cloneValue(cell.p);
+	if (cell.s !== void 0) if (cell.s === null || typeof cell.s === "string") result.s = cell.s;
+	else result.s = cloneValue(cell.s);
+	if (cell.v !== void 0) result.v = cell.v;
+	if (cell.t !== void 0) result.t = cell.t;
+	if (cell.f !== void 0) result.f = cell.f;
+	if (cell.ref !== void 0) result.ref = cell.ref;
+	if (cell.xf !== void 0) result.xf = cell.xf;
+	if (cell.si !== void 0) result.si = cell.si;
+	if (cell.custom !== void 0) result.custom = cell.custom === null ? null : cloneValue(cell.custom);
+	if (cell.rowSpan !== void 0) result.rowSpan = cell.rowSpan;
+	if (cell.colSpan !== void 0) result.colSpan = cell.colSpan;
+	if (cell.displayV !== void 0) result.displayV = cell.displayV;
+	return result;
+}
+/**
+* Fast clone for cell data matrix. Optimized for sparse matrix structure.
+* @param cellData - The cell data matrix to clone
+* @returns A deep clone of the cell data matrix
+*/
+function cloneCellDataMatrix(cellData) {
+	const result = {};
+	const rowKeys = Object.keys(cellData);
+	for (let i = 0, rowLen = rowKeys.length; i < rowLen; i++) {
+		const rowKey = rowKeys[i];
+		const rowNum = Number(rowKey);
+		const rowData = cellData[rowNum];
+		if (rowData === void 0) continue;
+		const clonedRow = {};
+		const colKeys = Object.keys(rowData);
+		for (let j = 0, colLen = colKeys.length; j < colLen; j++) {
+			const colKey = colKeys[j];
+			const colNum = Number(colKey);
+			const cell = rowData[colNum];
+			if (cell !== void 0 && cell !== null) clonedRow[colNum] = cloneCellData(cell);
+		}
+		result[rowNum] = clonedRow;
+	}
+	return result;
+}
+/**
+* Fast clone for row/column data arrays (sparse arrays stored as objects).
+* @param data - The row or column data to clone
+* @returns A deep clone of the row or column data
+*/
+function cloneRowColumnData(data) {
+	const result = {};
+	const keys = Object.keys(data);
+	for (let i = 0, len = keys.length; i < len; i++) {
+		const key = keys[i];
+		const idx = Number(key);
+		const item = data[idx];
+		if (item === void 0) continue;
+		const cloned = {};
+		if ("h" in item && item.h !== void 0) cloned.h = item.h;
+		if ("ia" in item && item.ia !== void 0) cloned.ia = item.ia;
+		if ("ah" in item && item.ah !== void 0) cloned.ah = item.ah;
+		if ("hd" in item && item.hd !== void 0) cloned.hd = item.hd;
+		if ("w" in item && item.w !== void 0) cloned.w = item.w;
+		if ("s" in item && item.s !== void 0) if (item.s === null || typeof item.s === "string") cloned.s = item.s;
+		else cloned.s = cloneValue(item.s);
+		if ("custom" in item && item.custom !== void 0) cloned.custom = item.custom === null ? null : cloneValue(item.custom);
+		result[idx] = cloned;
+	}
+	return result;
+}
+/**
+* Fast clone for IRange array (merge data).
+* @param ranges - The array of ranges to clone
+* @returns A shallow clone of the ranges (IRange contains only primitive values)
+*/
+function cloneMergeData(ranges) {
+	const len = ranges.length;
+	const result = new Array(len);
+	for (let i = 0; i < len; i++) {
+		const range = ranges[i];
+		result[i] = {
+			startRow: range.startRow,
+			startColumn: range.startColumn,
+			endRow: range.endRow,
+			endColumn: range.endColumn,
+			rangeType: range.rangeType,
+			startAbsoluteRefType: range.startAbsoluteRefType,
+			endAbsoluteRefType: range.endAbsoluteRefType
+		};
+	}
+	return result;
+}
+/**
+* Optimized deep clone specifically for IWorksheetData.
+* This is significantly faster than generic deepClone because:
+* 1. No recursive type checking - we know the structure
+* 2. Direct property access instead of Object.keys iteration for known properties
+* 3. Specialized handlers for cellData matrix (the largest data)
+* 4. Primitive values copied directly without cloning
+*
+* @param worksheet - The worksheet data to clone
+* @returns A deep clone of the worksheet data
+*/
+function cloneWorksheetData(worksheet) {
+	const result = {
+		id: worksheet.id,
+		name: worksheet.name,
+		tabColor: worksheet.tabColor,
+		hidden: worksheet.hidden,
+		rowCount: worksheet.rowCount,
+		columnCount: worksheet.columnCount,
+		zoomRatio: worksheet.zoomRatio,
+		scrollTop: worksheet.scrollTop,
+		scrollLeft: worksheet.scrollLeft,
+		defaultColumnWidth: worksheet.defaultColumnWidth,
+		defaultRowHeight: worksheet.defaultRowHeight,
+		showGridlines: worksheet.showGridlines,
+		rightToLeft: worksheet.rightToLeft,
+		freeze: {
+			xSplit: worksheet.freeze.xSplit,
+			ySplit: worksheet.freeze.ySplit,
+			startRow: worksheet.freeze.startRow,
+			startColumn: worksheet.freeze.startColumn
+		},
+		rowHeader: {
+			width: worksheet.rowHeader.width,
+			hidden: worksheet.rowHeader.hidden
+		},
+		columnHeader: {
+			height: worksheet.columnHeader.height,
+			hidden: worksheet.columnHeader.hidden
+		},
+		mergeData: cloneMergeData(worksheet.mergeData),
+		cellData: cloneCellDataMatrix(worksheet.cellData),
+		rowData: cloneRowColumnData(worksheet.rowData),
+		columnData: cloneRowColumnData(worksheet.columnData)
+	};
+	if (worksheet.gridlinesColor !== void 0) result.gridlinesColor = worksheet.gridlinesColor;
+	if (worksheet.defaultStyle !== void 0) if (worksheet.defaultStyle === null || typeof worksheet.defaultStyle === "string") result.defaultStyle = worksheet.defaultStyle;
+	else result.defaultStyle = cloneValue(worksheet.defaultStyle);
+	if (worksheet.custom !== void 0) result.custom = worksheet.custom === null ? null : cloneValue(worksheet.custom);
+	return result;
+}
+
+//#endregion
+//#region src/skeleton.ts
+let Skeleton = class Skeleton extends Disposable {
+	constructor(_localeService) {
+		super();
+		this._localeService = _localeService;
+		_defineProperty(this, "_fontLocale", void 0);
+		_defineProperty(this, "_dirty", true);
+		this._localeInitial();
+	}
+	get dirty() {
+		return this._dirty;
+	}
+	getFontLocale() {
+		return this._fontLocale;
+	}
+	makeDirty(state) {
+		this._dirty = state;
+	}
+	dispose() {
+		super.dispose();
+		this._fontLocale = null;
+	}
+	_localeInitial() {}
+};
+Skeleton = __decorate([__decorateParam(0, Inject(LocaleService))], Skeleton);
+
+//#endregion
+//#region src/sheets/sheet-skeleton.ts
+/**
+* Reusable gap fixture for visual and integration testing.
+*/
+function createSheetGapTestConfig(overrides = {}) {
+	const baseConfig = {
+		defaultBackgroundColor: "rgba(24, 119, 242, 0.08)",
+		defaultStripeColor: "rgba(24, 119, 242, 0.25)",
+		rowGaps: {
+			1: { size: 6 },
+			3: {
+				size: 10,
+				color: "rgba(245, 158, 11, 0.14)"
+			},
+			6: {
+				size: 14,
+				color: "rgba(16, 185, 129, 0.12)",
+				stripeColor: "rgba(5, 150, 105, 0.35)"
+			}
+		},
+		colGaps: {
+			1: { size: 5 },
+			2: {
+				size: 8,
+				stripeColor: "rgba(59, 130, 246, 0.35)"
+			},
+			4: {
+				size: 12,
+				color: "rgba(244, 63, 94, 0.12)",
+				stripeColor: "rgba(225, 29, 72, 0.30)"
+			}
+		}
+	};
+	return {
+		...baseConfig,
+		...overrides,
+		rowGaps: {
+			...baseConfig.rowGaps,
+			...overrides.rowGaps
+		},
+		colGaps: {
+			...baseConfig.colGaps,
+			...overrides.colGaps
+		}
+	};
+}
+let SheetSkeleton = class SheetSkeleton extends Skeleton {
+	constructor(worksheet, _styles, _localeService, _contextService, _configService, _injector) {
+		super(_localeService);
+		this.worksheet = worksheet;
+		this._styles = _styles;
+		this._contextService = _contextService;
+		this._configService = _configService;
+		this._injector = _injector;
+		_defineProperty(this, "_worksheetData", void 0);
+		_defineProperty(this, "_renderRawFormula", false);
+		_defineProperty(this, "_cellData", void 0);
+		_defineProperty(this, "_imageCacheMap", void 0);
+		_defineProperty(this, "_skipAutoHeightForMergedCells", true);
+		_defineProperty(this, "_rowTotalHeight", 0);
+		_defineProperty(this, "_columnTotalWidth", 0);
+		_defineProperty(this, "_rowHeaderWidth", 0);
+		_defineProperty(this, "_columnHeaderHeight", 0);
+		_defineProperty(this, "_rowHeightAccumulation", []);
+		_defineProperty(this, "_columnWidthAccumulation", []);
+		_defineProperty(this, "_marginTop", 0);
+		_defineProperty(this, "_marginLeft", 0);
+		_defineProperty(this, "_gapConfig", {});
+		_defineProperty(this, "_scaleX", 1);
+		_defineProperty(this, "_scaleY", 1);
+		_defineProperty(this, "_scrollX", 0);
+		_defineProperty(this, "_scrollY", 0);
+		this._worksheetData = this.worksheet.getConfig();
+		this._cellData = this.worksheet.getCellMatrix();
+		this._imageCacheMap = new ImageCacheMap(this._injector);
+		this.initConfig();
+	}
+	initConfig() {
+		this._skipAutoHeightForMergedCells = !(this._configService.getConfig(AUTO_HEIGHT_FOR_MERGED_CELLS) ?? false);
+		this.worksheet.setIsRowStylePrecedeColumnStyle(this._configService.getConfig("isRowStylePrecedeColumnStyle") ?? false);
+	}
+	resetCache() {}
+	/**
+	* Get which Workbook and Worksheet this skeleton is attached to.
+	* @returns [unitId, sheetId]
+	*/
+	getLocation() {
+		return [this.worksheet.getUnitId(), this.worksheet.getSheetId()];
+	}
+	set columnHeaderHeight(value) {
+		this._columnHeaderHeight = value;
+		this._worksheetData.columnHeader.height = value;
+	}
+	set rowHeaderWidth(value) {
+		this._rowHeaderWidth = value;
+		this._worksheetData.rowHeader.width = value;
+	}
+	get rowHeightAccumulation() {
+		return this._rowHeightAccumulation;
+	}
+	get rowTotalHeight() {
+		return this._rowTotalHeight;
+	}
+	get columnWidthAccumulation() {
+		return this._columnWidthAccumulation;
+	}
+	get columnTotalWidth() {
+		return this._columnTotalWidth;
+	}
+	get rowHeaderWidth() {
+		return this._rowHeaderWidth;
+	}
+	get columnHeaderHeight() {
+		return this._columnHeaderHeight;
+	}
+	setMarginLeft(left) {
+		this._marginLeft = left;
+	}
+	setMarginTop(top) {
+		this._marginTop = top;
+	}
+	setScale(value, valueY) {
+		this._updateLayout();
+		this._scaleX = value;
+		this._scaleY = valueY || value;
+		this._updateLayout();
+	}
+	setScroll(scrollX, scrollY) {
+		if (Tools.isDefine(scrollX)) this._scrollX = scrollX;
+		if (Tools.isDefine(scrollY)) this._scrollY = scrollY;
+	}
+	get scrollX() {
+		return this._scrollX;
+	}
+	get scrollY() {
+		return this._scrollY;
+	}
+	get scaleX() {
+		return this._scaleX;
+	}
+	get scaleY() {
+		return this._scaleY;
+	}
+	get rowHeaderWidthAndMarginLeft() {
+		return this.rowHeaderWidth + this._marginLeft;
+	}
+	get columnHeaderHeightAndMarginTop() {
+		return this.columnHeaderHeight + this._marginTop;
+	}
+	get imageCacheMap() {
+		return this._imageCacheMap;
+	}
+	get gapConfig() {
+		return this._gapConfig;
+	}
+	/**
+	* Set runtime gap configuration for visual row/column separators.
+	* This triggers a recalculation of the layout (accumulation arrays, etc.).
+	*/
+	setGapConfig(config) {
+		this._gapConfig = this._fillDefaultGapThemeColors(config);
+		this.makeDirty(true);
+		this._updateLayout();
+	}
+	_fillDefaultGapThemeColors(config) {
+		if (config.defaultBackgroundColor && config.defaultStripeColor) return config;
+		const { r, g, b } = new ColorKit(this._injector.get(ThemeService).getColorFromTheme("primary.500")).toRgb();
+		return {
+			...config,
+			defaultBackgroundColor: config.defaultBackgroundColor ?? `rgba(${r}, ${g}, ${b}, 0.025)`,
+			defaultStripeColor: config.defaultStripeColor ?? `rgba(${r}, ${g}, ${b}, 0.08)`
+		};
+	}
+	/**
+	* Get the gap size (in px) BEFORE the given row.
+	*/
+	getRowGapSize(row) {
+		var _this$_gapConfig$rowG;
+		return ((_this$_gapConfig$rowG = this._gapConfig.rowGaps) === null || _this$_gapConfig$rowG === void 0 || (_this$_gapConfig$rowG = _this$_gapConfig$rowG[row]) === null || _this$_gapConfig$rowG === void 0 ? void 0 : _this$_gapConfig$rowG.size) ?? 0;
+	}
+	/**
+	* Get the gap size (in px) BEFORE the given column.
+	*/
+	getColGapSize(col) {
+		var _this$_gapConfig$colG;
+		return ((_this$_gapConfig$colG = this._gapConfig.colGaps) === null || _this$_gapConfig$colG === void 0 || (_this$_gapConfig$colG = _this$_gapConfig$colG[col]) === null || _this$_gapConfig$colG === void 0 ? void 0 : _this$_gapConfig$colG.size) ?? 0;
+	}
+	/**
+	* Returns a gap size getter object for use with coordinate utility functions.
+	*/
+	getGapSizeGetter() {
+		if (!this._gapConfig.rowGaps && !this._gapConfig.colGaps) return;
+		return {
+			row: (r) => this.getRowGapSize(r),
+			col: (c) => this.getColGapSize(c)
+		};
+	}
+	/**
+	* Check if a Y position (in sheet content coordinates) falls within a row gap.
+	* @returns The row index that the gap precedes, or -1 if not in a gap.
+	*/
+	getRowGapAtPosition(y) {
+		const { rowGaps } = this._gapConfig;
+		if (!rowGaps) return -1;
+		for (const rowStr of Object.keys(rowGaps)) {
+			var _rowGaps$row;
+			const row = Number(rowStr);
+			const gapSize = ((_rowGaps$row = rowGaps[row]) === null || _rowGaps$row === void 0 ? void 0 : _rowGaps$row.size) ?? 0;
+			if (gapSize <= 0) continue;
+			const gapStart = this._rowHeightAccumulation[row - 1] ?? 0;
+			const gapEnd = gapStart + gapSize;
+			if (y >= gapStart && y < gapEnd) return row;
+		}
+		return -1;
+	}
+	/**
+	* Check if an X position (in sheet content coordinates) falls within a column gap.
+	* @returns The column index that the gap precedes, or -1 if not in a gap.
+	*/
+	getColGapAtPosition(x) {
+		const { colGaps } = this._gapConfig;
+		if (!colGaps) return -1;
+		for (const colStr of Object.keys(colGaps)) {
+			var _colGaps$col;
+			const col = Number(colStr);
+			const gapSize = ((_colGaps$col = colGaps[col]) === null || _colGaps$col === void 0 ? void 0 : _colGaps$col.size) ?? 0;
+			if (gapSize <= 0) continue;
+			const gapStart = this._columnWidthAccumulation[col - 1] ?? 0;
+			const gapEnd = gapStart + gapSize;
+			if (x >= gapStart && x < gapEnd) return col;
+		}
+		return -1;
+	}
+	_generateRowMatrixCache(rowCount, rowData, defaultRowHeight) {
+		let rowTotalHeight = 0;
+		const rowHeightAccumulation = [];
+		const data = rowData;
+		for (let r = 0; r < rowCount; r++) {
+			var _this$_gapConfig$rowG2;
+			let rowHeight = defaultRowHeight;
+			if (this.worksheet.getRowFiltered(r)) rowHeight = 0;
+			else if (data[r] != null) {
+				const rowDataItem = data[r];
+				if (!rowDataItem) continue;
+				const { h = defaultRowHeight, ah, ia } = rowDataItem;
+				if ((ia == null || ia === 1) && typeof ah === "number" && ah > 0) rowHeight = ah;
+				else rowHeight = h;
+				if (rowDataItem.hd === 1) rowHeight = 0;
+			}
+			const gapSize = ((_this$_gapConfig$rowG2 = this._gapConfig.rowGaps) === null || _this$_gapConfig$rowG2 === void 0 || (_this$_gapConfig$rowG2 = _this$_gapConfig$rowG2[r]) === null || _this$_gapConfig$rowG2 === void 0 ? void 0 : _this$_gapConfig$rowG2.size) ?? 0;
+			rowTotalHeight += gapSize;
+			rowTotalHeight += rowHeight;
+			rowHeightAccumulation.push(rowTotalHeight);
+		}
+		return {
+			rowTotalHeight,
+			rowHeightAccumulation
+		};
+	}
+	/**
+	* Calc columnWidthAccumulation by columnData
+	*/
+	_generateColumnMatrixCache(colCount, columnData, defaultColumnWidth) {
+		let columnTotalWidth = 0;
+		const columnWidthAccumulation = [];
+		const data = columnData;
+		for (let c = 0; c < colCount; c++) {
+			var _this$_gapConfig$colG2;
+			let columnWidth = defaultColumnWidth;
+			if (data[c] != null) {
+				const columnDataItem = data[c];
+				if (!columnDataItem) continue;
+				if (columnDataItem.w != null) columnWidth = columnDataItem.w;
+				if (columnDataItem.hd === 1) columnWidth = 0;
+			}
+			const gapSize = ((_this$_gapConfig$colG2 = this._gapConfig.colGaps) === null || _this$_gapConfig$colG2 === void 0 || (_this$_gapConfig$colG2 = _this$_gapConfig$colG2[c]) === null || _this$_gapConfig$colG2 === void 0 ? void 0 : _this$_gapConfig$colG2.size) ?? 0;
+			columnTotalWidth += gapSize;
+			columnTotalWidth += columnWidth;
+			columnWidthAccumulation.push(columnTotalWidth);
+		}
+		return {
+			columnTotalWidth,
+			columnWidthAccumulation
+		};
+	}
+	intersectMergeRange(row, column) {
+		const mergedData = this.worksheet.getMergedCell(row, column);
+		return Boolean(mergedData);
+	}
+	_getOverflowBound(row, startColumn, endColumn, contentWidth, horizontalAlign = 1) {
+		let cumWidth = 0;
+		if (startColumn > endColumn) {
+			const columnCount = this._columnWidthAccumulation.length - 1;
+			for (let i = startColumn; i >= endColumn; i--) {
+				const column = i;
+				if (!isCellCoverable(this.worksheet.getCell(row, column)) && column !== startColumn || this.intersectMergeRange(row, column)) {
+					if (column === startColumn) return column;
+					return column + 1 > columnCount ? columnCount : column + 1;
+				}
+				const { startX, endX } = getCellWithCoordByIndexCore(row, column, this.rowHeightAccumulation, this.columnWidthAccumulation, void 0, this.getGapSizeGetter());
+				if (horizontalAlign === 2 && column === startColumn) cumWidth += (endX - startX) / 2;
+				else cumWidth += endX - startX;
+				if (contentWidth < cumWidth) return column;
+			}
+			return startColumn;
+		}
+		for (let i = startColumn; i <= endColumn; i++) {
+			const column = i;
+			if (!isCellCoverable(this.worksheet.getCell(row, column)) && column !== startColumn || this.intersectMergeRange(row, column)) {
+				if (column === startColumn) return column;
+				return column - 1 < 0 ? 0 : column - 1;
+			}
+			const { startX, endX } = getCellWithCoordByIndexCore(row, column, this.rowHeightAccumulation, this.columnWidthAccumulation, void 0, this.getGapSizeGetter());
+			if (horizontalAlign === 2 && column === startColumn) cumWidth += (endX - startX) / 2;
+			else cumWidth += endX - startX;
+			if (contentWidth < cumWidth) return column;
+		}
+		return endColumn;
+	}
+	/**
+	* Calculate data for row col & cell position.
+	* This method should be called whenever a sheet is dirty.
+	* Update position value to this._rowHeaderWidth & this._rowHeightAccumulation & this._columnHeaderHeight & this._columnWidthAccumulation.
+	*/
+	_updateLayout() {
+		if (!this.dirty) return;
+		const { rowData, columnData, defaultRowHeight, defaultColumnWidth, rowCount, columnCount, rowHeader, columnHeader } = this._worksheetData;
+		const { rowTotalHeight, rowHeightAccumulation } = this._generateRowMatrixCache(rowCount, rowData, defaultRowHeight);
+		const { columnTotalWidth, columnWidthAccumulation } = this._generateColumnMatrixCache(columnCount, columnData, defaultColumnWidth);
+		this._rowHeaderWidth = rowHeader.hidden !== 1 ? this._dynamicallyUpdateRowHeaderWidth(rowHeader) : 0;
+		this._columnHeaderHeight = columnHeader.hidden !== 1 ? columnHeader.height : 0;
+		this._rowTotalHeight = rowTotalHeight;
+		this._rowHeightAccumulation = rowHeightAccumulation;
+		this._columnTotalWidth = columnTotalWidth;
+		this._columnWidthAccumulation = columnWidthAccumulation;
+		this.makeDirty(false);
+	}
+	/**
+	* Refresh cache after markDirty by SheetSkeletonManagerService.reCalculate()
+	*/
+	calculate() {
+		this.resetCache();
+		this._updateLayout();
+		return this;
+	}
+	resetRangeCache(_ranges) {}
+	_dynamicallyUpdateRowHeaderWidth(rowHeader) {
+		const widthByComputation = `${this.worksheet.getRowCount()}`.length * 8;
+		return Math.max(rowHeader.width, widthByComputation);
+	}
+	_hasUnMergedCellInRow(rowIndex, startColumn, endColumn) {
+		if (!this.worksheet.getMergeData()) return false;
+		for (let i = startColumn; i <= endColumn; i++) {
+			const { isMerged, isMergedMainCell } = this.worksheet.getCellInfoInMergeData(rowIndex, i);
+			if (!isMerged && !isMergedMainCell) return true;
+		}
+		return false;
+	}
+	/**
+	* expand curr range if it's intersect with merge range.
+	* @returns {IRange} expanded range because merge info.
+	*/
+	expandRangeByMerge(range, inRefSelectionMode) {
+		let { startRow, startColumn, endRow, endColumn } = range;
+		const mergeData = this._worksheetData.mergeData;
+		if (!mergeData) return {
+			startRow,
+			startColumn,
+			endRow,
+			endColumn
+		};
+		let isSearching = true;
+		const searchedMerge = new ObjectMatrix();
+		let searchedMergeSize = 0;
+		let lastSearchedMergeCell = null;
+		while (isSearching) {
+			isSearching = false;
+			for (let i = 0; i < mergeData.length; i++) {
+				const { startRow: mainStartRow, startColumn: mainStartColumn, endRow: mainEndRow, endColumn: mainEndColumn } = mergeData[i];
+				if (searchedMerge.getValue(mainStartRow, mainStartColumn)) continue;
+				const rect1 = {
+					startColumn,
+					startRow,
+					endColumn,
+					endRow
+				};
+				const rect2 = {
+					startColumn: mainStartColumn,
+					startRow: mainStartRow,
+					endColumn: mainEndColumn,
+					endRow: mainEndRow
+				};
+				if (getIntersectRange(rect1, rect2)) {
+					startRow = Math.min(startRow, mainStartRow);
+					startColumn = Math.min(startColumn, mainStartColumn);
+					endRow = Math.max(endRow, mainEndRow);
+					endColumn = Math.max(endColumn, mainEndColumn);
+					searchedMerge.setValue(mainStartRow, mainStartColumn, true);
+					isSearching = true;
+					searchedMergeSize++;
+					lastSearchedMergeCell = rect2;
+				}
+			}
+		}
+		/**
+		* If the selected cell is merged cell, we need to adjust the selection range to the merged main cell in the formula reference selection scenario.
+		* Must ensure that only one merged cell is involved in the selection and that the merged cell fully contains the selection range.
+		*/
+		if (inRefSelectionMode && searchedMergeSize === 1 && Rectangle.contains(lastSearchedMergeCell, range)) return {
+			startRow: lastSearchedMergeCell.startRow,
+			startColumn: lastSearchedMergeCell.startColumn,
+			endRow: lastSearchedMergeCell.startRow,
+			endColumn: lastSearchedMergeCell.startColumn
+		};
+		return {
+			startRow,
+			startColumn,
+			endRow,
+			endColumn
+		};
+	}
+	getColumnCount() {
+		return this._columnWidthAccumulation.length;
+	}
+	getRowCount() {
+		return this._rowHeightAccumulation.length;
+	}
+	/**
+	* New version to get merge data.
+	* @returns {ISelectionCell} The cell info with merge data
+	*/
+	_getCellMergeInfo(row, column) {
+		return this.worksheet.getCellInfoInMergeData(row, column);
+	}
+	/**
+	* Original name: getNoMergeCellPositionByIndex
+	*/
+	getNoMergeCellWithCoordByIndex(rowIndex, columnIndex, header = true) {
+		const { rowHeightAccumulation, columnWidthAccumulation, rowHeaderWidthAndMarginLeft, columnHeaderHeightAndMarginTop } = this;
+		let { startY, endY, startX, endX } = getCellWithCoordByIndexCore(rowIndex, columnIndex, rowHeightAccumulation, columnWidthAccumulation, void 0, this.getGapSizeGetter());
+		if (header) {
+			startY += columnHeaderHeightAndMarginTop;
+			endY += columnHeaderHeightAndMarginTop;
+			startX += rowHeaderWidthAndMarginLeft;
+			endX += rowHeaderWidthAndMarginLeft;
+		}
+		return {
+			startY,
+			endY,
+			startX,
+			endX
+		};
+	}
+	/**
+	* Get row index by offset y.
+	*/
+	getRowIndexByOffsetY(offsetY, scaleY, scrollXY, options) {
+		const { rowHeightAccumulation } = this;
+		offsetY = getTransformOffsetY(offsetY, scaleY, scrollXY, this.columnHeaderHeightAndMarginTop);
+		let row = searchArray(rowHeightAccumulation, offsetY, options === null || options === void 0 ? void 0 : options.firstMatch);
+		if (options === null || options === void 0 ? void 0 : options.closeFirst) {
+			if (Math.abs(rowHeightAccumulation[row] - offsetY) < Math.abs(offsetY - (rowHeightAccumulation[row - 1] ?? 0))) row = row + 1;
+		}
+		return row;
+	}
+	/**
+	* Get column index by offset x.
+	*/
+	getColumnIndexByOffsetX(evtOffsetX, scaleX, scrollXY, options) {
+		const offsetX = getTransformOffsetX(evtOffsetX, scaleX, scrollXY, this.rowHeaderWidthAndMarginLeft);
+		const { columnWidthAccumulation } = this;
+		let column = searchArray(columnWidthAccumulation, offsetX, options === null || options === void 0 ? void 0 : options.firstMatch);
+		if (options === null || options === void 0 ? void 0 : options.closeFirst) {
+			if (Math.abs(columnWidthAccumulation[column] - offsetX) < Math.abs(offsetX - (columnWidthAccumulation[column - 1] ?? 0))) column = column + 1;
+		}
+		return column;
+	}
+	/**
+	* Get cell index by offset(o)
+	* @param offsetX position X in viewport.
+	* @param offsetY position Y in viewport.
+	* @param scaleX render scene scale x-axis, scene.getAncestorScale
+	* @param scaleY render scene scale y-axis, scene.getAncestorScale
+	* @param scrollXY  render viewport scroll {x, y}, scene.getScrollXYByRelativeCoords, scene.getScrollXY
+	* @param scrollXY.x
+	* @param scrollXY.y
+	*/
+	getCellIndexByOffset(offsetX, offsetY, scaleX, scaleY, scrollXY, options) {
+		return {
+			row: this.getRowIndexByOffsetY(offsetY, scaleY, scrollXY, options),
+			column: this.getColumnIndexByOffsetX(offsetX, scaleX, scrollXY, options)
+		};
+	}
+	/**
+	* Unlike getCellWithCoordByOffset, returning data doesn't include coord.
+	*/
+	getCellByOffset(offsetX, offsetY, scaleX, scaleY, scrollXY) {
+		var _this;
+		const cellIndex = (_this = this) === null || _this === void 0 ? void 0 : _this.getCellIndexByOffset(offsetX, offsetY, scaleX, scaleY, scrollXY, { firstMatch: true });
+		if (!cellIndex) return null;
+		return this.worksheet.getCellInfoInMergeData(cellIndex.row, cellIndex.column);
+	}
+	/**
+	* Return cell information corresponding to the current coordinates, including the merged cell object.
+	* @param row Specified Row Coordinate
+	* @param column Specified Column Coordinate
+	*/
+	getCellWithCoordByIndex(row, column, header = true) {
+		var _this$worksheet;
+		const { rowHeightAccumulation, columnWidthAccumulation, rowHeaderWidthAndMarginLeft, columnHeaderHeightAndMarginTop } = this;
+		const primary = getCellWithCoordByIndexCore(row, column, rowHeightAccumulation, columnWidthAccumulation, (_this$worksheet = this.worksheet) === null || _this$worksheet === void 0 ? void 0 : _this$worksheet.getCellInfoInMergeData(row, column), this.getGapSizeGetter());
+		const { isMerged, isMergedMainCell } = primary;
+		let { startY, endY, startX, endX, mergeInfo } = primary;
+		let offsetX = rowHeaderWidthAndMarginLeft;
+		let offsetY = columnHeaderHeightAndMarginTop;
+		if (header === false) {
+			offsetX = 0;
+			offsetY = 0;
+		}
+		startY += offsetY;
+		endY += offsetY;
+		startX += offsetX;
+		endX += offsetX;
+		mergeInfo.startY += offsetY;
+		mergeInfo.endY += offsetY;
+		mergeInfo.startX += offsetX;
+		mergeInfo.endX += offsetX;
+		return {
+			actualRow: row,
+			actualColumn: column,
+			startX,
+			startY,
+			endX,
+			endY,
+			isMerged,
+			isMergedMainCell,
+			mergeInfo
+		};
+	}
+	/**
+	* Get cell by pos(offsetX, offsetY). Combine getCellIndexByOffset and then getCellWithCoordByIndex.
+	*
+	* options.matchFirst true means get cell would skip all invisible cells.
+	* @param offsetX position X in viewport.
+	* @param offsetY position Y in viewport.
+	* @param scaleX render scene scale x-axis, scene.getAncestorScale
+	* @param scaleY render scene scale y-axis, scene.getAncestorScale
+	* @param scrollXY render viewportScroll {x, y}
+	* @param options {IGetRowColByPosOptions}
+	* @returns {ICellWithCoord} Selection data with coordinates
+	*/
+	getCellWithCoordByOffset(offsetX, offsetY, scaleX, scaleY, scrollXY, options) {
+		const { row, column } = this.getCellIndexByOffset(offsetX, offsetY, scaleX, scaleY, scrollXY, options);
+		return this.getCellWithCoordByIndex(row, column);
+	}
+	/**
+	* Original name: getOffsetByPositionX
+	*/
+	getOffsetByColumn(column) {
+		const { columnWidthAccumulation, rowHeaderWidthAndMarginLeft } = this;
+		const lastColumnIndex = columnWidthAccumulation.length - 1;
+		const columnValue = columnWidthAccumulation[column];
+		if (columnValue != null) return columnValue + rowHeaderWidthAndMarginLeft;
+		if (column < 0) return rowHeaderWidthAndMarginLeft;
+		return columnWidthAccumulation[lastColumnIndex] + rowHeaderWidthAndMarginLeft;
+	}
+	/**
+	* Original name: getOffsetByPositionY
+	*/
+	getOffsetByRow(row) {
+		const { rowHeightAccumulation, columnHeaderHeightAndMarginTop } = this;
+		const lastRowIndex = rowHeightAccumulation.length - 1;
+		const rowValue = rowHeightAccumulation[row];
+		if (rowValue != null) return rowValue + columnHeaderHeightAndMarginTop;
+		if (row < 0) return columnHeaderHeightAndMarginTop;
+		return rowHeightAccumulation[lastRowIndex] + columnHeaderHeightAndMarginTop;
+	}
+	/**
+	* Original name: getDecomposedOffset
+	* Here, offsetX and offsetY are the coordinates in the main viewport, excluding the rowHeaderWidthAndMarginLeft and columnHeaderHeightAndMarginTop.
+	*/
+	getOffsetRelativeToRowCol(offsetX, offsetY) {
+		const column = searchArray(this.columnWidthAccumulation, offsetX);
+		const columnOffset = offsetX - ((this._columnWidthAccumulation[column - 1] || 0) + this.getColGapSize(column));
+		const row = searchArray(this.rowHeightAccumulation, offsetY);
+		return {
+			row,
+			column,
+			columnOffset,
+			rowOffset: offsetY - ((this._rowHeightAccumulation[row - 1] || 0) + this.getRowGapSize(row))
+		};
+	}
+	/**
+	* Here, offsetX and offsetY are the coordinates in the viewport, including the rowHeaderWidthAndMarginLeft and columnHeaderHeightAndMarginTop.
+	*/
+	getCellIndexAndOffsetByPosition(offsetX, offsetY) {
+		const { actualRow, actualColumn, startX, startY } = this.getCellWithCoordByOffset(offsetX, offsetY, this._scaleX, this._scaleY, {
+			x: this._scrollX,
+			y: this._scrollY
+		});
+		return {
+			row: actualRow,
+			rowOffset: offsetY - startY,
+			column: actualColumn,
+			columnOffset: offsetX - startX
+		};
+	}
+	_updateConfigAndGetDocumentModel(documentData, horizontalAlign, paddingData, renderConfig) {
+		var _documentData$body;
+		if (!renderConfig) return;
+		if (!((_documentData$body = documentData.body) === null || _documentData$body === void 0 ? void 0 : _documentData$body.dataStream)) return;
+		if (!documentData.documentStyle) documentData.documentStyle = {};
+		documentData.documentStyle.marginTop = paddingData.t ?? 0;
+		documentData.documentStyle.marginBottom = paddingData.b ?? 2;
+		documentData.documentStyle.marginLeft = paddingData.l ?? 2;
+		documentData.documentStyle.marginRight = paddingData.r ?? 2;
+		documentData.documentStyle.pageSize = {
+			width: Number.POSITIVE_INFINITY,
+			height: Number.POSITIVE_INFINITY
+		};
+		documentData.documentStyle.documentFlavor = 0;
+		documentData.documentStyle.paragraphLineGapDefault = 0;
+		documentData.documentStyle.renderConfig = {
+			...documentData.documentStyle.renderConfig,
+			...renderConfig
+		};
+		const paragraphs = documentData.body.paragraphs || [];
+		for (const paragraph of paragraphs) {
+			if (!paragraph.paragraphStyle) paragraph.paragraphStyle = {};
+			paragraph.paragraphStyle.horizontalAlign = horizontalAlign;
+		}
+		return new DocumentDataModel(documentData);
+	}
+	dispose() {
+		super.dispose();
+		this._rowHeightAccumulation = [];
+		this._columnWidthAccumulation = [];
+		this._rowTotalHeight = 0;
+		this._columnTotalWidth = 0;
+		this._rowHeaderWidth = 0;
+		this._columnHeaderHeight = 0;
+		this._worksheetData = null;
+		this._cellData = null;
+		this._styles = null;
+		this.worksheet = null;
+	}
+};
+SheetSkeleton = __decorate([
+	__decorateParam(2, Inject(LocaleService)),
+	__decorateParam(3, IContextService),
+	__decorateParam(4, IConfigService),
+	__decorateParam(5, Inject(Injector))
+], SheetSkeleton);
+/**
+* Not same as getCellWithCoordByIndex, Only the coordinates of the corresponding cells in rows and columns are considered, without taking into account the merged data.
+*
+* @param row
+* @param column
+* @param rowHeightAccumulation
+* @param columnWidthAccumulation
+* @param rowGapSize Gap size (px) BEFORE this row. The cell startY is shifted by this amount.
+* @param colGapSize Gap size (px) BEFORE this column. The cell startX is shifted by this amount.
+*/
+function getCellCoordByIndexSimple(row, column, rowHeightAccumulation, columnWidthAccumulation, rowGapSize = 0, colGapSize = 0) {
+	const startRow = row - 1;
+	const startColumn = column - 1;
+	const startY = (rowHeightAccumulation[startRow] || 0) + rowGapSize;
+	let endY = rowHeightAccumulation[row];
+	if (endY == null) endY = rowHeightAccumulation[rowHeightAccumulation.length - 1];
+	const startX = (columnWidthAccumulation[startColumn] || 0) + colGapSize;
+	let endX = columnWidthAccumulation[column];
+	if (endX == null) endX = columnWidthAccumulation[columnWidthAccumulation.length - 1];
+	return {
+		startY,
+		endY,
+		startX,
+		endX
+	};
+}
+/**
+* @description Get the cell position information of the specified row and column, including the position of the cell and the merge info
+* @param {number} row The row index of the cell
+* @param {number} column The column index of the cell
+* @param {number[]} rowHeightAccumulation The accumulated height of each row
+* @param {number[]} columnWidthAccumulation The accumulated width of each column
+* @param {ICellInfo} mergeDataInfo The merge information of the cell
+* @param {IGapSizeGetter} gapSizeGetter Optional getter for gap sizes before specific rows/columns
+* @returns {ICellWithCoord} The cell position information of the specified row and column, including the position information of the cell and the merge information of the cell
+*/
+function getCellWithCoordByIndexCore(row, column, rowHeightAccumulation, columnWidthAccumulation, mergeDataInfo, gapSizeGetter) {
+	row = Tools.clamp(row, 0, rowHeightAccumulation.length - 1);
+	column = Tools.clamp(column, 0, columnWidthAccumulation.length - 1);
+	let { startY, endY, startX, endX } = getCellCoordByIndexSimple(row, column, rowHeightAccumulation, columnWidthAccumulation, (gapSizeGetter === null || gapSizeGetter === void 0 ? void 0 : gapSizeGetter.row(row)) ?? 0, (gapSizeGetter === null || gapSizeGetter === void 0 ? void 0 : gapSizeGetter.col(column)) ?? 0);
+	if (!mergeDataInfo) return {
+		startY,
+		endY,
+		startX,
+		endX,
+		isMerged: false,
+		isMergedMainCell: false,
+		actualRow: row,
+		actualColumn: column,
+		mergeInfo: {
+			startY,
+			endY,
+			startX,
+			endX,
+			startRow: row,
+			startColumn: column,
+			endRow: row,
+			endColumn: column
+		}
+	};
+	const { isMerged, isMergedMainCell, startRow, startColumn, endRow, endColumn } = mergeDataInfo;
+	let mergeInfo = {
+		startRow,
+		startColumn,
+		endRow,
+		endColumn,
+		startY,
+		endY,
+		startX,
+		endX
+	};
+	const rowAccumulationCount = rowHeightAccumulation.length - 1;
+	const columnAccumulationCount = columnWidthAccumulation.length - 1;
+	if (isMerged && startRow !== -1 && startColumn !== -1) {
+		const mergeRowGapSize = (gapSizeGetter === null || gapSizeGetter === void 0 ? void 0 : gapSizeGetter.row(startRow)) ?? 0;
+		const mergeColGapSize = (gapSizeGetter === null || gapSizeGetter === void 0 ? void 0 : gapSizeGetter.col(startColumn)) ?? 0;
+		const mergeStartY = (rowHeightAccumulation[startRow - 1] || 0) + mergeRowGapSize;
+		const mergeEndY = rowHeightAccumulation[endRow] || rowHeightAccumulation[rowAccumulationCount];
+		const mergeStartX = (columnWidthAccumulation[startColumn - 1] || 0) + mergeColGapSize;
+		const mergeEndX = columnWidthAccumulation[endColumn] || columnWidthAccumulation[columnAccumulationCount];
+		mergeInfo = {
+			...mergeInfo,
+			startY: mergeStartY,
+			endY: mergeEndY,
+			startX: mergeStartX,
+			endX: mergeEndX
+		};
+	} else if (!isMerged && endRow !== -1 && endColumn !== -1) {
+		const mergeEndY = rowHeightAccumulation[endRow] || rowHeightAccumulation[rowAccumulationCount];
+		const mergeEndX = columnWidthAccumulation[endColumn] || columnWidthAccumulation[columnAccumulationCount];
+		mergeInfo = {
+			...mergeInfo,
+			startY,
+			endY: mergeEndY,
+			startX,
+			endX: mergeEndX
+		};
+	}
+	return {
+		isMerged,
+		isMergedMainCell,
+		actualRow: row,
+		actualColumn: column,
+		startY,
+		endY,
+		startX,
+		endX,
+		mergeInfo
+	};
+}
+/**
+* Get x in sheet coordinate. Already handled scrolling and zooming.
+* @param offsetX Offset value from PointerEvent in canvas element.
+* @param scaleX from scene.getAncestorScale
+* @param scrollXY Scroll value of viewport
+* @returns {number} x in sheet coordinate.
+*/
+function getTransformOffsetX(offsetX, scaleX, scrollXY, rowHeaderWidth) {
+	const { x: scrollX } = scrollXY;
+	return offsetX / scaleX + scrollX - rowHeaderWidth;
+}
+/**
+* @param offsetY
+* @param scaleY
+* @param scrollXY
+*/
+function getTransformOffsetY(offsetY, scaleY, scrollXY, columnHeight) {
+	const { y: scrollY } = scrollXY;
+	offsetY = offsetY / scaleY + scrollY - columnHeight;
+	return offsetY;
+}
+
+//#endregion
+//#region src/types/const/clipboard.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const skipParseTagNames = [
+	"script",
+	"style",
+	"meta",
+	"comment",
+	"link"
+];
+
+//#endregion
+//#region src/types/enum/data-validation-error-style.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DataValidationErrorStyle = /* @__PURE__ */ function(DataValidationErrorStyle) {
+	DataValidationErrorStyle[DataValidationErrorStyle["INFO"] = 0] = "INFO";
+	DataValidationErrorStyle[DataValidationErrorStyle["STOP"] = 1] = "STOP";
+	DataValidationErrorStyle[DataValidationErrorStyle["WARNING"] = 2] = "WARNING";
+	return DataValidationErrorStyle;
+}({});
+
+//#endregion
+//#region src/types/enum/data-validation-ime-mode.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DataValidationImeMode = /* @__PURE__ */ function(DataValidationImeMode) {
+	DataValidationImeMode[DataValidationImeMode["DISABLED"] = 0] = "DISABLED";
+	DataValidationImeMode[DataValidationImeMode["FULL_ALPHA"] = 1] = "FULL_ALPHA";
+	DataValidationImeMode[DataValidationImeMode["FULL_HANGUL"] = 2] = "FULL_HANGUL";
+	DataValidationImeMode[DataValidationImeMode["FULL_KATAKANA"] = 3] = "FULL_KATAKANA";
+	DataValidationImeMode[DataValidationImeMode["HALF_ALPHA"] = 4] = "HALF_ALPHA";
+	DataValidationImeMode[DataValidationImeMode["HALF_HANGUL"] = 5] = "HALF_HANGUL";
+	DataValidationImeMode[DataValidationImeMode["HALF_KATAKANA"] = 6] = "HALF_KATAKANA";
+	DataValidationImeMode[DataValidationImeMode["HIRAGANA"] = 7] = "HIRAGANA";
+	DataValidationImeMode[DataValidationImeMode["NO_CONTROL"] = 8] = "NO_CONTROL";
+	DataValidationImeMode[DataValidationImeMode["OFF"] = 9] = "OFF";
+	DataValidationImeMode[DataValidationImeMode["ON"] = 10] = "ON";
+	return DataValidationImeMode;
+}({});
+
+//#endregion
+//#region src/types/enum/data-validation-operator.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DataValidationOperator = /* @__PURE__ */ function(DataValidationOperator) {
+	DataValidationOperator["BETWEEN"] = "between";
+	DataValidationOperator["EQUAL"] = "equal";
+	DataValidationOperator["GREATER_THAN"] = "greaterThan";
+	DataValidationOperator["GREATER_THAN_OR_EQUAL"] = "greaterThanOrEqual";
+	DataValidationOperator["LESS_THAN"] = "lessThan";
+	DataValidationOperator["LESS_THAN_OR_EQUAL"] = "lessThanOrEqual";
+	DataValidationOperator["NOT_BETWEEN"] = "notBetween";
+	DataValidationOperator["NOT_EQUAL"] = "notEqual";
+	return DataValidationOperator;
+}({});
+
+//#endregion
+//#region src/types/enum/data-validation-render-mode.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DataValidationRenderMode = /* @__PURE__ */ function(DataValidationRenderMode) {
+	DataValidationRenderMode[DataValidationRenderMode["TEXT"] = 0] = "TEXT";
+	DataValidationRenderMode[DataValidationRenderMode["ARROW"] = 1] = "ARROW";
+	DataValidationRenderMode[DataValidationRenderMode["CUSTOM"] = 2] = "CUSTOM";
+	return DataValidationRenderMode;
+}({});
+
+//#endregion
+//#region src/types/enum/data-validation-status.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DataValidationStatus = /* @__PURE__ */ function(DataValidationStatus) {
+	DataValidationStatus["VALID"] = "valid";
+	DataValidationStatus["INVALID"] = "invalid";
+	DataValidationStatus["VALIDATING"] = "validating";
+	return DataValidationStatus;
+}({});
+
+//#endregion
+//#region src/types/enum/data-validation-type.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DataValidationType = /* @__PURE__ */ function(DataValidationType) {
+	/**
+	* custom formula
+	*/
+	DataValidationType["CUSTOM"] = "custom";
+	DataValidationType["LIST"] = "list";
+	DataValidationType["LIST_MULTIPLE"] = "listMultiple";
+	DataValidationType["NONE"] = "none";
+	DataValidationType["TEXT_LENGTH"] = "textLength";
+	DataValidationType["DATE"] = "date";
+	DataValidationType["TIME"] = "time";
+	/**
+	* integer number
+	*/
+	DataValidationType["WHOLE"] = "whole";
+	/**
+	* decimal number
+	*/
+	DataValidationType["DECIMAL"] = "decimal";
+	DataValidationType["CHECKBOX"] = "checkbox";
+	DataValidationType["ANY"] = "any";
+	return DataValidationType;
+}({});
+
+//#endregion
+//#region src/services/resource-loader/resource-loader.service.ts
+let ResourceLoaderService = class ResourceLoaderService extends Disposable {
+	constructor(_resourceManagerService, _univerInstanceService) {
+		super();
+		this._resourceManagerService = _resourceManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._init();
+	}
+	_init() {
+		const loadHookResource = (hook, unitId, resources = [], errorLabel) => {
+			const plugin = resources.find((r) => r.name === hook.pluginName);
+			if (plugin) try {
+				const data = hook.parseJson(plugin.data);
+				hook.onLoad(unitId, data);
+			} catch (err) {
+				console.error(`Load ${errorLabel}{${unitId}} Resources{${hook.pluginName}} Data Error.`);
+			}
+		};
+		const handleHookAdd = (hook) => {
+			hook.businesses.forEach((business) => {
+				switch (business) {
+					case UniverInstanceType.UNRECOGNIZED:
+					case UniverInstanceType.UNIVER_UNKNOWN:
+					case UniverInstanceType.UNIVER_DOC:
+						this._univerInstanceService.getAllUnitsForType(UniverInstanceType.UNIVER_DOC).forEach((doc) => {
+							loadHookResource(hook, doc.getUnitId(), doc.getSnapshot().resources, "Document");
+						});
+						break;
+					case UniverInstanceType.UNIVER_SLIDE:
+						this._univerInstanceService.getAllUnitsForType(UniverInstanceType.UNIVER_SLIDE).forEach((slide) => {
+							loadHookResource(hook, slide.getUnitId(), slide.getSnapshot().resources, "Slide");
+						});
+						break;
+					case UniverInstanceType.UNIVER_BOARD:
+						this._univerInstanceService.getAllUnitsForType(UniverInstanceType.UNIVER_BOARD).forEach((board) => {
+							loadHookResource(hook, board.getUnitId(), board.getSnapshot().resources, "Board");
+						});
+						break;
+					case UniverInstanceType.UNIVER_SHEET:
+						this._univerInstanceService.getAllUnitsForType(UniverInstanceType.UNIVER_SHEET).forEach((workbook) => {
+							loadHookResource(hook, workbook.getUnitId(), workbook.getSnapshot().resources, "Workbook");
+						});
+						break;
+					case UniverInstanceType.UNIVER_BASE:
+						this._univerInstanceService.getAllUnitsForType(UniverInstanceType.UNIVER_BASE).forEach((base) => {
+							loadHookResource(hook, base.getUnitId(), base.getSnapshot().resources, "Base");
+						});
+						break;
+				}
+			});
+		};
+		this._resourceManagerService.getAllResourceHooks().forEach((hook) => handleHookAdd(hook));
+		this.disposeWithMe(this._resourceManagerService.register$.subscribe((hook) => handleHookAdd(hook)));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_SHEET).subscribe((event) => {
+			const { unit: workbook } = event;
+			this._resourceManagerService.loadResources(workbook.getUnitId(), workbook.getSnapshot().resources);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_DOC).subscribe((event) => {
+			const { unit: doc } = event;
+			if (!isInternalEditorID(doc.getUnitId())) this._resourceManagerService.loadResources(doc.getUnitId(), doc.getSnapshot().resources);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_SLIDE).subscribe((event) => {
+			const { unit: slide } = event;
+			this._resourceManagerService.loadResources(slide.getUnitId(), slide.getSnapshot().resources);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_BOARD).subscribe((event) => {
+			const { unit: board } = event;
+			this._resourceManagerService.loadResources(board.getUnitId(), board.getSnapshot().resources);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_BASE).subscribe((event) => {
+			const { unit: base } = event;
+			this._resourceManagerService.loadResources(base.getUnitId(), base.getSnapshot().resources);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitDisposed$(UniverInstanceType.UNIVER_SHEET).subscribe((workbook) => {
+			this._resourceManagerService.unloadResources(workbook.getUnitId(), UniverInstanceType.UNIVER_SHEET);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitDisposed$(UniverInstanceType.UNIVER_DOC).subscribe((doc) => {
+			this._resourceManagerService.unloadResources(doc.getUnitId(), UniverInstanceType.UNIVER_DOC);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitDisposed$(UniverInstanceType.UNIVER_BASE).subscribe((base) => {
+			this._resourceManagerService.unloadResources(base.getUnitId(), UniverInstanceType.UNIVER_BASE);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitDisposed$(UniverInstanceType.UNIVER_SLIDE).subscribe((slide) => {
+			this._resourceManagerService.unloadResources(slide.getUnitId(), UniverInstanceType.UNIVER_SLIDE);
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitDisposed$(UniverInstanceType.UNIVER_BOARD).subscribe((board) => {
+			this._resourceManagerService.unloadResources(board.getUnitId(), UniverInstanceType.UNIVER_BOARD);
+		}));
+	}
+	saveUnit(unitId) {
+		const unit = this._univerInstanceService.getUnit(unitId);
+		if (!unit) return null;
+		const resources = this._resourceManagerService.getResources(unitId, unit.type);
+		const snapshot = Tools.deepClone(unit.getSnapshot());
+		snapshot.resources = resources;
+		return snapshot;
+	}
+};
+ResourceLoaderService = __decorate([__decorateParam(0, Inject(IResourceManagerService)), __decorateParam(1, Inject(IUniverInstanceService))], ResourceLoaderService);
+
+//#endregion
+//#region src/slides/slide-data-model.ts
+var SlideDataModel = class extends UnitModel {
+	constructor(..._args) {
+		super(..._args);
+		_defineProperty(this, "type", void 0);
+		_defineProperty(this, "name$", void 0);
+	}
+	getUnitId() {
+		throw new Error("Method not implemented.");
+	}
+	setName(name) {
+		throw new Error("Method not implemented.");
+	}
+	getSnapshot() {
+		throw new Error("Method not implemented.");
+	}
+	getRev() {
+		throw new Error("Method not implemented.");
+	}
+	incrementRev() {
+		throw new Error("Method not implemented.");
+	}
+	setRev(rev) {
+		throw new Error("Method not implemented.");
+	}
+};
+
+//#endregion
+//#region src/univer.ts
+/**
+* @hideconstructor
+*/
+var Univer = class {
+	get _univerInstanceService() {
+		return this._injector.get(IUniverInstanceService);
+	}
+	get _pluginService() {
+		return this._injector.get(PluginService);
+	}
+	/**
+	* Create a Univer instance.
+	* @param config Configuration data for Univer
+	* @param parentInjector An optional parent injector of the Univer injector. For more information, see https://redi.wendell.fun/docs/hierarchy.
+	*/
+	constructor(config = {}, parentInjector) {
+		_defineProperty(this, "_startedTypes", /* @__PURE__ */ new Set());
+		_defineProperty(this, "_injector", void 0);
+		_defineProperty(this, "_disposingCallbacks", new DisposableCollection());
+		const injector = this._injector = createUniverInjector(parentInjector, config === null || config === void 0 ? void 0 : config.override);
+		const { theme, darkMode, locale, region, locales, direction, logLevel, logCommandExecution, undoRedoHistoryLimit } = config;
+		const configService = this._injector.get(IConfigService);
+		if (theme) this._injector.get(ThemeService).setTheme(theme);
+		if (darkMode) this._injector.get(ThemeService).setDarkMode(darkMode);
+		if (locales) this._injector.get(LocaleService).load(locales);
+		if (locale) this._injector.get(LocaleService).setLocale(locale);
+		if (region) this._injector.get(RegionService).setRegion(region);
+		if (direction) this._injector.get(LocaleService).setDirection(direction);
+		if (logLevel) this._injector.get(ILogService).setLogLevel(logLevel);
+		if (logCommandExecution !== void 0) configService.setConfig(COMMAND_LOG_EXECUTION_CONFIG_KEY, logCommandExecution);
+		configService.setConfig(UNDO_REDO_HISTORY_LIMIT_CONFIG_KEY, undoRedoHistoryLimit ?? 50);
+		this._init(injector);
+	}
+	/**
+	* @ignore
+	*/
+	__getInjector() {
+		return this._injector;
+	}
+	/**
+	* Register a callback function which will be called when this Univer instance is disposing.
+	*
+	* @ignore
+	*
+	* @param callback The callback function.
+	* @returns To remove this callback function from this Univer instance's on disposing list.
+	*/
+	onDispose(callback) {
+		const d = this._disposingCallbacks.add(toDisposable(callback));
+		return toDisposable(() => d.dispose(true));
+	}
+	dispose() {
+		this._disposingCallbacks.dispose();
+		this._injector.dispose();
+	}
+	setLocale(locale) {
+		this._injector.get(LocaleService).setLocale(locale);
+	}
+	setRegion(region) {
+		this._injector.get(RegionService).setRegion(region);
+	}
+	createUnit(type, data) {
+		return this._univerInstanceService.createUnit(type, data);
+	}
+	_init(injector) {
+		this._univerInstanceService.registerCtorForType(UniverInstanceType.UNIVER_SHEET, Workbook);
+		this._univerInstanceService.registerCtorForType(UniverInstanceType.UNIVER_DOC, DocumentDataModel);
+		this._univerInstanceService.registerCtorForType(UniverInstanceType.UNIVER_SLIDE, SlideDataModel);
+		const univerInstanceService = injector.get(IUniverInstanceService);
+		univerInstanceService.__setCreateHandler((type, data, ctor, options) => {
+			const isFirstTime = !this._startedTypes.has(type);
+			if (isFirstTime) {
+				this._pluginService.startPluginsForType(type);
+				this._startedTypes.add(type);
+			}
+			const actualCtor = univerInstanceService.__getCtorByType(type) ?? ctor;
+			if (!actualCtor) throw new Error(`[Univer]: No constructor registered for unit type ${type}.`);
+			const model = injector.createInstance(actualCtor, data);
+			univerInstanceService.__addUnit(model, options);
+			if (isFirstTime) this._tryProgressToReady();
+			return model;
+		});
+	}
+	_tryProgressToReady() {
+		if (this._injector.get(LifecycleService).stage < 1) this._injector.get(LifecycleService).stage = 1;
+	}
+	/** Register a plugin into univer. */
+	registerPlugin(plugin, config) {
+		this._pluginService.registerPlugin(plugin, config);
+	}
+	/**
+	* Register multiple plugins into univer.
+	* @param plugins An array of tuples, where each tuple contains a plugin constructor and its optional configuration.
+	*/
+	registerPlugins(plugins) {
+		plugins.forEach((item) => {
+			const [plugin, config] = item;
+			this._pluginService.registerPlugin(plugin, config);
+		});
+	}
+};
+function createUniverInjector(parentInjector, override) {
+	const dependencies = mergeOverrideWithDependencies([
+		[ErrorService],
+		[LocaleService],
+		[RegionService],
+		[ThemeService],
+		[LifecycleService],
+		[PluginService],
+		[UserManagerService],
+		[IUniverInstanceService, { useClass: UniverInstanceService }],
+		[IPermissionService, { useClass: PermissionService }],
+		[ObjectPermissionService],
+		[ILogService, {
+			useClass: DesktopLogService,
+			lazy: true
+		}],
+		[ICommandService, { useClass: CommandService }],
+		[IUndoRedoService, {
+			useClass: LocalUndoRedoService,
+			lazy: true
+		}],
+		[IConfigService, { useClass: ConfigService }],
+		[IContextService, { useClass: ContextService }],
+		[IResourceManagerService, {
+			useClass: ResourceManagerService,
+			lazy: true
+		}],
+		[IResourceLoaderService, {
+			useClass: ResourceLoaderService,
+			lazy: true
+		}],
+		[IAuthzIoService, { useClass: AuthzIoLocalService }],
+		[IMentionIOService, {
+			useClass: MentionIOLocalService,
+			lazy: true
+		}]
+	], override);
+	const injector = parentInjector ? parentInjector.createChild(dependencies) : new Injector(dependencies);
+	touchDependencies(injector, [[UserManagerService], [IResourceLoaderService]]);
+	return injector;
+}
+
+//#endregion
+//#region src/index.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+installShims();
+
+//#endregion
+export { ABCToNumber, AUTO_HEIGHT_FOR_MERGED_CELLS, AbsoluteRefType, ActionIterator, AlignTypeH, AlignTypeV, ArrangeTypeEnum, AsyncInterceptorManager, AsyncLock, AuthzIoLocalService, AutoFillSeries, BASE_RECORD_ID_FIELD_ID, BASE_RECORD_ID_FIELD_NAME, BORDER_KEYS, BORDER_STYLE_KEYS, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseFilterOperator, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, BaselineOffset, BlockType, BooleanNumber, BorderStyleTypes, BorderType, BuildTextUtils, BulletAlignment, COLORS, COLOR_STYLE_KEYS, COMMAND_LOG_EXECUTION_CONFIG_KEY, CanceledError, CellModeEnum, CellValueType, ColorKit, ColorType, ColumnLayoutType, ColumnResponsiveType, ColumnSeparatorType, CommandService, CommandType, CommonHideTypes, ConfigService, ContextService, CopyPasteType, CustomCommandExecutionError, CustomDecorationType, CustomRangeType, DEFAULT_CELL, DEFAULT_DOC, DEFAULT_DOCUMENT_PARAGRAPH_LINE_SPACING, DEFAULT_DOCUMENT_PARAGRAPH_SPACE_ABOVE, DEFAULT_DOCUMENT_PARAGRAPH_SPACE_BELOW, DEFAULT_DOCUMENT_SUB_COMPONENT_ID, DEFAULT_EMPTY_DOCUMENT_VALUE, DEFAULT_NUMBER_FORMAT, DEFAULT_RANGE, DEFAULT_RANGE_ARRAY, DEFAULT_SELECTION, DEFAULT_STYLES, DEFAULT_TEXT_FORMAT, DEFAULT_TEXT_FORMAT_EXCEL, DEFAULT_WORKSHEET_COLUMN_COUNT, DEFAULT_WORKSHEET_COLUMN_COUNT_KEY, DEFAULT_WORKSHEET_COLUMN_TITLE_HEIGHT, DEFAULT_WORKSHEET_COLUMN_TITLE_HEIGHT_KEY, DEFAULT_WORKSHEET_COLUMN_WIDTH, DEFAULT_WORKSHEET_COLUMN_WIDTH_KEY, DEFAULT_WORKSHEET_ROW_COUNT, DEFAULT_WORKSHEET_ROW_COUNT_KEY, DEFAULT_WORKSHEET_ROW_HEIGHT, DEFAULT_WORKSHEET_ROW_HEIGHT_KEY, DEFAULT_WORKSHEET_ROW_TITLE_WIDTH, DEFAULT_WORKSHEET_ROW_TITLE_WIDTH_KEY, DOCS_COMMENT_EDITOR_UNIT_ID_KEY, DOCS_FORMULA_BAR_EDITOR_UNIT_ID_KEY, DOCS_NORMAL_EDITOR_UNIT_ID_KEY, DOC_DRAWING_PRINTING_COMPONENT_KEY, DOC_RANGE_TYPE, DashStyleType, DataStreamTreeNodeType, DataStreamTreeTokenType, DataValidationErrorStyle, DataValidationImeMode, DataValidationOperator, DataValidationRenderMode, DataValidationStatus, DataValidationType, DateSystem, DeleteDirection, DependentOn, DesktopLogService, DeveloperMetadataVisibility, Dimension, Direction, Disposable, DisposableCollection, DocStyleType, DocumentBlockRangeType, DocumentBlockType, DocumentDataModel, DocumentFlavor, DocxBreakType, DrawingTypeEnum, EDITOR_ACTIVATED, EXCEL_1904_OFFSET, EXTENSION_NAMES, ErrorService, EventState, EventSubject, FOCUSING_BOARD, FOCUSING_COMMENT_EDITOR, FOCUSING_COMMON_DRAWINGS, FOCUSING_DOC, FOCUSING_EDITOR_INPUT_FORMULA, FOCUSING_EDITOR_STANDALONE, FOCUSING_FX_BAR_EDITOR, FOCUSING_PANEL_EDITOR, FOCUSING_SHAPE_TEXT_EDITOR, FOCUSING_SHEET, FOCUSING_SLIDE, FOCUSING_UNIT, FOCUSING_UNIVER_EDITOR, FOCUSING_UNIVER_EDITOR_STANDALONE_SINGLE_MODE, FORMULA_EDITOR_ACTIVATED, FollowNumberWithType, FontItalic, FontStyleType, FontWeight, GridType, HorizontalAlign, IAuthzIoService, ICommandService, IConfigService, IConfirmService, IContextService, IImageIoService, ILocalStorageService, ILogService, IMentionIOService, IPermissionService, IResourceLoaderService, IResourceManagerService, IS_ROW_STYLE_PRECEDE_COLUMN_STYLE, IURLImageService, IUndoRedoService, IUniverInstanceService, ImageCacheMap, ImageSourceType, ImageUploadStatusType, Inject, InjectSelf, Injector, InterceptorEffectEnum, InterceptorManager, InterpolationPointType, json1 as JSON1, JSONX, LOCALE_META, LRUHelper, LRUMap, LifecycleService, LifecycleStages, LifecycleUnreachableError, ListGlyphType, LocalUndoRedoService, LocaleService, LocaleType, LogLevel, LookUp, MAX_COLUMN_COUNT, MAX_ROW_COUNT, MODERN_DOCUMENT_DEFAULT_MARGIN, MODERN_DOCUMENT_WIDTH, MOVE_BUFFER_VALUE, Many, MemoryCursor, MentionIOLocalService, MentionType, ModernDocumentWidthMode, NAMED_STYLE_MAP, NAMED_STYLE_SPACE_MAP, NamedStyleType, NilCommand, NumberUnitType, OBJECT_PERMISSION_CONFIG_KEY, ObjectMatrix, ObjectPermissionRuleModel, ObjectPermissionService, ObjectRelativeFromH, ObjectRelativeFromV, Optional, PADDING_KEYS, PAGE_SIZE, PAPER_TYPES, PARAGRAPH_ID_PREFIX, PRESERVE_INSERTED_PARAGRAPH_IDS, PRESET_LIST_TYPE, PageOrientType, PaperType, ParagraphElementType, ParagraphStyleBuilder, ParagraphStyleValue, PermissionService, PermissionStatus, Plugin, PluginService, PositionedObjectLayoutType, PresetListType, ProtectionType, Quantity, QuickListType, QuickListTypeMap, RANGE_DIRECTION, RANGE_TYPE, RBush, RCDisposable, RESTORE_INSERTED_PARAGRAPH_IDS, RGBA_PAREN, RGB_PAREN, ROTATE_BUFFER_VALUE, RTree, Range, Rectangle, RediError, RedoCommand, RedoCommandId, RefAlias, RegionService, Registry, RegistryAsMap, RelativeDate, ResourceManagerService, RichTextBuilder, RichTextParagraphBuilder, RichTextRunBuilder, RichTextValue, RxDisposable, SECTION_ID_PREFIX, SHEET_EDITOR_UNITS, STYLE_KEYS, SectionType, Self, SheetSkeleton, SheetTypes, SheetViewModel, Skeleton, SkipSelf, SliceBodyType, SpacingRule, Styles, TEXT_DECORATION_KEYS, TEXT_ROTATION_KEYS, THEME_COLORS, TRADITIONAL_DOCUMENT_DEFAULT_MARGIN, TabStopAlignment, TabStopLeader, TableAlignmentType, TableLayoutType, TableRowHeightRule, TableSizeType, TableTextWrapType, TestConfirmService, TextDecoration, TextDecorationBuilder, TextDirection, TextDirectionType, TextStyleBuilder, TextStyleValue, TextX, TextXActionType, ThemeColorType, ThemeColors, ThemeService, Tools, UndoCommand, UndoCommandId, UnitModel, Univer, UniverInstanceService, UniverInstanceType, UpdateDocsAttributeType, UserManagerService, VerticalAlign, VerticalAlignmentType, WithNew, Workbook, Worksheet, WrapStrategy, WrapTextType, addLinkToDocumentModel, afterInitApply, afterTime, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, awaitTime, binSearchFirstGreaterThanTarget, binarySearchArray, bufferDebounceTime, cellToRange, characterSpacingControlType, checkForSubstrings, checkIfMove, checkParagraphHasBullet, checkParagraphHasIndent, checkParagraphHasIndentByStyle, cloneBodyWithFreshParagraphIds, cloneCellData, cloneCellDataMatrix, cloneCellDataWithSpanAndDisplay, cloneParagraphWithId, cloneSectionBreakWithId, cloneValue, cloneWorksheetData, codeToBlob, columnLabelToNumber, composeBody, composeInterceptors, composeStyles, concatMatrixArray, containsInteriorInsertionOffset, containsStreamIndex, convertCellToRange, convertObservableToBehaviorSubject, covertCellValue, covertCellValues, createAsyncInterceptorKey, createBaseFormulaTableNameMap, createBaseFormulaTableReferenceNormalizer, createBaseRecordIdField, createDefaultBaseTableSnapshot, createDefaultUser, createDocumentModelWithStyle, createIdentifier, createInterceptorKey, createInternalEditorID, createParagraphId, createRandomId, createRowColIter, createSectionId, createSheetGapTestConfig, currencySymbols, customNameCharacterCheck, dateKit, debounce, dedupe, dedupeBy, deepCompare, delayAnimationFrame, deleteContent, excelDateSerial, excelDateTimePartsToSerial, excelDateTimeSerial, excelSerialToDate, excelSerialToDateTime, excelSerialToDateTimeParts, extractPureTextFromCell, forwardRef, fromCallback, fromEventSubject, generateIntervalsByPoints, generateRandomId, get, getArrayLength, getBaseFormulaTableName, getEmptySnapshot as getBasesEmptySnapshot, getBlockRangeInterval, getBodySlice, getBodySliceForSplitTextXAction, getBodySliceForTextXAction, getBorderStyleType, getCellCoordByIndexSimple, getCellValueType, getCellWithCoordByIndexCore, getColorStyle, getColumnGroupRangeInterval, getCustomBlockIdsInSelections, getCustomBlockInterval, getCustomBlockSlice, getCustomDecorationSlice, getCustomRangeInterval, getCustomRangeSlice, getDateSystemMaxSerial, getDisplayValueFromCell, getEmptySnapshot$1 as getDocsEmptySnapshot, getDocsUpdateBody, getDrawingOrderIndex, getEmptyCell, getExclusiveRangeInterval, getInclusiveRangeInterval, getIntersectRange, getNumfmtLocaleTag, getNumfmtParseValueFilter, getOriginCellValue, getParagraphContentStartOffset, getParagraphContentStartOffsets, getParagraphFollowingBlockOffset, getParagraphsSlice, getPlainText, getReverseDirection, getRichTextEditPath, getSectionBreakSlice, getSectionHeaderFooterReferenceKey, getEmptySnapshot$2 as getSheetsEmptySnapshot, getSingleDataStreamChange, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, getTableSlice, getTextRunSlice, getTransformOffsetX, getTransformOffsetY, getWorksheetUID, groupBy, handleStyleToString, hashAlgorithm, horizontalLineSegmentsSubtraction, insertMatrixArray, insertTextToContent, intersectsOperationalIntervals, invertColorByHSL, invertColorByMatrix, isAsyncDependencyItem, isAsyncHook, isBaseRecordIdFieldName, isBlackColor, isBooleanString, isCellCoverable, isCellV, isClassDependencyItem, isCommentEditorID, isCtor, isDefaultFormat, isDisposable, isEmptyCell, isFactoryDependencyItem, isFormulaId, isFormulaString, isICellData, isInternalEditorID, isNodeEnv, isNotNullOrUndefined, isNullCell, isNumeric, isPatternEqualWithoutDecimal, isRangesEqual, isRealNum, isSafeNumeric, isSafeUrl, isSameStyleTextRun, isTextFormat, isUnitRangesEqual, isValidBaseRecordId, isValidRange, isValueDependencyItem, isWhiteColor, makeArray, makeCellRangeToRangeData, mapObjectMatrix, merge, mergeIntervals, mergeLocales, mergeOverrideWithDependencies, mergeSets, mergeWith, mergeWorksheetSnapshotWithDefault, migrateBaseFormulaTableNames, mixinClass, moveMatrixArray, moveRangeByOffset, nameCharacterCheck, noop, normalizeBaseFormulaTableName, normalizeBaseFormulaTableReferences, normalizeBody, normalizeDrawingOrderIndex, normalizeInsertedSectionIdsForDocument, normalizeTextRuns, normalizeUrl, numberToABC, numberToListABC, api_exports as numfmt, regexp, registerDependencies, remove, repeatStringNumTimes, replaceInDocumentBody, requestImmediateMacroTask, resolveDocumentParagraphStyle, resolveSectionHeaderFooterReference, resolveSectionHeaderFooterReferences, resolveWithBasePath, rotate, searchArray, searchInOrderedArray, selectionToArray, sequence, sequenceAsync, sequenceExecute, sequenceExecuteAsync, set, setDependencies, setWith, shallowEqual, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert, skipParseTagNames, sliceMatrixArray, sortRules, sortRulesByDesc, sortRulesFactory, spliceArray, splitIntoGrid, takeAfter, throttle, toDisposable, touchDependencies, updateAttributeByDelete, updateAttributeByInsert, validateDocBodyStructure, validateDocumentStructure, willLoseNumericPrecision };

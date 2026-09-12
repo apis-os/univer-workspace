@@ -1,0 +1,35 @@
+import { SheetsShapeService } from '@univerjs-pro/sheets-shape';
+import { Disposable, ICommandService, IContextService, IUniverInstanceService, LocaleService } from '@univerjs/core';
+import { IDrawingManagerService } from '@univerjs/drawing';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { SheetCanvasPopManagerService } from '@univerjs/sheets-ui';
+import { IMenuManagerService, ISidebarService } from '@univerjs/ui';
+import { ShapeTextEditingService } from '../services/shape-text-editing.service';
+export declare class SheetsShapeUIController extends Disposable {
+    private readonly _univerInstanceService;
+    private _sidebarService;
+    protected readonly _menuManagerService: IMenuManagerService;
+    private _sheetsShapeService;
+    private readonly _localeService;
+    private readonly _commandService;
+    private _drawingManagerService;
+    private readonly _sheetCanvasPopManagerService;
+    private readonly _contextService;
+    private readonly _renderManagerService;
+    private readonly _shapeTextEditingService;
+    private _sidebarDisposable;
+    private _activeShapeInfo;
+    private _isOpenedShapeEditPanel;
+    private _shapeEditPanelVersion;
+    private _shapePopupMenuDisposable;
+    private _disposePopups;
+    constructor(_univerInstanceService: IUniverInstanceService, _sidebarService: ISidebarService, _menuManagerService: IMenuManagerService, _sheetsShapeService: SheetsShapeService, _localeService: LocaleService, _commandService: ICommandService, _drawingManagerService: IDrawingManagerService, _sheetCanvasPopManagerService: SheetCanvasPopManagerService, _contextService: IContextService, _renderManagerService: IRenderManagerService, _shapeTextEditingService: ShapeTextEditingService);
+    private _initMenu;
+    initShapePopupMenu(): void;
+    private _getShapeInfo;
+    private _clearPopups;
+    private _popupMenuListener;
+    private _registerOperations;
+    private _openShapeEditPanel;
+    private _closeShapeEditPanel;
+}

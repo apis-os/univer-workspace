@@ -1,0 +1,2 @@
+export declare const AutowrapIcon: import("react").ForwardRefExoticComponent<import("./base.js").IIconProps & import("react").RefAttributes<SVGElement>>;
+export default AutowrapIcon;

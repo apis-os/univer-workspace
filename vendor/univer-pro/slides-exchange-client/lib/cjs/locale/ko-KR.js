@@ -1,64 +1,8 @@
-function _0x14e9(_0x2436fc, _0x42b4fc) {
-  _0x2436fc = _0x2436fc - 0x145;
-  const _0x5af658 = _0x5af6();
-  let _0x14e907 = _0x5af658[_0x2436fc];
-  return _0x14e907;
-}
-const _0x13d02d = _0x14e9;
-function _0x5af6() {
-  const _0x3d62a4 = [
-    "984180kkrFgi",
-    "3306LYKIoj",
-    "255610ukvzOs",
-    "25KlhkCz",
-    "2mKBbSt",
-    "34074obBOWH",
-    "77FnVidv",
-    "124536OwGOAJ",
-    "39osZHYe",
-    "4afrAQe",
-    "열기(파일)",
-    "63fNsYTM",
-    "174321AIFeWD",
-    "2537412eVCYsy",
-    "다른\x20이름으로\x20저장",
-  ];
-  _0x5af6 = function () {
-    return _0x3d62a4;
-  };
-  return _0x5af6();
-}
-(function (_0x374d87, _0xdc71e8) {
-  const _0x59c67b = _0x14e9,
-    _0x3554e9 = _0x374d87();
-  while (!![]) {
-    try {
-      const _0x382b9d =
-        (parseInt(_0x59c67b(0x14d)) / 0x1) *
-          (-parseInt(_0x59c67b(0x14c)) / 0x2) +
-        (-parseInt(_0x59c67b(0x148)) / 0x3) *
-          (parseInt(_0x59c67b(0x151)) / 0x4) +
-        (-parseInt(_0x59c67b(0x14b)) / 0x5) *
-          (parseInt(_0x59c67b(0x149)) / 0x6) +
-        parseInt(_0x59c67b(0x145)) / 0x7 +
-        (-parseInt(_0x59c67b(0x14f)) / 0x8) *
-          (-parseInt(_0x59c67b(0x153)) / 0x9) +
-        (-parseInt(_0x59c67b(0x14a)) / 0xa) *
-          (parseInt(_0x59c67b(0x14e)) / 0xb) +
-        (-parseInt(_0x59c67b(0x146)) / 0xc) *
-          (-parseInt(_0x59c67b(0x150)) / 0xd);
-      if (_0x382b9d === _0xdc71e8) break;
-      else _0x3554e9["push"](_0x3554e9["shift"]());
-    } catch (_0x3038f8) {
-      _0x3554e9["push"](_0x3554e9["shift"]());
-    }
-  }
-})(_0x5af6, 0x36c99);
 const e = {
   "slides-exchange-client": {
     file: "파일",
-    upload: _0x13d02d(0x152),
-    download: _0x13d02d(0x147),
+    upload: "열기(파일)",
+    download: "다른 이름으로 저장",
   },
 };
-module["exports"] = e;
+module.exports = e;

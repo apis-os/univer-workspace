@@ -1,0 +1,36 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-manual-operation-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M1.41943 4H18.5806L14.2949 16H5.70508L1.41943 4Z",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartManualOperationIcon = (0, react.forwardRef)(function ShapeFlowChartManualOperationIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-manual-operation-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartManualOperationIcon.displayName = "ShapeFlowChartManualOperationIcon";
+//#endregion
+exports.ShapeFlowChartManualOperationIcon = ShapeFlowChartManualOperationIcon;
+exports.default = ShapeFlowChartManualOperationIcon;

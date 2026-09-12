@@ -1,0 +1,77 @@
+{
+  "name": "@univerjs-pro/bases-dashboard-ui",
+  "version": "1.0.0-insiders.20260907-70fc579",
+  "private": false,
+  "description": "Pivot view and dashboard UI for Univer Base.",
+  "author": "DreamNum Co., Ltd. <developer@univer.ai>",
+  "license": "Apache-2.0",
+  "homepage": "https://univer.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dream-num/univer-pro"
+  },
+  "exports": {
+    ".": {
+      "import": "./lib/es/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/types/index.d.ts"
+    },
+    "./*": {
+      "import": "./lib/es/*",
+      "require": "./lib/cjs/*",
+      "types": "./lib/types/index.d.ts"
+    },
+    "./locale/*": {
+      "import": "./lib/es/locale/*.js",
+      "require": "./lib/cjs/locale/*.js",
+      "types": "./lib/types/locale/*.d.ts"
+    },
+    "./lib/*": "./lib/*"
+  },
+  "main": "./lib/es/index.js",
+  "types": "./lib/types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "lib"
+  ],
+  "peerDependencies": {
+    "react": "^16.9.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc",
+    "rxjs": ">=7.0.0"
+  },
+  "dependencies": {
+    "@univerjs/icons": "1.38.0",
+    "@univerjs-pro/bases-dashboard": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/bases-ui": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/chart-ui": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/collaboration-client": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/engine-chart": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/engine-shape": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/engine-pivot": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/license": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs-pro/shape-editor": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/core": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/design": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/ui": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/docs-ui": "1.0.0-insiders.20260907-70fc579"
+  },
+  "devDependencies": {
+    "postcss": "^8.5.26",
+    "react": "18.3.1",
+    "rxjs": "7.8.2",
+    "tailwindcss": "3.4.17",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.11",
+    "@univerjs-infra/shared": "1.0.0-beta.2"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "build:bundle": "univer-cli build",
+    "build:types": "tsc -p tsconfig.node.json",
+    "build": "pnpm run build:bundle && pnpm run build:types"
+  },
+  "module": "./lib/es/index.js"
+}

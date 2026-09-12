@@ -1,0 +1,30 @@
+export declare const BOARD_SHAPE_TEXT_EDITOR_ID: string;
+export declare const BOARD_SHAPE_TEXT_FLOAT_MENU_COMPONENT_KEY = "board.shape.text.float-menu";
+export declare const BOARD_DOM_LAYER_ROOT_Z_INDEX = 10;
+export declare const BOARD_DOM_LAYER_POPUP_Z_INDEX = 60;
+export declare const BOARD_DOM_LAYER_RESIZE_GUIDE_Z_INDEX: number;
+export declare const BOARD_RENDER_LAYER_INDEX: {
+    readonly background: 0;
+    readonly grid: 0;
+    readonly container: 1;
+    readonly element: 2;
+    readonly preview: 3;
+    readonly overlay: 4;
+    readonly connectorAffordance: 5;
+    readonly connectorHandle: 6;
+    readonly connectorSnap: 7;
+    readonly viewportBar: 8;
+};
+export declare const BOARD_RENDER_OBJECT_Z_INDEX: {
+    readonly background: -1;
+    readonly default: 0;
+    readonly preview: 100;
+    readonly overlay: 200;
+    readonly transientPreview: 10000;
+    readonly transientPreviewForeground: 10001;
+    readonly transientControl: 10002;
+    readonly transientEditHandle: 10003;
+    readonly transientSnap: 10004;
+    readonly transientResize: 10005;
+    readonly transientNavigation: 10006;
+};

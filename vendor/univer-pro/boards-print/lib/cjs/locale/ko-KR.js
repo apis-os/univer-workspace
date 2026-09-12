@@ -1,61 +1,11 @@
-const _0x3d4621 = _0x2b84;
-(function (_0x2c7163, _0x58fcbf) {
-  const _0x2c7789 = _0x2b84,
-    _0x5d67fd = _0x2c7163();
-  while (!![]) {
-    try {
-      const _0x484f1e =
-        -parseInt(_0x2c7789(0x1ca)) / 0x1 +
-        (-parseInt(_0x2c7789(0x1d5)) / 0x2) *
-          (parseInt(_0x2c7789(0x1d0)) / 0x3) +
-        (parseInt(_0x2c7789(0x1d4)) / 0x4) *
-          (parseInt(_0x2c7789(0x1c9)) / 0x5) +
-        parseInt(_0x2c7789(0x1d2)) / 0x6 +
-        parseInt(_0x2c7789(0x1cb)) / 0x7 +
-        -parseInt(_0x2c7789(0x1ce)) / 0x8 +
-        (-parseInt(_0x2c7789(0x1c8)) / 0x9) *
-          (-parseInt(_0x2c7789(0x1cf)) / 0xa);
-      if (_0x484f1e === _0x58fcbf) break;
-      else _0x5d67fd["push"](_0x5d67fd["shift"]());
-    } catch (_0x58899e) {
-      _0x5d67fd["push"](_0x5d67fd["shift"]());
-    }
-  }
-})(_0x17c8, 0x241fc);
 const e = {
   "boards-print": {
-    menu: { print: "인쇄", exportPng: _0x3d4621(0x1d1), exportJpeg: "JPEG" },
-    loading: { print: "인쇄\x20준비\x20중…", image: _0x3d4621(0x1cd) },
-    errors: { printFailed: _0x3d4621(0x1d3), exportFailed: _0x3d4621(0x1c7) },
+    menu: { print: "인쇄", exportPng: "PNG", exportJpeg: "JPEG" },
+    loading: { print: "인쇄\x20준비\x20중…", image: "이미지 내보내는 중…" },
+    errors: {
+      printFailed: "이 보드를 인쇄할 수 없습니다.",
+      exportFailed: "이 보드 이미지를 내보낼 수 없습니다.",
+    },
   },
 };
-function _0x2b84(_0x17830f, _0x594857) {
-  _0x17830f = _0x17830f - 0x1c7;
-  const _0x17c8d5 = _0x17c8();
-  let _0x2b84a5 = _0x17c8d5[_0x17830f];
-  return _0x2b84a5;
-}
-function _0x17c8() {
-  const _0x345b20 = [
-    "1007136VMCPWq",
-    "이\x20보드를\x20인쇄할\x20수\x20없습니다.",
-    "1132AvaMPq",
-    "3736ILdfei",
-    "이\x20보드\x20이미지를\x20내보낼\x20수\x20없습니다.",
-    "9PTIuKL",
-    "1555xQWxOF",
-    "143261cRmKFS",
-    "1858010GccEgm",
-    "exports",
-    "이미지\x20내보내는\x20중…",
-    "579976zYOKqu",
-    "310910xBgwuH",
-    "303jGzmxk",
-    "PNG",
-  ];
-  _0x17c8 = function () {
-    return _0x345b20;
-  };
-  return _0x17c8();
-}
-module[_0x3d4621(0x1cc)] = e;
+module.exports = e;

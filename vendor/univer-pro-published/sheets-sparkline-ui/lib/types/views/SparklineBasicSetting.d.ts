@@ -1,0 +1,16 @@
+import type { ISparklineGroup, ISparklinePointConfig, ISparklinePoints } from '@univerjs-pro/sheets-sparkline';
+import type { ISparklinePanelCtx } from './SparklinePanel';
+import { SparklineTypeEnum } from '@univerjs-pro/sheets-sparkline';
+interface ISparklineMarkItemProps {
+    onCheckboxChange: (v: boolean, type: keyof ISparklinePoints) => void;
+    onColorChange: (v: string, type: keyof ISparklinePoints) => void;
+    type: keyof ISparklinePoints;
+    config?: ISparklinePointConfig;
+    chartType: SparklineTypeEnum;
+}
+export declare const SparklineMarkItem: (props: ISparklineMarkItemProps) => import("react").JSX.Element;
+export declare const SparklineBasicSetting: ({ config, ctx }: {
+    config: ISparklineGroup;
+    ctx: ISparklinePanelCtx;
+}) => import("react").JSX.Element;
+export {};

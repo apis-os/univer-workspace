@@ -1,159 +1,70 @@
-function _0x18e7() {
-  const _0x51b335 = [
-    "合并了表格单元格",
-    "1318815GPrADS",
-    "新增了表格",
-    "159116dtQaRJ",
-    "排序了表格",
-    "移动了表格",
-    "更新了标注块",
-    "重命名了文档",
-    "删除了表格",
-    "新增了自定义范围",
-    "新增了公式",
-    "更改了标题样式",
-    "新增了表格行",
-    "新增了表格列",
-    "删除了图表",
-    "删除了链接",
-    "463382vCNouG",
-    "新增了图片",
-    "更新了形状",
-    "删除了公式",
-    "更新了图表",
-    "删除了代码块",
-    "编辑了表格单元格",
-    "更新了分栏",
-    "删除了表格列",
-    "删除了表格行",
-    "删除了标注块",
-    "16qqVTxY",
-    "1lludTx",
-    "删除了分隔线",
-    "新增了图表",
-    "更新了表头",
-    "新增了代码块",
-    "更新了链接",
-    "更新了页眉或页脚",
-    "删除了形状",
-    "exports",
-    "删除了图片",
-    "调整了表格列宽",
-    "删除了内容块",
-    "1788417skiLTv",
-    "更新了浮动对象",
-    "更新了列表",
-    "更新了页面布局",
-    "634080cicYYl",
-    "更新了表格列",
-    "592949kuvFcu",
-    "设置了段落格式",
-    "更新了图片",
-    "711918eXLVwm",
-    "设置了表格格式",
-    "新增了标注块",
-    "均分了表格列",
-    "取消合并表格单元格",
-  ];
-  _0x18e7 = function () {
-    return _0x51b335;
-  };
-  return _0x18e7();
-}
-const _0x15953e = _0x5130;
-(function (_0x265ce9, _0x25f50a) {
-  const _0xd51377 = _0x5130,
-    _0x392b24 = _0x265ce9();
-  while (!![]) {
-    try {
-      const _0x3dd2c4 =
-        (-parseInt(_0xd51377(0x9d)) / 0x1) * (parseInt(_0xd51377(0x91)) / 0x2) +
-        parseInt(_0xd51377(0xad)) / 0x3 +
-        parseInt(_0xd51377(0x84)) / 0x4 +
-        parseInt(_0xd51377(0x82)) / 0x5 +
-        -parseInt(_0xd51377(0x7c)) / 0x6 +
-        (parseInt(_0xd51377(0xaf)) / 0x7) * (parseInt(_0xd51377(0x9c)) / 0x8) +
-        -parseInt(_0xd51377(0xa9)) / 0x9;
-      if (_0x3dd2c4 === _0x25f50a) break;
-      else _0x392b24["push"](_0x392b24["shift"]());
-    } catch (_0x402035) {
-      _0x392b24["push"](_0x392b24["shift"]());
-    }
-  }
-})(_0x18e7, 0x2105b);
 const e = {
   "docs-history-ui": {
     menu: { history: "版本历史记录" },
     action: {
-      renameDocument: _0x15953e(0x88),
+      renameDocument: "重命名了文档",
       insertText: "新增了文本",
       deleteText: "删除了文本",
-      deleteBlock: _0x15953e(0xa8),
+      deleteBlock: "删除了内容块",
       formatText: "设置了文本格式",
-      formatParagraph: _0x15953e(0xb0),
-      changeHeading: _0x15953e(0x8c),
-      updateList: _0x15953e(0xab),
+      formatParagraph: "设置了段落格式",
+      changeHeading: "更改了标题样式",
+      updateList: "更新了列表",
       moveBlock: "移动了内容块",
       insertDivider: "新增了分隔线",
-      deleteDivider: _0x15953e(0x9e),
-      updatePageLayout: _0x15953e(0xac),
-      updateHeaderFooter: _0x15953e(0xa3),
+      deleteDivider: "删除了分隔线",
+      updatePageLayout: "更新了页面布局",
+      updateHeaderFooter: "更新了页眉或页脚",
       insertLink: "新增了链接",
-      insertCustomRange: _0x15953e(0x8a),
-      updateLink: _0x15953e(0xa2),
-      deleteLink: _0x15953e(0x90),
-      insertTable: _0x15953e(0x83),
-      deleteTable: _0x15953e(0x89),
-      insertTableRows: _0x15953e(0x8d),
-      deleteTableRows: _0x15953e(0x9a),
+      insertCustomRange: "新增了自定义范围",
+      updateLink: "更新了链接",
+      deleteLink: "删除了链接",
+      insertTable: "新增了表格",
+      deleteTable: "删除了表格",
+      insertTableRows: "新增了表格行",
+      deleteTableRows: "删除了表格行",
       moveTableRows: "移动了表格行",
       resizeTableRows: "调整了表格行高",
       distributeTableRows: "均分了表格行",
-      insertTableColumns: _0x15953e(0x8e),
-      deleteTableColumns: _0x15953e(0x99),
+      insertTableColumns: "新增了表格列",
+      deleteTableColumns: "删除了表格列",
       moveTableColumns: "移动了表格列",
-      resizeTableColumns: _0x15953e(0xa7),
-      distributeTableColumns: _0x15953e(0x7f),
-      moveTable: _0x15953e(0x86),
-      updateTableHeader: _0x15953e(0xa0),
-      updateTableColumns: _0x15953e(0xae),
-      editTableCell: _0x15953e(0x97),
-      formatTable: _0x15953e(0x7d),
-      mergeTableCells: _0x15953e(0x81),
-      unmergeTableCells: _0x15953e(0x80),
-      sortTable: _0x15953e(0x85),
-      insertImage: _0x15953e(0x92),
-      deleteImage: _0x15953e(0xa6),
-      updateImage: _0x15953e(0xb1),
+      resizeTableColumns: "调整了表格列宽",
+      distributeTableColumns: "均分了表格列",
+      moveTable: "移动了表格",
+      updateTableHeader: "更新了表头",
+      updateTableColumns: "更新了表格列",
+      editTableCell: "编辑了表格单元格",
+      formatTable: "设置了表格格式",
+      mergeTableCells: "合并了表格单元格",
+      unmergeTableCells: "取消合并表格单元格",
+      sortTable: "排序了表格",
+      insertImage: "新增了图片",
+      deleteImage: "删除了图片",
+      updateImage: "更新了图片",
       insertShape: "新增了形状",
-      updateShape: _0x15953e(0x93),
-      deleteShape: _0x15953e(0xa4),
-      updateDrawing: _0x15953e(0xaa),
-      insertChart: _0x15953e(0x9f),
-      deleteChart: _0x15953e(0x8f),
-      updateChart: _0x15953e(0x95),
-      insertCallout: _0x15953e(0x7e),
-      deleteCallout: _0x15953e(0x9b),
-      updateCallout: _0x15953e(0x87),
-      insertCodeBlock: _0x15953e(0xa1),
-      deleteCodeBlock: _0x15953e(0x96),
+      updateShape: "更新了形状",
+      deleteShape: "删除了形状",
+      updateDrawing: "更新了浮动对象",
+      insertChart: "新增了图表",
+      deleteChart: "删除了图表",
+      updateChart: "更新了图表",
+      insertCallout: "新增了标注块",
+      deleteCallout: "删除了标注块",
+      updateCallout: "更新了标注块",
+      insertCodeBlock: "新增了代码块",
+      deleteCodeBlock: "删除了代码块",
       updateCodeBlock: "更新了代码块",
       insertQuote: "新增了引用块",
       deleteQuote: "删除了引用块",
       updateQuote: "更新了引用块",
       insertColumns: "新增了分栏",
-      updateColumns: _0x15953e(0x98),
-      insertFormula: _0x15953e(0x8b),
+      updateColumns: "更新了分栏",
+      insertFormula: "新增了公式",
       updateFormula: "更新了公式",
-      deleteFormula: _0x15953e(0x94),
+      deleteFormula: "删除了公式",
       editDocument: "编辑了文档",
     },
   },
 };
-function _0x5130(_0x223088, _0x2c8b8e) {
-  _0x223088 = _0x223088 - 0x7c;
-  const _0x18e71e = _0x18e7();
-  let _0x5130bd = _0x18e71e[_0x223088];
-  return _0x5130bd;
-}
-module[_0x15953e(0xa5)] = e;
+module.exports = e;

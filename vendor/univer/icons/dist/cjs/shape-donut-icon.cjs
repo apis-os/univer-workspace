@@ -1,0 +1,47 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-donut-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "circle",
+		"attrs": {
+			"cx": 10,
+			"cy": 10,
+			"r": 8.2,
+			"stroke": "currentColor",
+			"strokeWidth": 1.6
+		}
+	}, {
+		"tag": "circle",
+		"attrs": {
+			"cx": 10,
+			"cy": 10,
+			"r": 4.2,
+			"stroke": "currentColor",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeDonutIcon = (0, react.forwardRef)(function ShapeDonutIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-donut-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeDonutIcon.displayName = "ShapeDonutIcon";
+//#endregion
+exports.ShapeDonutIcon = ShapeDonutIcon;
+exports.default = ShapeDonutIcon;

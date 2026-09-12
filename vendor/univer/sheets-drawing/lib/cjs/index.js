@@ -1,0 +1,2303 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+let _univerjs_sheets = require("@univerjs/sheets");
+let _univerjs_core = require("@univerjs/core");
+let _univerjs_drawing = require("@univerjs/drawing");
+let _univerjs_engine_render = require("@univerjs/engine-render");
+
+//#region src/basics/transform-position.ts
+function drawingPositionToTransform(position, sheetSkeletonParam) {
+	if (!sheetSkeletonParam) return;
+	const { unitId, sheetId, skeleton } = sheetSkeletonParam;
+	const { from, to, flipY = false, flipX = false, angle = 0, skewX = 0, skewY = 0 } = position;
+	let { left, top, width, height } = (0, _univerjs_sheets.convertPositionSheetOverGridToAbsolute)(unitId, sheetId, {
+		from,
+		to
+	}, skeleton);
+	const sheetWidth = skeleton.rowHeaderWidth + skeleton.columnTotalWidth;
+	const sheetHeight = skeleton.columnHeaderHeight + skeleton.rowTotalHeight;
+	if (left + width > sheetWidth) left = sheetWidth - width;
+	if (top + height > sheetHeight) top = sheetHeight - height;
+	return {
+		flipY,
+		flipX,
+		angle,
+		skewX,
+		skewY,
+		left,
+		top,
+		width,
+		height
+	};
+}
+function transformToDrawingPosition(transform, skeleton) {
+	const { left = 0, top = 0, width = 0, height = 0, flipY = false, flipX = false, angle = 0, skewX = 0, skewY = 0 } = transform;
+	return {
+		flipY,
+		flipX,
+		angle,
+		skewX,
+		skewY,
+		from: skeleton.getCellIndexAndOffsetByPosition(left, top),
+		to: skeleton.getCellIndexAndOffsetByPosition(left + width, top + height)
+	};
+}
+/**
+* In excel, the basic drawing with rotate bound use major axis switch, axis-aligned bound will bu used.That means the position bound of drawing element will save as nearly axis-aligned rectangle.
+* Here is the rule to convert transform to axis-aligned position:
+* [-45°, 45°):  use the original bound
+* [45°, 135°): rotate the bound 90° clockwise,and the left, top, bottom,right will use the rotated bound.
+* [135°, 225°): use the original bound
+* [225°, 315°): rotate the bound 90° counterclockwise, and the left, top, bottom, right will use the rotated bound.
+* @return The axis-aligned position of the drawing element.
+*/
+function transformToAxisAlignPosition(transform, skeleton) {
+	const { left = 0, top = 0, width = 0, height = 0, angle = 0 } = transform;
+	const norm = (angle % 360 + 360) % 360;
+	if (!(norm >= 45 && norm < 135 || norm >= 225 && norm < 315)) return transformToDrawingPosition(transform, skeleton);
+	return transformToDrawingPosition({
+		...transform,
+		left: left + width / 2 - height / 2,
+		top: top + height / 2 - width / 2,
+		width: height,
+		height: width
+	}, skeleton);
+}
+
+//#endregion
+//#region src/services/sheet-drawing.service.ts
+let SheetDrawingAnchorType = /* @__PURE__ */ function(SheetDrawingAnchorType) {
+	/**
+	* Only the position of the drawing follows the cell changes. When rows or columns are inserted or deleted, the position of the drawing changes, but the size remains the same.
+	*/
+	SheetDrawingAnchorType["Position"] = "0";
+	/**
+	* The size and position of the drawing follow the cell changes. When rows or columns are inserted or deleted, the size and position of the drawing change accordingly.
+	*/
+	SheetDrawingAnchorType["Both"] = "1";
+	/**
+	* The size and position of the drawing do not follow the cell changes. When rows or columns are inserted or deleted, the position and size of the drawing remain unchanged.
+	*/
+	SheetDrawingAnchorType["None"] = "2";
+	return SheetDrawingAnchorType;
+}({});
+var SheetDrawingService = class extends _univerjs_drawing.UnitDrawingService {};
+const ISheetDrawingService = (0, _univerjs_core.createIdentifier)("sheets-drawing.sheet-drawing.service");
+
+//#endregion
+//#region src/commands/mutations/set-drawing-apply.mutation.ts
+let DrawingApplyType = /* @__PURE__ */ function(DrawingApplyType) {
+	DrawingApplyType[DrawingApplyType["INSERT"] = 0] = "INSERT";
+	DrawingApplyType[DrawingApplyType["REMOVE"] = 1] = "REMOVE";
+	DrawingApplyType[DrawingApplyType["UPDATE"] = 2] = "UPDATE";
+	DrawingApplyType[DrawingApplyType["ARRANGE"] = 3] = "ARRANGE";
+	DrawingApplyType[DrawingApplyType["GROUP"] = 4] = "GROUP";
+	DrawingApplyType[DrawingApplyType["UNGROUP"] = 5] = "UNGROUP";
+	return DrawingApplyType;
+}({});
+const SetDrawingApplyMutation = {
+	id: "sheet.mutation.set-drawing-apply",
+	type: _univerjs_core.CommandType.MUTATION,
+	handler: (accessor, params) => {
+		const drawingManagerService = accessor.get(_univerjs_drawing.IDrawingManagerService);
+		const sheetDrawingService = accessor.get(ISheetDrawingService);
+		const { op, unitId, subUnitId, type, objects } = params;
+		drawingManagerService.applyJson1(unitId, subUnitId, op);
+		sheetDrawingService.applyJson1(unitId, subUnitId, op);
+		switch (type) {
+			case 0:
+				drawingManagerService.addNotification(objects);
+				sheetDrawingService.addNotification(objects);
+				break;
+			case 1:
+				drawingManagerService.removeNotification(objects);
+				sheetDrawingService.removeNotification(objects);
+				break;
+			case 2:
+				drawingManagerService.updateNotification(objects);
+				sheetDrawingService.updateNotification(objects);
+				break;
+			case 3:
+				drawingManagerService.orderNotification(objects);
+				sheetDrawingService.orderNotification(objects);
+				break;
+			case 4:
+				drawingManagerService.groupUpdateNotification(objects);
+				sheetDrawingService.groupUpdateNotification(objects);
+				break;
+			case 5:
+				drawingManagerService.ungroupUpdateNotification(objects);
+				sheetDrawingService.ungroupUpdateNotification(objects);
+				break;
+		}
+		return true;
+	}
+};
+
+//#endregion
+//#region src/commands/operations/clear-drawing-transformer.operation.ts
+const ClearSheetDrawingTransformerOperation = {
+	id: "sheet.operation.clear-drawing-transformer",
+	type: _univerjs_core.CommandType.MUTATION,
+	handler: (accessor, params) => {
+		const renderManagerService = accessor.get(_univerjs_engine_render.IRenderManagerService);
+		params.forEach((unitId) => {
+			var _renderManagerService;
+			(_renderManagerService = renderManagerService.getRenderUnitById(unitId)) === null || _renderManagerService === void 0 || (_renderManagerService = _renderManagerService.scene.getTransformer()) === null || _renderManagerService === void 0 || _renderManagerService.debounceRefreshControls();
+		});
+		return true;
+	}
+};
+
+//#endregion
+//#region src/commands/commands/insert-sheet-drawing.command.ts
+const InsertSheetDrawingCommand = {
+	id: "sheet.command.insert-sheet-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		if (!params) return false;
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		const sheetDrawingService = accessor.get(ISheetDrawingService);
+		const sheetInterceptorService = accessor.get(_univerjs_sheets.SheetInterceptorService);
+		const drawings = params.drawings;
+		const { unitId, subUnitId, undo, redo, objects } = sheetDrawingService.getBatchAddOp(drawings);
+		const intercepted = sheetInterceptorService.onCommandExecute({
+			id: InsertSheetDrawingCommand.id,
+			params
+		});
+		const redoMutations = [
+			...intercepted.preRedos ?? [],
+			{
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: redo,
+					objects,
+					type: 0
+				}
+			},
+			{
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			},
+			...intercepted.redos
+		];
+		const undoMutations = [
+			...intercepted.preUndos ?? [],
+			{
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: undo,
+					objects,
+					type: 1
+				}
+			},
+			{
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			},
+			...intercepted.undos
+		];
+		if ((0, _univerjs_core.sequenceExecute)(redoMutations, commandService).result) {
+			undoRedoService.pushUndoRedo({
+				unitID: unitId,
+				undoMutations,
+				redoMutations
+			});
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region src/commands/commands/remove-sheet-drawing.command.ts
+const RemoveSheetDrawingCommand = {
+	id: "sheet.command.remove-sheet-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		if (!params) return false;
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		const sheetInterceptorService = accessor.get(_univerjs_sheets.SheetInterceptorService);
+		const sheetDrawingService = accessor.get(ISheetDrawingService);
+		const { drawings } = params;
+		const { unitId, subUnitId, undo, redo, objects } = sheetDrawingService.getBatchRemoveOp(drawings);
+		if (Array.isArray(objects) && objects.length === 0) return false;
+		const intercepted = sheetInterceptorService.onCommandExecute({
+			id: RemoveSheetDrawingCommand.id,
+			params
+		});
+		const redoMutations = [
+			...intercepted.preRedos ?? [],
+			{
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: redo,
+					objects,
+					type: 1
+				}
+			},
+			{
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			},
+			...intercepted.redos
+		];
+		const undoMutations = [
+			...intercepted.preUndos ?? [],
+			{
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: undo,
+					objects,
+					type: 0
+				}
+			},
+			{
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			},
+			...intercepted.undos
+		];
+		if ((0, _univerjs_core.sequenceExecute)(redoMutations, commandService).result) {
+			undoRedoService.pushUndoRedo({
+				unitID: unitId,
+				undoMutations,
+				redoMutations
+			});
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region src/commands/commands/set-drawing-arrange.command.ts
+const SetDrawingArrangeCommand = {
+	id: "sheet.command.set-drawing-arrange",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		if (!params) return false;
+		const sheetDrawingService = accessor.get(ISheetDrawingService);
+		const { unitId, subUnitId, drawingIds } = params;
+		const drawingOrderMapParam = {
+			unitId,
+			subUnitId,
+			drawingIds
+		};
+		let jsonOp;
+		if (params.zOrder !== void 0) jsonOp = sheetDrawingService.getDrawingOrderOp(drawingOrderMapParam, params.zOrder);
+		else if (params.arrangeType === _univerjs_core.ArrangeTypeEnum.forward) jsonOp = sheetDrawingService.getForwardDrawingsOp(drawingOrderMapParam);
+		else if (params.arrangeType === _univerjs_core.ArrangeTypeEnum.backward) jsonOp = sheetDrawingService.getBackwardDrawingOp(drawingOrderMapParam);
+		else if (params.arrangeType === _univerjs_core.ArrangeTypeEnum.front) jsonOp = sheetDrawingService.getFrontDrawingsOp(drawingOrderMapParam);
+		else if (params.arrangeType === _univerjs_core.ArrangeTypeEnum.back) jsonOp = sheetDrawingService.getBackDrawingsOp(drawingOrderMapParam);
+		if (jsonOp == null) return false;
+		const { objects, redo, undo } = jsonOp;
+		if (commandService.syncExecuteCommand(SetDrawingApplyMutation.id, {
+			op: redo,
+			unitId,
+			subUnitId,
+			objects,
+			type: 3
+		})) {
+			undoRedoService.pushUndoRedo({
+				unitID: unitId,
+				undoMutations: [{
+					id: SetDrawingApplyMutation.id,
+					params: {
+						op: undo,
+						unitId,
+						subUnitId,
+						objects,
+						type: 3
+					}
+				}],
+				redoMutations: [{
+					id: SetDrawingApplyMutation.id,
+					params: {
+						op: redo,
+						unitId,
+						subUnitId,
+						objects,
+						type: 3
+					}
+				}]
+			});
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region src/services/sheet-drawing-placement.ts
+function getSheetDrawingPlacement(drawing) {
+	var _drawing$transform5, _drawing$transform6;
+	const anchorType = drawing.anchorType ?? "0";
+	if (anchorType === "2") {
+		var _drawing$transform, _drawing$transform2, _drawing$transform3, _drawing$transform4;
+		return {
+			kind: "2",
+			left: ((_drawing$transform = drawing.transform) === null || _drawing$transform === void 0 ? void 0 : _drawing$transform.left) ?? 0,
+			top: ((_drawing$transform2 = drawing.transform) === null || _drawing$transform2 === void 0 ? void 0 : _drawing$transform2.top) ?? 0,
+			width: ((_drawing$transform3 = drawing.transform) === null || _drawing$transform3 === void 0 ? void 0 : _drawing$transform3.width) ?? 0,
+			height: ((_drawing$transform4 = drawing.transform) === null || _drawing$transform4 === void 0 ? void 0 : _drawing$transform4.height) ?? 0
+		};
+	}
+	if (anchorType === "1") return {
+		kind: "1",
+		from: { ...drawing.sheetTransform.from },
+		to: { ...drawing.sheetTransform.to }
+	};
+	return {
+		kind: "0",
+		from: { ...drawing.sheetTransform.from },
+		width: ((_drawing$transform5 = drawing.transform) === null || _drawing$transform5 === void 0 ? void 0 : _drawing$transform5.width) ?? 0,
+		height: ((_drawing$transform6 = drawing.transform) === null || _drawing$transform6 === void 0 ? void 0 : _drawing$transform6.height) ?? 0
+	};
+}
+function applySheetDrawingPlacement(drawing, input, skeleton) {
+	const placement = normalizeSheetDrawingPlacement(input, skeleton);
+	if (placement.kind === "2") {
+		const transform = withExistingTransform(drawing.transform, placement);
+		const sheetTransform = absoluteSheetTransform(placement, drawing.sheetTransform);
+		return {
+			...drawing,
+			anchorType: "2",
+			transform,
+			sheetTransform,
+			axisAlignSheetTransform: sheetTransform
+		};
+	}
+	if (!skeleton) throw new Error("SHEET_DRAWING_PLACEMENT_SKELETON_REQUIRED");
+	if (placement.kind === "0") {
+		const converted = (0, _univerjs_sheets.convertPositionCellToSheetOverGrid)(drawing.unitId, drawing.subUnitId, placement.from, placement.width, placement.height, skeleton);
+		const sheetTransform = withExistingSheetTransform(drawing.sheetTransform, converted.sheetTransform);
+		const transform = withExistingTransform(drawing.transform, converted.transform);
+		return {
+			...drawing,
+			anchorType: "0",
+			sheetTransform,
+			transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition(transform, skeleton)
+		};
+	}
+	const sheetTransform = withExistingSheetTransform(drawing.sheetTransform, {
+		from: placement.from,
+		to: placement.to
+	});
+	const bounds = (0, _univerjs_sheets.convertPositionSheetOverGridToAbsolute)(drawing.unitId, drawing.subUnitId, sheetTransform, skeleton);
+	const transform = withExistingTransform(drawing.transform, bounds);
+	return {
+		...drawing,
+		anchorType: "1",
+		sheetTransform,
+		transform,
+		axisAlignSheetTransform: transformToAxisAlignPosition(transform, skeleton)
+	};
+}
+/**
+* Normalize exact markers or model-space bounds to the authoritative
+* Position, Both, or None Placement.
+*/
+function normalizeSheetDrawingPlacement(input, skeleton) {
+	if (!("bounds" in input)) {
+		validatePlacement(input);
+		if (input.kind === "1" && skeleton) validateBounds((0, _univerjs_sheets.convertPositionSheetOverGridToAbsolute)(skeleton.worksheet.getUnitId(), skeleton.worksheet.getSheetId(), {
+			from: input.from,
+			to: input.to
+		}, skeleton));
+		return input;
+	}
+	validateBounds(input.bounds);
+	if (input.kind === "2") return {
+		kind: "2",
+		...input.bounds
+	};
+	if (!skeleton) throw new Error("SHEET_DRAWING_PLACEMENT_SKELETON_REQUIRED");
+	const sheetTransform = transformToDrawingPosition(input.bounds, skeleton);
+	if (input.kind === "0") return {
+		kind: "0",
+		from: sheetTransform.from,
+		width: input.bounds.width,
+		height: input.bounds.height
+	};
+	if (input.kind === "1") return {
+		kind: "1",
+		from: sheetTransform.from,
+		to: sheetTransform.to
+	};
+	throw new Error("SHEET_DRAWING_PLACEMENT_KIND_INVALID");
+}
+function withExistingSheetTransform(current, placement) {
+	return {
+		...current,
+		from: { ...placement.from },
+		to: { ...placement.to }
+	};
+}
+function withExistingTransform(current, bounds) {
+	return {
+		...current,
+		left: bounds.left,
+		top: bounds.top,
+		width: bounds.width,
+		height: bounds.height
+	};
+}
+function absoluteSheetTransform(placement, current) {
+	return {
+		...current,
+		from: {
+			column: 0,
+			columnOffset: placement.left,
+			row: 0,
+			rowOffset: placement.top
+		},
+		to: {
+			column: 0,
+			columnOffset: placement.left + placement.width,
+			row: 0,
+			rowOffset: placement.top + placement.height
+		}
+	};
+}
+function validatePlacement(placement) {
+	if (placement.kind === "0") {
+		validateCellPosition(placement.from);
+		validateExtent(placement.width, placement.height);
+		return;
+	}
+	if (placement.kind === "1") {
+		validateCellPosition(placement.from);
+		validateCellPosition(placement.to);
+		return;
+	}
+	if (placement.kind === "2") {
+		if (!Number.isFinite(placement.left) || !Number.isFinite(placement.top)) throw new TypeError("SHEET_DRAWING_PLACEMENT_POSITION_INVALID");
+		validateExtent(placement.width, placement.height);
+		return;
+	}
+	throw new Error("SHEET_DRAWING_PLACEMENT_KIND_INVALID");
+}
+function validateBounds(bounds) {
+	if (!Number.isFinite(bounds.left) || !Number.isFinite(bounds.top)) throw new TypeError("SHEET_DRAWING_PLACEMENT_POSITION_INVALID");
+	validateExtent(bounds.width, bounds.height);
+}
+function validateCellPosition(position) {
+	if (!Number.isInteger(position.row) || !Number.isInteger(position.column) || position.row < 0 || position.column < 0 || !Number.isFinite(position.rowOffset) || !Number.isFinite(position.columnOffset)) throw new Error("SHEET_DRAWING_PLACEMENT_CELL_INVALID");
+}
+function validateExtent(width, height) {
+	if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) throw new Error("SHEET_DRAWING_PLACEMENT_EXTENT_INVALID");
+}
+
+//#endregion
+//#region src/commands/commands/set-sheet-drawing-placement.command.ts
+const SetSheetDrawingPlacementCommand = {
+	id: "sheet.command.set-drawing-placement",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		if (!(params === null || params === void 0 ? void 0 : params.drawings.length)) return false;
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		const drawingService = accessor.get(ISheetDrawingService);
+		const skeleton = params.drawings.every(({ placement }) => placement.kind === "2") ? void 0 : accessor.get(_univerjs_sheets.SheetSkeletonService).ensureSkeleton(params.unitId, params.subUnitId);
+		const updatedDrawings = [];
+		for (const { drawingId, placement } of params.drawings) {
+			const drawing = drawingService.getDrawingByParam({
+				unitId: params.unitId,
+				subUnitId: params.subUnitId,
+				drawingId
+			});
+			if (!drawing) return false;
+			updatedDrawings.push(applySheetDrawingPlacement(drawing, placement, skeleton));
+		}
+		const { unitId, subUnitId, undo, redo, objects } = drawingService.getBatchUpdateOp(updatedDrawings);
+		const redoMutations = [{
+			id: SetDrawingApplyMutation.id,
+			params: {
+				unitId,
+				subUnitId,
+				op: redo,
+				objects,
+				type: 2
+			}
+		}, {
+			id: ClearSheetDrawingTransformerOperation.id,
+			params: [unitId]
+		}];
+		const undoMutations = [{
+			id: SetDrawingApplyMutation.id,
+			params: {
+				unitId,
+				subUnitId,
+				op: undo,
+				objects,
+				type: 2
+			}
+		}, {
+			id: ClearSheetDrawingTransformerOperation.id,
+			params: [unitId]
+		}];
+		if (!(0, _univerjs_core.sequenceExecute)(redoMutations, commandService).result) return false;
+		undoRedoService.pushUndoRedo({
+			unitID: unitId,
+			undoMutations,
+			redoMutations
+		});
+		return true;
+	}
+};
+
+//#endregion
+//#region src/common/rotate-enabled.ts
+function isKnownSheetNonRotatableDrawingType(drawingType) {
+	return drawingType === _univerjs_core.DrawingTypeEnum.DRAWING_CHART;
+}
+function resolveSheetDrawingRotateEnabled(drawing, drawingService, getChildren) {
+	return (0, _univerjs_drawing.resolveDrawingRotateEnabled)(drawing, {
+		getChildren: (current) => (getChildren === null || getChildren === void 0 ? void 0 : getChildren(current)) ?? drawingService.getDrawingsByGroup(current),
+		isKnownNonRotatableType: isKnownSheetNonRotatableDrawingType
+	});
+}
+
+//#endregion
+//#region src/commands/commands/set-sheet-drawing.command.ts
+function hasIncomingAngle(drawing) {
+	var _drawing$transform, _drawing$sheetTransfo, _drawing$axisAlignShe;
+	return ((_drawing$transform = drawing.transform) === null || _drawing$transform === void 0 ? void 0 : _drawing$transform.angle) !== void 0 || ((_drawing$sheetTransfo = drawing.sheetTransform) === null || _drawing$sheetTransfo === void 0 ? void 0 : _drawing$sheetTransfo.angle) !== void 0 || ((_drawing$axisAlignShe = drawing.axisAlignSheetTransform) === null || _drawing$axisAlignShe === void 0 ? void 0 : _drawing$axisAlignShe.angle) !== void 0;
+}
+function preserveAngle(incoming, current) {
+	const currentAngle = current === null || current === void 0 ? void 0 : current.angle;
+	const next = {
+		...current ?? {},
+		...incoming
+	};
+	if (currentAngle === void 0) delete next.angle;
+	else next.angle = currentAngle;
+	return next;
+}
+function normalizeNonRotatableAngleUpdate(drawing, sheetDrawingService) {
+	var _drawing$transform2, _drawing$sheetTransfo2, _drawing$axisAlignShe2;
+	if (!drawing.drawingId || !drawing.unitId || !drawing.subUnitId || !hasIncomingAngle(drawing)) return drawing;
+	const current = sheetDrawingService.getDrawingByParam({
+		unitId: drawing.unitId,
+		subUnitId: drawing.subUnitId,
+		drawingId: drawing.drawingId
+	});
+	if (!current) return drawing;
+	if (resolveSheetDrawingRotateEnabled({
+		...current,
+		...drawing,
+		drawingType: drawing.drawingType ?? current.drawingType,
+		transform: {
+			...current.transform,
+			...drawing.transform
+		}
+	}, sheetDrawingService)) return drawing;
+	const normalized = { ...drawing };
+	if (((_drawing$transform2 = drawing.transform) === null || _drawing$transform2 === void 0 ? void 0 : _drawing$transform2.angle) !== void 0) normalized.transform = preserveAngle(drawing.transform, current.transform);
+	if (((_drawing$sheetTransfo2 = drawing.sheetTransform) === null || _drawing$sheetTransfo2 === void 0 ? void 0 : _drawing$sheetTransfo2.angle) !== void 0) normalized.sheetTransform = preserveAngle(drawing.sheetTransform, current.sheetTransform);
+	if (((_drawing$axisAlignShe2 = drawing.axisAlignSheetTransform) === null || _drawing$axisAlignShe2 === void 0 ? void 0 : _drawing$axisAlignShe2.angle) !== void 0) normalized.axisAlignSheetTransform = preserveAngle(drawing.axisAlignSheetTransform, current.axisAlignSheetTransform);
+	return normalized;
+}
+const SetSheetDrawingCommand = {
+	id: "sheet.command.set-sheet-image",
+	type: _univerjs_core.CommandType.COMMAND,
+	handler: (accessor, params) => {
+		if (!params) return false;
+		const commandService = accessor.get(_univerjs_core.ICommandService);
+		const undoRedoService = accessor.get(_univerjs_core.IUndoRedoService);
+		const sheetDrawingService = accessor.get(ISheetDrawingService);
+		const sheetInterceptorService = accessor.get(_univerjs_sheets.SheetInterceptorService);
+		const { drawings } = params;
+		const normalizedDrawings = drawings.map((drawing) => normalizeNonRotatableAngleUpdate(drawing, sheetDrawingService));
+		const normalizedParams = {
+			...params,
+			drawings: normalizedDrawings
+		};
+		const { unitId, subUnitId, undo, redo, objects } = sheetDrawingService.getBatchUpdateOp(normalizedDrawings);
+		const intercepted = sheetInterceptorService.onCommandExecute({
+			id: SetSheetDrawingCommand.id,
+			params: normalizedParams
+		});
+		const redoMutations = [
+			...intercepted.preRedos ?? [],
+			{
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: redo,
+					objects,
+					type: 2
+				}
+			},
+			{
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			},
+			...intercepted.redos
+		];
+		const undoMutations = [
+			...intercepted.preUndos ?? [],
+			{
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: undo,
+					objects,
+					type: 2
+				}
+			},
+			{
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			},
+			...intercepted.undos
+		];
+		if ((0, _univerjs_core.sequenceExecute)(redoMutations, commandService).result) {
+			undoRedoService.pushUndoRedo({
+				unitID: unitId,
+				undoMutations,
+				redoMutations
+			});
+			return true;
+		}
+		return false;
+	}
+};
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/sheet-drawing.controller.ts
+const SHEET_DRAWING_PLUGIN = "SHEET_DRAWING_PLUGIN";
+function getDrawingsInOrder(drawingData, drawingOrder) {
+	const visited = /* @__PURE__ */ new Set();
+	const drawings = [];
+	drawingOrder.forEach((drawingId) => {
+		const drawing = drawingData[drawingId];
+		if (drawing) {
+			visited.add(drawingId);
+			drawings.push(drawing);
+		}
+	});
+	Object.values(drawingData).forEach((drawing) => {
+		if (!visited.has(drawing.drawingId)) drawings.push(drawing);
+	});
+	return drawings;
+}
+let SheetsDrawingLoadController = class SheetsDrawingLoadController extends _univerjs_core.Disposable {
+	constructor(_sheetInterceptorService, _univerInstanceService, _commandService, _sheetDrawingService, _drawingManagerService, _resourceManagerService) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._drawingManagerService = _drawingManagerService;
+		this._resourceManagerService = _resourceManagerService;
+		this._initCommands();
+		this._initSnapshot();
+		this._initSheetChange();
+		this.disposeWithMe(this._commandService.registerCommand(SetDrawingApplyMutation));
+	}
+	_initCommands() {
+		[
+			SetSheetDrawingCommand,
+			InsertSheetDrawingCommand,
+			RemoveSheetDrawingCommand,
+			SetDrawingArrangeCommand,
+			SetSheetDrawingPlacementCommand,
+			ClearSheetDrawingTransformerOperation
+		].forEach((command) => this.disposeWithMe(this._commandService.registerCommand(command)));
+	}
+	_initSnapshot() {
+		const toJson = (unitId, model) => {
+			const map = model || this._sheetDrawingService.getDrawingDataForUnit(unitId);
+			if (map) return JSON.stringify(map);
+			return "";
+		};
+		const parseJson = (json) => {
+			if (!json) return {};
+			try {
+				return JSON.parse(json);
+			} catch {
+				return {};
+			}
+		};
+		this.disposeWithMe(this._resourceManagerService.registerPluginResource({
+			pluginName: SHEET_DRAWING_PLUGIN,
+			businesses: [_univerjs_core.UniverInstanceType.UNIVER_SHEET],
+			toJson: (unitId, model) => toJson(unitId, model),
+			parseJson: (json) => parseJson(json),
+			onUnLoad: (unitId) => {
+				this._sheetDrawingService.removeDrawingDataForUnit(unitId);
+				this._drawingManagerService.removeDrawingDataForUnit(unitId);
+			},
+			onLoad: (unitId, value) => {
+				this._sheetDrawingService.registerDrawingData(unitId, value);
+				this._drawingManagerService.registerDrawingData(unitId, value);
+			}
+		}));
+	}
+	_initSheetChange() {
+		this.disposeWithMe(this._sheetInterceptorService.interceptCommand({ getMutations: (commandInfo) => {
+			if (commandInfo.id === _univerjs_sheets.RemoveSheetCommand.id) {
+				var _getActiveSheet;
+				const params = commandInfo.params;
+				const unitId = params.unitId || this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getUnitId();
+				const subUnitId = params.subUnitId || ((_getActiveSheet = this._univerInstanceService.getCurrentUnitOfType(_univerjs_core.UniverInstanceType.UNIVER_SHEET).getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId());
+				if (!unitId || !subUnitId) return {
+					redos: [],
+					undos: []
+				};
+				const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+				const drawings = Object.values(drawingData);
+				if (drawings.length === 0) return {
+					redos: [],
+					undos: []
+				};
+				const { unitId: jsonOpUnitId, subUnitId: jsonOpSubUnitId, undo, redo, objects } = this._sheetDrawingService.getBatchRemoveOp(drawings);
+				if (Array.isArray(objects) && objects.length === 0) return {
+					redos: [],
+					undos: []
+				};
+				return {
+					redos: [{
+						id: SetDrawingApplyMutation.id,
+						params: {
+							op: redo,
+							unitId: jsonOpUnitId,
+							subUnitId: jsonOpSubUnitId,
+							objects,
+							type: 1
+						}
+					}],
+					undos: [{
+						id: SetDrawingApplyMutation.id,
+						params: {
+							op: undo,
+							unitId: jsonOpUnitId,
+							subUnitId: jsonOpSubUnitId,
+							objects,
+							type: 0
+						}
+					}]
+				};
+			} else if (commandInfo.id === _univerjs_sheets.CopySheetCommand.id) {
+				const { unitId, subUnitId, targetSubUnitId, copyContext } = commandInfo.params;
+				if (!unitId || !subUnitId || !targetSubUnitId) return {
+					redos: [],
+					undos: []
+				};
+				const drawings = (0, _univerjs_drawing.getOrCreateDrawingCopyPlan)(copyContext, getDrawingsInOrder(this._sheetDrawingService.getDrawingData(unitId, subUnitId), this._sheetDrawingService.getDrawingOrder(unitId, subUnitId)), {
+					unitId,
+					sourceSubUnitId: subUnitId,
+					targetSubUnitId
+				}).drawings;
+				if (drawings.length === 0) return {
+					redos: [],
+					undos: []
+				};
+				const { unitId: jsonOpUnitId, subUnitId: jsonOpSubUnitId, undo, redo, objects } = this._sheetDrawingService.getBatchAddOp(drawings);
+				return {
+					redos: [{
+						id: SetDrawingApplyMutation.id,
+						params: {
+							op: redo,
+							unitId: jsonOpUnitId,
+							subUnitId: jsonOpSubUnitId,
+							objects,
+							type: 0
+						}
+					}],
+					undos: [{
+						id: SetDrawingApplyMutation.id,
+						params: {
+							op: undo,
+							unitId: jsonOpUnitId,
+							subUnitId: jsonOpSubUnitId,
+							objects,
+							type: 1
+						}
+					}]
+				};
+			}
+			return {
+				redos: [],
+				undos: []
+			};
+		} }));
+	}
+};
+SheetsDrawingLoadController = __decorate([
+	__decorateParam(0, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.IUniverInstanceService)),
+	__decorateParam(2, _univerjs_core.ICommandService),
+	__decorateParam(3, ISheetDrawingService),
+	__decorateParam(4, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(5, _univerjs_core.IResourceManagerService)
+], SheetsDrawingLoadController);
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-drawing";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SHEETS_DRAWING_PLUGIN_CONFIG_KEY = "sheets-drawing.config";
+const configSymbol = Symbol(SHEETS_DRAWING_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region src/services/sheet-drawing-transform-plan.service.ts
+function createEmptyResult() {
+	return {
+		preRedos: [],
+		redos: [],
+		preUndos: [],
+		undos: []
+	};
+}
+var SheetDrawingTransformPlanService = class {
+	constructor() {
+		_defineProperty(this, "_extensions", []);
+	}
+	register(extension) {
+		this._extensions.push(extension);
+		this._extensions.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0));
+		return (0, _univerjs_core.toDisposable)(() => {
+			const index = this._extensions.indexOf(extension);
+			if (index >= 0) this._extensions.splice(index, 1);
+		});
+	}
+	transform(plan) {
+		return this._extensions.reduce((all, extension) => {
+			const next = extension.transform(plan);
+			if (!next) return all;
+			all.preRedos.push(...next.preRedos ?? []);
+			all.redos.push(...next.redos ?? []);
+			all.preUndos.push(...next.preUndos ?? []);
+			all.undos.push(...next.undos ?? []);
+			return all;
+		}, createEmptyResult());
+	}
+};
+
+//#endregion
+//#region src/controllers/sheet-drawing-transform-affected.controller.ts
+const UPDATE_COMMANDS = [
+	_univerjs_sheets.InsertRowCommand.id,
+	_univerjs_sheets.InsertColCommand.id,
+	_univerjs_sheets.RemoveRowCommand.id,
+	_univerjs_sheets.RemoveColCommand.id,
+	_univerjs_sheets.DeleteRangeMoveLeftCommand.id,
+	_univerjs_sheets.DeleteRangeMoveUpCommand.id,
+	_univerjs_sheets.InsertRangeMoveDownCommand.id,
+	_univerjs_sheets.InsertRangeMoveRightCommand.id,
+	_univerjs_sheets.DeltaRowHeightCommand.id,
+	_univerjs_sheets.SetRowHeightCommand.id,
+	_univerjs_sheets.DeltaColumnWidthCommand.id,
+	_univerjs_sheets.SetColWidthCommand.id,
+	_univerjs_sheets.SetRowHiddenCommand.id,
+	_univerjs_sheets.SetSpecificRowsVisibleCommand.id,
+	_univerjs_sheets.SetSpecificColsVisibleCommand.id,
+	_univerjs_sheets.SetColHiddenCommand.id,
+	_univerjs_sheets.MoveColsCommand.id,
+	_univerjs_sheets.MoveRowsCommand.id,
+	_univerjs_sheets.MoveRangeCommand.id
+];
+const REFRESH_MUTATIONS = [
+	_univerjs_sheets.SetRowVisibleMutation.id,
+	_univerjs_sheets.SetRowHiddenMutation.id,
+	_univerjs_sheets.SetColVisibleMutation.id,
+	_univerjs_sheets.SetColHiddenMutation.id,
+	_univerjs_sheets.SetWorksheetRowHeightMutation.id,
+	_univerjs_sheets.SetWorksheetRowAutoHeightMutation.id,
+	_univerjs_sheets.SetWorksheetRowIsAutoHeightMutation.id,
+	_univerjs_sheets.SetWorksheetColWidthMutation.id
+];
+let SheetDrawingTransformAffectedController = class SheetDrawingTransformAffectedController extends _univerjs_core.Disposable {
+	constructor(_commandService, _sheetSkeletonService, _sheetInterceptorService, _selectionManagerService, _sheetDrawingService, _drawingManagerService, _univerInstanceService, _transformPlanService) {
+		super();
+		this._commandService = _commandService;
+		this._sheetSkeletonService = _sheetSkeletonService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._selectionManagerService = _selectionManagerService;
+		this._sheetDrawingService = _sheetDrawingService;
+		this._drawingManagerService = _drawingManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._transformPlanService = _transformPlanService;
+		_defineProperty(this, "_currentCommand", {
+			id: "",
+			params: {}
+		});
+		this._sheetInterceptorListener();
+		this._sheetRefreshListener();
+	}
+	_sheetInterceptorListener() {
+		this.disposeWithMe(this._sheetInterceptorService.interceptAfterCommand({ getMutations: (commandInfo) => {
+			const { id, params } = commandInfo;
+			if (!UPDATE_COMMANDS.includes(id) || !params) return {
+				redos: [],
+				undos: []
+			};
+			this._currentCommand = commandInfo;
+			if (id === _univerjs_sheets.InsertRowCommand.id) return this._moveRowInterceptor(params, "insert");
+			else if ([
+				_univerjs_sheets.MoveColsCommand.id,
+				_univerjs_sheets.MoveRowsCommand.id,
+				_univerjs_sheets.MoveRangeCommand.id
+			].includes(id)) {
+				let target;
+				if (id === _univerjs_sheets.MoveRangeCommand.id) {
+					const _params = params;
+					if (_params.toUnitId && _params.fromUnitId && _params.toUnitId !== _params.fromUnitId || _params.toSubUnitId && _params.fromSubUnitId && _params.toSubUnitId !== _params.fromSubUnitId) return {
+						redos: [],
+						undos: []
+					};
+					target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, {
+						unitId: _params.toUnitId,
+						subUnitId: _params.toSubUnitId
+					});
+				} else target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, params);
+				if (!target) return {
+					redos: [],
+					undos: []
+				};
+				const { unitId, subUnitId } = target;
+				const { fromRange, toRange } = params;
+				return this._moveRangeInterceptor(unitId, subUnitId, fromRange, toRange);
+			} else if (id === _univerjs_sheets.InsertColCommand.id) return this._moveColInterceptor(params, "insert");
+			else if (id === _univerjs_sheets.RemoveRowCommand.id) return this._moveRowInterceptor(params, "remove");
+			else if (id === _univerjs_sheets.RemoveColCommand.id) return this._moveColInterceptor(params, "remove");
+			else if (id === _univerjs_sheets.DeleteRangeMoveLeftCommand.id) {
+				const { range } = params;
+				return this._getRangeMoveUndo(range, 0);
+			} else if (id === _univerjs_sheets.DeleteRangeMoveUpCommand.id) {
+				const { range } = params;
+				return this._getRangeMoveUndo(range, 1);
+			} else if (id === _univerjs_sheets.InsertRangeMoveDownCommand.id) {
+				const { range } = params;
+				return this._getRangeMoveUndo(range, 2);
+			} else if (id === _univerjs_sheets.InsertRangeMoveRightCommand.id) {
+				const { range } = params;
+				return this._getRangeMoveUndo(range, 3);
+			} else if (id === _univerjs_sheets.SetRowHiddenCommand.id || id === _univerjs_sheets.SetSpecificRowsVisibleCommand.id) {
+				var _this$_selectionManag;
+				const _params = params;
+				const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, _params);
+				if (!target) return {
+					redos: [],
+					undos: []
+				};
+				const { unitId, subUnitId } = target;
+				const ranges = _params.ranges || ((_this$_selectionManag = this._selectionManagerService.getCurrentSelections()) === null || _this$_selectionManag === void 0 ? void 0 : _this$_selectionManag.map((s) => s.range).filter((r) => r.rangeType === _univerjs_core.RANGE_TYPE.ROW));
+				if (!ranges || ranges.length === 0) return {
+					redos: [],
+					undos: []
+				};
+				return this._getDrawingUndoForRowVisible(unitId, subUnitId, ranges);
+			} else if (id === _univerjs_sheets.SetColHiddenCommand.id || id === _univerjs_sheets.SetSpecificColsVisibleCommand.id) {
+				var _this$_selectionManag2;
+				const _params = params;
+				const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, _params);
+				if (!target) return {
+					redos: [],
+					undos: []
+				};
+				const { unitId, subUnitId } = target;
+				const ranges = _params.ranges || ((_this$_selectionManag2 = this._selectionManagerService.getCurrentSelections()) === null || _this$_selectionManag2 === void 0 ? void 0 : _this$_selectionManag2.map((s) => s.range).filter((r) => r.rangeType === _univerjs_core.RANGE_TYPE.COLUMN));
+				if (!ranges || ranges.length === 0) return {
+					redos: [],
+					undos: []
+				};
+				return this._getDrawingUndoForColVisible(unitId, subUnitId, ranges);
+			} else if (id === _univerjs_sheets.DeltaRowHeightCommand.id || id === _univerjs_sheets.DeltaColumnWidthCommand.id) {
+				const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService);
+				if (!target) return {
+					redos: [],
+					undos: []
+				};
+				const { unitId, subUnitId, worksheet } = target;
+				const ranges = [];
+				if (id === _univerjs_sheets.DeltaRowHeightCommand.id) ranges.push({
+					startRow: params.anchorRow,
+					endRow: params.anchorRow,
+					startColumn: 0,
+					endColumn: worksheet.getColumnCount() - 1
+				});
+				else ranges.push({
+					startRow: 0,
+					endRow: worksheet.getRowCount() - 1,
+					startColumn: params.anchorCol,
+					endColumn: params.anchorCol
+				});
+				return this._getDrawingUndoForRowAndColSize(unitId, subUnitId, ranges);
+			} else if (id === _univerjs_sheets.SetRowHeightCommand.id || id === _univerjs_sheets.SetColWidthCommand.id) {
+				var _this$_selectionManag3;
+				const _params = params;
+				const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, _params);
+				if (!target) return {
+					redos: [],
+					undos: []
+				};
+				const { unitId, subUnitId } = target;
+				const ranges = _params.ranges || ((_this$_selectionManag3 = this._selectionManagerService.getCurrentSelections()) === null || _this$_selectionManag3 === void 0 ? void 0 : _this$_selectionManag3.map((s) => s.range));
+				if (!ranges || ranges.length === 0) return {
+					redos: [],
+					undos: []
+				};
+				return this._getDrawingUndoForRowAndColSize(unitId, subUnitId, ranges);
+			}
+			return {
+				redos: [],
+				undos: []
+			};
+		} }));
+	}
+	_finalizePlan(unitId, subUnitId, updates, deletes = [], mode = "command", command = this._currentCommand) {
+		const skeleton = this._sheetSkeletonService.getSkeleton(unitId, subUnitId);
+		if (!skeleton) return {
+			redos: [],
+			undos: []
+		};
+		const data = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+		const originals = new Map(Object.entries(data));
+		const plan = {
+			command,
+			mode,
+			unitId,
+			subUnitId,
+			skeleton,
+			originals,
+			updates: /* @__PURE__ */ new Map(),
+			deletes: new Set(deletes.map(({ drawingId }) => drawingId).filter((drawingId) => Boolean(drawingId)))
+		};
+		updates.forEach((patch) => {
+			if (!patch.drawingId) return;
+			const original = originals.get(patch.drawingId);
+			if (!original) return;
+			plan.updates.set(patch.drawingId, {
+				...original,
+				...patch,
+				transform: {
+					...original.transform,
+					...patch.transform
+				},
+				sheetTransform: patch.sheetTransform ?? original.sheetTransform,
+				axisAlignSheetTransform: patch.axisAlignSheetTransform ?? original.axisAlignSheetTransform
+			});
+		});
+		const feature = this._transformPlanService.transform(plan);
+		if (mode === "refresh") {
+			const changed = [...plan.updates.values()].filter((drawing) => JSON.stringify(originals.get(drawing.drawingId)) !== JSON.stringify(drawing));
+			if (changed.length) {
+				this._sheetDrawingService.refreshTransform(changed);
+				this._drawingManagerService.refreshTransform(changed);
+				this._commandService.syncExecuteCommand(ClearSheetDrawingTransformerOperation.id, [unitId]);
+			}
+			return {
+				redos: [],
+				undos: []
+			};
+		}
+		return this._createPlanMutations(plan, feature);
+	}
+	_getCalculatedSkeletonParam(unitId, subUnitId) {
+		const skeletonParam = this._sheetSkeletonService.getSkeletonParam(unitId, subUnitId);
+		if (!skeletonParam) return;
+		skeletonParam.skeleton.makeDirty(true);
+		skeletonParam.skeleton.calculate();
+		return skeletonParam;
+	}
+	_createPlanMutations(plan, feature) {
+		const { unitId, subUnitId } = plan;
+		const redos = [...feature.preRedos];
+		const undos = [...feature.preUndos];
+		const updates = [...plan.updates.values()].filter(({ drawingId }) => !plan.deletes.has(drawingId));
+		if (updates.length) {
+			const { undo, redo, objects } = this._sheetDrawingService.getBatchUpdateOp(updates);
+			redos.push({
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: redo,
+					objects,
+					type: 2
+				}
+			});
+			undos.push({
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: undo,
+					objects,
+					type: 2
+				}
+			});
+		}
+		if (plan.deletes.size) {
+			const drawings = [...plan.deletes].map((drawingId) => ({
+				unitId,
+				subUnitId,
+				drawingId
+			}));
+			const { undo, redo, objects } = this._sheetDrawingService.getBatchRemoveOp(drawings);
+			redos.push({
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: redo,
+					objects,
+					type: 1
+				}
+			});
+			undos.push({
+				id: SetDrawingApplyMutation.id,
+				params: {
+					unitId,
+					subUnitId,
+					op: undo,
+					objects,
+					type: 0
+				}
+			});
+		}
+		redos.push(...feature.redos);
+		undos.push(...feature.undos);
+		if (redos.length || undos.length) {
+			redos.push({
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			});
+			undos.push({
+				id: ClearSheetDrawingTransformerOperation.id,
+				params: [unitId]
+			});
+		}
+		return {
+			redos,
+			undos
+		};
+	}
+	_getRangeMoveUndo(range, type) {
+		const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService);
+		if (!target) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId, subUnitId } = target;
+		if (!this._getCalculatedSkeletonParam(unitId, subUnitId)) return {
+			redos: [],
+			undos: []
+		};
+		const drawingData = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+		const updateDrawings = [];
+		const deleteDrawings = [];
+		Object.keys(drawingData).forEach((drawingId) => {
+			const drawing = drawingData[drawingId];
+			const { updateDrawings: updateDrawingsPart, deleteDrawings: deleteDrawingsPart } = this._getUpdateOrDeleteDrawings(range, type, drawing);
+			updateDrawings.push(...updateDrawingsPart);
+			deleteDrawings.push(...deleteDrawingsPart);
+		});
+		return this._finalizePlan(unitId, subUnitId, updateDrawings, deleteDrawings);
+	}
+	_getUpdateOrDeleteDrawings(range, type, drawing) {
+		const updateDrawings = [];
+		const deleteDrawings = [];
+		const { sheetTransform, anchorType = "0", transform, unitId, subUnitId, drawingId } = drawing;
+		const sheetSkeletonParam = this._sheetSkeletonService.getSkeletonParam(unitId, subUnitId);
+		if (!sheetTransform || !transform || !sheetSkeletonParam) return {
+			updateDrawings,
+			deleteDrawings
+		};
+		const { from, to } = sheetTransform;
+		const { row: fromRow, column: fromColumn } = from;
+		const { row: toRow, column: toColumn } = to;
+		const { startRow, endRow, startColumn, endColumn } = range;
+		let newSheetTransform = null;
+		let newTransform = null;
+		let axisAlignSheetTransform;
+		if (type === 0 && fromRow >= startRow && toRow <= endRow) if (fromColumn >= startColumn && toColumn <= endColumn) deleteDrawings.push({
+			unitId,
+			subUnitId,
+			drawingId
+		});
+		else {
+			const param = this._shrinkCol(startColumn, endColumn, {
+				sheetSkeletonParam,
+				sheetTransform,
+				transform,
+				anchorType
+			});
+			newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+			newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+			axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+		}
+		else if (type === 1 && fromColumn >= startColumn && toColumn <= endColumn) if (fromRow >= startRow && toRow <= endRow) deleteDrawings.push({
+			unitId,
+			subUnitId,
+			drawingId
+		});
+		else {
+			const param = this._shrinkRow(startRow, endRow, {
+				sheetSkeletonParam,
+				sheetTransform,
+				transform,
+				anchorType
+			});
+			newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+			newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+			axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+		}
+		else if (type === 2) {
+			const param = this._expandRow(startRow, endRow, {
+				sheetSkeletonParam,
+				sheetTransform,
+				transform,
+				anchorType
+			});
+			newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+			newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+			axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+		} else if (type === 3) {
+			const param = this._expandCol(startColumn, endColumn, {
+				sheetSkeletonParam,
+				sheetTransform,
+				transform,
+				anchorType
+			});
+			newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+			newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+			axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+		}
+		if (newSheetTransform && newTransform) {
+			const newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+			updateDrawings.push({
+				...drawing,
+				sheetTransform: newSheetTransform,
+				transform: newTransform,
+				axisAlignSheetTransform
+			});
+		}
+		return {
+			updateDrawings,
+			deleteDrawings
+		};
+	}
+	_remainDrawingSize(transform, updateDrawings, drawing, skeleton) {
+		const newSheetTransform = transformToDrawingPosition({ ...transform }, skeleton);
+		if (newSheetTransform) {
+			const axisAlignSheetTransform = transformToAxisAlignPosition({ ...transform }, skeleton);
+			updateDrawings.push({
+				...drawing,
+				sheetTransform: newSheetTransform,
+				axisAlignSheetTransform
+			});
+		}
+	}
+	_getDrawingUndoForColVisible(unitId, subUnitId, ranges) {
+		const sheetSkeletonParam = this._getCalculatedSkeletonParam(unitId, subUnitId);
+		if (!sheetSkeletonParam) return {
+			redos: [],
+			undos: []
+		};
+		const { skeleton } = sheetSkeletonParam;
+		const drawingData = this._drawingManagerService.getDrawingData(unitId, subUnitId);
+		const updateDrawings = [];
+		const preUpdateDrawings = [];
+		Object.keys(drawingData).forEach((drawingId) => {
+			const drawing = drawingData[drawingId];
+			const { sheetTransform, transform, anchorType = "0" } = drawing;
+			if (anchorType === "2") this._remainDrawingSize(transform, updateDrawings, drawing, skeleton);
+			else {
+				const { from, to } = sheetTransform;
+				const { row: fromRow, column: fromColumn } = from;
+				const { row: toRow, column: toColumn } = to;
+				for (let i = 0; i < ranges.length; i++) {
+					const { startColumn, endColumn } = ranges[i];
+					if (toColumn < startColumn) continue;
+					if (anchorType === "0") {
+						let newSheetTransform = null;
+						let newTransform = null;
+						if (fromColumn >= startColumn && fromColumn <= endColumn) {
+							const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+								startColumn: fromColumn,
+								endColumn,
+								startRow: fromRow,
+								endRow: toRow
+							});
+							newTransform = {
+								...transform,
+								left: selectionCell.startX
+							};
+						}
+						if (newTransform) {
+							newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+							const axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+							if (newSheetTransform && newTransform) {
+								updateDrawings.push({
+									...drawing,
+									sheetTransform: newSheetTransform,
+									transform: newTransform,
+									axisAlignSheetTransform
+								});
+								break;
+							}
+						}
+						continue;
+					}
+					if (fromColumn >= startColumn && toColumn <= endColumn) continue;
+					let newSheetTransform = null;
+					let newTransform = null;
+					if (fromColumn >= startColumn && fromColumn <= endColumn) {
+						const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+							startColumn: fromColumn,
+							endColumn,
+							startRow: fromRow,
+							endRow: toRow
+						});
+						newTransform = {
+							...transform,
+							left: (selectionCell === null || selectionCell === void 0 ? void 0 : selectionCell.startX) || 0,
+							width: ((transform === null || transform === void 0 ? void 0 : transform.width) || 0) - selectionCell.endX + selectionCell.startX
+						};
+					} else if (toColumn >= startColumn && toColumn <= endColumn) {
+						const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+							startColumn,
+							endColumn: toColumn,
+							startRow: fromRow,
+							endRow: toRow
+						});
+						newTransform = {
+							...transform,
+							left: selectionCell.startX - ((transform === null || transform === void 0 ? void 0 : transform.width) || 0)
+						};
+					} else {
+						const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+							startColumn,
+							endColumn,
+							startRow: fromRow,
+							endRow: toRow
+						});
+						newTransform = {
+							...transform,
+							width: ((transform === null || transform === void 0 ? void 0 : transform.width) || 0) - selectionCell.endX + selectionCell.startX
+						};
+						newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+						if (newSheetTransform && newTransform) {
+							const axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+							preUpdateDrawings.push({
+								...drawing,
+								sheetTransform: newSheetTransform,
+								transform: newTransform,
+								axisAlignSheetTransform
+							});
+							break;
+						}
+					}
+					if (newTransform) newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+					if (newTransform && newSheetTransform) {
+						const axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+						updateDrawings.push({
+							...drawing,
+							sheetTransform: newSheetTransform,
+							transform: newTransform,
+							axisAlignSheetTransform
+						});
+						break;
+					} else this._remainDrawingSize(transform, updateDrawings, drawing, skeleton);
+				}
+			}
+		});
+		return this._finalizePlan(unitId, subUnitId, [...preUpdateDrawings, ...updateDrawings]);
+	}
+	_createUndoAndRedoMutation(unitId, subUnitId, updateDrawings) {
+		return this._finalizePlan(unitId, subUnitId, updateDrawings);
+	}
+	_getDrawingUndoForRowVisible(unitId, subUnitId, ranges) {
+		const sheetSkeletonParam = this._getCalculatedSkeletonParam(unitId, subUnitId);
+		if (!sheetSkeletonParam) return {
+			redos: [],
+			undos: []
+		};
+		const { skeleton } = sheetSkeletonParam;
+		const drawingData = this._drawingManagerService.getDrawingData(unitId, subUnitId);
+		const updateDrawings = [];
+		const preUpdateDrawings = [];
+		Object.keys(drawingData).forEach((drawingId) => {
+			const drawing = drawingData[drawingId];
+			const { sheetTransform, transform, anchorType = "0" } = drawing;
+			if (anchorType === "2") this._remainDrawingSize(transform, updateDrawings, drawing, skeleton);
+			else {
+				const { from, to } = sheetTransform;
+				const { row: fromRow, column: fromColumn } = from;
+				const { row: toRow, column: toColumn } = to;
+				for (let i = 0; i < ranges.length; i++) {
+					const { startRow, endRow } = ranges[i];
+					if (toRow < startRow) continue;
+					if (anchorType === "0") {
+						let newSheetTransform = null;
+						let newTransform = null;
+						if (fromRow >= startRow && fromRow <= endRow) {
+							const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+								startColumn: fromColumn,
+								endColumn: toColumn,
+								startRow: fromRow,
+								endRow
+							});
+							newTransform = {
+								...transform,
+								top: selectionCell.startY
+							};
+						}
+						if (newTransform) {
+							newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+							const axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+							if (newSheetTransform && newTransform) {
+								updateDrawings.push({
+									...drawing,
+									sheetTransform: newSheetTransform,
+									transform: newTransform,
+									axisAlignSheetTransform
+								});
+								break;
+							}
+						}
+						continue;
+					}
+					if (fromRow >= startRow && toRow <= endRow) continue;
+					let newSheetTransform = null;
+					let newTransform = null;
+					if (fromRow >= startRow && fromRow <= endRow) {
+						const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+							startColumn: fromColumn,
+							endColumn: toColumn,
+							startRow: fromRow,
+							endRow
+						});
+						newTransform = {
+							...transform,
+							top: (selectionCell === null || selectionCell === void 0 ? void 0 : selectionCell.startY) || 0,
+							height: ((transform === null || transform === void 0 ? void 0 : transform.height) || 0) - selectionCell.endY + selectionCell.startY
+						};
+					} else if (toRow >= startRow && toRow <= endRow) {
+						const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+							startColumn: fromColumn,
+							endColumn: toColumn,
+							startRow,
+							endRow: toRow
+						});
+						newTransform = {
+							...transform,
+							top: selectionCell.startY - ((transform === null || transform === void 0 ? void 0 : transform.height) || 0)
+						};
+					} else {
+						const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+							startColumn: fromColumn,
+							endColumn: toColumn,
+							startRow,
+							endRow
+						});
+						newTransform = {
+							...transform,
+							height: ((transform === null || transform === void 0 ? void 0 : transform.height) || 0) - selectionCell.endY + selectionCell.startY
+						};
+						newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+						if (newSheetTransform && newTransform) {
+							const axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+							preUpdateDrawings.push({
+								...drawing,
+								sheetTransform: newSheetTransform,
+								transform: newTransform,
+								axisAlignSheetTransform
+							});
+							break;
+						}
+					}
+					if (newTransform) newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+					if (newTransform && newSheetTransform) {
+						const axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+						updateDrawings.push({
+							...drawing,
+							sheetTransform: newSheetTransform,
+							transform: newTransform,
+							axisAlignSheetTransform
+						});
+						break;
+					} else this._remainDrawingSize(transform, updateDrawings, drawing, skeleton);
+				}
+			}
+		});
+		return this._finalizePlan(unitId, subUnitId, [...preUpdateDrawings, ...updateDrawings]);
+	}
+	_getDrawingUndoForRowAndColSize(unitId, subUnitId, ranges) {
+		const sheetSkeletonParam = this._getCalculatedSkeletonParam(unitId, subUnitId);
+		if (!sheetSkeletonParam) return {
+			redos: [],
+			undos: []
+		};
+		const { skeleton } = sheetSkeletonParam;
+		const drawingData = this._drawingManagerService.getDrawingData(unitId, subUnitId);
+		const updateDrawings = [];
+		Object.keys(drawingData).forEach((drawingId) => {
+			const drawing = drawingData[drawingId];
+			const { sheetTransform, transform, anchorType = "0" } = drawing;
+			if (anchorType === "2") this._remainDrawingSize(transform, updateDrawings, drawing, skeleton);
+			else {
+				const { from, to } = sheetTransform;
+				const { row: fromRow, column: fromColumn } = from;
+				const { row: toRow, column: toColumn } = to;
+				for (let i = 0; i < ranges.length; i++) {
+					const { startRow, endRow, startColumn, endColumn } = ranges[i];
+					if (toRow < startRow || toColumn < startColumn) continue;
+					if (anchorType === "0") {
+						if (fromRow <= startRow && toRow >= endRow || fromColumn <= startColumn && toColumn >= endColumn) {
+							this._remainDrawingSize(transform, updateDrawings, drawing, skeleton);
+							continue;
+						}
+					}
+					const newTransform = drawingPositionToTransform({ ...sheetTransform }, sheetSkeletonParam);
+					if (newTransform) {
+						updateDrawings.push({
+							...drawing,
+							transform: newTransform
+						});
+						break;
+					}
+				}
+			}
+		});
+		if (updateDrawings.length === 0) return {
+			redos: [],
+			undos: []
+		};
+		return this._createUndoAndRedoMutation(unitId, subUnitId, updateDrawings);
+	}
+	_getUnitIdAndSubUnitId(params, type) {
+		let target;
+		if (type === "insert") target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, params);
+		else target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService);
+		if (!target) return;
+		const { unitId, subUnitId } = target;
+		return {
+			unitId,
+			subUnitId
+		};
+	}
+	_moveRangeInterceptor(unitId, subUnitId, fromRange, toRange) {
+		const sheetSkeletonParam = this._getCalculatedSkeletonParam(unitId, subUnitId);
+		if (!sheetSkeletonParam) return {
+			redos: [],
+			undos: []
+		};
+		const { skeleton } = sheetSkeletonParam;
+		const selectionRect = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, fromRange);
+		if (!selectionRect) return {
+			redos: [],
+			undos: []
+		};
+		const { startX, endX, startY, endY } = selectionRect;
+		const drawings = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+		const containedDrawings = [];
+		Object.keys(drawings).forEach((drawingId) => {
+			const drawing = drawings[drawingId];
+			if (drawing.anchorType !== "1") return;
+			const { transform } = drawing;
+			if (!transform) return;
+			const { left = 0, top = 0, width = 0, height = 0 } = transform;
+			const { drawingStartX, drawingEndX, drawingStartY, drawingEndY } = {
+				drawingStartX: left,
+				drawingEndX: left + width,
+				drawingStartY: top,
+				drawingEndY: top + height
+			};
+			if (startX <= drawingStartX && drawingEndX <= endX && startY <= drawingStartY && drawingEndY <= endY) containedDrawings.push(drawing);
+		});
+		const rowOffset = toRange.startRow - fromRange.startRow;
+		const colOffset = toRange.startColumn - fromRange.startColumn;
+		const updateDrawings = containedDrawings.map((drawing) => {
+			const oldSheetTransform = drawing.sheetTransform;
+			const sheetTransform = {
+				to: {
+					...oldSheetTransform.to,
+					row: oldSheetTransform.to.row + rowOffset,
+					column: oldSheetTransform.to.column + colOffset
+				},
+				from: {
+					...oldSheetTransform.from,
+					row: oldSheetTransform.from.row + rowOffset,
+					column: oldSheetTransform.from.column + colOffset
+				}
+			};
+			const transform = drawingPositionToTransform(sheetTransform, sheetSkeletonParam);
+			return {
+				unitId,
+				subUnitId,
+				drawingId: drawing.drawingId,
+				transform,
+				sheetTransform
+			};
+		});
+		return this._finalizePlan(unitId, subUnitId, updateDrawings);
+	}
+	_moveRowInterceptor(params, type) {
+		const target = this._getUnitIdAndSubUnitId(params, type);
+		if (!target) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId, subUnitId } = target;
+		const sheetSkeletonParam = this._getCalculatedSkeletonParam(unitId, subUnitId);
+		if (!sheetSkeletonParam) return {
+			redos: [],
+			undos: []
+		};
+		const { range } = params;
+		const rowStartIndex = range.startRow;
+		const rowEndIndex = range.endRow;
+		const data = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+		const updateDrawings = [];
+		const deleteDrawings = [];
+		Object.keys(data).forEach((drawingId) => {
+			const { sheetTransform, transform, anchorType = "0" } = data[drawingId];
+			if (!sheetTransform || !transform) return;
+			let newSheetTransform;
+			let newTransform;
+			let axisAlignSheetTransform;
+			if (type === "insert") {
+				const param = this._expandRow(rowStartIndex, rowEndIndex, {
+					sheetSkeletonParam,
+					sheetTransform,
+					transform,
+					anchorType
+				});
+				newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+				newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+				axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+			} else {
+				const { from, to } = sheetTransform;
+				const { row: fromRow } = from;
+				const { row: toRow } = to;
+				if (anchorType === "1" && fromRow >= rowStartIndex && toRow <= rowEndIndex) deleteDrawings.push({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				else {
+					const param = this._shrinkRow(rowStartIndex, rowEndIndex, {
+						sheetSkeletonParam,
+						sheetTransform,
+						transform,
+						anchorType
+					});
+					newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+					newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+					axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+				}
+			}
+			if (!newSheetTransform || !newTransform) return;
+			const params = {
+				unitId,
+				subUnitId,
+				drawingId,
+				transform: newTransform,
+				sheetTransform: newSheetTransform,
+				axisAlignSheetTransform
+			};
+			updateDrawings.push(params);
+		});
+		return this._finalizePlan(unitId, subUnitId, updateDrawings, deleteDrawings);
+	}
+	_moveColInterceptor(params, type) {
+		const target = this._getUnitIdAndSubUnitId(params, type);
+		if (!target) return {
+			redos: [],
+			undos: []
+		};
+		const { unitId, subUnitId } = target;
+		const sheetSkeletonParam = this._getCalculatedSkeletonParam(unitId, subUnitId);
+		if (!sheetSkeletonParam) return {
+			redos: [],
+			undos: []
+		};
+		const { range } = params;
+		const colStartIndex = range.startColumn;
+		const colEndIndex = range.endColumn;
+		const data = this._sheetDrawingService.getDrawingData(unitId, subUnitId);
+		const updateDrawings = [];
+		const deleteDrawings = [];
+		Object.keys(data).forEach((drawingId) => {
+			const { sheetTransform, transform, anchorType = "0" } = data[drawingId];
+			if (!sheetTransform || !transform) return;
+			let newSheetTransform;
+			let newTransform;
+			let axisAlignSheetTransform;
+			if (type === "insert") {
+				const param = this._expandCol(colStartIndex, colEndIndex, {
+					sheetSkeletonParam,
+					sheetTransform,
+					transform,
+					anchorType
+				});
+				newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+				newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+				axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+			} else {
+				const { from, to } = sheetTransform;
+				const { column: fromColumn } = from;
+				const { column: toColumn } = to;
+				if (anchorType === "1" && fromColumn >= colStartIndex && toColumn <= colEndIndex) deleteDrawings.push({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				else {
+					const param = this._shrinkCol(colStartIndex, colEndIndex, {
+						sheetSkeletonParam,
+						sheetTransform,
+						transform,
+						anchorType
+					});
+					newSheetTransform = param === null || param === void 0 ? void 0 : param.newSheetTransform;
+					newTransform = param === null || param === void 0 ? void 0 : param.newTransform;
+					axisAlignSheetTransform = (param === null || param === void 0 ? void 0 : param.axisAlignSheetTransform) ?? void 0;
+				}
+			}
+			if (!newSheetTransform || !newTransform) return;
+			const params = {
+				unitId,
+				subUnitId,
+				drawingId,
+				transform: newTransform,
+				sheetTransform: newSheetTransform,
+				axisAlignSheetTransform
+			};
+			updateDrawings.push(params);
+		});
+		return this._finalizePlan(unitId, subUnitId, updateDrawings, deleteDrawings);
+	}
+	_expandCol(colStartIndex, colEndIndex, options) {
+		const { sheetSkeletonParam, sheetTransform, transform, anchorType = "0" } = options;
+		const { skeleton } = sheetSkeletonParam;
+		const colCount = colEndIndex - colStartIndex + 1;
+		const { from, to } = sheetTransform;
+		const { column: fromColumn } = from;
+		const { column: toColumn } = to;
+		if (anchorType === "2") return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		let newSheetTransform = null;
+		let newTransform = null;
+		let axisAlignSheetTransform = null;
+		if (fromColumn >= colStartIndex) {
+			const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+				startColumn: colStartIndex,
+				endColumn: colEndIndex,
+				startRow: from.row,
+				endRow: to.row
+			});
+			newTransform = {
+				...transform,
+				left: (transform.left || 0) + selectionCell.endX - selectionCell.startX
+			};
+			newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+			axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+		} else if (toColumn >= colEndIndex) if (anchorType === "1") {
+			newSheetTransform = {
+				from: { ...from },
+				to: {
+					...to,
+					column: toColumn + colCount
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		} else return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		if (newSheetTransform && newTransform) return {
+			newSheetTransform,
+			newTransform,
+			axisAlignSheetTransform
+		};
+		return null;
+	}
+	_shrinkCol(colStartIndex, colEndIndex, options) {
+		const { sheetSkeletonParam, sheetTransform, transform, anchorType = "0" } = options;
+		const { skeleton } = sheetSkeletonParam;
+		const colCount = colEndIndex - colStartIndex + 1;
+		const { from, to } = sheetTransform;
+		const { column: fromColumn } = from;
+		const { column: toColumn } = to;
+		if (anchorType === "2") return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		let newSheetTransform = null;
+		let newTransform = null;
+		let axisAlignSheetTransform = null;
+		if (fromColumn > colEndIndex) {
+			newSheetTransform = {
+				from: {
+					...from,
+					column: fromColumn - colCount
+				},
+				to: {
+					...to,
+					column: toColumn - colCount
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		} else if (fromColumn >= colStartIndex && toColumn <= colEndIndex) return null;
+		else if (fromColumn < colStartIndex && toColumn > colEndIndex) if (anchorType === "1") {
+			newSheetTransform = {
+				from: { ...from },
+				to: {
+					...to,
+					column: toColumn - colCount
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		} else return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		else if (fromColumn >= colStartIndex && fromColumn <= colEndIndex) {
+			if (anchorType === "1") {
+				newSheetTransform = {
+					from: {
+						...from,
+						column: colStartIndex,
+						columnOffset: 0
+					},
+					to: {
+						...to,
+						column: toColumn - colCount
+					}
+				};
+				newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+				axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+			} else if (fromColumn === colStartIndex) newTransform = {
+				...transform,
+				left: (transform.left || 0) - sheetTransform.from.columnOffset
+			};
+			else {
+				const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+					startColumn: colStartIndex,
+					endColumn: fromColumn - 1,
+					startRow: from.row,
+					endRow: to.row
+				});
+				newTransform = {
+					...transform,
+					left: (transform.left || 0) - selectionCell.endX + selectionCell.startX - sheetTransform.from.columnOffset
+				};
+			}
+			if (!newSheetTransform) {
+				newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+				axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+			}
+		} else if (toColumn >= colStartIndex && toColumn <= colEndIndex && anchorType === "1") {
+			const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+				startColumn: colStartIndex - 1,
+				endColumn: colStartIndex - 1,
+				startRow: from.row,
+				endRow: to.row
+			});
+			newSheetTransform = {
+				from: { ...from },
+				to: {
+					...to,
+					column: colStartIndex - 1,
+					columnOffset: selectionCell.endX - selectionCell.startX
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		}
+		if (newSheetTransform && newTransform) return {
+			newSheetTransform,
+			newTransform,
+			axisAlignSheetTransform
+		};
+		return null;
+	}
+	_expandRow(rowStartIndex, rowEndIndex, options) {
+		const { sheetSkeletonParam, sheetTransform, transform, anchorType = "0" } = options;
+		const { skeleton } = sheetSkeletonParam;
+		const rowCount = rowEndIndex - rowStartIndex + 1;
+		const { from, to } = sheetTransform;
+		const { row: fromRow } = from;
+		const { row: toRow } = to;
+		if (anchorType === "2") return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		let newSheetTransform = null;
+		let newTransform = null;
+		let axisAlignSheetTransform = null;
+		if (fromRow >= rowStartIndex) {
+			const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+				startRow: rowStartIndex,
+				endRow: rowEndIndex,
+				startColumn: from.column,
+				endColumn: to.column
+			});
+			newTransform = {
+				...transform,
+				top: (transform.top || 0) + selectionCell.endY - selectionCell.startY
+			};
+			newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+			axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+		} else if (toRow >= rowEndIndex) if (anchorType === "1") {
+			newSheetTransform = {
+				from: { ...from },
+				to: {
+					...to,
+					row: toRow + rowCount
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		} else return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		if (newSheetTransform && newTransform) return {
+			newSheetTransform,
+			newTransform,
+			axisAlignSheetTransform
+		};
+		return null;
+	}
+	_shrinkRow(rowStartIndex, rowEndIndex, options) {
+		const { sheetSkeletonParam, sheetTransform, transform, anchorType = "0" } = options;
+		const { skeleton } = sheetSkeletonParam;
+		const rowCount = rowEndIndex - rowStartIndex + 1;
+		const { from, to } = sheetTransform;
+		const { row: fromRow } = from;
+		const { row: toRow } = to;
+		if (anchorType === "2") return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		let newSheetTransform = null;
+		let newTransform = null;
+		let axisAlignSheetTransform = null;
+		if (fromRow > rowEndIndex) {
+			newSheetTransform = {
+				from: {
+					...from,
+					row: fromRow - rowCount
+				},
+				to: {
+					...to,
+					row: toRow - rowCount
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		} else if (fromRow >= rowStartIndex && toRow <= rowEndIndex) return null;
+		else if (fromRow < rowStartIndex && toRow > rowEndIndex) if (anchorType === "1") {
+			newSheetTransform = {
+				from: { ...from },
+				to: {
+					...to,
+					row: toRow - rowCount
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		} else return {
+			newSheetTransform: transformToDrawingPosition({ ...transform }, skeleton),
+			newTransform: transform,
+			axisAlignSheetTransform: transformToAxisAlignPosition({ ...transform }, skeleton)
+		};
+		else if (fromRow >= rowStartIndex && fromRow <= rowEndIndex) {
+			if (anchorType === "1") {
+				newSheetTransform = {
+					from: {
+						...from,
+						row: rowStartIndex,
+						rowOffset: 0
+					},
+					to: {
+						...to,
+						row: toRow - rowCount
+					}
+				};
+				newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+				axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+			} else if (fromRow === rowStartIndex) newTransform = {
+				...transform,
+				top: (transform.top || 0) - sheetTransform.from.rowOffset
+			};
+			else {
+				const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+					startRow: rowStartIndex,
+					endRow: fromRow - 1,
+					startColumn: from.column,
+					endColumn: to.column
+				});
+				newTransform = {
+					...transform,
+					top: (transform.top || 0) - selectionCell.endY + selectionCell.startY - sheetTransform.from.rowOffset
+				};
+			}
+			if (!newSheetTransform) {
+				newSheetTransform = transformToDrawingPosition(newTransform, skeleton);
+				axisAlignSheetTransform = transformToAxisAlignPosition(newTransform, skeleton);
+			}
+		} else if (toRow >= rowStartIndex && toRow <= rowEndIndex && anchorType === "1") {
+			const selectionCell = (0, _univerjs_sheets.attachRangeWithCoord)(skeleton, {
+				startColumn: from.column,
+				endColumn: from.column,
+				startRow: rowStartIndex - 1,
+				endRow: rowStartIndex - 1
+			});
+			newSheetTransform = {
+				from: { ...from },
+				to: {
+					...to,
+					row: rowStartIndex - 1,
+					rowOffset: selectionCell.endY - selectionCell.startY
+				}
+			};
+			newTransform = drawingPositionToTransform(newSheetTransform, sheetSkeletonParam);
+		}
+		if (newSheetTransform && newTransform) return {
+			newSheetTransform,
+			newTransform,
+			axisAlignSheetTransform
+		};
+		return null;
+	}
+	_sheetRefreshListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (!REFRESH_MUTATIONS.includes(command.id)) return;
+			queueMicrotask(() => {
+				const params = command.params;
+				const target = (0, _univerjs_sheets.getSheetCommandTarget)(this._univerInstanceService, params);
+				if (!target) return;
+				const { unitId, subUnitId, worksheet } = target;
+				let ranges = [];
+				if ("ranges" in params) ranges = params.ranges;
+				else if ("rowsAutoHeightInfo" in params) ranges = params.rowsAutoHeightInfo.map((info) => ({
+					startRow: info.row,
+					endRow: info.row,
+					startColumn: 0,
+					endColumn: worksheet.getColumnCount() - 1
+				}));
+				this._refreshDrawingTransform(command, unitId, subUnitId, ranges);
+			});
+		}));
+	}
+	_refreshDrawingTransform(command, unitId, subUnitId, ranges) {
+		const sheetSkeletonParam = this._getCalculatedSkeletonParam(unitId, subUnitId);
+		const drawingData = this._drawingManagerService.getDrawingData(unitId, subUnitId) ?? {};
+		const updateDrawings = [];
+		Object.keys(drawingData).forEach((drawingId) => {
+			const drawing = drawingData[drawingId];
+			const { sheetTransform, transform, anchorType = "0" } = drawing;
+			if (anchorType === "2") return true;
+			if (!sheetTransform) return true;
+			const { from, to } = sheetTransform;
+			const { row: fromRow, column: fromColumn } = from;
+			const { row: toRow, column: toColumn } = to;
+			for (let i = 0; i < ranges.length; i++) {
+				const { startRow, endRow, startColumn, endColumn } = ranges[i];
+				if (_univerjs_core.Rectangle.intersects({
+					startRow,
+					endRow,
+					startColumn,
+					endColumn
+				}, {
+					startRow: fromRow,
+					endRow: toRow,
+					startColumn: fromColumn,
+					endColumn: toColumn
+				}) || fromRow > endRow || fromColumn > endColumn) {
+					const isPositionAnchor = anchorType === "0";
+					const newTransform = drawingPositionToTransform(sheetTransform, sheetSkeletonParam);
+					updateDrawings.push({
+						...drawing,
+						transform: {
+							...transform,
+							left: newTransform === null || newTransform === void 0 ? void 0 : newTransform.left,
+							top: newTransform === null || newTransform === void 0 ? void 0 : newTransform.top,
+							width: isPositionAnchor ? transform === null || transform === void 0 ? void 0 : transform.width : newTransform === null || newTransform === void 0 ? void 0 : newTransform.width,
+							height: isPositionAnchor ? transform === null || transform === void 0 ? void 0 : transform.height : newTransform === null || newTransform === void 0 ? void 0 : newTransform.height
+						}
+					});
+					break;
+				}
+			}
+		});
+		this._finalizePlan(unitId, subUnitId, updateDrawings, [], "refresh", command);
+	}
+};
+SheetDrawingTransformAffectedController = __decorate([
+	__decorateParam(0, _univerjs_core.ICommandService),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetSkeletonService)),
+	__decorateParam(2, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetInterceptorService)),
+	__decorateParam(3, (0, _univerjs_core.Inject)(_univerjs_sheets.SheetsSelectionsService)),
+	__decorateParam(4, ISheetDrawingService),
+	__decorateParam(5, _univerjs_drawing.IDrawingManagerService),
+	__decorateParam(6, _univerjs_core.IUniverInstanceService),
+	__decorateParam(7, (0, _univerjs_core.Inject)(SheetDrawingTransformPlanService))
+], SheetDrawingTransformAffectedController);
+
+//#endregion
+//#region src/plugin.ts
+let UniverSheetsDrawingPlugin = class UniverSheetsDrawingPlugin extends _univerjs_core.Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { ...rest } = (0, _univerjs_core.merge)({}, defaultPluginConfig, this._config);
+		this._configService.setConfig(SHEETS_DRAWING_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		[
+			[SheetsDrawingLoadController],
+			[SheetDrawingTransformPlanService],
+			[SheetDrawingTransformAffectedController],
+			[ISheetDrawingService, { useClass: SheetDrawingService }]
+		].forEach((dependency) => this._injector.add(dependency));
+		this._injector.get(SheetsDrawingLoadController);
+		this._injector.get(SheetDrawingTransformAffectedController);
+	}
+};
+_defineProperty(UniverSheetsDrawingPlugin, "pluginName", SHEET_DRAWING_PLUGIN);
+_defineProperty(UniverSheetsDrawingPlugin, "packageName", name);
+_defineProperty(UniverSheetsDrawingPlugin, "version", version);
+_defineProperty(UniverSheetsDrawingPlugin, "type", _univerjs_core.UniverInstanceType.UNIVER_SHEET);
+UniverSheetsDrawingPlugin = __decorate([
+	(0, _univerjs_core.DependentOn)(_univerjs_drawing.UniverDrawingPlugin, _univerjs_sheets.UniverSheetsPlugin),
+	__decorateParam(1, (0, _univerjs_core.Inject)(_univerjs_core.Injector)),
+	__decorateParam(2, _univerjs_core.IConfigService)
+], UniverSheetsDrawingPlugin);
+
+//#endregion
+exports.ClearSheetDrawingTransformerOperation = ClearSheetDrawingTransformerOperation;
+exports.DrawingApplyType = DrawingApplyType;
+exports.ISheetDrawingService = ISheetDrawingService;
+exports.InsertSheetDrawingCommand = InsertSheetDrawingCommand;
+exports.RemoveSheetDrawingCommand = RemoveSheetDrawingCommand;
+exports.SHEET_DRAWING_PLUGIN = SHEET_DRAWING_PLUGIN;
+exports.SetDrawingApplyMutation = SetDrawingApplyMutation;
+exports.SetDrawingArrangeCommand = SetDrawingArrangeCommand;
+exports.SetSheetDrawingCommand = SetSheetDrawingCommand;
+exports.SetSheetDrawingPlacementCommand = SetSheetDrawingPlacementCommand;
+exports.SheetDrawingAnchorType = SheetDrawingAnchorType;
+exports.SheetDrawingService = SheetDrawingService;
+exports.SheetDrawingTransformPlanService = SheetDrawingTransformPlanService;
+Object.defineProperty(exports, 'UniverSheetsDrawingPlugin', {
+  enumerable: true,
+  get: function () {
+    return UniverSheetsDrawingPlugin;
+  }
+});
+exports.applySheetDrawingPlacement = applySheetDrawingPlacement;
+exports.drawingPositionToTransform = drawingPositionToTransform;
+exports.getSheetDrawingPlacement = getSheetDrawingPlacement;
+exports.isKnownSheetNonRotatableDrawingType = isKnownSheetNonRotatableDrawingType;
+exports.normalizeSheetDrawingPlacement = normalizeSheetDrawingPlacement;
+exports.resolveSheetDrawingRotateEnabled = resolveSheetDrawingRotateEnabled;
+exports.transformToAxisAlignPosition = transformToAxisAlignPosition;
+exports.transformToDrawingPosition = transformToDrawingPosition;

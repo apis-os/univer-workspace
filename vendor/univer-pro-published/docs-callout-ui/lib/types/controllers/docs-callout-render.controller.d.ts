@@ -1,0 +1,38 @@
+import type { DocumentDataModel } from '@univerjs/core';
+import type { IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { DocsCalloutModel } from '@univerjs-pro/docs-callout';
+import { Disposable, ICommandService, IPermissionService, ThemeService } from '@univerjs/core';
+import { DocSkeletonManagerService } from '@univerjs/docs';
+import { DocCanvasPopManagerService } from '@univerjs/docs-ui';
+export declare class DocsCalloutRenderController extends Disposable implements IRenderModule {
+    private readonly _context;
+    private readonly _docSkeletonManagerService;
+    private readonly _docsCalloutModel;
+    private readonly _docCanvasPopManagerService;
+    private readonly _commandService;
+    private readonly _themeService;
+    private readonly _permissionService;
+    private _iconHitRects;
+    private _blockHitRects;
+    private _emojiPopoverDisposable;
+    private _toolbarPopoverDisposable;
+    private _activeEmojiBlockId;
+    private _cursorBeforeIconHover;
+    constructor(_context: IRenderContext<DocumentDataModel>, _docSkeletonManagerService: DocSkeletonManagerService, _docsCalloutModel: DocsCalloutModel, _docCanvasPopManagerService: DocCanvasPopManagerService, _commandService: ICommandService, _themeService: ThemeService, _permissionService: IPermissionService);
+    private _initRender;
+    private _initPointer;
+    private _drawPage;
+    private _collectRenderFragments;
+    private _collectLines;
+    private _getCalloutParagraphOwners;
+    private _makeDirty;
+    private _hitIcon;
+    private _hitBlock;
+    private _openToolbarPopover;
+    private _closeToolbarPopover;
+    private _openEmojiPopover;
+    private _closeEmojiPopover;
+    private _canEditBlock;
+    private _setPointerCursor;
+    private _restorePointerCursor;
+}

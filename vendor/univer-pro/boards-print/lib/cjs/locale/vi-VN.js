@@ -1,69 +1,11 @@
-function _0x6099() {
-  const _0x1f5976 = [
-    "4iZfkxF",
-    "JPEG",
-    "200406cXdPXD",
-    "1588536dtfSQg",
-    "Đang\x20chuẩn\x20bị\x20in…",
-    "PNG",
-    "77152OkyYqt",
-    "65463HEfVvO",
-    "Không\x20thể\x20xuất\x20hình\x20ảnh\x20của\x20bảng\x20này.",
-    "exports",
-    "119MLCBTj",
-    "3480620OqSsgX",
-    "Đang\x20xuất\x20hình\x20ảnh…",
-    "56190epvLeF",
-    "719828GUmFAX",
-    "90OuAAZO",
-  ];
-  _0x6099 = function () {
-    return _0x1f5976;
-  };
-  return _0x6099();
-}
-function _0x372f(_0x36bafa, _0x172867) {
-  _0x36bafa = _0x36bafa - 0x1c8;
-  const _0x609914 = _0x6099();
-  let _0x372fd7 = _0x609914[_0x36bafa];
-  return _0x372fd7;
-}
-const _0x58adfc = _0x372f;
-(function (_0x61b738, _0x2489aa) {
-  const _0x499a30 = _0x372f,
-    _0x48d20e = _0x61b738();
-  while (!![]) {
-    try {
-      const _0x1ec35 =
-        parseInt(_0x499a30(0x1cc)) / 0x1 +
-        (-parseInt(_0x499a30(0x1ca)) / 0x2) *
-          (parseInt(_0x499a30(0x1d1)) / 0x3) +
-        parseInt(_0x499a30(0x1c8)) / 0x4 +
-        (-parseInt(_0x499a30(0x1c9)) / 0x5) *
-          (-parseInt(_0x499a30(0x1d7)) / 0x6) +
-        (-parseInt(_0x499a30(0x1d4)) / 0x7) *
-          (-parseInt(_0x499a30(0x1d0)) / 0x8) +
-        -parseInt(_0x499a30(0x1cd)) / 0x9 +
-        -parseInt(_0x499a30(0x1d5)) / 0xa;
-      if (_0x1ec35 === _0x2489aa) break;
-      else _0x48d20e["push"](_0x48d20e["shift"]());
-    } catch (_0x37a640) {
-      _0x48d20e["push"](_0x48d20e["shift"]());
-    }
-  }
-})(_0x6099, 0x23521);
 const e = {
   "boards-print": {
-    menu: {
-      print: "In",
-      exportPng: _0x58adfc(0x1cf),
-      exportJpeg: _0x58adfc(0x1cb),
-    },
-    loading: { print: _0x58adfc(0x1ce), image: _0x58adfc(0x1d6) },
+    menu: { print: "In", exportPng: "PNG", exportJpeg: "JPEG" },
+    loading: { print: "Đang chuẩn bị in…", image: "Đang xuất hình ảnh…" },
     errors: {
       printFailed: "Không\x20thể\x20in\x20bảng\x20này.",
-      exportFailed: _0x58adfc(0x1d2),
+      exportFailed: "Không thể xuất hình ảnh của bảng này.",
     },
   },
 };
-module[_0x58adfc(0x1d3)] = e;
+module.exports = e;

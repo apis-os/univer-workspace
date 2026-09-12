@@ -1,68 +1,3 @@
-const _0xdcac4c = _0x547b;
-(function (_0x9d6179, _0x4a91c9) {
-  const _0x1db6e2 = _0x547b,
-    _0x4e5f2d = _0x9d6179();
-  while (!![]) {
-    try {
-      const _0x1eb25f =
-        (parseInt(_0x1db6e2(0x1c6)) / 0x1) *
-          (-parseInt(_0x1db6e2(0x1be)) / 0x2) +
-        parseInt(_0x1db6e2(0x1b9)) / 0x3 +
-        (-parseInt(_0x1db6e2(0x1b8)) / 0x4) *
-          (parseInt(_0x1db6e2(0x1c5)) / 0x5) +
-        -parseInt(_0x1db6e2(0x1cc)) / 0x6 +
-        -parseInt(_0x1db6e2(0x1cb)) / 0x7 +
-        (parseInt(_0x1db6e2(0x1cd)) / 0x8) *
-          (parseInt(_0x1db6e2(0x1b7)) / 0x9) +
-        parseInt(_0x1db6e2(0x1d0)) / 0xa;
-      if (_0x1eb25f === _0x4a91c9) break;
-      else _0x4e5f2d["push"](_0x4e5f2d["shift"]());
-    } catch (_0x279b85) {
-      _0x4e5f2d["push"](_0x4e5f2d["shift"]());
-    }
-  }
-})(_0x523f, 0xe75ef);
-function _0x523f() {
-  const _0x975d55 = [
-    "Vaše\x20akcie\x20sú\x20v\x20rozpore\x20s\x20oprávneniami\x20servera.\x20Uložte\x20si\x20lokálne\x20úpravy\x20inde,\x20pretože\x20po\x20obnovení\x20stránky\x20budú\x20zahodené.",
-    "Server\x20neodpovedá\x20na\x20požiadavku\x20spolupráce.\x20Vaše\x20úpravy\x20budú\x20uložené\x20lokálne.",
-    "Kolaboračná\x20miestnosť\x20je\x20plná.\x20Vaše\x20úpravy\x20budú\x20uložené\x20lokálne.",
-    "63235rtKtiZ",
-    "278643QRZaeH",
-    "exports",
-    "Medzi\x20vašou\x20lokálnou\x20kópiou\x20a\x20kópiou\x20na\x20serveri\x20je\x20konflikt.\x20Uložte\x20si\x20lokálne\x20úpravy,\x20inak\x20sa\x20po\x20obnovení\x20stránky\x20stratia.",
-    "Platnosť\x20prihlásenia\x20vypršala,\x20kliknite\x20OK\x20pre\x20opätovné\x20prihlásenie,\x20kliknite\x20Zrušiť\x20pre\x20uloženie\x20lokálnych\x20úprav.",
-    "Konflikty\x20úprav",
-    "3007466VzBVWM",
-    "9857178trKXGJ",
-    "8WPnHHR",
-    "Pripojenie\x20zlyhalo,\x20o\x20chvíľu\x20to\x20skúsime\x20znova.",
-    "Offline,\x20úpravy\x20budú\x20uložené\x20lokálne",
-    "43902130jBuIDh",
-    "Načítavanie\x20údajov\x20sa\x20zastavilo\x20na\x20{0}/{1}.\x20Obnovte\x20stránku\x20a\x20skúste\x20to\x20znova.",
-    "1247625tUPzou",
-    "392xHrygq",
-    "2536008FaeKwG",
-    "Momentálne\x20nie\x20je\x20možné\x20vykonať\x20výpočet\x20vzorcov.\x20Skúste\x20to\x20neskôr.",
-    "Obnoviť\x20stránku",
-    "Výpočet\x20vzorcov\x20sa\x20spustil.",
-    "Konflikt\x20spolupráce",
-    "8bIAexj",
-    "Máte\x20offline\x20úpravy,\x20ktoré\x20neboli\x20uložené\x20na\x20server.\x20Skontrolujte\x20sieť\x20a\x20skúste\x20to\x20znova.",
-    "Súbor\x20ste\x20otvorili\x20aj\x20na\x20inej\x20karte.\x20V\x20prípade\x20chýbajúcich\x20údajov\x20na\x20tejto\x20karte\x20nebudete\x20môcť\x20upravovať.",
-    "Fronta\x20výpočtu\x20vzorcov\x20je\x20plná,\x20čaká\x20sa\x20na\x20voľné\x20miesto...",
-  ];
-  _0x523f = function () {
-    return _0x975d55;
-  };
-  return _0x523f();
-}
-function _0x547b(_0x2b684d, _0x4eee9a) {
-  _0x2b684d = _0x2b684d - 0x1b7;
-  const _0x523f50 = _0x523f();
-  let _0x547b6e = _0x523f50[_0x2b684d];
-  return _0x547b6e;
-}
 const e = {
   "collaboration-client-ui": {
     collabClient: {
@@ -70,35 +5,57 @@ const e = {
     },
     collabStatus: {
       fetchMiss: "Synchronizujú\x20sa\x20údaje\x20zo\x20servera...",
-      conflict: _0xdcac4c(0x1ca),
+      conflict: "Konflikty úprav",
       notCollab: "Lokálny\x20súbor",
       synced: "Synchronizované",
       syncing: "Synchronizuje\x20sa...",
-      offline: _0xdcac4c(0x1cf),
+      offline: "Offline, úpravy budú uložené lokálne",
     },
-    snapshotLoading: { timeout: _0xdcac4c(0x1d1), refresh: _0xdcac4c(0x1bb) },
+    snapshotLoading: {
+      timeout:
+        "Načítavanie údajov sa zastavilo na {0}/{1}. Obnovte stránku a skúste to znova.",
+      refresh: "Obnoviť stránku",
+    },
     session: {
       "connection-failed": "Pripojenie\x20zlyhalo,\x20skontrolujte\x20sieť.",
-      "will-retry": _0xdcac4c(0x1ce),
-      "room-full": _0xdcac4c(0x1c4),
-      "collaboration-timeout": _0xdcac4c(0x1c3),
+      "will-retry": "Pripojenie zlyhalo, o chvíľu to skúsime znova.",
+      "room-full":
+        "Kolaboračná miestnosť je plná. Vaše úpravy budú uložené lokálne.",
+      "collaboration-timeout":
+        "Server neodpovedá na požiadavku spolupráce. Vaše úpravy budú uložené lokálne.",
     },
-    conflict: { title: _0xdcac4c(0x1bd), content: _0xdcac4c(0x1c8) },
-    permission: { title: "Chyba\x20overenia", content: _0xdcac4c(0x1c2) },
+    conflict: {
+      title: "Konflikt spolupráce",
+      content:
+        "Medzi vašou lokálnou kópiou a kópiou na serveri je konflikt. Uložte si lokálne úpravy, inak sa po obnovení stránky stratia.",
+    },
+    permission: {
+      title: "Chyba\x20overenia",
+      content:
+        "Vaše akcie sú v rozpore s oprávneniami servera. Uložte si lokálne úpravy inde, pretože po obnovení stránky budú zahodené.",
+    },
     collaboration: {
-      "offline-data-not-saved": _0xdcac4c(0x1bf),
-      "single-unit": { warning: _0xdcac4c(0x1c0) },
+      "offline-data-not-saved":
+        "Máte offline úpravy, ktoré neboli uložené na server. Skontrolujte sieť a skúste to znova.",
+      "single-unit": {
+        warning:
+          "Súbor ste otvorili aj na inej karte. V prípade chýbajúcich údajov na tejto karte nebudete môcť upravovať.",
+      },
       closeRoom:
         "Oprávnenia\x20na\x20úpravy\x20boli\x20odobraté,\x20pretože\x20kolaboračná\x20miestnosť\x20bola\x20zatvorená.",
     },
-    auth: { needGotoLoginAlert: _0xdcac4c(0x1c9) },
+    auth: {
+      needGotoLoginAlert:
+        "Platnosť prihlásenia vypršala, kliknite OK pre opätovné prihlásenie, kliknite Zrušiť pre uloženie lokálnych úprav.",
+    },
     formula: {
       calculation: {
-        started: _0xdcac4c(0x1bc),
-        waiting: _0xdcac4c(0x1c1),
-        unable: _0xdcac4c(0x1ba),
+        started: "Výpočet vzorcov sa spustil.",
+        waiting: "Fronta výpočtu vzorcov je plná, čaká sa na voľné miesto...",
+        unable:
+          "Momentálne nie je možné vykonať výpočet vzorcov. Skúste to neskôr.",
       },
     },
   },
 };
-module[_0xdcac4c(0x1c7)] = e;
+module.exports = e;

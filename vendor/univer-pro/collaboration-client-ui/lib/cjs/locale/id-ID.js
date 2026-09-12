@@ -1,116 +1,59 @@
-function _0x341e(_0x9c9c4e, _0x263298) {
-  _0x9c9c4e = _0x9c9c4e - 0x1ab;
-  const _0x2284be = _0x2284();
-  let _0x341ee1 = _0x2284be[_0x9c9c4e];
-  return _0x341ee1;
-}
-const _0x21bcae = _0x341e;
-(function (_0x516765, _0x443481) {
-  const _0x1623b8 = _0x341e,
-    _0x112cf3 = _0x516765();
-  while (!![]) {
-    try {
-      const _0xc97fd8 =
-        -parseInt(_0x1623b8(0x1bc)) / 0x1 +
-        (-parseInt(_0x1623b8(0x1bb)) / 0x2) *
-          (-parseInt(_0x1623b8(0x1b0)) / 0x3) +
-        (parseInt(_0x1623b8(0x1ab)) / 0x4) *
-          (-parseInt(_0x1623b8(0x1af)) / 0x5) +
-        (parseInt(_0x1623b8(0x1ae)) / 0x6) *
-          (parseInt(_0x1623b8(0x1c0)) / 0x7) +
-        (-parseInt(_0x1623b8(0x1b1)) / 0x8) *
-          (-parseInt(_0x1623b8(0x1b4)) / 0x9) +
-        -parseInt(_0x1623b8(0x1c4)) / 0xa +
-        (-parseInt(_0x1623b8(0x1bd)) / 0xb) *
-          (-parseInt(_0x1623b8(0x1b5)) / 0xc);
-      if (_0xc97fd8 === _0x443481) break;
-      else _0x112cf3["push"](_0x112cf3["shift"]());
-    } catch (_0x407fac) {
-      _0x112cf3["push"](_0x112cf3["shift"]());
-    }
-  }
-})(_0x2284, 0x8070d);
 const e = {
   "collaboration-client-ui": {
-    collabClient: { tooltip: { reconnect: _0x21bcae(0x1b8) } },
+    collabClient: { tooltip: { reconnect: "Klik untuk Menyambung Kembali" } },
     collabStatus: {
-      fetchMiss: _0x21bcae(0x1c2),
+      fetchMiss: "Menyinkronkan data server...",
       conflict: "Konflik\x20edit",
-      notCollab: _0x21bcae(0x1bf),
+      notCollab: "File lokal",
       synced: "Tersinkron",
-      syncing: _0x21bcae(0x1b7),
-      offline: _0x21bcae(0x1be),
+      syncing: "Menyinkronkan...",
+      offline: "Offline, edit akan disimpan secara lokal",
     },
     snapshotLoading: {
       timeout:
         "Pemuatan\x20data\x20berhenti\x20di\x20{0}/{1}.\x20Muat\x20ulang\x20halaman\x20untuk\x20mencoba\x20lagi.",
-      refresh: _0x21bcae(0x1b3),
+      refresh: "Muat ulang halaman",
     },
     session: {
-      "connection-failed": _0x21bcae(0x1c3),
-      "will-retry": _0x21bcae(0x1c9),
+      "connection-failed": "Koneksi gagal, harap periksa jaringan Anda.",
+      "will-retry": "Koneksi gagal, kami akan mencoba lagi sebentar lagi.",
       "room-full":
         "Ruang\x20kolaborasi\x20penuh.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-      "collaboration-timeout": _0x21bcae(0x1b2),
+      "collaboration-timeout":
+        "Server tidak merespons permintaan kolaborasi Anda. Edit Anda akan disimpan secara lokal.",
     },
-    conflict: { title: _0x21bcae(0x1c6), content: _0x21bcae(0x1c5) },
+    conflict: {
+      title: "Konflik Kolaborasi",
+      content:
+        "Ada konflik antara salinan lokal Anda dan salinan di server. Harap simpan edit lokal Anda, karena akan hilang saat Anda memuat ulang halaman.",
+    },
     permission: {
       title: "Kesalahan\x20Autentikasi",
-      content: _0x21bcae(0x1b6),
+      content:
+        "Tindakan Anda bertentangan dengan izin server. Harap simpan edit lokal Anda di tempat lain karena akan dibuang setelah menyegarkan halaman.",
     },
     collaboration: {
-      "offline-data-not-saved": _0x21bcae(0x1c8),
-      "single-unit": { warning: _0x21bcae(0x1b9) },
-      closeRoom: _0x21bcae(0x1ba),
+      "offline-data-not-saved":
+        "Anda memiliki edit offline yang belum disimpan ke server. Harap periksa jaringan Anda dan coba lagi.",
+      "single-unit": {
+        warning:
+          "Anda membuka file yang sama di tab lain. Jika terjadi kehilangan data, Anda tidak dapat mengedit di tab ini.",
+      },
+      closeRoom: "Hak edit dicabut karena ruang kolaboratif ditutup.",
     },
-    auth: { needGotoLoginAlert: _0x21bcae(0x1c7) },
+    auth: {
+      needGotoLoginAlert:
+        "Login Anda telah kedaluwarsa, klik OK untuk login ulang, klik Batal untuk menyimpan edit lokal Anda.",
+    },
     formula: {
       calculation: {
-        started: _0x21bcae(0x1ac),
-        waiting: _0x21bcae(0x1c1),
+        started: "Perhitungan rumus dimulai.",
+        waiting:
+          "Antrian perhitungan rumus penuh, menunggu slot yang tersedia...",
         unable:
           "Tidak\x20dapat\x20melakukan\x20perhitungan\x20rumus\x20saat\x20ini.\x20Harap\x20coba\x20lagi\x20nanti.",
       },
     },
   },
 };
-function _0x2284() {
-  const _0xbabf98 = [
-    "688966eCxPPS",
-    "670658WVfNwA",
-    "33253tHgzRU",
-    "Offline,\x20edit\x20akan\x20disimpan\x20secara\x20lokal",
-    "File\x20lokal",
-    "927731hWKUHi",
-    "Antrian\x20perhitungan\x20rumus\x20penuh,\x20menunggu\x20slot\x20yang\x20tersedia...",
-    "Menyinkronkan\x20data\x20server...",
-    "Koneksi\x20gagal,\x20harap\x20periksa\x20jaringan\x20Anda.",
-    "9751640sIXgQi",
-    "Ada\x20konflik\x20antara\x20salinan\x20lokal\x20Anda\x20dan\x20salinan\x20di\x20server.\x20Harap\x20simpan\x20edit\x20lokal\x20Anda,\x20karena\x20akan\x20hilang\x20saat\x20Anda\x20memuat\x20ulang\x20halaman.",
-    "Konflik\x20Kolaborasi",
-    "Login\x20Anda\x20telah\x20kedaluwarsa,\x20klik\x20OK\x20untuk\x20login\x20ulang,\x20klik\x20Batal\x20untuk\x20menyimpan\x20edit\x20lokal\x20Anda.",
-    "Anda\x20memiliki\x20edit\x20offline\x20yang\x20belum\x20disimpan\x20ke\x20server.\x20Harap\x20periksa\x20jaringan\x20Anda\x20dan\x20coba\x20lagi.",
-    "Koneksi\x20gagal,\x20kami\x20akan\x20mencoba\x20lagi\x20sebentar\x20lagi.",
-    "4UHNKUK",
-    "Perhitungan\x20rumus\x20dimulai.",
-    "exports",
-    "6KbIyus",
-    "4916030xAHCmH",
-    "9EZhRJU",
-    "90624UHUNyi",
-    "Server\x20tidak\x20merespons\x20permintaan\x20kolaborasi\x20Anda.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-    "Muat\x20ulang\x20halaman",
-    "819RMeBcg",
-    "3804MHWIVz",
-    "Tindakan\x20Anda\x20bertentangan\x20dengan\x20izin\x20server.\x20Harap\x20simpan\x20edit\x20lokal\x20Anda\x20di\x20tempat\x20lain\x20karena\x20akan\x20dibuang\x20setelah\x20menyegarkan\x20halaman.",
-    "Menyinkronkan...",
-    "Klik\x20untuk\x20Menyambung\x20Kembali",
-    "Anda\x20membuka\x20file\x20yang\x20sama\x20di\x20tab\x20lain.\x20Jika\x20terjadi\x20kehilangan\x20data,\x20Anda\x20tidak\x20dapat\x20mengedit\x20di\x20tab\x20ini.",
-    "Hak\x20edit\x20dicabut\x20karena\x20ruang\x20kolaboratif\x20ditutup.",
-  ];
-  _0x2284 = function () {
-    return _0xbabf98;
-  };
-  return _0x2284();
-}
-module[_0x21bcae(0x1ad)] = e;
+module.exports = e;

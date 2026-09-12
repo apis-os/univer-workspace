@@ -1,0 +1,231 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+declare const locale: {
+    'docs-ui': {
+        objectPermission: {
+            paragraphPermission: string;
+            title: string;
+            paragraph: string;
+            section: string;
+        };
+        layout: {
+            progress: string;
+            recovering: string;
+        };
+        toolbar: {
+            font: string;
+            fontSize: string;
+            bold: string;
+            italic: string;
+            strikethrough: string;
+            subscript: string;
+            superscript: string;
+            underline: string;
+            textColor: {
+                main: string;
+            };
+            fillColor: {
+                main: string;
+            };
+            table: {
+                main: string;
+                insert: string;
+                colCount: string;
+                rowCount: string;
+            };
+            resetColor: string;
+            order: string;
+            unorder: string;
+            checklist: string;
+            alignLeft: string;
+            alignCenter: string;
+            alignRight: string;
+            alignJustify: string;
+            horizontalLine: string;
+            headerFooter: string;
+            pageSetup: string;
+            breaks: string;
+            columnBreak: string;
+            sectionBreakNextPage: string;
+            sectionBreakContinuous: string;
+            sectionBreakNextColumn: string;
+            sectionBreakEvenPage: string;
+            sectionBreakOddPage: string;
+            heading: {
+                tooltip: string;
+                normal: string;
+                leading1: string;
+                leading2: string;
+                leading3: string;
+                leading4: string;
+                leading5: string;
+                title: string;
+                subTitle: string;
+            };
+        };
+        table: {
+            insert: string;
+            insertRowAbove: string;
+            insertRowBelow: string;
+            insertColumnLeft: string;
+            insertColumnRight: string;
+            delete: string;
+            deleteRows: string;
+            deleteColumns: string;
+            deleteTable: string;
+        };
+        headerFooter: {
+            header: string;
+            footer: string;
+            panel: string;
+            linkToPrevious: string;
+            firstPageCheckBox: string;
+            oddEvenCheckBox: string;
+            headerTopMargin: string;
+            footerBottomMargin: string;
+            closeHeaderFooter: string;
+            disableText: string;
+        };
+        statistics: {
+            title: string;
+            open: string;
+            document: string;
+            selection: string;
+            wordCount: string;
+            selectedWords: string;
+            pages: string;
+            words: string;
+            charactersWithoutSpaces: string;
+            charactersWithSpaces: string;
+            paragraphs: string;
+            lines: string;
+            nonAsianWords: string;
+            asianCharactersAndKoreanWords: string;
+        };
+        placeholder: {
+            heading1: string;
+            heading2: string;
+            heading3: string;
+            heading4: string;
+            heading5: string;
+            normalText: string;
+            listItem: string;
+        };
+        doc: {
+            blockMenu: {
+                dragBlock: string;
+            };
+            menu: {
+                paragraphSetting: string;
+                sectionSetting: string;
+            };
+            slider: {
+                paragraphSetting: string;
+                sectionSetting: string;
+            };
+            paragraphSetting: {
+                alignment: string;
+                indentation: string;
+                left: string;
+                right: string;
+                firstLine: string;
+                hanging: string;
+                spacing: string;
+                before: string;
+                after: string;
+                lineSpace: string;
+                multiSpace: string;
+                atLeast: string;
+                exactly: string;
+            };
+            sectionSetting: {
+                selectedSections: string;
+                multipleValues: string;
+                columnCount: string;
+                columnGap: string;
+                columnSeparator: string;
+                none: string;
+                betweenColumns: string;
+                sectionStart: string;
+                unspecified: string;
+                continuous: string;
+                nextColumn: string;
+                nextPage: string;
+                evenPage: string;
+                oddPage: string;
+                pageSetup: string;
+                pageWidth: string;
+                pageHeight: string;
+                pageNumberStart: string;
+            };
+        };
+        rightClick: {
+            copy: string;
+            cut: string;
+            paste: string;
+            delete: string;
+            bulletList: string;
+            orderList: string;
+            checkList: string;
+            insertBellow: string;
+        };
+        paragraphMenu: {
+            alignAndIndent: string;
+            align: string;
+            indent: string;
+            color: string;
+            increase: string;
+            decrease: string;
+            increaseIndent: string;
+            decreaseIndent: string;
+            defaultTextColor: string;
+            noBackground: string;
+        };
+        'page-settings': {
+            'document-setting': string;
+            'modern-width': string;
+            'modern-width-narrow': string;
+            'modern-width-medium': string;
+            'modern-width-wide': string;
+            'paper-size': string;
+            'page-size': {
+                main: string;
+                a4: string;
+                a3: string;
+                a5: string;
+                b4: string;
+                b5: string;
+                letter: string;
+                legal: string;
+                tabloid: string;
+                statement: string;
+                executive: string;
+                folio: string;
+            };
+            orientation: string;
+            portrait: string;
+            landscape: string;
+            'custom-paper-size': string;
+            top: string;
+            bottom: string;
+            left: string;
+            right: string;
+            cancel: string;
+            confirm: string;
+        };
+    };
+};
+export default locale;

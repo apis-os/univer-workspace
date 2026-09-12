@@ -1,0 +1,29 @@
+import { CollaborationController, DataLoaderService } from '@univerjs-pro/collaboration-client';
+import { HistoryRestoreService, HistoryUnitAdapterRegistryService } from '@univerjs-pro/edit-history';
+import { Disposable, IConfigService, IUniverInstanceService, LocaleService, ThemeService } from '@univerjs/core';
+export declare class BoardsHistoryLoaderService extends Disposable {
+    private readonly _configService;
+    private readonly _restoreService;
+    private readonly _adapterRegistry;
+    private readonly _localeService;
+    private readonly _themeService;
+    private readonly _collaborationController;
+    private readonly _dataLoaderService;
+    private readonly _univerInstanceService;
+    private _historyUniver;
+    private _opening;
+    private _openGeneration;
+    private readonly _sessionDisposables;
+    private _container;
+    private _unitId;
+    private _location;
+    constructor(_configService: IConfigService, _restoreService: HistoryRestoreService, _adapterRegistry: HistoryUnitAdapterRegistryService, _localeService: LocaleService, _themeService: ThemeService, _collaborationController: CollaborationController, _dataLoaderService: DataLoaderService, _univerInstanceService: IUniverInstanceService);
+    open(unitId: string): Promise<void>;
+    private _open;
+    close(): void;
+    private _syncViewerServices;
+    restore(revision: number): Promise<void>;
+    private _ensureContainer;
+    private _registerChildPlugins;
+    dispose(): void;
+}

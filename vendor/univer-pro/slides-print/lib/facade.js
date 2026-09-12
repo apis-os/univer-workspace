@@ -1,1 +1,15 @@
-();import{OpenSlidePrintDialogOperation as _0x4fd82c,SlidePrintOperation as _0x591f5b}from'@univerjs-pro/slides-print';import{FUniver as _0x3ed6fc}from'@univerjs/core/facade';var r=class extends _0x3ed6fc{printSlidesAsync(_0x4fda96){return this._commandService['executeCommand'](_0x591f5b.id,_0x4fda96);}openSlidesPrintDialog(_0x59cf55){return this._commandService["syncExecuteCommand"](_0x4fd82c.id,_0x59cf55);}};_0x3ed6fc.extend(r);export{};
+import {
+  OpenSlidePrintDialogOperation as _0x4fd82c,
+  SlidePrintOperation as _0x591f5b,
+} from "@univerjs-pro/slides-print";
+import { FUniver as _0x3ed6fc } from "@univerjs/core/facade";
+var r = class extends _0x3ed6fc {
+  printSlidesAsync(_0x4fda96) {
+    return this._commandService["executeCommand"](_0x591f5b.id, _0x4fda96);
+  }
+  openSlidesPrintDialog(_0x59cf55) {
+    return this._commandService["syncExecuteCommand"](_0x4fd82c.id, _0x59cf55);
+  }
+};
+_0x3ed6fc.extend(r);
+export {};

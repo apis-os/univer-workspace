@@ -1,0 +1,38 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-connector-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "circle",
+		"attrs": {
+			"cx": 10,
+			"cy": 10,
+			"r": 8.2,
+			"stroke": "currentColor",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartConnectorIcon = (0, react.forwardRef)(function ShapeFlowChartConnectorIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-connector-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartConnectorIcon.displayName = "ShapeFlowChartConnectorIcon";
+//#endregion
+exports.ShapeFlowChartConnectorIcon = ShapeFlowChartConnectorIcon;
+exports.default = ShapeFlowChartConnectorIcon;

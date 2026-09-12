@@ -1,101 +1,54 @@
-const _0x5821f1 = _0x3851;
-(function (_0x345116, _0x209b1e) {
-  const _0x3aeabc = _0x3851,
-    _0x474468 = _0x345116();
-  while (!![]) {
-    try {
-      const _0x403720 =
-        (parseInt(_0x3aeabc(0x17d)) / 0x1) *
-          (-parseInt(_0x3aeabc(0x172)) / 0x2) +
-        parseInt(_0x3aeabc(0x16c)) / 0x3 +
-        parseInt(_0x3aeabc(0x170)) / 0x4 +
-        -parseInt(_0x3aeabc(0x174)) / 0x5 +
-        -parseInt(_0x3aeabc(0x16e)) / 0x6 +
-        -parseInt(_0x3aeabc(0x166)) / 0x7 +
-        parseInt(_0x3aeabc(0x17a)) / 0x8;
-      if (_0x403720 === _0x209b1e) break;
-      else _0x474468["push"](_0x474468["shift"]());
-    } catch (_0x15324e) {
-      _0x474468["push"](_0x474468["shift"]());
-    }
-  }
-})(_0x19d7, 0x607fa);
 const e = {
   "collaboration-client": {
     collabClient: {
       tooltip: { reconnect: "Klik\x20untuk\x20Menyambung\x20Kembali" },
     },
     collabStatus: {
-      fetchMiss: _0x5821f1(0x17b),
+      fetchMiss: "Menyinkronkan data server...",
       conflict: "Konflik\x20edit",
-      notCollab: _0x5821f1(0x168),
-      synced: _0x5821f1(0x175),
-      syncing: _0x5821f1(0x16a),
-      offline: _0x5821f1(0x17e),
+      notCollab: "File lokal",
+      synced: "Tersinkron",
+      syncing: "Menyinkronkan...",
+      offline: "Offline, edit akan disimpan secara lokal",
     },
     session: {
-      "connection-failed": _0x5821f1(0x16d),
+      "connection-failed": "Koneksi gagal. Harap periksa jaringan Anda.",
       "will-retry":
         "Koneksi\x20gagal.\x20Kami\x20akan\x20mencoba\x20lagi\x20sebentar\x20lagi.",
-      "room-full": _0x5821f1(0x17f),
-      "join-failed": _0x5821f1(0x16f),
-      "room-not-exists": _0x5821f1(0x176),
-      "room-permission-denied": _0x5821f1(0x177),
-      "room-cnt-exceeds": _0x5821f1(0x169),
-      "collaboration-timeout": _0x5821f1(0x167),
+      "room-full":
+        "Dokumen telah mencapai batas kolaborasinya. Edit Anda akan disimpan secara lokal.",
+      "join-failed":
+        "Gagal bergabung dalam kolaborasi. Harap coba lagi nanti. Edit Anda akan disimpan secara lokal.",
+      "room-not-exists":
+        "Gagal bergabung dalam kolaborasi. Edit Anda akan disimpan secara lokal.",
+      "room-permission-denied":
+        "Tidak ada izin kolaborasi. Edit Anda akan disimpan secara lokal.",
+      "room-cnt-exceeds":
+        "Jumlah dokumen kolaboratif melebihi batas. Edit Anda akan disimpan secara lokal.",
+      "collaboration-timeout":
+        "Server tidak merespons permintaan kolaborasi Anda. Edit Anda akan disimpan secara lokal.",
     },
-    conflict: { title: _0x5821f1(0x171), content: _0x5821f1(0x165) },
+    conflict: {
+      title: "Konflik Kolaborasi",
+      content:
+        "Ada konflik antara salinan lokal Anda dan salinan di server. Harap simpan edit lokal Anda, karena akan hilang saat Anda memuat ulang halaman.",
+    },
     permission: {
-      title: _0x5821f1(0x173),
+      title: "Kesalahan Autentikasi",
       content:
         "Tindakan\x20Anda\x20bertentangan\x20dengan\x20izin\x20server.\x20Harap\x20simpan\x20edit\x20lokal\x20Anda\x20di\x20tempat\x20lain\x20karena\x20akan\x20dibuang\x20setelah\x20menyegarkan\x20halaman.",
     },
     collaboration: {
-      "single-unit": { warning: _0x5821f1(0x17c) },
-      closeRoom: _0x5821f1(0x179),
+      "single-unit": {
+        warning:
+          "Anda membuka file yang sama di tab lain. Jika terjadi kehilangan data, Anda tidak dapat mengedit di tab ini.",
+      },
+      closeRoom: "Hak edit dicabut karena ruang kolaboratif ditutup.",
     },
-    auth: { needGotoLoginAlert: _0x5821f1(0x16b) },
+    auth: {
+      needGotoLoginAlert:
+        "Login Anda telah kedaluwarsa, klik OK untuk login ulang, klik Batal untuk menyimpan edit lokal Anda.",
+    },
   },
 };
-function _0x3851(_0x4ca0ea, _0x5d1742) {
-  _0x4ca0ea = _0x4ca0ea - 0x165;
-  const _0x19d7bb = _0x19d7();
-  let _0x38512b = _0x19d7bb[_0x4ca0ea];
-  return _0x38512b;
-}
-function _0x19d7() {
-  const _0x1d4e55 = [
-    "exports",
-    "Hak\x20edit\x20dicabut\x20karena\x20ruang\x20kolaboratif\x20ditutup.",
-    "8348264uoEXhh",
-    "Menyinkronkan\x20data\x20server...",
-    "Anda\x20membuka\x20file\x20yang\x20sama\x20di\x20tab\x20lain.\x20Jika\x20terjadi\x20kehilangan\x20data,\x20Anda\x20tidak\x20dapat\x20mengedit\x20di\x20tab\x20ini.",
-    "1pCOSLU",
-    "Offline,\x20edit\x20akan\x20disimpan\x20secara\x20lokal",
-    "Dokumen\x20telah\x20mencapai\x20batas\x20kolaborasinya.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-    "Ada\x20konflik\x20antara\x20salinan\x20lokal\x20Anda\x20dan\x20salinan\x20di\x20server.\x20Harap\x20simpan\x20edit\x20lokal\x20Anda,\x20karena\x20akan\x20hilang\x20saat\x20Anda\x20memuat\x20ulang\x20halaman.",
-    "3199469RjlHLu",
-    "Server\x20tidak\x20merespons\x20permintaan\x20kolaborasi\x20Anda.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-    "File\x20lokal",
-    "Jumlah\x20dokumen\x20kolaboratif\x20melebihi\x20batas.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-    "Menyinkronkan...",
-    "Login\x20Anda\x20telah\x20kedaluwarsa,\x20klik\x20OK\x20untuk\x20login\x20ulang,\x20klik\x20Batal\x20untuk\x20menyimpan\x20edit\x20lokal\x20Anda.",
-    "1069587jedaiL",
-    "Koneksi\x20gagal.\x20Harap\x20periksa\x20jaringan\x20Anda.",
-    "3906036EWtSTo",
-    "Gagal\x20bergabung\x20dalam\x20kolaborasi.\x20Harap\x20coba\x20lagi\x20nanti.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-    "2714312tSZmqi",
-    "Konflik\x20Kolaborasi",
-    "884210ioJkRE",
-    "Kesalahan\x20Autentikasi",
-    "666020IRqWWB",
-    "Tersinkron",
-    "Gagal\x20bergabung\x20dalam\x20kolaborasi.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-    "Tidak\x20ada\x20izin\x20kolaborasi.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-  ];
-  _0x19d7 = function () {
-    return _0x1d4e55;
-  };
-  return _0x19d7();
-}
-module[_0x5821f1(0x178)] = e;
+module.exports = e;

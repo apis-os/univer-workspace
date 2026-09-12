@@ -1,0 +1,13 @@
+import type { ISlideTableCell, ISlideTableCellRange, ISlideTableSnapshot } from '../types';
+export declare function mergeSlideTableCells(table: ISlideTableSnapshot, range: ISlideTableCellRange): ISlideTableSnapshot;
+export declare function unmergeSlideTableCells(table: ISlideTableSnapshot, row: number, column: number): ISlideTableSnapshot;
+export declare function unmergeSlideTableCellsInRange(table: ISlideTableSnapshot, sourceRange: ISlideTableCellRange): ISlideTableSnapshot;
+export declare function findSlideTableMergeRange(table: ISlideTableSnapshot, row: number, column: number): ISlideTableCellRange | null;
+export declare function getSlideTableCellRowSpan(cell: ISlideTableCell): number;
+export declare function getSlideTableCellColumnSpan(cell: ISlideTableCell): number;
+export declare function collectSlideTableMergeRanges(table: ISlideTableSnapshot): ISlideTableCellRange[];
+export declare function expandSlideTableRangeToMergedCells(table: ISlideTableSnapshot, range: ISlideTableCellRange): ISlideTableCellRange;
+export declare function isSlideTableRowRangeCuttingMerge(table: ISlideTableSnapshot, startRow: number, endRow: number): boolean;
+export declare function isSlideTableColumnRangeCuttingMerge(table: ISlideTableSnapshot, startColumn: number, endColumn: number): boolean;
+export declare function isSlideTableRowInsertionInsideMerge(table: ISlideTableSnapshot, rowIndex: number): boolean;
+export declare function isSlideTableColumnInsertionInsideMerge(table: ISlideTableSnapshot, columnIndex: number): boolean;

@@ -1,0 +1,726 @@
+import { ArrangeTypeEnum, BooleanNumber, BuildTextUtils, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, MemoryCursor, Plugin, PositionedObjectLayoutType, TextX, TextXActionType, Tools, UniverInstanceType, createIdentifier, getRichTextEditPath, merge, normalizeDrawingOrderIndex, toDisposable, touchDependencies } from "@univerjs/core";
+import { DocHistoryAction, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange, normalizeTextRange } from "@univerjs/docs";
+import { IDrawingManagerService, UnitDrawingService, UniverDrawingPlugin } from "@univerjs/drawing";
+
+//#region src/commands/commands/insert-doc-drawing.command.ts
+/**
+* The command to insert new drawings
+*/
+const InsertDocDrawingCommand = {
+	id: "doc.command.insert-doc-image",
+	type: CommandType.COMMAND,
+	handler: (accessor, params) => {
+		var _documentDataModel$ge, _snapshot$headers, _snapshot$footers;
+		if (!params) return false;
+		const commandService = accessor.get(ICommandService);
+		const univerInstanceService = accessor.get(IUniverInstanceService);
+		const { unitId, drawings, textRange } = params;
+		const documentDataModel = univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+		if (!documentDataModel) return false;
+		const resolvedTextRange = resolveDocDrawingInsertTextRange(accessor, unitId, textRange);
+		if (!resolvedTextRange) return false;
+		const { segmentId = "" } = resolvedTextRange;
+		if (!((_documentDataModel$ge = documentDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _documentDataModel$ge === void 0 ? void 0 : _documentDataModel$ge.getBody())) return false;
+		const snapshot = documentDataModel.getSnapshot();
+		const targetDrawings = !!((_snapshot$headers = snapshot.headers) === null || _snapshot$headers === void 0 ? void 0 : _snapshot$headers[segmentId]) || !!((_snapshot$footers = snapshot.footers) === null || _snapshot$footers === void 0 ? void 0 : _snapshot$footers[segmentId]) ? drawings.map((drawing) => ({
+			...drawing,
+			isMultiTransform: BooleanNumber.TRUE,
+			transforms: drawing.transforms ?? (drawing.transform ? [drawing.transform] : null)
+		})) : drawings;
+		const actions = BuildTextUtils.drawing.add({
+			selection: resolvedTextRange,
+			documentDataModel,
+			drawings: targetDrawings
+		});
+		if (!actions) return false;
+		const doMutation = {
+			id: RichTextEditingMutation.id,
+			params: {
+				unitId,
+				actions: [],
+				textRanges: []
+			}
+		};
+		doMutation.params.actions = actions;
+		const result = commandService.syncExecuteCommand(doMutation.id, doMutation.params);
+		return Boolean(result);
+	}
+};
+function resolveDocDrawingInsertTextRange(accessor, unitId, textRange) {
+	const activeTextRange = accessor.get(DocSelectionManagerService).getActiveTextRange();
+	const contentInsertRange = (textRange ? normalizeTextRange(textRange) : null) ?? getContentInsertRange(accessor, unitId);
+	if (!contentInsertRange) return activeTextRange ?? null;
+	return {
+		...activeTextRange,
+		startOffset: contentInsertRange.startOffset,
+		endOffset: contentInsertRange.endOffset,
+		collapsed: contentInsertRange.startOffset === contentInsertRange.endOffset,
+		segmentId: contentInsertRange.segmentId ?? (activeTextRange === null || activeTextRange === void 0 ? void 0 : activeTextRange.segmentId) ?? ""
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region src/services/doc-drawing-adapter.service.ts
+const IDocDrawingAdapterService = createIdentifier("doc.drawing-adapter.service");
+var DocDrawingAdapterService = class {
+	constructor() {
+		_defineProperty(this, "_adapters", []);
+	}
+	registerAdapter(adapter) {
+		this._adapters.push(adapter);
+		return toDisposable(() => {
+			const index = this._adapters.indexOf(adapter);
+			if (index >= 0) this._adapters.splice(index, 1);
+		});
+	}
+	getRemoveDrawingMutationInfos(params) {
+		const mutationInfos = {
+			redoMutations: [],
+			undoMutations: []
+		};
+		for (const adapter of this._adapters) {
+			var _adapter$getRemoveDra;
+			const nextMutationInfos = (_adapter$getRemoveDra = adapter.getRemoveDrawingMutationInfos) === null || _adapter$getRemoveDra === void 0 ? void 0 : _adapter$getRemoveDra.call(adapter, params);
+			if (!nextMutationInfos) continue;
+			mutationInfos.redoMutations.push(...nextMutationInfos.redoMutations);
+			mutationInfos.undoMutations.push(...nextMutationInfos.undoMutations);
+		}
+		return mutationInfos;
+	}
+	getEditDrawingCommandInfo(params) {
+		for (const adapter of this._adapters) {
+			var _adapter$getEditDrawi;
+			const commandInfo = (_adapter$getEditDrawi = adapter.getEditDrawingCommandInfo) === null || _adapter$getEditDrawi === void 0 ? void 0 : _adapter$getEditDrawi.call(adapter, params);
+			if (commandInfo) return commandInfo;
+		}
+		return null;
+	}
+};
+
+//#endregion
+//#region src/commands/commands/remove-doc-drawing.command.ts
+const RemoveDocDrawingCommand = {
+	id: "doc.command.remove-doc-image",
+	type: CommandType.COMMAND,
+	handler: (accessor, params) => {
+		var _documentDataModel$ge;
+		if (!params) return false;
+		const commandService = accessor.get(ICommandService);
+		const undoRedoService = accessor.get(IUndoRedoService);
+		const drawingAdapterService = accessor.get(IDocDrawingAdapterService);
+		const univerInstanceService = accessor.get(IUniverInstanceService);
+		const docSelectionManagerService = accessor.get(DocSelectionManagerService);
+		const { unitId, drawings: removeDrawings, textRange } = params;
+		const documentDataModel = univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+		if (!documentDataModel || removeDrawings.length === 0) return false;
+		const activeTextRange = docSelectionManagerService.getActiveTextRange();
+		const contentInsertRange = (!textRange ? null : normalizeTextRange(textRange)) ?? getContentInsertRange(accessor, unitId);
+		const segmentId = (contentInsertRange === null || contentInsertRange === void 0 ? void 0 : contentInsertRange.segmentId) ?? (activeTextRange === null || activeTextRange === void 0 ? void 0 : activeTextRange.segmentId) ?? "";
+		const textX = new TextX();
+		const jsonX = JSONX.getInstance();
+		const customBlocks = ((_documentDataModel$ge = documentDataModel.getSelfOrHeaderFooterModel(segmentId)) === null || _documentDataModel$ge === void 0 || (_documentDataModel$ge = _documentDataModel$ge.getBody()) === null || _documentDataModel$ge === void 0 ? void 0 : _documentDataModel$ge.customBlocks) ?? [];
+		const removeCustomBlocks = removeDrawings.map((drawing) => customBlocks.find((customBlock) => customBlock.blockId === drawing.drawingId)).filter((block) => !!block).sort((a, b) => a.startIndex > b.startIndex ? 1 : -1);
+		if (removeCustomBlocks.length === 0) return false;
+		const drawings = documentDataModel.getDrawings() ?? {};
+		const removeDrawingParamById = new Map(removeDrawings.map((drawing) => [drawing.drawingId, drawing]));
+		const removeDrawingSnapshots = removeCustomBlocks.map((block) => drawings[block.blockId]).filter((drawing) => drawing != null);
+		const resourceRedoMutations = [];
+		const resourceUndoMutations = [];
+		const resourceMutationGroups = [];
+		for (const block of removeCustomBlocks) {
+			const { blockId } = block;
+			const drawing = drawings[blockId];
+			if (drawing == null) continue;
+			const removeDrawingParam = removeDrawingParamById.get(blockId);
+			const mutationInfos = drawingAdapterService.getRemoveDrawingMutationInfos({
+				unitId,
+				subUnitId: (removeDrawingParam === null || removeDrawingParam === void 0 ? void 0 : removeDrawingParam.subUnitId) ?? unitId,
+				drawing,
+				removeDrawings: removeDrawingSnapshots
+			});
+			if (mutationInfos.redoMutations.length === 0 && mutationInfos.undoMutations.length === 0) continue;
+			resourceRedoMutations.push(...mutationInfos.redoMutations);
+			resourceUndoMutations.push(...mutationInfos.undoMutations);
+			resourceMutationGroups.push(mutationInfos);
+		}
+		if (!executeResourceMutationGroups(resourceMutationGroups, commandService)) return false;
+		const historyId = `doc-drawing-remove-resource:${unitId}:${removeCustomBlocks.map((block) => block.blockId).join(",")}`;
+		let batchingDisposable = null;
+		if (resourceRedoMutations.length > 0 || resourceUndoMutations.length > 0) {
+			batchingDisposable = undoRedoService.__tempBatchingUndoRedo(unitId);
+			undoRedoService.pushUndoRedo({
+				unitID: unitId,
+				redoMutations: resourceRedoMutations,
+				undoMutations: resourceUndoMutations,
+				id: historyId
+			});
+		}
+		const memoryCursor = new MemoryCursor();
+		const cursorIndex = removeCustomBlocks[0].startIndex;
+		const textRanges = [{
+			startOffset: cursorIndex,
+			endOffset: cursorIndex
+		}];
+		const historyActions = getHistoryActions(removeDrawings);
+		const doMutation = {
+			id: RichTextEditingMutation.id,
+			params: {
+				unitId,
+				actions: [],
+				textRanges,
+				historyActions
+			}
+		};
+		const rawActions = [];
+		for (const block of removeCustomBlocks) {
+			const { startIndex } = block;
+			if (startIndex > memoryCursor.cursor) textX.push({
+				t: TextXActionType.RETAIN,
+				len: startIndex - memoryCursor.cursor
+			});
+			textX.push({
+				t: TextXActionType.DELETE,
+				len: 1
+			});
+			memoryCursor.moveCursorTo(startIndex + 1);
+		}
+		rawActions.push(jsonX.editOp(textX.serialize(), getRichTextEditPath(documentDataModel, segmentId)));
+		for (const block of removeCustomBlocks) {
+			const { blockId } = block;
+			const drawingIndex = documentDataModel.getDrawingsOrder().indexOf(blockId);
+			rawActions.push(jsonX.removeOp(["drawings", blockId], drawings[blockId]));
+			rawActions.push(jsonX.removeOp(["drawingsOrder", drawingIndex], blockId));
+		}
+		doMutation.params.actions = rawActions.reduce((acc, cur) => JSONX.compose(acc, cur), null);
+		const result = commandService.syncExecuteCommand(doMutation.id, doMutation.params);
+		if (!result && batchingDisposable != null) {
+			batchingDisposable.dispose();
+			undoRedoService.rollback(historyId, unitId);
+			return false;
+		}
+		batchingDisposable === null || batchingDisposable === void 0 || batchingDisposable.dispose();
+		return Boolean(result);
+	}
+};
+function getHistoryActions(drawings) {
+	const historyActions = drawings.flatMap((drawing) => {
+		switch (drawing.drawingType) {
+			case DrawingTypeEnum.DRAWING_IMAGE: return [DocHistoryAction.DeleteImage];
+			case DrawingTypeEnum.DRAWING_SHAPE: return [DocHistoryAction.DeleteShape];
+			case DrawingTypeEnum.DRAWING_CHART: return [DocHistoryAction.DeleteChart];
+			default: return [];
+		}
+	});
+	return [...new Set(historyActions)];
+}
+function executeResourceMutationGroups(mutationGroups, commandService) {
+	const executedUndoGroups = [];
+	for (const mutationGroup of mutationGroups) {
+		if (!executeMutations(mutationGroup.redoMutations, commandService)) {
+			executeMutationGroups([...executedUndoGroups].reverse(), commandService);
+			return false;
+		}
+		executedUndoGroups.push(mutationGroup.undoMutations);
+	}
+	return true;
+}
+function executeMutationGroups(mutationGroups, commandService) {
+	mutationGroups.forEach((mutations) => executeMutations(mutations, commandService));
+}
+function executeMutations(mutations, commandService) {
+	for (const mutation of mutations) if (!commandService.syncExecuteCommand(mutation.id, mutation.params)) return false;
+	return true;
+}
+
+//#endregion
+//#region src/commands/commands/set-drawing-arrange.command.ts
+const DRAWINGS_ORDER_KEY = "drawingsOrder";
+/**
+* Calculates the target model order. Adjacent moves treat selected drawings as a group,
+* so selected drawings keep their relative order instead of crossing each other.
+*/
+function getArrangedDrawingOrder(drawingOrder, drawingIds, arrangeType) {
+	const selectedDrawingIds = new Set(drawingIds.filter((drawingId) => drawingOrder.includes(drawingId)));
+	const arrangedDrawingOrder = [...drawingOrder];
+	if (selectedDrawingIds.size === 0) return arrangedDrawingOrder;
+	if (arrangeType === ArrangeTypeEnum.forward) {
+		for (let index = arrangedDrawingOrder.length - 2; index >= 0; index--) if (selectedDrawingIds.has(arrangedDrawingOrder[index]) && !selectedDrawingIds.has(arrangedDrawingOrder[index + 1])) [arrangedDrawingOrder[index], arrangedDrawingOrder[index + 1]] = [arrangedDrawingOrder[index + 1], arrangedDrawingOrder[index]];
+	} else if (arrangeType === ArrangeTypeEnum.backward) {
+		for (let index = 1; index < arrangedDrawingOrder.length; index++) if (selectedDrawingIds.has(arrangedDrawingOrder[index]) && !selectedDrawingIds.has(arrangedDrawingOrder[index - 1])) [arrangedDrawingOrder[index], arrangedDrawingOrder[index - 1]] = [arrangedDrawingOrder[index - 1], arrangedDrawingOrder[index]];
+	} else if (arrangeType === ArrangeTypeEnum.front || arrangeType === ArrangeTypeEnum.back) {
+		const selected = arrangedDrawingOrder.filter((drawingId) => selectedDrawingIds.has(drawingId));
+		const unselected = arrangedDrawingOrder.filter((drawingId) => !selectedDrawingIds.has(drawingId));
+		return arrangeType === ArrangeTypeEnum.front ? [...unselected, ...selected] : [...selected, ...unselected];
+	}
+	return arrangedDrawingOrder;
+}
+function getDrawingOrderAtIndex(drawingOrder, drawingIds, zOrder) {
+	if (drawingIds.length !== 1) return [...drawingOrder];
+	const arrangedDrawingOrder = [...drawingOrder];
+	const currentIndex = arrangedDrawingOrder.indexOf(drawingIds[0]);
+	if (currentIndex < 0) return arrangedDrawingOrder;
+	const [drawingId] = arrangedDrawingOrder.splice(currentIndex, 1);
+	const targetIndex = normalizeDrawingOrderIndex(zOrder, drawingOrder.length);
+	arrangedDrawingOrder.splice(targetIndex, 0, drawingId);
+	return arrangedDrawingOrder;
+}
+/**
+* Converts the target order into granular JSONX move operations. This avoids replacing
+* the entire drawingsOrder array and keeps collaboration conflicts scoped to moved items.
+*/
+function createDrawingOrderActions(drawingOrder, arrangedDrawingOrder) {
+	const jsonX = JSONX.getInstance();
+	const workingDrawingOrder = [...drawingOrder];
+	const rawActions = [];
+	for (let targetIndex = 0; targetIndex < arrangedDrawingOrder.length; targetIndex++) {
+		const drawingId = arrangedDrawingOrder[targetIndex];
+		const currentIndex = workingDrawingOrder.indexOf(drawingId);
+		if (currentIndex < 0 || currentIndex === targetIndex) continue;
+		const action = jsonX.moveOp([DRAWINGS_ORDER_KEY, currentIndex], [DRAWINGS_ORDER_KEY, targetIndex]);
+		if (action) rawActions.push(action);
+		workingDrawingOrder.splice(currentIndex, 1);
+		workingDrawingOrder.splice(targetIndex, 0, drawingId);
+	}
+	return rawActions.reduce((actions, action) => JSONX.compose(actions, action), null);
+}
+/**
+* The command to arrange drawings.
+*/
+const SetDocDrawingArrangeCommand = {
+	id: "doc.command.set-drawing-arrange",
+	type: CommandType.COMMAND,
+	handler: (accessor, params) => {
+		const commandService = accessor.get(ICommandService);
+		if (params == null) return false;
+		const { unitId, drawingIds } = params;
+		const documentDataModel = accessor.get(IUniverInstanceService).getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+		const drawingOrder = documentDataModel === null || documentDataModel === void 0 ? void 0 : documentDataModel.getDrawingsOrder();
+		if (!drawingOrder) return false;
+		const actions = createDrawingOrderActions(drawingOrder, params.zOrder !== void 0 ? getDrawingOrderAtIndex(drawingOrder, drawingIds, params.zOrder) : getArrangedDrawingOrder(drawingOrder, drawingIds, params.arrangeType));
+		if (JSONX.isNoop(actions)) return false;
+		const result = commandService.syncExecuteCommand(RichTextEditingMutation.id, {
+			unitId,
+			actions,
+			textRanges: null
+		});
+		return Boolean(result);
+	}
+};
+
+//#endregion
+//#region src/commands/commands/update-doc-drawing-transform.command.ts
+const UpdateDrawingDocTransformCommand = {
+	id: "doc.command.update-drawing-doc-transform",
+	type: CommandType.COMMAND,
+	handler: (accessor, params) => {
+		if (!params) return false;
+		const commandService = accessor.get(ICommandService);
+		const univerInstanceService = accessor.get(IUniverInstanceService);
+		const { unitId, drawings } = params;
+		const documentDataModel = univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+		if (!documentDataModel) return false;
+		const oldDrawings = documentDataModel.getSnapshot().drawings ?? {};
+		const historyAction = drawings.length > 0 && drawings.every(({ drawingId }) => {
+			var _oldDrawings$drawingI;
+			return ((_oldDrawings$drawingI = oldDrawings[drawingId]) === null || _oldDrawings$drawingI === void 0 ? void 0 : _oldDrawings$drawingI.drawingType) === DrawingTypeEnum.DRAWING_IMAGE;
+		}) ? DocHistoryAction.UpdateImage : void 0;
+		const jsonX = JSONX.getInstance();
+		const actions = [];
+		for (const { drawingId, key, value } of drawings) {
+			var _oldDrawing$docTransf;
+			const oldDrawing = oldDrawings[drawingId];
+			const oldValue = key === "srcRect" ? oldDrawing === null || oldDrawing === void 0 ? void 0 : oldDrawing.srcRect : oldDrawing === null || oldDrawing === void 0 || (_oldDrawing$docTransf = oldDrawing.docTransform) === null || _oldDrawing$docTransf === void 0 ? void 0 : _oldDrawing$docTransf[key];
+			if (!Tools.diffValue(oldValue, value)) {
+				const path = key === "srcRect" ? [
+					"drawings",
+					drawingId,
+					key
+				] : [
+					"drawings",
+					drawingId,
+					"docTransform",
+					key
+				];
+				actions.push(oldValue === void 0 ? jsonX.insertOp(path, value) : jsonX.replaceOp(path, oldValue, value));
+			}
+		}
+		return Boolean(commandService.syncExecuteCommand(RichTextEditingMutation.id, {
+			unitId,
+			historyAction,
+			actions: actions.reduce((acc, action) => JSONX.compose(acc, action), null),
+			textRanges: null,
+			debounce: true
+		}));
+	}
+};
+
+//#endregion
+//#region src/commands/commands/update-doc-drawing-wrapping-style.command.ts
+/**
+* Controls how a document drawing participates in text layout.
+*
+* `INLINE`, `WRAP_SQUARE`, and `WRAP_TOP_AND_BOTTOM` participate in text layout and can cause text to reflow.
+* `BEHIND_TEXT` and `IN_FRONT_OF_TEXT` are overlay styles and do not cause text to reflow.
+*/
+let TextWrappingStyle = /* @__PURE__ */ function(TextWrappingStyle) {
+	/**
+	* Places the drawing in the text flow like a character.
+	*
+	* The drawing occupies layout space and does not overlap surrounding text. Its position is determined by its
+	* document range, so floating position settings have no visible effect.
+	*/
+	TextWrappingStyle["INLINE"] = "inline";
+	/**
+	* Floats the drawing behind document text without causing the text to reflow.
+	*
+	* Use this style for backgrounds or watermarks. Text can overlap the drawing, so ensure that it remains readable.
+	*/
+	TextWrappingStyle["BEHIND_TEXT"] = "behindText";
+	/**
+	* Floats the drawing in front of document text without causing the text to reflow.
+	*
+	* The drawing can cover overlapping text. Use this style only when an overlay is intentional.
+	*/
+	TextWrappingStyle["IN_FRONT_OF_TEXT"] = "inFrontOfText";
+	/**
+	* Floats the drawing and wraps text around its rectangular bounds.
+	*
+	* Use this style for images that should appear beside body text, such as portraits or illustrations.
+	*/
+	TextWrappingStyle["WRAP_SQUARE"] = "wrapSquare";
+	/**
+	* Floats the drawing in a horizontal band, with text only above and below it.
+	*
+	* Use this style for wide figures or standalone illustrations that should not have text beside them.
+	*/
+	TextWrappingStyle["WRAP_TOP_AND_BOTTOM"] = "wrapTopAndBottom";
+	return TextWrappingStyle;
+}({});
+const WRAPPING_STYLE_TO_LAYOUT_TYPE = {
+	["inline"]: PositionedObjectLayoutType.INLINE,
+	["wrapSquare"]: PositionedObjectLayoutType.WRAP_SQUARE,
+	["wrapTopAndBottom"]: PositionedObjectLayoutType.WRAP_TOP_AND_BOTTOM,
+	["inFrontOfText"]: PositionedObjectLayoutType.WRAP_NONE,
+	["behindText"]: PositionedObjectLayoutType.WRAP_NONE
+};
+/**
+* Updates document drawing wrapping styles and optional persisted positions.
+*/
+const UpdateDocDrawingWrappingStyleCommand = {
+	id: "doc.command.update-doc-drawing-wrapping-style",
+	type: CommandType.COMMAND,
+	handler: (accessor, params) => {
+		if (!params) return false;
+		const { drawings, wrappingStyle, unitId } = params;
+		const commandService = accessor.get(ICommandService);
+		const documentDataModel = accessor.get(IUniverInstanceService).getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+		if (!documentDataModel) return false;
+		const oldDrawings = documentDataModel.getDrawings() ?? {};
+		const historyAction = drawings.length > 0 && drawings.every(({ drawingId }) => {
+			var _oldDrawings$drawingI;
+			return ((_oldDrawings$drawingI = oldDrawings[drawingId]) === null || _oldDrawings$drawingI === void 0 ? void 0 : _oldDrawings$drawingI.drawingType) === DrawingTypeEnum.DRAWING_IMAGE;
+		}) ? DocHistoryAction.UpdateImage : void 0;
+		const jsonX = JSONX.getInstance();
+		const rawActions = [];
+		for (const drawing of drawings) {
+			const oldDrawing = oldDrawings[drawing.drawingId];
+			if (!oldDrawing) continue;
+			const layoutType = WRAPPING_STYLE_TO_LAYOUT_TYPE[wrappingStyle];
+			if (oldDrawing.layoutType !== layoutType) rawActions.push(jsonX.replaceOp([
+				"drawings",
+				drawing.drawingId,
+				"layoutType"
+			], oldDrawing.layoutType, layoutType));
+			if (wrappingStyle === "behindText" || wrappingStyle === "inFrontOfText") {
+				const behindDoc = wrappingStyle === "behindText" ? BooleanNumber.TRUE : BooleanNumber.FALSE;
+				if (oldDrawing.behindDoc !== behindDoc) rawActions.push(jsonX.replaceOp([
+					"drawings",
+					drawing.drawingId,
+					"behindDoc"
+				], oldDrawing.behindDoc, behindDoc));
+			}
+			if (wrappingStyle !== "inline") for (const key of ["positionH", "positionV"]) {
+				var _drawing$docTransform;
+				const value = (_drawing$docTransform = drawing.docTransform) === null || _drawing$docTransform === void 0 ? void 0 : _drawing$docTransform[key];
+				const oldValue = oldDrawing.docTransform[key];
+				if (value && !Tools.diffValue(oldValue, value)) rawActions.push(jsonX.replaceOp([
+					"drawings",
+					drawing.drawingId,
+					"docTransform",
+					key
+				], oldValue, value));
+			}
+		}
+		const mutation = {
+			id: RichTextEditingMutation.id,
+			params: {
+				unitId,
+				historyAction,
+				actions: rawActions.reduce((actions, action) => JSONX.compose(actions, action), null),
+				textRanges: null
+			}
+		};
+		return Boolean(commandService.syncExecuteCommand(mutation.id, mutation.params));
+	}
+};
+
+//#endregion
+//#region src/services/doc-drawing.service.ts
+var DocDrawingService = class extends UnitDrawingService {};
+const IDocDrawingService = createIdentifier("univer.doc.plugin.doc-drawing.service");
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/doc-drawing.controller.ts
+const DOCS_DRAWING_PLUGIN = "DOC_DRAWING_PLUGIN";
+function getDocDrawingRenderOrder(order, drawings = {}) {
+	return order.map((drawingId, index) => ({
+		drawingId,
+		index
+	})).sort((a, b) => {
+		const aBehind = isDocDrawingBehindText(drawings[a.drawingId]);
+		if (aBehind !== isDocDrawingBehindText(drawings[b.drawingId])) return aBehind ? -1 : 1;
+		return a.index - b.index;
+	}).map(({ drawingId }) => drawingId);
+}
+function isDocDrawingBehindText(drawing) {
+	return (drawing === null || drawing === void 0 ? void 0 : drawing.layoutType) === PositionedObjectLayoutType.WRAP_NONE && drawing.behindDoc === BooleanNumber.TRUE;
+}
+let DocDrawingController = class DocDrawingController extends Disposable {
+	constructor(_docDrawingService, _drawingManagerService, _resourceManagerService, _univerInstanceService, _commandService) {
+		super();
+		this._docDrawingService = _docDrawingService;
+		this._drawingManagerService = _drawingManagerService;
+		this._resourceManagerService = _resourceManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		this._init();
+	}
+	_init() {
+		this._initSnapshot();
+		this._initCommands();
+	}
+	_initSnapshot() {
+		const toJson = (unitId) => {
+			const doc = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+			if (doc) {
+				const drawings = doc.getSnapshot().drawings;
+				const drawingOrder = doc.getSnapshot().drawingsOrder;
+				return JSON.stringify({
+					data: drawings ?? {},
+					order: drawingOrder ?? []
+				});
+			}
+			return "";
+		};
+		const parseJson = (json) => {
+			if (!json) return {
+				data: {},
+				order: []
+			};
+			try {
+				return JSON.parse(json);
+			} catch {
+				return {
+					data: {},
+					order: []
+				};
+			}
+		};
+		this.disposeWithMe(this._resourceManagerService.registerPluginResource({
+			pluginName: DOCS_DRAWING_PLUGIN,
+			businesses: [UniverInstanceType.UNIVER_DOC],
+			toJson: (unitId) => toJson(unitId),
+			parseJson: (json) => parseJson(json),
+			onUnLoad: (unitId) => {
+				this._unloadDrawingDataForUnit(unitId);
+			},
+			onLoad: (unitId, value) => {
+				this._setDrawingDataForUnit(unitId, {
+					data: value.data ?? {},
+					order: value.order ?? []
+				});
+			}
+		}));
+	}
+	_unloadDrawingDataForUnit(unitId) {
+		const documentDataModel = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+		documentDataModel === null || documentDataModel === void 0 || documentDataModel.resetDrawing({}, []);
+		this._docDrawingService.removeDrawingDataForUnit(unitId);
+		this._drawingManagerService.removeDrawingDataForUnit(unitId);
+	}
+	_setDrawingDataForUnit(unitId, drawingMapItem) {
+		const documentDataModel = this._univerInstanceService.getUnit(unitId);
+		if (documentDataModel == null) return;
+		documentDataModel.resetDrawing(drawingMapItem.data, drawingMapItem.order);
+		this.loadDrawingDataForUnit(unitId);
+	}
+	loadDrawingDataForUnit(unitId) {
+		const dataModel = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_DOC);
+		if (!dataModel) return false;
+		const subUnitId = unitId;
+		const drawingDataModels = dataModel.getDrawings();
+		const drawingOrderModel = dataModel.getDrawingsOrder();
+		if (!drawingDataModels || !drawingOrderModel) return false;
+		const normalizedDrawingData = {};
+		for (const [drawingId, drawing] of Object.entries(drawingDataModels)) normalizedDrawingData[drawingId] = drawing.unitId === unitId && drawing.subUnitId === subUnitId ? drawing : {
+			...drawing,
+			unitId,
+			subUnitId
+		};
+		const subDrawings = { [subUnitId]: {
+			unitId,
+			subUnitId,
+			data: normalizedDrawingData,
+			order: drawingOrderModel
+		} };
+		const renderDrawingData = {};
+		for (const [drawingId, drawing] of Object.entries(normalizedDrawingData)) renderDrawingData[drawingId] = {
+			...drawing,
+			hidden: true
+		};
+		const renderSubDrawings = { [subUnitId]: {
+			...subDrawings[subUnitId],
+			data: renderDrawingData,
+			order: getDocDrawingRenderOrder(drawingOrderModel, drawingDataModels)
+		} };
+		this._docDrawingService.registerDrawingData(unitId, subDrawings);
+		this._drawingManagerService.registerDrawingData(unitId, renderSubDrawings);
+		return true;
+	}
+	_initCommands() {
+		[
+			InsertDocDrawingCommand,
+			RemoveDocDrawingCommand,
+			UpdateDrawingDocTransformCommand,
+			UpdateDocDrawingWrappingStyleCommand,
+			SetDocDrawingArrangeCommand
+		].forEach((command) => this.disposeWithMe(this._commandService.registerCommand(command)));
+	}
+};
+DocDrawingController = __decorate([
+	__decorateParam(0, IDocDrawingService),
+	__decorateParam(1, IDrawingManagerService),
+	__decorateParam(2, IResourceManagerService),
+	__decorateParam(3, IUniverInstanceService),
+	__decorateParam(4, ICommandService)
+], DocDrawingController);
+
+//#endregion
+//#region package.json
+var name = "@univerjs/docs-drawing";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const DOCS_DRAWING_PLUGIN_CONFIG_KEY = "docs-drawing.config";
+const configSymbol = Symbol(DOCS_DRAWING_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/plugin.ts
+let UniverDocsDrawingPlugin = class UniverDocsDrawingPlugin extends Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { ...rest } = merge({}, defaultPluginConfig, this._config);
+		this._configService.setConfig(DOCS_DRAWING_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		[
+			[DocDrawingController],
+			[DocDrawingAdapterService],
+			[IDocDrawingAdapterService, { useClass: DocDrawingAdapterService }],
+			[DocDrawingService],
+			[IDocDrawingService, { useClass: DocDrawingService }]
+		].forEach((dependency) => this._injector.add(dependency));
+		touchDependencies(this._injector, [[DocDrawingController]]);
+	}
+};
+_defineProperty(UniverDocsDrawingPlugin, "pluginName", DOCS_DRAWING_PLUGIN);
+_defineProperty(UniverDocsDrawingPlugin, "packageName", name);
+_defineProperty(UniverDocsDrawingPlugin, "version", version);
+_defineProperty(UniverDocsDrawingPlugin, "type", UniverInstanceType.UNIVER_DOC);
+UniverDocsDrawingPlugin = __decorate([
+	DependentOn(UniverDocsPlugin, UniverDrawingPlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, IConfigService)
+], UniverDocsDrawingPlugin);
+
+//#endregion
+export { DOCS_DRAWING_PLUGIN, DocDrawingAdapterService, DocDrawingController, DocDrawingService, IDocDrawingAdapterService, IDocDrawingService, InsertDocDrawingCommand, RemoveDocDrawingCommand, SetDocDrawingArrangeCommand, TextWrappingStyle, UniverDocsDrawingPlugin, UpdateDocDrawingWrappingStyleCommand, UpdateDrawingDocTransformCommand, WRAPPING_STYLE_TO_LAYOUT_TYPE, getDocDrawingRenderOrder };

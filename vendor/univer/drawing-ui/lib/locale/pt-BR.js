@@ -1,0 +1,104 @@
+//#region src/locale/pt-BR.ts
+const locale = { "drawing-ui": {
+	"image-cropper": { error: "Não é possível cortar objetos que não são imagens." },
+	objectListPanel: {
+		title: "Camadas",
+		empty: "Nenhum objeto",
+		showAll: "Mostrar tudo",
+		hideAll: "Ocultar tudo",
+		lockAll: "Bloquear tudo",
+		unlockAll: "Desbloquear tudo",
+		moveForward: "Trazer para frente",
+		moveBackward: "Enviar para tras",
+		close: "Fechar",
+		show: "Mostrar",
+		hide: "Ocultar",
+		lock: "Bloquear",
+		unlock: "Desbloquear",
+		lockHint: "Bloquear para evitar seleção acidental",
+		unlockHint: "Bloqueado. Clique para desbloquear",
+		name: "Nome",
+		nameInput: "Nome do objeto",
+		description: "Descricao",
+		descriptionPlaceholder: "Adicionar descricao",
+		details: "Detalhes",
+		locate: "Localizar",
+		expand: "Expandir",
+		collapse: "Recolher",
+		dragToReorder: "Arraste para reordenar",
+		search: "Pesquisar objetos",
+		filterAll: "Todos",
+		filterHidden: "Ocultos",
+		filterLocked: "Bloqueados",
+		sectionCanvas: "Camada da tela",
+		sectionFloating: "Camada flutuante",
+		typeNames: {
+			object: "Objeto",
+			shape: "Forma",
+			connector: "Conector",
+			image: "Imagem",
+			chart: "Gráfico",
+			table: "Tabela",
+			smartArt: "SmartArt",
+			video: "Vídeo",
+			group: "Grupo",
+			unit: "Unidade",
+			dom: "DOM",
+			text: "Texto",
+			placeholder: "Espaço reservado",
+			container: "Contêiner"
+		},
+		noSelection: "Selecione um objeto para editar seus detalhes"
+	},
+	"image-panel": {
+		arrange: {
+			title: "Organizar",
+			forward: "Trazer para frente",
+			backward: "Enviar para trás",
+			front: "Trazer para a frente",
+			back: "Enviar para trás"
+		},
+		transform: {
+			title: "Transformar",
+			rotate: "Girar (°)",
+			x: "X (px)",
+			y: "Y (px)",
+			width: "Largura (px)",
+			height: "Altura (px)",
+			lock: "Bloquear proporção (%)"
+		},
+		crop: {
+			title: "Cortar",
+			start: "Iniciar corte",
+			mode: "Livre"
+		},
+		group: {
+			title: "Agrupar",
+			group: "Agrupar",
+			unGroup: "Desagrupar"
+		},
+		align: {
+			title: "Alinhar",
+			default: "Selecionar tipo de alinhamento",
+			left: "Alinhar à esquerda",
+			center: "Alinhar ao centro",
+			right: "Alinhar à direita",
+			top: "Alinhar ao topo",
+			middle: "Alinhar ao meio",
+			bottom: "Alinhar à base",
+			horizon: "Distribuir horizontalmente",
+			vertical: "Distribuir verticalmente"
+		},
+		null: "Nenhum objeto selecionado"
+	},
+	"image-text-wrap": {
+		square: "Quadrado",
+		topAndBottom: "Superior e inferior",
+		inline: "Em linha com o texto",
+		behindText: "Atrás do texto",
+		inFrontText: "À frente do texto"
+	}
+} };
+
+//#endregion
+export { locale as default };

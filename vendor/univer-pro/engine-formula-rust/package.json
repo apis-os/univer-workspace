@@ -1,0 +1,49 @@
+{
+    "author": "DreamNum Co., Ltd. <developer@univer.ai>",
+    "dependencies": {
+        "@univerjs-pro/engine-formula": "1.0.0-insiders.20260907-70fc579",
+        "@univerjs-pro/engine-formula-rust-binding": "1.0.0-insiders.20260829-2e3c387",
+        "@univerjs/core": "1.0.0-insiders.20260907-70fc579",
+        "@univerjs/engine-formula": "1.0.0-insiders.20260907-70fc579",
+        "@univerjs/protocol": "1.0.0-insiders.20260907-70fc579"
+    },
+    "description": "Rust-backed formula engine plugin for Univer",
+    "files": [
+        "lib"
+    ],
+    "name": "@univerjs-pro/engine-formula-rust",
+    "peerDependencies": {
+        "rxjs": ">=7.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/dream-num/univer-rs"
+    },
+    "type": "module",
+    "version": "1.0.0-insiders.20260907-70fc579",
+    "main": "./lib/cjs/index.cjs",
+    "module": "./lib/es/index.js",
+    "types": "./lib/types/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./lib/types/index.d.ts",
+            "import": "./lib/es/index.js",
+            "require": "./lib/cjs/index.cjs",
+            "default": "./lib/es/index.js"
+        }
+    },
+    "publishConfig": {
+        "main": "./lib/cjs/index.cjs",
+        "module": "./lib/es/index.js",
+        "types": "./lib/types/index.d.ts",
+        "exports": {
+            ".": {
+                "types": "./lib/types/index.d.ts",
+                "import": "./lib/es/index.js",
+                "require": "./lib/cjs/index.cjs",
+                "default": "./lib/es/index.js"
+            }
+        },
+        "access": "public"
+    }
+}

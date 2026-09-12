@@ -1,0 +1,3495 @@
+import { AbsoluteRefType, BooleanNumber, BuildTextUtils, CellValueType, CommandType, DependentOn, Direction, Disposable, DisposableCollection, DrawingTypeEnum, ICommandService, IConfigService, ILogService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, InterceptorEffectEnum, LocaleService, ObjectMatrix, Plugin, PositionedObjectLayoutType, RANGE_TYPE, Rectangle, Tools, UniverInstanceType, WrapTextType, cellToRange, createDocumentModelWithStyle, createIdentifier, generateRandomId, getIntersectRange, isFormulaId, isFormulaString, isNodeEnv, isRealNum, merge, moveRangeByOffset, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { AUTO_FILL_APPLY_TYPE, AUTO_FILL_DATA_TYPE, ClearSelectionFormatCommand, DeleteRangeMoveLeftCommand, DeleteRangeMoveUpCommand, EffectRefRangId, IAutoFillService, INTERCEPTOR_POINT, InsertColCommand, InsertColMutation, InsertRangeMoveDownCommand, InsertRangeMoveRightCommand, InsertRowCommand, InsertRowMutation, InsertSheetMutation, InterceptCellContentPriority, MoveColsCommand, MoveColsMutation, MoveRangeCommand, MoveRangeMutation, MoveRowsCommand, MoveRowsMutation, RefRangeService, RemoveColCommand, RemoveColMutation, RemoveDefinedNameCommand, RemoveRowCommand, RemoveRowMutation, RemoveSheetCommand, RemoveSheetMutation, ReorderRangeMutation, SCOPE_WORKBOOK_VALUE_DEFINED_NAME, SetBorderCommand, SetDefinedNameCommand, SetRangeCustomMetadataCommand, SetRangeValuesCommand, SetRangeValuesMutation, SetRowHiddenMutation, SetRowVisibleMutation, SetStyleCommand, SetWorkbookNameCommand, SetWorksheetActiveOperation, SetWorksheetNameCommand, SheetInterceptorService, UniverSheetsPlugin, getSeparateEffectedRangesOnCommand, getSheetCommandTarget, handleCommonDefaultRangeChangeWithEffectRefCommands, handleDefaultRangeChangeWithEffectRefCommands, handleDeleteRangeMoveLeft, handleDeleteRangeMoveUp, handleIRemoveCol, handleIRemoveRow, handleInsertCol, handleInsertRangeMoveDown, handleInsertRangeMoveRight, handleInsertRow, handleMoveCols, handleMoveRange, handleMoveRows, runRefRangeMutations } from "@univerjs/sheets";
+import { AstTreeBuilder, ENGINE_FORMULA_CYCLE_REFERENCE_COUNT, ENGINE_FORMULA_RETURN_DEPENDENCY_TREE, ErrorType, FormulaCalculationSessionService, FormulaDataModel, FormulaExecuteStageType, FormulaExecutedStateType, FormulaResultApplicationType, FunctionType, IActiveDirtyManagerService, IDefinedNamesService, IDescriptionService, IFormulaCurrentConfigService, IFunctionService, ISuperTableService, Interpreter, Lexer, LexerTreeBuilder, RemoveDefinedNameMutation, RemoveSuperTableMutation, SetArrayFormulaDataMutation, SetDefinedNameMutation, SetFormulaCalculationNotificationMutation, SetFormulaCalculationStartMutation, SetFormulaCalculationStopMutation, SetFormulaDataMutation, SetFormulaStringBatchCalculationMutation, SetImageFormulaDataMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverFormulaEnginePlugin, deserializeRangeWithSheetWithCache, generateExecuteAstNodeData, generateStringWithSequence, getObjectValue, refactorFormulaUnitQualifier, sequenceNodeType, serializeRange, serializeRangeToRefString, serializeRangeWithSheet, serializeRangeWithSpreadsheet, splitTableStructuredRef, stripErrorMargin } from "@univerjs/engine-formula";
+import { buildDocTransform } from "@univerjs/docs";
+import { BehaviorSubject, map } from "rxjs";
+import { IRPCChannelService, fromModule, toModule } from "@univerjs/rpc";
+
+//#region src/commands/commands/insert-function.command.ts
+const InsertFunctionCommand = {
+	id: "formula.command.insert-function",
+	type: CommandType.COMMAND,
+	handler: async (accessor, params) => {
+		const { list, listOfRangeHasNumber } = params;
+		const commandService = accessor.get(ICommandService);
+		const cellMatrix = new ObjectMatrix();
+		list.forEach((item) => {
+			const { range, primary, formula } = item;
+			const { row, column } = primary;
+			const formulaId = generateRandomId(6);
+			cellMatrix.setValue(row, column, {
+				f: formula,
+				si: formulaId
+			});
+			const { startRow, startColumn, endRow, endColumn } = range;
+			for (let i = startRow; i <= endRow; i++) for (let j = startColumn; j <= endColumn; j++) if (i !== row || j !== column) cellMatrix.setValue(i, j, { si: formulaId });
+		});
+		if (listOfRangeHasNumber && listOfRangeHasNumber.length > 0) listOfRangeHasNumber.forEach((item) => {
+			const { primary, formula } = item;
+			cellMatrix.setValue(primary.row, primary.column, { f: formula });
+		});
+		const setRangeValuesParams = { value: cellMatrix.clone() };
+		return commandService.executeCommand(SetRangeValuesCommand.id, setRangeValuesParams);
+	}
+};
+
+//#endregion
+//#region src/config/config.ts
+/**
+* Base configuration for the plugin.
+*/
+const PLUGIN_CONFIG_KEY_BASE = "sheets-formula.base.config";
+const configSymbolBase = Symbol(PLUGIN_CONFIG_KEY_BASE);
+let CalculationMode = /* @__PURE__ */ function(CalculationMode) {
+	/**
+	* Force calculation of all formulas
+	*/
+	CalculationMode[CalculationMode["FORCED"] = 0] = "FORCED";
+	/**
+	* Partial calculation, only cells with formulas but no v values are calculated
+	*/
+	CalculationMode[CalculationMode["WHEN_EMPTY"] = 1] = "WHEN_EMPTY";
+	/**
+	* All formulas are not calculated
+	*/
+	CalculationMode[CalculationMode["NO_CALCULATION"] = 2] = "NO_CALCULATION";
+	return CalculationMode;
+}({});
+const defaultPluginBaseConfig = {};
+/**
+* Remote configuration for the plugin.
+*/
+const PLUGIN_CONFIG_KEY_REMOTE = "sheets-formula.remote.config";
+const configSymbolRemote = Symbol(PLUGIN_CONFIG_KEY_REMOTE);
+const defaultPluginRemoteConfig = {};
+/**
+* Mobile configuration for the plugin.
+*/
+const PLUGIN_CONFIG_KEY_MOBILE = "sheets-formula.mobile.config";
+const configSymbolMobile = Symbol(PLUGIN_CONFIG_KEY_MOBILE);
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/formula-auto-fill.controller.ts
+let FormulaAutoFillController = class FormulaAutoFillController extends Disposable {
+	constructor(_autoFillService, _lexerTreeBuilder) {
+		super();
+		this._autoFillService = _autoFillService;
+		this._lexerTreeBuilder = _lexerTreeBuilder;
+		this._registerAutoFill();
+	}
+	_registerAutoFill() {
+		const formulaRule = {
+			type: AUTO_FILL_DATA_TYPE.FORMULA,
+			priority: 1001,
+			match: (cellData) => isFormulaString(cellData === null || cellData === void 0 ? void 0 : cellData.f) || isFormulaId(cellData === null || cellData === void 0 ? void 0 : cellData.si),
+			isContinue: (prev, cur) => {
+				if (prev.type === AUTO_FILL_DATA_TYPE.FORMULA) return true;
+				return false;
+			},
+			applyFunctions: { [AUTO_FILL_APPLY_TYPE.COPY]: (dataWithIndex, len, direction, copyDataPiece, location) => {
+				const { data, index } = dataWithIndex;
+				return this._fillCopyFormula(data, len, direction, index, copyDataPiece, location);
+			} }
+		};
+		this._autoFillService.registerRule(formulaRule);
+	}
+	_fillCopyFormula(data, len, direction, index, copyDataPiece, location) {
+		const step = getDataLength(copyDataPiece);
+		const applyData = [];
+		const formulaIdMap = /* @__PURE__ */ new Map();
+		for (let i = 1; i <= len; i++) {
+			const dataIndex = (i - 1) % data.length;
+			const sourceIndex = index[dataIndex];
+			const d = Tools.deepClone(data[dataIndex]);
+			if (d) {
+				var _data$dataIndex, _data$dataIndex2;
+				const originalFormula = ((_data$dataIndex = data[dataIndex]) === null || _data$dataIndex === void 0 ? void 0 : _data$dataIndex.f) || "";
+				const originalFormulaId = ((_data$dataIndex2 = data[dataIndex]) === null || _data$dataIndex2 === void 0 ? void 0 : _data$dataIndex2.si) || "";
+				const checkFormula = isFormulaString(originalFormula);
+				if (isFormulaId(originalFormulaId)) {
+					d.si = originalFormulaId;
+					d.f = null;
+					d.v = null;
+					d.p = null;
+					d.t = null;
+					applyData.push(d);
+				} else if (checkFormula) {
+					let formulaId = formulaIdMap.get(dataIndex);
+					if (!formulaId) {
+						formulaId = generateRandomId(6);
+						formulaIdMap.set(dataIndex, formulaId);
+						const { offsetX, offsetY } = directionToOffset(step, len, direction, location, sourceIndex);
+						const shiftedFormula = this._lexerTreeBuilder.moveFormulaRefOffset(originalFormula, offsetX, offsetY);
+						d.si = formulaId;
+						d.f = shiftedFormula;
+						d.v = null;
+						d.p = null;
+						d.t = null;
+					} else {
+						d.si = formulaId;
+						d.f = null;
+						d.v = null;
+						d.p = null;
+						d.t = null;
+					}
+					applyData.push(d);
+				}
+			}
+		}
+		return applyData;
+	}
+};
+FormulaAutoFillController = __decorate([__decorateParam(0, IAutoFillService), __decorateParam(1, Inject(LexerTreeBuilder))], FormulaAutoFillController);
+function directionToOffset(step, len, direction, location, sourceIndex) {
+	const { source, target } = location;
+	const { rows: targetRows } = target;
+	const { rows: sourceRows } = source;
+	let offsetX = 0;
+	let offsetY = 0;
+	switch (direction) {
+		case Direction.UP:
+			offsetY = targetRows[sourceIndex] - sourceRows[sourceIndex];
+			break;
+		case Direction.RIGHT:
+			offsetX = step;
+			break;
+		case Direction.DOWN:
+			offsetY = targetRows[sourceIndex] - sourceRows[sourceIndex];
+			break;
+		case Direction.LEFT:
+			offsetX = -step * len;
+			break;
+	}
+	return {
+		offsetX,
+		offsetY
+	};
+}
+function getDataLength(copyDataPiece) {
+	let length = 0;
+	for (const t in copyDataPiece) copyDataPiece[t].forEach((item) => {
+		length += item.data.length;
+	});
+	return length;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region src/controllers/image-formula-cell-interceptor.controller.ts
+let ImageFormulaCellInterceptorController = class ImageFormulaCellInterceptorController extends Disposable {
+	constructor(_commandService, _sheetInterceptorService, _formulaDataModel) {
+		super();
+		this._commandService = _commandService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._formulaDataModel = _formulaDataModel;
+		_defineProperty(this, "_errorValueCell", {
+			v: ErrorType.VALUE,
+			t: CellValueType.STRING
+		});
+		_defineProperty(this, "_refreshRender", void 0);
+		this._initialize();
+	}
+	_initialize() {
+		this._commandExecutedListener();
+		this._initInterceptorCellContent();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted(async (command) => {
+			if (command.id === SetImageFormulaDataMutation.id) {
+				const params = command.params;
+				if (!params) return;
+				const { imageFormulaData } = params;
+				if (!imageFormulaData || imageFormulaData.length === 0) return;
+				const updateRuntimeImageFormulaData = await Promise.all(imageFormulaData.map((imageFormulaInfo) => {
+					return this._getImageNatureSize(imageFormulaInfo);
+				}));
+				const unitImageFormulaData = {};
+				updateRuntimeImageFormulaData.forEach((imageFormulaInfo) => {
+					const { unitId, sheetId, row, column, ...imageInfo } = imageFormulaInfo;
+					if (!unitImageFormulaData[unitId]) unitImageFormulaData[unitId] = {};
+					if (!unitImageFormulaData[unitId][sheetId]) unitImageFormulaData[unitId][sheetId] = new ObjectMatrix();
+					unitImageFormulaData[unitId][sheetId].setValue(row, column, imageInfo);
+				});
+				this._formulaDataModel.mergeUnitImageFormulaData(unitImageFormulaData);
+				this._refreshRender();
+			}
+		}));
+	}
+	_initInterceptorCellContent() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
+			priority: InterceptCellContentPriority.CELL_IMAGE,
+			effect: InterceptorEffectEnum.Value | InterceptorEffectEnum.Style,
+			handler: (cell, location, next) => {
+				var _unitImageFormulaData;
+				const { unitId, subUnitId, row, col } = location;
+				const unitImageFormulaData = this._formulaDataModel.getUnitImageFormulaData();
+				const imageInfo = unitImageFormulaData === null || unitImageFormulaData === void 0 || (_unitImageFormulaData = unitImageFormulaData[unitId]) === null || _unitImageFormulaData === void 0 || (_unitImageFormulaData = _unitImageFormulaData[subUnitId]) === null || _unitImageFormulaData === void 0 ? void 0 : _unitImageFormulaData.getValue(row, col);
+				if (!imageInfo) return next(cell);
+				const { source, height, width, isErrorImage, imageNaturalWidth, imageNaturalHeight } = imageInfo;
+				if (isErrorImage) return next(this._errorValueCell);
+				const finalWidth = width || imageNaturalWidth;
+				const finalHeight = height || imageNaturalHeight;
+				if (!finalWidth || !finalHeight) return next(this._errorValueCell);
+				const docDataModel = createDocumentModelWithStyle("", {});
+				const docDrawingParam = {
+					unitId,
+					subUnitId,
+					drawingId: generateRandomId(),
+					drawingType: DrawingTypeEnum.DRAWING_IMAGE,
+					imageSourceType: ImageSourceType.URL,
+					source,
+					transform: {
+						left: 0,
+						top: 0,
+						width: finalWidth,
+						height: finalHeight
+					},
+					docTransform: buildDocTransform(finalWidth, finalHeight),
+					behindDoc: BooleanNumber.FALSE,
+					title: "",
+					description: "",
+					layoutType: PositionedObjectLayoutType.INLINE,
+					wrapText: WrapTextType.BOTH_SIDES,
+					distB: 0,
+					distL: 0,
+					distR: 0,
+					distT: 0
+				};
+				const jsonXActions = BuildTextUtils.drawing.add({
+					documentDataModel: docDataModel,
+					drawings: [docDrawingParam],
+					selection: {
+						collapsed: true,
+						startOffset: 0,
+						endOffset: 0
+					}
+				});
+				if (jsonXActions) {
+					docDataModel.apply(jsonXActions);
+					return next({
+						...cell,
+						p: docDataModel.getSnapshot()
+					});
+				}
+				return next(this._errorValueCell);
+			}
+		}));
+	}
+	async _getImageNatureSize(imageFormulaInfo) {
+		const imageInfo = await this._getImageSize(imageFormulaInfo.source);
+		if (!imageInfo.image) return {
+			...imageFormulaInfo,
+			isErrorImage: true
+		};
+		return {
+			...imageFormulaInfo,
+			isErrorImage: false,
+			imageNaturalHeight: imageInfo.height,
+			imageNaturalWidth: imageInfo.width
+		};
+	}
+	async _getImageSize(src) {
+		return new Promise((resolve) => {
+			const image = new Image();
+			image.src = src;
+			image.onload = () => {
+				resolve({
+					width: image.width,
+					height: image.height,
+					image
+				});
+			};
+			image.onerror = () => {
+				resolve({
+					width: 0,
+					height: 0,
+					image: null
+				});
+			};
+		});
+	}
+	registerRefreshRenderFunction(refreshRender) {
+		this._refreshRender = refreshRender;
+	}
+};
+ImageFormulaCellInterceptorController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, Inject(SheetInterceptorService)),
+	__decorateParam(2, Inject(FormulaDataModel))
+], ImageFormulaCellInterceptorController);
+
+//#endregion
+//#region src/controllers/trigger-calculation.controller.ts
+const NilProgress = {
+	done: 0,
+	count: 0
+};
+const lo = { onlyLocal: true };
+let TriggerCalculationController = class TriggerCalculationController extends Disposable {
+	_emitProgress(label) {
+		this._progress$.next({
+			done: this._doneCalculationTaskCount,
+			count: this._totalCalculationTaskCount,
+			label
+		});
+	}
+	_startProgress() {
+		this._doneCalculationTaskCount = 0;
+		this._totalCalculationTaskCount = 1;
+		const analyzing = this._localeService.t("sheets-formula.progress.analyzing");
+		this._emitProgress(analyzing);
+	}
+	_calculateProgress(label) {
+		if (this._executionInProgressParams) {
+			const { totalFormulasToCalculate, completedFormulasCount, totalArrayFormulasToCalculate, completedArrayFormulasCount } = this._executionInProgressParams;
+			this._doneCalculationTaskCount = completedFormulasCount + completedArrayFormulasCount;
+			this._totalCalculationTaskCount = totalFormulasToCalculate + totalArrayFormulasToCalculate;
+			if (this._totalCalculationTaskCount === 0) return;
+			this._emitProgress(label);
+		}
+	}
+	_completeProgress() {
+		this._doneCalculationTaskCount = this._totalCalculationTaskCount = 1;
+		const done = this._localeService.t("sheets-formula.progress.done");
+		this._emitProgress(done);
+	}
+	clearProgress() {
+		this._doneCalculationTaskCount = 0;
+		this._totalCalculationTaskCount = 0;
+		this._emitProgress();
+	}
+	constructor(_commandService, _univerInstanceService, _logService, _configService, _formulaDataModel, _localeService) {
+		super();
+		this._commandService = _commandService;
+		this._univerInstanceService = _univerInstanceService;
+		this._logService = _logService;
+		this._configService = _configService;
+		this._formulaDataModel = _formulaDataModel;
+		this._localeService = _localeService;
+		_defineProperty(this, "_startExecutionTime", 0);
+		_defineProperty(this, "_totalCalculationTaskCount", 0);
+		_defineProperty(this, "_doneCalculationTaskCount", 0);
+		_defineProperty(this, "_executionInProgressParams", null);
+		_defineProperty(this, "_progress$", new BehaviorSubject(NilProgress));
+		_defineProperty(this, "progress$", this._progress$.asObservable());
+		this._commandExecutedListener();
+		this._initialExecuteFormulaProcessListener();
+		this._initialExecuteFormula();
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_SHEET).subscribe(() => {
+			this._initialExecuteFormula();
+		}));
+	}
+	dispose() {
+		super.dispose();
+		this._progress$.next(NilProgress);
+		this._progress$.complete();
+	}
+	_getCalculationMode() {
+		const config = this._configService.getConfig(PLUGIN_CONFIG_KEY_BASE);
+		return (config === null || config === void 0 ? void 0 : config.initialFormulaComputing) ?? 1;
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.beforeCommandExecuted((command) => {
+			if (command.id === SetFormulaCalculationStartMutation.id || command.id === SetFormulaStringBatchCalculationMutation.id) {
+				const params = command.params;
+				if (command.id === SetFormulaCalculationStartMutation.id) params.isCalculateTreeModel = this._configService.getConfig(ENGINE_FORMULA_RETURN_DEPENDENCY_TREE) || false;
+				params.maxIteration = this._configService.getConfig(ENGINE_FORMULA_CYCLE_REFERENCE_COUNT);
+				params.rowData = this._formulaDataModel.getHiddenRowsFiltered();
+			}
+		}));
+	}
+	_initialExecuteFormulaProcessListener() {
+		let startDependencyTimer = null;
+		let calculationProcessCount = 0;
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id === SetFormulaCalculationStopMutation.id) this.clearProgress();
+			if (command.id !== SetFormulaCalculationNotificationMutation.id) return;
+			const params = command.params;
+			if (params.stageInfo != null) {
+				const { stage } = params.stageInfo;
+				if (stage === FormulaExecuteStageType.START) {
+					if (calculationProcessCount === 0) this._startExecutionTime = performance.now();
+					calculationProcessCount++;
+					if (startDependencyTimer !== null) {
+						clearTimeout(startDependencyTimer);
+						startDependencyTimer = null;
+					}
+					startDependencyTimer = setTimeout(() => {
+						startDependencyTimer = null;
+						this._startProgress();
+					}, 1e3);
+				} else if (stage === FormulaExecuteStageType.CURRENTLY_CALCULATING) {
+					this._executionInProgressParams = params.stageInfo;
+					if (startDependencyTimer === null) {
+						const calculating = this._localeService.t("sheets-formula.progress.calculating");
+						this._calculateProgress(calculating);
+					}
+				} else if (stage === FormulaExecuteStageType.START_DEPENDENCY_ARRAY_FORMULA) {
+					this._executionInProgressParams = params.stageInfo;
+					if (startDependencyTimer === null) {
+						const arrayAnalysis = this._localeService.t("sheets-formula.progress.array-analysis");
+						this._calculateProgress(arrayAnalysis);
+					}
+				} else if (stage === FormulaExecuteStageType.CURRENTLY_CALCULATING_ARRAY_FORMULA) {
+					this._executionInProgressParams = params.stageInfo;
+					if (startDependencyTimer === null) {
+						const arrayCalculation = this._localeService.t("sheets-formula.progress.array-calculation");
+						this._calculateProgress(arrayCalculation);
+					}
+				}
+			} else {
+				const state = params.functionsExecutedState;
+				let result = "";
+				calculationProcessCount--;
+				switch (state) {
+					case FormulaExecutedStateType.NOT_EXECUTED:
+						result = "No tasks are being executed anymore";
+						break;
+					case FormulaExecutedStateType.STOP_EXECUTION:
+						result = "The execution of the formula has been stopped";
+						calculationProcessCount = 0;
+						break;
+					case FormulaExecutedStateType.SUCCESS:
+						result = "Formula calculation succeeded";
+						if (calculationProcessCount === 0 || calculationProcessCount === -1) result += `. Total time consumed: ${performance.now() - this._startExecutionTime} ms`;
+						break;
+					case FormulaExecutedStateType.INITIAL:
+						result = "Waiting for calculation";
+						break;
+				}
+				if (calculationProcessCount === 0 || calculationProcessCount === -1) {
+					if (startDependencyTimer) {
+						clearTimeout(startDependencyTimer);
+						startDependencyTimer = null;
+						this.clearProgress();
+					} else this._completeProgress();
+					calculationProcessCount = 0;
+					this._doneCalculationTaskCount = 0;
+					this._totalCalculationTaskCount = 0;
+				}
+				this._executionInProgressParams = null;
+				this._logService.debug("[TriggerCalculationController]", result);
+			}
+		}));
+	}
+	_initialExecuteFormula() {
+		const calculationMode = this._getCalculationMode();
+		if (calculationMode !== 2) {
+			const params = this._getDirtyDataByCalculationMode(calculationMode);
+			this._commandService.executeCommand(SetTriggerFormulaCalculationStartMutation.id, params, lo);
+		}
+	}
+	_getDirtyDataByCalculationMode(calculationMode) {
+		return {
+			forceCalculation: calculationMode === 0,
+			dirtyRanges: calculationMode === 1 ? this._formulaDataModel.getFormulaDirtyRanges() : [],
+			dirtyNameMap: {},
+			dirtyDefinedNameMap: {},
+			dirtySuperTableMap: {},
+			dirtyUnitFeatureMap: {},
+			dirtyUnitOtherFormulaMap: {},
+			clearDependencyTreeCache: {}
+		};
+	}
+};
+TriggerCalculationController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IUniverInstanceService),
+	__decorateParam(2, ILogService),
+	__decorateParam(3, IConfigService),
+	__decorateParam(4, Inject(FormulaDataModel)),
+	__decorateParam(5, Inject(LocaleService))
+], TriggerCalculationController);
+
+//#endregion
+//#region src/controllers/unit-qualifier-rename.controller.ts
+function collectUnitQualifierFormulaPatches(workbook, oldName, newName) {
+	const unitId = workbook.getUnitId();
+	return workbook.getSheets().flatMap((sheet) => {
+		const updates = new ObjectMatrix();
+		sheet.getCellMatrix().forValue((row, column, cell) => {
+			if (!(cell === null || cell === void 0 ? void 0 : cell.f)) return;
+			const formula = refactorFormulaUnitQualifier(cell.f, oldName, newName);
+			if (formula !== cell.f) updates.setValue(row, column, { f: formula });
+		});
+		const cellValue = updates.clone();
+		return Object.keys(cellValue).length > 0 ? [{
+			unitId,
+			subUnitId: sheet.getSheetId(),
+			cellValue
+		}] : [];
+	});
+}
+let UnitQualifierRenameController = class UnitQualifierRenameController extends Disposable {
+	constructor(_commandService, _undoRedoService, _univerInstanceService, _definedNamesService) {
+		super();
+		this._commandService = _commandService;
+		this._undoRedoService = _undoRedoService;
+		this._univerInstanceService = _univerInstanceService;
+		this._definedNamesService = _definedNamesService;
+		_defineProperty(this, "_names", /* @__PURE__ */ new Map());
+		this._univerInstanceService.getAllUnitsForType(UniverInstanceType.UNIVER_BASE).forEach((unit) => this._watch(unit));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_BASE).subscribe(({ unit }) => this._watch(unit)));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitDisposed$(UniverInstanceType.UNIVER_BASE).subscribe((unit) => this._names.delete(unit.getUnitId())));
+	}
+	_watch(unit) {
+		const unitId = unit.getUnitId();
+		this.disposeWithMe(unit.name$.subscribe((name) => {
+			const oldName = this._names.get(unitId);
+			this._names.set(unitId, name);
+			if (!oldName || oldName === name) return;
+			this._refactor(unitId, oldName, name);
+		}));
+	}
+	_refactor(renamedUnitId, oldName, newName) {
+		const redos = [];
+		const undos = [];
+		for (const workbook of this._univerInstanceService.getAllUnitsForType(UniverInstanceType.UNIVER_SHEET)) {
+			for (const patch of collectUnitQualifierFormulaPatches(workbook, oldName, newName)) {
+				const sheet = workbook.getSheetBySheetId(patch.subUnitId);
+				if (!sheet) continue;
+				const undoCellValue = new ObjectMatrix();
+				new ObjectMatrix(patch.cellValue).forValue((row, column) => {
+					undoCellValue.setValue(row, column, sheet.getCellRaw(row, column) ?? null);
+				});
+				redos.push({
+					id: SetRangeValuesMutation.id,
+					params: patch
+				});
+				undos.unshift({
+					id: SetRangeValuesMutation.id,
+					params: {
+						...patch,
+						cellValue: undoCellValue.clone()
+					}
+				});
+			}
+			const definedNames = this._definedNamesService.getDefinedNameMap(workbook.getUnitId());
+			for (const item of Object.values(definedNames ?? {})) {
+				const formulaOrRefString = refactorFormulaUnitQualifier(item.formulaOrRefString, oldName, newName);
+				if (formulaOrRefString !== item.formulaOrRefString) {
+					redos.push({
+						id: SetDefinedNameMutation.id,
+						params: {
+							unitId: workbook.getUnitId(),
+							...item,
+							formulaOrRefString
+						}
+					});
+					undos.unshift({
+						id: SetDefinedNameMutation.id,
+						params: {
+							unitId: workbook.getUnitId(),
+							...item
+						}
+					});
+				}
+			}
+		}
+		if (!redos.length || !sequenceExecute(redos, this._commandService).result) return;
+		this._undoRedoService.pushUndoRedo({
+			unitID: renamedUnitId,
+			undoMutations: undos,
+			redoMutations: redos
+		});
+	}
+};
+UnitQualifierRenameController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IUndoRedoService),
+	__decorateParam(2, IUniverInstanceService),
+	__decorateParam(3, IDefinedNamesService)
+], UnitQualifierRenameController);
+
+//#endregion
+//#region src/controllers/utils/offset-formula-data.ts
+function checkFormulaDataNull(formulaData, unitId, sheetId) {
+	var _formulaData$unitId;
+	if (formulaData == null || formulaData[unitId] == null || ((_formulaData$unitId = formulaData[unitId]) === null || _formulaData$unitId === void 0 ? void 0 : _formulaData$unitId[sheetId]) == null) return true;
+	return false;
+}
+function removeFormulaData(formulaData, unitId, sheetId) {
+	if (sheetId) {
+		var _formulaData$unitId2;
+		if (formulaData && formulaData[unitId] && ((_formulaData$unitId2 = formulaData[unitId]) === null || _formulaData$unitId2 === void 0 ? void 0 : _formulaData$unitId2[sheetId])) {
+			delete formulaData[unitId][sheetId];
+			return { [unitId]: { [sheetId]: null } };
+		}
+	} else if (formulaData && formulaData[unitId]) {
+		delete formulaData[unitId];
+		return { [unitId]: null };
+	}
+}
+
+//#endregion
+//#region src/controllers/utils/ref-range-formula.ts
+const formulaReferenceSheetList = [
+	11,
+	12,
+	13,
+	14,
+	15,
+	16,
+	17
+];
+function getFormulaReferenceMoveUndoRedo(oldFormulaData, newFormulaData, formulaReferenceMoveParam) {
+	const { type } = formulaReferenceMoveParam;
+	if (formulaReferenceSheetList.includes(type) || type === 18 && formulaReferenceMoveParam.range == null) return getFormulaReferenceSheet(oldFormulaData, newFormulaData);
+	else return getFormulaReferenceRange(oldFormulaData, newFormulaData, formulaReferenceMoveParam);
+}
+function getFormulaReferenceSheet(oldFormulaData, newFormulaData) {
+	const undos = [];
+	const redos = [];
+	Object.keys(newFormulaData).forEach((unitId) => {
+		const newSheetData = newFormulaData[unitId];
+		const oldSheetData = oldFormulaData[unitId];
+		if (newSheetData == null) return true;
+		if (oldSheetData == null) return true;
+		Object.keys(newSheetData).forEach((subUnitId) => {
+			const newSheetFormula = new ObjectMatrix(newSheetData[subUnitId] || {});
+			const oldSheetFormula = new ObjectMatrix(oldSheetData[subUnitId] || {});
+			const redoFormulaMatrix = new ObjectMatrix();
+			const undoFormulaMatrix = new ObjectMatrix();
+			newSheetFormula.forValue((r, c, cell) => {
+				if (cell == null) return true;
+				const newValue = formulaDataItemToCellData(cell);
+				if (newValue === null) return;
+				redoFormulaMatrix.setValue(r, c, newValue);
+				undoFormulaMatrix.setValue(r, c, oldSheetFormula.getValue(r, c));
+			});
+			if (redoFormulaMatrix.getSizeOf() === 0) return;
+			const redoSetRangeValuesMutationParams = {
+				subUnitId,
+				unitId,
+				cellValue: redoFormulaMatrix.getMatrix()
+			};
+			const redoMutation = {
+				id: SetRangeValuesMutation.id,
+				params: redoSetRangeValuesMutationParams
+			};
+			redos.push(redoMutation);
+			const undoSetRangeValuesMutationParams = {
+				subUnitId,
+				unitId,
+				cellValue: undoFormulaMatrix.getMatrix()
+			};
+			const undoMutation = {
+				id: SetRangeValuesMutation.id,
+				params: undoSetRangeValuesMutationParams
+			};
+			undos.push(undoMutation);
+		});
+	});
+	return {
+		undos,
+		redos
+	};
+}
+function getFormulaReferenceRange(oldFormulaData, newFormulaData, formulaReferenceMoveParam) {
+	const { redoFormulaData, undoFormulaData } = refRangeFormula(oldFormulaData, newFormulaData, formulaReferenceMoveParam);
+	const redos = [];
+	const undos = [];
+	Object.keys(redoFormulaData).forEach((unitId) => {
+		Object.keys(redoFormulaData[unitId]).forEach((subUnitId) => {
+			if (Object.keys(redoFormulaData[unitId][subUnitId]).length !== 0) {
+				const redoSetRangeValuesMutationParams = {
+					subUnitId,
+					unitId,
+					cellValue: redoFormulaData[unitId][subUnitId]
+				};
+				const redoMutation = {
+					id: SetRangeValuesMutation.id,
+					params: redoSetRangeValuesMutationParams
+				};
+				redos.push(redoMutation);
+			}
+		});
+	});
+	Object.keys(undoFormulaData).forEach((unitId) => {
+		Object.keys(undoFormulaData[unitId]).forEach((subUnitId) => {
+			if (Object.keys(undoFormulaData[unitId][subUnitId]).length !== 0) {
+				const undoSetRangeValuesMutationParams = {
+					subUnitId,
+					unitId,
+					cellValue: undoFormulaData[unitId][subUnitId]
+				};
+				const undoMutation = {
+					id: SetRangeValuesMutation.id,
+					params: undoSetRangeValuesMutationParams
+				};
+				undos.push(undoMutation);
+			}
+		});
+	});
+	return {
+		undos,
+		redos
+	};
+}
+/**
+* For different Command operations, it may be necessary to perform traversal in reverse or in forward order, so first determine the type of Command and then perform traversal.
+* @param oldFormulaData
+* @param newFormulaData
+* @param formulaReferenceMoveParam
+* @returns
+*/
+function refRangeFormula(oldFormulaData, newFormulaData, formulaReferenceMoveParam) {
+	const redoFormulaData = {};
+	const undoFormulaData = {};
+	const { unitId: fromUnitId, sheetId: fromSheetId } = formulaReferenceMoveParam;
+	const targetUnitId = formulaReferenceMoveParam.targetUnitId ?? fromUnitId;
+	const targetSheetId = formulaReferenceMoveParam.targetSheetId ?? fromSheetId;
+	const isCrossSheet = fromUnitId !== targetUnitId || fromSheetId !== targetSheetId;
+	(/* @__PURE__ */ new Set([...Object.keys(oldFormulaData), ...Object.keys(newFormulaData)])).forEach((unitId) => {
+		if (checkFormulaDataNull(oldFormulaData, unitId, fromSheetId)) return;
+		(/* @__PURE__ */ new Set([...Object.keys(oldFormulaData[unitId] || {}), ...Object.keys(newFormulaData[unitId] || {})])).forEach((currentSheetId) => {
+			var _oldFormulaData$unitI, _newFormulaData$unitI;
+			const currentOldFormulaData = (_oldFormulaData$unitI = oldFormulaData[unitId]) === null || _oldFormulaData$unitI === void 0 ? void 0 : _oldFormulaData$unitI[currentSheetId];
+			const currentNewFormulaData = (_newFormulaData$unitI = newFormulaData[unitId]) === null || _newFormulaData$unitI === void 0 ? void 0 : _newFormulaData$unitI[currentSheetId];
+			const oldFormulaMatrix = new ObjectMatrix(currentOldFormulaData || {});
+			const newFormulaMatrix = new ObjectMatrix(currentNewFormulaData || {});
+			let rangeList = [];
+			if (isCrossSheet || unitId !== fromUnitId || currentSheetId !== fromSheetId) rangeList = processFormulaRange(newFormulaMatrix);
+			else rangeList = processFormulaChanges(oldFormulaMatrix, newFormulaMatrix, formulaReferenceMoveParam);
+			const sheetRedoFormulaData = getRedoFormulaData(rangeList, oldFormulaMatrix, newFormulaMatrix);
+			const sheetUndoFormulaData = getUndoFormulaData(rangeList, oldFormulaMatrix);
+			if (!redoFormulaData[unitId]) redoFormulaData[unitId] = {};
+			if (!undoFormulaData[unitId]) undoFormulaData[unitId] = {};
+			redoFormulaData[unitId][currentSheetId] = {
+				...redoFormulaData[unitId][currentSheetId],
+				...sheetRedoFormulaData
+			};
+			undoFormulaData[unitId][currentSheetId] = {
+				...undoFormulaData[unitId][currentSheetId],
+				...sheetUndoFormulaData
+			};
+		});
+	});
+	return {
+		redoFormulaData,
+		undoFormulaData
+	};
+}
+function processFormulaChanges(oldFormulaMatrix, newFormulaMatrix, formulaReferenceMoveParam) {
+	const { type, from, to, range } = formulaReferenceMoveParam;
+	const rangeList = [];
+	oldFormulaMatrix.forValue((row, column, cell) => {
+		if (cell == null || !isFormulaDataItem(cell)) return true;
+		const oldCell = cellToRange(row, column);
+		let newCell = null;
+		let isReverse = false;
+		if ([
+			0,
+			1,
+			2
+		].includes(type)) newCell = handleMove(type, from, to, oldCell);
+		else if (range !== void 0 && range !== null) {
+			const result = handleInsertDelete(oldCell, formulaReferenceMoveParam);
+			newCell = result.newCell;
+			isReverse = result.isReverse;
+		}
+		if (Tools.diffValue(oldCell, newCell) && !newFormulaMatrix.getValue(row, column)) return true;
+		isReverse ? rangeList.unshift({
+			oldCell,
+			newCell
+		}) : rangeList.push({
+			oldCell,
+			newCell
+		});
+	});
+	return rangeList;
+}
+function processFormulaRange(newFormulaMatrix) {
+	const rangeList = [];
+	newFormulaMatrix.forValue((row, column, cell) => {
+		if (cell == null || !isFormulaDataItem(cell)) return true;
+		const newCell = cellToRange(row, column);
+		rangeList.push({
+			oldCell: newCell,
+			newCell
+		});
+	});
+	return rangeList;
+}
+function handleMove(type, from, to, oldCell) {
+	if (from == null || to == null) return null;
+	switch (type) {
+		case 0: return handleRefMoveRange$1(from, to, oldCell);
+		case 1: return handleRefMoveRows$1(from, to, oldCell);
+		case 2: return handleRefMoveCols$1(from, to, oldCell);
+		default: return null;
+	}
+}
+function handleInsertDelete(oldCell, formulaReferenceMoveParam) {
+	const { type, rangeFilteredRows } = formulaReferenceMoveParam;
+	const range = formulaReferenceMoveParam.range;
+	let newCell = null;
+	let isReverse = false;
+	switch (type) {
+		case 3:
+			newCell = handleRefInsertRow$1(range, oldCell);
+			isReverse = true;
+			break;
+		case 4:
+			newCell = handleRefInsertCol$1(range, oldCell);
+			isReverse = true;
+			break;
+		case 5:
+			newCell = handleRefRemoveRow$1(range, oldCell, rangeFilteredRows);
+			break;
+		case 6:
+		case 18:
+			newCell = handleRefRemoveCol$1(range, oldCell);
+			break;
+		case 7:
+			newCell = handleRefDeleteMoveLeft(range, oldCell);
+			break;
+		case 8:
+			newCell = handleRefDeleteMoveUp(range, oldCell);
+			break;
+		case 9:
+			newCell = handleRefInsertMoveDown(range, oldCell);
+			isReverse = true;
+			break;
+		case 10:
+			newCell = handleRefInsertMoveRight(range, oldCell);
+			isReverse = true;
+			break;
+		default: break;
+	}
+	return {
+		newCell,
+		isReverse
+	};
+}
+function handleRefMoveRange$1(from, to, oldCell) {
+	return runRefRangeMutations(handleMoveRange({
+		id: EffectRefRangId.MoveRangeCommandId,
+		params: {
+			toRange: to,
+			fromRange: from
+		}
+	}, oldCell), oldCell);
+}
+function handleRefMoveRows$1(from, to, oldCell) {
+	return runRefRangeMutations(handleMoveRows({
+		id: EffectRefRangId.MoveRowsCommandId,
+		params: {
+			toRange: to,
+			fromRange: from
+		}
+	}, oldCell), oldCell);
+}
+function handleRefMoveCols$1(from, to, oldCell) {
+	return runRefRangeMutations(handleMoveCols({
+		id: EffectRefRangId.MoveColsCommandId,
+		params: {
+			toRange: to,
+			fromRange: from
+		}
+	}, oldCell), oldCell);
+}
+function handleRefInsertRow$1(range, oldCell) {
+	return runRefRangeMutations(handleInsertRow({
+		id: EffectRefRangId.InsertRowCommandId,
+		params: {
+			range,
+			unitId: "",
+			subUnitId: "",
+			direction: Direction.DOWN
+		}
+	}, oldCell), oldCell);
+}
+function handleRefInsertCol$1(range, oldCell) {
+	return runRefRangeMutations(handleInsertCol({
+		id: EffectRefRangId.InsertColCommandId,
+		params: {
+			range,
+			unitId: "",
+			subUnitId: "",
+			direction: Direction.RIGHT
+		}
+	}, oldCell), oldCell);
+}
+function handleRefRemoveRow$1(range, oldCell, rangeFilteredRows) {
+	return runRefRangeMutations(handleIRemoveRow({
+		id: EffectRefRangId.RemoveRowCommandId,
+		params: { range }
+	}, oldCell, rangeFilteredRows), oldCell);
+}
+function handleRefRemoveCol$1(range, oldCell) {
+	return runRefRangeMutations(handleIRemoveCol({
+		id: EffectRefRangId.RemoveColCommandId,
+		params: { range }
+	}, oldCell), oldCell);
+}
+function handleRefDeleteMoveLeft(range, oldCell) {
+	return runRefRangeMutations(handleDeleteRangeMoveLeft({
+		id: EffectRefRangId.DeleteRangeMoveLeftCommandId,
+		params: { range }
+	}, oldCell), oldCell);
+}
+function handleRefDeleteMoveUp(range, oldCell) {
+	return runRefRangeMutations(handleDeleteRangeMoveUp({
+		id: EffectRefRangId.DeleteRangeMoveUpCommandId,
+		params: { range }
+	}, oldCell), oldCell);
+}
+function handleRefInsertMoveDown(range, oldCell) {
+	return runRefRangeMutations(handleInsertRangeMoveDown({
+		id: EffectRefRangId.InsertRangeMoveDownCommandId,
+		params: { range }
+	}, oldCell), oldCell);
+}
+function handleRefInsertMoveRight(range, oldCell) {
+	return runRefRangeMutations(handleInsertRangeMoveRight({
+		id: EffectRefRangId.InsertRangeMoveRightCommandId,
+		params: { range }
+	}, oldCell), oldCell);
+}
+/**
+* Delete the old value at the old position on the match, and add the new value at the new position (the new value first checks whether the old position has offset content, if so, use the new offset content, if not, take the old value)
+* @param rangeList
+* @param oldFormulaData
+* @param newFormulaData
+*/
+function getRedoFormulaData(rangeList, oldFormulaMatrix, newFormulaMatrix) {
+	const redoFormulaData = new ObjectMatrix({});
+	for (let i = 0; i < rangeList.length; i++) {
+		var _redoFormulaData$getV, _redoFormulaData$getV2;
+		const { oldCell, newCell } = rangeList[i];
+		if (!(((_redoFormulaData$getV = redoFormulaData.getValue(oldCell.startRow, oldCell.startColumn)) === null || _redoFormulaData$getV === void 0 ? void 0 : _redoFormulaData$getV.f) || ((_redoFormulaData$getV2 = redoFormulaData.getValue(oldCell.startRow, oldCell.startColumn)) === null || _redoFormulaData$getV2 === void 0 ? void 0 : _redoFormulaData$getV2.si))) redoFormulaData.setValue(oldCell.startRow, oldCell.startColumn, {
+			f: null,
+			si: null
+		});
+		if (newCell) {
+			const newValue = formulaDataItemToCellData(newFormulaMatrix.getValue(oldCell.startRow, oldCell.startColumn) ?? oldFormulaMatrix.getValue(oldCell.startRow, oldCell.startColumn));
+			redoFormulaData.setValue(newCell.startRow, newCell.startColumn, newValue);
+		}
+	}
+	return redoFormulaData.getMatrix();
+}
+/**
+* The old position on the match saves the old value, and the new position delete value（for formulaData）
+* @param rangeList
+* @param oldFormulaData
+* @param newFormulaData
+*/
+function getUndoFormulaData(rangeList, oldFormulaMatrix) {
+	const undoFormulaData = new ObjectMatrix({});
+	for (let i = rangeList.length - 1; i >= 0; i--) {
+		const { oldCell, newCell } = rangeList[i];
+		const oldCellOldValue = formulaDataItemToCellData(oldFormulaMatrix.getValue(oldCell.startRow, oldCell.startColumn));
+		undoFormulaData.setValue(oldCell.startRow, oldCell.startColumn, oldCellOldValue);
+		if (newCell) {
+			const newCellOldValue = formulaDataItemToCellData(oldFormulaMatrix.getValue(newCell.startRow, newCell.startColumn));
+			undoFormulaData.setValue(newCell.startRow, newCell.startColumn, newCellOldValue ?? {
+				f: null,
+				si: null
+			});
+		}
+	}
+	return undoFormulaData.getMatrix();
+}
+/**
+* Transfer the formulaDataItem to the cellData
+* ┌────────────────────────────────┬─────────────────┐
+* │        IFormulaDataItem        │     ICellData   │
+* ├──────────────────┬─────┬───┬───┼───────────┬─────┤
+* │ f                │ si  │ x │ y │ f         │ si  │
+* ├──────────────────┼─────┼───┼───┼───────────┼─────┤
+* │ =SUM(1)          │     │   │   │ =SUM(1)   │     │
+* │                  │ id1 │   │   │           │ id1 │
+* │ =SUM(1)          │ id1 │   │   │ =SUM(1)   │ id1 │
+* │ =SUM(1)          │ id1 │ 0 │ 0 │ =SUM(1)   │ id1 │
+* │ =SUM(1)          │ id1 │ 0 │ 1 │           │ id1 │
+* └──────────────────┴─────┴───┴───┴───────────┴─────┘
+*/
+function formulaDataItemToCellData(formulaDataItem) {
+	if (formulaDataItem === void 0) return;
+	if (formulaDataItem === null) return {
+		f: null,
+		si: null
+	};
+	const { f, si, x = 0, y = 0 } = formulaDataItem;
+	const checkFormulaString = isFormulaString(f);
+	const checkFormulaId = isFormulaId(si);
+	if (!checkFormulaString && !checkFormulaId) return {
+		f: null,
+		si: null
+	};
+	const cellData = {};
+	if (checkFormulaId) cellData.si = si;
+	if (checkFormulaString && x === 0 && y === 0) cellData.f = f;
+	if (cellData.f === void 0) cellData.f = null;
+	if (cellData.si === void 0) cellData.si = null;
+	return cellData;
+}
+/**
+* Convert formulaData to cellData
+* @param formulaData
+* @returns
+*/
+function formulaDataToCellData(formulaData, changedCellValue) {
+	const cellData = new ObjectMatrix({});
+	new ObjectMatrix(formulaData).forValue((r, c, formulaDataItem) => {
+		var _changedCellValue$r;
+		const cellDataItem = formulaDataItemToCellData(formulaDataItem);
+		if (cellDataItem === void 0) return;
+		/**
+		* If the cell value has been changed and contains a formula, clear the current cell value and type to avoid the formula calculation could not be recalculated after it was interrupted in certain situations.
+		*/
+		if (changedCellValue && ((_changedCellValue$r = changedCellValue[r]) === null || _changedCellValue$r === void 0 ? void 0 : _changedCellValue$r[c]) && ((cellDataItem === null || cellDataItem === void 0 ? void 0 : cellDataItem.f) || (cellDataItem === null || cellDataItem === void 0 ? void 0 : cellDataItem.si))) {
+			cellDataItem.v = null;
+			cellDataItem.t = null;
+		}
+		cellData.setValue(r, c, cellDataItem);
+	});
+	return cellData.getMatrix();
+}
+function isFormulaDataItem(cell) {
+	const formulaString = (cell === null || cell === void 0 ? void 0 : cell.f) || "";
+	const formulaId = (cell === null || cell === void 0 ? void 0 : cell.si) || "";
+	const checkFormulaString = isFormulaString(formulaString);
+	const checkFormulaId = isFormulaId(formulaId);
+	if (checkFormulaString || checkFormulaId) return true;
+	return false;
+}
+function checkIsSameUnitAndSheet(userUnitId, userSheetId, currentFormulaUnitId, currentFormulaSheetId, sequenceRangeUnitId, sequenceRangeSheetId) {
+	if ((sequenceRangeUnitId == null || sequenceRangeUnitId.length === 0) && (sequenceRangeSheetId == null || sequenceRangeSheetId.length === 0)) {
+		if (userUnitId === currentFormulaUnitId && userSheetId === currentFormulaSheetId) return true;
+	} else if ((userUnitId === sequenceRangeUnitId || sequenceRangeUnitId == null || sequenceRangeUnitId.length === 0) && userSheetId === sequenceRangeSheetId) return true;
+	return false;
+}
+function updateRefOffset(sequenceNodes, refChangeIds, refOffsetX = 0, refOffsetY = 0) {
+	const newSequenceNodes = [];
+	for (let i = 0, len = sequenceNodes.length; i < len; i++) {
+		const node = sequenceNodes[i];
+		if (typeof node === "string" || node.nodeType !== sequenceNodeType.REFERENCE || refChangeIds.includes(i)) {
+			newSequenceNodes.push(node);
+			continue;
+		}
+		const { token } = node;
+		const { range, sheetName, unitId: sequenceUnitId } = deserializeRangeWithSheetWithCache(token);
+		const newRange = Rectangle.moveOffset(range, refOffsetX, refOffsetY);
+		newSequenceNodes.push({
+			...node,
+			token: serializeRangeToRefString({
+				range: newRange,
+				unitId: sequenceUnitId,
+				sheetName
+			})
+		});
+	}
+	return newSequenceNodes;
+}
+
+//#endregion
+//#region src/controllers/utils/ref-range-move.ts
+function getNewRangeByMoveParam(unitRangeWidthOffset, formulaReferenceMoveParam, currentFormulaUnitId, currentFormulaSheetId, options = {}) {
+	const { type, unitId: userUnitId, sheetId: userSheetId, targetUnitId, targetSheetId, targetSheetName, range, from, to, rangeFilteredRows } = formulaReferenceMoveParam;
+	const { range: unitRange, sheetId: sequenceRangeSheetId, unitId: sequenceRangeUnitId, sheetName: sequenceRangeSheetName, refOffsetX, refOffsetY } = unitRangeWidthOffset;
+	const { preserveSheetQualifier = false, inCrossSheetCutRange = false } = options;
+	if (!checkIsSameUnitAndSheet(userUnitId, userSheetId, currentFormulaUnitId, currentFormulaSheetId, sequenceRangeUnitId, sequenceRangeSheetId)) return;
+	const sequenceRange = Rectangle.moveOffset(unitRange, refOffsetX, refOffsetY);
+	let newRange = null;
+	if (type === 0) {
+		if (from == null || to == null) return;
+		const moveEdge = checkMoveEdge(sequenceRange, from);
+		const remainRange = getIntersectRange(sequenceRange, from);
+		if (remainRange == null || moveEdge !== 4) return;
+		const result = runRefRangeMutations(handleMoveRange({
+			id: EffectRefRangId.MoveRangeCommandId,
+			params: {
+				toRange: to,
+				fromRange: from
+			}
+		}, remainRange), remainRange);
+		if (result == null) return ErrorType.REF;
+		newRange = getMoveNewRange(moveEdge, result, from, to, sequenceRange, remainRange);
+	} else if (type === 1) {
+		if (from == null || to == null) return;
+		const moveEdge = checkMoveEdge(sequenceRange, from);
+		let remainRange = getIntersectRange(sequenceRange, from);
+		if (remainRange == null && (from.endRow < sequenceRange.startRow && to.endRow <= sequenceRange.startRow || from.startRow > sequenceRange.endRow && to.startRow > sequenceRange.endRow)) return;
+		if (remainRange == null) remainRange = {
+			startRow: sequenceRange.startRow,
+			endRow: sequenceRange.endRow,
+			startColumn: sequenceRange.startColumn,
+			endColumn: sequenceRange.endColumn,
+			rangeType: RANGE_TYPE.NORMAL
+		};
+		const result = runRefRangeMutations(handleMoveRows({
+			id: EffectRefRangId.MoveRowsCommandId,
+			params: {
+				toRange: to,
+				fromRange: from
+			}
+		}, remainRange), remainRange);
+		if (result == null) return ErrorType.REF;
+		newRange = getMoveNewRange(moveEdge, result, from, to, sequenceRange, remainRange);
+	} else if (type === 2) {
+		if (from == null || to == null) return;
+		const moveEdge = checkMoveEdge(sequenceRange, from);
+		let remainRange = getIntersectRange(sequenceRange, from);
+		if (remainRange == null && (from.endColumn < sequenceRange.startColumn && to.endColumn <= sequenceRange.startColumn || from.startColumn > sequenceRange.endColumn && to.startColumn > sequenceRange.endColumn)) return;
+		if (remainRange == null) remainRange = {
+			startRow: sequenceRange.startRow,
+			endRow: sequenceRange.endRow,
+			startColumn: sequenceRange.startColumn,
+			endColumn: sequenceRange.endColumn,
+			rangeType: RANGE_TYPE.NORMAL
+		};
+		const result = runRefRangeMutations(handleMoveCols({
+			id: EffectRefRangId.MoveColsCommandId,
+			params: {
+				toRange: to,
+				fromRange: from
+			}
+		}, remainRange), remainRange);
+		if (result == null) return ErrorType.REF;
+		newRange = getMoveNewRange(moveEdge, result, from, to, sequenceRange, remainRange);
+	}
+	if (range != null) {
+		if (type === 3) {
+			const result = runRefRangeMutations(handleInsertRow({
+				id: EffectRefRangId.InsertRowCommandId,
+				params: {
+					range,
+					unitId: "",
+					subUnitId: "",
+					direction: Direction.DOWN
+				}
+			}, sequenceRange), sequenceRange);
+			if (result == null) return;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		} else if (type === 4) {
+			const result = runRefRangeMutations(handleInsertCol({
+				id: EffectRefRangId.InsertColCommandId,
+				params: {
+					range,
+					unitId: "",
+					subUnitId: "",
+					direction: Direction.RIGHT
+				}
+			}, sequenceRange), sequenceRange);
+			if (result == null) return;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		} else if (type === 5) {
+			const result = runRefRangeMutations(handleIRemoveRow({
+				id: EffectRefRangId.RemoveRowCommandId,
+				params: { range }
+			}, sequenceRange, rangeFilteredRows), sequenceRange);
+			if (result == null) return ErrorType.REF;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		} else if (type === 6) {
+			const result = runRefRangeMutations(handleIRemoveCol({
+				id: EffectRefRangId.RemoveColCommandId,
+				params: { range }
+			}, sequenceRange), sequenceRange);
+			if (result == null) return ErrorType.REF;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		} else if (type === 7) {
+			const result = runRefRangeMutations(handleDeleteRangeMoveLeft({
+				id: EffectRefRangId.DeleteRangeMoveLeftCommandId,
+				params: { range }
+			}, sequenceRange), sequenceRange);
+			if (result == null) return ErrorType.REF;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		} else if (type === 8) {
+			const result = runRefRangeMutations(handleDeleteRangeMoveUp({
+				id: EffectRefRangId.DeleteRangeMoveUpCommandId,
+				params: { range }
+			}, sequenceRange), sequenceRange);
+			if (result == null) return ErrorType.REF;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		} else if (type === 9) {
+			const result = runRefRangeMutations(handleInsertRangeMoveDown({
+				id: EffectRefRangId.InsertRangeMoveDownCommandId,
+				params: { range }
+			}, sequenceRange), sequenceRange);
+			if (result == null) return;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		} else if (type === 10) {
+			const result = runRefRangeMutations(handleInsertRangeMoveRight({
+				id: EffectRefRangId.InsertRangeMoveRightCommandId,
+				params: { range }
+			}, sequenceRange), sequenceRange);
+			if (result == null) return;
+			newRange = {
+				...sequenceRange,
+				...result
+			};
+		}
+	}
+	if (newRange == null) return;
+	const shouldRewriteSheet = type === 0 && !!targetSheetId && targetSheetId !== userSheetId && !inCrossSheetCutRange;
+	const rewrittenSheetId = shouldRewriteSheet ? targetSheetId : sequenceRangeSheetId;
+	const rewrittenSheetName = shouldRewriteSheet ? targetSheetName || sequenceRangeSheetName : sequenceRangeSheetName;
+	const rewrittenUnitId = shouldRewriteSheet ? targetUnitId || sequenceRangeUnitId : sequenceRangeUnitId;
+	const isCurrentFormulaWorkbook = rewrittenUnitId == null || rewrittenUnitId.length === 0 || rewrittenUnitId === currentFormulaUnitId;
+	return serializeRangeToRefString({
+		range: newRange,
+		sheetName: preserveSheetQualifier || !(isCurrentFormulaWorkbook && rewrittenSheetId === currentFormulaSheetId) ? rewrittenSheetName : "",
+		unitId: isCurrentFormulaWorkbook ? "" : rewrittenUnitId
+	});
+}
+/**
+*  Calculate the new ref information for the moving selection.
+* @param moveEdge  the 'from' range lie on the edge of the original range, or does it completely cover the original range
+* @param result The original range is divided by 'from' and moved to a new position range.
+* @param from The initial range of the moving selection.
+* @param to The result range after moving the initial range.
+* @param origin The original target range.
+* @param remain "The range subtracted from the initial range by 'from'.
+* @returns
+*/
+function getMoveNewRange(moveEdge, result, from, to, origin, remain) {
+	const { startRow, endRow, startColumn, endColumn, rangeType } = getStartEndValue(result);
+	const { startRow: fromStartRow, startColumn: fromStartColumn, endRow: fromEndRow, endColumn: fromEndColumn, rangeType: fromRangeType = RANGE_TYPE.NORMAL } = getStartEndValue(from);
+	const { startRow: toStartRow, startColumn: toStartColumn, endRow: toEndRow, endColumn: toEndColumn } = getStartEndValue(to);
+	const { startRow: remainStartRow, endRow: remainEndRow, startColumn: remainStartColumn, endColumn: remainEndColumn } = getStartEndValue(remain);
+	const { startRow: originStartRow, endRow: originEndRow, startColumn: originStartColumn, endColumn: originEndColumn, rangeType: originRangeType = RANGE_TYPE.NORMAL } = getStartEndValue(origin);
+	const newRange = { ...origin };
+	function rowsCover() {
+		if (rangeType === RANGE_TYPE.COLUMN && originRangeType === RANGE_TYPE.COLUMN) return true;
+		return startColumn >= originStartColumn && endColumn <= originEndColumn;
+	}
+	function columnsCover() {
+		if (rangeType === RANGE_TYPE.ROW && originRangeType === RANGE_TYPE.ROW) return true;
+		return startRow >= originStartRow && endRow <= originEndRow;
+	}
+	if (moveEdge === 0) if (rowsCover()) if (startRow < originStartRow) newRange.startRow = startRow;
+	else if (startRow >= originEndRow) newRange.endRow -= fromEndRow + 1 - originStartRow;
+	else return;
+	else return;
+	else if (moveEdge === 1) if (rowsCover()) if (endRow > originEndRow) newRange.endRow = endRow;
+	else if (endRow <= originStartRow) newRange.startRow += originEndRow - fromStartRow + 1;
+	else return;
+	else return;
+	else if (moveEdge === 2) if (columnsCover()) if (startColumn < originStartColumn) newRange.startColumn = startColumn;
+	else if (startColumn >= originEndColumn) newRange.endColumn -= fromEndColumn + 1 - originStartColumn;
+	else return;
+	else return;
+	else if (moveEdge === 3) if (columnsCover()) if (endColumn > originEndColumn) newRange.endColumn = endColumn;
+	else if (endColumn <= originStartColumn) newRange.startColumn += originEndColumn - fromStartColumn + 1;
+	else return;
+	else return;
+	else if (moveEdge === 4) {
+		newRange.startRow = startRow;
+		newRange.startColumn = startColumn;
+		newRange.endRow = endRow;
+		newRange.endColumn = endColumn;
+	} else if (fromStartColumn <= originStartColumn && fromEndColumn >= originEndColumn || fromRangeType === RANGE_TYPE.ROW && originRangeType === RANGE_TYPE.ROW) {
+		if (from.endRow < originStartRow) {
+			if (toStartRow >= originStartRow) newRange.startRow -= fromEndRow - fromStartRow + 1;
+			if (toStartRow >= originEndRow) newRange.endRow -= fromEndRow - fromStartRow + 1;
+		} else if (from.startRow > originEndRow) {
+			if (toEndRow <= originEndRow) newRange.endRow += fromEndRow - fromStartRow + 1;
+			if (toEndRow <= originStartRow) newRange.startRow += fromEndRow - fromStartRow + 1;
+		} else if (from.startRow >= originStartRow && from.endRow <= originEndRow) {
+			if (toStartRow <= originStartRow) newRange.startRow += fromEndRow - fromStartRow + 1;
+			else if (toStartRow >= originEndRow) newRange.endRow -= fromEndRow - fromStartRow + 1;
+		}
+	} else if (fromStartRow <= originStartRow && fromEndRow >= originEndRow || fromRangeType === RANGE_TYPE.COLUMN && originRangeType === RANGE_TYPE.COLUMN) {
+		if (from.endColumn < originStartColumn) {
+			if (toStartColumn >= originStartColumn) newRange.startColumn -= fromEndColumn - fromStartColumn + 1;
+			if (toStartColumn >= originEndColumn) newRange.endColumn -= fromEndColumn - fromStartColumn + 1;
+		} else if (from.startColumn > originEndColumn) {
+			if (toEndColumn <= originEndColumn) newRange.endColumn += fromEndColumn - fromStartColumn + 1;
+			if (toEndColumn <= originStartColumn) newRange.startColumn += fromEndColumn - fromStartColumn + 1;
+		} else if (from.startColumn >= originStartColumn && from.endColumn <= originEndColumn) {
+			if (toStartColumn <= originStartColumn) newRange.startColumn += fromEndColumn - fromStartColumn + 1;
+			else if (toStartColumn >= originEndColumn) newRange.endColumn -= fromEndColumn - fromStartColumn + 1;
+		}
+	} else if ((toStartColumn <= remainEndColumn + 1 && toEndColumn >= originEndColumn || toStartColumn <= originStartColumn && toEndColumn >= remainStartColumn - 1) && toStartRow <= originStartRow && toEndRow >= originEndRow) {
+		newRange.startRow = startRow;
+		newRange.startColumn = startColumn;
+		newRange.endRow = endRow;
+		newRange.endColumn = endColumn;
+	} else if ((toStartRow <= remainEndRow + 1 && toEndRow >= originEndRow || toStartRow <= originStartRow && toEndRow >= remainStartRow - 1) && toStartColumn <= originStartColumn && toEndColumn >= originEndColumn) {
+		newRange.startRow = startRow;
+		newRange.startColumn = startColumn;
+		newRange.endRow = endRow;
+		newRange.endColumn = endColumn;
+	} else {
+		newRange.startRow = startRow;
+		newRange.startColumn = startColumn;
+		newRange.endRow = endRow;
+		newRange.endColumn = endColumn;
+	}
+	return newRange;
+}
+/**
+* Determine the range of the moving selection,
+* and check if it is at the edge of the reference range of the formula.
+* @param originRange
+* @param fromRange
+*/
+function checkMoveEdge(originRange, fromRange) {
+	const startRow = getStartValue(originRange.startRow);
+	const endRow = getEndValue(originRange.endRow);
+	const startColumn = getStartValue(originRange.startColumn);
+	const endColumn = getEndValue(originRange.endColumn);
+	const fromStartRow = getStartValue(fromRange.startRow);
+	const fromEndRow = getEndValue(fromRange.endRow);
+	const fromStartColumn = getStartValue(fromRange.startColumn);
+	const fromEndColumn = getEndValue(fromRange.endColumn);
+	function rowsCover() {
+		if (originRange.rangeType === RANGE_TYPE.COLUMN && fromRange.rangeType === RANGE_TYPE.COLUMN) return true;
+		return startRow >= fromStartRow && endRow <= fromEndRow;
+	}
+	function columnsCover() {
+		if (originRange.rangeType === RANGE_TYPE.ROW && fromRange.rangeType === RANGE_TYPE.ROW) return true;
+		return startColumn >= fromStartColumn && endColumn <= fromEndColumn;
+	}
+	function allCover() {
+		return originRange.rangeType === RANGE_TYPE.ALL && fromRange.rangeType === RANGE_TYPE.ALL;
+	}
+	if (rowsCover() && columnsCover() || allCover()) return 4;
+	if (columnsCover() && startRow >= fromStartRow && startRow <= fromEndRow && endRow > fromEndRow) return 0;
+	if (columnsCover() && endRow >= fromStartRow && endRow <= fromEndRow && startRow < fromStartRow) return 1;
+	if (rowsCover() && startColumn >= fromStartColumn && startColumn <= fromEndColumn && endColumn > fromEndColumn) return 2;
+	if (rowsCover() && endColumn >= fromStartColumn && endColumn <= fromEndColumn && startColumn < fromStartColumn) return 3;
+	return null;
+}
+function getStartValue(value) {
+	return isNaN(value) ? -Infinity : value;
+}
+function getEndValue(value) {
+	return isNaN(value) ? Infinity : value;
+}
+function getStartEndValue(range) {
+	const { startRow, endRow, startColumn, endColumn } = range;
+	return {
+		...range,
+		startRow: getStartValue(startRow),
+		endRow: getEndValue(endRow),
+		startColumn: getStartValue(startColumn),
+		endColumn: getEndValue(endColumn)
+	};
+}
+
+//#endregion
+//#region src/controllers/utils/ref-range-param.ts
+const SET_SHEET_TABLE_COMMAND_ID = "sheet.command.set-table-config";
+const DELETE_SHEET_TABLE_COMMAND_ID = "sheet.command.delete-table";
+const REMOVE_SHEET_TABLE_COLUMN_AT_COMMAND_ID = "sheet.command.table-remove-column-at";
+const REMOVE_SHEET_TABLE_COLUMN_COMMAND_ID = "sheet.command.table-remove-col";
+function getReferenceMoveParams(workbook, command) {
+	const { id } = command;
+	let result = null;
+	switch (id) {
+		case MoveRangeCommand.id:
+			result = handleRefMoveRange(command, workbook);
+			break;
+		case MoveRowsCommand.id:
+			result = handleRefMoveRows(command, workbook);
+			break;
+		case MoveColsCommand.id:
+			result = handleRefMoveCols(command, workbook);
+			break;
+		case InsertRowCommand.id:
+			result = handleRefInsertRow(command);
+			break;
+		case InsertColCommand.id:
+			result = handleRefInsertCol(command);
+			break;
+		case InsertRangeMoveRightCommand.id:
+			result = handleRefInsertRangeMoveRight(command, workbook);
+			break;
+		case InsertRangeMoveDownCommand.id:
+			result = handleRefInsertRangeMoveDown(command, workbook);
+			break;
+		case RemoveRowCommand.id:
+			result = handleRefRemoveRow(command, workbook);
+			break;
+		case RemoveColCommand.id:
+			result = handleRefRemoveCol(command);
+			break;
+		case DeleteRangeMoveUpCommand.id:
+			result = handleRefDeleteRangeMoveUp(command, workbook);
+			break;
+		case DeleteRangeMoveLeftCommand.id:
+			result = handleRefDeleteRangeMoveLeft(command, workbook);
+			break;
+		case SetWorksheetNameCommand.id:
+			result = handleRefSetWorksheetName(command, workbook);
+			break;
+		case SetWorkbookNameCommand.id:
+			result = handleRefSetWorkbookName(command);
+			break;
+		case RemoveSheetCommand.id:
+			result = handleRefRemoveWorksheet(command, workbook);
+			break;
+		case SetDefinedNameCommand.id:
+			result = handleRefSetDefinedName(command, workbook);
+			break;
+		case RemoveDefinedNameCommand.id:
+			result = handleRefRemoveDefinedName(command, workbook);
+			break;
+		case SET_SHEET_TABLE_COMMAND_ID:
+			result = handleRefSetSheetTableName(command, workbook);
+			break;
+		case DELETE_SHEET_TABLE_COMMAND_ID:
+			result = handleRefRemoveSheetTableName(command, workbook);
+			break;
+		case REMOVE_SHEET_TABLE_COLUMN_AT_COMMAND_ID:
+		case REMOVE_SHEET_TABLE_COLUMN_COMMAND_ID:
+			result = handleRefRemoveSheetTableColumn(command, workbook);
+			break;
+	}
+	return result;
+}
+function getCurrentSheetInfo(workbook) {
+	var _workbook$getActiveSh;
+	return {
+		unitId: workbook.getUnitId(),
+		sheetId: ((_workbook$getActiveSh = workbook.getActiveSheet()) === null || _workbook$getActiveSh === void 0 ? void 0 : _workbook$getActiveSh.getSheetId()) || ""
+	};
+}
+function handleRefMoveRange(command, workbook) {
+	var _workbook$getSheetByS, _workbook$getSheetByS2;
+	const { params } = command;
+	if (!params) return null;
+	const { fromRange, toRange, fromUnitId, fromSubUnitId, toUnitId, toSubUnitId } = params;
+	if (!fromRange || !toRange) return null;
+	const { unitId: currentUnitId, sheetId: currentSheetId } = getCurrentSheetInfo(workbook);
+	const unitId = fromUnitId || toUnitId || currentUnitId;
+	const sheetId = fromSubUnitId || currentSheetId;
+	const sheetName = (_workbook$getSheetByS = workbook.getSheetBySheetId(sheetId)) === null || _workbook$getSheetByS === void 0 ? void 0 : _workbook$getSheetByS.getName();
+	const targetSheetId = toSubUnitId || fromSubUnitId || currentSheetId;
+	const targetUnitId = toUnitId || fromUnitId || currentUnitId;
+	const targetSheetName = (_workbook$getSheetByS2 = workbook.getSheetBySheetId(targetSheetId)) === null || _workbook$getSheetByS2 === void 0 ? void 0 : _workbook$getSheetByS2.getName();
+	return {
+		type: 0,
+		from: fromRange,
+		to: toRange,
+		unitId,
+		sheetId,
+		sheetName,
+		targetUnitId,
+		targetSheetId,
+		targetSheetName
+	};
+}
+function handleRefMoveRows(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { fromRange: { startRow: fromStartRow, endRow: fromEndRow }, toRange: { startRow: toStartRow, endRow: toEndRow } } = params;
+	const unitId = workbook.getUnitId();
+	const worksheet = workbook.getActiveSheet();
+	if (!worksheet) return null;
+	const sheetId = worksheet.getSheetId();
+	const from = {
+		startRow: fromStartRow,
+		startColumn: 0,
+		endRow: fromEndRow,
+		endColumn: worksheet.getColumnCount() - 1,
+		rangeType: RANGE_TYPE.ROW
+	};
+	const to = {
+		startRow: toStartRow,
+		startColumn: 0,
+		endRow: toEndRow,
+		endColumn: worksheet.getColumnCount() - 1,
+		rangeType: RANGE_TYPE.ROW
+	};
+	return {
+		type: 1,
+		from,
+		to,
+		unitId,
+		sheetId
+	};
+}
+function handleRefMoveCols(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { fromRange: { startColumn: fromStartCol, endColumn: fromEndCol }, toRange: { startColumn: toStartCol, endColumn: toEndCol } } = params;
+	const unitId = workbook.getUnitId();
+	const worksheet = workbook.getActiveSheet();
+	if (!worksheet) return null;
+	const sheetId = worksheet.getSheetId();
+	const from = {
+		startRow: 0,
+		startColumn: fromStartCol,
+		endRow: worksheet.getRowCount() - 1,
+		endColumn: fromEndCol,
+		rangeType: RANGE_TYPE.COLUMN
+	};
+	const to = {
+		startRow: 0,
+		startColumn: toStartCol,
+		endRow: worksheet.getRowCount() - 1,
+		endColumn: toEndCol,
+		rangeType: RANGE_TYPE.COLUMN
+	};
+	return {
+		type: 2,
+		from,
+		to,
+		unitId,
+		sheetId
+	};
+}
+function handleRefInsertRow(command) {
+	const { params } = command;
+	if (!params) return null;
+	const { range, unitId, subUnitId } = params;
+	return {
+		type: 3,
+		range,
+		unitId,
+		sheetId: subUnitId
+	};
+}
+function handleRefInsertCol(command) {
+	const { params } = command;
+	if (!params) return null;
+	const { range, unitId, subUnitId } = params;
+	return {
+		type: 4,
+		range,
+		unitId,
+		sheetId: subUnitId
+	};
+}
+function handleRefInsertRangeMoveRight(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { range } = params;
+	const { unitId, sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 10,
+		range,
+		unitId,
+		sheetId
+	};
+}
+function handleRefInsertRangeMoveDown(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { range } = params;
+	const { unitId, sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 9,
+		range,
+		unitId,
+		sheetId
+	};
+}
+function handleRefRemoveRow(command, workbook) {
+	var _workbook$getSheetByS3;
+	const { params } = command;
+	if (!params) return null;
+	const { range, unitId, subUnitId: sheetId } = params;
+	return {
+		type: 5,
+		range,
+		unitId,
+		sheetId,
+		rangeFilteredRows: ((_workbook$getSheetByS3 = workbook.getSheetBySheetId(sheetId)) === null || _workbook$getSheetByS3 === void 0 ? void 0 : _workbook$getSheetByS3.getRangeFilterRows(range)) ?? []
+	};
+}
+function handleRefRemoveCol(command) {
+	const { params } = command;
+	if (!params) return null;
+	const { range, unitId, subUnitId: sheetId } = params;
+	return {
+		type: 6,
+		range,
+		unitId,
+		sheetId
+	};
+}
+function handleRefDeleteRangeMoveUp(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { range } = params;
+	const { unitId, sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 8,
+		range,
+		unitId,
+		sheetId
+	};
+}
+function handleRefDeleteRangeMoveLeft(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { range } = params;
+	const { unitId, sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 7,
+		range,
+		unitId,
+		sheetId
+	};
+}
+function handleRefSetWorksheetName(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { unitId, subUnitId, name } = params;
+	const { unitId: workbookId, sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 11,
+		unitId: unitId || workbookId,
+		sheetId: subUnitId || sheetId,
+		sheetName: name
+	};
+}
+function handleRefSetWorkbookName(command) {
+	const { params } = command;
+	if (!params) return null;
+	return {
+		type: 12,
+		unitId: params.unitId,
+		sheetId: "",
+		unitName: params.name
+	};
+}
+function handleRefRemoveWorksheet(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { unitId, subUnitId } = params;
+	const { unitId: workbookId, sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 13,
+		unitId: unitId || workbookId,
+		sheetId: subUnitId || sheetId
+	};
+}
+function handleRefSetDefinedName(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { unitId, name, id } = params;
+	const { sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 14,
+		unitId,
+		sheetId,
+		definedName: name,
+		definedNameId: id
+	};
+}
+function handleRefRemoveDefinedName(command, workbook) {
+	const { params } = command;
+	if (!params) return null;
+	const { unitId, name, id } = params;
+	const { sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 15,
+		unitId,
+		sheetId,
+		definedName: name,
+		definedNameId: id
+	};
+}
+function handleRefSetSheetTableName(command, workbook) {
+	const { params } = command;
+	if (!params || !params.name || !params.oldTableName || params.oldTableName === params.name) return null;
+	const { unitId, name: tableName, oldTableName } = params;
+	const { sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 16,
+		unitId,
+		sheetId,
+		tableName,
+		oldTableName
+	};
+}
+function handleRefRemoveSheetTableName(command, workbook) {
+	const { params } = command;
+	if (!params || !params.tableName) return null;
+	const { unitId, tableName } = params;
+	const { sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 17,
+		unitId,
+		sheetId,
+		oldTableName: tableName
+	};
+}
+function handleRefRemoveSheetTableColumn(command, workbook) {
+	var _params$removedColumn;
+	const { params } = command;
+	if (!params || !params.tableName || !((_params$removedColumn = params.removedColumnNames) === null || _params$removedColumn === void 0 ? void 0 : _params$removedColumn.length)) return null;
+	const { unitId, subUnitId, range, tableName, removedColumnNames } = params;
+	const { sheetId } = getCurrentSheetInfo(workbook);
+	return {
+		type: 18,
+		unitId,
+		sheetId: subUnitId || sheetId,
+		range,
+		oldTableName: tableName,
+		tableColumnNames: removedColumnNames
+	};
+}
+
+//#endregion
+//#region src/controllers/update-defined-name.controller.ts
+let UpdateDefinedNameController = class UpdateDefinedNameController extends Disposable {
+	constructor(_definedNamesService, _univerInstanceService, _sheetInterceptorService, _lexerTreeBuilder) {
+		super();
+		this._definedNamesService = _definedNamesService;
+		this._univerInstanceService = _univerInstanceService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._lexerTreeBuilder = _lexerTreeBuilder;
+		this._initialize();
+	}
+	_initialize() {
+		this._commandExecutedListener();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._sheetInterceptorService.interceptCommand({ getMutations: (command) => {
+			if (command.id === SetDefinedNameCommand.id || command.id === RemoveDefinedNameCommand.id) return {
+				redos: [],
+				undos: []
+			};
+			const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+			if (workbook == null) return {
+				redos: [],
+				undos: []
+			};
+			const result = getReferenceMoveParams(workbook, command);
+			if (!result) return {
+				redos: [],
+				undos: []
+			};
+			if (result.type === 12) {
+				var _this$_univerInstance;
+				result.oldUnitName = (_this$_univerInstance = this._univerInstanceService.getUnit(result.unitId, UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.name;
+			}
+			return this._getUpdateDefinedNameMutations(workbook, result);
+		} }));
+	}
+	_getUpdateDefinedNameMutations(workbook, moveParams) {
+		const { type, unitId, sheetId } = moveParams;
+		const definedNames = this._definedNamesService.getDefinedNameMap(unitId);
+		if (!definedNames) return {
+			redos: [],
+			undos: []
+		};
+		const redoMutations = [];
+		const undoMutations = [];
+		Object.values(definedNames).forEach((item) => {
+			const { formulaOrRefString } = item;
+			if (type === 12) {
+				const { oldUnitName, unitName } = moveParams;
+				if (!oldUnitName || !unitName) return true;
+				const nextFormula = refactorFormulaUnitQualifier(formulaOrRefString, oldUnitName, unitName);
+				if (nextFormula === formulaOrRefString) return true;
+				redoMutations.push({
+					id: SetDefinedNameMutation.id,
+					params: {
+						unitId,
+						...item,
+						formulaOrRefString: nextFormula
+					}
+				});
+				undoMutations.push({
+					id: SetDefinedNameMutation.id,
+					params: {
+						unitId,
+						...item
+					}
+				});
+				return true;
+			}
+			const sequenceNodes = this._lexerTreeBuilder.sequenceNodesBuilder(formulaOrRefString);
+			if (sequenceNodes == null) return true;
+			let shouldModify = false;
+			const refChangeIds = [];
+			for (let i = 0, len = sequenceNodes.length; i < len; i++) {
+				var _workbook$getSheetByS;
+				const node = sequenceNodes[i];
+				if (typeof node === "string" || node.nodeType !== sequenceNodeType.REFERENCE) continue;
+				const { token } = node;
+				const { range, sheetName, unitId: sequenceUnitId } = deserializeRangeWithSheetWithCache(token);
+				const sequenceSheetId = ((_workbook$getSheetByS = workbook.getSheetBySheetName(sheetName)) === null || _workbook$getSheetByS === void 0 ? void 0 : _workbook$getSheetByS.getSheetId()) || "";
+				const sequenceUnitRangeWidthOffset = {
+					range,
+					sheetId: sequenceSheetId,
+					unitId: sequenceUnitId,
+					sheetName,
+					refOffsetX: 0,
+					refOffsetY: 0
+				};
+				let newRefString = null;
+				if (type === 13) newRefString = this._removeSheet(item, unitId, sheetId);
+				else if (type === 11) {
+					const { sheetId: userSheetId, sheetName: newSheetName } = moveParams;
+					if (newSheetName == null) continue;
+					if (sequenceSheetId == null || sequenceSheetId.length === 0) continue;
+					if (userSheetId !== sequenceSheetId) continue;
+					newRefString = serializeRangeToRefString({
+						range,
+						sheetName: newSheetName,
+						unitId: sequenceUnitId
+					});
+				} else newRefString = getNewRangeByMoveParam(sequenceUnitRangeWidthOffset, moveParams, unitId, sheetId, { preserveSheetQualifier: true });
+				if (newRefString != null) {
+					sequenceNodes[i] = {
+						...node,
+						token: newRefString
+					};
+					shouldModify = true;
+					refChangeIds.push(i);
+				}
+			}
+			if (!shouldModify) return true;
+			const newSequenceString = generateStringWithSequence(updateRefOffset(sequenceNodes, refChangeIds));
+			const redoMutation = {
+				id: SetDefinedNameMutation.id,
+				params: {
+					unitId,
+					...item,
+					formulaOrRefString: newSequenceString
+				}
+			};
+			redoMutations.push(redoMutation);
+			const undoMutation = {
+				id: SetDefinedNameMutation.id,
+				params: {
+					unitId,
+					...item
+				}
+			};
+			undoMutations.push(undoMutation);
+		});
+		return {
+			redos: redoMutations,
+			undos: undoMutations
+		};
+	}
+	_removeSheet(item, unitId, subUnitId) {
+		var _this$_definedNamesSe;
+		const { formulaOrRefString } = item;
+		if (((_this$_definedNamesSe = this._definedNamesService.getWorksheetByRef(unitId, formulaOrRefString)) === null || _this$_definedNamesSe === void 0 ? void 0 : _this$_definedNamesSe.getSheetId()) === subUnitId) return ErrorType.REF;
+		return null;
+	}
+};
+UpdateDefinedNameController = __decorate([
+	__decorateParam(0, IDefinedNamesService),
+	__decorateParam(1, IUniverInstanceService),
+	__decorateParam(2, Inject(SheetInterceptorService)),
+	__decorateParam(3, Inject(LexerTreeBuilder))
+], UpdateDefinedNameController);
+
+//#endregion
+//#region src/controllers/update-formula.controller.ts
+let UpdateFormulaController = class UpdateFormulaController extends Disposable {
+	constructor(_univerInstanceService, _commandService, _lexerTreeBuilder, _formulaDataModel, _sheetInterceptorService, _definedNamesService, _configService, _injector) {
+		super();
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		this._lexerTreeBuilder = _lexerTreeBuilder;
+		this._formulaDataModel = _formulaDataModel;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._definedNamesService = _definedNamesService;
+		this._configService = _configService;
+		this._injector = _injector;
+		this._commandExecutedListener();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._sheetInterceptorService.interceptCommand({ getMutations: (command) => this._getUpdateFormula(command) }));
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (!command.params) return;
+			if (command.id === RemoveSheetMutation.id) {
+				const { subUnitId: sheetId, unitId } = command.params;
+				this._handleWorkbookDisposed(unitId, sheetId);
+			} else if (command.id === InsertSheetMutation.id) this._handleInsertSheetMutation(command.params);
+		}));
+		this.disposeWithMe(this._commandService.beforeCommandExecuted((command, options) => {
+			if (command.id === SetRangeValuesMutation.id) {
+				const params = command.params;
+				if (shouldSkipFormulaUpdateForSetRangeValues(params, options)) return;
+				this._handleSetRangeValuesMutation(params);
+			}
+		}));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitAdded$(UniverInstanceType.UNIVER_SHEET).subscribe((event) => this._handleWorkbookAdded(event.unit)));
+		this.disposeWithMe(this._univerInstanceService.getTypeOfUnitDisposed$(UniverInstanceType.UNIVER_SHEET).pipe(map((unit) => unit.getUnitId())).subscribe((unitId) => this._handleWorkbookDisposed(unitId)));
+	}
+	_handleSetRangeValuesMutation(params) {
+		const { subUnitId: sheetId, unitId, cellValue } = params;
+		if (cellValue == null) return;
+		const newSheetFormulaData = this._formulaDataModel.updateFormulaData(unitId, sheetId, cellValue);
+		const arrayFormulaCellDataChanged = this._formulaDataModel.updateArrayFormulaCellData(unitId, sheetId, cellValue);
+		const arrayFormulaRangeChanged = this._formulaDataModel.updateArrayFormulaRange(unitId, sheetId, cellValue);
+		if (Object.keys(newSheetFormulaData).length === 0) {
+			if (arrayFormulaCellDataChanged || arrayFormulaRangeChanged) this._commandService.executeCommand(SetArrayFormulaDataMutation.id, {
+				arrayFormulaRange: this._formulaDataModel.getArrayFormulaRange(),
+				arrayFormulaCellData: this._formulaDataModel.getArrayFormulaCellData()
+			}, {
+				onlyLocal: true,
+				remove: true
+			});
+			return;
+		}
+		const newFormulaData = { [unitId]: { [sheetId]: newSheetFormulaData } };
+		this._commandService.executeCommand(SetRangeValuesMutation.id, {
+			unitId,
+			subUnitId: sheetId,
+			cellValue: formulaDataToCellData(newSheetFormulaData, cellValue)
+		}, {
+			onlyLocal: true,
+			fromFormula: true
+		});
+		this._formulaDataModel.updateImageFormulaData(unitId, sheetId, cellValue);
+		this._commandService.executeCommand(SetFormulaDataMutation.id, { formulaData: newFormulaData }, { onlyLocal: true });
+		this._commandService.executeCommand(SetArrayFormulaDataMutation.id, {
+			arrayFormulaRange: this._formulaDataModel.getArrayFormulaRange(),
+			arrayFormulaCellData: this._formulaDataModel.getArrayFormulaCellData()
+		}, {
+			onlyLocal: true,
+			remove: true
+		});
+	}
+	_handleWorkbookDisposed(unitId, sheetId) {
+		this._formulaDataModel.clearFormulaIdMap(unitId, sheetId);
+		const newFormulaData = removeFormulaData(this._formulaDataModel.getFormulaData(), unitId, sheetId);
+		const arrayFormulaRange = this._formulaDataModel.getArrayFormulaRange();
+		const newArrayFormulaRange = removeFormulaData(arrayFormulaRange, unitId, sheetId);
+		const arrayFormulaCellData = this._formulaDataModel.getArrayFormulaCellData();
+		const newArrayFormulaCellData = removeFormulaData(arrayFormulaCellData, unitId, sheetId);
+		if (newFormulaData) this._commandService.executeCommand(SetFormulaDataMutation.id, { formulaData: newFormulaData }, { onlyLocal: true });
+		if (newArrayFormulaRange && newArrayFormulaCellData) this._commandService.executeCommand(SetArrayFormulaDataMutation.id, {
+			arrayFormulaRange,
+			arrayFormulaCellData
+		}, { onlyLocal: true });
+	}
+	_handleInsertSheetMutation(params) {
+		const { sheet, unitId } = params;
+		const formulaData = this._formulaDataModel.getFormulaData();
+		const { id: sheetId, cellData } = sheet;
+		const cellMatrix = new ObjectMatrix(cellData);
+		const newFormulaData = this._formulaDataModel.initSheetFormulaData(formulaData, unitId, sheetId, cellMatrix);
+		this._commandService.executeCommand(SetFormulaDataMutation.id, { formulaData: newFormulaData }, { onlyLocal: true });
+	}
+	_handleWorkbookAdded(unit) {
+		const formulaData = {};
+		const unitId = unit.getUnitId();
+		const newFormulaData = { [unitId]: {} };
+		unit.getSheets().forEach((worksheet) => {
+			var _currentSheetData$uni;
+			const cellMatrix = worksheet.getCellMatrix();
+			const sheetId = worksheet.getSheetId();
+			const currentSheetData = this._formulaDataModel.initSheetFormulaData(formulaData, unitId, sheetId, cellMatrix);
+			newFormulaData[unitId][sheetId] = (_currentSheetData$uni = currentSheetData[unitId]) === null || _currentSheetData$uni === void 0 ? void 0 : _currentSheetData$uni[sheetId];
+		});
+		this._commandService.executeCommand(SetFormulaDataMutation.id, { formulaData: newFormulaData }, { onlyLocal: true });
+		const config = this._configService.getConfig(PLUGIN_CONFIG_KEY_BASE);
+		const calculationMode = (config === null || config === void 0 ? void 0 : config.initialFormulaComputing) ?? 1;
+		if (calculationMode === 2) return;
+		const params = this._getDirtyDataByCalculationMode(calculationMode);
+		this._commandService.executeCommand(SetTriggerFormulaCalculationStartMutation.id, params, { onlyLocal: true });
+	}
+	_getDirtyDataByCalculationMode(calculationMode) {
+		return {
+			forceCalculation: calculationMode === 0,
+			dirtyRanges: calculationMode === 1 ? this._formulaDataModel.getFormulaDirtyRanges() : [],
+			dirtyNameMap: {},
+			dirtyDefinedNameMap: {},
+			dirtyUnitFeatureMap: {},
+			dirtyUnitOtherFormulaMap: {},
+			clearDependencyTreeCache: {}
+		};
+	}
+	_getUpdateFormula(command) {
+		const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return {
+			undos: [],
+			redos: []
+		};
+		const result = getReferenceMoveParams(workbook, command);
+		if (result) {
+			const { unitNameMap, unitSheetNameMap } = this._formulaDataModel.getCalculateData();
+			if (result.type === 12) {
+				var _unitNameMap$result$u;
+				result.oldUnitName = unitNameMap === null || unitNameMap === void 0 || (_unitNameMap$result$u = unitNameMap[result.unitId]) === null || _unitNameMap$result$u === void 0 ? void 0 : _unitNameMap$result$u.name;
+			}
+			const oldFormulaData = this._formulaDataModel.getFormulaData();
+			const { newFormulaData } = this._getFormulaReferenceMoveInfo(oldFormulaData, unitSheetNameMap, result);
+			const { undos, redos } = getFormulaReferenceMoveUndoRedo(oldFormulaData, newFormulaData, result);
+			return {
+				undos,
+				redos
+			};
+		}
+		return {
+			undos: [],
+			redos: []
+		};
+	}
+	_getFormulaReferenceMoveInfo(formulaData, unitSheetNameMap, formulaReferenceMoveParam) {
+		if (!Tools.isDefine(formulaData)) return { newFormulaData: {} };
+		const formulaDataKeys = Object.keys(formulaData);
+		if (formulaDataKeys.length === 0) return { newFormulaData: {} };
+		const newFormulaData = {};
+		const { unitId: fromUnitId, sheetId: fromSheetId, sheetName: fromSheetName, targetUnitId, targetSheetId, type, from, to } = formulaReferenceMoveParam;
+		const inCrossSheetCutRangeNewFormulas = [];
+		for (const unitId of formulaDataKeys) {
+			const sheetData = formulaData[unitId];
+			if (sheetData == null) continue;
+			const sheetDataKeys = Object.keys(sheetData);
+			if (!Tools.isDefine(newFormulaData[unitId])) newFormulaData[unitId] = {};
+			for (const sheetId of sheetDataKeys) {
+				const matrixData = new ObjectMatrix(sheetData[sheetId] || {});
+				const newFormulaDataItem = new ObjectMatrix();
+				const shouldModifySi = [];
+				matrixData.forValue((row, column, formulaDataItem) => {
+					if (!formulaDataItem) return true;
+					const { f: formulaString, x, y, si } = formulaDataItem;
+					if (type === 12) {
+						const { oldUnitName, unitName } = formulaReferenceMoveParam;
+						if (!oldUnitName || !unitName) return true;
+						const nextFormula = refactorFormulaUnitQualifier(formulaString, oldUnitName, unitName);
+						if (nextFormula !== formulaString) newFormulaDataItem.setValue(row, column, { f: nextFormula });
+						return true;
+					}
+					const sequenceNodes = this._lexerTreeBuilder.sequenceNodesBuilder(formulaString);
+					if (sequenceNodes == null) return true;
+					let shouldModify = false;
+					const refChangeIds = [];
+					const inCrossSheetCutRange = type === 0 && (targetUnitId !== fromUnitId || targetSheetId !== fromSheetId) && unitId === fromUnitId && sheetId === fromSheetId && from && from.startRow <= row && row <= from.endRow && from.startColumn <= column && column <= from.endColumn;
+					const inCrossSheetCutRangeSequenceNodes = [...sequenceNodes];
+					for (let i = 0, len = sequenceNodes.length; i < len; i++) {
+						var _unitSheetNameMap$map;
+						const node = sequenceNodes[i];
+						if (typeof node === "string") continue;
+						const { token, nodeType } = node;
+						if ((type === 14 || type === 15) && (nodeType === sequenceNodeType.DEFINED_NAME || nodeType === sequenceNodeType.FUNCTION)) {
+							const { definedNameId, definedName } = formulaReferenceMoveParam;
+							if (definedNameId === void 0 || definedName === void 0) continue;
+							const oldDefinedName = this._definedNamesService.getValueById(unitId, definedNameId);
+							if (oldDefinedName === void 0 || oldDefinedName === null) continue;
+							if (oldDefinedName.name !== token) continue;
+							sequenceNodes[i] = {
+								...node,
+								token: type === 14 ? definedName : ErrorType.REF
+							};
+							shouldModify = true;
+							refChangeIds.push(i);
+							continue;
+						} else if ((type === 16 || type === 17 || type === 18) && (nodeType === sequenceNodeType.TABLE || nodeType === sequenceNodeType.FUNCTION)) {
+							const { oldTableName, tableName, tableColumnNames } = formulaReferenceMoveParam;
+							if (oldTableName === void 0 || type === 16 && tableName === void 0) continue;
+							const { tableName: tokenTableName, columnStruct = "" } = splitTableStructuredRef(token);
+							if (tokenTableName !== oldTableName) continue;
+							if (type === 18 && !tableReferenceContainsColumn(columnStruct, tableColumnNames)) continue;
+							sequenceNodes[i] = {
+								...node,
+								token: type === 16 ? `${tableName}${columnStruct}` : ErrorType.REF
+							};
+							const nextNode = sequenceNodes[i + 1];
+							if ((type === 17 || type === 18) && typeof nextNode === "string" && nextNode.startsWith("]")) sequenceNodes[i + 1] = nextNode.slice(1);
+							shouldModify = true;
+							refChangeIds.push(i);
+							continue;
+						} else if (nodeType !== sequenceNodeType.REFERENCE) continue;
+						const { range, sheetName, unitId: sequenceUnitId } = deserializeRangeWithSheetWithCache(token);
+						const mapUnitId = sequenceUnitId == null || sequenceUnitId.length === 0 ? unitId : sequenceUnitId;
+						const sequenceSheetId = (unitSheetNameMap === null || unitSheetNameMap === void 0 || (_unitSheetNameMap$map = unitSheetNameMap[mapUnitId]) === null || _unitSheetNameMap$map === void 0 ? void 0 : _unitSheetNameMap$map[sheetName]) || "";
+						if (!checkIsSameUnitAndSheet(formulaReferenceMoveParam.unitId, formulaReferenceMoveParam.sheetId, unitId, sheetId, sequenceUnitId, sequenceSheetId)) continue;
+						const sequenceUnitRangeWidthOffset = {
+							range,
+							sheetId: sequenceSheetId,
+							unitId: sequenceUnitId,
+							sheetName,
+							refOffsetX: x || 0,
+							refOffsetY: y || 0
+						};
+						let newRefString = null;
+						if (type === 11) {
+							const { unitId: userUnitId, sheetId: userSheetId, sheetName: newSheetName } = formulaReferenceMoveParam;
+							if (newSheetName == null) continue;
+							if (sequenceSheetId == null || sequenceSheetId.length === 0) continue;
+							if (userSheetId !== sequenceSheetId) continue;
+							newRefString = serializeRangeToRefString({
+								range,
+								sheetName: newSheetName,
+								unitId: sequenceUnitId
+							});
+						} else if (type === 13) {
+							const { unitId: userUnitId, sheetId: userSheetId, sheetName: newSheetName } = formulaReferenceMoveParam;
+							if (sequenceSheetId == null || sequenceSheetId.length === 0) continue;
+							if (userSheetId !== sequenceSheetId) continue;
+							newRefString = ErrorType.REF;
+						} else if (type !== 14) newRefString = getNewRangeByMoveParam(sequenceUnitRangeWidthOffset, formulaReferenceMoveParam, unitId, sheetId, { inCrossSheetCutRange });
+						if (newRefString != null) {
+							sequenceNodes[i] = {
+								...node,
+								token: newRefString
+							};
+							shouldModify = true;
+							refChangeIds.push(i);
+							if (si && (x ?? 0) === 0 && (y ?? 0) === 0) shouldModifySi.push(si);
+						}
+						/**
+						* If the reference sequence range is not affected by the move, and the move is a cross-worksheet cut operation, it may be necessary to rewrite the sheet name in the ref string after move, to make sure the ref still works after move.
+						* For example, if a formula cell is `=SUM(A1:A5)` in Sheet1, and formula cell cut to Sheet2, the formula should be rewritten to `=SUM(Sheet1!A1:A5)`, otherwise it will become `=SUM(A1:A5)` and reference the wrong range in Sheet2.
+						*/
+						if (inCrossSheetCutRange) {
+							if (newRefString != null) inCrossSheetCutRangeSequenceNodes[i] = {
+								...node,
+								token: newRefString
+							};
+							else if ((!sequenceUnitId || sequenceUnitId === fromUnitId) && (!sequenceSheetId || sequenceSheetId === fromSheetId)) {
+								/**
+								* Only the reference range is in the from worksheet need to rewrite the sheet name, otherwise the ref string will be rewritten unnecessarily when moving between other worksheets.
+								* For example, if a formula cell is `=SUM(Sheet3!A1:A5)` in Sheet1, and formula cell cut to Sheet2, the formula should not be rewritten, otherwise it will become `=SUM(Sheet1!A1:A5)` and reference the wrong range in Sheet1, while the original ref is referencing Sheet3 and should not be affected by the move between Sheet1 and Sheet2.
+								*/
+								const sequenceRange = Rectangle.moveOffset(range, x || 0, y || 0);
+								inCrossSheetCutRangeSequenceNodes[i] = {
+									...node,
+									token: serializeRangeToRefString({
+										range: sequenceRange,
+										sheetName: fromSheetName || sheetName,
+										unitId: targetUnitId !== fromUnitId ? fromUnitId : ""
+									})
+								};
+								shouldModify = true;
+							}
+						}
+					}
+					if (!shouldModify)
+ /**
+					* If the operation is a move type, and the formula cell has si and is the same as the current shouldModifySi, unpack the si to f.
+					* Or the source formula cell is in the moved range.
+					* This is to ensure that the si formula can be recalculated correctly after the move.
+					*/
+					if (si && [
+						1,
+						2,
+						0
+					].includes(type)) {
+						if (from && from.startRow <= row && row <= from.endRow && from.startColumn <= column && column <= from.endColumn) {
+							if ((x ?? 0) === 0 && (y ?? 0) === 0) shouldModifySi.push(si);
+						} else if (!shouldModifySi.includes(si)) return true;
+					} else return true;
+					if (inCrossSheetCutRange) {
+						const newSequenceNodes = updateRefOffset(inCrossSheetCutRangeSequenceNodes, refChangeIds, x, y);
+						inCrossSheetCutRangeNewFormulas.push({
+							fromRow: row,
+							fromColumn: column,
+							formulaString: `=${generateStringWithSequence(newSequenceNodes)}`
+						});
+						return true;
+					}
+					const newSequenceNodes = updateRefOffset(sequenceNodes, refChangeIds, x, y);
+					newFormulaDataItem.setValue(row, column, { f: `=${generateStringWithSequence(newSequenceNodes)}` });
+				});
+				if (newFormulaData[unitId]) newFormulaData[unitId][sheetId] = newFormulaDataItem.clone();
+			}
+		}
+		if (inCrossSheetCutRangeNewFormulas.length > 0 && targetUnitId && targetSheetId) {
+			if (!newFormulaData[targetUnitId]) newFormulaData[targetUnitId] = {};
+			if (!newFormulaData[targetUnitId][targetSheetId]) newFormulaData[targetUnitId][targetSheetId] = {};
+			for (const newFormula of inCrossSheetCutRangeNewFormulas) {
+				const { fromRow, fromColumn, formulaString } = newFormula;
+				const targetRow = fromRow + (((to === null || to === void 0 ? void 0 : to.startRow) ?? 0) - ((from === null || from === void 0 ? void 0 : from.startRow) ?? 0));
+				const targetColumn = fromColumn + (((to === null || to === void 0 ? void 0 : to.startColumn) ?? 0) - ((from === null || from === void 0 ? void 0 : from.startColumn) ?? 0));
+				if (!newFormulaData[targetUnitId][targetSheetId][targetRow]) newFormulaData[targetUnitId][targetSheetId][targetRow] = {};
+				newFormulaData[targetUnitId][targetSheetId][targetRow][targetColumn] = { f: formulaString };
+			}
+		}
+		return { newFormulaData };
+	}
+};
+UpdateFormulaController = __decorate([
+	__decorateParam(0, IUniverInstanceService),
+	__decorateParam(1, ICommandService),
+	__decorateParam(2, Inject(LexerTreeBuilder)),
+	__decorateParam(3, Inject(FormulaDataModel)),
+	__decorateParam(4, Inject(SheetInterceptorService)),
+	__decorateParam(5, IDefinedNamesService),
+	__decorateParam(6, IConfigService),
+	__decorateParam(7, Inject(Injector))
+], UpdateFormulaController);
+/**
+* Whether to skip the formula update when the setRangeValues mutation is executed.
+* The style-only cell value does not affect the formula calculation, so it can be skipped.
+*/
+function shouldSkipFormulaUpdateForSetRangeValues(params, options) {
+	if (options && (options.onlyLocal === true || options.syncOnly === true || options.fromChangeset === true)) return true;
+	const { cellValue, trigger } = params;
+	if (trigger && [
+		SetStyleCommand.id,
+		SetBorderCommand.id,
+		ClearSelectionFormatCommand.id,
+		SetRangeCustomMetadataCommand.id
+	].includes(trigger)) return true;
+	if (!cellValue) return true;
+	return isStyleOnlyCellValue(cellValue);
+}
+function isStyleOnlyCellValue(cellValue) {
+	const matrix = new ObjectMatrix(cellValue);
+	let hasCell = false;
+	let styleOnly = true;
+	matrix.forValue((_row, _col, cell) => {
+		hasCell = true;
+		if (!cell) {
+			styleOnly = false;
+			return false;
+		}
+		const keys = Object.keys(cell);
+		if (keys.length !== 1 || keys[0] !== "s") {
+			styleOnly = false;
+			return false;
+		}
+	});
+	return hasCell && styleOnly;
+}
+function tableReferenceContainsColumn(columnStruct, columnNames) {
+	if (!(columnNames === null || columnNames === void 0 ? void 0 : columnNames.length) || columnStruct.length === 0) return false;
+	const columnNameSet = new Set(columnNames);
+	const columnMatches = (columnStruct.endsWith("]") ? columnStruct : `${columnStruct}]`).matchAll(/\[([^\]]+)\]/g);
+	for (const match of columnMatches) {
+		const columnName = match[1].replace(/^\[/, "").trim();
+		if (!columnName.startsWith("#") && columnNameSet.has(columnName)) return true;
+	}
+	return false;
+}
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-formula";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/common/plugin-name.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SHEETS_FORMULA_PLUGIN_NAME = "SHEETS_FORMULA_PLUGIN";
+
+//#endregion
+//#region src/controllers/active-dirty.controller.ts
+let ActiveDirtyController = class ActiveDirtyController extends Disposable {
+	constructor(_activeDirtyManagerService, _univerInstanceService, _formulaDataModel) {
+		super();
+		this._activeDirtyManagerService = _activeDirtyManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._formulaDataModel = _formulaDataModel;
+		this._initialize();
+	}
+	_initialize() {
+		this._initialConversion();
+	}
+	_initialConversion() {
+		this._activeDirtyManagerService.register(SetRangeValuesMutation.id, {
+			commandId: SetRangeValuesMutation.id,
+			shouldTrigger: (command, options) => {
+				const params = command.params;
+				return !(options === null || options === void 0 ? void 0 : options.onlyLocal) && params.trigger !== SetStyleCommand.id && params.trigger !== SetBorderCommand.id && params.trigger !== ClearSelectionFormatCommand.id;
+			},
+			getDirtyData: (command) => {
+				const params = command.params;
+				return { dirtyRanges: this._getSetRangeValuesMutationDirtyRange(params) };
+			}
+		});
+		this._initialMove();
+		this._initialRowAndColumn();
+		this._initialHideRow();
+		this._initialSheet();
+		this._initialDefinedName();
+	}
+	_initialMove() {
+		this._activeDirtyManagerService.register(MoveRangeMutation.id, {
+			commandId: MoveRangeMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getMoveRangeMutationDirtyRange(params),
+					clearDependencyTreeCache: { [params.unitId]: {
+						[params.to.subUnitId]: "1",
+						[params.from.subUnitId]: "1"
+					} }
+				};
+			}
+		});
+		this._activeDirtyManagerService.register(MoveRowsMutation.id, {
+			commandId: MoveRowsMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getMoveRowsMutationDirtyRange(params),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+		this._activeDirtyManagerService.register(MoveColsMutation.id, {
+			commandId: MoveColsMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getMoveRowsMutationDirtyRange(params),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+		this._activeDirtyManagerService.register(ReorderRangeMutation.id, {
+			commandId: ReorderRangeMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getReorderRangeMutationDirtyRange(params),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+	}
+	_initialRowAndColumn() {
+		this._activeDirtyManagerService.register(RemoveRowMutation.id, {
+			commandId: RemoveRowMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getRemoveRowOrColumnMutation(params, true),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+		this._activeDirtyManagerService.register(RemoveColMutation.id, {
+			commandId: RemoveColMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getRemoveRowOrColumnMutation(params, false),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+		this._activeDirtyManagerService.register(InsertColMutation.id, {
+			commandId: InsertColMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return { clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } } };
+			}
+		});
+		this._activeDirtyManagerService.register(InsertRowMutation.id, {
+			commandId: InsertRowMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return { clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } } };
+			}
+		});
+	}
+	_initialHideRow() {
+		this._activeDirtyManagerService.register(SetRowHiddenMutation.id, {
+			commandId: SetRowHiddenMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getHideRowMutation(params),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+		this._activeDirtyManagerService.register(SetRowVisibleMutation.id, {
+			commandId: SetRowVisibleMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyRanges: this._getHideRowMutation(params),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+	}
+	_initialSheet() {
+		this._activeDirtyManagerService.register(RemoveSheetMutation.id, {
+			commandId: RemoveSheetMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return {
+					dirtyNameMap: this._getRemoveSheetMutation(params),
+					clearDependencyTreeCache: { [params.unitId]: { [params.subUnitId]: "1" } }
+				};
+			}
+		});
+		this._activeDirtyManagerService.register(InsertSheetMutation.id, {
+			commandId: InsertSheetMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return { dirtyNameMap: this._getInsertSheetMutation(params) };
+			}
+		});
+	}
+	_initialDefinedName() {
+		this._activeDirtyManagerService.register(SetDefinedNameMutation.id, {
+			commandId: SetDefinedNameMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return { dirtyDefinedNameMap: this._getDefinedNameMutation(params) };
+			}
+		});
+		this._activeDirtyManagerService.register(RemoveDefinedNameMutation.id, {
+			commandId: RemoveDefinedNameMutation.id,
+			getDirtyData: (command) => {
+				const params = command.params;
+				return { dirtyDefinedNameMap: this._getDefinedNameMutation(params) };
+			}
+		});
+	}
+	_getDefinedNameMutation(definedName) {
+		if (definedName == null) return {};
+		const { unitId, name: definedNameName, formulaOrRefString } = definedName;
+		return { [unitId]: { [definedNameName]: formulaOrRefString } };
+	}
+	_getSetRangeValuesMutationDirtyRange(params) {
+		const { subUnitId: sheetId, unitId, cellValue } = params;
+		const dirtyRanges = [];
+		if (cellValue == null) return dirtyRanges;
+		dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, sheetId, cellValue));
+		dirtyRanges.push(...this._getDirtyRangesForArrayFormula(unitId, sheetId, cellValue));
+		return dirtyRanges;
+	}
+	_getMoveRangeMutationDirtyRange(params) {
+		const { unitId, from, to } = params;
+		const dirtyRanges = [];
+		dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, from.subUnitId, from.value));
+		dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, to.subUnitId, to.value));
+		dirtyRanges.push(...this._getDirtyRangesForArrayFormula(unitId, to.subUnitId, to.value));
+		return dirtyRanges;
+	}
+	_getMoveRowsMutationDirtyRange(params) {
+		const { subUnitId: sheetId, unitId, sourceRange, targetRange } = params;
+		const dirtyRanges = [];
+		const sourceMatrix = this._rangeToMatrix(sourceRange).clone();
+		const targetMatrix = this._rangeToMatrix(targetRange).clone();
+		dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, sheetId, sourceMatrix));
+		dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, sheetId, targetMatrix));
+		dirtyRanges.push(...this._getDirtyRangesForArrayFormula(unitId, sheetId, targetMatrix));
+		return dirtyRanges;
+	}
+	_getReorderRangeMutationDirtyRange(params) {
+		const { unitId, subUnitId: sheetId, range } = params;
+		const matrix = this._rangeToMatrix(range).clone();
+		const dirtyRanges = [];
+		dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, sheetId, matrix));
+		dirtyRanges.push(...this._getDirtyRangesForArrayFormula(unitId, sheetId, matrix));
+		return dirtyRanges;
+	}
+	_getRemoveRowOrColumnMutation(params, isRow = true) {
+		const { subUnitId: sheetId, unitId, range } = params;
+		const dirtyRanges = [];
+		const workbook = this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET);
+		const worksheet = workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetId(sheetId);
+		const rowCount = (worksheet === null || worksheet === void 0 ? void 0 : worksheet.getRowCount()) || 0;
+		const columnCount = (worksheet === null || worksheet === void 0 ? void 0 : worksheet.getColumnCount()) || 0;
+		let matrix = null;
+		const { startRow, endRow, startColumn, endColumn } = range;
+		if (isRow === true) matrix = this._rangeToMatrix({
+			startRow,
+			startColumn: 0,
+			endRow,
+			endColumn: columnCount - 1
+		});
+		else matrix = this._rangeToMatrix({
+			startRow: 0,
+			startColumn,
+			endRow: rowCount,
+			endColumn
+		});
+		const matrixData = matrix.clone();
+		dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, sheetId, matrixData));
+		dirtyRanges.push(...this._getDirtyRangesForArrayFormula(unitId, sheetId, matrixData));
+		return dirtyRanges;
+	}
+	_getHideRowMutation(params) {
+		const { subUnitId, unitId, ranges } = params;
+		const dirtyRanges = [];
+		ranges.forEach((range) => {
+			const matrix = this._rangeToMatrix(range).getMatrix();
+			dirtyRanges.push(...this._getDirtyRangesByCellValue(unitId, subUnitId, matrix));
+		});
+		return dirtyRanges;
+	}
+	_getRemoveSheetMutation(params) {
+		const dirtyNameMap = {};
+		const { subUnitId: sheetId, unitId, subUnitName } = params;
+		if (dirtyNameMap[unitId] == null) dirtyNameMap[unitId] = {};
+		dirtyNameMap[unitId][sheetId] = subUnitName;
+		return dirtyNameMap;
+	}
+	_getInsertSheetMutation(params) {
+		const dirtyNameMap = {};
+		const { sheet, unitId } = params;
+		if (dirtyNameMap[unitId] == null) dirtyNameMap[unitId] = {};
+		dirtyNameMap[unitId][sheet.id] = sheet.name;
+		return dirtyNameMap;
+	}
+	_rangeToMatrix(range) {
+		const matrix = new ObjectMatrix();
+		const { startRow, startColumn, endRow, endColumn } = range;
+		for (let r = startRow; r <= endRow; r++) for (let c = startColumn; c <= endColumn; c++) matrix.setValue(r, c, {});
+		return matrix;
+	}
+	_getDirtyRangesByCellValue(unitId, sheetId, cellValue) {
+		const dirtyRanges = [];
+		if (cellValue == null) return dirtyRanges;
+		new ObjectMatrix(cellValue).getDiscreteRanges().forEach((range) => {
+			dirtyRanges.push({
+				unitId,
+				sheetId,
+				range
+			});
+		});
+		return dirtyRanges;
+	}
+	/**
+	* The array formula is a range where only the top-left corner contains the formula value.
+	* All other positions, apart from the top-left corner, need to be marked as dirty.
+	*/
+	_getDirtyRangesForArrayFormula(unitId, sheetId, cellValue) {
+		var _arrayFormulaRange$un;
+		const dirtyRanges = [];
+		if (cellValue == null) return dirtyRanges;
+		const cellMatrix = new ObjectMatrix(cellValue);
+		const arrayFormulaRange = this._formulaDataModel.getArrayFormulaRange();
+		/**
+		* The array formula is a range where only the top-left corner contains the formula value.
+		* All other positions, apart from the top-left corner, need to be marked as dirty.
+		*/
+		if (arrayFormulaRange === null || arrayFormulaRange === void 0 || (_arrayFormulaRange$un = arrayFormulaRange[unitId]) === null || _arrayFormulaRange$un === void 0 ? void 0 : _arrayFormulaRange$un[sheetId]) {
+			var _arrayFormulaRange$un2;
+			const cellRangeData = new ObjectMatrix(arrayFormulaRange === null || arrayFormulaRange === void 0 || (_arrayFormulaRange$un2 = arrayFormulaRange[unitId]) === null || _arrayFormulaRange$un2 === void 0 ? void 0 : _arrayFormulaRange$un2[sheetId]);
+			cellMatrix.forValue((row, column) => {
+				cellRangeData.forValue((arrayFormulaRow, arrayFormulaColumn, arrayFormulaRange) => {
+					if (arrayFormulaRange == null) return true;
+					const { startRow, startColumn, endRow, endColumn } = arrayFormulaRange;
+					if (row >= startRow && row <= endRow && column >= startColumn && column <= endColumn) dirtyRanges.push({
+						unitId,
+						sheetId,
+						range: {
+							startRow,
+							startColumn,
+							endRow: startRow,
+							endColumn: startColumn
+						}
+					});
+				});
+			});
+		}
+		return dirtyRanges;
+	}
+};
+ActiveDirtyController = __decorate([
+	__decorateParam(0, IActiveDirtyManagerService),
+	__decorateParam(1, IUniverInstanceService),
+	__decorateParam(2, Inject(FormulaDataModel))
+], ActiveDirtyController);
+
+//#endregion
+//#region src/controllers/array-formula-cell-interceptor.controller.ts
+let ArrayFormulaCellInterceptorController = class ArrayFormulaCellInterceptorController extends Disposable {
+	constructor(_commandService, _sheetInterceptorService, _formulaDataModel) {
+		super();
+		this._commandService = _commandService;
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._formulaDataModel = _formulaDataModel;
+		this._initialize();
+	}
+	_initialize() {
+		this._commandExecutedListener();
+		this._initInterceptorCellContent();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id === SetArrayFormulaDataMutation.id) {
+				const params = command.params;
+				if (params == null) return;
+				const { arrayFormulaRange, arrayFormulaCellData } = params;
+				this._formulaDataModel.setArrayFormulaRange(arrayFormulaRange);
+				this._formulaDataModel.setArrayFormulaCellData(arrayFormulaCellData);
+			}
+		}));
+	}
+	_initInterceptorCellContent() {
+		this.disposeWithMe(this._sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
+			priority: 100,
+			effect: InterceptorEffectEnum.Value,
+			handler: (cell_, location, next) => {
+				var _arrayFormulaCellData;
+				let cell = cell_;
+				const { unitId, subUnitId, row, col } = location;
+				const arrayFormulaCellData = this._formulaDataModel.getArrayFormulaCellData();
+				const cellData = arrayFormulaCellData === null || arrayFormulaCellData === void 0 || (_arrayFormulaCellData = arrayFormulaCellData[unitId]) === null || _arrayFormulaCellData === void 0 || (_arrayFormulaCellData = _arrayFormulaCellData[subUnitId]) === null || _arrayFormulaCellData === void 0 || (_arrayFormulaCellData = _arrayFormulaCellData[row]) === null || _arrayFormulaCellData === void 0 ? void 0 : _arrayFormulaCellData[col];
+				if (cellData == null) return next(cell);
+				if (!cell || cell === location.rawData) cell = { ...location.rawData };
+				if (cellData.v == null && cellData.t == null) {
+					cell.v = 0;
+					cell.t = CellValueType.NUMBER;
+					return next(cell);
+				}
+				if ((cell === null || cell === void 0 ? void 0 : cell.t) === CellValueType.NUMBER && cell.v !== void 0 && cell.v !== null && isRealNum(cell.v)) {
+					cell.v = stripErrorMargin(Number(cell.v));
+					return next(cell);
+				}
+				cell.v = cellData.v;
+				cell.t = cellData.t;
+				return next(cell);
+			}
+		}));
+	}
+};
+ArrayFormulaCellInterceptorController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, Inject(SheetInterceptorService)),
+	__decorateParam(2, Inject(FormulaDataModel))
+], ArrayFormulaCellInterceptorController);
+
+//#endregion
+//#region src/controllers/defined-name.controller.ts
+let DefinedNameController = class DefinedNameController extends Disposable {
+	constructor(_descriptionService, _definedNamesService, _univerInstanceService, _commandService) {
+		super();
+		this._descriptionService = _descriptionService;
+		this._definedNamesService = _definedNamesService;
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		_defineProperty(this, "_preUnitId", null);
+		this._initialize();
+	}
+	_initialize() {
+		this._descriptionListener();
+		this._changeUnitListener();
+		this._changeSheetListener();
+	}
+	_descriptionListener() {
+		this.disposeWithMe(toDisposable(this._definedNamesService.update$.subscribe((event) => {
+			this._updateDescriptions(event);
+		})));
+	}
+	_changeUnitListener() {
+		this.disposeWithMe(toDisposable(this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).subscribe((workbook) => {
+			this._unRegisterDescriptions();
+			if (workbook) this._initRegisterDescriptions(workbook.getUnitId());
+		})));
+	}
+	_changeSheetListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command, options) => {
+			if (options === null || options === void 0 ? void 0 : options.fromCollab) return;
+			if (command.id === SetWorksheetActiveOperation.id) {
+				const params = command.params;
+				this._unregisterDescriptionsForNotInSheetId(params.unitId, params.subUnitId);
+				this._initRegisterDescriptions(params.unitId, params.subUnitId);
+			} else if (command.id === SetDefinedNameMutation.id) {
+				const params = command.params;
+				this._registerDescription(params);
+			} else if (command.id === RemoveDefinedNameMutation.id) {
+				const params = command.params;
+				this._unregisterDescription(params);
+			}
+		}));
+	}
+	_updateDescriptions(event) {
+		const target = getSheetCommandTarget(this._univerInstanceService);
+		if (!target) return;
+		const { unitId, subUnitId } = target;
+		const { type, unitId: updateUnitId, definedNames } = event;
+		if (updateUnitId !== unitId) return;
+		if (type === "update") {
+			const functionList = [];
+			definedNames.forEach((definedName) => {
+				const { name, comment, formulaOrRefString, localSheetId } = definedName;
+				if (localSheetId == null || localSheetId === SCOPE_WORKBOOK_VALUE_DEFINED_NAME || localSheetId === subUnitId) functionList.push({
+					functionName: name,
+					description: formulaOrRefString + (comment || ""),
+					abstract: formulaOrRefString,
+					functionType: FunctionType.DefinedName,
+					functionParameter: []
+				});
+			});
+			this._descriptionService.registerDescriptions(functionList);
+		} else if (type === "remove") {
+			const functionList = [];
+			definedNames.forEach((definedName) => {
+				functionList.push(definedName.name);
+			});
+			this._descriptionService.unregisterDescriptions(functionList);
+		}
+	}
+	_registerDescription(params) {
+		const target = getSheetCommandTarget(this._univerInstanceService, params);
+		if (!target) return;
+		const { subUnitId } = target;
+		const { name, comment, formulaOrRefString, localSheetId } = params;
+		if (this._descriptionService.hasDescription(name)) return;
+		if (localSheetId == null || localSheetId === SCOPE_WORKBOOK_VALUE_DEFINED_NAME || localSheetId === subUnitId) this._descriptionService.registerDescriptions([{
+			functionName: name,
+			description: formulaOrRefString + (comment || ""),
+			abstract: formulaOrRefString,
+			functionType: FunctionType.DefinedName,
+			functionParameter: []
+		}]);
+	}
+	_unregisterDescription(param) {
+		const { name } = param;
+		this._descriptionService.unregisterDescriptions([name]);
+	}
+	_unRegisterDescriptions() {
+		if (this._preUnitId === null) return;
+		const definedNames = this._definedNamesService.getDefinedNameMap(this._preUnitId);
+		if (!definedNames) return;
+		const functionList = [];
+		Object.values(definedNames).forEach((value) => {
+			const { name } = value;
+			functionList.push(name);
+		});
+		this._descriptionService.unregisterDescriptions(functionList);
+		this._preUnitId = null;
+	}
+	_initRegisterDescriptions(unitId, subUnitId) {
+		const target = getSheetCommandTarget(this._univerInstanceService, {
+			unitId,
+			subUnitId
+		});
+		if (!target) return;
+		const { unitId: _unitId, subUnitId: _subUnitId } = target;
+		const definedNames = this._definedNamesService.getDefinedNameMap(_unitId);
+		if (!definedNames) return;
+		const functionList = [];
+		this._preUnitId = _unitId;
+		Object.values(definedNames).forEach((value) => {
+			const { name, comment, formulaOrRefString, localSheetId } = value;
+			if (this._descriptionService.hasDescription(name)) return;
+			if (localSheetId == null || localSheetId === SCOPE_WORKBOOK_VALUE_DEFINED_NAME || localSheetId === _subUnitId) functionList.push({
+				functionName: name,
+				description: formulaOrRefString + (comment || ""),
+				abstract: formulaOrRefString,
+				functionType: FunctionType.DefinedName,
+				functionParameter: []
+			});
+		});
+		this._descriptionService.registerDescriptions(functionList);
+	}
+	_unregisterDescriptionsForNotInSheetId(unitId, subUnitId) {
+		const definedNames = this._definedNamesService.getDefinedNameMap(unitId);
+		if (!definedNames) return;
+		const functionList = [];
+		Object.values(definedNames).forEach((value) => {
+			const { name, localSheetId } = value;
+			if (localSheetId !== SCOPE_WORKBOOK_VALUE_DEFINED_NAME && localSheetId !== subUnitId) functionList.push(name);
+		});
+		this._descriptionService.unregisterDescriptions(functionList);
+	}
+};
+DefinedNameController = __decorate([
+	__decorateParam(0, IDescriptionService),
+	__decorateParam(1, IDefinedNamesService),
+	__decorateParam(2, IUniverInstanceService),
+	__decorateParam(3, ICommandService)
+], DefinedNameController);
+
+//#endregion
+//#region src/controllers/formula.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let FormulaController = class FormulaController extends Disposable {
+	constructor(_commandService) {
+		super();
+		this._commandService = _commandService;
+		this._commandService.registerCommand(InsertFunctionCommand);
+	}
+};
+FormulaController = __decorate([__decorateParam(0, ICommandService)], FormulaController);
+
+//#endregion
+//#region src/controllers/sheet-formula-calculation-result-apply.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let SheetFormulaCalculationResultApplyController = class SheetFormulaCalculationResultApplyController extends Disposable {
+	constructor(_commandService, _sessionService) {
+		super();
+		this._commandService = _commandService;
+		this._sessionService = _sessionService;
+		this.disposeWithMe(this._commandService.onCommandExecuted((command, options) => {
+			if (command.id === SetRangeValuesMutation.id && (options === null || options === void 0 ? void 0 : options.applyFormulaCalculationResult)) this._sessionService.markResultApplied(FormulaResultApplicationType.SHEET);
+		}));
+	}
+};
+SheetFormulaCalculationResultApplyController = __decorate([__decorateParam(0, ICommandService), __decorateParam(1, Inject(FormulaCalculationSessionService))], SheetFormulaCalculationResultApplyController);
+
+//#endregion
+//#region src/controllers/super-table.controller.ts
+let SuperTableController = class SuperTableController extends Disposable {
+	constructor(_descriptionService, _univerInstanceService, _commandService, _superTableService) {
+		super();
+		this._descriptionService = _descriptionService;
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		this._superTableService = _superTableService;
+		_defineProperty(this, "_preUnitId", null);
+		this._initialize();
+	}
+	_initialize() {
+		this._descriptionListener();
+		this._changeUnitListener();
+		this._changeSheetListener();
+	}
+	_descriptionListener() {
+		toDisposable(this._superTableService.update$.subscribe(() => {
+			this._registerDescriptions();
+		}));
+	}
+	_changeUnitListener() {
+		toDisposable(this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).subscribe((workbook) => {
+			this._unRegisterDescriptions();
+			if (workbook) this._registerDescriptions();
+		}));
+	}
+	_changeSheetListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command, options) => {
+			if (options === null || options === void 0 ? void 0 : options.fromCollab) return;
+			if (command.id === SetWorksheetActiveOperation.id) {
+				this._unregisterDescriptionsForNotInSheetId();
+				this._registerDescriptions();
+			} else if (command.id === SetSuperTableMutation.id) {
+				const param = command.params;
+				this._registerDescription(param);
+			} else if (command.id === RemoveSuperTableMutation.id) {
+				const param = command.params;
+				this._unregisterDescription(param);
+			}
+		}));
+	}
+	_registerDescription(param) {
+		const target = this._getUnitIdAndSheetId(param);
+		if (!target) return;
+		const { unitId } = target;
+		const { tableName, reference } = param;
+		if (!this._descriptionService.hasDescription(tableName)) {
+			var _this$_univerInstance;
+			const refString = serializeRangeWithSheet(((_this$_univerInstance = this._univerInstanceService.getUnit(unitId)) === null || _this$_univerInstance === void 0 || (_this$_univerInstance = _this$_univerInstance.getSheetBySheetId(reference.sheetId)) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getName()) || "", reference.range);
+			this._descriptionService.registerDescriptions([{
+				functionName: tableName,
+				description: refString,
+				abstract: refString,
+				functionType: FunctionType.Table,
+				functionParameter: []
+			}]);
+		}
+	}
+	_unregisterDescription(param) {
+		const { tableName } = param;
+		this._descriptionService.unregisterDescriptions([tableName]);
+	}
+	_unRegisterDescriptions() {
+		if (this._preUnitId == null) return;
+		const superTables = this._superTableService.getTableMap(this._preUnitId);
+		if (superTables == null) return;
+		const functionList = [];
+		superTables.forEach((_, tableName) => {
+			functionList.push(tableName);
+		});
+		this._descriptionService.unregisterDescriptions(functionList);
+		this._preUnitId = null;
+	}
+	_getUnitIdAndSheetId(params = {}) {
+		const { unitId, subUnitId } = params;
+		const workbook = unitId ? this._univerInstanceService.getUnit(unitId, UniverInstanceType.UNIVER_SHEET) : this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		if (!workbook) return null;
+		const worksheet = subUnitId ? workbook.getSheetBySheetId(subUnitId) : workbook.getActiveSheet(true);
+		if (!worksheet) return null;
+		return {
+			unitId: workbook.getUnitId(),
+			sheetId: worksheet.getSheetId()
+		};
+	}
+	_registerDescriptions() {
+		const target = this._getUnitIdAndSheetId();
+		if (!target) return;
+		const { unitId } = target;
+		const superTables = this._superTableService.getTableMap(unitId);
+		if (!superTables) return;
+		const functionList = [];
+		this._preUnitId = unitId;
+		superTables.forEach((table, tableName) => {
+			var _this$_univerInstance2;
+			const refString = serializeRangeWithSheet(((_this$_univerInstance2 = this._univerInstanceService.getUnit(unitId)) === null || _this$_univerInstance2 === void 0 || (_this$_univerInstance2 = _this$_univerInstance2.getSheetBySheetId(table.sheetId)) === null || _this$_univerInstance2 === void 0 ? void 0 : _this$_univerInstance2.getName()) || "", table.range);
+			if (!this._descriptionService.hasDescription(tableName)) functionList.push({
+				functionName: tableName,
+				description: refString,
+				abstract: refString,
+				functionType: FunctionType.Table,
+				functionParameter: []
+			});
+		});
+		this._descriptionService.registerDescriptions(functionList);
+	}
+	_unregisterDescriptionsForNotInSheetId() {
+		const target = this._getUnitIdAndSheetId();
+		if (!target) return;
+		const { unitId } = target;
+		const superTables = this._superTableService.getTableMap(unitId);
+		if (!superTables) return;
+		const functionList = [];
+		superTables.forEach((_, tableName) => {
+			functionList.push(tableName);
+		});
+		this._descriptionService.unregisterDescriptions(functionList);
+	}
+};
+SuperTableController = __decorate([
+	__decorateParam(0, IDescriptionService),
+	__decorateParam(1, IUniverInstanceService),
+	__decorateParam(2, ICommandService),
+	__decorateParam(3, ISuperTableService)
+], SuperTableController);
+
+//#endregion
+//#region src/services/formula-ref-range.service.ts
+function getFormulaKeyOffset(lexerTreeBuilder, formulaString, refOffsetX, refOffsetY) {
+	const sequenceNodes = lexerTreeBuilder.sequenceNodesBuilder(formulaString);
+	if (sequenceNodes == null) return formulaString;
+	const newSequenceNodes = [];
+	for (let i = 0, len = sequenceNodes.length; i < len; i++) {
+		const node = sequenceNodes[i];
+		if (typeof node === "string" || node.nodeType !== sequenceNodeType.REFERENCE) continue;
+		const { token } = node;
+		const sequenceGrid = deserializeRangeWithSheetWithCache(token);
+		const { sheetName, unitId: sequenceUnitId } = sequenceGrid;
+		let newRange = sequenceGrid.range;
+		if (newRange.startAbsoluteRefType === AbsoluteRefType.ALL && newRange.endAbsoluteRefType === AbsoluteRefType.ALL) continue;
+		else newRange = moveRangeByOffset(newRange, refOffsetX, refOffsetY);
+		newSequenceNodes.push({
+			unitId: sequenceUnitId,
+			sheetName,
+			range: newRange
+		});
+	}
+	return newSequenceNodes.map((item) => `${item.unitId}!${item.sheetName}!${item.range.startRow}!${item.range.endRow}!${item.range.startColumn}!${item.range.endColumn}`).join("|");
+}
+let FormulaRefRangeService = class FormulaRefRangeService extends Disposable {
+	constructor(_refRangeService, _lexerTreeBuilder, _univerInstanceService, _injector) {
+		super();
+		this._refRangeService = _refRangeService;
+		this._lexerTreeBuilder = _lexerTreeBuilder;
+		this._univerInstanceService = _univerInstanceService;
+		this._injector = _injector;
+	}
+	transformFormulaByEffectCommand(unitId, subUnitId, formula, params) {
+		const sequenceNodes = this._lexerTreeBuilder.sequenceNodesBuilder(formula);
+		const currentUnit = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const currentSheet = currentUnit.getActiveSheet();
+		const currentUnitId = currentUnit.getUnitId();
+		const currentSheetId = currentSheet.getSheetId();
+		const transformSequenceNodes = sequenceNodes === null || sequenceNodes === void 0 ? void 0 : sequenceNodes.map((node) => {
+			if (typeof node === "object" && node.nodeType === sequenceNodeType.REFERENCE) {
+				const { range, unitId: rangeUnitId, sheetName: rangeSheetName } = deserializeRangeWithSheetWithCache(node.token);
+				const workbook = this._univerInstanceService.getUnit(rangeUnitId || unitId);
+				const worksheet = rangeSheetName ? workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetName(rangeSheetName) : workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetId(subUnitId);
+				if (!worksheet) throw new Error("Sheet not found");
+				const realUnitId = workbook.getUnitId();
+				const realSheetId = worksheet.getSheetId();
+				if (realUnitId !== currentUnitId || realSheetId !== currentSheetId) return node;
+				const newRange = handleDefaultRangeChangeWithEffectRefCommands(range, params);
+				let newToken = "";
+				if (newRange) {
+					const finalRange = moveRangeByOffset(range, newRange.startColumn - range.startColumn, newRange.startRow - range.startRow);
+					if (rangeUnitId && rangeSheetName) newToken = serializeRangeWithSpreadsheet(rangeUnitId, rangeSheetName, finalRange);
+					else if (rangeSheetName) newToken = serializeRangeWithSheet(rangeSheetName, finalRange);
+					else newToken = serializeRange(finalRange);
+				} else newToken = ErrorType.REF;
+				return {
+					...node,
+					token: newToken
+				};
+			} else return node;
+		});
+		return transformSequenceNodes ? `=${generateStringWithSequence(transformSequenceNodes)}` : "";
+	}
+	registerFormula(unitId, subUnitId, formula, callback) {
+		const rangeMap = /* @__PURE__ */ new Map();
+		const sequenceNodes = this._lexerTreeBuilder.sequenceNodesBuilder(formula);
+		const disposableCollection = new DisposableCollection();
+		const handleChange = (params) => {
+			const currentUnit = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+			const currentSheet = currentUnit.getActiveSheet();
+			const currentUnitId = currentUnit.getUnitId();
+			const currentSheetId = currentSheet.getSheetId();
+			const transformSequenceNodes = sequenceNodes === null || sequenceNodes === void 0 ? void 0 : sequenceNodes.map((node) => {
+				if (typeof node === "object" && node.nodeType === sequenceNodeType.REFERENCE) {
+					const rangeInfo = rangeMap.get(node.token);
+					if (rangeInfo.unitId !== currentUnitId || rangeInfo.subUnitId !== currentSheetId) return node;
+					const newRange = handleDefaultRangeChangeWithEffectRefCommands(rangeInfo.range, params);
+					let newToken = "";
+					if (newRange) {
+						const offsetX = newRange.startColumn - rangeInfo.range.startColumn;
+						const offsetY = newRange.startRow - rangeInfo.range.startRow;
+						const finalRange = moveRangeByOffset(rangeInfo.range, offsetX, offsetY);
+						if (rangeInfo.unitId && rangeInfo.sheetName) newToken = serializeRangeWithSpreadsheet(rangeInfo.unitId, rangeInfo.sheetName, finalRange);
+						else if (rangeInfo.sheetName) newToken = serializeRangeWithSheet(rangeInfo.sheetName, finalRange);
+						else newToken = serializeRange(finalRange);
+					} else newToken = ErrorType.REF;
+					return {
+						...node,
+						token: newToken
+					};
+				} else return node;
+			});
+			return callback(`=${transformSequenceNodes && generateStringWithSequence(transformSequenceNodes)}`);
+		};
+		sequenceNodes === null || sequenceNodes === void 0 || sequenceNodes.forEach((node) => {
+			if (typeof node === "object" && node.nodeType === sequenceNodeType.REFERENCE) {
+				const { range, unitId: rangeUnitId, sheetName: rangeSheetName } = deserializeRangeWithSheetWithCache(node.token);
+				const workbook = this._univerInstanceService.getUnit(rangeUnitId || unitId);
+				const worksheet = rangeSheetName ? workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetName(rangeSheetName) : workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetId(subUnitId);
+				if (!worksheet) return;
+				const realUnitId = workbook.getUnitId();
+				const realSheetId = worksheet.getSheetId();
+				const item = {
+					unitId: realUnitId,
+					subUnitId: realSheetId,
+					range,
+					sheetName: rangeSheetName
+				};
+				rangeMap.set(node.token, item);
+				disposableCollection.add(this._refRangeService.registerRefRange(range, handleChange, realUnitId, realSheetId));
+			}
+		});
+		return disposableCollection;
+	}
+	_getFormulaDependcy(unitId, subUnitId, formula, ranges) {
+		const nodes = isFormulaString(formula) ? this._lexerTreeBuilder.sequenceNodesBuilder(formula) : null;
+		const dependencyRanges = [];
+		nodes === null || nodes === void 0 || nodes.forEach((node) => {
+			if (typeof node === "object" && node.nodeType === sequenceNodeType.REFERENCE) {
+				const { range, unitId: rangeUnitId, sheetName: rangeSheetName } = deserializeRangeWithSheetWithCache(node.token);
+				if (range.startAbsoluteRefType === AbsoluteRefType.ALL && range.endAbsoluteRefType === AbsoluteRefType.ALL) return;
+				const workbook = this._univerInstanceService.getUnit(rangeUnitId || unitId);
+				const worksheet = rangeSheetName ? workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetName(rangeSheetName) : workbook === null || workbook === void 0 ? void 0 : workbook.getSheetBySheetId(subUnitId);
+				if (!worksheet) return;
+				const realUnitId = workbook.getUnitId();
+				const realSheetId = worksheet.getSheetId();
+				const orginStartRow = ranges[0].startRow;
+				const orginStartColumn = ranges[0].startColumn;
+				const currentStartRow = range.startRow;
+				const currentStartColumn = range.startColumn;
+				const offsetRanges = ranges.map((range) => ({
+					startRow: range.startRow - orginStartRow + currentStartRow,
+					endRow: range.endRow - orginStartRow + currentStartRow,
+					startColumn: range.startColumn - orginStartColumn + currentStartColumn,
+					endColumn: range.endColumn - orginStartColumn + currentStartColumn
+				}));
+				dependencyRanges.push({
+					unitId: realUnitId,
+					subUnitId: realSheetId,
+					ranges: offsetRanges
+				});
+			}
+		});
+		return dependencyRanges;
+	}
+	registerRangeFormula(unitId, subUnitId, oldRanges, formulas, callback) {
+		const disposableCollection = new DisposableCollection();
+		const formulaDeps = formulas.map((formula) => this._getFormulaDependcy(unitId, subUnitId, formula, oldRanges));
+		const handleRangeChange = (commandInfo) => {
+			const effectedRanges = getSeparateEffectedRangesOnCommand(this._injector, commandInfo);
+			if (!effectedRanges) return {
+				undos: [],
+				redos: []
+			};
+			const originStartRow = oldRanges[0].startRow;
+			const originStartColumn = oldRanges[0].startColumn;
+			const deps = [{
+				unitId,
+				subUnitId,
+				ranges: oldRanges
+			}, ...formulaDeps.flat()];
+			const matchedEffectedRanges = [];
+			for (const { unitId: depUnitId, subUnitId: depSubUnitId, ranges } of deps) if (depUnitId === effectedRanges.unitId && depSubUnitId === effectedRanges.subUnitId) {
+				const intersectedRanges = [];
+				const currentStartRow = ranges[0].startRow;
+				const currentStartColumn = ranges[0].startColumn;
+				const offsetRow = currentStartRow - originStartRow;
+				const offsetColumn = currentStartColumn - originStartColumn;
+				for (const range of effectedRanges.ranges) {
+					const intersectedRange = [];
+					for (const r of ranges) {
+						const intersect = getIntersectRange(range, r);
+						if (intersect) intersectedRange.push(intersect);
+					}
+					if (intersectedRange.length > 0) intersectedRanges.push(...intersectedRange);
+				}
+				if (intersectedRanges.length > 0) matchedEffectedRanges.push(intersectedRanges.map((range) => ({
+					startRow: range.startRow - offsetRow,
+					endRow: range.endRow - offsetRow,
+					startColumn: range.startColumn - offsetColumn,
+					endColumn: range.endColumn - offsetColumn
+				})));
+			}
+			if (matchedEffectedRanges.length > 0) {
+				const ranges = Rectangle.splitIntoGrid([...matchedEffectedRanges.flat()]);
+				const noEffectRanges = Rectangle.subtractMulti(oldRanges, ranges);
+				noEffectRanges.sort((a, b) => a.startRow - b.startRow || a.startColumn - b.startColumn);
+				const keyMap = /* @__PURE__ */ new Map();
+				for (let i = 0; i < ranges.length; i++) {
+					const range = ranges[i];
+					const currentRow = range.startRow;
+					const currentColumn = range.startColumn;
+					const offsetRow = currentRow - originStartRow;
+					const offsetColumn = currentColumn - originStartColumn;
+					const transformedRange = handleCommonDefaultRangeChangeWithEffectRefCommands(range, commandInfo).sort((a, b) => a.startRow - b.startRow || a.startColumn - b.startColumn);
+					if (!transformedRange.length) continue;
+					const transformedRow = transformedRange[0].startRow;
+					const transformedColumn = transformedRange[0].startColumn;
+					const transformedOffsetRow = transformedRow - originStartRow;
+					const transformedOffsetColumn = transformedColumn - originStartColumn;
+					const transformedFormulas = [];
+					for (let j = 0; j < formulas.length; j++) {
+						const formula = formulas[j];
+						const isFormulaFormulaString = isFormulaString(formula);
+						const formulaString = isFormulaFormulaString ? this._lexerTreeBuilder.moveFormulaRefOffset(formula, offsetColumn, offsetRow) : formula;
+						const newFormula = isFormulaFormulaString ? this.transformFormulaByEffectCommand(unitId, subUnitId, formulaString, commandInfo) : formulaString;
+						const orginFormula = getFormulaKeyOffset(this._lexerTreeBuilder, newFormula, -transformedOffsetColumn, -transformedOffsetRow);
+						transformedFormulas.push({
+							newFormula,
+							orginFormula
+						});
+					}
+					const item = {
+						formulas: transformedFormulas,
+						ranges: transformedRange,
+						key: transformedFormulas.map((item) => item.orginFormula).join("_")
+					};
+					if (keyMap.has(item.key)) keyMap.get(item.key).push(item);
+					else keyMap.set(item.key, [item]);
+				}
+				const originKey = formulas.map((item) => getFormulaKeyOffset(this._lexerTreeBuilder, item, 0, 0)).join("_");
+				if (noEffectRanges.length > 0) {
+					const currentRow = noEffectRanges[0].startRow;
+					const currentColumn = noEffectRanges[0].startColumn;
+					const noEffectFormulas = [];
+					for (let i = 0; i < formulas.length; i++) {
+						const formula = formulas[i];
+						noEffectFormulas.push({
+							newFormula: isFormulaString(formula) ? this._lexerTreeBuilder.moveFormulaRefOffset(formula, currentColumn - originStartColumn, currentRow - originStartRow) : formula,
+							orginFormula: formula
+						});
+					}
+					const item = {
+						formulas: noEffectFormulas,
+						ranges: noEffectRanges,
+						key: originKey
+					};
+					if (keyMap.has(item.key)) keyMap.get(item.key).push(item);
+					else keyMap.set(item.key, [item]);
+				}
+				const res = [];
+				const keys = Array.from(keyMap.keys());
+				for (let i = keys.length - 1; i >= 0; i--) {
+					const key = keys[i];
+					const ranges = keyMap.get(key).sort((a, b) => a.ranges[0].startRow - b.ranges[0].startRow || a.ranges[0].startColumn - b.ranges[0].startColumn);
+					const formulas = [];
+					for (let j = 0; j < ranges[0].formulas.length; j++) formulas.push(ranges[0].formulas[j].newFormula);
+					const newRanges = Rectangle.mergeRanges(ranges.map((item) => item.ranges).flat());
+					newRanges.sort((a, b) => a.startRow - b.startRow || a.startColumn - b.startColumn);
+					res.push({
+						formulas,
+						ranges: newRanges
+					});
+				}
+				return callback(res);
+			}
+			return {
+				undos: [],
+				redos: []
+			};
+		};
+		oldRanges.forEach((range) => {
+			const disposable = this._refRangeService.registerRefRange(range, handleRangeChange, unitId, subUnitId);
+			disposableCollection.add(disposable);
+		});
+		[...formulaDeps.flat()].forEach(({ unitId, subUnitId, ranges }) => {
+			ranges.forEach((range) => {
+				const disposable = this._refRangeService.registerRefRange(range, handleRangeChange, unitId, subUnitId);
+				disposableCollection.add(disposable);
+			});
+		});
+		return disposableCollection;
+	}
+};
+FormulaRefRangeService = __decorate([
+	__decorateParam(0, Inject(RefRangeService)),
+	__decorateParam(1, Inject(LexerTreeBuilder)),
+	__decorateParam(2, IUniverInstanceService),
+	__decorateParam(3, Inject(Injector))
+], FormulaRefRangeService);
+
+//#endregion
+//#region src/services/remote/remote-register-function.service.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const RemoteRegisterFunctionServiceName = "sheets-formula.remote-register-function.service";
+const IRemoteRegisterFunctionService = createIdentifier(RemoteRegisterFunctionServiceName);
+let RemoteRegisterFunctionService = class RemoteRegisterFunctionService {
+	constructor(_functionService) {
+		this._functionService = _functionService;
+	}
+	async registerFunctions(serializedFuncs) {
+		rejectRemoteCustomFunctionRegistration(serializedFuncs);
+	}
+	async registerAsyncFunctions(serializedFuncs) {
+		rejectRemoteCustomFunctionRegistration(serializedFuncs);
+	}
+	async unregisterFunctions(names) {
+		this._functionService.unregisterExecutors(...names);
+		this._functionService.unregisterDescriptions(...names);
+		this._functionService.deleteFormulaAstCacheKey(...names);
+	}
+};
+RemoteRegisterFunctionService = __decorate([__decorateParam(0, IFunctionService)], RemoteRegisterFunctionService);
+function rejectRemoteCustomFunctionRegistration(serializedFuncs) {
+	if (serializedFuncs.length === 0) return;
+	throw new Error("Remote custom function registration is disabled because function deserialization over RPC is unsafe.");
+}
+
+//#endregion
+//#region src/plugin.ts
+let UniverRemoteSheetsFormulaPlugin = class UniverRemoteSheetsFormulaPlugin extends Plugin {
+	constructor(_config = defaultPluginRemoteConfig, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { ...rest } = merge({}, defaultPluginRemoteConfig, this._config);
+		this._configService.setConfig(PLUGIN_CONFIG_KEY_REMOTE, rest);
+	}
+	onStarting() {
+		this._injector.add([RemoteRegisterFunctionService]);
+		this._injector.get(IRPCChannelService).registerChannel(RemoteRegisterFunctionServiceName, fromModule(this._injector.get(RemoteRegisterFunctionService)));
+	}
+};
+_defineProperty(UniverRemoteSheetsFormulaPlugin, "pluginName", "SHEET_FORMULA_REMOTE_PLUGIN");
+_defineProperty(UniverRemoteSheetsFormulaPlugin, "packageName", name);
+_defineProperty(UniverRemoteSheetsFormulaPlugin, "version", version);
+_defineProperty(UniverRemoteSheetsFormulaPlugin, "type", UniverInstanceType.UNIVER_SHEET);
+UniverRemoteSheetsFormulaPlugin = __decorate([
+	DependentOn(UniverFormulaEnginePlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, IConfigService)
+], UniverRemoteSheetsFormulaPlugin);
+let UniverSheetsFormulaPlugin = class UniverSheetsFormulaPlugin extends Plugin {
+	constructor(_config = defaultPluginBaseConfig, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { ...rest } = merge({}, defaultPluginBaseConfig, this._config);
+		this._configService.setConfig(PLUGIN_CONFIG_KEY_BASE, rest, { merge: true });
+	}
+	onStarting() {
+		var _this$_config$descrip;
+		const j = this._injector;
+		const dependencies = [
+			[SheetFormulaCalculationResultApplyController],
+			[FormulaController],
+			[FormulaRefRangeService],
+			[ArrayFormulaCellInterceptorController],
+			[ImageFormulaCellInterceptorController],
+			[TriggerCalculationController],
+			[UpdateFormulaController],
+			[ActiveDirtyController],
+			[DefinedNameController],
+			[UpdateDefinedNameController],
+			[SuperTableController],
+			[FormulaAutoFillController],
+			[UnitQualifierRenameController]
+		];
+		if (this._config.notExecuteFormula) {
+			const rpcChannelService = j.get(IRPCChannelService);
+			dependencies.push([IRemoteRegisterFunctionService, { useFactory: () => toModule(rpcChannelService.requestChannel(RemoteRegisterFunctionServiceName)) }]);
+		}
+		dependencies.forEach((dependency) => j.add(dependency));
+		if ((_this$_config$descrip = this._config.description) === null || _this$_config$descrip === void 0 ? void 0 : _this$_config$descrip.length) this.disposeWithMe(j.get(IDescriptionService).registerDescriptions(this._config.description));
+	}
+	onReady() {
+		touchDependencies(this._injector, [
+			[FormulaController],
+			[ActiveDirtyController],
+			[ArrayFormulaCellInterceptorController],
+			[ImageFormulaCellInterceptorController],
+			[UpdateFormulaController],
+			[UpdateDefinedNameController],
+			[FormulaAutoFillController],
+			[UnitQualifierRenameController],
+			[SheetFormulaCalculationResultApplyController]
+		]);
+		if (isNodeEnv()) touchDependencies(this._injector, [[TriggerCalculationController]]);
+	}
+	onRendered() {
+		touchDependencies(this._injector, [[DefinedNameController], [SuperTableController]]);
+		if (!isNodeEnv()) touchDependencies(this._injector, [[TriggerCalculationController]]);
+	}
+};
+_defineProperty(UniverSheetsFormulaPlugin, "pluginName", SHEETS_FORMULA_PLUGIN_NAME);
+_defineProperty(UniverSheetsFormulaPlugin, "packageName", name);
+_defineProperty(UniverSheetsFormulaPlugin, "version", version);
+_defineProperty(UniverSheetsFormulaPlugin, "type", UniverInstanceType.UNIVER_SHEET);
+UniverSheetsFormulaPlugin = __decorate([
+	DependentOn(UniverFormulaEnginePlugin, UniverSheetsPlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, IConfigService)
+], UniverSheetsFormulaPlugin);
+
+//#endregion
+//#region src/util/calculate.ts
+function calculateFormula(inject, formulaString, unitId, sheetData) {
+	const formulaCurrentConfigService = inject.get(IFormulaCurrentConfigService);
+	const lexer = inject.get(Lexer);
+	const astTreeBuilder = inject.get(AstTreeBuilder);
+	const interpreter = inject.get(Interpreter);
+	formulaCurrentConfigService.load({
+		formulaData: {},
+		arrayFormulaCellData: {},
+		arrayFormulaRange: {},
+		forceCalculate: false,
+		dirtyRanges: [],
+		dirtyNameMap: {},
+		dirtyDefinedNameMap: {},
+		dirtyUnitFeatureMap: {},
+		excludedCell: {},
+		allUnitData: { [unitId]: sheetData },
+		dirtyUnitOtherFormulaMap: {}
+	});
+	const lexerNode = lexer.treeBuilder(formulaString);
+	const astNode = astTreeBuilder.parse(lexerNode);
+	return getObjectValue(interpreter.execute(generateExecuteAstNodeData(astNode)));
+}
+
+//#endregion
+export { CalculationMode, FormulaAutoFillController, FormulaRefRangeService, IRemoteRegisterFunctionService, ImageFormulaCellInterceptorController, InsertFunctionCommand, PLUGIN_CONFIG_KEY_BASE, RemoteRegisterFunctionService, TriggerCalculationController, UnitQualifierRenameController, UniverRemoteSheetsFormulaPlugin, UniverSheetsFormulaPlugin, UpdateDefinedNameController, UpdateFormulaController, calculateFormula, collectUnitQualifierFormulaPatches };

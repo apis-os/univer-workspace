@@ -1,29 +1,4 @@
-const _0x5cf3d9 = _0x3cac;
-((function (_0x1370a8, _0x29a83a) {
-  const _0x1612dd = _0x3cac,
-    _0x40b997 = _0x1370a8();
-  while (!![]) {
-    try {
-      const _0x56d08d =
-        (parseInt(_0x1612dd(0x95)) / 0x1) * (-parseInt(_0x1612dd(0xae)) / 0x2) +
-        (-parseInt(_0x1612dd(0x80)) / 0x3) *
-          (-parseInt(_0x1612dd(0xce)) / 0x4) +
-        -parseInt(_0x1612dd(0xa9)) / 0x5 +
-        -parseInt(_0x1612dd(0xb1)) / 0x6 +
-        -parseInt(_0x1612dd(0xa6)) / 0x7 +
-        (-parseInt(_0x1612dd(0xa2)) / 0x8) *
-          (-parseInt(_0x1612dd(0x81)) / 0x9) +
-        parseInt(_0x1612dd(0x8b)) / 0xa;
-      if (_0x56d08d === _0x29a83a) break;
-      else _0x40b997["push"](_0x40b997["shift"]());
-    } catch (_0x17e96d) {
-      _0x40b997["push"](_0x40b997["shift"]());
-    }
-  }
-})(_0xf2f2, 0x292f7),
-  Object[_0x5cf3d9(0x98)](exports, Symbol["toStringTag"], {
-    value: _0x5cf3d9(0xcc),
-  }));
+Object["defineProperty"](exports, Symbol["toStringTag"], { value: "Module" });
 let e = require("@univerjs-pro/collaboration-client"),
   t = require("@univerjs-pro/license"),
   n = require("@univerjs/core"),
@@ -33,175 +8,33 @@ let e = require("@univerjs-pro/collaboration-client"),
   o = require("@univerjs/protocol"),
   s = require("rxjs");
 var c = "@univerjs-pro/thread-comment-datasource",
-  l = _0x5cf3d9(0xb4);
+  l = "1.0.0-insiders.20260907-70fc579";
 const u = {},
   d = (_0xb20cf) =>
-    (0x0, n["dateKit"])(new Date(+_0xb20cf))[_0x5cf3d9(0xcd)](_0x5cf3d9(0xf4));
+    (0x0, n["dateKit"])(new Date(+_0xb20cf))["format"]("YYYY/MM/DD HH:mm");
 function f(_0x670f18) {
-  const _0x2d2f7d = _0x5cf3d9;
   if (!_0x670f18) return null;
   try {
     let _0x59ab8b = JSON["parse"](_0x670f18);
-    return (0x0, i[_0x2d2f7d(0xe9)])(_0x59ab8b) ? _0x59ab8b : null;
+    return (0x0, i["isThreadCommentDocumentBody"])(_0x59ab8b)
+      ? _0x59ab8b
+      : null;
   } catch {
     return null;
   }
 }
-function _0xf2f2() {
-  const _0x2da6d4 = [
-    "_initUserSync",
-    "subscribe",
-    "CommentService",
-    "HTTPService",
-    "UniverThreadCommentDataSourcePlugin",
-    "bufferTime",
-    "users",
-    "threadId",
-    "userId",
-    "stringify",
-    "DependentOn",
-    "Inject",
-    "CommentSolvedStatus",
-    "Module",
-    "format",
-    "4ChHLVs",
-    "call",
-    "rangeId",
-    "decorate",
-    "Disposable",
-    "/delete",
-    "unitId",
-    "has",
-    "onStarting",
-    "deleteComment",
-    "_resolveComment",
-    "setConfig",
-    "_httpService",
-    "type",
-    "ThreadCommentModel",
-    "syncUpdateMutationToColla",
-    "_threadCommentModel",
-    "function",
-    "onReady",
-    "thread-comment-data-source.config",
-    "version",
-    "replies",
-    "getUnit",
-    "constructor",
-    "Comment\x20service\x20did\x20not\x20return\x20the\x20created\x20comment",
-    "getUser",
-    "symbol",
-    "isThreadCommentDocumentBody",
-    "addComment",
-    "addUser",
-    "_userService",
-    "@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.",
-    "CollaborationSessionService",
-    "user",
-    "map",
-    "UserManagerService",
-    "_deleteComment",
-    "dateKit",
-    "YYYY/MM/DD\x20HH:mm",
-    "UniverLicensePlugin",
-    "find",
-    "content",
-    "filter",
-    "OpenOrReOpen",
-    "root",
-    "commentUpdate$",
-    "listComments",
-    "resolveComment",
-    "reply",
-    "_config",
-    "/add",
-    "/list",
-    "rangeType",
-    "IThreadCommentDataSourceService",
-    "post",
-    "959925ZkdSjV",
-    "66951xtNIaX",
-    "getComment",
-    "size",
-    "requireSession",
-    "message",
-    "object",
-    "Solved",
-    "replyId",
-    "updateComment",
-    "flatMap",
-    "4823250nUriNR",
-    "solved",
-    "forEach",
-    "merge",
-    "COMMENT",
-    "add",
-    "length",
-    "_threadCommentDataSource",
-    "_sessionService",
-    "UniverThreadCommentPlugin",
-    "1624RbTHZX",
-    "_initDataSource",
-    "string",
-    "defineProperty",
-    "_init",
-    "packageName",
-    "code",
-    "error",
-    "userID",
-    "CustomRangeType",
-    "/universer-api/comment/unit/",
-    "_threadCommentDataSourceService",
-    "dataSource",
-    "272JhOSKq",
-    "default",
-    "Injector",
-    "CommentUpdateEventType",
-    "2069949auxjlT",
-    "Solve",
-    "pluginName",
-    "675780KWjqVW",
-    "payload",
-    "_commentService",
-    "Comment\x20service\x20failed\x20to\x20list\x20comments",
-    "getMemberID",
-    "266JVjeGA",
-    "body",
-    "customRanges",
-    "1438056NZBcdQ",
-    "deleteThread",
-    "Delete",
-    "1.0.0-insiders.20260907-70fc579",
-    "disposeWithMe",
-    "getOwnPropertyDescriptor",
-    "Edit",
-    "Comment\x20service\x20returned\x20an\x20invalid\x20thread",
-    "UniverNetworkPlugin",
-    "_injector",
-    "comments",
-    "createTimestamp",
-    "/solved",
-    "get",
-  ];
-  _0xf2f2 = function () {
-    return _0x2da6d4;
-  };
-  return _0xf2f2();
-}
 const p = async (_0x529452, _0xbebb40) => {
-  const _0x3dbcaf = _0x5cf3d9;
-  let _0x448657 = _0x529452["get"](n[_0x3dbcaf(0xf1)]),
-    _0x39dd92 = _0x529452[_0x3dbcaf(0xbe)](r[_0x3dbcaf(0xc2)]);
-  (_0xbebb40[_0x3dbcaf(0x8d)]((_0x2bd6a8) => {
-    const _0x441c3f = _0x3dbcaf;
-    _0x448657[_0x441c3f(0xe7)](_0x2bd6a8) && _0xbebb40["delete"](_0x2bd6a8);
+  let _0x448657 = _0x529452["get"](n["UserManagerService"]),
+    _0x39dd92 = _0x529452["get"](r["HTTPService"]);
+  (_0xbebb40["forEach"]((_0x2bd6a8) => {
+    _0x448657["getUser"](_0x2bd6a8) && _0xbebb40["delete"](_0x2bd6a8);
   }),
-    _0xbebb40[_0x3dbcaf(0x83)] &&
+    _0xbebb40["size"] &&
       (
-        await _0x39dd92[_0x3dbcaf(0xbe)]("/universer-api/user/list", {
+        await _0x39dd92["get"]("/universer-api/user/list", {
           params: { userIDs: [..._0xbebb40] },
         })
-      )[_0x3dbcaf(0xaf)][_0x3dbcaf(0xc5)][_0x3dbcaf(0x8d)]((_0x43f20d) => {
+      )["body"]["users"]["forEach"]((_0x43f20d) => {
         _0x43f20d && _0x448657["addUser"](_0x43f20d);
       }));
 };
@@ -210,14 +43,7 @@ function m(_0x458583, _0x4b1a1a) {
     _0x4b1a1a(_0x52aba9, _0x4a291c, _0x458583);
   };
 }
-function _0x3cac(_0x1e9488, _0x141570) {
-  _0x1e9488 = _0x1e9488 - 0x7d;
-  const _0xf2f2a2 = _0xf2f2();
-  let _0x3cac99 = _0xf2f2a2[_0x1e9488];
-  return _0x3cac99;
-}
 function h(_0x53efd7, _0x52c709, _0x81a44a, _0x1be99e) {
-  const _0x49c1ca = _0x5cf3d9;
   var _0x340e7c = arguments[_0x49c1ca(0x91)],
     _0x3977bc =
       _0x340e7c < 0x3
@@ -252,9 +78,8 @@ function h(_0x53efd7, _0x52c709, _0x81a44a, _0x1be99e) {
     _0x3977bc
   );
 }
-let g = class extends n[_0x5cf3d9(0xd2)] {
+let g = class extends n["Disposable"] {
   constructor(_0x3c3be3, _0x450891, _0x5c5a40, _0x5166c1) {
-    const _0x2c014f = _0x5cf3d9;
     (super(),
       (this[_0x2c014f(0xab)] = _0x3c3be3),
       (this[_0x2c014f(0xde)] = _0x450891),
@@ -263,8 +88,7 @@ let g = class extends n[_0x5cf3d9(0xd2)] {
       this["_init"](),
       this[_0x2c014f(0xbf)]());
   }
-  [_0x5cf3d9(0xbf)]() {
-    const _0x22e269 = _0x5cf3d9;
+  ["_initUserSync"]() {
     this[_0x22e269(0xb5)](
       this[_0x22e269(0xde)]["commentUpdate$"]
         ["pipe"]((0x0, s[_0x22e269(0xc4)])(0x10))
@@ -287,8 +111,7 @@ let g = class extends n[_0x5cf3d9(0xd2)] {
         }),
     );
   }
-  [_0x5cf3d9(0xf2)](_0x5d9b47, _0x408076, _0x5c9412) {
-    const _0x3cbd4c = _0x5cf3d9;
+  ["_deleteComment"](_0x5d9b47, _0x408076, _0x5c9412) {
     let _0x263815 = this[_0x3cbd4c(0xde)][_0x3cbd4c(0x82)](
       _0x5d9b47,
       _0x408076,
@@ -307,8 +130,7 @@ let g = class extends n[_0x5cf3d9(0xd2)] {
             _0x263815["threadId"],
           ));
   }
-  [_0x5cf3d9(0xd8)](_0xcd1c7d, _0x90c0cb, _0x450f37, _0x357497) {
-    const _0x5cd70f = _0x5cf3d9;
+  ["_resolveComment"](_0xcd1c7d, _0x90c0cb, _0x450f37, _0x357497) {
     (_0x357497 === o[_0x5cd70f(0xcb)][_0x5cd70f(0x87)] ||
       _0x357497 === o["CommentSolvedStatus"][_0x5cd70f(0xf9)]) &&
       this["_threadCommentModel"]["resolveComment"](
@@ -318,8 +140,7 @@ let g = class extends n[_0x5cf3d9(0xd2)] {
         _0x357497 === o[_0x5cd70f(0xcb)][_0x5cd70f(0x87)],
       );
   }
-  [_0x5cf3d9(0x99)]() {
-    const _0x40857b = _0x5cf3d9;
+  ["_init"]() {
     this[_0x40857b(0xb5)](
       this["_commentService"][_0x40857b(0xfb)][_0x40857b(0xc0)]((_0x1caeb1) => {
         const _0x22ce77 = _0x40857b;
@@ -406,15 +227,14 @@ let g = class extends n[_0x5cf3d9(0xd2)] {
 };
 g = h(
   [
-    m(0x0, (0x0, n[_0x5cf3d9(0xca)])(e[_0x5cf3d9(0xc1)])),
-    m(0x1, (0x0, n["Inject"])(i[_0x5cf3d9(0xdc)])),
-    m(0x2, (0x0, n["Inject"])(n[_0x5cf3d9(0xf1)])),
+    m(0x0, (0x0, n["Inject"])(e["CommentService"])),
+    m(0x1, (0x0, n["Inject"])(i["ThreadCommentModel"])),
+    m(0x2, (0x0, n["Inject"])(n["UserManagerService"])),
     m(0x3, (0x0, n["Inject"])(n["Injector"])),
   ],
   g,
 );
 function _(_0x24aedc, _0x105fe4) {
-  const _0x572ebe = _0x5cf3d9;
   let _0x1c8c62 = Number(
     _0x24aedc == null ? void 0x0 : _0x24aedc[_0x572ebe(0xbc)],
   );
@@ -428,7 +248,6 @@ function _(_0x24aedc, _0x105fe4) {
   );
 }
 function v(_0x5b1182, _0x4dd3a7) {
-  const _0x5428b2 = _0x5cf3d9;
   let _0x44431e = _0x5b1182[_0x5428b2(0xe3)][0x0];
   if (!_0x5b1182[_0x5428b2(0xc6)] || !_(_0x44431e, _0x5b1182[_0x5428b2(0xc6)]))
     throw Error(_0x5428b2(0xb8));
@@ -442,7 +261,6 @@ function v(_0x5b1182, _0x4dd3a7) {
   };
 }
 function y(_0x3d974e, _0x18c6ef, _0x4baee9, _0x5ef0e7) {
-  const _0x51836d = _0x5cf3d9;
   if (
     (_0x3d974e == null ? void 0x0 : _0x3d974e[_0x51836d(0xc6)]) === _0x18c6ef &&
     _0x3d974e[_0x51836d(0xe3)][_0x51836d(0x91)] > 0x0
@@ -485,13 +303,11 @@ function y(_0x3d974e, _0x18c6ef, _0x4baee9, _0x5ef0e7) {
 }
 let b = class {
   constructor(_0x2b6a8f, _0x1a6781, _0x1ed474) {
-    const _0x3031ce = _0x5cf3d9;
     ((this[_0x3031ce(0xda)] = _0x2b6a8f),
       (this[_0x3031ce(0xec)] = _0x1a6781),
       (this[_0x3031ce(0x93)] = _0x1ed474));
   }
-  async [_0x5cf3d9(0xea)](_0x1ef63b) {
-    const _0x744ba0 = _0x5cf3d9;
+  async ["addComment"](_0x1ef63b) {
     var _0x445f34;
     let {
         parentId: _0x2cbb17,
@@ -571,8 +387,7 @@ let b = class {
       return v(_0x58d3f0[_0x744ba0(0xaf)]["comment"], _0x1ef63b);
     }
   }
-  async [_0x5cf3d9(0x89)](_0x3efcc4) {
-    const _0x5bd57c = _0x5cf3d9;
+  async ["updateComment"](_0x3efcc4) {
     var _0x441bf2;
     let { text: _0x4526d9, unitId: _0x141710 } = _0x3efcc4,
       _0x5ddb06 =
@@ -606,8 +421,7 @@ let b = class {
       _0x5bca97[_0x5bd57c(0xaf)]["error"]["code"] === 0x1
     );
   }
-  async [_0x5cf3d9(0xfd)](_0x4051bf) {
-    const _0x5c5f94 = _0x5cf3d9;
+  async ["resolveComment"](_0x4051bf) {
     let { unitId: _0x39a2b1 } = _0x4051bf,
       _0x537954 = _0x4051bf[_0x5c5f94(0xc6)],
       _0xe4a123 = {
@@ -630,15 +444,12 @@ let b = class {
     );
   }
   ["deleteComment"](_0x4cb0c6, _0x14a014, _0x2d23eb, _0x62f50) {
-    const _0x4a900b = _0x5cf3d9;
     return this[_0x4a900b(0xf2)](_0x4cb0c6, _0x2d23eb, _0x62f50);
   }
-  [_0x5cf3d9(0xb2)](_0x4f3ff0, _0x4fc0ea, _0x5394b5) {
-    const _0x5dc8e4 = _0x5cf3d9;
+  ["deleteThread"](_0x4f3ff0, _0x4fc0ea, _0x5394b5) {
     return this[_0x5dc8e4(0xf2)](_0x4f3ff0, _0x5394b5);
   }
-  async [_0x5cf3d9(0xf2)](_0x58e619, _0xa3c4d5, _0x45b019) {
-    const _0x5bb716 = _0x5cf3d9;
+  async ["_deleteComment"](_0x58e619, _0xa3c4d5, _0x45b019) {
     let _0x37084f = {
         memberId: (await this[_0x5bb716(0x93)][_0x5bb716(0x84)](_0x58e619))[
           _0x5bb716(0xad)
@@ -656,8 +467,7 @@ let b = class {
       _0x5e9756[_0x5bb716(0xaf)][_0x5bb716(0x9c)][_0x5bb716(0x9b)] === 0x1
     );
   }
-  async [_0x5cf3d9(0xfc)](_0x8d23e, _0x40ecb7, _0x1e19dd) {
-    const _0x426734 = _0x5cf3d9;
+  async ["listComments"](_0x8d23e, _0x40ecb7, _0x1e19dd) {
     let _0x4f701a = { unitId: _0x8d23e, threadId: _0x1e19dd },
       _0x3e098c = await this["_httpService"][_0x426734(0x7f)](
         _0x426734(0x9f) + _0x8d23e + _0x426734(0x101),
@@ -702,30 +512,30 @@ let b = class {
 };
 b = h(
   [
-    m(0x0, (0x0, n["Inject"])(r[_0x5cf3d9(0xc2)])),
-    m(0x1, (0x0, n["Inject"])(n[_0x5cf3d9(0xf1)])),
-    m(0x2, (0x0, n["Inject"])(e[_0x5cf3d9(0xee)])),
+    m(0x0, (0x0, n["Inject"])(r["HTTPService"])),
+    m(0x1, (0x0, n["Inject"])(n["UserManagerService"])),
+    m(0x2, (0x0, n["Inject"])(e["CollaborationSessionService"])),
   ],
   b,
 );
-let x = class extends n[_0x5cf3d9(0xd2)] {
+let x = class extends n["Disposable"] {
   constructor(_0x5bbc5b, _0x2e3320) {
-    const _0x1890c7 = _0x5cf3d9;
     (super(),
       (this[_0x1890c7(0xa0)] = _0x5bbc5b),
       (this[_0x1890c7(0x92)] = _0x2e3320),
       this[_0x1890c7(0x96)]());
   }
-  [_0x5cf3d9(0x96)]() {
-    const _0xdc6c04 = _0x5cf3d9;
+  ["_initDataSource"]() {
     ((this[_0xdc6c04(0xa0)][_0xdc6c04(0xa1)] = this[_0xdc6c04(0x92)]),
       (this["_threadCommentDataSourceService"][_0xdc6c04(0xdd)] = !0x1));
   }
 };
-x = h([m(0x0, i[_0x5cf3d9(0x7e)]), m(0x1, (0x0, n["Inject"])(b))], x);
+x = h(
+  [m(0x0, i["IThreadCommentDataSourceService"]), m(0x1, (0x0, n["Inject"])(b))],
+  x,
+);
 function S(_0x4c294a) {
   "@babel/helpers - typeof";
-  const _0x49e6ba = _0x5cf3d9;
   return (
     (S =
       typeof Symbol == _0x49e6ba(0xdf) && typeof Symbol["iterator"] == "symbol"
@@ -745,7 +555,6 @@ function S(_0x4c294a) {
   );
 }
 function C(_0x107b11, _0x1ee233) {
-  const _0x53e911 = _0x5cf3d9;
   if (S(_0x107b11) != "object" || !_0x107b11) return _0x107b11;
   var _0x25706e = _0x107b11[Symbol["toPrimitive"]];
   if (_0x25706e !== void 0x0) {
@@ -759,12 +568,10 @@ function C(_0x107b11, _0x1ee233) {
   return (_0x1ee233 === _0x53e911(0x97) ? String : Number)(_0x107b11);
 }
 function w(_0x1502e5) {
-  const _0x4fa8c5 = _0x5cf3d9;
   var _0x27f436 = C(_0x1502e5, "string");
   return S(_0x27f436) == _0x4fa8c5(0xe8) ? _0x27f436 : _0x27f436 + "";
 }
 function T(_0x21b04a, _0x148f14, _0x59e7a6) {
-  const _0x5cc2ee = _0x5cf3d9;
   return (
     (_0x148f14 = w(_0x148f14)) in _0x21b04a
       ? Object[_0x5cc2ee(0x98)](_0x21b04a, _0x148f14, {
@@ -779,7 +586,6 @@ function T(_0x21b04a, _0x148f14, _0x59e7a6) {
 }
 let E = class extends n["Plugin"] {
   constructor(_0x530f8e = u, _0x193670, _0x4b0606) {
-    const _0x113488 = _0x5cf3d9;
     (super(),
       (this[_0x113488(0xff)] = _0x530f8e),
       (this[_0x113488(0xba)] = _0x193670),
@@ -791,36 +597,34 @@ let E = class extends n["Plugin"] {
     );
     this["_configService"][_0x113488(0xd9)](_0x113488(0xe1), _0x58e30b);
   }
-  [_0x5cf3d9(0xd6)]() {
+  ["onStarting"]() {
     [[b], [x], [g]]["forEach"]((_0x46c4bf) => {
-      const _0x1283fc = _0x3cac;
       this[_0x1283fc(0xba)][_0x1283fc(0x90)](_0x46c4bf);
     });
   }
-  [_0x5cf3d9(0xe0)]() {
-    const _0x3bb508 = _0x5cf3d9;
+  ["onReady"]() {
     (this[_0x3bb508(0xba)][_0x3bb508(0xbe)](x),
       this[_0x3bb508(0xba)][_0x3bb508(0xbe)](g));
   }
 };
-(T(E, _0x5cf3d9(0xa8), "UNIVER_THREAD_COMMENT_DATA_SOURCE_PLUGIN"),
-  T(E, _0x5cf3d9(0x9a), c),
-  T(E, _0x5cf3d9(0xe2), l),
+(T(E, "pluginName", "UNIVER_THREAD_COMMENT_DATA_SOURCE_PLUGIN"),
+  T(E, "packageName", c),
+  T(E, "version", l),
   (E = h(
     [
-      (0x0, n[_0x5cf3d9(0xc9)])(
-        t[_0x5cf3d9(0xf5)],
-        r[_0x5cf3d9(0xb9)],
-        i[_0x5cf3d9(0x94)],
+      (0x0, n["DependentOn"])(
+        t["UniverLicensePlugin"],
+        r["UniverNetworkPlugin"],
+        i["UniverThreadCommentPlugin"],
         a["UniverThreadCommentUIPlugin"],
         e["UniverCollaborationClientPlugin"],
       ),
-      m(0x1, (0x0, n[_0x5cf3d9(0xca)])(n[_0x5cf3d9(0xa4)])),
+      m(0x1, (0x0, n["Inject"])(n["Injector"])),
       m(0x2, n["IConfigService"]),
     ],
     E,
   )),
-  Object[_0x5cf3d9(0x98)](exports, _0x5cf3d9(0xc3), {
+  Object["defineProperty"](exports, "UniverThreadCommentDataSourcePlugin", {
     enumerable: !0x0,
     get: function () {
       return E;

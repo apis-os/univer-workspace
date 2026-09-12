@@ -1,0 +1,51 @@
+import type { IDisposable } from '@univerjs/core';
+import { DocChartModelService } from '@univerjs-pro/docs-chart';
+import { Disposable, ICommandService, IUniverInstanceService, LocaleService } from '@univerjs/core';
+import { IDrawingManagerService } from '@univerjs/drawing';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { CanvasFloatDomService } from '@univerjs/ui';
+import { DocChartStaticRenderController } from '../controllers/doc-chart-static-render.controller';
+import { DocChartRenderService } from './doc-chart-render.service';
+import { DocChartSnapshotRenderService } from './doc-chart-snapshot-render.service';
+export interface IDocChartDomMountParams {
+    unitId: string;
+    subUnitId?: string;
+    drawingId: string;
+    chartId: string;
+    root: HTMLElement;
+}
+export declare class DocChartActiveRenderService extends Disposable {
+    private readonly _drawingManagerService;
+    private readonly _renderManagerService;
+    private readonly _canvasFloatDomService;
+    private readonly _modelService;
+    private readonly _renderService;
+    private readonly _snapshotRenderService;
+    private readonly _commandService;
+    private readonly _univerInstanceService;
+    private readonly _localeService;
+    private readonly _staticRenderController;
+    private _activeLayer;
+    private readonly _layoutChanged$;
+    private readonly _visualLayoutChanged$;
+    constructor(_drawingManagerService: IDrawingManagerService, _renderManagerService: IRenderManagerService, _canvasFloatDomService: CanvasFloatDomService, _modelService: DocChartModelService, _renderService: DocChartRenderService, _snapshotRenderService: DocChartSnapshotRenderService, _commandService: ICommandService, _univerInstanceService: IUniverInstanceService, _localeService: LocaleService, _staticRenderController: DocChartStaticRenderController);
+    mountChart(params: IDocChartDomMountParams): IDisposable;
+    dispose(): void;
+    private _init;
+    private _subscribeRender;
+    private _handleFocus;
+    private _activate;
+    private _deactivate;
+    private _refreshActivePosition;
+    private _refreshActiveLayout;
+    private _bindActiveLayerObservers;
+    private _updatePosition;
+    private _retryActivateFocusedChart;
+    private _getPositionState;
+    private _getRenderRect;
+    private _getActiveRenderRect;
+    private _getActiveRenderScale;
+    private _getDrawingSearch;
+    private _isActiveLayer;
+    private _isDocChartDrawing;
+}

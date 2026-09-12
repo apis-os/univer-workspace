@@ -1,0 +1,3972 @@
+import { ArrangeTypeEnum, BooleanNumber, CommandType, DependentOn, Disposable, DisposableCollection, DrawingTypeEnum, ICommandService, IConfigService, IImageIoService, IURLImageService, IUniverInstanceService, ImageSourceType, Inject, Injector, LocaleService, Plugin, PositionedObjectLayoutType, UniverInstanceType, checkIfMove, debounce, generateRandomId, merge, toDisposable } from "@univerjs/core";
+import { DRAWING_GROUPABLE_TYPES, IDrawingManagerService, SetDrawingSelectedOperation, UniverDrawingPlugin, getDrawingShapeKeyByDrawingSearch, isGroupableDrawingType, resolveDrawingRotateEnabled } from "@univerjs/drawing";
+import { CURSOR_TYPE, Canvas, DRAWING_OBJECT_LAYER_INDEX, DrawingGroupObject, Group, IRenderManagerService, Image as Image$1, RENDER_CLASS_TYPE, Rect, Shape, UniverRenderEnginePlugin, Vector2, degToRad, getGroupState, precisionTo, transformObjectOutOfGroup } from "@univerjs/engine-render";
+import { ComponentManager, ContextMenuGroup, ContextMenuPosition, IDialogService, IGalleryService, ILayoutService, IMenuManagerService, IMessageService, IShortcutService, IconManager, KeyCode, MenuItemType, useDependency, useObservable } from "@univerjs/ui";
+import { BehaviorSubject, Observable, bufferTime, filter, map, merge as merge$1, of, startWith, switchMap } from "rxjs";
+import { ArrowDownIcon, ArrowUpIcon, AutofillDoubleIcon, BottomIcon, ChartIcon, CreateCopyIcon, CropIcon, DeleteIcon, DocSettingIcon, EyeIcon, EyelashIcon, GroupIcon, LocateFixedIcon, LockIcon, MoreDownIcon, MoveDownIcon, MoveUpIcon, TextWrapShapeIcon, TopmostIcon, UngroupIcon, UnlockIcon } from "@univerjs/icons";
+import { Button, Checkbox, ConfigContext, Dropdown, DropdownMenu, Input, InputNumber, MessageType, MobileActionRow, Select, Separator, StateIconButton, Tooltip, borderClassName, clsx } from "@univerjs/design";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+
+//#region src/commands/operations/drawing-align.operation.ts
+/**
+* Set drawing align operation, including left, center, right, top, middle, bottom, horizon and vertical align.
+*/
+const SetDrawingAlignOperation = {
+	id: "sheet.operation.set-image-align",
+	type: CommandType.OPERATION,
+	handler: (accessor, params) => {
+		return true;
+	}
+};
+const SetDrawingAlignLeftOperation = {
+	id: "sheet.operation.set-drawing-align-left",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "1" });
+	}
+};
+const SetDrawingAlignCenterOperation = {
+	id: "sheet.operation.set-drawing-align-center",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "2" });
+	}
+};
+const SetDrawingAlignRightOperation = {
+	id: "sheet.operation.set-drawing-align-right",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "3" });
+	}
+};
+const SetDrawingAlignTopOperation = {
+	id: "sheet.operation.set-drawing-align-top",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "4" });
+	}
+};
+const SetDrawingAlignMiddleOperation = {
+	id: "sheet.operation.set-drawing-align-middle",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "5" });
+	}
+};
+const SetDrawingAlignBottomOperation = {
+	id: "sheet.operation.set-drawing-align-bottom",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "6" });
+	}
+};
+const SetDrawingAlignHorizonOperation = {
+	id: "sheet.operation.set-drawing-align-horizon",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "7" });
+	}
+};
+const SetDrawingAlignVerticalOperation = {
+	id: "sheet.operation.set-drawing-align-vertical",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingAlignOperation.id, { alignType: "8" });
+	}
+};
+
+//#endregion
+//#region src/commands/operations/drawing-arrange.operation.ts
+/**
+* Set the layer of the drawing, including forward, backward, front, and back
+*/
+const SetDrawingArrangeOperation = {
+	id: "drawing.operation.set-drawing-arrange",
+	type: CommandType.OPERATION,
+	handler: (accessor, params) => {
+		const drawingManagerService = accessor.get(IDrawingManagerService);
+		const { arrangeType } = params;
+		const drawings = params.drawings || drawingManagerService.getFocusDrawings();
+		const { unitId, subUnitId } = drawings[0];
+		const drawingIds = drawings.map((drawing) => drawing.drawingId);
+		drawingManagerService.featurePluginOrderUpdateNotification({
+			unitId,
+			subUnitId,
+			drawingIds,
+			arrangeType
+		});
+		return true;
+	}
+};
+const SetDrawingArrangeFrontOperation = {
+	id: "drawing.operation.set-drawing-arrange-front",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingArrangeOperation.id, { arrangeType: ArrangeTypeEnum.front });
+	}
+};
+const SetDrawingArrangeForwardOperation = {
+	id: "drawing.operation.set-drawing-arrange-forward",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingArrangeOperation.id, { arrangeType: ArrangeTypeEnum.forward });
+	}
+};
+const SetDrawingArrangeBackOperation = {
+	id: "drawing.operation.set-drawing-arrange-back",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingArrangeOperation.id, { arrangeType: ArrangeTypeEnum.back });
+	}
+};
+const SetDrawingArrangeBackwardOperation = {
+	id: "drawing.operation.set-drawing-arrange-backward",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		return accessor.get(ICommandService).syncExecuteCommand(SetDrawingArrangeOperation.id, { arrangeType: ArrangeTypeEnum.backward });
+	}
+};
+
+//#endregion
+//#region src/commands/operations/drawing-group.operation.ts
+/**
+* Now only support grouping images, shapes, charts, and groups.
+*/
+const DRAWING_GROUP_TYPES = DRAWING_GROUPABLE_TYPES;
+/**
+* Group the selected drawings into a new group. The selected drawings must be
+* of type image, shape, chart, or group, and there must be at least 2 drawings
+* selected.
+*/
+const SetDrawingGroupOperation = {
+	id: "drawing.operation.set-drawing-group",
+	type: CommandType.OPERATION,
+	handler: (accessor, params) => {
+		const drawingManagerService = accessor.get(IDrawingManagerService);
+		const drawings = params.drawings || drawingManagerService.getFocusDrawings();
+		if (drawings.length < 2) return false;
+		if (!drawings.every((drawing) => isGroupableDrawingType(drawing.drawingType))) return false;
+		const { unitId, subUnitId } = drawings[0];
+		const groupId = generateRandomId(10);
+		const groupTransform = getGroupState(0, 0, drawings.map((o) => o.transform || {}));
+		const groupParam = {
+			unitId,
+			subUnitId,
+			drawingId: groupId,
+			drawingType: DrawingTypeEnum.DRAWING_GROUP,
+			transform: groupTransform,
+			groupBaseBound: {
+				left: groupTransform.left,
+				top: groupTransform.top,
+				width: groupTransform.width,
+				height: groupTransform.height
+			}
+		};
+		const children = drawings.map((drawing) => {
+			const transform = drawing.transform || {
+				left: 0,
+				top: 0
+			};
+			const { unitId, subUnitId, drawingId, drawingType } = drawing;
+			return {
+				unitId,
+				subUnitId,
+				drawingId,
+				drawingType,
+				transform: { ...transform },
+				groupId
+			};
+		});
+		drawingManagerService.featurePluginGroupUpdateNotification([{
+			parent: groupParam,
+			children
+		}]);
+		return true;
+	}
+};
+/**
+* Ungroup the selected groups. The selected drawings must be at least 1 group selected.
+*/
+const CancelDrawingGroupOperation = {
+	id: "drawing.operation.cancel-drawing-group",
+	type: CommandType.OPERATION,
+	handler: (accessor, params) => {
+		const drawingManagerService = accessor.get(IDrawingManagerService);
+		const groupParams = (params.drawings || drawingManagerService.getFocusDrawings()).map((drawing) => {
+			if (drawing.drawingType !== DrawingTypeEnum.DRAWING_GROUP) return null;
+			const { unitId, subUnitId, drawingId, transform: groupTransform = {
+				width: 0,
+				height: 0
+			}, groupBaseBound } = drawing;
+			if (groupTransform === null) return null;
+			const objects = drawingManagerService.getDrawingsByGroup({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			if (objects.length === 0) return null;
+			return {
+				parent: drawing,
+				children: objects.map((object) => {
+					const { transform } = object;
+					const { unitId, subUnitId, drawingId } = object;
+					const newTransform = transformObjectOutOfGroup(transform || {}, groupTransform, groupTransform.width || 0, groupTransform.height || 0, groupBaseBound);
+					return {
+						unitId,
+						subUnitId,
+						drawingId,
+						transform: {
+							...transform,
+							...newTransform
+						},
+						groupId: void 0
+					};
+				})
+			};
+		}).filter((o) => o !== null);
+		if (groupParams.length === 0) return false;
+		drawingManagerService.featurePluginUngroupUpdateNotification(groupParams);
+		return true;
+	}
+};
+
+//#endregion
+//#region src/commands/operations/image-crop.operation.ts
+const OpenImageCropOperation = {
+	id: "sheet.operation.open-image-crop",
+	type: CommandType.OPERATION,
+	handler: (_accessor, _params) => {
+		return true;
+	}
+};
+const CloseImageCropOperation = {
+	id: "sheet.operation.close-image-crop",
+	type: CommandType.OPERATION,
+	handler: (_accessor, _params) => {
+		return true;
+	}
+};
+const AutoImageCropOperation = {
+	id: "sheet.operation.Auto-image-crop",
+	type: CommandType.OPERATION,
+	handler: (_accessor, _params) => {
+		return true;
+	}
+};
+
+//#endregion
+//#region src/commands/operations/image-reset-size.operation.ts
+const ImageResetSizeOperation = {
+	id: "sheet.operation.image-reset-size",
+	type: CommandType.OPERATION,
+	handler: (accessor, params) => {
+		return true;
+	}
+};
+
+//#endregion
+//#region src/utils/rotate-enabled.ts
+function isKnownDrawingUINonRotatableType(drawingType) {
+	return drawingType === DrawingTypeEnum.DRAWING_CHART;
+}
+function resolveDrawingUIRotateEnabled(drawing, options = {}) {
+	return resolveDrawingRotateEnabled(drawing, {
+		...options,
+		isKnownNonRotatableType: options.isKnownNonRotatableType ?? isKnownDrawingUINonRotatableType
+	});
+}
+
+//#endregion
+//#region src/controllers/utils.ts
+function getDrawingRenderObject(scene, drawingSearch) {
+	const key = getDrawingShapeKeyByDrawingSearch(drawingSearch);
+	return scene.getObjectIncludeInGroup(key) ?? null;
+}
+function disposeDrawingRenderObject(scene, drawingSearch) {
+	const object = getDrawingRenderObject(scene, drawingSearch);
+	if (object == null) return false;
+	object.dispose();
+	return true;
+}
+function getRenderObjectForDrawing(scene, drawing) {
+	return getDrawingRenderObject(scene, drawing);
+}
+function syncGroupRotateEnabled(group, groupParam, scene, drawingManagerService, children) {
+	const rotateEnabled = resolveDrawingUIRotateEnabled(groupParam, {
+		getChildren: (drawing) => {
+			if (children && drawing.drawingId === groupParam.drawingId && drawing.unitId === groupParam.unitId && drawing.subUnitId === groupParam.subUnitId) return children;
+			return drawingManagerService.getDrawingsByGroup(drawing);
+		},
+		getRenderObject: (drawing) => getRenderObjectForDrawing(scene, drawing)
+	});
+	group.transformerConfig = {
+		...group.transformerConfig,
+		rotateEnabled
+	};
+}
+function insertGroupObject(objectParam, object, scene, drawingManagerService) {
+	const groupParam = drawingManagerService.getDrawingByParam(objectParam);
+	if (groupParam == null) return;
+	const groupKey = getDrawingShapeKeyByDrawingSearch(objectParam);
+	const groupObject = scene.getObjectIncludeInGroup(groupKey);
+	if (groupObject && !(groupObject instanceof Group)) return;
+	if (groupObject != null) {
+		const objects = groupObject.getObjects();
+		for (const obj of objects) if (obj.oKey === object.oKey) return;
+		groupObject.addObject(object);
+		syncGroupRotateEnabled(groupObject, groupParam, scene, drawingManagerService);
+		return;
+	}
+	const group = new DrawingGroupObject(groupKey);
+	scene.addObject(group, DRAWING_OBJECT_LAYER_INDEX).attachTransformerTo(group);
+	group.addObject(object);
+	syncGroupRotateEnabled(group, groupParam, scene, drawingManagerService);
+	const { transform, groupBaseBound } = groupParam;
+	if (groupBaseBound) group.setBaseBound(groupBaseBound);
+	if (groupParam.groupId) {
+		group.isInGroup = true;
+		insertGroupObject({
+			drawingId: groupParam.groupId,
+			unitId: objectParam.unitId,
+			subUnitId: objectParam.subUnitId
+		}, group, scene, drawingManagerService);
+	}
+	transform && group.transformByState({
+		left: transform.left,
+		top: transform.top,
+		angle: transform.angle,
+		width: transform.width,
+		height: transform.height
+	});
+}
+function getCurrentUnitInfo(currentUniverService, propUnitId) {
+	const current = propUnitId ? currentUniverService.getUnit(propUnitId) : currentUniverService.getFocusedUnit();
+	if (current == null) return;
+	const unitId = current.getUnitId();
+	let subUnitId;
+	if (current.type === UniverInstanceType.UNIVER_SHEET) {
+		var _getActiveSheet;
+		subUnitId = (_getActiveSheet = current.getActiveSheet()) === null || _getActiveSheet === void 0 ? void 0 : _getActiveSheet.getSheetId();
+	} else if (current.type === UniverInstanceType.UNIVER_DOC) subUnitId = unitId;
+	else if (current.type === UniverInstanceType.UNIVER_SLIDE) subUnitId = unitId;
+	return {
+		unitId,
+		subUnitId,
+		current
+	};
+}
+
+//#endregion
+//#region src/menu/align.menu.ts
+const getMenuStateByDrawingFocusChangedObservable$$1 = (accessor) => {
+	const drawingManagerService = accessor.get(IDrawingManagerService);
+	return new Observable((subscriber) => {
+		const update = (drawings) => {
+			if (!drawings || drawings.length === 0) return subscriber.next(true);
+			if (drawings.length < 2) return subscriber.next(true);
+			subscriber.next(false);
+		};
+		const subscription = drawingManagerService.focus$.subscribe((drawings) => {
+			if (!drawings || drawings.length === 0) return subscriber.next(true);
+			update(drawings);
+		});
+		update(drawingManagerService.getFocusDrawings());
+		return () => subscription.unsubscribe();
+	});
+};
+const DRAWING_ALIGN_CONTEXT_MENU_ID = "contextMenu.drawing-align";
+function DrawingAlignContextMenuItemFactory(accessor) {
+	return {
+		id: DRAWING_ALIGN_CONTEXT_MENU_ID,
+		type: MenuItemType.SUBITEMS,
+		icon: "HorizontallyIcon",
+		title: "drawing-ui.image-panel.align.title",
+		hidden$: getMenuStateByDrawingFocusChangedObservable$$1(accessor)
+	};
+}
+function SetDrawingAlignLeftMenuItemFactory() {
+	return {
+		id: SetDrawingAlignLeftOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "LeftJustifyingIcon",
+		title: "drawing-ui.image-panel.align.left"
+	};
+}
+function SetDrawingAlignCenterMenuItemFactory() {
+	return {
+		id: SetDrawingAlignCenterOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "HorizontallyIcon",
+		title: "drawing-ui.image-panel.align.center"
+	};
+}
+function SetDrawingAlignRightMenuItemFactory() {
+	return {
+		id: SetDrawingAlignRightOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "RightJustifyingIcon",
+		title: "drawing-ui.image-panel.align.right"
+	};
+}
+function SetDrawingAlignTopMenuItemFactory() {
+	return {
+		id: SetDrawingAlignTopOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "AlignTopIcon",
+		title: "drawing-ui.image-panel.align.top"
+	};
+}
+function SetDrawingAlignMiddleMenuItemFactory() {
+	return {
+		id: SetDrawingAlignMiddleOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "VerticalCenterIcon",
+		title: "drawing-ui.image-panel.align.middle"
+	};
+}
+function SetDrawingAlignBottomMenuItemFactory() {
+	return {
+		id: SetDrawingAlignBottomOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "AlignBottomIcon",
+		title: "drawing-ui.image-panel.align.bottom"
+	};
+}
+function SetDrawingAlignHorizonMenuItemFactory() {
+	return {
+		id: SetDrawingAlignHorizonOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "HorizontallyIcon",
+		title: "drawing-ui.image-panel.align.horizon"
+	};
+}
+function SetDrawingAlignVerticalMenuItemFactory() {
+	return {
+		id: SetDrawingAlignVerticalOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "VerticalCenterIcon",
+		title: "drawing-ui.image-panel.align.vertical"
+	};
+}
+
+//#endregion
+//#region src/menu/arrange.menu.ts
+const DRAWING_ARRANGE_CONTEXT_MENU_ID = "contextMenu.drawing-arrange";
+function DrawingArrangeContextMenuItemFactory(accessor) {
+	const drawingManagerService = accessor.get(IDrawingManagerService);
+	return {
+		id: DRAWING_ARRANGE_CONTEXT_MENU_ID,
+		type: MenuItemType.SUBITEMS,
+		icon: "TopmostIcon",
+		title: "drawing-ui.image-panel.arrange.title",
+		hidden$: drawingManagerService.focus$.pipe(startWith(drawingManagerService.getFocusDrawings()), map((drawings) => drawings.length === 0))
+	};
+}
+function SetDrawingArrangeFrontMenuItemFactory() {
+	return {
+		id: SetDrawingArrangeFrontOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "TopmostIcon",
+		title: "drawing-ui.image-panel.arrange.front"
+	};
+}
+function SetDrawingArrangeForwardMenuItemFactory() {
+	return {
+		id: SetDrawingArrangeForwardOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "MoveUpIcon",
+		title: "drawing-ui.image-panel.arrange.forward"
+	};
+}
+function SetDrawingArrangeBackMenuItemFactory() {
+	return {
+		id: SetDrawingArrangeBackOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "BottomIcon",
+		title: "drawing-ui.image-panel.arrange.back"
+	};
+}
+function SetDrawingArrangeBackwardMenuItemFactory() {
+	return {
+		id: SetDrawingArrangeBackwardOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "MoveDownIcon",
+		title: "drawing-ui.image-panel.arrange.backward"
+	};
+}
+
+//#endregion
+//#region src/menu/group.menu.ts
+function getMenuStateByDrawingFocusChangedObservable$(accessor, type) {
+	const drawingManagerService = accessor.get(IDrawingManagerService);
+	return new Observable((subscriber) => {
+		const update = (drawings) => {
+			if (!drawings || drawings.length === 0) return subscriber.next(true);
+			if (type === "group") {
+				if (drawings.length < 2) return subscriber.next(true);
+				if (!drawings.every((drawing) => isGroupableDrawingType(drawing.drawingType))) return subscriber.next(true);
+			} else if (type === "unGroup") {
+				if (drawings.filter((drawing) => drawing.drawingType === DrawingTypeEnum.DRAWING_GROUP).length === 0) return subscriber.next(true);
+			} else if (!drawings.every((drawing) => isGroupableDrawingType(drawing.drawingType))) return subscriber.next(true);
+			subscriber.next(false);
+		};
+		const subscription = drawingManagerService.focus$.subscribe((drawings) => {
+			if (!drawings || drawings.length === 0) return subscriber.next(true);
+			update(drawings);
+		});
+		update(drawingManagerService.getFocusDrawings());
+		return () => subscription.unsubscribe();
+	});
+}
+const DRAWING_GROUP_CONTEXT_MENU_ID = "contextMenu.drawing-group";
+function DrawingGroupContextMenuItemFactory(accessor) {
+	return {
+		id: DRAWING_GROUP_CONTEXT_MENU_ID,
+		type: MenuItemType.SUBITEMS,
+		icon: "GroupIcon",
+		title: "drawing-ui.image-panel.group.title",
+		hidden$: getMenuStateByDrawingFocusChangedObservable$(accessor)
+	};
+}
+function SetDrawingGroupMenuItemFactory(accessor) {
+	return {
+		id: SetDrawingGroupOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "GroupIcon",
+		title: "drawing-ui.image-panel.group.group",
+		disabled$: getMenuStateByDrawingFocusChangedObservable$(accessor, "group")
+	};
+}
+function CancelDrawingGroupMenuItemFactory(accessor) {
+	return {
+		id: CancelDrawingGroupOperation.id,
+		type: MenuItemType.BUTTON,
+		icon: "UngroupIcon",
+		title: "drawing-ui.image-panel.group.unGroup",
+		disabled$: getMenuStateByDrawingFocusChangedObservable$(accessor, "unGroup")
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = { [ContextMenuPosition.DRAWING]: { [ContextMenuGroup.OTHERS]: {
+	[DRAWING_GROUP_CONTEXT_MENU_ID]: {
+		order: 1,
+		menuItemFactory: DrawingGroupContextMenuItemFactory,
+		[SetDrawingGroupOperation.id]: {
+			order: 0,
+			menuItemFactory: SetDrawingGroupMenuItemFactory
+		},
+		[CancelDrawingGroupOperation.id]: {
+			order: 1,
+			menuItemFactory: CancelDrawingGroupMenuItemFactory
+		}
+	},
+	[DRAWING_ARRANGE_CONTEXT_MENU_ID]: {
+		order: 2,
+		menuItemFactory: DrawingArrangeContextMenuItemFactory,
+		[SetDrawingArrangeFrontOperation.id]: {
+			order: 0,
+			menuItemFactory: SetDrawingArrangeFrontMenuItemFactory
+		},
+		[SetDrawingArrangeForwardOperation.id]: {
+			order: 1,
+			menuItemFactory: SetDrawingArrangeForwardMenuItemFactory
+		},
+		[SetDrawingArrangeBackOperation.id]: {
+			order: 2,
+			menuItemFactory: SetDrawingArrangeBackMenuItemFactory
+		},
+		[SetDrawingArrangeBackwardOperation.id]: {
+			order: 3,
+			menuItemFactory: SetDrawingArrangeBackwardMenuItemFactory
+		}
+	},
+	[DRAWING_ALIGN_CONTEXT_MENU_ID]: {
+		order: 3,
+		menuItemFactory: DrawingAlignContextMenuItemFactory,
+		[SetDrawingAlignLeftOperation.id]: {
+			order: 0,
+			menuItemFactory: SetDrawingAlignLeftMenuItemFactory
+		},
+		[SetDrawingAlignCenterOperation.id]: {
+			order: 1,
+			menuItemFactory: SetDrawingAlignCenterMenuItemFactory
+		},
+		[SetDrawingAlignRightOperation.id]: {
+			order: 2,
+			menuItemFactory: SetDrawingAlignRightMenuItemFactory
+		},
+		[SetDrawingAlignTopOperation.id]: {
+			order: 3,
+			menuItemFactory: SetDrawingAlignTopMenuItemFactory
+		},
+		[SetDrawingAlignMiddleOperation.id]: {
+			order: 4,
+			menuItemFactory: SetDrawingAlignMiddleMenuItemFactory
+		},
+		[SetDrawingAlignBottomOperation.id]: {
+			order: 5,
+			menuItemFactory: SetDrawingAlignBottomMenuItemFactory
+		},
+		[SetDrawingAlignHorizonOperation.id]: {
+			order: 6,
+			menuItemFactory: SetDrawingAlignHorizonMenuItemFactory
+		},
+		[SetDrawingAlignVerticalOperation.id]: {
+			order: 7,
+			menuItemFactory: SetDrawingAlignVerticalMenuItemFactory
+		}
+	}
+} } };
+
+//#endregion
+//#region package.json
+var name = "@univerjs/drawing-ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+const DRAWING_UI_PLUGIN_CONFIG_KEY = "drawing-ui.config";
+const configSymbol = Symbol(DRAWING_UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/views/image-popup-menu/component-name.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const COMPONENT_IMAGE_POPUP_MENU = "COMPONENT_IMAGE_POPUP_MENU";
+
+//#endregion
+//#region src/views/image-popup-menu/MobileImagePopupMenu.tsx
+function MobileImagePopupMenu({ menuItems, getLabel, onSelect }) {
+	return /* @__PURE__ */ jsx("div", {
+		className: "univer-flex univer-flex-col univer-gap-2",
+		children: menuItems.map((item) => {
+			const label = getLabel(item);
+			return /* @__PURE__ */ jsx(MobileActionRow, {
+				title: label,
+				"aria-label": label,
+				variant: "subtle",
+				disabled: item.disable,
+				onClick: () => onSelect(item)
+			}, `${item.commandId}-${item.label}`);
+		})
+	});
+}
+
+//#endregion
+//#region src/views/image-popup-menu/ImagePopupMenu.tsx
+function ImagePopupMenu(props) {
+	var _popup$extraProps, _popup$extraProps2, _popup$extraProps3;
+	const { popup } = props;
+	const menuItems = popup === null || popup === void 0 || (_popup$extraProps = popup.extraProps) === null || _popup$extraProps === void 0 ? void 0 : _popup$extraProps.menuItems;
+	const commandService = useDependency(ICommandService);
+	const localeService = useDependency(LocaleService);
+	const dialogService = useDependency(IDialogService);
+	const { mobile } = useContext(ConfigContext);
+	const [visible, setVisible] = useState(false);
+	const [isHovered, setIsHovered] = useState(false);
+	if (!menuItems) return null;
+	if (((_popup$extraProps2 = popup.extraProps) === null || _popup$extraProps2 === void 0 ? void 0 : _popup$extraProps2.variant) === "doc-floating-toolbar" && popup.extraProps.unitId && popup.extraProps.subUnitId && popup.extraProps.drawingId) return /* @__PURE__ */ jsx(DocImageFloatingToolbar, {
+		menuItems,
+		unitId: popup.extraProps.unitId,
+		subUnitId: popup.extraProps.subUnitId,
+		drawingId: popup.extraProps.drawingId
+	});
+	if (((_popup$extraProps3 = popup.extraProps) === null || _popup$extraProps3 === void 0 ? void 0 : _popup$extraProps3.variant) === "doc-chart-floating-toolbar") return /* @__PURE__ */ jsx(DocChartFloatingToolbar, { menuItems });
+	if (mobile) return /* @__PURE__ */ jsx(MobileImagePopupMenu, {
+		menuItems,
+		getLabel: (item) => localeService.t(item.label),
+		onSelect: async (item) => {
+			var _popup$extraProps4;
+			await commandService.executeCommand(item.commandId, item.commandParams);
+			if ((_popup$extraProps4 = popup.extraProps) === null || _popup$extraProps4 === void 0 ? void 0 : _popup$extraProps4.dialogId) dialogService.close(popup.extraProps.dialogId);
+		}
+	});
+	const handleMouseEnter = () => {
+		setIsHovered(true);
+	};
+	const handleMouseLeave = () => {
+		setIsHovered(false);
+	};
+	const onVisibleChange = (visible) => {
+		setVisible(visible);
+	};
+	const handleClick = (item) => {
+		commandService.executeCommand(item.commandId, item.commandParams);
+		setVisible(false);
+	};
+	const showMore = visible || isHovered;
+	return /* @__PURE__ */ jsx("div", {
+		onMouseEnter: handleMouseEnter,
+		onMouseLeave: handleMouseLeave,
+		children: /* @__PURE__ */ jsx(DropdownMenu, {
+			align: "start",
+			items: menuItems.map((item) => ({
+				type: "item",
+				children: localeService.t(item.label),
+				disabled: item.disable,
+				onSelect: () => handleClick(item)
+			})),
+			open: visible,
+			onOpenChange: onVisibleChange,
+			children: /* @__PURE__ */ jsxs("div", {
+				className: clsx("univer-flex univer-items-center univer-gap-2 univer-rounded univer-p-1 univer-text-gray-900 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800", borderClassName, {
+					"univer-bg-gray-100 dark:!univer-bg-gray-800": visible,
+					"univer-bg-gray-0 dark:!univer-bg-gray-900": !visible
+				}),
+				children: [/* @__PURE__ */ jsx(AutofillDoubleIcon, { className: "univer-fill-primary-600 univer-text-gray-900 dark:!univer-text-gray-0" }), showMore && /* @__PURE__ */ jsx(MoreDownIcon, { className: "dark:!univer-text-gray-0" })]
+			})
+		})
+	});
+}
+const UPDATE_DOC_DRAWING_WRAPPING_STYLE_COMMAND_ID = "doc.command.update-doc-drawing-wrapping-style";
+function getWrappingStyle(documentDataModel, drawingId) {
+	var _documentDataModel$ge;
+	const drawing = documentDataModel === null || documentDataModel === void 0 || (_documentDataModel$ge = documentDataModel.getSnapshot().drawings) === null || _documentDataModel$ge === void 0 ? void 0 : _documentDataModel$ge[drawingId];
+	if (!drawing) return "inline";
+	if (drawing.layoutType === PositionedObjectLayoutType.WRAP_NONE) return drawing.behindDoc === BooleanNumber.TRUE ? "behindText" : "inFrontOfText";
+	if (drawing.layoutType === PositionedObjectLayoutType.WRAP_SQUARE) return "wrapSquare";
+	if (drawing.layoutType === PositionedObjectLayoutType.WRAP_TOP_AND_BOTTOM) return "wrapTopAndBottom";
+	return "inline";
+}
+function ToolbarGroup(props) {
+	return /* @__PURE__ */ jsx("div", {
+		className: "univer-flex univer-h-7 univer-items-center univer-gap-1 univer-px-1",
+		children: props.children
+	});
+}
+function ToolbarButton(props) {
+	return /* @__PURE__ */ jsx(Tooltip, {
+		className: "univer-fill-mode-backwards univer-delay-100",
+		title: props.title,
+		placement: "bottom",
+		children: /* @__PURE__ */ jsx("button", {
+			type: "button",
+			disabled: props.disabled,
+			onClick: props.onClick,
+			className: clsx("univer-flex univer-h-6 univer-w-6 univer-items-center univer-justify-center univer-rounded-md univer-border-none univer-bg-transparent univer-p-0 univer-text-sm univer-text-gray-700 univer-transition-colors hover:univer-bg-gray-100 disabled:univer-cursor-not-allowed disabled:univer-opacity-40 dark:!univer-text-gray-100 dark:hover:!univer-bg-gray-700", { "univer-bg-gray-100 univer-text-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-primary-300": props.active }),
+			children: props.children
+		})
+	});
+}
+function ToolbarDropdownButton(props) {
+	const [open, setOpen] = useState(false);
+	const activeOption = props.options.find((option) => option.value === props.value) ?? props.options[0];
+	return /* @__PURE__ */ jsx(Dropdown, {
+		open,
+		onOpenChange: setOpen,
+		overlay: /* @__PURE__ */ jsx("div", {
+			className: "univer-min-w-32 univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-1 univer-shadow-lg dark:!univer-border-gray-700 dark:!univer-bg-gray-900",
+			children: props.options.map((option) => /* @__PURE__ */ jsxs("button", {
+				type: "button",
+				onClick: () => {
+					props.onChange(option.value);
+					setOpen(false);
+				},
+				className: clsx("univer-flex univer-h-8 univer-w-full univer-items-center univer-gap-2 univer-rounded-md univer-border-none univer-bg-transparent univer-px-2 univer-text-left univer-text-sm univer-text-gray-700 univer-transition-colors hover:univer-bg-gray-100 dark:!univer-text-gray-100 dark:hover:!univer-bg-gray-800", { "univer-bg-primary-50 univer-text-primary-600 dark:!univer-bg-gray-800 dark:!univer-text-primary-300": option.value === props.value }),
+				children: [/* @__PURE__ */ jsx("span", {
+					className: "univer-flex univer-size-4 univer-items-center univer-justify-center",
+					children: option.icon
+				}), /* @__PURE__ */ jsx("span", {
+					className: "univer-flex-1",
+					children: option.label
+				})]
+			}, option.value))
+		}),
+		children: /* @__PURE__ */ jsx("span", { children: /* @__PURE__ */ jsx(Tooltip, {
+			className: "univer-fill-mode-backwards univer-delay-100",
+			title: props.title,
+			placement: "bottom",
+			children: /* @__PURE__ */ jsxs("button", {
+				type: "button",
+				className: clsx("univer-flex univer-h-6 univer-min-w-9 univer-items-center univer-justify-center univer-gap-1 univer-rounded-md univer-border-none univer-bg-transparent univer-px-1.5 univer-text-sm univer-text-gray-700 univer-transition-colors hover:univer-bg-gray-100 dark:!univer-text-gray-100 dark:hover:!univer-bg-gray-700", { "univer-bg-gray-100 univer-text-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-primary-300": open }),
+				children: [activeOption.icon, /* @__PURE__ */ jsx(MoreDownIcon, { className: "univer-text-xs" })]
+			})
+		}) })
+	});
+}
+function DocImageFloatingToolbar(props) {
+	var _wrappingStyleOptions;
+	const commandService = useDependency(ICommandService);
+	const iconManager = useDependency(IconManager);
+	const localeService = useDependency(LocaleService);
+	const documentDataModel = useDependency(IUniverInstanceService).getUnit(props.unitId, UniverInstanceType.UNIVER_DOC) ?? void 0;
+	const [wrappingStyle, setWrappingStyle] = useState(() => getWrappingStyle(documentDataModel, props.drawingId));
+	const [hidden, setHidden] = useState(false);
+	const actionItems = props.menuItems.filter((item) => item.type !== "select" && item.icon).sort((a, b) => a.index - b.index);
+	const wrappingStyleOptions = [
+		{
+			label: localeService.t("drawing-ui.image-text-wrap.inline"),
+			value: "inline",
+			icon: /* @__PURE__ */ jsx(TextWrapShapeIcon, {})
+		},
+		{
+			label: localeService.t("drawing-ui.image-text-wrap.square"),
+			value: "wrapSquare",
+			icon: /* @__PURE__ */ jsx(TextWrapShapeIcon, {})
+		},
+		{
+			label: localeService.t("drawing-ui.image-text-wrap.topAndBottom"),
+			value: "wrapTopAndBottom",
+			icon: /* @__PURE__ */ jsx(TextWrapShapeIcon, {})
+		},
+		{
+			label: localeService.t("drawing-ui.image-text-wrap.behindText"),
+			value: "behindText",
+			icon: /* @__PURE__ */ jsx(TextWrapShapeIcon, {})
+		},
+		{
+			label: localeService.t("drawing-ui.image-text-wrap.inFrontText"),
+			value: "inFrontOfText",
+			icon: /* @__PURE__ */ jsx(TextWrapShapeIcon, {})
+		}
+	];
+	const executeMenuItem = (item) => {
+		if (!item || item.disable) return;
+		if (item.hideOnClick) setHidden(true);
+		commandService.executeCommand(item.commandId, item.commandParams);
+	};
+	const updateWrappingStyle = (value) => {
+		setWrappingStyle(value);
+		commandService.executeCommand(UPDATE_DOC_DRAWING_WRAPPING_STYLE_COMMAND_ID, {
+			unitId: props.unitId,
+			subUnitId: props.subUnitId,
+			drawings: [{
+				unitId: props.unitId,
+				subUnitId: props.subUnitId,
+				drawingId: props.drawingId
+			}],
+			wrappingStyle: value
+		});
+	};
+	if (hidden) return null;
+	return /* @__PURE__ */ jsxs("div", {
+		"data-u-comp": "doc-image-floating-toolbar",
+		onPointerDown: (event) => event.stopPropagation(),
+		onMouseDown: (event) => {
+			event.stopPropagation();
+			event.preventDefault();
+		},
+		className: clsx("univer-box-border univer-flex univer-items-center univer-rounded univer-bg-gray-0 univer-px-1 univer-py-1 univer-shadow-sm dark:!univer-border-gray-700 dark:!univer-bg-gray-900", borderClassName),
+		children: [/* @__PURE__ */ jsx(ToolbarGroup, { children: /* @__PURE__ */ jsx(ToolbarDropdownButton, {
+			title: ((_wrappingStyleOptions = wrappingStyleOptions.find((option) => option.value === wrappingStyle)) === null || _wrappingStyleOptions === void 0 ? void 0 : _wrappingStyleOptions.label) ?? localeService.t("drawing-ui.image-text-wrap.inline"),
+			value: wrappingStyle,
+			options: wrappingStyleOptions,
+			onChange: updateWrappingStyle
+		}) }), actionItems.length > 0 && /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(Separator, { orientation: "vertical" }), /* @__PURE__ */ jsx(ToolbarGroup, { children: actionItems.map((item) => {
+			const Icon = iconManager.get(item.icon);
+			return /* @__PURE__ */ jsx(ToolbarButton, {
+				title: localeService.t(item.label),
+				disabled: item.disable,
+				onClick: () => executeMenuItem(item),
+				children: /* @__PURE__ */ jsx(Icon, {})
+			}, `${item.commandId}-${item.index}`);
+		}) })] })]
+	});
+}
+function DocChartFloatingToolbar(props) {
+	var _chartTypeOptions$;
+	const commandService = useDependency(ICommandService);
+	const iconManager = useDependency(IconManager);
+	const localeService = useDependency(LocaleService);
+	const [hidden, setHidden] = useState(false);
+	const chartTypeItem = props.menuItems.find((item) => item.type === "select");
+	const actionItems = props.menuItems.filter((item) => item.type !== "select" && item.icon).sort((a, b) => a.index - b.index);
+	const chartTypeOptions = ((chartTypeItem === null || chartTypeItem === void 0 ? void 0 : chartTypeItem.options) ?? []).map((option) => {
+		const Icon = option.icon ? iconManager.get(option.icon) : ChartIcon;
+		return {
+			label: String(option.label),
+			value: option.value,
+			icon: /* @__PURE__ */ jsx(Icon, {})
+		};
+	});
+	const executeMenuItem = (item) => {
+		if (!item || item.disable) return;
+		if (item.hideOnClick) setHidden(true);
+		commandService.executeCommand(item.commandId, item.commandParams);
+	};
+	if (hidden) return null;
+	return /* @__PURE__ */ jsxs("div", {
+		"data-u-comp": "doc-chart-floating-toolbar",
+		onPointerDown: (event) => event.stopPropagation(),
+		onMouseDown: (event) => {
+			event.stopPropagation();
+			event.preventDefault();
+		},
+		className: clsx("univer-box-border univer-flex univer-items-center univer-rounded univer-bg-gray-0 univer-px-1 univer-py-1 univer-shadow-sm dark:!univer-border-gray-700 dark:!univer-bg-gray-900", borderClassName),
+		children: [chartTypeItem && /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx(ToolbarGroup, { children: /* @__PURE__ */ jsx(ToolbarDropdownButton, {
+			title: localeService.t(chartTypeItem.label),
+			value: chartTypeItem.value ?? ((_chartTypeOptions$ = chartTypeOptions[0]) === null || _chartTypeOptions$ === void 0 ? void 0 : _chartTypeOptions$.value) ?? "",
+			options: chartTypeOptions,
+			onChange: (value) => {
+				if (!chartTypeItem.disable) {
+					var _chartTypeItem$comman;
+					commandService.executeCommand(chartTypeItem.commandId, (_chartTypeItem$comman = chartTypeItem.commandParamsFactory) === null || _chartTypeItem$comman === void 0 ? void 0 : _chartTypeItem$comman.call(chartTypeItem, value));
+				}
+			}
+		}) }), actionItems.length > 0 && /* @__PURE__ */ jsx(Separator, { orientation: "vertical" })] }), actionItems.length > 0 && /* @__PURE__ */ jsx(ToolbarGroup, { children: actionItems.map((item) => {
+			const Icon = iconManager.get(item.icon);
+			return /* @__PURE__ */ jsx(ToolbarButton, {
+				title: localeService.t(item.label),
+				disabled: item.disable,
+				onClick: () => executeMenuItem(item),
+				children: /* @__PURE__ */ jsx(Icon, {})
+			}, `${item.commandId}-${item.index}`);
+		}) })]
+	});
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let ComponentsController = class ComponentsController extends Disposable {
+	constructor(_componentManager, _iconManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._iconManager = _iconManager;
+		this._registerComponents();
+		this._registerIcons();
+	}
+	_registerComponents() {
+		[[COMPONENT_IMAGE_POPUP_MENU, ImagePopupMenu]].forEach(([key, component]) => {
+			this.disposeWithMe(this._componentManager.register(key, component));
+		});
+	}
+	_registerIcons() {
+		this.disposeWithMe(this._iconManager.register({
+			BottomIcon,
+			DrawingCropIcon: CropIcon,
+			DrawingDeleteIcon: DeleteIcon,
+			DrawingEditIcon: DocSettingIcon,
+			GroupIcon,
+			MoveDownIcon,
+			MoveUpIcon,
+			TopmostIcon,
+			UngroupIcon
+		}));
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, Inject(ComponentManager)), __decorateParam(1, Inject(IconManager))], ComponentsController);
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region src/services/drawing-image-clip.service.ts
+const IMAGE_CLIP_SHAPE_PICKER_COMPONENT = "sheet.image-clip.shape.picker.component";
+/**
+* Bridge service that enables shape-based image clipping.
+* This service lives in the open-source drawing-ui package and delegates
+* to a registered clip implementation (provided by pro engine-shape package).
+*
+* When no delegate is registered, applyShapeClip returns false and images render normally without shape clipping.
+*/
+var DrawingImageClipService = class extends Disposable {
+	constructor() {
+		super();
+		_defineProperty(this, "_clipDelegate", null);
+		_defineProperty(this, "_canUseShapeClip$", new BehaviorSubject(false));
+		_defineProperty(this, "canUseShapeClip$", this._canUseShapeClip$.asObservable());
+	}
+	setCanUseShapeClip(canUse) {
+		this._canUseShapeClip$.next(canUse);
+	}
+	/**
+	* Register a clip delegate that knows how to build shape clip paths.
+	* Typically called by the pro-side plugin with a ShapeModel-based implementation.
+	* @returns IDisposable to unregister the delegate
+	*/
+	registerClipDelegate(delegate) {
+		this._clipDelegate = delegate;
+		return toDisposable(() => {
+			if (this._clipDelegate === delegate) this._clipDelegate = null;
+		});
+	}
+	applyShapeClip(ctx, prstGeom, width, height, adjustValues) {
+		if (this._clipDelegate) return this._clipDelegate(ctx, prstGeom, width, height, adjustValues);
+		return false;
+	}
+	dispose() {
+		this._clipDelegate = null;
+		this._canUseShapeClip$.complete();
+		super.dispose();
+	}
+};
+
+//#endregion
+//#region src/services/drawing-render.service.ts
+const DOC_DRAWING_BEHIND_TEXT_LAYER_INDEX = 1;
+function getDrawingRenderLayerIndex(param) {
+	return param.behindText === true || param.behindText === BooleanNumber.TRUE || param.layoutType === PositionedObjectLayoutType.WRAP_NONE && param.behindDoc === BooleanNumber.TRUE ? 1 : DRAWING_OBJECT_LAYER_INDEX;
+}
+function ensureDrawingRenderLayer(scene, object, param) {
+	const layerIndex = getDrawingRenderLayerIndex(param);
+	if (object.layer == null || object.layer.zIndex === layerIndex) return;
+	scene.removeObject(object);
+	scene.addObject(object, layerIndex);
+}
+function isRenderableImageCache(image) {
+	return (image === null || image === void 0 ? void 0 : image.complete) === true && image.naturalWidth > 0 && image.naturalHeight > 0;
+}
+let DrawingRenderService = class DrawingRenderService {
+	constructor(_drawingManagerService, _imageIoService, _galleryService, _urlImageService, _univerInstanceService, _drawingImageClipService) {
+		this._drawingManagerService = _drawingManagerService;
+		this._imageIoService = _imageIoService;
+		this._galleryService = _galleryService;
+		this._urlImageService = _urlImageService;
+		this._univerInstanceService = _univerInstanceService;
+		this._drawingImageClipService = _drawingImageClipService;
+	}
+	async renderImages(imageParam, scene, options) {
+		const { transform: singleTransform, drawingType, source, imageSourceType, srcRect, prstGeom, groupId, unitId, subUnitId, drawingId, isMultiTransform, transforms: multiTransforms, adjustValues, hidden } = imageParam;
+		const { docxHeaderFooterDrawing, layoutType } = imageParam;
+		if (drawingType !== DrawingTypeEnum.DRAWING_IMAGE) return;
+		if (!this._drawingManagerService.getDrawingVisible()) return;
+		if (!(options === null || options === void 0 ? void 0 : options.allowInactiveSheet) && this._univerInstanceService.getUnitType(unitId) === UniverInstanceType.UNIVER_SHEET && subUnitId !== this._getActiveSheetId()) return;
+		if (singleTransform == null) return;
+		const transforms = isMultiTransform && multiTransforms ? multiTransforms : [singleTransform];
+		const images = [];
+		for (const transform of transforms) {
+			const { left, top, width, height, angle, flipX, flipY, skewX, skewY } = transform;
+			const index = transforms.indexOf(transform);
+			const imageShapeKey = getDrawingShapeKeyByDrawingSearch({
+				unitId,
+				subUnitId,
+				drawingId
+			}, isMultiTransform ? index : void 0);
+			const imageShape = scene.getObject(imageShapeKey);
+			if (imageShape != null) {
+				var _setClipBounds;
+				imageShape.transformByState({
+					left,
+					top,
+					width,
+					height,
+					angle,
+					flipX,
+					flipY,
+					skewX,
+					skewY
+				});
+				(_setClipBounds = imageShape.setClipBounds) === null || _setClipBounds === void 0 || _setClipBounds.call(imageShape, transform.clipBounds);
+				if ("hidden" in imageParam) hidden ? imageShape.hide() : imageShape.show();
+				ensureDrawingRenderLayer(scene, imageShape, imageParam);
+				continue;
+			}
+			const orders = this._drawingManagerService.getDrawingOrder(unitId, subUnitId);
+			const zIndex = orders.indexOf(drawingId);
+			const imageConfig = {
+				...transform,
+				zIndex: zIndex === -1 ? orders.length - 1 : zIndex
+			};
+			const imageNativeCache = this._imageIoService.getImageSourceCache(source, imageSourceType);
+			let shouldBeCache = false;
+			if (isRenderableImageCache(imageNativeCache)) imageConfig.image = imageNativeCache;
+			else if (imageSourceType === ImageSourceType.UUID) try {
+				imageConfig.url = await this._imageIoService.getImage(source);
+			} catch (error) {
+				console.error(error);
+				continue;
+			}
+			else if (imageSourceType === ImageSourceType.URL) {
+				try {
+					imageConfig.url = await this._urlImageService.getImage(source);
+				} catch (error) {
+					console.error(error);
+					imageConfig.url = source;
+				}
+				shouldBeCache = true;
+			} else {
+				imageConfig.url = source;
+				shouldBeCache = true;
+			}
+			const shouldWaitForInlineTransform = docxHeaderFooterDrawing === true && layoutType === PositionedObjectLayoutType.INLINE;
+			if (hidden || shouldWaitForInlineTransform) imageConfig.visible = false;
+			if (scene.getObject(imageShapeKey)) continue;
+			imageConfig.printable = true;
+			const image = new Image$1(imageShapeKey, imageConfig);
+			image.setClipService(this._drawingImageClipService);
+			if (shouldBeCache) this._imageIoService.addImageSourceCache(source, imageSourceType, image.getNative());
+			scene.addObject(image, getDrawingRenderLayerIndex(imageParam));
+			if (this._drawingManagerService.getDrawingEditable()) scene.attachTransformerTo(image);
+			groupId && insertGroupObject({
+				drawingId: groupId,
+				unitId,
+				subUnitId
+			}, image, scene, this._drawingManagerService);
+			if (prstGeom != null) image.setPrstGeom(prstGeom);
+			if (adjustValues != null) image.setPrstGeomAdjValues(adjustValues);
+			if (srcRect != null) image.setSrcRect(srcRect);
+			images.push(image);
+		}
+		return images;
+	}
+	_getActiveSheetId() {
+		var _this$_univerInstance;
+		return (_this$_univerInstance = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance === void 0 || (_this$_univerInstance = _this$_univerInstance.getActiveSheet()) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getSheetId();
+	}
+	renderFloatDom(param, scene) {
+		const { transform: singleTransform, drawingType, groupId, unitId, subUnitId, drawingId, isMultiTransform, transforms: multiTransforms } = param;
+		if (drawingType !== DrawingTypeEnum.DRAWING_DOM) return;
+		if (!this._drawingManagerService.getDrawingVisible()) return;
+		if (singleTransform == null) return;
+		const transforms = isMultiTransform && multiTransforms ? multiTransforms : [singleTransform];
+		const rects = [];
+		for (const transform of transforms) {
+			const { left, top, width, height, angle, flipX, flipY, skewX, skewY } = transform;
+			const index = transforms.indexOf(transform);
+			const imageShapeKey = getDrawingShapeKeyByDrawingSearch({
+				unitId,
+				subUnitId,
+				drawingId
+			}, isMultiTransform ? index : void 0);
+			const imageShape = scene.getObject(imageShapeKey);
+			if (imageShape != null) {
+				imageShape.transformByState({
+					left,
+					top,
+					width,
+					height,
+					angle,
+					flipX,
+					flipY,
+					skewX,
+					skewY
+				});
+				continue;
+			}
+			const orders = this._drawingManagerService.getDrawingOrder(unitId, subUnitId);
+			const zIndex = orders.indexOf(drawingId);
+			const rectConfig = {
+				...transform,
+				zIndex: zIndex === -1 ? orders.length - 1 : zIndex
+			};
+			if (scene.getObject(imageShapeKey)) continue;
+			rectConfig.printable = false;
+			const rect = new Rect(imageShapeKey, rectConfig);
+			if (!this._drawingManagerService.getDrawingVisible()) continue;
+			scene.addObject(rect, DRAWING_OBJECT_LAYER_INDEX);
+			if (this._drawingManagerService.getDrawingEditable() && param.allowTransform !== false) scene.attachTransformerTo(rect);
+			groupId && insertGroupObject({
+				drawingId: groupId,
+				unitId,
+				subUnitId
+			}, rect, scene, this._drawingManagerService);
+			rects.push(rect);
+		}
+		return rects;
+	}
+	renderDrawing(param, scene, options) {
+		const drawingParam = this._drawingManagerService.getDrawingByParam(param);
+		if (drawingParam == null) return;
+		switch (drawingParam.drawingType) {
+			case DrawingTypeEnum.DRAWING_IMAGE: return this.renderImages(drawingParam, scene, options);
+			default:
+		}
+	}
+	previewImage(key, src, width, height) {
+		this._galleryService.open({
+			images: [src],
+			onOpenChange: (open) => {
+				if (!open) this._galleryService.close();
+			}
+		});
+	}
+	_adjustImageSize(nativeWidth, nativeHeight, screenWidth, screenHeight) {
+		if (nativeWidth <= screenWidth && nativeHeight <= screenHeight) return {
+			width: nativeWidth,
+			height: nativeHeight
+		};
+		const widthRatio = screenWidth / nativeWidth;
+		const heightRatio = screenHeight / nativeHeight;
+		const scale = Math.min(widthRatio, heightRatio);
+		return {
+			width: Math.floor(nativeWidth * scale),
+			height: Math.floor(nativeHeight * scale)
+		};
+	}
+};
+DrawingRenderService = __decorate([
+	__decorateParam(0, IDrawingManagerService),
+	__decorateParam(1, IImageIoService),
+	__decorateParam(2, IGalleryService),
+	__decorateParam(3, IURLImageService),
+	__decorateParam(4, IUniverInstanceService),
+	__decorateParam(5, Inject(DrawingImageClipService))
+], DrawingRenderService);
+
+//#endregion
+//#region src/utils/get-update-params.ts
+function getUpdateParams(objects, drawingManagerService) {
+	const params = [];
+	objects.forEach((object) => {
+		const { oKey, left, top, height, width, angle } = object;
+		const searchParam = drawingManagerService.getDrawingOKey(oKey);
+		if (searchParam == null) {
+			params.push(null);
+			return true;
+		}
+		const { unitId, subUnitId, drawingId, drawingType } = searchParam;
+		const param = {
+			unitId,
+			subUnitId,
+			drawingId,
+			drawingType,
+			transform: {
+				left,
+				top,
+				height,
+				width,
+				angle
+			}
+		};
+		if (drawingType === DrawingTypeEnum.DRAWING_IMAGE) param.srcRect = object.srcRect;
+		params.push(param);
+	});
+	return params;
+}
+
+//#endregion
+//#region src/controllers/drawing-update.controller.ts
+function hasRefreshMetadata(refreshParam) {
+	return "hidden" in refreshParam || "behindText" in refreshParam || "selectable" in refreshParam;
+}
+function syncDrawingHiddenState(shape, drawingParam) {
+	if (!("hidden" in drawingParam)) return;
+	drawingParam.hidden === true ? shape.hide() : shape.show();
+}
+function syncDrawingSelectableState(shape, drawingParam, scene, drawingManagerService) {
+	var _scene$getTransformer;
+	const previousDrawing = drawingManagerService.getOldDrawingByParam(drawingParam);
+	if (!("selectable" in drawingParam) && (!previousDrawing || !("selectable" in previousDrawing))) return;
+	const selectable = drawingParam.selectable !== false;
+	shape.evented = selectable;
+	if (selectable) return;
+	(_scene$getTransformer = scene.getTransformer()) === null || _scene$getTransformer === void 0 || _scene$getTransformer.clearControlByIds([shape.oKey]);
+	const focusedDrawings = drawingManagerService.getFocusDrawings();
+	const remainingDrawings = focusedDrawings.filter(({ unitId, subUnitId, drawingId }) => unitId !== drawingParam.unitId || subUnitId !== drawingParam.subUnitId || drawingId !== drawingParam.drawingId);
+	if (remainingDrawings.length !== focusedDrawings.length) drawingManagerService.focusDrawing(remainingDrawings);
+}
+function mergeRefreshMetadata(drawingParam, refreshParam) {
+	if (!hasRefreshMetadata(refreshParam)) return drawingParam;
+	return {
+		...drawingParam,
+		...refreshParam
+	};
+}
+let DrawingUpdateController = class DrawingUpdateController extends Disposable {
+	constructor(_currentUniverService, _commandService, _renderManagerService, _drawingManagerService) {
+		super();
+		this._currentUniverService = _currentUniverService;
+		this._commandService = _commandService;
+		this._renderManagerService = _renderManagerService;
+		this._drawingManagerService = _drawingManagerService;
+		_defineProperty(this, "_sceneListenerOnDrawingMap", /* @__PURE__ */ new WeakSet());
+		this._initialize();
+	}
+	dispose() {
+		super.dispose();
+	}
+	_initialize() {
+		this._recoveryImages();
+		this._drawingAddListener();
+		this._drawingRemoveListener();
+		this._drawingUpdateListener();
+		this._commandExecutedListener();
+		this._drawingArrangeListener();
+		this._drawingGroupListener();
+		this._drawingRefreshListener();
+		this._drawingVisibleListener();
+	}
+	_recoveryImages() {
+		const drawingList = this._drawingManagerService.drawingManagerData;
+		const info = getCurrentUnitInfo(this._currentUniverService);
+		if (info == null) return;
+		const { unitId: currentUnitId, subUnitId: currentSubUnitId } = info;
+		Object.keys(drawingList).forEach((unitId) => {
+			Object.keys(drawingList[unitId]).forEach((subUnitId) => {
+				const drawingMap = drawingList[unitId][subUnitId].data;
+				if (drawingMap == null || unitId !== currentUnitId || subUnitId !== currentSubUnitId) return;
+				Object.keys(drawingMap).forEach((drawingId) => {
+					if (drawingMap[drawingId]) this._insertDrawing([{
+						unitId,
+						subUnitId,
+						drawingId
+					}]);
+				});
+			});
+		});
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id === SetDrawingAlignOperation.id) {
+				const params = command.params;
+				if (params == null) return;
+				this._drawingAlign(params);
+			}
+		}));
+	}
+	_drawingGroupListener() {
+		this.disposeWithMe(this._drawingManagerService.group$.subscribe((params) => {
+			this._groupDrawings(params);
+		}));
+		this.disposeWithMe(this._drawingManagerService.ungroup$.subscribe((params) => {
+			this._ungroupDrawings(params);
+		}));
+	}
+	_getSceneAndTransformerByDrawingSearch(unitId) {
+		if (unitId == null) return;
+		const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+		const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+		if (scene == null) return null;
+		return {
+			scene,
+			transformer: scene.getTransformerByCreate()
+		};
+	}
+	_groupDrawings(drawings) {
+		drawings.forEach((drawing) => {
+			this._groupDrawing(drawing);
+		});
+	}
+	_groupDrawing(params) {
+		const { parent, children } = params;
+		const { unitId, subUnitId, drawingId } = parent;
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(parent.unitId);
+		if (renderObject == null) return;
+		const { scene, transformer } = renderObject;
+		this._commandService.syncExecuteCommand(CloseImageCropOperation.id);
+		const objects = [];
+		children.forEach((drawing) => {
+			const drawingShapeKey = getDrawingShapeKeyByDrawingSearch(drawing);
+			const object = scene.getObjectIncludeInGroup(drawingShapeKey);
+			if (object == null || objects.includes(object)) return;
+			objects.push(object);
+			const { transform } = drawing;
+			if (transform == null) return;
+			if (object.classType === RENDER_CLASS_TYPE.GROUP) object.transformByState({
+				left: transform.left,
+				top: transform.top
+			});
+			else object.transformByState(transform);
+		});
+		if (objects.length === 0) return;
+		const group = new DrawingGroupObject(getDrawingShapeKeyByDrawingSearch({
+			unitId,
+			subUnitId,
+			drawingId
+		}));
+		scene.addObject(group, DRAWING_OBJECT_LAYER_INDEX).attachTransformerTo(group);
+		group.addObjects(...objects);
+		syncGroupRotateEnabled(group, parent, scene, this._drawingManagerService, children);
+		if (parent.groupBaseBound) group.setBaseBound(parent.groupBaseBound);
+		if (parent.groupId) {
+			group.isInGroup = true;
+			insertGroupObject({
+				drawingId: parent.groupId,
+				unitId,
+				subUnitId
+			}, group, scene, this._drawingManagerService);
+		}
+		parent.transform && group.transformByState({
+			left: parent.transform.left,
+			top: parent.transform.top,
+			width: parent.transform.width,
+			height: parent.transform.height,
+			angle: parent.transform.angle
+		});
+		transformer.clearSelectedObjects();
+		transformer.setSelectedControl(group);
+	}
+	_ungroupDrawings(drawings) {
+		drawings.forEach((drawing) => {
+			this._ungroupDrawing(drawing);
+		});
+	}
+	_ungroupDrawing(drawing) {
+		const { parent, children } = drawing;
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(parent.unitId);
+		if (renderObject == null) return;
+		const { scene, transformer } = renderObject;
+		children.forEach((drawing) => {
+			const drawingKey = getDrawingShapeKeyByDrawingSearch(drawing);
+			const object = scene.getObjectIncludeInGroup(drawingKey);
+			if (object == null) return true;
+			if (object == null) return;
+			const { transform } = drawing;
+			if (transform == null) return;
+			if (object.classType === RENDER_CLASS_TYPE.GROUP) object.transformByState({
+				left: transform.left,
+				top: transform.top
+			});
+			else object.transformByState(transform);
+		});
+		const groupKey = getDrawingShapeKeyByDrawingSearch(parent);
+		const group = scene.getObject(groupKey);
+		const { width, height } = group;
+		group.getObjects().forEach((object) => {
+			group.removeSelfObjectAndTransform(object.oKey, width, height);
+		});
+		group.dispose();
+		transformer.clearSelectedObjects();
+	}
+	_drawingAlign(params) {
+		const { alignType } = params;
+		const drawings = params.drawings || this._drawingManagerService.getFocusDrawings();
+		if (alignType === "0") return;
+		const drawingTransformCaches = [];
+		let minLeft = Number.POSITIVE_INFINITY;
+		let minTop = Number.POSITIVE_INFINITY;
+		let maxRight = Number.NEGATIVE_INFINITY;
+		let maxBottom = Number.NEGATIVE_INFINITY;
+		let drawingCount = 0;
+		drawings.forEach((drawing) => {
+			const { unitId, subUnitId, drawingId, drawingType } = drawing;
+			const drawingParam = this._drawingManagerService.getDrawingByParam({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			if (drawingParam == null || drawingParam.transform == null) return;
+			drawingTransformCaches.push({
+				unitId,
+				subUnitId,
+				drawingId,
+				drawingType,
+				transform: drawingParam.transform
+			});
+			const { left = 0, top = 0, width = 0, height = 0 } = drawingParam.transform;
+			minLeft = Math.min(minLeft, left);
+			minTop = Math.min(minTop, top);
+			maxRight = Math.max(maxRight, left + width);
+			maxBottom = Math.max(maxBottom, top + height);
+			drawingCount++;
+		});
+		if (drawingCount === 0) return;
+		this._sortDrawingTransform(drawingTransformCaches, alignType);
+		this._applyAlignType(drawingTransformCaches, alignType, minLeft, minTop, maxRight, maxBottom, drawingCount);
+	}
+	_applyAlignType(drawingTransformCaches, alignType, minLeft, minTop, maxRight, maxBottom, drawingCount) {
+		const averageHorizon = Math.round((maxRight - minLeft) / drawingCount * 10) / 10;
+		const averageVertical = Math.round((maxBottom - minTop) / drawingCount * 10) / 10;
+		const updateParams = [];
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(drawingTransformCaches[0].unitId);
+		if (renderObject == null) return;
+		const { scene, transformer } = renderObject;
+		drawingTransformCaches.forEach((drawingTransformCache, index) => {
+			const { unitId, subUnitId, drawingId, transform, drawingType } = drawingTransformCache;
+			const { left = 0, top = 0, width = 0, height = 0 } = transform;
+			let newLeft = left;
+			let newTop = top;
+			switch (alignType) {
+				case "1":
+					newLeft = minLeft;
+					break;
+				case "2":
+					newLeft = minLeft + (maxRight - minLeft) / 2 - width / 2;
+					break;
+				case "3":
+					newLeft = maxRight - width;
+					break;
+				case "4":
+					newTop = minTop;
+					break;
+				case "5":
+					newTop = minTop + (maxBottom - minTop) / 2 - height / 2;
+					break;
+				case "6":
+					newTop = maxBottom - height;
+					break;
+				case "7":
+					newLeft = minLeft + averageHorizon * index;
+					break;
+				case "8":
+					newTop = minTop + averageVertical * index;
+					break;
+				default: break;
+			}
+			if (newLeft !== left || newTop !== top) updateParams.push({
+				unitId,
+				subUnitId,
+				drawingId,
+				drawingType,
+				transform: {
+					left: newLeft,
+					top: newTop
+				}
+			});
+		});
+		this._drawingManagerService.featurePluginUpdateNotification(updateParams);
+		transformer.refreshControls().changeNotification();
+	}
+	_sortDrawingTransform(drawingTransformCaches, alignType) {
+		drawingTransformCaches.sort((a, b) => {
+			const aTransform = a.transform;
+			const bTransform = b.transform;
+			const { left: aLeft = 0, top: aTop = 0, width: aWidth = 0, height: aHeight = 0 } = aTransform;
+			const { left: bLeft = 0, top: bTop = 0, width: bWidth = 0, height: bHeight = 0 } = bTransform;
+			switch (alignType) {
+				case "1": return aLeft - bLeft;
+				case "2": return aLeft + aWidth / 2 - (bLeft + bWidth / 2);
+				case "3": return aLeft + aWidth - (bLeft + bWidth);
+				case "4": return aTop - bTop;
+				case "5": return aTop + aHeight / 2 - (bTop + bHeight / 2);
+				case "6": return aTop + aHeight - (bTop + bHeight);
+				case "7": return aLeft + aWidth / 2 - (bLeft + bWidth / 2);
+				case "8": return aTop + aHeight / 2 - (bTop + bHeight / 2);
+				default: return 0;
+			}
+		});
+	}
+	_drawingArrangeListener() {
+		this.disposeWithMe(this._drawingManagerService.order$.subscribe((params) => {
+			this._drawingArrange(params);
+		}));
+	}
+	_drawingArrange(params) {
+		const { unitId, subUnitId, drawingIds } = params;
+		const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+		if (renderObject == null) return;
+		const { scene } = renderObject;
+		drawingIds.forEach((drawingId) => {
+			const oKey = getDrawingShapeKeyByDrawingSearch({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			const drawingShapes = scene.fuzzyMathObjects(oKey, true);
+			if (drawingShapes == null || drawingShapes.length === 0) return;
+			const index = this._drawingManagerService.getDrawingOrder(unitId, subUnitId).indexOf(drawingId);
+			for (const shape of drawingShapes) {
+				shape.setProps({ zIndex: index });
+				shape.makeDirty();
+			}
+		});
+	}
+	_drawingAddListener() {
+		this.disposeWithMe(this._drawingManagerService.add$.subscribe((params) => {
+			this._insertDrawing(params);
+		}));
+	}
+	_insertDrawing(params) {
+		const sceneList = [];
+		params.forEach((param) => {
+			const { unitId } = param;
+			if (this._drawingManagerService.getDrawingByParam(param) == null) return;
+			const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+			if (renderObject == null) return;
+			const { scene } = renderObject;
+			if (!sceneList.includes(scene)) sceneList.push(scene);
+		});
+		sceneList.forEach((scene) => {
+			if (this._sceneListenerOnDrawingMap.has(scene)) return;
+			this._addListenerOnDrawing(scene);
+			this._sceneListenerOnDrawingMap.add(scene);
+		});
+	}
+	_drawingRemoveListener() {
+		this.disposeWithMe(this._drawingManagerService.remove$.subscribe((params) => {
+			params.forEach((param) => {
+				const { unitId, subUnitId, drawingId } = param;
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+				if (renderObject == null) return;
+				const { scene } = renderObject;
+				if (disposeDrawingRenderObject(scene, {
+					unitId,
+					subUnitId,
+					drawingId
+				})) {
+					var _scene$getTransformer2;
+					(_scene$getTransformer2 = scene.getTransformer()) === null || _scene$getTransformer2 === void 0 || _scene$getTransformer2.clearSelectedObjects();
+				}
+			});
+		}));
+	}
+	_drawingUpdateListener() {
+		this.disposeWithMe(this._drawingManagerService.update$.subscribe((params) => {
+			params.forEach((param) => {
+				var _setClipBounds, _scene$getTransformer3;
+				const { unitId, subUnitId, drawingId } = param;
+				const drawingParam = this._drawingManagerService.getDrawingByParam(param);
+				if (drawingParam == null) return;
+				const { transform, drawingType } = drawingParam;
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+				if (renderObject == null) return;
+				const { scene, transformer } = renderObject;
+				if (transform == null) return true;
+				const { left = 0, top = 0, width = 0, height = 0, angle = 0, flipX = false, flipY = false, skewX = 0, skewY = 0 } = transform;
+				const drawingShapeKey = getDrawingShapeKeyByDrawingSearch({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				const drawingShape = scene.getObjectIncludeInGroup(drawingShapeKey);
+				if (drawingShape == null) return true;
+				drawingShape.transformByState({
+					left,
+					top,
+					width,
+					height,
+					angle,
+					flipX,
+					flipY,
+					skewX,
+					skewY
+				});
+				(_setClipBounds = drawingShape.setClipBounds) === null || _setClipBounds === void 0 || _setClipBounds.call(drawingShape, transform.clipBounds);
+				syncDrawingHiddenState(drawingShape, drawingParam);
+				syncDrawingSelectableState(drawingShape, drawingParam, scene, this._drawingManagerService);
+				ensureDrawingRenderLayer(scene, drawingShape, drawingParam);
+				(_scene$getTransformer3 = scene.getTransformer()) === null || _scene$getTransformer3 === void 0 || _scene$getTransformer3.debounceRefreshControls();
+			});
+		}));
+	}
+	_drawingRefreshListener() {
+		this.disposeWithMe(this._drawingManagerService.refreshTransform$.subscribe((params) => {
+			params.forEach((param) => {
+				var _setClipBounds2;
+				const { unitId, subUnitId, drawingId } = param;
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+				if (renderObject == null) return;
+				const drawingParam = this._drawingManagerService.getDrawingByParam(param);
+				if (drawingParam == null) return;
+				const { transform } = drawingParam;
+				const { scene } = renderObject;
+				if (transform == null) return true;
+				const drawingShapeKey = getDrawingShapeKeyByDrawingSearch({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				const drawingShape = scene.getObjectIncludeInGroup(drawingShapeKey);
+				const drawingParamWithRefreshMetadata = mergeRefreshMetadata(drawingParam, param);
+				if (drawingShape == null) {
+					if (drawingParamWithRefreshMetadata.hidden === true) return true;
+					this._drawingManagerService.addNotification([{
+						unitId,
+						subUnitId,
+						drawingId
+					}]);
+					return true;
+				}
+				const { left = 0, top = 0, width = 0, height = 0, angle = 0, flipX = false, flipY = false, skewX = 0, skewY = 0 } = transform;
+				drawingShape.transformByState({
+					left,
+					top,
+					width,
+					height,
+					angle,
+					flipX,
+					flipY,
+					skewX,
+					skewY
+				});
+				(_setClipBounds2 = drawingShape.setClipBounds) === null || _setClipBounds2 === void 0 || _setClipBounds2.call(drawingShape, transform.clipBounds);
+				syncDrawingHiddenState(drawingShape, drawingParamWithRefreshMetadata);
+				syncDrawingSelectableState(drawingShape, drawingParamWithRefreshMetadata, scene, this._drawingManagerService);
+				ensureDrawingRenderLayer(scene, drawingShape, drawingParamWithRefreshMetadata);
+			});
+		}));
+	}
+	_drawingVisibleListener() {
+		this.disposeWithMe(this._drawingManagerService.visible$.subscribe((params) => {
+			params.forEach((param) => {
+				const { unitId, subUnitId, drawingId, visible } = param;
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+				if (renderObject == null) return;
+				const { scene } = renderObject;
+				const drawingShapeKey = getDrawingShapeKeyByDrawingSearch({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				const drawingShape = scene.getObjectIncludeInGroup(drawingShapeKey);
+				if (drawingShape == null) return true;
+				if (visible) drawingShape.show();
+				else drawingShape.hide();
+			});
+		}));
+	}
+	_filterUpdateParams(params, startTransforms) {
+		return params.filter((param, index) => {
+			if (param == null) return false;
+			const { transform } = param;
+			return checkIfMove(transform, startTransforms === null || startTransforms === void 0 ? void 0 : startTransforms[index]);
+		});
+	}
+	_addListenerOnDrawing(scene) {
+		const transformer = scene.getTransformerByCreate();
+		let startTransforms = null;
+		this.disposeWithMe(toDisposable(transformer.changeStart$.subscribe((state) => {
+			const { objects } = state;
+			const objectArray = Array.from(objects.values());
+			const drawings = [];
+			startTransforms = objectArray.map((object) => {
+				const { left, top, height, width, angle, oKey, isInGroup } = object;
+				const drawing = this._drawingManagerService.getDrawingOKey(oKey);
+				if (isInGroup || object instanceof Group) {
+					let group = object.ancestorGroup;
+					if (group == null && object instanceof Group) group = object;
+					if (group == null) return null;
+					const groupDrawing = this._drawingManagerService.getDrawingOKey(group.oKey);
+					if (groupDrawing) {
+						const { unitId, subUnitId, drawingId } = groupDrawing;
+						drawings.push({
+							unitId,
+							subUnitId,
+							drawingId
+						});
+						const { left, top, height, width, angle } = group;
+						return {
+							left,
+							top,
+							height,
+							width,
+							angle
+						};
+					}
+				} else if (drawing != null) {
+					const { unitId, subUnitId, drawingId } = drawing;
+					drawings.push({
+						unitId,
+						subUnitId,
+						drawingId
+					});
+					return {
+						left,
+						top,
+						height,
+						width,
+						angle
+					};
+				}
+				return null;
+			}).filter((transform) => transform != null);
+			if (drawings.length > 0) this._commandService.syncExecuteCommand(SetDrawingSelectedOperation.id, drawings);
+			else this._commandService.syncExecuteCommand(SetDrawingSelectedOperation.id, []);
+		})));
+		this.disposeWithMe(toDisposable(transformer.changeEnd$.subscribe((state) => {
+			const { objects } = state;
+			const params = this._filterUpdateParams(getUpdateParams(objects, this._drawingManagerService), startTransforms);
+			if (params.length > 0) this._drawingManagerService.featurePluginUpdateNotification(params);
+		})));
+	}
+};
+DrawingUpdateController = __decorate([
+	__decorateParam(0, IUniverInstanceService),
+	__decorateParam(1, ICommandService),
+	__decorateParam(2, IRenderManagerService),
+	__decorateParam(3, IDrawingManagerService)
+], DrawingUpdateController);
+
+//#endregion
+//#region src/views/crop/image-cropper-object.ts
+var ImageCropperObject = class extends Shape {
+	constructor(key, props) {
+		if (props == null) props = {};
+		props.transformerConfig = {
+			keepRatio: false,
+			isCropper: true,
+			anchorFill: "rgb(0, 0, 0)",
+			anchorStroke: "rgb(255, 255, 255)",
+			anchorSize: 24
+		};
+		super(key, props);
+		_defineProperty(this, "_srcRect", void 0);
+		_defineProperty(this, "_prstGeom", void 0);
+		_defineProperty(this, "_applyTransform", void 0);
+		_defineProperty(this, "_dragPadding", 8);
+		_defineProperty(this, "_cacheCanvas", void 0);
+		if (props === null || props === void 0 ? void 0 : props.srcRect) this._srcRect = props.srcRect;
+		if (props === null || props === void 0 ? void 0 : props.prstGeom) this._prstGeom = props.prstGeom;
+		if (props === null || props === void 0 ? void 0 : props.applyTransform) this._applyTransform = props.applyTransform;
+		if (props === null || props === void 0 ? void 0 : props.dragPadding) this._dragPadding = props.dragPadding;
+		this._applyProps();
+	}
+	refreshSrcRect(value, transform) {
+		this._srcRect = value;
+		this._applyTransform = transform;
+		this._applyProps();
+	}
+	get srcRect() {
+		return this._srcRect;
+	}
+	dispose() {
+		var _this$_cacheCanvas;
+		super.dispose();
+		(_this$_cacheCanvas = this._cacheCanvas) === null || _this$_cacheCanvas === void 0 || _this$_cacheCanvas.dispose();
+		this._srcRect = null;
+	}
+	isHit(coord) {
+		const oCoord = this.getInverseCoord(coord);
+		if (oCoord.x >= -this.strokeWidth / 2 && oCoord.x <= this.width + this.strokeWidth / 2 && oCoord.y >= -this.strokeWidth / 2 && oCoord.y <= this.height + this.strokeWidth / 2 && !this._inSurround(oCoord)) return true;
+		return false;
+	}
+	_inSurround(oCoord) {
+		const padding = this._dragPadding;
+		if (oCoord.x >= padding - this.strokeWidth / 2 && oCoord.x <= this.width + this.strokeWidth / 2 - padding && oCoord.y >= padding - this.strokeWidth / 2 && oCoord.y <= this.height + this.strokeWidth / 2 - padding) return true;
+		return false;
+	}
+	render(mainCtx, bounds) {
+		if (!this.visible) {
+			this.makeDirty(false);
+			return this;
+		}
+		mainCtx.save();
+		this._draw(mainCtx);
+		mainCtx.restore();
+		this.makeDirty(false);
+		return this;
+	}
+	_draw(ctx) {
+		var _this$_cacheCanvas2, _this$_cacheCanvas3;
+		const { width: engineWidth, height: engineHeight } = this.getScene().getEngine();
+		this._initialCacheCanvas();
+		(_this$_cacheCanvas2 = this._cacheCanvas) === null || _this$_cacheCanvas2 === void 0 || _this$_cacheCanvas2.clear();
+		const cacheCtx = (_this$_cacheCanvas3 = this._cacheCanvas) === null || _this$_cacheCanvas3 === void 0 ? void 0 : _this$_cacheCanvas3.getContext();
+		if (cacheCtx == null) return;
+		cacheCtx.save();
+		Rect.drawWith(cacheCtx, {
+			left: 0,
+			top: 0,
+			width: engineWidth,
+			height: engineHeight,
+			fill: "rgba(0, 0, 0, 0.5)"
+		});
+		cacheCtx.setTransform(ctx.getTransform());
+		this._clipForApplyObject(cacheCtx);
+		this._applyCache(ctx);
+		cacheCtx.restore();
+	}
+	_clipForApplyObject(cacheCtx) {
+		let objectType = 0;
+		if (this._prstGeom != null) objectType = 1;
+		cacheCtx.globalCompositeOperation = "destination-out";
+		cacheCtx.beginPath();
+		if (objectType === 0) {
+			const m = this.transform.getMatrix();
+			cacheCtx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+			cacheCtx.rect(0, 0, this.width, this.height);
+			cacheCtx.fill();
+		}
+	}
+	_applyProps() {
+		if (this._applyTransform == null) return;
+		let cropLeft = 0;
+		let cropTop = 0;
+		let cropRight = 0;
+		let cropBottom = 0;
+		const { left: applyLeft = 0, top: applyTop = 0, width: applyWidth = 0, height: applyHeight = 0, angle } = this._applyTransform;
+		if (this._srcRect != null) {
+			const { left = 0, top = 0, right = 0, bottom = 0 } = this._srcRect;
+			cropLeft = left;
+			cropTop = top;
+			cropRight = right;
+			cropBottom = bottom;
+		}
+		const left = applyLeft + cropLeft;
+		const top = applyTop + cropTop;
+		this.transformByState({
+			left,
+			top,
+			width: applyLeft + applyWidth - cropRight - left,
+			height: applyTop + applyHeight - cropBottom - top,
+			angle
+		});
+	}
+	_applyCache(ctx) {
+		if (!ctx || this._cacheCanvas == null) return;
+		const cacheCtx = this._cacheCanvas.getContext();
+		cacheCtx.save();
+		ctx.save();
+		ctx.setTransform(1, 0, 0, 1, 0, 0);
+		cacheCtx.setTransform(1, 0, 0, 1, 0, 0);
+		ctx.drawImage(this._cacheCanvas.getCanvasEle(), 0, 0);
+		ctx.restore();
+		cacheCtx.restore();
+	}
+	_initialCacheCanvas() {
+		if (this._cacheCanvas != null) return;
+		const scene = this.getScene();
+		if (scene == null) return;
+		this._cacheCanvas = new Canvas();
+		const engine = scene.getEngine();
+		this._cacheCanvas.setSize(engine.width, engine.height);
+		engine.onTransformChange$.subscribeEvent(() => {
+			var _this$_cacheCanvas4;
+			(_this$_cacheCanvas4 = this._cacheCanvas) === null || _this$_cacheCanvas4 === void 0 || _this$_cacheCanvas4.setSize(engine.width, engine.height);
+			this.makeDirty(true);
+		});
+	}
+};
+
+//#endregion
+//#region src/controllers/image-cropper.controller.ts
+let ImageCropperController = class ImageCropperController extends Disposable {
+	constructor(_commandService, _drawingManagerService, _renderManagerService, _univerInstanceService, _messageService, _localeService, _shortcutService, _layoutService) {
+		super();
+		this._commandService = _commandService;
+		this._drawingManagerService = _drawingManagerService;
+		this._renderManagerService = _renderManagerService;
+		this._univerInstanceService = _univerInstanceService;
+		this._messageService = _messageService;
+		this._localeService = _localeService;
+		this._shortcutService = _shortcutService;
+		this._layoutService = _layoutService;
+		_defineProperty(this, "_sceneListenerOnImageMap", /* @__PURE__ */ new WeakSet());
+		_defineProperty(this, "_cropShortcutDisposables", new DisposableCollection());
+		_defineProperty(this, "_cropSnapshots", /* @__PURE__ */ new WeakMap());
+		_defineProperty(this, "_pendingCropSnapshot", null);
+		_defineProperty(this, "_activeCropSession", null);
+		this.disposeWithMe(this._cropShortcutDisposables);
+		this._init();
+	}
+	_init() {
+		this._initOpenCrop();
+		this._initCloseCrop();
+		this._initAutoCrop();
+	}
+	_initAutoCrop() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id !== AutoImageCropOperation.id) return;
+			const params = command.params;
+			if (params == null) return;
+			const { cropType } = params;
+			const drawingParams = this._drawingManagerService.getFocusDrawings();
+			if (drawingParams.length !== 1) return;
+			const { unitId, subUnitId, drawingId } = drawingParams[0];
+			const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+			const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+			if (scene == null) return true;
+			if (this._searchCropObject(scene) != null) this._commandService.syncExecuteCommand(CloseImageCropOperation.id, { isAuto: true });
+			const imageShapeKey = getDrawingShapeKeyByDrawingSearch({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			const imageShape = scene.getObject(imageShapeKey);
+			if (!(imageShape instanceof Image$1)) {
+				this._messageService.show({
+					type: MessageType.Error,
+					content: this._localeService.t("drawing-ui.image-cropper.error")
+				});
+				return;
+			}
+			if (imageShape == null) return;
+			this._pendingCropSnapshot = this._captureCropSnapshot(imageShape);
+			try {
+				this._updateCropperObject(cropType, imageShape);
+				this._commandService.syncExecuteCommand(OpenImageCropOperation.id, {
+					unitId,
+					subUnitId,
+					drawingId
+				});
+			} finally {
+				this._pendingCropSnapshot = null;
+			}
+		}));
+	}
+	_calculateSrcRectByRatio(left, top, width, height, numerator, denominator) {
+		const srcRatio = width / height;
+		const ratio = numerator / denominator;
+		let newWidth = width;
+		let newHeight = height;
+		if (srcRatio > ratio) newWidth = height * ratio;
+		else newHeight = width / ratio;
+		const newLeft = (width - newWidth) / 2;
+		const newTop = (height - newHeight) / 2;
+		return {
+			left: precisionTo(newLeft, 1),
+			top: precisionTo(newTop, 1),
+			right: precisionTo(width - (newLeft + newWidth), 1),
+			bottom: precisionTo(height - (newTop + newHeight), 1)
+		};
+	}
+	_updateCropperObject(cropType, imageShape) {
+		const { left, top, width, height } = imageShape.calculateTransformWithSrcRect();
+		let newSrcRect;
+		switch (cropType) {
+			case "1":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 1, 1);
+				break;
+			case "2":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 16, 9);
+				break;
+			case "3":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 9, 16);
+				break;
+			case "4":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 5, 4);
+				break;
+			case "5":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 4, 5);
+				break;
+			case "6":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 4, 3);
+				break;
+			case "7":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 3, 4);
+				break;
+			case "8":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 3, 2);
+				break;
+			case "9":
+				newSrcRect = this._calculateSrcRectByRatio(left, top, width, height, 2, 3);
+				break;
+			case "0":
+			default: break;
+		}
+		if (newSrcRect == null) return;
+		imageShape.setSrcRect(newSrcRect);
+		const { left: newLeft = 0, top: newTop = 0, bottom: newBottom = 0, right: newRight = 0 } = newSrcRect;
+		imageShape.transformByStateCloseCropper({
+			left: left + newLeft,
+			top: top + newTop,
+			width: width - newRight - newLeft,
+			height: height - newBottom - newTop
+		});
+	}
+	_initOpenCrop() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id !== OpenImageCropOperation.id) return;
+			const params = command.params;
+			if (params == null) return;
+			if (this._activeCropSession != null) this._commandService.syncExecuteCommand(CloseImageCropOperation.id, { isAuto: true });
+			const { unitId, subUnitId, drawingId } = params;
+			const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+			const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+			if (scene == null) return true;
+			if (!this._sceneListenerOnImageMap.has(scene)) {
+				this._addListenerOnImage(scene);
+				this._sceneListenerOnImageMap.add(scene);
+			}
+			if (this._drawingManagerService.getDrawingByParam({
+				unitId,
+				subUnitId,
+				drawingId
+			}) == null) return;
+			const imageShapeKey = getDrawingShapeKeyByDrawingSearch({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			const imageShape = scene.getObject(imageShapeKey);
+			if (imageShape == null) return;
+			if (!(imageShape instanceof Image$1)) {
+				this._messageService.show({
+					type: MessageType.Error,
+					content: this._localeService.t("drawing-ui.image-cropper.error")
+				});
+				return;
+			}
+			const transformer = scene.getTransformer();
+			transformer === null || transformer === void 0 || transformer.clearControls();
+			const imageCropperObject = new ImageCropperObject(`${imageShapeKey}-crop`, {
+				srcRect: imageShape.srcRect,
+				prstGeom: imageShape.prstGeom,
+				applyTransform: imageShape.calculateTransformWithSrcRect()
+			});
+			this._cropSnapshots.set(imageCropperObject, this._pendingCropSnapshot ?? this._captureCropSnapshot(imageShape));
+			this._pendingCropSnapshot = null;
+			scene.addObject(imageCropperObject, imageShape.getLayerIndex() + 1).attachTransformerTo(imageCropperObject);
+			this._activeCropSession = {
+				scene,
+				imageShape,
+				imageCropperObject
+			};
+			transformer === null || transformer === void 0 || transformer.createControlForCopper(imageCropperObject);
+			this._addHoverForImageCopper(imageCropperObject);
+			imageShape.openRenderByCropper();
+			transformer === null || transformer === void 0 || transformer.refreshControls();
+			imageCropperObject.makeDirty(true);
+			this._registerCropShortcuts();
+			this._commandService.syncExecuteCommand(SetDrawingSelectedOperation.id, [{
+				unitId,
+				subUnitId,
+				drawingId
+			}]);
+			this._layoutService.focus();
+		}));
+	}
+	_searchCropObject(scene) {
+		const objects = scene.getAllObjectsByOrder();
+		for (const object of objects) if (object instanceof ImageCropperObject) return object;
+	}
+	_initCloseCrop() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id !== CloseImageCropOperation.id) return;
+			const cropSession = this._activeCropSession;
+			if (cropSession == null) return;
+			const { scene, imageShape, imageCropperObject } = cropSession;
+			const transformer = scene.getTransformerByCreate();
+			transformer.detachFrom(imageCropperObject);
+			transformer.clearCopperControl();
+			const params = command.params;
+			if (params === null || params === void 0 ? void 0 : params.isCancel) this._restoreCropSnapshot(imageShape, imageCropperObject);
+			else {
+				const srcRect = this._getSrcRectByTransformState(imageShape, imageCropperObject);
+				const drawingParam = this._drawingManagerService.getDrawingOKey(imageShape.oKey);
+				if (drawingParam != null) {
+					const { left, top, height, width } = imageCropperObject;
+					this._drawingManagerService.featurePluginUpdateNotification([{
+						...drawingParam,
+						transform: {
+							...drawingParam.transform,
+							left,
+							top,
+							height,
+							width
+						},
+						srcRect: srcRect.srcRectAngle
+					}]);
+				}
+				imageShape.setSrcRect({ ...srcRect.srcRectAngle });
+			}
+			imageShape.closeRenderByCropper();
+			imageShape.makeDirty(true);
+			transformer.refreshControls();
+			this._cropSnapshots.delete(imageCropperObject);
+			imageCropperObject.dispose();
+			this._activeCropSession = null;
+			this._cropShortcutDisposables.dispose();
+		}));
+		const sheetUnit$ = this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).pipe(switchMap((workbook) => workbook ? workbook.activeSheet$ : of(null)));
+		this.disposeWithMe(sheetUnit$.subscribe(() => {
+			this._commandService.syncExecuteCommand(CloseImageCropOperation.id);
+		}));
+	}
+	_getApplyObjectByCropObject(cropObject) {
+		const cropOKey = cropObject.oKey;
+		const applyOKey = cropOKey.slice(0, cropOKey.length - 5);
+		const scene = cropObject.getScene();
+		if (!scene) return null;
+		const applyObject = scene.getObject(applyOKey);
+		if (applyObject == null) return null;
+		return applyObject;
+	}
+	_captureCropSnapshot(imageShape) {
+		return {
+			transform: imageShape.getState(),
+			srcRect: imageShape.srcRect == null ? imageShape.srcRect : { ...imageShape.srcRect }
+		};
+	}
+	_restoreCropSnapshot(imageShape, imageCropperObject) {
+		const snapshot = this._cropSnapshots.get(imageCropperObject);
+		if (snapshot) {
+			imageShape.transformByStateCloseCropper(snapshot.transform);
+			imageShape.setSrcRect(snapshot.srcRect);
+		}
+	}
+	_registerCropShortcuts() {
+		this._cropShortcutDisposables.dispose();
+		this._cropShortcutDisposables.add(this._shortcutService.registerShortcut({
+			id: CloseImageCropOperation.id,
+			binding: KeyCode.ENTER,
+			priority: 1e3
+		}));
+		this._cropShortcutDisposables.add(this._shortcutService.registerShortcut({
+			id: CloseImageCropOperation.id,
+			binding: KeyCode.ESC,
+			priority: 1e3,
+			staticParameters: { isCancel: true }
+		}));
+	}
+	_addListenerOnImage(scene) {
+		const transformer = scene.getTransformerByCreate();
+		let startTransform = null;
+		this.disposeWithMe(transformer.changeStart$.subscribe((state) => {
+			const { objects } = state;
+			const cropObject = objects.values().next().value;
+			if (cropObject == null || !(cropObject instanceof ImageCropperObject)) return;
+			const { left, top, height, width, angle } = cropObject;
+			startTransform = {
+				left,
+				top,
+				height,
+				width,
+				angle
+			};
+			transformer.clearCopperControl();
+		}));
+		this.disposeWithMe(transformer.changeEnd$.subscribe((state) => {
+			const { objects } = state;
+			const cropObject = objects.values().next().value;
+			if (cropObject == null || !(cropObject instanceof ImageCropperObject)) return;
+			const { left, top, height, width, angle } = cropObject;
+			if (!checkIfMove({
+				left,
+				top,
+				height,
+				width,
+				angle
+			}, startTransform)) return;
+			const applyObject = this._getApplyObjectByCropObject(cropObject);
+			if (applyObject == null) return;
+			const srcRect = this._getSrcRectByTransformState(applyObject, cropObject);
+			cropObject.refreshSrcRect(srcRect.srcRect, applyObject.getState());
+			transformer.createControlForCopper(cropObject);
+		}));
+		this._endCropListener(scene);
+	}
+	_addHoverForImageCopper(o) {
+		this.disposeWithMe(o.onPointerEnter$.subscribeEvent(() => {
+			o.cursor = CURSOR_TYPE.MOVE;
+		}));
+		this.disposeWithMe(o.onPointerLeave$.subscribeEvent(() => {
+			o.cursor = CURSOR_TYPE.DEFAULT;
+		}));
+	}
+	_endCropListener(scene) {
+		const transformer = scene.getTransformerByCreate();
+		this.disposeWithMe(transformer.clearControl$.subscribe((changeSelf) => {
+			if (changeSelf === true) this._commandService.syncExecuteCommand(CloseImageCropOperation.id);
+		}));
+	}
+	_getSrcRectByTransformState(applyObject, imageCropperObject) {
+		const { left, top, height, width } = imageCropperObject;
+		const { left: applyLeft, top: applyTop, width: applyWidth, height: applyHeight, angle: applyAngle } = applyObject;
+		const newLeft = left - applyLeft;
+		const newTop = top - applyTop;
+		const srcRect = {
+			left: newLeft,
+			top: newTop,
+			right: applyWidth - newLeft - width,
+			bottom: applyHeight - newTop - height
+		};
+		const srcRectAngle = { ...srcRect };
+		if (applyAngle !== 0) {
+			const centerPoint = new Vector2(left + width / 2, top + height / 2);
+			const newCenterPoint = new Vector2(applyWidth / 2 + applyLeft, applyHeight / 2 + applyTop);
+			const vertexPoint = new Vector2(applyLeft, applyTop);
+			vertexPoint.rotateByPoint(degToRad(applyAngle), newCenterPoint);
+			const applyFinalPoint = vertexPoint.clone();
+			applyFinalPoint.rotateByPoint(degToRad(-applyAngle), centerPoint);
+			const newAngleLeft = left - applyFinalPoint.x;
+			const newAngleTop = top - applyFinalPoint.y;
+			srcRectAngle.left = newAngleLeft;
+			srcRectAngle.top = newAngleTop;
+			srcRectAngle.right = applyWidth - newAngleLeft - width;
+			srcRectAngle.bottom = applyHeight - newAngleTop - height;
+		}
+		return {
+			srcRect,
+			srcRectAngle
+		};
+	}
+};
+ImageCropperController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IDrawingManagerService),
+	__decorateParam(2, IRenderManagerService),
+	__decorateParam(3, IUniverInstanceService),
+	__decorateParam(4, IMessageService),
+	__decorateParam(5, Inject(LocaleService)),
+	__decorateParam(6, IShortcutService),
+	__decorateParam(7, ILayoutService)
+], ImageCropperController);
+
+//#endregion
+//#region src/controllers/image-update.controller.ts
+let ImageUpdateController = class ImageUpdateController extends Disposable {
+	constructor(_commandService, _renderManagerService, _drawingManagerService, _dialogService, _imageIoService, _currentUniverService, _drawingRenderService) {
+		super();
+		this._commandService = _commandService;
+		this._renderManagerService = _renderManagerService;
+		this._drawingManagerService = _drawingManagerService;
+		this._dialogService = _dialogService;
+		this._imageIoService = _imageIoService;
+		this._currentUniverService = _currentUniverService;
+		this._drawingRenderService = _drawingRenderService;
+		this._initialize();
+	}
+	dispose() {
+		super.dispose();
+	}
+	_initialize() {
+		this._drawingAddListener();
+		this._commandExecutedListener();
+		this._imageUpdateListener();
+	}
+	_commandExecutedListener() {
+		this.disposeWithMe(this._commandService.onCommandExecuted((command) => {
+			if (command.id === ImageResetSizeOperation.id) {
+				const params = command.params;
+				if (params == null) return;
+				this._resetImageSize(params);
+			}
+		}));
+	}
+	_getSceneAndTransformerByDrawingSearch(unitId) {
+		if (unitId == null) return;
+		const renderObject = this._renderManagerService.getRenderUnitById(unitId);
+		const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+		if (scene == null) return null;
+		return {
+			scene,
+			transformer: scene.getTransformerByCreate()
+		};
+	}
+	_resetImageSize(params) {
+		const updateParams = [];
+		const sceneList = [];
+		params.forEach((param) => {
+			const { unitId, subUnitId, drawingId } = param;
+			const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+			if (renderObject == null) return;
+			const { scene } = renderObject;
+			const imageShapeKey = getDrawingShapeKeyByDrawingSearch({
+				unitId,
+				subUnitId,
+				drawingId
+			});
+			const imageShape = scene.getObject(imageShapeKey);
+			if (imageShape == null) return true;
+			const imageData = this._drawingManagerService.getDrawingByParam(param);
+			if (imageData == null) return true;
+			if (imageData.drawingType !== DrawingTypeEnum.DRAWING_IMAGE) return;
+			imageShape.resetSize();
+			const { width, height } = imageShape.getNativeSize();
+			if (sceneList.includes(scene) === false) sceneList.push(scene);
+			updateParams.push({
+				...imageData,
+				transform: {
+					...imageData.transform,
+					height,
+					width,
+					angle: 0
+				},
+				srcRect: null,
+				prstGeom: null
+			});
+		});
+		this._drawingManagerService.featurePluginUpdateNotification(updateParams);
+		sceneList.forEach((scene) => {
+			scene.getTransformerByCreate().refreshControls().changeNotification();
+		});
+		this._commandService.syncExecuteCommand(SetDrawingSelectedOperation.id, params);
+	}
+	_drawingAddListener() {
+		this.disposeWithMe(this._drawingManagerService.add$.pipe(bufferTime(33), filter((batches) => batches.length > 0), map((batches) => batches.flat()), map((items) => {
+			const map = /* @__PURE__ */ new Map();
+			for (const it of items) map.set(`${it.unitId}|${it.subUnitId}|${it.drawingId}`, it);
+			return [...map.values()];
+		}), filter((items) => items.length > 0)).subscribe((uniqueParams) => {
+			this._insertImages(uniqueParams);
+		}));
+	}
+	_insertImages(params) {
+		params.forEach(async (param) => {
+			var _getCurrentUnitInfo;
+			const { unitId, subUnitId } = param;
+			const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+			const currentSubUnitId = (_getCurrentUnitInfo = getCurrentUnitInfo(this._currentUniverService, unitId)) === null || _getCurrentUnitInfo === void 0 ? void 0 : _getCurrentUnitInfo.subUnitId;
+			if (renderObject == null || currentSubUnitId !== subUnitId) return;
+			const imageParam = this._drawingManagerService.getDrawingByParam(param);
+			if (imageParam == null) return;
+			const images = await this._drawingRenderService.renderImages(imageParam, renderObject.scene);
+			const currentImageParam = this._drawingManagerService.getDrawingByParam(param);
+			if (currentImageParam) this._drawingManagerService.refreshTransform([currentImageParam]);
+			if (images == null || images.length === 0) return;
+			for (const image of images) {
+				this._addHoverForImage(image);
+				this._addDialogForImage(image);
+			}
+		});
+	}
+	_imageUpdateListener() {
+		this.disposeWithMe(this._drawingManagerService.update$.subscribe((params) => {
+			params.forEach((param) => {
+				var _setClipBounds;
+				const { unitId, subUnitId, drawingId } = param;
+				const drawingParam = this._drawingManagerService.getDrawingByParam(param);
+				if (drawingParam == null) return;
+				const { transform, drawingType, srcRect, prstGeom, source, imageSourceType } = drawingParam;
+				if (drawingType !== DrawingTypeEnum.DRAWING_IMAGE) return;
+				const renderObject = this._getSceneAndTransformerByDrawingSearch(unitId);
+				if (renderObject == null) return;
+				const { scene } = renderObject;
+				if (transform == null) return true;
+				const drawingShapeKey = getDrawingShapeKeyByDrawingSearch({
+					unitId,
+					subUnitId,
+					drawingId
+				});
+				const imageShape = scene.getObject(drawingShapeKey);
+				if (imageShape == null) return true;
+				const { left = 0, top = 0, width = 0, height = 0, angle = 0, flipX = false, flipY = false, skewX = 0, skewY = 0 } = transform;
+				imageShape.transformByState({
+					left,
+					top,
+					width,
+					height,
+					angle,
+					flipX,
+					flipY,
+					skewX,
+					skewY
+				});
+				(_setClipBounds = imageShape.setClipBounds) === null || _setClipBounds === void 0 || _setClipBounds.call(imageShape, transform.clipBounds);
+				ensureDrawingRenderLayer(scene, imageShape, drawingParam);
+				imageShape.setSrcRect(srcRect);
+				imageShape.setPrstGeom(prstGeom);
+				if (source != null && source.length > 0 && (imageSourceType === ImageSourceType.BASE64 || imageSourceType === ImageSourceType.URL)) imageShape.changeSource(source);
+			});
+		}));
+	}
+	_addHoverForImage(o) {
+		this.disposeWithMe(toDisposable(o.onPointerEnter$.subscribeEvent(() => {
+			o.cursor = CURSOR_TYPE.GRAB;
+		})));
+		this.disposeWithMe(toDisposable(o.onPointerLeave$.subscribeEvent(() => {
+			o.cursor = CURSOR_TYPE.DEFAULT;
+		})));
+	}
+	_addDialogForImage(o) {
+		this.disposeWithMe(toDisposable(o.onDblclick$.subscribeEvent(() => {
+			const dialogId = `${o.oKey}-viewer-dialog`;
+			this._drawingRenderService.previewImage(dialogId, o.getNative().src, o.getNativeSize().width, o.getNativeSize().height);
+		})));
+	}
+};
+ImageUpdateController = __decorate([
+	__decorateParam(0, ICommandService),
+	__decorateParam(1, IRenderManagerService),
+	__decorateParam(2, IDrawingManagerService),
+	__decorateParam(3, IDialogService),
+	__decorateParam(4, IImageIoService),
+	__decorateParam(5, IUniverInstanceService),
+	__decorateParam(6, Inject(DrawingRenderService))
+], ImageUpdateController);
+
+//#endregion
+//#region src/controllers/ui.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let DrawingUIController = class DrawingUIController extends Disposable {
+	constructor(_commandService, _menuManagerService) {
+		super();
+		this._commandService = _commandService;
+		this._menuManagerService = _menuManagerService;
+		this._init();
+	}
+	_init() {
+		this._initMenus();
+		this._initCommands();
+	}
+	_initMenus() {
+		this._menuManagerService.mergeMenu(menuSchema);
+	}
+	_initCommands() {
+		[
+			OpenImageCropOperation,
+			CloseImageCropOperation,
+			ImageResetSizeOperation,
+			SetDrawingAlignOperation,
+			SetDrawingAlignLeftOperation,
+			SetDrawingAlignCenterOperation,
+			SetDrawingAlignRightOperation,
+			SetDrawingAlignTopOperation,
+			SetDrawingAlignMiddleOperation,
+			SetDrawingAlignBottomOperation,
+			SetDrawingAlignHorizonOperation,
+			SetDrawingAlignVerticalOperation,
+			AutoImageCropOperation,
+			SetDrawingGroupOperation,
+			CancelDrawingGroupOperation,
+			SetDrawingArrangeOperation,
+			SetDrawingArrangeFrontOperation,
+			SetDrawingArrangeForwardOperation,
+			SetDrawingArrangeBackOperation,
+			SetDrawingArrangeBackwardOperation
+		].forEach((command) => this.disposeWithMe(this._commandService.registerCommand(command)));
+	}
+};
+DrawingUIController = __decorate([__decorateParam(0, ICommandService), __decorateParam(1, IMenuManagerService)], DrawingUIController);
+
+//#endregion
+//#region src/plugin.ts
+let UniverDrawingUIPlugin = class UniverDrawingUIPlugin extends Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _configService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._configService = _configService;
+		const { menu, ...rest } = merge({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(DRAWING_UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		this._injector.add([ComponentsController]);
+		this._injector.get(ComponentsController);
+		this._initDependencies();
+	}
+	onRendered() {
+		this._injector.get(DrawingUpdateController);
+		this._injector.get(DrawingUIController);
+		this._injector.get(ImageCropperController);
+		this._injector.get(ImageUpdateController);
+	}
+	_initDependencies() {
+		[
+			[DrawingImageClipService],
+			[DrawingRenderService],
+			[DrawingUpdateController],
+			[DrawingUIController],
+			[ImageCropperController],
+			[ImageUpdateController]
+		].forEach((dependency) => this._injector.add(dependency));
+	}
+};
+_defineProperty(UniverDrawingUIPlugin, "pluginName", "UNIVER_DRAWING_UI_PLUGIN");
+_defineProperty(UniverDrawingUIPlugin, "packageName", name);
+_defineProperty(UniverDrawingUIPlugin, "version", version);
+UniverDrawingUIPlugin = __decorate([
+	DependentOn(UniverDrawingPlugin, UniverRenderEnginePlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, IConfigService)
+], UniverDrawingUIPlugin);
+
+//#endregion
+//#region src/utils/clipboard-image.ts
+const IMAGE_PNG_MIME_TYPE = "image/png";
+const IMAGE_SVG_MIME_TYPE = "image/svg+xml";
+const CLIPBOARD_HTML_IMAGE_FETCH_TIMEOUT = 5e3;
+const MAX_CLIPBOARD_HTML_IMAGE_COUNT = 32;
+const MAX_CLIPBOARD_SVG_SOURCE_LENGTH = 5e6;
+const MAX_CLIPBOARD_SVG_ELEMENT_COUNT = 5e4;
+const PASSTHROUGH_IMAGE_MIME_TYPES = [
+	IMAGE_PNG_MIME_TYPE,
+	"image/jpeg",
+	"image/jpg",
+	"image/gif",
+	"image/bmp"
+];
+const IMAGE_MIME_TYPES_BY_EXTENSION = {
+	avif: "image/avif",
+	bmp: "image/bmp",
+	gif: "image/gif",
+	heic: "image/heic",
+	ico: "image/x-icon",
+	jpeg: "image/jpeg",
+	jpg: "image/jpeg",
+	png: IMAGE_PNG_MIME_TYPE,
+	svg: "image/svg+xml",
+	tif: "image/tiff",
+	tiff: "image/tiff",
+	webp: "image/webp"
+};
+function extractClipboardImageFiles(clipboardData) {
+	const itemFiles = Array.from(clipboardData.items ?? []).filter((item) => item.kind === "file").map((item) => item.getAsFile()).filter((file) => file !== null && isClipboardImageFile(file));
+	return itemFiles.length > 0 ? itemFiles : Array.from(clipboardData.files ?? []).filter(isClipboardImageFile);
+}
+function isClipboardTextImage(text) {
+	const source = text.trim();
+	return /^data:image\/[a-z0-9.+-]+(?:;[^,]*)?,/i.test(source) || /^<svg(?:\s|>)/i.test(source) && /<\/svg>$/i.test(source);
+}
+async function extractClipboardTextImageFile(text) {
+	const source = text.trim();
+	if (/^data:image\/[a-z0-9.+-]+(?:;[^,]*)?,/i.test(source)) try {
+		const blob = await (await fetch(source)).blob();
+		const type = blob.type.split(";")[0].toLowerCase();
+		if (type === IMAGE_SVG_MIME_TYPE) {
+			const svg = parseSvg(await blob.text());
+			return svg ? new File([svg], "pasted-image.svg", { type }) : null;
+		}
+		return type.startsWith("image/") ? new File([blob], `pasted-image.${imageExtension(type)}`, { type }) : null;
+	} catch {
+		return null;
+	}
+	const svg = parseSvg(source);
+	return svg ? new File([svg], "pasted-image.svg", { type: IMAGE_SVG_MIME_TYPE }) : null;
+}
+function isImageOnlyClipboardHtml(html) {
+	const body = new DOMParser().parseFromString(html, "text/html").body.cloneNode(true);
+	const hasImage = body.querySelector("img, svg") !== null;
+	body.querySelectorAll("img, svg").forEach((element) => element.remove());
+	return hasImage && !(body.textContent ?? "").trim() && !body.querySelector("table");
+}
+async function extractClipboardHtmlImageFiles(html) {
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	const sources = Array.from(new Set(Array.from(doc.body.querySelectorAll("img")).filter((image) => !hasHiddenClipboardAncestor(image)).map(resolveClipboardHtmlImageSource).filter((source) => /^(?:data|blob|https?):/i.test(source)))).slice(0, MAX_CLIPBOARD_HTML_IMAGE_COUNT);
+	const fetchedFiles = await Promise.all(sources.map(fetchClipboardImageFile));
+	const svgFiles = Array.from(doc.body.querySelectorAll("svg")).filter((svg) => !hasHiddenClipboardAncestor(svg)).map((svg, index) => {
+		const source = parseSvg(new XMLSerializer().serializeToString(svg));
+		return source ? new File([source], `pasted-image-${index + 1}.svg`, { type: IMAGE_SVG_MIME_TYPE }) : null;
+	});
+	return [...fetchedFiles, ...svgFiles].filter((file) => file !== null).slice(0, MAX_CLIPBOARD_HTML_IMAGE_COUNT);
+}
+function resolveClipboardHtmlImageSource(image) {
+	var _image$closest;
+	const source = image.getAttribute("src") || image.getAttribute("data-src") || image.getAttribute("data-lazy-src") || image.getAttribute("data-original");
+	if (source) return source.trim();
+	return ((image.getAttribute("srcset") || ((_image$closest = image.closest("picture")) === null || _image$closest === void 0 || (_image$closest = _image$closest.querySelector("source[srcset]")) === null || _image$closest === void 0 ? void 0 : _image$closest.getAttribute("srcset")) || "").trim().split(/\s+/)[0] ?? "").replace(/,$/, "");
+}
+async function fetchClipboardImageFile(source) {
+	const controller = new AbortController();
+	const timeout = setTimeout(() => controller.abort(), CLIPBOARD_HTML_IMAGE_FETCH_TIMEOUT);
+	try {
+		const response = await fetch(source, { signal: controller.signal });
+		if (!response.ok) return null;
+		const blob = await response.blob();
+		return blob.type.startsWith("image/") ? new File([blob], `pasted-image.${imageExtension(blob.type)}`, { type: blob.type }) : null;
+	} catch {
+		return null;
+	} finally {
+		clearTimeout(timeout);
+	}
+}
+function hasHiddenClipboardAncestor(element) {
+	let current = element;
+	while (current) {
+		var _current$getAttribute;
+		if (current.hasAttribute("hidden") || ((_current$getAttribute = current.getAttribute("aria-hidden")) === null || _current$getAttribute === void 0 ? void 0 : _current$getAttribute.toLowerCase()) === "true") return true;
+		const classes = current.classList;
+		if (classes.contains("sr-only") || classes.contains("visually-hidden") || classes.contains("screen-reader-only")) return true;
+		const style = current.getAttribute("style") ?? "";
+		if (/(?:^|;)\s*display\s*:\s*none(?:\s*!important)?\s*(?:;|$)/i.test(style) || /(?:^|;)\s*visibility\s*:\s*(?:hidden|collapse)(?:\s*!important)?\s*(?:;|$)/i.test(style)) return true;
+		current = current.parentElement;
+	}
+	return false;
+}
+async function normalizeClipboardImageFile(file) {
+	const type = resolveClipboardImageMimeType(file);
+	if (!type) return null;
+	const typedFile = file.type.toLowerCase() === type ? file : new File([file], file.name, { type });
+	if (type === IMAGE_SVG_MIME_TYPE) {
+		const svg = parseSvg(await typedFile.text());
+		return svg ? new File([svg], typedFile.name || "pasted-image.svg", { type }) : null;
+	}
+	if (PASSTHROUGH_IMAGE_MIME_TYPES.includes(type)) return typedFile;
+	try {
+		const blob = await rasterizeImageBlob(typedFile);
+		return blob ? new File([blob], "pasted-image.png", { type: IMAGE_PNG_MIME_TYPE }) : null;
+	} catch {
+		return null;
+	}
+}
+async function svgImageFileToDataUrl(file) {
+	if (resolveClipboardImageMimeType(file) !== IMAGE_SVG_MIME_TYPE) return null;
+	const svg = parseSvg(await file.text());
+	return svg ? `data:${IMAGE_SVG_MIME_TYPE};charset=utf-8,${encodeURIComponent(svg)}` : null;
+}
+async function writeImageSourceToClipboard(source, imageSourceType, imageIoService) {
+	var _globalThis$navigator;
+	const clipboard = (_globalThis$navigator = globalThis.navigator) === null || _globalThis$navigator === void 0 ? void 0 : _globalThis$navigator.clipboard;
+	const ClipboardItemCtor = globalThis.ClipboardItem;
+	if (!source || !(clipboard === null || clipboard === void 0 ? void 0 : clipboard.write) || typeof ClipboardItemCtor === "undefined") return false;
+	try {
+		const pngBlob = resolveImageClipboardPng(source, imageSourceType, imageIoService);
+		await clipboard.write([new ClipboardItemCtor({ [IMAGE_PNG_MIME_TYPE]: pngBlob })]);
+		return true;
+	} catch {
+		return false;
+	}
+}
+async function resolveImageClipboardPng(source, imageSourceType, imageIoService) {
+	const resolvedSource = await resolveImageSource(source, imageSourceType, imageIoService);
+	if (!resolvedSource) throw new Error("Clipboard image source could not be resolved.");
+	const response = await fetch(resolvedSource);
+	if (!response.ok) throw new Error("Clipboard image source could not be loaded.");
+	const imageBlob = await response.blob();
+	const pngBlob = imageBlob.type === IMAGE_PNG_MIME_TYPE ? imageBlob : await rasterizeImageBlob(imageBlob);
+	if (!pngBlob) throw new Error("Clipboard image could not be converted to PNG.");
+	return pngBlob;
+}
+async function resolveImageSource(source, imageSourceType, imageIoService) {
+	if (/^(?:data|blob|https?):/i.test(source) && imageSourceType !== ImageSourceType.UUID) return source;
+	return imageIoService ? imageIoService.getImage(source) : null;
+}
+async function rasterizeImageBlob(blob) {
+	if (!blob.type.startsWith("image/")) return null;
+	const objectUrl = URL.createObjectURL(blob);
+	try {
+		const image = await loadImage(objectUrl);
+		if (image.naturalWidth === 0 || image.naturalHeight === 0) return null;
+		const canvas = document.createElement("canvas");
+		canvas.width = image.naturalWidth;
+		canvas.height = image.naturalHeight;
+		const context = canvas.getContext("2d");
+		if (!context) return null;
+		context.drawImage(image, 0, 0);
+		return new Promise((resolve) => canvas.toBlob(resolve, IMAGE_PNG_MIME_TYPE));
+	} finally {
+		URL.revokeObjectURL(objectUrl);
+	}
+}
+function loadImage(source) {
+	return new Promise((resolve, reject) => {
+		const image = new Image();
+		image.onload = () => resolve(image);
+		image.onerror = () => reject(/* @__PURE__ */ new Error("Clipboard image could not be decoded."));
+		image.src = source;
+	});
+}
+function parseSvg(source) {
+	if (source.length > MAX_CLIPBOARD_SVG_SOURCE_LENGTH || !isClipboardTextImage(source) || !/^<svg(?:\s|>)/i.test(source)) return null;
+	const doc = new DOMParser().parseFromString(source, IMAGE_SVG_MIME_TYPE);
+	const root = doc.documentElement;
+	if (root.localName.toLowerCase() !== "svg" || doc.querySelector("parsererror")) return null;
+	if (root.querySelectorAll("*").length > MAX_CLIPBOARD_SVG_ELEMENT_COUNT) return null;
+	root.querySelectorAll("script, foreignObject, iframe, object, embed, link").forEach((element) => element.remove());
+	root.querySelectorAll("style").forEach((element) => {
+		if (hasUnsafeSvgCssReference(element.textContent ?? "")) element.remove();
+	});
+	[root, ...Array.from(root.querySelectorAll("*"))].forEach((element) => {
+		Array.from(element.attributes).forEach((attribute) => {
+			if (/^on/i.test(attribute.name)) {
+				element.removeAttribute(attribute.name);
+				return;
+			}
+			if (/^(?:href|xlink:href)$/i.test(attribute.name) && !isSafeSvgReference(attribute.value)) {
+				element.removeAttribute(attribute.name);
+				return;
+			}
+			if (hasUnsafeSvgCssReference(attribute.value)) element.removeAttribute(attribute.name);
+		});
+	});
+	if (!root.hasAttribute("xmlns")) root.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+	return new XMLSerializer().serializeToString(root);
+}
+function isSafeSvgReference(value) {
+	const reference = value.trim();
+	return reference.startsWith("#") || /^data:image\/(?:png|jpe?g|gif|webp);base64,/i.test(reference);
+}
+function hasUnsafeSvgCssReference(value) {
+	if (/@import/i.test(value)) return true;
+	return (value.match(/url\([^)]*\)/gi) ?? []).some((reference) => !/^url\(\s*['"]?#/i.test(reference));
+}
+function imageExtension(type) {
+	const extension = type.split("/")[1] ?? "png";
+	return extension === "svg+xml" ? "svg" : extension;
+}
+function isClipboardImageFile(file) {
+	return resolveClipboardImageMimeType(file) !== null;
+}
+function resolveClipboardImageMimeType(file) {
+	var _file$name$split$pop;
+	const type = file.type.toLowerCase();
+	if (type.startsWith("image/")) return type;
+	const extension = (_file$name$split$pop = file.name.split(".").pop()) === null || _file$name$split$pop === void 0 ? void 0 : _file$name$split$pop.toLowerCase();
+	return extension ? IMAGE_MIME_TYPES_BY_EXTENSION[extension] ?? null : null;
+}
+
+//#endregion
+//#region src/views/object-list-panel/object-list-panel-layer.ts
+const OBJECT_LIST_FLOATING_SECTION_ID = "floating";
+const OBJECT_LIST_CANVAS_SECTION_ID = "canvas";
+function isFloatingObjectListDrawingType(drawingType) {
+	return drawingType === DrawingTypeEnum.DRAWING_CHART || drawingType === DrawingTypeEnum.DRAWING_DOM || drawingType === DrawingTypeEnum.DRAWING_UNIT;
+}
+function getObjectListPanelSectionIdForDrawingType(drawingType) {
+	return isFloatingObjectListDrawingType(drawingType) ? OBJECT_LIST_FLOATING_SECTION_ID : OBJECT_LIST_CANVAS_SECTION_ID;
+}
+
+//#endregion
+//#region src/views/object-list-panel/ObjectListPanelBase.tsx
+const objectListPanelLabelKeys = {
+	title: "drawing-ui.objectListPanel.title",
+	empty: "drawing-ui.objectListPanel.empty",
+	showAll: "drawing-ui.objectListPanel.showAll",
+	hideAll: "drawing-ui.objectListPanel.hideAll",
+	lockAll: "drawing-ui.objectListPanel.lockAll",
+	unlockAll: "drawing-ui.objectListPanel.unlockAll",
+	moveForward: "drawing-ui.objectListPanel.moveForward",
+	moveBackward: "drawing-ui.objectListPanel.moveBackward",
+	close: "drawing-ui.objectListPanel.close",
+	show: "drawing-ui.objectListPanel.show",
+	hide: "drawing-ui.objectListPanel.hide",
+	lock: "drawing-ui.objectListPanel.lock",
+	unlock: "drawing-ui.objectListPanel.unlock",
+	lockHint: "drawing-ui.objectListPanel.lockHint",
+	unlockHint: "drawing-ui.objectListPanel.unlockHint",
+	name: "drawing-ui.objectListPanel.name",
+	nameInput: "drawing-ui.objectListPanel.nameInput",
+	description: "drawing-ui.objectListPanel.description",
+	descriptionPlaceholder: "drawing-ui.objectListPanel.descriptionPlaceholder",
+	details: "drawing-ui.objectListPanel.details",
+	noSelection: "drawing-ui.objectListPanel.noSelection",
+	locate: "drawing-ui.objectListPanel.locate",
+	expand: "drawing-ui.objectListPanel.expand",
+	collapse: "drawing-ui.objectListPanel.collapse",
+	dragToReorder: "drawing-ui.objectListPanel.dragToReorder",
+	search: "drawing-ui.objectListPanel.search",
+	filterAll: "drawing-ui.objectListPanel.filterAll",
+	filterHidden: "drawing-ui.objectListPanel.filterHidden",
+	filterLocked: "drawing-ui.objectListPanel.filterLocked",
+	sectionCanvas: "drawing-ui.objectListPanel.sectionCanvas",
+	sectionFloating: "drawing-ui.objectListPanel.sectionFloating"
+};
+function getObjectListPanelLabels(localeService) {
+	return Object.fromEntries(Object.entries(objectListPanelLabelKeys).map(([labelKey, localeKey]) => [labelKey, localeService.t(localeKey)]));
+}
+function getObjectListPanelTypeName(localeService, typeName) {
+	return localeService.t(`drawing-ui.objectListPanel.typeNames.${typeName}`);
+}
+const iconButtonClassName = `
+  univer-flex univer-size-7 univer-shrink-0 univer-items-center univer-justify-center univer-rounded-md
+  univer-border-0 univer-bg-transparent univer-p-0 univer-text-gray-500 univer-outline-none univer-transition-colors
+  hover:univer-bg-gray-100 hover:univer-text-gray-900
+  disabled:univer-cursor-not-allowed disabled:univer-opacity-40
+  dark:!univer-text-gray-300 dark:hover:!univer-bg-gray-800 dark:hover:!univer-text-gray-100
+`;
+const sectionOrder = /* @__PURE__ */ new Map([
+	[OBJECT_LIST_FLOATING_SECTION_ID, 0],
+	[OBJECT_LIST_CANVAS_SECTION_ID, 1],
+	["", 2]
+]);
+function normalizeText(value) {
+	return value.trim();
+}
+function hasCapability(panelCapabilities, item, key, fallback = true) {
+	var _item$capabilities;
+	return (item === null || item === void 0 || (_item$capabilities = item.capabilities) === null || _item$capabilities === void 0 ? void 0 : _item$capabilities[key]) ?? (panelCapabilities === null || panelCapabilities === void 0 ? void 0 : panelCapabilities[key]) ?? fallback;
+}
+function ObjectListPanelBase(props) {
+	const { items, selectedIds, allObjectIds, allItems = items, focusedId, labels, showHeader = true, capabilities, onSelect, onSetVisible, onCommitName, onCommitDescription, onMoveForward, onMoveBackward, onToggleExpanded, onToggleSelectable, onSetSelectable, onLocate, onReorder, renderPermissionAction } = props;
+	const selectedIdSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+	const [draggingId, setDraggingId] = useState(null);
+	const [searchQuery, setSearchQuery] = useState("");
+	const [filterMode, setFilterMode] = useState("all");
+	const [collapsedSectionIds, setCollapsedSectionIds] = useState(() => /* @__PURE__ */ new Set());
+	const selectedItem = useMemo(() => items.find((item) => item.id === focusedId) ?? items.find((item) => selectedIdSet.has(item.id)) ?? null, [
+		focusedId,
+		items,
+		selectedIdSet
+	]);
+	const visibleItems = useMemo(() => {
+		const normalizedQuery = normalizeText(searchQuery).toLocaleLowerCase();
+		return items.filter((item) => {
+			if (filterMode === "hidden" && item.visible !== false) return false;
+			if (filterMode === "locked" && item.selectable !== false) return false;
+			if (!normalizedQuery) return true;
+			return item.name.toLocaleLowerCase().includes(normalizedQuery) || (item.description ?? "").toLocaleLowerCase().includes(normalizedQuery);
+		});
+	}, [
+		filterMode,
+		items,
+		searchQuery
+	]);
+	const visibleItemSections = useMemo(() => {
+		const sectionMap = /* @__PURE__ */ new Map();
+		visibleItems.forEach((item) => {
+			const sectionId = item.sectionId ?? "";
+			const existingSection = sectionMap.get(sectionId);
+			if (existingSection) {
+				existingSection.items.push(item);
+				return;
+			}
+			sectionMap.set(sectionId, {
+				id: sectionId,
+				title: item.sectionTitle ?? "",
+				items: [item]
+			});
+		});
+		return [...sectionMap.values()].sort((a, b) => (sectionOrder.get(a.id) ?? 3) - (sectionOrder.get(b.id) ?? 3));
+	}, [visibleItems]);
+	const showSectionHeaders = visibleItemSections.length > 1 || visibleItemSections.some((section) => section.id === "floating");
+	const bulkItems = useMemo(() => {
+		if (!allObjectIds) return allItems;
+		const itemMap = new Map(allItems.map((item) => [item.id, item]));
+		return allObjectIds.map((id) => itemMap.get(id) ?? {
+			id,
+			visible: true
+		});
+	}, [allObjectIds, allItems]);
+	const visibilityItems = bulkItems.filter((item) => !item.disabled && hasCapability(capabilities, item, "visible"));
+	const selectableItems = bulkItems.filter((item) => !item.disabled && hasCapability(capabilities, item, "selectable"));
+	const allVisible = visibilityItems.length > 0 && visibilityItems.every((item) => item.visible);
+	const allLocked = selectableItems.length > 0 && selectableItems.every((item) => item.selectable === false);
+	const selectedIndex = selectedItem ? items.findIndex((item) => item.id === selectedItem.id) : -1;
+	const canMoveForward = !!selectedItem && !!onMoveForward && !selectedItem.disabled && (selectedItem.canMoveForward ?? selectedIndex > 0) && hasCapability(capabilities, selectedItem, "arrange");
+	const canMoveBackward = !!selectedItem && !!onMoveBackward && !selectedItem.disabled && (selectedItem.canMoveBackward ?? (selectedIndex >= 0 && selectedIndex < items.length - 1)) && hasCapability(capabilities, selectedItem, "arrange");
+	const showArrangeControls = hasCapability(capabilities, selectedItem, "arrange") && (!!onMoveForward || !!onMoveBackward);
+	const showLocateControl = !!onLocate && hasCapability(capabilities, selectedItem, "locate");
+	const canReorder = !!onReorder && ((capabilities === null || capabilities === void 0 ? void 0 : capabilities.reorder) ?? true);
+	const findItem = (objectId) => {
+		return objectId ? items.find((item) => item.id === objectId) ?? null : null;
+	};
+	const handleDrop = (targetId) => {
+		const source = findItem(draggingId);
+		const target = findItem(targetId);
+		setDraggingId(null);
+		if (!source || !target || source.id === target.id || source.disabled || target.disabled) return;
+		if ((source.parentId ?? "") !== (target.parentId ?? "")) return;
+		if ((source.sectionId ?? "") !== (target.sectionId ?? "")) return;
+		if (source.canReorder === false || target.canReorder === false) return;
+		onReorder === null || onReorder === void 0 || onReorder(source.id, target.id);
+	};
+	const toggleSectionCollapsed = (sectionId) => {
+		if (!sectionId) return;
+		setCollapsedSectionIds((current) => {
+			const next = new Set(current);
+			if (next.has(sectionId)) next.delete(sectionId);
+			else next.add(sectionId);
+			return next;
+		});
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: "univer-box-border univer-flex univer-size-full univer-min-w-0 univer-max-w-full univer-flex-col univer-gap-3 univer-overflow-hidden univer-py-2 univer-text-gray-700 dark:!univer-text-gray-200",
+		"data-drawing-object-list-panel": "true",
+		children: [
+			showHeader && /* @__PURE__ */ jsx("div", {
+				className: "univer-flex univer-h-8 univer-shrink-0 univer-items-center univer-gap-2",
+				children: /* @__PURE__ */ jsx("div", {
+					className: "univer-min-w-0 univer-flex-1 univer-truncate univer-text-sm univer-font-semibold univer-text-gray-900 dark:!univer-text-gray-100",
+					children: labels.title
+				})
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-min-w-0 univer-items-center univer-justify-between univer-gap-2",
+				children: [/* @__PURE__ */ jsxs("div", {
+					className: "univer-flex univer-min-w-0 univer-gap-2",
+					children: [/* @__PURE__ */ jsx(Button, {
+						size: "small",
+						disabled: visibilityItems.length === 0,
+						onClick: () => onSetVisible(visibilityItems.map((item) => item.id), !allVisible),
+						children: allVisible ? labels.hideAll : labels.showAll
+					}), onSetSelectable && /* @__PURE__ */ jsx(Button, {
+						size: "small",
+						disabled: selectableItems.length === 0,
+						onClick: () => onSetSelectable(selectableItems.map((item) => item.id), allLocked),
+						children: allLocked ? labels.unlockAll ?? labels.unlock : labels.lockAll ?? labels.lock
+					})]
+				}), /* @__PURE__ */ jsxs("div", {
+					className: "univer-flex univer-shrink-0 univer-gap-1",
+					children: [showLocateControl && /* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: iconButtonClassName,
+						title: labels.locate,
+						"aria-label": labels.locate,
+						disabled: !(selectedItem === null || selectedItem === void 0 ? void 0 : selectedItem.id),
+						onClick: () => selectedItem && (onLocate === null || onLocate === void 0 ? void 0 : onLocate(selectedItem.id)),
+						children: /* @__PURE__ */ jsx(LocateFixedIcon, {})
+					}), showArrangeControls && /* @__PURE__ */ jsxs(Fragment, { children: [/* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: iconButtonClassName,
+						title: labels.moveForward,
+						"aria-label": labels.moveForward,
+						disabled: !canMoveForward,
+						onClick: () => selectedItem && (onMoveForward === null || onMoveForward === void 0 ? void 0 : onMoveForward(selectedItem.id)),
+						children: /* @__PURE__ */ jsx(ArrowUpIcon, {})
+					}), /* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: iconButtonClassName,
+						title: labels.moveBackward,
+						"aria-label": labels.moveBackward,
+						disabled: !canMoveBackward,
+						onClick: () => selectedItem && (onMoveBackward === null || onMoveBackward === void 0 ? void 0 : onMoveBackward(selectedItem.id)),
+						children: /* @__PURE__ */ jsx(ArrowDownIcon, {})
+					})] })]
+				})]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-shrink-0 univer-flex-col univer-gap-2",
+				children: [/* @__PURE__ */ jsx(Input, {
+					value: searchQuery,
+					"aria-label": labels.search,
+					placeholder: labels.search,
+					onChange: setSearchQuery
+				}), /* @__PURE__ */ jsx("div", {
+					className: "univer-flex univer-min-w-0 univer-gap-1",
+					children: [
+						["all", labels.filterAll],
+						["hidden", labels.filterHidden],
+						["locked", labels.filterLocked]
+					].map(([mode, label]) => /* @__PURE__ */ jsx("button", {
+						type: "button",
+						className: clsx("univer-h-7 univer-min-w-0 univer-flex-1 univer-rounded-md univer-border univer-border-solid univer-px-2 univer-text-xs univer-outline-none univer-transition-colors dark:!univer-border-gray-700", filterMode === mode ? "dark:!univer-bg-primary-900/30 univer-border-primary-500 univer-bg-primary-50 univer-text-primary-600 dark:!univer-text-primary-200" : "univer-border-gray-200 univer-bg-gray-0 univer-text-gray-600 hover:univer-bg-gray-50 dark:!univer-bg-gray-900 dark:!univer-text-gray-300 dark:hover:!univer-bg-gray-800"),
+						"aria-pressed": filterMode === mode,
+						onClick: () => setFilterMode(mode),
+						children: /* @__PURE__ */ jsx("span", {
+							className: "univer-block univer-truncate",
+							children: label
+						})
+					}, mode))
+				})]
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-min-h-0 univer-flex-1 univer-overflow-y-auto univer-overflow-x-hidden",
+				children: visibleItems.length === 0 ? /* @__PURE__ */ jsx("div", {
+					className: "univer-py-6 univer-text-center univer-text-sm univer-text-gray-500",
+					children: labels.empty
+				}) : /* @__PURE__ */ jsx("div", {
+					className: "univer-flex univer-min-w-0 univer-flex-col univer-gap-0.5",
+					children: visibleItemSections.map((section) => /* @__PURE__ */ jsxs("div", {
+						className: "univer-flex univer-min-w-0 univer-flex-col univer-gap-0.5",
+						children: [showSectionHeaders && section.title && (() => {
+							const sectionCollapsed = !!section.id && collapsedSectionIds.has(section.id);
+							return /* @__PURE__ */ jsxs("button", {
+								type: "button",
+								className: "univer-box-border univer-flex univer-h-7 univer-w-full univer-items-center univer-gap-1 univer-rounded-md univer-border-0 univer-bg-transparent univer-px-2 univer-pt-1 univer-text-xs univer-font-semibold univer-uppercase univer-text-gray-400 univer-outline-none hover:univer-bg-gray-50 hover:univer-text-gray-600 disabled:univer-cursor-default disabled:hover:univer-bg-transparent dark:!univer-text-gray-500 dark:hover:!univer-bg-gray-800 dark:hover:!univer-text-gray-300",
+								"aria-label": sectionCollapsed ? labels.expand : labels.collapse,
+								disabled: !section.id,
+								onClick: () => toggleSectionCollapsed(section.id),
+								children: [
+									section.id ? /* @__PURE__ */ jsx("span", {
+										className: "univer-flex univer-size-4 univer-shrink-0 univer-items-center univer-justify-center",
+										children: /* @__PURE__ */ jsx(MoreDownIcon, { className: clsx({ "-univer-rotate-90 rtl:univer-rotate-90": sectionCollapsed }) })
+									}) : /* @__PURE__ */ jsx("span", { className: "univer-size-4 univer-shrink-0" }),
+									/* @__PURE__ */ jsx("span", {
+										className: "univer-min-w-0 univer-flex-1 univer-truncate univer-text-left",
+										children: section.title
+									}),
+									/* @__PURE__ */ jsx("span", {
+										className: "univer-shrink-0 univer-text-[10px] univer-font-medium univer-text-gray-400 dark:!univer-text-gray-500",
+										children: section.items.length
+									})
+								]
+							});
+						})(), (!section.id || !collapsedSectionIds.has(section.id)) && section.items.map((item) => /* @__PURE__ */ jsx(ObjectListRow, {
+							item,
+							selected: selectedIdSet.has(item.id),
+							labels,
+							permissionAction: renderPermissionAction === null || renderPermissionAction === void 0 ? void 0 : renderPermissionAction(item),
+							showLock: !!onToggleSelectable && hasCapability(capabilities, item, "selectable"),
+							showName: hasCapability(capabilities, item, "name"),
+							showVisible: hasCapability(capabilities, item, "visible"),
+							draggable: canReorder && hasCapability(capabilities, item, "reorder") && !item.disabled && item.canReorder !== false,
+							dragging: draggingId === item.id,
+							onSelect: (multiSelect) => onSelect(item.id, multiSelect),
+							onToggleExpanded: () => onToggleExpanded === null || onToggleExpanded === void 0 ? void 0 : onToggleExpanded(item.id),
+							onToggleVisible: () => onSetVisible([item.id], !item.visible),
+							onToggleSelectable: () => onToggleSelectable === null || onToggleSelectable === void 0 ? void 0 : onToggleSelectable(item.id),
+							onCommitName: (value) => onCommitName(item.id, value),
+							onDragStart: () => setDraggingId(item.id),
+							onDragEnd: () => setDraggingId(null),
+							onDrop: () => handleDrop(item.id)
+						}, item.id))]
+					}, section.id || "default"))
+				})
+			}),
+			/* @__PURE__ */ jsx(ObjectDetailsEditor, {
+				item: selectedItem,
+				labels,
+				showName: hasCapability(capabilities, selectedItem, "name"),
+				showDescription: hasCapability(capabilities, selectedItem, "description"),
+				onCommitName: (value) => selectedItem && onCommitName(selectedItem.id, value),
+				onCommitDescription: (value) => selectedItem && onCommitDescription(selectedItem.id, value)
+			})
+		]
+	});
+}
+function ObjectListRow(props) {
+	const { permissionAction, item, selected, labels, showLock, showName, showVisible, draggable, dragging, onSelect, onToggleExpanded, onToggleVisible, onToggleSelectable, onCommitName, onDragStart, onDragEnd, onDrop } = props;
+	const [draftName, setDraftName] = useState(item.name);
+	const skipCommitOnBlurRef = useRef(false);
+	const disabled = item.disabled === true;
+	const level = item.level ?? 0;
+	const locked = item.selectable === false;
+	useEffect(() => {
+		setDraftName(item.name);
+	}, [item.name]);
+	const handleBlur = (event) => {
+		if (disabled) return;
+		if (skipCommitOnBlurRef.current) {
+			skipCommitOnBlurRef.current = false;
+			return;
+		}
+		if (event.currentTarget.value !== item.name) onCommitName(event.currentTarget.value);
+	};
+	const handleKeyDown = (event) => {
+		if (event.key === "Enter") {
+			event.currentTarget.blur();
+			return;
+		}
+		if (event.key === "Escape") {
+			skipCommitOnBlurRef.current = true;
+			setDraftName(item.name);
+			event.currentTarget.blur();
+		}
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-box-border univer-flex univer-h-8 univer-w-full univer-min-w-0 univer-max-w-full univer-items-center univer-gap-1.5 univer-overflow-hidden univer-rounded-md univer-pr-1.5 univer-transition-colors", !disabled && "hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800", selected && "univer-bg-gray-100 dark:!univer-bg-gray-800", disabled && "univer-text-gray-400 dark:!univer-text-gray-500", dragging && "univer-opacity-50"),
+		style: { paddingLeft: level * 14 + 4 },
+		draggable,
+		title: draggable ? labels.dragToReorder : void 0,
+		onClick: disabled ? void 0 : (event) => onSelect(event.ctrlKey || event.metaKey),
+		onDragStart: (event) => {
+			if (!draggable) {
+				event.preventDefault();
+				return;
+			}
+			event.dataTransfer.effectAllowed = "move";
+			event.dataTransfer.setData("text/plain", item.id);
+			onDragStart();
+		},
+		onDragEnd,
+		onDragOver: (event) => {
+			if (draggable) {
+				event.preventDefault();
+				event.dataTransfer.dropEffect = "move";
+			}
+		},
+		onDrop: (event) => {
+			event.preventDefault();
+			onDrop();
+		},
+		children: [
+			item.isGroup ? /* @__PURE__ */ jsx("button", {
+				type: "button",
+				className: "univer-flex univer-size-5 univer-shrink-0 univer-items-center univer-justify-center univer-rounded univer-border-0 univer-bg-transparent univer-p-0 univer-text-gray-500 univer-outline-none univer-transition-transform hover:univer-bg-gray-100 hover:univer-text-gray-900 dark:!univer-text-gray-300 dark:hover:!univer-bg-gray-800 dark:hover:!univer-text-gray-100",
+				title: item.expanded ? labels.collapse : labels.expand,
+				"aria-label": item.expanded ? labels.collapse : labels.expand,
+				onClick: (event) => {
+					event.stopPropagation();
+					onToggleExpanded();
+				},
+				children: /* @__PURE__ */ jsx(MoreDownIcon, { className: clsx({ "-univer-rotate-90 rtl:univer-rotate-90": !item.expanded }) })
+			}) : /* @__PURE__ */ jsx("span", { className: "univer-size-5 univer-shrink-0" }),
+			showName ? /* @__PURE__ */ jsx(Input, {
+				className: clsx("univer-h-7 univer-w-0 univer-min-w-0 univer-flex-1", disabled && "univer-cursor-not-allowed"),
+				inputClass: clsx("!univer-h-7 univer-min-w-0 univer-overflow-hidden univer-text-ellipsis univer-whitespace-nowrap !univer-rounded !univer-border-transparent !univer-bg-transparent !univer-px-1 univer-text-sm univer-text-gray-900 !univer-shadow-none focus:!univer-border-primary-500 focus:!univer-bg-gray-0 focus:!univer-ring-1 focus:!univer-ring-primary-100 disabled:!univer-bg-transparent disabled:univer-opacity-100 dark:!univer-text-gray-100 dark:focus:!univer-bg-gray-900 dark:focus:!univer-ring-primary-900", disabled && "univer-text-gray-400 dark:!univer-text-gray-500"),
+				inputStyle: {
+					maxWidth: "100%",
+					boxSizing: "border-box"
+				},
+				value: draftName,
+				disabled,
+				"aria-label": labels.nameInput,
+				onChange: setDraftName,
+				onBlur: handleBlur,
+				onKeyDown: handleKeyDown,
+				onClick: (event) => {
+					event.stopPropagation();
+					if (!disabled) onSelect(event.ctrlKey || event.metaKey);
+				}
+			}, item.name) : /* @__PURE__ */ jsx("span", {
+				className: "univer-min-w-0 univer-flex-1 univer-truncate univer-px-1 univer-text-sm",
+				children: item.name
+			}),
+			permissionAction,
+			showLock && /* @__PURE__ */ jsx(StateIconButton, {
+				active: locked,
+				emphasizeActive: true,
+				"aria-pressed": locked,
+				type: "button",
+				disabled,
+				title: locked ? labels.unlockHint ?? labels.unlock : labels.lockHint ?? labels.lock,
+				"aria-label": locked ? labels.unlock : labels.lock,
+				onClick: (event) => {
+					event.stopPropagation();
+					onToggleSelectable();
+				},
+				children: locked ? /* @__PURE__ */ jsx(LockIcon, { "aria-hidden": "true" }) : /* @__PURE__ */ jsx(UnlockIcon, { "aria-hidden": "true" })
+			}),
+			showVisible && /* @__PURE__ */ jsx(StateIconButton, {
+				active: !item.visible,
+				"aria-pressed": !item.visible,
+				type: "button",
+				disabled,
+				title: item.visible ? labels.hide : labels.show,
+				"aria-label": item.visible ? labels.hide : labels.show,
+				onClick: (event) => {
+					event.stopPropagation();
+					onToggleVisible();
+				},
+				children: item.visible ? /* @__PURE__ */ jsx(EyeIcon, {}) : /* @__PURE__ */ jsx(EyelashIcon, {})
+			})
+		]
+	});
+}
+function ObjectDetailsEditor(props) {
+	const { item, labels, showName, showDescription, onCommitName, onCommitDescription } = props;
+	const [draftName, setDraftName] = useState((item === null || item === void 0 ? void 0 : item.name) ?? "");
+	const [draftDescription, setDraftDescription] = useState((item === null || item === void 0 ? void 0 : item.description) ?? "");
+	const disabled = (item === null || item === void 0 ? void 0 : item.disabled) === true;
+	useEffect(() => {
+		setDraftName((item === null || item === void 0 ? void 0 : item.name) ?? "");
+		setDraftDescription((item === null || item === void 0 ? void 0 : item.description) ?? "");
+	}, [
+		item === null || item === void 0 ? void 0 : item.description,
+		item === null || item === void 0 ? void 0 : item.id,
+		item === null || item === void 0 ? void 0 : item.name
+	]);
+	if (!item) return /* @__PURE__ */ jsx("div", {
+		className: "univer-rounded-md univer-border univer-border-solid univer-border-gray-200 univer-p-3 univer-text-sm univer-text-gray-500 dark:!univer-border-gray-700 dark:!univer-text-gray-400",
+		children: labels.noSelection
+	});
+	return /* @__PURE__ */ jsxs("div", {
+		className: "univer-flex univer-shrink-0 univer-flex-col univer-gap-2 univer-border-0 univer-border-t univer-border-solid univer-border-gray-200 univer-pt-3 dark:!univer-border-gray-700",
+		children: [
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-text-xs univer-font-semibold univer-uppercase univer-text-gray-500 dark:!univer-text-gray-400",
+				children: labels.details
+			}),
+			showName && /* @__PURE__ */ jsxs("label", {
+				className: "univer-flex univer-flex-col univer-gap-1",
+				children: [/* @__PURE__ */ jsx("span", {
+					className: "univer-text-xs univer-text-gray-500 dark:!univer-text-gray-400",
+					children: labels.name
+				}), /* @__PURE__ */ jsx(Input, {
+					value: draftName,
+					"aria-label": labels.nameInput,
+					disabled,
+					onChange: setDraftName,
+					onBlur: () => {
+						if (!disabled && normalizeText(draftName) !== item.name) onCommitName(draftName);
+					},
+					onKeyDown: (event) => {
+						if (event.key === "Enter") event.currentTarget.blur();
+					}
+				})]
+			}),
+			showDescription && /* @__PURE__ */ jsxs("label", {
+				className: "univer-flex univer-flex-col univer-gap-1",
+				children: [/* @__PURE__ */ jsx("span", {
+					className: "univer-text-xs univer-text-gray-500 dark:!univer-text-gray-400",
+					children: labels.description
+				}), /* @__PURE__ */ jsx("textarea", {
+					className: "univer-box-border univer-min-h-16 univer-w-full univer-resize-none univer-rounded-md univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-2 univer-text-sm univer-text-gray-900 univer-outline-none focus:univer-border-primary-500 focus:univer-ring-1 focus:univer-ring-primary-100 disabled:univer-cursor-not-allowed disabled:univer-opacity-70 dark:!univer-border-gray-700 dark:!univer-bg-gray-900 dark:!univer-text-gray-100 dark:focus:!univer-ring-primary-900",
+					value: draftDescription,
+					disabled,
+					placeholder: labels.descriptionPlaceholder,
+					"aria-label": labels.description,
+					onChange: (event) => setDraftDescription(event.currentTarget.value),
+					onBlur: () => {
+						if (!disabled && normalizeText(draftDescription) !== (item.description ?? "")) onCommitDescription(draftDescription);
+					}
+				})]
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/views/panel/DrawingAlign.tsx
+const DrawingAlign = (props) => {
+	const commandService = useDependency(ICommandService);
+	const localeService = useDependency(LocaleService);
+	const { drawings, alignShow } = props;
+	const [alignValue, setAlignValue] = useState("0");
+	const alignOptions = [
+		{
+			label: localeService.t("drawing-ui.image-panel.align.default"),
+			value: "0"
+		},
+		{ options: [
+			{
+				label: localeService.t("drawing-ui.image-panel.align.left"),
+				value: "1"
+			},
+			{
+				label: localeService.t("drawing-ui.image-panel.align.center"),
+				value: "2"
+			},
+			{
+				label: localeService.t("drawing-ui.image-panel.align.right"),
+				value: "3"
+			}
+		] },
+		{ options: [
+			{
+				label: localeService.t("drawing-ui.image-panel.align.top"),
+				value: "4"
+			},
+			{
+				label: localeService.t("drawing-ui.image-panel.align.middle"),
+				value: "5"
+			},
+			{
+				label: localeService.t("drawing-ui.image-panel.align.bottom"),
+				value: "6"
+			}
+		] },
+		{ options: [{
+			label: localeService.t("drawing-ui.image-panel.align.horizon"),
+			value: "7"
+		}, {
+			label: localeService.t("drawing-ui.image-panel.align.vertical"),
+			value: "8"
+		}] }
+	];
+	function handleAlignChange(value) {
+		setAlignValue(value);
+		commandService.executeCommand(SetDrawingAlignOperation.id, {
+			alignType: value,
+			drawings
+		});
+	}
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-relative univer-w-full", { "univer-hidden": !alignShow }),
+		children: [/* @__PURE__ */ jsx("header", {
+			className: "univer-text-gray-600 dark:!univer-text-gray-200",
+			children: /* @__PURE__ */ jsx("div", { children: localeService.t("drawing-ui.image-panel.align.title") })
+		}), /* @__PURE__ */ jsx("div", {
+			className: "univer-relative univer-mt-2.5 univer-flex univer-h-full",
+			children: /* @__PURE__ */ jsx("div", {
+				className: "univer-w-full univer-text-gray-900 dark:!univer-text-gray-0",
+				children: /* @__PURE__ */ jsx(Select, {
+					value: alignValue,
+					options: alignOptions,
+					onChange: handleAlignChange
+				})
+			})
+		})]
+	});
+};
+
+//#endregion
+//#region src/views/panel/DrawingArrange.tsx
+const DrawingArrange = (props) => {
+	const { arrangeShow, drawings: focusDrawings } = props;
+	const localeService = useDependency(LocaleService);
+	const drawingManagerService = useDependency(IDrawingManagerService);
+	const commandService = useDependency(ICommandService);
+	const iconManager = useDependency(IconManager);
+	const MoveUpIcon = iconManager.get("MoveUpIcon");
+	const MoveDownIcon = iconManager.get("MoveDownIcon");
+	const TopmostIcon = iconManager.get("TopmostIcon");
+	const BottomIcon = iconManager.get("BottomIcon");
+	const drawings = useObservable(() => drawingManagerService.focus$, focusDrawings, false, [drawingManagerService]);
+	const onArrangeBtnClick = (arrangeType) => {
+		commandService.syncExecuteCommand(SetDrawingArrangeOperation.id, {
+			arrangeType,
+			drawings
+		});
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-grid univer-gap-2 univer-py-2 univer-text-gray-400", { "univer-hidden": !arrangeShow }),
+		children: [/* @__PURE__ */ jsx("header", {
+			className: "univer-text-gray-600 dark:!univer-text-gray-200",
+			children: /* @__PURE__ */ jsx("div", { children: localeService.t("drawing-ui.image-panel.arrange.title") })
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "univer-grid univer-grid-cols-2 univer-gap-2",
+			children: [
+				/* @__PURE__ */ jsxs(Button, {
+					onClick: () => {
+						onArrangeBtnClick(ArrangeTypeEnum.forward);
+					},
+					children: [/* @__PURE__ */ jsx(MoveUpIcon, {}), localeService.t("drawing-ui.image-panel.arrange.forward")]
+				}),
+				/* @__PURE__ */ jsxs(Button, {
+					onClick: () => {
+						onArrangeBtnClick(ArrangeTypeEnum.backward);
+					},
+					children: [/* @__PURE__ */ jsx(MoveDownIcon, {}), localeService.t("drawing-ui.image-panel.arrange.backward")]
+				}),
+				/* @__PURE__ */ jsxs(Button, {
+					onClick: () => {
+						onArrangeBtnClick(ArrangeTypeEnum.front);
+					},
+					children: [/* @__PURE__ */ jsx(TopmostIcon, {}), localeService.t("drawing-ui.image-panel.arrange.front")]
+				}),
+				/* @__PURE__ */ jsxs(Button, {
+					onClick: () => {
+						onArrangeBtnClick(ArrangeTypeEnum.back);
+					},
+					children: [/* @__PURE__ */ jsx(BottomIcon, {}), localeService.t("drawing-ui.image-panel.arrange.back")]
+				})
+			]
+		})]
+	});
+};
+
+//#endregion
+//#region src/views/panel/DrawingGroup.tsx
+const DrawingGroup = (props) => {
+	var _renderManagerService;
+	const localeService = useDependency(LocaleService);
+	const renderManagerService = useDependency(IRenderManagerService);
+	const drawingManagerService = useDependency(IDrawingManagerService);
+	const commandService = useDependency(ICommandService);
+	const iconManager = useDependency(IconManager);
+	const { hasGroup, drawings } = props;
+	const GroupIcon = iconManager.get("GroupIcon");
+	const UngroupIcon = iconManager.get("UngroupIcon");
+	const drawingParam = drawings[0];
+	const transformer = drawingParam ? (_renderManagerService = renderManagerService.getRenderUnitById(drawingParam.unitId)) === null || _renderManagerService === void 0 || (_renderManagerService = _renderManagerService.scene) === null || _renderManagerService === void 0 ? void 0 : _renderManagerService.getTransformerByCreate() : void 0;
+	const { groupShow, groupBtnShow, ungroupBtnShow } = useObservable(transformer ? () => merge$1(transformer.clearControl$.pipe(filter((changeSelf) => changeSelf === true), map(() => ({
+		groupShow: false,
+		groupBtnShow: false,
+		ungroupBtnShow: false
+	}))), transformer.changeStart$.pipe(map((state) => {
+		const params = getUpdateParams(state.objects, drawingManagerService);
+		const groupBtnShow = params.length > 1;
+		const ungroupBtnShow = params.some((item) => (item === null || item === void 0 ? void 0 : item.drawingType) === DrawingTypeEnum.DRAWING_GROUP);
+		return {
+			groupShow: groupBtnShow || ungroupBtnShow,
+			groupBtnShow,
+			ungroupBtnShow
+		};
+	}))) : null, {
+		groupShow: false,
+		groupBtnShow: true,
+		ungroupBtnShow: true
+	}, false, [drawingManagerService, transformer]);
+	const onGroupBtnClick = () => {
+		commandService.syncExecuteCommand(SetDrawingGroupOperation.id, { drawings });
+	};
+	const onUngroupBtnClick = () => {
+		commandService.syncExecuteCommand(CancelDrawingGroupOperation.id, { drawings });
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-grid univer-gap-2 univer-py-2 univer-text-gray-400", { "univer-hidden": hasGroup === true && groupShow === false || hasGroup === false }),
+		children: [/* @__PURE__ */ jsx("header", {
+			className: "univer-text-gray-600 dark:!univer-text-gray-200",
+			children: /* @__PURE__ */ jsx("div", { children: localeService.t("drawing-ui.image-panel.group.title") })
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "univer-flex univer-items-center univer-justify-center univer-gap-2",
+			children: [/* @__PURE__ */ jsxs(Button, {
+				className: clsx({ "univer-hidden": !groupBtnShow }),
+				onClick: onGroupBtnClick,
+				children: [/* @__PURE__ */ jsx(GroupIcon, {}), localeService.t("drawing-ui.image-panel.group.group")]
+			}), /* @__PURE__ */ jsxs(Button, {
+				className: clsx({ "univer-hidden": !ungroupBtnShow }),
+				onClick: onUngroupBtnClick,
+				children: [/* @__PURE__ */ jsx(UngroupIcon, {}), localeService.t("drawing-ui.image-panel.group.unGroup")]
+			})]
+		})]
+	});
+};
+
+//#endregion
+//#region src/utils/config.ts
+const RANGE_DRAWING_ROTATION_LIMIT = [-360, 360];
+
+//#endregion
+//#region src/views/panel/drawing-transform-rotation.ts
+function isDrawingTransformRotationDisabled(rotateEnabled) {
+	return !rotateEnabled;
+}
+function createDrawingTransformRotationChangeHandler(options) {
+	return (val) => {
+		if (isDrawingTransformRotationDisabled(options.rotateEnabled)) return;
+		if (val == null) return;
+		const { unitId, subUnitId, drawingId, drawingType } = options.drawingParam;
+		const updateParam = {
+			unitId,
+			subUnitId,
+			drawingId,
+			drawingType,
+			transform: { angle: val }
+		};
+		options.setRotation(val);
+		options.emitUpdate([updateParam]);
+		options.notifyChange();
+	};
+}
+
+//#endregion
+//#region src/views/panel/DrawingTransform.tsx
+const INPUT_DEBOUNCE_TIME = 300;
+const DrawingTransform = (props) => {
+	var _renderManagerService, _scene$getEngine;
+	const renderManagerService = useDependency(IRenderManagerService);
+	const drawingParam = props.drawings[0];
+	const scene = drawingParam ? (_renderManagerService = renderManagerService.getRenderUnitById(drawingParam.unitId)) === null || _renderManagerService === void 0 ? void 0 : _renderManagerService.scene : void 0;
+	const topScene = scene === null || scene === void 0 || (_scene$getEngine = scene.getEngine()) === null || _scene$getEngine === void 0 ? void 0 : _scene$getEngine.activeScene;
+	if (!(drawingParam === null || drawingParam === void 0 ? void 0 : drawingParam.transform) || !scene || !topScene) return null;
+	return /* @__PURE__ */ jsx(DrawingTransformContent, { ...props });
+};
+function DrawingTransformContent(props) {
+	const localeService = useDependency(LocaleService);
+	const drawingManagerService = useDependency(IDrawingManagerService);
+	const renderManagerService = useDependency(IRenderManagerService);
+	const { drawings, transformShow } = props;
+	const drawingParam = drawings[0];
+	const transform = drawingParam.transform;
+	const { unitId, subUnitId, drawingId, drawingType } = drawingParam;
+	const scene = renderManagerService.getRenderUnitById(unitId).scene;
+	const topScene = scene.getEngine().activeScene;
+	const transformer = scene.getTransformerByCreate();
+	const { width: originWidth = 0, height: originHeight = 0, left: originX = 0, top: originY = 0, angle: originRotation = 0 } = transform;
+	const [width, setWidth] = useState(originWidth);
+	const [height, setHeight] = useState(originHeight);
+	const [xPosition, setXPosition] = useState(originX);
+	const [yPosition, setYPosition] = useState(originY);
+	const [rotation, setRotation] = useState(originRotation);
+	const [lockRatio, setLockRatio] = useState(transformer.keepRatio);
+	const rotateEnabled = resolveDrawingUIRotateEnabled(drawingParam, { getChildren: (drawing) => drawingManagerService.getDrawingsByGroup(drawing) });
+	const rotationDisabled = isDrawingTransformRotationDisabled(rotateEnabled);
+	const checkMoveBoundary = (left, top, width, height) => {
+		const { width: topSceneWidth, height: topSceneHeight } = topScene;
+		const { ancestorLeft, ancestorTop } = scene;
+		let limitLeft = left;
+		let limitTop = top;
+		let limitWidth = width;
+		let limitHeight = height;
+		if (left + ancestorLeft < 0) limitLeft = -ancestorLeft;
+		if (top + ancestorTop < 0) limitTop = -ancestorTop;
+		limitWidth = topSceneWidth - limitLeft - ancestorLeft;
+		if (limitWidth < 20) limitWidth = 20;
+		limitHeight = topSceneHeight - limitTop - ancestorTop;
+		if (limitHeight < 20) limitHeight = 20;
+		if (left + limitWidth + ancestorLeft > topSceneWidth) limitLeft = topSceneWidth - width - ancestorLeft;
+		if (top + limitHeight + ancestorTop > topSceneHeight) limitTop = topSceneHeight - height - ancestorTop;
+		return {
+			limitLeft,
+			limitTop,
+			limitWidth,
+			limitHeight
+		};
+	};
+	const changeObs = (state) => {
+		const { objects } = state;
+		const params = getUpdateParams(objects, drawingManagerService);
+		if (params.length !== 1) return;
+		const drawingParam = params[0];
+		if (drawingParam == null) return;
+		const { transform } = drawingParam;
+		if (transform == null) return;
+		const { width: originWidth, height: originHeight, left: originX, top: originY, angle: originRotation } = transform;
+		if (originWidth != null) setWidth(originWidth);
+		if (originHeight != null) setHeight(originHeight);
+		if (originX != null) setXPosition(originX);
+		if (originY != null) setYPosition(originY);
+		if (originRotation != null) setRotation(originRotation);
+	};
+	useEffect(() => {
+		const subscriptions = [
+			transformer.changeStart$.subscribe((state) => {
+				changeObs(state);
+			}),
+			transformer.changing$.subscribe((state) => {
+				changeObs(state);
+			}),
+			transformer.changeEnd$.subscribe((state) => {
+				changeObs(state);
+			}),
+			drawingManagerService.focus$.subscribe((drawings) => {
+				if (drawings.length !== 1) return;
+				const drawingParam = drawingManagerService.getDrawingByParam(drawings[0]);
+				if (drawingParam == null) return;
+				const transform = drawingParam.transform;
+				if (transform == null) return;
+				const { width: originWidth, height: originHeight, left: originX, top: originY, angle: originRotation } = transform;
+				if (originWidth != null) setWidth(originWidth);
+				if (originHeight != null) setHeight(originHeight);
+				if (originX != null) setXPosition(originX);
+				if (originY != null) setYPosition(originY);
+				if (originRotation != null) setRotation(originRotation);
+			})
+		];
+		return () => {
+			subscriptions.forEach((sub) => sub.unsubscribe());
+		};
+	}, []);
+	const handleWidthChange = debounce((val) => {
+		if (val == null) return;
+		const { limitWidth, limitHeight } = checkMoveBoundary(xPosition, yPosition, val, height);
+		val = Math.min(val, limitWidth);
+		const updateParam = {
+			unitId,
+			subUnitId,
+			drawingId,
+			drawingType,
+			transform: { width: val }
+		};
+		if (lockRatio) {
+			let heightFix = val / width * height;
+			heightFix = Math.max(heightFix, 20);
+			if (heightFix > limitHeight) return;
+			setHeight(heightFix);
+			updateParam.transform.height = heightFix;
+		}
+		setWidth(val);
+		drawingManagerService.featurePluginUpdateNotification([updateParam]);
+		transformer.refreshControls().changeNotification();
+	}, INPUT_DEBOUNCE_TIME);
+	const handleHeightChange = debounce((val) => {
+		if (val == null) return;
+		const { limitHeight, limitWidth } = checkMoveBoundary(xPosition, yPosition, width, val);
+		val = Math.min(val, limitHeight);
+		const updateParam = {
+			unitId,
+			subUnitId,
+			drawingId,
+			drawingType,
+			transform: { height: val }
+		};
+		if (lockRatio) {
+			let widthFix = val / height * width;
+			widthFix = Math.max(widthFix, 20);
+			if (widthFix > limitWidth) return;
+			setWidth(widthFix);
+			updateParam.transform.width = widthFix;
+		}
+		setHeight(val);
+		drawingManagerService.featurePluginUpdateNotification([updateParam]);
+		transformer.refreshControls().changeNotification();
+	}, INPUT_DEBOUNCE_TIME);
+	const handleXChange = debounce((val) => {
+		if (val == null) return;
+		const { limitLeft } = checkMoveBoundary(val, yPosition, width, height);
+		val = limitLeft;
+		const updateParam = {
+			unitId,
+			subUnitId,
+			drawingId,
+			drawingType,
+			transform: { left: val }
+		};
+		setXPosition(val);
+		drawingManagerService.featurePluginUpdateNotification([updateParam]);
+		transformer.refreshControls().changeNotification();
+	}, INPUT_DEBOUNCE_TIME);
+	const handleYChange = debounce((val) => {
+		if (val == null) return;
+		const { limitTop } = checkMoveBoundary(xPosition, val, width, height);
+		val = limitTop;
+		const updateParam = {
+			unitId,
+			subUnitId,
+			drawingId,
+			drawingType,
+			transform: { top: val }
+		};
+		setYPosition(val);
+		drawingManagerService.featurePluginUpdateNotification([updateParam]);
+		transformer.refreshControls().changeNotification();
+	}, INPUT_DEBOUNCE_TIME);
+	const handleRotationChange = createDrawingTransformRotationChangeHandler({
+		rotateEnabled,
+		drawingParam: {
+			unitId,
+			subUnitId,
+			drawingId,
+			drawingType
+		},
+		setRotation,
+		emitUpdate: (updateParams) => drawingManagerService.featurePluginUpdateNotification(updateParams),
+		notifyChange: () => transformer.refreshControls().changeNotification()
+	});
+	const handleLockRatioChange = (val) => {
+		setLockRatio(val);
+		transformer.keepRatio = val;
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-grid univer-gap-2 univer-py-2 univer-text-gray-400", { "univer-hidden": !transformShow }),
+		children: [
+			/* @__PURE__ */ jsx("header", {
+				className: "univer-text-gray-600 dark:!univer-text-gray-200",
+				children: /* @__PURE__ */ jsx("div", { children: localeService.t("drawing-ui.image-panel.transform.title") })
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-grid univer-grid-cols-3 univer-gap-2 [&>div]:univer-grid [&>div]:univer-gap-2",
+				children: [
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", { children: localeService.t("drawing-ui.image-panel.transform.width") }), /* @__PURE__ */ jsx(InputNumber, {
+						precision: 1,
+						value: width,
+						min: 20,
+						onChange: (val) => {
+							handleWidthChange(val);
+						}
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", { children: localeService.t("drawing-ui.image-panel.transform.height") }), /* @__PURE__ */ jsx(InputNumber, {
+						precision: 1,
+						value: height,
+						min: 20,
+						onChange: (val) => {
+							handleHeightChange(val);
+						}
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", { children: localeService.t("drawing-ui.image-panel.transform.lock") }), /* @__PURE__ */ jsx("div", {
+						className: "univer-text-center",
+						children: /* @__PURE__ */ jsx(Checkbox, {
+							checked: lockRatio,
+							onChange: handleLockRatioChange
+						})
+					})] })
+				]
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-grid univer-grid-cols-3 univer-gap-2 [&>div]:univer-grid [&>div]:univer-gap-2",
+				children: [
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", { children: localeService.t("drawing-ui.image-panel.transform.x") }), /* @__PURE__ */ jsx(InputNumber, {
+						precision: 1,
+						value: xPosition,
+						onChange: (val) => {
+							handleXChange(val);
+						}
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", { children: localeService.t("drawing-ui.image-panel.transform.y") }), /* @__PURE__ */ jsx(InputNumber, {
+						precision: 1,
+						value: yPosition,
+						onChange: (val) => {
+							handleYChange(val);
+						}
+					})] }),
+					/* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsx("span", { children: localeService.t("drawing-ui.image-panel.transform.rotate") }), /* @__PURE__ */ jsx(InputNumber, {
+						precision: 1,
+						value: rotation,
+						min: RANGE_DRAWING_ROTATION_LIMIT[0],
+						max: RANGE_DRAWING_ROTATION_LIMIT[1],
+						disabled: rotationDisabled,
+						onChange: handleRotationChange
+					})] })
+				]
+			})
+		]
+	});
+}
+
+//#endregion
+//#region src/views/panel/ImageCropper.tsx
+const ImageCropper = (props) => {
+	const commandService = useDependency(ICommandService);
+	const localeService = useDependency(LocaleService);
+	const clipService = useDependency(DrawingImageClipService);
+	const componentManager = useDependency(ComponentManager);
+	const canUseShapeClip = useObservable(clipService.canUseShapeClip$, false);
+	const { drawings, cropperShow } = props;
+	const drawingParam = drawings[0];
+	const [cropValue, setCropValue] = useState("0");
+	const cropStateRef = useRef(false);
+	const cropOptions = [
+		{
+			label: localeService.t("drawing-ui.image-panel.crop.mode"),
+			value: "0"
+		},
+		{
+			label: "1:1",
+			value: "1"
+		},
+		{
+			label: "16:9",
+			value: "2"
+		},
+		{
+			label: "9:16",
+			value: "3"
+		},
+		{
+			label: "5:4",
+			value: "4"
+		},
+		{
+			label: "4:5",
+			value: "5"
+		},
+		{
+			label: "4:3",
+			value: "6"
+		},
+		{
+			label: "3:4",
+			value: "7"
+		},
+		{
+			label: "3:2",
+			value: "8"
+		},
+		{
+			label: "2:3",
+			value: "9"
+		}
+	];
+	useEffect(() => {
+		const onChangeStartObserver = commandService.onCommandExecuted((command) => {
+			if (command.id === CloseImageCropOperation.id) {
+				const params = command.params;
+				if (!(params === null || params === void 0 ? void 0 : params.isAuto)) cropStateRef.current = false;
+			}
+		});
+		return () => {
+			onChangeStartObserver === null || onChangeStartObserver === void 0 || onChangeStartObserver.dispose();
+		};
+	}, []);
+	if (drawingParam == null) return null;
+	function handleCropChange(value) {
+		setCropValue(value);
+		if (cropStateRef.current) commandService.executeCommand(AutoImageCropOperation.id, { cropType: value });
+	}
+	const onCropperBtnClick = (val) => {
+		commandService.executeCommand(AutoImageCropOperation.id, { cropType: val });
+		cropStateRef.current = true;
+	};
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-grid univer-gap-2 univer-py-2 univer-text-gray-400", { "univer-hidden": !cropperShow }),
+		children: [
+			/* @__PURE__ */ jsx("header", {
+				className: "univer-text-gray-600 dark:!univer-text-gray-200",
+				children: /* @__PURE__ */ jsx("div", { children: localeService.t("drawing-ui.image-panel.crop.title") })
+			}),
+			/* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-items-center univer-justify-center univer-gap-2",
+				children: [/* @__PURE__ */ jsxs(Button, {
+					onClick: () => {
+						onCropperBtnClick(cropValue);
+					},
+					children: [/* @__PURE__ */ jsx(CreateCopyIcon, {}), localeService.t("drawing-ui.image-panel.crop.start")]
+				}), /* @__PURE__ */ jsx(Select, {
+					value: cropValue,
+					options: cropOptions,
+					onChange: handleCropChange
+				})]
+			}),
+			canUseShapeClip && (() => {
+				const ShapeClipPicker = componentManager.get("sheet.image-clip.shape.picker.component");
+				return ShapeClipPicker ? /* @__PURE__ */ jsx(ShapeClipPicker, {}) : null;
+			})()
+		]
+	});
+};
+
+//#endregion
+//#region src/views/panel/DrawingCommonPanel.tsx
+function getPanelShowState(drawings) {
+	if (drawings.length === 0) return {
+		arrangeShow: false,
+		transformShow: false,
+		alignShow: false,
+		cropperShow: false,
+		nullShow: true
+	};
+	if (drawings.length === 1) return {
+		arrangeShow: true,
+		transformShow: true,
+		alignShow: false,
+		cropperShow: true,
+		nullShow: false
+	};
+	return {
+		arrangeShow: true,
+		transformShow: false,
+		alignShow: true,
+		cropperShow: false,
+		nullShow: false
+	};
+}
+const DrawingCommonPanel = (props) => {
+	const drawingManagerService = useDependency(IDrawingManagerService);
+	const renderManagerService = useDependency(IRenderManagerService);
+	const localeService = useDependency(LocaleService);
+	const { drawings, hasArrange = true, hasTransform = true, hasAlign = true, hasCropper = true, hasGroup = true } = props;
+	const drawingParam = drawings[0];
+	const renderObject = drawingParam ? renderManagerService.getRenderUnitById(drawingParam.unitId) : void 0;
+	const scene = renderObject === null || renderObject === void 0 ? void 0 : renderObject.scene;
+	const transformer = scene === null || scene === void 0 ? void 0 : scene.getTransformerByCreate();
+	const { arrangeShow, transformShow, alignShow, cropperShow, nullShow } = useObservable(() => merge$1(drawingManagerService.focus$.pipe(map(getPanelShowState)), ...transformer ? [transformer.clearControl$.pipe(filter((changeSelf) => changeSelf === true), map(() => getPanelShowState([]))), transformer.changeStart$.pipe(map((state) => getPanelShowState(getUpdateParams(state.objects, drawingManagerService))))] : []), getPanelShowState(drawings), false, [drawingManagerService, transformer]);
+	if (!drawingParam || !scene || !transformer) return null;
+	return /* @__PURE__ */ jsxs(Fragment, { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: clsx("univer-h-full", { "univer-hidden": !nullShow }),
+			children: /* @__PURE__ */ jsx("div", {
+				className: "univer-flex univer-h-full univer-items-center univer-justify-center",
+				children: /* @__PURE__ */ jsx("span", { children: localeService.t("drawing-ui.image-panel.null") })
+			})
+		}),
+		/* @__PURE__ */ jsx(DrawingArrange, {
+			arrangeShow: hasArrange === true ? arrangeShow : false,
+			drawings
+		}),
+		/* @__PURE__ */ jsx(DrawingTransform, {
+			transformShow: hasTransform === true ? transformShow : false,
+			drawings
+		}),
+		/* @__PURE__ */ jsx(DrawingAlign, {
+			alignShow: hasAlign === true ? alignShow : false,
+			drawings
+		}),
+		/* @__PURE__ */ jsx(ImageCropper, {
+			cropperShow: hasCropper === true ? cropperShow : false,
+			drawings
+		}),
+		/* @__PURE__ */ jsx(DrawingGroup, {
+			hasGroup,
+			drawings
+		})
+	] });
+};
+
+//#endregion
+export { AutoImageCropOperation, COMPONENT_IMAGE_POPUP_MENU, CancelDrawingGroupOperation, CloseImageCropOperation, DRAWING_GROUP_TYPES, DrawingCommonPanel, DrawingImageClipService, DrawingRenderService, menuSchema as DrawingUIMenuSchema, IMAGE_CLIP_SHAPE_PICKER_COMPONENT, ImageCropperObject, ImageResetSizeOperation, OBJECT_LIST_CANVAS_SECTION_ID, OBJECT_LIST_FLOATING_SECTION_ID, ObjectListPanelBase, OpenImageCropOperation, SetDrawingAlignOperation, SetDrawingArrangeOperation, SetDrawingGroupOperation, UniverDrawingUIPlugin, disposeDrawingRenderObject, extractClipboardHtmlImageFiles, extractClipboardImageFiles, extractClipboardTextImageFile, getCurrentUnitInfo, getDrawingRenderObject, getObjectListPanelLabels, getObjectListPanelSectionIdForDrawingType, getObjectListPanelTypeName, getUpdateParams, insertGroupObject, isClipboardTextImage, isFloatingObjectListDrawingType, isImageOnlyClipboardHtml, normalizeClipboardImageFile, svgImageFileToDataUrl, writeImageSourceToClipboard };

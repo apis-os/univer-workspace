@@ -1,0 +1,14 @@
+import type { LinePointShape, RelationChartLayoutEnum } from '../../enum';
+import type { IChartRelationForceSpec } from '../chart-types';
+export declare const setRelationLayout: (value: RelationChartLayoutEnum) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetRelationLayout: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setUseValueAsSymbolSize: (value: boolean) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetUseValueAsSymbolSize: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setEmphasisEnabled: (value: boolean) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetEmphasisEnabled: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setRelationForce: (value: IChartRelationForceSpec) => import("./chart-config-operation").IChartConfigOperation;
+export declare const clearRelationForce: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setCircularLabelRotation: (value: boolean) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetCircularLabelRotation: () => import("./chart-config-operation").IChartConfigOperation;
+export declare const setRelationNodeShape: (value: LinePointShape) => import("./chart-config-operation").IChartConfigOperation;
+export declare const resetRelationNodeShape: () => import("./chart-config-operation").IChartConfigOperation;

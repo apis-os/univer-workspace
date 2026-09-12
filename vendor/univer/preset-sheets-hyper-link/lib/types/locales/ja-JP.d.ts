@@ -1,0 +1,44 @@
+declare const _default: {
+    'sheets-hyper-link': {
+        message: {
+            refError: string;
+        };
+    };
+} & {
+    'sheets-hyper-link-ui': {
+        form: {
+            addTitle: string;
+            label: string;
+            type: string;
+            link: string;
+            linkPlaceholder: string;
+            range: string;
+            worksheet: string;
+            definedName: string;
+            ok: string;
+            cancel: string;
+            labelPlaceholder: string;
+            inputError: string;
+            selectError: string;
+            linkError: string;
+        };
+        menu: {
+            add: string;
+        };
+        permission: {
+            hyperLinkErr: string;
+        };
+        message: {
+            noSheet: string;
+            refError: string;
+            hiddenSheet: string;
+            coped: string;
+        };
+        popup: {
+            copy: string;
+            edit: string;
+            cancel: string;
+        };
+    };
+};
+export default _default;

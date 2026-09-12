@@ -1,0 +1,46 @@
+# @univerjs-pro/sheets-pivot-ui
+
+[![npm version](https://img.shields.io/npm/v/@univerjs-pro/sheets-pivot-ui?style=flat-square)](https://npmjs.com/package/@univerjs-pro/sheets-pivot-ui)
+[![license](https://img.shields.io/npm/l/@univerjs-pro/sheets-pivot-ui?style=flat-square)](https://npmjs.com/package/@univerjs-pro/sheets-pivot-ui)
+[![downloads](https://img.shields.io/npm/dm/@univerjs-pro/sheets-pivot-ui?style=flat-square)](https://npmjs.com/package/@univerjs-pro/sheets-pivot-ui)
+
+`@univerjs-pro/sheets-pivot-ui` is part of Univer Pro. Pivot table UI integration for Univer Sheets.
+
+## Package Overview
+
+| Package | UMD global | CSS | Locales | Facade entry |
+| --- | --- | :---: | :---: | :---: |
+| `@univerjs-pro/sheets-pivot-ui` | `UniverProSheetsPivotUi` | Yes | Yes | No |
+
+## Installation
+
+```sh
+pnpm add @univerjs-pro/sheets-pivot-ui
+# or
+npm install @univerjs-pro/sheets-pivot-ui
+```
+
+Keep all `@univerjs/*` and `@univerjs-pro/*` packages on the same version.
+
+## Usage
+
+```ts
+import '@univerjs-pro/sheets-pivot-ui/lib/index.css';
+import EnUS from '@univerjs-pro/sheets-pivot-ui/locale/en-US';
+import { UniverSheetsPivotTableUIPlugin } from '@univerjs-pro/sheets-pivot-ui';
+
+univer.registerPlugin(UniverSheetsPivotTableUIPlugin);
+
+// Merge EnUS into your Univer locale map when this package contributes UI text.
+```
+
+## Integration Notes
+
+- Keep this package on the same version as the other `@univerjs/*` and `@univerjs-pro/*` packages in your application.
+- Import the package stylesheet once in the application entry before rendering Univer UI.
+- Import locale files only for the languages your application enables.
+
+## Resources
+
+- [Documentation](https://docs.univer.ai/guides/pro)
+- [NPM package](https://npmjs.com/package/@univerjs-pro/sheets-pivot-ui)

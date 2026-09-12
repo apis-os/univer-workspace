@@ -1,0 +1,35 @@
+//#region src/locale/pl-PL.ts
+const locale = { "thread-comment-ui": {
+	panel: {
+		empty: "Brak komentarzy",
+		reset: "Resetuj filtr",
+		addComment: "Dodaj komentarz",
+		solved: "Rozwiązane"
+	},
+	editor: {
+		placeholder: "Odpowiedz lub dodaj innych za pomocą @",
+		reply: "Komentarz",
+		cancel: "Anuluj",
+		save: "Zapisz"
+	},
+	item: {
+		edit: "Edytuj",
+		delete: "Usuń ten komentarz",
+		more: "Więcej"
+	},
+	filter: {
+		sheet: {
+			all: "Wszystkie arkusze",
+			current: "Bieżący arkusz"
+		},
+		status: {
+			all: "Wszystkie komentarze",
+			resolved: "Rozwiązane",
+			unsolved: "Nierozwiązane",
+			concernMe: "Dotyczące mnie"
+		}
+	}
+} };
+
+//#endregion
+export { locale as default };

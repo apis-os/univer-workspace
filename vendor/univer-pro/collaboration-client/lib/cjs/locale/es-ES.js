@@ -1,99 +1,52 @@
-const _0x16ec7f = _0x314e;
-function _0x1501() {
-  const _0x2eddaf = [
-    "Sincronizando...",
-    "Error\x20de\x20conexión.\x20Intentaremos\x20de\x20nuevo\x20en\x20un\x20momento.",
-    "Hay\x20un\x20conflicto\x20entre\x20su\x20copia\x20local\x20y\x20la\x20copia\x20en\x20el\x20servidor.\x20Guarde\x20sus\x20cambios\x20locales,\x20ya\x20que\x20se\x20perderán\x20cuando\x20recargue\x20la\x20página.",
-    "Sincronizando\x20datos\x20del\x20servidor...",
-    "Archivo\x20local",
-    "868330tcamCX",
-    "Error\x20de\x20autenticación",
-    "9FRxMxt",
-    "2981970JlHrnn",
-    "Su\x20sesión\x20ha\x20expirado.\x20Haga\x20clic\x20en\x20Aceptar\x20para\x20volver\x20a\x20iniciar\x20sesión,\x20o\x20en\x20Cancelar\x20para\x20guardar\x20sus\x20cambios\x20locales.",
-    "No\x20se\x20pudo\x20unir\x20a\x20la\x20colaboración.\x20Inténtelo\x20de\x20nuevo\x20más\x20tarde.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "El\x20número\x20de\x20documentos\x20colaborativos\x20excede\x20el\x20límite.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "Desconectado,\x20los\x20cambios\x20se\x20guardarán\x20localmente",
-    "Haga\x20clic\x20para\x20reconectar",
-    "29406CtiJRk",
-    "Conflictos\x20de\x20edición",
-    "5765132qGbvwy",
-    "Error\x20de\x20conexión.\x20Verifique\x20su\x20red.",
-    "4466456LDYTPn",
-    "2845591PylbeU",
-    "Sin\x20permiso\x20de\x20colaboración.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "Conflicto\x20de\x20colaboración",
-    "El\x20documento\x20ha\x20alcanzado\x20su\x20límite\x20de\x20colaboración.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "El\x20servidor\x20no\x20responde\x20a\x20su\x20solicitud\x20de\x20colaboración.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "690576LszQAw",
-    "Abrió\x20el\x20mismo\x20archivo\x20en\x20otra\x20pestaña.\x20Para\x20evitar\x20pérdida\x20de\x20datos,\x20no\x20puede\x20editar\x20en\x20esta\x20pestaña.",
-    "Sus\x20acciones\x20entran\x20en\x20conflicto\x20con\x20los\x20permisos\x20del\x20servidor.\x20Guarde\x20sus\x20cambios\x20locales\x20en\x20otro\x20lugar,\x20ya\x20que\x20se\x20descartarán\x20después\x20de\x20actualizar\x20la\x20página.",
-    "No\x20se\x20pudo\x20unir\x20a\x20la\x20colaboración.\x20Sus\x20cambios\x20se\x20guardarán\x20localmente.",
-    "1285AhpfYK",
-    "Sincronizado",
-  ];
-  _0x1501 = function () {
-    return _0x2eddaf;
-  };
-  return _0x1501();
-}
-function _0x314e(_0xb54b1c, _0xe1903f) {
-  _0xb54b1c = _0xb54b1c - 0x1d5;
-  const _0x1501b7 = _0x1501();
-  let _0x314e48 = _0x1501b7[_0xb54b1c];
-  return _0x314e48;
-}
-(function (_0x5aa2b1, _0x37d725) {
-  const _0x3c1392 = _0x314e,
-    _0x3e908a = _0x5aa2b1();
-  while (!![]) {
-    try {
-      const _0x511d0f =
-        parseInt(_0x3c1392(0x1e3)) / 0x1 +
-        -parseInt(_0x3c1392(0x1ee)) / 0x2 +
-        parseInt(_0x3c1392(0x1f1)) / 0x3 +
-        -parseInt(_0x3c1392(0x1db)) / 0x4 +
-        (-parseInt(_0x3c1392(0x1e7)) / 0x5) *
-          (-parseInt(_0x3c1392(0x1d9)) / 0x6) +
-        parseInt(_0x3c1392(0x1de)) / 0x7 +
-        (parseInt(_0x3c1392(0x1dd)) / 0x8) *
-          (-parseInt(_0x3c1392(0x1f0)) / 0x9);
-      if (_0x511d0f === _0x37d725) break;
-      else _0x3e908a["push"](_0x3e908a["shift"]());
-    } catch (_0x18615e) {
-      _0x3e908a["push"](_0x3e908a["shift"]());
-    }
-  }
-})(_0x1501, 0xdfd91);
 const e = {
   "collaboration-client": {
-    collabClient: { tooltip: { reconnect: _0x16ec7f(0x1d8) } },
+    collabClient: { tooltip: { reconnect: "Haga clic para reconectar" } },
     collabStatus: {
-      fetchMiss: _0x16ec7f(0x1ec),
-      conflict: _0x16ec7f(0x1da),
-      notCollab: _0x16ec7f(0x1ed),
-      synced: _0x16ec7f(0x1e8),
-      syncing: _0x16ec7f(0x1e9),
-      offline: _0x16ec7f(0x1d7),
+      fetchMiss: "Sincronizando datos del servidor...",
+      conflict: "Conflictos de edición",
+      notCollab: "Archivo local",
+      synced: "Sincronizado",
+      syncing: "Sincronizando...",
+      offline: "Desconectado, los cambios se guardarán localmente",
     },
     session: {
-      "connection-failed": _0x16ec7f(0x1dc),
-      "will-retry": _0x16ec7f(0x1ea),
-      "room-full": _0x16ec7f(0x1e1),
-      "join-failed": _0x16ec7f(0x1d5),
-      "room-not-exists": _0x16ec7f(0x1e6),
-      "room-permission-denied": _0x16ec7f(0x1df),
-      "room-cnt-exceeds": _0x16ec7f(0x1d6),
-      "collaboration-timeout": _0x16ec7f(0x1e2),
+      "connection-failed": "Error de conexión. Verifique su red.",
+      "will-retry": "Error de conexión. Intentaremos de nuevo en un momento.",
+      "room-full":
+        "El documento ha alcanzado su límite de colaboración. Sus cambios se guardarán localmente.",
+      "join-failed":
+        "No se pudo unir a la colaboración. Inténtelo de nuevo más tarde. Sus cambios se guardarán localmente.",
+      "room-not-exists":
+        "No se pudo unir a la colaboración. Sus cambios se guardarán localmente.",
+      "room-permission-denied":
+        "Sin permiso de colaboración. Sus cambios se guardarán localmente.",
+      "room-cnt-exceeds":
+        "El número de documentos colaborativos excede el límite. Sus cambios se guardarán localmente.",
+      "collaboration-timeout":
+        "El servidor no responde a su solicitud de colaboración. Sus cambios se guardarán localmente.",
     },
-    conflict: { title: _0x16ec7f(0x1e0), content: _0x16ec7f(0x1eb) },
-    permission: { title: _0x16ec7f(0x1ef), content: _0x16ec7f(0x1e5) },
+    conflict: {
+      title: "Conflicto de colaboración",
+      content:
+        "Hay un conflicto entre su copia local y la copia en el servidor. Guarde sus cambios locales, ya que se perderán cuando recargue la página.",
+    },
+    permission: {
+      title: "Error de autenticación",
+      content:
+        "Sus acciones entran en conflicto con los permisos del servidor. Guarde sus cambios locales en otro lugar, ya que se descartarán después de actualizar la página.",
+    },
     collaboration: {
-      "single-unit": { warning: _0x16ec7f(0x1e4) },
+      "single-unit": {
+        warning:
+          "Abrió el mismo archivo en otra pestaña. Para evitar pérdida de datos, no puede editar en esta pestaña.",
+      },
       closeRoom:
         "Los\x20privilegios\x20de\x20edición\x20fueron\x20revocados\x20porque\x20la\x20sala\x20de\x20colaboración\x20fue\x20cerrada.",
     },
-    auth: { needGotoLoginAlert: _0x16ec7f(0x1f2) },
+    auth: {
+      needGotoLoginAlert:
+        "Su sesión ha expirado. Haga clic en Aceptar para volver a iniciar sesión, o en Cancelar para guardar sus cambios locales.",
+    },
   },
 };
-module["exports"] = e;
+module.exports = e;

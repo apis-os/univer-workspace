@@ -1,1 +1,2 @@
-();const e={'docs-print':{'menu':"Tlač"}};export{e as default};
+const e = { "docs-print": { menu: "Tlač" } };
+export { e as default };

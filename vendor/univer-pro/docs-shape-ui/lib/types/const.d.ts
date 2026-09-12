@@ -1,0 +1,12 @@
+export declare const DOCS_SHAPE_EDIT_PANEL_KEY = "doc.shape.edit.panel";
+export declare const DOCS_SHAPE_FORMAT_RIBBON_TAB = "docs-shape-ui.ribbon.shape-format";
+export declare const DOCS_SHAPE_FORMAT_RIBBON_GROUP_QUICK_STYLES = "docs-shape-ui.ribbon.shape-format.quick-styles";
+export declare const DOCS_SHAPE_FORMAT_RIBBON_GROUP_STYLE = "docs-shape-ui.ribbon.shape-format.style";
+export declare const DOCS_SHAPE_FORMAT_RIBBON_GROUP_TEXT = "docs-shape-ui.ribbon.shape-format.text";
+export declare const DOCS_SHAPE_FORMAT_RIBBON_GROUP_ARRANGE = "docs-shape-ui.ribbon.shape-format.arrange";
+export declare const DOCS_SHAPE_FORMAT_RIBBON_GROUP_FORMULA = "docs-shape-ui.ribbon.shape-format.formula";
+export declare const DOCS_SHAPE_FORMAT_RIBBON_GROUP_ADVANCED = "docs-shape-ui.ribbon.shape-format.advanced";
+export declare const DOCS_SHAPE_OBJECT_LIST_PANEL_KEY = "doc.shape.object-list.panel";
+export declare const DOCS_SHAPE_EDITOR_UNIT_ID_KEY: string;
+export declare const SHAPE_TEXT_FLOAT_MENU_COMPONENT_KEY = "doc.shape.text.float-menu";
+export declare const SHAPE_TEXT_EDITOR_CONTAINER_COMPONENT_KEY = "DocsShapeTextEditorContainer";

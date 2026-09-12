@@ -1,1 +1,1162 @@
-();import{AuthzIoHttpService as _0x1cba3f,COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as _0x6088a3,CollaborationController as _0xeeec03,DataLoaderService as _0x1ed87d,SnapshotServerOverHTTPService as _0x29371d,UniverCollaborationClientPlugin as _0x5c8990}from'@univerjs-pro/collaboration-client';import{DocsHistoryDiffService as _0x43eb08,UniverDocsHistoryPlugin as _0x54f2c1,createDocHistoryDisplay as _0x411e10}from'@univerjs-pro/docs-history';import{LS_CONFIG_KEY as _0x26dfff,UniverLicensePlugin as _0x202f9e}from'@univerjs-pro/license';import{CommandType as _0x4d5f1c,DependentOn as _0x291954,Disposable as _0x2f25de,DisposableCollection as _0x43f931,IAuthzIoService as _0x3d1db4,ICommandService as _0x3b80ca,IConfigService as _0x5081c3,ILogService as _0x3493b9,IResourceLoaderService as _0x1c2597,IUniverInstanceService as _0x5d343c,Inject as _0x2ead43,Injector as _0x59d273,LocaleService as _0x39af5b,Plugin as _0x597748,ThemeService as _0xe9d69,Univer as _0x81e3e9,UniverInstanceType as _0x735059,generateRandomId as _0x15482d,merge as _0x1f0805,registerDependencies as _0x120008}from'@univerjs/core';import{AfterSpaceCommand as _0x14b09e,AlignOperationCommand as _0x15c572,BreakLineCommand as _0x3ca498,ChangeListNestingLevelCommand as _0x4982a7,ChangeListTypeCommand as _0x181e80,CoverContentCommand as _0x3de357,CreateDocTableCommand as _0x699aed,CutContentCommand as _0x1a1eef,DeleteCurrentParagraphCommand as _0x466792,DeleteCustomBlockCommand as _0x3d247e,DeleteLeftCommand as _0x20a0b9,DeleteRightCommand as _0x131c05,DocFloatMenuService as _0x17b5b2,DocParagraphMenuService as _0x4e2526,DocTableDeleteColumnsCommand as _0x17a235,DocTableDeleteRowsCommand as _0x3fc832,DocTableDeleteTableCommand as _0x4305d9,DocTableInsertColumnCommand as _0x69f28d,DocTableInsertRowCommand as _0x1439d0,DocTableTabCommand as _0x24c733,EnterCommand as _0x5fd220,HorizontalLineCommand as _0x2da8c0,IMEInputCommand as _0xfadf5,InnerPasteCommand as _0x4e557d,ListOperationCommand as _0x551c5a,MergeTwoParagraphCommand as _0x557784,MoveDocBlockCommand as _0x32f6af,ReplaceSelectionCommand as _0x4bf74f,ReplaceSnapshotCommand as _0x17581c,ReplaceTextRunsCommand as _0x44f4ab,SetInlineFormatCommand as _0x279bc9,SetParagraphNamedStyleCommand as _0x4c372a,TabCommand as _0x24296b,ToggleCheckListCommand as _0x173b62,UniverDocsUIPlugin as _0x3133c7}from'@univerjs/docs-ui';import{HistoryIcon as _0x35ba3f}from'@univerjs/icons';import{IMenuManagerService as _0x57e997,IconManager as _0x13f50e,MenuItemType as _0x2537a7,RibbonStartGroup as _0xbda69a,UI_PLUGIN_CONFIG_KEY as _0xe30fe9,UniverUIPlugin as _0x2a98f9,getMenuHiddenObservable as _0x1290cb}from'@univerjs/ui';import{CollaborationEvent as _0x1375f5,ISnapshotServerService as _0x58b4bc,SnapshotService as _0x5740c0,UniverCollaborationPlugin as _0x53a2ef}from'@univerjs-pro/collaboration';import{DocsCalloutCancelEmptyParagraphCommand as _0x5b437a,DocsCalloutConsumeBoundaryDeleteCommand as _0x22c9a2,DocsCalloutDeleteCommand as _0x53163e,DocsCalloutInsertBelowCommand as _0x2471c2,DocsCalloutInsertCommand as _0x39d5a7,DocsCalloutResetColorsCommand as _0x87e25f,DocsCalloutSetTextColorCommand as _0x40ebdb,DocsCalloutUnwrapCommand as _0x39e84f,DocsCalloutUpdateCommand as _0x2a531f,UniverDocsCalloutPlugin as _0x58533f}from'@univerjs-pro/docs-callout';import{UniverDocsCalloutUIPlugin as _0x2a9841}from'@univerjs-pro/docs-callout-ui';import{ChangeDocChartDataSourceCommand as _0x25afa7,DuplicateDocChartDataSourceCommand as _0x12d1ea,InsertDocChartCommand as _0x30d57c,RemoveDocChartCommand as _0x1d6ece,RemoveDocChartSnapshotMutation as _0x3e08f7,UniverDocsChartPlugin as _0x47e55b,UpdateDocChartConfigCommand as _0x4b6936,UpdateDocChartDataSourceCommand as _0x49b155,UpdateDocChartDrawingCommand as _0x516bb9,UpdateDocChartSnapshotCommand as _0xd37b5f}from'@univerjs-pro/docs-chart';import{UniverDocsChartUIPlugin as _0x40ac9b}from'@univerjs-pro/docs-chart-ui';import{DocsCodeCancelEmptyParagraphCommand as _0x3f5036,DocsCodeConsumeBoundaryDeleteCommand as _0x4285f3,DocsCodeInsertCommand as _0x53f7b7,DocsCodeRemoveCommand as _0x32938b,DocsCodeUnwrapCommand as _0x3e025e,DocsCodeUpdateCommand as _0x259f4a,UniverDocsCodePlugin as _0x114399}from'@univerjs-pro/docs-code';import{UniverDocsCodeUIPlugin as _0x443f8f}from'@univerjs-pro/docs-code-ui';import{AddDocColumnCommand as _0x2854cf,DeleteDocColumnCommand as _0x37700,DeleteDocColumnGroupCommand as _0x3c0280,InsertDocColumnGroupCommand as _0x514675,NormalizeDocColumnGroupCommand as _0x4cf96c,ResizeDocColumnGroupCommand as _0x22c1c5,UniverDocsColumnPlugin as _0x54f085}from'@univerjs-pro/docs-column';import{UniverDocsColumnUIPlugin as _0xb542f2}from'@univerjs-pro/docs-column-ui';import{ConvertDocFormulaToTextCommand as _0x1258b5,InsertDocFormulaCommand as _0x248e4a,RemoveDocFormulaCommand as _0x5c9205,ReplaceDocFormulaWithTextCommand as _0x4bc315,SetDocFormulaNumberFormatCommand as _0x87963c,UniverDocsFormulaPlugin as _0x24fefd,UpdateDocFormulaCommand as _0x400ef9}from'@univerjs-pro/docs-formula';import{UniverDocsFormulaUIPlugin as _0x4bda4e}from'@univerjs-pro/docs-formula-ui';import{InsertDocsLatexFormulaCommand as _0x2eeb9f,RemoveDocsLatexFormulaCommand as _0x3edb97,ReplaceDocsLatexFormulaWithTextCommand as _0x199e5b,UniverDocsLatexPlugin as _0x293885,UpdateDocsLatexFormulaCommand as _0xff5f96}from'@univerjs-pro/docs-latex';import{UniverDocsLatexUIPlugin as _0x2fca71}from'@univerjs-pro/docs-latex-ui';import{DocsListDemoteCommand as _0x398144,DocsListInsertCommand as _0x4f4752,DocsListPromoteCommand as _0x8bdac6,DocsListSetGlyphSymbolCommand as _0x5d988c,DocsListSetGlyphTypeCommand as _0x72340e,DocsListSetPrefixSuffixCommand as _0x1c4f2e,DocsListSetStartNumberCommand as _0x3d9fb6,UniverDocsListPlugin as _0x47bda3}from'@univerjs-pro/docs-list';import{UniverDocsListUIPlugin as _0x4da04a}from'@univerjs-pro/docs-list-ui';import{DocsQuoteCancelEmptyParagraphCommand as _0x178cfd,DocsQuoteExitCommand as _0x488f11,DocsQuoteInsertBelowCommand as _0x4727dc,DocsQuoteInsertCommand as _0x4cdd3a,DocsQuoteRemoveCommand as _0x20dfb7,DocsQuoteUnwrapCommand as _0x1729c7,DocsQuoteUpdateStyleCommand as _0x27d224,UniverDocsQuotePlugin as _0x1d9e0f}from'@univerjs-pro/docs-quote';import{UniverDocsQuoteUIPlugin as _0x1a55ed}from'@univerjs-pro/docs-quote-ui';import{InsertDocShapeCommand as _0x5ad5ea,UniverDocsShapePlugin as _0x57cea2,UpdateDocDrawingMetadataCommand as _0x102336,UpdateDocShapeDataCommand as _0x244393}from'@univerjs-pro/docs-shape';import{UniverDocsShapeUIPlugin as _0x4bcf98}from'@univerjs-pro/docs-shape-ui';import{DocsTableDeleteColumnsCommand as _0x3ce509,DocsTableDeleteRowsCommand as _0x5eb140,DocsTableDeleteTableCommand as _0x549a3f,DocsTableDistributeColumnsCommand as _0x5d6397,DocsTableDistributeRowsCommand as _0x375ccd,DocsTableInsertColumnsCommand as _0x4c7623,DocsTableInsertRowsCommand as _0x3e7c66,DocsTableInsertTableCommand as _0x26eb85,DocsTableInsertTitleRowCommand as _0x5c43fd,DocsTableMergeCellsCommand as _0x4987d2,DocsTableMoveColumnsCommand as _0x4eb799,DocsTableMoveRowsCommand as _0x369832,DocsTableMoveTableCommand as _0x41bb3e,DocsTableResizeColumnCommand as _0x33d21a,DocsTableResizeRowCommand as _0x4b668a,DocsTableSetColumnTypeCommand as _0x5d90b9,DocsTableSetHeaderRowCountCommand as _0x390271,DocsTableSetTableBackgroundCommand as _0x334815,DocsTableSetTableBorderColorCommand as _0x5b738a,DocsTableSetTableBorderCommand as _0x59a1ec,DocsTableSetTableBorderStyleCommand as _0x16a5bd,DocsTableSetTableBorderWidthCommand as _0x5b3c03,DocsTableSetTableVerticalAlignCommand as _0x107d57,DocsTableSortTableCommand as _0x5d0f8a,DocsTableUnmergeCellsCommand as _0xedcefc,UniverDocsTablePlugin as _0x3a0639}from'@univerjs-pro/docs-table';import{UniverDocsTableUIPlugin as _0x4b5bd2}from'@univerjs-pro/docs-table-ui';import{HistoryRestoreService as _0xf77e8,HistoryUnitAdapterRegistryService as _0x29810d,UniverEditHistoryPlugin as _0x59a940,isHistoryRestoreAcknowledgement as _0x31f2a8}from'@univerjs-pro/edit-history';import{UniverProFormulaEnginePlugin as _0x367094}from'@univerjs-pro/engine-formula';import{UniverShapeEditorUIPlugin as _0x34dfaa}from'@univerjs-pro/shape-editor-ui';import{CreateHeaderFooterCommand as _0x2a88b8,DeleteDocumentSectionBreakCommand as _0x306834,DeleteTextCommand as _0x344ec0,DocHistoryAction as _0x26322d,InsertDocumentColumnBreakCommand as _0xfb5592,InsertDocumentSectionBreakCommand as _0x515188,InsertTextCommand as _0x3d52a5,RichTextEditingMutation as _0x5287db,SetDocumentDefaultParagraphStyleCommand as _0x1ae2cc,SetDocumentNameCommand as _0x12848d,SetSectionHeaderFooterLinkCommand as _0x9c7794,UniverDocsPlugin as _0x147008,UpdateDocumentParagraphStyleCommand as _0x229270,UpdateDocumentSectionCommand as _0x4c178e,UpdateTextCommand as _0x3aa417}from'@univerjs/docs';import{InsertDocDrawingCommand as _0x7ef559,RemoveDocDrawingCommand as _0x10a6cd,SetDocDrawingArrangeCommand as _0x56ac75,UniverDocsDrawingPlugin as _0x44a945,UpdateDocDrawingWrappingStyleCommand as _0x4ec085,UpdateDrawingDocTransformCommand as _0x227867}from'@univerjs/docs-drawing';import{UniverDocsDrawingUIPlugin as _0x475bc9}from'@univerjs/docs-drawing-ui';import{DocHyperLinkCommandId as _0x4ecd16,UniverDocsHyperLinkPlugin as _0x16478a}from'@univerjs/docs-hyper-link';import{UniverDocsHyperLinkUIPlugin as _0xac7da5}from'@univerjs/docs-hyper-link-ui';import{UniverDrawingPlugin as _0x13168f}from'@univerjs/drawing';import{UniverDrawingUIPlugin as _0x19d493}from'@univerjs/drawing-ui';import{IRenderManagerService as _0x47dd3c,UniverRenderEnginePlugin as _0x2a6b7e}from'@univerjs/engine-render';import{UniverNetworkPlugin as _0x25aacf}from'@univerjs/network';import{Subject as _0x11e500,filter as _0x3bef93,firstValueFrom as _0x405ace,takeUntil as _0x2f2621,timeout as _0x5144bf}from'rxjs';import{HistoryActionSummaryService as _0x2c09e3,HistoryHighlightService as _0x2e819d,HistoryRenderAdapterRegistryService as _0x48cdaf,UniverEditHistoryUIPlugin as _0x2887da}from'@univerjs-pro/edit-history-ui';const B="docs-history-ui.config",wr={'historyServerUrl':"/universer-api/history"};var Tr="@univerjs-pro/docs-history-ui",Er="1.0.0-insiders.20260907-70fc579";function V(_0x30d800,_0x154a2b){return function(_0x2bfacf,_0x4c8118){_0x154a2b(_0x2bfacf,_0x4c8118,_0x30d800);};}function H(_0x1f049c,_0x10e446,_0x7e7359,_0x1b45a8){var _0x24157b=arguments.length,_0x395a76=_0x24157b<3?_0x10e446:_0x1b45a8===null?_0x1b45a8=Object.getOwnPropertyDescriptor(_0x10e446,_0x7e7359):_0x1b45a8,_0x32752d;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")_0x395a76=Reflect.decorate(_0x1f049c,_0x10e446,_0x7e7359,_0x1b45a8);else{for(var _0x1a2753=_0x1f049c.length-1;_0x1a2753>=0;_0x1a2753--)(_0x32752d=_0x1f049c[_0x1a2753])&&(_0x395a76=(_0x24157b<3?_0x32752d(_0x395a76):_0x24157b>3?_0x32752d(_0x10e446,_0x7e7359,_0x395a76):_0x32752d(_0x10e446,_0x7e7359))||_0x395a76);}return _0x24157b>3&&_0x395a76&&Object.defineProperty(_0x10e446,_0x7e7359,_0x395a76),_0x395a76;}let U=class extends _0x2f25de{constructor(_0x302ce0){super(),this.disposeWithMe(_0x302ce0.register("DocsHistoryIcon",_0x35ba3f));}};U=H([V(0,_0x2ead43(_0x13f50e))],U);const Dr={[_0x26322d.DeleteChart]:"docs-history-ui.action.deleteChart",[_0x26322d.DeleteDivider]:"docs-history-ui.action.deleteDivider",[_0x26322d.DeleteImage]:"docs-history-ui.action.deleteImage",[_0x26322d.DeleteShape]:"docs-history-ui.action.deleteShape",[_0x26322d.EditTableCell]:"docs-history-ui.action.editTableCell",[_0x26322d.FormatParagraph]:"docs-history-ui.action.formatParagraph",[_0x26322d.InsertCustomRange]:"docs-history-ui.action.insertCustomRange",[_0x26322d.UpdateImage]:"docs-history-ui.action.updateImage",[_0x26322d.UpdatePageLayout]:"docs-history-ui.action.updatePageLayout"},Or=new Map([[_0x12848d.id,"docs-history-ui.action.renameDocument"],[_0x3d52a5.id,"docs-history-ui.action.insertText"],[_0xfadf5.id,"docs-history-ui.action.insertText"],[_0x3ca498.id,'docs-history-ui.action.insertText'],[_0x4e557d.id,"docs-history-ui.action.insertText"],[_0x4bf74f.id,'docs-history-ui.action.insertText'],[_0x344ec0.id,"docs-history-ui.action.deleteText"],[_0x1a1eef.id,'docs-history-ui.action.deleteText'],[_0x20a0b9.id,"docs-history-ui.action.deleteText"],[_0x131c05.id,"docs-history-ui.action.deleteText"],[_0x466792.id,"docs-history-ui.action.deleteText"],[_0x557784.id,"docs-history-ui.action.deleteText"],[_0x3d247e.id,'docs-history-ui.action.deleteBlock'],[_0x3aa417.id,"docs-history-ui.action.formatText"],[_0x279bc9.id,'docs-history-ui.action.formatText'],[_0x44f4ab.id,"docs-history-ui.action.formatText"],[_0x229270.id,"docs-history-ui.action.formatParagraph"],[_0x1ae2cc.id,"docs-history-ui.action.formatParagraph"],[_0x15c572.id,"docs-history-ui.action.formatParagraph"],[_0x14b09e.id,'docs-history-ui.action.formatParagraph'],[_0x5fd220.id,"docs-history-ui.action.formatParagraph"],[_0x24296b.id,"docs-history-ui.action.formatParagraph"],[_0x4c372a.id,"docs-history-ui.action.changeHeading"],[_0x551c5a.id,"docs-history-ui.action.updateList"],[_0x181e80.id,"docs-history-ui.action.updateList"],[_0x4982a7.id,'docs-history-ui.action.updateList'],[_0x173b62.id,"docs-history-ui.action.updateList"],[_0x4f4752.id,'docs-history-ui.action.updateList'],[_0x72340e.id,"docs-history-ui.action.updateList"],[_0x5d988c.id,"docs-history-ui.action.updateList"],[_0x1c4f2e.id,'docs-history-ui.action.updateList'],[_0x3d9fb6.id,'docs-history-ui.action.updateList'],[_0x8bdac6.id,"docs-history-ui.action.updateList"],[_0x398144.id,"docs-history-ui.action.updateList"],[_0x32f6af.id,'docs-history-ui.action.moveBlock'],[_0x2da8c0.id,"docs-history-ui.action.insertDivider"],[_0x4c178e.id,"docs-history-ui.action.updatePageLayout"],[_0x515188.id,"docs-history-ui.action.updatePageLayout"],[_0x306834.id,"docs-history-ui.action.updatePageLayout"],[_0xfb5592.id,"docs-history-ui.action.updatePageLayout"],[_0x2a88b8.id,"docs-history-ui.action.updateHeaderFooter"],[_0x9c7794.id,'docs-history-ui.action.updateHeaderFooter'],[_0x4ecd16.Add,"docs-history-ui.action.insertLink"],[_0x4ecd16.Update,"docs-history-ui.action.updateLink"],[_0x4ecd16.Delete,"docs-history-ui.action.deleteLink"],[_0x26eb85.id,'docs-history-ui.action.insertTable'],[_0x699aed.id,"docs-history-ui.action.insertTable"],[_0x549a3f.id,"docs-history-ui.action.deleteTable"],[_0x4305d9.id,"docs-history-ui.action.deleteTable"],[_0x3e7c66.id,"docs-history-ui.action.insertTableRows"],[_0x5eb140.id,"docs-history-ui.action.deleteTableRows"],[_0x369832.id,"docs-history-ui.action.moveTableRows"],[_0x4c7623.id,"docs-history-ui.action.insertTableColumns"],[_0x3ce509.id,'docs-history-ui.action.deleteTableColumns'],[_0x4eb799.id,"docs-history-ui.action.moveTableColumns"],[_0x41bb3e.id,"docs-history-ui.action.moveTable"],[_0x33d21a.id,'docs-history-ui.action.resizeTableColumns'],[_0x4b668a.id,'docs-history-ui.action.resizeTableRows'],[_0x5d6397.id,"docs-history-ui.action.distributeTableColumns"],[_0x375ccd.id,"docs-history-ui.action.distributeTableRows"],[_0x5c43fd.id,"docs-history-ui.action.updateTableHeader"],[_0x5d90b9.id,"docs-history-ui.action.updateTableColumns"],[_0x390271.id,'docs-history-ui.action.updateTableHeader'],[_0x334815.id,"docs-history-ui.action.formatTable"],[_0x5b738a.id,"docs-history-ui.action.formatTable"],[_0x59a1ec.id,'docs-history-ui.action.formatTable'],[_0x16a5bd.id,"docs-history-ui.action.formatTable"],[_0x5b3c03.id,"docs-history-ui.action.formatTable"],[_0x107d57.id,'docs-history-ui.action.formatTable'],[_0x4987d2.id,'docs-history-ui.action.mergeTableCells'],[_0xedcefc.id,'docs-history-ui.action.unmergeTableCells'],[_0x5d0f8a.id,'docs-history-ui.action.sortTable'],[_0x17a235.id,"docs-history-ui.action.deleteTableColumns"],[_0x3fc832.id,"docs-history-ui.action.deleteTableRows"],[_0x69f28d.id,'docs-history-ui.action.insertTableColumns'],[_0x1439d0.id,"docs-history-ui.action.insertTableRows"],[_0x24c733.id,"docs-history-ui.action.editTableCell"],[_0x7ef559.id,"docs-history-ui.action.insertImage"],[_0x10a6cd.id,"docs-history-ui.action.deleteImage"],[_0x227867.id,"docs-history-ui.action.updateDrawing"],[_0x4ec085.id,"docs-history-ui.action.updateDrawing"],[_0x56ac75.id,"docs-history-ui.action.updateDrawing"],[_0x5ad5ea.id,"docs-history-ui.action.insertShape"],[_0x244393.id,"docs-history-ui.action.updateShape"],[_0x102336.id,"docs-history-ui.action.updateShape"],[_0x30d57c.id,"docs-history-ui.action.insertChart"],[_0x1d6ece.id,"docs-history-ui.action.deleteChart"],[_0x3e08f7.id,"docs-history-ui.action.deleteChart"],[_0x4b6936.id,"docs-history-ui.action.updateChart"],[_0x49b155.id,'docs-history-ui.action.updateChart'],[_0x516bb9.id,"docs-history-ui.action.updateChart"],[_0xd37b5f.id,"docs-history-ui.action.updateChart"],[_0x25afa7.id,'docs-history-ui.action.updateChart'],[_0x12d1ea.id,"docs-history-ui.action.updateChart"],[_0x39d5a7.id,"docs-history-ui.action.insertCallout"],[_0x2471c2.id,"docs-history-ui.action.insertCallout"],[_0x53163e.id,"docs-history-ui.action.deleteCallout"],[_0x39e84f.id,'docs-history-ui.action.deleteCallout'],[_0x5b437a.id,'docs-history-ui.action.deleteCallout'],[_0x22c9a2.id,"docs-history-ui.action.updateCallout"],[_0x87e25f.id,"docs-history-ui.action.updateCallout"],[_0x40ebdb.id,"docs-history-ui.action.updateCallout"],[_0x2a531f.id,'docs-history-ui.action.updateCallout'],[_0x53f7b7.id,"docs-history-ui.action.insertCodeBlock"],[_0x32938b.id,"docs-history-ui.action.deleteCodeBlock"],[_0x3e025e.id,'docs-history-ui.action.deleteCodeBlock'],[_0x3f5036.id,'docs-history-ui.action.deleteCodeBlock'],[_0x4285f3.id,"docs-history-ui.action.updateCodeBlock"],[_0x259f4a.id,"docs-history-ui.action.updateCodeBlock"],[_0x4cdd3a.id,"docs-history-ui.action.insertQuote"],[_0x4727dc.id,"docs-history-ui.action.insertQuote"],[_0x20dfb7.id,"docs-history-ui.action.deleteQuote"],[_0x1729c7.id,"docs-history-ui.action.deleteQuote"],[_0x178cfd.id,"docs-history-ui.action.deleteQuote"],[_0x488f11.id,"docs-history-ui.action.updateQuote"],[_0x27d224.id,"docs-history-ui.action.updateQuote"],[_0x514675.id,"docs-history-ui.action.insertColumns"],[_0x2854cf.id,"docs-history-ui.action.updateColumns"],[_0x37700.id,"docs-history-ui.action.updateColumns"],[_0x3c0280.id,'docs-history-ui.action.updateColumns'],[_0x4cf96c.id,'docs-history-ui.action.updateColumns'],[_0x22c1c5.id,'docs-history-ui.action.updateColumns'],[_0x248e4a.id,"docs-history-ui.action.insertFormula"],[_0x400ef9.id,"docs-history-ui.action.updateFormula"],[_0x87963c.id,"docs-history-ui.action.updateFormula"],[_0x5c9205.id,'docs-history-ui.action.deleteFormula'],[_0x1258b5.id,"docs-history-ui.action.deleteFormula"],[_0x4bc315.id,"docs-history-ui.action.deleteFormula"],[_0x2eeb9f.id,"docs-history-ui.action.insertFormula"],[_0xff5f96.id,'docs-history-ui.action.updateFormula'],[_0x3edb97.id,"docs-history-ui.action.deleteFormula"],[_0x199e5b.id,'docs-history-ui.action.deleteFormula'],[_0x3de357.id,'docs-history-ui.action.editDocument'],[_0x17581c.id,"docs-history-ui.action.editDocument"]]),kr=new Set([_0x56ac75.id,_0x4ec085.id,_0x227867.id]),Ar=new Set([_0x4b6936.id,_0x49b155.id,_0x516bb9.id,_0xd37b5f.id,_0x102336.id,_0x244393.id]);let W=class extends _0x2f25de{constructor(_0x428a8c,_0x346d8a){super(),this._localeService=_0x346d8a,this.disposeWithMe(_0x428a8c.register(_0x735059.UNIVER_DOC,this));}resolve(_0x5089d1){let _0x10cc5b=jr(_0x5089d1),_0x369f2d=_0x10cc5b.has(_0x26322d.InsertCustomRange),_0x261d26=_0x10cc5b.has(_0x26322d.UpdateImage),_0x414b5d=_0x10cc5b.has(_0x26322d.DeleteChart)||_0x10cc5b.has(_0x26322d.DeleteImage)||_0x10cc5b.has(_0x26322d.DeleteShape),_0x3fd752=Mr(_0x5089d1),_0xc9f6b0=_0x5089d1.commandIds["has"](_0x5ad5ea.id)||_0x5089d1.commandIds["has"](_0x30d57c.id),_0x3c9800=[...Ar].some(_0x219f73=>_0x5089d1.commandIds["has"](_0x219f73)),_0xc5a6c6=_0x3fd752.map(_0x4725ce=>this._localeService['t'](_0x4725ce));_0xc5a6c6.push(...[..._0x10cc5b].map(_0xc89323=>this._localeService['t'](Dr[_0xc89323])));let _0x473a4d=[..._0x5089d1.commandIds].flatMap(_0x13168b=>{if(_0x369f2d&&_0x13168b===_0x4bf74f.id||_0xc9f6b0&&_0x13168b===_0x7ef559.id||(_0x414b5d||_0x3fd752.length>0)&&_0x13168b===_0x10a6cd.id||(_0x3c9800||_0x261d26)&&kr.has(_0x13168b))return[];let _0x1703d9=Or.get(_0x13168b);return _0x1703d9?[this._localeService['t'](_0x1703d9)]:[];}),_0x25476c=[...new Set([..._0xc5a6c6,..._0x473a4d])];return _0x25476c.length>0?_0x25476c:_0x5089d1.commandIds["has"](_0x5287db.id)?[this._localeService['t']("docs-history-ui.action.editDocument")]:[];}};W=H([V(0,_0x2ead43(_0x2c09e3)),V(1,_0x2ead43(_0x39af5b))],W);function jr(_0x4088ea){let _0x306702=new Set();return _0x4088ea.mutations['forEach'](_0x35fc61=>{if(!Nr(_0x35fc61.params))return;let {historyAction:_0x53e911}=_0x35fc61.params;G(_0x53e911)&&_0x306702.add(_0x53e911);let {historyActions:_0x10b0d}=_0x35fc61.params;Array.isArray(_0x10b0d)&&_0x10b0d.forEach(_0x181705=>{G(_0x181705)&&_0x306702.add(_0x181705);});}),_0x306702;}function G(_0x3e58a8){return _0x3e58a8===_0x26322d.DeleteChart||_0x3e58a8===_0x26322d.DeleteDivider||_0x3e58a8===_0x26322d.DeleteImage||_0x3e58a8===_0x26322d.DeleteShape||_0x3e58a8===_0x26322d.EditTableCell||_0x3e58a8===_0x26322d.FormatParagraph||_0x3e58a8===_0x26322d.InsertCustomRange||_0x3e58a8===_0x26322d.UpdateImage||_0x3e58a8===_0x26322d.UpdatePageLayout;}function Mr(_0x324fee){if(!_0x324fee.commandIds['has'](_0x10a6cd.id))return[];let _0x3b61a0=_0x324fee.mutations["flatMap"](_0x2e0a78=>Nr(_0x2e0a78.params)?typeof _0x2e0a78.params['chartId']=="string"?["docs-history-ui.action.deleteChart"]:typeof _0x2e0a78.params['shapeId']=="string"?["docs-history-ui.action.deleteShape"]:typeof _0x2e0a78.params['drawingId']=="string"?["docs-history-ui.action.deleteImage"]:[]:[]);return[...new Set(_0x3b61a0)];}function Nr(_0x29c12d){return typeof _0x29c12d=='object'&&!!_0x29c12d;}function K(_0x1dba13){'@babel/helpers - typeof';return K=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(_0x39fa49){return typeof _0x39fa49;}:function(_0x1e3753){return _0x1e3753&&typeof Symbol=="function"&&_0x1e3753.constructor===Symbol&&_0x1e3753!==Symbol.prototype?'symbol':typeof _0x1e3753;},K(_0x1dba13);}function Pr(_0x3d4d5a,_0x4d4da5){if(K(_0x3d4d5a)!="object"||!_0x3d4d5a)return _0x3d4d5a;var _0x29564f=_0x3d4d5a[Symbol.toPrimitive];if(_0x29564f!== undefined){var _0xf54b68=_0x29564f.call(_0x3d4d5a,_0x4d4da5||"default");if(K(_0xf54b68)!="object")return _0xf54b68;throw TypeError("@@toPrimitive must return a primitive value.");}return(_0x4d4da5==="string"?String:Number)(_0x3d4d5a);}function Fr(_0x4deb02){var _0x59ef51=Pr(_0x4deb02,"string");return K(_0x59ef51)=='symbol'?_0x59ef51:_0x59ef51+'';}function q(_0x318b1e,_0xe1817c,_0x5a2966){return(_0xe1817c=Fr(_0xe1817c))in _0x318b1e?Object.defineProperty(_0x318b1e,_0xe1817c,{'value':_0x5a2966,'enumerable': true,'configurable': true,'writable': true}):_0x318b1e[_0xe1817c]=_0x5a2966,_0x318b1e;}let J=class extends _0x2f25de{constructor(_0x5e96f7,_0x51506d,_0x4bcac4,_0x2ada4c,_0x50ce00,_0x470917){super(),this._diffService=_0x5e96f7,this._snapshotService=_0x4bcac4,this._resourceLoaderService=_0x2ada4c,this._univerInstanceService=_0x50ce00,this._highlightService=_0x470917,q(this,"type",_0x735059.UNIVER_DOC),q(this,'_changesGeneration',0),q(this,"_loadGeneration",0),q(this,"_loadQueue",Promise.resolve()),this.disposeWithMe(_0x51506d.register(this));}loadRevision(_0x536c05,_0x30f9e5){let _0x5082ec=++this._loadGeneration,_0x2c8ae9=this._loadQueue['catch'](()=> undefined).then(async()=>{if(_0x5082ec!==this._loadGeneration)return;this._getDocument(_0x536c05)&&this._univerInstanceService["disposeUnit"](_0x536c05);let _0x324903=await this._snapshotService['loadDoc'](_0x536c05,_0x30f9e5.endRevision);if(_0x324903.setDisabled( true),_0x5082ec!==this._loadGeneration){this._getDocument(_0x536c05)===_0x324903&&this._univerInstanceService['disposeUnit'](_0x536c05);return;}this._univerInstanceService["focusUnit"](_0x536c05);});return this._loadQueue=_0x2c8ae9,_0x2c8ae9;}async loadChanges(_0x3b887b,_0x299075){let _0x20c66e=++this._changesGeneration,_0x325190=await this._diffService['compare'](_0x3b887b,_0x299075);if(_0x20c66e!==this._changesGeneration)return;let _0x521631=this._getDocument(_0x3b887b);if(!_0x521631)return;let _0x5e0f8f=_0x411e10(this._resourceLoaderService['saveUnit'](_0x3b887b)??_0x521631.getSnapshot(),_0x325190.changes,{'insert':this._highlightService["getStyle"]('insert'),'delete':this._highlightService['getStyle']('delete'),'update':this._highlightService["getStyle"]("update")});_0x20c66e===this._changesGeneration&&(this._univerInstanceService['disposeUnit'](_0x3b887b),this._univerInstanceService["createUnit"](_0x735059.UNIVER_DOC,_0x5e0f8f.snapshot).setDisabled( true),this._univerInstanceService['focusUnit'](_0x3b887b));}close(){++this._changesGeneration,++this._loadGeneration;}_getDocument(_0x563a35){return this._univerInstanceService["getUnit"](_0x563a35,_0x735059.UNIVER_DOC)??null;}};J=H([V(0,_0x2ead43(_0x43eb08)),V(1,_0x2ead43(_0x48cdaf)),V(2,_0x2ead43(_0x5740c0)),V(3,_0x1c2597),V(4,_0x5d343c),V(5,_0x2ead43(_0x2e819d))],J);let Y=class extends _0x2887da{constructor(_0x1c1237,_0x1e1c53,_0x5d2ec8,_0x4974f8){let {collaborationClientConfig:_0x3fc143,..._0x43dceb}=_0x1c1237;super(_0x43dceb,_0x1e1c53,_0x5d2ec8,_0x4974f8),this._injector=_0x1e1c53,_0x5d2ec8.setConfig(_0x6088a3,_0x3fc143);}onStarting(){super.onStarting(),_0x120008(this._injector,[[_0x58b4bc,{'useClass':_0x29371d}],[W],[J]]),this._injector["get"](W),this._injector["get"](J);}};q(Y,"pluginName","UNIVER_DOCS_HISTORY_VIEWER_PLUGIN"),q(Y,'packageName',Tr),q(Y,"version",Er),q(Y,"type",_0x735059.UNIVER_UNKNOWN),Y=H([_0x291954(_0x202f9e,_0x54f2c1,_0x3133c7),V(1,_0x2ead43(_0x59d273)),V(2,_0x5081c3),V(3,_0x3493b9)],Y);let X=class extends _0x2f25de{constructor(_0x13e173,_0xd214f2,_0x1ffbe1,_0x488f97,_0x404dcc,_0x7c875f,_0x45b8f3,_0x3c008a,_0x4f0116){super(),this._configService=_0x13e173,this._restoreService=_0xd214f2,this._adapterRegistry=_0x1ffbe1,this._localeService=_0x488f97,this._themeService=_0x404dcc,this._collaborationController=_0x7c875f,this._dataLoaderService=_0x45b8f3,this._univerInstanceService=_0x3c008a,this._renderManagerService=_0x4f0116,q(this,'_historyUniver',null),q(this,"_opening",null),q(this,"_openGeneration",0),q(this,"_sessionDisposables",new _0x43f931()),q(this,'_container',null),q(this,"_ownsContainer", false),q(this,"_unitId",''),q(this,'_location', undefined),q(this,"_suppressedHostUnitId",'');}open(_0x4d616f){if(this._historyUniver)return Promise.resolve();if(this._opening)return this._opening;let _0x80f6b3=++this._openGeneration,_0x24b014=this._open(_0x4d616f,_0x80f6b3).finally(()=>{this._opening===_0x24b014&&(this._opening=null);});return this._opening=_0x24b014,_0x24b014;}async _open(_0x258356,_0x33e943){let _0xfb5d5f=this._adapterRegistry["get"](_0x735059.UNIVER_DOC);if(!_0xfb5d5f)throw Error("[DocsHistoryLoaderService]: Docs history adapter is not registered.");let _0x1c3ff5=_0xfb5d5f.captureLocation(_0x258356),_0x4055c7=await Promise.all([_0xfb5d5f.canView(_0x258356),_0xfb5d5f.canRevert(_0x258356)]).catch(_0x4e1464=>{if(_0x33e943===this._openGeneration)throw _0x4e1464;return null;});if(!_0x4055c7||_0x33e943!==this._openGeneration)return;let [_0x563151,_0x1a01d9]=_0x4055c7;if(!_0x563151)throw Error('[DocsHistoryLoaderService]:\x20The\x20current\x20user\x20cannot\x20view\x20history\x20for\x20this\x20document.');this._unitId=_0x258356,this._location=_0x1c3ff5;let _0x19348b=this._ensureContainer(),_0xc1361f=this._localeService["getCurrentLocale"](),_0x4f4353=this._localeService['getLocales'](),_0x1c8de8=new _0x81e3e9({'theme':this._themeService["getCurrentTheme"](),'darkMode':this._themeService["darkMode"],'locale':_0xc1361f,'locales':_0x4f4353?{[_0xc1361f]:_0x4f4353}: undefined,'direction':this._localeService["getDirection"](),'override':[[_0x3d1db4,{'useClass':_0x1cba3f}]]});this._historyUniver=_0x1c8de8;try{this._suppressHostMenus(_0x258356),_0x19348b.style['display']="block",this._syncViewerServices(_0x1c8de8,_0x19348b),this._registerChildPlugins(_0x1c8de8,_0x1a01d9,_0x19348b),this._createPlaceholderDocument(_0x1c8de8);}catch(_0x63a333){throw _0x33e943===this._openGeneration?this.close():(_0x19348b.style['display']='none',this._restoreHostMenus(),_0x1c8de8.dispose()),_0x63a333;}}close(){++this._openGeneration,this._opening=null,this._sessionDisposables['dispose']();let _0x20abeb=this._historyUniver;this._historyUniver=null,_0x20abeb==null||_0x20abeb.dispose();let _0x28a542=this._container;_0x28a542&&(_0x28a542.style["display"]="none"),this._restoreHostMenus(),this._unitId='',this._location= undefined;}_syncViewerServices(_0x5e7cde,_0x169cd7){let _0x40872c=_0x5e7cde.__getInjector(),_0xff6bfd=_0x40872c.get(_0x39af5b),_0x46e02c=_0x40872c.get(_0xe9d69);this._sessionDisposables['add'](this._themeService["darkMode$"].subscribe(_0x53929d=>{_0x46e02c.setDarkMode(_0x53929d);})),this._sessionDisposables['add'](this._themeService['currentTheme$'].subscribe(_0x3e3c00=>{_0x46e02c.setTheme(_0x3e3c00);})),this._sessionDisposables['add'](this._localeService['currentLocale$'].subscribe(_0x4fe668=>{let _0x121b3d=this._localeService["getLocales"]();_0x121b3d&&_0xff6bfd.load({[_0x4fe668]:_0x121b3d}),_0xff6bfd.setLocale(_0x4fe668);})),this._sessionDisposables["add"](this._localeService["direction$"].subscribe(_0x9421ed=>{_0xff6bfd.setDirection(_0x9421ed),_0x169cd7.dir=_0x9421ed,_0x169cd7.style["direction"]=_0x9421ed;}));}async restore(_0x57f589){var _0x1b9a2d;let _0x1b78e5=this._unitId,_0x514c52=this._location,_0x40babf=this._collaborationController["getCollabEntity"](_0x1b78e5);if(!_0x40babf)throw Error("[DocsHistoryLoaderService]: Collaboration is not ready for this document.");let _0x429f33=new _0x11e500(),_0x2f24c6=_0x405ace(_0x40babf.session["event$"].pipe(_0x3bef93(_0x55a2aa=>_0x55a2aa.eventID===_0x1375f5.CHANGESET_ACK),_0x3bef93(_0x36c363=>_0x31f2a8(_0x36c363,_0x57f589)),_0x2f2621(_0x429f33),_0x5144bf(10000)));try{if(!await this._restoreService["restore"](_0x1b78e5,_0x735059.UNIVER_DOC,_0x57f589))throw Error('[DocsHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.');await _0x2f24c6;}catch(_0x19ddd6){throw _0x429f33.next(),await _0x2f24c6.catch(()=> undefined),_0x19ddd6;}finally{_0x429f33.complete();}this.close(),this._univerInstanceService["disposeUnit"](_0x1b78e5),await this._dataLoaderService["loadUnit"](_0x1b78e5,_0x735059.UNIVER_DOC),await((_0x1b9a2d=this._adapterRegistry["get"](_0x735059.UNIVER_DOC))==null? undefined:_0x1b9a2d.restoreLocation(_0x1b78e5,_0x514c52));}_ensureContainer(){var _0x421519;if(this._container)return this._container;let _0x47c4e0=this._configService["getConfig"](B),_0x4f71a0=(_0x421519=this._configService["getConfig"](_0xe30fe9))==null? undefined:_0x421519.container,_0x5b75be=(_0x47c4e0==null? undefined:_0x47c4e0.univerContainerId)??_0x4f71a0,_0xea9f5=typeof _0x5b75be=='string'?document.getElementById(_0x5b75be):_0x5b75be;if(!_0xea9f5)throw Error("[DocsHistoryLoaderService]: Configure a valid Univer container before opening history.");let _0x167b8e=document.createElement("div");return _0x167b8e.style["position"]="absolute",_0x167b8e.style['inset']='0',_0x167b8e.style["zIndex"]='49',_0x167b8e.style["display"]="none",_0xea9f5.appendChild(_0x167b8e),this._container=_0x167b8e,this._ownsContainer= true,_0x167b8e;}_registerChildPlugins(_0x402a31,_0x51c0f9,_0x84618e){let _0x2fd52c=this._configService["getConfig"](_0x26dfff),_0x4a98d7=this._configService["getConfig"](B),_0x578228=[[_0x202f9e,{'license':_0x2fd52c==null? undefined:_0x2fd52c.ls}],[_0x2a6b7e],[_0x2a98f9,{'container':_0x84618e,'header': true,'toolbar': false,'footer': true,'contextMenu': false}],[_0x25aacf],[_0x13168f],[_0x19d493],[_0x147008,{'hasScroll': false}],[_0x3133c7],[_0x44a945],[_0x475bc9],[_0x367094],[_0x34dfaa],[_0x24fefd],[_0x4bda4e],[_0x3a0639],[_0x4b5bd2],[_0x58533f],[_0x2a9841],[_0x114399],[_0x443f8f],[_0x1d9e0f],[_0x1a55ed],[_0x54f085],[_0xb542f2],[_0x293885],[_0x2fca71],[_0x47bda3],[_0x4da04a],[_0x57cea2],[_0x4bcf98],[_0x47e55b],[_0x40ac9b],[_0x16478a],[_0xac7da5],[_0x53a2ef],[_0x59a940,{'historyServerUrl':_0x4a98d7==null? undefined:_0x4a98d7.historyServerUrl}],[_0x54f2c1]],_0x5eec65=new Set();[..._0x578228,...(_0x4a98d7==null? undefined:_0x4a98d7.viewerPlugins)??[]].forEach(([_0x154c86,_0x3a8977])=>{if(_0x5eec65.has(_0x154c86.pluginName))throw Error("[DocsHistoryLoaderService]: Plugin "+_0x154c86.pluginName+" has already been registered.");_0x5eec65.add(_0x154c86.pluginName),_0x402a31.registerPlugin(_0x154c86,_0x3a8977);}),_0x402a31.registerPlugin(Y,{'viewerMode': true,'descriptor':{'unitId':this._unitId,'type':_0x735059.UNIVER_DOC},'canRestore':_0x51c0f9,'onClose':()=>this.close(),'onRestore':_0x19a1da=>this.restore(_0x19a1da),'collaborationClientConfig':this._configService["getConfig"](_0x6088a3)});}_createPlaceholderDocument(_0xe10203){_0xe10203.createUnit(_0x735059.UNIVER_DOC,{'id':this._unitId,'body':{'dataStream':'\x0d\x0a','paragraphs':[{'startIndex':0,'paragraphId':_0x15482d()}],'sectionBreaks':[{'startIndex':1,'sectionId':_0x15482d()}]},'documentStyle':{}}).setDisabled( true);}_suppressHostMenus(_0x1ff381){let _0x3c56c9=this._renderManagerService["getRenderUnitById"](_0x1ff381);(_0x3c56c9==null? undefined:_0x3c56c9.type)===_0x735059.UNIVER_DOC&&(this._suppressedHostUnitId=_0x1ff381,_0x3c56c9.with(_0x17b5b2).setSuppressed( true),_0x3c56c9.with(_0x4e2526).hideParagraphMenu( true));}_restoreHostMenus(){let _0x34edff=this._suppressedHostUnitId;if(this._suppressedHostUnitId='',!_0x34edff)return;let _0x2e692d=this._renderManagerService["getRenderUnitById"](_0x34edff);(_0x2e692d==null? undefined:_0x2e692d.type)===_0x735059.UNIVER_DOC&&_0x2e692d.with(_0x17b5b2).setSuppressed( false);}dispose(){if(this.close(),this._ownsContainer){var _0x455d10;(_0x455d10=this._container)==null||_0x455d10.remove();}this._container=null,this._ownsContainer= false,super.dispose();}};X=H([V(0,_0x5081c3),V(1,_0x2ead43(_0xf77e8)),V(2,_0x2ead43(_0x29810d)),V(3,_0x2ead43(_0x39af5b)),V(4,_0x2ead43(_0xe9d69)),V(5,_0x2ead43(_0xeeec03)),V(6,_0x2ead43(_0x1ed87d)),V(7,_0x5d343c),V(8,_0x47dd3c)],X);const Z={'id':"docs-history-ui.operation.open",'type':_0x4d5f1c.OPERATION,'handler':_0x54dd22=>{let _0x3380fb=_0x54dd22.get(_0x5d343c).getCurrentUnitOfType(_0x735059.UNIVER_DOC);return _0x3380fb?(_0x54dd22.get(X).open(_0x3380fb.getUnitId()).catch(_0x4993ff=>{_0x54dd22.get(_0x3493b9).error("[OpenDocsHistoryOperation]: Failed to open document history.",_0x4993ff);}), true): false;}},Ir={[_0xbda69a.OTHERS]:{[Z.id]:{'order':100,'gridLayout':{'row':1,'column':3,'rowSpan':2,'columnSpan':2,'showLabel': true},'menuItemFactory':Lr}}};function Lr(_0x47a8d3){return{'id':Z.id,'type':_0x2537a7.BUTTON,'icon':"DocsHistoryIcon",'title':"docs-history-ui.menu.history",'tooltip':"docs-history-ui.menu.history",'hidden$':_0x1290cb(_0x47a8d3,_0x735059.UNIVER_DOC)};}let Q=class extends _0x2f25de{constructor(_0x537bd7,_0x3b08a0){super(),this.disposeWithMe(_0x537bd7.registerCommand(Z)),_0x3b08a0.mergeMenu(Ir);}};Q=H([V(0,_0x3b80ca),V(1,_0x57e997)],Q);let $=class extends _0x597748{constructor(_0x5aa4d5=wr,_0x23fda4,_0x44e0d9){super(),this._config=_0x5aa4d5,this._injector=_0x23fda4,this._configService=_0x44e0d9;let {..._0xdb3142}=_0x1f0805({},wr,this._config);this._configService['setConfig'](B,_0xdb3142);}onStarting(){_0x120008(this._injector,[[U],[X],[Q]]),this._injector["get"](U),this._injector["get"](Q);}};q($,"pluginName","UNIVER_DOCS_HISTORY_UI_PLUGIN"),q($,"packageName",Tr),q($,'version',Er),q($,'type',_0x735059.UNIVER_DOC),$=H([_0x291954(_0x202f9e,_0x5c8990,_0x54f2c1,_0x3133c7),V(1,_0x2ead43(_0x59d273)),V(2,_0x5081c3)],$);export{B as DOCS_HISTORY_UI_PLUGIN_CONFIG_KEY,$ as UniverDocsHistoryUIPlugin};
+import {
+  AuthzIoHttpService as _0x1cba3f,
+  COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as _0x6088a3,
+  CollaborationController as _0xeeec03,
+  DataLoaderService as _0x1ed87d,
+  SnapshotServerOverHTTPService as _0x29371d,
+  UniverCollaborationClientPlugin as _0x5c8990,
+} from "@univerjs-pro/collaboration-client";
+import {
+  DocsHistoryDiffService as _0x43eb08,
+  UniverDocsHistoryPlugin as _0x54f2c1,
+  createDocHistoryDisplay as _0x411e10,
+} from "@univerjs-pro/docs-history";
+import {
+  LS_CONFIG_KEY as _0x26dfff,
+  UniverLicensePlugin as _0x202f9e,
+} from "@univerjs-pro/license";
+import {
+  CommandType as _0x4d5f1c,
+  DependentOn as _0x291954,
+  Disposable as _0x2f25de,
+  DisposableCollection as _0x43f931,
+  IAuthzIoService as _0x3d1db4,
+  ICommandService as _0x3b80ca,
+  IConfigService as _0x5081c3,
+  ILogService as _0x3493b9,
+  IResourceLoaderService as _0x1c2597,
+  IUniverInstanceService as _0x5d343c,
+  Inject as _0x2ead43,
+  Injector as _0x59d273,
+  LocaleService as _0x39af5b,
+  Plugin as _0x597748,
+  ThemeService as _0xe9d69,
+  Univer as _0x81e3e9,
+  UniverInstanceType as _0x735059,
+  generateRandomId as _0x15482d,
+  merge as _0x1f0805,
+  registerDependencies as _0x120008,
+} from "@univerjs/core";
+import {
+  AfterSpaceCommand as _0x14b09e,
+  AlignOperationCommand as _0x15c572,
+  BreakLineCommand as _0x3ca498,
+  ChangeListNestingLevelCommand as _0x4982a7,
+  ChangeListTypeCommand as _0x181e80,
+  CoverContentCommand as _0x3de357,
+  CreateDocTableCommand as _0x699aed,
+  CutContentCommand as _0x1a1eef,
+  DeleteCurrentParagraphCommand as _0x466792,
+  DeleteCustomBlockCommand as _0x3d247e,
+  DeleteLeftCommand as _0x20a0b9,
+  DeleteRightCommand as _0x131c05,
+  DocFloatMenuService as _0x17b5b2,
+  DocParagraphMenuService as _0x4e2526,
+  DocTableDeleteColumnsCommand as _0x17a235,
+  DocTableDeleteRowsCommand as _0x3fc832,
+  DocTableDeleteTableCommand as _0x4305d9,
+  DocTableInsertColumnCommand as _0x69f28d,
+  DocTableInsertRowCommand as _0x1439d0,
+  DocTableTabCommand as _0x24c733,
+  EnterCommand as _0x5fd220,
+  HorizontalLineCommand as _0x2da8c0,
+  IMEInputCommand as _0xfadf5,
+  InnerPasteCommand as _0x4e557d,
+  ListOperationCommand as _0x551c5a,
+  MergeTwoParagraphCommand as _0x557784,
+  MoveDocBlockCommand as _0x32f6af,
+  ReplaceSelectionCommand as _0x4bf74f,
+  ReplaceSnapshotCommand as _0x17581c,
+  ReplaceTextRunsCommand as _0x44f4ab,
+  SetInlineFormatCommand as _0x279bc9,
+  SetParagraphNamedStyleCommand as _0x4c372a,
+  TabCommand as _0x24296b,
+  ToggleCheckListCommand as _0x173b62,
+  UniverDocsUIPlugin as _0x3133c7,
+} from "@univerjs/docs-ui";
+import { HistoryIcon as _0x35ba3f } from "@univerjs/icons";
+import {
+  IMenuManagerService as _0x57e997,
+  IconManager as _0x13f50e,
+  MenuItemType as _0x2537a7,
+  RibbonStartGroup as _0xbda69a,
+  UI_PLUGIN_CONFIG_KEY as _0xe30fe9,
+  UniverUIPlugin as _0x2a98f9,
+  getMenuHiddenObservable as _0x1290cb,
+} from "@univerjs/ui";
+import {
+  CollaborationEvent as _0x1375f5,
+  ISnapshotServerService as _0x58b4bc,
+  SnapshotService as _0x5740c0,
+  UniverCollaborationPlugin as _0x53a2ef,
+} from "@univerjs-pro/collaboration";
+import {
+  DocsCalloutCancelEmptyParagraphCommand as _0x5b437a,
+  DocsCalloutConsumeBoundaryDeleteCommand as _0x22c9a2,
+  DocsCalloutDeleteCommand as _0x53163e,
+  DocsCalloutInsertBelowCommand as _0x2471c2,
+  DocsCalloutInsertCommand as _0x39d5a7,
+  DocsCalloutResetColorsCommand as _0x87e25f,
+  DocsCalloutSetTextColorCommand as _0x40ebdb,
+  DocsCalloutUnwrapCommand as _0x39e84f,
+  DocsCalloutUpdateCommand as _0x2a531f,
+  UniverDocsCalloutPlugin as _0x58533f,
+} from "@univerjs-pro/docs-callout";
+import { UniverDocsCalloutUIPlugin as _0x2a9841 } from "@univerjs-pro/docs-callout-ui";
+import {
+  ChangeDocChartDataSourceCommand as _0x25afa7,
+  DuplicateDocChartDataSourceCommand as _0x12d1ea,
+  InsertDocChartCommand as _0x30d57c,
+  RemoveDocChartCommand as _0x1d6ece,
+  RemoveDocChartSnapshotMutation as _0x3e08f7,
+  UniverDocsChartPlugin as _0x47e55b,
+  UpdateDocChartConfigCommand as _0x4b6936,
+  UpdateDocChartDataSourceCommand as _0x49b155,
+  UpdateDocChartDrawingCommand as _0x516bb9,
+  UpdateDocChartSnapshotCommand as _0xd37b5f,
+} from "@univerjs-pro/docs-chart";
+import { UniverDocsChartUIPlugin as _0x40ac9b } from "@univerjs-pro/docs-chart-ui";
+import {
+  DocsCodeCancelEmptyParagraphCommand as _0x3f5036,
+  DocsCodeConsumeBoundaryDeleteCommand as _0x4285f3,
+  DocsCodeInsertCommand as _0x53f7b7,
+  DocsCodeRemoveCommand as _0x32938b,
+  DocsCodeUnwrapCommand as _0x3e025e,
+  DocsCodeUpdateCommand as _0x259f4a,
+  UniverDocsCodePlugin as _0x114399,
+} from "@univerjs-pro/docs-code";
+import { UniverDocsCodeUIPlugin as _0x443f8f } from "@univerjs-pro/docs-code-ui";
+import {
+  AddDocColumnCommand as _0x2854cf,
+  DeleteDocColumnCommand as _0x37700,
+  DeleteDocColumnGroupCommand as _0x3c0280,
+  InsertDocColumnGroupCommand as _0x514675,
+  NormalizeDocColumnGroupCommand as _0x4cf96c,
+  ResizeDocColumnGroupCommand as _0x22c1c5,
+  UniverDocsColumnPlugin as _0x54f085,
+} from "@univerjs-pro/docs-column";
+import { UniverDocsColumnUIPlugin as _0xb542f2 } from "@univerjs-pro/docs-column-ui";
+import {
+  ConvertDocFormulaToTextCommand as _0x1258b5,
+  InsertDocFormulaCommand as _0x248e4a,
+  RemoveDocFormulaCommand as _0x5c9205,
+  ReplaceDocFormulaWithTextCommand as _0x4bc315,
+  SetDocFormulaNumberFormatCommand as _0x87963c,
+  UniverDocsFormulaPlugin as _0x24fefd,
+  UpdateDocFormulaCommand as _0x400ef9,
+} from "@univerjs-pro/docs-formula";
+import { UniverDocsFormulaUIPlugin as _0x4bda4e } from "@univerjs-pro/docs-formula-ui";
+import {
+  InsertDocsLatexFormulaCommand as _0x2eeb9f,
+  RemoveDocsLatexFormulaCommand as _0x3edb97,
+  ReplaceDocsLatexFormulaWithTextCommand as _0x199e5b,
+  UniverDocsLatexPlugin as _0x293885,
+  UpdateDocsLatexFormulaCommand as _0xff5f96,
+} from "@univerjs-pro/docs-latex";
+import { UniverDocsLatexUIPlugin as _0x2fca71 } from "@univerjs-pro/docs-latex-ui";
+import {
+  DocsListDemoteCommand as _0x398144,
+  DocsListInsertCommand as _0x4f4752,
+  DocsListPromoteCommand as _0x8bdac6,
+  DocsListSetGlyphSymbolCommand as _0x5d988c,
+  DocsListSetGlyphTypeCommand as _0x72340e,
+  DocsListSetPrefixSuffixCommand as _0x1c4f2e,
+  DocsListSetStartNumberCommand as _0x3d9fb6,
+  UniverDocsListPlugin as _0x47bda3,
+} from "@univerjs-pro/docs-list";
+import { UniverDocsListUIPlugin as _0x4da04a } from "@univerjs-pro/docs-list-ui";
+import {
+  DocsQuoteCancelEmptyParagraphCommand as _0x178cfd,
+  DocsQuoteExitCommand as _0x488f11,
+  DocsQuoteInsertBelowCommand as _0x4727dc,
+  DocsQuoteInsertCommand as _0x4cdd3a,
+  DocsQuoteRemoveCommand as _0x20dfb7,
+  DocsQuoteUnwrapCommand as _0x1729c7,
+  DocsQuoteUpdateStyleCommand as _0x27d224,
+  UniverDocsQuotePlugin as _0x1d9e0f,
+} from "@univerjs-pro/docs-quote";
+import { UniverDocsQuoteUIPlugin as _0x1a55ed } from "@univerjs-pro/docs-quote-ui";
+import {
+  InsertDocShapeCommand as _0x5ad5ea,
+  UniverDocsShapePlugin as _0x57cea2,
+  UpdateDocDrawingMetadataCommand as _0x102336,
+  UpdateDocShapeDataCommand as _0x244393,
+} from "@univerjs-pro/docs-shape";
+import { UniverDocsShapeUIPlugin as _0x4bcf98 } from "@univerjs-pro/docs-shape-ui";
+import {
+  DocsTableDeleteColumnsCommand as _0x3ce509,
+  DocsTableDeleteRowsCommand as _0x5eb140,
+  DocsTableDeleteTableCommand as _0x549a3f,
+  DocsTableDistributeColumnsCommand as _0x5d6397,
+  DocsTableDistributeRowsCommand as _0x375ccd,
+  DocsTableInsertColumnsCommand as _0x4c7623,
+  DocsTableInsertRowsCommand as _0x3e7c66,
+  DocsTableInsertTableCommand as _0x26eb85,
+  DocsTableInsertTitleRowCommand as _0x5c43fd,
+  DocsTableMergeCellsCommand as _0x4987d2,
+  DocsTableMoveColumnsCommand as _0x4eb799,
+  DocsTableMoveRowsCommand as _0x369832,
+  DocsTableMoveTableCommand as _0x41bb3e,
+  DocsTableResizeColumnCommand as _0x33d21a,
+  DocsTableResizeRowCommand as _0x4b668a,
+  DocsTableSetColumnTypeCommand as _0x5d90b9,
+  DocsTableSetHeaderRowCountCommand as _0x390271,
+  DocsTableSetTableBackgroundCommand as _0x334815,
+  DocsTableSetTableBorderColorCommand as _0x5b738a,
+  DocsTableSetTableBorderCommand as _0x59a1ec,
+  DocsTableSetTableBorderStyleCommand as _0x16a5bd,
+  DocsTableSetTableBorderWidthCommand as _0x5b3c03,
+  DocsTableSetTableVerticalAlignCommand as _0x107d57,
+  DocsTableSortTableCommand as _0x5d0f8a,
+  DocsTableUnmergeCellsCommand as _0xedcefc,
+  UniverDocsTablePlugin as _0x3a0639,
+} from "@univerjs-pro/docs-table";
+import { UniverDocsTableUIPlugin as _0x4b5bd2 } from "@univerjs-pro/docs-table-ui";
+import {
+  HistoryRestoreService as _0xf77e8,
+  HistoryUnitAdapterRegistryService as _0x29810d,
+  UniverEditHistoryPlugin as _0x59a940,
+  isHistoryRestoreAcknowledgement as _0x31f2a8,
+} from "@univerjs-pro/edit-history";
+import { UniverProFormulaEnginePlugin as _0x367094 } from "@univerjs-pro/engine-formula";
+import { UniverShapeEditorUIPlugin as _0x34dfaa } from "@univerjs-pro/shape-editor-ui";
+import {
+  CreateHeaderFooterCommand as _0x2a88b8,
+  DeleteDocumentSectionBreakCommand as _0x306834,
+  DeleteTextCommand as _0x344ec0,
+  DocHistoryAction as _0x26322d,
+  InsertDocumentColumnBreakCommand as _0xfb5592,
+  InsertDocumentSectionBreakCommand as _0x515188,
+  InsertTextCommand as _0x3d52a5,
+  RichTextEditingMutation as _0x5287db,
+  SetDocumentDefaultParagraphStyleCommand as _0x1ae2cc,
+  SetDocumentNameCommand as _0x12848d,
+  SetSectionHeaderFooterLinkCommand as _0x9c7794,
+  UniverDocsPlugin as _0x147008,
+  UpdateDocumentParagraphStyleCommand as _0x229270,
+  UpdateDocumentSectionCommand as _0x4c178e,
+  UpdateTextCommand as _0x3aa417,
+} from "@univerjs/docs";
+import {
+  InsertDocDrawingCommand as _0x7ef559,
+  RemoveDocDrawingCommand as _0x10a6cd,
+  SetDocDrawingArrangeCommand as _0x56ac75,
+  UniverDocsDrawingPlugin as _0x44a945,
+  UpdateDocDrawingWrappingStyleCommand as _0x4ec085,
+  UpdateDrawingDocTransformCommand as _0x227867,
+} from "@univerjs/docs-drawing";
+import { UniverDocsDrawingUIPlugin as _0x475bc9 } from "@univerjs/docs-drawing-ui";
+import {
+  DocHyperLinkCommandId as _0x4ecd16,
+  UniverDocsHyperLinkPlugin as _0x16478a,
+} from "@univerjs/docs-hyper-link";
+import { UniverDocsHyperLinkUIPlugin as _0xac7da5 } from "@univerjs/docs-hyper-link-ui";
+import { UniverDrawingPlugin as _0x13168f } from "@univerjs/drawing";
+import { UniverDrawingUIPlugin as _0x19d493 } from "@univerjs/drawing-ui";
+import {
+  IRenderManagerService as _0x47dd3c,
+  UniverRenderEnginePlugin as _0x2a6b7e,
+} from "@univerjs/engine-render";
+import { UniverNetworkPlugin as _0x25aacf } from "@univerjs/network";
+import {
+  Subject as _0x11e500,
+  filter as _0x3bef93,
+  firstValueFrom as _0x405ace,
+  takeUntil as _0x2f2621,
+  timeout as _0x5144bf,
+} from "rxjs";
+import {
+  HistoryActionSummaryService as _0x2c09e3,
+  HistoryHighlightService as _0x2e819d,
+  HistoryRenderAdapterRegistryService as _0x48cdaf,
+  UniverEditHistoryUIPlugin as _0x2887da,
+} from "@univerjs-pro/edit-history-ui";
+const B = "docs-history-ui.config",
+  wr = { historyServerUrl: "/universer-api/history" };
+var Tr = "@univerjs-pro/docs-history-ui",
+  Er = "1.0.0-insiders.20260907-70fc579";
+function V(_0x30d800, _0x154a2b) {
+  return function (_0x2bfacf, _0x4c8118) {
+    _0x154a2b(_0x2bfacf, _0x4c8118, _0x30d800);
+  };
+}
+function H(_0x1f049c, _0x10e446, _0x7e7359, _0x1b45a8) {
+  var _0x24157b = arguments.length,
+    _0x395a76 =
+      _0x24157b < 3
+        ? _0x10e446
+        : _0x1b45a8 === null
+          ? (_0x1b45a8 = Object.getOwnPropertyDescriptor(_0x10e446, _0x7e7359))
+          : _0x1b45a8,
+    _0x32752d;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function")
+    _0x395a76 = Reflect.decorate(_0x1f049c, _0x10e446, _0x7e7359, _0x1b45a8);
+  else {
+    for (var _0x1a2753 = _0x1f049c.length - 1; _0x1a2753 >= 0; _0x1a2753--)
+      (_0x32752d = _0x1f049c[_0x1a2753]) &&
+        (_0x395a76 =
+          (_0x24157b < 3
+            ? _0x32752d(_0x395a76)
+            : _0x24157b > 3
+              ? _0x32752d(_0x10e446, _0x7e7359, _0x395a76)
+              : _0x32752d(_0x10e446, _0x7e7359)) || _0x395a76);
+  }
+  return (
+    _0x24157b > 3 &&
+      _0x395a76 &&
+      Object.defineProperty(_0x10e446, _0x7e7359, _0x395a76),
+    _0x395a76
+  );
+}
+let U = class extends _0x2f25de {
+  constructor(_0x302ce0) {
+    (super(),
+      this.disposeWithMe(_0x302ce0.register("DocsHistoryIcon", _0x35ba3f)));
+  }
+};
+U = H([V(0, _0x2ead43(_0x13f50e))], U);
+const Dr = {
+    [_0x26322d.DeleteChart]: "docs-history-ui.action.deleteChart",
+    [_0x26322d.DeleteDivider]: "docs-history-ui.action.deleteDivider",
+    [_0x26322d.DeleteImage]: "docs-history-ui.action.deleteImage",
+    [_0x26322d.DeleteShape]: "docs-history-ui.action.deleteShape",
+    [_0x26322d.EditTableCell]: "docs-history-ui.action.editTableCell",
+    [_0x26322d.FormatParagraph]: "docs-history-ui.action.formatParagraph",
+    [_0x26322d.InsertCustomRange]: "docs-history-ui.action.insertCustomRange",
+    [_0x26322d.UpdateImage]: "docs-history-ui.action.updateImage",
+    [_0x26322d.UpdatePageLayout]: "docs-history-ui.action.updatePageLayout",
+  },
+  Or = new Map([
+    [_0x12848d.id, "docs-history-ui.action.renameDocument"],
+    [_0x3d52a5.id, "docs-history-ui.action.insertText"],
+    [_0xfadf5.id, "docs-history-ui.action.insertText"],
+    [_0x3ca498.id, "docs-history-ui.action.insertText"],
+    [_0x4e557d.id, "docs-history-ui.action.insertText"],
+    [_0x4bf74f.id, "docs-history-ui.action.insertText"],
+    [_0x344ec0.id, "docs-history-ui.action.deleteText"],
+    [_0x1a1eef.id, "docs-history-ui.action.deleteText"],
+    [_0x20a0b9.id, "docs-history-ui.action.deleteText"],
+    [_0x131c05.id, "docs-history-ui.action.deleteText"],
+    [_0x466792.id, "docs-history-ui.action.deleteText"],
+    [_0x557784.id, "docs-history-ui.action.deleteText"],
+    [_0x3d247e.id, "docs-history-ui.action.deleteBlock"],
+    [_0x3aa417.id, "docs-history-ui.action.formatText"],
+    [_0x279bc9.id, "docs-history-ui.action.formatText"],
+    [_0x44f4ab.id, "docs-history-ui.action.formatText"],
+    [_0x229270.id, "docs-history-ui.action.formatParagraph"],
+    [_0x1ae2cc.id, "docs-history-ui.action.formatParagraph"],
+    [_0x15c572.id, "docs-history-ui.action.formatParagraph"],
+    [_0x14b09e.id, "docs-history-ui.action.formatParagraph"],
+    [_0x5fd220.id, "docs-history-ui.action.formatParagraph"],
+    [_0x24296b.id, "docs-history-ui.action.formatParagraph"],
+    [_0x4c372a.id, "docs-history-ui.action.changeHeading"],
+    [_0x551c5a.id, "docs-history-ui.action.updateList"],
+    [_0x181e80.id, "docs-history-ui.action.updateList"],
+    [_0x4982a7.id, "docs-history-ui.action.updateList"],
+    [_0x173b62.id, "docs-history-ui.action.updateList"],
+    [_0x4f4752.id, "docs-history-ui.action.updateList"],
+    [_0x72340e.id, "docs-history-ui.action.updateList"],
+    [_0x5d988c.id, "docs-history-ui.action.updateList"],
+    [_0x1c4f2e.id, "docs-history-ui.action.updateList"],
+    [_0x3d9fb6.id, "docs-history-ui.action.updateList"],
+    [_0x8bdac6.id, "docs-history-ui.action.updateList"],
+    [_0x398144.id, "docs-history-ui.action.updateList"],
+    [_0x32f6af.id, "docs-history-ui.action.moveBlock"],
+    [_0x2da8c0.id, "docs-history-ui.action.insertDivider"],
+    [_0x4c178e.id, "docs-history-ui.action.updatePageLayout"],
+    [_0x515188.id, "docs-history-ui.action.updatePageLayout"],
+    [_0x306834.id, "docs-history-ui.action.updatePageLayout"],
+    [_0xfb5592.id, "docs-history-ui.action.updatePageLayout"],
+    [_0x2a88b8.id, "docs-history-ui.action.updateHeaderFooter"],
+    [_0x9c7794.id, "docs-history-ui.action.updateHeaderFooter"],
+    [_0x4ecd16.Add, "docs-history-ui.action.insertLink"],
+    [_0x4ecd16.Update, "docs-history-ui.action.updateLink"],
+    [_0x4ecd16.Delete, "docs-history-ui.action.deleteLink"],
+    [_0x26eb85.id, "docs-history-ui.action.insertTable"],
+    [_0x699aed.id, "docs-history-ui.action.insertTable"],
+    [_0x549a3f.id, "docs-history-ui.action.deleteTable"],
+    [_0x4305d9.id, "docs-history-ui.action.deleteTable"],
+    [_0x3e7c66.id, "docs-history-ui.action.insertTableRows"],
+    [_0x5eb140.id, "docs-history-ui.action.deleteTableRows"],
+    [_0x369832.id, "docs-history-ui.action.moveTableRows"],
+    [_0x4c7623.id, "docs-history-ui.action.insertTableColumns"],
+    [_0x3ce509.id, "docs-history-ui.action.deleteTableColumns"],
+    [_0x4eb799.id, "docs-history-ui.action.moveTableColumns"],
+    [_0x41bb3e.id, "docs-history-ui.action.moveTable"],
+    [_0x33d21a.id, "docs-history-ui.action.resizeTableColumns"],
+    [_0x4b668a.id, "docs-history-ui.action.resizeTableRows"],
+    [_0x5d6397.id, "docs-history-ui.action.distributeTableColumns"],
+    [_0x375ccd.id, "docs-history-ui.action.distributeTableRows"],
+    [_0x5c43fd.id, "docs-history-ui.action.updateTableHeader"],
+    [_0x5d90b9.id, "docs-history-ui.action.updateTableColumns"],
+    [_0x390271.id, "docs-history-ui.action.updateTableHeader"],
+    [_0x334815.id, "docs-history-ui.action.formatTable"],
+    [_0x5b738a.id, "docs-history-ui.action.formatTable"],
+    [_0x59a1ec.id, "docs-history-ui.action.formatTable"],
+    [_0x16a5bd.id, "docs-history-ui.action.formatTable"],
+    [_0x5b3c03.id, "docs-history-ui.action.formatTable"],
+    [_0x107d57.id, "docs-history-ui.action.formatTable"],
+    [_0x4987d2.id, "docs-history-ui.action.mergeTableCells"],
+    [_0xedcefc.id, "docs-history-ui.action.unmergeTableCells"],
+    [_0x5d0f8a.id, "docs-history-ui.action.sortTable"],
+    [_0x17a235.id, "docs-history-ui.action.deleteTableColumns"],
+    [_0x3fc832.id, "docs-history-ui.action.deleteTableRows"],
+    [_0x69f28d.id, "docs-history-ui.action.insertTableColumns"],
+    [_0x1439d0.id, "docs-history-ui.action.insertTableRows"],
+    [_0x24c733.id, "docs-history-ui.action.editTableCell"],
+    [_0x7ef559.id, "docs-history-ui.action.insertImage"],
+    [_0x10a6cd.id, "docs-history-ui.action.deleteImage"],
+    [_0x227867.id, "docs-history-ui.action.updateDrawing"],
+    [_0x4ec085.id, "docs-history-ui.action.updateDrawing"],
+    [_0x56ac75.id, "docs-history-ui.action.updateDrawing"],
+    [_0x5ad5ea.id, "docs-history-ui.action.insertShape"],
+    [_0x244393.id, "docs-history-ui.action.updateShape"],
+    [_0x102336.id, "docs-history-ui.action.updateShape"],
+    [_0x30d57c.id, "docs-history-ui.action.insertChart"],
+    [_0x1d6ece.id, "docs-history-ui.action.deleteChart"],
+    [_0x3e08f7.id, "docs-history-ui.action.deleteChart"],
+    [_0x4b6936.id, "docs-history-ui.action.updateChart"],
+    [_0x49b155.id, "docs-history-ui.action.updateChart"],
+    [_0x516bb9.id, "docs-history-ui.action.updateChart"],
+    [_0xd37b5f.id, "docs-history-ui.action.updateChart"],
+    [_0x25afa7.id, "docs-history-ui.action.updateChart"],
+    [_0x12d1ea.id, "docs-history-ui.action.updateChart"],
+    [_0x39d5a7.id, "docs-history-ui.action.insertCallout"],
+    [_0x2471c2.id, "docs-history-ui.action.insertCallout"],
+    [_0x53163e.id, "docs-history-ui.action.deleteCallout"],
+    [_0x39e84f.id, "docs-history-ui.action.deleteCallout"],
+    [_0x5b437a.id, "docs-history-ui.action.deleteCallout"],
+    [_0x22c9a2.id, "docs-history-ui.action.updateCallout"],
+    [_0x87e25f.id, "docs-history-ui.action.updateCallout"],
+    [_0x40ebdb.id, "docs-history-ui.action.updateCallout"],
+    [_0x2a531f.id, "docs-history-ui.action.updateCallout"],
+    [_0x53f7b7.id, "docs-history-ui.action.insertCodeBlock"],
+    [_0x32938b.id, "docs-history-ui.action.deleteCodeBlock"],
+    [_0x3e025e.id, "docs-history-ui.action.deleteCodeBlock"],
+    [_0x3f5036.id, "docs-history-ui.action.deleteCodeBlock"],
+    [_0x4285f3.id, "docs-history-ui.action.updateCodeBlock"],
+    [_0x259f4a.id, "docs-history-ui.action.updateCodeBlock"],
+    [_0x4cdd3a.id, "docs-history-ui.action.insertQuote"],
+    [_0x4727dc.id, "docs-history-ui.action.insertQuote"],
+    [_0x20dfb7.id, "docs-history-ui.action.deleteQuote"],
+    [_0x1729c7.id, "docs-history-ui.action.deleteQuote"],
+    [_0x178cfd.id, "docs-history-ui.action.deleteQuote"],
+    [_0x488f11.id, "docs-history-ui.action.updateQuote"],
+    [_0x27d224.id, "docs-history-ui.action.updateQuote"],
+    [_0x514675.id, "docs-history-ui.action.insertColumns"],
+    [_0x2854cf.id, "docs-history-ui.action.updateColumns"],
+    [_0x37700.id, "docs-history-ui.action.updateColumns"],
+    [_0x3c0280.id, "docs-history-ui.action.updateColumns"],
+    [_0x4cf96c.id, "docs-history-ui.action.updateColumns"],
+    [_0x22c1c5.id, "docs-history-ui.action.updateColumns"],
+    [_0x248e4a.id, "docs-history-ui.action.insertFormula"],
+    [_0x400ef9.id, "docs-history-ui.action.updateFormula"],
+    [_0x87963c.id, "docs-history-ui.action.updateFormula"],
+    [_0x5c9205.id, "docs-history-ui.action.deleteFormula"],
+    [_0x1258b5.id, "docs-history-ui.action.deleteFormula"],
+    [_0x4bc315.id, "docs-history-ui.action.deleteFormula"],
+    [_0x2eeb9f.id, "docs-history-ui.action.insertFormula"],
+    [_0xff5f96.id, "docs-history-ui.action.updateFormula"],
+    [_0x3edb97.id, "docs-history-ui.action.deleteFormula"],
+    [_0x199e5b.id, "docs-history-ui.action.deleteFormula"],
+    [_0x3de357.id, "docs-history-ui.action.editDocument"],
+    [_0x17581c.id, "docs-history-ui.action.editDocument"],
+  ]),
+  kr = new Set([_0x56ac75.id, _0x4ec085.id, _0x227867.id]),
+  Ar = new Set([
+    _0x4b6936.id,
+    _0x49b155.id,
+    _0x516bb9.id,
+    _0xd37b5f.id,
+    _0x102336.id,
+    _0x244393.id,
+  ]);
+let W = class extends _0x2f25de {
+  constructor(_0x428a8c, _0x346d8a) {
+    (super(),
+      (this._localeService = _0x346d8a),
+      this.disposeWithMe(_0x428a8c.register(_0x735059.UNIVER_DOC, this)));
+  }
+  resolve(_0x5089d1) {
+    let _0x10cc5b = jr(_0x5089d1),
+      _0x369f2d = _0x10cc5b.has(_0x26322d.InsertCustomRange),
+      _0x261d26 = _0x10cc5b.has(_0x26322d.UpdateImage),
+      _0x414b5d =
+        _0x10cc5b.has(_0x26322d.DeleteChart) ||
+        _0x10cc5b.has(_0x26322d.DeleteImage) ||
+        _0x10cc5b.has(_0x26322d.DeleteShape),
+      _0x3fd752 = Mr(_0x5089d1),
+      _0xc9f6b0 =
+        _0x5089d1.commandIds["has"](_0x5ad5ea.id) ||
+        _0x5089d1.commandIds["has"](_0x30d57c.id),
+      _0x3c9800 = [...Ar].some((_0x219f73) =>
+        _0x5089d1.commandIds["has"](_0x219f73),
+      ),
+      _0xc5a6c6 = _0x3fd752.map((_0x4725ce) =>
+        this._localeService["t"](_0x4725ce),
+      );
+    _0xc5a6c6.push(
+      ...[..._0x10cc5b].map((_0xc89323) =>
+        this._localeService["t"](Dr[_0xc89323]),
+      ),
+    );
+    let _0x473a4d = [..._0x5089d1.commandIds].flatMap((_0x13168b) => {
+        if (
+          (_0x369f2d && _0x13168b === _0x4bf74f.id) ||
+          (_0xc9f6b0 && _0x13168b === _0x7ef559.id) ||
+          ((_0x414b5d || _0x3fd752.length > 0) && _0x13168b === _0x10a6cd.id) ||
+          ((_0x3c9800 || _0x261d26) && kr.has(_0x13168b))
+        )
+          return [];
+        let _0x1703d9 = Or.get(_0x13168b);
+        return _0x1703d9 ? [this._localeService["t"](_0x1703d9)] : [];
+      }),
+      _0x25476c = [...new Set([..._0xc5a6c6, ..._0x473a4d])];
+    return _0x25476c.length > 0
+      ? _0x25476c
+      : _0x5089d1.commandIds["has"](_0x5287db.id)
+        ? [this._localeService["t"]("docs-history-ui.action.editDocument")]
+        : [];
+  }
+};
+W = H([V(0, _0x2ead43(_0x2c09e3)), V(1, _0x2ead43(_0x39af5b))], W);
+function jr(_0x4088ea) {
+  let _0x306702 = new Set();
+  return (
+    _0x4088ea.mutations["forEach"]((_0x35fc61) => {
+      if (!Nr(_0x35fc61.params)) return;
+      let { historyAction: _0x53e911 } = _0x35fc61.params;
+      G(_0x53e911) && _0x306702.add(_0x53e911);
+      let { historyActions: _0x10b0d } = _0x35fc61.params;
+      Array.isArray(_0x10b0d) &&
+        _0x10b0d.forEach((_0x181705) => {
+          G(_0x181705) && _0x306702.add(_0x181705);
+        });
+    }),
+    _0x306702
+  );
+}
+function G(_0x3e58a8) {
+  return (
+    _0x3e58a8 === _0x26322d.DeleteChart ||
+    _0x3e58a8 === _0x26322d.DeleteDivider ||
+    _0x3e58a8 === _0x26322d.DeleteImage ||
+    _0x3e58a8 === _0x26322d.DeleteShape ||
+    _0x3e58a8 === _0x26322d.EditTableCell ||
+    _0x3e58a8 === _0x26322d.FormatParagraph ||
+    _0x3e58a8 === _0x26322d.InsertCustomRange ||
+    _0x3e58a8 === _0x26322d.UpdateImage ||
+    _0x3e58a8 === _0x26322d.UpdatePageLayout
+  );
+}
+function Mr(_0x324fee) {
+  if (!_0x324fee.commandIds["has"](_0x10a6cd.id)) return [];
+  let _0x3b61a0 = _0x324fee.mutations["flatMap"]((_0x2e0a78) =>
+    Nr(_0x2e0a78.params)
+      ? typeof _0x2e0a78.params["chartId"] == "string"
+        ? ["docs-history-ui.action.deleteChart"]
+        : typeof _0x2e0a78.params["shapeId"] == "string"
+          ? ["docs-history-ui.action.deleteShape"]
+          : typeof _0x2e0a78.params["drawingId"] == "string"
+            ? ["docs-history-ui.action.deleteImage"]
+            : []
+      : [],
+  );
+  return [...new Set(_0x3b61a0)];
+}
+function Nr(_0x29c12d) {
+  return typeof _0x29c12d == "object" && !!_0x29c12d;
+}
+function K(_0x1dba13) {
+  "@babel/helpers - typeof";
+  return (
+    (K =
+      typeof Symbol == "function" && typeof Symbol.iterator == "symbol"
+        ? function (_0x39fa49) {
+            return typeof _0x39fa49;
+          }
+        : function (_0x1e3753) {
+            return _0x1e3753 &&
+              typeof Symbol == "function" &&
+              _0x1e3753.constructor === Symbol &&
+              _0x1e3753 !== Symbol.prototype
+              ? "symbol"
+              : typeof _0x1e3753;
+          }),
+    K(_0x1dba13)
+  );
+}
+function Pr(_0x3d4d5a, _0x4d4da5) {
+  if (K(_0x3d4d5a) != "object" || !_0x3d4d5a) return _0x3d4d5a;
+  var _0x29564f = _0x3d4d5a[Symbol.toPrimitive];
+  if (_0x29564f !== undefined) {
+    var _0xf54b68 = _0x29564f.call(_0x3d4d5a, _0x4d4da5 || "default");
+    if (K(_0xf54b68) != "object") return _0xf54b68;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (_0x4d4da5 === "string" ? String : Number)(_0x3d4d5a);
+}
+function Fr(_0x4deb02) {
+  var _0x59ef51 = Pr(_0x4deb02, "string");
+  return K(_0x59ef51) == "symbol" ? _0x59ef51 : _0x59ef51 + "";
+}
+function q(_0x318b1e, _0xe1817c, _0x5a2966) {
+  return (
+    (_0xe1817c = Fr(_0xe1817c)) in _0x318b1e
+      ? Object.defineProperty(_0x318b1e, _0xe1817c, {
+          value: _0x5a2966,
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        })
+      : (_0x318b1e[_0xe1817c] = _0x5a2966),
+    _0x318b1e
+  );
+}
+let J = class extends _0x2f25de {
+  constructor(
+    _0x5e96f7,
+    _0x51506d,
+    _0x4bcac4,
+    _0x2ada4c,
+    _0x50ce00,
+    _0x470917,
+  ) {
+    (super(),
+      (this._diffService = _0x5e96f7),
+      (this._snapshotService = _0x4bcac4),
+      (this._resourceLoaderService = _0x2ada4c),
+      (this._univerInstanceService = _0x50ce00),
+      (this._highlightService = _0x470917),
+      q(this, "type", _0x735059.UNIVER_DOC),
+      q(this, "_changesGeneration", 0),
+      q(this, "_loadGeneration", 0),
+      q(this, "_loadQueue", Promise.resolve()),
+      this.disposeWithMe(_0x51506d.register(this)));
+  }
+  loadRevision(_0x536c05, _0x30f9e5) {
+    let _0x5082ec = ++this._loadGeneration,
+      _0x2c8ae9 = this._loadQueue["catch"](() => undefined).then(async () => {
+        if (_0x5082ec !== this._loadGeneration) return;
+        this._getDocument(_0x536c05) &&
+          this._univerInstanceService["disposeUnit"](_0x536c05);
+        let _0x324903 = await this._snapshotService["loadDoc"](
+          _0x536c05,
+          _0x30f9e5.endRevision,
+        );
+        if ((_0x324903.setDisabled(true), _0x5082ec !== this._loadGeneration)) {
+          this._getDocument(_0x536c05) === _0x324903 &&
+            this._univerInstanceService["disposeUnit"](_0x536c05);
+          return;
+        }
+        this._univerInstanceService["focusUnit"](_0x536c05);
+      });
+    return ((this._loadQueue = _0x2c8ae9), _0x2c8ae9);
+  }
+  async loadChanges(_0x3b887b, _0x299075) {
+    let _0x20c66e = ++this._changesGeneration,
+      _0x325190 = await this._diffService["compare"](_0x3b887b, _0x299075);
+    if (_0x20c66e !== this._changesGeneration) return;
+    let _0x521631 = this._getDocument(_0x3b887b);
+    if (!_0x521631) return;
+    let _0x5e0f8f = _0x411e10(
+      this._resourceLoaderService["saveUnit"](_0x3b887b) ??
+        _0x521631.getSnapshot(),
+      _0x325190.changes,
+      {
+        insert: this._highlightService["getStyle"]("insert"),
+        delete: this._highlightService["getStyle"]("delete"),
+        update: this._highlightService["getStyle"]("update"),
+      },
+    );
+    _0x20c66e === this._changesGeneration &&
+      (this._univerInstanceService["disposeUnit"](_0x3b887b),
+      this._univerInstanceService["createUnit"](
+        _0x735059.UNIVER_DOC,
+        _0x5e0f8f.snapshot,
+      ).setDisabled(true),
+      this._univerInstanceService["focusUnit"](_0x3b887b));
+  }
+  close() {
+    (++this._changesGeneration, ++this._loadGeneration);
+  }
+  _getDocument(_0x563a35) {
+    return (
+      this._univerInstanceService["getUnit"](_0x563a35, _0x735059.UNIVER_DOC) ??
+      null
+    );
+  }
+};
+J = H(
+  [
+    V(0, _0x2ead43(_0x43eb08)),
+    V(1, _0x2ead43(_0x48cdaf)),
+    V(2, _0x2ead43(_0x5740c0)),
+    V(3, _0x1c2597),
+    V(4, _0x5d343c),
+    V(5, _0x2ead43(_0x2e819d)),
+  ],
+  J,
+);
+let Y = class extends _0x2887da {
+  constructor(_0x1c1237, _0x1e1c53, _0x5d2ec8, _0x4974f8) {
+    let { collaborationClientConfig: _0x3fc143, ..._0x43dceb } = _0x1c1237;
+    (super(_0x43dceb, _0x1e1c53, _0x5d2ec8, _0x4974f8),
+      (this._injector = _0x1e1c53),
+      _0x5d2ec8.setConfig(_0x6088a3, _0x3fc143));
+  }
+  onStarting() {
+    (super.onStarting(),
+      _0x120008(this._injector, [
+        [_0x58b4bc, { useClass: _0x29371d }],
+        [W],
+        [J],
+      ]),
+      this._injector["get"](W),
+      this._injector["get"](J));
+  }
+};
+(q(Y, "pluginName", "UNIVER_DOCS_HISTORY_VIEWER_PLUGIN"),
+  q(Y, "packageName", Tr),
+  q(Y, "version", Er),
+  q(Y, "type", _0x735059.UNIVER_UNKNOWN),
+  (Y = H(
+    [
+      _0x291954(_0x202f9e, _0x54f2c1, _0x3133c7),
+      V(1, _0x2ead43(_0x59d273)),
+      V(2, _0x5081c3),
+      V(3, _0x3493b9),
+    ],
+    Y,
+  )));
+let X = class extends _0x2f25de {
+  constructor(
+    _0x13e173,
+    _0xd214f2,
+    _0x1ffbe1,
+    _0x488f97,
+    _0x404dcc,
+    _0x7c875f,
+    _0x45b8f3,
+    _0x3c008a,
+    _0x4f0116,
+  ) {
+    (super(),
+      (this._configService = _0x13e173),
+      (this._restoreService = _0xd214f2),
+      (this._adapterRegistry = _0x1ffbe1),
+      (this._localeService = _0x488f97),
+      (this._themeService = _0x404dcc),
+      (this._collaborationController = _0x7c875f),
+      (this._dataLoaderService = _0x45b8f3),
+      (this._univerInstanceService = _0x3c008a),
+      (this._renderManagerService = _0x4f0116),
+      q(this, "_historyUniver", null),
+      q(this, "_opening", null),
+      q(this, "_openGeneration", 0),
+      q(this, "_sessionDisposables", new _0x43f931()),
+      q(this, "_container", null),
+      q(this, "_ownsContainer", false),
+      q(this, "_unitId", ""),
+      q(this, "_location", undefined),
+      q(this, "_suppressedHostUnitId", ""));
+  }
+  open(_0x4d616f) {
+    if (this._historyUniver) return Promise.resolve();
+    if (this._opening) return this._opening;
+    let _0x80f6b3 = ++this._openGeneration,
+      _0x24b014 = this._open(_0x4d616f, _0x80f6b3).finally(() => {
+        this._opening === _0x24b014 && (this._opening = null);
+      });
+    return ((this._opening = _0x24b014), _0x24b014);
+  }
+  async _open(_0x258356, _0x33e943) {
+    let _0xfb5d5f = this._adapterRegistry["get"](_0x735059.UNIVER_DOC);
+    if (!_0xfb5d5f)
+      throw Error(
+        "[DocsHistoryLoaderService]: Docs history adapter is not registered.",
+      );
+    let _0x1c3ff5 = _0xfb5d5f.captureLocation(_0x258356),
+      _0x4055c7 = await Promise.all([
+        _0xfb5d5f.canView(_0x258356),
+        _0xfb5d5f.canRevert(_0x258356),
+      ]).catch((_0x4e1464) => {
+        if (_0x33e943 === this._openGeneration) throw _0x4e1464;
+        return null;
+      });
+    if (!_0x4055c7 || _0x33e943 !== this._openGeneration) return;
+    let [_0x563151, _0x1a01d9] = _0x4055c7;
+    if (!_0x563151)
+      throw Error(
+        "[DocsHistoryLoaderService]:\x20The\x20current\x20user\x20cannot\x20view\x20history\x20for\x20this\x20document.",
+      );
+    ((this._unitId = _0x258356), (this._location = _0x1c3ff5));
+    let _0x19348b = this._ensureContainer(),
+      _0xc1361f = this._localeService["getCurrentLocale"](),
+      _0x4f4353 = this._localeService["getLocales"](),
+      _0x1c8de8 = new _0x81e3e9({
+        theme: this._themeService["getCurrentTheme"](),
+        darkMode: this._themeService["darkMode"],
+        locale: _0xc1361f,
+        locales: _0x4f4353 ? { [_0xc1361f]: _0x4f4353 } : undefined,
+        direction: this._localeService["getDirection"](),
+        override: [[_0x3d1db4, { useClass: _0x1cba3f }]],
+      });
+    this._historyUniver = _0x1c8de8;
+    try {
+      (this._suppressHostMenus(_0x258356),
+        (_0x19348b.style["display"] = "block"),
+        this._syncViewerServices(_0x1c8de8, _0x19348b),
+        this._registerChildPlugins(_0x1c8de8, _0x1a01d9, _0x19348b),
+        this._createPlaceholderDocument(_0x1c8de8));
+    } catch (_0x63a333) {
+      throw (
+        _0x33e943 === this._openGeneration
+          ? this.close()
+          : ((_0x19348b.style["display"] = "none"),
+            this._restoreHostMenus(),
+            _0x1c8de8.dispose()),
+        _0x63a333
+      );
+    }
+  }
+  close() {
+    (++this._openGeneration,
+      (this._opening = null),
+      this._sessionDisposables["dispose"]());
+    let _0x20abeb = this._historyUniver;
+    ((this._historyUniver = null), _0x20abeb == null || _0x20abeb.dispose());
+    let _0x28a542 = this._container;
+    (_0x28a542 && (_0x28a542.style["display"] = "none"),
+      this._restoreHostMenus(),
+      (this._unitId = ""),
+      (this._location = undefined));
+  }
+  _syncViewerServices(_0x5e7cde, _0x169cd7) {
+    let _0x40872c = _0x5e7cde.__getInjector(),
+      _0xff6bfd = _0x40872c.get(_0x39af5b),
+      _0x46e02c = _0x40872c.get(_0xe9d69);
+    (this._sessionDisposables["add"](
+      this._themeService["darkMode$"].subscribe((_0x53929d) => {
+        _0x46e02c.setDarkMode(_0x53929d);
+      }),
+    ),
+      this._sessionDisposables["add"](
+        this._themeService["currentTheme$"].subscribe((_0x3e3c00) => {
+          _0x46e02c.setTheme(_0x3e3c00);
+        }),
+      ),
+      this._sessionDisposables["add"](
+        this._localeService["currentLocale$"].subscribe((_0x4fe668) => {
+          let _0x121b3d = this._localeService["getLocales"]();
+          (_0x121b3d && _0xff6bfd.load({ [_0x4fe668]: _0x121b3d }),
+            _0xff6bfd.setLocale(_0x4fe668));
+        }),
+      ),
+      this._sessionDisposables["add"](
+        this._localeService["direction$"].subscribe((_0x9421ed) => {
+          (_0xff6bfd.setDirection(_0x9421ed),
+            (_0x169cd7.dir = _0x9421ed),
+            (_0x169cd7.style["direction"] = _0x9421ed));
+        }),
+      ));
+  }
+  async restore(_0x57f589) {
+    var _0x1b9a2d;
+    let _0x1b78e5 = this._unitId,
+      _0x514c52 = this._location,
+      _0x40babf = this._collaborationController["getCollabEntity"](_0x1b78e5);
+    if (!_0x40babf)
+      throw Error(
+        "[DocsHistoryLoaderService]: Collaboration is not ready for this document.",
+      );
+    let _0x429f33 = new _0x11e500(),
+      _0x2f24c6 = _0x405ace(
+        _0x40babf.session["event$"].pipe(
+          _0x3bef93(
+            (_0x55a2aa) => _0x55a2aa.eventID === _0x1375f5.CHANGESET_ACK,
+          ),
+          _0x3bef93((_0x36c363) => _0x31f2a8(_0x36c363, _0x57f589)),
+          _0x2f2621(_0x429f33),
+          _0x5144bf(10000),
+        ),
+      );
+    try {
+      if (
+        !(await this._restoreService["restore"](
+          _0x1b78e5,
+          _0x735059.UNIVER_DOC,
+          _0x57f589,
+        ))
+      )
+        throw Error(
+          "[DocsHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.",
+        );
+      await _0x2f24c6;
+    } catch (_0x19ddd6) {
+      throw (
+        _0x429f33.next(),
+        await _0x2f24c6.catch(() => undefined),
+        _0x19ddd6
+      );
+    } finally {
+      _0x429f33.complete();
+    }
+    (this.close(),
+      this._univerInstanceService["disposeUnit"](_0x1b78e5),
+      await this._dataLoaderService["loadUnit"](
+        _0x1b78e5,
+        _0x735059.UNIVER_DOC,
+      ),
+      await ((_0x1b9a2d = this._adapterRegistry["get"](_0x735059.UNIVER_DOC)) ==
+      null
+        ? undefined
+        : _0x1b9a2d.restoreLocation(_0x1b78e5, _0x514c52)));
+  }
+  _ensureContainer() {
+    var _0x421519;
+    if (this._container) return this._container;
+    let _0x47c4e0 = this._configService["getConfig"](B),
+      _0x4f71a0 =
+        (_0x421519 = this._configService["getConfig"](_0xe30fe9)) == null
+          ? undefined
+          : _0x421519.container,
+      _0x5b75be =
+        (_0x47c4e0 == null ? undefined : _0x47c4e0.univerContainerId) ??
+        _0x4f71a0,
+      _0xea9f5 =
+        typeof _0x5b75be == "string"
+          ? document.getElementById(_0x5b75be)
+          : _0x5b75be;
+    if (!_0xea9f5)
+      throw Error(
+        "[DocsHistoryLoaderService]: Configure a valid Univer container before opening history.",
+      );
+    let _0x167b8e = document.createElement("div");
+    return (
+      (_0x167b8e.style["position"] = "absolute"),
+      (_0x167b8e.style["inset"] = "0"),
+      (_0x167b8e.style["zIndex"] = "49"),
+      (_0x167b8e.style["display"] = "none"),
+      _0xea9f5.appendChild(_0x167b8e),
+      (this._container = _0x167b8e),
+      (this._ownsContainer = true),
+      _0x167b8e
+    );
+  }
+  _registerChildPlugins(_0x402a31, _0x51c0f9, _0x84618e) {
+    let _0x2fd52c = this._configService["getConfig"](_0x26dfff),
+      _0x4a98d7 = this._configService["getConfig"](B),
+      _0x578228 = [
+        [_0x202f9e, { license: _0x2fd52c == null ? undefined : _0x2fd52c.ls }],
+        [_0x2a6b7e],
+        [
+          _0x2a98f9,
+          {
+            container: _0x84618e,
+            header: true,
+            toolbar: false,
+            footer: true,
+            contextMenu: false,
+          },
+        ],
+        [_0x25aacf],
+        [_0x13168f],
+        [_0x19d493],
+        [_0x147008, { hasScroll: false }],
+        [_0x3133c7],
+        [_0x44a945],
+        [_0x475bc9],
+        [_0x367094],
+        [_0x34dfaa],
+        [_0x24fefd],
+        [_0x4bda4e],
+        [_0x3a0639],
+        [_0x4b5bd2],
+        [_0x58533f],
+        [_0x2a9841],
+        [_0x114399],
+        [_0x443f8f],
+        [_0x1d9e0f],
+        [_0x1a55ed],
+        [_0x54f085],
+        [_0xb542f2],
+        [_0x293885],
+        [_0x2fca71],
+        [_0x47bda3],
+        [_0x4da04a],
+        [_0x57cea2],
+        [_0x4bcf98],
+        [_0x47e55b],
+        [_0x40ac9b],
+        [_0x16478a],
+        [_0xac7da5],
+        [_0x53a2ef],
+        [
+          _0x59a940,
+          {
+            historyServerUrl:
+              _0x4a98d7 == null ? undefined : _0x4a98d7.historyServerUrl,
+          },
+        ],
+        [_0x54f2c1],
+      ],
+      _0x5eec65 = new Set();
+    ([
+      ..._0x578228,
+      ...((_0x4a98d7 == null ? undefined : _0x4a98d7.viewerPlugins) ?? []),
+    ].forEach(([_0x154c86, _0x3a8977]) => {
+      if (_0x5eec65.has(_0x154c86.pluginName))
+        throw Error(
+          "[DocsHistoryLoaderService]: Plugin " +
+            _0x154c86.pluginName +
+            " has already been registered.",
+        );
+      (_0x5eec65.add(_0x154c86.pluginName),
+        _0x402a31.registerPlugin(_0x154c86, _0x3a8977));
+    }),
+      _0x402a31.registerPlugin(Y, {
+        viewerMode: true,
+        descriptor: { unitId: this._unitId, type: _0x735059.UNIVER_DOC },
+        canRestore: _0x51c0f9,
+        onClose: () => this.close(),
+        onRestore: (_0x19a1da) => this.restore(_0x19a1da),
+        collaborationClientConfig: this._configService["getConfig"](_0x6088a3),
+      }));
+  }
+  _createPlaceholderDocument(_0xe10203) {
+    _0xe10203
+      .createUnit(_0x735059.UNIVER_DOC, {
+        id: this._unitId,
+        body: {
+          dataStream: "\x0d\x0a",
+          paragraphs: [{ startIndex: 0, paragraphId: _0x15482d() }],
+          sectionBreaks: [{ startIndex: 1, sectionId: _0x15482d() }],
+        },
+        documentStyle: {},
+      })
+      .setDisabled(true);
+  }
+  _suppressHostMenus(_0x1ff381) {
+    let _0x3c56c9 = this._renderManagerService["getRenderUnitById"](_0x1ff381);
+    (_0x3c56c9 == null ? undefined : _0x3c56c9.type) === _0x735059.UNIVER_DOC &&
+      ((this._suppressedHostUnitId = _0x1ff381),
+      _0x3c56c9.with(_0x17b5b2).setSuppressed(true),
+      _0x3c56c9.with(_0x4e2526).hideParagraphMenu(true));
+  }
+  _restoreHostMenus() {
+    let _0x34edff = this._suppressedHostUnitId;
+    if (((this._suppressedHostUnitId = ""), !_0x34edff)) return;
+    let _0x2e692d = this._renderManagerService["getRenderUnitById"](_0x34edff);
+    (_0x2e692d == null ? undefined : _0x2e692d.type) === _0x735059.UNIVER_DOC &&
+      _0x2e692d.with(_0x17b5b2).setSuppressed(false);
+  }
+  dispose() {
+    if ((this.close(), this._ownsContainer)) {
+      var _0x455d10;
+      (_0x455d10 = this._container) == null || _0x455d10.remove();
+    }
+    ((this._container = null), (this._ownsContainer = false), super.dispose());
+  }
+};
+X = H(
+  [
+    V(0, _0x5081c3),
+    V(1, _0x2ead43(_0xf77e8)),
+    V(2, _0x2ead43(_0x29810d)),
+    V(3, _0x2ead43(_0x39af5b)),
+    V(4, _0x2ead43(_0xe9d69)),
+    V(5, _0x2ead43(_0xeeec03)),
+    V(6, _0x2ead43(_0x1ed87d)),
+    V(7, _0x5d343c),
+    V(8, _0x47dd3c),
+  ],
+  X,
+);
+const Z = {
+    id: "docs-history-ui.operation.open",
+    type: _0x4d5f1c.OPERATION,
+    handler: (_0x54dd22) => {
+      let _0x3380fb = _0x54dd22
+        .get(_0x5d343c)
+        .getCurrentUnitOfType(_0x735059.UNIVER_DOC);
+      return _0x3380fb
+        ? (_0x54dd22
+            .get(X)
+            .open(_0x3380fb.getUnitId())
+            .catch((_0x4993ff) => {
+              _0x54dd22
+                .get(_0x3493b9)
+                .error(
+                  "[OpenDocsHistoryOperation]: Failed to open document history.",
+                  _0x4993ff,
+                );
+            }),
+          true)
+        : false;
+    },
+  },
+  Ir = {
+    [_0xbda69a.OTHERS]: {
+      [Z.id]: {
+        order: 100,
+        gridLayout: {
+          row: 1,
+          column: 3,
+          rowSpan: 2,
+          columnSpan: 2,
+          showLabel: true,
+        },
+        menuItemFactory: Lr,
+      },
+    },
+  };
+function Lr(_0x47a8d3) {
+  return {
+    id: Z.id,
+    type: _0x2537a7.BUTTON,
+    icon: "DocsHistoryIcon",
+    title: "docs-history-ui.menu.history",
+    tooltip: "docs-history-ui.menu.history",
+    hidden$: _0x1290cb(_0x47a8d3, _0x735059.UNIVER_DOC),
+  };
+}
+let Q = class extends _0x2f25de {
+  constructor(_0x537bd7, _0x3b08a0) {
+    (super(),
+      this.disposeWithMe(_0x537bd7.registerCommand(Z)),
+      _0x3b08a0.mergeMenu(Ir));
+  }
+};
+Q = H([V(0, _0x3b80ca), V(1, _0x57e997)], Q);
+let $ = class extends _0x597748 {
+  constructor(_0x5aa4d5 = wr, _0x23fda4, _0x44e0d9) {
+    (super(),
+      (this._config = _0x5aa4d5),
+      (this._injector = _0x23fda4),
+      (this._configService = _0x44e0d9));
+    let { ..._0xdb3142 } = _0x1f0805({}, wr, this._config);
+    this._configService["setConfig"](B, _0xdb3142);
+  }
+  onStarting() {
+    (_0x120008(this._injector, [[U], [X], [Q]]),
+      this._injector["get"](U),
+      this._injector["get"](Q));
+  }
+};
+(q($, "pluginName", "UNIVER_DOCS_HISTORY_UI_PLUGIN"),
+  q($, "packageName", Tr),
+  q($, "version", Er),
+  q($, "type", _0x735059.UNIVER_DOC),
+  ($ = H(
+    [
+      _0x291954(_0x202f9e, _0x5c8990, _0x54f2c1, _0x3133c7),
+      V(1, _0x2ead43(_0x59d273)),
+      V(2, _0x5081c3),
+    ],
+    $,
+  )));
+export {
+  B as DOCS_HISTORY_UI_PLUGIN_CONFIG_KEY,
+  $ as UniverDocsHistoryUIPlugin,
+};

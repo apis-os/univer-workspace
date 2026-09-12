@@ -1,60 +1,8 @@
-const _0x5508b1 = _0x2a25;
-(function (_0x27d188, _0x5899ed) {
-  const _0x57598a = _0x2a25,
-    _0x5b2080 = _0x27d188();
-  while (!![]) {
-    try {
-      const _0x193b1e =
-        (parseInt(_0x57598a(0x1d0)) / 0x1) *
-          (-parseInt(_0x57598a(0x1cf)) / 0x2) +
-        (-parseInt(_0x57598a(0x1d1)) / 0x3) *
-          (parseInt(_0x57598a(0x1d3)) / 0x4) +
-        (-parseInt(_0x57598a(0x1ce)) / 0x5) *
-          (parseInt(_0x57598a(0x1d2)) / 0x6) +
-        parseInt(_0x57598a(0x1ca)) / 0x7 +
-        parseInt(_0x57598a(0x1c9)) / 0x8 +
-        (-parseInt(_0x57598a(0x1c8)) / 0x9) *
-          (-parseInt(_0x57598a(0x1cb)) / 0xa) +
-        parseInt(_0x57598a(0x1cc)) / 0xb;
-      if (_0x193b1e === _0x5899ed) break;
-      else _0x5b2080["push"](_0x5b2080["shift"]());
-    } catch (_0x579644) {
-      _0x5b2080["push"](_0x5b2080["shift"]());
-    }
-  }
-})(_0x5dc6, 0x538b8);
-function _0x2a25(_0x36e0bb, _0x16cf61) {
-  _0x36e0bb = _0x36e0bb - 0x1c8;
-  const _0x5dc626 = _0x5dc6();
-  let _0x2a2587 = _0x5dc626[_0x36e0bb];
-  return _0x2a2587;
-}
-function _0x5dc6() {
-  const _0x325911 = [
-    "10ECjklj",
-    "2031590UIymBO",
-    "Otwórz\x20(plik)",
-    "835qCbMTo",
-    "76Sxalec",
-    "8372mUZWRd",
-    "629619wkTlgE",
-    "7086Ddynrl",
-    "4VdHQos",
-    "exports",
-    "1411695xYzsZU",
-    "1469824MHelrA",
-    "3795141pQuFep",
-  ];
-  _0x5dc6 = function () {
-    return _0x325911;
-  };
-  return _0x5dc6();
-}
 const e = {
   "docs-exchange-client": {
     file: "Plik",
-    upload: _0x5508b1(0x1cd),
+    upload: "Otwórz (plik)",
     download: "Zapisz\x20jako",
   },
 };
-module[_0x5508b1(0x1d4)] = e;
+module.exports = e;

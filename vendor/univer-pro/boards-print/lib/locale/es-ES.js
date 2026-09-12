@@ -1,1 +1,11 @@
-();const e={'boards-print':{'menu':{'print':"Imprimir",'exportPng':'PNG','exportJpeg':"JPEG"},'loading':{'print':"Preparando la impresión…",'image':"Exportando imagen…"},'errors':{'printFailed':"No se puede imprimir este tablero.",'exportFailed':"No se puede exportar la imagen de este tablero."}}};export{e as default};
+const e = {
+  "boards-print": {
+    menu: { print: "Imprimir", exportPng: "PNG", exportJpeg: "JPEG" },
+    loading: { print: "Preparando la impresión…", image: "Exportando imagen…" },
+    errors: {
+      printFailed: "No se puede imprimir este tablero.",
+      exportFailed: "No se puede exportar la imagen de este tablero.",
+    },
+  },
+};
+export { e as default };

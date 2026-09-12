@@ -1,0 +1,183 @@
+Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+let _univerjs_docs = require("@univerjs/docs");
+let _univerjs_docs_ui = require("@univerjs/docs-ui");
+let _univerjs_engine_formula = require("@univerjs/engine-formula");
+let _univerjs_engine_render = require("@univerjs/engine-render");
+let _univerjs_network = require("@univerjs/network");
+let _univerjs_rpc = require("@univerjs/rpc");
+let _univerjs_sheets = require("@univerjs/sheets");
+let _univerjs_sheets_formula = require("@univerjs/sheets-formula");
+let _univerjs_sheets_formula_ui = require("@univerjs/sheets-formula-ui");
+let _univerjs_sheets_numfmt = require("@univerjs/sheets-numfmt");
+let _univerjs_sheets_numfmt_ui = require("@univerjs/sheets-numfmt-ui");
+let _univerjs_sheets_ui = require("@univerjs/sheets-ui");
+let _univerjs_ui = require("@univerjs/ui");
+require("@univerjs/network/facade");
+require("@univerjs/sheets/facade");
+require("@univerjs/ui/facade");
+require("@univerjs/docs-ui/facade");
+require("@univerjs/sheets-ui/facade");
+require("@univerjs/engine-formula/facade");
+require("@univerjs/sheets-formula/facade");
+require("@univerjs/sheets-numfmt/facade");
+require("@univerjs/sheets-formula-ui/facade");
+
+//#region src/preset.ts
+/**
+* This presets helps you to create a Univer sheet with open sourced features.
+*/
+function UniverSheetsCorePreset(config = {}) {
+	const { container = "app", workerURL: workerSrc, header, footer, toolbar, ribbonType, formulaBar, menu, contextMenu, disableAutoFocus, customFontFamily, docs, sheets, formula, disableTextFormatAlert, disableTextFormatMark } = config;
+	const useWorker = !!workerSrc;
+	return { plugins: [
+		_univerjs_network.UniverNetworkPlugin,
+		[_univerjs_docs.UniverDocsPlugin, { hasScroll: docs === null || docs === void 0 ? void 0 : docs.hasScroll }],
+		_univerjs_engine_render.UniverRenderEnginePlugin,
+		[_univerjs_ui.UniverUIPlugin, {
+			container,
+			header,
+			toolbar,
+			ribbonType,
+			menu,
+			contextMenu,
+			disableAutoFocus,
+			customFontFamily
+		}],
+		_univerjs_docs_ui.UniverDocsUIPlugin,
+		useWorker ? [_univerjs_rpc.UniverRPCMainThreadPlugin, { workerURL: workerSrc }] : null,
+		[_univerjs_engine_formula.UniverFormulaEnginePlugin, {
+			notExecuteFormula: useWorker,
+			function: formula === null || formula === void 0 ? void 0 : formula.function
+		}],
+		[_univerjs_sheets.UniverSheetsPlugin, {
+			notExecuteFormula: useWorker,
+			onlyRegisterFormulaRelatedMutations: false,
+			isRowStylePrecedeColumnStyle: sheets === null || sheets === void 0 ? void 0 : sheets.isRowStylePrecedeColumnStyle,
+			autoHeightForMergedCells: sheets === null || sheets === void 0 ? void 0 : sheets.autoHeightForMergedCells,
+			freezeSync: sheets === null || sheets === void 0 ? void 0 : sheets.freezeSync
+		}],
+		[_univerjs_sheets_ui.UniverSheetsUIPlugin, {
+			formulaBar,
+			footer,
+			maxAutoHeightCount: sheets === null || sheets === void 0 ? void 0 : sheets.maxAutoHeightCount,
+			clipboardConfig: sheets === null || sheets === void 0 ? void 0 : sheets.clipboardConfig,
+			scrollConfig: sheets === null || sheets === void 0 ? void 0 : sheets.scrollConfig,
+			protectedRangeShadow: (sheets === null || sheets === void 0 ? void 0 : sheets.protectedRangeShadow) ?? true,
+			protectedRangeUserSelector: sheets === null || sheets === void 0 ? void 0 : sheets.protectedRangeUserSelector,
+			disableForceStringAlert: sheets === null || sheets === void 0 ? void 0 : sheets.disableForceStringAlert,
+			disableForceStringMark: sheets === null || sheets === void 0 ? void 0 : sheets.disableForceStringMark
+		}],
+		[_univerjs_sheets_numfmt.UniverSheetsNumfmtPlugin, {
+			disableTextFormatAlert,
+			disableTextFormatMark
+		}],
+		_univerjs_sheets_numfmt_ui.UniverSheetsNumfmtUIPlugin,
+		[_univerjs_sheets_formula.UniverSheetsFormulaPlugin, {
+			notExecuteFormula: useWorker,
+			description: formula === null || formula === void 0 ? void 0 : formula.description,
+			initialFormulaComputing: formula === null || formula === void 0 ? void 0 : formula.initialFormulaComputing
+		}],
+		[_univerjs_sheets_formula_ui.UniverSheetsFormulaUIPlugin, { functionScreenTips: formula === null || formula === void 0 ? void 0 : formula.functionScreenTips }]
+	].filter((v) => !!v) };
+}
+
+//#endregion
+exports.UniverSheetsCorePreset = UniverSheetsCorePreset;
+var _univerjs_design = require("@univerjs/design");
+Object.keys(_univerjs_design).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_design[k]; }
+  });
+});
+
+Object.keys(_univerjs_docs).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_docs[k]; }
+  });
+});
+
+Object.keys(_univerjs_docs_ui).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_docs_ui[k]; }
+  });
+});
+
+Object.keys(_univerjs_engine_formula).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_engine_formula[k]; }
+  });
+});
+
+Object.keys(_univerjs_engine_render).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_engine_render[k]; }
+  });
+});
+
+Object.keys(_univerjs_network).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_network[k]; }
+  });
+});
+
+Object.keys(_univerjs_rpc).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_rpc[k]; }
+  });
+});
+
+Object.keys(_univerjs_sheets).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_sheets[k]; }
+  });
+});
+
+Object.keys(_univerjs_sheets_formula).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_sheets_formula[k]; }
+  });
+});
+
+Object.keys(_univerjs_sheets_formula_ui).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_sheets_formula_ui[k]; }
+  });
+});
+
+Object.keys(_univerjs_sheets_numfmt).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_sheets_numfmt[k]; }
+  });
+});
+
+Object.keys(_univerjs_sheets_numfmt_ui).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_sheets_numfmt_ui[k]; }
+  });
+});
+
+Object.keys(_univerjs_sheets_ui).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_sheets_ui[k]; }
+  });
+});
+
+Object.keys(_univerjs_ui).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) Object.defineProperty(exports, k, {
+    enumerable: true,
+    get: function () { return _univerjs_ui[k]; }
+  });
+});

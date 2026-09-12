@@ -1,0 +1,1915 @@
+import { AddDecimalCommand, CURRENCYFORMAT, DATEFMTLISG, NUMBERFORMAT, SHEETS_NUMFMT_PLUGIN_CONFIG_KEY, SetCurrencyCommand, SetNumfmtCommand, SetPercentCommand, SheetsNumfmtCellContentController, SubtractDecimalCommand, UniverSheetsNumfmtPlugin, getCurrencyFormatOptions, getCurrencySymbolByLocale, getCurrencySymbolIconByLocale, getCurrencyType, getDateFormatOptions, getDecimalFromPattern, getNumberFormatOptions, getPatternPreview, getPatternPreviewIgnoreGeneral, getPatternType, isPatternHasDecimal, setPatternDecimal } from "@univerjs/sheets-numfmt";
+import { ComponentManager, ILayoutService, IMenuManagerService, ISidebarService, IconManager, MenuItemType, RibbonStartGroup, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { CellValueType, CommandType, DEFAULT_TEXT_FORMAT_EXCEL, DependentOn, Disposable, DisposableCollection, ICommandService, IConfigService, ILocalStorageService, IUniverInstanceService, Inject, Injector, InterceptorEffectEnum, LocaleService, Optional, Plugin, Range, RegionService, ThemeService, Tools, UniverInstanceType, currencySymbols, excelSerialToDateTimeParts, fromCallback, getNumfmtParseValueFilter, isDefaultFormat, isPatternEqualWithoutDecimal, isRealNum, isTextFormat, merge, numfmt, registerDependencies, toDisposable, touchDependencies, willLoseNumericPrecision } from "@univerjs/core";
+import { IRenderManagerService, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { AFTER_CELL_EDIT, BEFORE_CELL_EDIT, INTERCEPTOR_POINT, INumfmtService, RangeProtectionPermissionEditPoint, RemoveNumfmtMutation, SetNumfmtMutation, SetRangeValuesCommand, SheetInterceptorService, SheetsSelectionsService, TextToNumberCommand, UniverSheetsPlugin, WorkbookEditablePermission, WorksheetEditPermission, WorksheetSetCellStylePermission, factoryRemoveNumfmtUndoMutation, factorySetNumfmtUndoMutation, transformCellsToRange } from "@univerjs/sheets";
+import { CellAlertManagerService, CellAlertType, IEditorBridgeService, IRepeatLastActionService, RepeatLastActionPermission, SheetSkeletonManagerService, UniverSheetsUIPlugin, deriveStateFromActiveSheet$, getCurrentRangeDisable$ } from "@univerjs/sheets-ui";
+import { Observable, combineLatest, filter, map, merge as merge$1 } from "rxjs";
+import { debounceTime, map as map$1, switchMap, tap } from "rxjs/operators";
+import { Button, Input, InputNumber, Select, SelectList, Separator, borderClassName, clsx, scrollbarClassName } from "@univerjs/design";
+import { createContext, createElement, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { AddDigitsIcon, CheckMarkIcon, DollarIcon, DongIcon, EuroIcon, PercentIcon, ReduceDigitsIcon, RialIcon, RmbIcon, RoubleIcon, RupiahIcon, WonIcon, ZlotyIcon } from "@univerjs/icons";
+import { stripErrorMargin } from "@univerjs/engine-formula";
+
+//#region src/commands/commands/set-mobile-numfmt.command.ts
+const SetMobileNumfmtCommand = {
+	id: "sheet.command.mobile.numfmt.set",
+	type: CommandType.COMMAND,
+	handler: async (accessor, params) => {
+		const selections = accessor.get(SheetsSelectionsService).getCurrentSelections();
+		if (!(selections === null || selections === void 0 ? void 0 : selections.length)) return false;
+		const pattern = (params === null || params === void 0 ? void 0 : params.value) || void 0;
+		const type = pattern ? getPatternType(pattern) : void 0;
+		const values = [];
+		selections.forEach((selection) => {
+			Range.foreach(selection.range, (row, col) => values.push({
+				row,
+				col,
+				pattern,
+				type
+			}));
+		});
+		return accessor.get(ICommandService).executeCommand(SetNumfmtCommand.id, { values });
+	}
+};
+
+//#endregion
+//#region src/commands/operations/close.numfmt.panel.operation.ts
+const CloseNumfmtPanelOperator = {
+	id: "sheet.operation.close.numfmt.panel",
+	type: CommandType.OPERATION,
+	handler: () => true
+};
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/typeof.js
+function _typeof(o) {
+	"@babel/helpers - typeof";
+	return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function(o) {
+		return typeof o;
+	} : function(o) {
+		return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
+	}, _typeof(o);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPrimitive.js
+function toPrimitive(t, r) {
+	if ("object" != _typeof(t) || !t) return t;
+	var e = t[Symbol.toPrimitive];
+	if (void 0 !== e) {
+		var i = e.call(t, r || "default");
+		if ("object" != _typeof(i)) return i;
+		throw new TypeError("@@toPrimitive must return a primitive value.");
+	}
+	return ("string" === r ? String : Number)(t);
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/toPropertyKey.js
+function toPropertyKey(t) {
+	var i = toPrimitive(t, "string");
+	return "symbol" == _typeof(i) ? i : i + "";
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/defineProperty.js
+function _defineProperty(e, r, t) {
+	return (r = toPropertyKey(r)) in e ? Object.defineProperty(e, r, {
+		value: t,
+		enumerable: !0,
+		configurable: !0,
+		writable: !0
+	}) : e[r] = t, e;
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorateParam.js
+function __decorateParam(paramIndex, decorator) {
+	return function(target, key) {
+		decorator(target, key, paramIndex);
+	};
+}
+
+//#endregion
+//#region \0@oxc-project+runtime@0.140.0/helpers/esm/decorate.js
+function __decorate(decorators, target, key, desc) {
+	var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+	if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+	else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+	return c > 3 && r && Object.defineProperty(target, key, r), r;
+}
+
+//#endregion
+//#region src/controllers/ui.controller.ts
+const SHEET_NUMFMT_PANEL$1 = "SHEET_NUMFMT_PANEL";
+let SheetNumfmtUIController = class SheetNumfmtUIController extends Disposable {
+	constructor(_sheetInterceptorService, _themeService, _univerInstanceService, _commandService, _selectionManagerService, _renderManagerService, _numfmtService, _sidebarService, _localeService, _sheetsNumfmtCellContentController) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._themeService = _themeService;
+		this._univerInstanceService = _univerInstanceService;
+		this._commandService = _commandService;
+		this._selectionManagerService = _selectionManagerService;
+		this._renderManagerService = _renderManagerService;
+		this._numfmtService = _numfmtService;
+		this._sidebarService = _sidebarService;
+		this._localeService = _localeService;
+		this._sheetsNumfmtCellContentController = _sheetsNumfmtCellContentController;
+		_defineProperty(this, "_previewPattern", "");
+		_defineProperty(this, "_sidebarDisposable", null);
+		this._initRealTimeRenderingInterceptor();
+		this._initCommands();
+		this._initCloseListener();
+		this._commandExecutedListener();
+		this._initNumfmtLocalChange();
+	}
+	_initNumfmtLocalChange() {
+		this.disposeWithMe(merge$1(this._sheetsNumfmtCellContentController.locale$, this._localeService.currentLocale$).subscribe(() => {
+			this._forceUpdate();
+		}));
+	}
+	openPanel() {
+		var _selectionManagerServ;
+		const sidebarService = this._sidebarService;
+		const selectionManagerService = this._selectionManagerService;
+		const commandService = this._commandService;
+		const univerInstanceService = this._univerInstanceService;
+		const numfmtService = this._numfmtService;
+		const localeService = this._localeService;
+		const range = (((_selectionManagerServ = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ === void 0 ? void 0 : _selectionManagerServ.map((s) => s.range)) || [])[0];
+		if (!range) return false;
+		const workbook = univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+		const sheet = workbook.getActiveSheet();
+		if (!sheet) return false;
+		const cellValue = sheet.getCellRaw(range.startRow, range.startColumn);
+		const numfmtValue = numfmtService.getValue(workbook.getUnitId(), sheet.getSheetId(), range.startRow, range.startColumn);
+		let pattern = "";
+		if (numfmtValue) pattern = numfmtValue.pattern;
+		const defaultValue = (cellValue === null || cellValue === void 0 ? void 0 : cellValue.t) === CellValueType.NUMBER ? cellValue.v : 12345678;
+		const props = {
+			onChange: (config) => {
+				if (config.type === "change") {
+					this._previewPattern = config.value;
+					this._forceUpdate();
+				} else if (config.type === "confirm") {
+					var _selectionManagerServ2;
+					const selections = ((_selectionManagerServ2 = selectionManagerService.getCurrentSelections()) === null || _selectionManagerServ2 === void 0 ? void 0 : _selectionManagerServ2.map((s) => s.range)) || [];
+					const params = { values: [] };
+					const patternType = getPatternType(config.value);
+					selections.forEach((rangeInfo) => {
+						Range.foreach(rangeInfo, (row, col) => {
+							params.values.push({
+								row,
+								col,
+								pattern: config.value,
+								type: patternType
+							});
+						});
+					});
+					commandService.executeCommand(SetNumfmtCommand.id, params);
+					sidebarService.close();
+				} else if (config.type === "cancel") sidebarService.close();
+			},
+			value: {
+				defaultPattern: pattern,
+				defaultValue,
+				row: range.startRow,
+				col: range.startColumn
+			}
+		};
+		this._sidebarDisposable = sidebarService.open({
+			header: { title: localeService.t("sheets-numfmt-ui.title") },
+			children: {
+				label: SHEET_NUMFMT_PANEL$1,
+				...props
+			},
+			onClose: () => {
+				this._forceUpdate();
+				commandService.executeCommand(CloseNumfmtPanelOperator.id);
+			}
+		});
+		return true;
+	}
+	_forceUpdate(unitId) {
+		var _this$_univerInstance, _renderUnit$mainCompo;
+		const resolvedUnitId = unitId ?? ((_this$_univerInstance = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET)) === null || _this$_univerInstance === void 0 ? void 0 : _this$_univerInstance.getUnitId());
+		if (!resolvedUnitId) return;
+		const renderUnit = this._renderManagerService.getRenderUnitById(resolvedUnitId);
+		renderUnit === null || renderUnit === void 0 || renderUnit.with(SheetSkeletonManagerService).reCalculate();
+		renderUnit === null || renderUnit === void 0 || (_renderUnit$mainCompo = renderUnit.mainComponent) === null || _renderUnit$mainCompo === void 0 || _renderUnit$mainCompo.makeDirty();
+	}
+	_initCommands() {
+		[
+			OpenNumfmtPanelOperator,
+			CloseNumfmtPanelOperator,
+			SetMobileNumfmtCommand
+		].forEach((config) => {
+			this.disposeWithMe(this._commandService.registerCommand(config));
+		});
+	}
+	_initRealTimeRenderingInterceptor() {
+		const combineOpenAndSelection$ = combineLatest([new Observable((subscriber) => {
+			this._commandService.onCommandExecuted((commandInfo) => {
+				if (commandInfo.id === OpenNumfmtPanelOperator.id) subscriber.next(true);
+				if (commandInfo.id === CloseNumfmtPanelOperator.id) subscriber.next(false);
+			});
+		}), this._selectionManagerService.selectionMoveEnd$.pipe(map$1((selectionInfos) => {
+			if (!selectionInfos) return [];
+			return selectionInfos.map((selectionInfo) => selectionInfo.range);
+		}))]);
+		this.disposeWithMe(toDisposable(combineOpenAndSelection$.pipe(switchMap(([isOpen, selectionRanges]) => new Observable((subscribe) => {
+			const disposableCollection = new DisposableCollection();
+			isOpen && selectionRanges.length && subscribe.next({
+				selectionRanges,
+				disposableCollection
+			});
+			return () => {
+				disposableCollection.dispose();
+			};
+		})), tap(() => {
+			this._previewPattern = null;
+		})).subscribe(({ disposableCollection, selectionRanges }) => {
+			var _this$_renderManagerS;
+			const workbook = this._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+			this.openPanel();
+			disposableCollection.add(this._sheetInterceptorService.intercept(INTERCEPTOR_POINT.CELL_CONTENT, {
+				priority: 99,
+				effect: InterceptorEffectEnum.Value | InterceptorEffectEnum.Style,
+				handler: (cell, location, next) => {
+					const { row, col } = location;
+					const defaultValue = next(cell) || {};
+					if (selectionRanges.find((range) => range.startColumn <= col && range.endColumn >= col && range.startRow <= row && range.endRow >= row)) {
+						const rawValue = location.worksheet.getCellRaw(row, col);
+						const value = rawValue === null || rawValue === void 0 ? void 0 : rawValue.v;
+						const type = rawValue === null || rawValue === void 0 ? void 0 : rawValue.t;
+						if (value === void 0 || value === null || type !== CellValueType.NUMBER || this._previewPattern === null) return defaultValue;
+						const info = getPatternPreviewIgnoreGeneral(this._previewPattern, value, this._sheetsNumfmtCellContentController.locale);
+						if (info.color) {
+							const color = this._themeService.getColorFromTheme(`${info.color}.500`) ?? info.color;
+							return {
+								...defaultValue,
+								v: info.result,
+								t: CellValueType.STRING,
+								s: { cl: { rgb: color } }
+							};
+						}
+						return {
+							...defaultValue,
+							v: info.result,
+							t: CellValueType.STRING
+						};
+					}
+					return defaultValue;
+				}
+			}));
+			(_this$_renderManagerS = this._renderManagerService.getRenderUnitById(workbook.getUnitId())) === null || _this$_renderManagerS === void 0 || (_this$_renderManagerS = _this$_renderManagerS.mainComponent) === null || _this$_renderManagerS === void 0 || _this$_renderManagerS.makeDirty();
+		})));
+	}
+	_commandExecutedListener() {
+		const commandList = [RemoveNumfmtMutation.id, SetNumfmtMutation.id];
+		this.disposeWithMe(new Observable((subscribe) => {
+			const disposable = this._commandService.onCommandExecuted((command) => {
+				if (commandList.includes(command.id)) {
+					const params = command.params;
+					subscribe.next(params.unitId);
+				}
+			});
+			return () => disposable.dispose();
+		}).pipe(debounceTime(16)).subscribe((unitId) => this._forceUpdate(unitId)));
+	}
+	_initCloseListener() {
+		this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).subscribe((unit) => {
+			if (!unit) {
+				var _this$_sidebarDisposa;
+				(_this$_sidebarDisposa = this._sidebarDisposable) === null || _this$_sidebarDisposa === void 0 || _this$_sidebarDisposa.dispose();
+				this._sidebarDisposable = null;
+			}
+		});
+	}
+};
+SheetNumfmtUIController = __decorate([
+	__decorateParam(0, Inject(SheetInterceptorService)),
+	__decorateParam(1, Inject(ThemeService)),
+	__decorateParam(2, IUniverInstanceService),
+	__decorateParam(3, ICommandService),
+	__decorateParam(4, Inject(SheetsSelectionsService)),
+	__decorateParam(5, IRenderManagerService),
+	__decorateParam(6, INumfmtService),
+	__decorateParam(7, ISidebarService),
+	__decorateParam(8, Inject(LocaleService)),
+	__decorateParam(9, Inject(SheetsNumfmtCellContentController))
+], SheetNumfmtUIController);
+
+//#endregion
+//#region src/commands/operations/open.numfmt.panel.operation.ts
+const OpenNumfmtPanelOperator = {
+	id: "sheet.operation.open.numfmt.panel",
+	type: CommandType.OPERATION,
+	handler: (accessor) => {
+		accessor.get(SheetNumfmtUIController).openPanel();
+		return true;
+	}
+};
+
+//#endregion
+//#region src/views/components/MoreNumfmtType.tsx
+const MORE_NUMFMT_TYPE_KEY = "sheets-numfmt-ui.moreNumfmtType";
+const OPTIONS_KEY = "sheets-numfmt-ui.moreNumfmtType.options";
+function MoreNumfmtType(props) {
+	const { value } = props;
+	const localeService = useDependency(LocaleService);
+	return /* @__PURE__ */ jsx("span", {
+		className: "univer-text-sm",
+		children: value ?? localeService.t("sheets-numfmt-ui.general")
+	});
+}
+function Options() {
+	const commandService = useDependency(ICommandService);
+	const localeService = useDependency(LocaleService);
+	const regionService = useDependency(RegionService);
+	const layoutService = useDependency(ILayoutService);
+	const sheetsNumfmtCellContentController = useDependency(SheetsNumfmtCellContentController);
+	const direction = useObservable(localeService.direction$, localeService.getDirection());
+	const region = useObservable(regionService.currentRegion$, regionService.getCurrentRegion());
+	const selectionManagerService = useDependency(SheetsSelectionsService);
+	const setNumfmt = (pattern) => {
+		const selection = selectionManagerService.getCurrentLastSelection();
+		if (!selection) return;
+		const range = selection.range;
+		const values = [];
+		Range.foreach(range, (row, col) => {
+			if (pattern) values.push({
+				row,
+				col,
+				pattern,
+				type: getPatternType(pattern)
+			});
+			else values.push({
+				row,
+				col
+			});
+		});
+		commandService.executeCommand(SetNumfmtCommand.id, { values });
+		layoutService.focus();
+	};
+	const menuOptions = useMemo(() => {
+		return MENU_OPTIONS(getCurrencySymbolByLocale(region));
+	}, [region]);
+	const handleClick = (index) => {
+		if (index === 0) setNumfmt(null);
+		else if (index === menuOptions.length - 1) {
+			commandService.executeCommand(OpenNumfmtPanelOperator.id);
+			layoutService.focus();
+		} else {
+			const item = menuOptions[index];
+			item.pattern && setNumfmt(item.pattern);
+		}
+	};
+	const defaultValue = 1220;
+	return /* @__PURE__ */ jsx("div", {
+		dir: direction,
+		className: "univer-grid univer-gap-1 univer-p-1.5",
+		children: menuOptions.map((item, index) => {
+			if (item === "|") return /* @__PURE__ */ jsx(Separator, {}, index);
+			return /* @__PURE__ */ jsxs("div", {
+				className: "univer-flex univer-h-7 univer-cursor-default univer-items-center univer-justify-between univer-gap-6 univer-rounded univer-px-2 univer-text-sm hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700",
+				onClick: () => handleClick(index),
+				children: [/* @__PURE__ */ jsx("span", { children: localeService.t(item.label) }), /* @__PURE__ */ jsx("span", {
+					className: "univer-text-xs univer-text-gray-500 dark:!univer-text-gray-400",
+					children: item.pattern ? getPatternPreview(item.pattern || "", defaultValue, sheetsNumfmtCellContentController.locale).result.trim() : ""
+				})]
+			}, index);
+		})
+	});
+}
+
+//#endregion
+//#region src/menu/menu.ts
+const MENU_OPTIONS = (currencySymbol) => {
+	return [
+		{
+			label: "sheets-numfmt-ui.general",
+			pattern: null
+		},
+		{
+			label: "sheets-numfmt-ui.text",
+			pattern: DEFAULT_TEXT_FORMAT_EXCEL
+		},
+		"|",
+		{
+			label: "sheets-numfmt-ui.number",
+			pattern: "0"
+		},
+		{
+			label: "sheets-numfmt-ui.percent",
+			pattern: "0.00%"
+		},
+		{
+			label: "sheets-numfmt-ui.scientific",
+			pattern: "0.00E+00"
+		},
+		"|",
+		{
+			label: "sheets-numfmt-ui.accounting",
+			pattern: `"${currencySymbol}" #,##0.00_);[Red]("${currencySymbol}"#,##0.00)`
+		},
+		{
+			label: "sheets-numfmt-ui.financialValue",
+			pattern: "#,##0.00;[Red]#,##0.00"
+		},
+		{
+			label: "sheets-numfmt-ui.currency",
+			pattern: `"${currencySymbol}"#,##0.00_);[Red]("${currencySymbol}"#,##0.00)`
+		},
+		{
+			label: "sheets-numfmt-ui.roundingCurrency",
+			pattern: `"${currencySymbol}"#,##0;[Red]"${currencySymbol}"#,##0`
+		},
+		"|",
+		{
+			label: "sheets-numfmt-ui.date",
+			pattern: "yyyy-mm-dd;@"
+		},
+		{
+			label: "sheets-numfmt-ui.time",
+			pattern: "am/pm h\":\"mm\":\"ss"
+		},
+		{
+			label: "sheets-numfmt-ui.dateTime",
+			pattern: "yyyy-m-d am/pm h:mm"
+		},
+		{
+			label: "sheets-numfmt-ui.timeDuration",
+			pattern: "h:mm:ss"
+		},
+		"|",
+		{
+			label: "sheets-numfmt-ui.moreFmt",
+			pattern: ""
+		}
+	];
+};
+function createMobileNumberFormatMenuConfig(currencySymbol) {
+	const detailOptions = MENU_OPTIONS(currencySymbol).slice(0, -1).map((item) => item === "|" ? { divider: true } : {
+		label: item.label,
+		value: item.pattern
+	});
+	detailOptions.push({
+		label: "sheets-numfmt-ui.customFormat",
+		custom: true
+	});
+	return {
+		kind: "number-format",
+		title: "sheets-numfmt-ui.title",
+		commandId: SetMobileNumfmtCommand.id,
+		detailTitle: "sheets-numfmt-ui.moreFmt",
+		customTitle: "sheets-numfmt-ui.customFormat",
+		quickOptions: [
+			{
+				label: "sheets-numfmt-ui.percent",
+				commandId: SetPercentCommand.id
+			},
+			{
+				label: "sheets-numfmt-ui.currency",
+				commandId: SetCurrencyCommand.id
+			},
+			{
+				label: "sheets-numfmt-ui.date",
+				commandId: SetMobileNumfmtCommand.id,
+				value: "yyyy-mm-dd;@"
+			},
+			{
+				label: "sheets-numfmt-ui.text",
+				commandId: SetMobileNumfmtCommand.id,
+				value: DEFAULT_TEXT_FORMAT_EXCEL
+			}
+		],
+		decimalOptions: [{
+			label: "sheets-numfmt-ui.subtractDecimal",
+			commandId: SubtractDecimalCommand.id
+		}, {
+			label: "sheets-numfmt-ui.addDecimal",
+			commandId: AddDecimalCommand.id
+		}],
+		detailOptions,
+		customPatterns: [.../* @__PURE__ */ new Set([
+			...CURRENCYFORMAT.map((item) => item.suffix(currencySymbol)),
+			...DATEFMTLISG.map((item) => item.suffix),
+			...NUMBERFORMAT.map((item) => item.suffix)
+		])]
+	};
+}
+function CurrencySymbolIconMenuItem(accessor) {
+	return {
+		icon: accessor.get(RegionService).currentRegion$.pipe(map((region) => getCurrencySymbolIconByLocale(region).icon)),
+		id: SetCurrencyCommand.id,
+		title: "sheets-numfmt-ui.currency",
+		tooltip: "sheets-numfmt-ui.currency",
+		type: MenuItemType.BUTTON,
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetEditPermission, WorksheetSetCellStylePermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function AddDecimalMenuItem(accessor) {
+	return {
+		icon: "AddDigitsIcon",
+		id: AddDecimalCommand.id,
+		title: "sheets-numfmt-ui.addDecimal",
+		tooltip: "sheets-numfmt-ui.addDecimal",
+		type: MenuItemType.BUTTON,
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetEditPermission, WorksheetSetCellStylePermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function SubtractDecimalMenuItem(accessor) {
+	return {
+		icon: "ReduceDigitsIcon",
+		id: SubtractDecimalCommand.id,
+		title: "sheets-numfmt-ui.subtractDecimal",
+		tooltip: "sheets-numfmt-ui.subtractDecimal",
+		type: MenuItemType.BUTTON,
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetEditPermission, WorksheetSetCellStylePermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function PercentMenuItem(accessor) {
+	return {
+		icon: "PercentIcon",
+		id: SetPercentCommand.id,
+		title: "sheets-numfmt-ui.percent",
+		tooltip: "sheets-numfmt-ui.percent",
+		type: MenuItemType.BUTTON,
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetEditPermission, WorksheetSetCellStylePermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		})
+	};
+}
+function FactoryOtherMenuItem(accessor) {
+	const univerInstanceService = accessor.get(IUniverInstanceService);
+	const commandService = accessor.get(ICommandService);
+	const localeService = accessor.get(LocaleService);
+	const regionService = accessor.get(RegionService);
+	const selectionManagerService = accessor.get(SheetsSelectionsService);
+	const commandList = [RemoveNumfmtMutation.id, SetNumfmtMutation.id];
+	const value$ = deriveStateFromActiveSheet$(univerInstanceService, "", ({ workbook, worksheet }) => new Observable((subscribe) => merge$1(selectionManagerService.selectionMoveEnd$, regionService.currentRegion$, fromCallback(commandService.onCommandExecuted.bind(commandService)).pipe(filter(([commandInfo]) => commandList.includes(commandInfo.id)))).subscribe(() => {
+		const selections = selectionManagerService.getCurrentSelections();
+		if (selections && selections[0]) {
+			var _workbook$getStyles$g, _worksheet$getCell;
+			const range = selections[0].range;
+			const row = range.startRow;
+			const col = range.startColumn;
+			const numfmtValue = (_workbook$getStyles$g = workbook.getStyles().get((_worksheet$getCell = worksheet.getCell(row, col)) === null || _worksheet$getCell === void 0 ? void 0 : _worksheet$getCell.s)) === null || _workbook$getStyles$g === void 0 ? void 0 : _workbook$getStyles$g.n;
+			const pattern = numfmtValue === null || numfmtValue === void 0 ? void 0 : numfmtValue.pattern;
+			const currencySymbol = getCurrencySymbolByLocale(regionService.getCurrentRegion());
+			let value = localeService.t("sheets-numfmt-ui.general");
+			if (isDefaultFormat(pattern)) {
+				subscribe.next(value);
+				return;
+			}
+			if (pattern) {
+				const item = MENU_OPTIONS(currencySymbol).filter((item) => typeof item === "object" && item.pattern).find((item) => isPatternEqualWithoutDecimal(pattern, item.pattern));
+				if (item && typeof item === "object" && item.pattern) value = localeService.t(item.label);
+				else value = localeService.t("sheets-numfmt-ui.moreFmt");
+			}
+			subscribe.next(value);
+		}
+	})));
+	return {
+		label: MORE_NUMFMT_TYPE_KEY,
+		id: OpenNumfmtPanelOperator.id,
+		tooltip: "sheets-numfmt-ui.title",
+		type: MenuItemType.SELECTOR,
+		slot: true,
+		selections: [{ label: {
+			name: OPTIONS_KEY,
+			hoverable: false,
+			selectable: false
+		} }],
+		value$,
+		hidden$: getMenuHiddenObservable(accessor, UniverInstanceType.UNIVER_SHEET),
+		disabled$: getCurrentRangeDisable$(accessor, {
+			workbookTypes: [WorkbookEditablePermission],
+			worksheetTypes: [WorksheetSetCellStylePermission, WorksheetEditPermission],
+			rangeTypes: [RangeProtectionPermissionEditPoint]
+		}),
+		mobileStyle: createMobileNumberFormatMenuConfig(getCurrencySymbolByLocale(regionService.getCurrentRegion()))
+	};
+}
+
+//#endregion
+//#region src/menu/schema.ts
+const menuSchema = { [RibbonStartGroup.NUMBER]: {
+	[OpenNumfmtPanelOperator.id]: {
+		order: 9,
+		gridLayout: {
+			row: 1,
+			column: 1,
+			columnSpan: 4,
+			width: 210
+		},
+		menuItemFactory: FactoryOtherMenuItem
+	},
+	[SetPercentCommand.id]: {
+		order: 9.1,
+		gridLayout: {
+			row: 2,
+			column: 1
+		},
+		menuItemFactory: PercentMenuItem
+	},
+	[SetCurrencyCommand.id]: {
+		order: 9.2,
+		gridLayout: {
+			row: 2,
+			column: 2
+		},
+		menuItemFactory: CurrencySymbolIconMenuItem
+	},
+	[AddDecimalCommand.id]: {
+		order: 9.3,
+		gridLayout: {
+			row: 2,
+			column: 3
+		},
+		menuItemFactory: AddDecimalMenuItem
+	},
+	[SubtractDecimalCommand.id]: {
+		order: 9.4,
+		gridLayout: {
+			row: 2,
+			column: 4
+		},
+		menuItemFactory: SubtractDecimalMenuItem
+	}
+} };
+
+//#endregion
+//#region package.json
+var name = "@univerjs/sheets-numfmt-ui";
+var version = "1.0.0-insiders.20260907-70fc579";
+
+//#endregion
+//#region src/config/config.ts
+const SHEETS_NUMFMT_UI_PLUGIN_CONFIG_KEY = "sheets-numfmt-ui.config";
+const configSymbol = Symbol(SHEETS_NUMFMT_UI_PLUGIN_CONFIG_KEY);
+const defaultPluginConfig = {};
+
+//#endregion
+//#region src/controllers/user-habit.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const UserHabitCurrencyContext = createContext([]);
+let UserHabitController = class UserHabitController {
+	constructor(_localStorageService) {
+		this._localStorageService = _localStorageService;
+	}
+	_getKey(habit) {
+		return `userHabitController_${habit}`;
+	}
+	async addHabit(habit, initValue) {
+		const key = this._getKey(habit);
+		return this._localStorageService.getItem(key).then((item) => {
+			if (!item) this._localStorageService.setItem(key, initValue);
+		});
+	}
+	markHabit(habit, value) {
+		const key = this._getKey(habit);
+		this._localStorageService.getItem(key).then((list) => {
+			if (list) {
+				const index = list.findIndex((item) => item === value);
+				index > -1 && list.splice(index, 1);
+				list.unshift(value);
+				this._localStorageService.setItem(key, list);
+			}
+		});
+	}
+	async getHabit(habit, sortList) {
+		const key = this._getKey(habit);
+		const result = await this._localStorageService.getItem(key);
+		if (sortList && result) {
+			const priority = result.map((item, index, arr) => {
+				return {
+					value: item,
+					priority: arr.length - index
+				};
+			});
+			return sortList.sort((a, b) => {
+				var _priority$find, _priority$find2;
+				const ap = ((_priority$find = priority.find((item) => item.value === a)) === null || _priority$find === void 0 ? void 0 : _priority$find.priority) || -1;
+				return (((_priority$find2 = priority.find((item) => item.value === b)) === null || _priority$find2 === void 0 ? void 0 : _priority$find2.priority) || -1) - ap;
+			});
+		}
+		return result || [];
+	}
+	deleteHabit(habit) {
+		this._localStorageService.removeItem(habit);
+	}
+};
+UserHabitController = __decorate([__decorateParam(0, Inject(ILocalStorageService))], UserHabitController);
+
+//#endregion
+//#region src/views/components/Accounting.tsx
+const isAccountingPanel = (pattern) => {
+	return !!getCurrencyType(pattern) && pattern.startsWith("_(");
+};
+function AccountingPanel(props) {
+	const { defaultPattern, onActionChange, onChange } = props;
+	const [decimal, setDecimal] = useState(() => getDecimalFromPattern(defaultPattern || "", 2));
+	const userHabitCurrency = useContext(UserHabitCurrencyContext);
+	const [suffix, setSuffix] = useState(() => getCurrencyType(defaultPattern) || userHabitCurrency[0]);
+	const options = useMemo(() => userHabitCurrency.map((key) => ({
+		label: key,
+		value: key
+	})), []);
+	const localeService = useDependency(LocaleService);
+	useLayoutEffect(() => {
+		onActionChange(() => setPatternDecimal(`_("${suffix}"* #,##0${decimal > 0 ? ".0" : ""}_)`, decimal));
+	}, [
+		decimal,
+		onActionChange,
+		suffix
+	]);
+	const handleSelect = (v) => {
+		setSuffix(v);
+		onChange(setPatternDecimal(`_("${v}"* #,##0${decimal > 0 ? ".0" : ""}_)`, decimal));
+	};
+	const handleDecimalChange = (v) => {
+		const decimal = v || 0;
+		setDecimal(decimal);
+		onChange(setPatternDecimal(`_("${suffix}"* #,##0${decimal > 0 ? ".0" : ""}_)`, decimal));
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [/* @__PURE__ */ jsxs("div", {
+		className: "univer-mt-4 univer-flex univer-justify-between",
+		children: [/* @__PURE__ */ jsxs("div", {
+			className: "option",
+			children: [/* @__PURE__ */ jsx("div", {
+				className: "univer-text-sm univer-text-gray-400",
+				children: localeService.t("sheets-numfmt-ui.decimalLength")
+			}), /* @__PURE__ */ jsx("div", {
+				className: "univer-mt-2 univer-w-32",
+				children: /* @__PURE__ */ jsx(InputNumber, {
+					value: decimal,
+					step: 1,
+					precision: 0,
+					max: 20,
+					min: 0,
+					onChange: handleDecimalChange
+				})
+			})]
+		}), /* @__PURE__ */ jsxs("div", {
+			className: "option",
+			children: [/* @__PURE__ */ jsx("div", {
+				className: "univer-text-sm univer-text-gray-400",
+				children: localeService.t("sheets-numfmt-ui.currencyType")
+			}), /* @__PURE__ */ jsx("div", {
+				className: "univer-mt-2 univer-w-36",
+				children: /* @__PURE__ */ jsx(Select, {
+					options,
+					value: suffix,
+					onChange: handleSelect
+				})
+			})]
+		})]
+	}), /* @__PURE__ */ jsx("div", {
+		className: "univer-mt-4 univer-text-sm univer-text-gray-400",
+		children: localeService.t("sheets-numfmt-ui.accountingDes")
+	})] });
+}
+
+//#endregion
+//#region src/views/components/Currency.tsx
+const isCurrencyPanel = (pattern) => {
+	return !!getCurrencyType(pattern) && !pattern.startsWith("_(");
+};
+function CurrencyPanel(props) {
+	const { onActionChange, onChange: onValueChange } = props;
+	const localeService = useDependency(LocaleService);
+	const userHabitCurrency = useContext(UserHabitCurrencyContext);
+	const [suffix, setSuffix] = useState(() => getCurrencyType(props.defaultPattern) || userHabitCurrency[0]);
+	const [decimal, setDecimal] = useState(() => getDecimalFromPattern(props.defaultPattern || "", 2));
+	const [pattern, setPattern] = useState(() => {
+		var _negativeOptions$find;
+		const negativeOptions = getCurrencyFormatOptions(suffix);
+		return ((_negativeOptions$find = negativeOptions.find((item) => isPatternEqualWithoutDecimal(item.value, props.defaultPattern))) === null || _negativeOptions$find === void 0 ? void 0 : _negativeOptions$find.value) || negativeOptions[0].value;
+	});
+	const negativeOptions = useMemo(() => getCurrencyFormatOptions(suffix), [suffix]);
+	const options = useMemo(() => userHabitCurrency.map((key) => ({
+		label: key,
+		value: key
+	})), [userHabitCurrency]);
+	useLayoutEffect(() => {
+		onActionChange(() => setPatternDecimal(pattern, decimal));
+	}, [
+		decimal,
+		onActionChange,
+		pattern
+	]);
+	const onSelect = (value) => {
+		if (value === void 0) return;
+		setSuffix(value);
+		const pattern = getCurrencyFormatOptions(value)[0].value;
+		setPattern(pattern);
+		onValueChange(setPatternDecimal(pattern, decimal));
+	};
+	const onChange = (value) => {
+		if (value === void 0) return;
+		setPattern(value);
+		onValueChange(setPatternDecimal(value, decimal));
+	};
+	const onDecimalChange = (v) => {
+		setDecimal(v || 0);
+		onValueChange(setPatternDecimal(pattern, v || 0));
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-4 univer-flex univer-justify-between",
+			children: [/* @__PURE__ */ jsxs("div", {
+				className: "option",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "univer-text-sm univer-text-gray-400",
+					children: localeService.t("sheets-numfmt-ui.decimalLength")
+				}), /* @__PURE__ */ jsx("div", {
+					className: "univer-mt-2 univer-w-32",
+					children: /* @__PURE__ */ jsx(InputNumber, {
+						value: decimal,
+						max: 20,
+						min: 0,
+						onChange: onDecimalChange
+					})
+				})]
+			}), /* @__PURE__ */ jsxs("div", {
+				className: "option",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "univer-text-sm univer-text-gray-400",
+					children: localeService.t("sheets-numfmt-ui.currencyType")
+				}), /* @__PURE__ */ jsx("div", {
+					className: "univer-mt-2 univer-w-36",
+					children: /* @__PURE__ */ jsx(Select, {
+						value: suffix,
+						options,
+						onChange: onSelect
+					})
+				})]
+			})]
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "label univer-mt-4",
+			children: localeService.t("sheets-numfmt-ui.negType")
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-2",
+			children: /* @__PURE__ */ jsx(SelectList, {
+				value: pattern,
+				options: negativeOptions,
+				onChange
+			})
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-400",
+			children: localeService.t("sheets-numfmt-ui.currencyDes")
+		})
+	] });
+}
+
+//#endregion
+//#region src/views/components/CustomFormat.tsx
+const key$1 = "customFormat";
+const historyPatternKey = "numfmt_custom_pattern";
+function CustomFormat(props) {
+	const { defaultPattern, onActionChange, onChange } = props;
+	const userHabitController = useDependency(UserHabitController);
+	const localStorageService = useDependency(ILocalStorageService);
+	const localeService = useDependency(LocaleService);
+	const [pattern, setPattern] = useState(defaultPattern);
+	useLayoutEffect(() => {
+		onActionChange(() => {
+			userHabitController.markHabit(key$1, pattern);
+			localStorageService.getItem(historyPatternKey).then((list = []) => {
+				const _list = [.../* @__PURE__ */ new Set([pattern, ...list || []])].splice(0, 10).filter((e) => !!e);
+				localStorageService.setItem(historyPatternKey, _list);
+			});
+			return pattern;
+		});
+	}, [
+		localStorageService,
+		onActionChange,
+		pattern,
+		userHabitController
+	]);
+	const [options, setOptions] = useState([]);
+	useEffect(() => {
+		let cancelled = false;
+		localStorageService.getItem(historyPatternKey).then((historyList) => {
+			const list = [
+				...CURRENCYFORMAT.map((item) => item.suffix("$")),
+				...DATEFMTLISG.map((item) => item.suffix),
+				...NUMBERFORMAT.map((item) => item.suffix),
+				...historyList ?? []
+			];
+			return userHabitController.addHabit(key$1, []).then(() => userHabitController.getHabit(key$1, list));
+		}).then((list) => {
+			if (!cancelled) setOptions([...new Set(list)]);
+		});
+		return () => {
+			cancelled = true;
+		};
+	}, [localStorageService, userHabitController]);
+	const handleClick = (p) => {
+		setPattern(p);
+		onChange(p);
+	};
+	const handleBlur = () => {
+		onChange(pattern);
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-400",
+			children: localeService.t("sheets-numfmt-ui.customFormat")
+		}),
+		/* @__PURE__ */ jsx(Input, {
+			placeholder: localeService.t("sheets-numfmt-ui.customFormat"),
+			onBlur: handleBlur,
+			value: pattern,
+			onChange: setPattern,
+			className: "univer-mt-2 univer-w-full"
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: clsx("univer-mt-2 univer-max-h-[400px] univer-overflow-auto univer-rounded-lg univer-p-2", borderClassName),
+			children: options.map((p) => /* @__PURE__ */ jsxs("div", {
+				onClick: () => handleClick(p),
+				className: "univer-flex univer-cursor-pointer univer-items-center univer-gap-1.5 univer-py-1.5 univer-text-sm",
+				children: [/* @__PURE__ */ jsx("div", {
+					className: "univer-flex univer-w-4 univer-items-center univer-text-primary-600",
+					children: pattern === p && /* @__PURE__ */ jsx(CheckMarkIcon, {})
+				}), /* @__PURE__ */ jsx("div", { children: p })]
+			}, p))
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-numfmt-ui.customFormatDes")
+		})
+	] });
+}
+
+//#endregion
+//#region src/views/components/Date.tsx
+const isDatePanel = (pattern) => {
+	const info = numfmt.getFormatInfo(pattern);
+	return getDateFormatOptions().map((item) => item.value).includes(pattern) || [
+		"date",
+		"datetime",
+		"time"
+	].includes(info.type);
+};
+function DatePanel(props) {
+	const { onActionChange, onChange, defaultPattern } = props;
+	const options = useMemo(getDateFormatOptions, []);
+	const localeService = useDependency(LocaleService);
+	const [suffix, setSuffix] = useState(() => {
+		if (defaultPattern) {
+			const item = options.find((item) => item.value === defaultPattern);
+			if (item) return item.value;
+		}
+		return options[0].value;
+	});
+	useLayoutEffect(() => {
+		onActionChange(() => suffix);
+	}, [onActionChange, suffix]);
+	const handleChange = (v) => {
+		if (v === void 0) return;
+		setSuffix(v);
+		onChange(v);
+	};
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-400",
+			children: localeService.t("sheets-numfmt-ui.dateType")
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-2",
+			children: /* @__PURE__ */ jsx(SelectList, {
+				value: suffix,
+				options,
+				onChange: handleChange
+			})
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3.5 univer-text-sm/5 univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-numfmt-ui.dateDes")
+		})
+	] });
+}
+
+//#endregion
+//#region src/views/components/General.tsx
+const isGeneralPanel = (pattern) => !pattern;
+function GeneralPanel(props) {
+	const localeService = useDependency(LocaleService);
+	const { onActionChange } = props;
+	useLayoutEffect(() => {
+		onActionChange(() => "");
+	}, [onActionChange]);
+	return /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx("div", {
+		className: "univer-mt-3.5 univer-text-sm/5 univer-text-gray-600 dark:!univer-text-gray-200",
+		children: localeService.t("sheets-numfmt-ui.generalDes")
+	}) });
+}
+
+//#endregion
+//#region src/views/components/ThousandthPercentile.tsx
+const isThousandthPercentilePanel = (pattern) => getNumberFormatOptions().some((item) => isPatternEqualWithoutDecimal(item.value, pattern));
+function ThousandthPercentilePanel(props) {
+	const { onActionChange, onChange } = props;
+	const localeService = useDependency(LocaleService);
+	const options = useMemo(getNumberFormatOptions, []);
+	const [decimal, setDecimal] = useState(() => getDecimalFromPattern(props.defaultPattern || "", 0));
+	const [suffix, setSuffix] = useState(() => {
+		const item = options.find((item) => isPatternEqualWithoutDecimal(item.value, props.defaultPattern || ""));
+		return (item === null || item === void 0 ? void 0 : item.value) || options[0].value;
+	});
+	const pattern = useMemo(() => setPatternDecimal(suffix, Number(decimal || 0)), [suffix, decimal]);
+	const isInputDisable = !isPatternHasDecimal(suffix);
+	const handleDecimalChange = (decimal) => {
+		setDecimal(decimal || 0);
+		onChange(setPatternDecimal(suffix, Number(decimal || 0)));
+	};
+	const handleClick = (v) => {
+		if (v === void 0) return;
+		setDecimal(getDecimalFromPattern(v, 0));
+		setSuffix(v);
+		onChange(v);
+	};
+	useLayoutEffect(() => {
+		onActionChange(() => pattern);
+	}, [onActionChange, pattern]);
+	return /* @__PURE__ */ jsxs("div", { children: [
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-400",
+			children: localeService.t("sheets-numfmt-ui.decimalLength")
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-2",
+			children: /* @__PURE__ */ jsx(InputNumber, {
+				disabled: isInputDisable,
+				value: decimal,
+				max: 20,
+				min: 0,
+				onChange: handleDecimalChange
+			})
+		}),
+		/* @__PURE__ */ jsxs("div", {
+			className: "univer-mt-4 univer-text-sm univer-text-gray-400",
+			children: [" ", localeService.t("sheets-numfmt-ui.negType")]
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-2",
+			children: /* @__PURE__ */ jsx(SelectList, {
+				onChange: handleClick,
+				options,
+				value: suffix
+			})
+		}),
+		/* @__PURE__ */ jsx("div", {
+			className: "univer-mt-3.5 univer-text-sm/5 univer-text-gray-600 dark:!univer-text-gray-200",
+			children: localeService.t("sheets-numfmt-ui.thousandthPercentileDes")
+		})
+	] });
+}
+
+//#endregion
+//#region src/views/hooks/use-currency-options.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const key = "numfmtCurrency";
+const useCurrencyOptions = (onOptionChange) => {
+	const userHabitController = useDependency(UserHabitController);
+	const [options, setOptions] = useState(currencySymbols);
+	useEffect(() => {
+		userHabitController.addHabit("numfmtCurrency", []).then(() => {
+			userHabitController.getHabit(key, [...currencySymbols]).then((list) => {
+				setOptions(list);
+				onOptionChange && onOptionChange(list);
+			});
+		});
+	}, []);
+	const mark = (v) => {
+		userHabitController.markHabit(key, v);
+	};
+	return {
+		userHabitCurrency: options,
+		mark
+	};
+};
+
+//#endregion
+//#region src/views/hooks/use-next-tick.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const useNextTick = () => {
+	const effectList = useRef([]);
+	const [value, dispatch] = useState({});
+	useEffect(() => {
+		effectList.current.forEach((fn) => {
+			fn();
+		});
+		effectList.current = [];
+	}, [value]);
+	const nextTick = (fn) => {
+		effectList.current.push(fn);
+		dispatch({});
+	};
+	return nextTick;
+};
+
+//#endregion
+//#region src/views/SheetNumfmtPanel.tsx
+function SheetNumfmtPanel(props) {
+	var _typeOptions$find;
+	const { defaultValue, defaultPattern, row, col } = props.value;
+	const localeService = useDependency(LocaleService);
+	const currentPatternRef = useRef(() => "");
+	const nextTick = useNextTick();
+	const typeOptions = useMemo(() => {
+		return [
+			{
+				label: "sheets-numfmt-ui.general",
+				component: GeneralPanel
+			},
+			{
+				label: "sheets-numfmt-ui.accounting",
+				component: AccountingPanel
+			},
+			{
+				label: "sheets-numfmt-ui.currency",
+				component: CurrencyPanel
+			},
+			{
+				label: "sheets-numfmt-ui.date",
+				component: DatePanel
+			},
+			{
+				label: "sheets-numfmt-ui.thousandthPercentile",
+				component: ThousandthPercentilePanel
+			},
+			{
+				label: "sheets-numfmt-ui.customFormat",
+				component: CustomFormat
+			}
+		].map((item) => ({
+			...item,
+			label: localeService.t(item.label)
+		}));
+	}, [localeService]);
+	const [type, setType] = useState(findDefaultType);
+	const [key, setKey] = useState(() => `${row}_${col}_${defaultPattern}`);
+	const { mark, userHabitCurrency } = useCurrencyOptions(() => setKey(`${row}_${col}_${defaultPattern}_userCurrency`));
+	const BusinessComponent = (_typeOptions$find = typeOptions.find((item) => item.label === type)) === null || _typeOptions$find === void 0 ? void 0 : _typeOptions$find.component;
+	function findDefaultType() {
+		return [
+			isGeneralPanel,
+			isAccountingPanel,
+			isCurrencyPanel,
+			isDatePanel,
+			isThousandthPercentilePanel
+		].reduce((pre, curFn, index) => pre || (curFn(defaultPattern) ? typeOptions[index].label : ""), "") || typeOptions[0].label;
+	}
+	const selectOptions = typeOptions.map((option) => ({
+		label: option.label,
+		value: option.label
+	}));
+	const handleSelect = (value) => {
+		setType(value);
+		nextTick(() => props.onChange({
+			type: "change",
+			value: currentPatternRef.current() || ""
+		}));
+	};
+	const handleChange = useCallback((v) => {
+		props.onChange({
+			type: "change",
+			value: v
+		});
+	}, []);
+	const handleActionChange = useCallback((action) => {
+		currentPatternRef.current = action;
+	}, []);
+	const handleConfirm = () => {
+		const pattern = currentPatternRef.current() || "";
+		const currency = getCurrencyType(pattern);
+		if (currency) mark(currency);
+		props.onChange({
+			type: "confirm",
+			value: pattern
+		});
+	};
+	const handleCancel = () => {
+		props.onChange({
+			type: "cancel",
+			value: ""
+		});
+	};
+	const subProps = {
+		onChange: handleChange,
+		onActionChange: handleActionChange,
+		defaultValue,
+		defaultPattern
+	};
+	useEffect(() => {
+		setType(findDefaultType());
+		setKey(`${row}_${col}_${defaultPattern}`);
+	}, [
+		row,
+		col,
+		defaultPattern
+	]);
+	return /* @__PURE__ */ jsxs("div", {
+		className: clsx("univer-flex univer-h-full univer-flex-col univer-justify-between univer-overflow-y-auto univer-pb-5", scrollbarClassName),
+		children: [/* @__PURE__ */ jsxs("div", { children: [
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-3.5 univer-text-sm univer-text-gray-400",
+				children: localeService.t("sheets-numfmt-ui.numfmtType")
+			}),
+			/* @__PURE__ */ jsx("div", {
+				className: "univer-mt-2",
+				children: /* @__PURE__ */ jsx(Select, {
+					className: "univer-w-full",
+					value: type,
+					options: selectOptions,
+					onChange: handleSelect
+				})
+			}),
+			/* @__PURE__ */ jsx("div", { children: BusinessComponent && /* @__PURE__ */ jsx(UserHabitCurrencyContext.Provider, {
+				value: userHabitCurrency,
+				children: /* @__PURE__ */ createElement(BusinessComponent, {
+					...subProps,
+					key
+				})
+			}) })
+		] }), /* @__PURE__ */ jsxs("div", {
+			className: "univer-mb-5 univer-mt-3.5 univer-flex univer-justify-end univer-gap-2 rtl:univer-flex-row-reverse",
+			children: [/* @__PURE__ */ jsx(Button, {
+				onClick: handleCancel,
+				children: localeService.t("sheets-numfmt-ui.cancel")
+			}), /* @__PURE__ */ jsx(Button, {
+				variant: "primary",
+				onClick: handleConfirm,
+				children: localeService.t("sheets-numfmt-ui.confirm")
+			})]
+		})]
+	});
+}
+
+//#endregion
+//#region src/controllers/components.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+const SHEET_NUMFMT_PANEL = "SHEET_NUMFMT_PANEL";
+let ComponentsController = class ComponentsController extends Disposable {
+	constructor(_componentManager, _iconManager) {
+		super();
+		this._componentManager = _componentManager;
+		this._iconManager = _iconManager;
+		this._registerComponents();
+		this._registerIcons();
+	}
+	_registerIcons() {
+		this.disposeWithMe(this._iconManager.register({
+			AddDigitsIcon,
+			DollarIcon,
+			DongIcon,
+			EuroIcon,
+			PercentIcon,
+			ReduceDigitsIcon,
+			RialIcon,
+			RmbIcon,
+			RoubleIcon,
+			RupiahIcon,
+			WonIcon,
+			ZlotyIcon
+		}));
+	}
+	_registerComponents() {
+		this.disposeWithMe(this._componentManager.register(SHEET_NUMFMT_PANEL, SheetNumfmtPanel));
+		[[MORE_NUMFMT_TYPE_KEY, MoreNumfmtType], [OPTIONS_KEY, Options]].forEach(([key, comp]) => {
+			this.disposeWithMe(this._componentManager.register(key, comp));
+		});
+	}
+};
+ComponentsController = __decorate([__decorateParam(0, Inject(ComponentManager)), __decorateParam(1, Inject(IconManager))], ComponentsController);
+
+//#endregion
+//#region src/controllers/numfmt-alert-render.controller.ts
+const ALERT_KEY = "SHEET_NUMFMT_ALERT";
+let NumfmtAlertRenderController = class NumfmtAlertRenderController extends Disposable {
+	constructor(_context, _selectionManagerService, _cellAlertManagerService, _localeService, _numfmtService, _configService, _commandService, _univerInstanceService) {
+		super();
+		this._context = _context;
+		this._selectionManagerService = _selectionManagerService;
+		this._cellAlertManagerService = _cellAlertManagerService;
+		this._localeService = _localeService;
+		this._numfmtService = _numfmtService;
+		this._configService = _configService;
+		this._commandService = _commandService;
+		this._univerInstanceService = _univerInstanceService;
+		this._init();
+	}
+	_init() {
+		this._initCellAlertPopup();
+	}
+	_initCellAlertPopup() {
+		this.disposeWithMe(this._selectionManagerService.selectionChanged$.subscribe((selections) => this._updateAlert(selections)));
+		this.disposeWithMe(this._context.unit.activeSheet$.subscribe(() => this._updateAlert(this._selectionManagerService.getCurrentSelections())));
+		this.disposeWithMe(this._univerInstanceService.getCurrentTypeOfUnit$(UniverInstanceType.UNIVER_SHEET).subscribe(() => this._updateAlert(this._selectionManagerService.getCurrentSelections())));
+	}
+	_isCurrentSheet(worksheet) {
+		const selectionParam = this._selectionManagerService.currentSelectionParam;
+		return Boolean(worksheet && (selectionParam === null || selectionParam === void 0 ? void 0 : selectionParam.unitId) === this._context.unit.getUnitId() && selectionParam.sheetId === worksheet.getSheetId());
+	}
+	_updateAlert(selections) {
+		var _this$_configService$, _getNumfmtParseValueF;
+		this._hideAlert();
+		const workbook = this._context.unit;
+		const worksheet = workbook.getActiveSheet();
+		if (!this._isCurrentSheet(worksheet)) return;
+		if ((selections === null || selections === void 0 ? void 0 : selections.length) !== 1) return;
+		if ((_this$_configService$ = this._configService.getConfig(SHEETS_NUMFMT_PLUGIN_CONFIG_KEY)) === null || _this$_configService$ === void 0 ? void 0 : _this$_configService$.disableTextFormatAlert) return;
+		const selection = selections[0];
+		const primary = selection.primary;
+		if (!primary) return;
+		const row = primary.actualRow;
+		const col = primary.actualColumn;
+		const unitId = workbook.getUnitId();
+		const subUnitId = worksheet.getSheetId();
+		const cellData = worksheet.getCell(row, col);
+		let numfmtValue;
+		if (cellData === null || cellData === void 0 ? void 0 : cellData.s) {
+			var _workbook$getStyles$g;
+			numfmtValue = (_workbook$getStyles$g = workbook.getStyles().get(cellData.s)) === null || _workbook$getStyles$g === void 0 ? void 0 : _workbook$getStyles$g.n;
+		}
+		if (!numfmtValue) numfmtValue = this._numfmtService.getValue(unitId, subUnitId, row, col);
+		const cellValue = cellData === null || cellData === void 0 ? void 0 : cellData.v;
+		const isConvertibleNumber = isRealNum(cellValue) || typeof cellValue === "string" && typeof ((_getNumfmtParseValueF = getNumfmtParseValueFilter(cellValue)) === null || _getNumfmtParseValueF === void 0 ? void 0 : _getNumfmtParseValueF.v) === "number";
+		if (!isTextFormat(numfmtValue === null || numfmtValue === void 0 ? void 0 : numfmtValue.pattern) || !Tools.isDefine(cellValue) || !isConvertibleNumber) return;
+		const range = { ...selection.range };
+		this._cellAlertManagerService.showAlert({
+			type: CellAlertType.WARNING,
+			title: this._localeService.t("sheets-numfmt-ui.info.error"),
+			message: this._localeService.t("sheets-numfmt-ui.info.forceStringInfo"),
+			location: {
+				unitId,
+				subUnitId,
+				row,
+				col
+			},
+			width: 200,
+			height: 74,
+			key: this._alertKey,
+			menu: [{
+				label: this._localeService.t("sheets-numfmt-ui.info.convertToNumber"),
+				onSelect: () => {
+					if (this._commandService.syncExecuteCommand(TextToNumberCommand.id, {
+						unitId,
+						subUnitId,
+						ranges: [range]
+					})) this._hideAlert();
+				}
+			}]
+		});
+	}
+	get _alertKey() {
+		return `${ALERT_KEY}:${this._context.unit.getUnitId()}`;
+	}
+	_hideAlert() {
+		this._cellAlertManagerService.removeAlert(this._alertKey);
+	}
+};
+NumfmtAlertRenderController = __decorate([
+	__decorateParam(1, Inject(SheetsSelectionsService)),
+	__decorateParam(2, Inject(CellAlertManagerService)),
+	__decorateParam(3, Inject(LocaleService)),
+	__decorateParam(4, Inject(INumfmtService)),
+	__decorateParam(5, IConfigService),
+	__decorateParam(6, ICommandService),
+	__decorateParam(7, IUniverInstanceService)
+], NumfmtAlertRenderController);
+
+//#endregion
+//#region src/controllers/numfmt-repeat-last-action.controller.ts
+let NumfmtRepeatLastActionController = class NumfmtRepeatLastActionController extends Disposable {
+	constructor(_repeatLastActionService) {
+		super();
+		this._repeatLastActionService = _repeatLastActionService;
+		this._initCommandRecording();
+	}
+	_initCommandRecording() {
+		if (!this._repeatLastActionService) return;
+		const handler = (selections, params) => {
+			if (!params) return;
+			const { values } = params;
+			const numfmtCell = values.find((cell) => cell.pattern);
+			if (!numfmtCell) return;
+			const { pattern, type } = numfmtCell;
+			const newValues = [];
+			const cache = /* @__PURE__ */ new Set();
+			for (const selection of selections) {
+				const { startRow, startColumn, endRow, endColumn } = selection;
+				for (let row = startRow; row <= endRow; row++) for (let col = startColumn; col <= endColumn; col++) {
+					const key = `${row}-${col}`;
+					if (cache.has(key)) continue;
+					cache.add(key);
+					newValues.push({
+						row,
+						col,
+						pattern,
+						type
+					});
+				}
+			}
+			return {
+				...params,
+				values: newValues
+			};
+		};
+		this.disposeWithMe(this._repeatLastActionService.registerRepeatableCommand(SetNumfmtCommand.id, handler, RepeatLastActionPermission.CellStyle));
+	}
+};
+NumfmtRepeatLastActionController = __decorate([__decorateParam(0, Optional(IRepeatLastActionService))], NumfmtRepeatLastActionController);
+
+//#endregion
+//#region src/utils/temporal-editor-value.ts
+function getTemporalType(pattern) {
+	if (numfmt.getFormatDateInfo(pattern).isDuration) return "duration";
+	const type = numfmt.getFormatInfo(pattern).type;
+	return type === "date" || type === "datetime" || type === "time" ? type : null;
+}
+function trimFraction(value, locale) {
+	var _numfmt$getLocale;
+	const decimal = ((_numfmt$getLocale = numfmt.getLocale(locale)) === null || _numfmt$getLocale === void 0 ? void 0 : _numfmt$getLocale.decimal) ?? ".";
+	const decimalIndex = value.lastIndexOf(decimal);
+	if (decimalIndex < 0) return value;
+	const suffixStart = value.indexOf(" ", decimalIndex);
+	const end = suffixStart < 0 ? value.length : suffixStart;
+	let fractionEnd = end;
+	while (fractionEnd > decimalIndex + 1 && value[fractionEnd - 1] === "0") fractionEnd--;
+	return value.slice(0, fractionEnd) + value.slice(end);
+}
+function serializeDuration(serial, locale) {
+	var _numfmt$getLocale2;
+	const totalMilliseconds = Math.round(Math.abs(serial) * 864e5);
+	const hours = Math.floor(totalMilliseconds / 36e5);
+	const minutes = Math.floor(totalMilliseconds / 6e4) % 60;
+	const seconds = Math.floor(totalMilliseconds / 1e3) % 60;
+	const milliseconds = totalMilliseconds % 1e3;
+	const fraction = milliseconds ? `${((_numfmt$getLocale2 = numfmt.getLocale(locale)) === null || _numfmt$getLocale2 === void 0 ? void 0 : _numfmt$getLocale2.decimal) ?? "."}${String(milliseconds).padStart(3, "0").replace(/0+$/, "")}` : "";
+	return `${serial < 0 ? "-" : ""}${hours}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}${fraction}`;
+}
+function serializeTemporalEditorValue(options) {
+	const { serial, pattern, locale, dateSystem } = options;
+	const type = getTemporalType(pattern);
+	if (!type || !Number.isFinite(serial) || serial < 0 && type !== "duration") return null;
+	if (type === "duration") return serializeDuration(serial, locale);
+	const parts = excelSerialToDateTimeParts(serial, { dateSystem });
+	if (!parts) return null;
+	const hasFraction = Math.round(parts.fractionalSecond * 1e3) > 0;
+	const canonicalPattern = numfmt.getDateTimeEditPattern(pattern, serial);
+	if (!canonicalPattern) return null;
+	const value = numfmt.format(canonicalPattern, serial, {
+		locale,
+		dateSystem,
+		throws: false
+	});
+	return hasFraction ? trimFraction(value, locale) : value;
+}
+function parseDuration(content, locale) {
+	var _numfmt$getLocale3;
+	const decimal = ((_numfmt$getLocale3 = numfmt.getLocale(locale)) === null || _numfmt$getLocale3 === void 0 ? void 0 : _numfmt$getLocale3.decimal) ?? ".";
+	const normalized = decimal === "." ? content : content.replace(decimal, ".");
+	const match = /^\s*([+-])?(\d+):([0-5]?\d):([0-5]?\d)(\.\d{1,10})?\s*$/.exec(normalized);
+	if (!match) return null;
+	const sign = match[1] === "-" ? -1 : 1;
+	const hours = Number(match[2]);
+	const minutes = Number(match[3]);
+	const seconds = Number(match[4]);
+	const fractionalSecond = Number(match[5] ?? 0);
+	return sign * (hours * 3600 + minutes * 60 + seconds + fractionalSecond) / 86400;
+}
+function parseTemporalEditorValue(options) {
+	const { content, originalSerial, pattern, locale, dateSystem } = options;
+	const type = getTemporalType(pattern);
+	if (!type || !Number.isFinite(originalSerial) || originalSerial < 0 && type !== "duration") return null;
+	if (type === "duration") return parseDuration(content, locale);
+	if (type === "time") {
+		const parsed = numfmt.parseTime(content, {
+			locale,
+			dateSystem
+		});
+		return parsed ? Math.floor(originalSerial) + Number(parsed.v) : null;
+	}
+	const parsed = numfmt.parseDate(content, {
+		locale,
+		dateSystem
+	});
+	if (!parsed || typeof parsed.v !== "number") return null;
+	if (type === "date") return Math.floor(parsed.v) + (originalSerial - Math.floor(originalSerial));
+	return parsed.v;
+}
+
+//#endregion
+//#region src/controllers/numfmt.editor.controller.ts
+const createCollectEffectMutation = () => {
+	let list = [];
+	const add = (unitId, subUnitId, row, col, value) => list.push({
+		unitId,
+		subUnitId,
+		row,
+		col,
+		value
+	});
+	const getEffects = () => list;
+	const clean = () => {
+		list = [];
+	};
+	return {
+		add,
+		getEffects,
+		clean
+	};
+};
+let NumfmtEditorController = class NumfmtEditorController extends Disposable {
+	constructor(_sheetInterceptorService, _numfmtService, _univerInstanceService, _injector, _sheetsNumfmtCellContentController, _editorBridgeService) {
+		super();
+		this._sheetInterceptorService = _sheetInterceptorService;
+		this._numfmtService = _numfmtService;
+		this._univerInstanceService = _univerInstanceService;
+		this._injector = _injector;
+		this._sheetsNumfmtCellContentController = _sheetsNumfmtCellContentController;
+		this._editorBridgeService = _editorBridgeService;
+		_defineProperty(this, "_collectEffectMutation", createCollectEffectMutation());
+		this._initInterceptorEditorStart();
+		this._initInterceptorEditorEnd();
+		this._initInterceptorCommands();
+	}
+	_initInterceptorEditorStart() {
+		if (!this._editorBridgeService) return;
+		this.disposeWithMe(toDisposable(this._sheetInterceptorService.writeCellInterceptor.intercept(BEFORE_CELL_EDIT, { handler: (value, context, next) => {
+			/**
+			* This value is get by `worksheet.getCell()`, it has been processed by cell content interceptor, and used to display in cell render, so it should be the final value after all the processing of number format.
+			* But the editor has different requirement for different number format type, so we need to get the raw cell value and number format value to determine the final value for editor.
+			*/
+			const row = context.row;
+			const col = context.col;
+			const numfmtCell = this._numfmtService.getValue(context.unitId, context.subUnitId, row, col);
+			if (numfmtCell) {
+				const rawCell = context.worksheet.getCellRaw(row, col);
+				if (!(rawCell === null || rawCell === void 0 ? void 0 : rawCell.f) && (rawCell === null || rawCell === void 0 ? void 0 : rawCell.t) === CellValueType.NUMBER && isRealNum(rawCell.v)) {
+					const canonicalValue = serializeTemporalEditorValue({
+						serial: Number(rawCell.v),
+						pattern: numfmtCell.pattern,
+						locale: this._sheetsNumfmtCellContentController.getLocale(context.workbook),
+						dateSystem: context.workbook.getDateSystem()
+					});
+					if (canonicalValue != null) return next && next({
+						...rawCell,
+						v: canonicalValue
+					});
+				}
+				switch (getPatternType(numfmtCell.pattern)) {
+					/**
+					* For scientific, currency, grouped and number format, the editor should display the raw number value without format, unlike the cell render which display the formatted value.
+					*/
+					case "scientific":
+					case "currency":
+					case "grouped":
+					case "number": {
+						const cell = { ...context.worksheet.getCellRaw(row, col) };
+						if ((cell === null || cell === void 0 ? void 0 : cell.t) === CellValueType.NUMBER && isRealNum(cell.v)) cell.v = stripErrorMargin(Number(cell.v));
+						return next && next(cell);
+					}
+					/**
+					* For percent format, the editor should display the full percent value, unlike the cell render which display the limited decimal places.
+					* e.g. { v: 1.001234567, t: 2, s: { n: { pattern: '0.00%' } } } should display as '100.12%' in cell render, but when edit this cell, the editor should display '100.1234567%' rather than '100.12%'.
+					* If the editor also display '100.12%', will lose precision when before edit.
+					*/
+					case "percent": {
+						const cell = { ...context.worksheet.getCellRaw(row, col) };
+						if ((cell === null || cell === void 0 ? void 0 : cell.t) === CellValueType.NUMBER && isRealNum(cell.v)) {
+							cell.v = `${stripErrorMargin(Number(cell.v) * 100)}%`;
+							cell.isPercentFormat = true;
+						}
+						return next && next(cell);
+					}
+					default: return next && next(value);
+				}
+			}
+			return next(value);
+		} })));
+	}
+	/**
+	* Process the  values after  edit
+	* @private
+	* @memberof NumfmtService
+	*/
+	_initInterceptorEditorEnd() {
+		this.disposeWithMe(toDisposable(this._sheetInterceptorService.writeCellInterceptor.intercept(AFTER_CELL_EDIT, { handler: (value, context, next) => {
+			var _value$p, _value$p2;
+			if (!(value === null || value === void 0 ? void 0 : value.v) && !(value === null || value === void 0 ? void 0 : value.p)) return next(value);
+			this._collectEffectMutation.clean();
+			const currentNumfmtValue = this._numfmtService.getValue(context.unitId, context.subUnitId, context.row, context.col);
+			const originCell = context.worksheet.getCellRaw(context.row, context.col);
+			if (isTextFormat(currentNumfmtValue === null || currentNumfmtValue === void 0 ? void 0 : currentNumfmtValue.pattern) || value.t === CellValueType.FORCE_STRING) return next(value);
+			const body = (_value$p = value.p) === null || _value$p === void 0 ? void 0 : _value$p.body;
+			const content = (value === null || value === void 0 || (_value$p2 = value.p) === null || _value$p2 === void 0 || (_value$p2 = _value$p2.body) === null || _value$p2 === void 0 ? void 0 : _value$p2.dataStream) ? value.p.body.dataStream.replace(/\r\n$/, "") : String(value.v);
+			const locale = this._sheetsNumfmtCellContentController.getLocale(context.workbook);
+			const dateSystem = context.workbook.getDateSystem();
+			const numfmtInfo = getNumfmtParseValueFilter(content, {
+				locale,
+				dateSystem
+			});
+			if (body) if (!canConvertRichTextToNumfmt(body)) return next(value);
+			else {
+				const { dataStream } = body;
+				const dataStreamWithoutEnd = dataStream.replace(/\r\n$/, "");
+				const num = Number(dataStreamWithoutEnd);
+				if (Number.isNaN(num) && !numfmtInfo) return next(value);
+			}
+			if ((currentNumfmtValue === null || currentNumfmtValue === void 0 ? void 0 : currentNumfmtValue.pattern) && (originCell === null || originCell === void 0 ? void 0 : originCell.t) === CellValueType.NUMBER && isRealNum(originCell.v)) {
+				const temporalValue = parseTemporalEditorValue({
+					content,
+					originalSerial: Number(originCell.v),
+					pattern: currentNumfmtValue.pattern,
+					locale,
+					dateSystem
+				});
+				if (temporalValue != null) return next({
+					...value,
+					p: void 0,
+					v: stripErrorMargin(temporalValue, 16),
+					t: CellValueType.NUMBER
+				});
+			}
+			if (numfmtInfo) {
+				if (!numfmtInfo.z && !(currentNumfmtValue === null || currentNumfmtValue === void 0 ? void 0 : currentNumfmtValue.pattern) && (originCell === null || originCell === void 0 ? void 0 : originCell.t) !== CellValueType.STRING && (originCell === null || originCell === void 0 ? void 0 : originCell.t) !== CellValueType.FORCE_STRING && willLoseNumericPrecision(content)) return next({
+					...value,
+					p: void 0,
+					v: content,
+					t: CellValueType.FORCE_STRING
+				});
+				/**
+				* Only when the content has number format pattern but the current cell has no pattern, or the pattern type is different, need to update the number format.
+				* Different currency symbols also should not be updated in Excel.
+				*/
+				if (numfmtInfo.z && (!(currentNumfmtValue === null || currentNumfmtValue === void 0 ? void 0 : currentNumfmtValue.pattern) || getPatternType(numfmtInfo.z) !== getPatternType(currentNumfmtValue.pattern))) this._collectEffectMutation.add(context.unitId, context.subUnitId, context.row, context.col, { pattern: numfmtInfo.z });
+				const v = stripErrorMargin(Number(numfmtInfo.v), 16);
+				return next({
+					...value,
+					p: void 0,
+					v,
+					t: CellValueType.NUMBER
+				});
+			}
+			return next(value);
+		} })));
+	}
+	_initInterceptorCommands() {
+		const self = this;
+		this.disposeWithMe(this._sheetInterceptorService.interceptCommand({ getMutations(command) {
+			switch (command.id) {
+				case SetRangeValuesCommand.id: {
+					var _workbook$getActiveSh;
+					const workbook = self._univerInstanceService.getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+					const unitId = workbook.getUnitId();
+					const subUnitId = (_workbook$getActiveSh = workbook.getActiveSheet()) === null || _workbook$getActiveSh === void 0 ? void 0 : _workbook$getActiveSh.getSheetId();
+					if (!subUnitId) return {
+						redos: [],
+						undos: []
+					};
+					const list = self._collectEffectMutation.getEffects();
+					self._collectEffectMutation.clean();
+					if (!list.length) return {
+						redos: [],
+						undos: []
+					};
+					const cells = list.filter((item) => {
+						var _item$value;
+						return !!((_item$value = item.value) === null || _item$value === void 0 ? void 0 : _item$value.pattern);
+					}).map((item) => ({
+						row: item.row,
+						col: item.col,
+						pattern: item.value.pattern
+					}));
+					const removeCells = list.filter((item) => {
+						var _item$value2;
+						return !((_item$value2 = item.value) === null || _item$value2 === void 0 ? void 0 : _item$value2.pattern);
+					}).map((item) => ({
+						startRow: item.row,
+						endColumn: item.col,
+						startColumn: item.col,
+						endRow: item.row
+					}));
+					const redos = [];
+					const undos = [];
+					if (cells.length) {
+						const redo = {
+							id: SetNumfmtMutation.id,
+							params: transformCellsToRange(unitId, subUnitId, cells)
+						};
+						redos.push(redo);
+						undos.push(...factorySetNumfmtUndoMutation(self._injector, redo.params));
+					}
+					if (removeCells.length) {
+						const redo = {
+							id: RemoveNumfmtMutation.id,
+							params: {
+								unitId,
+								subUnitId,
+								ranges: removeCells
+							}
+						};
+						redos.push(redo);
+						undos.push(...factoryRemoveNumfmtUndoMutation(self._injector, redo.params));
+					}
+					return {
+						redos,
+						undos: undos.reverse()
+					};
+				}
+			}
+			return {
+				redos: [],
+				undos: []
+			};
+		} }));
+	}
+	dispose() {
+		super.dispose();
+		this._collectEffectMutation.clean();
+	}
+};
+NumfmtEditorController = __decorate([
+	__decorateParam(0, Inject(SheetInterceptorService)),
+	__decorateParam(1, Inject(INumfmtService)),
+	__decorateParam(2, Inject(IUniverInstanceService)),
+	__decorateParam(3, Inject(Injector)),
+	__decorateParam(4, Inject(SheetsNumfmtCellContentController)),
+	__decorateParam(5, Optional(IEditorBridgeService))
+], NumfmtEditorController);
+function canConvertRichTextToNumfmt(body) {
+	const { textRuns = [], paragraphs = [], customRanges, customBlocks = [] } = body;
+	const richTextStyle = ["va"];
+	return !(textRuns.some((textRun) => {
+		return Boolean(textRun.ts && Object.keys(textRun.ts).some((property) => {
+			return richTextStyle.includes(property);
+		}));
+	}) || paragraphs.some((paragraph) => paragraph.bullet) || paragraphs.length >= 2 || Boolean(customRanges === null || customRanges === void 0 ? void 0 : customRanges.length) || customBlocks.length > 0);
+}
+
+//#endregion
+//#region src/menu/numfmt.menu.controller.ts
+/**
+* Copyright 2023-present DreamNum Co., Ltd.
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
+let NumfmtMenuController = class NumfmtMenuController extends Disposable {
+	constructor(_menuManagerService) {
+		super();
+		this._menuManagerService = _menuManagerService;
+		this._initMenu();
+	}
+	_initMenu() {
+		this._menuManagerService.mergeMenu(menuSchema);
+	}
+};
+NumfmtMenuController = __decorate([__decorateParam(0, IMenuManagerService)], NumfmtMenuController);
+
+//#endregion
+//#region src/plugin.ts
+let UniverSheetsNumfmtUIPlugin = class UniverSheetsNumfmtUIPlugin extends Plugin {
+	constructor(_config = defaultPluginConfig, _injector, _configService, _renderManagerService) {
+		super();
+		this._config = _config;
+		this._injector = _injector;
+		this._configService = _configService;
+		this._renderManagerService = _renderManagerService;
+		const { menu, ...rest } = merge({}, defaultPluginConfig, this._config);
+		if (menu) this._configService.setConfig("menu", menu, { merge: true });
+		this._configService.setConfig(SHEETS_NUMFMT_UI_PLUGIN_CONFIG_KEY, rest);
+	}
+	onStarting() {
+		this._injector.add([ComponentsController]);
+		this._injector.get(ComponentsController);
+		registerDependencies(this._injector, [
+			[SheetNumfmtUIController],
+			[NumfmtEditorController],
+			[UserHabitController],
+			[NumfmtMenuController],
+			[NumfmtRepeatLastActionController]
+		]);
+	}
+	onRendered() {
+		this._registerRenderModules();
+		touchDependencies(this._injector, [
+			[SheetNumfmtUIController],
+			[NumfmtEditorController],
+			[NumfmtMenuController],
+			[NumfmtRepeatLastActionController]
+		]);
+	}
+	_registerRenderModules() {
+		[[NumfmtAlertRenderController]].forEach((m) => {
+			this.disposeWithMe(this._renderManagerService.registerRenderModule(UniverInstanceType.UNIVER_SHEET, m));
+		});
+	}
+};
+_defineProperty(UniverSheetsNumfmtUIPlugin, "pluginName", "SHEET_NUMFMT_UI_PLUGIN");
+_defineProperty(UniverSheetsNumfmtUIPlugin, "packageName", name);
+_defineProperty(UniverSheetsNumfmtUIPlugin, "version", version);
+_defineProperty(UniverSheetsNumfmtUIPlugin, "type", UniverInstanceType.UNIVER_SHEET);
+UniverSheetsNumfmtUIPlugin = __decorate([
+	DependentOn(UniverRenderEnginePlugin, UniverSheetsPlugin, UniverSheetsNumfmtPlugin, UniverSheetsUIPlugin),
+	__decorateParam(1, Inject(Injector)),
+	__decorateParam(2, IConfigService),
+	__decorateParam(3, IRenderManagerService)
+], UniverSheetsNumfmtUIPlugin);
+
+//#endregion
+export { menuSchema as SheetsNumfmtUIMenuSchema, UniverSheetsNumfmtUIPlugin };

@@ -1,0 +1,119 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { DocumentDataModel, IDocDrawingBase, JSONXActions } from '@univerjs/core';
+import type { IDocumentLayoutInvalidation, IRenderContext, IRenderModule } from '@univerjs/engine-render';
+import { ICommandService, ILogService, IUniverInstanceService, RxDisposable, ThemeService } from '@univerjs/core';
+import { DocLayoutExecutorService, DocSelectionManagerService, DocSkeletonManagerService } from '@univerjs/docs';
+import { IRenderManagerService } from '@univerjs/engine-render';
+import { DocLayoutInteractionService } from '../../services/doc-layout-interaction.service';
+import { DocPageLayoutService } from '../../services/doc-page-layout.service';
+import { DocViewScaleService } from '../../services/doc-view-scale';
+import { IEditorService } from '../../services/editor/editor-manager.service';
+import { DocSelectionRenderService } from '../../services/selection/doc-selection-render.service';
+/**
+ * Returns false only when a mutation is proven not to affect text layout.
+ *
+ * WRAP_NONE drawings are positioned independently from text, so moving, resizing,
+ * rotating, or switching them between front/behind text must refresh drawing
+ * geometry without starting a document layout generation. Accessibility metadata
+ * never participates in layout, regardless of wrapping mode. Every uncertain case
+ * remains conservative and reflows.
+ */
+export declare function doesDocMutationRequireLayout(actions: JSONXActions, drawings: Record<string, IDocDrawingBase> | undefined): boolean;
+export declare class DocRenderController extends RxDisposable implements IRenderModule {
+    private readonly _context;
+    private readonly _commandService;
+    private readonly _docSelectionRenderService;
+    private readonly _docSkeletonManagerService;
+    private readonly _editorService;
+    private readonly _renderManagerService;
+    private readonly _univerInstanceService;
+    private readonly _docPageLayoutService;
+    private readonly _textSelectionManagerService;
+    private readonly _docViewScaleService;
+    private readonly _themeService;
+    private readonly _docLayoutExecutorService;
+    private readonly _docLayoutInteractionService;
+    private readonly _logService;
+    private _changesetRenderScheduled;
+    private _pendingChangesetLayoutRequest;
+    private readonly _layoutCoordinator;
+    private _layoutRequestId;
+    private _workerHandoffTimer;
+    private _workerPresentationResumeTimer;
+    private _pendingWorkerHandoff;
+    private _pendingWorkerEditBatch;
+    private _latestLayoutRestart;
+    private _pendingImeLayoutRestart;
+    private _isImeComposing;
+    private _recoveryViewportAnchor;
+    private _pendingMaterializedPageRange;
+    private _isMaterializingPages;
+    private _reservedLayoutWidth;
+    private _reservedLayoutHeight;
+    constructor(_context: IRenderContext<DocumentDataModel>, _commandService: ICommandService, _docSelectionRenderService: DocSelectionRenderService, _docSkeletonManagerService: DocSkeletonManagerService, _editorService: IEditorService, _renderManagerService: IRenderManagerService, _univerInstanceService: IUniverInstanceService, _docPageLayoutService: DocPageLayoutService, _textSelectionManagerService: DocSelectionManagerService, _docViewScaleService: DocViewScaleService, _themeService: ThemeService, _docLayoutExecutorService: DocLayoutExecutorService, _docLayoutInteractionService: DocLayoutInteractionService, _logService: ILogService);
+    private _scheduleVisualFrame;
+    reRender(unitId: string, anchor?: number, invalidation?: IDocumentLayoutInvalidation, priorityAnchor?: number, refreshMainSelection?: boolean, preserveInactiveViewportAnchor?: boolean, deferForeground?: boolean): void;
+    dispose(): void;
+    refreshCustomBlockPresentation(unitId: string): boolean;
+    private _scheduleLayout;
+    private _scheduleInitialInteractionWindow;
+    private _prepareReservedLayoutExtent;
+    private _scheduleMainInteractionWindow;
+    private _refreshSelectionAfterForegroundLayout;
+    private _resolveContinuousForegroundEndOffset;
+    private _createLayoutCallbacks;
+    private _handleLayoutProgress;
+    private _applyLayoutPublication;
+    private _completeLayoutPresentation;
+    private _scheduleWorkerLayout;
+    private _handleWorkerLayoutFailure;
+    private _accumulateWorkerEditBatch;
+    private _initInteractionLayoutProtection;
+    private _queueWorkerHandoff;
+    private _startWorkerHandoffTimer;
+    private _deferWorkerHandoff;
+    private _cancelWorkerHandoff;
+    private _resolveProtectedRange;
+    private _resolveMaterializedPageRange;
+    private _queueMaterializedPageRange;
+    private _materializePendingPageRanges;
+    private _captureViewportAnchor;
+    private _restoreRecoveryViewportAnchor;
+    private _restoreViewportAnchor;
+    private _addNewRender;
+    private _initViewportInteraction;
+    private _shouldEnableHorizontalScrollBar;
+    private _addComponent;
+    private _initRenderRefresh;
+    private _create;
+    private _initCommandListener;
+    private _scheduleChangesetRender;
+    private _initThemeListener;
+    private _markDocumentRenderDirty;
+    private _refreshPagePositionAndSelection;
+    private _getFocusedSelectionInfo;
+    private _getActiveEditingRange;
+    private _getActiveRange;
+    private _captureCompletionViewportAnchor;
+    private _refreshPagePosition;
+    private _recalculateSizeBySkeleton;
+    private _measureDocumentExtent;
+    private _reserveDocumentExtent;
+    private _syncCanvasBackground;
+    private _getEditorBackgroundConfig;
+    private _isEditorRenderUnit;
+}

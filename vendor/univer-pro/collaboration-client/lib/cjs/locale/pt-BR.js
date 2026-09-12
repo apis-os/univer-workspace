@@ -1,97 +1,48 @@
-const _0x4498ed = _0x109f;
-function _0x4f10() {
-  const _0x34e6f7 = [
-    "3730120GXJmZx",
-    "O\x20documento\x20atingiu\x20o\x20limite\x20de\x20colaboração.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-    "Offline,\x20as\x20edições\x20serão\x20salvas\x20localmente",
-    "Sincronizando\x20dados\x20do\x20servidor...",
-    "Os\x20privilégios\x20de\x20edição\x20foram\x20revogados\x20porque\x20a\x20sala\x20de\x20colaboração\x20foi\x20fechada.",
-    "680eNDpDG",
-    "Sincronizado",
-    "exports",
-    "529800ZxRjCX",
-    "Erro\x20de\x20Autenticação",
-    "Conflitos\x20de\x20edição",
-    "5677091bBYojL",
-    "20DcHyjI",
-    "Você\x20abriu\x20o\x20mesmo\x20arquivo\x20em\x20outra\x20aba.\x20Em\x20caso\x20de\x20perda\x20de\x20dados,\x20você\x20não\x20poderá\x20editar\x20nesta\x20aba.",
-    "752686aRqyXq",
-    "Suas\x20ações\x20estão\x20em\x20conflito\x20com\x20as\x20permissões\x20do\x20servidor.\x20Salve\x20suas\x20edições\x20locais\x20em\x20outro\x20lugar,\x20pois\x20elas\x20serão\x20descartadas\x20após\x20atualizar\x20a\x20página.",
-    "Falha\x20na\x20conexão.\x20Tentaremos\x20novamente\x20em\x20breve.",
-    "6456843kPKYEA",
-    "Conflito\x20de\x20Colaboração",
-    "O\x20número\x20de\x20documentos\x20colaborativos\x20excede\x20o\x20limite.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-    "Falha\x20ao\x20entrar\x20na\x20colaboração.\x20Tente\x20novamente\x20mais\x20tarde.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-    "73364nAEtMR",
-    "Clique\x20para\x20Reconectar",
-    "O\x20servidor\x20não\x20está\x20respondendo\x20à\x20sua\x20solicitação\x20de\x20colaboração.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-    "141mKWZjZ",
-    "Sincronizando...",
-    "Há\x20um\x20conflito\x20entre\x20sua\x20cópia\x20local\x20e\x20a\x20cópia\x20no\x20servidor.\x20Salve\x20suas\x20edições\x20locais,\x20pois\x20elas\x20serão\x20perdidas\x20ao\x20recarregar\x20a\x20página.",
-    "Sem\x20permissão\x20para\x20colaborar.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-    "43266HqocNe",
-  ];
-  _0x4f10 = function () {
-    return _0x34e6f7;
-  };
-  return _0x4f10();
-}
-(function (_0x15f0b9, _0x27b576) {
-  const _0x1d12f8 = _0x109f,
-    _0x37e314 = _0x15f0b9();
-  while (!![]) {
-    try {
-      const _0x4a1691 =
-        parseInt(_0x1d12f8(0xd4)) / 0x1 +
-        -parseInt(_0x1d12f8(0xce)) / 0x2 +
-        (-parseInt(_0x1d12f8(0xde)) / 0x3) *
-          (-parseInt(_0x1d12f8(0xdb)) / 0x4) +
-        (-parseInt(_0x1d12f8(0xcb)) / 0x5) *
-          (-parseInt(_0x1d12f8(0xc5)) / 0x6) +
-        -parseInt(_0x1d12f8(0xd1)) / 0x7 +
-        parseInt(_0x1d12f8(0xc6)) / 0x8 +
-        (-parseInt(_0x1d12f8(0xd7)) / 0x9) * (parseInt(_0x1d12f8(0xd2)) / 0xa);
-      if (_0x4a1691 === _0x27b576) break;
-      else _0x37e314["push"](_0x37e314["shift"]());
-    } catch (_0x323daf) {
-      _0x37e314["push"](_0x37e314["shift"]());
-    }
-  }
-})(_0x4f10, 0x867fb);
-function _0x109f(_0x410a61, _0x5cf39c) {
-  _0x410a61 = _0x410a61 - 0xc3;
-  const _0x4f1015 = _0x4f10();
-  let _0x109fe0 = _0x4f1015[_0x410a61];
-  return _0x109fe0;
-}
 const e = {
   "collaboration-client": {
-    collabClient: { tooltip: { reconnect: _0x4498ed(0xdc) } },
+    collabClient: { tooltip: { reconnect: "Clique para Reconectar" } },
     collabStatus: {
-      fetchMiss: _0x4498ed(0xc9),
-      conflict: _0x4498ed(0xd0),
+      fetchMiss: "Sincronizando dados do servidor...",
+      conflict: "Conflitos de edição",
       notCollab: "Arquivo\x20local",
-      synced: _0x4498ed(0xcc),
-      syncing: _0x4498ed(0xdf),
-      offline: _0x4498ed(0xc8),
+      synced: "Sincronizado",
+      syncing: "Sincronizando...",
+      offline: "Offline, as edições serão salvas localmente",
     },
     session: {
       "connection-failed":
         "Falha\x20na\x20conexão.\x20Verifique\x20sua\x20rede.",
-      "will-retry": _0x4498ed(0xd6),
-      "room-full": _0x4498ed(0xc7),
-      "join-failed": _0x4498ed(0xda),
+      "will-retry": "Falha na conexão. Tentaremos novamente em breve.",
+      "room-full":
+        "O documento atingiu o limite de colaboração. Suas edições serão salvas localmente.",
+      "join-failed":
+        "Falha ao entrar na colaboração. Tente novamente mais tarde. Suas edições serão salvas localmente.",
       "room-not-exists":
         "Falha\x20ao\x20entrar\x20na\x20colaboração.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-      "room-permission-denied": _0x4498ed(0xc4),
-      "room-cnt-exceeds": _0x4498ed(0xd9),
-      "collaboration-timeout": _0x4498ed(0xdd),
+      "room-permission-denied":
+        "Sem permissão para colaborar. Suas edições serão salvas localmente.",
+      "room-cnt-exceeds":
+        "O número de documentos colaborativos excede o limite. Suas edições serão salvas localmente.",
+      "collaboration-timeout":
+        "O servidor não está respondendo à sua solicitação de colaboração. Suas edições serão salvas localmente.",
     },
-    conflict: { title: _0x4498ed(0xd8), content: _0x4498ed(0xc3) },
-    permission: { title: _0x4498ed(0xcf), content: _0x4498ed(0xd5) },
+    conflict: {
+      title: "Conflito de Colaboração",
+      content:
+        "Há um conflito entre sua cópia local e a cópia no servidor. Salve suas edições locais, pois elas serão perdidas ao recarregar a página.",
+    },
+    permission: {
+      title: "Erro de Autenticação",
+      content:
+        "Suas ações estão em conflito com as permissões do servidor. Salve suas edições locais em outro lugar, pois elas serão descartadas após atualizar a página.",
+    },
     collaboration: {
-      "single-unit": { warning: _0x4498ed(0xd3) },
-      closeRoom: _0x4498ed(0xca),
+      "single-unit": {
+        warning:
+          "Você abriu o mesmo arquivo em outra aba. Em caso de perda de dados, você não poderá editar nesta aba.",
+      },
+      closeRoom:
+        "Os privilégios de edição foram revogados porque a sala de colaboração foi fechada.",
     },
     auth: {
       needGotoLoginAlert:
@@ -99,4 +50,4 @@ const e = {
     },
   },
 };
-module[_0x4498ed(0xcd)] = e;
+module.exports = e;

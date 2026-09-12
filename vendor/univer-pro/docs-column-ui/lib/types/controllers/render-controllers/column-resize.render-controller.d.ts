@@ -1,0 +1,62 @@
+import type { DocumentDataModel } from '@univerjs/core';
+import type { DocumentSkeleton, IDocumentSkeletonColumnGroup, IRenderContext, IRenderModule, Scene } from '@univerjs/engine-render';
+import type { IDocsColumnResizeHandle } from '../../services/resize-handle';
+import type { IDocsColumnResizePoint } from '../../services/resize-interaction';
+import { Disposable, ICommandService, IPermissionService, IUniverInstanceService } from '@univerjs/core';
+import { DocSelectionManagerService, DocSkeletonManagerService } from '@univerjs/docs';
+import { DocParagraphMenuService } from '@univerjs/docs-ui';
+export declare class DocColumnResizeRenderController extends Disposable implements IRenderModule {
+    private readonly _context;
+    private readonly _docSkeletonManagerService;
+    private readonly _commandService;
+    private readonly _univerInstanceService;
+    private readonly _docSelectionManagerService;
+    private readonly _docParagraphMenuService;
+    private readonly _permissionService;
+    private _resizeHandles;
+    private _columnGroups;
+    private _resizeDragState;
+    private _resizeDragDelta;
+    private _hoveredResizeHandle;
+    private _hoveredColumnGroupId;
+    private _canvasPointerEventsInitialized;
+    private _canvasPointerEventsRetryCount;
+    constructor(_context: IRenderContext<DocumentDataModel>, _docSkeletonManagerService: DocSkeletonManagerService, _commandService: ICommandService, _univerInstanceService: IUniverInstanceService, _docSelectionManagerService: DocSelectionManagerService, _docParagraphMenuService: DocParagraphMenuService, _permissionService: IPermissionService);
+    getResizeHandles(): IDocsColumnResizeHandle[];
+    resizeColumnFromHandle(handle: IDocsColumnResizeHandle, delta: number): Promise<boolean>;
+    startResizeDragAtPoint(point: IDocsColumnResizePoint): boolean;
+    releaseResizeDragAtPoint(point: IDocsColumnResizePoint, commit: boolean): Promise<boolean>;
+    private _initPointerEvents;
+    private _initCanvasPointerEvents;
+    private _retryInitCanvasPointerEvents;
+    private _updateHoverAtPoint;
+    private _refreshColumnResizeState;
+    private _initCanvasRender;
+    private _setResizeCursor;
+    private _setDefaultCursor;
+    private _cancelResizeInteraction;
+    private _canEditColumnGroup;
+    private _retainActiveColumnHoverOnLeave;
+    private _resolveActiveColumnGroupId;
+    private _resolveActiveParagraphMenuColumnGroupId;
+    private _resolveSelectionColumnGroupId;
+    private _resolveColumnGroupIdByRange;
+    private _resolveColumnGroupIdByOffset;
+    private _makeDirty;
+    private _consumePointerEvent;
+    private _getDocumentPageMarginFallback;
+}
+export declare function collectColumnResizeHandles(skeleton: DocumentSkeleton | null | undefined): IDocsColumnResizeHandle[];
+interface IDocsColumnPageMarginFallback {
+    marginLeft?: number;
+    marginTop?: number;
+    pageLeft?: number;
+    pageTop?: number;
+}
+export declare function collectColumnResizeState(skeleton: DocumentSkeleton | null | undefined, pageMarginFallback?: IDocsColumnPageMarginFallback): {
+    columnGroups: Map<string, IDocumentSkeletonColumnGroup>;
+    handles: IDocsColumnResizeHandle[];
+};
+export declare function getDocColumnPointerEventTarget(context: IRenderContext): import("@univerjs/engine-render").BaseObject | Scene;
+export declare function transformOffsetToDocumentPoint(offsetX: number, offsetY: number, scene: Scene): IDocsColumnResizePoint;
+export {};

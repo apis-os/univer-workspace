@@ -1,0 +1,31 @@
+import type { IWordCloudEncodedWord } from '../../types';
+import type { IBoxFootprint, IWordCloudLayoutGrid } from '../types/layout';
+import type { ICollisionCandidate, ICollisionEngine, ICollisionEngineStats, ICollisionTextStyle } from './engine';
+export declare class BoxShapeEngine implements ICollisionEngine<IBoxFootprint> {
+    private readonly _grid;
+    private readonly _shapeGrid;
+    readonly collisionShape: "box";
+    private readonly _footprintCache;
+    private readonly _placed;
+    private readonly _spatialIndex;
+    private readonly _blockedCenters;
+    private readonly _spatialCellSize;
+    private readonly _shapeIsFull;
+    private _nextSpatialQueryId;
+    private readonly _stats;
+    private _lastShapeCheck;
+    constructor(_grid: IWordCloudLayoutGrid, _shapeGrid: Uint8Array);
+    createFootprint(_word: IWordCloudEncodedWord, style: ICollisionTextStyle, rotation: number): IBoxFootprint;
+    getBounds(footprint: IBoxFootprint, candidate: ICollisionCandidate): import("../../types").IWordCloudBounds;
+    isInsideLayout(footprint: IBoxFootprint, candidate: ICollisionCandidate, width: number, height: number): boolean;
+    canPlace(footprint: IBoxFootprint, candidate: ICollisionCandidate): boolean;
+    isShapeBlocked(footprint: IBoxFootprint, candidate: ICollisionCandidate): boolean;
+    commit(footprint: IBoxFootprint, candidate: ICollisionCandidate): void;
+    getStats(): ICollisionEngineStats;
+    private isBoxInsideShape;
+    private rememberShapeCheck;
+    private getRememberedShapeCheck;
+    private visitNearby;
+    private insertSpatial;
+    private isCandidateCenterBlocked;
+}

@@ -1,0 +1,104 @@
+//#region src/locale/it-IT.ts
+const locale = { "drawing-ui": {
+	"image-cropper": { error: "Impossibile ritagliare oggetti non immagine." },
+	objectListPanel: {
+		title: "Livelli",
+		empty: "Nessun oggetto",
+		showAll: "Mostra tutto",
+		hideAll: "Nascondi tutto",
+		lockAll: "Blocca tutto",
+		unlockAll: "Sblocca tutto",
+		moveForward: "Porta avanti",
+		moveBackward: "Manda indietro",
+		close: "Chiudi",
+		show: "Mostra",
+		hide: "Nascondi",
+		lock: "Blocca",
+		unlock: "Sblocca",
+		lockHint: "Blocca per evitare selezioni accidentali",
+		unlockHint: "Bloccato. Fai clic per sbloccare",
+		name: "Nome",
+		nameInput: "Nome oggetto",
+		description: "Descrizione",
+		descriptionPlaceholder: "Aggiungi descrizione",
+		details: "Dettagli",
+		locate: "Individua",
+		expand: "Espandi",
+		collapse: "Comprimi",
+		dragToReorder: "Trascina per riordinare",
+		search: "Cerca oggetti",
+		filterAll: "Tutti",
+		filterHidden: "Nascosti",
+		filterLocked: "Bloccati",
+		sectionCanvas: "Livello canvas",
+		sectionFloating: "Livello mobile",
+		typeNames: {
+			object: "Oggetto",
+			shape: "Forma",
+			connector: "Connettore",
+			image: "Immagine",
+			chart: "Grafico",
+			table: "Tabella",
+			smartArt: "SmartArt",
+			video: "Video",
+			group: "Gruppo",
+			unit: "Unità",
+			dom: "DOM",
+			text: "Testo",
+			placeholder: "Segnaposto",
+			container: "Contenitore"
+		},
+		noSelection: "Seleziona un oggetto per modificarne i dettagli"
+	},
+	"image-panel": {
+		arrange: {
+			title: "Disponi",
+			forward: "Porta avanti",
+			backward: "Porta indietro",
+			front: "Porta in primo piano",
+			back: "Porta in secondo piano"
+		},
+		transform: {
+			title: "Trasforma",
+			rotate: "Ruota (°)",
+			x: "X (px)",
+			y: "Y (px)",
+			width: "Larghezza (px)",
+			height: "Altezza (px)",
+			lock: "Blocca proporzioni (%)"
+		},
+		crop: {
+			title: "Ritaglia",
+			start: "Inizia ritaglio",
+			mode: "Libero"
+		},
+		group: {
+			title: "Raggruppa",
+			group: "Raggruppa",
+			unGroup: "Separa"
+		},
+		align: {
+			title: "Allinea",
+			default: "Seleziona tipo allineamento",
+			left: "Allinea a sinistra",
+			center: "Allinea al centro",
+			right: "Allinea a destra",
+			top: "Allinea in alto",
+			middle: "Allinea al centro",
+			bottom: "Allinea in basso",
+			horizon: "Distribuisci orizzontalmente ",
+			vertical: "Distribuisci verticalmente "
+		},
+		null: "Nessun oggetto selezionato"
+	},
+	"image-text-wrap": {
+		square: "Quadrato",
+		topAndBottom: "Superiore e inferiore",
+		inline: "In linea con il testo",
+		behindText: "Dietro il testo",
+		inFrontText: "Davanti al testo"
+	}
+} };
+
+//#endregion
+export { locale as default };

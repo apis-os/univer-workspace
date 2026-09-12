@@ -1,103 +1,54 @@
-const _0xa5005b = _0x34a8;
-(function (_0x1e279a, _0x45aafc) {
-  const _0x5a60e5 = _0x34a8,
-    _0x4ddf26 = _0x1e279a();
-  while (!![]) {
-    try {
-      const _0x43976f =
-        -parseInt(_0x5a60e5(0xf6)) / 0x1 +
-        -parseInt(_0x5a60e5(0xf7)) / 0x2 +
-        (-parseInt(_0x5a60e5(0xf1)) / 0x3) *
-          (-parseInt(_0x5a60e5(0xf0)) / 0x4) +
-        parseInt(_0x5a60e5(0x106)) / 0x5 +
-        (-parseInt(_0x5a60e5(0xee)) / 0x6) *
-          (parseInt(_0x5a60e5(0x102)) / 0x7) +
-        (parseInt(_0x5a60e5(0xf2)) / 0x8) * (parseInt(_0x5a60e5(0xfa)) / 0x9) +
-        parseInt(_0x5a60e5(0xf3)) / 0xa;
-      if (_0x43976f === _0x45aafc) break;
-      else _0x4ddf26["push"](_0x4ddf26["shift"]());
-    } catch (_0x27bed5) {
-      _0x4ddf26["push"](_0x4ddf26["shift"]());
-    }
-  }
-})(_0x1c6c, 0x458aa);
 const e = {
   "collaboration-client": {
-    collabClient: { tooltip: { reconnect: _0xa5005b(0xf4) } },
+    collabClient: { tooltip: { reconnect: "Cliquez pour reconnecter" } },
     collabStatus: {
-      fetchMiss: _0xa5005b(0xf5),
-      conflict: _0xa5005b(0x104),
-      notCollab: _0xa5005b(0x101),
+      fetchMiss: "Synchronisation des données du serveur...",
+      conflict: "Conflits de modification",
+      notCollab: "Fichier local",
       synced: "Synchronisé",
-      syncing: _0xa5005b(0xfb),
-      offline: _0xa5005b(0x107),
+      syncing: "Synchronisation...",
+      offline: "Hors ligne, les modifications seront enregistrées localement",
     },
     session: {
-      "connection-failed": _0xa5005b(0xef),
-      "will-retry": _0xa5005b(0xfe),
-      "room-full": _0xa5005b(0xfc),
-      "join-failed": _0xa5005b(0xed),
-      "room-not-exists": _0xa5005b(0xec),
+      "connection-failed":
+        "Échec de la connexion. Veuillez vérifier votre réseau.",
+      "will-retry":
+        "Échec de la connexion. Une nouvelle tentative aura lieu dans un instant.",
+      "room-full":
+        "Ce document a atteint sa limite de collaboration. Vos modifications seront enregistrées localement.",
+      "join-failed":
+        "Échec de la connexion à la collaboration. Veuillez réessayer plus tard. Vos modifications seront enregistrées localement.",
+      "room-not-exists":
+        "Échec de la connexion à la collaboration. Vos modifications seront enregistrées localement.",
       "room-permission-denied":
         "Aucune\x20autorisation\x20de\x20collaboration.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
-      "room-cnt-exceeds": _0xa5005b(0xeb),
+      "room-cnt-exceeds":
+        "Le nombre de documents collaboratifs dépasse la limite. Vos modifications seront enregistrées localement.",
       "collaboration-timeout":
         "Le\x20serveur\x20ne\x20répond\x20pas\x20à\x20votre\x20demande\x20de\x20collaboration.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
     },
-    conflict: { title: _0xa5005b(0x103), content: _0xa5005b(0xf8) },
+    conflict: {
+      title: "Conflit de collaboration",
+      content:
+        "Il existe un conflit entre votre copie locale et la copie sur le serveur. Veuillez enregistrer vos modifications locales, car elles seront perdues lors du rechargement de la page.",
+    },
     permission: {
-      title: _0xa5005b(0x100),
+      title: "Erreur d'authentification",
       content:
         "Vos\x20actions\x20entrent\x20en\x20conflit\x20avec\x20les\x20autorisations\x20du\x20serveur.\x20Veuillez\x20enregistrer\x20vos\x20modifications\x20locales\x20ailleurs,\x20car\x20elles\x20seront\x20supprimées\x20après\x20l\x27actualisation\x20de\x20la\x20page.",
     },
     collaboration: {
-      "single-unit": { warning: _0xa5005b(0xff) },
-      closeRoom: _0xa5005b(0xf9),
+      "single-unit": {
+        warning:
+          "Vous avez ouvert le même fichier dans un autre onglet. Pour éviter toute perte de données, vous ne pouvez pas modifier dans cet onglet.",
+      },
+      closeRoom:
+        "Les privilèges d'édition ont été révoqués car la salle de collaboration a été fermée.",
     },
-    auth: { needGotoLoginAlert: _0xa5005b(0x105) },
+    auth: {
+      needGotoLoginAlert:
+        "Votre connexion a expiré. Cliquez sur OK pour vous reconnecter, ou sur Annuler pour enregistrer vos modifications locales.",
+    },
   },
 };
-function _0x34a8(_0x20bded, _0x51d34c) {
-  _0x20bded = _0x20bded - 0xeb;
-  const _0x1c6c2b = _0x1c6c();
-  let _0x34a8d6 = _0x1c6c2b[_0x20bded];
-  return _0x34a8d6;
-}
-function _0x1c6c() {
-  const _0x4cbeb4 = [
-    "Synchronisation\x20des\x20données\x20du\x20serveur...",
-    "312133rmEhVT",
-    "582638FatHFS",
-    "Il\x20existe\x20un\x20conflit\x20entre\x20votre\x20copie\x20locale\x20et\x20la\x20copie\x20sur\x20le\x20serveur.\x20Veuillez\x20enregistrer\x20vos\x20modifications\x20locales,\x20car\x20elles\x20seront\x20perdues\x20lors\x20du\x20rechargement\x20de\x20la\x20page.",
-    "Les\x20privilèges\x20d\x27édition\x20ont\x20été\x20révoqués\x20car\x20la\x20salle\x20de\x20collaboration\x20a\x20été\x20fermée.",
-    "279ytVVSU",
-    "Synchronisation...",
-    "Ce\x20document\x20a\x20atteint\x20sa\x20limite\x20de\x20collaboration.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
-    "exports",
-    "Échec\x20de\x20la\x20connexion.\x20Une\x20nouvelle\x20tentative\x20aura\x20lieu\x20dans\x20un\x20instant.",
-    "Vous\x20avez\x20ouvert\x20le\x20même\x20fichier\x20dans\x20un\x20autre\x20onglet.\x20Pour\x20éviter\x20toute\x20perte\x20de\x20données,\x20vous\x20ne\x20pouvez\x20pas\x20modifier\x20dans\x20cet\x20onglet.",
-    "Erreur\x20d\x27authentification",
-    "Fichier\x20local",
-    "56HdqpZA",
-    "Conflit\x20de\x20collaboration",
-    "Conflits\x20de\x20modification",
-    "Votre\x20connexion\x20a\x20expiré.\x20Cliquez\x20sur\x20OK\x20pour\x20vous\x20reconnecter,\x20ou\x20sur\x20Annuler\x20pour\x20enregistrer\x20vos\x20modifications\x20locales.",
-    "2194970NQvCTp",
-    "Hors\x20ligne,\x20les\x20modifications\x20seront\x20enregistrées\x20localement",
-    "Le\x20nombre\x20de\x20documents\x20collaboratifs\x20dépasse\x20la\x20limite.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
-    "Échec\x20de\x20la\x20connexion\x20à\x20la\x20collaboration.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
-    "Échec\x20de\x20la\x20connexion\x20à\x20la\x20collaboration.\x20Veuillez\x20réessayer\x20plus\x20tard.\x20Vos\x20modifications\x20seront\x20enregistrées\x20localement.",
-    "336954zwWBYX",
-    "Échec\x20de\x20la\x20connexion.\x20Veuillez\x20vérifier\x20votre\x20réseau.",
-    "515128iWxsyU",
-    "6YBsBEO",
-    "18328tnBBxD",
-    "5699870kLlZOb",
-    "Cliquez\x20pour\x20reconnecter",
-  ];
-  _0x1c6c = function () {
-    return _0x4cbeb4;
-  };
-  return _0x1c6c();
-}
-module[_0xa5005b(0xfd)] = e;
+module.exports = e;

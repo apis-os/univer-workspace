@@ -1,0 +1,10 @@
+import type { IAccessor } from '@univerjs/core';
+import type { IMenuButtonItem } from '@univerjs/ui';
+import { Observable } from 'rxjs';
+export declare const DOC_CHART_INSERT_MENU_ID: string;
+export declare const DOC_CHART_INSERT_BELOW_MENU_ID: string;
+export declare function getDocChartInsertDisabledObservable(accessor: IAccessor): Observable<boolean>;
+export declare function getDocChartInsertSelectionDisabledObservable(accessor: IAccessor): Observable<boolean>;
+export declare function DocChartInsertRibbonMenuItemFactory(accessor: IAccessor): IMenuButtonItem;
+export declare function DocChartInsertMenuItemFactory(accessor: IAccessor): IMenuButtonItem;
+export declare function DocChartInsertBelowMenuItemFactory(accessor: IAccessor): IMenuButtonItem;

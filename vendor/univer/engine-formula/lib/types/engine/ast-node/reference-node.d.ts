@@ -1,0 +1,80 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import { AstNodePromiseType } from '../../basics/common';
+import { IFormulaCurrentConfigService } from '../../services/current-data.service';
+import { IFormulaExternalReferenceDataLoader } from '../../services/external-reference-data-loader.service';
+import { IFunctionService } from '../../services/function.service';
+import { IFormulaRuntimeService } from '../../services/runtime.service';
+import { ISuperTableService } from '../../services/super-table.service';
+import { IFormulaUnitReferenceResolver } from '../../services/unit-reference-resolver.service';
+import { LexerNode } from '../analysis/lexer-node';
+import { ReferenceObjectType } from '../utils/value-object';
+import { BaseAstNode } from './base-ast-node';
+import { BaseAstNodeFactory } from './base-ast-node-factory';
+import { NodeType } from './node-type';
+interface ITableReferenceDescriptor {
+    unitQualifier: string;
+    tableName: string;
+    columnStruct: string | undefined;
+}
+type ReferenceNodeCurrentConfigService = Pick<IFormulaCurrentConfigService, 'getArrayFormulaCellData' | 'getArrayFormulaRange' | 'getSheetNameMap' | 'getUnitData' | 'getUnitStylesData'>;
+type ReferenceNodeRuntimeService = Pick<IFormulaRuntimeService, 'currentColumn' | 'currentRow' | 'currentSubUnitId' | 'currentUnitId' | 'getRuntimeArrayFormulaCellData' | 'getRuntimeFeatureCellData' | 'getUnitArrayFormula' | 'getUnitData'>;
+type ReferenceNodeSuperTableService = Pick<ISuperTableService, 'getTableMap' | 'getTableOptionMap'>;
+export declare class ReferenceNode extends BaseAstNode {
+    private _currentConfigService;
+    private _runtimeService;
+    private _referenceObjectType;
+    private _unitReferenceResolver;
+    private _superTableService;
+    private _externalReferenceDataLoader;
+    private _isPrepareMerge;
+    private _tableReference?;
+    private _refOffsetX;
+    private _refOffsetY;
+    constructor(_currentConfigService: ReferenceNodeCurrentConfigService, _runtimeService: ReferenceNodeRuntimeService, operatorString: string, _referenceObjectType: ReferenceObjectType, _unitReferenceResolver: IFormulaUnitReferenceResolver, _superTableService: ReferenceNodeSuperTableService, _externalReferenceDataLoader: IFormulaExternalReferenceDataLoader, _isPrepareMerge?: boolean, _tableReference?: ITableReferenceDescriptor | undefined);
+    get nodeType(): NodeType;
+    execute(): void;
+    executeAsync(): Promise<AstNodePromiseType>;
+    /**
+     * A1 ranges are represented as two ReferenceNodes under a `:` UnionNode.
+     * The qualified left node owns the external read, so include the right
+     * boundary and materialize the whole rectangular range in one request.
+     */
+    private _getExternalLoadToken;
+    private _configureReferenceObject;
+    setRefOffset(x?: number, y?: number): void;
+    getRefOffset(): {
+        x: number;
+        y: number;
+    };
+}
+export declare class ReferenceNodeFactory extends BaseAstNodeFactory {
+    private readonly _currentConfigService;
+    private readonly _formulaRuntimeService;
+    private readonly _functionService;
+    private readonly _superTableService;
+    private readonly _unitReferenceResolver;
+    private readonly _externalReferenceDataLoader;
+    constructor(_currentConfigService: IFormulaCurrentConfigService, _formulaRuntimeService: IFormulaRuntimeService, _functionService: IFunctionService, _superTableService: ISuperTableService, _unitReferenceResolver: IFormulaUnitReferenceResolver, _externalReferenceDataLoader: IFormulaExternalReferenceDataLoader);
+    get zIndex(): number;
+    checkAndCreateNodeType(param: LexerNode | string): ReferenceNode | undefined;
+    private _getTableMap;
+    private _getNode;
+    private _getTableReferenceNode;
+    private _checkTokenIsTableReference;
+    private _checkParentIsUnionOperator;
+}
+export {};

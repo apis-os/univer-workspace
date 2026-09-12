@@ -1,1 +1,6297 @@
-();import{BooleanNumber as _0x48a0b6,ColorKit as _0x3efc84,CommandType as _0x102086,DependentOn as _0x50dec6,Disposable as _0x8f71e1,DisposableCollection as _0x5cf52e,IAuthzIoService as _0x51d41c,ICommandService as _0x76d311,IConfigService as _0x47a55c,IConfirmService as _0x48adf8,IImageIoService as _0x49cfd2,ILogService as _0x317fe1,IPermissionService as _0x4dfc55,IUniverInstanceService as _0x5d9d1d,Inject as _0x200c9d,Injector as _0x2df6d2,LOCALE_META as _0x56a628,LRUMap as _0x1c057f,LocaleService as _0x2bdbd6,ObjectMatrix as _0x20fa55,Plugin as _0x49102e,RANGE_TYPE as _0x5bbd7a,RxDisposable as _0x42b732,ThemeService as _0x27ce45,Univer as _0x345473,UniverInstanceType as _0x196f55,Workbook as _0x32ca6f,dateKit as _0x2a330d,debounce as _0x4d3248,merge as _0x4c6abd,toDisposable as _0x538774}from'@univerjs/core';import{AddRangeProtectionMutation as _0x3c4356,AddRangeThemeMutation as _0x5248f5,AddWorksheetMergeMutation as _0x1a1c89,AddWorksheetProtectionMutation as _0x32c01e,CopyWorksheetEndMutation as _0x4a1996,DeleteRangeProtectionMutation as _0x4c5a10,DeleteWorksheetProtectionMutation as _0x28981c,DeleteWorksheetRangeThemeStyleMutation as _0x4e2817,InsertColMutation as _0x2754fa,InsertRowMutation as _0x534f14,InsertSheetMutation as _0x51c809,MoveColsMutation as _0x364b2d,MoveRangeMutation as _0x417fb8,MoveRowsMutation as _0x23e5d8,RangeMergeUtil as _0x4925da,RangeProtectionPermissionEditPoint as _0x1eb953,RangeProtectionRuleModel as _0x39df73,RemoveColMutation as _0x21bdad,RemoveNumfmtMutation as _0x159141,RemoveRangeThemeMutation as _0x2672ec,RemoveRowMutation as _0x475c37,RemoveSheetMutation as _0x1ed245,RemoveWorksheetMergeMutation as _0x193d05,ReorderRangeMutation as _0x590be1,SetColDataMutation as _0x3182ef,SetColHiddenMutation as _0x19fbfa,SetColVisibleMutation as _0x42854f,SetFrozenMutation as _0x3e1f32,SetGridlinesColorMutation as _0x493b27,SetNumfmtMutation as _0x574777,SetRangeProtectionMutation as _0x476e11,SetRangeThemeMutation as _0x3fa808,SetRangeValuesMutation as _0x30c3b3,SetRowDataMutation as _0x486a90,SetRowHiddenMutation as _0x25d48a,SetRowVisibleMutation as _0xfd3e21,SetTabColorMutation as _0x1094fa,SetWorkbookNameMutation as _0x39af3d,SetWorksheetActivateCommand as _0x49596b,SetWorksheetActiveOperation as _0x3e0253,SetWorksheetColWidthMutation as _0x88e34d,SetWorksheetColumnCountMutation as _0x95e5e3,SetWorksheetDefaultStyleMutation as _0x4d31dd,SetWorksheetHideMutation as _0x3c6d31,SetWorksheetNameMutation as _0x43a96f,SetWorksheetOrderMutation as _0x2a92d4,SetWorksheetPermissionPointsMutation as _0x50af03,SetWorksheetProtectionMutation as _0x15d915,SetWorksheetRangeThemeStyleMutation as _0x5278f9,SetWorksheetRightToLeftMutation as _0x4f5a16,SetWorksheetRowAutoHeightMutation as _0x125363,SetWorksheetRowCountMutation as _0x56bb03,SetWorksheetRowHeightMutation as _0x4336b1,SetWorksheetRowIsAutoHeightMutation as _0x1df329,SheetPermissionInitController as _0x202081,ToggleGridlinesMutation as _0x23cf59,UniverSheetsPlugin as _0x2514ad,WorkbookEditablePermission as _0x36e808,WorkbookHideSheetPermission as _0x4acf7e,WorkbookMoveSheetPermission as _0x569f7f,WorkbookRecoverHistoryPermission as _0xd1fc1c,WorkbookRenameSheetPermission as _0x179ddc,WorkbookViewHistoryPermission as _0x33ddea,WorksheetEditPermission as _0x346068,findAllRectangle as _0x1892ad,getSheetCommandTarget as _0xf9e528}from'@univerjs/sheets';import{CollaborationEvent as _0x23611b,CompressMutationService as _0x2b305c,CreateUnitMutation as _0x2303ff,ISnapshotServerService as _0x2b8368,ITransformService as _0x148615,RevertRevisionMutation as _0xdc72c5,UniverCollaborationPlugin as _0x4bd407,isTransformMutationsSuccess as _0x43ba2c,parseProtocolChangeset as _0x278de0,transformSnapshotToWorkbookData as _0x4b691e}from'@univerjs-pro/collaboration';import{AuthzIoHttpService as _0x29d59a,COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as _0x16992c,CollaborationController as _0x3d2c62,CollaborationImageIoService as _0x4cd2e2,CollaborationStatus as _0x370b3f,DataLoaderService as _0x6fe70d,ILocalCacheService as _0x606807,SnapshotServerOverHTTPService as _0x42171d,UniverCollaborationClientPlugin as _0x3a633b}from'@univerjs-pro/collaboration-client';import{UniverProFormulaEnginePlugin as _0x1ac2eb}from'@univerjs-pro/engine-formula';import{LS_CONFIG_KEY as _0x482a3c,UniverLicensePlugin as _0x9cc1b4}from'@univerjs-pro/license';import{ChartUpdateConfigMutation as _0x582a54,ChartUpdateSourceConfigMutation as _0xdff17e,InsertSheetsChartMutation as _0x269522,RemoveSheetsChartMutation as _0x1b5309,SheetsChartService as _0x3965dd,UniverSheetsChartPlugin as _0x2034fb}from'@univerjs-pro/sheets-chart';import{UniverSheetsChartUIPlugin as _0x1149fd}from'@univerjs-pro/sheets-chart-ui';import{AddPivotFieldMutation as _0x39f562,AddPivotTableMutation as _0x4f42d6,RemovePivotFieldMutation as _0x2d4aaa,RemovePivotTableMutation as _0x374e7a,RenamePivotFieldMutation as _0x2858af,SetPivotCollapseMutation as _0x48815d,SetPivotFieldFormatMutation as _0x2e4104,SetPivotFilterMutation as _0x5616e9,SetPivotOptionMutation as _0x5ed8e2,SetPivotPositionMutation as _0x7cf02a,SetPivotSortMutation as _0x479b1d,SetPivotSubtotalTypeMutation as _0x33f953,SetPivotValueFilterMutation as _0x4a84a7,SheetsPivotTableConfigModel as _0x465b56,UniverSheetsPivotTablePlugin as _0x566531,UpdateFieldPositionMutation as _0x282936,UpdatePivotFieldSourceInfoMutation as _0x4f95e2,UpdatePivotTableSourceRangeMutation as _0x9161fd,UpdateValuePositionMutation as _0x35e203,unionPivotViewRange as _0x19aba1}from'@univerjs-pro/sheets-pivot';import{InsertSheetsShapeMutation as _0x1ff80,RemoveSheetsShapeMutation as _0x38deb3,UniverSheetsShapePlugin as _0x1ce9bf,UpdateSheetsShapeDataMutation as _0x4717d1,UpdateSheetsShapeTypeMutation as _0x48225b}from'@univerjs-pro/sheets-shape';import{UniverSheetsShapeUIPlugin as _0x4ce039}from'@univerjs-pro/sheets-shape-ui';import{AddSheetSparklineMutation as _0x2d3f5e,RemoveSheetSparklineMutation as _0x50eeec,SetSheetSparklineMutation as _0x4e18c6,SparklineDataSourceModel as _0x4d476b,UniverSheetSparklinePlugin as _0x4db10d}from'@univerjs-pro/sheets-sparkline';import{UniverSheetSparklineUIPlugin as _0x46e1c2}from'@univerjs-pro/sheets-sparkline-ui';import{AddDataValidationMutation as _0x1b1c51,RemoveDataValidationMutation as _0x97f0c0,UniverDataValidationPlugin as _0x364048,UpdateDataValidationMutation as _0x5eb890}from'@univerjs/data-validation';import{Button as _0xe7ae40,Checkbox as _0x7fad2d,Dropdown as _0x5cde61,MessageType as _0x609f1f,Segmented as _0x3f61cf,Tooltip as _0x349151,borderBottomClassName as _0x2ce247,clsx as _0x5df285}from'@univerjs/design';import{UniverDocsPlugin as _0x329c8b}from'@univerjs/docs';import{UniverDocsUIPlugin as _0x3e8f0b}from'@univerjs/docs-ui';import{IDrawingManagerService as _0x2044fc,UniverDrawingPlugin as _0xf559cc}from'@univerjs/drawing';import{UniverDrawingUIPlugin as _0x27beee}from'@univerjs/drawing-ui';import{IRenderManagerService as _0x407e32,Rect as _0x242d59,SHEET_VIEWPORT_KEY as _0x472dbf,Shape as _0x4117fb,UniverRenderEnginePlugin as _0xec48ba,Vector2 as _0x216a81}from'@univerjs/engine-render';import{HTTPService as _0x1479ef,UniverNetworkPlugin as _0x46e284}from'@univerjs/network';import{IRemoteInstanceService as _0x3f4102,UniverRPCMainThreadPlugin as _0xdd0a0a}from'@univerjs/rpc';import{AddConditionalRuleMutation as _0x2a14cd,ConditionalFormattingRuleModel as _0x5a9ee5,DeleteConditionalRuleMutation as _0x40fb43,MoveConditionalRuleMutation as _0x51bbdc,SetConditionalRuleMutation as _0x1a19e1,UniverSheetsConditionalFormattingPlugin as _0xc66447}from'@univerjs/sheets-conditional-formatting';import{UniverSheetsConditionalFormattingUIPlugin as _0x2af53f}from'@univerjs/sheets-conditional-formatting-ui';import{SheetDataValidationModel as _0x5c942e,UniverSheetsDataValidationPlugin as _0x203fa8}from'@univerjs/sheets-data-validation';import{UniverSheetsDataValidationMobileUIPlugin as _0x2fc989,UniverSheetsDataValidationUIPlugin as _0x4af1d5}from'@univerjs/sheets-data-validation-ui';import{DrawingApplyType as _0x47d822,SetDrawingApplyMutation as _0x343963,UniverSheetsDrawingPlugin as _0x4260f2}from'@univerjs/sheets-drawing';import{UniverSheetsDrawingUIPlugin as _0x23f118}from'@univerjs/sheets-drawing-ui';import{ReCalcSheetsFilterMutation as _0x2b6a47,RemoveSheetsFilterMutation as _0x3a03bf,SetSheetsFilterCriteriaMutation as _0x553ada,SetSheetsFilterRangeMutation as _0x5419d0,SheetsFilterService as _0x206cef,UniverSheetsFilterPlugin as _0x541918}from'@univerjs/sheets-filter';import{UniverSheetsFilterUIPlugin as _0x5919f9}from'@univerjs/sheets-filter-ui';import{UniverSheetsFormulaPlugin as _0x34fce1}from'@univerjs/sheets-formula';import{UniverSheetsFormulaUIPlugin as _0x5115c0}from'@univerjs/sheets-formula-ui';import{UniverSheetsHyperLinkPlugin as _0x40baf3}from'@univerjs/sheets-hyper-link';import{UniverSheetsHyperLinkUIPlugin as _0x50f650}from'@univerjs/sheets-hyper-link-ui';import{UniverSheetsNumfmtPlugin as _0x142a42}from'@univerjs/sheets-numfmt';import{AddSheetTableMutation as _0x3abc14,DeleteSheetTableMutation as _0x57ee5b,SetSheetTableFilterMutation as _0x2dc4d0,SetSheetTableMutation as _0x541565,SheetTableService as _0x57fbab,UniverSheetsTablePlugin as _0x4f05b0}from'@univerjs/sheets-table';import{ICellEditorManagerService as _0x45b20d,SheetSkeletonManagerService as _0x13da0c,UniverSheetsMobileUIPlugin as _0x19281e,UniverSheetsUIPlugin as _0x14146b,getCoordByCell as _0x2b252d,getCurrentRangeDisable$ as _0x16e589,getSheetObject as _0x59868c}from'@univerjs/sheets-ui';import{BuiltInUIPart as _0x1c77ff,ComponentManager as _0x146326,IDialogService as _0x3822b3,IMenuManagerService as _0x1fbb9b,IMessageService as _0x2efab0,ISidebarService as _0x159c4b,IUIPartsService as _0x574965,IconManager as _0x4c2752,MenuItemType as _0x51bf88,RibbonStartGroup as _0x330e51,UI_PLUGIN_CONFIG_KEY as _0x372cd6,UniverMobileUIPlugin as _0x5c7c1c,UniverUIPlugin as _0x5c66ab,connectInjector as _0x13cdf5,getMenuHiddenObservable as _0x1744b9,useDependency as _0x98ea07,useObservable as _0xd2f1e0}from'@univerjs/ui';import{BehaviorSubject as _0x32f298,Subject as _0x3fbab2,combineLatest as _0x59ab16,filter as _0x5e7dfd,map as _0x49f52c,of as _0x2bc979,skip as _0x24ef39,switchMap as _0xccce5,take as _0x48ae58,takeUntil as _0x5679a8,timeout as _0x147bfa}from'rxjs';import{AiAssistantMultiIcon as _0x126ba5,ArrowLeftIcon as _0x2c184a,FunnelIcon as _0x16d5e2,HistoryIcon as _0x5c7750,LoadingMultiIcon as _0x2b8ff6,MoreDownIcon as _0x835cdf,MoreRightIcon as _0x2e00b9,RestoreIcon as _0x284b24}from'@univerjs/icons';import{Fragment as _0x309698,useCallback as _0x2fc950,useEffect as _0x411dd3,useMemo as _0x227cfb,useRef as _0x377add,useState as _0x446936}from'react';import{ErrorCode as _0x3cb116,UnitAction as _0x4f2a57,isError as _0x34aca7}from'@univerjs/protocol';import{Fragment as _0x2343a6,jsx as _0x5790c5,jsxs as _0x435c70}from'react/jsx-runtime';import{IURLService as _0x43c9a6,SheetCollabCursorShape as _0x473b92,UniverCollaborationClientUIPlugin as _0x2f4f40}from'@univerjs-pro/collaboration-client-ui';import{UniverSheetsHistoryPlugin as _0x4c9933}from'@univerjs-pro/sheets-history';const W="sheets-history-ui.config",vi='history-panel',G={'historyPanelComponentKey':vi};function yi(_0x138863){return(_0x138863==null? undefined:_0x138863.historyServerUrl)??"/universer-api/history";}var bi="@univerjs-pro/sheets-history-ui",xi="1.0.0-insiders.20260907-70fc579";function Si(_0x5073c1){'@babel/helpers - typeof';return Si=typeof Symbol=="function"&&typeof Symbol.iterator=='symbol'?function(_0x14cb02){return typeof _0x14cb02;}:function(_0x7bac27){return _0x7bac27&&typeof Symbol=="function"&&_0x7bac27.constructor===Symbol&&_0x7bac27!==Symbol.prototype?"symbol":typeof _0x7bac27;},Si(_0x5073c1);}function Ci(_0x39eaa1,_0x7cbdeb){if(Si(_0x39eaa1)!="object"||!_0x39eaa1)return _0x39eaa1;var _0x4bd2ae=_0x39eaa1[Symbol.toPrimitive];if(_0x4bd2ae!== undefined){var _0x2e3edc=_0x4bd2ae.call(_0x39eaa1,_0x7cbdeb||"default");if(Si(_0x2e3edc)!="object")return _0x2e3edc;throw TypeError('@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.');}return(_0x7cbdeb==="string"?String:Number)(_0x39eaa1);}function wi(_0x5e7353){var _0x41ce2a=Ci(_0x5e7353,"string");return Si(_0x41ce2a)=="symbol"?_0x41ce2a:_0x41ce2a+'';}function K(_0x5a6e1a,_0x444cc0,_0x303bb6){return(_0x444cc0=wi(_0x444cc0))in _0x5a6e1a?Object.defineProperty(_0x5a6e1a,_0x444cc0,{'value':_0x303bb6,'enumerable': true,'configurable': true,'writable': true}):_0x5a6e1a[_0x444cc0]=_0x303bb6,_0x5a6e1a;}function q(_0x58d4e1,_0x2525e9){return function(_0x5eaa4b,_0x5cfd4f){_0x2525e9(_0x5eaa4b,_0x5cfd4f,_0x58d4e1);};}function J(_0x4e7d13,_0x1fb560,_0x537d56,_0x237bf3){var _0x463bf4=arguments.length,_0x1b068a=_0x463bf4<3?_0x1fb560:_0x237bf3===null?_0x237bf3=Object.getOwnPropertyDescriptor(_0x1fb560,_0x537d56):_0x237bf3,_0x9c3275;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")_0x1b068a=Reflect.decorate(_0x4e7d13,_0x1fb560,_0x537d56,_0x237bf3);else{for(var _0x41ecc4=_0x4e7d13.length-1;_0x41ecc4>=0;_0x41ecc4--)(_0x9c3275=_0x4e7d13[_0x41ecc4])&&(_0x1b068a=(_0x463bf4<3?_0x9c3275(_0x1b068a):_0x463bf4>3?_0x9c3275(_0x1fb560,_0x537d56,_0x1b068a):_0x9c3275(_0x1fb560,_0x537d56))||_0x1b068a);}return _0x463bf4>3&&_0x1b068a&&Object.defineProperty(_0x1fb560,_0x537d56,_0x1b068a),_0x1b068a;}let Y=class extends _0x8f71e1{constructor(_0x4e8919,_0xf68019,_0x5f0d7f,_0x1d09b9,_0x3a396f,_0x35b0d8,_0x51b61b,_0x25015e,_0x1a9dc8){super(),this._snapshotServerService=_0x4e8919,this._univerInstanceService=_0xf68019,this._commandService=_0x5f0d7f,this._permissionService=_0x1d09b9,this._drawingManagerService=_0x3a396f,this._configService=_0x35b0d8,this._httpService=_0x51b61b,this._compressMutationService=_0x25015e,this._sheetPermissionInitController=_0x1a9dc8,K(this,'_workbookDataCache', undefined),this._workbookDataCache=new _0x1c057f(60);}dispose(){this._workbookDataCache['clear'](),super.dispose();}async fetchCreatorList(_0x640803){try{let _0x165e20=(await this._httpService['get'](this._getAPIPrefix()+'/'+_0x640803+"/creators")).body;if(_0x165e20&&_0x165e20.error&&_0x165e20.error['code']===_0x3cb116.OK)return _0x165e20.creators??[];}catch(_0x4f9c77){console.error(_0x4f9c77);}return[];}async getVersions(_0x2bc45f,_0x286f7f){let {userIds:_0x4f3f93,lastLabel:_0xed4c5c,origin:_0x3eb4c4}=_0x286f7f??{},_0x2f0365=new URL();SearchParams();_0x2f0365.set('length','20'),_0xed4c5c&&_0x2f0365.set("lastLabel",_0xed4c5c),_0x4f3f93==null||_0x4f3f93.forEach(_0x3a2728=>{_0x2f0365.append("userIds",_0x3a2728);}),_0x3eb4c4&&_0x2f0365.set("origin",_0x3eb4c4.toString());let _0x273340=this._getAPIPrefix()+'/'+_0x2bc45f+"/list?"+_0x2f0365.toString();try{let _0x336f8a=(await this._httpService["get"](_0x273340)).body;if(_0x336f8a&&_0x336f8a.error&&_0x336f8a.error["code"]===_0x3cb116.OK){let {hasMore:_0x111810,lastLabel:_0x13f1d2}=_0x336f8a;return{'hasMore':_0x111810,'lastLabel':_0x13f1d2,'versions':Ei(_0x336f8a),'members':_0x336f8a.entities['users']};}}catch(_0x59481a){console.error(_0x59481a);}return null;}async getHistoryChangesets(_0x6b74f4,_0x4ab2aa){let {unitId:_0x5cb693,startRevision:_0x53e0c3,endRevision:_0x12b7f1}=_0x4ab2aa,_0x3dc57f=this._getAPIPrefix()+'/'+_0x5cb693+"/cs?startRevision="+_0x53e0c3+"&endRevision="+_0x12b7f1;return(await this._httpService["get"](_0x3dc57f)).body;}_getAPIPrefix(){return yi(this._configService["getConfig"](W));}_cacheKey(_0x3b98b4,_0x311f34){return _0x3b98b4+':'+_0x311f34;}async loadSheet(_0x4f3721,_0x52492a,_0x5d4394={}){let _0x51b946=this._cacheKey(_0x4f3721,_0x52492a),_0x46b81b=this._workbookDataCache["get"](_0x51b946);if(_0x46b81b){let {workbookData:_0x2eebd1,changesets:_0x4dfaf}=_0x46b81b;return await this._applyWorkbookData(_0x2eebd1,_0x4dfaf), true;}let {snapshot:_0x28e9b5,changesets:_0x29ac22,error:_0x1b824d}=await this._snapshotServerService["getUnitOnRev"](_0x5d4394,{'unitID':_0x4f3721,'type':_0x196f55.UNIVER_SHEET,'revision':_0x52492a});if(_0x34aca7(_0x1b824d)||!_0x28e9b5||!_0x28e9b5.workbook)throw Error("[HistoryFetchService]: request snapshot error!");let _0x41a670=(_0x29ac22==null? undefined:_0x29ac22.length)??0;if(_0x52492a!==0&&_0x28e9b5.rev+_0x41a670!==_0x52492a)throw Error("[HistoryFetchService]: wrong rev from the server!");let {workbook:_0x913be3}=_0x28e9b5,_0x5b9c2a=_0x913be3.blockMeta?Object.values(_0x913be3.blockMeta).flatMap(_0x333771=>_0x333771.blocks??[]):[],_0x8e209a=await _0x4b691e(_0x28e9b5,(await Promise.all(_0x5b9c2a.map(_0x564ea8=>this._snapshotServerService['getDeserializedSheetBlock'](_0x5d4394,{'unitID':_0x4f3721,'type':_0x196f55.UNIVER_SHEET,'blockID':_0x564ea8}).then(_0x543723=>_0x543723.block)))).filter(Boolean),_0x5d4394);return this._workbookDataCache["set"](_0x51b946,{'workbookData':_0x8e209a,'changesets':_0x29ac22}),await this._applyWorkbookData(_0x8e209a,_0x29ac22), true;}async _applyWorkbookData(_0x3ed25e,_0x84e1f){let _0x288c57=this._univerInstanceService['getCurrentUnitOfType'](_0x196f55.UNIVER_SHEET);_0x288c57&&(this._univerInstanceService["disposeUnit"](_0x288c57.getUnitId()),await Promise.resolve());let _0x2a60b3=JSON.parse(JSON.stringify(_0x3ed25e));this._drawingManagerService["setDrawingEditable"]( false);let _0x24400a=this._createUnit(_0x2a60b3,_0x84e1f);Ti(this._permissionService,this._drawingManagerService,_0x24400a),this._sheetPermissionInitController['refreshRangeProtectPermission']();}_createUnit(_0xfc5299,_0x4f5736){let _0x5a0591=this._univerInstanceService["createUnit"](_0x196f55.UNIVER_SHEET,_0xfc5299);this._univerInstanceService['focusUnit'](_0x5a0591.getUnitId());let _0x94f056=this._compressMutationService['interceptor'].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_APPLY);return _0x4f5736==null||_0x4f5736.forEach(_0x2cfae4=>{let _0x28d45e=_0x2cfae4.mutations["map"](_0x2cc88c=>({'id':_0x2cc88c.id,'params':JSON.parse(_0x2cc88c.data)}));(_0x94f056(_0x28d45e,null)||_0x28d45e).forEach(_0x313f15=>{this._commandService["hasCommand"](_0x313f15.id)&&this._commandService["syncExecuteCommand"](_0x313f15.id,_0x313f15.params,{'fromChangeset': true});});}),_0x5a0591;}};Y=J([q(0,_0x2b8368),q(1,_0x5d9d1d),q(2,_0x76d311),q(3,_0x4dfc55),q(4,_0x2044fc),q(5,_0x47a55c),q(6,_0x200c9d(_0x1479ef)),q(7,_0x200c9d(_0x2b305c)),q(8,_0x200c9d(_0x202081))],Y);function Ti(_0x389255,_0x4af2c1,_0x5d0377){let _0x3b2a55=_0x5d0377.getUnitId();_0x4af2c1.setDrawingEditable( false),_0x389255.updatePermissionPoint(new _0x36e808(_0x3b2a55).id, false),_0x5d0377.getSheets().forEach(_0x59165f=>{_0x389255.updatePermissionPoint(new _0x346068(_0x3b2a55,_0x59165f.getSheetId()).id, false);});}function Ei(_0x11d26b){let _0x18125c=[],{entities:_0x6a28d7,historyIds:_0x42b872}=_0x11d26b,{datas:_0x222da9,users:_0x3ca532}=_0x6a28d7;for(let _0x5a99e1 of _0x42b872){let _0x289208=_0x222da9[_0x5a99e1];if(_0x289208){var _0x2ec0bb,_0x24e889;let _0x12582c=!!((_0x2ec0bb=_0x3ca532[_0x289208.userId])!=null&&_0x2ec0bb.anonymous);_0x18125c.push({'unitId':_0x289208.unitId,'user':_0x12582c?'':(_0x3ca532==null||(_0x24e889=_0x3ca532[_0x289208.userId])==null? undefined:_0x24e889.name)||'','users':_0x289208.userIds['map'](_0xd040f9=>{var _0x22015b;return(_0x3ca532==null||(_0x22015b=_0x3ca532[_0xd040f9])==null? undefined:_0x22015b.name)||'';}).filter(_0x5a53dd=>_0x5a53dd),'isAnonymous':_0x12582c,'id':_0x5a99e1,'time':_0x289208.createTime?Number(_0x289208.createTime): undefined,'commands':_0x289208.command,'startRev':Number(_0x289208.startRevision),'endRev':Number(_0x289208.endRevision),'recoverTime':_0x289208.recoverTime?Number(_0x289208.recoverTime): undefined,'additionalFields':_0x289208.additionalFields,'startRevCreateTime':_0x289208.startRevCreateTime?Number(_0x289208.startRevCreateTime): undefined,'endRevCreateTime':_0x289208.endRevCreateTime?Number(_0x289208.endRevCreateTime): undefined});}}return _0x18125c;}function Di(_0x32061d="sheets-history-ui.viewer.action."){return{'collaboration':[{'id':_0x2303ff.id,'action':_0x32061d+"createSheet"},{'id':_0xdc72c5.id,'action':_0x32061d+"revertSheet"}],'sheets':[{'id':_0x51c809.id,'action':_0x32061d+'insertSheet'},{'id':_0x1ed245.id,'action':_0x32061d+"removeSheet"},{'id':_0x43a96f.id,'action':_0x32061d+"renameSheet"},{'id':_0x2a92d4.id,'action':_0x32061d+"reorderSheet"},{'id':_0x3c6d31.id,'action':_0x32061d+"hideSheet"},{'id':_0x4a1996.id,'action':_0x32061d+"copySheet"},{'id':_0x1094fa.id,'action':_0x32061d+"setTabColor"},{'id':_0x39af3d.id,'action':_0x32061d+"renameWorkbook"},{'id':_0x534f14.id,'action':_0x32061d+"insertRow"},{'id':_0x2754fa.id,'action':_0x32061d+"insertCol"},{'id':_0x475c37.id,'action':_0x32061d+"removeRow"},{'id':_0x21bdad.id,'action':_0x32061d+"removeCol"},{'id':_0x23e5d8.id,'action':_0x32061d+"moveRows"},{'id':_0x364b2d.id,'action':_0x32061d+"moveCols"},{'id':_0xfd3e21.id,'action':_0x32061d+"showRow"},{'id':_0x25d48a.id,'action':_0x32061d+"hideRow"},{'id':_0x42854f.id,'action':_0x32061d+"showCol"},{'id':_0x19fbfa.id,'action':_0x32061d+"hideCol"},{'id':_0x4336b1.id,'action':_0x32061d+"setRowHeight"},{'id':_0x88e34d.id,'action':_0x32061d+"setColWidth"},{'id':_0x125363.id,'action':_0x32061d+"setRowAutoHeight"},{'id':_0x1df329.id,'action':_0x32061d+"setRowIsAutoHeight"},{'id':_0x486a90.id,'action':_0x32061d+"setRowData"},{'id':_0x3182ef.id,'action':_0x32061d+"setColData"},{'id':_0x56bb03.id,'action':_0x32061d+"setRowCount"},{'id':_0x95e5e3.id,'action':_0x32061d+"setColCount"},{'id':_0x30c3b3.id,'action':_0x32061d+'setRangeValues'},{'id':_0x417fb8.id,'action':_0x32061d+"moveRange"},{'id':_0x590be1.id,'action':_0x32061d+"reorderRange"},{'id':_0x1a1c89.id,'action':_0x32061d+'mergeCells'},{'id':_0x193d05.id,'action':_0x32061d+"unmergeCells"},{'id':_0x3e1f32.id,'action':_0x32061d+'setFrozen'},{'id':_0x23cf59.id,'action':_0x32061d+"toggleGridlines"},{'id':_0x493b27.id,'action':_0x32061d+"setGridlinesColor"},{'id':_0x4f5a16.id,'action':_0x32061d+'setRightToLeft'},{'id':_0x4d31dd.id,'action':_0x32061d+"setDefaultStyle"},{'id':_0x32c01e.id,'action':_0x32061d+"addProtection"},{'id':_0x15d915.id,'action':_0x32061d+"setProtection"},{'id':_0x28981c.id,'action':_0x32061d+"deleteProtection"},{'id':_0x3c4356.id,'action':_0x32061d+'addRangeProtection'},{'id':_0x476e11.id,'action':_0x32061d+'setRangeProtection'},{'id':_0x4c5a10.id,'action':_0x32061d+"deleteRangeProtection"},{'id':_0x50af03.id,'action':_0x32061d+'setPermissionPoints'},{'id':_0x574777.id,'action':_0x32061d+"setNumfmt"},{'id':_0x159141.id,'action':_0x32061d+"removeNumfmt"},{'id':_0x5248f5.id,'action':_0x32061d+'addRangeTheme'},{'id':_0x3fa808.id,'action':_0x32061d+"setRangeTheme"},{'id':_0x2672ec.id,'action':_0x32061d+'removeRangeTheme'},{'id':_0x5278f9.id,'action':_0x32061d+"setWorksheetRangeTheme"},{'id':_0x4e2817.id,'action':_0x32061d+"deleteWorksheetRangeTheme"}],'sheetsConditionalFormatting':[{'id':_0x2a14cd.id,'action':_0x32061d+"setCF"},{'id':_0x1a19e1.id,'action':_0x32061d+"setCF"},{'id':_0x40fb43.id,'action':_0x32061d+"deleteCF"},{'id':_0x51bbdc.id,'action':_0x32061d+"moveCF"}],'sheetsFilter':[{'id':_0x5419d0.id,'action':_0x32061d+"setFilter"},{'id':_0x553ada.id,'action':_0x32061d+"setFilterCriteria"},{'id':_0x3a03bf.id,'action':_0x32061d+"removeFilter"},{'id':_0x2b6a47.id,'action':_0x32061d+"recalcFilter"}],'dataValidation':[{'id':_0x1b1c51.id,'action':_0x32061d+"setDV"},{'id':_0x5eb890.id,'action':_0x32061d+"setDV"},{'id':_0x97f0c0.id,'action':_0x32061d+"removeDV"}],'sheetsChart':[{'id':_0x269522.id,'action':_0x32061d+"insertChart"},{'id':_0x1b5309.id,'action':_0x32061d+"removeChart"},{'id':_0x582a54.id,'action':_0x32061d+"updateChartConfig"},{'id':_0xdff17e.id,'action':_0x32061d+"updateChartSource"}],'sheetsSparkline':[{'id':_0x2d3f5e.id,'action':_0x32061d+"addSparkline"},{'id':_0x4e18c6.id,'action':_0x32061d+"setSparkline"},{'id':_0x50eeec.id,'action':_0x32061d+"removeSparkline"}],'sheetsPivot':[{'id':_0x4f42d6.id,'action':_0x32061d+"addPivotTable"},{'id':_0x374e7a.id,'action':_0x32061d+"removePivotTable"},{'id':_0x5ed8e2.id,'action':_0x32061d+"setPivotOption"},{'id':_0x7cf02a.id,'action':_0x32061d+"setPivotPosition"},{'id':_0x9161fd.id,'action':_0x32061d+"updatePivotSource"},{'id':_0x39f562.id,'action':_0x32061d+'addPivotField'},{'id':_0x2d4aaa.id,'action':_0x32061d+"removePivotField"},{'id':_0x2858af.id,'action':_0x32061d+"renamePivotField"},{'id':_0x282936.id,'action':_0x32061d+"updateFieldPosition"},{'id':_0x35e203.id,'action':_0x32061d+"updateValuePosition"},{'id':_0x4f95e2.id,'action':_0x32061d+'updatePivotFieldSource'},{'id':_0x2e4104.id,'action':_0x32061d+"setPivotFieldFormat"},{'id':_0x5616e9.id,'action':_0x32061d+"setPivotFilter"},{'id':_0x4a84a7.id,'action':_0x32061d+'setPivotValueFilter'},{'id':_0x479b1d.id,'action':_0x32061d+'setPivotSort'},{'id':_0x48815d.id,'action':_0x32061d+"setPivotCollapse"},{'id':_0x33f953.id,'action':_0x32061d+"setPivotSubtotalType"}],'sheetsShape':[{'id':_0x1ff80.id,'action':_0x32061d+"insertShape"},{'id':_0x38deb3.id,'action':_0x32061d+"removeShape"},{'id':_0x4717d1.id,'action':_0x32061d+'updateShapeData'},{'id':_0x48225b.id,'action':_0x32061d+"updateShapeType"}],'sheetsTable':[{'id':_0x3abc14.id,'action':_0x32061d+"addTable"},{'id':_0x57ee5b.id,'action':_0x32061d+'removeTable'},{'id':_0x541565.id,'action':_0x32061d+"updateTable"},{'id':_0x2dc4d0.id,'action':_0x32061d+"setTableFilter"}],'sheetsDrawing':[{'id':_0x343963.id,'action':_0x32061d+'updateDrawing'}]};}function Oi(_0x7921ab="sheets-history-ui.viewer.action."){let _0x4e21d4=Di(_0x7921ab);return Object.values(_0x4e21d4).flat();}function ki(_0x37f9fa){return _0x56a628[_0x37f9fa.getCurrentLocale()].tag;}const Ai=(_0x36b6de,_0x1389c9)=>{if(!_0x36b6de)return{'date':'','time':''};let _0x34efa0=_0x2a330d(_0x36b6de);return{'date':Ni(_0x34efa0.format("YYYY-MM-DD"),_0x1389c9),'time':_0x34efa0.formatIntl(ki(_0x1389c9),{'hour':"2-digit",'minute':'2-digit','second':"2-digit",'hour12': false})};},ji=(_0x3834c2,_0x275351)=>{if(_0x3834c2.commands["some"](_0x24b076=>_0x24b076===_0xdc72c5.id)&&_0x3834c2.recoverTime){let _0x1aedb1=Ai(_0x3834c2.recoverTime,_0x275351),_0x2890bd=_0x1aedb1.date+'\x20'+_0x1aedb1.time;return _0x275351.t("sheets-history-ui.viewer.action.revertSheetPrefix")+'\x20'+_0x2890bd+'\x20'+_0x275351.t("sheets-history-ui.viewer.action.revertSheetSuffix");}let _0x21d3df=Mi(_0x3834c2),_0x4c074b=Array.from(new Set(_0x21d3df)),_0xfb80e4;if(_0x4c074b.length===1)_0xfb80e4=_0x275351.t(_0x4c074b[0]);else{let _0x3d3524=_0x4c074b.slice(0,5).map(_0x74b352=>_0x275351.t(_0x74b352)).join(',\x20');_0xfb80e4=_0x4c074b.length>5?''+_0x3d3524+_0x275351.t("sheets-history-ui.viewer.action.etc"):_0x3d3524;}return''+_0xfb80e4;};function Mi(_0x710cbc){if(_0x710cbc.commands["length"]===0)return[''];let _0x4da711="sheets-history-ui.viewer.action.",_0x5f2759=_0x4da711+'editSheet',_0x3d2209=Oi(_0x4da711).filter(_0xe1d61e=>_0x710cbc.commands['includes'](_0xe1d61e.id));return _0x3d2209!=null&&_0x3d2209.length?_0x3d2209.map(_0x49b02f=>_0x49b02f.action):[_0x5f2759];}function Ni(_0x44b78e,_0x2f065b){let [_0x38c860,_0x109d06,_0x57cdc1]=_0x2a330d().format('YYYY-MM-DD').split('-'),[_0x1923f4,_0x592394,_0x280be5]=_0x44b78e.split('-');if(_0x38c860===_0x1923f4&&_0x109d06===_0x592394&&_0x57cdc1===_0x280be5)return _0x2f065b.t("sheets-history-ui.viewer.panel.today");let _0x3ce432=ki(_0x2f065b);return _0x38c860===_0x1923f4?_0x2a330d(_0x44b78e).formatIntl(_0x3ce432,{'month':'numeric','day':"numeric"}):_0x2a330d(_0x44b78e).formatIntl(_0x3ce432,{'year':"numeric",'month':"numeric",'day':'numeric'});}function Pi(_0x50a052){return _0x50a052?_0x50a052.reduce((_0x2c84d1,_0xf1744e)=>{let _0x29d868=_0x2a330d(_0xf1744e.time??Date.now()).format('YYYY-MM-DD'),_0x1009c6=_0xf1744e.startRevCreateTime?_0x2a330d(_0xf1744e.startRevCreateTime).format("YYYY-MM-DD"):_0x29d868,_0x46c30c=_0xf1744e.endRevCreateTime?_0x2a330d(_0xf1744e.endRevCreateTime).format("YYYY-MM-DD"):_0x29d868;return _0x2c84d1.length>0&&_0x2c84d1[_0x2c84d1.length-1].startDateString===_0x1009c6?_0x2c84d1[_0x2c84d1.length-1].versions["push"](_0xf1744e):_0x2c84d1.push({'dateString':_0x29d868,'startDateString':_0x1009c6,'endDateString':_0x46c30c,'versions':[_0xf1744e]}),_0x2c84d1;},[]):[];}const Fi="VIRTUAL_VERSION_NOW";let X=class extends _0x8f71e1{_setFetching(_0xff82e0){this._fetching$["next"](_0xff82e0);}get fetching(){return this._fetching$["value"];}constructor(_0x57965a,_0x2375a9,_0x29c1b7,_0x988684,_0x73c3cd){super(),this._messageService=_0x57965a,this._confirmService=_0x2375a9,this._logService=_0x29c1b7,this._localeService=_0x988684,this._historyFetchService=_0x73c3cd,K(this,'_versions$',new _0x32f298([])),K(this,"versions$",this._versions$["asObservable"]()),K(this,"_currentVersion$",new _0x32f298('')),K(this,'currentVersion$',this._currentVersion$["asObservable"]()),K(this,'_status$',new _0x32f298("entered")),K(this,"status$",this._status$['asObservable']()),K(this,'_revertRevision$',new _0x32f298(0)),K(this,'revertRevision$',this._revertRevision$["asObservable"]()),K(this,"_unitId$",new _0x32f298('')),K(this,"unitId$",this._unitId$["asObservable"]()),K(this,'_fetching$',new _0x32f298( false)),K(this,'fetching$',this._fetching$["asObservable"]()),K(this,"_creators$",new _0x32f298([])),K(this,"creators$",this._creators$["asObservable"]()),K(this,"_openPanel$",new _0x32f298( false)),K(this,"openPanel$",this._openPanel$['asObservable']()),K(this,"_detailVersionsMap",new Map()),K(this,"_loadingState$",new _0x32f298("init")),K(this,"loadingState$",this._loadingState$["asObservable"]()),K(this,'_lastLabel',null),K(this,'_hasMore', true),K(this,"_members",new Map()),K(this,"_canRevert", false),K(this,'_loadParams',null),K(this,"_unitCurrentVersionMap",new Map());}async triggerLoadVersions(_0x11943f,_0x4328fa){this._canRevert=_0x4328fa,this._openPanel$["next"]( true),await this.loadInitialVersions(_0x11943f);}triggerCustomVersions(_0x53bb63,_0x504cc6,_0x3add9c){let {versions:_0x4c569d,hasMore:_0x1d68fc,lastLabel:_0x34c85d,members:_0x2486ba}=_0x3add9c,_0x43a1d5=_0x4c569d.length>0?_0x4c569d:[{'unitId':_0x53bb63,'id':Fi,'startRev':1,'endRev':0,'time':Date.now(),'user':this._localeService['t']("sheets-history-ui.viewer.panel.currentUser"),'users':[this._localeService['t']("sheets-history-ui.viewer.panel.currentUser")],'commands':[],'isAnonymous': false}];this._canRevert=_0x504cc6,this._unitId$["next"](_0x53bb63),this._updateVersions(_0x43a1d5,_0x1d68fc,_0x34c85d, false,_0x2486ba),this._currentVersion$["next"](_0x43a1d5[0].id);}async loadInitialVersions(_0x206f97,_0xcc70e7){this._unitId$["next"](_0x206f97),this._loadParams=_0xcc70e7??null,this._setFetching( true);let _0x2b34e9=await this._historyFetchService["getVersions"](_0x206f97,_0xcc70e7);if(this._setFetching( false),_0x2b34e9){let {versions:_0x1e2db1,lastLabel:_0x252596,hasMore:_0xf6cba1,members:_0x443b8d}=_0x2b34e9;_0x1e2db1.length===0&&_0x1e2db1.push({'unitId':_0x206f97,'id':Fi,'startRev':1,'endRev':0,'time':Date.now(),'user':this._localeService['t']("sheets-history-ui.viewer.panel.currentUser"),'users':[this._localeService['t']("sheets-history-ui.viewer.panel.currentUser")],'commands':[],'isAnonymous': false}),this._updateVersions(_0x1e2db1,_0xf6cba1,_0x252596, false,_0x443b8d),this._currentVersion$["next"](_0x1e2db1[0].id),this._unitCurrentVersionMap["set"](_0x206f97,_0x1e2db1[0].endRev);}else this._status$["next"]("error");}async loadMoreVersions(){if(!this._lastLabel||!this._hasMore||this.fetching)return false;this._setFetching( true);let _0x1949b0=await this._historyFetchService["getVersions"](this.unitId,{'lastLabel':this._lastLabel,...this._loadParams});if(this._setFetching( false),_0x1949b0){let {versions:_0x314ecb,lastLabel:_0x58ee65,hasMore:_0x4eab15,members:_0x4bb941}=_0x1949b0;this._updateVersions(_0x314ecb,_0x4eab15,_0x58ee65, true,_0x4bb941);}else this._messageService["show"]({'content':this._localeService['t']("sheets-history-ui.viewer.panel.listFetchError"),'type':_0x609f1f.Error,'duration':3000});return true;}async loadHistoryCreatorList(){let {unitId:_0x5ce5d6}=this;if(!_0x5ce5d6)return;let _0x29b06f=await this._historyFetchService["fetchCreatorList"](_0x5ce5d6);_0x29b06f&&this._creators$['next'](_0x29b06f);}async triggerLoadSheet(_0xa35c99){let {endRev:_0x4a7ff3}=this.getVersion(_0xa35c99)||{};if(_0x4a7ff3||_0x4a7ff3===0){this._loadingState$['next']('loading');try{await this._historyFetchService["loadSheet"](this.unitId,_0x4a7ff3),this._loadingState$['next']("loaded");}catch(_0x1b93b0){this._logService['error']("[HistoryManagerService]: Failed to load history revision.",_0x1b93b0),this._loadingState$["next"]("error"),this._status$['next']("error");}}else this._status$["next"]("error");}async triggerRevert(_0x4fdd3b){let _0xdf20fb=_0x4fdd3b?this.getVersion(_0x4fdd3b):this.getCurrentVersion();if(!_0xdf20fb)return;let _0x51ec4b=_0xdf20fb.endRev,_0x4f83cf=Ai(_0xdf20fb.time,this._localeService);await this._confirmService["confirm"]({'id':'confirm-revert-revision','title':{'title':this._localeService['t']("sheets-history-ui.viewer.panel.revertConfirm")},'children':{'title':this._localeService['t']("sheets-history-ui.viewer.panel.revertConfirmText",_0x4f83cf.date,_0x4f83cf.time)},'cancelText':this._localeService['t']("sheets-history-ui.viewer.panel.cancel"),'confirmText':this._localeService['t']("sheets-history-ui.viewer.panel.confirm")})&&this._revertRevision$["next"](_0x51ec4b);}_updateVersions(_0x373f13,_0x56559a,_0x1035bc,_0x2277b5,_0x4d1516){this._setVersions(_0x2277b5?this._versions$["value"].concat(_0x373f13):_0x373f13),this._hasMore=_0x56559a,this._lastLabel=_0x1035bc,_0x4d1516&&Object.keys(_0x4d1516).forEach(_0x360f63=>this._members["set"](_0x360f63,_0x4d1516[_0x360f63]));}getCurrentVersion(){return this.getVersion(this._currentVersion$["value"]);}_setVersions(_0x3674c9){this._versions$["next"](_0x3674c9);}getVersion(_0x5a61c3){var _0x41d9a5;return((_0x41d9a5=this._versions$['value'])==null? undefined:_0x41d9a5.find(_0x4eec8b=>_0x4eec8b.id===_0x5a61c3))||this._detailVersionsMap["get"](_0x5a61c3);}registerDetailVersion(_0x5ca97c){this._detailVersionsMap["set"](_0x5ca97c.id,_0x5ca97c);}getCurrentUnitCurrentVersion(){if(this.unitId)return this._unitCurrentVersionMap['get'](this.unitId);}getSelectedVersionIsCurrentVersion(){var _0x26e3d6;return((_0x26e3d6=this.getCurrentVersion())==null? undefined:_0x26e3d6.endRev)===this.getCurrentUnitCurrentVersion();}getSelectedVersionCanRevert(){return!this.getSelectedVersionIsCurrentVersion()&&this.canRevert;}getMember(_0x45393b){return this._members["get"](_0x45393b);}exitHistoryMode(){this._status$['next']("exited");}set status(_0x18ee95){this._status$["next"](_0x18ee95);}get status(){return this._status$["value"];}selectVersion(_0x22e2bd){_0x22e2bd!==this._currentVersion$["value"]&&this._currentVersion$['next'](_0x22e2bd);}get currentVersion(){return this._currentVersion$['value'];}set unitId(_0xbab673){this._unitId$['next'](_0xbab673);}get unitId(){return this._unitId$['value'];}get canRevert(){return this._canRevert;}get loadingState(){return this._loadingState$["value"];}};X=J([q(0,_0x2efab0),q(1,_0x48adf8),q(2,_0x317fe1),q(3,_0x200c9d(_0x2bdbd6)),q(4,_0x200c9d(Y))],X);let Z=class extends _0x8f71e1{constructor(_0x3658a0,_0x3b0a05,_0x55e028,_0x46f4d5,_0x392aaf,_0x379606,_0x50561b,_0x79c4bc,_0x2249d5,_0x225eb2,_0x4a0d58,_0x653bbf,_0x3ae622){super(),this._historyManagerService=_0x3658a0,this._transformService=_0x3b0a05,this._snapshotServerService=_0x55e028,this._rangeProtectionRuleModel=_0x46f4d5,this._conditionalFormattingRuleModel=_0x392aaf,this._dataValidationModel=_0x379606,this._sheetsFilterService=_0x50561b,this._sparklineDataSourceModel=_0x79c4bc,this._sheetsPivotTableConfigModel=_0x2249d5,this._sheetTableService=_0x225eb2,this._localeService=_0x4a0d58,this._sheetsChartService=_0x653bbf,this._historyFetchService=_0x3ae622,K(this,"_diffRangesMap",new Map()),K(this,'_currentVersionDiff$',new _0x32f298({'ranges':new Map(),'active':null,'subUnitIds':[]})),K(this,"currentVersionDiff$",this._currentVersionDiff$["asObservable"]()),this._init();}_init(){this._diffRangesMap=new Map(),this.disposeWithMe(this._historyManagerService['unitId$'].subscribe(_0x28fc3=>{_0x28fc3&&!this._diffRangesMap["has"](_0x28fc3)&&this._diffRangesMap["set"](_0x28fc3,new Map());})),this.disposeWithMe(this._historyManagerService['currentVersion$'].subscribe(async _0x3bc0e0=>{if(_0x3bc0e0){var _0x5ce46d;await this.ensureVersion(_0x3bc0e0),this._currentVersionDiff$["next"](((_0x5ce46d=this._diffRangesMap["get"](this._historyManagerService["unitId"]))==null? undefined:_0x5ce46d.get(_0x3bc0e0))||{'ranges':new Map(),'active':null,'subUnitIds':[]});}}));}async ensureVersion(_0x47de83){var _0x1076cd,_0x4f0328;let _0x4bddbd=this._historyManagerService["getVersion"](_0x47de83),_0x5c993f=this._historyManagerService["unitId"];if(!_0x4bddbd||!_0x5c993f)return;let _0x3eb009=this._diffRangesMap['get'](_0x5c993f);if(_0x3eb009||this._diffRangesMap["set"](_0x5c993f,new Map()),(_0x1076cd=this._diffRangesMap["get"](_0x5c993f))!=null&&_0x1076cd.has(_0x4bddbd.id))return;let {startRev:_0x19e842,endRev:_0x33a034}=_0x4bddbd;if(_0x19e842===1){_0x3eb009.set(_0x4bddbd.id,{'ranges':new Map(),'active':null,'subUnitIds':[]});return;}let _0x451c8a=_0x19e842,_0x5d169c=_0x33a034,_0xd6c200=await this._historyFetchService["getHistoryChangesets"]({},{'unitId':_0x5c993f,'startRevision':_0x451c8a,'endRevision':_0x5d169c});if(((_0x4f0328=_0xd6c200.error)==null? undefined:_0x4f0328.code)===_0x3cb116.OK){let _0x37a96c=_0xd6c200.changesets["map"](_0x37dafc=>((_0x37dafc.mutations===null||_0x37dafc.mutations=== undefined)&&(_0x37dafc.mutations=[]),_0x278de0(_0x37dafc))).map(_0x430ca7=>_0x430ca7.mutations["map"](_0x40d5a8=>({..._0x40d5a8,'params':{..._0x40d5a8.params,'memberId':_0x430ca7.userID||"unknownUser"}}))).flat(),_0xe79505=await this._transformMutationByOrder(_0x37a96c),_0x34cfc3=this._getActiveSubUnitId(_0x37a96c),_0x490951=this._extractRanges(_0xe79505);_0x3eb009.set(_0x4bddbd.id,{..._0x490951,'active':_0x34cfc3});}}getMutationActionMap(){let _0x2d9a74=Di("sheets-history-ui.viewer.action."),_0x15e638=new Map();return Object.values(_0x2d9a74).flat().forEach(_0x66edbc=>{_0x15e638.set(_0x66edbc.id,_0x66edbc.action);}),_0x15e638;}categorizeMutationRanges(_0x13d8ae,_0x230959){return this._categorizeMutationRanges(_0x13d8ae,_0x230959);}async _transformMutationByOrder(_0x5227c0){let _0x2c3fa4=[];for(let _0x1f027c=0;_0x1f027c<_0x5227c0.length;_0x1f027c++){let _0x544ba6=_0x5227c0[_0x1f027c];if(_0x2c3fa4.push(_0x544ba6),_0x1f027c!==_0x5227c0.length-1){let _0x7848cf=_0x5227c0[_0x1f027c+1],_0x90bae9=this._transformService['transformMutations'](_0x2c3fa4,[_0x7848cf]);_0x2c3fa4=_0x43ba2c(_0x90bae9)?_0x90bae9.m1Prime:[];}_0x1f027c%10==0&&_0x1f027c>0&&await this._yieldToMain();}return _0x2c3fa4;}_yieldToMain(){return new Promise(_0x1cdb11=>{typeof requestIdleCallback=="function"?requestIdleCallback(()=>_0x1cdb11(),{'timeout':100}):setTimeout(_0x1cdb11,0);});}_getActiveSubUnitId(_0xd5c527){let _0x6eadf8=[];return _0xd5c527.forEach(_0x16c628=>{if(_0x16c628.id===_0x51c809.id){let _0x1da819=_0x16c628.params;_0x6eadf8.push(_0x1da819.sheet['id']);}else{if(_0x16c628.id===_0x1ed245.id){let _0x225ba9=_0x16c628.params;_0x6eadf8.length>0&&(_0x6eadf8=_0x6eadf8.filter(_0xc1ab4f=>_0xc1ab4f!==_0x225ba9.subUnitId));}else{if(_0x16c628.id===_0x3c6d31.id){let _0x57c7f6=_0x16c628.params;_0x57c7f6.hidden?_0x6eadf8=_0x6eadf8.filter(_0xcacadd=>_0xcacadd!==_0x57c7f6.subUnitId):_0x6eadf8.push(_0x57c7f6.subUnitId);}else{let _0xe11287=_0x16c628.params;_0xe11287.subUnitId&&_0x6eadf8.push(_0xe11287.subUnitId);}}}}),_0x6eadf8.length>0?_0x6eadf8[_0x6eadf8.length-1]:null;}_extractRanges(_0x3f78d0){let _0x104805=new Map(),_0x356a6d=new Map(),_0x4e598f=new Map(),_0x1fb430=new Map(),_0x3c917e=new Map(),_0x1b09a1=new Map(),_0x15f970=new Map(),_0x5532c6=new Map(),_0x4fa817=new Map(),_0x373cf2=new Map(),_0xf4514f=new Map(),_0x3ba309=new Map(),_0x24c4be=new Set(),_0x26b13c=this.getMutationActionMap();return _0x3f78d0.forEach(_0xdd0865=>{var _0x22d41a,_0x288324,_0x59b3d9,_0x57a4a3,_0x588e57,_0xddf257,_0x3c834c,_0x5cb945,_0x5ae1d6,_0x50b8c8,_0x4b081c,_0x179955,_0x2cb0ca;let _0x307755=(_0x22d41a=_0xdd0865.params)==null? undefined:_0x22d41a.memberId;if(!_0x307755)return;_0x104805.has(_0x307755)||(_0x104805.set(_0x307755,[]),_0x356a6d.set(_0x307755,[]),_0x4e598f.set(_0x307755,[]),_0x1fb430.set(_0x307755,[]),_0x3c917e.set(_0x307755,[]),_0x1b09a1.set(_0x307755,[]),_0x15f970.set(_0x307755,[]),_0x5532c6.set(_0x307755,[]),_0x4fa817.set(_0x307755,[]),_0x373cf2.set(_0x307755,[]),_0xf4514f.set(_0x307755,[]),_0x3ba309.set(_0x307755,[]));let _0x480816=this._categorizeMutationRanges(_0xdd0865,_0x26b13c);_0x480816.subUnitIds["forEach"](_0x1b7f54=>_0x24c4be.add(_0x1b7f54)),(_0x288324=_0x104805.get(_0x307755))==null||_0x288324.push(..._0x480816.allRanges),(_0x59b3d9=_0x356a6d.get(_0x307755))==null||_0x59b3d9.push(..._0x480816.insertCellRanges),(_0x57a4a3=_0x4e598f.get(_0x307755))==null||_0x57a4a3.push(..._0x480816.deleteCellRanges),(_0x588e57=_0x1fb430.get(_0x307755))==null||_0x588e57.push(..._0x480816.updateCellRanges),(_0xddf257=_0x3c917e.get(_0x307755))==null||_0xddf257.push(..._0x480816.insertBorderRanges),(_0x3c834c=_0x1b09a1.get(_0x307755))==null||_0x3c834c.push(..._0x480816.deleteBorderRanges),(_0x5cb945=_0x15f970.get(_0x307755))==null||_0x5cb945.push(..._0x480816.updateBorderRanges),(_0x5ae1d6=_0x5532c6.get(_0x307755))==null||_0x5ae1d6.push(..._0x480816.arrowRowRanges),(_0x50b8c8=_0x4fa817.get(_0x307755))==null||_0x50b8c8.push(..._0x480816.arrowColumnRanges),(_0x4b081c=_0xf4514f.get(_0x307755))==null||_0x4b081c.push(..._0x480816.insertDrawings),(_0x179955=_0x3ba309.get(_0x307755))==null||_0x179955.push(..._0x480816.deleteDrawings),(_0x2cb0ca=_0x373cf2.get(_0x307755))==null||_0x2cb0ca.push(..._0x480816.updateDrawings);}),_0x104805.forEach((_0x1d88c6,_0x525a81)=>{_0x104805.set(_0x525a81,this._combineRanges(_0x1d88c6)),_0x356a6d.set(_0x525a81,this._combineRanges(_0x356a6d.get(_0x525a81)||[])),_0x4e598f.set(_0x525a81,this._combineRanges(_0x4e598f.get(_0x525a81)||[])),_0x1fb430.set(_0x525a81,this._combineRanges(_0x1fb430.get(_0x525a81)||[])),_0x3c917e.set(_0x525a81,this._combineRanges(_0x3c917e.get(_0x525a81)||[])),_0x1b09a1.set(_0x525a81,this._combineRanges(_0x1b09a1.get(_0x525a81)||[])),_0x15f970.set(_0x525a81,this._combineRanges(_0x15f970.get(_0x525a81)||[])),_0x5532c6.set(_0x525a81,this._combineRanges(_0x5532c6.get(_0x525a81)||[])),_0x4fa817.set(_0x525a81,this._combineRanges(_0x4fa817.get(_0x525a81)||[]));}),{'ranges':_0x104805,'insertCellRanges':_0x356a6d,'deleteCellRanges':_0x4e598f,'updateCellRanges':_0x1fb430,'insertBorderRanges':_0x3c917e,'deleteBorderRanges':_0x1b09a1,'updateBorderRanges':_0x15f970,'arrowRowRanges':_0x5532c6,'arrowColumnRanges':_0x4fa817,'insertDrawings':_0xf4514f,'deleteDrawings':_0x3ba309,'updateDrawings':_0x373cf2,'subUnitIds':Array.from(_0x24c4be)};}_categorizeMutationRanges(_0x305557,_0x4edb0d){let _0x44cfd9={'allRanges':[],'insertCellRanges':[],'deleteCellRanges':[],'updateCellRanges':[],'insertBorderRanges':[],'deleteBorderRanges':[],'updateBorderRanges':[],'arrowRowRanges':[],'arrowColumnRanges':[],'insertDrawings':[],'deleteDrawings':[],'updateDrawings':[],'subUnitIds':[]},_0x69ffca=_0x305557.id,_0x4deb57=_0x305557.params,_0x401cb3=_0x4edb0d.get(_0x69ffca),_0x3b5deb=_0x401cb3?this._localeService['t'](_0x401cb3):'';_0x4deb57.subUnitId&&_0x44cfd9.subUnitIds["push"](_0x4deb57.subUnitId);let _0x2b64c7=(_0x4d65d6,_0x40838f)=>{let _0x39c5ec=_0x4d65d6.map(_0x580a51=>({..._0x580a51,'showText':_0x3b5deb}));switch(_0x44cfd9.allRanges["push"](..._0x39c5ec),_0x40838f){case "insert":_0x44cfd9.insertCellRanges["push"](..._0x39c5ec);break;case "delete":_0x44cfd9.deleteCellRanges["push"](..._0x39c5ec);break;case "update":_0x44cfd9.updateCellRanges["push"](..._0x39c5ec);break;case'insertBorder':_0x44cfd9.insertBorderRanges['push'](..._0x39c5ec);break;case "deleteBorder":_0x44cfd9.deleteBorderRanges['push'](..._0x39c5ec);break;case "updateBorder":_0x44cfd9.updateBorderRanges["push"](..._0x39c5ec);break;case'arrowRow':_0x44cfd9.arrowRowRanges["push"](..._0x39c5ec);break;case'arrowColumn':_0x44cfd9.arrowColumnRanges["push"](..._0x39c5ec);break;}};switch(_0x69ffca){case _0x534f14.id:{let _0x3c0ae2=_0x4deb57;_0x2b64c7([{'range':{..._0x3c0ae2.range,'rangeType':_0x5bbd7a.ROW},'unitId':_0x3c0ae2.unitId,'subUnitId':_0x3c0ae2.subUnitId,'showText':'insertRow','highlightRow': true}],"insert");break;}case _0x2754fa.id:{let _0x17c6dc=_0x4deb57;_0x2b64c7([{'range':{..._0x17c6dc.range,'rangeType':_0x5bbd7a.COLUMN},'unitId':_0x17c6dc.unitId,'subUnitId':_0x17c6dc.subUnitId,'showText':"insertCol",'highlightColumn': true}],"insert");break;}case _0x1a1c89.id:{let _0x3e904f=_0x4deb57;_0x2b64c7(_0x3e904f.ranges["map"](_0x2bd849=>({'range':_0x2bd849,'unitId':_0x3e904f.unitId,'subUnitId':_0x3e904f.subUnitId,'showText':"mergeCells"})),"insert");break;}case _0x574777.id:{let _0x1bbca8=_0x4deb57;_0x2b64c7(Object.values(_0x1bbca8.values).map(_0x3800bb=>_0x3800bb.ranges["map"](_0x1f6e02=>({'range':_0x1f6e02,'unitId':_0x1bbca8.unitId,'subUnitId':_0x1bbca8.subUnitId,'showText':"setNumfmt"}))).flat(),'insert');break;}case _0x193d05.id:{let _0x327d6a=_0x4deb57;_0x2b64c7(_0x327d6a.ranges["map"](_0x2a8390=>({'range':_0x2a8390,'unitId':_0x327d6a.unitId,'subUnitId':_0x327d6a.subUnitId,'showText':"unmergeCells"})),"delete");break;}case _0x159141.id:{let _0x4a182a=_0x4deb57;_0x2b64c7(_0x4a182a.ranges["map"](_0xbbcbbc=>({'range':_0xbbcbbc,'unitId':_0x4a182a.unitId,'subUnitId':_0x4a182a.subUnitId,'showText':"removeNumfmt"})),"delete");break;}case _0x23e5d8.id:{let _0x4abbe3=_0x4deb57;_0x2b64c7([{'range':{..._0x4abbe3.sourceRange,'rangeType':_0x5bbd7a.ROW},'unitId':_0x4abbe3.unitId,'subUnitId':_0x4abbe3.subUnitId,'showText':"moveRows"}],"delete"),_0x2b64c7([{'range':{..._0x4abbe3.targetRange,'rangeType':_0x5bbd7a.ROW},'unitId':_0x4abbe3.unitId,'subUnitId':_0x4abbe3.subUnitId,'showText':"moveRows"}],'insert');break;}case _0x364b2d.id:{let _0x3f2868=_0x4deb57;_0x2b64c7([{'range':{..._0x3f2868.sourceRange,'rangeType':_0x5bbd7a.COLUMN},'unitId':_0x3f2868.unitId,'subUnitId':_0x3f2868.subUnitId,'showText':"moveCols"}],"delete"),_0x2b64c7([{'range':{..._0x3f2868.targetRange,'rangeType':_0x5bbd7a.COLUMN},'unitId':_0x3f2868.unitId,'subUnitId':_0x3f2868.subUnitId,'showText':"moveCols"}],'insert');break;}case _0xfd3e21.id:{let _0x170329=_0x4deb57;_0x2b64c7(_0x170329.ranges['map'](_0x294e3e=>({'range':{..._0x294e3e,'rangeType':_0x5bbd7a.ROW},'unitId':_0x170329.unitId,'subUnitId':_0x170329.subUnitId,'showText':"showRow",'highlightRow': true})),'update');break;}case _0x486a90.id:{let _0x44e138=_0x4deb57;_0x44e138.rowData&&_0x44e138.subUnitId&&Object.keys(_0x44e138.rowData).map(Number).forEach(_0x470795=>{_0x2b64c7([{'range':{'startRow':_0x470795,'endRow':_0x470795,'startColumn':NaN,'endColumn':NaN,'rangeType':_0x5bbd7a.ROW},'unitId':_0x44e138.unitId,'subUnitId':_0x44e138.subUnitId,'showText':"setRowData",'highlightRow': true}],"update");});break;}case _0x42854f.id:{let _0x150c21=_0x4deb57;_0x2b64c7(_0x150c21.ranges['map'](_0x3343f4=>({'range':{..._0x3343f4,'rangeType':_0x5bbd7a.COLUMN},'unitId':_0x150c21.unitId,'subUnitId':_0x150c21.subUnitId,'showText':'showCol','highlightColumn': true})),"update");break;}case _0x3182ef.id:{let _0x345a60=_0x4deb57;_0x345a60.columnData&&_0x345a60.subUnitId&&Object.keys(_0x345a60.columnData).map(Number).forEach(_0x1a053f=>{_0x2b64c7([{'range':{'startRow':NaN,'endRow':NaN,'startColumn':_0x1a053f,'endColumn':_0x1a053f,'rangeType':_0x5bbd7a.COLUMN},'unitId':_0x345a60.unitId,'subUnitId':_0x345a60.subUnitId,'showText':"setColData",'highlightColumn': true}],"update");});break;}case _0x30c3b3.id:{let _0x2a93e2=_0x4deb57;_0x2b64c7(_0x2a93e2.cellValue?Li(_0x2a93e2.cellValue).map(_0x1d62f3=>({'range':_0x1d62f3,'unitId':_0x2a93e2.unitId,'subUnitId':_0x2a93e2.subUnitId,'showText':"setRangeValues"})):[],"update");break;}case _0x417fb8.id:{let _0xd490b3=_0x305557.params;_0x2b64c7([{'range':Ii(_0xd490b3.from['value']),'unitId':_0xd490b3.unitId,'subUnitId':_0xd490b3.from["subUnitId"],'showText':'moveRange'}],"delete"),_0x2b64c7([{'range':Ii(_0xd490b3.to['value']),'unitId':_0xd490b3.unitId,'subUnitId':_0xd490b3.to["subUnitId"],'showText':'moveRange'}],'insert');break;}case _0x590be1.id:{let _0x108f57=_0x4deb57;_0x2b64c7([{'range':_0x108f57.range,'unitId':_0x108f57.unitId,'subUnitId':_0x108f57.subUnitId}],"update");break;}case _0x4336b1.id:{let _0x47add7=_0x4deb57;_0x47add7.ranges&&_0x47add7.ranges["length"]>0&&_0x47add7.subUnitId&&_0x2b64c7(_0x47add7.ranges["map"](_0x2af79d=>({'range':_0x2af79d,'unitId':_0x47add7.unitId,'subUnitId':_0x47add7.subUnitId,'showText':"setRowHeight"})),"arrowRow");break;}case _0x88e34d.id:{let _0x289d1e=_0x4deb57;_0x289d1e.ranges&&_0x289d1e.ranges['length']>0&&_0x289d1e.subUnitId&&_0x2b64c7(_0x289d1e.ranges["map"](_0x2cc598=>({'range':_0x2cc598,'unitId':_0x289d1e.unitId,'subUnitId':_0x289d1e.subUnitId,'showText':"setColWidth"})),"arrowColumn");break;}case _0x3c4356.id:{let _0x23498f=_0x4deb57;_0x2b64c7(_0x23498f.rules["map"](_0x287d93=>_0x287d93.ranges["map"](_0x459e3c=>({'range':_0x459e3c,'unitId':_0x23498f.unitId,'subUnitId':_0x23498f.subUnitId,'showText':"addRangeProtection"}))).flat(),"insertBorder");break;}case _0x2a14cd.id:{let _0x356e40=_0x4deb57;_0x2b64c7(_0x356e40.rule["ranges"].map(_0x308ffb=>({'range':_0x308ffb,'unitId':_0x356e40.unitId,'subUnitId':_0x356e40.subUnitId,'showText':'setCF'})),"insertBorder");break;}case _0x1b1c51.id:{let _0x42aa09=_0x4deb57;_0x2b64c7((Array.isArray(_0x42aa09.rule)?_0x42aa09.rule:[_0x42aa09.rule]).map(_0x502db8=>_0x502db8.ranges["map"](_0x44ce9f=>({'range':_0x44ce9f,'unitId':_0x42aa09.unitId,'subUnitId':_0x42aa09.subUnitId,'showText':'setDV'}))).flat(),"insertBorder");break;}case _0x4c5a10.id:{let _0x165792=_0x4deb57,_0x3d48a4=_0x165792.unitId,_0x42e335=_0x165792.subUnitId;_0x165792.ruleIds&&_0x165792.ruleIds["length"]>0&&_0x165792.subUnitId&&_0x165792.ruleIds["forEach"](_0x2096f8=>{let _0x27eb36=this._rangeProtectionRuleModel["getRule"](_0x3d48a4,_0x42e335,_0x2096f8),_0x4b8ed5=(_0x27eb36==null? undefined:_0x27eb36.ranges["map"](_0x582b1c=>({'range':_0x582b1c,'unitId':_0x3d48a4,'subUnitId':_0x42e335,'showText':'deleteRangeProtection'})))||[];_0x4b8ed5.length>0&&_0x2b64c7(_0x4b8ed5,"deleteBorder");});break;}case _0x40fb43.id:{let _0x306f0c=_0x4deb57;if(_0x306f0c.cfId&&_0x306f0c.subUnitId){let _0x596618=this._conditionalFormattingRuleModel['getRule'](_0x306f0c.unitId,_0x306f0c.subUnitId,_0x306f0c.cfId);if(_0x596618){let _0x3c6a61=_0x596618.ranges["map"](_0x234f92=>({'range':_0x234f92,'unitId':_0x306f0c.unitId,'subUnitId':_0x306f0c.subUnitId,'showText':"deleteCF"}));_0x3c6a61.length>0&&_0x2b64c7(_0x3c6a61,"deleteBorder");}}break;}case _0x97f0c0.id:{let _0x19fc99=_0x4deb57,_0x1a0383=Array.isArray(_0x19fc99.ruleId)?_0x19fc99.ruleId:[_0x19fc99.ruleId];_0x1a0383.length>0&&_0x19fc99.subUnitId&&_0x1a0383.forEach(_0x1de31d=>{let _0x45edd6=this._dataValidationModel["getRuleById"](_0x19fc99.unitId,_0x19fc99.subUnitId,_0x1de31d),_0x2e2fd8=(_0x45edd6==null? undefined:_0x45edd6.ranges['map'](_0x134af3=>({'range':_0x134af3,'unitId':_0x19fc99.unitId,'subUnitId':_0x19fc99.subUnitId,'showText':"removeDV"})))||[];_0x2e2fd8.length>0&&_0x2b64c7(_0x2e2fd8,"deleteBorder");});break;}case _0x476e11.id:{let _0x188113=_0x4deb57;_0x2b64c7(_0x188113.rule["ranges"].map(_0x267ad7=>({'range':_0x267ad7,'unitId':_0x188113.unitId,'subUnitId':_0x188113.subUnitId,'showText':"setRangeProtection"})),"updateBorder");break;}case _0x5278f9.id:{let _0x4eaef9=_0x4deb57;_0x2b64c7([{'range':_0x4eaef9.range,'unitId':_0x4eaef9.unitId,'subUnitId':_0x4eaef9.subUnitId,'showText':"setWorksheetRangeTheme"}],"updateBorder");break;}case _0x4e2817.id:{let _0x4ce749=_0x4deb57;_0x2b64c7([{'range':_0x4ce749.range,'unitId':_0x4ce749.unitId,'subUnitId':_0x4ce749.subUnitId,'showText':"deleteWorksheetRangeTheme"}],"updateBorder");break;}case _0x1a19e1.id:{let _0x1d65dc=_0x4deb57;_0x2b64c7(_0x1d65dc.rule['ranges'].map(_0x242437=>({'range':_0x242437,'unitId':_0x1d65dc.unitId,'subUnitId':_0x1d65dc.subUnitId,'showText':"setCF"})),'updateBorder');break;}case _0x51bbdc.id:{let _0x221b68=_0x4deb57,_0xa19336=this._conditionalFormattingRuleModel["getRule"](_0x221b68.unitId,_0x221b68.subUnitId,_0x221b68.start['id']),_0x3dc1e7=this._conditionalFormattingRuleModel["getRule"](_0x221b68.unitId,_0x221b68.subUnitId,_0x221b68.end['id']);_0xa19336&&_0x2b64c7(_0xa19336.ranges["map"](_0x81ce2f=>({'range':_0x81ce2f,'unitId':_0x221b68.unitId,'subUnitId':_0x221b68.subUnitId,'showText':"moveCF"})),'deleteBorder'),_0x3dc1e7&&_0x2b64c7(_0x3dc1e7.ranges["map"](_0xb864d4=>({'range':_0xb864d4,'unitId':_0x221b68.unitId,'subUnitId':_0x221b68.subUnitId,'showText':'moveCF'})),'insertBorder');break;}case _0x5419d0.id:{let _0x591ee4=_0x4deb57;_0x2b64c7([{'range':_0x591ee4.range,'unitId':_0x591ee4.unitId,'subUnitId':_0x591ee4.subUnitId,'showText':"setFilter"}],"updateBorder");break;}case _0x553ada.id:{let _0x1b65fc=_0x4deb57,_0x2442db=this._sheetsFilterService["getFilterModel"](_0x1b65fc.unitId,_0x1b65fc.subUnitId);if(_0x2442db){let _0x4afb2a=_0x2442db.getRange();_0x2b64c7(_0x4afb2a?[{'range':_0x4afb2a,'unitId':_0x1b65fc.unitId,'subUnitId':_0x1b65fc.subUnitId,'showText':"setFilterCriteria"}]:[],"updateBorder");}break;}case _0x3a03bf.id:{let _0x2be407=_0x4deb57,_0x270df4=this._sheetsFilterService["getFilterModel"](_0x2be407.unitId,_0x2be407.subUnitId);if(_0x270df4){let _0x2ab4ca=_0x270df4.getRange();_0x2b64c7(_0x2ab4ca?[{'range':_0x2ab4ca,'unitId':_0x2be407.unitId,'subUnitId':_0x2be407.subUnitId,'showText':"removeFilter"}]:[],"updateBorder");}break;}case _0x2b6a47.id:{let _0x368ba4=_0x4deb57,_0x115a12=this._sheetsFilterService['getFilterModel'](_0x368ba4.unitId,_0x368ba4.subUnitId);if(_0x115a12){let _0x5913cf=_0x115a12.getRange();_0x2b64c7(_0x5913cf?[{'range':_0x5913cf,'unitId':_0x368ba4.unitId,'subUnitId':_0x368ba4.subUnitId,'showText':'removeFilter'}]:[],"updateBorder");}break;}case _0x5eb890.id:{let _0x1f4da0=_0x4deb57,_0x46a880=this._dataValidationModel["getRuleById"](_0x1f4da0.unitId,_0x1f4da0.subUnitId,_0x1f4da0.ruleId);_0x46a880&&_0x2b64c7(_0x46a880.ranges["map"](_0x401aea=>({'range':_0x401aea,'unitId':_0x1f4da0.unitId,'subUnitId':_0x1f4da0.subUnitId,'showText':'setDV'})),"updateBorder");break;}case _0x2d3f5e.id:{let _0x3f3b87=_0x4deb57,_0x34e59=_0x3f3b87.unitId,_0x106cf4=_0x3f3b87.subUnitId,_0xde737f=_0x3f3b87.sparklineConfigMap;_0x3f3b87.sparklineConfigMap&&_0x106cf4&&Object.keys(_0x3f3b87.sparklineConfigMap).forEach(_0x40a0de=>{let _0x1174f0=_0xde737f[_0x40a0de],_0xfc2a59=Li(_0x1174f0.sparklines).map(_0x116d52=>({'range':_0x116d52,'unitId':_0x34e59,'subUnitId':_0x106cf4,'showText':"addSparkline"}));_0x2b64c7(_0xfc2a59,"insert");});break;}case _0x4e18c6.id:{let _0x2967ed=_0x4deb57;_0x2967ed.groupIds&&_0x2967ed.groupIds['length']>0&&_0x2967ed.subUnitId&&_0x2967ed.groupIds["forEach"](_0x312308=>{let _0x56bb61=this._sparklineDataSourceModel["getSparklineById"](_0x2967ed.unitId,_0x2967ed.subUnitId,_0x312308);if(_0x56bb61){let _0x3a2656=Li(_0x56bb61.sparklines['getMatrix']()).map(_0xd5904a=>({'range':_0xd5904a,'unitId':_0x2967ed.unitId,'subUnitId':_0x2967ed.subUnitId,'showText':"setSparkline"}));_0x2b64c7(_0x3a2656,"update");}});break;}case _0x50eeec.id:{let _0x2c3043=_0x4deb57;_0x2c3043.groupIds&&_0x2c3043.groupIds["length"]>0&&_0x2c3043.subUnitId&&_0x2c3043.groupIds["forEach"](_0x529087=>{let _0x212427=this._sparklineDataSourceModel["getSparklineById"](_0x2c3043.unitId,_0x2c3043.subUnitId,_0x529087);if(_0x212427){let _0x3e7fe2=Li(_0x212427.sparklines["getMatrix"]()).map(_0x1e4cdf=>({'range':_0x1e4cdf,'unitId':_0x2c3043.unitId,'subUnitId':_0x2c3043.subUnitId,'showText':"removeSparkline"}));_0x2b64c7(_0x3e7fe2,'delete');}});break;}case _0x3abc14.id:{let _0xe6693d=_0x4deb57;_0xe6693d.tableId&&_0xe6693d.subUnitId&&_0x2b64c7([{'range':_0xe6693d.range,'unitId':_0xe6693d.unitId,'subUnitId':_0xe6693d.subUnitId,'showText':"addTable"}],'insert');break;}case _0x57ee5b.id:{let _0x3d04f9=_0x4deb57;if(_0x3d04f9.tableId&&_0x3d04f9.subUnitId){var _0x1ae712;let _0x108af0=(_0x1ae712=this._sheetTableService["getTableInfo"](_0x3d04f9.unitId,_0x3d04f9.tableId))==null? undefined:_0x1ae712.range;_0x108af0&&_0x2b64c7([{'range':_0x108af0,'unitId':_0x3d04f9.unitId,'subUnitId':_0x3d04f9.subUnitId,'showText':"removeTable"}],"delete");}break;}case _0x2dc4d0.id:{let _0xacb4a9=_0x305557.params;if(_0xacb4a9.tableId){let _0x200e38=this._sheetTableService["getTableInfo"](_0xacb4a9.unitId,_0xacb4a9.tableId);_0x200e38&&_0x200e38.range&&_0x200e38.subUnitId&&(_0x44cfd9.subUnitIds["push"](_0x200e38.subUnitId),_0x2b64c7([{'range':_0x200e38.range,'unitId':_0xacb4a9.unitId,'subUnitId':_0x200e38.subUnitId,'showText':"setTableFilter"}],"update"));}break;}case _0x541565.id:{let _0x1a58e7=_0x4deb57;if(_0x1a58e7.tableId&&_0x1a58e7.subUnitId){var _0x4e3115;let _0xd239f1=(_0x4e3115=this._sheetTableService["getTableInfo"](_0x1a58e7.unitId,_0x1a58e7.tableId))==null? undefined:_0x4e3115.range;_0xd239f1&&_0x2b64c7([{'range':_0xd239f1,'unitId':_0x1a58e7.unitId,'subUnitId':_0x1a58e7.subUnitId,'showText':"updateTable"}],"update");}break;}case _0x4f42d6.id:{let _0x2e9735=_0x4deb57;if(_0x2e9735.pivotTableId&&_0x2e9735.subUnitId){var _0x5b1d57;let _0x3e91b4=(_0x5b1d57=this._sheetsPivotTableConfigModel['getPivotTableRangeInfo'](_0x2e9735.unitId,_0x2e9735.subUnitId,_0x2e9735.pivotTableId))==null? undefined:_0x5b1d57.rangeInfo;_0x3e91b4&&_0x2b64c7(_0x19aba1(_0x3e91b4).map(_0x21348f=>({'range':_0x21348f,'unitId':_0x2e9735.unitId,'subUnitId':_0x2e9735.subUnitId,'showText':'addPivotTable'})),"insert");}break;}case _0x374e7a.id:{let _0x3a34ef=_0x4deb57;if(_0x3a34ef.pivotTableId&&_0x3a34ef.subUnitId){var _0xc93254;let _0x3dda5d=(_0xc93254=this._sheetsPivotTableConfigModel["getPivotTableRangeInfo"](_0x3a34ef.unitId,_0x3a34ef.subUnitId,_0x3a34ef.pivotTableId))==null? undefined:_0xc93254.rangeInfo;_0x3dda5d&&_0x2b64c7(_0x19aba1(_0x3dda5d).map(_0xf74f83=>({'range':_0xf74f83,'unitId':_0x3a34ef.unitId,'subUnitId':_0x3a34ef.subUnitId,'showText':"removePivotTable"})),"delete");}break;}case _0x5ed8e2.id:case _0x7cf02a.id:case _0x9161fd.id:case _0x39f562.id:case _0x2d4aaa.id:case _0x2858af.id:case _0x282936.id:case _0x35e203.id:case _0x4f95e2.id:case _0x5616e9.id:case _0x4a84a7.id:case _0x479b1d.id:case _0x48815d.id:case _0x2e4104.id:case _0x33f953.id:{let _0x2ce492=_0x4deb57,_0x7bdc9e='setPivotOption';if(_0x69ffca===_0x5ed8e2.id?_0x7bdc9e='setPivotOption':_0x69ffca===_0x7cf02a.id?_0x7bdc9e='setPivotPosition':_0x69ffca===_0x9161fd.id?_0x7bdc9e='updatePivotSource':_0x69ffca===_0x39f562.id?_0x7bdc9e="addPivotField":_0x69ffca===_0x2d4aaa.id?_0x7bdc9e="removePivotField":_0x69ffca===_0x2858af.id?_0x7bdc9e='renamePivotField':_0x69ffca===_0x282936.id?_0x7bdc9e="updateFieldPosition":_0x69ffca===_0x35e203.id?_0x7bdc9e="updateValuePosition":_0x69ffca===_0x4f95e2.id?_0x7bdc9e="updatePivotFieldSource":_0x69ffca===_0x5616e9.id?_0x7bdc9e="setPivotFilter":_0x69ffca===_0x4a84a7.id?_0x7bdc9e="setPivotValueFilter":_0x69ffca===_0x479b1d.id?_0x7bdc9e="setPivotSort":_0x69ffca===_0x48815d.id?_0x7bdc9e="setPivotCollapse":_0x69ffca===_0x33f953.id?_0x7bdc9e="setPivotSubtotalType":_0x69ffca===_0x2e4104.id&&(_0x7bdc9e="setPivotFieldFormat"),_0x2ce492.pivotTableId&&_0x2ce492.subUnitId){var _0x436c3f;let _0xa404b5=(_0x436c3f=this._sheetsPivotTableConfigModel["getPivotTableRangeInfo"](_0x2ce492.unitId,_0x2ce492.subUnitId,_0x2ce492.pivotTableId))==null? undefined:_0x436c3f.rangeInfo;_0xa404b5&&_0x2b64c7(_0x19aba1(_0xa404b5).map(_0x5bfc54=>({'range':_0x5bfc54,'unitId':_0x2ce492.unitId,'subUnitId':_0x2ce492.subUnitId,'showText':_0x7bdc9e})),"update");}break;}case _0x269522.id:{let _0x592c91=_0x4deb57;_0x592c91.chartId&&_0x44cfd9.insertDrawings['push']({'drawingId':_0x592c91.chartId,'unitId':_0x592c91.unitId,'subUnitId':_0x592c91.subUnitId,'showText':_0x3b5deb});break;}case _0x1b5309.id:{let _0xe41f65=_0x4deb57;_0xe41f65.chartId&&_0x44cfd9.deleteDrawings["push"]({'drawingId':_0xe41f65.chartId,'unitId':_0xe41f65.unitId,'subUnitId':_0xe41f65.subUnitId,'showText':_0x3b5deb});break;}case _0x582a54.id:{let _0x9470a2=_0x305557.params;if(_0x9470a2.chartModelId){let _0x1b663d=this._sheetsChartService["getSubUnitId"](_0x9470a2.unitId,_0x9470a2.chartModelId);_0x1b663d&&(_0x44cfd9.subUnitIds["push"](_0x1b663d),_0x44cfd9.updateDrawings["push"]({'drawingId':_0x9470a2.chartModelId,'unitId':_0x9470a2.unitId,'subUnitId':_0x1b663d,'showText':_0x3b5deb}));}break;}case _0xdff17e.id:{let _0x4effbf=_0x305557.params;if(_0x4effbf.chartModelId){let _0x59d535=this._sheetsChartService["getSubUnitId"](_0x4effbf.unitId,_0x4effbf.chartModelId);_0x59d535&&(_0x44cfd9.subUnitIds["push"](_0x59d535),_0x44cfd9.updateDrawings["push"]({'drawingId':_0x4effbf.chartModelId,'unitId':_0x4effbf.unitId,'subUnitId':_0x59d535,'showText':_0x3b5deb}));}break;}case _0x1ff80.id:{let _0x49e7fe=_0x4deb57;_0x49e7fe.shapeId&&_0x44cfd9.insertDrawings['push']({'drawingId':_0x49e7fe.shapeId,'unitId':_0x49e7fe.unitId,'subUnitId':_0x49e7fe.subUnitId,'showText':_0x3b5deb});break;}case _0x38deb3.id:{let _0x17e957=_0x4deb57;_0x17e957.shapeId&&_0x44cfd9.deleteDrawings["push"]({'drawingId':_0x17e957.shapeId,'unitId':_0x17e957.unitId,'subUnitId':_0x17e957.subUnitId,'showText':_0x3b5deb});break;}case _0x4717d1.id:case _0x48225b.id:{let _0xae4006=_0x4deb57;_0xae4006.shapeId&&_0x44cfd9.updateDrawings['push']({'drawingId':_0xae4006.shapeId,'unitId':_0xae4006.unitId,'subUnitId':_0xae4006.subUnitId,'showText':_0x3b5deb});break;}case _0x343963.id:{let _0x35b34d=_0x4deb57,_0x538258=_0x35b34d.objects,_0x41b88d=_0x35b34d.type,_0x456b2b=_0x41b88d!==_0x47d822.INSERT&&_0x41b88d!==_0x47d822.REMOVE,_0x48a3f9=_0x41b88d===_0x47d822.INSERT,_0x3f25ff=_0x41b88d===_0x47d822.REMOVE,_0x5d03e6=_0x3b5deb;if(_0x41b88d===_0x47d822.INSERT?_0x5d03e6=this._localeService['t']("sheets-history-ui.viewer.action.insertDrawing"):_0x41b88d===_0x47d822.REMOVE&&(_0x5d03e6=this._localeService['t']("sheets-history-ui.viewer.action.removeDrawing")),Array.isArray(_0x538258))_0x538258.forEach(_0xe655f9=>{if("drawingId"in _0xe655f9&&_0xe655f9.drawingId)_0x456b2b?_0x44cfd9.updateDrawings["push"]({'drawingId':_0xe655f9.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x48a3f9?_0x44cfd9.insertDrawings["push"]({'drawingId':_0xe655f9.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x3f25ff&&_0x44cfd9.deleteDrawings["push"]({'drawingId':_0xe655f9.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6});else{if("parent"in _0xe655f9&&"children"in _0xe655f9){var _0x31ca1e,_0x35db9c;(_0x31ca1e=_0xe655f9.parent)!=null&&_0x31ca1e.drawingId&&(_0x456b2b?_0x44cfd9.updateDrawings["push"]({'drawingId':_0xe655f9.parent["drawingId"],'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x48a3f9?_0x44cfd9.insertDrawings["push"]({'drawingId':_0xe655f9.parent["drawingId"],'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x3f25ff&&_0x44cfd9.deleteDrawings["push"]({'drawingId':_0xe655f9.parent['drawingId'],'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6})),(_0x35db9c=_0xe655f9.children)==null||_0x35db9c.forEach(_0x598091=>{_0x598091.drawingId&&(_0x456b2b?_0x44cfd9.updateDrawings['push']({'drawingId':_0x598091.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x48a3f9?_0x44cfd9.insertDrawings["push"]({'drawingId':_0x598091.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x3f25ff&&_0x44cfd9.deleteDrawings['push']({'drawingId':_0x598091.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}));});}}});else{if(_0x538258&&typeof _0x538258=='object'){if('drawingIds'in _0x538258&&Array.isArray(_0x538258.drawingIds))_0x538258.drawingIds["forEach"](_0x2b89de=>{_0x456b2b?_0x44cfd9.updateDrawings["push"]({'drawingId':_0x2b89de,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x48a3f9?_0x44cfd9.insertDrawings["push"]({'drawingId':_0x2b89de,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x3f25ff&&_0x44cfd9.deleteDrawings["push"]({'drawingId':_0x2b89de,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6});});else{if('parent'in _0x538258&&"children"in _0x538258){var _0x41f310,_0x5e2746;(_0x41f310=_0x538258.parent)!=null&&_0x41f310.drawingId&&(_0x456b2b?_0x44cfd9.updateDrawings["push"]({'drawingId':_0x538258.parent['drawingId'],'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x48a3f9?_0x44cfd9.insertDrawings["push"]({'drawingId':_0x538258.parent['drawingId'],'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x3f25ff&&_0x44cfd9.deleteDrawings["push"]({'drawingId':_0x538258.parent["drawingId"],'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6})),(_0x5e2746=_0x538258.children)==null||_0x5e2746.forEach(_0x188d9c=>{_0x188d9c.drawingId&&(_0x456b2b?_0x44cfd9.updateDrawings["push"]({'drawingId':_0x188d9c.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x48a3f9?_0x44cfd9.insertDrawings['push']({'drawingId':_0x188d9c.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}):_0x3f25ff&&_0x44cfd9.deleteDrawings["push"]({'drawingId':_0x188d9c.drawingId,'unitId':_0x35b34d.unitId,'subUnitId':_0x35b34d.subUnitId,'showText':_0x5d03e6}));});}}}}break;}}return _0x44cfd9;}_combineRanges(_0x29073e){if(_0x29073e.length<=1)return _0x29073e;let _0x2ba084=new Map();return _0x29073e.forEach(_0xdf1e88=>{let {unitId:_0x49ab7e,subUnitId:_0x6c9aa9}=_0xdf1e88,_0x141fa4=_0x49ab7e+'-'+_0x6c9aa9;if(!_0x2ba084.has(_0x141fa4))_0x2ba084.set(_0x141fa4,[_0xdf1e88]);else{var _0x23e3ae;(_0x23e3ae=_0x2ba084.get(_0x141fa4))==null||_0x23e3ae.push(_0xdf1e88);}}),Array.from(_0x2ba084.values()).map(_0x5ca6a1=>new _0x4925da().add(..._0x5ca6a1.map(_0x20ac6f=>_0x20ac6f.range)).merge().map(_0x263d6c=>({'range':_0x263d6c,'unitId':_0x5ca6a1[0].unitId,'subUnitId':_0x5ca6a1[0].subUnitId,'showText':_0x5ca6a1[0].showText,'highlightRow':_0x5ca6a1[0].highlightRow,'highlightColumn':_0x5ca6a1[0].highlightColumn}))).flat();}};Z=J([q(0,_0x200c9d(X)),q(1,_0x148615),q(2,_0x2b8368),q(3,_0x200c9d(_0x39df73)),q(4,_0x200c9d(_0x5a9ee5)),q(5,_0x200c9d(_0x5c942e)),q(6,_0x200c9d(_0x206cef)),q(7,_0x200c9d(_0x4d476b)),q(8,_0x200c9d(_0x465b56)),q(9,_0x200c9d(_0x57fbab)),q(10,_0x200c9d(_0x2bdbd6)),q(11,_0x200c9d(_0x3965dd)),q(12,_0x200c9d(Y))],Z);function Ii(_0x4acc97){return new _0x20fa55(_0x4acc97).getDataRange();}function Li(_0x10a9d6){let _0x1cb9b0=new _0x20fa55(_0x10a9d6),_0x2f0ae9=new _0x20fa55();return _0x1cb9b0.forValue((_0x5f082b,_0x267fbf)=>{_0x2f0ae9.setValue(_0x5f082b,_0x267fbf,1);}),_0x1892ad(_0x2f0ae9);}const Ri=[{'key':0,'labelKey':"sheets-history-ui.viewer.panel.filterAll"},{'key':1,'labelKey':'sheets-history-ui.viewer.panel.filterUser'},{'key':2,'labelKey':"sheets-history-ui.viewer.panel.filterAi"}];function zi(_0x5b4d90){let {value:_0x31f742,onChange:_0x2116ac}=_0x5b4d90,_0x2dc2ef=_0x98ea07(_0x2bdbd6);return _0x5790c5("div",{'className':"univer-relative univer-h-8",'children':_0x5790c5(_0x3f61cf,{'items':Ri.map(_0x879058=>({'label':_0x2dc2ef.t(_0x879058.labelKey),'value':_0x879058.key})),'value':_0x31f742,'onChange':_0x2116ac})});}function Bi(){var _0x583992;let _0x5ed90b=_0x98ea07(X),_0x155e55=_0x98ea07(Y),_0x56f425=_0x98ea07(Z),_0x4eb35b=_0x98ea07(_0x47a55c),_0x46c384=_0xd2f1e0(_0x5ed90b.versions$),_0x31f1ac=_0xd2f1e0(_0x5ed90b.creators$,[]),[_0x7e1a5f,_0x33335a]=_0x446936(()=>new Set()),[_0x54632d,_0x446a4d]=_0x446936(()=>new Map()),[_0x2707dd,_0x41e6c2]=_0x446936(()=>new Set()),[_0x322f8c,_0x2ad7c]=_0x446936(0),_0x52c163=_0x98ea07(_0x2bdbd6),_0x26fc3e=_0x377add(null),[_0x1fbd73,_0x97c4de]=_0x446936( false),[_0x3ce109,_0x714fe0]=_0x446936([]),_0xf4e77d=((_0x583992=_0x4eb35b.getConfig("sheets-history-ui.config"))==null? undefined:_0x583992.historyAIassistantEnabled)?? false,_0x4d7143=Pi(_0x46c384),[_0x255cc2,_0x5238b7]=_0x446936([]),_0x4e1ed5=_0x227cfb(()=>_0x31f1ac.map(_0x4ac911=>({'key':_0x4ac911.userId,'label':_0x4ac911.name})),[_0x31f1ac]);_0x411dd3(()=>{_0x5ed90b.loadHistoryCreatorList().catch(()=> undefined);},[_0x5ed90b]);let _0x843888=_0x2fc950(_0x1bec65=>{_0x5238b7([]),_0x2ad7c(_0x1bec65),_0x5ed90b.unitId&&_0x5ed90b.loadInitialVersions(_0x5ed90b.unitId,{'origin':_0x1bec65}).catch(()=> undefined);},[_0x5ed90b]);_0x411dd3(()=>{let _0x27120d=_0x26fc3e.current;if(!_0x27120d)return;let _0x463c0b,_0x5aacf6=()=>{clearTimeout(_0x463c0b),_0x463c0b=setTimeout(()=>{let {scrollTop:_0x748051,scrollHeight:_0x10d2a9,clientHeight:_0x67bc54}=_0x27120d;_0x748051+_0x67bc54>=_0x10d2a9-5&&_0x5ed90b.loadMoreVersions().catch(()=> undefined);},100);};return _0x27120d.addEventListener("scroll",_0x5aacf6),()=>{clearTimeout(_0x463c0b),_0x27120d.removeEventListener("scroll",_0x5aacf6);};},[_0x5ed90b]);let _0x3cd839=_0x2fc950(async _0x4a1db6=>{let _0x4c65ff=_0x4a1db6.id;if(_0x7e1a5f.has(_0x4c65ff)){_0x33335a(_0x22cd5a=>{let _0x3f3e7a=new Set(_0x22cd5a);return _0x3f3e7a.delete(_0x4c65ff),_0x3f3e7a;});return;}if(_0x54632d.has(_0x4c65ff)){_0x33335a(_0x1b0d92=>new Set(_0x1b0d92).add(_0x4c65ff));return;}_0x41e6c2(_0x44a601=>new Set(_0x44a601).add(_0x4c65ff));try{var _0x3e9126;let _0x5c3c3d=_0x5ed90b.unitId;if(!_0x5c3c3d)return;let _0x5e36aa=await _0x155e55.getHistoryChangesets({},{'unitId':_0x5c3c3d,'startRevision':_0x4a1db6.startRev,'endRevision':_0x4a1db6.endRev});if(((_0x3e9126=_0x5e36aa.error)==null? undefined:_0x3e9126.code)===1&&_0x5e36aa.changesets){let _0x15c692=_0x5e36aa.changesets["reverse"]().map(_0x244a95=>{var _0x8d145e,_0xdaa4a;let _0x4ea0e0=_0x278de0(_0x244a95),_0x350105=_0x244a95.userID||_0x4ea0e0.userID,_0x4a5bca=(_0x8d145e=_0x5e36aa.users)==null? undefined:_0x8d145e[_0x350105],_0x6c4302=((_0xdaa4a=_0x244a95.mutations)==null? undefined:_0xdaa4a.map(_0x4d58c8=>_0x4d58c8.id))||[];return{'id':_0x4c65ff+"-detail-"+_0x244a95.revision,'unitId':_0x244a95.unitID,'startRev':_0x244a95.revision,'endRev':_0x244a95.revision,'time':_0x244a95.createTime?_0x244a95.createTime*1000: undefined,'user':(_0x4a5bca==null? undefined:_0x4a5bca.name)||'','users':[(_0x4a5bca==null? undefined:_0x4a5bca.name)||''],'commands':_0x6c4302,'isAnonymous': false,'isDetail': true,'parentId':_0x4c65ff,'additionalFields':_0x244a95.additionalFields};});_0x446a4d(_0x35cdd2=>new Map(_0x35cdd2).set(_0x4c65ff,_0x15c692)),_0x15c692.forEach(_0xb946e8=>{_0x5ed90b.registerDetailVersion(_0xb946e8);});for(let _0xad64d8 of _0x15c692)await _0x56f425.ensureVersion(_0xad64d8.id);_0x33335a(_0x38491b=>new Set(_0x38491b).add(_0x4c65ff));}}catch(_0x47cf1d){console.error("Failed to fetch version details:",_0x47cf1d);}finally{_0x41e6c2(_0x5cd9d9=>{let _0x27b42d=new Set(_0x5cd9d9);return _0x27b42d.delete(_0x4c65ff),_0x27b42d;});}},[_0x7e1a5f,_0x54632d,_0x5ed90b,_0x155e55,_0x56f425]);return _0x46c384?_0x435c70("div",{'ref':_0x26fc3e,'className':"univer-absolute univer-flex univer-h-[calc(100%-32px)] univer-w-[calc(100%-16px)] univer-flex-col univer-overflow-auto",'children':[_0xf4e77d&&_0x435c70('div',{'className':"univer-sticky univer-top-0 univer-z-10 univer-mb-3 univer-flex univer-items-center univer-gap-2 univer-bg-gray-0 dark:!univer-bg-gray-200",'children':[_0x5790c5("div",{'className':'univer-flex-1','children':_0x5790c5(zi,{'value':_0x322f8c,'onChange':_0x843888})}),_0x5790c5(_0x5cde61,{'align':"end",'open':_0x1fbd73,'onOpenChange':_0x3f5ab4=>{_0x97c4de(_0x3f5ab4),_0x3f5ab4&&_0x714fe0(_0x255cc2);},'overlay':_0x435c70("div",{'className':"univer-min-w-[240px]",'children':[_0x5790c5("div",{'className':"univer-px-3 univer-py-2 univer-text-sm univer-font-semibold",'children':_0x52c163.t("sheets-history-ui.viewer.panel.filterCollaborator")}),_0x5790c5("div",{'className':"univer-border-t univer-border-gray-200 dark:!univer-border-gray-700"}),_0x5790c5("div",{'className':"univer-max-h-[300px] univer-overflow-y-auto univer-py-1",'children':_0x4e1ed5.map(_0x1d3426=>{let _0x55976b=_0x3ce109.includes(_0x1d3426.key);return _0x435c70("div",{'className':"univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-px-3 univer-py-2 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800",'onClick':()=>{let _0x1fd05e=_0x55976b?_0x3ce109.filter(_0x18c38c=>_0x18c38c!==_0x1d3426.key):[..._0x3ce109,_0x1d3426.key];_0x714fe0(_0x1fd05e);},'children':[_0x5790c5(_0x7fad2d,{'checked':_0x55976b}),_0x5790c5("span",{'className':'univer-text-sm','children':_0x1d3426.label})]},_0x1d3426.key);})}),_0x5790c5("div",{'className':"univer-border-t univer-border-gray-200 dark:!univer-border-gray-700"}),_0x435c70("div",{'className':"univer-flex univer-items-center univer-justify-end univer-gap-2 univer-p-2",'children':[_0x5790c5(_0xe7ae40,{'variant':'ghost','onClick':()=>{_0x714fe0(_0x255cc2),_0x97c4de( false);},'children':_0x52c163.t("sheets-history-ui.viewer.panel.filterCollaboratorCancel")}),_0x5790c5(_0xe7ae40,{'onClick':()=>{_0x5238b7(_0x3ce109),_0x5ed90b.unitId&&_0x5ed90b.loadInitialVersions(_0x5ed90b.unitId,{'origin':_0x322f8c,'userIds':_0x3ce109}).catch(()=> undefined),_0x97c4de( false);},'children':_0x52c163.t("sheets-history-ui.viewer.panel.filterCollaboratorConfirm")})]})]}),'children':_0x5790c5(_0xe7ae40,{'variant':"ghost",'children':_0x5790c5(_0x16d5e2,{'className':_0x5df285("univer-size-4",{'univer-text-blue-600\x20dark:!univer-text-blue-400':_0x255cc2.length>0})})})})]}),_0x5790c5('div',{'className':"univer-relative univer-flex-1 univer-space-y-2 univer-pb-4",'children':_0x4d7143.map(_0x22aac5=>_0x435c70(_0x309698,{'children':[_0x5790c5(Hi,{'date':_0x22aac5.dateString,'startDate':_0x22aac5.startDateString,'endDate':_0x22aac5.endDateString}),_0x22aac5.versions["map"](_0x438b71=>{let _0x38ebbb=_0x7e1a5f.has(_0x438b71.id),_0x22d438=_0x2707dd.has(_0x438b71.id),_0x32113e=_0x54632d.get(_0x438b71.id)||[];return _0x435c70(_0x309698,{'children':[_0x5790c5(Ui,{'item':_0x438b71,'onToggleExpand':_0x3cd839,'isExpanded':_0x38ebbb,'isLoadingDetail':_0x22d438}),_0x38ebbb&&_0x32113e.map((_0x167880,_0x27b762)=>_0x435c70("div",{'className':"univer-relative !univer-mb-0 !univer-mt-0",'children':[_0x435c70("div",{'className':"univer-absolute univer-left-[30px] univer-top-0 univer-h-full univer-w-2.5 rtl:univer-left-auto rtl:univer-right-[30px]",'children':[_0x27b762<_0x32113e.length-1&&_0x5790c5("div",{'className':"univer-absolute univer-left-0 univer-top-0 univer-h-full univer-w-px univer-bg-gray-100 rtl:univer-left-auto rtl:univer-right-0 dark:!univer-bg-gray-800"}),_0x27b762===_0x32113e.length-1&&_0x5790c5("div",{'className':"univer-absolute univer-left-0 univer-top-0 univer-h-1/2 univer-w-px univer-bg-gray-100 rtl:univer-left-auto rtl:univer-right-0 dark:!univer-bg-gray-800"}),_0x5790c5('div',{'className':"univer-absolute univer-left-0 univer-top-1/2 univer-h-px univer-w-2.5 -univer-translate-y-1/2 univer-bg-gray-100 rtl:univer-left-auto rtl:univer-right-0 dark:!univer-bg-gray-800"})]}),_0x5790c5(Ui,{'item':_0x167880,'isDetail': true})]},_0x438b71.id+"-detail-"+_0x167880.id))]},_0x438b71.id);})]},_0x22aac5.dateString))})]}):_0x5790c5(Vi,{});}function Vi(){return _0x5790c5('div',{'className':"univer-flex univer-items-center univer-justify-center",'children':_0x5790c5("span",{'className':"univer-text-gray-500",'children':_0x5790c5(_0x2b8ff6,{'className':'univer-m-auto\x20univer-animate-spin'})})});}function Hi(_0x516060){let _0x30304a=_0x98ea07(_0x2bdbd6),{date:_0x1b4ba4,startDate:_0x464cea=_0x1b4ba4}=_0x516060;return _0x5790c5('div',{'className':"univer-flex univer-items-center univer-gap-2.5 univer-pt-1.5 univer-text-sm univer-font-medium",'children':Ni(_0x464cea,_0x30304a)});}function Ui(_0x38adb2){let {item:_0x3e279e,onToggleExpand:_0x3cff28,isExpanded:_0x2435fd,isLoadingDetail:_0x474a51,isDetail:_0x4be3f9}=_0x38adb2,{time:_0x346f13,user:_0x5047e8,startRevCreateTime:_0x302475,endRevCreateTime:_0x4ead8e,users:_0x59ffd2}=_0x3e279e,_0x1e5e71=_0x98ea07(X),_0x4ea7d0=_0x98ea07(Z),_0x258465=_0xd2f1e0(_0x1e5e71.currentVersion$,'', true)===_0x3e279e.id,_0x1377fc=_0x1e5e71.getCurrentUnitCurrentVersion()===_0x3e279e.endRev,_0x453836=!_0x1377fc&&_0x1e5e71.canRevert,_0x23d091=_0x98ea07(_0x2bdbd6),_0xfa94cc=Ai(_0x346f13,_0x23d091),_0x20d1f8=Ai(_0x302475,_0x23d091),_0x1157ce=Ai(_0x4ead8e,_0x23d091),_0x2538ff=_0x23d091.t("sheets-history-ui.viewer.panel.currentVersion"),_0x2e04dd=_0x3e279e.startRev!==_0x3e279e.endRev,_0xa9b467=!!_0x3e279e.additionalFields,_0x2e1a4b=_0x227cfb(()=>{let _0x3af35e=_0x5047e8||_0x23d091.t('sheets-history-ui.viewer.panel.unknownUser');return _0x59ffd2&&_0x59ffd2.filter(_0x453b0f=>_0x453b0f).length>0&&(_0x3af35e=_0x59ffd2.filter(_0x285bfe=>_0x285bfe).join(',\x20')),_0xa9b467?''+_0x23d091.t("sheets-history-ui.viewer.panel.aiAssistant")+(_0x3af35e?'\x20('+_0x3af35e+')':''):_0x3af35e;},[_0xa9b467,_0x5047e8,_0x59ffd2,_0x23d091]),_0x369b3a=_0x2fc950(async _0x5d444e=>{_0x1e5e71.loadingState!=='loading'&&(_0x1e5e71.selectVersion(_0x5d444e),_0x4be3f9&&(await _0x4ea7d0.ensureVersion(_0x5d444e),await _0x1e5e71.triggerLoadSheet(_0x5d444e)));},[_0x1e5e71,_0x4ea7d0,_0x4be3f9]),_0x116a81=_0x2fc950(_0x2d284b=>{_0x1e5e71.triggerRevert(_0x2d284b).catch(()=> undefined);},[_0x1e5e71]),_0x3716c2=_0x2fc950(_0x4048c8=>{_0x4048c8.stopPropagation(),_0x3cff28&&!_0x474a51&&_0x3cff28(_0x3e279e).catch(()=> undefined);},[_0x3cff28,_0x3e279e,_0x474a51]),_0x1b2ce1=_0x5790c5(_0x2e00b9,{'className':'univer-size-8\x20univer-text-gray-400\x20rtl:univer-rotate-180'});_0x474a51?_0x1b2ce1=_0x5790c5(_0x2b8ff6,{'className':"univer-animate-spin"}):_0x2435fd&&(_0x1b2ce1=_0x5790c5(_0x835cdf,{'className':"univer-size-8 univer-text-gray-400"}));let _0x48e37d=_0x20d1f8.time;return _0x4be3f9?_0x48e37d=_0xfa94cc.time:_0x302475!==_0x4ead8e&&(_0x48e37d=_0x20d1f8.time+" - "+_0x1157ce.time),_0x435c70('div',{'className':_0x5df285("univer-min-h-15 univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-rounded-md univer-px-1 univer-py-1.5 univer-transition-colors hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800",{'univer-bg-gray-50\x20dark:!univer-bg-gray-900':_0x258465,'univer-ml-6\x20rtl:univer-ml-0\x20rtl:univer-mr-6':_0x4be3f9}),'onClick':()=>_0x369b3a(_0x3e279e.id).catch(()=> undefined),'children':[_0x5790c5("div",{'className':'univer-flex\x20univer-w-3\x20univer-items-center\x20univer-justify-center','children':_0x2e04dd&&!_0x4be3f9&&_0x5790c5("div",{'onClick':_0x3716c2,'className':"univer-flex univer-size-5 univer-cursor-pointer univer-items-center univer-justify-center",'children':_0x1b2ce1})}),_0x435c70('div',{'className':"univer-flex univer-flex-1 univer-flex-col univer-gap-1",'children':[_0x435c70("div",{'className':"univer-flex univer-min-h-6 univer-w-full univer-items-center univer-justify-between",'children':[_0x435c70('div',{'className':"univer-flex univer-flex-1 univer-items-center univer-gap-1.5 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",'children':[_0xa9b467&&_0x5790c5(_0x126ba5,{'className':"univer-size-4 univer-shrink-0"}),_0x5790c5("span",{'className':"univer-break-all univer-font-medium univer-text-gray-700 dark:!univer-text-gray-200",'children':_0x2e1a4b}),_0x5790c5('span',{'className':"univer-text-center univer-text-gray-500 dark:!univer-text-gray-400",'children':_0x48e37d}),_0x1377fc&&_0x5790c5("span",{'className':"univer-ml-1 univer-flex univer-flex-shrink-0 univer-items-center univer-justify-center univer-rounded univer-border univer-border-primary-600 univer-bg-primary-50 univer-px-1.5 univer-text-xs univer-text-primary-600",'children':_0x2538ff})]}),_0x5790c5("div",{'children':_0x453836&&_0x5790c5(_0x349151,{'title':_0x23d091.t("sheets-history-ui.viewer.panel.revertDesc"),'children':_0x5790c5("div",{'onClick':_0x278972=>{_0x278972.stopPropagation(),_0x116a81(_0x3e279e.id);},'className':'univer-flex\x20univer-size-6\x20univer-items-center\x20univer-justify-center\x20univer-rounded\x20univer-text-gray-400\x20hover:univer-bg-gray-100\x20dark:hover:!univer-bg-gray-700','children':_0x5790c5(_0x284b24,{})})})})]}),_0x5790c5('div',{'className':'univer-text-sm\x20univer-leading-5\x20univer-text-gray-500\x20dark:!univer-text-gray-300','children':ji(_0x3e279e,_0x23d091)})]})]});}let Q=class extends _0x8f71e1{constructor(_0x3e1b1c,_0x2a903f){super(),this.disposeWithMe(_0x3e1b1c.register(vi,Bi)),this.disposeWithMe(_0x2a903f.register({'HistoryIcon':_0x5c7750}));}};Q=J([q(0,_0x200c9d(_0x146326)),q(1,_0x200c9d(_0x4c2752))],Q);let Wi=class extends _0x8f71e1{constructor(_0x3bb1b0){super(),this._cellEditorManagerService=_0x3bb1b0,this._init();}_init(){this.disposeWithMe(this._cellEditorManagerService["state$"].subscribe(_0x585d25=>{_0x585d25!=null&&_0x585d25.show&&this._cellEditorManagerService["setState"]({'show': false});}));}};Wi=J([q(0,_0x45b20d)],Wi);function Gi(){let _0xd50f33=_0x98ea07(X),_0x37f2e9=_0x98ea07(_0x2bdbd6);if(_0xd2f1e0(_0xd50f33.loadingState$,"init")!=="loading")return null;let _0x2f53df=_0x37f2e9.t("sheets-history-ui.viewer.info.loading");return _0x5790c5("div",{'aria-busy':"true",'aria-label':_0x2f53df,'className':"univer-bg-gray-0/70 dark:!univer-bg-gray-900/70 univer-fixed univer-inset-0 univer-z-[1000] univer-flex univer-cursor-wait univer-items-center univer-justify-center univer-backdrop-blur-sm",'children':_0x435c70("div",{'role':"status",'aria-live':"polite",'className':"univer-flex univer-items-center univer-gap-3 univer-rounded-lg univer-bg-gray-0 univer-px-5 univer-py-4 univer-text-sm univer-text-gray-900 univer-shadow-lg dark:!univer-bg-gray-700 dark:!univer-text-gray-0",'children':[_0x5790c5(_0x2b8ff6,{'className':"univer-size-6 univer-animate-spin univer-text-gray-500"}),_0x5790c5("span",{'children':_0x2f53df})]})});}function Ki(){let _0x2521fb=_0x98ea07(X),_0x6ff7e6=_0x98ea07(_0x2bdbd6),_0x538796=_0xd2f1e0(_0x2521fb.currentVersion$),_0xc4a17=_0x227cfb(()=>_0x538796?_0x2521fb.getSelectedVersionCanRevert(): false,[_0x2521fb,_0x538796]),_0x314348=_0x2fc950(()=>{_0x2521fb.exitHistoryMode();},[_0x2521fb]),_0x52b14d=_0x2fc950(()=>{_0x2521fb.triggerRevert();},[_0x2521fb]);return _0x435c70('div',{'className':_0x5df285("univer-flex univer-h-12 univer-cursor-default univer-items-center univer-justify-between univer-px-3",_0x2ce247),'children':[_0x435c70(_0xe7ae40,{'onClick':_0x314348,'children':[_0x5790c5(_0x2c184a,{'className':"univer-size-4"}),_0x6ff7e6.t("sheets-history-ui.viewer.header.back")]}),_0x5790c5(_0xe7ae40,{'variant':"primary",'disabled':!_0xc4a17,'onClick':_0x52b14d,'children':_0x6ff7e6.t('sheets-history-ui.viewer.header.revert')})]});}let qi=class extends _0x8f71e1{constructor(_0x12ee23,_0x3d097f,_0x576a86,_0x4dafe3,_0x3a713d,_0x3eb7e7,_0x5a2bdd){super(),this._permissionService=_0x12ee23,this._uiPartsService=_0x3d097f,this._messageService=_0x576a86,this._localeService=_0x4dafe3,this._historyManagerService=_0x3a713d,this._injector=_0x3eb7e7,this._configService=_0x5a2bdd,this._init();}_init(){this.disposeWithMe(this._historyManagerService["currentVersion$"].subscribe(_0x3efcea=>{_0x3efcea&&this._historyManagerService["triggerLoadSheet"](_0x3efcea);})),this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(_0x2fc268=>{let _0xec2eda=this._historyManagerService["unitId"];_0xec2eda&&(_0x2fc268.subType===_0x4f2a57.Edit&&_0x2fc268.value=== true&&this._permissionService["updatePermissionPoint"](new _0x36e808(_0xec2eda).id, false),_0x2fc268.subType===_0x4f2a57.RenameSheet&&_0x2fc268.value=== true&&this._permissionService["updatePermissionPoint"](new _0x179ddc(_0xec2eda).id, false),_0x2fc268.subType===_0x4f2a57.MoveSheet&&_0x2fc268.value=== true&&this._permissionService["updatePermissionPoint"](new _0x569f7f(_0xec2eda).id, false),_0x2fc268.subType===_0x4f2a57.HideSheet&&_0x2fc268.value=== true&&this._permissionService["updatePermissionPoint"](new _0x4acf7e(_0xec2eda).id, false),_0x2fc268.subType===_0x4f2a57.Comment&&_0x2fc268.value=== true&&this._permissionService['updatePermissionPoint'](new _0x36e808(_0xec2eda).id, false),_0x2fc268.subType===_0x4f2a57.FloatImg&&_0x2fc268.value=== true&&this._permissionService["updatePermissionPoint"](new _0x36e808(_0xec2eda).id, false));})),this._registerHeader(),this._registerLoadingMask();let _0x420e93=null;this.disposeWithMe(_0x538774(()=>_0x420e93==null? undefined:_0x420e93.dispose())),this.disposeWithMe(this._historyManagerService['loadingState$'].subscribe(_0x33c9c7=>{_0x420e93==null||_0x420e93.dispose(),_0x420e93=null,_0x33c9c7==='loading'&&(_0x420e93=this._messageService["show"]({'type':_0x609f1f.Info,'content':this._localeService['t']('sheets-history-ui.viewer.info.loading'),'duration':1000}));}));}_registerHeader(){var _0x2a692a;(_0x2a692a=this._configService["getConfig"]("sheets-history-ui.config"))!=null&&_0x2a692a.historyPanelHidden||this.disposeWithMe(this._uiPartsService["registerComponent"](_0x1c77ff.HEADER,()=>_0x13cdf5(Ki,this._injector)));}_registerLoadingMask(){this.disposeWithMe(this._uiPartsService["registerComponent"](_0x1c77ff.GLOBAL,()=>_0x13cdf5(Gi,this._injector)));}};qi=J([q(0,_0x4dfc55),q(1,_0x574965),q(2,_0x2efab0),q(3,_0x200c9d(_0x2bdbd6)),q(4,_0x200c9d(X)),q(5,_0x200c9d(_0x2df6d2)),q(6,_0x47a55c)],qi);const Ji={'insert':'green.800','delete':"red.800",'update':'blue.800'};let Yi=class extends _0x8f71e1{constructor(_0x35d3c4){super(),this._themeService=_0x35d3c4,K(this,"_palette$", undefined),K(this,"palette$", undefined),this._palette$=new _0x32f298(this._createPalette()),this.palette$=this._palette$['asObservable'](),this.disposeWithMe(this._themeService["currentTheme$"].pipe(_0x24ef39(1)).subscribe(()=>{this._palette$["next"](this._createPalette());})),this.disposeWithMe(_0x538774(()=>this._palette$["complete"]()));}_createPalette(){return{'insert':this._createStyle("insert"),'delete':this._createStyle('delete'),'update':this._createStyle('update')};}_createStyle(_0x49ff20){let _0x42d791=this._themeService['getColorFromTheme'](Ji[_0x49ff20]);return{'fill':new _0x3efc84(_0x42d791).setAlpha(0.5).toRgbString(),'stroke':new _0x3efc84(_0x42d791).setAlpha(0.9).toRgbString()};}};Yi=J([q(0,_0x200c9d(_0x27ce45))],Yi);var Xi=class extends _0x4117fb{constructor(_0x1a1513,_0x448cf1){super(_0x1a1513,_0x448cf1),K(this,'_color', undefined),K(this,"_direction", undefined),K(this,'_highlight', false),K(this,'_highlightSecond',4),K(this,"_blinkTimer", undefined),K(this,"_blinkIntervalTimer", undefined),K(this,"_isBlinkVisible", true),this._color=_0x448cf1.color,this._direction=_0x448cf1.direction,this.setShapeProps(_0x448cf1),_0x448cf1.highlight&&this._startBlinking(_0x448cf1.highlightSecond??this._highlightSecond);}setShapeProps(_0x5a9d24){this._color=_0x5a9d24.color??this._color,this._direction=_0x5a9d24.direction??this._direction,this._highlight=_0x5a9d24.highlight??this._highlight,this._highlightSecond=_0x5a9d24.highlightSecond??this._highlightSecond,this.transformByState({'width':_0x5a9d24.width??this.width,'height':_0x5a9d24.height??this.height});}triggerDblclick(_0x4475c0){return false;}dispose(){this._stopBlinking(),super.dispose();}_draw(_0x5ebdd3){_0x5ebdd3.save(),_0x5ebdd3.globalAlpha=this._highlight&&!this._isBlinkVisible?0.25:1,_0x5ebdd3.strokeStyle=this._color,_0x5ebdd3.fillStyle=this._color,_0x5ebdd3.lineWidth=4,this._direction==="horizontal"?this._drawHorizontalArrow(_0x5ebdd3):this._drawVerticalArrow(_0x5ebdd3),_0x5ebdd3.restore();}_startBlinking(_0x12d724){this._stopBlinking(),this._isBlinkVisible= true,this._blinkIntervalTimer=window.setInterval(()=>{this._isBlinkVisible=!this._isBlinkVisible,this.makeDirty( true);},500),this._blinkTimer=window.setTimeout(()=>{this._stopBlinking(),this._isBlinkVisible= true,this.makeDirty( true);},_0x12d724*1000);}_stopBlinking(){this._blinkIntervalTimer!== undefined&&(window.clearInterval(this._blinkIntervalTimer),this._blinkIntervalTimer= undefined),this._blinkTimer!== undefined&&(window.clearTimeout(this._blinkTimer),this._blinkTimer= undefined);}_drawHorizontalArrow(_0x2407ca){let _0x2412ee=this.height/2;_0x2407ca.beginPath(),_0x2407ca.moveTo(12,_0x2412ee),_0x2407ca.lineTo(this.width-12,_0x2412ee),_0x2407ca.stroke(),_0x2407ca.beginPath(),_0x2407ca.moveTo(0,_0x2412ee),_0x2407ca.lineTo(12,_0x2412ee-12/2),_0x2407ca.lineTo(12,_0x2412ee+12/2),_0x2407ca.closePath(),_0x2407ca.fill(),_0x2407ca.beginPath(),_0x2407ca.moveTo(this.width,_0x2412ee),_0x2407ca.lineTo(this.width-12,_0x2412ee-12/2),_0x2407ca.lineTo(this.width-12,_0x2412ee+12/2),_0x2407ca.closePath(),_0x2407ca.fill();}_drawVerticalArrow(_0x469bac){let _0x342e34=this.width/2;_0x469bac.beginPath(),_0x469bac.moveTo(_0x342e34,12),_0x469bac.lineTo(_0x342e34,this.height-12),_0x469bac.stroke(),_0x469bac.beginPath(),_0x469bac.moveTo(_0x342e34,0),_0x469bac.lineTo(_0x342e34-12/2,12),_0x469bac.lineTo(_0x342e34+12/2,12),_0x469bac.closePath(),_0x469bac.fill(),_0x469bac.beginPath(),_0x469bac.moveTo(_0x342e34,this.height),_0x469bac.lineTo(_0x342e34-12/2,this.height-12),_0x469bac.lineTo(_0x342e34+12/2,this.height-12),_0x469bac.closePath(),_0x469bac.fill();}};let Zi=class extends _0x8f71e1{constructor(_0x546f4f,_0x5a4669,_0x4c1b80,_0x28d44a,_0x320ae0,_0x2d1e39,_0x4c65fa,_0x539e05,_0x451dbc,_0x5b93df){super(),this._context=_0x546f4f,this._historyManagerService=_0x5a4669,this._versionDiffService=_0x4c1b80,this._univerInstanceService=_0x28d44a,this._renderManagerService=_0x320ae0,this._sheetSkeletonManagerService=_0x2d1e39,this._commandService=_0x4c65fa,this._drawingManagerService=_0x539e05,this._localeService=_0x451dbc,this._diffColorService=_0x5b93df,K(this,'_diffs',new Set()),K(this,"_borderDiffs",new Set()),K(this,"_arrowDiffs",new Set()),K(this,"_lastPointer",null),K(this,"_pointerMoveSubscription",null),this._init();}_init(){this._initRender(),this._initActiveSwitch();}_initRender(){this._initDiffRender(),this._initPointerEvents();}_initDiffRender(){this.disposeWithMe(_0x59ab16([this._historyManagerService['loadingState$'],this._sheetSkeletonManagerService["currentSkeleton$"],this._diffColorService['palette$']]).pipe(_0xccce5(([_0x5e8e57,_0x25d50f,_0x2c34b9])=>{if(_0x5e8e57==="loaded"&&_0x25d50f){let _0x8a53a6=_0x25d50f.sheetId;return this._versionDiffService["currentVersionDiff$"].pipe(_0x49f52c(_0x3625f4=>_0x3625f4.subUnitIds["length"]===0||_0x3625f4.subUnitIds["includes"](_0x8a53a6)?{'skeleton':_0x25d50f,'versionDiff':_0x3625f4,'sheetID':_0x8a53a6,'palette':_0x2c34b9}:{'skeleton':_0x25d50f,'versionDiff':null,'palette':_0x2c34b9}));}return _0x2bc979({'skeleton':null,'versionDiff':null,'sheetID':null,'palette':_0x2c34b9});})).subscribe(({skeleton:_0x3315b3,versionDiff:_0x217e3d,sheetID:_0x14fffc,palette:_0x4492ae})=>{this._removeDiffMarks(),_0x3315b3&&_0x217e3d&&_0x14fffc&&this._updateDiffMarks(_0x3315b3,_0x217e3d,_0x14fffc,_0x4492ae);}));}_initPointerEvents(){this.disposeWithMe(this._sheetSkeletonManagerService["currentSkeleton$"].subscribe(_0x424efc=>{var _0x6117e1;if((_0x6117e1=this._pointerMoveSubscription)==null||_0x6117e1.unsubscribe(),this._pointerMoveSubscription=null,this._lastPointer=null,_0x424efc==null)return;let {skeleton:_0x38d012}=_0x424efc,{scene:_0x5785f5}=this._context;this._pointerMoveSubscription=_0x5785f5.onPointerMove$['subscribeEvent'](_0x4d3248(_0x2d6da1=>{var _0x5e6c4d,_0x5555d7;let {offsetX:_0x35bf37,offsetY:_0x3813db}=_0x2d6da1,{x:_0x37335e,y:_0x360540}=_0x5785f5.getCoordRelativeToViewport(_0x216a81.FromArray([_0x35bf37,_0x3813db])),{scaleX:_0x3381db,scaleY:_0xfdfc62}=_0x5785f5.getAncestorScale(),_0x52b88d=_0x5785f5.getViewport(_0x472dbf.VIEW_MAIN),_0x35d792=_0x5785f5.getScrollXYInfoByViewport(_0x216a81.FromArray([_0x37335e,_0x360540]),_0x52b88d),_0x68d8ed=_0x38d012.getCellIndexByOffset(_0x35bf37,_0x3813db,_0x3381db,_0xfdfc62,_0x35d792);(((_0x5e6c4d=this._lastPointer)==null? undefined:_0x5e6c4d.column)!==_0x68d8ed.column||((_0x5555d7=this._lastPointer)==null? undefined:_0x5555d7.row)!==_0x68d8ed.row)&&(this._lastPointer=_0x68d8ed,this._diffs['forEach'](_0x419a30=>{_0x419a30.evented||_0x419a30.onMouseMove(_0x68d8ed);}));},100));}));}_initActiveSwitch(){this.disposeWithMe(_0x59ab16([this._historyManagerService["loadingState$"],this._versionDiffService['currentVersionDiff$']]).subscribe(([_0x57712b,_0x37f025])=>{_0x57712b==="loaded"&&(this._updateWorksheetVisibility(_0x37f025.subUnitIds),_0x37f025.active&&this._commandService['syncExecuteCommand'](_0x3e0253.id,{'unitId':this._context["unitId"],'subUnitId':_0x37f025.active}));}));}_updateWorksheetVisibility(_0x49108c){let _0x19ef8e=this._univerInstanceService["getUnit"](this._context['unitId'],_0x196f55.UNIVER_SHEET);if(!_0x19ef8e)return;let _0x494216=_0x19ef8e.getSheets();if(_0x49108c.length===0){_0x494216.forEach(_0x3e4712=>{_0x3e4712.isSheetHidden()&&this._setWorksheetVisibility(_0x3e4712.getSheetId(),_0x48a0b6.FALSE);});return;}_0x494216.forEach(_0x3ca5e7=>{let _0x3d6a8c=_0x3ca5e7.getSheetId(),_0x586c23=_0x49108c.includes(_0x3d6a8c),_0x2f5c4d=_0x3ca5e7.isSheetHidden();_0x586c23&&_0x2f5c4d?this._setWorksheetVisibility(_0x3d6a8c,_0x48a0b6.FALSE):!_0x586c23&&!_0x2f5c4d&&this._setWorksheetVisibility(_0x3d6a8c,_0x48a0b6.TRUE);});}_setWorksheetVisibility(_0x582cde,_0x400097){this._commandService["syncExecuteCommand"](_0x3c6d31.id,{'unitId':this._context["unitId"],'subUnitId':_0x582cde,'hidden':_0x400097});}_getLabelHorizontalPosition(){return this._localeService["getDirection"]()==="rtl"?'left':"right";}_updateDiffMarks(_0xeccdf7,_0x4f1fef,_0x6411f8,_0x9fdd66){this._diffs["forEach"](_0x4805e3=>{_0x4805e3.makeDirty();});let _0x13d20e=this._generateDiffMarks(_0x4f1fef,_0x6411f8,_0x9fdd66);this._diffs=new Set(_0x13d20e.filter(_0x52979=>_0x52979 instanceof _0x473b92)),this._borderDiffs=new Set(_0x13d20e.filter(_0x1e0d66=>_0x1e0d66 instanceof _0x242d59)),this._arrowDiffs=new Set(_0x13d20e.filter(_0x189bf6=>_0x189bf6 instanceof Xi)),_0x13d20e.length>0&&this._scrollToShape(_0x13d20e[0],this._context["scene"]);}_generateDiffMarks(_0x2d3ad4,_0x53849d,_0x15fa62){let _0x4b7e75=this._sheetSkeletonManagerService['getCurrentSkeleton']();if(!_0x4b7e75)return[];let {scene:_0x1f06c3}=this._context,_0xe403c3=[],_0x2483aa=_0x2f5772=>{if(!_0x2f5772)return new Map();let _0x3b4b74=new Map();return _0x2f5772.forEach((_0x503539,_0x3057c3)=>{let _0x104b37=_0x503539.filter(_0x48df80=>_0x48df80.subUnitId===_0x53849d);_0x104b37.length>0&&_0x3b4b74.set(_0x3057c3,_0x104b37);}),_0x3b4b74;};return this._renderCellRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.insertCellRanges),_0x15fa62.insert["fill"],_0xe403c3),this._renderCellRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.deleteCellRanges),_0x15fa62.delete['fill'],_0xe403c3),this._renderCellRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.updateCellRanges),_0x15fa62.update["fill"],_0xe403c3),this._renderBorderRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.insertBorderRanges),_0x15fa62.insert['stroke'],_0xe403c3),this._renderBorderRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.deleteBorderRanges),_0x15fa62.delete['stroke'],_0xe403c3),this._renderBorderRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.updateBorderRanges),_0x15fa62.update["stroke"],_0xe403c3),this._renderArrowRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.arrowRowRanges),_0x15fa62.update["fill"],'vertical',_0xe403c3),this._renderArrowRanges(_0x1f06c3,_0x4b7e75,_0x2483aa(_0x2d3ad4.arrowColumnRanges),_0x15fa62.update["fill"],"horizontal",_0xe403c3),_0x2d3ad4.insertDrawings&&this._renderDrawingHighlights(_0x1f06c3,_0x2d3ad4.insertDrawings,_0x15fa62.insert["stroke"],_0xe403c3),_0x2d3ad4.deleteDrawings&&this._renderDrawingHighlights(_0x1f06c3,_0x2d3ad4.deleteDrawings,_0x15fa62.delete["stroke"],_0xe403c3),_0x2d3ad4.updateDrawings&&this._renderDrawingHighlights(_0x1f06c3,_0x2d3ad4.updateDrawings,_0x15fa62.update['stroke'],_0xe403c3),this._handleOverlappingShapes(_0xe403c3),_0x1f06c3.addObjects(_0xe403c3,20),_0xe403c3;}hideDiffMarks(){this._diffs["forEach"](_0x36cfa9=>{_0x36cfa9.hide();}),this._borderDiffs["forEach"](_0x28a680=>{_0x28a680.hide();}),this._arrowDiffs["forEach"](_0x19942e=>{_0x19942e.hide();});}showDiffMarks(){this._diffs["forEach"](_0x277c59=>{_0x277c59.show();}),this._borderDiffs["forEach"](_0x2900d3=>{_0x2900d3.show();}),this._arrowDiffs["forEach"](_0x51133c=>{_0x51133c.show();});}removeDiffMarks(){this._removeDiffMarks();}scrollToShape(_0x13a3a1,_0x1af707){this._scrollToShape(_0x13a3a1,_0x1af707);}_renderCellRanges(_0x1d4303,_0x22bd17,_0x56624f,_0x6a876f,_0xd440d3){_0x56624f.forEach((_0x398685,_0x5ce306)=>{_0x398685.forEach(_0x36bd55=>{var _0x5ca91f;let {range:_0x502de4,subUnitId:_0x3cef6c,unitId:_0x4b8168,showText:_0x1227d7='',highlightColumn:_0x2b372b,highlightRow:_0x3ae405}=_0x36bd55,{startColumn:_0x5642a1,startRow:_0x4537de,endColumn:_0x4fe641,endRow:_0x51a254}=_0x502de4,_0x3f66ca=_0x2b252d(_0x4537de,_0x5642a1,_0x1d4303,_0x22bd17),_0x26b1b9=_0x2b252d(_0x51a254,_0x4fe641,_0x1d4303,_0x22bd17),{columnHeaderHeightAndMarginTop:_0x53bd39}=_0x22bd17,{startX:_0x301b98,startY:_0x3166fd}=_0x3f66ca,{endX:_0x12297b,endY:_0x46d8b3}=_0x26b1b9,_0x3ef706=_0x22bd17.rowHeaderWidth,_0x156321=_0x22bd17.columnHeaderHeight;_0x3ae405&&(_0x301b98-=_0x3ef706),_0x2b372b&&(_0x3166fd-=_0x156321);let _0xbde068=_0x12297b-_0x301b98,_0x104a1c=_0x46d8b3-_0x3166fd,_0x5c5354={'labelPosition':_0x3166fd-_0x53bd39>=20?"top":"bottom",'sheetID':_0x3cef6c,'range':_0x502de4,'color':_0x6a876f,'fillAfterStrokeEnabled': true,'backgroundColor':_0x6a876f,'name':((_0x5ca91f=this._historyManagerService["getMember"](_0x5ce306))==null? undefined:_0x5ca91f.name)+'\x20'+_0x1227d7||_0x1227d7,'labelHorizontalPosition':this._getLabelHorizontalPosition(),'selection':_0x4b8168+'-'+_0x3cef6c+'-'+_0x502de4.startColumn+'-'+_0x502de4.startRow+'-'+_0x502de4.endColumn+'-'+_0x502de4.endRow,'left':_0x301b98,'top':_0x3166fd,'width':_0xbde068,'height':_0x104a1c,'evented': false,'zIndex':1000,'highlight': true};_0xd440d3.push(new _0x473b92('',_0x5c5354));});});}_renderBorderRanges(_0x68f145,_0x23fd84,_0x3784bc,_0x160aff,_0x253c77){_0x3784bc.forEach((_0x505569,_0x1cdc4e)=>{_0x505569.forEach(_0x55cdd7=>{var _0x4d3c7e;let {range:_0x5df5d4,subUnitId:_0x43cfec,unitId:_0x2141eb,showText:_0x5e3e31=''}=_0x55cdd7,{startColumn:_0x147dde,startRow:_0x45d0a7,endColumn:_0x52607b,endRow:_0x2e0993}=_0x5df5d4,_0x4eff8d=_0x2b252d(_0x45d0a7,_0x147dde,_0x68f145,_0x23fd84),_0x34a250=_0x2b252d(_0x2e0993,_0x52607b,_0x68f145,_0x23fd84),{columnHeaderHeightAndMarginTop:_0x373a21}=_0x23fd84,{startX:_0x1e7358,startY:_0x35e21c}=_0x4eff8d,{endX:_0x481b5d,endY:_0x329987}=_0x34a250,_0x51614d=_0x481b5d-_0x1e7358,_0x4ecd20=_0x329987-_0x35e21c,_0x16c589={'labelPosition':_0x35e21c-_0x373a21>=20?"top":"bottom",'sheetID':_0x43cfec,'range':_0x5df5d4,'color':_0x160aff,'fillAfterStrokeEnabled': false,'backgroundColor':"transparent",'name':((_0x4d3c7e=this._historyManagerService["getMember"](_0x1cdc4e))==null? undefined:_0x4d3c7e.name)+'\x20'+_0x5e3e31||_0x5e3e31,'labelHorizontalPosition':this._getLabelHorizontalPosition(),'selection':_0x2141eb+'-'+_0x43cfec+'-'+_0x5df5d4.startColumn+'-'+_0x5df5d4.startRow+'-'+_0x5df5d4.endColumn+'-'+_0x5df5d4.endRow,'left':_0x1e7358-12/2,'top':_0x35e21c-12/2,'width':_0x51614d,'height':_0x4ecd20,'evented': false,'zIndex':1000,'strokeWidth':12,'highlight': true};_0x253c77.push(new _0x473b92('',_0x16c589));});});}_renderArrowRanges(_0x16e24a,_0x3a456f,_0x9ce23a,_0x33bae2,_0x2dee3b,_0x57c819){let _0x13a477=_0x3a456f.rowHeaderWidth,_0x42add3=_0x3a456f.columnHeaderHeight;_0x9ce23a.forEach(_0x5dfcdd=>{_0x5dfcdd.forEach(_0x2eae98=>{let {range:_0x321eaf}=_0x2eae98,{startColumn:_0xcd50d,startRow:_0x1866e1,endColumn:_0x38fda0,endRow:_0xeb5f8b}=_0x321eaf,_0x219fb5=_0x2b252d(_0x1866e1,_0xcd50d,_0x16e24a,_0x3a456f),_0x4cab2a=_0x2b252d(_0xeb5f8b,_0x38fda0,_0x16e24a,_0x3a456f),{startX:_0x5e8b5d,startY:_0x527bed}=_0x219fb5,{endX:_0x4854c2,endY:_0x37ba98}=_0x4cab2a,_0x39b7a6;if(_0x2dee3b==="horizontal")_0x39b7a6=new Xi('',{'color':_0x33bae2,'direction':'horizontal','left':_0x5e8b5d,'top':2,'width':_0x4854c2-_0x5e8b5d,'height':_0x42add3-4,'evented': false,'zIndex':1001,'highlight': true,'highlightSecond':4}),_0x57c819.push(_0x39b7a6);else{let _0x4fb750=_0x37ba98-_0x527bed;_0x39b7a6=new Xi('',{'color':_0x33bae2,'direction':'vertical','left':2,'top':_0x527bed,'width':_0x13a477-4,'height':_0x4fb750,'evented': false,'zIndex':1001,'highlight': true,'highlightSecond':4}),_0x57c819.push(_0x39b7a6);}});});}_renderDrawingHighlights(_0x2d8945,_0x5b37dd,_0x2d61b9,_0x32d35a){let _0x13ced1=this._sheetSkeletonManagerService['getCurrentSkeleton']();if(!_0x13ced1)return;let {columnHeaderHeightAndMarginTop:_0x14672a}=_0x13ced1;_0x5b37dd.forEach((_0x316714,_0x2f8c4d)=>{_0x316714.forEach(_0x2bf88c=>{let _0x4af9e4=this._createDrawingHighlight(_0x2bf88c,_0x2f8c4d,_0x2d61b9,_0x14672a,12,_0x32d35a);_0x4af9e4&&_0x32d35a.push(_0x4af9e4);});});}_createDrawingHighlight(_0x599ab2,_0x1bc382,_0x3af7a0,_0x2b9a57,_0x44c9dd,_0x5b9d5f){var _0xe15fd1;let {drawingId:_0x3853fa,unitId:_0x436c7f,subUnitId:_0x534d18,showText:_0x287ab6=''}=_0x599ab2,_0x159778=this._drawingManagerService["getDrawingByParam"]({'unitId':_0x436c7f,'subUnitId':_0x534d18,'drawingId':_0x3853fa});if(!(_0x159778!=null&&_0x159778.transform))return null;let {left:_0x4e6706=0,top:_0x3d7bb6=0,width:_0x9264bc,height:_0x1ad062}=_0x159778.transform,_0x211c06=new _0x473b92('',{'labelPosition':_0x3d7bb6-_0x2b9a57>=20?'top':"bottom",'sheetID':_0x534d18,'range':{'startRow':0,'startColumn':0,'endRow':0,'endColumn':0},'color':_0x3af7a0,'fillAfterStrokeEnabled': false,'backgroundColor':'transparent','name':((_0xe15fd1=this._historyManagerService["getMember"](_0x1bc382))==null? undefined:_0xe15fd1.name)+'\x20'+_0x287ab6||_0x287ab6,'labelHorizontalPosition':this._getLabelHorizontalPosition(),'selection':_0x436c7f+'-'+_0x534d18+"-drawing-"+_0x3853fa,'left':_0x4e6706-_0x44c9dd/2,'top':_0x3d7bb6-_0x44c9dd/2,'width':_0x9264bc,'height':_0x1ad062,'evented': true,'zIndex':1000,'strokeWidth':_0x44c9dd,'highlight': true});return this._bindDrawingHighlightHover(_0x211c06,_0x5b9d5f),_0x211c06;}_bindDrawingHighlightHover(_0x24de88,_0x568fe3){_0x24de88.onPointerEnter$['subscribeEvent'](()=>this._setOverlappingShapesHovered(_0x24de88,_0x568fe3, true)),_0x24de88.onPointerLeave$["subscribeEvent"](()=>this._setOverlappingShapesHovered(_0x24de88,_0x568fe3, false));}_setOverlappingShapesHovered(_0xa14e3a,_0x341758,_0x24836d){this._findOverlappingShapes(_0xa14e3a,_0x341758).forEach(_0x3601f5=>{_0x3601f5 instanceof _0x473b92&&_0x3601f5.setShapeProps({'hovered':_0x24836d});});}_removeDiffMarks(){this._diffs["forEach"](_0x36eb3f=>_0x36eb3f.dispose()),this._borderDiffs["forEach"](_0x2941bb=>_0x2941bb.dispose()),this._arrowDiffs['forEach'](_0x25d7f5=>_0x25d7f5.dispose()),this._diffs["clear"](),this._borderDiffs["clear"](),this._arrowDiffs['clear']();}_handleOverlappingShapes(_0x208708){let _0x2c87e9=_0x208708.filter(_0x5a3478=>_0x5a3478 instanceof _0x473b92);if(_0x2c87e9.length===0)return;let _0x237402=[],_0x20fcbf=new Set();_0x2c87e9.forEach(_0x27ec55=>{if(_0x20fcbf.has(_0x27ec55))return;let _0x3fb511=_0x27ec55.left||0,_0x111ffe=_0x27ec55.top||0,_0x352098=_0x3fb511+(_0x27ec55.width||0),_0x54db18=_0x111ffe,_0x5b4320=[_0x27ec55];_0x20fcbf.add(_0x27ec55),_0x2c87e9.forEach(_0x49c8d4=>{if(_0x20fcbf.has(_0x49c8d4))return;let _0x5c37d5=_0x49c8d4.left||0,_0x474999=_0x49c8d4.top||0,_0x300596=_0x5c37d5+(_0x49c8d4.width||0),_0x430a1d=_0x474999;Math.abs(_0x352098-_0x300596)<=10&&Math.abs(_0x54db18-_0x430a1d)<=10&&(_0x5b4320.push(_0x49c8d4),_0x20fcbf.add(_0x49c8d4));}),_0x5b4320.length>1&&_0x237402.push(_0x5b4320);}),_0x237402.forEach(_0x16a32d=>{_0x16a32d.sort((_0xc3e30b,_0x5103d8)=>(_0xc3e30b.top||0)-(_0x5103d8.top||0)),_0x16a32d.forEach((_0x28255f,_0xe0d876)=>{let _0x3e1b20=_0xe0d876*22;_0x28255f.setOffsetY(_0x3e1b20);});});}_findOverlappingShapes(_0x167cf0,_0x2f5c92){let _0x4304b6=_0x167cf0.left||0,_0x3385f6=_0x167cf0.top||0,_0x39d9b0=_0x167cf0.width||0,_0x4dc656=_0x167cf0.height||0,_0x25d631=_0x4304b6+_0x39d9b0,_0xbfeba5=_0x3385f6+_0x4dc656;return _0x2f5c92.filter(_0x4d7901=>{let _0x2bd0e5=_0x4d7901.left||0,_0x492bd4=_0x4d7901.top||0,_0x403c44=_0x4d7901.width||0,_0x18c075=_0x4d7901.height||0,_0x48bad0=_0x2bd0e5+_0x403c44,_0xe857e7=_0x492bd4+_0x18c075;return!(_0x25d631<=_0x2bd0e5||_0x4304b6>=_0x48bad0||_0xbfeba5<=_0x492bd4||_0x3385f6>=_0xe857e7);});}_scrollToShape(_0x27d7bd,_0x1150d5){let _0x5be06f=_0x1150d5.getViewport(_0x472dbf.VIEW_MAIN);if(!_0x5be06f)return;let _0x5e264b=_0x27d7bd.left||0,_0x581d73=_0x27d7bd.top||0,_0x45ef04=_0x27d7bd.width||0,_0x5b1476=_0x27d7bd.height||0,_0x556e53=_0x5be06f.width||0,_0x32e7c7=_0x5be06f.height||0,_0x1fcd19=_0x5be06f.viewportScrollX||0,_0xf6f64f=_0x5be06f.viewportScrollY||0,_0x582d4b=_0x1fcd19,_0x589256=_0xf6f64f,_0x5f3fc5=_0x1fcd19+_0x556e53,_0x44990f=_0xf6f64f+_0x32e7c7;if(_0x5e264b>=_0x582d4b&&_0x581d73>=_0x589256&&_0x5e264b+_0x45ef04<=_0x5f3fc5&&_0x581d73+_0x5b1476<=_0x44990f)return;let _0x334909=Math.max(0,_0x5e264b-_0x556e53/2+_0x45ef04/2),_0x9c3793=Math.max(0,_0x581d73-_0x32e7c7/2+_0x5b1476/2);_0x5be06f.scrollToViewportPos({'viewportScrollX':_0x334909,'viewportScrollY':_0x9c3793});}_getSheetObject(){return _0x59868c(this._univerInstanceService,this._renderManagerService);}dispose(){var _0x1986cf;(_0x1986cf=this._pointerMoveSubscription)==null||_0x1986cf.unsubscribe(),this._pointerMoveSubscription=null,this._removeDiffMarks(),super.dispose();}};Zi=J([q(1,_0x200c9d(X)),q(2,_0x200c9d(Z)),q(3,_0x5d9d1d),q(4,_0x407e32),q(5,_0x200c9d(_0x13da0c)),q(6,_0x76d311),q(7,_0x2044fc),q(8,_0x200c9d(_0x2bdbd6)),q(9,_0x200c9d(Yi))],Zi);let Qi=class extends _0x8f71e1{constructor(_0x436abb,_0x573ee9,_0x2a589a,_0x7f79e5){super(),this._sidebarService=_0x436abb,this._localeService=_0x573ee9,this._historyManagerService=_0x2a589a,this._configService=_0x7f79e5,K(this,'_sidebarDisposable',null),this._init();}_init(){this._initPanel();}_openPanel(){var _0xe07411;if(this._sidebarDisposable)return;let _0x19928e=(_0xe07411=this._configService["getConfig"]('sheets-history-ui.config'))==null? undefined:_0xe07411.historyPanelComponentKey,_0x1c2399={'header':{'title':this._localeService['t']('sheets-history-ui.viewer.panel.title')},'children':{'label':_0x19928e},'onClose':()=>{this._sidebarDisposable=null,this._historyManagerService["exitHistoryMode"]();}};this._sidebarDisposable=this._sidebarService['open']({..._0x1c2399});}_initPanel(){this.disposeWithMe(this._historyManagerService["openPanel$"].subscribe(_0x1b30ff=>{_0x1b30ff&&this._openPanel();}));}};Qi=J([q(0,_0x159c4b),q(1,_0x200c9d(_0x2bdbd6)),q(2,_0x200c9d(X)),q(3,_0x47a55c)],Qi);var $i=class extends _0x8f71e1{constructor(){super(),K(this,'_dialogOptions$',new _0x3fbab2());}open(){return _0x538774(()=>{});}close(){}closeAll(_0x134295){}getDialogs$(){return this._dialogOptions$["asObservable"]();}};let ea=class extends _0x49102e{constructor(_0x1a1808=G,_0x613fc2,_0x4ca129,_0x1bae17){super(),this._config=_0x1a1808,this._injector=_0x613fc2,this._renderManagerService=_0x4ca129,this._configService=_0x1bae17;let {..._0x38bf90}=_0x4c6abd({},G,this._config);this._configService["setConfig"](W,_0x38bf90);}onStarting(){[[Q],[X],[qi],[Z],[Yi],[Y],[Qi],[Wi],[_0x2b8368,{'useClass':_0x42171d}],[_0x3822b3,{'useClass':$i}],[_0x49cfd2,{'useClass':_0x4cd2e2}]].forEach(_0x3c2c86=>this._injector['add'](_0x3c2c86)),this._injector["get"](qi),this._injector['get'](Q);}onRendered(){[[Zi]].forEach(_0x3b17c4=>{this.disposeWithMe(this._renderManagerService["registerRenderModule"](_0x196f55.UNIVER_SHEET,_0x3b17c4));}),this._injector["get"](Wi),this._injector["get"](Qi);}onSteady(){this._injector["get"](Z);}};K(ea,"pluginName",'UNIVER_SHEETS_HISTORY_VIEWER_PLUGIN'),K(ea,"packageName",bi),K(ea,'version',xi),ea=J([_0x50dec6(_0x9cc1b4,_0xf559cc,_0xec48ba,_0x46e284,_0x541918,_0x4f05b0,_0x2514ad,_0x4bd407,_0xc66447,_0x2034fb,_0x566531,_0x4db10d,_0x14146b,_0x203fa8),q(1,_0x200c9d(_0x2df6d2)),q(2,_0x407e32),q(3,_0x47a55c)],ea);function ta(_0x56684a){let _0x6f070=_0x56684a.getCurrentLocale();return{'locale':_0x6f070,'locales':{[_0x6f070]:_0x56684a.getLocales()},'direction':_0x56684a.getDirection()};}function na(_0x2f8dc6,_0x5ab105){let _0x4be958=_0x5ab105.getDirection();_0x2f8dc6.dir=_0x4be958,_0x2f8dc6.style['direction']=_0x4be958;}function ra(_0x7326dd){return ia(_0x7326dd)?typeof _0x7326dd.hasMore=='boolean'&&typeof _0x7326dd.lastLabel=="string"&&Array.isArray(_0x7326dd.versions)&&ia(_0x7326dd.members): false;}function ia(_0x3b4f8b){return typeof _0x3b4f8b=="object"&&!!_0x3b4f8b;}const aa="univer-history-container";let $=class extends _0x8f71e1{constructor(_0x411051,_0x4f071f,_0x21adc3,_0x7d02cd,_0x140989,_0x5da0cb,_0x4b3052,_0x2fc209,_0x5e5f53,_0xb44679){super(),this._localeService=_0x411051,this._univerInstanceService=_0x4f071f,this._configService=_0x21adc3,this._commandService=_0x7d02cd,this._messageService=_0x140989,this._permissionService=_0x5da0cb,this._selectionProtectionRuleModel=_0x4b3052,this._dialogService=_0x2fc209,this._sidebarService=_0x5e5f53,this._themeService=_0xb44679,K(this,'_historyUniver$',new _0x32f298(null)),K(this,'historyUniver$',this._historyUniver$['asObservable']()),K(this,'_disposableCollection',new _0x5cf52e()),K(this,"_pluginMap",new Map()),K(this,"_internalWebWorker",null),this._init();}get historyUniver(){return this._historyUniver$["value"];}_init(){this._initContainer(),this._initPlugins();}_initContainer(){var _0x2bd5e0;let _0x39e4c9=this._configService["getConfig"](W),_0x10383d=(_0x2bd5e0=this._configService["getConfig"](_0x372cd6))==null? undefined:_0x2bd5e0.container,_0x3488f0=(_0x39e4c9==null? undefined:_0x39e4c9.univerContainerId)??_0x10383d,_0x59ebc5=typeof _0x3488f0=='string'?document.getElementById(_0x3488f0):_0x3488f0;if(!_0x59ebc5)throw Error('[HistoryLoaderService]:\x20Configure\x20a\x20valid\x20Univer\x20container\x20before\x20opening\x20history.');let _0x1c3289=document.createElement("div");_0x1c3289.id=aa,_0x1c3289.style["position"]="absolute",_0x1c3289.style["top"]='0',_0x1c3289.style["left"]='0',_0x1c3289.style["width"]="100%",_0x1c3289.style["height"]="100%",_0x1c3289.style['zIndex']='49',_0x1c3289.style['display']="none",na(_0x1c3289,this._localeService),_0x59ebc5.appendChild(_0x1c3289);}_initPlugins(){[[_0xec48ba],[_0x5c66ab,{'container':aa,'header': true,'toolbar': false,'footer': true,'contextMenu': false,'override':[[_0x3822b3,null]]}],[_0x46e284],[_0xf559cc,{'override':[[_0x49cfd2,null]]}],[_0x329c8b,{'hasScroll': false}],[_0x3e8f0b],[_0x142a42],[_0x2514ad,{'notExecuteFormula': true}],[_0x14146b],[_0x34fce1],[_0x5115c0],[_0x4bd407],[_0x541918],[_0x5919f9],[_0xc66447],[_0x2af53f],[_0x40baf3],[_0x50f650],[_0x364048],[_0x203fa8],[_0x4af1d5],[_0x1ac2eb,{'notExecuteFormula': true}],[_0x27beee],[_0x4260f2],[_0x23f118],[_0x4db10d],[_0x46e1c2],[_0x2034fb],[_0x1149fd],[_0x1ce9bf],[_0x4ce039],[_0x566531,{'notExecuteFormula': true}],[_0x4f05b0]].forEach(([_0x4e2243,_0x465a5d])=>this.registerPlugin(_0x4e2243,_0x465a5d));}dispose(){super.dispose(),this.unMountHistoryContent(),this._pluginMap["clear"]();}registerPlugin(_0x12465a,_0x543095,_0x35239c){if(this._pluginMap["has"](_0x12465a.pluginName)&&!_0x35239c)throw Error("[HistoryLoaderService]: Plugin "+_0x12465a.pluginName+'\x20has\x20been\x20registered.');this._pluginMap["set"](_0x12465a.pluginName,[_0x12465a,_0x543095]);}getAllPlugins(){return Array.from(this._pluginMap["values"]());}mountHistoryContent(_0x5450d9,_0x55dba2){let _0x1b453b=document.getElementById(aa);_0x1b453b&&(_0x1b453b.style["display"]="block",this._initUniver(_0x5450d9,aa,_0x55dba2));}unMountHistoryContent(){var _0x314b6a;this._disposableCollection['dispose'](),(_0x314b6a=this.historyUniver)==null||_0x314b6a.dispose(),this._historyUniver$["next"](null);let _0x2f2b9b=document.getElementById(aa);_0x2f2b9b&&(_0x2f2b9b.style["display"]="none",this._internalWebWorker&&=(this._internalWebWorker["terminate"](),null));}_initUniver(_0x407f62,_0x1bcb92,_0x4b1b5f){var _0x22af3e,_0x244f28,_0x3cf863,_0x2844fc;if(this.historyUniver)return;let _0x216a9a=new _0x345473({...ta(this._localeService),'override':[[_0x51d41c,{'useClass':_0x29d59a}]]}),_0x511ee6=_0x216a9a.__getInjector();this._syncViewerServices(_0x511ee6,_0x1bcb92),_0x511ee6.get(_0x47a55c).setConfig(_0x16992c,this._configService["getConfig"](_0x16992c));let _0x54ffd9=this._configService["getConfig"](_0x482a3c);_0x54ffd9&&_0x216a9a.registerPlugin(_0x9cc1b4,{'license':_0x54ffd9.ls});let _0x4daad4=(_0x22af3e=this._configService["getConfig"]("sheets-history-ui.config"))==null? undefined:_0x22af3e.workerURL;_0x4daad4&&(this._internalWebWorker=_0x4daad4 instanceof Worker?_0x4daad4:null,_0x216a9a.registerPlugin(_0xdd0a0a,{'workerURL':_0x4daad4})),this._pluginMap['forEach'](([_0x54dae8,_0x2004ca])=>{_0x216a9a.registerPlugin(_0x54dae8,_0x2004ca);}),_0x216a9a.registerPlugin(ea,{'historyServerUrl':yi(this._configService["getConfig"](W)),'historyPanelComponentKey':(_0x244f28=this._configService["getConfig"]('sheets-history-ui.config'))==null? undefined:_0x244f28.historyPanelComponentKey,'historyPanelHidden':(_0x3cf863=this._configService["getConfig"]('sheets-history-ui.config'))==null? undefined:_0x3cf863.historyPanelHidden,'historyAIassistantEnabled':(_0x2844fc=this._configService["getConfig"]('sheets-history-ui.config'))==null? undefined:_0x2844fc.historyAIassistantEnabled}),_0x511ee6.invoke(_0x351fde=>{this._initListener(_0x351fde,_0x407f62);}),this._historyUniver$['next'](_0x216a9a);let _0x388cf0=_0x511ee6.get(X),_0x2e1432=this._checkCanRevert(_0x407f62);ra(_0x4b1b5f)?_0x388cf0.triggerCustomVersions(_0x407f62,_0x2e1432,_0x4b1b5f):_0x388cf0.triggerLoadVersions(_0x407f62,_0x2e1432).catch(()=> undefined);}_syncViewerServices(_0x6be4e5,_0x4a9ce5){let _0x27f892=_0x6be4e5.get(_0x27ce45);this._disposableCollection['add'](this._themeService["darkMode$"].subscribe(_0x4a5376=>{_0x27f892.setDarkMode(_0x4a5376);})),this._disposableCollection['add'](this._themeService["currentTheme$"].subscribe(_0x2fb5ba=>{_0x27f892.setTheme(_0x2fb5ba);}));let _0x2fab99=_0x6be4e5.get(_0x2bdbd6);this._disposableCollection['add'](this._localeService["currentLocale$"].subscribe(_0x4a798e=>{let _0x16a7c4=this._localeService['getLocales']();_0x16a7c4&&_0x2fab99.load({[_0x4a798e]:_0x16a7c4}),_0x2fab99.setLocale(_0x4a798e);})),this._disposableCollection["add"](this._localeService["direction$"].subscribe(_0x2068bf=>{_0x2fab99.setDirection(_0x2068bf);let _0x4634fd=document.getElementById(_0x4a9ce5);_0x4634fd&&(_0x4634fd.dir=_0x2068bf,_0x4634fd.style["direction"]=_0x2068bf);}));}_initListener(_0x2e23f8,_0x38be92){let _0x4e4539=_0x2e23f8.get(X);this._disposableCollection["add"](_0x4e4539.status$["subscribe"](_0x51332c=>{switch(_0x51332c){case "entered":this._dialogService["closeAll"](),this._sidebarService["close"]();break;case "exited":this._commandService["executeCommand"](sa.id),this.unMountHistoryContent();break;case'error':this.unMountHistoryContent(),this._messageService["show"]({'content':this._localeService['t']("sheets-history-ui.loader.panel.listFetchError"),'type':_0x609f1f.Error,'duration':3000});break;default:break;}})),this._disposableCollection["add"](_0x4e4539.revertRevision$["subscribe"](_0x2619ea=>{if(_0x2619ea){let _0x4a8d08={'unitId':_0x38be92,'revision':_0x2619ea};this._commandService["executeCommand"](_0xdc72c5.id,_0x4a8d08).catch(()=>{_0x4e4539.status='error';});}}));}_checkCanRevert(_0x30113c){let _0x9308b8=this._univerInstanceService['getUnit'](_0x30113c);if(!_0x9308b8)return false;let _0x52f2a8=_0x9308b8.getSheets().map(_0x74be54=>_0x74be54.getSheetId()),_0x32c7b0=new _0x36e808(_0x30113c).id,_0x4d6560=_0x52f2a8.map(_0x33f40a=>new _0x346068(_0x30113c,_0x33f40a).id),_0x871de0=_0x52f2a8.map(_0x48964e=>this._selectionProtectionRuleModel["getSubunitRuleList"](_0x30113c,_0x48964e).map(_0x521868=>new _0x1eb953(_0x30113c,_0x48964e,_0x521868.permissionId).id)).flat(),_0x4b4a77=new _0xd1fc1c(_0x30113c).id;return this._permissionService["composePermission"]([_0x32c7b0,..._0x4d6560,..._0x871de0,_0x4b4a77]).every(_0x694f4c=>!!_0x694f4c.value);}};$=J([q(0,_0x200c9d(_0x2bdbd6)),q(1,_0x5d9d1d),q(2,_0x47a55c),q(3,_0x76d311),q(4,_0x2efab0),q(5,_0x4dfc55),q(6,_0x200c9d(_0x39df73)),q(7,_0x200c9d(_0x3822b3)),q(8,_0x200c9d(_0x159c4b)),q(9,_0x200c9d(_0x27ce45))],$);const oa={'id':'univer.operation.toggle-edit-history','type':_0x102086.OPERATION,'handler':_0x2cd5ea=>{let _0x3b4a16=_0x2cd5ea.get($),{unitId:_0x1e0c82}=_0xf9e528(_0x2cd5ea.get(_0x5d9d1d))||{};return _0x1e0c82?(_0x3b4a16.mountHistoryContent(_0x1e0c82), true): false;}},sa={'id':'univer.operation.exit-edit-history','type':_0x102086.OPERATION,'handler':()=> true};function ca(_0x8673f6){return{'id':oa.id,'type':_0x51bf88.BUTTON,'icon':"HistoryIcon",'title':"sheets-history-ui.loader.panel.title",'tooltip':"sheets-history-ui.loader.panel.title",'hidden$':_0x1744b9(_0x8673f6,_0x196f55.UNIVER_SHEET),'disabled$':_0x16e589(_0x8673f6,{'workbookTypes':[_0x33ddea],'worksheetTypes':[],'rangeTypes':[]})};}const la={[_0x330e51.OTHERS]:{[oa.id]:{'order':100,'gridLayout':{'row':1,'column':5,'rowSpan':2,'columnSpan':2,'showLabel': true},'menuItemFactory':ca}}};function ua(_0x2f2a82){return!!(_0x2f2a82&&"unitId"in _0x2f2a82&&typeof _0x2f2a82.unitId=="string"&&"revision"in _0x2f2a82&&typeof _0x2f2a82.revision=="number");}function da(_0x303526,_0x224f1c){return _0x303526.eventID===_0x23611b.CHANGESET_ACK&&_0x278de0(_0x303526.data).mutations["some"](_0x46d7ef=>_0x46d7ef.id===_0xdc72c5.id&&ua(_0x46d7ef.params)&&_0x46d7ef.params["unitId"]===_0x224f1c.unitId&&_0x46d7ef.params["revision"]===_0x224f1c.revision);}let fa=class extends _0x42b732{constructor(_0x358667,_0x5d83ae,_0x4052ae,_0x4b1774,_0x56a003,_0x889f8d,_0x3cbb45,_0x27770b,_0x35c4ac,_0x1891a2){super(),this._commandService=_0x358667,this._menuManagerService=_0x5d83ae,this._historyManagerService=_0x4052ae,this._localeService=_0x4b1774,this._messageService=_0x56a003,this._collaborationController=_0x889f8d,this._localCacheService=_0x3cbb45,this._dataLoaderService=_0x27770b,this._univerInstanceService=_0x35c4ac,this._urlService=_0x1891a2,K(this,"_revertAcknowledgementSubscription",null),this.disposeWithMe(_0x538774(()=>this._clearRevertAcknowledgement())),this._init();}_init(){[oa,sa].forEach(_0x28195e=>this.disposeWithMe(_0x538774(this._commandService["registerCommand"](_0x28195e)))),this._menuManagerService["mergeMenu"](la),this.disposeWithMe(this._commandService['onCommandExecuted']((_0x487a81,_0x15962d)=>{if(_0x487a81.id===_0xdc72c5.id&&ua(_0x487a81.params)){let {revision:_0x14dec4,unitId:_0xbae13b}=_0x487a81.params;this._messageService["show"]({'content':this._localeService['t']('sheets-history-ui.loader.panel.reverting'),'type':_0x609f1f.Loading,'duration':5000});let _0x523810=this._collaborationController['getCollabEntity'](_0xbae13b);if(!_0x523810){this._showRevertFailed();return;}_0x15962d!=null&&_0x15962d.fromCollab?this._handleRevertAcknowledgement(_0x523810,{'revision':_0x14dec4,'unitId':_0xbae13b},async()=>(setTimeout(()=>window.location["reload"]()), true), true):this._handleRevertAcknowledgement(_0x523810,{'revision':_0x14dec4,'unitId':_0xbae13b},async()=>{let _0x15b46e=this._univerInstanceService["getCurrentUnitOfType"](_0x196f55.UNIVER_SHEET),_0x43ebbe=_0x15b46e==null? undefined:_0x15b46e.getActiveSheet();if(!_0x43ebbe)return false;this._univerInstanceService["disposeUnit"](_0xbae13b);let _0x5685b7=await this._dataLoaderService['loadUnit'](_0xbae13b,_0x196f55.UNIVER_SHEET);return _0x5685b7&&_0x5685b7 instanceof _0x32ca6f?(await this._setupSubUnitSync(_0x5685b7,_0x43ebbe.getSheetId()), true): false;});}}));}_handleRevertAcknowledgement(_0x318f65,_0x1c86f2,_0x5644f2,_0x550e01= false){this._clearRevertAcknowledgement();let _0x438f02=_0x59ab16([_0x318f65.session['event$'],_0x318f65.state$]).pipe(_0x5e7dfd(([_0x4d449d,_0x1c8b28])=>da(_0x4d449d,_0x1c86f2)&&(_0x1c8b28==null? undefined:_0x1c8b28.status)===_0x370b3f.SYNCED),_0x48ae58(1)),_0xf801fd=_0x438f02;_0x550e01&&(_0xf801fd=_0x438f02.pipe(_0x147bfa({'first':5000}))),this._revertAcknowledgementSubscription=_0xf801fd.pipe(_0xccce5(async()=>{let _0x3d4feb=await _0x5644f2();return _0x3d4feb&&(this._historyManagerService["unMountHistoryContent"](),await this._localCacheService["exhaustSavingTask"]()),_0x3d4feb;}),_0x5679a8(this.dispose$)).subscribe({'next':_0xad6cb7=>{this._clearRevertAcknowledgement(),_0xad6cb7?this._messageService["removeAll"]():this._showRevertFailed();},'error':()=>{this._clearRevertAcknowledgement(),this._showRevertFailed();}});}_clearRevertAcknowledgement(){var _0x37c758;(_0x37c758=this._revertAcknowledgementSubscription)==null||_0x37c758.unsubscribe(),this._revertAcknowledgementSubscription=null;}_showRevertFailed(){this._messageService['show']({'content':this._localeService['t']("sheets-history-ui.loader.panel.revertFailed"),'type':_0x609f1f.Error,'duration':3000});}async _setupSubUnitSync(_0x3fff22,_0x1f0a6a){await this._updateSubUnitFromURLParams(_0x3fff22,_0x1f0a6a),_0x3fff22.activeSheet$["pipe"](_0x5679a8(this.dispose$)).subscribe(_0x1a4c24=>{_0x1a4c24&&this._updateURLWithCurrentState(_0x1a4c24);}),this._urlService["urlChange$"].pipe(_0x5679a8(this.dispose$)).subscribe(()=>this._updateSubUnitFromURLParams(_0x3fff22,_0x1f0a6a));}_updateURLWithCurrentState(_0x1247ca,_0x5d59b9= false){let _0xe8e896=this._urlService['getParam']("subunit");_0x1247ca.getSheetId()!==_0xe8e896&&this._urlService['setParam']("subunit",_0x1247ca.getSheetId(),_0x5d59b9);}async _updateSubUnitFromURLParams(_0x34b43a,_0x1c60c8){var _0x3c9580;if(!_0x1c60c8||!_0x34b43a.getSheetBySheetId(_0x1c60c8)){let _0x55993f=_0x34b43a.getUnhiddenWorksheets()[0],_0x262578=_0x34b43a.getSheetBySheetId(_0x55993f);if(!_0x262578)return;this._updateURLWithCurrentState(_0x262578, true),await this._commandService['executeCommand'](_0x49596b.id,{'unitId':_0x34b43a.getUnitId(),'subUnitId':_0x55993f});return;}((_0x3c9580=_0x34b43a.getActiveSheet())==null? undefined:_0x3c9580.getSheetId())!==_0x1c60c8&&await this._commandService["executeCommand"](_0x49596b.id,{'unitId':_0x34b43a.getUnitId(),'subUnitId':_0x1c60c8});}};fa=J([q(0,_0x76d311),q(1,_0x1fbb9b),q(2,_0x200c9d($)),q(3,_0x200c9d(_0x2bdbd6)),q(4,_0x2efab0),q(5,_0x200c9d(_0x3d2c62)),q(6,_0x606807),q(7,_0x200c9d(_0x6fe70d)),q(8,_0x5d9d1d),q(9,_0x43c9a6)],fa);function pa(){let _0x1b751d=_0x98ea07(X),_0x52130f=_0x98ea07(_0x2bdbd6),_0x4fc3f9=_0xd2f1e0(_0x1b751d.currentVersion$),_0x1e1b6e=_0x227cfb(()=>_0x4fc3f9?_0x1b751d.getSelectedVersionCanRevert(): false,[_0x1b751d,_0x4fc3f9]),_0x4954f0=_0x2fc950(()=>{_0x1b751d.exitHistoryMode();},[_0x1b751d]),_0x2ba3de=_0x2fc950(()=>{_0x1b751d.triggerRevert();},[_0x1b751d]);return _0x435c70('div',{'className':"univer-flex univer-h-12 univer-items-center univer-border-b univer-border-gray-200 univer-bg-gray-0 univer-px-4 dark:!univer-border-gray-700 dark:!univer-bg-gray-950",'children':[_0x5790c5(_0xe7ae40,{'variant':"link",'onClick':_0x4954f0,'children':_0x52130f.t("sheets-history-ui.viewer.header.back")}),_0x1e1b6e?_0x5790c5(_0xe7ae40,{'variant':"link",'onClick':_0x2ba3de,'children':_0x52130f.t('sheets-history-ui.viewer.header.revert')}):_0x5790c5("div",{'className':"univer-w-10"})]});}let ma=class extends _0x8f71e1{constructor(_0x3f3f82,_0x2ca8af,_0x4f8a55,_0x573e79,_0x57a105,_0x4d0721,_0x299fed){super(),this._permissionService=_0x3f3f82,this._uiPartsService=_0x2ca8af,this._messageService=_0x4f8a55,this._localeService=_0x573e79,this._historyManagerService=_0x57a105,this._injector=_0x4d0721,this._configService=_0x299fed,this._init();}_init(){this.disposeWithMe(this._historyManagerService["currentVersion$"].subscribe(_0xd1b07c=>{_0xd1b07c&&this._historyManagerService['triggerLoadSheet'](_0xd1b07c);})),this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(_0xc70723=>{let _0x1d82e5=this._historyManagerService['unitId'];_0x1d82e5&&(_0xc70723.subType===_0x4f2a57.Edit&&_0xc70723.value=== true&&this._permissionService["updatePermissionPoint"](new _0x36e808(_0x1d82e5).id, false),_0xc70723.subType===_0x4f2a57.RenameSheet&&_0xc70723.value=== true&&this._permissionService["updatePermissionPoint"](new _0x179ddc(_0x1d82e5).id, false),_0xc70723.subType===_0x4f2a57.MoveSheet&&_0xc70723.value=== true&&this._permissionService["updatePermissionPoint"](new _0x569f7f(_0x1d82e5).id, false),_0xc70723.subType===_0x4f2a57.HideSheet&&_0xc70723.value=== true&&this._permissionService["updatePermissionPoint"](new _0x4acf7e(_0x1d82e5).id, false),_0xc70723.subType===_0x4f2a57.Comment&&_0xc70723.value=== true&&this._permissionService['updatePermissionPoint'](new _0x36e808(_0x1d82e5).id, false),_0xc70723.subType===_0x4f2a57.FloatImg&&_0xc70723.value=== true&&this._permissionService["updatePermissionPoint"](new _0x36e808(_0x1d82e5).id, false));})),this._registerHeader(),this._registerLoadingMask();let _0x28b434=null;this.disposeWithMe(_0x538774(()=>_0x28b434==null? undefined:_0x28b434.dispose())),this.disposeWithMe(this._historyManagerService["loadingState$"].subscribe(_0xaf2442=>{_0x28b434==null||_0x28b434.dispose(),_0x28b434=null,_0xaf2442==="loading"&&(_0x28b434=this._messageService["show"]({'type':_0x609f1f.Info,'content':this._localeService['t']('sheets-history-ui.viewer.info.loading'),'duration':1000}));}));}_registerHeader(){var _0x3303ac;(_0x3303ac=this._configService["getConfig"]("sheets-history-ui.config"))!=null&&_0x3303ac.historyPanelHidden||this.disposeWithMe(this._uiPartsService["registerComponent"](_0x1c77ff.HEADER,()=>_0x13cdf5(pa,this._injector)));}_registerLoadingMask(){this.disposeWithMe(this._uiPartsService["registerComponent"](_0x1c77ff.GLOBAL,()=>_0x13cdf5(Gi,this._injector)));}};ma=J([q(0,_0x4dfc55),q(1,_0x574965),q(2,_0x2efab0),q(3,_0x200c9d(_0x2bdbd6)),q(4,_0x200c9d(X)),q(5,_0x200c9d(_0x2df6d2)),q(6,_0x47a55c)],ma);function ha(_0x395b38){var _0x5abaad;let {item:_0x236e86,isNewest:_0x3ecaf8}=_0x395b38,_0xd5ad13=_0x98ea07(X),_0x4852b8=_0x98ea07(Z),_0x221387=_0x98ea07(_0x2bdbd6),_0x11dae3=_0xd2f1e0(_0xd5ad13.currentVersion$,'', true)===_0x236e86.id,_0x29d17a=Ai(_0x236e86.time,_0x221387),_0xe835bc=!_0x3ecaf8&&_0xd5ad13.canRevert,_0x34623d=_0x2fc950(async()=>{_0xd5ad13.loadingState!=="loading"&&(_0xd5ad13.selectVersion(_0x236e86.id),await _0x4852b8.ensureVersion(_0x236e86.id));},[_0xd5ad13,_0x4852b8,_0x236e86.id]),_0x4ad69d=_0x2fc950(_0x468561=>{_0x468561.stopPropagation(),_0xd5ad13.triggerRevert(_0x236e86.id);},[_0xd5ad13,_0x236e86.id]),_0x19a9db=((_0x5abaad=_0x236e86.users)==null? undefined:_0x5abaad.filter(Boolean).join(',\x20'))||_0x236e86.user||_0x221387.t("sheets-history-ui.viewer.panel.unknownUser");return _0x435c70('div',{'className':_0x5df285("univer-flex univer-items-center univer-gap-3 univer-border-b univer-border-gray-100 univer-px-4 univer-py-3 dark:!univer-border-gray-800",_0x11dae3&&"univer-bg-blue-50 dark:!univer-bg-gray-900"),'onClick':_0x34623d,'children':[_0x435c70("div",{'className':"univer-min-w-0 univer-flex-1",'children':[_0x435c70("div",{'className':"univer-mb-0.5 univer-flex univer-items-center univer-gap-2",'children':[_0x5790c5("span",{'className':"univer-truncate univer-text-sm univer-font-medium univer-text-gray-800 dark:!univer-text-gray-200",'children':_0x19a9db}),_0x3ecaf8&&_0x5790c5("span",{'className':"univer-shrink-0 univer-rounded univer-border univer-border-primary-600 univer-bg-primary-50 univer-px-1.5 univer-py-0.5 univer-text-xs univer-text-primary-600 dark:!univer-bg-transparent",'children':_0x221387.t('sheets-history-ui.viewer.panel.currentVersion')})]}),_0x435c70("div",{'className':"univer-flex univer-items-center univer-gap-2",'children':[_0x5790c5("span",{'className':"univer-text-xs univer-text-gray-400",'children':_0x29d17a.time}),_0x5790c5("span",{'className':"univer-truncate univer-text-xs univer-text-gray-500 dark:!univer-text-gray-400",'children':ji(_0x236e86,_0x221387)})]})]}),_0xe835bc&&_0x5790c5(_0xe7ae40,{'size':"small",'variant':"primary",'onClick':_0x4ad69d,'children':_0x221387.t("sheets-history-ui.viewer.header.revert")})]});}function ga(){let _0xfad931=_0x98ea07(X),_0x143afe=_0x98ea07(_0x2bdbd6),_0x5a4009=_0xd2f1e0(_0xfad931.versions$),_0x5cb240=_0xd2f1e0(_0xfad931.fetching$),_0x3ebd7b=_0x377add(null),[_0x36afff,_0x259c6c]=_0x446936( true);_0x411dd3(()=>{let _0x3d264d=_0x3ebd7b.current;if(!_0x3d264d||!_0x36afff)return;let _0x34dc80,_0x52ef0b=()=>{clearTimeout(_0x34dc80),_0x34dc80=setTimeout(()=>{let {scrollTop:_0x820f25,scrollHeight:_0x403626,clientHeight:_0x13fdbd}=_0x3d264d;_0x820f25+_0x13fdbd>=_0x403626-10&&_0xfad931.loadMoreVersions().catch(()=> undefined);},100);};return _0x3d264d.addEventListener('scroll',_0x52ef0b),()=>{clearTimeout(_0x34dc80),_0x3d264d.removeEventListener("scroll",_0x52ef0b);};},[_0xfad931,_0x36afff]);let _0x1ff32e=Pi(_0x5a4009??[]);return _0x5790c5('div',{'className':"univer-pointer-events-none univer-absolute univer-inset-0 univer-z-10 univer-flex univer-flex-col univer-justify-end",'children':_0x435c70("div",{'className':_0x5df285("univer-pointer-events-auto univer-flex univer-flex-col univer-rounded-t-2xl univer-bg-gray-0 univer-shadow-lg univer-transition-[height] univer-duration-300 dark:!univer-bg-gray-950",_0x36afff?"univer-h-[60%]":'univer-h-12'),'children':[_0x435c70("div",{'className':'univer-flex\x20univer-shrink-0\x20univer-cursor-pointer\x20univer-flex-col\x20univer-items-center\x20univer-py-2','onClick':()=>_0x259c6c(_0x4826c2=>!_0x4826c2),'children':[_0x5790c5("div",{'className':"univer-h-1 univer-w-10 univer-rounded-full univer-bg-gray-300 dark:!univer-bg-gray-600"}),!_0x36afff&&_0x5790c5("span",{'className':'univer-mt-1\x20univer-text-xs\x20univer-text-gray-500','children':_0x143afe.t("sheets-history-ui.viewer.panel.title")})]}),_0x36afff&&_0x5790c5(_0x2343a6,{'children':_0x5a4009?_0x435c70('div',{'ref':_0x3ebd7b,'className':"univer-flex-1 univer-overflow-y-auto",'children':[_0x1ff32e.map(_0x45ad48=>_0x435c70("div",{'children':[_0x5790c5("div",{'className':"univer-sticky univer-top-0 univer-z-10 univer-bg-gray-50 univer-px-4 univer-py-2 univer-text-xs univer-font-semibold univer-text-gray-500 dark:!univer-bg-gray-900",'children':Ni(_0x45ad48.startDateString,_0x143afe)}),_0x45ad48.versions["map"]((_0x20daed,_0x381027)=>_0x5790c5(ha,{'item':_0x20daed,'isNewest':_0x1ff32e[0]===_0x45ad48&&_0x381027===0},_0x20daed.id))]},_0x45ad48.dateString)),_0x5cb240&&_0x5790c5("div",{'className':"univer-flex univer-items-center univer-justify-center univer-py-4",'children':_0x5790c5(_0x2b8ff6,{'className':"univer-animate-spin univer-text-gray-400"})})]}):_0x5790c5('div',{'className':'univer-flex\x20univer-flex-1\x20univer-items-center\x20univer-justify-center','children':_0x5790c5(_0x2b8ff6,{'className':"univer-animate-spin univer-text-gray-400"})})})]})});}let _a=class extends _0x8f71e1{constructor(_0xd66945,_0x3ac786){super(),this._uiPartsService=_0xd66945,this._injector=_0x3ac786,this.disposeWithMe(this._uiPartsService["registerComponent"](_0x1c77ff.CONTENT,()=>_0x13cdf5(ga,this._injector)));}};_a=J([q(0,_0x574965),q(1,_0x200c9d(_0x2df6d2))],_a);let va=class extends _0x49102e{constructor(_0x38e045=G,_0x144517,_0x35b1ab,_0x48dcde){super(),this._config=_0x38e045,this._injector=_0x144517,this._renderManagerService=_0x35b1ab,this._configService=_0x48dcde;let {..._0x34cd15}=_0x4c6abd({},G,this._config);this._configService["setConfig"](W,_0x34cd15);}onStarting(){[[Q],[X],[ma],[Z],[Yi],[Y],[_a],[Wi],[_0x2b8368,{'useClass':_0x42171d}],[_0x3822b3,{'useClass':$i}],[_0x49cfd2,{'useClass':_0x4cd2e2}]].forEach(_0x218d8f=>this._injector["add"](_0x218d8f)),this._injector['get'](ma),this._injector["get"](Q);}onRendered(){[[Zi]].forEach(_0x14919f=>{this.disposeWithMe(this._renderManagerService["registerRenderModule"](_0x196f55.UNIVER_SHEET,_0x14919f));}),this._injector["get"](Wi),this._injector["get"](_a);}onSteady(){this._injector["get"](Z);}};K(va,"pluginName","UNIVER_SHEETS_HISTORY_VIEWER_MOBILE_PLUGIN"),K(va,"packageName",bi),K(va,"version",xi),va=J([_0x50dec6(_0x9cc1b4,_0xf559cc,_0xec48ba,_0x46e284,_0x541918,_0x4f05b0,_0x2514ad,_0x5c7c1c,_0x4bd407,_0xc66447,_0x2034fb,_0x566531,_0x4db10d,_0x19281e,_0x203fa8),q(1,_0x200c9d(_0x2df6d2)),q(2,_0x407e32),q(3,_0x47a55c)],va);const ya="univer-history-container-mobile";let ba=class extends _0x8f71e1{constructor(_0x26a52,_0x582dd2,_0x1e75b9,_0x231ee5,_0x48ca7a,_0x33ea59,_0x42b3de,_0x1220c1,_0x14abba,_0x1b81e8){super(),this._localeService=_0x26a52,this._univerInstanceService=_0x582dd2,this._configService=_0x1e75b9,this._commandService=_0x231ee5,this._messageService=_0x48ca7a,this._permissionService=_0x33ea59,this._selectionProtectionRuleModel=_0x42b3de,this._dialogService=_0x1220c1,this._sidebarService=_0x14abba,this._themeService=_0x1b81e8,K(this,'_historyUniver$',new _0x32f298(null)),K(this,"historyUniver$",this._historyUniver$["asObservable"]()),K(this,"_disposableCollection",new _0x5cf52e()),K(this,"_pluginMap",new Map()),K(this,"_internalWebWorker",null),this._init();}get historyUniver(){return this._historyUniver$['value'];}_init(){this._initContainer(),this._initPlugins();}_initContainer(){var _0x3b26a1;let _0x302ad0=this._configService["getConfig"](W),_0x36b187=(_0x3b26a1=this._configService["getConfig"](_0x372cd6))==null? undefined:_0x3b26a1.container,_0x1f5621=(_0x302ad0==null? undefined:_0x302ad0.univerContainerId)??_0x36b187,_0x461ea0=typeof _0x1f5621=="string"?document.getElementById(_0x1f5621):_0x1f5621;if(!_0x461ea0)throw Error("[MobileHistoryLoaderService]: Configure a valid Univer container before opening history.");let _0x4cde1c=document.createElement('div');_0x4cde1c.id=ya,_0x4cde1c.style["position"]='absolute',_0x4cde1c.style["top"]='0',_0x4cde1c.style["left"]='0',_0x4cde1c.style["width"]="100%",_0x4cde1c.style["height"]="100%",_0x4cde1c.style["zIndex"]='49',_0x4cde1c.style["display"]="none",na(_0x4cde1c,this._localeService),_0x461ea0.appendChild(_0x4cde1c);}_initPlugins(){[[_0xec48ba],[_0x5c7c1c,{'container':ya,'header': true,'toolbar': false,'footer': true,'contextMenu': false,'override':[[_0x3822b3,null]]}],[_0x46e284],[_0xf559cc,{'override':[[_0x49cfd2,null]]}],[_0x329c8b,{'hasScroll': false}],[_0x3e8f0b],[_0x142a42],[_0x2514ad,{'notExecuteFormula': true}],[_0x19281e],[_0x34fce1],[_0x5115c0],[_0x4bd407],[_0x541918],[_0xc66447],[_0x40baf3],[_0x50f650],[_0x364048],[_0x203fa8],[_0x2fc989],[_0x1ac2eb,{'notExecuteFormula': true}],[_0x27beee],[_0x4260f2],[_0x23f118],[_0x4db10d],[_0x46e1c2],[_0x2034fb],[_0x1149fd],[_0x1ce9bf],[_0x4ce039],[_0x566531,{'notExecuteFormula': true}],[_0x4f05b0]].forEach(([_0x408bc2,_0x544c4e])=>this.registerPlugin(_0x408bc2,_0x544c4e));}dispose(){super.dispose(),this.unMountHistoryContent(),this._pluginMap["clear"]();}registerPlugin(_0x44d021,_0x289403,_0x4ed7c5){if(this._pluginMap['has'](_0x44d021.pluginName)&&!_0x4ed7c5)throw Error('[MobileHistoryLoaderService]:\x20Plugin\x20'+_0x44d021.pluginName+" has been registered.");this._pluginMap["set"](_0x44d021.pluginName,[_0x44d021,_0x289403]);}getAllPlugins(){return Array.from(this._pluginMap["values"]());}mountHistoryContent(_0x1e724b,_0x2d051a){let _0x53ce56=document.getElementById(ya);_0x53ce56&&(_0x53ce56.style['display']="block",this._initUniver(_0x1e724b,_0x2d051a));}unMountHistoryContent(){var _0x528a11;this._disposableCollection["dispose"](),(_0x528a11=this.historyUniver)==null||_0x528a11.dispose(),this._historyUniver$["next"](null);let _0x17dd6f=document.getElementById(ya);_0x17dd6f&&(_0x17dd6f.style["display"]="none",this._internalWebWorker&&=(this._internalWebWorker['terminate'](),null));}_initUniver(_0x141724,_0xcfe3b0){var _0x4b3e80,_0x12c543,_0x2597e3;if(this.historyUniver)return;let _0x4d4fa6=new _0x345473({...ta(this._localeService),'override':[[_0x51d41c,{'useClass':_0x29d59a}]]}),_0x351da8=_0x4d4fa6.__getInjector(),_0x1d1c39=_0x351da8.get(_0x27ce45);this._disposableCollection["add"](this._themeService["darkMode$"].subscribe(_0x553e79=>{_0x1d1c39.setDarkMode(_0x553e79);})),this._disposableCollection["add"](this._themeService["currentTheme$"].subscribe(_0x37836e=>{_0x1d1c39.setTheme(_0x37836e);}));let _0x3bfdfe=_0x351da8.get(_0x2bdbd6);_0x3bfdfe.setLocale(this._localeService['getCurrentLocale']()),_0x3bfdfe.setDirection(this._localeService["getDirection"]()),_0x351da8.get(_0x47a55c).setConfig(_0x16992c,this._configService["getConfig"](_0x16992c));let _0x130e82=this._configService["getConfig"](_0x482a3c);_0x130e82&&_0x4d4fa6.registerPlugin(_0x9cc1b4,{'license':_0x130e82.ls});let _0x4dafe2=(_0x4b3e80=this._configService["getConfig"]("sheets-history-ui.config"))==null? undefined:_0x4b3e80.workerURL,_0x3e42d=!!_0x4dafe2;_0x3e42d&&(this._internalWebWorker=_0x4dafe2 instanceof Worker?_0x4dafe2:null,_0x4d4fa6.registerPlugin(_0xdd0a0a,{'workerURL':_0x4dafe2})),this._pluginMap["forEach"](([_0x16c803,_0x14279a])=>{_0x4d4fa6.registerPlugin(_0x16c803,_0x14279a);}),_0x4d4fa6.registerPlugin(va,{'historyServerUrl':yi(this._configService["getConfig"](W)),'historyPanelComponentKey':(_0x12c543=this._configService["getConfig"]('sheets-history-ui.config'))==null? undefined:_0x12c543.historyPanelComponentKey,'historyPanelHidden':(_0x2597e3=this._configService["getConfig"]("sheets-history-ui.config"))==null? undefined:_0x2597e3.historyPanelHidden}),_0x351da8.invoke(_0x2eee67=>this._initListener(_0x2eee67,_0x141724)),this._historyUniver$["next"](_0x4d4fa6);let _0x502e28=_0x351da8.get(X),_0x35da1f=this._checkCanRevert(_0x141724),_0x33d0bf=()=>{ra(_0xcfe3b0)?_0x502e28.triggerCustomVersions(_0x141724,_0x35da1f,_0xcfe3b0):_0x502e28.triggerLoadVersions(_0x141724,_0x35da1f).catch(()=>{_0x502e28.status="error";});};if(this._messageService['show']({'content':this._localeService['t']("sheets-history-ui.loader.info.initializing"),'type':_0x609f1f.Loading}),_0x3e42d)try{_0x351da8.get(_0x3f4102).whenReady().then(_0x33d0bf).catch(_0x33d0bf);}catch{_0x33d0bf();}else _0x33d0bf();}_initListener(_0x3da2f5,_0x1c580d){let _0x5c4fd6=_0x3da2f5.get(X);this._disposableCollection["add"](_0x5c4fd6.status$['subscribe'](_0x3ce42d=>{switch(_0x3ce42d){case "entered":this._dialogService["closeAll"](),this._sidebarService["close"]();break;case "exited":this._commandService["executeCommand"](sa.id),this.unMountHistoryContent();break;case "error":this.unMountHistoryContent(),this._messageService["show"]({'content':this._localeService['t']('sheets-history-ui.loader.panel.listFetchError'),'type':_0x609f1f.Error,'duration':3000});break;default:break;}})),this._disposableCollection["add"](_0x5c4fd6.revertRevision$['subscribe'](_0x17dfea=>{if(_0x17dfea){let _0x5b5fa3={'unitId':_0x1c580d,'revision':_0x17dfea};this._commandService["executeCommand"](_0xdc72c5.id,_0x5b5fa3).catch(()=>{_0x5c4fd6.status='error';});}}));}_checkCanRevert(_0x41a031){let _0x28fa82=this._univerInstanceService["getUnit"](_0x41a031);if(!_0x28fa82)return false;let _0x1c8857=_0x28fa82.getSheets().map(_0x421408=>_0x421408.getSheetId()),_0x1b58d9=new _0x36e808(_0x41a031).id,_0x522cb0=_0x1c8857.map(_0x316de5=>new _0x346068(_0x41a031,_0x316de5).id),_0x343f93=_0x1c8857.map(_0x5d7892=>this._selectionProtectionRuleModel["getSubunitRuleList"](_0x41a031,_0x5d7892).map(_0x11e437=>new _0x1eb953(_0x41a031,_0x5d7892,_0x11e437.permissionId).id)).flat(),_0x552c29=new _0xd1fc1c(_0x41a031).id;return this._permissionService["composePermission"]([_0x1b58d9,..._0x522cb0,..._0x343f93,_0x552c29]).every(_0x1071d0=>!!_0x1071d0.value);}};ba=J([q(0,_0x200c9d(_0x2bdbd6)),q(1,_0x5d9d1d),q(2,_0x47a55c),q(3,_0x76d311),q(4,_0x2efab0),q(5,_0x4dfc55),q(6,_0x200c9d(_0x39df73)),q(7,_0x200c9d(_0x3822b3)),q(8,_0x200c9d(_0x159c4b)),q(9,_0x200c9d(_0x27ce45))],ba);let xa=class extends _0x49102e{constructor(_0x2e976d=G,_0x17178b,_0x3e8846){super(),this._config=_0x2e976d,this._injector=_0x17178b,this._configService=_0x3e8846;let {menu:_0x34d52b,..._0x13d4ae}=_0x4c6abd({},G,this._config);_0x34d52b&&this._configService["setConfig"]("menu",_0x34d52b,{'merge': true}),this._configService["setConfig"](W,_0x13d4ae);}onStarting(){this._injector["add"]([Q]),this._injector['get'](Q),[[$,{'useClass':ba}],[fa]].forEach(_0x42d58a=>this._injector['add'](_0x42d58a));}onSteady(){this._injector["get"](fa);}};K(xa,"type",_0x196f55.UNIVER_UNKNOWN),K(xa,"pluginName","UNIVER_SHEETS_HISTORY_MOBILE_UI_PLUGIN"),K(xa,"packageName",bi),K(xa,'version',xi),xa=J([_0x50dec6(_0x9cc1b4,_0x2514ad,_0x5c7c1c,_0x3a633b,_0x2f4f40),q(1,_0x200c9d(_0x2df6d2)),q(2,_0x47a55c)],xa);let Sa=class extends _0x42b732{constructor(_0x5d3fb8,_0xd362bf,_0x61d7fa,_0x51b034,_0x1c2ceb,_0x372578,_0x44a8eb,_0x4ec58c,_0x4d81bc,_0x3c65e9){super(),this._commandService=_0x5d3fb8,this._menuManagerService=_0xd362bf,this._historyManagerService=_0x61d7fa,this._localeService=_0x51b034,this._messageService=_0x1c2ceb,this._collaborationController=_0x372578,this._localCacheService=_0x44a8eb,this._dataLoaderService=_0x4ec58c,this._univerInstanceService=_0x4d81bc,this._urlService=_0x3c65e9,K(this,"_revertAcknowledgementSubscription",null),this.disposeWithMe(_0x538774(()=>this._clearRevertAcknowledgement())),this._init();}_init(){[oa,sa].forEach(_0x436a9c=>this.disposeWithMe(_0x538774(this._commandService['registerCommand'](_0x436a9c)))),this._menuManagerService['mergeMenu'](la),this.disposeWithMe(this._commandService["onCommandExecuted"]((_0x228723,_0x4411a5)=>{if(_0x228723.id===_0xdc72c5.id&&ua(_0x228723.params)){let {revision:_0x71a1b8,unitId:_0x56b599}=_0x228723.params;this._messageService["show"]({'content':this._localeService['t']('sheets-history-ui.loader.panel.reverting'),'type':_0x609f1f.Loading,'duration':5000});let _0xce8ea3=this._collaborationController["getCollabEntity"](_0x56b599);if(!_0xce8ea3){this._showRevertFailed();return;}_0x4411a5!=null&&_0x4411a5.fromCollab?this._handleRevertAcknowledgement(_0xce8ea3,{'revision':_0x71a1b8,'unitId':_0x56b599},async()=>(setTimeout(()=>window.location['reload']()), true), true):this._handleRevertAcknowledgement(_0xce8ea3,{'revision':_0x71a1b8,'unitId':_0x56b599},async()=>{let _0x54bcc8=this._univerInstanceService["getCurrentUnitOfType"](_0x196f55.UNIVER_SHEET),_0x10f88f=_0x54bcc8==null? undefined:_0x54bcc8.getActiveSheet();if(!_0x10f88f)return false;this._univerInstanceService['disposeUnit'](_0x56b599);let _0x397bf9=await this._dataLoaderService["loadUnit"](_0x56b599,_0x196f55.UNIVER_SHEET);return _0x397bf9&&_0x397bf9 instanceof _0x32ca6f?(await this._setupSubUnitSync(_0x397bf9,_0x10f88f.getSheetId()), true): false;});}}));}_handleRevertAcknowledgement(_0x1809fc,_0x24db2d,_0x250859,_0x10d4df= false){this._clearRevertAcknowledgement();let _0x2c8c8a=_0x59ab16([_0x1809fc.session['event$'],_0x1809fc.state$]).pipe(_0x5e7dfd(([_0x6a98aa,_0x237abd])=>da(_0x6a98aa,_0x24db2d)&&(_0x237abd==null? undefined:_0x237abd.status)===_0x370b3f.SYNCED),_0x48ae58(1)),_0x198142=_0x2c8c8a;_0x10d4df&&(_0x198142=_0x2c8c8a.pipe(_0x147bfa({'first':5000}))),this._revertAcknowledgementSubscription=_0x198142.pipe(_0xccce5(async()=>{let _0x1d11d6=await _0x250859();return _0x1d11d6&&(this._historyManagerService["unMountHistoryContent"](),await this._localCacheService['exhaustSavingTask']()),_0x1d11d6;}),_0x5679a8(this.dispose$)).subscribe({'next':_0x462eba=>{this._clearRevertAcknowledgement(),_0x462eba||this._showRevertFailed();},'error':()=>{this._clearRevertAcknowledgement(),this._showRevertFailed();}});}_clearRevertAcknowledgement(){var _0x55d9c7;(_0x55d9c7=this._revertAcknowledgementSubscription)==null||_0x55d9c7.unsubscribe(),this._revertAcknowledgementSubscription=null;}_showRevertFailed(){this._messageService['show']({'content':this._localeService['t']("sheets-history-ui.loader.panel.revertFailed"),'type':_0x609f1f.Error,'duration':3000});}async _setupSubUnitSync(_0x5837f6,_0x18e96d){await this._updateSubUnitFromURLParams(_0x5837f6,_0x18e96d),_0x5837f6.activeSheet$["pipe"](_0x5679a8(this.dispose$)).subscribe(_0x4cffb0=>{_0x4cffb0&&this._updateURLWithCurrentState(_0x4cffb0);}),this._urlService["urlChange$"].pipe(_0x5679a8(this.dispose$)).subscribe(()=>this._updateSubUnitFromURLParams(_0x5837f6,_0x18e96d));}_updateURLWithCurrentState(_0x4bbf16,_0x5c95a9= false){let _0x512b51=this._urlService["getParam"]("subunit");_0x4bbf16.getSheetId()!==_0x512b51&&this._urlService["setParam"]('subunit',_0x4bbf16.getSheetId(),_0x5c95a9);}async _updateSubUnitFromURLParams(_0x196fe6,_0x5f3561){var _0x225bd2;if(!_0x5f3561||!_0x196fe6.getSheetBySheetId(_0x5f3561)){let _0x435e59=_0x196fe6.getUnhiddenWorksheets()[0],_0x3aabac=_0x196fe6.getSheetBySheetId(_0x435e59);if(!_0x3aabac)return;this._updateURLWithCurrentState(_0x3aabac, true),await this._commandService["executeCommand"](_0x49596b.id,{'unitId':_0x196fe6.getUnitId(),'subUnitId':_0x435e59});return;}((_0x225bd2=_0x196fe6.getActiveSheet())==null? undefined:_0x225bd2.getSheetId())!==_0x5f3561&&await this._commandService['executeCommand'](_0x49596b.id,{'unitId':_0x196fe6.getUnitId(),'subUnitId':_0x5f3561});}};Sa=J([q(0,_0x76d311),q(1,_0x1fbb9b),q(2,_0x200c9d($)),q(3,_0x200c9d(_0x2bdbd6)),q(4,_0x2efab0),q(5,_0x200c9d(_0x3d2c62)),q(6,_0x606807),q(7,_0x200c9d(_0x6fe70d)),q(8,_0x5d9d1d),q(9,_0x43c9a6)],Sa);let Ca=class extends _0x49102e{constructor(_0x43a737=G,_0x5638b8,_0x1a87d6){super(),this._config=_0x43a737,this._injector=_0x5638b8,this._configService=_0x1a87d6;let {menu:_0x1e5cc8,..._0x44460f}=_0x4c6abd({},G,this._config);_0x1e5cc8&&this._configService['setConfig']("menu",_0x1e5cc8,{'merge': true}),this._configService["setConfig"](W,_0x44460f);}onStarting(){this._injector["add"]([Q]),this._injector["get"](Q),[[$],[Sa]].forEach(_0x3dcc32=>this._injector["add"](_0x3dcc32));}onSteady(){this._injector["get"](Sa);}};K(Ca,'pluginName','UNIVER_SHEETS_HISTORY_UI_PLUGIN'),K(Ca,'packageName',bi),K(Ca,"version",xi),K(Ca,'type',_0x196f55.UNIVER_SHEET),Ca=J([_0x50dec6(_0x9cc1b4,_0x2514ad,_0x4c9933,_0x3a633b,_0x2f4f40),q(1,_0x200c9d(_0x2df6d2)),q(2,_0x47a55c)],Ca);export{W as SHEETS_HISTORY_UI_PLUGIN_CONFIG_KEY,oa as ToggleEditHistoryOperation,xa as UniverSheetsHistoryMobileUIPlugin,Ca as UniverSheetsHistoryUIPlugin};
+import {
+  BooleanNumber as _0x48a0b6,
+  ColorKit as _0x3efc84,
+  CommandType as _0x102086,
+  DependentOn as _0x50dec6,
+  Disposable as _0x8f71e1,
+  DisposableCollection as _0x5cf52e,
+  IAuthzIoService as _0x51d41c,
+  ICommandService as _0x76d311,
+  IConfigService as _0x47a55c,
+  IConfirmService as _0x48adf8,
+  IImageIoService as _0x49cfd2,
+  ILogService as _0x317fe1,
+  IPermissionService as _0x4dfc55,
+  IUniverInstanceService as _0x5d9d1d,
+  Inject as _0x200c9d,
+  Injector as _0x2df6d2,
+  LOCALE_META as _0x56a628,
+  LRUMap as _0x1c057f,
+  LocaleService as _0x2bdbd6,
+  ObjectMatrix as _0x20fa55,
+  Plugin as _0x49102e,
+  RANGE_TYPE as _0x5bbd7a,
+  RxDisposable as _0x42b732,
+  ThemeService as _0x27ce45,
+  Univer as _0x345473,
+  UniverInstanceType as _0x196f55,
+  Workbook as _0x32ca6f,
+  dateKit as _0x2a330d,
+  debounce as _0x4d3248,
+  merge as _0x4c6abd,
+  toDisposable as _0x538774,
+} from "@univerjs/core";
+import {
+  AddRangeProtectionMutation as _0x3c4356,
+  AddRangeThemeMutation as _0x5248f5,
+  AddWorksheetMergeMutation as _0x1a1c89,
+  AddWorksheetProtectionMutation as _0x32c01e,
+  CopyWorksheetEndMutation as _0x4a1996,
+  DeleteRangeProtectionMutation as _0x4c5a10,
+  DeleteWorksheetProtectionMutation as _0x28981c,
+  DeleteWorksheetRangeThemeStyleMutation as _0x4e2817,
+  InsertColMutation as _0x2754fa,
+  InsertRowMutation as _0x534f14,
+  InsertSheetMutation as _0x51c809,
+  MoveColsMutation as _0x364b2d,
+  MoveRangeMutation as _0x417fb8,
+  MoveRowsMutation as _0x23e5d8,
+  RangeMergeUtil as _0x4925da,
+  RangeProtectionPermissionEditPoint as _0x1eb953,
+  RangeProtectionRuleModel as _0x39df73,
+  RemoveColMutation as _0x21bdad,
+  RemoveNumfmtMutation as _0x159141,
+  RemoveRangeThemeMutation as _0x2672ec,
+  RemoveRowMutation as _0x475c37,
+  RemoveSheetMutation as _0x1ed245,
+  RemoveWorksheetMergeMutation as _0x193d05,
+  ReorderRangeMutation as _0x590be1,
+  SetColDataMutation as _0x3182ef,
+  SetColHiddenMutation as _0x19fbfa,
+  SetColVisibleMutation as _0x42854f,
+  SetFrozenMutation as _0x3e1f32,
+  SetGridlinesColorMutation as _0x493b27,
+  SetNumfmtMutation as _0x574777,
+  SetRangeProtectionMutation as _0x476e11,
+  SetRangeThemeMutation as _0x3fa808,
+  SetRangeValuesMutation as _0x30c3b3,
+  SetRowDataMutation as _0x486a90,
+  SetRowHiddenMutation as _0x25d48a,
+  SetRowVisibleMutation as _0xfd3e21,
+  SetTabColorMutation as _0x1094fa,
+  SetWorkbookNameMutation as _0x39af3d,
+  SetWorksheetActivateCommand as _0x49596b,
+  SetWorksheetActiveOperation as _0x3e0253,
+  SetWorksheetColWidthMutation as _0x88e34d,
+  SetWorksheetColumnCountMutation as _0x95e5e3,
+  SetWorksheetDefaultStyleMutation as _0x4d31dd,
+  SetWorksheetHideMutation as _0x3c6d31,
+  SetWorksheetNameMutation as _0x43a96f,
+  SetWorksheetOrderMutation as _0x2a92d4,
+  SetWorksheetPermissionPointsMutation as _0x50af03,
+  SetWorksheetProtectionMutation as _0x15d915,
+  SetWorksheetRangeThemeStyleMutation as _0x5278f9,
+  SetWorksheetRightToLeftMutation as _0x4f5a16,
+  SetWorksheetRowAutoHeightMutation as _0x125363,
+  SetWorksheetRowCountMutation as _0x56bb03,
+  SetWorksheetRowHeightMutation as _0x4336b1,
+  SetWorksheetRowIsAutoHeightMutation as _0x1df329,
+  SheetPermissionInitController as _0x202081,
+  ToggleGridlinesMutation as _0x23cf59,
+  UniverSheetsPlugin as _0x2514ad,
+  WorkbookEditablePermission as _0x36e808,
+  WorkbookHideSheetPermission as _0x4acf7e,
+  WorkbookMoveSheetPermission as _0x569f7f,
+  WorkbookRecoverHistoryPermission as _0xd1fc1c,
+  WorkbookRenameSheetPermission as _0x179ddc,
+  WorkbookViewHistoryPermission as _0x33ddea,
+  WorksheetEditPermission as _0x346068,
+  findAllRectangle as _0x1892ad,
+  getSheetCommandTarget as _0xf9e528,
+} from "@univerjs/sheets";
+import {
+  CollaborationEvent as _0x23611b,
+  CompressMutationService as _0x2b305c,
+  CreateUnitMutation as _0x2303ff,
+  ISnapshotServerService as _0x2b8368,
+  ITransformService as _0x148615,
+  RevertRevisionMutation as _0xdc72c5,
+  UniverCollaborationPlugin as _0x4bd407,
+  isTransformMutationsSuccess as _0x43ba2c,
+  parseProtocolChangeset as _0x278de0,
+  transformSnapshotToWorkbookData as _0x4b691e,
+} from "@univerjs-pro/collaboration";
+import {
+  AuthzIoHttpService as _0x29d59a,
+  COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as _0x16992c,
+  CollaborationController as _0x3d2c62,
+  CollaborationImageIoService as _0x4cd2e2,
+  CollaborationStatus as _0x370b3f,
+  DataLoaderService as _0x6fe70d,
+  ILocalCacheService as _0x606807,
+  SnapshotServerOverHTTPService as _0x42171d,
+  UniverCollaborationClientPlugin as _0x3a633b,
+} from "@univerjs-pro/collaboration-client";
+import { UniverProFormulaEnginePlugin as _0x1ac2eb } from "@univerjs-pro/engine-formula";
+import {
+  LS_CONFIG_KEY as _0x482a3c,
+  UniverLicensePlugin as _0x9cc1b4,
+} from "@univerjs-pro/license";
+import {
+  ChartUpdateConfigMutation as _0x582a54,
+  ChartUpdateSourceConfigMutation as _0xdff17e,
+  InsertSheetsChartMutation as _0x269522,
+  RemoveSheetsChartMutation as _0x1b5309,
+  SheetsChartService as _0x3965dd,
+  UniverSheetsChartPlugin as _0x2034fb,
+} from "@univerjs-pro/sheets-chart";
+import { UniverSheetsChartUIPlugin as _0x1149fd } from "@univerjs-pro/sheets-chart-ui";
+import {
+  AddPivotFieldMutation as _0x39f562,
+  AddPivotTableMutation as _0x4f42d6,
+  RemovePivotFieldMutation as _0x2d4aaa,
+  RemovePivotTableMutation as _0x374e7a,
+  RenamePivotFieldMutation as _0x2858af,
+  SetPivotCollapseMutation as _0x48815d,
+  SetPivotFieldFormatMutation as _0x2e4104,
+  SetPivotFilterMutation as _0x5616e9,
+  SetPivotOptionMutation as _0x5ed8e2,
+  SetPivotPositionMutation as _0x7cf02a,
+  SetPivotSortMutation as _0x479b1d,
+  SetPivotSubtotalTypeMutation as _0x33f953,
+  SetPivotValueFilterMutation as _0x4a84a7,
+  SheetsPivotTableConfigModel as _0x465b56,
+  UniverSheetsPivotTablePlugin as _0x566531,
+  UpdateFieldPositionMutation as _0x282936,
+  UpdatePivotFieldSourceInfoMutation as _0x4f95e2,
+  UpdatePivotTableSourceRangeMutation as _0x9161fd,
+  UpdateValuePositionMutation as _0x35e203,
+  unionPivotViewRange as _0x19aba1,
+} from "@univerjs-pro/sheets-pivot";
+import {
+  InsertSheetsShapeMutation as _0x1ff80,
+  RemoveSheetsShapeMutation as _0x38deb3,
+  UniverSheetsShapePlugin as _0x1ce9bf,
+  UpdateSheetsShapeDataMutation as _0x4717d1,
+  UpdateSheetsShapeTypeMutation as _0x48225b,
+} from "@univerjs-pro/sheets-shape";
+import { UniverSheetsShapeUIPlugin as _0x4ce039 } from "@univerjs-pro/sheets-shape-ui";
+import {
+  AddSheetSparklineMutation as _0x2d3f5e,
+  RemoveSheetSparklineMutation as _0x50eeec,
+  SetSheetSparklineMutation as _0x4e18c6,
+  SparklineDataSourceModel as _0x4d476b,
+  UniverSheetSparklinePlugin as _0x4db10d,
+} from "@univerjs-pro/sheets-sparkline";
+import { UniverSheetSparklineUIPlugin as _0x46e1c2 } from "@univerjs-pro/sheets-sparkline-ui";
+import {
+  AddDataValidationMutation as _0x1b1c51,
+  RemoveDataValidationMutation as _0x97f0c0,
+  UniverDataValidationPlugin as _0x364048,
+  UpdateDataValidationMutation as _0x5eb890,
+} from "@univerjs/data-validation";
+import {
+  Button as _0xe7ae40,
+  Checkbox as _0x7fad2d,
+  Dropdown as _0x5cde61,
+  MessageType as _0x609f1f,
+  Segmented as _0x3f61cf,
+  Tooltip as _0x349151,
+  borderBottomClassName as _0x2ce247,
+  clsx as _0x5df285,
+} from "@univerjs/design";
+import { UniverDocsPlugin as _0x329c8b } from "@univerjs/docs";
+import { UniverDocsUIPlugin as _0x3e8f0b } from "@univerjs/docs-ui";
+import {
+  IDrawingManagerService as _0x2044fc,
+  UniverDrawingPlugin as _0xf559cc,
+} from "@univerjs/drawing";
+import { UniverDrawingUIPlugin as _0x27beee } from "@univerjs/drawing-ui";
+import {
+  IRenderManagerService as _0x407e32,
+  Rect as _0x242d59,
+  SHEET_VIEWPORT_KEY as _0x472dbf,
+  Shape as _0x4117fb,
+  UniverRenderEnginePlugin as _0xec48ba,
+  Vector2 as _0x216a81,
+} from "@univerjs/engine-render";
+import {
+  HTTPService as _0x1479ef,
+  UniverNetworkPlugin as _0x46e284,
+} from "@univerjs/network";
+import {
+  IRemoteInstanceService as _0x3f4102,
+  UniverRPCMainThreadPlugin as _0xdd0a0a,
+} from "@univerjs/rpc";
+import {
+  AddConditionalRuleMutation as _0x2a14cd,
+  ConditionalFormattingRuleModel as _0x5a9ee5,
+  DeleteConditionalRuleMutation as _0x40fb43,
+  MoveConditionalRuleMutation as _0x51bbdc,
+  SetConditionalRuleMutation as _0x1a19e1,
+  UniverSheetsConditionalFormattingPlugin as _0xc66447,
+} from "@univerjs/sheets-conditional-formatting";
+import { UniverSheetsConditionalFormattingUIPlugin as _0x2af53f } from "@univerjs/sheets-conditional-formatting-ui";
+import {
+  SheetDataValidationModel as _0x5c942e,
+  UniverSheetsDataValidationPlugin as _0x203fa8,
+} from "@univerjs/sheets-data-validation";
+import {
+  UniverSheetsDataValidationMobileUIPlugin as _0x2fc989,
+  UniverSheetsDataValidationUIPlugin as _0x4af1d5,
+} from "@univerjs/sheets-data-validation-ui";
+import {
+  DrawingApplyType as _0x47d822,
+  SetDrawingApplyMutation as _0x343963,
+  UniverSheetsDrawingPlugin as _0x4260f2,
+} from "@univerjs/sheets-drawing";
+import { UniverSheetsDrawingUIPlugin as _0x23f118 } from "@univerjs/sheets-drawing-ui";
+import {
+  ReCalcSheetsFilterMutation as _0x2b6a47,
+  RemoveSheetsFilterMutation as _0x3a03bf,
+  SetSheetsFilterCriteriaMutation as _0x553ada,
+  SetSheetsFilterRangeMutation as _0x5419d0,
+  SheetsFilterService as _0x206cef,
+  UniverSheetsFilterPlugin as _0x541918,
+} from "@univerjs/sheets-filter";
+import { UniverSheetsFilterUIPlugin as _0x5919f9 } from "@univerjs/sheets-filter-ui";
+import { UniverSheetsFormulaPlugin as _0x34fce1 } from "@univerjs/sheets-formula";
+import { UniverSheetsFormulaUIPlugin as _0x5115c0 } from "@univerjs/sheets-formula-ui";
+import { UniverSheetsHyperLinkPlugin as _0x40baf3 } from "@univerjs/sheets-hyper-link";
+import { UniverSheetsHyperLinkUIPlugin as _0x50f650 } from "@univerjs/sheets-hyper-link-ui";
+import { UniverSheetsNumfmtPlugin as _0x142a42 } from "@univerjs/sheets-numfmt";
+import {
+  AddSheetTableMutation as _0x3abc14,
+  DeleteSheetTableMutation as _0x57ee5b,
+  SetSheetTableFilterMutation as _0x2dc4d0,
+  SetSheetTableMutation as _0x541565,
+  SheetTableService as _0x57fbab,
+  UniverSheetsTablePlugin as _0x4f05b0,
+} from "@univerjs/sheets-table";
+import {
+  ICellEditorManagerService as _0x45b20d,
+  SheetSkeletonManagerService as _0x13da0c,
+  UniverSheetsMobileUIPlugin as _0x19281e,
+  UniverSheetsUIPlugin as _0x14146b,
+  getCoordByCell as _0x2b252d,
+  getCurrentRangeDisable$ as _0x16e589,
+  getSheetObject as _0x59868c,
+} from "@univerjs/sheets-ui";
+import {
+  BuiltInUIPart as _0x1c77ff,
+  ComponentManager as _0x146326,
+  IDialogService as _0x3822b3,
+  IMenuManagerService as _0x1fbb9b,
+  IMessageService as _0x2efab0,
+  ISidebarService as _0x159c4b,
+  IUIPartsService as _0x574965,
+  IconManager as _0x4c2752,
+  MenuItemType as _0x51bf88,
+  RibbonStartGroup as _0x330e51,
+  UI_PLUGIN_CONFIG_KEY as _0x372cd6,
+  UniverMobileUIPlugin as _0x5c7c1c,
+  UniverUIPlugin as _0x5c66ab,
+  connectInjector as _0x13cdf5,
+  getMenuHiddenObservable as _0x1744b9,
+  useDependency as _0x98ea07,
+  useObservable as _0xd2f1e0,
+} from "@univerjs/ui";
+import {
+  BehaviorSubject as _0x32f298,
+  Subject as _0x3fbab2,
+  combineLatest as _0x59ab16,
+  filter as _0x5e7dfd,
+  map as _0x49f52c,
+  of as _0x2bc979,
+  skip as _0x24ef39,
+  switchMap as _0xccce5,
+  take as _0x48ae58,
+  takeUntil as _0x5679a8,
+  timeout as _0x147bfa,
+} from "rxjs";
+import {
+  AiAssistantMultiIcon as _0x126ba5,
+  ArrowLeftIcon as _0x2c184a,
+  FunnelIcon as _0x16d5e2,
+  HistoryIcon as _0x5c7750,
+  LoadingMultiIcon as _0x2b8ff6,
+  MoreDownIcon as _0x835cdf,
+  MoreRightIcon as _0x2e00b9,
+  RestoreIcon as _0x284b24,
+} from "@univerjs/icons";
+import {
+  Fragment as _0x309698,
+  useCallback as _0x2fc950,
+  useEffect as _0x411dd3,
+  useMemo as _0x227cfb,
+  useRef as _0x377add,
+  useState as _0x446936,
+} from "react";
+import {
+  ErrorCode as _0x3cb116,
+  UnitAction as _0x4f2a57,
+  isError as _0x34aca7,
+} from "@univerjs/protocol";
+import {
+  Fragment as _0x2343a6,
+  jsx as _0x5790c5,
+  jsxs as _0x435c70,
+} from "react/jsx-runtime";
+import {
+  IURLService as _0x43c9a6,
+  SheetCollabCursorShape as _0x473b92,
+  UniverCollaborationClientUIPlugin as _0x2f4f40,
+} from "@univerjs-pro/collaboration-client-ui";
+import { UniverSheetsHistoryPlugin as _0x4c9933 } from "@univerjs-pro/sheets-history";
+const W = "sheets-history-ui.config",
+  vi = "history-panel",
+  G = { historyPanelComponentKey: vi };
+function yi(_0x138863) {
+  return (
+    (_0x138863 == null ? undefined : _0x138863.historyServerUrl) ??
+    "/universer-api/history"
+  );
+}
+var bi = "@univerjs-pro/sheets-history-ui",
+  xi = "1.0.0-insiders.20260907-70fc579";
+function Si(_0x5073c1) {
+  "@babel/helpers - typeof";
+  return (
+    (Si =
+      typeof Symbol == "function" && typeof Symbol.iterator == "symbol"
+        ? function (_0x14cb02) {
+            return typeof _0x14cb02;
+          }
+        : function (_0x7bac27) {
+            return _0x7bac27 &&
+              typeof Symbol == "function" &&
+              _0x7bac27.constructor === Symbol &&
+              _0x7bac27 !== Symbol.prototype
+              ? "symbol"
+              : typeof _0x7bac27;
+          }),
+    Si(_0x5073c1)
+  );
+}
+function Ci(_0x39eaa1, _0x7cbdeb) {
+  if (Si(_0x39eaa1) != "object" || !_0x39eaa1) return _0x39eaa1;
+  var _0x4bd2ae = _0x39eaa1[Symbol.toPrimitive];
+  if (_0x4bd2ae !== undefined) {
+    var _0x2e3edc = _0x4bd2ae.call(_0x39eaa1, _0x7cbdeb || "default");
+    if (Si(_0x2e3edc) != "object") return _0x2e3edc;
+    throw TypeError(
+      "@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.",
+    );
+  }
+  return (_0x7cbdeb === "string" ? String : Number)(_0x39eaa1);
+}
+function wi(_0x5e7353) {
+  var _0x41ce2a = Ci(_0x5e7353, "string");
+  return Si(_0x41ce2a) == "symbol" ? _0x41ce2a : _0x41ce2a + "";
+}
+function K(_0x5a6e1a, _0x444cc0, _0x303bb6) {
+  return (
+    (_0x444cc0 = wi(_0x444cc0)) in _0x5a6e1a
+      ? Object.defineProperty(_0x5a6e1a, _0x444cc0, {
+          value: _0x303bb6,
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        })
+      : (_0x5a6e1a[_0x444cc0] = _0x303bb6),
+    _0x5a6e1a
+  );
+}
+function q(_0x58d4e1, _0x2525e9) {
+  return function (_0x5eaa4b, _0x5cfd4f) {
+    _0x2525e9(_0x5eaa4b, _0x5cfd4f, _0x58d4e1);
+  };
+}
+function J(_0x4e7d13, _0x1fb560, _0x537d56, _0x237bf3) {
+  var _0x463bf4 = arguments.length,
+    _0x1b068a =
+      _0x463bf4 < 3
+        ? _0x1fb560
+        : _0x237bf3 === null
+          ? (_0x237bf3 = Object.getOwnPropertyDescriptor(_0x1fb560, _0x537d56))
+          : _0x237bf3,
+    _0x9c3275;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function")
+    _0x1b068a = Reflect.decorate(_0x4e7d13, _0x1fb560, _0x537d56, _0x237bf3);
+  else {
+    for (var _0x41ecc4 = _0x4e7d13.length - 1; _0x41ecc4 >= 0; _0x41ecc4--)
+      (_0x9c3275 = _0x4e7d13[_0x41ecc4]) &&
+        (_0x1b068a =
+          (_0x463bf4 < 3
+            ? _0x9c3275(_0x1b068a)
+            : _0x463bf4 > 3
+              ? _0x9c3275(_0x1fb560, _0x537d56, _0x1b068a)
+              : _0x9c3275(_0x1fb560, _0x537d56)) || _0x1b068a);
+  }
+  return (
+    _0x463bf4 > 3 &&
+      _0x1b068a &&
+      Object.defineProperty(_0x1fb560, _0x537d56, _0x1b068a),
+    _0x1b068a
+  );
+}
+let Y = class extends _0x8f71e1 {
+  constructor(
+    _0x4e8919,
+    _0xf68019,
+    _0x5f0d7f,
+    _0x1d09b9,
+    _0x3a396f,
+    _0x35b0d8,
+    _0x51b61b,
+    _0x25015e,
+    _0x1a9dc8,
+  ) {
+    (super(),
+      (this._snapshotServerService = _0x4e8919),
+      (this._univerInstanceService = _0xf68019),
+      (this._commandService = _0x5f0d7f),
+      (this._permissionService = _0x1d09b9),
+      (this._drawingManagerService = _0x3a396f),
+      (this._configService = _0x35b0d8),
+      (this._httpService = _0x51b61b),
+      (this._compressMutationService = _0x25015e),
+      (this._sheetPermissionInitController = _0x1a9dc8),
+      K(this, "_workbookDataCache", undefined),
+      (this._workbookDataCache = new _0x1c057f(60)));
+  }
+  dispose() {
+    (this._workbookDataCache["clear"](), super.dispose());
+  }
+  async fetchCreatorList(_0x640803) {
+    try {
+      let _0x165e20 = (
+        await this._httpService["get"](
+          this._getAPIPrefix() + "/" + _0x640803 + "/creators",
+        )
+      ).body;
+      if (
+        _0x165e20 &&
+        _0x165e20.error &&
+        _0x165e20.error["code"] === _0x3cb116.OK
+      )
+        return _0x165e20.creators ?? [];
+    } catch (_0x4f9c77) {
+      console.error(_0x4f9c77);
+    }
+    return [];
+  }
+  async getVersions(_0x2bc45f, _0x286f7f) {
+    let {
+        userIds: _0x4f3f93,
+        lastLabel: _0xed4c5c,
+        origin: _0x3eb4c4,
+      } = _0x286f7f ?? {},
+      _0x2f0365 = new URL();
+    SearchParams();
+    (_0x2f0365.set("length", "20"),
+      _0xed4c5c && _0x2f0365.set("lastLabel", _0xed4c5c),
+      _0x4f3f93 == null ||
+        _0x4f3f93.forEach((_0x3a2728) => {
+          _0x2f0365.append("userIds", _0x3a2728);
+        }),
+      _0x3eb4c4 && _0x2f0365.set("origin", _0x3eb4c4.toString()));
+    let _0x273340 =
+      this._getAPIPrefix() + "/" + _0x2bc45f + "/list?" + _0x2f0365.toString();
+    try {
+      let _0x336f8a = (await this._httpService["get"](_0x273340)).body;
+      if (
+        _0x336f8a &&
+        _0x336f8a.error &&
+        _0x336f8a.error["code"] === _0x3cb116.OK
+      ) {
+        let { hasMore: _0x111810, lastLabel: _0x13f1d2 } = _0x336f8a;
+        return {
+          hasMore: _0x111810,
+          lastLabel: _0x13f1d2,
+          versions: Ei(_0x336f8a),
+          members: _0x336f8a.entities["users"],
+        };
+      }
+    } catch (_0x59481a) {
+      console.error(_0x59481a);
+    }
+    return null;
+  }
+  async getHistoryChangesets(_0x6b74f4, _0x4ab2aa) {
+    let {
+        unitId: _0x5cb693,
+        startRevision: _0x53e0c3,
+        endRevision: _0x12b7f1,
+      } = _0x4ab2aa,
+      _0x3dc57f =
+        this._getAPIPrefix() +
+        "/" +
+        _0x5cb693 +
+        "/cs?startRevision=" +
+        _0x53e0c3 +
+        "&endRevision=" +
+        _0x12b7f1;
+    return (await this._httpService["get"](_0x3dc57f)).body;
+  }
+  _getAPIPrefix() {
+    return yi(this._configService["getConfig"](W));
+  }
+  _cacheKey(_0x3b98b4, _0x311f34) {
+    return _0x3b98b4 + ":" + _0x311f34;
+  }
+  async loadSheet(_0x4f3721, _0x52492a, _0x5d4394 = {}) {
+    let _0x51b946 = this._cacheKey(_0x4f3721, _0x52492a),
+      _0x46b81b = this._workbookDataCache["get"](_0x51b946);
+    if (_0x46b81b) {
+      let { workbookData: _0x2eebd1, changesets: _0x4dfaf } = _0x46b81b;
+      return (await this._applyWorkbookData(_0x2eebd1, _0x4dfaf), true);
+    }
+    let {
+      snapshot: _0x28e9b5,
+      changesets: _0x29ac22,
+      error: _0x1b824d,
+    } = await this._snapshotServerService["getUnitOnRev"](_0x5d4394, {
+      unitID: _0x4f3721,
+      type: _0x196f55.UNIVER_SHEET,
+      revision: _0x52492a,
+    });
+    if (_0x34aca7(_0x1b824d) || !_0x28e9b5 || !_0x28e9b5.workbook)
+      throw Error("[HistoryFetchService]: request snapshot error!");
+    let _0x41a670 = (_0x29ac22 == null ? undefined : _0x29ac22.length) ?? 0;
+    if (_0x52492a !== 0 && _0x28e9b5.rev + _0x41a670 !== _0x52492a)
+      throw Error("[HistoryFetchService]: wrong rev from the server!");
+    let { workbook: _0x913be3 } = _0x28e9b5,
+      _0x5b9c2a = _0x913be3.blockMeta
+        ? Object.values(_0x913be3.blockMeta).flatMap(
+            (_0x333771) => _0x333771.blocks ?? [],
+          )
+        : [],
+      _0x8e209a = await _0x4b691e(
+        _0x28e9b5,
+        (
+          await Promise.all(
+            _0x5b9c2a.map((_0x564ea8) =>
+              this._snapshotServerService["getDeserializedSheetBlock"](
+                _0x5d4394,
+                {
+                  unitID: _0x4f3721,
+                  type: _0x196f55.UNIVER_SHEET,
+                  blockID: _0x564ea8,
+                },
+              ).then((_0x543723) => _0x543723.block),
+            ),
+          )
+        ).filter(Boolean),
+        _0x5d4394,
+      );
+    return (
+      this._workbookDataCache["set"](_0x51b946, {
+        workbookData: _0x8e209a,
+        changesets: _0x29ac22,
+      }),
+      await this._applyWorkbookData(_0x8e209a, _0x29ac22),
+      true
+    );
+  }
+  async _applyWorkbookData(_0x3ed25e, _0x84e1f) {
+    let _0x288c57 = this._univerInstanceService["getCurrentUnitOfType"](
+      _0x196f55.UNIVER_SHEET,
+    );
+    _0x288c57 &&
+      (this._univerInstanceService["disposeUnit"](_0x288c57.getUnitId()),
+      await Promise.resolve());
+    let _0x2a60b3 = JSON.parse(JSON.stringify(_0x3ed25e));
+    this._drawingManagerService["setDrawingEditable"](false);
+    let _0x24400a = this._createUnit(_0x2a60b3, _0x84e1f);
+    (Ti(this._permissionService, this._drawingManagerService, _0x24400a),
+      this._sheetPermissionInitController["refreshRangeProtectPermission"]());
+  }
+  _createUnit(_0xfc5299, _0x4f5736) {
+    let _0x5a0591 = this._univerInstanceService["createUnit"](
+      _0x196f55.UNIVER_SHEET,
+      _0xfc5299,
+    );
+    this._univerInstanceService["focusUnit"](_0x5a0591.getUnitId());
+    let _0x94f056 = this._compressMutationService[
+      "interceptor"
+    ].fetchThroughInterceptors(
+      this._compressMutationService["interceptor"].getInterceptPoints()
+        .COMPRESS_MUTATION_APPLY,
+    );
+    return (
+      _0x4f5736 == null ||
+        _0x4f5736.forEach((_0x2cfae4) => {
+          let _0x28d45e = _0x2cfae4.mutations["map"]((_0x2cc88c) => ({
+            id: _0x2cc88c.id,
+            params: JSON.parse(_0x2cc88c.data),
+          }));
+          (_0x94f056(_0x28d45e, null) || _0x28d45e).forEach((_0x313f15) => {
+            this._commandService["hasCommand"](_0x313f15.id) &&
+              this._commandService["syncExecuteCommand"](
+                _0x313f15.id,
+                _0x313f15.params,
+                { fromChangeset: true },
+              );
+          });
+        }),
+      _0x5a0591
+    );
+  }
+};
+Y = J(
+  [
+    q(0, _0x2b8368),
+    q(1, _0x5d9d1d),
+    q(2, _0x76d311),
+    q(3, _0x4dfc55),
+    q(4, _0x2044fc),
+    q(5, _0x47a55c),
+    q(6, _0x200c9d(_0x1479ef)),
+    q(7, _0x200c9d(_0x2b305c)),
+    q(8, _0x200c9d(_0x202081)),
+  ],
+  Y,
+);
+function Ti(_0x389255, _0x4af2c1, _0x5d0377) {
+  let _0x3b2a55 = _0x5d0377.getUnitId();
+  (_0x4af2c1.setDrawingEditable(false),
+    _0x389255.updatePermissionPoint(new _0x36e808(_0x3b2a55).id, false),
+    _0x5d0377.getSheets().forEach((_0x59165f) => {
+      _0x389255.updatePermissionPoint(
+        new _0x346068(_0x3b2a55, _0x59165f.getSheetId()).id,
+        false,
+      );
+    }));
+}
+function Ei(_0x11d26b) {
+  let _0x18125c = [],
+    { entities: _0x6a28d7, historyIds: _0x42b872 } = _0x11d26b,
+    { datas: _0x222da9, users: _0x3ca532 } = _0x6a28d7;
+  for (let _0x5a99e1 of _0x42b872) {
+    let _0x289208 = _0x222da9[_0x5a99e1];
+    if (_0x289208) {
+      var _0x2ec0bb, _0x24e889;
+      let _0x12582c = !!(
+        (_0x2ec0bb = _0x3ca532[_0x289208.userId]) != null && _0x2ec0bb.anonymous
+      );
+      _0x18125c.push({
+        unitId: _0x289208.unitId,
+        user: _0x12582c
+          ? ""
+          : (_0x3ca532 == null ||
+            (_0x24e889 = _0x3ca532[_0x289208.userId]) == null
+              ? undefined
+              : _0x24e889.name) || "",
+        users: _0x289208.userIds["map"]((_0xd040f9) => {
+          var _0x22015b;
+          return (
+            (_0x3ca532 == null || (_0x22015b = _0x3ca532[_0xd040f9]) == null
+              ? undefined
+              : _0x22015b.name) || ""
+          );
+        }).filter((_0x5a53dd) => _0x5a53dd),
+        isAnonymous: _0x12582c,
+        id: _0x5a99e1,
+        time: _0x289208.createTime ? Number(_0x289208.createTime) : undefined,
+        commands: _0x289208.command,
+        startRev: Number(_0x289208.startRevision),
+        endRev: Number(_0x289208.endRevision),
+        recoverTime: _0x289208.recoverTime
+          ? Number(_0x289208.recoverTime)
+          : undefined,
+        additionalFields: _0x289208.additionalFields,
+        startRevCreateTime: _0x289208.startRevCreateTime
+          ? Number(_0x289208.startRevCreateTime)
+          : undefined,
+        endRevCreateTime: _0x289208.endRevCreateTime
+          ? Number(_0x289208.endRevCreateTime)
+          : undefined,
+      });
+    }
+  }
+  return _0x18125c;
+}
+function Di(_0x32061d = "sheets-history-ui.viewer.action.") {
+  return {
+    collaboration: [
+      { id: _0x2303ff.id, action: _0x32061d + "createSheet" },
+      { id: _0xdc72c5.id, action: _0x32061d + "revertSheet" },
+    ],
+    sheets: [
+      { id: _0x51c809.id, action: _0x32061d + "insertSheet" },
+      { id: _0x1ed245.id, action: _0x32061d + "removeSheet" },
+      { id: _0x43a96f.id, action: _0x32061d + "renameSheet" },
+      { id: _0x2a92d4.id, action: _0x32061d + "reorderSheet" },
+      { id: _0x3c6d31.id, action: _0x32061d + "hideSheet" },
+      { id: _0x4a1996.id, action: _0x32061d + "copySheet" },
+      { id: _0x1094fa.id, action: _0x32061d + "setTabColor" },
+      { id: _0x39af3d.id, action: _0x32061d + "renameWorkbook" },
+      { id: _0x534f14.id, action: _0x32061d + "insertRow" },
+      { id: _0x2754fa.id, action: _0x32061d + "insertCol" },
+      { id: _0x475c37.id, action: _0x32061d + "removeRow" },
+      { id: _0x21bdad.id, action: _0x32061d + "removeCol" },
+      { id: _0x23e5d8.id, action: _0x32061d + "moveRows" },
+      { id: _0x364b2d.id, action: _0x32061d + "moveCols" },
+      { id: _0xfd3e21.id, action: _0x32061d + "showRow" },
+      { id: _0x25d48a.id, action: _0x32061d + "hideRow" },
+      { id: _0x42854f.id, action: _0x32061d + "showCol" },
+      { id: _0x19fbfa.id, action: _0x32061d + "hideCol" },
+      { id: _0x4336b1.id, action: _0x32061d + "setRowHeight" },
+      { id: _0x88e34d.id, action: _0x32061d + "setColWidth" },
+      { id: _0x125363.id, action: _0x32061d + "setRowAutoHeight" },
+      { id: _0x1df329.id, action: _0x32061d + "setRowIsAutoHeight" },
+      { id: _0x486a90.id, action: _0x32061d + "setRowData" },
+      { id: _0x3182ef.id, action: _0x32061d + "setColData" },
+      { id: _0x56bb03.id, action: _0x32061d + "setRowCount" },
+      { id: _0x95e5e3.id, action: _0x32061d + "setColCount" },
+      { id: _0x30c3b3.id, action: _0x32061d + "setRangeValues" },
+      { id: _0x417fb8.id, action: _0x32061d + "moveRange" },
+      { id: _0x590be1.id, action: _0x32061d + "reorderRange" },
+      { id: _0x1a1c89.id, action: _0x32061d + "mergeCells" },
+      { id: _0x193d05.id, action: _0x32061d + "unmergeCells" },
+      { id: _0x3e1f32.id, action: _0x32061d + "setFrozen" },
+      { id: _0x23cf59.id, action: _0x32061d + "toggleGridlines" },
+      { id: _0x493b27.id, action: _0x32061d + "setGridlinesColor" },
+      { id: _0x4f5a16.id, action: _0x32061d + "setRightToLeft" },
+      { id: _0x4d31dd.id, action: _0x32061d + "setDefaultStyle" },
+      { id: _0x32c01e.id, action: _0x32061d + "addProtection" },
+      { id: _0x15d915.id, action: _0x32061d + "setProtection" },
+      { id: _0x28981c.id, action: _0x32061d + "deleteProtection" },
+      { id: _0x3c4356.id, action: _0x32061d + "addRangeProtection" },
+      { id: _0x476e11.id, action: _0x32061d + "setRangeProtection" },
+      { id: _0x4c5a10.id, action: _0x32061d + "deleteRangeProtection" },
+      { id: _0x50af03.id, action: _0x32061d + "setPermissionPoints" },
+      { id: _0x574777.id, action: _0x32061d + "setNumfmt" },
+      { id: _0x159141.id, action: _0x32061d + "removeNumfmt" },
+      { id: _0x5248f5.id, action: _0x32061d + "addRangeTheme" },
+      { id: _0x3fa808.id, action: _0x32061d + "setRangeTheme" },
+      { id: _0x2672ec.id, action: _0x32061d + "removeRangeTheme" },
+      { id: _0x5278f9.id, action: _0x32061d + "setWorksheetRangeTheme" },
+      { id: _0x4e2817.id, action: _0x32061d + "deleteWorksheetRangeTheme" },
+    ],
+    sheetsConditionalFormatting: [
+      { id: _0x2a14cd.id, action: _0x32061d + "setCF" },
+      { id: _0x1a19e1.id, action: _0x32061d + "setCF" },
+      { id: _0x40fb43.id, action: _0x32061d + "deleteCF" },
+      { id: _0x51bbdc.id, action: _0x32061d + "moveCF" },
+    ],
+    sheetsFilter: [
+      { id: _0x5419d0.id, action: _0x32061d + "setFilter" },
+      { id: _0x553ada.id, action: _0x32061d + "setFilterCriteria" },
+      { id: _0x3a03bf.id, action: _0x32061d + "removeFilter" },
+      { id: _0x2b6a47.id, action: _0x32061d + "recalcFilter" },
+    ],
+    dataValidation: [
+      { id: _0x1b1c51.id, action: _0x32061d + "setDV" },
+      { id: _0x5eb890.id, action: _0x32061d + "setDV" },
+      { id: _0x97f0c0.id, action: _0x32061d + "removeDV" },
+    ],
+    sheetsChart: [
+      { id: _0x269522.id, action: _0x32061d + "insertChart" },
+      { id: _0x1b5309.id, action: _0x32061d + "removeChart" },
+      { id: _0x582a54.id, action: _0x32061d + "updateChartConfig" },
+      { id: _0xdff17e.id, action: _0x32061d + "updateChartSource" },
+    ],
+    sheetsSparkline: [
+      { id: _0x2d3f5e.id, action: _0x32061d + "addSparkline" },
+      { id: _0x4e18c6.id, action: _0x32061d + "setSparkline" },
+      { id: _0x50eeec.id, action: _0x32061d + "removeSparkline" },
+    ],
+    sheetsPivot: [
+      { id: _0x4f42d6.id, action: _0x32061d + "addPivotTable" },
+      { id: _0x374e7a.id, action: _0x32061d + "removePivotTable" },
+      { id: _0x5ed8e2.id, action: _0x32061d + "setPivotOption" },
+      { id: _0x7cf02a.id, action: _0x32061d + "setPivotPosition" },
+      { id: _0x9161fd.id, action: _0x32061d + "updatePivotSource" },
+      { id: _0x39f562.id, action: _0x32061d + "addPivotField" },
+      { id: _0x2d4aaa.id, action: _0x32061d + "removePivotField" },
+      { id: _0x2858af.id, action: _0x32061d + "renamePivotField" },
+      { id: _0x282936.id, action: _0x32061d + "updateFieldPosition" },
+      { id: _0x35e203.id, action: _0x32061d + "updateValuePosition" },
+      { id: _0x4f95e2.id, action: _0x32061d + "updatePivotFieldSource" },
+      { id: _0x2e4104.id, action: _0x32061d + "setPivotFieldFormat" },
+      { id: _0x5616e9.id, action: _0x32061d + "setPivotFilter" },
+      { id: _0x4a84a7.id, action: _0x32061d + "setPivotValueFilter" },
+      { id: _0x479b1d.id, action: _0x32061d + "setPivotSort" },
+      { id: _0x48815d.id, action: _0x32061d + "setPivotCollapse" },
+      { id: _0x33f953.id, action: _0x32061d + "setPivotSubtotalType" },
+    ],
+    sheetsShape: [
+      { id: _0x1ff80.id, action: _0x32061d + "insertShape" },
+      { id: _0x38deb3.id, action: _0x32061d + "removeShape" },
+      { id: _0x4717d1.id, action: _0x32061d + "updateShapeData" },
+      { id: _0x48225b.id, action: _0x32061d + "updateShapeType" },
+    ],
+    sheetsTable: [
+      { id: _0x3abc14.id, action: _0x32061d + "addTable" },
+      { id: _0x57ee5b.id, action: _0x32061d + "removeTable" },
+      { id: _0x541565.id, action: _0x32061d + "updateTable" },
+      { id: _0x2dc4d0.id, action: _0x32061d + "setTableFilter" },
+    ],
+    sheetsDrawing: [{ id: _0x343963.id, action: _0x32061d + "updateDrawing" }],
+  };
+}
+function Oi(_0x7921ab = "sheets-history-ui.viewer.action.") {
+  let _0x4e21d4 = Di(_0x7921ab);
+  return Object.values(_0x4e21d4).flat();
+}
+function ki(_0x37f9fa) {
+  return _0x56a628[_0x37f9fa.getCurrentLocale()].tag;
+}
+const Ai = (_0x36b6de, _0x1389c9) => {
+    if (!_0x36b6de) return { date: "", time: "" };
+    let _0x34efa0 = _0x2a330d(_0x36b6de);
+    return {
+      date: Ni(_0x34efa0.format("YYYY-MM-DD"), _0x1389c9),
+      time: _0x34efa0.formatIntl(ki(_0x1389c9), {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+        hour12: false,
+      }),
+    };
+  },
+  ji = (_0x3834c2, _0x275351) => {
+    if (
+      _0x3834c2.commands["some"]((_0x24b076) => _0x24b076 === _0xdc72c5.id) &&
+      _0x3834c2.recoverTime
+    ) {
+      let _0x1aedb1 = Ai(_0x3834c2.recoverTime, _0x275351),
+        _0x2890bd = _0x1aedb1.date + "\x20" + _0x1aedb1.time;
+      return (
+        _0x275351.t("sheets-history-ui.viewer.action.revertSheetPrefix") +
+        "\x20" +
+        _0x2890bd +
+        "\x20" +
+        _0x275351.t("sheets-history-ui.viewer.action.revertSheetSuffix")
+      );
+    }
+    let _0x21d3df = Mi(_0x3834c2),
+      _0x4c074b = Array.from(new Set(_0x21d3df)),
+      _0xfb80e4;
+    if (_0x4c074b.length === 1) _0xfb80e4 = _0x275351.t(_0x4c074b[0]);
+    else {
+      let _0x3d3524 = _0x4c074b
+        .slice(0, 5)
+        .map((_0x74b352) => _0x275351.t(_0x74b352))
+        .join(",\x20");
+      _0xfb80e4 =
+        _0x4c074b.length > 5
+          ? "" + _0x3d3524 + _0x275351.t("sheets-history-ui.viewer.action.etc")
+          : _0x3d3524;
+    }
+    return "" + _0xfb80e4;
+  };
+function Mi(_0x710cbc) {
+  if (_0x710cbc.commands["length"] === 0) return [""];
+  let _0x4da711 = "sheets-history-ui.viewer.action.",
+    _0x5f2759 = _0x4da711 + "editSheet",
+    _0x3d2209 = Oi(_0x4da711).filter((_0xe1d61e) =>
+      _0x710cbc.commands["includes"](_0xe1d61e.id),
+    );
+  return _0x3d2209 != null && _0x3d2209.length
+    ? _0x3d2209.map((_0x49b02f) => _0x49b02f.action)
+    : [_0x5f2759];
+}
+function Ni(_0x44b78e, _0x2f065b) {
+  let [_0x38c860, _0x109d06, _0x57cdc1] = _0x2a330d()
+      .format("YYYY-MM-DD")
+      .split("-"),
+    [_0x1923f4, _0x592394, _0x280be5] = _0x44b78e.split("-");
+  if (
+    _0x38c860 === _0x1923f4 &&
+    _0x109d06 === _0x592394 &&
+    _0x57cdc1 === _0x280be5
+  )
+    return _0x2f065b.t("sheets-history-ui.viewer.panel.today");
+  let _0x3ce432 = ki(_0x2f065b);
+  return _0x38c860 === _0x1923f4
+    ? _0x2a330d(_0x44b78e).formatIntl(_0x3ce432, {
+        month: "numeric",
+        day: "numeric",
+      })
+    : _0x2a330d(_0x44b78e).formatIntl(_0x3ce432, {
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      });
+}
+function Pi(_0x50a052) {
+  return _0x50a052
+    ? _0x50a052.reduce((_0x2c84d1, _0xf1744e) => {
+        let _0x29d868 = _0x2a330d(_0xf1744e.time ?? Date.now()).format(
+            "YYYY-MM-DD",
+          ),
+          _0x1009c6 = _0xf1744e.startRevCreateTime
+            ? _0x2a330d(_0xf1744e.startRevCreateTime).format("YYYY-MM-DD")
+            : _0x29d868,
+          _0x46c30c = _0xf1744e.endRevCreateTime
+            ? _0x2a330d(_0xf1744e.endRevCreateTime).format("YYYY-MM-DD")
+            : _0x29d868;
+        return (
+          _0x2c84d1.length > 0 &&
+          _0x2c84d1[_0x2c84d1.length - 1].startDateString === _0x1009c6
+            ? _0x2c84d1[_0x2c84d1.length - 1].versions["push"](_0xf1744e)
+            : _0x2c84d1.push({
+                dateString: _0x29d868,
+                startDateString: _0x1009c6,
+                endDateString: _0x46c30c,
+                versions: [_0xf1744e],
+              }),
+          _0x2c84d1
+        );
+      }, [])
+    : [];
+}
+const Fi = "VIRTUAL_VERSION_NOW";
+let X = class extends _0x8f71e1 {
+  _setFetching(_0xff82e0) {
+    this._fetching$["next"](_0xff82e0);
+  }
+  get fetching() {
+    return this._fetching$["value"];
+  }
+  constructor(_0x57965a, _0x2375a9, _0x29c1b7, _0x988684, _0x73c3cd) {
+    (super(),
+      (this._messageService = _0x57965a),
+      (this._confirmService = _0x2375a9),
+      (this._logService = _0x29c1b7),
+      (this._localeService = _0x988684),
+      (this._historyFetchService = _0x73c3cd),
+      K(this, "_versions$", new _0x32f298([])),
+      K(this, "versions$", this._versions$["asObservable"]()),
+      K(this, "_currentVersion$", new _0x32f298("")),
+      K(this, "currentVersion$", this._currentVersion$["asObservable"]()),
+      K(this, "_status$", new _0x32f298("entered")),
+      K(this, "status$", this._status$["asObservable"]()),
+      K(this, "_revertRevision$", new _0x32f298(0)),
+      K(this, "revertRevision$", this._revertRevision$["asObservable"]()),
+      K(this, "_unitId$", new _0x32f298("")),
+      K(this, "unitId$", this._unitId$["asObservable"]()),
+      K(this, "_fetching$", new _0x32f298(false)),
+      K(this, "fetching$", this._fetching$["asObservable"]()),
+      K(this, "_creators$", new _0x32f298([])),
+      K(this, "creators$", this._creators$["asObservable"]()),
+      K(this, "_openPanel$", new _0x32f298(false)),
+      K(this, "openPanel$", this._openPanel$["asObservable"]()),
+      K(this, "_detailVersionsMap", new Map()),
+      K(this, "_loadingState$", new _0x32f298("init")),
+      K(this, "loadingState$", this._loadingState$["asObservable"]()),
+      K(this, "_lastLabel", null),
+      K(this, "_hasMore", true),
+      K(this, "_members", new Map()),
+      K(this, "_canRevert", false),
+      K(this, "_loadParams", null),
+      K(this, "_unitCurrentVersionMap", new Map()));
+  }
+  async triggerLoadVersions(_0x11943f, _0x4328fa) {
+    ((this._canRevert = _0x4328fa),
+      this._openPanel$["next"](true),
+      await this.loadInitialVersions(_0x11943f));
+  }
+  triggerCustomVersions(_0x53bb63, _0x504cc6, _0x3add9c) {
+    let {
+        versions: _0x4c569d,
+        hasMore: _0x1d68fc,
+        lastLabel: _0x34c85d,
+        members: _0x2486ba,
+      } = _0x3add9c,
+      _0x43a1d5 =
+        _0x4c569d.length > 0
+          ? _0x4c569d
+          : [
+              {
+                unitId: _0x53bb63,
+                id: Fi,
+                startRev: 1,
+                endRev: 0,
+                time: Date.now(),
+                user: this._localeService["t"](
+                  "sheets-history-ui.viewer.panel.currentUser",
+                ),
+                users: [
+                  this._localeService["t"](
+                    "sheets-history-ui.viewer.panel.currentUser",
+                  ),
+                ],
+                commands: [],
+                isAnonymous: false,
+              },
+            ];
+    ((this._canRevert = _0x504cc6),
+      this._unitId$["next"](_0x53bb63),
+      this._updateVersions(_0x43a1d5, _0x1d68fc, _0x34c85d, false, _0x2486ba),
+      this._currentVersion$["next"](_0x43a1d5[0].id));
+  }
+  async loadInitialVersions(_0x206f97, _0xcc70e7) {
+    (this._unitId$["next"](_0x206f97),
+      (this._loadParams = _0xcc70e7 ?? null),
+      this._setFetching(true));
+    let _0x2b34e9 = await this._historyFetchService["getVersions"](
+      _0x206f97,
+      _0xcc70e7,
+    );
+    if ((this._setFetching(false), _0x2b34e9)) {
+      let {
+        versions: _0x1e2db1,
+        lastLabel: _0x252596,
+        hasMore: _0xf6cba1,
+        members: _0x443b8d,
+      } = _0x2b34e9;
+      (_0x1e2db1.length === 0 &&
+        _0x1e2db1.push({
+          unitId: _0x206f97,
+          id: Fi,
+          startRev: 1,
+          endRev: 0,
+          time: Date.now(),
+          user: this._localeService["t"](
+            "sheets-history-ui.viewer.panel.currentUser",
+          ),
+          users: [
+            this._localeService["t"](
+              "sheets-history-ui.viewer.panel.currentUser",
+            ),
+          ],
+          commands: [],
+          isAnonymous: false,
+        }),
+        this._updateVersions(_0x1e2db1, _0xf6cba1, _0x252596, false, _0x443b8d),
+        this._currentVersion$["next"](_0x1e2db1[0].id),
+        this._unitCurrentVersionMap["set"](_0x206f97, _0x1e2db1[0].endRev));
+    } else this._status$["next"]("error");
+  }
+  async loadMoreVersions() {
+    if (!this._lastLabel || !this._hasMore || this.fetching) return false;
+    this._setFetching(true);
+    let _0x1949b0 = await this._historyFetchService["getVersions"](
+      this.unitId,
+      { lastLabel: this._lastLabel, ...this._loadParams },
+    );
+    if ((this._setFetching(false), _0x1949b0)) {
+      let {
+        versions: _0x314ecb,
+        lastLabel: _0x58ee65,
+        hasMore: _0x4eab15,
+        members: _0x4bb941,
+      } = _0x1949b0;
+      this._updateVersions(_0x314ecb, _0x4eab15, _0x58ee65, true, _0x4bb941);
+    } else
+      this._messageService["show"]({
+        content: this._localeService["t"](
+          "sheets-history-ui.viewer.panel.listFetchError",
+        ),
+        type: _0x609f1f.Error,
+        duration: 3000,
+      });
+    return true;
+  }
+  async loadHistoryCreatorList() {
+    let { unitId: _0x5ce5d6 } = this;
+    if (!_0x5ce5d6) return;
+    let _0x29b06f =
+      await this._historyFetchService["fetchCreatorList"](_0x5ce5d6);
+    _0x29b06f && this._creators$["next"](_0x29b06f);
+  }
+  async triggerLoadSheet(_0xa35c99) {
+    let { endRev: _0x4a7ff3 } = this.getVersion(_0xa35c99) || {};
+    if (_0x4a7ff3 || _0x4a7ff3 === 0) {
+      this._loadingState$["next"]("loading");
+      try {
+        (await this._historyFetchService["loadSheet"](this.unitId, _0x4a7ff3),
+          this._loadingState$["next"]("loaded"));
+      } catch (_0x1b93b0) {
+        (this._logService["error"](
+          "[HistoryManagerService]: Failed to load history revision.",
+          _0x1b93b0,
+        ),
+          this._loadingState$["next"]("error"),
+          this._status$["next"]("error"));
+      }
+    } else this._status$["next"]("error");
+  }
+  async triggerRevert(_0x4fdd3b) {
+    let _0xdf20fb = _0x4fdd3b
+      ? this.getVersion(_0x4fdd3b)
+      : this.getCurrentVersion();
+    if (!_0xdf20fb) return;
+    let _0x51ec4b = _0xdf20fb.endRev,
+      _0x4f83cf = Ai(_0xdf20fb.time, this._localeService);
+    (await this._confirmService["confirm"]({
+      id: "confirm-revert-revision",
+      title: {
+        title: this._localeService["t"](
+          "sheets-history-ui.viewer.panel.revertConfirm",
+        ),
+      },
+      children: {
+        title: this._localeService["t"](
+          "sheets-history-ui.viewer.panel.revertConfirmText",
+          _0x4f83cf.date,
+          _0x4f83cf.time,
+        ),
+      },
+      cancelText: this._localeService["t"](
+        "sheets-history-ui.viewer.panel.cancel",
+      ),
+      confirmText: this._localeService["t"](
+        "sheets-history-ui.viewer.panel.confirm",
+      ),
+    })) && this._revertRevision$["next"](_0x51ec4b);
+  }
+  _updateVersions(_0x373f13, _0x56559a, _0x1035bc, _0x2277b5, _0x4d1516) {
+    (this._setVersions(
+      _0x2277b5 ? this._versions$["value"].concat(_0x373f13) : _0x373f13,
+    ),
+      (this._hasMore = _0x56559a),
+      (this._lastLabel = _0x1035bc),
+      _0x4d1516 &&
+        Object.keys(_0x4d1516).forEach((_0x360f63) =>
+          this._members["set"](_0x360f63, _0x4d1516[_0x360f63]),
+        ));
+  }
+  getCurrentVersion() {
+    return this.getVersion(this._currentVersion$["value"]);
+  }
+  _setVersions(_0x3674c9) {
+    this._versions$["next"](_0x3674c9);
+  }
+  getVersion(_0x5a61c3) {
+    var _0x41d9a5;
+    return (
+      ((_0x41d9a5 = this._versions$["value"]) == null
+        ? undefined
+        : _0x41d9a5.find((_0x4eec8b) => _0x4eec8b.id === _0x5a61c3)) ||
+      this._detailVersionsMap["get"](_0x5a61c3)
+    );
+  }
+  registerDetailVersion(_0x5ca97c) {
+    this._detailVersionsMap["set"](_0x5ca97c.id, _0x5ca97c);
+  }
+  getCurrentUnitCurrentVersion() {
+    if (this.unitId) return this._unitCurrentVersionMap["get"](this.unitId);
+  }
+  getSelectedVersionIsCurrentVersion() {
+    var _0x26e3d6;
+    return (
+      ((_0x26e3d6 = this.getCurrentVersion()) == null
+        ? undefined
+        : _0x26e3d6.endRev) === this.getCurrentUnitCurrentVersion()
+    );
+  }
+  getSelectedVersionCanRevert() {
+    return !this.getSelectedVersionIsCurrentVersion() && this.canRevert;
+  }
+  getMember(_0x45393b) {
+    return this._members["get"](_0x45393b);
+  }
+  exitHistoryMode() {
+    this._status$["next"]("exited");
+  }
+  set status(_0x18ee95) {
+    this._status$["next"](_0x18ee95);
+  }
+  get status() {
+    return this._status$["value"];
+  }
+  selectVersion(_0x22e2bd) {
+    _0x22e2bd !== this._currentVersion$["value"] &&
+      this._currentVersion$["next"](_0x22e2bd);
+  }
+  get currentVersion() {
+    return this._currentVersion$["value"];
+  }
+  set unitId(_0xbab673) {
+    this._unitId$["next"](_0xbab673);
+  }
+  get unitId() {
+    return this._unitId$["value"];
+  }
+  get canRevert() {
+    return this._canRevert;
+  }
+  get loadingState() {
+    return this._loadingState$["value"];
+  }
+};
+X = J(
+  [
+    q(0, _0x2efab0),
+    q(1, _0x48adf8),
+    q(2, _0x317fe1),
+    q(3, _0x200c9d(_0x2bdbd6)),
+    q(4, _0x200c9d(Y)),
+  ],
+  X,
+);
+let Z = class extends _0x8f71e1 {
+  constructor(
+    _0x3658a0,
+    _0x3b0a05,
+    _0x55e028,
+    _0x46f4d5,
+    _0x392aaf,
+    _0x379606,
+    _0x50561b,
+    _0x79c4bc,
+    _0x2249d5,
+    _0x225eb2,
+    _0x4a0d58,
+    _0x653bbf,
+    _0x3ae622,
+  ) {
+    (super(),
+      (this._historyManagerService = _0x3658a0),
+      (this._transformService = _0x3b0a05),
+      (this._snapshotServerService = _0x55e028),
+      (this._rangeProtectionRuleModel = _0x46f4d5),
+      (this._conditionalFormattingRuleModel = _0x392aaf),
+      (this._dataValidationModel = _0x379606),
+      (this._sheetsFilterService = _0x50561b),
+      (this._sparklineDataSourceModel = _0x79c4bc),
+      (this._sheetsPivotTableConfigModel = _0x2249d5),
+      (this._sheetTableService = _0x225eb2),
+      (this._localeService = _0x4a0d58),
+      (this._sheetsChartService = _0x653bbf),
+      (this._historyFetchService = _0x3ae622),
+      K(this, "_diffRangesMap", new Map()),
+      K(
+        this,
+        "_currentVersionDiff$",
+        new _0x32f298({ ranges: new Map(), active: null, subUnitIds: [] }),
+      ),
+      K(
+        this,
+        "currentVersionDiff$",
+        this._currentVersionDiff$["asObservable"](),
+      ),
+      this._init());
+  }
+  _init() {
+    ((this._diffRangesMap = new Map()),
+      this.disposeWithMe(
+        this._historyManagerService["unitId$"].subscribe((_0x28fc3) => {
+          _0x28fc3 &&
+            !this._diffRangesMap["has"](_0x28fc3) &&
+            this._diffRangesMap["set"](_0x28fc3, new Map());
+        }),
+      ),
+      this.disposeWithMe(
+        this._historyManagerService["currentVersion$"].subscribe(
+          async (_0x3bc0e0) => {
+            if (_0x3bc0e0) {
+              var _0x5ce46d;
+              (await this.ensureVersion(_0x3bc0e0),
+                this._currentVersionDiff$["next"](
+                  ((_0x5ce46d = this._diffRangesMap["get"](
+                    this._historyManagerService["unitId"],
+                  )) == null
+                    ? undefined
+                    : _0x5ce46d.get(_0x3bc0e0)) || {
+                    ranges: new Map(),
+                    active: null,
+                    subUnitIds: [],
+                  },
+                ));
+            }
+          },
+        ),
+      ));
+  }
+  async ensureVersion(_0x47de83) {
+    var _0x1076cd, _0x4f0328;
+    let _0x4bddbd = this._historyManagerService["getVersion"](_0x47de83),
+      _0x5c993f = this._historyManagerService["unitId"];
+    if (!_0x4bddbd || !_0x5c993f) return;
+    let _0x3eb009 = this._diffRangesMap["get"](_0x5c993f);
+    if (
+      (_0x3eb009 || this._diffRangesMap["set"](_0x5c993f, new Map()),
+      (_0x1076cd = this._diffRangesMap["get"](_0x5c993f)) != null &&
+        _0x1076cd.has(_0x4bddbd.id))
+    )
+      return;
+    let { startRev: _0x19e842, endRev: _0x33a034 } = _0x4bddbd;
+    if (_0x19e842 === 1) {
+      _0x3eb009.set(_0x4bddbd.id, {
+        ranges: new Map(),
+        active: null,
+        subUnitIds: [],
+      });
+      return;
+    }
+    let _0x451c8a = _0x19e842,
+      _0x5d169c = _0x33a034,
+      _0xd6c200 = await this._historyFetchService["getHistoryChangesets"](
+        {},
+        { unitId: _0x5c993f, startRevision: _0x451c8a, endRevision: _0x5d169c },
+      );
+    if (
+      ((_0x4f0328 = _0xd6c200.error) == null ? undefined : _0x4f0328.code) ===
+      _0x3cb116.OK
+    ) {
+      let _0x37a96c = _0xd6c200.changesets["map"](
+          (_0x37dafc) => (
+            (_0x37dafc.mutations === null ||
+              _0x37dafc.mutations === undefined) &&
+              (_0x37dafc.mutations = []),
+            _0x278de0(_0x37dafc)
+          ),
+        )
+          .map((_0x430ca7) =>
+            _0x430ca7.mutations["map"]((_0x40d5a8) => ({
+              ..._0x40d5a8,
+              params: {
+                ..._0x40d5a8.params,
+                memberId: _0x430ca7.userID || "unknownUser",
+              },
+            })),
+          )
+          .flat(),
+        _0xe79505 = await this._transformMutationByOrder(_0x37a96c),
+        _0x34cfc3 = this._getActiveSubUnitId(_0x37a96c),
+        _0x490951 = this._extractRanges(_0xe79505);
+      _0x3eb009.set(_0x4bddbd.id, { ..._0x490951, active: _0x34cfc3 });
+    }
+  }
+  getMutationActionMap() {
+    let _0x2d9a74 = Di("sheets-history-ui.viewer.action."),
+      _0x15e638 = new Map();
+    return (
+      Object.values(_0x2d9a74)
+        .flat()
+        .forEach((_0x66edbc) => {
+          _0x15e638.set(_0x66edbc.id, _0x66edbc.action);
+        }),
+      _0x15e638
+    );
+  }
+  categorizeMutationRanges(_0x13d8ae, _0x230959) {
+    return this._categorizeMutationRanges(_0x13d8ae, _0x230959);
+  }
+  async _transformMutationByOrder(_0x5227c0) {
+    let _0x2c3fa4 = [];
+    for (let _0x1f027c = 0; _0x1f027c < _0x5227c0.length; _0x1f027c++) {
+      let _0x544ba6 = _0x5227c0[_0x1f027c];
+      if ((_0x2c3fa4.push(_0x544ba6), _0x1f027c !== _0x5227c0.length - 1)) {
+        let _0x7848cf = _0x5227c0[_0x1f027c + 1],
+          _0x90bae9 = this._transformService["transformMutations"](_0x2c3fa4, [
+            _0x7848cf,
+          ]);
+        _0x2c3fa4 = _0x43ba2c(_0x90bae9) ? _0x90bae9.m1Prime : [];
+      }
+      _0x1f027c % 10 == 0 && _0x1f027c > 0 && (await this._yieldToMain());
+    }
+    return _0x2c3fa4;
+  }
+  _yieldToMain() {
+    return new Promise((_0x1cdb11) => {
+      typeof requestIdleCallback == "function"
+        ? requestIdleCallback(() => _0x1cdb11(), { timeout: 100 })
+        : setTimeout(_0x1cdb11, 0);
+    });
+  }
+  _getActiveSubUnitId(_0xd5c527) {
+    let _0x6eadf8 = [];
+    return (
+      _0xd5c527.forEach((_0x16c628) => {
+        if (_0x16c628.id === _0x51c809.id) {
+          let _0x1da819 = _0x16c628.params;
+          _0x6eadf8.push(_0x1da819.sheet["id"]);
+        } else {
+          if (_0x16c628.id === _0x1ed245.id) {
+            let _0x225ba9 = _0x16c628.params;
+            _0x6eadf8.length > 0 &&
+              (_0x6eadf8 = _0x6eadf8.filter(
+                (_0xc1ab4f) => _0xc1ab4f !== _0x225ba9.subUnitId,
+              ));
+          } else {
+            if (_0x16c628.id === _0x3c6d31.id) {
+              let _0x57c7f6 = _0x16c628.params;
+              _0x57c7f6.hidden
+                ? (_0x6eadf8 = _0x6eadf8.filter(
+                    (_0xcacadd) => _0xcacadd !== _0x57c7f6.subUnitId,
+                  ))
+                : _0x6eadf8.push(_0x57c7f6.subUnitId);
+            } else {
+              let _0xe11287 = _0x16c628.params;
+              _0xe11287.subUnitId && _0x6eadf8.push(_0xe11287.subUnitId);
+            }
+          }
+        }
+      }),
+      _0x6eadf8.length > 0 ? _0x6eadf8[_0x6eadf8.length - 1] : null
+    );
+  }
+  _extractRanges(_0x3f78d0) {
+    let _0x104805 = new Map(),
+      _0x356a6d = new Map(),
+      _0x4e598f = new Map(),
+      _0x1fb430 = new Map(),
+      _0x3c917e = new Map(),
+      _0x1b09a1 = new Map(),
+      _0x15f970 = new Map(),
+      _0x5532c6 = new Map(),
+      _0x4fa817 = new Map(),
+      _0x373cf2 = new Map(),
+      _0xf4514f = new Map(),
+      _0x3ba309 = new Map(),
+      _0x24c4be = new Set(),
+      _0x26b13c = this.getMutationActionMap();
+    return (
+      _0x3f78d0.forEach((_0xdd0865) => {
+        var _0x22d41a,
+          _0x288324,
+          _0x59b3d9,
+          _0x57a4a3,
+          _0x588e57,
+          _0xddf257,
+          _0x3c834c,
+          _0x5cb945,
+          _0x5ae1d6,
+          _0x50b8c8,
+          _0x4b081c,
+          _0x179955,
+          _0x2cb0ca;
+        let _0x307755 =
+          (_0x22d41a = _0xdd0865.params) == null
+            ? undefined
+            : _0x22d41a.memberId;
+        if (!_0x307755) return;
+        _0x104805.has(_0x307755) ||
+          (_0x104805.set(_0x307755, []),
+          _0x356a6d.set(_0x307755, []),
+          _0x4e598f.set(_0x307755, []),
+          _0x1fb430.set(_0x307755, []),
+          _0x3c917e.set(_0x307755, []),
+          _0x1b09a1.set(_0x307755, []),
+          _0x15f970.set(_0x307755, []),
+          _0x5532c6.set(_0x307755, []),
+          _0x4fa817.set(_0x307755, []),
+          _0x373cf2.set(_0x307755, []),
+          _0xf4514f.set(_0x307755, []),
+          _0x3ba309.set(_0x307755, []));
+        let _0x480816 = this._categorizeMutationRanges(_0xdd0865, _0x26b13c);
+        (_0x480816.subUnitIds["forEach"]((_0x1b7f54) =>
+          _0x24c4be.add(_0x1b7f54),
+        ),
+          (_0x288324 = _0x104805.get(_0x307755)) == null ||
+            _0x288324.push(..._0x480816.allRanges),
+          (_0x59b3d9 = _0x356a6d.get(_0x307755)) == null ||
+            _0x59b3d9.push(..._0x480816.insertCellRanges),
+          (_0x57a4a3 = _0x4e598f.get(_0x307755)) == null ||
+            _0x57a4a3.push(..._0x480816.deleteCellRanges),
+          (_0x588e57 = _0x1fb430.get(_0x307755)) == null ||
+            _0x588e57.push(..._0x480816.updateCellRanges),
+          (_0xddf257 = _0x3c917e.get(_0x307755)) == null ||
+            _0xddf257.push(..._0x480816.insertBorderRanges),
+          (_0x3c834c = _0x1b09a1.get(_0x307755)) == null ||
+            _0x3c834c.push(..._0x480816.deleteBorderRanges),
+          (_0x5cb945 = _0x15f970.get(_0x307755)) == null ||
+            _0x5cb945.push(..._0x480816.updateBorderRanges),
+          (_0x5ae1d6 = _0x5532c6.get(_0x307755)) == null ||
+            _0x5ae1d6.push(..._0x480816.arrowRowRanges),
+          (_0x50b8c8 = _0x4fa817.get(_0x307755)) == null ||
+            _0x50b8c8.push(..._0x480816.arrowColumnRanges),
+          (_0x4b081c = _0xf4514f.get(_0x307755)) == null ||
+            _0x4b081c.push(..._0x480816.insertDrawings),
+          (_0x179955 = _0x3ba309.get(_0x307755)) == null ||
+            _0x179955.push(..._0x480816.deleteDrawings),
+          (_0x2cb0ca = _0x373cf2.get(_0x307755)) == null ||
+            _0x2cb0ca.push(..._0x480816.updateDrawings));
+      }),
+      _0x104805.forEach((_0x1d88c6, _0x525a81) => {
+        (_0x104805.set(_0x525a81, this._combineRanges(_0x1d88c6)),
+          _0x356a6d.set(
+            _0x525a81,
+            this._combineRanges(_0x356a6d.get(_0x525a81) || []),
+          ),
+          _0x4e598f.set(
+            _0x525a81,
+            this._combineRanges(_0x4e598f.get(_0x525a81) || []),
+          ),
+          _0x1fb430.set(
+            _0x525a81,
+            this._combineRanges(_0x1fb430.get(_0x525a81) || []),
+          ),
+          _0x3c917e.set(
+            _0x525a81,
+            this._combineRanges(_0x3c917e.get(_0x525a81) || []),
+          ),
+          _0x1b09a1.set(
+            _0x525a81,
+            this._combineRanges(_0x1b09a1.get(_0x525a81) || []),
+          ),
+          _0x15f970.set(
+            _0x525a81,
+            this._combineRanges(_0x15f970.get(_0x525a81) || []),
+          ),
+          _0x5532c6.set(
+            _0x525a81,
+            this._combineRanges(_0x5532c6.get(_0x525a81) || []),
+          ),
+          _0x4fa817.set(
+            _0x525a81,
+            this._combineRanges(_0x4fa817.get(_0x525a81) || []),
+          ));
+      }),
+      {
+        ranges: _0x104805,
+        insertCellRanges: _0x356a6d,
+        deleteCellRanges: _0x4e598f,
+        updateCellRanges: _0x1fb430,
+        insertBorderRanges: _0x3c917e,
+        deleteBorderRanges: _0x1b09a1,
+        updateBorderRanges: _0x15f970,
+        arrowRowRanges: _0x5532c6,
+        arrowColumnRanges: _0x4fa817,
+        insertDrawings: _0xf4514f,
+        deleteDrawings: _0x3ba309,
+        updateDrawings: _0x373cf2,
+        subUnitIds: Array.from(_0x24c4be),
+      }
+    );
+  }
+  _categorizeMutationRanges(_0x305557, _0x4edb0d) {
+    let _0x44cfd9 = {
+        allRanges: [],
+        insertCellRanges: [],
+        deleteCellRanges: [],
+        updateCellRanges: [],
+        insertBorderRanges: [],
+        deleteBorderRanges: [],
+        updateBorderRanges: [],
+        arrowRowRanges: [],
+        arrowColumnRanges: [],
+        insertDrawings: [],
+        deleteDrawings: [],
+        updateDrawings: [],
+        subUnitIds: [],
+      },
+      _0x69ffca = _0x305557.id,
+      _0x4deb57 = _0x305557.params,
+      _0x401cb3 = _0x4edb0d.get(_0x69ffca),
+      _0x3b5deb = _0x401cb3 ? this._localeService["t"](_0x401cb3) : "";
+    _0x4deb57.subUnitId && _0x44cfd9.subUnitIds["push"](_0x4deb57.subUnitId);
+    let _0x2b64c7 = (_0x4d65d6, _0x40838f) => {
+      let _0x39c5ec = _0x4d65d6.map((_0x580a51) => ({
+        ..._0x580a51,
+        showText: _0x3b5deb,
+      }));
+      switch ((_0x44cfd9.allRanges["push"](..._0x39c5ec), _0x40838f)) {
+        case "insert":
+          _0x44cfd9.insertCellRanges["push"](..._0x39c5ec);
+          break;
+        case "delete":
+          _0x44cfd9.deleteCellRanges["push"](..._0x39c5ec);
+          break;
+        case "update":
+          _0x44cfd9.updateCellRanges["push"](..._0x39c5ec);
+          break;
+        case "insertBorder":
+          _0x44cfd9.insertBorderRanges["push"](..._0x39c5ec);
+          break;
+        case "deleteBorder":
+          _0x44cfd9.deleteBorderRanges["push"](..._0x39c5ec);
+          break;
+        case "updateBorder":
+          _0x44cfd9.updateBorderRanges["push"](..._0x39c5ec);
+          break;
+        case "arrowRow":
+          _0x44cfd9.arrowRowRanges["push"](..._0x39c5ec);
+          break;
+        case "arrowColumn":
+          _0x44cfd9.arrowColumnRanges["push"](..._0x39c5ec);
+          break;
+      }
+    };
+    switch (_0x69ffca) {
+      case _0x534f14.id: {
+        let _0x3c0ae2 = _0x4deb57;
+        _0x2b64c7(
+          [
+            {
+              range: { ..._0x3c0ae2.range, rangeType: _0x5bbd7a.ROW },
+              unitId: _0x3c0ae2.unitId,
+              subUnitId: _0x3c0ae2.subUnitId,
+              showText: "insertRow",
+              highlightRow: true,
+            },
+          ],
+          "insert",
+        );
+        break;
+      }
+      case _0x2754fa.id: {
+        let _0x17c6dc = _0x4deb57;
+        _0x2b64c7(
+          [
+            {
+              range: { ..._0x17c6dc.range, rangeType: _0x5bbd7a.COLUMN },
+              unitId: _0x17c6dc.unitId,
+              subUnitId: _0x17c6dc.subUnitId,
+              showText: "insertCol",
+              highlightColumn: true,
+            },
+          ],
+          "insert",
+        );
+        break;
+      }
+      case _0x1a1c89.id: {
+        let _0x3e904f = _0x4deb57;
+        _0x2b64c7(
+          _0x3e904f.ranges["map"]((_0x2bd849) => ({
+            range: _0x2bd849,
+            unitId: _0x3e904f.unitId,
+            subUnitId: _0x3e904f.subUnitId,
+            showText: "mergeCells",
+          })),
+          "insert",
+        );
+        break;
+      }
+      case _0x574777.id: {
+        let _0x1bbca8 = _0x4deb57;
+        _0x2b64c7(
+          Object.values(_0x1bbca8.values)
+            .map((_0x3800bb) =>
+              _0x3800bb.ranges["map"]((_0x1f6e02) => ({
+                range: _0x1f6e02,
+                unitId: _0x1bbca8.unitId,
+                subUnitId: _0x1bbca8.subUnitId,
+                showText: "setNumfmt",
+              })),
+            )
+            .flat(),
+          "insert",
+        );
+        break;
+      }
+      case _0x193d05.id: {
+        let _0x327d6a = _0x4deb57;
+        _0x2b64c7(
+          _0x327d6a.ranges["map"]((_0x2a8390) => ({
+            range: _0x2a8390,
+            unitId: _0x327d6a.unitId,
+            subUnitId: _0x327d6a.subUnitId,
+            showText: "unmergeCells",
+          })),
+          "delete",
+        );
+        break;
+      }
+      case _0x159141.id: {
+        let _0x4a182a = _0x4deb57;
+        _0x2b64c7(
+          _0x4a182a.ranges["map"]((_0xbbcbbc) => ({
+            range: _0xbbcbbc,
+            unitId: _0x4a182a.unitId,
+            subUnitId: _0x4a182a.subUnitId,
+            showText: "removeNumfmt",
+          })),
+          "delete",
+        );
+        break;
+      }
+      case _0x23e5d8.id: {
+        let _0x4abbe3 = _0x4deb57;
+        (_0x2b64c7(
+          [
+            {
+              range: { ..._0x4abbe3.sourceRange, rangeType: _0x5bbd7a.ROW },
+              unitId: _0x4abbe3.unitId,
+              subUnitId: _0x4abbe3.subUnitId,
+              showText: "moveRows",
+            },
+          ],
+          "delete",
+        ),
+          _0x2b64c7(
+            [
+              {
+                range: { ..._0x4abbe3.targetRange, rangeType: _0x5bbd7a.ROW },
+                unitId: _0x4abbe3.unitId,
+                subUnitId: _0x4abbe3.subUnitId,
+                showText: "moveRows",
+              },
+            ],
+            "insert",
+          ));
+        break;
+      }
+      case _0x364b2d.id: {
+        let _0x3f2868 = _0x4deb57;
+        (_0x2b64c7(
+          [
+            {
+              range: { ..._0x3f2868.sourceRange, rangeType: _0x5bbd7a.COLUMN },
+              unitId: _0x3f2868.unitId,
+              subUnitId: _0x3f2868.subUnitId,
+              showText: "moveCols",
+            },
+          ],
+          "delete",
+        ),
+          _0x2b64c7(
+            [
+              {
+                range: {
+                  ..._0x3f2868.targetRange,
+                  rangeType: _0x5bbd7a.COLUMN,
+                },
+                unitId: _0x3f2868.unitId,
+                subUnitId: _0x3f2868.subUnitId,
+                showText: "moveCols",
+              },
+            ],
+            "insert",
+          ));
+        break;
+      }
+      case _0xfd3e21.id: {
+        let _0x170329 = _0x4deb57;
+        _0x2b64c7(
+          _0x170329.ranges["map"]((_0x294e3e) => ({
+            range: { ..._0x294e3e, rangeType: _0x5bbd7a.ROW },
+            unitId: _0x170329.unitId,
+            subUnitId: _0x170329.subUnitId,
+            showText: "showRow",
+            highlightRow: true,
+          })),
+          "update",
+        );
+        break;
+      }
+      case _0x486a90.id: {
+        let _0x44e138 = _0x4deb57;
+        _0x44e138.rowData &&
+          _0x44e138.subUnitId &&
+          Object.keys(_0x44e138.rowData)
+            .map(Number)
+            .forEach((_0x470795) => {
+              _0x2b64c7(
+                [
+                  {
+                    range: {
+                      startRow: _0x470795,
+                      endRow: _0x470795,
+                      startColumn: NaN,
+                      endColumn: NaN,
+                      rangeType: _0x5bbd7a.ROW,
+                    },
+                    unitId: _0x44e138.unitId,
+                    subUnitId: _0x44e138.subUnitId,
+                    showText: "setRowData",
+                    highlightRow: true,
+                  },
+                ],
+                "update",
+              );
+            });
+        break;
+      }
+      case _0x42854f.id: {
+        let _0x150c21 = _0x4deb57;
+        _0x2b64c7(
+          _0x150c21.ranges["map"]((_0x3343f4) => ({
+            range: { ..._0x3343f4, rangeType: _0x5bbd7a.COLUMN },
+            unitId: _0x150c21.unitId,
+            subUnitId: _0x150c21.subUnitId,
+            showText: "showCol",
+            highlightColumn: true,
+          })),
+          "update",
+        );
+        break;
+      }
+      case _0x3182ef.id: {
+        let _0x345a60 = _0x4deb57;
+        _0x345a60.columnData &&
+          _0x345a60.subUnitId &&
+          Object.keys(_0x345a60.columnData)
+            .map(Number)
+            .forEach((_0x1a053f) => {
+              _0x2b64c7(
+                [
+                  {
+                    range: {
+                      startRow: NaN,
+                      endRow: NaN,
+                      startColumn: _0x1a053f,
+                      endColumn: _0x1a053f,
+                      rangeType: _0x5bbd7a.COLUMN,
+                    },
+                    unitId: _0x345a60.unitId,
+                    subUnitId: _0x345a60.subUnitId,
+                    showText: "setColData",
+                    highlightColumn: true,
+                  },
+                ],
+                "update",
+              );
+            });
+        break;
+      }
+      case _0x30c3b3.id: {
+        let _0x2a93e2 = _0x4deb57;
+        _0x2b64c7(
+          _0x2a93e2.cellValue
+            ? Li(_0x2a93e2.cellValue).map((_0x1d62f3) => ({
+                range: _0x1d62f3,
+                unitId: _0x2a93e2.unitId,
+                subUnitId: _0x2a93e2.subUnitId,
+                showText: "setRangeValues",
+              }))
+            : [],
+          "update",
+        );
+        break;
+      }
+      case _0x417fb8.id: {
+        let _0xd490b3 = _0x305557.params;
+        (_0x2b64c7(
+          [
+            {
+              range: Ii(_0xd490b3.from["value"]),
+              unitId: _0xd490b3.unitId,
+              subUnitId: _0xd490b3.from["subUnitId"],
+              showText: "moveRange",
+            },
+          ],
+          "delete",
+        ),
+          _0x2b64c7(
+            [
+              {
+                range: Ii(_0xd490b3.to["value"]),
+                unitId: _0xd490b3.unitId,
+                subUnitId: _0xd490b3.to["subUnitId"],
+                showText: "moveRange",
+              },
+            ],
+            "insert",
+          ));
+        break;
+      }
+      case _0x590be1.id: {
+        let _0x108f57 = _0x4deb57;
+        _0x2b64c7(
+          [
+            {
+              range: _0x108f57.range,
+              unitId: _0x108f57.unitId,
+              subUnitId: _0x108f57.subUnitId,
+            },
+          ],
+          "update",
+        );
+        break;
+      }
+      case _0x4336b1.id: {
+        let _0x47add7 = _0x4deb57;
+        _0x47add7.ranges &&
+          _0x47add7.ranges["length"] > 0 &&
+          _0x47add7.subUnitId &&
+          _0x2b64c7(
+            _0x47add7.ranges["map"]((_0x2af79d) => ({
+              range: _0x2af79d,
+              unitId: _0x47add7.unitId,
+              subUnitId: _0x47add7.subUnitId,
+              showText: "setRowHeight",
+            })),
+            "arrowRow",
+          );
+        break;
+      }
+      case _0x88e34d.id: {
+        let _0x289d1e = _0x4deb57;
+        _0x289d1e.ranges &&
+          _0x289d1e.ranges["length"] > 0 &&
+          _0x289d1e.subUnitId &&
+          _0x2b64c7(
+            _0x289d1e.ranges["map"]((_0x2cc598) => ({
+              range: _0x2cc598,
+              unitId: _0x289d1e.unitId,
+              subUnitId: _0x289d1e.subUnitId,
+              showText: "setColWidth",
+            })),
+            "arrowColumn",
+          );
+        break;
+      }
+      case _0x3c4356.id: {
+        let _0x23498f = _0x4deb57;
+        _0x2b64c7(
+          _0x23498f.rules["map"]((_0x287d93) =>
+            _0x287d93.ranges["map"]((_0x459e3c) => ({
+              range: _0x459e3c,
+              unitId: _0x23498f.unitId,
+              subUnitId: _0x23498f.subUnitId,
+              showText: "addRangeProtection",
+            })),
+          ).flat(),
+          "insertBorder",
+        );
+        break;
+      }
+      case _0x2a14cd.id: {
+        let _0x356e40 = _0x4deb57;
+        _0x2b64c7(
+          _0x356e40.rule["ranges"].map((_0x308ffb) => ({
+            range: _0x308ffb,
+            unitId: _0x356e40.unitId,
+            subUnitId: _0x356e40.subUnitId,
+            showText: "setCF",
+          })),
+          "insertBorder",
+        );
+        break;
+      }
+      case _0x1b1c51.id: {
+        let _0x42aa09 = _0x4deb57;
+        _0x2b64c7(
+          (Array.isArray(_0x42aa09.rule) ? _0x42aa09.rule : [_0x42aa09.rule])
+            .map((_0x502db8) =>
+              _0x502db8.ranges["map"]((_0x44ce9f) => ({
+                range: _0x44ce9f,
+                unitId: _0x42aa09.unitId,
+                subUnitId: _0x42aa09.subUnitId,
+                showText: "setDV",
+              })),
+            )
+            .flat(),
+          "insertBorder",
+        );
+        break;
+      }
+      case _0x4c5a10.id: {
+        let _0x165792 = _0x4deb57,
+          _0x3d48a4 = _0x165792.unitId,
+          _0x42e335 = _0x165792.subUnitId;
+        _0x165792.ruleIds &&
+          _0x165792.ruleIds["length"] > 0 &&
+          _0x165792.subUnitId &&
+          _0x165792.ruleIds["forEach"]((_0x2096f8) => {
+            let _0x27eb36 = this._rangeProtectionRuleModel["getRule"](
+                _0x3d48a4,
+                _0x42e335,
+                _0x2096f8,
+              ),
+              _0x4b8ed5 =
+                (_0x27eb36 == null
+                  ? undefined
+                  : _0x27eb36.ranges["map"]((_0x582b1c) => ({
+                      range: _0x582b1c,
+                      unitId: _0x3d48a4,
+                      subUnitId: _0x42e335,
+                      showText: "deleteRangeProtection",
+                    }))) || [];
+            _0x4b8ed5.length > 0 && _0x2b64c7(_0x4b8ed5, "deleteBorder");
+          });
+        break;
+      }
+      case _0x40fb43.id: {
+        let _0x306f0c = _0x4deb57;
+        if (_0x306f0c.cfId && _0x306f0c.subUnitId) {
+          let _0x596618 = this._conditionalFormattingRuleModel["getRule"](
+            _0x306f0c.unitId,
+            _0x306f0c.subUnitId,
+            _0x306f0c.cfId,
+          );
+          if (_0x596618) {
+            let _0x3c6a61 = _0x596618.ranges["map"]((_0x234f92) => ({
+              range: _0x234f92,
+              unitId: _0x306f0c.unitId,
+              subUnitId: _0x306f0c.subUnitId,
+              showText: "deleteCF",
+            }));
+            _0x3c6a61.length > 0 && _0x2b64c7(_0x3c6a61, "deleteBorder");
+          }
+        }
+        break;
+      }
+      case _0x97f0c0.id: {
+        let _0x19fc99 = _0x4deb57,
+          _0x1a0383 = Array.isArray(_0x19fc99.ruleId)
+            ? _0x19fc99.ruleId
+            : [_0x19fc99.ruleId];
+        _0x1a0383.length > 0 &&
+          _0x19fc99.subUnitId &&
+          _0x1a0383.forEach((_0x1de31d) => {
+            let _0x45edd6 = this._dataValidationModel["getRuleById"](
+                _0x19fc99.unitId,
+                _0x19fc99.subUnitId,
+                _0x1de31d,
+              ),
+              _0x2e2fd8 =
+                (_0x45edd6 == null
+                  ? undefined
+                  : _0x45edd6.ranges["map"]((_0x134af3) => ({
+                      range: _0x134af3,
+                      unitId: _0x19fc99.unitId,
+                      subUnitId: _0x19fc99.subUnitId,
+                      showText: "removeDV",
+                    }))) || [];
+            _0x2e2fd8.length > 0 && _0x2b64c7(_0x2e2fd8, "deleteBorder");
+          });
+        break;
+      }
+      case _0x476e11.id: {
+        let _0x188113 = _0x4deb57;
+        _0x2b64c7(
+          _0x188113.rule["ranges"].map((_0x267ad7) => ({
+            range: _0x267ad7,
+            unitId: _0x188113.unitId,
+            subUnitId: _0x188113.subUnitId,
+            showText: "setRangeProtection",
+          })),
+          "updateBorder",
+        );
+        break;
+      }
+      case _0x5278f9.id: {
+        let _0x4eaef9 = _0x4deb57;
+        _0x2b64c7(
+          [
+            {
+              range: _0x4eaef9.range,
+              unitId: _0x4eaef9.unitId,
+              subUnitId: _0x4eaef9.subUnitId,
+              showText: "setWorksheetRangeTheme",
+            },
+          ],
+          "updateBorder",
+        );
+        break;
+      }
+      case _0x4e2817.id: {
+        let _0x4ce749 = _0x4deb57;
+        _0x2b64c7(
+          [
+            {
+              range: _0x4ce749.range,
+              unitId: _0x4ce749.unitId,
+              subUnitId: _0x4ce749.subUnitId,
+              showText: "deleteWorksheetRangeTheme",
+            },
+          ],
+          "updateBorder",
+        );
+        break;
+      }
+      case _0x1a19e1.id: {
+        let _0x1d65dc = _0x4deb57;
+        _0x2b64c7(
+          _0x1d65dc.rule["ranges"].map((_0x242437) => ({
+            range: _0x242437,
+            unitId: _0x1d65dc.unitId,
+            subUnitId: _0x1d65dc.subUnitId,
+            showText: "setCF",
+          })),
+          "updateBorder",
+        );
+        break;
+      }
+      case _0x51bbdc.id: {
+        let _0x221b68 = _0x4deb57,
+          _0xa19336 = this._conditionalFormattingRuleModel["getRule"](
+            _0x221b68.unitId,
+            _0x221b68.subUnitId,
+            _0x221b68.start["id"],
+          ),
+          _0x3dc1e7 = this._conditionalFormattingRuleModel["getRule"](
+            _0x221b68.unitId,
+            _0x221b68.subUnitId,
+            _0x221b68.end["id"],
+          );
+        (_0xa19336 &&
+          _0x2b64c7(
+            _0xa19336.ranges["map"]((_0x81ce2f) => ({
+              range: _0x81ce2f,
+              unitId: _0x221b68.unitId,
+              subUnitId: _0x221b68.subUnitId,
+              showText: "moveCF",
+            })),
+            "deleteBorder",
+          ),
+          _0x3dc1e7 &&
+            _0x2b64c7(
+              _0x3dc1e7.ranges["map"]((_0xb864d4) => ({
+                range: _0xb864d4,
+                unitId: _0x221b68.unitId,
+                subUnitId: _0x221b68.subUnitId,
+                showText: "moveCF",
+              })),
+              "insertBorder",
+            ));
+        break;
+      }
+      case _0x5419d0.id: {
+        let _0x591ee4 = _0x4deb57;
+        _0x2b64c7(
+          [
+            {
+              range: _0x591ee4.range,
+              unitId: _0x591ee4.unitId,
+              subUnitId: _0x591ee4.subUnitId,
+              showText: "setFilter",
+            },
+          ],
+          "updateBorder",
+        );
+        break;
+      }
+      case _0x553ada.id: {
+        let _0x1b65fc = _0x4deb57,
+          _0x2442db = this._sheetsFilterService["getFilterModel"](
+            _0x1b65fc.unitId,
+            _0x1b65fc.subUnitId,
+          );
+        if (_0x2442db) {
+          let _0x4afb2a = _0x2442db.getRange();
+          _0x2b64c7(
+            _0x4afb2a
+              ? [
+                  {
+                    range: _0x4afb2a,
+                    unitId: _0x1b65fc.unitId,
+                    subUnitId: _0x1b65fc.subUnitId,
+                    showText: "setFilterCriteria",
+                  },
+                ]
+              : [],
+            "updateBorder",
+          );
+        }
+        break;
+      }
+      case _0x3a03bf.id: {
+        let _0x2be407 = _0x4deb57,
+          _0x270df4 = this._sheetsFilterService["getFilterModel"](
+            _0x2be407.unitId,
+            _0x2be407.subUnitId,
+          );
+        if (_0x270df4) {
+          let _0x2ab4ca = _0x270df4.getRange();
+          _0x2b64c7(
+            _0x2ab4ca
+              ? [
+                  {
+                    range: _0x2ab4ca,
+                    unitId: _0x2be407.unitId,
+                    subUnitId: _0x2be407.subUnitId,
+                    showText: "removeFilter",
+                  },
+                ]
+              : [],
+            "updateBorder",
+          );
+        }
+        break;
+      }
+      case _0x2b6a47.id: {
+        let _0x368ba4 = _0x4deb57,
+          _0x115a12 = this._sheetsFilterService["getFilterModel"](
+            _0x368ba4.unitId,
+            _0x368ba4.subUnitId,
+          );
+        if (_0x115a12) {
+          let _0x5913cf = _0x115a12.getRange();
+          _0x2b64c7(
+            _0x5913cf
+              ? [
+                  {
+                    range: _0x5913cf,
+                    unitId: _0x368ba4.unitId,
+                    subUnitId: _0x368ba4.subUnitId,
+                    showText: "removeFilter",
+                  },
+                ]
+              : [],
+            "updateBorder",
+          );
+        }
+        break;
+      }
+      case _0x5eb890.id: {
+        let _0x1f4da0 = _0x4deb57,
+          _0x46a880 = this._dataValidationModel["getRuleById"](
+            _0x1f4da0.unitId,
+            _0x1f4da0.subUnitId,
+            _0x1f4da0.ruleId,
+          );
+        _0x46a880 &&
+          _0x2b64c7(
+            _0x46a880.ranges["map"]((_0x401aea) => ({
+              range: _0x401aea,
+              unitId: _0x1f4da0.unitId,
+              subUnitId: _0x1f4da0.subUnitId,
+              showText: "setDV",
+            })),
+            "updateBorder",
+          );
+        break;
+      }
+      case _0x2d3f5e.id: {
+        let _0x3f3b87 = _0x4deb57,
+          _0x34e59 = _0x3f3b87.unitId,
+          _0x106cf4 = _0x3f3b87.subUnitId,
+          _0xde737f = _0x3f3b87.sparklineConfigMap;
+        _0x3f3b87.sparklineConfigMap &&
+          _0x106cf4 &&
+          Object.keys(_0x3f3b87.sparklineConfigMap).forEach((_0x40a0de) => {
+            let _0x1174f0 = _0xde737f[_0x40a0de],
+              _0xfc2a59 = Li(_0x1174f0.sparklines).map((_0x116d52) => ({
+                range: _0x116d52,
+                unitId: _0x34e59,
+                subUnitId: _0x106cf4,
+                showText: "addSparkline",
+              }));
+            _0x2b64c7(_0xfc2a59, "insert");
+          });
+        break;
+      }
+      case _0x4e18c6.id: {
+        let _0x2967ed = _0x4deb57;
+        _0x2967ed.groupIds &&
+          _0x2967ed.groupIds["length"] > 0 &&
+          _0x2967ed.subUnitId &&
+          _0x2967ed.groupIds["forEach"]((_0x312308) => {
+            let _0x56bb61 = this._sparklineDataSourceModel["getSparklineById"](
+              _0x2967ed.unitId,
+              _0x2967ed.subUnitId,
+              _0x312308,
+            );
+            if (_0x56bb61) {
+              let _0x3a2656 = Li(_0x56bb61.sparklines["getMatrix"]()).map(
+                (_0xd5904a) => ({
+                  range: _0xd5904a,
+                  unitId: _0x2967ed.unitId,
+                  subUnitId: _0x2967ed.subUnitId,
+                  showText: "setSparkline",
+                }),
+              );
+              _0x2b64c7(_0x3a2656, "update");
+            }
+          });
+        break;
+      }
+      case _0x50eeec.id: {
+        let _0x2c3043 = _0x4deb57;
+        _0x2c3043.groupIds &&
+          _0x2c3043.groupIds["length"] > 0 &&
+          _0x2c3043.subUnitId &&
+          _0x2c3043.groupIds["forEach"]((_0x529087) => {
+            let _0x212427 = this._sparklineDataSourceModel["getSparklineById"](
+              _0x2c3043.unitId,
+              _0x2c3043.subUnitId,
+              _0x529087,
+            );
+            if (_0x212427) {
+              let _0x3e7fe2 = Li(_0x212427.sparklines["getMatrix"]()).map(
+                (_0x1e4cdf) => ({
+                  range: _0x1e4cdf,
+                  unitId: _0x2c3043.unitId,
+                  subUnitId: _0x2c3043.subUnitId,
+                  showText: "removeSparkline",
+                }),
+              );
+              _0x2b64c7(_0x3e7fe2, "delete");
+            }
+          });
+        break;
+      }
+      case _0x3abc14.id: {
+        let _0xe6693d = _0x4deb57;
+        _0xe6693d.tableId &&
+          _0xe6693d.subUnitId &&
+          _0x2b64c7(
+            [
+              {
+                range: _0xe6693d.range,
+                unitId: _0xe6693d.unitId,
+                subUnitId: _0xe6693d.subUnitId,
+                showText: "addTable",
+              },
+            ],
+            "insert",
+          );
+        break;
+      }
+      case _0x57ee5b.id: {
+        let _0x3d04f9 = _0x4deb57;
+        if (_0x3d04f9.tableId && _0x3d04f9.subUnitId) {
+          var _0x1ae712;
+          let _0x108af0 =
+            (_0x1ae712 = this._sheetTableService["getTableInfo"](
+              _0x3d04f9.unitId,
+              _0x3d04f9.tableId,
+            )) == null
+              ? undefined
+              : _0x1ae712.range;
+          _0x108af0 &&
+            _0x2b64c7(
+              [
+                {
+                  range: _0x108af0,
+                  unitId: _0x3d04f9.unitId,
+                  subUnitId: _0x3d04f9.subUnitId,
+                  showText: "removeTable",
+                },
+              ],
+              "delete",
+            );
+        }
+        break;
+      }
+      case _0x2dc4d0.id: {
+        let _0xacb4a9 = _0x305557.params;
+        if (_0xacb4a9.tableId) {
+          let _0x200e38 = this._sheetTableService["getTableInfo"](
+            _0xacb4a9.unitId,
+            _0xacb4a9.tableId,
+          );
+          _0x200e38 &&
+            _0x200e38.range &&
+            _0x200e38.subUnitId &&
+            (_0x44cfd9.subUnitIds["push"](_0x200e38.subUnitId),
+            _0x2b64c7(
+              [
+                {
+                  range: _0x200e38.range,
+                  unitId: _0xacb4a9.unitId,
+                  subUnitId: _0x200e38.subUnitId,
+                  showText: "setTableFilter",
+                },
+              ],
+              "update",
+            ));
+        }
+        break;
+      }
+      case _0x541565.id: {
+        let _0x1a58e7 = _0x4deb57;
+        if (_0x1a58e7.tableId && _0x1a58e7.subUnitId) {
+          var _0x4e3115;
+          let _0xd239f1 =
+            (_0x4e3115 = this._sheetTableService["getTableInfo"](
+              _0x1a58e7.unitId,
+              _0x1a58e7.tableId,
+            )) == null
+              ? undefined
+              : _0x4e3115.range;
+          _0xd239f1 &&
+            _0x2b64c7(
+              [
+                {
+                  range: _0xd239f1,
+                  unitId: _0x1a58e7.unitId,
+                  subUnitId: _0x1a58e7.subUnitId,
+                  showText: "updateTable",
+                },
+              ],
+              "update",
+            );
+        }
+        break;
+      }
+      case _0x4f42d6.id: {
+        let _0x2e9735 = _0x4deb57;
+        if (_0x2e9735.pivotTableId && _0x2e9735.subUnitId) {
+          var _0x5b1d57;
+          let _0x3e91b4 =
+            (_0x5b1d57 = this._sheetsPivotTableConfigModel[
+              "getPivotTableRangeInfo"
+            ](_0x2e9735.unitId, _0x2e9735.subUnitId, _0x2e9735.pivotTableId)) ==
+            null
+              ? undefined
+              : _0x5b1d57.rangeInfo;
+          _0x3e91b4 &&
+            _0x2b64c7(
+              _0x19aba1(_0x3e91b4).map((_0x21348f) => ({
+                range: _0x21348f,
+                unitId: _0x2e9735.unitId,
+                subUnitId: _0x2e9735.subUnitId,
+                showText: "addPivotTable",
+              })),
+              "insert",
+            );
+        }
+        break;
+      }
+      case _0x374e7a.id: {
+        let _0x3a34ef = _0x4deb57;
+        if (_0x3a34ef.pivotTableId && _0x3a34ef.subUnitId) {
+          var _0xc93254;
+          let _0x3dda5d =
+            (_0xc93254 = this._sheetsPivotTableConfigModel[
+              "getPivotTableRangeInfo"
+            ](_0x3a34ef.unitId, _0x3a34ef.subUnitId, _0x3a34ef.pivotTableId)) ==
+            null
+              ? undefined
+              : _0xc93254.rangeInfo;
+          _0x3dda5d &&
+            _0x2b64c7(
+              _0x19aba1(_0x3dda5d).map((_0xf74f83) => ({
+                range: _0xf74f83,
+                unitId: _0x3a34ef.unitId,
+                subUnitId: _0x3a34ef.subUnitId,
+                showText: "removePivotTable",
+              })),
+              "delete",
+            );
+        }
+        break;
+      }
+      case _0x5ed8e2.id:
+      case _0x7cf02a.id:
+      case _0x9161fd.id:
+      case _0x39f562.id:
+      case _0x2d4aaa.id:
+      case _0x2858af.id:
+      case _0x282936.id:
+      case _0x35e203.id:
+      case _0x4f95e2.id:
+      case _0x5616e9.id:
+      case _0x4a84a7.id:
+      case _0x479b1d.id:
+      case _0x48815d.id:
+      case _0x2e4104.id:
+      case _0x33f953.id: {
+        let _0x2ce492 = _0x4deb57,
+          _0x7bdc9e = "setPivotOption";
+        if (
+          (_0x69ffca === _0x5ed8e2.id
+            ? (_0x7bdc9e = "setPivotOption")
+            : _0x69ffca === _0x7cf02a.id
+              ? (_0x7bdc9e = "setPivotPosition")
+              : _0x69ffca === _0x9161fd.id
+                ? (_0x7bdc9e = "updatePivotSource")
+                : _0x69ffca === _0x39f562.id
+                  ? (_0x7bdc9e = "addPivotField")
+                  : _0x69ffca === _0x2d4aaa.id
+                    ? (_0x7bdc9e = "removePivotField")
+                    : _0x69ffca === _0x2858af.id
+                      ? (_0x7bdc9e = "renamePivotField")
+                      : _0x69ffca === _0x282936.id
+                        ? (_0x7bdc9e = "updateFieldPosition")
+                        : _0x69ffca === _0x35e203.id
+                          ? (_0x7bdc9e = "updateValuePosition")
+                          : _0x69ffca === _0x4f95e2.id
+                            ? (_0x7bdc9e = "updatePivotFieldSource")
+                            : _0x69ffca === _0x5616e9.id
+                              ? (_0x7bdc9e = "setPivotFilter")
+                              : _0x69ffca === _0x4a84a7.id
+                                ? (_0x7bdc9e = "setPivotValueFilter")
+                                : _0x69ffca === _0x479b1d.id
+                                  ? (_0x7bdc9e = "setPivotSort")
+                                  : _0x69ffca === _0x48815d.id
+                                    ? (_0x7bdc9e = "setPivotCollapse")
+                                    : _0x69ffca === _0x33f953.id
+                                      ? (_0x7bdc9e = "setPivotSubtotalType")
+                                      : _0x69ffca === _0x2e4104.id &&
+                                        (_0x7bdc9e = "setPivotFieldFormat"),
+          _0x2ce492.pivotTableId && _0x2ce492.subUnitId)
+        ) {
+          var _0x436c3f;
+          let _0xa404b5 =
+            (_0x436c3f = this._sheetsPivotTableConfigModel[
+              "getPivotTableRangeInfo"
+            ](_0x2ce492.unitId, _0x2ce492.subUnitId, _0x2ce492.pivotTableId)) ==
+            null
+              ? undefined
+              : _0x436c3f.rangeInfo;
+          _0xa404b5 &&
+            _0x2b64c7(
+              _0x19aba1(_0xa404b5).map((_0x5bfc54) => ({
+                range: _0x5bfc54,
+                unitId: _0x2ce492.unitId,
+                subUnitId: _0x2ce492.subUnitId,
+                showText: _0x7bdc9e,
+              })),
+              "update",
+            );
+        }
+        break;
+      }
+      case _0x269522.id: {
+        let _0x592c91 = _0x4deb57;
+        _0x592c91.chartId &&
+          _0x44cfd9.insertDrawings["push"]({
+            drawingId: _0x592c91.chartId,
+            unitId: _0x592c91.unitId,
+            subUnitId: _0x592c91.subUnitId,
+            showText: _0x3b5deb,
+          });
+        break;
+      }
+      case _0x1b5309.id: {
+        let _0xe41f65 = _0x4deb57;
+        _0xe41f65.chartId &&
+          _0x44cfd9.deleteDrawings["push"]({
+            drawingId: _0xe41f65.chartId,
+            unitId: _0xe41f65.unitId,
+            subUnitId: _0xe41f65.subUnitId,
+            showText: _0x3b5deb,
+          });
+        break;
+      }
+      case _0x582a54.id: {
+        let _0x9470a2 = _0x305557.params;
+        if (_0x9470a2.chartModelId) {
+          let _0x1b663d = this._sheetsChartService["getSubUnitId"](
+            _0x9470a2.unitId,
+            _0x9470a2.chartModelId,
+          );
+          _0x1b663d &&
+            (_0x44cfd9.subUnitIds["push"](_0x1b663d),
+            _0x44cfd9.updateDrawings["push"]({
+              drawingId: _0x9470a2.chartModelId,
+              unitId: _0x9470a2.unitId,
+              subUnitId: _0x1b663d,
+              showText: _0x3b5deb,
+            }));
+        }
+        break;
+      }
+      case _0xdff17e.id: {
+        let _0x4effbf = _0x305557.params;
+        if (_0x4effbf.chartModelId) {
+          let _0x59d535 = this._sheetsChartService["getSubUnitId"](
+            _0x4effbf.unitId,
+            _0x4effbf.chartModelId,
+          );
+          _0x59d535 &&
+            (_0x44cfd9.subUnitIds["push"](_0x59d535),
+            _0x44cfd9.updateDrawings["push"]({
+              drawingId: _0x4effbf.chartModelId,
+              unitId: _0x4effbf.unitId,
+              subUnitId: _0x59d535,
+              showText: _0x3b5deb,
+            }));
+        }
+        break;
+      }
+      case _0x1ff80.id: {
+        let _0x49e7fe = _0x4deb57;
+        _0x49e7fe.shapeId &&
+          _0x44cfd9.insertDrawings["push"]({
+            drawingId: _0x49e7fe.shapeId,
+            unitId: _0x49e7fe.unitId,
+            subUnitId: _0x49e7fe.subUnitId,
+            showText: _0x3b5deb,
+          });
+        break;
+      }
+      case _0x38deb3.id: {
+        let _0x17e957 = _0x4deb57;
+        _0x17e957.shapeId &&
+          _0x44cfd9.deleteDrawings["push"]({
+            drawingId: _0x17e957.shapeId,
+            unitId: _0x17e957.unitId,
+            subUnitId: _0x17e957.subUnitId,
+            showText: _0x3b5deb,
+          });
+        break;
+      }
+      case _0x4717d1.id:
+      case _0x48225b.id: {
+        let _0xae4006 = _0x4deb57;
+        _0xae4006.shapeId &&
+          _0x44cfd9.updateDrawings["push"]({
+            drawingId: _0xae4006.shapeId,
+            unitId: _0xae4006.unitId,
+            subUnitId: _0xae4006.subUnitId,
+            showText: _0x3b5deb,
+          });
+        break;
+      }
+      case _0x343963.id: {
+        let _0x35b34d = _0x4deb57,
+          _0x538258 = _0x35b34d.objects,
+          _0x41b88d = _0x35b34d.type,
+          _0x456b2b =
+            _0x41b88d !== _0x47d822.INSERT && _0x41b88d !== _0x47d822.REMOVE,
+          _0x48a3f9 = _0x41b88d === _0x47d822.INSERT,
+          _0x3f25ff = _0x41b88d === _0x47d822.REMOVE,
+          _0x5d03e6 = _0x3b5deb;
+        if (
+          (_0x41b88d === _0x47d822.INSERT
+            ? (_0x5d03e6 = this._localeService["t"](
+                "sheets-history-ui.viewer.action.insertDrawing",
+              ))
+            : _0x41b88d === _0x47d822.REMOVE &&
+              (_0x5d03e6 = this._localeService["t"](
+                "sheets-history-ui.viewer.action.removeDrawing",
+              )),
+          Array.isArray(_0x538258))
+        )
+          _0x538258.forEach((_0xe655f9) => {
+            if ("drawingId" in _0xe655f9 && _0xe655f9.drawingId)
+              _0x456b2b
+                ? _0x44cfd9.updateDrawings["push"]({
+                    drawingId: _0xe655f9.drawingId,
+                    unitId: _0x35b34d.unitId,
+                    subUnitId: _0x35b34d.subUnitId,
+                    showText: _0x5d03e6,
+                  })
+                : _0x48a3f9
+                  ? _0x44cfd9.insertDrawings["push"]({
+                      drawingId: _0xe655f9.drawingId,
+                      unitId: _0x35b34d.unitId,
+                      subUnitId: _0x35b34d.subUnitId,
+                      showText: _0x5d03e6,
+                    })
+                  : _0x3f25ff &&
+                    _0x44cfd9.deleteDrawings["push"]({
+                      drawingId: _0xe655f9.drawingId,
+                      unitId: _0x35b34d.unitId,
+                      subUnitId: _0x35b34d.subUnitId,
+                      showText: _0x5d03e6,
+                    });
+            else {
+              if ("parent" in _0xe655f9 && "children" in _0xe655f9) {
+                var _0x31ca1e, _0x35db9c;
+                ((_0x31ca1e = _0xe655f9.parent) != null &&
+                  _0x31ca1e.drawingId &&
+                  (_0x456b2b
+                    ? _0x44cfd9.updateDrawings["push"]({
+                        drawingId: _0xe655f9.parent["drawingId"],
+                        unitId: _0x35b34d.unitId,
+                        subUnitId: _0x35b34d.subUnitId,
+                        showText: _0x5d03e6,
+                      })
+                    : _0x48a3f9
+                      ? _0x44cfd9.insertDrawings["push"]({
+                          drawingId: _0xe655f9.parent["drawingId"],
+                          unitId: _0x35b34d.unitId,
+                          subUnitId: _0x35b34d.subUnitId,
+                          showText: _0x5d03e6,
+                        })
+                      : _0x3f25ff &&
+                        _0x44cfd9.deleteDrawings["push"]({
+                          drawingId: _0xe655f9.parent["drawingId"],
+                          unitId: _0x35b34d.unitId,
+                          subUnitId: _0x35b34d.subUnitId,
+                          showText: _0x5d03e6,
+                        })),
+                  (_0x35db9c = _0xe655f9.children) == null ||
+                    _0x35db9c.forEach((_0x598091) => {
+                      _0x598091.drawingId &&
+                        (_0x456b2b
+                          ? _0x44cfd9.updateDrawings["push"]({
+                              drawingId: _0x598091.drawingId,
+                              unitId: _0x35b34d.unitId,
+                              subUnitId: _0x35b34d.subUnitId,
+                              showText: _0x5d03e6,
+                            })
+                          : _0x48a3f9
+                            ? _0x44cfd9.insertDrawings["push"]({
+                                drawingId: _0x598091.drawingId,
+                                unitId: _0x35b34d.unitId,
+                                subUnitId: _0x35b34d.subUnitId,
+                                showText: _0x5d03e6,
+                              })
+                            : _0x3f25ff &&
+                              _0x44cfd9.deleteDrawings["push"]({
+                                drawingId: _0x598091.drawingId,
+                                unitId: _0x35b34d.unitId,
+                                subUnitId: _0x35b34d.subUnitId,
+                                showText: _0x5d03e6,
+                              }));
+                    }));
+              }
+            }
+          });
+        else {
+          if (_0x538258 && typeof _0x538258 == "object") {
+            if (
+              "drawingIds" in _0x538258 &&
+              Array.isArray(_0x538258.drawingIds)
+            )
+              _0x538258.drawingIds["forEach"]((_0x2b89de) => {
+                _0x456b2b
+                  ? _0x44cfd9.updateDrawings["push"]({
+                      drawingId: _0x2b89de,
+                      unitId: _0x35b34d.unitId,
+                      subUnitId: _0x35b34d.subUnitId,
+                      showText: _0x5d03e6,
+                    })
+                  : _0x48a3f9
+                    ? _0x44cfd9.insertDrawings["push"]({
+                        drawingId: _0x2b89de,
+                        unitId: _0x35b34d.unitId,
+                        subUnitId: _0x35b34d.subUnitId,
+                        showText: _0x5d03e6,
+                      })
+                    : _0x3f25ff &&
+                      _0x44cfd9.deleteDrawings["push"]({
+                        drawingId: _0x2b89de,
+                        unitId: _0x35b34d.unitId,
+                        subUnitId: _0x35b34d.subUnitId,
+                        showText: _0x5d03e6,
+                      });
+              });
+            else {
+              if ("parent" in _0x538258 && "children" in _0x538258) {
+                var _0x41f310, _0x5e2746;
+                ((_0x41f310 = _0x538258.parent) != null &&
+                  _0x41f310.drawingId &&
+                  (_0x456b2b
+                    ? _0x44cfd9.updateDrawings["push"]({
+                        drawingId: _0x538258.parent["drawingId"],
+                        unitId: _0x35b34d.unitId,
+                        subUnitId: _0x35b34d.subUnitId,
+                        showText: _0x5d03e6,
+                      })
+                    : _0x48a3f9
+                      ? _0x44cfd9.insertDrawings["push"]({
+                          drawingId: _0x538258.parent["drawingId"],
+                          unitId: _0x35b34d.unitId,
+                          subUnitId: _0x35b34d.subUnitId,
+                          showText: _0x5d03e6,
+                        })
+                      : _0x3f25ff &&
+                        _0x44cfd9.deleteDrawings["push"]({
+                          drawingId: _0x538258.parent["drawingId"],
+                          unitId: _0x35b34d.unitId,
+                          subUnitId: _0x35b34d.subUnitId,
+                          showText: _0x5d03e6,
+                        })),
+                  (_0x5e2746 = _0x538258.children) == null ||
+                    _0x5e2746.forEach((_0x188d9c) => {
+                      _0x188d9c.drawingId &&
+                        (_0x456b2b
+                          ? _0x44cfd9.updateDrawings["push"]({
+                              drawingId: _0x188d9c.drawingId,
+                              unitId: _0x35b34d.unitId,
+                              subUnitId: _0x35b34d.subUnitId,
+                              showText: _0x5d03e6,
+                            })
+                          : _0x48a3f9
+                            ? _0x44cfd9.insertDrawings["push"]({
+                                drawingId: _0x188d9c.drawingId,
+                                unitId: _0x35b34d.unitId,
+                                subUnitId: _0x35b34d.subUnitId,
+                                showText: _0x5d03e6,
+                              })
+                            : _0x3f25ff &&
+                              _0x44cfd9.deleteDrawings["push"]({
+                                drawingId: _0x188d9c.drawingId,
+                                unitId: _0x35b34d.unitId,
+                                subUnitId: _0x35b34d.subUnitId,
+                                showText: _0x5d03e6,
+                              }));
+                    }));
+              }
+            }
+          }
+        }
+        break;
+      }
+    }
+    return _0x44cfd9;
+  }
+  _combineRanges(_0x29073e) {
+    if (_0x29073e.length <= 1) return _0x29073e;
+    let _0x2ba084 = new Map();
+    return (
+      _0x29073e.forEach((_0xdf1e88) => {
+        let { unitId: _0x49ab7e, subUnitId: _0x6c9aa9 } = _0xdf1e88,
+          _0x141fa4 = _0x49ab7e + "-" + _0x6c9aa9;
+        if (!_0x2ba084.has(_0x141fa4)) _0x2ba084.set(_0x141fa4, [_0xdf1e88]);
+        else {
+          var _0x23e3ae;
+          (_0x23e3ae = _0x2ba084.get(_0x141fa4)) == null ||
+            _0x23e3ae.push(_0xdf1e88);
+        }
+      }),
+      Array.from(_0x2ba084.values())
+        .map((_0x5ca6a1) =>
+          new _0x4925da()
+            .add(..._0x5ca6a1.map((_0x20ac6f) => _0x20ac6f.range))
+            .merge()
+            .map((_0x263d6c) => ({
+              range: _0x263d6c,
+              unitId: _0x5ca6a1[0].unitId,
+              subUnitId: _0x5ca6a1[0].subUnitId,
+              showText: _0x5ca6a1[0].showText,
+              highlightRow: _0x5ca6a1[0].highlightRow,
+              highlightColumn: _0x5ca6a1[0].highlightColumn,
+            })),
+        )
+        .flat()
+    );
+  }
+};
+Z = J(
+  [
+    q(0, _0x200c9d(X)),
+    q(1, _0x148615),
+    q(2, _0x2b8368),
+    q(3, _0x200c9d(_0x39df73)),
+    q(4, _0x200c9d(_0x5a9ee5)),
+    q(5, _0x200c9d(_0x5c942e)),
+    q(6, _0x200c9d(_0x206cef)),
+    q(7, _0x200c9d(_0x4d476b)),
+    q(8, _0x200c9d(_0x465b56)),
+    q(9, _0x200c9d(_0x57fbab)),
+    q(10, _0x200c9d(_0x2bdbd6)),
+    q(11, _0x200c9d(_0x3965dd)),
+    q(12, _0x200c9d(Y)),
+  ],
+  Z,
+);
+function Ii(_0x4acc97) {
+  return new _0x20fa55(_0x4acc97).getDataRange();
+}
+function Li(_0x10a9d6) {
+  let _0x1cb9b0 = new _0x20fa55(_0x10a9d6),
+    _0x2f0ae9 = new _0x20fa55();
+  return (
+    _0x1cb9b0.forValue((_0x5f082b, _0x267fbf) => {
+      _0x2f0ae9.setValue(_0x5f082b, _0x267fbf, 1);
+    }),
+    _0x1892ad(_0x2f0ae9)
+  );
+}
+const Ri = [
+  { key: 0, labelKey: "sheets-history-ui.viewer.panel.filterAll" },
+  { key: 1, labelKey: "sheets-history-ui.viewer.panel.filterUser" },
+  { key: 2, labelKey: "sheets-history-ui.viewer.panel.filterAi" },
+];
+function zi(_0x5b4d90) {
+  let { value: _0x31f742, onChange: _0x2116ac } = _0x5b4d90,
+    _0x2dc2ef = _0x98ea07(_0x2bdbd6);
+  return _0x5790c5("div", {
+    className: "univer-relative univer-h-8",
+    children: _0x5790c5(_0x3f61cf, {
+      items: Ri.map((_0x879058) => ({
+        label: _0x2dc2ef.t(_0x879058.labelKey),
+        value: _0x879058.key,
+      })),
+      value: _0x31f742,
+      onChange: _0x2116ac,
+    }),
+  });
+}
+function Bi() {
+  var _0x583992;
+  let _0x5ed90b = _0x98ea07(X),
+    _0x155e55 = _0x98ea07(Y),
+    _0x56f425 = _0x98ea07(Z),
+    _0x4eb35b = _0x98ea07(_0x47a55c),
+    _0x46c384 = _0xd2f1e0(_0x5ed90b.versions$),
+    _0x31f1ac = _0xd2f1e0(_0x5ed90b.creators$, []),
+    [_0x7e1a5f, _0x33335a] = _0x446936(() => new Set()),
+    [_0x54632d, _0x446a4d] = _0x446936(() => new Map()),
+    [_0x2707dd, _0x41e6c2] = _0x446936(() => new Set()),
+    [_0x322f8c, _0x2ad7c] = _0x446936(0),
+    _0x52c163 = _0x98ea07(_0x2bdbd6),
+    _0x26fc3e = _0x377add(null),
+    [_0x1fbd73, _0x97c4de] = _0x446936(false),
+    [_0x3ce109, _0x714fe0] = _0x446936([]),
+    _0xf4e77d =
+      ((_0x583992 = _0x4eb35b.getConfig("sheets-history-ui.config")) == null
+        ? undefined
+        : _0x583992.historyAIassistantEnabled) ?? false,
+    _0x4d7143 = Pi(_0x46c384),
+    [_0x255cc2, _0x5238b7] = _0x446936([]),
+    _0x4e1ed5 = _0x227cfb(
+      () =>
+        _0x31f1ac.map((_0x4ac911) => ({
+          key: _0x4ac911.userId,
+          label: _0x4ac911.name,
+        })),
+      [_0x31f1ac],
+    );
+  _0x411dd3(() => {
+    _0x5ed90b.loadHistoryCreatorList().catch(() => undefined);
+  }, [_0x5ed90b]);
+  let _0x843888 = _0x2fc950(
+    (_0x1bec65) => {
+      (_0x5238b7([]),
+        _0x2ad7c(_0x1bec65),
+        _0x5ed90b.unitId &&
+          _0x5ed90b
+            .loadInitialVersions(_0x5ed90b.unitId, { origin: _0x1bec65 })
+            .catch(() => undefined));
+    },
+    [_0x5ed90b],
+  );
+  _0x411dd3(() => {
+    let _0x27120d = _0x26fc3e.current;
+    if (!_0x27120d) return;
+    let _0x463c0b,
+      _0x5aacf6 = () => {
+        (clearTimeout(_0x463c0b),
+          (_0x463c0b = setTimeout(() => {
+            let {
+              scrollTop: _0x748051,
+              scrollHeight: _0x10d2a9,
+              clientHeight: _0x67bc54,
+            } = _0x27120d;
+            _0x748051 + _0x67bc54 >= _0x10d2a9 - 5 &&
+              _0x5ed90b.loadMoreVersions().catch(() => undefined);
+          }, 100)));
+      };
+    return (
+      _0x27120d.addEventListener("scroll", _0x5aacf6),
+      () => {
+        (clearTimeout(_0x463c0b),
+          _0x27120d.removeEventListener("scroll", _0x5aacf6));
+      }
+    );
+  }, [_0x5ed90b]);
+  let _0x3cd839 = _0x2fc950(
+    async (_0x4a1db6) => {
+      let _0x4c65ff = _0x4a1db6.id;
+      if (_0x7e1a5f.has(_0x4c65ff)) {
+        _0x33335a((_0x22cd5a) => {
+          let _0x3f3e7a = new Set(_0x22cd5a);
+          return (_0x3f3e7a.delete(_0x4c65ff), _0x3f3e7a);
+        });
+        return;
+      }
+      if (_0x54632d.has(_0x4c65ff)) {
+        _0x33335a((_0x1b0d92) => new Set(_0x1b0d92).add(_0x4c65ff));
+        return;
+      }
+      _0x41e6c2((_0x44a601) => new Set(_0x44a601).add(_0x4c65ff));
+      try {
+        var _0x3e9126;
+        let _0x5c3c3d = _0x5ed90b.unitId;
+        if (!_0x5c3c3d) return;
+        let _0x5e36aa = await _0x155e55.getHistoryChangesets(
+          {},
+          {
+            unitId: _0x5c3c3d,
+            startRevision: _0x4a1db6.startRev,
+            endRevision: _0x4a1db6.endRev,
+          },
+        );
+        if (
+          ((_0x3e9126 = _0x5e36aa.error) == null
+            ? undefined
+            : _0x3e9126.code) === 1 &&
+          _0x5e36aa.changesets
+        ) {
+          let _0x15c692 = _0x5e36aa.changesets["reverse"]().map((_0x244a95) => {
+            var _0x8d145e, _0xdaa4a;
+            let _0x4ea0e0 = _0x278de0(_0x244a95),
+              _0x350105 = _0x244a95.userID || _0x4ea0e0.userID,
+              _0x4a5bca =
+                (_0x8d145e = _0x5e36aa.users) == null
+                  ? undefined
+                  : _0x8d145e[_0x350105],
+              _0x6c4302 =
+                ((_0xdaa4a = _0x244a95.mutations) == null
+                  ? undefined
+                  : _0xdaa4a.map((_0x4d58c8) => _0x4d58c8.id)) || [];
+            return {
+              id: _0x4c65ff + "-detail-" + _0x244a95.revision,
+              unitId: _0x244a95.unitID,
+              startRev: _0x244a95.revision,
+              endRev: _0x244a95.revision,
+              time: _0x244a95.createTime
+                ? _0x244a95.createTime * 1000
+                : undefined,
+              user: (_0x4a5bca == null ? undefined : _0x4a5bca.name) || "",
+              users: [(_0x4a5bca == null ? undefined : _0x4a5bca.name) || ""],
+              commands: _0x6c4302,
+              isAnonymous: false,
+              isDetail: true,
+              parentId: _0x4c65ff,
+              additionalFields: _0x244a95.additionalFields,
+            };
+          });
+          (_0x446a4d((_0x35cdd2) =>
+            new Map(_0x35cdd2).set(_0x4c65ff, _0x15c692),
+          ),
+            _0x15c692.forEach((_0xb946e8) => {
+              _0x5ed90b.registerDetailVersion(_0xb946e8);
+            }));
+          for (let _0xad64d8 of _0x15c692)
+            await _0x56f425.ensureVersion(_0xad64d8.id);
+          _0x33335a((_0x38491b) => new Set(_0x38491b).add(_0x4c65ff));
+        }
+      } catch (_0x47cf1d) {
+        console.error("Failed to fetch version details:", _0x47cf1d);
+      } finally {
+        _0x41e6c2((_0x5cd9d9) => {
+          let _0x27b42d = new Set(_0x5cd9d9);
+          return (_0x27b42d.delete(_0x4c65ff), _0x27b42d);
+        });
+      }
+    },
+    [_0x7e1a5f, _0x54632d, _0x5ed90b, _0x155e55, _0x56f425],
+  );
+  return _0x46c384
+    ? _0x435c70("div", {
+        ref: _0x26fc3e,
+        className:
+          "univer-absolute univer-flex univer-h-[calc(100%-32px)] univer-w-[calc(100%-16px)] univer-flex-col univer-overflow-auto",
+        children: [
+          _0xf4e77d &&
+            _0x435c70("div", {
+              className:
+                "univer-sticky univer-top-0 univer-z-10 univer-mb-3 univer-flex univer-items-center univer-gap-2 univer-bg-gray-0 dark:!univer-bg-gray-200",
+              children: [
+                _0x5790c5("div", {
+                  className: "univer-flex-1",
+                  children: _0x5790c5(zi, {
+                    value: _0x322f8c,
+                    onChange: _0x843888,
+                  }),
+                }),
+                _0x5790c5(_0x5cde61, {
+                  align: "end",
+                  open: _0x1fbd73,
+                  onOpenChange: (_0x3f5ab4) => {
+                    (_0x97c4de(_0x3f5ab4), _0x3f5ab4 && _0x714fe0(_0x255cc2));
+                  },
+                  overlay: _0x435c70("div", {
+                    className: "univer-min-w-[240px]",
+                    children: [
+                      _0x5790c5("div", {
+                        className:
+                          "univer-px-3 univer-py-2 univer-text-sm univer-font-semibold",
+                        children: _0x52c163.t(
+                          "sheets-history-ui.viewer.panel.filterCollaborator",
+                        ),
+                      }),
+                      _0x5790c5("div", {
+                        className:
+                          "univer-border-t univer-border-gray-200 dark:!univer-border-gray-700",
+                      }),
+                      _0x5790c5("div", {
+                        className:
+                          "univer-max-h-[300px] univer-overflow-y-auto univer-py-1",
+                        children: _0x4e1ed5.map((_0x1d3426) => {
+                          let _0x55976b = _0x3ce109.includes(_0x1d3426.key);
+                          return _0x435c70(
+                            "div",
+                            {
+                              className:
+                                "univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-px-3 univer-py-2 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800",
+                              onClick: () => {
+                                let _0x1fd05e = _0x55976b
+                                  ? _0x3ce109.filter(
+                                      (_0x18c38c) =>
+                                        _0x18c38c !== _0x1d3426.key,
+                                    )
+                                  : [..._0x3ce109, _0x1d3426.key];
+                                _0x714fe0(_0x1fd05e);
+                              },
+                              children: [
+                                _0x5790c5(_0x7fad2d, { checked: _0x55976b }),
+                                _0x5790c5("span", {
+                                  className: "univer-text-sm",
+                                  children: _0x1d3426.label,
+                                }),
+                              ],
+                            },
+                            _0x1d3426.key,
+                          );
+                        }),
+                      }),
+                      _0x5790c5("div", {
+                        className:
+                          "univer-border-t univer-border-gray-200 dark:!univer-border-gray-700",
+                      }),
+                      _0x435c70("div", {
+                        className:
+                          "univer-flex univer-items-center univer-justify-end univer-gap-2 univer-p-2",
+                        children: [
+                          _0x5790c5(_0xe7ae40, {
+                            variant: "ghost",
+                            onClick: () => {
+                              (_0x714fe0(_0x255cc2), _0x97c4de(false));
+                            },
+                            children: _0x52c163.t(
+                              "sheets-history-ui.viewer.panel.filterCollaboratorCancel",
+                            ),
+                          }),
+                          _0x5790c5(_0xe7ae40, {
+                            onClick: () => {
+                              (_0x5238b7(_0x3ce109),
+                                _0x5ed90b.unitId &&
+                                  _0x5ed90b
+                                    .loadInitialVersions(_0x5ed90b.unitId, {
+                                      origin: _0x322f8c,
+                                      userIds: _0x3ce109,
+                                    })
+                                    .catch(() => undefined),
+                                _0x97c4de(false));
+                            },
+                            children: _0x52c163.t(
+                              "sheets-history-ui.viewer.panel.filterCollaboratorConfirm",
+                            ),
+                          }),
+                        ],
+                      }),
+                    ],
+                  }),
+                  children: _0x5790c5(_0xe7ae40, {
+                    variant: "ghost",
+                    children: _0x5790c5(_0x16d5e2, {
+                      className: _0x5df285("univer-size-4", {
+                        "univer-text-blue-600\x20dark:!univer-text-blue-400":
+                          _0x255cc2.length > 0,
+                      }),
+                    }),
+                  }),
+                }),
+              ],
+            }),
+          _0x5790c5("div", {
+            className:
+              "univer-relative univer-flex-1 univer-space-y-2 univer-pb-4",
+            children: _0x4d7143.map((_0x22aac5) =>
+              _0x435c70(
+                _0x309698,
+                {
+                  children: [
+                    _0x5790c5(Hi, {
+                      date: _0x22aac5.dateString,
+                      startDate: _0x22aac5.startDateString,
+                      endDate: _0x22aac5.endDateString,
+                    }),
+                    _0x22aac5.versions["map"]((_0x438b71) => {
+                      let _0x38ebbb = _0x7e1a5f.has(_0x438b71.id),
+                        _0x22d438 = _0x2707dd.has(_0x438b71.id),
+                        _0x32113e = _0x54632d.get(_0x438b71.id) || [];
+                      return _0x435c70(
+                        _0x309698,
+                        {
+                          children: [
+                            _0x5790c5(Ui, {
+                              item: _0x438b71,
+                              onToggleExpand: _0x3cd839,
+                              isExpanded: _0x38ebbb,
+                              isLoadingDetail: _0x22d438,
+                            }),
+                            _0x38ebbb &&
+                              _0x32113e.map((_0x167880, _0x27b762) =>
+                                _0x435c70(
+                                  "div",
+                                  {
+                                    className:
+                                      "univer-relative !univer-mb-0 !univer-mt-0",
+                                    children: [
+                                      _0x435c70("div", {
+                                        className:
+                                          "univer-absolute univer-left-[30px] univer-top-0 univer-h-full univer-w-2.5 rtl:univer-left-auto rtl:univer-right-[30px]",
+                                        children: [
+                                          _0x27b762 < _0x32113e.length - 1 &&
+                                            _0x5790c5("div", {
+                                              className:
+                                                "univer-absolute univer-left-0 univer-top-0 univer-h-full univer-w-px univer-bg-gray-100 rtl:univer-left-auto rtl:univer-right-0 dark:!univer-bg-gray-800",
+                                            }),
+                                          _0x27b762 === _0x32113e.length - 1 &&
+                                            _0x5790c5("div", {
+                                              className:
+                                                "univer-absolute univer-left-0 univer-top-0 univer-h-1/2 univer-w-px univer-bg-gray-100 rtl:univer-left-auto rtl:univer-right-0 dark:!univer-bg-gray-800",
+                                            }),
+                                          _0x5790c5("div", {
+                                            className:
+                                              "univer-absolute univer-left-0 univer-top-1/2 univer-h-px univer-w-2.5 -univer-translate-y-1/2 univer-bg-gray-100 rtl:univer-left-auto rtl:univer-right-0 dark:!univer-bg-gray-800",
+                                          }),
+                                        ],
+                                      }),
+                                      _0x5790c5(Ui, {
+                                        item: _0x167880,
+                                        isDetail: true,
+                                      }),
+                                    ],
+                                  },
+                                  _0x438b71.id + "-detail-" + _0x167880.id,
+                                ),
+                              ),
+                          ],
+                        },
+                        _0x438b71.id,
+                      );
+                    }),
+                  ],
+                },
+                _0x22aac5.dateString,
+              ),
+            ),
+          }),
+        ],
+      })
+    : _0x5790c5(Vi, {});
+}
+function Vi() {
+  return _0x5790c5("div", {
+    className: "univer-flex univer-items-center univer-justify-center",
+    children: _0x5790c5("span", {
+      className: "univer-text-gray-500",
+      children: _0x5790c5(_0x2b8ff6, {
+        className: "univer-m-auto\x20univer-animate-spin",
+      }),
+    }),
+  });
+}
+function Hi(_0x516060) {
+  let _0x30304a = _0x98ea07(_0x2bdbd6),
+    { date: _0x1b4ba4, startDate: _0x464cea = _0x1b4ba4 } = _0x516060;
+  return _0x5790c5("div", {
+    className:
+      "univer-flex univer-items-center univer-gap-2.5 univer-pt-1.5 univer-text-sm univer-font-medium",
+    children: Ni(_0x464cea, _0x30304a),
+  });
+}
+function Ui(_0x38adb2) {
+  let {
+      item: _0x3e279e,
+      onToggleExpand: _0x3cff28,
+      isExpanded: _0x2435fd,
+      isLoadingDetail: _0x474a51,
+      isDetail: _0x4be3f9,
+    } = _0x38adb2,
+    {
+      time: _0x346f13,
+      user: _0x5047e8,
+      startRevCreateTime: _0x302475,
+      endRevCreateTime: _0x4ead8e,
+      users: _0x59ffd2,
+    } = _0x3e279e,
+    _0x1e5e71 = _0x98ea07(X),
+    _0x4ea7d0 = _0x98ea07(Z),
+    _0x258465 = _0xd2f1e0(_0x1e5e71.currentVersion$, "", true) === _0x3e279e.id,
+    _0x1377fc = _0x1e5e71.getCurrentUnitCurrentVersion() === _0x3e279e.endRev,
+    _0x453836 = !_0x1377fc && _0x1e5e71.canRevert,
+    _0x23d091 = _0x98ea07(_0x2bdbd6),
+    _0xfa94cc = Ai(_0x346f13, _0x23d091),
+    _0x20d1f8 = Ai(_0x302475, _0x23d091),
+    _0x1157ce = Ai(_0x4ead8e, _0x23d091),
+    _0x2538ff = _0x23d091.t("sheets-history-ui.viewer.panel.currentVersion"),
+    _0x2e04dd = _0x3e279e.startRev !== _0x3e279e.endRev,
+    _0xa9b467 = !!_0x3e279e.additionalFields,
+    _0x2e1a4b = _0x227cfb(() => {
+      let _0x3af35e =
+        _0x5047e8 || _0x23d091.t("sheets-history-ui.viewer.panel.unknownUser");
+      return (
+        _0x59ffd2 &&
+          _0x59ffd2.filter((_0x453b0f) => _0x453b0f).length > 0 &&
+          (_0x3af35e = _0x59ffd2
+            .filter((_0x285bfe) => _0x285bfe)
+            .join(",\x20")),
+        _0xa9b467
+          ? "" +
+            _0x23d091.t("sheets-history-ui.viewer.panel.aiAssistant") +
+            (_0x3af35e ? "\x20(" + _0x3af35e + ")" : "")
+          : _0x3af35e
+      );
+    }, [_0xa9b467, _0x5047e8, _0x59ffd2, _0x23d091]),
+    _0x369b3a = _0x2fc950(
+      async (_0x5d444e) => {
+        _0x1e5e71.loadingState !== "loading" &&
+          (_0x1e5e71.selectVersion(_0x5d444e),
+          _0x4be3f9 &&
+            (await _0x4ea7d0.ensureVersion(_0x5d444e),
+            await _0x1e5e71.triggerLoadSheet(_0x5d444e)));
+      },
+      [_0x1e5e71, _0x4ea7d0, _0x4be3f9],
+    ),
+    _0x116a81 = _0x2fc950(
+      (_0x2d284b) => {
+        _0x1e5e71.triggerRevert(_0x2d284b).catch(() => undefined);
+      },
+      [_0x1e5e71],
+    ),
+    _0x3716c2 = _0x2fc950(
+      (_0x4048c8) => {
+        (_0x4048c8.stopPropagation(),
+          _0x3cff28 &&
+            !_0x474a51 &&
+            _0x3cff28(_0x3e279e).catch(() => undefined));
+      },
+      [_0x3cff28, _0x3e279e, _0x474a51],
+    ),
+    _0x1b2ce1 = _0x5790c5(_0x2e00b9, {
+      className:
+        "univer-size-8\x20univer-text-gray-400\x20rtl:univer-rotate-180",
+    });
+  _0x474a51
+    ? (_0x1b2ce1 = _0x5790c5(_0x2b8ff6, { className: "univer-animate-spin" }))
+    : _0x2435fd &&
+      (_0x1b2ce1 = _0x5790c5(_0x835cdf, {
+        className: "univer-size-8 univer-text-gray-400",
+      }));
+  let _0x48e37d = _0x20d1f8.time;
+  return (
+    _0x4be3f9
+      ? (_0x48e37d = _0xfa94cc.time)
+      : _0x302475 !== _0x4ead8e &&
+        (_0x48e37d = _0x20d1f8.time + " - " + _0x1157ce.time),
+    _0x435c70("div", {
+      className: _0x5df285(
+        "univer-min-h-15 univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-rounded-md univer-px-1 univer-py-1.5 univer-transition-colors hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-800",
+        {
+          "univer-bg-gray-50\x20dark:!univer-bg-gray-900": _0x258465,
+          "univer-ml-6\x20rtl:univer-ml-0\x20rtl:univer-mr-6": _0x4be3f9,
+        },
+      ),
+      onClick: () => _0x369b3a(_0x3e279e.id).catch(() => undefined),
+      children: [
+        _0x5790c5("div", {
+          className:
+            "univer-flex\x20univer-w-3\x20univer-items-center\x20univer-justify-center",
+          children:
+            _0x2e04dd &&
+            !_0x4be3f9 &&
+            _0x5790c5("div", {
+              onClick: _0x3716c2,
+              className:
+                "univer-flex univer-size-5 univer-cursor-pointer univer-items-center univer-justify-center",
+              children: _0x1b2ce1,
+            }),
+        }),
+        _0x435c70("div", {
+          className: "univer-flex univer-flex-1 univer-flex-col univer-gap-1",
+          children: [
+            _0x435c70("div", {
+              className:
+                "univer-flex univer-min-h-6 univer-w-full univer-items-center univer-justify-between",
+              children: [
+                _0x435c70("div", {
+                  className:
+                    "univer-flex univer-flex-1 univer-items-center univer-gap-1.5 univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+                  children: [
+                    _0xa9b467 &&
+                      _0x5790c5(_0x126ba5, {
+                        className: "univer-size-4 univer-shrink-0",
+                      }),
+                    _0x5790c5("span", {
+                      className:
+                        "univer-break-all univer-font-medium univer-text-gray-700 dark:!univer-text-gray-200",
+                      children: _0x2e1a4b,
+                    }),
+                    _0x5790c5("span", {
+                      className:
+                        "univer-text-center univer-text-gray-500 dark:!univer-text-gray-400",
+                      children: _0x48e37d,
+                    }),
+                    _0x1377fc &&
+                      _0x5790c5("span", {
+                        className:
+                          "univer-ml-1 univer-flex univer-flex-shrink-0 univer-items-center univer-justify-center univer-rounded univer-border univer-border-primary-600 univer-bg-primary-50 univer-px-1.5 univer-text-xs univer-text-primary-600",
+                        children: _0x2538ff,
+                      }),
+                  ],
+                }),
+                _0x5790c5("div", {
+                  children:
+                    _0x453836 &&
+                    _0x5790c5(_0x349151, {
+                      title: _0x23d091.t(
+                        "sheets-history-ui.viewer.panel.revertDesc",
+                      ),
+                      children: _0x5790c5("div", {
+                        onClick: (_0x278972) => {
+                          (_0x278972.stopPropagation(),
+                            _0x116a81(_0x3e279e.id));
+                        },
+                        className:
+                          "univer-flex\x20univer-size-6\x20univer-items-center\x20univer-justify-center\x20univer-rounded\x20univer-text-gray-400\x20hover:univer-bg-gray-100\x20dark:hover:!univer-bg-gray-700",
+                        children: _0x5790c5(_0x284b24, {}),
+                      }),
+                    }),
+                }),
+              ],
+            }),
+            _0x5790c5("div", {
+              className:
+                "univer-text-sm\x20univer-leading-5\x20univer-text-gray-500\x20dark:!univer-text-gray-300",
+              children: ji(_0x3e279e, _0x23d091),
+            }),
+          ],
+        }),
+      ],
+    })
+  );
+}
+let Q = class extends _0x8f71e1 {
+  constructor(_0x3e1b1c, _0x2a903f) {
+    (super(),
+      this.disposeWithMe(_0x3e1b1c.register(vi, Bi)),
+      this.disposeWithMe(_0x2a903f.register({ HistoryIcon: _0x5c7750 })));
+  }
+};
+Q = J([q(0, _0x200c9d(_0x146326)), q(1, _0x200c9d(_0x4c2752))], Q);
+let Wi = class extends _0x8f71e1 {
+  constructor(_0x3bb1b0) {
+    (super(), (this._cellEditorManagerService = _0x3bb1b0), this._init());
+  }
+  _init() {
+    this.disposeWithMe(
+      this._cellEditorManagerService["state$"].subscribe((_0x585d25) => {
+        _0x585d25 != null &&
+          _0x585d25.show &&
+          this._cellEditorManagerService["setState"]({ show: false });
+      }),
+    );
+  }
+};
+Wi = J([q(0, _0x45b20d)], Wi);
+function Gi() {
+  let _0xd50f33 = _0x98ea07(X),
+    _0x37f2e9 = _0x98ea07(_0x2bdbd6);
+  if (_0xd2f1e0(_0xd50f33.loadingState$, "init") !== "loading") return null;
+  let _0x2f53df = _0x37f2e9.t("sheets-history-ui.viewer.info.loading");
+  return _0x5790c5("div", {
+    "aria-busy": "true",
+    "aria-label": _0x2f53df,
+    className:
+      "univer-bg-gray-0/70 dark:!univer-bg-gray-900/70 univer-fixed univer-inset-0 univer-z-[1000] univer-flex univer-cursor-wait univer-items-center univer-justify-center univer-backdrop-blur-sm",
+    children: _0x435c70("div", {
+      role: "status",
+      "aria-live": "polite",
+      className:
+        "univer-flex univer-items-center univer-gap-3 univer-rounded-lg univer-bg-gray-0 univer-px-5 univer-py-4 univer-text-sm univer-text-gray-900 univer-shadow-lg dark:!univer-bg-gray-700 dark:!univer-text-gray-0",
+      children: [
+        _0x5790c5(_0x2b8ff6, {
+          className: "univer-size-6 univer-animate-spin univer-text-gray-500",
+        }),
+        _0x5790c5("span", { children: _0x2f53df }),
+      ],
+    }),
+  });
+}
+function Ki() {
+  let _0x2521fb = _0x98ea07(X),
+    _0x6ff7e6 = _0x98ea07(_0x2bdbd6),
+    _0x538796 = _0xd2f1e0(_0x2521fb.currentVersion$),
+    _0xc4a17 = _0x227cfb(
+      () => (_0x538796 ? _0x2521fb.getSelectedVersionCanRevert() : false),
+      [_0x2521fb, _0x538796],
+    ),
+    _0x314348 = _0x2fc950(() => {
+      _0x2521fb.exitHistoryMode();
+    }, [_0x2521fb]),
+    _0x52b14d = _0x2fc950(() => {
+      _0x2521fb.triggerRevert();
+    }, [_0x2521fb]);
+  return _0x435c70("div", {
+    className: _0x5df285(
+      "univer-flex univer-h-12 univer-cursor-default univer-items-center univer-justify-between univer-px-3",
+      _0x2ce247,
+    ),
+    children: [
+      _0x435c70(_0xe7ae40, {
+        onClick: _0x314348,
+        children: [
+          _0x5790c5(_0x2c184a, { className: "univer-size-4" }),
+          _0x6ff7e6.t("sheets-history-ui.viewer.header.back"),
+        ],
+      }),
+      _0x5790c5(_0xe7ae40, {
+        variant: "primary",
+        disabled: !_0xc4a17,
+        onClick: _0x52b14d,
+        children: _0x6ff7e6.t("sheets-history-ui.viewer.header.revert"),
+      }),
+    ],
+  });
+}
+let qi = class extends _0x8f71e1 {
+  constructor(
+    _0x12ee23,
+    _0x3d097f,
+    _0x576a86,
+    _0x4dafe3,
+    _0x3a713d,
+    _0x3eb7e7,
+    _0x5a2bdd,
+  ) {
+    (super(),
+      (this._permissionService = _0x12ee23),
+      (this._uiPartsService = _0x3d097f),
+      (this._messageService = _0x576a86),
+      (this._localeService = _0x4dafe3),
+      (this._historyManagerService = _0x3a713d),
+      (this._injector = _0x3eb7e7),
+      (this._configService = _0x5a2bdd),
+      this._init());
+  }
+  _init() {
+    (this.disposeWithMe(
+      this._historyManagerService["currentVersion$"].subscribe((_0x3efcea) => {
+        _0x3efcea && this._historyManagerService["triggerLoadSheet"](_0x3efcea);
+      }),
+    ),
+      this.disposeWithMe(
+        this._permissionService["permissionPointUpdate$"].subscribe(
+          (_0x2fc268) => {
+            let _0xec2eda = this._historyManagerService["unitId"];
+            _0xec2eda &&
+              (_0x2fc268.subType === _0x4f2a57.Edit &&
+                _0x2fc268.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x36e808(_0xec2eda).id,
+                  false,
+                ),
+              _0x2fc268.subType === _0x4f2a57.RenameSheet &&
+                _0x2fc268.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x179ddc(_0xec2eda).id,
+                  false,
+                ),
+              _0x2fc268.subType === _0x4f2a57.MoveSheet &&
+                _0x2fc268.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x569f7f(_0xec2eda).id,
+                  false,
+                ),
+              _0x2fc268.subType === _0x4f2a57.HideSheet &&
+                _0x2fc268.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x4acf7e(_0xec2eda).id,
+                  false,
+                ),
+              _0x2fc268.subType === _0x4f2a57.Comment &&
+                _0x2fc268.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x36e808(_0xec2eda).id,
+                  false,
+                ),
+              _0x2fc268.subType === _0x4f2a57.FloatImg &&
+                _0x2fc268.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x36e808(_0xec2eda).id,
+                  false,
+                ));
+          },
+        ),
+      ),
+      this._registerHeader(),
+      this._registerLoadingMask());
+    let _0x420e93 = null;
+    (this.disposeWithMe(
+      _0x538774(() => (_0x420e93 == null ? undefined : _0x420e93.dispose())),
+    ),
+      this.disposeWithMe(
+        this._historyManagerService["loadingState$"].subscribe((_0x33c9c7) => {
+          (_0x420e93 == null || _0x420e93.dispose(),
+            (_0x420e93 = null),
+            _0x33c9c7 === "loading" &&
+              (_0x420e93 = this._messageService["show"]({
+                type: _0x609f1f.Info,
+                content: this._localeService["t"](
+                  "sheets-history-ui.viewer.info.loading",
+                ),
+                duration: 1000,
+              })));
+        }),
+      ));
+  }
+  _registerHeader() {
+    var _0x2a692a;
+    ((_0x2a692a = this._configService["getConfig"](
+      "sheets-history-ui.config",
+    )) != null &&
+      _0x2a692a.historyPanelHidden) ||
+      this.disposeWithMe(
+        this._uiPartsService["registerComponent"](_0x1c77ff.HEADER, () =>
+          _0x13cdf5(Ki, this._injector),
+        ),
+      );
+  }
+  _registerLoadingMask() {
+    this.disposeWithMe(
+      this._uiPartsService["registerComponent"](_0x1c77ff.GLOBAL, () =>
+        _0x13cdf5(Gi, this._injector),
+      ),
+    );
+  }
+};
+qi = J(
+  [
+    q(0, _0x4dfc55),
+    q(1, _0x574965),
+    q(2, _0x2efab0),
+    q(3, _0x200c9d(_0x2bdbd6)),
+    q(4, _0x200c9d(X)),
+    q(5, _0x200c9d(_0x2df6d2)),
+    q(6, _0x47a55c),
+  ],
+  qi,
+);
+const Ji = { insert: "green.800", delete: "red.800", update: "blue.800" };
+let Yi = class extends _0x8f71e1 {
+  constructor(_0x35d3c4) {
+    (super(),
+      (this._themeService = _0x35d3c4),
+      K(this, "_palette$", undefined),
+      K(this, "palette$", undefined),
+      (this._palette$ = new _0x32f298(this._createPalette())),
+      (this.palette$ = this._palette$["asObservable"]()),
+      this.disposeWithMe(
+        this._themeService["currentTheme$"].pipe(_0x24ef39(1)).subscribe(() => {
+          this._palette$["next"](this._createPalette());
+        }),
+      ),
+      this.disposeWithMe(_0x538774(() => this._palette$["complete"]())));
+  }
+  _createPalette() {
+    return {
+      insert: this._createStyle("insert"),
+      delete: this._createStyle("delete"),
+      update: this._createStyle("update"),
+    };
+  }
+  _createStyle(_0x49ff20) {
+    let _0x42d791 = this._themeService["getColorFromTheme"](Ji[_0x49ff20]);
+    return {
+      fill: new _0x3efc84(_0x42d791).setAlpha(0.5).toRgbString(),
+      stroke: new _0x3efc84(_0x42d791).setAlpha(0.9).toRgbString(),
+    };
+  }
+};
+Yi = J([q(0, _0x200c9d(_0x27ce45))], Yi);
+var Xi = class extends _0x4117fb {
+  constructor(_0x1a1513, _0x448cf1) {
+    (super(_0x1a1513, _0x448cf1),
+      K(this, "_color", undefined),
+      K(this, "_direction", undefined),
+      K(this, "_highlight", false),
+      K(this, "_highlightSecond", 4),
+      K(this, "_blinkTimer", undefined),
+      K(this, "_blinkIntervalTimer", undefined),
+      K(this, "_isBlinkVisible", true),
+      (this._color = _0x448cf1.color),
+      (this._direction = _0x448cf1.direction),
+      this.setShapeProps(_0x448cf1),
+      _0x448cf1.highlight &&
+        this._startBlinking(
+          _0x448cf1.highlightSecond ?? this._highlightSecond,
+        ));
+  }
+  setShapeProps(_0x5a9d24) {
+    ((this._color = _0x5a9d24.color ?? this._color),
+      (this._direction = _0x5a9d24.direction ?? this._direction),
+      (this._highlight = _0x5a9d24.highlight ?? this._highlight),
+      (this._highlightSecond =
+        _0x5a9d24.highlightSecond ?? this._highlightSecond),
+      this.transformByState({
+        width: _0x5a9d24.width ?? this.width,
+        height: _0x5a9d24.height ?? this.height,
+      }));
+  }
+  triggerDblclick(_0x4475c0) {
+    return false;
+  }
+  dispose() {
+    (this._stopBlinking(), super.dispose());
+  }
+  _draw(_0x5ebdd3) {
+    (_0x5ebdd3.save(),
+      (_0x5ebdd3.globalAlpha =
+        this._highlight && !this._isBlinkVisible ? 0.25 : 1),
+      (_0x5ebdd3.strokeStyle = this._color),
+      (_0x5ebdd3.fillStyle = this._color),
+      (_0x5ebdd3.lineWidth = 4),
+      this._direction === "horizontal"
+        ? this._drawHorizontalArrow(_0x5ebdd3)
+        : this._drawVerticalArrow(_0x5ebdd3),
+      _0x5ebdd3.restore());
+  }
+  _startBlinking(_0x12d724) {
+    (this._stopBlinking(),
+      (this._isBlinkVisible = true),
+      (this._blinkIntervalTimer = window.setInterval(() => {
+        ((this._isBlinkVisible = !this._isBlinkVisible), this.makeDirty(true));
+      }, 500)),
+      (this._blinkTimer = window.setTimeout(() => {
+        (this._stopBlinking(),
+          (this._isBlinkVisible = true),
+          this.makeDirty(true));
+      }, _0x12d724 * 1000)));
+  }
+  _stopBlinking() {
+    (this._blinkIntervalTimer !== undefined &&
+      (window.clearInterval(this._blinkIntervalTimer),
+      (this._blinkIntervalTimer = undefined)),
+      this._blinkTimer !== undefined &&
+        (window.clearTimeout(this._blinkTimer),
+        (this._blinkTimer = undefined)));
+  }
+  _drawHorizontalArrow(_0x2407ca) {
+    let _0x2412ee = this.height / 2;
+    (_0x2407ca.beginPath(),
+      _0x2407ca.moveTo(12, _0x2412ee),
+      _0x2407ca.lineTo(this.width - 12, _0x2412ee),
+      _0x2407ca.stroke(),
+      _0x2407ca.beginPath(),
+      _0x2407ca.moveTo(0, _0x2412ee),
+      _0x2407ca.lineTo(12, _0x2412ee - 12 / 2),
+      _0x2407ca.lineTo(12, _0x2412ee + 12 / 2),
+      _0x2407ca.closePath(),
+      _0x2407ca.fill(),
+      _0x2407ca.beginPath(),
+      _0x2407ca.moveTo(this.width, _0x2412ee),
+      _0x2407ca.lineTo(this.width - 12, _0x2412ee - 12 / 2),
+      _0x2407ca.lineTo(this.width - 12, _0x2412ee + 12 / 2),
+      _0x2407ca.closePath(),
+      _0x2407ca.fill());
+  }
+  _drawVerticalArrow(_0x469bac) {
+    let _0x342e34 = this.width / 2;
+    (_0x469bac.beginPath(),
+      _0x469bac.moveTo(_0x342e34, 12),
+      _0x469bac.lineTo(_0x342e34, this.height - 12),
+      _0x469bac.stroke(),
+      _0x469bac.beginPath(),
+      _0x469bac.moveTo(_0x342e34, 0),
+      _0x469bac.lineTo(_0x342e34 - 12 / 2, 12),
+      _0x469bac.lineTo(_0x342e34 + 12 / 2, 12),
+      _0x469bac.closePath(),
+      _0x469bac.fill(),
+      _0x469bac.beginPath(),
+      _0x469bac.moveTo(_0x342e34, this.height),
+      _0x469bac.lineTo(_0x342e34 - 12 / 2, this.height - 12),
+      _0x469bac.lineTo(_0x342e34 + 12 / 2, this.height - 12),
+      _0x469bac.closePath(),
+      _0x469bac.fill());
+  }
+};
+let Zi = class extends _0x8f71e1 {
+  constructor(
+    _0x546f4f,
+    _0x5a4669,
+    _0x4c1b80,
+    _0x28d44a,
+    _0x320ae0,
+    _0x2d1e39,
+    _0x4c65fa,
+    _0x539e05,
+    _0x451dbc,
+    _0x5b93df,
+  ) {
+    (super(),
+      (this._context = _0x546f4f),
+      (this._historyManagerService = _0x5a4669),
+      (this._versionDiffService = _0x4c1b80),
+      (this._univerInstanceService = _0x28d44a),
+      (this._renderManagerService = _0x320ae0),
+      (this._sheetSkeletonManagerService = _0x2d1e39),
+      (this._commandService = _0x4c65fa),
+      (this._drawingManagerService = _0x539e05),
+      (this._localeService = _0x451dbc),
+      (this._diffColorService = _0x5b93df),
+      K(this, "_diffs", new Set()),
+      K(this, "_borderDiffs", new Set()),
+      K(this, "_arrowDiffs", new Set()),
+      K(this, "_lastPointer", null),
+      K(this, "_pointerMoveSubscription", null),
+      this._init());
+  }
+  _init() {
+    (this._initRender(), this._initActiveSwitch());
+  }
+  _initRender() {
+    (this._initDiffRender(), this._initPointerEvents());
+  }
+  _initDiffRender() {
+    this.disposeWithMe(
+      _0x59ab16([
+        this._historyManagerService["loadingState$"],
+        this._sheetSkeletonManagerService["currentSkeleton$"],
+        this._diffColorService["palette$"],
+      ])
+        .pipe(
+          _0xccce5(([_0x5e8e57, _0x25d50f, _0x2c34b9]) => {
+            if (_0x5e8e57 === "loaded" && _0x25d50f) {
+              let _0x8a53a6 = _0x25d50f.sheetId;
+              return this._versionDiffService["currentVersionDiff$"].pipe(
+                _0x49f52c((_0x3625f4) =>
+                  _0x3625f4.subUnitIds["length"] === 0 ||
+                  _0x3625f4.subUnitIds["includes"](_0x8a53a6)
+                    ? {
+                        skeleton: _0x25d50f,
+                        versionDiff: _0x3625f4,
+                        sheetID: _0x8a53a6,
+                        palette: _0x2c34b9,
+                      }
+                    : {
+                        skeleton: _0x25d50f,
+                        versionDiff: null,
+                        palette: _0x2c34b9,
+                      },
+                ),
+              );
+            }
+            return _0x2bc979({
+              skeleton: null,
+              versionDiff: null,
+              sheetID: null,
+              palette: _0x2c34b9,
+            });
+          }),
+        )
+        .subscribe(
+          ({
+            skeleton: _0x3315b3,
+            versionDiff: _0x217e3d,
+            sheetID: _0x14fffc,
+            palette: _0x4492ae,
+          }) => {
+            (this._removeDiffMarks(),
+              _0x3315b3 &&
+                _0x217e3d &&
+                _0x14fffc &&
+                this._updateDiffMarks(
+                  _0x3315b3,
+                  _0x217e3d,
+                  _0x14fffc,
+                  _0x4492ae,
+                ));
+          },
+        ),
+    );
+  }
+  _initPointerEvents() {
+    this.disposeWithMe(
+      this._sheetSkeletonManagerService["currentSkeleton$"].subscribe(
+        (_0x424efc) => {
+          var _0x6117e1;
+          if (
+            ((_0x6117e1 = this._pointerMoveSubscription) == null ||
+              _0x6117e1.unsubscribe(),
+            (this._pointerMoveSubscription = null),
+            (this._lastPointer = null),
+            _0x424efc == null)
+          )
+            return;
+          let { skeleton: _0x38d012 } = _0x424efc,
+            { scene: _0x5785f5 } = this._context;
+          this._pointerMoveSubscription = _0x5785f5.onPointerMove$[
+            "subscribeEvent"
+          ](
+            _0x4d3248((_0x2d6da1) => {
+              var _0x5e6c4d, _0x5555d7;
+              let { offsetX: _0x35bf37, offsetY: _0x3813db } = _0x2d6da1,
+                { x: _0x37335e, y: _0x360540 } =
+                  _0x5785f5.getCoordRelativeToViewport(
+                    _0x216a81.FromArray([_0x35bf37, _0x3813db]),
+                  ),
+                { scaleX: _0x3381db, scaleY: _0xfdfc62 } =
+                  _0x5785f5.getAncestorScale(),
+                _0x52b88d = _0x5785f5.getViewport(_0x472dbf.VIEW_MAIN),
+                _0x35d792 = _0x5785f5.getScrollXYInfoByViewport(
+                  _0x216a81.FromArray([_0x37335e, _0x360540]),
+                  _0x52b88d,
+                ),
+                _0x68d8ed = _0x38d012.getCellIndexByOffset(
+                  _0x35bf37,
+                  _0x3813db,
+                  _0x3381db,
+                  _0xfdfc62,
+                  _0x35d792,
+                );
+              (((_0x5e6c4d = this._lastPointer) == null
+                ? undefined
+                : _0x5e6c4d.column) !== _0x68d8ed.column ||
+                ((_0x5555d7 = this._lastPointer) == null
+                  ? undefined
+                  : _0x5555d7.row) !== _0x68d8ed.row) &&
+                ((this._lastPointer = _0x68d8ed),
+                this._diffs["forEach"]((_0x419a30) => {
+                  _0x419a30.evented || _0x419a30.onMouseMove(_0x68d8ed);
+                }));
+            }, 100),
+          );
+        },
+      ),
+    );
+  }
+  _initActiveSwitch() {
+    this.disposeWithMe(
+      _0x59ab16([
+        this._historyManagerService["loadingState$"],
+        this._versionDiffService["currentVersionDiff$"],
+      ]).subscribe(([_0x57712b, _0x37f025]) => {
+        _0x57712b === "loaded" &&
+          (this._updateWorksheetVisibility(_0x37f025.subUnitIds),
+          _0x37f025.active &&
+            this._commandService["syncExecuteCommand"](_0x3e0253.id, {
+              unitId: this._context["unitId"],
+              subUnitId: _0x37f025.active,
+            }));
+      }),
+    );
+  }
+  _updateWorksheetVisibility(_0x49108c) {
+    let _0x19ef8e = this._univerInstanceService["getUnit"](
+      this._context["unitId"],
+      _0x196f55.UNIVER_SHEET,
+    );
+    if (!_0x19ef8e) return;
+    let _0x494216 = _0x19ef8e.getSheets();
+    if (_0x49108c.length === 0) {
+      _0x494216.forEach((_0x3e4712) => {
+        _0x3e4712.isSheetHidden() &&
+          this._setWorksheetVisibility(_0x3e4712.getSheetId(), _0x48a0b6.FALSE);
+      });
+      return;
+    }
+    _0x494216.forEach((_0x3ca5e7) => {
+      let _0x3d6a8c = _0x3ca5e7.getSheetId(),
+        _0x586c23 = _0x49108c.includes(_0x3d6a8c),
+        _0x2f5c4d = _0x3ca5e7.isSheetHidden();
+      _0x586c23 && _0x2f5c4d
+        ? this._setWorksheetVisibility(_0x3d6a8c, _0x48a0b6.FALSE)
+        : !_0x586c23 &&
+          !_0x2f5c4d &&
+          this._setWorksheetVisibility(_0x3d6a8c, _0x48a0b6.TRUE);
+    });
+  }
+  _setWorksheetVisibility(_0x582cde, _0x400097) {
+    this._commandService["syncExecuteCommand"](_0x3c6d31.id, {
+      unitId: this._context["unitId"],
+      subUnitId: _0x582cde,
+      hidden: _0x400097,
+    });
+  }
+  _getLabelHorizontalPosition() {
+    return this._localeService["getDirection"]() === "rtl" ? "left" : "right";
+  }
+  _updateDiffMarks(_0xeccdf7, _0x4f1fef, _0x6411f8, _0x9fdd66) {
+    this._diffs["forEach"]((_0x4805e3) => {
+      _0x4805e3.makeDirty();
+    });
+    let _0x13d20e = this._generateDiffMarks(_0x4f1fef, _0x6411f8, _0x9fdd66);
+    ((this._diffs = new Set(
+      _0x13d20e.filter((_0x52979) => _0x52979 instanceof _0x473b92),
+    )),
+      (this._borderDiffs = new Set(
+        _0x13d20e.filter((_0x1e0d66) => _0x1e0d66 instanceof _0x242d59),
+      )),
+      (this._arrowDiffs = new Set(
+        _0x13d20e.filter((_0x189bf6) => _0x189bf6 instanceof Xi),
+      )),
+      _0x13d20e.length > 0 &&
+        this._scrollToShape(_0x13d20e[0], this._context["scene"]));
+  }
+  _generateDiffMarks(_0x2d3ad4, _0x53849d, _0x15fa62) {
+    let _0x4b7e75 = this._sheetSkeletonManagerService["getCurrentSkeleton"]();
+    if (!_0x4b7e75) return [];
+    let { scene: _0x1f06c3 } = this._context,
+      _0xe403c3 = [],
+      _0x2483aa = (_0x2f5772) => {
+        if (!_0x2f5772) return new Map();
+        let _0x3b4b74 = new Map();
+        return (
+          _0x2f5772.forEach((_0x503539, _0x3057c3) => {
+            let _0x104b37 = _0x503539.filter(
+              (_0x48df80) => _0x48df80.subUnitId === _0x53849d,
+            );
+            _0x104b37.length > 0 && _0x3b4b74.set(_0x3057c3, _0x104b37);
+          }),
+          _0x3b4b74
+        );
+      };
+    return (
+      this._renderCellRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.insertCellRanges),
+        _0x15fa62.insert["fill"],
+        _0xe403c3,
+      ),
+      this._renderCellRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.deleteCellRanges),
+        _0x15fa62.delete["fill"],
+        _0xe403c3,
+      ),
+      this._renderCellRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.updateCellRanges),
+        _0x15fa62.update["fill"],
+        _0xe403c3,
+      ),
+      this._renderBorderRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.insertBorderRanges),
+        _0x15fa62.insert["stroke"],
+        _0xe403c3,
+      ),
+      this._renderBorderRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.deleteBorderRanges),
+        _0x15fa62.delete["stroke"],
+        _0xe403c3,
+      ),
+      this._renderBorderRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.updateBorderRanges),
+        _0x15fa62.update["stroke"],
+        _0xe403c3,
+      ),
+      this._renderArrowRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.arrowRowRanges),
+        _0x15fa62.update["fill"],
+        "vertical",
+        _0xe403c3,
+      ),
+      this._renderArrowRanges(
+        _0x1f06c3,
+        _0x4b7e75,
+        _0x2483aa(_0x2d3ad4.arrowColumnRanges),
+        _0x15fa62.update["fill"],
+        "horizontal",
+        _0xe403c3,
+      ),
+      _0x2d3ad4.insertDrawings &&
+        this._renderDrawingHighlights(
+          _0x1f06c3,
+          _0x2d3ad4.insertDrawings,
+          _0x15fa62.insert["stroke"],
+          _0xe403c3,
+        ),
+      _0x2d3ad4.deleteDrawings &&
+        this._renderDrawingHighlights(
+          _0x1f06c3,
+          _0x2d3ad4.deleteDrawings,
+          _0x15fa62.delete["stroke"],
+          _0xe403c3,
+        ),
+      _0x2d3ad4.updateDrawings &&
+        this._renderDrawingHighlights(
+          _0x1f06c3,
+          _0x2d3ad4.updateDrawings,
+          _0x15fa62.update["stroke"],
+          _0xe403c3,
+        ),
+      this._handleOverlappingShapes(_0xe403c3),
+      _0x1f06c3.addObjects(_0xe403c3, 20),
+      _0xe403c3
+    );
+  }
+  hideDiffMarks() {
+    (this._diffs["forEach"]((_0x36cfa9) => {
+      _0x36cfa9.hide();
+    }),
+      this._borderDiffs["forEach"]((_0x28a680) => {
+        _0x28a680.hide();
+      }),
+      this._arrowDiffs["forEach"]((_0x19942e) => {
+        _0x19942e.hide();
+      }));
+  }
+  showDiffMarks() {
+    (this._diffs["forEach"]((_0x277c59) => {
+      _0x277c59.show();
+    }),
+      this._borderDiffs["forEach"]((_0x2900d3) => {
+        _0x2900d3.show();
+      }),
+      this._arrowDiffs["forEach"]((_0x51133c) => {
+        _0x51133c.show();
+      }));
+  }
+  removeDiffMarks() {
+    this._removeDiffMarks();
+  }
+  scrollToShape(_0x13a3a1, _0x1af707) {
+    this._scrollToShape(_0x13a3a1, _0x1af707);
+  }
+  _renderCellRanges(_0x1d4303, _0x22bd17, _0x56624f, _0x6a876f, _0xd440d3) {
+    _0x56624f.forEach((_0x398685, _0x5ce306) => {
+      _0x398685.forEach((_0x36bd55) => {
+        var _0x5ca91f;
+        let {
+            range: _0x502de4,
+            subUnitId: _0x3cef6c,
+            unitId: _0x4b8168,
+            showText: _0x1227d7 = "",
+            highlightColumn: _0x2b372b,
+            highlightRow: _0x3ae405,
+          } = _0x36bd55,
+          {
+            startColumn: _0x5642a1,
+            startRow: _0x4537de,
+            endColumn: _0x4fe641,
+            endRow: _0x51a254,
+          } = _0x502de4,
+          _0x3f66ca = _0x2b252d(_0x4537de, _0x5642a1, _0x1d4303, _0x22bd17),
+          _0x26b1b9 = _0x2b252d(_0x51a254, _0x4fe641, _0x1d4303, _0x22bd17),
+          { columnHeaderHeightAndMarginTop: _0x53bd39 } = _0x22bd17,
+          { startX: _0x301b98, startY: _0x3166fd } = _0x3f66ca,
+          { endX: _0x12297b, endY: _0x46d8b3 } = _0x26b1b9,
+          _0x3ef706 = _0x22bd17.rowHeaderWidth,
+          _0x156321 = _0x22bd17.columnHeaderHeight;
+        (_0x3ae405 && (_0x301b98 -= _0x3ef706),
+          _0x2b372b && (_0x3166fd -= _0x156321));
+        let _0xbde068 = _0x12297b - _0x301b98,
+          _0x104a1c = _0x46d8b3 - _0x3166fd,
+          _0x5c5354 = {
+            labelPosition: _0x3166fd - _0x53bd39 >= 20 ? "top" : "bottom",
+            sheetID: _0x3cef6c,
+            range: _0x502de4,
+            color: _0x6a876f,
+            fillAfterStrokeEnabled: true,
+            backgroundColor: _0x6a876f,
+            name:
+              ((_0x5ca91f =
+                this._historyManagerService["getMember"](_0x5ce306)) == null
+                ? undefined
+                : _0x5ca91f.name) +
+                "\x20" +
+                _0x1227d7 || _0x1227d7,
+            labelHorizontalPosition: this._getLabelHorizontalPosition(),
+            selection:
+              _0x4b8168 +
+              "-" +
+              _0x3cef6c +
+              "-" +
+              _0x502de4.startColumn +
+              "-" +
+              _0x502de4.startRow +
+              "-" +
+              _0x502de4.endColumn +
+              "-" +
+              _0x502de4.endRow,
+            left: _0x301b98,
+            top: _0x3166fd,
+            width: _0xbde068,
+            height: _0x104a1c,
+            evented: false,
+            zIndex: 1000,
+            highlight: true,
+          };
+        _0xd440d3.push(new _0x473b92("", _0x5c5354));
+      });
+    });
+  }
+  _renderBorderRanges(_0x68f145, _0x23fd84, _0x3784bc, _0x160aff, _0x253c77) {
+    _0x3784bc.forEach((_0x505569, _0x1cdc4e) => {
+      _0x505569.forEach((_0x55cdd7) => {
+        var _0x4d3c7e;
+        let {
+            range: _0x5df5d4,
+            subUnitId: _0x43cfec,
+            unitId: _0x2141eb,
+            showText: _0x5e3e31 = "",
+          } = _0x55cdd7,
+          {
+            startColumn: _0x147dde,
+            startRow: _0x45d0a7,
+            endColumn: _0x52607b,
+            endRow: _0x2e0993,
+          } = _0x5df5d4,
+          _0x4eff8d = _0x2b252d(_0x45d0a7, _0x147dde, _0x68f145, _0x23fd84),
+          _0x34a250 = _0x2b252d(_0x2e0993, _0x52607b, _0x68f145, _0x23fd84),
+          { columnHeaderHeightAndMarginTop: _0x373a21 } = _0x23fd84,
+          { startX: _0x1e7358, startY: _0x35e21c } = _0x4eff8d,
+          { endX: _0x481b5d, endY: _0x329987 } = _0x34a250,
+          _0x51614d = _0x481b5d - _0x1e7358,
+          _0x4ecd20 = _0x329987 - _0x35e21c,
+          _0x16c589 = {
+            labelPosition: _0x35e21c - _0x373a21 >= 20 ? "top" : "bottom",
+            sheetID: _0x43cfec,
+            range: _0x5df5d4,
+            color: _0x160aff,
+            fillAfterStrokeEnabled: false,
+            backgroundColor: "transparent",
+            name:
+              ((_0x4d3c7e =
+                this._historyManagerService["getMember"](_0x1cdc4e)) == null
+                ? undefined
+                : _0x4d3c7e.name) +
+                "\x20" +
+                _0x5e3e31 || _0x5e3e31,
+            labelHorizontalPosition: this._getLabelHorizontalPosition(),
+            selection:
+              _0x2141eb +
+              "-" +
+              _0x43cfec +
+              "-" +
+              _0x5df5d4.startColumn +
+              "-" +
+              _0x5df5d4.startRow +
+              "-" +
+              _0x5df5d4.endColumn +
+              "-" +
+              _0x5df5d4.endRow,
+            left: _0x1e7358 - 12 / 2,
+            top: _0x35e21c - 12 / 2,
+            width: _0x51614d,
+            height: _0x4ecd20,
+            evented: false,
+            zIndex: 1000,
+            strokeWidth: 12,
+            highlight: true,
+          };
+        _0x253c77.push(new _0x473b92("", _0x16c589));
+      });
+    });
+  }
+  _renderArrowRanges(
+    _0x16e24a,
+    _0x3a456f,
+    _0x9ce23a,
+    _0x33bae2,
+    _0x2dee3b,
+    _0x57c819,
+  ) {
+    let _0x13a477 = _0x3a456f.rowHeaderWidth,
+      _0x42add3 = _0x3a456f.columnHeaderHeight;
+    _0x9ce23a.forEach((_0x5dfcdd) => {
+      _0x5dfcdd.forEach((_0x2eae98) => {
+        let { range: _0x321eaf } = _0x2eae98,
+          {
+            startColumn: _0xcd50d,
+            startRow: _0x1866e1,
+            endColumn: _0x38fda0,
+            endRow: _0xeb5f8b,
+          } = _0x321eaf,
+          _0x219fb5 = _0x2b252d(_0x1866e1, _0xcd50d, _0x16e24a, _0x3a456f),
+          _0x4cab2a = _0x2b252d(_0xeb5f8b, _0x38fda0, _0x16e24a, _0x3a456f),
+          { startX: _0x5e8b5d, startY: _0x527bed } = _0x219fb5,
+          { endX: _0x4854c2, endY: _0x37ba98 } = _0x4cab2a,
+          _0x39b7a6;
+        if (_0x2dee3b === "horizontal")
+          ((_0x39b7a6 = new Xi("", {
+            color: _0x33bae2,
+            direction: "horizontal",
+            left: _0x5e8b5d,
+            top: 2,
+            width: _0x4854c2 - _0x5e8b5d,
+            height: _0x42add3 - 4,
+            evented: false,
+            zIndex: 1001,
+            highlight: true,
+            highlightSecond: 4,
+          })),
+            _0x57c819.push(_0x39b7a6));
+        else {
+          let _0x4fb750 = _0x37ba98 - _0x527bed;
+          ((_0x39b7a6 = new Xi("", {
+            color: _0x33bae2,
+            direction: "vertical",
+            left: 2,
+            top: _0x527bed,
+            width: _0x13a477 - 4,
+            height: _0x4fb750,
+            evented: false,
+            zIndex: 1001,
+            highlight: true,
+            highlightSecond: 4,
+          })),
+            _0x57c819.push(_0x39b7a6));
+        }
+      });
+    });
+  }
+  _renderDrawingHighlights(_0x2d8945, _0x5b37dd, _0x2d61b9, _0x32d35a) {
+    let _0x13ced1 = this._sheetSkeletonManagerService["getCurrentSkeleton"]();
+    if (!_0x13ced1) return;
+    let { columnHeaderHeightAndMarginTop: _0x14672a } = _0x13ced1;
+    _0x5b37dd.forEach((_0x316714, _0x2f8c4d) => {
+      _0x316714.forEach((_0x2bf88c) => {
+        let _0x4af9e4 = this._createDrawingHighlight(
+          _0x2bf88c,
+          _0x2f8c4d,
+          _0x2d61b9,
+          _0x14672a,
+          12,
+          _0x32d35a,
+        );
+        _0x4af9e4 && _0x32d35a.push(_0x4af9e4);
+      });
+    });
+  }
+  _createDrawingHighlight(
+    _0x599ab2,
+    _0x1bc382,
+    _0x3af7a0,
+    _0x2b9a57,
+    _0x44c9dd,
+    _0x5b9d5f,
+  ) {
+    var _0xe15fd1;
+    let {
+        drawingId: _0x3853fa,
+        unitId: _0x436c7f,
+        subUnitId: _0x534d18,
+        showText: _0x287ab6 = "",
+      } = _0x599ab2,
+      _0x159778 = this._drawingManagerService["getDrawingByParam"]({
+        unitId: _0x436c7f,
+        subUnitId: _0x534d18,
+        drawingId: _0x3853fa,
+      });
+    if (!(_0x159778 != null && _0x159778.transform)) return null;
+    let {
+        left: _0x4e6706 = 0,
+        top: _0x3d7bb6 = 0,
+        width: _0x9264bc,
+        height: _0x1ad062,
+      } = _0x159778.transform,
+      _0x211c06 = new _0x473b92("", {
+        labelPosition: _0x3d7bb6 - _0x2b9a57 >= 20 ? "top" : "bottom",
+        sheetID: _0x534d18,
+        range: { startRow: 0, startColumn: 0, endRow: 0, endColumn: 0 },
+        color: _0x3af7a0,
+        fillAfterStrokeEnabled: false,
+        backgroundColor: "transparent",
+        name:
+          ((_0xe15fd1 = this._historyManagerService["getMember"](_0x1bc382)) ==
+          null
+            ? undefined
+            : _0xe15fd1.name) +
+            "\x20" +
+            _0x287ab6 || _0x287ab6,
+        labelHorizontalPosition: this._getLabelHorizontalPosition(),
+        selection: _0x436c7f + "-" + _0x534d18 + "-drawing-" + _0x3853fa,
+        left: _0x4e6706 - _0x44c9dd / 2,
+        top: _0x3d7bb6 - _0x44c9dd / 2,
+        width: _0x9264bc,
+        height: _0x1ad062,
+        evented: true,
+        zIndex: 1000,
+        strokeWidth: _0x44c9dd,
+        highlight: true,
+      });
+    return (this._bindDrawingHighlightHover(_0x211c06, _0x5b9d5f), _0x211c06);
+  }
+  _bindDrawingHighlightHover(_0x24de88, _0x568fe3) {
+    (_0x24de88.onPointerEnter$["subscribeEvent"](() =>
+      this._setOverlappingShapesHovered(_0x24de88, _0x568fe3, true),
+    ),
+      _0x24de88.onPointerLeave$["subscribeEvent"](() =>
+        this._setOverlappingShapesHovered(_0x24de88, _0x568fe3, false),
+      ));
+  }
+  _setOverlappingShapesHovered(_0xa14e3a, _0x341758, _0x24836d) {
+    this._findOverlappingShapes(_0xa14e3a, _0x341758).forEach((_0x3601f5) => {
+      _0x3601f5 instanceof _0x473b92 &&
+        _0x3601f5.setShapeProps({ hovered: _0x24836d });
+    });
+  }
+  _removeDiffMarks() {
+    (this._diffs["forEach"]((_0x36eb3f) => _0x36eb3f.dispose()),
+      this._borderDiffs["forEach"]((_0x2941bb) => _0x2941bb.dispose()),
+      this._arrowDiffs["forEach"]((_0x25d7f5) => _0x25d7f5.dispose()),
+      this._diffs["clear"](),
+      this._borderDiffs["clear"](),
+      this._arrowDiffs["clear"]());
+  }
+  _handleOverlappingShapes(_0x208708) {
+    let _0x2c87e9 = _0x208708.filter(
+      (_0x5a3478) => _0x5a3478 instanceof _0x473b92,
+    );
+    if (_0x2c87e9.length === 0) return;
+    let _0x237402 = [],
+      _0x20fcbf = new Set();
+    (_0x2c87e9.forEach((_0x27ec55) => {
+      if (_0x20fcbf.has(_0x27ec55)) return;
+      let _0x3fb511 = _0x27ec55.left || 0,
+        _0x111ffe = _0x27ec55.top || 0,
+        _0x352098 = _0x3fb511 + (_0x27ec55.width || 0),
+        _0x54db18 = _0x111ffe,
+        _0x5b4320 = [_0x27ec55];
+      (_0x20fcbf.add(_0x27ec55),
+        _0x2c87e9.forEach((_0x49c8d4) => {
+          if (_0x20fcbf.has(_0x49c8d4)) return;
+          let _0x5c37d5 = _0x49c8d4.left || 0,
+            _0x474999 = _0x49c8d4.top || 0,
+            _0x300596 = _0x5c37d5 + (_0x49c8d4.width || 0),
+            _0x430a1d = _0x474999;
+          Math.abs(_0x352098 - _0x300596) <= 10 &&
+            Math.abs(_0x54db18 - _0x430a1d) <= 10 &&
+            (_0x5b4320.push(_0x49c8d4), _0x20fcbf.add(_0x49c8d4));
+        }),
+        _0x5b4320.length > 1 && _0x237402.push(_0x5b4320));
+    }),
+      _0x237402.forEach((_0x16a32d) => {
+        (_0x16a32d.sort(
+          (_0xc3e30b, _0x5103d8) => (_0xc3e30b.top || 0) - (_0x5103d8.top || 0),
+        ),
+          _0x16a32d.forEach((_0x28255f, _0xe0d876) => {
+            let _0x3e1b20 = _0xe0d876 * 22;
+            _0x28255f.setOffsetY(_0x3e1b20);
+          }));
+      }));
+  }
+  _findOverlappingShapes(_0x167cf0, _0x2f5c92) {
+    let _0x4304b6 = _0x167cf0.left || 0,
+      _0x3385f6 = _0x167cf0.top || 0,
+      _0x39d9b0 = _0x167cf0.width || 0,
+      _0x4dc656 = _0x167cf0.height || 0,
+      _0x25d631 = _0x4304b6 + _0x39d9b0,
+      _0xbfeba5 = _0x3385f6 + _0x4dc656;
+    return _0x2f5c92.filter((_0x4d7901) => {
+      let _0x2bd0e5 = _0x4d7901.left || 0,
+        _0x492bd4 = _0x4d7901.top || 0,
+        _0x403c44 = _0x4d7901.width || 0,
+        _0x18c075 = _0x4d7901.height || 0,
+        _0x48bad0 = _0x2bd0e5 + _0x403c44,
+        _0xe857e7 = _0x492bd4 + _0x18c075;
+      return !(
+        _0x25d631 <= _0x2bd0e5 ||
+        _0x4304b6 >= _0x48bad0 ||
+        _0xbfeba5 <= _0x492bd4 ||
+        _0x3385f6 >= _0xe857e7
+      );
+    });
+  }
+  _scrollToShape(_0x27d7bd, _0x1150d5) {
+    let _0x5be06f = _0x1150d5.getViewport(_0x472dbf.VIEW_MAIN);
+    if (!_0x5be06f) return;
+    let _0x5e264b = _0x27d7bd.left || 0,
+      _0x581d73 = _0x27d7bd.top || 0,
+      _0x45ef04 = _0x27d7bd.width || 0,
+      _0x5b1476 = _0x27d7bd.height || 0,
+      _0x556e53 = _0x5be06f.width || 0,
+      _0x32e7c7 = _0x5be06f.height || 0,
+      _0x1fcd19 = _0x5be06f.viewportScrollX || 0,
+      _0xf6f64f = _0x5be06f.viewportScrollY || 0,
+      _0x582d4b = _0x1fcd19,
+      _0x589256 = _0xf6f64f,
+      _0x5f3fc5 = _0x1fcd19 + _0x556e53,
+      _0x44990f = _0xf6f64f + _0x32e7c7;
+    if (
+      _0x5e264b >= _0x582d4b &&
+      _0x581d73 >= _0x589256 &&
+      _0x5e264b + _0x45ef04 <= _0x5f3fc5 &&
+      _0x581d73 + _0x5b1476 <= _0x44990f
+    )
+      return;
+    let _0x334909 = Math.max(0, _0x5e264b - _0x556e53 / 2 + _0x45ef04 / 2),
+      _0x9c3793 = Math.max(0, _0x581d73 - _0x32e7c7 / 2 + _0x5b1476 / 2);
+    _0x5be06f.scrollToViewportPos({
+      viewportScrollX: _0x334909,
+      viewportScrollY: _0x9c3793,
+    });
+  }
+  _getSheetObject() {
+    return _0x59868c(this._univerInstanceService, this._renderManagerService);
+  }
+  dispose() {
+    var _0x1986cf;
+    ((_0x1986cf = this._pointerMoveSubscription) == null ||
+      _0x1986cf.unsubscribe(),
+      (this._pointerMoveSubscription = null),
+      this._removeDiffMarks(),
+      super.dispose());
+  }
+};
+Zi = J(
+  [
+    q(1, _0x200c9d(X)),
+    q(2, _0x200c9d(Z)),
+    q(3, _0x5d9d1d),
+    q(4, _0x407e32),
+    q(5, _0x200c9d(_0x13da0c)),
+    q(6, _0x76d311),
+    q(7, _0x2044fc),
+    q(8, _0x200c9d(_0x2bdbd6)),
+    q(9, _0x200c9d(Yi)),
+  ],
+  Zi,
+);
+let Qi = class extends _0x8f71e1 {
+  constructor(_0x436abb, _0x573ee9, _0x2a589a, _0x7f79e5) {
+    (super(),
+      (this._sidebarService = _0x436abb),
+      (this._localeService = _0x573ee9),
+      (this._historyManagerService = _0x2a589a),
+      (this._configService = _0x7f79e5),
+      K(this, "_sidebarDisposable", null),
+      this._init());
+  }
+  _init() {
+    this._initPanel();
+  }
+  _openPanel() {
+    var _0xe07411;
+    if (this._sidebarDisposable) return;
+    let _0x19928e =
+        (_0xe07411 = this._configService["getConfig"](
+          "sheets-history-ui.config",
+        )) == null
+          ? undefined
+          : _0xe07411.historyPanelComponentKey,
+      _0x1c2399 = {
+        header: {
+          title: this._localeService["t"](
+            "sheets-history-ui.viewer.panel.title",
+          ),
+        },
+        children: { label: _0x19928e },
+        onClose: () => {
+          ((this._sidebarDisposable = null),
+            this._historyManagerService["exitHistoryMode"]());
+        },
+      };
+    this._sidebarDisposable = this._sidebarService["open"]({ ..._0x1c2399 });
+  }
+  _initPanel() {
+    this.disposeWithMe(
+      this._historyManagerService["openPanel$"].subscribe((_0x1b30ff) => {
+        _0x1b30ff && this._openPanel();
+      }),
+    );
+  }
+};
+Qi = J(
+  [
+    q(0, _0x159c4b),
+    q(1, _0x200c9d(_0x2bdbd6)),
+    q(2, _0x200c9d(X)),
+    q(3, _0x47a55c),
+  ],
+  Qi,
+);
+var $i = class extends _0x8f71e1 {
+  constructor() {
+    (super(), K(this, "_dialogOptions$", new _0x3fbab2()));
+  }
+  open() {
+    return _0x538774(() => {});
+  }
+  close() {}
+  closeAll(_0x134295) {}
+  getDialogs$() {
+    return this._dialogOptions$["asObservable"]();
+  }
+};
+let ea = class extends _0x49102e {
+  constructor(_0x1a1808 = G, _0x613fc2, _0x4ca129, _0x1bae17) {
+    (super(),
+      (this._config = _0x1a1808),
+      (this._injector = _0x613fc2),
+      (this._renderManagerService = _0x4ca129),
+      (this._configService = _0x1bae17));
+    let { ..._0x38bf90 } = _0x4c6abd({}, G, this._config);
+    this._configService["setConfig"](W, _0x38bf90);
+  }
+  onStarting() {
+    ([
+      [Q],
+      [X],
+      [qi],
+      [Z],
+      [Yi],
+      [Y],
+      [Qi],
+      [Wi],
+      [_0x2b8368, { useClass: _0x42171d }],
+      [_0x3822b3, { useClass: $i }],
+      [_0x49cfd2, { useClass: _0x4cd2e2 }],
+    ].forEach((_0x3c2c86) => this._injector["add"](_0x3c2c86)),
+      this._injector["get"](qi),
+      this._injector["get"](Q));
+  }
+  onRendered() {
+    ([[Zi]].forEach((_0x3b17c4) => {
+      this.disposeWithMe(
+        this._renderManagerService["registerRenderModule"](
+          _0x196f55.UNIVER_SHEET,
+          _0x3b17c4,
+        ),
+      );
+    }),
+      this._injector["get"](Wi),
+      this._injector["get"](Qi));
+  }
+  onSteady() {
+    this._injector["get"](Z);
+  }
+};
+(K(ea, "pluginName", "UNIVER_SHEETS_HISTORY_VIEWER_PLUGIN"),
+  K(ea, "packageName", bi),
+  K(ea, "version", xi),
+  (ea = J(
+    [
+      _0x50dec6(
+        _0x9cc1b4,
+        _0xf559cc,
+        _0xec48ba,
+        _0x46e284,
+        _0x541918,
+        _0x4f05b0,
+        _0x2514ad,
+        _0x4bd407,
+        _0xc66447,
+        _0x2034fb,
+        _0x566531,
+        _0x4db10d,
+        _0x14146b,
+        _0x203fa8,
+      ),
+      q(1, _0x200c9d(_0x2df6d2)),
+      q(2, _0x407e32),
+      q(3, _0x47a55c),
+    ],
+    ea,
+  )));
+function ta(_0x56684a) {
+  let _0x6f070 = _0x56684a.getCurrentLocale();
+  return {
+    locale: _0x6f070,
+    locales: { [_0x6f070]: _0x56684a.getLocales() },
+    direction: _0x56684a.getDirection(),
+  };
+}
+function na(_0x2f8dc6, _0x5ab105) {
+  let _0x4be958 = _0x5ab105.getDirection();
+  ((_0x2f8dc6.dir = _0x4be958), (_0x2f8dc6.style["direction"] = _0x4be958));
+}
+function ra(_0x7326dd) {
+  return ia(_0x7326dd)
+    ? typeof _0x7326dd.hasMore == "boolean" &&
+        typeof _0x7326dd.lastLabel == "string" &&
+        Array.isArray(_0x7326dd.versions) &&
+        ia(_0x7326dd.members)
+    : false;
+}
+function ia(_0x3b4f8b) {
+  return typeof _0x3b4f8b == "object" && !!_0x3b4f8b;
+}
+const aa = "univer-history-container";
+let $ = class extends _0x8f71e1 {
+  constructor(
+    _0x411051,
+    _0x4f071f,
+    _0x21adc3,
+    _0x7d02cd,
+    _0x140989,
+    _0x5da0cb,
+    _0x4b3052,
+    _0x2fc209,
+    _0x5e5f53,
+    _0xb44679,
+  ) {
+    (super(),
+      (this._localeService = _0x411051),
+      (this._univerInstanceService = _0x4f071f),
+      (this._configService = _0x21adc3),
+      (this._commandService = _0x7d02cd),
+      (this._messageService = _0x140989),
+      (this._permissionService = _0x5da0cb),
+      (this._selectionProtectionRuleModel = _0x4b3052),
+      (this._dialogService = _0x2fc209),
+      (this._sidebarService = _0x5e5f53),
+      (this._themeService = _0xb44679),
+      K(this, "_historyUniver$", new _0x32f298(null)),
+      K(this, "historyUniver$", this._historyUniver$["asObservable"]()),
+      K(this, "_disposableCollection", new _0x5cf52e()),
+      K(this, "_pluginMap", new Map()),
+      K(this, "_internalWebWorker", null),
+      this._init());
+  }
+  get historyUniver() {
+    return this._historyUniver$["value"];
+  }
+  _init() {
+    (this._initContainer(), this._initPlugins());
+  }
+  _initContainer() {
+    var _0x2bd5e0;
+    let _0x39e4c9 = this._configService["getConfig"](W),
+      _0x10383d =
+        (_0x2bd5e0 = this._configService["getConfig"](_0x372cd6)) == null
+          ? undefined
+          : _0x2bd5e0.container,
+      _0x3488f0 =
+        (_0x39e4c9 == null ? undefined : _0x39e4c9.univerContainerId) ??
+        _0x10383d,
+      _0x59ebc5 =
+        typeof _0x3488f0 == "string"
+          ? document.getElementById(_0x3488f0)
+          : _0x3488f0;
+    if (!_0x59ebc5)
+      throw Error(
+        "[HistoryLoaderService]:\x20Configure\x20a\x20valid\x20Univer\x20container\x20before\x20opening\x20history.",
+      );
+    let _0x1c3289 = document.createElement("div");
+    ((_0x1c3289.id = aa),
+      (_0x1c3289.style["position"] = "absolute"),
+      (_0x1c3289.style["top"] = "0"),
+      (_0x1c3289.style["left"] = "0"),
+      (_0x1c3289.style["width"] = "100%"),
+      (_0x1c3289.style["height"] = "100%"),
+      (_0x1c3289.style["zIndex"] = "49"),
+      (_0x1c3289.style["display"] = "none"),
+      na(_0x1c3289, this._localeService),
+      _0x59ebc5.appendChild(_0x1c3289));
+  }
+  _initPlugins() {
+    [
+      [_0xec48ba],
+      [
+        _0x5c66ab,
+        {
+          container: aa,
+          header: true,
+          toolbar: false,
+          footer: true,
+          contextMenu: false,
+          override: [[_0x3822b3, null]],
+        },
+      ],
+      [_0x46e284],
+      [_0xf559cc, { override: [[_0x49cfd2, null]] }],
+      [_0x329c8b, { hasScroll: false }],
+      [_0x3e8f0b],
+      [_0x142a42],
+      [_0x2514ad, { notExecuteFormula: true }],
+      [_0x14146b],
+      [_0x34fce1],
+      [_0x5115c0],
+      [_0x4bd407],
+      [_0x541918],
+      [_0x5919f9],
+      [_0xc66447],
+      [_0x2af53f],
+      [_0x40baf3],
+      [_0x50f650],
+      [_0x364048],
+      [_0x203fa8],
+      [_0x4af1d5],
+      [_0x1ac2eb, { notExecuteFormula: true }],
+      [_0x27beee],
+      [_0x4260f2],
+      [_0x23f118],
+      [_0x4db10d],
+      [_0x46e1c2],
+      [_0x2034fb],
+      [_0x1149fd],
+      [_0x1ce9bf],
+      [_0x4ce039],
+      [_0x566531, { notExecuteFormula: true }],
+      [_0x4f05b0],
+    ].forEach(([_0x4e2243, _0x465a5d]) =>
+      this.registerPlugin(_0x4e2243, _0x465a5d),
+    );
+  }
+  dispose() {
+    (super.dispose(), this.unMountHistoryContent(), this._pluginMap["clear"]());
+  }
+  registerPlugin(_0x12465a, _0x543095, _0x35239c) {
+    if (this._pluginMap["has"](_0x12465a.pluginName) && !_0x35239c)
+      throw Error(
+        "[HistoryLoaderService]: Plugin " +
+          _0x12465a.pluginName +
+          "\x20has\x20been\x20registered.",
+      );
+    this._pluginMap["set"](_0x12465a.pluginName, [_0x12465a, _0x543095]);
+  }
+  getAllPlugins() {
+    return Array.from(this._pluginMap["values"]());
+  }
+  mountHistoryContent(_0x5450d9, _0x55dba2) {
+    let _0x1b453b = document.getElementById(aa);
+    _0x1b453b &&
+      ((_0x1b453b.style["display"] = "block"),
+      this._initUniver(_0x5450d9, aa, _0x55dba2));
+  }
+  unMountHistoryContent() {
+    var _0x314b6a;
+    (this._disposableCollection["dispose"](),
+      (_0x314b6a = this.historyUniver) == null || _0x314b6a.dispose(),
+      this._historyUniver$["next"](null));
+    let _0x2f2b9b = document.getElementById(aa);
+    _0x2f2b9b &&
+      ((_0x2f2b9b.style["display"] = "none"),
+      (this._internalWebWorker &&=
+        (this._internalWebWorker["terminate"](), null)));
+  }
+  _initUniver(_0x407f62, _0x1bcb92, _0x4b1b5f) {
+    var _0x22af3e, _0x244f28, _0x3cf863, _0x2844fc;
+    if (this.historyUniver) return;
+    let _0x216a9a = new _0x345473({
+        ...ta(this._localeService),
+        override: [[_0x51d41c, { useClass: _0x29d59a }]],
+      }),
+      _0x511ee6 = _0x216a9a.__getInjector();
+    (this._syncViewerServices(_0x511ee6, _0x1bcb92),
+      _0x511ee6
+        .get(_0x47a55c)
+        .setConfig(_0x16992c, this._configService["getConfig"](_0x16992c)));
+    let _0x54ffd9 = this._configService["getConfig"](_0x482a3c);
+    _0x54ffd9 && _0x216a9a.registerPlugin(_0x9cc1b4, { license: _0x54ffd9.ls });
+    let _0x4daad4 =
+      (_0x22af3e = this._configService["getConfig"](
+        "sheets-history-ui.config",
+      )) == null
+        ? undefined
+        : _0x22af3e.workerURL;
+    (_0x4daad4 &&
+      ((this._internalWebWorker =
+        _0x4daad4 instanceof Worker ? _0x4daad4 : null),
+      _0x216a9a.registerPlugin(_0xdd0a0a, { workerURL: _0x4daad4 })),
+      this._pluginMap["forEach"](([_0x54dae8, _0x2004ca]) => {
+        _0x216a9a.registerPlugin(_0x54dae8, _0x2004ca);
+      }),
+      _0x216a9a.registerPlugin(ea, {
+        historyServerUrl: yi(this._configService["getConfig"](W)),
+        historyPanelComponentKey:
+          (_0x244f28 = this._configService["getConfig"](
+            "sheets-history-ui.config",
+          )) == null
+            ? undefined
+            : _0x244f28.historyPanelComponentKey,
+        historyPanelHidden:
+          (_0x3cf863 = this._configService["getConfig"](
+            "sheets-history-ui.config",
+          )) == null
+            ? undefined
+            : _0x3cf863.historyPanelHidden,
+        historyAIassistantEnabled:
+          (_0x2844fc = this._configService["getConfig"](
+            "sheets-history-ui.config",
+          )) == null
+            ? undefined
+            : _0x2844fc.historyAIassistantEnabled,
+      }),
+      _0x511ee6.invoke((_0x351fde) => {
+        this._initListener(_0x351fde, _0x407f62);
+      }),
+      this._historyUniver$["next"](_0x216a9a));
+    let _0x388cf0 = _0x511ee6.get(X),
+      _0x2e1432 = this._checkCanRevert(_0x407f62);
+    ra(_0x4b1b5f)
+      ? _0x388cf0.triggerCustomVersions(_0x407f62, _0x2e1432, _0x4b1b5f)
+      : _0x388cf0
+          .triggerLoadVersions(_0x407f62, _0x2e1432)
+          .catch(() => undefined);
+  }
+  _syncViewerServices(_0x6be4e5, _0x4a9ce5) {
+    let _0x27f892 = _0x6be4e5.get(_0x27ce45);
+    (this._disposableCollection["add"](
+      this._themeService["darkMode$"].subscribe((_0x4a5376) => {
+        _0x27f892.setDarkMode(_0x4a5376);
+      }),
+    ),
+      this._disposableCollection["add"](
+        this._themeService["currentTheme$"].subscribe((_0x2fb5ba) => {
+          _0x27f892.setTheme(_0x2fb5ba);
+        }),
+      ));
+    let _0x2fab99 = _0x6be4e5.get(_0x2bdbd6);
+    (this._disposableCollection["add"](
+      this._localeService["currentLocale$"].subscribe((_0x4a798e) => {
+        let _0x16a7c4 = this._localeService["getLocales"]();
+        (_0x16a7c4 && _0x2fab99.load({ [_0x4a798e]: _0x16a7c4 }),
+          _0x2fab99.setLocale(_0x4a798e));
+      }),
+    ),
+      this._disposableCollection["add"](
+        this._localeService["direction$"].subscribe((_0x2068bf) => {
+          _0x2fab99.setDirection(_0x2068bf);
+          let _0x4634fd = document.getElementById(_0x4a9ce5);
+          _0x4634fd &&
+            ((_0x4634fd.dir = _0x2068bf),
+            (_0x4634fd.style["direction"] = _0x2068bf));
+        }),
+      ));
+  }
+  _initListener(_0x2e23f8, _0x38be92) {
+    let _0x4e4539 = _0x2e23f8.get(X);
+    (this._disposableCollection["add"](
+      _0x4e4539.status$["subscribe"]((_0x51332c) => {
+        switch (_0x51332c) {
+          case "entered":
+            (this._dialogService["closeAll"](),
+              this._sidebarService["close"]());
+            break;
+          case "exited":
+            (this._commandService["executeCommand"](sa.id),
+              this.unMountHistoryContent());
+            break;
+          case "error":
+            (this.unMountHistoryContent(),
+              this._messageService["show"]({
+                content: this._localeService["t"](
+                  "sheets-history-ui.loader.panel.listFetchError",
+                ),
+                type: _0x609f1f.Error,
+                duration: 3000,
+              }));
+            break;
+          default:
+            break;
+        }
+      }),
+    ),
+      this._disposableCollection["add"](
+        _0x4e4539.revertRevision$["subscribe"]((_0x2619ea) => {
+          if (_0x2619ea) {
+            let _0x4a8d08 = { unitId: _0x38be92, revision: _0x2619ea };
+            this._commandService["executeCommand"](
+              _0xdc72c5.id,
+              _0x4a8d08,
+            ).catch(() => {
+              _0x4e4539.status = "error";
+            });
+          }
+        }),
+      ));
+  }
+  _checkCanRevert(_0x30113c) {
+    let _0x9308b8 = this._univerInstanceService["getUnit"](_0x30113c);
+    if (!_0x9308b8) return false;
+    let _0x52f2a8 = _0x9308b8
+        .getSheets()
+        .map((_0x74be54) => _0x74be54.getSheetId()),
+      _0x32c7b0 = new _0x36e808(_0x30113c).id,
+      _0x4d6560 = _0x52f2a8.map(
+        (_0x33f40a) => new _0x346068(_0x30113c, _0x33f40a).id,
+      ),
+      _0x871de0 = _0x52f2a8
+        .map((_0x48964e) =>
+          this._selectionProtectionRuleModel["getSubunitRuleList"](
+            _0x30113c,
+            _0x48964e,
+          ).map(
+            (_0x521868) =>
+              new _0x1eb953(_0x30113c, _0x48964e, _0x521868.permissionId).id,
+          ),
+        )
+        .flat(),
+      _0x4b4a77 = new _0xd1fc1c(_0x30113c).id;
+    return this._permissionService["composePermission"]([
+      _0x32c7b0,
+      ..._0x4d6560,
+      ..._0x871de0,
+      _0x4b4a77,
+    ]).every((_0x694f4c) => !!_0x694f4c.value);
+  }
+};
+$ = J(
+  [
+    q(0, _0x200c9d(_0x2bdbd6)),
+    q(1, _0x5d9d1d),
+    q(2, _0x47a55c),
+    q(3, _0x76d311),
+    q(4, _0x2efab0),
+    q(5, _0x4dfc55),
+    q(6, _0x200c9d(_0x39df73)),
+    q(7, _0x200c9d(_0x3822b3)),
+    q(8, _0x200c9d(_0x159c4b)),
+    q(9, _0x200c9d(_0x27ce45)),
+  ],
+  $,
+);
+const oa = {
+    id: "univer.operation.toggle-edit-history",
+    type: _0x102086.OPERATION,
+    handler: (_0x2cd5ea) => {
+      let _0x3b4a16 = _0x2cd5ea.get($),
+        { unitId: _0x1e0c82 } = _0xf9e528(_0x2cd5ea.get(_0x5d9d1d)) || {};
+      return _0x1e0c82
+        ? (_0x3b4a16.mountHistoryContent(_0x1e0c82), true)
+        : false;
+    },
+  },
+  sa = {
+    id: "univer.operation.exit-edit-history",
+    type: _0x102086.OPERATION,
+    handler: () => true,
+  };
+function ca(_0x8673f6) {
+  return {
+    id: oa.id,
+    type: _0x51bf88.BUTTON,
+    icon: "HistoryIcon",
+    title: "sheets-history-ui.loader.panel.title",
+    tooltip: "sheets-history-ui.loader.panel.title",
+    hidden$: _0x1744b9(_0x8673f6, _0x196f55.UNIVER_SHEET),
+    disabled$: _0x16e589(_0x8673f6, {
+      workbookTypes: [_0x33ddea],
+      worksheetTypes: [],
+      rangeTypes: [],
+    }),
+  };
+}
+const la = {
+  [_0x330e51.OTHERS]: {
+    [oa.id]: {
+      order: 100,
+      gridLayout: {
+        row: 1,
+        column: 5,
+        rowSpan: 2,
+        columnSpan: 2,
+        showLabel: true,
+      },
+      menuItemFactory: ca,
+    },
+  },
+};
+function ua(_0x2f2a82) {
+  return !!(
+    _0x2f2a82 &&
+    "unitId" in _0x2f2a82 &&
+    typeof _0x2f2a82.unitId == "string" &&
+    "revision" in _0x2f2a82 &&
+    typeof _0x2f2a82.revision == "number"
+  );
+}
+function da(_0x303526, _0x224f1c) {
+  return (
+    _0x303526.eventID === _0x23611b.CHANGESET_ACK &&
+    _0x278de0(_0x303526.data).mutations["some"](
+      (_0x46d7ef) =>
+        _0x46d7ef.id === _0xdc72c5.id &&
+        ua(_0x46d7ef.params) &&
+        _0x46d7ef.params["unitId"] === _0x224f1c.unitId &&
+        _0x46d7ef.params["revision"] === _0x224f1c.revision,
+    )
+  );
+}
+let fa = class extends _0x42b732 {
+  constructor(
+    _0x358667,
+    _0x5d83ae,
+    _0x4052ae,
+    _0x4b1774,
+    _0x56a003,
+    _0x889f8d,
+    _0x3cbb45,
+    _0x27770b,
+    _0x35c4ac,
+    _0x1891a2,
+  ) {
+    (super(),
+      (this._commandService = _0x358667),
+      (this._menuManagerService = _0x5d83ae),
+      (this._historyManagerService = _0x4052ae),
+      (this._localeService = _0x4b1774),
+      (this._messageService = _0x56a003),
+      (this._collaborationController = _0x889f8d),
+      (this._localCacheService = _0x3cbb45),
+      (this._dataLoaderService = _0x27770b),
+      (this._univerInstanceService = _0x35c4ac),
+      (this._urlService = _0x1891a2),
+      K(this, "_revertAcknowledgementSubscription", null),
+      this.disposeWithMe(_0x538774(() => this._clearRevertAcknowledgement())),
+      this._init());
+  }
+  _init() {
+    ([oa, sa].forEach((_0x28195e) =>
+      this.disposeWithMe(
+        _0x538774(this._commandService["registerCommand"](_0x28195e)),
+      ),
+    ),
+      this._menuManagerService["mergeMenu"](la),
+      this.disposeWithMe(
+        this._commandService["onCommandExecuted"]((_0x487a81, _0x15962d) => {
+          if (_0x487a81.id === _0xdc72c5.id && ua(_0x487a81.params)) {
+            let { revision: _0x14dec4, unitId: _0xbae13b } = _0x487a81.params;
+            this._messageService["show"]({
+              content: this._localeService["t"](
+                "sheets-history-ui.loader.panel.reverting",
+              ),
+              type: _0x609f1f.Loading,
+              duration: 5000,
+            });
+            let _0x523810 =
+              this._collaborationController["getCollabEntity"](_0xbae13b);
+            if (!_0x523810) {
+              this._showRevertFailed();
+              return;
+            }
+            _0x15962d != null && _0x15962d.fromCollab
+              ? this._handleRevertAcknowledgement(
+                  _0x523810,
+                  { revision: _0x14dec4, unitId: _0xbae13b },
+                  async () => (
+                    setTimeout(() => window.location["reload"]()),
+                    true
+                  ),
+                  true,
+                )
+              : this._handleRevertAcknowledgement(
+                  _0x523810,
+                  { revision: _0x14dec4, unitId: _0xbae13b },
+                  async () => {
+                    let _0x15b46e = this._univerInstanceService[
+                        "getCurrentUnitOfType"
+                      ](_0x196f55.UNIVER_SHEET),
+                      _0x43ebbe =
+                        _0x15b46e == null
+                          ? undefined
+                          : _0x15b46e.getActiveSheet();
+                    if (!_0x43ebbe) return false;
+                    this._univerInstanceService["disposeUnit"](_0xbae13b);
+                    let _0x5685b7 = await this._dataLoaderService["loadUnit"](
+                      _0xbae13b,
+                      _0x196f55.UNIVER_SHEET,
+                    );
+                    return _0x5685b7 && _0x5685b7 instanceof _0x32ca6f
+                      ? (await this._setupSubUnitSync(
+                          _0x5685b7,
+                          _0x43ebbe.getSheetId(),
+                        ),
+                        true)
+                      : false;
+                  },
+                );
+          }
+        }),
+      ));
+  }
+  _handleRevertAcknowledgement(
+    _0x318f65,
+    _0x1c86f2,
+    _0x5644f2,
+    _0x550e01 = false,
+  ) {
+    this._clearRevertAcknowledgement();
+    let _0x438f02 = _0x59ab16([
+        _0x318f65.session["event$"],
+        _0x318f65.state$,
+      ]).pipe(
+        _0x5e7dfd(
+          ([_0x4d449d, _0x1c8b28]) =>
+            da(_0x4d449d, _0x1c86f2) &&
+            (_0x1c8b28 == null ? undefined : _0x1c8b28.status) ===
+              _0x370b3f.SYNCED,
+        ),
+        _0x48ae58(1),
+      ),
+      _0xf801fd = _0x438f02;
+    (_0x550e01 && (_0xf801fd = _0x438f02.pipe(_0x147bfa({ first: 5000 }))),
+      (this._revertAcknowledgementSubscription = _0xf801fd
+        .pipe(
+          _0xccce5(async () => {
+            let _0x3d4feb = await _0x5644f2();
+            return (
+              _0x3d4feb &&
+                (this._historyManagerService["unMountHistoryContent"](),
+                await this._localCacheService["exhaustSavingTask"]()),
+              _0x3d4feb
+            );
+          }),
+          _0x5679a8(this.dispose$),
+        )
+        .subscribe({
+          next: (_0xad6cb7) => {
+            (this._clearRevertAcknowledgement(),
+              _0xad6cb7
+                ? this._messageService["removeAll"]()
+                : this._showRevertFailed());
+          },
+          error: () => {
+            (this._clearRevertAcknowledgement(), this._showRevertFailed());
+          },
+        })));
+  }
+  _clearRevertAcknowledgement() {
+    var _0x37c758;
+    ((_0x37c758 = this._revertAcknowledgementSubscription) == null ||
+      _0x37c758.unsubscribe(),
+      (this._revertAcknowledgementSubscription = null));
+  }
+  _showRevertFailed() {
+    this._messageService["show"]({
+      content: this._localeService["t"](
+        "sheets-history-ui.loader.panel.revertFailed",
+      ),
+      type: _0x609f1f.Error,
+      duration: 3000,
+    });
+  }
+  async _setupSubUnitSync(_0x3fff22, _0x1f0a6a) {
+    (await this._updateSubUnitFromURLParams(_0x3fff22, _0x1f0a6a),
+      _0x3fff22.activeSheet$["pipe"](_0x5679a8(this.dispose$)).subscribe(
+        (_0x1a4c24) => {
+          _0x1a4c24 && this._updateURLWithCurrentState(_0x1a4c24);
+        },
+      ),
+      this._urlService["urlChange$"]
+        .pipe(_0x5679a8(this.dispose$))
+        .subscribe(() =>
+          this._updateSubUnitFromURLParams(_0x3fff22, _0x1f0a6a),
+        ));
+  }
+  _updateURLWithCurrentState(_0x1247ca, _0x5d59b9 = false) {
+    let _0xe8e896 = this._urlService["getParam"]("subunit");
+    _0x1247ca.getSheetId() !== _0xe8e896 &&
+      this._urlService["setParam"](
+        "subunit",
+        _0x1247ca.getSheetId(),
+        _0x5d59b9,
+      );
+  }
+  async _updateSubUnitFromURLParams(_0x34b43a, _0x1c60c8) {
+    var _0x3c9580;
+    if (!_0x1c60c8 || !_0x34b43a.getSheetBySheetId(_0x1c60c8)) {
+      let _0x55993f = _0x34b43a.getUnhiddenWorksheets()[0],
+        _0x262578 = _0x34b43a.getSheetBySheetId(_0x55993f);
+      if (!_0x262578) return;
+      (this._updateURLWithCurrentState(_0x262578, true),
+        await this._commandService["executeCommand"](_0x49596b.id, {
+          unitId: _0x34b43a.getUnitId(),
+          subUnitId: _0x55993f,
+        }));
+      return;
+    }
+    ((_0x3c9580 = _0x34b43a.getActiveSheet()) == null
+      ? undefined
+      : _0x3c9580.getSheetId()) !== _0x1c60c8 &&
+      (await this._commandService["executeCommand"](_0x49596b.id, {
+        unitId: _0x34b43a.getUnitId(),
+        subUnitId: _0x1c60c8,
+      }));
+  }
+};
+fa = J(
+  [
+    q(0, _0x76d311),
+    q(1, _0x1fbb9b),
+    q(2, _0x200c9d($)),
+    q(3, _0x200c9d(_0x2bdbd6)),
+    q(4, _0x2efab0),
+    q(5, _0x200c9d(_0x3d2c62)),
+    q(6, _0x606807),
+    q(7, _0x200c9d(_0x6fe70d)),
+    q(8, _0x5d9d1d),
+    q(9, _0x43c9a6),
+  ],
+  fa,
+);
+function pa() {
+  let _0x1b751d = _0x98ea07(X),
+    _0x52130f = _0x98ea07(_0x2bdbd6),
+    _0x4fc3f9 = _0xd2f1e0(_0x1b751d.currentVersion$),
+    _0x1e1b6e = _0x227cfb(
+      () => (_0x4fc3f9 ? _0x1b751d.getSelectedVersionCanRevert() : false),
+      [_0x1b751d, _0x4fc3f9],
+    ),
+    _0x4954f0 = _0x2fc950(() => {
+      _0x1b751d.exitHistoryMode();
+    }, [_0x1b751d]),
+    _0x2ba3de = _0x2fc950(() => {
+      _0x1b751d.triggerRevert();
+    }, [_0x1b751d]);
+  return _0x435c70("div", {
+    className:
+      "univer-flex univer-h-12 univer-items-center univer-border-b univer-border-gray-200 univer-bg-gray-0 univer-px-4 dark:!univer-border-gray-700 dark:!univer-bg-gray-950",
+    children: [
+      _0x5790c5(_0xe7ae40, {
+        variant: "link",
+        onClick: _0x4954f0,
+        children: _0x52130f.t("sheets-history-ui.viewer.header.back"),
+      }),
+      _0x1e1b6e
+        ? _0x5790c5(_0xe7ae40, {
+            variant: "link",
+            onClick: _0x2ba3de,
+            children: _0x52130f.t("sheets-history-ui.viewer.header.revert"),
+          })
+        : _0x5790c5("div", { className: "univer-w-10" }),
+    ],
+  });
+}
+let ma = class extends _0x8f71e1 {
+  constructor(
+    _0x3f3f82,
+    _0x2ca8af,
+    _0x4f8a55,
+    _0x573e79,
+    _0x57a105,
+    _0x4d0721,
+    _0x299fed,
+  ) {
+    (super(),
+      (this._permissionService = _0x3f3f82),
+      (this._uiPartsService = _0x2ca8af),
+      (this._messageService = _0x4f8a55),
+      (this._localeService = _0x573e79),
+      (this._historyManagerService = _0x57a105),
+      (this._injector = _0x4d0721),
+      (this._configService = _0x299fed),
+      this._init());
+  }
+  _init() {
+    (this.disposeWithMe(
+      this._historyManagerService["currentVersion$"].subscribe((_0xd1b07c) => {
+        _0xd1b07c && this._historyManagerService["triggerLoadSheet"](_0xd1b07c);
+      }),
+    ),
+      this.disposeWithMe(
+        this._permissionService["permissionPointUpdate$"].subscribe(
+          (_0xc70723) => {
+            let _0x1d82e5 = this._historyManagerService["unitId"];
+            _0x1d82e5 &&
+              (_0xc70723.subType === _0x4f2a57.Edit &&
+                _0xc70723.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x36e808(_0x1d82e5).id,
+                  false,
+                ),
+              _0xc70723.subType === _0x4f2a57.RenameSheet &&
+                _0xc70723.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x179ddc(_0x1d82e5).id,
+                  false,
+                ),
+              _0xc70723.subType === _0x4f2a57.MoveSheet &&
+                _0xc70723.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x569f7f(_0x1d82e5).id,
+                  false,
+                ),
+              _0xc70723.subType === _0x4f2a57.HideSheet &&
+                _0xc70723.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x4acf7e(_0x1d82e5).id,
+                  false,
+                ),
+              _0xc70723.subType === _0x4f2a57.Comment &&
+                _0xc70723.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x36e808(_0x1d82e5).id,
+                  false,
+                ),
+              _0xc70723.subType === _0x4f2a57.FloatImg &&
+                _0xc70723.value === true &&
+                this._permissionService["updatePermissionPoint"](
+                  new _0x36e808(_0x1d82e5).id,
+                  false,
+                ));
+          },
+        ),
+      ),
+      this._registerHeader(),
+      this._registerLoadingMask());
+    let _0x28b434 = null;
+    (this.disposeWithMe(
+      _0x538774(() => (_0x28b434 == null ? undefined : _0x28b434.dispose())),
+    ),
+      this.disposeWithMe(
+        this._historyManagerService["loadingState$"].subscribe((_0xaf2442) => {
+          (_0x28b434 == null || _0x28b434.dispose(),
+            (_0x28b434 = null),
+            _0xaf2442 === "loading" &&
+              (_0x28b434 = this._messageService["show"]({
+                type: _0x609f1f.Info,
+                content: this._localeService["t"](
+                  "sheets-history-ui.viewer.info.loading",
+                ),
+                duration: 1000,
+              })));
+        }),
+      ));
+  }
+  _registerHeader() {
+    var _0x3303ac;
+    ((_0x3303ac = this._configService["getConfig"](
+      "sheets-history-ui.config",
+    )) != null &&
+      _0x3303ac.historyPanelHidden) ||
+      this.disposeWithMe(
+        this._uiPartsService["registerComponent"](_0x1c77ff.HEADER, () =>
+          _0x13cdf5(pa, this._injector),
+        ),
+      );
+  }
+  _registerLoadingMask() {
+    this.disposeWithMe(
+      this._uiPartsService["registerComponent"](_0x1c77ff.GLOBAL, () =>
+        _0x13cdf5(Gi, this._injector),
+      ),
+    );
+  }
+};
+ma = J(
+  [
+    q(0, _0x4dfc55),
+    q(1, _0x574965),
+    q(2, _0x2efab0),
+    q(3, _0x200c9d(_0x2bdbd6)),
+    q(4, _0x200c9d(X)),
+    q(5, _0x200c9d(_0x2df6d2)),
+    q(6, _0x47a55c),
+  ],
+  ma,
+);
+function ha(_0x395b38) {
+  var _0x5abaad;
+  let { item: _0x236e86, isNewest: _0x3ecaf8 } = _0x395b38,
+    _0xd5ad13 = _0x98ea07(X),
+    _0x4852b8 = _0x98ea07(Z),
+    _0x221387 = _0x98ea07(_0x2bdbd6),
+    _0x11dae3 = _0xd2f1e0(_0xd5ad13.currentVersion$, "", true) === _0x236e86.id,
+    _0x29d17a = Ai(_0x236e86.time, _0x221387),
+    _0xe835bc = !_0x3ecaf8 && _0xd5ad13.canRevert,
+    _0x34623d = _0x2fc950(async () => {
+      _0xd5ad13.loadingState !== "loading" &&
+        (_0xd5ad13.selectVersion(_0x236e86.id),
+        await _0x4852b8.ensureVersion(_0x236e86.id));
+    }, [_0xd5ad13, _0x4852b8, _0x236e86.id]),
+    _0x4ad69d = _0x2fc950(
+      (_0x468561) => {
+        (_0x468561.stopPropagation(), _0xd5ad13.triggerRevert(_0x236e86.id));
+      },
+      [_0xd5ad13, _0x236e86.id],
+    ),
+    _0x19a9db =
+      ((_0x5abaad = _0x236e86.users) == null
+        ? undefined
+        : _0x5abaad.filter(Boolean).join(",\x20")) ||
+      _0x236e86.user ||
+      _0x221387.t("sheets-history-ui.viewer.panel.unknownUser");
+  return _0x435c70("div", {
+    className: _0x5df285(
+      "univer-flex univer-items-center univer-gap-3 univer-border-b univer-border-gray-100 univer-px-4 univer-py-3 dark:!univer-border-gray-800",
+      _0x11dae3 && "univer-bg-blue-50 dark:!univer-bg-gray-900",
+    ),
+    onClick: _0x34623d,
+    children: [
+      _0x435c70("div", {
+        className: "univer-min-w-0 univer-flex-1",
+        children: [
+          _0x435c70("div", {
+            className:
+              "univer-mb-0.5 univer-flex univer-items-center univer-gap-2",
+            children: [
+              _0x5790c5("span", {
+                className:
+                  "univer-truncate univer-text-sm univer-font-medium univer-text-gray-800 dark:!univer-text-gray-200",
+                children: _0x19a9db,
+              }),
+              _0x3ecaf8 &&
+                _0x5790c5("span", {
+                  className:
+                    "univer-shrink-0 univer-rounded univer-border univer-border-primary-600 univer-bg-primary-50 univer-px-1.5 univer-py-0.5 univer-text-xs univer-text-primary-600 dark:!univer-bg-transparent",
+                  children: _0x221387.t(
+                    "sheets-history-ui.viewer.panel.currentVersion",
+                  ),
+                }),
+            ],
+          }),
+          _0x435c70("div", {
+            className: "univer-flex univer-items-center univer-gap-2",
+            children: [
+              _0x5790c5("span", {
+                className: "univer-text-xs univer-text-gray-400",
+                children: _0x29d17a.time,
+              }),
+              _0x5790c5("span", {
+                className:
+                  "univer-truncate univer-text-xs univer-text-gray-500 dark:!univer-text-gray-400",
+                children: ji(_0x236e86, _0x221387),
+              }),
+            ],
+          }),
+        ],
+      }),
+      _0xe835bc &&
+        _0x5790c5(_0xe7ae40, {
+          size: "small",
+          variant: "primary",
+          onClick: _0x4ad69d,
+          children: _0x221387.t("sheets-history-ui.viewer.header.revert"),
+        }),
+    ],
+  });
+}
+function ga() {
+  let _0xfad931 = _0x98ea07(X),
+    _0x143afe = _0x98ea07(_0x2bdbd6),
+    _0x5a4009 = _0xd2f1e0(_0xfad931.versions$),
+    _0x5cb240 = _0xd2f1e0(_0xfad931.fetching$),
+    _0x3ebd7b = _0x377add(null),
+    [_0x36afff, _0x259c6c] = _0x446936(true);
+  _0x411dd3(() => {
+    let _0x3d264d = _0x3ebd7b.current;
+    if (!_0x3d264d || !_0x36afff) return;
+    let _0x34dc80,
+      _0x52ef0b = () => {
+        (clearTimeout(_0x34dc80),
+          (_0x34dc80 = setTimeout(() => {
+            let {
+              scrollTop: _0x820f25,
+              scrollHeight: _0x403626,
+              clientHeight: _0x13fdbd,
+            } = _0x3d264d;
+            _0x820f25 + _0x13fdbd >= _0x403626 - 10 &&
+              _0xfad931.loadMoreVersions().catch(() => undefined);
+          }, 100)));
+      };
+    return (
+      _0x3d264d.addEventListener("scroll", _0x52ef0b),
+      () => {
+        (clearTimeout(_0x34dc80),
+          _0x3d264d.removeEventListener("scroll", _0x52ef0b));
+      }
+    );
+  }, [_0xfad931, _0x36afff]);
+  let _0x1ff32e = Pi(_0x5a4009 ?? []);
+  return _0x5790c5("div", {
+    className:
+      "univer-pointer-events-none univer-absolute univer-inset-0 univer-z-10 univer-flex univer-flex-col univer-justify-end",
+    children: _0x435c70("div", {
+      className: _0x5df285(
+        "univer-pointer-events-auto univer-flex univer-flex-col univer-rounded-t-2xl univer-bg-gray-0 univer-shadow-lg univer-transition-[height] univer-duration-300 dark:!univer-bg-gray-950",
+        _0x36afff ? "univer-h-[60%]" : "univer-h-12",
+      ),
+      children: [
+        _0x435c70("div", {
+          className:
+            "univer-flex\x20univer-shrink-0\x20univer-cursor-pointer\x20univer-flex-col\x20univer-items-center\x20univer-py-2",
+          onClick: () => _0x259c6c((_0x4826c2) => !_0x4826c2),
+          children: [
+            _0x5790c5("div", {
+              className:
+                "univer-h-1 univer-w-10 univer-rounded-full univer-bg-gray-300 dark:!univer-bg-gray-600",
+            }),
+            !_0x36afff &&
+              _0x5790c5("span", {
+                className:
+                  "univer-mt-1\x20univer-text-xs\x20univer-text-gray-500",
+                children: _0x143afe.t("sheets-history-ui.viewer.panel.title"),
+              }),
+          ],
+        }),
+        _0x36afff &&
+          _0x5790c5(_0x2343a6, {
+            children: _0x5a4009
+              ? _0x435c70("div", {
+                  ref: _0x3ebd7b,
+                  className: "univer-flex-1 univer-overflow-y-auto",
+                  children: [
+                    _0x1ff32e.map((_0x45ad48) =>
+                      _0x435c70(
+                        "div",
+                        {
+                          children: [
+                            _0x5790c5("div", {
+                              className:
+                                "univer-sticky univer-top-0 univer-z-10 univer-bg-gray-50 univer-px-4 univer-py-2 univer-text-xs univer-font-semibold univer-text-gray-500 dark:!univer-bg-gray-900",
+                              children: Ni(
+                                _0x45ad48.startDateString,
+                                _0x143afe,
+                              ),
+                            }),
+                            _0x45ad48.versions["map"]((_0x20daed, _0x381027) =>
+                              _0x5790c5(
+                                ha,
+                                {
+                                  item: _0x20daed,
+                                  isNewest:
+                                    _0x1ff32e[0] === _0x45ad48 &&
+                                    _0x381027 === 0,
+                                },
+                                _0x20daed.id,
+                              ),
+                            ),
+                          ],
+                        },
+                        _0x45ad48.dateString,
+                      ),
+                    ),
+                    _0x5cb240 &&
+                      _0x5790c5("div", {
+                        className:
+                          "univer-flex univer-items-center univer-justify-center univer-py-4",
+                        children: _0x5790c5(_0x2b8ff6, {
+                          className: "univer-animate-spin univer-text-gray-400",
+                        }),
+                      }),
+                  ],
+                })
+              : _0x5790c5("div", {
+                  className:
+                    "univer-flex\x20univer-flex-1\x20univer-items-center\x20univer-justify-center",
+                  children: _0x5790c5(_0x2b8ff6, {
+                    className: "univer-animate-spin univer-text-gray-400",
+                  }),
+                }),
+          }),
+      ],
+    }),
+  });
+}
+let _a = class extends _0x8f71e1 {
+  constructor(_0xd66945, _0x3ac786) {
+    (super(),
+      (this._uiPartsService = _0xd66945),
+      (this._injector = _0x3ac786),
+      this.disposeWithMe(
+        this._uiPartsService["registerComponent"](_0x1c77ff.CONTENT, () =>
+          _0x13cdf5(ga, this._injector),
+        ),
+      ));
+  }
+};
+_a = J([q(0, _0x574965), q(1, _0x200c9d(_0x2df6d2))], _a);
+let va = class extends _0x49102e {
+  constructor(_0x38e045 = G, _0x144517, _0x35b1ab, _0x48dcde) {
+    (super(),
+      (this._config = _0x38e045),
+      (this._injector = _0x144517),
+      (this._renderManagerService = _0x35b1ab),
+      (this._configService = _0x48dcde));
+    let { ..._0x34cd15 } = _0x4c6abd({}, G, this._config);
+    this._configService["setConfig"](W, _0x34cd15);
+  }
+  onStarting() {
+    ([
+      [Q],
+      [X],
+      [ma],
+      [Z],
+      [Yi],
+      [Y],
+      [_a],
+      [Wi],
+      [_0x2b8368, { useClass: _0x42171d }],
+      [_0x3822b3, { useClass: $i }],
+      [_0x49cfd2, { useClass: _0x4cd2e2 }],
+    ].forEach((_0x218d8f) => this._injector["add"](_0x218d8f)),
+      this._injector["get"](ma),
+      this._injector["get"](Q));
+  }
+  onRendered() {
+    ([[Zi]].forEach((_0x14919f) => {
+      this.disposeWithMe(
+        this._renderManagerService["registerRenderModule"](
+          _0x196f55.UNIVER_SHEET,
+          _0x14919f,
+        ),
+      );
+    }),
+      this._injector["get"](Wi),
+      this._injector["get"](_a));
+  }
+  onSteady() {
+    this._injector["get"](Z);
+  }
+};
+(K(va, "pluginName", "UNIVER_SHEETS_HISTORY_VIEWER_MOBILE_PLUGIN"),
+  K(va, "packageName", bi),
+  K(va, "version", xi),
+  (va = J(
+    [
+      _0x50dec6(
+        _0x9cc1b4,
+        _0xf559cc,
+        _0xec48ba,
+        _0x46e284,
+        _0x541918,
+        _0x4f05b0,
+        _0x2514ad,
+        _0x5c7c1c,
+        _0x4bd407,
+        _0xc66447,
+        _0x2034fb,
+        _0x566531,
+        _0x4db10d,
+        _0x19281e,
+        _0x203fa8,
+      ),
+      q(1, _0x200c9d(_0x2df6d2)),
+      q(2, _0x407e32),
+      q(3, _0x47a55c),
+    ],
+    va,
+  )));
+const ya = "univer-history-container-mobile";
+let ba = class extends _0x8f71e1 {
+  constructor(
+    _0x26a52,
+    _0x582dd2,
+    _0x1e75b9,
+    _0x231ee5,
+    _0x48ca7a,
+    _0x33ea59,
+    _0x42b3de,
+    _0x1220c1,
+    _0x14abba,
+    _0x1b81e8,
+  ) {
+    (super(),
+      (this._localeService = _0x26a52),
+      (this._univerInstanceService = _0x582dd2),
+      (this._configService = _0x1e75b9),
+      (this._commandService = _0x231ee5),
+      (this._messageService = _0x48ca7a),
+      (this._permissionService = _0x33ea59),
+      (this._selectionProtectionRuleModel = _0x42b3de),
+      (this._dialogService = _0x1220c1),
+      (this._sidebarService = _0x14abba),
+      (this._themeService = _0x1b81e8),
+      K(this, "_historyUniver$", new _0x32f298(null)),
+      K(this, "historyUniver$", this._historyUniver$["asObservable"]()),
+      K(this, "_disposableCollection", new _0x5cf52e()),
+      K(this, "_pluginMap", new Map()),
+      K(this, "_internalWebWorker", null),
+      this._init());
+  }
+  get historyUniver() {
+    return this._historyUniver$["value"];
+  }
+  _init() {
+    (this._initContainer(), this._initPlugins());
+  }
+  _initContainer() {
+    var _0x3b26a1;
+    let _0x302ad0 = this._configService["getConfig"](W),
+      _0x36b187 =
+        (_0x3b26a1 = this._configService["getConfig"](_0x372cd6)) == null
+          ? undefined
+          : _0x3b26a1.container,
+      _0x1f5621 =
+        (_0x302ad0 == null ? undefined : _0x302ad0.univerContainerId) ??
+        _0x36b187,
+      _0x461ea0 =
+        typeof _0x1f5621 == "string"
+          ? document.getElementById(_0x1f5621)
+          : _0x1f5621;
+    if (!_0x461ea0)
+      throw Error(
+        "[MobileHistoryLoaderService]: Configure a valid Univer container before opening history.",
+      );
+    let _0x4cde1c = document.createElement("div");
+    ((_0x4cde1c.id = ya),
+      (_0x4cde1c.style["position"] = "absolute"),
+      (_0x4cde1c.style["top"] = "0"),
+      (_0x4cde1c.style["left"] = "0"),
+      (_0x4cde1c.style["width"] = "100%"),
+      (_0x4cde1c.style["height"] = "100%"),
+      (_0x4cde1c.style["zIndex"] = "49"),
+      (_0x4cde1c.style["display"] = "none"),
+      na(_0x4cde1c, this._localeService),
+      _0x461ea0.appendChild(_0x4cde1c));
+  }
+  _initPlugins() {
+    [
+      [_0xec48ba],
+      [
+        _0x5c7c1c,
+        {
+          container: ya,
+          header: true,
+          toolbar: false,
+          footer: true,
+          contextMenu: false,
+          override: [[_0x3822b3, null]],
+        },
+      ],
+      [_0x46e284],
+      [_0xf559cc, { override: [[_0x49cfd2, null]] }],
+      [_0x329c8b, { hasScroll: false }],
+      [_0x3e8f0b],
+      [_0x142a42],
+      [_0x2514ad, { notExecuteFormula: true }],
+      [_0x19281e],
+      [_0x34fce1],
+      [_0x5115c0],
+      [_0x4bd407],
+      [_0x541918],
+      [_0xc66447],
+      [_0x40baf3],
+      [_0x50f650],
+      [_0x364048],
+      [_0x203fa8],
+      [_0x2fc989],
+      [_0x1ac2eb, { notExecuteFormula: true }],
+      [_0x27beee],
+      [_0x4260f2],
+      [_0x23f118],
+      [_0x4db10d],
+      [_0x46e1c2],
+      [_0x2034fb],
+      [_0x1149fd],
+      [_0x1ce9bf],
+      [_0x4ce039],
+      [_0x566531, { notExecuteFormula: true }],
+      [_0x4f05b0],
+    ].forEach(([_0x408bc2, _0x544c4e]) =>
+      this.registerPlugin(_0x408bc2, _0x544c4e),
+    );
+  }
+  dispose() {
+    (super.dispose(), this.unMountHistoryContent(), this._pluginMap["clear"]());
+  }
+  registerPlugin(_0x44d021, _0x289403, _0x4ed7c5) {
+    if (this._pluginMap["has"](_0x44d021.pluginName) && !_0x4ed7c5)
+      throw Error(
+        "[MobileHistoryLoaderService]:\x20Plugin\x20" +
+          _0x44d021.pluginName +
+          " has been registered.",
+      );
+    this._pluginMap["set"](_0x44d021.pluginName, [_0x44d021, _0x289403]);
+  }
+  getAllPlugins() {
+    return Array.from(this._pluginMap["values"]());
+  }
+  mountHistoryContent(_0x1e724b, _0x2d051a) {
+    let _0x53ce56 = document.getElementById(ya);
+    _0x53ce56 &&
+      ((_0x53ce56.style["display"] = "block"),
+      this._initUniver(_0x1e724b, _0x2d051a));
+  }
+  unMountHistoryContent() {
+    var _0x528a11;
+    (this._disposableCollection["dispose"](),
+      (_0x528a11 = this.historyUniver) == null || _0x528a11.dispose(),
+      this._historyUniver$["next"](null));
+    let _0x17dd6f = document.getElementById(ya);
+    _0x17dd6f &&
+      ((_0x17dd6f.style["display"] = "none"),
+      (this._internalWebWorker &&=
+        (this._internalWebWorker["terminate"](), null)));
+  }
+  _initUniver(_0x141724, _0xcfe3b0) {
+    var _0x4b3e80, _0x12c543, _0x2597e3;
+    if (this.historyUniver) return;
+    let _0x4d4fa6 = new _0x345473({
+        ...ta(this._localeService),
+        override: [[_0x51d41c, { useClass: _0x29d59a }]],
+      }),
+      _0x351da8 = _0x4d4fa6.__getInjector(),
+      _0x1d1c39 = _0x351da8.get(_0x27ce45);
+    (this._disposableCollection["add"](
+      this._themeService["darkMode$"].subscribe((_0x553e79) => {
+        _0x1d1c39.setDarkMode(_0x553e79);
+      }),
+    ),
+      this._disposableCollection["add"](
+        this._themeService["currentTheme$"].subscribe((_0x37836e) => {
+          _0x1d1c39.setTheme(_0x37836e);
+        }),
+      ));
+    let _0x3bfdfe = _0x351da8.get(_0x2bdbd6);
+    (_0x3bfdfe.setLocale(this._localeService["getCurrentLocale"]()),
+      _0x3bfdfe.setDirection(this._localeService["getDirection"]()),
+      _0x351da8
+        .get(_0x47a55c)
+        .setConfig(_0x16992c, this._configService["getConfig"](_0x16992c)));
+    let _0x130e82 = this._configService["getConfig"](_0x482a3c);
+    _0x130e82 && _0x4d4fa6.registerPlugin(_0x9cc1b4, { license: _0x130e82.ls });
+    let _0x4dafe2 =
+        (_0x4b3e80 = this._configService["getConfig"](
+          "sheets-history-ui.config",
+        )) == null
+          ? undefined
+          : _0x4b3e80.workerURL,
+      _0x3e42d = !!_0x4dafe2;
+    (_0x3e42d &&
+      ((this._internalWebWorker =
+        _0x4dafe2 instanceof Worker ? _0x4dafe2 : null),
+      _0x4d4fa6.registerPlugin(_0xdd0a0a, { workerURL: _0x4dafe2 })),
+      this._pluginMap["forEach"](([_0x16c803, _0x14279a]) => {
+        _0x4d4fa6.registerPlugin(_0x16c803, _0x14279a);
+      }),
+      _0x4d4fa6.registerPlugin(va, {
+        historyServerUrl: yi(this._configService["getConfig"](W)),
+        historyPanelComponentKey:
+          (_0x12c543 = this._configService["getConfig"](
+            "sheets-history-ui.config",
+          )) == null
+            ? undefined
+            : _0x12c543.historyPanelComponentKey,
+        historyPanelHidden:
+          (_0x2597e3 = this._configService["getConfig"](
+            "sheets-history-ui.config",
+          )) == null
+            ? undefined
+            : _0x2597e3.historyPanelHidden,
+      }),
+      _0x351da8.invoke((_0x2eee67) => this._initListener(_0x2eee67, _0x141724)),
+      this._historyUniver$["next"](_0x4d4fa6));
+    let _0x502e28 = _0x351da8.get(X),
+      _0x35da1f = this._checkCanRevert(_0x141724),
+      _0x33d0bf = () => {
+        ra(_0xcfe3b0)
+          ? _0x502e28.triggerCustomVersions(_0x141724, _0x35da1f, _0xcfe3b0)
+          : _0x502e28.triggerLoadVersions(_0x141724, _0x35da1f).catch(() => {
+              _0x502e28.status = "error";
+            });
+      };
+    if (
+      (this._messageService["show"]({
+        content: this._localeService["t"](
+          "sheets-history-ui.loader.info.initializing",
+        ),
+        type: _0x609f1f.Loading,
+      }),
+      _0x3e42d)
+    )
+      try {
+        _0x351da8.get(_0x3f4102).whenReady().then(_0x33d0bf).catch(_0x33d0bf);
+      } catch {
+        _0x33d0bf();
+      }
+    else _0x33d0bf();
+  }
+  _initListener(_0x3da2f5, _0x1c580d) {
+    let _0x5c4fd6 = _0x3da2f5.get(X);
+    (this._disposableCollection["add"](
+      _0x5c4fd6.status$["subscribe"]((_0x3ce42d) => {
+        switch (_0x3ce42d) {
+          case "entered":
+            (this._dialogService["closeAll"](),
+              this._sidebarService["close"]());
+            break;
+          case "exited":
+            (this._commandService["executeCommand"](sa.id),
+              this.unMountHistoryContent());
+            break;
+          case "error":
+            (this.unMountHistoryContent(),
+              this._messageService["show"]({
+                content: this._localeService["t"](
+                  "sheets-history-ui.loader.panel.listFetchError",
+                ),
+                type: _0x609f1f.Error,
+                duration: 3000,
+              }));
+            break;
+          default:
+            break;
+        }
+      }),
+    ),
+      this._disposableCollection["add"](
+        _0x5c4fd6.revertRevision$["subscribe"]((_0x17dfea) => {
+          if (_0x17dfea) {
+            let _0x5b5fa3 = { unitId: _0x1c580d, revision: _0x17dfea };
+            this._commandService["executeCommand"](
+              _0xdc72c5.id,
+              _0x5b5fa3,
+            ).catch(() => {
+              _0x5c4fd6.status = "error";
+            });
+          }
+        }),
+      ));
+  }
+  _checkCanRevert(_0x41a031) {
+    let _0x28fa82 = this._univerInstanceService["getUnit"](_0x41a031);
+    if (!_0x28fa82) return false;
+    let _0x1c8857 = _0x28fa82
+        .getSheets()
+        .map((_0x421408) => _0x421408.getSheetId()),
+      _0x1b58d9 = new _0x36e808(_0x41a031).id,
+      _0x522cb0 = _0x1c8857.map(
+        (_0x316de5) => new _0x346068(_0x41a031, _0x316de5).id,
+      ),
+      _0x343f93 = _0x1c8857
+        .map((_0x5d7892) =>
+          this._selectionProtectionRuleModel["getSubunitRuleList"](
+            _0x41a031,
+            _0x5d7892,
+          ).map(
+            (_0x11e437) =>
+              new _0x1eb953(_0x41a031, _0x5d7892, _0x11e437.permissionId).id,
+          ),
+        )
+        .flat(),
+      _0x552c29 = new _0xd1fc1c(_0x41a031).id;
+    return this._permissionService["composePermission"]([
+      _0x1b58d9,
+      ..._0x522cb0,
+      ..._0x343f93,
+      _0x552c29,
+    ]).every((_0x1071d0) => !!_0x1071d0.value);
+  }
+};
+ba = J(
+  [
+    q(0, _0x200c9d(_0x2bdbd6)),
+    q(1, _0x5d9d1d),
+    q(2, _0x47a55c),
+    q(3, _0x76d311),
+    q(4, _0x2efab0),
+    q(5, _0x4dfc55),
+    q(6, _0x200c9d(_0x39df73)),
+    q(7, _0x200c9d(_0x3822b3)),
+    q(8, _0x200c9d(_0x159c4b)),
+    q(9, _0x200c9d(_0x27ce45)),
+  ],
+  ba,
+);
+let xa = class extends _0x49102e {
+  constructor(_0x2e976d = G, _0x17178b, _0x3e8846) {
+    (super(),
+      (this._config = _0x2e976d),
+      (this._injector = _0x17178b),
+      (this._configService = _0x3e8846));
+    let { menu: _0x34d52b, ..._0x13d4ae } = _0x4c6abd({}, G, this._config);
+    (_0x34d52b &&
+      this._configService["setConfig"]("menu", _0x34d52b, { merge: true }),
+      this._configService["setConfig"](W, _0x13d4ae));
+  }
+  onStarting() {
+    (this._injector["add"]([Q]),
+      this._injector["get"](Q),
+      [[$, { useClass: ba }], [fa]].forEach((_0x42d58a) =>
+        this._injector["add"](_0x42d58a),
+      ));
+  }
+  onSteady() {
+    this._injector["get"](fa);
+  }
+};
+(K(xa, "type", _0x196f55.UNIVER_UNKNOWN),
+  K(xa, "pluginName", "UNIVER_SHEETS_HISTORY_MOBILE_UI_PLUGIN"),
+  K(xa, "packageName", bi),
+  K(xa, "version", xi),
+  (xa = J(
+    [
+      _0x50dec6(_0x9cc1b4, _0x2514ad, _0x5c7c1c, _0x3a633b, _0x2f4f40),
+      q(1, _0x200c9d(_0x2df6d2)),
+      q(2, _0x47a55c),
+    ],
+    xa,
+  )));
+let Sa = class extends _0x42b732 {
+  constructor(
+    _0x5d3fb8,
+    _0xd362bf,
+    _0x61d7fa,
+    _0x51b034,
+    _0x1c2ceb,
+    _0x372578,
+    _0x44a8eb,
+    _0x4ec58c,
+    _0x4d81bc,
+    _0x3c65e9,
+  ) {
+    (super(),
+      (this._commandService = _0x5d3fb8),
+      (this._menuManagerService = _0xd362bf),
+      (this._historyManagerService = _0x61d7fa),
+      (this._localeService = _0x51b034),
+      (this._messageService = _0x1c2ceb),
+      (this._collaborationController = _0x372578),
+      (this._localCacheService = _0x44a8eb),
+      (this._dataLoaderService = _0x4ec58c),
+      (this._univerInstanceService = _0x4d81bc),
+      (this._urlService = _0x3c65e9),
+      K(this, "_revertAcknowledgementSubscription", null),
+      this.disposeWithMe(_0x538774(() => this._clearRevertAcknowledgement())),
+      this._init());
+  }
+  _init() {
+    ([oa, sa].forEach((_0x436a9c) =>
+      this.disposeWithMe(
+        _0x538774(this._commandService["registerCommand"](_0x436a9c)),
+      ),
+    ),
+      this._menuManagerService["mergeMenu"](la),
+      this.disposeWithMe(
+        this._commandService["onCommandExecuted"]((_0x228723, _0x4411a5) => {
+          if (_0x228723.id === _0xdc72c5.id && ua(_0x228723.params)) {
+            let { revision: _0x71a1b8, unitId: _0x56b599 } = _0x228723.params;
+            this._messageService["show"]({
+              content: this._localeService["t"](
+                "sheets-history-ui.loader.panel.reverting",
+              ),
+              type: _0x609f1f.Loading,
+              duration: 5000,
+            });
+            let _0xce8ea3 =
+              this._collaborationController["getCollabEntity"](_0x56b599);
+            if (!_0xce8ea3) {
+              this._showRevertFailed();
+              return;
+            }
+            _0x4411a5 != null && _0x4411a5.fromCollab
+              ? this._handleRevertAcknowledgement(
+                  _0xce8ea3,
+                  { revision: _0x71a1b8, unitId: _0x56b599 },
+                  async () => (
+                    setTimeout(() => window.location["reload"]()),
+                    true
+                  ),
+                  true,
+                )
+              : this._handleRevertAcknowledgement(
+                  _0xce8ea3,
+                  { revision: _0x71a1b8, unitId: _0x56b599 },
+                  async () => {
+                    let _0x54bcc8 = this._univerInstanceService[
+                        "getCurrentUnitOfType"
+                      ](_0x196f55.UNIVER_SHEET),
+                      _0x10f88f =
+                        _0x54bcc8 == null
+                          ? undefined
+                          : _0x54bcc8.getActiveSheet();
+                    if (!_0x10f88f) return false;
+                    this._univerInstanceService["disposeUnit"](_0x56b599);
+                    let _0x397bf9 = await this._dataLoaderService["loadUnit"](
+                      _0x56b599,
+                      _0x196f55.UNIVER_SHEET,
+                    );
+                    return _0x397bf9 && _0x397bf9 instanceof _0x32ca6f
+                      ? (await this._setupSubUnitSync(
+                          _0x397bf9,
+                          _0x10f88f.getSheetId(),
+                        ),
+                        true)
+                      : false;
+                  },
+                );
+          }
+        }),
+      ));
+  }
+  _handleRevertAcknowledgement(
+    _0x1809fc,
+    _0x24db2d,
+    _0x250859,
+    _0x10d4df = false,
+  ) {
+    this._clearRevertAcknowledgement();
+    let _0x2c8c8a = _0x59ab16([
+        _0x1809fc.session["event$"],
+        _0x1809fc.state$,
+      ]).pipe(
+        _0x5e7dfd(
+          ([_0x6a98aa, _0x237abd]) =>
+            da(_0x6a98aa, _0x24db2d) &&
+            (_0x237abd == null ? undefined : _0x237abd.status) ===
+              _0x370b3f.SYNCED,
+        ),
+        _0x48ae58(1),
+      ),
+      _0x198142 = _0x2c8c8a;
+    (_0x10d4df && (_0x198142 = _0x2c8c8a.pipe(_0x147bfa({ first: 5000 }))),
+      (this._revertAcknowledgementSubscription = _0x198142
+        .pipe(
+          _0xccce5(async () => {
+            let _0x1d11d6 = await _0x250859();
+            return (
+              _0x1d11d6 &&
+                (this._historyManagerService["unMountHistoryContent"](),
+                await this._localCacheService["exhaustSavingTask"]()),
+              _0x1d11d6
+            );
+          }),
+          _0x5679a8(this.dispose$),
+        )
+        .subscribe({
+          next: (_0x462eba) => {
+            (this._clearRevertAcknowledgement(),
+              _0x462eba || this._showRevertFailed());
+          },
+          error: () => {
+            (this._clearRevertAcknowledgement(), this._showRevertFailed());
+          },
+        })));
+  }
+  _clearRevertAcknowledgement() {
+    var _0x55d9c7;
+    ((_0x55d9c7 = this._revertAcknowledgementSubscription) == null ||
+      _0x55d9c7.unsubscribe(),
+      (this._revertAcknowledgementSubscription = null));
+  }
+  _showRevertFailed() {
+    this._messageService["show"]({
+      content: this._localeService["t"](
+        "sheets-history-ui.loader.panel.revertFailed",
+      ),
+      type: _0x609f1f.Error,
+      duration: 3000,
+    });
+  }
+  async _setupSubUnitSync(_0x5837f6, _0x18e96d) {
+    (await this._updateSubUnitFromURLParams(_0x5837f6, _0x18e96d),
+      _0x5837f6.activeSheet$["pipe"](_0x5679a8(this.dispose$)).subscribe(
+        (_0x4cffb0) => {
+          _0x4cffb0 && this._updateURLWithCurrentState(_0x4cffb0);
+        },
+      ),
+      this._urlService["urlChange$"]
+        .pipe(_0x5679a8(this.dispose$))
+        .subscribe(() =>
+          this._updateSubUnitFromURLParams(_0x5837f6, _0x18e96d),
+        ));
+  }
+  _updateURLWithCurrentState(_0x4bbf16, _0x5c95a9 = false) {
+    let _0x512b51 = this._urlService["getParam"]("subunit");
+    _0x4bbf16.getSheetId() !== _0x512b51 &&
+      this._urlService["setParam"](
+        "subunit",
+        _0x4bbf16.getSheetId(),
+        _0x5c95a9,
+      );
+  }
+  async _updateSubUnitFromURLParams(_0x196fe6, _0x5f3561) {
+    var _0x225bd2;
+    if (!_0x5f3561 || !_0x196fe6.getSheetBySheetId(_0x5f3561)) {
+      let _0x435e59 = _0x196fe6.getUnhiddenWorksheets()[0],
+        _0x3aabac = _0x196fe6.getSheetBySheetId(_0x435e59);
+      if (!_0x3aabac) return;
+      (this._updateURLWithCurrentState(_0x3aabac, true),
+        await this._commandService["executeCommand"](_0x49596b.id, {
+          unitId: _0x196fe6.getUnitId(),
+          subUnitId: _0x435e59,
+        }));
+      return;
+    }
+    ((_0x225bd2 = _0x196fe6.getActiveSheet()) == null
+      ? undefined
+      : _0x225bd2.getSheetId()) !== _0x5f3561 &&
+      (await this._commandService["executeCommand"](_0x49596b.id, {
+        unitId: _0x196fe6.getUnitId(),
+        subUnitId: _0x5f3561,
+      }));
+  }
+};
+Sa = J(
+  [
+    q(0, _0x76d311),
+    q(1, _0x1fbb9b),
+    q(2, _0x200c9d($)),
+    q(3, _0x200c9d(_0x2bdbd6)),
+    q(4, _0x2efab0),
+    q(5, _0x200c9d(_0x3d2c62)),
+    q(6, _0x606807),
+    q(7, _0x200c9d(_0x6fe70d)),
+    q(8, _0x5d9d1d),
+    q(9, _0x43c9a6),
+  ],
+  Sa,
+);
+let Ca = class extends _0x49102e {
+  constructor(_0x43a737 = G, _0x5638b8, _0x1a87d6) {
+    (super(),
+      (this._config = _0x43a737),
+      (this._injector = _0x5638b8),
+      (this._configService = _0x1a87d6));
+    let { menu: _0x1e5cc8, ..._0x44460f } = _0x4c6abd({}, G, this._config);
+    (_0x1e5cc8 &&
+      this._configService["setConfig"]("menu", _0x1e5cc8, { merge: true }),
+      this._configService["setConfig"](W, _0x44460f));
+  }
+  onStarting() {
+    (this._injector["add"]([Q]),
+      this._injector["get"](Q),
+      [[$], [Sa]].forEach((_0x3dcc32) => this._injector["add"](_0x3dcc32)));
+  }
+  onSteady() {
+    this._injector["get"](Sa);
+  }
+};
+(K(Ca, "pluginName", "UNIVER_SHEETS_HISTORY_UI_PLUGIN"),
+  K(Ca, "packageName", bi),
+  K(Ca, "version", xi),
+  K(Ca, "type", _0x196f55.UNIVER_SHEET),
+  (Ca = J(
+    [
+      _0x50dec6(_0x9cc1b4, _0x2514ad, _0x4c9933, _0x3a633b, _0x2f4f40),
+      q(1, _0x200c9d(_0x2df6d2)),
+      q(2, _0x47a55c),
+    ],
+    Ca,
+  )));
+export {
+  W as SHEETS_HISTORY_UI_PLUGIN_CONFIG_KEY,
+  oa as ToggleEditHistoryOperation,
+  xa as UniverSheetsHistoryMobileUIPlugin,
+  Ca as UniverSheetsHistoryUIPlugin,
+};

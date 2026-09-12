@@ -1,1 +1,691 @@
-();import{CollaborationEvent as _0x643c40,parseProtocolChangeset as _0xe8319c}from'@univerjs-pro/collaboration';import{CollaborationSessionService as _0x5f127c,SessionStatus as _0x3c2b46,UniverCollaborationClientPlugin as _0x5d995b}from'@univerjs-pro/collaboration-client';import{CommandType as _0x43bf47,DependentOn as _0x12baa6,Disposable as _0x1d686c,DisposableCollection as _0x453f8d,ICommandService as _0x363b7b,IConfigService as _0x40e642,IUniverInstanceService as _0x4593c8,Inject as _0x546006,Injector as _0x1ada8e,Plugin as _0x8b22f5,RxDisposable as _0x348d9,UniverInstanceType as _0x3dfe53,merge as _0x32e28e,mergeOverrideWithDependencies as _0x2f1c31,registerDependencies as _0x234367,toDisposable as _0x6ae78b,touchDependencies as _0x489cb2}from'@univerjs/core';import{InsertSheetMutation as _0x5093d0,SetWorksheetActiveOperation as _0x5ea9cb}from'@univerjs/sheets';import{BehaviorSubject as _0xbdb7f0,Subject as _0x5a5706,defer as _0x4b05d9,from as _0x5dbbab,of as _0x2e022e}from'rxjs';import{takeUntil as _0x48197a,throttleTime as _0x14a294}from'rxjs/operators';import{UniverLicensePlugin as _0x801d21}from'@univerjs-pro/license';import{SetScrollOperation as _0x599f2d,SetZoomRatioOperation as _0x34fd56}from'@univerjs/sheets-ui';import{BuiltInUIPart as _0x3301c7,IUIPartsService as _0x4f0f2d,connectInjector as _0x46dbfe,useDependency as _0x4fb788,useObservable as _0x33e6b1}from'@univerjs/ui';import{Button as _0x3b3cde,Dropdown as _0x2935a4}from'@univerjs/design';import{LiveShareIcon as _0x25cd2d}from'@univerjs/icons';import{useMemo as _0xccdaf5}from'react';import{Fragment as _0x1f18c3,jsx as _0x38d84e,jsxs as _0x126cf0}from'react/jsx-runtime';function z(_0xf36aad){'@babel/helpers - typeof';return z=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(_0x101bd3){return typeof _0x101bd3;}:function(_0x849cfb){return _0x849cfb&&typeof Symbol=='function'&&_0x849cfb.constructor===Symbol&&_0x849cfb!==Symbol.prototype?"symbol":typeof _0x849cfb;},z(_0xf36aad);}function B(_0x49aa05,_0x3d2bb1){if(z(_0x49aa05)!="object"||!_0x49aa05)return _0x49aa05;var _0x2a0475=_0x49aa05[Symbol.toPrimitive];if(_0x2a0475!== undefined){var _0x2f8be1=_0x2a0475.call(_0x49aa05,_0x3d2bb1||"default");if(z(_0x2f8be1)!="object")return _0x2f8be1;throw TypeError('@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.');}return(_0x3d2bb1==="string"?String:Number)(_0x49aa05);}function V(_0x1d6148){var _0x2996ad=B(_0x1d6148,"string");return z(_0x2996ad)=="symbol"?_0x2996ad:_0x2996ad+'';}function H(_0x58253a,_0x48f56c,_0x3317b0){return(_0x48f56c=V(_0x48f56c))in _0x58253a?Object.defineProperty(_0x58253a,_0x48f56c,{'value':_0x3317b0,'enumerable': true,'configurable': true,'writable': true}):_0x58253a[_0x48f56c]=_0x3317b0,_0x58253a;}var U=class extends _0x1d686c{constructor(..._0x504716){super(..._0x504716),H(this,"_sharedOperations",new Set()),H(this,"_reporters",new Set());}registerSharedOperation(_0x46a12d){return this._sharedOperations['add'](_0x46a12d),_0x6ae78b(()=>this._sharedOperations["delete"](_0x46a12d));}registerInitialStateReporter(_0x3775af){return this._reporters["add"](_0x3775af),_0x6ae78b(()=>this._reporters['delete'](_0x3775af));}shouldShareOperation(_0x3494ff){return this._sharedOperations['has'](_0x3494ff);}getInitialStates(_0x6feca3){return Array.from(this._reporters).map(_0x2b2461=>_0x2b2461(_0x6feca3));}};function W(_0x44bfab,_0xc8d41d){return function(_0xdf5f64,_0x1da668){_0xc8d41d(_0xdf5f64,_0x1da668,_0x44bfab);};}function G(_0x4c9d21,_0x5a94ab,_0x3107e2,_0x3d2034){var _0x177b97=arguments.length,_0x4da022=_0x177b97<3?_0x5a94ab:_0x3d2034===null?_0x3d2034=Object.getOwnPropertyDescriptor(_0x5a94ab,_0x3107e2):_0x3d2034,_0x89e689;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")_0x4da022=Reflect.decorate(_0x4c9d21,_0x5a94ab,_0x3107e2,_0x3d2034);else{for(var _0x5d1051=_0x4c9d21.length-1;_0x5d1051>=0;_0x5d1051--)(_0x89e689=_0x4c9d21[_0x5d1051])&&(_0x4da022=(_0x177b97<3?_0x89e689(_0x4da022):_0x177b97>3?_0x89e689(_0x5a94ab,_0x3107e2,_0x4da022):_0x89e689(_0x5a94ab,_0x3107e2))||_0x4da022);}return _0x177b97>3&&_0x4da022&&Object.defineProperty(_0x5a94ab,_0x3107e2,_0x4da022),_0x4da022;}let K=class extends _0x348d9{constructor(_0x27f329,_0x3bd6b1,_0x5ca844){super(),this._univerInstanceService=_0x27f329,this._injector=_0x3bd6b1,this._collabSessionService=_0x5ca844,H(this,'_entities',new Map()),this._init();}async getLiveShareCoordinator(_0x91d71){return this._entities["has"](_0x91d71)||await this._startLiveShareCoordinator(_0x91d71),this._entities['get'](_0x91d71);}getLiveShareCoordinatorSync(_0xab3692){return this._entities['get'](_0xab3692)??null;}_init(){this._univerInstanceService['getTypeOfUnitAdded$'](_0x3dfe53.UNIVER_SHEET).pipe(_0x48197a(this.dispose$)).subscribe(async _0x41a307=>{let _0x4519fc=_0x41a307.unit["getUnitId"]();this._entities["has"](_0x4519fc)||this._startLiveShareCoordinator(_0x4519fc);}),this._univerInstanceService['getTypeOfUnitDisposed$'](_0x3dfe53.UNIVER_SHEET).pipe(_0x48197a(this.dispose$)).subscribe(_0x3f3ffe=>{let _0x3fcae7=_0x3f3ffe.getUnitId(),_0x4c6006=this._entities['get'](_0x3fcae7);_0x4c6006==null||_0x4c6006.dispose();});}async _startLiveShareCoordinator(_0x5cfa1e){let _0x228c67=await this._collabSessionService['requireSession'](_0x5cfa1e),_0x3e3d73=this._injector["createInstance"](J,_0x5cfa1e,_0x228c67);return _0x3e3d73.init(),this._entities["set"](_0x5cfa1e,_0x3e3d73),_0x3e3d73;}};K=G([W(0,_0x4593c8),W(1,_0x546006(_0x1ada8e)),W(2,_0x546006(_0x5f127c))],K);let q=function(_0x259446){return _0x259446.OFFLINE="offline",_0x259446.IDLE="idle",_0x259446.FOLLOWING="following",_0x259446.NOT_FOLLOWING="not-following",_0x259446.PRESENTING='presenting',_0x259446;}({}),J=class extends _0x348d9{get _status(){return this._status$['getValue']();}constructor(_0x3f3800,_0x560628,_0x41b1ad,_0x5e8ff2,_0x55fa28){super(),this._unitID=_0x3f3800,this._collabSession=_0x560628,this._configService=_0x41b1ad,this._liveShareService=_0x5e8ff2,this._commandService=_0x55fa28,H(this,"_status$",new _0xbdb7f0('idle')),H(this,"status$",this._status$["asObservable"]()),H(this,'_init', false),H(this,"_commandDisposable",null),H(this,"_presenter",null);}dispose(){var _0x205ec2;(_0x205ec2=this._commandDisposable)==null||_0x205ec2.dispose(),this._status$["next"]("idle"),this._status$["complete"]();}getStatus(){return this._status;}init(){this._init||(this._init= true,this._collabSession["sessionStatus$"].pipe(_0x48197a(this.dispose$)).subscribe(_0x9efc66=>{switch(_0x9efc66){case _0x3c2b46.OFFLINE:this._handleOffline();break;case _0x3c2b46.ONLINE:this._handleOnline();break;default:}}),this._collabSession["event$"].pipe(_0x48197a(this.dispose$)).subscribe(_0x598fdf=>{let {eventID:_0x2086f4}=_0x598fdf;switch(_0x2086f4){case _0x643c40.LIVESHARE_NEW_HOST:this._handleNewHost(_0x598fdf);break;case _0x643c40.LIVESHARE_OPERATION:this._handleOperation(_0x598fdf);break;case _0x643c40.LIVESHARE_TERMINATE:this._handleTerminate();break;case _0x643c40.NEW_CHANGESETS:this._handleNewChangeSets(_0x598fdf);break;default:}}));}tryStartPresenting(){this._collabSession["send"]({'eventID':_0x643c40.LIVESHARE_REQUEST_HOST,'data':{'unitID':this._unitID,'userID':this._collabSession["getMemberID"]()}},this._unitID);}stopPresenting(){this._status==='presenting'&&(this._status$["next"]("idle"),this._collabSession["send"]({'eventID':_0x643c40.LIVESHARE_TERMINATE,'data':{'unitID':this._unitID}},this._unitID));}startFollowing(){this._status==='not-following'&&(this._status$["next"]("following"),this._startFollowing());}stopFollowing(){this._status==="following"&&this._stopFollowing();}_handleNewHost(_0x53bfc4){let {presenter:_0x28a021}=_0x53bfc4.data,_0x34d325=this._collabSession["getMemberID"]();this._presenter=_0x28a021,_0x28a021===_0x34d325?(this._stopFollowing(),this._startPresenting()):this._status!=="not-following"&&(this._stopPresenting(),this._startFollowing());}_fetchOperations(){let _0x466b58={'eventID':_0x643c40.LIVESHARE_FETCH_OPERATIONS};this._collabSession["send"](_0x466b58,this._unitID);}_handleTerminate(){this._presenter=null,this._status!=="presenting"&&this._beIdle();}_handleNewChangeSets(_0x5a4568){if(this._status==='following'&&this._presenter===_0x5a4568.data["memberID"]){let _0x57d644=_0xe8319c(_0x5a4568.data).mutations["reverse"]().find(_0x5b5a9a=>_0x5b5a9a.id===_0x5093d0.id);if(_0x57d644){let _0x31da8e=_0x57d644.params["unitId"],_0x4461a4=_0x57d644.params['sheet'].id;setTimeout(()=>{this._commandService["executeCommand"](_0x5ea9cb.id,{'unitId':_0x31da8e,'subUnitId':_0x4461a4},{'fromCollab': true});});}}}_startPresenting(){var _0x1cc704;(_0x1cc704=this._commandDisposable)==null||_0x1cc704.dispose(),this._status$['next']('presenting');let _0x6d5c3=new Map(),_0x5c5ddd=this._commandDisposable=new _0x453f8d();_0x5c5ddd.add(_0x6ae78b(()=>{_0x6d5c3.forEach(({subject:_0x1a16ef,subscription:_0x357f10})=>{_0x357f10.unsubscribe(),_0x1a16ef.complete();}),_0x6d5c3.clear();})),_0x5c5ddd.add(this._commandService["onCommandExecuted"](_0x1ff0a4=>{if(_0x1ff0a4.type!==_0x43bf47.OPERATION||!this._liveShareService["shouldShareOperation"](_0x1ff0a4.id))return;let {id:_0x3bf09e}=_0x1ff0a4,_0x1a8397;if(_0x6d5c3.has(_0x3bf09e))_0x1a8397=_0x6d5c3.get(_0x3bf09e).subject;else{_0x1a8397=new _0x5a5706();let _0x18f153=_0x1a8397.pipe(_0x14a294(this._configService["getConfig"]("SAME_OPERATION_SHARE_INTERVAL")??200, undefined,{'trailing': true,'leading': true})).subscribe(_0x294397=>{this._collabSession["send"]({'eventID':_0x643c40.LIVESHARE_OPERATION,'data':{'unitID':this._unitID,'operations':{[_0x294397.id]:{'id':_0x294397.id,'params':JSON.stringify(_0x294397.params)}}}},this._unitID);});_0x6d5c3.set(_0x3bf09e,{'subject':_0x1a8397,'subscription':_0x18f153});}_0x1a8397.next(_0x1ff0a4);})),this._liveShareService['getInitialStates'](this._unitID).forEach(_0x2cb5ad=>this._collabSession["send"]({'eventID':_0x643c40.LIVESHARE_OPERATION,'data':{'unitID':this._unitID,'operations':{[_0x2cb5ad.id]:{'id':_0x2cb5ad.id,'params':JSON.stringify(_0x2cb5ad.params)}}}},this._unitID));}_stopPresenting(){var _0x2cc4bf;this._status$["next"]("idle"),(_0x2cc4bf=this._commandDisposable)==null||_0x2cc4bf.dispose(),this._commandDisposable=null;}_startFollowing(){var _0x161ca5;(_0x161ca5=this._commandDisposable)==null||_0x161ca5.dispose(),this._status$["next"]("following");}_beIdle(){var _0x71d417;this._status$["next"]("idle"),(_0x71d417=this._commandDisposable)==null||_0x71d417.dispose(),this._commandDisposable=null;}_stopFollowing(){var _0x163318;this._status$["next"]("not-following"),(_0x163318=this._commandDisposable)==null||_0x163318.dispose();}_handleOperation(_0x2d280c){if(["presenting","not-following","offline"].includes(this._status)||!_0x2d280c.data["presenter"]||_0x2d280c.data['presenter']===this._collabSession["getMemberID"]())return;this._status==="idle"&&this._startFollowing();let _0x256f97=_0x2d280c.data['operations'];Object.values(_0x256f97).forEach(_0x28457c=>{this._commandService["executeCommand"](_0x28457c.id,_0x28457c.params?JSON.parse(_0x28457c.params):null,{'fromCollab': true});});}_handleOffline(){var _0xbb3ff4;this._status$["next"]("offline"),(_0xbb3ff4=this._commandDisposable)==null||_0xbb3ff4.dispose();}_handleOnline(){this._status$["next"]('idle'),this._fetchOperations();}};J=G([W(2,_0x40e642),W(3,_0x546006(U)),W(4,_0x363b7b)],J);var se='@univerjs-pro/live-share',ce="1.0.0-insiders.20260907-70fc579";const Y={};let X=class extends _0x1d686c{constructor(_0x154b58){super(),this._liveShareService=_0x154b58,this._init();}_init(){[_0x34fd56.id,_0x599f2d.id,_0x5ea9cb.id].forEach(_0x51c009=>{this.disposeWithMe(this._liveShareService["registerSharedOperation"](_0x51c009));});}};X=G([W(0,_0x546006(U))],X);function Z(){let _0x4c7851=_0x4fb788(K),_0x1adf79=_0x4fb788(_0x4593c8),_0x22435f=_0x33e6b1(()=>_0x1adf79.getCurrentTypeOfUnit$(_0x3dfe53.UNIVER_SHEET), undefined, false,[]),_0x121803=_0x33e6b1(_0xccdaf5(()=>_0x22435f?_0x4b05d9(()=>_0x5dbbab(_0x4c7851.getLiveShareCoordinator(_0x22435f.getUnitId()))):_0x2e022e(null),[_0x22435f,_0x4c7851]),null),_0x3cac4d=_0x33e6b1(_0x121803?()=>_0x121803.status$:null,'idle', false,[_0x121803]);return _0x121803?_0x38d84e(_0x2935a4,{'align':"end",'disabled':_0x3cac4d==="offline",'className':"univer-box-border univer-min-w-60 univer-bg-gray-900 univer-px-4 univer-py-3 univer-text-gray-900 dark:!univer-bg-gray-0 dark:!univer-text-gray-0",'overlay':_0x38d84e(le,{'status':_0x3cac4d,'coordinator':_0x121803}),'children':_0x38d84e(_0x3b3cde,{'size':"icon",'variant':'text','disabled':_0x3cac4d==="offline",'type':'button','children':_0x38d84e(_0x25cd2d,{})})}):null;}function le(_0x1bb7b5){let {status:_0x13c272,coordinator:_0x5c6c14}=_0x1bb7b5;switch(_0x13c272){case "idle":return _0x38d84e(ue,{'coordinator':_0x5c6c14});case'following':return _0x38d84e(de,{'coordinator':_0x5c6c14});case "not-following":return _0x38d84e(fe,{'coordinator':_0x5c6c14});case "offline":return _0x38d84e(me,{});case "presenting":return _0x38d84e(pe,{'coordinator':_0x5c6c14});default:return null;}}function ue(_0x1c19ec){let {coordinator:_0x501b97}=_0x1c19ec;return _0x126cf0(_0x1f18c3,{'children':[_0x38d84e("div",{'className':'univer-mb-3\x20univer-w-full\x20univer-text-sm','children':"Present this document"}),_0x38d84e(_0x3b3cde,{'onClick':()=>_0x501b97.tryStartPresenting(),'children':"Start"})]});}function de(_0x297aa3){let {coordinator:_0x5d01fb}=_0x297aa3;return _0x126cf0(_0x1f18c3,{'children':[_0x38d84e('div',{'className':"univer-mb-3 univer-w-full univer-text-sm",'children':"You're following the presenter"}),_0x38d84e(_0x3b3cde,{'onClick':()=>_0x5d01fb.stopFollowing(),'children':"Stop following"})]});}function fe(_0x4bf5b3){let {coordinator:_0x56ddcc}=_0x4bf5b3;return _0x126cf0(_0x1f18c3,{'children':[_0x38d84e("div",{'className':"univer-mb-3 univer-w-full univer-text-sm",'children':"You're not following the presenter"}),_0x38d84e(_0x3b3cde,{'variant':"text",'onClick':()=>_0x56ddcc.startFollowing(),'children':"Start following"})]});}function pe(_0x566710){let {coordinator:_0x1043b1}=_0x566710;return _0x126cf0(_0x1f18c3,{'children':[_0x38d84e('div',{'className':"univer-mb-3 univer-w-full univer-text-sm",'children':"You're presenting the document"}),_0x38d84e(_0x3b3cde,{'variant':"default",'onClick':()=>_0x1043b1.stopPresenting(),'children':"Stop presenting"})]});}function me(){return _0x38d84e(_0x1f18c3,{'children':"You'are offline."});}let Q=class extends _0x1d686c{constructor(_0xa71cb4,_0x14971d){super(),this._injector=_0xa71cb4,this._uiPartsService=_0x14971d,this._mountLiveShare();}_mountLiveShare(){this.disposeWithMe(this._uiPartsService['registerComponent'](_0x3301c7.HEADER_MENU,()=>_0x46dbfe(Z,this._injector)));}};Q=G([W(0,_0x546006(_0x1ada8e)),W(1,_0x4f0f2d)],Q);let $=class extends _0x8b22f5{constructor(_0x13e5d1=Y,_0x282e2a,_0x527c4c){super(),this._config=_0x13e5d1,this._injector=_0x282e2a,this._configService=_0x527c4c;let {..._0x253087}=_0x32e28e({},Y,this._config);this._configService['setConfig']("live-share.config",_0x253087);}onStarting(){_0x234367(this._injector,_0x2f1c31([[U],[K],[X],[Q]],this._config["override"])),_0x489cb2(this._injector,[[X]]);}onRendered(){_0x489cb2(this._injector,[[Q]]);}};H($,"type",_0x3dfe53.UNIVER_UNKNOWN),H($,"pluginName","UNIVER_LIVE_SHARE_PLUGIN"),H($,"packageName",se),H($,"version",ce),$=G([_0x12baa6(_0x801d21,_0x5d995b),W(1,_0x546006(_0x1ada8e)),W(2,_0x40e642)],$);export{K as LiveShareController,q as LiveShareStatus,$ as UniverLiveSharePlugin};
+import {
+  CollaborationEvent as _0x643c40,
+  parseProtocolChangeset as _0xe8319c,
+} from "@univerjs-pro/collaboration";
+import {
+  CollaborationSessionService as _0x5f127c,
+  SessionStatus as _0x3c2b46,
+  UniverCollaborationClientPlugin as _0x5d995b,
+} from "@univerjs-pro/collaboration-client";
+import {
+  CommandType as _0x43bf47,
+  DependentOn as _0x12baa6,
+  Disposable as _0x1d686c,
+  DisposableCollection as _0x453f8d,
+  ICommandService as _0x363b7b,
+  IConfigService as _0x40e642,
+  IUniverInstanceService as _0x4593c8,
+  Inject as _0x546006,
+  Injector as _0x1ada8e,
+  Plugin as _0x8b22f5,
+  RxDisposable as _0x348d9,
+  UniverInstanceType as _0x3dfe53,
+  merge as _0x32e28e,
+  mergeOverrideWithDependencies as _0x2f1c31,
+  registerDependencies as _0x234367,
+  toDisposable as _0x6ae78b,
+  touchDependencies as _0x489cb2,
+} from "@univerjs/core";
+import {
+  InsertSheetMutation as _0x5093d0,
+  SetWorksheetActiveOperation as _0x5ea9cb,
+} from "@univerjs/sheets";
+import {
+  BehaviorSubject as _0xbdb7f0,
+  Subject as _0x5a5706,
+  defer as _0x4b05d9,
+  from as _0x5dbbab,
+  of as _0x2e022e,
+} from "rxjs";
+import {
+  takeUntil as _0x48197a,
+  throttleTime as _0x14a294,
+} from "rxjs/operators";
+import { UniverLicensePlugin as _0x801d21 } from "@univerjs-pro/license";
+import {
+  SetScrollOperation as _0x599f2d,
+  SetZoomRatioOperation as _0x34fd56,
+} from "@univerjs/sheets-ui";
+import {
+  BuiltInUIPart as _0x3301c7,
+  IUIPartsService as _0x4f0f2d,
+  connectInjector as _0x46dbfe,
+  useDependency as _0x4fb788,
+  useObservable as _0x33e6b1,
+} from "@univerjs/ui";
+import { Button as _0x3b3cde, Dropdown as _0x2935a4 } from "@univerjs/design";
+import { LiveShareIcon as _0x25cd2d } from "@univerjs/icons";
+import { useMemo as _0xccdaf5 } from "react";
+import {
+  Fragment as _0x1f18c3,
+  jsx as _0x38d84e,
+  jsxs as _0x126cf0,
+} from "react/jsx-runtime";
+function z(_0xf36aad) {
+  "@babel/helpers - typeof";
+  return (
+    (z =
+      typeof Symbol == "function" && typeof Symbol.iterator == "symbol"
+        ? function (_0x101bd3) {
+            return typeof _0x101bd3;
+          }
+        : function (_0x849cfb) {
+            return _0x849cfb &&
+              typeof Symbol == "function" &&
+              _0x849cfb.constructor === Symbol &&
+              _0x849cfb !== Symbol.prototype
+              ? "symbol"
+              : typeof _0x849cfb;
+          }),
+    z(_0xf36aad)
+  );
+}
+function B(_0x49aa05, _0x3d2bb1) {
+  if (z(_0x49aa05) != "object" || !_0x49aa05) return _0x49aa05;
+  var _0x2a0475 = _0x49aa05[Symbol.toPrimitive];
+  if (_0x2a0475 !== undefined) {
+    var _0x2f8be1 = _0x2a0475.call(_0x49aa05, _0x3d2bb1 || "default");
+    if (z(_0x2f8be1) != "object") return _0x2f8be1;
+    throw TypeError(
+      "@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.",
+    );
+  }
+  return (_0x3d2bb1 === "string" ? String : Number)(_0x49aa05);
+}
+function V(_0x1d6148) {
+  var _0x2996ad = B(_0x1d6148, "string");
+  return z(_0x2996ad) == "symbol" ? _0x2996ad : _0x2996ad + "";
+}
+function H(_0x58253a, _0x48f56c, _0x3317b0) {
+  return (
+    (_0x48f56c = V(_0x48f56c)) in _0x58253a
+      ? Object.defineProperty(_0x58253a, _0x48f56c, {
+          value: _0x3317b0,
+          enumerable: true,
+          configurable: true,
+          writable: true,
+        })
+      : (_0x58253a[_0x48f56c] = _0x3317b0),
+    _0x58253a
+  );
+}
+var U = class extends _0x1d686c {
+  constructor(..._0x504716) {
+    (super(..._0x504716),
+      H(this, "_sharedOperations", new Set()),
+      H(this, "_reporters", new Set()));
+  }
+  registerSharedOperation(_0x46a12d) {
+    return (
+      this._sharedOperations["add"](_0x46a12d),
+      _0x6ae78b(() => this._sharedOperations["delete"](_0x46a12d))
+    );
+  }
+  registerInitialStateReporter(_0x3775af) {
+    return (
+      this._reporters["add"](_0x3775af),
+      _0x6ae78b(() => this._reporters["delete"](_0x3775af))
+    );
+  }
+  shouldShareOperation(_0x3494ff) {
+    return this._sharedOperations["has"](_0x3494ff);
+  }
+  getInitialStates(_0x6feca3) {
+    return Array.from(this._reporters).map((_0x2b2461) => _0x2b2461(_0x6feca3));
+  }
+};
+function W(_0x44bfab, _0xc8d41d) {
+  return function (_0xdf5f64, _0x1da668) {
+    _0xc8d41d(_0xdf5f64, _0x1da668, _0x44bfab);
+  };
+}
+function G(_0x4c9d21, _0x5a94ab, _0x3107e2, _0x3d2034) {
+  var _0x177b97 = arguments.length,
+    _0x4da022 =
+      _0x177b97 < 3
+        ? _0x5a94ab
+        : _0x3d2034 === null
+          ? (_0x3d2034 = Object.getOwnPropertyDescriptor(_0x5a94ab, _0x3107e2))
+          : _0x3d2034,
+    _0x89e689;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function")
+    _0x4da022 = Reflect.decorate(_0x4c9d21, _0x5a94ab, _0x3107e2, _0x3d2034);
+  else {
+    for (var _0x5d1051 = _0x4c9d21.length - 1; _0x5d1051 >= 0; _0x5d1051--)
+      (_0x89e689 = _0x4c9d21[_0x5d1051]) &&
+        (_0x4da022 =
+          (_0x177b97 < 3
+            ? _0x89e689(_0x4da022)
+            : _0x177b97 > 3
+              ? _0x89e689(_0x5a94ab, _0x3107e2, _0x4da022)
+              : _0x89e689(_0x5a94ab, _0x3107e2)) || _0x4da022);
+  }
+  return (
+    _0x177b97 > 3 &&
+      _0x4da022 &&
+      Object.defineProperty(_0x5a94ab, _0x3107e2, _0x4da022),
+    _0x4da022
+  );
+}
+let K = class extends _0x348d9 {
+  constructor(_0x27f329, _0x3bd6b1, _0x5ca844) {
+    (super(),
+      (this._univerInstanceService = _0x27f329),
+      (this._injector = _0x3bd6b1),
+      (this._collabSessionService = _0x5ca844),
+      H(this, "_entities", new Map()),
+      this._init());
+  }
+  async getLiveShareCoordinator(_0x91d71) {
+    return (
+      this._entities["has"](_0x91d71) ||
+        (await this._startLiveShareCoordinator(_0x91d71)),
+      this._entities["get"](_0x91d71)
+    );
+  }
+  getLiveShareCoordinatorSync(_0xab3692) {
+    return this._entities["get"](_0xab3692) ?? null;
+  }
+  _init() {
+    (this._univerInstanceService["getTypeOfUnitAdded$"](_0x3dfe53.UNIVER_SHEET)
+      .pipe(_0x48197a(this.dispose$))
+      .subscribe(async (_0x41a307) => {
+        let _0x4519fc = _0x41a307.unit["getUnitId"]();
+        this._entities["has"](_0x4519fc) ||
+          this._startLiveShareCoordinator(_0x4519fc);
+      }),
+      this._univerInstanceService["getTypeOfUnitDisposed$"](
+        _0x3dfe53.UNIVER_SHEET,
+      )
+        .pipe(_0x48197a(this.dispose$))
+        .subscribe((_0x3f3ffe) => {
+          let _0x3fcae7 = _0x3f3ffe.getUnitId(),
+            _0x4c6006 = this._entities["get"](_0x3fcae7);
+          _0x4c6006 == null || _0x4c6006.dispose();
+        }));
+  }
+  async _startLiveShareCoordinator(_0x5cfa1e) {
+    let _0x228c67 =
+        await this._collabSessionService["requireSession"](_0x5cfa1e),
+      _0x3e3d73 = this._injector["createInstance"](J, _0x5cfa1e, _0x228c67);
+    return (
+      _0x3e3d73.init(),
+      this._entities["set"](_0x5cfa1e, _0x3e3d73),
+      _0x3e3d73
+    );
+  }
+};
+K = G(
+  [W(0, _0x4593c8), W(1, _0x546006(_0x1ada8e)), W(2, _0x546006(_0x5f127c))],
+  K,
+);
+let q = (function (_0x259446) {
+    return (
+      (_0x259446.OFFLINE = "offline"),
+      (_0x259446.IDLE = "idle"),
+      (_0x259446.FOLLOWING = "following"),
+      (_0x259446.NOT_FOLLOWING = "not-following"),
+      (_0x259446.PRESENTING = "presenting"),
+      _0x259446
+    );
+  })({}),
+  J = class extends _0x348d9 {
+    get _status() {
+      return this._status$["getValue"]();
+    }
+    constructor(_0x3f3800, _0x560628, _0x41b1ad, _0x5e8ff2, _0x55fa28) {
+      (super(),
+        (this._unitID = _0x3f3800),
+        (this._collabSession = _0x560628),
+        (this._configService = _0x41b1ad),
+        (this._liveShareService = _0x5e8ff2),
+        (this._commandService = _0x55fa28),
+        H(this, "_status$", new _0xbdb7f0("idle")),
+        H(this, "status$", this._status$["asObservable"]()),
+        H(this, "_init", false),
+        H(this, "_commandDisposable", null),
+        H(this, "_presenter", null));
+    }
+    dispose() {
+      var _0x205ec2;
+      ((_0x205ec2 = this._commandDisposable) == null || _0x205ec2.dispose(),
+        this._status$["next"]("idle"),
+        this._status$["complete"]());
+    }
+    getStatus() {
+      return this._status;
+    }
+    init() {
+      this._init ||
+        ((this._init = true),
+        this._collabSession["sessionStatus$"]
+          .pipe(_0x48197a(this.dispose$))
+          .subscribe((_0x9efc66) => {
+            switch (_0x9efc66) {
+              case _0x3c2b46.OFFLINE:
+                this._handleOffline();
+                break;
+              case _0x3c2b46.ONLINE:
+                this._handleOnline();
+                break;
+              default:
+            }
+          }),
+        this._collabSession["event$"]
+          .pipe(_0x48197a(this.dispose$))
+          .subscribe((_0x598fdf) => {
+            let { eventID: _0x2086f4 } = _0x598fdf;
+            switch (_0x2086f4) {
+              case _0x643c40.LIVESHARE_NEW_HOST:
+                this._handleNewHost(_0x598fdf);
+                break;
+              case _0x643c40.LIVESHARE_OPERATION:
+                this._handleOperation(_0x598fdf);
+                break;
+              case _0x643c40.LIVESHARE_TERMINATE:
+                this._handleTerminate();
+                break;
+              case _0x643c40.NEW_CHANGESETS:
+                this._handleNewChangeSets(_0x598fdf);
+                break;
+              default:
+            }
+          }));
+    }
+    tryStartPresenting() {
+      this._collabSession["send"](
+        {
+          eventID: _0x643c40.LIVESHARE_REQUEST_HOST,
+          data: {
+            unitID: this._unitID,
+            userID: this._collabSession["getMemberID"](),
+          },
+        },
+        this._unitID,
+      );
+    }
+    stopPresenting() {
+      this._status === "presenting" &&
+        (this._status$["next"]("idle"),
+        this._collabSession["send"](
+          {
+            eventID: _0x643c40.LIVESHARE_TERMINATE,
+            data: { unitID: this._unitID },
+          },
+          this._unitID,
+        ));
+    }
+    startFollowing() {
+      this._status === "not-following" &&
+        (this._status$["next"]("following"), this._startFollowing());
+    }
+    stopFollowing() {
+      this._status === "following" && this._stopFollowing();
+    }
+    _handleNewHost(_0x53bfc4) {
+      let { presenter: _0x28a021 } = _0x53bfc4.data,
+        _0x34d325 = this._collabSession["getMemberID"]();
+      ((this._presenter = _0x28a021),
+        _0x28a021 === _0x34d325
+          ? (this._stopFollowing(), this._startPresenting())
+          : this._status !== "not-following" &&
+            (this._stopPresenting(), this._startFollowing()));
+    }
+    _fetchOperations() {
+      let _0x466b58 = { eventID: _0x643c40.LIVESHARE_FETCH_OPERATIONS };
+      this._collabSession["send"](_0x466b58, this._unitID);
+    }
+    _handleTerminate() {
+      ((this._presenter = null),
+        this._status !== "presenting" && this._beIdle());
+    }
+    _handleNewChangeSets(_0x5a4568) {
+      if (
+        this._status === "following" &&
+        this._presenter === _0x5a4568.data["memberID"]
+      ) {
+        let _0x57d644 = _0xe8319c(_0x5a4568.data)
+          .mutations["reverse"]()
+          .find((_0x5b5a9a) => _0x5b5a9a.id === _0x5093d0.id);
+        if (_0x57d644) {
+          let _0x31da8e = _0x57d644.params["unitId"],
+            _0x4461a4 = _0x57d644.params["sheet"].id;
+          setTimeout(() => {
+            this._commandService["executeCommand"](
+              _0x5ea9cb.id,
+              { unitId: _0x31da8e, subUnitId: _0x4461a4 },
+              { fromCollab: true },
+            );
+          });
+        }
+      }
+    }
+    _startPresenting() {
+      var _0x1cc704;
+      ((_0x1cc704 = this._commandDisposable) == null || _0x1cc704.dispose(),
+        this._status$["next"]("presenting"));
+      let _0x6d5c3 = new Map(),
+        _0x5c5ddd = (this._commandDisposable = new _0x453f8d());
+      (_0x5c5ddd.add(
+        _0x6ae78b(() => {
+          (_0x6d5c3.forEach(
+            ({ subject: _0x1a16ef, subscription: _0x357f10 }) => {
+              (_0x357f10.unsubscribe(), _0x1a16ef.complete());
+            },
+          ),
+            _0x6d5c3.clear());
+        }),
+      ),
+        _0x5c5ddd.add(
+          this._commandService["onCommandExecuted"]((_0x1ff0a4) => {
+            if (
+              _0x1ff0a4.type !== _0x43bf47.OPERATION ||
+              !this._liveShareService["shouldShareOperation"](_0x1ff0a4.id)
+            )
+              return;
+            let { id: _0x3bf09e } = _0x1ff0a4,
+              _0x1a8397;
+            if (_0x6d5c3.has(_0x3bf09e))
+              _0x1a8397 = _0x6d5c3.get(_0x3bf09e).subject;
+            else {
+              _0x1a8397 = new _0x5a5706();
+              let _0x18f153 = _0x1a8397
+                .pipe(
+                  _0x14a294(
+                    this._configService["getConfig"](
+                      "SAME_OPERATION_SHARE_INTERVAL",
+                    ) ?? 200,
+                    undefined,
+                    { trailing: true, leading: true },
+                  ),
+                )
+                .subscribe((_0x294397) => {
+                  this._collabSession["send"](
+                    {
+                      eventID: _0x643c40.LIVESHARE_OPERATION,
+                      data: {
+                        unitID: this._unitID,
+                        operations: {
+                          [_0x294397.id]: {
+                            id: _0x294397.id,
+                            params: JSON.stringify(_0x294397.params),
+                          },
+                        },
+                      },
+                    },
+                    this._unitID,
+                  );
+                });
+              _0x6d5c3.set(_0x3bf09e, {
+                subject: _0x1a8397,
+                subscription: _0x18f153,
+              });
+            }
+            _0x1a8397.next(_0x1ff0a4);
+          }),
+        ),
+        this._liveShareService["getInitialStates"](this._unitID).forEach(
+          (_0x2cb5ad) =>
+            this._collabSession["send"](
+              {
+                eventID: _0x643c40.LIVESHARE_OPERATION,
+                data: {
+                  unitID: this._unitID,
+                  operations: {
+                    [_0x2cb5ad.id]: {
+                      id: _0x2cb5ad.id,
+                      params: JSON.stringify(_0x2cb5ad.params),
+                    },
+                  },
+                },
+              },
+              this._unitID,
+            ),
+        ));
+    }
+    _stopPresenting() {
+      var _0x2cc4bf;
+      (this._status$["next"]("idle"),
+        (_0x2cc4bf = this._commandDisposable) == null || _0x2cc4bf.dispose(),
+        (this._commandDisposable = null));
+    }
+    _startFollowing() {
+      var _0x161ca5;
+      ((_0x161ca5 = this._commandDisposable) == null || _0x161ca5.dispose(),
+        this._status$["next"]("following"));
+    }
+    _beIdle() {
+      var _0x71d417;
+      (this._status$["next"]("idle"),
+        (_0x71d417 = this._commandDisposable) == null || _0x71d417.dispose(),
+        (this._commandDisposable = null));
+    }
+    _stopFollowing() {
+      var _0x163318;
+      (this._status$["next"]("not-following"),
+        (_0x163318 = this._commandDisposable) == null || _0x163318.dispose());
+    }
+    _handleOperation(_0x2d280c) {
+      if (
+        ["presenting", "not-following", "offline"].includes(this._status) ||
+        !_0x2d280c.data["presenter"] ||
+        _0x2d280c.data["presenter"] === this._collabSession["getMemberID"]()
+      )
+        return;
+      this._status === "idle" && this._startFollowing();
+      let _0x256f97 = _0x2d280c.data["operations"];
+      Object.values(_0x256f97).forEach((_0x28457c) => {
+        this._commandService["executeCommand"](
+          _0x28457c.id,
+          _0x28457c.params ? JSON.parse(_0x28457c.params) : null,
+          { fromCollab: true },
+        );
+      });
+    }
+    _handleOffline() {
+      var _0xbb3ff4;
+      (this._status$["next"]("offline"),
+        (_0xbb3ff4 = this._commandDisposable) == null || _0xbb3ff4.dispose());
+    }
+    _handleOnline() {
+      (this._status$["next"]("idle"), this._fetchOperations());
+    }
+  };
+J = G([W(2, _0x40e642), W(3, _0x546006(U)), W(4, _0x363b7b)], J);
+var se = "@univerjs-pro/live-share",
+  ce = "1.0.0-insiders.20260907-70fc579";
+const Y = {};
+let X = class extends _0x1d686c {
+  constructor(_0x154b58) {
+    (super(), (this._liveShareService = _0x154b58), this._init());
+  }
+  _init() {
+    [_0x34fd56.id, _0x599f2d.id, _0x5ea9cb.id].forEach((_0x51c009) => {
+      this.disposeWithMe(
+        this._liveShareService["registerSharedOperation"](_0x51c009),
+      );
+    });
+  }
+};
+X = G([W(0, _0x546006(U))], X);
+function Z() {
+  let _0x4c7851 = _0x4fb788(K),
+    _0x1adf79 = _0x4fb788(_0x4593c8),
+    _0x22435f = _0x33e6b1(
+      () => _0x1adf79.getCurrentTypeOfUnit$(_0x3dfe53.UNIVER_SHEET),
+      undefined,
+      false,
+      [],
+    ),
+    _0x121803 = _0x33e6b1(
+      _0xccdaf5(
+        () =>
+          _0x22435f
+            ? _0x4b05d9(() =>
+                _0x5dbbab(
+                  _0x4c7851.getLiveShareCoordinator(_0x22435f.getUnitId()),
+                ),
+              )
+            : _0x2e022e(null),
+        [_0x22435f, _0x4c7851],
+      ),
+      null,
+    ),
+    _0x3cac4d = _0x33e6b1(
+      _0x121803 ? () => _0x121803.status$ : null,
+      "idle",
+      false,
+      [_0x121803],
+    );
+  return _0x121803
+    ? _0x38d84e(_0x2935a4, {
+        align: "end",
+        disabled: _0x3cac4d === "offline",
+        className:
+          "univer-box-border univer-min-w-60 univer-bg-gray-900 univer-px-4 univer-py-3 univer-text-gray-900 dark:!univer-bg-gray-0 dark:!univer-text-gray-0",
+        overlay: _0x38d84e(le, { status: _0x3cac4d, coordinator: _0x121803 }),
+        children: _0x38d84e(_0x3b3cde, {
+          size: "icon",
+          variant: "text",
+          disabled: _0x3cac4d === "offline",
+          type: "button",
+          children: _0x38d84e(_0x25cd2d, {}),
+        }),
+      })
+    : null;
+}
+function le(_0x1bb7b5) {
+  let { status: _0x13c272, coordinator: _0x5c6c14 } = _0x1bb7b5;
+  switch (_0x13c272) {
+    case "idle":
+      return _0x38d84e(ue, { coordinator: _0x5c6c14 });
+    case "following":
+      return _0x38d84e(de, { coordinator: _0x5c6c14 });
+    case "not-following":
+      return _0x38d84e(fe, { coordinator: _0x5c6c14 });
+    case "offline":
+      return _0x38d84e(me, {});
+    case "presenting":
+      return _0x38d84e(pe, { coordinator: _0x5c6c14 });
+    default:
+      return null;
+  }
+}
+function ue(_0x1c19ec) {
+  let { coordinator: _0x501b97 } = _0x1c19ec;
+  return _0x126cf0(_0x1f18c3, {
+    children: [
+      _0x38d84e("div", {
+        className: "univer-mb-3\x20univer-w-full\x20univer-text-sm",
+        children: "Present this document",
+      }),
+      _0x38d84e(_0x3b3cde, {
+        onClick: () => _0x501b97.tryStartPresenting(),
+        children: "Start",
+      }),
+    ],
+  });
+}
+function de(_0x297aa3) {
+  let { coordinator: _0x5d01fb } = _0x297aa3;
+  return _0x126cf0(_0x1f18c3, {
+    children: [
+      _0x38d84e("div", {
+        className: "univer-mb-3 univer-w-full univer-text-sm",
+        children: "You're following the presenter",
+      }),
+      _0x38d84e(_0x3b3cde, {
+        onClick: () => _0x5d01fb.stopFollowing(),
+        children: "Stop following",
+      }),
+    ],
+  });
+}
+function fe(_0x4bf5b3) {
+  let { coordinator: _0x56ddcc } = _0x4bf5b3;
+  return _0x126cf0(_0x1f18c3, {
+    children: [
+      _0x38d84e("div", {
+        className: "univer-mb-3 univer-w-full univer-text-sm",
+        children: "You're not following the presenter",
+      }),
+      _0x38d84e(_0x3b3cde, {
+        variant: "text",
+        onClick: () => _0x56ddcc.startFollowing(),
+        children: "Start following",
+      }),
+    ],
+  });
+}
+function pe(_0x566710) {
+  let { coordinator: _0x1043b1 } = _0x566710;
+  return _0x126cf0(_0x1f18c3, {
+    children: [
+      _0x38d84e("div", {
+        className: "univer-mb-3 univer-w-full univer-text-sm",
+        children: "You're presenting the document",
+      }),
+      _0x38d84e(_0x3b3cde, {
+        variant: "default",
+        onClick: () => _0x1043b1.stopPresenting(),
+        children: "Stop presenting",
+      }),
+    ],
+  });
+}
+function me() {
+  return _0x38d84e(_0x1f18c3, { children: "You'are offline." });
+}
+let Q = class extends _0x1d686c {
+  constructor(_0xa71cb4, _0x14971d) {
+    (super(),
+      (this._injector = _0xa71cb4),
+      (this._uiPartsService = _0x14971d),
+      this._mountLiveShare());
+  }
+  _mountLiveShare() {
+    this.disposeWithMe(
+      this._uiPartsService["registerComponent"](_0x3301c7.HEADER_MENU, () =>
+        _0x46dbfe(Z, this._injector),
+      ),
+    );
+  }
+};
+Q = G([W(0, _0x546006(_0x1ada8e)), W(1, _0x4f0f2d)], Q);
+let $ = class extends _0x8b22f5 {
+  constructor(_0x13e5d1 = Y, _0x282e2a, _0x527c4c) {
+    (super(),
+      (this._config = _0x13e5d1),
+      (this._injector = _0x282e2a),
+      (this._configService = _0x527c4c));
+    let { ..._0x253087 } = _0x32e28e({}, Y, this._config);
+    this._configService["setConfig"]("live-share.config", _0x253087);
+  }
+  onStarting() {
+    (_0x234367(
+      this._injector,
+      _0x2f1c31([[U], [K], [X], [Q]], this._config["override"]),
+    ),
+      _0x489cb2(this._injector, [[X]]));
+  }
+  onRendered() {
+    _0x489cb2(this._injector, [[Q]]);
+  }
+};
+(H($, "type", _0x3dfe53.UNIVER_UNKNOWN),
+  H($, "pluginName", "UNIVER_LIVE_SHARE_PLUGIN"),
+  H($, "packageName", se),
+  H($, "version", ce),
+  ($ = G(
+    [
+      _0x12baa6(_0x801d21, _0x5d995b),
+      W(1, _0x546006(_0x1ada8e)),
+      W(2, _0x40e642),
+    ],
+    $,
+  )));
+export {
+  K as LiveShareController,
+  q as LiveShareStatus,
+  $ as UniverLiveSharePlugin,
+};

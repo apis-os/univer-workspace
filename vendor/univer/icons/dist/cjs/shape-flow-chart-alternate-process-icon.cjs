@@ -1,0 +1,40 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-flow-chart-alternate-process-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "rect",
+		"attrs": {
+			"width": 16.4,
+			"height": 12.4,
+			"x": 1.8,
+			"y": 3.8,
+			"stroke": "currentColor",
+			"rx": 2.2,
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapeFlowChartAlternateProcessIcon = (0, react.forwardRef)(function ShapeFlowChartAlternateProcessIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-flow-chart-alternate-process-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeFlowChartAlternateProcessIcon.displayName = "ShapeFlowChartAlternateProcessIcon";
+//#endregion
+exports.ShapeFlowChartAlternateProcessIcon = ShapeFlowChartAlternateProcessIcon;
+exports.default = ShapeFlowChartAlternateProcessIcon;

@@ -1,57 +1,8 @@
-const _0x346fab = _0x5e35;
-(function (_0x2eb7ce, _0x8e9496) {
-  const _0x13f1ce = _0x5e35,
-    _0x29a6f6 = _0x2eb7ce();
-  while (!![]) {
-    try {
-      const _0x1630a0 =
-        (parseInt(_0x13f1ce(0x1d2)) / 0x1) *
-          (-parseInt(_0x13f1ce(0x1c9)) / 0x2) +
-        (parseInt(_0x13f1ce(0x1d1)) / 0x3) *
-          (-parseInt(_0x13f1ce(0x1d0)) / 0x4) +
-        -parseInt(_0x13f1ce(0x1cf)) / 0x5 +
-        parseInt(_0x13f1ce(0x1ca)) / 0x6 +
-        parseInt(_0x13f1ce(0x1cd)) / 0x7 +
-        -parseInt(_0x13f1ce(0x1cb)) / 0x8 +
-        (-parseInt(_0x13f1ce(0x1d3)) / 0x9) *
-          (-parseInt(_0x13f1ce(0x1cc)) / 0xa);
-      if (_0x1630a0 === _0x8e9496) break;
-      else _0x29a6f6["push"](_0x29a6f6["shift"]());
-    } catch (_0x324724) {
-      _0x29a6f6["push"](_0x29a6f6["shift"]());
-    }
-  }
-})(_0x5cff, 0x86920);
-function _0x5cff() {
-  const _0x1d8c0b = [
-    "1384bmzJuT",
-    "2418300PdakZr",
-    "4953992UEIiWh",
-    "21320230rIQqgW",
-    "3765657Zecwxf",
-    "Plik",
-    "2388420vejISB",
-    "169220gJjRuw",
-    "69pQaYfo",
-    "653gxNIoT",
-    "9nMuBZx",
-  ];
-  _0x5cff = function () {
-    return _0x1d8c0b;
-  };
-  return _0x5cff();
-}
-function _0x5e35(_0x15edc3, _0xa37713) {
-  _0x15edc3 = _0x15edc3 - 0x1c9;
-  const _0x5cff3b = _0x5cff();
-  let _0x5e35c1 = _0x5cff3b[_0x15edc3];
-  return _0x5e35c1;
-}
 const e = {
   "bases-exchange-client": {
-    file: _0x346fab(0x1ce),
+    file: "Plik",
     upload: "Otwórz\x20(plik)",
     download: "Zapisz\x20jako",
   },
 };
-module["exports"] = e;
+module.exports = e;

@@ -1,95 +1,46 @@
-function _0x541c(_0x386aac, _0x3c9a81) {
-  _0x386aac = _0x386aac - 0xaf;
-  const _0xaeec02 = _0xaeec();
-  let _0x541cb9 = _0xaeec02[_0x386aac];
-  return _0x541cb9;
-}
-function _0xaeec() {
-  const _0x3b09ba = [
-    "Offline,\x20as\x20edições\x20serão\x20salvas\x20localmente",
-    "8bPgXZq",
-    "Sincronizando\x20dados\x20do\x20servidor...",
-    "A\x20fila\x20de\x20cálculo\x20de\x20fórmulas\x20está\x20cheia,\x20aguardando\x20slot\x20disponível...",
-    "Sincronizando...",
-    "O\x20carregamento\x20dos\x20dados\x20parou\x20em\x20{0}/{1}.\x20Atualize\x20a\x20página\x20para\x20tentar\x20novamente.",
-    "Clique\x20para\x20Reconectar",
-    "O\x20servidor\x20não\x20está\x20respondendo\x20à\x20sua\x20solicitação\x20de\x20colaboração.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-    "8253378fXGeuE",
-    "2986608pvsshh",
-    "Suas\x20ações\x20estão\x20em\x20conflito\x20com\x20as\x20permissões\x20do\x20servidor.\x20Salve\x20suas\x20edições\x20locais\x20em\x20outro\x20lugar,\x20pois\x20elas\x20serão\x20descartadas\x20após\x20atualizar\x20a\x20página.",
-    "Conflito\x20de\x20Colaboração",
-    "40119291vXoFBe",
-    "94289SjgYvW",
-    "Atualizar\x20página",
-    "Falha\x20na\x20conexão,\x20verifique\x20sua\x20rede.",
-    "Erro\x20de\x20autenticação",
-    "Não\x20foi\x20possível\x20realizar\x20o\x20cálculo\x20da\x20fórmula\x20neste\x20momento.\x20Tente\x20novamente\x20mais\x20tarde.",
-    "A\x20sala\x20de\x20colaboração\x20está\x20cheia.\x20Suas\x20edições\x20serão\x20salvas\x20localmente.",
-    "3482645vkaZiT",
-    "9673674bxTIDd",
-    "Conflitos\x20de\x20edição",
-    "Você\x20abriu\x20o\x20mesmo\x20arquivo\x20em\x20outra\x20aba.\x20Em\x20caso\x20de\x20perda\x20de\x20dados,\x20você\x20não\x20poderá\x20editar\x20nesta\x20aba.",
-    "Os\x20privilégios\x20de\x20edição\x20foram\x20revogados\x20porque\x20a\x20sala\x20de\x20colaboração\x20foi\x20fechada.",
-    "3010708BMIiah",
-    "3DSTYpF",
-    "Falha\x20na\x20conexão,\x20tentaremos\x20novamente\x20em\x20breve.",
-  ];
-  _0xaeec = function () {
-    return _0x3b09ba;
-  };
-  return _0xaeec();
-}
-const _0x3afdb3 = _0x541c;
-(function (_0x4b07cd, _0x1ebc8f) {
-  const _0x13c693 = _0x541c,
-    _0x1201fd = _0x4b07cd();
-  while (!![]) {
-    try {
-      const _0xcd04b0 =
-        (parseInt(_0x13c693(0xc5)) / 0x1) * (-parseInt(_0x13c693(0xb9)) / 0x2) +
-        (-parseInt(_0x13c693(0xb6)) / 0x3) *
-          (-parseInt(_0x13c693(0xb5)) / 0x4) +
-        -parseInt(_0x13c693(0xb0)) / 0x5 +
-        -parseInt(_0x13c693(0xb1)) / 0x6 +
-        -parseInt(_0x13c693(0xc0)) / 0x7 +
-        -parseInt(_0x13c693(0xc1)) / 0x8 +
-        parseInt(_0x13c693(0xc4)) / 0x9;
-      if (_0xcd04b0 === _0x1ebc8f) break;
-      else _0x1201fd["push"](_0x1201fd["shift"]());
-    } catch (_0x4ca626) {
-      _0x1201fd["push"](_0x1201fd["shift"]());
-    }
-  }
-})(_0xaeec, 0xed500);
 const e = {
   "collaboration-client-ui": {
-    collabClient: { tooltip: { reconnect: _0x3afdb3(0xbe) } },
+    collabClient: { tooltip: { reconnect: "Clique para Reconectar" } },
     collabStatus: {
-      fetchMiss: _0x3afdb3(0xba),
-      conflict: _0x3afdb3(0xb2),
+      fetchMiss: "Sincronizando dados do servidor...",
+      conflict: "Conflitos de edição",
       notCollab: "Arquivo\x20local",
       synced: "Sincronizado",
-      syncing: _0x3afdb3(0xbc),
-      offline: _0x3afdb3(0xb8),
+      syncing: "Sincronizando...",
+      offline: "Offline, as edições serão salvas localmente",
     },
-    snapshotLoading: { timeout: _0x3afdb3(0xbd), refresh: _0x3afdb3(0xc6) },
+    snapshotLoading: {
+      timeout:
+        "O carregamento dos dados parou em {0}/{1}. Atualize a página para tentar novamente.",
+      refresh: "Atualizar página",
+    },
     session: {
-      "connection-failed": _0x3afdb3(0xc7),
-      "will-retry": _0x3afdb3(0xb7),
-      "room-full": _0x3afdb3(0xaf),
-      "collaboration-timeout": _0x3afdb3(0xbf),
+      "connection-failed": "Falha na conexão, verifique sua rede.",
+      "will-retry": "Falha na conexão, tentaremos novamente em breve.",
+      "room-full":
+        "A sala de colaboração está cheia. Suas edições serão salvas localmente.",
+      "collaboration-timeout":
+        "O servidor não está respondendo à sua solicitação de colaboração. Suas edições serão salvas localmente.",
     },
     conflict: {
-      title: _0x3afdb3(0xc3),
+      title: "Conflito de Colaboração",
       content:
         "Há\x20um\x20conflito\x20entre\x20sua\x20cópia\x20local\x20e\x20a\x20cópia\x20no\x20servidor.\x20Salve\x20suas\x20edições\x20locais,\x20pois\x20elas\x20serão\x20perdidas\x20ao\x20recarregar\x20a\x20página.",
     },
-    permission: { title: _0x3afdb3(0xc8), content: _0x3afdb3(0xc2) },
+    permission: {
+      title: "Erro de autenticação",
+      content:
+        "Suas ações estão em conflito com as permissões do servidor. Salve suas edições locais em outro lugar, pois elas serão descartadas após atualizar a página.",
+    },
     collaboration: {
       "offline-data-not-saved":
         "Você\x20tem\x20edições\x20offline\x20que\x20não\x20foram\x20salvas\x20no\x20servidor.\x20Verifique\x20sua\x20rede\x20e\x20tente\x20novamente.",
-      "single-unit": { warning: _0x3afdb3(0xb3) },
-      closeRoom: _0x3afdb3(0xb4),
+      "single-unit": {
+        warning:
+          "Você abriu o mesmo arquivo em outra aba. Em caso de perda de dados, você não poderá editar nesta aba.",
+      },
+      closeRoom:
+        "Os privilégios de edição foram revogados porque a sala de colaboração foi fechada.",
     },
     auth: {
       needGotoLoginAlert:
@@ -98,10 +49,12 @@ const e = {
     formula: {
       calculation: {
         started: "Cálculo\x20de\x20fórmula\x20iniciado.",
-        waiting: _0x3afdb3(0xbb),
-        unable: _0x3afdb3(0xc9),
+        waiting:
+          "A fila de cálculo de fórmulas está cheia, aguardando slot disponível...",
+        unable:
+          "Não foi possível realizar o cálculo da fórmula neste momento. Tente novamente mais tarde.",
       },
     },
   },
 };
-module["exports"] = e;
+module.exports = e;

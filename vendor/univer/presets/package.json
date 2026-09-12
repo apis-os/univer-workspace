@@ -1,0 +1,70 @@
+{
+  "name": "@univerjs/presets",
+  "version": "1.0.0-insiders.20260907-70fc579",
+  "private": false,
+  "description": "Build Univer apps faster and easier with pre-configured plugin collections.",
+  "author": "DreamNum Co., Ltd. <developer@univer.ai>",
+  "license": "Apache-2.0",
+  "funding": {
+    "type": "opencollective",
+    "url": "https://opencollective.com/univer"
+  },
+  "homepage": "https://univer.ai",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dream-num/univer"
+  },
+  "bugs": {
+    "url": "https://github.com/dream-num/univer/issues"
+  },
+  "keywords": [
+    "univer",
+    "univer-preset",
+    "presets"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "import": "./lib/es/index.js",
+      "require": "./lib/cjs/index.js",
+      "types": "./lib/types/index.d.ts"
+    },
+    "./lib/*": "./lib/*"
+  },
+  "main": "./lib/es/index.js",
+  "types": "./lib/types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@univerjs/core": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/drawing": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/engine-formula": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/engine-render": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/network": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/protocol": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/rpc": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/themes": "1.0.0-insiders.20260907-70fc579",
+    "@univerjs/telemetry": "1.0.0-insiders.20260907-70fc579"
+  },
+  "devDependencies": {
+    "@wendellhu/redi": "1.1.2",
+    "typescript": "^6.0.3",
+    "@univerjs-infra/shared": "1.0.0-beta.2"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build:bundle": "univer-cli preset build --cleanup",
+    "build:types": "tsc -p tsconfig.node.json",
+    "build": "pnpm run build:bundle && pnpm run build:types"
+  },
+  "module": "./lib/es/index.js"
+}

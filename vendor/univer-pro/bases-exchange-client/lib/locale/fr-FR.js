@@ -1,1 +1,8 @@
-();const e={'bases-exchange-client':{'file':"Fichier",'upload':"Ouvrir (Fichier)",'download':'Enregistrer\x20sous'}};export{e as default};
+const e = {
+  "bases-exchange-client": {
+    file: "Fichier",
+    upload: "Ouvrir (Fichier)",
+    download: "Enregistrer\x20sous",
+  },
+};
+export { e as default };

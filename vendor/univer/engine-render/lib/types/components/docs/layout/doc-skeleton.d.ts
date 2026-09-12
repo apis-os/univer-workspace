@@ -1,0 +1,212 @@
+/**
+ * Copyright 2023-present DreamNum Co., Ltd.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+import type { LocaleService, Nullable } from '@univerjs/core';
+import type { IDocumentSkeletonCached, IDocumentSkeletonGlyph, IDocumentSkeletonPage } from '../../../basics/i-document-skeleton-cached';
+import type { INodeInfo, INodePosition, INodeSearch } from '../../../basics/interfaces';
+import type { IViewportInfo, Vector2 } from '../../../basics/vector2';
+import type { DocumentViewModel } from '../view-model/document-view-model';
+import type { IDocumentLayoutGeometryPublication, IDocumentLayoutPagePublication } from './document-layout-publication';
+import type { DocumentLayoutReason, IDocumentLayoutApplyResult, IDocumentLayoutInvalidation, IDocumentLayoutPageRange, IDocumentLayoutProgress, IDocumentLayoutProtectedRange } from './document-layout-types';
+import type { IDocumentPaginationMetrics } from './tools';
+import { Skeleton } from '@univerjs/core';
+import { PageLayoutType } from '../../../basics/i-document-skeleton-cached';
+import { DocumentEditArea } from '../view-model/document-view-model';
+export declare enum DocumentSkeletonState {
+    PENDING = "pending",
+    CALCULATING = "calculating",
+    READY = "ready",
+    INVALID = "invalid"
+}
+export interface IDocumentCustomBlockPresentationRefreshResult {
+    didRefresh: boolean;
+    requiresLayout: boolean;
+}
+export interface IFindNodeRestrictions {
+    strict: boolean;
+    segmentId: string;
+    segmentPage: number;
+}
+export declare class DocumentSkeleton extends Skeleton {
+    private _docViewModel;
+    private _dirty$;
+    readonly dirty$: import("rxjs").Observable<boolean>;
+    private _layoutProgress$;
+    readonly layoutProgress$: import("rxjs").Observable<IDocumentLayoutProgress>;
+    private _skeletonData;
+    private _findLiquid;
+    private _hyphen;
+    private _languageDetector;
+    private _iteratorCount;
+    private _initialWidth;
+    private _paginationMetrics;
+    private _lastCompleteSkeletonData;
+    private _pendingInvalidationAnchor;
+    private _layoutGeneration;
+    private _activeLayout;
+    private _externalLayoutProgress;
+    private _externalProtectedPages;
+    private _externalProtectedContinuousLayout;
+    private _topLevelBlockSections;
+    private _topLevelBlocks;
+    private readonly _isolateIncrementalPublications;
+    constructor(_docViewModel: DocumentViewModel, localeService: LocaleService, options?: {
+        isolateIncrementalPublications?: boolean;
+    });
+    static create(docViewModel: DocumentViewModel, localeService: LocaleService, options?: {
+        isolateIncrementalPublications?: boolean;
+    }): DocumentSkeleton;
+    dispose(): void;
+    getViewModel(): DocumentViewModel;
+    /**
+     * Layout the document.
+     * PS: This method has significant impact on performance.
+     */
+    calculate(bounds?: IViewportInfo): void;
+    startIncrementalLayout(options?: {
+        reason?: DocumentLayoutReason;
+        anchor?: number;
+        priorityAnchor?: number;
+        invalidation?: IDocumentLayoutInvalidation;
+        bounds?: IViewportInfo;
+        reuseUnaffectedTail?: boolean;
+        /** The caller proved this edit only changes offset-preserving render metadata. */
+        allowMetadataOnlyStructuralTailReuse?: boolean;
+        preserveInteractionWindow?: boolean;
+        /** Cooperative schedulers wait for code-split dictionaries before publishing. */
+        waitForHyphenationPatterns?: boolean;
+    }): number;
+    private _prepareIncrementalLayoutStart;
+    private _preparePaginatedParagraphPrefix;
+    private _prepareContinuousPrefix;
+    private _findBodyPageIndex;
+    private _getTopLevelBlocks;
+    private _copySkeletonResources;
+    cancelIncrementalLayout(generation?: number): void;
+    stepIncrementalLayout(generation: number, budgetMs?: number, maxWorkUnits?: number): IDocumentLayoutProgress;
+    /**
+     * Publishes at most one page that a previous layout slice has already
+     * completed. It never advances shaping or pagination work.
+     */
+    publishIncrementalLayoutBacklog(generation: number): IDocumentLayoutProgress;
+    private _stepIncrementalLayout;
+    private _createPublishablePartialSkeleton;
+    private _createSharedPublishablePartialSkeleton;
+    private _findPublishablePriorityPageIndex;
+    private _finalizePaginatedPagesForPublication;
+    getLayoutProgress(): Nullable<IDocumentLayoutProgress>;
+    /**
+     * Opens a presentation barrier before an external executor starts layout.
+     * The Main interaction snapshot remains authoritative inside its protected
+     * page or block range while the external executor publishes a newer tail.
+     */
+    beginExternalLayout(options: {
+        reason: DocumentLayoutReason;
+        protectedRange?: IDocumentLayoutProtectedRange;
+    }): void;
+    cancelExternalLayout(): void;
+    /**
+     * Whether this skeleton owns a fully finalized layout that can be used as
+     * stable geometry while a later incremental generation is still running.
+     */
+    hasCompleteLayout(): boolean;
+    getSkeletonData(): Nullable<IDocumentSkeletonCached>;
+    /**
+     * Refreshes Custom Block viewport-only metrics without rebuilding document flow.
+     * Pure presentation metrics are published as one batch. Flow metrics are only
+     * replaced for compatible drawings; incompatible drawings retain their stable
+     * flow geometry while callers schedule a normal layout generation.
+     */
+    refreshCustomBlockPresentationViewports(): IDocumentCustomBlockPresentationRefreshResult;
+    applyLayoutPublication(publication: IDocumentLayoutGeometryPublication, progress: IDocumentLayoutProgress, materializedPageRange?: IDocumentLayoutPageRange): IDocumentLayoutApplyResult;
+    applyLayoutPagePublication(publication: IDocumentLayoutPagePublication, materializedPageRange: IDocumentLayoutPageRange): boolean;
+    private _compactMaterializedPages;
+    private _applyExternalLayoutResources;
+    private _resolveProtectedContinuousPublication;
+    /**
+     * Returns a cloned snapshot of the most recent layout's bounded pagination counters.
+     * These diagnostics describe renderer work and are not part of the document model.
+     */
+    getPaginationMetrics(): Nullable<IDocumentPaginationMetrics>;
+    resetInitialWidth(): void;
+    getActualSize(): {
+        actualWidth: number;
+        actualHeight: number;
+    };
+    private _getPageActualWidth;
+    getPageSize(): import("@univerjs/core").ISize | undefined;
+    findPositionByGlyph(glyph: IDocumentSkeletonGlyph, segmentPage: number): Nullable<INodeSearch>;
+    findCharIndexByPosition(position: INodePosition): Nullable<number>;
+    findNodePositionByCharIndex(charIndex: number, isBack?: boolean, segmentId?: string, segmentPIndex?: number): Nullable<INodePosition>;
+    findBodyPageIndexByCharIndex(charIndex: number): number;
+    findNodeByCharIndex(charIndex: number, segmentId?: string, segmentPageIndex?: number): Nullable<IDocumentSkeletonGlyph>;
+    findGlyphByPosition(position: Nullable<INodePosition>): IDocumentSkeletonGlyph | undefined;
+    findEditAreaByCoord(coord: Vector2, pageLayoutType: PageLayoutType, pageMarginLeft: number, pageMarginTop: number): {
+        editArea: DocumentEditArea;
+        pageNumber: number;
+        page: Nullable<IDocumentSkeletonPage>;
+    };
+    findNodeByCoord(coord: Vector2, pageLayoutType: PageLayoutType, pageMarginLeft: number, pageMarginTop: number, restrictions?: IFindNodeRestrictions): Nullable<INodeInfo>;
+    private _findNodeByCoord;
+    private _collectNearestNode;
+    private _getNearestNode;
+    private _getPageBoundingBox;
+    private _translatePage;
+    private _getLayoutProgress;
+    private _tryConvergeUnaffectedTail;
+    private _isPriorityAnchorReady;
+    private _tryReuseInteractionPageTail;
+    private _prepareIncrementalHyphenation;
+    private _advanceIncrementalLayout;
+    private _resumeAfterSealedInteractionPage;
+    private _captureIncrementalParagraphCheckpoint;
+    private _restoreIncrementalParagraphCheckpoint;
+    private _initializeIncrementalSection;
+    private _restartDirtyIncrementalLayout;
+    private _finishIncrementalLayout;
+    private _prepareLayoutContext;
+    /**
+     * \v COLUMN_BREAK
+     * \f PAGE_BREAK
+     * \0 DOCS_END
+     * \t TAB
+     *
+     * Needs to be changed：
+     * \r PARAGRAPH
+     * \n SECTION_BREAK
+     *
+     * \b customBlock: Scenarios where customBlock, images, mentions, etc. do not participate in the document flow.
+     *
+     * Table
+     * \x1A table start
+     * \x1B table row start
+     * \x1C table cell start
+     * \x1D table cell end
+     * \x1E table row end
+     * \x1F table end
+     *
+     * Special ranges within the document flow:：hyperlinks，field，structured document tags， bookmark，comment
+     * \x1F customRange start
+     * \x1E customRange end
+     *
+     * Split the document according to SectionBreak and perform layout calculations.
+     * @returns view model: skeleton
+     */
+    private _createSkeleton;
+    private _addNewSectionByContinuous;
+    private _addNewSectionByNextColumn;
+    private _restoreContinuousSection;
+    private _findNodeByIndex;
+}

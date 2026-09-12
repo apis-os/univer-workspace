@@ -1,172 +1,72 @@
-const _0x1e79ff = _0x1729;
-(function (_0x1498cc, _0x37fb43) {
-  const _0x150685 = _0x1729,
-    _0x4a2cd9 = _0x1498cc();
-  while (!![]) {
-    try {
-      const _0x1d7c87 =
-        (-parseInt(_0x150685(0x1f1)) / 0x1) *
-          (-parseInt(_0x150685(0x1fd)) / 0x2) +
-        parseInt(_0x150685(0x21f)) / 0x3 +
-        (parseInt(_0x150685(0x20d)) / 0x4) *
-          (parseInt(_0x150685(0x1e8)) / 0x5) +
-        (parseInt(_0x150685(0x21a)) / 0x6) *
-          (parseInt(_0x150685(0x20b)) / 0x7) +
-        -parseInt(_0x150685(0x200)) / 0x8 +
-        (-parseInt(_0x150685(0x1fb)) / 0x9) *
-          (-parseInt(_0x150685(0x1ec)) / 0xa) +
-        (-parseInt(_0x150685(0x1f7)) / 0xb) *
-          (parseInt(_0x150685(0x209)) / 0xc);
-      if (_0x1d7c87 === _0x37fb43) break;
-      else _0x4a2cd9["push"](_0x4a2cd9["shift"]());
-    } catch (_0x146c05) {
-      _0x4a2cd9["push"](_0x4a2cd9["shift"]());
-    }
-  }
-})(_0x5e14, 0x6e4fe);
-function _0x5e14() {
-  const _0x423c0d = [
-    "S\x27ha\x20mogut\x20la\x20taula",
-    "S\x27ha\x20ordenat\x20la\x20taula",
-    "5335024SHlNWw",
-    "S\x27ha\x20afegit\x20la\x20forma",
-    "S\x27ha\x20afegit\x20la\x20taula",
-    "S\x27ha\x20canviat\x20la\x20mida\x20de\x20les\x20columnes\x20de\x20la\x20taula",
-    "S\x27ha\x20formatat\x20la\x20taula",
-    "S\x27ha\x20suprimit\x20text",
-    "S\x27ha\x20actualitzat\x20la\x20fórmula",
-    "S\x27ha\x20afegit\x20l\x27enllaç",
-    "S\x27han\x20actualitzat\x20les\x20columnes\x20de\x20la\x20taula",
-    "580632mXdWDb",
-    "S\x27ha\x20afegit\x20el\x20bloc\x20de\x20codi",
-    "7dVWEvR",
-    "S\x27ha\x20afegit\x20el\x20gràfic",
-    "60JPrrFe",
-    "S\x27ha\x20actualitzat\x20el\x20destacat",
-    "S\x27ha\x20afegit\x20el\x20destacat",
-    "S\x27ha\x20suprimit\x20l\x27enllaç",
-    "S\x27ha\x20afegit\x20les\x20columnes",
-    "S\x27ha\x20canviat\x20la\x20mida\x20de\x20les\x20files\x20de\x20la\x20taula",
-    "S\x27ha\x20actualitzat\x20el\x20disseny\x20de\x20pàgina",
-    "S\x27ha\x20afegit\x20text",
-    "S\x27ha\x20suprimit\x20la\x20forma",
-    "S\x27han\x20suprimit\x20columnes\x20de\x20la\x20taula",
-    "S\x27ha\x20actualitzat\x20l\x27objecte\x20flotant",
-    "S\x27ha\x20formatat\x20el\x20paràgraf",
-    "S\x27ha\x20actualitzat\x20el\x20bloc\x20de\x20codi",
-    "916056etVllM",
-    "S\x27ha\x20afegit\x20la\x20fórmula",
-    "S\x27ha\x20canviat\x20el\x20nom\x20de\x20el\x20document",
-    "S\x27ha\x20editat\x20el\x20document",
-    "S\x27ha\x20actualitzat\x20la\x20llista",
-    "2696949YMecoX",
-    "S\x27ha\x20actualitzat\x20les\x20columnes",
-    "S\x27ha\x20suprimit\x20el\x20bloc",
-    "S\x27ha\x20suprimit\x20el\x20divisor",
-    "S\x27han\x20combinat\x20cel·les\x20de\x20la\x20taula",
-    "5845mDCmiq",
-    "S\x27ha\x20actualitzat\x20la\x20imatge",
-    "S\x27ha\x20afegit\x20un\x20interval\x20personalitzat",
-    "S\x27ha\x20afegit\x20el\x20divisor",
-    "750860YshpWa",
-    "S\x27ha\x20afegit\x20la\x20cita",
-    "S\x27ha\x20actualitzat\x20l\x27enllaç",
-    "S\x27han\x20distribuït\x20les\x20files\x20de\x20la\x20taula",
-    "S\x27ha\x20formatat\x20text",
-    "35497zZOlSB",
-    "S\x27han\x20distribuït\x20les\x20columnes\x20de\x20la\x20taula",
-    "S\x27ha\x20suprimit\x20el\x20destacat",
-    "S\x27ha\x20mogut\x20el\x20bloc",
-    "S\x27ha\x20suprimit\x20el\x20gràfic",
-    "S\x27ha\x20suprimit\x20la\x20imatge",
-    "242CvJOwS",
-    "S\x27ha\x20canviat\x20l\x27encapçalament",
-    "S\x27ha\x20actualitzat\x20la\x20capçalera\x20o\x20el\x20peu",
-    "S\x27ha\x20suprimit\x20la\x20taula",
-    "108SqjnKr",
-    "S\x27han\x20mogut\x20columnes\x20de\x20la\x20taula",
-    "12RFkJpF",
-  ];
-  _0x5e14 = function () {
-    return _0x423c0d;
-  };
-  return _0x5e14();
-}
-function _0x1729(_0x5d622d, _0x3210be) {
-  _0x5d622d = _0x5d622d - 0x1e5;
-  const _0x5e14be = _0x5e14();
-  let _0x17298b = _0x5e14be[_0x5d622d];
-  return _0x17298b;
-}
 const e = {
   "docs-history-ui": {
     menu: { history: "Historial\x20de\x20versions" },
     action: {
-      renameDocument: _0x1e79ff(0x21c),
-      insertText: _0x1e79ff(0x214),
-      deleteText: _0x1e79ff(0x205),
-      deleteBlock: _0x1e79ff(0x1e5),
-      formatText: _0x1e79ff(0x1f0),
-      formatParagraph: _0x1e79ff(0x218),
-      changeHeading: _0x1e79ff(0x1f8),
-      updateList: _0x1e79ff(0x21e),
-      moveBlock: _0x1e79ff(0x1f4),
-      insertDivider: _0x1e79ff(0x1eb),
-      deleteDivider: _0x1e79ff(0x1e6),
-      updatePageLayout: _0x1e79ff(0x213),
-      updateHeaderFooter: _0x1e79ff(0x1f9),
-      insertLink: _0x1e79ff(0x207),
-      insertCustomRange: _0x1e79ff(0x1ea),
-      updateLink: _0x1e79ff(0x1ee),
-      deleteLink: _0x1e79ff(0x210),
-      insertTable: _0x1e79ff(0x202),
-      deleteTable: _0x1e79ff(0x1fa),
+      renameDocument: "S'ha canviat el nom de el document",
+      insertText: "S'ha afegit text",
+      deleteText: "S'ha suprimit text",
+      deleteBlock: "S'ha suprimit el bloc",
+      formatText: "S'ha formatat text",
+      formatParagraph: "S'ha formatat el paràgraf",
+      changeHeading: "S'ha canviat l'encapçalament",
+      updateList: "S'ha actualitzat la llista",
+      moveBlock: "S'ha mogut el bloc",
+      insertDivider: "S'ha afegit el divisor",
+      deleteDivider: "S'ha suprimit el divisor",
+      updatePageLayout: "S'ha actualitzat el disseny de pàgina",
+      updateHeaderFooter: "S'ha actualitzat la capçalera o el peu",
+      insertLink: "S'ha afegit l'enllaç",
+      insertCustomRange: "S'ha afegit un interval personalitzat",
+      updateLink: "S'ha actualitzat l'enllaç",
+      deleteLink: "S'ha suprimit l'enllaç",
+      insertTable: "S'ha afegit la taula",
+      deleteTable: "S'ha suprimit la taula",
       insertTableRows: "S\x27han\x20afegit\x20files\x20a\x20la\x20taula",
       deleteTableRows: "S\x27han\x20suprimit\x20files\x20de\x20la\x20taula",
       moveTableRows: "S\x27han\x20mogut\x20files\x20de\x20la\x20taula",
-      resizeTableRows: _0x1e79ff(0x212),
-      distributeTableRows: _0x1e79ff(0x1ef),
+      resizeTableRows: "S'ha canviat la mida de les files de la taula",
+      distributeTableRows: "S'han distribuït les files de la taula",
       insertTableColumns: "S\x27han\x20afegit\x20columnes\x20a\x20la\x20taula",
-      deleteTableColumns: _0x1e79ff(0x216),
-      moveTableColumns: _0x1e79ff(0x1fc),
-      resizeTableColumns: _0x1e79ff(0x203),
-      distributeTableColumns: _0x1e79ff(0x1f2),
-      moveTable: _0x1e79ff(0x1fe),
+      deleteTableColumns: "S'han suprimit columnes de la taula",
+      moveTableColumns: "S'han mogut columnes de la taula",
+      resizeTableColumns: "S'ha canviat la mida de les columnes de la taula",
+      distributeTableColumns: "S'han distribuït les columnes de la taula",
+      moveTable: "S'ha mogut la taula",
       updateTableHeader:
         "S\x27ha\x20actualitzat\x20la\x20capçalera\x20de\x20la\x20taula",
-      updateTableColumns: _0x1e79ff(0x208),
+      updateTableColumns: "S'han actualitzat les columnes de la taula",
       editTableCell: "S\x27ha\x20editat\x20una\x20cel·la\x20de\x20la\x20taula",
-      formatTable: _0x1e79ff(0x204),
-      mergeTableCells: _0x1e79ff(0x1e7),
+      formatTable: "S'ha formatat la taula",
+      mergeTableCells: "S'han combinat cel·les de la taula",
       unmergeTableCells:
         "S\x27han\x20descombinat\x20cel·les\x20de\x20la\x20taula",
-      sortTable: _0x1e79ff(0x1ff),
+      sortTable: "S'ha ordenat la taula",
       insertImage: "S\x27ha\x20afegit\x20la\x20imatge",
-      deleteImage: _0x1e79ff(0x1f6),
-      updateImage: _0x1e79ff(0x1e9),
-      insertShape: _0x1e79ff(0x201),
+      deleteImage: "S'ha suprimit la imatge",
+      updateImage: "S'ha actualitzat la imatge",
+      insertShape: "S'ha afegit la forma",
       updateShape: "S\x27ha\x20actualitzat\x20la\x20forma",
-      deleteShape: _0x1e79ff(0x215),
-      updateDrawing: _0x1e79ff(0x217),
-      insertChart: _0x1e79ff(0x20c),
-      deleteChart: _0x1e79ff(0x1f5),
+      deleteShape: "S'ha suprimit la forma",
+      updateDrawing: "S'ha actualitzat l'objecte flotant",
+      insertChart: "S'ha afegit el gràfic",
+      deleteChart: "S'ha suprimit el gràfic",
       updateChart: "S\x27ha\x20actualitzat\x20el\x20gràfic",
-      insertCallout: _0x1e79ff(0x20f),
-      deleteCallout: _0x1e79ff(0x1f3),
-      updateCallout: _0x1e79ff(0x20e),
-      insertCodeBlock: _0x1e79ff(0x20a),
+      insertCallout: "S'ha afegit el destacat",
+      deleteCallout: "S'ha suprimit el destacat",
+      updateCallout: "S'ha actualitzat el destacat",
+      insertCodeBlock: "S'ha afegit el bloc de codi",
       deleteCodeBlock: "S\x27ha\x20suprimit\x20el\x20bloc\x20de\x20codi",
-      updateCodeBlock: _0x1e79ff(0x219),
-      insertQuote: _0x1e79ff(0x1ed),
+      updateCodeBlock: "S'ha actualitzat el bloc de codi",
+      insertQuote: "S'ha afegit la cita",
       deleteQuote: "S\x27ha\x20suprimit\x20la\x20cita",
       updateQuote: "S\x27ha\x20actualitzat\x20la\x20cita",
-      insertColumns: _0x1e79ff(0x211),
-      updateColumns: _0x1e79ff(0x220),
-      insertFormula: _0x1e79ff(0x21b),
-      updateFormula: _0x1e79ff(0x206),
+      insertColumns: "S'ha afegit les columnes",
+      updateColumns: "S'ha actualitzat les columnes",
+      insertFormula: "S'ha afegit la fórmula",
+      updateFormula: "S'ha actualitzat la fórmula",
       deleteFormula: "S\x27ha\x20suprimit\x20la\x20fórmula",
-      editDocument: _0x1e79ff(0x21d),
+      editDocument: "S'ha editat el document",
     },
   },
 };
-module["exports"] = e;
+module.exports = e;

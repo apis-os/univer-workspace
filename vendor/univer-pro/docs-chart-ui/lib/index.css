@@ -1,0 +1,242 @@
+.univer-absolute {
+  position: absolute;
+}
+
+.univer-relative {
+  position: relative;
+}
+
+.univer-inset-0 {
+  inset: 0;
+}
+
+.univer-bottom-3 {
+  bottom: .75rem;
+}
+
+.univer-left-3 {
+  left: .75rem;
+}
+
+.univer-mt-2 {
+  margin-top: .5rem;
+}
+
+.univer-box-border {
+  box-sizing: border-box;
+}
+
+.univer-flex {
+  display: flex;
+}
+
+.univer-grid {
+  display: grid;
+}
+
+.univer-size-full {
+  width: 100%;
+  height: 100%;
+}
+
+.univer-h-0 {
+  height: 0;
+}
+
+.univer-h-full {
+  height: 100%;
+}
+
+.univer-min-h-0 {
+  min-height: 0;
+}
+
+.univer-min-h-full {
+  min-height: 100%;
+}
+
+.univer-w-\[388px\] {
+  width: 388px;
+}
+
+.univer-w-full {
+  width: 100%;
+}
+
+.\!univer-min-w-0 {
+  min-width: 0 !important;
+}
+
+.univer-min-w-0 {
+  min-width: 0;
+}
+
+.univer-flex-1 {
+  flex: 1;
+}
+
+.univer-shrink-0 {
+  flex-shrink: 0;
+}
+
+.univer-grid-cols-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.univer-flex-col {
+  flex-direction: column;
+}
+
+.univer-justify-start {
+  justify-content: flex-start;
+}
+
+.univer-justify-end {
+  justify-content: flex-end;
+}
+
+.univer-gap-2 {
+  gap: .5rem;
+}
+
+.univer-gap-3 {
+  gap: .75rem;
+}
+
+.univer-gap-4 {
+  gap: 1rem;
+}
+
+.univer-gap-5 {
+  gap: 1.25rem;
+}
+
+.univer-overflow-auto {
+  overflow: auto;
+}
+
+.univer-overflow-hidden {
+  overflow: hidden;
+}
+
+.univer-overscroll-contain {
+  overscroll-behavior: contain;
+}
+
+.univer-rounded {
+  border-radius: .25rem;
+}
+
+.univer-rounded-lg {
+  border-radius: .5rem;
+}
+
+.univer-border {
+  border-width: 1px;
+}
+
+.univer-border-solid {
+  border-style: solid;
+}
+
+.univer-border-gray-200 {
+  border-color: var(--univer-gray-200);
+}
+
+.univer-bg-gray-0 {
+  background-color: var(--univer-gray-0);
+}
+
+.univer-p-4 {
+  padding: 1rem;
+}
+
+.univer-px-1 {
+  padding-left: .25rem;
+  padding-right: .25rem;
+}
+
+.univer-px-2 {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.univer-px-3 {
+  padding-left: .75rem;
+  padding-right: .75rem;
+}
+
+.univer-px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.univer-py-1 {
+  padding-top: .25rem;
+  padding-bottom: .25rem;
+}
+
+.univer-pb-4 {
+  padding-bottom: 1rem;
+}
+
+.univer-pb-5 {
+  padding-bottom: 1.25rem;
+}
+
+.univer-pr-1 {
+  padding-right: .25rem;
+}
+
+.univer-pt-4 {
+  padding-top: 1rem;
+}
+
+.univer-text-sm {
+  font-size: .875rem;
+  line-height: 1.25rem;
+}
+
+.univer-text-xs {
+  font-size: .75rem;
+  line-height: 1rem;
+}
+
+.univer-font-medium {
+  font-weight: 500;
+}
+
+.univer-text-gray-500 {
+  color: var(--univer-gray-500);
+}
+
+.univer-text-gray-900 {
+  color: var(--univer-gray-900);
+}
+
+.univer-text-red-600 {
+  color: var(--univer-red-600);
+}
+
+.dark\:\!univer-border-gray-700:where(.univer-dark, .univer-dark *) {
+  border-color: var(--univer-gray-700) !important;
+}
+
+.dark\:\!univer-bg-gray-900:where(.univer-dark, .univer-dark *) {
+  background-color: var(--univer-gray-900) !important;
+}
+
+.dark\:\!univer-text-gray-0:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-0) !important;
+}
+
+.dark\:\!univer-text-gray-400:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-gray-400) !important;
+}
+
+.dark\:\!univer-text-red-400:where(.univer-dark, .univer-dark *) {
+  color: var(--univer-red-400) !important;
+}
+body:has([data-u-comp="doc-chart-floating-toolbar"]) [role="tooltip"].univer-delay-100 {
+  pointer-events: none !important;
+}

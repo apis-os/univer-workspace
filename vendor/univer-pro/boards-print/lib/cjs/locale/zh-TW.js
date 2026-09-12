@@ -1,70 +1,11 @@
-function _0x8135(_0x4606bc, _0x621a87) {
-  _0x4606bc = _0x4606bc - 0x10e;
-  const _0x4dae8c = _0x4dae();
-  let _0x8135c9 = _0x4dae8c[_0x4606bc];
-  return _0x8135c9;
-}
-const _0x2e15d3 = _0x8135;
-(function (_0xc2643b, _0x366ea2) {
-  const _0x58a99e = _0x8135,
-    _0x43e733 = _0xc2643b();
-  while (!![]) {
-    try {
-      const _0xbb63b7 =
-        (parseInt(_0x58a99e(0x11c)) / 0x1) *
-          (-parseInt(_0x58a99e(0x117)) / 0x2) +
-        (parseInt(_0x58a99e(0x118)) / 0x3) *
-          (-parseInt(_0x58a99e(0x11a)) / 0x4) +
-        (-parseInt(_0x58a99e(0x119)) / 0x5) *
-          (parseInt(_0x58a99e(0x110)) / 0x6) +
-        parseInt(_0x58a99e(0x11d)) / 0x7 +
-        (-parseInt(_0x58a99e(0x10f)) / 0x8) *
-          (parseInt(_0x58a99e(0x11b)) / 0x9) +
-        -parseInt(_0x58a99e(0x10e)) / 0xa +
-        (parseInt(_0x58a99e(0x116)) / 0xb) * (parseInt(_0x58a99e(0x114)) / 0xc);
-      if (_0xbb63b7 === _0x366ea2) break;
-      else _0x43e733["push"](_0x43e733["shift"]());
-    } catch (_0x261a09) {
-      _0x43e733["push"](_0x43e733["shift"]());
-    }
-  }
-})(_0x4dae, 0xe1818);
-function _0x4dae() {
-  const _0xd6aed2 = [
-    "680zWRPeF",
-    "12UwLOmk",
-    "exports",
-    "JPEG",
-    "無法列印此白板。",
-    "35700vygPnA",
-    "PNG",
-    "16313nDuNYz",
-    "2fIthBy",
-    "237sGxXWi",
-    "4475750SPrxWE",
-    "4700EJVnAK",
-    "173187ivNyPR",
-    "481763xyXoKk",
-    "5764080wdmutP",
-    "3111500hQLAWq",
-  ];
-  _0x4dae = function () {
-    return _0xd6aed2;
-  };
-  return _0x4dae();
-}
 const e = {
   "boards-print": {
-    menu: {
-      print: "列印",
-      exportPng: _0x2e15d3(0x115),
-      exportJpeg: _0x2e15d3(0x112),
-    },
+    menu: { print: "列印", exportPng: "PNG", exportJpeg: "JPEG" },
     loading: { print: "正在準備列印…", image: "正在匯出圖片…" },
     errors: {
-      printFailed: _0x2e15d3(0x113),
+      printFailed: "無法列印此白板。",
       exportFailed: "無法匯出此白板圖片。",
     },
   },
 };
-module[_0x2e15d3(0x111)] = e;
+module.exports = e;

@@ -1,0 +1,2 @@
+export declare const ShapeCubeIcon: import("react").ForwardRefExoticComponent<import("./base.js").IIconProps & import("react").RefAttributes<SVGElement>>;
+export default ShapeCubeIcon;

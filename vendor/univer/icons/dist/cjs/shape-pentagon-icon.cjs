@@ -1,0 +1,36 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-pentagon-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"stroke": "currentColor",
+			"d": "M10 3.23584L17.3838 8.60059L14.5635 17.2812H5.43652L2.61572 8.60059L10 3.23584Z",
+			"strokeWidth": 1.6
+		}
+	}]
+};
+const ShapePentagonIcon = (0, react.forwardRef)(function ShapePentagonIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-pentagon-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapePentagonIcon.displayName = "ShapePentagonIcon";
+//#endregion
+exports.ShapePentagonIcon = ShapePentagonIcon;
+exports.default = ShapePentagonIcon;

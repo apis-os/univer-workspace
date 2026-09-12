@@ -1,0 +1,36 @@
+Object.defineProperties(exports, {
+	__esModule: { value: true },
+	[Symbol.toStringTag]: { value: "Module" }
+});
+let react = require("react");
+let ts_base_js = require("./base.js");
+//#region ts/shape-notched-right-arrow-icon.tsx
+const element = {
+	"tag": "svg",
+	"attrs": {
+		"xmlns": "http://www.w3.org/2000/svg",
+		"fill": "none",
+		"viewBox": "0 0 20 20",
+		"width": "1em",
+		"height": "1em"
+	},
+	"children": [{
+		"tag": "path",
+		"attrs": {
+			"fill": "currentColor",
+			"d": "M18.699 10.001L10.2 17.5556L10.2 13.8L1.4 13.8L4.25 10L1.4 6.2L10.2 6.2L10.2 2.4463ZM16.2906 10.001L11.8 13.9927L11.8 12.2L4.6 12.2L6.25 10L4.6 7.8L11.8 7.8L11.8 6.0093Z",
+			"fillRule": "evenodd"
+		}
+	}]
+};
+const ShapeNotchedRightArrowIcon = (0, react.forwardRef)(function ShapeNotchedRightArrowIcon(props, ref) {
+	return (0, react.createElement)(ts_base_js.IconBase, Object.assign({}, props, {
+		id: "shape-notched-right-arrow-icon",
+		ref,
+		icon: element
+	}));
+});
+ShapeNotchedRightArrowIcon.displayName = "ShapeNotchedRightArrowIcon";
+//#endregion
+exports.ShapeNotchedRightArrowIcon = ShapeNotchedRightArrowIcon;
+exports.default = ShapeNotchedRightArrowIcon;

@@ -1,80 +1,20 @@
-const _0x31cca2 = _0x30a0;
-function _0x30a0(_0x536880, _0xec3933) {
-  _0x536880 = _0x536880 - 0x160;
-  const _0x38efc8 = _0x38ef();
-  let _0x30a072 = _0x38efc8[_0x536880];
-  return _0x30a072;
-}
-(function (_0x3d033f, _0x2384b0) {
-  const _0x521fd9 = _0x30a0,
-    _0x1c71d1 = _0x3d033f();
-  while (!![]) {
-    try {
-      const _0x44d760 =
-        parseInt(_0x521fd9(0x164)) / 0x1 +
-        (parseInt(_0x521fd9(0x160)) / 0x2) *
-          (parseInt(_0x521fd9(0x165)) / 0x3) +
-        parseInt(_0x521fd9(0x170)) / 0x4 +
-        parseInt(_0x521fd9(0x169)) / 0x5 +
-        (-parseInt(_0x521fd9(0x168)) / 0x6) *
-          (-parseInt(_0x521fd9(0x167)) / 0x7) +
-        (parseInt(_0x521fd9(0x16f)) / 0x8) *
-          (-parseInt(_0x521fd9(0x173)) / 0x9) +
-        -parseInt(_0x521fd9(0x161)) / 0xa;
-      if (_0x44d760 === _0x2384b0) break;
-      else _0x1c71d1["push"](_0x1c71d1["shift"]());
-    } catch (_0x1bf1fc) {
-      _0x1c71d1["push"](_0x1c71d1["shift"]());
-    }
-  }
-})(_0x38ef, 0xbfa80);
 const e = {
   "exchange-client": {
-    uploading: _0x31cca2(0x16c),
+    uploading: "جارٍ الرفع",
     uploadSuccess: "تم\x20رفع\x20الملف\x20بنجاح",
-    uploadSuccessTip: _0x31cca2(0x16a),
-    downloading: _0x31cca2(0x16b),
-    downloadSuccess: _0x31cca2(0x16d),
-    unknownMistake: _0x31cca2(0x16e),
+    uploadSuccessTip: "تم رفع {0} ملف/ملفات بنجاح",
+    downloading: "جارٍ التحميل",
+    downloadSuccess: "تم التحميل بنجاح",
+    unknownMistake: "خطأ غير معروف",
     networkError: "خطأ\x20في\x20الشبكة",
-    tooLarge: _0x31cca2(0x171),
+    tooLarge: "البيانات كبيرة جداً",
     internalError: "خطأ\x20داخلي\x20غير\x20معروف",
-    interrupt: _0x31cca2(0x162),
-    fileTypeError: _0x31cca2(0x166),
-    wait: _0x31cca2(0x163),
-    cancel: _0x31cca2(0x172),
-    confirm: _0x31cca2(0x175),
+    interrupt: "تمت مقاطعة الاتصال بالشبكة وفشل رفع الملف",
+    fileTypeError: "نوع الملف المحدد [{0}] غير مدعوم للرفع",
+    wait: "يرجى الانتظار...",
+    cancel: "إلغاء",
+    confirm: "تأكيد",
     uploadAgain: "إعادة\x20الرفع",
   },
 };
-module[_0x31cca2(0x174)] = e;
-function _0x38ef() {
-  const _0x23aa73 = [
-    "جارٍ\x20الرفع",
-    "تم\x20التحميل\x20بنجاح",
-    "خطأ\x20غير\x20معروف",
-    "649840Aivazf",
-    "1036908XIJgBO",
-    "البيانات\x20كبيرة\x20جداً",
-    "إلغاء",
-    "153kUYWFI",
-    "exports",
-    "تأكيد",
-    "2fsLUzP",
-    "3440240PQiumJ",
-    "تمت\x20مقاطعة\x20الاتصال\x20بالشبكة\x20وفشل\x20رفع\x20الملف",
-    "يرجى\x20الانتظار...",
-    "571940zpEnud",
-    "3832629faBkrN",
-    "نوع\x20الملف\x20المحدد\x20[{0}]\x20غير\x20مدعوم\x20للرفع",
-    "7QzjtTF",
-    "454794xYmBxy",
-    "1627245hsAvOc",
-    "تم\x20رفع\x20{0}\x20ملف/ملفات\x20بنجاح",
-    "جارٍ\x20التحميل",
-  ];
-  _0x38ef = function () {
-    return _0x23aa73;
-  };
-  return _0x38ef();
-}
+module.exports = e;

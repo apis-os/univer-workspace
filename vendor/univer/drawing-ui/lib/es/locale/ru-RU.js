@@ -1,0 +1,104 @@
+//#region src/locale/ru-RU.ts
+const locale = { "drawing-ui": {
+	"image-cropper": { error: "Невозможно обрезать не изображения." },
+	objectListPanel: {
+		title: "Слои",
+		empty: "Нет объектов",
+		showAll: "Показать все",
+		hideAll: "Скрыть все",
+		lockAll: "Заблокировать всё",
+		unlockAll: "Разблокировать всё",
+		moveForward: "Переместить вперед",
+		moveBackward: "Переместить назад",
+		close: "Закрыть",
+		show: "Показать",
+		hide: "Скрыть",
+		lock: "Заблокировать",
+		unlock: "Разблокировать",
+		lockHint: "Заблокировать для защиты от случайного выбора",
+		unlockHint: "Заблокировано. Нажмите, чтобы разблокировать",
+		name: "Имя",
+		nameInput: "Имя объекта",
+		description: "Описание",
+		descriptionPlaceholder: "Добавить описание",
+		details: "Сведения",
+		locate: "Найти",
+		expand: "Развернуть",
+		collapse: "Свернуть",
+		dragToReorder: "Перетащите, чтобы изменить порядок",
+		search: "Поиск объектов",
+		filterAll: "Все",
+		filterHidden: "Скрытые",
+		filterLocked: "Заблокированные",
+		sectionCanvas: "Слой холста",
+		sectionFloating: "Плавающий слой",
+		typeNames: {
+			object: "Объект",
+			shape: "Фигура",
+			connector: "Соединитель",
+			image: "Изображение",
+			chart: "Диаграмма",
+			table: "Таблица",
+			smartArt: "SmartArt",
+			video: "Видео",
+			group: "Группа",
+			unit: "Единица",
+			dom: "DOM",
+			text: "Текст",
+			placeholder: "Заполнитель",
+			container: "Контейнер"
+		},
+		noSelection: "Выберите объект, чтобы изменить сведения"
+	},
+	"image-panel": {
+		arrange: {
+			title: "Расположение",
+			forward: "Переместить вперёд",
+			backward: "Переместить назад",
+			front: "На передний план",
+			back: "На задний план"
+		},
+		transform: {
+			title: "Трансформация",
+			rotate: "Повернуть (°)",
+			x: "X (пкс)",
+			y: "Y (пкс)",
+			width: "Ширина (пкс)",
+			height: "Высота (пкс)",
+			lock: "Заблокировать пропорции (%)"
+		},
+		crop: {
+			title: "Обрезка",
+			start: "Начать обрезку",
+			mode: "Свободный"
+		},
+		group: {
+			title: "Группировка",
+			group: "Сгруппировать",
+			unGroup: "Разгруппировать"
+		},
+		align: {
+			title: "Выравнивание",
+			default: "Выберите тип выравнивания",
+			left: "Выровнять по левому краю",
+			center: "Выровнять по центру",
+			right: "Выровнять по правому краю",
+			top: "Выровнять по верхнему краю",
+			middle: "Выровнять посередине",
+			bottom: "Выровнять по нижнему краю",
+			horizon: "Распределить горизонтально",
+			vertical: "Распределить вертикально"
+		},
+		null: "Нет выбранных объектов"
+	},
+	"image-text-wrap": {
+		square: "Вокруг рамки",
+		topAndBottom: "Сверху и снизу",
+		inline: "В тексте",
+		behindText: "За текстом",
+		inFrontText: "Перед текстом"
+	}
+} };
+
+//#endregion
+export { locale as default };

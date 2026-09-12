@@ -1,1 +1,8 @@
-();const e={'docs-exchange-client':{'file':"فایل",'upload':"بازکردن(فایل)",'download':"ذخیره به عنوان"}};export{e as default};
+const e = {
+  "docs-exchange-client": {
+    file: "فایل",
+    upload: "بازکردن(فایل)",
+    download: "ذخیره به عنوان",
+  },
+};
+export { e as default };

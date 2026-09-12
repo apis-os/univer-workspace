@@ -1,1 +1,37 @@
-();const e={'slides-print':{'menu':"Tlačiť",'header':{'pages':'Celkom:\x20{0}\x20strán','cancel':"Zrušiť",'next':"Ďalej",'printing':'Tlačí\x20sa…'},'settings':{'range':"Rozsah tlače",'rangePlaceholder':"Všetky snímky alebo 1-3,5",'rangeInvalid':"Zadajte čísla snímok z prezentácie, napríklad 1-3,5.",'layout':"Rozloženie tlače",'fullPage':"Snímky na celú stranu",'notesPage':"Strany s poznámkami",'handout':"Podklady",'slidesPerPage':'Snímok\x20na\x20stranu','order':"Poradie strán",'horizontal':"Vodorovne",'vertical':"Zvislo",'paperSize':'Veľkosť\x20papiera','orientation':"Orientácia",'portrait':"Na výšku",'landscape':'Na\x20šírku','margin':'Okraje','normal':"Normálne",'narrow':"Úzke",'wide':"Široké",'none':"Žiadne",'formatting':"Formátovanie",'frameSlides':"Orámovať snímky",'slideNumber':"Tlačiť čísla snímok"}}};export{e as default};
+const e = {
+  "slides-print": {
+    menu: "Tlačiť",
+    header: {
+      pages: "Celkom:\x20{0}\x20strán",
+      cancel: "Zrušiť",
+      next: "Ďalej",
+      printing: "Tlačí\x20sa…",
+    },
+    settings: {
+      range: "Rozsah tlače",
+      rangePlaceholder: "Všetky snímky alebo 1-3,5",
+      rangeInvalid: "Zadajte čísla snímok z prezentácie, napríklad 1-3,5.",
+      layout: "Rozloženie tlače",
+      fullPage: "Snímky na celú stranu",
+      notesPage: "Strany s poznámkami",
+      handout: "Podklady",
+      slidesPerPage: "Snímok\x20na\x20stranu",
+      order: "Poradie strán",
+      horizontal: "Vodorovne",
+      vertical: "Zvislo",
+      paperSize: "Veľkosť\x20papiera",
+      orientation: "Orientácia",
+      portrait: "Na výšku",
+      landscape: "Na\x20šírku",
+      margin: "Okraje",
+      normal: "Normálne",
+      narrow: "Úzke",
+      wide: "Široké",
+      none: "Žiadne",
+      formatting: "Formátovanie",
+      frameSlides: "Orámovať snímky",
+      slideNumber: "Tlačiť čísla snímok",
+    },
+  },
+};
+export { e as default };

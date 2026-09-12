@@ -1,0 +1,11 @@
+const require_rolldown_runtime = require('../rolldown-runtime-C_NdSu1c.js');
+let _univerjs_drawing_ui_locale_zh_HK = require("@univerjs/drawing-ui/locale/zh-HK");
+_univerjs_drawing_ui_locale_zh_HK = require_rolldown_runtime.__toESM(_univerjs_drawing_ui_locale_zh_HK);
+let _univerjs_sheets_drawing_ui_locale_zh_HK = require("@univerjs/sheets-drawing-ui/locale/zh-HK");
+_univerjs_sheets_drawing_ui_locale_zh_HK = require_rolldown_runtime.__toESM(_univerjs_sheets_drawing_ui_locale_zh_HK);
+
+//#region src/locales/zh-HK.ts
+var zh_HK_default = Object.assign({}, _univerjs_drawing_ui_locale_zh_HK.default, _univerjs_sheets_drawing_ui_locale_zh_HK.default);
+
+//#endregion
+module.exports = zh_HK_default;

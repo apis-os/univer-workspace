@@ -1,0 +1,43 @@
+import type { IDisposable } from '@univerjs/core';
+import type { IEmbedChildContainerContext } from '../types/embed-ui';
+import type { EmbedHostWheelGestureService } from './embed-host-wheel-gesture.service';
+import type { EmbedPassiveViewportRegistryService } from './embed-passive-viewport-registry.service';
+import type { EmbedPassiveWheelHandlerRegistryService } from './embed-passive-wheel-handler-registry.service';
+interface IEmbedDomWheelRoutingOptions {
+    container: HTMLElement;
+    gate: HTMLElement;
+    getChildContext: () => IEmbedChildContainerContext | undefined;
+    getStage: () => 'inactive' | 'stage1' | 'stage2';
+    hostScrollOffset: {
+        current: number;
+    };
+    hostWheelGestureService: EmbedHostWheelGestureService;
+    invalidate: (reason: 'child-scroll' | 'host-scroll' | 'wheel') => void;
+    liveRoot: HTMLElement;
+    onHostWheel?: (event: WheelEvent, context: IEmbedChildContainerContext) => boolean | void;
+    passiveViewportRegistry: EmbedPassiveViewportRegistryService;
+    passiveWheelHandlerRegistry: EmbedPassiveWheelHandlerRegistryService;
+    resizeDocsSheetLikeRendererByWheel?: (event: WheelEvent) => boolean;
+    routeHostGestures: boolean;
+    syncHostVerticalScroll?: boolean;
+    viewScale?: number;
+}
+export declare function registerEmbedDomWheelRouting(options: IEmbedDomWheelRoutingOptions): IDisposable;
+export declare function createEmbedWheelEventForViewScale(event: WheelEvent, viewScale: number | undefined): WheelEvent;
+export declare function createForwardedEmbedWheelEvent(source: WheelEvent, init: WheelEventInit): WheelEvent;
+export declare function isEmbedForwardedWheelEvent(event: Event | undefined): boolean;
+export declare function markHostVerticalWheelAttempted(event: WheelEvent): void;
+export declare function isHostVerticalWheelAttempted(event: WheelEvent): boolean;
+export declare function forwardWheelToEmbedRuntime(event: WheelEvent, liveRoot: HTMLElement): boolean;
+export declare function scrollEmbedRuntimeDom(event: WheelEvent, liveRoot: HTMLElement): boolean;
+export declare function scrollEmbedRuntimeDomElement(event: WheelEvent, element: HTMLElement): boolean;
+export declare function scrollHostScrollPortByWheel(container: HTMLElement, event: WheelEvent): boolean;
+export declare function findNearestEmbedScrollPort(element: HTMLElement): HTMLElement | null;
+export declare function clipsEmbedOverflow(element: HTMLElement): boolean;
+export declare function shouldPassVerticalWheelToHost(context: IEmbedChildContainerContext, event: WheelEvent, syncHostVerticalScroll?: boolean): boolean;
+export declare function shouldUseRuntimeDomHorizontalScroll(container: HTMLElement, event: WheelEvent): boolean;
+export declare function getHorizontalWheelDelta(event: WheelEvent): number;
+export declare function scrollDocsSheetLikeHorizontalWheel(deltaX: number, resizeRenderer: () => boolean, scrollChild: () => boolean): boolean;
+export declare function shouldReturnDocsSheetLikeChildBeforeShrink(deltaX: number, viewportScrollX: number | undefined): boolean;
+export declare function shouldRouteUnhandledWheelToHost(event: WheelEvent): boolean;
+export {};

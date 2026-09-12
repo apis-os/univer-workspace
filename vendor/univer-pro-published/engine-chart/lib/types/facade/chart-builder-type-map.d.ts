@@ -1,0 +1,58 @@
+import type { ChartTypeString, IChartInfo, IChartSeriesPatch, IChartSeriesStyleSpec } from '@univerjs-pro/engine-chart';
+import type { FAreaChartBuilder } from './builders/f-area-chart-builder';
+import type { FBoxplotChartBuilder } from './builders/f-boxplot-chart-builder';
+import type { FBubbleChartBuilder } from './builders/f-bubble-chart-builder';
+import type { FCandlestickChartBuilder } from './builders/f-candlestick-chart-builder';
+import type { FChordChartBuilder } from './builders/f-chord-chart-builder';
+import type { FCombinationChartBuilder } from './builders/f-combination-chart-builder';
+import type { FFunnelChartBuilder } from './builders/f-funnel-chart-builder';
+import type { FGaugeChartBuilder } from './builders/f-gauge-chart-builder';
+import type { FHeatmapChartBuilder } from './builders/f-heatmap-chart-builder';
+import type { FHistogramChartBuilder } from './builders/f-histogram-chart-builder';
+import type { FLineChartBuilder } from './builders/f-line-chart-builder';
+import type { FParetoChartBuilder } from './builders/f-pareto-chart-builder';
+import type { FPieChartBuilder } from './builders/f-pie-chart-builder';
+import type { FRadarChartBuilder } from './builders/f-radar-chart-builder';
+import type { FRelationChartBuilder } from './builders/f-relation-chart-builder';
+import type { FScatterChartBuilder } from './builders/f-scatter-chart-builder';
+import type { FSunburstChartBuilder } from './builders/f-sunburst-chart-builder';
+import type { FTreemapChartBuilder } from './builders/f-treemap-chart-builder';
+import type { FWaterfallChartBuilder } from './builders/f-waterfall-chart-builder';
+import type { FWordCloudChartBuilder } from './builders/f-word-cloud-chart-builder';
+import type { FCartesianChartBuilder } from './f-cartesian-chart-builder';
+import type { FChartBuilderBase } from './f-chart-builder-base';
+/** Maps each canonical Chart type to its type-specific Facade Builder. */
+export interface IChartBuilderTypeMap<TSource = never[], TDataSource = TSource, TInfo extends IChartInfo<TDataSource> = IChartInfo<TDataSource>> {
+    [ChartTypeString.Line]: FLineChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Column]: FCartesianChartBuilder<Omit<IChartSeriesPatch, 'selector'>, IChartSeriesStyleSpec, TSource, TDataSource, TInfo>;
+    [ChartTypeString.ColumnStacked]: FCartesianChartBuilder<Omit<IChartSeriesPatch, 'selector'>, IChartSeriesStyleSpec, TSource, TDataSource, TInfo>;
+    [ChartTypeString.ColumnPercentStacked]: FCartesianChartBuilder<Omit<IChartSeriesPatch, 'selector'>, IChartSeriesStyleSpec, TSource, TDataSource, TInfo>;
+    [ChartTypeString.Bar]: FCartesianChartBuilder<Omit<IChartSeriesPatch, 'selector'>, IChartSeriesStyleSpec, TSource, TDataSource, TInfo>;
+    [ChartTypeString.BarStacked]: FCartesianChartBuilder<Omit<IChartSeriesPatch, 'selector'>, IChartSeriesStyleSpec, TSource, TDataSource, TInfo>;
+    [ChartTypeString.BarPercentStacked]: FCartesianChartBuilder<Omit<IChartSeriesPatch, 'selector'>, IChartSeriesStyleSpec, TSource, TDataSource, TInfo>;
+    [ChartTypeString.Pie]: FPieChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Donut]: FPieChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Area]: FAreaChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.AreaStacked]: FAreaChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.AreaPercentStacked]: FAreaChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Radar]: FRadarChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Scatter]: FScatterChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Combination]: FCombinationChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.WordCloud]: FWordCloudChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Funnel]: FFunnelChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Bubble]: FBubbleChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Relation]: FRelationChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Waterfall]: FWaterfallChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Pareto]: FParetoChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Sankey]: FChartBuilderBase<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Heatmap]: FHeatmapChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Boxplot]: FBoxplotChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Candlestick]: FCandlestickChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Histogram]: FHistogramChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Treemap]: FTreemapChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Sunburst]: FSunburstChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Gauge]: FGaugeChartBuilder<TSource, TDataSource, TInfo>;
+    [ChartTypeString.Chord]: FChordChartBuilder<TSource, TDataSource, TInfo>;
+}
+/** Any concrete engine-only Chart configuration builder. */
+export type FAnyChartBuilder<TSource = never[], TDataSource = TSource, TInfo extends IChartInfo<TDataSource> = IChartInfo<TDataSource>> = IChartBuilderTypeMap<TSource, TDataSource, TInfo>[ChartTypeString];

@@ -1,0 +1,16 @@
+import type { ChartDirection } from '../../../../types';
+import type { ITooltipRuntimeSize } from './tool-tip-size';
+export declare function getTooltipExtraCss(backgroundColor: string, direction: ChartDirection, runtimeSize: ITooltipRuntimeSize): string;
+export declare function getLTRTooltipMarker(color: string, runtimeSize: ITooltipRuntimeSize): string;
+export declare function getRTLTooltipMarker(color: string, runtimeSize: ITooltipRuntimeSize): string;
+export declare function adaptLTRTooltipMarker(marker: string | undefined, runtimeSize: ITooltipRuntimeSize): string;
+export declare function adaptRTLTooltipMarker(marker: string | undefined, runtimeSize: ITooltipRuntimeSize): string;
+export declare function wrapTooltipAutoDirection(content: string): string;
+export declare function wrapTooltipLTRDirection(content: string): string;
+export declare function renderLTRTitleRow(content: string): string;
+export declare function renderRTLTooltipRow(content: string, runtimeSize: ITooltipRuntimeSize): string;
+export declare function renderRTLTooltipBlock(rows: string[], runtimeSize: ITooltipRuntimeSize): string;
+export declare function renderRTLTitleRow(content: string): string;
+export declare function renderRTLMarkerTextRow(text: string, runtimeSize: ITooltipRuntimeSize, marker?: string): string;
+export declare function renderRTLValueLabelRow(label: string, value: unknown, runtimeSize: ITooltipRuntimeSize, marker?: string, boldValue?: boolean): string;
+export declare function renderRTLEdgeRow(sourceName: string, targetName: string, value: unknown, runtimeSize: ITooltipRuntimeSize, marker?: string): string;
