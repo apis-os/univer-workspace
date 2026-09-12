@@ -1,0 +1,8 @@
+import{BooleanNumber,CommandType,DOC_RANGE_TYPE,DashStyleType,DataStreamTreeTokenType,DependentOn,Disposable,DocumentFlavor,ICommandService,IConfigService,IResourceManagerService,IUniverInstanceService,Inject,Injector,JSONX,ObjectRelativeFromH,ObjectRelativeFromV,Plugin,TableAlignmentType,TableRowHeightRule,TableSizeType,TableTextWrapType,TextX,Tools,UniverInstanceType,containsInteriorInsertionOffset,createParagraphId,createSectionId,generateRandomId,getBlockRangeInterval,getBodySliceForTextXAction,getCustomBlockIdsInSelections,getParagraphContentStartOffset,getTableCellTokenInterval,getTableRangeInterval,getTableRowTokenInterval,merge}from"@univerjs/core";
+import{DocHistoryAction,DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin,getContentInsertRange}from"@univerjs/docs";
+import{Subject}from"rxjs";
+import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { fa } from "./internal-core-endo.js";
+function sa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463592){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463593=new DOMParser().parseFromString(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463592,"text/html");return Array.from(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463593.querySelectorAll("table")).map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46832=>fa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46832));}
+
+export { sa as parseHtmlTablesClipboard };
