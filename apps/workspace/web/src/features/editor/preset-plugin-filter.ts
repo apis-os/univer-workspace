@@ -36,6 +36,11 @@ export function isSkippablePluginError(reason: unknown): boolean {
   );
 }
 
+export function isSkippableRenderError(reason: unknown): boolean {
+  const message = reason instanceof Error ? reason.message : String(reason ?? "");
+  return /Cannot find "" registered/i.test(message);
+}
+
 type UniverPrototype = {
   registerPlugin: (plugin: unknown, config?: unknown) => unknown;
 };
@@ -123,9 +128,8 @@ type RenderGuardTarget = {
 };
 
 /**
- * Pivot/chart leftovers still register sheet render modules. One empty Redi
- * token then disposes the whole sheet renderer (canvas included). Isolate each
- * module so the Q3 grid can mount without those Pro controllers.
+ * Belt-and-suspenders after leftover pivot CQ is not registered: isolate
+ * each sheet render module so an empty Redi token cannot dispose the canvas.
  */
 export function installSafeSheetRenderGuard(
   renderTarget: RenderGuardTarget
@@ -137,12 +141,14 @@ export function installSafeSheetRenderGuard(
       this: unknown,
       dependencies: unknown
     ) {
-      const list = Array.isArray(dependencies) ? dependencies : [];
-      for (const dep of list) {
+      if (!Array.isArray(dependencies)) {
+        return origAdd.call(this, dependencies);
+      }
+      for (const dep of dependencies) {
         try {
           origAdd.call(this, [dep]);
         } catch (err) {
-          if (isSkippablePluginError(err)) continue;
+          if (isSkippableRenderError(err)) continue;
           throw err;
         }
       }
@@ -158,12 +164,14 @@ export function installSafeSheetRenderGuard(
       renderer: unknown,
       dependencies: unknown
     ) {
-      const list = Array.isArray(dependencies) ? dependencies : [];
-      for (const dep of list) {
+      if (!Array.isArray(dependencies)) {
+        return origTry.call(this, renderer, dependencies);
+      }
+      for (const dep of dependencies) {
         try {
           origTry.call(this, renderer, [dep]);
         } catch (err) {
-          if (isSkippablePluginError(err)) continue;
+          if (isSkippableRenderError(err)) continue;
           throw err;
         }
       }

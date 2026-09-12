@@ -267,7 +267,7 @@ curl -s https://univer-workspace.apisos.workers.dev/healthz.ai
 ## 8. Live origin proof (T9)
 
 Origin: `https://univer-workspace.apisos.workers.dev`  
-Worker version: `721b7efe-89b5-4f7e-9b6c-efa7fde543c6` (`pnpm exec wrangler deploy`; `ai` + `browser` + `LOADER` bindings).
+Worker version: `6858790b-935d-4472-821b-a98a9f1c8450` (`npx wrangler@4.130.0 deploy`; `ai` + `browser` + `LOADER` bindings).
 
 ```bash
 pnpm --filter @univerjs/univer-workspace build:web
@@ -278,7 +278,7 @@ EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cl
 
 Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot PNG ≥4000B after `POST /uf/:fileKey`.
 
-Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-ready"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-fix4"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
 
 ### Proved on this deploy
 
@@ -286,15 +286,16 @@ Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-ready"`, 
 - [x] `GET /healthz.ai` → `{ gateway: "default" }`
 - [x] Avery password login + `POST /agents/unit_welcome_sheet/turns` (`Set A1 to Hello from AI`) returns `rev`
 - [x] `POST /uf/d29ya3NwYWNlLnVuaXZlcg` then `GET .../units/unit_welcome_sheet/inspect?range=E2` → 200
-- [ ] Explain cache: this deploy smoke `HIT` then `HIT` (warm `demo:explain-q3:t9-ready`, not invented). Prior `0fbc9e32` had MISS then HIT.
+- [x] Explain cache: this deploy smoke `MISS` then `HIT` on `demo:explain-q3:t9-fix4` (not invented; not prior `0fbc9e32`)
 - [x] `/uf` screenshot 200 PNG length 5794 (≥4000; real sheet capture)
 - [x] CLI proof execute → inspect E2 `f=SUM(B2:D2)` → screenshot 200 → worktree ready → curl `/uf` 200
 - [x] Headed `/demo` shows Q3 grid; `univer-sheet-main-canvas_unit_welcome_sheet` 806×651 (exact id `univer-sheet-main-canvas` is suffixed)
-- [ ] 90-second two-user click-through — canvas + in-grid D3 181→180; conflict toast / Fill card / What-if Merge / formula inspector still fail
-- [ ] Present / Follow Agent / Fill E2:E4 screenshot card / formula inspector — Follow click true; Present visible in chrome (90s `^Present$` matcher missed); no fill card; no inspector
-- [ ] Same-cell conflict toast — both D3 typed in-grid on the sheet canvas; no toast
-- [ ] What-if comparison + Merge — palette item not found
-- [ ] History overlay names Avery / Jordan / Workspace Agent — History click true; overlay showed agent panel text, not those names
-- [ ] `/render` screenshot card PNG on Fill — Fill streamed E2:E4; no screenshot card in the panel
+- [ ] 90-second two-user click-through — canvas + in-grid D3 name-box 180 (name box advanced to D4); Present/Follow and formula inspector `SUM(B2:D2)` clicked; conflict toast / Fill PNG card / What-if Merge / History Avery·Jordan names still fail
+- [x] Present / Follow — clicked `[data-demo="live-share-present"]` label Present and `[data-demo="live-share-follow"]` label Follow
+- [x] Formula inspector — palette Inspect formula; dialog `f=SUM(B2:D2)`
+- [ ] Same-cell conflict toast — both D3 typed in-grid via the name box; no toast
+- [ ] What-if comparison + Merge — palette What-if +10% Sep clicked; stayed on `/demo`; no Confirm merge
+- [ ] History overlay names Avery / Jordan / Workspace Agent — History vs Live Comb clicked; Avery/Jordan names not in overlay (Workspace Agent only in agent panel)
+- [ ] `/render` screenshot card PNG on Fill — Fill streamed E2:E4; panel showed screenshot unavailable, not `img[alt="Q3 Forecast after agent fill"]`
 
 Unchecked boxes are remaining concerns, not invented passes.

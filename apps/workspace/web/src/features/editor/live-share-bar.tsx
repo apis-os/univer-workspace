@@ -7,10 +7,7 @@ import {
   collaborationStatusMessageKey,
   type CollaborationIssue,
 } from "./collaboration-status";
-import {
-  followAgentCommand,
-  stopFollowAgent,
-} from "./follow-agent";
+import { stopFollowAgent } from "./follow-agent";
 import {
   isLiveShareFacadeAvailable,
   liveShareCommands,
@@ -86,12 +83,18 @@ export function LiveShareBar({
   const commands = liveShareCommands(resolved);
   return (
     <div className="flex items-center gap-1">
-      <Button size="sm" variant="secondary" onClick={commands.present}>
+      <Button
+        size="sm"
+        variant="secondary"
+        data-demo="live-share-present"
+        onClick={commands.present}
+      >
         {t("liveSharePresent")}
       </Button>
       <Button
         size="sm"
         variant="secondary"
+        data-demo="live-share-stop"
         onClick={() => {
           stopFollowAgent();
           commands.stop();
@@ -99,8 +102,13 @@ export function LiveShareBar({
       >
         {t("liveShareStop")}
       </Button>
-      <Button size="sm" variant="secondary" onClick={followAgentCommand}>
-        {t("followAgent")}
+      <Button
+        size="sm"
+        variant="secondary"
+        data-demo="live-share-follow"
+        onClick={commands.follow}
+      >
+        {t("liveShareFollow")}
       </Button>
     </div>
   );

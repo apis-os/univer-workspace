@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import {
   isRegisterablePlugin,
   isSkippablePluginError,
+  isSkippableRenderError,
   omitUnnamedPlugins,
   omitUnnamedPresetPlugins,
   withSafeUniverPluginRegistration,
@@ -157,20 +158,20 @@ describe("preset plugin filter", () => {
     expect(src).toMatch(/omitUnnamedPresetPlugins\(/);
     expect(src).toMatch(/omitUnnamedPlugins\(/);
     expect(src).toMatch(/installNamelessPluginServiceGuard\(/);
-    expect(src).toMatch(/installSafeSheetRenderGuard\(/);
-    expect(src).toMatch(/RenderUnit/);
-    expect(src).toMatch(/IRenderManagerService/);
+    expect(src).toMatch(/installSafeSheetRenderGuard\(\s*RenderUnit\.prototype\s*\)/);
+    expect(src).not.toMatch(/installSafeSheetRenderGuard\(\s*RenderManagerService\.prototype/);
+    expect(src).not.toMatch(/installSafeSheetRenderGuard\(\s*univer\.__getInjector/);
     expect(src).toMatch(/PluginService/);
   });
 
   it("treats empty Redi tokens from leftover Pro render modules as skippable", () => {
-    expect(
-      isSkippablePluginError(
-        new Error(
-          '[redi]: Cannot find "" registered by any injector. It is the 2th param of "CQ".'
-        )
-      )
-    ).toBe(true);
+    const emptyRedi = new Error(
+      '[redi]: Cannot find "" registered by any injector. It is the 2th param of "CQ".'
+    );
+    expect(isSkippableRenderError(emptyRedi)).toBe(true);
+    expect(isSkippablePluginError(emptyRedi)).toBe(true);
+    expect(isSkippableRenderError(new Error("CQ is not defined"))).toBe(false);
+    expect(isSkippablePluginError(new Error("CQ is not defined"))).toBe(true);
   });
 
   it("keeps later sheet render modules when a pivot module has an empty Redi token", () => {
@@ -194,7 +195,71 @@ describe("preset plugin filter", () => {
       { name: "scroll" }
     ]);
     expect(added).toEqual(["skeleton", "scroll"]);
+    const wrapped = proto.addRenderDependencies;
     restore();
+    expect(proto.addRenderDependencies).not.toBe(wrapped);
+    expect(() =>
+      proto.addRenderDependencies([
+        { name: "skeleton" },
+        { name: "pivot" },
+        { name: "scroll" }
+      ])
+    ).toThrow(/Cannot find "" registered/);
+  });
+
+  it("throws through non-skippable sheet render errors instead of skipping the module", () => {
+    const proto = {
+      addRenderDependencies() {
+        throw new Error("SheetSkeleton is not defined");
+      }
+    };
+    const restore = installSafeSheetRenderGuard(proto);
+    expect(() => proto.addRenderDependencies([{ name: "skeleton" }])).toThrow(
+      /SheetSkeleton is not defined/
+    );
+    restore();
+  });
+
+  it("forwards non-array render deps instead of silently no-op", () => {
+    const seen: unknown[] = [];
+    const proto = {
+      addRenderDependencies(deps: unknown) {
+        seen.push(deps);
+      }
+    };
+    const restore = installSafeSheetRenderGuard(proto);
+    const lone = { name: "skeleton" };
+    proto.addRenderDependencies(lone);
+    expect(seen).toEqual([lone]);
+    restore();
+  });
+
+  it("rewires leftover collaboration-client-ui import aliases so _0x free vars cannot abort the sheet", () => {
+    const src = readFileSync(
+      join(
+        dirname(fileURLToPath(import.meta.url)),
+        "../../../../../../vendor/univer-pro/collaboration-client-ui/lib/es/index.js"
+      ),
+      "utf8"
+    );
+    expect(src).toMatch(/UniverCollaborationClientUIPlugin/);
+    expect(src).not.toMatch(/\b_0x[0-9a-fA-F]+\b/);
+  });
+
+  it("skips leftover pivot CQ registerRenderModule so _createRender never sees it", () => {
+    const src = readFileSync(
+      join(
+        dirname(fileURLToPath(import.meta.url)),
+        "../../../../../../vendor/univer-pro/sheets-pivot-ui/lib/es/index.js"
+      ),
+      "utf8"
+    );
+    const defStart = src.lastIndexOf("_registerRenderModules(){");
+    expect(defStart).toBeGreaterThan(-1);
+    const defEnd = src.indexOf("_initRegisterCommand", defStart);
+    const method = src.slice(defStart, defEnd);
+    expect(method).toMatch(/_registerRenderModules\(\)\{/);
+    expect(method).not.toMatch(/\["registerRenderModule"\]|\.registerRenderModule\s*\(/);
   });
 
   it("keeps later render deps when RenderManagerService._tryAddRenderDependencies throws", () => {

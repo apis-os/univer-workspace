@@ -17,7 +17,7 @@ export const AI_GATEWAY_LIVE_MODELS = [
 ] as const;
 
 const AI_GATEWAY_PRODUCT = "univer-workspace";
-const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-ready";
+const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-fix4";
 const EXPLAIN_CACHE_TTL = 3600;
 
 export type AgentGatewayStep = "tool" | "text" | "explain";
@@ -317,6 +317,10 @@ function hasFillE2E4Cells(cells: unknown): boolean {
   const a1s = new Set(cells.map(cellA1).filter(Boolean));
   if ([...a1s].some(isE2E4Range)) return true;
   return a1s.has("E2") && a1s.has("E3") && a1s.has("E4");
+}
+
+export function isQ3FillPrompt(prompt: string): boolean {
+  return /fill[\s\S]*e2\s*:\s*e4/i.test(prompt);
 }
 
 export function isQ3FillToolResult(tool: string, args: Record<string, unknown>): boolean {
@@ -702,6 +706,10 @@ export async function runAgentTurn(
 
   try {
     emit({ type: "agent.thinking", data: { delta: "Loading Workspace Skills and unit snapshot…" } });
+    if (isQ3FillPrompt(prompt)) {
+      fillScreenshot = captureQ3FillScreenshot(action, unitId, actor);
+      scheduleWaitUntil(host, fillScreenshot.then(() => undefined));
+    }
 
   const recordTool = async (tool: string, args: Record<string, unknown>) => {
     emit({ type: "agent.tool_call_start", data: { tool, args } });
@@ -797,7 +805,14 @@ export async function runAgentTurn(
       emit({ type: "agent.token", data: { delta: chunk } });
     }
   }
-  const screenshot = fillScreenshot ? await fillScreenshot : undefined;
+  const screenshot = fillScreenshot
+    ? await Promise.race([
+        fillScreenshot,
+        new Promise<AgentScreenshot | null>((resolve) => {
+          setTimeout(() => resolve(null), 12_000);
+        })
+      ])
+    : undefined;
   const unit = collab?.getUnit(unitId);
   const elapsedMs = aiElapsedMs ?? (Date.now() - turnStartedAt);
   const doneData: Record<string, unknown> = {

@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it, vi } from "vitest";
 import {
   isLiveShareFacadeAvailable,
@@ -25,6 +26,16 @@ describe("Live Share bar Facade helpers", () => {
       isLiveShareFacadeAvailable({ startPresenting: () => undefined })
     ).toBe(false);
     expect(isLiveShareFacadeAvailable(facade())).toBe(true);
+  });
+
+  it("exposes Present and Follow as the real live-share controls", () => {
+    const src = readFileSync(new URL("./live-share-bar.tsx", import.meta.url));
+    expect(src.toString()).toMatch(/data-demo="live-share-present"/);
+    expect(src.toString()).toMatch(/data-demo="live-share-follow"/);
+    expect(src.toString()).toMatch(/t\("liveSharePresent"\)/);
+    expect(src.toString()).toMatch(/t\("liveShareFollow"\)/);
+    expect(src.toString()).toMatch(/onClick=\{commands\.follow\}/);
+    expect(src.toString()).not.toMatch(/onClick=\{followAgentCommand\}/);
   });
 
   it("invokes Present Stop and Follow on the Facade", () => {

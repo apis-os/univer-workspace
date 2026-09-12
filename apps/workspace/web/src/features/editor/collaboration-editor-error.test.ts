@@ -29,4 +29,10 @@ describe("collaboration editor mount errors", () => {
       /setError\(\s*reason instanceof Error\s*\?\s*reason\.message/
     );
   });
+
+  it("does not assign window.univerAPI on collaboration editors", () => {
+    const src = readFileSync(join(root, "collaboration-editor.tsx"), "utf8");
+    expect(src).not.toMatch(/window\.univerAPI/);
+    expect(src).not.toMatch(/univerAPI\?: FUniver/);
+  });
 });
