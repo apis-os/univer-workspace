@@ -563,9 +563,12 @@ export class DshHost extends HostBase<any> {
       }
       const db = new ControlPlaneDb(dbBinding);
       const session = await resolveGatewayContext(request, db);
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
       const fileRes = await handleUniverFileHttp(request, {
         db,
-        currentUser: session.currentUser
+        currentUser: session.currentUser,
+        collab
       });
       if (fileRes) return fileRes;
     }

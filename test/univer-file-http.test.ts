@@ -7,6 +7,7 @@ import { registerHooks } from "node:module";
 import { DatabaseSync } from "node:sqlite";
 import { Context } from "@deepseek-ai/cordis";
 import { createMockD1 } from "./mock-d1.ts";
+import { generateSessionToken } from "../src/control-plane/auth.ts";
 import { seedControlPlane } from "../src/control-plane/schema.ts";
 import { ControlPlaneDb } from "../src/control-plane/db.ts";
 import type { SqlExec } from "../src/kernel/sql.ts";
@@ -409,6 +410,48 @@ describe("Univer File /uf inspect", () => {
     assert.equal(draftRes?.status, 200);
     const draftBody = (await draftRes!.json()) as { v?: unknown };
     assert.equal(draftBody.v, "draft-a1");
+  });
+
+  test("ChatAgent /uf inspect reads a snapshot without injecting collab on the handler", async () => {
+    const { DshHost } = await import("../src/project/dsh-host.ts");
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const token = generateSessionToken();
+    await admin.db.createSession(user.id, token);
+
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    setSheetCell(snapshot, "A1", { v: "seeded-a1" });
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+
+    class KernelHost extends DshHost {
+      override async ensureKernel() {
+        return { get: (name: string) => (name === "collab" ? collab : undefined) } as never;
+      }
+    }
+
+    const agent = new KernelHost(
+      {
+        id: { toString: () => "id_inspect", name: "univer_collab" },
+        storage: { sql: { exec: () => ({ toArray: () => [] }) } },
+        getWebSockets: () => [],
+        acceptWebSocket: () => {}
+      } as never,
+      { DB: admin.d1 }
+    );
+
+    const key = fileKeyOf(DEMO_FILE);
+    const auth = { Authorization: `Bearer ${token}` };
+    const created = await agent.fetch(new Request(ufUrl(key), { method: "POST", headers: auth }));
+    assert.equal(created.status, 200);
+
+    const res = await agent.fetch(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/inspect?range=A1`), { headers: auth })
+    );
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { v?: unknown };
+    assert.equal(body.v, "seeded-a1");
   });
 });
 
