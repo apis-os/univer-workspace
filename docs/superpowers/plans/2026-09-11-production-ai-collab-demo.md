@@ -1,6 +1,6 @@
 ---
 name: AI collab demo
-overview: "Shipped T0–T22 (Approved): two-browser Comb + Live Share + AI Gateway + /uf on workers.dev. T9 90s proof is in flight. Wave G (T23–T31) is the next wow — the Q3 sheet itself becomes the collaboration instrument (cell intent, OT blame heat, agent draft Jordan Follows before merge, Gateway trace HUD, History vs live Comb, formula provenance, legend-as-playbook)."
+overview: "Shipped T0–T22 (Approved): two-browser Comb + Live Share + AI Gateway + /uf on workers.dev. T9 90s proof is in flight. Wave G (T23–T31) is the next wow — the Q3 sheet itself becomes the collaboration instrument (cell intent, OT blame heat, agent draft Jordan Follows before merge, Gateway trace HUD, History vs live Comb, formula provenance, legend-as-playbook). Wave H (T32–T40) makes the CLI a Comb-visible third actor: streaming agent turns, first-class /uf office commands, inspect narratives, conflict-aware keep-D3, and a 90s CLI+AI addendum."
 todos:
   - id: t0-deobfuscate
     content: "T0: Expand DEFAULT_PACKAGES; deobfuscate CF Pro set; --fix-vendor; never patch obfuscated blobs"
@@ -119,20 +119,47 @@ todos:
   - id: t31-verify
     content: "T31: Wave G 90s addendum + edge-wave-g.mjs (do not steal T9 smoke)"
     status: pending
+  - id: t32-uf-cli
+    content: "T32: First-class univer-workspace-cli uf execute/inspect/screenshot/worktree on /uf (no daemon)"
+    status: pending
+  - id: t33-agent-sse
+    content: "T33: CLI agent turn SSE + canned vs ad-hoc explain (never fake HIT)"
+    status: pending
+  - id: t34-cli-ticker
+    content: "T34: CLI watch cliWroteCells + live-edit --via uf so Jordan sees the third actor"
+    status: pending
+  - id: t35-undo-follow
+    content: "T35: CLI agent undo + follow-print last Workspace Agent A1"
+    status: pending
+  - id: t36-cli-draft
+    content: "T36: CLI agent draft-fill via /uf (after T26; do not take dsh-host)"
+    status: pending
+  - id: t37-narrative
+    content: "T37: Structured cell narrative from /uf inspect precedents"
+    status: pending
+  - id: t38-keep-d3
+    content: "T38: Conflict-aware agent suggests who keeps D3 (text only, skipCache)"
+    status: pending
+  - id: t39-wave-h-scenes
+    content: "T39: /demo scenes cli|narrative|keep + i18n en-US/zh-CN (after T30)"
+    status: pending
+  - id: t40-verify
+    content: "T40: Wave H 90s addendum + edge-wave-h.mjs (do not steal T9 or T31 smoke)"
+    status: pending
 isProject: false
 ---
 
 # Production AI + Realtime Collaboration Demo
 
-> **For agentic workers:** REQUIRED SUB-SKILL: `superpowers:subagent-driven-development` + TDD. **T0–T8b and T10–T22 are complete and Approved.** **T9 is in progress** in another agent — do not touch product code, wrangler, `scripts/edge-smoke.mjs`, or T9 files; do not mark T9 complete; do not `git push`. **Wave G (T23–T31) starts after T9 Approved.** Subagents: `model: "cursor-grok-4.6-xhigh"` only. Steps use `- [ ]`.
+> **For agentic workers:** REQUIRED SUB-SKILL: `superpowers:subagent-driven-development` + TDD. **T0–T8b and T10–T22 are complete and Approved.** **T9 is in progress** in another agent — do not touch product code, wrangler, `scripts/edge-smoke.mjs`, or T9 files; do not mark T9 complete; do not `git push`. **Wave G (T23–T31) starts after T9 Approved.** **Wave H (T32–T40) also after T9 Approved** and may run alongside Wave G with exclusive-file locks. Subagents: `model: "cursor-grok-4.6-xhigh"` only. Steps use `- [ ]`.
 >
-> **Save on execute:** copy to [univer-workspace/docs/superpowers/plans/2026-09-11-production-ai-collab-demo.md](univer-workspace/docs/superpowers/plans/2026-09-11-production-ai-collab-demo.md). Ledger: [univer-workspace/.superpowers/sdd/progress.md](univer-workspace/.superpowers/sdd/progress.md).
+> **Save on execute:** copy to [univer-workspace/docs/superpowers/plans/2026-09-11-production-ai-collab-demo.md](univer-workspace/docs/superpowers/plans/2026-09-11-production-ai-collab-demo.md). Ledger: [univer-workspace/.superpowers/sdd/progress.md](univer-workspace/.superpowers/sdd/progress.md). Wave H notes: [univer-workspace/.superpowers/sdd/plan-wave-h-notes.md](univer-workspace/.superpowers/sdd/plan-wave-h-notes.md).
 >
-> **Revision:** CLI/headless is **on Cloudflare** (agent-think-cordis wax-office `/uf/` contract). Decode every Pro package before editing. Wave F (T15–T22) shipped follow-agent, what-if, screenshot cards, formula inspector, @agent, HUD, undo. **Wave G** composes those primitives into a 2026 sheet instrument.
+> **Revision:** CLI/headless is **on Cloudflare** (agent-think-cordis wax-office `/uf/` contract). Decode every Pro package before editing. Wave F (T15–T22) shipped follow-agent, what-if, screenshot cards, formula inspector, @agent, HUD, undo. **Wave G** composes those primitives into a 2026 sheet instrument. **Wave H** makes `univer-workspace-cli` a Comb-visible third actor (streaming `/agents` SSE, first-class `/uf`, inspect narrative, keep-D3).
 
-**Goal:** [https://univer-workspace.apisos.workers.dev](https://univer-workspace.apisos.workers.dev) is a **pixel-perfect production demo**: Avery + Jordan + Workspace Agent live-edit a Q3 Forecast sheet; DSH/CLI execute/inspect/screenshot/import/export/lint/pdf run **on this Worker**; every beat is live-proved. After T9, Wave G makes the **grid itself** the collaboration log — not another chat overlay.
+**Goal:** [https://univer-workspace.apisos.workers.dev](https://univer-workspace.apisos.workers.dev) is a **pixel-perfect production demo**: Avery + Jordan + Workspace Agent live-edit a Q3 Forecast sheet; DSH/CLI execute/inspect/screenshot/import/export/lint/pdf run **on this Worker**; every beat is live-proved. After T9, Wave G makes the **grid itself** the collaboration log — not another chat overlay. Wave H adds the **CLI as a third collaborator** Avery/Jordan can see (`cliWroteCells`) plus streaming agent turns and a 90s CLI+AI addendum.
 
-**Architecture:** ChatAgent `idFromName("univer_collab")` is the Univer DO. Browser uses Comb protobuf. Agent is Comb member `agent_workspace`. DSH wax-office and `univer-workspace-cli` are thin HTTP clients of `/uf/:fileKey/...`. Execute uses LOADER (or BROWSER `page.evaluate`); screenshot/pdf/lint use `env.BROWSER` + `/render`. Pro `lib/es` is deobfuscated then workerd-adapted. Merge is human. No ComputerAgent containers, no third-party LLM keys. Wave G adds Comb `cell_intent` INGEST, OT blame from History `clientId`, an agent **draft worktree Comb room** Jordan can Follow, Gateway trace on the HUD, and History-vs-live via native `UnitComparisonViewer`.
+**Architecture:** ChatAgent `idFromName("univer_collab")` is the Univer DO. Browser uses Comb protobuf. Agent is Comb member `agent_workspace`. DSH wax-office and `univer-workspace-cli` are thin HTTP clients of `/uf/:fileKey/...`. Execute uses LOADER (or BROWSER `page.evaluate`); screenshot/pdf/lint use `env.BROWSER` + `/render`. Pro `lib/es` is deobfuscated then workerd-adapted. Merge is human. No ComputerAgent containers, no third-party LLM keys. Wave G adds Comb `cell_intent` INGEST, OT blame from History `clientId`, an agent **draft worktree Comb room** Jordan can Follow, Gateway trace on the HUD, and History-vs-live via native `UnitComparisonViewer`. Wave H keeps the packaged CLI off the local daemon on the demo path: `/uf` execute (so `cliWroteCells` fires), `/agents` SSE, and `watch` on the same worktree-events feed Jordan already toasts — the CLI is not a Comb peer.
 
 ```mermaid
 flowchart LR
@@ -145,15 +172,18 @@ flowchart LR
   Draft --> Comb
   Jordan --> Follow
   Follow --> Draft
-  CLI[CLI] --> Uf["/uf"]
+  CLI[CLI third actor] --> Uf["/uf"]
   DSH[wax-office] --> Uf
   Panel[Agent SSE] --> Gw["Gateway default"]
+  CLI --> Panel
   Gw --> Llama["70b-fast then 8b"]
   Gw --> Trace[HUD trace]
   Uf --> DO[ChatAgent]
   DO --> Comb
   DO --> Loader[LOADER Facade]
   DO --> Br[BROWSER /render]
+  Feed[cliWroteCells] --> Jordan
+  Feed --> CLI
   Shot[PNG card] --> Panel
   Hist[History rev] --> Compare[UnitComparisonViewer]
   Live[Live Comb snapshot] --> Compare
@@ -162,7 +192,7 @@ flowchart LR
 
 ## Why this is new
 
-A visitor today sees chat chips, a HIT/MISS footer, and Follow Agent on a live Fill. Wave G makes every Q3 cell a live instrument: who is about to write (Comb intent), who last wrote (real History/Comb `clientId` heat, not a PNG), and why E2 is that SUM (inspect + precedents + those writers). The agent drafts on a worktree Comb room Jordan Follows like a human peer **before** merge. Gateway `cf-aig-cache-status` + which llama actually ran is a HUD beat, never a fake MISS. That composition — Comb truth, worktree what-if, native comparison, Gateway cache — does not exist as a two-browser office demo.
+A visitor today sees chat chips, a HIT/MISS footer, and Follow Agent on a live Fill. Wave G makes every Q3 cell a live instrument: who is about to write (Comb intent), who last wrote (real History/Comb `clientId` heat, not a PNG), and why E2 is that SUM (inspect + precedents + those writers). The agent drafts on a worktree Comb room Jordan Follows like a human peer **before** merge. Gateway `cf-aig-cache-status` + which llama actually ran is a HUD beat, never a fake MISS. Wave H is the missing third seat: `univer-workspace-cli uf execute` writes E4 through `/uf` so Jordan’s `cliWroteCells` ticker moves; the same CLI streams a Gateway turn (canned `demo:explain-q3` HIT vs ad-hoc skipCache), narrates E2 from inspect precedents, and asks who keeps D3 after a real same-cell conflict — never a fake HIT or PNG. That composition — Comb truth, worktree what-if, native comparison, Gateway cache, **CLI as Comb-visible actor** — does not exist as a two-browser office demo.
 
 
 
@@ -186,7 +216,7 @@ Prior plan wired Skills, HTTP turns, snapshot/changeset HTTP, Worktree clone/mer
 - Automatic worktree merge (merge stays human)
 - Voice, 3D, blockchain, extra LLM models, AI Gateway WebSockets
 
-**Wave G scope change (human must accept):** T26 may add **worktree Comb** upgrade on `dsh-host.ts` for `/universer-api/worktrees/:worktreeId/comb/connect` so `agent_workspace` is a real peer on the draft room. This is not a fake Comb ticket, not two Univer canvases in one tab, and not Channel 1 mux OT. T20’s HUD already regexes that URL; the DO does not accept it yet. **Reject T26 rather than fake Follow on the trunk sheet.**
+**Wave G scope change (accepted 2026-09-12):** T26 may add **worktree Comb** upgrade on `dsh-host.ts` for `/universer-api/worktrees/:worktreeId/comb/connect` so `agent_workspace` is a real peer on the draft room. This is not a fake Comb ticket, not two Univer canvases in one tab, and not Channel 1 mux OT. T20’s HUD already regexes that URL; the DO does not accept it yet. Do not fake Follow on the trunk sheet.
 
 ## Global constraints
 
@@ -207,7 +237,9 @@ Prior plan wired Skills, HTTP turns, snapshot/changeset HTTP, Worktree clone/mer
 - Reduced motion: `prefers-reduced-motion: reduce` skips spotlight walk (chip only). Wave G: no thinking pulse, no blame shimmer, intent rings static.
 - Wave G pixel bar: typography `text-[11px]`/`h-9` header chips, presence rings on the six tokens, ghost Jordan dashed, HUD never shows HIT/MISS/protobuf until observed, comparison labels use History names, no English leftovers (`Present`/`Stop`/`precedents`/`Q3 Forecast` title), no fake PNG, no fake HIT. i18n `en-US` + `zh-CN` for every new string.
 - Wave G Linux shells: `required_permissions: ["all"]` (sandbox cannot unshare user namespaces on this host).
-- `i18n.tsx`: Wave G tasks may **append-only** keys; do not reformat the file; do not rewrite unrelated strings.
+- `i18n.tsx`: Wave G and Wave H tasks may **append-only** keys; do not reformat the file; do not rewrite unrelated strings.
+- Wave H Linux shells: `required_permissions: ["all"]`. Wave H does not take `dsh-host.ts`. Wave H does not take `univer-agent.ts` until T27 Approved (prefer new files even then). Wave H does not take `server.ts`, wrangler, or T9/T31 smoke.
+- Wave H pixel bar (T39): same as Wave G — `text-[11px]`/`h-9`, i18n `en-US` + `zh-CN`, Avery Chen / Jordan Lee / Workspace Agent, no English leftovers, no fake HIT/PNG. CLI terminal copy may be English.
 
 ### Exclusive ownership (locks)
 
@@ -243,6 +275,15 @@ Prior plan wired Skills, HTTP turns, snapshot/changeset HTTP, Worktree clone/mer
 - **T29:** [formula-inspector.ts](univer-workspace/apps/workspace/web/src/features/demo/formula-inspector.ts), [formula-inspector-popover.tsx](univer-workspace/apps/workspace/web/src/features/demo/formula-inspector-popover.tsx), tests. After T23 popover + T25 blame API.
 - **T30:** [presence-legend.tsx](univer-workspace/apps/workspace/web/src/features/editor/presence-legend.tsx), [collaborator-avatars.tsx](univer-workspace/apps/workspace/web/src/features/editor/collaborator-avatars.tsx), [demo-playbook.ts](univer-workspace/apps/workspace/web/src/features/demo/demo-playbook.ts), [demo-playbook-bar.tsx](univer-workspace/apps/workspace/web/src/features/demo/demo-playbook-bar.tsx), [demo-scenes.ts](univer-workspace/apps/workspace/web/src/features/demo/demo-scenes.ts), [demo-search.ts](univer-workspace/apps/workspace/web/src/features/demo/demo-search.ts), [demo-palette.ts](univer-workspace/apps/workspace/web/src/features/demo/demo-palette.ts), [demo-runtime.tsx](univer-workspace/apps/workspace/web/src/features/demo/demo-runtime.tsx). After T24–T29 functions exist.
 - **T31:** create `scripts/edge-wave-g.mjs` + `test/edge-wave-g.test.ts`. **Do not edit `scripts/edge-smoke.mjs` until T9 Approved.** After T9 Approved, T31 may **append** Wave G beats without deleting T9 assertions.
+- **T32:** [univer-file.ts](univer-workspace/packages/client-core/src/univer-file.ts), create `apps/cli/src/features/edge/uf-command.ts` + `apps/cli/src/features/edge/index.ts`; [program.ts](univer-workspace/apps/cli/src/program.ts) **one-line** `registerEdgeCommands` only. Do not change `DEFAULT_ORIGIN`. Do not take `dsh-host.ts` / `univer-file-http.ts` / daemon execute.
+- **T33:** [http.ts](univer-workspace/packages/client-core/src/http.ts) `Accept` header; [agent.ts](univer-workspace/packages/client-core/src/agent.ts); create `agent-sse.ts`; `apps/cli/src/features/edge/agent-command.ts`. **Do not take `univer-agent.ts`.** After T32 `edge/index.ts`.
+- **T34:** create `packages/client-core/src/change-feed.ts`; [live-edit.ts](univer-workspace/apps/agent/src/live-edit.ts); [workspace-change-feed.ts](univer-workspace/apps/agent/src/workspace-change-feed.ts); `watch-command.ts`. **Do not take `dsh-host.ts`.** Keep `--via collab` default.
+- **T35:** `packages/client-core/src/agent-actions.ts`; T33 `agent-command.ts` undo/follow. Do not take Live Share bar.
+- **T36:** create `packages/client-core/src/agent-draft.ts`. **After T26 Approved.** Do not take `dsh-host.ts` or `demo-agent-draft.ts`.
+- **T37:** create `packages/client-core/src/cell-narrative.ts`. Do not take `formula-inspector.ts` (T29).
+- **T38:** create `demo-conflict-keep.ts` + `packages/client-core/src/conflict-keep.ts`. Do not take `univer-agent.ts` or `collab-conflict-toast.ts`. Bind in T39 after T30/T24.
+- **T39:** demo-search/scenes/palette/runtime **after T30 Approved** (append scene union). i18n append-only.
+- **T40:** create `scripts/edge-wave-h.mjs` + `test/edge-wave-h.test.ts`. **Do not edit `scripts/edge-smoke.mjs` or `scripts/edge-wave-g.mjs`.**
 
 Do not expand [worker-gateway.test.ts](univer-workspace/test/worker-gateway.test.ts) except `/uf` forward cases owned by T13b.
 
@@ -659,6 +700,14 @@ Smoke: `healthz.ai.gateway === "default"`; `healthz.browser` bound; Avery turn `
 15. Explain Q3 twice: HUD shows `MISS · 70b-fast · aig_…` then `HIT · demo:explain-q3`. Never a HIT chip without `cf-aig-cache-status` / Gateway log.
 16. History vs live: pick a pre-Fill revision in comparison viewer; labels Avery/Jordan/Workspace Agent vs Live Comb.
 17. Alt-inspect E2: provenance lists B2/C2/D2 writers with ring dots matching the legend.
+
+**Wave H addendum (T40, after T9 Approved — do not delete steps 1–17):**
+
+18. CLI `uf execute` E4=180 (or `live-edit --via uf --set E4=180`); Avery/Jordan see `cliWroteCells`; CLI `watch` prints the same event. No local Chromium. No Comb ticket.
+19. CLI `agent turn` canned Explain Q3; tokens stream in the terminal; second canned run may show HIT only from a real `cf-aig-cache-status`. Ad-hoc `Explain D3` is skipCache (not `demo:explain-q3`).
+20. CLI `uf inspect --narrative` / `agent narrative --range E2`: structured B2,C2,D2 then optional skipCache sentence.
+21. Same-cell D3 conflict → Ask who keeps; agent text names Avery Chen / Jordan Lee; **no cell write**. Reduced-motion: static chip.
+22. CLI `agent draft-fill` creates `Agent draft Fill`; Jordan Follows draft (T26); human Merge. Live Fill stays.
 
 Check runbook only after real clicks. Commit `test(edge): smoke AI Gateway two-user demo and /uf`
 
@@ -1105,6 +1154,418 @@ Clicks: ghost Jordan → `conflict` scene; Agent seat → Follow Agent + focus F
 
 ---
 
+## Wave H (after T9 Approved; exclusive-file parallel with Wave G)
+
+Wave H does **not** rewrite T0–T31. It makes `univer-workspace-cli` a first-class **edge** client of this Worker (HTTP `/uf` + `/agents` SSE), not a local daemon leftover, and adds AI beats plus a 90s CLI+AI addendum. Subagents: `cursor-grok-4.6-xhigh`. Linux test shells: `required_permissions: ["all"]`. **T9 remains in_progress** — do not touch `scripts/edge-smoke.mjs`, wrangler, or T9 files. **T26 is the only `dsh-host.ts` writer.** **T27 owns `univer-agent.ts` until Approved** — Wave H AI uses new files and existing skipCache prompt routing. Packaged CLI `DEFAULT_ORIGIN` stays `https://workspace.univer.plus/`. Daemon `execute --worktree` stays; Wave H adds an `uf` / `agent` / `watch` group.
+
+Grounded gaps (do not duplicate T11–T22 / T23–T31):
+
+- `WorkspaceUniverFileClient` already hits `/uf`; packaged `univer-workspace-cli execute` still requires `--worktree` and daemon `runtime.execute-and-commit`.
+- `WorkspaceAgentFeature.runTurn` is JSON-only and is **not exported** from `packages/client-core/src/index.ts`. SSE already exists on `POST /agents/:unitId/turns` (`Accept: text/event-stream`).
+- `cliWroteCells` fires only on `/uf` execute commit. `apps/agent` live-edit `--set` uses Universer `new_changes` (`memberID: agent:${userId}`), so Jordan’s ticker does **not** see it. `apps/agent/src/workspace-change-feed.ts` currently ignores `cliWroteCells`.
+- Canned Explain is `isCachedExplainPrompt` → `skipCache: false` + `cacheKey: "demo:explain-q3"`. Ad-hoc `"Explain D3 in one sentence"` already skipCaches. CLI must send those prompts; do not edit `univer-agent.ts` until T27 Approved.
+- T20 HUD already toasts `cliWroteCells`. Close the loop: CLI writes via `/uf`, CLI `watch` prints the same feed Avery/Jordan see. CLI is **not** a Comb peer (no ticket, no `dsh-host`).
+
+### T32: First-class `/uf` office CLI
+
+**Depends on T9 Approved.** Daemon `execute` stays. Do not change `DEFAULT_ORIGIN`. Do not take `dsh-host.ts`, `univer-file-http.ts`, `wrangler.jsonc`, or `scripts/edge-smoke.mjs`.
+
+**Files:**
+- Modify: `univer-workspace/packages/client-core/src/univer-file.ts` (`lint`, `printPdf`, `SET_E4_CODE`, trunk execute already exists)
+- Modify: `univer-workspace/packages/client-core/src/index.ts` (export new helpers)
+- Create: `univer-workspace/packages/client-core/test/univer-file.test.ts`
+- Create: `univer-workspace/apps/cli/src/features/edge/uf-command.ts`
+- Create: `univer-workspace/apps/cli/src/features/edge/index.ts` (`registerEdgeCommands` — **T32 is the only `program.ts` writer**)
+- Modify: `univer-workspace/apps/cli/src/program.ts` — one `registerEdgeCommands(...)` append; do not remove daemon commands
+- Test: `univer-workspace/apps/cli/test/edge-uf-command.test.ts` (help text; no full daemon)
+
+**Interfaces:**
+- Consumes: existing `WorkspaceUniverFileClient`, `fileKeyOf`, `SUM_E2_CODE`, `DEMO_UNIT_ID`
+- Produces:
+
+```ts
+export const SET_E4_CODE =
+  "api.getActiveWorkbook().getActiveSheet().getRange('E4').setValue({ v: 180 })";
+export function registerEdgeCommands(program: Command, input: {
+  readonly authenticatedHttp: AuthenticatedWorkspaceHttp;
+  readonly write: (text: string) => void;
+}): void
+```
+
+`univer-workspace-cli uf execute --unit unit_welcome_sheet -e "..."` may omit `--worktree` (trunk). `--worktree <id>` uses the existing `/uf/.../worktrees/:id/units/:unitId/execute` path. Screenshot/lint/print-pdf never launch local Chromium.
+
+- [ ] **Step 1: Write the failing tests**
+
+```ts
+it("execute hits /uf trunk without a daemon worktree", async () => {
+  const paths: string[] = [];
+  const http = new WorkspaceHttp({
+    origin: "https://workspace.edge.test",
+    role: "client",
+    cookie: "workspace_session=tok",
+    fetcher: async (input, init) => {
+      const request = new Request(input, init);
+      paths.push(new URL(request.url).pathname);
+      return Response.json({ success: true, rev: 2 });
+    },
+  });
+  await new WorkspaceUniverFileClient(http).execute({
+    unitId: DEMO_UNIT_ID,
+    code: SUM_E2_CODE,
+  });
+  expect(paths[0]).toMatch(/\/uf\/[^/]+\/units\/unit_welcome_sheet\/execute/);
+  expect(paths[0]).not.toContain("/worktrees/");
+});
+```
+
+- [ ] **Step 2: Run** `pnpm --filter @univerjs/univer-workspace-client-core exec vitest run test/univer-file.test.ts` — Expected: FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement** `lint` / `printPdf` on the client; Commander `uf execute|inspect|screenshot|worktree|lint`. README Edge Quick Start: `univer-workspace-cli config set workspace.origin https://univer-workspace.apisos.workers.dev` (do not change `DEFAULT_ORIGIN`).
+
+- [ ] **Step 4: PASS.** Existing `execute --help` daemon tests still pass.
+
+- [ ] **Step 5: Commit** `feat(cli): run execute inspect screenshot on Cloudflare /uf`
+
+---
+
+### T33: Streaming `agent turn` SSE + canned vs ad-hoc explain
+
+**Depends on T32** (`registerEdgeCommands` + `program.ts` released). **Do not take `univer-agent.ts`** (T27 lock). Duplicate the canned-prompt regex in client-core; comment that it must match `isCachedExplainPrompt`.
+
+**Files:**
+- Modify: `univer-workspace/packages/client-core/src/http.ts` — `accept?: string` on `WorkspaceRequestOptions`; pass `Accept` header
+- Modify: `univer-workspace/packages/client-core/src/agent.ts` — `streamTurn`; export feature from `index.ts`
+- Create: `univer-workspace/packages/client-core/src/agent-sse.ts`
+- Create: `univer-workspace/packages/client-core/test/agent-sse.test.ts`
+- Create: `univer-workspace/apps/cli/src/features/edge/agent-command.ts`
+- Modify: `univer-workspace/apps/cli/src/features/edge/index.ts` (register `agent`)
+
+**Interfaces:**
+- Consumes: `POST /agents/:unitId/turns` SSE (T2); `cf-aig-cache-status` on JSON (existing `turnCacheHeaders`)
+- Produces:
+
+```ts
+export const CANNED_EXPLAIN_PROMPT = "Explain the Q3 forecast in one sentence";
+export function isCannedExplainPrompt(prompt: string): boolean
+export function adHocExplainPrompt(range: string): string // `Explain ${range} in one sentence`
+export interface AgentSseEvent { readonly type: string; readonly data: Record<string, unknown> }
+export async function* iterateAgentTurnSse(response: Response): AsyncGenerator<AgentSseEvent>
+export function gatewayCacheFromHeaders(headers: Headers): "HIT" | "MISS" | null
+```
+
+`univer-workspace-cli agent turn --unit unit_welcome_sheet --prompt "..."` sets `Accept: text/event-stream`, prints tokens live, then prints `cache: HIT|MISS|—` from `agent.done` or response headers. **Never** print HIT unless the header/body cache is HIT. Canned prompt uses `CANNED_EXPLAIN_PROMPT`; `--range D3` uses `adHocExplainPrompt` (server skipCache true). After T27 Approved, print `model` / truncated `logId` when `agent.done` includes them — do not invent them.
+
+- [ ] **Step 1: Failing tests**
+
+```ts
+it("treats only the canned Q3 sentence as cached explain", () => {
+  expect(isCannedExplainPrompt("Explain the Q3 forecast in one sentence")).toBe(true);
+  expect(isCannedExplainPrompt("Explain D3 in one sentence")).toBe(false);
+});
+
+it("streams agent.token then agent.done", async () => {
+  const body = "event: agent.token\ndata: {\"delta\":\"Hel\"}\n\nevent: agent.done\ndata: {\"cache\":\"MISS\"}\n\n";
+  const events = [];
+  for await (const ev of iterateAgentTurnSse(new Response(body, { headers: { "content-type": "text/event-stream" } }))) {
+    events.push(ev.type);
+  }
+  expect(events).toEqual(["agent.token", "agent.done"]);
+});
+
+it("does not infer HIT from the canned prompt text", () => {
+  expect(gatewayCacheFromHeaders(new Headers())).toBeNull();
+  expect(gatewayCacheFromHeaders(new Headers({ "cf-aig-cache-status": "HIT" }))).toBe("HIT");
+});
+```
+
+- [ ] **Step 2: Run** `pnpm --filter @univerjs/univer-workspace-client-core exec vitest run test/agent-sse.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement** `http.request` Accept header; `streamTurn`; Commander `agent turn`. JSON fallback if the server returns non-SSE.
+
+- [ ] **Step 4: PASS.** T2 SSE tests still pass (do not edit them).
+
+- [ ] **Step 5: Commit** `feat(cli): stream Workspace Agent turns over SSE`
+
+---
+
+### T34: CLI watch + live-edit `--via uf` (third collaborator)
+
+**Depends on T32.** Close the T20 loop. **Do not take `dsh-host.ts`.** Keep existing live-edit Universer `--via collab` (default) so `apps/agent/test/live-edit.test.ts` stays green.
+
+**Files:**
+- Create: `univer-workspace/packages/client-core/src/change-feed.ts`
+- Create: `univer-workspace/packages/client-core/test/change-feed.test.ts`
+- Modify: `univer-workspace/apps/agent/src/workspace-change-feed.ts` (handle `cliWroteCells`, not only `worktreesChanged`)
+- Modify: `univer-workspace/apps/agent/src/live-edit.ts` (`via?: "uf" | "collab"`)
+- Modify: `univer-workspace/apps/agent/test/live-edit.test.ts` (add `--via uf` case; do not weaken collab test)
+- Create: `univer-workspace/apps/cli/src/features/edge/watch-command.ts`
+- Modify: `univer-workspace/apps/cli/src/features/edge/index.ts`
+
+**Interfaces:**
+- Consumes: T20 `CLI_WROTE_CELLS`, `/universer-api/user/session-ticket`, `/api/worktree-events`
+- Produces:
+
+```ts
+export type WorktreeFeedEvent =
+  | { readonly event: "worktreeChangeFeedReady" }
+  | { readonly event: "worktreesChanged" }
+  | { readonly event: "cliWroteCells" };
+export function parseWorktreeFeedEvent(value: unknown): WorktreeFeedEvent | null
+export function formatCliWroteCellsLine(event: WorktreeFeedEvent): string // `cliWroteCells`
+export async function subscribeWorktreeFeed(http: WorkspaceHttp, onEvent: (e: WorktreeFeedEvent) => void): Promise<() => void>
+```
+
+`univer-workspace-cli watch` prints `cliWroteCells` when Jordan would toast. `live-edit --via uf --set E4=180` posts Facade via `WorkspaceUniverFileClient.execute` so the ticker fires. Comb last-frame in the terminal **is this feed line**, not a Comb WS (out of scope: CLI Comb peer / fake ticket).
+
+- [ ] **Step 1: Failing tests**
+
+```ts
+it("parses cliWroteCells on the worktree-events feed", () => {
+  expect(parseWorktreeFeedEvent({ event: "cliWroteCells" })).toEqual({ event: "cliWroteCells" });
+});
+
+it("live-edit --via uf posts Facade execute on /uf", async () => {
+  const paths: string[] = [];
+  await runLiveEdit({
+    origin: "https://workspace.test",
+    username: "admin",
+    password: "password123",
+    unitId: "unit_welcome_sheet",
+    via: "uf",
+    cells: [{ a1: "E4", value: 180 }],
+    fetcher: async (input, init) => { /* record paths; fake login + /uf */ },
+  });
+  expect(paths.some((p) => p.includes("/execute"))).toBe(true);
+});
+```
+
+- [ ] **Step 2: Run** `pnpm exec vitest run packages/client-core/test/change-feed.test.ts apps/agent/test/live-edit.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement** feed client; agent feed parses `cliWroteCells`; `--via uf`; `watch` command.
+
+- [ ] **Step 4: PASS.** Existing collab live-edit test still expects `new_changes` + `agent:user_admin`.
+
+- [ ] **Step 5: Commit** `feat(cli): show CLI writes on the Comb-visible change feed`
+
+---
+
+### T35: CLI undo + follow-print
+
+**Depends on T33.** Undo HTTP already exists (`GET|POST /agents/:unitId/undo`). Follow is **print last Workspace Agent A1** from turn log / toolCalls — not Live Share viewport (T15 stays web).
+
+**Files:**
+- Modify: `univer-workspace/packages/client-core/src/agent.ts` (`undo`, `undoStatus`, `lastAgentRange`)
+- Create: `univer-workspace/packages/client-core/src/agent-actions.ts`
+- Create: `univer-workspace/packages/client-core/test/agent-actions.test.ts`
+- Modify: `univer-workspace/apps/cli/src/features/edge/agent-command.ts` (`undo`, `follow`)
+
+**Interfaces:**
+- Consumes: T22 undo JSON `{ reversed, enabled, actor, unitId }`; GET `/agents/:unitId/turns`
+- Produces:
+
+```ts
+export function lastAgentRangeFromTurns(items: readonly Record<string, unknown>[]): string | null
+export async function undoLastAgentTurn(http: WorkspaceHttp, unitId: string): Promise<{ reversed: boolean; enabled: boolean }>
+```
+
+`univer-workspace-cli agent undo --unit unit_welcome_sheet` POSTs undo; 409 if last actor is not `agent_workspace`. `agent follow` prints `Workspace Agent · E2` or `—` (i18n not required on CLI). Names in any copied demo string: Avery Chen / Jordan Lee / Workspace Agent.
+
+- [ ] **Step 1: Failing test** — `lastAgentRangeFromTurns` reads E2 from a Fill tool result; undo client POSTs `/agents/unit_welcome_sheet/undo`.
+
+- [ ] **Step 2: Run** `pnpm --filter @univerjs/univer-workspace-client-core exec vitest run test/agent-actions.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement** commands.
+
+- [ ] **Step 4: PASS.**
+
+- [ ] **Step 5: Commit** `feat(cli): undo and follow-print the Workspace Agent`
+
+---
+
+### T36: CLI `@agent` draft Fill
+
+**Depends on T26 Approved + T32.** **Do not take `dsh-host.ts`.** Duplicate worktree name `"Agent draft Fill"` in client-core so it **equals** T26 `AGENT_DRAFT_WORKTREE_NAME`. CLI must not import `apps/workspace/web`.
+
+**Files:**
+- Create: `univer-workspace/packages/client-core/src/agent-draft.ts`
+- Create: `univer-workspace/packages/client-core/test/agent-draft.test.ts`
+- Modify: `univer-workspace/apps/cli/src/features/edge/agent-command.ts` (`draft-fill`)
+- Optional: `apps/agent/src/live-edit.ts` `--prompt` unchanged; do not steal T26 `demo-agent-draft.ts`
+
+**Interfaces:**
+- Consumes: T32 `/uf` worktree + execute; T26 follow href shape `/worktrees/${id}/units/${unitId}/draft?embedded=true`
+- Produces:
+
+```ts
+export const CLI_AGENT_DRAFT_WORKTREE_NAME = "Agent draft Fill";
+export async function runCliAgentDraftFill(http: WorkspaceHttp, unitId: string): Promise<{
+  readonly worktreeId: string;
+  readonly worktreeName: string;
+  readonly followHref: string;
+}>
+```
+
+Execute Fill SUM on the **draft** worktree (same Facade as T26). Human merges. Busy → non-zero exit, no fake merge.
+
+- [ ] **Step 1: Failing test** — create returns name `Agent draft Fill` and follow href matching `/worktrees/.+/units/.+/draft`.
+
+- [ ] **Step 2: Run** `pnpm --filter @univerjs/univer-workspace-client-core exec vitest run test/agent-draft.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement**.
+
+- [ ] **Step 4: PASS.**
+
+- [ ] **Step 5: Commit** `feat(cli): start Agent draft Fill from the edge CLI`
+
+---
+
+### T37: Structured cell narrative from inspect
+
+**Depends on T32.** Does **not** wait for T29 (inspect `{f,v,precedents}` is T21/T13c). Does **not** take `formula-inspector.ts` (T29 lock). No LLM required for the structured block; optional `agent turn` with the narrative as prompt is ad-hoc (skipCache) via T33.
+
+**Files:**
+- Create: `univer-workspace/packages/client-core/src/cell-narrative.ts`
+- Create: `univer-workspace/packages/client-core/test/cell-narrative.test.ts`
+- Modify: `univer-workspace/apps/cli/src/features/edge/uf-command.ts` (`inspect --narrative`)
+- Modify: `univer-workspace/apps/cli/src/features/edge/agent-command.ts` (`agent narrative --range E2`)
+
+**Interfaces:**
+- Consumes: `/uf/.../inspect?range=`; `precedentsFromFormula` logic copied into client-core (do not import web)
+- Produces:
+
+```ts
+export interface CellNarrative {
+  readonly range: string;
+  readonly f?: unknown;
+  readonly v?: unknown;
+  readonly precedents: readonly string[]; // expanded B2, C2, D2
+  readonly text: string; // "E2 is =SUM(B2:D2) → 600. Precedents: B2, C2, D2."
+}
+export function expandA1List(precedents: readonly string[]): string[]
+export function narrativeFromInspect(input: {
+  readonly range: string;
+  readonly f?: unknown;
+  readonly v?: unknown;
+  readonly precedents?: readonly string[];
+}): CellNarrative
+export function narrativeExplainPrompt(n: CellNarrative): string
+  // `Explain E2 (=SUM(B2:D2), precedents B2, C2, D2) in one sentence`
+```
+
+- [ ] **Step 1: Failing test**
+
+```ts
+it("narrates E2 SUM with expanded precedents", () => {
+  const n = narrativeFromInspect({ range: "E2", f: "=SUM(B2:D2)", v: 600, precedents: ["B2:D2"] });
+  expect(n.precedents).toEqual(["B2", "C2", "D2"]);
+  expect(n.text).toMatch(/E2/);
+  expect(isCannedExplainPrompt(narrativeExplainPrompt(n))).toBe(false);
+});
+```
+
+- [ ] **Step 2: Run** `pnpm --filter @univerjs/univer-workspace-client-core exec vitest run test/cell-narrative.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement**.
+
+- [ ] **Step 4: PASS.**
+
+- [ ] **Step 5: Commit** `feat(cli): narrate inspect precedents for Q3 SUM cells`
+
+---
+
+### T38: Conflict-aware who-keeps D3
+
+**Depends on T6 (shipped) + T33.** **Do not take `univer-agent.ts`.** POST an existing turn with a skipCache prompt. **Do not take `collab-conflict-toast.ts`** (shipped T6) — wrap from a new module. Do not take `collaboration-editor.tsx` until T24 Approved; T38 is library + tests; T39 binds the scene.
+
+**Files:**
+- Create: `univer-workspace/apps/workspace/web/src/features/demo/demo-conflict-keep.ts`
+- Create: `univer-workspace/apps/workspace/web/src/features/demo/demo-conflict-keep.test.ts`
+- Create: `univer-workspace/packages/client-core/src/conflict-keep.ts` (prompt constant shared with CLI)
+- Create: `univer-workspace/packages/client-core/test/conflict-keep.test.ts`
+- Modify: `univer-workspace/apps/cli/src/features/edge/agent-command.ts` (`agent keep --cell D3`)
+
+**Interfaces:**
+- Consumes: T6 `COLLAB_CONFLICT` toast; T33 `agent turn`; History names Avery Chen / Jordan Lee
+- Produces:
+
+```ts
+export const KEEP_D3_PROMPT =
+  "Avery Chen and Jordan Lee both edited D3. Suggest who should keep the cell and why. Do not write cells.";
+export function keepCellPrompt(a1: string): string
+export function isKeepPrompt(prompt: string): boolean
+```
+
+Prompt must fail `isCannedExplainPrompt`. Agent must not `univer_execute` / setRange (prompt forbids writes; test asserts prompt text). Reduced-motion: chip has no pulse. Never fake HIT.
+
+- [ ] **Step 1: Failing tests** — prompt contains Avery Chen, Jordan Lee, D3, `Do not write cells`; `isCannedExplainPrompt(KEEP_D3_PROMPT) === false`.
+
+- [ ] **Step 2: Run** `pnpm exec vitest run packages/client-core/test/conflict-keep.test.ts apps/workspace/web/src/features/demo/demo-conflict-keep.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement** `runConflictKeep(host)` → `agent turn` with `KEEP_D3_PROMPT`. CLI `agent keep --cell D3`.
+
+- [ ] **Step 4: PASS.**
+
+- [ ] **Step 5: Commit** `feat(agent): suggest who keeps a conflicted D3 cell`
+
+---
+
+### T39: `/demo` Wave H scenes + i18n
+
+**Depends on T30 Approved + T32–T38 functions.** Header stepper stays T8a five steps. **Do not rewrite T30 files except append-only scene union** after T30 Approved.
+
+**Files:**
+- Modify: `univer-workspace/apps/workspace/web/src/features/demo/demo-search.ts` (`DemoScene` union)
+- Modify: `univer-workspace/apps/workspace/web/src/features/demo/demo-scenes.ts`
+- Modify: `univer-workspace/apps/workspace/web/src/features/demo/demo-palette.ts`
+- Modify: `univer-workspace/apps/workspace/web/src/features/demo/demo-runtime.tsx` (wire keep/narrative/cli)
+- Modify: `univer-workspace/apps/workspace/web/src/shared/i18n.tsx` append-only: `demoCliBeat`, `demoNarrative`, `demoKeepD3`, `agentWhoKeepsD3`, `demoCliCommand`
+- Tests: `demo-scenes.test.ts`, `demo-palette.test.ts`, `demo-search` coverage
+
+**Interfaces:**
+- Consumes: T30 `DemoScene`; T32 command string; T37 `narrativeFromInspect`; T38 `KEEP_D3_PROMPT`
+- Produces:
+
+```ts
+export type DemoScene = /* Wave G */ | "cli" | "narrative" | "keep";
+```
+
+`/demo?scene=cli` copies `univer-workspace-cli uf execute --unit unit_welcome_sheet -e "…E4…"` and toasts `demoCliBeat` (en-US + zh-CN). `scene=narrative` focuses inspect E2 narrative (not English `precedents`). `scene=keep` copies Jordan URL + focuses keep chip. Compact 720: palette only. `prefers-reduced-motion`: no pulse. No English leftovers. Avery Chen / Jordan Lee / Workspace Agent only.
+
+- [ ] **Step 1: Failing tests** — `isDemoScene("cli")`, palette ids `cli-uf` / `cell-narrative` / `keep-d3`.
+
+- [ ] **Step 2: Run** `pnpm exec vitest run apps/workspace/web/src/features/demo/demo-scenes.test.ts apps/workspace/web/src/features/demo/demo-palette.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement** + `/demo?scene=cli|narrative|keep`.
+
+- [ ] **Step 4: PASS.** T8a v2 + T30 scene tests still pass.
+
+- [ ] **Step 5: Commit** `feat(web): add CLI AI and keep-D3 demo scenes`
+
+---
+
+### T40: Wave H 90s addendum
+
+**Depends on T9 Approved + T32–T39.** **Do not weaken T9 or T31.** **Do not edit `scripts/edge-smoke.mjs` or `scripts/edge-wave-g.mjs`.**
+
+**Files:**
+- Create: `univer-workspace/scripts/edge-wave-h.mjs`
+- Create: `univer-workspace/test/edge-wave-h.test.ts`
+- Modify: ledger only
+
+**Interfaces:**
+- Consumes: T32–T39 source strings; copy T9 login helpers, do not import T9 smoke as a side effect that deploys
+- Produces: `runWaveHSmoke({ origin, fetchImpl })` asserts fake fetch: `POST /uf/.../execute` 200; `Accept` contains `text/event-stream` on agent turn; canned prompt `Explain the Q3 forecast in one sentence`; second canned turn may show `cf-aig-cache-status: HIT` only when the fake/live header is HIT; `cliWroteCells` parse; `Agent draft Fill`; `KEEP_D3_PROMPT` / who keeps D3; inspect narrative precedents B2. Live `EDGE_ORIGIN` optional and must not fail T9 if Wave H HTTP is 404 pre-deploy.
+
+- [ ] **Step 1: Failing test** — `test/edge-wave-h.test.ts` source-contract (`/uf/.*/execute`, `text/event-stream`, `cliWroteCells`, `demo:explain-q3` or canned prompt, `Agent draft Fill`, `Do not write cells`, `edge-wave-h`).
+
+- [ ] **Step 2: Run** `node --test test/edge-wave-h.test.ts` — FAIL. `required_permissions: ["all"]`.
+
+- [ ] **Step 3: Implement** script. Do not append into `edge-smoke.mjs`.
+
+- [ ] **Step 4: PASS.** Re-run `node --test test/edge-smoke.test.ts` — still PASS (do not edit that file).
+
+- [ ] **Step 5: Commit** `test(edge): prove Wave H CLI SSE narrative keep-D3 and draft-fill`
+
 ## Waves
 
 - Wave 0: T0 — **complete**
@@ -1115,14 +1576,15 @@ Clicks: ghost Jordan → `conflict` scene; Agent seat → Follow Agent + focus F
 - Wave F: T15 ∥ T16 ∥ T21; T17; T18; T19; T20; T22 — **complete**
 - Wave D: T9 + whole-branch review `cursor-grok-4.6-xhigh` + finishing-a-development-branch — **in progress** (do not steal)
 - Wave G (after T9 Approved): T23 chrome → T24 intent → T25 blame; T26 draft (dsh-host lock) ∥ T27 Gateway trace; T28 History vs live after T7; T29 after T25; T30 legend-playbook last of features; T31 verify
+- Wave H (after T9 Approved; exclusive-file parallel with G): T32 `/uf` CLI → T33 SSE turn ∥ T37 narrative; T34 watch + `--via uf`; T35 undo/follow after T33; T36 draft-fill after T26; T38 keep-D3 (no univer-agent.ts); T39 scenes after T30; T40 `edge-wave-h.mjs`
 
 Controller: SDD task briefs + `scripts/review-package`. Never `HEAD~1`. Subagents: `cursor-grok-4.6-xhigh` only.
 
 ## Self-review
 
-- Spec coverage: Comb, Gateway, agent peer, visual Q3, SSE, Live Share, comparison, /demo, comments, CLI auth, mutations, /uf split, Pro decode, follow-agent, explain selection, screenshot card, what-if, @agent, HUD, formula inspector, undo, 90s proof, **Wave G intent/blame/draft/trace/history/provenance/legend**.
-- Retracted: Node-only headless; “Tasks 1–10 unchanged”; XLSX/screenshot out of Worker scope; generic AI wishlist (voice/3D/blockchain).
-- Types: 3-arg `run`, `AGENT_MEMBER_ID`, Gateway 5 keys, `Env.BROWSER`/`LOADER`, `/uf` screenshot `{ images: [{ mediaType, data }] }`, `gatewayCacheStatus → HIT|MISS|null`, `CellIntent`, `BlameCell`, `GatewayTrace`, `PrecedentProvenance`.
-- No placeholders. Exclusive locks: T9 owns smoke; T26 is the only Wave G `dsh-host.ts` writer; T27 owns `univer-agent.ts`; T30 owns palette/scenes/legend.
-- T9 90s steps 1–10 unchanged; steps 11–17 are additive.
+- Spec coverage: Comb, Gateway, agent peer, visual Q3, SSE, Live Share, comparison, /demo, comments, CLI auth, mutations, /uf split, Pro decode, follow-agent, explain selection, screenshot card, what-if, @agent, HUD, formula inspector, undo, 90s proof, **Wave G intent/blame/draft/trace/history/provenance/legend**, **Wave H CLI /uf + SSE + watch + narrative + keep-D3 + draft-fill + scenes**.
+- Retracted: Node-only headless; “Tasks 1–10 unchanged”; XLSX/screenshot out of Worker scope; generic AI wishlist (voice/3D/blockchain); CLI as Comb peer / fake ticket; changing `DEFAULT_ORIGIN`.
+- Types: 3-arg `run`, `AGENT_MEMBER_ID`, Gateway 5 keys, `Env.BROWSER`/`LOADER`, `/uf` screenshot `{ images: [{ mediaType, data }] }`, `gatewayCacheStatus → HIT|MISS|null`, `CellIntent`, `BlameCell`, `GatewayTrace`, `PrecedentProvenance`, `AgentSseEvent`, `CellNarrative`, `WorktreeFeedEvent`, `CLI_AGENT_DRAFT_WORKTREE_NAME`.
+- No placeholders. Exclusive locks: T9 owns smoke; T26 is the only `dsh-host.ts` writer; T27 owns `univer-agent.ts`; T30 owns palette/scenes/legend until Approved; T32 owns `program.ts`; T40 owns `edge-wave-h.mjs` (not T9/T31).
+- T9 90s steps 1–10 unchanged; steps 11–17 are Wave G additive; steps 18–22 are Wave H additive.
 
