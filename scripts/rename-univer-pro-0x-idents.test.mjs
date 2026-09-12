@@ -71,6 +71,44 @@ test("heals unglue-split delete methods and empty rotator IIFE residue", () => {
   assert.doesNotMatch(src, /_0x1a\b/);
 });
 
+test("heals extra };ident after a closed function then parses", () => {
+  const original =
+    "function _0xaaa(){ return \"_0xdead\"; }\n" +
+    "}\n" +
+    "};xw=_0xaaa;\n" +
+    "export { _0xaaa as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "extra };ident residue must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /xw=/);
+  assert.doesNotMatch(src, /\n}\n};xw=/);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+});
+
+test("heals Object.entries split, typeof==, and for(var residue then parses", () => {
+  const original =
+    "function _0xaaa(obj){\n" +
+    "  let x = Object.fromEntries(Object);\n" +
+    "}\n" +
+    ".entries(obj).map(y=>y));}\n" +
+    "let ju = typeof Map;\n" +
+    "==\"function\";\n" +
+    "function _0xbbb(){\n" +
+    "  return ju ? \"_0xdead\" : 0;\n" +
+    "}\n" +
+    "r(var _0x1a=1;_0x1a;);\n" +
+    "export { _0xaaa as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "unglue Object.entries/typeof/for residue must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /fromEntries\(Object\.entries\(/);
+  assert.match(src, /typeof Map==\"function\"/);
+  assert.match(src, /for\(var /);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+});
+
 test("heals leftover decoder object residue then renames locals", () => {
   const original =
     "function _0xaaa(){var _0xbbb=Df,_0xccc,_0xddd,_0xeee=0,_0xfff=[];_0xccc=[],_0xddd=[];,'quadraticIn':function(_0x1a){return _0x1a+\"_0xdead\";}},Hf=1;}\n" +

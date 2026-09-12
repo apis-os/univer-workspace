@@ -90,7 +90,9 @@ function parseSource(src) {
 /**
  * Decode leftover unglue mistakes that make Babel unparseable.
  * Does not rewrite `_0x` tokens; only rejoins `delete` + Ident that
- * unglueKeywords split, and empty rotator IIFE residue.
+ * unglueKeywords split, empty rotator IIFE residue, extra `};ident`
+ * after a closed function, Object.entries / typeof== splits, and
+ * `for(var` residue that lost `fo`.
  */
 const STMT_AFTER_VALUE = ["function", "class", "const", "let", "var", "if", "for", "while", "switch", "try"];
 
@@ -140,7 +142,11 @@ export function healForParse(src) {
     .replace(/\}async\s+function\b/g, "};async function")
     .replace(/([,{])\s*delete\s+([A-Za-z_$][\w$]*)\s*:/g, "$1delete$2:")
     .replace(/async\s*'handler'/g, "async handler")
-    .replace(/async'handler'/g, "async handler");
+    .replace(/async'handler'/g, "async handler")
+    .replace(/\n}\n};(?=[A-Za-z_$])/g, "\n}\n")
+    .replace(/fromEntries\(Object\);\n\}\n\.entries\(/g, "fromEntries(Object.entries(")
+    .replace(/\btypeof\s+([A-Za-z_$][\w$]*);\n==/g, "typeof $1==")
+    .replace(/\n}\nr\(var /g, "\n}\nfor(var ");
 }
 
 function exportedName(spec) {
