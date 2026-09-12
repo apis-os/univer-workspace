@@ -1,0 +1,7 @@
+import{CommandType,DEFAULT_STYLES,DependentOn,Disposable,ICommandService,IConfigService,IUniverInstanceService,ImageSourceType,Inject,Injector,Plugin,UnitModel,UniverInstanceType,generateRandomId,merge}from'@univerjs/core';
+import{BehaviorSubject,Subject}from'rxjs';
+import{UniverLicensePlugin}from'@univerjs-pro/license';
+import { Ke } from "./pdfs-pdf-document-runtime-index.js";
+function at(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462323,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462324=0,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462325=0){return{'documentIdentity':Ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462323).documentIdentity,'pageRevision':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462324,'resourceRevision':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462325};}function ot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462329){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462329.documentIdentity+':'+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462329.pageRevision+':'+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462329.resourceRevision;}
+
+export { at as createPdfPageCacheEpoch, ot as serializePdfPageCacheEpoch };

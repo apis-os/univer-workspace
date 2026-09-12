@@ -1,0 +1,8 @@
+import{CommandType,DEFAULT_STYLES,DependentOn,Disposable,ICommandService,IConfigService,IUniverInstanceService,ImageSourceType,Inject,Injector,Plugin,UnitModel,UniverInstanceType,generateRandomId,merge}from'@univerjs/core';
+import{BehaviorSubject,Subject}from'rxjs';
+import{UniverLicensePlugin}from'@univerjs-pro/license';
+import { ab } from "./pdfs-pdf-document-model.js";
+import { St, bt, xt } from "./pdfs-pdf-mutation.js";
+const yb={};let Sb=class extends Plugin{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462099=yb,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462100,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462101,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462102,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462103){super(),this._config=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462099,this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462100,this._commandService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462101,this._configService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462102,this._univerInstanceService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462103;let{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462104}=merge({},yb,this._config);this._configService['setConfig']("pdfs.config",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462104);}onStarting(){this._univerInstanceService["registerCtorForType"](UniverInstanceType.UNIVER_PDF,ab),this.disposeWithMe(this._commandService["registerCommand"](xt)),this.disposeWithMe(this._commandService['registerCommand'](bt)),this.disposeWithMe(this._commandService["registerCommand"](St));}};
+
+export { Sb as UniverPdfsPlugin };
