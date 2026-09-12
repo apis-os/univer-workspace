@@ -17,6 +17,9 @@ describe("demo command palette", () => {
       "present",
       "follow-agent",
       "what-if",
+      "draft-fill",
+      "history-live",
+      "blame-heat",
       "export-xlsx",
       "language",
     ]);
@@ -45,6 +48,9 @@ describe("demo command palette", () => {
       present: vi.fn(),
       followAgent: vi.fn(),
       whatIf: vi.fn(),
+      draftFill: vi.fn(),
+      historyLive: vi.fn(),
+      blameHeat: vi.fn(),
       exportXlsx: vi.fn(),
       toggleLanguage: vi.fn(),
     };
@@ -56,6 +62,9 @@ describe("demo command palette", () => {
     executePaletteItem("present", ctx);
     executePaletteItem("follow-agent", ctx);
     executePaletteItem("what-if", ctx);
+    executePaletteItem("draft-fill", ctx);
+    executePaletteItem("history-live", ctx);
+    executePaletteItem("blame-heat", ctx);
     executePaletteItem("export-xlsx", ctx);
     executePaletteItem("language", ctx);
     expect(ctx.openAvery).toHaveBeenCalled();
@@ -66,6 +75,9 @@ describe("demo command palette", () => {
     expect(ctx.present).toHaveBeenCalled();
     expect(ctx.followAgent).toHaveBeenCalled();
     expect(ctx.whatIf).toHaveBeenCalled();
+    expect(ctx.draftFill).toHaveBeenCalled();
+    expect(ctx.historyLive).toHaveBeenCalled();
+    expect(ctx.blameHeat).toHaveBeenCalled();
     expect(ctx.exportXlsx).toHaveBeenCalled();
     expect(ctx.toggleLanguage).toHaveBeenCalled();
   });

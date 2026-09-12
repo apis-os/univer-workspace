@@ -3,9 +3,17 @@ import { Bot } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useI18n } from "../../shared/i18n";
 import { useMediaQuery } from "../../shared/resizable-sidebar";
-import { Avatar, Tooltip } from "../../shared/ui";
+import { Avatar, Tooltip, toast } from "../../shared/ui";
 import { cn } from "../../shared/utils/cn";
-import { PresenceLegend } from "./presence-legend";
+import {
+  dispatchDemoScene,
+  focusAgentFillChip,
+  jordanDemoUrl,
+  openAgentPanelFromHeader,
+} from "../demo/demo-scenes";
+import { followAgentCommand } from "./follow-agent";
+import { BLAME_HEAT_EVENT } from "./ot-blame-heat";
+import { PresenceLegend, type PresenceLegendAction } from "./presence-legend";
 import {
   composePresenceRoster,
   isBotCollaborator,
@@ -62,12 +70,48 @@ export function CollaboratorAvatars({
   const overflow = seats.slice(VISIBLE_MEMBERS);
   const onlineLabel = t("collaboratorsOnline", { count: seats.length });
 
+  const handleLegendAction = (action: PresenceLegendAction) => {
+    if (action === "jordan") {
+      void navigator.clipboard?.writeText(jordanDemoUrl(window.location.origin));
+      toast.info(t("collabSameCell"));
+      dispatchDemoScene("conflict");
+    } else if (action === "follow-agent") {
+      followAgentCommand();
+      openAgentPanelFromHeader();
+      window.setTimeout(() => focusAgentFillChip(), 80);
+    } else if (action === "present") {
+      const presentLabel = t("liveSharePresent");
+      const button = Array.from(document.querySelectorAll("button")).find(
+        (item) => {
+          const text = item.textContent?.trim();
+          return text === presentLabel || text === "Present";
+        }
+      );
+      button?.click();
+    } else if (action === "blame") {
+      window.dispatchEvent(new CustomEvent(BLAME_HEAT_EVENT, { detail: {} }));
+    } else if (action === "draft") {
+      dispatchDemoScene("draft");
+    }
+  };
+
   return (
     <PresenceLegend
       title={t("presenceLegendTitle")}
+      onItemAction={handleLegendAction}
+      onToggleBlame={() => handleLegendAction("blame")}
+      onDraftFill={() => handleLegendAction("draft")}
       items={seats.map((seat) => ({
         id: seat.userID,
         label: seatLabel(seat),
+        action:
+          seat.kind === "ghost"
+            ? "jordan"
+            : seat.bot
+              ? "follow-agent"
+              : seat.userID === currentUserId
+                ? "present"
+                : undefined,
         hint:
           seat.bot && agentStatus === "thinking"
             ? t("presenceThinking")
@@ -85,10 +129,11 @@ export function CollaboratorAvatars({
         aria-label={onlineLabel}
         className="flex shrink-0 cursor-pointer items-center px-1"
       >
-        <div className="flex -space-x-1.5 items-center">
-          {seats.slice(0, VISIBLE_MEMBERS).map((seat) => (
-            <Tooltip key={seat.userID} content={seatLabel(seat)}>
+        <Tooltip content={onlineLabel}>
+          <div className="flex -space-x-1.5 items-center">
+            {seats.slice(0, VISIBLE_MEMBERS).map((seat) => (
               <span
+                key={seat.userID}
                 tabIndex={0}
                 aria-label={seatLabel(seat)}
                 className={cn(
@@ -119,18 +164,8 @@ export function CollaboratorAvatars({
                   />
                 )}
               </span>
-            </Tooltip>
-          ))}
-          {overflow.length > 0 ? (
-            <Tooltip
-              content={
-                <ul className="max-h-48 overflow-y-auto">
-                  {overflow.map((seat) => (
-                    <li key={seat.userID}>{seatLabel(seat)}</li>
-                  ))}
-                </ul>
-              }
-            >
+            ))}
+            {overflow.length > 0 ? (
               <span
                 tabIndex={0}
                 aria-label={overflow.map(seatLabel).join(", ")}
@@ -138,9 +173,9 @@ export function CollaboratorAvatars({
               >
                 +{overflow.length}
               </span>
-            </Tooltip>
-          ) : null}
-        </div>
+            ) : null}
+          </div>
+        </Tooltip>
       </div>
     </PresenceLegend>
   );

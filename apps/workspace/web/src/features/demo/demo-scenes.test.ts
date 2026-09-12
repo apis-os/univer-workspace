@@ -91,4 +91,60 @@ describe("demo scenes", () => {
     expect(focusAgentFillChip(root as unknown as Document)).toBe(true);
     expect(chip.focus).toHaveBeenCalled();
   });
+
+  it("runs Wave G scenes: provenance opens inspect, draft runs draft fill, blame toggles blame", () => {
+    const inspectFormula = vi.fn();
+    const runDraftFill = vi.fn();
+    const toggleBlame = vi.fn();
+    const dispatchScene = vi.fn();
+
+    runDemoScene("provenance", {
+      origin: "https://example.test",
+      dispatchScene,
+      openAgentPanel: vi.fn(),
+      focusFillChip: vi.fn(),
+      copyText: vi.fn(),
+      toast: vi.fn(),
+      navigate: vi.fn(),
+      openPalette: vi.fn(),
+      inspectFormula,
+      runDraftFill,
+      toggleBlame,
+    });
+    expect(inspectFormula).toHaveBeenCalledTimes(1);
+    expect(dispatchScene).toHaveBeenCalledWith("provenance");
+
+    runDemoScene("draft", {
+      origin: "https://example.test",
+      dispatchScene,
+      openAgentPanel: vi.fn(),
+      focusFillChip: vi.fn(),
+      copyText: vi.fn(),
+      toast: vi.fn(),
+      navigate: vi.fn(),
+      openPalette: vi.fn(),
+      inspectFormula,
+      runDraftFill,
+      toggleBlame,
+    });
+    expect(runDraftFill).toHaveBeenCalledTimes(1);
+    expect(dispatchScene).toHaveBeenCalledWith("draft");
+
+    runDemoScene("blame", {
+      origin: "https://example.test",
+      dispatchScene,
+      openAgentPanel: vi.fn(),
+      focusFillChip: vi.fn(),
+      copyText: vi.fn(),
+      toast: vi.fn(),
+      navigate: vi.fn(),
+      openPalette: vi.fn(),
+      inspectFormula,
+      runDraftFill,
+      toggleBlame,
+    });
+    expect(toggleBlame).toHaveBeenCalledTimes(1);
+    expect(dispatchScene).toHaveBeenCalledWith("blame");
+  });
 });
+

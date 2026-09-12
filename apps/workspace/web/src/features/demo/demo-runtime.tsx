@@ -4,15 +4,19 @@ import { useEffect, useRef, useState } from "react";
 import { useI18n } from "../../shared/i18n";
 import { toast } from "../../shared/ui";
 import { followAgentCommand } from "../editor/follow-agent";
+import { BLAME_HEAT_EVENT } from "../editor/ot-blame-heat";
 import { worktreesQueryKey } from "../worktrees";
 import { DemoCommandPalette } from "./demo-command-palette";
 import {
   openDemoPalette,
   type DemoPaletteActions,
 } from "./demo-palette";
+import { runAgentDraftFill } from "./demo-agent-draft";
+import { loadHistoryVsLive } from "./history-vs-live";
 import { FormulaInspectPopover } from "./formula-inspector-popover";
 import {
   FORMULA_INSPECT_RANGE,
+  FORMULA_INSPECT_UNIT_ID,
   isAltInspectClick,
   readInspectorRangeA1,
   runFormulaInspect,
@@ -67,7 +71,7 @@ export function DemoRuntime({
       window.location.assign("/demo?as=jordan");
     },
     runFillSum: () => {
-      runWithContext("fill", t, navigate);
+      runWithContext("fill");
     },
     runExplainQ3: () => {
       openAgentPanelFromHeader();
@@ -77,8 +81,12 @@ export function DemoRuntime({
       openFormulaInspect(FORMULA_INSPECT_RANGE);
     },
     present: () => {
+      const presentLabel = t("liveSharePresent");
       const button = Array.from(document.querySelectorAll("button")).find(
-        (item) => item.textContent?.trim() === "Present"
+        (item) => {
+          const text = item.textContent?.trim();
+          return text === presentLabel || text === "Present";
+        }
       );
       button?.click();
     },
@@ -106,10 +114,98 @@ export function DemoRuntime({
         },
       });
     },
+    draftFill: () => {
+      void runAgentDraftFill({
+        fetch: globalThis.fetch.bind(globalThis),
+        toast: (kind, key) => {
+          if (kind === "busy") toast.info(t(key as any));
+          else toast.error(t(key as any));
+        },
+        invalidateWorktrees: () =>
+          queryClient.invalidateQueries({ queryKey: worktreesQueryKey }),
+        openComparison: ({ worktreeId, unitId }) => {
+          void navigate({
+            to: "/worktrees",
+            search: {
+              worktree: worktreeId,
+              unit: unitId,
+              view: "comparison",
+            },
+          });
+        },
+        followDraft: (href) => {
+          window.location.assign(href);
+        },
+      });
+    },
+    historyLive: () => {
+      void loadHistoryVsLive({
+        unitId: FORMULA_INSPECT_UNIT_ID,
+        rev: 1,
+        fetch: globalThis.fetch.bind(globalThis),
+      })
+        .then((comparison) => {
+          void navigate({
+            to: "/worktrees",
+            search: {
+              worktree: comparison.worktreeId,
+              unit: comparison.unitId,
+              view: "comparison",
+            },
+          });
+        })
+        .catch(() => {
+          toast.error("Failed to load history comparison");
+        });
+    },
+    blameHeat: () => {
+      window.dispatchEvent(new CustomEvent(BLAME_HEAT_EVENT, { detail: {} }));
+    },
     exportXlsx: () => undefined,
     toggleLanguage: () => {
       setLanguage(language === "zh-CN" ? "en-US" : "zh-CN");
     },
+  };
+
+  const runWithContext = (scene: DemoScene) => {
+    runDemoScene(scene, {
+      origin: window.location.origin,
+      dispatchScene: dispatchDemoScene,
+      openAgentPanel: () => openAgentPanelFromHeader(),
+      focusFillChip: () => {
+        window.setTimeout(() => focusAgentFillChip(), 80);
+      },
+      copyText: (text) => {
+        void navigator.clipboard?.writeText(text);
+      },
+      toast: (key) => {
+        toast.info(t(key));
+      },
+      navigate: (to) => {
+        void navigate({ to });
+      },
+      openPalette: (itemId) => {
+        openDemoPalette(itemId);
+      },
+      inspectFormula: () => {
+        openFormulaInspect(FORMULA_INSPECT_RANGE);
+      },
+      toggleBlame: () => {
+        actions.blameHeat?.();
+      },
+      runDraftFill: () => {
+        actions.draftFill?.();
+      },
+      openHistoryVsLive: () => {
+        actions.historyLive?.();
+      },
+      followAgent: () => {
+        actions.followAgent();
+      },
+      present: () => {
+        actions.present();
+      },
+    });
   };
 
   useEffect(() => {
@@ -124,7 +220,7 @@ export function DemoRuntime({
     if (search.scene && ranScene.current !== search.scene) {
       ranScene.current = search.scene;
       window.setTimeout(() => {
-        runWithContext(search.scene as DemoScene, t, navigate);
+        runWithContext(search.scene as DemoScene);
       }, 120);
     }
   }, [language, navigate, setLanguage, t]);
@@ -182,29 +278,3 @@ export function DemoRuntime({
   );
 }
 
-function runWithContext(
-  scene: DemoScene,
-  t: (key: "collabSameCell") => string,
-  navigate: ReturnType<typeof useNavigate>
-): void {
-  runDemoScene(scene, {
-    origin: window.location.origin,
-    dispatchScene: dispatchDemoScene,
-    openAgentPanel: () => openAgentPanelFromHeader(),
-    focusFillChip: () => {
-      window.setTimeout(() => focusAgentFillChip(), 80);
-    },
-    copyText: (text) => {
-      void navigator.clipboard?.writeText(text);
-    },
-    toast: (key) => {
-      toast.info(t(key));
-    },
-    navigate: (to) => {
-      void navigate({ to });
-    },
-    openPalette: (itemId) => {
-      openDemoPalette(itemId);
-    },
-  });
-}

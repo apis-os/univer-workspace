@@ -3,7 +3,17 @@ export const DEMO_LANGUAGE_STORAGE_KEY = "univer-workspace-language-v2";
 
 export type DemoActor = "jordan";
 export type DemoLanguage = "zh-CN" | "en-US";
-export type DemoScene = "fill" | "conflict" | "review" | "export";
+export type DemoScene =
+  | "fill"
+  | "conflict"
+  | "review"
+  | "export"
+  | "intent"
+  | "blame"
+  | "draft"
+  | "trace"
+  | "history"
+  | "provenance";
 
 export interface DemoSearch {
   readonly as?: DemoActor;
@@ -17,7 +27,13 @@ export function isDemoScene(value: unknown): value is DemoScene {
     value === "fill" ||
     value === "conflict" ||
     value === "review" ||
-    value === "export"
+    value === "export" ||
+    value === "intent" ||
+    value === "blame" ||
+    value === "draft" ||
+    value === "trace" ||
+    value === "history" ||
+    value === "provenance"
   );
 }
 

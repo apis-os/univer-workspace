@@ -12,6 +12,12 @@ export interface DemoSceneContext {
   readonly toast: (key: "collabSameCell") => void;
   readonly navigate: (to: string) => void;
   readonly openPalette: (itemId: "export-xlsx") => void;
+  readonly inspectFormula?: () => void;
+  readonly toggleBlame?: () => void;
+  readonly runDraftFill?: () => void;
+  readonly openHistoryVsLive?: () => void;
+  readonly followAgent?: () => void;
+  readonly present?: () => void;
 }
 
 type FillChipRoot = Pick<Document, "getElementById">;
@@ -75,5 +81,33 @@ export function runDemoScene(scene: DemoScene, ctx: DemoSceneContext): void {
     ctx.navigate("/worktrees");
     return;
   }
-  ctx.openPalette("export-xlsx");
+  if (scene === "export") {
+    ctx.openPalette("export-xlsx");
+    return;
+  }
+  if (scene === "intent") {
+    ctx.copyText(jordanDemoUrl(ctx.origin));
+    ctx.toast("collabSameCell");
+    return;
+  }
+  if (scene === "blame") {
+    ctx.toggleBlame?.();
+    return;
+  }
+  if (scene === "draft") {
+    ctx.runDraftFill?.();
+    return;
+  }
+  if (scene === "trace") {
+    ctx.openAgentPanel();
+    return;
+  }
+  if (scene === "history") {
+    ctx.openHistoryVsLive?.();
+    return;
+  }
+  if (scene === "provenance") {
+    ctx.inspectFormula?.();
+    return;
+  }
 }

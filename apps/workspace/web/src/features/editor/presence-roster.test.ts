@@ -151,3 +151,14 @@ describe("bot icon and thinking pulse", () => {
     ).toBe(true);
   });
 });
+
+describe("presence legend actions", () => {
+  it("maps ghost to jordan, bot to follow-agent, and current user to present", () => {
+    const src = readFileSync(new URL("./collaborator-avatars.tsx", import.meta.url), "utf8");
+    expect(src).toMatch(/action:\s*seat\.kind === "ghost"/);
+    expect(src).toMatch(/"jordan"/);
+    expect(src).toMatch(/"follow-agent"/);
+    expect(src).toMatch(/"present"/);
+  });
+});
+

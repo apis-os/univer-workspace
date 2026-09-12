@@ -9,6 +9,9 @@ export const DEMO_PALETTE_ITEM_IDS = [
   "present",
   "follow-agent",
   "what-if",
+  "draft-fill",
+  "history-live",
+  "blame-heat",
   "export-xlsx",
   "language",
 ] as const;
@@ -29,6 +32,9 @@ const PALETTE_LABELS = {
   present: "demoPalettePresent",
   "follow-agent": "demoPaletteFollowAgent",
   "what-if": "demoPaletteWhatIf",
+  "draft-fill": "demoPaletteDraftFill",
+  "history-live": "demoPaletteHistoryLive",
+  "blame-heat": "demoPaletteBlameHeat",
   "export-xlsx": "demoPaletteExportXlsx",
   language: "demoPaletteLanguage",
 } as const satisfies Record<DemoPaletteItemId, MessageKey>;
@@ -57,6 +63,9 @@ export interface DemoPaletteActions {
   readonly present: () => void;
   readonly followAgent: () => void;
   readonly whatIf: () => void;
+  readonly draftFill?: () => void;
+  readonly historyLive?: () => void;
+  readonly blameHeat?: () => void;
   readonly exportXlsx: () => void;
   readonly toggleLanguage: () => void;
 }
@@ -95,6 +104,18 @@ export function executePaletteItem(
   }
   if (id === "what-if") {
     ctx.whatIf();
+    return;
+  }
+  if (id === "draft-fill") {
+    ctx.draftFill?.();
+    return;
+  }
+  if (id === "history-live") {
+    ctx.historyLive?.();
+    return;
+  }
+  if (id === "blame-heat") {
+    ctx.blameHeat?.();
     return;
   }
   if (id === "export-xlsx") {
