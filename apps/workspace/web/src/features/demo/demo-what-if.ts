@@ -38,6 +38,18 @@ export function demoUniverFileKey(): string {
   return fileKeyOf(DEMO_UNIVER_FILE);
 }
 
+export function spaceIdFromFileKey(key: string): string {
+  const path = atob(key.replace(/-/g, "+").replace(/_/g, "/"));
+  return `space_uf_${[...new Uint8Array(new TextEncoder().encode(path))]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("")
+    .slice(0, 24)}`;
+}
+
+export function demoUniverFileSpaceId(): string {
+  return spaceIdFromFileKey(demoUniverFileKey());
+}
+
 export function whatIfUfPath(rest = ""): string {
   const key = demoUniverFileKey();
   const suffix = rest.replace(/^\//u, "");
@@ -84,10 +96,11 @@ export function whatIfApiPath(rest = ""): string {
 export async function runWhatIfWorktree(host: WhatIfHost): Promise<void> {
   host.toast("busy", "demoWhatIfBusy");
   try {
-    const created = await jsonPost(host.fetch, whatIfApiPath(), {
+    const created = await jsonPost(host.fetch, whatIfUfPath("worktrees"), {
       kind: "user",
       name: WHAT_IF_WORKTREE_NAME,
       summary: null,
+      teamSpaceId: demoUniverFileSpaceId(),
     });
     const worktreeId = worktreeIdFrom(created);
     const added = await jsonPost(

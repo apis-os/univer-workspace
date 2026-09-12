@@ -10,6 +10,7 @@ import {
   WHAT_IF_WORKTREE_NAME,
   comparisonLabelsForWorktree,
   demoUniverFileKey,
+  demoUniverFileSpaceId,
   isWhatIfWorktreeName,
   runWhatIfWorktree,
   whatIfComparisonHref,
@@ -73,13 +74,30 @@ describe("what-if comparison labels", () => {
   });
 });
 
-function productCloneFetch(): {
+const DEMO_FILE_SPACE_ID = "space_uf_776f726b73706163652e756e";
+
+function createBodyTeamSpaceId(body: unknown): string | undefined {
+  if (body === null || typeof body !== "object") return undefined;
+  const teamSpaceId = (body as { teamSpaceId?: unknown }).teamSpaceId;
+  return typeof teamSpaceId === "string" ? teamSpaceId : undefined;
+}
+
+function createdInFileSpace(call: string | undefined, body: unknown): boolean {
+  if (call === `POST ${whatIfUfPath("worktrees")}`) return true;
+  return (
+    call === "POST /api/worktrees" &&
+    createBodyTeamSpaceId(body) === DEMO_FILE_SPACE_ID
+  );
+}
+
+function fileSpaceCloneFetch(): {
   readonly fetchImpl: typeof fetch;
   readonly calls: string[];
   readonly bodies: unknown[];
 } {
   const calls: string[] = [];
   const bodies: unknown[] = [];
+  const fileSpaceWorktrees = new Set<string>();
   const clonedDrafts = new Set<string>();
   const fetchImpl = vi.fn<typeof fetch>(async (input, init) => {
     const href = typeof input === "string" ? input : String(input);
@@ -91,8 +109,16 @@ function productCloneFetch(): {
       const text = typeof init?.body === "string" ? init.body : "";
       bodies.push(text ? JSON.parse(text) : null);
     }
+    const lastBody = bodies.at(-1);
 
+    if (method === "POST" && path === whatIfUfPath("worktrees")) {
+      fileSpaceWorktrees.add("wt_what_if");
+      return jsonResponse({ id: "wt_what_if", name: WHAT_IF_WORKTREE_NAME }, 201);
+    }
     if (method === "POST" && path === "/api/worktrees") {
+      if (createBodyTeamSpaceId(lastBody) === DEMO_FILE_SPACE_ID) {
+        fileSpaceWorktrees.add("wt_what_if");
+      }
       return jsonResponse({ id: "wt_what_if", name: WHAT_IF_WORKTREE_NAME }, 201);
     }
     if (method === "POST" && path === "/api/worktrees/wt_what_if/units") {
@@ -109,6 +135,9 @@ function productCloneFetch(): {
     const executeMatch = path.match(/\/units\/([^/]+)\/execute$/);
     if (method === "POST" && executeMatch) {
       const unitId = executeMatch[1];
+      if (!fileSpaceWorktrees.has("wt_what_if")) {
+        return jsonResponse({ error: { message: "Worktree not found" } }, 404);
+      }
       if (!clonedDrafts.has(unitId)) {
         return jsonResponse({ error: { message: "Snapshot not found" } }, 404);
       }
@@ -126,8 +155,8 @@ function productCloneFetch(): {
 }
 
 describe("runWhatIfWorktree", () => {
-  it("clones via product /api/worktrees so execute hits a collab draft, then ready without merging", async () => {
-    const { fetchImpl, calls, bodies } = productCloneFetch();
+  it("creates the worktree in the workspace.univer file space so /uf execute canReviewFileWorktree succeeds", async () => {
+    const { fetchImpl, calls, bodies } = fileSpaceCloneFetch();
     const toast = vi.fn();
     const openComparison = vi.fn();
     const invalidateWorktrees = vi.fn();
@@ -140,12 +169,11 @@ describe("runWhatIfWorktree", () => {
     });
 
     expect(toast).toHaveBeenCalledWith("busy", "demoWhatIfBusy");
-    expect(calls[0]).toBe("POST /api/worktrees");
-    expect(bodies[0]).toEqual({
-      kind: "user",
-      name: WHAT_IF_WORKTREE_NAME,
-      summary: null,
-    });
+    expect(demoUniverFileSpaceId()).toBe(DEMO_FILE_SPACE_ID);
+    expect(createdInFileSpace(calls[0], bodies[0])).toBe(true);
+    expect(createBodyTeamSpaceId(bodies[0]) ?? calls[0]).toMatch(
+      new RegExp(`${DEMO_FILE_SPACE_ID}|${whatIfUfPath("worktrees")}`)
+    );
     expect(calls).toContain("POST /api/worktrees/wt_what_if/units");
     expect(calls).not.toContain(
       `POST ${whatIfUfPath("worktrees/wt_what_if/units")}`
@@ -228,5 +256,6 @@ describe("what-if wiring", () => {
     expect(runtime).toMatch(/invalidateQueries/);
     expect(runtime).toMatch(/worktreesQueryKey/);
     expect(demoUniverFileKey().length).toBeGreaterThan(0);
+    expect(demoUniverFileSpaceId()).toBe("space_uf_776f726b73706163652e756e");
   });
 });
