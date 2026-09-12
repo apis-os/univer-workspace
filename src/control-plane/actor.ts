@@ -23,8 +23,24 @@ export function actorMemberId(actor: WorkspaceActor): string {
   return `agent:${actor.userId}`;
 }
 
+const CLIENT_ACTOR_HEADERS = [
+  ACTOR_HEADER_ID,
+  ACTOR_HEADER_NAME,
+  ACTOR_HEADER_USERNAME,
+  "x-workspace-user-id",
+  "x-workspace-user-name",
+  "x-workspace-user-avatar"
+] as const;
+
+export function stripClientActorHeaders(headers: Headers): void {
+  for (const name of CLIENT_ACTOR_HEADERS) {
+    headers.delete(name);
+  }
+}
+
 export function attachActorHeaders(request: Request, user: User): Request {
   const headers = new Headers(request.headers);
+  stripClientActorHeaders(headers);
   headers.set(ACTOR_HEADER_ID, user.id);
   headers.set(ACTOR_HEADER_NAME, user.display_name);
   headers.set(ACTOR_HEADER_USERNAME, user.username);

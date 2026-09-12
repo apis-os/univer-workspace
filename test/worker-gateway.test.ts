@@ -377,4 +377,74 @@ describe("Master Cloudflare Worker Edge Gateway", async () => {
     assert.equal(received, original, "cloning a WS upgrade Request causes Cloudflare 1006");
     assert.equal(received.headers.get("Upgrade"), "websocket");
   });
+
+  test("strips spoofed Comb actor headers unless a session is attached", async () => {
+    const env = createMockEnv();
+    await seedControlPlane(env.DB);
+    const registerRes = await worker.fetch(
+      new Request("https://workspace.edge/api/auth/password/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "combsession",
+          displayName: "Comb Session",
+          password: "password123"
+        })
+      }),
+      env as any,
+      {} as any
+    );
+    assert.equal(registerRes.status, 200);
+    const sessionData = await registerRes.json();
+    const sessionUserId = sessionData.user.id as string;
+    const setCookie = registerRes.headers.get("Set-Cookie") ?? "";
+    const cookieMatch = setCookie.match(/workspace_session=([^;]+)/);
+    assert.ok(cookieMatch);
+    const sessionCookie = `workspace_session=${cookieMatch[1]}`;
+
+    let received: Request | null = null;
+    env.ChatAgent.get = () => ({
+      fetch: async (req: Request) => {
+        received = req;
+        return new Response("ok", { status: 200 });
+      }
+    });
+
+    const spoofed = await worker.fetch(
+      new Request("https://workspace.edge/universer-api/comb/connect", {
+        headers: {
+          Upgrade: "websocket",
+          "x-workspace-user-id": "user_jordan",
+          "x-workspace-user-name": "Jordan Lee",
+          "x-workspace-actor-id": "user_jordan"
+        }
+      }),
+      env as any,
+      {} as any
+    );
+    assert.equal(spoofed.status, 200);
+    assert.ok(received);
+    assert.equal(received.headers.get("x-workspace-user-id"), null);
+    assert.equal(received.headers.get("x-workspace-actor-id"), null);
+
+    received = null;
+    const attached = await worker.fetch(
+      new Request("https://workspace.edge/universer-api/comb/connect?sessionTicket=t-session", {
+        headers: {
+          Upgrade: "websocket",
+          Cookie: sessionCookie,
+          "x-workspace-user-id": "user_jordan",
+          "x-workspace-user-name": "Jordan Lee"
+        }
+      }),
+      env as any,
+      {} as any
+    );
+    assert.equal(attached.status, 200);
+    assert.ok(received);
+    assert.equal(received.headers.get("x-workspace-user-id"), sessionUserId);
+    assert.equal(received.headers.get("x-workspace-actor-id"), sessionUserId);
+    assert.equal(received.headers.get("x-workspace-user-name"), "Comb Session");
+    assert.notEqual(received.headers.get("x-workspace-user-id"), "user_jordan");
+  });
 });

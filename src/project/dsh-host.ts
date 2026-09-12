@@ -28,7 +28,6 @@ import {
   loadIssuedTicket,
   persistIssuedTicket,
   readCollaboratorIdentity,
-  WORKSPACE_USER_ID_HEADER,
   type CollaboratorIdentity,
   type IssuedSessionTicket
 } from "../integrations/univer-protocol.ts";
@@ -125,11 +124,7 @@ export class DshHost extends HostBase<any> {
       const [client, server] = Object.values(pair);
 
       if (isWorktreeCombConnect(url.pathname)) {
-        const ticket = this.consumeSessionTicket(url.searchParams.get("sessionTicket") || "");
-        const fromRequest = readCollaboratorIdentity(request);
-        const identity =
-          ticket ??
-          (request.headers.get(WORKSPACE_USER_ID_HEADER)?.trim() ? fromRequest : null);
+        const identity = this.consumeSessionTicket(url.searchParams.get("sessionTicket") || "");
         if (!identity) {
           return new Response(JSON.stringify({ error: { code: 16, message: "unauthenticated" } }), {
             status: 401,

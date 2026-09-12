@@ -3,7 +3,7 @@
  */
 import { ControlPlaneDb } from "./control-plane/db.ts";
 import { initControlPlaneSchema, seedControlPlane } from "./control-plane/schema.ts";
-import { attachActorHeaders } from "./control-plane/actor.ts";
+import { attachActorHeaders, stripClientActorHeaders } from "./control-plane/actor.ts";
 import { handleControlPlaneRoutes, resolveGatewayContext } from "./control-plane/gateway.ts";
 import { handleBlobRoutes, R2BlobStore } from "./integrations/r2-blob-store.ts";
 import {
@@ -184,20 +184,21 @@ export default {
               })
             );
           }
-          if (session.currentUser) {
-            if (isWebSocket) {
-              try {
+          if (isWebSocket) {
+            try {
+              stripClientActorHeaders(request.headers);
+              if (session.currentUser) {
                 request.headers.set("x-workspace-actor-id", session.currentUser.id);
                 request.headers.set("x-workspace-actor-name", session.currentUser.display_name);
                 request.headers.set("x-workspace-user-id", session.currentUser.id);
                 request.headers.set("x-workspace-user-name", session.currentUser.display_name);
-              } catch {
-                /* Request headers may be immutable; Comb identity comes from the session ticket. */
               }
-              forwarded = request;
-            } else {
-              forwarded = attachActorHeaders(request, session.currentUser);
+            } catch {
+              /* Request headers may be immutable; Comb identity comes from the session ticket. */
             }
+            forwarded = request;
+          } else if (session.currentUser) {
+            forwarded = attachActorHeaders(request, session.currentUser);
           }
         } else if (isUniverFile && !env.DB) {
           return applyCorsHeaders(

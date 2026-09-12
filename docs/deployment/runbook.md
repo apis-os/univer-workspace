@@ -293,7 +293,7 @@ Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9b-comb"`, 
 - [x] 90-second two-user click-through — canvas, in-grid D3, Present/Follow, Fill PNG card, What-if Merge, History names, formula inspector, and same-cell conflict toast observed
 - [x] Present / Follow — clicked `[data-demo="live-share-present"]` label Present and `[data-demo="live-share-follow"]` label Follow
 - [x] Formula inspector — palette Inspect formula; dialog `f=SUM(B2:D2)`
-- [x] Same-cell conflict toast — both D3 typed in-grid via the name box (overlapping 181/182/183); sonner `Collaboration conflict: someone else edited the same cells.` on Avery and Jordan (Comb HUD still `json`/`Syncing…`)
+- [x] Same-cell conflict toast — both D3 typed in-grid via the name box (overlapping 181/182/183); sonner `Collaboration conflict: someone else edited the same cells.` on Avery and Jordan (Comb HUD `json`/`Synced`, observed on T9b headed Avery+Jordan)
 - [x] What-if comparison + Merge — palette What-if +10% Sep → `/worktrees?...&demo=what-if`; Confirm merge clicked twice (demo trunk execute, labeled not a worktree `/merge`)
 - [x] History overlay names Avery / Jordan / Workspace Agent — History vs Live Comb → `/worktrees?...&demo=history`; names mapped from writers, not Administrator
 - [x] `/render` screenshot card PNG on Fill — `img[alt="Q3 Forecast after agent fill"]` 1280×800 `srcLen` 7750

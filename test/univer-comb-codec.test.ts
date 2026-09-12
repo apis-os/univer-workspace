@@ -1,6 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
+import { DatabaseSync } from "node:sqlite";
 import {
   CombCmd,
   CmdRspCode,
@@ -516,6 +517,88 @@ describe("Comb connect ticket handshake", () => {
       (globalThis as { WebSocketPair?: unknown }).WebSocketPair = previous;
     }
   });
+
+  test("Comb connect with spoofed x-workspace-user-id and no session ticket does not JOIN as that user", async () => {
+    const previous = (globalThis as { WebSocketPair?: unknown }).WebSocketPair;
+    try {
+      for (const pathname of [
+        "/universer-api/comb/connect",
+        "/universer-api/worktrees/wt_review/comb/connect"
+      ]) {
+        const { host, accepted, attachment, fetchUpgrade: upgrade } = await createCombConnectHarness();
+        const res = await upgrade(
+          host,
+          new Request(`https://workspace.edge${pathname}`, {
+            headers: {
+              Upgrade: "websocket",
+              "x-workspace-user-id": "user_jordan",
+              "x-workspace-user-name": "Jordan Lee"
+            }
+          })
+        );
+        assert.equal(res.status, 401, pathname);
+        assert.equal(accepted.length, 0, pathname);
+        assert.notEqual(attachment.userID, "user_jordan", pathname);
+        const body = await (res as Response).json();
+        assert.equal(body.error?.code, 16, pathname);
+      }
+    } finally {
+      (globalThis as { WebSocketPair?: unknown }).WebSocketPair = previous;
+    }
+  });
+
+  test("session-ticket Comb connect JOINs as the ticket user, not spoofed headers", async () => {
+    const { persistIssuedTicket } = await import("../src/integrations/univer-protocol.ts");
+    const previous = (globalThis as { WebSocketPair?: unknown }).WebSocketPair;
+    try {
+      const { host, accepted, attachment, serverSocket, sql, fetchUpgrade: upgrade } =
+        await createCombConnectHarness();
+      persistIssuedTicket(
+        sql,
+        "ticket_session_avery",
+        { userID: "user_admin", name: "Avery Chen", avatar: "" },
+        Date.now() + 60_000
+      );
+
+      const res = await upgrade(
+        host,
+        new Request("https://workspace.edge/universer-api/comb/connect?sessionTicket=ticket_session_avery", {
+          headers: {
+            Upgrade: "websocket",
+            "x-workspace-user-id": "user_jordan",
+            "x-workspace-user-name": "Jordan Lee"
+          }
+        })
+      );
+      assert.equal(res.status, 101);
+      assert.equal(accepted.length, 1);
+      assert.equal(attachment.userID, "user_admin");
+      assert.equal(attachment.name, "Avery Chen");
+
+      await host.webSocketMessage(
+        serverSocket as unknown as WebSocket,
+        encodeCombJson({
+          cmd: CombCmd.JOIN,
+          routeKey: "unit_welcome_sheet",
+          joinReq: { rooms: [{ roomID: "unit_welcome_sheet", args: "" }] }
+        })
+      );
+      const join = serverSocket.sent
+        .filter((row) => typeof row === "string")
+        .map((row) => JSON.parse(String(row)))
+        .find((msg) => msg.cmd === CombCmd.JOIN);
+      assert.equal(join?.cmd, CombCmd.JOIN);
+      assert.equal(join?.code, CmdRspCode.OK);
+      const members = join?.joinRsp.roomInfos.unit_welcome_sheet.members as Array<{
+        userID?: string;
+        name?: string;
+      }>;
+      assert.ok(members.some((member) => member.userID === "user_admin" && member.name === "Avery Chen"));
+      assert.ok(!members.some((member) => member.userID === "user_jordan"));
+    } finally {
+      (globalThis as { WebSocketPair?: unknown }).WebSocketPair = previous;
+    }
+  });
 });
 
 async function fetchUpgrade(host: { fetch: (request: Request) => Promise<Response> }, request: Request) {
@@ -527,6 +610,54 @@ async function fetchUpgrade(host: { fetch: (request: Request) => Promise<Respons
     }
     throw err;
   }
+}
+
+function memorySql() {
+  const db = new DatabaseSync(":memory:");
+  return {
+    exec: (query: string, ...binds: unknown[]) => {
+      const trimmed = query.trim().toUpperCase();
+      if (trimmed.startsWith("CREATE") || trimmed.startsWith("ALTER") || trimmed.startsWith("DROP")) {
+        db.exec(query);
+        return { toArray: () => [] };
+      }
+      const stmt = db.prepare(query);
+      if (trimmed.startsWith("INSERT") || trimmed.startsWith("UPDATE") || trimmed.startsWith("DELETE")) {
+        stmt.run(...(binds as any[]));
+        return { toArray: () => [] };
+      }
+      const rows = stmt.all(...(binds as any[]));
+      return { toArray: () => rows as Record<string, unknown>[] };
+    }
+  };
+}
+
+async function createCombConnectHarness() {
+  const sql = memorySql();
+  const attachment: Record<string, unknown> = { rooms: [] };
+  const accepted: unknown[] = [];
+  const serverSocket = fakeSocket(attachment);
+  const WebSocketPair = function WebSocketPair() {
+    return { 0: {}, 1: serverSocket };
+  };
+  (globalThis as { WebSocketPair?: unknown }).WebSocketPair = WebSocketPair as never;
+  const { DshHost } = await import("../src/project/dsh-host.ts");
+  const host = new DshHost(
+    {
+      getWebSockets: () => [serverSocket],
+      acceptWebSocket: (ws: unknown) => accepted.push(ws),
+      id: { toString: () => "univer_collab", name: "univer_collab" },
+      storage: { sql: { exec: sql.exec } }
+    } as any,
+    {} as any
+  );
+  host.ensureKernel = async () =>
+    ({
+      get: () => undefined,
+      emit: async () => undefined
+    }) as any;
+  host.getSqlExec = () => sql as never;
+  return { host, accepted, attachment, serverSocket, sql, fetchUpgrade };
 }
 
 function fakeSocket(att: Record<string, unknown>) {
