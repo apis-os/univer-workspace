@@ -8543,11 +8543,11 @@ function Qg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309) {
   return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309 == 'string' && Zg.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46309 : 'roundedOrthogonal';
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46311, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46311, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312) {
   return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46311 === 'straight' ? "straight" : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46311 === 'curve' ? "curve" : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46311 === "orthogonal" && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46312.cornerStyle) === "miter" ? "orthogonal" : 'roundedOrthogonal';
 }
 ;
-function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315) {
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315) {
   switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46315) {
     case 'straight':
       return {
@@ -8576,7 +8576,7 @@ function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1(var_L0_core_endo
   }
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1() {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1_1() {
   try {
     var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46317;
     return Qg((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46317 = globalThis.localStorage) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46317.getItem("univer.boards.connector.routing-style"));
@@ -8585,14 +8585,14 @@ function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1() {
   }
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319) {
   try {
     var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46320;
     (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46320 = globalThis.localStorage) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46320.setItem("univer.boards.connector.routing-style", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319);
   } catch {}
 }
 const var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D82 = 0.02;
-function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323) {
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323) {
   let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323.minZoomRatio,
     var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46323.maxZoomRatio,
     var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D60 = Math.max(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D82, typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324 == "number" && Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324 > 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324 : var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D82);
@@ -8708,7 +8708,7 @@ const var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6 = {
   'zoomWheelFactor': 1.1
 };
 ;
-function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608) {
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF1_2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608) {
   let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB14 = {
       ...p_,
       ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.interaction)
@@ -8737,12 +8737,12 @@ function X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46614, var_L0_core
   return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46618 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46619 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46615, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46619), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46619;
 }
 const Z = oxe4f9ac_1("board-ui.state.service");
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F_2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628) {
   let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16 = {};
   return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.modeSwitcherVisible) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.modeSwitcherVisible = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.modeSwitcherVisible), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.collaboratorCursorsVisible) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.collaboratorCursorsVisible = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.collaboratorCursorsVisible), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.collaboratorCursorShareInterval) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.collaboratorCursorShareInterval = yg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.collaboratorCursorShareInterval)), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.gridVisible) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.gridVisible = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.gridVisible), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.quickAddEnabled) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.quickAddEnabled = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.quickAddEnabled), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.preciseSelection) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.preciseSelection = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.preciseSelection), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.showDimensions) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.showDimensions = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.showDimensions), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.showToolbar) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.showToolbar = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.showToolbar), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.viewportBarEnabled) !== undefined && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16.viewportBarEnabled = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46628.viewportBarEnabled), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB16;
 }
 ;
-function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46630) {
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF11_2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46630) {
   var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46631;
   return {
     ...vg,
@@ -9191,16 +9191,16 @@ let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46779 = class extends ox1
   }
 };
 var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46779 = X([Y(0, ox1cd84c_1(ox468acd_1)), Y(1, Z)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46779);
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46634) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1_2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46634) {
   return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46634.kind === "free" ? null : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46634.shapeId;
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46636) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2_2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46636) {
   let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18 = [fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46636.start), fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46636.end)];
   return Array.from(new Set(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350 => !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350)));
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46638, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639 = {}) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46638, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639 = {}) {
   let var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594 = new Map();
   return Object.values(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46638).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351 => {
     if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351.element["type"] !== ox2cbbb0_1.Connector || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46639.includeHidden && !Gg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46638, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351)) return;
@@ -9216,7 +9216,7 @@ function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3(var_L0_core_end
   }), var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594;
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F4({
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F4_1({
   unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46642,
   subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46643,
   elementData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46644,
@@ -9239,16 +9239,16 @@ const var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB19 = {
   },
   var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16 = 'gray.50',
   var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929916 = new Set(["#fff", "#ffffff", "#f8fafc", "#eef2ff"]);
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F5(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F5_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654) {
   return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46654.trim().toLowerCase();
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F6(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46657) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F6_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46657) {
   let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46658 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46656.background;
   return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46658 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46658.type) === ox564797_1.Image ? "transparent" : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46658 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46658.type) === ox564797_1.Solid ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46657 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46657.darkMode && var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929916.has(fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F5(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46658.color)) ? var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46658.color : var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB16;
 }
 ;
-function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF12(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46662, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46665, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46666 = 'cover') {
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF12_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46662, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46664, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46665, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46666 = 'cover') {
   if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46666 === "stretch" || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46662 <= 0 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46663 <= 0) return {
     'left': 0,
     'top': 0,
@@ -9268,12 +9268,12 @@ function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF12(var_L0_core_end
   };
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F7(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F7_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676) {
   var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677;
   return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46676.scene) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46677.minSize) ?? var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB19;
 }
 ;
-function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF13({
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF13_1({
   engineWidth: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46680 = 0,
   engineHeight: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46681 = 0,
   sceneWidth: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46682 = 0,
@@ -9286,16 +9286,16 @@ function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sig8CF13({
   };
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F8(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46690, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46691) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F8_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46690, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46691) {
   return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46690.oKey["startsWith"]('board-element:' + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46691 + ':');
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F9(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F9_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694) {
   let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46694;
   return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.getObjects == 'function' ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46695.getObjects() : [];
 }
 ;
-function fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699) {
+function fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699) {
   var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698) || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698), fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F9(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46698).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46363 => fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46363, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46699)));
 }
 ;
@@ -9311,7 +9311,7 @@ function fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sig193F(var_L0_core_endo_
   var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46704 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702.parent = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46704), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702.groupKey = undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46702.isInGroup = false;
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F10(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46708) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F10_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46708) {
   let var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929912 = new Set();
   return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46708.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365 => fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365, var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929912)), var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929912.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366 => fn_L0_core_endo_routine_mut_O1_zalloc_nothrow_sig193F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366)), Array.from(var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig929912);
 }
@@ -9842,7 +9842,7 @@ function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F16(var_L0_core_en
   return var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D33 >= 0.1 ? Math.min(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D33, 4) : null;
 }
 ;
-function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sigDC72(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748) {
+function fn_L1_core_endo_routine_pure_O1_zalloc_nothrow_sigDC72_1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748) {
   return [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.left, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.top, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.right, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.bottom, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.width ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.right - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.left, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.height ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.bottom - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46748.top];
 }
 ;
@@ -10014,7 +10014,7 @@ function gv(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189) {
   };
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F_3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191) {
   return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 || typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 != "object" ? {} : ox49f534.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191);
 }
 ;
@@ -10636,7 +10636,7 @@ function Qv(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461413) {
   return Array.from(new Set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461413.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268.elementId)));
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461415, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461416) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F_4(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461415, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461416) {
   return Array.from(new Set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461416.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269 => {
     var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270;
     let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461415[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269.elementId],
@@ -10993,7 +10993,7 @@ function gy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555) {
   return typeof HTMLElement > 'u' || !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555 instanceof HTMLElement) ? false : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555.isContentEditable || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555 instanceof HTMLInputElement || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555 instanceof HTMLTextAreaElement || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461555 instanceof HTMLSelectElement;
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F1_3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557) {
   return gy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557) || typeof HTMLElement < 'u' && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557 instanceof HTMLElement && !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461557.closest('button,\x20a[href],\x20[role=\x22button\x22],\x20[role=\x22menuitem\x22],\x20[role=\x22menuitemradio\x22],\x20[role=\x22menuitemcheckbox\x22]');
 }
 ;
@@ -12340,7 +12340,7 @@ function Qy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461713, var_L0_co
   return ox49f534.diffValue(eb(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461713), eb(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461714));
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461717, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461718) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F2_3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461717, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461718) {
   return ox49f534.diffValue(tb(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461717), tb(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461718));
 }
 ;
@@ -13014,7 +13014,7 @@ function gb(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769) {
   return !fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769) || !Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769.elements) ? false : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769.elements["length"] > 0 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769.elements["length"] <= 1000 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769.elements["every"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461317 => fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461317) && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461317.id == 'string' && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461317.type == "string" && fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461317.transform)) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769.resources === undefined || fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461769.resources));
 }
 ;
-function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461771) {
+function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F3_2(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461771) {
   return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461771 == 'object' && !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461771 && !Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461771);
 }
 ;
@@ -14481,7 +14481,6 @@ function ax(targetObj_BD18) {
   let var_core_value_sigDC34 = targetObj1.text;
   return typeof var_core_value_sigDC34 == "string" ? var_core_value_sigDC34 : lx(((targetObj = targetObj1.dataModel) == null ? undefined : targetObj.doc) ?? targetObj1.documentData);
 }
-
 function ox(targetObj_BD18) {
   return ('text' in targetObj_BD18 && typeof targetObj_BD18.text == "string" ? targetObj_BD18.text : '') || lx('textData' in targetObj_BD18 ? targetObj_BD18.textData : undefined);
 }
@@ -14497,7 +14496,6 @@ function lx(targetObj_BD18) {
   let var_core_value_sigDAA2 = targetObj_BD18 == null || (targetObj = targetObj_BD18.body) == null ? undefined : targetObj.dataStream;
   return var_core_value_sigDAA2 ? var_core_value_sigDAA2.replace(/\r\n/g, '\x0a').replace(/\r/g, '\x0a').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/\n+$/g, '') : '';
 }
-
 function ux(options16) {
   let itemsMap = new Map();
   return ex().presets["forEach"](targetObj35 => {
@@ -14568,7 +14566,6 @@ function _x(targetObj_BD18, var_core_value_sig9207, var_core_value_sigFEB9, opti
     }];
   });
 }
-
 function vx(var_core_value_sig57CB, var_core_value_sig3799, var_core_value_sigFDCC, targetObj_BD18, options22) {
   return targetObj_BD18 != null && targetObj_BD18.length ? targetObj_BD18.flatMap(targetObj41 => {
     let var_core_value_sig9959 = targetObj41.text["trim"]();
@@ -14606,7 +14603,6 @@ function yx(targetObj_BD18, var_core_value_sig0D37, targetObj) {
     'searchableParts': [var_core_value_sigFBA2, strVal26, var_core_value_sigA6B5, strVal27, var_core_value_sig0AE7, var_core_value_sig848E, var_core_value_sig4D04, var_core_value_sigD26F]
   }, ...hx(targetObj2, var_core_value_sigFBA2, var_core_value_sig848E), ...gx(targetObj2, var_core_value_sigFBA2, var_core_value_sig848E), ..._x(targetObj2, var_core_value_sigFBA2, var_core_value_sig848E, targetObj.localeTexts), ...vx(targetObj2, var_core_value_sigFBA2, var_core_value_sig848E, (targetObj1 = targetObj.tableSearchEntries) == null ? undefined : targetObj1[var_core_value_sigFBA2], targetObj.localeTexts)];
 }
-
 function bx(targetObj_BD18) {
   let strVal30 = targetObj_BD18.query['trim']().toLowerCase();
   if (!strVal30) return [];
@@ -14730,7 +14726,6 @@ let xx = class {
     return this.focusElementResult(var_core_value_sigAB6D, var_core_value_sig0766, var_core_value_sigA0DF);
   }
 };
-
 xx = X([Y(0, ox1cd84c_1(ox468acd_1)), Y(1, v_), Y(2, Z), Y(3, ox1cd84c_1(ox4a4b3c_1)), Y(4, ox5379d7_1(ox2f0e19))], xx);
 const Sx = oxe4f9ac_1('boards-ui.board-ink-edit.service'),
   Cx = {
@@ -14850,7 +14845,6 @@ const Tx = {
       return var_core_value_sig1C21 ? (targetObj18.focusUnit(targetObj_BD18.unitId), itemsMap17.get(xx).focusElementResult(var_core_value_sig1C21, targetObj_BD18.elementId, targetObj_BD18.viewportPoint)) : false;
     }
   };
-
 let Px = class {
   constructor(var_core_value_sig0D46, var_core_value_sig8C35) {
     this._commandService = var_core_value_sig0D46, this._themeService = var_core_value_sig8C35;
@@ -14879,7 +14873,6 @@ let Px = class {
     }));
   }
 };
-
 Px = X([Y(0, ox2a9b92_1), Y(1, ox1cd84c_1(ox35af97_1))], Px);
 function Fx(options24, targetObj_BD18) {
   return !(targetObj_BD18 != null && targetObj_BD18.length) || !(options24 instanceof Element) ? false : targetObj_BD18.some(var_core_value_sigE3AD => !!options24.closest(var_core_value_sigE3AD));
@@ -14945,7 +14938,6 @@ function Lx(targetObj_BD18) {
     })]
   });
 }
-
 var Rx = class extends ox1e4e65_1 {
   constructor(...var_core_value_sig5B54) {
     super(...var_core_value_sig5B54), W(this, "_items", new Map()), W(this, "_itemTokens", new Map()), W(this, "_items$", new oxefffcf_1([])), W(this, "items$", this._items$['asObservable']());
@@ -14979,7 +14971,6 @@ var Rx = class extends ox1e4e65_1 {
     this._items$['next'](Array.from(this._items["values"]()));
   }
 };
-
 let zx = class extends ox1e4e65_1 {
   constructor(var_core_value_sig1961) {
     super(), this._contextMenuHostService = var_core_value_sig1961, W(this, "_interactionSurfaceActive$", new oxefffcf_1(false)), W(this, "_exclusiveSurfaceId", 0), W(this, "_exclusiveSurfaceIds", new Set()), W(this, "interactionSurfaceActive$", this._interactionSurfaceActive$["asObservable"]()), this.disposeWithMe(ox1db710_1(this._contextMenuHostService["activeMenuId$"].subscribe(() => {
@@ -15056,7 +15047,6 @@ let Bx = class extends ox1e4e65_1 {
     return !var_core_value_sig2876 || var_core_value_sig2876.type !== ox2cbbb0_1.Container || var_core_value_sig2876.containerData['kind'] !== "swimlane" || !var_core_value_sig2876.containerData['swimlane'] ? null : var_core_value_sig2876;
   }
 };
-
 Bx = X([Y(0, ox1cd84c_1(Rx)), Y(1, ox1cd84c_1(Gy)), Y(2, v_), Y(3, ox468acd_1), Y(4, ox209363_1), Y(5, ox1cd84c_1(zx))], Bx);
 const Vx = {
   'chart': {
@@ -15086,7 +15076,6 @@ function Hx(targetObj_BD18) {
     }
   };
 }
-
 function Ux(targetObj_BD18) {
   let countVal8 = Math.max(1, Math.floor(targetObj_BD18.rows)),
     countVal9 = Math.max(1, Math.floor(targetObj_BD18.columns)),
@@ -15375,7 +15364,6 @@ let Gx = class {
     this._stateService['setShapeSidebarOpen'](true);
   }
 };
-
 Gx = X([Y(0, ox1cd84c_1(Z)), Y(1, ox2a9b92_1), Y(2, ox209363_1), Y(3, ox32c6cb_1), Y(4, ox1cd84c_1(Ob)), Y(5, ox5965f9_1)], Gx);
 let Kx = class extends ox1e4e65_1 {
   constructor(var_core_value_sigA740, var_core_value_sigA348, var_core_value_sig28AA, var_core_value_sigA073, var_core_value_sig1715, var_core_value_sig25DF, var_core_value_sig1C77, var_core_value_sigA4DE, var_core_value_sigF86F, var_core_value_sigA9B4, var_core_value_sig1A77, var_core_value_sigC480, var_core_value_sigB49E, var_core_value_sig0333, var_core_value_sig4BF7, var_core_value_sigDB88) {
@@ -15391,7 +15379,6 @@ function qx(itemsMap19, targetObj_BD18) {
   let targetObj1 = itemsMap19.get(ox99b022_1).getRenderUnitById(var_core_value_sigA8B4);
   return (targetObj1 == null ? undefined : targetObj1.with(Kx)) ?? null;
 }
-
 const Jx = {
     'id': "board.operation.copy-selection",
     'type': ox56ee38_1.OPERATION,
@@ -15445,7 +15432,6 @@ const Jx = {
     }
   },
   Qx = [Jx, Xx, Yx, Zx];
-
 function $x(var_core_value_sig13C6, var_core_value_sigC7F9) {
   if (!Number.isFinite(var_core_value_sigC7F9) || var_core_value_sigC7F9 <= 0) return null;
   switch (var_core_value_sig13C6) {
@@ -15489,7 +15475,6 @@ function eS(itemsMap29, targetObj_BD18) {
     'selectedIds': targetObj.selectedIds
   } : null;
 }
-
 function tS(itemsMap31, targetObj_BD18) {
   var targetObj;
   let options32 = (((targetObj = targetObj_BD18.runtime) == null ? undefined : targetObj.elementService) ?? itemsMap31.get(ox468acd_1)).getElementData(targetObj_BD18.selectionContext["unitId"], targetObj_BD18.selectionContext['subUnitId']);
@@ -15498,7 +15483,6 @@ function tS(itemsMap31, targetObj_BD18) {
     return ox1719f0((targetObj_BD18 = options32[var_core_value_sigD4DA]) == null ? undefined : targetObj_BD18.element);
   });
 }
-
 const nS = 'board:open-find-shortcut',
   Q = {
     'showMoreShapes': ox7d0c03.M,
@@ -15943,7 +15927,6 @@ function pS(targetObj_BD18, var_core_value_sig8C42) {
   let var_core_value_sig40C7 = (targetObj = targetObj_BD18[Array.from(itemsSet2)[0]]) == null ? undefined : targetObj.element;
   return (var_core_value_sig40C7 == null ? undefined : var_core_value_sig40C7.type) === ox2cbbb0_1.Container && !var_core_value_sig40C7.containerData["behavior"].membershipLocked;
 }
-
 function mS(targetObj_BD18, targetObj1 = {}) {
   var targetObj2;
   let var_core_value_sig81F5 = (targetObj_BD18 == null ? undefined : targetObj_BD18.containerData["kind"]) === "swimlane" ? targetObj_BD18.containerData["swimlane"] : undefined;
@@ -15962,7 +15945,6 @@ function mS(targetObj_BD18, targetObj1 = {}) {
     }
   };
 }
-
 function hS(targetObj_BD18, targetObj1, targetObj2 = {}) {
   var targetObj3;
   let var_core_value_sig0218 = (targetObj_BD18 == null ? undefined : targetObj_BD18.containerData["kind"]) === "swimlane" ? targetObj_BD18.containerData["swimlane"] : undefined;
@@ -16003,7 +15985,6 @@ function hS(targetObj_BD18, targetObj1, targetObj2 = {}) {
     'canRemoveAndMoveNext': !isFlag11 && isFlag14 && isFlag10 && (targetObj5 == null ? undefined : targetObj5.locked) !== true && !!targetObj5
   };
 }
-
 function gS(itemsMap33, targetObj_BD18) {
   return itemsMap33.get(ox468acd_1).getElementData(targetObj_BD18.unitId, targetObj_BD18.subUnitId);
 }
@@ -16035,7 +16016,6 @@ function _S(itemsMap35) {
     'canFitParent': var_core_value_sigE77E && var_core_value_sig3500.locked !== true
   };
 }
-
 const vS = {
     'id': "board.operation.container-child-contextmenu.move-out",
     'type': ox56ee38_1.OPERATION,
@@ -16122,7 +16102,6 @@ let SS = class extends ox1e4e65_1 {
     return !var_core_value_sig8363 || var_core_value_sig8363.type !== ox2cbbb0_1.Container ? null : var_core_value_sig8363;
   }
 };
-
 SS = X([Y(0, ox1cd84c_1(Rx)), Y(1, ox1cd84c_1(Gy)), Y(2, v_), Y(3, ox468acd_1), Y(4, ox209363_1), Y(5, ox1cd84c_1(zx))], SS);
 function CS(itemsMap43, targetObj_BD18) {
   return itemsMap43.get(ox468acd_1).getElementData(targetObj_BD18.unitId, targetObj_BD18.subUnitId);
@@ -16145,7 +16124,6 @@ function wS(itemsMap45) {
     'hasContents': Object.values(targetObj2).some(targetObj_BD18 => targetObj_BD18.element["parentId"] === var_core_value_sigF948)
   };
 }
-
 const TS = {
     'id': "board.operation.container-contextmenu.rename",
     'type': ox56ee38_1.OPERATION,
@@ -16227,7 +16205,6 @@ var PS = class extends ox1e4e65_1 {
     });
   }
 };
-
 const FS = {
   'id': "board-ui.operation.set-pointer",
   'type': ox56ee38_1.OPERATION,
@@ -16259,7 +16236,6 @@ function LS(itemsMap_E798) {
     'laneActions': var_core_value_sig7615
   } : null;
 }
-
 function RS(targetObj_BD18) {
   return targetObj_BD18.containerData["kind"] === "swimlane" ? targetObj_BD18.containerData["swimlane"] ?? null : null;
 }
@@ -16306,7 +16282,6 @@ const zS = {
       });
     }
   };
-
 ;
 function US(itemsMap_E798, targetObj_BD18, var_core_value_sigF73F) {
   return var_core_value_sigF73F ? itemsMap_E798.get(Gy).removeSwimlaneLane(targetObj_BD18.boardModel, targetObj_BD18.selectionContext, targetObj_BD18.laneActions["containerId"], targetObj_BD18.laneActions["laneId"], {
@@ -16367,7 +16342,6 @@ function ZS(targetObj_BD18, var_core_value_sigB9C8) {
   var targetObj;
   return ((targetObj = targetObj_BD18.getFocusedUnit()) == null ? undefined : targetObj.getUnitId()) === var_core_value_sigB9C8;
 }
-
 function QS(targetObj_BD18) {
   return targetObj_BD18.getContextValue(ox451487) && !targetObj_BD18.getContextValue(ox4b2606_1) && !targetObj_BD18.getContextValue(ox4c2dd3) && !targetObj_BD18.getContextValue(ox5c8a7b);
 }
@@ -16375,7 +16349,6 @@ function $S(targetObj_BD18, var_core_value_sig11F9 = false) {
   let targetObj = targetObj_BD18.renderContext["unit"];
   return !var_core_value_sig11F9 && targetObj_BD18.uiStateService["getState"]().interactionMode === 'viewing' || !ZS(targetObj_BD18.instanceService, targetObj.getUnitId()) || targetObj_BD18.elementStateService["getSnapshot"]().activeEditingId ? null : targetObj;
 }
-
 const eC = "board.operation.clipboard-shortcut",
   tC = ["copyAsImage", "makeCopy", "copyStyle", "pasteStyle"],
   nC = {
@@ -16480,7 +16453,6 @@ async function iC(var_core_value_sig25E4, var_core_value_sig8B7E, var_core_value
       return false;
   }
 }
-
 let aC = class extends ox92a213_1 {
   constructor(var_core_value_sig46D0, var_core_value_sig919E, var_core_value_sig4357, var_core_value_sigAD8C, var_core_value_sigC556, var_core_value_sigD5C8) {
     super(), this._commandService = var_core_value_sig46D0, this._shortcutService = var_core_value_sig919E, this._contextService = var_core_value_sig4357, this._permissionService = var_core_value_sigAD8C, this._instanceService = var_core_value_sigC556, this._renderManagerService = var_core_value_sigD5C8, W(this, "_handleCopy", async targetObj22 => {
@@ -16607,7 +16579,6 @@ let aC = class extends ox92a213_1 {
     return targetObj30.length > 0 ? uC(targetObj28, targetObj30, 0, var_core_value_sig928E) : null;
   }
 };
-
 aC = X([Y(0, ox2a9b92_1), Y(1, ox4e6797_1), Y(2, ox1b540f_1), Y(3, ox5965f9_1), Y(4, ox209363_1), Y(5, ox99b022_1)], aC);
 async function oC(targetObj_BD18, var_core_value_sig6BC2, var_core_value_sig59EF, var_core_value_sig51B8, var_core_value_sigFF29) {
   var targetObj, var_core_value_sig5408;
@@ -16626,7 +16597,6 @@ async function oC(targetObj_BD18, var_core_value_sig6BC2, var_core_value_sig59EF
     return false;
   }
 }
-
 function sC(var_core_value_sig5B36) {
   let {
     context: options38,
@@ -16669,7 +16639,6 @@ async function uC(targetObj_BD18, targetObj, var_core_value_sigAF38 = 0, var_cor
   }
   return isFlag24;
 }
-
 function dC(var_core_value_sigEB85) {
   return new DOMParser().parseFromString(var_core_value_sigEB85, 'text/html').querySelector("img, svg") !== null;
 }
@@ -16714,7 +16683,6 @@ function mC(targetObj_BD18, var_core_value_sigD267, targetObj) {
     'bottom': targetObj4.y * countVal21 + targetObj6.top
   };
 }
-
 let hC = class extends ox1e4e65_1 {
   constructor(var_core_value_sigDA42, var_core_value_sig1E7C, var_core_value_sigA757) {
     super(), this._globalPopupManagerService = var_core_value_sigDA42, this._renderManagerService = var_core_value_sig1E7C, this._boardUIStateService = var_core_value_sigA757;
@@ -16802,7 +16770,6 @@ let hC = class extends ox1e4e65_1 {
     };
   }
 };
-
 hC = X([Y(0, ox1cd84c_1(ox37d0c4)), Y(1, ox99b022_1), Y(2, Z)], hC);
 function gC(targetObj_BD18, callback4) {
   if (targetObj_BD18.hidden === true || targetObj_BD18.element["visible"] === false) return false;
@@ -16833,7 +16800,6 @@ function _C(var_core_value_sig9B19) {
   }
   return null;
 }
-
 function vC(var_core_value_sigEBA2, var_core_value_sig3731) {
   return {
     'fs': var_core_value_sig3731,
@@ -16867,7 +16833,6 @@ function bC(targetObj_BD18) {
   var targetObj;
   return targetObj_BD18 == null || (targetObj = targetObj_BD18.containerData['style']) == null ? undefined : targetObj.titleStyle;
 }
-
 function xC(targetObj_BD18, var_core_value_sig743B) {
   if (!targetObj_BD18 || targetObj_BD18.containerData["kind"] !== "swimlane" || !targetObj_BD18.containerData["swimlane"] || !var_core_value_sig743B) return null;
   let var_core_value_sig6B03 = targetObj_BD18.containerData["swimlane"].lanes["find"](targetObj_BD18 => targetObj_BD18.id === var_core_value_sig743B);
@@ -16885,7 +16850,6 @@ function SC(targetObj_BD18) {
     'va': (targetObj1 == null ? undefined : targetObj1.verticalAlign) ?? ox4e364d_1.MIDDLE
   };
 }
-
 function CC(targetObj_BD18) {
   if (!targetObj_BD18 || targetObj_BD18.containerData['kind'] !== 'swimlane' || !targetObj_BD18.containerData["swimlane"]) return null;
   let targetObj = bC(targetObj_BD18);
@@ -16894,7 +16858,6 @@ function CC(targetObj_BD18) {
     'va': (targetObj == null ? undefined : targetObj.verticalAlign) ?? ox4e364d_1.MIDDLE
   };
 }
-
 function wC(targetObj_BD18, var_core_value_sigF82C) {
   return targetObj_BD18.containerData["kind"] === "swimlane" && !!targetObj_BD18.containerData["swimlane"] && !var_core_value_sigF82C;
 }
@@ -16914,17 +16877,14 @@ function TC(var_core_value_sig6690, targetObj_BD18) {
     ...targetObj
   };
 }
-
 function EC(targetObj_BD18, var_core_value_sigC576) {
   var targetObj;
   return TC((targetObj = targetObj_BD18.containerData["style"]) == null ? undefined : targetObj.titleStyle, var_core_value_sigC576);
 }
-
 function DC(targetObj_BD18) {
   var targetObj;
   return targetObj_BD18.element['type'] !== ox2cbbb0_1.Shape || ox506dc0(targetObj_BD18.element) || ox1719f0(targetObj_BD18.element) ? false : ((targetObj = Ku(targetObj_BD18.element)) == null ? undefined : targetObj.isTextBox) !== true;
 }
-
 function OC(var_core_value_sig8E19) {
   let {
     element: targetObj_BD18
@@ -16976,7 +16936,6 @@ function jC(targetObj_BD18, targetObj) {
   }
   return false;
 }
-
 function MC(var_core_value_sigB729, var_core_value_sigDC3A) {
   return Reflect.get(var_core_value_sigB729, var_core_value_sigDC3A);
 }
@@ -17268,7 +17227,6 @@ function GC(targetObj_BD18) {
     })]
   });
 }
-
 const KC = {
     [ox17a05f.Start]: 'boards-ui.connector.toolbar.anchorStart',
     [ox17a05f.Center]: "boards-ui.connector.toolbar.anchorCenter",
@@ -17357,7 +17315,6 @@ function ew(targetObj_BD18) {
 function tw(targetObj_BD18, targetObj) {
   return !!(targetObj_BD18 && targetObj_BD18.length === targetObj.length && targetObj_BD18.every((var_core_value_sigA477, var_core_value_sigFFAA) => var_core_value_sigA477 === targetObj[var_core_value_sigFFAA]));
 }
-
 function nw(targetObj_BD18) {
   return targetObj_BD18 != null && targetObj_BD18.length ? tw(targetObj_BD18, [2, 4]) ? ox119a1c.RoundDot : tw(targetObj_BD18, [6, 4, 2, 4]) ? ox119a1c.DashDot : ox119a1c.Dash : ox119a1c.Solid;
 }
@@ -17575,7 +17532,6 @@ function cw(targetObj_BD18) {
     })
   });
 }
-
 function lw(targetObj_BD18) {
   let targetObj = ox338e67_1(ox4a4b3c_1),
     strVal50 = targetObj.t("boards-ui.connector.toolbar.settings"),
@@ -17625,7 +17581,6 @@ function lw(targetObj_BD18) {
     })
   });
 }
-
 async function uw(targetObj_BD18, callback8, callback9) {
   await callback8(targetObj_BD18.routing), targetObj_BD18.cornerStyle && (await callback9({
     'cornerStyle': targetObj_BD18.cornerStyle
@@ -17662,7 +17617,6 @@ function fw(targetObj_BD18, targetObj) {
     'width': var_core_value_sig7C67.width ?? (targetObj_BD18 == null || (targetObj5 = targetObj_BD18.stroke) == null ? undefined : targetObj5.width) ?? 1
   };
 }
-
 function pw(var_core_value_sig7861) {
   var targetObj_BD18;
   return ox49f534.deepClone(((targetObj_BD18 = ox2f33fb_1(var_core_value_sig7861)) == null || (targetObj_BD18 = targetObj_BD18.body) == null || (targetObj_BD18 = targetObj_BD18.textRuns) == null || (targetObj_BD18 = targetObj_BD18[0]) == null ? undefined : targetObj_BD18.ts) ?? {});
@@ -17695,7 +17649,6 @@ function gw(targetObj_BD18) {
 function _w(targetObj_BD18, targetObj) {
   return targetObj instanceof Element && targetObj_BD18.contains(targetObj) && !targetObj.closest("[data-board-connector-label-style-panel-trigger]");
 }
-
 function vw(targetObj_BD18) {
   var targetObj, targetObj1, targetObj2, var_core_value_sig97A2, var_core_value_sig07E9, var_core_value_sig4F59, var_core_value_sigF564, var_core_value_sig8CFA;
   let [var_core_value_sig2E11, var_core_value_sig5B69] = ox5288c1_1(null),
@@ -17781,7 +17734,6 @@ function vw(targetObj_BD18) {
     }];
   return "selection";
 }
-
 _resolveConnectorPopupAnchorMode(ox1f6c49, ox452d74, ox135e59, ox1dbdc3);
 {
   return this._isConnectorTextEditing(ox1f6c49, ox452d74, ox135e59) ? "text-editing" : Cw(ox1dbdc3 ?? this._getConnectorRenderObject(ox1f6c49, ox135e59)) ? "label-anchor" : "selection";
@@ -17797,12 +17749,12 @@ _isConnectorTextEditing(ox247b6f, ox257c7c, oxe74ee0);
   let options46 = this._boardTextEditingService["getEditing"]();
   return (options46 == null ? undefined : options46.visible) === true && options46.unitId === ox247b6f && options46.subUnitId === ox257c7c && options46.shapeId === oxe74ee0;
 }
-xw=X([Y(1,ox1cd84c_1(hC)),Y(2,ox1cd84c_1(ox468acd_1)),Y(3,ox1cd84c_1(v_)),Y(4,ox1cd84c_1(Yy)),Y(5,ox1cd84c_1(zx))],xw);function Sw(var_core_value_sig877E, var_core_value_sig20C8) {
+xw = X([Y(1, ox1cd84c_1(hC)), Y(2, ox1cd84c_1(ox468acd_1)), Y(3, ox1cd84c_1(v_)), Y(4, ox1cd84c_1(Yy)), Y(5, ox1cd84c_1(zx))], xw);
+function Sw(var_core_value_sig877E, var_core_value_sig20C8) {
   var targetObj_BD18, targetObj;
   let targetObj1 = var_core_value_sig877E;
   return (var_core_value_sig20C8 ? targetObj1 == null || (targetObj_BD18 = targetObj1.getLabelBounds) == null ? undefined : targetObj_BD18.call(targetObj1, var_core_value_sig20C8) : null) ?? (targetObj1 == null || (targetObj = targetObj1.getLabelRect) == null ? undefined : targetObj.call(targetObj1, var_core_value_sig20C8)) ?? null;
 }
-
 ;
 function Cw(var_core_value_sig2DAB) {
   return !!Sw(var_core_value_sig2DAB);
@@ -17822,7 +17774,6 @@ function ww(targetObj_BD18, var_core_value_sig698E) {
     'bottom': targetObj_BD18.top + targetObj_BD18.height
   };
 }
-
 const Tw = "board-connector-affordance-object",
   Ew = wg.connectorAffordance;
 function Dw(targetObj_BD18, countVal_0E5A) {
@@ -17832,7 +17783,6 @@ function Dw(targetObj_BD18, countVal_0E5A) {
     'y': targetObj_BD18.point['y'] + targetObj_BD18.normal['y'] * countVal
   };
 }
-
 ;
 function Ow(targetObj_BD18) {
   return targetObj_BD18.elementId + ':' + targetObj_BD18.segmentIndex + ':' + targetObj_BD18.endpoint["kind"] + ':' + Math.round(targetObj_BD18.point['x'] * 100) + ':' + Math.round(targetObj_BD18.point['y'] * 100);
@@ -17895,7 +17845,6 @@ var jw = class extends ox25ee34_1 {
     }), targetObj_BD18.restore(), this.makeDirty(false), this;
   }
 };
-
 const Mw = "board-connector-endpoint-object",
   Nw = wg.connectorHandle;
 function Pw(targetObj_BD18) {
@@ -18003,7 +17952,6 @@ var zw = class extends ox25ee34_1 {
     return Number.isFinite(var_core_value_sig3F4C) ? Math.max(0, Math.min(1, var_core_value_sig3F4C)) : Rw;
   }
 };
-
 const Bw = "board-connector-snap-object",
   Vw = wg.connectorSnap;
 var Hw = class extends ox25ee34_1 {
@@ -18037,7 +17985,6 @@ var Hw = class extends ox25ee34_1 {
     return targetObj_BD18.save(), targetObj_BD18.strokeStyle = "#ffffff", targetObj_BD18.lineWidth = 5 / countVal_0E5A, targetObj_BD18.beginPath(), targetObj_BD18.moveTo(targetObj2.segmentStart['x'], targetObj2.segmentStart['y']), targetObj_BD18.lineTo(targetObj2.segmentEnd['x'], targetObj2.segmentEnd['y']), targetObj_BD18.stroke(), targetObj_BD18.strokeStyle = "#2563eb", targetObj_BD18.fillStyle = "rgba(37, 99, 235, 0.18)", targetObj_BD18.lineWidth = 2 / countVal_0E5A, (targetObj = targetObj_BD18.setLineDash) == null || targetObj.call(targetObj_BD18, [5 / countVal_0E5A, 4 / countVal_0E5A]), targetObj_BD18.beginPath(), targetObj_BD18.moveTo(targetObj2.segmentStart['x'], targetObj2.segmentStart['y']), targetObj_BD18.lineTo(targetObj2.segmentEnd['x'], targetObj2.segmentEnd['y']), targetObj_BD18.stroke(), targetObj_BD18.beginPath(), targetObj_BD18.moveTo(targetObj2.point['x'], targetObj2.point['y']), targetObj_BD18.lineTo(targetObj3.x, targetObj3.y), targetObj_BD18.stroke(), (targetObj1 = targetObj_BD18.setLineDash) == null || targetObj1.call(targetObj_BD18, []), targetObj_BD18.lineCap = 'round', targetObj_BD18.strokeStyle = "#2563eb", targetObj_BD18.lineWidth = 3 / countVal_0E5A, targetObj_BD18.beginPath(), targetObj_BD18.moveTo(targetObj2.point['x'], targetObj2.point['y']), targetObj_BD18.lineTo(targetObj3.x, targetObj3.y), targetObj_BD18.stroke(), targetObj_BD18.beginPath(), targetObj_BD18.arc(targetObj2.point['x'], targetObj2.point['y'], countVal, 0, Math.PI * 2), targetObj_BD18.fill(), targetObj_BD18.stroke(), targetObj_BD18.restore(), this.makeDirty(false), this;
   }
 };
-
 const Uw = "board-connector-waypoint-object",
   Ww = wg.connectorHandle;
 function Gw(targetObj_BD18, countVal_0E5A) {
@@ -18052,7 +17999,6 @@ function Gw(targetObj_BD18, countVal_0E5A) {
 function Kw(targetObj_BD18, targetObj) {
   return targetObj_BD18.left < targetObj.left + targetObj.width && targetObj_BD18.left + targetObj_BD18.width > targetObj.left && targetObj_BD18.top < targetObj.top + targetObj.height && targetObj_BD18.top + targetObj_BD18.height > targetObj.top;
 }
-
 var qw = class extends ox25ee34_1 {
   constructor(var_core_value_sigEFD4 = Uw, var_core_value_sig861B) {
     super(var_core_value_sigEFD4), W(this, "_state", {
@@ -18256,7 +18202,6 @@ var qw = class extends ox25ee34_1 {
     }), targetObj_BD18.restore(), this.makeDirty(false), this;
   }
 };
-
 function Jw(targetObj_BD18, var_core_value_sigFDEA) {
   return targetObj_BD18.kind === "free" ? targetObj_BD18 : {
     ...targetObj_BD18,
@@ -18323,7 +18268,6 @@ function eT(var_core_value_sig9E2F, targetObj_BD18) {
   } = targetObj_BD18.element['containerData'];
   return targetObj_BD18.element["locked"] !== true && targetObj_BD18.element["selectable"] !== false && !targetObj.membershipLocked && targetObj.acceptsChildren;
 }
-
 ;
 function tT(targetObj_BD18, var_core_value_sigF9C7, var_core_value_sig88952) {
   let var_core_value_sigC80B = var_core_value_sigF9C7 ? targetObj_BD18[var_core_value_sigF9C7] : undefined,
@@ -18346,7 +18290,6 @@ function tT(targetObj_BD18, var_core_value_sigF9C7, var_core_value_sig88952) {
     'parentId': var_core_value_sig284F
   } : null;
 }
-
 ;
 function nT(var_core_value_sigD8732, targetObj_BD18, itemsMap12) {
   return !itemsMap12.has(targetObj_BD18.elementId) && targetObj_BD18.element["type"] !== ox2cbbb0_1.Connector && targetObj_BD18.element['type'] !== ox2cbbb0_1.Group && Gg(var_core_value_sigD8732, targetObj_BD18);
@@ -18355,7 +18298,6 @@ function nT(var_core_value_sigD8732, targetObj_BD18, itemsMap12) {
 function rT(targetObj_BD18, targetObj) {
   return targetObj_BD18.left - 40 < targetObj.left + targetObj.width && targetObj_BD18.left + targetObj_BD18.width + 40 > targetObj.left && targetObj_BD18.top - 40 < targetObj.top + targetObj.height && targetObj_BD18.top + targetObj_BD18.height + 40 > targetObj.top;
 }
-
 ;
 function iT(targetObj_BD18, targetObj, countVal_0E5A) {
   let strVal42 = targetObj.x === 0 ? targetObj_BD18.width + 40 : targetObj_BD18.height + 40;
@@ -18365,14 +18307,12 @@ function iT(targetObj_BD18, targetObj, countVal_0E5A) {
     'top': targetObj_BD18.top + (targetObj.x === 0 ? 0 : countVal_0E5A * strVal42)
   };
 }
-
 ;
 function aT(countVal_0E5A) {
   if (countVal_0E5A === 0) return 0;
   let countVal = Math.ceil(countVal_0E5A / 2);
   return countVal_0E5A % 2 == 1 ? -countVal : countVal;
 }
-
 ;
 function oT(targetObj_BD18, targetObj, var_core_value_sig26DB, var_core_value_sigF0F93) {
   let strVal44 = targetObj.x === 0 ? targetObj_BD18.left + targetObj_BD18.width / 2 : targetObj_BD18.top + targetObj_BD18.height / 2,
@@ -18385,7 +18325,6 @@ function oT(targetObj_BD18, targetObj, var_core_value_sig26DB, var_core_value_si
     }, 0);
   return Math.ceil((var_core_value_sig186C + countVal_0E5A / 2 + 40) / strVal45) + 1;
 }
-
 ;
 function sT(var_core_value_sig27E5, var_core_value_sig80612, itemsList_7EFA, callback19, var_core_value_sig76BA2) {
   let countVal_0E5A = oT(var_core_value_sig27E5, var_core_value_sig80612, itemsList_7EFA, var_core_value_sig76BA2);
@@ -18411,7 +18350,6 @@ function cT(targetObj_BD18, targetObj, targetObj1) {
     'top': Math.min(targetObj_BD18.top, targetObj.top - 200 - targetObj_BD18.height)
   };
 }
-
 ;
 function lT(targetObj_BD18, var_core_value_sig9CAE, var_core_value_sig32BB, var_core_value_sig34D9) {
   var targetObj5;
@@ -18673,7 +18611,6 @@ function lT(targetObj_BD18, var_core_value_sig9CAE, var_core_value_sig32BB, var_
     }
   }];
 }
-
 ;
 function Mj(targetObj_BD18, targetObj) {
   let countVal_0E5A = targetObj_BD18.orientation === "vertical" ? targetObj.x - targetObj_BD18.origin['x'] : targetObj.y - targetObj_BD18.origin['y'],
@@ -18684,12 +18621,10 @@ function Mj(targetObj_BD18, targetObj) {
     'size': countVal
   };
 }
-
 const Nj = "boards-ui.swimlane-resize";
 function Pj(targetObj_BD18, targetObj) {
   return targetObj.x >= targetObj_BD18.left && targetObj.x <= targetObj_BD18.left + targetObj_BD18.width && targetObj.y >= targetObj_BD18.top && targetObj.y <= targetObj_BD18.top + targetObj_BD18.height;
 }
-
 let Fj = class extends ox92a213 {
   constructor(var_core_value_sig5D57, var_core_value_sig33EE, var_core_value_sigC08F, var_core_value_sig036A, var_core_value_sigB2A8, var_core_value_sig7B3F) {
     super(), this._renderContext = var_core_value_sig5D57, this._instanceSrv = var_core_value_sig33EE, this._boardElementService = var_core_value_sigC08F, this._elementStateService = var_core_value_sig036A, this._uiStateService = var_core_value_sigB2A8, this._commandService = var_core_value_sig7B3F, W(this, "_resizeObject", null), W(this, '_draft', null), W(this, "_ownsResizeCursor", false), this._init();
@@ -18877,13 +18812,11 @@ let Fj = class extends ox92a213 {
     this._ownsResizeCursor && (this._ownsResizeCursor = false, targetObj_BD18.resetCursor());
   }
 };
-
 Fj = X([Y(1, ox209363), Y(2, ox468acd), Y(3, v_), Y(4, Z), Y(5, ox2a9b92)], Fj);
 function Ij(targetObj_BD18) {
   var targetObj;
   return targetObj_BD18.type === ox2cbbb0.Shape && !!((targetObj = targetObj_BD18.custom) != null && targetObj.ink);
 }
-
 let Lj = class extends ox92a213 {
   constructor(var_core_value_sig443C, var_core_value_sig39B1, var_core_value_sig210D, var_core_value_sigB4B4, var_core_value_sigD407, var_core_value_sig63F3, var_core_value_sig6A71, var_core_value_sig3BF6, var_core_value_sig38CE, var_core_value_sig62B7) {
     super(), this._renderContext = var_core_value_sig443C, this._instanceService = var_core_value_sig39B1, this._boardElementService = var_core_value_sig210D, this._boardTextEditingService = var_core_value_sigB4B4, this._boardContainerRenameService = var_core_value_sigD407, this._boardSwimlaneLaneRenameService = var_core_value_sig63F3, this._elementStateService = var_core_value_sig6A71, this._uiStateService = var_core_value_sig3BF6, this._contextService = var_core_value_sig38CE, this._inkStateService = var_core_value_sig62B7, W(this, '_attachScheduled', false), W(this, "_attachAllObjectDoubleClicks", false), W(this, "_lastEditingShapeKey", null), W(this, '_ignoreFocusChangesUntil', 0), W(this, '_objectDblclickDisposablesByElementId', new Map()), W(this, "_pendingObjectDoubleClickElementIds", new Set()), this._init();
@@ -19119,31 +19052,31 @@ let Lj = class extends ox92a213 {
     }
     return null;
   }
-  _resolveBoardObjectHit(targetObj_BD18, v309) {
-    if (!(v309 != null && v309.oKey)) return null;
+  _resolveBoardObjectHit(targetObj_BD18, targetObj260) {
+    if (!(targetObj260 != null && targetObj260.oKey)) return null;
     let {
         unitId: var_core_value_sig6201
       } = this._renderContext,
-      v311 = Uh(v309.oKey);
-    if (!v311 || v311.unitId !== var_core_value_sig6201) return null;
-    let var_core_value_sigB542 = this._boardElementService["getElementById"](var_core_value_sig6201, targetObj_BD18.getActivePageId(), v311.elementId);
+      targetObj261 = Uh(targetObj260.oKey);
+    if (!targetObj261 || targetObj261.unitId !== var_core_value_sig6201) return null;
+    let var_core_value_sigB542 = this._boardElementService["getElementById"](var_core_value_sig6201, targetObj_BD18.getActivePageId(), targetObj261.elementId);
     return var_core_value_sigB542 ? {
       'elementData': var_core_value_sigB542,
-      'obj': v309
+      'obj': targetObj260
     } : null;
   }
   _hitTestBoardObjects(targetObj_BD18, var_core_value_sigE2BF) {
     let {
-        scene: v315,
+        scene: targetObj264,
         unitId: var_core_value_sigA56E
       } = this._renderContext,
       var_core_value_sig1998 = targetObj_BD18.getActivePageId(),
-      v318 = this._boardElementService["getElementOrder"](var_core_value_sigA56E, var_core_value_sig1998);
-    for (let countVal_0E5A = v318.length - 1; countVal_0E5A >= 0; countVal_0E5A--) {
-      var v319;
-      let var_core_value_sig5241 = v318[countVal_0E5A],
+      targetObj265 = this._boardElementService["getElementOrder"](var_core_value_sigA56E, var_core_value_sig1998);
+    for (let countVal_0E5A = targetObj265.length - 1; countVal_0E5A >= 0; countVal_0E5A--) {
+      var targetObj266;
+      let var_core_value_sig5241 = targetObj265[countVal_0E5A],
         var_core_value_sigC6E5 = J(var_core_value_sigA56E, var_core_value_sig5241),
-        var_core_value_sigCEFB = v315.getObject(var_core_value_sigC6E5) ?? ((v319 = v315.getObjectIncludeInGroup) == null ? undefined : v319.call(v315, var_core_value_sigC6E5)),
+        var_core_value_sigCEFB = targetObj264.getObject(var_core_value_sigC6E5) ?? ((targetObj266 = targetObj264.getObjectIncludeInGroup) == null ? undefined : targetObj266.call(targetObj264, var_core_value_sigC6E5)),
         var_core_value_sig1537 = this._boardElementService["getElementById"](var_core_value_sigA56E, var_core_value_sig1998, var_core_value_sig5241);
       if (!(!var_core_value_sigCEFB || !var_core_value_sig1537 || !Rj(var_core_value_sigCEFB, var_core_value_sigE2BF))) return {
         'elementData': var_core_value_sig1537,
@@ -19161,7 +19094,6 @@ let Lj = class extends ox92a213 {
     return targetObj_BD18 instanceof q ? targetObj_BD18.hitTestLabel(var_core_value_sig866F) : null;
   }
 };
-
 Lj = X([Y(1, ox209363), Y(2, ox1cd84c(ox468acd)), Y(3, ox1cd84c(Yy)), Y(4, ox1cd84c(SS)), Y(5, ox1cd84c(Bx)), Y(6, v_), Y(7, ox1cd84c(Z)), Y(8, ox1b540f), Y(9, ox258d0f)], Lj);
 function Rj(var_core_value_sig591C, var_core_value_sigB5A8) {
   let targetObj_BD18 = var_core_value_sig591C;
@@ -19186,7 +19118,6 @@ function Vj(targetObj_BD18) {
   var targetObj;
   return [...((targetObj_BD18 == null || (targetObj = targetObj_BD18.sticky) == null ? undefined : targetObj.colors) ?? Bj)];
 }
-
 const Hj = "board.operation.tool-shortcut",
   Uj = ["showMoreShapes", "roundedRectangle", "rectangle", "oval", "diamond", "text", "elbowConnector", "line", "stickyNote"],
   Wj = {
@@ -19241,13 +19172,11 @@ function Kj(targetObj_BD18, var_core_value_sig3605) {
       return false;
   }
 }
-
 ;
 function qj(targetObj_BD18) {
   let targetObj = targetObj_BD18.getState();
   return !!targetObj.pendingInsert || targetObj.activeTool === ox78b684.Line;
 }
-
 let Jj = class extends ox92a213 {
   constructor(var_core_value_sig08BA, var_core_value_sigDBB5, var_core_value_sigCFAC) {
     super(), this._commandService = var_core_value_sig08BA, this._shortcutService = var_core_value_sigDBB5, this._uiStateService = var_core_value_sigCFAC, this.disposeWithMe(this._commandService["registerCommand"](Wj)), Uj.forEach(var_core_value_sigB008 => {
@@ -19347,7 +19276,6 @@ const eM = ox3334ac(function ({
       })
     });
   });
-
 function nM(targetObj_BD18) {
   return {
     'height': "100%",
@@ -19402,7 +19330,6 @@ const rM = ox3334ac(function ({
     'auxiliary': 1
   },
   oM = Object.freeze([]);
-
 var sM = class extends ox1e4e65 {
   constructor(...var_core_value_sig826B) {
     super(...var_core_value_sig826B), W(this, "_registrations", new Map()), W(this, '_contributions$', new oxefffcf(oM)), W(this, "_registrationIndex", 0), W(this, "contributions$", this._contributions$['asObservable']());
@@ -19438,7 +19365,6 @@ var sM = class extends ox1e4e65 {
     this._contributions$["next"](var_core_value_sig9F76);
   }
 };
-
 function cM({
   left: var_core_value_sig5CCD,
   top: countVal_0E5A
@@ -19602,7 +19528,6 @@ function lM(targetObj_BD18 = {}) {
     })]
   });
 }
-
 ;
 function uM(var_core_value_sig7042, var_core_value_sig1EAF, var_core_value_sig50C9, targetObj_BD18) {
   return !(targetObj_BD18 != null && targetObj_BD18.shouldSuppressHostInteraction(var_core_value_sig7042, var_core_value_sig1EAF, var_core_value_sig50C9));
@@ -19630,7 +19555,6 @@ let fM = class extends ox1e4e65 {
     targetObj && (this._activePanel$["next"](null), (targetObj_BD18 = targetObj.onClose) == null || targetObj_BD18.call(targetObj, var_core_value_sigC87D));
   }
 };
-
 fM = X([Y(0, ox1cd84c(Z))], fM);
 function pM(var_core_value_sig952E, var_core_value_sigB7D12, var_core_value_sig09F4, var_core_value_sigE447) {
   let countVal_0E5A = Math.max(0, Math.min(var_core_value_sig09F4, var_core_value_sigE447));
@@ -19658,7 +19582,6 @@ function mM(var_core_value_sig52D9) {
     'width': pM(var_core_value_sig0531, var_core_value_sig6921, var_core_value_sigBA45, targetObj2.width - countVal1 - 20 - 24)
   };
 }
-
 ;
 function hM(targetObj_BD18) {
   return !!(targetObj_BD18 && typeof targetObj_BD18 == "object" && "label" in targetObj_BD18 && typeof targetObj_BD18.label == "string");
@@ -19678,7 +19601,6 @@ function _M(targetObj_BD18, targetObj) {
     'top': targetObj1.top - targetObj_BD18.top
   };
 }
-
 ;
 function vM(itemsList_7EFA) {
   let itemsList = itemsList_7EFA.filter(var_core_value_sigFA2B => var_core_value_sigFA2B != null);
@@ -19689,7 +19611,6 @@ function vM(itemsList_7EFA) {
     'top': Math.min(targetObj_BD18.top, targetObj.top)
   }), itemsList[0]) : null;
 }
-
 ;
 function yM(targetObj_BD18, itemsMap14) {
   if (targetObj_BD18 == null || ox85749d(targetObj_BD18) || typeof targetObj_BD18 != 'object') return targetObj_BD18;
@@ -19748,7 +19669,6 @@ function bM(options_0BE8, options, var_core_value_sigD529) {
     };
   }, [var_core_value_sigD529, options, options_0BE8]), var_core_value_sig21F7;
 }
-
 ;
 function xM() {
   let options_0BE8 = ox338e67(dM),
@@ -19806,7 +19726,6 @@ function xM() {
     'data-board-floating-panel-layer': "true"
   });
 }
-
 const SM = [{
   'type': ox78b684.Shape,
   'labelKey': 'boards-ui.toolbar.shape',
@@ -19885,7 +19804,6 @@ function CM(targetObj_BD18) {
     };
   });
 }
-
 ;
 function $(var_core_value_sigA995) {
   return ox53b982("rect", {
@@ -20617,7 +20535,6 @@ function FM(var_core_value_sigFE70) {
     })]
   });
 }
-
 ;
 function IM(var_core_value_sig2B59) {
   let targetObj_BD18 = ox1ada54(var_core_value_sig2B59),
@@ -20650,51 +20567,51 @@ function IM(var_core_value_sig2B59) {
           return;
         }
         let countVal_0E5A = targetObj_BD18.clientX - var_core_value_sig8178,
-          v4543 = targetObj_BD18.clientY - var_core_value_sigE9ED;
-        Math.hypot(countVal_0E5A, v4543) < 4 || (isFlag42 = true, options_0BE8.current = true, targetObj_BD18.current['beginDrag'](), targetObj_BD18.preventDefault());
+          countVal = targetObj_BD18.clientY - var_core_value_sigE9ED;
+        Math.hypot(countVal_0E5A, countVal) < 4 || (isFlag42 = true, options_0BE8.current = true, targetObj_BD18.current['beginDrag'](), targetObj_BD18.preventDefault());
       }
       ;
       function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig92F81(targetObj_BD18) {
         isFlag42 && targetObj_BD18.preventDefault(), var_core_value_sigF230(true);
       }
       ;
-      function QN(targetObj_BD18, v4539) {
-        if (v4539.tableDiagramPreset) {
+      function QN(targetObj_BD18, targetObj108) {
+        if (targetObj108.tableDiagramPreset) {
           targetObj_BD18.beginTableInsert({
-            'rows': v4539.rows,
-            'columns': v4539.columns,
+            'rows': targetObj108.rows,
+            'columns': targetObj108.columns,
             'keepShapeSidebarOpen': true,
-            'width': v4539.width,
-            'height': v4539.height,
-            'diagramPreset': v4539.tableDiagramPreset
+            'width': targetObj108.width,
+            'height': targetObj108.height,
+            'diagramPreset': targetObj108.tableDiagramPreset
           });
           return;
         }
-        if (v4539.connectorRouting) {
-          targetObj_BD18.beginLineInsert(v4539.connectorRouting, v4539.connectorStyle);
+        if (targetObj108.connectorRouting) {
+          targetObj_BD18.beginLineInsert(targetObj108.connectorRouting, targetObj108.connectorStyle);
           return;
         }
-        if (v4539.shapeType) {
-          let var_core_value_sigD7E8 = Ab(v4539);
-          var_core_value_sigD7E8 ? targetObj_BD18.beginShapeInsert(v4539.shapeType, var_core_value_sigD7E8) : targetObj_BD18.beginShapeInsert(v4539.shapeType);
+        if (targetObj108.shapeType) {
+          let var_core_value_sigD7E8 = Ab(targetObj108);
+          var_core_value_sigD7E8 ? targetObj_BD18.beginShapeInsert(targetObj108.shapeType, var_core_value_sigD7E8) : targetObj_BD18.beginShapeInsert(targetObj108.shapeType);
         }
       }
       ;
-      function $N(targetObj_BD18, v4536) {
-        if (v4536.tableDiagramPreset) {
+      function $N(targetObj_BD18, targetObj110) {
+        if (targetObj110.tableDiagramPreset) {
           targetObj_BD18.beginTableInsertDrag({
-            'rows': v4536.rows,
-            'columns': v4536.columns,
+            'rows': targetObj110.rows,
+            'columns': targetObj110.columns,
             'keepShapeSidebarOpen': true,
-            'width': v4536.width,
-            'height': v4536.height,
-            'diagramPreset': v4536.tableDiagramPreset
+            'width': targetObj110.width,
+            'height': targetObj110.height,
+            'diagramPreset': targetObj110.tableDiagramPreset
           });
           return;
         }
-        if (v4536.shapeType) {
-          let var_core_value_sigE0BE = Ab(v4536);
-          targetObj_BD18.beginShapeInsertDrag(v4536.shapeType, var_core_value_sigE0BE);
+        if (targetObj110.shapeType) {
+          let var_core_value_sigE0BE = Ab(targetObj110);
+          targetObj_BD18.beginShapeInsertDrag(targetObj110.shapeType, var_core_value_sigE0BE);
         }
       }
       ;
@@ -20702,7 +20619,7 @@ function IM(var_core_value_sig2B59) {
         preset: targetObj_BD18
       }) {
         let var_core_value_sig62C4 = ox338e67(ox2c8387),
-          v4527 = ox338e67(ox4a4b3c),
+          targetObj112 = ox338e67(ox4a4b3c),
           options19 = ox338e67(Gx),
           [var_core_value_sig367D, var_core_value_sig4F1B] = ox5288c1(false),
           var_core_value_sigDAA0 = IM({
@@ -20710,7 +20627,7 @@ function IM(var_core_value_sig2B59) {
             'cancelDrag': () => options19.cancelPendingInsertDrag()
           }),
           var_core_value_sig5231 = Nb(var_core_value_sig62C4, targetObj_BD18.icon),
-          var_core_value_sig3BCB = v4527.t(targetObj_BD18.labelKey);
+          var_core_value_sig3BCB = targetObj112.t(targetObj_BD18.labelKey);
         return ox53b982(ox41476e, {
           'title': var_core_value_sig3BCB,
           'placement': "top",
@@ -20737,23 +20654,23 @@ function IM(var_core_value_sig2B59) {
       ;
       function tP() {
         let targetObj_BD18 = ox338e67(ox32c6cb),
-          v4502 = ox338e67(Z),
+          targetObj114 = ox338e67(Z),
           options21 = ox338e67(Gx),
-          v4504 = ox338e67(ox4a4b3c),
+          targetObj115 = ox338e67(ox4a4b3c),
           var_core_value_sig1383 = ox1ada54(null),
-          v4506 = ox5004bd(() => v4502.state$, v4502.getState(), false, [v4502]),
+          targetObj116 = ox5004bd(() => targetObj114.state$, targetObj114.getState(), false, [targetObj114]),
           [strVal14, var_core_value_sigBCEF] = ox5288c1(''),
-          [v4509, var_core_value_sigA52B] = ox5288c1([ZN.Main]),
-          v4511 = ex(targetObj_BD18.getConfig('boards-ui.config') ?? undefined),
-          var_core_value_sig3A62 = v4509[v4509.length - 1] ?? ZN.Main,
+          [targetObj117, var_core_value_sigA52B] = ox5288c1([ZN.Main]),
+          targetObj118 = ex(targetObj_BD18.getConfig('boards-ui.config') ?? undefined),
+          var_core_value_sig3A62 = targetObj117[targetObj117.length - 1] ?? ZN.Main,
           strVal15 = strVal14.trim().toLowerCase(),
-          v4514 = strVal15 ? v4511.basicPreviewPresets['filter'](targetObj_BD18 => v4504.t(targetObj_BD18.labelKey).toLowerCase().includes(strVal15)) : v4511.basicPreviewPresets,
+          targetObj119 = strVal15 ? targetObj118.basicPreviewPresets['filter'](targetObj_BD18 => targetObj115.t(targetObj_BD18.labelKey).toLowerCase().includes(strVal15)) : targetObj118.basicPreviewPresets,
           callback3 = itemsList7 => itemsList7.map(targetObj12 => ({
             ...targetObj12,
-            'presets': strVal15 ? targetObj12.presets['filter'](targetObj2 => v4504.t(targetObj2.labelKey).toLowerCase().includes(strVal15)) : targetObj12.presets
+            'presets': strVal15 ? targetObj12.presets['filter'](targetObj2 => targetObj115.t(targetObj2.labelKey).toLowerCase().includes(strVal15)) : targetObj12.presets
           })).filter(targetObj13 => targetObj13.presets["length"] > 0),
-          itemsList30 = callback3(v4511.boardSpecificPresetGroups),
-          itemsList31 = callback3(v4511.basicAllPresetGroups),
+          itemsList30 = callback3(targetObj118.boardSpecificPresetGroups),
+          itemsList31 = callback3(targetObj118.basicAllPresetGroups),
           var_core_value_sigB50B = ox4b9b77(() => {
             options21.closeShapeSidebar();
           }, [options21]),
@@ -20763,7 +20680,7 @@ function IM(var_core_value_sig2B59) {
           var_core_value_sigF39A = ox4b9b77(() => {
             var_core_value_sigA52B(targetObj14 => targetObj14.length > 1 ? targetObj14.slice(0, -1) : targetObj14);
           }, []);
-        if (!v4506.shapeSidebarOpen) return null;
+        if (!targetObj116.shapeSidebarOpen) return null;
         let var_core_value_sig66DA = targetObj_BD18 => ox53b982(eP, {
             'preset': targetObj_BD18
           }, targetObj_BD18.labelKey),
@@ -20771,7 +20688,7 @@ function IM(var_core_value_sig2B59) {
             'className': "univer-flex univer-flex-col univer-gap-2",
             'children': [targetObj_BD18.categoryKey || targetObj_BD18.category ? ox53b982("div", {
               'className': "univer-mb-3 univer-text-sm univer-font-semibold univer-text-gray-900 dark:!univer-text-gray-100",
-              'children': targetObj_BD18.categoryKey ? v4504.t(targetObj_BD18.categoryKey) : targetObj_BD18.category
+              'children': targetObj_BD18.categoryKey ? targetObj115.t(targetObj_BD18.categoryKey) : targetObj_BD18.category
             }) : null, ox53b982("div", {
               'className': 'univer-grid\x20univer-grid-cols-5\x20univer-gap-2',
               'children': targetObj_BD18.presets['map'](var_core_value_sig66DA)
@@ -20780,7 +20697,7 @@ function IM(var_core_value_sig2B59) {
           callback4 = targetObj_BD18 => ox290bfd("div", {
             'className': "univer-mb-3 univer-flex univer-h-8 univer-items-center univer-gap-2",
             'children': [targetObj_BD18.showBack ? ox53b982(ox53e2eb, {
-              'aria-label': v4504.t('boards-ui.panel.back'),
+              'aria-label': targetObj115.t('boards-ui.panel.back'),
               'className': "univer-size-8 !univer-h-8 !univer-min-h-8 !univer-w-8 !univer-min-w-8 univer-shrink-0 !univer-p-0",
               'size': "small",
               'variant': "ghost",
@@ -20792,7 +20709,7 @@ function IM(var_core_value_sig2B59) {
               'className': "univer-min-w-0 univer-flex-1 univer-truncate univer-text-sm univer-font-semibold univer-text-gray-900 dark:!univer-text-gray-100",
               'children': targetObj_BD18.title
             }), ox53b982(ox53e2eb, {
-              'aria-label': v4504.t("boards-ui.panel.close"),
+              'aria-label': targetObj115.t("boards-ui.panel.close"),
               'className': "univer-size-8 univer-shrink-0 univer-text-gray-500 dark:!univer-text-gray-300",
               'size': "small",
               'variant': "ghost",
@@ -20807,45 +20724,45 @@ function IM(var_core_value_sig2B59) {
           'className': ox5184fa("univer-w-[260px]", "univer-relative univer-z-10 univer-flex univer-h-full univer-shrink-0 univer-flex-col univer-border-0 univer-border-r univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-3 univer-text-gray-700 rtl:univer-border-l rtl:univer-border-r-0 dark:!univer-border-gray-700 dark:!univer-bg-gray-900 dark:!univer-text-gray-200"),
           'children': var_core_value_sig3A62 === ZN.Basics ? ox290bfd(ox55d08d, {
             'children': [callback4({
-              'title': v4504.t(Pb),
+              'title': targetObj115.t(Pb),
               'showBack': true
             }), ox53b982(ox4fe02e, {
               'slot': ox53b982(ox192e5c, {}),
               'value': strVal14,
               'onChange': var_core_value_sigBCEF,
-              'placeholder': v4504.t("boards-ui.panel.searchShapes")
+              'placeholder': targetObj115.t("boards-ui.panel.searchShapes")
             }), ox53b982("div", {
               'className': "univer-mt-3 univer-flex univer-min-h-0 univer-flex-col univer-gap-4 univer-overflow-y-auto univer-pb-8",
               'children': itemsList31.map(var_core_value_sig2485)
             })]
           }) : ox290bfd(ox55d08d, {
             'children': [callback4({
-              'title': v4504.t('boards-ui.panel.moreShapes')
+              'title': targetObj115.t('boards-ui.panel.moreShapes')
             }), ox53b982(ox4fe02e, {
               'slot': ox53b982(ox192e5c, {}),
               'value': strVal14,
               'onChange': var_core_value_sigBCEF,
-              'placeholder': v4504.t("boards-ui.panel.searchShapes")
+              'placeholder': targetObj115.t("boards-ui.panel.searchShapes")
             }), ox290bfd('div', {
               'className': "univer-mt-3 univer-flex univer-min-h-0 univer-flex-col univer-gap-4 univer-overflow-y-auto univer-pb-8",
-              'children': [v4514.length ? ox290bfd('section', {
+              'children': [targetObj119.length ? ox290bfd('section', {
                 'className': 'univer-flex\x20univer-flex-col\x20univer-gap-2',
                 'children': [ox290bfd('div', {
                   'className': "univer-flex univer-items-center univer-justify-between univer-gap-2",
                   'children': [ox53b982("div", {
                     'className': 'univer-mb-0\x20univer-text-sm\x20univer-font-semibold\x20univer-text-gray-900\x20dark:!univer-text-gray-100',
-                    'children': v4504.t(Pb)
+                    'children': targetObj115.t(Pb)
                   }), ox53b982(ox53e2eb, {
-                    'aria-label': v4504.t("boards-ui.panel.more"),
+                    'aria-label': targetObj115.t("boards-ui.panel.more"),
                     'className': "univer-h-6 univer-shrink-0 univer-px-1.5 univer-text-xs",
                     'size': "small",
                     'variant': 'ghost',
                     'onClick': () => var_core_value_sig0025(ZN.Basics),
-                    'children': v4504.t('boards-ui.panel.more')
+                    'children': targetObj115.t('boards-ui.panel.more')
                   })]
                 }), ox53b982('div', {
                   'className': "univer-grid univer-grid-cols-5 univer-gap-2",
-                  'children': v4514.map(var_core_value_sig66DA)
+                  'children': targetObj119.map(var_core_value_sig66DA)
                 })]
               }) : null, itemsList30.map(var_core_value_sig2485)]
             })]
@@ -20882,11 +20799,11 @@ function IM(var_core_value_sig2B59) {
               })), true) : false;
             }
           case 'enterFullScreen':
-            var v4486;
-            return targetObj_BD18.preventDefault(), (v4486 = targetObj_BD18.requestFullscreen) == null || v4486.call(targetObj_BD18), true;
+            var targetObj126;
+            return targetObj_BD18.preventDefault(), (targetObj126 = targetObj_BD18.requestFullscreen) == null || targetObj126.call(targetObj_BD18), true;
           case "exitFullScreen":
-            var v4487, v4488;
-            return (v4487 = targetObj_BD18.getFullscreenElement) != null && v4487.call(targetObj_BD18) ? (targetObj_BD18.preventDefault(), (v4488 = targetObj_BD18.exitFullscreen) == null || v4488.call(targetObj_BD18), true) : false;
+            var targetObj127, targetObj128;
+            return (targetObj127 = targetObj_BD18.getFullscreenElement) != null && targetObj127.call(targetObj_BD18) ? (targetObj_BD18.preventDefault(), (targetObj128 = targetObj_BD18.exitFullscreen) == null || targetObj128.call(targetObj_BD18), true) : false;
           default:
             return false;
         }
@@ -20917,15 +20834,15 @@ function IM(var_core_value_sig2B59) {
         if (!var_core_value_sig652D || !var_core_value_sig407E) return false;
         let var_core_value_sig54ED = cP(targetObj_BD18),
           var_core_value_sig747C = lP(var_core_value_sig54ED),
-          v4479 = targetObj_BD18.elementStateService["getSnapshot"]();
-        if (var_core_value_sig652D === "enterFullScreen" && Bh(v4479.focusedSwimlaneLane)) return await PO(targetObj_BD18, "rename");
+          targetObj132 = targetObj_BD18.elementStateService["getSnapshot"]();
+        if (var_core_value_sig652D === "enterFullScreen" && Bh(targetObj132.focusedSwimlaneLane)) return await PO(targetObj_BD18, "rename");
         if (var_core_value_sig652D === "exitFullScreen" && Kj(targetObj_BD18, 'cancelTool')) return true;
         let var_core_value_sigB5BE = m_(targetObj_BD18.configService["getConfig"]("boards-ui.config") ?? undefined);
         return nP({
           'action': var_core_value_sig652D,
           'boardModel': var_core_value_sig407E,
-          'boardContext': v4479.context,
-          'selectedIds': v4479.selectedIds,
+          'boardContext': targetObj132.context,
+          'selectedIds': targetObj132.selectedIds,
           'boardElementService': targetObj_BD18.elementService,
           'stateService': targetObj_BD18.uiStateService,
           'viewportService': targetObj_BD18.viewportService,
@@ -20938,12 +20855,12 @@ function IM(var_core_value_sig2B59) {
             return (targetObj_BD18 = (var_core_value_sig7144 = globalThis).dispatchEvent) == null ? undefined : targetObj_BD18.call(var_core_value_sig7144, var_core_value_sig89A0);
           },
           'requestFullscreen': () => {
-            var targetObj_BD18, v4468;
-            return (targetObj_BD18 = dP(var_core_value_sig54ED)) == null || (v4468 = targetObj_BD18.requestFullscreen) == null ? undefined : v4468.call(targetObj_BD18);
+            var targetObj_BD18, targetObj10;
+            return (targetObj_BD18 = dP(var_core_value_sig54ED)) == null || (targetObj10 = targetObj_BD18.requestFullscreen) == null ? undefined : targetObj10.call(targetObj_BD18);
           },
           'exitFullscreen': () => {
-            var targetObj_BD18, v4470;
-            return (targetObj_BD18 = globalThis.document) == null || (v4470 = targetObj_BD18.exitFullscreen) == null ? undefined : v4470.call(targetObj_BD18);
+            var targetObj_BD18, targetObj12;
+            return (targetObj_BD18 = globalThis.document) == null || (targetObj12 = targetObj_BD18.exitFullscreen) == null ? undefined : targetObj12.call(targetObj_BD18);
           },
           'getFullscreenElement': () => {
             var targetObj_BD18;
@@ -20953,13 +20870,13 @@ function IM(var_core_value_sig2B59) {
       }
       ;
       function cP(targetObj_BD18) {
-        var v4462, var_core_value_sigE30B;
-        return ((v4462 = (var_core_value_sigE30B = targetObj_BD18.renderContext['engine']).getCanvasElement) == null ? undefined : v4462.call(var_core_value_sigE30B)) ?? null;
+        var targetObj134, var_core_value_sigE30B;
+        return ((targetObj134 = (var_core_value_sigE30B = targetObj_BD18.renderContext['engine']).getCanvasElement) == null ? undefined : targetObj134.call(var_core_value_sigE30B)) ?? null;
       }
       ;
       function lP(targetObj_BD18) {
-        var v4459;
-        let var_core_value_sig8C6B = targetObj_BD18 == null || (v4459 = targetObj_BD18.getBoundingClientRect) == null ? undefined : v4459.call(targetObj_BD18);
+        var targetObj136;
+        let var_core_value_sig8C6B = targetObj_BD18 == null || (targetObj136 = targetObj_BD18.getBoundingClientRect) == null ? undefined : targetObj136.call(targetObj_BD18);
         return var_core_value_sig8C6B && Number.isFinite(var_core_value_sig8C6B.width) && Number.isFinite(var_core_value_sig8C6B.height) ? {
           'width': var_core_value_sig8C6B.width,
           'height': var_core_value_sig8C6B.height
@@ -21067,20 +20984,20 @@ function IM(var_core_value_sig2B59) {
         var targetObj_BD18;
         let options27 = ox1ada54(null),
           options28 = ox338e67(ox2a9b92),
-          v4420 = ox338e67(ox209363),
-          v4421 = ox338e67(ox32c6cb),
-          v4422 = ox338e67(v_),
-          v4423 = ox338e67(Z),
-          v4424 = ox338e67(ox4a4b3c),
+          targetObj138 = ox338e67(ox209363),
+          targetObj139 = ox338e67(ox32c6cb),
+          targetObj140 = ox338e67(v_),
+          targetObj141 = ox338e67(Z),
+          targetObj142 = ox338e67(ox4a4b3c),
           options29 = ox338e67(ox4e6797),
           options30 = ox338e67(ox5cd311),
-          v4427 = ox5004bd(() => v4423.state$, v4423.getState(), false, [v4423]),
-          v4428 = ox5004bd(() => v4422.state$, v4422.getSnapshot(), false, [v4422]),
-          v4429 = ox5004bd(() => v4420.getCurrentTypeOfUnit$(ox2dc2f2.UNIVER_BOARD), v4420.getCurrentUnitOfType(ox2dc2f2.UNIVER_BOARD), undefined, [v4420]),
-          options31 = m_(v4421.getConfig('boards-ui.config') ?? undefined),
-          countVal_0E5A = v4427.zoomRatio,
-          isFlag22 = v4427.activeTool === ox78b684.Drag,
-          isFlag23 = !!v4429 && ((targetObj_BD18 = v4428.context) == null ? undefined : targetObj_BD18.unitId) === v4429.getUnitId() && v4428.context['subUnitId'] === v4429.getActivePageId() && v4428.selectedIds["length"] > 0,
+          targetObj143 = ox5004bd(() => targetObj141.state$, targetObj141.getState(), false, [targetObj141]),
+          targetObj144 = ox5004bd(() => targetObj140.state$, targetObj140.getSnapshot(), false, [targetObj140]),
+          targetObj145 = ox5004bd(() => targetObj138.getCurrentTypeOfUnit$(ox2dc2f2.UNIVER_BOARD), targetObj138.getCurrentUnitOfType(ox2dc2f2.UNIVER_BOARD), undefined, [targetObj138]),
+          options31 = m_(targetObj139.getConfig('boards-ui.config') ?? undefined),
+          countVal_0E5A = targetObj143.zoomRatio,
+          isFlag22 = targetObj143.activeTool === ox78b684.Drag,
+          isFlag23 = !!targetObj145 && ((targetObj_BD18 = targetObj144.context) == null ? undefined : targetObj_BD18.unitId) === targetObj145.getUnitId() && targetObj144.context['subUnitId'] === targetObj145.getActivePageId() && targetObj144.selectedIds["length"] > 0,
           var_core_value_sigBE54 = () => {
             var targetObj_BD18;
             let var_core_value_sigF56E = (targetObj_BD18 = options27.current) == null ? undefined : targetObj_BD18.closest('[data-board-viewport-host=\x22true\x22]'),
@@ -21094,7 +21011,7 @@ function IM(var_core_value_sig2B59) {
             };
           },
           var_core_value_sig9D54 = var_core_value_sigB5AB => {
-            v4423.setZoomRatioAtViewportPoint(var_core_value_sigB5AB, var_core_value_sigBE54());
+            targetObj141.setZoomRatioAtViewportPoint(var_core_value_sigB5AB, var_core_value_sigBE54());
           },
           var_core_value_sigE7A0 = async var_core_value_sig435B => {
             await options28.executeCommand(rP, {
@@ -21109,7 +21026,7 @@ function IM(var_core_value_sig2B59) {
             'type': "item",
             'children': ox53b982(gP, {
               'icon': ox53b982(ox18fa7f, {}),
-              'label': v4424.t("boards-ui.zoom.zoomTo100"),
+              'label': targetObj142.t("boards-ui.zoom.zoomTo100"),
               'shortcut': callback9("zoomTo100")
             }),
             'onSelect': () => var_core_value_sigE7A0("zoomTo100")
@@ -21117,7 +21034,7 @@ function IM(var_core_value_sig2B59) {
             'type': "item",
             'children': ox53b982(gP, {
               'icon': ox53b982(ox22706c, {}),
-              'label': v4424.t('boards-ui.zoom.zoomToFit'),
+              'label': targetObj142.t('boards-ui.zoom.zoomToFit'),
               'shortcut': callback9("zoomToFit")
             }),
             'onSelect': () => var_core_value_sigE7A0("zoomToFit")
@@ -21126,7 +21043,7 @@ function IM(var_core_value_sig2B59) {
             'disabled': !isFlag23,
             'children': ox53b982(gP, {
               'icon': ox53b982(ox3ad8c9, {}),
-              'label': v4424.t("boards-ui.zoom.zoomToSelection"),
+              'label': targetObj142.t("boards-ui.zoom.zoomToSelection"),
               'shortcut': callback9("zoomToSelection")
             }),
             'onSelect': () => var_core_value_sigE7A0("zoomToSelection")
@@ -21138,22 +21055,22 @@ function IM(var_core_value_sig2B59) {
             'className': "univer-box-border univer-flex univer-items-center univer-gap-1 univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-2 univer-shadow-xl dark:!univer-border-gray-700 dark:!univer-bg-gray-900",
             'data-board-zoom-controls': 'true',
             'children': [ox53b982(hP, {
-              'label': v4424.t("boards-ui.zoom.dragMode"),
+              'label': targetObj142.t("boards-ui.zoom.dragMode"),
               'className': ox5184fa(isFlag22 ? "univer-bg-primary-50 univer-text-primary-600" : ''),
               'size': "icon",
               'variant': 'ghost',
-              'onClick': () => v4423.setActiveTool(isFlag22 ? ox78b684.Select : ox78b684.Drag),
+              'onClick': () => targetObj141.setActiveTool(isFlag22 ? ox78b684.Select : ox78b684.Drag),
               'children': ox53b982(ox1bb675, {})
             }), ox53b982(ox3c4ee8, {
               'orientation': "vertical"
             }), ox53b982(hP, {
-              'label': v4424.t("boards-ui.zoom.fitContent"),
+              'label': targetObj142.t("boards-ui.zoom.fitContent"),
               'size': "icon",
               'variant': "ghost",
               'onClick': () => var_core_value_sigE7A0("zoomToFit"),
               'children': ox53b982(ox22706c, {})
             }), ox53b982(hP, {
-              'label': v4424.t("boards-ui.zoom.zoomOut"),
+              'label': targetObj142.t("boards-ui.zoom.zoomOut"),
               'size': "icon",
               'variant': "ghost",
               'onClick': () => var_core_value_sig9D54(mP(countVal_0E5A, -options31.zoomStep)),
@@ -21164,13 +21081,13 @@ function IM(var_core_value_sig2B59) {
               'sideOffset': 12,
               'items': itemsList34,
               'children': ox290bfd(hP, {
-                'label': v4424.t("boards-ui.zoom.zoomOptions"),
+                'label': targetObj142.t("boards-ui.zoom.zoomOptions"),
                 'size': "small",
                 'variant': 'ghost',
                 'children': [Math.round(countVal_0E5A * 100), '%']
               })
             }), ox53b982(hP, {
-              'label': v4424.t('boards-ui.zoom.zoomIn'),
+              'label': targetObj142.t('boards-ui.zoom.zoomIn'),
               'size': "icon",
               'variant': "ghost",
               'onClick': () => var_core_value_sig9D54(mP(countVal_0E5A, options31.zoomStep)),
@@ -21180,14 +21097,14 @@ function IM(var_core_value_sig2B59) {
             'className': 'univer-box-border\x20univer-flex\x20univer-items-center\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-p-2\x20univer-shadow-xl\x20dark:!univer-border-gray-700\x20dark:!univer-bg-gray-900',
             'data-board-help-control': 'true',
             'children': ox53b982(hP, {
-              'label': v4424.t("boards-ui.zoom.help"),
+              'label': targetObj142.t("boards-ui.zoom.help"),
               'size': "icon",
               'variant': "ghost",
               'onClick': () => {
                 options30.open({
                   'id': "board-shortcut-help",
                   'header': {
-                    'title': v4424.t("boards-ui.shortcutHelp.title")
+                    'title': targetObj142.t("boards-ui.shortcutHelp.title")
                   },
                   'children': {
                     'title': ox53b982(pP, {})
@@ -21201,18 +21118,18 @@ function IM(var_core_value_sig2B59) {
       }
       ;
       function vP(targetObj_BD18 = {}) {
-        var v4399, v4400, v4401;
-        let v4402 = ox338e67(ox4a4b3c),
+        var targetObj154, targetObj155, targetObj156;
+        let targetObj157 = ox338e67(ox4a4b3c),
           itemsMap8 = ox338e67(ox287a17),
-          v4404 = ox338e67(ox209363),
-          v4405 = ox338e67(ox99b022),
-          v4406 = ox338e67(ox677174),
+          targetObj158 = ox338e67(ox209363),
+          targetObj159 = ox338e67(ox99b022),
+          targetObj160 = ox338e67(ox677174),
           var_core_value_sig11FD = itemsMap8.has(Xj) ? itemsMap8.get(Xj) : undefined;
-        ox5004bd(() => ox4129b5(v4405.created$, v4405.disposed$, (var_core_value_sig11FD == null ? undefined : var_core_value_sig11FD.runtimeSessionChanged$) ?? ox48a418), null, false, [var_core_value_sig11FD, v4405]);
-        let var_core_value_sigE7CD = ox5004bd(v4402.direction$, v4402.getDirection()),
-          var_core_value_sigBC1E = ox5004bd(v4406.rootUnitType$, null, true),
-          v4410 = ox5004bd(() => v4404.getCurrentTypeOfUnit$(ox2dc2f2.UNIVER_BOARD), v4404.getCurrentUnitOfType(ox2dc2f2.UNIVER_BOARD), undefined, [v4404]);
-        return targetObj_BD18.embedded == null && (var_core_value_sigBC1E !== ox2dc2f2.UNIVER_BOARD || v4410 == null || (var_core_value_sig11FD == null || (v4399 = var_core_value_sig11FD.resolveRuntimeScopeByChildUnitId) == null ? undefined : v4399.call(var_core_value_sig11FD, v4410.getUnitId())) != null || ((v4400 = v4405.getRenderUnitById(v4410.getUnitId())) == null ? undefined : v4400.isMainScene) === false || ((v4401 = v4404.getUnitCreateOptions(v4410.getUnitId())) == null ? undefined : v4401.embeddedRender) === true) ? null : ox290bfd('div', {
+        ox5004bd(() => ox4129b5(targetObj159.created$, targetObj159.disposed$, (var_core_value_sig11FD == null ? undefined : var_core_value_sig11FD.runtimeSessionChanged$) ?? ox48a418), null, false, [var_core_value_sig11FD, targetObj159]);
+        let var_core_value_sigE7CD = ox5004bd(targetObj157.direction$, targetObj157.getDirection()),
+          var_core_value_sigBC1E = ox5004bd(targetObj160.rootUnitType$, null, true),
+          targetObj161 = ox5004bd(() => targetObj158.getCurrentTypeOfUnit$(ox2dc2f2.UNIVER_BOARD), targetObj158.getCurrentUnitOfType(ox2dc2f2.UNIVER_BOARD), undefined, [targetObj158]);
+        return targetObj_BD18.embedded == null && (var_core_value_sigBC1E !== ox2dc2f2.UNIVER_BOARD || targetObj161 == null || (var_core_value_sig11FD == null || (targetObj154 = var_core_value_sig11FD.resolveRuntimeScopeByChildUnitId) == null ? undefined : targetObj154.call(var_core_value_sig11FD, targetObj161.getUnitId())) != null || ((targetObj155 = targetObj159.getRenderUnitById(targetObj161.getUnitId())) == null ? undefined : targetObj155.isMainScene) === false || ((targetObj156 = targetObj158.getUnitCreateOptions(targetObj161.getUnitId())) == null ? undefined : targetObj156.embeddedRender) === true) ? null : ox290bfd('div', {
           'dir': var_core_value_sigE7CD,
           'onFocusCapture': targetObj_BD18.embedded ? undefined : targetObj_BD18 => targetObj_BD18.currentTarget['scrollIntoView']({
             'block': 'nearest',
@@ -21238,16 +21155,16 @@ function IM(var_core_value_sig2B59) {
         }
       };
       yP = X([Y(0, ox1cd84c(ox287a17)), Y(1, oxfa782), Y(2, ox32c6cb)], yP);
-      function bP(targetObj_BD18, v4389, var_core_value_sig87EC, var_core_value_sigE822) {
-        var v4392;
-        let var_core_value_sigAF7A = v4389 && (!var_core_value_sigE822 || v4389.unitId === var_core_value_sigE822) ? v4389 : null,
+      function bP(targetObj_BD18, targetObj170, var_core_value_sig87EC, var_core_value_sigE822) {
+        var targetObj171;
+        let var_core_value_sigAF7A = targetObj170 && (!var_core_value_sigE822 || targetObj170.unitId === var_core_value_sigE822) ? targetObj170 : null,
           var_core_value_sigA783 = targetObj_BD18.context && (!var_core_value_sigE822 || targetObj_BD18.context["unitId"] === var_core_value_sigE822) ? targetObj_BD18.context : null,
-          v4395 = var_core_value_sigAF7A ?? var_core_value_sigA783;
-        if (!v4395) return null;
-        let isFlag26 = ((v4392 = targetObj_BD18.context) == null ? undefined : v4392.unitId) === v4395.unitId && targetObj_BD18.context['subUnitId'] === v4395.subUnitId;
+          targetObj172 = var_core_value_sigAF7A ?? var_core_value_sigA783;
+        if (!targetObj172) return null;
+        let isFlag26 = ((targetObj171 = targetObj_BD18.context) == null ? undefined : targetObj171.unitId) === targetObj172.unitId && targetObj_BD18.context['subUnitId'] === targetObj172.subUnitId;
         return {
-          'unitId': v4395.unitId,
-          'subUnitId': v4395.subUnitId,
+          'unitId': targetObj172.unitId,
+          'subUnitId': targetObj172.subUnitId,
           'selectedIds': isFlag26 ? Array.from(targetObj_BD18.selectedIds) : [],
           'focusedId': isFlag26 ? targetObj_BD18.focusedId : null,
           'pointer': var_core_value_sigAF7A != null && var_core_value_sigAF7A.pointer ? {
@@ -21279,15 +21196,15 @@ function IM(var_core_value_sig2B59) {
           return this._getOrCreateRemotePresenceSubject(var_core_value_sigEACD).asObservable();
         }
         setRemotePresence(targetObj_BD18) {
-          let v670 = this._getOrCreateRemotePresenceSubject(targetObj_BD18.unitId),
-            itemsMap2 = new Map(v670.getValue());
+          let targetObj14 = this._getOrCreateRemotePresenceSubject(targetObj_BD18.unitId),
+            itemsMap2 = new Map(targetObj14.getValue());
           itemsMap2.set(targetObj_BD18.memberId, {
             ...targetObj_BD18,
             'selectedIds': Array.from(targetObj_BD18.selectedIds),
             'pointer': targetObj_BD18.pointer ? {
               ...targetObj_BD18.pointer
             } : null
-          }), v670.next(itemsMap2);
+          }), targetObj14.next(itemsMap2);
         }
         removeRemotePresence(var_core_value_sig102B, var_core_value_sigA7DB) {
           let targetObj_BD18 = this._remotePresences['get'](var_core_value_sig102B);
@@ -21333,13 +21250,13 @@ function IM(var_core_value_sig2B59) {
       ;
       function OP(targetObj_BD18, var_core_value_sig7788, countVal_0E5A) {
         if (targetObj_BD18.measureText(var_core_value_sig7788).width <= countVal_0E5A) return var_core_value_sig7788;
-        let v4375 = countVal_0E5A - targetObj_BD18.measureText("...").width,
+        let countVal2 = countVal_0E5A - targetObj_BD18.measureText("...").width,
           strVal18 = '',
-          v4377 = 0;
+          countVal3 = 0;
         for (let var_core_value_sigC27E of var_core_value_sig7788) {
           let var_core_value_sig1632 = targetObj_BD18.measureText(var_core_value_sigC27E).width;
-          if (v4377 + var_core_value_sig1632 > v4375) break;
-          strVal18 += var_core_value_sigC27E, v4377 += var_core_value_sig1632;
+          if (countVal3 + var_core_value_sig1632 > countVal2) break;
+          strVal18 += var_core_value_sigC27E, countVal3 += var_core_value_sig1632;
         }
         return strVal18 + "...";
       }
@@ -21404,8 +21321,8 @@ function IM(var_core_value_sig2B59) {
           this.disposeWithMe(ox1db710(targetObj_BD18.addObject$["pipe"](ox3d6c19(this.dispose$)).subscribe(() => {
             this._isApplyingOverlays || this._scheduleRender();
           })));
-          let v628 = targetObj_BD18.getEngine();
-          v628 && this.disposeWithMe(ox1db710(v628.onTransformChange$["subscribeEvent"](() => this._scheduleRender()))), this.disposeWithMe(this._boardElementService['elementAdd$'].pipe(ox3d6c19(this.dispose$)).subscribe(itemsList => {
+          let targetObj16 = targetObj_BD18.getEngine();
+          targetObj16 && this.disposeWithMe(ox1db710(targetObj16.onTransformChange$["subscribeEvent"](() => this._scheduleRender()))), this.disposeWithMe(this._boardElementService['elementAdd$'].pipe(ox3d6c19(this.dispose$)).subscribe(itemsList => {
             itemsList.some(targetObj5 => targetObj5.unitId === this._context['unitId']) && this._scheduleRender();
           })), this.disposeWithMe(this._boardElementService["elementUpdate$"].pipe(ox3d6c19(this.dispose$)).subscribe(itemsList2 => {
             itemsList2.some(targetObj6 => targetObj6.unitId === this._context['unitId']) && this._scheduleRender();
@@ -21463,14 +21380,14 @@ function IM(var_core_value_sig2B59) {
         }
         _publishLocalPointer(targetObj_BD18) {
           if (!this._presenceAdapter["isActive"]() || "pointerType" in targetObj_BD18 && targetObj_BD18.pointerType === "touch") return;
-          let v635 = this._boardUIStateService['getState'](),
-            countVal29 = Number.isFinite(v635.zoomRatio) && v635.zoomRatio > 0 ? v635.zoomRatio : 1;
+          let targetObj18 = this._boardUIStateService['getState'](),
+            countVal29 = Number.isFinite(targetObj18.zoomRatio) && targetObj18.zoomRatio > 0 ? targetObj18.zoomRatio : 1;
           this._commandService["syncExecuteCommand"](FS.id, {
             'unitId': this._context['unitId'],
             'subUnitId': this._context["unit"].getActivePageId(),
             'pointer': {
-              'x': Math.round((targetObj_BD18.offsetX - v635.viewportPanOffset['x']) / countVal29 * 10) / 10,
-              'y': Math.round((targetObj_BD18.offsetY - v635.viewportPanOffset['y']) / countVal29 * 10) / 10
+              'x': Math.round((targetObj_BD18.offsetX - targetObj18.viewportPanOffset['x']) / countVal29 * 10) / 10,
+              'y': Math.round((targetObj_BD18.offsetY - targetObj18.viewportPanOffset['y']) / countVal29 * 10) / 10
             }
           });
         }
@@ -21604,15 +21521,15 @@ function IM(var_core_value_sig2B59) {
       MP = X([Y(1, ox1cd84c(xP)), Y(2, ox2a9b92), Y(3, ox468acd), Y(4, Z), Y(5, ox1cd84c(ox35af97))], MP);
       const NP = "board-viewport-bar-object",
         PP = wg.viewportBar;
-      function FP(targetObj_BD18, v4365, countVal_0E5A) {
-        return v4365.x >= targetObj_BD18.left - countVal_0E5A && v4365.x <= targetObj_BD18.left + targetObj_BD18.width + countVal_0E5A && v4365.y >= targetObj_BD18.top - countVal_0E5A && v4365.y <= targetObj_BD18.top + targetObj_BD18.height + countVal_0E5A;
+      function FP(targetObj_BD18, targetObj176, countVal_0E5A) {
+        return targetObj176.x >= targetObj_BD18.left - countVal_0E5A && targetObj176.x <= targetObj_BD18.left + targetObj_BD18.width + countVal_0E5A && targetObj176.y >= targetObj_BD18.top - countVal_0E5A && targetObj176.y <= targetObj_BD18.top + targetObj_BD18.height + countVal_0E5A;
       }
       ;
-      function IP(targetObj_BD18, v4360) {
-        let countVal_0E5A = Math.min(v4360.width, v4360.height) / 2,
-          strVal20 = v4360.left + v4360.width,
-          strVal21 = v4360.top + v4360.height;
-        targetObj_BD18.beginPath(), targetObj_BD18.moveTo(v4360.left + countVal_0E5A, v4360.top), targetObj_BD18.lineTo(strVal20 - countVal_0E5A, v4360.top), targetObj_BD18.quadraticCurveTo(strVal20, v4360.top, strVal20, v4360.top + countVal_0E5A), targetObj_BD18.lineTo(strVal20, strVal21 - countVal_0E5A), targetObj_BD18.quadraticCurveTo(strVal20, strVal21, strVal20 - countVal_0E5A, strVal21), targetObj_BD18.lineTo(v4360.left + countVal_0E5A, strVal21), targetObj_BD18.quadraticCurveTo(v4360.left, strVal21, v4360.left, strVal21 - countVal_0E5A), targetObj_BD18.lineTo(v4360.left, v4360.top + countVal_0E5A), targetObj_BD18.quadraticCurveTo(v4360.left, v4360.top, v4360.left + countVal_0E5A, v4360.top), targetObj_BD18.closePath(), targetObj_BD18.fill();
+      function IP(targetObj_BD18, targetObj178) {
+        let countVal_0E5A = Math.min(targetObj178.width, targetObj178.height) / 2,
+          strVal20 = targetObj178.left + targetObj178.width,
+          strVal21 = targetObj178.top + targetObj178.height;
+        targetObj_BD18.beginPath(), targetObj_BD18.moveTo(targetObj178.left + countVal_0E5A, targetObj178.top), targetObj_BD18.lineTo(strVal20 - countVal_0E5A, targetObj178.top), targetObj_BD18.quadraticCurveTo(strVal20, targetObj178.top, strVal20, targetObj178.top + countVal_0E5A), targetObj_BD18.lineTo(strVal20, strVal21 - countVal_0E5A), targetObj_BD18.quadraticCurveTo(strVal20, strVal21, strVal20 - countVal_0E5A, strVal21), targetObj_BD18.lineTo(targetObj178.left + countVal_0E5A, strVal21), targetObj_BD18.quadraticCurveTo(targetObj178.left, strVal21, targetObj178.left, strVal21 - countVal_0E5A), targetObj_BD18.lineTo(targetObj178.left, targetObj178.top + countVal_0E5A), targetObj_BD18.quadraticCurveTo(targetObj178.left, targetObj178.top, targetObj178.left + countVal_0E5A, targetObj178.top), targetObj_BD18.closePath(), targetObj_BD18.fill();
       }
       var LP = class extends ox25ee34 {
         constructor(var_core_value_sigD37B = NP, var_core_value_sigFA28) {
@@ -21676,41 +21593,41 @@ function IM(var_core_value_sig2B59) {
         };
       }
       ;
-      function HP(targetObj_BD18, v4346, v4347) {
-        let var_core_value_sigEBEE = (targetObj_BD18 == null ? undefined : targetObj_BD18.left) ?? v4346.left,
-          var_core_value_sigC48C = (targetObj_BD18 == null ? undefined : targetObj_BD18.top) ?? v4346.top,
-          strVal24 = targetObj_BD18 ? targetObj_BD18.left + targetObj_BD18.width : v4346.left + v4346.width,
-          strVal25 = targetObj_BD18 ? targetObj_BD18.top + targetObj_BD18.height : v4346.top + v4346.height;
+      function HP(targetObj_BD18, targetObj180, targetObj181) {
+        let var_core_value_sigEBEE = (targetObj_BD18 == null ? undefined : targetObj_BD18.left) ?? targetObj180.left,
+          var_core_value_sigC48C = (targetObj_BD18 == null ? undefined : targetObj_BD18.top) ?? targetObj180.top,
+          strVal24 = targetObj_BD18 ? targetObj_BD18.left + targetObj_BD18.width : targetObj180.left + targetObj180.width,
+          strVal25 = targetObj_BD18 ? targetObj_BD18.top + targetObj_BD18.height : targetObj180.top + targetObj180.height;
         return {
-          'bottom': Math.max(strVal25, v4346.top + v4346.height) + v4347.bottom,
-          'left': Math.min(var_core_value_sigEBEE, v4346.left) - v4347.left,
-          'right': Math.max(strVal24, v4346.left + v4346.width) + v4347.right,
-          'top': Math.min(var_core_value_sigC48C, v4346.top) - v4347.top
+          'bottom': Math.max(strVal25, targetObj180.top + targetObj180.height) + targetObj181.bottom,
+          'left': Math.min(var_core_value_sigEBEE, targetObj180.left) - targetObj181.left,
+          'right': Math.max(strVal24, targetObj180.left + targetObj180.width) + targetObj181.right,
+          'top': Math.min(var_core_value_sigC48C, targetObj180.top) - targetObj181.top
         };
       }
       ;
-      function UP(targetObj_BD18, v4344) {
+      function UP(targetObj_BD18, targetObj184) {
         return {
-          'bottom': Math.max(targetObj_BD18.bottom, v4344.bottom),
-          'left': Math.min(targetObj_BD18.left, v4344.left),
-          'right': Math.max(targetObj_BD18.right, v4344.right),
-          'top': Math.min(targetObj_BD18.top, v4344.top)
+          'bottom': Math.max(targetObj_BD18.bottom, targetObj184.bottom),
+          'left': Math.min(targetObj_BD18.left, targetObj184.left),
+          'right': Math.max(targetObj_BD18.right, targetObj184.right),
+          'top': Math.min(targetObj_BD18.top, targetObj184.top)
         };
       }
       ;
       function WP(targetObj_BD18) {
         let strVal28 = targetObj_BD18.maxViewportStart - targetObj_BD18.minViewportStart + targetObj_BD18.viewportSize,
           countVal_0E5A = strVal28 - targetObj_BD18.viewportSize,
-          v4338 = Math.max(0, targetObj_BD18.availableEnd - targetObj_BD18.availableStart);
-        if (v4338 <= 0 || countVal_0E5A <= RP || strVal28 <= RP) return null;
-        let v4339 = Math.min(v4338, Math.max(targetObj_BD18.minBarLength, v4338 * targetObj_BD18.viewportSize / strVal28)),
-          v4340 = Math.max(0, v4338 - v4339);
-        if (v4340 <= RP) return null;
-        let v4341 = BP((targetObj_BD18.viewportStart - targetObj_BD18.minViewportStart) / countVal_0E5A, 0, 1),
-          strVal29 = targetObj_BD18.availableStart + v4341 * v4340;
+          countVal6 = Math.max(0, targetObj_BD18.availableEnd - targetObj_BD18.availableStart);
+        if (countVal6 <= 0 || countVal_0E5A <= RP || strVal28 <= RP) return null;
+        let countVal7 = Math.min(countVal6, Math.max(targetObj_BD18.minBarLength, countVal6 * targetObj_BD18.viewportSize / strVal28)),
+          countVal8 = Math.max(0, countVal6 - countVal7);
+        if (countVal8 <= RP) return null;
+        let countVal9 = BP((targetObj_BD18.viewportStart - targetObj_BD18.minViewportStart) / countVal_0E5A, 0, 1),
+          strVal29 = targetObj_BD18.availableStart + countVal9 * countVal8;
         return {
           'barRect': targetObj_BD18.vertical ? {
-            'height': v4339,
+            'height': countVal7,
             'left': targetObj_BD18.barCrossStart,
             'top': strVal29,
             'width': targetObj_BD18.barSize
@@ -21718,49 +21635,49 @@ function IM(var_core_value_sig2B59) {
             'height': targetObj_BD18.barSize,
             'left': strVal29,
             'top': targetObj_BD18.barCrossStart,
-            'width': v4339
+            'width': countVal7
           },
           'maxViewportStart': targetObj_BD18.maxViewportStart,
           'minViewportStart': targetObj_BD18.minViewportStart,
-          'travelLength': v4340,
+          'travelLength': countVal8,
           'viewportStart': targetObj_BD18.viewportStart
         };
       }
       ;
       function GP(targetObj_BD18) {
         let {
-            navigationBounds: v4327,
-            safeArea: v4328,
-            viewport: v4329,
-            viewportPixelSize: v4330
+            navigationBounds: targetObj186,
+            safeArea: targetObj187,
+            viewport: targetObj188,
+            viewportPixelSize: targetObj189
           } = targetObj_BD18,
-          var_core_value_sigA98C = BP((v4328 == null ? undefined : v4328.horizontalStart) ?? targetObj_BD18.edgeOffset, 0, v4330.width),
-          var_core_value_sig0502 = BP((v4328 == null ? undefined : v4328.horizontalEnd) ?? v4330.width - targetObj_BD18.edgeOffset, var_core_value_sigA98C, v4330.width),
-          var_core_value_sigDEDD = BP((v4328 == null ? undefined : v4328.verticalStart) ?? targetObj_BD18.edgeOffset, 0, v4330.height),
-          var_core_value_sigA5DC = BP((v4328 == null ? undefined : v4328.verticalEnd) ?? v4330.height - targetObj_BD18.edgeOffset, var_core_value_sigDEDD, v4330.height);
+          var_core_value_sigA98C = BP((targetObj187 == null ? undefined : targetObj187.horizontalStart) ?? targetObj_BD18.edgeOffset, 0, targetObj189.width),
+          var_core_value_sig0502 = BP((targetObj187 == null ? undefined : targetObj187.horizontalEnd) ?? targetObj189.width - targetObj_BD18.edgeOffset, var_core_value_sigA98C, targetObj189.width),
+          var_core_value_sigDEDD = BP((targetObj187 == null ? undefined : targetObj187.verticalStart) ?? targetObj_BD18.edgeOffset, 0, targetObj189.height),
+          var_core_value_sigA5DC = BP((targetObj187 == null ? undefined : targetObj187.verticalEnd) ?? targetObj189.height - targetObj_BD18.edgeOffset, var_core_value_sigDEDD, targetObj189.height);
         return {
           'horizontal': targetObj_BD18.horizontal ? WP({
             'availableEnd': var_core_value_sig0502,
             'availableStart': var_core_value_sigA98C,
-            'barCrossStart': v4330.height - targetObj_BD18.edgeOffset - targetObj_BD18.barSize,
+            'barCrossStart': targetObj189.height - targetObj_BD18.edgeOffset - targetObj_BD18.barSize,
             'barSize': targetObj_BD18.barSize,
-            'maxViewportStart': v4327.right - v4329.width,
+            'maxViewportStart': targetObj186.right - targetObj188.width,
             'minBarLength': targetObj_BD18.minBarLength,
-            'minViewportStart': v4327.left,
-            'viewportSize': v4329.width,
-            'viewportStart': v4329.left,
+            'minViewportStart': targetObj186.left,
+            'viewportSize': targetObj188.width,
+            'viewportStart': targetObj188.left,
             'vertical': false
           }) : null,
           'vertical': targetObj_BD18.vertical ? WP({
             'availableEnd': var_core_value_sigA5DC,
             'availableStart': var_core_value_sigDEDD,
-            'barCrossStart': v4330.width - targetObj_BD18.edgeOffset - targetObj_BD18.barSize,
+            'barCrossStart': targetObj189.width - targetObj_BD18.edgeOffset - targetObj_BD18.barSize,
             'barSize': targetObj_BD18.barSize,
-            'maxViewportStart': v4327.bottom - v4329.height,
+            'maxViewportStart': targetObj186.bottom - targetObj188.height,
             'minBarLength': targetObj_BD18.minBarLength,
-            'minViewportStart': v4327.top,
-            'viewportSize': v4329.height,
-            'viewportStart': v4329.top,
+            'minViewportStart': targetObj186.top,
+            'viewportSize': targetObj188.height,
+            'viewportStart': targetObj188.top,
             'vertical': true
           }) : null
         };
@@ -21768,8 +21685,8 @@ function IM(var_core_value_sig2B59) {
       ;
       function KP(targetObj_BD18, countVal_0E5A) {
         if (targetObj_BD18.travelLength <= 0) return targetObj_BD18.viewportStart;
-        let v4325 = targetObj_BD18.maxViewportStart - targetObj_BD18.minViewportStart;
-        return BP(targetObj_BD18.viewportStart + countVal_0E5A / targetObj_BD18.travelLength * v4325, targetObj_BD18.minViewportStart, targetObj_BD18.maxViewportStart);
+        let countVal14 = targetObj_BD18.maxViewportStart - targetObj_BD18.minViewportStart;
+        return BP(targetObj_BD18.viewportStart + countVal_0E5A / targetObj_BD18.travelLength * countVal14, targetObj_BD18.minViewportStart, targetObj_BD18.maxViewportStart);
       }
       const qP = "boards-ui.viewport-bar";
       function JP(targetObj_BD18) {
@@ -21797,23 +21714,23 @@ function IM(var_core_value_sig2B59) {
           let var_core_value_sigE6D0 = (targetObj_BD18 = this._configService["getConfig"]("boards-ui.config")) == null ? undefined : targetObj_BD18.viewportBar;
           if (this._horizontalEnabled = (var_core_value_sigE6D0 == null ? undefined : var_core_value_sigE6D0.horizontal) !== false, this._verticalEnabled = (var_core_value_sigE6D0 == null ? undefined : var_core_value_sigE6D0.vertical) !== false, !this._horizontalEnabled && !this._verticalEnabled) return;
           let {
-              engine: v500,
-              scene: v501,
+              engine: targetObj20,
+              scene: targetObj21,
               unitId: var_core_value_sig7BB5
             } = this._renderContext,
             var_core_value_sig6AAD = this._instanceSrv["getUnit"](var_core_value_sig7BB5, ox2dc2f2.UNIVER_BOARD);
           if (!var_core_value_sig6AAD) return;
-          this._barObject = new LP(NP, this._createInitialObjectState()), v501.addObject(this._barObject, PP), this.disposeWithMe(ox1db710(this._barObject["onPointerDown$"].subscribeEvent((var_core_value_sigB608, var_core_value_sigF866) => {
+          this._barObject = new LP(NP, this._createInitialObjectState()), targetObj21.addObject(this._barObject, PP), this.disposeWithMe(ox1db710(this._barObject["onPointerDown$"].subscribeEvent((var_core_value_sigB608, var_core_value_sigF866) => {
             this._handleBarPointerDown(var_core_value_sigB608, var_core_value_sigF866);
-          }))), this.disposeWithMe(ox1db710(v501.onPointerDown$["subscribeEvent"](() => {
+          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerDown$["subscribeEvent"](() => {
             this._drag || (this._viewportPointerActive = true);
-          }))), this.disposeWithMe(ox1db710(v501.onPointerMove$["subscribeEvent"]((var_core_value_sig5EFB, var_core_value_sig3A85) => {
+          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerMove$["subscribeEvent"]((var_core_value_sig5EFB, var_core_value_sig3A85) => {
             this._handlePointerMove(var_core_value_sig5EFB, var_core_value_sig3A85);
-          }))), this.disposeWithMe(ox1db710(v501.onPointerUp$["subscribeEvent"]((var_core_value_sig2682, var_core_value_sig4BB5) => {
+          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerUp$["subscribeEvent"]((var_core_value_sig2682, var_core_value_sig4BB5) => {
             this._handlePointerEnd(var_core_value_sig2682, var_core_value_sig4BB5);
-          }))), this.disposeWithMe(ox1db710(v501.onPointerCancel$["subscribeEvent"]((var_core_value_sig6709, var_core_value_sig52CA) => {
+          }))), this.disposeWithMe(ox1db710(targetObj21.onPointerCancel$["subscribeEvent"]((var_core_value_sig6709, var_core_value_sig52CA) => {
             this._handlePointerEnd(null, var_core_value_sig52CA);
-          }))), this._subscribeToWindowInputInterruptions(), this.disposeWithMe(ox1db710(v500.onTransformChange$['subscribeEvent'](() => this._syncLayout(false))));
+          }))), this._subscribeToWindowInputInterruptions(), this.disposeWithMe(ox1db710(targetObj20.onTransformChange$['subscribeEvent'](() => this._syncLayout(false))));
           let var_core_value_sig1157 = this._stateService['getSettings']().viewportBarEnabled;
           this.disposeWithMe(this._stateService['state$'].subscribe(targetObj29 => {
             let var_core_value_sig88F6 = !var_core_value_sig1157 && targetObj29.settings["viewportBarEnabled"];
@@ -21826,7 +21743,7 @@ function IM(var_core_value_sig2B59) {
             this._handleElementChanges(var_core_value_sig6AAD, var_core_value_sigE0A9);
           })), this.disposeWithMe(ox2eae45([this._themeService["currentTheme$"], this._themeService['darkMode$']]).subscribe(() => this._syncTheme())), this.disposeWithMe(ox1db710(() => {
             var targetObj31;
-            this._scheduledFrameId != null && typeof globalThis.cancelAnimationFrame == "function" && globalThis.cancelAnimationFrame(this._scheduledFrameId), this._scheduledFrameId = null, AE(v501, qP), (targetObj31 = v501.removeObjects) == null || targetObj31.call(v501, [this._barObject].filter(var_core_value_sigEB43 => !!var_core_value_sigEB43)), this._barObject = null;
+            this._scheduledFrameId != null && typeof globalThis.cancelAnimationFrame == "function" && globalThis.cancelAnimationFrame(this._scheduledFrameId), this._scheduledFrameId = null, AE(targetObj21, qP), (targetObj31 = targetObj21.removeObjects) == null || targetObj31.call(targetObj21, [this._barObject].filter(var_core_value_sigEB43 => !!var_core_value_sigEB43)), this._barObject = null;
           })), this._syncLayout(true), this._scheduleLayoutSync(false);
         }
         _subscribeToWindowInputInterruptions() {
@@ -21882,15 +21799,15 @@ function IM(var_core_value_sig2B59) {
           }
         }
         _syncLayout(var_core_value_sig555F) {
-          var targetObj_BD18, v511, v512;
-          let v513 = this._barObject,
+          var targetObj_BD18, targetObj24, targetObj25;
+          let targetObj26 = this._barObject,
             var_core_value_sig48EA = this._instanceSrv["getUnit"](this._renderContext["unitId"], ox2dc2f2.UNIVER_BOARD);
-          if (!v513 || !var_core_value_sig48EA) return;
+          if (!targetObj26 || !var_core_value_sig48EA) return;
           if (!this._stateService["getSettings"]().viewportBarEnabled) {
             this._contentBounds = null, this._layout = {
               'horizontal': null,
               'vertical': null
-            }, this._navigationBounds = null, v513.updateState({
+            }, this._navigationBounds = null, targetObj26.updateState({
               'activeAxis': null,
               'horizontalRect': null,
               'hoverAxis': null,
@@ -21899,41 +21816,41 @@ function IM(var_core_value_sig2B59) {
             return;
           }
           this._drag && var_core_value_sig555F ? this._pendingContentRefresh = true : var_core_value_sig555F && (this._contentBounds = this._resolveContentBounds(var_core_value_sig48EA));
-          let v515 = this._stateService["getState"](),
-            countVal37 = Number.isFinite(v515.zoomRatio) && v515.zoomRatio > 0 ? v515.zoomRatio : 1,
-            v517 = this._resolveViewportPixelSize(),
-            v518 = {
-              'height': v517.height / countVal37,
-              'left': -v515.viewportPanOffset['x'] / countVal37,
-              'top': -v515.viewportPanOffset['y'] / countVal37,
-              'width': v517.width / countVal37
+          let targetObj27 = this._stateService["getState"](),
+            countVal37 = Number.isFinite(targetObj27.zoomRatio) && targetObj27.zoomRatio > 0 ? targetObj27.zoomRatio : 1,
+            targetObj28 = this._resolveViewportPixelSize(),
+            targetObj29 = {
+              'height': targetObj28.height / countVal37,
+              'left': -targetObj27.viewportPanOffset['x'] / countVal37,
+              'top': -targetObj27.viewportPanOffset['y'] / countVal37,
+              'width': targetObj28.width / countVal37
             },
             var_core_value_sig1617 = VP((targetObj_BD18 = this._configService['getConfig']('boards-ui.config')) == null || (targetObj_BD18 = targetObj_BD18.viewportBar) == null ? undefined : targetObj_BD18.padding),
-            var_core_value_sig4169 = HP(this._contentBounds, v518, var_core_value_sig1617);
+            var_core_value_sig4169 = HP(this._contentBounds, targetObj29, var_core_value_sig1617);
           this._drag || (this._navigationBounds = this._viewportPointerActive && this._navigationBounds ? UP(this._navigationBounds, var_core_value_sig4169) : var_core_value_sig4169), this._navigationBounds ??= var_core_value_sig4169, this._layout = GP({
             'barSize': 6,
             'edgeOffset': 5,
             'horizontal': this._horizontalEnabled,
             'minBarLength': 40,
             'navigationBounds': this._navigationBounds,
-            'safeArea': this._resolveSafeArea(v517),
+            'safeArea': this._resolveSafeArea(targetObj28),
             'vertical': this._verticalEnabled,
-            'viewport': v518,
-            'viewportPixelSize': v517
-          }), v513.updateState({
-            'horizontalRect': this._toWorldRect(((v511 = this._layout["horizontal"]) == null ? undefined : v511.barRect) ?? null, v518, countVal37),
-            'verticalRect': this._toWorldRect(((v512 = this._layout['vertical']) == null ? undefined : v512.barRect) ?? null, v518, countVal37),
+            'viewport': targetObj29,
+            'viewportPixelSize': targetObj28
+          }), targetObj26.updateState({
+            'horizontalRect': this._toWorldRect(((targetObj24 = this._layout["horizontal"]) == null ? undefined : targetObj24.barRect) ?? null, targetObj29, countVal37),
+            'verticalRect': this._toWorldRect(((targetObj25 = this._layout['vertical']) == null ? undefined : targetObj25.barRect) ?? null, targetObj29, countVal37),
             'zoomRatio': countVal37
           }), this._renderContext["scene"].makeDirty(true);
         }
         _resolveViewportPixelSize() {
           let {
             engine: targetObj_BD18,
-            scene: v522
+            scene: targetObj36
           } = this._renderContext;
           return {
-            'height': Number.isFinite(targetObj_BD18.height) && targetObj_BD18.height > 0 ? targetObj_BD18.height : v522.height,
-            'width': Number.isFinite(targetObj_BD18.width) && targetObj_BD18.width > 0 ? targetObj_BD18.width : v522.width
+            'height': Number.isFinite(targetObj_BD18.height) && targetObj_BD18.height > 0 ? targetObj_BD18.height : targetObj36.height,
+            'width': Number.isFinite(targetObj_BD18.width) && targetObj_BD18.width > 0 ? targetObj_BD18.width : targetObj36.width
           };
         }
         _resolveContentBounds(targetObj_BD18) {
@@ -21952,26 +21869,26 @@ function IM(var_core_value_sig2B59) {
             }
           });
         }
-        _toWorldRect(targetObj_BD18, v527, countVal39) {
+        _toWorldRect(targetObj_BD18, targetObj38, countVal39) {
           return targetObj_BD18 ? {
             'height': targetObj_BD18.height / countVal39,
-            'left': v527.left + targetObj_BD18.left / countVal39,
-            'top': v527.top + targetObj_BD18.top / countVal39,
+            'left': targetObj38.left + targetObj_BD18.left / countVal39,
+            'top': targetObj38.top + targetObj_BD18.top / countVal39,
             'width': targetObj_BD18.width / countVal39
           } : null;
         }
         _resolveSafeArea(targetObj_BD18) {
-          var v530, var_core_value_sigC9F5, v532;
-          let var_core_value_sig59CE = (v530 = (var_core_value_sigC9F5 = this._renderContext["engine"]).getCanvasElement) == null ? undefined : v530.call(var_core_value_sigC9F5),
-            var_core_value_sig33C8 = var_core_value_sig59CE == null || (v532 = var_core_value_sig59CE.closest) == null ? undefined : v532.call(var_core_value_sig59CE, '[data-board-viewport-host=\x22true\x22]');
+          var targetObj40, var_core_value_sigC9F5, targetObj41;
+          let var_core_value_sig59CE = (targetObj40 = (var_core_value_sigC9F5 = this._renderContext["engine"]).getCanvasElement) == null ? undefined : targetObj40.call(var_core_value_sigC9F5),
+            var_core_value_sig33C8 = var_core_value_sig59CE == null || (targetObj41 = var_core_value_sig59CE.closest) == null ? undefined : targetObj41.call(var_core_value_sig59CE, '[data-board-viewport-host=\x22true\x22]');
           if (!var_core_value_sig33C8) return {};
-          let v535 = var_core_value_sig33C8.getBoundingClientRect();
-          if (v535.width <= 0 || v535.height <= 0) return {};
-          let countVal41 = targetObj_BD18.width / v535.width,
-            countVal42 = targetObj_BD18.height / v535.height,
+          let targetObj42 = var_core_value_sig33C8.getBoundingClientRect();
+          if (targetObj42.width <= 0 || targetObj42.height <= 0) return {};
+          let countVal41 = targetObj_BD18.width / targetObj42.width,
+            countVal42 = targetObj_BD18.height / targetObj42.height,
             countVal43 = targetObj_BD18.height - 5 - 6 / 2,
             countVal44 = targetObj_BD18.width - 5 - 6 / 2,
-            v540 = {
+            targetObj43 = {
               'horizontalEnd': targetObj_BD18.width - 5,
               'horizontalStart': 5,
               'verticalEnd': targetObj_BD18.height - 5,
@@ -21979,21 +21896,21 @@ function IM(var_core_value_sig2B59) {
             };
           return var_core_value_sig33C8.querySelectorAll(['[data-board-help-control=\x22true\x22]', "[data-board-left-toolbar=\"true\"]", "[data-board-top-right-menu=\"true\"]", "[data-board-zoom-controls=\"true\"]"].join(',')).forEach(targetObj39 => {
             let targetObj40 = targetObj39.getBoundingClientRect(),
-              countVal12 = (targetObj40.left - v535.left) * countVal41,
-              countVal13 = (targetObj40.right - v535.left) * countVal41,
-              countVal14 = (targetObj40.top - v535.top) * countVal42,
-              countVal15 = (targetObj40.bottom - v535.top) * countVal42;
-            countVal14 <= countVal43 + 7 && countVal15 >= countVal43 - 7 && ((countVal12 + countVal13) / 2 >= targetObj_BD18.width / 2 ? v540.horizontalEnd = Math.min(v540.horizontalEnd, countVal12 - 12) : v540.horizontalStart = Math.max(v540.horizontalStart, countVal13 + 12)), countVal12 <= countVal44 + 7 && countVal13 >= countVal44 - 7 && ((countVal14 + countVal15) / 2 >= targetObj_BD18.height / 2 ? v540.verticalEnd = Math.min(v540.verticalEnd, countVal14 - 12) : v540.verticalStart = Math.max(v540.verticalStart, countVal15 + 12));
-          }), v540;
+              countVal12 = (targetObj40.left - targetObj42.left) * countVal41,
+              countVal13 = (targetObj40.right - targetObj42.left) * countVal41,
+              countVal14 = (targetObj40.top - targetObj42.top) * countVal42,
+              countVal15 = (targetObj40.bottom - targetObj42.top) * countVal42;
+            countVal14 <= countVal43 + 7 && countVal15 >= countVal43 - 7 && ((countVal12 + countVal13) / 2 >= targetObj_BD18.width / 2 ? targetObj43.horizontalEnd = Math.min(targetObj43.horizontalEnd, countVal12 - 12) : targetObj43.horizontalStart = Math.max(targetObj43.horizontalStart, countVal13 + 12)), countVal12 <= countVal44 + 7 && countVal13 >= countVal44 - 7 && ((countVal14 + countVal15) / 2 >= targetObj_BD18.height / 2 ? targetObj43.verticalEnd = Math.min(targetObj43.verticalEnd, countVal14 - 12) : targetObj43.verticalStart = Math.max(targetObj43.verticalStart, countVal15 + 12));
+          }), targetObj43;
         }
-        _handleBarPointerDown(targetObj_BD18, v542) {
-          var v543, v544;
+        _handleBarPointerDown(targetObj_BD18, targetObj48) {
+          var targetObj49, targetObj50;
           if (typeof targetObj_BD18.button == 'number' && targetObj_BD18.button !== 0) return;
-          let var_core_value_sig0B4E = ((v543 = this._barObject) == null ? undefined : v543.resolveHitAxis(this._getBoardPoint(targetObj_BD18))) ?? null,
+          let var_core_value_sig0B4E = ((targetObj49 = this._barObject) == null ? undefined : targetObj49.resolveHitAxis(this._getBoardPoint(targetObj_BD18))) ?? null,
             var_core_value_sig0E9F = var_core_value_sig0B4E ? this._layout[var_core_value_sig0B4E] : null;
           if (!var_core_value_sig0B4E || !var_core_value_sig0E9F) return;
-          let v547 = this._stateService["getState"](),
-            v548 = JP(targetObj_BD18);
+          let targetObj51 = this._stateService["getState"](),
+            targetObj52 = JP(targetObj_BD18);
           this._viewportPointerActive = false, this._drag = {
             'axis': var_core_value_sig0B4E,
             'axisLayout': {
@@ -22002,50 +21919,50 @@ function IM(var_core_value_sig2B59) {
                 ...var_core_value_sig0E9F.barRect
               }
             },
-            'pointerStart': var_core_value_sig0B4E === "horizontal" ? v548.x : v548.y,
+            'pointerStart': var_core_value_sig0B4E === "horizontal" ? targetObj52.x : targetObj52.y,
             'startPanOffset': {
-              ...v547.viewportPanOffset
+              ...targetObj51.viewportPanOffset
             },
-            'zoomRatio': Number.isFinite(v547.zoomRatio) && v547.zoomRatio > 0 ? v547.zoomRatio : 1
-          }, (v544 = this._barObject) == null || v544.updateState({
+            'zoomRatio': Number.isFinite(targetObj51.zoomRatio) && targetObj51.zoomRatio > 0 ? targetObj51.zoomRatio : 1
+          }, (targetObj50 = this._barObject) == null || targetObj50.updateState({
             'activeAxis': var_core_value_sig0B4E,
             'hoverAxis': var_core_value_sig0B4E
-          }), kE(this._renderContext['scene'], qP, true), this._setCursor(ox37711d.GRABBING), v542.stopPropagation();
+          }), kE(this._renderContext['scene'], qP, true), this._setCursor(ox37711d.GRABBING), targetObj48.stopPropagation();
         }
-        _handlePointerMove(targetObj_BD18, v550) {
-          let v551 = this._drag;
-          if (!v551) {
-            var v552, v553;
-            let var_core_value_sig7E56 = ((v552 = this._barObject) == null ? undefined : v552.resolveHitAxis(this._getBoardPoint(targetObj_BD18))) ?? null;
-            (v553 = this._barObject) == null || v553.updateState({
+        _handlePointerMove(targetObj_BD18, targetObj58) {
+          let targetObj59 = this._drag;
+          if (!targetObj59) {
+            var targetObj60, targetObj61;
+            let var_core_value_sig7E56 = ((targetObj60 = this._barObject) == null ? undefined : targetObj60.resolveHitAxis(this._getBoardPoint(targetObj_BD18))) ?? null;
+            (targetObj61 = this._barObject) == null || targetObj61.updateState({
               'hoverAxis': var_core_value_sig7E56
-            }), this._setCursor(var_core_value_sig7E56 ? ox37711d.GRAB : null), var_core_value_sig7E56 && v550.stopPropagation();
+            }), this._setCursor(var_core_value_sig7E56 ? ox37711d.GRAB : null), var_core_value_sig7E56 && targetObj58.stopPropagation();
             return;
           }
           if ("buttons" in targetObj_BD18 && targetObj_BD18.buttons !== undefined && (targetObj_BD18.buttons & 1) != 1) {
             this._finishDrag(null);
             return;
           }
-          let v554 = JP(targetObj_BD18),
-            countVal49 = v551.axis === "horizontal" ? v554.x : v554.y,
-            var_core_value_sigD22E = KP(v551.axisLayout, countVal49 - v551.pointerStart);
-          this._stateService["setViewportPanOffset"](v551.axis === "horizontal" ? {
-            'x': -var_core_value_sigD22E * v551.zoomRatio,
-            'y': v551.startPanOffset['y']
+          let targetObj62 = JP(targetObj_BD18),
+            countVal49 = targetObj59.axis === "horizontal" ? targetObj62.x : targetObj62.y,
+            var_core_value_sigD22E = KP(targetObj59.axisLayout, countVal49 - targetObj59.pointerStart);
+          this._stateService["setViewportPanOffset"](targetObj59.axis === "horizontal" ? {
+            'x': -var_core_value_sigD22E * targetObj59.zoomRatio,
+            'y': targetObj59.startPanOffset['y']
           } : {
-            'x': v551.startPanOffset['x'],
-            'y': -var_core_value_sigD22E * v551.zoomRatio
-          }), v550.stopPropagation();
+            'x': targetObj59.startPanOffset['x'],
+            'y': -var_core_value_sigD22E * targetObj59.zoomRatio
+          }), targetObj58.stopPropagation();
         }
         _handlePointerEnd(var_core_value_sig3455, targetObj_BD18) {
           this._finishDrag(var_core_value_sig3455) && targetObj_BD18.stopPropagation();
         }
         _finishDrag(var_core_value_sig43D5) {
-          var targetObj_BD18, v561;
+          var targetObj_BD18, targetObj68;
           let isFlag12 = !!this._drag;
           this._drag = null, this._viewportPointerActive = false, AE(this._renderContext["scene"], qP);
           let var_core_value_sig7C77 = var_core_value_sig43D5 ? ((targetObj_BD18 = this._barObject) == null ? undefined : targetObj_BD18.resolveHitAxis(this._getBoardPoint(var_core_value_sig43D5))) ?? null : null;
-          (v561 = this._barObject) == null || v561.updateState({
+          (targetObj68 = this._barObject) == null || targetObj68.updateState({
             'activeAxis': null,
             'hoverAxis': var_core_value_sig7C77
           }), this._setCursor(var_core_value_sig7C77 ? ox37711d.GRAB : null);
@@ -22053,11 +21970,11 @@ function IM(var_core_value_sig2B59) {
           return this._pendingContentRefresh = false, this._syncLayout(var_core_value_sig9578), isFlag12;
         }
         _getBoardPoint(targetObj_BD18) {
-          let v566 = this._stateService["getState"](),
-            countVal_0E5A = Number.isFinite(v566.zoomRatio) && v566.zoomRatio > 0 ? v566.zoomRatio : 1;
+          let targetObj70 = this._stateService["getState"](),
+            countVal_0E5A = Number.isFinite(targetObj70.zoomRatio) && targetObj70.zoomRatio > 0 ? targetObj70.zoomRatio : 1;
           return {
-            'x': ((targetObj_BD18.offsetX ?? 0) - v566.viewportPanOffset['x']) / countVal_0E5A,
-            'y': ((targetObj_BD18.offsetY ?? 0) - v566.viewportPanOffset['y']) / countVal_0E5A
+            'x': ((targetObj_BD18.offsetX ?? 0) - targetObj70.viewportPanOffset['x']) / countVal_0E5A,
+            'y': ((targetObj_BD18.offsetY ?? 0) - targetObj70.viewportPanOffset['y']) / countVal_0E5A
           };
         }
         _setCursor(var_core_value_sig3D8E) {
@@ -22085,45 +22002,45 @@ function IM(var_core_value_sig2B59) {
       ;
       function $P({
         event: targetObj_BD18,
-        interactionConfig: v4305,
-        viewportRect: v4306
+        interactionConfig: targetObj194,
+        viewportRect: targetObj195
       }) {
         let var_core_value_sigE2C9 = ZP(targetObj_BD18.deltaX, targetObj_BD18.deltaMode),
           var_core_value_sig6D71 = ZP(targetObj_BD18.deltaY, targetObj_BD18.deltaMode),
           var_core_value_sig4BDF = targetObj_BD18.ctrlKey || targetObj_BD18.metaKey,
-          var_core_value_sig0925 = v4305.wheelZoomWithModifier && var_core_value_sig4BDF;
-        if (var_core_value_sig4BDF && !v4305.wheelZoomWithModifier) return {
+          var_core_value_sig0925 = targetObj194.wheelZoomWithModifier && var_core_value_sig4BDF;
+        if (var_core_value_sig4BDF && !targetObj194.wheelZoomWithModifier) return {
           'type': "none"
         };
         if (var_core_value_sig0925) {
-          let var_core_value_sig595E = QP(var_core_value_sig6D71, v4305);
+          let var_core_value_sig595E = QP(var_core_value_sig6D71, targetObj194);
           return !Number.isFinite(var_core_value_sig595E) || var_core_value_sig595E === 1 ? {
             'type': 'none'
           } : {
             'type': "zoomAtPoint",
             'viewportPoint': {
-              'x': targetObj_BD18.clientX - v4306.left,
-              'y': targetObj_BD18.clientY - v4306.top
+              'x': targetObj_BD18.clientX - targetObj195.left,
+              'y': targetObj_BD18.clientY - targetObj195.top
             },
             'zoomFactor': var_core_value_sig595E
           };
         }
-        if (!v4305.trackpadPanEnabled) return {
+        if (!targetObj194.trackpadPanEnabled) return {
           'type': "none"
         };
-        let countVal_0E5A = Number.isFinite(v4305.wheelPanFactor) ? v4305.wheelPanFactor : 1,
-          v4312 = targetObj_BD18.shiftKey ? {
+        let countVal_0E5A = Number.isFinite(targetObj194.wheelPanFactor) ? targetObj194.wheelPanFactor : 1,
+          targetObj196 = targetObj_BD18.shiftKey ? {
             'x': -var_core_value_sig6D71 * countVal_0E5A,
             'y': 0
           } : {
             'x': -var_core_value_sigE2C9 * countVal_0E5A,
             'y': -var_core_value_sig6D71 * countVal_0E5A
           };
-        return v4312.x === 0 && v4312.y === 0 ? {
+        return targetObj196.x === 0 && targetObj196.y === 0 ? {
           'type': 'none'
         } : {
           'type': "pan",
-          'delta': v4312
+          'delta': targetObj196
         };
       }
       const eF = "boards-ui.viewport-gesture";
@@ -22134,18 +22051,18 @@ function IM(var_core_value_sig2B59) {
         };
       }
       ;
-      function nF(targetObj_BD18, v4297) {
-        let var_core_value_sig0A62 = v4297 == null ? undefined : v4297.getBoundingClientRect();
+      function nF(targetObj_BD18, targetObj200) {
+        let var_core_value_sig0A62 = targetObj200 == null ? undefined : targetObj200.getBoundingClientRect();
         if (var_core_value_sig0A62) return {
           'left': var_core_value_sig0A62.left,
           'top': var_core_value_sig0A62.top
         };
-        let v4299 = tF(targetObj_BD18),
-          countVal_0E5A = Number.isFinite(targetObj_BD18.offsetX) ? targetObj_BD18.offsetX : v4299.x,
-          v4301 = Number.isFinite(targetObj_BD18.offsetY) ? targetObj_BD18.offsetY : v4299.y;
+        let targetObj201 = tF(targetObj_BD18),
+          countVal_0E5A = Number.isFinite(targetObj_BD18.offsetX) ? targetObj_BD18.offsetX : targetObj201.x,
+          countVal16 = Number.isFinite(targetObj_BD18.offsetY) ? targetObj_BD18.offsetY : targetObj201.y;
         return {
-          'left': v4299.x - countVal_0E5A,
-          'top': v4299.y - v4301
+          'left': targetObj201.x - countVal_0E5A,
+          'top': targetObj201.y - countVal16
         };
       }
       ;
@@ -22155,13 +22072,13 @@ function IM(var_core_value_sig2B59) {
       ;
       function iF(targetObj_BD18) {
         if (!_y(targetObj_BD18) || !(targetObj_BD18 instanceof HTMLElement)) return false;
-        let v4294 = targetObj_BD18.closest('[data-embed-float-dom=\x22true\x22]');
-        return !v4294 || v4294.dataset['embedFloatStage'] === "stage2";
+        let targetObj204 = targetObj_BD18.closest('[data-embed-float-dom=\x22true\x22]');
+        return !targetObj204 || targetObj204.dataset['embedFloatStage'] === "stage2";
       }
       ;
-      function aF(targetObj_BD18, v4292) {
-        return targetObj_BD18.addEventListener("pointerdown", v4292.pointerDown, true), window.addEventListener("pointerdown", v4292.pointerDown, true), window.addEventListener('pointermove', v4292.pointerMove, true), window.addEventListener("pointerup", v4292.pointerEnd, true), window.addEventListener("pointercancel", v4292.pointerEnd, true), window.addEventListener('blur', v4292.blur), ox1db710(() => {
-          targetObj_BD18.removeEventListener("pointerdown", v4292.pointerDown, true), window.removeEventListener("pointerdown", v4292.pointerDown, true), window.removeEventListener("pointermove", v4292.pointerMove, true), window.removeEventListener("pointerup", v4292.pointerEnd, true), window.removeEventListener("pointercancel", v4292.pointerEnd, true), window.removeEventListener("blur", v4292.blur);
+      function aF(targetObj_BD18, targetObj206) {
+        return targetObj_BD18.addEventListener("pointerdown", targetObj206.pointerDown, true), window.addEventListener("pointerdown", targetObj206.pointerDown, true), window.addEventListener('pointermove', targetObj206.pointerMove, true), window.addEventListener("pointerup", targetObj206.pointerEnd, true), window.addEventListener("pointercancel", targetObj206.pointerEnd, true), window.addEventListener('blur', targetObj206.blur), ox1db710(() => {
+          targetObj_BD18.removeEventListener("pointerdown", targetObj206.pointerDown, true), window.removeEventListener("pointerdown", targetObj206.pointerDown, true), window.removeEventListener("pointermove", targetObj206.pointerMove, true), window.removeEventListener("pointerup", targetObj206.pointerEnd, true), window.removeEventListener("pointercancel", targetObj206.pointerEnd, true), window.removeEventListener("blur", targetObj206.blur);
         });
       }
       let oF = class extends ox92a213 {
@@ -22174,11 +22091,11 @@ function IM(var_core_value_sig2B59) {
         _init() {
           var targetObj_BD18;
           let {
-            scene: v408,
+            scene: targetObj72,
             unitId: var_core_value_sig3082
           } = this._renderContext;
           if (!this._instanceSrv['getUnit'](var_core_value_sig3082, ox2dc2f2.UNIVER_BOARD)) return;
-          this.disposeWithMe(ox1db710(v408.onMouseWheel$["subscribeEvent"]((var_core_value_sigEEDB, var_core_value_sig36E7) => this._handleWheel(var_core_value_sigEEDB, var_core_value_sig36E7)))), this.disposeWithMe(ox1db710(v408.onPointerDown$["subscribeEvent"]((var_core_value_sig6A78, var_core_value_sigF7EF) => this._handlePointerDown(var_core_value_sig6A78, var_core_value_sigF7EF)))), this.disposeWithMe(ox1db710(v408.onPointerMove$["subscribeEvent"]((var_core_value_sig27F9, var_core_value_sig393E) => this._handlePointerMove(var_core_value_sig27F9, var_core_value_sig393E)))), this.disposeWithMe(ox1db710(v408.onPointerUp$['subscribeEvent']((var_core_value_sigB609, var_core_value_sig390D) => this._handlePointerEnd(var_core_value_sigB609, var_core_value_sig390D)))), this.disposeWithMe(ox1db710(v408.onPointerCancel$["subscribeEvent"]((var_core_value_sigC928, var_core_value_sig39B7) => this._handlePointerEnd(null, var_core_value_sig39B7)))), this._subscribeToCanvasGestureRouting(), this._syncPanCursor();
+          this.disposeWithMe(ox1db710(targetObj72.onMouseWheel$["subscribeEvent"]((var_core_value_sigEEDB, var_core_value_sig36E7) => this._handleWheel(var_core_value_sigEEDB, var_core_value_sig36E7)))), this.disposeWithMe(ox1db710(targetObj72.onPointerDown$["subscribeEvent"]((var_core_value_sig6A78, var_core_value_sigF7EF) => this._handlePointerDown(var_core_value_sig6A78, var_core_value_sigF7EF)))), this.disposeWithMe(ox1db710(targetObj72.onPointerMove$["subscribeEvent"]((var_core_value_sig27F9, var_core_value_sig393E) => this._handlePointerMove(var_core_value_sig27F9, var_core_value_sig393E)))), this.disposeWithMe(ox1db710(targetObj72.onPointerUp$['subscribeEvent']((var_core_value_sigB609, var_core_value_sig390D) => this._handlePointerEnd(var_core_value_sigB609, var_core_value_sig390D)))), this.disposeWithMe(ox1db710(targetObj72.onPointerCancel$["subscribeEvent"]((var_core_value_sigC928, var_core_value_sig39B7) => this._handlePointerEnd(null, var_core_value_sig39B7)))), this._subscribeToCanvasGestureRouting(), this._syncPanCursor();
           let var_core_value_sigF5D1 = (targetObj_BD18 = this._stateService["state$"]) == null ? undefined : targetObj_BD18.subscribe(() => this._syncPanCursor());
           var_core_value_sigF5D1 && this.disposeWithMe(ox1db710(() => var_core_value_sigF5D1.unsubscribe())), this._subscribeToWindowInputInterruptions();
         }
@@ -22194,9 +22111,9 @@ function IM(var_core_value_sig2B59) {
           }));
         }
         _subscribeToCanvasGestureRouting() {
-          var targetObj_BD18, v415;
+          var targetObj_BD18, targetObj74;
           if (typeof window > 'u') return;
-          let var_core_value_sigC2BB = (targetObj_BD18 = this._renderContext["engine"]) == null || (v415 = targetObj_BD18.getCanvasElement) == null ? undefined : v415.call(targetObj_BD18);
+          let var_core_value_sigC2BB = (targetObj_BD18 = this._renderContext["engine"]) == null || (targetObj74 = targetObj_BD18.getCanvasElement) == null ? undefined : targetObj74.call(targetObj_BD18);
           if (!var_core_value_sigC2BB) return;
           let var_core_value_sigD9DB = null;
           this.disposeWithMe(aF(var_core_value_sigC2BB, {
@@ -22232,17 +22149,17 @@ function IM(var_core_value_sig2B59) {
           !targetObj_BD18 || var_core_value_sigFBA5 != null && var_core_value_sigFBA5 !== targetObj_BD18.pointerId || (this._sceneGestureLease = null, AE(targetObj_BD18.scene, eF));
         }
         _shouldRoutePointerGestureToScene(targetObj_BD18) {
-          let v422 = this._stateService["getState"]();
-          if (targetObj_BD18.button !== 0 || v422.pendingInsert) return false;
-          let v423 = this._renderContext["scene"].getObject(NP);
-          if (v423 instanceof LP) {
-            let countVal22 = Number.isFinite(v422.zoomRatio) && v422.zoomRatio > 0 ? v422.zoomRatio : 1;
-            if (v423.resolveHitAxis({
-              'x': (targetObj_BD18.offsetX - v422.viewportPanOffset['x']) / countVal22,
-              'y': (targetObj_BD18.offsetY - v422.viewportPanOffset['y']) / countVal22
+          let targetObj76 = this._stateService["getState"]();
+          if (targetObj_BD18.button !== 0 || targetObj76.pendingInsert) return false;
+          let targetObj77 = this._renderContext["scene"].getObject(NP);
+          if (targetObj77 instanceof LP) {
+            let countVal22 = Number.isFinite(targetObj76.zoomRatio) && targetObj76.zoomRatio > 0 ? targetObj76.zoomRatio : 1;
+            if (targetObj77.resolveHitAxis({
+              'x': (targetObj_BD18.offsetX - targetObj76.viewportPanOffset['x']) / countVal22,
+              'y': (targetObj_BD18.offsetY - targetObj76.viewportPanOffset['y']) / countVal22
             })) return false;
           }
-          return v422.activeTool === ox78b684.Drag ? true : v422.activeTool != null && v422.activeTool !== ox78b684.Select ? false : this._platformService["isMac"] ? targetObj_BD18.metaKey : targetObj_BD18.ctrlKey;
+          return targetObj76.activeTool === ox78b684.Drag ? true : targetObj76.activeTool != null && targetObj76.activeTool !== ox78b684.Select ? false : this._platformService["isMac"] ? targetObj_BD18.metaKey : targetObj_BD18.ctrlKey;
         }
         _handleKeyDown(targetObj_BD18) {
           if (this._stateService['getState']().interactionMode === "viewing" && this._canStartSpacePan(targetObj_BD18) && !iF(targetObj_BD18.target)) {
@@ -22272,19 +22189,19 @@ function IM(var_core_value_sig2B59) {
           let var_core_value_sigA8C3 = this._spacePanRestoreTool;
           this._spacePanRestoreTool = undefined, this._spacePanReleasePending = false, this._panDraft = null, this._stateService['getState']().activeTool === ox78b684.Drag && this._stateService["setActiveTool"](var_core_value_sigA8C3), this._syncPanCursor();
         }
-        _handleWheel(targetObj_BD18, v430) {
-          var v431, v432, v433;
-          let v434 = $P({
+        _handleWheel(targetObj_BD18, targetObj80) {
+          var targetObj81, targetObj82, targetObj83;
+          let targetObj84 = $P({
             'event': targetObj_BD18,
             'interactionConfig': m_(this._configService["getConfig"]("boards-ui.config") ?? undefined),
-            'viewportRect': nF(targetObj_BD18, (v431 = this._renderContext["engine"]) == null || (v432 = v431.getCanvasElement) == null ? undefined : v432.call(v431))
+            'viewportRect': nF(targetObj_BD18, (targetObj81 = this._renderContext["engine"]) == null || (targetObj82 = targetObj81.getCanvasElement) == null ? undefined : targetObj82.call(targetObj81))
           });
-          if (v434.type !== "none") {
-            if ((v433 = targetObj_BD18.preventDefault) == null || v433.call(targetObj_BD18), v430.stopPropagation(), v434.type === "pan") {
-              this._stateService["shiftViewportPanOffset"](v434.delta);
+          if (targetObj84.type !== "none") {
+            if ((targetObj83 = targetObj_BD18.preventDefault) == null || targetObj83.call(targetObj_BD18), targetObj80.stopPropagation(), targetObj84.type === "pan") {
+              this._stateService["shiftViewportPanOffset"](targetObj84.delta);
               return;
             }
-            this._stateService['setZoomRatioAtViewportPoint'](this._stateService["getState"]().zoomRatio * v434.zoomFactor, v434.viewportPoint);
+            this._stateService['setZoomRatioAtViewportPoint'](this._stateService["getState"]().zoomRatio * targetObj84.zoomFactor, targetObj84.viewportPoint);
           }
         }
         _handlePointerDown(var_core_value_sigAEC8, targetObj_BD18) {
@@ -22298,12 +22215,12 @@ function IM(var_core_value_sig2B59) {
         }
         _beginPan(targetObj_BD18) {
           if (!this._isPanModeActive() || typeof targetObj_BD18.button == 'number' && targetObj_BD18.button !== 0) return false;
-          let v442 = this._stateService["getState"]();
-          if (v442.interactionMode === 'viewing') {
+          let targetObj90 = this._stateService["getState"]();
+          if (targetObj90.interactionMode === 'viewing') {
             let options2 = this._renderContext["engine"].getCanvasElement().getBoundingClientRect(),
               targetObj_BD18 = {
-                'x': (targetObj_BD18.clientX - options2.left - v442.viewportPanOffset['x']) / v442.zoomRatio,
-                'y': (targetObj_BD18.clientY - options2.top - v442.viewportPanOffset['y']) / v442.zoomRatio
+                'x': (targetObj_BD18.clientX - options2.left - targetObj90.viewportPanOffset['x']) / targetObj90.zoomRatio,
+                'y': (targetObj_BD18.clientY - options2.top - targetObj90.viewportPanOffset['y']) / targetObj90.zoomRatio
               };
             this._selectionService["selectByPointerGesture"]({
               'boardModel': this._renderContext["unit"],
@@ -22325,21 +22242,21 @@ function IM(var_core_value_sig2B59) {
           let targetObj_BD18 = this._panDraft;
           if (!targetObj_BD18) return false;
           if (!this._isPanModeActive()) return this._panDraft = null, this._syncPanCursor(), false;
-          let v445 = tF(var_core_value_sig19B4);
-          return (Math.abs(v445.x - targetObj_BD18.start['x']) >= 4 || Math.abs(v445.y - targetObj_BD18.start['y']) >= 4) && (targetObj_BD18.locked = true), this._stateService['setViewportPanOffset']({
-            'x': targetObj_BD18.panOffset['x'] + v445.x - targetObj_BD18.start['x'],
-            'y': targetObj_BD18.panOffset['y'] + v445.y - targetObj_BD18.start['y']
+          let targetObj92 = tF(var_core_value_sig19B4);
+          return (Math.abs(targetObj92.x - targetObj_BD18.start['x']) >= 4 || Math.abs(targetObj92.y - targetObj_BD18.start['y']) >= 4) && (targetObj_BD18.locked = true), this._stateService['setViewportPanOffset']({
+            'x': targetObj_BD18.panOffset['x'] + targetObj92.x - targetObj_BD18.start['x'],
+            'y': targetObj_BD18.panOffset['y'] + targetObj92.y - targetObj_BD18.start['y']
           }), true;
         }
         _endPan() {
           return this._panDraft ? (this._panDraft = null, this._spacePanReleasePending ? (this._restoreSpacePanMode(), true) : (this._syncPanCursor(), true)) : false;
         }
         _canStartSpacePan(targetObj_BD18) {
-          var v447, v448, v449;
+          var targetObj94, targetObj95, targetObj96;
           if (this._instanceSrv["getFocusedUnit"]() && ZS(this._instanceSrv, this._renderContext["unitId"])) return true;
-          if (((v447 = this._instanceSrv['getCurrentUnitOfType'](ox2dc2f2.UNIVER_BOARD)) == null ? undefined : v447.getUnitId()) !== this._renderContext["unitId"] || typeof document > 'u') return false;
+          if (((targetObj94 = this._instanceSrv['getCurrentUnitOfType'](ox2dc2f2.UNIVER_BOARD)) == null ? undefined : targetObj94.getUnitId()) !== this._renderContext["unitId"] || typeof document > 'u') return false;
           let var_core_value_sigCE10 = targetObj_BD18.target,
-            var_core_value_sigA386 = (v448 = this._renderContext["engine"]) == null || (v449 = v448.getCanvasElement) == null ? undefined : v449.call(v448),
+            var_core_value_sigA386 = (targetObj95 = this._renderContext["engine"]) == null || (targetObj96 = targetObj95.getCanvasElement) == null ? undefined : targetObj96.call(targetObj95),
             var_core_value_sigCD82 = var_core_value_sigA386 == null ? undefined : var_core_value_sigA386.closest("[data-board-canvas-view=\"true\"]");
           return var_core_value_sigCE10 === document.body || var_core_value_sigCE10 === document.documentElement || var_core_value_sigCE10 === var_core_value_sigA386 || var_core_value_sigCE10 instanceof Node && (var_core_value_sigCD82 == null ? undefined : var_core_value_sigCD82.contains(var_core_value_sigCE10)) === true;
         }
@@ -22359,16 +22276,16 @@ function IM(var_core_value_sig2B59) {
           this._setPanCursor(null);
         }
         _setPanCursor(var_core_value_sig96FA) {
-          var targetObj_BD18, v456, v457;
-          let v458 = this._renderContext["scene"],
-            var_core_value_sig9D96 = (targetObj_BD18 = this._renderContext["engine"]) == null || (v456 = targetObj_BD18.getCanvasElement) == null ? undefined : v456.call(targetObj_BD18),
+          var targetObj_BD18, targetObj100, targetObj101;
+          let targetObj102 = this._renderContext["scene"],
+            var_core_value_sig9D96 = (targetObj_BD18 = this._renderContext["engine"]) == null || (targetObj100 = targetObj_BD18.getCanvasElement) == null ? undefined : targetObj100.call(targetObj_BD18),
             var_core_value_sig2776 = (var_core_value_sig9D96 == null ? undefined : var_core_value_sig9D96.closest("[data-board-canvas-view=\"true\"]")) ?? null;
           if (var_core_value_sig96FA) {
-            var v461;
-            this._ownsPanCursor = true, (v461 = v458.setCursor) == null || v461.call(v458, var_core_value_sig96FA), var_core_value_sig2776 && this._panCursorRoot !== var_core_value_sig2776 && (this._restorePanCursorRoot(), this._panCursorRoot = var_core_value_sig2776, this._previousPanCursor = var_core_value_sig2776.style["cursor"]), this._panCursorRoot && (this._panCursorRoot["style"].cursor = var_core_value_sig96FA);
+            var targetObj103;
+            this._ownsPanCursor = true, (targetObj103 = targetObj102.setCursor) == null || targetObj103.call(targetObj102, var_core_value_sig96FA), var_core_value_sig2776 && this._panCursorRoot !== var_core_value_sig2776 && (this._restorePanCursorRoot(), this._panCursorRoot = var_core_value_sig2776, this._previousPanCursor = var_core_value_sig2776.style["cursor"]), this._panCursorRoot && (this._panCursorRoot["style"].cursor = var_core_value_sig96FA);
             return;
           }
-          this._ownsPanCursor && (this._ownsPanCursor = false, (v457 = v458.resetCursor) == null || v457.call(v458), this._restorePanCursorRoot());
+          this._ownsPanCursor && (this._ownsPanCursor = false, (targetObj101 = targetObj102.resetCursor) == null || targetObj101.call(targetObj102), this._restorePanCursorRoot());
         }
         _restorePanCursorRoot() {
           this._panCursorRoot && (this._panCursorRoot['style'].cursor = this._previousPanCursor, this._panCursorRoot = null, this._previousPanCursor = '');
@@ -22379,8 +22296,8 @@ function IM(var_core_value_sig2B59) {
         let targetObj_BD18 = ox338e67(ox209363),
           options37 = ox338e67(ox5965f9);
         ox5004bd(() => options37.permissionPointUpdate$, undefined, false, [options37]);
-        let v4290 = targetObj_BD18.getCurrentUnitOfType(ox2dc2f2.UNIVER_BOARD);
-        return !v4290 || !ox569b63(options37, v4290.getUnitId(), v4290.getUnitId(), ox5d6956.Edit) ? null : ox53b982("div", {
+        let targetObj208 = targetObj_BD18.getCurrentUnitOfType(ox2dc2f2.UNIVER_BOARD);
+        return !targetObj208 || !ox569b63(options37, targetObj208.getUnitId(), targetObj208.getUnitId(), ox5d6956.Edit) ? null : ox53b982("div", {
           'data-u-comp': "board-shape-text-float-toolbar",
           'children': ox53b982(ox17ce5e, {})
         });
@@ -23113,24 +23030,24 @@ function IM(var_core_value_sig2B59) {
             'previewHostSize': targetObj_BD18 => {
               let var_core_value_sigF0F9 = options42.getElementById(targetObj_BD18.unitId, targetObj_BD18.subUnitId, targetObj_BD18.shapeId);
               if (!var_core_value_sigF0F9) return;
-              let v18 = options43.resolveHostSize({
+              let targetObj = options43.resolveHostSize({
                   'elementData': var_core_value_sigF0F9,
                   'params': targetObj_BD18
                 }) ?? targetObj_BD18,
-                v19 = {
+                targetObj1 = {
                   ...targetObj_BD18,
-                  'width': v18.width,
-                  'height': v18.height
+                  'width': targetObj.width,
+                  'height': targetObj.height
                 };
               options43.previewHostSize({
                 'elementData': var_core_value_sigF0F9,
-                'params': v19
+                'params': targetObj1
               }) || BI({
                 'elementData': var_core_value_sigF0F9,
-                'height': v18.height,
+                'height': targetObj.height,
                 'renderManagerService': var_core_value_sigD9551,
                 'unitId': targetObj_BD18.unitId,
-                'width': v18.width
+                'width': targetObj.width
               });
             },
             'allowHostSizeShrink': ({
@@ -23161,9 +23078,9 @@ function IM(var_core_value_sig2B59) {
               'main': z_
             },
             'getHostTransform': (var_core_value_sig0A4E, targetObj_BD18) => {
-              let v17 = options42.getElementById(targetObj_BD18.unitId, targetObj_BD18.subUnitId, targetObj_BD18.shapeId);
-              return (v17 == null ? undefined : v17.element["type"]) === ox2cbbb0.Connector ? LI({
-                'elementData': v17,
+              let targetObj4 = options42.getElementById(targetObj_BD18.unitId, targetObj_BD18.subUnitId, targetObj_BD18.shapeId);
+              return (targetObj4 == null ? undefined : targetObj4.element["type"]) === ox2cbbb0.Connector ? LI({
+                'elementData': targetObj4,
                 'elementDataMap': options42.getElementData(targetObj_BD18.unitId, targetObj_BD18.subUnitId),
                 'labelId': targetObj_BD18.labelId,
                 'renderManagerService': var_core_value_sigD9551,
@@ -23172,8 +23089,8 @@ function IM(var_core_value_sig2B59) {
               }) : null;
             },
             'getPositionOffset': (targetObj_BD18, var_core_value_sigBB9B, var_core_value_sigFC5C) => {
-              var v15, var_core_value_sig2BCF;
-              return II((v15 = (var_core_value_sig2BCF = targetObj_BD18.engine).getCanvasElement) == null ? undefined : v15.call(var_core_value_sig2BCF), targetObj_BD18.positionRoot ?? var_core_value_sigFC5C ?? undefined);
+              var targetObj6, var_core_value_sig2BCF;
+              return II((targetObj6 = (var_core_value_sig2BCF = targetObj_BD18.engine).getCanvasElement) == null ? undefined : targetObj6.call(var_core_value_sig2BCF), targetObj_BD18.positionRoot ?? var_core_value_sigFC5C ?? undefined);
             }
           }), [options42, targetObj_BD18.positionRoot, var_core_value_sigD9551])
         });
@@ -23208,8 +23125,8 @@ function IM(var_core_value_sig2B59) {
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
             var var_core_value_sig116D, targetObj_BD18;
-            let v4168 = options47.getRenderUnitById(var_core_value_sig1606),
-              var_core_value_sig05A7 = v4168 == null || (targetObj_BD18 = (var_core_value_sig116D = v4168.engine).getCanvasElement) == null ? undefined : targetObj_BD18.call(var_core_value_sig116D);
+            let targetObj8 = options47.getRenderUnitById(var_core_value_sig1606),
+              var_core_value_sig05A7 = targetObj8 == null || (targetObj_BD18 = (var_core_value_sig116D = targetObj8.engine).getCanvasElement) == null ? undefined : targetObj_BD18.call(var_core_value_sig116D);
             var_core_value_sig05A7 == null || var_core_value_sig05A7.focus({
               'preventScroll': true
             });
@@ -23217,57 +23134,57 @@ function IM(var_core_value_sig2B59) {
         });
       }
       ;
-      function II(targetObj_BD18, v4160) {
-        var v4161;
-        let var_core_value_sigC2EF = targetObj_BD18 == null || (v4161 = targetObj_BD18.getBoundingClientRect) == null ? undefined : v4161.call(targetObj_BD18);
+      function II(targetObj_BD18, targetObj210) {
+        var targetObj211;
+        let var_core_value_sigC2EF = targetObj_BD18 == null || (targetObj211 = targetObj_BD18.getBoundingClientRect) == null ? undefined : targetObj211.call(targetObj_BD18);
         if (!var_core_value_sigC2EF) return null;
-        let var_core_value_sig2FD1 = v4160 == null ? undefined : v4160.getBoundingClientRect(),
-          countVal_0E5A = var_core_value_sig2FD1 ? var_core_value_sig2FD1.left + ((v4160 == null ? undefined : v4160.clientLeft) ?? 0) - ((v4160 == null ? undefined : v4160.scrollLeft) ?? 0) : 0,
-          v4165 = var_core_value_sig2FD1 ? var_core_value_sig2FD1.top + ((v4160 == null ? undefined : v4160.clientTop) ?? 0) - ((v4160 == null ? undefined : v4160.scrollTop) ?? 0) : 0;
+        let var_core_value_sig2FD1 = targetObj210 == null ? undefined : targetObj210.getBoundingClientRect(),
+          countVal_0E5A = var_core_value_sig2FD1 ? var_core_value_sig2FD1.left + ((targetObj210 == null ? undefined : targetObj210.clientLeft) ?? 0) - ((targetObj210 == null ? undefined : targetObj210.scrollLeft) ?? 0) : 0,
+          countVal18 = var_core_value_sig2FD1 ? var_core_value_sig2FD1.top + ((targetObj210 == null ? undefined : targetObj210.clientTop) ?? 0) - ((targetObj210 == null ? undefined : targetObj210.scrollTop) ?? 0) : 0;
         return {
           'left': var_core_value_sigC2EF.left - countVal_0E5A,
-          'top': var_core_value_sigC2EF.top - v4165
+          'top': var_core_value_sigC2EF.top - countVal18
         };
       }
       ;
       function LI(var_core_value_sigB242) {
         var targetObj_BD18;
         let {
-            elementData: v4151,
+            elementData: targetObj214,
             elementDataMap: var_core_value_sigB95F,
             labelId: var_core_value_sigC3B9,
-            renderManagerService: v4154,
+            renderManagerService: targetObj215,
             shapeId: var_core_value_sigCD8F,
             unitId: var_core_value_sigBF2E
           } = var_core_value_sigB242,
-          v4157 = GI((targetObj_BD18 = v4154.getRenderUnitById(var_core_value_sigBF2E)) == null ? undefined : targetObj_BD18.scene, var_core_value_sigBF2E, var_core_value_sigCD8F);
-        if ((v4151 == null ? undefined : v4151.element["type"]) === ox2cbbb0.Connector) {
-          let options12 = KI(v4157, var_core_value_sigC3B9) ?? JI(v4151, var_core_value_sigB95F, var_core_value_sigC3B9);
+          targetObj216 = GI((targetObj_BD18 = targetObj215.getRenderUnitById(var_core_value_sigBF2E)) == null ? undefined : targetObj_BD18.scene, var_core_value_sigBF2E, var_core_value_sigCD8F);
+        if ((targetObj214 == null ? undefined : targetObj214.element["type"]) === ox2cbbb0.Connector) {
+          let options12 = KI(targetObj216, var_core_value_sigC3B9) ?? JI(targetObj214, var_core_value_sigB95F, var_core_value_sigC3B9);
           return options12 ? {
-            'angle': (qI(v4157, var_core_value_sigC3B9) ?? XI(v4151, var_core_value_sigB95F, var_core_value_sigC3B9) ?? 0) * 180 / Math.PI,
+            'angle': (qI(targetObj216, var_core_value_sigC3B9) ?? XI(targetObj214, var_core_value_sigB95F, var_core_value_sigC3B9) ?? 0) * 180 / Math.PI,
             'height': options12.height,
             'left': options12.left,
             'top': options12.top,
             'width': options12.width
           } : null;
         }
-        if (HI(v4157)) return {
-          'angle': v4157.angle ?? 0,
-          'flipX': v4157.flipX,
-          'flipY': v4157.flipY,
-          'height': v4157.height,
-          'left': v4157.left,
-          'top': v4157.top,
-          'width': v4157.width
+        if (HI(targetObj216)) return {
+          'angle': targetObj216.angle ?? 0,
+          'flipX': targetObj216.flipX,
+          'flipY': targetObj216.flipY,
+          'height': targetObj216.height,
+          'left': targetObj216.left,
+          'top': targetObj216.top,
+          'width': targetObj216.width
         };
-        let var_core_value_sig0C1F = v4151 && var_core_value_sigB95F ? ox33118d(var_core_value_sigB95F, v4151.elementId) : null;
-        return v4151 && var_core_value_sig0C1F ? {
-          'angle': v4151.element['transform'].rotation ?? 0,
+        let var_core_value_sig0C1F = targetObj214 && var_core_value_sigB95F ? ox33118d(var_core_value_sigB95F, targetObj214.elementId) : null;
+        return targetObj214 && var_core_value_sig0C1F ? {
+          'angle': targetObj214.element['transform'].rotation ?? 0,
           'height': var_core_value_sig0C1F.height,
           'left': var_core_value_sig0C1F.left,
           'top': var_core_value_sig0C1F.top,
           'width': var_core_value_sig0C1F.width
-        } : (v4151 == null ? undefined : v4151.transform) ?? (v4151 == null ? undefined : v4151.element["transform"]);
+        } : (targetObj214 == null ? undefined : targetObj214.transform) ?? (targetObj214 == null ? undefined : targetObj214.element["transform"]);
       }
       ;
       function RI(targetObj_BD18) {
@@ -23280,26 +23197,26 @@ function IM(var_core_value_sig2B59) {
       }
       ;
       function zI(targetObj_BD18) {
-        var v4145;
-        return targetObj_BD18 ? targetObj_BD18.element["type"] === ox2cbbb0.Connector || targetObj_BD18.element["type"] === ox2cbbb0.Text || targetObj_BD18.element["type"] === ox2cbbb0.Shape && ((v4145 = Ku(targetObj_BD18.element)) == null ? undefined : v4145.isTextBox) === true : false;
+        var targetObj220;
+        return targetObj_BD18 ? targetObj_BD18.element["type"] === ox2cbbb0.Connector || targetObj_BD18.element["type"] === ox2cbbb0.Text || targetObj_BD18.element["type"] === ox2cbbb0.Shape && ((targetObj220 = Ku(targetObj_BD18.element)) == null ? undefined : targetObj220.isTextBox) === true : false;
       }
       ;
       function BI(targetObj_BD18) {
-        var v4141, v4142;
+        var targetObj222, targetObj223;
         if (targetObj_BD18.elementData["element"].type !== ox2cbbb0.Shape && targetObj_BD18.elementData['element'].type !== ox2cbbb0.Text || !Number.isFinite(targetObj_BD18.width) || !Number.isFinite(targetObj_BD18.height) || targetObj_BD18.width <= 0 || targetObj_BD18.height <= 0) return false;
-        let v4143 = GI((v4141 = targetObj_BD18.renderManagerService["getRenderUnitById"](targetObj_BD18.unitId)) == null ? undefined : v4141.scene, targetObj_BD18.unitId, targetObj_BD18.elementData["elementId"]);
-        return !v4143 || typeof v4143.transformByState != 'function' ? false : (v4143.transformByState({
+        let targetObj224 = GI((targetObj222 = targetObj_BD18.renderManagerService["getRenderUnitById"](targetObj_BD18.unitId)) == null ? undefined : targetObj222.scene, targetObj_BD18.unitId, targetObj_BD18.elementData["elementId"]);
+        return !targetObj224 || typeof targetObj224.transformByState != 'function' ? false : (targetObj224.transformByState({
           'width': targetObj_BD18.width,
           'height': targetObj_BD18.height
-        }), (v4142 = v4143.makeDirtyNoDebounce) == null || v4142.call(v4143, true), true);
+        }), (targetObj223 = targetObj224.makeDirtyNoDebounce) == null || targetObj223.call(targetObj224, true), true);
       }
       ;
       function VI(targetObj_BD18, var_core_value_sig2240) {
-        var v4137;
+        var targetObj228;
         if ((targetObj_BD18 == null ? undefined : targetObj_BD18.element['type']) !== ox2cbbb0.Connector) return;
         let itemsList40 = ox2a06b0(targetObj_BD18.element["connectorData"]),
-          v4139 = itemsList40.find(targetObj_BD18 => targetObj_BD18.id === var_core_value_sig2240) ?? itemsList40[0];
-        return (v4139 == null || (v4137 = v4139.layout) == null ? undefined : v4137.mode) === ox134fee.FixedSize ? {
+          targetObj229 = itemsList40.find(targetObj_BD18 => targetObj_BD18.id === var_core_value_sig2240) ?? itemsList40[0];
+        return (targetObj229 == null || (targetObj228 = targetObj229.layout) == null ? undefined : targetObj228.mode) === ox134fee.FixedSize ? {
           'overflow': 'hidden'
         } : undefined;
       }
@@ -23313,16 +23230,16 @@ function IM(var_core_value_sig2B59) {
       function UI(var_core_value_sig1B69) {
         var targetObj_BD18;
         let {
-            elementData: v4128,
+            elementData: targetObj232,
             labelId: var_core_value_sig0009,
-            renderManagerService: v4130
+            renderManagerService: targetObj233
           } = var_core_value_sig1B69,
-          options49 = GI((targetObj_BD18 = v4130.getRenderUnitById(v4128.unitId)) == null ? undefined : targetObj_BD18.scene, v4128.unitId, v4128.elementId);
-        return v4128.element["type"] === ox2cbbb0.Connector ? {
-          'getShapeTextData': () => YI(v4128.element, var_core_value_sig0009),
+          options49 = GI((targetObj_BD18 = targetObj233.getRenderUnitById(targetObj232.unitId)) == null ? undefined : targetObj_BD18.scene, targetObj232.unitId, targetObj232.elementId);
+        return targetObj232.element["type"] === ox2cbbb0.Connector ? {
+          'getShapeTextData': () => YI(targetObj232.element, var_core_value_sig0009),
           'getShapeTextRect': WI
         } : {
-          'getShapeTextData': () => QI(v4128),
+          'getShapeTextData': () => QI(targetObj232),
           'getShapeTextRect': targetObj_BD18 => options49 instanceof Ph ? ox4fad1f(options49.getTextRect(targetObj_BD18.width, targetObj_BD18.height), targetObj_BD18) : {
             'left': 0,
             'top': 0,
@@ -23342,10 +23259,10 @@ function IM(var_core_value_sig2B59) {
       }
       ;
       function GI(var_core_value_sig084C, var_core_value_sig9C10, var_core_value_sig1717) {
-        var targetObj_BD18, v4121;
+        var targetObj_BD18, targetObj236;
         let var_core_value_sig05D1 = J(var_core_value_sig9C10, var_core_value_sig1717),
-          v4123 = var_core_value_sig084C;
-        return (v4123 == null || (targetObj_BD18 = v4123.getObjectIncludeInGroup) == null ? undefined : targetObj_BD18.call(v4123, var_core_value_sig05D1)) ?? (v4123 == null || (v4121 = v4123.getObject) == null ? undefined : v4121.call(v4123, var_core_value_sig05D1));
+          targetObj237 = var_core_value_sig084C;
+        return (targetObj237 == null || (targetObj_BD18 = targetObj237.getObjectIncludeInGroup) == null ? undefined : targetObj_BD18.call(targetObj237, var_core_value_sig05D1)) ?? (targetObj237 == null || (targetObj236 = targetObj237.getObject) == null ? undefined : targetObj236.call(targetObj237, var_core_value_sig05D1));
       }
       ;
       function KI(var_core_value_sig7694, var_core_value_sigEB2D) {
@@ -23360,38 +23277,38 @@ function IM(var_core_value_sig2B59) {
       ;
       function JI(targetObj_BD18, var_core_value_sig7B76, var_core_value_sigA674) {
         if (targetObj_BD18.element["type"] !== ox2cbbb0.Connector) return null;
-        let v4107 = targetObj_BD18.element,
-          itemsList42 = ox2a06b0(v4107.connectorData),
+        let targetObj240 = targetObj_BD18.element,
+          itemsList42 = ox2a06b0(targetObj240.connectorData),
           var_core_value_sigCF7F = itemsList42.find(targetObj_BD18 => targetObj_BD18.id === var_core_value_sigA674) ?? itemsList42[0];
         if (!var_core_value_sigCF7F) return null;
-        let v4110 = Rp(v4107.connectorData, {
-          'connectorId': v4107.id,
+        let targetObj241 = Rp(targetObj240.connectorData, {
+          'connectorId': targetObj240.id,
           'elementData': var_core_value_sig7B76 ?? {
             [targetObj_BD18.elementId]: targetObj_BD18
           }
         });
-        return v4110.length < 2 ? null : Gp(v4110, var_core_value_sigCF7F);
+        return targetObj241.length < 2 ? null : Gp(targetObj241, var_core_value_sigCF7F);
       }
       ;
       function YI(targetObj_BD18, var_core_value_sig886D) {
-        var v4095;
+        var targetObj244;
         let itemsList44 = ox2a06b0(targetObj_BD18.connectorData),
-          v4097 = itemsList44.find(targetObj_BD18 => targetObj_BD18.id === var_core_value_sig886D) ?? itemsList44[0],
-          var_core_value_sig2C6B = ox2f33fb(v4097),
-          var_core_value_sigC969 = (v4097 == null || (v4095 = v4097.layout) == null ? undefined : v4095.mode) ?? ox134fee.AutoSize,
+          targetObj245 = itemsList44.find(targetObj_BD18 => targetObj_BD18.id === var_core_value_sig886D) ?? itemsList44[0],
+          var_core_value_sig2C6B = ox2f33fb(targetObj245),
+          var_core_value_sigC969 = (targetObj245 == null || (targetObj244 = targetObj245.layout) == null ? undefined : targetObj244.mode) ?? ox134fee.AutoSize,
           var_core_value_sigF87E = var_core_value_sigC969 === ox134fee.AutoSize ? ox31df99.None : ox31df99.Square,
           var_core_value_sigDA9F = var_core_value_sigC969 === ox134fee.FixedSize ? oxaba2c7.NoAutoFit : oxaba2c7.SpAutoFit;
         if (var_core_value_sig2C6B) return {
           'isHorizontal': true,
           'textWrap': var_core_value_sigF87E,
           'autoFitType': var_core_value_sigDA9F,
-          'text': ox34c39b(v4097),
+          'text': ox34c39b(targetObj245),
           'dataModel': {
-            'ha': Up(v4097),
+            'ha': Up(targetObj245),
             'doc': Nm(Sg, var_core_value_sig2C6B)
           }
         };
-        let var_core_value_sigFCA4 = ox34c39b(v4097);
+        let var_core_value_sigFCA4 = ox34c39b(targetObj245);
         return {
           'isHorizontal': true,
           'textWrap': var_core_value_sigF87E,
@@ -23410,11 +23327,11 @@ function IM(var_core_value_sig2B59) {
       ;
       function XI(targetObj_BD18, var_core_value_sigAF9F, var_core_value_sig6DAA) {
         if (targetObj_BD18.element["type"] !== ox2cbbb0.Connector) return null;
-        let v4089 = targetObj_BD18.element,
-          itemsList46 = ox2a06b0(v4089.connectorData),
+        let targetObj248 = targetObj_BD18.element,
+          itemsList46 = ox2a06b0(targetObj248.connectorData),
           var_core_value_sigE90C = itemsList46.find(targetObj_BD18 => targetObj_BD18.id === var_core_value_sig6DAA) ?? itemsList46[0];
-        return var_core_value_sigE90C ? Zp(Rp(v4089.connectorData, {
-          'connectorId': v4089.id,
+        return var_core_value_sigE90C ? Zp(Rp(targetObj248.connectorData, {
+          'connectorId': targetObj248.id,
           'elementData': var_core_value_sigAF9F ?? {
             [targetObj_BD18.elementId]: targetObj_BD18
           }
@@ -23422,37 +23339,37 @@ function IM(var_core_value_sig2B59) {
       }
       ;
       function ZI(targetObj_BD18, var_core_value_sig544C, var_core_value_sig866C, var_core_value_sigA82B) {
-        let v4084 = targetObj_BD18.getEditing();
-        return (v4084 == null ? undefined : v4084.unitId) === var_core_value_sig544C && v4084.subUnitId === var_core_value_sig866C && v4084.shapeId === var_core_value_sigA82B ? v4084.labelId : undefined;
+        let targetObj250 = targetObj_BD18.getEditing();
+        return (targetObj250 == null ? undefined : targetObj250.unitId) === var_core_value_sig544C && targetObj250.subUnitId === var_core_value_sig866C && targetObj250.shapeId === var_core_value_sigA82B ? targetObj250.labelId : undefined;
       }
       ;
       function QI(targetObj_BD18) {
-        let v4073 = Ku(targetObj_BD18.element),
-          var_core_value_sigB870 = v4073 == null ? undefined : v4073.shapeText,
+        let targetObj252 = Ku(targetObj_BD18.element),
+          var_core_value_sigB870 = targetObj252 == null ? undefined : targetObj252.shapeText,
           var_core_value_sigF8CA = ox2573a1(var_core_value_sigB870),
-          v4076 = var_core_value_sigB870,
-          v4077 = ox3d291a(var_core_value_sigB870 == null ? undefined : var_core_value_sigB870.dataModel);
-        if (v4077 != null && v4077.doc) return {
+          targetObj253 = var_core_value_sigB870,
+          targetObj254 = ox3d291a(var_core_value_sigB870 == null ? undefined : var_core_value_sigB870.dataModel);
+        if (targetObj254 != null && targetObj254.doc) return {
           ...var_core_value_sigF8CA,
           'dataModel': {
-            ...v4077,
-            'doc': Nm(Sg, v4077.doc)
+            ...targetObj254,
+            'doc': Nm(Sg, targetObj254.doc)
           }
         };
-        let strVal32 = (v4076 == null ? undefined : v4076.text) ?? '',
-          v4079 = {
+        let strVal32 = (targetObj253 == null ? undefined : targetObj253.text) ?? '',
+          targetObj255 = {
             'ha': ox50a62e.LEFT,
             'va': ox4e364d.TOP,
             'doc': Mm(strVal32, {
               'id': Sg,
-              'textStyle': ox2e1a79(v4076)
+              'textStyle': ox2e1a79(targetObj253)
             })
           };
         return {
           ...var_core_value_sigF8CA,
-          'isHorizontal': (v4076 == null ? undefined : v4076.isHorizontal) !== false,
+          'isHorizontal': (targetObj253 == null ? undefined : targetObj253.isHorizontal) !== false,
           'text': strVal32,
-          'dataModel': v4079
+          'dataModel': targetObj255
         };
       }
       var $I;
@@ -23525,7 +23442,6 @@ function IM(var_core_value_sig2B59) {
         }
       };
       W(rL, "pluginName", "UNIVER_BOARDS_UI_PLUGIN"), W(rL, "packageName", uS), W(rL, "version", dS), W(rL, 'type', ox2dc2f2.UNIVER_BOARD), W(rL, "_runtimeScopedDependencies", new WeakMap()), rL = $I = X([ox10698e(ox33ffb5, ox20e264, ox49a592, ox409e44, ox16fe3e, ox18a893, ox4c5f4a, ox5113e9, ox59d938), Y(1, ox1cd84c(ox287a17)), Y(2, ox99b022), Y(3, oxfa782), Y(4, ox2a9b92), Y(5, ox4a86da), Y(6, ox32c6cb)], rL);
-      
     })
   };
 }
