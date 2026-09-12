@@ -226,6 +226,10 @@ function combChangesetEventId(root: Record<string, unknown>): string | undefined
   return undefined;
 }
 
+function isCombChangesetEventId(eventID: string | undefined): boolean {
+  return eventID === "new_changesets" || eventID === "changeset_ack";
+}
+
 function combChangesetRecord(
   root: Record<string, unknown>
 ): Record<string, unknown> | null {
@@ -235,11 +239,17 @@ function combChangesetRecord(
     asRecord(collaMsg?.newCsEvent) ??
     asRecord(root.newCsEvent) ??
     asRecord(data?.newCsEvent);
+  const ackCs =
+    asRecord(collaMsg?.csAckEvent) ??
+    asRecord(root.csAckEvent) ??
+    asRecord(data?.csAckEvent);
   return (
     asRecord(newCs?.cs) ??
+    asRecord(ackCs?.cs) ??
     asRecord(root.cs) ??
     asRecord(data?.cs) ??
-    newCs
+    newCs ??
+    ackCs
   );
 }
 
@@ -250,8 +260,12 @@ export function readCombChangesetActor(event: {
   const root = asRecord(event.detail) ?? asRecord(event);
   if (!root) return null;
   const eventID = combChangesetEventId(root);
-  if (eventID && eventID !== "new_changesets") return null;
-  if (event.type && event.type !== COMB_CHANGESET_EVENT && eventID !== "new_changesets") {
+  if (eventID && !isCombChangesetEventId(eventID)) return null;
+  if (
+    event.type &&
+    event.type !== COMB_CHANGESET_EVENT &&
+    !isCombChangesetEventId(eventID)
+  ) {
     return null;
   }
   const cs = combChangesetRecord(root);

@@ -23,6 +23,7 @@ import {
   readAgentPanelOpen,
   readJsonBody,
   shouldPostAgentTurn,
+  tapCollaborationSocketChangeset,
   shouldShowLiveAgentTurn,
   suggestionChipsForUnitType,
   truncateGatewayLogId,
@@ -527,6 +528,72 @@ describe("Undo last Workspace Agent turn", () => {
       "utf8"
     );
     expect(socket).toMatch(/tapCollaborationSocketChangeset/);
+  });
+
+  it("disables Undo when local Comb changeset_ack is the last actor", () => {
+    const ackColla = {
+      type: COMB_CHANGESET_EVENT,
+      detail: {
+        collaMsg: {
+          eventID: "changeset_ack",
+          csAckEvent: { cs: { memberID: "user_jordan" } },
+        },
+      },
+    };
+    expect(readCombChangesetActor(ackColla)).toBe("user_jordan");
+    expect(canUndoAgentTurn(readCombChangesetActor(ackColla))).toBe(false);
+
+    const ackRoot = {
+      type: COMB_CHANGESET_EVENT,
+      detail: {
+        eventID: "changeset_ack",
+        csAckEvent: { cs: { memberID: "user_admin" } },
+      },
+    };
+    expect(readCombChangesetActor(ackRoot)).toBe("user_admin");
+    expect(canUndoAgentTurn(readCombChangesetActor(ackRoot))).toBe(false);
+
+    let emit: ((event: unknown) => void) | undefined;
+    const received: unknown[] = [];
+    const bus = new EventTarget();
+    bus.addEventListener(COMB_CHANGESET_EVENT, (event) => {
+      received.push((event as CustomEvent).detail);
+    });
+    tapCollaborationSocketChangeset(
+      {
+        message$: {
+          subscribe(next: (event: unknown) => void) {
+            emit = next;
+            return { unsubscribe() {} };
+          },
+        },
+      },
+      bus
+    );
+    emit?.({
+      collaMsg: {
+        eventID: "changeset_ack",
+        csAckEvent: { cs: { memberID: "user_jordan" } },
+      },
+    });
+    expect(received).toHaveLength(1);
+    expect(
+      readCombChangesetActor({
+        type: COMB_CHANGESET_EVENT,
+        detail: received[0],
+      })
+    ).toBe("user_jordan");
+    expect(
+      canUndoAgentTurn(
+        readCombChangesetActor({
+          type: COMB_CHANGESET_EVENT,
+          detail: received[0],
+        })
+      )
+    ).toBe(false);
+    const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
+    expect(src).toMatch(/readCombChangesetActor/);
+    expect(src).toMatch(/setLastReversible\(false\)/);
   });
 
   it("wires panel Undo to reverseLast with undoAgentTurn copy", () => {
