@@ -569,7 +569,8 @@ export class DshHost extends HostBase<any> {
         db,
         currentUser: session.currentUser,
         collab,
-        browser: (this.env as { BROWSER?: { fetch?: typeof fetch } }).BROWSER
+        browser: (this.env as { BROWSER?: { fetch?: typeof fetch } }).BROWSER,
+        loader: (this.env as { LOADER?: import("../integrations/univer-file-execute.ts").LoaderBinding }).LOADER
       });
       if (fileRes) return fileRes;
     }

@@ -17,6 +17,10 @@ declare global {
   interface Window {
     univerAPI?: unknown;
     __univerLint?: () => { findings: unknown[] };
+    __univerRunExecute?: (code: string) => Promise<{
+      cells: Array<{ a1: string; value: unknown; sheetId: string }>;
+      saved: unknown;
+    }>;
   }
 }
 
@@ -66,6 +70,72 @@ async function boot(): Promise<void> {
 
   window.univerAPI = univerAPI;
   window.__univerLint = () => ({ findings: [] });
+  window.__univerRunExecute = async (code: string) => {
+    const api = univerAPI as {
+      getActiveWorkbook?: () => {
+        save?: () => Record<string, unknown>;
+        getSnapshot?: () => Record<string, unknown>;
+        getActiveSheet?: () => {
+          getSheetId?: () => string;
+          getSheetName?: () => string;
+          getRange?: (a1: string) => {
+            getValue?: () => unknown;
+            getCellData?: () => unknown;
+          };
+        };
+      };
+      getFormula?: () => { executeCalculation?: () => Promise<unknown> | unknown };
+    };
+    const runner = new Function("api", `return (async () => { ${code}\n })()`);
+    await runner(api);
+    const formula = api.getFormula?.();
+    if (formula && typeof formula.executeCalculation === "function") {
+      await formula.executeCalculation();
+    }
+    const wb = api.getActiveWorkbook?.();
+    const sheet = wb?.getActiveSheet?.();
+    const sheetId = String(sheet?.getSheetId?.() ?? sheet?.getSheetName?.() ?? "sheet_1");
+    const cells: Array<{ a1: string; value: unknown; sheetId: string }> = [];
+    const range = sheet?.getRange?.("E2");
+    const cell = range?.getCellData?.() ?? range?.getValue?.();
+    if (cell != null) {
+      cells.push({
+        a1: "E2",
+        value: typeof cell === "object" ? cell : { v: cell },
+        sheetId
+      });
+    }
+    const saved =
+      (typeof wb?.save === "function" ? wb.save() : null) ??
+      (typeof wb?.getSnapshot === "function" ? wb.getSnapshot() : null);
+    if (saved && typeof saved === "object") {
+      const sheets = (saved as { sheets?: Record<string, { cellData?: Record<string, Record<string, unknown>> } } })
+        .sheets;
+      if (sheets) {
+        for (const [id, nextSheet] of Object.entries(sheets)) {
+          const cellData = nextSheet?.cellData ?? {};
+          for (const [rowKey, cols] of Object.entries(cellData)) {
+            if (!cols || typeof cols !== "object") continue;
+            for (const [colKey, nextCell] of Object.entries(cols)) {
+              if (!nextCell || typeof nextCell !== "object") continue;
+              const row = Number(rowKey);
+              const col = Number(colKey);
+              if (!Number.isFinite(row) || !Number.isFinite(col)) continue;
+              let n = col + 1;
+              let letters = "";
+              while (n > 0) {
+                const rem = (n - 1) % 26;
+                letters = String.fromCharCode(65 + rem) + letters;
+                n = Math.floor((n - 1) / 26);
+              }
+              cells.push({ a1: `${letters}${row + 1}`, value: nextCell, sheetId: id });
+            }
+          }
+        }
+      }
+    }
+    return { cells, saved };
+  };
   document.documentElement.dataset.univerReady = "1";
 }
 

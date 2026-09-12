@@ -14,6 +14,13 @@ import {
   renderPageUrl,
   type BrowserBinding
 } from "./browser-rendering.ts";
+import {
+  executeMemberId,
+  facadeUnboundResponse,
+  isFacadeRuntimeBound,
+  runFacadeAndPersist,
+  type LoaderBinding
+} from "./univer-file-execute.ts";
 
 export const DEMO_UNIVER_FILE = "workspace.univer";
 export const DEMO_UNIT_ID = "unit_welcome_sheet";
@@ -25,6 +32,12 @@ export interface UniverFileCollab {
     unitId: string
   ): { unit_id: string; trunk_unit_id: string | null } | null;
   listWorktreeBindings(worktreeId: string): Array<{ unit_id: string; trunk_unit_id: string | null }>;
+  saveSnapshot(unitId: string, rev: number, data: Record<string, unknown>): void;
+  applyChangeset(
+    payload: Record<string, unknown>,
+    clientId?: string,
+    userID?: string
+  ): Promise<unknown> | unknown;
 }
 
 export interface UniverFileHttpHost {
@@ -32,6 +45,7 @@ export interface UniverFileHttpHost {
   currentUser: User | null;
   collab?: UniverFileCollab;
   browser?: BrowserBinding;
+  loader?: LoaderBinding;
 }
 
 /** Encode a file path as base64url for `/uf/:key` URLs. */
@@ -91,6 +105,11 @@ export async function handleUniverFileHttp(
     return listFileUnits(host, filePath, spaceId);
   }
 
+  const executeWorktree = rest.match(/^worktrees\/([^/]+)\/units\/([^/]+)\/execute$/);
+  if (executeWorktree && method === "POST") {
+    return executeFileUnit(request, host, filePath, spaceId, executeWorktree[2], executeWorktree[1]);
+  }
+
   if (rest === "worktrees" || rest.startsWith("worktrees/")) {
     return aliasWorktreeRoutes(request, host, rest, spaceId);
   }
@@ -98,6 +117,11 @@ export async function handleUniverFileHttp(
   const inspectMatch = rest.match(/^units\/([^/]+)\/inspect$/);
   if (inspectMatch && method === "GET") {
     return inspectFileUnit(request, host, filePath, spaceId, inspectMatch[1]);
+  }
+
+  const executeTrunk = rest.match(/^units\/([^/]+)\/execute$/);
+  if (executeTrunk && method === "POST") {
+    return executeFileUnit(request, host, filePath, spaceId, executeTrunk[1], "");
   }
 
   if (rest === "screenshot" && method === "POST") {
@@ -279,6 +303,56 @@ async function inspectFileUnit(
   }
 
   return jsonFile(inspectPayload(rangeParam, cells));
+}
+
+async function executeFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string,
+  unitId: string,
+  worktreeId: string
+): Promise<Response> {
+  if (!isFacadeRuntimeBound(host.browser, host.loader)) {
+    return facadeUnboundResponse();
+  }
+
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const code = typeof body.code === "string" ? body.code : "";
+  if (!code.trim()) {
+    return jsonFile({ error: { message: "code is required" } }, 400);
+  }
+  if (worktreeId && !(await canReviewFileWorktree(host, worktreeId, spaceId))) {
+    return jsonFile({ error: { message: "Worktree not found" } }, 404);
+  }
+  if (!(await canInspectUnit(host, filePath, spaceId, unitId, worktreeId))) {
+    return jsonFile({ error: { message: "Unit not found" } }, 404);
+  }
+  if (!host.collab) {
+    return jsonFile({ error: { message: "Collab service unavailable" } }, 503);
+  }
+
+  const snapshotUnitId = resolveSnapshotUnitId(host.collab, unitId, worktreeId);
+  try {
+    const persisted = await runFacadeAndPersist({
+      request,
+      browser: host.browser,
+      loader: host.loader,
+      collab: host.collab,
+      unitId,
+      snapshotUnitId,
+      worktreeId,
+      code,
+      memberId: executeMemberId(request, host.currentUser!.id)
+    });
+    return jsonFile({ success: true, unitId, worktreeId: worktreeId || undefined, rev: persisted.rev });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "Execute failed";
+    if (message === "Snapshot not found") {
+      return jsonFile({ error: { message } }, 404);
+    }
+    return jsonFile({ error: { message } }, 502);
+  }
 }
 
 async function screenshotFileUnit(

@@ -302,6 +302,24 @@ export async function lintRenderPage(
   }
 }
 
+export async function evaluateOnRenderPage(
+  browser: BrowserBinding,
+  pageUrl: string,
+  expression: string
+): Promise<unknown> {
+  const page = await openRenderPage(browser, pageUrl);
+  try {
+    const evaluated = await page.cdp.send(
+      "Runtime.evaluate",
+      { expression, returnByValue: true, awaitPromise: true },
+      { sessionId: page.pageSessionId }
+    );
+    return cdpValue(evaluated);
+  } finally {
+    await page.close();
+  }
+}
+
 function screenshotClip(params?: Record<string, unknown>): Record<string, unknown> | undefined {
   const clip = params?.clip;
   if (!clip || typeof clip !== "object") return undefined;
