@@ -178,6 +178,64 @@ describe("Univer File /uf gateway skeleton", () => {
     assert.equal(ready.status, 200);
   });
 
+  test("authenticated user cannot GET another worktree's units via /uf/:key/worktrees/:otherId/units", async () => {
+    const seeded = await seededHost(null);
+    const admin = await seeded.db.getUserById("user_admin");
+    const jordan = await seeded.db.getUserById("user_jordan");
+    assert.ok(admin);
+    assert.ok(jordan);
+    const adminHost = { db: seeded.db, currentUser: admin };
+    const jordanHost = { db: seeded.db, currentUser: jordan };
+    const adminKey = fileKeyOf(DEMO_FILE);
+    const jordanKey = fileKeyOf("jordan.univer");
+
+    const adminPosted = await handleUniverFileHttp(new Request(ufUrl(adminKey), { method: "POST" }), adminHost);
+    assert.equal(adminPosted?.status, 200);
+
+    const created = await handleUniverFileHttp(
+      new Request(ufUrl(adminKey, "/worktrees"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: "Secret draft" })
+      }),
+      adminHost
+    );
+    assert.ok(created);
+    assert.ok(created.status === 200 || created.status === 201);
+    const createdWt = (await created.json()) as { id?: string; worktree?: { id?: string } };
+    const worktreeId = createdWt.worktree?.id || createdWt.id;
+    assert.ok(worktreeId);
+
+    const jordanPosted = await handleUniverFileHttp(
+      new Request(ufUrl(jordanKey), { method: "POST" }),
+      jordanHost
+    );
+    assert.equal(jordanPosted?.status, 200);
+
+    const leaked = await handleUniverFileHttp(
+      new Request(ufUrl(jordanKey, `/worktrees/${worktreeId}/units`)),
+      jordanHost
+    );
+    assert.ok(leaked);
+    assert.ok(
+      leaked.status === 403 || leaked.status === 404,
+      `expected 403 or 404 like product GET /api/worktrees/:id, got ${leaked.status}`
+    );
+    const leakedBody = (await leaked.json()) as {
+      units?: unknown[];
+      worktree?: { units?: unknown[] };
+    };
+    const leakedUnits = leakedBody.units ?? leakedBody.worktree?.units ?? [];
+    assert.equal(leakedUnits.length, 0);
+
+    const own = await handleUniverFileHttp(
+      new Request(ufUrl(adminKey, `/worktrees/${worktreeId}/units`)),
+      adminHost
+    );
+    assert.ok(own);
+    assert.equal(own.status, 200);
+  });
+
   test("Worker 401s unauthenticated POST /uf and never serves SPA assets", async () => {
     const { default: worker } = await import("../src/server.ts");
     const env = createForwardEnv();

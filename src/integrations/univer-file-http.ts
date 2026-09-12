@@ -142,14 +142,7 @@ async function aliasWorktreeRoutes(
   const method = request.method.toUpperCase();
   const unitsMatch = rest.match(/^worktrees\/([^/]+)\/units$/);
   if (unitsMatch && method === "GET") {
-    const rows = await host.db.listWorktreeUnits(unitsMatch[1]);
-    return jsonFile({
-      units: rows.map((row) => ({
-        id: row.unit_id,
-        name: row.name,
-        type: unitTypeNumber(row.unit_type)
-      }))
-    });
+    return listScopedWorktreeUnits(host, unitsMatch[1], spaceId);
   }
 
   let productPath = `/api/${rest.replace(/\/units\/([^/]+)\/remove$/, "/units/$1/removal")}`;
@@ -182,6 +175,30 @@ async function aliasWorktreeRoutes(
     res ??
     jsonFile({ error: { message: `Not found: ${method} ${new URL(request.url).pathname}` } }, 404)
   );
+}
+
+async function listScopedWorktreeUnits(
+  host: UniverFileHttpHost,
+  worktreeId: string,
+  spaceId: string
+): Promise<Response> {
+  const wt = await host.db.getWorktree(worktreeId);
+  const user = host.currentUser;
+  const canReview =
+    !!wt &&
+    !!user &&
+    (wt.creator_user_id === user.id || (wt.kind === "team" && wt.visibility === "space"));
+  if (!wt || !canReview || wt.team_space_id !== spaceId) {
+    return jsonFile({ error: { message: "Worktree not found" } }, 404);
+  }
+  const rows = await host.db.listWorktreeUnits(worktreeId);
+  return jsonFile({
+    units: rows.map((row) => ({
+      id: row.unit_id,
+      name: row.name,
+      type: unitTypeNumber(row.unit_type)
+    }))
+  });
 }
 
 function mapWorktreeBody(
