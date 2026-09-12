@@ -1,0 +1,1 @@
+import{RangePreprocessController as v2}from"@univerjs-pro/range-preprocess";import{FWorkbook as v3}from"@univerjs/sheets/facade";var n=class extends v3{getPreprocessRanges(v1){return this._injector["get"](v2).getAllTableJson(this._workbook,v1);}};v3.extend(n);export{};

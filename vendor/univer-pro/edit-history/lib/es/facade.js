@@ -1,1 +1,1 @@
-import{UnitComparisonService as v7}from"@univerjs-pro/edit-history";import{FUniver as v8}from"@univerjs/core/facade";var n=class{constructor(v1,v2){this._service=v1,this._prepared=v2;}query(v3){return this._service["query"](this._prepared,v3);}},r=class extends v8{compareUnitData(v4){return this._injector["get"](v7).compare(v4);}prepareUnitComparison(v5){let v6=this._injector["get"](v7);return new n(v6,v6.prepare(v5));}};v8.extend(r);export{n as FUnitComparison};
+export { FUnitComparison } from "./facade-edit-history-funit-comparison.js";
