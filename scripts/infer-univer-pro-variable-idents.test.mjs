@@ -4,8 +4,10 @@ import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import {
+  functionBodyStatementSlices,
   inferMeaningfulIdents,
-  splitHugeModule
+  splitHugeModule,
+  uniqueifyCollidingInferredNames
 } from "./infer-univer-pro-variable-idents.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -103,4 +105,65 @@ test("splitter adds import bridges when a later chunk references an earlier bind
   if (later.rel !== helperChunk.rel) {
     assert.match(later.code, /import\s*\{[^}]*helper[^}]*\}\s*from\s*['"]\.\//);
   }
+});
+
+test("unique-ifies Bloom-colliding inferred function names instead of emitting duplicates", () => {
+  const fns = Array.from({ length: 52 }, (_, i) => `function v${2000 + i}(){ return ${i}; }`).join("\n");
+  const original = `${fns}\nexport { host as publicApi };\n`;
+  const { src, aborted, changed } = inferMeaningfulIdents(original, {
+    filePath: "vendor/univer-pro/boards-ui/lib/es/index.js"
+  });
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  const names = [...src.matchAll(/function\s+(fn_[A-Za-z0-9_]+)/g)].map((m) => m[1]);
+  assert.ok(names.length >= 52, `expected >=52 inferred functions, got ${names.length}`);
+  assert.equal(new Set(names).size, names.length, "Bloom collisions must unique-ify");
+  assert.doesNotMatch(src, /function\s+v20\d+\b/);
+});
+
+test("unique-ifies already-emitted colliding inferred names so leftover bindings can parse", () => {
+  const dup = "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F";
+  const original =
+    `function ${dup}(){ return 1; }\n` +
+    `function ${dup}(){ return 2; }\n` +
+    `function v3654(){ return 3; }\n` +
+    "export { host as publicApi };\n";
+  const unique = uniqueifyCollidingInferredNames(original);
+  assert.match(unique.src, new RegExp(`function\\s+${dup}\\(`));
+  assert.notEqual(unique.src, original);
+  const { src, aborted, changed } = inferMeaningfulIdents(original, {
+    filePath: "vendor/univer-pro/boards-ui/lib/es/index.js"
+  });
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.doesNotMatch(src, /function\s+v3654\b/);
+  const names = [...src.matchAll(/function\s+(fn_[A-Za-z0-9_]+)/g)].map((m) => m[1]);
+  assert.equal(new Set(names).size, names.length);
+});
+
+test("unique-ify does not rewrite colliding names inside string literals", () => {
+  const dup = "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD23F";
+  const original =
+    `function ${dup}(){ return 1; }\n` +
+    `function ${dup}(){ return "${dup}"; }\n` +
+    "export { host as publicApi };\n";
+  const { src } = uniqueifyCollidingInferredNames(original);
+  assert.match(src, new RegExp(`"${dup}"`));
+  const decls = [...src.matchAll(/function\s+(fn_[A-Za-z0-9_]+)\s*\(/g)].map((m) => m[1]);
+  assert.equal(decls.length, 2);
+  assert.equal(new Set(decls).size, 2);
+});
+
+test("loc-slices inner statements of a function when they have locations", () => {
+  const src =
+    "function IM(v1){\n" +
+    "  let v2 = 1;\n" +
+    "  function v3(v4){ return v2 + v4; }\n" +
+    "  return v3(v1);\n" +
+    "}\n";
+  const slices = functionBodyStatementSlices(src, "IM.js");
+  assert.ok(slices && slices.length >= 3, "function body must expose inner statement locs");
+  assert.ok(slices.every((s) => Number.isInteger(s.start) && s.end > s.start));
+  assert.match(slices.map((s) => s.code).join(""), /let v2/);
+  assert.match(slices.map((s) => s.code).join(""), /function v3/);
 });

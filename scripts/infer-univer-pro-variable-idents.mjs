@@ -74,6 +74,9 @@ const { computeTypeBloomSignature } = astReq("./scripts/L0_core/ast-bloom.codec.
 const { splitHugeModuleLst } = await import(
   pathToFileURL(path.join(AST_REFACTOR, "scripts/L2_services/lst-split.service.mjs")).href
 );
+const { LosslessFusionParser } = await import(
+  pathToFileURL(path.join(AST_REFACTOR, "packages/lst/src/parser/LosslessFusionParser.js")).href
+);
 function synthesizeChunkBridges(body, exported) {
   if (!exported.length) return body.endsWith("\n") ? body : `${body}\n`;
   const footer = `\nexport { ${exported.join(", ")} };\n`;
@@ -246,13 +249,156 @@ function uniqueIdent(scope, wanted, used) {
   ) {
     n += 1;
     name = `${wanted}${n}`;
-    if (n > 50) {
-      name = `${wanted}_${computeTypeBloomSignature([], "*", wanted)}`;
-      break;
-    }
   }
   used.add(name);
   return name;
+}
+
+function skipStringOrComment(src, i) {
+  const c = src[i];
+  const n = src[i + 1];
+  if (c === "/" && n === "/") {
+    let j = i + 2;
+    while (j < src.length && src[j] !== "\n") j += 1;
+    return j;
+  }
+  if (c === "/" && n === "*") {
+    const j = src.indexOf("*/", i + 2);
+    return j < 0 ? src.length : j + 2;
+  }
+  if (c === "'" || c === '"' || c === "`") {
+    const q = c;
+    let j = i + 1;
+    while (j < src.length) {
+      if (src[j] === "\\") {
+        j += 2;
+        continue;
+      }
+      if (src[j] === q) return j + 1;
+      j += 1;
+    }
+    return src.length;
+  }
+  return i;
+}
+
+function isIdentStart(c) {
+  return c != null && /[A-Za-z_$]/.test(c);
+}
+
+function isIdentChar(c) {
+  return c != null && /[\w$]/.test(c);
+}
+
+function readIdentAt(src, i) {
+  if (!isIdentStart(src[i])) return null;
+  let j = i + 1;
+  while (isIdentChar(src[j])) j += 1;
+  return { name: src.slice(i, j), start: i, end: j };
+}
+
+/**
+ * Duplicate `function fn_…sigD23F` decls from loc-slice Bloom collisions
+ * make Babel throw before leftover vNNNN can infer. Rename 2nd+
+ * same-scope function names only (skip strings/comments).
+ */
+export function uniqueifyCollidingInferredNames(src) {
+  const used = new Set();
+  const jobs = [];
+  let i = 0;
+  let brace = 0;
+  let paren = 0;
+  while (i < src.length) {
+    const next = skipStringOrComment(src, i);
+    if (next !== i) {
+      i = next;
+      continue;
+    }
+    const c = src[i];
+    if (c === "{") {
+      brace += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "}") {
+      brace -= 1;
+      i += 1;
+      continue;
+    }
+    if (c === "(") {
+      paren += 1;
+      i += 1;
+      continue;
+    }
+    if (c === ")") {
+      paren -= 1;
+      i += 1;
+      continue;
+    }
+    if (
+      brace === 0 &&
+      paren <= 0 &&
+      src.startsWith("function", i) &&
+      !isIdentChar(src[i - 1]) &&
+      !isIdentChar(src[i + 8])
+    ) {
+      let j = i + 8;
+      while (src[j] === " " || src[j] === "\t" || src[j] === "\n" || src[j] === "\r") j += 1;
+      if (src[j] === "*") {
+        j += 1;
+        while (src[j] === " " || src[j] === "\t" || src[j] === "\n" || src[j] === "\r") j += 1;
+      }
+      const ident = readIdentAt(src, j);
+      if (ident) {
+        if (used.has(ident.name)) {
+          let n = 1;
+          let to;
+          do {
+            to = `${ident.name}_${n}`;
+            n += 1;
+          } while (used.has(to));
+          jobs.push({ start: ident.start, end: ident.end, to });
+          used.add(to);
+        } else {
+          used.add(ident.name);
+        }
+        i = ident.end;
+        continue;
+      }
+    }
+    i += 1;
+  }
+  if (jobs.length === 0) return { src, changed: false };
+  let out = src;
+  for (const job of jobs.sort((a, b) => b.start - a.start)) {
+    out = `${out.slice(0, job.start)}${job.to}${out.slice(job.end)}`;
+  }
+  return { src: out, changed: true, renamed: jobs.length };
+}
+
+export function functionBodyStatementSlices(src, hintPath = "fn.js") {
+  try {
+    const lst = LosslessFusionParser.parse(src, {
+      sourcePath: hintPath,
+      errorRecovery: true
+    });
+    const fn = (lst.statements || []).find((s) => s?.body && Array.isArray(s.body.statements));
+    if (!fn) return null;
+    const stmts = fn.body.statements.filter((s) => s.loc && Number.isInteger(s.loc.start));
+    if (stmts.length < 2) return null;
+    const slices = [];
+    for (let i = 0; i < stmts.length; i += 1) {
+      const start = stmts[i].loc.start;
+      const next = stmts[i + 1];
+      const rawEnd = next && next.loc && Number.isInteger(next.loc.start) ? next.loc.start : stmts[i].loc.end;
+      const end = Math.min(Math.max(start, rawEnd), src.length);
+      if (end <= start) continue;
+      slices.push({ start, end, code: src.slice(start, end) });
+    }
+    return slices.length >= 2 ? slices : null;
+  } catch {
+    return null;
+  }
 }
 
 function inferFromInit(init, t) {
@@ -372,6 +518,8 @@ export function inferMeaningfulIdents(src, options = {}) {
 }
 
 function runInferMeaningfulIdents(src, { filePath = "", skipImportAlias = false } = {}) {
+  const unique = uniqueifyCollidingInferredNames(src);
+  src = unique.src;
   const { traverse, generate, types: t } = loadBabel();
   let ast;
   try {
