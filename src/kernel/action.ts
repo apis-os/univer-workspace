@@ -11,12 +11,29 @@ declare module "@deepseek-ai/cordis" {
   }
 }
 
+export const AGENT_JOURNAL_ACTOR = "agent_workspace";
+
 export interface ActionMeta {
   userId?: string;
   clientId?: string;
   unitId?: string;
   worktreeId?: string;
 }
+
+export function journalActor(meta: ActionMeta | undefined): string {
+  const userId = meta?.userId?.trim() || "";
+  const clientId = meta?.clientId?.trim() || "";
+  if (userId === AGENT_JOURNAL_ACTOR || clientId === AGENT_JOURNAL_ACTOR) {
+    return AGENT_JOURNAL_ACTOR;
+  }
+  return userId || clientId;
+}
+
+const MUTATING_ACTION_IDS = new Set([
+  "univer.sheet.setRange",
+  "univer.doc.appendText",
+  "univer.execute"
+]);
 
 export interface ActionDefinition<TInput = any, TOutput = any> {
   id: string;
@@ -144,20 +161,36 @@ export class ActionService extends Service {
     return result;
   }
 
+  peekLast(): ActionExecutionJournalEntry | undefined {
+    return this.journal.at(-1);
+  }
+
   /**
-   * Reverses the most recent action or a specific journal entry.
+   * Reverses the most recent Workspace Agent action.
+   * Only reverse when the last journal actor is `agent_workspace`.
+   * Human last-write is a no-op (`false`). Non-reversible agent journal
+   * entries (reads) are skipped so a turn of getSnapshot/setRange/getRange
+   * still undoes the write.
    */
   async reverseLast(): Promise<boolean> {
-    const last = this.journal.pop();
-    if (!last) return false;
-
-    const action = this.actions.get(last.actionId);
-    if (!action || !action.reverse) {
-      throw new Error(`Action ${last.actionId} does not support reversal`);
+    while (this.journal.length > 0) {
+      const last = this.journal[this.journal.length - 1]!;
+      if (journalActor(last.meta) !== AGENT_JOURNAL_ACTOR) {
+        return false;
+      }
+      const action = this.actions.get(last.actionId);
+      if (!action?.reverse) {
+        if (MUTATING_ACTION_IDS.has(last.actionId)) {
+          return false;
+        }
+        this.journal.pop();
+        continue;
+      }
+      this.journal.pop();
+      await action.reverse(last.input, last.result, last.meta);
+      return true;
     }
-
-    await action.reverse(last.input, last.result, last.meta);
-    return true;
+    return false;
   }
 }
 

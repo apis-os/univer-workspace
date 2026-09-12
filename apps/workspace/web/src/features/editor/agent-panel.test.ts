@@ -9,6 +9,7 @@ import {
   agentExamplePrompt,
   agentMuxUrl,
   agentScreenshotCard,
+  canUndoAgentTurn,
   consumeAgentTurnResponse,
   defaultAgentPanelOpen,
   explainSelectionFromRange,
@@ -475,5 +476,39 @@ describe("Explain selection panel wiring", () => {
       "utf8"
     );
     expect(editor).toMatch(/bindExplainSelectionHost/);
+  });
+});
+
+describe("Undo last Workspace Agent turn", () => {
+  it("enables Undo only when the last journal actor is agent_workspace", () => {
+    expect(canUndoAgentTurn("agent_workspace")).toBe(true);
+    expect(canUndoAgentTurn("user_admin")).toBe(false);
+    expect(canUndoAgentTurn("user_jordan")).toBe(false);
+    expect(canUndoAgentTurn(undefined)).toBe(false);
+    expect(canUndoAgentTurn("")).toBe(false);
+  });
+
+  it("wires panel Undo to reverseLast with undoAgentTurn copy", () => {
+    const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
+    expect(src).toMatch(/undoAgentTurn/);
+    expect(src).toMatch(/canUndoAgentTurn/);
+    expect(src).toMatch(/\/agents\/.*\/undo/);
+    expect(src).toMatch(/reverseLast|method:\s*"POST"/);
+    expect(src).toMatch(/disabled=\{[^}]*canUndo/);
+    const i18n = readFileSync(join(webSrc, "shared/i18n.tsx"), "utf8");
+    const en = i18n.match(
+      /"en-US":\s*\{[\s\S]*?undoAgentTurn:\s*"([^"]+)"/
+    )?.[1];
+    const zh = i18n.match(
+      /"zh-CN":\s*\{[\s\S]*?undoAgentTurn:\s*"([^"]+)"/
+    )?.[1];
+    expect(en).toBe("Undo last agent turn");
+    expect(zh).toBeTruthy();
+    expect(zh).not.toBe(en);
+    const editor = readFileSync(
+      join(editorDir, "collaboration-editor.tsx"),
+      "utf8"
+    );
+    expect(editor).not.toMatch(/undoAgentTurn|reverseLast/);
   });
 });

@@ -207,6 +207,12 @@ export function shouldPostAgentTurn(spectator?: boolean): boolean {
   return spectator !== true;
 }
 
+export const AGENT_UNDO_ACTOR = "agent_workspace";
+
+export function canUndoAgentTurn(actor: string | null | undefined): boolean {
+  return actor === AGENT_UNDO_ACTOR;
+}
+
 export function shouldShowLiveAgentTurn(input: {
   readonly pending: boolean;
   readonly streamText: string;

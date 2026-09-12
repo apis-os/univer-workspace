@@ -3,7 +3,7 @@
  * Follows multiplexer-protocol.md and univer-sdk-skills / workspace-cli Skills.
  */
 import type { Context } from "@deepseek-ai/cordis";
-import type { ActionService } from "../kernel/action.ts";
+import { journalActor, type ActionService } from "../kernel/action.ts";
 import type { WorkspaceActor } from "../control-plane/actor.ts";
 import { actorFromRequest } from "../control-plane/actor.ts";
 import type { UniverCollabService } from "./univer-collab.ts";
@@ -146,6 +146,72 @@ function collabFrom(host: AgentHost): UniverCollabService | undefined {
   } catch {
     return undefined;
   }
+}
+
+function actionFrom(host: AgentHost): ActionService | undefined {
+  try {
+    return host.kernel.get("action") as ActionService | undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+export function lastCollabActor(
+  collab: UniverCollabService | undefined,
+  unitId: string
+): string {
+  const last = collab?.listChangesetEntries(unitId).at(-1);
+  if (!last) return "";
+  const member = last.changeset?.memberID;
+  if (typeof member === "string" && member.trim()) return member.trim();
+  return last.clientId || "";
+}
+
+export function lastJournalActor(action: ActionService | undefined): string {
+  return journalActor(action?.peekLast()?.meta);
+}
+
+export function undoEnabledForUnit(
+  action: ActionService | undefined,
+  collab: UniverCollabService | undefined,
+  unitId: string
+): boolean {
+  const collabActor = lastCollabActor(collab, unitId);
+  if (collabActor && collabActor !== AGENT_USER_ID) return false;
+  return lastJournalActor(action) === AGENT_USER_ID;
+}
+
+async function reverseLastAgentTurn(
+  host: AgentHost,
+  unitId: string
+): Promise<{ reversed: boolean; enabled: boolean; rev: number | null }> {
+  registerFacadeActions(host.kernel);
+  const action = actionFrom(host);
+  const collab = collabFrom(host);
+  if (!action) {
+    return { reversed: false, enabled: false, rev: collab?.getUnit(unitId)?.rev ?? null };
+  }
+  if (!undoEnabledForUnit(action, collab, unitId)) {
+    return { reversed: false, enabled: false, rev: collab?.getUnit(unitId)?.rev ?? null };
+  }
+  const reversed = await action.reverseLast();
+  if (reversed && host.broadcastCollab) {
+    const changeset = collab?.listChangesetEntries(unitId).at(-1)?.changeset as
+      | Record<string, unknown>
+      | undefined;
+    if (changeset) {
+      host.broadcastCollab(unitId, changeset, {
+        userId: AGENT_USER_ID,
+        name: "Workspace Agent",
+        username: "agent"
+      });
+    }
+  }
+  return {
+    reversed,
+    enabled: undoEnabledForUnit(action, collab, unitId),
+    rev: collab?.getUnit(unitId)?.rev ?? null
+  };
 }
 
 function json(data: unknown, status = 200, extra: HeadersInit = {}): Response {
@@ -672,7 +738,13 @@ export async function handleAgentHttp(request: Request, host: AgentHost): Promis
       skills: listAgentSkills(),
       tools: action?.getLlmTools() ?? [],
       protocol: {
-        http: ["GET /agents", "GET /agents/skills", "POST /agents/:unitId/turns"],
+        http: [
+          "GET /agents",
+          "GET /agents/skills",
+          "POST /agents/:unitId/turns",
+          "GET /agents/:unitId/undo",
+          "POST /agents/:unitId/undo"
+        ],
         mux: "channel 2 agent.prompt on /api/remote.mux",
         collab: [
           "GET /universer-api/snapshot/:type/unit/:unitId",
@@ -709,6 +781,27 @@ export async function handleAgentHttp(request: Request, host: AgentHost): Promis
 
   if (turnsMatch && request.method === "GET") {
     return json({ items: TURN_LOG.get(turnsMatch[1]) ?? [], nextCursor: null, unitId: turnsMatch[1] });
+  }
+
+  const undoMatch = path.match(/^\/agents\/([^/]+)\/undo$/);
+  if (undoMatch && (request.method === "GET" || request.method === "POST")) {
+    const unitId = undoMatch[1];
+    registerFacadeActions(host.kernel);
+    const collab = collabFrom(host);
+    if (collab && !collab.getUnit(unitId)) {
+      return json({ error: { message: "unit not found" } }, 404);
+    }
+    if (request.method === "GET") {
+      const action = actionFrom(host);
+      const lastActor = lastCollabActor(collab, unitId) || lastJournalActor(action);
+      return json({
+        enabled: undoEnabledForUnit(action, collab, unitId),
+        actor: lastActor,
+        unitId
+      });
+    }
+    const result = await reverseLastAgentTurn(liveHost, unitId);
+    return json(result, result.reversed ? 200 : 409);
   }
 
   if (path === "/agents/turns" && request.method === "POST") {

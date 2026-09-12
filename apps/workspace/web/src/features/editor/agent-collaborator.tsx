@@ -1,4 +1,4 @@
-import { Bot, Send, Sparkles, X } from "lucide-react";
+import { Bot, Send, Sparkles, Undo2, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useI18n } from "../../shared/i18n";
 import { useMediaQuery } from "../../shared/resizable-sidebar";
@@ -17,6 +17,7 @@ import {
   agentExamplePrompt,
   agentMuxUrl,
   agentScreenshotCard,
+  canUndoAgentTurn,
   consumeAgentTurnResponse,
   explainSelectionFromRange,
   gatewayCacheStatus,
@@ -100,6 +101,7 @@ export function AgentCollaborator({
   const [cacheStatus, setCacheStatus] = useState<"HIT" | "MISS">("MISS");
   const [gatewayLogId, setGatewayLogId] = useState("");
   const [spotlightCells, setSpotlightCells] = useState<string[]>([]);
+  const [lastActor, setLastActor] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
   const pendingRef = useRef(false);
   const lastPromptRef = useRef("");
@@ -108,6 +110,7 @@ export function AgentCollaborator({
   const streamEventsRef = useRef<AgentEvent[]>([]);
   const suggestions = suggestionChipsForUnitType(unitType);
   const busy = pending || remoteBusy;
+  const canUndo = canUndoAgentTurn(lastActor);
 
   streamTextRef.current = streamText;
   streamEventsRef.current = streamEvents;
@@ -125,6 +128,24 @@ export function AgentCollaborator({
       )
     );
   };
+
+  const refreshUndo = async () => {
+    try {
+      const res = await fetch(`/agents/${encodeURIComponent(unitId)}/undo`, {
+        credentials: "include",
+      });
+      const body = await readJsonBody(res);
+      const actor = typeof body.actor === "string" ? body.actor : "";
+      setLastActor(body.enabled === true ? actor : "");
+    } catch {
+      setLastActor("");
+    }
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    void refreshUndo();
+  }, [open, unitId]);
 
   useEffect(() => {
     if (!open) return;
@@ -258,6 +279,7 @@ export function AgentCollaborator({
             detail: { unitId, rev, toolCalls: turn.toolCalls },
           })
         );
+        void refreshUndo();
       }
     });
     return () => ws.close();
@@ -325,6 +347,7 @@ export function AgentCollaborator({
         new CustomEvent("workspace-agent-edited", { detail })
       );
       onEdited?.(detail);
+      void refreshUndo();
     } catch (err) {
       setError(err instanceof Error ? err.message : t("agentTurnFailed"));
       streamTextRef.current = "";
@@ -332,6 +355,40 @@ export function AgentCollaborator({
       setPendingPrompt("");
       setStreamText("");
       setStreamEvents([]);
+    } finally {
+      pendingRef.current = false;
+      setPending(false);
+    }
+  };
+
+  const undoLastAgentTurn = async () => {
+    if (spectator || pendingRef.current || !canUndo) return;
+    pendingRef.current = true;
+    setPending(true);
+    setError(null);
+    try {
+      const res = await fetch(`/agents/${encodeURIComponent(unitId)}/undo`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const body = await readJsonBody(res);
+      if (!res.ok || body.reversed === false) {
+        setLastActor("");
+        throw new Error(agentErrorMessage(body, t("agentTurnFailed")));
+      }
+      window.dispatchEvent(
+        new CustomEvent("workspace-agent-edited", {
+          detail: { unitId, rev: typeof body.rev === "number" ? body.rev : null },
+        })
+      );
+      onEdited?.({
+        unitId,
+        rev: typeof body.rev === "number" ? body.rev : null,
+      });
+      await refreshUndo();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("agentTurnFailed"));
+      await refreshUndo();
     } finally {
       pendingRef.current = false;
       setPending(false);
@@ -525,8 +582,17 @@ export function AgentCollaborator({
               "placeholder:text-subtle-foreground focus:border-ring focus:ring-2 focus:ring-ring/25"
             )}
           />
+          <p className="text-[11px] text-subtle-foreground">{t("agentSendShortcut")}</p>
           <div className="flex items-center justify-between gap-2">
-            <p className="text-[11px] text-subtle-foreground">{t("agentSendShortcut")}</p>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={spectator || pending || !canUndo}
+              onClick={() => void undoLastAgentTurn()}
+            >
+              <Undo2 />
+              {t("undoAgentTurn")}
+            </Button>
             <Button type="submit" disabled={spectator || pending || !prompt.trim()}>
               <Send />
               {t("agentSend")}
