@@ -29,6 +29,21 @@ export function journalActor(meta: ActionMeta | undefined): string {
   return userId || clientId;
 }
 
+function journalUnitId(entry: ActionExecutionJournalEntry): string {
+  const metaUnit = entry.meta.unitId?.trim() || "";
+  if (metaUnit) return metaUnit;
+  const input = entry.input as { unitId?: unknown } | undefined;
+  if (typeof input?.unitId === "string" && input.unitId.trim()) return input.unitId.trim();
+  const result = entry.result as { unitId?: unknown } | undefined;
+  if (typeof result?.unitId === "string" && result.unitId.trim()) return result.unitId.trim();
+  return "";
+}
+
+function entryMatchesUnit(entry: ActionExecutionJournalEntry, unitId?: string): boolean {
+  if (!unitId) return true;
+  return journalUnitId(entry) === unitId;
+}
+
 const MUTATING_ACTION_IDS = new Set([
   "univer.sheet.setRange",
   "univer.doc.appendText",
@@ -161,20 +176,44 @@ export class ActionService extends Service {
     return result;
   }
 
-  peekLast(): ActionExecutionJournalEntry | undefined {
-    return this.journal.at(-1);
+  peekLast(unitId?: string): ActionExecutionJournalEntry | undefined {
+    for (let i = this.journal.length - 1; i >= 0; i--) {
+      const entry = this.journal[i]!;
+      if (entryMatchesUnit(entry, unitId)) return entry;
+    }
+    return undefined;
   }
 
   /**
-   * Reverses the most recent Workspace Agent action.
-   * Only reverse when the last journal actor is `agent_workspace`.
-   * Human last-write is a no-op (`false`). Non-reversible agent journal
-   * entries (reads) are skipped so a turn of getSnapshot/setRange/getRange
-   * still undoes the write.
+   * True when the last mutating Workspace Agent journal entry for `unitId`
+   * (or globally, if omitted) has a reverse implementation.
    */
-  async reverseLast(): Promise<boolean> {
-    while (this.journal.length > 0) {
-      const last = this.journal[this.journal.length - 1]!;
+  canReverseLast(unitId?: string): boolean {
+    for (let i = this.journal.length - 1; i >= 0; i--) {
+      const last = this.journal[i]!;
+      if (!entryMatchesUnit(last, unitId)) continue;
+      if (journalActor(last.meta) !== AGENT_JOURNAL_ACTOR) return false;
+      const action = this.actions.get(last.actionId);
+      if (!action?.reverse) {
+        if (MUTATING_ACTION_IDS.has(last.actionId)) return false;
+        continue;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * Reverses the most recent Workspace Agent action for `unitId`.
+   * Journal entries for other units are left in place. Only reverse when the
+   * last matching journal actor is `agent_workspace`. Human last-write is a
+   * no-op (`false`). Non-reversible agent journal entries (reads) are skipped
+   * so a turn of getSnapshot/setRange/getRange still undoes the write.
+   */
+  async reverseLast(unitId?: string): Promise<boolean> {
+    for (let i = this.journal.length - 1; i >= 0; i--) {
+      const last = this.journal[i]!;
+      if (!entryMatchesUnit(last, unitId)) continue;
       if (journalActor(last.meta) !== AGENT_JOURNAL_ACTOR) {
         return false;
       }
@@ -183,10 +222,10 @@ export class ActionService extends Service {
         if (MUTATING_ACTION_IDS.has(last.actionId)) {
           return false;
         }
-        this.journal.pop();
+        this.journal.splice(i, 1);
         continue;
       }
-      this.journal.pop();
+      this.journal.splice(i, 1);
       await action.reverse(last.input, last.result, last.meta);
       return true;
     }

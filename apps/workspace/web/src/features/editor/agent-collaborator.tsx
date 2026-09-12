@@ -13,6 +13,7 @@ import {
 import { noteLastGatewayCache } from "../demo/edge-hud";
 import {
   AGENT_PANEL_ID,
+  COMB_CHANGESET_EVENT,
   agentErrorMessage,
   agentExamplePrompt,
   agentMuxUrl,
@@ -23,6 +24,7 @@ import {
   gatewayCacheStatus,
   readActiveRangeA1,
   readAgentMuxFrame,
+  readCombChangesetActor,
   readJsonBody,
   shouldPostAgentTurn,
   shouldShowLiveAgentTurn,
@@ -102,6 +104,7 @@ export function AgentCollaborator({
   const [gatewayLogId, setGatewayLogId] = useState("");
   const [spotlightCells, setSpotlightCells] = useState<string[]>([]);
   const [lastActor, setLastActor] = useState("");
+  const [lastReversible, setLastReversible] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const pendingRef = useRef(false);
   const lastPromptRef = useRef("");
@@ -110,7 +113,7 @@ export function AgentCollaborator({
   const streamEventsRef = useRef<AgentEvent[]>([]);
   const suggestions = suggestionChipsForUnitType(unitType);
   const busy = pending || remoteBusy;
-  const canUndo = canUndoAgentTurn(lastActor);
+  const canUndo = canUndoAgentTurn(lastActor, lastReversible);
 
   streamTextRef.current = streamText;
   streamEventsRef.current = streamEvents;
@@ -136,15 +139,36 @@ export function AgentCollaborator({
       });
       const body = await readJsonBody(res);
       const actor = typeof body.actor === "string" ? body.actor : "";
-      setLastActor(body.enabled === true ? actor : "");
+      setLastActor(actor);
+      setLastReversible(body.enabled === true);
     } catch {
       setLastActor("");
+      setLastReversible(false);
     }
   };
 
   useEffect(() => {
     if (!open) return;
     void refreshUndo();
+  }, [open, unitId]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onComb = (event: Event) => {
+      const actor = readCombChangesetActor({
+        type: event.type,
+        detail: (event as CustomEvent).detail,
+      });
+      if (!actor) return;
+      if (!canUndoAgentTurn(actor)) {
+        setLastActor(actor);
+        setLastReversible(false);
+        return;
+      }
+      void refreshUndo();
+    };
+    window.addEventListener(COMB_CHANGESET_EVENT, onComb);
+    return () => window.removeEventListener(COMB_CHANGESET_EVENT, onComb);
   }, [open, unitId]);
 
   useEffect(() => {
@@ -374,6 +398,7 @@ export function AgentCollaborator({
       const body = await readJsonBody(res);
       if (!res.ok || body.reversed === false) {
         setLastActor("");
+        setLastReversible(false);
         throw new Error(agentErrorMessage(body, t("agentTurnFailed")));
       }
       window.dispatchEvent(

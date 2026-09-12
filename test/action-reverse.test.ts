@@ -109,6 +109,73 @@ describe("Undo last Workspace Agent turn", () => {
     assert.ok(restored.some((cell) => cell?.v === "prior"));
   });
 
+  test("POST undo for unit B does not reverse unit A or broadcast B last row", async () => {
+    const UNIT_A = "unit_undo_a";
+    const UNIT_B = "unit_undo_b";
+    const { ctx, action, collab } = harness();
+    applySheetCells(collab, UNIT_A, [{ a1: "A1", value: "prior-a" }], "user_admin");
+    applySheetCells(collab, UNIT_B, [{ a1: "B1", value: "prior-b" }], "user_admin");
+    await action.execute(
+      "univer.sheet.setRange",
+      { unitId: UNIT_B, cells: [{ a1: "B1", value: "agent-b" }] },
+      { unitId: UNIT_B, userId: AGENT_USER_ID, clientId: AGENT_USER_ID }
+    );
+    await action.execute(
+      "univer.sheet.setRange",
+      { unitId: UNIT_A, cells: [{ a1: "A1", value: "agent-a" }] },
+      { unitId: UNIT_A, userId: AGENT_USER_ID, clientId: AGENT_USER_ID }
+    );
+    const bLastBefore = collab.listChangesetEntries(UNIT_B).at(-1);
+    assert.ok(bLastBefore);
+    const broadcasts: Array<{ unitId: string; changeset: Record<string, unknown> }> = [];
+    const res = await handleAgentHttp(
+      new Request(`https://workspace.test/agents/${UNIT_B}/undo`, { method: "POST" }),
+      {
+        kernel: ctx,
+        broadcastCollab: (unitId, changeset) => {
+          broadcasts.push({ unitId, changeset });
+        }
+      }
+    );
+    assert.ok(res);
+    assert.equal(getSheetCell(collab.getLatestSnapshot(UNIT_A)!.data, "A1")?.v, "agent-a");
+    const broadcastBLastRow = broadcasts.some((item) => {
+      if (item.unitId !== UNIT_B) return false;
+      return item.changeset.id === bLastBefore!.id || item.changeset.id === bLastBefore!.changeset.id;
+    });
+    assert.equal(broadcastBLastRow, false);
+  });
+
+  test("undo is disabled when last mutating journal entry has no reverse", async () => {
+    const DOC_ID = "unit_undo_doc";
+    const { ctx, action } = harness();
+    await action.execute(
+      "univer.doc.appendText",
+      { unitId: DOC_ID, text: "hello from agent" },
+      { unitId: DOC_ID, userId: AGENT_USER_ID, clientId: AGENT_USER_ID }
+    );
+    const getRes = await handleAgentHttp(
+      new Request(`https://workspace.test/agents/${DOC_ID}/undo`),
+      { kernel: ctx }
+    );
+    assert.ok(getRes);
+    const getBody = (await getRes.json()) as { enabled?: boolean };
+    assert.equal(getBody.enabled, false);
+    const broadcasts: unknown[] = [];
+    const postRes = await handleAgentHttp(
+      new Request(`https://workspace.test/agents/${DOC_ID}/undo`, { method: "POST" }),
+      {
+        kernel: ctx,
+        broadcastCollab: (...args: unknown[]) => {
+          broadcasts.push(args);
+        }
+      }
+    );
+    assert.ok(postRes);
+    assert.equal(postRes.status, 409);
+    assert.equal(broadcasts.length, 0);
+  });
+
   test("regex agent turn then reverseLast restores prior v", async () => {
     const { ctx, action, collab } = harness();
     applySheetCells(collab, UNIT_ID, [{ a1: "A1", value: "prior" }], "user_admin");

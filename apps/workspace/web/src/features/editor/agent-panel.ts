@@ -208,9 +208,93 @@ export function shouldPostAgentTurn(spectator?: boolean): boolean {
 }
 
 export const AGENT_UNDO_ACTOR = "agent_workspace";
+export const COMB_CHANGESET_EVENT = "workspace-comb-changeset";
 
-export function canUndoAgentTurn(actor: string | null | undefined): boolean {
-  return actor === AGENT_UNDO_ACTOR;
+export function canUndoAgentTurn(
+  actor: string | null | undefined,
+  reversible = true
+): boolean {
+  return actor === AGENT_UNDO_ACTOR && reversible;
+}
+
+function combChangesetEventId(root: Record<string, unknown>): string | undefined {
+  const collaMsg = asRecord(root.collaMsg);
+  const data = asRecord(root.data);
+  if (typeof collaMsg?.eventID === "string") return collaMsg.eventID;
+  if (typeof root.eventID === "string") return root.eventID;
+  if (typeof data?.eventID === "string") return data.eventID;
+  return undefined;
+}
+
+function combChangesetRecord(
+  root: Record<string, unknown>
+): Record<string, unknown> | null {
+  const collaMsg = asRecord(root.collaMsg);
+  const data = asRecord(root.data);
+  const newCs =
+    asRecord(collaMsg?.newCsEvent) ??
+    asRecord(root.newCsEvent) ??
+    asRecord(data?.newCsEvent);
+  return (
+    asRecord(newCs?.cs) ??
+    asRecord(root.cs) ??
+    asRecord(data?.cs) ??
+    newCs
+  );
+}
+
+export function readCombChangesetActor(event: {
+  readonly type?: string;
+  readonly detail?: unknown;
+}): string | null {
+  const root = asRecord(event.detail) ?? asRecord(event);
+  if (!root) return null;
+  const eventID = combChangesetEventId(root);
+  if (eventID && eventID !== "new_changesets") return null;
+  if (event.type && event.type !== COMB_CHANGESET_EVENT && eventID !== "new_changesets") {
+    return null;
+  }
+  const cs = combChangesetRecord(root);
+  const member =
+    (typeof cs?.memberID === "string" && cs.memberID.trim()) ||
+    (typeof cs?.userID === "string" && cs.userID.trim()) ||
+    (typeof cs?.clientId === "string" && cs.clientId.trim()) ||
+    "";
+  return member || null;
+}
+
+export function tapCollaborationSocketChangeset(
+  socket:
+    | {
+        readonly message$?: {
+          readonly subscribe: (next: (event: unknown) => void) => unknown;
+        };
+      }
+    | null
+    | undefined,
+  target?: EventTarget
+): void {
+  const dest =
+    target ??
+    (typeof globalThis !== "undefined" &&
+    typeof (globalThis as { dispatchEvent?: unknown }).dispatchEvent ===
+      "function"
+      ? (globalThis as unknown as EventTarget)
+      : undefined);
+  if (!socket?.message$?.subscribe || !dest) return;
+  socket.message$.subscribe((event) => {
+    if (
+      !readCombChangesetActor({
+        type: COMB_CHANGESET_EVENT,
+        detail: event,
+      })
+    ) {
+      return;
+    }
+    dest.dispatchEvent(
+      new CustomEvent(COMB_CHANGESET_EVENT, { detail: event })
+    );
+  });
 }
 
 export function shouldShowLiveAgentTurn(input: {

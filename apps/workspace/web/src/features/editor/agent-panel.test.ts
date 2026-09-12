@@ -9,6 +9,7 @@ import {
   agentExamplePrompt,
   agentMuxUrl,
   agentScreenshotCard,
+  COMB_CHANGESET_EVENT,
   canUndoAgentTurn,
   consumeAgentTurnResponse,
   defaultAgentPanelOpen,
@@ -18,6 +19,7 @@ import {
   isCachedExplainPrompt,
   readActiveRangeA1,
   readAgentMuxFrame,
+  readCombChangesetActor,
   readAgentPanelOpen,
   readJsonBody,
   shouldPostAgentTurn,
@@ -486,6 +488,45 @@ describe("Undo last Workspace Agent turn", () => {
     expect(canUndoAgentTurn("user_jordan")).toBe(false);
     expect(canUndoAgentTurn(undefined)).toBe(false);
     expect(canUndoAgentTurn("")).toBe(false);
+  });
+
+  it("disables Undo when last mutating journal entry has no reverse", () => {
+    expect(canUndoAgentTurn("agent_workspace", false)).toBe(false);
+    expect(canUndoAgentTurn("agent_workspace", true)).toBe(true);
+  });
+
+  it("disables Undo when the last Comb actor is human without a failed POST", () => {
+    expect(
+      readCombChangesetActor({
+        type: COMB_CHANGESET_EVENT,
+        detail: {
+          collaMsg: {
+            eventID: "new_changesets",
+            newCsEvent: { cs: { memberID: "user_jordan" } },
+          },
+        },
+      })
+    ).toBe("user_jordan");
+    expect(canUndoAgentTurn("user_jordan")).toBe(false);
+    expect(
+      canUndoAgentTurn(
+        readCombChangesetActor({
+          type: COMB_CHANGESET_EVENT,
+          detail: {
+            eventID: "new_changesets",
+            newCsEvent: { cs: { memberID: "user_admin" } },
+          },
+        })
+      )
+    ).toBe(false);
+    const src = readFileSync(join(editorDir, "agent-collaborator.tsx"), "utf8");
+    expect(src).toMatch(/readCombChangesetActor/);
+    expect(src).toMatch(/COMB_CHANGESET_EVENT/);
+    const socket = readFileSync(
+      join(editorDir, "follow-agent-collab-socket.ts"),
+      "utf8"
+    );
+    expect(socket).toMatch(/tapCollaborationSocketChangeset/);
   });
 
   it("wires panel Undo to reverseLast with undoAgentTurn copy", () => {

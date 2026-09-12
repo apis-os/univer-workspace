@@ -167,8 +167,8 @@ export function lastCollabActor(
   return last.clientId || "";
 }
 
-export function lastJournalActor(action: ActionService | undefined): string {
-  return journalActor(action?.peekLast()?.meta);
+export function lastJournalActor(action: ActionService | undefined, unitId?: string): string {
+  return journalActor(action?.peekLast(unitId)?.meta);
 }
 
 export function undoEnabledForUnit(
@@ -178,7 +178,7 @@ export function undoEnabledForUnit(
 ): boolean {
   const collabActor = lastCollabActor(collab, unitId);
   if (collabActor && collabActor !== AGENT_USER_ID) return false;
-  return lastJournalActor(action) === AGENT_USER_ID;
+  return action?.canReverseLast(unitId) === true;
 }
 
 async function reverseLastAgentTurn(
@@ -194,12 +194,12 @@ async function reverseLastAgentTurn(
   if (!undoEnabledForUnit(action, collab, unitId)) {
     return { reversed: false, enabled: false, rev: collab?.getUnit(unitId)?.rev ?? null };
   }
-  const reversed = await action.reverseLast();
+  const beforeId = collab?.listChangesetEntries(unitId).at(-1)?.id;
+  const reversed = await action.reverseLast(unitId);
   if (reversed && host.broadcastCollab) {
-    const changeset = collab?.listChangesetEntries(unitId).at(-1)?.changeset as
-      | Record<string, unknown>
-      | undefined;
-    if (changeset) {
+    const last = collab?.listChangesetEntries(unitId).at(-1);
+    const changeset = last?.changeset as Record<string, unknown> | undefined;
+    if (changeset && last?.id !== beforeId) {
       host.broadcastCollab(unitId, changeset, {
         userId: AGENT_USER_ID,
         name: "Workspace Agent",
@@ -793,9 +793,10 @@ export async function handleAgentHttp(request: Request, host: AgentHost): Promis
     }
     if (request.method === "GET") {
       const action = actionFrom(host);
-      const lastActor = lastCollabActor(collab, unitId) || lastJournalActor(action);
+      const lastActor = lastCollabActor(collab, unitId) || lastJournalActor(action, unitId);
       return json({
         enabled: undoEnabledForUnit(action, collab, unitId),
+        reversible: action?.canReverseLast(unitId) === true,
         actor: lastActor,
         unitId
       });
