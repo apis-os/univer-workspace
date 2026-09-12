@@ -94,10 +94,7 @@ export async function handleUniverserHttp(
     const a1s = Array.isArray(body.a1s)
       ? body.a1s.filter((item): item is string => typeof item === "string")
       : [];
-    const userID =
-      typeof body.userID === "string" && body.userID.trim()
-        ? body.userID.trim()
-        : host.identity.userID;
+    const userID = host.identity.userID;
     const result = recordCellOverlap(cellOverlapStore, {
       unitId: typeof body.unitId === "string" ? body.unitId : "",
       userID,

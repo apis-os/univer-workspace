@@ -278,7 +278,7 @@ EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cl
 
 Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot PNG ≥4000B after `POST /uf/:fileKey`.
 
-Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-fix12"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9b-comb"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
 
 ### Proved on this deploy
 
@@ -286,7 +286,7 @@ Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-fix12"`, 
 - [x] `GET /healthz.ai` → `{ gateway: "default" }`
 - [x] Avery password login + `POST /agents/unit_welcome_sheet/turns` (`Set A1 to Hello from AI`) returns `rev`
 - [x] `POST /uf/d29ya3NwYWNlLnVuaXZlcg` then `GET .../units/unit_welcome_sheet/inspect?range=E2` → 200
-- [x] Explain cache: this deploy smoke `MISS` then `HIT` on `demo:explain-q3:t9-fix12` (not invented; not prior warm keys)
+- [x] Explain cache: this deploy smoke `MISS` then `HIT` on `demo:explain-q3:t9b-comb` (not invented; not prior warm keys)
 - [x] `/uf` screenshot 200 PNG length 5791 (≥4000; real sheet capture)
 - [x] CLI proof execute → inspect E2 `f=SUM(B2:D2)` → screenshot 200 → worktree ready → curl `/uf` 200
 - [x] Headed `/demo` shows Q3 grid; `univer-sheet-main-canvas_unit_welcome_sheet` 806×651 (exact id `univer-sheet-main-canvas` is suffixed)

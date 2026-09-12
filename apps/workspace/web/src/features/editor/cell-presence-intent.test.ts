@@ -8,6 +8,7 @@ import {
   localEditA1AfterCommand,
   readCellIntent,
   remoteChangesetConflictsLocal,
+  shouldPostCellOverlapForLocalEdit,
   shouldPublishIntent,
   shouldToastRemoteCellOverlap,
   type CellIntent,
@@ -286,5 +287,39 @@ describe("cell presence intent", () => {
         currentUserId: "user_admin",
       })
     ).toBe(true);
+  });
+
+  it("does not post overlap on name-box navigation, only after a cell value commit", () => {
+    expect(
+      shouldPostCellOverlapForLocalEdit({ source: "name-box" })
+    ).toBe(false);
+    expect(
+      shouldPostCellOverlapForLocalEdit({
+        source: "command",
+        isMutation: false,
+        commandId: "sheet.operation.set-selections",
+      })
+    ).toBe(false);
+    expect(
+      shouldPostCellOverlapForLocalEdit({
+        source: "command",
+        isMutation: true,
+        commandId: "sheet.mutation.set-range-values",
+      })
+    ).toBe(true);
+    expect(
+      shouldPostCellOverlapForLocalEdit({
+        source: "command",
+        isMutation: false,
+        commandId: "sheet.command.set-range-values",
+      })
+    ).toBe(true);
+    expect(
+      shouldPostCellOverlapForLocalEdit({
+        source: "command",
+        isMutation: true,
+        commandId: "formula.mutation.set-formula-calculation-start",
+      })
+    ).toBe(false);
   });
 });

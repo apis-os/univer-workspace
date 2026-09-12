@@ -25,7 +25,10 @@ import {
   consumeIssuedTicket,
   isWorktreeCombConnect,
   isWorktreeProtocolEvents,
+  loadIssuedTicket,
+  persistIssuedTicket,
   readCollaboratorIdentity,
+  WORKSPACE_USER_ID_HEADER,
   type CollaboratorIdentity,
   type IssuedSessionTicket
 } from "../integrations/univer-protocol.ts";
@@ -123,7 +126,11 @@ export class DshHost extends HostBase<any> {
 
       if (isWorktreeCombConnect(url.pathname)) {
         const ticket = this.consumeSessionTicket(url.searchParams.get("sessionTicket") || "");
-        if (!ticket) {
+        const fromRequest = readCollaboratorIdentity(request);
+        const identity =
+          ticket ??
+          (request.headers.get(WORKSPACE_USER_ID_HEADER)?.trim() ? fromRequest : null);
+        if (!identity) {
           return new Response(JSON.stringify({ error: { code: 16, message: "unauthenticated" } }), {
             status: 401,
             headers: { "Content-Type": "application/json" }
@@ -134,8 +141,8 @@ export class DshHost extends HostBase<any> {
         const attachment: CollabMemberAttachment = {
           kind: "comb",
           memberID,
-          userID: ticket.userID,
-          name: ticket.name,
+          userID: identity.userID,
+          name: identity.name,
           rooms: []
         };
         server.serializeAttachment(attachment);
@@ -186,22 +193,12 @@ export class DshHost extends HostBase<any> {
           });
         }
         const worktreeId = decodeURIComponent(url.pathname.split("/")[3] ?? "");
-        const kernel = await this.ensureKernel();
-        const collab = kernel.get("collab") as UniverCollabService | undefined;
         server.serializeAttachment({ kind: "worktree-feed", userID: ticket.userID } satisfies WorktreeFeedAttachment);
         this.acceptWebSocket(server, ["worktree-protocol", `worktree:${worktreeId}`]);
-        try {
-          server.send(
-            JSON.stringify({
-              error: { code: 1, message: "" },
-              worktree: collab?.getWorktreeProtocolData(worktreeId) ?? {
-                worktreeID: worktreeId,
-                status: "editing",
-                units: []
-              }
-            })
-          );
-        } catch {}
+        const protocolBoot = this.sendWorktreeProtocolSnapshot(server, worktreeId);
+        if (typeof (this.ctx as { waitUntil?: (task: Promise<unknown>) => void }).waitUntil === "function") {
+          (this.ctx as { waitUntil: (task: Promise<unknown>) => void }).waitUntil(protocolBoot);
+        }
         return new Response(null, { status: 101, webSocket: client });
       }
 
@@ -212,11 +209,9 @@ export class DshHost extends HostBase<any> {
 
       this.acceptWebSocket(server, tags);
 
-      try {
-        const kernel = await this.ensureKernel();
-        await kernel.emit("client/connect", { ws: server, tags });
-      } catch (err) {
-        console.error("Failed to notify kernel of connect:", err);
+      const muxBoot = this.notifyMuxConnected(server, tags);
+      if (typeof (this.ctx as { waitUntil?: (task: Promise<unknown>) => void }).waitUntil === "function") {
+        (this.ctx as { waitUntil: (task: Promise<unknown>) => void }).waitUntil(muxBoot);
       }
 
       return new Response(null, {
@@ -517,20 +512,37 @@ export class DshHost extends HostBase<any> {
   private mintSessionTicket(identity: CollaboratorIdentity): string {
     const ticket = `ticket_${crypto.randomUUID()}`;
     const now = Date.now();
-    this.sessionTickets.set(ticket, {
+    const issued: IssuedSessionTicket = {
       userID: identity.userID,
       name: identity.name,
       avatar: identity.avatar,
       expiresAt: now + 300_000
-    });
+    };
+    this.sessionTickets.set(ticket, issued);
     for (const [key, value] of this.sessionTickets.entries()) {
       if (value.expiresAt <= now) this.sessionTickets.delete(key);
+    }
+    try {
+      persistIssuedTicket(this.getSqlExec(), ticket, identity, issued.expiresAt);
+    } catch (err) {
+      console.warn("Comb session ticket persist failed:", err);
     }
     return ticket;
   }
 
   private consumeSessionTicket(ticketParam: string): CollaboratorIdentity | null {
-    return consumeIssuedTicket(this.sessionTickets, ticketParam);
+    const fromMemory = consumeIssuedTicket(this.sessionTickets, ticketParam);
+    if (fromMemory) {
+      try {
+        loadIssuedTicket(this.getSqlExec(), ticketParam);
+      } catch {}
+      return fromMemory;
+    }
+    try {
+      return loadIssuedTicket(this.getSqlExec(), ticketParam);
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -586,6 +598,34 @@ export class DshHost extends HostBase<any> {
       } catch {}
     }
     return false;
+  }
+
+  private async notifyMuxConnected(server: WebSocket, tags: string[]): Promise<void> {
+    try {
+      const kernel = await this.ensureKernel();
+      await kernel.emit("client/connect", { ws: server, tags });
+    } catch (err) {
+      console.error("Failed to notify kernel of connect:", err);
+    }
+  }
+
+  private async sendWorktreeProtocolSnapshot(server: WebSocket, worktreeId: string): Promise<void> {
+    try {
+      const kernel = await this.ensureKernel();
+      const collab = kernel.get("collab") as UniverCollabService | undefined;
+      server.send(
+        JSON.stringify({
+          error: { code: 1, message: "" },
+          worktree: collab?.getWorktreeProtocolData(worktreeId) ?? {
+            worktreeID: worktreeId,
+            status: "editing",
+            units: []
+          }
+        })
+      );
+    } catch (err) {
+      console.error("Failed to send worktree protocol snapshot:", err);
+    }
   }
 
   private sendComb(ws: WebSocket, att: CollabMemberAttachment | null | undefined, msg: unknown): void {

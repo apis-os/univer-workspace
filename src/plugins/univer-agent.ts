@@ -23,7 +23,7 @@ export const AI_GATEWAY_LIVE_MODELS = [
 ] as const;
 
 const AI_GATEWAY_PRODUCT = "univer-workspace";
-const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-fix12";
+const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9b-comb";
 const EXPLAIN_CACHE_TTL = 3600;
 
 export type AgentGatewayStep = "tool" | "text" | "explain";

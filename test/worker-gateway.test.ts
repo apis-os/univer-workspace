@@ -2,6 +2,7 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { registerHooks } from "node:module";
 import { createMockD1 } from "./mock-d1.ts";
+import { seedControlPlane } from "../src/control-plane/schema.ts";
 
 function dataModule(source: string) {
   return {
@@ -336,5 +337,44 @@ describe("Master Cloudflare Worker Edge Gateway", async () => {
     assert.equal(feedRes.status, 200);
     assert.equal(await feedRes.text(), "ChatAgent response");
     assert.ok(env.ChatAgent.fetches.includes("GET /api/worktree-events"));
+  });
+
+  test("forwards authenticated Comb websocket upgrades without cloning the Request", async () => {
+    const env = createMockEnv();
+    await seedControlPlane(env.DB);
+    const registerRes = await worker.fetch(
+      new Request("https://workspace.edge/api/auth/password/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: "combws",
+          displayName: "Comb Websocket",
+          password: "password123"
+        })
+      }),
+      env as any,
+      {} as any
+    );
+    assert.equal(registerRes.status, 200);
+    const setCookie = registerRes.headers.get("Set-Cookie") ?? "";
+    const cookieMatch = setCookie.match(/workspace_session=([^;]+)/);
+    assert.ok(cookieMatch);
+    const sessionCookie = `workspace_session=${cookieMatch[1]}`;
+
+    let received: Request | null = null;
+    env.ChatAgent.get = () => ({
+      fetch: async (req: Request) => {
+        received = req;
+        return new Response("ok", { status: 200 });
+      }
+    });
+    const original = new Request("https://workspace.edge/universer-api/comb/connect?sessionTicket=t1", {
+      headers: { Upgrade: "websocket", Cookie: sessionCookie }
+    });
+    const res = await worker.fetch(original, env as any, {} as any);
+    assert.equal(res.status, 200);
+    assert.ok(received, "ChatAgent must receive the Comb upgrade");
+    assert.equal(received, original, "cloning a WS upgrade Request causes Cloudflare 1006");
+    assert.equal(received.headers.get("Upgrade"), "websocket");
   });
 });

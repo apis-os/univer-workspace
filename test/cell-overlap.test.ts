@@ -62,7 +62,7 @@ test("POST /universer-api/cell-overlap reports Avery/Jordan D3 overlap", async (
   assert.deepEqual(second.peers, ["user_admin"]);
 });
 
-test("POST /universer-api/cell-overlap uses body userID when both sessions look like admin", async () => {
+test("POST /universer-api/cell-overlap uses session identity, not JSON body userID", async () => {
   const { handleUniverserHttp } = await import("../src/integrations/univer-collab-http.ts");
   const defaultHost = {
     identity: { userID: "user_admin", name: "Administrator", avatar: "" }
@@ -72,13 +72,13 @@ test("POST /universer-api/cell-overlap uses body userID when both sessions look 
       new Request("https://univer-workspace.apisos.workers.dev/universer-api/cell-overlap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ unitId: "unit_overlap_body_userid", a1s, userID })
+        body: JSON.stringify({ unitId: "unit_overlap_session_identity", a1s, userID })
       }),
       defaultHost
     );
   const first = await (await post("user_admin", ["D3"]))!.json();
   assert.equal(first.conflict, false);
-  const second = await (await post("user_jordan", ["D3"]))!.json();
-  assert.equal(second.conflict, true);
-  assert.deepEqual(second.peers, ["user_admin"]);
+  const spoofed = await (await post("user_jordan", ["D3"]))!.json();
+  assert.equal(spoofed.conflict, false, "same authenticated session must not toast against a spoofed body userID");
+  assert.deepEqual(spoofed.peers, []);
 });

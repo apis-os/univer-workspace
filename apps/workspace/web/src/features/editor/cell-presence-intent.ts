@@ -111,6 +111,16 @@ export function a1FromNameBoxValue(value: string | null | undefined): string | n
   return /^[A-Z]+\d+$/.test(trimmed) ? trimmed : null;
 }
 
+export function shouldPostCellOverlapForLocalEdit(input: {
+  readonly source: "name-box" | "command";
+  readonly isMutation?: boolean;
+  readonly commandId?: string;
+}): boolean {
+  if (input.source === "name-box") return false;
+  const id = input.commandId ?? "";
+  return /set-range/i.test(id);
+}
+
 export function localEditA1AfterCommand(input: {
   readonly isMutation: boolean;
   readonly commandA1s: readonly string[];

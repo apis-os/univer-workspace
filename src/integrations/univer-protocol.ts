@@ -116,3 +116,54 @@ export function consumeIssuedTicket(
     avatar: ticketData.avatar ?? ""
   };
 }
+
+export const COMB_SESSION_TICKET_DDL = `
+CREATE TABLE IF NOT EXISTS comb_session_tickets (
+  ticket TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  avatar TEXT NOT NULL DEFAULT '',
+  expires_at INTEGER NOT NULL
+)
+`;
+
+export function persistIssuedTicket(
+  sql: { exec: (query: string, ...binds: unknown[]) => { toArray: () => unknown[] } },
+  ticket: string,
+  identity: CollaboratorIdentity,
+  expiresAt: number
+): void {
+  sql.exec(COMB_SESSION_TICKET_DDL);
+  sql.exec(
+    `INSERT OR REPLACE INTO comb_session_tickets (ticket, user_id, name, avatar, expires_at)
+     VALUES (?, ?, ?, ?, ?)`,
+    ticket,
+    identity.userID,
+    identity.name,
+    identity.avatar ?? "",
+    expiresAt
+  );
+}
+
+export function loadIssuedTicket(
+  sql: { exec: (query: string, ...binds: unknown[]) => { toArray: () => unknown[] } },
+  ticketParam: string
+): CollaboratorIdentity | null {
+  if (!ticketParam) return null;
+  sql.exec(COMB_SESSION_TICKET_DDL);
+  const now = Date.now();
+  sql.exec(`DELETE FROM comb_session_tickets WHERE expires_at <= ?`, now);
+  const row = sql
+    .exec<{ user_id: string; name: string; avatar: string; expires_at: number }>(
+      `SELECT user_id, name, avatar, expires_at FROM comb_session_tickets WHERE ticket = ?`,
+      ticketParam
+    )
+    .toArray()[0];
+  sql.exec(`DELETE FROM comb_session_tickets WHERE ticket = ?`, ticketParam);
+  if (!row || row.expires_at <= now) return null;
+  return {
+    userID: row.user_id,
+    name: row.name,
+    avatar: row.avatar ?? ""
+  };
+}

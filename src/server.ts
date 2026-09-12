@@ -171,6 +171,7 @@ export default {
           isUniverFile ||
           pathname.startsWith("/universer-api/") ||
           pathname.startsWith("/agents/");
+        const isWebSocket = request.headers.get("Upgrade")?.toLowerCase() === "websocket";
         if (needsActor && env.DB) {
           const cpDb = new ControlPlaneDb(env.DB);
           const session = await resolveGatewayContext(request, cpDb);
@@ -184,7 +185,19 @@ export default {
             );
           }
           if (session.currentUser) {
-            forwarded = attachActorHeaders(request, session.currentUser);
+            if (isWebSocket) {
+              try {
+                request.headers.set("x-workspace-actor-id", session.currentUser.id);
+                request.headers.set("x-workspace-actor-name", session.currentUser.display_name);
+                request.headers.set("x-workspace-user-id", session.currentUser.id);
+                request.headers.set("x-workspace-user-name", session.currentUser.display_name);
+              } catch {
+                /* Request headers may be immutable; Comb identity comes from the session ticket. */
+              }
+              forwarded = request;
+            } else {
+              forwarded = attachActorHeaders(request, session.currentUser);
+            }
           }
         } else if (isUniverFile && !env.DB) {
           return applyCorsHeaders(

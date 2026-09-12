@@ -47,7 +47,8 @@ describe("collaboration editor mount errors", () => {
     expect(src).toMatch(/BroadcastChannel/);
     expect(src).toMatch(/workspace-cell-overlap/);
     expect(src).toMatch(/\/universer-api\/cell-overlap/);
-    expect(src).toMatch(/userID: user\.id/);
+    expect(src).toMatch(/shouldPostCellOverlapForLocalEdit/);
+    expect(src).toMatch(/source:\s*"name-box"/);
     expect(src).toMatch(/shouldClearCollaborationIssueOnStatus/);
     expect(src).not.toMatch(
       /else if \(event.status !== CollaborationStatus.CONFLICT\)/

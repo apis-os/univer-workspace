@@ -103,6 +103,7 @@ import {
   localEditA1AfterCommand,
   remoteChangesetConflictsLocal,
   readCellIntent,
+  shouldPostCellOverlapForLocalEdit,
   shouldPublishIntent,
   shouldToastRemoteCellOverlap,
   type CellIntentKind,
@@ -519,11 +520,13 @@ export function createCollaborationEditor(
           if (!a1) return;
           lastSelectedA1 = a1;
           rememberLocalA1s([a1]);
-          overlapChannel?.postMessage({
-            userID: user.id,
-            a1s: recentLocalA1s(),
-          });
-          postCellOverlap(recentLocalA1s());
+          if (shouldPostCellOverlapForLocalEdit({ source: "name-box" })) {
+            overlapChannel?.postMessage({
+              userID: user.id,
+              a1s: recentLocalA1s(),
+            });
+            postCellOverlap(recentLocalA1s());
+          }
         };
         document.addEventListener("keydown", captureNameBoxA1, true);
         document.addEventListener("change", captureNameBoxA1, true);
@@ -776,11 +779,26 @@ export function createCollaborationEditor(
               ...(nameBoxA1 ? [nameBoxA1] : []),
             ];
             rememberLocalA1s(remembered);
-            overlapChannel?.postMessage({
-              userID: user.id,
-              a1s: recentLocalA1s(),
-            });
-            postCellOverlap(recentLocalA1s());
+            const commandId = String(
+              (commandEvent as { id?: unknown }).id ??
+                (commandEvent as { command?: { id?: unknown } }).command?.id ??
+                ""
+            );
+            if (
+              shouldPostCellOverlapForLocalEdit({
+                source: "command",
+                isMutation,
+                commandId,
+              })
+            ) {
+              overlapChannel?.postMessage({
+                userID: user.id,
+                a1s: recentLocalA1s(),
+              });
+              if (collaborationStatusRef.current !== CollaborationStatus.SYNCED) {
+                postCellOverlap(recentLocalA1s());
+              }
+            }
             const publishA1 = commandA1s[0] || localEditA1 || lastSelectedA1 || a1;
             if (!publishA1 || !shouldPublishIntent({ kind: "member", a1: publishA1 })) {
               return;

@@ -394,6 +394,141 @@ describe("Comb Workspace Agent peer", () => {
   });
 });
 
+describe("Comb connect ticket handshake", () => {
+  test("live /universer-api/comb/connect accepts a persisted ticket and answers HELLO", async () => {
+    const { persistIssuedTicket } = await import("../src/integrations/univer-protocol.ts");
+    const { DatabaseSync } = await import("node:sqlite");
+    const db = new DatabaseSync(":memory:");
+    const sql = {
+      exec: (query: string, ...binds: unknown[]) => {
+        const trimmed = query.trim().toUpperCase();
+        if (trimmed.startsWith("CREATE") || trimmed.startsWith("ALTER") || trimmed.startsWith("DROP")) {
+          db.exec(query);
+          return { toArray: () => [] };
+        }
+        const stmt = db.prepare(query);
+        if (trimmed.startsWith("INSERT") || trimmed.startsWith("UPDATE") || trimmed.startsWith("DELETE")) {
+          stmt.run(...(binds as any[]));
+          return { toArray: () => [] };
+        }
+        const rows = stmt.all(...(binds as any[]));
+        return { toArray: () => rows as Record<string, unknown>[] };
+      }
+    };
+
+    persistIssuedTicket(
+      sql,
+      "ticket_live_hello",
+      { userID: "user_admin", name: "Avery Chen", avatar: "" },
+      Date.now() + 60_000
+    );
+
+    const accepted: unknown[] = [];
+    const serverSocket = fakeSocket({ rooms: [] });
+    const WebSocketPair = function WebSocketPair() {
+      return { 0: {}, 1: serverSocket };
+    };
+    const previous = (globalThis as { WebSocketPair?: unknown }).WebSocketPair;
+    (globalThis as { WebSocketPair?: unknown }).WebSocketPair = WebSocketPair as never;
+
+    try {
+      const { DshHost } = await import("../src/project/dsh-host.ts");
+      const host = new DshHost(
+        {
+          getWebSockets: () => [serverSocket],
+          acceptWebSocket: (ws: unknown) => accepted.push(ws),
+          id: { toString: () => "univer_collab", name: "univer_collab" },
+          storage: { sql: { exec: sql.exec } }
+        } as any,
+        {} as any
+      );
+      host.ensureKernel = async () =>
+        ({
+          get: () => undefined,
+          emit: async () => undefined
+        }) as any;
+      host.getSqlExec = () => sql as never;
+
+      const started = Date.now();
+      const res = await fetchUpgrade(
+        host,
+        new Request("https://workspace.edge/universer-api/comb/connect?sessionTicket=ticket_live_hello", {
+          headers: { Upgrade: "websocket" }
+        })
+      );
+      assert.equal(res.status, 101);
+      assert.equal(accepted.length, 1);
+      assert.ok(Date.now() - started < 400, "Comb connect 101 must not wait on kernel");
+
+      await host.webSocketMessage(
+        serverSocket as unknown as WebSocket,
+        encodeCombJson({ cmd: CombCmd.HELLO, routeKey: "" })
+      );
+      assert.equal(typeof serverSocket.sent[0], "string");
+      const hello = JSON.parse(String(serverSocket.sent[0]));
+      assert.equal(hello.cmd, CombCmd.HELLO);
+      assert.equal(hello.code, CmdRspCode.OK);
+      assert.equal(typeof hello.infoRsp.memberID, "string");
+    } finally {
+      (globalThis as { WebSocketPair?: unknown }).WebSocketPair = previous;
+    }
+  });
+
+  test("mux websocket returns 101 without waiting for ensureKernel so Comb is not queued", async () => {
+    const accepted: unknown[] = [];
+    const serverSocket = fakeSocket({ rooms: [] });
+    const WebSocketPair = function WebSocketPair() {
+      return { 0: {}, 1: serverSocket };
+    };
+    const previous = (globalThis as { WebSocketPair?: unknown }).WebSocketPair;
+    (globalThis as { WebSocketPair?: unknown }).WebSocketPair = WebSocketPair as never;
+
+    try {
+      const { DshHost } = await import("../src/project/dsh-host.ts");
+      const host = new DshHost(
+        {
+          getWebSockets: () => [serverSocket],
+          acceptWebSocket: (ws: unknown) => accepted.push(ws),
+          id: { toString: () => "univer_collab", name: "univer_collab" }
+        } as any,
+        {} as any
+      );
+      let kernelResolved = false;
+      host.ensureKernel = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        kernelResolved = true;
+        return { get: () => undefined, emit: async () => undefined } as any;
+      };
+
+      const started = Date.now();
+      const res = await fetchUpgrade(
+        host,
+        new Request("https://workspace.edge/api/remote.mux?unitId=unit_welcome_sheet", {
+          headers: { Upgrade: "websocket" }
+        })
+      );
+      const elapsed = Date.now() - started;
+      assert.equal(res.status, 101);
+      assert.equal(accepted.length, 1);
+      assert.equal(kernelResolved, false);
+      assert.ok(elapsed < 400, `mux 101 blocked Comb for ${elapsed}ms`);
+    } finally {
+      (globalThis as { WebSocketPair?: unknown }).WebSocketPair = previous;
+    }
+  });
+});
+
+async function fetchUpgrade(host: { fetch: (request: Request) => Promise<Response> }, request: Request) {
+  try {
+    return await host.fetch(request);
+  } catch (err) {
+    if (err instanceof RangeError && String(err.message).includes("status")) {
+      return { status: 101 } as Response;
+    }
+    throw err;
+  }
+}
+
 function fakeSocket(att: Record<string, unknown>) {
   const sent: Array<string | ArrayBuffer | ArrayBufferView> = [];
   return {
