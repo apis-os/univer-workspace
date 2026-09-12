@@ -278,7 +278,7 @@ EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cl
 
 Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot 200 after `POST /uf/:fileKey`.
 
-Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-miss-hit"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-r3"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
 
 ### Proved on this deploy
 

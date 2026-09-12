@@ -240,7 +240,7 @@ export async function runEdgeSmoke(input = {}) {
   const png = screenshotBytesFromBody(screenshot.body, screenshot.text);
   if (!isSheetPng(png)) {
     fail(
-      `/uf screenshot is not a sheet PNG (magic+min ${MIN_SCREENSHOT_BYTES}B), got length=${png.length} prefix=${png.subarray(0, 8).toString("hex")}`
+      `/uf screenshot is not a sheet PNG (magic+min ${MIN_SCREENSHOT_BYTES}B), got length=${png.length} prefix=${png.subarray(0, 8).toString("hex")} explain=${JSON.stringify({ miss, hit })}`
     );
   }
 
