@@ -547,6 +547,66 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
     );
   });
 
+  test("fake BROWSER screenshot survives early Runtime.evaluate errors", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, evaluateFailures: 3 });
+    const host = { db: admin.db, currentUser: user, browser: fake.browser };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/screenshot"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID })
+      }),
+      host
+    );
+    assert.ok(res);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as {
+      images?: Array<{ mediaType?: string; data?: string; width?: number; height?: number }>;
+    };
+    assert.equal(body.images?.[0]?.mediaType, "image/png");
+    assert.ok((body.images?.[0]?.data?.length ?? 0) > 0);
+    assert.equal(Buffer.from(body.images?.[0]?.data ?? "", "base64").length > 0, true);
+    assert.ok(fake.evaluateAttempts() > 3, "must keep polling Runtime.evaluate after early failures");
+    assert.ok(fake.cdpMethods.includes("Page.captureScreenshot"));
+  });
+
+  test("/render hydrate requires a snapshot body before ready and createWorkbook", async () => {
+    const { hydrateRenderWorkbook } = await import("../apps/workspace/web/src/render-hydrate.ts");
+    const created: Record<string, unknown>[] = [];
+    const createWorkbook = (data: Record<string, unknown>) => {
+      created.push(data);
+    };
+
+    const missing = hydrateRenderWorkbook({ snapshot: null, createWorkbook });
+    assert.equal(missing.ready, false);
+    assert.equal(created.length, 0);
+
+    const failedLoad = hydrateRenderWorkbook({ snapshot: undefined, createWorkbook });
+    assert.equal(failedLoad.ready, false);
+    assert.equal(created.length, 0);
+
+    const snapshot = {
+      id: DEMO_UNIT_ID,
+      name: "Q3 Forecast",
+      sheetOrder: ["sheet-1"],
+      sheets: { "sheet-1": { id: "sheet-1", name: "Sheet1" } }
+    };
+    const applied = hydrateRenderWorkbook({ snapshot, createWorkbook });
+    assert.equal(applied.ready, true);
+    assert.equal(created.length, 1);
+    assert.deepEqual(created[0], snapshot);
+
+    const renderMain = readFileSync(RENDER_MAIN, "utf8");
+    assert.match(renderMain, /hydrateRenderWorkbook/);
+  });
+
   test("fake BROWSER print-pdf and lint load /render", async () => {
     const admin = await seededHost(null);
     const user = await admin.db.getUserById("user_admin");
@@ -632,9 +692,11 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
   });
 });
 
-function createFakeBrowser(opts: { png: string; pdf: string }) {
+function createFakeBrowser(opts: { png: string; pdf: string; evaluateFailures?: number }) {
   const cdpMethods: string[] = [];
   const navigated: string[] = [];
+  let evaluateAttempts = 0;
+  let remainingEvaluateFailures = opts.evaluateFailures ?? 0;
 
   function createSocket() {
     const listeners = new Map<string, Array<(event: { data?: string }) => void>>();
@@ -664,7 +726,22 @@ function createFakeBrowser(opts: { png: string; pdf: string }) {
         } else if (method === "Page.printToPDF") {
           result = { data: opts.pdf };
         } else if (method === "Runtime.evaluate") {
+          evaluateAttempts += 1;
           const expression = String(msg.params?.expression ?? "");
+          if (remainingEvaluateFailures > 0) {
+            remainingEvaluateFailures -= 1;
+            queueMicrotask(() => {
+              for (const listener of listeners.get("message") ?? []) {
+                listener({
+                  data: JSON.stringify({
+                    id: msg.id,
+                    error: { message: "execution context destroyed" }
+                  })
+                });
+              }
+            });
+            return;
+          }
           if (expression.includes("univerAPI")) {
             result = { result: { value: true } };
           } else {
@@ -709,7 +786,7 @@ function createFakeBrowser(opts: { png: string; pdf: string }) {
     }
   };
 
-  return { browser, cdpMethods, navigated };
+  return { browser, cdpMethods, navigated, evaluateAttempts: () => evaluateAttempts };
 }
 
 function createForwardEnv() {

@@ -179,6 +179,31 @@ function cdpValue(payload: unknown): unknown {
   return payload;
 }
 
+const RENDER_READY_EXPRESSION =
+  "document.readyState === 'complete' && Boolean(window.univerAPI) && document.documentElement.dataset.univerReady === '1'";
+const RENDER_READY_TIMEOUT_MS = 30_000;
+const RENDER_READY_POLL_MS = 100;
+
+async function waitForRenderReady(cdp: CdpClient, pageSessionId: string): Promise<boolean> {
+  const deadline = Date.now() + RENDER_READY_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    try {
+      const evaluated = await cdp.send(
+        "Runtime.evaluate",
+        { expression: RENDER_READY_EXPRESSION, returnByValue: true },
+        { sessionId: pageSessionId }
+      );
+      if (cdpValue(evaluated) === true) return true;
+    } catch {
+      // Execution context is destroyed during navigation; keep polling until timeout.
+    }
+    const remaining = deadline - Date.now();
+    if (remaining <= 0) break;
+    await new Promise((resolve) => setTimeout(resolve, Math.min(RENDER_READY_POLL_MS, remaining)));
+  }
+  return false;
+}
+
 export async function openRenderPage(
   browser: BrowserBinding,
   pageUrl: string
@@ -197,33 +222,11 @@ export async function openRenderPage(
     if (!targetId) throw new Error("Browser session has no page target");
     const pageSessionId = await cdp.attachToTarget(targetId);
     await cdp.send("Page.enable", {}, { sessionId: pageSessionId });
+    await cdp.send("Runtime.enable", {}, { sessionId: pageSessionId }).catch(() => undefined);
     await cdp.send("Page.navigate", { url: pageUrl }, { sessionId: pageSessionId });
-    let ready = false;
-    for (let i = 0; i < 40; i++) {
-      const evaluated = await cdp.send(
-        "Runtime.evaluate",
-        {
-          expression: "Boolean(window.univerAPI) && document.documentElement.dataset.univerReady === '1'",
-          returnByValue: true
-        },
-        { sessionId: pageSessionId }
-      );
-      if (cdpValue(evaluated) === true) {
-        ready = true;
-        break;
-      }
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
+    const ready = await waitForRenderReady(cdp, pageSessionId);
     if (!ready) {
-      // Still capture: /render may expose univerAPI without dataset in older stubs.
-      const evaluated = await cdp.send(
-        "Runtime.evaluate",
-        { expression: "Boolean(window.univerAPI)", returnByValue: true },
-        { sessionId: pageSessionId }
-      );
-      if (cdpValue(evaluated) !== true) {
-        throw new Error("window.univerAPI was not ready on /render");
-      }
+      throw new Error("window.univerAPI was not ready on /render");
     }
     return { cdp, pageSessionId, close };
   } catch (err) {

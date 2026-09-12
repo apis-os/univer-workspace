@@ -7,6 +7,7 @@ import { UniverSheetsCorePreset } from "@univerjs/preset-sheets-core";
 import { createUniver } from "@univerjs/presets";
 import { greenTheme } from "@univerjs/themes";
 import { resolveUniverLicense } from "./features/editor/univer-license";
+import { hydrateRenderWorkbook } from "./render-hydrate";
 
 import "@univerjs/preset-sheets-core/lib/index.css";
 
@@ -57,9 +58,11 @@ async function boot(): Promise<void> {
 
   const api = univerAPI as UniverFacade;
   const snapshot = unitId ? await loadSnapshot(unitId, worktreeId) : null;
-  if (typeof api.createWorkbook === "function") {
-    api.createWorkbook(workbookData(unitId, snapshot));
-  }
+  const hydrated = hydrateRenderWorkbook({
+    snapshot,
+    createWorkbook: typeof api.createWorkbook === "function" ? api.createWorkbook.bind(api) : undefined
+  });
+  if (!hydrated.ready) return;
 
   window.univerAPI = univerAPI;
   window.__univerLint = () => ({ findings: [] });
@@ -81,21 +84,6 @@ async function loadSnapshot(
   } catch {
     return null;
   }
-}
-
-function workbookData(unitId: string, snapshot: Record<string, unknown> | null): Record<string, unknown> {
-  if (snapshot && typeof snapshot.id === "string") return snapshot;
-  if (snapshot && snapshot.workbook && typeof snapshot.workbook === "object") {
-    return snapshot.workbook as Record<string, unknown>;
-  }
-  return {
-    id: unitId || "render",
-    name: "Render",
-    sheetOrder: ["sheet-1"],
-    sheets: {
-      "sheet-1": { id: "sheet-1", name: "Sheet1", cellData: {} },
-    },
-  };
 }
 
 void boot();
