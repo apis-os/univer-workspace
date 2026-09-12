@@ -277,14 +277,18 @@ describe("agent panel helpers", () => {
     ]);
   });
 
-  it("treats cached explain as HIT and missing cache flags as MISS", () => {
-    expect(gatewayCacheStatus({}, "Set D4 to 180")).toBe("MISS");
-    expect(gatewayCacheStatus({ skipCache: false })).toBe("HIT");
+  it("does not treat explain prompts as HIT without a Gateway header", () => {
     expect(
       gatewayCacheStatus({}, "Explain the Q3 forecast in one sentence")
-    ).toBe("HIT");
-    expect(gatewayCacheStatus({ skipCache: true })).toBe("MISS");
+    ).toBeNull();
     expect(gatewayCacheStatus({ cache: "HIT" })).toBe("HIT");
+    expect(gatewayCacheStatus({ cache: "MISS" })).toBe("MISS");
+  });
+
+  it("treats cached explain as HIT and missing cache flags as MISS", () => {
+    expect(gatewayCacheStatus({ cache: "MISS" }, "Set D4 to 180")).toBe("MISS");
+    expect(gatewayCacheStatus({ cache: "HIT" })).toBe("HIT");
+    expect(gatewayCacheStatus({ cache: "HIT" }, "Explain the Q3 forecast in one sentence")).toBe("HIT");
     expect(truncateGatewayLogId("aig_explain_long")).toBe("aig_explain…");
     expect(truncateGatewayLogId(null)).toBe("");
   });

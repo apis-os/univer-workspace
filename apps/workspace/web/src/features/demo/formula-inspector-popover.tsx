@@ -30,15 +30,15 @@ export function FormulaInspectPopover({
       </div>
       <dl className="grid gap-1 font-mono text-xs">
         <div className="flex gap-2">
-          <dt className="text-subtle-foreground">f</dt>
+          <dt className="text-subtle-foreground">{t("formulaLabelF")}</dt>
           <dd>{payload.f == null ? "—" : String(payload.f)}</dd>
         </div>
         <div className="flex gap-2">
-          <dt className="text-subtle-foreground">v</dt>
+          <dt className="text-subtle-foreground">{t("formulaLabelV")}</dt>
           <dd>{payload.v == null ? "—" : String(payload.v)}</dd>
         </div>
         <div className="flex gap-2">
-          <dt className="text-subtle-foreground">precedents</dt>
+          <dt className="text-subtle-foreground">{t("formulaLabelPrecedents")}</dt>
           <dd>{payload.precedents.join(", ")}</dd>
         </div>
       </dl>

@@ -141,4 +141,13 @@ describe("bot icon and thinking pulse", () => {
     expect(shouldPulseBot({ bot: true, status: "idle" })).toBe(false);
     expect(shouldPulseBot({ bot: false, status: "thinking" })).toBe(false);
   });
+
+  it("does not pulse the bot when prefers-reduced-motion is reduce", () => {
+    expect(
+      shouldPulseBot({ bot: true, status: "thinking", reducedMotion: true })
+    ).toBe(false);
+    expect(
+      shouldPulseBot({ bot: true, status: "thinking", reducedMotion: false })
+    ).toBe(true);
+  });
 });

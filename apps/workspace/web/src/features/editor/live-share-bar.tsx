@@ -87,7 +87,7 @@ export function LiveShareBar({
   return (
     <div className="flex items-center gap-1">
       <Button size="sm" variant="secondary" onClick={commands.present}>
-        Present
+        {t("liveSharePresent")}
       </Button>
       <Button
         size="sm"
@@ -97,7 +97,7 @@ export function LiveShareBar({
           commands.stop();
         }}
       >
-        Stop
+        {t("liveShareStop")}
       </Button>
       <Button size="sm" variant="secondary" onClick={followAgentCommand}>
         {t("followAgent")}

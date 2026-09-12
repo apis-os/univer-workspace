@@ -336,17 +336,14 @@ export function isCachedExplainPrompt(prompt: string): boolean {
 
 export function gatewayCacheStatus(
   meta: Record<string, unknown> | undefined,
-  prompt = ""
-): "HIT" | "MISS" {
-  const cache = meta?.cache;
+  _prompt = ""
+): "HIT" | "MISS" | null {
+  const cache = meta?.cache ?? meta?.["cf-aig-cache-status"];
   if (cache === "HIT" || cache === "hit") return "HIT";
   if (cache === "MISS" || cache === "miss") return "MISS";
   if (meta?.cacheHit === true || meta?.cached === true) return "HIT";
   if (meta?.cacheHit === false || meta?.cached === false) return "MISS";
-  if (meta?.skipCache === false) return "HIT";
-  if (meta?.skipCache === true) return "MISS";
-  if (isCachedExplainPrompt(prompt)) return "HIT";
-  return "MISS";
+  return null;
 }
 
 export function truncateGatewayLogId(

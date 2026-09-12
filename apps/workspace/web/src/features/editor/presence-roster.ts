@@ -95,7 +95,9 @@ export function readAgentPresenceStatus(event: {
 export function shouldPulseBot(input: {
   readonly bot: boolean;
   readonly status: "thinking" | "idle";
+  readonly reducedMotion?: boolean;
 }): boolean {
+  if (input.reducedMotion) return false;
   return input.bot && input.status === "thinking";
 }
 

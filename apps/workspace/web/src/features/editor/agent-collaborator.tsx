@@ -100,7 +100,7 @@ export function AgentCollaborator({
   const [streamEvents, setStreamEvents] = useState<AgentEvent[]>([]);
   const [pendingPrompt, setPendingPrompt] = useState("");
   const [skills, setSkills] = useState<Array<{ id: string; name: string }>>([]);
-  const [cacheStatus, setCacheStatus] = useState<"HIT" | "MISS">("MISS");
+  const [cacheStatus, setCacheStatus] = useState<"HIT" | "MISS" | null>(null);
   const [gatewayLogId, setGatewayLogId] = useState("");
   const [spotlightCells, setSpotlightCells] = useState<string[]>([]);
   const [lastActor, setLastActor] = useState("");
@@ -124,7 +124,7 @@ export function AgentCollaborator({
   ) => {
     const status = gatewayCacheStatus(meta, usedPrompt);
     setCacheStatus(status);
-    noteLastGatewayCache(status);
+    if (status) noteLastGatewayCache(status);
     setGatewayLogId(
       truncateGatewayLogId(
         typeof meta.aiGatewayLogId === "string" ? meta.aiGatewayLogId : null
@@ -451,7 +451,7 @@ export function AgentCollaborator({
           <div className="flex min-w-0 items-center gap-2">
             <Sparkles className="size-4 text-brand-600" />
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">Q3 Forecast</p>
+              <p className="truncate text-sm font-semibold">{t("agentPanelTitle")}</p>
             </div>
           </div>
           <Button variant="ghost" size="icon-sm" aria-label={t("close")} onClick={onClose}>
@@ -628,7 +628,9 @@ export function AgentCollaborator({
           <p>
             {t("agentGateway")}
             {" · "}
-            {t(cacheStatus === "HIT" ? "agentCacheHit" : "agentCacheMiss")}
+            {cacheStatus === null
+              ? t("agentCacheUnknown")
+              : t(cacheStatus === "HIT" ? "agentCacheHit" : "agentCacheMiss")}
             {gatewayLogId ? ` · ${gatewayLogId}` : ""}
           </p>
           {spotlightCells.length > 0 ? (

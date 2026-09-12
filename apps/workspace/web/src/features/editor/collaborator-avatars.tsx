@@ -2,6 +2,7 @@ import type { IMember } from "@univerjs/protocol";
 import { Bot } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useI18n } from "../../shared/i18n";
+import { useMediaQuery } from "../../shared/resizable-sidebar";
 import { Avatar, Tooltip } from "../../shared/ui";
 import { cn } from "../../shared/utils/cn";
 import { PresenceLegend } from "./presence-legend";
@@ -30,6 +31,7 @@ export function CollaboratorAvatars({
   readonly currentUserAvatar?: string | null;
 }) {
   const { t } = useI18n();
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
   const [agentStatus, setAgentStatus] = useState<"thinking" | "idle">("idle");
   useEffect(() => {
     const onPresence = (event: Event) => {
@@ -72,7 +74,7 @@ export function CollaboratorAvatars({
             : undefined,
         dashed: seat.kind === "ghost",
         muted: seat.kind === "muted-bot",
-        thinking: shouldPulseBot({ bot: seat.bot, status: agentStatus }),
+        thinking: shouldPulseBot({ bot: seat.bot, status: agentStatus, reducedMotion }),
         ringClassName: presenceRingClassName(seat.ringToken, {
           dashed: seat.kind === "ghost",
         }),
@@ -101,7 +103,7 @@ export function CollaboratorAvatars({
                         presenceRingClassName(seat.ringToken)
                       ),
                   seat.kind === "muted-bot" && "opacity-50",
-                  shouldPulseBot({ bot: seat.bot, status: agentStatus }) &&
+                  shouldPulseBot({ bot: seat.bot, status: agentStatus, reducedMotion }) &&
                     "animate-pulse"
                 )}
               >
