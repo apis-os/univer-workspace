@@ -13,7 +13,7 @@ import { ActionService } from "../src/kernel/action.ts";
 import { UniverCollabService } from "../src/plugins/univer-collab.ts";
 import { generateDefaultSnapshot } from "../src/plugins/univer-default-snapshots.ts";
 import { registerFacadeActions } from "../src/plugins/univer-facade-actions.ts";
-import { runAgentTurn, type AgentEvent } from "../src/plugins/univer-agent.ts";
+import { isQ3FillToolResult, runAgentTurn, type AgentEvent } from "../src/plugins/univer-agent.ts";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const DEMO_FILE = "workspace.univer";
@@ -21,6 +21,8 @@ const DEMO_UNIT_ID = "unit_welcome_sheet";
 const FILL_PROMPT = "Fill E2:E4 with SUM of Jul–Sep";
 const FILL_CODE =
   "api.getActiveWorkbook().getActiveSheet().getRange('E2:E4').setValue({ f: '=SUM(B2:D2)' });";
+const INSPECT_E2_CODE =
+  "api.getActiveWorkbook().getActiveSheet().getRange('E2').getValue();";
 const PNG_1x1 =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
 
@@ -77,7 +79,7 @@ async function fillHarness(opts: { browser?: { fetch: typeof fetch } } = {}) {
   return { ctx, fileHost };
 }
 
-function fillAi() {
+function toolAi(toolName: string, args: Record<string, unknown>, response = "ok") {
   return {
     run: async (_model: string, input: unknown) => {
       const tools = (input as { tools?: Array<{ function?: { name?: string } }> }).tools;
@@ -86,20 +88,24 @@ function fillAi() {
           tool_calls: [
             {
               function: {
-                name: "univer_execute",
+                name: toolName,
                 arguments: JSON.stringify({
                   file: DEMO_FILE,
                   unitId: DEMO_UNIT_ID,
-                  code: FILL_CODE
+                  ...args
                 })
               }
             }
           ]
         };
       }
-      return { response: "Filled E2:E4 with SUM of Jul–Sep." };
+      return { response };
     }
   };
+}
+
+function fillAi() {
+  return toolAi("univer_execute", { code: FILL_CODE }, "Filled E2:E4 with SUM of Jul–Sep.");
 }
 
 function createFakeBrowser(opts: { png: string; delay?: Promise<void> }) {
@@ -278,5 +284,71 @@ describe("T17 CF screenshot card after Q3 fill", () => {
     assert.doesNotMatch(JSON.stringify(turn), /iVBORw0KGgo/);
     const done = turn.events.filter((event) => event.type === "agent.done").at(-1);
     assert.equal(done?.data.screenshot, null);
+  });
+
+  test("E2 inspect / single-cell E2 setRange does not schedule A1:F12 screenshot", async () => {
+    assert.equal(
+      isQ3FillToolResult("univer.execute", { code: INSPECT_E2_CODE }),
+      false,
+      "inspect getRange('E2') is not Fill E2:E4"
+    );
+    assert.equal(
+      isQ3FillToolResult("univer.sheet.setRange", {
+        range: "E2",
+        cells: [{ a1: "E2", value: "1" }]
+      }),
+      false,
+      "single-cell E2 setRange is not Fill E2:E4"
+    );
+    assert.equal(isQ3FillToolResult("univer.execute", { code: FILL_CODE }), true);
+    assert.equal(isQ3FillToolResult("univer.sheet.setRange", { range: "E2:E4" }), true);
+    assert.equal(
+      isQ3FillToolResult("univer.sheet.setRange", {
+        cells: [{ a1: "E2" }, { a1: "E3" }, { a1: "E4" }]
+      }),
+      true,
+      "E2+E3+E4 together is Fill E2:E4"
+    );
+
+    const { ctx } = await fillHarness();
+
+    const inspectWaited: Promise<unknown>[] = [];
+    const inspectTurn = await runAgentTurn(
+      {
+        kernel: ctx,
+        env: { AI: toolAi("univer_execute", { code: INSPECT_E2_CODE }, "E2 is empty.") },
+        waitUntil: (promise) => {
+          inspectWaited.push(promise);
+        }
+      },
+      { unitId: DEMO_UNIT_ID, prompt: "What is in E2?" }
+    );
+    assert.ok(
+      inspectTurn.toolCalls.some(
+        (call) =>
+          (call.tool === "univer_execute" || call.tool === "univer.execute") &&
+          String((call.args as { code?: unknown }).code ?? "").includes("getRange('E2')")
+      ),
+      "inspect turn must run univer.execute getRange('E2')"
+    );
+    assert.equal(inspectWaited.length, 0, "E2 inspect must not schedule A1:F12 screenshot");
+    assert.equal(inspectTurn.screenshot, undefined);
+
+    const setWaited: Promise<unknown>[] = [];
+    const setTurn = await runAgentTurn(
+      {
+        kernel: ctx,
+        waitUntil: (promise) => {
+          setWaited.push(promise);
+        }
+      },
+      { unitId: DEMO_UNIT_ID, prompt: "Set E2 to 1" }
+    );
+    assert.ok(
+      setTurn.toolCalls.some((call) => call.tool === "univer.sheet.setRange"),
+      "single-cell turn must run univer.sheet.setRange"
+    );
+    assert.equal(setWaited.length, 0, "single-cell E2 setRange must not schedule A1:F12 screenshot");
+    assert.equal(setTurn.screenshot, undefined);
   });
 });

@@ -179,21 +179,30 @@ function canonicalToolName(tool: string): string {
   return tool.includes(".") ? tool : tool.replace(/_/g, ".");
 }
 
+function cellA1(cell: unknown): string {
+  if (!cell || typeof cell !== "object") return "";
+  return String((cell as { a1?: unknown }).a1 ?? "").toUpperCase().replace(/\s/g, "");
+}
+
+function isE2E4Range(value: string): boolean {
+  return /E2\s*:\s*E4/i.test(value);
+}
+
+function hasFillE2E4Cells(cells: unknown): boolean {
+  if (!Array.isArray(cells)) return false;
+  const a1s = new Set(cells.map(cellA1).filter(Boolean));
+  if ([...a1s].some(isE2E4Range)) return true;
+  return a1s.has("E2") && a1s.has("E3") && a1s.has("E4");
+}
+
 export function isQ3FillToolResult(tool: string, args: Record<string, unknown>): boolean {
   const name = canonicalToolName(tool);
   if (name === "univer.execute") {
-    const code = String(args.code ?? "");
-    return /E2\s*:\s*E4/i.test(code) || /getRange\(\s*['"]E[2-4]/i.test(code);
+    return isE2E4Range(String(args.code ?? ""));
   }
   if (name === "univer.sheet.setRange") {
-    const range = String(args.range ?? "").toUpperCase();
-    if (range.includes("E2:E4")) return true;
-    const cells = Array.isArray(args.cells) ? args.cells : [];
-    return cells.some((cell) => {
-      if (!cell || typeof cell !== "object") return false;
-      const a1 = String((cell as { a1?: unknown }).a1 ?? "").toUpperCase();
-      return a1 === "E2" || a1 === "E3" || a1 === "E4" || a1.includes("E2:E4");
-    });
+    if (isE2E4Range(String(args.range ?? ""))) return true;
+    return hasFillE2E4Cells(args.cells);
   }
   return false;
 }
