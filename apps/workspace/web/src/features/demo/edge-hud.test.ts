@@ -3,10 +3,12 @@ import {
   browserHudStatus,
   combWireFromFrame,
   edgeHudChips,
+  isCombConnectUrl,
   noteLastCombWire,
   noteLastGatewayCache,
   readEdgeHudState,
   resetEdgeHudState,
+  tapCombWireFromSocket,
 } from "./edge-hud";
 
 describe("Comb wire from last collab frame", () => {
@@ -73,5 +75,64 @@ describe("edge HUD chips", () => {
       comb: "protobuf",
       gateway: "HIT",
     });
+  });
+});
+
+describe("Comb connect URL matching", () => {
+  it("matches trunk and worktree Comb connect sockets", () => {
+    expect(isCombConnectUrl("/universer-api/comb/connect")).toBe(true);
+    expect(
+      isCombConnectUrl(
+        "wss://workspace.example/universer-api/comb/connect?sessionTicket=t"
+      )
+    ).toBe(true);
+    expect(
+      isCombConnectUrl(
+        "wss://workspace.example/universer-api/worktrees/wt_review/comb/connect"
+      )
+    ).toBe(true);
+    expect(
+      isCombConnectUrl(
+        "/universer-api/worktrees/wt_review/comb/connect?sessionTicket=t"
+      )
+    ).toBe(true);
+    expect(isCombConnectUrl("/universer-api/comb")).toBe(false);
+    expect(isCombConnectUrl("/universer-api/worktrees/wt_review/comb")).toBe(
+      false
+    );
+  });
+});
+
+function fakeCollaborationSocket() {
+  let emit: ((event: unknown) => void) | undefined;
+  return {
+    socket: {
+      message$: {
+        subscribe(next: (event: unknown) => void) {
+          emit = next;
+          return { unsubscribe() {} };
+        },
+      },
+    },
+    emit(event: unknown) {
+      emit?.(event);
+    },
+  };
+}
+
+describe("tap Comb last-frame from ICollaborationSocket message$", () => {
+  afterEach(() => {
+    resetEdgeHudState();
+  });
+
+  it("updates protobuf|json from message$ without addEventListener", () => {
+    const { socket, emit } = fakeCollaborationSocket();
+    tapCombWireFromSocket(socket);
+    emit(new Uint8Array([0x08, 0x01, 0x10, 0x01]));
+    expect(readEdgeHudState().comb).toBe("protobuf");
+    emit('{"cmd":6}');
+    expect(readEdgeHudState().comb).toBe("json");
+    emit({ data: new Uint8Array([0x08, 0x02]) });
+    expect(readEdgeHudState().comb).toBe("protobuf");
   });
 });

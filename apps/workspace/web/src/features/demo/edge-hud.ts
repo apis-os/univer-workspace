@@ -117,8 +117,44 @@ export function edgeHudChips(input: {
   ];
 }
 
+const COMB_CONNECT_URL =
+  /\/universer-api(?:\/worktrees\/[^/?#]+)?\/comb\/connect(?:[/?#]|$)/;
+
 export function isCombConnectUrl(url: string): boolean {
-  return url.includes("/universer-api/comb/connect");
+  return COMB_CONNECT_URL.test(url);
+}
+
+function combFrameFromSocketEvent(event: unknown): unknown {
+  if (
+    typeof event === "string" ||
+    event instanceof ArrayBuffer ||
+    ArrayBuffer.isView(event)
+  ) {
+    return event;
+  }
+  if (event !== null && typeof event === "object" && "data" in event) {
+    const data = (event as { data: unknown }).data;
+    if (
+      typeof data === "string" ||
+      data instanceof ArrayBuffer ||
+      ArrayBuffer.isView(data)
+    ) {
+      return data;
+    }
+  }
+  return event;
+}
+
+function noteCombFrameFromSocketEvent(event: unknown): void {
+  const frame = combFrameFromSocketEvent(event);
+  if (
+    typeof frame !== "string" &&
+    !(frame instanceof ArrayBuffer) &&
+    !ArrayBuffer.isView(frame)
+  ) {
+    return;
+  }
+  noteLastCombWire(combWireFromFrame(frame));
 }
 
 export function tapCombWireFromSocket(
@@ -128,12 +164,18 @@ export function tapCombWireFromSocket(
           type: string,
           listener: (event: { readonly data?: unknown }) => void
         ) => void;
+        readonly message$?: {
+          readonly subscribe: (next: (event: unknown) => void) => unknown;
+        };
       }
     | null
     | undefined
 ): void {
   socket?.addEventListener?.("message", (event) => {
-    noteLastCombWire(combWireFromFrame(event.data));
+    noteCombFrameFromSocketEvent(event);
+  });
+  socket?.message$?.subscribe?.((event) => {
+    noteCombFrameFromSocketEvent(event);
   });
 }
 
