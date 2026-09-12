@@ -417,6 +417,24 @@ test("loose-parses optional-chain residue and still renames import and let bindi
   assert.doesNotMatch(src, /\b_0xec34fb\b/);
 });
 
+test("renames unbound constructor and prototype identifier refs but keeps matching string literals", () => {
+  const original =
+    'var AG="graph",jG=function(s){if(0){function C(){return 1;}};},' +
+    'new _0x5554c2,_0x5554c2.prototype.x=1,_0x5554c2.call(this),_0x5554c2;}(oO);\n' +
+    'const k="_0x5554c2";\nexport { z as publicApi };\n';
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0x5554c2"/);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /new ox5554c2\b/);
+  assert.match(src, /ox5554c2\.prototype/);
+  assert.match(src, /ox5554c2\.call/);
+  assert.doesNotMatch(src, /new _0x5554c2\b/);
+  assert.doesNotMatch(src, /_0x5554c2\.prototype/);
+  assert.doesNotMatch(src, /_0x5554c2\.call/);
+});
+
 test("keeps emptied _registerRenderModules body while renaming nearby hex locals", () => {
   const original =
     "class P{foo(_0xab12){return _0xab12;}_registerRenderModules(){}_initRegisterCommand(){this.bar=1;}}\n" +

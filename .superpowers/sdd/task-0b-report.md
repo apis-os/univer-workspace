@@ -426,4 +426,39 @@ cjs + lib-root twins still contain `registerRenderModule` (T9 only emptied es). 
 - **engine-chart es/lib 11+11 `_0x5554c2`**: unbound constructor refs with no recovered binding.
 - **collaboration-client-ui**: still skipped (T9 remapped leftover `_0x` imports onto `vN`).
 
+## Unbound constructor / prototype Identifier pass
+
+Date: 2026-09-12. Did **not** re-run sheets-pivot. T9 files not touched. `collaboration-client-ui` skipped. CQ stub `_registerRenderModules(){}` kept. No push. No `--all`. No commit.
+
+### TDD
+
+`node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **35/35**.
+
+RED then GREEN (1 new test): Identifier `_0x5554c2` with no recovered binding, used as `new _0x5554c2` / `_0x5554c2.prototype` / `_0x5554c2.call`, is ox-renamed like unbound decoder calls (`ox5554c2`). String `"_0x5554c2"` and `export … as publicApi` stay. Fixture uses a `var AG=…,jG=function…` list that `collectBoundHexNames` false-binds; previously loose parse turned some refs into `v1` and left `new _0x5554c2`.
+
+`renameUnboundHexIdents` now ox-renames every Identifier span of a hex name that appears as a constructor or prototype target (`new NAME`, `NAME.prototype`, `NAME.call` / `.apply`), even when the sloppy var-list walker marked the name bound. Strings and `export … as Public` still skipped.
+
+### Files rewritten (`--file --write --apply`, engine-chart only)
+
+| File | Hits before | Hits after | Overlay |
+| --- | ---: | ---: | --- |
+| `engine-chart/lib/es/index.js` | 11 | **0** | copied to workspace + dsh-plugin `@univerjs-pro/engine-chart` |
+| `engine-chart/lib/index.js` | 11 | **0** | copied |
+
+Did not write umd / published / pnpm store.
+
+### Hits
+
+| | This session start (after sheets-pivot) | After this pass |
+| --- | ---: | ---: |
+| `lib/es` files / tokens | 1 / 11 (engine-chart) | **0 / 0** |
+| Tree-wide Pro files / tokens | 2 / 22 | **0 / 0** |
+
+`collaboration-client-ui` skipped and already **0** `_0x`. CQ stub still `/_registerRenderModules\s*\(\s*\)\s*\{\s*\}/`.
+
+### Still stuck
+
+- **collaboration-client-ui**: still T9-skipped (already 0 `_0x` in vendor).
+- T0b leftover `_0x` in `vendor/univer-pro` is **empty**.
+
 

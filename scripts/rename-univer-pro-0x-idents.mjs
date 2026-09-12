@@ -1325,14 +1325,28 @@ function identExistsInCode(src, name) {
   return found;
 }
 
+function isCtorProtoOrCallUse(src, span) {
+  let k = span.start - 1;
+  while (k >= 0 && /\s/.test(src[k])) k -= 1;
+  if (k >= 2 && isKeywordAt(src, k - 2, "new")) return true;
+  const after = skipWs(src, span.end);
+  if (src[after] !== ".") return false;
+  const prop = readIdent(src, skipWs(src, after + 1));
+  return prop === "prototype" || prop === "call" || prop === "apply";
+}
+
 export function renameUnboundHexIdents(src) {
   const spans = scanHexIdentSpans(src);
   if (spans.length === 0) return { src, renamed: 0, changed: false };
   const bound = collectBoundHexNames(src);
+  const ctorProtoNames = new Set();
+  for (const span of spans) {
+    if (isCtorProtoOrCallUse(src, span)) ctorProtoNames.add(span.name);
+  }
   const map = new Map();
   const used = new Set();
   for (const span of spans) {
-    if (bound.has(span.name)) continue;
+    if (bound.has(span.name) && !ctorProtoNames.has(span.name)) continue;
     if (isExportAsPublicSpan(src, span)) continue;
     if (!map.has(span.name)) map.set(span.name, allocUnboundName(span.name, src, used));
   }
