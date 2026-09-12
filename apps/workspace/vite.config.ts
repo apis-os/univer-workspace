@@ -1,7 +1,11 @@
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+
+const workspaceDir = dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   root: "web",
@@ -41,6 +45,10 @@ export default defineConfig({
     outDir: "../dist/public",
     emptyOutDir: true,
     rollupOptions: {
+      input: {
+        main: resolve(workspaceDir, "web/index.html"),
+        render: resolve(workspaceDir, "web/render.html"),
+      },
       output: {
         manualChunks(id) {
           if (id.includes("@wendellhu/redi")) return "univer-core";

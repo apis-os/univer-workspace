@@ -455,6 +455,263 @@ describe("Univer File /uf inspect", () => {
   });
 });
 
+const PNG_1x1 =
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+const PDF_STUB = Buffer.from("%PDF-1.4\n%\xE2\xE3\xCF\xD3\n1 0 obj\n<<>>\nendobj\ntrailer\n<<>>\n%%EOF\n").toString(
+  "base64"
+);
+const RENDER_MAIN = join(ROOT, "apps/workspace/web/src/render-main.tsx");
+const RENDER_HTML = join(ROOT, "apps/workspace/web/render.html");
+const VITE_CONFIG = join(ROOT, "apps/workspace/vite.config.ts");
+
+describe("Univer File /uf screenshot, print-pdf, lint", () => {
+  test("chrome-less /render hydrates snapshot query params and exposes window.univerAPI", () => {
+    const renderMain = readFileSync(RENDER_MAIN, "utf8");
+    const renderHtml = readFileSync(RENDER_HTML, "utf8");
+    const viteConfig = readFileSync(VITE_CONFIG, "utf8");
+    assert.match(renderHtml, /render-main/);
+    assert.match(viteConfig, /render\.html/);
+    assert.match(renderMain, /window\.univerAPI/);
+    assert.match(renderMain, /unitId/);
+    assert.match(renderMain, /worktreeId/);
+    assert.match(renderMain, /theme/);
+    assert.doesNotMatch(renderMain, /workspace-layout|Live Share|command palette/i);
+  });
+
+  test("missing BROWSER returns 503 { error: \"BROWSER unbound\" } and never fakes PNG pixels", async () => {
+    const src = readFileSync(FILE_HTTP_SRC, "utf8");
+    assert.doesNotMatch(src, /iVBORw0KGgo/);
+
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const host = { db: admin.db, currentUser: user };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    for (const rest of ["/screenshot", "/print-pdf", "/lint"] as const) {
+      const res = await handleUniverFileHttp(
+        new Request(ufUrl(key, rest), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ unitId: DEMO_UNIT_ID })
+        }),
+        host
+      );
+      assert.ok(res, `POST ${rest} must be handled`);
+      assert.equal(res.status, 503);
+      assert.deepEqual(await res.json(), { error: "BROWSER unbound" });
+    }
+  });
+
+  test("fake BROWSER Page.captureScreenshot returns PNG length > 0", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB });
+    const host = { db: admin.db, currentUser: user, browser: fake.browser };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/screenshot"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID, params: { theme: "light" } })
+      }),
+      host
+    );
+    assert.ok(res);
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as {
+      images?: Array<{ mediaType?: string; data?: string; width?: number; height?: number }>;
+    };
+    assert.ok(Array.isArray(body.images));
+    assert.equal(body.images?.length, 1);
+    const image = body.images![0];
+    assert.equal(image.mediaType, "image/png");
+    assert.equal(typeof image.data, "string");
+    assert.ok((image.data?.length ?? 0) > 0);
+    assert.equal(Buffer.from(image.data ?? "", "base64").length > 0, true);
+    assert.equal(image.width, 1);
+    assert.equal(image.height, 1);
+    assert.ok(
+      fake.cdpMethods.includes("Page.captureScreenshot"),
+      "must call Page.captureScreenshot on BROWSER CDP"
+    );
+    assert.ok(
+      fake.navigated.some((url) => url.includes("/render") && url.includes(`unitId=${DEMO_UNIT_ID}`)),
+      "BROWSER must load /render?unitId="
+    );
+  });
+
+  test("fake BROWSER print-pdf and lint load /render", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB });
+    const host = { db: admin.db, currentUser: user, browser: fake.browser };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const pdfRes = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/print-pdf"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID, worktreeId: "" })
+      }),
+      host
+    );
+    assert.ok(pdfRes);
+    assert.equal(pdfRes.status, 200);
+    const pdfBody = (await pdfRes.json()) as { mediaType?: string; data?: string };
+    assert.equal(pdfBody.mediaType, "application/pdf");
+    assert.ok((pdfBody.data?.length ?? 0) > 0);
+    assert.ok(fake.cdpMethods.includes("Page.printToPDF"));
+
+    const lintRes = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/lint"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID })
+      }),
+      host
+    );
+    assert.ok(lintRes);
+    assert.equal(lintRes.status, 200);
+    const lintBody = (await lintRes.json()) as { findings?: unknown };
+    assert.ok(Array.isArray(lintBody.findings));
+    assert.ok(fake.cdpMethods.includes("Runtime.evaluate"));
+  });
+
+  test("ChatAgent /uf screenshot uses env.BROWSER without injecting it on the handler", async () => {
+    const { DshHost } = await import("../src/project/dsh-host.ts");
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const token = generateSessionToken();
+    await admin.db.createSession(user.id, token);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB });
+
+    class KernelHost extends DshHost {
+      override async ensureKernel() {
+        return { get: () => undefined } as never;
+      }
+    }
+
+    const agent = new KernelHost(
+      {
+        id: { toString: () => "id_screenshot", name: "univer_collab" },
+        storage: { sql: { exec: () => ({ toArray: () => [] }) } },
+        getWebSockets: () => [],
+        acceptWebSocket: () => {}
+      } as never,
+      { DB: admin.d1, BROWSER: fake.browser }
+    );
+
+    const key = fileKeyOf(DEMO_FILE);
+    const auth = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+    const created = await agent.fetch(new Request(ufUrl(key), { method: "POST", headers: auth }));
+    assert.equal(created.status, 200);
+
+    const res = await agent.fetch(
+      new Request(ufUrl(key, "/screenshot"), {
+        method: "POST",
+        headers: auth,
+        body: JSON.stringify({ unitId: DEMO_UNIT_ID })
+      })
+    );
+    assert.equal(res.status, 200);
+    const body = (await res.json()) as { images?: Array<{ data?: string; mediaType?: string }> };
+    assert.equal(body.images?.[0]?.mediaType, "image/png");
+    assert.ok((body.images?.[0]?.data?.length ?? 0) > 0);
+    assert.ok(fake.cdpMethods.includes("Page.captureScreenshot"));
+  });
+});
+
+function createFakeBrowser(opts: { png: string; pdf: string }) {
+  const cdpMethods: string[] = [];
+  const navigated: string[] = [];
+
+  function createSocket() {
+    const listeners = new Map<string, Array<(event: { data?: string }) => void>>();
+    return {
+      accept() {},
+      addEventListener(type: string, listener: (event: { data?: string }) => void) {
+        const list = listeners.get(type) ?? [];
+        list.push(listener);
+        listeners.set(type, list);
+      },
+      send(raw: string) {
+        const msg = JSON.parse(raw) as {
+          id?: number;
+          method?: string;
+          params?: Record<string, unknown>;
+        };
+        const method = msg.method ?? "";
+        cdpMethods.push(method);
+        let result: Record<string, unknown> = {};
+        if (method === "Target.attachToTarget") {
+          result = { sessionId: "cdp-page" };
+        } else if (method === "Page.navigate") {
+          const url = typeof msg.params?.url === "string" ? msg.params.url : "";
+          navigated.push(url);
+        } else if (method === "Page.captureScreenshot") {
+          result = { data: opts.png };
+        } else if (method === "Page.printToPDF") {
+          result = { data: opts.pdf };
+        } else if (method === "Runtime.evaluate") {
+          const expression = String(msg.params?.expression ?? "");
+          if (expression.includes("univerAPI")) {
+            result = { result: { value: true } };
+          } else {
+            result = { result: { value: { findings: [] } } };
+          }
+        }
+        queueMicrotask(() => {
+          for (const listener of listeners.get("message") ?? []) {
+            listener({ data: JSON.stringify({ id: msg.id, result }) });
+          }
+        });
+      },
+      close() {}
+    };
+  }
+
+  const browser = {
+    fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = String(input);
+      const method = (init?.method ?? "GET").toUpperCase();
+      if (url.endsWith("/v1/sessions") && method === "POST") {
+        return new Response(
+          JSON.stringify({
+            sessionId: "mock-session",
+            targets: [{ id: "mock-target", type: "page", url: "about:blank" }]
+          }),
+          { headers: { "Content-Type": "application/json" } }
+        );
+      }
+      if (url.includes("/cdp")) {
+        return { ok: true, webSocket: createSocket() } as unknown as Response;
+      }
+      if (url.includes("/targets")) {
+        return new Response(JSON.stringify([{ id: "mock-target", type: "page" }]), {
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+      if (method === "DELETE") {
+        return new Response(null, { status: 204 });
+      }
+      return new Response("not found", { status: 404 });
+    }
+  };
+
+  return { browser, cdpMethods, navigated };
+}
+
 function createForwardEnv() {
   const d1 = createMockD1();
   const chatAgentFetches: string[] = [];

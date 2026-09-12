@@ -568,7 +568,8 @@ export class DshHost extends HostBase<any> {
       const fileRes = await handleUniverFileHttp(request, {
         db,
         currentUser: session.currentUser,
-        collab
+        collab,
+        browser: (this.env as { BROWSER?: { fetch?: typeof fetch } }).BROWSER
       });
       if (fileRes) return fileRes;
     }

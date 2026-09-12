@@ -5,6 +5,15 @@ import type { ControlPlaneDb } from "../control-plane/db.ts";
 import { handleControlPlaneRoutes, type GatewayContext } from "../control-plane/gateway.ts";
 import type { User } from "../control-plane/types.ts";
 import { getSheetRange, type SheetCellValue } from "../plugins/univer-snapshot.ts";
+import {
+  browserUnboundResponse,
+  capturePng,
+  isBrowserBound,
+  lintRenderPage,
+  printPdf,
+  renderPageUrl,
+  type BrowserBinding
+} from "./browser-rendering.ts";
 
 export const DEMO_UNIVER_FILE = "workspace.univer";
 export const DEMO_UNIT_ID = "unit_welcome_sheet";
@@ -22,6 +31,7 @@ export interface UniverFileHttpHost {
   db: ControlPlaneDb;
   currentUser: User | null;
   collab?: UniverFileCollab;
+  browser?: BrowserBinding;
 }
 
 /** Encode a file path as base64url for `/uf/:key` URLs. */
@@ -88,6 +98,16 @@ export async function handleUniverFileHttp(
   const inspectMatch = rest.match(/^units\/([^/]+)\/inspect$/);
   if (inspectMatch && method === "GET") {
     return inspectFileUnit(request, host, filePath, spaceId, inspectMatch[1]);
+  }
+
+  if (rest === "screenshot" && method === "POST") {
+    return screenshotFileUnit(request, host, filePath, spaceId);
+  }
+  if (rest === "print-pdf" && method === "POST") {
+    return printPdfFileUnit(request, host, filePath, spaceId);
+  }
+  if (rest === "lint" && method === "POST") {
+    return lintFileUnit(request, host, filePath, spaceId);
   }
 
   return jsonFile({ error: { message: `Not found: ${method} ${url.pathname}` } }, 404);
@@ -259,6 +279,94 @@ async function inspectFileUnit(
   }
 
   return jsonFile(inspectPayload(rangeParam, cells));
+}
+
+async function screenshotFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string
+): Promise<Response> {
+  const opened = await openRenderRequest(request, host, filePath, spaceId);
+  if (opened instanceof Response) return opened;
+  try {
+    const image = await capturePng(host.browser!, opened.renderUrl, opened.params);
+    return jsonFile({
+      images: [{ mediaType: "image/png", data: image.data, width: image.width, height: image.height }]
+    });
+  } catch (err) {
+    return jsonFile({ error: { message: err instanceof Error ? err.message : "Screenshot failed" } }, 502);
+  }
+}
+
+async function printPdfFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string
+): Promise<Response> {
+  const opened = await openRenderRequest(request, host, filePath, spaceId);
+  if (opened instanceof Response) return opened;
+  try {
+    const pdf = await printPdf(host.browser!, opened.renderUrl);
+    return jsonFile({ mediaType: "application/pdf", data: pdf.data });
+  } catch (err) {
+    return jsonFile({ error: { message: err instanceof Error ? err.message : "Print PDF failed" } }, 502);
+  }
+}
+
+async function lintFileUnit(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string
+): Promise<Response> {
+  const opened = await openRenderRequest(request, host, filePath, spaceId);
+  if (opened instanceof Response) return opened;
+  try {
+    return jsonFile(await lintRenderPage(host.browser!, opened.renderUrl));
+  } catch (err) {
+    return jsonFile({ error: { message: err instanceof Error ? err.message : "Lint failed" } }, 502);
+  }
+}
+
+async function openRenderRequest(
+  request: Request,
+  host: UniverFileHttpHost,
+  filePath: string,
+  spaceId: string
+): Promise<Response | { renderUrl: string; params?: Record<string, unknown> }> {
+  if (!isBrowserBound(host.browser)) {
+    return browserUnboundResponse();
+  }
+
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  const unitId = typeof body.unitId === "string" ? body.unitId.trim() : "";
+  const worktreeId = typeof body.worktreeId === "string" ? body.worktreeId.trim() : "";
+  const params = body.params && typeof body.params === "object" && !Array.isArray(body.params)
+    ? (body.params as Record<string, unknown>)
+    : undefined;
+  const theme = typeof params?.theme === "string" ? params.theme : "";
+
+  if (!unitId) {
+    return jsonFile({ error: { message: "unitId is required" } }, 400);
+  }
+  if (worktreeId && !(await canReviewFileWorktree(host, worktreeId, spaceId))) {
+    return jsonFile({ error: { message: "Worktree not found" } }, 404);
+  }
+  if (!(await canInspectUnit(host, filePath, spaceId, unitId, worktreeId))) {
+    return jsonFile({ error: { message: "Unit not found" } }, 404);
+  }
+
+  const snapshotUnitId = host.collab ? resolveSnapshotUnitId(host.collab, unitId, worktreeId) : unitId;
+  return {
+    renderUrl: renderPageUrl(request.url, {
+      unitId: snapshotUnitId,
+      worktreeId,
+      theme
+    }),
+    params
+  };
 }
 
 async function canReviewFileWorktree(
