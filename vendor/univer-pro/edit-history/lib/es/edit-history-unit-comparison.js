@@ -1,0 +1,10 @@
+import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,Tools,UniverInstanceType,merge,registerDependencies,toDisposable}from"@univerjs/core";
+import{RevertRevisionMutation,UniverCollaborationPlugin,parseProtocolChangeset}from"@univerjs-pro/collaboration";
+import{UniverLicensePlugin}from"@univerjs-pro/license";
+import{HTTPService}from"@univerjs/network";
+import{ErrorCode}from"@univerjs/protocol";
+import{BehaviorSubject}from"rxjs";
+import { B, V } from "./internal-glue.js";
+let K=class{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215){this._adapterRegistry=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215;}compare(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217){let{query:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46218,...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46219}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217;return this.query(this.prepare(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46219),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46218);}prepare(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224=this._adapterRegistry["get"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223.type);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224)throw Error("[UnitComparisonService]: No comparison adapter for unit type "+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223.type+".");return B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224);}query(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228={}){return V(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228);}};
+
+export { K as UnitComparisonService };
