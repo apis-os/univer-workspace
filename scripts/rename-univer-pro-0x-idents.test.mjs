@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { rename0xIdents } from "./rename-univer-pro-0x-idents.mjs";
+import { abortIfCqStubRestored, rename0xIdents } from "./rename-univer-pro-0x-idents.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const FIXTURE = path.join(ROOT, "scripts/fixtures/0x-ident-rename.fixture.js");
@@ -415,4 +415,37 @@ test("loose-parses optional-chain residue and still renames import and let bindi
   assert.match(src, /\?\.\./);
   assert.doesNotMatch(src, /\b_0xb1346a\b/);
   assert.doesNotMatch(src, /\b_0xec34fb\b/);
+});
+
+test("keeps emptied _registerRenderModules body while renaming nearby hex locals", () => {
+  const original =
+    "class P{foo(_0xab12){return _0xab12;}_registerRenderModules(){}_initRegisterCommand(){this.bar=1;}}\n" +
+    "export { P as PivotPlugin };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /_registerRenderModules\s*\(\s*\)\s*\{\s*\}/);
+  assert.doesNotMatch(src, /\["registerRenderModule"\]|\.registerRenderModule\s*\(/);
+  assert.doesNotMatch(src, /\b_0xab12\b/);
+  assert.match(src, /as PivotPlugin/);
+});
+
+test("aborts when emptied CQ stub would regain registerRenderModule", () => {
+  const original = "class P{_registerRenderModules(){}_initRegisterCommand(){}}";
+  const next =
+    'class P{_registerRenderModules(){this._renderManagerService["registerRenderModule"](1);}_initRegisterCommand(){}}';
+  const result = abortIfCqStubRestored(original, next);
+  assert.equal(result.aborted, true);
+  assert.equal(result.src, original);
+  assert.match(String(result.reason), /registerRenderModule/);
+});
+
+test("does not abort CQ-bearing twins that still register render modules", () => {
+  const original =
+    'class P{_registerRenderModules(){this._renderManagerService["registerRenderModule"](_0xab12);}_initRegisterCommand(){}}';
+  const next =
+    'class P{_registerRenderModules(){this._renderManagerService["registerRenderModule"](v1);}_initRegisterCommand(){}}';
+  const result = abortIfCqStubRestored(original, next);
+  assert.equal(result.aborted, false);
+  assert.equal(result.src, next);
 });

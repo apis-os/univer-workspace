@@ -28,7 +28,7 @@ const T9_SKIP = [
   "apps/workspace/web/src/render-main.tsx",
   "src/integrations/browser-rendering.ts"
 ];
-const T0B_SKIP_PKGS = ["sheets-pivot", "sheets-pivot-ui", "collaboration-client-ui"];
+const T0B_SKIP_PKGS = ["collaboration-client-ui"];
 
 let babel = null;
 let acornLoose = null;
@@ -2276,6 +2276,58 @@ function renameViaLooseParse(src, counter) {
   return { src: out, renamed: map.size, changed: out !== src, aborted: false };
 }
 
+const CQ_METHOD_RE = /(?:^|[^\w$])([A-Za-z_$][\w$]*)\s*\(\s*\)\s*\{/g;
+const CQ_REGISTER_RE = /\["registerRenderModule"\]|\.registerRenderModule\s*\(/;
+
+function lastNamedEmptyishMethod(src, wantedName) {
+  CQ_METHOD_RE.lastIndex = 0;
+  let last = null;
+  let match;
+  while ((match = CQ_METHOD_RE.exec(src))) {
+    if (wantedName && match[1] !== wantedName) continue;
+    const open = match.index + match[0].length - 1;
+    const balanced = matchBalancedBrace(src, open);
+    const end = balanced ? balanced.end : src.length;
+    last = { name: match[1], start: open, end, body: src.slice(open, end) };
+  }
+  return last;
+}
+
+function extractCqStubMethod(src) {
+  const named = lastNamedEmptyishMethod(src, "_registerRenderModules");
+  if (named) return named;
+  const initAt = src.lastIndexOf("_initRegisterCommand");
+  if (initAt === -1) return null;
+  const before = src.slice(0, initAt);
+  const fallback = lastNamedEmptyishMethod(before, null);
+  if (!fallback) return null;
+  if (fallback.end !== before.length && before.slice(fallback.end).trim() !== "") return null;
+  return fallback;
+}
+
+function cqStubBodyIsEmpty(body) {
+  if (body == null) return false;
+  if (CQ_REGISTER_RE.test(body)) return false;
+  const inner = body.replace(/^\{/, "").replace(/\}$/, "");
+  return inner.replace(/;/g, "").trim() === "";
+}
+
+export function abortIfCqStubRestored(original, next) {
+  const origMethod = extractCqStubMethod(original);
+  if (!origMethod || origMethod.name !== "_registerRenderModules" || !cqStubBodyIsEmpty(origMethod.body)) {
+    return { aborted: false, src: next };
+  }
+  const nextMethod = extractCqStubMethod(next);
+  if (nextMethod && cqStubBodyIsEmpty(nextMethod.body)) {
+    return { aborted: false, src: next };
+  }
+  return {
+    aborted: true,
+    reason: "would restore CQ registerRenderModule",
+    src: original
+  };
+}
+
 export function rename0xIdents(src) {
   const original = src;
   const hitsBefore = countTokens(src);
@@ -2370,6 +2422,18 @@ export function rename0xIdents(src) {
     };
   }
   if (!next.endsWith("\n")) next += "\n";
+  const cq = abortIfCqStubRestored(original, next);
+  if (cq.aborted) {
+    return {
+      src: original,
+      changed: false,
+      aborted: true,
+      reason: cq.reason,
+      hitsBefore,
+      hitsAfter: hitsBefore,
+      renamed: 0
+    };
+  }
   return {
     src: next,
     changed: next !== src,
@@ -2413,14 +2477,21 @@ function writeUnlinked(filePath, content) {
 function applyEsFileToNodeModules(vendorFile) {
   const rel = path.relative(VENDOR_PRO, vendorFile);
   if (rel.startsWith("..")) return false;
-  const dest = path.join(PRO_NM, rel);
   const pkg = rel.split(path.sep)[0];
-  if (!fs.existsSync(path.join(PRO_NM, pkg))) {
-    console.warn(`skip apply: @univerjs-pro/${pkg} missing in node_modules`);
-    return false;
+  const roots = [
+    PRO_NM,
+    path.join(ROOT, "packages/dsh-univer-workspace-plugin/node_modules/@univerjs-pro")
+  ];
+  let applied = false;
+  for (const proNm of roots) {
+    if (!fs.existsSync(path.join(proNm, pkg))) continue;
+    writeUnlinked(path.join(proNm, rel), fs.readFileSync(vendorFile));
+    applied = true;
   }
-  writeUnlinked(dest, fs.readFileSync(vendorFile));
-  return true;
+  if (!applied) {
+    console.warn(`skip apply: @univerjs-pro/${pkg} missing in node_modules`);
+  }
+  return applied;
 }
 
 function walkJs(dir, out = []) {
@@ -2602,9 +2673,21 @@ export function processVendorFile(filePath, { write = false, apply = false } = {
     console.log(`UNCHANGED ${rel} hits=${result.hitsBefore} ${ms}ms`);
     return { rel, changed: false, hitsBefore: result.hitsBefore, hitsAfter: result.hitsAfter, ms };
   }
+  const cqWrite = abortIfCqStubRestored(original, result.src);
+  if (cqWrite.aborted) {
+    console.warn(`ABORT ${rel} (${cqWrite.reason})`);
+    return { rel, aborted: true, reason: cqWrite.reason, hitsBefore: result.hitsBefore, ms };
+  }
   if (write) {
     backupVendorFile(filePath);
     writeUnlinked(filePath, result.src);
+    const writtenSrc = fs.readFileSync(filePath, "utf8");
+    const cqAfter = abortIfCqStubRestored(original, writtenSrc);
+    if (cqAfter.aborted) {
+      writeUnlinked(filePath, original);
+      console.warn(`ABORT ${rel} post-write (${cqAfter.reason}); restored original`);
+      return { rel, aborted: true, reason: cqAfter.reason, hitsBefore: result.hitsBefore, ms };
+    }
     if (apply) applyEsFileToNodeModules(filePath);
   }
   const mode = write ? "WRITE" : "DRY";

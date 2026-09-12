@@ -367,3 +367,63 @@ Still abort `export { _0x123 }` with no `as`.
 
 Commit: `cd1c7fb1` `chore(vendor): loose-parse leftover Pro _0x without adding braces`.
 
+## sheets-pivot* pass (T9 CQ stub preserved)
+
+Date: 2026-09-12. T9 CQ stub already committed (`dd608458`). Renamed identifiers in `sheets-pivot` / `sheets-pivot-ui` only. Did not touch T9 files, `collaboration-client-ui`, wrangler, `/demo`, or `--all`. No push.
+
+### TDD
+
+`node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **34/34**.
+
+RED then GREEN (3 new tests):
+
+1. Keep emptied `_registerRenderModules(){}` while renaming nearby hex locals.
+2. `abortIfCqStubRestored` aborts if that empty stub would regain `registerRenderModule`.
+3. CQ-bearing cjs/lib-root twins that still register render modules are not aborted.
+
+`T0B_SKIP_PKGS` is now only `collaboration-client-ui`. Post-write assertion restores the original file if the stub would come back.
+
+### Backup (new; did not overwrite earlier packages)
+
+`vendor/univer-pro-0x-backup/<pkg>/lib/{es,cjs,}/…`
+
+- `sheets-pivot` es/index + lib-root index/facade + cjs index/facade
+- `sheets-pivot-ui` es/index (CQ stub snapshot, 0 `_0x`) + cjs/index + lib-root index
+
+### Hits
+
+| | This session start (after `cd1c7fb1`) | After this pass |
+| --- | ---: | ---: |
+| `lib/es` files / tokens | 2 / 4,456 (sheets-pivot 4,445 + engine-chart 11) | **1 / 11** (engine-chart only) |
+| sheets-pivot* files / tokens | 7 / 44,487 | **0 / 0** |
+| Tree-wide files / tokens | 9 / 44,509 | **2 / 22** |
+
+### Files rewritten (`--file --write --apply`, pivot only)
+
+| File | Hits before | Hits after | Bindings renamed |
+| --- | ---: | ---: | ---: |
+| `sheets-pivot/lib/es/index.js` | 4,445 | **0** | 1,391 |
+| `sheets-pivot/lib/index.js` | 10,855 | **0** | 3,368 |
+| `sheets-pivot/lib/facade.js` | 1,747 | **0** | 547 |
+| `sheets-pivot/lib/cjs/index.js` | 13,496 | **0** | 3,291 |
+| `sheets-pivot/lib/cjs/facade.js` | 1,525 | **0** | 483 |
+| `sheets-pivot-ui/lib/es/index.js` | 0 | **0** (UNCHANGED; CQ stub not regenerated) | 0 |
+| `sheets-pivot-ui/lib/cjs/index.js` | 5,570 | **0** | 1,627 |
+| `sheets-pivot-ui/lib/index.js` | 6,849 | **0** | 1,809 |
+
+### CQ stub
+
+`sheets-pivot-ui/lib/es/index.js` still matches `/_registerRenderModules\s*\(\s*\)\s*\{\s*\}/` with empty body `{}`. No `registerRenderModule` calls on that file.
+
+cjs + lib-root twins still contain `registerRenderModule` (T9 only emptied es). Rename did not restore CQ onto es.
+
+### Overlay
+
+`@univerjs-pro/sheets-pivot` and `sheets-pivot-ui` are **not** installed under `apps/workspace/node_modules/@univerjs-pro` (skip, same as pdfs). Applied written files into `packages/dsh-univer-workspace-plugin/node_modules/@univerjs-pro/{sheets-pivot,sheets-pivot-ui}` (file: installs). Did not write pnpm store / umd / published.
+
+### Still stuck
+
+- **engine-chart es/lib 11+11 `_0x5554c2`**: unbound constructor refs with no recovered binding.
+- **collaboration-client-ui**: still skipped (T9 remapped leftover `_0x` imports onto `vN`).
+
+
