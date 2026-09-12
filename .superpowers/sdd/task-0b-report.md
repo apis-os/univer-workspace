@@ -275,3 +275,49 @@ Small facades (docs-list/quote/callout/code/formula, history, thread-comment, pr
 
 Commit: `5abf54b7` `chore(vendor): drop leftover Pro _0x via unbound decoder and module-slice heals`.
 
+## Extract inner `function _0x` + else-semicolon + dist
+
+Date: 2026-09-12. Did **not** re-run unbound-decoder + module-slice alone. T9 files not touched (`sheets-pivot*`, `collaboration-client-ui` skipped). No push. No `--all`.
+
+### New techniques (TDD RED then GREEN)
+
+`node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **28/28**.
+
+1. **Extract complete `function _0xHEX(...){…}` as its own program** even when the parent IIFE does not parse. `scope.rename` the function’s own binding (recursion included), splice back, then rewrite remaining Identifier refs of that name in the parent. Fixture: unparseable `else{` containing `function _0xab12(a){ return a+_0xab12; }`.
+2. **Missing semicolon after `else{`:** insert `;` only at a proven statement boundary (digit / `)` / `]` / string then `function|class|const|let|var|if|for|…`). Does not insert before `foo(function`. Fixture: `var _0xaaa=1function _0xbbb`.
+3. **Parseable prefix of unclosed / false-complete hex functions** (brace matcher stole an outer `}`). Longest depth-1 statement prefix that parses as `function _0xHEX(){…}`, rename, splice without adding a brace.
+4. **Hex `var`/`let`/`const` statements** in unparseable wrappers: isolate, wrap as `function __uw()`, `scope.rename`, splice, rewrite remaining Identifier refs of those bindings.
+5. **`for (let x of _0xdead01)`** is not a binding of `_0xdead01` (unbound decoder rename).
+6. **`--dist`** of leftover `dist/*.cjs` / `dist/*.mjs`, excluding `sheets-pivot*` and `collaboration-client-ui`. Same AST rename.
+
+Still abort `export { _0x123 }` with no `as`. Strings / Comb keys untouched.
+
+### Hits
+
+| | This session start (after `5abf54b7`) | After this pass |
+| --- | ---: | ---: |
+| `lib/es` files / tokens | 6 / 9,165 | **4 / 4,569** (includes skipped sheets-pivot 4,445) |
+| Tree-wide files / tokens | 48 / 63,532 | **15 / 44,748** |
+
+### Giants
+
+| File | Hits before | Hits after |
+| --- | ---: | ---: |
+| `engine-chart/lib/es/index.js` | 4,508 | **111** |
+| `engine-chart/lib/index.js` | 4,508 | **111** |
+| `boards-ui/lib/es/index.js` | 155 | **2** |
+| `boards-ui/lib/cjs/index.js` | 79 | **2** |
+| `bases-ui/lib/es/index.js` | 25 | **11** |
+| `docs-print/lib/es/index.js` | 21 | **0** |
+| `chart-ui/lib/es/index.js` | 11 | **0** |
+| `bases-ui/lib/cjs/rolldown-runtime-*.js` | 47 | **0** |
+| collab `dist/*.cjs` (service, worktree, endpoint, history, …) | 9,477 across 28 files | **11** (`collaboration-worktree-client/dist/index.mjs` only) |
+
+### Still stuck (one-line why)
+
+- **sheets-pivot\***: skipped while T9 is live (~44k across es/cjs/lib-root).
+- **engine-chart es/lib 111**: leftover bound names past the parseable prefix of two unclosed `function _0x…` bodies.
+- **bases-ui 11 / boards-ui 2**: inner export / missing-semicolon residue after `else{`.
+- **collaboration-worktree-client dist/index.mjs 11**: unparseable chunks after AST rename (`Export 'x' is not defined` / unexpected token).
+- **collaboration-client-ui**: skipped (T9 remapped leftover `_0x` imports onto `vN`).
+

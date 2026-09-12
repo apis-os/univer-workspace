@@ -28,7 +28,7 @@ const T9_SKIP = [
   "apps/workspace/web/src/render-main.tsx",
   "src/integrations/browser-rendering.ts"
 ];
-const T0B_SKIP_PKGS = ["sheets-pivot", "sheets-pivot-ui"];
+const T0B_SKIP_PKGS = ["sheets-pivot", "sheets-pivot-ui", "collaboration-client-ui"];
 
 let babel = null;
 
@@ -81,6 +81,40 @@ function parseSource(src) {
  * Does not rewrite `_0x` tokens; only rejoins `delete` + Ident that
  * unglueKeywords split, and empty rotator IIFE residue.
  */
+const STMT_AFTER_VALUE = ["function", "class", "const", "let", "var", "if", "for", "while", "switch", "try"];
+
+function healElseMissingSemicolons(src) {
+  if (!src.includes("else{") && !src.includes("else {")) return src;
+  const ranges = [];
+  walkCode(src, (i) => {
+    if (!isKeywordAt(src, i, "else")) return;
+    const j = skipWs(src, i + 4);
+    if (src[j] !== "{") return;
+    const balanced = matchBalancedBrace(src, j);
+    ranges.push({ start: j + 1, end: balanced ? balanced.end - 1 : src.length });
+  });
+  if (ranges.length === 0) return src;
+  const inserts = [];
+  walkCode(src, (i) => {
+    if (!ranges.some((r) => i >= r.start && i < r.end)) return;
+    if (!STMT_AFTER_VALUE.some((word) => isKeywordAt(src, i, word))) return;
+    let k = i - 1;
+    while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) k -= 1;
+    if (k < 0) return;
+    const prev = src[k];
+    if (prev === ";") return;
+    const proven = /[0-9]/.test(prev) || prev === ")" || prev === "]" || prev === '"' || prev === "'";
+    if (!proven) return;
+    inserts.push(i);
+  });
+  if (inserts.length === 0) return src;
+  let out = src;
+  for (const at of [...new Set(inserts)].sort((a, b) => b - a)) {
+    out = `${out.slice(0, at)};${out.slice(at)}`;
+  }
+  return out;
+}
+
 export function healForParse(src) {
   return src
     .replace(/\bas\s+delete\s+([A-Z][A-Za-z0-9_]*)/g, "as delete$1")
@@ -345,8 +379,17 @@ function readIdent(src, i) {
 function isKeywordAt(src, i, word) {
   if (i < 0 || i + word.length > src.length) return false;
   if (src.slice(i, i + word.length) !== word) return false;
-  if (isIdentChar(src[i - 1]) || isIdentChar(src[i + word.length])) return false;
-  return true;
+  if (isIdentChar(src[i + word.length])) return false;
+  const prev = src[i - 1];
+  if (prev == null) return true;
+  if (/[A-Za-z_$]/.test(prev)) return false;
+  if (/[0-9]/.test(prev)) {
+    let d = i - 1;
+    while (d >= 0 && /[0-9]/.test(src[d])) d -= 1;
+    if (d >= 0 && /[A-Za-z_$]/.test(src[d])) return false;
+    return true;
+  }
+  return !isIdentChar(prev);
 }
 
 const REGEX_AFTER_KEYWORD =
@@ -746,6 +789,29 @@ function tryParseVariants(src) {
   return { error: true, src };
 }
 
+function hexFunctionDeclName(src) {
+  const t = src.trimStart();
+  const m = /^(?:async\s+)?function\s*\*?\s*(_0x[0-9a-f]+)/i.exec(t);
+  return m ? m[1] : null;
+}
+
+function functionDeclName(src) {
+  const t = src.trimStart();
+  const m = /^(?:async\s+)?function\s*\*?\s*([A-Za-z_$][\w$]*)/.exec(t);
+  return m ? m[1] : null;
+}
+
+function rewriteHexIdents(src, from, to) {
+  if (!from || !to || from === to) return src;
+  const spans = scanHexIdentSpans(src).filter((s) => s.name === from);
+  if (spans.length === 0) return src;
+  let out = src;
+  for (const span of [...spans].sort((a, b) => b.start - a.start)) {
+    out = `${out.slice(0, span.start)}${to}${out.slice(span.end)}`;
+  }
+  return out;
+}
+
 function tryRenameIsolatedFunction(src, counter) {
   if (countTokens(src) === 0) return { src, renamed: 0, changed: false };
   const parsed = tryParseVariants(src);
@@ -753,9 +819,8 @@ function tryRenameIsolatedFunction(src, counter) {
   const { traverse, generate } = loadBabel();
   const abort = findAbortReason(parsed.ast, traverse);
   if (abort) return { aborted: true, reason: abort, src, renamed: 0 };
-  const skipNames = skipProgramFunctionIds(parsed.ast);
   const renamed =
-    renameHexBindings(parsed.ast, traverse, counter, skipNames) + renameHexLabels(parsed.ast, traverse);
+    renameHexBindings(parsed.ast, traverse, counter) + renameHexLabels(parsed.ast, traverse);
   if (renamed === 0) return { src, renamed: 0, changed: false };
   const body = parsed.ast.program.body;
   let next;
@@ -779,6 +844,7 @@ function processFunctionsIn(src, counter, includeTop) {
   let renamed = 0;
   for (const f of [...tops].sort((a, b) => b.start - a.start)) {
     const piece = result.slice(f.start, f.end);
+    const oldName = hexFunctionDeclName(piece);
     const inner = processFunctionsIn(piece, counter, false);
     renamed += inner.renamed;
     const renamedPiece = tryRenameIsolatedFunction(inner.src, counter);
@@ -786,6 +852,156 @@ function processFunctionsIn(src, counter, includeTop) {
     const nextPiece = renamedPiece.error ? inner.src : renamedPiece.src;
     renamed += renamedPiece.renamed ?? 0;
     result = result.slice(0, f.start) + nextPiece + result.slice(f.end);
+    if (oldName && nextPiece) {
+      const newName = functionDeclName(nextPiece);
+      if (newName && newName !== oldName) result = rewriteHexIdents(result, oldName, newName);
+    }
+  }
+  return { src: result, renamed, changed: result !== src };
+}
+
+function collectBodyStatementCuts(src, openBrace, maxEnd) {
+  const cuts = [];
+  let i = openBrace;
+  let paren = 0;
+  let brace = 0;
+  let bracket = 0;
+  let str = null;
+  const tmplExpr = [];
+  let started = false;
+  const n = Math.min(src.length, maxEnd);
+  for (; i < n; i += 1) {
+    const c = src[i];
+    if (str === "`") {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === "`") {
+        str = null;
+        continue;
+      }
+      if (c === "$" && src[i + 1] === "{") {
+        tmplExpr.push(brace);
+        brace += 1;
+        str = null;
+        i += 1;
+        continue;
+      }
+      continue;
+    }
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "`") {
+      str = "`";
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "/") {
+      i += 1;
+      while (i < n && src[i] !== "\n") i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "*") {
+      i += 1;
+      while (i < n - 1 && !(src[i] === "*" && src[i + 1] === "/")) i += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i) - 1;
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") paren -= 1;
+    else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") {
+      if (!started && paren === 0 && bracket === 0) {
+        started = true;
+        brace = 1;
+        continue;
+      }
+      if (started) brace += 1;
+    } else if (c === "}") {
+      if (started) {
+        brace -= 1;
+        if (tmplExpr.length && brace === tmplExpr[tmplExpr.length - 1]) {
+          tmplExpr.pop();
+          str = "`";
+          continue;
+        }
+        if (brace === 0) return cuts;
+      }
+    } else if (c === ";" && started && brace === 1 && paren === 0 && bracket === 0) {
+      cuts.push(i + 1);
+    }
+  }
+  return cuts;
+}
+
+function longestParseableHexFunctionPrefix(src, start) {
+  const open = src.indexOf("{", start);
+  if (open < 0) return null;
+  const id = hexFunctionDeclName(src.slice(start));
+  if (!id) return null;
+  const maxEnd = Math.min(src.length, open + 1 + 80_000);
+  const cuts = collectBodyStatementCuts(src, open, maxEnd);
+  if (cuts.length === 0) return null;
+  let best = 0;
+  let tries = 0;
+  const MAX_TRIES = 120;
+  for (const cut of cuts) {
+    if (tries >= MAX_TRIES) break;
+    tries += 1;
+    const wrapped = `${src.slice(start, cut)}}`;
+    const parsed = tryParseVariants(wrapped);
+    if (parsed.ast) best = cut;
+  }
+  if (best === 0) return null;
+  return { start, cut: best, wrapped: `${src.slice(start, best)}}`, id };
+}
+
+function processUnclosedHexFunctions(src, counter) {
+  const starts = [];
+  walkCode(src, (i) => {
+    if (isKeywordAt(src, i, "async")) {
+      let j = skipWs(src, i + 5);
+      if (!isKeywordAt(src, j, "function")) return;
+    } else if (!isKeywordAt(src, i, "function")) return;
+    const id = hexFunctionDeclName(src.slice(i));
+    if (!id) return;
+    const complete = matchCompleteFunction(src, i);
+    if (complete) {
+      const piece = src.slice(complete.start, complete.end);
+      if (tryParseVariants(piece).ast) return;
+    }
+    if (starts[starts.length - 1] !== i) starts.push(i);
+  });
+  let result = src;
+  let renamed = 0;
+  for (const start of [...starts].sort((a, b) => b - a)) {
+    const prefix = longestParseableHexFunctionPrefix(result, start);
+    if (!prefix) continue;
+    const renamedPiece = tryRenameIsolatedFunction(prefix.wrapped, counter);
+    if (renamedPiece.aborted || renamedPiece.error || !(renamedPiece.renamed > 0)) continue;
+    const generated = renamedPiece.src.trimEnd().replace(/;+$/, "");
+    const stripped = generated.endsWith("}") ? generated.slice(0, -1) : generated;
+    result = result.slice(0, prefix.start) + stripped + result.slice(prefix.cut);
+    renamed += renamedPiece.renamed;
+    const newName = functionDeclName(stripped);
+    if (prefix.id && newName && newName !== prefix.id) {
+      result = rewriteHexIdents(result, prefix.id, newName);
+    }
   }
   return { src: result, renamed, changed: result !== src };
 }
@@ -812,7 +1028,7 @@ function tryRenameIsolatedClass(src, counter) {
   const { traverse, generate } = loadBabel();
   const abort = findAbortReason(parsed.ast, traverse);
   if (abort) return { aborted: true, reason: abort, src, renamed: 0 };
-  const skipNames = new Set([...skipProgramFunctionIds(parsed.ast), ...skipProgramClassIds(parsed.ast)]);
+  const skipNames = skipProgramClassIds(parsed.ast);
   const renamed =
     renameHexBindings(parsed.ast, traverse, counter, skipNames) + renameHexLabels(parsed.ast, traverse);
   if (renamed === 0) return { src, renamed: 0, changed: false };
@@ -1006,6 +1222,7 @@ function collectDeclaratorHexNames(src, start, names) {
       continue;
     }
     if (depth === 0 && (c === ";" || (c === "\n" && afterEq))) break;
+    if (depth === 0 && !afterEq && (isKeywordAt(src, i, "of") || isKeywordAt(src, i, "in"))) break;
     if (depth === 0 && c === ",") {
       afterEq = false;
       i += 1;
@@ -1466,18 +1683,201 @@ function tryRenameObjectLiteral(src, counter) {
 }
 
 function processWindows(src, counter, scan, renamePiece, includeTop) {
-  const found = scan(src);
-  const candidates = includeTop ? found : found.filter((f) => !(f.start === 0 && f.end === src.length));
-  const tops = candidates.filter((f) => !candidates.some((o) => o.start < f.start && o.end > f.end));
   let result = src;
   let renamed = 0;
-  for (const f of [...tops].sort((a, b) => b.start - a.start)) {
+  for (let round = 0; round < 12; round += 1) {
+    const found = scan(result);
+    const candidates = includeTop ? found : found.filter((f) => !(f.start === 0 && f.end === result.length));
+    const bounded = candidates.filter((f) => f.end - f.start < 80_000);
+    const leaves = bounded.filter((f) => !bounded.some((o) => o.start > f.start && o.end < f.end));
+    if (leaves.length === 0) break;
+    let progress = false;
+    for (const f of [...leaves].sort((a, b) => b.start - a.start)) {
+      const piece = result.slice(f.start, f.end);
+      const renamedPiece = renamePiece(piece, counter);
+      if (renamedPiece.aborted) continue;
+      if (renamedPiece.error || !(renamedPiece.renamed > 0)) continue;
+      renamed += renamedPiece.renamed ?? 0;
+      result = result.slice(0, f.start) + renamedPiece.src + result.slice(f.end);
+      progress = true;
+    }
+    if (!progress) break;
+  }
+  return { src: result, renamed, changed: result !== src };
+}
+
+function matchCompleteVarStatement(src, start) {
+  if (!(isKeywordAt(src, start, "var") || isKeywordAt(src, start, "let") || isKeywordAt(src, start, "const"))) {
+    return null;
+  }
+  let i = start;
+  let paren = 0;
+  let brace = 0;
+  let bracket = 0;
+  let str = null;
+  const tmplExpr = [];
+  const n = Math.min(src.length, start + 8_000);
+  for (; i < n; i += 1) {
+    const c = src[i];
+    if (str === "`") {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === "`") {
+        str = null;
+        continue;
+      }
+      if (c === "$" && src[i + 1] === "{") {
+        tmplExpr.push(brace);
+        brace += 1;
+        str = null;
+        i += 1;
+        continue;
+      }
+      continue;
+    }
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "`") {
+      str = "`";
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "/") {
+      i += 1;
+      while (i < n && src[i] !== "\n") i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "*") {
+      i += 1;
+      while (i < n - 1 && !(src[i] === "*" && src[i + 1] === "/")) i += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i) - 1;
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") paren -= 1;
+    else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") brace += 1;
+    else if (c === "}") {
+      brace -= 1;
+      if (tmplExpr.length && brace === tmplExpr[tmplExpr.length - 1]) {
+        tmplExpr.pop();
+        str = "`";
+        continue;
+      }
+      if (brace < 0) return null;
+    } else if (c === ";" && paren === 0 && brace === 0 && bracket === 0) {
+      return { start, end: i + 1 };
+    }
+  }
+  return null;
+}
+
+function scanHexVarStatements(src) {
+  const out = [];
+  walkCode(src, (i) => {
+    if (!(isKeywordAt(src, i, "var") || isKeywordAt(src, i, "let") || isKeywordAt(src, i, "const"))) return;
+    const found = matchCompleteVarStatement(src, i);
+    if (!found) return;
+    if (countTokens(src.slice(found.start, found.end)) === 0) return;
+    if (out.length === 0 || out[out.length - 1].start !== found.start) out.push(found);
+  });
+  return out;
+}
+
+function declaratorIds(stmt) {
+  const names = [];
+  let i = 0;
+  if (isKeywordAt(stmt, 0, "const")) i = skipWs(stmt, 5);
+  else if (isKeywordAt(stmt, 0, "let") || isKeywordAt(stmt, 0, "var")) i = skipWs(stmt, 3);
+  else return names;
+  let depth = 0;
+  let str = null;
+  let afterEq = false;
+  while (i < stmt.length) {
+    const c = stmt[i];
+    if (str) {
+      if (c === "\\") {
+        i += 2;
+        continue;
+      }
+      if (c === str) str = null;
+      i += 1;
+      continue;
+    }
+    if (c === "'" || c === '"' || c === "`") {
+      str = c;
+      i += 1;
+      continue;
+    }
+    if (c === "(" || c === "{" || c === "[") {
+      depth += 1;
+      i += 1;
+      continue;
+    }
+    if (c === ")" || c === "}" || c === "]") {
+      if (depth === 0) break;
+      depth -= 1;
+      i += 1;
+      continue;
+    }
+    if (depth === 0 && (c === ";" || isKeywordAt(stmt, i, "of") || isKeywordAt(stmt, i, "in"))) break;
+    if (depth === 0 && c === ",") {
+      afterEq = false;
+      i += 1;
+      continue;
+    }
+    if (depth === 0 && c === "=") {
+      afterEq = true;
+      i += 1;
+      continue;
+    }
+    if (!afterEq && depth === 0 && isIdentChar(stmt[i]) && !isIdentChar(stmt[i - 1])) {
+      const id = readIdent(stmt, i);
+      if (id) {
+        names.push(id);
+        i += id.length;
+        continue;
+      }
+    }
+    i += 1;
+  }
+  return names;
+}
+
+function processHexVarStatements(src, counter) {
+  const found = scanHexVarStatements(src);
+  let result = src;
+  let renamed = 0;
+  for (const f of [...found].sort((a, b) => b.start - a.start)) {
     const piece = result.slice(f.start, f.end);
-    const renamedPiece = renamePiece(piece, counter);
-    if (renamedPiece.aborted) continue;
-    if (renamedPiece.error || !(renamedPiece.renamed > 0)) continue;
-    renamed += renamedPiece.renamed ?? 0;
+    const oldIds = declaratorIds(piece).filter((n) => HEX_IDENT.test(n));
+    if (oldIds.length === 0) continue;
+    const renamedPiece = tryRenameWrappedFragment(piece, counter);
+    if (renamedPiece.aborted || renamedPiece.error || !(renamedPiece.renamed > 0)) continue;
     result = result.slice(0, f.start) + renamedPiece.src + result.slice(f.end);
+    renamed += renamedPiece.renamed;
+    const newIds = declaratorIds(renamedPiece.src);
+    if (oldIds.length === newIds.length) {
+      for (let k = 0; k < oldIds.length; k += 1) {
+        if (oldIds[k] !== newIds[k]) result = rewriteHexIdents(result, oldIds[k], newIds[k]);
+      }
+    }
   }
   return { src: result, renamed, changed: result !== src };
 }
@@ -1525,8 +1925,7 @@ function tryRenameWrappedFragment(src, counter) {
   const wrapped = `function ${wrapName}(){${src}\n}`;
   const parsed = parseMaybeHealed(wrapped);
   if (!parsed.ast) return { error: parsed.error, src, renamed: 0 };
-  const { traverse } = loadBabel();
-  const skipNames = skipHexFunctionDeclNames(parsed.ast, traverse, new Set([wrapName]));
+  const skipNames = new Set([wrapName]);
   const result = emitRenamed(parsed.src, parsed.ast, counter, { skipNames });
   if (result.aborted) return result;
   if (!result.renamed) return { src, renamed: 0, changed: false };
@@ -1609,6 +2008,12 @@ function renameChunkDeep(src, counter, depth = 0) {
   const nested = processFunctionsIn(src, counter, true);
   renamed += nested.renamed;
   current = nested.src;
+  const unclosed = processUnclosedHexFunctions(current, counter);
+  renamed += unclosed.renamed;
+  current = unclosed.src;
+  const vars = processHexVarStatements(current, counter);
+  renamed += vars.renamed;
+  current = vars.src;
   const nestedCls = processClassesIn(current, counter, true);
   renamed += nestedCls.renamed;
   current = nestedCls.src;
@@ -1683,6 +2088,7 @@ function renameOneUnit(src, counter) {
 }
 
 export function rename0xIdents(src) {
+  const original = src;
   const hitsBefore = countTokens(src);
   if (hitsBefore === 0) {
     return { src, changed: false, aborted: false, reason: null, hitsBefore, hitsAfter: 0, renamed: 0 };
@@ -1691,7 +2097,7 @@ export function rename0xIdents(src) {
     const reason = "export { _0x } with no public alias";
     const match = src.match(/\bexport\s*\{\s*(_0x[0-9a-f]+)/i);
     return {
-      src,
+      src: original,
       changed: false,
       aborted: true,
       reason: match ? `export { ${match[1]} } with no public alias` : reason,
@@ -1701,9 +2107,10 @@ export function rename0xIdents(src) {
     };
   }
   const counter = { value: 0 };
+  src = healElseMissingSemicolons(healForParse(src));
   const whole = renameOneUnit(src, counter);
   if (whole.aborted) {
-    return { src, changed: false, aborted: true, reason: whole.reason, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
+    return { src: original, changed: false, aborted: true, reason: whole.reason, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
   }
   let next = src;
   let renamed = 0;
@@ -1736,7 +2143,7 @@ export function rename0xIdents(src) {
       renamed += result.renamed ?? 0;
     }
     if (chunkAbort) {
-      return { src, changed: false, aborted: true, reason: chunkAbort, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
+      return { src: original, changed: false, aborted: true, reason: chunkAbort, hitsBefore, hitsAfter: hitsBefore, renamed: 0 };
     }
     next = out.join("");
   }
@@ -1747,7 +2154,7 @@ export function rename0xIdents(src) {
 
   if (renamed === 0) {
     return {
-      src,
+      src: original,
       changed: false,
       aborted: false,
       reason: whole.error ? `parse failed: ${whole.error?.message ?? "unparseable chunks"}` : null,
@@ -1903,6 +2310,24 @@ export function listDirtyCjsTwins() {
     .sort((a, b) => b.hits - a.hits);
 }
 
+export function listDistLeftoverFiles() {
+  const files = [];
+  if (!fs.existsSync(VENDOR_PRO)) return files;
+  for (const pkg of fs.readdirSync(VENDOR_PRO)) {
+    if (T0B_SKIP_PKGS.includes(pkg)) continue;
+    const distDir = path.join(VENDOR_PRO, pkg, "dist");
+    if (!fs.existsSync(distDir)) continue;
+    for (const file of walkJs(distDir, [])) {
+      if (file.includes(`${path.sep}umd${path.sep}`)) continue;
+      if (hitsForFile(file) === 0) continue;
+      files.push(file);
+    }
+  }
+  return files
+    .map((file) => ({ file, hits: hitsForFile(file), rel: posixRel(file) }))
+    .sort((a, b) => b.hits - a.hits);
+}
+
 const BACKUP_ROOT = path.join(ROOT, "vendor/univer-pro-0x-backup");
 
 function backupVendorFile(filePath) {
@@ -2001,6 +2426,7 @@ function parseArgs(argv) {
     cjsTwins: null,
     libRootTwins: null,
     dirtyCjs: null,
+    dist: null,
     child: false
   };
   for (let i = 0; i < argv.length; i += 1) {
@@ -2012,6 +2438,7 @@ function parseArgs(argv) {
     else if (a === "--cjs-twins") args.cjsTwins = Number(argv[++i]);
     else if (a === "--lib-root-twins") args.libRootTwins = Number(argv[++i]);
     else if (a === "--dirty-cjs") args.dirtyCjs = Number(argv[++i]);
+    else if (a === "--dist") args.dist = Number(argv[++i]);
     else if (a === "--child") args.child = true;
   }
   return args;
@@ -2072,13 +2499,14 @@ function processBatch(candidates, n, { write, apply, child }) {
 
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.file && !args.largestEs && !args.cjsTwins && !args.libRootTwins && !args.dirtyCjs) {
+  if (!args.file && !args.largestEs && !args.cjsTwins && !args.libRootTwins && !args.dirtyCjs && !args.dist) {
     console.log(`Usage:
   node scripts/rename-univer-pro-0x-idents.mjs --file <path> [--write] [--apply]
   node scripts/rename-univer-pro-0x-idents.mjs --largest-es <n> [--write] [--apply]
   node scripts/rename-univer-pro-0x-idents.mjs --cjs-twins <n> [--write] [--apply]
   node scripts/rename-univer-pro-0x-idents.mjs --lib-root-twins <n> [--write] [--apply]
   node scripts/rename-univer-pro-0x-idents.mjs --dirty-cjs <n> [--write] [--apply]
+  node scripts/rename-univer-pro-0x-idents.mjs --dist <n> [--write] [--apply]
 Default is dry-run. Never umd/, published, or OSS vendor.`);
     process.exitCode = 1;
     return;
@@ -2118,6 +2546,18 @@ Default is dry-run. Never umd/, published, or OSS vendor.`);
     const ordered = listDirtyCjsTwins();
     const candidates = ordered.slice(0, Math.max(n * 2, n)).filter((row) => !isForbiddenPath(row.file));
     console.log(`cjs twins still dirty: ${ordered.length} (target ${n} writes)`);
+    for (const row of candidates) {
+      console.log(`  ${row.hits} ${row.rel}`);
+    }
+    const written = processBatch(candidates, n, args);
+    console.log(`batch done: ${written} file(s) processed`);
+    return;
+  }
+  if (args.dist) {
+    const n = Number.isFinite(args.dist) && args.dist > 0 ? args.dist : 30;
+    const ordered = listDistLeftoverFiles();
+    const candidates = ordered.slice(0, Math.max(n * 2, n)).filter((row) => !isForbiddenPath(row.file));
+    console.log(`dist leftovers: ${ordered.length} (target ${n} writes)`);
     for (const row of candidates) {
       console.log(`  ${row.hits} ${row.rel}`);
     }

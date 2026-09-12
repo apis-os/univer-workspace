@@ -1,13 +1,1 @@
-import _0x3fdb1d from "./index.cjs";
-const facadeExport0 = _0x3fdb1d.DefaultHistoryPolicy,
-  facadeExport1 = _0x3fdb1d.MemoryHistoryDatabaseAdapter,
-  facadeExport2 = _0x3fdb1d.UniverHistoryService,
-  facadeExport3 = _0x3fdb1d.buildHistoryRecords,
-  facadeExport4 = _0x3fdb1d.selectHistoryRecords;
-export {
-  facadeExport0 as DefaultHistoryPolicy,
-  facadeExport1 as MemoryHistoryDatabaseAdapter,
-  facadeExport2 as UniverHistoryService,
-  facadeExport3 as buildHistoryRecords,
-  facadeExport4 as selectHistoryRecords,
-};
+import v1 from"./index.cjs";const facadeExport0=v1.DefaultHistoryPolicy,facadeExport1=v1.MemoryHistoryDatabaseAdapter,facadeExport2=v1.UniverHistoryService,facadeExport3=v1.buildHistoryRecords,facadeExport4=v1.selectHistoryRecords;export{facadeExport0 as DefaultHistoryPolicy,facadeExport1 as MemoryHistoryDatabaseAdapter,facadeExport2 as UniverHistoryService,facadeExport3 as buildHistoryRecords,facadeExport4 as selectHistoryRecords};

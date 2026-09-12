@@ -1,7 +1,1 @@
-import _0x324c16 from "./index.cjs";
-const facadeExport0 = _0x324c16.UniverCollabWorktreeService,
-  facadeExport1 = _0x324c16.WorktreeError;
-export {
-  facadeExport0 as UniverCollabWorktreeService,
-  facadeExport1 as WorktreeError,
-};
+import v1 from"./index.cjs";const facadeExport0=v1.UniverCollabWorktreeService,facadeExport1=v1.WorktreeError;export{facadeExport0 as UniverCollabWorktreeService,facadeExport1 as WorktreeError};

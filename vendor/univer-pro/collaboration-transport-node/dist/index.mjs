@@ -1,7 +1,1 @@
-import _0x47e8ab from "./index.cjs";
-const facadeExport0 = _0x47e8ab.NodeTransportError,
-  facadeExport1 = _0x47e8ab.createNodeTransport;
-export {
-  facadeExport0 as NodeTransportError,
-  facadeExport1 as createNodeTransport,
-};
+import v1 from"./index.cjs";const facadeExport0=v1.NodeTransportError,facadeExport1=v1.createNodeTransport;export{facadeExport0 as NodeTransportError,facadeExport1 as createNodeTransport};

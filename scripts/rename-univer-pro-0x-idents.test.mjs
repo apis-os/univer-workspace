@@ -83,7 +83,7 @@ test("heals let-list arrow then nested function and renames across in-memory chu
   assert.doesNotMatch(src, /function\s+_0xaaa\b/);
 });
 
-test("renames nested function locals inside an unparseable IIFE and keeps the inner function name", () => {
+test("renames nested function locals inside an unparseable IIFE including the inner function name", () => {
   const original =
     "var z=1;\n" +
     "(function(){else{\n" +
@@ -94,8 +94,9 @@ test("renames nested function locals inside an unparseable IIFE and keeps the in
   assert.equal(aborted, false);
   assert.equal(changed, true);
   assert.match(src, /"_0xdead"/);
-  assert.match(src, /function _0xabcd\(/);
+  assert.match(src, /function v\d+\(/);
   assert.doesNotMatch(src, /_0x12ef\b/);
+  assert.doesNotMatch(src, /\b_0xabcd\b/);
   assert.match(src, /as publicApi/);
 });
 
@@ -267,6 +268,104 @@ test("renames params inside a concise object method window when the parent IIFE 
   const original =
     "(function(){else{\n" +
     'const o={foo(_0xaaa){return _0xaaa+"_0xdead";}};\n' +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /\b_0xaaa\b/);
+});
+
+test("extracts a complete inner hex function from an unparseable else block and renames its recursive binding", () => {
+  const original =
+    "(function(){else{\n" +
+    "function _0xab12(a){ return a+_0xab12; }\n" +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /function v\d+\(a\)/);
+  assert.match(src, /a\s*\+\s*v\d+/);
+  assert.doesNotMatch(src, /\b_0xab12\b/);
+});
+
+test("inserts a semicolon after else{ only at a proven statement boundary then renames the bound local", () => {
+  const original =
+    '(function(){else{var _0xaaa=1function _0xbbb(_0xccc){return _0xccc+_0xaaa+"_0xdead";}}})();\n' +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /1;function/);
+  assert.doesNotMatch(src, /\b_0xaaa\b/);
+  assert.doesNotMatch(src, /\b_0xccc\b/);
+  assert.doesNotMatch(src, /1function/);
+});
+
+test("does not insert a semicolon before a callback function argument", () => {
+  const original =
+    '(function(){else{foo(function(_0xaaa){return _0xaaa+"_0xdead";});}})();\n' +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /foo\(function/);
+  assert.doesNotMatch(src, /foo\(;function/);
+  assert.doesNotMatch(src, /\b_0xaaa\b/);
+});
+
+test("renames a parseable prefix of an unclosed hex function inside an unparseable else block", () => {
+  const original =
+    "(function(){else{\n" +
+    "function _0xab12(_0xaaa){var _0xbbb=_0xaaa;void(_0xbbb+_0xab12);else{\n" +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /\b_0xaaa\b/);
+  assert.doesNotMatch(src, /\b_0xbbb\b/);
+  assert.doesNotMatch(src, /\b_0xab12\b/);
+});
+
+test("renames an unbound decoder used as a for-of source", () => {
+  const original = 'for(let v1 of _0xdead01)void(v1+"_0xdead");\nexport { z as publicApi };\n';
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /oxdead01/);
+  assert.doesNotMatch(src, /\b_0xdead01\b/);
+});
+
+test("renames a nested class method when an outer concise method window does not parse", () => {
+  const original =
+    "(function(){else{\n" +
+    'outer(_0xstuck){foo(){var _0xaaa=1;return _0xaaa+"_0xdead";}return _0xstuck;}\n' +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /\b_0xaaa\b/);
+});
+
+test("renames a hex var statement inside an unparseable else block", () => {
+  const original =
+    "(function(){else{\n" +
+    'void(1);var _0xaaa=2;void(_0xaaa+"_0xdead");else{\n' +
     "}})();\n" +
     "export { z as publicApi };\n";
   const { src, aborted, changed } = rename0xIdents(original);

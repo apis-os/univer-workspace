@@ -1,3 +1,1 @@
-import _0xe2d765 from "./index.cjs";
-const facadeExport0 = _0xe2d765.UniverCommentEndpoint;
-export { facadeExport0 as UniverCommentEndpoint };
+import v1 from"./index.cjs";const facadeExport0=v1.UniverCommentEndpoint;export{facadeExport0 as UniverCommentEndpoint};
