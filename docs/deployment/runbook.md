@@ -267,7 +267,7 @@ curl -s https://univer-workspace.apisos.workers.dev/healthz.ai
 ## 8. Live origin proof (T9)
 
 Origin: `https://univer-workspace.apisos.workers.dev`  
-Worker version: `b7161cdc-4731-47f1-9b9e-c35c72a08bf1` (`pnpm exec wrangler deploy`; `ai` + `browser` + `LOADER` bindings).
+Worker version: `721b7efe-89b5-4f7e-9b6c-efa7fde543c6` (`pnpm exec wrangler deploy`; `ai` + `browser` + `LOADER` bindings).
 
 ```bash
 pnpm --filter @univerjs/univer-workspace build:web
@@ -286,15 +286,15 @@ Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-ready"`, 
 - [x] `GET /healthz.ai` → `{ gateway: "default" }`
 - [x] Avery password login + `POST /agents/unit_welcome_sheet/turns` (`Set A1 to Hello from AI`) returns `rev`
 - [x] `POST /uf/d29ya3NwYWNlLnVuaXZlcg` then `GET .../units/unit_welcome_sheet/inspect?range=E2` → 200
-- [x] Explain cache: live smoke `MISS` then `HIT` (key `demo:explain-q3:t9-ready`, not invented)
-- [x] `/uf` screenshot 200 PNG length 5791 (≥4000; real sheet capture, License registered)
+- [ ] Explain cache: this deploy smoke `HIT` then `HIT` (warm `demo:explain-q3:t9-ready`, not invented). Prior `0fbc9e32` had MISS then HIT.
+- [x] `/uf` screenshot 200 PNG length 5794 (≥4000; real sheet capture)
 - [x] CLI proof execute → inspect E2 `f=SUM(B2:D2)` → screenshot 200 → worktree ready → curl `/uf` 200
-- [x] Headed `/demo` opens without `Unable to open this resource`; `<canvas>` count 2
-- [ ] 90-second two-user click-through against live `/demo` and `/demo?as=jordan` (headed Chrome, two cookie jars, in-grid Comb editors) — canvas 2 but **no `univer-sheet-main-canvas` / Q3 grid**
-- [ ] Present / Follow Agent / Fill E2:E4 screenshot card / formula inspector — Follow click true; Present matcher missed; no fill card; no inspector
-- [ ] Same-cell conflict toast — both D3 typed in-grid; no toast; Facade `no-sheet`
+- [x] Headed `/demo` shows Q3 grid; `univer-sheet-main-canvas_unit_welcome_sheet` 806×651 (exact id `univer-sheet-main-canvas` is suffixed)
+- [ ] 90-second two-user click-through — canvas + in-grid D3 181→180; conflict toast / Fill card / What-if Merge / formula inspector still fail
+- [ ] Present / Follow Agent / Fill E2:E4 screenshot card / formula inspector — Follow click true; Present visible in chrome (90s `^Present$` matcher missed); no fill card; no inspector
+- [ ] Same-cell conflict toast — both D3 typed in-grid on the sheet canvas; no toast
 - [ ] What-if comparison + Merge — palette item not found
-- [ ] History overlay names Avery / Jordan / Workspace Agent — History opened; overlay stuck on Loading
+- [ ] History overlay names Avery / Jordan / Workspace Agent — History click true; overlay showed agent panel text, not those names
 - [ ] `/render` screenshot card PNG on Fill — Fill streamed E2:E4; no screenshot card in the panel
 
 Unchecked boxes are remaining concerns, not invented passes.

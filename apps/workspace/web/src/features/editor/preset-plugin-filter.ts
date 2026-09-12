@@ -116,3 +116,63 @@ export function installNamelessPluginServiceGuard(
     pluginServicePrototype._runStage = origRun;
   };
 }
+
+type RenderGuardTarget = {
+  addRenderDependencies?: (dependencies: unknown) => unknown;
+  _tryAddRenderDependencies?: (renderer: unknown, dependencies: unknown) => unknown;
+};
+
+/**
+ * Pivot/chart leftovers still register sheet render modules. One empty Redi
+ * token then disposes the whole sheet renderer (canvas included). Isolate each
+ * module so the Q3 grid can mount without those Pro controllers.
+ */
+export function installSafeSheetRenderGuard(
+  renderTarget: RenderGuardTarget
+): () => void {
+  const restores: Array<() => void> = [];
+  const origAdd = renderTarget.addRenderDependencies;
+  if (typeof origAdd === "function") {
+    renderTarget.addRenderDependencies = function (
+      this: unknown,
+      dependencies: unknown
+    ) {
+      const list = Array.isArray(dependencies) ? dependencies : [];
+      for (const dep of list) {
+        try {
+          origAdd.call(this, [dep]);
+        } catch (err) {
+          if (isSkippablePluginError(err)) continue;
+          throw err;
+        }
+      }
+    };
+    restores.push(() => {
+      renderTarget.addRenderDependencies = origAdd;
+    });
+  }
+  const origTry = renderTarget._tryAddRenderDependencies;
+  if (typeof origTry === "function") {
+    renderTarget._tryAddRenderDependencies = function (
+      this: unknown,
+      renderer: unknown,
+      dependencies: unknown
+    ) {
+      const list = Array.isArray(dependencies) ? dependencies : [];
+      for (const dep of list) {
+        try {
+          origTry.call(this, renderer, [dep]);
+        } catch (err) {
+          if (isSkippablePluginError(err)) continue;
+          throw err;
+        }
+      }
+    };
+    restores.push(() => {
+      renderTarget._tryAddRenderDependencies = origTry;
+    });
+  }
+  return () => {
+    for (const restore of restores) restore();
+  };
+}

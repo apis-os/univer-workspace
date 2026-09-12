@@ -8,7 +8,8 @@ import {
   omitUnnamedPlugins,
   omitUnnamedPresetPlugins,
   withSafeUniverPluginRegistration,
-  installNamelessPluginServiceGuard
+  installNamelessPluginServiceGuard,
+  installSafeSheetRenderGuard
 } from "./preset-plugin-filter";
 
 class NamedPlugin {
@@ -156,6 +157,67 @@ describe("preset plugin filter", () => {
     expect(src).toMatch(/omitUnnamedPresetPlugins\(/);
     expect(src).toMatch(/omitUnnamedPlugins\(/);
     expect(src).toMatch(/installNamelessPluginServiceGuard\(/);
+    expect(src).toMatch(/installSafeSheetRenderGuard\(/);
+    expect(src).toMatch(/RenderUnit/);
+    expect(src).toMatch(/IRenderManagerService/);
     expect(src).toMatch(/PluginService/);
+  });
+
+  it("treats empty Redi tokens from leftover Pro render modules as skippable", () => {
+    expect(
+      isSkippablePluginError(
+        new Error(
+          '[redi]: Cannot find "" registered by any injector. It is the 2th param of "CQ".'
+        )
+      )
+    ).toBe(true);
+  });
+
+  it("keeps later sheet render modules when a pivot module has an empty Redi token", () => {
+    const added: string[] = [];
+    const proto = {
+      addRenderDependencies(deps: Array<{ name: string }>) {
+        for (const dep of deps) {
+          if (dep.name === "pivot") {
+            throw new Error(
+              '[redi]: Cannot find "" registered by any injector. It is the 2th param of "CQ".'
+            );
+          }
+          added.push(dep.name);
+        }
+      }
+    };
+    const restore = installSafeSheetRenderGuard(proto);
+    proto.addRenderDependencies([
+      { name: "skeleton" },
+      { name: "pivot" },
+      { name: "scroll" }
+    ]);
+    expect(added).toEqual(["skeleton", "scroll"]);
+    restore();
+  });
+
+  it("keeps later render deps when RenderManagerService._tryAddRenderDependencies throws", () => {
+    const added: string[] = [];
+    const proto = {
+      _tryAddRenderDependencies(_renderer: unknown, deps: Array<{ name: string }>) {
+        for (const dep of deps) {
+          if (dep.name === "pivot") {
+            throw new Error(
+              '[redi]: Cannot find "" registered by any injector. It is the 2th param of "CQ".'
+            );
+          }
+          added.push(dep.name);
+        }
+      }
+    };
+    const restore = installSafeSheetRenderGuard(proto);
+    proto._tryAddRenderDependencies(null, [
+      { name: "skeleton" },
+      { name: "pivot" },
+      { name: "scroll" }
+    ]);
+    expect(added).toEqual(["skeleton", "scroll"]);
+    restore();
   });
 });

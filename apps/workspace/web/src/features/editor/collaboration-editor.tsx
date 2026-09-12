@@ -49,6 +49,7 @@ import type {
 } from "@univerjs/presets";
 import type { IMember, IUser } from "@univerjs/protocol";
 import type { Theme } from "@univerjs/themes";
+import { IRenderManagerService, RenderManagerService, RenderUnit } from "@univerjs/engine-render";
 import { createUniver, mergeLocales } from "@univerjs/presets";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -124,6 +125,7 @@ import {
   omitUnnamedPresetPlugins,
   withSafeUniverPluginRegistration,
   installNamelessPluginServiceGuard,
+  installSafeSheetRenderGuard,
 } from "./preset-plugin-filter";
 
 import "@univerjs-pro/collaboration-client-ui/lib/index.css";
@@ -272,6 +274,13 @@ export function createCollaborationEditor(
       const restorePluginService = installNamelessPluginServiceGuard(
         PluginService.prototype
       );
+      const restoreSheetRender = installSafeSheetRenderGuard(
+        RenderUnit.prototype
+      );
+      const restoreRenderManager = installSafeSheetRenderGuard(
+        RenderManagerService.prototype
+      );
+      let restoreLiveRender = () => {};
 
       const mount = async () => {
         if (!element.id) {
@@ -447,6 +456,14 @@ export function createCollaborationEditor(
         );
         mountedUniver = univer;
         univerAPIRef.current = univerAPI;
+        (window as Window & { univerAPI?: FUniver }).univerAPI = univerAPI;
+        try {
+          restoreLiveRender = installSafeSheetRenderGuard(
+            univer.__getInjector().get(IRenderManagerService)
+          );
+        } catch {
+          restoreLiveRender = () => {};
+        }
         bindAgentEditSpotlight({
           getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
         });
@@ -736,6 +753,15 @@ export function createCollaborationEditor(
       return () => {
         disposed = true;
         restorePluginService();
+        restoreSheetRender();
+        restoreRenderManager();
+        restoreLiveRender();
+        if (
+          (window as Window & { univerAPI?: FUniver }).univerAPI ===
+          univerAPIRef.current
+        ) {
+          delete (window as Window & { univerAPI?: FUniver }).univerAPI;
+        }
         blameHandle?.dispose();
         if (onChangesetForBlame) {
           window.removeEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
