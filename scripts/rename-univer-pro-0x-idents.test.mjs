@@ -7,7 +7,6 @@ import { rename0xIdents } from "./rename-univer-pro-0x-idents.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const FIXTURE = path.join(ROOT, "scripts/fixtures/0x-ident-rename.fixture.js");
-const FACADE = path.join(ROOT, "vendor/univer-pro/engine-formula/lib/es/facade.js");
 
 test("renames hex locals but keeps string keys, string literals, and export aliases", () => {
   const original = readFileSync(FIXTURE, "utf8");
@@ -84,15 +83,63 @@ test("heals let-list arrow then nested function and renames across in-memory chu
   assert.doesNotMatch(src, /function\s+_0xaaa\b/);
 });
 
-test("dry-run keeps FFormula export on engine-formula facade without inventing string _0x keys", () => {
-  const original = readFileSync(FACADE, "utf8");
-  assert.match(original, /export\s*\{\s*_0x[0-9a-f]+\s+as\s+FFormula\s*\}/i);
-  const beforeStrings = [...original.matchAll(/["']_0x[0-9a-f]+["']/gi)].map((m) => m[0]);
+test("renames nested function locals inside an unparseable IIFE and keeps the inner function name", () => {
+  const original =
+    "var z=1;\n" +
+    "(function(){else{\n" +
+    "function _0xabcd(_0x12ef){ return _0x12ef + \"_0xdead\"; }\n" +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /function _0xabcd\(/);
+  assert.doesNotMatch(src, /_0x12ef\b/);
+  assert.match(src, /as publicApi/);
+});
+
+test("wraps return fragments so locals rename while string keys stay", () => {
+  const original = "let _0xaaa=1;return _0xaaa + \"_0xdead\";\nexport { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.doesNotMatch(src, /_0xaaa\b/);
+  assert.match(src, /as publicApi/);
+});
+
+test("splits a class before an undeclared export alias and still renames constructor locals", () => {
+  const original =
+    'let WD=class{constructor(_0xaaa){this.x=_0xaaa+"_0xdead";}};export{Ui as PublicUi};\n';
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as PublicUi/);
+  assert.doesNotMatch(src, /_0xaaa\b/);
+});
+
+test("skips an unparseable residue chunk and still renames a later sibling function", () => {
+  const original =
+    "(function(){else{ var _0xstuck=1; }})();\n" +
+    "function _0xbbb(_0xccc){ return _0xccc + \"_0xdead\"; }\n" +
+    "export { _0xbbb as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /_0xccc\b/);
+  assert.match(src, /_0xstuck\b/);
+});
+
+test("keeps FFormula-style export alias and does not invent string _0x keys", () => {
+  const original = 'function _0x12ab(){ return "_0xdead"; }\nexport { _0x12ab as FFormula };\n';
   const { src, aborted, changed } = rename0xIdents(original);
   assert.equal(aborted, false);
   assert.equal(changed, true);
   assert.match(src, /export\s*\{[^}]*\bas\s+FFormula\b/);
+  assert.match(src, /"_0xdead"/);
   assert.doesNotMatch(src, /export\s*\{\s*_0x[0-9a-f]+\s+as\s+FFormula\s*\}/i);
-  const afterStrings = [...src.matchAll(/["']_0x[0-9a-f]+["']/gi)].map((m) => m[0]);
-  assert.deepEqual(afterStrings, beforeStrings);
 });

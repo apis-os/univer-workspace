@@ -126,6 +126,35 @@ Tests: `node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **7/7**.
 
 Leftover hits are in unparseable IIFE/class chunks (not string keys). Restore from backup if Comb `eventID` / `serializeCombRequest` regresses.
 
+## Nested IIFE / wrap-fragment pass
+
+Date: 2026-09-12. Nested `function` extraction (keep declaration name) + wrap `return`/`let` fragments as `function __uw(){…}` + last-`;export{` split. No tree-wide `_0x` sed. T9 untouched. No push.
+
+Fixture tests: `node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **11/11**.
+
+### Hits (`vendor/univer-pro/**/lib/es`)
+
+| | This session start | After this pass |
+| --- | ---: | ---: |
+| Files with `_0x` | 180 | **26** |
+| Token hits | 415,446 | **44,997** |
+
+### Giants leftover IIFE chunks
+
+| File | Hits before | Hits after |
+| --- | ---: | ---: |
+| `engine-chart/lib/es/index.js` | 104,369 | **21,807** |
+| `boards-ui/lib/es/index.js` | 24,712 | **5,188** |
+| `bases-ui/lib/es/index.js` | 3,261 | **3,223** |
+
+Most remaining giant hits are unbound refs or residue Babel still cannot parse (`else{` rotators, `delete` splits, export not at top level). Unparseable chunks skipped after logging the first leftover token.
+
+### Next-largest `lib/es` (parseable)
+
+Most went **0** (collaboration, bases, slides-table-ui, docs-table, engine-pivot, slides, embed, facades, locales, …). Overlay copied when `@univerjs-pro/<pkg>` exists in workspace `node_modules`.
+
+Stuck leftover (unparseable chunks): shape-editor-ui 6,766 · sheets-pivot 4,445 · chart-ui 1,714 · collaboration-client-ui 873 · sheets-print 671 · docs-print 243.
+
 ## Not done
 
 - `lib/cjs` / `lib/index.js` twins
