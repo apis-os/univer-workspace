@@ -21,18 +21,24 @@ import {
 
 interface SnapshotComparisonViewProps {
   readonly comparison: WorktreeComparisonPayload;
+  readonly labels?: {
+    readonly officialVersion: string;
+    readonly agentVersion: string;
+  };
 }
 
 export function SnapshotComparisonView({
   comparison,
+  labels,
 }: SnapshotComparisonViewProps) {
   const { language, t } = useI18n();
   const { resolvedTheme } = useTheme();
   const [useTable, setUseTable] = useState(false);
-  const value = worktreeComparisonValue(comparison, {
+  const resolvedLabels = labels ?? {
     officialVersion: t("officialVersion"),
     agentVersion: t("agentVersion"),
-  });
+  };
+  const value = worktreeComparisonValue(comparison, resolvedLabels);
   const createUniver = useMemo(
     () =>
       wrapComparisonUniverFactory(createComparisonUniver, () => {
@@ -43,8 +49,13 @@ export function SnapshotComparisonView({
   const table = (
     <SnapshotComparisonTable
       result={comparison.result}
-      leftRevision={comparison.left.revision}
-      rightRevision={comparison.right.revision}
+      labels={resolvedLabels}
+      {...(typeof comparison.left.revision === "number"
+        ? { leftRevision: comparison.left.revision }
+        : {})}
+      {...(typeof comparison.right.revision === "number"
+        ? { rightRevision: comparison.right.revision }
+        : {})}
     />
   );
 
@@ -66,10 +77,15 @@ function SnapshotComparisonTable({
   result,
   leftRevision,
   rightRevision,
+  labels,
 }: {
   readonly result: WorktreeComparisonPayload["result"];
   readonly leftRevision?: number;
   readonly rightRevision?: number;
+  readonly labels: {
+    readonly officialVersion: string;
+    readonly agentVersion: string;
+  };
 }) {
   const { t } = useI18n();
   const rows = snapshotComparisonRows(result);
@@ -84,12 +100,12 @@ function SnapshotComparisonTable({
         <strong className="font-medium text-foreground">{t("reviewCompare")}</strong>
         {typeof leftRevision === "number" ? (
           <span>
-            {t("officialVersion")} r{leftRevision}
+            {labels.officialVersion} r{leftRevision}
           </span>
         ) : null}
         {typeof rightRevision === "number" ? (
           <span>
-            {t("agentVersion")} r{rightRevision}
+            {labels.agentVersion} r{rightRevision}
           </span>
         ) : null}
         {summary ? (
@@ -107,8 +123,8 @@ function SnapshotComparisonTable({
             <thead className="sticky top-0 bg-surface text-left text-xs tracking-wide text-muted-foreground">
               <tr>
                 <th className="px-3 py-2 font-medium">{t("reviewCompare")}</th>
-                <th className="px-3 py-2 font-medium">{t("officialVersion")}</th>
-                <th className="px-3 py-2 font-medium">{t("agentVersion")}</th>
+                <th className="px-3 py-2 font-medium">{labels.officialVersion}</th>
+                <th className="px-3 py-2 font-medium">{labels.agentVersion}</th>
               </tr>
             </thead>
             <tbody>

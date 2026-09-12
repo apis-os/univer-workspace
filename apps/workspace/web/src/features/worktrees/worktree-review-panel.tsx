@@ -38,6 +38,7 @@ import {
 } from "../../shared/ui";
 import { cn } from "../../shared/utils/cn";
 import type { MergeReviewStatus } from "../editor/merge-review";
+import { isWhatIfWorktreeName } from "../demo/demo-what-if";
 import { SnapshotComparisonView } from "./snapshot-comparison-view";
 import {
   worktreeUnitComparisonQueryOptions,
@@ -407,6 +408,14 @@ function UnitReview({
             <SnapshotComparisonView
               key={`${comparison.result.comparisonId}:${unit.unitId}`}
               comparison={comparison}
+              {...(isWhatIfWorktreeName(worktree.name)
+                ? {
+                    labels: {
+                      officialVersion: t("comparisonOfficial"),
+                      agentVersion: t("comparisonWhatIf"),
+                    },
+                  }
+                : {})}
             />
           )}
         </div>

@@ -23,6 +23,7 @@ import {
   openAgentPanelFromHeader,
   runDemoScene,
 } from "./demo-scenes";
+import { runWhatIfWorktree } from "./demo-what-if";
 
 export function DemoRuntime({
   palette: Palette = DemoCommandPalette,
@@ -60,7 +61,25 @@ export function DemoRuntime({
     followAgent: () => {
       followAgentCommand();
     },
-    whatIf: () => undefined,
+    whatIf: () => {
+      void runWhatIfWorktree({
+        fetch: globalThis.fetch.bind(globalThis),
+        toast: (kind, key) => {
+          if (kind === "busy") toast.info(t(key));
+          else toast.error(t(key));
+        },
+        openComparison: ({ worktreeId, unitId }) => {
+          void navigate({
+            to: "/worktrees",
+            search: {
+              worktree: worktreeId,
+              unit: unitId,
+              view: "comparison",
+            },
+          });
+        },
+      });
+    },
     exportXlsx: () => undefined,
     toggleLanguage: () => {
       setLanguage(language === "zh-CN" ? "en-US" : "zh-CN");
