@@ -1,0 +1,11 @@
+import{BooleanNumber,ColorKit,CommandType,CustomCommandExecutionError,DependentOn,Disposable,DrawingTypeEnum,GridType,HorizontalAlign,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,PermissionStatus,Plugin,Tools,UnitModel,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createParagraphId,createSectionId,generateRandomId,merge,normalizeDrawingOrderIndex,sequenceExecute,toDisposable}from"@univerjs/core";
+import{BehaviorSubject,Subject,map,merge as mergeLocal,mergeMap}from"rxjs";
+import{UnitDrawingService}from"@univerjs/drawing";
+import{IShapeHostAdapterRegistry,ShapeArrowSizeEnum,ShapeArrowTypeEnum,ShapeFillEnum,ShapeLineCapEnum,ShapeLineDashEnum,ShapeLineJoinEnum,ShapeLineTypeEnum,ShapeOperatorEnum,ShapeTextAutoFitType,ShapeTextDirection,ShapeTextWrapType,ShapeTypeEnum,UniverShapePlugin,canApplyShapeFormulaLastValue,computeConnectorRouteLayout,createUniqueShapeName,isConnectorShape,isCurvedConnectorShape,resolveConnectorRoutePoints,resolveShapeConnectionPoint,resolveShapeDefaultInsertSize}from"@univerjs-pro/engine-shape";
+import{UnitAction,UnitObject}from"@univerjs/protocol";
+import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { id } from "./internal-core-endo.js";
+import { M } from "./boards-board-element-type.js";
+function ya(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562){return{id:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.id??generateRandomId(6),type:M.Image,parentId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.parentId,laneId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.laneId,source:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.source,imageSourceType:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.imageSourceType,transform:{left:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.left,top:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.top,width:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.width,height:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463562.height,rotation:0}};}
+
+export { ya as createBoardImageElement };

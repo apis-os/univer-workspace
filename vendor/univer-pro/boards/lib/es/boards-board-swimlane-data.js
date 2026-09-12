@@ -1,0 +1,10 @@
+import{BooleanNumber,ColorKit,CommandType,CustomCommandExecutionError,DependentOn,Disposable,DrawingTypeEnum,GridType,HorizontalAlign,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,PermissionStatus,Plugin,Tools,UnitModel,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createParagraphId,createSectionId,generateRandomId,merge,normalizeDrawingOrderIndex,sequenceExecute,toDisposable}from"@univerjs/core";
+import{BehaviorSubject,Subject,map,merge as mergeLocal,mergeMap}from"rxjs";
+import{UnitDrawingService}from"@univerjs/drawing";
+import{IShapeHostAdapterRegistry,ShapeArrowSizeEnum,ShapeArrowTypeEnum,ShapeFillEnum,ShapeLineCapEnum,ShapeLineDashEnum,ShapeLineJoinEnum,ShapeLineTypeEnum,ShapeOperatorEnum,ShapeTextAutoFitType,ShapeTextDirection,ShapeTextWrapType,ShapeTypeEnum,UniverShapePlugin,canApplyShapeFormulaLastValue,computeConnectorRouteLayout,createUniqueShapeName,isConnectorShape,isCurvedConnectorShape,resolveConnectorRoutePoints,resolveShapeConnectionPoint,resolveShapeDefaultInsertSize}from"@univerjs-pro/engine-shape";
+import{UnitAction,UnitObject}from"@univerjs/protocol";
+import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { Si } from "./boards-board-swimlane-orientation.js";
+function Ti(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463256){return{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463256,orientation:Si(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463256.orientation),laneGap:0,lanes:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463256.lanes["map"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46882=>({...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46882}))};}
+
+export { Ti as normalizeBoardSwimlaneData };
