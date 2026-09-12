@@ -18,7 +18,6 @@ import {
   type IUniverCollaborationClientConfig,
 } from "@univerjs-pro/collaboration-client";
 import {
-  BrowserCollaborationSocketService,
   DesktopCollaborationStatusDisplayController,
   UniverCollaborationClientUIPlugin,
 } from "@univerjs-pro/collaboration-client-ui";
@@ -73,12 +72,14 @@ import {
   type WorkspaceHostSnapshotScope,
 } from "./workspace-snapshot-server-adapter";
 import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
-import { activateSpotlightCell, bindAgentEditSpotlight } from "./agent-edit-spotlight";
+import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
 import {
   AGENT_MEMBER_ID,
   bindFollowAgentHost,
+  createFollowAgentEditorHost,
   noteFollowAgentCue,
 } from "./follow-agent";
+import { FollowAgentCollaborationSocketService } from "./follow-agent-collab-socket";
 import { createCollabConflictToaster } from "./collab-conflict-toast";
 import {
   applyHistoryNameUsers,
@@ -244,6 +245,7 @@ export function createCollaborationEditor(
           definition.exchangeEnabled !== false;
         const collaborationConfig = {
           ...resolvedCollaboration.pluginConfig,
+          socketService: FollowAgentCollaborationSocketService,
           override: withWorkspaceSnapshotServerOverride(
             resolvedCollaboration.pluginConfig.override,
             {
@@ -300,7 +302,7 @@ export function createCollaborationEditor(
                 [
                   UniverCollaborationClientPlugin,
                   {
-                    socketService: BrowserCollaborationSocketService,
+                    socketService: FollowAgentCollaborationSocketService,
                     enableOfflineEditing: false,
                     enableAuthServer: true,
                     wsSessionTicketUrl:
@@ -403,21 +405,7 @@ export function createCollaborationEditor(
         bindAgentEditSpotlight({
           getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
         });
-        bindFollowAgentHost({
-          followMember: (memberId) => {
-            if (memberId !== AGENT_MEMBER_ID) return;
-          },
-          stopPresenterFollow: () => {
-            try {
-              if (univerAPI.getLiveShareStatus?.() === "following") {
-                univerAPI.stopFollowing?.();
-              }
-            } catch {
-              // Live Share Facade throws without a workbook or LiveShareCoordinator.
-            }
-          },
-          activateA1: activateSpotlightCell,
-        });
+        bindFollowAgentHost(createFollowAgentEditorHost(univerAPI));
         const notifyCollabConflict = createCollabConflictToaster({
           warning: (message) => toast.warning(message),
         });

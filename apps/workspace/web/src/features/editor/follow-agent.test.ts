@@ -1,10 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   AGENT_CURSOR_EVENT,
   AGENT_MEMBER_ID,
+  bindFollowAgentHost,
   createFollowAgentController,
+  createFollowAgentEditorHost,
+  followAgentCommand,
+  noteFollowAgentCue,
   readAgentCursorMemberId,
   resolveFollowAgentTarget,
+  stopFollowAgent,
 } from "./follow-agent";
 import {
   AGENT_PRESENCE_EVENT,
@@ -132,5 +137,119 @@ describe("Follow Agent target from mock status and member id", () => {
     });
     expect(followed).toEqual([AGENT_MEMBER_ID]);
     expect(followed).not.toContain(AVERY_MEMBER_ID);
+  });
+
+  it("reads Comb update_cursor member id from a deserialized collab socket RECV", () => {
+    expect(
+      readAgentCursorMemberId({
+        type: AGENT_CURSOR_EVENT,
+        detail: {
+          cmd: 6,
+          data: {
+            eventID: "update_cursor",
+            data: {
+              memberID: AGENT_MEMBER_ID,
+              selection: { startRow: 1, startColumn: 4 },
+            },
+          },
+        },
+      })
+    ).toBe(AGENT_MEMBER_ID);
+  });
+
+  it("bind re-applies Follow Agent when the host attaches after choose", () => {
+    const followed: string[] = [];
+    const controller = createFollowAgentController();
+    controller.noteCue({ presenceStatus: "thinking" });
+    controller.choose();
+    expect(followed).toEqual([]);
+    controller.bind({
+      followMember: (memberId) => {
+        followed.push(memberId);
+      },
+    });
+    expect(followed).toEqual([AGENT_MEMBER_ID]);
+    expect(followed).not.toContain(AVERY_MEMBER_ID);
+  });
+});
+
+function workbookActivateSpy() {
+  const activated: string[] = [];
+  const workbook = {
+    getActiveSheet() {
+      return {
+        getRange(a1: string) {
+          return {
+            activate() {
+              activated.push(a1);
+            },
+          };
+        },
+      };
+    },
+  };
+  return { workbook, activated };
+}
+
+describe("Follow Agent attach and production host", () => {
+  afterEach(() => {
+    stopFollowAgent();
+    bindFollowAgentHost(undefined);
+  });
+
+  it("attach delivers Comb update_cursor to the production host viewport", () => {
+    const { workbook, activated } = workbookActivateSpy();
+    const host = createFollowAgentEditorHost({
+      getActiveWorkbook: () => workbook,
+    });
+    const bus = new EventTarget();
+    const controller = createFollowAgentController();
+    const detach = controller.attach(bus);
+    controller.choose();
+    controller.bind(host);
+    bus.dispatchEvent(
+      new CustomEvent(AGENT_CURSOR_EVENT, {
+        detail: {
+          eventID: "update_cursor",
+          updateCursorEvent: {
+            memberID: AGENT_MEMBER_ID,
+            selection: {
+              startRow: 1,
+              startColumn: 4,
+              endRow: 1,
+              endColumn: 4,
+            },
+          },
+        },
+      })
+    );
+    expect(activated).toContain("E2");
+    expect(host.followMember).not.toBeUndefined();
+    detach();
+  });
+
+  it("bindFollowAgentHost re-applies if Follow Agent is already chosen", () => {
+    const first: string[] = [];
+    followAgentCommand();
+    noteFollowAgentCue({ presenceStatus: "thinking" });
+    expect(first).toEqual([]);
+    bindFollowAgentHost({
+      followMember: (memberId) => {
+        first.push(memberId);
+      },
+    });
+    expect(first).toEqual([AGENT_MEMBER_ID]);
+
+    const { workbook, activated } = workbookActivateSpy();
+    bindFollowAgentHost(
+      createFollowAgentEditorHost({
+        getActiveWorkbook: () => workbook,
+      })
+    );
+    noteFollowAgentCue({
+      cursorMemberId: AGENT_MEMBER_ID,
+      selection: { startRow: 0, startColumn: 0 },
+    });
+    expect(activated).toContain("A1");
   });
 });

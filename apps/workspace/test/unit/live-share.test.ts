@@ -109,8 +109,29 @@ describe("Live Share bar and header status chip", () => {
       "web/src/features/editor/collaboration-editor.tsx"
     );
     expect(editor).toMatch(/bindFollowAgentHost/);
+    expect(editor).toMatch(/createFollowAgentEditorHost/);
+    expect(editor).toMatch(/FollowAgentCollaborationSocketService/);
     expect(editor).toMatch(/AGENT_MEMBER_ID/);
     expect(editor).not.toMatch(/startFollowing\(\)/);
+    expect(editor).not.toMatch(
+      /followMember:\s*\(memberId\)\s*=>\s*\{\s*if \(memberId !== AGENT_MEMBER_ID\) return;\s*\}/
+    );
+  });
+
+  it("wires Comb update_cursor from the collab socket into Follow Agent", () => {
+    const editor = readWorkspace(
+      "web/src/features/editor/collaboration-editor.tsx"
+    );
+    expect(editor).toMatch(
+      /socketService:\s*FollowAgentCollaborationSocketService/
+    );
+    expect(editor).toMatch(/createFollowAgentEditorHost\(/);
+    const socket = readWorkspace(
+      "web/src/features/editor/follow-agent-collab-socket.ts"
+    );
+    expect(socket).toMatch(/extends BrowserCollaborationSocketService/);
+    expect(socket).toMatch(/tapCollaborationSocketCursor/);
+    expect(socket).toMatch(/createSocket/);
   });
 
   it("moves the status pill off the canvas into the node header", () => {

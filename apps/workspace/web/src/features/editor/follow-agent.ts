@@ -20,6 +20,24 @@ export interface FollowAgentHost {
   readonly activateA1?: (a1: string) => void;
 }
 
+export interface FollowAgentEditorApi {
+  readonly getActiveWorkbook?: () => unknown;
+  readonly getLiveShareStatus?: () => unknown;
+  readonly stopFollowing?: () => void;
+}
+
+export interface CollaborationCursorSocket {
+  readonly message$?: {
+    readonly subscribe: (next: (event: unknown) => void) => unknown;
+  };
+}
+
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value !== null && typeof value === "object"
+    ? (value as Record<string, unknown>)
+    : null;
+}
+
 export function resolveFollowAgentTarget(
   input: FollowAgentCue
 ): typeof AGENT_MEMBER_ID | null {
@@ -30,43 +48,56 @@ export function resolveFollowAgentTarget(
   return AGENT_MEMBER_ID;
 }
 
+function cursorEventId(root: Record<string, unknown>): string | undefined {
+  const collaMsg = asRecord(root.collaMsg);
+  const data = asRecord(root.data);
+  if (typeof collaMsg?.eventID === "string") return collaMsg.eventID;
+  if (typeof root.eventID === "string") return root.eventID;
+  if (typeof data?.eventID === "string") return data.eventID;
+  return undefined;
+}
+
+function cursorUpdateRecord(
+  root: Record<string, unknown>
+): Record<string, unknown> | null {
+  const collaMsg = asRecord(root.collaMsg);
+  const data = asRecord(root.data);
+  return (
+    asRecord(collaMsg?.updateCursorEvent) ??
+    asRecord(root.updateCursorEvent) ??
+    asRecord(data?.updateCursorEvent) ??
+    asRecord(data?.data)
+  );
+}
+
 export function readAgentCursorMemberId(event: {
   readonly type?: string;
   readonly detail?: unknown;
 }): string | null {
-  const detail = event.detail;
-  if (!detail || typeof detail !== "object") return null;
-  const root = detail as Record<string, unknown>;
-  const collaMsg =
-    root.collaMsg && typeof root.collaMsg === "object"
-      ? (root.collaMsg as Record<string, unknown>)
-      : root;
-  const eventID =
-    typeof collaMsg.eventID === "string"
-      ? collaMsg.eventID
-      : typeof root.eventID === "string"
-        ? root.eventID
-        : undefined;
+  const root = asRecord(event.detail);
+  if (!root) return null;
+  const eventID = cursorEventId(root);
   if (eventID !== "update_cursor") {
     if (event.type === AGENT_CURSOR_EVENT && typeof root.memberID === "string") {
       return root.memberID;
     }
     return null;
   }
-  const update =
-    collaMsg.updateCursorEvent && typeof collaMsg.updateCursorEvent === "object"
-      ? (collaMsg.updateCursorEvent as Record<string, unknown>)
-      : root.updateCursorEvent && typeof root.updateCursorEvent === "object"
-        ? (root.updateCursorEvent as Record<string, unknown>)
-        : undefined;
-  const memberID = update?.memberID;
+  const update = cursorUpdateRecord(root);
+  const data = asRecord(root.data);
+  const memberID = update?.memberID ?? data?.memberID ?? root.memberID;
   return typeof memberID === "string" ? memberID : null;
 }
 
 export function a1FromCursorSelection(selection: unknown): string | null {
   if (typeof selection === "string") {
     const trimmed = selection.trim();
-    return /^[A-Z]+\d+$/i.test(trimmed) ? trimmed.toUpperCase() : null;
+    if (/^[A-Z]+\d+$/i.test(trimmed)) return trimmed.toUpperCase();
+    try {
+      return a1FromCursorSelection(JSON.parse(trimmed) as unknown);
+    } catch {
+      return null;
+    }
   }
   if (!selection || typeof selection !== "object") return null;
   const startRow = Number((selection as { startRow?: unknown }).startRow);
@@ -90,19 +121,88 @@ function columnLetters(column: number): string {
 }
 
 function selectionFromCursorDetail(detail: unknown): unknown {
-  if (!detail || typeof detail !== "object") return undefined;
-  const root = detail as Record<string, unknown>;
-  const collaMsg =
-    root.collaMsg && typeof root.collaMsg === "object"
-      ? (root.collaMsg as Record<string, unknown>)
-      : root;
-  const update =
-    collaMsg.updateCursorEvent && typeof collaMsg.updateCursorEvent === "object"
-      ? (collaMsg.updateCursorEvent as Record<string, unknown>)
-      : root.updateCursorEvent && typeof root.updateCursorEvent === "object"
-        ? (root.updateCursorEvent as Record<string, unknown>)
-        : undefined;
-  return update?.selection ?? root.selection;
+  const root = asRecord(detail);
+  if (!root) return undefined;
+  const data = asRecord(root.data);
+  const update = cursorUpdateRecord(root);
+  return update?.selection ?? root.selection ?? data?.selection;
+}
+
+export function activateSheetViewport(workbook: unknown, a1: string): void {
+  if (!workbook || typeof workbook !== "object") return;
+  const getActiveSheet = (workbook as { getActiveSheet?: unknown })
+    .getActiveSheet;
+  if (typeof getActiveSheet !== "function") return;
+  const sheet = (getActiveSheet as () => unknown).call(workbook);
+  if (!sheet || typeof sheet !== "object") return;
+  const getRange = (sheet as { getRange?: unknown }).getRange;
+  if (typeof getRange !== "function") return;
+  const range = (getRange as (address: string) => unknown).call(sheet, a1);
+  if (range && typeof range === "object") {
+    const activate = (range as { activate?: unknown }).activate;
+    if (typeof activate === "function") {
+      (activate as () => unknown).call(range);
+      return;
+    }
+  }
+  const getSelection = (sheet as { getSelection?: unknown }).getSelection;
+  if (typeof getSelection !== "function") return;
+  const selection = (getSelection as () => unknown).call(sheet);
+  if (!selection || typeof selection !== "object") return;
+  const setActiveRange = (selection as { setActiveRange?: unknown })
+    .setActiveRange;
+  if (typeof setActiveRange === "function") {
+    (setActiveRange as (next: unknown) => unknown).call(selection, range ?? a1);
+  }
+}
+
+export function createFollowAgentEditorHost(
+  api: FollowAgentEditorApi
+): FollowAgentHost {
+  let lastA1: string | null = null;
+  return {
+    followMember(memberId) {
+      if (memberId !== AGENT_MEMBER_ID) return;
+      if (lastA1) activateSheetViewport(api.getActiveWorkbook?.(), lastA1);
+    },
+    stopPresenterFollow() {
+      try {
+        if (api.getLiveShareStatus?.() === "following") {
+          api.stopFollowing?.();
+        }
+      } catch {
+        // Live Share Facade throws without a workbook or LiveShareCoordinator.
+      }
+    },
+    activateA1(a1) {
+      lastA1 = a1;
+    },
+  };
+}
+
+export function tapCollaborationSocketCursor(
+  socket: CollaborationCursorSocket | null | undefined,
+  target?: EventTarget
+): void {
+  const dest =
+    target ??
+    (typeof globalThis !== "undefined" &&
+    typeof (globalThis as { dispatchEvent?: unknown }).dispatchEvent ===
+      "function"
+      ? (globalThis as unknown as EventTarget)
+      : undefined);
+  if (!socket?.message$?.subscribe || !dest) return;
+  socket.message$.subscribe((event) => {
+    if (
+      !readAgentCursorMemberId({
+        type: AGENT_CURSOR_EVENT,
+        detail: event,
+      })
+    ) {
+      return;
+    }
+    dest.dispatchEvent(new CustomEvent(AGENT_CURSOR_EVENT, { detail: event }));
+  });
 }
 
 export interface FollowAgentController {
@@ -134,9 +234,9 @@ export function createFollowAgentController(
     });
     if (target !== AGENT_MEMBER_ID) return null;
     bound?.stopPresenterFollow?.();
-    bound?.followMember(target);
     const a1 = a1FromCursorSelection(selection);
     if (a1) bound?.activateA1?.(a1);
+    bound?.followMember(target);
     return target;
   };
 
@@ -150,6 +250,7 @@ export function createFollowAgentController(
     },
     bind(next) {
       bound = next;
+      apply();
     },
     noteCue(cue) {
       if (cue.presenceStatus !== undefined) {
