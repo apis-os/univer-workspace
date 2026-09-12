@@ -321,3 +321,5 @@ Still abort `export { _0x123 }` with no `as`. Strings / Comb keys untouched.
 - **collaboration-worktree-client dist/index.mjs 11**: unparseable chunks after AST rename (`Export 'x' is not defined` / unexpected token).
 - **collaboration-client-ui**: skipped (T9 remapped leftover `_0x` imports onto `vN`).
 
+Commit: `0ec13b3f` `chore(vendor): extract inner hex functions and rename leftover Pro dist _0x`.
+
