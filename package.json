@@ -26,7 +26,7 @@
     "dev:edge": "wrangler dev --port 8790",
     "deploy": "pnpm --filter @univerjs/univer-workspace build:web && wrangler deploy",
     "postinstall": "node scripts/deobfuscate-univer-pro.mjs",
-    "test:vendor": "node --test scripts/deobfuscate-univer-pro.test.mjs scripts/vendor-univer-freeze.test.mjs"
+    "test:vendor": "node --test scripts/deobfuscate-univer-pro.test.mjs scripts/vendor-univer-freeze.test.mjs scripts/rename-univer-pro-0x-idents.test.mjs"
   },
   "devDependencies": {
     "@deepseek-ai/cordis": "4.0.2",
