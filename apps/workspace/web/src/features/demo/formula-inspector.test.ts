@@ -14,6 +14,7 @@ import {
   loadFormulaInspect,
   precedentsFromFormula,
   readFacadeSnapshotCell,
+  runFormulaInspect,
 } from "./formula-inspector";
 
 const demoDir = dirname(fileURLToPath(import.meta.url));
@@ -28,6 +29,11 @@ describe("Q3 E2 inspect payload { f, v, precedents }", () => {
     expect(FORMULA_INSPECT_RANGE).toBe("E2");
     expect(Q3_SUM_FORMULA).toBe("=SUM(B2:D2)");
     expect(precedentsFromFormula(Q3_SUM_FORMULA)).toEqual([Q3_SUM_PRECEDENT]);
+    const expectedProvenanceFallback = [
+      { a1: "B2", v: undefined, userID: null, name: "—", ringToken: "brand-600" },
+      { a1: "C2", v: undefined, userID: null, name: "—", ringToken: "brand-600" },
+      { a1: "D2", v: undefined, userID: null, name: "—", ringToken: "brand-600" },
+    ];
     expect(
       formulaInspectFromInspectBody("E2", {
         f: "=SUM(B2:D2)",
@@ -39,6 +45,7 @@ describe("Q3 E2 inspect payload { f, v, precedents }", () => {
       f: "=SUM(B2:D2)",
       v: 420,
       precedents: ["B2:D2"],
+      provenance: expectedProvenanceFallback,
       source: "inspect",
     });
     expect(inspectFormulaUrl(FORMULA_INSPECT_UNIT_ID, "E2")).toBe(
@@ -58,6 +65,11 @@ describe("Q3 E2 inspect payload { f, v, precedents }", () => {
         { status: 200, headers: { "Content-Type": "application/json" } }
       );
     });
+    const expectedProvenanceFallback = [
+      { a1: "B2", v: undefined, userID: null, name: "—", ringToken: "brand-600" },
+      { a1: "C2", v: undefined, userID: null, name: "—", ringToken: "brand-600" },
+      { a1: "D2", v: undefined, userID: null, name: "—", ringToken: "brand-600" },
+    ];
     await expect(
       loadFormulaInspect({
         range: "E2",
@@ -69,6 +81,7 @@ describe("Q3 E2 inspect payload { f, v, precedents }", () => {
       f: "=SUM(B2:D2)",
       v: 420,
       precedents: ["B2:D2"],
+      provenance: expectedProvenanceFallback,
       source: "inspect",
     });
     expect(inspectFetch).toHaveBeenCalledTimes(1);
@@ -89,6 +102,7 @@ describe("Q3 E2 inspect payload { f, v, precedents }", () => {
       f: "=SUM(B2:D2)",
       v: 420,
       precedents: ["B2:D2"],
+      provenance: expectedProvenanceFallback,
       source: "snapshot",
     });
   });
@@ -209,3 +223,51 @@ describe("formula inspector wiring", () => {
     expect(inspector).not.toMatch(/undoAgentTurn|reverseLast|ActionService/);
   });
 });
+
+describe("formula provenance from inspect and blame", () => {
+  it("maps B2 Avery / C2 Jordan / D2 Avery onto provenance length 3 and highlights 3 ranges", async () => {
+    const sheet = fakeSheet();
+    const fakeWorkbook = {
+      getActiveSheet: () => sheet,
+    };
+    const blame = [
+      { a1: "B2", userID: "user_admin", rev: 1 },
+      { a1: "C2", userID: "user_jordan", rev: 2 },
+      { a1: "D2", userID: "user_admin", rev: 3 },
+    ];
+    const payload = await runFormulaInspect("E2", {
+      blame,
+      host: {
+        getActiveWorkbook: () => fakeWorkbook,
+      },
+      snapshot: () => ({ f: "=SUM(B2:D2)", v: 420 }),
+      getCellValue: (a1) => (a1 === "B2" ? 100 : a1 === "C2" ? 140 : 180),
+    });
+
+    expect(payload.provenance).toHaveLength(3);
+    expect(payload.provenance[0]).toEqual({
+      a1: "B2",
+      v: 100,
+      userID: "user_admin",
+      name: "Avery Chen",
+      ringToken: "brand-600",
+    });
+    expect(payload.provenance[1]).toEqual({
+      a1: "C2",
+      v: 140,
+      userID: "user_jordan",
+      name: "Jordan Lee",
+      ringToken: "sheet",
+    });
+    expect(payload.provenance[2]).toEqual({
+      a1: "D2",
+      v: 180,
+      userID: "user_admin",
+      name: "Avery Chen",
+      ringToken: "brand-600",
+    });
+
+    expect(sheet.highlighted).toEqual(["B2", "C2", "D2"]);
+  });
+});
+
