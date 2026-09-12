@@ -3,7 +3,10 @@
  * Copied from `@univerjs-pro/collaboration-comment-endpoint` JSON routes;
  * persisted on Durable Object SQLite (not the Node comment-database-sqlite adapter).
  */
+import type { Context } from "@deepseek-ai/cordis";
 import type { SqlExec } from "../kernel/sql.ts";
+import { AGENT_MEMBER_ID, AGENT_USER_ID } from "../plugins/univer-facade-actions.ts";
+import { runAgentTurn, type AgentHost, type AgentTurnResult } from "../plugins/univer-agent.ts";
 
 /** `@univerjs/protocol` ErrorCode.OK — comment client treats `error.code !== 1` as failure. */
 export const UNIVERSER_COMMENT_OK = { code: 1, message: "" } as const;
@@ -50,7 +53,12 @@ export interface CommentHttpHost {
   readonly userID: string;
   readonly name?: string;
   readonly avatar?: string;
+  readonly collab?: unknown;
+  waitUntil?(promise: Promise<unknown>): void;
+  onNewChanges?(unitID: string, changeset: unknown, memberID?: string): void;
 }
+
+const AGENT_MENTION_RE = /@agent\b/i;
 
 interface CommentRecord {
   unitID: string;
@@ -152,6 +160,7 @@ export async function handleCommentHttp(
         const content = requireNonEmptyString(object.content, "content");
         const mentions = requireStringArray(object.mention, "mention");
         const comment = addRoot(sql, unitID, host.userID, content, mentions);
+        await enqueueAgentMentionTurn(host, sql, unitID, comment.threadId, content).catch(() => undefined);
         return jsonComment({ error: UNIVERSER_COMMENT_OK, comment });
       }
       case "reply": {
@@ -159,6 +168,7 @@ export async function handleCommentHttp(
         const content = requireNonEmptyString(object.content, "content");
         const mentions = requireStringArray(object.mention, "mention");
         const reply = addReply(sql, unitID, threadID, host.userID, content, mentions);
+        await enqueueAgentMentionTurn(host, sql, unitID, threadID, content).catch(() => undefined);
         return jsonComment({ error: UNIVERSER_COMMENT_OK, reply });
       }
       case "edit": {
@@ -188,6 +198,16 @@ export async function handleCommentHttp(
   } catch (err) {
     return commentErrorResponse(err, action);
   }
+}
+
+function promptFromAgentMention(content: string): string | null {
+  const texts = [plainCommentText(content), content];
+  for (const text of texts) {
+    if (!AGENT_MENTION_RE.test(text)) continue;
+    const remainder = text.replace(AGENT_MENTION_RE, "").trim();
+    return remainder || null;
+  }
+  return null;
 }
 
 export function resolveCommentUser(userID: string, fallbackName = ""): DemoCommentUser {
@@ -531,6 +551,113 @@ function commentErrorResponse(err: unknown, action: string): Response {
           ? { reply: undefined }
           : {};
   return jsonComment({ error: mapped.error, ...extras }, mapped.status);
+}
+
+function enqueueAgentMentionTurn(
+  host: CommentHttpHost,
+  sql: SqlExec,
+  unitId: string,
+  threadId: string,
+  content: string
+): Promise<void> {
+  if (host.userID === AGENT_USER_ID) return Promise.resolve();
+  const prompt = promptFromAgentMention(content);
+  if (!prompt) return Promise.resolve();
+  const kernel = kernelFromCollab(host.collab);
+  if (!kernel) return Promise.resolve();
+
+  const job = runMentionTurnAndReply(host, sql, kernel, unitId, threadId, prompt);
+  const waitUntil = host.waitUntil ?? kernelHostWaitUntil(kernel);
+  if (typeof waitUntil === "function") {
+    waitUntil(job);
+    return Promise.resolve();
+  }
+  return job;
+}
+
+async function runMentionTurnAndReply(
+  host: CommentHttpHost,
+  sql: SqlExec,
+  kernel: Context,
+  unitId: string,
+  threadId: string,
+  prompt: string
+): Promise<void> {
+  const kernelHost = kernelDelegate(kernel);
+  try {
+    const result = await runAgentTurn(
+      {
+        kernel,
+        env: kernelHost?.env as AgentHost["env"],
+        waitUntil: host.waitUntil ?? kernelHost?.waitUntil,
+        actor: {
+          userId: host.userID,
+          name: host.name || host.userID,
+          username: ""
+        },
+        broadcastCollab: host.onNewChanges
+          ? (changedUnitId, changeset) => host.onNewChanges?.(changedUnitId, changeset, AGENT_MEMBER_ID)
+          : undefined
+      },
+      { unitId, prompt }
+    );
+    addReply(sql, unitId, threadId, AGENT_USER_ID, agentReplyContent(replyTextFromTurn(result)), []);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    try {
+      addReply(
+        sql,
+        unitId,
+        threadId,
+        AGENT_USER_ID,
+        agentReplyContent(message || "Agent turn failed"),
+        []
+      );
+    } catch {
+      // mention turn must not fail the original comment write
+    }
+  }
+}
+
+function replyTextFromTurn(result: AgentTurnResult): string {
+  const text = result.text.trim();
+  if (text) return text;
+  const error = result.events.find((event) => event.type === "agent.error");
+  const message = error?.data && typeof error.data.message === "string" ? error.data.message : "";
+  return message.trim() || "Workspace Agent finished this turn.";
+}
+
+function agentReplyContent(text: string): string {
+  return JSON.stringify({ dataStream: `${text}\r\n` });
+}
+
+function plainCommentText(content: string): string {
+  try {
+    const parsed = JSON.parse(content) as { dataStream?: unknown };
+    if (parsed && typeof parsed === "object" && typeof parsed.dataStream === "string") {
+      return parsed.dataStream;
+    }
+  } catch {
+    // raw comment body
+  }
+  return content;
+}
+
+function kernelFromCollab(collab: unknown): Context | undefined {
+  if (!collab || typeof collab !== "object") return undefined;
+  return (collab as { ctx?: Context }).ctx;
+}
+
+function kernelDelegate(kernel: Context): { env?: unknown; waitUntil?: (promise: Promise<unknown>) => void } | undefined {
+  try {
+    return kernel.get("host") as { env?: unknown; waitUntil?: (promise: Promise<unknown>) => void };
+  } catch {
+    return undefined;
+  }
+}
+
+function kernelHostWaitUntil(kernel: Context): ((promise: Promise<unknown>) => void) | undefined {
+  return kernelDelegate(kernel)?.waitUntil;
 }
 
 function jsonComment(body: Record<string, unknown>, status = 200): Response {

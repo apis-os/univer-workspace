@@ -29,6 +29,8 @@ export async function handleUniverserHttp(
     sql: host.sql,
     userID: host.identity.userID,
     name: host.identity.name,
-    avatar: host.identity.avatar
+    avatar: host.identity.avatar,
+    collab: host.collab,
+    onNewChanges: host.onNewChanges
   });
 }

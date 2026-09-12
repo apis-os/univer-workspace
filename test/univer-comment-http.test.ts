@@ -1,8 +1,14 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { DatabaseSync } from "node:sqlite";
+import { Context } from "@deepseek-ai/cordis";
 import type { SqlExec } from "../src/kernel/sql.ts";
+import { ActionService } from "../src/kernel/action.ts";
 import { handleUniverserHttp } from "../src/integrations/univer-collab-http.ts";
+import { handleAgentHttp } from "../src/plugins/univer-agent.ts";
+import { UniverCollabService } from "../src/plugins/univer-collab.ts";
+import { registerFacadeActions } from "../src/plugins/univer-facade-actions.ts";
+import { generateDefaultSnapshot } from "../src/plugins/univer-default-snapshots.ts";
 
 const UNIT_ID = "unit_welcome_sheet";
 const D3_BODY = { dataStream: "D3 looks light — can we push Sep to 180?\r\n" };
@@ -31,15 +37,28 @@ function createSqliteAdapter(): SqlExec {
   };
 }
 
-function hostFor(sql: SqlExec, userID: string, name: string) {
+function hostFor(sql: SqlExec, userID: string, name: string, collab: unknown = null) {
   return {
     sql,
-    collab: null,
+    collab,
     identity: { userID, name, avatar: "" },
     mintSessionTicket() {
       return "ticket_comment_test";
     }
   };
+}
+
+function agentCommentHarness() {
+  const sql = createSqliteAdapter();
+  const ctx = new Context();
+  ctx.provide("host", { sql });
+  const action = new ActionService(ctx, sql);
+  const collab = new UniverCollabService(ctx, sql);
+  ctx.provide("collab", collab);
+  void action;
+  registerFacadeActions(ctx);
+  collab.createUnit(UNIT_ID, 2, "Q3 Forecast", generateDefaultSnapshot(UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>);
+  return { sql, ctx, collab, host: hostFor(sql, "user_admin", "Avery Chen", collab) };
 }
 
 function commentUrl(action: string): string {
@@ -161,5 +180,72 @@ describe("Universer thread comments", () => {
     assert.equal(byId.get("user_admin"), "Avery Chen");
     assert.equal(byId.get("user_jordan"), "Jordan Lee");
     assert.equal(byId.get("agent_workspace"), "Workspace Agent");
+  });
+
+  test("@agent fill E2 creates a Skill turn and an agent_workspace reply comment", async () => {
+    const { ctx, host } = agentCommentHarness();
+    const content = JSON.stringify({ dataStream: "@agent fill E2\r\n" });
+
+    const addRes = await handleUniverserHttp(
+      new Request(commentUrl("add"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-workspace-user-id": "user_admin",
+          "x-workspace-user-name": "Avery Chen"
+        },
+        body: JSON.stringify({
+          unitId: UNIT_ID,
+          memberId: "member_avery",
+          content,
+          mention: ["agent_workspace"]
+        })
+      }),
+      host
+    );
+    assert.ok(addRes, "comment add must be handled");
+    assert.equal(addRes.status, 200);
+    const added = (await addRes.json()) as {
+      error?: { code?: number };
+      comment?: { threadId?: string };
+    };
+    assert.equal(added.error?.code, 1);
+    const threadId = added.comment?.threadId;
+    assert.ok(threadId);
+
+    const turnsRes = await handleAgentHttp(new Request(`https://workspace.edge/agents/${UNIT_ID}/turns`), {
+      kernel: ctx
+    });
+    assert.ok(turnsRes);
+    const turnsBody = (await turnsRes.json()) as {
+      items?: Array<{ prompt?: string; turnId?: string }>;
+    };
+    assert.ok((turnsBody.items?.length ?? 0) >= 1, "must enqueue a Skill turn");
+    const turn = turnsBody.items?.find((item) => /fill\s+E2/i.test(item.prompt ?? ""));
+    assert.ok(turn, "turn prompt must be the remainder after stripping @agent");
+    assert.equal(turn?.prompt?.trim(), "fill E2");
+    assert.ok(turn?.turnId);
+
+    const listRes = await handleUniverserHttp(
+      new Request(commentUrl("list"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ unitId: UNIT_ID, threadId: [threadId] })
+      }),
+      host
+    );
+    assert.ok(listRes);
+    const listBody = (await listRes.json()) as {
+      comments?: Record<
+        string,
+        { replies?: Array<{ userId?: string; content?: string; threadId?: string }> }
+      >;
+      users?: Record<string, { userID?: string; name?: string }>;
+    };
+    const replies = listBody.comments?.[threadId]?.replies ?? [];
+    const agentReply = replies.find((reply) => reply.userId === "agent_workspace");
+    assert.ok(agentReply, "agent must reply on the thread as agent_workspace");
+    assert.equal(agentReply?.threadId, threadId);
+    assert.equal(listBody.users?.agent_workspace?.name, "Workspace Agent");
   });
 });
