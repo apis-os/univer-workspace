@@ -94,22 +94,22 @@ todos:
     status: in_progress
   - id: t23-chrome
     content: "T23: Pixel-perfect truth chrome — no fake HIT/MISS, i18n leftovers, reduced-motion"
-    status: pending
+    status: completed
   - id: t24-intent
     content: "T24: Cell presence intent via Comb INGEST cell_intent"
-    status: pending
+    status: completed
   - id: t25-blame
     content: "T25: Live OT blame heat from Comb/History clientId"
-    status: pending
+    status: completed
   - id: t26-draft
     content: "T26: Agent draft worktree Jordan Follows before merge (worktree Comb)"
-    status: pending
+    status: completed
   - id: t27-trace
     content: "T27: Gateway trace HUD — real cf-aig headers, model 70b-fast|8b, logId"
-    status: pending
+    status: completed
   - id: t28-timetravel
     content: "T28: Time-travel History vs live Comb in native UnitComparisonViewer"
-    status: pending
+    status: completed
   - id: t29-provenance
     content: "T29: Formula provenance — inspect + precedents + blame writers"
     status: pending
