@@ -1,8 +1,12 @@
 /**
  * Chrome-less Univer boot for Browser Rendering (`/render?unitId=&worktreeId=&theme=`).
  */
-import { LocaleType, LogLevel } from "@univerjs/core";
-import { UniverExchangeClientPlugin } from "@univerjs-pro/exchange-client";
+import { LocaleType, LogLevel, UniverInstanceType } from "@univerjs/core";
+import {
+  ExchangeFormat,
+  IExchangeService,
+  UniverExchangeClientPlugin
+} from "@univerjs-pro/exchange-client";
 import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { UniverSheetsCorePreset } from "@univerjs/preset-sheets-core";
 import { createUniver } from "@univerjs/presets";
@@ -11,7 +15,7 @@ import { createWorkspaceExchangeClientConfig } from "./features/editor/exchange-
 import { resolveUniverLicense } from "./features/editor/univer-license";
 import { hydrateRenderWorkbook } from "./render-hydrate";
 import { runUniverExecutePersist } from "./render-execute";
-import { runUniverExport, runUniverImport } from "./render-exchange";
+import { installBrowserExchangeInterceptor } from "./render-exchange";
 
 import "@univerjs/preset-sheets-core/lib/index.css";
 import "@univerjs-pro/exchange-client/facade";
@@ -36,6 +40,19 @@ type UniverFacade = {
   createWorkbook?: (data?: Record<string, unknown>) => unknown;
 };
 
+type UniverHost = {
+  __getInjector?: () => { get: (token: unknown) => unknown };
+};
+
+type ExchangeService = {
+  importFileToJson: (file: File, type: unknown) => Promise<unknown>;
+  exportFileBySnapshot: (
+    snapshot: unknown,
+    type: unknown,
+    format: unknown
+  ) => Promise<File | undefined>;
+};
+
 async function boot(): Promise<void> {
   const params = new URLSearchParams(window.location.search);
   const unitId = params.get("unitId")?.trim() ?? "";
@@ -49,7 +66,7 @@ async function boot(): Promise<void> {
   if (!container) throw new Error("Render root #app is missing");
   container.id = "app";
 
-  const { univerAPI } = createUniver({
+  const { univer, univerAPI } = createUniver({
     locale: LocaleType.EN_US,
     theme: greenTheme,
     darkMode,
@@ -71,6 +88,8 @@ async function boot(): Promise<void> {
     ],
   });
 
+  const host = univer as UniverHost;
+  installBrowserExchangeInterceptor(host);
   const api = univerAPI as UniverFacade;
   const snapshot = unitId ? await loadSnapshot(unitId, worktreeId) : null;
   const hydrated = hydrateRenderWorkbook({
@@ -78,8 +97,8 @@ async function boot(): Promise<void> {
     createWorkbook: typeof api.createWorkbook === "function" ? api.createWorkbook.bind(api) : undefined
   });
 
-  window.__univerImport = (payload) => runUniverImport(payload);
-  window.__univerExport = (payload) => runUniverExport(payload);
+  window.__univerImport = (payload) => importViaExchangeClient(host, payload);
+  window.__univerExport = (payload) => exportViaExchangeClient(host, payload);
   if (!hydrated.ready) {
     if (!unitId) {
       window.univerAPI = univerAPI;
@@ -92,6 +111,69 @@ async function boot(): Promise<void> {
   window.__univerLint = () => ({ findings: [] });
   window.__univerRunExecute = (code: string) => runUniverExecutePersist(univerAPI as never, code);
   document.documentElement.dataset.univerReady = "1";
+}
+
+function getExchangeService(host: UniverHost): ExchangeService {
+  const exchange = host.__getInjector?.()?.get(IExchangeService) as ExchangeService | undefined;
+  if (!exchange?.importFileToJson || !exchange.exportFileBySnapshot) {
+    throw new Error("IExchangeService unavailable");
+  }
+  return exchange;
+}
+
+async function importViaExchangeClient(
+  host: UniverHost,
+  payload: { format?: string; content?: string; unitId?: string }
+): Promise<{ snapshot: Record<string, unknown>; unitId: string; name: string }> {
+  const exchange = getExchangeService(host);
+  const format = String(payload.format ?? "csv").trim().toLowerCase() || "csv";
+  const content = typeof payload.content === "string" ? payload.content : "";
+  const unitId =
+    typeof payload.unitId === "string" && payload.unitId.trim()
+      ? payload.unitId.trim()
+      : `unit_${crypto.randomUUID()}`;
+  const mime =
+    format === "tsv" ? "text/tab-separated-values" : format === "csv" ? "text/csv" : "application/octet-stream";
+  const file = new File([content], `import.${format}`, { type: mime });
+  const json = await exchange.importFileToJson(file, UniverInstanceType.UNIVER_SHEET);
+  const record = json && typeof json === "object" ? (json as Record<string, unknown>) : {};
+  const snapshot =
+    record.snapshot && typeof record.snapshot === "object"
+      ? (record.snapshot as Record<string, unknown>)
+      : record;
+  if (!snapshot.workbook && !(snapshot as { sheets?: unknown }).sheets) {
+    throw new Error("Import did not return a workbook snapshot");
+  }
+  snapshot.unitID = String(snapshot.unitID ?? unitId);
+  return {
+    snapshot,
+    unitId: String(snapshot.unitID),
+    name: format === "tsv" ? "Imported TSV" : "Imported CSV"
+  };
+}
+
+async function exportViaExchangeClient(
+  host: UniverHost,
+  payload: { format?: string; snapshot?: Record<string, unknown> }
+): Promise<{ mediaType: string; data: string; byteSize: number }> {
+  const exchange = getExchangeService(host);
+  const format = String(payload.format ?? "csv").trim().toLowerCase() || "csv";
+  const snapshot =
+    payload.snapshot && typeof payload.snapshot === "object" ? payload.snapshot : {};
+  const file = await exchange.exportFileBySnapshot(
+    { snapshot, sheetBlocks: {} },
+    UniverInstanceType.UNIVER_SHEET,
+    format === "tsv" ? ExchangeFormat.TSV : ExchangeFormat.CSV
+  );
+  if (!file) {
+    throw new Error("Export did not return bytes");
+  }
+  const data = await file.text();
+  return {
+    mediaType: file.type || (format === "tsv" ? "text/tab-separated-values" : "text/csv"),
+    data,
+    byteSize: new TextEncoder().encode(data).byteLength
+  };
 }
 
 async function loadSnapshot(

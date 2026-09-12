@@ -589,7 +589,7 @@ async function compileSvgFileUnit(
   }
 
   try {
-    const persisted = persistCompiledSvg(host.collab, unitId, svg);
+    const persisted = await persistCompiledSvg(host.collab, unitId, svg);
     return jsonFile({ success: true, unitId, rev: persisted.rev });
   } catch (err) {
     const message = err instanceof Error ? err.message : "compile-svg failed";

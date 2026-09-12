@@ -1206,10 +1206,18 @@ describe("Univer File /uf import, export, compile-svg", () => {
   test("decoded exchange-client runs in BROWSER /render, not exchange-node-binding", () => {
     const renderMain = readFileSync(RENDER_MAIN, "utf8");
     assert.match(renderMain, /@univerjs-pro\/exchange-client/);
+    assert.match(renderMain, /IExchangeService/);
+    assert.match(renderMain, /importFileToJson/);
+    assert.match(renderMain, /exportFileBySnapshot/);
     assert.match(renderMain, /__univerImport/);
     assert.match(renderMain, /__univerExport/);
+    assert.doesNotMatch(renderMain, /runUniverImport/);
+    assert.doesNotMatch(renderMain, /runUniverExport/);
     const exchangeSrc = readFileSync(EXCHANGE_SRC, "utf8");
     assert.match(exchangeSrc, /BLOB_BUCKET|R2BlobStore|blobStore/);
+    assert.match(exchangeSrc, /compileSvgToFacade/);
+    assert.match(exchangeSrc, /@univer-cli\/svg-facade/);
+    assert.doesNotMatch(exchangeSrc, /from ["']node:fs["']/);
     assert.doesNotMatch(exchangeSrc, /exchange-node-binding/);
     assert.doesNotMatch(exchangeSrc, /collaboration-transport-node/);
     const httpSrc = readFileSync(FILE_HTTP_SRC, "utf8");
@@ -1306,6 +1314,12 @@ describe("Univer File /uf import, export, compile-svg", () => {
       listedBody.units?.some((unit) => unit.id === unitId),
       `GET /units must include imported unit ${unitId}`
     );
+    const importedSnap = collab.getLatestSnapshot(String(unitId));
+    assert.ok(importedSnap, "import must persist a collaborative snapshot");
+    assert.equal(getSheetCell(importedSnap.data, "A1")?.v, "hello");
+    assert.equal(getSheetCell(importedSnap.data, "B1")?.v, "qty");
+    assert.equal(getSheetCell(importedSnap.data, "A2")?.v, "alpha");
+    assert.equal(getSheetCell(importedSnap.data, "B2")?.v, 1);
     assert.ok(r2.objects.size > 0, "import bytes must go through R2");
     assert.ok(
       fake.evaluatedExpressions.some((expression) => expression.includes("__univerImport")),
@@ -1318,9 +1332,7 @@ describe("Univer File /uf import, export, compile-svg", () => {
     const user = await admin.db.getUserById("user_admin");
     assert.ok(user);
     const collab = createCollab();
-    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
-    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
-    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, snapshot });
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB });
     const r2 = createFakeR2();
     const host = {
       db: admin.db,
@@ -1333,11 +1345,26 @@ describe("Univer File /uf import, export, compile-svg", () => {
     const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
     assert.equal(created?.status, 200);
 
+    const imported = await handleUniverFileHttp(
+      new Request(ufUrl(key, "/import"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format: "csv", content: TINY_CSV })
+      }),
+      host
+    );
+    assert.equal(imported?.status, 200);
+    const importBody = (await imported!.json()) as { unitId?: string; id?: string };
+    const unitId = importBody.unitId || importBody.id;
+    assert.ok(unitId);
+    const importedSnap = collab.getLatestSnapshot(unitId);
+    fake.snapshot = importedSnap?.data;
+
     const exported = await handleUniverFileHttp(
       new Request(ufUrl(key, "/export"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ unitId: DEMO_UNIT_ID, format: "csv" })
+        body: JSON.stringify({ unitId, format: "csv" })
       }),
       host
     );
@@ -1346,6 +1373,10 @@ describe("Univer File /uf import, export, compile-svg", () => {
     const body = (await exported.json()) as { mediaType?: string; data?: string; byteSize?: number };
     assert.equal(typeof body.data, "string");
     assert.ok((body.data?.length ?? 0) > 0, "export csv must return bytes");
+    assert.match(body.data ?? "", /hello/);
+    assert.match(body.data ?? "", /qty/);
+    assert.match(body.data ?? "", /alpha/);
+    assert.match(body.data ?? "", /1/);
     assert.ok(Buffer.from(body.data ?? "").length > 0);
     assert.ok((body.byteSize ?? Buffer.from(body.data ?? "").length) > 0);
     assert.ok(
@@ -1382,8 +1413,11 @@ describe("Univer File /uf import, export, compile-svg", () => {
     assert.ok(afterSnap, "compile-svg must keep a snapshot");
     const after = JSON.stringify(afterSnap?.data);
     assert.notEqual(after, before, "compile-svg must mutate the collaborative snapshot");
-    assert.match(after, /svg|drawing|shape/i);
-    assert.match(after, /4472c4|#4472c4|rect/i);
+    assert.match(after, /insertShape|setSolidFill/);
+    assert.match(after, /4472c4|#4472c4/i);
+    const exchangeSrc = readFileSync(EXCHANGE_SRC, "utf8");
+    assert.match(exchangeSrc, /compileSvgToFacade/);
+    assert.doesNotMatch(exchangeSrc, /from ["']node:fs["']/);
   });
 
   test("ChatAgent /uf import uses env.BROWSER and BLOB_BUCKET without injecting them on the handler", async () => {
@@ -1620,6 +1654,19 @@ function createFakeBrowser(opts: {
   const evaluatedExpressions: string[] = [];
   let evaluateAttempts = 0;
   let remainingEvaluateFailures = opts.evaluateFailures ?? 0;
+  const fake = {
+    browser: null as unknown as { fetch: typeof fetch },
+    cdpMethods,
+    navigated,
+    evaluatedExpressions,
+    evaluateAttempts: () => evaluateAttempts,
+    get snapshot() {
+      return opts.snapshot;
+    },
+    set snapshot(next: Record<string, unknown> | undefined) {
+      opts.snapshot = next;
+    }
+  };
 
   function createSocket() {
     const listeners = new Map<string, Array<(event: { data?: string }) => void>>();
@@ -1689,7 +1736,7 @@ function createFakeBrowser(opts: {
           } else if (expression.includes("__univerImport") || expression.includes("__univerExport")) {
             void (async () => {
               const { runUniverImport, runUniverExport } = await import(
-                "../apps/workspace/web/src/render-exchange.ts"
+                "../apps/workspace/web/src/render-exchange-csv.ts"
               );
               if (expression.includes("__univerImport")) {
                 return runUniverImport(parseUniverExchangeArg(expression));
@@ -1757,7 +1804,8 @@ function createFakeBrowser(opts: {
     }
   };
 
-  return { browser, cdpMethods, navigated, evaluatedExpressions, evaluateAttempts: () => evaluateAttempts };
+  fake.browser = browser as never;
+  return fake;
 }
 
 function createForwardEnv() {
