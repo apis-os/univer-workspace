@@ -141,6 +141,7 @@ export interface WorktreeItem {
   kind: "user" | "team";
   team_space_id: string | null;
   visibility: "private" | "space";
+  status?: "draft" | "ready" | "merged" | "discarded";
   processed_at: number | null;
   created_at: number;
   updated_at: number;

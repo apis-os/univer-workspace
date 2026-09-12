@@ -162,6 +162,7 @@ CREATE TABLE IF NOT EXISTS worktrees (
   kind TEXT NOT NULL DEFAULT 'user',
   team_space_id TEXT,
   visibility TEXT NOT NULL DEFAULT 'private',
+  status TEXT NOT NULL DEFAULT 'draft',
   processed_at INTEGER,
   created_at INTEGER NOT NULL,
   updated_at INTEGER NOT NULL,
@@ -213,6 +214,16 @@ export async function initControlPlaneSchema(db: D1Database): Promise<void> {
     } catch (err) {
       console.warn("Schema statement execution warning:", err);
     }
+  }
+
+  try {
+    const columns = await db.prepare("PRAGMA table_info(worktrees)").all<{ name: string }>();
+    const hasStatus = (columns.results ?? []).some((column) => column.name === "status");
+    if (!hasStatus) {
+      await db.prepare("ALTER TABLE worktrees ADD COLUMN status TEXT NOT NULL DEFAULT 'draft'").run();
+    }
+  } catch {
+    // Fresh CREATE TABLE may already include status, or PRAGMA is unavailable.
   }
 
   initializedDbs.add(db);

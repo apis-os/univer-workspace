@@ -230,14 +230,6 @@ async function aliasWorktreeRoutes(
   if (unitsMatch && method === "GET") {
     return listScopedWorktreeUnits(host, unitsMatch[1], spaceId);
   }
-  const readyMatch = rest.match(/^worktrees\/([^/]+)\/ready$/);
-  if (readyMatch && method === "POST") {
-    if (!(await canReviewFileWorktree(host, readyMatch[1], spaceId))) {
-      return jsonFile({ error: { message: "Worktree not found" } }, 404);
-    }
-    return jsonFile({ success: true, id: readyMatch[1], state: "ready" });
-  }
-
   let productPath = `/api/${rest.replace(/\/units\/([^/]+)\/remove$/, "/units/$1/removal")}`;
   if (productPath.endsWith("/preview")) {
     productPath = productPath.slice(0, -"/preview".length);

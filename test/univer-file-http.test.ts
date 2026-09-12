@@ -190,6 +190,13 @@ describe("Univer File /uf gateway skeleton", () => {
     );
     assert.ok(ready);
     assert.equal(ready.status, 200);
+    const marked = await host.db.getWorktree(worktreeId);
+    assert.ok(marked, "ready must persist the worktree");
+    assert.equal(
+      marked.status ?? (marked as { state?: string }).state,
+      "ready",
+      "POST /uf/.../ready must call setWorktreeStatus, not return a constant 200 stub"
+    );
   });
 
   test("authenticated user cannot GET another worktree's units via /uf/:key/worktrees/:otherId/units", async () => {

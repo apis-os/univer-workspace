@@ -1027,6 +1027,7 @@ export class ControlPlaneDb {
       kind: input.kind ?? "user",
       team_space_id: input.teamSpaceId ?? null,
       visibility: input.visibility ?? "private",
+      status: "draft",
       processed_at: null,
       created_at: now,
       updated_at: now
@@ -1034,13 +1035,25 @@ export class ControlPlaneDb {
 
     await this.db
       .prepare(
-        `INSERT INTO worktrees (id, name, summary, creator_user_id, kind, team_space_id, visibility, processed_at, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)`
+        `INSERT INTO worktrees (id, name, summary, creator_user_id, kind, team_space_id, visibility, status, processed_at, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, 'draft', NULL, ?, ?)`
       )
       .bind(wt.id, wt.name, wt.summary, wt.creator_user_id, wt.kind, wt.team_space_id, wt.visibility, wt.created_at, wt.updated_at)
       .run();
 
     return wt;
+  }
+
+  async setWorktreeStatus(
+    id: string,
+    status: NonNullable<WorktreeItem["status"]>
+  ): Promise<WorktreeItem | null> {
+    const processed = status === "merged" || status === "discarded" ? Date.now() : null;
+    await this.db
+      .prepare("UPDATE worktrees SET status = ?, processed_at = ?, updated_at = ? WHERE id = ?")
+      .bind(status, processed, Date.now(), id)
+      .run();
+    return this.getWorktree(id);
   }
 
   async discardWorktree(id: string): Promise<void> {

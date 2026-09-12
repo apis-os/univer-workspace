@@ -96,10 +96,34 @@ export function cacheFlag(value) {
   return null;
 }
 
-/** Warm cache (HIT then HIT) is valid; MISS then HIT is the cold path. Do not invent HIT. */
+export const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47];
+/** Reject license/empty-workbook stubs (live 2932-byte captures). */
+export const MIN_SCREENSHOT_BYTES = 4000;
+
+export function screenshotBytesFromBody(body, text) {
+  const data = body?.images?.[0]?.data;
+  if (typeof data === "string" && data) {
+    return Buffer.from(data, "base64");
+  }
+  if (typeof text === "string" && text) {
+    return Buffer.from(text);
+  }
+  return Buffer.alloc(0);
+}
+
+export function isSheetPng(bytes) {
+  if (!bytes || bytes.length < MIN_SCREENSHOT_BYTES) return false;
+  return (
+    bytes[0] === PNG_MAGIC[0] &&
+    bytes[1] === PNG_MAGIC[1] &&
+    bytes[2] === PNG_MAGIC[2] &&
+    bytes[3] === PNG_MAGIC[3]
+  );
+}
+
+/** Cold path only. Warm HIT then HIT is not a pass. Do not invent HIT. */
 export function explainCacheOk(first, second) {
-  if (second !== "HIT") return false;
-  return first === "MISS" || first === "HIT";
+  return first === "MISS" && second === "HIT";
 }
 
 function sleep(ms) {
@@ -213,6 +237,12 @@ export async function runEdgeSmoke(input = {}) {
   if (screenshot.res.status !== 200) {
     fail(`/uf screenshot ${screenshot.res.status} ${String(screenshot.text).slice(0, 400)}`);
   }
+  const png = screenshotBytesFromBody(screenshot.body, screenshot.text);
+  if (!isSheetPng(png)) {
+    fail(
+      `/uf screenshot is not a sheet PNG (magic+min ${MIN_SCREENSHOT_BYTES}B), got length=${png.length} prefix=${png.subarray(0, 8).toString("hex")}`
+    );
+  }
 
   const result = {
     ok: explainCacheOk(miss, hit),
@@ -222,11 +252,11 @@ export async function runEdgeSmoke(input = {}) {
     turn: { turnId: turnRes.body.turnId, rev: turnRes.body.rev },
     explain: { miss, hit },
     inspect: { status: inspect.res.status, path: inspectPath },
-    screenshot: { status: screenshot.res.status, path: screenshotPath }
+    screenshot: { status: screenshot.res.status, path: screenshotPath, pngLength: png.length }
   };
   if (!result.ok) {
     const err = new Error(
-      `Explain cache expected MISS then HIT or HIT then HIT, got miss=${JSON.stringify(miss)} hit=${JSON.stringify(hit)}`
+      `Explain cache expected MISS then HIT, got miss=${JSON.stringify(miss)} hit=${JSON.stringify(hit)}`
     );
     err.result = result;
     throw err;

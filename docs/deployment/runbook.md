@@ -278,7 +278,7 @@ EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cl
 
 Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot 200 after `POST /uf/:fileKey`.
 
-Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Warm cache is honest HIT then HIT.
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-miss-hit"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
 
 ### Proved on this deploy
 
@@ -289,8 +289,8 @@ Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3"`, `cacheTtl
 - [x] Explain cache: live smoke `HIT` then `HIT` (warm `demo:explain-q3`, not invented). UI second Explain showed `cache: HIT` / HUD `Gateway HIT`.
 - [x] `/uf` screenshot 200 (CDP `Page.captureScreenshot` after `POST /v1/devtools/browser`)
 - [x] CLI proof execute → inspect E2 `f=SUM(B2:D2)` → screenshot 200 → worktree ready → curl `/uf` 200
-- [x] 90-second two-user click-through against live `/demo` and `/demo?as=jordan` (two Chrome contexts; `cursor-ide-browser` still cannot attach a tab)
-- [x] Present / Follow Agent / Fill E2:E4 (`univer_sheet_setRange` E2:E3:E4) / formula inspector (`f=SUM(B2:D2)`)
+- [ ] 90-second two-user click-through against live `/demo` and `/demo?as=jordan` (headed Chrome, two cookie jars, in-grid Comb editors)
+- [ ] Present / Follow Agent / Fill E2:E4 screenshot card / formula inspector
 - [ ] Same-cell conflict toast — both D3 executes 200; no toast
 - [ ] What-if comparison + Merge — palette item clicked; stayed on the sheet (`/api/worktrees/:id/units` and `/ready` are not on HEAD)
 - [ ] History overlay names Avery / Jordan / Workspace Agent — Edit History still shows `Administrator`

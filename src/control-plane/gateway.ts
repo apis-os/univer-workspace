@@ -12,7 +12,7 @@ import {
   serializeSessionCookie,
   verifyPassword
 } from "./auth.ts";
-import type { NodeItem, Space, SpaceRole, User } from "./types.ts";
+import type { NodeItem, Space, SpaceRole, User, WorktreeItem } from "./types.ts";
 
 type AccessRole = "owner" | SpaceRole;
 
@@ -267,7 +267,8 @@ async function formatWorktreeSummary(wt: any, db: ControlPlaneDb) {
     kind: wt.kind,
     teamSpace,
     visibility: wt.visibility,
-    state: (wt.processed_at ? "merged" : "draft") as "draft" | "ready" | "merging" | "merged" | "discarded",
+    state: ((wt.status as WorktreeItem["status"] | undefined) ||
+      (wt.processed_at ? "merged" : "draft")) as "draft" | "ready" | "merging" | "merged" | "discarded",
     creator: creator
       ? formatUser(creator)
       : { id: wt.creator_user_id, username: "unknown", displayName: "Unknown", avatarUrl: null },
@@ -942,6 +943,14 @@ export async function handleControlPlaneRoutes(
       ...summary,
       units: []
     });
+  }
+
+  const worktreeReadyMatch = path.match(/^\/api\/worktrees\/([^/]+)\/ready$/);
+  if (worktreeReadyMatch && method === "POST") {
+    const wt = await db.getWorktree(worktreeReadyMatch[1]);
+    if (!wt) return jsonResponse({ error: { message: "Worktree not found" } }, 404);
+    const ready = await db.setWorktreeStatus(worktreeReadyMatch[1], "ready");
+    return jsonResponse({ worktree: await formatWorktreeSummary(ready ?? wt, db) });
   }
 
   const worktreeDiscardMatch = path.match(/^\/api\/worktrees\/([^/]+)\/discard$/);
