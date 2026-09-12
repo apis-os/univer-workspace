@@ -24,7 +24,7 @@ describe("demo command palette", () => {
     ]);
   });
 
-  it("opens on ⌘K and runs presenter actions with T15 T18 T13f as no-ops", () => {
+  it("opens on ⌘K and runs presenter actions with T18 T13f as no-ops", () => {
     expect(isPaletteToggleKey({ key: "k", metaKey: true, ctrlKey: false })).toBe(
       true
     );

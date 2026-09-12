@@ -73,7 +73,12 @@ import {
   type WorkspaceHostSnapshotScope,
 } from "./workspace-snapshot-server-adapter";
 import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
-import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
+import { activateSpotlightCell, bindAgentEditSpotlight } from "./agent-edit-spotlight";
+import {
+  AGENT_MEMBER_ID,
+  bindFollowAgentHost,
+  noteFollowAgentCue,
+} from "./follow-agent";
 import { createCollabConflictToaster } from "./collab-conflict-toast";
 import {
   applyHistoryNameUsers,
@@ -398,6 +403,21 @@ export function createCollaborationEditor(
         bindAgentEditSpotlight({
           getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
         });
+        bindFollowAgentHost({
+          followMember: (memberId) => {
+            if (memberId !== AGENT_MEMBER_ID) return;
+          },
+          stopPresenterFollow: () => {
+            try {
+              if (univerAPI.getLiveShareStatus?.() === "following") {
+                univerAPI.stopFollowing?.();
+              }
+            } catch {
+              // Live Share Facade throws without a workbook or LiveShareCoordinator.
+            }
+          },
+          activateA1: activateSpotlightCell,
+        });
         const notifyCollabConflict = createCollabConflictToaster({
           warning: (message) => toast.warning(message),
         });
@@ -502,7 +522,7 @@ export function createCollaborationEditor(
         });
         const applyAgentEdits = (event: Event) => {
           if (disposed) return;
-          applyWorkspaceAgentEdits(
+          const result = applyWorkspaceAgentEdits(
             univerAPI,
             (event as CustomEvent<{
               unitId?: string;
@@ -511,6 +531,12 @@ export function createCollaborationEditor(
             unitId,
             collaborationStatusRef.current
           );
+          noteFollowAgentCue({
+            cursorMemberId: AGENT_MEMBER_ID,
+            ...(result.ranges[0]?.a1
+              ? { selection: result.ranges[0].a1 }
+              : {}),
+          });
         };
         agentEditedListener = applyAgentEdits;
         window.addEventListener("workspace-agent-edited", applyAgentEdits);
@@ -554,6 +580,7 @@ export function createCollaborationEditor(
           window.removeEventListener("workspace-agent-edited", agentEditedListener);
         }
         bindAgentEditSpotlight(undefined);
+        bindFollowAgentHost(undefined);
         bindLiveShareFacade(undefined);
         bindCollaborationStatusDisplay(null);
         mountedUniver?.dispose();

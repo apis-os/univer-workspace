@@ -86,10 +86,31 @@ describe("Live Share bar and header status chip", () => {
     expect(src).toMatch(/Present/);
     expect(src).toMatch(/Stop/);
     expect(src).toMatch(/Follow/);
+    expect(src).toMatch(/followAgent/);
+    expect(src).toMatch(/followAgentCommand/);
+    expect(src).toMatch(/t\("followAgent"\)/);
     expect(src).toMatch(/startPresenting/);
     expect(src).toMatch(/stopPresenting/);
     expect(src).toMatch(/startFollowing/);
     expect(src).toMatch(/isLiveShareFacadeAvailable|startPresenting[\s\S]*return null/);
+  });
+
+  it("labels Follow Agent with i18n followAgent and shares the palette command", () => {
+    const i18n = readWorkspace("web/src/shared/i18n.tsx");
+    const zh = i18n.match(/"zh-CN":\s*\{[\s\S]*?followAgent:\s*"([^"]+)"/);
+    const en = i18n.match(/"en-US":\s*\{[\s\S]*?followAgent:\s*"([^"]+)"/);
+    expect(en?.[1]).toBe("Follow Agent");
+    expect(zh?.[1]).toBeTruthy();
+    expect(zh?.[1]).not.toBe(en?.[1]);
+    const runtime = readWorkspace("web/src/features/demo/demo-runtime.tsx");
+    expect(runtime).toMatch(/followAgentCommand/);
+    expect(runtime).not.toMatch(/followAgent:\s*\(\)\s*=>\s*undefined/);
+    const editor = readWorkspace(
+      "web/src/features/editor/collaboration-editor.tsx"
+    );
+    expect(editor).toMatch(/bindFollowAgentHost/);
+    expect(editor).toMatch(/AGENT_MEMBER_ID/);
+    expect(editor).not.toMatch(/startFollowing\(\)/);
   });
 
   it("moves the status pill off the canvas into the node header", () => {

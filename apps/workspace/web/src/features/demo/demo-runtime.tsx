@@ -2,6 +2,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useI18n } from "../../shared/i18n";
 import { toast } from "../../shared/ui";
+import { followAgentCommand } from "../editor/follow-agent";
 import { DemoCommandPalette } from "./demo-command-palette";
 import {
   openDemoPalette,
@@ -56,7 +57,9 @@ export function DemoRuntime({
       );
       button?.click();
     },
-    followAgent: () => undefined,
+    followAgent: () => {
+      followAgentCommand();
+    },
     whatIf: () => undefined,
     exportXlsx: () => undefined,
     toggleLanguage: () => {
