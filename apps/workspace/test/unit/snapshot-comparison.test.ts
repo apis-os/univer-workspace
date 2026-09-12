@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   snapshotComparisonRows,
+  snapshotComparisonSideLabels,
   wrapComparisonUniverFactory,
 } from "../../web/src/features/worktrees/snapshot-comparison";
 
@@ -44,6 +45,26 @@ describe("snapshot comparison rows", () => {
         items: [],
       })
     ).toEqual([]);
+  });
+});
+
+describe("snapshot comparison side labels", () => {
+  it("uses Official vs What-if for the What-if +10% Sep worktree", () => {
+    const t = (key: string) =>
+      ({
+        officialVersion: "Official version",
+        agentVersion: "AI changes",
+        comparisonOfficial: "Official",
+        comparisonWhatIf: "What-if",
+      })[key] ?? key;
+    expect(snapshotComparisonSideLabels("What-if +10% Sep", t)).toEqual({
+      officialVersion: "Official",
+      agentVersion: "What-if",
+    });
+    expect(snapshotComparisonSideLabels("Agent Forecast Update", t)).toEqual({
+      officialVersion: "Official version",
+      agentVersion: "AI changes",
+    });
   });
 });
 

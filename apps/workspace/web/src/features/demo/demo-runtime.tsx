@@ -1,8 +1,10 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef } from "react";
 import { useI18n } from "../../shared/i18n";
 import { toast } from "../../shared/ui";
 import { followAgentCommand } from "../editor/follow-agent";
+import { worktreesQueryKey } from "../worktrees";
 import { DemoCommandPalette } from "./demo-command-palette";
 import {
   openDemoPalette,
@@ -31,6 +33,7 @@ export function DemoRuntime({
   readonly palette?: typeof DemoCommandPalette;
 } = {}) {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { language, setLanguage, t } = useI18n();
   const ranScene = useRef<string>("");
   const presence = useRef<{
@@ -68,6 +71,8 @@ export function DemoRuntime({
           if (kind === "busy") toast.info(t(key));
           else toast.error(t(key));
         },
+        invalidateWorktrees: () =>
+          queryClient.invalidateQueries({ queryKey: worktreesQueryKey }),
         openComparison: ({ worktreeId, unitId }) => {
           void navigate({
             to: "/worktrees",

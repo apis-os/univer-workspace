@@ -56,6 +56,37 @@ export interface WorktreeComparisonPayload {
   };
 }
 
+export const WHAT_IF_WORKTREE_NAME = "What-if +10% Sep";
+
+export function isWhatIfWorktreeName(name: string | undefined): boolean {
+  return name === WHAT_IF_WORKTREE_NAME;
+}
+
+export function snapshotComparisonSideLabels(
+  worktreeName: string | undefined,
+  t: (
+    key:
+      | "officialVersion"
+      | "agentVersion"
+      | "comparisonOfficial"
+      | "comparisonWhatIf"
+  ) => string
+): {
+  readonly officialVersion: string;
+  readonly agentVersion: string;
+} {
+  if (isWhatIfWorktreeName(worktreeName)) {
+    return {
+      officialVersion: t("comparisonOfficial"),
+      agentVersion: t("comparisonWhatIf"),
+    };
+  }
+  return {
+    officialVersion: t("officialVersion"),
+    agentVersion: t("agentVersion"),
+  };
+}
+
 export function worktreeComparisonValue(
   payload: WorktreeComparisonPayload,
   labels: {

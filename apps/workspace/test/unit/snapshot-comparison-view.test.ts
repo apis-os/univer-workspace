@@ -55,8 +55,30 @@ describe("native Worktree comparison wiring", () => {
       "web/src/features/worktrees/snapshot-comparison-view.tsx"
     );
     expect(view).toMatch(/worktreeComparisonValue|left:\s*\{/);
-    expect(view).toMatch(/t\(["']officialVersion["']\)/);
-    expect(view).toMatch(/t\(["']agentVersion["']\)/);
+    const labels = readWorkspace(
+      "web/src/features/worktrees/snapshot-comparison.ts"
+    );
+    expect(labels).toMatch(/t\(["']officialVersion["']\)/);
+    expect(labels).toMatch(/t\(["']agentVersion["']\)/);
+  });
+
+  it("applies Official vs What-if next to the comparison view, not via a demo import in the review panel", () => {
+    const view = readWorkspace(
+      "web/src/features/worktrees/snapshot-comparison-view.tsx"
+    );
+    expect(view).toMatch(/worktreeName/);
+    expect(view).toMatch(/snapshotComparisonSideLabels/);
+    const labels = readWorkspace(
+      "web/src/features/worktrees/snapshot-comparison.ts"
+    );
+    expect(labels).toMatch(/t\(["']comparisonOfficial["']\)/);
+    expect(labels).toMatch(/t\(["']comparisonWhatIf["']\)/);
+    const panel = readWorkspace(
+      "web/src/features/worktrees/worktree-review-panel.tsx"
+    );
+    expect(panel).not.toMatch(/from ["']\.\.\/demo\/demo-what-if["']/);
+    expect(panel).not.toMatch(/isWhatIfWorktreeName/);
+    expect(panel).toMatch(/worktreeName=\{worktree\.name\}/);
   });
 
   it("uses SnapshotComparisonView instead of inlining UnitComparisonViewer", () => {

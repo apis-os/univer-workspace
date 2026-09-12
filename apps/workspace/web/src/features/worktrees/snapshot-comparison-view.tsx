@@ -14,6 +14,7 @@ import { Badge, Empty } from "../../shared/ui";
 import { cn } from "../../shared/utils/cn";
 import {
   snapshotComparisonRows,
+  snapshotComparisonSideLabels,
   worktreeComparisonValue,
   wrapComparisonUniverFactory,
   type WorktreeComparisonPayload,
@@ -21,6 +22,7 @@ import {
 
 interface SnapshotComparisonViewProps {
   readonly comparison: WorktreeComparisonPayload;
+  readonly worktreeName?: string;
   readonly labels?: {
     readonly officialVersion: string;
     readonly agentVersion: string;
@@ -29,15 +31,13 @@ interface SnapshotComparisonViewProps {
 
 export function SnapshotComparisonView({
   comparison,
+  worktreeName,
   labels,
 }: SnapshotComparisonViewProps) {
   const { language, t } = useI18n();
   const { resolvedTheme } = useTheme();
   const [useTable, setUseTable] = useState(false);
-  const resolvedLabels = labels ?? {
-    officialVersion: t("officialVersion"),
-    agentVersion: t("agentVersion"),
-  };
+  const resolvedLabels = labels ?? snapshotComparisonSideLabels(worktreeName, t);
   const value = worktreeComparisonValue(comparison, resolvedLabels);
   const createUniver = useMemo(
     () =>

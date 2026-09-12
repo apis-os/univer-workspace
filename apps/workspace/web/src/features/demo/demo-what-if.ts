@@ -1,6 +1,8 @@
+import { WHAT_IF_WORKTREE_NAME } from "../worktrees/snapshot-comparison";
+
 export const DEMO_UNIVER_FILE = "workspace.univer";
 export const DEMO_RESOURCE_ID = "res_welcome_sheet";
-export const WHAT_IF_WORKTREE_NAME = "What-if +10% Sep";
+export { WHAT_IF_WORKTREE_NAME };
 export const WHAT_IF_RANGE = "D2:D4";
 export const WHAT_IF_COMPARE_LEFT = "Official";
 export const WHAT_IF_COMPARE_RIGHT = "What-if";
@@ -22,6 +24,7 @@ export interface WhatIfHost {
     readonly worktreeId: string;
     readonly unitId: string;
   }) => void;
+  readonly invalidateWorktrees: () => Promise<void> | void;
 }
 
 export function fileKeyOf(path: string): string {
@@ -73,16 +76,23 @@ export function comparisonLabelsForWorktree(name: string | undefined): {
   };
 }
 
+export function whatIfApiPath(rest = ""): string {
+  const suffix = rest.replace(/^\//u, "");
+  return suffix === "" ? "/api/worktrees" : `/api/worktrees/${suffix}`;
+}
+
 export async function runWhatIfWorktree(host: WhatIfHost): Promise<void> {
   host.toast("busy", "demoWhatIfBusy");
   try {
-    const created = await jsonPost(host.fetch, whatIfUfPath("worktrees"), {
+    const created = await jsonPost(host.fetch, whatIfApiPath(), {
+      kind: "user",
       name: WHAT_IF_WORKTREE_NAME,
+      summary: null,
     });
     const worktreeId = worktreeIdFrom(created);
     const added = await jsonPost(
       host.fetch,
-      whatIfUfPath(`worktrees/${encodeURIComponent(worktreeId)}/units`),
+      whatIfApiPath(`${encodeURIComponent(worktreeId)}/units`),
       { source: "trunk", resourceId: DEMO_RESOURCE_ID }
     );
     const unitId = unitIdFrom(added);
@@ -95,8 +105,9 @@ export async function runWhatIfWorktree(host: WhatIfHost): Promise<void> {
     );
     await jsonPost(
       host.fetch,
-      whatIfUfPath(`worktrees/${encodeURIComponent(worktreeId)}/ready`)
+      whatIfApiPath(`${encodeURIComponent(worktreeId)}/ready`)
     );
+    await host.invalidateWorktrees();
     host.openComparison({ worktreeId, unitId });
   } catch {
     host.toast("error", "demoWhatIfError");
