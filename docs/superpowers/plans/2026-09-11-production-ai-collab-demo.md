@@ -112,13 +112,13 @@ todos:
     status: completed
   - id: t29-provenance
     content: "T29: Formula provenance — inspect + precedents + blame writers"
-    status: pending
+    status: completed
   - id: t30-legend
     content: "T30: Presence legend is the playbook (seats run Wave G scenes)"
-    status: pending
+    status: completed
   - id: t31-verify
     content: "T31: Wave G 90s addendum + edge-wave-g.mjs (do not steal T9 smoke)"
-    status: pending
+    status: completed
   - id: t32-uf-cli
     content: "T32: First-class univer-workspace-cli uf execute/inspect/screenshot/worktree on /uf (no daemon)"
     status: pending
@@ -1078,15 +1078,15 @@ export interface FormulaInspectPayload {
 
 Expand `B2:D2` into B2,C2,D2 for writer rows. Highlight each precedent once with that writer's stroke (not a single blue wash). Missing writer → `—` / muted.
 
-- [ ] **Step 1: Failing test** — inspect E2 `=SUM(B2:D2)` + blame B2 Avery / C2 Jordan / D2 Avery → provenance length 3, names History map, `highlightPrecedentRangesOnce` called with 3 ranges.
+- [x] **Step 1: Failing test** — inspect E2 `=SUM(B2:D2)` + blame B2 Avery / C2 Jordan / D2 Avery → provenance length 3, names History map, `highlightPrecedentRangesOnce` called with 3 ranges.
 
-- [ ] **Step 2: Run** `pnpm exec vitest run apps/workspace/web/src/features/demo/formula-inspector.test.ts` — FAIL. `required_permissions: ["all"]`.
+- [x] **Step 2: Run** `pnpm exec vitest run apps/workspace/web/src/features/demo/formula-inspector.test.ts` — FAIL. `required_permissions: ["all"]`.
 
-- [ ] **Step 3: Implement** popover table: A1 · v · ring · name. `tabular-nums`. zh-CN keys.
+- [x] **Step 3: Implement** popover table: A1 · v · ring · name. `tabular-nums`. zh-CN keys.
 
-- [ ] **Step 4: PASS.**
+- [x] **Step 4: PASS.**
 
-- [ ] **Step 5: Commit** `feat(web): show formula provenance from inspect and OT blame`
+- [x] **Step 5: Commit** `feat(web): show formula provenance from inspect and OT blame`
 
 ---
 
@@ -1116,15 +1116,15 @@ export type PresenceLegendItem = { /* existing */ readonly action?: "jordan" | "
 
 Clicks: ghost Jordan → `conflict` scene; Agent seat → Follow Agent + focus Fill; Avery → Present via `t("liveSharePresent")` not English `"Present"`; legend footer toggle Blame heat; optional Draft Fill row. Compact 720: legend still popover (stepper remains badge). `prefers-reduced-motion`: no pulse. Nested Tooltip-in-Popover: clickable `role="menuitem"` rows, keep one tooltip on the avatar stack.
 
-- [ ] **Step 1: Failing tests** — `isDemoScene("draft")`, palette ids include `draft-fill` / `history-live` / `blame-heat`, `runDemoScene("provenance")` opens inspect, `demo-runtime` Present matcher uses i18n.
+- [x] **Step 1: Failing tests** — `isDemoScene("draft")`, palette ids include `draft-fill` / `history-live` / `blame-heat`, `runDemoScene("provenance")` opens inspect, `demo-runtime` Present matcher uses i18n.
 
-- [ ] **Step 2: Run** `pnpm exec vitest run apps/workspace/web/src/features/demo/demo-scenes.test.ts apps/workspace/web/src/features/demo/demo-palette.test.ts` — FAIL. `required_permissions: ["all"]`.
+- [x] **Step 2: Run** `pnpm exec vitest run apps/workspace/web/src/features/demo/demo-scenes.test.ts apps/workspace/web/src/features/demo/demo-palette.test.ts` — FAIL. `required_permissions: ["all"]`.
 
-- [ ] **Step 3: Implement** + `/demo?scene=draft|blame|history|provenance|trace|intent`.
+- [x] **Step 3: Implement** + `/demo?scene=draft|blame|history|provenance|trace|intent`.
 
-- [ ] **Step 4: PASS.** T8a v2 playbook tests still pass.
+- [x] **Step 4: PASS.** T8a v2 playbook tests still pass.
 
-- [ ] **Step 5: Commit** `feat(web): run the demo playbook from the presence legend`
+- [x] **Step 5: Commit** `feat(web): run the demo playbook from the presence legend`
 
 ---
 
@@ -1142,15 +1142,15 @@ Clicks: ghost Jordan → `conflict` scene; Agent seat → Follow Agent + focus F
 - Consumes: T9 `runEdgeSmoke` origin/login helpers (copy, do not break T9 exports)
 - Produces: `runWaveGSmoke({ origin, fetchImpl })` asserts: `/universer-api/worktrees/:id/comb/connect` 101 on Upgrade in unit fake; Explain turn body has `model` in `AI_GATEWAY_LIVE_MODELS` and `cache` HIT|MISS; `/universer-api/history/unit_welcome_sheet/cs` 200; inspect E2 JSON has `f`; Draft worktree name `Agent draft Fill` create 200 in fake fetch. Live `EDGE_ORIGIN` run is optional and must not fail T9 if Wave G HTTP is 404 pre-deploy.
 
-- [ ] **Step 1: Failing test** — `test/edge-wave-g.test.ts` source-contract like T9 (`worktrees/.*/comb/connect`, `70b-fast` or `llama-3.3-70b`, `Agent draft Fill`, `cell_intent`).
+- [x] **Step 1: Failing test** — `test/edge-wave-g.test.ts` source-contract like T9 (`worktrees/.*/comb/connect`, `70b-fast` or `llama-3.3-70b`, `Agent draft Fill`, `cell_intent`).
 
-- [ ] **Step 2: Run** `node --test test/edge-wave-g.test.ts` — FAIL. `required_permissions: ["all"]`.
+- [x] **Step 2: Run** `node --test test/edge-wave-g.test.ts` — FAIL. `required_permissions: ["all"]`.
 
-- [ ] **Step 3: Implement** script. After T9 Approved, append beats 11–17 to the runbook only once the live origin proves them.
+- [x] **Step 3: Implement** script. After T9 Approved, append beats 11–17 to the runbook only once the live origin proves them.
 
-- [ ] **Step 4: PASS.** Re-run `node --test test/edge-smoke.test.ts` — still PASS.
+- [x] **Step 4: PASS.** Re-run `node --test test/edge-smoke.test.ts` — still PASS.
 
-- [ ] **Step 5: Commit** `test(edge): prove Wave G intent blame draft Gateway History provenance`
+- [x] **Step 5: Commit** `test(edge): prove Wave G intent blame draft Gateway History provenance`
 
 ---
 
