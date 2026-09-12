@@ -91,8 +91,8 @@ function parseSource(src) {
  * Decode leftover unglue mistakes that make Babel unparseable.
  * Does not rewrite `_0x` tokens; only rejoins `delete` + Ident that
  * unglueKeywords split, empty rotator IIFE residue, extra `};ident`
- * after a closed function, Object.entries / typeof== splits, and
- * `for(var` residue that lost `fo`.
+ * after a closed function, `;}(),ident=` IIFE-comma after `;}()`,
+ * Object.entries / typeof== splits, and `for(var` residue that lost `fo`.
  */
 const STMT_AFTER_VALUE = ["function", "class", "const", "let", "var", "if", "for", "while", "switch", "try"];
 
@@ -129,24 +129,26 @@ function healElseMissingSemicolons(src) {
 }
 
 export function healForParse(src) {
-  return src
-    .replace(/\bas\s+delete\s+([A-Z][A-Za-z0-9_]*)/g, "as delete$1")
-    .replace(/([,{])delete\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "$1delete$2 as")
-    .replace(/([{};,])\s*delete\s+([A-Z][A-Za-z0-9_]*)\s*\(/g, "$1delete$2(")
-    .replace(/\bawait\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "await$1 as")
-    .replace(/URL\(\);SearchParams/g, "URLSearchParams")
-    .replace(/\(function\s*\(\s*\)\s*\{\(\)\)/g, "(function(){})")
-    .replace(/\(function\s*\(\s*\)\s*\{,/g, "(function(){")
-    .replace(/\[\];,((?:'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"))\s*:/g, "{$1:")
-    .replace(/\}function\b/g, "};function")
-    .replace(/\}async\s+function\b/g, "};async function")
-    .replace(/([,{])\s*delete\s+([A-Za-z_$][\w$]*)\s*:/g, "$1delete$2:")
-    .replace(/async\s*'handler'/g, "async handler")
-    .replace(/async'handler'/g, "async handler")
-    .replace(/\n}\n};(?=[A-Za-z_$])/g, "\n}\n")
-    .replace(/fromEntries\(Object\);\n\}\n\.entries\(/g, "fromEntries(Object.entries(")
-    .replace(/\btypeof\s+([A-Za-z_$][\w$]*);\n==/g, "typeof $1==")
-    .replace(/\n}\nr\(var /g, "\n}\nfor(var ");
+  return healIifeCommaAndExtraBrace(
+    src
+      .replace(/\bas\s+delete\s+([A-Z][A-Za-z0-9_]*)/g, "as delete$1")
+      .replace(/([,{])delete\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "$1delete$2 as")
+      .replace(/([{};,])\s*delete\s+([A-Z][A-Za-z0-9_]*)\s*\(/g, "$1delete$2(")
+      .replace(/\bawait\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "await$1 as")
+      .replace(/URL\(\);SearchParams/g, "URLSearchParams")
+      .replace(/\(function\s*\(\s*\)\s*\{\(\)\)/g, "(function(){})")
+      .replace(/\(function\s*\(\s*\)\s*\{,/g, "(function(){")
+      .replace(/\[\];,((?:'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"))\s*:/g, "{$1:")
+      .replace(/\}function\b/g, "};function")
+      .replace(/\}async\s+function\b/g, "};async function")
+      .replace(/([,{])\s*delete\s+([A-Za-z_$][\w$]*)\s*:/g, "$1delete$2:")
+      .replace(/async\s*'handler'/g, "async handler")
+      .replace(/async'handler'/g, "async handler")
+      .replace(/\n}\n};(?=[A-Za-z_$])/g, "\n}\n")
+      .replace(/fromEntries\(Object\);\n\}\n\.entries\(/g, "fromEntries(Object.entries(")
+      .replace(/\btypeof\s+([A-Za-z_$][\w$]*);\n==/g, "typeof $1==")
+      .replace(/\n}\nr\(var /g, "\n}\nfor(var ")
+  );
 }
 
 function exportedName(spec) {
@@ -533,6 +535,41 @@ function walkCode(src, onCode) {
     onCode(i, { paren, brace, bracket });
     i += 1;
   }
+}
+
+/**
+ * `;}(),ident=` is a grouping-paren IIFE that lost `)` (`(function(){...})(),ident=`).
+ * Extra `};ident` after a closed function is a leftover `}` at brace depth < 0.
+ * Walk skips strings/comments so Comb keys and literals stay intact.
+ */
+function healIifeCommaAndExtraBrace(src) {
+  if (!src.includes(";}(),") && !src.includes("};")) return src;
+  const splices = [];
+  walkCode(src, (i, { brace, paren }) => {
+    if (
+      paren > 0 &&
+      src[i] === ";" &&
+      src[i + 1] === "}" &&
+      src[i + 2] === "(" &&
+      src[i + 3] === ")" &&
+      src[i + 4] === "," &&
+      /[A-Za-z_$]/.test(src[i + 5] || "")
+    ) {
+      splices.push({ start: i, end: i + 2, to: "})" });
+      return;
+    }
+    if (src[i] !== "}" || brace >= 0 || src[i + 1] !== ";") return;
+    let k = i + 2;
+    while (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r") k += 1;
+    if (/[A-Za-z_$]/.test(src[k] || "")) splices.push({ start: i, end: i + 1, to: "" });
+  });
+  if (splices.length === 0) return src;
+  splices.sort((a, b) => b.start - a.start);
+  let out = src;
+  for (const job of splices) {
+    out = `${out.slice(0, job.start)}${job.to}${out.slice(job.end)}`;
+  }
+  return out;
 }
 
 function matchCompleteFunction(src, start) {

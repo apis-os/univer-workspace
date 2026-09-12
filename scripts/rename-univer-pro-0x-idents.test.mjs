@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { abortIfCqStubRestored, rename0xIdents } from "./rename-univer-pro-0x-idents.mjs";
+import { abortIfCqStubRestored, healForParse, rename0xIdents } from "./rename-univer-pro-0x-idents.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const FIXTURE = path.join(ROOT, "scripts/fixtures/0x-ident-rename.fixture.js");
@@ -82,6 +82,47 @@ test("heals extra };ident after a closed function then parses", () => {
   assert.equal(changed, true);
   assert.match(src, /xw=/);
   assert.doesNotMatch(src, /\n}\n};xw=/);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+});
+
+test("heals ;}(),ident=function IIFE comma residue then parses", () => {
+  const original =
+    "var td=(function(){function _0xaaa(){}return _0xaaa.prototype.x=function(_0xbbb){this._draggingTarget=null,this.z=_0xbbb;},_0xaaa;}(),rd=function(){function _0xccc(_0xddd){return _0xddd+\"_0xdead\";}return _0xccc;}();\n" +
+    "export { rd as publicApi };\n";
+  const healed = healForParse(original);
+  assert.match(healed, /}\)(\(\),)rd=function/);
+  assert.doesNotMatch(healed, /;}(\(\),)[A-Za-z_$]/);
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, ";}(),ident=function IIFE comma must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /"_0xdead"/);
+  assert.doesNotMatch(src, /_0xbbb\b/);
+  assert.doesNotMatch(src, /_0xddd\b/);
+});
+
+test("heals IIFE comma after ;}() before a non-function assignment then parses", () => {
+  const original =
+    "var td=(function(){function _0xaaa(){}return _0xaaa;}(),id=Math.log(2),rd=function(_0xbbb){return _0xbbb+\"_0xdead\";}();\n" +
+    "export { rd as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, ";}(),ident= IIFE comma must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /as publicApi/);
+  assert.match(src, /"_0xdead"/);
+  assert.doesNotMatch(src, /_0xbbb\b/);
+});
+
+test("heals extra };ident on the same line after a closed function then parses", () => {
+  const original =
+    "function _0xaaa(){ return \"_0xdead\"; }};xw=_0xaaa;\n" +
+    "export { _0xaaa as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "same-line extra };ident residue must parse after heal");
+  assert.equal(changed, true);
+  assert.match(src, /xw=/);
+  assert.doesNotMatch(src, /}};xw=/);
   assert.match(src, /"_0xdead"/);
   assert.match(src, /as publicApi/);
 });
