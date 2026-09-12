@@ -434,6 +434,9 @@ const messages = {
     formulaLabelPrecedents: "前置单元格",
     agentPanelTitle: "Q3 预测",
     agentCacheUnknown: "缓存：—",
+    intentSelecting: "正在选择",
+    intentEditing: "正在编辑",
+    intentThinking: "思考中",
   },
   "en-US": {
     home: "Home",
@@ -885,6 +888,9 @@ const messages = {
     formulaLabelPrecedents: "precedents",
     agentPanelTitle: "Q3 Forecast",
     agentCacheUnknown: "cache: —",
+    intentSelecting: "Selecting",
+    intentEditing: "Editing",
+    intentThinking: "Thinking",
   },
 } as const;
 

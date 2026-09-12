@@ -73,7 +73,7 @@ import {
 } from "./workspace-snapshot-server-adapter";
 import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
 import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
-import { bindExplainSelectionHost } from "./agent-panel";
+import { bindExplainSelectionHost, readActiveRangeA1 } from "./agent-panel";
 import { bindFormulaInspectorHost } from "../demo/formula-inspector";
 import {
   AGENT_MEMBER_ID,
@@ -81,7 +81,18 @@ import {
   createFollowAgentEditorHost,
   noteFollowAgentCue,
 } from "./follow-agent";
-import { FollowAgentCollaborationSocketService } from "./follow-agent-collab-socket";
+import {
+  FollowAgentCollaborationSocketService,
+  sendCellIntent,
+} from "./follow-agent-collab-socket";
+import {
+  CELL_INTENT_EVENT,
+  highlightIntent,
+  readCellIntent,
+  shouldPublishIntent,
+  type CellIntentKind,
+} from "./cell-presence-intent";
+import { presenceRingToken } from "./presence-roster";
 import { createCollabConflictToaster } from "./collab-conflict-toast";
 import {
   applyHistoryNameUsers,
@@ -540,6 +551,50 @@ export function createCollaborationEditor(
         };
         agentEditedListener = applyAgentEdits;
         window.addEventListener("workspace-agent-edited", applyAgentEdits);
+        let intentHighlightHandle: { dispose(): void } | null = null;
+        let commandListener: { dispose(): void } | null = null;
+        let cellIntentListener: ((event: Event) => void) | null = null;
+
+        const onCellIntent = (event: Event) => {
+          if (disposed) return;
+          const intent = readCellIntent(event);
+          if (!intent) return;
+          if (intent.memberID === user.id || intent.userID === user.id) return;
+          const ringToken = presenceRingToken({ userID: intent.userID });
+          const reducedMotion =
+            typeof window !== "undefined" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+          intentHighlightHandle?.dispose();
+          intentHighlightHandle = highlightIntent(
+            { getActiveWorkbook: () => univerAPI.getActiveWorkbook?.() },
+            intent,
+            ringToken,
+            reducedMotion
+          );
+        };
+        cellIntentListener = onCellIntent;
+        window.addEventListener(CELL_INTENT_EVENT, onCellIntent);
+
+        commandListener = univerAPI.addEvent(
+          univerAPI.Event.CommandExecuted,
+          (commandEvent) => {
+            if (disposed) return;
+            const a1 = readActiveRangeA1({
+              getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+            });
+            if (!a1 || !shouldPublishIntent({ kind: "member", a1 })) return;
+            const isMutation =
+              (commandEvent as { type?: number }).type === CommandType.MUTATION;
+            const intentKind: CellIntentKind = isMutation ? "editing" : "selecting";
+            sendCellIntent(unitId, {
+              memberID: user.id,
+              userID: user.id,
+              a1,
+              intent: intentKind,
+            });
+          }
+        );
+
         if (
           !disposed &&
           onCollaboratorsChange &&
@@ -570,6 +625,11 @@ export function createCollaborationEditor(
 
       return () => {
         disposed = true;
+        commandListener?.dispose();
+        intentHighlightHandle?.dispose();
+        if (cellIntentListener) {
+          window.removeEventListener(CELL_INTENT_EVENT, cellIntentListener);
+        }
         collaboratorsListener?.dispose();
         onCollaboratorsChange?.([]);
         statusListener?.dispose();
