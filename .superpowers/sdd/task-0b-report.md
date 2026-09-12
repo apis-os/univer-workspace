@@ -155,10 +155,70 @@ Most went **0** (collaboration, bases, slides-table-ui, docs-table, engine-pivot
 
 Stuck leftover (unparseable chunks): shape-editor-ui 6,766 · sheets-pivot 4,445 · chart-ui 1,714 · collaboration-client-ui 873 · sheets-print 671 · docs-print 243.
 
+## Healer / windowed class pass + cjs twins
+
+Date: 2026-09-12. T9 files not touched (`sheets-pivot*` skipped). No push. No `--all`.
+
+### TDD
+
+`node --test scripts/rename-univer-pro-0x-idents.test.mjs` → **16/16**.
+
+RED then GREEN (4 new tests):
+
+1. Heal `await Time as` → `awaitTime as` (unglue of `@univerjs/core` `awaitTime`).
+2. Heal `URL();SearchParams` → `URLSearchParams` (prefer heal-before-parse so glue happens even when `new URL();` happens to parse).
+3. Nested `function` whose body is `return/^[a-zA-Z]+:\/\//` — previous scanners treated `://` as a line comment; `/` after `return` is now a regex start.
+4. Extract complete `class` bodies from unparseable `else{` IIFEs and `scope.rename` method params.
+
+Still abort `export { _0x123 }` with no `as`. String / Comb keys untouched (`eventID` still 26 in collaboration-client es/cjs/lib).
+
+### Backup (new; did not overwrite earlier giants)
+
+`vendor/univer-pro-0x-backup/<pkg>/lib/es/index.js` added for: `shape-editor-ui`, `chart-ui`, `collaboration-client-ui`, `sheets-print`, `docs-print`. Existing `engine-chart` / `boards-ui` / `bases-ui` backups kept.
+
+### lib/es (`--write --apply`, skip `sheets-pivot*`)
+
+| File | Hits before | Hits after |
+| --- | ---: | ---: |
+| `engine-chart/lib/es/index.js` | 21,807 | **11,944** |
+| `shape-editor-ui/lib/es/index.js` | 6,766 | **1,355** |
+| `boards-ui/lib/es/index.js` | 5,188 | **2,705** |
+| `bases-ui/lib/es/index.js` | 3,223 | **3,223** (still unparseable; export not at top level) |
+| `chart-ui/lib/es/index.js` | 1,714 | **1,570** |
+| `collaboration-client-ui/lib/es/index.js` | 874 | **469** |
+| `sheets-print/lib/es/index.js` | 671 | **514** (`sheets-print` not installed in workspace nm) |
+| `docs-print/lib/es/index.js` | 243 | **130** |
+
+Small facade leftovers (11…1) still parse as wholes but leftover `_0x` are unbound decoder refs — `scope.rename` correctly skips them.
+
+### Hits (`vendor/univer-pro/**/lib/es`)
+
+| | This session start | After this pass |
+| --- | ---: | ---: |
+| Files with `_0x` | 26 | **26** |
+| Token hits | 44,997 | **26,422** (includes skipped sheets-pivot 4,445) |
+
+### cjs / lib-root twins of es-already-0
+
+`--cjs-twins` (unlink-first + overlay). 274 candidates / 680,101 hits at start of twin pass. Processed in bounded batches; most large twins went **0**. Stalled twins (unparseable residue, not regex): engine-pivot cjs 2,856 · bases cjs facade 1,090 · a handful of other cjs facades.
+
+| | After previous T0b wave (this session) | After twins |
+| --- | ---: | ---: |
+| Tree-wide files with `_0x` | 385 | **123** |
+| Tree-wide tokens | 1,399,522 | **726,028** |
+| `lib/cjs` tokens | 722,760 | **403,159** |
+
+### Still unparseable (why)
+
+- **engine-chart** leftover ~12k: missing-semicolon rotator residue + unbound stripped decoder (`_0xfce7a8(n)`). Nested functions/classes already renamed.
+- **bases-ui** 3,223: `'import' and 'export' may only appear at the top level` even after `}export{` split; class walk finds nothing remaining.
+- **sheets-pivot\***: skipped while T9 is live.
+- Unbound `_0x(` calls (embed-ui 3, many giant leftovers): no binding, not renamed.
+
 ## Not done
 
-- `lib/cjs` / `lib/index.js` twins
-- leftover hits inside unparseable wrapper chunks
-- `--all`
+- leftover hits inside unparseable wrapper chunks / unbound decoder calls
+- `--all` (543-file freeze)
 - T9 / wrangler / `/demo` sheet open
 - git push
+

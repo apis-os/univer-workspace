@@ -1,9 +1,1 @@
-import { ChartImageExportService as _0x4f2cec } from "@univerjs-pro/chart-ui";
-import { FChart as _0x41b4f0 } from "@univerjs-pro/engine-chart/facade";
-var n = class extends _0x41b4f0 {
-  exportImage(_0x40aa20) {
-    return this._injector["get"](_0x4f2cec).exportImage(this, _0x40aa20);
-  }
-};
-_0x41b4f0.extend(n);
-export {};
+import{ChartImageExportService as v2}from"@univerjs-pro/chart-ui";import{FChart as v3}from"@univerjs-pro/engine-chart/facade";var n=class extends v3{exportImage(v1){return this._injector["get"](v2).exportImage(this,v1);}};v3.extend(n);export{};

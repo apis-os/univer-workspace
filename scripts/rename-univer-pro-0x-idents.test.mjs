@@ -143,3 +143,72 @@ test("keeps FFormula-style export alias and does not invent string _0x keys", ()
   assert.match(src, /"_0xdead"/);
   assert.doesNotMatch(src, /export\s*\{\s*_0x[0-9a-f]+\s+as\s+FFormula\s*\}/i);
 });
+
+test("heals await-split import alias then renames locals", () => {
+  const original =
+    'import { await Time as _0xaaa } from "@univerjs/core";\n' +
+    'function _0xbbb(_0xccc){ return _0xccc + "_0xdead"; }\n' +
+    "export { _0xbbb as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "await Time as must parse as awaitTime after heal");
+  assert.equal(changed, true);
+  assert.match(src, /awaitTime\s+as/);
+  assert.doesNotMatch(src, /\bawait\s+Time\b/);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /_0xccc\b/);
+});
+
+test("heals URLSearchParams constructor residue then renames locals", () => {
+  const original =
+    'function _0xaaa(_0xbbb){ return new URL();SearchParams(_0xbbb).toString() + "_0xdead"; }\n' +
+    "export { _0xaaa as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false, "URL();SearchParams must parse as URLSearchParams after heal");
+  assert.equal(changed, true);
+  assert.match(src, /URLSearchParams/);
+  assert.doesNotMatch(src, /URL\(\);SearchParams/);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /_0xbbb\b/);
+});
+
+test("renames nested function locals when body is return-regex with protocol slashes", () => {
+  const original =
+    "(function(){else{\n" +
+    'function fc(_0x196237){return/^[a-zA-Z]+:\\/\\//["test"](_0x196237)+"_0xdead";}\n' +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /function fc\(/);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /_0x196237\b/);
+});
+
+test("renames class method params inside an unparseable IIFE", () => {
+  const original =
+    "(function(){else{\n" +
+    'class C { foo(_0xaaa){ return _0xaaa + "_0xdead"; } }\n' +
+    "}})();\n" +
+    "export { z as publicApi };\n";
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as publicApi/);
+  assert.doesNotMatch(src, /_0xaaa\b/);
+});
+
+test("splits }export{ without semicolon and still renames constructor locals", () => {
+  const original =
+    'let WD=class{constructor(_0xaaa){this.x=_0xaaa+"_0xdead";}}export{Ui as PublicUi};\n';
+  const { src, aborted, changed } = rename0xIdents(original);
+  assert.equal(aborted, false);
+  assert.equal(changed, true);
+  assert.match(src, /"_0xdead"/);
+  assert.match(src, /as PublicUi/);
+  assert.doesNotMatch(src, /_0xaaa\b/);
+});

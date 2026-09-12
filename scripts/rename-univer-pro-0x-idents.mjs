@@ -28,6 +28,7 @@ const T9_SKIP = [
   "apps/workspace/web/src/render-main.tsx",
   "src/integrations/browser-rendering.ts"
 ];
+const T0B_SKIP_PKGS = ["sheets-pivot", "sheets-pivot-ui"];
 
 let babel = null;
 
@@ -85,6 +86,8 @@ export function healForParse(src) {
     .replace(/\bas\s+delete\s+([A-Z][A-Za-z0-9_]*)/g, "as delete$1")
     .replace(/([,{])delete\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "$1delete$2 as")
     .replace(/([{};,])\s*delete\s+([A-Z][A-Za-z0-9_]*)\s*\(/g, "$1delete$2(")
+    .replace(/\bawait\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "await$1 as")
+    .replace(/URL\(\);SearchParams/g, "URLSearchParams")
     .replace(/\(function\s*\(\s*\)\s*\{\(\)\)/g, "(function(){})")
     .replace(/\(function\s*\(\s*\)\s*\{,/g, "(function(){")
     .replace(/\[\];,((?:'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"))\s*:/g, "{$1:")
@@ -272,21 +275,8 @@ export function splitTopLevel(src) {
       i += 2;
       continue;
     }
-    if (c === "/" && /[=(,;:{[!&|?]$/.test(src[i - 1] ?? ";")) {
-      i += 1;
-      while (i < n) {
-        if (src[i] === "\\") {
-          i += 2;
-          continue;
-        }
-        if (src[i] === "/") {
-          i += 1;
-          while (i < n && /[gimsuy]/.test(src[i])) i += 1;
-          break;
-        }
-        if (src[i] === "\n") break;
-        i += 1;
-      }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i);
       continue;
     }
     if (c === "(") paren += 1;
@@ -316,13 +306,13 @@ export function splitTopLevel(src) {
 }
 
 function parseMaybeHealed(src) {
+  const healed = healForParse(src);
   try {
-    return { ast: parseSource(src), src };
+    return { ast: parseSource(healed), src: healed };
   } catch (firstErr) {
-    const healed = healForParse(src);
     if (healed === src) return { error: firstErr, src };
     try {
-      return { ast: parseSource(healed), src: healed };
+      return { ast: parseSource(src), src };
     } catch {
       return { error: firstErr, src };
     }
@@ -349,6 +339,42 @@ function isKeywordAt(src, i, word) {
   if (src.slice(i, i + word.length) !== word) return false;
   if (isIdentChar(src[i - 1]) || isIdentChar(src[i + word.length])) return false;
   return true;
+}
+
+const REGEX_AFTER_KEYWORD =
+  /^(?:return|throw|case|typeof|void|delete|new|await|yield|else|in|of|instanceof)$/;
+
+function canStartRegex(src, slashIndex) {
+  let k = slashIndex - 1;
+  while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+    k -= 1;
+  }
+  if (k < 0) return true;
+  const prev = src[k];
+  if (/[=(,;:{[!&|?~+\-*%<>^,]/.test(prev)) return true;
+  if (!/[A-Za-z]/.test(prev)) return false;
+  let start = k;
+  while (start >= 0 && /[A-Za-z]/.test(src[start])) start -= 1;
+  return REGEX_AFTER_KEYWORD.test(src.slice(start + 1, k + 1));
+}
+
+function skipRegexLiteral(src, slashIndex) {
+  const n = src.length;
+  let i = slashIndex + 1;
+  while (i < n) {
+    if (src[i] === "\\") {
+      i += 2;
+      continue;
+    }
+    if (src[i] === "/") {
+      i += 1;
+      while (i < n && /[gimsuy]/.test(src[i])) i += 1;
+      return i;
+    }
+    if (src[i] === "\n") return i;
+    i += 1;
+  }
+  return i;
 }
 
 /**
@@ -415,21 +441,8 @@ function walkCode(src, onCode) {
       i += 2;
       continue;
     }
-    if (c === "/" && /[=(,;:{[!&|?]$/.test(src[i - 1] ?? ";")) {
-      i += 1;
-      while (i < n) {
-        if (src[i] === "\\") {
-          i += 2;
-          continue;
-        }
-        if (src[i] === "/") {
-          i += 1;
-          while (i < n && /[gimsuy]/.test(src[i])) i += 1;
-          break;
-        }
-        if (src[i] === "\n") break;
-        i += 1;
-      }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i);
       continue;
     }
     if (c === "(") paren += 1;
@@ -521,6 +534,10 @@ function matchCompleteFunction(src, start) {
       i += 1;
       continue;
     }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i) - 1;
+      continue;
+    }
     if (c === "(") paren += 1;
     else if (c === ")") paren -= 1;
     else if (c === "[") bracket += 1;
@@ -565,6 +582,115 @@ function scanCompleteFunctions(src) {
   return out;
 }
 
+function skipWs(src, i) {
+  while (src[i] === " " || src[i] === "\t" || src[i] === "\n" || src[i] === "\r") i += 1;
+  return i;
+}
+
+function matchCompleteClass(src, start) {
+  if (!isKeywordAt(src, start, "class")) return null;
+  let i = skipWs(src, start + 5);
+  if (isIdentChar(src[i]) && !isKeywordAt(src, i, "extends")) {
+    i += 1;
+    while (isIdentChar(src[i])) i += 1;
+    i = skipWs(src, i);
+  }
+  let paren = 0;
+  let brace = 0;
+  let bracket = 0;
+  let str = null;
+  const tmplExpr = [];
+  let started = false;
+  const n = src.length;
+  for (; i < n; i += 1) {
+    const c = src[i];
+    if (str === "`") {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === "`") {
+        str = null;
+        continue;
+      }
+      if (c === "$" && src[i + 1] === "{") {
+        tmplExpr.push(brace);
+        brace += 1;
+        str = null;
+        i += 1;
+        continue;
+      }
+      continue;
+    }
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "`") {
+      str = "`";
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "/") {
+      i += 1;
+      while (i < n && src[i] !== "\n") i += 1;
+      continue;
+    }
+    if (c === "/" && src[i + 1] === "*") {
+      i += 1;
+      while (i < n - 1 && !(src[i] === "*" && src[i + 1] === "/")) i += 1;
+      i += 1;
+      continue;
+    }
+    if (c === "/" && canStartRegex(src, i)) {
+      i = skipRegexLiteral(src, i) - 1;
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") paren -= 1;
+    else if (c === "[") bracket += 1;
+    else if (c === "]") bracket -= 1;
+    else if (c === "{") {
+      if (!started && paren === 0 && bracket === 0) {
+        started = true;
+        brace = 1;
+        continue;
+      }
+      if (started) brace += 1;
+    } else if (c === "}") {
+      if (started) {
+        brace -= 1;
+        if (tmplExpr.length && brace === tmplExpr[tmplExpr.length - 1]) {
+          tmplExpr.pop();
+          str = "`";
+          continue;
+        }
+        if (brace === 0) return { start, end: i + 1 };
+      }
+    }
+  }
+  return null;
+}
+
+function scanCompleteClasses(src) {
+  const out = [];
+  walkCode(src, (i) => {
+    if (!isKeywordAt(src, i, "class")) return;
+    const found = matchCompleteClass(src, i);
+    if (found && (out.length === 0 || out[out.length - 1].start !== found.start)) {
+      out.push(found);
+    }
+  });
+  return out;
+}
+
 function skipProgramFunctionIds(ast) {
   const skipNames = new Set();
   for (const node of ast.program.body) {
@@ -591,9 +717,16 @@ function tryParseVariants(src) {
   const variants = [src];
   if (healed !== src) variants.push(healed);
   const trimmed = src.trimStart();
+  const healedTrim = healed.trimStart();
   if (/^(?:async\s+)?function\s*\*?\s*\(/.test(trimmed)) {
     variants.push(`(${src});`);
     if (healed !== src) variants.push(`(${healed});`);
+  }
+  if (/^class\s+(?:extends\b|\{)/.test(trimmed)) {
+    variants.push(`let __c=${src};`);
+  }
+  if (healed !== src && /^class\s+(?:extends\b|\{)/.test(healedTrim)) {
+    variants.push(`let __c=${healed};`);
   }
   for (const variant of variants) {
     try {
@@ -649,6 +782,70 @@ function processFunctionsIn(src, counter, includeTop) {
   return { src: result, renamed, changed: result !== src };
 }
 
+function skipProgramClassIds(ast) {
+  const skipNames = new Set();
+  for (const node of ast.program.body) {
+    if (node.type === "ClassDeclaration" && node.id && HEX_IDENT.test(node.id.name)) {
+      skipNames.add(node.id.name);
+    }
+    if (node.type === "VariableDeclaration") {
+      for (const d of node.declarations) {
+        if (d.id?.type === "Identifier" && d.id.name === "__c") continue;
+      }
+    }
+  }
+  return skipNames;
+}
+
+function tryRenameIsolatedClass(src, counter) {
+  if (countTokens(src) === 0) return { src, renamed: 0, changed: false };
+  const parsed = tryParseVariants(src);
+  if (!parsed.ast) return { error: true, src, renamed: 0 };
+  const { traverse, generate } = loadBabel();
+  const abort = findAbortReason(parsed.ast, traverse);
+  if (abort) return { aborted: true, reason: abort, src, renamed: 0 };
+  const skipNames = new Set([...skipProgramFunctionIds(parsed.ast), ...skipProgramClassIds(parsed.ast)]);
+  const renamed =
+    renameHexBindings(parsed.ast, traverse, counter, skipNames) + renameHexLabels(parsed.ast, traverse);
+  if (renamed === 0) return { src, renamed: 0, changed: false };
+  const body = parsed.ast.program.body;
+  let next;
+  if (parsed.src.startsWith("let __c=") && body[0]?.type === "VariableDeclaration") {
+    const init = body[0].declarations[0]?.init;
+    next = init ? generate(init, GEN_OPTS).code : generateNodes(body);
+  } else if (parsed.wrapped && body[0]?.type === "ExpressionStatement") {
+    next = generate(body[0].expression, GEN_OPTS).code;
+  } else {
+    next = generateNodes(body);
+  }
+  return { src: next, renamed, changed: next !== src, aborted: false };
+}
+
+function processClassesIn(src, counter, includeTop) {
+  const classes = scanCompleteClasses(src);
+  const candidates = includeTop
+    ? classes
+    : classes.filter((f) => !(f.start === 0 && f.end === src.length));
+  const tops = candidates.filter(
+    (f) => !candidates.some((o) => o.start < f.start && o.end > f.end)
+  );
+  let result = src;
+  let renamed = 0;
+  for (const f of [...tops].sort((a, b) => b.start - a.start)) {
+    const piece = result.slice(f.start, f.end);
+    const innerFns = processFunctionsIn(piece, counter, true);
+    renamed += innerFns.renamed;
+    const innerCls = processClassesIn(innerFns.src, counter, false);
+    renamed += innerCls.renamed;
+    const renamedPiece = tryRenameIsolatedClass(innerCls.src, counter);
+    if (renamedPiece.aborted) continue;
+    const nextPiece = renamedPiece.error ? innerCls.src : renamedPiece.src;
+    renamed += renamedPiece.renamed ?? 0;
+    result = result.slice(0, f.start) + nextPiece + result.slice(f.end);
+  }
+  return { src: result, renamed, changed: result !== src };
+}
+
 function splitAtTopLevelExportImport(src) {
   const starts = [];
   walkCode(src, (i, depth) => {
@@ -680,9 +877,12 @@ function looksLikeClassMethod(src) {
 }
 
 function splitLastExport(src) {
-  const idxBrace = src.lastIndexOf(";export{");
-  const idxSpace = src.lastIndexOf(";export {");
-  const at = Math.max(idxBrace, idxSpace);
+  const patterns = [";export{", ";export {", "}export{", "}export {"];
+  let at = -1;
+  for (const p of patterns) {
+    const i = src.lastIndexOf(p);
+    if (i > at) at = i;
+  }
   if (at < 0) return null;
   const prefix = src.slice(0, at + 1);
   const tail = src.slice(at + 1);
@@ -769,6 +969,9 @@ function renameChunkDeep(src, counter, depth = 0) {
   const nested = processFunctionsIn(src, counter, true);
   renamed += nested.renamed;
   current = nested.src;
+  const nestedCls = processClassesIn(current, counter, true);
+  renamed += nestedCls.renamed;
+  current = nestedCls.src;
 
   const again = renameOneUnit(current, counter);
   if (!again.error && !again.aborted) {
@@ -906,6 +1109,11 @@ export function isForbiddenPath(filePath) {
   if (rel.startsWith("vendor/univer-pro-published/")) return true;
   if (rel.startsWith("vendor/univer/")) return true;
   if (rel.includes("/.pnpm/") || rel.includes("node_modules/.pnpm/")) return true;
+  const vendorRel = path.relative(VENDOR_PRO, path.resolve(filePath));
+  if (!vendorRel.startsWith("..")) {
+    const pkg = vendorRel.split(path.sep)[0];
+    if (T0B_SKIP_PKGS.includes(pkg)) return true;
+  }
   return false;
 }
 
@@ -944,6 +1152,32 @@ function walkJs(dir, out = []) {
     }
   }
   return out;
+}
+
+export function listCjsTwinsOfCleanEs() {
+  const twins = [];
+  if (!fs.existsSync(VENDOR_PRO)) return twins;
+  for (const pkg of fs.readdirSync(VENDOR_PRO)) {
+    if (T0B_SKIP_PKGS.includes(pkg)) continue;
+    const esDir = path.join(VENDOR_PRO, pkg, "lib/es");
+    const cjsDir = path.join(VENDOR_PRO, pkg, "lib/cjs");
+    const libDir = path.join(VENDOR_PRO, pkg, "lib");
+    if (!fs.existsSync(esDir)) continue;
+    const esFiles = walkJs(esDir, []);
+    for (const esFile of esFiles) {
+      if (hitsForFile(esFile) > 0) continue;
+      const rel = path.relative(esDir, esFile);
+      for (const twin of [path.join(cjsDir, rel), path.join(libDir, rel)]) {
+        if (!fs.existsSync(twin)) continue;
+        if (twin.includes(`${path.sep}umd${path.sep}`)) continue;
+        if (hitsForFile(twin) === 0) continue;
+        twins.push(twin);
+      }
+    }
+  }
+  return twins
+    .map((file) => ({ file, hits: hitsForFile(file), rel: posixRel(file) }))
+    .sort((a, b) => b.hits - a.hits);
 }
 
 export function listLibEsFiles() {
@@ -1019,13 +1253,14 @@ export function processVendorFile(filePath, { write = false, apply = false } = {
 }
 
 function parseArgs(argv) {
-  const args = { write: false, apply: false, file: null, largestEs: null, child: false };
+  const args = { write: false, apply: false, file: null, largestEs: null, cjsTwins: null, child: false };
   for (let i = 0; i < argv.length; i += 1) {
     const a = argv[i];
     if (a === "--write") args.write = true;
     else if (a === "--apply") args.apply = true;
     else if (a === "--file") args.file = argv[++i];
     else if (a === "--largest-es") args.largestEs = Number(argv[++i]);
+    else if (a === "--cjs-twins") args.cjsTwins = Number(argv[++i]);
     else if (a === "--child") args.child = true;
   }
   return args;
@@ -1057,13 +1292,41 @@ function runChildFile(file, { write, apply }) {
   return { rel: posixRel(file), childOk: true };
 }
 
+function processBatch(candidates, n, { write, apply, child }) {
+  let written = 0;
+  for (const row of candidates) {
+    if (written >= n) break;
+    const started = Date.now();
+    const result = child
+      ? processVendorFile(row.file, { write, apply })
+      : runChildFile(row.file, { write, apply });
+    if (result.timedOut) {
+      console.warn(`TIMEOUT ${row.rel} (>${FILE_TIMEOUT_MS}ms) left untouched; stopping batch`);
+      process.exitCode = 3;
+      return written;
+    }
+    if (result.aborted || result.childFailed || result.skipped) {
+      continue;
+    }
+    if (result.changed || result.childOk || result.written) {
+      written += 1;
+    }
+    if (Date.now() - started > FILE_TIMEOUT_MS) {
+      console.warn(`STOP after ${row.rel} exceeded ${FILE_TIMEOUT_MS}ms`);
+      return written;
+    }
+  }
+  return written;
+}
+
 function main() {
   const args = parseArgs(process.argv.slice(2));
-  if (!args.file && !args.largestEs) {
+  if (!args.file && !args.largestEs && !args.cjsTwins) {
     console.log(`Usage:
   node scripts/rename-univer-pro-0x-idents.mjs --file <path> [--write] [--apply]
   node scripts/rename-univer-pro-0x-idents.mjs --largest-es <n> [--write] [--apply]
-Default is dry-run. Writes lib/es only; never umd/, published, or OSS vendor.`);
+  node scripts/rename-univer-pro-0x-idents.mjs --cjs-twins <n> [--write] [--apply]
+Default is dry-run. Never umd/, published, or OSS vendor.`);
     process.exitCode = 1;
     return;
   }
@@ -1073,36 +1336,26 @@ Default is dry-run. Writes lib/es only; never umd/, published, or OSS vendor.`);
     if (result.aborted || result.timedOut) process.exitCode = 2;
     return;
   }
+  if (args.cjsTwins) {
+    const n = Number.isFinite(args.cjsTwins) && args.cjsTwins > 0 ? args.cjsTwins : 20;
+    const ordered = listCjsTwinsOfCleanEs();
+    const candidates = ordered.slice(0, Math.max(n * 2, n));
+    console.log(`cjs/lib twins of clean es: ${ordered.length} (target ${n} writes)`);
+    for (const row of candidates) {
+      console.log(`  ${row.hits} ${row.rel}`);
+    }
+    const written = processBatch(candidates, n, args);
+    console.log(`batch done: ${written} file(s) processed`);
+    return;
+  }
   const n = Number.isFinite(args.largestEs) && args.largestEs > 0 ? args.largestEs : 5;
-  const ordered = orderLargestEs(listLibEsFiles());
+  const ordered = orderLargestEs(listLibEsFiles()).filter((row) => !isForbiddenPath(row.file));
   const candidates = ordered.slice(0, Math.max(n * 3, n));
   console.log(`largest lib/es candidates: ${candidates.length} (target ${n} writes)`);
   for (const row of candidates) {
     console.log(`  ${row.hits} ${row.rel}`);
   }
-  let written = 0;
-  for (const row of candidates) {
-    if (written >= n) break;
-    const started = Date.now();
-    const result = args.child
-      ? processVendorFile(row.file, { write: args.write, apply: args.apply })
-      : runChildFile(row.file, { write: args.write, apply: args.apply });
-    if (result.timedOut) {
-      console.warn(`TIMEOUT ${row.rel} (>${FILE_TIMEOUT_MS}ms) left untouched; stopping batch`);
-      process.exitCode = 3;
-      return;
-    }
-    if (result.aborted || result.childFailed) {
-      continue;
-    }
-    if (result.changed || result.childOk || result.written) {
-      written += 1;
-    }
-    if (Date.now() - started > FILE_TIMEOUT_MS) {
-      console.warn(`STOP after ${row.rel} exceeded ${FILE_TIMEOUT_MS}ms`);
-      return;
-    }
-  }
+  const written = processBatch(candidates, n, args);
   console.log(`batch done: ${written} file(s) processed`);
 }
 
