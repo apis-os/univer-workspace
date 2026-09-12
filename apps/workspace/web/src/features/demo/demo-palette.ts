@@ -5,6 +5,7 @@ export const DEMO_PALETTE_ITEM_IDS = [
   "jordan",
   "fill-sum",
   "explain-q3",
+  "inspect-formula",
   "present",
   "follow-agent",
   "what-if",
@@ -24,6 +25,7 @@ const PALETTE_LABELS = {
   jordan: "demoPaletteJordan",
   "fill-sum": "demoPaletteFillSum",
   "explain-q3": "demoPaletteExplainQ3",
+  "inspect-formula": "demoPaletteInspectFormula",
   present: "demoPalettePresent",
   "follow-agent": "demoPaletteFollowAgent",
   "what-if": "demoPaletteWhatIf",
@@ -51,6 +53,7 @@ export interface DemoPaletteActions {
   readonly openJordan: () => void;
   readonly runFillSum: () => void;
   readonly runExplainQ3: () => void;
+  readonly inspectFormula: () => void;
   readonly present: () => void;
   readonly followAgent: () => void;
   readonly whatIf: () => void;
@@ -76,6 +79,10 @@ export function executePaletteItem(
   }
   if (id === "explain-q3") {
     ctx.runExplainQ3();
+    return;
+  }
+  if (id === "inspect-formula") {
+    ctx.inspectFormula();
     return;
   }
   if (id === "present") {

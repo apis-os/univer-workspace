@@ -136,6 +136,7 @@ describe("demo scenes and command palette", () => {
     expect(palette).toMatch(/jordan/i);
     expect(palette).toMatch(/fill-sum|fillSum|Fill SUM/);
     expect(palette).toMatch(/explain-q3|explainQ3|Explain Q3/);
+    expect(palette).toMatch(/inspect-formula|inspectFormula|Inspect formula/);
     expect(palette).toMatch(/present/i);
     expect(palette).toMatch(/follow-agent|followAgent|Follow Agent/);
     expect(palette).toMatch(/what-if|whatIf|What-if/);

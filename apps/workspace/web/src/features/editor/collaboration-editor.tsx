@@ -74,6 +74,7 @@ import {
 import { applyWorkspaceAgentEdits } from "./apply-agent-edits";
 import { bindAgentEditSpotlight } from "./agent-edit-spotlight";
 import { bindExplainSelectionHost } from "./agent-panel";
+import { bindFormulaInspectorHost } from "../demo/formula-inspector";
 import {
   AGENT_MEMBER_ID,
   bindFollowAgentHost,
@@ -409,6 +410,13 @@ export function createCollaborationEditor(
         bindExplainSelectionHost({
           getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
         });
+        bindFormulaInspectorHost({
+          getActiveWorkbook: () => univerAPI.getActiveWorkbook?.(),
+          unitId,
+          ...(collaborationScope.kind === "trunk"
+            ? {}
+            : { worktreeId: collaborationScope.worktreeId }),
+        });
         bindFollowAgentHost(createFollowAgentEditorHost(univerAPI));
         const notifyCollabConflict = createCollabConflictToaster({
           warning: (message) => toast.warning(message),
@@ -573,6 +581,7 @@ export function createCollaborationEditor(
         }
         bindAgentEditSpotlight(undefined);
         bindExplainSelectionHost(undefined);
+        bindFormulaInspectorHost(undefined);
         bindFollowAgentHost(undefined);
         bindLiveShareFacade(undefined);
         bindCollaborationStatusDisplay(null);

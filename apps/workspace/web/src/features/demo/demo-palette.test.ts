@@ -13,6 +13,7 @@ describe("demo command palette", () => {
       "jordan",
       "fill-sum",
       "explain-q3",
+      "inspect-formula",
       "present",
       "follow-agent",
       "what-if",
@@ -40,6 +41,7 @@ describe("demo command palette", () => {
       openJordan: vi.fn(),
       runFillSum: vi.fn(),
       runExplainQ3: vi.fn(),
+      inspectFormula: vi.fn(),
       present: vi.fn(),
       followAgent: vi.fn(),
       whatIf: vi.fn(),
@@ -50,6 +52,7 @@ describe("demo command palette", () => {
     executePaletteItem("jordan", ctx);
     executePaletteItem("fill-sum", ctx);
     executePaletteItem("explain-q3", ctx);
+    executePaletteItem("inspect-formula", ctx);
     executePaletteItem("present", ctx);
     executePaletteItem("follow-agent", ctx);
     executePaletteItem("what-if", ctx);
@@ -59,6 +62,7 @@ describe("demo command palette", () => {
     expect(ctx.openJordan).toHaveBeenCalled();
     expect(ctx.runFillSum).toHaveBeenCalled();
     expect(ctx.runExplainQ3).toHaveBeenCalled();
+    expect(ctx.inspectFormula).toHaveBeenCalled();
     expect(ctx.present).toHaveBeenCalled();
     expect(ctx.followAgent).toHaveBeenCalled();
     expect(ctx.whatIf).toHaveBeenCalled();

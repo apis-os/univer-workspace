@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useI18n } from "../../shared/i18n";
 import { toast } from "../../shared/ui";
 import { followAgentCommand } from "../editor/follow-agent";
@@ -10,6 +10,14 @@ import {
   openDemoPalette,
   type DemoPaletteActions,
 } from "./demo-palette";
+import { FormulaInspectPopover } from "./formula-inspector-popover";
+import {
+  FORMULA_INSPECT_RANGE,
+  isAltInspectClick,
+  readInspectorRangeA1,
+  runFormulaInspect,
+  type FormulaInspectPayload,
+} from "./formula-inspector";
 import {
   DEMO_PRESENCE_EVENT,
   DEMO_RESET_EVENT,
@@ -40,6 +48,16 @@ export function DemoRuntime({
     members: readonly DemoPresenceMember[];
     currentUserId: string;
   }>({ members: [], currentUserId: "" });
+  const [inspectOpen, setInspectOpen] = useState(false);
+  const [inspectPayload, setInspectPayload] =
+    useState<FormulaInspectPayload | null>(null);
+
+  const openFormulaInspect = (range: string) => {
+    void runFormulaInspect(range).then((payload) => {
+      setInspectPayload(payload);
+      setInspectOpen(true);
+    });
+  };
 
   const actions: DemoPaletteActions = {
     openAvery: () => {
@@ -54,6 +72,9 @@ export function DemoRuntime({
     runExplainQ3: () => {
       openAgentPanelFromHeader();
       window.setTimeout(() => focusAgentExplainChip(), 80);
+    },
+    inspectFormula: () => {
+      openFormulaInspect(FORMULA_INSPECT_RANGE);
     },
     present: () => {
       const button = Array.from(document.querySelectorAll("button")).find(
@@ -109,6 +130,15 @@ export function DemoRuntime({
   }, [language, navigate, setLanguage, t]);
 
   useEffect(() => {
+    const onClick = (event: MouseEvent) => {
+      if (!isAltInspectClick(event)) return;
+      openFormulaInspect(readInspectorRangeA1() ?? FORMULA_INSPECT_RANGE);
+    };
+    window.addEventListener("click", onClick);
+    return () => window.removeEventListener("click", onClick);
+  }, []);
+
+  useEffect(() => {
     const onPresence = (event: Event) => {
       const detail = (event as CustomEvent<{
         members?: readonly DemoPresenceMember[];
@@ -140,7 +170,16 @@ export function DemoRuntime({
     };
   }, [t]);
 
-  return <Palette actions={actions} />;
+  return (
+    <>
+      <Palette actions={actions} />
+      <FormulaInspectPopover
+        open={inspectOpen}
+        payload={inspectPayload}
+        onClose={() => setInspectOpen(false)}
+      />
+    </>
+  );
 }
 
 function runWithContext(
