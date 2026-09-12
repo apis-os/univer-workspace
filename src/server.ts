@@ -167,19 +167,14 @@ export default {
         pathname.startsWith("/api/actions/")
       ) {
         let forwarded = request;
-        if (isUniverFile) {
-          if (!env.DB) {
-            return applyCorsHeaders(
-              request,
-              new Response(JSON.stringify({ error: { message: "Authentication required" } }), {
-                status: 401,
-                headers: { "Content-Type": "application/json; charset=utf-8" }
-              })
-            );
-          }
+        const needsActor =
+          isUniverFile ||
+          pathname.startsWith("/universer-api/") ||
+          pathname.startsWith("/agents/");
+        if (needsActor && env.DB) {
           const cpDb = new ControlPlaneDb(env.DB);
           const session = await resolveGatewayContext(request, cpDb);
-          if (!session.currentUser) {
+          if (isUniverFile && !session.currentUser) {
             return applyCorsHeaders(
               request,
               new Response(JSON.stringify({ error: { message: "Authentication required" } }), {
@@ -188,7 +183,17 @@ export default {
               })
             );
           }
-          forwarded = attachActorHeaders(request, session.currentUser);
+          if (session.currentUser) {
+            forwarded = attachActorHeaders(request, session.currentUser);
+          }
+        } else if (isUniverFile && !env.DB) {
+          return applyCorsHeaders(
+            request,
+            new Response(JSON.stringify({ error: { message: "Authentication required" } }), {
+              status: 401,
+              headers: { "Content-Type": "application/json; charset=utf-8" }
+            })
+          );
         }
         const id = env.ChatAgent.idFromName("univer_collab");
         const stub = env.ChatAgent.get(id);

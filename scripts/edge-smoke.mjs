@@ -207,6 +207,9 @@ export async function runEdgeSmoke(input = {}) {
   if (!explainMiss.res.ok) fail(`Explain MISS ${explainMiss.res.status} ${String(explainMiss.text).slice(0, 400)}`);
   const miss = await resolveCache(explainMiss.res, explainMiss.body, lookup);
 
+  // Gateway may not store a HIT if the second call races the first write.
+  if (!input.fetchImpl) await sleep(4000);
+
   const explainHit = await request(fetchImpl, origin, `/agents/${DEMO_UNIT_ID}/turns`, {
     method: "POST",
     headers: auth,

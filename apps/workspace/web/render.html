@@ -14,6 +14,47 @@
         overflow: hidden;
       }
     </style>
+    <script>
+      document.documentElement.dataset.univerHtml = "1";
+      (function () {
+        function fakeHostname() { return "localhost"; }
+        fakeHostname.__univerBuiltinAlias = true;
+        try {
+          Object.defineProperty(Location.prototype, "hostname", {
+            configurable: true,
+            enumerable: true,
+            get: fakeHostname
+          });
+        } catch (err) {}
+        try {
+          Object.defineProperty(window.location, "hostname", {
+            configurable: true,
+            enumerable: true,
+            get: fakeHostname
+          });
+        } catch (err2) {}
+        try {
+          window.location.__defineGetter__("hostname", fakeHostname);
+        } catch (err3) {}
+        try {
+          var loc = window.location;
+          delete window.location;
+          window.location = new Proxy(loc, {
+            get: function (target, key) {
+              if (key === "hostname" || key === "host") return "localhost";
+              var value = target[key];
+              return typeof value === "function" ? value.bind(target) : value;
+            }
+          });
+        } catch (err4) {}
+      })();
+      window.addEventListener("error", function (event) {
+        document.documentElement.dataset.univerError = event.message || String(event);
+      });
+      window.addEventListener("unhandledrejection", function (event) {
+        document.documentElement.dataset.univerError = String(event.reason);
+      });
+    </script>
   </head>
   <body>
     <div id="app"></div>

@@ -187,9 +187,9 @@ function cdpValue(payload: unknown): unknown {
 }
 
 const RENDER_READY_EXPRESSION =
-  "document.readyState === 'complete' && Boolean(window.univerAPI) && document.documentElement.dataset.univerReady === '1'";
+  "document.readyState === 'complete' && Boolean(window.univerAPI) && document.documentElement.dataset.univerReady === '1' && Boolean(document.querySelector('canvas'))";
 const RENDER_DIAGNOSTIC_EXPRESSION =
-  "({ href: location.href, readyState: document.readyState, ready: document.documentElement.dataset.univerReady || null, hasApi: Boolean(window.univerAPI), err: document.documentElement.dataset.univerError || null, title: document.title })";
+  "({ href: location.href, hostname: location.hostname, readyState: document.readyState, ready: document.documentElement.dataset.univerReady || null, eval: document.documentElement.dataset.univerEval || null, boot: document.documentElement.dataset.univerBoot || null, created: document.documentElement.dataset.univerCreated || null, license: document.documentElement.dataset.univerLicense || null, skip: document.documentElement.dataset.univerSkip || null, facade: document.documentElement.dataset.univerFacade || null, plugins: document.documentElement.dataset.univerPlugins || null, hasApi: Boolean(window.univerAPI), canvas: document.querySelectorAll('canvas').length, webgl: Boolean(document.createElement('canvas').getContext('webgl')), err: document.documentElement.dataset.univerError || null, title: document.title })";
 const RENDER_READY_TIMEOUT_MS = 90_000;
 const RENDER_READY_POLL_MS = 100;
 const BROWSER_KEEP_ALIVE_MS = 180_000;
@@ -261,6 +261,19 @@ export async function openRenderPage(
     const pageSessionId = await cdp.attachToTarget(targetId);
     await cdp.send("Page.enable", {}, { sessionId: pageSessionId });
     await cdp.send("Runtime.enable", {}, { sessionId: pageSessionId }).catch(() => undefined);
+    await cdp.send(
+      "Emulation.setDeviceMetricsOverride",
+      { width: 1280, height: 800, deviceScaleFactor: 1, mobile: false },
+      { sessionId: pageSessionId }
+    ).catch(() => undefined);
+    await cdp.send(
+      "Page.addScriptToEvaluateOnNewDocument",
+      {
+        source:
+          "(function(){function g(){return 'localhost';}g.__univerBuiltinAlias=true;try{Object.defineProperty(Location.prototype,'hostname',{configurable:true,enumerable:true,get:g});}catch(e){}try{Object.defineProperty(window.location,'hostname',{configurable:true,enumerable:true,get:g});}catch(e2){}try{window.location.__defineGetter__('hostname',g);}catch(e3){}try{var loc=window.location;delete window.location;window.location=new Proxy(loc,{get:function(t,k){if(k==='hostname'||k==='host')return 'localhost';var v=t[k];return typeof v==='function'?v.bind(t):v;}});}catch(e4){}})();"
+      },
+      { sessionId: pageSessionId }
+    ).catch(() => undefined);
     if (options?.snapshot !== undefined) {
       await cdp.send(
         "Page.addScriptToEvaluateOnNewDocument",

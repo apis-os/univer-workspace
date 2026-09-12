@@ -1130,7 +1130,8 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
     assert.match(renderMain, /worktreeId/);
     assert.match(renderMain, /theme/);
     assert.match(renderMain, /createUniver/);
-    assert.match(renderMain, /plugins:\s*\[\s*\]/);
+    assert.match(renderMain, /UniverLicensePlugin/);
+    assert.doesNotMatch(renderMain, /plugins:\s*\[\s*\]/);
     assert.doesNotMatch(renderMain, /workspace-layout|Live Share|command palette/i);
   });
 

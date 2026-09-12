@@ -267,18 +267,18 @@ curl -s https://univer-workspace.apisos.workers.dev/healthz.ai
 ## 8. Live origin proof (T9)
 
 Origin: `https://univer-workspace.apisos.workers.dev`  
-Worker version: `3b2f3066-0fd3-4220-9eba-ed90acb9fd9b` (`npx wrangler@4.130.0 deploy`; `ai` + `browser` + `LOADER` bindings). Browser sessions use `POST /v1/devtools/browser`.
+Worker version: `b7161cdc-4731-47f1-9b9e-c35c72a08bf1` (`pnpm exec wrangler deploy`; `ai` + `browser` + `LOADER` bindings).
 
 ```bash
 pnpm --filter @univerjs/univer-workspace build:web
-npx wrangler@4.130.0 deploy
+pnpm exec wrangler deploy
 EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev node scripts/edge-smoke.mjs
 EDGE_ORIGIN=https://univer-workspace.apisos.workers.dev pnpm exec tsx scripts/cli-edge-proof.mjs
 ```
 
-Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot 200 after `POST /uf/:fileKey`.
+Smoke (`scripts/edge-smoke.mjs`) asserts `healthz.ai.gateway === "default"`, `healthz.browser === "ok"`, Avery turn `rev`, Explain MISS then HIT from `cf-aig-cache-status` (not the HUD `skipCache` chip), and `/uf` inspect + screenshot PNG ≥4000B after `POST /uf/:fileKey`.
 
-Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-r3"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
+Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-ready"`, `cacheTtl: 3600`, non-stream `returnRawResponse` so the turn JSON can forward a real Gateway cache header. Smoke requires MISS then HIT (HIT then HIT is not a pass).
 
 ### Proved on this deploy
 
@@ -286,14 +286,15 @@ Canned Explain uses `skipCache: false`, `cacheKey: "demo:explain-q3:t9-r3"`, `ca
 - [x] `GET /healthz.ai` → `{ gateway: "default" }`
 - [x] Avery password login + `POST /agents/unit_welcome_sheet/turns` (`Set A1 to Hello from AI`) returns `rev`
 - [x] `POST /uf/d29ya3NwYWNlLnVuaXZlcg` then `GET .../units/unit_welcome_sheet/inspect?range=E2` → 200
-- [x] Explain cache: live smoke `HIT` then `HIT` (warm `demo:explain-q3`, not invented). UI second Explain showed `cache: HIT` / HUD `Gateway HIT`.
-- [x] `/uf` screenshot 200 (CDP `Page.captureScreenshot` after `POST /v1/devtools/browser`)
+- [x] Explain cache: live smoke `MISS` then `HIT` (key `demo:explain-q3:t9-ready`, not invented)
+- [x] `/uf` screenshot 200 PNG length 5791 (≥4000; real sheet capture, License registered)
 - [x] CLI proof execute → inspect E2 `f=SUM(B2:D2)` → screenshot 200 → worktree ready → curl `/uf` 200
-- [ ] 90-second two-user click-through against live `/demo` and `/demo?as=jordan` (headed Chrome, two cookie jars, in-grid Comb editors)
-- [ ] Present / Follow Agent / Fill E2:E4 screenshot card / formula inspector
-- [ ] Same-cell conflict toast — both D3 executes 200; no toast
-- [ ] What-if comparison + Merge — palette item clicked; stayed on the sheet (`/api/worktrees/:id/units` and `/ready` are not on HEAD)
-- [ ] History overlay names Avery / Jordan / Workspace Agent — Edit History still shows `Administrator`
-- [ ] `/render` screenshot card PNG on Fill — Fill streamed changeset + “Changed cells E2 E3 E4”; no screenshot card in the panel text
+- [x] Headed `/demo` opens without `Unable to open this resource`; `<canvas>` count 2
+- [ ] 90-second two-user click-through against live `/demo` and `/demo?as=jordan` (headed Chrome, two cookie jars, in-grid Comb editors) — canvas 2 but **no `univer-sheet-main-canvas` / Q3 grid**
+- [ ] Present / Follow Agent / Fill E2:E4 screenshot card / formula inspector — Follow click true; Present matcher missed; no fill card; no inspector
+- [ ] Same-cell conflict toast — both D3 typed in-grid; no toast; Facade `no-sheet`
+- [ ] What-if comparison + Merge — palette item not found
+- [ ] History overlay names Avery / Jordan / Workspace Agent — History opened; overlay stuck on Loading
+- [ ] `/render` screenshot card PNG on Fill — Fill streamed E2:E4; no screenshot card in the panel
 
 Unchecked boxes are remaining concerns, not invented passes.

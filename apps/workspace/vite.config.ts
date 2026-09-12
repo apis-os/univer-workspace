@@ -4,6 +4,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
+import { unglueUniverProImportsPlugin } from "./unglue-univer-pro-imports.mjs";
 
 const workspaceDir = dirname(fileURLToPath(import.meta.url));
 
@@ -15,9 +16,19 @@ export default defineConfig({
   // browser itself owns React 19, so all source imports must resolve through
   // this composition root instead of bundling a second React dispatcher.
   resolve: {
-    dedupe: ["react", "react-dom", "@wendellhu/redi"],
+    dedupe: [
+      "react",
+      "react-dom",
+      "@wendellhu/redi",
+      "@univerjs/core",
+      "@univerjs/engine-render"
+    ]
+  },
+  worker: {
+    plugins: () => [unglueUniverProImportsPlugin()],
   },
   plugins: [
+    unglueUniverProImportsPlugin(),
     tanstackRouter({
       target: "react",
       routesDirectory: "./src/routes",

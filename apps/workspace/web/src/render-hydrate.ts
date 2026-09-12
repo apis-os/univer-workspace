@@ -4,7 +4,7 @@
 
 export type RenderHydrateInput = {
   snapshot: unknown;
-  createWorkbook?: (data: Record<string, unknown>) => unknown;
+  createWorkbook?: ((data?: Record<string, unknown>) => unknown) | undefined;
 };
 
 export type RenderHydrateResult = {

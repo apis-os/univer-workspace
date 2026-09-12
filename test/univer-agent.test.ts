@@ -413,7 +413,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(done?.data.aiGatewayLogId, "aig_tool_turn");
   });
 
-  test("explain Q3 uses skipCache false and cacheKey demo:explain-q3:t9-r3", async () => {
+  test("explain Q3 uses skipCache false and cacheKey demo:explain-q3", async () => {
     const { ctx } = createHarness();
     const calls: AiCall[] = [];
     const host = {
@@ -444,8 +444,11 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(calls.length, 1);
     assert.equal(runHasStream(finalRun.input, finalRun.options), false);
     assert.equal(runSkipCache(finalRun.options), false);
-    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3:t9-r3");
+    assert.equal(runCacheKey(finalRun.options), "demo:explain-q3:t9-ready");
     assert.equal(runCacheTtl(finalRun.options), 3600);
+    assert.equal(finalRun.options.extraHeaders?.["cf-aig-cache-key"], "demo:explain-q3:t9-ready");
+    assert.equal(finalRun.options.gateway?.collectLog, true);
+    assert.equal(finalRun.options.extraHeaders?.["cf-aig-skip-cache"], undefined);
     assert.equal(runMetadata(finalRun.options).step, "explain");
     assert.equal(result.text, "Hello");
     assert.equal(result.events.find((e) => e.type === "agent.done")?.data.aiGatewayLogId, "aig_explain");
@@ -458,7 +461,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(calls.length, 1);
     assert.equal(runHasStream(canned.input, canned.options), false);
     assert.equal(runSkipCache(canned.options), false);
-    assert.equal(runCacheKey(canned.options), "demo:explain-q3:t9-r3");
+    assert.equal(runCacheKey(canned.options), "demo:explain-q3:t9-ready");
     assert.equal(runMetadata(canned.options).step, "explain");
   });
 
@@ -494,7 +497,7 @@ describe("Workspace AI collaboration (sdk-skills Facade + Worktree model)", () =
     assert.equal(firstDone?.cache, "MISS");
     assert.equal(firstDone?.model, "@cf/meta/llama-3.3-70b-instruct-fp8-fast");
     assert.equal(firstDone?.aiGatewayLogId, "aig_explain_cache");
-    assert.equal(firstDone?.cacheKey, "demo:explain-q3:t9-r3");
+    assert.equal(firstDone?.cacheKey, "demo:explain-q3:t9-ready");
     assert.equal(typeof firstDone?.elapsedMs, "number");
     const second = await runAgentTurn(host, {
       unitId: "unit_explain_cache",

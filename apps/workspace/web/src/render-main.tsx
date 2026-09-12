@@ -1,7 +1,8 @@
 /**
  * Chrome-less Univer boot for Browser Rendering (`/render?unitId=&worktreeId=&theme=`).
  */
-import { LocaleType, LogLevel, UniverInstanceType } from "@univerjs/core";
+import { LocaleType, LogLevel, Univer, UniverInstanceType } from "@univerjs/core";
+import { FUniver } from "@univerjs/core/facade";
 import {
   ExchangeFormat,
   IExchangeService,
@@ -9,8 +10,10 @@ import {
 } from "@univerjs-pro/exchange-client";
 import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { UniverSheetsCorePreset } from "@univerjs/preset-sheets-core";
-import { createUniver } from "@univerjs/presets";
+import UniverPresetSheetsCoreEnUS from "@univerjs/preset-sheets-core/locales/en-US";
+import { mergeLocales } from "@univerjs/presets";
 import { greenTheme } from "@univerjs/themes";
+import { formatUnknownError } from "./features/editor/collaboration-editor-error";
 import { createWorkspaceExchangeClientConfig } from "./features/editor/exchange-plugins";
 import { resolveUniverLicense } from "./features/editor/univer-license";
 import { hydrateRenderWorkbook, injectedRenderSnapshot } from "./render-hydrate";
@@ -21,7 +24,16 @@ import "@univerjs/preset-sheets-core/lib/index.css";
 import "@univerjs-pro/exchange-client/facade";
 import "@univerjs-pro/exchange-client/lib/index.css";
 
-(UniverLicensePlugin.prototype as { onRendered?: () => void }).onRendered = function () {};
+try {
+  (UniverLicensePlugin.prototype as { onRendered?: () => void }).onRendered = function () {};
+} catch {
+  // License class may be a stub in the render bundle.
+}
+
+if (typeof document !== "undefined") {
+  document.documentElement.dataset.univerEval = "1";
+  resolveUniverLicense();
+}
 
 declare global {
   interface Window {
@@ -66,6 +78,7 @@ async function boot(): Promise<void> {
   const container = document.getElementById("app");
   if (!container) throw new Error("Render root #app is missing");
   container.id = "app";
+  document.documentElement.dataset.univerBoot = "1";
 
   const { univer, univerAPI } = createRenderUniver({
     locale: LocaleType.EN_US,
@@ -74,6 +87,7 @@ async function boot(): Promise<void> {
     logLevel: LogLevel.ERROR,
     container
   });
+  document.documentElement.dataset.univerCreated = "1";
 
   const host = univer as UniverHost;
   installBrowserExchangeInterceptor(host);
@@ -84,10 +98,10 @@ async function boot(): Promise<void> {
   try {
     hydrated = hydrateRenderWorkbook({
       snapshot,
-      createWorkbook: typeof api.createWorkbook === "function" ? api.createWorkbook.bind(api) : undefined
+      ...(typeof api.createWorkbook === "function" ? { createWorkbook: api.createWorkbook.bind(api) } : {})
     });
   } catch (err) {
-    document.documentElement.dataset.univerError = err instanceof Error ? err.message : String(err);
+    document.documentElement.dataset.univerError = formatUnknownError(err, "hydrate");
   }
 
   window.__univerImport = (payload) => importViaExchangeClient(host, payload);
@@ -114,6 +128,11 @@ type CreateRenderUniverInput = {
   container: HTMLElement;
 };
 
+function pluginNameOf(ctor: { pluginName?: string; name?: string } | undefined): string {
+  if (typeof ctor?.pluginName === "string" && ctor.pluginName) return ctor.pluginName;
+  return String(ctor?.name ?? "plugin");
+}
+
 function createRenderUniver(input: CreateRenderUniverInput) {
   const sheets = UniverSheetsCorePreset({
     container: input.container,
@@ -124,15 +143,53 @@ function createRenderUniver(input: CreateRenderUniverInput) {
     contextMenu: false,
     disableAutoFocus: true
   });
-  const shared = {
+  const license = resolveUniverLicense();
+  const licensePreset = { plugins: [[UniverLicensePlugin, { license }]] };
+  const univer = new Univer({
     locale: input.locale,
+    locales: {
+      [LocaleType.EN_US]: mergeLocales(UniverPresetSheetsCoreEnUS)
+    },
     theme: input.theme,
     darkMode: input.darkMode,
-    logLevel: input.logLevel,
-    presets: [sheets]
-  };
-  // License is localhost-only on this key. Pro plugins throw Redi (cB) on workers.dev.
-  return createUniver({ ...shared, plugins: [] });
+    logLevel: input.logLevel
+  });
+  const loaded: string[] = [];
+  const skipped: string[] = [];
+  for (const spec of sheets.plugins ?? []) {
+    if (!spec) continue;
+    const ctor = Array.isArray(spec) ? spec[0] : spec;
+    const options = Array.isArray(spec) ? spec[1] : undefined;
+    const name = pluginNameOf(ctor);
+    try {
+      univer.registerPlugin(ctor, options);
+      loaded.push(name);
+    } catch (err) {
+      skipped.push(`${name}:${formatUnknownError(err, "skip")}`);
+    }
+  }
+  document.documentElement.dataset.univerPlugins = loaded.join(",");
+  if (skipped.length) document.documentElement.dataset.univerSkip = skipped.join(";");
+  try {
+    for (const spec of licensePreset.plugins) {
+      univer.registerPlugin(spec[0] as never, spec[1] as never);
+    }
+    document.documentElement.dataset.univerLicense = "1";
+  } catch (err) {
+    document.documentElement.dataset.univerLicense = formatUnknownError(err, "license-late");
+  }
+  let univerAPI: UniverFacade;
+  try {
+    univerAPI = FUniver.newAPI(univer) as UniverFacade;
+  } catch (err) {
+    document.documentElement.dataset.univerFacade = formatUnknownError(err, "facade");
+    univerAPI = {
+      createWorkbook(data) {
+        return univer.createUnit(UniverInstanceType.UNIVER_SHEET, data ?? {});
+      }
+    };
+  }
+  return { univer, univerAPI };
 }
 
 function getExchangeService(host: UniverHost): ExchangeService {
@@ -216,7 +273,7 @@ async function loadSnapshot(
 }
 
 void boot().catch((err) => {
-  document.documentElement.dataset.univerError = err instanceof Error ? err.message : String(err);
+  document.documentElement.dataset.univerError = formatUnknownError(err, "render-boot");
   window.univerAPI ??= { createWorkbook() {} };
   window.__univerLint ??= () => ({ findings: [] });
   document.documentElement.dataset.univerReady = "1";

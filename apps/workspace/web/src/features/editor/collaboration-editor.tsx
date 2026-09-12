@@ -4,6 +4,8 @@ import {
   LifecycleStages,
   LocaleType,
   LogLevel,
+  PluginService,
+  Univer,
   UserManagerService,
 } from "@univerjs/core";
 import {
@@ -116,6 +118,13 @@ import {
   shouldBindCollaborationStatusDisplay,
   shouldBindLiveShareFacade,
 } from "./live-share-bar";
+import { formatUnknownError } from "./collaboration-editor-error";
+import {
+  omitUnnamedPlugins,
+  omitUnnamedPresetPlugins,
+  withSafeUniverPluginRegistration,
+  installNamelessPluginServiceGuard,
+} from "./preset-plugin-filter";
 
 import "@univerjs-pro/collaboration-client-ui/lib/index.css";
 import "@univerjs-pro/edit-history-ui/lib/index.css";
@@ -253,7 +262,16 @@ export function createCollaborationEditor(
       let readOnlyListener: { dispose(): void } | null = null;
       let readOnlyLifecycleListener: { dispose(): void } | null = null;
       let agentEditedListener: ((event: Event) => void) | null = null;
+      let intentHighlightHandle: { dispose(): void } | null = null;
+      let commandListener: { dispose(): void } | null = null;
+      let cellIntentListener: ((event: Event) => void) | null = null;
+      let blameHandle: { dispose(): void } | null = null;
+      let onChangesetForBlame: ((event: Event) => void) | null = null;
+      let onBlameToggle: ((event: Event) => void) | null = null;
       onCollaboratorsChange?.([]);
+      const restorePluginService = installNamelessPluginServiceGuard(
+        PluginService.prototype
+      );
 
       const mount = async () => {
         if (!element.id) {
@@ -326,7 +344,6 @@ export function createCollaborationEditor(
                 [
                   UniverCollaborationClientPlugin,
                   {
-                    socketService: FollowAgentCollaborationSocketService,
                     enableOfflineEditing: false,
                     enableAuthServer: true,
                     wsSessionTicketUrl:
@@ -381,7 +398,10 @@ export function createCollaborationEditor(
         }
         const univerLocale =
           language === "zh-CN" ? LocaleType.ZH_CN : LocaleType.EN_US;
-        const { univer, univerAPI } = createUniver({
+        const { univer, univerAPI } = withSafeUniverPluginRegistration(
+          Univer.prototype,
+          () =>
+            createUniver({
           locale: univerLocale,
           locales: {
             [univerLocale]: mergeLocales(
@@ -406,8 +426,8 @@ export function createCollaborationEditor(
           darkMode: resolvedThemeRef.current === "dark",
           logLevel: LogLevel.WARN,
           collaboration: true,
-          presets,
-          plugins: [
+          presets: omitUnnamedPresetPlugins(presets),
+          plugins: omitUnnamedPlugins([
             ...collaborationPlugins,
             UniverLiveSharePlugin,
             ...collaborationFeaturePlugins,
@@ -422,8 +442,9 @@ export function createCollaborationEditor(
               },
             ],
             UniverEmbedUIPlugin,
-          ],
-        });
+          ]),
+        })
+        );
         mountedUniver = univer;
         univerAPIRef.current = univerAPI;
         bindAgentEditSpotlight({
@@ -562,10 +583,6 @@ export function createCollaborationEditor(
         };
         agentEditedListener = applyAgentEdits;
         window.addEventListener("workspace-agent-edited", applyAgentEdits);
-        let intentHighlightHandle: { dispose(): void } | null = null;
-        let commandListener: { dispose(): void } | null = null;
-        let cellIntentListener: ((event: Event) => void) | null = null;
-
         const onCellIntent = (event: Event) => {
           if (disposed) return;
           const intent = readCellIntent(event);
@@ -606,8 +623,7 @@ export function createCollaborationEditor(
           }
         );
 
-        let blameHandle: { dispose(): void } | null = null;
-        let blameCells: BlameCell[] = [];
+        let blameCells: readonly BlameCell[] = [];
         let blameEnabled = false;
 
         const refreshBlame = () => {
@@ -642,7 +658,7 @@ export function createCollaborationEditor(
           })
           .catch(() => {});
 
-        const onChangesetForBlame = (event: Event) => {
+        onChangesetForBlame = (event: Event) => {
           if (disposed) return;
           const detail = (event as CustomEvent).detail as
             | Record<string, unknown>
@@ -677,7 +693,7 @@ export function createCollaborationEditor(
         };
         window.addEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
 
-        const onBlameToggle = (event: Event) => {
+        onBlameToggle = (event: Event) => {
           if (disposed) return;
           const detail = (event as CustomEvent<{ enabled?: boolean }>).detail;
           blameEnabled =
@@ -710,17 +726,23 @@ export function createCollaborationEditor(
         if (disposed) return;
         setLoading(false);
         setError(
-          reason instanceof Error
-            ? reason.message
-            : `The ${definition.label} could not be loaded.`
+          formatUnknownError(
+            reason,
+            `The ${definition.label} could not be loaded.`
+          )
         );
       });
 
       return () => {
         disposed = true;
+        restorePluginService();
         blameHandle?.dispose();
-        window.removeEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
-        window.removeEventListener(BLAME_HEAT_EVENT, onBlameToggle);
+        if (onChangesetForBlame) {
+          window.removeEventListener(COMB_CHANGESET_EVENT, onChangesetForBlame);
+        }
+        if (onBlameToggle) {
+          window.removeEventListener(BLAME_HEAT_EVENT, onBlameToggle);
+        }
         commandListener?.dispose();
         intentHighlightHandle?.dispose();
         if (cellIntentListener) {
@@ -760,7 +782,7 @@ export function createCollaborationEditor(
     ]);
 
     return (
-      <div className="univer-editor-shell">
+      <div className="univer-editor-shell relative h-full min-h-0 flex-1">
         {error ? (
           <Alert
             variant="destructive"
@@ -778,7 +800,7 @@ export function createCollaborationEditor(
             </div>
           </div>
         ) : null}
-        <div ref={container} className="univer-editor-container" />
+        <div ref={container} className="univer-editor-container h-full min-h-0" />
       </div>
     );
   };

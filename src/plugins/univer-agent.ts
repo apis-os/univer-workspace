@@ -17,7 +17,7 @@ export const AI_GATEWAY_LIVE_MODELS = [
 ] as const;
 
 const AI_GATEWAY_PRODUCT = "univer-workspace";
-const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-r3";
+const EXPLAIN_CACHE_KEY = "demo:explain-q3:t9-ready";
 const EXPLAIN_CACHE_TTL = 3600;
 
 export type AgentGatewayStep = "tool" | "text" | "explain";
@@ -36,6 +36,7 @@ export type AgentAiRunOptions = {
     skipCache?: boolean;
     cacheKey?: string;
     cacheTtl?: number;
+    collectLog?: boolean;
     metadata?: AgentAiMetadata;
   };
   stream?: boolean;
@@ -134,6 +135,7 @@ function gatewayOptions(input: {
   const gateway: AgentAiRunOptions["gateway"] = {
     id: AI_GATEWAY_ID,
     skipCache: input.skipCache,
+    collectLog: true,
     metadata
   };
   const options: AgentAiRunOptions = {
@@ -146,13 +148,14 @@ function gatewayOptions(input: {
     options.returnRawResponse = true;
   }
   if (input.cacheKey) {
+    const cacheTtl = input.cacheTtl ?? EXPLAIN_CACHE_TTL;
     gateway.cacheKey = input.cacheKey;
-    gateway.cacheTtl = input.cacheTtl;
+    gateway.cacheTtl = cacheTtl;
     options.cacheKey = input.cacheKey;
-    options.cacheTtl = input.cacheTtl;
+    options.cacheTtl = cacheTtl;
     options.extraHeaders = {
       "cf-aig-cache-key": input.cacheKey,
-      "cf-aig-cache-ttl": String(input.cacheTtl ?? EXPLAIN_CACHE_TTL)
+      "cf-aig-cache-ttl": String(cacheTtl)
     };
   }
   return options;
