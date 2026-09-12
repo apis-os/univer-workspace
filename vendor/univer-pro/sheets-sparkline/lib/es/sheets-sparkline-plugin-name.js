@@ -1,0 +1,7 @@
+import{CellValueType,ColorKit,CommandType,DependentOn,Disposable,DisposableCollection,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,ObjectMatrix,Plugin,RANGE_TYPE,Range,Rectangle,Tools,UniverInstanceType,cellToRange,generateRandomId,isValidRange,merge,sequenceExecute,touchDependencies}from'@univerjs/core';
+import{AddWorksheetMergeCommand,ClearSelectionAllCommand,CopySheetCommand,IExclusiveRangeService,InsertColMutation,InsertRowMutation,MoveColsMutation,MoveRangeMutation,MoveRowsMutation,RefRangeService,RemoveColCommand,RemoveColMutation,RemoveRowCommand,RemoveRowMutation,RemoveSheetCommand,ReorderRangeMutation,SetColHiddenMutation,SetColVisibleMutation,SetRangeValuesMutation,SetRowHiddenMutation,SetRowVisibleMutation,SetWorksheetActivateCommand,SheetInterceptorService,SheetsSelectionsService,UniverSheetsPlugin,adjustRangeOnMutation,getSheetCommandTarget}from'@univerjs/sheets';
+import{Subject}from'rxjs';
+import{UniverLicensePlugin}from'@univerjs-pro/license';
+const P='SHEET_SPARKLINE_PLUGIN',F={'standard':["rgb(54,78,244)","rgb(236,100,169)"],'specialty':["rgb(49,106,246)","rgb(30,177,189)"],'distinctive':['rgb(124,66,147)',"rgb(252,117,60)"],'soft':["rgb(80,102,248)",'rgb(244,104,249)'],'fresh':["rgb(46,187,122)","rgb(248,190,21)"]},Se=["highPoint","firstPoint","lastPoint","lowPoint","negativePoint","markersPoint"];
+
+export { P as PLUGIN_NAME, F as SparklineThemeMapping, Se as SparklinePointsNames };
