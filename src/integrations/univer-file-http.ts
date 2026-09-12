@@ -46,6 +46,7 @@ export interface UniverFileHttpHost {
   collab?: UniverFileCollab;
   browser?: BrowserBinding;
   loader?: LoaderBinding;
+  executeAsAgent?: boolean;
 }
 
 /** Encode a file path as base64url for `/uf/:key` URLs. */
@@ -343,7 +344,7 @@ async function executeFileUnit(
       snapshotUnitId,
       worktreeId,
       code,
-      memberId: executeMemberId(request, host.currentUser!.id)
+      memberId: executeMemberId(host.currentUser!.id, host.executeAsAgent === true)
     });
     return jsonFile({ success: true, unitId, worktreeId: worktreeId || undefined, rev: persisted.rev });
   } catch (err) {

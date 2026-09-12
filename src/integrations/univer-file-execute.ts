@@ -63,12 +63,8 @@ export function facadeUnboundResponse(): Response {
   });
 }
 
-export function executeMemberId(request: Request, userId: string): string {
-  const invoker =
-    request.headers.get("x-univer-invoker")?.trim() ||
-    request.headers.get("x-workspace-invoker")?.trim() ||
-    "";
-  if (invoker === "agent" || userId === AGENT_EXECUTE_MEMBER_ID) {
+export function executeMemberId(userId: string, executeAsAgent = false): string {
+  if (executeAsAgent || userId === AGENT_EXECUTE_MEMBER_ID) {
     return AGENT_EXECUTE_MEMBER_ID;
   }
   return userId;
@@ -235,41 +231,83 @@ export function normalizeFacadeResult(value: unknown): FacadeExecuteResult {
   return { cells: writes, saved: record.saved ?? null };
 }
 
+function asExecuteResult(result: FacadeExecuteResult | FacadeCellWrite[]): FacadeExecuteResult {
+  return Array.isArray(result) ? { cells: result } : result;
+}
+
+function mergeSavedSnapshot(
+  snapshot: Record<string, unknown>,
+  saved: Record<string, unknown>
+): Record<string, unknown> {
+  const next = cloneSnapshot(snapshot);
+  const envelope = next as { workbook?: Record<string, unknown> };
+  const savedInner =
+    saved.workbook && typeof saved.workbook === "object"
+      ? (saved.workbook as Record<string, unknown>)
+      : saved;
+  if (envelope.workbook) {
+    envelope.workbook = { ...envelope.workbook, ...savedInner };
+    return next;
+  }
+  return { ...next, ...savedInner };
+}
+
 export async function persistFacadeWrites(
   collab: ExecuteCollab,
   unitId: string,
-  cells: FacadeCellWrite[],
+  result: FacadeExecuteResult | FacadeCellWrite[],
   memberId: string
 ): Promise<{ rev: number }> {
   const current = collab.getLatestSnapshot(unitId);
   if (!current) {
     throw new Error("Snapshot not found");
   }
-  if (cells.length === 0) {
+  const payload = asExecuteResult(result);
+  const cells = payload.cells ?? [];
+  if (cells.length === 0 && (payload.saved == null || typeof payload.saved !== "object")) {
     return { rev: current.rev };
   }
-  let snapshot = cloneSnapshot(current.data);
-  const cellValue: Record<string, Record<string, SheetCellValue>> = {};
-  let sheetId = "";
+
+  const bySheet = new Map<string, FacadeCellWrite[]>();
   for (const cell of cells) {
-    const result = setSheetCell(snapshot, cell.a1, cell.value, cell.sheetId);
-    sheetId = result.sheetId;
-    const rowKey = String(result.row);
-    const colKey = String(result.col);
-    if (!cellValue[rowKey]) cellValue[rowKey] = {};
-    cellValue[rowKey][colKey] = result.next;
+    const sheetId = cell.sheetId || "sheet_1";
+    const list = bySheet.get(sheetId) ?? [];
+    list.push(cell);
+    bySheet.set(sheetId, list);
   }
-  const rev = Math.max(current.rev, 1) + 1;
+
+  let rev = current.rev;
+  let snapshot = cloneSnapshot(current.data);
+  for (const [sheetId, sheetCells] of bySheet) {
+    const cellValue: Record<string, Record<string, SheetCellValue>> = {};
+    let resolvedSheetId = sheetId;
+    for (const cell of sheetCells) {
+      const applied = setSheetCell(snapshot, cell.a1, cell.value, sheetId);
+      resolvedSheetId = applied.sheetId;
+      const rowKey = String(applied.row);
+      const colKey = String(applied.col);
+      if (!cellValue[rowKey]) cellValue[rowKey] = {};
+      cellValue[rowKey][colKey] = applied.next;
+    }
+    rev = Math.max(rev, 1) + 1;
+    const changeset = buildSetRangeChangeset({
+      unitId,
+      rev,
+      sheetId: resolvedSheetId,
+      cellValue,
+      memberId
+    });
+    await collab.applyChangeset(changeset, memberId, memberId);
+  }
+
+  if (payload.saved && typeof payload.saved === "object") {
+    snapshot = mergeSavedSnapshot(snapshot, payload.saved);
+  }
+  if (rev === current.rev) {
+    rev = Math.max(current.rev, 1) + 1;
+  }
   snapshot = bumpSnapshotRevision(snapshot, rev);
-  const changeset = buildSetRangeChangeset({
-    unitId,
-    rev,
-    sheetId,
-    cellValue,
-    memberId
-  });
   collab.saveSnapshot(unitId, rev, snapshot);
-  await collab.applyChangeset(changeset, memberId, memberId);
   return { rev };
 }
 
@@ -289,9 +327,7 @@ export async function runFacadeAndPersist(input: {
     throw new Error("Snapshot not found");
   }
   let result: FacadeExecuteResult;
-  if (isLoaderBound(input.loader)) {
-    result = await evaluateFacadeOnLoader(input.loader, input.code, snapshot.data);
-  } else if (isBrowserBound(input.browser)) {
+  if (isBrowserBound(input.browser)) {
     result = await evaluateFacadeOnBrowser(
       input.browser,
       input.request.url,
@@ -299,8 +335,10 @@ export async function runFacadeAndPersist(input: {
       input.worktreeId,
       input.code
     );
+  } else if (isLoaderBound(input.loader)) {
+    result = await evaluateFacadeOnLoader(input.loader, input.code, snapshot.data);
   } else {
     throw new Error(FACADE_UNBOUND);
   }
-  return persistFacadeWrites(input.collab, input.snapshotUnitId, result.cells, input.memberId);
+  return persistFacadeWrites(input.collab, input.snapshotUnitId, result, input.memberId);
 }

@@ -13,12 +13,17 @@ import { ControlPlaneDb } from "../src/control-plane/db.ts";
 import type { SqlExec } from "../src/kernel/sql.ts";
 import { UniverCollabService } from "../src/plugins/univer-collab.ts";
 import { generateDefaultSnapshot } from "../src/plugins/univer-default-snapshots.ts";
-import { setSheetCell } from "../src/plugins/univer-snapshot.ts";
+import { getSheetCell, setSheetCell } from "../src/plugins/univer-snapshot.ts";
 import {
   fileKeyOf,
   handleUniverFileHttp,
   spaceIdFromFileKey
 } from "../src/integrations/univer-file-http.ts";
+import { runUniverExecutePersist } from "../apps/workspace/web/src/render-execute.ts";
+import {
+  FACADE_EXECUTE_WORKER_CODE,
+  persistFacadeWrites
+} from "../src/integrations/univer-file-execute.ts";
 
 const ORIGIN = "https://workspace.edge";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -457,6 +462,9 @@ describe("Univer File /uf inspect", () => {
 
 const EXECUTE_CODE =
   "api.getActiveWorkbook().getActiveSheet().getRange('E2').setValue({ f: '=SUM(B2:D2)' });";
+const COMMA_CODE =
+  "api.getActiveWorkbook().getActiveSheet().getRange('Z2').setValue({ f: '=SUM(B2:D2)', t: 2 });";
+const EXECUTE_SRC = join(ROOT, "src/integrations/univer-file-execute.ts");
 
 describe("Univer File /uf execute", () => {
   test("missing BROWSER and LOADER returns 503 and does not invent cell values", async () => {
@@ -603,6 +611,85 @@ describe("Univer File /uf execute", () => {
     );
   });
 
+  test("prefers BROWSER /render over stub LOADER when both are bound", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const fakeBrowser = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, snapshot });
+    const fakeLoader = createFakeLoader();
+    const host = {
+      db: admin.db,
+      currentUser: user,
+      collab,
+      browser: fakeBrowser.browser,
+      loader: fakeLoader.loader
+    };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/execute`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: EXECUTE_CODE })
+      }),
+      host
+    );
+    assert.equal(res?.status, 200);
+    assert.ok(
+      fakeBrowser.cdpMethods.includes("Runtime.evaluate"),
+      "deploy must page.evaluate Facade on /render when BROWSER is bound"
+    );
+    assert.equal(fakeLoader.got.length, 0, "stub LOADER must not run when BROWSER is bound");
+  });
+
+  test("BROWSER execute runs posted Facade code with commas via __univerRunExecute persist", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, snapshot });
+    const host = { db: admin.db, currentUser: user, collab, browser: fake.browser };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/execute`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: COMMA_CODE })
+      }),
+      host
+    );
+    assert.equal(res?.status, 200);
+    assert.ok(fake.evaluatedExpressions.some((expression) => expression.includes("__univerRunExecute")));
+
+    const posted = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/inspect?range=Z2`)),
+      host
+    );
+    assert.equal(posted?.status, 200);
+    const postedBody = (await posted!.json()) as { f?: unknown; v?: unknown };
+    assert.ok(
+      postedBody.f === FORMULA || postedBody.v != null,
+      `posted comma-containing snippet must persist Z2, got ${JSON.stringify(postedBody)}`
+    );
+
+    const fallback = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/inspect?range=E2`)),
+      host
+    );
+    const fallbackBody = (await fallback!.json()) as { f?: unknown };
+    assert.notEqual(fallbackBody.f, FORMULA, "must not fall back to EXECUTE_CODE E2 when posted code writes Z2");
+  });
+
   test("CLI execute persists changeset with caller memberId, not agent_workspace", async () => {
     const admin = await seededHost(null);
     const user = await admin.db.getUserById("user_admin");
@@ -632,7 +719,12 @@ describe("Univer File /uf execute", () => {
     assert.notEqual(last.changeset.memberID, "agent_workspace");
   });
 
-  test("Agent-invoked execute persists with agent_workspace", async () => {
+  test("HTTP execute ignores spoofed invoker headers and uses the session memberId", async () => {
+    const src = readFileSync(EXECUTE_SRC, "utf8");
+    const httpSrc = readFileSync(FILE_HTTP_SRC, "utf8");
+    assert.doesNotMatch(src, /x-univer-invoker|x-workspace-invoker/);
+    assert.doesNotMatch(httpSrc, /x-univer-invoker|x-workspace-invoker/);
+
     const admin = await seededHost(null);
     const user = await admin.db.getUserById("user_admin");
     assert.ok(user);
@@ -650,7 +742,8 @@ describe("Univer File /uf execute", () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-univer-invoker": "agent"
+          "x-univer-invoker": "agent",
+          "x-workspace-invoker": "agent"
         },
         body: JSON.stringify({ code: EXECUTE_CODE })
       }),
@@ -660,7 +753,118 @@ describe("Univer File /uf execute", () => {
     const entries = collab.listChangesetEntries(DEMO_UNIT_ID);
     assert.ok(entries.length > 0);
     const last = entries[entries.length - 1];
+    assert.equal(last.changeset.memberID, user.id);
+    assert.notEqual(last.changeset.memberID, "agent_workspace");
+  });
+
+  test("internal executeAsAgent persists with agent_workspace", async () => {
+    const admin = await seededHost(null);
+    const user = await admin.db.getUserById("user_admin");
+    assert.ok(user);
+    const collab = createCollab();
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    collab.createUnit(DEMO_UNIT_ID, 2, "Q3 Forecast", snapshot);
+    const fake = createFakeBrowser({ png: PNG_1x1, pdf: PDF_STUB, snapshot });
+    const host = {
+      db: admin.db,
+      currentUser: user,
+      collab,
+      browser: fake.browser,
+      executeAsAgent: true
+    };
+    const key = fileKeyOf(DEMO_FILE);
+    const created = await handleUniverFileHttp(new Request(ufUrl(key), { method: "POST" }), host);
+    assert.equal(created?.status, 200);
+
+    const res = await handleUniverFileHttp(
+      new Request(ufUrl(key, `/units/${DEMO_UNIT_ID}/execute`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: EXECUTE_CODE })
+      }),
+      host
+    );
+    assert.equal(res?.status, 200);
+    const entries = collab.listChangesetEntries(DEMO_UNIT_ID);
+    assert.ok(entries.length > 0);
+    const last = entries[entries.length - 1];
     assert.equal(last.changeset.memberID, "agent_workspace");
+  });
+
+  test("FACADE_EXECUTE_WORKER_CODE execute.js runs the posted Facade snippet", async () => {
+    const source = FACADE_EXECUTE_WORKER_CODE.modules["execute.js"];
+    assert.equal(typeof source, "string");
+    const mod = (await import("data:text/javascript," + encodeURIComponent(source))) as {
+      default: { fetch: (request: Request) => Promise<Response> };
+    };
+    const snapshot = generateDefaultSnapshot(DEMO_UNIT_ID, 2, "Q3 Forecast") as Record<string, unknown>;
+    const res = await mod.default.fetch(
+      new Request("https://uf-execute/execute", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: EXECUTE_CODE, snapshot })
+      })
+    );
+    assert.equal(res.ok, true);
+    const body = (await res.json()) as { cells?: Array<{ a1?: string; value?: { f?: unknown } }> };
+    assert.ok(body.cells?.some((cell) => cell.a1 === "E2" && cell.value?.f === FORMULA));
+  });
+
+  test("persist emits per-sheet changesets and applies OT before snapshot save", async () => {
+    const collab = createCollab();
+    const unitId = "unit_persist_sheets";
+    const snapshot = generateDefaultSnapshot(unitId, 2, "Sheets") as Record<string, unknown>;
+    const workbook = ((snapshot as { workbook?: Record<string, unknown> }).workbook ?? snapshot) as {
+      sheetOrder?: string[];
+      sheets?: Record<string, Record<string, unknown>>;
+    };
+    workbook.sheetOrder = ["sheet_1", "sheet_2"];
+    workbook.sheets = workbook.sheets ?? {};
+    workbook.sheets.sheet_2 = {
+      id: "sheet_2",
+      name: "Sheet 2",
+      cellData: {},
+      type: 0
+    };
+    collab.createUnit(unitId, 2, "Sheets", snapshot);
+
+    const applyAt: Array<{ snapshotRev: number; changesetRev: number; subUnitId: string }> = [];
+    const origApply = collab.applyChangeset.bind(collab);
+    const origGet = collab.getLatestSnapshot.bind(collab);
+    collab.applyChangeset = async (payload, clientId, userID) => {
+      const latest = origGet(unitId);
+      const record = payload as {
+        rev?: number;
+        revision?: number;
+        mutations?: Array<{ params?: { subUnitId?: string } }>;
+      };
+      applyAt.push({
+        snapshotRev: latest?.rev ?? 0,
+        changesetRev: record.rev ?? record.revision ?? 0,
+        subUnitId: String(record.mutations?.[0]?.params?.subUnitId ?? "")
+      });
+      return origApply(payload, clientId, userID);
+    };
+
+    await persistFacadeWrites(
+      collab,
+      unitId,
+      [
+        { a1: "A1", value: { v: "one" }, sheetId: "sheet_1" },
+        { a1: "B1", value: { v: "two" }, sheetId: "sheet_2" }
+      ],
+      "user_admin"
+    );
+
+    const subUnitIds = applyAt.map((entry) => entry.subUnitId).sort();
+    assert.deepEqual(subUnitIds, ["sheet_1", "sheet_2"]);
+    assert.ok(
+      applyAt.every((entry) => entry.snapshotRev < entry.changesetRev),
+      `T12 materialize must not be skipped by a prior saveSnapshot, got ${JSON.stringify(applyAt)}`
+    );
+    const latest = collab.getLatestSnapshot(unitId);
+    assert.equal(getSheetCell(latest?.data ?? {}, "A1", "sheet_1")?.v, "one");
+    assert.equal(getSheetCell(latest?.data ?? {}, "B1", "sheet_2")?.v, "two");
   });
 
   test("fake LOADER worker runs Facade when BROWSER is absent", async () => {
@@ -770,6 +974,8 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
     assert.match(renderHtml, /render-main/);
     assert.match(viteConfig, /render\.html/);
     assert.match(renderMain, /window\.univerAPI/);
+    assert.match(renderMain, /runUniverExecutePersist/);
+    assert.match(renderMain, /__univerRunExecute/);
     assert.match(renderMain, /unitId/);
     assert.match(renderMain, /worktreeId/);
     assert.match(renderMain, /theme/);
@@ -990,37 +1196,70 @@ describe("Univer File /uf screenshot, print-pdf, lint", () => {
   });
 });
 
-function fakeRunFacadeSnippet(code: string, snapshot: Record<string, unknown> = {}) {
-  const writes: Array<{ a1: string; value: { f?: unknown; v?: unknown }; sheetId: string }> = [];
-  const workbook = JSON.parse(JSON.stringify(snapshot || {})) as Record<string, unknown>;
-  const inner = (workbook.workbook ?? workbook) as {
-    sheets?: Record<string, { id?: string; cellData?: Record<string, Record<string, { v?: unknown; f?: string }>> }>;
+function parseUniverRunExecuteArg(expression: string): string {
+  const match = /window\.__univerRunExecute\(([\s\S]*)\)\s*$/.exec(expression.trim());
+  if (!match) throw new Error("missing __univerRunExecute");
+  return JSON.parse(match[1]);
+}
+
+function createSnapshotFacade(snapshot: Record<string, unknown>) {
+  const cloned = JSON.parse(JSON.stringify(snapshot || {})) as Record<string, unknown>;
+  const workbook = ((cloned as { workbook?: Record<string, unknown> }).workbook ?? cloned) as {
+    sheets?: Record<
+      string,
+      { id?: string; name?: string; cellData?: Record<string, Record<string, { v?: unknown; f?: string; t?: number }>> }
+    >;
     sheetOrder?: string[];
   };
-  const sheets = inner.sheets ?? {};
-  const firstSheetId = inner.sheetOrder?.[0] || Object.keys(sheets)[0] || "sheet_1";
+  const sheets = workbook.sheets ?? {};
+  workbook.sheets = sheets;
+  const activeSheetId = workbook.sheetOrder?.[0] || Object.keys(sheets)[0] || "sheet_1";
+  if (!sheets[activeSheetId]) sheets[activeSheetId] = { id: activeSheetId, cellData: {} };
   const cellOf = (a1: string) => {
-    const match = /^([A-Za-z]+)(\d+)$/.exec(a1.trim());
+    const match = /^([A-Za-z]+)(\d+)$/.exec(String(a1).trim());
     if (!match) return { row: 0, col: 0 };
     const letters = match[1].toUpperCase();
     let col = 0;
     for (let i = 0; i < letters.length; i++) col = col * 26 + (letters.charCodeAt(i) - 64);
     return { row: Number(match[2]) - 1, col: col - 1 };
   };
-  const readCell = (a1: string) => {
+  const cellAt = (a1: string) => {
+    const sheet = sheets[activeSheetId];
+    if (!sheet.cellData) sheet.cellData = {};
     const { row, col } = cellOf(a1);
-    const sheet = sheets[firstSheetId];
-    return sheet?.cellData?.[String(row)]?.[String(col)] ?? null;
+    return { sheet, row, col };
   };
-  const api = {
+  return {
     getActiveWorkbook() {
       return {
+        save: () => workbook,
+        getSnapshot: () => workbook,
         getActiveSheet() {
           return {
+            getSheetId: () => activeSheetId,
+            getSheetName: () => String(sheets[activeSheetId]?.name ?? activeSheetId),
             getRange(a1: string) {
               return {
-                setValue(value: { f?: unknown; v?: unknown }) {
-                  writes.push({ a1, value, sheetId: firstSheetId });
+                setValue(value: unknown) {
+                  const next =
+                    value !== null && typeof value === "object"
+                      ? { ...(value as Record<string, unknown>) }
+                      : String(value).startsWith("=")
+                        ? { f: String(value) }
+                        : { v: value };
+                  const { sheet, row, col } = cellAt(a1);
+                  const rowKey = String(row);
+                  if (!sheet.cellData) sheet.cellData = {};
+                  if (!sheet.cellData[rowKey]) sheet.cellData[rowKey] = {};
+                  sheet.cellData[rowKey][String(col)] = next as { v?: unknown; f?: string; t?: number };
+                },
+                getValue() {
+                  const { sheet, row, col } = cellAt(a1);
+                  return sheet.cellData?.[String(row)]?.[String(col)] ?? null;
+                },
+                getCellData() {
+                  const { sheet, row, col } = cellAt(a1);
+                  return sheet.cellData?.[String(row)]?.[String(col)] ?? null;
                 }
               };
             }
@@ -1031,37 +1270,30 @@ function fakeRunFacadeSnippet(code: string, snapshot: Record<string, unknown> = 
     getFormula() {
       return {
         executeCalculation() {
-          for (const write of writes) {
-            const formula = typeof write.value?.f === "string" ? write.value.f : "";
-            const sum = /^=SUM\(([A-Za-z]+\d+):([A-Za-z]+\d+)\)$/.exec(formula);
-            if (!sum) continue;
-            const start = cellOf(sum[1]);
-            const end = cellOf(sum[2]);
-            let total = 0;
-            for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
-              for (let c = Math.min(start.col, end.col); c <= Math.max(start.col, end.col); c++) {
-                let n = c + 1;
-                let letters = "";
-                while (n > 0) {
-                  const rem = (n - 1) % 26;
-                  letters = String.fromCharCode(65 + rem) + letters;
-                  n = Math.floor((n - 1) / 26);
+          const sheet = sheets[activeSheetId];
+          const cellData = sheet?.cellData ?? {};
+          for (const cols of Object.values(cellData)) {
+            if (!cols) continue;
+            for (const [colKey, cell] of Object.entries(cols)) {
+              const formula = typeof cell?.f === "string" ? cell.f.trim() : "";
+              const sum = /^=SUM\(([A-Za-z]+\d+):([A-Za-z]+\d+)\)$/.exec(formula);
+              if (!sum) continue;
+              const start = cellOf(sum[1]);
+              const end = cellOf(sum[2]);
+              let total = 0;
+              for (let r = Math.min(start.row, end.row); r <= Math.max(start.row, end.row); r++) {
+                for (let c = Math.min(start.col, end.col); c <= Math.max(start.col, end.col); c++) {
+                  const v = sheet.cellData?.[String(r)]?.[String(c)]?.v;
+                  if (typeof v === "number") total += v;
                 }
-                const a1 = `${letters}${r + 1}`;
-                const cell = readCell(a1);
-                const v = cell?.v;
-                if (typeof v === "number") total += v;
               }
+              cols[colKey] = { ...cell, v: total };
             }
-            write.value = { ...write.value, v: total };
           }
         }
       };
     }
   };
-  new Function("api", code)(api);
-  api.getFormula().executeCalculation();
-  return { cells: writes };
 }
 
 function createFakeLoader() {
@@ -1069,14 +1301,14 @@ function createFakeLoader() {
   const loader = {
     get(name: string | null, getCode: () => unknown) {
       got.push(String(name));
-      getCode();
+      const spec = getCode() as { modules?: Record<string, string> };
+      const source = spec?.modules?.["execute.js"] ?? "";
       return {
         fetch: async (input: RequestInfo | URL, init?: RequestInit) => {
+          const url = "data:text/javascript," + encodeURIComponent(source);
+          const mod = (await import(url)) as { default: { fetch: (request: Request) => Promise<Response> } };
           const req = input instanceof Request ? input : new Request(input, init);
-          const body = (await req.json().catch(() => ({}))) as { code?: string; snapshot?: Record<string, unknown> };
-          return new Response(JSON.stringify(fakeRunFacadeSnippet(body.code ?? "", body.snapshot ?? {})), {
-            headers: { "Content-Type": "application/json" }
-          });
+          return mod.default.fetch(req);
         }
       };
     }
@@ -1092,6 +1324,7 @@ function createFakeBrowser(opts: {
 }) {
   const cdpMethods: string[] = [];
   const navigated: string[] = [];
+  const evaluatedExpressions: string[] = [];
   let evaluateAttempts = 0;
   let remainingEvaluateFailures = opts.evaluateFailures ?? 0;
 
@@ -1125,6 +1358,7 @@ function createFakeBrowser(opts: {
         } else if (method === "Runtime.evaluate") {
           evaluateAttempts += 1;
           const expression = String(msg.params?.expression ?? "");
+          evaluatedExpressions.push(expression);
           if (remainingEvaluateFailures > 0) {
             remainingEvaluateFailures -= 1;
             queueMicrotask(() => {
@@ -1140,16 +1374,25 @@ function createFakeBrowser(opts: {
             return;
           }
           if (expression.includes("__univerRunExecute")) {
-            const start = expression.indexOf("(");
-            const end = expression.lastIndexOf(")");
-            const arg = start >= 0 && end > start ? expression.slice(start + 1, end).trim() : "\"\"";
-            let code = "";
-            try {
-              code = JSON.parse(arg.split(",")[0] ?? "\"\"");
-            } catch {
-              code = EXECUTE_CODE;
-            }
-            result = { result: { value: fakeRunFacadeSnippet(code, opts.snapshot ?? {}) } };
+            const code = parseUniverRunExecuteArg(expression);
+            void runUniverExecutePersist(createSnapshotFacade(opts.snapshot ?? {}), code).then(
+              (value) => {
+                for (const listener of listeners.get("message") ?? []) {
+                  listener({ data: JSON.stringify({ id: msg.id, result: { result: { value } } }) });
+                }
+              },
+              (err) => {
+                for (const listener of listeners.get("message") ?? []) {
+                  listener({
+                    data: JSON.stringify({
+                      id: msg.id,
+                      error: { message: err instanceof Error ? err.message : String(err) }
+                    })
+                  });
+                }
+              }
+            );
+            return;
           } else if (expression.includes("univerAPI")) {
             result = { result: { value: true } };
           } else {
@@ -1194,7 +1437,7 @@ function createFakeBrowser(opts: {
     }
   };
 
-  return { browser, cdpMethods, navigated, evaluateAttempts: () => evaluateAttempts };
+  return { browser, cdpMethods, navigated, evaluatedExpressions, evaluateAttempts: () => evaluateAttempts };
 }
 
 function createForwardEnv() {
