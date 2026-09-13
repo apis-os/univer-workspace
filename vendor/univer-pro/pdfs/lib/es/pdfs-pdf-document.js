@@ -1,10 +1,71 @@
-import{CommandType,DEFAULT_STYLES,DependentOn,Disposable,ICommandService,IConfigService,IUniverInstanceService,ImageSourceType,Inject,Injector,Plugin,UnitModel,UniverInstanceType,generateRandomId,merge}from'@univerjs/core';
-import{BehaviorSubject,Subject}from'rxjs';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
 import { te, v, x } from "./pdfs-pdf-document-schema.js";
 import { je } from "./pdfs-empty-edit-state.js";
 import { ke } from "./pdfs-empty-asset-store.js";
 import { Ae } from "./pdfs-empty-style-store.js";
-function Ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462200=He(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.source,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.sources);return{'schema':v,'schemaVersion':1,'id':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.id,'title':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.title,'coordinate':{'modelUnit':"emu",'modelOrigin':"top-left",'pdfUnit':"pdf-user-space",'pdfOrigin':"bottom-left",'emuPerPt':x,'emuPerCssPx':te},'source':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.source,'sources':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462200,'pages':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.pages??[],'objects':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.objects??{},'displayLists':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.displayLists??{},'textStories':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.textStories??{},'edits':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.edits??je(),'exportPlan':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.exportPlan,'assets':Be(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.assets),'styles':Ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.styles),'native':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.native,'outlines':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.outlines,'logicalStructure':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.logicalStructure,'operations':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.operations??[],'conversion':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.conversion,'collaboration':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.collaboration,'metadata':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.metadata};}function Be(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215){return{...ke(),...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215,'fonts':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.fonts)??{},'images':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.images)??{},'formXObjects':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.formXObjects)??{},'colorProfiles':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.colorProfiles)??{},'patterns':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.patterns)??{},'shadings':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.shadings)??{},'attachments':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.attachments)??{},'streams':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.streams)??{}};}function Ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217){return{...Ae(),...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217,'fills':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217.fills)??{},'strokes':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217.strokes)??{},'text':(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217.text)??{}};}function He(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462220){let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB46={...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462220??{})};return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219.id&&(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB46[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219.id]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219),var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB46;}
-
+function Ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462200 = He(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.source, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.sources);
+  return {
+    'schema': v,
+    'schemaVersion': 1,
+    'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.id,
+    'title': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.title,
+    'coordinate': {
+      'modelUnit': "emu",
+      'modelOrigin': "top-left",
+      'pdfUnit': "pdf-user-space",
+      'pdfOrigin': "bottom-left",
+      'emuPerPt': x,
+      'emuPerCssPx': te
+    },
+    'source': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.source,
+    'sources': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462200,
+    'pages': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.pages ?? [],
+    'objects': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.objects ?? {},
+    'displayLists': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.displayLists ?? {},
+    'textStories': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.textStories ?? {},
+    'edits': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.edits ?? je(),
+    'exportPlan': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.exportPlan,
+    'assets': Be(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.assets),
+    'styles': Ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.styles),
+    'native': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.native,
+    'outlines': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.outlines,
+    'logicalStructure': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.logicalStructure,
+    'operations': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.operations ?? [],
+    'conversion': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.conversion,
+    'collaboration': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.collaboration,
+    'metadata': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462199.metadata
+  };
+}
+function Be(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215) {
+  return {
+    ...ke(),
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215,
+    'fonts': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.fonts) ?? {},
+    'images': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.images) ?? {},
+    'formXObjects': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.formXObjects) ?? {},
+    'colorProfiles': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.colorProfiles) ?? {},
+    'patterns': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.patterns) ?? {},
+    'shadings': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.shadings) ?? {},
+    'attachments': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.attachments) ?? {},
+    'streams': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462215.streams) ?? {}
+  };
+}
+function Ve(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217) {
+  return {
+    ...Ae(),
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217,
+    'fills': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217.fills) ?? {},
+    'strokes': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217.strokes) ?? {},
+    'text': (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462217.text) ?? {}
+  };
+}
+function He(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462220) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB46 = {
+    ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462220 ?? {})
+  };
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219.id && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB46[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219.id] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462219), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB46;
+}
 export { Ie as createPdfDocument };

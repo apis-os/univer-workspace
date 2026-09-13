@@ -1,11 +1,180 @@
-import{AddBoardElementMutation,BOARD_MIND_MAP_CONNECTOR_ROLE,BOARD_MIND_MAP_CONTAINER_ROLE,BOARD_MIND_MAP_DECORATION_ROLE,BOARD_MIND_MAP_MODE_ID,BOARD_MIND_MAP_NODE_ROLE,BoardElementType,IBoardElementService,RemoveBoardElementMutation,SetBoardElementOrderMutation,UniverBoardsPlugin,createAddBoardElementsMutationInfos,createBoardConnectorElement,createBoardContainerElement,createBoardTextBoxShapeElement,createBoardTextBoxShapeTextData,mergeBoardRichTextDocument,offsetBoardConnectorGeometry,resolveBoardElementLocalTransformForParent,resolveBoardElementWorldBounds,resolveBoardElementWorldTransform,shapeTextToBoardDocumentTextStyle}from"@univerjs-pro/boards";
-import{BooleanNumber,CommandType,DependentOn,Disposable,HorizontalAlign,ICommandService,IConfigService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,Tools,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createInternalEditorID,generateRandomId,merge,sequenceExecute}from"@univerjs/core";
-import{ShapeFillEnum,ShapeLineTypeEnum,ShapeModel,ShapeTypeEnum}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { AddBoardElementMutation, BOARD_MIND_MAP_CONNECTOR_ROLE, BOARD_MIND_MAP_CONTAINER_ROLE, BOARD_MIND_MAP_DECORATION_ROLE, BOARD_MIND_MAP_MODE_ID, BOARD_MIND_MAP_NODE_ROLE, BoardElementType, IBoardElementService, RemoveBoardElementMutation, SetBoardElementOrderMutation, UniverBoardsPlugin, createAddBoardElementsMutationInfos, createBoardConnectorElement, createBoardContainerElement, createBoardTextBoxShapeElement, createBoardTextBoxShapeTextData, mergeBoardRichTextDocument, offsetBoardConnectorGeometry, resolveBoardElementLocalTransformForParent, resolveBoardElementWorldBounds, resolveBoardElementWorldTransform, shapeTextToBoardDocumentTextStyle } from "@univerjs-pro/boards";
+import { BooleanNumber, CommandType, DependentOn, Disposable, HorizontalAlign, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createInternalEditorID, generateRandomId, merge, sequenceExecute } from "@univerjs/core";
+import { ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { Ar, jr } from "./boards-mind-reflow-mind-map.js";
 import { At } from "./boards-mind-mind-map-elements-from-blueprint.js";
 import { V } from "./boards-mind-mind-map-container-meta.js";
 import { H } from "./boards-mind-mind-map-node-meta.js";
-function Mr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462239){return!!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462239&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462239.nodeType===1;}function Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462241,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462242){return Array.from(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462241.children).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586.tagName["toLowerCase"]()===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462242);}function Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462245,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462246){return Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462245,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462246)[0];}function Fr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462249){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462250;return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462249==null||(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462250=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462249.textContent)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462250.trim())||undefined;}function Ir(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462253){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462253.getAttribute("text")??var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462253.getAttribute("title")??"Add text";}function Lr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462255){let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69={};return Array.from(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462255.attributes).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587=>{jr.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.name)||(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.name]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.value);}),Object.keys(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69).length?var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69:undefined;}function Rr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257){return{text:Ir(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257),foreignAttributes:Lr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257),children:Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257,"outline").map(Rr)};}function zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462259,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462260){return{text:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462259||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462260||"导入的大纲",children:[]};}function Br(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462263,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462264){let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A132=[];if(Ar.test(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462263))return{diagnostics:[{severity:"error",code:"unsafe-doctype",message:"OPML containing DOCTYPE or ENTITY declarations is not imported."}]};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265=new DOMParser().parseFromString(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462263,"text/xml");if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.getElementsByTagName("parsererror").length>0)return{diagnostics:[{severity:"error",code:"invalid-xml",message:"OPML\x20XML\x20could\x20not\x20be\x20parsed."}]};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266=Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.documentElement,"body")?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.documentElement:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.getElementsByTagName("opml")[0];if(!Mr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266))return{diagnostics:[{severity:"error",code:"missing-opml",message:"The document does not contain an OPML root element."}]};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462267=Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266,"head"),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462268=Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266,"body"),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462269=Fr(Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462267??var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266,"title")),var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462268?Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462268,"outline").map(Rr):[];var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133.length||var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A132.push({severity:"warning",code:"empty-body",message:"The OPML body does not contain outline nodes."});let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB71=var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133.length===1?var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133[0]:{...zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462269,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462264==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462264.fileName),children:var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133};return{blueprint:{title:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462269??var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB71.text,root:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB71},diagnostics:var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A132};}function Gr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462291,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462292,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462293){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462294=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462293<0?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462292.length:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462293;var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462292.slice(-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462294).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593=>{var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462291.syncExecuteCommand(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593.id,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593.params);});}function Kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462300){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301=At({containerId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.containerId,rootNodeId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.rootNodeId,left:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.left,top:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.top,blueprint:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462300});return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.container["custom"]={...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.container["custom"],mindmap:{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.container["custom"].mindmap,sourceProvenance:{format:"opml",...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.fileName?{fileName:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.fileName}:null),importedAt:Date.now()}}},var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.elements;}const qr={id:"board.operation.mind-map.import-opml",type:CommandType.OPERATION,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306)=>{var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462307;if(!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId)||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.opml||!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.left)||!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.top))return{success:false,diagnostics:[{severity:"error",code:"invalid-params",message:"Missing import parameters."}]};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308=Br(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.opml,{fileName:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.fileName});if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.blueprint)return{success:false,diagnostics:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.diagnostics};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309=Kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.blueprint),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462310=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305.get(IBoardElementService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462311=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462310.getElementData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462312=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462310.getElementOrder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313=createAddBoardElementsMutationInfos({unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId,elements:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309,insertIndex:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.insertIndex,elementData:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462311,elementOrder:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462312});if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313)return{success:false,diagnostics:[{severity:"error",code:"add-elements-failed",message:"Unable to create board elements for imported OPML."}]};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462314=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305.get(ICommandService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462315=sequenceExecute(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.redoMutations,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462314);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462315.result?(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305.get(IUndoRedoService).pushUndoRedo({unitID:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId,redoMutations:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.redoMutations,undoMutations:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.undoMutations}),{success:true,diagnostics:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.diagnostics,containerId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309[0].id,rootNodeId:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462307=V(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309[0]))==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462307.rootNodeId,nodeCount:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46595=>!!H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46595)).length}):(Gr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462314,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.undoMutations,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462315.index),{success:false,diagnostics:[{severity:"error",code:"mutation-failed",message:"Unable to add imported mind-map elements."}]});}};
-
+function Mr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462239) {
+  return !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462239 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462239.nodeType === 1;
+}
+function Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462241, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462242) {
+  return Array.from(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462241.children).filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46586.tagName["toLowerCase"]() === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462242);
+}
+function Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462245, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462246) {
+  return Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462245, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462246)[0];
+}
+function Fr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462249) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462250;
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462249 == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462250 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462249.textContent) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462250.trim()) || undefined;
+}
+function Ir(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462253) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462253.getAttribute("text") ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462253.getAttribute("title") ?? "Add text";
+}
+function Lr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462255) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69 = {};
+  return Array.from(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462255.attributes).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587 => {
+    jr.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.name) || (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.name] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46587.value);
+  }), Object.keys(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69).length ? var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB69 : undefined;
+}
+function Rr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257) {
+  return {
+    text: Ir(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257),
+    foreignAttributes: Lr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257),
+    children: Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462257, "outline").map(Rr)
+  };
+}
+function zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462260) {
+  return {
+    text: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462259 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462260 || "导入的大纲",
+    children: []
+  };
+}
+function Br(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462263, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462264) {
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A132 = [];
+  if (Ar.test(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462263)) return {
+    diagnostics: [{
+      severity: "error",
+      code: "unsafe-doctype",
+      message: "OPML containing DOCTYPE or ENTITY declarations is not imported."
+    }]
+  };
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265 = new DOMParser().parseFromString(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462263, "text/xml");
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.getElementsByTagName("parsererror").length > 0) return {
+    diagnostics: [{
+      severity: "error",
+      code: "invalid-xml",
+      message: "OPML\x20XML\x20could\x20not\x20be\x20parsed."
+    }]
+  };
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266 = Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.documentElement, "body") ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.documentElement : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462265.getElementsByTagName("opml")[0];
+  if (!Mr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266)) return {
+    diagnostics: [{
+      severity: "error",
+      code: "missing-opml",
+      message: "The document does not contain an OPML root element."
+    }]
+  };
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462267 = Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266, "head"),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462268 = Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266, "body"),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462269 = Fr(Pr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462267 ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462266, "title")),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462268 ? Nr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462268, "outline").map(Rr) : [];
+  var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133.length || var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A132.push({
+    severity: "warning",
+    code: "empty-body",
+    message: "The OPML body does not contain outline nodes."
+  });
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB71 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133.length === 1 ? var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133[0] : {
+    ...zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462269, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462264 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462264.fileName),
+    children: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A133
+  };
+  return {
+    blueprint: {
+      title: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462269 ?? var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB71.text,
+      root: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB71
+    },
+    diagnostics: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A132
+  };
+}
+function Gr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462291, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462292, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462293) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462294 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462293 < 0 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462292.length : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462293;
+  var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462292.slice(-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462294).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593 => {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462291.syncExecuteCommand(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46593.params);
+  });
+}
+function Kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462300) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301 = At({
+    containerId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.containerId,
+    rootNodeId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.rootNodeId,
+    left: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.left,
+    top: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.top,
+    blueprint: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462300
+  });
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.container["custom"] = {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.container["custom"],
+    mindmap: {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.container["custom"].mindmap,
+      sourceProvenance: {
+        format: "opml",
+        ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.fileName ? {
+          fileName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462299.fileName
+        } : null),
+        importedAt: Date.now()
+      }
+    }
+  }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462301.elements;
+}
+const qr = {
+  id: "board.operation.mind-map.import-opml",
+  type: CommandType.OPERATION,
+  handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306) => {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462307;
+    if (!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.opml || !Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.left) || !Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.top)) return {
+      success: false,
+      diagnostics: [{
+        severity: "error",
+        code: "invalid-params",
+        message: "Missing import parameters."
+      }]
+    };
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308 = Br(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.opml, {
+      fileName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.fileName
+    });
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.blueprint) return {
+      success: false,
+      diagnostics: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.diagnostics
+    };
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309 = Kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.blueprint),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462310 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305.get(IBoardElementService),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462311 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462310.getElementData(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462312 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462310.getElementOrder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313 = createAddBoardElementsMutationInfos({
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.subUnitId,
+        elements: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309,
+        insertIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.insertIndex,
+        elementData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462311,
+        elementOrder: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462312
+      });
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313) return {
+      success: false,
+      diagnostics: [{
+        severity: "error",
+        code: "add-elements-failed",
+        message: "Unable to create board elements for imported OPML."
+      }]
+    };
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462314 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305.get(ICommandService),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462315 = sequenceExecute(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.redoMutations, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462314);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462315.result ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462305.get(IUndoRedoService).pushUndoRedo({
+      unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462306.unitId,
+      redoMutations: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.redoMutations,
+      undoMutations: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.undoMutations
+    }), {
+      success: true,
+      diagnostics: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462308.diagnostics,
+      containerId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309[0].id,
+      rootNodeId: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462307 = V(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309[0])) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462307.rootNodeId,
+      nodeCount: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462309.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46595 => !!H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46595)).length
+    }) : (Gr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462314, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462313.undoMutations, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462315.index), {
+      success: false,
+      diagnostics: [{
+        severity: "error",
+        code: "mutation-failed",
+        message: "Unable to add imported mind-map elements."
+      }]
+    });
+  }
+};
 export { qr as ImportMindMapOpmlOperation };

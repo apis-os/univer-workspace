@@ -1,7 +1,23 @@
-import{CommandType,DEFAULT_STYLES,DependentOn,Disposable,ICommandService,IConfigService,IUniverInstanceService,ImageSourceType,Inject,Injector,Plugin,UnitModel,UniverInstanceType,generateRandomId,merge}from'@univerjs/core';
-import{BehaviorSubject,Subject}from'rxjs';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
 import { wh } from "./internal-core-endo.js";
-function Ch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467750=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.createdAt??Date.now(),var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB118=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.sourceName||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document["title"]||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document['id']||"document",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467751=og(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB118),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467752=wh({...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749,'id':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.id??var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document['id']+"_edited_"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467750,'title':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.title??(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document["title"]??var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB118)+" Edited",'createdAt':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467750});return{'filename':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467751+".edited.univer-pdf.json",'document':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467752};}function og(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468017){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468017.replace(/\.univer-pdf\.json$/i,'').replace(/\.json$/i,'');}
-
+function Ch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467750 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.createdAt ?? Date.now(),
+    var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB118 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.sourceName || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document["title"] || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document['id'] || "document",
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467751 = og(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB118),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467752 = wh({
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749,
+      'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.id ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document['id'] + "_edited_" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467750,
+      'title': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.title ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467749.document["title"] ?? var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB118) + " Edited",
+      'createdAt': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467750
+    });
+  return {
+    'filename': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467751 + ".edited.univer-pdf.json",
+    'document': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467752
+  };
+}
+function og(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468017) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468017.replace(/\.univer-pdf\.json$/i, '').replace(/\.json$/i, '');
+}
 export { Ch as createPdfEditorEditedDocumentJsonExport };

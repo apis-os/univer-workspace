@@ -1,7 +1,86 @@
-import{BoardElementType}from"@univerjs-pro/boards";
-import{FBoard}from"@univerjs-pro/boards/facade";
-import{buildInkCustomShapePayload}from"@univerjs-pro/ink";
-import{Tools,generateRandomId}from"@univerjs/core";
-import{FEnum}from"@univerjs/core/facade";
+import { BoardElementType } from "@univerjs-pro/boards";
+import { FBoard } from "@univerjs-pro/boards/facade";
+import { buildInkCustomShapePayload } from "@univerjs-pro/ink";
+import { Tools, generateRandomId } from "@univerjs/core";
+import { FEnum } from "@univerjs/core/facade";
 import { BoardInkHandleKind, BoardInkPointType, BoardInkTool, g, h, m } from "./facade-ink-board-ink-tool.js";
-var o=class extends FBoard{insertInk(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463=s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463&&this._addElement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463,{insertIndex:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462.insertIndex})?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463:null;}getInks(){return this.findElements({elementType:BoardElementType.Shape,includeHidden:true,includeLocked:true}).filter(p);}};function s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468){if(!l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.model)||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel!==undefined&&!l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel)||!u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.style))return null;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.parentId??(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.parentId),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610=Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.model),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611=buildInkCustomShapePayload({model:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610,style:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.style,tool:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.tool,sourceModel:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel?Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612=d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.custom);return{id:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.id)??var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.id??generateRandomId(6),type:BoardElementType.Shape,transform:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.transform,shapeData:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.shapeData,parentId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469??undefined,laneId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.laneId===undefined?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.laneId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.laneId,custom:{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612,ink:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.ink}};}function c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619){return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619.x)&&Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619.y);}function l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621){if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.kind==="pen"){let var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299=new Set();return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.anchors["length"]>=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.closed?3:2)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.anchors["every"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46=>{let var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.id["trim"]().length>0&&!var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.id)&&c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46)&&(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.in||c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.in))&&(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.out||c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.out));return var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.id),var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A;});}return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.points["length"]>=2&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.points["every"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466=>c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466)&&Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.t)&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.pressure===undefined||Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.pressure)))&&Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.width)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.width>0&&Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.opacity)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.opacity>=0&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.opacity<=1;}function u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623===undefined||(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.width===undefined||Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.width)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.width>0)&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity===undefined||Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity>=0&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity<=1);}function d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625&&typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625=="object"&&!Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625)?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625:{};}function f(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628=d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.custom).ink;if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628||typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628!="object"||Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628))return null;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628;return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.version===1&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.sourceModel&&typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.sourceModel=="object"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629:null;}function p(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633.type===BoardElementType.Shape&&!!f(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633);}FBoard.extend(o);var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635=class extends FEnum{get BoardInkTool(){return m;}get BoardInkPointType(){return h;}get BoardInkHandleKind(){return g;}};FEnum.extend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635);
+var o = class extends FBoard {
+  insertInk(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463 = s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463 && this._addElement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463, {
+      insertIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462.insertIndex
+    }) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463 : null;
+  }
+  getInks() {
+    return this.findElements({
+      elementType: BoardElementType.Shape,
+      includeHidden: true,
+      includeLocked: true
+    }).filter(p);
+  }
+};
+function s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468) {
+  if (!l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.model) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel !== undefined && !l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel) || !u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.style)) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.parentId ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.parentId),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.model),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611 = buildInkCustomShapePayload({
+      model: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610,
+      style: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.style,
+      tool: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.tool,
+      sourceModel: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel ? Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.sourceModel) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610
+    }),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612 = d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.custom);
+  return {
+    id: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.id) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.id ?? generateRandomId(6),
+    type: BoardElementType.Shape,
+    transform: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.transform,
+    shapeData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.shapeData,
+    parentId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469 ?? undefined,
+    laneId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.laneId === undefined ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.laneId : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.laneId,
+    custom: {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612,
+      ink: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.ink
+    }
+  };
+}
+function c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619) {
+  return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619.x) && Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619.y);
+}
+function l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.kind === "pen") {
+    let var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299 = new Set();
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.anchors["length"] >= (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.closed ? 3 : 2) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.anchors["every"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 => {
+      let var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.id["trim"]().length > 0 && !var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299.has(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.id) && c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46) && (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.in || c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.in)) && (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.out || c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.out));
+      return var_L0_core_endo_itemsSet_pure_O1_zalloc_nothrow_sig9299.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.id), var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A;
+    });
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.points["length"] >= 2 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.points["every"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 => c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466) && Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.t) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.pressure === undefined || Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.pressure))) && Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.width) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.width > 0 && Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.opacity) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.opacity >= 0 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621.opacity <= 1;
+}
+function u(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623 === undefined || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.width === undefined || Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.width) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.width > 0) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity === undefined || Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity >= 0 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623.opacity <= 1);
+}
+function d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 == "object" && !Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 : {};
+}
+function f(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 = d(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.custom).ink;
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 || typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 != "object" || Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628)) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628;
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.version === 1 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.sourceModel && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629.sourceModel == "object" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 : null;
+}
+function p(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633.type === BoardElementType.Shape && !!f(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633);
+}
+FBoard.extend(o);
+var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635 = class extends FEnum {
+  get BoardInkTool() {
+    return m;
+  }
+  get BoardInkPointType() {
+    return h;
+  }
+  get BoardInkHandleKind() {
+    return g;
+  }
+};
+FEnum.extend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635);

@@ -1,1 +1,24 @@
-import{ISlideExchangeService as v7}from"@univerjs-pro/slides-exchange-client";import{FUniver as v8}from"@univerjs/core/facade";var n=class extends v8{importSlideToUnitIdAsync(v1){return this._injector["get"](v7).importSlideToUnitId(v1);}importSlideToSnapshotAsync(v2){return this._injector["get"](v7).importSlideToSnapshot(v2);}exportSlideByUnitIdAsync(v3){return this._injector["get"](v7).exportSlideByUnitId(v3);}exportSlideBySnapshotAsync(v4){return this._injector["get"](v7).exportSlideBySnapshot(v4);}transformSnapshotJsonToSlideDataAsync(v5){return this._injector["get"](v7).transformSnapshotJsonToSlideData(v5);}transformSlideDataToSnapshotJsonAsync(v6){return this._injector["get"](v7).transformSlideDataToSnapshotJson(v6);}};v8.extend(n);export{};
+import { ISlideExchangeService as var_core_value_sig27E5 } from "@univerjs-pro/slides-exchange-client";
+import { FUniver as var_core_value_sig8061 } from "@univerjs/core/facade";
+var n = class extends var_core_value_sig8061 {
+  importSlideToUnitIdAsync(var_core_value_sig7524) {
+    return this._injector["get"](var_core_value_sig27E5).importSlideToUnitId(var_core_value_sig7524);
+  }
+  importSlideToSnapshotAsync(var_core_value_sig2AD8) {
+    return this._injector["get"](var_core_value_sig27E5).importSlideToSnapshot(var_core_value_sig2AD8);
+  }
+  exportSlideByUnitIdAsync(var_core_value_sig2AD0) {
+    return this._injector["get"](var_core_value_sig27E5).exportSlideByUnitId(var_core_value_sig2AD0);
+  }
+  exportSlideBySnapshotAsync(var_core_value_sig3EEE) {
+    return this._injector["get"](var_core_value_sig27E5).exportSlideBySnapshot(var_core_value_sig3EEE);
+  }
+  transformSnapshotJsonToSlideDataAsync(var_core_value_sigBC46) {
+    return this._injector["get"](var_core_value_sig27E5).transformSnapshotJsonToSlideData(var_core_value_sigBC46);
+  }
+  transformSlideDataToSnapshotJsonAsync(var_core_value_sig3D7D) {
+    return this._injector["get"](var_core_value_sig27E5).transformSlideDataToSnapshotJson(var_core_value_sig3D7D);
+  }
+};
+var_core_value_sig8061.extend(n);
+export {};

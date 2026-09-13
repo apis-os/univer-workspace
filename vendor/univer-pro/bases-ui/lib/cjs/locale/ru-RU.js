@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Высокая",
       rowHeightExtraTall: "Очень высокая",
       conditionalColoring: "Условное окрашивание",
-      conditionalColoringHelp:
-        "Нажмите\x20«Новое\x20условие»,\x20чтобы\x20применить\x20цвета\x20на\x20основе\x20заданных\x20условий.\x20Условия,\x20расположенные\x20выше,\x20имеют\x20более\x20высокий\x20приоритет.",
+      conditionalColoringHelp: "Нажмите\x20«Новое\x20условие»,\x20чтобы\x20применить\x20цвета\x20на\x20основе\x20заданных\x20условий.\x20Условия,\x20расположенные\x20выше,\x20имеют\x20более\x20высокий\x20приоритет.",
       conditionalColoringSmart: "Применить умный цвет ко всем",
       conditionalColor: "Цвет",
       conditionalCustomColor: "Пользовательский",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "проверено",
       conditionalUnchecked: "непроверенный",
       statusDoneTitle: "Статус\x20выполнено",
-      statusDoneDescription:
-        "Примените мягкий зеленый маркер к совпадающим записям.",
+      statusDoneDescription: "Примените мягкий зеленый маркер к совпадающим записям.",
       statusBlockedTitle: "Статус заблокирован",
-      statusBlockedDescription:
-        "Примените маркер предупреждения к заблокированным записям.",
+      statusBlockedDescription: "Примените маркер предупреждения к заблокированным записям.",
       addField: "Добавить\x20поле",
       undo: "Отменить",
-      redo: "Повторить",
+      redo: "Повторить"
     },
     recordDetail: {
       untitledRecord: "Запись без названия",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Добавить еще записи после отправки",
       panelSize: "Размер\x20панели",
       fullScreen: "Полноэкранный режим",
-      exitFullScreen: "Выйти\x20из\x20полноэкранного\x20режима",
+      exitFullScreen: "Выйти\x20из\x20полноэкранного\x20режима"
     },
     recordLink: {
       searchRecords: "Поиск записей",
@@ -74,28 +71,22 @@ const n = {
       selectedCount: "Выбрано: {0}",
       missingRecord: "Удалённая запись",
       openRecord: "Открыть связанную запись",
-      back: "Назад",
+      back: "Назад"
     },
     hierarchy: {
-      invalidField:
-        "Выберите\x20однозначное\x20поле\x20ссылки\x20на\x20запись,\x20которое\x20указывает\x20на\x20эту\x20таблицу.",
-      missingRecord:
-        "Запись или родительский элемент больше не существует. Обновите страницу и повторите попытку.",
-      selfParent:
-        "Запись\x20не\x20может\x20быть\x20родительской\x20для\x20самой\x20себя.",
+      invalidField: "Выберите\x20однозначное\x20поле\x20ссылки\x20на\x20запись,\x20которое\x20указывает\x20на\x20эту\x20таблицу.",
+      missingRecord: "Запись или родительский элемент больше не существует. Обновите страницу и повторите попытку.",
+      selfParent: "Запись\x20не\x20может\x20быть\x20родительской\x20для\x20самой\x20себя.",
       cycle: "Это\x20перемещение\x20создаст\x20цикл\x20родительских\x20связей.",
-      maxDepth:
-        "Это\x20перемещение\x20превысит\x20максимальную\x20глубину\x20иерархии\x20в\x20пять\x20уровней.",
-      sortedView:
-        "Отключите сортировку представления, прежде чем изменять порядок записей вручную.",
-      operationFailed:
-        "Не удалось применить изменение иерархии. Обновите страницу и повторите попытку.",
+      maxDepth: "Это\x20перемещение\x20превысит\x20максимальную\x20глубину\x20иерархии\x20в\x20пять\x20уровней.",
+      sortedView: "Отключите сортировку представления, прежде чем изменять порядок записей вручную.",
+      operationFailed: "Не удалось применить изменение иерархии. Обновите страницу и повторите попытку.",
       parent: "Родительский элемент",
       parentFieldName: "Родительские элементы",
       children: "Подэлементы",
       viewChildren: "Показать подэлементы",
       root: "Корневая запись",
-      setParent: "Задать родительский элемент",
+      setParent: "Задать родительский элемент"
     },
     collaboration: {
       localStatus: "Локальный\x20режим",
@@ -105,20 +96,18 @@ const n = {
       syncingStatus: "Синхронизация",
       syncingTooltip: "Изменения синхронизируются.",
       offlineStatus: "Офлайн",
-      offlineTooltip:
-        "Соединение потеряно. Нажмите, чтобы восстановить соединение.",
+      offlineTooltip: "Соединение потеряно. Нажмите, чтобы восстановить соединение.",
       conflictStatus: "Конфликт",
       conflictTooltip: "Конфликт сотрудничества требует внимания.",
       notCollabStatus: "Не для совместной работы",
-      notCollabTooltip:
-        "Эта\x20база\x20не\x20находится\x20в\x20режиме\x20совместной\x20работы.",
+      notCollabTooltip: "Эта\x20база\x20не\x20находится\x20в\x20режиме\x20совместной\x20работы."
     },
     virtualRecord: {
       regrouped: "Запись\x20будет\x20перегруппирована",
       resorted: "Запись будет пересортирована",
       moved: "Запись будет перемещена в этом представлении",
       filteredOut: "Запись скрыта в этом представлении",
-      "delete d": "Запись удалена",
+      "delete d": "Запись удалена"
     },
     gridContext: {
       insert: "Вставить",
@@ -128,7 +117,7 @@ const n = {
       addSubRecord: "Добавить\x20подзапись",
       clearContent: "Очистить\x20контент",
       deleteRecord: "Удалить запись",
-      deleteRecords: "Удалить записи",
+      deleteRecords: "Удалить записи"
     },
     common: {
       apply: "Применить",
@@ -143,7 +132,7 @@ const n = {
       searchClose: "Закрыть поиск",
       value: "Значение",
       newCondition: "Новое условие",
-      newBadge: "Новый",
+      newBadge: "Новый"
     },
     footerStat: {
       none: "Нет",
@@ -162,17 +151,16 @@ const n = {
       sum: "Сумма\x20{0}",
       average: "Среднее значение {0}",
       min: "Мин {0}",
-      max: "Макс {0}",
+      max: "Макс {0}"
     },
     confirmDelete: {
       tableTitle: "Удалить эту таблицу?",
       tableDescription: "Эта таблица и ее записи будут удалены.",
-      tableReferenced:
-        "Эту таблицу нельзя удалить, поскольку на нее ссылаются следующие поля: {0}.",
+      tableReferenced: "Эту таблицу нельзя удалить, поскольку на нее ссылаются следующие поля: {0}.",
       viewTitle: "Удалить это представление?",
       viewDescription: "Это\x20представление\x20будет\x20удалено.",
       fieldTitle: "Удалить это поле?",
-      fieldDescription: "Это поле будет удалено из таблицы.",
+      fieldDescription: "Это поле будет удалено из таблицы."
     },
     duplicateTable: {
       title: "Дублировать таблицу",
@@ -181,28 +169,26 @@ const n = {
       configurationsOnly: "Только конфигурации",
       configurationsAndRecords: "Конфигурации\x20и\x20записи",
       action: "Дублировать",
-      copyName: "{0} копия",
+      copyName: "{0} копия"
     },
     tableNameValidation: {
       required: "Введите имя таблицы.",
       tooLong: "Используйте не более 31 символа.",
-      apostrophe:
-        "Имя таблицы не может начинаться или заканчиваться апострофом.",
+      apostrophe: "Имя таблицы не может начинаться или заканчиваться апострофом.",
       invalidCharacters: "Имя таблицы не может содержать : \\ / ? * [ ].",
       duplicate: "Таблица с таким именем уже существует.",
-      invalid: "Введите допустимое имя таблицы.",
+      invalid: "Введите допустимое имя таблицы."
     },
     clipboard: {
       recordsCopied: "Скопировано\x20записей:\x20{0}",
-      attachmentsUploading: "Загрузка вложений: {0}...",
+      attachmentsUploading: "Загрузка вложений: {0}..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Целевая таблица",
       recordLinkDisplayField: "Поле\x20отображения",
       recordLinkPickerFields: "Дополнительные поля выбора",
       recordLinkAllowMultiple: "Разрешить связь с несколькими записями",
-      recordLinkDescription:
-        "Хранит стабильные ID записей. Связанные значения можно читать стандартными формулами Excel, например XLOOKUP и TEXTSPLIT.",
+      recordLinkDescription: "Хранит стабильные ID записей. Связанные значения можно читать стандартными формулами Excel, например XLOOKUP и TEXTSPLIT.",
       fieldTitle: "Название поля",
       fieldTitlePlaceholder: "Введите\x20название\x20поля",
       fieldType: "Тип поля",
@@ -257,18 +243,12 @@ const n = {
       filterByField: "Фильтровать по {0}",
       createKanbanWithField: "Создайте\x20Канбан\x20с\x20помощью\x20{0}",
       deleteField: "Удалить поле",
-      referenceOptionsHelp:
-        "Справочные данные из других таблиц в качестве опции",
-      allowMultipleMembers:
-        "Разрешить добавление нескольких участников в одну запись",
-      allowMultipleGroups:
-        "Разрешить\x20добавление\x20нескольких\x20групп\x20в\x20одну\x20запись",
-      defaultProviderMock:
-        "Значение по умолчанию определяется из {0} макета {1} элемента{2}.",
-      defaultProviderExternal:
-        "Значение по умолчанию определяется внешним поставщиком Univer {0}.",
-      linkPlaceholder:
-        "Введите URL-адрес (например, univer.ai или https://univer.ai/skills).",
+      referenceOptionsHelp: "Справочные данные из других таблиц в качестве опции",
+      allowMultipleMembers: "Разрешить добавление нескольких участников в одну запись",
+      allowMultipleGroups: "Разрешить\x20добавление\x20нескольких\x20групп\x20в\x20одну\x20запись",
+      defaultProviderMock: "Значение по умолчанию определяется из {0} макета {1} элемента{2}.",
+      defaultProviderExternal: "Значение по умолчанию определяется внешним поставщиком Univer {0}.",
+      linkPlaceholder: "Введите URL-адрес (например, univer.ai или https://univer.ai/skills).",
       phonePlaceholder: "Введите номер телефона",
       currencySymbol: "Символ\x20валюты",
       thousandsSeparator: "Разделитель тысяч",
@@ -301,10 +281,8 @@ const n = {
       noFormulaConfigured: "Формула не настроена",
       editFormula: "Изменить формулу",
       closeFormulaEditor: "Закрыть редактор формул",
-      formulaHint:
-        "Используйте поля текущей строки типа [@[Сумма]]. A1:B10 и ссылки на отдельные ячейки не допускаются.",
-      formulaReferenceError:
-        "Ссылки и диапазоны A1 не поддерживаются в базовых формулах.",
+      formulaHint: "Используйте поля текущей строки типа [@[Сумма]]. A1:B10 и ссылки на отдельные ячейки не допускаются.",
+      formulaReferenceError: "Ссылки и диапазоны A1 не поддерживаются в базовых формулах.",
       formulaTables: "Таблицы",
       formulaFields: "Поля",
       formulaFunctions: "Функции",
@@ -317,10 +295,8 @@ const n = {
       currentTableName: "Текущая таблица",
       currentTableField: "Текущее поле таблицы",
       fieldFromTable: "Поле из {0}",
-      referenceCurrentField:
-        "Используйте\x20ссылку\x20на\x20поле\x20«{0}»\x20в\x20текущей\x20таблице\x20Base.\x20Для\x20обработчика\x20формул\x20оно\x20будет\x20сохранено\x20как\x20[[#This\x20Row],[{1}]].",
-      referenceTableField:
-        "Используйте\x20ссылку\x20на\x20поле\x20«{0}»\x20из\x20таблицы\x20«{1}».",
+      referenceCurrentField: "Используйте\x20ссылку\x20на\x20поле\x20«{0}»\x20в\x20текущей\x20таблице\x20Base.\x20Для\x20обработчика\x20формул\x20оно\x20будет\x20сохранено\x20как\x20[[#This\x20Row],[{1}]].",
+      referenceTableField: "Используйте\x20ссылку\x20на\x20поле\x20«{0}»\x20из\x20таблицы\x20«{1}».",
       fieldNameColumn: "Имя",
       fieldTypeColumn: "Тип",
       insertColumn: "Вставить",
@@ -335,8 +311,7 @@ const n = {
       formulaFormatPercent: "Процент",
       formulaFormatDateTime: "Дата/Время",
       addDescriptionPlaceholder: "Добавить описание",
-      numberingDescription:
-        "Автоматически присваивает уникальный возрастающий индекс, начиная с 1, при создании записи. Сгенерированные значения нельзя редактировать.",
+      numberingDescription: "Автоматически присваивает уникальный возрастающий индекс, начиная с 1, при создании записи. Сгенерированные значения нельзя редактировать.",
       optionColor: "Цвет опции",
       separatorLocal: "Местный",
       separatorCommaPeriod: "Запятая, точка",
@@ -361,7 +336,7 @@ const n = {
       ratingIconLightning: "Молния",
       ratingIconMedal: "Медаль",
       increment: "приращение",
-      decrement: "уменьшать",
+      decrement: "уменьшать"
     },
     cellEditor: {
       done: "Сделанный",
@@ -377,8 +352,7 @@ const n = {
       deleteAttachment: "Удалить вложение {0}",
       deleteAttachmentConfirmTitle: "Удалить это вложение?",
       deleteAttachmentsConfirmTitle: "Удалить вложения ({0})?",
-      deleteAttachmentConfirmDescription:
-        "Выбранные вложения будут удалены из этой записи.",
+      deleteAttachmentConfirmDescription: "Выбранные вложения будут удалены из этой записи.",
       failedToAttachFile: "Не удалось прикрепить файл",
       file: "ФАЙЛ",
       invalidEmail: "Неверный адрес электронной почты",
@@ -389,7 +363,7 @@ const n = {
       selectOptions: "Выберите\x20параметры",
       previousMonth: "Предыдущий месяц",
       nextMonth: "В\x20следующем\x20месяце",
-      time: "Время",
+      time: "Время"
     },
     recordDetailField: {
       previousRecord: "Предыдущая запись",
@@ -402,7 +376,7 @@ const n = {
       empty: "Пусто",
       unassigned: "Неназначенный",
       editField: "Изменить {0}",
-      noVisibleFields: "Нет видимых полей",
+      noVisibleFields: "Нет видимых полей"
     },
     fieldMenu: {
       createSharedBaseField: "Создайте общее базовое поле",
@@ -433,8 +407,8 @@ const n = {
         createdBy: "Поле автора системы",
         updatedBy: "Поле системного модификатора",
         createdAt: "Время\x20создания\x20системы",
-        updatedAt: "Время обновления системы",
-      },
+        updatedAt: "Время обновления системы"
+      }
     },
     fieldTypes: {
       text: "Текст",
@@ -458,7 +432,7 @@ const n = {
       createdBy: "Создано",
       updatedBy: "Изменено",
       createdAt: "Дата создания",
-      updatedAt: "Дата последнего изменения",
+      updatedAt: "Дата последнего изменения"
     },
     viewMenus: {
       customizeKanban: "Настройте Канбан",
@@ -496,13 +470,11 @@ const n = {
       addCondition: "Добавить условие",
       calculateWorkingDaysOnly: "Рассчитывать только рабочие дни",
       customWorkingDays: "Индивидуальные рабочие дни",
-      customWorkingDaysHelp:
-        "Настройте\x20рабочие\x20и\x20выходные\x20дни\x20для\x20этого\x20представления\x20Ганта.\x20Если\x20параметр\x20не\x20установлен,\x20с\x20понедельника\x20по\x20пятницу\x20используется,\x20когда\x20включен\x20расчет\x20рабочих\x20дней.",
+      customWorkingDaysHelp: "Настройте\x20рабочие\x20и\x20выходные\x20дни\x20для\x20этого\x20представления\x20Ганта.\x20Если\x20параметр\x20не\x20установлен,\x20с\x20понедельника\x20по\x20пятницу\x20используется,\x20когда\x20включен\x20расчет\x20рабочих\x20дней.",
       notSet: "Не задано",
       settings: "Настройки",
       setWorkingDays: "Установить рабочие дни",
-      setWorkingDaysDescription:
-        "Настройте рабочие и выходные дни и примените их к текущей базе.",
+      setWorkingDaysDescription: "Настройте рабочие и выходные дни и примените их к текущей базе.",
       closeWorkingDaysSettings: "Закрыть настройки рабочих дней",
       addWorkingDays: "Добавить рабочие дни",
       holidayName: "Название\x20праздника",
@@ -511,8 +483,7 @@ const n = {
       add: "Добавлять",
       removeWorkingDayException: "Удалить исключение рабочего дня",
       legalWorkingDays: "Законные рабочие дни",
-      legalWorkingDaysHelp:
-        "Юридические\x20рабочие\x20дни\x20будут\x20доступны\x20после\x20подключения\x20внешнего\x20API\x20календаря.",
+      legalWorkingDaysHelp: "Юридические\x20рабочие\x20дни\x20будут\x20доступны\x20после\x20подключения\x20внешнего\x20API\x20календаря.",
       mon: "Пн.",
       tue: "Вт",
       wed: "Ср",
@@ -529,8 +500,7 @@ const n = {
       groupByFieldFallback: "Группировать\x20по\x20полю",
       kanbanGroup: "Канбан-группа",
       required: "Необходимый",
-      kanbanGroupHelp:
-        "В представлениях Канбана всегда используется одно групповое поле.",
+      kanbanGroupHelp: "В представлениях Канбана всегда используется одно групповое поле."
     },
     operators: {
       is: "является",
@@ -542,7 +512,7 @@ const n = {
       greaterThan: "больше,\x20чем",
       lessThan: "меньше, чем",
       before: "это раньше",
-      after: "после",
+      after: "после"
     },
     viewSettings: {
       title: "Настройки представления",
@@ -572,7 +542,7 @@ const n = {
       ganttViewDescription: "Временная шкала с датами начала и окончания.",
       galleryView: "Галерея",
       galleryViewDescription: "Визуальные карточки для просмотра записей.",
-      copySuffix: "Копировать",
+      copySuffix: "Копировать"
     },
     tableSidebar: {
       searchTables: "Поиск таблиц",
@@ -585,9 +555,12 @@ const n = {
       renameTable: "Переименовать\x20таблицу",
       duplicateTable: "Дублировать таблицу",
       deleteTable: "Удалить\x20таблицу",
-      defaultTableName: "Таблица\x20{0}",
+      defaultTableName: "Таблица\x20{0}"
     },
-    footer: { record: "записывать", records: "записи" },
+    footer: {
+      record: "записывать",
+      records: "записи"
+    },
     canvas: {
       addRecord: "Добавить запись",
       attachmentDropLabel: "Добавить файлы к этой записи",
@@ -600,12 +573,12 @@ const n = {
       quarter: "Квартал",
       today: "Сегодня",
       week: "Неделя",
-      year: "Год",
+      year: "Год"
     },
     empty: {
       value: "Пусто",
       noRecords: "Нет записей",
-      invalidView: "Это\x20представление\x20необходимо\x20настроить",
+      invalidView: "Это\x20представление\x20необходимо\x20настроить"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -623,19 +596,17 @@ const n = {
         engineering: "Инженерное дело",
         financial: "Финансовый",
         lookup: "Поиск и ссылки",
-        web: "Интернет",
+        web: "Интернет"
       },
       generic: {
         engineAbstract: "{0}\x20функция\x20механизма\x20формул",
-        engineDescription:
-          "{0} предоставляется обработчиком формул Univer. Base поддерживает ссылки на поля, такие как TableName[[#This Row],[Field]] и OtherTable[Field], но не поддерживает ячейки A1, диапазоны A1:B10 или выходные данные массива в полях формул Base.",
+        engineDescription: "{0} предоставляется обработчиком формул Univer. Base поддерживает ссылки на поля, такие как TableName[[#This Row],[Field]] и OtherTable[Field], но не поддерживает ячейки A1, диапазоны A1:B10 или выходные данные массива в полях формул Base.",
         argument: {
           name: "аргумент",
-          detail:
-            "Значение, ссылка на поле, ссылка на поле таблицы или выражение, поддерживаемые обработчиком формул Univer.",
-        },
-      },
-    },
-  },
+          detail: "Значение, ссылка на поле, ссылка на поле таблицы или выражение, поддерживаемые обработчиком формул Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

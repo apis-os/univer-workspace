@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Tinggi",
       rowHeightExtraTall: "Sangat tinggi",
       conditionalColoring: "Pewarnaan bersyarat",
-      conditionalColoringHelp:
-        'Klik "Kondisi Baru" untuk menerapkan warna berdasarkan kondisi yang ditentukan. Kondisi yang lebih atas memiliki prioritas lebih tinggi.',
+      conditionalColoringHelp: 'Klik "Kondisi Baru" untuk menerapkan warna berdasarkan kondisi yang ditentukan. Kondisi yang lebih atas memiliki prioritas lebih tinggi.',
       conditionalColoringSmart: "Terapkan warna pintar ke semua",
       conditionalColor: "Warna",
       conditionalCustomColor: "Kustom",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "diperiksa",
       conditionalUnchecked: "tidak dicentang",
       statusDoneTitle: "Statusnya Selesai",
-      statusDoneDescription:
-        "Terapkan penanda hijau lembut ke catatan yang cocok.",
+      statusDoneDescription: "Terapkan penanda hijau lembut ke catatan yang cocok.",
       statusBlockedTitle: "Statusnya\x20Diblokir",
-      statusBlockedDescription:
-        "Terapkan penanda peringatan pada rekaman yang diblokir.",
+      statusBlockedDescription: "Terapkan penanda peringatan pada rekaman yang diblokir.",
       addField: "Tambah\x20bidang",
       undo: "Urungkan",
-      redo: "Ulangi",
+      redo: "Ulangi"
     },
     recordDetail: {
       untitledRecord: "Rekaman tanpa judul",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Tambah rekaman lagi setelah mengirim",
       panelSize: "Ukuran panel",
       fullScreen: "Layar penuh",
-      exitFullScreen: "Keluar dari layar penuh",
+      exitFullScreen: "Keluar dari layar penuh"
     },
     recordLink: {
       searchRecords: "Cari\x20rekaman",
@@ -74,27 +71,22 @@ const n = {
       selectedCount: "{0} dipilih",
       missingRecord: "Rekaman\x20dihapus",
       openRecord: "Buka rekaman tertaut",
-      back: "Kembali",
+      back: "Kembali"
     },
     hierarchy: {
-      invalidField:
-        "Pilih\x20bidang\x20Tautan\x20Rekaman\x20bernilai\x20tunggal\x20yang\x20mengarah\x20ke\x20tabel\x20ini.",
-      missingRecord:
-        "Rekaman atau induk sudah tidak ada. Muat ulang lalu coba lagi.",
+      invalidField: "Pilih\x20bidang\x20Tautan\x20Rekaman\x20bernilai\x20tunggal\x20yang\x20mengarah\x20ke\x20tabel\x20ini.",
+      missingRecord: "Rekaman atau induk sudah tidak ada. Muat ulang lalu coba lagi.",
       selfParent: "Rekaman tidak dapat menjadi induknya sendiri.",
       cycle: "Pemindahan\x20ini\x20akan\x20membuat\x20siklus\x20induk.",
-      maxDepth:
-        "Pemindahan ini akan melebihi batas maksimum lima tingkat hierarki.",
-      sortedView:
-        "Hapus pengurutan tampilan sebelum mengurutkan ulang rekaman secara manual.",
-      operationFailed:
-        "Perubahan hierarki tidak dapat diterapkan. Muat ulang lalu coba lagi.",
+      maxDepth: "Pemindahan ini akan melebihi batas maksimum lima tingkat hierarki.",
+      sortedView: "Hapus pengurutan tampilan sebelum mengurutkan ulang rekaman secara manual.",
+      operationFailed: "Perubahan hierarki tidak dapat diterapkan. Muat ulang lalu coba lagi.",
       parent: "Induk",
       parentFieldName: "Item\x20induk",
       children: "Subitem",
       viewChildren: "Lihat subitem",
       root: "Rekaman akar",
-      setParent: "Tetapkan induk",
+      setParent: "Tetapkan induk"
     },
     collaboration: {
       localStatus: "Modus lokal",
@@ -108,14 +100,14 @@ const n = {
       conflictStatus: "Konflik",
       conflictTooltip: "Konflik kolaborasi perlu mendapat perhatian.",
       notCollabStatus: "Tidak kolaboratif",
-      notCollabTooltip: "Basis\x20ini\x20tidak\x20dalam\x20mode\x20kolaborasi.",
+      notCollabTooltip: "Basis\x20ini\x20tidak\x20dalam\x20mode\x20kolaborasi."
     },
     virtualRecord: {
       regrouped: "Record\x20akan\x20dikelompokkan\x20ulang",
       resorted: "Record\x20akan\x20diurutkan\x20ulang",
       moved: "Record akan dipindahkan di tampilan ini",
       filteredOut: "Record disembunyikan di tampilan ini",
-      "delete d": "Record\x20telah\x20dihapus",
+      "delete d": "Record\x20telah\x20dihapus"
     },
     gridContext: {
       insert: "Sisipkan",
@@ -125,7 +117,7 @@ const n = {
       addSubRecord: "Tambahkan subrekaman",
       clearContent: "Hapus konten",
       deleteRecord: "Hapus rekaman",
-      deleteRecords: "Hapus rekaman",
+      deleteRecords: "Hapus rekaman"
     },
     common: {
       apply: "Terapkan",
@@ -140,7 +132,7 @@ const n = {
       searchClose: "Tutup pencarian",
       value: "Nilai",
       newCondition: "Kondisi baru",
-      newBadge: "Baru",
+      newBadge: "Baru"
     },
     footerStat: {
       none: "Tidak ada",
@@ -159,17 +151,16 @@ const n = {
       sum: "Jumlah {0}",
       average: "Rata-rata {0}",
       min: "Minimal {0}",
-      max: "Maks {0}",
+      max: "Maks {0}"
     },
     confirmDelete: {
       tableTitle: "Hapus tabel ini?",
       tableDescription: "Tabel ini beserta rekamannya akan dihapus.",
-      tableReferenced:
-        "Tabel ini tidak dapat dihapus karena dirujuk oleh bidang berikut: {0}.",
+      tableReferenced: "Tabel ini tidak dapat dihapus karena dirujuk oleh bidang berikut: {0}.",
       viewTitle: "Hapus tampilan ini?",
       viewDescription: "Tampilan ini akan dihapus.",
       fieldTitle: "Hapus\x20bidang\x20ini?",
-      fieldDescription: "Bidang\x20ini\x20akan\x20dihapus\x20dari\x20tabel.",
+      fieldDescription: "Bidang\x20ini\x20akan\x20dihapus\x20dari\x20tabel."
     },
     duplicateTable: {
       title: "Duplikat tabel",
@@ -178,28 +169,26 @@ const n = {
       configurationsOnly: "Konfigurasi\x20saja",
       configurationsAndRecords: "Konfigurasi dan rekaman",
       action: "Duplikat",
-      copyName: "{0} Salinan",
+      copyName: "{0} Salinan"
     },
     tableNameValidation: {
       required: "Masukkan nama tabel.",
       tooLong: "Gunakan maksimal 31 karakter.",
-      apostrophe:
-        "Nama\x20tabel\x20tidak\x20boleh\x20diawali\x20atau\x20diakhiri\x20dengan\x20apostrof.",
+      apostrophe: "Nama\x20tabel\x20tidak\x20boleh\x20diawali\x20atau\x20diakhiri\x20dengan\x20apostrof.",
       invalidCharacters: "Nama tabel tidak boleh berisi : \\ / ? * [ ].",
       duplicate: "Tabel dengan nama ini sudah ada.",
-      invalid: "Masukkan nama tabel yang valid.",
+      invalid: "Masukkan nama tabel yang valid."
     },
     clipboard: {
       recordsCopied: "{0} rekaman disalin",
-      attachmentsUploading: "Mengunggah\x20{0}\x20lampiran...",
+      attachmentsUploading: "Mengunggah\x20{0}\x20lampiran..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Tabel\x20target",
       recordLinkDisplayField: "Bidang tampilan",
       recordLinkPickerFields: "Bidang\x20bantu\x20pemilih",
       recordLinkAllowMultiple: "Izinkan menautkan beberapa rekaman",
-      recordLinkDescription:
-        "Menyimpan\x20ID\x20rekaman\x20yang\x20stabil.\x20Gunakan\x20rumus\x20Excel\x20standar\x20seperti\x20XLOOKUP\x20dan\x20TEXTSPLIT\x20untuk\x20membaca\x20nilai\x20tertaut.",
+      recordLinkDescription: "Menyimpan\x20ID\x20rekaman\x20yang\x20stabil.\x20Gunakan\x20rumus\x20Excel\x20standar\x20seperti\x20XLOOKUP\x20dan\x20TEXTSPLIT\x20untuk\x20membaca\x20nilai\x20tertaut.",
       fieldTitle: "Judul bidang",
       fieldTitlePlaceholder: "Masukkan judul bidang",
       fieldType: "Jenis\x20bidang",
@@ -208,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Lanjutan",
       defaultValue: "Nilai default",
       newField: "Bidang\x20baru",
-      defaultSettingsReady:
-        "Jenis\x20bidang\x20ini\x20siap\x20dengan\x20pengaturan\x20default.",
+      defaultSettingsReady: "Jenis\x20bidang\x20ini\x20siap\x20dengan\x20pengaturan\x20default.",
       numberFormat: "Format angka",
       currencyFormat: "Format mata uang",
       dateFormat: "Format\x20tanggal",
@@ -256,16 +244,11 @@ const n = {
       createKanbanWithField: "Buat Kanban dengan {0}",
       deleteField: "Hapus bidang",
       referenceOptionsHelp: "Referensi data dari tabel lain sebagai opsi",
-      allowMultipleMembers:
-        "Izinkan menambahkan beberapa anggota dalam satu catatan",
-      allowMultipleGroups:
-        "Izinkan menambahkan beberapa grup dalam satu catatan",
-      defaultProviderMock:
-        "Nilai\x20default\x20diselesaikan\x20dari\x20item\x20{0}\x20tiruan\x20{1}{2}.",
-      defaultProviderExternal:
-        "Nilai default diselesaikan dari penyedia Univer {0} eksternal.",
-      linkPlaceholder:
-        "Masukkan URL (misalnya univer.ai atau https://univer.ai/skills).",
+      allowMultipleMembers: "Izinkan menambahkan beberapa anggota dalam satu catatan",
+      allowMultipleGroups: "Izinkan menambahkan beberapa grup dalam satu catatan",
+      defaultProviderMock: "Nilai\x20default\x20diselesaikan\x20dari\x20item\x20{0}\x20tiruan\x20{1}{2}.",
+      defaultProviderExternal: "Nilai default diselesaikan dari penyedia Univer {0} eksternal.",
+      linkPlaceholder: "Masukkan URL (misalnya univer.ai atau https://univer.ai/skills).",
       phonePlaceholder: "Masukkan nomor telepon",
       currencySymbol: "Simbol\x20mata\x20uang",
       thousandsSeparator: "Pemisah ribuan",
@@ -289,8 +272,7 @@ const n = {
       targetValue: "Nilai sasaran",
       searchGroups: "Grup pencarian",
       selectGroups: "Pilih grup",
-      noProviderGroupData:
-        "Tidak\x20ada\x20data\x20grup\x20penyedia\x20yang\x20tersedia",
+      noProviderGroupData: "Tidak\x20ada\x20data\x20grup\x20penyedia\x20yang\x20tersedia",
       noMatchingGroups: "Tidak\x20ada\x20grup\x20yang\x20cocok.",
       searchMembers: "Cari\x20anggota",
       selectMembers: "Pilih\x20anggota",
@@ -299,10 +281,8 @@ const n = {
       noFormulaConfigured: "Tidak ada rumus yang dikonfigurasi",
       editFormula: "Sunting rumus",
       closeFormulaEditor: "Tutup editor rumus",
-      formulaHint:
-        "Gunakan bidang baris saat ini seperti [@[Jumlah]]. A1:B10 dan referensi sel tunggal tidak diperbolehkan.",
-      formulaReferenceError:
-        "Referensi dan rentang A1 tidak didukung dalam rumus Dasar.",
+      formulaHint: "Gunakan bidang baris saat ini seperti [@[Jumlah]]. A1:B10 dan referensi sel tunggal tidak diperbolehkan.",
+      formulaReferenceError: "Referensi dan rentang A1 tidak didukung dalam rumus Dasar.",
       formulaTables: "Tabel",
       formulaFields: "Bidang",
       formulaFunctions: "Fungsi",
@@ -315,8 +295,7 @@ const n = {
       currentTableName: "Tabel saat ini",
       currentTableField: "Bidang\x20tabel\x20saat\x20ini",
       fieldFromTable: "Bidang dari {0}",
-      referenceCurrentField:
-        'Referensikan bidang "{0}" pada tabel Base saat ini. Referensi akan disimpan sebagai [[#This Row],[{1}]] untuk mesin formula.',
+      referenceCurrentField: 'Referensikan bidang "{0}" pada tabel Base saat ini. Referensi akan disimpan sebagai [[#This Row],[{1}]] untuk mesin formula.',
       referenceTableField: 'Referensikan bidang "{0}" dari tabel "{1}".',
       fieldNameColumn: "Nama",
       fieldTypeColumn: "Jenis",
@@ -332,8 +311,7 @@ const n = {
       formulaFormatPercent: "Persen",
       formulaFormatDateTime: "Tanggal / Waktu",
       addDescriptionPlaceholder: "Tambahkan deskripsi",
-      numberingDescription:
-        "Secara otomatis menetapkan indeks peningkatan unik mulai dari 1 saat catatan dibuat. Nilai yang dihasilkan tidak dapat diedit.",
+      numberingDescription: "Secara otomatis menetapkan indeks peningkatan unik mulai dari 1 saat catatan dibuat. Nilai yang dihasilkan tidak dapat diedit.",
       optionColor: "Warna pilihan",
       separatorLocal: "Lokal",
       separatorCommaPeriod: "Koma, titik",
@@ -358,7 +336,7 @@ const n = {
       ratingIconLightning: "Petir",
       ratingIconMedal: "Medali",
       increment: "kenaikan",
-      decrement: "pengurangan",
+      decrement: "pengurangan"
     },
     cellEditor: {
       done: "Selesai",
@@ -374,8 +352,7 @@ const n = {
       deleteAttachment: "Hapus lampiran {0}",
       deleteAttachmentConfirmTitle: "Hapus lampiran ini?",
       deleteAttachmentsConfirmTitle: "Hapus {0} lampiran?",
-      deleteAttachmentConfirmDescription:
-        "Lampiran\x20yang\x20dipilih\x20akan\x20dihapus\x20dari\x20catatan\x20ini.",
+      deleteAttachmentConfirmDescription: "Lampiran\x20yang\x20dipilih\x20akan\x20dihapus\x20dari\x20catatan\x20ini.",
       failedToAttachFile: "Gagal melampirkan file",
       file: "BERKAS",
       invalidEmail: "Alamat email tidak valid",
@@ -386,7 +363,7 @@ const n = {
       selectOptions: "Pilih\x20opsi",
       previousMonth: "Bulan\x20sebelumnya",
       nextMonth: "Bulan depan",
-      time: "Waktu",
+      time: "Waktu"
     },
     recordDetailField: {
       previousRecord: "Rekor sebelumnya",
@@ -399,7 +376,7 @@ const n = {
       empty: "Kosong",
       unassigned: "Belum ditetapkan",
       editField: "Sunting\x20{0}",
-      noVisibleFields: "Tidak ada bidang yang terlihat",
+      noVisibleFields: "Tidak ada bidang yang terlihat"
     },
     fieldMenu: {
       createSharedBaseField: "Buat bidang Basis bersama",
@@ -430,8 +407,8 @@ const n = {
         createdBy: "Bidang penulis sistem",
         updatedBy: "Bidang pengubah sistem",
         createdAt: "Waktu\x20pembuatan\x20sistem",
-        updatedAt: "Waktu\x20pembaruan\x20sistem",
-      },
+        updatedAt: "Waktu\x20pembaruan\x20sistem"
+      }
     },
     fieldTypes: {
       text: "Teks",
@@ -455,7 +432,7 @@ const n = {
       createdBy: "Dibuat\x20Oleh",
       updatedBy: "Dimodifikasi Oleh",
       createdAt: "Tanggal Dibuat",
-      updatedAt: "Tanggal Modifikasi Terakhir",
+      updatedAt: "Tanggal Modifikasi Terakhir"
     },
     viewMenus: {
       customizeKanban: "Sesuaikan\x20Kanban",
@@ -493,13 +470,11 @@ const n = {
       addCondition: "Tambahkan kondisi",
       calculateWorkingDaysOnly: "Hitung hari kerja saja",
       customWorkingDays: "Hari kerja khusus",
-      customWorkingDaysHelp:
-        "Sesuaikan\x20hari\x20kerja\x20dan\x20hari\x20libur\x20untuk\x20tampilan\x20Gantt\x20ini.\x20Jika\x20tidak\x20disetel,\x20Senin\x20hingga\x20Jumat\x20digunakan\x20saat\x20penghitungan\x20hari\x20kerja\x20diaktifkan.",
+      customWorkingDaysHelp: "Sesuaikan\x20hari\x20kerja\x20dan\x20hari\x20libur\x20untuk\x20tampilan\x20Gantt\x20ini.\x20Jika\x20tidak\x20disetel,\x20Senin\x20hingga\x20Jumat\x20digunakan\x20saat\x20penghitungan\x20hari\x20kerja\x20diaktifkan.",
       notSet: "Tidak\x20diatur",
       settings: "Pengaturan",
       setWorkingDays: "Tetapkan hari kerja",
-      setWorkingDaysDescription:
-        "Sesuaikan hari kerja dan hari libur, dan terapkan pada basis saat ini",
+      setWorkingDaysDescription: "Sesuaikan hari kerja dan hari libur, dan terapkan pada basis saat ini",
       closeWorkingDaysSettings: "Tutup pengaturan hari kerja",
       addWorkingDays: "Tambahkan hari kerja",
       holidayName: "Nama hari libur",
@@ -508,8 +483,7 @@ const n = {
       add: "Menambahkan",
       removeWorkingDayException: "Hapus pengecualian hari kerja",
       legalWorkingDays: "Hari\x20kerja\x20yang\x20sah",
-      legalWorkingDaysHelp:
-        "Hari\x20kerja\x20resmi\x20akan\x20tersedia\x20setelah\x20API\x20kalender\x20eksternal\x20terhubung.",
+      legalWorkingDaysHelp: "Hari\x20kerja\x20resmi\x20akan\x20tersedia\x20setelah\x20API\x20kalender\x20eksternal\x20terhubung.",
       mon: "Senin",
       tue: "Selasa",
       wed: "Rabu",
@@ -526,8 +500,7 @@ const n = {
       groupByFieldFallback: "Kelompokkan\x20berdasarkan\x20bidang",
       kanbanGroup: "Grup Kanban",
       required: "Diperlukan",
-      kanbanGroupHelp:
-        "Tampilan\x20Kanban\x20selalu\x20menggunakan\x20satu\x20bidang\x20grup.",
+      kanbanGroupHelp: "Tampilan\x20Kanban\x20selalu\x20menggunakan\x20satu\x20bidang\x20grup."
     },
     operators: {
       is: "adalah",
@@ -539,7 +512,7 @@ const n = {
       greaterThan: "lebih besar dari",
       lessThan: "kurang dari",
       before: "adalah sebelumnya",
-      after: "setelahnya",
+      after: "setelahnya"
     },
     viewSettings: {
       title: "Pengaturan\x20tampilan",
@@ -568,9 +541,8 @@ const n = {
       ganttView: "Gantt",
       ganttViewDescription: "Garis waktu dengan tanggal mulai dan berakhir.",
       galleryView: "Galeri",
-      galleryViewDescription:
-        "Kartu\x20visual\x20untuk\x20menelusuri\x20catatan.",
-      copySuffix: "Menyalin",
+      galleryViewDescription: "Kartu\x20visual\x20untuk\x20menelusuri\x20catatan.",
+      copySuffix: "Menyalin"
     },
     tableSidebar: {
       searchTables: "Cari tabel",
@@ -583,9 +555,12 @@ const n = {
       renameTable: "Ganti Nama Tabel",
       duplicateTable: "Tabel Duplikat",
       deleteTable: "Hapus\x20Tabel",
-      defaultTableName: "Tabel {0}",
+      defaultTableName: "Tabel {0}"
     },
-    footer: { record: "catatan", records: "catatan" },
+    footer: {
+      record: "catatan",
+      records: "catatan"
+    },
     canvas: {
       addRecord: "Tambahkan catatan",
       attachmentDropLabel: "Tambahkan file ke rekaman ini",
@@ -598,12 +573,12 @@ const n = {
       quarter: "Kuartal",
       today: "Hari ini",
       week: "Pekan",
-      year: "Tahun",
+      year: "Tahun"
     },
     empty: {
       value: "Kosong",
       noRecords: "Tidak ada rekaman",
-      invalidView: "Tampilan ini perlu dikonfigurasi",
+      invalidView: "Tampilan ini perlu dikonfigurasi"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -621,19 +596,17 @@ const n = {
         engineering: "Rekayasa",
         financial: "Finansial",
         lookup: "Pencarian\x20dan\x20referensi",
-        web: "jaring",
+        web: "jaring"
       },
       generic: {
         engineAbstract: "{0} fungsi mesin rumus",
-        engineDescription:
-          "{0} disediakan oleh mesin formula Universitas. Base mendukung referensi bidang seperti TableName[[#This Row],[Field]] dan OtherTable[Field], namun tidak mendukung sel A1, rentang A1:B10, atau keluaran array tumpah di bidang rumus Base.",
+        engineDescription: "{0} disediakan oleh mesin formula Universitas. Base mendukung referensi bidang seperti TableName[[#This Row],[Field]] dan OtherTable[Field], namun tidak mendukung sel A1, rentang A1:B10, atau keluaran array tumpah di bidang rumus Base.",
         argument: {
           name: "argumen",
-          detail:
-            "Nilai, referensi bidang, referensi bidang tabel, atau ekspresi yang didukung oleh mesin rumus Univer.",
-        },
-      },
-    },
-  },
+          detail: "Nilai, referensi bidang, referensi bidang tabel, atau ekspresi yang didukung oleh mesin rumus Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

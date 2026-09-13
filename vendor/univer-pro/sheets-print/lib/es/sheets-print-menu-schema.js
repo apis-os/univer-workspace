@@ -1,20 +1,92 @@
-import{LS_CONFIG_KEY,ReleaseType,UniverLicensePlugin,getLicenseInfo,getSheetFeatureLimit,isFeatureAuthorizedWithinTime,isLocalCheck}from'@univerjs-pro/license';
-import{IPrintPreparationService,PRINT_CANVAS_CLASS,PRINT_CONTAINER_CLASS,PaperMarginMap,PrintAlign,PrintDirection,PrintPaperMargin,PrintPreparationService,PrintScale,createPrintStyle}from'@univerjs-pro/print';
-import{BuildTextUtils,CommandType,CustomRangeType,DependentOn,Disposable,DisposableCollection,ICommandService,IConfigService,ILocalStorageService,IPermissionService,IUniverInstanceService,Inject,Injector,JSONX,LocaleService,PAGE_SIZE,PaperType,Plugin,Quantity,RichTextBuilder,Tools,UniverInstanceType,UserManagerService,awaitTime,createIdentifier,dateKit,generateRandomId,merge,registerDependencies,touchDependencies}from'@univerjs/core';
-import{RangeProtectionPermissionViewPoint,SheetsSelectionsService,UniverSheetsPlugin,WorkbookCopyPermission,WorkbookPrintPermission,WorkbookViewPermission,WorksheetCopyPermission,WorksheetViewPermission,getSheetCommandTarget}from'@univerjs/sheets';
-import{BuiltInUIPart,ComponentManager,ContextMenuGroup,ContextMenuPosition,IDialogService,IMenuManagerService,IMessageService,IShortcutService,ISidebarService,IUIPartsService,IconManager,KeyCode,MenuItemType,MetaKeys,RibbonStartGroup,connectInjector,getMenuHiddenObservable,useDependency,useEvent,useObservable,useVirtualList}from'@univerjs/ui';
-import{BehaviorSubject,debounceTime}from'rxjs';
-import{CanvasRenderMode,DEFAULT_FONTFACE_PLANE,Engine,IRenderManagerService,IWatermarkTypeEnum,SHEET_VIEWPORT_KEY,Scene,SheetExtension,Spreadsheet,SpreadsheetColumnHeader,SpreadsheetRowHeader,UNIVER_WATERMARK_STORAGE_KEY,UniverRenderEnginePlugin,Viewport,fixLineWidthByScale,renderWatermark}from'@univerjs/engine-render';
-import{SheetPrintInterceptorService,SheetPrintingResourceCollector,SheetSkeletonManagerService,UniverSheetsUIPlugin,getCurrentRangeDisable$,whenSheetEditorFocused}from'@univerjs/sheets-ui';
-import{Button,Checkbox,CheckboxGroup,Dropdown,FormLayout,Input,MessageType,Radio,RadioGroup,Select,borderBottomClassName,borderClassName,clsx,scrollbarClassName}from'@univerjs/design';
-import{CalendarIcon,ClockIcon,DocSettingIcon,IncreaseIcon,LoadingMultiIcon,MoreDownIcon,PrintIcon,ReduceIcon,SheetIcon,TextIcon}from'@univerjs/icons';
-import{forwardRef,memo,useEffect,useMemo,useRef,useState}from'react';
-import{jsx,jsxs}from'react/jsx-runtime';
-import{RichTextEditingMutation}from'@univerjs/docs';
-import{IEditorService,RichTextEditor}from'@univerjs/docs-ui';
+import { LS_CONFIG_KEY, ReleaseType, UniverLicensePlugin, getLicenseInfo, getSheetFeatureLimit, isFeatureAuthorizedWithinTime, isLocalCheck } from '@univerjs-pro/license';
+import { IPrintPreparationService, PRINT_CANVAS_CLASS, PRINT_CONTAINER_CLASS, PaperMarginMap, PrintAlign, PrintDirection, PrintPaperMargin, PrintPreparationService, PrintScale, createPrintStyle } from '@univerjs-pro/print';
+import { BuildTextUtils, CommandType, CustomRangeType, DependentOn, Disposable, DisposableCollection, ICommandService, IConfigService, ILocalStorageService, IPermissionService, IUniverInstanceService, Inject, Injector, JSONX, LocaleService, PAGE_SIZE, PaperType, Plugin, Quantity, RichTextBuilder, Tools, UniverInstanceType, UserManagerService, awaitTime, createIdentifier, dateKit, generateRandomId, merge, registerDependencies, touchDependencies } from '@univerjs/core';
+import { RangeProtectionPermissionViewPoint, SheetsSelectionsService, UniverSheetsPlugin, WorkbookCopyPermission, WorkbookPrintPermission, WorkbookViewPermission, WorksheetCopyPermission, WorksheetViewPermission, getSheetCommandTarget } from '@univerjs/sheets';
+import { BuiltInUIPart, ComponentManager, ContextMenuGroup, ContextMenuPosition, IDialogService, IMenuManagerService, IMessageService, IShortcutService, ISidebarService, IUIPartsService, IconManager, KeyCode, MenuItemType, MetaKeys, RibbonStartGroup, connectInjector, getMenuHiddenObservable, useDependency, useEvent, useObservable, useVirtualList } from '@univerjs/ui';
+import { BehaviorSubject, debounceTime } from 'rxjs';
+import { CanvasRenderMode, DEFAULT_FONTFACE_PLANE, Engine, IRenderManagerService, IWatermarkTypeEnum, SHEET_VIEWPORT_KEY, Scene, SheetExtension, Spreadsheet, SpreadsheetColumnHeader, SpreadsheetRowHeader, UNIVER_WATERMARK_STORAGE_KEY, UniverRenderEnginePlugin, Viewport, fixLineWidthByScale, renderWatermark } from '@univerjs/engine-render';
+import { SheetPrintInterceptorService, SheetPrintingResourceCollector, SheetSkeletonManagerService, UniverSheetsUIPlugin, getCurrentRangeDisable$, whenSheetEditorFocused } from '@univerjs/sheets-ui';
+import { Button, Checkbox, CheckboxGroup, Dropdown, FormLayout, Input, MessageType, Radio, RadioGroup, Select, borderBottomClassName, borderClassName, clsx, scrollbarClassName } from '@univerjs/design';
+import { CalendarIcon, ClockIcon, DocSettingIcon, IncreaseIcon, LoadingMultiIcon, MoreDownIcon, PrintIcon, ReduceIcon, SheetIcon, TextIcon } from '@univerjs/icons';
+import { forwardRef, memo, useEffect, useMemo, useRef, useState } from 'react';
+import { jsx, jsxs } from 'react/jsx-runtime';
+import { RichTextEditingMutation } from '@univerjs/docs';
+import { IEditorService, RichTextEditor } from '@univerjs/docs-ui';
 import { xn, yn } from "./internal-glue.js";
 import { Z } from "./sheets-print-sheet-print-open-operation.js";
 import { hn } from "./sheets-print-sheet-screen-shot-operation.js";
-function Sn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863){return{'id':xn,'type':ox129830.SUBITEMS,'icon':'PrintIcon','tooltip':"sheets-print.menu",'hidden$':ox2ceb68(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863,UniverInstanceType.UNIVER_SHEET),'disabled$':ox15a7d6(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863,{'workbookTypes':[ox3035b0]})};}function Cn(){return{'id':Z.id,'type':ox129830.BUTTON,'title':"sheets-print.menu",'icon':"PrintIcon"};}function wn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865){return{'id':hn.id,'type':ox129830.BUTTON,'title':'sheets-print.screenshot.title','icon':"DownloadImageIcon",'tooltip':"sheets-print.screenshot.title",'hidden$':ox2ceb68(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865,UniverInstanceType.UNIVER_SHEET),'disabled$':ox15a7d6(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865,{'workbookTypes':[ox3035b0,ox493117,ox1143a6],'worksheetTypes':[ox5ea9b5,oxb2515b],'rangeTypes':[ox250309]})};}function Tn(){return{'id':yn.id,'type':ox129830.BUTTON,'title':"sheets-print.grid.title",'icon':"DocSettingIcon"};}const En={[oxa81e72.OTHERS]:{[xn]:{'order':0.01,'gridLayout':{'row':1,'column':3,'rowSpan':2,'columnSpan':2,'showLabel':true},'menuItemFactory':Sn,[Z.id]:{'order':0,'menuItemFactory':Cn},[yn.id]:{'order':1,'menuItemFactory':Tn}}},[ox15facf.MAIN_AREA]:{[ox21e9d1.OTHERS]:{[hn.id]:{'order':2.1,'menuItemFactory':wn}}}};
-
+function Sn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863) {
+  return {
+    'id': xn,
+    'type': ox129830.SUBITEMS,
+    'icon': 'PrintIcon',
+    'tooltip': "sheets-print.menu",
+    'hidden$': ox2ceb68(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863, UniverInstanceType.UNIVER_SHEET),
+    'disabled$': ox15a7d6(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46863, {
+      'workbookTypes': [ox3035b0]
+    })
+  };
+}
+function Cn() {
+  return {
+    'id': Z.id,
+    'type': ox129830.BUTTON,
+    'title': "sheets-print.menu",
+    'icon': "PrintIcon"
+  };
+}
+function wn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865) {
+  return {
+    'id': hn.id,
+    'type': ox129830.BUTTON,
+    'title': 'sheets-print.screenshot.title',
+    'icon': "DownloadImageIcon",
+    'tooltip': "sheets-print.screenshot.title",
+    'hidden$': ox2ceb68(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865, UniverInstanceType.UNIVER_SHEET),
+    'disabled$': ox15a7d6(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46865, {
+      'workbookTypes': [ox3035b0, ox493117, ox1143a6],
+      'worksheetTypes': [ox5ea9b5, oxb2515b],
+      'rangeTypes': [ox250309]
+    })
+  };
+}
+function Tn() {
+  return {
+    'id': yn.id,
+    'type': ox129830.BUTTON,
+    'title': "sheets-print.grid.title",
+    'icon': "DocSettingIcon"
+  };
+}
+const En = {
+  [oxa81e72.OTHERS]: {
+    [xn]: {
+      'order': 0.01,
+      'gridLayout': {
+        'row': 1,
+        'column': 3,
+        'rowSpan': 2,
+        'columnSpan': 2,
+        'showLabel': true
+      },
+      'menuItemFactory': Sn,
+      [Z.id]: {
+        'order': 0,
+        'menuItemFactory': Cn
+      },
+      [yn.id]: {
+        'order': 1,
+        'menuItemFactory': Tn
+      }
+    }
+  },
+  [ox15facf.MAIN_AREA]: {
+    [ox21e9d1.OTHERS]: {
+      [hn.id]: {
+        'order': 2.1,
+        'menuItemFactory': wn
+      }
+    }
+  }
+};
 export { En as SheetsPrintMenuSchema };

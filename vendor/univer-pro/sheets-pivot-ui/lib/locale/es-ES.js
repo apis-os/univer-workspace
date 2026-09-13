@@ -5,8 +5,7 @@ const e = {
     sourceRangeLabel: "Fuente\x20de\x20datos",
     sourceRangePlaceholder: "La fuente de datos se ha actualizado",
     sourceFieldTile: "Campos de la fuente de datos",
-    sourceFieldDescription:
-      "Arrastre\x20los\x20campos\x20a\x20las\x20áreas\x20de\x20abajo",
+    sourceFieldDescription: "Arrastre\x20los\x20campos\x20a\x20las\x20áreas\x20de\x20abajo",
     searchFieldPlaceholder: "Buscar campos",
     noMatchingFields: "No hay campos coincidentes",
     filter: "Filtro",
@@ -34,8 +33,7 @@ const e = {
       percentOfRowTotal: "%\x20del\x20total\x20de\x20fila",
       percentOfColumnTotal: "% del total de columna",
       percentOfParentRowTotal: "% del total de fila principal",
-      percentOfParentColumnTotal:
-        "%\x20del\x20total\x20de\x20columna\x20principal",
+      percentOfParentColumnTotal: "%\x20del\x20total\x20de\x20columna\x20principal",
       index: "Índice",
       percentOfParent: "% del total principal",
       percentOf: "% de",
@@ -52,7 +50,7 @@ const e = {
       next: "Siguiente",
       other: "Otro",
       ok: "Aceptar",
-      cancel: "Cancelar",
+      cancel: "Cancelar"
     },
     valueFilter: {
       title: "Filtros de valor",
@@ -74,7 +72,7 @@ const e = {
       bottomPercent: "Porcentaje inferior",
       clear: "Borrar filtro",
       ok: "Aceptar",
-      cancel: "Cancelar",
+      cancel: "Cancelar"
     },
     dateGroup: {
       title: "Agrupaci?n\x20de\x20fechas",
@@ -88,7 +86,7 @@ const e = {
       date: "Día",
       hour: "Hora",
       minute: "Minuto",
-      hourMinute: "Hora-Minuto",
+      hourMinute: "Hora-Minuto"
     },
     dialog: {
       fieldName: "Nombre del campo",
@@ -104,7 +102,7 @@ const e = {
         clearFilter: "Borrar filtro",
         blank: "(Vacío)",
         cancel: "Cancelar",
-        confirm: "Aceptar",
+        confirm: "Aceptar"
       },
       numfmt: {
         general: "General",
@@ -116,20 +114,15 @@ const e = {
         formatTypes: "Tipos\x20de\x20formato",
         confirm: "Aceptar",
         cancel: "Cancelar",
-        generalDesc:
-          "El\x20formato\x20general\x20no\x20contiene\x20ningún\x20formato\x20de\x20número\x20específico.",
-        accountingDesc:
-          "El formato de número contable alinea los símbolos de moneda y los puntos decimales en una columna.",
-        currencyDesc:
-          "El formato de moneda se utiliza para valores monetarios generales, el formato contable alinea los puntos decimales en una columna de valores.",
-        dateDesc:
-          "El formato de fecha muestra los números de serie de fecha y hora como valores de fecha.",
-        thousandthPercentileDesc:
-          "El formato de percentil milésimo se utiliza para números generales, los formatos de moneda y contable proporcionan formatos especializados para valores monetarios.",
+        generalDesc: "El\x20formato\x20general\x20no\x20contiene\x20ningún\x20formato\x20de\x20número\x20específico.",
+        accountingDesc: "El formato de número contable alinea los símbolos de moneda y los puntos decimales en una columna.",
+        currencyDesc: "El formato de moneda se utiliza para valores monetarios generales, el formato contable alinea los puntos decimales en una columna de valores.",
+        dateDesc: "El formato de fecha muestra los números de serie de fecha y hora como valores de fecha.",
+        thousandthPercentileDesc: "El formato de percentil milésimo se utiliza para números generales, los formatos de moneda y contable proporcionan formatos especializados para valores monetarios.",
         decimalPlaces: "Decimales",
         currencyTypes: "Tipos de moneda",
         negativeNumberTypes: "Tipos de números negativos",
-        dateTypes: "Tipos de fecha",
+        dateTypes: "Tipos de fecha"
       },
       source: {
         insertPivotTable: "Insertar tabla dinámica",
@@ -137,8 +130,8 @@ const e = {
         position: "Ubicación de la tabla dinámica",
         newSheet: "Nueva hoja",
         existingSheet: "Hoja existente",
-        intersect: "No puede superponerse con la fuente de datos",
-      },
+        intersect: "No puede superponerse con la fuente de datos"
+      }
     },
     subtotal: {
       average: "Promedio",
@@ -151,7 +144,7 @@ const e = {
       stdDevp: "Desviación estándar de población",
       sum: "Suma",
       var: "Varianza",
-      varp: "Varianza de población",
+      varp: "Varianza de población"
     },
     subTotalText: "Subtotal",
     grandTotalText: "Total\x20general",
@@ -177,24 +170,21 @@ const e = {
       layoutCompact: "Formato compacto",
       layoutOutline: "Formato de esquema",
       repeatRowLabels: "Repetir etiquetas de fila",
-      repeatColLabels: "Repetir etiquetas de columna",
+      repeatColLabels: "Repetir etiquetas de columna"
     },
     perform: {
       tips: "Consejos",
       info: "Ya\x20hay\x20datos\x20en\x20el\x20área\x20de\x20destino.\x20Esta\x20acción\x20sobrescribirá\x20los\x20datos\x20existentes.\x20¿Desea\x20continuar?",
       confirm: "Confirmar",
       cancel: "Cancelar",
-      rowColError:
-        "Este cambio no se puede realizar en las celdas seleccionadas porque afectaría la tabla dinámica. Use la lista de campos para modificar el informe. Si intenta insertar o eliminar celdas, mueva la tabla dinámica e inténtelo de nuevo.",
+      rowColError: "Este cambio no se puede realizar en las celdas seleccionadas porque afectaría la tabla dinámica. Use la lista de campos para modificar el informe. Si intenta insertar o eliminar celdas, mueva la tabla dinámica e inténtelo de nuevo."
     },
     msg: {
       emptySourceRange: "El rango de la fuente de datos está vacío",
       invalidSize: "El rango de la fuente de datos no es válido",
-      mergeCellError:
-        "No se pueden insertar celdas combinadas en una tabla dinámica",
+      mergeCellError: "No se pueden insertar celdas combinadas en una tabla dinámica",
       editCellError: "No se pueden editar celdas en una tabla dinámica",
-      permissionError:
-        "No\x20se\x20puede\x20editar\x20la\x20tabla\x20dinámica\x20en\x20una\x20hoja\x20protegida",
+      permissionError: "No\x20se\x20puede\x20editar\x20la\x20tabla\x20dinámica\x20en\x20una\x20hoja\x20protegida"
     },
     averageName: "Promedio de ",
     countName: "Conteo de ",
@@ -206,7 +196,7 @@ const e = {
     stdDevpName: "DesvEstP de ",
     sumName: "Suma de ",
     varName: "Var de ",
-    varpName: "VarP de ",
-  },
+    varpName: "VarP de "
+  }
 };
 export { e as default };

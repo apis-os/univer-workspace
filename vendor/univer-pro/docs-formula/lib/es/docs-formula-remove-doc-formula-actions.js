@@ -1,10 +1,19 @@
-import{FormulaCacheEligibilityService,FormulaLastValuePersistenceService,HostExternalReferenceModel,UniverProFormulaEnginePlugin,buildUpsertHostExternalReferenceMutations,collectFormulaExternalReferenceQualifiers,getScalarFormulaResultCell,resolveFormulaResultPresentation,resolveHostFormulaExternalReferences,toFormulaLastValue}from"@univerjs-pro/engine-formula";
-import{CellValueType,CommandType,CustomRangeType,DataStreamTreeTokenType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSONX,Plugin,TextX,Tools,UniverInstanceType,generateRandomId,getBodySliceForTextXAction,getCustomRangeInterval,getParagraphContentStartOffset,getRichTextEditPath,merge,shiftExclusiveRangeOnDelete,shiftExclusiveRangeOnInsert,shiftInclusiveRangeOnDelete,shiftInclusiveRangeOnInsert,touchDependencies}from"@univerjs/core";
-import{DOC_SELECTION_OPTION_PRESERVE_CARET,DocSelectionManagerService,DocTextResolverService,RichTextEditingMutation,UniverDocsPlugin}from"@univerjs/docs";
-import{FormulaResultStatus,LexerTreeBuilder,OtherFormulaBizType,RegisterOtherFormulaService}from"@univerjs/engine-formula";
-import{Subject}from"rxjs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { FormulaCacheEligibilityService, FormulaLastValuePersistenceService, HostExternalReferenceModel, UniverProFormulaEnginePlugin, buildUpsertHostExternalReferenceMutations, collectFormulaExternalReferenceQualifiers, getScalarFormulaResultCell, resolveFormulaResultPresentation, resolveHostFormulaExternalReferences, toFormulaLastValue } from "@univerjs-pro/engine-formula";
+import { CellValueType, CommandType, CustomRangeType, DataStreamTreeTokenType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, Tools, UniverInstanceType, generateRandomId, getBodySliceForTextXAction, getCustomRangeInterval, getParagraphContentStartOffset, getRichTextEditPath, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert, touchDependencies } from "@univerjs/core";
+import { DOC_SELECTION_OPTION_PRESERVE_CARET, DocSelectionManagerService, DocTextResolverService, RichTextEditingMutation, UniverDocsPlugin } from "@univerjs/docs";
+import { FormulaResultStatus, LexerTreeBuilder, OtherFormulaBizType, RegisterOtherFormulaService } from "@univerjs/engine-formula";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { E, Je } from "./internal-core-endo.js";
-function Be(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356=Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.documentData),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357=Je(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.rangeId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.text??"");if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357==null)return null;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358=E(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.resource);return delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358.formulas[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.rangeId],{nextDocumentData:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356,nextResource:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358,cursorOffset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357};}
-
+function Be(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.documentData),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357 = Je(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.rangeId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.text ?? "");
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357 == null) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358 = E(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.resource);
+  return delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358.formulas[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46355.rangeId], {
+    nextDocumentData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356,
+    nextResource: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46358,
+    cursorOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357
+  };
+}
 export { Be as buildRemoveDocFormulaActions };

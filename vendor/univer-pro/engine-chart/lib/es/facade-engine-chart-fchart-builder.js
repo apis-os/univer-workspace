@@ -1,7 +1,743 @@
-import{AREA_CHART_TYPES,AreaLineStyle,ChartAggregationTarget,ChartAllSeriesStyleTarget,ChartAppearanceTarget,ChartAxisName,ChartAxisPointerTarget,ChartAxisTarget,ChartAxisTickPosition,ChartBuilder,ChartChordFocusMode,ChartChordLabelPosition,ChartChordRibbonColorMode,ChartGaugeMode,ChartGaugePointerShape,ChartMarkLineLabelPosition,ChartSemanticAxis,ChartSeriesAxis,ChartSeriesClearTarget,ChartSeriesTypeString,ChartSunburstLabelPosition,ChartThemeService,ChartTrendlineType,ChartTypeString,ChartVisualMapType,ChartWaterfallPointRole,ChartWaterfallStyleTarget,DetachedChartBuilderAdapter,InvalidValueType,LabelAlignEnum,LegendPositionEnum,LinePointShape,PieLabelPosition,PieSecondaryPlotType,RadarShape,RelationChartLayoutEnum,SelectModeEnum,SeriesLabelPosition,TitlePositionEnum,TreemapParentLabelLayout,WaterfallStackTypeEnum,WordCloudShapeEnum,clearAggregation,clearAllSeriesOverrides,clearAllSeriesStyle,clearAppearance,clearAreaLineStyle,clearAxisPointer,clearAxisTitle,clearBar,clearBubbleMapping,clearCandlestickFields,clearCategoryField,clearCellLabel,clearCumulativeLineStyle,clearDojiStyle,clearDoughnutHole,clearFallingStyle,clearHistogramField,clearHistogramOverflowThreshold,clearHistogramUnderflowThreshold,clearLegend,clearLineStyle,clearMarkLines,clearMaskImage,clearPalette,clearParetoBarStyle,clearPieComposite,clearPieLabel,clearRelationForce,clearRightYAxis,clearRisingStyle,clearSeries,clearSliceBorderColor,clearSliceStyle,clearSubtitle,clearTheme,clearTitle,clearTrendlines,clearValueFields,clearValueRange,clearValueUnit,clearWaterfallConnector,clearWaterfallStyle,clearXAxis,clearYAxis,removeTrendline,resetAutoGradientFill,resetCandleWidth,resetChordEmphasis,resetChordLabel,resetChordLayout,resetChordNode,resetChordRibbon,resetCircularLabelRotation,resetCombinationSeriesAxis,resetCombinationSeriesType,resetEmphasisEnabled,resetExplosion,resetFunnelGap,resetGaugeAnchor,resetGaugeAngles,resetGaugeAxisLabel,resetGaugeAxisLine,resetGaugeAxisTick,resetGaugeDetail,resetGaugeMode,resetGaugePointer,resetGaugeProgress,resetGaugeRanges,resetGaugeScale,resetGaugeSplitLine,resetGaugeTitle,resetHalfPie,resetHistogramBinGap,resetHistogramBinning,resetIncludeZeroValues,resetInvalidValueStrategy,resetLabelLineVisible,resetPaddingAngleEnabled,resetRadarFill,resetRadarShape,resetRelationLayout,resetRelationNodeShape,resetRosePie,resetSunburstCenterLabel,resetSunburstLabel,resetTreemapLabel,resetTreemapParentLabelLayout,resetUseAbsoluteValue,resetUseDateAxis,resetUseSubtotal,resetUseValueAsSymbolSize,resetValueScale,resetVisualMapType,resetWaterfallStackType,resetWordCloudRepeat,resetWordCloudShape,setAggregation,setAllSeriesStyle,setAppearance,setAreaLineStyle,setAutoGradientFill,setAxisPointer,setAxisTitle,setBar,setBubbleMapping,setCandleWidth,setCandlestickFields,setCategoryField,setCellLabel,setChordEmphasis,setChordLabel,setChordLayout,setChordMapping,setChordNode,setChordRibbon,setCircularLabelRotation,setCombinationSeriesAxis,setCombinationSeriesType,setCumulativeLineStyle,setDojiStyle,setDoughnutHole,setEmphasisEnabled,setExplosion,setFallingStyle,setFunnelGap,setGaugeAnchor,setGaugeAngles,setGaugeAxisLabel,setGaugeAxisLine,setGaugeAxisTick,setGaugeDetail,setGaugeMode,setGaugePointer,setGaugeProgress,setGaugeRanges,setGaugeScale,setGaugeSplitLine,setGaugeTicks,setGaugeTitle,setGaugeValueField,setHalfPie,setHistogramBinCount,setHistogramBinGap,setHistogramBinWidth,setHistogramField,setHistogramOverflowThreshold,setHistogramUnderflowThreshold,setIncludeZeroValues,setInvalidValueStrategy,setLabelLineVisible,setLegend,setLineStyle,setMarkLines,setMaskImage,setPaddingAngleEnabled,setPalette,setParetoBarStyle,setPieComposite,setPieLabel,setRadarFill,setRadarShape,setRelationForce,setRelationLayout,setRelationNodeShape,setRightYAxis,setRisingStyle,setRosePie,setSeries,setSliceBorderColor,setSliceStyle,setSubtitle,setSunburstCenterLabel,setSunburstHierarchyFields,setSunburstLabel,setSunburstValueField,setTheme,setTitle,setTreemapHierarchyFields,setTreemapLabel,setTreemapParentLabelLayout,setTreemapValueField,setTrendline,setUseAbsoluteValue,setUseDateAxis,setUseSubtotal,setUseValueAsSymbolSize,setValueFields,setValueRange,setValueScale,setValueUnit,setVisualMapType,setWaterfallConnector,setWaterfallPointRoles,setWaterfallStackType,setWaterfallStyle,setWordCloudRepeat,setWordCloudShape,setXAxis,setYAxis,toChartCreateConfig,toChartCreateConfigSnapshot}from"@univerjs-pro/engine-chart";
-import{ArrangeTypeEnum,Tools,generateRandomId}from"@univerjs/core";
-import{FBase,FEnum,FUniver}from"@univerjs/core/facade";
+import { AREA_CHART_TYPES, AreaLineStyle, ChartAggregationTarget, ChartAllSeriesStyleTarget, ChartAppearanceTarget, ChartAxisName, ChartAxisPointerTarget, ChartAxisTarget, ChartAxisTickPosition, ChartBuilder, ChartChordFocusMode, ChartChordLabelPosition, ChartChordRibbonColorMode, ChartGaugeMode, ChartGaugePointerShape, ChartMarkLineLabelPosition, ChartSemanticAxis, ChartSeriesAxis, ChartSeriesClearTarget, ChartSeriesTypeString, ChartSunburstLabelPosition, ChartThemeService, ChartTrendlineType, ChartTypeString, ChartVisualMapType, ChartWaterfallPointRole, ChartWaterfallStyleTarget, DetachedChartBuilderAdapter, InvalidValueType, LabelAlignEnum, LegendPositionEnum, LinePointShape, PieLabelPosition, PieSecondaryPlotType, RadarShape, RelationChartLayoutEnum, SelectModeEnum, SeriesLabelPosition, TitlePositionEnum, TreemapParentLabelLayout, WaterfallStackTypeEnum, WordCloudShapeEnum, clearAggregation, clearAllSeriesOverrides, clearAllSeriesStyle, clearAppearance, clearAreaLineStyle, clearAxisPointer, clearAxisTitle, clearBar, clearBubbleMapping, clearCandlestickFields, clearCategoryField, clearCellLabel, clearCumulativeLineStyle, clearDojiStyle, clearDoughnutHole, clearFallingStyle, clearHistogramField, clearHistogramOverflowThreshold, clearHistogramUnderflowThreshold, clearLegend, clearLineStyle, clearMarkLines, clearMaskImage, clearPalette, clearParetoBarStyle, clearPieComposite, clearPieLabel, clearRelationForce, clearRightYAxis, clearRisingStyle, clearSeries, clearSliceBorderColor, clearSliceStyle, clearSubtitle, clearTheme, clearTitle, clearTrendlines, clearValueFields, clearValueRange, clearValueUnit, clearWaterfallConnector, clearWaterfallStyle, clearXAxis, clearYAxis, removeTrendline, resetAutoGradientFill, resetCandleWidth, resetChordEmphasis, resetChordLabel, resetChordLayout, resetChordNode, resetChordRibbon, resetCircularLabelRotation, resetCombinationSeriesAxis, resetCombinationSeriesType, resetEmphasisEnabled, resetExplosion, resetFunnelGap, resetGaugeAnchor, resetGaugeAngles, resetGaugeAxisLabel, resetGaugeAxisLine, resetGaugeAxisTick, resetGaugeDetail, resetGaugeMode, resetGaugePointer, resetGaugeProgress, resetGaugeRanges, resetGaugeScale, resetGaugeSplitLine, resetGaugeTitle, resetHalfPie, resetHistogramBinGap, resetHistogramBinning, resetIncludeZeroValues, resetInvalidValueStrategy, resetLabelLineVisible, resetPaddingAngleEnabled, resetRadarFill, resetRadarShape, resetRelationLayout, resetRelationNodeShape, resetRosePie, resetSunburstCenterLabel, resetSunburstLabel, resetTreemapLabel, resetTreemapParentLabelLayout, resetUseAbsoluteValue, resetUseDateAxis, resetUseSubtotal, resetUseValueAsSymbolSize, resetValueScale, resetVisualMapType, resetWaterfallStackType, resetWordCloudRepeat, resetWordCloudShape, setAggregation, setAllSeriesStyle, setAppearance, setAreaLineStyle, setAutoGradientFill, setAxisPointer, setAxisTitle, setBar, setBubbleMapping, setCandleWidth, setCandlestickFields, setCategoryField, setCellLabel, setChordEmphasis, setChordLabel, setChordLayout, setChordMapping, setChordNode, setChordRibbon, setCircularLabelRotation, setCombinationSeriesAxis, setCombinationSeriesType, setCumulativeLineStyle, setDojiStyle, setDoughnutHole, setEmphasisEnabled, setExplosion, setFallingStyle, setFunnelGap, setGaugeAnchor, setGaugeAngles, setGaugeAxisLabel, setGaugeAxisLine, setGaugeAxisTick, setGaugeDetail, setGaugeMode, setGaugePointer, setGaugeProgress, setGaugeRanges, setGaugeScale, setGaugeSplitLine, setGaugeTicks, setGaugeTitle, setGaugeValueField, setHalfPie, setHistogramBinCount, setHistogramBinGap, setHistogramBinWidth, setHistogramField, setHistogramOverflowThreshold, setHistogramUnderflowThreshold, setIncludeZeroValues, setInvalidValueStrategy, setLabelLineVisible, setLegend, setLineStyle, setMarkLines, setMaskImage, setPaddingAngleEnabled, setPalette, setParetoBarStyle, setPieComposite, setPieLabel, setRadarFill, setRadarShape, setRelationForce, setRelationLayout, setRelationNodeShape, setRightYAxis, setRisingStyle, setRosePie, setSeries, setSliceBorderColor, setSliceStyle, setSubtitle, setSunburstCenterLabel, setSunburstHierarchyFields, setSunburstLabel, setSunburstValueField, setTheme, setTitle, setTreemapHierarchyFields, setTreemapLabel, setTreemapParentLabelLayout, setTreemapValueField, setTrendline, setUseAbsoluteValue, setUseDateAxis, setUseSubtotal, setUseValueAsSymbolSize, setValueFields, setValueRange, setValueScale, setValueUnit, setVisualMapType, setWaterfallConnector, setWaterfallPointRoles, setWaterfallStackType, setWaterfallStyle, setWordCloudRepeat, setWordCloudShape, setXAxis, setYAxis, toChartCreateConfig, toChartCreateConfigSnapshot } from "@univerjs-pro/engine-chart";
+import { ArrangeTypeEnum, Tools, generateRandomId } from "@univerjs/core";
+import { FBase, FEnum, FUniver } from "@univerjs/core/facade";
 import { R, z } from "./facade-internal-core-endo.js";
-function B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394){"@babel/helpers - typeof";return B=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469){return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469;}:function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611&&typeof Symbol=="function"&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.constructor===Symbol&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611!==Symbol.prototype?"symbol":typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611;},B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394);}function Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397){if(B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396)!="object"||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396)return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396;var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396[Symbol.toPrimitive];if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398!==undefined){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397||"default");if(B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399)!="object")return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399;throw TypeError("@@toPrimitive must return a primitive value.");}return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397==="string"?String:Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396);}function Zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46404){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405=Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46404,"string");return B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405)=="symbol"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405+"";}function V(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410){return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409=Zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409))in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408?Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409,{value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410,enumerable:true,configurable:true,writable:true}):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408;}var H=class{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613){this._context=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613,V(this,"_builder",undefined),V(this,"_info",undefined),this._builder=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.builder,this._info=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.info;}setSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615){return this._info["dataSource"]=Tools.deepClone(this._context["normalizeSource"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615)),this;}setAbsolutePosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618){return this._info["position"]={x:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617,y:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618},this;}setSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622){return this._info["size"]={width:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621,height:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622},this;}build(){if(this._context["requireSource"]&&this._info["dataSource"]===undefined)throw Error("Chart data source is required. Please call setSource() before build().");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625=Tools.deepClone(this._info);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625.config=this._context["createConfig"](this._builder),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625;}_record(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627){return this._builder["mergePending"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627),this;}_describe(){return this._builder["describe"]();}setTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629){return this._builder["apply"](setTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629)),this;}clearTitle(){return this._builder["apply"](clearTitle()),this;}setSubtitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631){return this._builder["apply"](setSubtitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631)),this;}clearSubtitle(){return this._builder["apply"](clearSubtitle()),this;}setLegend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633){return this._builder["apply"](setLegend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633)),this;}clearLegend(){return this._builder["apply"](clearLegend()),this;}setTheme(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635){return this._builder["apply"](setTheme(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635)),this;}clearTheme(){return this._builder["apply"](clearTheme()),this;}setPalette(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637){return this._builder["apply"](setPalette(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637)),this;}clearPalette(){return this._builder["apply"](clearPalette()),this;}setAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639){return this._builder["apply"](setAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639)),this;}clearAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641){return this._builder["apply"](clearAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641)),this;}setAutoGradientFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643){return this._builder["apply"](setAutoGradientFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643)),this;}resetAutoGradientFill(){return this._builder["apply"](resetAutoGradientFill()),this;}setInvalidValueStrategy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645){return this._builder["apply"](setInvalidValueStrategy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645)),this;}resetInvalidValueStrategy(){return this._builder["apply"](resetInvalidValueStrategy()),this;}setCategoryField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647){return this._builder["apply"](setCategoryField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647)),this;}setCategoryFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649){return this._builder["mergePending"](R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649)),this;}clearCategoryFields(){return this._builder["mergePending"](z()),this;}setMultiLevelCategoryAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651){return this._builder["mergePending"]({mapping:{multiLevelCategoryAxis:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651}}),this;}clearCategoryField(){return this._builder["apply"](clearCategoryField()),this;}setValueFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653){return this._builder["apply"](setValueFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653)),this;}clearValueFields(){return this._builder["apply"](clearValueFields()),this;}setAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655){return this._builder["apply"](setAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655)),this;}clearAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657){return this._builder["apply"](clearAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657)),this;}},U=class extends H{setMarkLines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659){return this._builder["apply"](setMarkLines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659)),this;}clearMarkLines(){return this._builder["apply"](clearMarkLines()),this;}setXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661){return this._builder["apply"](setXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661)),this;}clearXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4663){return this._builder["apply"](clearXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4663)),this;}setYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4665){return this._builder["apply"](setYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4665)),this;}clearYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667){return this._builder["apply"](clearYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667)),this;}setRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669){return this._builder["apply"](setRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669)),this;}clearRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671){return this._builder["apply"](clearRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671)),this;}setXAxisTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673){return this._builder["apply"](setAxisTitle(ChartAxisName.X,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673)),this;}clearXAxisTitle(){return this._builder["apply"](clearAxisTitle(ChartAxisName.X)),this;}setYAxisTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675){return this._builder["apply"](setAxisTitle(ChartAxisName.Y,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675)),this;}clearYAxisTitle(){return this._builder["apply"](clearAxisTitle(ChartAxisName.Y)),this;}setRightYAxisTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677){return this._builder["apply"](setAxisTitle(ChartAxisName.RightY,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677)),this;}clearRightYAxisTitle(){return this._builder["apply"](clearAxisTitle(ChartAxisName.RightY)),this;}setUseDateAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679){return this._builder["apply"](setUseDateAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679)),this;}resetUseDateAxis(){return this._builder["apply"](resetUseDateAxis()),this;}},W=class extends U{setBar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681){return this._builder["apply"](setBar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681)),this;}clearBar(){return this._builder["apply"](clearBar()),this;}setSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684){return this._builder["apply"](setSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684)),this;}clearSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688){return this._builder["apply"](clearSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688)),this;}clearAllSeriesOverrides(){return this._builder["apply"](clearAllSeriesOverrides()),this;}setAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691){return this._builder["apply"](setAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691)),this;}clearAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693){return this._builder["apply"](clearAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693)),this;}setTrendline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4695,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696){return this._builder["apply"](setTrendline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4695,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696)),this;}removeTrendline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100){return this._builder["apply"](removeTrendline(this._builder["describe"](),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100)),this;}clearTrendlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103){return this._builder["apply"](clearTrendlines(this._builder["describe"](),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103)),this;}setAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105){return this._builder["apply"](setAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105)),this;}clearAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107){return this._builder["apply"](clearAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107)),this;}},G=class extends W{setAreaLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109){return this._builder["apply"](setAreaLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109)),this;}clearAreaLineStyle(){return this._builder["apply"](clearAreaLineStyle()),this;}},K=class extends W{},q=class extends W{setBubbleMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111){return this._builder["apply"](setBubbleMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111)),this;}clearBubbleMapping(){return this._builder["apply"](clearBubbleMapping()),this;}},J=class extends U{setCandlestickFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113){return this._builder["apply"](setCandlestickFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113)),this;}clearCandlestickFields(){return this._builder["apply"](clearCandlestickFields()),this;}setRisingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115){return this._builder["apply"](setRisingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115)),this;}clearRisingStyle(){return this._builder["apply"](clearRisingStyle()),this;}setFallingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117){return this._builder["apply"](setFallingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117)),this;}clearFallingStyle(){return this._builder["apply"](clearFallingStyle()),this;}setDojiStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119){return this._builder["apply"](setDojiStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119)),this;}clearDojiStyle(){return this._builder["apply"](clearDojiStyle()),this;}setCandleWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121){return this._builder["apply"](setCandleWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121)),this;}resetCandleWidth(){return this._builder["apply"](resetCandleWidth()),this;}},Y=class extends H{setChordMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123){return this._builder["apply"](setChordMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123)),this;}setChordLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125){return this._builder["apply"](setChordLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125)),this;}resetChordLayout(){return this._builder["apply"](resetChordLayout()),this;}setChordNode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127){return this._builder["apply"](setChordNode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127)),this;}resetChordNode(){return this._builder["apply"](resetChordNode()),this;}setChordLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129){return this._builder["apply"](setChordLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129)),this;}resetChordLabel(){return this._builder["apply"](resetChordLabel()),this;}setChordRibbon(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131){return this._builder["apply"](setChordRibbon(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131)),this;}resetChordRibbon(){return this._builder["apply"](resetChordRibbon()),this;}setChordEmphasis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133){return this._builder["apply"](setChordEmphasis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133)),this;}resetChordEmphasis(){return this._builder["apply"](resetChordEmphasis()),this;}},X=class extends W{setSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46136){return this._builder["apply"](setCombinationSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46136)),this;}resetSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46139){return this._builder["apply"](resetCombinationSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46139)),this;}setSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142){return this._builder["apply"](setCombinationSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142)),this;}resetSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46145){return this._builder["apply"](resetCombinationSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46145)),this;}},Z=class extends H{setGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147){return this._builder["apply"](setFunnelGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147)),this;}resetGap(){return this._builder["apply"](resetFunnelGap()),this;}setUseAbsoluteValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149){return this._builder["apply"](setUseAbsoluteValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149)),this;}resetUseAbsoluteValue(){return this._builder["apply"](resetUseAbsoluteValue()),this;}},Qr=class extends H{setGaugeValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151){return this._builder["apply"](setGaugeValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151)),this;}setGaugeMode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153){return this._builder["apply"](setGaugeMode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153)),this;}resetGaugeMode(){return this._builder["apply"](resetGaugeMode()),this;}setGaugeScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155){return this._builder["apply"](setGaugeScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155)),this;}resetGaugeScale(){return this._builder["apply"](resetGaugeScale()),this;}setGaugeTicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157){return this._builder["apply"](setGaugeTicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157)),this;}setGaugeAngles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159){return this._builder["apply"](setGaugeAngles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159)),this;}resetGaugeAngles(){return this._builder["apply"](resetGaugeAngles()),this;}setGaugeRanges(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161){return this._builder["apply"](setGaugeRanges(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161)),this;}resetGaugeRanges(){return this._builder["apply"](resetGaugeRanges()),this;}setGaugeAxisLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46163){return this._builder["apply"](setGaugeAxisLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46163)),this;}resetGaugeAxisLine(){return this._builder["apply"](resetGaugeAxisLine()),this;}setGaugeAxisTick(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165){return this._builder["apply"](setGaugeAxisTick(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165)),this;}resetGaugeAxisTick(){return this._builder["apply"](resetGaugeAxisTick()),this;}setGaugeSplitLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167){return this._builder["apply"](setGaugeSplitLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167)),this;}resetGaugeSplitLine(){return this._builder["apply"](resetGaugeSplitLine()),this;}setGaugeAxisLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169){return this._builder["apply"](setGaugeAxisLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169)),this;}resetGaugeAxisLabel(){return this._builder["apply"](resetGaugeAxisLabel()),this;}setGaugePointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171){return this._builder["apply"](setGaugePointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171)),this;}resetGaugePointer(){return this._builder["apply"](resetGaugePointer()),this;}setGaugeAnchor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173){return this._builder["apply"](setGaugeAnchor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173)),this;}resetGaugeAnchor(){return this._builder["apply"](resetGaugeAnchor()),this;}setGaugeProgress(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175){return this._builder["apply"](setGaugeProgress(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175)),this;}resetGaugeProgress(){return this._builder["apply"](resetGaugeProgress()),this;}setGaugeTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177){return this._builder["apply"](setGaugeTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177)),this;}resetGaugeTitle(){return this._builder["apply"](resetGaugeTitle()),this;}setGaugeDetail(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179){return this._builder["apply"](setGaugeDetail(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179)),this;}resetGaugeDetail(){return this._builder["apply"](resetGaugeDetail()),this;}},var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460=class extends U{setVisualMapType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181){return this._builder["apply"](setVisualMapType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181)),this;}resetVisualMapType(){return this._builder["apply"](resetVisualMapType()),this;}setValueRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184){return this._builder["apply"](setValueRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184)),this;}clearValueRange(){return this._builder["apply"](clearValueRange()),this;}setCellLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187){return this._builder["apply"](setCellLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187)),this;}clearCellLabel(){return this._builder["apply"](clearCellLabel()),this;}setValueUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189){return this._builder["apply"](setValueUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189)),this;}clearValueUnit(){return this._builder["apply"](clearValueUnit()),this;}},ei=class extends W{setHistogramField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191){return this._builder["apply"](setHistogramField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191)),this;}clearHistogramField(){return this._builder["apply"](clearHistogramField()),this;}setBinCount(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193){return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193)&&this._builder["apply"](setHistogramBinCount(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193)),this;}setBinWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195){return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195)&&this._builder["apply"](setHistogramBinWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195)),this;}resetBinning(){return this._builder["apply"](resetHistogramBinning()),this;}setUnderflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197){return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197)&&this._builder["apply"](setHistogramUnderflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197)),this;}clearUnderflowThreshold(){return this._builder["apply"](clearHistogramUnderflowThreshold()),this;}setOverflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199){return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199)&&this._builder["apply"](setHistogramOverflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199)),this;}clearOverflowThreshold(){return this._builder["apply"](clearHistogramOverflowThreshold()),this;}setBinGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201){return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201)&&this._builder["apply"](setHistogramBinGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201)),this;}resetBinGap(){return this._builder["apply"](resetHistogramBinGap()),this;}},ti=class extends W{setLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203){return this._builder["apply"](setLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203)),this;}clearLineStyle(){return this._builder["apply"](clearLineStyle()),this;}},ni=class extends W{setBarStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205){return this._builder["apply"](setParetoBarStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205)),this;}clearBarStyle(){return this._builder["apply"](clearParetoBarStyle()),this;}setCumulativeLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207){return this._builder["apply"](setCumulativeLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207)),this;}clearCumulativeLineStyle(){return this._builder["apply"](clearCumulativeLineStyle()),this;}setIncludeZeroValues(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209){return this._builder["apply"](setIncludeZeroValues(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209)),this;}resetIncludeZeroValues(){return this._builder["apply"](resetIncludeZeroValues()),this;}},Q=class extends H{setPieComposite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211){return this._builder["apply"](setPieComposite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211)),this;}clearPieComposite(){return this._builder["apply"](clearPieComposite()),this;}setSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214){return this._builder["apply"](setSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214)),this;}clearSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217){return this._builder["apply"](clearSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217)),this;}setDoughnutHole(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46219){return this._builder["apply"](setDoughnutHole(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46219)),this;}clearDoughnutHole(){return this._builder["apply"](clearDoughnutHole()),this;}setExplosion(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221){return this._builder["apply"](setExplosion(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221)),this;}resetExplosion(){return this._builder["apply"](resetExplosion()),this;}setSliceBorderColor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223){return this._builder["apply"](setSliceBorderColor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223)),this;}clearSliceBorderColor(){return this._builder["apply"](clearSliceBorderColor()),this;}setPaddingAngleEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46225){return this._builder["apply"](setPaddingAngleEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46225)),this;}resetPaddingAngleEnabled(){return this._builder["apply"](resetPaddingAngleEnabled()),this;}setHalfPie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227){return this._builder["apply"](setHalfPie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227)),this;}resetHalfPie(){return this._builder["apply"](resetHalfPie()),this;}setRosePie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229){return this._builder["apply"](setRosePie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229)),this;}resetRosePie(){return this._builder["apply"](resetRosePie()),this;}setLabelLineVisible(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231){return this._builder["apply"](setLabelLineVisible(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231)),this;}resetLabelLineVisible(){return this._builder["apply"](resetLabelLineVisible()),this;}setValueScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233){return this._builder["apply"](setValueScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233)),this;}resetValueScale(){return this._builder["apply"](resetValueScale()),this;}setPieLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235){return this._builder["apply"](setPieLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235)),this;}clearPieLabel(){return this._builder["apply"](clearPieLabel()),this;}},ri=class extends H{setShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237){return this._builder["apply"](setRadarShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237)),this;}resetShape(){return this._builder["apply"](resetRadarShape()),this;}setFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46239){return this._builder["apply"](setRadarFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46239)),this;}resetFill(){return this._builder["apply"](resetRadarFill()),this;}},ii=class extends H{setLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241){return this._builder["apply"](setRelationLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241)),this;}resetLayout(){return this._builder["apply"](resetRelationLayout()),this;}setUseValueAsSymbolSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46243){return this._builder["apply"](setUseValueAsSymbolSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46243)),this;}resetUseValueAsSymbolSize(){return this._builder["apply"](resetUseValueAsSymbolSize()),this;}setEmphasisEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245){return this._builder["apply"](setEmphasisEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245)),this;}resetEmphasisEnabled(){return this._builder["apply"](resetEmphasisEnabled()),this;}setForce(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46247){return this._builder["apply"](setRelationForce(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46247)),this;}clearForce(){return this._builder["apply"](clearRelationForce()),this;}setCircularLabelRotation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46249){return this._builder["apply"](setCircularLabelRotation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46249)),this;}resetCircularLabelRotation(){return this._builder["apply"](resetCircularLabelRotation()),this;}setNodeShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251){return this._builder["apply"](setRelationNodeShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251)),this;}resetNodeShape(){return this._builder["apply"](resetRelationNodeShape()),this;}},ai=class extends W{},oi=class extends H{setHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253){return this._builder["apply"](setSunburstHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253)),this;}setValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46255){return this._builder["apply"](setSunburstValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46255)),this;}setSunburstLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257){return this._builder["apply"](setSunburstLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257)),this;}resetSunburstLabel(){return this._builder["apply"](resetSunburstLabel()),this;}setCenterLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259){return this._builder["apply"](setSunburstCenterLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259)),this;}resetCenterLabel(){return this._builder["apply"](resetSunburstCenterLabel()),this;}},si=class extends H{setHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261){return this._builder["apply"](setTreemapHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261)),this;}setValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263){return this._builder["apply"](setTreemapValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263)),this;}setParentLabelLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265){return this._builder["apply"](setTreemapParentLabelLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265)),this;}resetParentLabelLayout(){return this._builder["apply"](resetTreemapParentLabelLayout()),this;}setTreemapLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267){return this._builder["apply"](setTreemapLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267)),this;}resetTreemapLabel(){return this._builder["apply"](resetTreemapLabel()),this;}},ci=class extends W{setPointRoles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270=this._describe().series,var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59=new Map();var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269.forEach((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461)=>{if(!Number.isInteger(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.dataPointIndex)||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.dataPointIndex<0)throw Error("pointRoles."+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461+"\x20has\x20an\x20invalid\x20data-point\x20index.");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462=typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.series=="number"?li(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.series,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461):ui(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.series["name"],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461);var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59.set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462+":"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.dataPointIndex,{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46,series:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462});});let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271=[...var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59.values()].sort((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467)=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.series-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.series||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.dataPointIndex-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.dataPointIndex);return this._builder["apply"](setWaterfallPointRoles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271)),this;}setConnector(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275){return this._builder["apply"](setWaterfallConnector(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275)),this;}clearConnector(){return this._builder["apply"](clearWaterfallConnector()),this;}setStackType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277){return this._builder["apply"](setWaterfallStackType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277)),this;}resetStackType(){return this._builder["apply"](resetWaterfallStackType()),this;}setUseSubtotal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279){return this._builder["apply"](setUseSubtotal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279)),this;}resetUseSubtotal(){return this._builder["apply"](resetUseSubtotal()),this;}setPositiveStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282){return this._builder["apply"](setWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281,ChartWaterfallStyleTarget.Positive,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282)),this;}clearPositiveStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46285){return this._builder["apply"](clearWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46285,ChartWaterfallStyleTarget.Positive)),this;}setNegativeStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46287,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46288){return this._builder["apply"](setWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46287,ChartWaterfallStyleTarget.Negative,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46288)),this;}clearNegativeStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291){return this._builder["apply"](clearWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291,ChartWaterfallStyleTarget.Negative)),this;}setSubtotalStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46294){return this._builder["apply"](setWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293,ChartWaterfallStyleTarget.Subtotal,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46294)),this;}clearSubtotalStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46297){return this._builder["apply"](clearWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46297,ChartWaterfallStyleTarget.Subtotal)),this;}};function li(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415){if(!Number.isInteger(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414)||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414<0)throw Error("pointRoles."+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415+" has an invalid series index.");return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414;}function ui(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46419,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420){let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A=Object.entries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46419).filter(([,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299])=>(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299.name)===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418);if(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A.length!==1)throw Error("pointRoles."+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420+"\x20must\x20resolve\x20to\x20exactly\x20one\x20series\x20named\x20\x22"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418+"\x22.");return Number(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A[0][0]);}
+function B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394) {
+  "@babel/helpers - typeof";
 
+  return B = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611;
+  }, B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394);
+}
+function Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397) {
+  if (B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397 || "default");
+    if (B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396);
+}
+function Zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46404) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405 = Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46404, "string");
+  return B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46405 + "";
+}
+function V(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409 = Zr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46409] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46410, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46408;
+}
+var H = class {
+    constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613) {
+      this._context = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613, V(this, "_builder", undefined), V(this, "_info", undefined), this._builder = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.builder, this._info = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.info;
+    }
+    setSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615) {
+      return this._info["dataSource"] = Tools.deepClone(this._context["normalizeSource"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615)), this;
+    }
+    setAbsolutePosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618) {
+      return this._info["position"] = {
+        x: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617,
+        y: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618
+      }, this;
+    }
+    setSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622) {
+      return this._info["size"] = {
+        width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621,
+        height: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622
+      }, this;
+    }
+    build() {
+      if (this._context["requireSource"] && this._info["dataSource"] === undefined) throw Error("Chart data source is required. Please call setSource() before build().");
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 = Tools.deepClone(this._info);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625.config = this._context["createConfig"](this._builder), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625;
+    }
+    _record(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627) {
+      return this._builder["mergePending"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627), this;
+    }
+    _describe() {
+      return this._builder["describe"]();
+    }
+    setTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629) {
+      return this._builder["apply"](setTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629)), this;
+    }
+    clearTitle() {
+      return this._builder["apply"](clearTitle()), this;
+    }
+    setSubtitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631) {
+      return this._builder["apply"](setSubtitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4631)), this;
+    }
+    clearSubtitle() {
+      return this._builder["apply"](clearSubtitle()), this;
+    }
+    setLegend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633) {
+      return this._builder["apply"](setLegend(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633)), this;
+    }
+    clearLegend() {
+      return this._builder["apply"](clearLegend()), this;
+    }
+    setTheme(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635) {
+      return this._builder["apply"](setTheme(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635)), this;
+    }
+    clearTheme() {
+      return this._builder["apply"](clearTheme()), this;
+    }
+    setPalette(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637) {
+      return this._builder["apply"](setPalette(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637)), this;
+    }
+    clearPalette() {
+      return this._builder["apply"](clearPalette()), this;
+    }
+    setAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639) {
+      return this._builder["apply"](setAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639)), this;
+    }
+    clearAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641) {
+      return this._builder["apply"](clearAppearance(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641)), this;
+    }
+    setAutoGradientFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643) {
+      return this._builder["apply"](setAutoGradientFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643)), this;
+    }
+    resetAutoGradientFill() {
+      return this._builder["apply"](resetAutoGradientFill()), this;
+    }
+    setInvalidValueStrategy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645) {
+      return this._builder["apply"](setInvalidValueStrategy(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4645)), this;
+    }
+    resetInvalidValueStrategy() {
+      return this._builder["apply"](resetInvalidValueStrategy()), this;
+    }
+    setCategoryField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647) {
+      return this._builder["apply"](setCategoryField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4647)), this;
+    }
+    setCategoryFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649) {
+      return this._builder["mergePending"](R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649)), this;
+    }
+    clearCategoryFields() {
+      return this._builder["mergePending"](z()), this;
+    }
+    setMultiLevelCategoryAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651) {
+      return this._builder["mergePending"]({
+        mapping: {
+          multiLevelCategoryAxis: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4651
+        }
+      }), this;
+    }
+    clearCategoryField() {
+      return this._builder["apply"](clearCategoryField()), this;
+    }
+    setValueFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653) {
+      return this._builder["apply"](setValueFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653)), this;
+    }
+    clearValueFields() {
+      return this._builder["apply"](clearValueFields()), this;
+    }
+    setAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655) {
+      return this._builder["apply"](setAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655)), this;
+    }
+    clearAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657) {
+      return this._builder["apply"](clearAggregation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657)), this;
+    }
+  },
+  U = class extends H {
+    setMarkLines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659) {
+      return this._builder["apply"](setMarkLines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4659)), this;
+    }
+    clearMarkLines() {
+      return this._builder["apply"](clearMarkLines()), this;
+    }
+    setXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661) {
+      return this._builder["apply"](setXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661)), this;
+    }
+    clearXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4663) {
+      return this._builder["apply"](clearXAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4663)), this;
+    }
+    setYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4665) {
+      return this._builder["apply"](setYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4665)), this;
+    }
+    clearYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667) {
+      return this._builder["apply"](clearYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4667)), this;
+    }
+    setRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669) {
+      return this._builder["apply"](setRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669)), this;
+    }
+    clearRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671) {
+      return this._builder["apply"](clearRightYAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671)), this;
+    }
+    setXAxisTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673) {
+      return this._builder["apply"](setAxisTitle(ChartAxisName.X, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673)), this;
+    }
+    clearXAxisTitle() {
+      return this._builder["apply"](clearAxisTitle(ChartAxisName.X)), this;
+    }
+    setYAxisTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675) {
+      return this._builder["apply"](setAxisTitle(ChartAxisName.Y, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4675)), this;
+    }
+    clearYAxisTitle() {
+      return this._builder["apply"](clearAxisTitle(ChartAxisName.Y)), this;
+    }
+    setRightYAxisTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677) {
+      return this._builder["apply"](setAxisTitle(ChartAxisName.RightY, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4677)), this;
+    }
+    clearRightYAxisTitle() {
+      return this._builder["apply"](clearAxisTitle(ChartAxisName.RightY)), this;
+    }
+    setUseDateAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679) {
+      return this._builder["apply"](setUseDateAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4679)), this;
+    }
+    resetUseDateAxis() {
+      return this._builder["apply"](resetUseDateAxis()), this;
+    }
+  },
+  W = class extends U {
+    setBar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681) {
+      return this._builder["apply"](setBar(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4681)), this;
+    }
+    clearBar() {
+      return this._builder["apply"](clearBar()), this;
+    }
+    setSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684) {
+      return this._builder["apply"](setSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4683, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4684)), this;
+    }
+    clearSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688) {
+      return this._builder["apply"](clearSeries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4687, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4688)), this;
+    }
+    clearAllSeriesOverrides() {
+      return this._builder["apply"](clearAllSeriesOverrides()), this;
+    }
+    setAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691) {
+      return this._builder["apply"](setAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691)), this;
+    }
+    clearAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693) {
+      return this._builder["apply"](clearAllSeriesStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4693)), this;
+    }
+    setTrendline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4695, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696) {
+      return this._builder["apply"](setTrendline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4695, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4696)), this;
+    }
+    removeTrendline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100) {
+      return this._builder["apply"](removeTrendline(this._builder["describe"](), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100)), this;
+    }
+    clearTrendlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103) {
+      return this._builder["apply"](clearTrendlines(this._builder["describe"](), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46103)), this;
+    }
+    setAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105) {
+      return this._builder["apply"](setAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46105)), this;
+    }
+    clearAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107) {
+      return this._builder["apply"](clearAxisPointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46107)), this;
+    }
+  },
+  G = class extends W {
+    setAreaLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109) {
+      return this._builder["apply"](setAreaLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46109)), this;
+    }
+    clearAreaLineStyle() {
+      return this._builder["apply"](clearAreaLineStyle()), this;
+    }
+  },
+  K = class extends W {},
+  q = class extends W {
+    setBubbleMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111) {
+      return this._builder["apply"](setBubbleMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46111)), this;
+    }
+    clearBubbleMapping() {
+      return this._builder["apply"](clearBubbleMapping()), this;
+    }
+  },
+  J = class extends U {
+    setCandlestickFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113) {
+      return this._builder["apply"](setCandlestickFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113)), this;
+    }
+    clearCandlestickFields() {
+      return this._builder["apply"](clearCandlestickFields()), this;
+    }
+    setRisingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115) {
+      return this._builder["apply"](setRisingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46115)), this;
+    }
+    clearRisingStyle() {
+      return this._builder["apply"](clearRisingStyle()), this;
+    }
+    setFallingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117) {
+      return this._builder["apply"](setFallingStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117)), this;
+    }
+    clearFallingStyle() {
+      return this._builder["apply"](clearFallingStyle()), this;
+    }
+    setDojiStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119) {
+      return this._builder["apply"](setDojiStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119)), this;
+    }
+    clearDojiStyle() {
+      return this._builder["apply"](clearDojiStyle()), this;
+    }
+    setCandleWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121) {
+      return this._builder["apply"](setCandleWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121)), this;
+    }
+    resetCandleWidth() {
+      return this._builder["apply"](resetCandleWidth()), this;
+    }
+  },
+  Y = class extends H {
+    setChordMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123) {
+      return this._builder["apply"](setChordMapping(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123)), this;
+    }
+    setChordLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125) {
+      return this._builder["apply"](setChordLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46125)), this;
+    }
+    resetChordLayout() {
+      return this._builder["apply"](resetChordLayout()), this;
+    }
+    setChordNode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127) {
+      return this._builder["apply"](setChordNode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46127)), this;
+    }
+    resetChordNode() {
+      return this._builder["apply"](resetChordNode()), this;
+    }
+    setChordLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129) {
+      return this._builder["apply"](setChordLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129)), this;
+    }
+    resetChordLabel() {
+      return this._builder["apply"](resetChordLabel()), this;
+    }
+    setChordRibbon(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131) {
+      return this._builder["apply"](setChordRibbon(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131)), this;
+    }
+    resetChordRibbon() {
+      return this._builder["apply"](resetChordRibbon()), this;
+    }
+    setChordEmphasis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133) {
+      return this._builder["apply"](setChordEmphasis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133)), this;
+    }
+    resetChordEmphasis() {
+      return this._builder["apply"](resetChordEmphasis()), this;
+    }
+  },
+  X = class extends W {
+    setSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46136) {
+      return this._builder["apply"](setCombinationSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46135, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46136)), this;
+    }
+    resetSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46139) {
+      return this._builder["apply"](resetCombinationSeriesType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46139)), this;
+    }
+    setSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142) {
+      return this._builder["apply"](setCombinationSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142)), this;
+    }
+    resetSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46145) {
+      return this._builder["apply"](resetCombinationSeriesAxis(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46145)), this;
+    }
+  },
+  Z = class extends H {
+    setGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147) {
+      return this._builder["apply"](setFunnelGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147)), this;
+    }
+    resetGap() {
+      return this._builder["apply"](resetFunnelGap()), this;
+    }
+    setUseAbsoluteValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149) {
+      return this._builder["apply"](setUseAbsoluteValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149)), this;
+    }
+    resetUseAbsoluteValue() {
+      return this._builder["apply"](resetUseAbsoluteValue()), this;
+    }
+  },
+  Qr = class extends H {
+    setGaugeValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151) {
+      return this._builder["apply"](setGaugeValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151)), this;
+    }
+    setGaugeMode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153) {
+      return this._builder["apply"](setGaugeMode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153)), this;
+    }
+    resetGaugeMode() {
+      return this._builder["apply"](resetGaugeMode()), this;
+    }
+    setGaugeScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155) {
+      return this._builder["apply"](setGaugeScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46155)), this;
+    }
+    resetGaugeScale() {
+      return this._builder["apply"](resetGaugeScale()), this;
+    }
+    setGaugeTicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157) {
+      return this._builder["apply"](setGaugeTicks(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157)), this;
+    }
+    setGaugeAngles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159) {
+      return this._builder["apply"](setGaugeAngles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159)), this;
+    }
+    resetGaugeAngles() {
+      return this._builder["apply"](resetGaugeAngles()), this;
+    }
+    setGaugeRanges(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161) {
+      return this._builder["apply"](setGaugeRanges(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161)), this;
+    }
+    resetGaugeRanges() {
+      return this._builder["apply"](resetGaugeRanges()), this;
+    }
+    setGaugeAxisLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46163) {
+      return this._builder["apply"](setGaugeAxisLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46163)), this;
+    }
+    resetGaugeAxisLine() {
+      return this._builder["apply"](resetGaugeAxisLine()), this;
+    }
+    setGaugeAxisTick(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165) {
+      return this._builder["apply"](setGaugeAxisTick(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165)), this;
+    }
+    resetGaugeAxisTick() {
+      return this._builder["apply"](resetGaugeAxisTick()), this;
+    }
+    setGaugeSplitLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167) {
+      return this._builder["apply"](setGaugeSplitLine(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167)), this;
+    }
+    resetGaugeSplitLine() {
+      return this._builder["apply"](resetGaugeSplitLine()), this;
+    }
+    setGaugeAxisLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169) {
+      return this._builder["apply"](setGaugeAxisLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169)), this;
+    }
+    resetGaugeAxisLabel() {
+      return this._builder["apply"](resetGaugeAxisLabel()), this;
+    }
+    setGaugePointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171) {
+      return this._builder["apply"](setGaugePointer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171)), this;
+    }
+    resetGaugePointer() {
+      return this._builder["apply"](resetGaugePointer()), this;
+    }
+    setGaugeAnchor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173) {
+      return this._builder["apply"](setGaugeAnchor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173)), this;
+    }
+    resetGaugeAnchor() {
+      return this._builder["apply"](resetGaugeAnchor()), this;
+    }
+    setGaugeProgress(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175) {
+      return this._builder["apply"](setGaugeProgress(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175)), this;
+    }
+    resetGaugeProgress() {
+      return this._builder["apply"](resetGaugeProgress()), this;
+    }
+    setGaugeTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177) {
+      return this._builder["apply"](setGaugeTitle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46177)), this;
+    }
+    resetGaugeTitle() {
+      return this._builder["apply"](resetGaugeTitle()), this;
+    }
+    setGaugeDetail(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179) {
+      return this._builder["apply"](setGaugeDetail(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179)), this;
+    }
+    resetGaugeDetail() {
+      return this._builder["apply"](resetGaugeDetail()), this;
+    }
+  },
+  var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460 = class extends U {
+    setVisualMapType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181) {
+      return this._builder["apply"](setVisualMapType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181)), this;
+    }
+    resetVisualMapType() {
+      return this._builder["apply"](resetVisualMapType()), this;
+    }
+    setValueRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184) {
+      return this._builder["apply"](setValueRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184)), this;
+    }
+    clearValueRange() {
+      return this._builder["apply"](clearValueRange()), this;
+    }
+    setCellLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187) {
+      return this._builder["apply"](setCellLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187)), this;
+    }
+    clearCellLabel() {
+      return this._builder["apply"](clearCellLabel()), this;
+    }
+    setValueUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189) {
+      return this._builder["apply"](setValueUnit(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189)), this;
+    }
+    clearValueUnit() {
+      return this._builder["apply"](clearValueUnit()), this;
+    }
+  },
+  ei = class extends W {
+    setHistogramField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191) {
+      return this._builder["apply"](setHistogramField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191)), this;
+    }
+    clearHistogramField() {
+      return this._builder["apply"](clearHistogramField()), this;
+    }
+    setBinCount(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193) {
+      return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193) && this._builder["apply"](setHistogramBinCount(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193)), this;
+    }
+    setBinWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195) {
+      return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195) && this._builder["apply"](setHistogramBinWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195)), this;
+    }
+    resetBinning() {
+      return this._builder["apply"](resetHistogramBinning()), this;
+    }
+    setUnderflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197) {
+      return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197) && this._builder["apply"](setHistogramUnderflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46197)), this;
+    }
+    clearUnderflowThreshold() {
+      return this._builder["apply"](clearHistogramUnderflowThreshold()), this;
+    }
+    setOverflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199) {
+      return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199) && this._builder["apply"](setHistogramOverflowThreshold(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199)), this;
+    }
+    clearOverflowThreshold() {
+      return this._builder["apply"](clearHistogramOverflowThreshold()), this;
+    }
+    setBinGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201) {
+      return Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201) && this._builder["apply"](setHistogramBinGap(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201)), this;
+    }
+    resetBinGap() {
+      return this._builder["apply"](resetHistogramBinGap()), this;
+    }
+  },
+  ti = class extends W {
+    setLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203) {
+      return this._builder["apply"](setLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203)), this;
+    }
+    clearLineStyle() {
+      return this._builder["apply"](clearLineStyle()), this;
+    }
+  },
+  ni = class extends W {
+    setBarStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205) {
+      return this._builder["apply"](setParetoBarStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205)), this;
+    }
+    clearBarStyle() {
+      return this._builder["apply"](clearParetoBarStyle()), this;
+    }
+    setCumulativeLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207) {
+      return this._builder["apply"](setCumulativeLineStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207)), this;
+    }
+    clearCumulativeLineStyle() {
+      return this._builder["apply"](clearCumulativeLineStyle()), this;
+    }
+    setIncludeZeroValues(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209) {
+      return this._builder["apply"](setIncludeZeroValues(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46209)), this;
+    }
+    resetIncludeZeroValues() {
+      return this._builder["apply"](resetIncludeZeroValues()), this;
+    }
+  },
+  Q = class extends H {
+    setPieComposite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211) {
+      return this._builder["apply"](setPieComposite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46211)), this;
+    }
+    clearPieComposite() {
+      return this._builder["apply"](clearPieComposite()), this;
+    }
+    setSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214) {
+      return this._builder["apply"](setSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214)), this;
+    }
+    clearSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217) {
+      return this._builder["apply"](clearSliceStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46217)), this;
+    }
+    setDoughnutHole(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46219) {
+      return this._builder["apply"](setDoughnutHole(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46219)), this;
+    }
+    clearDoughnutHole() {
+      return this._builder["apply"](clearDoughnutHole()), this;
+    }
+    setExplosion(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221) {
+      return this._builder["apply"](setExplosion(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221)), this;
+    }
+    resetExplosion() {
+      return this._builder["apply"](resetExplosion()), this;
+    }
+    setSliceBorderColor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223) {
+      return this._builder["apply"](setSliceBorderColor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223)), this;
+    }
+    clearSliceBorderColor() {
+      return this._builder["apply"](clearSliceBorderColor()), this;
+    }
+    setPaddingAngleEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46225) {
+      return this._builder["apply"](setPaddingAngleEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46225)), this;
+    }
+    resetPaddingAngleEnabled() {
+      return this._builder["apply"](resetPaddingAngleEnabled()), this;
+    }
+    setHalfPie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227) {
+      return this._builder["apply"](setHalfPie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227)), this;
+    }
+    resetHalfPie() {
+      return this._builder["apply"](resetHalfPie()), this;
+    }
+    setRosePie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229) {
+      return this._builder["apply"](setRosePie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229)), this;
+    }
+    resetRosePie() {
+      return this._builder["apply"](resetRosePie()), this;
+    }
+    setLabelLineVisible(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231) {
+      return this._builder["apply"](setLabelLineVisible(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231)), this;
+    }
+    resetLabelLineVisible() {
+      return this._builder["apply"](resetLabelLineVisible()), this;
+    }
+    setValueScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233) {
+      return this._builder["apply"](setValueScale(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233)), this;
+    }
+    resetValueScale() {
+      return this._builder["apply"](resetValueScale()), this;
+    }
+    setPieLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235) {
+      return this._builder["apply"](setPieLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235)), this;
+    }
+    clearPieLabel() {
+      return this._builder["apply"](clearPieLabel()), this;
+    }
+  },
+  ri = class extends H {
+    setShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237) {
+      return this._builder["apply"](setRadarShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237)), this;
+    }
+    resetShape() {
+      return this._builder["apply"](resetRadarShape()), this;
+    }
+    setFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46239) {
+      return this._builder["apply"](setRadarFill(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46239)), this;
+    }
+    resetFill() {
+      return this._builder["apply"](resetRadarFill()), this;
+    }
+  },
+  ii = class extends H {
+    setLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241) {
+      return this._builder["apply"](setRelationLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241)), this;
+    }
+    resetLayout() {
+      return this._builder["apply"](resetRelationLayout()), this;
+    }
+    setUseValueAsSymbolSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46243) {
+      return this._builder["apply"](setUseValueAsSymbolSize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46243)), this;
+    }
+    resetUseValueAsSymbolSize() {
+      return this._builder["apply"](resetUseValueAsSymbolSize()), this;
+    }
+    setEmphasisEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245) {
+      return this._builder["apply"](setEmphasisEnabled(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245)), this;
+    }
+    resetEmphasisEnabled() {
+      return this._builder["apply"](resetEmphasisEnabled()), this;
+    }
+    setForce(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46247) {
+      return this._builder["apply"](setRelationForce(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46247)), this;
+    }
+    clearForce() {
+      return this._builder["apply"](clearRelationForce()), this;
+    }
+    setCircularLabelRotation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46249) {
+      return this._builder["apply"](setCircularLabelRotation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46249)), this;
+    }
+    resetCircularLabelRotation() {
+      return this._builder["apply"](resetCircularLabelRotation()), this;
+    }
+    setNodeShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251) {
+      return this._builder["apply"](setRelationNodeShape(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251)), this;
+    }
+    resetNodeShape() {
+      return this._builder["apply"](resetRelationNodeShape()), this;
+    }
+  },
+  ai = class extends W {},
+  oi = class extends H {
+    setHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253) {
+      return this._builder["apply"](setSunburstHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253)), this;
+    }
+    setValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46255) {
+      return this._builder["apply"](setSunburstValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46255)), this;
+    }
+    setSunburstLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257) {
+      return this._builder["apply"](setSunburstLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46257)), this;
+    }
+    resetSunburstLabel() {
+      return this._builder["apply"](resetSunburstLabel()), this;
+    }
+    setCenterLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259) {
+      return this._builder["apply"](setSunburstCenterLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259)), this;
+    }
+    resetCenterLabel() {
+      return this._builder["apply"](resetSunburstCenterLabel()), this;
+    }
+  },
+  si = class extends H {
+    setHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261) {
+      return this._builder["apply"](setTreemapHierarchyFields(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261)), this;
+    }
+    setValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263) {
+      return this._builder["apply"](setTreemapValueField(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46263)), this;
+    }
+    setParentLabelLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265) {
+      return this._builder["apply"](setTreemapParentLabelLayout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46265)), this;
+    }
+    resetParentLabelLayout() {
+      return this._builder["apply"](resetTreemapParentLabelLayout()), this;
+    }
+    setTreemapLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267) {
+      return this._builder["apply"](setTreemapLabel(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46267)), this;
+    }
+    resetTreemapLabel() {
+      return this._builder["apply"](resetTreemapLabel()), this;
+    }
+  },
+  ci = class extends W {
+    setPointRoles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270 = this._describe().series,
+        var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59 = new Map();
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46269.forEach((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461) => {
+        if (!Number.isInteger(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.dataPointIndex) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.dataPointIndex < 0) throw Error("pointRoles." + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 + "\x20has\x20an\x20invalid\x20data-point\x20index.");
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 = typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.series == "number" ? li(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.series, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461) : ui(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.series["name"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46270, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461);
+        var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59.set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 + ":" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.dataPointIndex, {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46,
+          series: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462
+        });
+      });
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271 = [...var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B59.values()].sort((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.series - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.series || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.dataPointIndex - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467.dataPointIndex);
+      return this._builder["apply"](setWaterfallPointRoles(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46271)), this;
+    }
+    setConnector(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275) {
+      return this._builder["apply"](setWaterfallConnector(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46275)), this;
+    }
+    clearConnector() {
+      return this._builder["apply"](clearWaterfallConnector()), this;
+    }
+    setStackType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277) {
+      return this._builder["apply"](setWaterfallStackType(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46277)), this;
+    }
+    resetStackType() {
+      return this._builder["apply"](resetWaterfallStackType()), this;
+    }
+    setUseSubtotal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279) {
+      return this._builder["apply"](setUseSubtotal(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46279)), this;
+    }
+    resetUseSubtotal() {
+      return this._builder["apply"](resetUseSubtotal()), this;
+    }
+    setPositiveStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282) {
+      return this._builder["apply"](setWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46281, ChartWaterfallStyleTarget.Positive, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46282)), this;
+    }
+    clearPositiveStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46285) {
+      return this._builder["apply"](clearWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46285, ChartWaterfallStyleTarget.Positive)), this;
+    }
+    setNegativeStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46287, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46288) {
+      return this._builder["apply"](setWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46287, ChartWaterfallStyleTarget.Negative, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46288)), this;
+    }
+    clearNegativeStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291) {
+      return this._builder["apply"](clearWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46291, ChartWaterfallStyleTarget.Negative)), this;
+    }
+    setSubtotalStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46294) {
+      return this._builder["apply"](setWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46293, ChartWaterfallStyleTarget.Subtotal, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46294)), this;
+    }
+    clearSubtotalStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46297) {
+      return this._builder["apply"](clearWaterfallStyle(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46297, ChartWaterfallStyleTarget.Subtotal)), this;
+    }
+  };
+function li(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415) {
+  if (!Number.isInteger(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414 < 0) throw Error("pointRoles." + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46415 + " has an invalid series index.");
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46414;
+}
+function ui(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46419, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420) {
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A = Object.entries(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46419).filter(([, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299]) => (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46299.name) === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418);
+  if (var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A.length !== 1) throw Error("pointRoles." + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46420 + "\x20must\x20resolve\x20to\x20exactly\x20one\x20series\x20named\x20\x22" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46418 + "\x22.");
+  return Number(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A[0][0]);
+}
 export { H as FChartBuilderBase, U as FAxisChartBuilder, W as FCartesianChartBuilder, G as FAreaChartBuilder, K as FBoxplotChartBuilder, q as FBubbleChartBuilder, J as FCandlestickChartBuilder, Y as FChordChartBuilder, X as FCombinationChartBuilder, Z as FFunnelChartBuilder, Qr as FGaugeChartBuilder, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460 as FHeatmapChartBuilder, ei as FHistogramChartBuilder, ti as FLineChartBuilder, ni as FParetoChartBuilder, Q as FPieChartBuilder, ri as FRadarChartBuilder, ii as FRelationChartBuilder, ai as FScatterChartBuilder, oi as FSunburstChartBuilder, si as FTreemapChartBuilder, ci as FWaterfallChartBuilder };

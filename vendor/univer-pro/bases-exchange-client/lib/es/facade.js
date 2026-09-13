@@ -1,1 +1,24 @@
-import{IBaseExchangeService}from"@univerjs-pro/bases-exchange-client";import{FUniver}from"@univerjs/core/facade";var n=class extends FUniver{importBaseToUnitIdAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46){return this._injector["get"](IBaseExchangeService).importBaseToUnitId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46);}importBaseToSnapshotAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D462){return this._injector["get"](IBaseExchangeService).importBaseToSnapshot(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D462);}exportBaseByUnitIdAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466){return this._injector["get"](IBaseExchangeService).exportBaseByUnitId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466);}exportBaseBySnapshotAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4610,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4611,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612){return this._injector["get"](IBaseExchangeService).exportBaseBySnapshot(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4610,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4611,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612);}transformSnapshotJsonToBaseDataAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616){return this._injector["get"](IBaseExchangeService).transformSnapshotJsonToBaseData(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616);}transformBaseDataToSnapshotJsonAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618){return this._injector["get"](IBaseExchangeService).transformBaseDataToSnapshotJson(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618);}};FUniver.extend(n);export{};
+import { IBaseExchangeService } from "@univerjs-pro/bases-exchange-client";
+import { FUniver } from "@univerjs/core/facade";
+var n = class extends FUniver {
+  importBaseToUnitIdAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46) {
+    return this._injector["get"](IBaseExchangeService).importBaseToUnitId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46);
+  }
+  importBaseToSnapshotAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D462) {
+    return this._injector["get"](IBaseExchangeService).importBaseToSnapshot(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D462);
+  }
+  exportBaseByUnitIdAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466) {
+    return this._injector["get"](IBaseExchangeService).exportBaseByUnitId(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D464, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466);
+  }
+  exportBaseBySnapshotAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4610, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4611, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612) {
+    return this._injector["get"](IBaseExchangeService).exportBaseBySnapshot(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4610, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4611, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612);
+  }
+  transformSnapshotJsonToBaseDataAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616) {
+    return this._injector["get"](IBaseExchangeService).transformSnapshotJsonToBaseData(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616);
+  }
+  transformBaseDataToSnapshotJsonAsync(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618) {
+    return this._injector["get"](IBaseExchangeService).transformBaseDataToSnapshotJson(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618);
+  }
+};
+FUniver.extend(n);
+export {};

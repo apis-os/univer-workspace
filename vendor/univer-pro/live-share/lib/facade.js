@@ -1,1 +1,89 @@
-import{LiveShareController as v30,LiveShareStatus as v31}from"@univerjs-pro/live-share";import{IUniverInstanceService as v32,UniverInstanceType as v33}from"@univerjs/core";import{FEnum as v34,FUniver as v35}from"@univerjs/core/facade";function o(v20){"@babel/helpers - typeof";return o=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v1){return typeof v1;}:function(v2){return v2&&typeof Symbol=="function"&&v2.constructor===Symbol&&v2!==Symbol.prototype?"symbol":typeof v2;},o(v20);}function s(v21,v22){if(o(v21)!="object"||!v21)return v21;var v23=v21[Symbol.toPrimitive];if(v23!==undefined){var v24=v23.call(v21,v22||"default");if(o(v24)!="object")return v24;throw TypeError("@@toPrimitive must return a primitive value.");}return(v22==="string"?String:Number)(v21);}function c(v25){var v26=s(v25,"string");return o(v26)=="symbol"?v26:v26+"";}function l(v27,v28,v29){return(v28=c(v28))in v27?Object.defineProperty(v27,v28,{value:v29,enumerable:true,configurable:true,writable:true}):v27[v28]=v29,v27;}var u=class extends v35{constructor(...v3){super(...v3),l(this,"_liveShareController",undefined);}_initialize(v4){this._liveShareController=v4.get(v30);}getLiveShareStatus(){let v5=this._injector["get"](v32).getCurrentUnitOfType(v33.UNIVER_SHEET);if(!v5)throw Error("No active workbook found.");let v6=v5.getUnitId(),v7=this._liveShareController["getLiveShareCoordinatorSync"](v6);return(v7==null?undefined:v7.getStatus())??v31.IDLE;}startFollowing(){let v8=this._injector["get"](v32).getCurrentUnitOfType(v33.UNIVER_SHEET);if(!v8)throw Error("No\x20active\x20workbook\x20found.");let v9=v8.getUnitId(),v10=this._liveShareController["getLiveShareCoordinatorSync"](v9);if(!v10)throw Error("No LiveShareCoordinator found for the active workbook.");v10.startFollowing();}stopFollowing(){let v11=this._injector["get"](v32).getCurrentUnitOfType(v33.UNIVER_SHEET);if(!v11)throw Error("No active workbook found.");let v12=v11.getUnitId(),v13=this._liveShareController["getLiveShareCoordinatorSync"](v12);if(!v13)throw Error("No LiveShareCoordinator found for the active workbook.");v13.stopFollowing();}startPresenting(){let v14=this._injector["get"](v32).getCurrentUnitOfType(v33.UNIVER_SHEET);if(!v14)throw Error("No\x20active\x20workbook\x20found.");let v15=v14.getUnitId(),v16=this._liveShareController["getLiveShareCoordinatorSync"](v15);if(!v16)throw Error("No LiveShareCoordinator found for the active workbook.");v16.tryStartPresenting();}stopPresenting(){let v17=this._injector["get"](v32).getCurrentUnitOfType(v33.UNIVER_SHEET);if(!v17)throw Error("No\x20active\x20workbook\x20found.");let v18=v17.getUnitId(),v19=this._liveShareController["getLiveShareCoordinatorSync"](v18);if(!v19)throw Error("No LiveShareCoordinator found for the active workbook.");v19.stopPresenting();}};v35.extend(u);var d=class extends v34{get LiveShareStatusEnum(){return v31;}};v34.extend(d);export{};
+import { LiveShareController as var_core_value_sigE9ED, LiveShareStatus as var_core_value_sigB577 } from "@univerjs-pro/live-share";
+import { IUniverInstanceService as var_core_value_sig9572, UniverInstanceType as var_core_value_sigD873 } from "@univerjs/core";
+import { FEnum as var_core_value_sigA12B, FUniver as var_core_value_sigF230 } from "@univerjs/core/facade";
+function o(var_core_value_sigF0F9) {
+  "@babel/helpers - typeof";
+
+  return o = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig7524) {
+    return typeof var_core_value_sig7524;
+  } : function (var_core_value_sig2AD8) {
+    return var_core_value_sig2AD8 && typeof Symbol == "function" && var_core_value_sig2AD8.constructor === Symbol && var_core_value_sig2AD8 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig2AD8;
+  }, o(var_core_value_sigF0F9);
+}
+function s(var_core_value_sig1A0F, var_core_value_sigFBA4) {
+  if (o(var_core_value_sig1A0F) != "object" || !var_core_value_sig1A0F) return var_core_value_sig1A0F;
+  var var_core_value_sig4383 = var_core_value_sig1A0F[Symbol.toPrimitive];
+  if (var_core_value_sig4383 !== undefined) {
+    var var_core_value_sig186C = var_core_value_sig4383.call(var_core_value_sig1A0F, var_core_value_sigFBA4 || "default");
+    if (o(var_core_value_sig186C) != "object") return var_core_value_sig186C;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigFBA4 === "string" ? String : Number)(var_core_value_sig1A0F);
+}
+function c(var_core_value_sigD955) {
+  var var_core_value_sig48BD = s(var_core_value_sigD955, "string");
+  return o(var_core_value_sig48BD) == "symbol" ? var_core_value_sig48BD : var_core_value_sig48BD + "";
+}
+function l(var_core_value_sig429F, var_core_value_sigF62A, var_core_value_sig8178) {
+  return (var_core_value_sigF62A = c(var_core_value_sigF62A)) in var_core_value_sig429F ? Object.defineProperty(var_core_value_sig429F, var_core_value_sigF62A, {
+    value: var_core_value_sig8178,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig429F[var_core_value_sigF62A] = var_core_value_sig8178, var_core_value_sig429F;
+}
+var u = class extends var_core_value_sigF230 {
+  constructor(...var_core_value_sig2AD0) {
+    super(...var_core_value_sig2AD0), l(this, "_liveShareController", undefined);
+  }
+  _initialize(var_core_value_sig3EEE) {
+    this._liveShareController = var_core_value_sig3EEE.get(var_core_value_sigE9ED);
+  }
+  getLiveShareStatus() {
+    let var_core_value_sigBC46 = this._injector["get"](var_core_value_sig9572).getCurrentUnitOfType(var_core_value_sigD873.UNIVER_SHEET);
+    if (!var_core_value_sigBC46) throw Error("No active workbook found.");
+    let var_core_value_sig3D7D = var_core_value_sigBC46.getUnitId(),
+      var_core_value_sig27E5 = this._liveShareController["getLiveShareCoordinatorSync"](var_core_value_sig3D7D);
+    return (var_core_value_sig27E5 == null ? undefined : var_core_value_sig27E5.getStatus()) ?? var_core_value_sigB577.IDLE;
+  }
+  startFollowing() {
+    let var_core_value_sig8061 = this._injector["get"](var_core_value_sig9572).getCurrentUnitOfType(var_core_value_sigD873.UNIVER_SHEET);
+    if (!var_core_value_sig8061) throw Error("No\x20active\x20workbook\x20found.");
+    let var_core_value_sig4D4C = var_core_value_sig8061.getUnitId(),
+      var_core_value_sigC9E0 = this._liveShareController["getLiveShareCoordinatorSync"](var_core_value_sig4D4C);
+    if (!var_core_value_sigC9E0) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_core_value_sigC9E0.startFollowing();
+  }
+  stopFollowing() {
+    let var_core_value_sig76BA = this._injector["get"](var_core_value_sig9572).getCurrentUnitOfType(var_core_value_sigD873.UNIVER_SHEET);
+    if (!var_core_value_sig76BA) throw Error("No active workbook found.");
+    let var_core_value_sigFBFA = var_core_value_sig76BA.getUnitId(),
+      var_core_value_sigF602 = this._liveShareController["getLiveShareCoordinatorSync"](var_core_value_sigFBFA);
+    if (!var_core_value_sigF602) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_core_value_sigF602.stopFollowing();
+  }
+  startPresenting() {
+    let var_core_value_sig1BBD = this._injector["get"](var_core_value_sig9572).getCurrentUnitOfType(var_core_value_sigD873.UNIVER_SHEET);
+    if (!var_core_value_sig1BBD) throw Error("No\x20active\x20workbook\x20found.");
+    let var_core_value_sigF704 = var_core_value_sig1BBD.getUnitId(),
+      var_core_value_sig2BCF = this._liveShareController["getLiveShareCoordinatorSync"](var_core_value_sigF704);
+    if (!var_core_value_sig2BCF) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_core_value_sig2BCF.tryStartPresenting();
+  }
+  stopPresenting() {
+    let var_core_value_sig0D69 = this._injector["get"](var_core_value_sig9572).getCurrentUnitOfType(var_core_value_sigD873.UNIVER_SHEET);
+    if (!var_core_value_sig0D69) throw Error("No\x20active\x20workbook\x20found.");
+    let var_core_value_sig480E = var_core_value_sig0D69.getUnitId(),
+      var_core_value_sig26DB = this._liveShareController["getLiveShareCoordinatorSync"](var_core_value_sig480E);
+    if (!var_core_value_sig26DB) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_core_value_sig26DB.stopPresenting();
+  }
+};
+var_core_value_sigF230.extend(u);
+var d = class extends var_core_value_sigA12B {
+  get LiveShareStatusEnum() {
+    return var_core_value_sigB577;
+  }
+};
+var_core_value_sigA12B.extend(d);
+export {};

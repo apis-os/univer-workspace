@@ -1,11 +1,68 @@
-import{AddBoardElementMutation,BoardElementType,IBoardChartAdapterService,IBoardElementService,RemoveBoardElementCommand,RemoveBoardElementMutation,ReorderBoardElementsOperation,UniverBoardsPlugin,UpdateBoardElementCommand,UpdateBoardElementMutation,createAddBoardElementsMutationInfos}from"@univerjs-pro/boards";
-import{ChartDataSourceRuntimeStatus,ChartResourceRepository,ChartResourceRuntimeService,ChartTypeBits,DEFAULT_CHART_RESOURCE_HEADER_ROW,IChartDataSourceRuntimeService,ResourceRefChartDataSourceAdapter,UniverChartPlugin,buildChartDataSetFromValues,buildChartPreviewData,buildOrientedChartDataSet,chartConfigInterpreter,createChartStarterRows,describeChartModel,isInlineChartDataSource,isReferencedChartDataSource,omitUndefinedFields,toChartCreateConfigSnapshot,toChartModelConfigReplacement,toChartModelUpdate}from"@univerjs-pro/engine-chart";
-import{ArrangeTypeEnum,CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,Inject,Injector,Plugin,Tools,UniverInstanceType,generateRandomId,getDrawingOrderIndex,merge,normalizeDrawingOrderIndex,sequenceExecute,touchDependencies}from"@univerjs/core";
-import{filter,firstValueFrom}from"rxjs";
-import{ShapeLineTypeEnum}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { AddBoardElementMutation, BoardElementType, IBoardChartAdapterService, IBoardElementService, RemoveBoardElementCommand, RemoveBoardElementMutation, ReorderBoardElementsOperation, UniverBoardsPlugin, UpdateBoardElementCommand, UpdateBoardElementMutation, createAddBoardElementsMutationInfos } from "@univerjs-pro/boards";
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, ChartTypeBits, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, createChartStarterRows, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, omitUndefinedFields, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { ArrangeTypeEnum, CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, Inject, Injector, Plugin, Tools, UniverInstanceType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { filter, firstValueFrom } from "rxjs";
+import { ShapeLineTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { N } from "./boards-chart-board-chart-resource.js";
 import { I, L, P } from "./boards-chart-remove-board-chart-data-source.js";
-const Ve={id:"board.command.duplicate-board-chart-data-source",type:CommandType.COMMAND,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457)=>{if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457)return false;let{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,chartId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459,duplicateDataSourceId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456.get(N),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461.getChart(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461.getDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462.dataSourceId):undefined;if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463)return false;let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22={...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463,id:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460??generateRandomId()},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB23={...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462,dataSourceId:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22.id},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB24={unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,dataSource:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25={unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,dataSourceId:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22.id},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB26={unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,chart:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB23},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB27={unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,chart:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462},var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22=[{id:I.id,params:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB24},{id:L.id,params:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB26}],var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A23=[{id:L.id,params:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB27},{id:P.id,params:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25}];return sequenceExecute(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456.get(ICommandService)).result?(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456.get(IUndoRedoService).pushUndoRedo({unitID:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,undoMutations:var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A23,redoMutations:var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22}),true):false;}};
-
+const Ve = {
+  id: "board.command.duplicate-board-chart-data-source",
+  type: CommandType.COMMAND,
+  handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457) => {
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457) return false;
+    let {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,
+        chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459,
+        duplicateDataSourceId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46457,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456.get(N),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461.getChart(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461.getDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462.dataSourceId) : undefined;
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463) return false;
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22 = {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463,
+        id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460 ?? generateRandomId()
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB23 = {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462,
+        dataSourceId: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22.id
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB24 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,
+        dataSource: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,
+        dataSourceId: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB22.id
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB26 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,
+        chart: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB23
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB27 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,
+        chart: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46462
+      },
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22 = [{
+        id: I.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB24
+      }, {
+        id: L.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB26
+      }],
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A23 = [{
+        id: L.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB27
+      }, {
+        id: P.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB25
+      }];
+    return sequenceExecute(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456.get(ICommandService)).result ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46456.get(IUndoRedoService).pushUndoRedo({
+      unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46458,
+      undoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A23,
+      redoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A22
+    }), true) : false;
+  }
+};
 export { Ve as DuplicateBoardChartDataSourceCommand };

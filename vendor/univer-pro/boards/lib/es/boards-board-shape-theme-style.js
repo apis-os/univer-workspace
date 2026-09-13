@@ -1,12 +1,199 @@
-import{BooleanNumber,ColorKit,CommandType,CustomCommandExecutionError,DependentOn,Disposable,DrawingTypeEnum,GridType,HorizontalAlign,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,PermissionStatus,Plugin,Tools,UnitModel,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createParagraphId,createSectionId,generateRandomId,merge,normalizeDrawingOrderIndex,sequenceExecute,toDisposable}from"@univerjs/core";
-import{BehaviorSubject,Subject,map,merge as mergeLocal,mergeMap}from"rxjs";
-import{UnitDrawingService}from"@univerjs/drawing";
-import{IShapeHostAdapterRegistry,ShapeArrowSizeEnum,ShapeArrowTypeEnum,ShapeFillEnum,ShapeLineCapEnum,ShapeLineDashEnum,ShapeLineJoinEnum,ShapeLineTypeEnum,ShapeOperatorEnum,ShapeTextAutoFitType,ShapeTextDirection,ShapeTextWrapType,ShapeTypeEnum,UniverShapePlugin,canApplyShapeFormulaLastValue,computeConnectorRouteLayout,createUniqueShapeName,isConnectorShape,isCurvedConnectorShape,resolveConnectorRoutePoints,resolveShapeConnectionPoint,resolveShapeDefaultInsertSize}from"@univerjs-pro/engine-shape";
-import{UnitAction,UnitObject}from"@univerjs/protocol";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { pt, xt } from "./internal-core-endo.js";
 import { Qe, et, qe, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB215 } from "./boards-board-connector-site.js";
 import { ht } from "./boards-board-theme-presets.js";
-function vt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382){switch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382){case ShapeTypeEnum.Diamond:case ShapeTypeEnum.FlowchartDecision:return"decision";case ShapeTypeEnum.Can:case ShapeTypeEnum.FlowchartMagneticDisk:case ShapeTypeEnum.FlowchartMagneticDrum:case ShapeTypeEnum.FlowchartMagneticTape:case ShapeTypeEnum.FlowchartOnlineStorage:case ShapeTypeEnum.FlowChartOfflineStorage:case ShapeTypeEnum.FlowChartInputOutput:case ShapeTypeEnum.Parallelogram:return"data";case ShapeTypeEnum.RightArrow:case ShapeTypeEnum.LeftArrow:case ShapeTypeEnum.UpArrow:case ShapeTypeEnum.DownArrow:case ShapeTypeEnum.LeftRightArrow:case ShapeTypeEnum.UpDownArrow:case ShapeTypeEnum.QuadArrow:case ShapeTypeEnum.Chevron:case ShapeTypeEnum.Pentagon:case ShapeTypeEnum.RightArrowCallout:case ShapeTypeEnum.LeftArrowCallout:case ShapeTypeEnum.UpArrowCallout:case ShapeTypeEnum.DownArrowCallout:case ShapeTypeEnum.LeftRightArrowCallout:case ShapeTypeEnum.QuadArrowCallout:case ShapeTypeEnum.UpDownArrowCallout:return"accent";case ShapeTypeEnum.Triangle:case ShapeTypeEnum.RightTriangle:case ShapeTypeEnum.Trapezoid:case ShapeTypeEnum.FlowchartManualOperation:return"danger";case ShapeTypeEnum.Star5:case ShapeTypeEnum.Star6:case ShapeTypeEnum.Star7:case ShapeTypeEnum.Star8:case ShapeTypeEnum.Star10:case ShapeTypeEnum.Star12:case ShapeTypeEnum.Star16:case ShapeTypeEnum.Star24:case ShapeTypeEnum.Star32:case ShapeTypeEnum.WedgeRectCallout:case ShapeTypeEnum.WedgeRoundRectCallout:case ShapeTypeEnum.WedgeEllipseCallout:case ShapeTypeEnum.CloudCallout:case ShapeTypeEnum.Cloud:case ShapeTypeEnum.LeftBrace:case ShapeTypeEnum.RightBrace:case ShapeTypeEnum.BracePair:case ShapeTypeEnum.LeftBracket:case ShapeTypeEnum.RightBracket:case ShapeTypeEnum.BracketPair:return"purple";case ShapeTypeEnum.FoldedCorner:case ShapeTypeEnum.FlowchartDocument:case ShapeTypeEnum.FlowchartMultiDocument:return"warning";case ShapeTypeEnum.MathPlus:case ShapeTypeEnum.MathMinus:case ShapeTypeEnum.MathMultiply:case ShapeTypeEnum.MathDivide:case ShapeTypeEnum.MathEqual:case ShapeTypeEnum.MathNotEqual:return"neutral";default:break;}if(typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382=="string"){if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("data_storage")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("database")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("data-flow"))return"data";if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("actor")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("boundary")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("control"))return"purple";if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("activation"))return"neutral";}return"primary";}function yt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384){switch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384){case ShapeTypeEnum.Ellipse:case ShapeTypeEnum.Cloud:case ShapeTypeEnum.CloudCallout:case ShapeTypeEnum.Hexagon:return"neutral";case ShapeTypeEnum.Diamond:case ShapeTypeEnum.FlowchartDecision:return"decision";case ShapeTypeEnum.Can:case ShapeTypeEnum.FlowchartMagneticDisk:case ShapeTypeEnum.FlowchartMagneticDrum:case ShapeTypeEnum.FlowchartMagneticTape:case ShapeTypeEnum.FlowchartOnlineStorage:case ShapeTypeEnum.FlowChartOfflineStorage:case ShapeTypeEnum.FlowChartInputOutput:case ShapeTypeEnum.Parallelogram:return"data";case ShapeTypeEnum.LeftArrow:case ShapeTypeEnum.UpArrow:case ShapeTypeEnum.DownArrow:case ShapeTypeEnum.LeftRightArrow:case ShapeTypeEnum.UpDownArrow:case ShapeTypeEnum.QuadArrow:case ShapeTypeEnum.RightArrowCallout:case ShapeTypeEnum.LeftArrowCallout:case ShapeTypeEnum.UpArrowCallout:case ShapeTypeEnum.DownArrowCallout:case ShapeTypeEnum.LeftRightArrowCallout:case ShapeTypeEnum.QuadArrowCallout:case ShapeTypeEnum.UpDownArrowCallout:return"warning";case ShapeTypeEnum.RightArrow:case ShapeTypeEnum.Chevron:case ShapeTypeEnum.Pentagon:return"accent";case ShapeTypeEnum.Triangle:case ShapeTypeEnum.RightTriangle:case ShapeTypeEnum.Trapezoid:case ShapeTypeEnum.FlowchartManualOperation:return"danger";case ShapeTypeEnum.Octagon:case ShapeTypeEnum.Star5:case ShapeTypeEnum.Star6:case ShapeTypeEnum.Star7:case ShapeTypeEnum.Star8:case ShapeTypeEnum.Star10:case ShapeTypeEnum.Star12:case ShapeTypeEnum.Star16:case ShapeTypeEnum.Star24:case ShapeTypeEnum.Star32:case ShapeTypeEnum.WedgeRectCallout:case ShapeTypeEnum.WedgeRoundRectCallout:case ShapeTypeEnum.WedgeEllipseCallout:case ShapeTypeEnum.LeftBrace:case ShapeTypeEnum.RightBrace:case ShapeTypeEnum.BracePair:case ShapeTypeEnum.LeftBracket:case ShapeTypeEnum.RightBracket:case ShapeTypeEnum.BracketPair:return"purple";case ShapeTypeEnum.FoldedCorner:case ShapeTypeEnum.FlowchartDocument:case ShapeTypeEnum.FlowchartMultiDocument:return"warning";case ShapeTypeEnum.MathPlus:case ShapeTypeEnum.MathMinus:case ShapeTypeEnum.MathMultiply:case ShapeTypeEnum.MathDivide:case ShapeTypeEnum.MathEqual:case ShapeTypeEnum.MathNotEqual:return"neutral";default:break;}if(typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384=="string"){if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("data_storage")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("database")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("data-flow"))return"data";if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("actor")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("boundary")||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("control"))return"purple";if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("activation"))return"neutral";}return"primary";}function bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462386,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462387){return pt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462387==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462387.id)===qe?vt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462386):yt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462386);}function St(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462400,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462401){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462401??ht[0],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404=bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462400,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462405=Qe[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462406=var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB215[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462407=et[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462408=xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462405),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462409=xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462406,"boardStroke");return{slot:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404,textColor:xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462407,"boardText"),fill:{fillType:ShapeFillEnum.SolidFill,color:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462408,opacity:1},stroke:{lineStrokeType:ShapeLineTypeEnum.SolidLine,color:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462409,width:((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403.fmtScheme)==null||(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402.lnStyleLst[1])==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402.width)??2,opacity:1}};}
-
+function vt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382) {
+  switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382) {
+    case ShapeTypeEnum.Diamond:
+    case ShapeTypeEnum.FlowchartDecision:
+      return "decision";
+    case ShapeTypeEnum.Can:
+    case ShapeTypeEnum.FlowchartMagneticDisk:
+    case ShapeTypeEnum.FlowchartMagneticDrum:
+    case ShapeTypeEnum.FlowchartMagneticTape:
+    case ShapeTypeEnum.FlowchartOnlineStorage:
+    case ShapeTypeEnum.FlowChartOfflineStorage:
+    case ShapeTypeEnum.FlowChartInputOutput:
+    case ShapeTypeEnum.Parallelogram:
+      return "data";
+    case ShapeTypeEnum.RightArrow:
+    case ShapeTypeEnum.LeftArrow:
+    case ShapeTypeEnum.UpArrow:
+    case ShapeTypeEnum.DownArrow:
+    case ShapeTypeEnum.LeftRightArrow:
+    case ShapeTypeEnum.UpDownArrow:
+    case ShapeTypeEnum.QuadArrow:
+    case ShapeTypeEnum.Chevron:
+    case ShapeTypeEnum.Pentagon:
+    case ShapeTypeEnum.RightArrowCallout:
+    case ShapeTypeEnum.LeftArrowCallout:
+    case ShapeTypeEnum.UpArrowCallout:
+    case ShapeTypeEnum.DownArrowCallout:
+    case ShapeTypeEnum.LeftRightArrowCallout:
+    case ShapeTypeEnum.QuadArrowCallout:
+    case ShapeTypeEnum.UpDownArrowCallout:
+      return "accent";
+    case ShapeTypeEnum.Triangle:
+    case ShapeTypeEnum.RightTriangle:
+    case ShapeTypeEnum.Trapezoid:
+    case ShapeTypeEnum.FlowchartManualOperation:
+      return "danger";
+    case ShapeTypeEnum.Star5:
+    case ShapeTypeEnum.Star6:
+    case ShapeTypeEnum.Star7:
+    case ShapeTypeEnum.Star8:
+    case ShapeTypeEnum.Star10:
+    case ShapeTypeEnum.Star12:
+    case ShapeTypeEnum.Star16:
+    case ShapeTypeEnum.Star24:
+    case ShapeTypeEnum.Star32:
+    case ShapeTypeEnum.WedgeRectCallout:
+    case ShapeTypeEnum.WedgeRoundRectCallout:
+    case ShapeTypeEnum.WedgeEllipseCallout:
+    case ShapeTypeEnum.CloudCallout:
+    case ShapeTypeEnum.Cloud:
+    case ShapeTypeEnum.LeftBrace:
+    case ShapeTypeEnum.RightBrace:
+    case ShapeTypeEnum.BracePair:
+    case ShapeTypeEnum.LeftBracket:
+    case ShapeTypeEnum.RightBracket:
+    case ShapeTypeEnum.BracketPair:
+      return "purple";
+    case ShapeTypeEnum.FoldedCorner:
+    case ShapeTypeEnum.FlowchartDocument:
+    case ShapeTypeEnum.FlowchartMultiDocument:
+      return "warning";
+    case ShapeTypeEnum.MathPlus:
+    case ShapeTypeEnum.MathMinus:
+    case ShapeTypeEnum.MathMultiply:
+    case ShapeTypeEnum.MathDivide:
+    case ShapeTypeEnum.MathEqual:
+    case ShapeTypeEnum.MathNotEqual:
+      return "neutral";
+    default:
+      break;
+  }
+  if (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382 == "string") {
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("data_storage") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("database") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("data-flow")) return "data";
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("actor") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("boundary") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("control")) return "purple";
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462382.includes("activation")) return "neutral";
+  }
+  return "primary";
+}
+function yt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384) {
+  switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384) {
+    case ShapeTypeEnum.Ellipse:
+    case ShapeTypeEnum.Cloud:
+    case ShapeTypeEnum.CloudCallout:
+    case ShapeTypeEnum.Hexagon:
+      return "neutral";
+    case ShapeTypeEnum.Diamond:
+    case ShapeTypeEnum.FlowchartDecision:
+      return "decision";
+    case ShapeTypeEnum.Can:
+    case ShapeTypeEnum.FlowchartMagneticDisk:
+    case ShapeTypeEnum.FlowchartMagneticDrum:
+    case ShapeTypeEnum.FlowchartMagneticTape:
+    case ShapeTypeEnum.FlowchartOnlineStorage:
+    case ShapeTypeEnum.FlowChartOfflineStorage:
+    case ShapeTypeEnum.FlowChartInputOutput:
+    case ShapeTypeEnum.Parallelogram:
+      return "data";
+    case ShapeTypeEnum.LeftArrow:
+    case ShapeTypeEnum.UpArrow:
+    case ShapeTypeEnum.DownArrow:
+    case ShapeTypeEnum.LeftRightArrow:
+    case ShapeTypeEnum.UpDownArrow:
+    case ShapeTypeEnum.QuadArrow:
+    case ShapeTypeEnum.RightArrowCallout:
+    case ShapeTypeEnum.LeftArrowCallout:
+    case ShapeTypeEnum.UpArrowCallout:
+    case ShapeTypeEnum.DownArrowCallout:
+    case ShapeTypeEnum.LeftRightArrowCallout:
+    case ShapeTypeEnum.QuadArrowCallout:
+    case ShapeTypeEnum.UpDownArrowCallout:
+      return "warning";
+    case ShapeTypeEnum.RightArrow:
+    case ShapeTypeEnum.Chevron:
+    case ShapeTypeEnum.Pentagon:
+      return "accent";
+    case ShapeTypeEnum.Triangle:
+    case ShapeTypeEnum.RightTriangle:
+    case ShapeTypeEnum.Trapezoid:
+    case ShapeTypeEnum.FlowchartManualOperation:
+      return "danger";
+    case ShapeTypeEnum.Octagon:
+    case ShapeTypeEnum.Star5:
+    case ShapeTypeEnum.Star6:
+    case ShapeTypeEnum.Star7:
+    case ShapeTypeEnum.Star8:
+    case ShapeTypeEnum.Star10:
+    case ShapeTypeEnum.Star12:
+    case ShapeTypeEnum.Star16:
+    case ShapeTypeEnum.Star24:
+    case ShapeTypeEnum.Star32:
+    case ShapeTypeEnum.WedgeRectCallout:
+    case ShapeTypeEnum.WedgeRoundRectCallout:
+    case ShapeTypeEnum.WedgeEllipseCallout:
+    case ShapeTypeEnum.LeftBrace:
+    case ShapeTypeEnum.RightBrace:
+    case ShapeTypeEnum.BracePair:
+    case ShapeTypeEnum.LeftBracket:
+    case ShapeTypeEnum.RightBracket:
+    case ShapeTypeEnum.BracketPair:
+      return "purple";
+    case ShapeTypeEnum.FoldedCorner:
+    case ShapeTypeEnum.FlowchartDocument:
+    case ShapeTypeEnum.FlowchartMultiDocument:
+      return "warning";
+    case ShapeTypeEnum.MathPlus:
+    case ShapeTypeEnum.MathMinus:
+    case ShapeTypeEnum.MathMultiply:
+    case ShapeTypeEnum.MathDivide:
+    case ShapeTypeEnum.MathEqual:
+    case ShapeTypeEnum.MathNotEqual:
+      return "neutral";
+    default:
+      break;
+  }
+  if (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384 == "string") {
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("data_storage") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("database") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("data-flow")) return "data";
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("actor") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("boundary") || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("control")) return "purple";
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462384.includes("activation")) return "neutral";
+  }
+  return "primary";
+}
+function bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462386, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462387) {
+  return pt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462387 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462387.id) === qe ? vt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462386) : yt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462386);
+}
+function St(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462400, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462401) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462401 ?? ht[0],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404 = bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462400, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462405 = Qe[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462406 = var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB215[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462407 = et[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404],
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462408 = xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462405),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462409 = xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462406, "boardStroke");
+  return {
+    slot: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462404,
+    textColor: xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462407, "boardText"),
+    fill: {
+      fillType: ShapeFillEnum.SolidFill,
+      color: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462408,
+      opacity: 1
+    },
+    stroke: {
+      lineStrokeType: ShapeLineTypeEnum.SolidLine,
+      color: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462409,
+      width: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462403.fmtScheme) == null || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402.lnStyleLst[1]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462402.width) ?? 2,
+      opacity: 1
+    }
+  };
+}
 export { St as resolveBoardShapeThemeStyle };

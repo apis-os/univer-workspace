@@ -1,9 +1,92 @@
-import{BASE_RECORD_ID_FIELD_ID,BaseConditionalColorOperator,BaseConditionalColorTarget,BaseConditionalDateMode,BaseDataModel,BaseFieldType,BaseFilterConjunction,BaseHierarchyInvalidReason,BaseRecordLinkRole,BaseSortDirection,BaseViewType,CellValueType,ColorKit,CommandType,CustomCommandExecutionError,DateSystem,DependentOn,Disposable,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSON1,JSONX,ObjectMatrix,Optional,PermissionStatus,Plugin,Tools,UniverInstanceType,allocateBaseFormulaTableName,assertBaseTableRecordIdentity,createBaseFormulaTableNameMap,createBaseRecordIdField,createIdentifier,dateKit,excelDateTimeSerial,excelSerialToDateTime,generateRandomId,getBaseFormulaTableName,isBaseRecordIdFieldName,isValidBaseRecordId,merge,nameCharacterCheck,numfmt,regexp,sequenceExecute,toDisposable,touchDependencies}from'@univerjs/core';
-import{FormulaCalculationTriggerService,IActiveDirtyManagerService,RemoveSuperTableMutation,SetFormulaCalculationResultMutation,SetSuperTableMutation,SetTriggerFormulaCalculationStartMutation,UniverProFormulaEnginePlugin,refactorFormulaUnitQualifier}from'@univerjs-pro/engine-formula';
-import{UnitAction,UnitObject}from'@univerjs/protocol';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
-import{DataSyncPrimaryController}from'@univerjs/rpc';
-import{FormulaCalculationSessionService,FormulaResultApplicationType}from'@univerjs/engine-formula';
-function Mo(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465631=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.now??Date.now(),var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.primaryFieldId??var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id+"-field-name",var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.gridViewId??var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id+"-view-grid",var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D86=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordCount??0,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465632=createBaseRecordIdField(),var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB268={'id':var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96,'name':var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.primaryFieldName??'Name','type':BaseFieldType.Text,'config':{'placeholder':"bases.fieldConfig.textPlaceholder"}},var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB269={},var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A242=[],var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB270={},var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB271={},var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272={};for(let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41=0;var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41<var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D86;var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41++){let var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id+"-record-"+(var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41+1);var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB269[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23]={'id':var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23,'values':{[BASE_RECORD_ID_FIELD_ID]:var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23,...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix?{[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96]:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix+'\x20'+(var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41+1)}:{})},'orderKey':String(var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41+1).padStart(4,'0'),'createdAt':var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465631,'updatedAt':var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465631},var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A242.push(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23),var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB270[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23]=var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41,var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB271[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41]=var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23,var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41]={0:{'v':var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23,'t':CellValueType.STRING}},var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix&&(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41][1]={'v':var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix+'\x20'+(var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41+1),'t':CellValueType.STRING});}let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB273={'id':var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97,'tableId':var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id,'name':'Grid','type':BaseViewType.Grid,'fieldOrder':[BASE_RECORD_ID_FIELD_ID,var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96],'fieldSettings':{[BASE_RECORD_ID_FIELD_ID]:{'hidden':true}},'config':{'frozenFieldCount':1}};return{'id':var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id,'name':var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.name,'primaryFieldId':var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96,'fieldOrder':[BASE_RECORD_ID_FIELD_ID,var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96],'fields':{[BASE_RECORD_ID_FIELD_ID]:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465632,[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96]:var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB268},'records':var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB269,'recordOrder':var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A242,'rowIndex':var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB270,'rowId':var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB271,'colIndex':{[BASE_RECORD_ID_FIELD_ID]:0,[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96]:1},'colId':{0:BASE_RECORD_ID_FIELD_ID,1:var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96},'cellData':var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272,'views':{[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97]:var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB273},'viewOrder':[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97]};}
-
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+function Mo(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465631 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.now ?? Date.now(),
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.primaryFieldId ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id + "-field-name",
+    var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.gridViewId ?? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id + "-view-grid",
+    var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D86 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordCount ?? 0,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465632 = createBaseRecordIdField(),
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB268 = {
+      'id': var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96,
+      'name': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.primaryFieldName ?? 'Name',
+      'type': BaseFieldType.Text,
+      'config': {
+        'placeholder': "bases.fieldConfig.textPlaceholder"
+      }
+    },
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB269 = {},
+    var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A242 = [],
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB270 = {},
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB271 = {},
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272 = {};
+  for (let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41 = 0; var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41 < var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D86; var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41++) {
+    let var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id + "-record-" + (var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41 + 1);
+    var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB269[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23] = {
+      'id': var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23,
+      'values': {
+        [BASE_RECORD_ID_FIELD_ID]: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23,
+        ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix ? {
+          [var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96]: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix + '\x20' + (var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41 + 1)
+        } : {})
+      },
+      'orderKey': String(var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41 + 1).padStart(4, '0'),
+      'createdAt': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465631,
+      'updatedAt': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465631
+    }, var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A242.push(var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23), var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB270[var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23] = var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB271[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41] = var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23, var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41] = {
+      0: {
+        'v': var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB23,
+        't': CellValueType.STRING
+      }
+    }, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix && (var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272[var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41][1] = {
+      'v': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.recordNamePrefix + '\x20' + (var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D41 + 1),
+      't': CellValueType.STRING
+    });
+  }
+  let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB273 = {
+    'id': var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97,
+    'tableId': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id,
+    'name': 'Grid',
+    'type': BaseViewType.Grid,
+    'fieldOrder': [BASE_RECORD_ID_FIELD_ID, var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96],
+    'fieldSettings': {
+      [BASE_RECORD_ID_FIELD_ID]: {
+        'hidden': true
+      }
+    },
+    'config': {
+      'frozenFieldCount': 1
+    }
+  };
+  return {
+    'id': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.id,
+    'name': var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465630.name,
+    'primaryFieldId': var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96,
+    'fieldOrder': [BASE_RECORD_ID_FIELD_ID, var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96],
+    'fields': {
+      [BASE_RECORD_ID_FIELD_ID]: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D465632,
+      [var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96]: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB268
+    },
+    'records': var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB269,
+    'recordOrder': var_L0_db_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A242,
+    'rowIndex': var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB270,
+    'rowId': var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB271,
+    'colIndex': {
+      [BASE_RECORD_ID_FIELD_ID]: 0,
+      [var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96]: 1
+    },
+    'colId': {
+      0: BASE_RECORD_ID_FIELD_ID,
+      1: var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB96
+    },
+    'cellData': var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB272,
+    'views': {
+      [var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97]: var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB273
+    },
+    'viewOrder': [var_L0_db_endo_strVal_pure_O1_zalloc_nothrow_sig12FB97]
+  };
+}
 export { Mo as createDefaultBaseTableSnapshot };

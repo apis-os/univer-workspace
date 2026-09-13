@@ -1,17 +1,65 @@
-import{ConvertDocFormulaToTextCommand,DOC_FORMULA_PLUGIN,DOC_FORMULA_SCHEMA_VERSION,DocFormulaDisplayTextService,DocFormulaModel,DocFormulaService,InsertDocFormulaCommand,RemoveDocFormulaCommand,RemoveDocFormulaMutation,SetDocFormulaMutation,SetDocFormulaNumberFormatCommand,UniverDocsFormulaPlugin,UpdateDocFormulaCommand,findDocFormulaRange,isDocFormulaRange,isDocFormulaResource}from"@univerjs-pro/docs-formula";
-import{CommandType,DEFAULT_NUMBER_FORMAT,DependentOn,Disposable,DocumentDataModel,HorizontalAlign,ICommandService,IConfigService,IPermissionService,IUniverInstanceService,Inject,Injector,LocaleService,Plugin,ThemeService,Tools,UniverInstanceType,VerticalAlign,createParagraphId,merge,touchDependencies}from"@univerjs/core";
-import{DOC_INTERCEPTOR_POINT,DOC_SELECTION_OPTION_PRESERVE_CARET,DocInterceptorService,DocLayoutExecutorService,DocSelectionManagerService,DocSkeletonManagerService,UniverDocsPlugin,canEditDocumentTargets,getDocumentEntityParentPermissionObjectIds,getDocumentEntityPermissionObjectId}from"@univerjs/docs";
-import{DocCanvasPopManagerService,DocFloatMenuService,DocHtmlExportService,DocParagraphMenuService,DocRenderController,IDocClipboardPasteAdapterService,IDocClipboardService,UniverDocsUIPlugin,disableMenuWhenHeaderFooterEditing,drawDocCustomRangeChrome,resolveDocCustomRangeChromeTheme}from"@univerjs/docs-ui";
-import{CURSOR_TYPE,ComponentExtension,DocumentSkeleton,DocumentViewModel,Documents,IRenderManagerService,UniverRenderEnginePlugin,pixelToPt,ptToPixel}from"@univerjs/engine-render";
-import{BehaviorSubject}from"rxjs";
-import{ComponentManager,IMenuManagerService,IShortcutService,IconManager,KeyCode,MenuItemType,MenuManagerPosition,MetaKeys,RibbonInsertGroup,RibbonPosition,getMenuHiddenObservable,useDependency,useObservable}from"@univerjs/ui";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{FormulaBindingEditorDialog,FormulaBindingNumberFormatDialog,SHAPE_EDITOR_UI_PLUGIN_CONFIG_KEY,UniverShapeEditorUIPlugin}from"@univerjs-pro/shape-editor-ui";
-import{DeleteIcon,FxIcon,NumberIcon,TextIcon,WriteIcon}from"@univerjs/icons";
-import{Fragment,jsx,jsxs}from"react/jsx-runtime";
-import{Button,Tooltip}from"@univerjs/design";
-import{useState}from"react";
+import { ConvertDocFormulaToTextCommand, DOC_FORMULA_PLUGIN, DOC_FORMULA_SCHEMA_VERSION, DocFormulaDisplayTextService, DocFormulaModel, DocFormulaService, InsertDocFormulaCommand, RemoveDocFormulaCommand, RemoveDocFormulaMutation, SetDocFormulaMutation, SetDocFormulaNumberFormatCommand, UniverDocsFormulaPlugin, UpdateDocFormulaCommand, findDocFormulaRange, isDocFormulaRange, isDocFormulaResource } from "@univerjs-pro/docs-formula";
+import { CommandType, DEFAULT_NUMBER_FORMAT, DependentOn, Disposable, DocumentDataModel, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, ThemeService, Tools, UniverInstanceType, VerticalAlign, createParagraphId, merge, touchDependencies } from "@univerjs/core";
+import { DOC_INTERCEPTOR_POINT, DOC_SELECTION_OPTION_PRESERVE_CARET, DocInterceptorService, DocLayoutExecutorService, DocSelectionManagerService, DocSkeletonManagerService, UniverDocsPlugin, canEditDocumentTargets, getDocumentEntityParentPermissionObjectIds, getDocumentEntityPermissionObjectId } from "@univerjs/docs";
+import { DocCanvasPopManagerService, DocFloatMenuService, DocHtmlExportService, DocParagraphMenuService, DocRenderController, IDocClipboardPasteAdapterService, IDocClipboardService, UniverDocsUIPlugin, disableMenuWhenHeaderFooterEditing, drawDocCustomRangeChrome, resolveDocCustomRangeChromeTheme } from "@univerjs/docs-ui";
+import { CURSOR_TYPE, ComponentExtension, DocumentSkeleton, DocumentViewModel, Documents, IRenderManagerService, UniverRenderEnginePlugin, pixelToPt, ptToPixel } from "@univerjs/engine-render";
+import { BehaviorSubject } from "rxjs";
+import { ComponentManager, IMenuManagerService, IShortcutService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, RibbonInsertGroup, RibbonPosition, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { FormulaBindingEditorDialog, FormulaBindingNumberFormatDialog, SHAPE_EDITOR_UI_PLUGIN_CONFIG_KEY, UniverShapeEditorUIPlugin } from "@univerjs-pro/shape-editor-ui";
+import { DeleteIcon, FxIcon, NumberIcon, TextIcon, WriteIcon } from "@univerjs/icons";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { Button, Tooltip } from "@univerjs/design";
+import { useState } from "react";
 import { L } from "./internal-core-endo.js";
-const R={id:"docs-formula.operation.open-editor",type:CommandType.OPERATION,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450)=>{var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46451;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450.unitId)??((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46451=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC))==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46451.getUnitId());if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452)return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449.get(L);if(!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450.rangeId)&&!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450.selection)){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453.getSelectedFormulaTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452);return!!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453.openEditor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172??{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452});}return!!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453.openEditor({...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450,unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452});}},z={id:"docs-formula.operation.open-selected-hover",type:CommandType.OPERATION,handler:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460=H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459.get(IUniverInstanceService));return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460?!!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459.get(L).showSelectedHover(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460):false;}},B={id:"docs-formula.operation.close-popup",type:CommandType.OPERATION,handler:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463.get(L).closeAndRestoreSelection()},V={id:"docs-formula.operation.remove-selected",type:CommandType.OPERATION,handler:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465=H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464.get(IUniverInstanceService));if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465)return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464.get(L),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466.getSelectedFormulaTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467)return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464.get(ICommandService).syncExecuteCommand(RemoveDocFormulaCommand.id,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466.closeEditor(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466.closeHover()),!!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468;}};function H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46474){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475;return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46474.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC))==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475.getUnitId();}
-
+const R = {
+    id: "docs-formula.operation.open-editor",
+    type: CommandType.OPERATION,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450) => {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46451;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450.unitId) ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46451 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46451.getUnitId());
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46449.get(L);
+      if (!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450.rangeId) && !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450.selection)) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453.getSelectedFormulaTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452);
+        return !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453.openEditor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46172 ?? {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452
+        });
+      }
+      return !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46453.openEditor({
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46450,
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46452
+      });
+    }
+  },
+  z = {
+    id: "docs-formula.operation.open-selected-hover",
+    type: CommandType.OPERATION,
+    handler: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460 = H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459.get(IUniverInstanceService));
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460 ? !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46459.get(L).showSelectedHover(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460) : false;
+    }
+  },
+  B = {
+    id: "docs-formula.operation.close-popup",
+    type: CommandType.OPERATION,
+    handler: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46463.get(L).closeAndRestoreSelection()
+  },
+  V = {
+    id: "docs-formula.operation.remove-selected",
+    type: CommandType.OPERATION,
+    handler: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465 = H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464.get(IUniverInstanceService));
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464.get(L),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466.getSelectedFormulaTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46465);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46464.get(ICommandService).syncExecuteCommand(RemoveDocFormulaCommand.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46467);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466.closeEditor(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46466.closeHover()), !!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46468;
+    }
+  };
+function H(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46474) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475;
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46474.getCurrentUnitOfType(UniverInstanceType.UNIVER_DOC)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46475.getUnitId();
+}
 export { R as OpenDocFormulaEditorOperation, z as OpenSelectedDocFormulaHoverOperation, B as CloseDocFormulaPopupOperation, V as RemoveSelectedDocFormulaOperation };

@@ -50,7 +50,7 @@ const e = {
       next: "Następny",
       other: "Inne",
       ok: "OK",
-      cancel: "Anuluj",
+      cancel: "Anuluj"
     },
     valueFilter: {
       title: "Filtry\x20wartości",
@@ -72,7 +72,7 @@ const e = {
       bottomPercent: "Najniższy procent",
       clear: "Wyczyść filtr",
       ok: "OK",
-      cancel: "Anuluj",
+      cancel: "Anuluj"
     },
     dateGroup: {
       title: "Grupowanie dat",
@@ -86,7 +86,7 @@ const e = {
       date: "Dzień",
       hour: "Godzina",
       minute: "Minuta",
-      hourMinute: "Godzina-Minuta",
+      hourMinute: "Godzina-Minuta"
     },
     dialog: {
       fieldName: "Nazwa pola",
@@ -102,7 +102,7 @@ const e = {
         clearFilter: "Wyczyść filtr",
         blank: "(Puste)",
         cancel: "Anuluj",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "Ogólny",
@@ -114,20 +114,15 @@ const e = {
         formatTypes: "Typy formatów",
         confirm: "OK",
         cancel: "Anuluj",
-        generalDesc:
-          "Format ogólny nie zawiera żadnego konkretnego formatu liczbowego.",
-        accountingDesc:
-          "Format księgowy wyrównuje symbole walut i miejsca dziesiętne w kolumnie.",
-        currencyDesc:
-          "Format\x20walutowy\x20jest\x20używany\x20do\x20ogólnych\x20wartości\x20pieniężnych,\x20format\x20księgowy\x20wyrównuje\x20miejsca\x20dziesiętne\x20w\x20kolumnie\x20wartości.",
-        dateDesc:
-          "Format daty wyświetla numery seryjne daty i czasu jako wartości daty.",
-        thousandthPercentileDesc:
-          "Format liczbowy jest używany do ogólnych liczb, formaty walutowe i księgowe zapewniają wyspecjalizowane formaty dla wartości pieniężnych.",
+        generalDesc: "Format ogólny nie zawiera żadnego konkretnego formatu liczbowego.",
+        accountingDesc: "Format księgowy wyrównuje symbole walut i miejsca dziesiętne w kolumnie.",
+        currencyDesc: "Format\x20walutowy\x20jest\x20używany\x20do\x20ogólnych\x20wartości\x20pieniężnych,\x20format\x20księgowy\x20wyrównuje\x20miejsca\x20dziesiętne\x20w\x20kolumnie\x20wartości.",
+        dateDesc: "Format daty wyświetla numery seryjne daty i czasu jako wartości daty.",
+        thousandthPercentileDesc: "Format liczbowy jest używany do ogólnych liczb, formaty walutowe i księgowe zapewniają wyspecjalizowane formaty dla wartości pieniężnych.",
         decimalPlaces: "Miejsca dziesiętne",
         currencyTypes: "Typy walut",
         negativeNumberTypes: "Typy liczb ujemnych",
-        dateTypes: "Typy\x20dat",
+        dateTypes: "Typy\x20dat"
       },
       source: {
         insertPivotTable: "Wstaw tabelę przestawną",
@@ -135,8 +130,8 @@ const e = {
         position: "Położenie tabeli przestawnej",
         newSheet: "Nowy arkusz",
         existingSheet: "Istniejący\x20arkusz",
-        intersect: "Nie może nakładać się na dane źródłowe",
-      },
+        intersect: "Nie może nakładać się na dane źródłowe"
+      }
     },
     subtotal: {
       average: "Średnia",
@@ -149,7 +144,7 @@ const e = {
       stdDevp: "Odchylenie standardowe populacji",
       sum: "Suma",
       var: "Wariancja",
-      varp: "Wariancja\x20populacji",
+      varp: "Wariancja\x20populacji"
     },
     subTotalText: "Suma częściowa",
     grandTotalText: "Suma całkowita",
@@ -175,24 +170,21 @@ const e = {
       layoutCompact: "Forma\x20kompaktowa",
       layoutOutline: "Forma konspektu",
       repeatRowLabels: "Powtarzaj etykiety wierszy",
-      repeatColLabels: "Powtarzaj etykiety kolumn",
+      repeatColLabels: "Powtarzaj etykiety kolumn"
     },
     perform: {
       tips: "Wskazówki",
       info: "W\x20obszarze\x20docelowym\x20znajdują\x20się\x20już\x20dane.\x20Ta\x20akcja\x20nadpisze\x20istniejące\x20dane.\x20Czy\x20chcesz\x20kontynuować?",
       confirm: "Potwierdź",
       cancel: "Anuluj",
-      rowColError:
-        "Nie można wprowadzić tej zmiany w zaznaczonych komórkach, ponieważ wpłynęłaby ona na tabelę przestawną. Użyj listy pól, aby zmodyfikować raport. Jeśli próbujesz wstawić lub usunąć komórki, przenieś tabelę przestawną i spróbuj ponownie.",
+      rowColError: "Nie można wprowadzić tej zmiany w zaznaczonych komórkach, ponieważ wpłynęłaby ona na tabelę przestawną. Użyj listy pól, aby zmodyfikować raport. Jeśli próbujesz wstawić lub usunąć komórki, przenieś tabelę przestawną i spróbuj ponownie."
     },
     msg: {
       emptySourceRange: "Zakres\x20źródłowy\x20jest\x20pusty",
       invalidSize: "Zakres źródłowy jest nieprawidłowy",
-      mergeCellError:
-        "Nie\x20można\x20wstawić\x20scalonych\x20komórek\x20do\x20tabeli\x20przestawnej",
+      mergeCellError: "Nie\x20można\x20wstawić\x20scalonych\x20komórek\x20do\x20tabeli\x20przestawnej",
       editCellError: "Nie można edytować komórek w tabeli przestawnej",
-      permissionError:
-        "Nie można edytować tabeli przestawnej w chronionym arkuszu",
+      permissionError: "Nie można edytować tabeli przestawnej w chronionym arkuszu"
     },
     averageName: "Średnia z ",
     countName: "Liczba z ",
@@ -204,7 +196,7 @@ const e = {
     stdDevpName: "OdchStdPop z ",
     sumName: "Suma z ",
     varName: "Wariancja z ",
-    varpName: "WariancjaPop z ",
-  },
+    varpName: "WariancjaPop z "
+  }
 };
 module.exports = e;

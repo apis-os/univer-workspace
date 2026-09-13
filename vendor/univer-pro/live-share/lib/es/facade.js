@@ -1,1 +1,89 @@
-import{LiveShareController,LiveShareStatus}from"@univerjs-pro/live-share";import{IUniverInstanceService,UniverInstanceType}from"@univerjs/core";import{FEnum,FUniver}from"@univerjs/core/facade";function o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638){"@babel/helpers - typeof";return o=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46){return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46;}:function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462&&typeof Symbol=="function"&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462.constructor===Symbol&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462!==Symbol.prototype?"symbol":typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462;},o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638);}function s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641){if(o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640)!="object"||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640)return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640;var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640[Symbol.toPrimitive];if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642!==undefined){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641||"default");if(o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643)!="object")return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643;throw TypeError("@@toPrimitive must return a primitive value.");}return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641==="string"?String:Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640);}function c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649=s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648,"string");return o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649)=="symbol"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649+"";}function l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4654){return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653=c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653))in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652?Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653,{value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4654,enumerable:true,configurable:true,writable:true}):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4654,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652;}var u=class extends FUniver{constructor(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464){super(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464),l(this,"_liveShareController",undefined);}_initialize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466){this._liveShareController=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.get(LiveShareController);}getLiveShareStatus(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468=this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468)throw Error("No active workbook found.");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610=this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469);return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610.getStatus())??LiveShareStatus.IDLE;}startFollowing(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614=this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614)throw Error("No\x20active\x20workbook\x20found.");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616=this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616)throw Error("No LiveShareCoordinator found for the active workbook.");var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616.startFollowing();}stopFollowing(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620=this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620)throw Error("No active workbook found.");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622=this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622)throw Error("No LiveShareCoordinator found for the active workbook.");var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.stopFollowing();}startPresenting(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626=this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626)throw Error("No\x20active\x20workbook\x20found.");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628=this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628)throw Error("No LiveShareCoordinator found for the active workbook.");var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628.tryStartPresenting();}stopPresenting(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632=this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632)throw Error("No\x20active\x20workbook\x20found.");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634=this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634)throw Error("No LiveShareCoordinator found for the active workbook.");var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.stopPresenting();}};FUniver.extend(u);var d=class extends FEnum{get LiveShareStatusEnum(){return LiveShareStatus;}};FEnum.extend(d);export{};
+import { LiveShareController, LiveShareStatus } from "@univerjs-pro/live-share";
+import { IUniverInstanceService, UniverInstanceType } from "@univerjs/core";
+import { FEnum, FUniver } from "@univerjs/core/facade";
+function o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638) {
+  "@babel/helpers - typeof";
+
+  return o = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462;
+  }, o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638);
+}
+function s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641) {
+  if (o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 || "default");
+    if (o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4643;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4641 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4640);
+}
+function c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649 = s(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648, "string");
+  return o(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649 + "";
+}
+function l(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4654) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653 = c(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4654,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4654, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652;
+}
+var u = class extends FUniver {
+  constructor(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464) {
+    super(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464), l(this, "_liveShareController", undefined);
+  }
+  _initialize(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466) {
+    this._liveShareController = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466.get(LiveShareController);
+  }
+  getLiveShareStatus() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 = this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468) throw Error("No active workbook found.");
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468.getUnitId(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610 = this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469);
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610.getStatus()) ?? LiveShareStatus.IDLE;
+  }
+  startFollowing() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614 = this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614) throw Error("No\x20active\x20workbook\x20found.");
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614.getUnitId(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616 = this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616.startFollowing();
+  }
+  stopFollowing() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620 = this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620) throw Error("No active workbook found.");
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620.getUnitId(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622 = this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.stopFollowing();
+  }
+  startPresenting() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 = this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626) throw Error("No\x20active\x20workbook\x20found.");
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.getUnitId(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 = this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628.tryStartPresenting();
+  }
+  stopPresenting() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 = this._injector["get"](IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632) throw Error("No\x20active\x20workbook\x20found.");
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.getUnitId(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634 = this._liveShareController["getLiveShareCoordinatorSync"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634) throw Error("No LiveShareCoordinator found for the active workbook.");
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.stopPresenting();
+  }
+};
+FUniver.extend(u);
+var d = class extends FEnum {
+  get LiveShareStatusEnum() {
+    return LiveShareStatus;
+  }
+};
+FEnum.extend(d);
+export {};

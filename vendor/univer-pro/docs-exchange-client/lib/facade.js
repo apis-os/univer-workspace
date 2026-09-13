@@ -1,1 +1,24 @@
-import{IDocExchangeService as v9}from"@univerjs-pro/docs-exchange-client";import{FUniver as v10}from"@univerjs/core/facade";var n=class extends v10{importDocToUnitIdAsync(v1,v2){return this._injector["get"](v9).importDocToUnitId(v1,v2);}importDocToSnapshotAsync(v3,v4){return this._injector["get"](v9).importDocToSnapshot(v3,v4);}exportDocByUnitIdAsync(v5){return this._injector["get"](v9).exportDocByUnitId(v5);}exportDocBySnapshotAsync(v6){return this._injector["get"](v9).exportDocBySnapshot(v6);}transformSnapshotJsonToDocumentDataAsync(v7){return this._injector["get"](v9).transformSnapshotJsonToDocumentData(v7);}transformDocumentDataToSnapshotJsonAsync(v8){return this._injector["get"](v9).transformDocumentDataToSnapshotJson(v8);}};v10.extend(n);export{};
+import { IDocExchangeService as var_core_value_sig4D4C } from "@univerjs-pro/docs-exchange-client";
+import { FUniver as var_core_value_sigC9E0 } from "@univerjs/core/facade";
+var n = class extends var_core_value_sigC9E0 {
+  importDocToUnitIdAsync(var_core_value_sig7524, var_core_value_sig2AD8) {
+    return this._injector["get"](var_core_value_sig4D4C).importDocToUnitId(var_core_value_sig7524, var_core_value_sig2AD8);
+  }
+  importDocToSnapshotAsync(var_core_value_sig2AD0, var_core_value_sig3EEE) {
+    return this._injector["get"](var_core_value_sig4D4C).importDocToSnapshot(var_core_value_sig2AD0, var_core_value_sig3EEE);
+  }
+  exportDocByUnitIdAsync(var_core_value_sigBC46) {
+    return this._injector["get"](var_core_value_sig4D4C).exportDocByUnitId(var_core_value_sigBC46);
+  }
+  exportDocBySnapshotAsync(var_core_value_sig3D7D) {
+    return this._injector["get"](var_core_value_sig4D4C).exportDocBySnapshot(var_core_value_sig3D7D);
+  }
+  transformSnapshotJsonToDocumentDataAsync(var_core_value_sig27E5) {
+    return this._injector["get"](var_core_value_sig4D4C).transformSnapshotJsonToDocumentData(var_core_value_sig27E5);
+  }
+  transformDocumentDataToSnapshotJsonAsync(var_core_value_sig8061) {
+    return this._injector["get"](var_core_value_sig4D4C).transformDocumentDataToSnapshotJson(var_core_value_sig8061);
+  }
+};
+var_core_value_sigC9E0.extend(n);
+export {};

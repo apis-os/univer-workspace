@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Alta",
       rowHeightExtraTall: "Muito alta",
       conditionalColoring: "Coloração\x20condicional",
-      conditionalColoringHelp:
-        'Clique em "Nova condição" para aplicar cores com base nas condições definidas. As condições mais acima têm prioridade.',
+      conditionalColoringHelp: 'Clique em "Nova condição" para aplicar cores com base nas condições definidas. As condições mais acima têm prioridade.',
       conditionalColoringSmart: "Aplicar cor inteligente a tudo",
       conditionalColor: "Cor",
       conditionalCustomColor: "Personalizado",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "verificado",
       conditionalUnchecked: "desmarcado",
       statusDoneTitle: "O\x20status\x20está\x20concluído",
-      statusDoneDescription:
-        "Aplique um marcador verde suave nos registros correspondentes.",
+      statusDoneDescription: "Aplique um marcador verde suave nos registros correspondentes.",
       statusBlockedTitle: "O status está bloqueado",
-      statusBlockedDescription:
-        "Aplique\x20um\x20marcador\x20de\x20aviso\x20aos\x20registros\x20bloqueados.",
+      statusBlockedDescription: "Aplique\x20um\x20marcador\x20de\x20aviso\x20aos\x20registros\x20bloqueados.",
       addField: "Adicionar campo",
       undo: "Desfazer",
-      redo: "Refazer",
+      redo: "Refazer"
     },
     recordDetail: {
       untitledRecord: "Registro sem título",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Adicionar mais registros após o envio",
       panelSize: "Tamanho\x20do\x20painel",
       fullScreen: "Tela cheia",
-      exitFullScreen: "Sair da tela cheia",
+      exitFullScreen: "Sair da tela cheia"
     },
     recordLink: {
       searchRecords: "Pesquisar\x20registros",
@@ -74,27 +71,22 @@ const n = {
       selectedCount: "{0} selecionados",
       missingRecord: "Registro\x20excluído",
       openRecord: "Abrir registro vinculado",
-      back: "Voltar",
+      back: "Voltar"
     },
     hierarchy: {
-      invalidField:
-        "Escolha\x20um\x20campo\x20de\x20vínculo\x20de\x20registro\x20de\x20valor\x20único\x20que\x20aponte\x20para\x20esta\x20tabela.",
-      missingRecord:
-        "O registro ou o item pai não existe mais. Atualize e tente novamente.",
+      invalidField: "Escolha\x20um\x20campo\x20de\x20vínculo\x20de\x20registro\x20de\x20valor\x20único\x20que\x20aponte\x20para\x20esta\x20tabela.",
+      missingRecord: "O registro ou o item pai não existe mais. Atualize e tente novamente.",
       selfParent: "Um registro não pode ser seu próprio item pai.",
       cycle: "Esta movimentação criaria um ciclo de itens pai.",
-      maxDepth:
-        "Esta movimentação ultrapassaria o limite máximo de cinco níveis hierárquicos.",
-      sortedView:
-        "Remova\x20a\x20ordenação\x20da\x20visualização\x20antes\x20de\x20reordenar\x20os\x20registros\x20manualmente.",
-      operationFailed:
-        "Não foi possível aplicar a alteração de hierarquia. Atualize e tente novamente.",
+      maxDepth: "Esta movimentação ultrapassaria o limite máximo de cinco níveis hierárquicos.",
+      sortedView: "Remova\x20a\x20ordenação\x20da\x20visualização\x20antes\x20de\x20reordenar\x20os\x20registros\x20manualmente.",
+      operationFailed: "Não foi possível aplicar a alteração de hierarquia. Atualize e tente novamente.",
       parent: "Item pai",
       parentFieldName: "Itens\x20pai",
       children: "Subitens",
       viewChildren: "Ver subitens",
       root: "Registro raiz",
-      setParent: "Definir item pai",
+      setParent: "Definir item pai"
     },
     collaboration: {
       localStatus: "Modo\x20local",
@@ -106,17 +98,16 @@ const n = {
       offlineStatus: "Off-line",
       offlineTooltip: "Conexão perdida. Clique para reconectar.",
       conflictStatus: "Conflito",
-      conflictTooltip:
-        "Um\x20conflito\x20de\x20colaboração\x20precisa\x20de\x20atenção.",
+      conflictTooltip: "Um\x20conflito\x20de\x20colaboração\x20precisa\x20de\x20atenção.",
       notCollabStatus: "Não colaborativo",
-      notCollabTooltip: "Esta base não está em modo de colaboração.",
+      notCollabTooltip: "Esta base não está em modo de colaboração."
     },
     virtualRecord: {
       regrouped: "O\x20registro\x20será\x20reagrupado",
       resorted: "O registro será reordenado",
       moved: "O\x20registro\x20será\x20movido\x20nesta\x20visualização",
       filteredOut: "O registro está oculto nesta visualização",
-      "delete d": "O\x20registro\x20foi\x20excluído",
+      "delete d": "O\x20registro\x20foi\x20excluído"
     },
     gridContext: {
       insert: "Inserir",
@@ -126,7 +117,7 @@ const n = {
       addSubRecord: "Adicionar\x20sub-registro",
       clearContent: "Limpar\x20conteúdo",
       deleteRecord: "Excluir registro",
-      deleteRecords: "Excluir registros",
+      deleteRecords: "Excluir registros"
     },
     common: {
       apply: "Aplicar",
@@ -141,7 +132,7 @@ const n = {
       searchClose: "Fechar pesquisa",
       value: "Valor",
       newCondition: "Nova condição",
-      newBadge: "Novo",
+      newBadge: "Novo"
     },
     footerStat: {
       none: "Nenhum",
@@ -160,17 +151,16 @@ const n = {
       sum: "Soma {0}",
       average: "Média {0}",
       min: "Mínimo\x20{0}",
-      max: "Máx. {0}",
+      max: "Máx. {0}"
     },
     confirmDelete: {
       tableTitle: "Excluir esta tabela?",
       tableDescription: "Esta tabela e seus registros serão removidos.",
-      tableReferenced:
-        "Esta tabela não pode ser excluída porque os seguintes campos fazem referência a ela: {0}.",
+      tableReferenced: "Esta tabela não pode ser excluída porque os seguintes campos fazem referência a ela: {0}.",
       viewTitle: "Excluir\x20esta\x20visualização?",
       viewDescription: "Esta\x20visualização\x20será\x20removida.",
       fieldTitle: "Excluir este campo?",
-      fieldDescription: "Este campo será removido da tabela.",
+      fieldDescription: "Este campo será removido da tabela."
     },
     duplicateTable: {
       title: "Duplicar tabela",
@@ -179,28 +169,26 @@ const n = {
       configurationsOnly: "Somente configurações",
       configurationsAndRecords: "Configurações e registros",
       action: "Duplicar",
-      copyName: "{0} cópia",
+      copyName: "{0} cópia"
     },
     tableNameValidation: {
       required: "Digite\x20um\x20nome\x20para\x20a\x20tabela.",
       tooLong: "Use no máximo 31 caracteres.",
-      apostrophe:
-        "O nome da tabela não pode começar nem terminar com apóstrofo.",
+      apostrophe: "O nome da tabela não pode começar nem terminar com apóstrofo.",
       invalidCharacters: "O nome da tabela não pode conter : \\ / ? * [ ].",
       duplicate: "Já existe uma tabela com esse nome.",
-      invalid: "Digite um nome de tabela válido.",
+      invalid: "Digite um nome de tabela válido."
     },
     clipboard: {
       recordsCopied: "{0} registros copiados",
-      attachmentsUploading: "Enviando {0} anexos...",
+      attachmentsUploading: "Enviando {0} anexos..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Tabela\x20de\x20destino",
       recordLinkDisplayField: "Campo de exibição",
       recordLinkPickerFields: "Campos\x20auxiliares\x20do\x20seletor",
       recordLinkAllowMultiple: "Permitir vincular vários registros",
-      recordLinkDescription:
-        "Armazena IDs de registro estáveis. Use fórmulas padrão do Excel, como XLOOKUP e TEXTSPLIT, para ler valores vinculados.",
+      recordLinkDescription: "Armazena IDs de registro estáveis. Use fórmulas padrão do Excel, como XLOOKUP e TEXTSPLIT, para ler valores vinculados.",
       fieldTitle: "Título\x20do\x20campo",
       fieldTitlePlaceholder: "Digite\x20um\x20título\x20de\x20campo",
       fieldType: "Tipo de campo",
@@ -209,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Avançado",
       defaultValue: "Valor\x20padrão",
       newField: "Novo\x20campo",
-      defaultSettingsReady:
-        "Este tipo de campo está pronto com as configurações padrão.",
+      defaultSettingsReady: "Este tipo de campo está pronto com as configurações padrão.",
       numberFormat: "Formato numérico",
       currencyFormat: "Formato de moeda",
       dateFormat: "Formato de data",
@@ -256,18 +243,12 @@ const n = {
       filterByField: "Filtrar\x20por\x20{0}",
       createKanbanWithField: "Crie Kanban com {0}",
       deleteField: "Excluir campo",
-      referenceOptionsHelp:
-        "Referenciar\x20dados\x20de\x20outras\x20tabelas\x20como\x20opções",
-      allowMultipleMembers:
-        "Permitir\x20adicionar\x20vários\x20membros\x20em\x20um\x20registro",
-      allowMultipleGroups:
-        "Permitir\x20adicionar\x20vários\x20grupos\x20em\x20um\x20registro",
-      defaultProviderMock:
-        "O valor padrão é resolvido a partir do {0} item simulado {1}{2}.",
-      defaultProviderExternal:
-        "O\x20valor\x20padrão\x20é\x20resolvido\x20pelo\x20provedor\x20Univer\x20{0}\x20externo.",
-      linkPlaceholder:
-        "Insira uma URL (por exemplo, univer.ai ou https://univer.ai/skills).",
+      referenceOptionsHelp: "Referenciar\x20dados\x20de\x20outras\x20tabelas\x20como\x20opções",
+      allowMultipleMembers: "Permitir\x20adicionar\x20vários\x20membros\x20em\x20um\x20registro",
+      allowMultipleGroups: "Permitir\x20adicionar\x20vários\x20grupos\x20em\x20um\x20registro",
+      defaultProviderMock: "O valor padrão é resolvido a partir do {0} item simulado {1}{2}.",
+      defaultProviderExternal: "O\x20valor\x20padrão\x20é\x20resolvido\x20pelo\x20provedor\x20Univer\x20{0}\x20externo.",
+      linkPlaceholder: "Insira uma URL (por exemplo, univer.ai ou https://univer.ai/skills).",
       phonePlaceholder: "Insira um número de telefone",
       currencySymbol: "Símbolo\x20de\x20moeda",
       thousandsSeparator: "Separador de milhares",
@@ -291,8 +272,7 @@ const n = {
       targetValue: "Valor alvo",
       searchGroups: "Grupos\x20de\x20pesquisa",
       selectGroups: "Selecione\x20grupos",
-      noProviderGroupData:
-        "Nenhum\x20dado\x20de\x20grupo\x20de\x20provedores\x20disponível",
+      noProviderGroupData: "Nenhum\x20dado\x20de\x20grupo\x20de\x20provedores\x20disponível",
       noMatchingGroups: "Nenhum grupo correspondente.",
       searchMembers: "Pesquisar\x20membros",
       selectMembers: "Selecione\x20membros",
@@ -301,10 +281,8 @@ const n = {
       noFormulaConfigured: "Nenhuma fórmula configurada",
       editFormula: "Editar fórmula",
       closeFormulaEditor: "Fechar editor de fórmulas",
-      formulaHint:
-        "Use campos da linha atual como [@[Valor]]. A1:B10 e referências de célula única não são permitidas.",
-      formulaReferenceError:
-        "Referências\x20e\x20intervalos\x20A1\x20não\x20são\x20suportados\x20em\x20fórmulas\x20base.",
+      formulaHint: "Use campos da linha atual como [@[Valor]]. A1:B10 e referências de célula única não são permitidas.",
+      formulaReferenceError: "Referências\x20e\x20intervalos\x20A1\x20não\x20são\x20suportados\x20em\x20fórmulas\x20base.",
       formulaTables: "Tabelas",
       formulaFields: "Campos",
       formulaFunctions: "Funções",
@@ -317,10 +295,8 @@ const n = {
       currentTableName: "Tabela atual",
       currentTableField: "Campo da tabela atual",
       fieldFromTable: "Campo de {0}",
-      referenceCurrentField:
-        'Faça referência ao campo "{0}" na tabela Base atual. Ele será salvo como [[#This Row],[{1}]] para o mecanismo de fórmulas.',
-      referenceTableField:
-        "Faça\x20referência\x20ao\x20campo\x20\x22{0}\x22\x20da\x20tabela\x20\x22{1}\x22.",
+      referenceCurrentField: 'Faça referência ao campo "{0}" na tabela Base atual. Ele será salvo como [[#This Row],[{1}]] para o mecanismo de fórmulas.',
+      referenceTableField: "Faça\x20referência\x20ao\x20campo\x20\x22{0}\x22\x20da\x20tabela\x20\x22{1}\x22.",
       fieldNameColumn: "Nome",
       fieldTypeColumn: "Tipo",
       insertColumn: "Inserir",
@@ -335,8 +311,7 @@ const n = {
       formulaFormatPercent: "Por cento",
       formulaFormatDateTime: "Data/Hora",
       addDescriptionPlaceholder: "Adicione uma descrição",
-      numberingDescription:
-        "Atribui automaticamente um índice crescente exclusivo começando em 1 quando um registro é criado. Os valores gerados não podem ser editados.",
+      numberingDescription: "Atribui automaticamente um índice crescente exclusivo começando em 1 quando um registro é criado. Os valores gerados não podem ser editados.",
       optionColor: "Cor da opção",
       separatorLocal: "Local",
       separatorCommaPeriod: "Vírgula, ponto final",
@@ -361,7 +336,7 @@ const n = {
       ratingIconLightning: "Raio",
       ratingIconMedal: "Medalha",
       increment: "incremento",
-      decrement: "diminuir",
+      decrement: "diminuir"
     },
     cellEditor: {
       done: "Feito",
@@ -377,8 +352,7 @@ const n = {
       deleteAttachment: "Excluir anexo {0}",
       deleteAttachmentConfirmTitle: "Excluir este anexo?",
       deleteAttachmentsConfirmTitle: "Excluir\x20{0}\x20anexos?",
-      deleteAttachmentConfirmDescription:
-        "Os anexos selecionados serão removidos deste registro.",
+      deleteAttachmentConfirmDescription: "Os anexos selecionados serão removidos deste registro.",
       failedToAttachFile: "Falha ao anexar arquivo",
       file: "ARQUIVO",
       invalidEmail: "Endereço de e-mail inválido",
@@ -389,7 +363,7 @@ const n = {
       selectOptions: "Selecione opções",
       previousMonth: "Mês anterior",
       nextMonth: "Próximo mês",
-      time: "Tempo",
+      time: "Tempo"
     },
     recordDetailField: {
       previousRecord: "Registro anterior",
@@ -402,7 +376,7 @@ const n = {
       empty: "Vazio",
       unassigned: "Não atribuído",
       editField: "Editar {0}",
-      noVisibleFields: "Nenhum\x20campo\x20visível",
+      noVisibleFields: "Nenhum\x20campo\x20visível"
     },
     fieldMenu: {
       createSharedBaseField: "Crie um campo Base compartilhado",
@@ -433,8 +407,8 @@ const n = {
         createdBy: "Campo de autor do sistema",
         updatedBy: "Campo\x20modificador\x20do\x20sistema",
         createdAt: "Hora\x20de\x20criação\x20do\x20sistema",
-        updatedAt: "Hora de atualização do sistema",
-      },
+        updatedAt: "Hora de atualização do sistema"
+      }
     },
     fieldTypes: {
       text: "Texto",
@@ -458,14 +432,13 @@ const n = {
       createdBy: "Criado por",
       updatedBy: "Modificado por",
       createdAt: "Data\x20de\x20criação",
-      updatedAt: "Data da última modificação",
+      updatedAt: "Data da última modificação"
     },
     viewMenus: {
       customizeKanban: "Personalizar Kanban",
       customizeCard: "Personalizar cartão",
       eventSettings: "Configurações de evento",
-      calendarViewSettings:
-        "Configurações\x20de\x20visualização\x20do\x20calendário",
+      calendarViewSettings: "Configurações\x20de\x20visualização\x20do\x20calendário",
       calendarViewSettingsTitle: "Configurações de visualização do calendário",
       ganttViewSettings: "Configurações de visualização de Gantt",
       fieldsCount: "{0} campos",
@@ -497,13 +470,11 @@ const n = {
       addCondition: "Adicionar condição",
       calculateWorkingDaysOnly: "Calcular apenas dias úteis",
       customWorkingDays: "Dias\x20úteis\x20personalizados",
-      customWorkingDaysHelp:
-        "Personalize dias úteis e dias de folga para esta visualização de Gantt. Se não for definido, de segunda a sexta-feira será usado quando o cálculo de dias úteis estiver ativado.",
+      customWorkingDaysHelp: "Personalize dias úteis e dias de folga para esta visualização de Gantt. Se não for definido, de segunda a sexta-feira será usado quando o cálculo de dias úteis estiver ativado.",
       notSet: "Não\x20definido",
       settings: "Configurações",
       setWorkingDays: "Definir dias úteis",
-      setWorkingDaysDescription:
-        "Personalize dias úteis e folgas e aplique-os à base atual",
+      setWorkingDaysDescription: "Personalize dias úteis e folgas e aplique-os à base atual",
       closeWorkingDaysSettings: "Fechar configurações de dias úteis",
       addWorkingDays: "Adicionar dias úteis",
       holidayName: "Nome do feriado",
@@ -512,8 +483,7 @@ const n = {
       add: "Adicionar",
       removeWorkingDayException: "Remover exceção de dia útil",
       legalWorkingDays: "Dias úteis legais",
-      legalWorkingDaysHelp:
-        "Os dias úteis legais estarão disponíveis depois que uma API de calendário externa for conectada.",
+      legalWorkingDaysHelp: "Os dias úteis legais estarão disponíveis depois que uma API de calendário externa for conectada.",
       mon: "seg",
       tue: "ter",
       wed: "qua",
@@ -530,7 +500,7 @@ const n = {
       groupByFieldFallback: "Agrupar por campo",
       kanbanGroup: "Grupo Kanban",
       required: "Obrigatório",
-      kanbanGroupHelp: "As visualizações Kanban sempre usam um campo de grupo.",
+      kanbanGroupHelp: "As visualizações Kanban sempre usam um campo de grupo."
     },
     operators: {
       is: "é",
@@ -542,7 +512,7 @@ const n = {
       greaterThan: "maior que",
       lessThan: "menor que",
       before: "é antes",
-      after: "está depois",
+      after: "está depois"
     },
     viewSettings: {
       title: "Configurações\x20da\x20visualização",
@@ -572,7 +542,7 @@ const n = {
       ganttViewDescription: "Linha do tempo com datas de início e término.",
       galleryView: "Galeria",
       galleryViewDescription: "Cartões visuais para navegar nos registros.",
-      copySuffix: "Cópia",
+      copySuffix: "Cópia"
     },
     tableSidebar: {
       searchTables: "Pesquisar tabelas",
@@ -585,9 +555,12 @@ const n = {
       renameTable: "Renomear tabela",
       duplicateTable: "Tabela Duplicada",
       deleteTable: "Excluir tabela",
-      defaultTableName: "Tabela {0}",
+      defaultTableName: "Tabela {0}"
     },
-    footer: { record: "registro", records: "registros" },
+    footer: {
+      record: "registro",
+      records: "registros"
+    },
     canvas: {
       addRecord: "Adicionar\x20registro",
       attachmentDropLabel: "Adicionar arquivos a este registro",
@@ -600,12 +573,12 @@ const n = {
       quarter: "Trimestre",
       today: "Hoje",
       week: "Semana",
-      year: "Ano",
+      year: "Ano"
     },
     empty: {
       value: "Vazio",
       noRecords: "Nenhum registro",
-      invalidView: "Esta visualização precisa ser configurada",
+      invalidView: "Esta visualização precisa ser configurada"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -623,19 +596,17 @@ const n = {
         engineering: "Engenharia",
         financial: "Financeiro",
         lookup: "Pesquisa e referência",
-        web: "Rede",
+        web: "Rede"
       },
       generic: {
         engineAbstract: "{0} função do mecanismo de fórmula",
-        engineDescription:
-          "{0}\x20é\x20fornecido\x20pelo\x20mecanismo\x20de\x20fórmula\x20Univer.\x20Base\x20oferece\x20suporte\x20a\x20referências\x20de\x20campo\x20como\x20TableName[[#This\x20Row],[Field]]\x20e\x20OtherTable[Field],\x20mas\x20não\x20oferece\x20suporte\x20a\x20células\x20A1,\x20intervalos\x20A1:B10\x20ou\x20saída\x20de\x20matriz\x20dividida\x20em\x20campos\x20de\x20fórmula\x20Base.",
+        engineDescription: "{0}\x20é\x20fornecido\x20pelo\x20mecanismo\x20de\x20fórmula\x20Univer.\x20Base\x20oferece\x20suporte\x20a\x20referências\x20de\x20campo\x20como\x20TableName[[#This\x20Row],[Field]]\x20e\x20OtherTable[Field],\x20mas\x20não\x20oferece\x20suporte\x20a\x20células\x20A1,\x20intervalos\x20A1:B10\x20ou\x20saída\x20de\x20matriz\x20dividida\x20em\x20campos\x20de\x20fórmula\x20Base.",
         argument: {
           name: "argumento",
-          detail:
-            "Um valor, referência de campo, referência de campo de tabela ou expressão suportada pelo mecanismo de fórmula Univer.",
-        },
-      },
-    },
-  },
+          detail: "Um valor, referência de campo, referência de campo de tabela ou expressão suportada pelo mecanismo de fórmula Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

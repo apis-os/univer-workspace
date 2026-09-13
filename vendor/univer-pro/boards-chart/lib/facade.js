@@ -1,1 +1,238 @@
-import{BoardElementType as v74,InsertBoardChartCommand as v75}from"@univerjs-pro/boards";import{BoardChartConfigAdapter as v76,BoardChartResourceService as v77}from"@univerjs-pro/boards-chart";import{FBoard as v78}from"@univerjs-pro/boards/facade";import{ChartDataSourceRuntimeStatus as v79,DEFAULT_CHART_RESOURCE_HEADER_ROW as v80,IChartDataSourceRuntimeService as v81,ResourceRefChartDataSourceAdapter as v82,buildOrientedChartDataSet as v83,chartTypeToBits as v84,toChartDataItem as v85,toChartModelConfig as v86}from"@univerjs-pro/engine-chart";import{CHART_FACADE_RANDOM_ID_LENGTH as v87,FChart as v88,createChartBuilder as v89}from"@univerjs-pro/engine-chart/facade";import{ICommandService as v90,IUniverInstanceService as v91,Tools as v92,UniverInstanceType as v93,generateRandomId as v94}from"@univerjs/core";import{filter as v95,firstValueFrom as v96}from"rxjs";function C(v61){"@babel/helpers - typeof";return C=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v34){return typeof v34;}:function(v35){return v35&&typeof Symbol=="function"&&v35.constructor===Symbol&&v35!==Symbol.prototype?"symbol":typeof v35;},C(v61);}function w(v62,v63){if(C(v62)!="object"||!v62)return v62;var v64=v62[Symbol.toPrimitive];if(v64!==undefined){var v65=v64.call(v62,v63||"default");if(C(v65)!="object")return v65;throw TypeError("@@toPrimitive must return a primitive value.");}return(v63==="string"?String:Number)(v62);}function T(v66){var v67=w(v66,"string");return C(v67)=="symbol"?v67:v67+"";}function E(v68,v69,v70){return(v69=T(v69))in v68?Object.defineProperty(v68,v69,{value:v70,enumerable:true,configurable:true,writable:true}):v68[v69]=v70,v68;}var D=class extends v88{constructor(v36,v37,v38){super(v38.chartId,()=>{let v11=v36.getId(),v12=v37.get(v91).getUnit(v11,v93.UNIVER_BOARD);if(!v12)throw Error("Board not found: "+v11);return new v76({unitId:v11,pageId:v12.getActivePageId(),chartId:v38.chartId,elementId:v38.elementId,boardModel:v12,injector:v37});},(v13,v14,v15)=>v89({info:v13,description:v14,type:v15,normalizeSource:v4=>Array.isArray(v4)?{values:v92.deepClone(v4)}:{source:v82.toReference(v4)},extension:({setInfo:v5})=>({setContainer(v1){return v5("containerId",v1),this;},setLane(v2){return v5("laneId",v2),this;},setZOrder(v3){return v5("zOrder",v3),this;}})}),v37),this._board=v36,E(this,"unitId",undefined),E(this,"elementId",undefined),E(this,"chartId",undefined),this.unitId=v36.getId(),this.elementId=v38.elementId,this.chartId=v38.chartId;}getElementId(){return this.elementId;}getElement(){let v39=this._board["getElement"](this.elementId);return(v39==null?undefined:v39.type)===v74.Chart?v39:null;}getChart(){return this._injector["get"](v77).getChart(this.unitId,this.chartId)??null;}getDataSource(){let v40=this.getChart();return v40?this._injector["get"](v77).getDataSource(this.unitId,v40.dataSourceId)??null:null;}},O=class extends v78{newChart(v41){return v89({type:v41,injector:this._injector,commitError:"Insert the Board chart before updating it.",normalizeSource:v16=>Array.isArray(v16)?{values:v92.deepClone(v16)}:{source:v82.toReference(v16)},createInfo:()=>({}),extension:({setInfo:v17})=>({setContainer(v6){return v17("containerId",v6),this;},setLane(v7){return v17("laneId",v7),this;},setZOrder(v8){return v17("zOrder",v8),this;}})});}async insertChart(v42){let v43=null;try{var v44,v45,v46,v47;v43=v42.dataSource["values"]?null:await this._resolveReferencedValues(v42.dataSource["source"]);let v18={...v42.config,data:v42.dataSource["values"]??v43.values,dataSource:v42.dataSource,position:v42.position,size:v42.size,parentId:v42.containerId,laneId:v42.laneId,insertIndex:v42.zOrder},v19=this._getStoragePageId(),v20=Array.isArray(v18.data)?v18.data:v18.data["values"];if(v20.length===0)throw Error("Board chart data is required.");let v21=(v44=v18.size)==null?undefined:v44.width,v22=(v45=v18.size)==null?undefined:v45.height;if(v21!==undefined&&!(v21>0)||v22!==undefined&&!(v22>0))throw Error("Board\x20chart\x20size\x20must\x20be\x20positive.");let v23=v18.id??v94(v87),v24=v18.elementId??v94(v87),v25={...v18.context},v26=v86(v18,{series:k(v20,v25)});if(!this._injector["get"](v90).syncExecuteCommand(v75.id,{unitId:this.getId(),subUnitId:v19,elementId:v24,chartId:v23,parentId:v18.parentId,laneId:v18.laneId,insertIndex:v18.insertIndex,left:((v46=v18.position)==null?undefined:v46.x)??0,top:((v47=v18.position)==null?undefined:v47.y)??0,width:v21,height:v22,options:{chartType:v84(v18.type),data:v20,dataSource:v18.dataSource,style:v26.style,context:{...v25,chartContext:v26.context},dataAggregation:v26.dataAggregation}}))throw Error("Failed to create Board chart.");return this.getChart(v23)??this._injector["createInstance"](D,this,this._injector,{chartId:v23,elementId:v24});}finally{v43==null||v43.handle["dispose"]();}}getChart(v48){let v49=this._elements().find(v27=>v27.id===v48||v27.chartId===v48);return v49&&this._hasCompleteResource(v49.chartId)?this._injector["createInstance"](D,this,this._injector,{chartId:v49.chartId,elementId:v49.id}):null;}getCharts(){return this._elements().filter(v28=>this._hasCompleteResource(v28.chartId)).map(v29=>this._injector["createInstance"](D,this,this._injector,{chartId:v29.chartId,elementId:v29.id}));}_elements(){let v50=this.getData().pages[this._getStoragePageId()];return v50?v50.elementOrder["map"](v30=>v50.elements[v30]).filter(v31=>(v31==null?undefined:v31.type)===v74.Chart):[];}_hasCompleteResource(v51){let v52=this._injector["get"](v77),v53=v52.getChart(this.getId(),v51);return!!v53&&!!v52.getDataSource(this.getId(),v53.dataSourceId);}_getStoragePageId(){var v54;let v55=this.getData();return v55.activePageId??((v54=v55.pageOrder)==null?undefined:v54[0])??Object.keys(v55.pages)[0]??"";}async _resolveReferencedValues(v56){let v57=this._injector["get"](v81).acquire(v56);try{let v32=await v96(v57.state$["pipe"](v95(({status:v9})=>v9!==v79.LOADING)));if(v32.status!==v79.READY||!v32.values)throw v32.error instanceof Error?v32.error:Error(v56.kind);return{values:v32.values["map"](v10=>[...v10]),handle:v57};}catch(v33){throw v57.dispose(),v33;}}};function k(v71,v72){let v73=v83(v71,{headerRow:v72.headerRow??v80,isRowDirection:v76.isRowRecordDirection(v72.orient)});return v73.source["slice"](1).map((v58,v59)=>{let v60=1+v59;return{index:v60,name:String(v73.dimensions[v60]??""),items:v58.map(v85)};});}v78.extend(O);export{D as FBoardChart};
+import { BoardElementType as var_core_value_sig5B67, InsertBoardChartCommand as var_core_value_sig1758 } from "@univerjs-pro/boards";
+import { BoardChartConfigAdapter as var_core_value_sig4805, BoardChartResourceService as var_core_value_sigE67E } from "@univerjs-pro/boards-chart";
+import { FBoard as var_core_value_sig2902 } from "@univerjs-pro/boards/facade";
+import { ChartDataSourceRuntimeStatus as var_core_value_sig9989, DEFAULT_CHART_RESOURCE_HEADER_ROW as var_core_value_sig698E, IChartDataSourceRuntimeService as var_core_value_sig2809, ResourceRefChartDataSourceAdapter as var_core_value_sig2DAB, buildOrientedChartDataSet as var_core_value_sig877E, chartTypeToBits as var_core_value_sig20C8, toChartDataItem as var_core_value_sigE9A7, toChartModelConfig as var_core_value_sigBECE } from "@univerjs-pro/engine-chart";
+import { CHART_FACADE_RANDOM_ID_LENGTH as var_core_value_sig1B22, FChart as var_core_value_sig7F72, createChartBuilder as var_core_value_sig7B2A } from "@univerjs-pro/engine-chart/facade";
+import { ICommandService as var_core_value_sig06CD, IUniverInstanceService as var_core_value_sigA5F1, Tools as var_core_value_sig97A2, UniverInstanceType as var_core_value_sig07E9, generateRandomId as var_core_value_sig4F59 } from "@univerjs/core";
+import { filter as var_core_value_sigF564, firstValueFrom as var_core_value_sig8CFA } from "rxjs";
+function C(var_core_value_sig9A8D) {
+  "@babel/helpers - typeof";
+
+  return C = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigA12B) {
+    return typeof var_core_value_sigA12B;
+  } : function (var_core_value_sigF230) {
+    return var_core_value_sigF230 && typeof Symbol == "function" && var_core_value_sigF230.constructor === Symbol && var_core_value_sigF230 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigF230;
+  }, C(var_core_value_sig9A8D);
+}
+function w(var_core_value_sigC259, var_core_value_sig9C9F) {
+  if (C(var_core_value_sigC259) != "object" || !var_core_value_sigC259) return var_core_value_sigC259;
+  var var_core_value_sigFDEA = var_core_value_sigC259[Symbol.toPrimitive];
+  if (var_core_value_sigFDEA !== undefined) {
+    var var_core_value_sig86D0 = var_core_value_sigFDEA.call(var_core_value_sigC259, var_core_value_sig9C9F || "default");
+    if (C(var_core_value_sig86D0) != "object") return var_core_value_sig86D0;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig9C9F === "string" ? String : Number)(var_core_value_sigC259);
+}
+function T(var_core_value_sig4CD2) {
+  var var_core_value_sig48CA = w(var_core_value_sig4CD2, "string");
+  return C(var_core_value_sig48CA) == "symbol" ? var_core_value_sig48CA : var_core_value_sig48CA + "";
+}
+function E(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621) {
+  return (var_core_value_sigA942 = T(var_core_value_sigA942)) in var_core_value_sig50AF ? Object.defineProperty(var_core_value_sig50AF, var_core_value_sigA942, {
+    value: var_core_value_sigA621,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig50AF[var_core_value_sigA942] = var_core_value_sigA621, var_core_value_sig50AF;
+}
+var D = class extends var_core_value_sig7F72 {
+    constructor(var_core_value_sig09B8, var_core_value_sig6F91, var_core_value_sigF9C7) {
+      super(var_core_value_sigF9C7.chartId, () => {
+        let var_core_value_sig76BA = var_core_value_sig09B8.getId(),
+          var_core_value_sigFBFA = var_core_value_sig6F91.get(var_core_value_sigA5F1).getUnit(var_core_value_sig76BA, var_core_value_sig07E9.UNIVER_BOARD);
+        if (!var_core_value_sigFBFA) throw Error("Board not found: " + var_core_value_sig76BA);
+        return new var_core_value_sig4805({
+          unitId: var_core_value_sig76BA,
+          pageId: var_core_value_sigFBFA.getActivePageId(),
+          chartId: var_core_value_sigF9C7.chartId,
+          elementId: var_core_value_sigF9C7.elementId,
+          boardModel: var_core_value_sigFBFA,
+          injector: var_core_value_sig6F91
+        });
+      }, (var_core_value_sigF602, var_core_value_sig1BBD, var_core_value_sigF704) => var_core_value_sig7B2A({
+        info: var_core_value_sigF602,
+        description: var_core_value_sig1BBD,
+        type: var_core_value_sigF704,
+        normalizeSource: var_core_value_sig3EEE => Array.isArray(var_core_value_sig3EEE) ? {
+          values: var_core_value_sig97A2.deepClone(var_core_value_sig3EEE)
+        } : {
+          source: var_core_value_sig2DAB.toReference(var_core_value_sig3EEE)
+        },
+        extension: ({
+          setInfo: var_core_value_sigBC46
+        }) => ({
+          setContainer(var_core_value_sig7524) {
+            return var_core_value_sigBC46("containerId", var_core_value_sig7524), this;
+          },
+          setLane(var_core_value_sig2AD8) {
+            return var_core_value_sigBC46("laneId", var_core_value_sig2AD8), this;
+          },
+          setZOrder(var_core_value_sig2AD0) {
+            return var_core_value_sigBC46("zOrder", var_core_value_sig2AD0), this;
+          }
+        })
+      }), var_core_value_sig6F91), this._board = var_core_value_sig09B8, E(this, "unitId", undefined), E(this, "elementId", undefined), E(this, "chartId", undefined), this.unitId = var_core_value_sig09B8.getId(), this.elementId = var_core_value_sigF9C7.elementId, this.chartId = var_core_value_sigF9C7.chartId;
+    }
+    getElementId() {
+      return this.elementId;
+    }
+    getElement() {
+      let var_core_value_sig8895 = this._board["getElement"](this.elementId);
+      return (var_core_value_sig8895 == null ? undefined : var_core_value_sig8895.type) === var_core_value_sig5B67.Chart ? var_core_value_sig8895 : null;
+    }
+    getChart() {
+      return this._injector["get"](var_core_value_sigE67E).getChart(this.unitId, this.chartId) ?? null;
+    }
+    getDataSource() {
+      let var_core_value_sigC80B = this.getChart();
+      return var_core_value_sigC80B ? this._injector["get"](var_core_value_sigE67E).getDataSource(this.unitId, var_core_value_sigC80B.dataSourceId) ?? null : null;
+    }
+  },
+  O = class extends var_core_value_sig2902 {
+    newChart(var_core_value_sig284F) {
+      return var_core_value_sig7B2A({
+        type: var_core_value_sig284F,
+        injector: this._injector,
+        commitError: "Insert the Board chart before updating it.",
+        normalizeSource: var_core_value_sig2BCF => Array.isArray(var_core_value_sig2BCF) ? {
+          values: var_core_value_sig97A2.deepClone(var_core_value_sig2BCF)
+        } : {
+          source: var_core_value_sig2DAB.toReference(var_core_value_sig2BCF)
+        },
+        createInfo: () => ({}),
+        extension: ({
+          setInfo: var_core_value_sig0D69
+        }) => ({
+          setContainer(var_core_value_sig3D7D) {
+            return var_core_value_sig0D69("containerId", var_core_value_sig3D7D), this;
+          },
+          setLane(var_core_value_sig27E5) {
+            return var_core_value_sig0D69("laneId", var_core_value_sig27E5), this;
+          },
+          setZOrder(var_core_value_sig8061) {
+            return var_core_value_sig0D69("zOrder", var_core_value_sig8061), this;
+          }
+        })
+      });
+    }
+    async insertChart(var_core_value_sigE154) {
+      let var_core_value_sig4632 = null;
+      try {
+        var var_core_value_sig12F2, var_core_value_sig2259, var_core_value_sig9E2F, var_core_value_sigD082;
+        var_core_value_sig4632 = var_core_value_sigE154.dataSource["values"] ? null : await this._resolveReferencedValues(var_core_value_sigE154.dataSource["source"]);
+        let var_core_value_sig480E = {
+            ...var_core_value_sigE154.config,
+            data: var_core_value_sigE154.dataSource["values"] ?? var_core_value_sig4632.values,
+            dataSource: var_core_value_sigE154.dataSource,
+            position: var_core_value_sigE154.position,
+            size: var_core_value_sigE154.size,
+            parentId: var_core_value_sigE154.containerId,
+            laneId: var_core_value_sigE154.laneId,
+            insertIndex: var_core_value_sigE154.zOrder
+          },
+          var_core_value_sig26DB = this._getStoragePageId(),
+          var_core_value_sigF0F9 = Array.isArray(var_core_value_sig480E.data) ? var_core_value_sig480E.data : var_core_value_sig480E.data["values"];
+        if (var_core_value_sigF0F9.length === 0) throw Error("Board chart data is required.");
+        let var_core_value_sig1A0F = (var_core_value_sig12F2 = var_core_value_sig480E.size) == null ? undefined : var_core_value_sig12F2.width,
+          var_core_value_sigFBA4 = (var_core_value_sig2259 = var_core_value_sig480E.size) == null ? undefined : var_core_value_sig2259.height;
+        if (var_core_value_sig1A0F !== undefined && !(var_core_value_sig1A0F > 0) || var_core_value_sigFBA4 !== undefined && !(var_core_value_sigFBA4 > 0)) throw Error("Board\x20chart\x20size\x20must\x20be\x20positive.");
+        let var_core_value_sig4383 = var_core_value_sig480E.id ?? var_core_value_sig4F59(var_core_value_sig1B22),
+          var_core_value_sig186C = var_core_value_sig480E.elementId ?? var_core_value_sig4F59(var_core_value_sig1B22),
+          var_core_value_sigD955 = {
+            ...var_core_value_sig480E.context
+          },
+          var_core_value_sig48BD = var_core_value_sigBECE(var_core_value_sig480E, {
+            series: k(var_core_value_sigF0F9, var_core_value_sigD955)
+          });
+        if (!this._injector["get"](var_core_value_sig06CD).syncExecuteCommand(var_core_value_sig1758.id, {
+          unitId: this.getId(),
+          subUnitId: var_core_value_sig26DB,
+          elementId: var_core_value_sig186C,
+          chartId: var_core_value_sig4383,
+          parentId: var_core_value_sig480E.parentId,
+          laneId: var_core_value_sig480E.laneId,
+          insertIndex: var_core_value_sig480E.insertIndex,
+          left: ((var_core_value_sig9E2F = var_core_value_sig480E.position) == null ? undefined : var_core_value_sig9E2F.x) ?? 0,
+          top: ((var_core_value_sigD082 = var_core_value_sig480E.position) == null ? undefined : var_core_value_sigD082.y) ?? 0,
+          width: var_core_value_sig1A0F,
+          height: var_core_value_sigFBA4,
+          options: {
+            chartType: var_core_value_sig20C8(var_core_value_sig480E.type),
+            data: var_core_value_sigF0F9,
+            dataSource: var_core_value_sig480E.dataSource,
+            style: var_core_value_sig48BD.style,
+            context: {
+              ...var_core_value_sigD955,
+              chartContext: var_core_value_sig48BD.context
+            },
+            dataAggregation: var_core_value_sig48BD.dataAggregation
+          }
+        })) throw Error("Failed to create Board chart.");
+        return this.getChart(var_core_value_sig4383) ?? this._injector["createInstance"](D, this, this._injector, {
+          chartId: var_core_value_sig4383,
+          elementId: var_core_value_sig186C
+        });
+      } finally {
+        var_core_value_sig4632 == null || var_core_value_sig4632.handle["dispose"]();
+      }
+    }
+    getChart(var_core_value_sigDBB7) {
+      let var_core_value_sigD0A8 = this._elements().find(var_core_value_sig429F => var_core_value_sig429F.id === var_core_value_sigDBB7 || var_core_value_sig429F.chartId === var_core_value_sigDBB7);
+      return var_core_value_sigD0A8 && this._hasCompleteResource(var_core_value_sigD0A8.chartId) ? this._injector["createInstance"](D, this, this._injector, {
+        chartId: var_core_value_sigD0A8.chartId,
+        elementId: var_core_value_sigD0A8.id
+      }) : null;
+    }
+    getCharts() {
+      return this._elements().filter(var_core_value_sigF62A => this._hasCompleteResource(var_core_value_sigF62A.chartId)).map(var_core_value_sig8178 => this._injector["createInstance"](D, this, this._injector, {
+        chartId: var_core_value_sig8178.chartId,
+        elementId: var_core_value_sig8178.id
+      }));
+    }
+    _elements() {
+      let var_core_value_sigF4B9 = this.getData().pages[this._getStoragePageId()];
+      return var_core_value_sigF4B9 ? var_core_value_sigF4B9.elementOrder["map"](var_core_value_sigE9ED => var_core_value_sigF4B9.elements[var_core_value_sigE9ED]).filter(var_core_value_sigB577 => (var_core_value_sigB577 == null ? undefined : var_core_value_sigB577.type) === var_core_value_sig5B67.Chart) : [];
+    }
+    _hasCompleteResource(var_core_value_sig5CEE) {
+      let var_core_value_sigE92A = this._injector["get"](var_core_value_sigE67E),
+        var_core_value_sig362B = var_core_value_sigE92A.getChart(this.getId(), var_core_value_sig5CEE);
+      return !!var_core_value_sig362B && !!var_core_value_sigE92A.getDataSource(this.getId(), var_core_value_sig362B.dataSourceId);
+    }
+    _getStoragePageId() {
+      var var_core_value_sig5CA5;
+      let var_core_value_sigE90F = this.getData();
+      return var_core_value_sigE90F.activePageId ?? ((var_core_value_sig5CA5 = var_core_value_sigE90F.pageOrder) == null ? undefined : var_core_value_sig5CA5[0]) ?? Object.keys(var_core_value_sigE90F.pages)[0] ?? "";
+    }
+    async _resolveReferencedValues(var_core_value_sigEFD4) {
+      let var_core_value_sig861B = this._injector["get"](var_core_value_sig2809).acquire(var_core_value_sigEFD4);
+      try {
+        let var_core_value_sig9572 = await var_core_value_sig8CFA(var_core_value_sig861B.state$["pipe"](var_core_value_sigF564(({
+          status: var_core_value_sig4D4C
+        }) => var_core_value_sig4D4C !== var_core_value_sig9989.LOADING)));
+        if (var_core_value_sig9572.status !== var_core_value_sig9989.READY || !var_core_value_sig9572.values) throw var_core_value_sig9572.error instanceof Error ? var_core_value_sig9572.error : Error(var_core_value_sigEFD4.kind);
+        return {
+          values: var_core_value_sig9572.values["map"](var_core_value_sigC9E0 => [...var_core_value_sigC9E0]),
+          handle: var_core_value_sig861B
+        };
+      } catch (var_core_value_sigD873) {
+        throw var_core_value_sig861B.dispose(), var_core_value_sigD873;
+      }
+    }
+  };
+function k(var_core_value_sigBBFF, var_core_value_sig8889) {
+  let var_core_value_sig32F8 = var_core_value_sig877E(var_core_value_sigBBFF, {
+    headerRow: var_core_value_sig8889.headerRow ?? var_core_value_sig698E,
+    isRowDirection: var_core_value_sig4805.isRowRecordDirection(var_core_value_sig8889.orient)
+  });
+  return var_core_value_sig32F8.source["slice"](1).map((var_core_value_sig5237, var_core_value_sigBB00) => {
+    let var_core_value_sig7E54 = 1 + var_core_value_sigBB00;
+    return {
+      index: var_core_value_sig7E54,
+      name: String(var_core_value_sig32F8.dimensions[var_core_value_sig7E54] ?? ""),
+      items: var_core_value_sig5237.map(var_core_value_sigE9A7)
+    };
+  });
+}
+var_core_value_sig2902.extend(O);
+export { D as FBoardChart };

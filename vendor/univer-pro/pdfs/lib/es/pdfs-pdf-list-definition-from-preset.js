@@ -1,6 +1,77 @@
-import{CommandType,DEFAULT_STYLES,DependentOn,Disposable,ICommandService,IConfigService,IUniverInstanceService,ImageSourceType,Inject,Injector,Plugin,UnitModel,UniverInstanceType,generateRandomId,merge}from'@univerjs/core';
-import{BehaviorSubject,Subject}from'rxjs';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
-const var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453=304800;function ym(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467095,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467096){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097={'unorderedDisc':['•','◦','▪'],'unorderedCircle':['◦','•','▪'],'unorderedSquare':['▪','•','◦'],'unorderedDiamond':['◆','◇','▪'],'unorderedCheck':['✓','•','◦'],'unorderedArrow':['➜','▸','•']}[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467095];return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097?{'id':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467096,'kind':'unordered','levels':bm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398=>({'markerStyle':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398<3?['disc',"circle","square"][var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398]:"custom",'markerGlyph':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398%var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097.length]}))}:{'id':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467096,'kind':"ordered",'levels':bm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461399=>xm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467095,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461399))};}function bm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467101){return Array.from({'length':9},(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461400,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401)=>({'level':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401,...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467101(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401),'markerAlignment':"end",'startAt':1,'markerColumnWidth':228600+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401*var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453,'markerGap':76200,'textIndent':var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453*(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401+1),'hangingIndent':var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453}));}function xm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467103,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104){switch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467103){case"orderedDecimalParen":return{'markerStyle':'decimal','markerFormat':'%'+(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104+1)+')'};case"orderedMultilevel":return{'markerStyle':"decimal",'markerFormat':Array.from({'length':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104+1},(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461)=>'%'+(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461+1)).join('.')+'.'};case"orderedAlpha":return{'markerStyle':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104%2==0?"upperAlpha":"lowerAlpha",'markerFormat':'%'+(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104+1)+'.'};case"orderedNumberAlpha":return{'markerStyle':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104%2==0?'decimal':"lowerAlpha",'markerFormat':'%'+(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104+1)+'.'};case"orderedDecimalZero":return{'markerStyle':"decimalZero",'markerFormat':'%'+(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104+1)+'.'};default:return{'markerStyle':"decimal",'markerFormat':'%'+(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104+1)+'.'};}}
-
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+const var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453 = 304800;
+function ym(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467095, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467096) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097 = {
+    'unorderedDisc': ['•', '◦', '▪'],
+    'unorderedCircle': ['◦', '•', '▪'],
+    'unorderedSquare': ['▪', '•', '◦'],
+    'unorderedDiamond': ['◆', '◇', '▪'],
+    'unorderedCheck': ['✓', '•', '◦'],
+    'unorderedArrow': ['➜', '▸', '•']
+  }[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467095];
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097 ? {
+    'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467096,
+    'kind': 'unordered',
+    'levels': bm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398 => ({
+      'markerStyle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398 < 3 ? ['disc', "circle", "square"][var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398] : "custom",
+      'markerGlyph': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461398 % var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467097.length]
+    }))
+  } : {
+    'id': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467096,
+    'kind': "ordered",
+    'levels': bm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461399 => xm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467095, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461399))
+  };
+}
+function bm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467101) {
+  return Array.from({
+    'length': 9
+  }, (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461400, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401) => ({
+    'level': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401,
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467101(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401),
+    'markerAlignment': "end",
+    'startAt': 1,
+    'markerColumnWidth': 228600 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401 * var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453,
+    'markerGap': 76200,
+    'textIndent': var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453 * (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461401 + 1),
+    'hangingIndent': var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D453
+  }));
+}
+function xm(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467103, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104) {
+  switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467103) {
+    case "orderedDecimalParen":
+      return {
+        'markerStyle': 'decimal',
+        'markerFormat': '%' + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 + 1) + ')'
+      };
+    case "orderedMultilevel":
+      return {
+        'markerStyle': "decimal",
+        'markerFormat': Array.from({
+          'length': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 + 1
+        }, (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46460, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461) => '%' + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46461 + 1)).join('.') + '.'
+      };
+    case "orderedAlpha":
+      return {
+        'markerStyle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 % 2 == 0 ? "upperAlpha" : "lowerAlpha",
+        'markerFormat': '%' + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 + 1) + '.'
+      };
+    case "orderedNumberAlpha":
+      return {
+        'markerStyle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 % 2 == 0 ? 'decimal' : "lowerAlpha",
+        'markerFormat': '%' + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 + 1) + '.'
+      };
+    case "orderedDecimalZero":
+      return {
+        'markerStyle': "decimalZero",
+        'markerFormat': '%' + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 + 1) + '.'
+      };
+    default:
+      return {
+        'markerStyle': "decimal",
+        'markerFormat': '%' + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467104 + 1) + '.'
+      };
+  }
+}
 export { ym as createPdfListDefinitionFromPreset };

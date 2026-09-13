@@ -1,1 +1,1074 @@
-import{CommandType as v352,DependentOn as v353,Disposable as v354,ICommandService as v355,IConfigService as v356,IUniverInstanceService as v357,Inject as v358,Injector as v359,LocaleService as v360,PAGE_SIZE as v361,PAPER_TYPES as v362,PaperType as v363,Plugin as v364,UniverInstanceType as v365,createIdentifier as v366,generateRandomId as v367,merge as v368,registerDependencies as v369,toDisposable as v370}from"@univerjs/core";import{BehaviorSubject as v371}from"rxjs";import{IPrintPreparationService as v372,PRINT_CONTAINER_CLASS as v373,PaperMarginMap as v374,PrintDirection as v375,PrintPaperMargin as v376,PrintPreparationService as v377}from"@univerjs-pro/print";import{ObjectProvider as v378,SlidePageBackgroundObject as v379,SlidePageClipGroup as v380,UniverSlidesUIPlugin as v381,assembleGroupHierarchy as v382,isThumbnailRenderableDrawing as v383,resolveGroupFillInheritance as v384,resolveSlideLogicalPageSize as v385}from"@univerjs-pro/slides-ui";import{ISlideDrawingService as v386,SlideSceneTypeEnum as v387,UniverSlidesPlugin as v388,resolvedSlideLayersToDrawingMap as v389}from"@univerjs-pro/slides";import{CanvasRenderMode as v390,DRAWING_OBJECT_LAYER_INDEX as v391,Engine as v392,IRenderManagerService as v393,MAIN_VIEW_PORT_KEY as v394,Scene as v395,UniverRenderEnginePlugin as v396,Viewport as v397}from"@univerjs/engine-render";import{BuiltInUIPart as v398,IMenuManagerService as v399,IUIPartsService as v400,IconManager as v401,MenuItemType as v402,RibbonStartGroup as v403,connectInjector as v404,getMenuHiddenObservable as v405,useDependency as v406,useObservable as v407}from"@univerjs/ui";import{UniverLicensePlugin as v408}from"@univerjs-pro/license";import{LoadingMultiIcon as v409,PrintIcon as v410}from"@univerjs/icons";import{Button as v411,Checkbox as v412,FormLayout as v413,Input as v414,Radio as v415,RadioGroup as v416,Select as v417,borderBottomClassName as v418,clsx as v419,scrollbarClassName as v420}from"@univerjs/design";import{useEffect as v421,useMemo as v422,useRef as v423,useState as v424}from"react";import{Fragment as v425,jsx as v426,jsxs as v427}from"react/jsx-runtime";let I=function(v203){return v203.FullPage="FullPage",v203.Handout="Handout",v203.NotesPage="NotesPage",v203;}({}),Be=function(v204){return v204.Horizontal="Horizontal",v204.Vertical="Vertical",v204;}({});function L(v205,v206){return v205===undefined?v206:v205;}function Ve(v207){let v208=(v207==null?undefined:v207.layout)??"FullPage",v209=v208==="FullPage";return{layout:v208,slidesPerPage:L(v207==null?undefined:v207.slidesPerPage,2),handoutOrder:L(v207==null?undefined:v207.handoutOrder,"Horizontal"),paperSize:v207==null?undefined:v207.paperSize,direction:L(v207==null?undefined:v207.direction,v209?v375.Landscape:v375.Portrait),margin:L(v207==null?undefined:v207.margin,v207!=null&&v207.paperSize?v376.Normal:v376.None),marginCustom:L(v207==null?undefined:v207.marginCustom,{top:0,right:0,bottom:0,left:0}),frameSlides:L(v207==null?undefined:v207.frameSlides,!v209),showSlideNumber:L(v207==null?undefined:v207.showSlideNumber,!v209)};}function He(v210,v211,v212,v213=v18=>v18.length*14*0.55){let v214=v385(v211),v215=Ve(v212);!(v212!=null&&v212.direction)&&v215.layout==="FullPage"&&(v215.direction=v214.width>=v214.height?v375.Landscape:v375.Portrait);let v216=We(v214,v215),v217=v215.margin===v376.Custom?v215.marginCustom:v374[v215.margin],v218=Ge(v216,v217),v219;switch(v215.layout){case"Handout":v219=Ke(v210,v218,v215.slidesPerPage,v215.handoutOrder);break;case"NotesPage":v219=Ye(v210,v218,v213);break;default:v219=v210.map(v19=>({key:"full-page-"+v19.pageId,slots:[{source:v19,rect:v218}]}));break;}return{pageSize:v216,margin:v217,options:v215,pages:v219};}function Ue(v220,v221){let v222=v385(v221);return v220.map(({page:v70,index:v71})=>{let v72=v70.getData(),v73=v385(v72.pageSize??v222);return{index:v71,page:v70,pageId:v70.getId(),width:v73.width,height:v73.height,speakerNotes:v72.speakerNotes??""};});}function We(v223,v224){let v225=v224.paperSize?v361[v224.paperSize]:v223,v226=Math.min(v225.width,v225.height),v227=Math.max(v225.width,v225.height);return v224.direction===v375.Portrait?{width:v226,height:v227}:{width:v227,height:v226};}function Ge(v228,v229){return{x:v229.left,y:v229.top,width:Math.max(1,v228.width-v229.left-v229.right),height:Math.max(1,v228.height-v229.top-v229.bottom)};}function Ke(v230,v231,v232,v233){let v234=[];for(let v74=0;v74<v230.length;v74+=v232){let v20=v230.slice(v74,v74+v232),v21=Je(qe(v231,v232),v232,v233);v234.push({key:"handout-"+v74/v232,slots:v20.map((v10,v11)=>{let v12=v21[v11];if(v232!==3)return{source:v10,rect:v12};let v13=(v12.width-24)*0.56;return{source:v10,rect:{...v12,width:v13},noteLinesRect:{x:v12.x+v13+24,y:v12.y,width:Math.max(1,v12.width-v13-24),height:v12.height}};})});}return v234;}function qe(v235,v236){let[v237,v238]=v236===1?[1,1]:v236===2||v236===3?[1,v236]:v236===4?[2,2]:v236===6?[2,3]:[3,3],v239=(v235.width-24*(v237-1))/v237,v240=(v235.height-24*(v238-1))/v238,v241=[];for(let v75=0;v75<v238;v75++)for(let v22=0;v22<v237;v22++)v241.push({x:v235.x+v22*(v239+24),y:v235.y+v75*(v240+24),width:v239,height:v240});return v241;}function Je(v242,v243,v244){if(v244==="Horizontal"||v243<4)return v242;let v245=v243===9?3:2,v246=v243/v245;return v242.map((v76,v77)=>v242[v77%v246*v245+Math.floor(v77/v246)]);}function Ye(v247,v248,v249){let v250=[];for(let v78 of v247){let v23=v248.height*0.42,v24={x:v248.x,y:v248.y+v23+24,width:v248.width,height:Math.max(1,v248.height-v23-24)},v25=Xe(v78.speakerNotes,v24.width,v249),v26=Math.max(1,Math.floor(v24.height/21)),v27=Math.max(1,Math.floor(v248.height/21)),v28=v25.splice(0,v26);v250.push({key:"notes-"+v78.pageId+"-0",slots:[{source:v78,rect:{x:v248.x,y:v248.y,width:v248.width,height:v23}}],notes:{lines:v28,rect:v24,continuation:false,source:v78}});let v29=1;for(;v25.length;)v250.push({key:"notes-"+v78.pageId+"-"+v29,slots:[],notes:{lines:v25.splice(0,v27),rect:v248,continuation:true,source:v78}}),v29++;}return v250;}function Xe(v251,v252,v253){if(!v251)return[];let v254=v251.replace(/\r\n/g,"\x0a").split("\x0a"),v255=[];return v254.forEach(v79=>{let v80=Array.from(v79);if(v80.length===0)v255.push("");else{let v30=0;for(;v30<v80.length;){let v3=v30+1,v4=v80.length,v5=v30;for(;v3<=v4;){let v1=Math.floor((v3+v4)/2);v253(v80.slice(v30,v1).join(""))<=v252?(v5=v1,v3=v1+1):v4=v1-1;}let v6=Math.max(v30+1,v5);v255.push(v80.slice(v30,v6).join("")),v30=v6;}}}),v255;}function Ze(){return{layout:"FullPage",slidesPerPage:2,handoutOrder:"Horizontal",paperSize:v363.A4,direction:v375.Landscape,margin:v376.Normal,frameSlides:false,showSlideNumber:false};}function R(v256){"@babel/helpers - typeof";return R=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v81){return typeof v81;}:function(v82){return v82&&typeof Symbol=="function"&&v82.constructor===Symbol&&v82!==Symbol.prototype?"symbol":typeof v82;},R(v256);}function Qe(v257,v258){if(R(v257)!="object"||!v257)return v257;var v259=v257[Symbol.toPrimitive];if(v259!==undefined){var v260=v259.call(v257,v258||"default");if(R(v260)!="object")return v260;throw TypeError("@@toPrimitive must return a primitive value.");}return(v258==="string"?String:Number)(v257);}function $e(v261){var v262=Qe(v261,"string");return R(v262)=="symbol"?v262:v262+"";}function z(v263,v264,v265){return(v264=$e(v264))in v263?Object.defineProperty(v263,v264,{value:v265,enumerable:true,configurable:true,writable:true}):v263[v264]=v265,v263;}const B=v366("univer-pro.slide-print-dialog.service");var et=class extends v354{constructor(...v83){super(...v83),z(this,"_visible$",new v371(false)),z(this,"_options$",new v371(Ze())),z(this,"visible$",this._visible$["asObservable"]()),z(this,"options$",this._options$["asObservable"]());}get visible(){return this._visible$["getValue"]();}get options(){return this._options$["getValue"]();}open(v84){this._options$["next"]({...Ze(),...v84}),this._visible$["next"](true);}close(){this._visible$["next"](false);}updateOptions(v85){this._options$["next"]({...this.options,...v85});}dispose(){this._visible$["complete"](),this._options$["complete"](),super.dispose();}};const V={id:"slide.operation.print-open",type:v352.OPERATION,handler(v266,v267){return v266.get(B).open(v267),true;}},H={id:"slide.operation.print-close",type:v352.OPERATION,handler(v268){return v268.get(B).close(),true;}};var U=class{constructor(){z(this,"_transformers",new Set());}register(v86){return this._transformers["add"](v86),v370(()=>this._transformers["delete"](v86));}transform(v87,v88){return Array.from(this._transformers).reduce((v31,v32)=>v32(v31,v88),v87);}};function tt(v269,v270){let v271={};return{data:v271,order:v270.filter(v89=>{let v90=v269[v89];return v383(v90)?(v271[v89]=v90,true):false;})};}function nt(v272,v273,v274){let v275=v273.getUnitId(),v276=v274.getId(),v277=v272.getDrawingData(v275,v276),v278=v272.getDrawingOrder(v275,v276);if(v278.some(v91=>!!v277[v91]))return tt(v277,v278);let v279=v389(v275,v276,v274.resolveElements(),v273.getThemeDataForPage(v276));return tt(v279.data,v279.order);}var rt=class extends v354{get container(){return this._container;}get root(){return this._root;}get _pageSize(){return v385(this._slidePage["getData"]().pageSize??this._slideModel["getSnapshot"]().defaultPageSize);}constructor(v92,v93,v94,v95,v96=false){super(),this._injector=v92,this._slideDrawingService=v93,this._slideModel=v94,this._slidePage=v95,this._autoRender=v96,z(this,"_container",document.createElement("div")),z(this,"_root",document.createElement("div")),z(this,"_engine",undefined),z(this,"_scene",undefined),z(this,"_objectProvider",undefined),z(this,"_renderObjectMap",new Map()),z(this,"_drawingTransformService",undefined),this._drawingTransformService=this._injector["get"](U),this._objectProvider=this._injector["createInstance"](v378),this._initRenderer(),this.disposeWithMe({dispose:()=>{this._renderObjectMap["clear"](),this._scene["dispose"](),this._engine["dispose"]();}});}_initRenderer(){let v97="slide-print-"+v367(4),{width:v98,height:v99}=this._pageSize;this._engine=new v392("",{elementWidth:v98,elementHeight:v99,dpr:1,renderMode:v390.Printing}),this._scene=new v395(v97,this._engine),this._scene["disableObjectsEvent"](),this._scene["transformByState"]({width:v98,height:v99,scaleX:1,scaleY:1}),new v397(v394,this._scene,{left:0,top:0,width:v98,height:v99,active:true}).openClip(),this._engine["mount"](this._container,false),this._engine["getCanvas"]().getContext().setId(v97+"_"+v367(4)),this._renderSlidePage();}_renderSlidePage(){let v100=this._slideModel["getUnitId"](),v101=this._slidePage["getId"](),{width:v102,height:v103}=this._pageSize,v104=this._scene,v105=this._injector["createInstance"](v379,"slide-print-page-background-"+v100+"-"+v101,{left:0,top:0,width:v102,height:v103,background:this._slidePage["resolveBackground"](),evented:false,zIndex:1});v104.addObject(v105,0),this._renderObjectMap["set"](v105.oKey,v105);let{data:v106,order:v107}=this._drawingTransformService["transform"](nt(this._slideDrawingService,this._slideModel,this._slidePage),{slideModel:this._slideModel,slidePage:this._slidePage}),v108=v384(v106),v109=new v380("slide-print-page-clip-"+v100+"-"+v101,{left:0,top:0,width:v102,height:v103});v104.addObject(v109,0),this._renderObjectMap["set"](v109.oKey,v109),this._objectProvider["convertToRenderObjects"](v108,v107,{unitId:v100,subUnitId:v101,pageOffsetLeft:0,pageOffsetTop:0,sceneType:v387.PRESENTATION,showPlaceholder:false,requestRender:()=>this._requestRender()}).forEach(v33=>{v104.addObject(v33,v391),this._renderObjectMap["set"](v33.oKey,v33);}),v382(v108,v107,v104,{unitId:v100,subUnitId:v101,pageOffsetLeft:0,pageOffsetTop:0,sceneType:v387.PRESENTATION,showPlaceholder:false,objectProvider:this._objectProvider,renderObjectMap:this._renderObjectMap,requestRender:()=>this._requestRender()}),v104.makeDirty(true);}prepare(){this._root["style"].position="absolute",this._root["style"].top="0px",this._root["style"].left="0px",this._root["style"].width="100%",this._root["style"].height="100%";}render(){let v110=this._engine["getCanvas"]().getContext();this._scene["makeDirty"](true),v110.save(),this._scene["render"](),v110.restore();}_requestRender(){this._scene["makeDirty"](true),this._autoRender&&this.render();}};const W="univer-slide-print-page";var it=class extends v354{constructor(v111,v112,v113,v114,v115,v116,v117){super(),this._document=v111,this._injector=v112,this._slideDrawingService=v113,this._slideModel=v114,this._plan=v115,this._pageSize=v116,this._options=v117,z(this,"container",undefined),z(this,"_slideViews",[]),this.container=this._document["createElement"]("div"),this.container["className"]=W,this.container["style"].position="relative",this.container["style"].width=this._pageSize["width"]+"px",this.container["style"].height=this._pageSize["height"]+"px",this.container["style"].background="#fff",this.container["style"].color="#000",this.container["style"].overflow="hidden",this._mountSlides(),this._mountNotes();}render(){this._slideViews["forEach"](v34=>v34.render());}dispose(){this._slideViews["forEach"](v35=>v35.dispose()),this._slideViews["length"]=0,this.container["remove"](),super.dispose();}_mountSlides(){this._plan["slots"].forEach(v36=>{let v37=this._document["createElement"]("div");v37.className="univer-slide-print-slot",G(v37,v36.rect),v37.style["overflow"]="hidden",this.container["appendChild"](v37);let v38=this._options["showSlideNumber"]?20:0,v39={...v36.rect,x:0,y:0,height:Math.max(1,v36.rect["height"]-v38)},v40=v36.source["width"]||this._slideModel["getSnapshot"]().defaultPageSize["width"],v41=v36.source["height"]||this._slideModel["getSnapshot"]().defaultPageSize["height"],v42=at(v40,v41,v39),v43=new rt(this._injector,this._slideDrawingService,this._slideModel,v36.source["page"],this._options["preview"]??false);if(v43.prepare(),v43.container["className"]="univer-slide-print-surface",v43.container["style"].position="absolute",v43.container["style"].left=v42.x+"px",v43.container["style"].top=v42.y+"px",v43.container["style"].width=v40+"px",v43.container["style"].height=v41+"px",v43.container["style"].transform="scale("+v42.width/v40+")",v43.container["style"].transformOrigin="top\x20left",v43.container["appendChild"](v43.root),v37.appendChild(v43.container),this._slideViews["push"](v43),this._options["frameSlides"]){let v14=this._document["createElement"]("div");G(v14,v42),v14.style["border"]="1px solid currentColor",v14.style["boxSizing"]="border-box",v14.style["opacity"]="0.5",v14.style["pointerEvents"]="none",v37.appendChild(v14);}if(this._options["showSlideNumber"]){let v15=this._document["createElement"]("div");v15.textContent=String(v36.source["index"]+1),v15.style["position"]="absolute",v15.style["left"]="0",v15.style["right"]="0",v15.style["bottom"]="0",v15.style["height"]="20px",v15.style["font"]="12px/20px Arial, sans-serif",v15.style["textAlign"]="center",v37.appendChild(v15);}v36.noteLinesRect&&this._mountHandoutLines(v36.noteLinesRect);});}_mountHandoutLines(v118){let v119=this._document["createElement"]("div");G(v119,v118),v119.style["display"]="flex",v119.style["flexDirection"]="column",v119.style["justifyContent"]="space-evenly";for(let v44=0;v44<6;v44++){let v16=this._document["createElement"]("div");v16.style["borderBottom"]="1px solid currentColor",v16.style["opacity"]="0.4",v119.appendChild(v16);}this.container["appendChild"](v119);}_mountNotes(){let v120=this._plan["notes"];if(!v120)return;let v121=this._document["createElement"]("div");G(v121,v120.rect),v121.style["boxSizing"]="border-box",v121.style["font"]="14px/21px Arial, sans-serif",v121.style["overflow"]="hidden",v121.style["whiteSpace"]="pre",v121.dir="auto",v120.lines["forEach"](v45=>{let v46=this._document["createElement"]("div");v46.style["height"]="21px",v46.textContent=v45||"\u00a0",v121.appendChild(v46);}),this.container["appendChild"](v121);}};function at(v280,v281,v282){let v283=Math.min(v282.width/v280,v282.height/v281),v284=v280*v283,v285=v281*v283;return{x:v282.x+(v282.width-v284)/2,y:v282.y+(v282.height-v285)/2,width:v284,height:v285};}function G(v286,v287){v286.style["position"]="absolute",v286.style["left"]=v287.x+"px",v286.style["top"]=v287.y+"px",v286.style["width"]=v287.width+"px",v286.style["height"]=v287.height+"px";}function ot(v288,v289,v290){let v291=v288.createElement("style"),v292=v290.paperSize?"size: "+v290.paperSize+"\x20"+v290.direction["toLowerCase"]()+";":"";return v291.className="offline-printing-css",v291.textContent="\n html, body {\n margin: 0;\n padding: 0;\n }\n ."+v373+" {\n position: relative;\n }\n ."+W+" {\n position: relative;\n width: "+v289.width+"px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20height:\x20"+v289.height+"px;\n overflow: hidden;\n }\n @media print {\n @page {\n size: "+v289.width+"px "+v289.height+"px;\n "+v292+"\n margin: 0;\n }\n ."+W+" {\n break-after: page;\n page-break-after: always;\n }\n ."+W+":last-child {\n break-after: auto;\n page-break-after: auto;\n }\n }\n ",v291;}function st(v293){return Number.isFinite(v293.from)&&Number.isFinite(v293.to)&&v293.from<=v293.to;}function ct(v294,v295){return Math.max(0,Math.min(v295-1,v294-1));}function lt(v296,v297){if(v296<=0)return[];if(!v297)return Array.from({length:v296},(v122,v123)=>v123);let v298=new Set();return v297.forEach(v124=>{if(!st(v124)||v124.to<1||v124.from>v296)return;let v125=ct(v124.from,v296),v126=ct(v124.to,v296);for(let v47=v125;v47<=v126;v47+=1)v298.add(v47);}),Array.from(v298).sort((v127,v128)=>v127-v128);}function K(v299,v300){return function(v129,v130){v300(v129,v130,v299);};}function q(v301,v302,v303,v304){var v305=arguments.length,v306=v305<3?v302:v304===null?v304=Object.getOwnPropertyDescriptor(v302,v303):v304,v307;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v306=Reflect.decorate(v301,v302,v303,v304);else{for(var v308=v301.length-1;v308>=0;v308--)(v307=v301[v308])&&(v306=(v305<3?v307(v306):v305>3?v307(v302,v303,v306):v307(v302,v303))||v306);}return v305>3&&v306&&Object.defineProperty(v302,v303,v306),v306;}let J=class extends v354{constructor(v131,v132,v133,v134,v135){super(),this._univerInstanceService=v131,this._injector=v132,this._slideDrawingService=v133,this._renderManagerService=v134,this._printPreparationService=v135,z(this,"_printing",false);}async print(v136,v137){if(this._printing)return Promise.resolve(false);let v138=this._univerInstanceService["getUnit"](v136,v365.UNIVER_SLIDE);if(!v138)return Promise.resolve(false);let v139=v138.getSnapshot(),v140=lt(v139.slideOrder["length"],v137==null?undefined:v137.range).map(v48=>({index:v48,page:v138.pageManager["getSlide"](v139.slideOrder[v48])})).filter(v49=>!!v49.page);if(v140.length===0)return false;this._printing=true;try{await this._printPreparationService["prepare"]({unitId:v136,unitType:v365.UNIVER_SLIDE,dpr:1});}catch(v50){throw this._printing=false,v50;}let v141=this._createPrintFrame();if(!v141)return this._printing=false,false;try{let v51=this._preparePrintResources(v141,v138,v140,v137);return this._printPreparedPages(v136,v139.slideOrder,v141,v51);}catch(v52){return v141.frame["remove"](),this._printing=false,Promise.reject(v52);}}_preparePrintResources(v142,v143,v144,v145){let v146=v143.getSnapshot(),v147=v142.document["createElement"]("canvas").getContext("2d");v147&&(v147.font="14px Arial, sans-serif");let v148=He(Ue(v144,v146.defaultPageSize),v146.defaultPageSize,v145,v53=>(v147==null?undefined:v147.measureText(v53).width)??v53.length*14*0.55),v149=ot(v142.document,v148.pageSize,v148.options),v150=v142.document["createElement"]("div");v150.className=v373;let v151=v148.pages["map"](v54=>new it(v142.document,this._injector,this._slideDrawingService,v143,v54,v148.pageSize,v148.options));return v151.forEach(v55=>v150.appendChild(v55.container)),v142.document["head"].appendChild(v149),v142.document["body"].appendChild(v150),{container:v150,pageInstances:v151,style:v149};}_printPreparedPages(v152,v153,v154,v155){let{container:v156,pageInstances:v157,style:v158}=v155,v159=v154.window,v160=v159.onbeforeprint,v161=v159.onafterprint;return new Promise(v56=>{let v57=v17=>{v157.forEach(v7=>v7.dispose()),v156.remove(),v158.remove(),v159.onbeforeprint=v160,v159.onafterprint=v161,v154.frame["remove"](),this._restoreThumbnailRenders(v152,v153),this._printing=false,v56(v17);};setTimeout(()=>{if(v159.onbeforeprint=v8=>{v160==null||v160.call(v159,v8),v157.forEach(v2=>v2.render());},v159.onafterprint=v9=>{v161==null||v161.call(v159,v9),v57(true);},typeof v159.print!="function"){v57(false);return;}try{v159.print();}catch{v57(false);}},100);});}_createPrintFrame(){let v162=document.createElement("iframe");v162.setAttribute("aria-hidden","true"),v162.setAttribute("data-univer-slides-print-frame","true"),v162.style["position"]="fixed",v162.style["left"]="-10000px",v162.style["top"]="0",v162.style["width"]="1px",v162.style["height"]="1px",v162.style["border"]="0",v162.style["pointerEvents"]="none",document.body["appendChild"](v162);let v163=v162.contentWindow,v164=v162.contentDocument??(v163==null?undefined:v163.document);return!v163||!v164?(v162.remove(),null):(v164.open(),v164.write("<!doctype html><html><head></head><body></body></html>"),v164.close(),{frame:v162,document:v164,window:v163});}_restoreThumbnailRenders(v165,v166){v166.forEach(v58=>{let v59=this._renderManagerService["getRenderUnitById"](v165+"-thumb-"+v58);v59&&(v59.engine["resize"](),v59.scene["makeDirty"](true),v59.scene["render"]());});}};J=q([K(0,v357),K(1,v358(v359)),K(2,v386),K(3,v393),K(4,v372)],J);const Y={id:"slide.operation.print",type:v352.OPERATION,handler:async(v309,v310)=>{let v311=v309.get(v357),v312=v309.get(J),v313=v311.getCurrentUnitOfType(v365.UNIVER_SLIDE);return v313?v312.print(v313.getUnitId(),v310):false;}};function ut(v314){return{id:V.id,type:v402.BUTTON,title:"slides-print.menu",icon:"PrintIcon",tooltip:"slides-print.menu",hidden$:v405(v314,v365.UNIVER_SLIDE)};}const dt={[v403.OTHERS]:{[V.id]:{order:0.2,gridLayout:{row:1,column:2,rowSpan:2,showLabel:true},menuItemFactory:ut}}};var ft="@univerjs-pro/slides-print",pt="1.0.0-insiders.20260907-70fc579";const mt={};let X=class extends v354{constructor(v167){super(),this._iconManager=v167,this._registerIcons();}_registerIcons(){this.disposeWithMe(this._iconManager["register"]({PrintIcon:v410}));}};X=q([K(0,v358(v401))],X);function ht(v315,v316){let v317=v315.trim();if(!v317)return{valid:true};let v318=[];for(let v168 of v317.split(",")){let v60=/^\s*(\d+)(?:\s*-\s*(\d+))?\s*$/["exec"](v168);if(!v60)return{valid:false};let v61=Number(v60[1]),v62=Number(v60[2]??v60[1]);if(v61<1||v62<v61||v62>v316)return{valid:false};v318.push({from:v61,to:v62});}return{valid:true,range:v318};}function gt(v319){return(v319==null?undefined:v319.map(({from:v169,to:v170})=>v169===v170?String(v169):v169+"-"+v170).join(","))??"";}const Z=[1,2,3,4,6,9];function _t({model:v320,page:v321,plan:v322}){let v323=v423(null),v324=v406(v359),v325=v406(v386),v326=Math.min(1,560/v322.pageSize["width"]);return v421(()=>{let v171=v323.current;if(!v171)return;let v172=new it(document,v324,v325,v320,v321,v322.pageSize,{...v322.options,preview:true});return v172.container["style"].transform="scale("+v326+")",v172.container["style"].transformOrigin="top left",v172.container["classList"].add("univer-shadow-sm"),v171.appendChild(v172.container),v172.render(),()=>v172.dispose();},[v324,v320,v321,v322,v326,v325]),v426("div",{ref:v323,className:"univer-relative univer-mx-auto univer-mb-7",style:{width:v322.pageSize["width"]*v326,height:v322.pageSize["height"]*v326}});}function vt({totalSlides:v327}){let v328=v406(B),v329=v407(v328.options$,v328.options),v330=v406(v360),[v331,v332]=v424(()=>gt(v329.range)),[v333,v334]=v424(true),v335=v329.layout??"FullPage",v336=v329.slidesPerPage??2;return v426("div",{className:v419("univer-h-full univer-overflow-y-auto",v420),children:v427("div",{className:"univer-p-4",children:[v427(v413,{label:v330.t("slides-print.settings.range"),children:[v426(v414,{value:v331,placeholder:v330.t("slides-print.settings.rangePlaceholder"),onChange:v173=>{v332(v173);let v174=ht(v173,v327);v334(v174.valid),v174.valid&&v328.updateOptions({range:v174.range});}}),!v333&&v426("div",{className:"univer-mt-1 univer-text-xs univer-text-red-500",children:v330.t("slides-print.settings.rangeInvalid")})]}),v426(v413,{label:v330.t("slides-print.settings.layout"),children:v426(v417,{className:"univer-w-full",value:v335,options:[{label:v330.t("slides-print.settings.fullPage"),value:"FullPage"},{label:v330.t("slides-print.settings.notesPage"),value:"NotesPage"},{label:v330.t("slides-print.settings.handout"),value:"Handout"}],onChange:v175=>{let v176=Object.values(I).find(v63=>v63===v175);v176&&v328.updateOptions({layout:v176,direction:v176==="FullPage"?v375.Landscape:v375.Portrait,frameSlides:v176!=="FullPage",showSlideNumber:v176!=="FullPage"});}})}),v335==="Handout"&&v427(v425,{children:[v426(v413,{label:v330.t("slides-print.settings.slidesPerPage"),children:v426(v417,{className:"univer-w-full",value:String(v336),options:Z.map(v177=>({label:String(v177),value:String(v177)})),onChange:v178=>{let v179=Z.find(v64=>String(v64)===v178);v179&&v328.updateOptions({slidesPerPage:v179});}})}),v336>=4&&v426(v413,{label:v330.t("slides-print.settings.order"),children:v427(v416,{value:v329.handoutOrder??"Horizontal",onChange:v180=>{(v180==="Horizontal"||v180==="Vertical")&&v328.updateOptions({handoutOrder:v180});},children:[v426(v415,{value:"Horizontal",children:v330.t("slides-print.settings.horizontal")}),v426(v415,{value:"Vertical",children:v330.t("slides-print.settings.vertical")})]})})]}),v426(v413,{label:v330.t("slides-print.settings.paperSize"),children:v426(v417,{className:"univer-w-full",value:v329.paperSize??v363.A4,options:v362.map(v181=>({label:v181,value:v181})),onChange:v182=>{let v183=v362.find(v65=>v65===v182);v183&&v328.updateOptions({paperSize:v183});}})}),v426(v413,{label:v330.t("slides-print.settings.orientation"),children:v427(v416,{value:v329.direction??v375.Landscape,onChange:v184=>{(v184===v375.Portrait||v184===v375.Landscape)&&v328.updateOptions({direction:v184});},children:[v426(v415,{value:v375.Portrait,children:v330.t("slides-print.settings.portrait")}),v426(v415,{value:v375.Landscape,children:v330.t("slides-print.settings.landscape")})]})}),v426(v413,{label:v330.t("slides-print.settings.margin"),children:v426(v417,{className:"univer-w-full",value:v329.margin??v376.Normal,options:[{label:v330.t("slides-print.settings.normal"),value:v376.Normal},{label:v330.t("slides-print.settings.narrow"),value:v376.Narrow},{label:v330.t("slides-print.settings.wide"),value:v376.Wide},{label:v330.t("slides-print.settings.none"),value:v376.None}],onChange:v185=>{(v185===v376.Normal||v185===v376.Narrow||v185===v376.Wide||v185===v376.None)&&v328.updateOptions({margin:v185});}})}),v426(v413,{label:v330.t("slides-print.settings.formatting"),children:v427("div",{className:"univer-flex univer-flex-col univer-gap-3",children:[v426(v412,{checked:v329.frameSlides??false,onChange:v186=>{typeof v186=="boolean"&&v328.updateOptions({frameSlides:v186});},children:v330.t("slides-print.settings.frameSlides")}),v426(v412,{checked:v329.showSlideNumber??false,onChange:v187=>{typeof v187=="boolean"&&v328.updateOptions({showSlideNumber:v187});},children:v330.t("slides-print.settings.slideNumber")})]})})]})});}function yt(){let v337=v406(v355),v338=v406(B),v339=v407(v338.options$,v338.options),v340=v406(v357),v341=v406(v360),v342=v406(v372),[v343,v344]=v424(false),[v345,v346]=v424(),[v347]=v424(()=>{var v188;return(v188=v340.getCurrentUnitOfType(v365.UNIVER_SLIDE))==null?undefined:v188.getUnitId();}),v348=v347?v340.getUnit(v347,v365.UNIVER_SLIDE):undefined,v349=v348==null?undefined:v348.getSnapshot(),v350=v422(()=>{if(!v348||!v349||v345!==v347)return;let v189=v385(v349.defaultPageSize),v190=Ue(lt(v349.slideOrder["length"],v339.range).map(v66=>({index:v66,page:v348.pageManager["getSlide"](v349.slideOrder[v66])})).filter(v67=>!!v67.page),v189),v191=document.createElement("canvas").getContext("2d");return v191&&(v191.font="14px Arial, sans-serif"),He(v190,v189,v339,v68=>(v191==null?undefined:v191.measureText(v68).width)??v68.length*14*0.55);},[v348,v339,v345,v349,v347]);return v421(()=>{if(!v348||!v347)return;let v192=true;return v342.prepare({unitId:v347,unitType:v365.UNIVER_SLIDE,dpr:1}).then(()=>{v192&&v346(v347);},()=>{v192&&v346(undefined);}),()=>{v192=false;};},[v348,v342,v347]),!v348||!v349?null:v427("div",{className:"univer-absolute univer-inset-0 univer-z-[100] univer-flex univer-size-full univer-flex-col univer-overflow-hidden univer-bg-gray-100 dark:!univer-bg-gray-900",children:[v427("div",{className:v419("univer-flex univer-h-16 univer-items-center univer-justify-between univer-bg-gray-0 univer-px-4 dark:!univer-bg-gray-900",v418),children:[v426("div",{className:"univer-ml-2 univer-text-base univer-font-medium univer-text-gray-900 dark:!univer-text-gray-0",children:v341.t("slides-print.header.pages",String((v350==null?undefined:v350.pages["length"])??0))}),v427("div",{className:"univer-flex univer-gap-2",children:[v426(v411,{disabled:v343,onClick:()=>v337.executeCommand(H.id),children:v341.t("slides-print.header.cancel")}),v426(v411,{variant:"primary",disabled:v343||!(v350!=null&&v350.pages["length"]),onClick:async()=>{v344(true);try{(await v337.executeCommand(Y.id,v339))&&(await v337.executeCommand(H.id));}finally{v344(false);}},children:v343?v341.t("slides-print.header.printing"):v341.t("slides-print.header.next")})]})]}),v427("div",{className:"univer-flex univer-flex-1 univer-overflow-hidden",children:[v426("div",{className:v419("univer-flex-1 univer-overflow-auto univer-p-7",v420),"aria-busy":!v350,children:v350?v350.pages["map"](v193=>v426(_t,{model:v348,page:v193,plan:v350},v193.key)):v426("div",{className:"univer-flex univer-size-full univer-items-center univer-justify-center",role:"status","aria-label":v341.t("slides-print.header.printing"),children:v426(v409,{className:"univer-size-8\x20univer-animate-spin\x20univer-text-gray-500","aria-hidden":"true"})})}),v426("div",{className:"univer-box-border univer-h-full univer-w-[312px] univer-flex-none univer-bg-gray-0 dark:!univer-bg-gray-900",children:v426(vt,{totalSlides:v349.slideOrder["length"]})})]})]});}function bt(){let v351=v406(B);return v407(v351.visible$,v351.visible)?v426(yt,{}):null;}let Q=class extends v354{constructor(v194,v195,v196,v197){super(),this._commandService=v194,this._menuManagerService=v195,this._uiPartsService=v196,this._injector=v197,this._initCommands(),this._initUIParts(),this._initMenus();}_initCommands(){[Y,V,H].forEach(v69=>this.disposeWithMe(this._commandService["registerCommand"](v69)));}_initUIParts(){this.disposeWithMe(this._uiPartsService["registerComponent"](v398.GLOBAL,()=>v404(bt,this._injector)));}_initMenus(){this._menuManagerService["mergeMenu"](dt);}};Q=q([K(0,v355),K(1,v399),K(2,v400),K(3,v358(v359))],Q);let $=class extends v364{constructor(v198=mt,v199,v200){super(),this._config=v198,this._injector=v199,this._configService=v200;let{menu:v201,...v202}=v368({},mt,this._config);v201&&this._configService["setConfig"]("menu",v201,{merge:true}),this._configService["setConfig"]("slides-print.config",v202);}onStarting(){this._injector["has"](v372)||this._injector["add"]([v372,{useClass:v377}]),this._injector["add"]([X]),this._injector["get"](X),this._injector["has"](U)||this._injector["add"]([U]),v369(this._injector,[[J],[B,{useClass:et}],[Q]]);}onReady(){this._injector["get"](Q);}};z($,"pluginName","SLIDES_PRINT_PLUGIN"),z($,"packageName",ft),z($,"version",pt),z($,"type",v365.UNIVER_SLIDE),$=q([v353(v408,v396,v388,v381),K(1,v358(v359)),K(2,v356)],$);export{V as OpenSlidePrintDialogOperation,U as SlidePrintDrawingTransformService,Be as SlidePrintHandoutOrder,I as SlidePrintLayoutType,Y as SlidePrintOperation,dt as SlidesPrintMenuSchema,$ as UniverSlidesPrintPlugin};
+import { CommandType as var_core_value_sig5A75, DependentOn as var_core_value_sig7BAF, Disposable as var_core_value_sig8F69, ICommandService as var_core_value_sig6884, IConfigService as var_core_value_sig066E, IUniverInstanceService as var_core_value_sig9B0D, Inject as var_core_value_sig3D2C, Injector as var_core_value_sigC56D, LocaleService as var_core_value_sig3A17, PAGE_SIZE as var_core_value_sig938F, PAPER_TYPES as var_core_value_sigD948, PaperType as var_core_value_sigBE5E, Plugin as var_core_value_sig0281, UniverInstanceType as var_core_value_sigED71, createIdentifier as var_core_value_sig281C, generateRandomId as var_core_value_sig3C92, merge as var_core_value_sigB16B, registerDependencies as var_core_value_sig585D, toDisposable as var_core_value_sigE722 } from "@univerjs/core";
+import { BehaviorSubject as var_core_value_sig062A } from "rxjs";
+import { IPrintPreparationService as var_core_value_sig050A, PRINT_CONTAINER_CLASS as var_core_value_sig8B32, PaperMarginMap as var_core_value_sig870F, PrintDirection as var_core_value_sigB683, PrintPaperMargin as var_core_value_sig26EC, PrintPreparationService as var_core_value_sigEEDB } from "@univerjs-pro/print";
+import { ObjectProvider as var_core_value_sig36E7, SlidePageBackgroundObject as var_core_value_sig6A78, SlidePageClipGroup as var_core_value_sigF7EF, UniverSlidesUIPlugin as var_core_value_sig27F9, assembleGroupHierarchy as var_core_value_sig393E, isThumbnailRenderableDrawing as var_core_value_sigB609, resolveGroupFillInheritance as var_core_value_sig390D, resolveSlideLogicalPageSize as var_core_value_sigC928 } from "@univerjs-pro/slides-ui";
+import { ISlideDrawingService as var_core_value_sig39B7, SlideSceneTypeEnum as var_core_value_sig18E0, UniverSlidesPlugin as var_core_value_sigE161, resolvedSlideLayersToDrawingMap as var_core_value_sigBDEE } from "@univerjs-pro/slides";
+import { CanvasRenderMode as var_core_value_sig1F40, DRAWING_OBJECT_LAYER_INDEX as var_core_value_sig3FC7, Engine as var_core_value_sig1E1B, IRenderManagerService as var_core_value_sig3B10, MAIN_VIEW_PORT_KEY as var_core_value_sig89E6, Scene as var_core_value_sig4743, UniverRenderEnginePlugin as var_core_value_sigEB6A, Viewport as var_core_value_sig3D46 } from "@univerjs/engine-render";
+import { BuiltInUIPart as var_core_value_sigCC93, IMenuManagerService as var_core_value_sig5964, IUIPartsService as var_core_value_sig808B, IconManager as var_core_value_sig2A26, MenuItemType as var_core_value_sig1179, RibbonStartGroup as var_core_value_sigEA92, connectInjector as var_core_value_sig8FD9, getMenuHiddenObservable as var_core_value_sig1AE5, useDependency as var_core_value_sig7100, useObservable as var_core_value_sigA19A } from "@univerjs/ui";
+import { UniverLicensePlugin as var_core_value_sigD3F5 } from "@univerjs-pro/license";
+import { LoadingMultiIcon as var_core_value_sig3082, PrintIcon as var_core_value_sigF5D1 } from "@univerjs/icons";
+import { Button as var_core_value_sig8775, Checkbox as var_core_value_sig481B, FormLayout as var_core_value_sig13D7, Input as var_core_value_sig90C0, Radio as var_core_value_sigF1B2, RadioGroup as var_core_value_sigC2BB, Select as var_core_value_sigD9DB, borderBottomClassName as var_core_value_sigA363, clsx as var_core_value_sigFBA5, scrollbarClassName as var_core_value_sigAC47 } from "@univerjs/design";
+import { useEffect as var_core_value_sigA06F, useMemo as var_core_value_sig770E, useRef as var_core_value_sig4654, useState as var_core_value_sigB26B } from "react";
+import { Fragment as var_core_value_sig019B, jsx as var_core_value_sigC6BC, jsxs as var_core_value_sig8EC2 } from "react/jsx-runtime";
+let I = function (var_core_value_sig1537) {
+    return var_core_value_sig1537.FullPage = "FullPage", var_core_value_sig1537.Handout = "Handout", var_core_value_sig1537.NotesPage = "NotesPage", var_core_value_sig1537;
+  }({}),
+  Be = function (var_core_value_sigE4C6) {
+    return var_core_value_sigE4C6.Horizontal = "Horizontal", var_core_value_sigE4C6.Vertical = "Vertical", var_core_value_sigE4C6;
+  }({});
+function L(var_core_value_sig4313, var_core_value_sigFC87) {
+  return var_core_value_sig4313 === undefined ? var_core_value_sigFC87 : var_core_value_sig4313;
+}
+function Ve(var_core_value_sig156F) {
+  let var_core_value_sigDD51 = (var_core_value_sig156F == null ? undefined : var_core_value_sig156F.layout) ?? "FullPage",
+    var_core_value_sigF057 = var_core_value_sigDD51 === "FullPage";
+  return {
+    layout: var_core_value_sigDD51,
+    slidesPerPage: L(var_core_value_sig156F == null ? undefined : var_core_value_sig156F.slidesPerPage, 2),
+    handoutOrder: L(var_core_value_sig156F == null ? undefined : var_core_value_sig156F.handoutOrder, "Horizontal"),
+    paperSize: var_core_value_sig156F == null ? undefined : var_core_value_sig156F.paperSize,
+    direction: L(var_core_value_sig156F == null ? undefined : var_core_value_sig156F.direction, var_core_value_sigF057 ? var_core_value_sigB683.Landscape : var_core_value_sigB683.Portrait),
+    margin: L(var_core_value_sig156F == null ? undefined : var_core_value_sig156F.margin, var_core_value_sig156F != null && var_core_value_sig156F.paperSize ? var_core_value_sig26EC.Normal : var_core_value_sig26EC.None),
+    marginCustom: L(var_core_value_sig156F == null ? undefined : var_core_value_sig156F.marginCustom, {
+      top: 0,
+      right: 0,
+      bottom: 0,
+      left: 0
+    }),
+    frameSlides: L(var_core_value_sig156F == null ? undefined : var_core_value_sig156F.frameSlides, !var_core_value_sigF057),
+    showSlideNumber: L(var_core_value_sig156F == null ? undefined : var_core_value_sig156F.showSlideNumber, !var_core_value_sigF057)
+  };
+}
+function He(var_core_value_sig72F6, var_core_value_sig9FBA, var_core_value_sigFE01, var_core_value_sigA2CE = var_core_value_sig480E => var_core_value_sig480E.length * 14 * 0.55) {
+  let var_core_value_sig1975 = var_core_value_sigC928(var_core_value_sig9FBA),
+    var_core_value_sig6EA1 = Ve(var_core_value_sigFE01);
+  !(var_core_value_sigFE01 != null && var_core_value_sigFE01.direction) && var_core_value_sig6EA1.layout === "FullPage" && (var_core_value_sig6EA1.direction = var_core_value_sig1975.width >= var_core_value_sig1975.height ? var_core_value_sigB683.Landscape : var_core_value_sigB683.Portrait);
+  let var_core_value_sig029F = We(var_core_value_sig1975, var_core_value_sig6EA1),
+    var_core_value_sig3767 = var_core_value_sig6EA1.margin === var_core_value_sig26EC.Custom ? var_core_value_sig6EA1.marginCustom : var_core_value_sig870F[var_core_value_sig6EA1.margin],
+    var_core_value_sig670B = Ge(var_core_value_sig029F, var_core_value_sig3767),
+    var_core_value_sig6912;
+  switch (var_core_value_sig6EA1.layout) {
+    case "Handout":
+      var_core_value_sig6912 = Ke(var_core_value_sig72F6, var_core_value_sig670B, var_core_value_sig6EA1.slidesPerPage, var_core_value_sig6EA1.handoutOrder);
+      break;
+    case "NotesPage":
+      var_core_value_sig6912 = Ye(var_core_value_sig72F6, var_core_value_sig670B, var_core_value_sigA2CE);
+      break;
+    default:
+      var_core_value_sig6912 = var_core_value_sig72F6.map(var_core_value_sig26DB => ({
+        key: "full-page-" + var_core_value_sig26DB.pageId,
+        slots: [{
+          source: var_core_value_sig26DB,
+          rect: var_core_value_sig670B
+        }]
+      }));
+      break;
+  }
+  return {
+    pageSize: var_core_value_sig029F,
+    margin: var_core_value_sig3767,
+    options: var_core_value_sig6EA1,
+    pages: var_core_value_sig6912
+  };
+}
+function Ue(var_core_value_sigE235, var_core_value_sig7664) {
+  let var_core_value_sig2281 = var_core_value_sigC928(var_core_value_sig7664);
+  return var_core_value_sigE235.map(({
+    page: var_core_value_sigA621,
+    index: var_core_value_sigBBFF
+  }) => {
+    let var_core_value_sig8889 = var_core_value_sigA621.getData(),
+      var_core_value_sig32F8 = var_core_value_sigC928(var_core_value_sig8889.pageSize ?? var_core_value_sig2281);
+    return {
+      index: var_core_value_sigBBFF,
+      page: var_core_value_sigA621,
+      pageId: var_core_value_sigA621.getId(),
+      width: var_core_value_sig32F8.width,
+      height: var_core_value_sig32F8.height,
+      speakerNotes: var_core_value_sig8889.speakerNotes ?? ""
+    };
+  });
+}
+function We(var_core_value_sig5E86, var_core_value_sig6998) {
+  let var_core_value_sigF639 = var_core_value_sig6998.paperSize ? var_core_value_sig938F[var_core_value_sig6998.paperSize] : var_core_value_sig5E86,
+    var_core_value_sigEAE5 = Math.min(var_core_value_sigF639.width, var_core_value_sigF639.height),
+    var_core_value_sigE94C = Math.max(var_core_value_sigF639.width, var_core_value_sigF639.height);
+  return var_core_value_sig6998.direction === var_core_value_sigB683.Portrait ? {
+    width: var_core_value_sigEAE5,
+    height: var_core_value_sigE94C
+  } : {
+    width: var_core_value_sigE94C,
+    height: var_core_value_sigEAE5
+  };
+}
+function Ge(var_core_value_sig6D47, var_core_value_sigCB82) {
+  return {
+    x: var_core_value_sigCB82.left,
+    y: var_core_value_sigCB82.top,
+    width: Math.max(1, var_core_value_sig6D47.width - var_core_value_sigCB82.left - var_core_value_sigCB82.right),
+    height: Math.max(1, var_core_value_sig6D47.height - var_core_value_sigCB82.top - var_core_value_sigCB82.bottom)
+  };
+}
+function Ke(var_core_value_sigCF4E, var_core_value_sig6CAD, var_core_value_sig8CF5, var_core_value_sigDDD7) {
+  let var_core_value_sigB2CE = [];
+  for (let var_core_value_sig5B67 = 0; var_core_value_sig5B67 < var_core_value_sigCF4E.length; var_core_value_sig5B67 += var_core_value_sig8CF5) {
+    let var_core_value_sigF0F9 = var_core_value_sigCF4E.slice(var_core_value_sig5B67, var_core_value_sig5B67 + var_core_value_sig8CF5),
+      var_core_value_sig1A0F = Je(qe(var_core_value_sig6CAD, var_core_value_sig8CF5), var_core_value_sig8CF5, var_core_value_sigDDD7);
+    var_core_value_sigB2CE.push({
+      key: "handout-" + var_core_value_sig5B67 / var_core_value_sig8CF5,
+      slots: var_core_value_sigF0F9.map((var_core_value_sigC9E0, var_core_value_sig76BA) => {
+        let var_core_value_sigFBFA = var_core_value_sig1A0F[var_core_value_sig76BA];
+        if (var_core_value_sig8CF5 !== 3) return {
+          source: var_core_value_sigC9E0,
+          rect: var_core_value_sigFBFA
+        };
+        let var_core_value_sigF602 = (var_core_value_sigFBFA.width - 24) * 0.56;
+        return {
+          source: var_core_value_sigC9E0,
+          rect: {
+            ...var_core_value_sigFBFA,
+            width: var_core_value_sigF602
+          },
+          noteLinesRect: {
+            x: var_core_value_sigFBFA.x + var_core_value_sigF602 + 24,
+            y: var_core_value_sigFBFA.y,
+            width: Math.max(1, var_core_value_sigFBFA.width - var_core_value_sigF602 - 24),
+            height: var_core_value_sigFBFA.height
+          }
+        };
+      })
+    });
+  }
+  return var_core_value_sigB2CE;
+}
+function qe(var_core_value_sig443C, var_core_value_sig39B1) {
+  let [var_core_value_sig210D, var_core_value_sigB4B4] = var_core_value_sig39B1 === 1 ? [1, 1] : var_core_value_sig39B1 === 2 || var_core_value_sig39B1 === 3 ? [1, var_core_value_sig39B1] : var_core_value_sig39B1 === 4 ? [2, 2] : var_core_value_sig39B1 === 6 ? [2, 3] : [3, 3],
+    var_core_value_sigD407 = (var_core_value_sig443C.width - 24 * (var_core_value_sig210D - 1)) / var_core_value_sig210D,
+    var_core_value_sig63F3 = (var_core_value_sig443C.height - 24 * (var_core_value_sigB4B4 - 1)) / var_core_value_sigB4B4,
+    var_core_value_sig6A71 = [];
+  for (let var_core_value_sig1758 = 0; var_core_value_sig1758 < var_core_value_sigB4B4; var_core_value_sig1758++) for (let var_core_value_sigFBA4 = 0; var_core_value_sigFBA4 < var_core_value_sig210D; var_core_value_sigFBA4++) var_core_value_sig6A71.push({
+    x: var_core_value_sig443C.x + var_core_value_sigFBA4 * (var_core_value_sigD407 + 24),
+    y: var_core_value_sig443C.y + var_core_value_sig1758 * (var_core_value_sig63F3 + 24),
+    width: var_core_value_sigD407,
+    height: var_core_value_sig63F3
+  });
+  return var_core_value_sig6A71;
+}
+function Je(var_core_value_sig3BF6, var_core_value_sig38CE, var_core_value_sig62B7) {
+  if (var_core_value_sig62B7 === "Horizontal" || var_core_value_sig38CE < 4) return var_core_value_sig3BF6;
+  let var_core_value_sig37A8 = var_core_value_sig38CE === 9 ? 3 : 2,
+    var_core_value_sigA90D = var_core_value_sig38CE / var_core_value_sig37A8;
+  return var_core_value_sig3BF6.map((var_core_value_sig4805, var_core_value_sigE67E) => var_core_value_sig3BF6[var_core_value_sigE67E % var_core_value_sigA90D * var_core_value_sig37A8 + Math.floor(var_core_value_sigE67E / var_core_value_sigA90D)]);
+}
+function Ye(var_core_value_sig7A3C, var_core_value_sig0511, var_core_value_sig1F44) {
+  let var_core_value_sigCB04 = [];
+  for (let var_core_value_sig2902 of var_core_value_sig7A3C) {
+    let var_core_value_sig4383 = var_core_value_sig0511.height * 0.42,
+      var_core_value_sig186C = {
+        x: var_core_value_sig0511.x,
+        y: var_core_value_sig0511.y + var_core_value_sig4383 + 24,
+        width: var_core_value_sig0511.width,
+        height: Math.max(1, var_core_value_sig0511.height - var_core_value_sig4383 - 24)
+      },
+      var_core_value_sigD955 = Xe(var_core_value_sig2902.speakerNotes, var_core_value_sig186C.width, var_core_value_sig1F44),
+      var_core_value_sig48BD = Math.max(1, Math.floor(var_core_value_sig186C.height / 21)),
+      var_core_value_sig429F = Math.max(1, Math.floor(var_core_value_sig0511.height / 21)),
+      var_core_value_sigF62A = var_core_value_sigD955.splice(0, var_core_value_sig48BD);
+    var_core_value_sigCB04.push({
+      key: "notes-" + var_core_value_sig2902.pageId + "-0",
+      slots: [{
+        source: var_core_value_sig2902,
+        rect: {
+          x: var_core_value_sig0511.x,
+          y: var_core_value_sig0511.y,
+          width: var_core_value_sig0511.width,
+          height: var_core_value_sig4383
+        }
+      }],
+      notes: {
+        lines: var_core_value_sigF62A,
+        rect: var_core_value_sig186C,
+        continuation: false,
+        source: var_core_value_sig2902
+      }
+    });
+    let var_core_value_sig8178 = 1;
+    for (; var_core_value_sigD955.length;) var_core_value_sigCB04.push({
+      key: "notes-" + var_core_value_sig2902.pageId + "-" + var_core_value_sig8178,
+      slots: [],
+      notes: {
+        lines: var_core_value_sigD955.splice(0, var_core_value_sig429F),
+        rect: var_core_value_sig0511,
+        continuation: true,
+        source: var_core_value_sig2902
+      }
+    }), var_core_value_sig8178++;
+  }
+  return var_core_value_sigCB04;
+}
+function Xe(var_core_value_sig947E, var_core_value_sig4545, var_core_value_sigF39A) {
+  if (!var_core_value_sig947E) return [];
+  let var_core_value_sigF79C = var_core_value_sig947E.replace(/\r\n/g, "\x0a").split("\x0a"),
+    var_core_value_sig2E54 = [];
+  return var_core_value_sigF79C.forEach(var_core_value_sig9989 => {
+    let var_core_value_sig698E = Array.from(var_core_value_sig9989);
+    if (var_core_value_sig698E.length === 0) var_core_value_sig2E54.push("");else {
+      let var_core_value_sigE9ED = 0;
+      for (; var_core_value_sigE9ED < var_core_value_sig698E.length;) {
+        let var_core_value_sig2AD0 = var_core_value_sigE9ED + 1,
+          var_core_value_sig3EEE = var_core_value_sig698E.length,
+          var_core_value_sigBC46 = var_core_value_sigE9ED;
+        for (; var_core_value_sig2AD0 <= var_core_value_sig3EEE;) {
+          let var_core_value_sig7524 = Math.floor((var_core_value_sig2AD0 + var_core_value_sig3EEE) / 2);
+          var_core_value_sigF39A(var_core_value_sig698E.slice(var_core_value_sigE9ED, var_core_value_sig7524).join("")) <= var_core_value_sig4545 ? (var_core_value_sigBC46 = var_core_value_sig7524, var_core_value_sig2AD0 = var_core_value_sig7524 + 1) : var_core_value_sig3EEE = var_core_value_sig7524 - 1;
+        }
+        let var_core_value_sig3D7D = Math.max(var_core_value_sigE9ED + 1, var_core_value_sigBC46);
+        var_core_value_sig2E54.push(var_core_value_sig698E.slice(var_core_value_sigE9ED, var_core_value_sig3D7D).join("")), var_core_value_sigE9ED = var_core_value_sig3D7D;
+      }
+    }
+  }), var_core_value_sig2E54;
+}
+function Ze() {
+  return {
+    layout: "FullPage",
+    slidesPerPage: 2,
+    handoutOrder: "Horizontal",
+    paperSize: var_core_value_sigBE5E.A4,
+    direction: var_core_value_sigB683.Landscape,
+    margin: var_core_value_sig26EC.Normal,
+    frameSlides: false,
+    showSlideNumber: false
+  };
+}
+function R(var_core_value_sig7658) {
+  "@babel/helpers - typeof";
+
+  return R = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig2809) {
+    return typeof var_core_value_sig2809;
+  } : function (var_core_value_sig2DAB) {
+    return var_core_value_sig2DAB && typeof Symbol == "function" && var_core_value_sig2DAB.constructor === Symbol && var_core_value_sig2DAB !== Symbol.prototype ? "symbol" : typeof var_core_value_sig2DAB;
+  }, R(var_core_value_sig7658);
+}
+function Qe(var_core_value_sigDCF5, var_core_value_sigC786) {
+  if (R(var_core_value_sigDCF5) != "object" || !var_core_value_sigDCF5) return var_core_value_sigDCF5;
+  var var_core_value_sigC0D9 = var_core_value_sigDCF5[Symbol.toPrimitive];
+  if (var_core_value_sigC0D9 !== undefined) {
+    var var_core_value_sigF051 = var_core_value_sigC0D9.call(var_core_value_sigDCF5, var_core_value_sigC786 || "default");
+    if (R(var_core_value_sigF051) != "object") return var_core_value_sigF051;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigC786 === "string" ? String : Number)(var_core_value_sigDCF5);
+}
+function $e(var_core_value_sig5825) {
+  var var_core_value_sig4EB7 = Qe(var_core_value_sig5825, "string");
+  return R(var_core_value_sig4EB7) == "symbol" ? var_core_value_sig4EB7 : var_core_value_sig4EB7 + "";
+}
+function z(var_core_value_sig73AF, var_core_value_sig548A, var_core_value_sigE026) {
+  return (var_core_value_sig548A = $e(var_core_value_sig548A)) in var_core_value_sig73AF ? Object.defineProperty(var_core_value_sig73AF, var_core_value_sig548A, {
+    value: var_core_value_sigE026,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig73AF[var_core_value_sig548A] = var_core_value_sigE026, var_core_value_sig73AF;
+}
+const B = var_core_value_sig281C("univer-pro.slide-print-dialog.service");
+var et = class extends var_core_value_sig8F69 {
+  constructor(...var_core_value_sig877E) {
+    super(...var_core_value_sig877E), z(this, "_visible$", new var_core_value_sig062A(false)), z(this, "_options$", new var_core_value_sig062A(Ze())), z(this, "visible$", this._visible$["asObservable"]()), z(this, "options$", this._options$["asObservable"]());
+  }
+  get visible() {
+    return this._visible$["getValue"]();
+  }
+  get options() {
+    return this._options$["getValue"]();
+  }
+  open(var_core_value_sig20C8) {
+    this._options$["next"]({
+      ...Ze(),
+      ...var_core_value_sig20C8
+    }), this._visible$["next"](true);
+  }
+  close() {
+    this._visible$["next"](false);
+  }
+  updateOptions(var_core_value_sigE9A7) {
+    this._options$["next"]({
+      ...this.options,
+      ...var_core_value_sigE9A7
+    });
+  }
+  dispose() {
+    this._visible$["complete"](), this._options$["complete"](), super.dispose();
+  }
+};
+const V = {
+    id: "slide.operation.print-open",
+    type: var_core_value_sig5A75.OPERATION,
+    handler(var_core_value_sig339E, var_core_value_sig7550) {
+      return var_core_value_sig339E.get(B).open(var_core_value_sig7550), true;
+    }
+  },
+  H = {
+    id: "slide.operation.print-close",
+    type: var_core_value_sig5A75.OPERATION,
+    handler(var_core_value_sig2983) {
+      return var_core_value_sig2983.get(B).close(), true;
+    }
+  };
+var U = class {
+  constructor() {
+    z(this, "_transformers", new Set());
+  }
+  register(var_core_value_sigBECE) {
+    return this._transformers["add"](var_core_value_sigBECE), var_core_value_sigE722(() => this._transformers["delete"](var_core_value_sigBECE));
+  }
+  transform(var_core_value_sig1B22, var_core_value_sig7F72) {
+    return Array.from(this._transformers).reduce((var_core_value_sigB577, var_core_value_sig9572) => var_core_value_sig9572(var_core_value_sigB577, var_core_value_sig7F72), var_core_value_sig1B22);
+  }
+};
+function tt(var_core_value_sigE1B0, var_core_value_sigD4FF) {
+  let var_core_value_sig1E5B = {};
+  return {
+    data: var_core_value_sig1E5B,
+    order: var_core_value_sigD4FF.filter(var_core_value_sig7B2A => {
+      let var_core_value_sig06CD = var_core_value_sigE1B0[var_core_value_sig7B2A];
+      return var_core_value_sigB609(var_core_value_sig06CD) ? (var_core_value_sig1E5B[var_core_value_sig7B2A] = var_core_value_sig06CD, true) : false;
+    })
+  };
+}
+function nt(var_core_value_sigB680, var_core_value_sig1F64, var_core_value_sigDD1C) {
+  let var_core_value_sig2C39 = var_core_value_sig1F64.getUnitId(),
+    var_core_value_sigB7D1 = var_core_value_sigDD1C.getId(),
+    var_core_value_sig64F0 = var_core_value_sigB680.getDrawingData(var_core_value_sig2C39, var_core_value_sigB7D1),
+    var_core_value_sig85B1 = var_core_value_sigB680.getDrawingOrder(var_core_value_sig2C39, var_core_value_sigB7D1);
+  if (var_core_value_sig85B1.some(var_core_value_sigA5F1 => !!var_core_value_sig64F0[var_core_value_sigA5F1])) return tt(var_core_value_sig64F0, var_core_value_sig85B1);
+  let var_core_value_sig3141 = var_core_value_sigBDEE(var_core_value_sig2C39, var_core_value_sigB7D1, var_core_value_sigDD1C.resolveElements(), var_core_value_sig1F64.getThemeDataForPage(var_core_value_sigB7D1));
+  return tt(var_core_value_sig3141.data, var_core_value_sig3141.order);
+}
+var rt = class extends var_core_value_sig8F69 {
+  get container() {
+    return this._container;
+  }
+  get root() {
+    return this._root;
+  }
+  get _pageSize() {
+    return var_core_value_sigC928(this._slidePage["getData"]().pageSize ?? this._slideModel["getSnapshot"]().defaultPageSize);
+  }
+  constructor(var_core_value_sig97A2, var_core_value_sig07E9, var_core_value_sig4F59, var_core_value_sigF564, var_core_value_sig8CFA = false) {
+    super(), this._injector = var_core_value_sig97A2, this._slideDrawingService = var_core_value_sig07E9, this._slideModel = var_core_value_sig4F59, this._slidePage = var_core_value_sigF564, this._autoRender = var_core_value_sig8CFA, z(this, "_container", document.createElement("div")), z(this, "_root", document.createElement("div")), z(this, "_engine", undefined), z(this, "_scene", undefined), z(this, "_objectProvider", undefined), z(this, "_renderObjectMap", new Map()), z(this, "_drawingTransformService", undefined), this._drawingTransformService = this._injector["get"](U), this._objectProvider = this._injector["createInstance"](var_core_value_sig36E7), this._initRenderer(), this.disposeWithMe({
+      dispose: () => {
+        this._renderObjectMap["clear"](), this._scene["dispose"](), this._engine["dispose"]();
+      }
+    });
+  }
+  _initRenderer() {
+    let var_core_value_sig2E11 = "slide-print-" + var_core_value_sig3C92(4),
+      {
+        width: var_core_value_sig5B69,
+        height: var_core_value_sigB098
+      } = this._pageSize;
+    this._engine = new var_core_value_sig1E1B("", {
+      elementWidth: var_core_value_sig5B69,
+      elementHeight: var_core_value_sigB098,
+      dpr: 1,
+      renderMode: var_core_value_sig1F40.Printing
+    }), this._scene = new var_core_value_sig4743(var_core_value_sig2E11, this._engine), this._scene["disableObjectsEvent"](), this._scene["transformByState"]({
+      width: var_core_value_sig5B69,
+      height: var_core_value_sigB098,
+      scaleX: 1,
+      scaleY: 1
+    }), new var_core_value_sig3D46(var_core_value_sig89E6, this._scene, {
+      left: 0,
+      top: 0,
+      width: var_core_value_sig5B69,
+      height: var_core_value_sigB098,
+      active: true
+    }).openClip(), this._engine["mount"](this._container, false), this._engine["getCanvas"]().getContext().setId(var_core_value_sig2E11 + "_" + var_core_value_sig3C92(4)), this._renderSlidePage();
+  }
+  _renderSlidePage() {
+    let var_core_value_sigCE71 = this._slideModel["getUnitId"](),
+      var_core_value_sig21D8 = this._slidePage["getId"](),
+      {
+        width: var_core_value_sig2B65,
+        height: var_core_value_sigD7EA
+      } = this._pageSize,
+      var_core_value_sigB33B = this._scene,
+      var_core_value_sig24B9 = this._injector["createInstance"](var_core_value_sig6A78, "slide-print-page-background-" + var_core_value_sigCE71 + "-" + var_core_value_sig21D8, {
+        left: 0,
+        top: 0,
+        width: var_core_value_sig2B65,
+        height: var_core_value_sigD7EA,
+        background: this._slidePage["resolveBackground"](),
+        evented: false,
+        zIndex: 1
+      });
+    var_core_value_sigB33B.addObject(var_core_value_sig24B9, 0), this._renderObjectMap["set"](var_core_value_sig24B9.oKey, var_core_value_sig24B9);
+    let {
+        data: var_core_value_sigE627,
+        order: var_core_value_sigEF3E
+      } = this._drawingTransformService["transform"](nt(this._slideDrawingService, this._slideModel, this._slidePage), {
+        slideModel: this._slideModel,
+        slidePage: this._slidePage
+      }),
+      var_core_value_sig273D = var_core_value_sig390D(var_core_value_sigE627),
+      var_core_value_sig9A0D = new var_core_value_sigF7EF("slide-print-page-clip-" + var_core_value_sigCE71 + "-" + var_core_value_sig21D8, {
+        left: 0,
+        top: 0,
+        width: var_core_value_sig2B65,
+        height: var_core_value_sigD7EA
+      });
+    var_core_value_sigB33B.addObject(var_core_value_sig9A0D, 0), this._renderObjectMap["set"](var_core_value_sig9A0D.oKey, var_core_value_sig9A0D), this._objectProvider["convertToRenderObjects"](var_core_value_sig273D, var_core_value_sigEF3E, {
+      unitId: var_core_value_sigCE71,
+      subUnitId: var_core_value_sig21D8,
+      pageOffsetLeft: 0,
+      pageOffsetTop: 0,
+      sceneType: var_core_value_sig18E0.PRESENTATION,
+      showPlaceholder: false,
+      requestRender: () => this._requestRender()
+    }).forEach(var_core_value_sigD873 => {
+      var_core_value_sigB33B.addObject(var_core_value_sigD873, var_core_value_sig3FC7), this._renderObjectMap["set"](var_core_value_sigD873.oKey, var_core_value_sigD873);
+    }), var_core_value_sig393E(var_core_value_sig273D, var_core_value_sigEF3E, var_core_value_sigB33B, {
+      unitId: var_core_value_sigCE71,
+      subUnitId: var_core_value_sig21D8,
+      pageOffsetLeft: 0,
+      pageOffsetTop: 0,
+      sceneType: var_core_value_sig18E0.PRESENTATION,
+      showPlaceholder: false,
+      objectProvider: this._objectProvider,
+      renderObjectMap: this._renderObjectMap,
+      requestRender: () => this._requestRender()
+    }), var_core_value_sigB33B.makeDirty(true);
+  }
+  prepare() {
+    this._root["style"].position = "absolute", this._root["style"].top = "0px", this._root["style"].left = "0px", this._root["style"].width = "100%", this._root["style"].height = "100%";
+  }
+  render() {
+    let var_core_value_sigA319 = this._engine["getCanvas"]().getContext();
+    this._scene["makeDirty"](true), var_core_value_sigA319.save(), this._scene["render"](), var_core_value_sigA319.restore();
+  }
+  _requestRender() {
+    this._scene["makeDirty"](true), this._autoRender && this.render();
+  }
+};
+const W = "univer-slide-print-page";
+var it = class extends var_core_value_sig8F69 {
+  constructor(var_core_value_sig2D58, var_core_value_sig223F, var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sig58C1, var_core_value_sig5090, var_core_value_sigC368) {
+    super(), this._document = var_core_value_sig2D58, this._injector = var_core_value_sig223F, this._slideDrawingService = var_core_value_sigD749, this._slideModel = var_core_value_sigCFFA, this._plan = var_core_value_sig58C1, this._pageSize = var_core_value_sig5090, this._options = var_core_value_sigC368, z(this, "container", undefined), z(this, "_slideViews", []), this.container = this._document["createElement"]("div"), this.container["className"] = W, this.container["style"].position = "relative", this.container["style"].width = this._pageSize["width"] + "px", this.container["style"].height = this._pageSize["height"] + "px", this.container["style"].background = "#fff", this.container["style"].color = "#000", this.container["style"].overflow = "hidden", this._mountSlides(), this._mountNotes();
+  }
+  render() {
+    this._slideViews["forEach"](var_core_value_sigA12B => var_core_value_sigA12B.render());
+  }
+  dispose() {
+    this._slideViews["forEach"](var_core_value_sigF230 => var_core_value_sigF230.dispose()), this._slideViews["length"] = 0, this.container["remove"](), super.dispose();
+  }
+  _mountSlides() {
+    this._plan["slots"].forEach(var_core_value_sig09B8 => {
+      let var_core_value_sig6F91 = this._document["createElement"]("div");
+      var_core_value_sig6F91.className = "univer-slide-print-slot", G(var_core_value_sig6F91, var_core_value_sig09B8.rect), var_core_value_sig6F91.style["overflow"] = "hidden", this.container["appendChild"](var_core_value_sig6F91);
+      let var_core_value_sigF9C7 = this._options["showSlideNumber"] ? 20 : 0,
+        var_core_value_sig8895 = {
+          ...var_core_value_sig09B8.rect,
+          x: 0,
+          y: 0,
+          height: Math.max(1, var_core_value_sig09B8.rect["height"] - var_core_value_sigF9C7)
+        },
+        var_core_value_sigC80B = var_core_value_sig09B8.source["width"] || this._slideModel["getSnapshot"]().defaultPageSize["width"],
+        var_core_value_sig284F = var_core_value_sig09B8.source["height"] || this._slideModel["getSnapshot"]().defaultPageSize["height"],
+        var_core_value_sigE154 = at(var_core_value_sigC80B, var_core_value_sig284F, var_core_value_sig8895),
+        var_core_value_sig4632 = new rt(this._injector, this._slideDrawingService, this._slideModel, var_core_value_sig09B8.source["page"], this._options["preview"] ?? false);
+      if (var_core_value_sig4632.prepare(), var_core_value_sig4632.container["className"] = "univer-slide-print-surface", var_core_value_sig4632.container["style"].position = "absolute", var_core_value_sig4632.container["style"].left = var_core_value_sigE154.x + "px", var_core_value_sig4632.container["style"].top = var_core_value_sigE154.y + "px", var_core_value_sig4632.container["style"].width = var_core_value_sigC80B + "px", var_core_value_sig4632.container["style"].height = var_core_value_sig284F + "px", var_core_value_sig4632.container["style"].transform = "scale(" + var_core_value_sigE154.width / var_core_value_sigC80B + ")", var_core_value_sig4632.container["style"].transformOrigin = "top\x20left", var_core_value_sig4632.container["appendChild"](var_core_value_sig4632.root), var_core_value_sig6F91.appendChild(var_core_value_sig4632.container), this._slideViews["push"](var_core_value_sig4632), this._options["frameSlides"]) {
+        let var_core_value_sig1BBD = this._document["createElement"]("div");
+        G(var_core_value_sig1BBD, var_core_value_sigE154), var_core_value_sig1BBD.style["border"] = "1px solid currentColor", var_core_value_sig1BBD.style["boxSizing"] = "border-box", var_core_value_sig1BBD.style["opacity"] = "0.5", var_core_value_sig1BBD.style["pointerEvents"] = "none", var_core_value_sig6F91.appendChild(var_core_value_sig1BBD);
+      }
+      if (this._options["showSlideNumber"]) {
+        let var_core_value_sigF704 = this._document["createElement"]("div");
+        var_core_value_sigF704.textContent = String(var_core_value_sig09B8.source["index"] + 1), var_core_value_sigF704.style["position"] = "absolute", var_core_value_sigF704.style["left"] = "0", var_core_value_sigF704.style["right"] = "0", var_core_value_sigF704.style["bottom"] = "0", var_core_value_sigF704.style["height"] = "20px", var_core_value_sigF704.style["font"] = "12px/20px Arial, sans-serif", var_core_value_sigF704.style["textAlign"] = "center", var_core_value_sig6F91.appendChild(var_core_value_sigF704);
+      }
+      var_core_value_sig09B8.noteLinesRect && this._mountHandoutLines(var_core_value_sig09B8.noteLinesRect);
+    });
+  }
+  _mountHandoutLines(var_core_value_sigAD56) {
+    let var_core_value_sigDB4A = this._document["createElement"]("div");
+    G(var_core_value_sigDB4A, var_core_value_sigAD56), var_core_value_sigDB4A.style["display"] = "flex", var_core_value_sigDB4A.style["flexDirection"] = "column", var_core_value_sigDB4A.style["justifyContent"] = "space-evenly";
+    for (let var_core_value_sig12F2 = 0; var_core_value_sig12F2 < 6; var_core_value_sig12F2++) {
+      let var_core_value_sig2BCF = this._document["createElement"]("div");
+      var_core_value_sig2BCF.style["borderBottom"] = "1px solid currentColor", var_core_value_sig2BCF.style["opacity"] = "0.4", var_core_value_sigDB4A.appendChild(var_core_value_sig2BCF);
+    }
+    this.container["appendChild"](var_core_value_sigDB4A);
+  }
+  _mountNotes() {
+    let var_core_value_sig6418 = this._plan["notes"];
+    if (!var_core_value_sig6418) return;
+    let var_core_value_sig1896 = this._document["createElement"]("div");
+    G(var_core_value_sig1896, var_core_value_sig6418.rect), var_core_value_sig1896.style["boxSizing"] = "border-box", var_core_value_sig1896.style["font"] = "14px/21px Arial, sans-serif", var_core_value_sig1896.style["overflow"] = "hidden", var_core_value_sig1896.style["whiteSpace"] = "pre", var_core_value_sig1896.dir = "auto", var_core_value_sig6418.lines["forEach"](var_core_value_sig2259 => {
+      let var_core_value_sig9E2F = this._document["createElement"]("div");
+      var_core_value_sig9E2F.style["height"] = "21px", var_core_value_sig9E2F.textContent = var_core_value_sig2259 || "\u00a0", var_core_value_sig1896.appendChild(var_core_value_sig9E2F);
+    }), this.container["appendChild"](var_core_value_sig1896);
+  }
+};
+function at(var_core_value_sig2162, var_core_value_sig2EAD, var_core_value_sig6774) {
+  let var_core_value_sig340D = Math.min(var_core_value_sig6774.width / var_core_value_sig2162, var_core_value_sig6774.height / var_core_value_sig2EAD),
+    var_core_value_sig82D4 = var_core_value_sig2162 * var_core_value_sig340D,
+    var_core_value_sigBDE4 = var_core_value_sig2EAD * var_core_value_sig340D;
+  return {
+    x: var_core_value_sig6774.x + (var_core_value_sig6774.width - var_core_value_sig82D4) / 2,
+    y: var_core_value_sig6774.y + (var_core_value_sig6774.height - var_core_value_sigBDE4) / 2,
+    width: var_core_value_sig82D4,
+    height: var_core_value_sigBDE4
+  };
+}
+function G(var_core_value_sig7DF1, var_core_value_sigDC86) {
+  var_core_value_sig7DF1.style["position"] = "absolute", var_core_value_sig7DF1.style["left"] = var_core_value_sigDC86.x + "px", var_core_value_sig7DF1.style["top"] = var_core_value_sigDC86.y + "px", var_core_value_sig7DF1.style["width"] = var_core_value_sigDC86.width + "px", var_core_value_sig7DF1.style["height"] = var_core_value_sigDC86.height + "px";
+}
+function ot(var_core_value_sig0B0C, var_core_value_sigA39E, var_core_value_sigBBEE) {
+  let var_core_value_sig011D = var_core_value_sig0B0C.createElement("style"),
+    var_core_value_sig6167 = var_core_value_sigBBEE.paperSize ? "size: " + var_core_value_sigBBEE.paperSize + "\x20" + var_core_value_sigBBEE.direction["toLowerCase"]() + ";" : "";
+  return var_core_value_sig011D.className = "offline-printing-css", var_core_value_sig011D.textContent = "\n html, body {\n margin: 0;\n padding: 0;\n }\n ." + var_core_value_sig8B32 + " {\n position: relative;\n }\n ." + W + " {\n position: relative;\n width: " + var_core_value_sigA39E.width + "px;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20height:\x20" + var_core_value_sigA39E.height + "px;\n overflow: hidden;\n }\n @media print {\n @page {\n size: " + var_core_value_sigA39E.width + "px " + var_core_value_sigA39E.height + "px;\n " + var_core_value_sig6167 + "\n margin: 0;\n }\n ." + W + " {\n break-after: page;\n page-break-after: always;\n }\n ." + W + ":last-child {\n break-after: auto;\n page-break-after: auto;\n }\n }\n ", var_core_value_sig011D;
+}
+function st(var_core_value_sig65A1) {
+  return Number.isFinite(var_core_value_sig65A1.from) && Number.isFinite(var_core_value_sig65A1.to) && var_core_value_sig65A1.from <= var_core_value_sig65A1.to;
+}
+function ct(var_core_value_sig7F19, var_core_value_sig7827) {
+  return Math.max(0, Math.min(var_core_value_sig7827 - 1, var_core_value_sig7F19 - 1));
+}
+function lt(var_core_value_sig652C, var_core_value_sig7E32) {
+  if (var_core_value_sig652C <= 0) return [];
+  if (!var_core_value_sig7E32) return Array.from({
+    length: var_core_value_sig652C
+  }, (var_core_value_sig0285, var_core_value_sig777D) => var_core_value_sig777D);
+  let var_core_value_sig4C07 = new Set();
+  return var_core_value_sig7E32.forEach(var_core_value_sig3F4C => {
+    if (!st(var_core_value_sig3F4C) || var_core_value_sig3F4C.to < 1 || var_core_value_sig3F4C.from > var_core_value_sig652C) return;
+    let var_core_value_sigD65A = ct(var_core_value_sig3F4C.from, var_core_value_sig652C),
+      var_core_value_sig5A13 = ct(var_core_value_sig3F4C.to, var_core_value_sig652C);
+    for (let var_core_value_sigD082 = var_core_value_sigD65A; var_core_value_sigD082 <= var_core_value_sig5A13; var_core_value_sigD082 += 1) var_core_value_sig4C07.add(var_core_value_sigD082);
+  }), Array.from(var_core_value_sig4C07).sort((var_core_value_sigF593, var_core_value_sig3607) => var_core_value_sigF593 - var_core_value_sig3607);
+}
+function K(var_core_value_sig79AB, var_core_value_sig8E74) {
+  return function (var_core_value_sigB512, var_core_value_sigF2E6) {
+    var_core_value_sig8E74(var_core_value_sigB512, var_core_value_sigF2E6, var_core_value_sig79AB);
+  };
+}
+function q(var_core_value_sig104C, var_core_value_sig841D, var_core_value_sig90CB, var_core_value_sigBDF5) {
+  var var_core_value_sigACC6 = arguments.length,
+    var_core_value_sig1614 = var_core_value_sigACC6 < 3 ? var_core_value_sig841D : var_core_value_sigBDF5 === null ? var_core_value_sigBDF5 = Object.getOwnPropertyDescriptor(var_core_value_sig841D, var_core_value_sig90CB) : var_core_value_sigBDF5,
+    var_core_value_sig85C3;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig1614 = Reflect.decorate(var_core_value_sig104C, var_core_value_sig841D, var_core_value_sig90CB, var_core_value_sigBDF5);else {
+    for (var var_core_value_sigB996 = var_core_value_sig104C.length - 1; var_core_value_sigB996 >= 0; var_core_value_sigB996--) (var_core_value_sig85C3 = var_core_value_sig104C[var_core_value_sigB996]) && (var_core_value_sig1614 = (var_core_value_sigACC6 < 3 ? var_core_value_sig85C3(var_core_value_sig1614) : var_core_value_sigACC6 > 3 ? var_core_value_sig85C3(var_core_value_sig841D, var_core_value_sig90CB, var_core_value_sig1614) : var_core_value_sig85C3(var_core_value_sig841D, var_core_value_sig90CB)) || var_core_value_sig1614);
+  }
+  return var_core_value_sigACC6 > 3 && var_core_value_sig1614 && Object.defineProperty(var_core_value_sig841D, var_core_value_sig90CB, var_core_value_sig1614), var_core_value_sig1614;
+}
+let J = class extends var_core_value_sig8F69 {
+  constructor(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A, var_core_value_sig3E68) {
+    super(), this._univerInstanceService = var_core_value_sig34C8, this._injector = var_core_value_sigB744, this._slideDrawingService = var_core_value_sigEAE2, this._renderManagerService = var_core_value_sigE68A, this._printPreparationService = var_core_value_sig3E68, z(this, "_printing", false);
+  }
+  async print(var_core_value_sigF4C5, var_core_value_sig5410) {
+    if (this._printing) return Promise.resolve(false);
+    let var_core_value_sig492F = this._univerInstanceService["getUnit"](var_core_value_sigF4C5, var_core_value_sigED71.UNIVER_SLIDE);
+    if (!var_core_value_sig492F) return Promise.resolve(false);
+    let var_core_value_sig8EA0 = var_core_value_sig492F.getSnapshot(),
+      var_core_value_sigA6F6 = lt(var_core_value_sig8EA0.slideOrder["length"], var_core_value_sig5410 == null ? undefined : var_core_value_sig5410.range).map(var_core_value_sigDBB7 => ({
+        index: var_core_value_sigDBB7,
+        page: var_core_value_sig492F.pageManager["getSlide"](var_core_value_sig8EA0.slideOrder[var_core_value_sigDBB7])
+      })).filter(var_core_value_sigD0A8 => !!var_core_value_sigD0A8.page);
+    if (var_core_value_sigA6F6.length === 0) return false;
+    this._printing = true;
+    try {
+      await this._printPreparationService["prepare"]({
+        unitId: var_core_value_sigF4C5,
+        unitType: var_core_value_sigED71.UNIVER_SLIDE,
+        dpr: 1
+      });
+    } catch (var_core_value_sigF4B9) {
+      throw this._printing = false, var_core_value_sigF4B9;
+    }
+    let var_core_value_sigCDDA = this._createPrintFrame();
+    if (!var_core_value_sigCDDA) return this._printing = false, false;
+    try {
+      let var_core_value_sig5CEE = this._preparePrintResources(var_core_value_sigCDDA, var_core_value_sig492F, var_core_value_sigA6F6, var_core_value_sig5410);
+      return this._printPreparedPages(var_core_value_sigF4C5, var_core_value_sig8EA0.slideOrder, var_core_value_sigCDDA, var_core_value_sig5CEE);
+    } catch (var_core_value_sigE92A) {
+      return var_core_value_sigCDDA.frame["remove"](), this._printing = false, Promise.reject(var_core_value_sigE92A);
+    }
+  }
+  _preparePrintResources(var_core_value_sigE243, var_core_value_sig74A8, var_core_value_sig21B2, var_core_value_sigDE08) {
+    let var_core_value_sigACCB = var_core_value_sig74A8.getSnapshot(),
+      var_core_value_sig7F33 = var_core_value_sigE243.document["createElement"]("canvas").getContext("2d");
+    var_core_value_sig7F33 && (var_core_value_sig7F33.font = "14px Arial, sans-serif");
+    let var_core_value_sig0C53 = He(Ue(var_core_value_sig21B2, var_core_value_sigACCB.defaultPageSize), var_core_value_sigACCB.defaultPageSize, var_core_value_sigDE08, var_core_value_sig362B => (var_core_value_sig7F33 == null ? undefined : var_core_value_sig7F33.measureText(var_core_value_sig362B).width) ?? var_core_value_sig362B.length * 14 * 0.55),
+      var_core_value_sigEA04 = ot(var_core_value_sigE243.document, var_core_value_sig0C53.pageSize, var_core_value_sig0C53.options),
+      var_core_value_sig7A62 = var_core_value_sigE243.document["createElement"]("div");
+    var_core_value_sig7A62.className = var_core_value_sig8B32;
+    let var_core_value_sig8109 = var_core_value_sig0C53.pages["map"](var_core_value_sig5CA5 => new it(var_core_value_sigE243.document, this._injector, this._slideDrawingService, var_core_value_sig74A8, var_core_value_sig5CA5, var_core_value_sig0C53.pageSize, var_core_value_sig0C53.options));
+    return var_core_value_sig8109.forEach(var_core_value_sigE90F => var_core_value_sig7A62.appendChild(var_core_value_sigE90F.container)), var_core_value_sigE243.document["head"].appendChild(var_core_value_sigEA04), var_core_value_sigE243.document["body"].appendChild(var_core_value_sig7A62), {
+      container: var_core_value_sig7A62,
+      pageInstances: var_core_value_sig8109,
+      style: var_core_value_sigEA04
+    };
+  }
+  _printPreparedPages(var_core_value_sig7565, var_core_value_sigD4FB, var_core_value_sig3E71, var_core_value_sig01B3) {
+    let {
+        container: var_core_value_sig7442,
+        pageInstances: var_core_value_sigDF87,
+        style: var_core_value_sig9EE0
+      } = var_core_value_sig01B3,
+      var_core_value_sigF0511 = var_core_value_sig3E71.window,
+      var_core_value_sig0B45 = var_core_value_sigF0511.onbeforeprint,
+      var_core_value_sig36F8 = var_core_value_sigF0511.onafterprint;
+    return new Promise(var_core_value_sigEFD4 => {
+      let var_core_value_sig861B = var_core_value_sig0D69 => {
+        var_core_value_sigDF87.forEach(var_core_value_sig27E5 => var_core_value_sig27E5.dispose()), var_core_value_sig7442.remove(), var_core_value_sig9EE0.remove(), var_core_value_sigF0511.onbeforeprint = var_core_value_sig0B45, var_core_value_sigF0511.onafterprint = var_core_value_sig36F8, var_core_value_sig3E71.frame["remove"](), this._restoreThumbnailRenders(var_core_value_sig7565, var_core_value_sigD4FB), this._printing = false, var_core_value_sigEFD4(var_core_value_sig0D69);
+      };
+      setTimeout(() => {
+        if (var_core_value_sigF0511.onbeforeprint = var_core_value_sig8061 => {
+          var_core_value_sig0B45 == null || var_core_value_sig0B45.call(var_core_value_sigF0511, var_core_value_sig8061), var_core_value_sigDF87.forEach(var_core_value_sig2AD8 => var_core_value_sig2AD8.render());
+        }, var_core_value_sigF0511.onafterprint = var_core_value_sig4D4C => {
+          var_core_value_sig36F8 == null || var_core_value_sig36F8.call(var_core_value_sigF0511, var_core_value_sig4D4C), var_core_value_sig861B(true);
+        }, typeof var_core_value_sigF0511.print != "function") {
+          var_core_value_sig861B(false);
+          return;
+        }
+        try {
+          var_core_value_sigF0511.print();
+        } catch {
+          var_core_value_sig861B(false);
+        }
+      }, 100);
+    });
+  }
+  _createPrintFrame() {
+    let var_core_value_sig03E1 = document.createElement("iframe");
+    var_core_value_sig03E1.setAttribute("aria-hidden", "true"), var_core_value_sig03E1.setAttribute("data-univer-slides-print-frame", "true"), var_core_value_sig03E1.style["position"] = "fixed", var_core_value_sig03E1.style["left"] = "-10000px", var_core_value_sig03E1.style["top"] = "0", var_core_value_sig03E1.style["width"] = "1px", var_core_value_sig03E1.style["height"] = "1px", var_core_value_sig03E1.style["border"] = "0", var_core_value_sig03E1.style["pointerEvents"] = "none", document.body["appendChild"](var_core_value_sig03E1);
+    let var_core_value_sigBB57 = var_core_value_sig03E1.contentWindow,
+      var_core_value_sig7C4A = var_core_value_sig03E1.contentDocument ?? (var_core_value_sigBB57 == null ? undefined : var_core_value_sigBB57.document);
+    return !var_core_value_sigBB57 || !var_core_value_sig7C4A ? (var_core_value_sig03E1.remove(), null) : (var_core_value_sig7C4A.open(), var_core_value_sig7C4A.write("<!doctype html><html><head></head><body></body></html>"), var_core_value_sig7C4A.close(), {
+      frame: var_core_value_sig03E1,
+      document: var_core_value_sig7C4A,
+      window: var_core_value_sigBB57
+    });
+  }
+  _restoreThumbnailRenders(var_core_value_sigE799, var_core_value_sigB601) {
+    var_core_value_sigB601.forEach(var_core_value_sig5237 => {
+      let var_core_value_sigBB00 = this._renderManagerService["getRenderUnitById"](var_core_value_sigE799 + "-thumb-" + var_core_value_sig5237);
+      var_core_value_sigBB00 && (var_core_value_sigBB00.engine["resize"](), var_core_value_sigBB00.scene["makeDirty"](true), var_core_value_sigBB00.scene["render"]());
+    });
+  }
+};
+J = q([K(0, var_core_value_sig9B0D), K(1, var_core_value_sig3D2C(var_core_value_sigC56D)), K(2, var_core_value_sig39B7), K(3, var_core_value_sig3B10), K(4, var_core_value_sig050A)], J);
+const Y = {
+  id: "slide.operation.print",
+  type: var_core_value_sig5A75.OPERATION,
+  handler: async (var_core_value_sig4BBA, var_core_value_sig6201) => {
+    let var_core_value_sig5151 = var_core_value_sig4BBA.get(var_core_value_sig9B0D),
+      var_core_value_sigB542 = var_core_value_sig4BBA.get(J),
+      var_core_value_sigBB6C = var_core_value_sig5151.getCurrentUnitOfType(var_core_value_sigED71.UNIVER_SLIDE);
+    return var_core_value_sigBB6C ? var_core_value_sigB542.print(var_core_value_sigBB6C.getUnitId(), var_core_value_sig6201) : false;
+  }
+};
+function ut(var_core_value_sigE2BF) {
+  return {
+    id: V.id,
+    type: var_core_value_sig1179.BUTTON,
+    title: "slides-print.menu",
+    icon: "PrintIcon",
+    tooltip: "slides-print.menu",
+    hidden$: var_core_value_sig1AE5(var_core_value_sigE2BF, var_core_value_sigED71.UNIVER_SLIDE)
+  };
+}
+const dt = {
+  [var_core_value_sigEA92.OTHERS]: {
+    [V.id]: {
+      order: 0.2,
+      gridLayout: {
+        row: 1,
+        column: 2,
+        rowSpan: 2,
+        showLabel: true
+      },
+      menuItemFactory: ut
+    }
+  }
+};
+var ft = "@univerjs-pro/slides-print",
+  pt = "1.0.0-insiders.20260907-70fc579";
+const mt = {};
+let X = class extends var_core_value_sig8F69 {
+  constructor(var_core_value_sig8B71) {
+    super(), this._iconManager = var_core_value_sig8B71, this._registerIcons();
+  }
+  _registerIcons() {
+    this.disposeWithMe(this._iconManager["register"]({
+      PrintIcon: var_core_value_sigF5D1
+    }));
+  }
+};
+X = q([K(0, var_core_value_sig3D2C(var_core_value_sig2A26))], X);
+function ht(var_core_value_sigB8C7, var_core_value_sigA56E) {
+  let var_core_value_sig1998 = var_core_value_sigB8C7.trim();
+  if (!var_core_value_sig1998) return {
+    valid: true
+  };
+  let var_core_value_sigFF19 = [];
+  for (let var_core_value_sigAEFB of var_core_value_sig1998.split(",")) {
+    let var_core_value_sig7E54 = /^\s*(\d+)(?:\s*-\s*(\d+))?\s*$/["exec"](var_core_value_sigAEFB);
+    if (!var_core_value_sig7E54) return {
+      valid: false
+    };
+    let var_core_value_sig9A8D = Number(var_core_value_sig7E54[1]),
+      var_core_value_sigC259 = Number(var_core_value_sig7E54[2] ?? var_core_value_sig7E54[1]);
+    if (var_core_value_sig9A8D < 1 || var_core_value_sigC259 < var_core_value_sig9A8D || var_core_value_sigC259 > var_core_value_sigA56E) return {
+      valid: false
+    };
+    var_core_value_sigFF19.push({
+      from: var_core_value_sig9A8D,
+      to: var_core_value_sigC259
+    });
+  }
+  return {
+    valid: true,
+    range: var_core_value_sigFF19
+  };
+}
+function gt(var_core_value_sig43B8) {
+  return (var_core_value_sig43B8 == null ? undefined : var_core_value_sig43B8.map(({
+    from: var_core_value_sig826B,
+    to: var_core_value_sigCF89
+  }) => var_core_value_sig826B === var_core_value_sigCF89 ? String(var_core_value_sig826B) : var_core_value_sig826B + "-" + var_core_value_sigCF89).join(",")) ?? "";
+}
+const Z = [1, 2, 3, 4, 6, 9];
+function _t({
+  model: var_core_value_sigD98F,
+  page: var_core_value_sig66C0,
+  plan: var_core_value_sig9D15
+}) {
+  let var_core_value_sigB785 = var_core_value_sig4654(null),
+    var_core_value_sig130F = var_core_value_sig7100(var_core_value_sigC56D),
+    var_core_value_sigC0E3 = var_core_value_sig7100(var_core_value_sig39B7),
+    var_core_value_sig52F7 = Math.min(1, 560 / var_core_value_sig9D15.pageSize["width"]);
+  return var_core_value_sigA06F(() => {
+    let var_core_value_sig00CB = var_core_value_sigB785.current;
+    if (!var_core_value_sig00CB) return;
+    let var_core_value_sig77EE = new it(document, var_core_value_sig130F, var_core_value_sigC0E3, var_core_value_sigD98F, var_core_value_sig66C0, var_core_value_sig9D15.pageSize, {
+      ...var_core_value_sig9D15.options,
+      preview: true
+    });
+    return var_core_value_sig77EE.container["style"].transform = "scale(" + var_core_value_sig52F7 + ")", var_core_value_sig77EE.container["style"].transformOrigin = "top left", var_core_value_sig77EE.container["classList"].add("univer-shadow-sm"), var_core_value_sig00CB.appendChild(var_core_value_sig77EE.container), var_core_value_sig77EE.render(), () => var_core_value_sig77EE.dispose();
+  }, [var_core_value_sig130F, var_core_value_sigD98F, var_core_value_sig66C0, var_core_value_sig9D15, var_core_value_sig52F7, var_core_value_sigC0E3]), var_core_value_sigC6BC("div", {
+    ref: var_core_value_sigB785,
+    className: "univer-relative univer-mx-auto univer-mb-7",
+    style: {
+      width: var_core_value_sig9D15.pageSize["width"] * var_core_value_sig52F7,
+      height: var_core_value_sig9D15.pageSize["height"] * var_core_value_sig52F7
+    }
+  });
+}
+function vt({
+  totalSlides: var_core_value_sig866F
+}) {
+  let var_core_value_sigDE3D = var_core_value_sig7100(B),
+    var_core_value_sigF175 = var_core_value_sigA19A(var_core_value_sigDE3D.options$, var_core_value_sigDE3D.options),
+    var_core_value_sig6A18 = var_core_value_sig7100(var_core_value_sig3A17),
+    [var_core_value_sig4E3D, var_core_value_sig49B0] = var_core_value_sigB26B(() => gt(var_core_value_sigF175.range)),
+    [var_core_value_sig2547, var_core_value_sigBCA9] = var_core_value_sigB26B(true),
+    var_core_value_sig4CDF = var_core_value_sigF175.layout ?? "FullPage",
+    var_core_value_sig3F79 = var_core_value_sigF175.slidesPerPage ?? 2;
+  return var_core_value_sigC6BC("div", {
+    className: var_core_value_sigFBA5("univer-h-full univer-overflow-y-auto", var_core_value_sigAC47),
+    children: var_core_value_sig8EC2("div", {
+      className: "univer-p-4",
+      children: [var_core_value_sig8EC2(var_core_value_sig13D7, {
+        label: var_core_value_sig6A18.t("slides-print.settings.range"),
+        children: [var_core_value_sigC6BC(var_core_value_sig90C0, {
+          value: var_core_value_sig4E3D,
+          placeholder: var_core_value_sig6A18.t("slides-print.settings.rangePlaceholder"),
+          onChange: var_core_value_sig9F76 => {
+            var_core_value_sig49B0(var_core_value_sig9F76);
+            let var_core_value_sigB008 = ht(var_core_value_sig9F76, var_core_value_sig866F);
+            var_core_value_sigBCA9(var_core_value_sigB008.valid), var_core_value_sigB008.valid && var_core_value_sigDE3D.updateOptions({
+              range: var_core_value_sigB008.range
+            });
+          }
+        }), !var_core_value_sig2547 && var_core_value_sigC6BC("div", {
+          className: "univer-mt-1 univer-text-xs univer-text-red-500",
+          children: var_core_value_sig6A18.t("slides-print.settings.rangeInvalid")
+        })]
+      }), var_core_value_sigC6BC(var_core_value_sig13D7, {
+        label: var_core_value_sig6A18.t("slides-print.settings.layout"),
+        children: var_core_value_sigC6BC(var_core_value_sigD9DB, {
+          className: "univer-w-full",
+          value: var_core_value_sig4CDF,
+          options: [{
+            label: var_core_value_sig6A18.t("slides-print.settings.fullPage"),
+            value: "FullPage"
+          }, {
+            label: var_core_value_sig6A18.t("slides-print.settings.notesPage"),
+            value: "NotesPage"
+          }, {
+            label: var_core_value_sig6A18.t("slides-print.settings.handout"),
+            value: "Handout"
+          }],
+          onChange: var_core_value_sig8721 => {
+            let var_core_value_sig08BA = Object.values(I).find(var_core_value_sig9C9F => var_core_value_sig9C9F === var_core_value_sig8721);
+            var_core_value_sig08BA && var_core_value_sigDE3D.updateOptions({
+              layout: var_core_value_sig08BA,
+              direction: var_core_value_sig08BA === "FullPage" ? var_core_value_sigB683.Landscape : var_core_value_sigB683.Portrait,
+              frameSlides: var_core_value_sig08BA !== "FullPage",
+              showSlideNumber: var_core_value_sig08BA !== "FullPage"
+            });
+          }
+        })
+      }), var_core_value_sig4CDF === "Handout" && var_core_value_sig8EC2(var_core_value_sig019B, {
+        children: [var_core_value_sigC6BC(var_core_value_sig13D7, {
+          label: var_core_value_sig6A18.t("slides-print.settings.slidesPerPage"),
+          children: var_core_value_sigC6BC(var_core_value_sigD9DB, {
+            className: "univer-w-full",
+            value: String(var_core_value_sig3F79),
+            options: Z.map(var_core_value_sigDBB5 => ({
+              label: String(var_core_value_sigDBB5),
+              value: String(var_core_value_sigDBB5)
+            })),
+            onChange: var_core_value_sigCFAC => {
+              let var_core_value_sig237B = Z.find(var_core_value_sigFDEA => String(var_core_value_sigFDEA) === var_core_value_sigCFAC);
+              var_core_value_sig237B && var_core_value_sigDE3D.updateOptions({
+                slidesPerPage: var_core_value_sig237B
+              });
+            }
+          })
+        }), var_core_value_sig3F79 >= 4 && var_core_value_sigC6BC(var_core_value_sig13D7, {
+          label: var_core_value_sig6A18.t("slides-print.settings.order"),
+          children: var_core_value_sig8EC2(var_core_value_sigC2BB, {
+            value: var_core_value_sigF175.handoutOrder ?? "Horizontal",
+            onChange: var_core_value_sigFEAB => {
+              (var_core_value_sigFEAB === "Horizontal" || var_core_value_sigFEAB === "Vertical") && var_core_value_sigDE3D.updateOptions({
+                handoutOrder: var_core_value_sigFEAB
+              });
+            },
+            children: [var_core_value_sigC6BC(var_core_value_sigF1B2, {
+              value: "Horizontal",
+              children: var_core_value_sig6A18.t("slides-print.settings.horizontal")
+            }), var_core_value_sigC6BC(var_core_value_sigF1B2, {
+              value: "Vertical",
+              children: var_core_value_sig6A18.t("slides-print.settings.vertical")
+            })]
+          })
+        })]
+      }), var_core_value_sigC6BC(var_core_value_sig13D7, {
+        label: var_core_value_sig6A18.t("slides-print.settings.paperSize"),
+        children: var_core_value_sigC6BC(var_core_value_sigD9DB, {
+          className: "univer-w-full",
+          value: var_core_value_sigF175.paperSize ?? var_core_value_sigBE5E.A4,
+          options: var_core_value_sigD948.map(var_core_value_sigE347 => ({
+            label: var_core_value_sigE347,
+            value: var_core_value_sigE347
+          })),
+          onChange: var_core_value_sig3C5B => {
+            let var_core_value_sig200B = var_core_value_sigD948.find(var_core_value_sig86D0 => var_core_value_sig86D0 === var_core_value_sig3C5B);
+            var_core_value_sig200B && var_core_value_sigDE3D.updateOptions({
+              paperSize: var_core_value_sig200B
+            });
+          }
+        })
+      }), var_core_value_sigC6BC(var_core_value_sig13D7, {
+        label: var_core_value_sig6A18.t("slides-print.settings.orientation"),
+        children: var_core_value_sig8EC2(var_core_value_sigC2BB, {
+          value: var_core_value_sigF175.direction ?? var_core_value_sigB683.Landscape,
+          onChange: var_core_value_sig3863 => {
+            (var_core_value_sig3863 === var_core_value_sigB683.Portrait || var_core_value_sig3863 === var_core_value_sigB683.Landscape) && var_core_value_sigDE3D.updateOptions({
+              direction: var_core_value_sig3863
+            });
+          },
+          children: [var_core_value_sigC6BC(var_core_value_sigF1B2, {
+            value: var_core_value_sigB683.Portrait,
+            children: var_core_value_sig6A18.t("slides-print.settings.portrait")
+          }), var_core_value_sigC6BC(var_core_value_sigF1B2, {
+            value: var_core_value_sigB683.Landscape,
+            children: var_core_value_sig6A18.t("slides-print.settings.landscape")
+          })]
+        })
+      }), var_core_value_sigC6BC(var_core_value_sig13D7, {
+        label: var_core_value_sig6A18.t("slides-print.settings.margin"),
+        children: var_core_value_sigC6BC(var_core_value_sigD9DB, {
+          className: "univer-w-full",
+          value: var_core_value_sigF175.margin ?? var_core_value_sig26EC.Normal,
+          options: [{
+            label: var_core_value_sig6A18.t("slides-print.settings.normal"),
+            value: var_core_value_sig26EC.Normal
+          }, {
+            label: var_core_value_sig6A18.t("slides-print.settings.narrow"),
+            value: var_core_value_sig26EC.Narrow
+          }, {
+            label: var_core_value_sig6A18.t("slides-print.settings.wide"),
+            value: var_core_value_sig26EC.Wide
+          }, {
+            label: var_core_value_sig6A18.t("slides-print.settings.none"),
+            value: var_core_value_sig26EC.None
+          }],
+          onChange: var_core_value_sigC97C => {
+            (var_core_value_sigC97C === var_core_value_sig26EC.Normal || var_core_value_sigC97C === var_core_value_sig26EC.Narrow || var_core_value_sigC97C === var_core_value_sig26EC.Wide || var_core_value_sigC97C === var_core_value_sig26EC.None) && var_core_value_sigDE3D.updateOptions({
+              margin: var_core_value_sigC97C
+            });
+          }
+        })
+      }), var_core_value_sigC6BC(var_core_value_sig13D7, {
+        label: var_core_value_sig6A18.t("slides-print.settings.formatting"),
+        children: var_core_value_sig8EC2("div", {
+          className: "univer-flex univer-flex-col univer-gap-3",
+          children: [var_core_value_sigC6BC(var_core_value_sig481B, {
+            checked: var_core_value_sigF175.frameSlides ?? false,
+            onChange: var_core_value_sigC4B1 => {
+              typeof var_core_value_sigC4B1 == "boolean" && var_core_value_sigDE3D.updateOptions({
+                frameSlides: var_core_value_sigC4B1
+              });
+            },
+            children: var_core_value_sig6A18.t("slides-print.settings.frameSlides")
+          }), var_core_value_sigC6BC(var_core_value_sig481B, {
+            checked: var_core_value_sigF175.showSlideNumber ?? false,
+            onChange: var_core_value_sig1BD9 => {
+              typeof var_core_value_sig1BD9 == "boolean" && var_core_value_sigDE3D.updateOptions({
+                showSlideNumber: var_core_value_sig1BD9
+              });
+            },
+            children: var_core_value_sig6A18.t("slides-print.settings.slideNumber")
+          })]
+        })
+      })]
+    })
+  });
+}
+function yt() {
+  let var_core_value_sig880E = var_core_value_sig7100(var_core_value_sig6884),
+    var_core_value_sigC9ED = var_core_value_sig7100(B),
+    var_core_value_sigB57B = var_core_value_sigA19A(var_core_value_sigC9ED.options$, var_core_value_sigC9ED.options),
+    var_core_value_sig780B = var_core_value_sig7100(var_core_value_sig9B0D),
+    var_core_value_sig7D1B = var_core_value_sig7100(var_core_value_sig3A17),
+    var_core_value_sig7BE0 = var_core_value_sig7100(var_core_value_sig050A),
+    [var_core_value_sig7D40, var_core_value_sig6C7E] = var_core_value_sigB26B(false),
+    [var_core_value_sig68BE, var_core_value_sig04C6] = var_core_value_sigB26B(),
+    [var_core_value_sigCA05] = var_core_value_sigB26B(() => {
+      var var_core_value_sigE43E;
+      return (var_core_value_sigE43E = var_core_value_sig780B.getCurrentUnitOfType(var_core_value_sigED71.UNIVER_SLIDE)) == null ? undefined : var_core_value_sigE43E.getUnitId();
+    }),
+    var_core_value_sig2F2B = var_core_value_sigCA05 ? var_core_value_sig780B.getUnit(var_core_value_sigCA05, var_core_value_sigED71.UNIVER_SLIDE) : undefined,
+    var_core_value_sig70AF = var_core_value_sig2F2B == null ? undefined : var_core_value_sig2F2B.getSnapshot(),
+    var_core_value_sigD04E = var_core_value_sig770E(() => {
+      if (!var_core_value_sig2F2B || !var_core_value_sig70AF || var_core_value_sig68BE !== var_core_value_sigCA05) return;
+      let var_core_value_sigA937 = var_core_value_sigC928(var_core_value_sig70AF.defaultPageSize),
+        var_core_value_sigCAD5 = Ue(lt(var_core_value_sig70AF.slideOrder["length"], var_core_value_sigB57B.range).map(var_core_value_sig4CD2 => ({
+          index: var_core_value_sig4CD2,
+          page: var_core_value_sig2F2B.pageManager["getSlide"](var_core_value_sig70AF.slideOrder[var_core_value_sig4CD2])
+        })).filter(var_core_value_sig48CA => !!var_core_value_sig48CA.page), var_core_value_sigA937),
+        var_core_value_sigE503 = document.createElement("canvas").getContext("2d");
+      return var_core_value_sigE503 && (var_core_value_sigE503.font = "14px Arial, sans-serif"), He(var_core_value_sigCAD5, var_core_value_sigA937, var_core_value_sigB57B, var_core_value_sig50AF => (var_core_value_sigE503 == null ? undefined : var_core_value_sigE503.measureText(var_core_value_sig50AF).width) ?? var_core_value_sig50AF.length * 14 * 0.55);
+    }, [var_core_value_sig2F2B, var_core_value_sigB57B, var_core_value_sig68BE, var_core_value_sig70AF, var_core_value_sigCA05]);
+  return var_core_value_sigA06F(() => {
+    if (!var_core_value_sig2F2B || !var_core_value_sigCA05) return;
+    let var_core_value_sig48DD = true;
+    return var_core_value_sig7BE0.prepare({
+      unitId: var_core_value_sigCA05,
+      unitType: var_core_value_sigED71.UNIVER_SLIDE,
+      dpr: 1
+    }).then(() => {
+      var_core_value_sig48DD && var_core_value_sig04C6(var_core_value_sigCA05);
+    }, () => {
+      var_core_value_sig48DD && var_core_value_sig04C6(undefined);
+    }), () => {
+      var_core_value_sig48DD = false;
+    };
+  }, [var_core_value_sig2F2B, var_core_value_sig7BE0, var_core_value_sigCA05]), !var_core_value_sig2F2B || !var_core_value_sig70AF ? null : var_core_value_sig8EC2("div", {
+    className: "univer-absolute univer-inset-0 univer-z-[100] univer-flex univer-size-full univer-flex-col univer-overflow-hidden univer-bg-gray-100 dark:!univer-bg-gray-900",
+    children: [var_core_value_sig8EC2("div", {
+      className: var_core_value_sigFBA5("univer-flex univer-h-16 univer-items-center univer-justify-between univer-bg-gray-0 univer-px-4 dark:!univer-bg-gray-900", var_core_value_sigA363),
+      children: [var_core_value_sigC6BC("div", {
+        className: "univer-ml-2 univer-text-base univer-font-medium univer-text-gray-900 dark:!univer-text-gray-0",
+        children: var_core_value_sig7D1B.t("slides-print.header.pages", String((var_core_value_sigD04E == null ? undefined : var_core_value_sigD04E.pages["length"]) ?? 0))
+      }), var_core_value_sig8EC2("div", {
+        className: "univer-flex univer-gap-2",
+        children: [var_core_value_sigC6BC(var_core_value_sig8775, {
+          disabled: var_core_value_sig7D40,
+          onClick: () => var_core_value_sig880E.executeCommand(H.id),
+          children: var_core_value_sig7D1B.t("slides-print.header.cancel")
+        }), var_core_value_sigC6BC(var_core_value_sig8775, {
+          variant: "primary",
+          disabled: var_core_value_sig7D40 || !(var_core_value_sigD04E != null && var_core_value_sigD04E.pages["length"]),
+          onClick: async () => {
+            var_core_value_sig6C7E(true);
+            try {
+              (await var_core_value_sig880E.executeCommand(Y.id, var_core_value_sigB57B)) && (await var_core_value_sig880E.executeCommand(H.id));
+            } finally {
+              var_core_value_sig6C7E(false);
+            }
+          },
+          children: var_core_value_sig7D40 ? var_core_value_sig7D1B.t("slides-print.header.printing") : var_core_value_sig7D1B.t("slides-print.header.next")
+        })]
+      })]
+    }), var_core_value_sig8EC2("div", {
+      className: "univer-flex univer-flex-1 univer-overflow-hidden",
+      children: [var_core_value_sigC6BC("div", {
+        className: var_core_value_sigFBA5("univer-flex-1 univer-overflow-auto univer-p-7", var_core_value_sigAC47),
+        "aria-busy": !var_core_value_sigD04E,
+        children: var_core_value_sigD04E ? var_core_value_sigD04E.pages["map"](var_core_value_sig5E6A => var_core_value_sigC6BC(_t, {
+          model: var_core_value_sig2F2B,
+          page: var_core_value_sig5E6A,
+          plan: var_core_value_sigD04E
+        }, var_core_value_sig5E6A.key)) : var_core_value_sigC6BC("div", {
+          className: "univer-flex univer-size-full univer-items-center univer-justify-center",
+          role: "status",
+          "aria-label": var_core_value_sig7D1B.t("slides-print.header.printing"),
+          children: var_core_value_sigC6BC(var_core_value_sig3082, {
+            className: "univer-size-8\x20univer-animate-spin\x20univer-text-gray-500",
+            "aria-hidden": "true"
+          })
+        })
+      }), var_core_value_sigC6BC("div", {
+        className: "univer-box-border univer-h-full univer-w-[312px] univer-flex-none univer-bg-gray-0 dark:!univer-bg-gray-900",
+        children: var_core_value_sigC6BC(vt, {
+          totalSlides: var_core_value_sig70AF.slideOrder["length"]
+        })
+      })]
+    })]
+  });
+}
+function bt() {
+  let var_core_value_sigB99B = var_core_value_sig7100(B);
+  return var_core_value_sigA19A(var_core_value_sigB99B.visible$, var_core_value_sigB99B.visible) ? var_core_value_sigC6BC(yt, {}) : null;
+}
+let Q = class extends var_core_value_sig8F69 {
+  constructor(var_core_value_sigB7FC, var_core_value_sig9CD9, var_core_value_sigFD0C, var_core_value_sig849B) {
+    super(), this._commandService = var_core_value_sigB7FC, this._menuManagerService = var_core_value_sig9CD9, this._uiPartsService = var_core_value_sigFD0C, this._injector = var_core_value_sig849B, this._initCommands(), this._initUIParts(), this._initMenus();
+  }
+  _initCommands() {
+    [Y, V, H].forEach(var_core_value_sigA942 => this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sigA942)));
+  }
+  _initUIParts() {
+    this.disposeWithMe(this._uiPartsService["registerComponent"](var_core_value_sigCC93.GLOBAL, () => var_core_value_sig8FD9(bt, this._injector)));
+  }
+  _initMenus() {
+    this._menuManagerService["mergeMenu"](dt);
+  }
+};
+Q = q([K(0, var_core_value_sig6884), K(1, var_core_value_sig5964), K(2, var_core_value_sig808B), K(3, var_core_value_sig3D2C(var_core_value_sigC56D))], Q);
+let $ = class extends var_core_value_sig0281 {
+  constructor(var_core_value_sig5F1A = mt, var_core_value_sigB455, var_core_value_sig5241) {
+    super(), this._config = var_core_value_sig5F1A, this._injector = var_core_value_sigB455, this._configService = var_core_value_sig5241;
+    let {
+      menu: var_core_value_sigC6E5,
+      ...var_core_value_sigCEFB
+    } = var_core_value_sigB16B({}, mt, this._config);
+    var_core_value_sigC6E5 && this._configService["setConfig"]("menu", var_core_value_sigC6E5, {
+      merge: true
+    }), this._configService["setConfig"]("slides-print.config", var_core_value_sigCEFB);
+  }
+  onStarting() {
+    this._injector["has"](var_core_value_sig050A) || this._injector["add"]([var_core_value_sig050A, {
+      useClass: var_core_value_sigEEDB
+    }]), this._injector["add"]([X]), this._injector["get"](X), this._injector["has"](U) || this._injector["add"]([U]), var_core_value_sig585D(this._injector, [[J], [B, {
+      useClass: et
+    }], [Q]]);
+  }
+  onReady() {
+    this._injector["get"](Q);
+  }
+};
+z($, "pluginName", "SLIDES_PRINT_PLUGIN"), z($, "packageName", ft), z($, "version", pt), z($, "type", var_core_value_sigED71.UNIVER_SLIDE), $ = q([var_core_value_sig7BAF(var_core_value_sigD3F5, var_core_value_sigEB6A, var_core_value_sigE161, var_core_value_sig27F9), K(1, var_core_value_sig3D2C(var_core_value_sigC56D)), K(2, var_core_value_sig066E)], $);
+export { V as OpenSlidePrintDialogOperation, U as SlidePrintDrawingTransformService, Be as SlidePrintHandoutOrder, I as SlidePrintLayoutType, Y as SlidePrintOperation, dt as SlidesPrintMenuSchema, $ as UniverSlidesPrintPlugin };

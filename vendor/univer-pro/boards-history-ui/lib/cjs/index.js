@@ -1,1 +1,477 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/boards-history"),t=require("@univerjs-pro/boards-ui"),n=require("@univerjs-pro/collaboration-client"),r=require("@univerjs-pro/license"),i=require("@univerjs/core"),a=require("@univerjs/icons"),o=require("@univerjs-pro/boards"),s=require("@univerjs-pro/boards-chart"),c=require("@univerjs-pro/boards-chart-ui"),l=require("@univerjs-pro/boards-mind"),u=require("@univerjs-pro/boards-mind-ui"),d=require("@univerjs-pro/boards-table"),f=require("@univerjs-pro/boards-table-ui"),p=require("@univerjs-pro/collaboration"),m=require("@univerjs-pro/docs-latex"),h=require("@univerjs-pro/docs-latex-ui"),g=require("@univerjs-pro/edit-history"),ee=require("@univerjs-pro/ink"),te=require("@univerjs-pro/ink-ui"),ne=require("@univerjs/docs"),_=require("@univerjs/docs-ui"),v=require("@univerjs/drawing"),re=require("@univerjs/engine-render"),y=require("@univerjs/network"),b=require("@univerjs/ui"),x=require("rxjs"),S=require("@univerjs-pro/edit-history-ui"),C=require("react/jsx-runtime");const w="boards-history-ui.config",T={historyServerUrl:"/universer-api/history"};var E="@univerjs-pro/boards-history-ui",D="1.0.0-insiders.20260907-70fc579";function O(){return(0,C.jsx)(t.BoardWorkbench,{embedded:true,fitOnMount:true});}function k(v129,v130){return function(v23,v24){v130(v23,v24,v129);};}function A(v131,v132,v133,v134){var v135=arguments.length,v136=v135<3?v132:v134===null?v134=Object.getOwnPropertyDescriptor(v132,v133):v134,v137;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v136=Reflect.decorate(v131,v132,v133,v134);else{for(var v138=v131.length-1;v138>=0;v138--)(v137=v131[v138])&&(v136=(v135<3?v137(v136):v135>3?v137(v132,v133,v136):v137(v132,v133))||v136);}return v135>3&&v136&&Object.defineProperty(v132,v133,v136),v136;}let j=class extends i.Disposable{constructor(v25,v26){super(),this.disposeWithMe(v26.registerComponent(b.BuiltInUIPart["CONTENT"],()=>(0,b.connectInjector)(O,v25)));}};j=A([k(0,(0,i.Inject)(i.Injector)),k(1,b.IUIPartsService)],j);const M=new Map([[o.SetBoardNameCommand["id"],"boards-history-ui.action.renameBoard"],[o.SetBoardPageBackgroundCommand["id"],"boards-history-ui.action.updateBackground"],[o.SetBoardThemeOperation["id"],"boards-history-ui.action.updateTheme"],[o.AddBoardElementOperation["id"],"boards-history-ui.action.insertObject"],[o.AddBoardElementsOperation["id"],"boards-history-ui.action.insertObject"],[o.RemoveBoardElementCommand["id"],"boards-history-ui.action.deleteObject"],[o.RemoveBoardElementsOperation["id"],"boards-history-ui.action.deleteObject"],[o.UpdateBoardElementCommand["id"],"boards-history-ui.action.updateObject"],[o.UpdateBoardElementsCommand["id"],"boards-history-ui.action.updateObject"],[o.ReorderBoardElementsOperation["id"],"boards-history-ui.action.reorderObject"],[o.ReorderBoardObjectListElementOperation["id"],"boards-history-ui.action.reorderObject"],[o.ReparentBoardElementsOperation["id"],"boards-history-ui.action.moveObject"],[o.SetBoardElementsMetadataOperation["id"],"boards-history-ui.action.updateObject"],[o.SetBoardConnectorLabelTextCommand["id"],"boards-history-ui.action.updateConnector"],[o.SetBoardConnectorLabelStyleCommand["id"],"boards-history-ui.action.updateConnector"],[o.RemoveBoardConnectorLabelCommand["id"],"boards-history-ui.action.updateConnector"],[o.NormalizeBoardConnectorRoutingCommand["id"],"boards-history-ui.action.updateConnector"],[o.BeginBoardContainerOperation["id"],"boards-history-ui.action.insertContainer"],[o.WrapBoardElementsInContainerOperation["id"],"boards-history-ui.action.insertContainer"],[o.DisbandBoardContainerOperation["id"],"boards-history-ui.action.deleteContainer"],[o.CommitBoardContainerTransformOperation["id"],"boards-history-ui.action.updateContainer"],[o.FitBoardContainerToContentOperation["id"],"boards-history-ui.action.updateContainer"],[o.SetBoardContainerAutoResizeOperation["id"],"boards-history-ui.action.updateContainer"],[o.SetBoardContainerMembershipLockOperation["id"],"boards-history-ui.action.updateContainer"],[o.BeginBoardSwimlaneOperation["id"],"boards-history-ui.action.insertSwimlane"],[o.SetBoardSwimlaneLanesOperation["id"],"boards-history-ui.action.updateSwimlane"],[o.SetBoardSwimlaneLaneSizeOperation["id"],"boards-history-ui.action.updateSwimlane"],[o.RemoveBoardSwimlaneLaneOperation["id"],"boards-history-ui.action.updateSwimlane"],[l.InsertBoardMindMapOperation["id"],"boards-history-ui.action.insertMindMap"],[l.ImportMindMapOpmlOperation["id"],"boards-history-ui.action.insertMindMap"],[l.PasteMindMapAsNewMindMapOperation["id"],"boards-history-ui.action.insertMindMap"],[l.AddMindMapChildOperation["id"],"boards-history-ui.action.insertMindMapNode"],[l.AddMindMapSiblingOperation["id"],"boards-history-ui.action.insertMindMapNode"],[l.PasteMindMapNodeOperation["id"],"boards-history-ui.action.insertMindMapNode"],[l.DeleteMindMapNodeOperation["id"],"boards-history-ui.action.deleteMindMapNode"],[l.UpdateMindMapNodeOperation["id"],"boards-history-ui.action.updateMindMap"],[l.UpdateMindMapNodesOperation["id"],"boards-history-ui.action.updateMindMap"],[l.UpdateMindMapIncomingConnectorOperation["id"],"boards-history-ui.action.updateMindMap"],[l.ChangeMindMapLayoutOperation["id"],"boards-history-ui.action.updateMindMapLayout"],[l.LayoutMindMapOperation["id"],"boards-history-ui.action.updateMindMapLayout"],[l.ChangeMindMapBranchLineTypeOperation["id"],"boards-history-ui.action.updateMindMapLayout"],[l.ReflowMindMapCommand["id"],"boards-history-ui.action.updateMindMapLayout"],[l.ReparentMindMapNodeOperation["id"],"boards-history-ui.action.moveMindMapNode"],[l.PromoteMindMapNodeOperation["id"],"boards-history-ui.action.moveMindMapNode"],[l.DetachMindMapNodeOperation["id"],"boards-history-ui.action.moveMindMapNode"],[l.TranslateMindMapOperation["id"],"boards-history-ui.action.moveMindMapNode"],[l.ToggleMindMapNodeCollapseOperation["id"],"boards-history-ui.action.updateMindMap"],[o.InsertBoardTableOperation["id"],"boards-history-ui.action.insertTable"],[d.RemoveBoardTableCommand["id"],"boards-history-ui.action.deleteTable"],[d.InsertBoardTableRowsCommand["id"],"boards-history-ui.action.insertTableRows"],[d.DeleteBoardTableRowsCommand["id"],"boards-history-ui.action.deleteTableRows"],[d.MoveBoardTableRowsCommand["id"],"boards-history-ui.action.moveTableRows"],[d.ResizeBoardTableRowsCommand["id"],"boards-history-ui.action.resizeTableRows"],[d.InsertBoardTableColumnsCommand["id"],"boards-history-ui.action.insertTableColumns"],[d.DeleteBoardTableColumnsCommand["id"],"boards-history-ui.action.deleteTableColumns"],[d.MoveBoardTableColumnsCommand["id"],"boards-history-ui.action.moveTableColumns"],[d.ResizeBoardTableColumnsCommand["id"],"boards-history-ui.action.resizeTableColumns"],[d.MergeBoardTableCellsCommand["id"],"boards-history-ui.action.mergeTableCells"],[d.UnmergeBoardTableCellsCommand["id"],"boards-history-ui.action.unmergeTableCells"],[d.SetBoardTableCellTextCommand["id"],"boards-history-ui.action.editTableCell"],[d.SetBoardTableCellStyleCommand["id"],"boards-history-ui.action.formatTable"],[d.SetBoardTableBorderPresetCommand["id"],"boards-history-ui.action.formatTable"],[d.UpdateBoardTableCommand["id"],"boards-history-ui.action.updateTable"],[o.InsertBoardChartCommand["id"],"boards-history-ui.action.insertChart"],[s.ChangeBoardChartDataSourceCommand["id"],"boards-history-ui.action.updateChart"],[s.DuplicateBoardChartDataSourceCommand["id"],"boards-history-ui.action.updateChart"],[s.UpdateBoardChartDataSourceCommand["id"],"boards-history-ui.action.updateChart"],[s.UpdateBoardChartConfigCommand["id"],"boards-history-ui.action.updateChart"]]),N=new Map([[o.BoardElementType["Text"],{insert:"boards-history-ui.action.insertTextBox",update:"boards-history-ui.action.updateTextBox",delete:"boards-history-ui.action.deleteTextBox"}],[o.BoardElementType["Shape"],{insert:"boards-history-ui.action.insertShape",update:"boards-history-ui.action.updateShape",delete:"boards-history-ui.action.deleteShape"}],[o.BoardElementType["Image"],{insert:"boards-history-ui.action.insertImage",update:"boards-history-ui.action.updateImage",delete:"boards-history-ui.action.deleteImage"}],[o.BoardElementType["Diagram"],{insert:"boards-history-ui.action.insertDiagram",update:"boards-history-ui.action.updateDiagram",delete:"boards-history-ui.action.deleteDiagram"}],[o.BoardElementType["Media"],{insert:"boards-history-ui.action.insertMedia",update:"boards-history-ui.action.updateMedia",delete:"boards-history-ui.action.deleteMedia"}],[o.BoardElementType["Group"],{insert:"boards-history-ui.action.insertGroup",update:"boards-history-ui.action.updateGroup",delete:"boards-history-ui.action.deleteGroup"}],[o.BoardElementType["Connector"],{insert:"boards-history-ui.action.insertConnector",update:"boards-history-ui.action.updateConnector",delete:"boards-history-ui.action.deleteConnector"}],[o.BoardElementType["Table"],{insert:"boards-history-ui.action.insertTable",update:"boards-history-ui.action.updateTable",delete:"boards-history-ui.action.deleteTable"}],[o.BoardElementType["Chart"],{insert:"boards-history-ui.action.insertChart",update:"boards-history-ui.action.updateChart",delete:"boards-history-ui.action.deleteChart"}]]),ie=new Set([o.AddBoardElementMutation["id"],o.AddBoardElementOperation["id"],o.AddBoardElementsOperation["id"]]),P=new Set([o.UpdateBoardElementCommand["id"],o.UpdateBoardElementMutation["id"],o.UpdateBoardElementsCommand["id"]]),F=new Set([o.RemoveBoardElementCommand["id"],o.RemoveBoardElementMutation["id"],o.RemoveBoardElementOperation["id"],o.RemoveBoardElementsOperation["id"]]);let I=class extends i.Disposable{constructor(v27,v28){super(),this._localeService=v28,this.disposeWithMe(v27.register(i.UniverInstanceType["UNIVER_BOARD"],this));}resolve(v29){let v30=new Set(B(v29,o.AddBoardElementMutation["id"]).map(v1=>v1.id)),v31=R(v29),v32=z(v29,v30),v33=L(v29),v34=[...v31,...v32,...v33].map(v2=>this._localeService["t"](v2)),v35=[...v29.commandIds].flatMap(v3=>{if(v31.length>0&&ie.has(v3)||v32.length>0&&P.has(v3)||v33.length>0&&F.has(v3))return[];let v4=M.get(v3);return v4?[this._localeService["t"](v4)]:[];}),v36=[...new Set([...v34,...v35])];return v36.length>0?v36:v29.commandIds["has"](l.SetMindMapElementMutation["id"])?[this._localeService["t"]("boards-history-ui.action.updateMindMap")]:v29.commandIds["has"](o.AddBoardElementMutation["id"])?[this._localeService["t"]("boards-history-ui.action.insertObject")]:v29.commandIds["has"](o.RemoveBoardElementMutation["id"])?[this._localeService["t"]("boards-history-ui.action.deleteObject")]:v29.commandIds["has"](o.UpdateBoardElementMutation["id"])?[this._localeService["t"]("boards-history-ui.action.updateObject")]:[];}};I=A([k(0,(0,i.Inject)(S.HistoryActionSummaryService)),k(1,(0,i.Inject)(i.LocaleService))],I);function L(v139){let v140=v139.mutations["flatMap"](v37=>{var v38;if(v37.id!==o.RemoveBoardElementMutation["id"]||!U(v37.params))return[];if(v37.params["elementType"]===o.BoardElementType["Container"])return v37.params["containerKind"]==="swimlane"?["boards-history-ui.action.deleteSwimlane"]:["boards-history-ui.action.deleteContainer"];let v39=H(v37.params["elementType"])?(v38=N.get(v37.params["elementType"]))==null?undefined:v38.delete:undefined;return v39?[v39]:[];});return[...new Set(v140)];}function R(v141){let v142=B(v141,o.AddBoardElementMutation["id"]).flatMap(v40=>{var v41;if((0,l.getMindMapContainerMeta)(v40))return["boards-history-ui.action.insertMindMap"];if((0,l.getMindMapNodeMeta)(v40))return["boards-history-ui.action.insertMindMapNode"];if(v40.type===o.BoardElementType["Container"])return v40.containerData["kind"]==="swimlane"?["boards-history-ui.action.insertSwimlane"]:["boards-history-ui.action.insertContainer"];let v42=(v41=N.get(v40.type))==null?undefined:v41.insert;return v42?[v42]:[];});return[...new Set(v142)];}function z(v143,v144){let v145=[...B(v143,l.SetMindMapElementMutation["id"]),...B(v143,o.UpdateBoardElementMutation["id"])].filter(v43=>!v144.has(v43.id)).flatMap(v44=>{var v45;if((0,l.getMindMapContainerMeta)(v44)||(0,l.getMindMapNodeMeta)(v44))return["boards-history-ui.action.updateMindMap"];if(v44.type===o.BoardElementType["Container"])return v44.containerData["kind"]==="swimlane"?["boards-history-ui.action.updateSwimlane"]:["boards-history-ui.action.updateContainer"];let v46=(v45=N.get(v44.type))==null?undefined:v45.update;return v46?[v46]:[];});return[...new Set(v145)];}function B(v146,v147){return v146.mutations["flatMap"](v47=>v47.id!==v147||!U(v47.params)||!V(v47.params["element"])?[]:[v47.params["element"]]);}function V(v148){if(!U(v148)||typeof v148.id!="string"||!U(v148.transform))return false;switch(v148.type){case o.BoardElementType["Placeholder"]:case o.BoardElementType["Text"]:case o.BoardElementType["Shape"]:case o.BoardElementType["Image"]:case o.BoardElementType["Chart"]:case o.BoardElementType["Table"]:case o.BoardElementType["Diagram"]:case o.BoardElementType["Media"]:case o.BoardElementType["Group"]:case o.BoardElementType["Connector"]:case o.BoardElementType["Container"]:return true;default:return false;}}function H(v149){switch(v149){case o.BoardElementType["Placeholder"]:case o.BoardElementType["Text"]:case o.BoardElementType["Shape"]:case o.BoardElementType["Image"]:case o.BoardElementType["Chart"]:case o.BoardElementType["Table"]:case o.BoardElementType["Diagram"]:case o.BoardElementType["Media"]:case o.BoardElementType["Group"]:case o.BoardElementType["Connector"]:case o.BoardElementType["Container"]:return true;default:return false;}}function U(v150){return typeof v150=="object"&&!!v150;}function W(v151){"@babel/helpers - typeof";return W=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v48){return typeof v48;}:function(v49){return v49&&typeof Symbol=="function"&&v49.constructor===Symbol&&v49!==Symbol.prototype?"symbol":typeof v49;},W(v151);}function G(v152,v153){if(W(v152)!="object"||!v152)return v152;var v154=v152[Symbol.toPrimitive];if(v154!==undefined){var v155=v154.call(v152,v153||"default");if(W(v155)!="object")return v155;throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");}return(v153==="string"?String:Number)(v152);}function K(v156){var v157=G(v156,"string");return W(v157)=="symbol"?v157:v157+"";}function q(v158,v159,v160){return(v159=K(v159))in v158?Object.defineProperty(v158,v159,{value:v160,enumerable:true,configurable:true,writable:true}):v158[v159]=v160,v158;}let J=class extends i.Disposable{constructor(v50,v51,v52,v53,v54){super(),this._diffService=v50,this._snapshotService=v52,this._univerInstanceService=v53,this._highlightService=v54,q(this,"type",i.UniverInstanceType["UNIVER_BOARD"]),q(this,"_changes",new Map()),q(this,"_changesGeneration",0),q(this,"_loadGeneration",0),q(this,"_loadQueue",Promise.resolve()),q(this,"_unitId",""),this.disposeWithMe(v51.register(this));}loadRevision(v55,v56){let v57=++this._loadGeneration,v58=this._loadQueue["catch"](()=>undefined).then(async()=>{if(v57!==this._loadGeneration)return;this._getBoard(v55)&&this._univerInstanceService["disposeUnit"](v55);let v5=await this._snapshotService["loadBoard"](v55,v56.endRevision);if(v57!==this._loadGeneration){this._getBoard(v55)===v5&&this._univerInstanceService["disposeUnit"](v55);return;}this._univerInstanceService["focusUnit"](v55);});return this._loadQueue=v58,v58;}async loadChanges(v59,v60){this._unitId=v59;let v61=++this._changesGeneration,v62=await this._diffService["compare"](v59,v60);v61===this._changesGeneration&&(this._changes["clear"](),v62.forEach(v6=>this._changes["set"](v6.id,v6)),await this._renderHighlights(v59));}close(){++this._changesGeneration,++this._loadGeneration,this._changes["clear"](),this._unitId&&=(this._highlightService["clear"](this._unitId),"");}_getBoard(v63){return this._univerInstanceService["getUnit"](v63,i.UniverInstanceType["UNIVER_BOARD"])??null;}_renderHighlights(v64){let v65=this._getBoard(v64);if(!v65)return Promise.resolve();let v66=v65.getActivePageId(),v67=Array.from(this._changes["values"]()).filter(v7=>v7.pageId===v66).map(v8=>({id:v8.id,kind:v8.kind,objectKey:v8.elementId?(0,t.getBoardElementRenderObjectKey)(v64,v8.elementId):undefined,outlineOnly:v8.kind==="delete"||!v8.elementId}));return this._highlightService["show"](v64,v67);}};J=A([k(0,(0,i.Inject)(e.BoardsHistoryDiffService)),k(1,(0,i.Inject)(S.HistoryRenderAdapterRegistryService)),k(2,(0,i.Inject)(p.SnapshotService)),k(3,i.IUniverInstanceService),k(4,(0,i.Inject)(S.HistoryCanvasHighlightService))],J);let Y=class extends S.UniverEditHistoryUIPlugin{constructor(v68,v69,v70,v71){let{collaborationClientConfig:v72,...v73}=v68;super(v73,v69,v70,v71),this._injector=v69,v70.setConfig(n.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY,v72);}onStarting(){super.onStarting(),(0,i.registerDependencies)(this._injector,[[p.ISnapshotServerService,{useClass:n.SnapshotServerOverHTTPService}],[I],[J],[j]]),this._injector["get"](I),this._injector["get"](J),this._injector["get"](j);}};q(Y,"pluginName","UNIVER_BOARDS_HISTORY_VIEWER_PLUGIN"),q(Y,"packageName",E),q(Y,"version",D),q(Y,"type",i.UniverInstanceType["UNIVER_UNKNOWN"]),Y=A([(0,i.DependentOn)(r.UniverLicensePlugin,e.UniverBoardsHistoryPlugin,t.UniverBoardsUIPlugin),k(1,(0,i.Inject)(i.Injector)),k(2,i.IConfigService),k(3,i.ILogService)],Y);let X=class extends i.Disposable{constructor(v74,v75,v76,v77,v78,v79,v80,v81){super(),this._configService=v74,this._restoreService=v75,this._adapterRegistry=v76,this._localeService=v77,this._themeService=v78,this._collaborationController=v79,this._dataLoaderService=v80,this._univerInstanceService=v81,q(this,"_historyUniver",null),q(this,"_opening",null),q(this,"_openGeneration",0),q(this,"_sessionDisposables",new i["DisposableCollection"]()),q(this,"_container",null),q(this,"_unitId",""),q(this,"_location",undefined);}open(v82){if(this._historyUniver)return Promise.resolve();if(this._opening)return this._opening;let v83=++this._openGeneration,v84=this._open(v82,v83).finally(()=>{this._opening===v84&&(this._opening=null);});return this._opening=v84,v84;}async _open(v85,v86){let v87=this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_BOARD"]);if(!v87)throw Error("[BoardsHistoryLoaderService]: Board history adapter is not registered.");let v88=await Promise.all([v87.canView(v85),v87.canRevert(v85)]).catch(v9=>{if(v86===this._openGeneration)throw v9;return null;});if(!v88||v86!==this._openGeneration)return;let[v89,v90]=v88;if(!v89)throw Error("[BoardsHistoryLoaderService]: The current user cannot view history for this Board.");this._unitId=v85,this._location=v87.captureLocation(v85);let v91=this._ensureContainer();v91.style["display"]="block";let v92=this._localeService["getCurrentLocale"](),v93=this._localeService["getLocales"](),v94=new i["Univer"]({theme:this._themeService["getCurrentTheme"](),darkMode:this._themeService["darkMode"],locale:v92,locales:v93?{[v92]:v93}:undefined,direction:this._localeService["getDirection"](),override:[[i.IAuthzIoService,{useClass:n.AuthzIoHttpService}]]});this._historyUniver=v94,this._syncViewerServices(v94,v91);try{this._registerChildPlugins(v94,v90,v91),v94.createUnit(i.UniverInstanceType["UNIVER_BOARD"],(0,o.getBoardsEmptySnapshot)(v85,""));}catch(v10){throw v86===this._openGeneration?this.close():v94.dispose(),v10;}}close(){++this._openGeneration,this._opening=null,this._sessionDisposables["dispose"]();let v95=this._historyUniver;this._historyUniver=null,v95==null||v95.dispose(),this._unitId="",this._location=undefined,this._container&&(this._container["style"].display="none");}_syncViewerServices(v96,v97){let v98=v96.__getInjector(),v99=v98.get(i.LocaleService),v100=v98.get(i.ThemeService);this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(v11=>{v100.setDarkMode(v11);})),this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(v12=>{v100.setTheme(v12);})),this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(v13=>{let v14=this._localeService["getLocales"]();v14&&v99.load({[v13]:v14}),v99.setLocale(v13);})),this._sessionDisposables["add"](this._localeService["direction$"].subscribe(v15=>{v99.setDirection(v15),v97.dir=v15,v97.style["direction"]=v15;}));}async restore(v101){var v102;let v103=this._unitId,v104=this._location,v105=this._collaborationController["getCollabEntity"](v103);if(!v105)throw Error("[BoardsHistoryLoaderService]: Collaboration is not ready for this Board.");let v106=new x.Subject(),v107=(0,x.firstValueFrom)(v105.session["event$"].pipe((0,x.filter)(v16=>v16.eventID===p.CollaborationEvent["CHANGESET_ACK"]),(0,x.filter)(v17=>(0,g.isHistoryRestoreAcknowledgement)(v17,v101)),(0,x.takeUntil)(v106),(0,x.timeout)(10000)));try{if(!(await this._restoreService["restore"](v103,i.UniverInstanceType["UNIVER_BOARD"],v101)))throw Error("[BoardsHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.");await v107;}catch(v18){throw v106.next(),await v107.catch(()=>undefined),v18;}finally{v106.complete();}this.close(),this._univerInstanceService["disposeUnit"](v103),await this._dataLoaderService["loadUnit"](v103,i.UniverInstanceType["UNIVER_BOARD"]),await((v102=this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_BOARD"]))==null?undefined:v102.restoreLocation(v103,v104));}_ensureContainer(){var v108;if(this._container)return this._container;let v109=this._configService["getConfig"](w),v110=(v109==null?undefined:v109.univerContainerId)??((v108=this._configService["getConfig"](b.UI_PLUGIN_CONFIG_KEY))==null?undefined:v108.container),v111=typeof v110=="string"?document.getElementById(v110):v110;if(!v111)throw Error("[BoardsHistoryLoaderService]: Configure a valid Univer container before opening history.");let v112=document.createElement("div");return Object.assign(v112.style,{position:"absolute",inset:"0",zIndex:"49",display:"none"}),v111.appendChild(v112),this._container=v112,v112;}_registerChildPlugins(v113,v114,v115){let v116=this._configService["getConfig"](r.LS_CONFIG_KEY),v117=this._configService["getConfig"](w),v118=[[r.UniverLicensePlugin,{license:v116==null?undefined:v116.ls}],[re.UniverRenderEnginePlugin],[b.UniverUIPlugin,{container:v115,header:true,toolbar:false,footer:true,contextMenu:false}],[y.UniverNetworkPlugin],[v.UniverDrawingPlugin,{override:[[i.IImageIoService,{useClass:n.CollaborationImageIoService}]]}],[ne.UniverDocsPlugin],[_.UniverDocsUIPlugin],[m.UniverDocsLatexPlugin],[h.UniverDocsLatexUIPlugin],[ee.UniverInkPlugin],[te.UniverInkUIPlugin],[o.UniverBoardsPlugin],[t.UniverBoardsUIPlugin,{showToolbar:false,workbench:{content:false}}],[s.UniverBoardsChartPlugin],[c.UniverBoardsChartUIPlugin],[l.UniverBoardsMindPlugin],[u.UniverBoardsMindUIPlugin],[d.UniverBoardsTablePlugin],[f.UniverBoardsTableUIPlugin],[p.UniverCollaborationPlugin],[g.UniverEditHistoryPlugin,{historyServerUrl:v117==null?undefined:v117.historyServerUrl}],[e.UniverBoardsHistoryPlugin]],v119=new Set();[...v118,...((v117==null?undefined:v117.viewerPlugins)??[])].forEach(([v19,v20])=>{if(v119.has(v19.pluginName))throw Error("[BoardsHistoryLoaderService]: Plugin "+v19.pluginName+" has already been registered.");v119.add(v19.pluginName),v113.registerPlugin(v19,v20);}),v113.registerPlugin(Y,{viewerMode:true,descriptor:{unitId:this._unitId,type:i.UniverInstanceType["UNIVER_BOARD"]},canRestore:v114,onClose:()=>this.close(),onRestore:v21=>this.restore(v21),collaborationClientConfig:this._configService["getConfig"](n.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY)});}dispose(){var v120;this.close(),(v120=this._container)==null||v120.remove(),this._container=null,super.dispose();}};X=A([k(0,i.IConfigService),k(1,(0,i.Inject)(g.HistoryRestoreService)),k(2,(0,i.Inject)(g.HistoryUnitAdapterRegistryService)),k(3,(0,i.Inject)(i.LocaleService)),k(4,(0,i.Inject)(i.ThemeService)),k(5,(0,i.Inject)(n.CollaborationController)),k(6,(0,i.Inject)(n.DataLoaderService)),k(7,i.IUniverInstanceService)],X);const Z={id:"boards-history-ui.operation.open",type:i.CommandType["OPERATION"],handler:v161=>{let v162=v161.get(i.IUniverInstanceService).getCurrentUnitOfType(i.UniverInstanceType["UNIVER_BOARD"]);return v162?(v161.get(X).open(v162.getUnitId()).catch(v121=>{v161.get(i.ILogService).error("[OpenBoardsHistoryOperation]: Failed to open Board history.",v121);}),true):false;}};let Q=class extends i.Disposable{constructor(v122,v123,v124){super(),this.disposeWithMe(v122.registerCommand(Z)),this.disposeWithMe(v123.register({id:Z.id,menuItemId:Z.id,group:"action",order:100,icon:a.HistoryIcon,label:()=>v124.t("boards-history-ui.menu.history"),onClick:v22=>v22.executeCommand(Z.id)}));}};Q=A([k(0,i.ICommandService),k(1,(0,i.Inject)(t.IBoardSettingsMenuContributionService)),k(2,(0,i.Inject)(i.LocaleService))],Q);let $=class extends i.Plugin{constructor(v125=T,v126,v127){super(),this._config=v125,this._injector=v126,this._configService=v127;let{...v128}=(0,i.merge)({},T,this._config);this._configService["setConfig"](w,v128);}onStarting(){(0,i.registerDependencies)(this._injector,[[X],[Q]]),this._injector["get"](Q);}};q($,"pluginName","UNIVER_BOARDS_HISTORY_UI_PLUGIN"),q($,"packageName",E),q($,"version",D),q($,"type",i.UniverInstanceType["UNIVER_BOARD"]),$=A([(0,i.DependentOn)(r.UniverLicensePlugin,n.UniverCollaborationClientPlugin,e.UniverBoardsHistoryPlugin,t.UniverBoardsUIPlugin),k(1,(0,i.Inject)(i.Injector)),k(2,i.IConfigService)],$),exports.BOARDS_HISTORY_UI_PLUGIN_CONFIG_KEY=w,Object.defineProperty(exports,"UniverBoardsHistoryUIPlugin",{enumerable:true,get:function(){return $;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/boards-history"),
+  t = require("@univerjs-pro/boards-ui"),
+  n = require("@univerjs-pro/collaboration-client"),
+  r = require("@univerjs-pro/license"),
+  i = require("@univerjs/core"),
+  a = require("@univerjs/icons"),
+  o = require("@univerjs-pro/boards"),
+  s = require("@univerjs-pro/boards-chart"),
+  c = require("@univerjs-pro/boards-chart-ui"),
+  l = require("@univerjs-pro/boards-mind"),
+  u = require("@univerjs-pro/boards-mind-ui"),
+  d = require("@univerjs-pro/boards-table"),
+  f = require("@univerjs-pro/boards-table-ui"),
+  p = require("@univerjs-pro/collaboration"),
+  m = require("@univerjs-pro/docs-latex"),
+  h = require("@univerjs-pro/docs-latex-ui"),
+  g = require("@univerjs-pro/edit-history"),
+  ee = require("@univerjs-pro/ink"),
+  te = require("@univerjs-pro/ink-ui"),
+  ne = require("@univerjs/docs"),
+  _ = require("@univerjs/docs-ui"),
+  v = require("@univerjs/drawing"),
+  re = require("@univerjs/engine-render"),
+  y = require("@univerjs/network"),
+  b = require("@univerjs/ui"),
+  x = require("rxjs"),
+  S = require("@univerjs-pro/edit-history-ui"),
+  C = require("react/jsx-runtime");
+const w = "boards-history-ui.config",
+  T = {
+    historyServerUrl: "/universer-api/history"
+  };
+var E = "@univerjs-pro/boards-history-ui",
+  D = "1.0.0-insiders.20260907-70fc579";
+function O() {
+  return (0, C.jsx)(t.BoardWorkbench, {
+    embedded: true,
+    fitOnMount: true
+  });
+}
+function k(var_core_value_sigB512, var_core_value_sigF2E6) {
+  return function (var_core_value_sig4383, var_core_value_sig186C) {
+    var_core_value_sigF2E6(var_core_value_sig4383, var_core_value_sig186C, var_core_value_sigB512);
+  };
+}
+function A(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A) {
+  var var_core_value_sig3E68 = arguments.length,
+    var_core_value_sigF4C5 = var_core_value_sig3E68 < 3 ? var_core_value_sigB744 : var_core_value_sigE68A === null ? var_core_value_sigE68A = Object.getOwnPropertyDescriptor(var_core_value_sigB744, var_core_value_sigEAE2) : var_core_value_sigE68A,
+    var_core_value_sig5410;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigF4C5 = Reflect.decorate(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A);else {
+    for (var var_core_value_sig492F = var_core_value_sig34C8.length - 1; var_core_value_sig492F >= 0; var_core_value_sig492F--) (var_core_value_sig5410 = var_core_value_sig34C8[var_core_value_sig492F]) && (var_core_value_sigF4C5 = (var_core_value_sig3E68 < 3 ? var_core_value_sig5410(var_core_value_sigF4C5) : var_core_value_sig3E68 > 3 ? var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5) : var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2)) || var_core_value_sigF4C5);
+  }
+  return var_core_value_sig3E68 > 3 && var_core_value_sigF4C5 && Object.defineProperty(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5), var_core_value_sigF4C5;
+}
+let j = class extends i.Disposable {
+  constructor(var_core_value_sigD955, var_core_value_sig48BD) {
+    super(), this.disposeWithMe(var_core_value_sig48BD.registerComponent(b.BuiltInUIPart["CONTENT"], () => (0, b.connectInjector)(O, var_core_value_sigD955)));
+  }
+};
+j = A([k(0, (0, i.Inject)(i.Injector)), k(1, b.IUIPartsService)], j);
+const M = new Map([[o.SetBoardNameCommand["id"], "boards-history-ui.action.renameBoard"], [o.SetBoardPageBackgroundCommand["id"], "boards-history-ui.action.updateBackground"], [o.SetBoardThemeOperation["id"], "boards-history-ui.action.updateTheme"], [o.AddBoardElementOperation["id"], "boards-history-ui.action.insertObject"], [o.AddBoardElementsOperation["id"], "boards-history-ui.action.insertObject"], [o.RemoveBoardElementCommand["id"], "boards-history-ui.action.deleteObject"], [o.RemoveBoardElementsOperation["id"], "boards-history-ui.action.deleteObject"], [o.UpdateBoardElementCommand["id"], "boards-history-ui.action.updateObject"], [o.UpdateBoardElementsCommand["id"], "boards-history-ui.action.updateObject"], [o.ReorderBoardElementsOperation["id"], "boards-history-ui.action.reorderObject"], [o.ReorderBoardObjectListElementOperation["id"], "boards-history-ui.action.reorderObject"], [o.ReparentBoardElementsOperation["id"], "boards-history-ui.action.moveObject"], [o.SetBoardElementsMetadataOperation["id"], "boards-history-ui.action.updateObject"], [o.SetBoardConnectorLabelTextCommand["id"], "boards-history-ui.action.updateConnector"], [o.SetBoardConnectorLabelStyleCommand["id"], "boards-history-ui.action.updateConnector"], [o.RemoveBoardConnectorLabelCommand["id"], "boards-history-ui.action.updateConnector"], [o.NormalizeBoardConnectorRoutingCommand["id"], "boards-history-ui.action.updateConnector"], [o.BeginBoardContainerOperation["id"], "boards-history-ui.action.insertContainer"], [o.WrapBoardElementsInContainerOperation["id"], "boards-history-ui.action.insertContainer"], [o.DisbandBoardContainerOperation["id"], "boards-history-ui.action.deleteContainer"], [o.CommitBoardContainerTransformOperation["id"], "boards-history-ui.action.updateContainer"], [o.FitBoardContainerToContentOperation["id"], "boards-history-ui.action.updateContainer"], [o.SetBoardContainerAutoResizeOperation["id"], "boards-history-ui.action.updateContainer"], [o.SetBoardContainerMembershipLockOperation["id"], "boards-history-ui.action.updateContainer"], [o.BeginBoardSwimlaneOperation["id"], "boards-history-ui.action.insertSwimlane"], [o.SetBoardSwimlaneLanesOperation["id"], "boards-history-ui.action.updateSwimlane"], [o.SetBoardSwimlaneLaneSizeOperation["id"], "boards-history-ui.action.updateSwimlane"], [o.RemoveBoardSwimlaneLaneOperation["id"], "boards-history-ui.action.updateSwimlane"], [l.InsertBoardMindMapOperation["id"], "boards-history-ui.action.insertMindMap"], [l.ImportMindMapOpmlOperation["id"], "boards-history-ui.action.insertMindMap"], [l.PasteMindMapAsNewMindMapOperation["id"], "boards-history-ui.action.insertMindMap"], [l.AddMindMapChildOperation["id"], "boards-history-ui.action.insertMindMapNode"], [l.AddMindMapSiblingOperation["id"], "boards-history-ui.action.insertMindMapNode"], [l.PasteMindMapNodeOperation["id"], "boards-history-ui.action.insertMindMapNode"], [l.DeleteMindMapNodeOperation["id"], "boards-history-ui.action.deleteMindMapNode"], [l.UpdateMindMapNodeOperation["id"], "boards-history-ui.action.updateMindMap"], [l.UpdateMindMapNodesOperation["id"], "boards-history-ui.action.updateMindMap"], [l.UpdateMindMapIncomingConnectorOperation["id"], "boards-history-ui.action.updateMindMap"], [l.ChangeMindMapLayoutOperation["id"], "boards-history-ui.action.updateMindMapLayout"], [l.LayoutMindMapOperation["id"], "boards-history-ui.action.updateMindMapLayout"], [l.ChangeMindMapBranchLineTypeOperation["id"], "boards-history-ui.action.updateMindMapLayout"], [l.ReflowMindMapCommand["id"], "boards-history-ui.action.updateMindMapLayout"], [l.ReparentMindMapNodeOperation["id"], "boards-history-ui.action.moveMindMapNode"], [l.PromoteMindMapNodeOperation["id"], "boards-history-ui.action.moveMindMapNode"], [l.DetachMindMapNodeOperation["id"], "boards-history-ui.action.moveMindMapNode"], [l.TranslateMindMapOperation["id"], "boards-history-ui.action.moveMindMapNode"], [l.ToggleMindMapNodeCollapseOperation["id"], "boards-history-ui.action.updateMindMap"], [o.InsertBoardTableOperation["id"], "boards-history-ui.action.insertTable"], [d.RemoveBoardTableCommand["id"], "boards-history-ui.action.deleteTable"], [d.InsertBoardTableRowsCommand["id"], "boards-history-ui.action.insertTableRows"], [d.DeleteBoardTableRowsCommand["id"], "boards-history-ui.action.deleteTableRows"], [d.MoveBoardTableRowsCommand["id"], "boards-history-ui.action.moveTableRows"], [d.ResizeBoardTableRowsCommand["id"], "boards-history-ui.action.resizeTableRows"], [d.InsertBoardTableColumnsCommand["id"], "boards-history-ui.action.insertTableColumns"], [d.DeleteBoardTableColumnsCommand["id"], "boards-history-ui.action.deleteTableColumns"], [d.MoveBoardTableColumnsCommand["id"], "boards-history-ui.action.moveTableColumns"], [d.ResizeBoardTableColumnsCommand["id"], "boards-history-ui.action.resizeTableColumns"], [d.MergeBoardTableCellsCommand["id"], "boards-history-ui.action.mergeTableCells"], [d.UnmergeBoardTableCellsCommand["id"], "boards-history-ui.action.unmergeTableCells"], [d.SetBoardTableCellTextCommand["id"], "boards-history-ui.action.editTableCell"], [d.SetBoardTableCellStyleCommand["id"], "boards-history-ui.action.formatTable"], [d.SetBoardTableBorderPresetCommand["id"], "boards-history-ui.action.formatTable"], [d.UpdateBoardTableCommand["id"], "boards-history-ui.action.updateTable"], [o.InsertBoardChartCommand["id"], "boards-history-ui.action.insertChart"], [s.ChangeBoardChartDataSourceCommand["id"], "boards-history-ui.action.updateChart"], [s.DuplicateBoardChartDataSourceCommand["id"], "boards-history-ui.action.updateChart"], [s.UpdateBoardChartDataSourceCommand["id"], "boards-history-ui.action.updateChart"], [s.UpdateBoardChartConfigCommand["id"], "boards-history-ui.action.updateChart"]]),
+  N = new Map([[o.BoardElementType["Text"], {
+    insert: "boards-history-ui.action.insertTextBox",
+    update: "boards-history-ui.action.updateTextBox",
+    delete: "boards-history-ui.action.deleteTextBox"
+  }], [o.BoardElementType["Shape"], {
+    insert: "boards-history-ui.action.insertShape",
+    update: "boards-history-ui.action.updateShape",
+    delete: "boards-history-ui.action.deleteShape"
+  }], [o.BoardElementType["Image"], {
+    insert: "boards-history-ui.action.insertImage",
+    update: "boards-history-ui.action.updateImage",
+    delete: "boards-history-ui.action.deleteImage"
+  }], [o.BoardElementType["Diagram"], {
+    insert: "boards-history-ui.action.insertDiagram",
+    update: "boards-history-ui.action.updateDiagram",
+    delete: "boards-history-ui.action.deleteDiagram"
+  }], [o.BoardElementType["Media"], {
+    insert: "boards-history-ui.action.insertMedia",
+    update: "boards-history-ui.action.updateMedia",
+    delete: "boards-history-ui.action.deleteMedia"
+  }], [o.BoardElementType["Group"], {
+    insert: "boards-history-ui.action.insertGroup",
+    update: "boards-history-ui.action.updateGroup",
+    delete: "boards-history-ui.action.deleteGroup"
+  }], [o.BoardElementType["Connector"], {
+    insert: "boards-history-ui.action.insertConnector",
+    update: "boards-history-ui.action.updateConnector",
+    delete: "boards-history-ui.action.deleteConnector"
+  }], [o.BoardElementType["Table"], {
+    insert: "boards-history-ui.action.insertTable",
+    update: "boards-history-ui.action.updateTable",
+    delete: "boards-history-ui.action.deleteTable"
+  }], [o.BoardElementType["Chart"], {
+    insert: "boards-history-ui.action.insertChart",
+    update: "boards-history-ui.action.updateChart",
+    delete: "boards-history-ui.action.deleteChart"
+  }]]),
+  ie = new Set([o.AddBoardElementMutation["id"], o.AddBoardElementOperation["id"], o.AddBoardElementsOperation["id"]]),
+  P = new Set([o.UpdateBoardElementCommand["id"], o.UpdateBoardElementMutation["id"], o.UpdateBoardElementsCommand["id"]]),
+  F = new Set([o.RemoveBoardElementCommand["id"], o.RemoveBoardElementMutation["id"], o.RemoveBoardElementOperation["id"], o.RemoveBoardElementsOperation["id"]]);
+let I = class extends i.Disposable {
+  constructor(var_core_value_sig429F, var_core_value_sigF62A) {
+    super(), this._localeService = var_core_value_sigF62A, this.disposeWithMe(var_core_value_sig429F.register(i.UniverInstanceType["UNIVER_BOARD"], this));
+  }
+  resolve(var_core_value_sig8178) {
+    let var_core_value_sigE9ED = new Set(B(var_core_value_sig8178, o.AddBoardElementMutation["id"]).map(var_core_value_sig7524 => var_core_value_sig7524.id)),
+      var_core_value_sigB577 = R(var_core_value_sig8178),
+      var_core_value_sig9572 = z(var_core_value_sig8178, var_core_value_sigE9ED),
+      var_core_value_sigD873 = L(var_core_value_sig8178),
+      var_core_value_sigA12B = [...var_core_value_sigB577, ...var_core_value_sig9572, ...var_core_value_sigD873].map(var_core_value_sig2AD8 => this._localeService["t"](var_core_value_sig2AD8)),
+      var_core_value_sigF230 = [...var_core_value_sig8178.commandIds].flatMap(var_core_value_sig2AD0 => {
+        if (var_core_value_sigB577.length > 0 && ie.has(var_core_value_sig2AD0) || var_core_value_sig9572.length > 0 && P.has(var_core_value_sig2AD0) || var_core_value_sigD873.length > 0 && F.has(var_core_value_sig2AD0)) return [];
+        let var_core_value_sig3EEE = M.get(var_core_value_sig2AD0);
+        return var_core_value_sig3EEE ? [this._localeService["t"](var_core_value_sig3EEE)] : [];
+      }),
+      var_core_value_sig09B8 = [...new Set([...var_core_value_sigA12B, ...var_core_value_sigF230])];
+    return var_core_value_sig09B8.length > 0 ? var_core_value_sig09B8 : var_core_value_sig8178.commandIds["has"](l.SetMindMapElementMutation["id"]) ? [this._localeService["t"]("boards-history-ui.action.updateMindMap")] : var_core_value_sig8178.commandIds["has"](o.AddBoardElementMutation["id"]) ? [this._localeService["t"]("boards-history-ui.action.insertObject")] : var_core_value_sig8178.commandIds["has"](o.RemoveBoardElementMutation["id"]) ? [this._localeService["t"]("boards-history-ui.action.deleteObject")] : var_core_value_sig8178.commandIds["has"](o.UpdateBoardElementMutation["id"]) ? [this._localeService["t"]("boards-history-ui.action.updateObject")] : [];
+  }
+};
+I = A([k(0, (0, i.Inject)(S.HistoryActionSummaryService)), k(1, (0, i.Inject)(i.LocaleService))], I);
+function L(var_core_value_sig8EA0) {
+  let var_core_value_sigA6F6 = var_core_value_sig8EA0.mutations["flatMap"](var_core_value_sig6F91 => {
+    var var_core_value_sigF9C7;
+    if (var_core_value_sig6F91.id !== o.RemoveBoardElementMutation["id"] || !U(var_core_value_sig6F91.params)) return [];
+    if (var_core_value_sig6F91.params["elementType"] === o.BoardElementType["Container"]) return var_core_value_sig6F91.params["containerKind"] === "swimlane" ? ["boards-history-ui.action.deleteSwimlane"] : ["boards-history-ui.action.deleteContainer"];
+    let var_core_value_sig8895 = H(var_core_value_sig6F91.params["elementType"]) ? (var_core_value_sigF9C7 = N.get(var_core_value_sig6F91.params["elementType"])) == null ? undefined : var_core_value_sigF9C7.delete : undefined;
+    return var_core_value_sig8895 ? [var_core_value_sig8895] : [];
+  });
+  return [...new Set(var_core_value_sigA6F6)];
+}
+function R(var_core_value_sigCDDA) {
+  let var_core_value_sigE243 = B(var_core_value_sigCDDA, o.AddBoardElementMutation["id"]).flatMap(var_core_value_sigC80B => {
+    var var_core_value_sig284F;
+    if ((0, l.getMindMapContainerMeta)(var_core_value_sigC80B)) return ["boards-history-ui.action.insertMindMap"];
+    if ((0, l.getMindMapNodeMeta)(var_core_value_sigC80B)) return ["boards-history-ui.action.insertMindMapNode"];
+    if (var_core_value_sigC80B.type === o.BoardElementType["Container"]) return var_core_value_sigC80B.containerData["kind"] === "swimlane" ? ["boards-history-ui.action.insertSwimlane"] : ["boards-history-ui.action.insertContainer"];
+    let var_core_value_sigE154 = (var_core_value_sig284F = N.get(var_core_value_sigC80B.type)) == null ? undefined : var_core_value_sig284F.insert;
+    return var_core_value_sigE154 ? [var_core_value_sigE154] : [];
+  });
+  return [...new Set(var_core_value_sigE243)];
+}
+function z(var_core_value_sig74A8, var_core_value_sig21B2) {
+  let var_core_value_sigDE08 = [...B(var_core_value_sig74A8, l.SetMindMapElementMutation["id"]), ...B(var_core_value_sig74A8, o.UpdateBoardElementMutation["id"])].filter(var_core_value_sig4632 => !var_core_value_sig21B2.has(var_core_value_sig4632.id)).flatMap(var_core_value_sig12F2 => {
+    var var_core_value_sig2259;
+    if ((0, l.getMindMapContainerMeta)(var_core_value_sig12F2) || (0, l.getMindMapNodeMeta)(var_core_value_sig12F2)) return ["boards-history-ui.action.updateMindMap"];
+    if (var_core_value_sig12F2.type === o.BoardElementType["Container"]) return var_core_value_sig12F2.containerData["kind"] === "swimlane" ? ["boards-history-ui.action.updateSwimlane"] : ["boards-history-ui.action.updateContainer"];
+    let var_core_value_sig9E2F = (var_core_value_sig2259 = N.get(var_core_value_sig12F2.type)) == null ? undefined : var_core_value_sig2259.update;
+    return var_core_value_sig9E2F ? [var_core_value_sig9E2F] : [];
+  });
+  return [...new Set(var_core_value_sigDE08)];
+}
+function B(var_core_value_sigACCB, var_core_value_sig7F33) {
+  return var_core_value_sigACCB.mutations["flatMap"](var_core_value_sigD082 => var_core_value_sigD082.id !== var_core_value_sig7F33 || !U(var_core_value_sigD082.params) || !V(var_core_value_sigD082.params["element"]) ? [] : [var_core_value_sigD082.params["element"]]);
+}
+function V(var_core_value_sig0C53) {
+  if (!U(var_core_value_sig0C53) || typeof var_core_value_sig0C53.id != "string" || !U(var_core_value_sig0C53.transform)) return false;
+  switch (var_core_value_sig0C53.type) {
+    case o.BoardElementType["Placeholder"]:
+    case o.BoardElementType["Text"]:
+    case o.BoardElementType["Shape"]:
+    case o.BoardElementType["Image"]:
+    case o.BoardElementType["Chart"]:
+    case o.BoardElementType["Table"]:
+    case o.BoardElementType["Diagram"]:
+    case o.BoardElementType["Media"]:
+    case o.BoardElementType["Group"]:
+    case o.BoardElementType["Connector"]:
+    case o.BoardElementType["Container"]:
+      return true;
+    default:
+      return false;
+  }
+}
+function H(var_core_value_sigEA04) {
+  switch (var_core_value_sigEA04) {
+    case o.BoardElementType["Placeholder"]:
+    case o.BoardElementType["Text"]:
+    case o.BoardElementType["Shape"]:
+    case o.BoardElementType["Image"]:
+    case o.BoardElementType["Chart"]:
+    case o.BoardElementType["Table"]:
+    case o.BoardElementType["Diagram"]:
+    case o.BoardElementType["Media"]:
+    case o.BoardElementType["Group"]:
+    case o.BoardElementType["Connector"]:
+    case o.BoardElementType["Container"]:
+      return true;
+    default:
+      return false;
+  }
+}
+function U(var_core_value_sig7A62) {
+  return typeof var_core_value_sig7A62 == "object" && !!var_core_value_sig7A62;
+}
+function W(var_core_value_sig8109) {
+  "@babel/helpers - typeof";
+
+  return W = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigDBB7) {
+    return typeof var_core_value_sigDBB7;
+  } : function (var_core_value_sigD0A8) {
+    return var_core_value_sigD0A8 && typeof Symbol == "function" && var_core_value_sigD0A8.constructor === Symbol && var_core_value_sigD0A8 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigD0A8;
+  }, W(var_core_value_sig8109);
+}
+function G(var_core_value_sig7565, var_core_value_sigD4FB) {
+  if (W(var_core_value_sig7565) != "object" || !var_core_value_sig7565) return var_core_value_sig7565;
+  var var_core_value_sig3E71 = var_core_value_sig7565[Symbol.toPrimitive];
+  if (var_core_value_sig3E71 !== undefined) {
+    var var_core_value_sig01B3 = var_core_value_sig3E71.call(var_core_value_sig7565, var_core_value_sigD4FB || "default");
+    if (W(var_core_value_sig01B3) != "object") return var_core_value_sig01B3;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_core_value_sigD4FB === "string" ? String : Number)(var_core_value_sig7565);
+}
+function K(var_core_value_sig7442) {
+  var var_core_value_sigDF87 = G(var_core_value_sig7442, "string");
+  return W(var_core_value_sigDF87) == "symbol" ? var_core_value_sigDF87 : var_core_value_sigDF87 + "";
+}
+function q(var_core_value_sig9EE0, var_core_value_sigF051, var_core_value_sig0B45) {
+  return (var_core_value_sigF051 = K(var_core_value_sigF051)) in var_core_value_sig9EE0 ? Object.defineProperty(var_core_value_sig9EE0, var_core_value_sigF051, {
+    value: var_core_value_sig0B45,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig9EE0[var_core_value_sigF051] = var_core_value_sig0B45, var_core_value_sig9EE0;
+}
+let J = class extends i.Disposable {
+  constructor(var_core_value_sigF4B9, var_core_value_sig5CEE, var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5) {
+    super(), this._diffService = var_core_value_sigF4B9, this._snapshotService = var_core_value_sigE92A, this._univerInstanceService = var_core_value_sig362B, this._highlightService = var_core_value_sig5CA5, q(this, "type", i.UniverInstanceType["UNIVER_BOARD"]), q(this, "_changes", new Map()), q(this, "_changesGeneration", 0), q(this, "_loadGeneration", 0), q(this, "_loadQueue", Promise.resolve()), q(this, "_unitId", ""), this.disposeWithMe(var_core_value_sig5CEE.register(this));
+  }
+  loadRevision(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    let var_core_value_sig861B = ++this._loadGeneration,
+      var_core_value_sig5237 = this._loadQueue["catch"](() => undefined).then(async () => {
+        if (var_core_value_sig861B !== this._loadGeneration) return;
+        this._getBoard(var_core_value_sigE90F) && this._univerInstanceService["disposeUnit"](var_core_value_sigE90F);
+        let var_core_value_sigBC46 = await this._snapshotService["loadBoard"](var_core_value_sigE90F, var_core_value_sigEFD4.endRevision);
+        if (var_core_value_sig861B !== this._loadGeneration) {
+          this._getBoard(var_core_value_sigE90F) === var_core_value_sigBC46 && this._univerInstanceService["disposeUnit"](var_core_value_sigE90F);
+          return;
+        }
+        this._univerInstanceService["focusUnit"](var_core_value_sigE90F);
+      });
+    return this._loadQueue = var_core_value_sig5237, var_core_value_sig5237;
+  }
+  async loadChanges(var_core_value_sigBB00, var_core_value_sig7E54) {
+    this._unitId = var_core_value_sigBB00;
+    let var_core_value_sig9A8D = ++this._changesGeneration,
+      var_core_value_sigC259 = await this._diffService["compare"](var_core_value_sigBB00, var_core_value_sig7E54);
+    var_core_value_sig9A8D === this._changesGeneration && (this._changes["clear"](), var_core_value_sigC259.forEach(var_core_value_sig3D7D => this._changes["set"](var_core_value_sig3D7D.id, var_core_value_sig3D7D)), await this._renderHighlights(var_core_value_sigBB00));
+  }
+  close() {
+    ++this._changesGeneration, ++this._loadGeneration, this._changes["clear"](), this._unitId &&= (this._highlightService["clear"](this._unitId), "");
+  }
+  _getBoard(var_core_value_sig9C9F) {
+    return this._univerInstanceService["getUnit"](var_core_value_sig9C9F, i.UniverInstanceType["UNIVER_BOARD"]) ?? null;
+  }
+  _renderHighlights(var_core_value_sigFDEA) {
+    let var_core_value_sig86D0 = this._getBoard(var_core_value_sigFDEA);
+    if (!var_core_value_sig86D0) return Promise.resolve();
+    let var_core_value_sig4CD2 = var_core_value_sig86D0.getActivePageId(),
+      var_core_value_sig48CA = Array.from(this._changes["values"]()).filter(var_core_value_sig27E5 => var_core_value_sig27E5.pageId === var_core_value_sig4CD2).map(var_core_value_sig8061 => ({
+        id: var_core_value_sig8061.id,
+        kind: var_core_value_sig8061.kind,
+        objectKey: var_core_value_sig8061.elementId ? (0, t.getBoardElementRenderObjectKey)(var_core_value_sigFDEA, var_core_value_sig8061.elementId) : undefined,
+        outlineOnly: var_core_value_sig8061.kind === "delete" || !var_core_value_sig8061.elementId
+      }));
+    return this._highlightService["show"](var_core_value_sigFDEA, var_core_value_sig48CA);
+  }
+};
+J = A([k(0, (0, i.Inject)(e.BoardsHistoryDiffService)), k(1, (0, i.Inject)(S.HistoryRenderAdapterRegistryService)), k(2, (0, i.Inject)(p.SnapshotService)), k(3, i.IUniverInstanceService), k(4, (0, i.Inject)(S.HistoryCanvasHighlightService))], J);
+let Y = class extends S.UniverEditHistoryUIPlugin {
+  constructor(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF) {
+    let {
+      collaborationClientConfig: var_core_value_sig8889,
+      ...var_core_value_sig32F8
+    } = var_core_value_sig50AF;
+    super(var_core_value_sig32F8, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF), this._injector = var_core_value_sigA942, var_core_value_sigA621.setConfig(n.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY, var_core_value_sig8889);
+  }
+  onStarting() {
+    super.onStarting(), (0, i.registerDependencies)(this._injector, [[p.ISnapshotServerService, {
+      useClass: n.SnapshotServerOverHTTPService
+    }], [I], [J], [j]]), this._injector["get"](I), this._injector["get"](J), this._injector["get"](j);
+  }
+};
+q(Y, "pluginName", "UNIVER_BOARDS_HISTORY_VIEWER_PLUGIN"), q(Y, "packageName", E), q(Y, "version", D), q(Y, "type", i.UniverInstanceType["UNIVER_UNKNOWN"]), Y = A([(0, i.DependentOn)(r.UniverLicensePlugin, e.UniverBoardsHistoryPlugin, t.UniverBoardsUIPlugin), k(1, (0, i.Inject)(i.Injector)), k(2, i.IConfigService), k(3, i.ILogService)], Y);
+let X = class extends i.Disposable {
+  constructor(var_core_value_sig5B67, var_core_value_sig1758, var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902, var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+    super(), this._configService = var_core_value_sig5B67, this._restoreService = var_core_value_sig1758, this._adapterRegistry = var_core_value_sig4805, this._localeService = var_core_value_sigE67E, this._themeService = var_core_value_sig2902, this._collaborationController = var_core_value_sig9989, this._dataLoaderService = var_core_value_sig698E, this._univerInstanceService = var_core_value_sig2809, q(this, "_historyUniver", null), q(this, "_opening", null), q(this, "_openGeneration", 0), q(this, "_sessionDisposables", new i["DisposableCollection"]()), q(this, "_container", null), q(this, "_unitId", ""), q(this, "_location", undefined);
+  }
+  open(var_core_value_sig2DAB) {
+    if (this._historyUniver) return Promise.resolve();
+    if (this._opening) return this._opening;
+    let var_core_value_sig877E = ++this._openGeneration,
+      var_core_value_sig20C8 = this._open(var_core_value_sig2DAB, var_core_value_sig877E).finally(() => {
+        this._opening === var_core_value_sig20C8 && (this._opening = null);
+      });
+    return this._opening = var_core_value_sig20C8, var_core_value_sig20C8;
+  }
+  async _open(var_core_value_sigE9A7, var_core_value_sigBECE) {
+    let var_core_value_sig1B22 = this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_BOARD"]);
+    if (!var_core_value_sig1B22) throw Error("[BoardsHistoryLoaderService]: Board history adapter is not registered.");
+    let var_core_value_sig7F72 = await Promise.all([var_core_value_sig1B22.canView(var_core_value_sigE9A7), var_core_value_sig1B22.canRevert(var_core_value_sigE9A7)]).catch(var_core_value_sig4D4C => {
+      if (var_core_value_sigBECE === this._openGeneration) throw var_core_value_sig4D4C;
+      return null;
+    });
+    if (!var_core_value_sig7F72 || var_core_value_sigBECE !== this._openGeneration) return;
+    let [var_core_value_sig7B2A, var_core_value_sig06CD] = var_core_value_sig7F72;
+    if (!var_core_value_sig7B2A) throw Error("[BoardsHistoryLoaderService]: The current user cannot view history for this Board.");
+    this._unitId = var_core_value_sigE9A7, this._location = var_core_value_sig1B22.captureLocation(var_core_value_sigE9A7);
+    let var_core_value_sigA5F1 = this._ensureContainer();
+    var_core_value_sigA5F1.style["display"] = "block";
+    let var_core_value_sig97A2 = this._localeService["getCurrentLocale"](),
+      var_core_value_sig07E9 = this._localeService["getLocales"](),
+      var_core_value_sig4F59 = new i["Univer"]({
+        theme: this._themeService["getCurrentTheme"](),
+        darkMode: this._themeService["darkMode"],
+        locale: var_core_value_sig97A2,
+        locales: var_core_value_sig07E9 ? {
+          [var_core_value_sig97A2]: var_core_value_sig07E9
+        } : undefined,
+        direction: this._localeService["getDirection"](),
+        override: [[i.IAuthzIoService, {
+          useClass: n.AuthzIoHttpService
+        }]]
+      });
+    this._historyUniver = var_core_value_sig4F59, this._syncViewerServices(var_core_value_sig4F59, var_core_value_sigA5F1);
+    try {
+      this._registerChildPlugins(var_core_value_sig4F59, var_core_value_sig06CD, var_core_value_sigA5F1), var_core_value_sig4F59.createUnit(i.UniverInstanceType["UNIVER_BOARD"], (0, o.getBoardsEmptySnapshot)(var_core_value_sigE9A7, ""));
+    } catch (var_core_value_sigC9E0) {
+      throw var_core_value_sigBECE === this._openGeneration ? this.close() : var_core_value_sig4F59.dispose(), var_core_value_sigC9E0;
+    }
+  }
+  close() {
+    ++this._openGeneration, this._opening = null, this._sessionDisposables["dispose"]();
+    let var_core_value_sigF564 = this._historyUniver;
+    this._historyUniver = null, var_core_value_sigF564 == null || var_core_value_sigF564.dispose(), this._unitId = "", this._location = undefined, this._container && (this._container["style"].display = "none");
+  }
+  _syncViewerServices(var_core_value_sig8CFA, var_core_value_sig2E11) {
+    let var_core_value_sig5B69 = var_core_value_sig8CFA.__getInjector(),
+      var_core_value_sigB098 = var_core_value_sig5B69.get(i.LocaleService),
+      var_core_value_sigCE71 = var_core_value_sig5B69.get(i.ThemeService);
+    this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(var_core_value_sig76BA => {
+      var_core_value_sigCE71.setDarkMode(var_core_value_sig76BA);
+    })), this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(var_core_value_sigFBFA => {
+      var_core_value_sigCE71.setTheme(var_core_value_sigFBFA);
+    })), this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(var_core_value_sigF602 => {
+      let var_core_value_sig1BBD = this._localeService["getLocales"]();
+      var_core_value_sig1BBD && var_core_value_sigB098.load({
+        [var_core_value_sigF602]: var_core_value_sig1BBD
+      }), var_core_value_sigB098.setLocale(var_core_value_sigF602);
+    })), this._sessionDisposables["add"](this._localeService["direction$"].subscribe(var_core_value_sigF704 => {
+      var_core_value_sigB098.setDirection(var_core_value_sigF704), var_core_value_sig2E11.dir = var_core_value_sigF704, var_core_value_sig2E11.style["direction"] = var_core_value_sigF704;
+    }));
+  }
+  async restore(var_core_value_sig21D8) {
+    var var_core_value_sig2B65;
+    let var_core_value_sigD7EA = this._unitId,
+      var_core_value_sigB33B = this._location,
+      var_core_value_sig24B9 = this._collaborationController["getCollabEntity"](var_core_value_sigD7EA);
+    if (!var_core_value_sig24B9) throw Error("[BoardsHistoryLoaderService]: Collaboration is not ready for this Board.");
+    let var_core_value_sigE627 = new x.Subject(),
+      var_core_value_sigEF3E = (0, x.firstValueFrom)(var_core_value_sig24B9.session["event$"].pipe((0, x.filter)(var_core_value_sig2BCF => var_core_value_sig2BCF.eventID === p.CollaborationEvent["CHANGESET_ACK"]), (0, x.filter)(var_core_value_sig0D69 => (0, g.isHistoryRestoreAcknowledgement)(var_core_value_sig0D69, var_core_value_sig21D8)), (0, x.takeUntil)(var_core_value_sigE627), (0, x.timeout)(10000)));
+    try {
+      if (!(await this._restoreService["restore"](var_core_value_sigD7EA, i.UniverInstanceType["UNIVER_BOARD"], var_core_value_sig21D8))) throw Error("[BoardsHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.");
+      await var_core_value_sigEF3E;
+    } catch (var_core_value_sig480E) {
+      throw var_core_value_sigE627.next(), await var_core_value_sigEF3E.catch(() => undefined), var_core_value_sig480E;
+    } finally {
+      var_core_value_sigE627.complete();
+    }
+    this.close(), this._univerInstanceService["disposeUnit"](var_core_value_sigD7EA), await this._dataLoaderService["loadUnit"](var_core_value_sigD7EA, i.UniverInstanceType["UNIVER_BOARD"]), await ((var_core_value_sig2B65 = this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_BOARD"])) == null ? undefined : var_core_value_sig2B65.restoreLocation(var_core_value_sigD7EA, var_core_value_sigB33B));
+  }
+  _ensureContainer() {
+    var var_core_value_sig273D;
+    if (this._container) return this._container;
+    let var_core_value_sig9A0D = this._configService["getConfig"](w),
+      var_core_value_sigA319 = (var_core_value_sig9A0D == null ? undefined : var_core_value_sig9A0D.univerContainerId) ?? ((var_core_value_sig273D = this._configService["getConfig"](b.UI_PLUGIN_CONFIG_KEY)) == null ? undefined : var_core_value_sig273D.container),
+      var_core_value_sig2D58 = typeof var_core_value_sigA319 == "string" ? document.getElementById(var_core_value_sigA319) : var_core_value_sigA319;
+    if (!var_core_value_sig2D58) throw Error("[BoardsHistoryLoaderService]: Configure a valid Univer container before opening history.");
+    let var_core_value_sig223F = document.createElement("div");
+    return Object.assign(var_core_value_sig223F.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "49",
+      display: "none"
+    }), var_core_value_sig2D58.appendChild(var_core_value_sig223F), this._container = var_core_value_sig223F, var_core_value_sig223F;
+  }
+  _registerChildPlugins(var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sig58C1) {
+    let var_core_value_sig5090 = this._configService["getConfig"](r.LS_CONFIG_KEY),
+      var_core_value_sigC368 = this._configService["getConfig"](w),
+      var_core_value_sigAD56 = [[r.UniverLicensePlugin, {
+        license: var_core_value_sig5090 == null ? undefined : var_core_value_sig5090.ls
+      }], [re.UniverRenderEnginePlugin], [b.UniverUIPlugin, {
+        container: var_core_value_sig58C1,
+        header: true,
+        toolbar: false,
+        footer: true,
+        contextMenu: false
+      }], [y.UniverNetworkPlugin], [v.UniverDrawingPlugin, {
+        override: [[i.IImageIoService, {
+          useClass: n.CollaborationImageIoService
+        }]]
+      }], [ne.UniverDocsPlugin], [_.UniverDocsUIPlugin], [m.UniverDocsLatexPlugin], [h.UniverDocsLatexUIPlugin], [ee.UniverInkPlugin], [te.UniverInkUIPlugin], [o.UniverBoardsPlugin], [t.UniverBoardsUIPlugin, {
+        showToolbar: false,
+        workbench: {
+          content: false
+        }
+      }], [s.UniverBoardsChartPlugin], [c.UniverBoardsChartUIPlugin], [l.UniverBoardsMindPlugin], [u.UniverBoardsMindUIPlugin], [d.UniverBoardsTablePlugin], [f.UniverBoardsTableUIPlugin], [p.UniverCollaborationPlugin], [g.UniverEditHistoryPlugin, {
+        historyServerUrl: var_core_value_sigC368 == null ? undefined : var_core_value_sigC368.historyServerUrl
+      }], [e.UniverBoardsHistoryPlugin]],
+      var_core_value_sigDB4A = new Set();
+    [...var_core_value_sigAD56, ...((var_core_value_sigC368 == null ? undefined : var_core_value_sigC368.viewerPlugins) ?? [])].forEach(([var_core_value_sig26DB, var_core_value_sigF0F9]) => {
+      if (var_core_value_sigDB4A.has(var_core_value_sig26DB.pluginName)) throw Error("[BoardsHistoryLoaderService]: Plugin " + var_core_value_sig26DB.pluginName + " has already been registered.");
+      var_core_value_sigDB4A.add(var_core_value_sig26DB.pluginName), var_core_value_sigD749.registerPlugin(var_core_value_sig26DB, var_core_value_sigF0F9);
+    }), var_core_value_sigD749.registerPlugin(Y, {
+      viewerMode: true,
+      descriptor: {
+        unitId: this._unitId,
+        type: i.UniverInstanceType["UNIVER_BOARD"]
+      },
+      canRestore: var_core_value_sigCFFA,
+      onClose: () => this.close(),
+      onRestore: var_core_value_sig1A0F => this.restore(var_core_value_sig1A0F),
+      collaborationClientConfig: this._configService["getConfig"](n.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY)
+    });
+  }
+  dispose() {
+    var var_core_value_sig6418;
+    this.close(), (var_core_value_sig6418 = this._container) == null || var_core_value_sig6418.remove(), this._container = null, super.dispose();
+  }
+};
+X = A([k(0, i.IConfigService), k(1, (0, i.Inject)(g.HistoryRestoreService)), k(2, (0, i.Inject)(g.HistoryUnitAdapterRegistryService)), k(3, (0, i.Inject)(i.LocaleService)), k(4, (0, i.Inject)(i.ThemeService)), k(5, (0, i.Inject)(n.CollaborationController)), k(6, (0, i.Inject)(n.DataLoaderService)), k(7, i.IUniverInstanceService)], X);
+const Z = {
+  id: "boards-history-ui.operation.open",
+  type: i.CommandType["OPERATION"],
+  handler: var_core_value_sig36F8 => {
+    let var_core_value_sig03E1 = var_core_value_sig36F8.get(i.IUniverInstanceService).getCurrentUnitOfType(i.UniverInstanceType["UNIVER_BOARD"]);
+    return var_core_value_sig03E1 ? (var_core_value_sig36F8.get(X).open(var_core_value_sig03E1.getUnitId()).catch(var_core_value_sig1896 => {
+      var_core_value_sig36F8.get(i.ILogService).error("[OpenBoardsHistoryOperation]: Failed to open Board history.", var_core_value_sig1896);
+    }), true) : false;
+  }
+};
+let Q = class extends i.Disposable {
+  constructor(var_core_value_sig0285, var_core_value_sig777D, var_core_value_sig3F4C) {
+    super(), this.disposeWithMe(var_core_value_sig0285.registerCommand(Z)), this.disposeWithMe(var_core_value_sig777D.register({
+      id: Z.id,
+      menuItemId: Z.id,
+      group: "action",
+      order: 100,
+      icon: a.HistoryIcon,
+      label: () => var_core_value_sig3F4C.t("boards-history-ui.menu.history"),
+      onClick: var_core_value_sigFBA4 => var_core_value_sigFBA4.executeCommand(Z.id)
+    }));
+  }
+};
+Q = A([k(0, i.ICommandService), k(1, (0, i.Inject)(t.IBoardSettingsMenuContributionService)), k(2, (0, i.Inject)(i.LocaleService))], Q);
+let $ = class extends i.Plugin {
+  constructor(var_core_value_sigD65A = T, var_core_value_sig5A13, var_core_value_sigF593) {
+    super(), this._config = var_core_value_sigD65A, this._injector = var_core_value_sig5A13, this._configService = var_core_value_sigF593;
+    let {
+      ...var_core_value_sig3607
+    } = (0, i.merge)({}, T, this._config);
+    this._configService["setConfig"](w, var_core_value_sig3607);
+  }
+  onStarting() {
+    (0, i.registerDependencies)(this._injector, [[X], [Q]]), this._injector["get"](Q);
+  }
+};
+q($, "pluginName", "UNIVER_BOARDS_HISTORY_UI_PLUGIN"), q($, "packageName", E), q($, "version", D), q($, "type", i.UniverInstanceType["UNIVER_BOARD"]), $ = A([(0, i.DependentOn)(r.UniverLicensePlugin, n.UniverCollaborationClientPlugin, e.UniverBoardsHistoryPlugin, t.UniverBoardsUIPlugin), k(1, (0, i.Inject)(i.Injector)), k(2, i.IConfigService)], $), exports.BOARDS_HISTORY_UI_PLUGIN_CONFIG_KEY = w, Object.defineProperty(exports, "UniverBoardsHistoryUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return $;
+  }
+});

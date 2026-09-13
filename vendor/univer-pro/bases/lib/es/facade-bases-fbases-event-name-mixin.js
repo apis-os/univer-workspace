@@ -1,9 +1,45 @@
-import{ApplyBaseJson1Mutation,BASE_TABLE_NAME_REQUIREMENTS,BaseConditionalColorRuleUpdateType,BaseEventSource,BaseHierarchyErrorCode,BatchCreateBaseRecordsCommand,BatchDeleteBaseRecordsCommand,ChangeBaseFieldTypeCommand,CreateBaseChildRecordCommand,CreateBaseFieldCommand,CreateBaseRecordCommand,CreateBaseTableCommand,CreateBaseViewCommand,DeleteBaseFieldCommand,DeleteBaseRecordCommand,DeleteBaseTableCommand,DeleteBaseViewCommand,DuplicateBaseRecordCommand,IBaseProjectionService,MoveBaseFieldCommand,MoveBaseHierarchyRecordCommand,MoveBaseViewCommand,RenameBaseTableCommand,RenameBaseViewCommand,SetBaseNameCommand,SetBasePermissionCommand,SetBaseRangeValuesCommand,SetBaseRecordValuesCommand,SetBaseTableHierarchyFieldCommand,SetBaseViewFieldOrderCommand,SetBaseViewFieldVisibleCommand,SetBaseViewFieldWidthCommand,SetBaseViewFilterCommand,SetBaseViewGroupCommand,SetBaseViewSortCommand,UpdateBaseCellCommand,UpdateBaseFieldCommand,UpdateBaseRecordOrderCommand,UpdateBaseViewConditionalColorRulesCommand,UpdateBaseViewConfigCommand,ValidateBaseFormulaCommand,buildBaseHierarchyIndex,canEditBaseTargets,copyBaseTableSnapshot,createUniqueBaseTableName,ensureBaseTableCellLayout,getActiveBaseHierarchyFieldIds,getBaseCellValue,getBaseFieldPermissionObjectId,getBaseFormulaTableName,getBaseHierarchyDeletePromotions,getBasePermissionValue,getBaseRecordPermissionObjectId,getBaseTablePermissionObjectId,getBaseViewPermissionObjectId,getRecordLinkFieldConfig,matchesBaseCondition,parseRecordLinkIds,resolveBaseHierarchyFieldId,resolveBaseRangeHierarchyPatches,searchBaseTable,serializeRecordLinkIds,validateBaseHierarchyRecordCreations,validateBaseHierarchyRecordPatches,validateBaseTableName,validateRecordLinkValue}from'@univerjs-pro/bases';
-import{BASE_RECORD_ID_FIELD_ID,BaseConditionalColorOperator,BaseConditionalColorTarget,BaseConditionalDateMode,BaseFieldType,BaseFilterConjunction,BaseFilterOperator,BaseHierarchyInvalidReason,BaseRecordLinkRole,BaseSortDirection,BaseViewType,CanceledError,ICommandService,IPermissionService,IResourceLoaderService,ImageSourceType,Inject,Injector,Tools,UniverInstanceType,createDefaultBaseTableSnapshot,generateRandomId}from'@univerjs/core';
-import*as var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461029 from'@univerjs/core/facade';
-import{FBaseInitialable,FEnum,FEventName,FUniver}from'@univerjs/core/facade';
-import{UnitAction}from'@univerjs/protocol';
-import{UpsertHostExternalReferencesCommand}from'@univerjs-pro/engine-formula';
-var Dt=class extends FEventName{get BaseTableCreated(){return"BaseTableCreated";}get BeforeBaseTableCreate(){return'BeforeBaseTableCreate';}get BaseTableFieldCreated(){return'BaseTableFieldCreated';}get BeforeBaseTableFieldCreate(){return"BeforeBaseTableFieldCreate";}get BaseTableRecordCreated(){return"BaseTableRecordCreated";}get BeforeBaseTableRecordCreate(){return"BeforeBaseTableRecordCreate";}get BaseTableViewCreated(){return'BaseTableViewCreated';}get BeforeBaseTableViewCreate(){return"BeforeBaseTableViewCreate";}get BaseTableCellValueChanged(){return"BaseTableCellValueChanged";}get BeforeBaseTableCellValueChange(){return'BeforeBaseTableCellValueChange';}get BaseHierarchyChanged(){return'BaseHierarchyChanged';}get BeforeBaseHierarchyChange(){return'BeforeBaseHierarchyChange';}};
-
+import { ApplyBaseJson1Mutation, BASE_TABLE_NAME_REQUIREMENTS, BaseConditionalColorRuleUpdateType, BaseEventSource, BaseHierarchyErrorCode, BatchCreateBaseRecordsCommand, BatchDeleteBaseRecordsCommand, ChangeBaseFieldTypeCommand, CreateBaseChildRecordCommand, CreateBaseFieldCommand, CreateBaseRecordCommand, CreateBaseTableCommand, CreateBaseViewCommand, DeleteBaseFieldCommand, DeleteBaseRecordCommand, DeleteBaseTableCommand, DeleteBaseViewCommand, DuplicateBaseRecordCommand, IBaseProjectionService, MoveBaseFieldCommand, MoveBaseHierarchyRecordCommand, MoveBaseViewCommand, RenameBaseTableCommand, RenameBaseViewCommand, SetBaseNameCommand, SetBasePermissionCommand, SetBaseRangeValuesCommand, SetBaseRecordValuesCommand, SetBaseTableHierarchyFieldCommand, SetBaseViewFieldOrderCommand, SetBaseViewFieldVisibleCommand, SetBaseViewFieldWidthCommand, SetBaseViewFilterCommand, SetBaseViewGroupCommand, SetBaseViewSortCommand, UpdateBaseCellCommand, UpdateBaseFieldCommand, UpdateBaseRecordOrderCommand, UpdateBaseViewConditionalColorRulesCommand, UpdateBaseViewConfigCommand, ValidateBaseFormulaCommand, buildBaseHierarchyIndex, canEditBaseTargets, copyBaseTableSnapshot, createUniqueBaseTableName, ensureBaseTableCellLayout, getActiveBaseHierarchyFieldIds, getBaseCellValue, getBaseFieldPermissionObjectId, getBaseFormulaTableName, getBaseHierarchyDeletePromotions, getBasePermissionValue, getBaseRecordPermissionObjectId, getBaseTablePermissionObjectId, getBaseViewPermissionObjectId, getRecordLinkFieldConfig, matchesBaseCondition, parseRecordLinkIds, resolveBaseHierarchyFieldId, resolveBaseRangeHierarchyPatches, searchBaseTable, serializeRecordLinkIds, validateBaseHierarchyRecordCreations, validateBaseHierarchyRecordPatches, validateBaseTableName, validateRecordLinkValue } from '@univerjs-pro/bases';
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseFieldType, BaseFilterConjunction, BaseFilterOperator, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CanceledError, ICommandService, IPermissionService, IResourceLoaderService, ImageSourceType, Inject, Injector, Tools, UniverInstanceType, createDefaultBaseTableSnapshot, generateRandomId } from '@univerjs/core';
+import * as var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D461029 from '@univerjs/core/facade';
+import { FBaseInitialable, FEnum, FEventName, FUniver } from '@univerjs/core/facade';
+import { UnitAction } from '@univerjs/protocol';
+import { UpsertHostExternalReferencesCommand } from '@univerjs-pro/engine-formula';
+var Dt = class extends FEventName {
+  get BaseTableCreated() {
+    return "BaseTableCreated";
+  }
+  get BeforeBaseTableCreate() {
+    return 'BeforeBaseTableCreate';
+  }
+  get BaseTableFieldCreated() {
+    return 'BaseTableFieldCreated';
+  }
+  get BeforeBaseTableFieldCreate() {
+    return "BeforeBaseTableFieldCreate";
+  }
+  get BaseTableRecordCreated() {
+    return "BaseTableRecordCreated";
+  }
+  get BeforeBaseTableRecordCreate() {
+    return "BeforeBaseTableRecordCreate";
+  }
+  get BaseTableViewCreated() {
+    return 'BaseTableViewCreated';
+  }
+  get BeforeBaseTableViewCreate() {
+    return "BeforeBaseTableViewCreate";
+  }
+  get BaseTableCellValueChanged() {
+    return "BaseTableCellValueChanged";
+  }
+  get BeforeBaseTableCellValueChange() {
+    return 'BeforeBaseTableCellValueChange';
+  }
+  get BaseHierarchyChanged() {
+    return 'BaseHierarchyChanged';
+  }
+  get BeforeBaseHierarchyChange() {
+    return 'BeforeBaseHierarchyChange';
+  }
+};
 export { Dt as FBasesEventNameMixin };

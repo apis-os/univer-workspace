@@ -1,1 +1,82 @@
-import{AnalyzeBoardRenderedLayoutCommand as v10,BoardInteractionMode as v11,CaptureBoardScreenshotCommand as v12,FindBoardElementsByTextOperation as v13,FocusBoardElementOperation as v14,GetBoardElementViewportPointOperation as v15,GetBoardInteractionModeOperation as v16,GetBoardObjectListPanelOpenOperation as v17,GetBoardSettingsOperation as v18,SetBoardInteractionModeOperation as v19,SetBoardObjectListPanelOpenOperation as v20,SetBoardSettingsOperation as v21}from"@univerjs-pro/boards-ui";import{FBoard as v22}from"@univerjs-pro/boards/facade";import{FEnum as v23}from"@univerjs/core/facade";var m=class extends v22{analyzeRenderedLayout(v1){return this._commandService["syncExecuteCommand"](v10.id,{unitId:this.id,subUnitId:this._boardModel["getActivePageId"](),focusPadding:v1});}getScreenshot(v2){return this._commandService["executeCommand"](v12.id,{...v2,unitId:this.id,subUnitId:this._boardModel["getActivePageId"]()});}};v22.extend(m);var h=class extends v23{get BoardInteractionMode(){return v11;}};v23.extend(h);var g=class extends v22{getInteractionMode(){return this._commandService["syncExecuteCommand"](v16.id,{unitId:this.id});}setInteractionMode(v3){return this._commandService["executeCommand"](v19.id,{unitId:this.id,mode:v3});}getSettings(){return this._commandService["syncExecuteCommand"](v18.id,{unitId:this.id});}setSettings(v4){return this._commandService["syncExecuteCommand"](v21.id,{unitId:this.id,settings:v4});}getObjectListPanelOpen(){return this._commandService["syncExecuteCommand"](v17.id,{unitId:this.id});}setObjectListPanelOpen(v5){return this._commandService["syncExecuteCommand"](v20.id,{unitId:this.id,open:v5});}findElementsByText(v6){return this._commandService["syncExecuteCommand"](v13.id,{unitId:this.id,query:v6});}focusElement(v7,v8){return this._commandService["syncExecuteCommand"](v14.id,{unitId:this.id,elementId:v7,viewportPoint:v8});}getElementViewportPoint(v9){return this._commandService["syncExecuteCommand"](v15.id,{unitId:this.id,elementId:v9});}};v22.extend(g);export{};
+import { AnalyzeBoardRenderedLayoutCommand as var_core_value_sigC9E0, BoardInteractionMode as var_core_value_sig76BA, CaptureBoardScreenshotCommand as var_core_value_sigFBFA, FindBoardElementsByTextOperation as var_core_value_sigF602, FocusBoardElementOperation as var_core_value_sig1BBD, GetBoardElementViewportPointOperation as var_core_value_sigF704, GetBoardInteractionModeOperation as var_core_value_sig2BCF, GetBoardObjectListPanelOpenOperation as var_core_value_sig0D69, GetBoardSettingsOperation as var_core_value_sig480E, SetBoardInteractionModeOperation as var_core_value_sig26DB, SetBoardObjectListPanelOpenOperation as var_core_value_sigF0F9, SetBoardSettingsOperation as var_core_value_sig1A0F } from "@univerjs-pro/boards-ui";
+import { FBoard as var_core_value_sigFBA4 } from "@univerjs-pro/boards/facade";
+import { FEnum as var_core_value_sig4383 } from "@univerjs/core/facade";
+var m = class extends var_core_value_sigFBA4 {
+  analyzeRenderedLayout(var_core_value_sig7524) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigC9E0.id, {
+      unitId: this.id,
+      subUnitId: this._boardModel["getActivePageId"](),
+      focusPadding: var_core_value_sig7524
+    });
+  }
+  getScreenshot(var_core_value_sig2AD8) {
+    return this._commandService["executeCommand"](var_core_value_sigFBFA.id, {
+      ...var_core_value_sig2AD8,
+      unitId: this.id,
+      subUnitId: this._boardModel["getActivePageId"]()
+    });
+  }
+};
+var_core_value_sigFBA4.extend(m);
+var h = class extends var_core_value_sig4383 {
+  get BoardInteractionMode() {
+    return var_core_value_sig76BA;
+  }
+};
+var_core_value_sig4383.extend(h);
+var g = class extends var_core_value_sigFBA4 {
+  getInteractionMode() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig2BCF.id, {
+      unitId: this.id
+    });
+  }
+  setInteractionMode(var_core_value_sig2AD0) {
+    return this._commandService["executeCommand"](var_core_value_sig26DB.id, {
+      unitId: this.id,
+      mode: var_core_value_sig2AD0
+    });
+  }
+  getSettings() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig480E.id, {
+      unitId: this.id
+    });
+  }
+  setSettings(var_core_value_sig3EEE) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig1A0F.id, {
+      unitId: this.id,
+      settings: var_core_value_sig3EEE
+    });
+  }
+  getObjectListPanelOpen() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig0D69.id, {
+      unitId: this.id
+    });
+  }
+  setObjectListPanelOpen(var_core_value_sigBC46) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigF0F9.id, {
+      unitId: this.id,
+      open: var_core_value_sigBC46
+    });
+  }
+  findElementsByText(var_core_value_sig3D7D) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigF602.id, {
+      unitId: this.id,
+      query: var_core_value_sig3D7D
+    });
+  }
+  focusElement(var_core_value_sig27E5, var_core_value_sig8061) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig1BBD.id, {
+      unitId: this.id,
+      elementId: var_core_value_sig27E5,
+      viewportPoint: var_core_value_sig8061
+    });
+  }
+  getElementViewportPoint(var_core_value_sig4D4C) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigF704.id, {
+      unitId: this.id,
+      elementId: var_core_value_sig4D4C
+    });
+  }
+};
+var_core_value_sigFBA4.extend(g);
+export {};

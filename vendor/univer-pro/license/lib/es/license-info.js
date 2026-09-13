@@ -1,10 +1,35 @@
-import{etc,hashes,verify}from"@noble/ed25519";
-import{sha512}from"@noble/hashes/sha2.js";
-import{Disposable,IConfigService,IUniverInstanceService,Inject,Injector,LifecycleService,Plugin,SHEET_EDITOR_UNITS,UniverInstanceType,merge}from"@univerjs/core";
-import{IRenderManagerService}from"@univerjs/engine-render";
-import{take}from"rxjs";
+import { etc, hashes, verify } from "@noble/ed25519";
+import { sha512 } from "@noble/hashes/sha2.js";
+import { Disposable, IConfigService, IUniverInstanceService, Inject, Injector, LifecycleService, Plugin, SHEET_EDITOR_UNITS, UniverInstanceType, merge } from "@univerjs/core";
+import { IRenderManagerService } from "@univerjs/engine-render";
+import { take } from "rxjs";
 import { F, I, M, P, b } from "./internal-glue.js";
 import { k } from "./license-ls-config-key.js";
-function R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161){if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161)return{valid:false,message:{}};try{I();let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160.split("-"),var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2=JSON.parse(P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[2]));var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.ud||=Number(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[4]);let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627=k.hexStringify(k.base64Parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[2])),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628=k.hexStringify(k.base64Parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[3])),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629=verify(etc.hexToBytes(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628),etc.hexToBytes(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627),etc.hexToBytes(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161)),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630=F(),var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A=Array.isArray(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.dm)?var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.dm["filter"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462=>typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462=="string"):[],var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A=true;return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630&&(var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A=!var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A.length||var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463=>M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630)),b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630)&&(var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A=true)),{valid:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629&&var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A,message:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2};}catch{return{valid:false,message:{}};}}
-
+function R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161) {
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161) return {
+    valid: false,
+    message: {}
+  };
+  try {
+    I();
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160.split("-"),
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 = JSON.parse(P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[2]));
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.ud ||= Number(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[4]);
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627 = k.hexStringify(k.base64Parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[2])),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 = k.hexStringify(k.base64Parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626[3])),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 = verify(etc.hexToBytes(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628), etc.hexToBytes(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627), etc.hexToBytes(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46161)),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 = F(),
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A = Array.isArray(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.dm) ? var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2.dm["filter"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 => typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462 == "string") : [],
+      var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = true;
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630 && (var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = !var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A.length || var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463 => M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630)), b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4630) && (var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = true)), {
+      valid: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 && var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A,
+      message: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2
+    };
+  } catch {
+    return {
+      valid: false,
+      message: {}
+    };
+  }
+}
 export { R as getLicenseInfo };

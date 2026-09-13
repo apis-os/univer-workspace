@@ -1,1 +1,102 @@
-import{BoardElementType as v21}from"@univerjs-pro/boards";import{FBoard as v22}from"@univerjs-pro/boards/facade";import{buildInkCustomShapePayload as v23}from"@univerjs-pro/ink";import{Tools as v24,generateRandomId as v25}from"@univerjs/core";import{FEnum as v26}from"@univerjs/core/facade";var o=class extends v22{insertInk(v3){let v4=s(v3);return v4&&this._addElement(v4,{insertIndex:v3.insertIndex})?v4:null;}getInks(){return this.findElements({elementType:v21.Shape,includeHidden:true,includeLocked:true}).filter(p);}};function s(v7,v8){if(!l(v7.model)||v7.sourceModel!==undefined&&!l(v7.sourceModel)||!u(v7.style))return null;let v9=v7.parentId??(v8==null?undefined:v8.parentId),v10=v24.deepClone(v7.model),v11=v23({model:v10,style:v7.style,tool:v7.tool,sourceModel:v7.sourceModel?v24.deepClone(v7.sourceModel):v10}),v12=d(v8==null?undefined:v8.custom);return{id:(v8==null?undefined:v8.id)??v7.id??v25(6),type:v21.Shape,transform:v11.transform,shapeData:v11.shapeData,parentId:v9??undefined,laneId:v7.laneId===undefined?v8==null?undefined:v8.laneId:v7.laneId,custom:{...v12,ink:v11.ink}};}function c(v13){return Number.isFinite(v13.x)&&Number.isFinite(v13.y);}function l(v14){if(v14.kind==="pen"){let v5=new Set();return v14.anchors["length"]>=(v14.closed?3:2)&&v14.anchors["every"](v1=>{let v2=v1.id["trim"]().length>0&&!v5.has(v1.id)&&c(v1)&&(!v1.in||c(v1.in))&&(!v1.out||c(v1.out));return v5.add(v1.id),v2;});}return v14.points["length"]>=2&&v14.points["every"](v6=>c(v6)&&Number.isFinite(v6.t)&&(v6.pressure===undefined||Number.isFinite(v6.pressure)))&&Number.isFinite(v14.width)&&v14.width>0&&Number.isFinite(v14.opacity)&&v14.opacity>=0&&v14.opacity<=1;}function u(v15){return v15===undefined||(v15.width===undefined||Number.isFinite(v15.width)&&v15.width>0)&&(v15.opacity===undefined||Number.isFinite(v15.opacity)&&v15.opacity>=0&&v15.opacity<=1);}function d(v16){return v16&&typeof v16=="object"&&!Array.isArray(v16)?v16:{};}function f(v17){let v18=d(v17.custom).ink;if(!v18||typeof v18!="object"||Array.isArray(v18))return null;let v19=v18;return v19.version===1&&v19.sourceModel&&typeof v19.sourceModel=="object"?v19:null;}function p(v20){return v20.type===v21.Shape&&!!f(v20);}v22.extend(o);const m={Pen:"pen",Brush:"brush",Highlighter:"highlighter"},h={Corner:"corner",Smooth:"smooth",Symmetric:"symmetric",Free:"free"},g={Anchor:"anchor",In:"in",Out:"out"};var _=class extends v26{get BoardInkTool(){return m;}get BoardInkPointType(){return h;}get BoardInkHandleKind(){return g;}};v26.extend(_);export{g as BoardInkHandleKind,h as BoardInkPointType,m as BoardInkTool};
+import { BoardElementType as var_core_value_sig1A0F } from "@univerjs-pro/boards";
+import { FBoard as var_core_value_sigFBA4 } from "@univerjs-pro/boards/facade";
+import { buildInkCustomShapePayload as var_core_value_sig4383 } from "@univerjs-pro/ink";
+import { Tools as var_core_value_sig186C, generateRandomId as var_core_value_sigD955 } from "@univerjs/core";
+import { FEnum as var_core_value_sig48BD } from "@univerjs/core/facade";
+var o = class extends var_core_value_sigFBA4 {
+  insertInk(var_core_value_sig2AD0) {
+    let var_core_value_sig3EEE = s(var_core_value_sig2AD0);
+    return var_core_value_sig3EEE && this._addElement(var_core_value_sig3EEE, {
+      insertIndex: var_core_value_sig2AD0.insertIndex
+    }) ? var_core_value_sig3EEE : null;
+  }
+  getInks() {
+    return this.findElements({
+      elementType: var_core_value_sig1A0F.Shape,
+      includeHidden: true,
+      includeLocked: true
+    }).filter(p);
+  }
+};
+function s(var_core_value_sig27E5, var_core_value_sig8061) {
+  if (!l(var_core_value_sig27E5.model) || var_core_value_sig27E5.sourceModel !== undefined && !l(var_core_value_sig27E5.sourceModel) || !u(var_core_value_sig27E5.style)) return null;
+  let var_core_value_sig4D4C = var_core_value_sig27E5.parentId ?? (var_core_value_sig8061 == null ? undefined : var_core_value_sig8061.parentId),
+    var_core_value_sigC9E0 = var_core_value_sig186C.deepClone(var_core_value_sig27E5.model),
+    var_core_value_sig76BA = var_core_value_sig4383({
+      model: var_core_value_sigC9E0,
+      style: var_core_value_sig27E5.style,
+      tool: var_core_value_sig27E5.tool,
+      sourceModel: var_core_value_sig27E5.sourceModel ? var_core_value_sig186C.deepClone(var_core_value_sig27E5.sourceModel) : var_core_value_sigC9E0
+    }),
+    var_core_value_sigFBFA = d(var_core_value_sig8061 == null ? undefined : var_core_value_sig8061.custom);
+  return {
+    id: (var_core_value_sig8061 == null ? undefined : var_core_value_sig8061.id) ?? var_core_value_sig27E5.id ?? var_core_value_sigD955(6),
+    type: var_core_value_sig1A0F.Shape,
+    transform: var_core_value_sig76BA.transform,
+    shapeData: var_core_value_sig76BA.shapeData,
+    parentId: var_core_value_sig4D4C ?? undefined,
+    laneId: var_core_value_sig27E5.laneId === undefined ? var_core_value_sig8061 == null ? undefined : var_core_value_sig8061.laneId : var_core_value_sig27E5.laneId,
+    custom: {
+      ...var_core_value_sigFBFA,
+      ink: var_core_value_sig76BA.ink
+    }
+  };
+}
+function c(var_core_value_sigF602) {
+  return Number.isFinite(var_core_value_sigF602.x) && Number.isFinite(var_core_value_sigF602.y);
+}
+function l(var_core_value_sig1BBD) {
+  if (var_core_value_sig1BBD.kind === "pen") {
+    let var_core_value_sigBC46 = new Set();
+    return var_core_value_sig1BBD.anchors["length"] >= (var_core_value_sig1BBD.closed ? 3 : 2) && var_core_value_sig1BBD.anchors["every"](var_core_value_sig7524 => {
+      let var_core_value_sig2AD8 = var_core_value_sig7524.id["trim"]().length > 0 && !var_core_value_sigBC46.has(var_core_value_sig7524.id) && c(var_core_value_sig7524) && (!var_core_value_sig7524.in || c(var_core_value_sig7524.in)) && (!var_core_value_sig7524.out || c(var_core_value_sig7524.out));
+      return var_core_value_sigBC46.add(var_core_value_sig7524.id), var_core_value_sig2AD8;
+    });
+  }
+  return var_core_value_sig1BBD.points["length"] >= 2 && var_core_value_sig1BBD.points["every"](var_core_value_sig3D7D => c(var_core_value_sig3D7D) && Number.isFinite(var_core_value_sig3D7D.t) && (var_core_value_sig3D7D.pressure === undefined || Number.isFinite(var_core_value_sig3D7D.pressure))) && Number.isFinite(var_core_value_sig1BBD.width) && var_core_value_sig1BBD.width > 0 && Number.isFinite(var_core_value_sig1BBD.opacity) && var_core_value_sig1BBD.opacity >= 0 && var_core_value_sig1BBD.opacity <= 1;
+}
+function u(var_core_value_sigF704) {
+  return var_core_value_sigF704 === undefined || (var_core_value_sigF704.width === undefined || Number.isFinite(var_core_value_sigF704.width) && var_core_value_sigF704.width > 0) && (var_core_value_sigF704.opacity === undefined || Number.isFinite(var_core_value_sigF704.opacity) && var_core_value_sigF704.opacity >= 0 && var_core_value_sigF704.opacity <= 1);
+}
+function d(var_core_value_sig2BCF) {
+  return var_core_value_sig2BCF && typeof var_core_value_sig2BCF == "object" && !Array.isArray(var_core_value_sig2BCF) ? var_core_value_sig2BCF : {};
+}
+function f(var_core_value_sig0D69) {
+  let var_core_value_sig480E = d(var_core_value_sig0D69.custom).ink;
+  if (!var_core_value_sig480E || typeof var_core_value_sig480E != "object" || Array.isArray(var_core_value_sig480E)) return null;
+  let var_core_value_sig26DB = var_core_value_sig480E;
+  return var_core_value_sig26DB.version === 1 && var_core_value_sig26DB.sourceModel && typeof var_core_value_sig26DB.sourceModel == "object" ? var_core_value_sig26DB : null;
+}
+function p(var_core_value_sigF0F9) {
+  return var_core_value_sigF0F9.type === var_core_value_sig1A0F.Shape && !!f(var_core_value_sigF0F9);
+}
+var_core_value_sigFBA4.extend(o);
+const m = {
+    Pen: "pen",
+    Brush: "brush",
+    Highlighter: "highlighter"
+  },
+  h = {
+    Corner: "corner",
+    Smooth: "smooth",
+    Symmetric: "symmetric",
+    Free: "free"
+  },
+  g = {
+    Anchor: "anchor",
+    In: "in",
+    Out: "out"
+  };
+var _ = class extends var_core_value_sig48BD {
+  get BoardInkTool() {
+    return m;
+  }
+  get BoardInkPointType() {
+    return h;
+  }
+  get BoardInkHandleKind() {
+    return g;
+  }
+};
+var_core_value_sig48BD.extend(_);
+export { g as BoardInkHandleKind, h as BoardInkPointType, m as BoardInkTool };

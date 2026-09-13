@@ -1,1 +1,145 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/collaboration-client"),t=require("@univerjs/core/facade"),n=require("@univerjs/core"),r=require("@univerjs-pro/collaboration"),i=require("rxjs");var a=class extends t.FEnum{get CollaborationStatus(){return e.CollaborationStatus;}};t.FEnum["extend"](a);var o=class extends t.FEventName{get CollaborationStatusChanged(){return"CollaborationStatusChanged";}};t.FEventName["extend"](o);function s(v64,v65){return function(v23,v24){v65(v23,v24,v64);};}function c(v66,v67,v68,v69){var v70=arguments.length,v71=v70<3?v67:v69===null?v69=Object.getOwnPropertyDescriptor(v67,v68):v69,v72;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v71=Reflect.decorate(v66,v67,v68,v69);else{for(var v73=v66.length-1;v73>=0;v73--)(v72=v66[v73])&&(v71=(v70<3?v72(v71):v70>3?v72(v67,v68,v71):v72(v67,v68))||v71);}return v70>3&&v71&&Object.defineProperty(v67,v68,v71),v71;}let l=class extends t.FBase{constructor(v25,v26,v27,v28,v29){super(),this._handler=v25,this._injector=v26,this._univerInstanceService=v27,this._snapshotService=v28,this._collaborationController=v29;}async loadSheetAsync(v30,v31){return(await this._snapshotService["loadSheet"](v30,0,v31))?(await this._collaborationController["readyForCollab"](v30),this._handler["getWorkbook"](v30)):null;}async loadDocAsync(v32,v33){return(await this._snapshotService["loadDoc"](v32,0,v33))?(await this._collaborationController["readyForCollab"](v32),this._handler["getDocument"](v32)):null;}async loadBaseAsync(v34,v35){return(await this._snapshotService["loadBase"](v34,0,v35))?(await this._collaborationController["readyForCollab"](v34),this._handler["getBase"](v34)):null;}async loadSlideAsync(v36,v37){return(await this._snapshotService["loadSlide"](v36,0,v37))?(await this._collaborationController["readyForCollab"](v36),this._handler["getPresentation"](v36)):null;}async loadBoardAsync(v38,v39){return(await this._snapshotService["loadBoard"](v38,0,v39))?(await this._collaborationController["readyForCollab"](v38),this._handler["getBoard"](v38)):null;}async loadPdfAsync(v40,v41){return(await this._snapshotService["loadPdf"](v40,0,v41))?(await this._collaborationController["readyForCollab"](v40),this._handler["getPdf"](v40)):null;}subscribeCollaborators(v42,v43){return(0,n.toDisposable)(this._injector["get"](e.MemberService).waitForRoom$(v42).pipe((0,i.switchMap)(v7=>v7.members$)).subscribe(v8=>v43(Array.from(v8.values()))));}getCollaborationStatus(v44){let v45=this._resolveUnitId(v44);if(!v45)return e.CollaborationStatus["NOT_COLLAB"];let v46=this._collaborationController["getCollabEntity"](v45);return(v46==null?undefined:v46.state["status"])??e.CollaborationStatus["NOT_COLLAB"];}flush(v47,v48={}){let v49=this._resolveUnitId(v47);if(!v49)return Promise.reject(Error("[FCollaboration]: Cannot flush because no unit is focused or specified."));let v50=this._collaborationController["getCollabEntity"](v49);if(!v50)return Promise.reject(Error("[FCollaboration]:\x20Unit\x20\x22"+v49+'" is not in collaboration mode.'));let v51=v50.state["status"];if(v51===e.CollaborationStatus["SYNCED"])return Promise.resolve();let v52=u(v49,v51);if(v52)return Promise.reject(v52);let v53=v48.timeout??30000;return new Promise((v9,v10)=>{let v11=false,v12=null,v13=setTimeout(()=>{v11=true,v12==null||v12.unsubscribe(),v10(Error('[FCollaboration]: Timed out flushing unit "'+v49+"\x22\x20after\x20"+v53+"ms."));},v53),v14=()=>{v11=true,clearTimeout(v13),v12==null||v12.unsubscribe();};v12=v50.status$["subscribe"](v3=>{if(v11)return;if(v3===e.CollaborationStatus["SYNCED"]){v14(),v9();return;}let v4=u(v49,v3);v4&&(v14(),v10(v4));});});}_resolveUnitId(v54){var v55;return v54||((v55=this._univerInstanceService["getFocusedUnit"]())==null?undefined:v55.getUnitId());}};l=c([s(1,(0,n.Inject)(n.Injector)),s(2,n.IUniverInstanceService),s(3,(0,n.Inject)(r.SnapshotService)),s(4,(0,n.Inject)(e.CollaborationController))],l);function u(v74,v75){return v75===e.CollaborationStatus["CONFLICT"]||v75===e.CollaborationStatus["NOT_COLLAB"]?Error("[FCollaboration]:\x20Cannot\x20flush\x20unit\x20\x22"+v74+'" while collaboration status is '+v75+"."):null;}var d=class extends t.FUniver{_initialize(v56){let v57=v56.get(e.CollaborationController);this.disposeWithMe(this.registerEventHandler(this.Event["CollaborationStatusChanged"],()=>{let v15=new n["DisposableCollection"](),v16=v57.entityInit$["subscribe"](v5=>{let v6=v5.status$["subscribe"](v1=>{let v2={unitId:v5.unitID,status:v1};this.fireEvent(this.Event["CollaborationStatusChanged"],v2);});v15.add((0,n.toDisposable)(v6));});return v15.add((0,n.toDisposable)(v16)),v15;}));}getCollaboration(){return this._injector["createInstance"](l,{getWorkbook:v17=>this.getWorkbook(v17),getDocument:v18=>this.getDocument(v18),getPresentation:v19=>this.getPresentation(v19),getBase:v20=>this.getBase(v20),getBoard:v21=>this.getBoard(v21),getPdf:v22=>this.getPdf(v22)});}loadServerUnit(v58,v59,v60){return this._injector["get"](e.DataLoaderService).loadUnit(v58,v59,v60);}loadServerUnitOfRevision(v61,v62,v63){return this._injector["get"](e.DataLoaderService).loadUnitOfRevision(v61,v62,v63);}};t.FUniver["extend"](d),Object.defineProperty(exports,"FCollaboration",{enumerable:true,get:function(){return l;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/collaboration-client"),
+  t = require("@univerjs/core/facade"),
+  n = require("@univerjs/core"),
+  r = require("@univerjs-pro/collaboration"),
+  i = require("rxjs");
+var a = class extends t.FEnum {
+  get CollaborationStatus() {
+    return e.CollaborationStatus;
+  }
+};
+t.FEnum["extend"](a);
+var o = class extends t.FEventName {
+  get CollaborationStatusChanged() {
+    return "CollaborationStatusChanged";
+  }
+};
+t.FEventName["extend"](o);
+function s(var_core_value_sigFDEA, var_core_value_sig86D0) {
+  return function (var_core_value_sig4383, var_core_value_sig186C) {
+    var_core_value_sig86D0(var_core_value_sig4383, var_core_value_sig186C, var_core_value_sigFDEA);
+  };
+}
+function c(var_core_value_sig4CD2, var_core_value_sig48CA, var_core_value_sig50AF, var_core_value_sigA942) {
+  var var_core_value_sigA621 = arguments.length,
+    var_core_value_sigBBFF = var_core_value_sigA621 < 3 ? var_core_value_sig48CA : var_core_value_sigA942 === null ? var_core_value_sigA942 = Object.getOwnPropertyDescriptor(var_core_value_sig48CA, var_core_value_sig50AF) : var_core_value_sigA942,
+    var_core_value_sig8889;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigBBFF = Reflect.decorate(var_core_value_sig4CD2, var_core_value_sig48CA, var_core_value_sig50AF, var_core_value_sigA942);else {
+    for (var var_core_value_sig32F8 = var_core_value_sig4CD2.length - 1; var_core_value_sig32F8 >= 0; var_core_value_sig32F8--) (var_core_value_sig8889 = var_core_value_sig4CD2[var_core_value_sig32F8]) && (var_core_value_sigBBFF = (var_core_value_sigA621 < 3 ? var_core_value_sig8889(var_core_value_sigBBFF) : var_core_value_sigA621 > 3 ? var_core_value_sig8889(var_core_value_sig48CA, var_core_value_sig50AF, var_core_value_sigBBFF) : var_core_value_sig8889(var_core_value_sig48CA, var_core_value_sig50AF)) || var_core_value_sigBBFF);
+  }
+  return var_core_value_sigA621 > 3 && var_core_value_sigBBFF && Object.defineProperty(var_core_value_sig48CA, var_core_value_sig50AF, var_core_value_sigBBFF), var_core_value_sigBBFF;
+}
+let l = class extends t.FBase {
+  constructor(var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigF62A, var_core_value_sig8178) {
+    super(), this._handler = var_core_value_sigD955, this._injector = var_core_value_sig48BD, this._univerInstanceService = var_core_value_sig429F, this._snapshotService = var_core_value_sigF62A, this._collaborationController = var_core_value_sig8178;
+  }
+  async loadSheetAsync(var_core_value_sigE9ED, var_core_value_sigB577) {
+    return (await this._snapshotService["loadSheet"](var_core_value_sigE9ED, 0, var_core_value_sigB577)) ? (await this._collaborationController["readyForCollab"](var_core_value_sigE9ED), this._handler["getWorkbook"](var_core_value_sigE9ED)) : null;
+  }
+  async loadDocAsync(var_core_value_sig9572, var_core_value_sigD873) {
+    return (await this._snapshotService["loadDoc"](var_core_value_sig9572, 0, var_core_value_sigD873)) ? (await this._collaborationController["readyForCollab"](var_core_value_sig9572), this._handler["getDocument"](var_core_value_sig9572)) : null;
+  }
+  async loadBaseAsync(var_core_value_sigA12B, var_core_value_sigF230) {
+    return (await this._snapshotService["loadBase"](var_core_value_sigA12B, 0, var_core_value_sigF230)) ? (await this._collaborationController["readyForCollab"](var_core_value_sigA12B), this._handler["getBase"](var_core_value_sigA12B)) : null;
+  }
+  async loadSlideAsync(var_core_value_sig09B8, var_core_value_sig6F91) {
+    return (await this._snapshotService["loadSlide"](var_core_value_sig09B8, 0, var_core_value_sig6F91)) ? (await this._collaborationController["readyForCollab"](var_core_value_sig09B8), this._handler["getPresentation"](var_core_value_sig09B8)) : null;
+  }
+  async loadBoardAsync(var_core_value_sigF9C7, var_core_value_sig8895) {
+    return (await this._snapshotService["loadBoard"](var_core_value_sigF9C7, 0, var_core_value_sig8895)) ? (await this._collaborationController["readyForCollab"](var_core_value_sigF9C7), this._handler["getBoard"](var_core_value_sigF9C7)) : null;
+  }
+  async loadPdfAsync(var_core_value_sigC80B, var_core_value_sig284F) {
+    return (await this._snapshotService["loadPdf"](var_core_value_sigC80B, 0, var_core_value_sig284F)) ? (await this._collaborationController["readyForCollab"](var_core_value_sigC80B), this._handler["getPdf"](var_core_value_sigC80B)) : null;
+  }
+  subscribeCollaborators(var_core_value_sigE154, var_core_value_sig4632) {
+    return (0, n.toDisposable)(this._injector["get"](e.MemberService).waitForRoom$(var_core_value_sigE154).pipe((0, i.switchMap)(var_core_value_sig27E5 => var_core_value_sig27E5.members$)).subscribe(var_core_value_sig8061 => var_core_value_sig4632(Array.from(var_core_value_sig8061.values()))));
+  }
+  getCollaborationStatus(var_core_value_sig12F2) {
+    let var_core_value_sig2259 = this._resolveUnitId(var_core_value_sig12F2);
+    if (!var_core_value_sig2259) return e.CollaborationStatus["NOT_COLLAB"];
+    let var_core_value_sig9E2F = this._collaborationController["getCollabEntity"](var_core_value_sig2259);
+    return (var_core_value_sig9E2F == null ? undefined : var_core_value_sig9E2F.state["status"]) ?? e.CollaborationStatus["NOT_COLLAB"];
+  }
+  flush(var_core_value_sigD082, var_core_value_sigDBB7 = {}) {
+    let var_core_value_sigD0A8 = this._resolveUnitId(var_core_value_sigD082);
+    if (!var_core_value_sigD0A8) return Promise.reject(Error("[FCollaboration]: Cannot flush because no unit is focused or specified."));
+    let var_core_value_sigF4B9 = this._collaborationController["getCollabEntity"](var_core_value_sigD0A8);
+    if (!var_core_value_sigF4B9) return Promise.reject(Error("[FCollaboration]:\x20Unit\x20\x22" + var_core_value_sigD0A8 + '" is not in collaboration mode.'));
+    let var_core_value_sig5CEE = var_core_value_sigF4B9.state["status"];
+    if (var_core_value_sig5CEE === e.CollaborationStatus["SYNCED"]) return Promise.resolve();
+    let var_core_value_sigE92A = u(var_core_value_sigD0A8, var_core_value_sig5CEE);
+    if (var_core_value_sigE92A) return Promise.reject(var_core_value_sigE92A);
+    let var_core_value_sig362B = var_core_value_sigDBB7.timeout ?? 30000;
+    return new Promise((var_core_value_sig4D4C, var_core_value_sigC9E0) => {
+      let var_core_value_sig76BA = false,
+        var_core_value_sigFBFA = null,
+        var_core_value_sigF602 = setTimeout(() => {
+          var_core_value_sig76BA = true, var_core_value_sigFBFA == null || var_core_value_sigFBFA.unsubscribe(), var_core_value_sigC9E0(Error('[FCollaboration]: Timed out flushing unit "' + var_core_value_sigD0A8 + "\x22\x20after\x20" + var_core_value_sig362B + "ms."));
+        }, var_core_value_sig362B),
+        var_core_value_sig1BBD = () => {
+          var_core_value_sig76BA = true, clearTimeout(var_core_value_sigF602), var_core_value_sigFBFA == null || var_core_value_sigFBFA.unsubscribe();
+        };
+      var_core_value_sigFBFA = var_core_value_sigF4B9.status$["subscribe"](var_core_value_sig2AD0 => {
+        if (var_core_value_sig76BA) return;
+        if (var_core_value_sig2AD0 === e.CollaborationStatus["SYNCED"]) {
+          var_core_value_sig1BBD(), var_core_value_sig4D4C();
+          return;
+        }
+        let var_core_value_sig3EEE = u(var_core_value_sigD0A8, var_core_value_sig2AD0);
+        var_core_value_sig3EEE && (var_core_value_sig1BBD(), var_core_value_sigC9E0(var_core_value_sig3EEE));
+      });
+    });
+  }
+  _resolveUnitId(var_core_value_sig5CA5) {
+    var var_core_value_sigE90F;
+    return var_core_value_sig5CA5 || ((var_core_value_sigE90F = this._univerInstanceService["getFocusedUnit"]()) == null ? undefined : var_core_value_sigE90F.getUnitId());
+  }
+};
+l = c([s(1, (0, n.Inject)(n.Injector)), s(2, n.IUniverInstanceService), s(3, (0, n.Inject)(r.SnapshotService)), s(4, (0, n.Inject)(e.CollaborationController))], l);
+function u(var_core_value_sig5B67, var_core_value_sig1758) {
+  return var_core_value_sig1758 === e.CollaborationStatus["CONFLICT"] || var_core_value_sig1758 === e.CollaborationStatus["NOT_COLLAB"] ? Error("[FCollaboration]:\x20Cannot\x20flush\x20unit\x20\x22" + var_core_value_sig5B67 + '" while collaboration status is ' + var_core_value_sig1758 + ".") : null;
+}
+var d = class extends t.FUniver {
+  _initialize(var_core_value_sigEFD4) {
+    let var_core_value_sig861B = var_core_value_sigEFD4.get(e.CollaborationController);
+    this.disposeWithMe(this.registerEventHandler(this.Event["CollaborationStatusChanged"], () => {
+      let var_core_value_sigF704 = new n["DisposableCollection"](),
+        var_core_value_sig2BCF = var_core_value_sig861B.entityInit$["subscribe"](var_core_value_sigBC46 => {
+          let var_core_value_sig3D7D = var_core_value_sigBC46.status$["subscribe"](var_core_value_sig7524 => {
+            let var_core_value_sig2AD8 = {
+              unitId: var_core_value_sigBC46.unitID,
+              status: var_core_value_sig7524
+            };
+            this.fireEvent(this.Event["CollaborationStatusChanged"], var_core_value_sig2AD8);
+          });
+          var_core_value_sigF704.add((0, n.toDisposable)(var_core_value_sig3D7D));
+        });
+      return var_core_value_sigF704.add((0, n.toDisposable)(var_core_value_sig2BCF)), var_core_value_sigF704;
+    }));
+  }
+  getCollaboration() {
+    return this._injector["createInstance"](l, {
+      getWorkbook: var_core_value_sig0D69 => this.getWorkbook(var_core_value_sig0D69),
+      getDocument: var_core_value_sig480E => this.getDocument(var_core_value_sig480E),
+      getPresentation: var_core_value_sig26DB => this.getPresentation(var_core_value_sig26DB),
+      getBase: var_core_value_sigF0F9 => this.getBase(var_core_value_sigF0F9),
+      getBoard: var_core_value_sig1A0F => this.getBoard(var_core_value_sig1A0F),
+      getPdf: var_core_value_sigFBA4 => this.getPdf(var_core_value_sigFBA4)
+    });
+  }
+  loadServerUnit(var_core_value_sig5237, var_core_value_sigBB00, var_core_value_sig7E54) {
+    return this._injector["get"](e.DataLoaderService).loadUnit(var_core_value_sig5237, var_core_value_sigBB00, var_core_value_sig7E54);
+  }
+  loadServerUnitOfRevision(var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F) {
+    return this._injector["get"](e.DataLoaderService).loadUnitOfRevision(var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F);
+  }
+};
+t.FUniver["extend"](d), Object.defineProperty(exports, "FCollaboration", {
+  enumerable: true,
+  get: function () {
+    return l;
+  }
+});

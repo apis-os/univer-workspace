@@ -1,12 +1,13 @@
-import{ApplyBaseJson1Mutation,BaseJson1OpApplier,BaseJson1OpFactory,IBaseProjectionService,IBaseViewRegistryService,UniverBasesPlugin,UniverRemoteBasesPlugin,canEditBaseTargets,getBaseDashboardPermissionObjectId,getBaseTablePermissionObjectId,getBaseViewPermissionObjectId,matchesBaseCondition,normalizeBaseDateSerial,resolveBaseDateFieldConfig}from"@univerjs-pro/bases";
-import{BaseFieldType,BaseFilterConjunction,BaseFilterOperator,BaseViewType,CommandType,CustomCommandExecutionError,DependentOn,Disposable,ICommandService,IConfigService,IPermissionService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,ImageSourceType,Inject,Injector,Optional,Plugin,Tools,UniverInstanceType,generateRandomId,merge,sequenceExecute,touchDependencies}from"@univerjs/core";
-import{BehaviorSubject,filter,map}from"rxjs";
-import{ChartModel,ChartTypeBits,StaticChartSource,UniverChartPlugin,generateChartContext,reconcileChartContext}from"@univerjs-pro/engine-chart";
-import{DataFieldManager,PivotTable,PivotTableFiledAreaEnum,PivotView,isErrorValue,isPrefixValue}from"@univerjs-pro/engine-pivot";
-import{IShapeHostAdapterRegistry,UniverShapePlugin,canApplyShapeFormulaLastValue}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{UniverShapeEditorPlugin,createFormulaShapeData}from"@univerjs-pro/shape-editor";
-import{DataSyncPrimaryController}from"@univerjs/rpc";
-let Ze=function(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564){return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.CreateWidget="create-widget",var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.RenameDashboard="rename-dashboard",var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.ReorderWidgets="reorder-widgets",var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.UpdateWidget="update-widget",var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.RemoveWidget="remove-widget",var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564;}({});
-
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, BaseJson1OpFactory, IBaseProjectionService, IBaseViewRegistryService, UniverBasesPlugin, UniverRemoteBasesPlugin, canEditBaseTargets, getBaseDashboardPermissionObjectId, getBaseTablePermissionObjectId, getBaseViewPermissionObjectId, matchesBaseCondition, normalizeBaseDateSerial, resolveBaseDateFieldConfig } from "@univerjs-pro/bases";
+import { BaseFieldType, BaseFilterConjunction, BaseFilterOperator, BaseViewType, CommandType, CustomCommandExecutionError, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, Optional, Plugin, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { BehaviorSubject, filter, map } from "rxjs";
+import { ChartModel, ChartTypeBits, StaticChartSource, UniverChartPlugin, generateChartContext, reconcileChartContext } from "@univerjs-pro/engine-chart";
+import { DataFieldManager, PivotTable, PivotTableFiledAreaEnum, PivotView, isErrorValue, isPrefixValue } from "@univerjs-pro/engine-pivot";
+import { IShapeHostAdapterRegistry, UniverShapePlugin, canApplyShapeFormulaLastValue } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { UniverShapeEditorPlugin, createFormulaShapeData } from "@univerjs-pro/shape-editor";
+import { DataSyncPrimaryController } from "@univerjs/rpc";
+let Ze = function (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564) {
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.CreateWidget = "create-widget", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.RenameDashboard = "rename-dashboard", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.ReorderWidgets = "reorder-widgets", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.UpdateWidget = "update-widget", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564.RemoveWidget = "remove-widget", var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46564;
+}({});
 export { Ze as BaseDashboardHistoryAction };

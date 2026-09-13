@@ -1,5 +1,69 @@
-import{IConnectorShapeHostAdapter,IShapeHostAdapterRegistry,ImageFillModeEnum,ImageSourceTypeEnum,ShapeArrowSizeEnum,ShapeArrowTypeEnum,ShapeFillEnum,ShapeGradientTypeEnum,ShapeLineCapEnum,ShapeLineDashEnum,ShapeLineJoinEnum,ShapeLineTypeEnum,ShapeModel,ShapeOperatorEnum,ShapeTextAutoFitType,ShapeTextDirection,ShapeTextWrapType,ShapeTypeEnum,SmartArtOperationTypeEnum,applyRichTextToShapeText,applyShapeTextAlignment,applyShapeTextBoxOptions,applyShapeTextStyle,applyTextToShapeText,isConnectorShape,isSmartArtShapeData,parseSvgPathData,resolveShapeTextBoxOptions,shapeTextToRichTextValue}from'@univerjs-pro/engine-shape';
-import{FBase,FEnum}from'@univerjs/core/facade';
-import{BooleanNumber,ICommandService,Tools}from'@univerjs/core';
+import { IConnectorShapeHostAdapter, IShapeHostAdapterRegistry, ImageFillModeEnum, ImageSourceTypeEnum, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeGradientTypeEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeModel, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, SmartArtOperationTypeEnum, applyRichTextToShapeText, applyShapeTextAlignment, applyShapeTextBoxOptions, applyShapeTextStyle, applyTextToShapeText, isConnectorShape, isSmartArtShapeData, parseSvgPathData, resolveShapeTextBoxOptions, shapeTextToRichTextValue } from '@univerjs-pro/engine-shape';
+import { FBase, FEnum } from '@univerjs/core/facade';
+import { BooleanNumber, ICommandService, Tools } from '@univerjs/core';
 import { B, H } from "./facade-engine-shape-fshape.js";
-var P=class extends FEnum{get ShapeTypeEnum(){return ShapeTypeEnum;}get ShapeFillEnum(){return ShapeFillEnum;}get ShapeGradientTypeEnum(){return ShapeGradientTypeEnum;}get ShapeImageFillModeEnum(){return ImageFillModeEnum;}get ShapeImageSourceTypeEnum(){return ImageSourceTypeEnum;}get ShapeLineTypeEnum(){return ShapeLineTypeEnum;}get ShapeLineDashEnum(){return ShapeLineDashEnum;}get ShapeLineCapEnum(){return ShapeLineCapEnum;}get ShapeLineJoinEnum(){return ShapeLineJoinEnum;}get ShapeOperatorEnum(){return ShapeOperatorEnum;}get ShapeArrowTypeEnum(){return ShapeArrowTypeEnum;}get ShapeArrowSizeEnum(){return ShapeArrowSizeEnum;}get ShapeTextAutoFitType(){return ShapeTextAutoFitType;}get ShapeTextDirection(){return ShapeTextDirection;}get ShapeTextWrapType(){return ShapeTextWrapType;}};FEnum.extend(P);;function R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388){return function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129){var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387);};};function z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395=arguments.length,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395<3?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394===null?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394=Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396=Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394);else{for(var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391.length-1;var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4>=0;var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4--)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4])&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395<3?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395>3?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393))||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396);}return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395>3&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396&&Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396;}H=B=z([R(2,IShapeHostAdapterRegistry),R(3,ICommandService)],H);
+var P = class extends FEnum {
+  get ShapeTypeEnum() {
+    return ShapeTypeEnum;
+  }
+  get ShapeFillEnum() {
+    return ShapeFillEnum;
+  }
+  get ShapeGradientTypeEnum() {
+    return ShapeGradientTypeEnum;
+  }
+  get ShapeImageFillModeEnum() {
+    return ImageFillModeEnum;
+  }
+  get ShapeImageSourceTypeEnum() {
+    return ImageSourceTypeEnum;
+  }
+  get ShapeLineTypeEnum() {
+    return ShapeLineTypeEnum;
+  }
+  get ShapeLineDashEnum() {
+    return ShapeLineDashEnum;
+  }
+  get ShapeLineCapEnum() {
+    return ShapeLineCapEnum;
+  }
+  get ShapeLineJoinEnum() {
+    return ShapeLineJoinEnum;
+  }
+  get ShapeOperatorEnum() {
+    return ShapeOperatorEnum;
+  }
+  get ShapeArrowTypeEnum() {
+    return ShapeArrowTypeEnum;
+  }
+  get ShapeArrowSizeEnum() {
+    return ShapeArrowSizeEnum;
+  }
+  get ShapeTextAutoFitType() {
+    return ShapeTextAutoFitType;
+  }
+  get ShapeTextDirection() {
+    return ShapeTextDirection;
+  }
+  get ShapeTextWrapType() {
+    return ShapeTextWrapType;
+  }
+};
+FEnum.extend(P);
+;
+function R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388) {
+  return function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46388(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46387);
+  };
+}
+;
+function z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 = arguments.length,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394 === null ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394 = Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396 = Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46394);else {
+    for (var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4 >= 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4--) (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46391[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D4]) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 > 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46397(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393)) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396);
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46395 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46392, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46393, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46396;
+}
+H = B = z([R(2, IShapeHostAdapterRegistry), R(3, ICommandService)], H);

@@ -1,9 +1,31 @@
-import{BooleanNumber,CommandType,DOC_RANGE_TYPE,DashStyleType,DataStreamTreeTokenType,DependentOn,Disposable,DocumentFlavor,ICommandService,IConfigService,IResourceManagerService,IUniverInstanceService,Inject,Injector,JSONX,ObjectRelativeFromH,ObjectRelativeFromV,Plugin,TableAlignmentType,TableRowHeightRule,TableSizeType,TableTextWrapType,TextX,Tools,UniverInstanceType,containsInteriorInsertionOffset,createParagraphId,createSectionId,generateRandomId,getBlockRangeInterval,getBodySliceForTextXAction,getCustomBlockIdsInSelections,getParagraphContentStartOffset,getTableCellTokenInterval,getTableRangeInterval,getTableRowTokenInterval,merge}from"@univerjs/core";
-import{DocHistoryAction,DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin,getContentInsertRange}from"@univerjs/docs";
-import{Subject}from"rxjs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, CommandType, DOC_RANGE_TYPE, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentFlavor, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getCustomBlockIdsInSelections, getParagraphContentStartOffset, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, merge } from "@univerjs/core";
+import { DocHistoryAction, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { st } from "./docs-table-insert-rows-actions.js";
 import { nt } from "./internal-core-endo.js";
-function Xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461627;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628=st({documentData:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.documentData,metadata:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.metadata,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId,row:0,count:1,position:"above"}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461627=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628.nextDocumentData["tableSource"])==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461627[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId];if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629)throw Error("[DocsTable]: Table "+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId+" is not found.");let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461630=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629.tableColumns["length"];return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629.tableRows[0].tableCells["forEach"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357)=>{if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357===0){var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.columnSpan=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461630,delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.rowSpan;return;}var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.rowSpan=0,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.columnSpan=0;}),{nextDocumentData:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628.nextDocumentData,nextMetadata:nt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628.nextMetadata,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId,true)};}
-
+function Xt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461627;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628 = st({
+      documentData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.documentData,
+      metadata: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.metadata,
+      tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId,
+      row: 0,
+      count: 1,
+      position: "above"
+    }),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461627 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628.nextDocumentData["tableSource"]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461627[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId];
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629) throw Error("[DocsTable]: Table " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId + " is not found.");
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461630 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629.tableColumns["length"];
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461629.tableRows[0].tableCells["forEach"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357) => {
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46357 === 0) {
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.columnSpan = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461630, delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.rowSpan;
+      return;
+    }
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.rowSpan = 0, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46356.columnSpan = 0;
+  }), {
+    nextDocumentData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628.nextDocumentData,
+    nextMetadata: nt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461628.nextMetadata, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461626.tableId, true)
+  };
+}
 export { Xt as buildInsertTitleRowActions };

@@ -1,17 +1,17 @@
-import{CollaborationEvent,CompressMutationService,EmptyMutationInfo,ISnapshotServerService,ITransformService,RevisionService,SnapshotService,UniverCollaborationPlugin,b64DecodeUnicode,isTransformChangesetsSuccess,isTransformMutationsWithChangesetFailure,isTransformMutationsWithChangesetSuccess,mapDocumentTypeToUniverInstanceType,parseChangesetToProtocol,parseProtocolChangeset,textEncoder,uuidv4}from"@univerjs-pro/collaboration";
-import{CommandType,DependentOn,Disposable,DisposableCollection,IAuthzIoService,ICommandService,IConfigService,IContextService,IImageIoService,ILogService,IMentionIOService,IPermissionService,IUndoRedoService,IUniverInstanceService,ImageSourceType,ImageUploadStatusType,Inject,Injector,JSONX,LocalUndoRedoService,LocaleService,MentionType,Optional,Plugin,Quantity,Rectangle,RxDisposable,Tools,UniverInstanceType,UserManagerService,Workbook,createIdentifier,generateRandomId,isInternalEditorID,merge,mergeOverrideWithDependencies,registerDependencies,resolveWithBasePath,sequenceExecute,toDisposable,touchDependencies}from"@univerjs/core";
-import{DocStateChangeManagerService,RichTextEditingMutation}from"@univerjs/docs";
-import{InsertSheetMutation,SetSelectionsOperation,SheetPermissionInitController,SheetsSelectionsService,WorkbookEditablePermission}from"@univerjs/sheets";
-import{BehaviorSubject,ReplaySubject,Subject,concatMap,firstValueFrom,map,merge as mergeLocal,of,shareReplay,take,takeUntil}from"rxjs";
-import{CmdRspCode,CombCmd,ErrorCode,FileSource,UnitAction,UnitObject}from"@univerjs/protocol";
-import{ITelemetryService}from"@univerjs/telemetry";
-import{delay,filter,map as mapLocal,take as takeLocal,takeUntil as takeUntilLocal}from"rxjs/operators";
-import{AddSlidePageMutation,EnsureSlideMasterPageMutation,MoveSlidePageMutation,RemoveSlidePageMutation}from"@univerjs-pro/slides";
-import{HTTPRequest,HTTPService,ISocketService,MergeInterceptorFactory,ThresholdInterceptorFactory,UniverNetworkPlugin}from"@univerjs/network";
-import{UniverLicensePlugin,getGlobalObject}from"@univerjs-pro/license";
-import{cbc}from"@noble/ciphers/aes.js";
-import{concatBytes,randomBytes,utf8ToBytes}from"@noble/ciphers/utils.js";
-import{DRAWING_IMAGE_ALLOW_IMAGE_LIST,getDrawingImageAllowSize}from"@univerjs/drawing";
+import { CollaborationEvent, CompressMutationService, EmptyMutationInfo, ISnapshotServerService, ITransformService, RevisionService, SnapshotService, UniverCollaborationPlugin, b64DecodeUnicode, isTransformChangesetsSuccess, isTransformMutationsWithChangesetFailure, isTransformMutationsWithChangesetSuccess, mapDocumentTypeToUniverInstanceType, parseChangesetToProtocol, parseProtocolChangeset, textEncoder, uuidv4 } from "@univerjs-pro/collaboration";
+import { CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IContextService, IImageIoService, ILogService, IMentionIOService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, ImageUploadStatusType, Inject, Injector, JSONX, LocalUndoRedoService, LocaleService, MentionType, Optional, Plugin, Quantity, Rectangle, RxDisposable, Tools, UniverInstanceType, UserManagerService, Workbook, createIdentifier, generateRandomId, isInternalEditorID, merge, mergeOverrideWithDependencies, registerDependencies, resolveWithBasePath, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { DocStateChangeManagerService, RichTextEditingMutation } from "@univerjs/docs";
+import { InsertSheetMutation, SetSelectionsOperation, SheetPermissionInitController, SheetsSelectionsService, WorkbookEditablePermission } from "@univerjs/sheets";
+import { BehaviorSubject, ReplaySubject, Subject, concatMap, firstValueFrom, map, merge as mergeLocal, of, shareReplay, take, takeUntil } from "rxjs";
+import { CmdRspCode, CombCmd, ErrorCode, FileSource, UnitAction, UnitObject } from "@univerjs/protocol";
+import { ITelemetryService } from "@univerjs/telemetry";
+import { delay, filter, map as mapLocal, take as takeLocal, takeUntil as takeUntilLocal } from "rxjs/operators";
+import { AddSlidePageMutation, EnsureSlideMasterPageMutation, MoveSlidePageMutation, RemoveSlidePageMutation } from "@univerjs-pro/slides";
+import { HTTPRequest, HTTPService, ISocketService, MergeInterceptorFactory, ThresholdInterceptorFactory, UniverNetworkPlugin } from "@univerjs/network";
+import { UniverLicensePlugin, getGlobalObject } from "@univerjs-pro/license";
+import { cbc } from "@noble/ciphers/aes.js";
+import { concatBytes, randomBytes, utf8ToBytes } from "@noble/ciphers/utils.js";
+import { DRAWING_IMAGE_ALLOW_IMAGE_LIST, getDrawingImageAllowSize } from "@univerjs/drawing";
 import { vn, z } from "./internal-glue.js";
 import { Q } from "./collaboration-client-fetching-miss-state.js";
 import { K } from "./collaboration-client-synced-state.js";
@@ -19,6 +19,217 @@ import { q } from "./collaboration-client-pending-state.js";
 import { Y } from "./collaboration-client-awaiting-with-pending-state.js";
 import { J } from "./collaboration-client-awaiting-state.js";
 import { Z } from "./collaboration-client-offline-state.js";
-let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461962=class extends RxDisposable{get state(){return this._state;}constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46974,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46975,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46976,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46977,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46978,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46979,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46980,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46981,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46983){super(),this.unitID=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970,this.session=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971,this._type=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972,this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973,this._compressMutationService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46974,this._localeService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46975,this._revisionService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46976,this._eventService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46977,this._univerInstanceService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46978,this._logService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46979,this._commandService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46980,this._permissionService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46981,this._singleActiveUnitService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982,this._localCacheService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46983,z(this,"_state$",new BehaviorSubject(null)),z(this,"state$",this._state$["asObservable"]()),z(this,"_state",undefined),z(this,"_collaborationPaused",false),z(this,"_changesetSessionId",""),z(this,"_changesetReqId",0),z(this,"status$",this.state$["pipe"](map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168.status:"offline"),shareReplay({bufferSize:1,refCount:true}))),z(this,"_transitionLocked",false),z(this,"_remoteChangesetQueue",[]);}async init(){if(this.state)throw Error('[CollaborationEntity]: initial state has been created before. You should not call "init" twice.');await this._init();}pauseCollaboration(){return this._collaborationPaused=true,toDisposable(()=>{this._collaborationPaused=false,this._exhaustRemoteChangesetQueue();});}onLocalMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46998){this._onLocalMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46998);}_updateState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000){this._state=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000,this._state$["next"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000);}async _init(){if(this._updateState(await this._createInitialState()),this._singleActiveUnitService){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002;(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002=this._singleActiveUnitService)==null||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002.editingUnit(this.unitID),this.disposeWithMe(this._singleActiveUnitService["getUnitStatus$"](this.unitID).subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650=>{this._logService["debug"]("[CollaborationEntity]","editing status changed to",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650===1?(this._eventService["emitEvent"]({id:"OTHER_CLIENT_EDITING"}),this._permissionService["updatePermissionPoint"](new WorkbookEditablePermission(this.unitID).id,false),this._permissionService["setShowComponents"](false)):(this._permissionService["updatePermissionPoint"](new WorkbookEditablePermission(this.unitID).id,true),this._permissionService["setShowComponents"](true));}));}let var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2=false;return this.disposeWithMe(this.session["sessionStatus$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169=>{var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169===3?this._toggleOnline(var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169===2&&(var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2=true,this._toggleOffline());})),this.disposeWithMe(this.session["event$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171=>{try{switch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.eventID){case CollaborationEvent.NEW_CHANGESETS:this._onRemoteChangeset(parseProtocolChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data));break;case CollaborationEvent.CHANGESET_ACK:this._onRemoteACK(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data);break;case CollaborationEvent.CHANGESET_REJ:this._onRemoteRejected();break;case CollaborationEvent.CHANGESET_SHOULD_RETRY:this._onRemoteRetry(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data);break;case CollaborationEvent.PSEUDO_FETCH_MISSING_RESULT:this._onFetchMissResult(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data["changesets"].map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461=>parseProtocolChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461)));break;case CollaborationEvent.PERMISSION_REJ:this._onRemoteRejected({isPermissionRej:true});break;case CollaborationEvent.UNISCRIPT_RUN:break;}}catch(var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC5){throw console.error("Error on receiving event",var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC5),var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC5;}})),this._state;}_unlockTransition(){this._transitionLocked=false;}_lockTransition(){if(this._transitionLocked)throw Error("[CollaborationEntity]: cannot lock transition twice! This is an implementation error, meaning you transit the collaboration state again in the process of a previous transition. This should never happen.");this._transitionLocked=true;}_onLocalMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461004){this._lockTransition(),this._updateState(this._state["appendMutation"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461004)),this._unlockTransition();}_onRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006){if(!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006.revision<=this._revisionService["getCurrentRevOfUnit"](this.unitID))){if(this._collaborationPaused){this._remoteChangesetQueue["push"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006);return;}this._applyRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006);}}_exhaustRemoteChangesetQueue(){this._remoteChangesetQueue["forEach"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173=>this._applyRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173)),this._remoteChangesetQueue=[];}_applyRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009=this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_APPLY)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.mutations,null)||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.mutations,var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11={...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008,mutations:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009};this._lockTransition(),this._updateState(this._state["onRemoteChangeset"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11)),this._unlockTransition();}_onRemoteACK(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012){this._lockTransition(),this._updateState(this._state["onRemoteAck"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012)),this._unlockTransition();}_onRemoteRejected(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461014){this._lockTransition(),this._updateState(this._state["onRemoteRej"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461014)),this._unlockTransition();}_onRemoteRetry(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461016){this._lockTransition(),this._updateState(this._state["onRemoteRetry"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461016)),this._unlockTransition();}_onFetchMissResult(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018){if(!(this._state instanceof Q))throw TypeError("[CollaborationEntity]: cannot apply missing results on other states!");let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175=this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_APPLY)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.mutations,null)||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.mutations;return{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174,mutations:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175};});this._lockTransition(),this._updateState(this._state["onMissedChangesetFetched"](var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18)),this._unlockTransition();}_toggleOffline(){this._lockTransition(),this._updateState(this._state["toggleOffline"]()),this._unlockTransition();}_toggleOnline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020=false){this._lockTransition(),this._updateState(this._state["toggleOnline"]()),this._unlockTransition();let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021=this._state;var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021 instanceof K&&(this._lockTransition(),this._updateState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021.fetchMiss()),this._unlockTransition());}async _createInitialState(){return new Promise(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46178=>{this.session["sessionStatus$"].pipe(take(1)).subscribe(async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652=>{var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46178(await this._createInitialStateImpl(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652===3));});});}_createHandler(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461024=this.unitID;return{onStateChange:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181)=>{if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180!==this._state)throw Error("[CollaborationEntity]:\x20invalid\x20state\x20transition!\x20State\x20transferred\x20from\x20is\x20not\x20the\x20current\x20state.\x0aBefore:\x20"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180.status+"\nAfter: "+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181.status+"\nCurrent: "+this._state["status"]);this._updateState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181);},onSendChangeset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184=>{var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.sid||(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.sid=this._changesetSessionId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.reqId=++this._changesetReqId);let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2={eventID:CollaborationEvent.SUBMIT_CHANGESET,data:{unitID:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.unitID,unitType:this._type,changeset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184,memberID:this.session["getMemberID"]()}};this.session["send"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2,this.unitID);},onMissingChangesets:({from:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46186,to:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187})=>{this._logService["debug"]("[CollaborationEntity]","fetching missing changesets from "+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46186+" to "+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187);let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4={eventID:CollaborationEvent.FETCH_MISSING,data:{unitID:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461024,unitType:this._type,from:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46186,to:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187}};this.session["send"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4,this.unitID);}};}async _createInitialStateImpl(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461026){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461027;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028=await((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461027=this._localCacheService)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461027.loadOfflineData(this.unitID)),var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028.mutations)??[],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028.awaitingChangeset)??null,var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4=!!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.sid)&&!!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.reqId);this._changesetSessionId=var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.sid:uuidv4(),this._changesetReqId=var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.reqId:0;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461030=this.unitID;try{this._replayCachedMutations(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029,var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20);}catch(var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC516){this._logService["error"](var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC516);}let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461031=this._createHandler();if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461026){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190=vn(this._injector,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461030,this._type,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029,var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461031);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 instanceof q?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190._schedule():(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 instanceof Y||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 instanceof J)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.resend(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190;}return this._injector["createInstance"](Z,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461030,this._type,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029,var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461031);}_replayCachedMutations(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461038,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461039){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461040,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461041;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461042=this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_APPLY);(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461040=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461042((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461038==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461038.mutations)||[],null))==null||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461040.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191=>this._commandService["executeCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.id,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.params)),(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461041=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461042(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461039||[],null))==null||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461041.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192=>this._commandService["executeCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192.id,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192.params));}};let bn=class extends var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461962{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461084,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461085,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461086,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461087,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461088,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461089,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461090,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461091,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461092,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461095,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461096,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461097){super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461084,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461086,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461085,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461087,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461088,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461089,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461090,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461091,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461092,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461095,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461096,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461097),this.unitID=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461084,this.type=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461085;}async _init(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112=await super._init();return this.disposeWithMe(this._commandService["onMutationExecutedForCollab"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252)=>{if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251.type!==CommandType.MUTATION||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252.fromCollab||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252.onlyLocal)return;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251.params;if((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253.unitId)!==this.unitID)return;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251,var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4=this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_SEND)([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254],this._univerInstanceService)||[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254];this._onLocalMutation(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4[0]);})),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112;}};
-
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461962 = class extends RxDisposable {
+  get state() {
+    return this._state;
+  }
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46974, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46975, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46976, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46977, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46978, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46979, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46980, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46981, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46983) {
+    super(), this.unitID = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46970, this.session = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46971, this._type = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46972, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46973, this._compressMutationService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46974, this._localeService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46975, this._revisionService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46976, this._eventService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46977, this._univerInstanceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46978, this._logService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46979, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46980, this._permissionService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46981, this._singleActiveUnitService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46982, this._localCacheService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46983, z(this, "_state$", new BehaviorSubject(null)), z(this, "state$", this._state$["asObservable"]()), z(this, "_state", undefined), z(this, "_collaborationPaused", false), z(this, "_changesetSessionId", ""), z(this, "_changesetReqId", 0), z(this, "status$", this.state$["pipe"](map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168.status : "offline"), shareReplay({
+      bufferSize: 1,
+      refCount: true
+    }))), z(this, "_transitionLocked", false), z(this, "_remoteChangesetQueue", []);
+  }
+  async init() {
+    if (this.state) throw Error('[CollaborationEntity]: initial state has been created before. You should not call "init" twice.');
+    await this._init();
+  }
+  pauseCollaboration() {
+    return this._collaborationPaused = true, toDisposable(() => {
+      this._collaborationPaused = false, this._exhaustRemoteChangesetQueue();
+    });
+  }
+  onLocalMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46998) {
+    this._onLocalMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46998);
+  }
+  _updateState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000) {
+    this._state = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000, this._state$["next"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461000);
+  }
+  async _init() {
+    if (this._updateState(await this._createInitialState()), this._singleActiveUnitService) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002;
+      (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002 = this._singleActiveUnitService) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461002.editingUnit(this.unitID), this.disposeWithMe(this._singleActiveUnitService["getUnitStatus$"](this.unitID).subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650 => {
+        this._logService["debug"]("[CollaborationEntity]", "editing status changed to", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650 === 1 ? (this._eventService["emitEvent"]({
+          id: "OTHER_CLIENT_EDITING"
+        }), this._permissionService["updatePermissionPoint"](new WorkbookEditablePermission(this.unitID).id, false), this._permissionService["setShowComponents"](false)) : (this._permissionService["updatePermissionPoint"](new WorkbookEditablePermission(this.unitID).id, true), this._permissionService["setShowComponents"](true));
+      }));
+    }
+    let var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2 = false;
+    return this.disposeWithMe(this.session["sessionStatus$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169 => {
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169 === 3 ? this._toggleOnline(var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169 === 2 && (var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A2 = true, this._toggleOffline());
+    })), this.disposeWithMe(this.session["event$"].subscribe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171 => {
+      try {
+        switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.eventID) {
+          case CollaborationEvent.NEW_CHANGESETS:
+            this._onRemoteChangeset(parseProtocolChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data));
+            break;
+          case CollaborationEvent.CHANGESET_ACK:
+            this._onRemoteACK(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data);
+            break;
+          case CollaborationEvent.CHANGESET_REJ:
+            this._onRemoteRejected();
+            break;
+          case CollaborationEvent.CHANGESET_SHOULD_RETRY:
+            this._onRemoteRetry(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data);
+            break;
+          case CollaborationEvent.PSEUDO_FETCH_MISSING_RESULT:
+            this._onFetchMissResult(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46171.data["changesets"].map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 => parseProtocolChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461)));
+            break;
+          case CollaborationEvent.PERMISSION_REJ:
+            this._onRemoteRejected({
+              isPermissionRej: true
+            });
+            break;
+          case CollaborationEvent.UNISCRIPT_RUN:
+            break;
+        }
+      } catch (var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC5) {
+        throw console.error("Error on receiving event", var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC5), var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC5;
+      }
+    })), this._state;
+  }
+  _unlockTransition() {
+    this._transitionLocked = false;
+  }
+  _lockTransition() {
+    if (this._transitionLocked) throw Error("[CollaborationEntity]: cannot lock transition twice! This is an implementation error, meaning you transit the collaboration state again in the process of a previous transition. This should never happen.");
+    this._transitionLocked = true;
+  }
+  _onLocalMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461004) {
+    this._lockTransition(), this._updateState(this._state["appendMutation"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461004)), this._unlockTransition();
+  }
+  _onRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006) {
+    if (!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006.revision <= this._revisionService["getCurrentRevOfUnit"](this.unitID))) {
+      if (this._collaborationPaused) {
+        this._remoteChangesetQueue["push"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006);
+        return;
+      }
+      this._applyRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461006);
+    }
+  }
+  _exhaustRemoteChangesetQueue() {
+    this._remoteChangesetQueue["forEach"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173 => this._applyRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46173)), this._remoteChangesetQueue = [];
+  }
+  _applyRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009 = this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_APPLY)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.mutations, null) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.mutations,
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11 = {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008,
+        mutations: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009
+      };
+    this._lockTransition(), this._updateState(this._state["onRemoteChangeset"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB11)), this._unlockTransition();
+  }
+  _onRemoteACK(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012) {
+    this._lockTransition(), this._updateState(this._state["onRemoteAck"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012)), this._unlockTransition();
+  }
+  _onRemoteRejected(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461014) {
+    this._lockTransition(), this._updateState(this._state["onRemoteRej"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461014)), this._unlockTransition();
+  }
+  _onRemoteRetry(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461016) {
+    this._lockTransition(), this._updateState(this._state["onRemoteRetry"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461016)), this._unlockTransition();
+  }
+  _onFetchMissResult(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018) {
+    if (!(this._state instanceof Q)) throw TypeError("[CollaborationEntity]: cannot apply missing results on other states!");
+    let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461018.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175 = this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_APPLY)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.mutations, null) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174.mutations;
+      return {
+        ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46174,
+        mutations: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175
+      };
+    });
+    this._lockTransition(), this._updateState(this._state["onMissedChangesetFetched"](var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A18)), this._unlockTransition();
+  }
+  _toggleOffline() {
+    this._lockTransition(), this._updateState(this._state["toggleOffline"]()), this._unlockTransition();
+  }
+  _toggleOnline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020 = false) {
+    this._lockTransition(), this._updateState(this._state["toggleOnline"]()), this._unlockTransition();
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021 = this._state;
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461020 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021 instanceof K && (this._lockTransition(), this._updateState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461021.fetchMiss()), this._unlockTransition());
+  }
+  async _createInitialState() {
+    return new Promise(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46178 => {
+      this.session["sessionStatus$"].pipe(take(1)).subscribe(async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652 => {
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46178(await this._createInitialStateImpl(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4652 === 3));
+      });
+    });
+  }
+  _createHandler() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461024 = this.unitID;
+    return {
+      onStateChange: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181) => {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180 !== this._state) throw Error("[CollaborationEntity]:\x20invalid\x20state\x20transition!\x20State\x20transferred\x20from\x20is\x20not\x20the\x20current\x20state.\x0aBefore:\x20" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180.status + "\nAfter: " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181.status + "\nCurrent: " + this._state["status"]);
+        this._updateState(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181);
+      },
+      onSendChangeset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184 => {
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.sid || (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.sid = this._changesetSessionId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.reqId = ++this._changesetReqId);
+        let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 = {
+          eventID: CollaborationEvent.SUBMIT_CHANGESET,
+          data: {
+            unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.unitID,
+            unitType: this._type,
+            changeset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184,
+            memberID: this.session["getMemberID"]()
+          }
+        };
+        this.session["send"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2, this.unitID);
+      },
+      onMissingChangesets: ({
+        from: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46186,
+        to: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187
+      }) => {
+        this._logService["debug"]("[CollaborationEntity]", "fetching missing changesets from " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46186 + " to " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187);
+        let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 = {
+          eventID: CollaborationEvent.FETCH_MISSING,
+          data: {
+            unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461024,
+            unitType: this._type,
+            from: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46186,
+            to: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46187
+          }
+        };
+        this.session["send"](var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4, this.unitID);
+      }
+    };
+  }
+  async _createInitialStateImpl(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461026) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461027;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028 = await ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461027 = this._localCacheService) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461027.loadOfflineData(this.unitID)),
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028.mutations) ?? [],
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461028.awaitingChangeset) ?? null,
+      var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4 = !!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.sid) && !!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.reqId);
+    this._changesetSessionId = var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.sid : uuidv4(), this._changesetReqId = var_L0_core_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A4 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029.reqId : 0;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461030 = this.unitID;
+    try {
+      this._replayCachedMutations(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20);
+    } catch (var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC516) {
+      this._logService["error"](var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC516);
+    }
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461031 = this._createHandler();
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461026) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 = vn(this._injector, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461030, this._type, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461031);
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 instanceof q ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190._schedule() : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 instanceof Y || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 instanceof J) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.resend(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190;
+    }
+    return this._injector["createInstance"](Z, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461030, this._type, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461029, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A20, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461031);
+  }
+  _replayCachedMutations(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461039) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461040, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461041;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461042 = this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_APPLY);
+    (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461040 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461042((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461038 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461038.mutations) || [], null)) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461040.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 => this._commandService["executeCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191.params)), (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461041 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461042(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461039 || [], null)) == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461041.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192 => this._commandService["executeCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46192.params));
+  }
+};
+let bn = class extends var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461962 {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461084, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461085, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461086, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461087, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461088, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461089, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461090, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461091, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461092, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461095, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461096, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461097) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461084, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461086, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461085, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461087, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461088, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461089, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461090, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461091, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461092, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461095, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461096, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461097), this.unitID = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461084, this.type = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461085;
+  }
+  async _init() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112 = await super._init();
+    return this.disposeWithMe(this._commandService["onMutationExecutedForCollab"]((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252) => {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251.type !== CommandType.MUTATION || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252.fromCollab || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46252.onlyLocal) return;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251.params;
+      if ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46253.unitId) !== this.unitID) return;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46251,
+        var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4 = this._compressMutationService["interceptor"].fetchThroughInterceptors(this._compressMutationService["interceptor"].getInterceptPoints().COMPRESS_MUTATION_SEND)([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254], this._univerInstanceService) || [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46254];
+      this._onLocalMutation(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A4[0]);
+    })), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461112;
+  }
+};
 export { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461962 as CollaborationEntity, bn as BaseCollaborationEntity };

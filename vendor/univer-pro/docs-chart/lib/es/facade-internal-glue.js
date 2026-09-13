@@ -1,10 +1,19 @@
-import{DocChartInsertAnchorKind,DocChartParagraphPosition,DocumentChartConfigAdapter,InsertDocChartCommand,assertValidOptionalDocChartSize,normalizeDocumentChartValues}from"@univerjs-pro/docs-chart";
-import{ChartDataSourceRuntimeStatus,ChartResourceRepository,ChartTypeBits,IChartDataSourceRuntimeService,ResourceRefChartDataSourceAdapter,toChartDataItem,toChartModelConfig}from"@univerjs-pro/engine-chart";
-import{FChart,createChartBuilder}from"@univerjs-pro/engine-chart/facade";
-import{DrawingTypeEnum,ICommandService,PositionedObjectLayoutType,Tools,getParagraphContentStartOffset}from"@univerjs/core";
-import{DocSelectionManagerService,normalizeTextRange}from"@univerjs/docs";
-import{FDocument}from"@univerjs/docs/facade";
-import{filter,firstValueFrom}from"rxjs";
-import{FEnum}from"@univerjs/core/facade";
+import { DocChartInsertAnchorKind, DocChartParagraphPosition, DocumentChartConfigAdapter, InsertDocChartCommand, assertValidOptionalDocChartSize, normalizeDocumentChartValues } from "@univerjs-pro/docs-chart";
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartTypeBits, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, toChartDataItem, toChartModelConfig } from "@univerjs-pro/engine-chart";
+import { FChart, createChartBuilder } from "@univerjs-pro/engine-chart/facade";
+import { DrawingTypeEnum, ICommandService, PositionedObjectLayoutType, Tools, getParagraphContentStartOffset } from "@univerjs/core";
+import { DocSelectionManagerService, normalizeTextRange } from "@univerjs/docs";
+import { FDocument } from "@univerjs/docs/facade";
+import { filter, firstValueFrom } from "rxjs";
+import { FEnum } from "@univerjs/core/facade";
 import { j } from "./facade-docs-chart-fdocument-chart.js";
-FDocument.extend(j);var H=class extends FEnum{get DocsChartInsertAnchorKind(){return DocChartInsertAnchorKind;}get DocsChartLayoutType(){return PositionedObjectLayoutType;}};FEnum.extend(H);
+FDocument.extend(j);
+var H = class extends FEnum {
+  get DocsChartInsertAnchorKind() {
+    return DocChartInsertAnchorKind;
+  }
+  get DocsChartLayoutType() {
+    return PositionedObjectLayoutType;
+  }
+};
+FEnum.extend(H);

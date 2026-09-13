@@ -50,7 +50,7 @@ const e = {
       next: "Próximo",
       other: "Outro",
       ok: "OK",
-      cancel: "Cancelar",
+      cancel: "Cancelar"
     },
     valueFilter: {
       title: "Filtros de valor",
@@ -72,7 +72,7 @@ const e = {
       bottomPercent: "Percentual inferior",
       clear: "Limpar filtro",
       ok: "OK",
-      cancel: "Cancelar",
+      cancel: "Cancelar"
     },
     dateGroup: {
       title: "Agrupamento de datas",
@@ -86,7 +86,7 @@ const e = {
       date: "Dia",
       hour: "Hora",
       minute: "Minuto",
-      hourMinute: "Hora-Minuto",
+      hourMinute: "Hora-Minuto"
     },
     dialog: {
       fieldName: "Nome do Campo",
@@ -102,7 +102,7 @@ const e = {
         clearFilter: "Limpar\x20Filtro",
         blank: "(Em branco)",
         cancel: "Cancelar",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "Geral",
@@ -114,20 +114,15 @@ const e = {
         formatTypes: "Tipos de Formato",
         confirm: "OK",
         cancel: "Cancelar",
-        generalDesc:
-          "O formato geral não contém nenhum formato de número específico.",
-        accountingDesc:
-          "O formato de número contábil alinha os símbolos de moeda e os pontos decimais em uma coluna.",
-        currencyDesc:
-          "O formato de moeda é usado para valores monetários gerais, o formato contábil alinha os pontos decimais em uma coluna de valores.",
-        dateDesc:
-          "O formato de data exibe números de série de data e hora como valores de data.",
-        thousandthPercentileDesc:
-          "O\x20formato\x20de\x20percentil\x20de\x20milésimos\x20é\x20usado\x20para\x20números\x20gerais,\x20os\x20formatos\x20de\x20moeda\x20e\x20contábil\x20fornecem\x20formatos\x20especializados\x20para\x20valores\x20monetários.",
+        generalDesc: "O formato geral não contém nenhum formato de número específico.",
+        accountingDesc: "O formato de número contábil alinha os símbolos de moeda e os pontos decimais em uma coluna.",
+        currencyDesc: "O formato de moeda é usado para valores monetários gerais, o formato contábil alinha os pontos decimais em uma coluna de valores.",
+        dateDesc: "O formato de data exibe números de série de data e hora como valores de data.",
+        thousandthPercentileDesc: "O\x20formato\x20de\x20percentil\x20de\x20milésimos\x20é\x20usado\x20para\x20números\x20gerais,\x20os\x20formatos\x20de\x20moeda\x20e\x20contábil\x20fornecem\x20formatos\x20especializados\x20para\x20valores\x20monetários.",
         decimalPlaces: "Casas\x20Decimais",
         currencyTypes: "Tipos\x20de\x20Moeda",
         negativeNumberTypes: "Tipos de Números Negativos",
-        dateTypes: "Tipos de Data",
+        dateTypes: "Tipos de Data"
       },
       source: {
         insertPivotTable: "Inserir Tabela Dinâmica",
@@ -135,8 +130,8 @@ const e = {
         position: "Localização da Tabela Dinâmica",
         newSheet: "Nova Planilha",
         existingSheet: "Planilha Existente",
-        intersect: "Não pode sobrepor os dados de origem",
-      },
+        intersect: "Não pode sobrepor os dados de origem"
+      }
     },
     subtotal: {
       average: "Média",
@@ -149,7 +144,7 @@ const e = {
       stdDevp: "Desvio\x20Padrão\x20da\x20População",
       sum: "Soma",
       var: "Variância",
-      varp: "Variância da População",
+      varp: "Variância da População"
     },
     subTotalText: "Subtotal",
     grandTotalText: "Total Geral",
@@ -175,25 +170,21 @@ const e = {
       layoutCompact: "Formato\x20compacto",
       layoutOutline: "Formato de estrutura de tópicos",
       repeatRowLabels: "Repetir rótulos de linha",
-      repeatColLabels: "Repetir\x20rótulos\x20de\x20coluna",
+      repeatColLabels: "Repetir\x20rótulos\x20de\x20coluna"
     },
     perform: {
       tips: "Dicas",
       info: "Já existem dados na área de destino. Esta ação substituirá os dados existentes. Deseja continuar?",
       confirm: "Confirmar",
       cancel: "Cancelar",
-      rowColError:
-        "Esta alteração não pode ser feita nas células selecionadas porque afetaria a tabela dinâmica. Use a lista de campos para modificar o relatório. Se estiver tentando inserir ou excluir células, mova a tabela dinâmica e tente novamente.",
+      rowColError: "Esta alteração não pode ser feita nas células selecionadas porque afetaria a tabela dinâmica. Use a lista de campos para modificar o relatório. Se estiver tentando inserir ou excluir células, mova a tabela dinâmica e tente novamente."
     },
     msg: {
       emptySourceRange: "O intervalo da fonte de dados está vazio",
-      invalidSize:
-        "O\x20intervalo\x20da\x20fonte\x20de\x20dados\x20é\x20inválido",
-      mergeCellError:
-        "Não é possível inserir células mescladas na tabela dinâmica",
+      invalidSize: "O\x20intervalo\x20da\x20fonte\x20de\x20dados\x20é\x20inválido",
+      mergeCellError: "Não é possível inserir células mescladas na tabela dinâmica",
       editCellError: "Não é possível editar células na tabela dinâmica",
-      permissionError:
-        "Não é possível editar a tabela dinâmica em uma planilha protegida",
+      permissionError: "Não é possível editar a tabela dinâmica em uma planilha protegida"
     },
     averageName: "Média de ",
     countName: "Contagem de ",
@@ -205,7 +196,7 @@ const e = {
     stdDevpName: "DesvPadrãoP\x20de\x20",
     sumName: "Soma de ",
     varName: "Var\x20de\x20",
-    varpName: "VarP de ",
-  },
+    varpName: "VarP de "
+  }
 };
 export { e as default };

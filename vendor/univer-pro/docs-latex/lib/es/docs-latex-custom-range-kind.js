@@ -1,9 +1,8 @@
-import{CommandType,CustomRangeType,DataStreamTreeTokenType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSONX,Plugin,TextX,UniverInstanceType,generateRandomId,getBodySliceForTextXAction,getCustomRangeInterval,getRichTextEditPath,merge,shiftExclusiveRangeOnDelete,shiftExclusiveRangeOnInsert,shiftInclusiveRangeOnDelete,shiftInclusiveRangeOnInsert}from"@univerjs/core";
-import{DOC_SELECTION_OPTION_PRESERVE_CARET,DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin}from"@univerjs/docs";
-import{Subject}from"rxjs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-const fe="univer-docs-latex-formula",w=new Set([DataStreamTreeTokenType.SECTION_BREAK,DataStreamTreeTokenType.TABLE_START,DataStreamTreeTokenType.TABLE_ROW_START,DataStreamTreeTokenType.TABLE_CELL_START,DataStreamTreeTokenType.TABLE_CELL_END,DataStreamTreeTokenType.TABLE_ROW_END,DataStreamTreeTokenType.TABLE_END,DataStreamTreeTokenType.COLUMN_GROUP_START,DataStreamTreeTokenType.COLUMN_START,DataStreamTreeTokenType.COLUMN_END,DataStreamTreeTokenType.COLUMN_GROUP_END,DataStreamTreeTokenType.BLOCK_START,DataStreamTreeTokenType.BLOCK_END,DataStreamTreeTokenType.CUSTOM_BLOCK]);
-
+import { CommandType, CustomRangeType, DataStreamTreeTokenType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, UniverInstanceType, generateRandomId, getBodySliceForTextXAction, getCustomRangeInterval, getRichTextEditPath, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { DOC_SELECTION_OPTION_PRESERVE_CARET, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+const fe = "univer-docs-latex-formula",
+  w = new Set([DataStreamTreeTokenType.SECTION_BREAK, DataStreamTreeTokenType.TABLE_START, DataStreamTreeTokenType.TABLE_ROW_START, DataStreamTreeTokenType.TABLE_CELL_START, DataStreamTreeTokenType.TABLE_CELL_END, DataStreamTreeTokenType.TABLE_ROW_END, DataStreamTreeTokenType.TABLE_END, DataStreamTreeTokenType.COLUMN_GROUP_START, DataStreamTreeTokenType.COLUMN_START, DataStreamTreeTokenType.COLUMN_END, DataStreamTreeTokenType.COLUMN_GROUP_END, DataStreamTreeTokenType.BLOCK_START, DataStreamTreeTokenType.BLOCK_END, DataStreamTreeTokenType.CUSTOM_BLOCK]);
 export { fe as DOCS_LATEX_CUSTOM_RANGE_KIND };
-
 export { w };

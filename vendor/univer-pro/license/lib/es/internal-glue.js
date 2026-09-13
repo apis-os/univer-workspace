@@ -1,10 +1,35 @@
-import{etc,hashes,verify}from"@noble/ed25519";
-import{sha512}from"@noble/hashes/sha2.js";
-import{Disposable,IConfigService,IUniverInstanceService,Inject,Injector,LifecycleService,Plugin,SHEET_EDITOR_UNITS,UniverInstanceType,merge}from"@univerjs/core";
-import{IRenderManagerService}from"@univerjs/engine-render";
-import{take}from"rxjs";
+import { etc, hashes, verify } from "@noble/ed25519";
+import { sha512 } from "@noble/hashes/sha2.js";
+import { Disposable, IConfigService, IUniverInstanceService, Inject, Injector, LifecycleService, Plugin, SHEET_EDITOR_UNITS, UniverInstanceType, merge } from "@univerjs/core";
+import { IRenderManagerService } from "@univerjs/engine-render";
+import { take } from "rxjs";
 import { g } from "./license-global-object.js";
 import { B, G, K, W, X, q, z } from "./license-plugin.js";
-const v=[[61,62,50,48,61,57,62,34,37],[96,99,102,127,97,127,97,127,96]];function y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671){return String.fromCharCode(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617^81));}function b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673){return v.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618=>y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618)===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673);}function M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144){if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144)return true;if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.startsWith("*."))return false;let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.slice(2);return var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3&&var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144?true:!!(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3&&!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144.startsWith(".")&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144.endsWith("."+var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3));}const N=(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147)=>sha512(etc.concatBytes(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147));function P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148){return typeof atob=="function"?atob(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148):Buffer.from(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148,"base64").toString("binary");}function F(){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151=g();return typeof((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151.location)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150.hostname)=="string"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151.location["hostname"]:undefined;}function I(){hashes.sha512=N;}q=K([G(1,IConfigService)],q);W(X,"pluginName","UNIVER_LICENSE_PLUGIN"),W(X,"packageName",z),W(X,"version",B),X=K([G(1,Inject(Injector)),G(2,IConfigService),G(3,Inject(LifecycleService)),G(4,Inject(IUniverInstanceService))],X);
-
+const v = [[61, 62, 50, 48, 61, 57, 62, 34, 37], [96, 99, 102, 127, 97, 127, 97, 127, 96]];
+function y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671) {
+  return String.fromCharCode(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671.map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 ^ 81));
+}
+function b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673) {
+  return v.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618 => y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618) === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4673);
+}
+function M(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143 === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144) return true;
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.startsWith("*.")) return false;
+  let var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.slice(2);
+  return var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3 && var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3 === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144 ? true : !!(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3 && !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144.startsWith(".") && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46144.endsWith("." + var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A3));
+}
+const N = (...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147) => sha512(etc.concatBytes(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147));
+function P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148) {
+  return typeof atob == "function" ? atob(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148) : Buffer.from(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148, "base64").toString("binary");
+}
+function F() {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151 = g();
+  return typeof ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151.location) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150.hostname) == "string" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151.location["hostname"] : undefined;
+}
+function I() {
+  hashes.sha512 = N;
+}
+q = K([G(1, IConfigService)], q);
+W(X, "pluginName", "UNIVER_LICENSE_PLUGIN"), W(X, "packageName", z), W(X, "version", B), X = K([G(1, Inject(Injector)), G(2, IConfigService), G(3, Inject(LifecycleService)), G(4, Inject(IUniverInstanceService))], X);
 export { F, I, v, b, M, N, y, P };

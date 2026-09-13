@@ -4,7 +4,7 @@ const e = {
       smartArt: "SmartArt Design",
       smartArtTextPane: "Ngăn Văn bản",
       shapeFormat: "Định\x20dạng\x20hình\x20dạng",
-      changeShape: "Thay đổi hình dạng",
+      changeShape: "Thay đổi hình dạng"
     },
     insertToolbar: {
       smartArt: "SmartArt",
@@ -17,7 +17,7 @@ const e = {
       shape: "Hình\x20dạng",
       chart: "Biểu\x20đồ",
       symbol: "Ký\x20hiệu",
-      emoji: "Biểu tượng cảm xúc",
+      emoji: "Biểu tượng cảm xúc"
     },
     tableSizePicker: {
       title: "Kích thước bảng",
@@ -25,25 +25,24 @@ const e = {
       rows: "Hàng",
       columns: "Cột",
       insert: "Chèn",
-      apply: "Áp dụng",
+      apply: "Áp dụng"
     },
     searchPanel: {
       placeholder: "Tìm kiếm trang trình bày và đối tượng",
-      noQuery:
-        "Nhập để tìm kiếm tên trang trình bày, văn bản và tên đối tượng.",
+      noQuery: "Nhập để tìm kiếm tên trang trình bày, văn bản và tên đối tượng.",
       empty: "Không\x20tìm\x20thấy\x20kết\x20quả.",
-      slidePrefix: "Trang",
+      slidePrefix: "Trang"
     },
     themePicker: {
       title: "Chủ đề",
       caption: "Mặc định hình dạng",
-      tooltip: "Chọn chủ đề trang trình bày",
+      tooltip: "Chọn chủ đề trang trình bày"
     },
     display: {
       slideSize: "Kích thước trang chiếu",
       widescreen: "Màn hình rộng (16:9)",
       standard: "Tiêu chuẩn (4:3)",
-      fullscreen: "Toàn màn hình",
+      fullscreen: "Toàn màn hình"
     },
     editorToolbar: {
       fontFamily: "Phông chữ",
@@ -67,7 +66,7 @@ const e = {
       alignJustify: "Căn đều",
       alignTop: "Căn trên",
       alignMiddle: "Căn giữa dọc",
-      alignBottom: "Căn dưới",
+      alignBottom: "Căn dưới"
     },
     quickStyles: {
       tooltip: "Kiểu nhanh",
@@ -75,7 +74,10 @@ const e = {
       lineStyles: "Kiểu đường kẻ",
       textStyles: "Kiểu văn bản",
       more: "Thêm kiểu",
-      groups: { solid: "Liền nét", dashed: "Đứt nét" },
+      groups: {
+        solid: "Liền nét",
+        dashed: "Đứt nét"
+      },
       presets: {
         line: {
           blackSolid: "Đường\x20liền\x20mảnh\x20màu\x20đen",
@@ -88,18 +90,17 @@ const e = {
           blueDashed: "Đường\x20đứt\x20nét\x20mảnh\x20màu\x20xanh\x20dương",
           grayDashed: "Đường đứt nét mảnh màu xám",
           blueDashedEndArrow: "Đường đứt nét xanh dương có mũi tên ở cuối",
-          grayDashedEndArrow:
-            "Đường\x20đứt\x20nét\x20xám\x20có\x20mũi\x20tên\x20ở\x20cuối",
-          greenDashedTwoWayArrow: "Đường đứt nét xanh lá có mũi tên hai chiều",
+          grayDashedEndArrow: "Đường\x20đứt\x20nét\x20xám\x20có\x20mũi\x20tên\x20ở\x20cuối",
+          greenDashedTwoWayArrow: "Đường đứt nét xanh lá có mũi tên hai chiều"
         },
         text: {
           bodyBlack: "Nội\x20dung\x20đen",
           titleBlack: "Tiêu đề đen",
           accentBlue: "Nhấn mạnh xanh dương",
           accentOrange: "Nhấn mạnh cam",
-          noteGray: "Ghi chú xám",
-        },
-      },
+          noteGray: "Ghi chú xám"
+        }
+      }
     },
     thumbnailBar: {
       resizePanel: "Đổi kích thước bảng hình thu nhỏ trang chiếu",
@@ -109,7 +110,7 @@ const e = {
         copy: "Sao chép",
         paste: "Dán",
         addBelow: "Thêm\x20trang\x20chiếu\x20bên\x20dưới",
-        delete: "Xóa",
+        delete: "Xóa"
       },
       layoutPicker: {
         title: "Chọn bố cục",
@@ -121,9 +122,9 @@ const e = {
           comparison: "So sánh",
           blank: "Trống",
           titleOnly: "Chỉ\x20tiêu\x20đề",
-          pictureWithCaption: "Hình ảnh có chú thích",
-        },
-      },
+          pictureWithCaption: "Hình ảnh có chú thích"
+        }
+      }
     },
     shapePanel: {
       title: "Định dạng hình dạng",
@@ -143,19 +144,19 @@ const e = {
         textColor: "Màu chữ",
         textBackgroundColor: "Màu\x20nền\x20chữ",
         fillColor: "Màu\x20nền\x20văn\x20bản",
-        resetColor: "Đặt lại màu",
+        resetColor: "Đặt lại màu"
       },
       align: {
         top: "Căn trên",
         middle: "Căn giữa theo chiều dọc",
-        bottom: "Căn\x20dưới",
+        bottom: "Căn\x20dưới"
       },
       textWrap: {
         inline: "Cùng\x20dòng\x20với\x20văn\x20bản",
         square: "Hình vuông",
         topAndBottom: "Trên\x20và\x20dưới",
         behindText: "Phía sau văn bản",
-        inFrontText: "Phía trước văn bản",
+        inFrontText: "Phía trước văn bản"
       },
       textBox: {
         title: "H?p v?n b?n",
@@ -174,7 +175,7 @@ const e = {
         paddingBottom: "D??i",
         columns: "C?t",
         columnCount: "S?\x20l??ng",
-        columnSpacing: "Kho?ng c?ch",
+        columnSpacing: "Kho?ng c?ch"
       },
       position: {
         title: "Vị trí và kích thước",
@@ -182,7 +183,7 @@ const e = {
         y: "Y",
         width: "Chiều rộng",
         height: "Chiều cao",
-        rotation: "Xoay",
+        rotation: "Xoay"
       },
       style: {
         shadow: "Bóng",
@@ -201,8 +202,8 @@ const e = {
           shdw2: "Bên ngoài: trên phải",
           shdw1: "Bên ngoài: trên trái",
           shdw14: "Bên ngoài: dưới phải nhỏ",
-          shdw10: "Bên\x20ngoài:\x20trên\x20trái\x20lớn",
-        },
+          shdw10: "Bên\x20ngoài:\x20trên\x20trái\x20lớn"
+        }
       },
       fill: {
         title: "Tô màu",
@@ -231,9 +232,9 @@ const e = {
             r: "Bên\x20phải",
             bl: "Dưới cùng bên trái",
             b: "Dưới cùng",
-            br: "Dưới cùng bên phải",
-          },
-        },
+            br: "Dưới cùng bên phải"
+          }
+        }
       },
       line: {
         title: "Đường kẻ",
@@ -256,26 +257,26 @@ const e = {
           dashDot: "Gạch ngang-chấm",
           longDash: "Gạch\x20ngang\x20dài",
           longDashDot: "Gạch ngang dài-chấm",
-          longDashDotDot: "Gạch\x20ngang\x20dài-chấm-chấm",
+          longDashDotDot: "Gạch\x20ngang\x20dài-chấm-chấm"
         },
         capType: {
           title: "Kiểu đầu đường",
           flat: "Phẳng",
           round: "Tròn",
-          square: "Vuông",
+          square: "Vuông"
         },
         joinType: {
           title: "Kiểu nối",
           miter: "Góc nhọn",
           round: "Tròn",
-          bevel: "Vát",
+          bevel: "Vát"
         },
         sketchType: {
           title: "Kiểu phác thảo",
           none: "Không",
           curved: "Cong",
           freehand: "Tự do",
-          handDrawn: "Vẽ\x20tay",
+          handDrawn: "Vẽ\x20tay"
         },
         arrowType: {
           none: "Không",
@@ -283,10 +284,14 @@ const e = {
           openArrow: "Mũi tên mở",
           stealthArrow: "Mũi tên tàng hình",
           diamondArrow: "Mũi tên hình thoi",
-          ovalArrow: "Mũi tên hình bầu dục",
+          ovalArrow: "Mũi tên hình bầu dục"
         },
-        arrowSize: { small: "Nhỏ", medium: "Vừa", large: "Lớn" },
-      },
+        arrowSize: {
+          small: "Nhỏ",
+          medium: "Vừa",
+          large: "Lớn"
+        }
+      }
     },
     objectListPanel: {
       title: "Danh sách đối tượng",
@@ -304,7 +309,7 @@ const e = {
       description: "Mô tả",
       descriptionPlaceholder: "Thêm mô tả",
       details: "Chi tiết",
-      noSelection: "Chọn một đối tượng để chỉnh sửa chi tiết",
+      noSelection: "Chọn một đối tượng để chỉnh sửa chi tiết"
     },
     backgroundPanel: {
       title: "Định dạng nền",
@@ -329,11 +334,11 @@ const e = {
         cover: "Lấp đầy",
         contain: "Vừa\x20khung",
         stretch: "Kéo\x20giãn",
-        repeat: "Lặp lại",
+        repeat: "Lặp lại"
       },
       patternHint: "Cài đặt hoa văn sẽ sớm có.",
       applyToAll: "Áp dụng cho tất cả",
-      resetBackground: "Đặt\x20lại\x20nền",
+      resetBackground: "Đặt\x20lại\x20nền"
     },
     transitionPanel: {
       title: "Chuyển tiếp",
@@ -352,14 +357,14 @@ const e = {
         cut: "Cắt",
         uncover: "Bỏ che",
         cover: "Che phủ",
-        zoom: "Thu\x20phóng",
+        zoom: "Thu\x20phóng"
       },
       directions: {
         left: "Từ trái",
         right: "Từ phải",
         up: "Từ\x20trên",
-        down: "Từ dưới",
-      },
+        down: "Từ dưới"
+      }
     },
     contextmenu: {
       addPage: "Trang\x20trình\x20bày\x20mới",
@@ -371,7 +376,7 @@ const e = {
       flipHorizontal: "Lật ngang",
       flipVertical: "Lật\x20dọc",
       group: "Nhóm",
-      ungroup: "Bỏ nhóm",
+      ungroup: "Bỏ nhóm"
     },
     presentation: {
       play: "Phát",
@@ -380,14 +385,12 @@ const e = {
       playDualScreen: "Trình bày màn hình kép",
       playDualScreenFromBeginning: "Màn hình kép từ đầu",
       playDualScreenFromCurrent: "Màn hình kép từ hiện tại",
-      dualScreenUnavailable:
-        "Không\x20thể\x20bắt\x20đầu\x20trình\x20bày\x20màn\x20hình\x20kép.\x20Hãy\x20cho\x20phép\x20quyền\x20quản\x20lý\x20cửa\x20sổ\x20và\x20kết\x20nối\x20màn\x20hình\x20mở\x20rộng,\x20rồi\x20thử\x20lại.",
+      dualScreenUnavailable: "Không\x20thể\x20bắt\x20đầu\x20trình\x20bày\x20màn\x20hình\x20kép.\x20Hãy\x20cho\x20phép\x20quyền\x20quản\x20lý\x20cửa\x20sổ\x20và\x20kết\x20nối\x20màn\x20hình\x20mở\x20rộng,\x20rồi\x20thử\x20lại.",
       fullscreenPrompt: "Nhấp để toàn màn hình",
       dismissFullscreenPrompt: "Đóng lời nhắc toàn màn hình",
       enterFullscreen: "Vào chế độ toàn màn hình",
       exitFullscreen: "Thoát chế độ toàn màn hình",
-      fullscreenFailed:
-        "Không thể thay đổi chế độ toàn màn hình. Hãy kiểm tra quyền của trình duyệt rồi thử lại.",
+      fullscreenFailed: "Không thể thay đổi chế độ toàn màn hình. Hãy kiểm tra quyền của trình duyệt rồi thử lại.",
       thumbnailNavigation: "Hình thu nhỏ của trang chiếu",
       goToSlide: "Chuyển đến trang chiếu {index}",
       presentationEnded: "Bản trình bày đã kết thúc",
@@ -403,7 +406,7 @@ const e = {
       speakerNotesClear: "Xóa",
       speakerNotesCleared: "Đã xóa ghi chú của trang chiếu hiện tại",
       speakerNotesClearFailed: "Không thể xóa ghi chú. Vui lòng thử lại",
-      speakerNotesCancel: "Hủy",
+      speakerNotesCancel: "Hủy"
     },
     slide: {
       placeholder: {
@@ -415,16 +418,16 @@ const e = {
           header: "Trình giữ chỗ tiêu đề",
           footer: "Trình giữ chỗ chân trang",
           date: "Trình giữ chỗ ngày tháng",
-          slideNumber: "Trình giữ chỗ số trang",
+          slideNumber: "Trình giữ chỗ số trang"
         },
         icon: {
           image: "Hình ảnh",
           table: "Bảng",
           chart: "Biểu đồ",
           diagram: "Sơ đồ",
-          media: "Đa phương tiện",
-        },
-      },
+          media: "Đa phương tiện"
+        }
+      }
     },
     "image-panel": {
       arrange: {
@@ -432,7 +435,7 @@ const e = {
         forward: "Đưa lên trước",
         backward: "Đưa\x20xuống\x20sau",
         front: "Đưa lên đầu",
-        back: "Đưa xuống cuối",
+        back: "Đưa xuống cuối"
       },
       transform: {
         title: "Biến đổi",
@@ -441,15 +444,15 @@ const e = {
         y: "Y (px)",
         width: "Chiều\x20rộng\x20(px)",
         height: "Chiều cao (px)",
-        lock: "Khóa tỷ lệ",
+        lock: "Khóa tỷ lệ"
       },
       crop: {
         title: "Cắt",
         start: "Bắt đầu cắt",
         mode: "Tự do",
-        shape: "Cắt\x20theo\x20hình\x20dạng",
-      },
-    },
-  },
+        shape: "Cắt\x20theo\x20hình\x20dạng"
+      }
+    }
+  }
 };
 export { e as default };

@@ -50,7 +50,7 @@ const e = {
       next: "Berikutnya",
       other: "Lainnya",
       ok: "OK",
-      cancel: "Batal",
+      cancel: "Batal"
     },
     valueFilter: {
       title: "Filter Nilai",
@@ -72,7 +72,7 @@ const e = {
       bottomPercent: "Persen terbawah",
       clear: "Hapus filter",
       ok: "OK",
-      cancel: "Batal",
+      cancel: "Batal"
     },
     dateGroup: {
       title: "Grup Tanggal",
@@ -86,7 +86,7 @@ const e = {
       date: "Hari",
       hour: "Jam",
       minute: "Menit",
-      hourMinute: "Jam-Menit",
+      hourMinute: "Jam-Menit"
     },
     dialog: {
       fieldName: "Nama Bidang",
@@ -102,7 +102,7 @@ const e = {
         clearFilter: "Hapus Filter",
         blank: "(Kosong)",
         cancel: "Batal",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "Umum",
@@ -115,18 +115,14 @@ const e = {
         confirm: "OK",
         cancel: "Batal",
         generalDesc: "Format umum tidak berisi format angka tertentu.",
-        accountingDesc:
-          "Format angka akuntansi menyelaraskan simbol mata uang dan titik desimal dalam kolom.",
-        currencyDesc:
-          "Format mata uang digunakan untuk nilai moneter umum, format akuntansi menyelaraskan titik desimal dalam kolom nilai.",
-        dateDesc:
-          "Format tanggal menampilkan nomor seri tanggal dan waktu sebagai nilai tanggal.",
-        thousandthPercentileDesc:
-          "Format persentil ribuan digunakan untuk angka umum, format mata uang dan akuntansi menyediakan format khusus untuk nilai moneter.",
+        accountingDesc: "Format angka akuntansi menyelaraskan simbol mata uang dan titik desimal dalam kolom.",
+        currencyDesc: "Format mata uang digunakan untuk nilai moneter umum, format akuntansi menyelaraskan titik desimal dalam kolom nilai.",
+        dateDesc: "Format tanggal menampilkan nomor seri tanggal dan waktu sebagai nilai tanggal.",
+        thousandthPercentileDesc: "Format persentil ribuan digunakan untuk angka umum, format mata uang dan akuntansi menyediakan format khusus untuk nilai moneter.",
         decimalPlaces: "Tempat Desimal",
         currencyTypes: "Jenis Mata Uang",
         negativeNumberTypes: "Jenis Angka Negatif",
-        dateTypes: "Jenis Tanggal",
+        dateTypes: "Jenis Tanggal"
       },
       source: {
         insertPivotTable: "Sisipkan Tabel Pivot",
@@ -134,8 +130,8 @@ const e = {
         position: "Penempatan\x20Tabel\x20Pivot",
         newSheet: "Lembar Baru",
         existingSheet: "Lembar yang Ada",
-        intersect: "Tidak dapat tumpang tindih dengan data sumber",
-      },
+        intersect: "Tidak dapat tumpang tindih dengan data sumber"
+      }
     },
     subtotal: {
       average: "Rata-rata",
@@ -148,7 +144,7 @@ const e = {
       stdDevp: "Deviasi Standar Populasi",
       sum: "Jumlah",
       var: "Varians",
-      varp: "Varians Populasi",
+      varp: "Varians Populasi"
     },
     subTotalText: "Subtotal",
     grandTotalText: "Total Keseluruhan",
@@ -174,25 +170,21 @@ const e = {
       layoutCompact: "Bentuk\x20ringkas",
       layoutOutline: "Bentuk\x20kerangka",
       repeatRowLabels: "Ulangi label baris",
-      repeatColLabels: "Ulangi label kolom",
+      repeatColLabels: "Ulangi label kolom"
     },
     perform: {
       tips: "Tips",
       info: "Sudah ada data di area target. Tindakan ini akan menimpa data yang ada. Apakah Anda ingin melanjutkan?",
       confirm: "Konfirmasi",
       cancel: "Batal",
-      rowColError:
-        "Perubahan ini tidak dapat dilakukan pada sel yang dipilih karena akan memengaruhi tabel pivot. Harap gunakan daftar bidang untuk mengubah laporan. Jika Anda mencoba menyisipkan atau menghapus sel, pindahkan tabel pivot dan coba lagi.",
+      rowColError: "Perubahan ini tidak dapat dilakukan pada sel yang dipilih karena akan memengaruhi tabel pivot. Harap gunakan daftar bidang untuk mengubah laporan. Jika Anda mencoba menyisipkan atau menghapus sel, pindahkan tabel pivot dan coba lagi."
     },
     msg: {
       emptySourceRange: "Rentang sumber data kosong",
       invalidSize: "Rentang sumber data tidak valid",
-      mergeCellError:
-        "Tidak\x20dapat\x20menyisipkan\x20sel\x20yang\x20digabungkan\x20ke\x20tabel\x20pivot",
-      editCellError:
-        "Tidak\x20dapat\x20mengedit\x20sel\x20dalam\x20tabel\x20pivot",
-      permissionError:
-        "Tidak\x20dapat\x20mengedit\x20tabel\x20pivot\x20dalam\x20lembar\x20yang\x20dilindungi",
+      mergeCellError: "Tidak\x20dapat\x20menyisipkan\x20sel\x20yang\x20digabungkan\x20ke\x20tabel\x20pivot",
+      editCellError: "Tidak\x20dapat\x20mengedit\x20sel\x20dalam\x20tabel\x20pivot",
+      permissionError: "Tidak\x20dapat\x20mengedit\x20tabel\x20pivot\x20dalam\x20lembar\x20yang\x20dilindungi"
     },
     averageName: "Rata-rata dari ",
     countName: "Jumlah dari ",
@@ -204,7 +196,7 @@ const e = {
     stdDevpName: "StdDevp dari ",
     sumName: "Jumlah dari ",
     varName: "Var\x20dari\x20",
-    varpName: "Varp dari ",
-  },
+    varpName: "Varp dari "
+  }
 };
 module.exports = e;

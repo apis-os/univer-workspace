@@ -1,9 +1,10 @@
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,Tools,UniverInstanceType,merge,registerDependencies,toDisposable}from"@univerjs/core";
-import{RevertRevisionMutation,UniverCollaborationPlugin,parseProtocolChangeset}from"@univerjs-pro/collaboration";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{HTTPService}from"@univerjs/network";
-import{ErrorCode}from"@univerjs/protocol";
-import{BehaviorSubject}from"rxjs";
-let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765=function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756.Unspecified=0]="Unspecified",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756.User=1]="User",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756.Character=2]="Character",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756;}({});
-
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, merge, registerDependencies, toDisposable } from "@univerjs/core";
+import { RevertRevisionMutation, UniverCollaborationPlugin, parseProtocolChangeset } from "@univerjs-pro/collaboration";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { HTTPService } from "@univerjs/network";
+import { ErrorCode } from "@univerjs/protocol";
+import { BehaviorSubject } from "rxjs";
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765 = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756.Unspecified = 0] = "Unspecified", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756.User = 1] = "User", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756.Character = 2] = "Character", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46756;
+}({});
 export { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46765 as HistoryOrigin };

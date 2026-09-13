@@ -1,1 +1,8 @@
-let e=require("@univerjs-pro/range-preprocess"),t=require("@univerjs/sheets/facade");var n=class extends t.FWorkbook{getPreprocessRanges(v1){return this._injector["get"](e.RangePreprocessController).getAllTableJson(this._workbook,v1);}};t.FWorkbook["extend"](n);
+let e = require("@univerjs-pro/range-preprocess"),
+  t = require("@univerjs/sheets/facade");
+var n = class extends t.FWorkbook {
+  getPreprocessRanges(var_core_value_sig7524) {
+    return this._injector["get"](e.RangePreprocessController).getAllTableJson(this._workbook, var_core_value_sig7524);
+  }
+};
+t.FWorkbook["extend"](n);

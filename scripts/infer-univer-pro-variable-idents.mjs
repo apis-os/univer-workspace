@@ -255,6 +255,49 @@ function uniqueIdent(scope, wanted, used) {
   return name;
 }
 
+function isIdentStart(c) {
+  return c != null && /[A-Za-z_$]/.test(c);
+}
+
+function isIdentChar(c) {
+  return c != null && /[\w$]/.test(c);
+}
+
+const REGEX_AFTER_KEYWORD =
+  /^(?:return|throw|case|typeof|void|delete|new|await|yield|else|in|of|instanceof)$/;
+
+function canStartRegex(src, slashIndex) {
+  let k = slashIndex - 1;
+  while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+    k -= 1;
+  }
+  if (k < 0) return true;
+  const prev = src[k];
+  if (/[=(,;:{[!&|?~+\-*%<>^]/.test(prev)) return true;
+  if (!/[A-Za-z]/.test(prev)) return false;
+  let start = k;
+  while (start >= 0 && /[A-Za-z]/.test(src[start])) start -= 1;
+  return REGEX_AFTER_KEYWORD.test(src.slice(start + 1, k + 1));
+}
+
+function skipRegexLiteral(src, slashIndex) {
+  let i = slashIndex + 1;
+  while (i < src.length) {
+    if (src[i] === "\\") {
+      i += 2;
+      continue;
+    }
+    if (src[i] === "/") {
+      i += 1;
+      while (i < src.length && /[gimsuy]/.test(src[i])) i += 1;
+      return i;
+    }
+    if (src[i] === "\n") return i;
+    i += 1;
+  }
+  return i;
+}
+
 function skipStringOrComment(src, i) {
   const c = src[i];
   const n = src[i + 1];
@@ -266,6 +309,9 @@ function skipStringOrComment(src, i) {
   if (c === "/" && n === "*") {
     const j = src.indexOf("*/", i + 2);
     return j < 0 ? src.length : j + 2;
+  }
+  if (c === "/" && n !== "/" && n !== "*" && canStartRegex(src, i)) {
+    return skipRegexLiteral(src, i);
   }
   if (c === "'" || c === '"' || c === "`") {
     const q = c;
@@ -281,14 +327,6 @@ function skipStringOrComment(src, i) {
     return src.length;
   }
   return i;
-}
-
-function isIdentStart(c) {
-  return c != null && /[A-Za-z_$]/.test(c);
-}
-
-function isIdentChar(c) {
-  return c != null && /[\w$]/.test(c);
 }
 
 function readIdentAt(src, i) {
@@ -396,6 +434,97 @@ export function uniqueifyCollidingInferredNames(src) {
     out = `${out.slice(0, job.start)}${job.to}${out.slice(job.end)}`;
   }
   return { src: out, changed: true, renamed: jobs.length };
+}
+
+function scanCrypticIdentSpans(src) {
+  const spans = [];
+  for (let i = 0; i < src.length; ) {
+    const next = skipStringOrComment(src, i);
+    if (next !== i) {
+      i = next;
+      continue;
+    }
+    if (isIdentStart(src[i])) {
+      const ident = readIdentAt(src, i);
+      if (ident && CRYPTIC.test(ident.name)) spans.push(ident);
+      i = ident ? ident.end : i + 1;
+      continue;
+    }
+    i += 1;
+  }
+  return spans;
+}
+
+function leftoverWantedName(name, isFn, used) {
+  const role = isFn ? "routine" : "value";
+  const bloom = computeTypeBloomSignature([{ name, type: role }], "*", name);
+  const wanted = isFn
+    ? `fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig${bloom}`
+    : `var_core_${role}_sig${bloom}`;
+  let out = wanted;
+  let n = 0;
+  while (used.has(out) || !/^[A-Za-z_$][\w$]*$/.test(out)) {
+    n += 1;
+    out = `${wanted}${n}`;
+  }
+  used.add(out);
+  return out;
+}
+
+const LEFTOVER_V = /^v\d+$/;
+
+function scanLeftoverVSpans(src) {
+  const spans = [];
+  for (let i = 0; i < src.length; ) {
+    const next = skipStringOrComment(src, i);
+    if (next !== i) {
+      i = next;
+      continue;
+    }
+    if (isIdentStart(src[i])) {
+      const ident = readIdentAt(src, i);
+      if (ident && LEFTOVER_V.test(ident.name)) spans.push(ident);
+      i = ident ? ident.end : i + 1;
+      continue;
+    }
+    i += 1;
+  }
+  return spans;
+}
+
+/**
+ * Globally unique leftover vNNNN from T0b stay unique. Token-rename
+ * identifier spans only (skip strings/comments/regex/Comb keys). Does not
+ * rewrite ox<hex> decoder names.
+ */
+export function renameLeftoverCrypticTokens(src, filePath = "") {
+  const spans = scanLeftoverVSpans(src);
+  if (spans.length === 0) return { src, renamed: 0, changed: false };
+  const fnNames = new Set();
+  for (const span of spans) {
+    let k = span.start - 1;
+    while (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r") k -= 1;
+    if (k >= 7 && src.slice(k - 7, k + 1) === "function" && !isIdentChar(src[k - 8])) {
+      fnNames.add(span.name);
+    }
+  }
+  const used = new Set();
+  const map = new Map();
+  for (const span of spans) {
+    if (map.has(span.name)) continue;
+    map.set(span.name, leftoverWantedName(span.name, fnNames.has(span.name), used));
+  }
+  const parts = [];
+  let prev = 0;
+  for (const span of spans) {
+    const to = map.get(span.name);
+    if (!to) continue;
+    parts.push(src.slice(prev, span.start), to);
+    prev = span.end;
+  }
+  parts.push(src.slice(prev));
+  const out = parts.join("");
+  return { src: out, renamed: map.size, changed: out !== src, filePath };
 }
 
 const WRAP_SUFFIXES = ["", "}", "}}", "}}}", "})}", "})}}", "});", "})};", ")}", "})", ");", "();"];
@@ -618,10 +747,22 @@ export function inferStatementLikePieces(src, hintPath = "index.js", depth = 0) 
   const unique = uniqueifyCollidingInferredNames(src);
   src = unique.src;
   const whole = tryInferPiece(src, hintPath);
-  if (whole.ok) return { src: whole.src, inferred: 1, failed: 0 };
+  if (whole.ok) {
+    let out = whole.src;
+    if (depth === 0) {
+      const leftover = renameLeftoverCrypticTokens(out, hintPath);
+      out = leftover.src;
+    }
+    return { src: out, inferred: 1, failed: 0 };
+  }
   if (depth >= 8) {
     const innerFns = inferInnerCrypticFunctions(src, hintPath);
-    return { src: innerFns.src, inferred: innerFns.inferred, failed: innerFns.inferred ? 0 : 1 };
+    let out = innerFns.src;
+    if (depth === 0) {
+      const leftover = renameLeftoverCrypticTokens(out, hintPath);
+      out = leftover.src;
+    }
+    return { src: out, inferred: innerFns.inferred, failed: innerFns.inferred ? 0 : 1 };
   }
   const cuts = [...new Set([...statementLikeCutOffsets(src), ...lstStatementOffsets(src, hintPath)])].sort(
     (a, b) => a - b
@@ -629,8 +770,14 @@ export function inferStatementLikePieces(src, hintPath = "index.js", depth = 0) 
   const pieces = splitPieces(src, cuts);
   if (pieces.length <= 1) {
     const innerFns = inferInnerCrypticFunctions(src, hintPath);
+    let out = innerFns.src;
+    if (depth === 0) {
+      const leftover = renameLeftoverCrypticTokens(out, hintPath);
+      out = leftover.src;
+      innerFns.inferred += leftover.renamed || 0;
+    }
     return {
-      src: innerFns.src,
+      src: out,
       inferred: innerFns.inferred,
       failed: innerFns.inferred ? 0 : 1
     };
@@ -648,6 +795,11 @@ export function inferStatementLikePieces(src, hintPath = "index.js", depth = 0) 
     const innerFns = inferInnerCrypticFunctions(out, hintPath);
     out = innerFns.src;
     inferred += innerFns.inferred;
+  }
+  if (depth === 0) {
+    const leftover = renameLeftoverCrypticTokens(out, hintPath);
+    out = leftover.src;
+    inferred += leftover.renamed || 0;
   }
   return { src: out, inferred, failed };
 }
@@ -1023,6 +1175,13 @@ export function processVendorFile(filePath, { write = false, apply = false, spli
     };
     if (inferred.aborted) {
       return { rel: posixRel(filePath), aborted: true, reason: inferred.reason, beforeV, before0x };
+    }
+  }
+  {
+    const leftover = renameLeftoverCrypticTokens(next, filePath);
+    if (leftover.changed) {
+      next = leftover.src;
+      pieceInferred += leftover.renamed || 0;
     }
   }
   let splitFiles = null;

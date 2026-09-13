@@ -1,11 +1,50 @@
-import{combineDrawingEffectFilter,createDrawingEffectFilter,expandDrawingEffectBounds}from'@univerjs/engine-render';
-import{BooleanNumber,DependentOn,HorizontalAlign,IConfigService,ImageSourceType,Inject,Injector,JSONX,Plugin,RichTextBuilder,RichTextValue,TextX,Tools,UniverInstanceType,VerticalAlign,createIdentifier,generateRandomId,getSingleDataStreamChange,merge,toDisposable}from'@univerjs/core';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
-import{HostExternalReferenceModel}from'@univerjs-pro/engine-formula';
+import { combineDrawingEffectFilter, createDrawingEffectFilter, expandDrawingEffectBounds } from '@univerjs/engine-render';
+import { BooleanNumber, DependentOn, HorizontalAlign, IConfigService, ImageSourceType, Inject, Injector, JSONX, Plugin, RichTextBuilder, RichTextValue, TextX, Tools, UniverInstanceType, VerticalAlign, createIdentifier, generateRandomId, getSingleDataStreamChange, merge, toDisposable } from '@univerjs/core';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { HostExternalReferenceModel } from '@univerjs-pro/engine-formula';
 import { K } from "./engine-shape-connector-shape.js";
 import { nh } from "./engine-shape-shape-model.js";
 import { ng } from "./engine-shape-connector-coordinate-transform.js";
 import { Wh } from "./engine-shape-basic-shape-rotate-bound.js";
-function rg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612559){if(K(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeType))return null;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612560=new nh(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeType,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeData),{left:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612561,top:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612562,width:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,height:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564,rotation:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565,flipX:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612566,flipY:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612567}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.transform;var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612560.updateContext({'width':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,'height':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564});let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612560.getConnectionSiteList().find(({index:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466131})=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466131===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612559);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568)return null;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612569=new ng({'left':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612561,'top':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612562,'width':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,'height':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564,'angle':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565,'flipX':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612566,'flipY':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612567}),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568.ang/60000;return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612566&&(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004=180-var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612567&&(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004=-var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004=((var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565)%360+360)%360,{'point':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612569.localToWorld(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568),'angle':var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004,'bounds':Wh({'left':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612561,'top':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612562,'width':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,'height':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564},var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565)};}
-
+function rg(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612559) {
+  if (K(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeType)) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612560 = new nh(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeType, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.shapeData),
+    {
+      left: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612561,
+      top: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612562,
+      width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,
+      height: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564,
+      rotation: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565,
+      flipX: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612566,
+      flipY: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612567
+    } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612558.transform;
+  var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612560.updateContext({
+    'width': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,
+    'height': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564
+  });
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612560.getConnectionSiteList().find(({
+    index: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466131
+  }) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466131 === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612559);
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568) return null;
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612569 = new ng({
+      'left': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612561,
+      'top': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612562,
+      'width': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,
+      'height': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564,
+      'angle': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565,
+      'flipX': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612566,
+      'flipY': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612567
+    }),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568.ang / 60000;
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612566 && (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004 = 180 - var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612567 && (var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004 = -var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004), var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004 = ((var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565) % 360 + 360) % 360, {
+    'point': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612569.localToWorld(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612568),
+    'angle': var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D2004,
+    'bounds': Wh({
+      'left': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612561,
+      'top': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612562,
+      'width': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612563,
+      'height': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612564
+    }, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612565)
+  };
+}
 export { rg as resolveShapeConnectionPoint };

@@ -1,53 +1,45 @@
 const e = {
   "collaboration-client": {
-    collabClient: { tooltip: { reconnect: "Feu clic per reconnectar" } },
+    collabClient: {
+      tooltip: {
+        reconnect: "Feu clic per reconnectar"
+      }
+    },
     collabStatus: {
       fetchMiss: "Sincronitzant dades del servidor...",
       conflict: "Conflictes d'edició",
       notCollab: "Fitxer local",
       synced: "Sincronitzat",
       syncing: "Sincronitzant...",
-      offline: "Fora de línia, els canvis es desaran localment",
+      offline: "Fora de línia, els canvis es desaran localment"
     },
     session: {
       "connection-failed": "Error de connexió. Comproveu la vostra xarxa.",
-      "will-retry":
-        "Error de connexió. Ho tornarem a intentar d'aquí un moment.",
-      "room-full":
-        "Aquest document ha arribat al límit de col·laboració. Els vostres canvis es desaran localment.",
-      "join-failed":
-        "No\x20s\x27ha\x20pogut\x20unir\x20a\x20la\x20col·laboració.\x20Torneu-ho\x20a\x20provar\x20més\x20tard.\x20Els\x20vostres\x20canvis\x20es\x20desaran\x20localment.",
-      "room-not-exists":
-        "No s'ha pogut unir a la col·laboració. Els vostres canvis es desaran localment.",
-      "room-permission-denied":
-        "No teniu permís de col·laboració. Els vostres canvis es desaran localment.",
-      "room-cnt-exceeds":
-        "El nombre de documents col·laboratius supera el límit. Els vostres canvis es desaran localment.",
-      "collaboration-timeout":
-        "El\x20servidor\x20no\x20respon\x20a\x20la\x20vostra\x20sol·licitud\x20de\x20col·laboració.\x20Els\x20vostres\x20canvis\x20es\x20desaran\x20localment.",
+      "will-retry": "Error de connexió. Ho tornarem a intentar d'aquí un moment.",
+      "room-full": "Aquest document ha arribat al límit de col·laboració. Els vostres canvis es desaran localment.",
+      "join-failed": "No\x20s\x27ha\x20pogut\x20unir\x20a\x20la\x20col·laboració.\x20Torneu-ho\x20a\x20provar\x20més\x20tard.\x20Els\x20vostres\x20canvis\x20es\x20desaran\x20localment.",
+      "room-not-exists": "No s'ha pogut unir a la col·laboració. Els vostres canvis es desaran localment.",
+      "room-permission-denied": "No teniu permís de col·laboració. Els vostres canvis es desaran localment.",
+      "room-cnt-exceeds": "El nombre de documents col·laboratius supera el límit. Els vostres canvis es desaran localment.",
+      "collaboration-timeout": "El\x20servidor\x20no\x20respon\x20a\x20la\x20vostra\x20sol·licitud\x20de\x20col·laboració.\x20Els\x20vostres\x20canvis\x20es\x20desaran\x20localment."
     },
     conflict: {
       title: "Conflicte\x20de\x20col·laboració",
-      content:
-        "Hi\x20ha\x20un\x20conflicte\x20entre\x20la\x20vostra\x20còpia\x20local\x20i\x20la\x20còpia\x20del\x20servidor.\x20Deseu\x20els\x20vostres\x20canvis\x20locals,\x20perquè\x20es\x20perdran\x20quan\x20actualitzeu\x20la\x20pàgina.",
+      content: "Hi\x20ha\x20un\x20conflicte\x20entre\x20la\x20vostra\x20còpia\x20local\x20i\x20la\x20còpia\x20del\x20servidor.\x20Deseu\x20els\x20vostres\x20canvis\x20locals,\x20perquè\x20es\x20perdran\x20quan\x20actualitzeu\x20la\x20pàgina."
     },
     permission: {
       title: "Error d'autenticació",
-      content:
-        "Les vostres accions entren en conflicte amb els permisos del servidor. Deseu els vostres canvis locals en un altre lloc, perquè es descartaran després d'actualitzar la pàgina.",
+      content: "Les vostres accions entren en conflicte amb els permisos del servidor. Deseu els vostres canvis locals en un altre lloc, perquè es descartaran després d'actualitzar la pàgina."
     },
     collaboration: {
       "single-unit": {
-        warning:
-          "Heu obert el mateix fitxer en una altra pestanya. Per evitar la pèrdua de dades, no podeu editar en aquesta pestanya.",
+        warning: "Heu obert el mateix fitxer en una altra pestanya. Per evitar la pèrdua de dades, no podeu editar en aquesta pestanya."
       },
-      closeRoom:
-        "Els privilegis d'edició han estat revocats perquè la sala de col·laboració s'ha tancat.",
+      closeRoom: "Els privilegis d'edició han estat revocats perquè la sala de col·laboració s'ha tancat."
     },
     auth: {
-      needGotoLoginAlert:
-        "La vostra sessió ha caducat. Feu clic a D'acord per tornar a iniciar sessió, o a Cancel·la per desar els vostres canvis locals.",
-    },
-  },
+      needGotoLoginAlert: "La vostra sessió ha caducat. Feu clic a D'acord per tornar a iniciar sessió, o a Cancel·la per desar els vostres canvis locals."
+    }
+  }
 };
 export { e as default };

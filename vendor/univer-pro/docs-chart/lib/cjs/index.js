@@ -1,1 +1,1054 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/engine-chart"),t=require("@univerjs/core"),n=require("@univerjs/docs-drawing"),r=require("rxjs"),i=require("@univerjs/docs"),a=require("@univerjs-pro/license");const o={id:"doc.mutation.remove-doc-chart-data-source",type:t.CommandType["MUTATION"],handler:(v154,v155)=>v154.get(e.ChartResourceRepository).removeDataSource(v155.unitId,v155.dataSourceId)},s={id:"doc.mutation.set-doc-chart-data-source",type:t.CommandType["MUTATION"],handler:(v156,v157)=>(v156.get(e.ChartResourceRepository).setDataSource(v157.unitId,v157.dataSource),true)},c={id:"doc.mutation.set-doc-chart-snapshot",type:t.CommandType["MUTATION"],handler:(v158,v159)=>(v158.get(e.ChartResourceRepository).setChart(v159.unitId,v159.chart),true)},l={id:"doc.command.change-chart-data-source",type:t.CommandType["COMMAND"],handler:(v160,v161)=>{if(!v161)return false;let v162=v160.get(e.ChartResourceRepository),v163=v162.getChart(v161.unitId,v161.chartId),v164=v163?v162.getDataSource(v161.unitId,v163.dataSourceId):undefined;if(!v163||!v164)return false;let v165=v162.isDataSourceShared(v161.unitId,v164.id),v166=v165?v161.duplicateDataSourceId??(0,t.generateRandomId)():v164.id,v167=u(v166,v161.dataSource,v161.name??v164.name),v168=v160.get(t.ICommandService),v169={id:s.id,params:{unitId:v161.unitId,dataSource:v167}},v170=[v169],v171=[{id:s.id,params:{unitId:v161.unitId,dataSource:v164}}];if(!v168.syncExecuteCommand(v169.id,v169.params))return false;if(v165){let v18={id:c.id,params:{unitId:v161.unitId,chart:{...v163,dataSourceId:v166}}},v19={id:o.id,params:{unitId:v161.unitId,dataSourceId:v166}};if(!v168.syncExecuteCommand(v18.id,v18.params))return v168.syncExecuteCommand(v19.id,v19.params),false;v170.push(v18),v171.splice(0,1,{id:c.id,params:{unitId:v161.unitId,chart:v163}},v19);}let v172=v160.get(t.IUndoRedoService),v173=v172.__tempBatchingUndoRedo(v161.unitId);return v172.pushUndoRedo({unitID:v161.unitId,undoMutations:v171,redoMutations:v170}),v173.dispose(),true;}};function u(v174,v175,v176){let v177=(0,e.isInlineChartDataSource)(v175)?{id:v174,name:v176,values:v175.values}:{id:v174,name:v176,source:v175.source};return v177.name??delete v177.name,v177;}const d={id:"doc.mutation.remove-doc-chart-snapshot",type:t.CommandType["MUTATION"],handler:(v178,v179)=>v178.get(e.ChartResourceRepository).removeChart(v179.unitId,v179.chartId,{cleanupDataSource:v179.cleanupDataSource})!=null},f={id:"doc.command.remove-doc-chart",type:t.CommandType["COMMAND"],handler:(v180,v181)=>{var v182;if(!v181)return false;let{unitId:v183,drawingId:v184}=v181,v185=v183,v186=v180.get(t.IUniverInstanceService).getUnit(v183,t.UniverInstanceType["UNIVER_DOC"]),v187=v186==null||(v182=v186.getDrawings())==null?undefined:v182[v184];if(!p(v187)||v181.chartId&&v187.chartId!==v181.chartId)return false;let v188=v180.get(e.ChartResourceRepository),v189=v188.getChart(v183,v187.chartId);if(!v189)return false;let v190=v180.get(t.ICommandService);return v190.syncExecuteCommand("doc.command.remove-doc-image",{unitId:v183,drawings:[{unitId:v183,subUnitId:v185,drawingId:v184,drawingType:t.DrawingTypeEnum["DRAWING_CHART"]}]})?!v188.getChart(v183,v189.id)||(0,t.sequenceExecute)([{id:d.id,params:{unitId:v183,chartId:v189.id,cleanupDataSource:v188.getDataSourceSharingCount(v183,v189.dataSourceId)<=1}}],v190).result:false;}};function p(v191){return(v191==null?undefined:v191.drawingType)===t.DrawingTypeEnum["DRAWING_CHART"]&&"chartId"in v191&&typeof v191.chartId=="string";}const m=Symbol("ReplaceDocChartConfig"),h={id:"doc.command.update-doc-chart-config",type:t.CommandType["COMMAND"],handler:(v192,v193)=>{if(!v193)return false;let{unitId:v194,chartId:v195}=v193,v196=v193[m]===true,v197=v192.get(e.ChartResourceRepository).getChart(v194,v195);if(!v197)return false;let v198=v192.get(t.ICommandService),v199=v192.get(t.IUndoRedoService),v200=e.chartConfigInterpreter["apply"](v197,v193,v196);if(!v200)return false;let v201={unitId:v194,chart:v200},v202={unitId:v194,chart:v197},v203=[{id:c.id,params:v201}],v204=[{id:c.id,params:v202}];return(0,t.sequenceExecute)(v203,v198).result?(v199.pushUndoRedo({unitID:v194,undoMutations:v204,redoMutations:v203}),true):false;}};function g(v205,v206){return function(v20,v21){v206(v20,v21,v205);};}function _(v207,v208,v209,v210){var v211=arguments.length,v212=v211<3?v208:v210===null?v210=Object.getOwnPropertyDescriptor(v208,v209):v210,v213;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v212=Reflect.decorate(v207,v208,v209,v210);else{for(var v214=v207.length-1;v214>=0;v214--)(v213=v207[v214])&&(v212=(v211<3?v213(v212):v211>3?v213(v208,v209,v212):v213(v208,v209))||v212);}return v211>3&&v212&&Object.defineProperty(v208,v209,v212),v212;}let v=class extends e.ChartResourceRuntimeService{constructor(v22,v23,v24){super(v22,v23,e.buildChartDataSetFromValues,v24);}};v=_([g(0,(0,t.Inject)(e.ChartResourceRepository)),g(1,(0,t.Inject)(t.Injector)),g(2,(0,t.Inject)(e.IChartDataSourceRuntimeService))],v);const y={id:"doc.command.duplicate-doc-chart-data-source",type:t.CommandType["COMMAND"],handler:(v215,v216)=>{if(!v216)return false;let{unitId:v217,chartId:v218,duplicateDataSourceId:v219}=v216,v220=v215.get(e.ChartResourceRepository),v221=v220.getChart(v217,v218),v222=v221?v220.getDataSource(v217,v221.dataSourceId):undefined;if(!v221||!v222)return false;let v223={...v222,id:v219??(0,t.generateRandomId)()},v224=v215.get(t.ICommandService),v225=v215.get(t.IUndoRedoService),v226={unitId:v217,dataSource:v223},v227={unitId:v217,dataSourceId:v223.id},v228={unitId:v217,chart:{...v221,dataSourceId:v223.id}},v229={unitId:v217,chart:v221},v230=[{id:s.id,params:v226},{id:c.id,params:v228}],v231=[{id:c.id,params:v229},{id:o.id,params:v227}];return(0,t.sequenceExecute)(v230,v224).result?(v225.pushUndoRedo({unitID:v217,undoMutations:v231,redoMutations:v230}),true):false;}},b={id:"doc.command.update-doc-chart-data-source",type:t.CommandType["COMMAND"],handler:(v232,v233)=>{if(!v233)return false;let{unitId:v234,dataSourceId:v235,values:v236,name:v237}=v233;if(v236.length===0)return false;let v238=v232.get(e.ChartResourceRepository).getDataSource(v234,v235);if(!v238)return false;let v239=v232.get(t.ICommandService),v240=v232.get(t.IUndoRedoService),v241={unitId:v234,dataSource:{id:v235,values:v236,name:v237??v238.name}},v242={unitId:v234,dataSource:v238},v243=[{id:s.id,params:v241}],v244=[{id:s.id,params:v242}];return(0,t.sequenceExecute)(v243,v239).result?(v240.pushUndoRedo({unitID:v234,undoMutations:v244,redoMutations:v243}),true):false;}},x=[["Category","Value"],["Series\x201",1]];function S(v245){return Number.isFinite(v245)&&v245>0;}function C(v246){return v246===undefined||S(v246);}function w(v247){if(!C(v247))throw Error("Document chart width and height must be positive finite numbers.");}const T={id:"doc.command.update-doc-chart-drawing",type:t.CommandType["COMMAND"],handler:(v248,v249)=>{var v250;if(!v249||!v249.unitId||!v249.drawingId||!k(v249.layout))return false;let v251=v248.get(t.IUniverInstanceService).getUnit(v249.unitId,t.UniverInstanceType["UNIVER_DOC"]),v252=v251==null||(v250=v251.getDrawings())==null?undefined:v250[v249.drawingId];if(!O(v252)||v249.chartId&&v252.chartId!==v249.chartId)return false;let v253=E(v252,v249.layout),v254=t.JSONX["getInstance"]().replaceOp(["drawings",v249.drawingId],v252,v253);return v254?!!v248.get(t.ICommandService).syncExecuteCommand(i.RichTextEditingMutation["id"],{unitId:v249.unitId,actions:v254,textRanges:null,noNeedSetTextRange:true}):false;}};function E(v255,v256){let v257=v256.width!==undefined||v256.height!==undefined||v256.position!==undefined;return{...v255,...(v256.layoutType===undefined?{}:{layoutType:v256.layoutType}),...(v257?{docTransform:D(v255.docTransform,v256)}:{})};}function D(v258,v259){if(v259.width===undefined&&v259.height===undefined&&v259.position===undefined)return v258??(0,i.buildDocTransform)(480,320);let v260=v259.width??(v258==null?undefined:v258.size["width"])??480,v261=v259.height??(v258==null?undefined:v258.size["height"])??320,v262=v259.position;return{...(v258??(0,i.buildDocTransform)(v260,v261)),size:{width:v260,height:v261},...(v262===undefined?{}:{positionH:{relativeFrom:t.ObjectRelativeFromH["PAGE"],posOffset:v262.x},positionV:{relativeFrom:t.ObjectRelativeFromV["PARAGRAPH"],posOffset:v262.y}})};}function O(v263){return(v263==null?undefined:v263.drawingType)===t.DrawingTypeEnum["DRAWING_CHART"]&&"chartId"in v263&&typeof v263.chartId=="string";}function k(v264){return!!v264&&C(v264.width)&&C(v264.height)&&(v264.position===undefined||Number.isFinite(v264.position["x"])&&Number.isFinite(v264.position["y"]));}let A=function(v265){return v265.DuplicateIfShared="duplicateIfShared",v265.UpdateShared="updateShared",v265.RejectIfShared="rejectIfShared",v265;}({});function j(v266){let v267=v266.map(v25=>[...v25]),v268=v267.length;for(;v268>0&&v267[v268-1].every(v5=>v5==null||v5==="");)v268--;let v269=v267.slice(0,v268),v270=Math.max(0,...v269.map(v26=>v26.length));for(;v270>0&&v269.every(v6=>v6[v270-1]==null||v6[v270-1]==="");)v270--;return v269.map(v27=>v27.slice(0,v270)).filter(v28=>v28.length>0);}function M(v271,v272,v273){let v274=j(v272);if(v274.length===0)throw Error("Document\x20chart\x20values\x20are\x20required.");let{chartId:v275,injector:v276,unitId:v277}=v271,v278=v276.get(t.ICommandService),v279=v276.get(e.ChartResourceRepository),v280=v279.getChart(v277,v275);if(!v280)throw Error('Document chart "'+v275+'" was not found.');let v281=(v273==null?undefined:v273.mode)??"duplicateIfShared";if(v279.getChartIdsByDataSource(v277,v280.dataSourceId).length>1){if(v281==="rejectIfShared")throw Error("Document\x20chart\x20data\x20source\x20\x22"+v280.dataSourceId+"\x22\x20is\x20shared.");if(v281==="duplicateIfShared"){if(!v278.syncExecuteCommand(y.id,{unitId:v277,chartId:v275}))throw Error('Failed to duplicate data source for document chart "'+v275+"\x22.");v280=v279.getChart(v277,v275);}}if(!v280||!v278.syncExecuteCommand(b.id,{unitId:v277,dataSourceId:v280.dataSourceId,values:v274}))throw Error("Failed\x20to\x20update\x20document\x20chart\x20data\x20source\x20for\x20\x22"+v275+"\x22.");}function N(v282,v283){w(v283.width),w(v283.height);let{chartId:v284,drawingId:v285,injector:v286,unitId:v287}=v282;if(!v286.get(t.ICommandService).syncExecuteCommand(T.id,{unitId:v287,drawingId:v285,chartId:v284,layout:v283}))throw Error('Failed to update document chart layout "'+v284+"\x22.");}var P=class{constructor(v29){this._context=v29;}describe(v30={},v31){var v32,v33,v34;let{chartId:v35,documentDataModel:v36,drawingId:v37,injector:v38,unitId:v39}=this._context,v40=v38.get(v).ensureChartModel(v39,v35);if(!v40)throw Error("Document chart not found: "+v35);let v41=(v32=v36.getDrawings())==null?undefined:v32[v37],v42=v41!=null&&v41.docTransform?{width:(v33=v41.docTransform["size"])==null?undefined:v33.width,height:(v34=v41.docTransform["size"])==null?undefined:v34.height,layoutType:v41.layoutType}:undefined;return{...(0,e.describeChartModel)(v40.model,v30,v31),layout:v42};}getInfo(){var v43,v44;let v45=this.describe(),v46=this.getDataSource();if(!v46)throw Error("Document chart data source not found: "+this._context["chartId"]);return{config:(0,e.toChartCreateConfigSnapshot)(v45),dataSource:(0,e.isInlineChartDataSource)(v46)?{values:t.Tools["deepClone"](v46.values)}:(0,e.isReferencedChartDataSource)(v46)?{source:t.Tools["deepClone"](v46.source)}:(()=>{throw Error("Invalid Document chart data source: "+this._context["chartId"]);})(),position:t.Tools["deepClone"]((v43=v45.layout)==null?undefined:v43.position),size:v45.layout?{width:v45.layout["width"]??0,height:v45.layout["height"]??0}:undefined,layoutType:(v44=v45.layout)==null?undefined:v44.layoutType};}getData(){let{chartId:v47,injector:v48,unitId:v49}=this._context,v50=v48.get(e.ChartResourceRepository).getChart(v49,v47),v51=v50?v48.get(e.ChartResourceRepository).getDataSource(v49,v50.dataSourceId):null;return(0,e.isInlineChartDataSource)(v51)?v51.values:null;}getDataSource(){let{chartId:v52,injector:v53,unitId:v54}=this._context,v55=v53.get(e.ChartResourceRepository).getChart(v54,v52);return(v55?v53.get(e.ChartResourceRepository).getDataSource(v54,v55.dataSourceId):null)??null;}async commitDataSource(v56){let{injector:v57}=this._context,v58=(0,e.isReferencedChartDataSource)(v56)?v56.source:undefined,v59=v58?v57.get(e.IChartDataSourceRuntimeService).acquire(v58):null;try{if(v59){let v3=await(0,r.firstValueFrom)(v59.state$["pipe"]((0,r.filter)(({status:v1})=>v1!==e.ChartDataSourceRuntimeStatus["LOADING"])));if(v3.status!==e.ChartDataSourceRuntimeStatus["READY"])throw v3.error instanceof Error?v3.error:Error(v58==null?undefined:v58.kind);}this._commitDataSource(v56);}finally{v59==null||v59.dispose();}}async commitChanges(v60,v61,v62,v63=false){let{injector:v64}=this._context,v65=(0,e.isReferencedChartDataSource)(v60)?v60.source:undefined,v66=v65?v64.get(e.IChartDataSourceRuntimeService).acquire(v65):null;try{if(v66){let v4=await(0,r.firstValueFrom)(v66.state$["pipe"]((0,r.filter)(({status:v2})=>v2!==e.ChartDataSourceRuntimeStatus["LOADING"])));if(v4.status!==e.ChartDataSourceRuntimeStatus["READY"])throw v4.error instanceof Error?v4.error:Error(v65==null?undefined:v65.kind);}Object.keys(v61).length>0&&(v63?this._replaceConfig(v61):this.commit(v61)),Object.keys(v62).length>0&&this.commitHost(v62),v60&&this._commitDataSource(v60);}finally{v66==null||v66.dispose();}}refreshDataSource(){let{chartId:v67,injector:v68,unitId:v69}=this._context;return v68.get(v).refreshChartDataSource(v69,v67);}commit(v70){var v71;let{chartId:v72,injector:v73,unitId:v74}=this._context,v75=v73.get(v).ensureChartModel(v74,v72);if(!v75)throw Error("Document chart not found: "+v72);let v76=(0,e.toChartModelUpdate)(v70,{series:(v71=v75.model["config"])==null?undefined:v71.series,currentChartType:v75.model["chartType"],currentStyle:v75.model["style"],currentContext:v75.model["context"],currentDataAggregation:v75.model["dataAggregation"]});if(!v73.get(t.ICommandService).syncExecuteCommand(h.id,{unitId:v74,chartId:v72,...v76,[m]:true}))throw Error("Failed to update Document chart configuration.");}update(v77){let v78={};v77.position!==undefined&&(v78.position=v77.position),v77.size!==undefined&&(v78.width=v77.size["width"],v78.height=v77.size["height"]),Object.prototype["hasOwnProperty"].call(v77,"layoutType")&&(v78.layoutType=v77.layoutType);let v79={};return v77.anchor!==undefined&&(v79.anchor=v77.anchor),Object.keys(v78).length>0&&(v79.layout=v78),this.commitChanges(v77.dataSource,v77.config,v79,true);}_replaceConfig(v80){var v81;let{chartId:v82,injector:v83,unitId:v84}=this._context,v85=v83.get(v).ensureChartModel(v84,v82);if(!v85)throw Error("Document chart not found: "+v82);let v86=(0,e.toChartModelConfigReplacement)(v80,{series:(v81=v85.model["config"])==null?undefined:v81.series,currentStyle:v85.model["style"]});if(!v83.get(t.ICommandService).syncExecuteCommand(h.id,{unitId:v84,chartId:v82,...v86,[m]:true}))throw Error("Failed to update Document chart configuration.");}setDataSource(v87){return this.commitDataSource(Array.isArray(v87)?{values:v87}:{source:e.ResourceRefChartDataSourceAdapter["toReference"](v87)});}setAbsolutePosition(v88,v89){this.commitHost({layout:{position:{x:v88,y:v89}}});}setSize(v90,v91){this.commitHost({layout:{width:v90,height:v91}});}arrange(v92){let{documentDataModel:v93,drawingId:v94,injector:v95,unitId:v96}=this._context,v97=v93.getDrawingsOrder()??[],v98=v97.indexOf(v94);if(v98<0)throw Error("Document chart drawing not found: "+v94);if((0,t.getDrawingOrderIndex)(v98,v97.length,v92)!==v98&&!v95.get(t.ICommandService).syncExecuteCommand(n.SetDocDrawingArrangeCommand["id"],{unitId:v96,subUnitId:v96,drawingIds:[v94],arrangeType:v92}))throw Error("Failed to arrange Document chart.");}setZOrder(v99){let{documentDataModel:v100,drawingId:v101,injector:v102,unitId:v103}=this._context,v104=v100.getDrawingsOrder()??[],v105=v104.indexOf(v101);if(v105<0)throw Error("Document\x20chart\x20drawing\x20not\x20found:\x20"+v101);if((0,t.normalizeDrawingOrderIndex)(v99,v104.length)!==v105&&!v102.get(t.ICommandService).syncExecuteCommand(n.SetDocDrawingArrangeCommand["id"],{unitId:v103,subUnitId:v103,drawingIds:[v101],zOrder:v99}))throw Error("Failed\x20to\x20update\x20Document\x20chart\x20z-order.");}resolveData(v106,v107){let{chartId:v108,injector:v109,unitId:v110}=this._context,v111=v109.get(v).ensureChartModel(v110,v108);if(!v111)throw Error("Document chart not found: "+v108);return(0,e.buildChartPreviewData)(v111.model,v106,v107);}resolveDataSet(v112){var v113,v114;let{chartId:v115,injector:v116,unitId:v117}=this._context,v118=v116.get(v).ensureChartModel(v117,v115),v119=v116.get(e.ChartResourceRepository).getChart(v117,v115);if(!v118||!v119)throw Error("Document chart not found: "+v115);return(0,e.buildOrientedChartDataSet)(v112,{headerRow:((v113=v119.context)==null?undefined:v113.headerRow)??e.DEFAULT_CHART_RESOURCE_HEADER_ROW,isRowDirection:((v114=v119.context)==null?undefined:v114.orient)!=="column"});}commitHost(v120){let{chartId:v121,drawingId:v122,injector:v123,unitId:v124}=this._context;if(v120.anchor!==undefined)throw Error("Document chart anchor can only be set before insert().");v120.data!==undefined&&M({unitId:v124,chartId:v121,injector:v123},v120.data),v120.layout!==undefined&&N({unitId:v124,chartId:v121,drawingId:v122,injector:v123},v120.layout);}remove(){let{chartId:v125,drawingId:v126,injector:v127,unitId:v128}=this._context;return!!v127.get(t.ICommandService).syncExecuteCommand(f.id,{unitId:v128,drawingId:v126,chartId:v125});}_commitDataSource(v129){let{chartId:v130,injector:v131,unitId:v132}=this._context;if(!v131.get(t.ICommandService).syncExecuteCommand(l.id,{unitId:v132,chartId:v130,dataSource:v129}))throw Error(l.id);}};let F=function(v288){return v288.Selection="selection",v288.BodyOffset="bodyOffset",v288.Paragraph="paragraph",v288.TextRange="textRange",v288;}({}),I=function(v289){return v289.Before="before",v289.After="after",v289;}({});const L={},R={id:"doc.command.insert-doc-chart",type:t.CommandType["COMMAND"],handler:(v290,v291)=>{var v292,v293,v294,v295,v296,v297;if(!v291||!v291.unitId)return false;let v298=t.Tools["deepClone"](v291.chart);if(!v298.chartType||((v292=v291.textRange)==null?undefined:v292.segmentId)!=null&&v291.textRange["segmentId"]!==""||!C(v291.width)||!C(v291.height)||v291.position&&(!Number.isFinite(v291.position["x"])||!Number.isFinite(v291.position["y"])))return false;v298.id=v298.id??(0,t.generateRandomId)(6),v298.context={...v298.context,headerRow:((v293=v298.context)==null?undefined:v293.headerRow)??e.DEFAULT_CHART_RESOURCE_HEADER_ROW};let v299=z(v291.dataSource);v298.dataSourceId=v299.id;let v300=(v294=v290.get(t.IConfigService).getConfig("docs-chart.config"))==null?undefined:v294.defaultChartSize,v301=(v295=v291.drawing)==null?undefined:v295.docTransform,v302=v291.width??(v301==null?undefined:v301.size["width"])??(v300==null?undefined:v300.width)??480,v303=v291.height??(v301==null?undefined:v301.size["height"])??(v300==null?undefined:v300.height)??320,v304={...(v301??(0,i.buildDocTransform)(v302,v303)),size:{width:v302,height:v303},...(v291.position===undefined?{}:{positionH:{relativeFrom:t.ObjectRelativeFromH["PAGE"],posOffset:v291.position["x"]},positionV:{relativeFrom:t.ObjectRelativeFromV["PARAGRAPH"],posOffset:v291.position["y"]}})},v305=B({unitId:v291.unitId,chartId:v298.id,drawing:v291.drawing,docTransform:v304});if(!S(((v296=v305.docTransform)==null?undefined:v296.size["width"])??NaN)||!S(((v297=v305.docTransform)==null?undefined:v297.size["height"])??NaN))return false;let v306={unitId:v291.unitId,dataSource:v299},v307={unitId:v291.unitId,chart:v298},v308={unitId:v291.unitId,chartId:v298.id},v309={unitId:v291.unitId,dataSourceId:v299.id},v310=[{id:s.id,params:v306},{id:c.id,params:v307}],v311=[{id:d.id,params:v308},{id:o.id,params:v309}],v312=v290.get(t.ICommandService),v313=v290.get(t.IUndoRedoService),v314=(0,t.sequenceExecute)(v310,v312);if(!v314.result)return(0,t.sequenceExecute)(v311.slice(v311.length-v314.index),v312),false;let v315="doc-chart-insert-resource:"+v291.unitId+":"+v298.id,v316=v313.__tempBatchingUndoRedo(v291.unitId);v313.pushUndoRedo({unitID:v291.unitId,redoMutations:v310,undoMutations:v311,id:v315});let v317={unitId:v291.unitId,drawings:[v305]};if(v291.textRange!=null&&(v317.textRange=(0,i.normalizeTextRange)(v291.textRange)),!v312.syncExecuteCommand(n.InsertDocDrawingCommand["id"],v317))return v316.dispose(),v313.rollback(v315,v291.unitId),false;if(v291.focus!==false)try{v290.get(n.IDocDrawingService).focusDrawing([{unitId:v291.unitId,subUnitId:v291.unitId,drawingId:v305.drawingId}]);}catch{}return v316.dispose(),{chartId:v298.id,dataSourceId:v299.id,drawingId:v305.drawingId};}};function z(v318){let v319=(v318==null?undefined:v318.id)??(0,t.generateRandomId)(6),v320=v318==null?undefined:v318.name,v321=v318!=null&&v318.source?{id:v319,name:v320,source:v318.source}:{id:v319,name:v320,values:V((v318==null?undefined:v318.values)??x)};return v321.name??delete v321.name,v321;}function B(v322){let{unitId:v323,chartId:v324,drawing:v325,docTransform:v326}=v322;return{...v325,unitId:v323,subUnitId:v323,drawingId:(v325==null?undefined:v325.drawingId)??(0,t.generateRandomId)(6),drawingType:t.DrawingTypeEnum["DRAWING_CHART"],chartId:v324,docTransform:v326,behindDoc:(v325==null?undefined:v325.behindDoc)??t.BooleanNumber["FALSE"],title:(v325==null?undefined:v325.title)??"",description:(v325==null?undefined:v325.description)??"",layoutType:(v325==null?undefined:v325.layoutType)??t.PositionedObjectLayoutType["INLINE"],wrapText:(v325==null?undefined:v325.wrapText)??t.WrapTextType["BOTH_SIDES"],distB:(v325==null?undefined:v325.distB)??0,distL:(v325==null?undefined:v325.distL)??0,distR:(v325==null?undefined:v325.distR)??0,distT:(v325==null?undefined:v325.distT)??0,allowTransform:(v325==null?undefined:v325.allowTransform)??true};}function V(v327){return v327.map(v133=>[...v133]);}const H={id:"doc.command.update-doc-chart-snapshot",type:t.CommandType["COMMAND"],handler:(v328,v329)=>{if(!v329)return false;let{unitId:v330,chartId:v331,patch:v332}=v329,v333=v328.get(e.ChartResourceRepository).getChart(v330,v331);if(!v333)return false;let v334=v328.get(t.ICommandService),v335=v328.get(t.IUndoRedoService),v336={unitId:v330,chart:{...v333,...v332}},v337={unitId:v330,chart:v333},v338=[{id:c.id,params:v336}],v339=[{id:c.id,params:v337}];return(0,t.sequenceExecute)(v338,v334).result?(v335.pushUndoRedo({unitID:v330,undoMutations:v339,redoMutations:v338}),true):false;}};var U="@univerjs-pro/docs-chart",W="1.0.0-insiders.20260907-70fc579";function G(v340){"@babel/helpers - typeof";return G=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v134){return typeof v134;}:function(v135){return v135&&typeof Symbol=="function"&&v135.constructor===Symbol&&v135!==Symbol.prototype?"symbol":typeof v135;},G(v340);}function K(v341,v342){if(G(v341)!="object"||!v341)return v341;var v343=v341[Symbol.toPrimitive];if(v343!==undefined){var v344=v343.call(v341,v342||"default");if(G(v344)!="object")return v344;throw TypeError("@@toPrimitive must return a primitive value.");}return(v342==="string"?String:Number)(v341);}function q(v345){var v346=K(v345,"string");return G(v346)=="symbol"?v346:v346+"";}function J(v347,v348,v349){return(v348=q(v348))in v347?Object.defineProperty(v347,v348,{value:v349,enumerable:true,configurable:true,writable:true}):v347[v348]=v349,v347;}let Y=class extends t.Disposable{constructor(v136,v137,v138){super(),this._resourceManagerService=v136,this._resourceService=v137,this._modelService=v138,J(this,"_resourceDisposable",null),this._initResource();}_initResource(){this._resourceDisposable=this._resourceManagerService["registerPluginResource"]({pluginName:"DOC_CHART_PLUGIN",businesses:[t.UniverInstanceType["UNIVER_DOC"]],toJson:v7=>this._resourceService["serializeUnit"](v7),parseJson:v8=>JSON.parse(v8),onLoad:(v9,v10)=>{this._resourceService["loadUnit"](v9,v10);},onUnLoad:v11=>{this._modelService["removeUnit"](v11),this._resourceService["unloadUnit"](v11);}}),this.disposeWithMe(this._resourceDisposable);}};Y=_([g(0,t.IResourceManagerService),g(1,(0,t.Inject)(e.ChartResourceRepository)),g(2,(0,t.Inject)(v))],Y);let X=class{constructor(v139){this._resourceService=v139;}getRemoveDrawingMutationInfos(v140){let v141=Z(v140.drawing);if(!v141)return null;let v142=this._resourceService["getChart"](v140.unitId,v141.chartId);if(!v142)return null;let v143=this._resourceService["getDataSource"](v140.unitId,v142.dataSourceId),v144=this._shouldCleanupDataSource(v140,v142.dataSourceId);return{redoMutations:[{id:d.id,params:{unitId:v140.unitId,chartId:v142.id,cleanupDataSource:v144}}],undoMutations:[...(v144&&v143?[{id:s.id,params:{unitId:v140.unitId,dataSource:v143}}]:[]),{id:c.id,params:{unitId:v140.unitId,chart:v142}}]};}_shouldCleanupDataSource(v145,v146){let v147=new Set(v145.removeDrawings["map"](v12=>{var v13;return(v13=Z(v12))==null?undefined:v13.chartId;}).filter(v14=>v14!=null));return this._resourceService["getChartIdsByDataSource"](v145.unitId,v146).filter(v15=>!v147.has(v15)).length===0;}};X=_([g(0,(0,t.Inject)(e.ChartResourceRepository))],X);function Z(v350){let v351=v350;return v351.drawingType===t.DrawingTypeEnum["DRAWING_CHART"]&&typeof v351.chartId=="string"?v351:null;}let Q=class extends t.Plugin{constructor(v148=L,v149,v150,v151){super(),this._config=v148,this._injector=v149,this._configService=v150,this._commandService=v151;let{...v152}=(0,t.merge)({},L,this._config);this._configService["setConfig"]("docs-chart.config",v152),this._initCommands();}onStarting(){let v153=this._injector;[[e.ChartResourceRepository],[v],[X],[Y]].forEach(v16=>v153.add(v16)),this.disposeWithMe(v153.get(n.IDocDrawingAdapterService).registerAdapter(v153.get(X))),(0,t.touchDependencies)(v153,[[e.ChartResourceRepository],[v],[X],[Y]]);}_initCommands(){[R,l,H,b,h,T,y,f,s,o,c,d].forEach(v17=>{this.disposeWithMe(this._commandService["registerCommand"](v17));});}};J(Q,"type",t.UniverInstanceType["UNIVER_DOC"]),J(Q,"pluginName","UniverDocsChartPlugin"),J(Q,"packageName",U),J(Q,"version",W),Q=_([(0,t.DependentOn)(e.UniverChartPlugin,a.UniverLicensePlugin,n.UniverDocsDrawingPlugin),g(1,(0,t.Inject)(t.Injector)),g(2,t.IConfigService),g(3,t.ICommandService)],Q),exports.ChangeDocChartDataSourceCommand=l,exports.DEFAULT_DOC_CHART_ELEMENT_HEIGHT=320,exports.DEFAULT_DOC_CHART_ELEMENT_WIDTH=480,exports.DEFAULT_DOC_CHART_VALUES=x,exports.DocChartDataEditMode=A,Object.defineProperty(exports,"DocChartDrawingAdapter",{enumerable:true,get:function(){return X;}}),exports.DocChartInsertAnchorKind=F,Object.defineProperty(exports,"DocChartModelService",{enumerable:true,get:function(){return v;}}),exports.DocChartParagraphPosition=I,exports.DocumentChartConfigAdapter=P,exports.DuplicateDocChartDataSourceCommand=y,exports.InsertDocChartCommand=R,exports.RemoveDocChartCommand=f,exports.RemoveDocChartDataSourceMutation=o,exports.RemoveDocChartSnapshotMutation=d,exports.SetDocChartDataSourceMutation=s,exports.SetDocChartSnapshotMutation=c,Object.defineProperty(exports,"UniverDocsChartPlugin",{enumerable:true,get:function(){return Q;}}),exports.UpdateDocChartConfigCommand=h,exports.UpdateDocChartDataSourceCommand=b,exports.UpdateDocChartDrawingCommand=T,exports.UpdateDocChartSnapshotCommand=H,exports.assertValidOptionalDocChartSize=w,exports.normalizeDocumentChartValues=j,exports.updateDocumentChartData=M,exports.updateDocumentChartLayout=N;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/engine-chart"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs/docs-drawing"),
+  r = require("rxjs"),
+  i = require("@univerjs/docs"),
+  a = require("@univerjs-pro/license");
+const o = {
+    id: "doc.mutation.remove-doc-chart-data-source",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sig3E71, var_core_value_sig01B3) => var_core_value_sig3E71.get(e.ChartResourceRepository).removeDataSource(var_core_value_sig01B3.unitId, var_core_value_sig01B3.dataSourceId)
+  },
+  s = {
+    id: "doc.mutation.set-doc-chart-data-source",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sig7442, var_core_value_sigDF87) => (var_core_value_sig7442.get(e.ChartResourceRepository).setDataSource(var_core_value_sigDF87.unitId, var_core_value_sigDF87.dataSource), true)
+  },
+  c = {
+    id: "doc.mutation.set-doc-chart-snapshot",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sig9EE0, var_core_value_sigF051) => (var_core_value_sig9EE0.get(e.ChartResourceRepository).setChart(var_core_value_sigF051.unitId, var_core_value_sigF051.chart), true)
+  },
+  l = {
+    id: "doc.command.change-chart-data-source",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sig0B45, var_core_value_sig36F8) => {
+      if (!var_core_value_sig36F8) return false;
+      let var_core_value_sig03E1 = var_core_value_sig0B45.get(e.ChartResourceRepository),
+        var_core_value_sigBB57 = var_core_value_sig03E1.getChart(var_core_value_sig36F8.unitId, var_core_value_sig36F8.chartId),
+        var_core_value_sig7C4A = var_core_value_sigBB57 ? var_core_value_sig03E1.getDataSource(var_core_value_sig36F8.unitId, var_core_value_sigBB57.dataSourceId) : undefined;
+      if (!var_core_value_sigBB57 || !var_core_value_sig7C4A) return false;
+      let var_core_value_sigE799 = var_core_value_sig03E1.isDataSourceShared(var_core_value_sig36F8.unitId, var_core_value_sig7C4A.id),
+        var_core_value_sigB601 = var_core_value_sigE799 ? var_core_value_sig36F8.duplicateDataSourceId ?? (0, t.generateRandomId)() : var_core_value_sig7C4A.id,
+        var_core_value_sig8B71 = u(var_core_value_sigB601, var_core_value_sig36F8.dataSource, var_core_value_sig36F8.name ?? var_core_value_sig7C4A.name),
+        var_core_value_sigAEFB = var_core_value_sig0B45.get(t.ICommandService),
+        var_core_value_sig826B = {
+          id: s.id,
+          params: {
+            unitId: var_core_value_sig36F8.unitId,
+            dataSource: var_core_value_sig8B71
+          }
+        },
+        var_core_value_sigCF89 = [var_core_value_sig826B],
+        var_core_value_sig00CB = [{
+          id: s.id,
+          params: {
+            unitId: var_core_value_sig36F8.unitId,
+            dataSource: var_core_value_sig7C4A
+          }
+        }];
+      if (!var_core_value_sigAEFB.syncExecuteCommand(var_core_value_sig826B.id, var_core_value_sig826B.params)) return false;
+      if (var_core_value_sigE799) {
+        let var_core_value_sig480E = {
+            id: c.id,
+            params: {
+              unitId: var_core_value_sig36F8.unitId,
+              chart: {
+                ...var_core_value_sigBB57,
+                dataSourceId: var_core_value_sigB601
+              }
+            }
+          },
+          var_core_value_sig26DB = {
+            id: o.id,
+            params: {
+              unitId: var_core_value_sig36F8.unitId,
+              dataSourceId: var_core_value_sigB601
+            }
+          };
+        if (!var_core_value_sigAEFB.syncExecuteCommand(var_core_value_sig480E.id, var_core_value_sig480E.params)) return var_core_value_sigAEFB.syncExecuteCommand(var_core_value_sig26DB.id, var_core_value_sig26DB.params), false;
+        var_core_value_sigCF89.push(var_core_value_sig480E), var_core_value_sig00CB.splice(0, 1, {
+          id: c.id,
+          params: {
+            unitId: var_core_value_sig36F8.unitId,
+            chart: var_core_value_sigBB57
+          }
+        }, var_core_value_sig26DB);
+      }
+      let var_core_value_sig77EE = var_core_value_sig0B45.get(t.IUndoRedoService),
+        var_core_value_sig9F76 = var_core_value_sig77EE.__tempBatchingUndoRedo(var_core_value_sig36F8.unitId);
+      return var_core_value_sig77EE.pushUndoRedo({
+        unitID: var_core_value_sig36F8.unitId,
+        undoMutations: var_core_value_sig00CB,
+        redoMutations: var_core_value_sigCF89
+      }), var_core_value_sig9F76.dispose(), true;
+    }
+  };
+function u(var_core_value_sigB008, var_core_value_sig8721, var_core_value_sig08BA) {
+  let var_core_value_sigDBB5 = (0, e.isInlineChartDataSource)(var_core_value_sig8721) ? {
+    id: var_core_value_sigB008,
+    name: var_core_value_sig08BA,
+    values: var_core_value_sig8721.values
+  } : {
+    id: var_core_value_sigB008,
+    name: var_core_value_sig08BA,
+    source: var_core_value_sig8721.source
+  };
+  return var_core_value_sigDBB5.name ?? delete var_core_value_sigDBB5.name, var_core_value_sigDBB5;
+}
+const d = {
+    id: "doc.mutation.remove-doc-chart-snapshot",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sigCFAC, var_core_value_sig237B) => var_core_value_sigCFAC.get(e.ChartResourceRepository).removeChart(var_core_value_sig237B.unitId, var_core_value_sig237B.chartId, {
+      cleanupDataSource: var_core_value_sig237B.cleanupDataSource
+    }) != null
+  },
+  f = {
+    id: "doc.command.remove-doc-chart",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sigFEAB, var_core_value_sigE347) => {
+      var var_core_value_sig3C5B;
+      if (!var_core_value_sigE347) return false;
+      let {
+          unitId: var_core_value_sig200B,
+          drawingId: var_core_value_sig3863
+        } = var_core_value_sigE347,
+        var_core_value_sigC97C = var_core_value_sig200B,
+        var_core_value_sigC4B1 = var_core_value_sigFEAB.get(t.IUniverInstanceService).getUnit(var_core_value_sig200B, t.UniverInstanceType["UNIVER_DOC"]),
+        var_core_value_sig1BD9 = var_core_value_sigC4B1 == null || (var_core_value_sig3C5B = var_core_value_sigC4B1.getDrawings()) == null ? undefined : var_core_value_sig3C5B[var_core_value_sig3863];
+      if (!p(var_core_value_sig1BD9) || var_core_value_sigE347.chartId && var_core_value_sig1BD9.chartId !== var_core_value_sigE347.chartId) return false;
+      let var_core_value_sigE43E = var_core_value_sigFEAB.get(e.ChartResourceRepository),
+        var_core_value_sigA937 = var_core_value_sigE43E.getChart(var_core_value_sig200B, var_core_value_sig1BD9.chartId);
+      if (!var_core_value_sigA937) return false;
+      let var_core_value_sigCAD5 = var_core_value_sigFEAB.get(t.ICommandService);
+      return var_core_value_sigCAD5.syncExecuteCommand("doc.command.remove-doc-image", {
+        unitId: var_core_value_sig200B,
+        drawings: [{
+          unitId: var_core_value_sig200B,
+          subUnitId: var_core_value_sigC97C,
+          drawingId: var_core_value_sig3863,
+          drawingType: t.DrawingTypeEnum["DRAWING_CHART"]
+        }]
+      }) ? !var_core_value_sigE43E.getChart(var_core_value_sig200B, var_core_value_sigA937.id) || (0, t.sequenceExecute)([{
+        id: d.id,
+        params: {
+          unitId: var_core_value_sig200B,
+          chartId: var_core_value_sigA937.id,
+          cleanupDataSource: var_core_value_sigE43E.getDataSourceSharingCount(var_core_value_sig200B, var_core_value_sigA937.dataSourceId) <= 1
+        }
+      }], var_core_value_sigCAD5).result : false;
+    }
+  };
+function p(var_core_value_sigE503) {
+  return (var_core_value_sigE503 == null ? undefined : var_core_value_sigE503.drawingType) === t.DrawingTypeEnum["DRAWING_CHART"] && "chartId" in var_core_value_sigE503 && typeof var_core_value_sigE503.chartId == "string";
+}
+const m = Symbol("ReplaceDocChartConfig"),
+  h = {
+    id: "doc.command.update-doc-chart-config",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sig48DD, var_core_value_sig5E6A) => {
+      if (!var_core_value_sig5E6A) return false;
+      let {
+          unitId: var_core_value_sigB7FC,
+          chartId: var_core_value_sig9CD9
+        } = var_core_value_sig5E6A,
+        var_core_value_sigFD0C = var_core_value_sig5E6A[m] === true,
+        var_core_value_sig849B = var_core_value_sig48DD.get(e.ChartResourceRepository).getChart(var_core_value_sigB7FC, var_core_value_sig9CD9);
+      if (!var_core_value_sig849B) return false;
+      let var_core_value_sig5F1A = var_core_value_sig48DD.get(t.ICommandService),
+        var_core_value_sigB455 = var_core_value_sig48DD.get(t.IUndoRedoService),
+        var_core_value_sig5241 = e.chartConfigInterpreter["apply"](var_core_value_sig849B, var_core_value_sig5E6A, var_core_value_sigFD0C);
+      if (!var_core_value_sig5241) return false;
+      let var_core_value_sigC6E5 = {
+          unitId: var_core_value_sigB7FC,
+          chart: var_core_value_sig5241
+        },
+        var_core_value_sigCEFB = {
+          unitId: var_core_value_sigB7FC,
+          chart: var_core_value_sig849B
+        },
+        var_core_value_sig1537 = [{
+          id: c.id,
+          params: var_core_value_sigC6E5
+        }],
+        var_core_value_sigE4C6 = [{
+          id: c.id,
+          params: var_core_value_sigCEFB
+        }];
+      return (0, t.sequenceExecute)(var_core_value_sig1537, var_core_value_sig5F1A).result ? (var_core_value_sigB455.pushUndoRedo({
+        unitID: var_core_value_sigB7FC,
+        undoMutations: var_core_value_sigE4C6,
+        redoMutations: var_core_value_sig1537
+      }), true) : false;
+    }
+  };
+function g(var_core_value_sig4313, var_core_value_sigFC87) {
+  return function (var_core_value_sigF0F9, var_core_value_sig1A0F) {
+    var_core_value_sigFC87(var_core_value_sigF0F9, var_core_value_sig1A0F, var_core_value_sig4313);
+  };
+}
+function _(var_core_value_sig156F, var_core_value_sigDD51, var_core_value_sigF057, var_core_value_sig72F6) {
+  var var_core_value_sig9FBA = arguments.length,
+    var_core_value_sigFE01 = var_core_value_sig9FBA < 3 ? var_core_value_sigDD51 : var_core_value_sig72F6 === null ? var_core_value_sig72F6 = Object.getOwnPropertyDescriptor(var_core_value_sigDD51, var_core_value_sigF057) : var_core_value_sig72F6,
+    var_core_value_sigA2CE;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigFE01 = Reflect.decorate(var_core_value_sig156F, var_core_value_sigDD51, var_core_value_sigF057, var_core_value_sig72F6);else {
+    for (var var_core_value_sig1975 = var_core_value_sig156F.length - 1; var_core_value_sig1975 >= 0; var_core_value_sig1975--) (var_core_value_sigA2CE = var_core_value_sig156F[var_core_value_sig1975]) && (var_core_value_sigFE01 = (var_core_value_sig9FBA < 3 ? var_core_value_sigA2CE(var_core_value_sigFE01) : var_core_value_sig9FBA > 3 ? var_core_value_sigA2CE(var_core_value_sigDD51, var_core_value_sigF057, var_core_value_sigFE01) : var_core_value_sigA2CE(var_core_value_sigDD51, var_core_value_sigF057)) || var_core_value_sigFE01);
+  }
+  return var_core_value_sig9FBA > 3 && var_core_value_sigFE01 && Object.defineProperty(var_core_value_sigDD51, var_core_value_sigF057, var_core_value_sigFE01), var_core_value_sigFE01;
+}
+let v = class extends e.ChartResourceRuntimeService {
+  constructor(var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sig186C) {
+    super(var_core_value_sigFBA4, var_core_value_sig4383, e.buildChartDataSetFromValues, var_core_value_sig186C);
+  }
+};
+v = _([g(0, (0, t.Inject)(e.ChartResourceRepository)), g(1, (0, t.Inject)(t.Injector)), g(2, (0, t.Inject)(e.IChartDataSourceRuntimeService))], v);
+const y = {
+    id: "doc.command.duplicate-doc-chart-data-source",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sig6EA1, var_core_value_sig029F) => {
+      if (!var_core_value_sig029F) return false;
+      let {
+          unitId: var_core_value_sig3767,
+          chartId: var_core_value_sig670B,
+          duplicateDataSourceId: var_core_value_sig6912
+        } = var_core_value_sig029F,
+        var_core_value_sigE235 = var_core_value_sig6EA1.get(e.ChartResourceRepository),
+        var_core_value_sig7664 = var_core_value_sigE235.getChart(var_core_value_sig3767, var_core_value_sig670B),
+        var_core_value_sig2281 = var_core_value_sig7664 ? var_core_value_sigE235.getDataSource(var_core_value_sig3767, var_core_value_sig7664.dataSourceId) : undefined;
+      if (!var_core_value_sig7664 || !var_core_value_sig2281) return false;
+      let var_core_value_sig5E86 = {
+          ...var_core_value_sig2281,
+          id: var_core_value_sig6912 ?? (0, t.generateRandomId)()
+        },
+        var_core_value_sig6998 = var_core_value_sig6EA1.get(t.ICommandService),
+        var_core_value_sigF639 = var_core_value_sig6EA1.get(t.IUndoRedoService),
+        var_core_value_sigEAE5 = {
+          unitId: var_core_value_sig3767,
+          dataSource: var_core_value_sig5E86
+        },
+        var_core_value_sigE94C = {
+          unitId: var_core_value_sig3767,
+          dataSourceId: var_core_value_sig5E86.id
+        },
+        var_core_value_sig6D47 = {
+          unitId: var_core_value_sig3767,
+          chart: {
+            ...var_core_value_sig7664,
+            dataSourceId: var_core_value_sig5E86.id
+          }
+        },
+        var_core_value_sigCB82 = {
+          unitId: var_core_value_sig3767,
+          chart: var_core_value_sig7664
+        },
+        var_core_value_sigCF4E = [{
+          id: s.id,
+          params: var_core_value_sigEAE5
+        }, {
+          id: c.id,
+          params: var_core_value_sig6D47
+        }],
+        var_core_value_sig6CAD = [{
+          id: c.id,
+          params: var_core_value_sigCB82
+        }, {
+          id: o.id,
+          params: var_core_value_sigE94C
+        }];
+      return (0, t.sequenceExecute)(var_core_value_sigCF4E, var_core_value_sig6998).result ? (var_core_value_sigF639.pushUndoRedo({
+        unitID: var_core_value_sig3767,
+        undoMutations: var_core_value_sig6CAD,
+        redoMutations: var_core_value_sigCF4E
+      }), true) : false;
+    }
+  },
+  b = {
+    id: "doc.command.update-doc-chart-data-source",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sig8CF5, var_core_value_sigDDD7) => {
+      if (!var_core_value_sigDDD7) return false;
+      let {
+        unitId: var_core_value_sigB2CE,
+        dataSourceId: var_core_value_sig443C,
+        values: var_core_value_sig39B1,
+        name: var_core_value_sig210D
+      } = var_core_value_sigDDD7;
+      if (var_core_value_sig39B1.length === 0) return false;
+      let var_core_value_sigB4B4 = var_core_value_sig8CF5.get(e.ChartResourceRepository).getDataSource(var_core_value_sigB2CE, var_core_value_sig443C);
+      if (!var_core_value_sigB4B4) return false;
+      let var_core_value_sigD407 = var_core_value_sig8CF5.get(t.ICommandService),
+        var_core_value_sig63F3 = var_core_value_sig8CF5.get(t.IUndoRedoService),
+        var_core_value_sig6A71 = {
+          unitId: var_core_value_sigB2CE,
+          dataSource: {
+            id: var_core_value_sig443C,
+            values: var_core_value_sig39B1,
+            name: var_core_value_sig210D ?? var_core_value_sigB4B4.name
+          }
+        },
+        var_core_value_sig3BF6 = {
+          unitId: var_core_value_sigB2CE,
+          dataSource: var_core_value_sigB4B4
+        },
+        var_core_value_sig38CE = [{
+          id: s.id,
+          params: var_core_value_sig6A71
+        }],
+        var_core_value_sig62B7 = [{
+          id: s.id,
+          params: var_core_value_sig3BF6
+        }];
+      return (0, t.sequenceExecute)(var_core_value_sig38CE, var_core_value_sigD407).result ? (var_core_value_sig63F3.pushUndoRedo({
+        unitID: var_core_value_sigB2CE,
+        undoMutations: var_core_value_sig62B7,
+        redoMutations: var_core_value_sig38CE
+      }), true) : false;
+    }
+  },
+  x = [["Category", "Value"], ["Series\x201", 1]];
+function S(var_core_value_sig37A8) {
+  return Number.isFinite(var_core_value_sig37A8) && var_core_value_sig37A8 > 0;
+}
+function C(var_core_value_sigA90D) {
+  return var_core_value_sigA90D === undefined || S(var_core_value_sigA90D);
+}
+function w(var_core_value_sig7A3C) {
+  if (!C(var_core_value_sig7A3C)) throw Error("Document chart width and height must be positive finite numbers.");
+}
+const T = {
+  id: "doc.command.update-doc-chart-drawing",
+  type: t.CommandType["COMMAND"],
+  handler: (var_core_value_sig0511, var_core_value_sig1F44) => {
+    var var_core_value_sigCB04;
+    if (!var_core_value_sig1F44 || !var_core_value_sig1F44.unitId || !var_core_value_sig1F44.drawingId || !k(var_core_value_sig1F44.layout)) return false;
+    let var_core_value_sig947E = var_core_value_sig0511.get(t.IUniverInstanceService).getUnit(var_core_value_sig1F44.unitId, t.UniverInstanceType["UNIVER_DOC"]),
+      var_core_value_sig4545 = var_core_value_sig947E == null || (var_core_value_sigCB04 = var_core_value_sig947E.getDrawings()) == null ? undefined : var_core_value_sigCB04[var_core_value_sig1F44.drawingId];
+    if (!O(var_core_value_sig4545) || var_core_value_sig1F44.chartId && var_core_value_sig4545.chartId !== var_core_value_sig1F44.chartId) return false;
+    let var_core_value_sigF39A = E(var_core_value_sig4545, var_core_value_sig1F44.layout),
+      var_core_value_sigF79C = t.JSONX["getInstance"]().replaceOp(["drawings", var_core_value_sig1F44.drawingId], var_core_value_sig4545, var_core_value_sigF39A);
+    return var_core_value_sigF79C ? !!var_core_value_sig0511.get(t.ICommandService).syncExecuteCommand(i.RichTextEditingMutation["id"], {
+      unitId: var_core_value_sig1F44.unitId,
+      actions: var_core_value_sigF79C,
+      textRanges: null,
+      noNeedSetTextRange: true
+    }) : false;
+  }
+};
+function E(var_core_value_sig2E54, var_core_value_sig7658) {
+  let var_core_value_sigDCF5 = var_core_value_sig7658.width !== undefined || var_core_value_sig7658.height !== undefined || var_core_value_sig7658.position !== undefined;
+  return {
+    ...var_core_value_sig2E54,
+    ...(var_core_value_sig7658.layoutType === undefined ? {} : {
+      layoutType: var_core_value_sig7658.layoutType
+    }),
+    ...(var_core_value_sigDCF5 ? {
+      docTransform: D(var_core_value_sig2E54.docTransform, var_core_value_sig7658)
+    } : {})
+  };
+}
+function D(var_core_value_sigC786, var_core_value_sigC0D9) {
+  if (var_core_value_sigC0D9.width === undefined && var_core_value_sigC0D9.height === undefined && var_core_value_sigC0D9.position === undefined) return var_core_value_sigC786 ?? (0, i.buildDocTransform)(480, 320);
+  let var_core_value_sigF0511 = var_core_value_sigC0D9.width ?? (var_core_value_sigC786 == null ? undefined : var_core_value_sigC786.size["width"]) ?? 480,
+    var_core_value_sig5825 = var_core_value_sigC0D9.height ?? (var_core_value_sigC786 == null ? undefined : var_core_value_sigC786.size["height"]) ?? 320,
+    var_core_value_sig4EB7 = var_core_value_sigC0D9.position;
+  return {
+    ...(var_core_value_sigC786 ?? (0, i.buildDocTransform)(var_core_value_sigF0511, var_core_value_sig5825)),
+    size: {
+      width: var_core_value_sigF0511,
+      height: var_core_value_sig5825
+    },
+    ...(var_core_value_sig4EB7 === undefined ? {} : {
+      positionH: {
+        relativeFrom: t.ObjectRelativeFromH["PAGE"],
+        posOffset: var_core_value_sig4EB7.x
+      },
+      positionV: {
+        relativeFrom: t.ObjectRelativeFromV["PARAGRAPH"],
+        posOffset: var_core_value_sig4EB7.y
+      }
+    })
+  };
+}
+function O(var_core_value_sig73AF) {
+  return (var_core_value_sig73AF == null ? undefined : var_core_value_sig73AF.drawingType) === t.DrawingTypeEnum["DRAWING_CHART"] && "chartId" in var_core_value_sig73AF && typeof var_core_value_sig73AF.chartId == "string";
+}
+function k(var_core_value_sig548A) {
+  return !!var_core_value_sig548A && C(var_core_value_sig548A.width) && C(var_core_value_sig548A.height) && (var_core_value_sig548A.position === undefined || Number.isFinite(var_core_value_sig548A.position["x"]) && Number.isFinite(var_core_value_sig548A.position["y"]));
+}
+let A = function (var_core_value_sigE026) {
+  return var_core_value_sigE026.DuplicateIfShared = "duplicateIfShared", var_core_value_sigE026.UpdateShared = "updateShared", var_core_value_sigE026.RejectIfShared = "rejectIfShared", var_core_value_sigE026;
+}({});
+function j(var_core_value_sig339E) {
+  let var_core_value_sig7550 = var_core_value_sig339E.map(var_core_value_sigD955 => [...var_core_value_sigD955]),
+    var_core_value_sig2983 = var_core_value_sig7550.length;
+  for (; var_core_value_sig2983 > 0 && var_core_value_sig7550[var_core_value_sig2983 - 1].every(var_core_value_sigBC46 => var_core_value_sigBC46 == null || var_core_value_sigBC46 === "");) var_core_value_sig2983--;
+  let var_core_value_sigE1B0 = var_core_value_sig7550.slice(0, var_core_value_sig2983),
+    var_core_value_sigD4FF = Math.max(0, ...var_core_value_sigE1B0.map(var_core_value_sig48BD => var_core_value_sig48BD.length));
+  for (; var_core_value_sigD4FF > 0 && var_core_value_sigE1B0.every(var_core_value_sig3D7D => var_core_value_sig3D7D[var_core_value_sigD4FF - 1] == null || var_core_value_sig3D7D[var_core_value_sigD4FF - 1] === "");) var_core_value_sigD4FF--;
+  return var_core_value_sigE1B0.map(var_core_value_sig429F => var_core_value_sig429F.slice(0, var_core_value_sigD4FF)).filter(var_core_value_sigF62A => var_core_value_sigF62A.length > 0);
+}
+function M(var_core_value_sig1E5B, var_core_value_sigB680, var_core_value_sig1F64) {
+  let var_core_value_sigDD1C = j(var_core_value_sigB680);
+  if (var_core_value_sigDD1C.length === 0) throw Error("Document\x20chart\x20values\x20are\x20required.");
+  let {
+      chartId: var_core_value_sig2C39,
+      injector: var_core_value_sigB7D1,
+      unitId: var_core_value_sig64F0
+    } = var_core_value_sig1E5B,
+    var_core_value_sig85B1 = var_core_value_sigB7D1.get(t.ICommandService),
+    var_core_value_sig3141 = var_core_value_sigB7D1.get(e.ChartResourceRepository),
+    var_core_value_sig2162 = var_core_value_sig3141.getChart(var_core_value_sig64F0, var_core_value_sig2C39);
+  if (!var_core_value_sig2162) throw Error('Document chart "' + var_core_value_sig2C39 + '" was not found.');
+  let var_core_value_sig2EAD = (var_core_value_sig1F64 == null ? undefined : var_core_value_sig1F64.mode) ?? "duplicateIfShared";
+  if (var_core_value_sig3141.getChartIdsByDataSource(var_core_value_sig64F0, var_core_value_sig2162.dataSourceId).length > 1) {
+    if (var_core_value_sig2EAD === "rejectIfShared") throw Error("Document\x20chart\x20data\x20source\x20\x22" + var_core_value_sig2162.dataSourceId + "\x22\x20is\x20shared.");
+    if (var_core_value_sig2EAD === "duplicateIfShared") {
+      if (!var_core_value_sig85B1.syncExecuteCommand(y.id, {
+        unitId: var_core_value_sig64F0,
+        chartId: var_core_value_sig2C39
+      })) throw Error('Failed to duplicate data source for document chart "' + var_core_value_sig2C39 + "\x22.");
+      var_core_value_sig2162 = var_core_value_sig3141.getChart(var_core_value_sig64F0, var_core_value_sig2C39);
+    }
+  }
+  if (!var_core_value_sig2162 || !var_core_value_sig85B1.syncExecuteCommand(b.id, {
+    unitId: var_core_value_sig64F0,
+    dataSourceId: var_core_value_sig2162.dataSourceId,
+    values: var_core_value_sigDD1C
+  })) throw Error("Failed\x20to\x20update\x20document\x20chart\x20data\x20source\x20for\x20\x22" + var_core_value_sig2C39 + "\x22.");
+}
+function N(var_core_value_sig6774, var_core_value_sig340D) {
+  w(var_core_value_sig340D.width), w(var_core_value_sig340D.height);
+  let {
+    chartId: var_core_value_sig82D4,
+    drawingId: var_core_value_sigBDE4,
+    injector: var_core_value_sig7DF1,
+    unitId: var_core_value_sigDC86
+  } = var_core_value_sig6774;
+  if (!var_core_value_sig7DF1.get(t.ICommandService).syncExecuteCommand(T.id, {
+    unitId: var_core_value_sigDC86,
+    drawingId: var_core_value_sigBDE4,
+    chartId: var_core_value_sig82D4,
+    layout: var_core_value_sig340D
+  })) throw Error('Failed to update document chart layout "' + var_core_value_sig82D4 + "\x22.");
+}
+var P = class {
+  constructor(var_core_value_sig8178) {
+    this._context = var_core_value_sig8178;
+  }
+  describe(var_core_value_sigE9ED = {}, var_core_value_sigB577) {
+    var var_core_value_sig9572, var_core_value_sigD873, var_core_value_sigA12B;
+    let {
+        chartId: var_core_value_sigF230,
+        documentDataModel: var_core_value_sig09B8,
+        drawingId: var_core_value_sig6F91,
+        injector: var_core_value_sigF9C7,
+        unitId: var_core_value_sig8895
+      } = this._context,
+      var_core_value_sigC80B = var_core_value_sigF9C7.get(v).ensureChartModel(var_core_value_sig8895, var_core_value_sigF230);
+    if (!var_core_value_sigC80B) throw Error("Document chart not found: " + var_core_value_sigF230);
+    let var_core_value_sig284F = (var_core_value_sig9572 = var_core_value_sig09B8.getDrawings()) == null ? undefined : var_core_value_sig9572[var_core_value_sig6F91],
+      var_core_value_sigE154 = var_core_value_sig284F != null && var_core_value_sig284F.docTransform ? {
+        width: (var_core_value_sigD873 = var_core_value_sig284F.docTransform["size"]) == null ? undefined : var_core_value_sigD873.width,
+        height: (var_core_value_sigA12B = var_core_value_sig284F.docTransform["size"]) == null ? undefined : var_core_value_sigA12B.height,
+        layoutType: var_core_value_sig284F.layoutType
+      } : undefined;
+    return {
+      ...(0, e.describeChartModel)(var_core_value_sigC80B.model, var_core_value_sigE9ED, var_core_value_sigB577),
+      layout: var_core_value_sigE154
+    };
+  }
+  getInfo() {
+    var var_core_value_sig4632, var_core_value_sig12F2;
+    let var_core_value_sig2259 = this.describe(),
+      var_core_value_sig9E2F = this.getDataSource();
+    if (!var_core_value_sig9E2F) throw Error("Document chart data source not found: " + this._context["chartId"]);
+    return {
+      config: (0, e.toChartCreateConfigSnapshot)(var_core_value_sig2259),
+      dataSource: (0, e.isInlineChartDataSource)(var_core_value_sig9E2F) ? {
+        values: t.Tools["deepClone"](var_core_value_sig9E2F.values)
+      } : (0, e.isReferencedChartDataSource)(var_core_value_sig9E2F) ? {
+        source: t.Tools["deepClone"](var_core_value_sig9E2F.source)
+      } : (() => {
+        throw Error("Invalid Document chart data source: " + this._context["chartId"]);
+      })(),
+      position: t.Tools["deepClone"]((var_core_value_sig4632 = var_core_value_sig2259.layout) == null ? undefined : var_core_value_sig4632.position),
+      size: var_core_value_sig2259.layout ? {
+        width: var_core_value_sig2259.layout["width"] ?? 0,
+        height: var_core_value_sig2259.layout["height"] ?? 0
+      } : undefined,
+      layoutType: (var_core_value_sig12F2 = var_core_value_sig2259.layout) == null ? undefined : var_core_value_sig12F2.layoutType
+    };
+  }
+  getData() {
+    let {
+        chartId: var_core_value_sigD082,
+        injector: var_core_value_sigDBB7,
+        unitId: var_core_value_sigD0A8
+      } = this._context,
+      var_core_value_sigF4B9 = var_core_value_sigDBB7.get(e.ChartResourceRepository).getChart(var_core_value_sigD0A8, var_core_value_sigD082),
+      var_core_value_sig5CEE = var_core_value_sigF4B9 ? var_core_value_sigDBB7.get(e.ChartResourceRepository).getDataSource(var_core_value_sigD0A8, var_core_value_sigF4B9.dataSourceId) : null;
+    return (0, e.isInlineChartDataSource)(var_core_value_sig5CEE) ? var_core_value_sig5CEE.values : null;
+  }
+  getDataSource() {
+    let {
+        chartId: var_core_value_sigE92A,
+        injector: var_core_value_sig362B,
+        unitId: var_core_value_sig5CA5
+      } = this._context,
+      var_core_value_sigE90F = var_core_value_sig362B.get(e.ChartResourceRepository).getChart(var_core_value_sig5CA5, var_core_value_sigE92A);
+    return (var_core_value_sigE90F ? var_core_value_sig362B.get(e.ChartResourceRepository).getDataSource(var_core_value_sig5CA5, var_core_value_sigE90F.dataSourceId) : null) ?? null;
+  }
+  async commitDataSource(var_core_value_sigEFD4) {
+    let {
+        injector: var_core_value_sig861B
+      } = this._context,
+      var_core_value_sig5237 = (0, e.isReferencedChartDataSource)(var_core_value_sigEFD4) ? var_core_value_sigEFD4.source : undefined,
+      var_core_value_sigBB00 = var_core_value_sig5237 ? var_core_value_sig861B.get(e.IChartDataSourceRuntimeService).acquire(var_core_value_sig5237) : null;
+    try {
+      if (var_core_value_sigBB00) {
+        let var_core_value_sig2AD0 = await (0, r.firstValueFrom)(var_core_value_sigBB00.state$["pipe"]((0, r.filter)(({
+          status: var_core_value_sig7524
+        }) => var_core_value_sig7524 !== e.ChartDataSourceRuntimeStatus["LOADING"])));
+        if (var_core_value_sig2AD0.status !== e.ChartDataSourceRuntimeStatus["READY"]) throw var_core_value_sig2AD0.error instanceof Error ? var_core_value_sig2AD0.error : Error(var_core_value_sig5237 == null ? undefined : var_core_value_sig5237.kind);
+      }
+      this._commitDataSource(var_core_value_sigEFD4);
+    } finally {
+      var_core_value_sigBB00 == null || var_core_value_sigBB00.dispose();
+    }
+  }
+  async commitChanges(var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F = false) {
+    let {
+        injector: var_core_value_sigFDEA
+      } = this._context,
+      var_core_value_sig86D0 = (0, e.isReferencedChartDataSource)(var_core_value_sig7E54) ? var_core_value_sig7E54.source : undefined,
+      var_core_value_sig4CD2 = var_core_value_sig86D0 ? var_core_value_sigFDEA.get(e.IChartDataSourceRuntimeService).acquire(var_core_value_sig86D0) : null;
+    try {
+      if (var_core_value_sig4CD2) {
+        let var_core_value_sig3EEE = await (0, r.firstValueFrom)(var_core_value_sig4CD2.state$["pipe"]((0, r.filter)(({
+          status: var_core_value_sig2AD8
+        }) => var_core_value_sig2AD8 !== e.ChartDataSourceRuntimeStatus["LOADING"])));
+        if (var_core_value_sig3EEE.status !== e.ChartDataSourceRuntimeStatus["READY"]) throw var_core_value_sig3EEE.error instanceof Error ? var_core_value_sig3EEE.error : Error(var_core_value_sig86D0 == null ? undefined : var_core_value_sig86D0.kind);
+      }
+      Object.keys(var_core_value_sig9A8D).length > 0 && (var_core_value_sig9C9F ? this._replaceConfig(var_core_value_sig9A8D) : this.commit(var_core_value_sig9A8D)), Object.keys(var_core_value_sigC259).length > 0 && this.commitHost(var_core_value_sigC259), var_core_value_sig7E54 && this._commitDataSource(var_core_value_sig7E54);
+    } finally {
+      var_core_value_sig4CD2 == null || var_core_value_sig4CD2.dispose();
+    }
+  }
+  refreshDataSource() {
+    let {
+      chartId: var_core_value_sig48CA,
+      injector: var_core_value_sig50AF,
+      unitId: var_core_value_sigA942
+    } = this._context;
+    return var_core_value_sig50AF.get(v).refreshChartDataSource(var_core_value_sigA942, var_core_value_sig48CA);
+  }
+  commit(var_core_value_sigA621) {
+    var var_core_value_sigBBFF;
+    let {
+        chartId: var_core_value_sig8889,
+        injector: var_core_value_sig32F8,
+        unitId: var_core_value_sig5B67
+      } = this._context,
+      var_core_value_sig1758 = var_core_value_sig32F8.get(v).ensureChartModel(var_core_value_sig5B67, var_core_value_sig8889);
+    if (!var_core_value_sig1758) throw Error("Document chart not found: " + var_core_value_sig8889);
+    let var_core_value_sig4805 = (0, e.toChartModelUpdate)(var_core_value_sigA621, {
+      series: (var_core_value_sigBBFF = var_core_value_sig1758.model["config"]) == null ? undefined : var_core_value_sigBBFF.series,
+      currentChartType: var_core_value_sig1758.model["chartType"],
+      currentStyle: var_core_value_sig1758.model["style"],
+      currentContext: var_core_value_sig1758.model["context"],
+      currentDataAggregation: var_core_value_sig1758.model["dataAggregation"]
+    });
+    if (!var_core_value_sig32F8.get(t.ICommandService).syncExecuteCommand(h.id, {
+      unitId: var_core_value_sig5B67,
+      chartId: var_core_value_sig8889,
+      ...var_core_value_sig4805,
+      [m]: true
+    })) throw Error("Failed to update Document chart configuration.");
+  }
+  update(var_core_value_sigE67E) {
+    let var_core_value_sig2902 = {};
+    var_core_value_sigE67E.position !== undefined && (var_core_value_sig2902.position = var_core_value_sigE67E.position), var_core_value_sigE67E.size !== undefined && (var_core_value_sig2902.width = var_core_value_sigE67E.size["width"], var_core_value_sig2902.height = var_core_value_sigE67E.size["height"]), Object.prototype["hasOwnProperty"].call(var_core_value_sigE67E, "layoutType") && (var_core_value_sig2902.layoutType = var_core_value_sigE67E.layoutType);
+    let var_core_value_sig9989 = {};
+    return var_core_value_sigE67E.anchor !== undefined && (var_core_value_sig9989.anchor = var_core_value_sigE67E.anchor), Object.keys(var_core_value_sig2902).length > 0 && (var_core_value_sig9989.layout = var_core_value_sig2902), this.commitChanges(var_core_value_sigE67E.dataSource, var_core_value_sigE67E.config, var_core_value_sig9989, true);
+  }
+  _replaceConfig(var_core_value_sig698E) {
+    var var_core_value_sig2809;
+    let {
+        chartId: var_core_value_sig2DAB,
+        injector: var_core_value_sig877E,
+        unitId: var_core_value_sig20C8
+      } = this._context,
+      var_core_value_sigE9A7 = var_core_value_sig877E.get(v).ensureChartModel(var_core_value_sig20C8, var_core_value_sig2DAB);
+    if (!var_core_value_sigE9A7) throw Error("Document chart not found: " + var_core_value_sig2DAB);
+    let var_core_value_sigBECE = (0, e.toChartModelConfigReplacement)(var_core_value_sig698E, {
+      series: (var_core_value_sig2809 = var_core_value_sigE9A7.model["config"]) == null ? undefined : var_core_value_sig2809.series,
+      currentStyle: var_core_value_sigE9A7.model["style"]
+    });
+    if (!var_core_value_sig877E.get(t.ICommandService).syncExecuteCommand(h.id, {
+      unitId: var_core_value_sig20C8,
+      chartId: var_core_value_sig2DAB,
+      ...var_core_value_sigBECE,
+      [m]: true
+    })) throw Error("Failed to update Document chart configuration.");
+  }
+  setDataSource(var_core_value_sig1B22) {
+    return this.commitDataSource(Array.isArray(var_core_value_sig1B22) ? {
+      values: var_core_value_sig1B22
+    } : {
+      source: e.ResourceRefChartDataSourceAdapter["toReference"](var_core_value_sig1B22)
+    });
+  }
+  setAbsolutePosition(var_core_value_sig7F72, var_core_value_sig7B2A) {
+    this.commitHost({
+      layout: {
+        position: {
+          x: var_core_value_sig7F72,
+          y: var_core_value_sig7B2A
+        }
+      }
+    });
+  }
+  setSize(var_core_value_sig06CD, var_core_value_sigA5F1) {
+    this.commitHost({
+      layout: {
+        width: var_core_value_sig06CD,
+        height: var_core_value_sigA5F1
+      }
+    });
+  }
+  arrange(var_core_value_sig97A2) {
+    let {
+        documentDataModel: var_core_value_sig07E9,
+        drawingId: var_core_value_sig4F59,
+        injector: var_core_value_sigF564,
+        unitId: var_core_value_sig8CFA
+      } = this._context,
+      var_core_value_sig2E11 = var_core_value_sig07E9.getDrawingsOrder() ?? [],
+      var_core_value_sig5B69 = var_core_value_sig2E11.indexOf(var_core_value_sig4F59);
+    if (var_core_value_sig5B69 < 0) throw Error("Document chart drawing not found: " + var_core_value_sig4F59);
+    if ((0, t.getDrawingOrderIndex)(var_core_value_sig5B69, var_core_value_sig2E11.length, var_core_value_sig97A2) !== var_core_value_sig5B69 && !var_core_value_sigF564.get(t.ICommandService).syncExecuteCommand(n.SetDocDrawingArrangeCommand["id"], {
+      unitId: var_core_value_sig8CFA,
+      subUnitId: var_core_value_sig8CFA,
+      drawingIds: [var_core_value_sig4F59],
+      arrangeType: var_core_value_sig97A2
+    })) throw Error("Failed to arrange Document chart.");
+  }
+  setZOrder(var_core_value_sigB098) {
+    let {
+        documentDataModel: var_core_value_sigCE71,
+        drawingId: var_core_value_sig21D8,
+        injector: var_core_value_sig2B65,
+        unitId: var_core_value_sigD7EA
+      } = this._context,
+      var_core_value_sigB33B = var_core_value_sigCE71.getDrawingsOrder() ?? [],
+      var_core_value_sig24B9 = var_core_value_sigB33B.indexOf(var_core_value_sig21D8);
+    if (var_core_value_sig24B9 < 0) throw Error("Document\x20chart\x20drawing\x20not\x20found:\x20" + var_core_value_sig21D8);
+    if ((0, t.normalizeDrawingOrderIndex)(var_core_value_sigB098, var_core_value_sigB33B.length) !== var_core_value_sig24B9 && !var_core_value_sig2B65.get(t.ICommandService).syncExecuteCommand(n.SetDocDrawingArrangeCommand["id"], {
+      unitId: var_core_value_sigD7EA,
+      subUnitId: var_core_value_sigD7EA,
+      drawingIds: [var_core_value_sig21D8],
+      zOrder: var_core_value_sigB098
+    })) throw Error("Failed\x20to\x20update\x20Document\x20chart\x20z-order.");
+  }
+  resolveData(var_core_value_sigE627, var_core_value_sigEF3E) {
+    let {
+        chartId: var_core_value_sig273D,
+        injector: var_core_value_sig9A0D,
+        unitId: var_core_value_sigA319
+      } = this._context,
+      var_core_value_sig2D58 = var_core_value_sig9A0D.get(v).ensureChartModel(var_core_value_sigA319, var_core_value_sig273D);
+    if (!var_core_value_sig2D58) throw Error("Document chart not found: " + var_core_value_sig273D);
+    return (0, e.buildChartPreviewData)(var_core_value_sig2D58.model, var_core_value_sigE627, var_core_value_sigEF3E);
+  }
+  resolveDataSet(var_core_value_sig223F) {
+    var var_core_value_sigD749, var_core_value_sigCFFA;
+    let {
+        chartId: var_core_value_sig58C1,
+        injector: var_core_value_sig5090,
+        unitId: var_core_value_sigC368
+      } = this._context,
+      var_core_value_sigAD56 = var_core_value_sig5090.get(v).ensureChartModel(var_core_value_sigC368, var_core_value_sig58C1),
+      var_core_value_sigDB4A = var_core_value_sig5090.get(e.ChartResourceRepository).getChart(var_core_value_sigC368, var_core_value_sig58C1);
+    if (!var_core_value_sigAD56 || !var_core_value_sigDB4A) throw Error("Document chart not found: " + var_core_value_sig58C1);
+    return (0, e.buildOrientedChartDataSet)(var_core_value_sig223F, {
+      headerRow: ((var_core_value_sigD749 = var_core_value_sigDB4A.context) == null ? undefined : var_core_value_sigD749.headerRow) ?? e.DEFAULT_CHART_RESOURCE_HEADER_ROW,
+      isRowDirection: ((var_core_value_sigCFFA = var_core_value_sigDB4A.context) == null ? undefined : var_core_value_sigCFFA.orient) !== "column"
+    });
+  }
+  commitHost(var_core_value_sig6418) {
+    let {
+      chartId: var_core_value_sig1896,
+      drawingId: var_core_value_sig0285,
+      injector: var_core_value_sig777D,
+      unitId: var_core_value_sig3F4C
+    } = this._context;
+    if (var_core_value_sig6418.anchor !== undefined) throw Error("Document chart anchor can only be set before insert().");
+    var_core_value_sig6418.data !== undefined && M({
+      unitId: var_core_value_sig3F4C,
+      chartId: var_core_value_sig1896,
+      injector: var_core_value_sig777D
+    }, var_core_value_sig6418.data), var_core_value_sig6418.layout !== undefined && N({
+      unitId: var_core_value_sig3F4C,
+      chartId: var_core_value_sig1896,
+      drawingId: var_core_value_sig0285,
+      injector: var_core_value_sig777D
+    }, var_core_value_sig6418.layout);
+  }
+  remove() {
+    let {
+      chartId: var_core_value_sigD65A,
+      drawingId: var_core_value_sig5A13,
+      injector: var_core_value_sigF593,
+      unitId: var_core_value_sig3607
+    } = this._context;
+    return !!var_core_value_sigF593.get(t.ICommandService).syncExecuteCommand(f.id, {
+      unitId: var_core_value_sig3607,
+      drawingId: var_core_value_sig5A13,
+      chartId: var_core_value_sigD65A
+    });
+  }
+  _commitDataSource(var_core_value_sigB512) {
+    let {
+      chartId: var_core_value_sigF2E6,
+      injector: var_core_value_sig34C8,
+      unitId: var_core_value_sigB744
+    } = this._context;
+    if (!var_core_value_sig34C8.get(t.ICommandService).syncExecuteCommand(l.id, {
+      unitId: var_core_value_sigB744,
+      chartId: var_core_value_sigF2E6,
+      dataSource: var_core_value_sigB512
+    })) throw Error(l.id);
+  }
+};
+let F = function (var_core_value_sig0B0C) {
+    return var_core_value_sig0B0C.Selection = "selection", var_core_value_sig0B0C.BodyOffset = "bodyOffset", var_core_value_sig0B0C.Paragraph = "paragraph", var_core_value_sig0B0C.TextRange = "textRange", var_core_value_sig0B0C;
+  }({}),
+  I = function (var_core_value_sigA39E) {
+    return var_core_value_sigA39E.Before = "before", var_core_value_sigA39E.After = "after", var_core_value_sigA39E;
+  }({});
+const L = {},
+  R = {
+    id: "doc.command.insert-doc-chart",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sigBBEE, var_core_value_sig011D) => {
+      var var_core_value_sig6167, var_core_value_sig65A1, var_core_value_sig7F19, var_core_value_sig7827, var_core_value_sig652C, var_core_value_sig7E32;
+      if (!var_core_value_sig011D || !var_core_value_sig011D.unitId) return false;
+      let var_core_value_sig4C07 = t.Tools["deepClone"](var_core_value_sig011D.chart);
+      if (!var_core_value_sig4C07.chartType || ((var_core_value_sig6167 = var_core_value_sig011D.textRange) == null ? undefined : var_core_value_sig6167.segmentId) != null && var_core_value_sig011D.textRange["segmentId"] !== "" || !C(var_core_value_sig011D.width) || !C(var_core_value_sig011D.height) || var_core_value_sig011D.position && (!Number.isFinite(var_core_value_sig011D.position["x"]) || !Number.isFinite(var_core_value_sig011D.position["y"]))) return false;
+      var_core_value_sig4C07.id = var_core_value_sig4C07.id ?? (0, t.generateRandomId)(6), var_core_value_sig4C07.context = {
+        ...var_core_value_sig4C07.context,
+        headerRow: ((var_core_value_sig65A1 = var_core_value_sig4C07.context) == null ? undefined : var_core_value_sig65A1.headerRow) ?? e.DEFAULT_CHART_RESOURCE_HEADER_ROW
+      };
+      let var_core_value_sig79AB = z(var_core_value_sig011D.dataSource);
+      var_core_value_sig4C07.dataSourceId = var_core_value_sig79AB.id;
+      let var_core_value_sig8E74 = (var_core_value_sig7F19 = var_core_value_sigBBEE.get(t.IConfigService).getConfig("docs-chart.config")) == null ? undefined : var_core_value_sig7F19.defaultChartSize,
+        var_core_value_sig104C = (var_core_value_sig7827 = var_core_value_sig011D.drawing) == null ? undefined : var_core_value_sig7827.docTransform,
+        var_core_value_sig841D = var_core_value_sig011D.width ?? (var_core_value_sig104C == null ? undefined : var_core_value_sig104C.size["width"]) ?? (var_core_value_sig8E74 == null ? undefined : var_core_value_sig8E74.width) ?? 480,
+        var_core_value_sig90CB = var_core_value_sig011D.height ?? (var_core_value_sig104C == null ? undefined : var_core_value_sig104C.size["height"]) ?? (var_core_value_sig8E74 == null ? undefined : var_core_value_sig8E74.height) ?? 320,
+        var_core_value_sigBDF5 = {
+          ...(var_core_value_sig104C ?? (0, i.buildDocTransform)(var_core_value_sig841D, var_core_value_sig90CB)),
+          size: {
+            width: var_core_value_sig841D,
+            height: var_core_value_sig90CB
+          },
+          ...(var_core_value_sig011D.position === undefined ? {} : {
+            positionH: {
+              relativeFrom: t.ObjectRelativeFromH["PAGE"],
+              posOffset: var_core_value_sig011D.position["x"]
+            },
+            positionV: {
+              relativeFrom: t.ObjectRelativeFromV["PARAGRAPH"],
+              posOffset: var_core_value_sig011D.position["y"]
+            }
+          })
+        },
+        var_core_value_sigACC6 = B({
+          unitId: var_core_value_sig011D.unitId,
+          chartId: var_core_value_sig4C07.id,
+          drawing: var_core_value_sig011D.drawing,
+          docTransform: var_core_value_sigBDF5
+        });
+      if (!S(((var_core_value_sig652C = var_core_value_sigACC6.docTransform) == null ? undefined : var_core_value_sig652C.size["width"]) ?? NaN) || !S(((var_core_value_sig7E32 = var_core_value_sigACC6.docTransform) == null ? undefined : var_core_value_sig7E32.size["height"]) ?? NaN)) return false;
+      let var_core_value_sig1614 = {
+          unitId: var_core_value_sig011D.unitId,
+          dataSource: var_core_value_sig79AB
+        },
+        var_core_value_sig85C3 = {
+          unitId: var_core_value_sig011D.unitId,
+          chart: var_core_value_sig4C07
+        },
+        var_core_value_sigB996 = {
+          unitId: var_core_value_sig011D.unitId,
+          chartId: var_core_value_sig4C07.id
+        },
+        var_core_value_sig4BBA = {
+          unitId: var_core_value_sig011D.unitId,
+          dataSourceId: var_core_value_sig79AB.id
+        },
+        var_core_value_sig6201 = [{
+          id: s.id,
+          params: var_core_value_sig1614
+        }, {
+          id: c.id,
+          params: var_core_value_sig85C3
+        }],
+        var_core_value_sig5151 = [{
+          id: d.id,
+          params: var_core_value_sigB996
+        }, {
+          id: o.id,
+          params: var_core_value_sig4BBA
+        }],
+        var_core_value_sigB542 = var_core_value_sigBBEE.get(t.ICommandService),
+        var_core_value_sigBB6C = var_core_value_sigBBEE.get(t.IUndoRedoService),
+        var_core_value_sigE2BF = (0, t.sequenceExecute)(var_core_value_sig6201, var_core_value_sigB542);
+      if (!var_core_value_sigE2BF.result) return (0, t.sequenceExecute)(var_core_value_sig5151.slice(var_core_value_sig5151.length - var_core_value_sigE2BF.index), var_core_value_sigB542), false;
+      let var_core_value_sigB8C7 = "doc-chart-insert-resource:" + var_core_value_sig011D.unitId + ":" + var_core_value_sig4C07.id,
+        var_core_value_sigA56E = var_core_value_sigBB6C.__tempBatchingUndoRedo(var_core_value_sig011D.unitId);
+      var_core_value_sigBB6C.pushUndoRedo({
+        unitID: var_core_value_sig011D.unitId,
+        redoMutations: var_core_value_sig6201,
+        undoMutations: var_core_value_sig5151,
+        id: var_core_value_sigB8C7
+      });
+      let var_core_value_sig1998 = {
+        unitId: var_core_value_sig011D.unitId,
+        drawings: [var_core_value_sigACC6]
+      };
+      if (var_core_value_sig011D.textRange != null && (var_core_value_sig1998.textRange = (0, i.normalizeTextRange)(var_core_value_sig011D.textRange)), !var_core_value_sigB542.syncExecuteCommand(n.InsertDocDrawingCommand["id"], var_core_value_sig1998)) return var_core_value_sigA56E.dispose(), var_core_value_sigBB6C.rollback(var_core_value_sigB8C7, var_core_value_sig011D.unitId), false;
+      if (var_core_value_sig011D.focus !== false) try {
+        var_core_value_sigBBEE.get(n.IDocDrawingService).focusDrawing([{
+          unitId: var_core_value_sig011D.unitId,
+          subUnitId: var_core_value_sig011D.unitId,
+          drawingId: var_core_value_sigACC6.drawingId
+        }]);
+      } catch {}
+      return var_core_value_sigA56E.dispose(), {
+        chartId: var_core_value_sig4C07.id,
+        dataSourceId: var_core_value_sig79AB.id,
+        drawingId: var_core_value_sigACC6.drawingId
+      };
+    }
+  };
+function z(var_core_value_sigFF19) {
+  let var_core_value_sig43B8 = (var_core_value_sigFF19 == null ? undefined : var_core_value_sigFF19.id) ?? (0, t.generateRandomId)(6),
+    var_core_value_sigD98F = var_core_value_sigFF19 == null ? undefined : var_core_value_sigFF19.name,
+    var_core_value_sig66C0 = var_core_value_sigFF19 != null && var_core_value_sigFF19.source ? {
+      id: var_core_value_sig43B8,
+      name: var_core_value_sigD98F,
+      source: var_core_value_sigFF19.source
+    } : {
+      id: var_core_value_sig43B8,
+      name: var_core_value_sigD98F,
+      values: V((var_core_value_sigFF19 == null ? undefined : var_core_value_sigFF19.values) ?? x)
+    };
+  return var_core_value_sig66C0.name ?? delete var_core_value_sig66C0.name, var_core_value_sig66C0;
+}
+function B(var_core_value_sig9D15) {
+  let {
+    unitId: var_core_value_sigB785,
+    chartId: var_core_value_sig130F,
+    drawing: var_core_value_sigC0E3,
+    docTransform: var_core_value_sig52F7
+  } = var_core_value_sig9D15;
+  return {
+    ...var_core_value_sigC0E3,
+    unitId: var_core_value_sigB785,
+    subUnitId: var_core_value_sigB785,
+    drawingId: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.drawingId) ?? (0, t.generateRandomId)(6),
+    drawingType: t.DrawingTypeEnum["DRAWING_CHART"],
+    chartId: var_core_value_sig130F,
+    docTransform: var_core_value_sig52F7,
+    behindDoc: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.behindDoc) ?? t.BooleanNumber["FALSE"],
+    title: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.title) ?? "",
+    description: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.description) ?? "",
+    layoutType: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.layoutType) ?? t.PositionedObjectLayoutType["INLINE"],
+    wrapText: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.wrapText) ?? t.WrapTextType["BOTH_SIDES"],
+    distB: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.distB) ?? 0,
+    distL: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.distL) ?? 0,
+    distR: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.distR) ?? 0,
+    distT: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.distT) ?? 0,
+    allowTransform: (var_core_value_sigC0E3 == null ? undefined : var_core_value_sigC0E3.allowTransform) ?? true
+  };
+}
+function V(var_core_value_sig866F) {
+  return var_core_value_sig866F.map(var_core_value_sigEAE2 => [...var_core_value_sigEAE2]);
+}
+const H = {
+  id: "doc.command.update-doc-chart-snapshot",
+  type: t.CommandType["COMMAND"],
+  handler: (var_core_value_sigDE3D, var_core_value_sigF175) => {
+    if (!var_core_value_sigF175) return false;
+    let {
+        unitId: var_core_value_sig6A18,
+        chartId: var_core_value_sig4E3D,
+        patch: var_core_value_sig49B0
+      } = var_core_value_sigF175,
+      var_core_value_sig2547 = var_core_value_sigDE3D.get(e.ChartResourceRepository).getChart(var_core_value_sig6A18, var_core_value_sig4E3D);
+    if (!var_core_value_sig2547) return false;
+    let var_core_value_sigBCA9 = var_core_value_sigDE3D.get(t.ICommandService),
+      var_core_value_sig4CDF = var_core_value_sigDE3D.get(t.IUndoRedoService),
+      var_core_value_sig3F79 = {
+        unitId: var_core_value_sig6A18,
+        chart: {
+          ...var_core_value_sig2547,
+          ...var_core_value_sig49B0
+        }
+      },
+      var_core_value_sig880E = {
+        unitId: var_core_value_sig6A18,
+        chart: var_core_value_sig2547
+      },
+      var_core_value_sigC9ED = [{
+        id: c.id,
+        params: var_core_value_sig3F79
+      }],
+      var_core_value_sigB57B = [{
+        id: c.id,
+        params: var_core_value_sig880E
+      }];
+    return (0, t.sequenceExecute)(var_core_value_sigC9ED, var_core_value_sigBCA9).result ? (var_core_value_sig4CDF.pushUndoRedo({
+      unitID: var_core_value_sig6A18,
+      undoMutations: var_core_value_sigB57B,
+      redoMutations: var_core_value_sigC9ED
+    }), true) : false;
+  }
+};
+var U = "@univerjs-pro/docs-chart",
+  W = "1.0.0-insiders.20260907-70fc579";
+function G(var_core_value_sig780B) {
+  "@babel/helpers - typeof";
+
+  return G = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigE68A) {
+    return typeof var_core_value_sigE68A;
+  } : function (var_core_value_sig3E68) {
+    return var_core_value_sig3E68 && typeof Symbol == "function" && var_core_value_sig3E68.constructor === Symbol && var_core_value_sig3E68 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig3E68;
+  }, G(var_core_value_sig780B);
+}
+function K(var_core_value_sig7D1B, var_core_value_sig7BE0) {
+  if (G(var_core_value_sig7D1B) != "object" || !var_core_value_sig7D1B) return var_core_value_sig7D1B;
+  var var_core_value_sig7D40 = var_core_value_sig7D1B[Symbol.toPrimitive];
+  if (var_core_value_sig7D40 !== undefined) {
+    var var_core_value_sig6C7E = var_core_value_sig7D40.call(var_core_value_sig7D1B, var_core_value_sig7BE0 || "default");
+    if (G(var_core_value_sig6C7E) != "object") return var_core_value_sig6C7E;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig7BE0 === "string" ? String : Number)(var_core_value_sig7D1B);
+}
+function q(var_core_value_sig68BE) {
+  var var_core_value_sig04C6 = K(var_core_value_sig68BE, "string");
+  return G(var_core_value_sig04C6) == "symbol" ? var_core_value_sig04C6 : var_core_value_sig04C6 + "";
+}
+function J(var_core_value_sigCA05, var_core_value_sig2F2B, var_core_value_sig70AF) {
+  return (var_core_value_sig2F2B = q(var_core_value_sig2F2B)) in var_core_value_sigCA05 ? Object.defineProperty(var_core_value_sigCA05, var_core_value_sig2F2B, {
+    value: var_core_value_sig70AF,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigCA05[var_core_value_sig2F2B] = var_core_value_sig70AF, var_core_value_sigCA05;
+}
+let Y = class extends t.Disposable {
+  constructor(var_core_value_sigF4C5, var_core_value_sig5410, var_core_value_sig492F) {
+    super(), this._resourceManagerService = var_core_value_sigF4C5, this._resourceService = var_core_value_sig5410, this._modelService = var_core_value_sig492F, J(this, "_resourceDisposable", null), this._initResource();
+  }
+  _initResource() {
+    this._resourceDisposable = this._resourceManagerService["registerPluginResource"]({
+      pluginName: "DOC_CHART_PLUGIN",
+      businesses: [t.UniverInstanceType["UNIVER_DOC"]],
+      toJson: var_core_value_sig27E5 => this._resourceService["serializeUnit"](var_core_value_sig27E5),
+      parseJson: var_core_value_sig8061 => JSON.parse(var_core_value_sig8061),
+      onLoad: (var_core_value_sig4D4C, var_core_value_sigC9E0) => {
+        this._resourceService["loadUnit"](var_core_value_sig4D4C, var_core_value_sigC9E0);
+      },
+      onUnLoad: var_core_value_sig76BA => {
+        this._modelService["removeUnit"](var_core_value_sig76BA), this._resourceService["unloadUnit"](var_core_value_sig76BA);
+      }
+    }), this.disposeWithMe(this._resourceDisposable);
+  }
+};
+Y = _([g(0, t.IResourceManagerService), g(1, (0, t.Inject)(e.ChartResourceRepository)), g(2, (0, t.Inject)(v))], Y);
+let X = class {
+  constructor(var_core_value_sig8EA0) {
+    this._resourceService = var_core_value_sig8EA0;
+  }
+  getRemoveDrawingMutationInfos(var_core_value_sigA6F6) {
+    let var_core_value_sigCDDA = Z(var_core_value_sigA6F6.drawing);
+    if (!var_core_value_sigCDDA) return null;
+    let var_core_value_sigE243 = this._resourceService["getChart"](var_core_value_sigA6F6.unitId, var_core_value_sigCDDA.chartId);
+    if (!var_core_value_sigE243) return null;
+    let var_core_value_sig74A8 = this._resourceService["getDataSource"](var_core_value_sigA6F6.unitId, var_core_value_sigE243.dataSourceId),
+      var_core_value_sig21B2 = this._shouldCleanupDataSource(var_core_value_sigA6F6, var_core_value_sigE243.dataSourceId);
+    return {
+      redoMutations: [{
+        id: d.id,
+        params: {
+          unitId: var_core_value_sigA6F6.unitId,
+          chartId: var_core_value_sigE243.id,
+          cleanupDataSource: var_core_value_sig21B2
+        }
+      }],
+      undoMutations: [...(var_core_value_sig21B2 && var_core_value_sig74A8 ? [{
+        id: s.id,
+        params: {
+          unitId: var_core_value_sigA6F6.unitId,
+          dataSource: var_core_value_sig74A8
+        }
+      }] : []), {
+        id: c.id,
+        params: {
+          unitId: var_core_value_sigA6F6.unitId,
+          chart: var_core_value_sigE243
+        }
+      }]
+    };
+  }
+  _shouldCleanupDataSource(var_core_value_sigDE08, var_core_value_sigACCB) {
+    let var_core_value_sig7F33 = new Set(var_core_value_sigDE08.removeDrawings["map"](var_core_value_sigFBFA => {
+      var var_core_value_sigF602;
+      return (var_core_value_sigF602 = Z(var_core_value_sigFBFA)) == null ? undefined : var_core_value_sigF602.chartId;
+    }).filter(var_core_value_sig1BBD => var_core_value_sig1BBD != null));
+    return this._resourceService["getChartIdsByDataSource"](var_core_value_sigDE08.unitId, var_core_value_sigACCB).filter(var_core_value_sigF704 => !var_core_value_sig7F33.has(var_core_value_sigF704)).length === 0;
+  }
+};
+X = _([g(0, (0, t.Inject)(e.ChartResourceRepository))], X);
+function Z(var_core_value_sigD04E) {
+  let var_core_value_sigB99B = var_core_value_sigD04E;
+  return var_core_value_sigB99B.drawingType === t.DrawingTypeEnum["DRAWING_CHART"] && typeof var_core_value_sigB99B.chartId == "string" ? var_core_value_sigB99B : null;
+}
+let Q = class extends t.Plugin {
+  constructor(var_core_value_sig0C53 = L, var_core_value_sigEA04, var_core_value_sig7A62, var_core_value_sig8109) {
+    super(), this._config = var_core_value_sig0C53, this._injector = var_core_value_sigEA04, this._configService = var_core_value_sig7A62, this._commandService = var_core_value_sig8109;
+    let {
+      ...var_core_value_sig7565
+    } = (0, t.merge)({}, L, this._config);
+    this._configService["setConfig"]("docs-chart.config", var_core_value_sig7565), this._initCommands();
+  }
+  onStarting() {
+    let var_core_value_sigD4FB = this._injector;
+    [[e.ChartResourceRepository], [v], [X], [Y]].forEach(var_core_value_sig2BCF => var_core_value_sigD4FB.add(var_core_value_sig2BCF)), this.disposeWithMe(var_core_value_sigD4FB.get(n.IDocDrawingAdapterService).registerAdapter(var_core_value_sigD4FB.get(X))), (0, t.touchDependencies)(var_core_value_sigD4FB, [[e.ChartResourceRepository], [v], [X], [Y]]);
+  }
+  _initCommands() {
+    [R, l, H, b, h, T, y, f, s, o, c, d].forEach(var_core_value_sig0D69 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sig0D69));
+    });
+  }
+};
+J(Q, "type", t.UniverInstanceType["UNIVER_DOC"]), J(Q, "pluginName", "UniverDocsChartPlugin"), J(Q, "packageName", U), J(Q, "version", W), Q = _([(0, t.DependentOn)(e.UniverChartPlugin, a.UniverLicensePlugin, n.UniverDocsDrawingPlugin), g(1, (0, t.Inject)(t.Injector)), g(2, t.IConfigService), g(3, t.ICommandService)], Q), exports.ChangeDocChartDataSourceCommand = l, exports.DEFAULT_DOC_CHART_ELEMENT_HEIGHT = 320, exports.DEFAULT_DOC_CHART_ELEMENT_WIDTH = 480, exports.DEFAULT_DOC_CHART_VALUES = x, exports.DocChartDataEditMode = A, Object.defineProperty(exports, "DocChartDrawingAdapter", {
+  enumerable: true,
+  get: function () {
+    return X;
+  }
+}), exports.DocChartInsertAnchorKind = F, Object.defineProperty(exports, "DocChartModelService", {
+  enumerable: true,
+  get: function () {
+    return v;
+  }
+}), exports.DocChartParagraphPosition = I, exports.DocumentChartConfigAdapter = P, exports.DuplicateDocChartDataSourceCommand = y, exports.InsertDocChartCommand = R, exports.RemoveDocChartCommand = f, exports.RemoveDocChartDataSourceMutation = o, exports.RemoveDocChartSnapshotMutation = d, exports.SetDocChartDataSourceMutation = s, exports.SetDocChartSnapshotMutation = c, Object.defineProperty(exports, "UniverDocsChartPlugin", {
+  enumerable: true,
+  get: function () {
+    return Q;
+  }
+}), exports.UpdateDocChartConfigCommand = h, exports.UpdateDocChartDataSourceCommand = b, exports.UpdateDocChartDrawingCommand = T, exports.UpdateDocChartSnapshotCommand = H, exports.assertValidOptionalDocChartSize = w, exports.normalizeDocumentChartValues = j, exports.updateDocumentChartData = M, exports.updateDocumentChartLayout = N;

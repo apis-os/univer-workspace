@@ -1,19 +1,59 @@
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IImageIoService,IUniverInstanceService,ImageSourceType,Inject,Injector,LocaleService,Plugin,ThemeService,UniverInstanceType,delayAnimationFrame,generateRandomId,merge,registerDependencies,toDisposable}from"@univerjs/core";
-import{MessageType}from"@univerjs/design";
-import{BuiltInUIPart,ILocalFileService,IMessageService,IUIPartsService,connectInjector,useDependency,useObservable}from"@univerjs/ui";
-import{BoardBackgroundType,BoardElementType,IBoardElementService,ResolveBoardCaptureBoundsCommand,UniverBoardsPlugin,resolveBoardElementParentChain}from"@univerjs-pro/boards";
-import{BOARDS_UI_PLUGIN_CONFIG_KEY,BOARD_RENDER_LAYER_INDEX,BoardSettingsMenuContributionSubmenu,IBoardSettingsMenuContributionService,UniverBoardsUIPlugin,createBoardElementRenderObject,resolveBoardRenderAdapters}from"@univerjs-pro/boards-ui";
-import{IShapeHostAdapterRegistry}from"@univerjs-pro/engine-shape";
-import{IPrintPreparationService,PrintPreparationService}from"@univerjs-pro/print";
-import{FormulaShapeResultStatus,ShapeFormulaService}from"@univerjs-pro/shape-editor";
-import{CanvasRenderMode,Engine,ICanvasColorService,MAIN_VIEW_PORT_KEY,Scene,Viewport}from"@univerjs/engine-render";
-import{BehaviorSubject}from"rxjs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{DownloadImageIcon,LoadingMultiIcon,PrintIcon}from"@univerjs/icons";
-import{jsx,jsxs}from"react/jsx-runtime";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IImageIoService, IUniverInstanceService, ImageSourceType, Inject, Injector, LocaleService, Plugin, ThemeService, UniverInstanceType, delayAnimationFrame, generateRandomId, merge, registerDependencies, toDisposable } from "@univerjs/core";
+import { MessageType } from "@univerjs/design";
+import { BuiltInUIPart, ILocalFileService, IMessageService, IUIPartsService, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { BoardBackgroundType, BoardElementType, IBoardElementService, ResolveBoardCaptureBoundsCommand, UniverBoardsPlugin, resolveBoardElementParentChain } from "@univerjs-pro/boards";
+import { BOARDS_UI_PLUGIN_CONFIG_KEY, BOARD_RENDER_LAYER_INDEX, BoardSettingsMenuContributionSubmenu, IBoardSettingsMenuContributionService, UniverBoardsUIPlugin, createBoardElementRenderObject, resolveBoardRenderAdapters } from "@univerjs-pro/boards-ui";
+import { IShapeHostAdapterRegistry } from "@univerjs-pro/engine-shape";
+import { IPrintPreparationService, PrintPreparationService } from "@univerjs-pro/print";
+import { FormulaShapeResultStatus, ShapeFormulaService } from "@univerjs-pro/shape-editor";
+import { CanvasRenderMode, Engine, ICanvasColorService, MAIN_VIEW_PORT_KEY, Scene, Viewport } from "@univerjs/engine-render";
+import { BehaviorSubject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DownloadImageIcon, LoadingMultiIcon, PrintIcon } from "@univerjs/icons";
+import { jsx, jsxs } from "react/jsx-runtime";
 import { W } from "./internal-glue.js";
-const q={id:"boards-print.operation.print",type:CommandType.OPERATION,handler:async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346)return false;try{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223=await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(W).print(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346.getActivePageId());return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(IMessageService).show({type:MessageType.Error,content:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(LocaleService).t("boards-print.errors.printFailed")}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223;}catch{return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(IMessageService).show({type:MessageType.Error,content:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(LocaleService).t("boards-print.errors.printFailed")}),false;}}},J={id:"boards-print.operation.export-image",type:CommandType.OPERATION,handler:async(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350)=>{if((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350.format)!=="png"&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350.format)!=="jpeg")return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351)return false;try{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224=await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(W).exportImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351.getActivePageId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350.format);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(IMessageService).show({type:MessageType.Error,content:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(LocaleService).t("boards-print.errors.exportFailed")}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224;}catch{return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(IMessageService).show({type:MessageType.Error,content:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(LocaleService).t("boards-print.errors.exportFailed")}),false;}}},Y="boards-print.config",X={};
-
+const q = {
+    id: "boards-print.operation.print",
+    type: CommandType.OPERATION,
+    handler: async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346) return false;
+      try {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223 = await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(W).print(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346.getUnitId(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46346.getActivePageId());
+        return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(IMessageService).show({
+          type: MessageType.Error,
+          content: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(LocaleService).t("boards-print.errors.printFailed")
+        }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223;
+      } catch {
+        return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(IMessageService).show({
+          type: MessageType.Error,
+          content: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46345.get(LocaleService).t("boards-print.errors.printFailed")
+        }), false;
+      }
+    }
+  },
+  J = {
+    id: "boards-print.operation.export-image",
+    type: CommandType.OPERATION,
+    handler: async (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350) => {
+      if ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350.format) !== "png" && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350.format) !== "jpeg") return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351) return false;
+      try {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224 = await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(W).exportImage(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351.getUnitId(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46351.getActivePageId(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46350.format);
+        return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224 || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(IMessageService).show({
+          type: MessageType.Error,
+          content: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(LocaleService).t("boards-print.errors.exportFailed")
+        }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46224;
+      } catch {
+        return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(IMessageService).show({
+          type: MessageType.Error,
+          content: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46349.get(LocaleService).t("boards-print.errors.exportFailed")
+        }), false;
+      }
+    }
+  },
+  Y = "boards-print.config",
+  X = {};
 export { q as PrintBoardOperation, J as ExportBoardImageOperation, Y as BOARDS_PRINT_PLUGIN_CONFIG_KEY };
-
 export { X };

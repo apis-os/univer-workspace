@@ -1,15 +1,28 @@
-import{BooleanNumber,CommandType,DependentOn,Disposable,DrawingTypeEnum,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,ObjectMatrix,Plugin,Rectangle,Tools,UniverInstanceType,createBaseFormulaTableNameMap,createIdentifier,getOriginCellValue,merge,sequenceExecute,toDisposable,touchDependencies}from"@univerjs/core";
-import{InsertColMutation,InsertRowMutation,InsertSheetMutation,RemoveColMutation,RemoveRowMutation,RemoveSheetMutation,ReorderRangeMutation,SetRangeValuesMutation,SheetSkeletonService}from"@univerjs/sheets";
-import{DrawingApplyType,ISheetDrawingService,SetDrawingApplyMutation,SheetDrawingAnchorType,applySheetDrawingPlacement,getSheetDrawingPlacement}from"@univerjs/sheets-drawing";
-import{IFormulaReferenceDataProviderRegistry,createUnavailableReferenceDataResponse}from"@univerjs-pro/engine-formula";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{AddBoardElementMutation,IBoardElementService,RemoveBoardElementMutation,UpdateBoardElementMutation,collectBoardElementIdsForRemoveWithBoundConnectors,createEmbedBoardsFloatingElement,isEmbedBoardsFloatingElement}from"@univerjs-pro/boards";
-import{AddSlideElementMutation,AddSlidePageMutation,ISlideDrawingService,RemoveSlideElementMutation,RemoveSlidePageMutation,UpdateSlideElementMutation,createEmbedSlidesFloatingElement,createEmbedSlidesPage,getEmbedSlidesFloatingCustomData,resolvedSlideLayersToDrawingMap}from"@univerjs-pro/slides";
-import{IDrawingManagerService}from"@univerjs/drawing";
-import{ApplyBaseJson1Mutation,BaseJson1OpApplier,createEmbedBasesTable,createEmbedBasesTableAddMutation,createEmbedBasesTableRemoveMutation,ensureBaseTableCellLayout,getBaseCellFormulaValue}from"@univerjs-pro/bases";
-import{createDocsCustomBlockInsertMutation,createDocsCustomBlockRemoveMutation}from"@univerjs/docs";
-import{BehaviorSubject}from"rxjs";
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, ObjectMatrix, Plugin, Rectangle, Tools, UniverInstanceType, createBaseFormulaTableNameMap, createIdentifier, getOriginCellValue, merge, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { InsertColMutation, InsertRowMutation, InsertSheetMutation, RemoveColMutation, RemoveRowMutation, RemoveSheetMutation, ReorderRangeMutation, SetRangeValuesMutation, SheetSkeletonService } from "@univerjs/sheets";
+import { DrawingApplyType, ISheetDrawingService, SetDrawingApplyMutation, SheetDrawingAnchorType, applySheetDrawingPlacement, getSheetDrawingPlacement } from "@univerjs/sheets-drawing";
+import { IFormulaReferenceDataProviderRegistry, createUnavailableReferenceDataResponse } from "@univerjs-pro/engine-formula";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { AddBoardElementMutation, IBoardElementService, RemoveBoardElementMutation, UpdateBoardElementMutation, collectBoardElementIdsForRemoveWithBoundConnectors, createEmbedBoardsFloatingElement, isEmbedBoardsFloatingElement } from "@univerjs-pro/boards";
+import { AddSlideElementMutation, AddSlidePageMutation, ISlideDrawingService, RemoveSlideElementMutation, RemoveSlidePageMutation, UpdateSlideElementMutation, createEmbedSlidesFloatingElement, createEmbedSlidesPage, getEmbedSlidesFloatingCustomData, resolvedSlideLayersToDrawingMap } from "@univerjs-pro/slides";
+import { IDrawingManagerService } from "@univerjs/drawing";
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, createEmbedBasesTable, createEmbedBasesTableAddMutation, createEmbedBasesTableRemoveMutation, ensureBaseTableCellLayout, getBaseCellFormulaValue } from "@univerjs-pro/bases";
+import { createDocsCustomBlockInsertMutation, createDocsCustomBlockRemoveMutation } from "@univerjs/docs";
+import { BehaviorSubject } from "rxjs";
 import { Hn } from "./embed-descriptor.js";
-function Wn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617){let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42={};return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.renderHost&&(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.renderHost=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.renderHost),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.hostType===UniverInstanceType.UNIVER_DOC&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.childType===UniverInstanceType.UNIVER_SHEET||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.childType===UniverInstanceType.UNIVER_BASE)&&(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.verticalWheelMode="host",var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.horizontalWheelMode="expand-then-self"),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.mode==="float"?(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.floating={enabled:true,layout:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.layout,fullscreen:true},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.tab=false,var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42):(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.floating=false,var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.tab={enabled:true,container:Hn.get(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.entry),replaceHostMenu:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.menuBehavior==="host-override",hideHostFxBar:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.menuBehavior==="host-override",lockHostRibbon:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.menuBehavior==="host-override",thumbnail:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.entry==="slides-page-list-block"},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42);}
-
+function Wn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42 = {};
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.renderHost && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.renderHost = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.renderHost), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.hostType === UniverInstanceType.UNIVER_DOC && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.childType === UniverInstanceType.UNIVER_SHEET || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.childType === UniverInstanceType.UNIVER_BASE) && (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.verticalWheelMode = "host", var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.horizontalWheelMode = "expand-then-self"), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.mode === "float" ? (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.floating = {
+    enabled: true,
+    layout: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.layout,
+    fullscreen: true
+  }, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.tab = false, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42) : (var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.floating = false, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.tab = {
+    enabled: true,
+    container: Hn.get(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.entry),
+    replaceHostMenu: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.menuBehavior === "host-override",
+    hideHostFxBar: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.menuBehavior === "host-override",
+    lockHostRibbon: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.menuBehavior === "host-override",
+    thumbnail: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461617.entry === "slides-page-list-block"
+  }, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42);
+}
 export { Wn as createDefaultEmbedSourceMeta };

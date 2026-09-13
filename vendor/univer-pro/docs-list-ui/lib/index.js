@@ -1,1 +1,687 @@
-import{DOCS_LIST_MORE_BULLETS as v212,DOCS_LIST_PLUGIN as v213,DocsListDemoteCommand as v214,DocsListPromoteCommand as v215,DocsListSelectionMode as v216,DocsListSetGlyphSymbolCommand as v217,DocsListSetGlyphTypeCommand as v218,DocsListSetPrefixSuffixCommand as v219,DocsListSetStartNumberCommand as v220,UniverDocsListPlugin as v221}from"@univerjs-pro/docs-list";import{UniverLicensePlugin as v222}from"@univerjs-pro/license";import{DependentOn as v223,Disposable as v224,ICommandService as v225,IConfigService as v226,IPermissionService as v227,Inject as v228,Injector as v229,ListGlyphType as v230,LocaleService as v231,PRESET_LIST_TYPE as v232,Plugin as v233,PresetListType as v234,UniverInstanceType as v235,merge as v236}from"@univerjs/core";import{DocSelectionManagerService as v237,UniverDocsPlugin as v238,canEditDocumentTargets as v239}from"@univerjs/docs";import{DocCanvasPopManagerService as v240,DocEventManagerService as v241,UniverDocsUIPlugin as v242,getListMarkerFallbackBound as v243}from"@univerjs/docs-ui";import{IRenderManagerService as v244,UniverRenderEnginePlugin as v245}from"@univerjs/engine-render";import{ComponentManager as v246,IContextMenuService as v247,useDependency as v248}from"@univerjs/ui";import{Button as v249,Checkbox as v250,Input as v251,InputNumber as v252,Separator as v253}from"@univerjs/design";import{Fragment as v254,jsx as v255,jsxs as v256}from"react/jsx-runtime";import{useMemo as v257,useState as v258}from"react";import{BehaviorSubject as v259}from"rxjs";var j="@univerjs-pro/docs-list-ui",M="1.0.0-insiders.20260907-70fc579";const N={},P="docs-list-ui.context-menu",F=[{label:"1",type:v230.DECIMAL},{label:"A",type:v230.UPPER_LETTER},{label:"a",type:v230.LOWER_LETTER},{label:"I",type:v230.UPPER_ROMAN},{label:"i",type:v230.LOWER_ROMAN}],I=["●","○","■","➢","★"];function L(v148){var v149;let v150=(v149=v148.popup)==null?undefined:v149.extraProps,v151=v248(v231);return v256("section",{className:"univer-box-border\x20univer-w-48\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-py-1.5\x20univer-text-xs\x20univer-shadow-lg","data-u-comp":P,children:[v255("div",{className:"univer-grid univer-grid-cols-5 univer-justify-items-center univer-gap-1 univer-px-2.5 univer-py-1",children:F.map(v33=>v255(v249,{size:"small",type:"button",disabled:v150==null?undefined:v150.readOnly,onClick:()=>{var v1;return v150==null||(v1=v150.onSetGlyphType)==null?undefined:v1.call(v150,v33.type);},children:v33.label},v33.label))}),v255(v253,{}),v255("div",{className:"univer-grid\x20univer-grid-cols-5\x20univer-justify-items-center\x20univer-gap-1\x20univer-px-2.5\x20univer-py-1",children:I.map(v34=>v255(v249,{size:"small",type:"button",disabled:v150==null?undefined:v150.readOnly,onClick:()=>{var v2;return v150==null||(v2=v150.onSetGlyphSymbol)==null?undefined:v2.call(v150,v34);},children:v34},v34))}),v255(v253,{}),v255(R,{disabled:v150==null?undefined:v150.readOnly,onClick:v150==null?undefined:v150.onMoreBullets,children:v151.t("docs-list-ui.moreBullets")}),(v150==null?undefined:v150.showNumberingControls)&&v256(v254,{children:[v255(R,{disabled:v150==null?undefined:v150.readOnly,onClick:v150==null?undefined:v150.onEditPrefixSuffix,children:v151.t("docs-list-ui.editPrefixSuffix")}),v255(R,{disabled:v150==null?undefined:v150.readOnly,onClick:()=>{var v35;return v150==null||(v35=v150.onSetStartNumber)==null?undefined:v35.call(v150,1);},children:v151.t("docs-list-ui.restartNumbering")}),v255(R,{disabled:v150==null?undefined:v150.readOnly,onClick:v150==null?undefined:v150.onRestartAt,children:v151.t("docs-list-ui.restartAt")})]}),v255(R,{disabled:(v150==null?undefined:v150.readOnly)||!(v150!=null&&v150.canPromote),onClick:v150==null?undefined:v150.onPromote,children:v151.t("docs-list-ui.promote")}),v255(R,{disabled:(v150==null?undefined:v150.readOnly)||!(v150!=null&&v150.canDemote),onClick:v150==null?undefined:v150.onDemote,children:v151.t("docs-list-ui.demote")}),v255(v253,{}),v255(R,{onClick:v150==null?undefined:v150.onSelectItem,children:v151.t("docs-list-ui.selectListItem")}),v255(R,{onClick:v150==null?undefined:v150.onSelectCurrentLevel,children:v151.t("docs-list-ui.selectCurrentLevel")}),v255(R,{onClick:v150==null?undefined:v150.onSelectCurrentList,children:v151.t("docs-list-ui.selectCurrentList")})]});}function R(v152){return v255(v249,{size:"small",variant:"ghost",type:"button",className:"univer-w-full univer-justify-start",disabled:v152.disabled,onClick:v36=>{var v37;v36.preventDefault(),(v37=v152.onClick)==null||v37.call(v152);},children:v152.children});}const z="docs-list-ui.more-bullets-dialog";function _e(v153){var v154;let v155=(v154=v153.popup)==null?undefined:v154.extraProps,v156=v248(v231),v157=v257(()=>v212.map((v3,v4)=>({id:v3+"-"+v4,symbol:v3})),[]);return v256("section",{className:"univer-box-border\x20univer-w-[420px]\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-p-4\x20univer-text-sm\x20univer-shadow-lg","data-u-comp":z,children:[v256("header",{className:"univer-mb-3 univer-flex univer-items-center univer-justify-between",children:[v255("h2",{className:"univer-m-0\x20univer-text-lg\x20univer-font-medium\x20univer-text-gray-900",children:v156.t("docs-list-ui.moreBullets")}),v255(v249,{type:"button",size:"icon",variant:"ghost",className:"univer-text-xl",onClick:v155==null?undefined:v155.onClose,"aria-label":v156.t("docs-list-ui.close"),children:"×"})]}),v255("div",{className:"univer-grid univer-max-h-[260px] univer-grid-cols-10 univer-gap-1 univer-overflow-y-auto univer-pr-1",children:v157.map(({id:v38,symbol:v39})=>v255(v249,{type:"button",size:"icon",className:"univer-text-base",onClick:()=>{var v5;return v155==null||(v5=v155.onSelect)==null?undefined:v5.call(v155,v39);},children:v39},v38))})]});}const B="docs-list-ui.prefix-suffix-dialog";function ve(v158){var v159;let v160=(v159=v158.popup)==null?undefined:v159.extraProps,v161=v248(v231),[v162,v163]=v258(""),[v164,v165]=v258("."),[v166,v167]=v258(true);return v256("form",{className:"univer-box-border univer-w-[456px] univer-rounded-xl univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-6 univer-text-sm univer-shadow-xl",onSubmit:v40=>{var v41;v40.preventDefault(),v160==null||(v41=v160.onApply)==null||v41.call(v160,v162,v164,v166?v216.List:v216.Level);},children:[v255("h2",{className:"univer-m-0\x20univer-mb-6\x20univer-text-3xl\x20univer-font-medium\x20univer-text-gray-900",children:v161.t("docs-list-ui.prefixAndSuffix")}),v256("div",{className:"univer-flex univer-items-end univer-gap-4",children:[v256("label",{className:"univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",children:[v255("span",{children:v161.t("docs-list-ui.prefix")}),v255(v251,{size:"large",inputClass:"univer-h-16\x20univer-text-xl",value:v162,onChange:v163,placeholder:v161.t("docs-list-ui.noPrefix")})]}),v255("span",{className:"univer-w-6 univer-flex-none univer-pb-5 univer-text-center univer-text-xl univer-text-gray-700",children:"A"}),v256("label",{className:"univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",children:[v255("span",{children:v161.t("docs-list-ui.suffix")}),v255(v251,{size:"large",inputClass:"univer-h-16 univer-text-xl",value:v164,onChange:v165})]})]}),v255(v250,{className:"univer-mt-6 univer-text-xl",checked:v166,onChange:v42=>v167(!!v42),children:v161.t("docs-list-ui.applyToEntireList")}),v256("footer",{className:"univer-mt-10 univer-flex univer-items-center univer-justify-end univer-gap-4",children:[v255(v249,{type:"button",variant:"default",onClick:v160==null?undefined:v160.onClose,children:v161.t("docs-list-ui.cancel")}),v255(v249,{type:"submit",variant:"primary",children:v161.t("docs-list-ui.ok")})]})]});}const V="docs-list-ui.start-number-dialog";function ye(v168){var v169;let v170=(v169=v168.popup)==null?undefined:v169.extraProps,v171=v248(v231),[v172,v173]=v258(1);return v256("section",{className:"univer-box-border univer-w-[260px] univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-4 univer-text-sm univer-shadow-lg","data-u-comp":V,children:[v255("h2",{className:"univer-m-0 univer-mb-3 univer-text-lg univer-font-medium univer-text-gray-900",children:v171.t("docs-list-ui.restartAt")}),v255(v252,{className:"univer-w-full",min:1,step:1,precision:0,value:v172,onChange:v173}),v256("footer",{className:"univer-mt-4 univer-flex univer-justify-end univer-gap-2",children:[v255(v249,{type:"button",variant:"default",onClick:v170==null?undefined:v170.onClose,children:v171.t("docs-list-ui.cancel")}),v255(v249,{type:"button",variant:"primary",onClick:()=>{var v43;return v170==null||(v43=v170.onApply)==null?undefined:v43.call(v170,Math.max(1,v172??1));},children:v171.t("docs-list-ui.ok")})]})]});}function H(v174,v175){return function(v44,v45){v175(v44,v45,v174);};}function U(v176,v177,v178,v179){var v180=arguments.length,v181=v180<3?v177:v179===null?v179=Object.getOwnPropertyDescriptor(v177,v178):v179,v182;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v181=Reflect.decorate(v176,v177,v178,v179);else{for(var v183=v176.length-1;v183>=0;v183--)(v182=v176[v183])&&(v181=(v180<3?v182(v181):v180>3?v182(v177,v178,v181):v182(v177,v178))||v181);}return v180>3&&v181&&Object.defineProperty(v177,v178,v181),v181;}let W=class extends v224{constructor(v46){super(),this._componentManager=v46,this._registerComponents();}_registerComponents(){this.disposeWithMe(this._componentManager["register"](P,L)),this.disposeWithMe(this._componentManager["register"](z,_e)),this.disposeWithMe(this._componentManager["register"](B,ve)),this.disposeWithMe(this._componentManager["register"](V,ye));}};W=U([H(0,v228(v246))],W);function G(v184){"@babel/helpers - typeof";return G=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v47){return typeof v47;}:function(v48){return v48&&typeof Symbol=="function"&&v48.constructor===Symbol&&v48!==Symbol.prototype?"symbol":typeof v48;},G(v184);}function be(v185,v186){if(G(v185)!="object"||!v185)return v185;var v187=v185[Symbol.toPrimitive];if(v187!==undefined){var v188=v187.call(v185,v186||"default");if(G(v188)!="object")return v188;throw TypeError("@@toPrimitive must return a primitive value.");}return(v186==="string"?String:Number)(v185);}function xe(v189){var v190=be(v189,"string");return G(v190)=="symbol"?v190:v190+"";}function K(v191,v192,v193){return(v192=xe(v192))in v191?Object.defineProperty(v191,v192,{value:v193,enumerable:true,configurable:true,writable:true}):v191[v192]=v193,v191;}const q={marker:null,anchor:null,open:false};var J=class{constructor(){K(this,"_menuState$",new v259(q)),K(this,"_markerSelection$",new v259(null)),K(this,"menuState$",this._menuState$["asObservable"]()),K(this,"markerSelection$",this._markerSelection$["asObservable"]());}get menuState(){return this._menuState$["value"];}get markerSelection(){return this._markerSelection$["value"];}nextClickMode(v49){let v50=this.markerSelection;return v50&&this._getMarkerGroupKey(v50.marker)===this._getMarkerGroupKey(v49)?v216.Item:v216.Level;}contextMenuMode(v51){let v52=this.markerSelection;return!v52||this._getMarkerListKey(v52.marker)!==this._getMarkerListKey(v51)?v216.Level:v52.mode==="list"?v216.List:this._getMarkerGroupKey(v52.marker)===this._getMarkerGroupKey(v51)?v52.mode:v216.Level;}openMenu(v53,v54){this._menuState$["next"]({marker:v53,anchor:v54,open:true});}closeMenu(){this._menuState$["next"](q);}setMarkerSelection(v55,v56){this._markerSelection$["next"]({marker:v55,mode:v56});}clearMarkerSelection(){this._markerSelection$["next"](null);}_getMarkerGroupKey(v57){return(v57.segmentId??"")+":"+v57.listId+":"+v57.nestingLevel;}_getMarkerListKey(v58){return(v58.segmentId??"")+":"+v58.listId;}};let Y=class extends v224{constructor(v59,v60,v61,v62,v63,v64,v65,v66){super(),this._context=v59,this._commandService=v60,this._docSelectionManagerService=v61,this._docEventManagerService=v62,this._docCanvasPopManagerService=v63,this._contextMenuService=v64,this._selectionService=v65,this._permissionService=v66,K(this,"_menuDisposable",null),K(this,"_docRangesBeforeMarkerPointer",null),K(this,"_ignoreTextSelectionBefore",0),K(this,"_openContextMenuTimer",null),this._initMarkerPointerSelectionPreserve(),this._initMarkerClick(),this._initMarkerContextMenu(),this._initMarkerSelectionRender(),this._initTextSelectionClear(),this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(()=>this._closeContextMenu()));}_initMarkerPointerSelectionPreserve(){let v67=this._context["mainComponent"]??this._context["scene"];this.disposeWithMe(v67.onPointerDown$["subscribeEvent"]({next:([v6])=>{this._docEventManagerService["isPointerOnBullet"](v6.offsetX,v6.offsetY)?this._docRangesBeforeMarkerPointer=[...(this._docSelectionManagerService["getDocRanges"]()??[])]:this._docRangesBeforeMarkerPointer=null;},priority:-12000}));}_initMarkerClick(){this.disposeWithMe(this._docEventManagerService["clickBullets$"].subscribe(v7=>{let v8=this._toMarkerInfo(v7);if(!Z(v8.listType))return;let v9=this._selectionService["nextClickMode"](v8);this._selectMarker(v8,v9);}));}_initMarkerContextMenu(){this.disposeWithMe(this._docEventManagerService["contextMenuBullets$"].subscribe(v10=>{let v11=this._toMarkerInfo(v10);Z(v11.listType)&&this._openMarkerContextMenuFromOffset(v11,v10.x,v10.y);}));}_openMarkerContextMenuFromOffset(v68,v69,v70){let v71=Ce(v69,v70,this._context["scene"]),v72=this._selectionService["contextMenuMode"](v68);this._selectionService["openMenu"](v68,v71),this._selectMarker(v68,v72),this._scheduleOpenContextMenu(v68,v71.x,v71.y);}_scheduleOpenContextMenu(v73,v74,v75){this._clearOpenContextMenuTimer(),this._openContextMenuTimer=setTimeout(()=>{this._openContextMenuTimer=null,this._openContextMenu(v73,v74,v75);},0);}_initMarkerSelectionRender(){this.disposeWithMe(this._selectionService["markerSelection$"].subscribe(()=>this._makeDirty())),this.disposeWithMe(this._context["scene"].afterRender$["subscribe"](v12=>{let v13=this._selectionService["markerSelection"];if(!v12||!v13)return;let v14=v12.getContext();v14&&this._drawMarkerSelection(v14);}));}_initTextSelectionClear(){this.disposeWithMe(this._docSelectionManagerService["textSelection$"].subscribe(v15=>{Date.now()<this._ignoreTextSelectionBefore||this._selectionService["markerSelection"]&&(v15.textRanges["length"]||v15.rectRanges["length"])&&this._selectionService["clearMarkerSelection"]();}));}_openContextMenu(v76,v77,v78){this._contextMenuService["hideContextMenu"](),this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"]({bottom:v78,left:v77,right:v77,top:v78},{componentKey:P,direction:"bottom-left",extraProps:{marker:v76,readOnly:!this._canEditDocument(),canDemote:v76.nestingLevel<8,canPromote:v76.nestingLevel>0,showNumberingControls:this._isOrderedMarker(v76),onClose:()=>this._closeContextMenu(),onDemote:()=>this._executeMarkerCommand(v214.id,v76),onEditPrefixSuffix:()=>this._openPrefixSuffixDialog(v76,v77,v78),onMoreBullets:()=>this._openMoreBulletsDialog(v76,v77,v78),onPromote:()=>this._executeMarkerCommand(v215.id,v76),onRestartAt:()=>this._openStartNumberDialog(v76,v77,v78),onSelectCurrentLevel:()=>this._selectMarkerAndClose(v76,v216.Level),onSelectCurrentList:()=>this._selectMarkerAndClose(v76,v216.List),onSelectItem:()=>this._selectMarkerAndClose(v76,v216.Item),onSetGlyphSymbol:v16=>this._executeMarkerCommand(v217.id,v76,{symbol:v16}),onSetGlyphType:v17=>this._executeMarkerCommand(v218.id,v76,{glyphType:v17}),onSetPrefixSuffix:(v18,v19)=>this._executeMarkerCommand(v219.id,v76,{prefix:v18,suffix:v19}),onSetStartNumber:v20=>this._executeMarkerCommand(v220.id,v76,v20===1?{restartFromPrevious:true,startNumber:v20}:{startNumber:v20})},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]);}_openMoreBulletsDialog(v79,v80,v81){this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(v80,v81),{componentKey:z,direction:"bottom-left",extraProps:{onClose:()=>this._closeContextMenu(),onSelect:v21=>this._executeMarkerCommand(v217.id,v79,{symbol:v21})},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]);}_openPrefixSuffixDialog(v82,v83,v84){this._isOrderedMarker(v82)&&(this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(v83,v84),{componentKey:B,direction:"bottom-left",extraProps:{onApply:(v22,v23,v24)=>this._executeMarkerCommand(v219.id,v82,{prefix:v22,suffix:v23,mode:v24}),onClose:()=>this._closeContextMenu()},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]));}_openStartNumberDialog(v85,v86,v87){this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(v86,v87),{componentKey:V,direction:"bottom-left",extraProps:{onApply:v25=>this._executeMarkerCommand(v220.id,v85,{startNumber:v25}),onClose:()=>this._closeContextMenu()},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]);}_closeContextMenu(){var v88;this._clearOpenContextMenuTimer(),(v88=this._menuDisposable)==null||v88.dispose(),this._menuDisposable=null,this._selectionService["closeMenu"]();}_canEditDocument(){return v239(this._permissionService,this._context["unitId"],[]);}_clearOpenContextMenuTimer(){this._openContextMenuTimer!=null&&(clearTimeout(this._openContextMenuTimer),this._openContextMenuTimer=null);}_executeMarkerCommand(v89,v90,v91={}){this._commandService["executeCommand"](v89,{paragraphStartIndex:v90.paragraphStartIndex,segmentId:v90.segmentId,mode:this._getCommandMode(v90,v91.mode),...v91}),this._closeContextMenu();}_getCommandMode(v92,v93){if(v93===v216.Item||v93===v216.Level||v93===v216.List)return v93;let v94=this._selectionService["markerSelection"];return!v94||v94.marker["listId"]!==v92.listId||(v94.marker["segmentId"]??"")!==(v92.segmentId??"")?v216.Level:v94.mode;}_selectMarker(v95,v96){let v97=this._docRangesBeforeMarkerPointer??[...(this._docSelectionManagerService["getDocRanges"]()??[])];this._ignoreTextSelectionBefore=Date.now()+400,this._selectionService["setMarkerSelection"](v95,v96),this._makeDirty(),this._docRangesBeforeMarkerPointer=null,v97.length&&queueMicrotask(()=>{this._docSelectionManagerService["replaceDocRanges"](v97,{unitId:this._context["unitId"],subUnitId:this._context["unitId"]},false,{forceFocus:false});});}_selectMarkerAndClose(v98,v99){this._selectMarker(v98,v99),this._closeContextMenu();}_drawMarkerSelection(v100){let v101=this._getSelectedBulletBounds();v101.length&&(v100.save(),v100.fillStyle="#8ab4f8",v100.globalAlpha=0.45,v101.forEach(v26=>{let v27=this._getMarkerSelectionRect(v26);v100.fillRect(v27.x,v27.y,v27.width,v27.height);}),v100.restore());}_getMarkerSelectionRect(v102){let v103=Se(v102.rect,this._context["scene"]),v104=this._isBulletMarker(v102)?v103.height*0.72:v103.height*1.15;return{...v103,width:Math.min(v103.width,Math.max(8,v104))};}_isBulletMarker(v105){var v106,v107,v108,v109;let v110=(v106=v105.paragraph["bullet"])==null?undefined:v106.listType,v111=((v107=v105.paragraph["bullet"])==null?undefined:v107.nestingLevel)??0,v112=v110&&(((v108=this._context["unit"].lists)==null?undefined:v108[v110])??v232[v110])||null,v113=v112==null||(v109=v112.nestingLevel)==null?undefined:v109[v111];return(v113==null?undefined:v113.glyphType)===v230.BULLET||!!(v113!=null&&v113.glyphSymbol);}_isOrderedMarker(v114){var v115,v116;let v117=((v115=this._context["unit"].lists)==null?undefined:v115[v114.listType])??v232[v114.listType],v118=v117==null||(v116=v117.nestingLevel)==null?undefined:v116[v114.nestingLevel];return!!(v118&&v118.glyphType!==v230.BULLET&&!v118.glyphSymbol);}_getSelectedBulletBounds(){let v119=this._selectionService["markerSelection"];if(!v119)return[];let{marker:v120,mode:v121}=v119;return Z(v120.listType)?this._getSelectedFallbackBulletBounds(v120,v121).concat(this._docEventManagerService["getBulletBounds"]().filter(v28=>this._isMarkerBoundSelected(v28,v120,v121)&&!this._hasFallbackBoundForMarker(v28.paragraph["startIndex"],v28.segmentId))):[];}_getSelectedFallbackBulletBounds(v122,v123){var v124;return(((v124=this._context["unit"].getBody())==null?undefined:v124.paragraphs)??[]).filter(v29=>this._isParagraphSelected(v29,v122,v123)).map(v30=>{let v31=this._docEventManagerService["findParagraphBoundByIndex"](v30.startIndex);return X(v31)?v243(v31,v30):null;}).filter(v32=>v32!=null);}_hasFallbackBoundForMarker(v125,v126){let v127=this._docEventManagerService["findParagraphBoundByIndex"](v125);return X(v127)&&(v127.segmentId??"")===(v126??"");}_isMarkerBoundSelected(v128,v129,v130){return this._isParagraphSelected(v128.paragraph,v129,v130)&&(v128.segmentId??"")===(v129.segmentId??"");}_isParagraphSelected(v131,v132,v133){let v134=v131.bullet;return!v134||v134.listId!==v132.listId||!Z(v134.listType)?false:v133==="item"?v131.startIndex===v132.paragraphStartIndex:v133==="list"||v134.nestingLevel===v132.nestingLevel;}_makeDirty(){var v135;(v135=this._context["mainComponent"])==null||v135.makeDirty(true),this._context["scene"].makeDirty();}_getAnchorRect(v136,v137){return{bottom:v137,left:v136,right:v136,top:v137};}_toMarkerInfo(v138){var v139,v140,v141;return{paragraphStartIndex:v138.paragraph["startIndex"],listId:((v139=v138.paragraph["bullet"])==null?undefined:v139.listId)??"",listType:((v140=v138.paragraph["bullet"])==null?undefined:v140.listType)??"",nestingLevel:((v141=v138.paragraph["bullet"])==null?undefined:v141.nestingLevel)??0,segmentId:v138.segmentId};}};Y=U([H(1,v225),H(2,v228(v237)),H(3,v228(v241)),H(4,v228(v240)),H(5,v247),H(6,v228(J)),H(7,v227)],Y);function X(v194){return!!(v194&&typeof v194=="object"&&"tableId"in v194);}function Z(v195){return v195!==v234.CHECK_LIST&&v195!==v234.CHECK_LIST_CHECKED;}function Se(v196,v197){let v198=Q(v196.left,v196.top,v197),v199=Q(v196.right,v196.bottom,v197);return{height:v199.y-v198.y,width:v199.x-v198.x,x:v198.x,y:v198.y};}function Q(v200,v201,v202){let{scaleX:v203,scaleY:v204}=v202.getAncestorScale(),v205=v202.getViewport("viewMain");return v205?{x:(v200-v205.viewportScrollX)*v203,y:(v201-v205.viewportScrollY)*v204}:{x:v200,y:v201};}function Ce(v206,v207,v208){let{scaleX:v209,scaleY:v210}=v208.getAncestorScale(),v211=v208.getViewport("viewMain");return v211?{x:v206/v209+v211.viewportScrollX,y:v207/v210+v211.viewportScrollY}:{x:v206,y:v207};}let $=class extends v233{constructor(v142=N,v143,v144,v145){super(),this._config=v142,this._injector=v143,this._renderManagerService=v144,this._configService=v145;let{menu:v146,...v147}=v236({},N,this._config);v146&&this._configService["setConfig"]("menu",v146,{merge:true}),this._configService["setConfig"]("docs-list-ui.config",v147);}onStarting(){this._injector["add"]([W]),this._injector["add"]([J]),this._injector["get"](J),this._injector["get"](W);}onRendered(){this.disposeWithMe(this._renderManagerService["registerRenderModule"](v235.UNIVER_DOC,[Y]));}};K($,"pluginName",v213+"_UI_PLUGIN"),K($,"packageName",j),K($,"version",M),K($,"type",v235.UNIVER_DOC),$=U([v223(v222,v238,v245,v242,v221),H(1,v228(v229)),H(2,v244),H(3,v226)],$);export{$ as UniverDocsListUIPlugin};
+import { DOCS_LIST_MORE_BULLETS as var_core_value_sigFE01, DOCS_LIST_PLUGIN as var_core_value_sigA2CE, DocsListDemoteCommand as var_core_value_sig1975, DocsListPromoteCommand as var_core_value_sig6EA1, DocsListSelectionMode as var_core_value_sig029F, DocsListSetGlyphSymbolCommand as var_core_value_sig3767, DocsListSetGlyphTypeCommand as var_core_value_sig670B, DocsListSetPrefixSuffixCommand as var_core_value_sig6912, DocsListSetStartNumberCommand as var_core_value_sigE235, UniverDocsListPlugin as var_core_value_sig7664 } from "@univerjs-pro/docs-list";
+import { UniverLicensePlugin as var_core_value_sig2281 } from "@univerjs-pro/license";
+import { DependentOn as var_core_value_sig5E86, Disposable as var_core_value_sig6998, ICommandService as var_core_value_sigF639, IConfigService as var_core_value_sigEAE5, IPermissionService as var_core_value_sigE94C, Inject as var_core_value_sig6D47, Injector as var_core_value_sigCB82, ListGlyphType as var_core_value_sigCF4E, LocaleService as var_core_value_sig6CAD, PRESET_LIST_TYPE as var_core_value_sig8CF5, Plugin as var_core_value_sigDDD7, PresetListType as var_core_value_sigB2CE, UniverInstanceType as var_core_value_sig443C, merge as var_core_value_sig39B1 } from "@univerjs/core";
+import { DocSelectionManagerService as var_core_value_sig210D, UniverDocsPlugin as var_core_value_sigB4B4, canEditDocumentTargets as var_core_value_sigD407 } from "@univerjs/docs";
+import { DocCanvasPopManagerService as var_core_value_sig63F3, DocEventManagerService as var_core_value_sig6A71, UniverDocsUIPlugin as var_core_value_sig3BF6, getListMarkerFallbackBound as var_core_value_sig38CE } from "@univerjs/docs-ui";
+import { IRenderManagerService as var_core_value_sig62B7, UniverRenderEnginePlugin as var_core_value_sig37A8 } from "@univerjs/engine-render";
+import { ComponentManager as var_core_value_sigA90D, IContextMenuService as var_core_value_sig7A3C, useDependency as var_core_value_sig0511 } from "@univerjs/ui";
+import { Button as var_core_value_sig1F44, Checkbox as var_core_value_sigCB04, Input as var_core_value_sig947E, InputNumber as var_core_value_sig4545, Separator as var_core_value_sigF39A } from "@univerjs/design";
+import { Fragment as var_core_value_sigF79C, jsx as var_core_value_sig2E54, jsxs as var_core_value_sig7658 } from "react/jsx-runtime";
+import { useMemo as var_core_value_sigDCF5, useState as var_core_value_sigC786 } from "react";
+import { BehaviorSubject as var_core_value_sigC0D9 } from "rxjs";
+var j = "@univerjs-pro/docs-list-ui",
+  M = "1.0.0-insiders.20260907-70fc579";
+const N = {},
+  P = "docs-list-ui.context-menu",
+  F = [{
+    label: "1",
+    type: var_core_value_sigCF4E.DECIMAL
+  }, {
+    label: "A",
+    type: var_core_value_sigCF4E.UPPER_LETTER
+  }, {
+    label: "a",
+    type: var_core_value_sigCF4E.LOWER_LETTER
+  }, {
+    label: "I",
+    type: var_core_value_sigCF4E.UPPER_ROMAN
+  }, {
+    label: "i",
+    type: var_core_value_sigCF4E.LOWER_ROMAN
+  }],
+  I = ["●", "○", "■", "➢", "★"];
+function L(var_core_value_sig0C53) {
+  var var_core_value_sigEA04;
+  let var_core_value_sig7A62 = (var_core_value_sigEA04 = var_core_value_sig0C53.popup) == null ? undefined : var_core_value_sigEA04.extraProps,
+    var_core_value_sig8109 = var_core_value_sig0511(var_core_value_sig6CAD);
+  return var_core_value_sig7658("section", {
+    className: "univer-box-border\x20univer-w-48\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-py-1.5\x20univer-text-xs\x20univer-shadow-lg",
+    "data-u-comp": P,
+    children: [var_core_value_sig2E54("div", {
+      className: "univer-grid univer-grid-cols-5 univer-justify-items-center univer-gap-1 univer-px-2.5 univer-py-1",
+      children: F.map(var_core_value_sigD873 => var_core_value_sig2E54(var_core_value_sig1F44, {
+        size: "small",
+        type: "button",
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sig7524;
+          return var_core_value_sig7A62 == null || (var_core_value_sig7524 = var_core_value_sig7A62.onSetGlyphType) == null ? undefined : var_core_value_sig7524.call(var_core_value_sig7A62, var_core_value_sigD873.type);
+        },
+        children: var_core_value_sigD873.label
+      }, var_core_value_sigD873.label))
+    }), var_core_value_sig2E54(var_core_value_sigF39A, {}), var_core_value_sig2E54("div", {
+      className: "univer-grid\x20univer-grid-cols-5\x20univer-justify-items-center\x20univer-gap-1\x20univer-px-2.5\x20univer-py-1",
+      children: I.map(var_core_value_sigA12B => var_core_value_sig2E54(var_core_value_sig1F44, {
+        size: "small",
+        type: "button",
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sig2AD8;
+          return var_core_value_sig7A62 == null || (var_core_value_sig2AD8 = var_core_value_sig7A62.onSetGlyphSymbol) == null ? undefined : var_core_value_sig2AD8.call(var_core_value_sig7A62, var_core_value_sigA12B);
+        },
+        children: var_core_value_sigA12B
+      }, var_core_value_sigA12B))
+    }), var_core_value_sig2E54(var_core_value_sigF39A, {}), var_core_value_sig2E54(R, {
+      disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onMoreBullets,
+      children: var_core_value_sig8109.t("docs-list-ui.moreBullets")
+    }), (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.showNumberingControls) && var_core_value_sig7658(var_core_value_sigF79C, {
+      children: [var_core_value_sig2E54(R, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onEditPrefixSuffix,
+        children: var_core_value_sig8109.t("docs-list-ui.editPrefixSuffix")
+      }), var_core_value_sig2E54(R, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sigF230;
+          return var_core_value_sig7A62 == null || (var_core_value_sigF230 = var_core_value_sig7A62.onSetStartNumber) == null ? undefined : var_core_value_sigF230.call(var_core_value_sig7A62, 1);
+        },
+        children: var_core_value_sig8109.t("docs-list-ui.restartNumbering")
+      }), var_core_value_sig2E54(R, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onRestartAt,
+        children: var_core_value_sig8109.t("docs-list-ui.restartAt")
+      })]
+    }), var_core_value_sig2E54(R, {
+      disabled: (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly) || !(var_core_value_sig7A62 != null && var_core_value_sig7A62.canPromote),
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onPromote,
+      children: var_core_value_sig8109.t("docs-list-ui.promote")
+    }), var_core_value_sig2E54(R, {
+      disabled: (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly) || !(var_core_value_sig7A62 != null && var_core_value_sig7A62.canDemote),
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onDemote,
+      children: var_core_value_sig8109.t("docs-list-ui.demote")
+    }), var_core_value_sig2E54(var_core_value_sigF39A, {}), var_core_value_sig2E54(R, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectItem,
+      children: var_core_value_sig8109.t("docs-list-ui.selectListItem")
+    }), var_core_value_sig2E54(R, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectCurrentLevel,
+      children: var_core_value_sig8109.t("docs-list-ui.selectCurrentLevel")
+    }), var_core_value_sig2E54(R, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectCurrentList,
+      children: var_core_value_sig8109.t("docs-list-ui.selectCurrentList")
+    })]
+  });
+}
+function R(var_core_value_sig7565) {
+  return var_core_value_sig2E54(var_core_value_sig1F44, {
+    size: "small",
+    variant: "ghost",
+    type: "button",
+    className: "univer-w-full univer-justify-start",
+    disabled: var_core_value_sig7565.disabled,
+    onClick: var_core_value_sig09B8 => {
+      var var_core_value_sig6F91;
+      var_core_value_sig09B8.preventDefault(), (var_core_value_sig6F91 = var_core_value_sig7565.onClick) == null || var_core_value_sig6F91.call(var_core_value_sig7565);
+    },
+    children: var_core_value_sig7565.children
+  });
+}
+const z = "docs-list-ui.more-bullets-dialog";
+function _e(var_core_value_sigD4FB) {
+  var var_core_value_sig3E71;
+  let var_core_value_sig01B3 = (var_core_value_sig3E71 = var_core_value_sigD4FB.popup) == null ? undefined : var_core_value_sig3E71.extraProps,
+    var_core_value_sig7442 = var_core_value_sig0511(var_core_value_sig6CAD),
+    var_core_value_sigDF87 = var_core_value_sigDCF5(() => var_core_value_sigFE01.map((var_core_value_sig2AD0, var_core_value_sig3EEE) => ({
+      id: var_core_value_sig2AD0 + "-" + var_core_value_sig3EEE,
+      symbol: var_core_value_sig2AD0
+    })), []);
+  return var_core_value_sig7658("section", {
+    className: "univer-box-border\x20univer-w-[420px]\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-p-4\x20univer-text-sm\x20univer-shadow-lg",
+    "data-u-comp": z,
+    children: [var_core_value_sig7658("header", {
+      className: "univer-mb-3 univer-flex univer-items-center univer-justify-between",
+      children: [var_core_value_sig2E54("h2", {
+        className: "univer-m-0\x20univer-text-lg\x20univer-font-medium\x20univer-text-gray-900",
+        children: var_core_value_sig7442.t("docs-list-ui.moreBullets")
+      }), var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        size: "icon",
+        variant: "ghost",
+        className: "univer-text-xl",
+        onClick: var_core_value_sig01B3 == null ? undefined : var_core_value_sig01B3.onClose,
+        "aria-label": var_core_value_sig7442.t("docs-list-ui.close"),
+        children: "×"
+      })]
+    }), var_core_value_sig2E54("div", {
+      className: "univer-grid univer-max-h-[260px] univer-grid-cols-10 univer-gap-1 univer-overflow-y-auto univer-pr-1",
+      children: var_core_value_sigDF87.map(({
+        id: var_core_value_sigF9C7,
+        symbol: var_core_value_sig8895
+      }) => var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        size: "icon",
+        className: "univer-text-base",
+        onClick: () => {
+          var var_core_value_sigBC46;
+          return var_core_value_sig01B3 == null || (var_core_value_sigBC46 = var_core_value_sig01B3.onSelect) == null ? undefined : var_core_value_sigBC46.call(var_core_value_sig01B3, var_core_value_sig8895);
+        },
+        children: var_core_value_sig8895
+      }, var_core_value_sigF9C7))
+    })]
+  });
+}
+const B = "docs-list-ui.prefix-suffix-dialog";
+function ve(var_core_value_sig9EE0) {
+  var var_core_value_sigF051;
+  let var_core_value_sig0B45 = (var_core_value_sigF051 = var_core_value_sig9EE0.popup) == null ? undefined : var_core_value_sigF051.extraProps,
+    var_core_value_sig36F8 = var_core_value_sig0511(var_core_value_sig6CAD),
+    [var_core_value_sig03E1, var_core_value_sigBB57] = var_core_value_sigC786(""),
+    [var_core_value_sig7C4A, var_core_value_sigE799] = var_core_value_sigC786("."),
+    [var_core_value_sigB601, var_core_value_sig8B71] = var_core_value_sigC786(true);
+  return var_core_value_sig7658("form", {
+    className: "univer-box-border univer-w-[456px] univer-rounded-xl univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-6 univer-text-sm univer-shadow-xl",
+    onSubmit: var_core_value_sigC80B => {
+      var var_core_value_sig284F;
+      var_core_value_sigC80B.preventDefault(), var_core_value_sig0B45 == null || (var_core_value_sig284F = var_core_value_sig0B45.onApply) == null || var_core_value_sig284F.call(var_core_value_sig0B45, var_core_value_sig03E1, var_core_value_sig7C4A, var_core_value_sigB601 ? var_core_value_sig029F.List : var_core_value_sig029F.Level);
+    },
+    children: [var_core_value_sig2E54("h2", {
+      className: "univer-m-0\x20univer-mb-6\x20univer-text-3xl\x20univer-font-medium\x20univer-text-gray-900",
+      children: var_core_value_sig36F8.t("docs-list-ui.prefixAndSuffix")
+    }), var_core_value_sig7658("div", {
+      className: "univer-flex univer-items-end univer-gap-4",
+      children: [var_core_value_sig7658("label", {
+        className: "univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",
+        children: [var_core_value_sig2E54("span", {
+          children: var_core_value_sig36F8.t("docs-list-ui.prefix")
+        }), var_core_value_sig2E54(var_core_value_sig947E, {
+          size: "large",
+          inputClass: "univer-h-16\x20univer-text-xl",
+          value: var_core_value_sig03E1,
+          onChange: var_core_value_sigBB57,
+          placeholder: var_core_value_sig36F8.t("docs-list-ui.noPrefix")
+        })]
+      }), var_core_value_sig2E54("span", {
+        className: "univer-w-6 univer-flex-none univer-pb-5 univer-text-center univer-text-xl univer-text-gray-700",
+        children: "A"
+      }), var_core_value_sig7658("label", {
+        className: "univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",
+        children: [var_core_value_sig2E54("span", {
+          children: var_core_value_sig36F8.t("docs-list-ui.suffix")
+        }), var_core_value_sig2E54(var_core_value_sig947E, {
+          size: "large",
+          inputClass: "univer-h-16 univer-text-xl",
+          value: var_core_value_sig7C4A,
+          onChange: var_core_value_sigE799
+        })]
+      })]
+    }), var_core_value_sig2E54(var_core_value_sigCB04, {
+      className: "univer-mt-6 univer-text-xl",
+      checked: var_core_value_sigB601,
+      onChange: var_core_value_sigE154 => var_core_value_sig8B71(!!var_core_value_sigE154),
+      children: var_core_value_sig36F8.t("docs-list-ui.applyToEntireList")
+    }), var_core_value_sig7658("footer", {
+      className: "univer-mt-10 univer-flex univer-items-center univer-justify-end univer-gap-4",
+      children: [var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        variant: "default",
+        onClick: var_core_value_sig0B45 == null ? undefined : var_core_value_sig0B45.onClose,
+        children: var_core_value_sig36F8.t("docs-list-ui.cancel")
+      }), var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "submit",
+        variant: "primary",
+        children: var_core_value_sig36F8.t("docs-list-ui.ok")
+      })]
+    })]
+  });
+}
+const V = "docs-list-ui.start-number-dialog";
+function ye(var_core_value_sigAEFB) {
+  var var_core_value_sig826B;
+  let var_core_value_sigCF89 = (var_core_value_sig826B = var_core_value_sigAEFB.popup) == null ? undefined : var_core_value_sig826B.extraProps,
+    var_core_value_sig00CB = var_core_value_sig0511(var_core_value_sig6CAD),
+    [var_core_value_sig77EE, var_core_value_sig9F76] = var_core_value_sigC786(1);
+  return var_core_value_sig7658("section", {
+    className: "univer-box-border univer-w-[260px] univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-4 univer-text-sm univer-shadow-lg",
+    "data-u-comp": V,
+    children: [var_core_value_sig2E54("h2", {
+      className: "univer-m-0 univer-mb-3 univer-text-lg univer-font-medium univer-text-gray-900",
+      children: var_core_value_sig00CB.t("docs-list-ui.restartAt")
+    }), var_core_value_sig2E54(var_core_value_sig4545, {
+      className: "univer-w-full",
+      min: 1,
+      step: 1,
+      precision: 0,
+      value: var_core_value_sig77EE,
+      onChange: var_core_value_sig9F76
+    }), var_core_value_sig7658("footer", {
+      className: "univer-mt-4 univer-flex univer-justify-end univer-gap-2",
+      children: [var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        variant: "default",
+        onClick: var_core_value_sigCF89 == null ? undefined : var_core_value_sigCF89.onClose,
+        children: var_core_value_sig00CB.t("docs-list-ui.cancel")
+      }), var_core_value_sig2E54(var_core_value_sig1F44, {
+        type: "button",
+        variant: "primary",
+        onClick: () => {
+          var var_core_value_sig4632;
+          return var_core_value_sigCF89 == null || (var_core_value_sig4632 = var_core_value_sigCF89.onApply) == null ? undefined : var_core_value_sig4632.call(var_core_value_sigCF89, Math.max(1, var_core_value_sig77EE ?? 1));
+        },
+        children: var_core_value_sig00CB.t("docs-list-ui.ok")
+      })]
+    })]
+  });
+}
+function H(var_core_value_sigB008, var_core_value_sig8721) {
+  return function (var_core_value_sig12F2, var_core_value_sig2259) {
+    var_core_value_sig8721(var_core_value_sig12F2, var_core_value_sig2259, var_core_value_sigB008);
+  };
+}
+function U(var_core_value_sig08BA, var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sig237B) {
+  var var_core_value_sigFEAB = arguments.length,
+    var_core_value_sigE347 = var_core_value_sigFEAB < 3 ? var_core_value_sigDBB5 : var_core_value_sig237B === null ? var_core_value_sig237B = Object.getOwnPropertyDescriptor(var_core_value_sigDBB5, var_core_value_sigCFAC) : var_core_value_sig237B,
+    var_core_value_sig3C5B;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigE347 = Reflect.decorate(var_core_value_sig08BA, var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sig237B);else {
+    for (var var_core_value_sig200B = var_core_value_sig08BA.length - 1; var_core_value_sig200B >= 0; var_core_value_sig200B--) (var_core_value_sig3C5B = var_core_value_sig08BA[var_core_value_sig200B]) && (var_core_value_sigE347 = (var_core_value_sigFEAB < 3 ? var_core_value_sig3C5B(var_core_value_sigE347) : var_core_value_sigFEAB > 3 ? var_core_value_sig3C5B(var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sigE347) : var_core_value_sig3C5B(var_core_value_sigDBB5, var_core_value_sigCFAC)) || var_core_value_sigE347);
+  }
+  return var_core_value_sigFEAB > 3 && var_core_value_sigE347 && Object.defineProperty(var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sigE347), var_core_value_sigE347;
+}
+let W = class extends var_core_value_sig6998 {
+  constructor(var_core_value_sig9E2F) {
+    super(), this._componentManager = var_core_value_sig9E2F, this._registerComponents();
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](P, L)), this.disposeWithMe(this._componentManager["register"](z, _e)), this.disposeWithMe(this._componentManager["register"](B, ve)), this.disposeWithMe(this._componentManager["register"](V, ye));
+  }
+};
+W = U([H(0, var_core_value_sig6D47(var_core_value_sigA90D))], W);
+function G(var_core_value_sig3863) {
+  "@babel/helpers - typeof";
+
+  return G = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigD082) {
+    return typeof var_core_value_sigD082;
+  } : function (var_core_value_sigDBB7) {
+    return var_core_value_sigDBB7 && typeof Symbol == "function" && var_core_value_sigDBB7.constructor === Symbol && var_core_value_sigDBB7 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigDBB7;
+  }, G(var_core_value_sig3863);
+}
+function be(var_core_value_sigC97C, var_core_value_sigC4B1) {
+  if (G(var_core_value_sigC97C) != "object" || !var_core_value_sigC97C) return var_core_value_sigC97C;
+  var var_core_value_sig1BD9 = var_core_value_sigC97C[Symbol.toPrimitive];
+  if (var_core_value_sig1BD9 !== undefined) {
+    var var_core_value_sigE43E = var_core_value_sig1BD9.call(var_core_value_sigC97C, var_core_value_sigC4B1 || "default");
+    if (G(var_core_value_sigE43E) != "object") return var_core_value_sigE43E;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigC4B1 === "string" ? String : Number)(var_core_value_sigC97C);
+}
+function xe(var_core_value_sigA937) {
+  var var_core_value_sigCAD5 = be(var_core_value_sigA937, "string");
+  return G(var_core_value_sigCAD5) == "symbol" ? var_core_value_sigCAD5 : var_core_value_sigCAD5 + "";
+}
+function K(var_core_value_sigE503, var_core_value_sig48DD, var_core_value_sig5E6A) {
+  return (var_core_value_sig48DD = xe(var_core_value_sig48DD)) in var_core_value_sigE503 ? Object.defineProperty(var_core_value_sigE503, var_core_value_sig48DD, {
+    value: var_core_value_sig5E6A,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigE503[var_core_value_sig48DD] = var_core_value_sig5E6A, var_core_value_sigE503;
+}
+const q = {
+  marker: null,
+  anchor: null,
+  open: false
+};
+var J = class {
+  constructor() {
+    K(this, "_menuState$", new var_core_value_sigC0D9(q)), K(this, "_markerSelection$", new var_core_value_sigC0D9(null)), K(this, "menuState$", this._menuState$["asObservable"]()), K(this, "markerSelection$", this._markerSelection$["asObservable"]());
+  }
+  get menuState() {
+    return this._menuState$["value"];
+  }
+  get markerSelection() {
+    return this._markerSelection$["value"];
+  }
+  nextClickMode(var_core_value_sigD0A8) {
+    let var_core_value_sigF4B9 = this.markerSelection;
+    return var_core_value_sigF4B9 && this._getMarkerGroupKey(var_core_value_sigF4B9.marker) === this._getMarkerGroupKey(var_core_value_sigD0A8) ? var_core_value_sig029F.Item : var_core_value_sig029F.Level;
+  }
+  contextMenuMode(var_core_value_sig5CEE) {
+    let var_core_value_sigE92A = this.markerSelection;
+    return !var_core_value_sigE92A || this._getMarkerListKey(var_core_value_sigE92A.marker) !== this._getMarkerListKey(var_core_value_sig5CEE) ? var_core_value_sig029F.Level : var_core_value_sigE92A.mode === "list" ? var_core_value_sig029F.List : this._getMarkerGroupKey(var_core_value_sigE92A.marker) === this._getMarkerGroupKey(var_core_value_sig5CEE) ? var_core_value_sigE92A.mode : var_core_value_sig029F.Level;
+  }
+  openMenu(var_core_value_sig362B, var_core_value_sig5CA5) {
+    this._menuState$["next"]({
+      marker: var_core_value_sig362B,
+      anchor: var_core_value_sig5CA5,
+      open: true
+    });
+  }
+  closeMenu() {
+    this._menuState$["next"](q);
+  }
+  setMarkerSelection(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    this._markerSelection$["next"]({
+      marker: var_core_value_sigE90F,
+      mode: var_core_value_sigEFD4
+    });
+  }
+  clearMarkerSelection() {
+    this._markerSelection$["next"](null);
+  }
+  _getMarkerGroupKey(var_core_value_sig861B) {
+    return (var_core_value_sig861B.segmentId ?? "") + ":" + var_core_value_sig861B.listId + ":" + var_core_value_sig861B.nestingLevel;
+  }
+  _getMarkerListKey(var_core_value_sig5237) {
+    return (var_core_value_sig5237.segmentId ?? "") + ":" + var_core_value_sig5237.listId;
+  }
+};
+let Y = class extends var_core_value_sig6998 {
+  constructor(var_core_value_sigBB00, var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2) {
+    super(), this._context = var_core_value_sigBB00, this._commandService = var_core_value_sig7E54, this._docSelectionManagerService = var_core_value_sig9A8D, this._docEventManagerService = var_core_value_sigC259, this._docCanvasPopManagerService = var_core_value_sig9C9F, this._contextMenuService = var_core_value_sigFDEA, this._selectionService = var_core_value_sig86D0, this._permissionService = var_core_value_sig4CD2, K(this, "_menuDisposable", null), K(this, "_docRangesBeforeMarkerPointer", null), K(this, "_ignoreTextSelectionBefore", 0), K(this, "_openContextMenuTimer", null), this._initMarkerPointerSelectionPreserve(), this._initMarkerClick(), this._initMarkerContextMenu(), this._initMarkerSelectionRender(), this._initTextSelectionClear(), this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(() => this._closeContextMenu()));
+  }
+  _initMarkerPointerSelectionPreserve() {
+    let var_core_value_sig48CA = this._context["mainComponent"] ?? this._context["scene"];
+    this.disposeWithMe(var_core_value_sig48CA.onPointerDown$["subscribeEvent"]({
+      next: ([var_core_value_sig3D7D]) => {
+        this._docEventManagerService["isPointerOnBullet"](var_core_value_sig3D7D.offsetX, var_core_value_sig3D7D.offsetY) ? this._docRangesBeforeMarkerPointer = [...(this._docSelectionManagerService["getDocRanges"]() ?? [])] : this._docRangesBeforeMarkerPointer = null;
+      },
+      priority: -12000
+    }));
+  }
+  _initMarkerClick() {
+    this.disposeWithMe(this._docEventManagerService["clickBullets$"].subscribe(var_core_value_sig27E5 => {
+      let var_core_value_sig8061 = this._toMarkerInfo(var_core_value_sig27E5);
+      if (!Z(var_core_value_sig8061.listType)) return;
+      let var_core_value_sig4D4C = this._selectionService["nextClickMode"](var_core_value_sig8061);
+      this._selectMarker(var_core_value_sig8061, var_core_value_sig4D4C);
+    }));
+  }
+  _initMarkerContextMenu() {
+    this.disposeWithMe(this._docEventManagerService["contextMenuBullets$"].subscribe(var_core_value_sigC9E0 => {
+      let var_core_value_sig76BA = this._toMarkerInfo(var_core_value_sigC9E0);
+      Z(var_core_value_sig76BA.listType) && this._openMarkerContextMenuFromOffset(var_core_value_sig76BA, var_core_value_sigC9E0.x, var_core_value_sigC9E0.y);
+    }));
+  }
+  _openMarkerContextMenuFromOffset(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621) {
+    let var_core_value_sigBBFF = Ce(var_core_value_sigA942, var_core_value_sigA621, this._context["scene"]),
+      var_core_value_sig8889 = this._selectionService["contextMenuMode"](var_core_value_sig50AF);
+    this._selectionService["openMenu"](var_core_value_sig50AF, var_core_value_sigBBFF), this._selectMarker(var_core_value_sig50AF, var_core_value_sig8889), this._scheduleOpenContextMenu(var_core_value_sig50AF, var_core_value_sigBBFF.x, var_core_value_sigBBFF.y);
+  }
+  _scheduleOpenContextMenu(var_core_value_sig32F8, var_core_value_sig5B67, var_core_value_sig1758) {
+    this._clearOpenContextMenuTimer(), this._openContextMenuTimer = setTimeout(() => {
+      this._openContextMenuTimer = null, this._openContextMenu(var_core_value_sig32F8, var_core_value_sig5B67, var_core_value_sig1758);
+    }, 0);
+  }
+  _initMarkerSelectionRender() {
+    this.disposeWithMe(this._selectionService["markerSelection$"].subscribe(() => this._makeDirty())), this.disposeWithMe(this._context["scene"].afterRender$["subscribe"](var_core_value_sigFBFA => {
+      let var_core_value_sigF602 = this._selectionService["markerSelection"];
+      if (!var_core_value_sigFBFA || !var_core_value_sigF602) return;
+      let var_core_value_sig1BBD = var_core_value_sigFBFA.getContext();
+      var_core_value_sig1BBD && this._drawMarkerSelection(var_core_value_sig1BBD);
+    }));
+  }
+  _initTextSelectionClear() {
+    this.disposeWithMe(this._docSelectionManagerService["textSelection$"].subscribe(var_core_value_sigF704 => {
+      Date.now() < this._ignoreTextSelectionBefore || this._selectionService["markerSelection"] && (var_core_value_sigF704.textRanges["length"] || var_core_value_sigF704.rectRanges["length"]) && this._selectionService["clearMarkerSelection"]();
+    }));
+  }
+  _openContextMenu(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902) {
+    this._contextMenuService["hideContextMenu"](), this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"]({
+      bottom: var_core_value_sig2902,
+      left: var_core_value_sigE67E,
+      right: var_core_value_sigE67E,
+      top: var_core_value_sig2902
+    }, {
+      componentKey: P,
+      direction: "bottom-left",
+      extraProps: {
+        marker: var_core_value_sig4805,
+        readOnly: !this._canEditDocument(),
+        canDemote: var_core_value_sig4805.nestingLevel < 8,
+        canPromote: var_core_value_sig4805.nestingLevel > 0,
+        showNumberingControls: this._isOrderedMarker(var_core_value_sig4805),
+        onClose: () => this._closeContextMenu(),
+        onDemote: () => this._executeMarkerCommand(var_core_value_sig1975.id, var_core_value_sig4805),
+        onEditPrefixSuffix: () => this._openPrefixSuffixDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onMoreBullets: () => this._openMoreBulletsDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onPromote: () => this._executeMarkerCommand(var_core_value_sig6EA1.id, var_core_value_sig4805),
+        onRestartAt: () => this._openStartNumberDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onSelectCurrentLevel: () => this._selectMarkerAndClose(var_core_value_sig4805, var_core_value_sig029F.Level),
+        onSelectCurrentList: () => this._selectMarkerAndClose(var_core_value_sig4805, var_core_value_sig029F.List),
+        onSelectItem: () => this._selectMarkerAndClose(var_core_value_sig4805, var_core_value_sig029F.Item),
+        onSetGlyphSymbol: var_core_value_sig2BCF => this._executeMarkerCommand(var_core_value_sig3767.id, var_core_value_sig4805, {
+          symbol: var_core_value_sig2BCF
+        }),
+        onSetGlyphType: var_core_value_sig0D69 => this._executeMarkerCommand(var_core_value_sig670B.id, var_core_value_sig4805, {
+          glyphType: var_core_value_sig0D69
+        }),
+        onSetPrefixSuffix: (var_core_value_sig480E, var_core_value_sig26DB) => this._executeMarkerCommand(var_core_value_sig6912.id, var_core_value_sig4805, {
+          prefix: var_core_value_sig480E,
+          suffix: var_core_value_sig26DB
+        }),
+        onSetStartNumber: var_core_value_sigF0F9 => this._executeMarkerCommand(var_core_value_sigE235.id, var_core_value_sig4805, var_core_value_sigF0F9 === 1 ? {
+          restartFromPrevious: true,
+          startNumber: var_core_value_sigF0F9
+        } : {
+          startNumber: var_core_value_sigF0F9
+        })
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _openMoreBulletsDialog(var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+    this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sig698E, var_core_value_sig2809), {
+      componentKey: z,
+      direction: "bottom-left",
+      extraProps: {
+        onClose: () => this._closeContextMenu(),
+        onSelect: var_core_value_sig1A0F => this._executeMarkerCommand(var_core_value_sig3767.id, var_core_value_sig9989, {
+          symbol: var_core_value_sig1A0F
+        })
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _openPrefixSuffixDialog(var_core_value_sig2DAB, var_core_value_sig877E, var_core_value_sig20C8) {
+    this._isOrderedMarker(var_core_value_sig2DAB) && (this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sig877E, var_core_value_sig20C8), {
+      componentKey: B,
+      direction: "bottom-left",
+      extraProps: {
+        onApply: (var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sig186C) => this._executeMarkerCommand(var_core_value_sig6912.id, var_core_value_sig2DAB, {
+          prefix: var_core_value_sigFBA4,
+          suffix: var_core_value_sig4383,
+          mode: var_core_value_sig186C
+        }),
+        onClose: () => this._closeContextMenu()
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]));
+  }
+  _openStartNumberDialog(var_core_value_sigE9A7, var_core_value_sigBECE, var_core_value_sig1B22) {
+    this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sigBECE, var_core_value_sig1B22), {
+      componentKey: V,
+      direction: "bottom-left",
+      extraProps: {
+        onApply: var_core_value_sigD955 => this._executeMarkerCommand(var_core_value_sigE235.id, var_core_value_sigE9A7, {
+          startNumber: var_core_value_sigD955
+        }),
+        onClose: () => this._closeContextMenu()
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _closeContextMenu() {
+    var var_core_value_sig7F72;
+    this._clearOpenContextMenuTimer(), (var_core_value_sig7F72 = this._menuDisposable) == null || var_core_value_sig7F72.dispose(), this._menuDisposable = null, this._selectionService["closeMenu"]();
+  }
+  _canEditDocument() {
+    return var_core_value_sigD407(this._permissionService, this._context["unitId"], []);
+  }
+  _clearOpenContextMenuTimer() {
+    this._openContextMenuTimer != null && (clearTimeout(this._openContextMenuTimer), this._openContextMenuTimer = null);
+  }
+  _executeMarkerCommand(var_core_value_sig7B2A, var_core_value_sig06CD, var_core_value_sigA5F1 = {}) {
+    this._commandService["executeCommand"](var_core_value_sig7B2A, {
+      paragraphStartIndex: var_core_value_sig06CD.paragraphStartIndex,
+      segmentId: var_core_value_sig06CD.segmentId,
+      mode: this._getCommandMode(var_core_value_sig06CD, var_core_value_sigA5F1.mode),
+      ...var_core_value_sigA5F1
+    }), this._closeContextMenu();
+  }
+  _getCommandMode(var_core_value_sig97A2, var_core_value_sig07E9) {
+    if (var_core_value_sig07E9 === var_core_value_sig029F.Item || var_core_value_sig07E9 === var_core_value_sig029F.Level || var_core_value_sig07E9 === var_core_value_sig029F.List) return var_core_value_sig07E9;
+    let var_core_value_sig4F59 = this._selectionService["markerSelection"];
+    return !var_core_value_sig4F59 || var_core_value_sig4F59.marker["listId"] !== var_core_value_sig97A2.listId || (var_core_value_sig4F59.marker["segmentId"] ?? "") !== (var_core_value_sig97A2.segmentId ?? "") ? var_core_value_sig029F.Level : var_core_value_sig4F59.mode;
+  }
+  _selectMarker(var_core_value_sigF564, var_core_value_sig8CFA) {
+    let var_core_value_sig2E11 = this._docRangesBeforeMarkerPointer ?? [...(this._docSelectionManagerService["getDocRanges"]() ?? [])];
+    this._ignoreTextSelectionBefore = Date.now() + 400, this._selectionService["setMarkerSelection"](var_core_value_sigF564, var_core_value_sig8CFA), this._makeDirty(), this._docRangesBeforeMarkerPointer = null, var_core_value_sig2E11.length && queueMicrotask(() => {
+      this._docSelectionManagerService["replaceDocRanges"](var_core_value_sig2E11, {
+        unitId: this._context["unitId"],
+        subUnitId: this._context["unitId"]
+      }, false, {
+        forceFocus: false
+      });
+    });
+  }
+  _selectMarkerAndClose(var_core_value_sig5B69, var_core_value_sigB098) {
+    this._selectMarker(var_core_value_sig5B69, var_core_value_sigB098), this._closeContextMenu();
+  }
+  _drawMarkerSelection(var_core_value_sigCE71) {
+    let var_core_value_sig21D8 = this._getSelectedBulletBounds();
+    var_core_value_sig21D8.length && (var_core_value_sigCE71.save(), var_core_value_sigCE71.fillStyle = "#8ab4f8", var_core_value_sigCE71.globalAlpha = 0.45, var_core_value_sig21D8.forEach(var_core_value_sig48BD => {
+      let var_core_value_sig429F = this._getMarkerSelectionRect(var_core_value_sig48BD);
+      var_core_value_sigCE71.fillRect(var_core_value_sig429F.x, var_core_value_sig429F.y, var_core_value_sig429F.width, var_core_value_sig429F.height);
+    }), var_core_value_sigCE71.restore());
+  }
+  _getMarkerSelectionRect(var_core_value_sig2B65) {
+    let var_core_value_sigD7EA = Se(var_core_value_sig2B65.rect, this._context["scene"]),
+      var_core_value_sigB33B = this._isBulletMarker(var_core_value_sig2B65) ? var_core_value_sigD7EA.height * 0.72 : var_core_value_sigD7EA.height * 1.15;
+    return {
+      ...var_core_value_sigD7EA,
+      width: Math.min(var_core_value_sigD7EA.width, Math.max(8, var_core_value_sigB33B))
+    };
+  }
+  _isBulletMarker(var_core_value_sig24B9) {
+    var var_core_value_sigE627, var_core_value_sigEF3E, var_core_value_sig273D, var_core_value_sig9A0D;
+    let var_core_value_sigA319 = (var_core_value_sigE627 = var_core_value_sig24B9.paragraph["bullet"]) == null ? undefined : var_core_value_sigE627.listType,
+      var_core_value_sig2D58 = ((var_core_value_sigEF3E = var_core_value_sig24B9.paragraph["bullet"]) == null ? undefined : var_core_value_sigEF3E.nestingLevel) ?? 0,
+      var_core_value_sig223F = var_core_value_sigA319 && (((var_core_value_sig273D = this._context["unit"].lists) == null ? undefined : var_core_value_sig273D[var_core_value_sigA319]) ?? var_core_value_sig8CF5[var_core_value_sigA319]) || null,
+      var_core_value_sigD749 = var_core_value_sig223F == null || (var_core_value_sig9A0D = var_core_value_sig223F.nestingLevel) == null ? undefined : var_core_value_sig9A0D[var_core_value_sig2D58];
+    return (var_core_value_sigD749 == null ? undefined : var_core_value_sigD749.glyphType) === var_core_value_sigCF4E.BULLET || !!(var_core_value_sigD749 != null && var_core_value_sigD749.glyphSymbol);
+  }
+  _isOrderedMarker(var_core_value_sigCFFA) {
+    var var_core_value_sig58C1, var_core_value_sig5090;
+    let var_core_value_sigC368 = ((var_core_value_sig58C1 = this._context["unit"].lists) == null ? undefined : var_core_value_sig58C1[var_core_value_sigCFFA.listType]) ?? var_core_value_sig8CF5[var_core_value_sigCFFA.listType],
+      var_core_value_sigAD56 = var_core_value_sigC368 == null || (var_core_value_sig5090 = var_core_value_sigC368.nestingLevel) == null ? undefined : var_core_value_sig5090[var_core_value_sigCFFA.nestingLevel];
+    return !!(var_core_value_sigAD56 && var_core_value_sigAD56.glyphType !== var_core_value_sigCF4E.BULLET && !var_core_value_sigAD56.glyphSymbol);
+  }
+  _getSelectedBulletBounds() {
+    let var_core_value_sigDB4A = this._selectionService["markerSelection"];
+    if (!var_core_value_sigDB4A) return [];
+    let {
+      marker: var_core_value_sig6418,
+      mode: var_core_value_sig1896
+    } = var_core_value_sigDB4A;
+    return Z(var_core_value_sig6418.listType) ? this._getSelectedFallbackBulletBounds(var_core_value_sig6418, var_core_value_sig1896).concat(this._docEventManagerService["getBulletBounds"]().filter(var_core_value_sigF62A => this._isMarkerBoundSelected(var_core_value_sigF62A, var_core_value_sig6418, var_core_value_sig1896) && !this._hasFallbackBoundForMarker(var_core_value_sigF62A.paragraph["startIndex"], var_core_value_sigF62A.segmentId))) : [];
+  }
+  _getSelectedFallbackBulletBounds(var_core_value_sig0285, var_core_value_sig777D) {
+    var var_core_value_sig3F4C;
+    return (((var_core_value_sig3F4C = this._context["unit"].getBody()) == null ? undefined : var_core_value_sig3F4C.paragraphs) ?? []).filter(var_core_value_sig8178 => this._isParagraphSelected(var_core_value_sig8178, var_core_value_sig0285, var_core_value_sig777D)).map(var_core_value_sigE9ED => {
+      let var_core_value_sigB577 = this._docEventManagerService["findParagraphBoundByIndex"](var_core_value_sigE9ED.startIndex);
+      return X(var_core_value_sigB577) ? var_core_value_sig38CE(var_core_value_sigB577, var_core_value_sigE9ED) : null;
+    }).filter(var_core_value_sig9572 => var_core_value_sig9572 != null);
+  }
+  _hasFallbackBoundForMarker(var_core_value_sigD65A, var_core_value_sig5A13) {
+    let var_core_value_sigF593 = this._docEventManagerService["findParagraphBoundByIndex"](var_core_value_sigD65A);
+    return X(var_core_value_sigF593) && (var_core_value_sigF593.segmentId ?? "") === (var_core_value_sig5A13 ?? "");
+  }
+  _isMarkerBoundSelected(var_core_value_sig3607, var_core_value_sigB512, var_core_value_sigF2E6) {
+    return this._isParagraphSelected(var_core_value_sig3607.paragraph, var_core_value_sigB512, var_core_value_sigF2E6) && (var_core_value_sig3607.segmentId ?? "") === (var_core_value_sigB512.segmentId ?? "");
+  }
+  _isParagraphSelected(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2) {
+    let var_core_value_sigE68A = var_core_value_sig34C8.bullet;
+    return !var_core_value_sigE68A || var_core_value_sigE68A.listId !== var_core_value_sigB744.listId || !Z(var_core_value_sigE68A.listType) ? false : var_core_value_sigEAE2 === "item" ? var_core_value_sig34C8.startIndex === var_core_value_sigB744.paragraphStartIndex : var_core_value_sigEAE2 === "list" || var_core_value_sigE68A.nestingLevel === var_core_value_sigB744.nestingLevel;
+  }
+  _makeDirty() {
+    var var_core_value_sig3E68;
+    (var_core_value_sig3E68 = this._context["mainComponent"]) == null || var_core_value_sig3E68.makeDirty(true), this._context["scene"].makeDirty();
+  }
+  _getAnchorRect(var_core_value_sigF4C5, var_core_value_sig5410) {
+    return {
+      bottom: var_core_value_sig5410,
+      left: var_core_value_sigF4C5,
+      right: var_core_value_sigF4C5,
+      top: var_core_value_sig5410
+    };
+  }
+  _toMarkerInfo(var_core_value_sig492F) {
+    var var_core_value_sig8EA0, var_core_value_sigA6F6, var_core_value_sigCDDA;
+    return {
+      paragraphStartIndex: var_core_value_sig492F.paragraph["startIndex"],
+      listId: ((var_core_value_sig8EA0 = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sig8EA0.listId) ?? "",
+      listType: ((var_core_value_sigA6F6 = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sigA6F6.listType) ?? "",
+      nestingLevel: ((var_core_value_sigCDDA = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sigCDDA.nestingLevel) ?? 0,
+      segmentId: var_core_value_sig492F.segmentId
+    };
+  }
+};
+Y = U([H(1, var_core_value_sigF639), H(2, var_core_value_sig6D47(var_core_value_sig210D)), H(3, var_core_value_sig6D47(var_core_value_sig6A71)), H(4, var_core_value_sig6D47(var_core_value_sig63F3)), H(5, var_core_value_sig7A3C), H(6, var_core_value_sig6D47(J)), H(7, var_core_value_sigE94C)], Y);
+function X(var_core_value_sigB7FC) {
+  return !!(var_core_value_sigB7FC && typeof var_core_value_sigB7FC == "object" && "tableId" in var_core_value_sigB7FC);
+}
+function Z(var_core_value_sig9CD9) {
+  return var_core_value_sig9CD9 !== var_core_value_sigB2CE.CHECK_LIST && var_core_value_sig9CD9 !== var_core_value_sigB2CE.CHECK_LIST_CHECKED;
+}
+function Se(var_core_value_sigFD0C, var_core_value_sig849B) {
+  let var_core_value_sig5F1A = Q(var_core_value_sigFD0C.left, var_core_value_sigFD0C.top, var_core_value_sig849B),
+    var_core_value_sigB455 = Q(var_core_value_sigFD0C.right, var_core_value_sigFD0C.bottom, var_core_value_sig849B);
+  return {
+    height: var_core_value_sigB455.y - var_core_value_sig5F1A.y,
+    width: var_core_value_sigB455.x - var_core_value_sig5F1A.x,
+    x: var_core_value_sig5F1A.x,
+    y: var_core_value_sig5F1A.y
+  };
+}
+function Q(var_core_value_sig5241, var_core_value_sigC6E5, var_core_value_sigCEFB) {
+  let {
+      scaleX: var_core_value_sig1537,
+      scaleY: var_core_value_sigE4C6
+    } = var_core_value_sigCEFB.getAncestorScale(),
+    var_core_value_sig4313 = var_core_value_sigCEFB.getViewport("viewMain");
+  return var_core_value_sig4313 ? {
+    x: (var_core_value_sig5241 - var_core_value_sig4313.viewportScrollX) * var_core_value_sig1537,
+    y: (var_core_value_sigC6E5 - var_core_value_sig4313.viewportScrollY) * var_core_value_sigE4C6
+  } : {
+    x: var_core_value_sig5241,
+    y: var_core_value_sigC6E5
+  };
+}
+function Ce(var_core_value_sigFC87, var_core_value_sig156F, var_core_value_sigDD51) {
+  let {
+      scaleX: var_core_value_sigF057,
+      scaleY: var_core_value_sig72F6
+    } = var_core_value_sigDD51.getAncestorScale(),
+    var_core_value_sig9FBA = var_core_value_sigDD51.getViewport("viewMain");
+  return var_core_value_sig9FBA ? {
+    x: var_core_value_sigFC87 / var_core_value_sigF057 + var_core_value_sig9FBA.viewportScrollX,
+    y: var_core_value_sig156F / var_core_value_sig72F6 + var_core_value_sig9FBA.viewportScrollY
+  } : {
+    x: var_core_value_sigFC87,
+    y: var_core_value_sig156F
+  };
+}
+let $ = class extends var_core_value_sigDDD7 {
+  constructor(var_core_value_sigE243 = N, var_core_value_sig74A8, var_core_value_sig21B2, var_core_value_sigDE08) {
+    super(), this._config = var_core_value_sigE243, this._injector = var_core_value_sig74A8, this._renderManagerService = var_core_value_sig21B2, this._configService = var_core_value_sigDE08;
+    let {
+      menu: var_core_value_sigACCB,
+      ...var_core_value_sig7F33
+    } = var_core_value_sig39B1({}, N, this._config);
+    var_core_value_sigACCB && this._configService["setConfig"]("menu", var_core_value_sigACCB, {
+      merge: true
+    }), this._configService["setConfig"]("docs-list-ui.config", var_core_value_sig7F33);
+  }
+  onStarting() {
+    this._injector["add"]([W]), this._injector["add"]([J]), this._injector["get"](J), this._injector["get"](W);
+  }
+  onRendered() {
+    this.disposeWithMe(this._renderManagerService["registerRenderModule"](var_core_value_sig443C.UNIVER_DOC, [Y]));
+  }
+};
+K($, "pluginName", var_core_value_sigA2CE + "_UI_PLUGIN"), K($, "packageName", j), K($, "version", M), K($, "type", var_core_value_sig443C.UNIVER_DOC), $ = U([var_core_value_sig5E86(var_core_value_sig2281, var_core_value_sigB4B4, var_core_value_sig37A8, var_core_value_sig3BF6, var_core_value_sig7664), H(1, var_core_value_sig6D47(var_core_value_sigCB82)), H(2, var_core_value_sig62B7), H(3, var_core_value_sigEAE5)], $);
+export { $ as UniverDocsListUIPlugin };

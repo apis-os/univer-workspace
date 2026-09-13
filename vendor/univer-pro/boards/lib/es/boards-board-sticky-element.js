@@ -1,12 +1,23 @@
-import{BooleanNumber,ColorKit,CommandType,CustomCommandExecutionError,DependentOn,Disposable,DrawingTypeEnum,GridType,HorizontalAlign,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,PermissionStatus,Plugin,Tools,UnitModel,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createParagraphId,createSectionId,generateRandomId,merge,normalizeDrawingOrderIndex,sequenceExecute,toDisposable}from"@univerjs/core";
-import{BehaviorSubject,Subject,map,merge as mergeLocal,mergeMap}from"rxjs";
-import{UnitDrawingService}from"@univerjs/drawing";
-import{IShapeHostAdapterRegistry,ShapeArrowSizeEnum,ShapeArrowTypeEnum,ShapeFillEnum,ShapeLineCapEnum,ShapeLineDashEnum,ShapeLineJoinEnum,ShapeLineTypeEnum,ShapeOperatorEnum,ShapeTextAutoFitType,ShapeTextDirection,ShapeTextWrapType,ShapeTypeEnum,UniverShapePlugin,canApplyShapeFormulaLastValue,computeConnectorRouteLayout,createUniqueShapeName,isConnectorShape,isCurvedConnectorShape,resolveConnectorRoutePoints,resolveShapeConnectionPoint,resolveShapeDefaultInsertSize}from"@univerjs-pro/engine-shape";
-import{UnitAction,UnitObject}from"@univerjs/protocol";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { ua } from "./boards-board-shape-element.js";
 import { id } from "./internal-core-endo.js";
 import { Zi } from "./boards-board-insert-default-size.js";
-function va(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560){return ua({id:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.id,shapeType:ShapeTypeEnum.FoldedCorner,left:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.left,top:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.top,width:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.width??Zi.stickyWidth,height:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.height??Zi.stickyHeight,fillColor:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.fillColor,parentId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.parentId,laneId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.laneId});}
-
+function va(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560) {
+  return ua({
+    id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.id,
+    shapeType: ShapeTypeEnum.FoldedCorner,
+    left: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.left,
+    top: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.top,
+    width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.width ?? Zi.stickyWidth,
+    height: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.height ?? Zi.stickyHeight,
+    fillColor: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.fillColor,
+    parentId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.parentId,
+    laneId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463560.laneId
+  });
+}
 export { va as createBoardStickyElement };

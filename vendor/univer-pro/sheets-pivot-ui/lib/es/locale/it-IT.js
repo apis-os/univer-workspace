@@ -5,8 +5,7 @@ const e = {
     sourceRangeLabel: "Origine Dati",
     sourceRangePlaceholder: "L'origine dati è stata aggiornata",
     sourceFieldTile: "Campi Origine Dati",
-    sourceFieldDescription:
-      "Trascina\x20i\x20campi\x20nelle\x20aree\x20sottostanti",
+    sourceFieldDescription: "Trascina\x20i\x20campi\x20nelle\x20aree\x20sottostanti",
     searchFieldPlaceholder: "Cerca campi",
     noMatchingFields: "Nessun\x20campo\x20corrispondente",
     filter: "Filtro",
@@ -42,8 +41,7 @@ const e = {
       percentDifferenceFrom: "% differenza da",
       runningTotal: "Totale progressivo in",
       percentRunningTotal: "% totale progressivo in",
-      rankAscending:
-        "Classifica\x20dal\x20più\x20piccolo\x20al\x20più\x20grande",
+      rankAscending: "Classifica\x20dal\x20più\x20piccolo\x20al\x20più\x20grande",
       rankDescending: "Classifica dal più grande al più piccolo",
       dialogTitle: "Mostra valori come",
       baseField: "Campo base",
@@ -52,7 +50,7 @@ const e = {
       next: "Successivo",
       other: "Altro",
       ok: "OK",
-      cancel: "Annulla",
+      cancel: "Annulla"
     },
     valueFilter: {
       title: "Filtri valori",
@@ -74,7 +72,7 @@ const e = {
       bottomPercent: "Percentuale inferiore",
       clear: "Cancella\x20filtro",
       ok: "OK",
-      cancel: "Annulla",
+      cancel: "Annulla"
     },
     dateGroup: {
       title: "Raggruppamento date",
@@ -88,7 +86,7 @@ const e = {
       date: "Giorno",
       hour: "Ora",
       minute: "Minuto",
-      hourMinute: "Ora-Minuto",
+      hourMinute: "Ora-Minuto"
     },
     dialog: {
       fieldName: "Nome Campo",
@@ -104,7 +102,7 @@ const e = {
         clearFilter: "Cancella\x20Filtro",
         blank: "(Vuoto)",
         cancel: "Annulla",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "Generale",
@@ -116,20 +114,15 @@ const e = {
         formatTypes: "Tipi di Formato",
         confirm: "OK",
         cancel: "Annulla",
-        generalDesc:
-          "Il\x20formato\x20generale\x20non\x20contiene\x20alcun\x20formato\x20numero\x20specifico.",
-        accountingDesc:
-          "Il\x20formato\x20numero\x20contabilità\x20allinea\x20i\x20simboli\x20di\x20valuta\x20e\x20i\x20punti\x20decimali\x20in\x20una\x20colonna.",
-        currencyDesc:
-          "Il formato valuta è utilizzato per valori monetari generali, il formato contabilità allinea i punti decimali in una colonna di valori.",
-        dateDesc:
-          "Il\x20formato\x20data\x20visualizza\x20i\x20numeri\x20seriali\x20di\x20data\x20e\x20ora\x20come\x20valori\x20data.",
-        thousandthPercentileDesc:
-          "Il formato percentile millesimo è utilizzato per numeri generali, i formati valuta e contabilità forniscono formati specializzati per valori monetari.",
+        generalDesc: "Il\x20formato\x20generale\x20non\x20contiene\x20alcun\x20formato\x20numero\x20specifico.",
+        accountingDesc: "Il\x20formato\x20numero\x20contabilità\x20allinea\x20i\x20simboli\x20di\x20valuta\x20e\x20i\x20punti\x20decimali\x20in\x20una\x20colonna.",
+        currencyDesc: "Il formato valuta è utilizzato per valori monetari generali, il formato contabilità allinea i punti decimali in una colonna di valori.",
+        dateDesc: "Il\x20formato\x20data\x20visualizza\x20i\x20numeri\x20seriali\x20di\x20data\x20e\x20ora\x20come\x20valori\x20data.",
+        thousandthPercentileDesc: "Il formato percentile millesimo è utilizzato per numeri generali, i formati valuta e contabilità forniscono formati specializzati per valori monetari.",
         decimalPlaces: "Posizioni Decimali",
         currencyTypes: "Tipi di Valuta",
         negativeNumberTypes: "Tipi di Numeri Negativi",
-        dateTypes: "Tipi di Data",
+        dateTypes: "Tipi di Data"
       },
       source: {
         insertPivotTable: "Inserisci Tabella Pivot",
@@ -137,8 +130,8 @@ const e = {
         position: "Posizionamento\x20Tabella\x20Pivot",
         newSheet: "Nuovo Foglio",
         existingSheet: "Foglio Esistente",
-        intersect: "Non può sovrapporsi con i dati origine",
-      },
+        intersect: "Non può sovrapporsi con i dati origine"
+      }
     },
     subtotal: {
       average: "Media",
@@ -151,7 +144,7 @@ const e = {
       stdDevp: "Deviazione Standard Popolazione",
       sum: "Somma",
       var: "Varianza",
-      varp: "Varianza Popolazione",
+      varp: "Varianza Popolazione"
     },
     subTotalText: "Subtotale",
     grandTotalText: "Totale Complessivo",
@@ -177,23 +170,21 @@ const e = {
       layoutCompact: "Formato compatto",
       layoutOutline: "Formato struttura",
       repeatRowLabels: "Ripeti\x20etichette\x20di\x20riga",
-      repeatColLabels: "Ripeti etichette di colonna",
+      repeatColLabels: "Ripeti etichette di colonna"
     },
     perform: {
       tips: "Suggerimenti",
       info: "Esistono già dati nell'area di destinazione. Questa azione sovrascriverà i dati esistenti. Vuoi continuare?",
       confirm: "Conferma",
       cancel: "Annulla",
-      rowColError:
-        "Questa modifica non può essere apportata alle celle selezionate perché influirebbe sulla tabella pivot. Utilizza l'elenco campi per modificare il report. Se stai cercando di inserire o eliminare celle, sposta la tabella pivot e riprova.",
+      rowColError: "Questa modifica non può essere apportata alle celle selezionate perché influirebbe sulla tabella pivot. Utilizza l'elenco campi per modificare il report. Se stai cercando di inserire o eliminare celle, sposta la tabella pivot e riprova."
     },
     msg: {
       emptySourceRange: "L'intervallo origine dati è vuoto",
       invalidSize: "L'intervallo origine dati non è valido",
       mergeCellError: "Impossibile inserire celle unite nella tabella pivot",
       editCellError: "Impossibile modificare celle nella tabella pivot",
-      permissionError:
-        "Impossibile modificare la tabella pivot in un foglio protetto",
+      permissionError: "Impossibile modificare la tabella pivot in un foglio protetto"
     },
     averageName: "Media di ",
     countName: "Conteggio di ",
@@ -205,7 +196,7 @@ const e = {
     stdDevpName: "DevStdp di ",
     sumName: "Somma di ",
     varName: "Var di ",
-    varpName: "Varp\x20di\x20",
-  },
+    varpName: "Varp\x20di\x20"
+  }
 };
 export { e as default };

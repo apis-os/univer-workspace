@@ -5,8 +5,7 @@ const e = {
     sourceRangeLabel: "Source de données",
     sourceRangePlaceholder: "La source de données a été mise à jour",
     sourceFieldTile: "Champs\x20de\x20la\x20source\x20de\x20données",
-    sourceFieldDescription:
-      "Faites glisser les champs vers les zones ci-dessous",
+    sourceFieldDescription: "Faites glisser les champs vers les zones ci-dessous",
     searchFieldPlaceholder: "Rechercher des champs",
     noMatchingFields: "Aucun\x20champ\x20correspondant",
     filter: "Filtre",
@@ -14,8 +13,7 @@ const e = {
     row: "Ligne",
     value: "Valeur",
     multipleValue: "Σ Valeurs",
-    filterDesc:
-      "Faites\x20glisser\x20les\x20champs\x20pour\x20filtrer\x20les\x20données",
+    filterDesc: "Faites\x20glisser\x20les\x20champs\x20pour\x20filtrer\x20les\x20données",
     columnDesc: "Faites glisser les champs vers les colonnes",
     rowDesc: "Faites glisser les champs vers les lignes",
     valueDesc: "Résultats\x20calculés\x20des\x20lignes\x20et\x20colonnes",
@@ -35,8 +33,7 @@ const e = {
       percentOfRowTotal: "% du total de la ligne",
       percentOfColumnTotal: "% du total de la colonne",
       percentOfParentRowTotal: "% du total de la ligne parente",
-      percentOfParentColumnTotal:
-        "%\x20du\x20total\x20de\x20la\x20colonne\x20parente",
+      percentOfParentColumnTotal: "%\x20du\x20total\x20de\x20la\x20colonne\x20parente",
       index: "Indice",
       percentOfParent: "% du total parent",
       percentOf: "% de",
@@ -53,7 +50,7 @@ const e = {
       next: "Suivant",
       other: "Autre",
       ok: "OK",
-      cancel: "Annuler",
+      cancel: "Annuler"
     },
     valueFilter: {
       title: "Filtres de valeurs",
@@ -75,7 +72,7 @@ const e = {
       bottomPercent: "Pourcentage inférieur",
       clear: "Effacer le filtre",
       ok: "OK",
-      cancel: "Annuler",
+      cancel: "Annuler"
     },
     dateGroup: {
       title: "Regroupement\x20de\x20dates",
@@ -89,7 +86,7 @@ const e = {
       date: "Jour",
       hour: "Heure",
       minute: "Minute",
-      hourMinute: "Heure-Minute",
+      hourMinute: "Heure-Minute"
     },
     dialog: {
       fieldName: "Nom du champ",
@@ -105,7 +102,7 @@ const e = {
         clearFilter: "Effacer le filtre",
         blank: "(Vide)",
         cancel: "Annuler",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "Général",
@@ -117,20 +114,15 @@ const e = {
         formatTypes: "Types de format",
         confirm: "OK",
         cancel: "Annuler",
-        generalDesc:
-          "Le format général ne contient aucun format de nombre spécifique.",
-        accountingDesc:
-          "Le\x20format\x20de\x20nombre\x20comptable\x20aligne\x20les\x20symboles\x20de\x20devise\x20et\x20les\x20décimales\x20dans\x20une\x20colonne.",
-        currencyDesc:
-          "Le format de devise est utilisé pour les valeurs monétaires générales, le format comptable aligne les décimales dans une colonne de valeurs.",
-        dateDesc:
-          "Le format de date affiche les numéros de série de date et d'heure sous forme de valeurs de date.",
-        thousandthPercentileDesc:
-          "Le format millième percentile est utilisé pour les nombres généraux, les formats de devise et comptable fournissent des formats spécialisés pour les valeurs monétaires.",
+        generalDesc: "Le format général ne contient aucun format de nombre spécifique.",
+        accountingDesc: "Le\x20format\x20de\x20nombre\x20comptable\x20aligne\x20les\x20symboles\x20de\x20devise\x20et\x20les\x20décimales\x20dans\x20une\x20colonne.",
+        currencyDesc: "Le format de devise est utilisé pour les valeurs monétaires générales, le format comptable aligne les décimales dans une colonne de valeurs.",
+        dateDesc: "Le format de date affiche les numéros de série de date et d'heure sous forme de valeurs de date.",
+        thousandthPercentileDesc: "Le format millième percentile est utilisé pour les nombres généraux, les formats de devise et comptable fournissent des formats spécialisés pour les valeurs monétaires.",
         decimalPlaces: "Décimales",
         currencyTypes: "Types\x20de\x20devise",
         negativeNumberTypes: "Types de nombres négatifs",
-        dateTypes: "Types\x20de\x20date",
+        dateTypes: "Types\x20de\x20date"
       },
       source: {
         insertPivotTable: "Insérer\x20un\x20tableau\x20croisé\x20dynamique",
@@ -138,8 +130,8 @@ const e = {
         position: "Emplacement du tableau croisé dynamique",
         newSheet: "Nouvelle feuille",
         existingSheet: "Feuille\x20existante",
-        intersect: "Ne peut pas chevaucher la source de données",
-      },
+        intersect: "Ne peut pas chevaucher la source de données"
+      }
     },
     subtotal: {
       average: "Moyenne",
@@ -152,7 +144,7 @@ const e = {
       stdDevp: "Écart-type de population",
       sum: "Somme",
       var: "Variance",
-      varp: "Variance de population",
+      varp: "Variance de population"
     },
     subTotalText: "Sous-total",
     grandTotalText: "Total général",
@@ -178,26 +170,21 @@ const e = {
       layoutCompact: "Format\x20compact",
       layoutOutline: "Format\x20plan",
       repeatRowLabels: "Répéter les étiquettes de lignes",
-      repeatColLabels: "Répéter les étiquettes de colonnes",
+      repeatColLabels: "Répéter les étiquettes de colonnes"
     },
     perform: {
       tips: "Conseils",
       info: "Il y a déjà des données dans la zone cible. Cette action écrasera les données existantes. Voulez-vous continuer ?",
       confirm: "Confirmer",
       cancel: "Annuler",
-      rowColError:
-        "Cette modification ne peut pas être apportée aux cellules sélectionnées car elle affecterait le tableau croisé dynamique. Veuillez utiliser la liste de champs pour modifier le rapport. Si vous essayez d'insérer ou de supprimer des cellules, déplacez le tableau croisé dynamique et réessayez.",
+      rowColError: "Cette modification ne peut pas être apportée aux cellules sélectionnées car elle affecterait le tableau croisé dynamique. Veuillez utiliser la liste de champs pour modifier le rapport. Si vous essayez d'insérer ou de supprimer des cellules, déplacez le tableau croisé dynamique et réessayez."
     },
     msg: {
       emptySourceRange: "La plage de la source de données est vide",
-      invalidSize:
-        "La\x20plage\x20de\x20la\x20source\x20de\x20données\x20est\x20invalide",
-      mergeCellError:
-        "Impossible\x20d\x27insérer\x20des\x20cellules\x20fusionnées\x20dans\x20un\x20tableau\x20croisé\x20dynamique",
-      editCellError:
-        "Impossible\x20de\x20modifier\x20les\x20cellules\x20dans\x20un\x20tableau\x20croisé\x20dynamique",
-      permissionError:
-        "Impossible de modifier le tableau croisé dynamique dans une feuille protégée",
+      invalidSize: "La\x20plage\x20de\x20la\x20source\x20de\x20données\x20est\x20invalide",
+      mergeCellError: "Impossible\x20d\x27insérer\x20des\x20cellules\x20fusionnées\x20dans\x20un\x20tableau\x20croisé\x20dynamique",
+      editCellError: "Impossible\x20de\x20modifier\x20les\x20cellules\x20dans\x20un\x20tableau\x20croisé\x20dynamique",
+      permissionError: "Impossible de modifier le tableau croisé dynamique dans une feuille protégée"
     },
     averageName: "Moyenne de ",
     countName: "Nombre de ",
@@ -209,7 +196,7 @@ const e = {
     stdDevpName: "Écart-type\x20pop.\x20de\x20",
     sumName: "Somme de ",
     varName: "Variance\x20de\x20",
-    varpName: "Variance pop. de ",
-  },
+    varpName: "Variance pop. de "
+  }
 };
 module.exports = e;

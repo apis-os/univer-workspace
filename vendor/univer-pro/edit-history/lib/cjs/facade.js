@@ -1,1 +1,23 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/edit-history"),t=require("@univerjs/core/facade");var n=class{constructor(v1,v2){this._service=v1,this._prepared=v2;}query(v3){return this._service["query"](this._prepared,v3);}},r=class extends t.FUniver{compareUnitData(v4){return this._injector["get"](e.UnitComparisonService).compare(v4);}prepareUnitComparison(v5){let v6=this._injector["get"](e.UnitComparisonService);return new n(v6,v6.prepare(v5));}};t.FUniver["extend"](r),exports.FUnitComparison=n;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/edit-history"),
+  t = require("@univerjs/core/facade");
+var n = class {
+    constructor(var_core_value_sig7524, var_core_value_sig2AD8) {
+      this._service = var_core_value_sig7524, this._prepared = var_core_value_sig2AD8;
+    }
+    query(var_core_value_sig2AD0) {
+      return this._service["query"](this._prepared, var_core_value_sig2AD0);
+    }
+  },
+  r = class extends t.FUniver {
+    compareUnitData(var_core_value_sig3EEE) {
+      return this._injector["get"](e.UnitComparisonService).compare(var_core_value_sig3EEE);
+    }
+    prepareUnitComparison(var_core_value_sigBC46) {
+      let var_core_value_sig3D7D = this._injector["get"](e.UnitComparisonService);
+      return new n(var_core_value_sig3D7D, var_core_value_sig3D7D.prepare(var_core_value_sigBC46));
+    }
+  };
+t.FUniver["extend"](r), exports.FUnitComparison = n;

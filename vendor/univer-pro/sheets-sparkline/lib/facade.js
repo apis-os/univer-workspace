@@ -1,1 +1,276 @@
-import{AddSheetSparklineCommand as v112,RemoveSheetSparklineCommand as v113,SetSheetSparklineCommand as v114,SparklineDataSourceModel as v115,SparklineTypeEnum as v116}from"@univerjs-pro/sheets-sparkline";import{ICommandService as v117,Inject as v118,Injector as v119,Tools as v120}from"@univerjs/core";import{FWorksheet as v121}from"@univerjs/sheets/facade";import{FEnum as v122,FEventName as v123,FUniver as v124}from"@univerjs/core/facade";import{SheetsSelectionsService as v125}from"@univerjs/sheets";function m(v102,v103){return function(v47,v48){v103(v47,v48,v102);};}function h(v104,v105,v106,v107){var v108=arguments.length,v109=v108<3?v105:v107===null?v107=Object.getOwnPropertyDescriptor(v105,v106):v107,v110;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v109=Reflect.decorate(v104,v105,v106,v107);else{for(var v111=v104.length-1;v111>=0;v111--)(v110=v104[v111])&&(v109=(v108<3?v110(v109):v108>3?v110(v105,v106,v109):v110(v105,v106))||v109);}return v108>3&&v109&&Object.defineProperty(v105,v106,v109),v109;}let g=class{constructor(v49,v50,v51,v52,v53,v54){this._unitId=v49,this._subUnitId=v50,this._groupId=v51,this._row=v52,this._col=v53,this._injector=v54;}changeDataSource(v55,v56){let v57=this._injector["get"](v115),v58=this._injector["get"](v117),v59=v57.getSparklineById(this._unitId,this._subUnitId,this._groupId);if(!v59)return;let v60={config:v59,isChangeDataSource:true,changeDataSourceInfo:{groupId:this._groupId,resetType:"item",sourceRanges:[v55],targetRanges:[v56],primary:{startRow:this._row,startColumn:this._col,endRow:this._row,endColumn:this._col,actualRow:this._row,actualColumn:this._col,isMerged:false,isMergedMainCell:false}}};return v58.syncExecuteCommand(v114.id,v60),this._row=v56.startRow,this._col=v56.startColumn,this;}removeSparkline(){let v61=this._injector["get"](v117),v62={isSingle:true,ranges:[{startRow:this._row,startColumn:this._col,endRow:this._row,endColumn:this._col}]};v61.syncExecuteCommand(v113.id,v62);}};g=h([m(5,v118(v119))],g);let _=class{constructor(v63,v64,v65,v66,v67,v68){this._unitId=v63,this._subUnitId=v64,this._groupId=v65,this._row=v66,this._col=v67,this._injector=v68;}changeDataSource(v69,v70){let v71=this._injector["get"](v115),v72=this._injector["get"](v117),v73=v71.getSparklineById(this._unitId,this._subUnitId,this._groupId);if(!v73)return;let v74={config:v73,isChangeDataSource:true,changeDataSourceInfo:{groupId:this._groupId,resetType:"group",sourceRanges:v69,targetRanges:v70,primary:{startRow:this._row,startColumn:this._col,endRow:this._row,endColumn:this._col,actualRow:this._row,actualColumn:this._col,isMerged:false,isMergedMainCell:false}}};return v72.syncExecuteCommand(v114.id,v74),this._row=v70[0].startRow,this._col=v70[0].startColumn,this;}removeSparklineGroup(){let v75=this._injector["get"](v117),v76={isSingle:false,ranges:[{startRow:this._row,startColumn:this._col,endRow:this._row,endColumn:this._col}]};v75.syncExecuteCommand(v113.id,v76);}setConfig(v77){let v78=this._injector["get"](v115).getSparklineById(this._unitId,this._subUnitId,this._groupId);if(v78){let v42={config:{config:v77,sparklines:v78.sparklines},isChangeDataSource:false};this._injector["get"](v117).syncExecuteCommand(v114.id,v42);}return this;}};_=h([m(5,v118(v119))],_);var v=class extends v121{addSparkline(v79,v80,v81){if(this._commandService["syncExecuteCommand"](v112.id,{sourceRanges:v79,targetRanges:v80,targetInfo:{unitId:this._workbook["getUnitId"](),subUnitId:this._worksheet["getSheetId"]()},config:{type:v81}})){let{startRow:v43,startColumn:v44}=v80[0];return this.getSparklineByCell(v43,v44);}}getAllSubSparkline(){return this._injector["get"](v115).getSubUnitSparkline(this._workbook["getUnitId"](),this._worksheet["getSheetId"]());}composeSparkline(v82){let v83=this._injector["get"](v115),v84;for(let v45=0;v45<v82.length;v45++){let{startRow:v32,endRow:v33,startColumn:v34,endColumn:v35}=v82[v45];for(let v29=v32;v29<=v33;v29++)for(let v17=v34;v17<=v35;v17++){let v6=v83.getSparkline(this._workbook["getUnitId"](),this._worksheet["getSheetId"](),v29,v17);if(v6){let v3=v83.getSparklineById(this._workbook["getUnitId"](),this._worksheet["getSheetId"](),v6);if(v3){v84=v120.deepClone(v3);break;}}}}v84&&this._commandService["executeCommand"](v114.id,{ranges:v82,combine:true,config:v84,isChangeDataSource:false});}unComposeSparkline(v85){let v86=this._injector["get"](v115),v87;for(let v46=0;v46<v85.length;v46++){let{startRow:v36,endRow:v37,startColumn:v38,endColumn:v39}=v85[v46];for(let v30=v36;v30<=v37;v30++)for(let v18=v38;v18<=v39;v18++){let v7=v86.getSparkline(this._workbook["getUnitId"](),this._worksheet["getSheetId"](),v30,v18);if(v7){let v4=v86.getSparklineById(this._workbook["getUnitId"](),this._worksheet["getSheetId"](),v7);if(v4){v87=v120.deepClone(v4);break;}}}}v87||this._commandService["executeCommand"](v114.id,{ranges:v85,unCombine:true,config:v87,isChangeDataSource:false});}getSparklineByCell(v88,v89){let v90=this._injector["get"](v115),v91=this._workbook["getUnitId"](),v92=this._worksheet["getSheetId"](),v93=v90.getSparkline(v91,v92,v88,v89);if(v93)return this._injector["createInstance"](g,v91,v92,v93,v88,v89);}getSparklineGroupByCell(v94,v95){let v96=this._injector["get"](v115),v97=this._workbook["getUnitId"](),v98=this._worksheet["getSheetId"](),v99=v96.getSparkline(v97,v98,v94,v95);if(v99)return this._injector["createInstance"](_,v97,v98,v99,v94,v95);}};v121.extend(v);var y=class extends v122{get SparklineTypeEnum(){return v116;}};v122.extend(y);var b=class extends v123{get SheetSparklineChanged(){return"SheetSparklineChanged";}};v123.extend(b);var x=class extends v124{_initialize(v100){let v101=v100.get(v117);this.disposeWithMe(this.registerEventHandler(this.Event["SheetSparklineChanged"],()=>v101.onCommandExecuted(v40=>{if(v40.id===v114.id){let v31=v40.params;if(!v31.isChangeDataSource){var v41;let v19=this.getActiveWorkbook(),v20=v19==null?undefined:v19.getActiveSheet();if(!v19||!v20)return;let v21=v19.getId(),v22=v20.getSheetId(),v23=this._injector["get"](v125),v24=this._injector["get"](v115),v25=(v31==null?undefined:v31.ranges)??v23.getCurrentSelections().map(v8=>v8.range),v26=(v41=v24.getSparklineCache().sparklineAnchorMap["get"](v21))==null?undefined:v41.get(v22),v27=new Set();v25.forEach(v9=>{let{startRow:v10,endRow:v11,startColumn:v12,endColumn:v13}=v9;for(let v5=v10;v5<=v11;v5++)for(let v2=v12;v2<=v13;v2++){var v14;let v1=v26==null||(v14=v26.matrix["getValue"](v5,v2))==null?undefined:v14.groupId;v1&&v27.add(v1);}});let v28={workbook:v19,worksheet:v20,sparklines:Array.from(v27).map(v15=>v24.getSparklineById(v21,v22,v15)).filter(v16=>!!v16)};if(this.fireEvent(this.Event["SheetSparklineChanged"],v28),v28.cancel)throw Error("Sheet create canceled by facade api.");}}})));}};v124.extend(x);export{g as FSparkline,_ as FSparklineGroup};
+import { AddSheetSparklineCommand as var_core_value_sig223F, RemoveSheetSparklineCommand as var_core_value_sigD749, SetSheetSparklineCommand as var_core_value_sigCFFA, SparklineDataSourceModel as var_core_value_sig58C1, SparklineTypeEnum as var_core_value_sig5090 } from "@univerjs-pro/sheets-sparkline";
+import { ICommandService as var_core_value_sigC368, Inject as var_core_value_sigAD56, Injector as var_core_value_sigDB4A, Tools as var_core_value_sig6418 } from "@univerjs/core";
+import { FWorksheet as var_core_value_sig1896 } from "@univerjs/sheets/facade";
+import { FEnum as var_core_value_sig0285, FEventName as var_core_value_sig777D, FUniver as var_core_value_sig3F4C } from "@univerjs/core/facade";
+import { SheetsSelectionsService as var_core_value_sigD65A } from "@univerjs/sheets";
+function m(var_core_value_sig2B65, var_core_value_sigD7EA) {
+  return function (var_core_value_sigD082, var_core_value_sigDBB7) {
+    var_core_value_sigD7EA(var_core_value_sigD082, var_core_value_sigDBB7, var_core_value_sig2B65);
+  };
+}
+function h(var_core_value_sigB33B, var_core_value_sig24B9, var_core_value_sigE627, var_core_value_sigEF3E) {
+  var var_core_value_sig273D = arguments.length,
+    var_core_value_sig9A0D = var_core_value_sig273D < 3 ? var_core_value_sig24B9 : var_core_value_sigEF3E === null ? var_core_value_sigEF3E = Object.getOwnPropertyDescriptor(var_core_value_sig24B9, var_core_value_sigE627) : var_core_value_sigEF3E,
+    var_core_value_sigA319;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig9A0D = Reflect.decorate(var_core_value_sigB33B, var_core_value_sig24B9, var_core_value_sigE627, var_core_value_sigEF3E);else {
+    for (var var_core_value_sig2D58 = var_core_value_sigB33B.length - 1; var_core_value_sig2D58 >= 0; var_core_value_sig2D58--) (var_core_value_sigA319 = var_core_value_sigB33B[var_core_value_sig2D58]) && (var_core_value_sig9A0D = (var_core_value_sig273D < 3 ? var_core_value_sigA319(var_core_value_sig9A0D) : var_core_value_sig273D > 3 ? var_core_value_sigA319(var_core_value_sig24B9, var_core_value_sigE627, var_core_value_sig9A0D) : var_core_value_sigA319(var_core_value_sig24B9, var_core_value_sigE627)) || var_core_value_sig9A0D);
+  }
+  return var_core_value_sig273D > 3 && var_core_value_sig9A0D && Object.defineProperty(var_core_value_sig24B9, var_core_value_sigE627, var_core_value_sig9A0D), var_core_value_sig9A0D;
+}
+let g = class {
+  constructor(var_core_value_sigD0A8, var_core_value_sigF4B9, var_core_value_sig5CEE, var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5) {
+    this._unitId = var_core_value_sigD0A8, this._subUnitId = var_core_value_sigF4B9, this._groupId = var_core_value_sig5CEE, this._row = var_core_value_sigE92A, this._col = var_core_value_sig362B, this._injector = var_core_value_sig5CA5;
+  }
+  changeDataSource(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    let var_core_value_sig861B = this._injector["get"](var_core_value_sig58C1),
+      var_core_value_sig5237 = this._injector["get"](var_core_value_sigC368),
+      var_core_value_sigBB00 = var_core_value_sig861B.getSparklineById(this._unitId, this._subUnitId, this._groupId);
+    if (!var_core_value_sigBB00) return;
+    let var_core_value_sig7E54 = {
+      config: var_core_value_sigBB00,
+      isChangeDataSource: true,
+      changeDataSourceInfo: {
+        groupId: this._groupId,
+        resetType: "item",
+        sourceRanges: [var_core_value_sigE90F],
+        targetRanges: [var_core_value_sigEFD4],
+        primary: {
+          startRow: this._row,
+          startColumn: this._col,
+          endRow: this._row,
+          endColumn: this._col,
+          actualRow: this._row,
+          actualColumn: this._col,
+          isMerged: false,
+          isMergedMainCell: false
+        }
+      }
+    };
+    return var_core_value_sig5237.syncExecuteCommand(var_core_value_sigCFFA.id, var_core_value_sig7E54), this._row = var_core_value_sigEFD4.startRow, this._col = var_core_value_sigEFD4.startColumn, this;
+  }
+  removeSparkline() {
+    let var_core_value_sig9A8D = this._injector["get"](var_core_value_sigC368),
+      var_core_value_sigC259 = {
+        isSingle: true,
+        ranges: [{
+          startRow: this._row,
+          startColumn: this._col,
+          endRow: this._row,
+          endColumn: this._col
+        }]
+      };
+    var_core_value_sig9A8D.syncExecuteCommand(var_core_value_sigD749.id, var_core_value_sigC259);
+  }
+};
+g = h([m(5, var_core_value_sigAD56(var_core_value_sigDB4A))], g);
+let _ = class {
+  constructor(var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sig48CA, var_core_value_sig50AF) {
+    this._unitId = var_core_value_sig9C9F, this._subUnitId = var_core_value_sigFDEA, this._groupId = var_core_value_sig86D0, this._row = var_core_value_sig4CD2, this._col = var_core_value_sig48CA, this._injector = var_core_value_sig50AF;
+  }
+  changeDataSource(var_core_value_sigA942, var_core_value_sigA621) {
+    let var_core_value_sigBBFF = this._injector["get"](var_core_value_sig58C1),
+      var_core_value_sig8889 = this._injector["get"](var_core_value_sigC368),
+      var_core_value_sig32F8 = var_core_value_sigBBFF.getSparklineById(this._unitId, this._subUnitId, this._groupId);
+    if (!var_core_value_sig32F8) return;
+    let var_core_value_sig5B67 = {
+      config: var_core_value_sig32F8,
+      isChangeDataSource: true,
+      changeDataSourceInfo: {
+        groupId: this._groupId,
+        resetType: "group",
+        sourceRanges: var_core_value_sigA942,
+        targetRanges: var_core_value_sigA621,
+        primary: {
+          startRow: this._row,
+          startColumn: this._col,
+          endRow: this._row,
+          endColumn: this._col,
+          actualRow: this._row,
+          actualColumn: this._col,
+          isMerged: false,
+          isMergedMainCell: false
+        }
+      }
+    };
+    return var_core_value_sig8889.syncExecuteCommand(var_core_value_sigCFFA.id, var_core_value_sig5B67), this._row = var_core_value_sigA621[0].startRow, this._col = var_core_value_sigA621[0].startColumn, this;
+  }
+  removeSparklineGroup() {
+    let var_core_value_sig1758 = this._injector["get"](var_core_value_sigC368),
+      var_core_value_sig4805 = {
+        isSingle: false,
+        ranges: [{
+          startRow: this._row,
+          startColumn: this._col,
+          endRow: this._row,
+          endColumn: this._col
+        }]
+      };
+    var_core_value_sig1758.syncExecuteCommand(var_core_value_sigD749.id, var_core_value_sig4805);
+  }
+  setConfig(var_core_value_sigE67E) {
+    let var_core_value_sig2902 = this._injector["get"](var_core_value_sig58C1).getSparklineById(this._unitId, this._subUnitId, this._groupId);
+    if (var_core_value_sig2902) {
+      let var_core_value_sigE154 = {
+        config: {
+          config: var_core_value_sigE67E,
+          sparklines: var_core_value_sig2902.sparklines
+        },
+        isChangeDataSource: false
+      };
+      this._injector["get"](var_core_value_sigC368).syncExecuteCommand(var_core_value_sigCFFA.id, var_core_value_sigE154);
+    }
+    return this;
+  }
+};
+_ = h([m(5, var_core_value_sigAD56(var_core_value_sigDB4A))], _);
+var v = class extends var_core_value_sig1896 {
+  addSparkline(var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+    if (this._commandService["syncExecuteCommand"](var_core_value_sig223F.id, {
+      sourceRanges: var_core_value_sig9989,
+      targetRanges: var_core_value_sig698E,
+      targetInfo: {
+        unitId: this._workbook["getUnitId"](),
+        subUnitId: this._worksheet["getSheetId"]()
+      },
+      config: {
+        type: var_core_value_sig2809
+      }
+    })) {
+      let {
+        startRow: var_core_value_sig4632,
+        startColumn: var_core_value_sig12F2
+      } = var_core_value_sig698E[0];
+      return this.getSparklineByCell(var_core_value_sig4632, var_core_value_sig12F2);
+    }
+  }
+  getAllSubSparkline() {
+    return this._injector["get"](var_core_value_sig58C1).getSubUnitSparkline(this._workbook["getUnitId"](), this._worksheet["getSheetId"]());
+  }
+  composeSparkline(var_core_value_sig2DAB) {
+    let var_core_value_sig877E = this._injector["get"](var_core_value_sig58C1),
+      var_core_value_sig20C8;
+    for (let var_core_value_sig2259 = 0; var_core_value_sig2259 < var_core_value_sig2DAB.length; var_core_value_sig2259++) {
+      let {
+        startRow: var_core_value_sig9572,
+        endRow: var_core_value_sigD873,
+        startColumn: var_core_value_sigA12B,
+        endColumn: var_core_value_sigF230
+      } = var_core_value_sig2DAB[var_core_value_sig2259];
+      for (let var_core_value_sig8178 = var_core_value_sig9572; var_core_value_sig8178 <= var_core_value_sigD873; var_core_value_sig8178++) for (let var_core_value_sig0D69 = var_core_value_sigA12B; var_core_value_sig0D69 <= var_core_value_sigF230; var_core_value_sig0D69++) {
+        let var_core_value_sig3D7D = var_core_value_sig877E.getSparkline(this._workbook["getUnitId"](), this._worksheet["getSheetId"](), var_core_value_sig8178, var_core_value_sig0D69);
+        if (var_core_value_sig3D7D) {
+          let var_core_value_sig2AD0 = var_core_value_sig877E.getSparklineById(this._workbook["getUnitId"](), this._worksheet["getSheetId"](), var_core_value_sig3D7D);
+          if (var_core_value_sig2AD0) {
+            var_core_value_sig20C8 = var_core_value_sig6418.deepClone(var_core_value_sig2AD0);
+            break;
+          }
+        }
+      }
+    }
+    var_core_value_sig20C8 && this._commandService["executeCommand"](var_core_value_sigCFFA.id, {
+      ranges: var_core_value_sig2DAB,
+      combine: true,
+      config: var_core_value_sig20C8,
+      isChangeDataSource: false
+    });
+  }
+  unComposeSparkline(var_core_value_sigE9A7) {
+    let var_core_value_sigBECE = this._injector["get"](var_core_value_sig58C1),
+      var_core_value_sig1B22;
+    for (let var_core_value_sig9E2F = 0; var_core_value_sig9E2F < var_core_value_sigE9A7.length; var_core_value_sig9E2F++) {
+      let {
+        startRow: var_core_value_sig09B8,
+        endRow: var_core_value_sig6F91,
+        startColumn: var_core_value_sigF9C7,
+        endColumn: var_core_value_sig8895
+      } = var_core_value_sigE9A7[var_core_value_sig9E2F];
+      for (let var_core_value_sigE9ED = var_core_value_sig09B8; var_core_value_sigE9ED <= var_core_value_sig6F91; var_core_value_sigE9ED++) for (let var_core_value_sig480E = var_core_value_sigF9C7; var_core_value_sig480E <= var_core_value_sig8895; var_core_value_sig480E++) {
+        let var_core_value_sig27E5 = var_core_value_sigBECE.getSparkline(this._workbook["getUnitId"](), this._worksheet["getSheetId"](), var_core_value_sigE9ED, var_core_value_sig480E);
+        if (var_core_value_sig27E5) {
+          let var_core_value_sig3EEE = var_core_value_sigBECE.getSparklineById(this._workbook["getUnitId"](), this._worksheet["getSheetId"](), var_core_value_sig27E5);
+          if (var_core_value_sig3EEE) {
+            var_core_value_sig1B22 = var_core_value_sig6418.deepClone(var_core_value_sig3EEE);
+            break;
+          }
+        }
+      }
+    }
+    var_core_value_sig1B22 || this._commandService["executeCommand"](var_core_value_sigCFFA.id, {
+      ranges: var_core_value_sigE9A7,
+      unCombine: true,
+      config: var_core_value_sig1B22,
+      isChangeDataSource: false
+    });
+  }
+  getSparklineByCell(var_core_value_sig7F72, var_core_value_sig7B2A) {
+    let var_core_value_sig06CD = this._injector["get"](var_core_value_sig58C1),
+      var_core_value_sigA5F1 = this._workbook["getUnitId"](),
+      var_core_value_sig97A2 = this._worksheet["getSheetId"](),
+      var_core_value_sig07E9 = var_core_value_sig06CD.getSparkline(var_core_value_sigA5F1, var_core_value_sig97A2, var_core_value_sig7F72, var_core_value_sig7B2A);
+    if (var_core_value_sig07E9) return this._injector["createInstance"](g, var_core_value_sigA5F1, var_core_value_sig97A2, var_core_value_sig07E9, var_core_value_sig7F72, var_core_value_sig7B2A);
+  }
+  getSparklineGroupByCell(var_core_value_sig4F59, var_core_value_sigF564) {
+    let var_core_value_sig8CFA = this._injector["get"](var_core_value_sig58C1),
+      var_core_value_sig2E11 = this._workbook["getUnitId"](),
+      var_core_value_sig5B69 = this._worksheet["getSheetId"](),
+      var_core_value_sigB098 = var_core_value_sig8CFA.getSparkline(var_core_value_sig2E11, var_core_value_sig5B69, var_core_value_sig4F59, var_core_value_sigF564);
+    if (var_core_value_sigB098) return this._injector["createInstance"](_, var_core_value_sig2E11, var_core_value_sig5B69, var_core_value_sigB098, var_core_value_sig4F59, var_core_value_sigF564);
+  }
+};
+var_core_value_sig1896.extend(v);
+var y = class extends var_core_value_sig0285 {
+  get SparklineTypeEnum() {
+    return var_core_value_sig5090;
+  }
+};
+var_core_value_sig0285.extend(y);
+var b = class extends var_core_value_sig777D {
+  get SheetSparklineChanged() {
+    return "SheetSparklineChanged";
+  }
+};
+var_core_value_sig777D.extend(b);
+var x = class extends var_core_value_sig3F4C {
+  _initialize(var_core_value_sigCE71) {
+    let var_core_value_sig21D8 = var_core_value_sigCE71.get(var_core_value_sigC368);
+    this.disposeWithMe(this.registerEventHandler(this.Event["SheetSparklineChanged"], () => var_core_value_sig21D8.onCommandExecuted(var_core_value_sigC80B => {
+      if (var_core_value_sigC80B.id === var_core_value_sigCFFA.id) {
+        let var_core_value_sigB577 = var_core_value_sigC80B.params;
+        if (!var_core_value_sigB577.isChangeDataSource) {
+          var var_core_value_sig284F;
+          let var_core_value_sig26DB = this.getActiveWorkbook(),
+            var_core_value_sigF0F9 = var_core_value_sig26DB == null ? undefined : var_core_value_sig26DB.getActiveSheet();
+          if (!var_core_value_sig26DB || !var_core_value_sigF0F9) return;
+          let var_core_value_sig1A0F = var_core_value_sig26DB.getId(),
+            var_core_value_sigFBA4 = var_core_value_sigF0F9.getSheetId(),
+            var_core_value_sig4383 = this._injector["get"](var_core_value_sigD65A),
+            var_core_value_sig186C = this._injector["get"](var_core_value_sig58C1),
+            var_core_value_sigD955 = (var_core_value_sigB577 == null ? undefined : var_core_value_sigB577.ranges) ?? var_core_value_sig4383.getCurrentSelections().map(var_core_value_sig8061 => var_core_value_sig8061.range),
+            var_core_value_sig48BD = (var_core_value_sig284F = var_core_value_sig186C.getSparklineCache().sparklineAnchorMap["get"](var_core_value_sig1A0F)) == null ? undefined : var_core_value_sig284F.get(var_core_value_sigFBA4),
+            var_core_value_sig429F = new Set();
+          var_core_value_sigD955.forEach(var_core_value_sig4D4C => {
+            let {
+              startRow: var_core_value_sigC9E0,
+              endRow: var_core_value_sig76BA,
+              startColumn: var_core_value_sigFBFA,
+              endColumn: var_core_value_sigF602
+            } = var_core_value_sig4D4C;
+            for (let var_core_value_sigBC46 = var_core_value_sigC9E0; var_core_value_sigBC46 <= var_core_value_sig76BA; var_core_value_sigBC46++) for (let var_core_value_sig2AD8 = var_core_value_sigFBFA; var_core_value_sig2AD8 <= var_core_value_sigF602; var_core_value_sig2AD8++) {
+              var var_core_value_sig1BBD;
+              let var_core_value_sig7524 = var_core_value_sig48BD == null || (var_core_value_sig1BBD = var_core_value_sig48BD.matrix["getValue"](var_core_value_sigBC46, var_core_value_sig2AD8)) == null ? undefined : var_core_value_sig1BBD.groupId;
+              var_core_value_sig7524 && var_core_value_sig429F.add(var_core_value_sig7524);
+            }
+          });
+          let var_core_value_sigF62A = {
+            workbook: var_core_value_sig26DB,
+            worksheet: var_core_value_sigF0F9,
+            sparklines: Array.from(var_core_value_sig429F).map(var_core_value_sigF704 => var_core_value_sig186C.getSparklineById(var_core_value_sig1A0F, var_core_value_sigFBA4, var_core_value_sigF704)).filter(var_core_value_sig2BCF => !!var_core_value_sig2BCF)
+          };
+          if (this.fireEvent(this.Event["SheetSparklineChanged"], var_core_value_sigF62A), var_core_value_sigF62A.cancel) throw Error("Sheet create canceled by facade api.");
+        }
+      }
+    })));
+  }
+};
+var_core_value_sig3F4C.extend(x);
+export { g as FSparkline, _ as FSparklineGroup };

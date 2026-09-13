@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "طويل",
       rowHeightExtraTall: "طويل جداً",
       conditionalColoring: "التلوين\x20الشرطي",
-      conditionalColoringHelp:
-        'انقر على "شرط جديد" لتطبيق الألوان بناءً على الشروط المحددة. يرجى ملاحظة أن الشروط الأعلى لها أولوية أكبر.',
+      conditionalColoringHelp: 'انقر على "شرط جديد" لتطبيق الألوان بناءً على الشروط المحددة. يرجى ملاحظة أن الشروط الأعلى لها أولوية أكبر.',
       conditionalColoringSmart: "تطبيق اللون الذكي على الكل",
       conditionalColor: "اللون",
       conditionalCustomColor: "مخصص",
@@ -44,13 +43,12 @@ const n = {
       conditionalChecked: "محدد",
       conditionalUnchecked: "غير محدد",
       statusDoneTitle: "ﺔﻟﺎﺤﻟﺍ\x20ﺖﻤﺗ",
-      statusDoneDescription:
-        ".ﺔﻘﺑﺎﻄﻤﻟﺍ\x20ﺕﻼ\ufeffﺠﺴﻟﺍ\x20ﻰﻠﻋ\x20ﺔﻤﻋﺎﻧ\x20ءﺍﺮﻀﺧ\x20ﺔﻣﻼ\ufeffﻋ\x20ﻊﺿ",
+      statusDoneDescription: ".ﺔﻘﺑﺎﻄﻤﻟﺍ\x20ﺕﻼ\ufeffﺠﺴﻟﺍ\x20ﻰﻠﻋ\x20ﺔﻤﻋﺎﻧ\x20ءﺍﺮﻀﺧ\x20ﺔﻣﻼ\ufeffﻋ\x20ﻊﺿ",
       statusBlockedTitle: "ﺓﺭﻮﻈﺤﻣ ﺔﻟﺎﺤﻟﺍ",
       statusBlockedDescription: ".ﺓﺭﻮﻈﺤﻤﻟﺍ ﺕﻼ﻿ﺠﺴﻟﺍ ﻰﻠﻋ ﺮﻳﺬﺤﺗ ﺔﻣﻼ﻿ﻋ ﻖﻴﺒﻄﺘﺑ ﻢﻗ",
       addField: "إضافة حقل",
       undo: "تراجع",
-      redo: "إعادة",
+      redo: "إعادة"
     },
     recordDetail: {
       untitledRecord: "سجل بدون عنوان",
@@ -62,11 +60,10 @@ const n = {
       deleteConfirmTitle: "حذف هذا السجل؟",
       deleteConfirmDescription: "سيتم إزالة هذا السجل.",
       submit: "إرسال",
-      addMoreAfterSubmission:
-        "إضافة\x20المزيد\x20من\x20السجلات\x20بعد\x20الإرسال",
+      addMoreAfterSubmission: "إضافة\x20المزيد\x20من\x20السجلات\x20بعد\x20الإرسال",
       panelSize: "حجم\x20اللوحة",
       fullScreen: "ملء\x20الشاشة",
-      exitFullScreen: "الخروج من ملء الشاشة",
+      exitFullScreen: "الخروج من ملء الشاشة"
     },
     recordLink: {
       searchRecords: "البحث\x20في\x20السجلات",
@@ -74,25 +71,22 @@ const n = {
       selectedCount: "تم تحديد {0}",
       missingRecord: "سجل محذوف",
       openRecord: "فتح\x20السجل\x20المرتبط",
-      back: "رجوع",
+      back: "رجوع"
     },
     hierarchy: {
       invalidField: "اختر حقل ارتباط بسجل ذي قيمة واحدة يشير إلى هذا الجدول.",
-      missingRecord:
-        "لم\x20يعد\x20السجل\x20أو\x20العنصر\x20الأصل\x20موجودًا.\x20حدّث\x20الصفحة\x20وحاول\x20مجددًا.",
+      missingRecord: "لم\x20يعد\x20السجل\x20أو\x20العنصر\x20الأصل\x20موجودًا.\x20حدّث\x20الصفحة\x20وحاول\x20مجددًا.",
       selfParent: "لا يمكن أن يكون السجل أصلًا لنفسه.",
       cycle: "سيؤدي هذا النقل إلى إنشاء حلقة في العلاقة الهرمية.",
-      maxDepth:
-        "سيتجاوز\x20هذا\x20النقل\x20الحد\x20الأقصى\x20البالغ\x20خمسة\x20مستويات.",
+      maxDepth: "سيتجاوز\x20هذا\x20النقل\x20الحد\x20الأقصى\x20البالغ\x20خمسة\x20مستويات.",
       sortedView: "أزل فرز العرض قبل إعادة ترتيب السجلات يدويًا.",
-      operationFailed:
-        "تعذر تطبيق تغيير التسلسل الهرمي. حدّث الصفحة وحاول مجددًا.",
+      operationFailed: "تعذر تطبيق تغيير التسلسل الهرمي. حدّث الصفحة وحاول مجددًا.",
       parent: "العنصر الأصل",
       parentFieldName: "العناصر الرئيسية",
       children: "العناصر\x20الفرعية",
       viewChildren: "عرض العناصر الفرعية",
       root: "سجل\x20جذري",
-      setParent: "تعيين\x20العنصر\x20الأصل",
+      setParent: "تعيين\x20العنصر\x20الأصل"
     },
     collaboration: {
       localStatus: "ﻲﻠﺤﻤﻟﺍ\x20ﻊﺿﻮﻟﺍ",
@@ -106,14 +100,14 @@ const n = {
       conflictStatus: "ﻉﺍﺮﺻ",
       conflictTooltip: ".ﻡﺎﻤﺘﻫﻻ﻿ﺍ ﻰﻟﺇ ﺝﺎﺘﺤﻳ ﻥﻭﺎﻌﺘﻟﺍ ﻉﺍﺮﺻ",
       notCollabStatus: "ﺔﻴﻧﻭﺎﻌﺗ ﺮﻴﻏ",
-      notCollabTooltip: ".ﻥﻭﺎﻌﺘﻟﺍ ﻊﺿﻭ ﻲﻓ ﺖﺴﻴﻟ ﺓﺪﻋﺎﻘﻟﺍ ﻩﺬﻫ",
+      notCollabTooltip: ".ﻥﻭﺎﻌﺘﻟﺍ ﻊﺿﻭ ﻲﻓ ﺖﺴﻴﻟ ﺓﺪﻋﺎﻘﻟﺍ ﻩﺬﻫ"
     },
     virtualRecord: {
       regrouped: "ستتم إعادة تجميع السجل",
       resorted: "ستتم إعادة فرز السجل",
       moved: "سينتقل السجل في هذا العرض",
       filteredOut: "السجل مخفي في هذا العرض",
-      "delete d": "تم حذف السجل",
+      "delete d": "تم حذف السجل"
     },
     gridContext: {
       insert: "إدراج",
@@ -123,7 +117,7 @@ const n = {
       addSubRecord: "إضافة سجل فرعي",
       clearContent: "مسح المحتوى",
       deleteRecord: "حذف\x20السجل",
-      deleteRecords: "حذف السجلات",
+      deleteRecords: "حذف السجلات"
     },
     common: {
       apply: "تطبيق",
@@ -138,7 +132,7 @@ const n = {
       searchClose: "إغلاق البحث",
       value: "القيمة",
       newCondition: "شرط\x20جديد",
-      newBadge: "جديد",
+      newBadge: "جديد"
     },
     footerStat: {
       none: "لا شيء",
@@ -157,17 +151,16 @@ const n = {
       sum: "المجموع {0}",
       average: "المتوسط {0}",
       min: "الحد\x20الأدنى\x20{0}",
-      max: "الحد الأقصى {0}",
+      max: "الحد الأقصى {0}"
     },
     confirmDelete: {
       tableTitle: "حذف هذا الجدول؟",
       tableDescription: "سيتم\x20إزالة\x20هذا\x20الجدول\x20وسجلاته.",
-      tableReferenced:
-        "لا يمكن حذف هذا الجدول لأن الحقول التالية تشير إليه: {0}.",
+      tableReferenced: "لا يمكن حذف هذا الجدول لأن الحقول التالية تشير إليه: {0}.",
       viewTitle: "حذف هذا العرض؟",
       viewDescription: "سيتم إزالة هذا العرض.",
       fieldTitle: "حذف هذا الحقل؟",
-      fieldDescription: "سيتم\x20إزالة\x20هذا\x20الحقل\x20من\x20الجدول.",
+      fieldDescription: "سيتم\x20إزالة\x20هذا\x20الحقل\x20من\x20الجدول."
     },
     duplicateTable: {
       title: "تكرار\x20الجدول",
@@ -176,29 +169,26 @@ const n = {
       configurationsOnly: "الإعدادات فقط",
       configurationsAndRecords: "الإعدادات والسجلات",
       action: "تكرار",
-      copyName: "{0} نسخة",
+      copyName: "{0} نسخة"
     },
     tableNameValidation: {
       required: "أدخل اسمًا للجدول.",
       tooLong: "استخدم 31 حرفًا أو أقل.",
-      apostrophe:
-        "لا\x20يمكن\x20أن\x20يبدأ\x20اسم\x20الجدول\x20أو\x20ينتهي\x20بعلامة\x20اقتباس\x20مفردة.",
-      invalidCharacters:
-        "لا\x20يمكن\x20أن\x20يحتوي\x20اسم\x20الجدول\x20على\x20:\x20\x5c\x20/\x20?\x20*\x20[\x20].",
+      apostrophe: "لا\x20يمكن\x20أن\x20يبدأ\x20اسم\x20الجدول\x20أو\x20ينتهي\x20بعلامة\x20اقتباس\x20مفردة.",
+      invalidCharacters: "لا\x20يمكن\x20أن\x20يحتوي\x20اسم\x20الجدول\x20على\x20:\x20\x5c\x20/\x20?\x20*\x20[\x20].",
       duplicate: "يوجد\x20جدول\x20بهذا\x20الاسم\x20بالفعل.",
-      invalid: "أدخل اسم جدول صالحًا.",
+      invalid: "أدخل اسم جدول صالحًا."
     },
     clipboard: {
       recordsCopied: "تم نسخ {0} من السجلات",
-      attachmentsUploading: "جارٍ\x20رفع\x20{0}\x20من\x20المرفقات...",
+      attachmentsUploading: "جارٍ\x20رفع\x20{0}\x20من\x20المرفقات..."
     },
     fieldConfig: {
       recordLinkTargetTable: "الجدول الهدف",
       recordLinkDisplayField: "حقل العرض",
       recordLinkPickerFields: "الحقول المساعدة في أداة الاختيار",
       recordLinkAllowMultiple: "السماح بربط سجلات متعددة",
-      recordLinkDescription:
-        "يخزن\x20معرّفات\x20سجلات\x20ثابتة.\x20استخدم\x20صيغ\x20Excel\x20القياسية\x20مثل\x20XLOOKUP\x20وTEXTSPLIT\x20لقراءة\x20القيم\x20المرتبطة.",
+      recordLinkDescription: "يخزن\x20معرّفات\x20سجلات\x20ثابتة.\x20استخدم\x20صيغ\x20Excel\x20القياسية\x20مثل\x20XLOOKUP\x20وTEXTSPLIT\x20لقراءة\x20القيم\x20المرتبطة.",
       fieldTitle: "عنوان\x20الحقل",
       fieldTitlePlaceholder: "أدخل عنوان الحقل",
       fieldType: "نوع\x20الحقل",
@@ -207,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "متقدم",
       defaultValue: "القيمة الافتراضية",
       newField: "حقل\x20جديد",
-      defaultSettingsReady:
-        "نوع\x20الحقل\x20هذا\x20جاهز\x20بالإعدادات\x20الافتراضية.",
+      defaultSettingsReady: "نوع\x20الحقل\x20هذا\x20جاهز\x20بالإعدادات\x20الافتراضية.",
       numberFormat: "تنسيق الرقم",
       currencyFormat: "تنسيق\x20العملة",
       dateFormat: "تنسيق\x20التاريخ",
@@ -255,16 +244,11 @@ const n = {
       createKanbanWithField: "إنشاء Kanban باستخدام {0}",
       deleteField: "حذف الحقل",
       referenceOptionsHelp: "الإشارة إلى البيانات من الجداول الأخرى كخيارات",
-      allowMultipleMembers:
-        "السماح\x20بإضافة\x20أعضاء\x20متعددين\x20في\x20سجل\x20واحد",
-      allowMultipleGroups:
-        "السماح\x20بإضافة\x20مجموعات\x20متعددة\x20في\x20سجل\x20واحد",
-      defaultProviderMock:
-        "يتم حل القيمة الافتراضية من {0} عنصر {1} تجريبي{2}.",
-      defaultProviderExternal:
-        "يتم حل القيمة الافتراضية من موفر {0} الخارجي في Univer.",
-      linkPlaceholder:
-        "أدخل\x20عنوان\x20URL\x20(مثل\x20univer.ai\x20أو\x20https://univer.ai/skills).",
+      allowMultipleMembers: "السماح\x20بإضافة\x20أعضاء\x20متعددين\x20في\x20سجل\x20واحد",
+      allowMultipleGroups: "السماح\x20بإضافة\x20مجموعات\x20متعددة\x20في\x20سجل\x20واحد",
+      defaultProviderMock: "يتم حل القيمة الافتراضية من {0} عنصر {1} تجريبي{2}.",
+      defaultProviderExternal: "يتم حل القيمة الافتراضية من موفر {0} الخارجي في Univer.",
+      linkPlaceholder: "أدخل\x20عنوان\x20URL\x20(مثل\x20univer.ai\x20أو\x20https://univer.ai/skills).",
       phonePlaceholder: "أدخل رقم الهاتف",
       currencySymbol: "رمز العملة",
       thousandsSeparator: "فاصل\x20الآلاف",
@@ -297,10 +281,8 @@ const n = {
       noFormulaConfigured: "لم يتم تكوين صيغة",
       editFormula: "تحرير الصيغة",
       closeFormulaEditor: "إغلاق محرر الصيغة",
-      formulaHint:
-        "استخدم حقول الصف الحالي مثل [@[المبلغ]]. لا يُسمح بـ A1:B10 ولا بمراجع الخلايا المفردة.",
-      formulaReferenceError:
-        "مراجع\x20A1\x20والنطاقات\x20غير\x20مدعومة\x20في\x20صيغ\x20Base.",
+      formulaHint: "استخدم حقول الصف الحالي مثل [@[المبلغ]]. لا يُسمح بـ A1:B10 ولا بمراجع الخلايا المفردة.",
+      formulaReferenceError: "مراجع\x20A1\x20والنطاقات\x20غير\x20مدعومة\x20في\x20صيغ\x20Base.",
       formulaTables: "جداول",
       formulaFields: "حقول",
       formulaFunctions: "الدوال",
@@ -313,8 +295,7 @@ const n = {
       currentTableName: "الجدول\x20الحالي",
       currentTableField: "حقل الجدول الحالي",
       fieldFromTable: "حقل من {0}",
-      referenceCurrentField:
-        'الإشارة إلى الحقل "{0}" في جدول Base الحالي. سيتم حفظه كـ [[#This Row],[{1}]] لمحرك الصيغ.',
+      referenceCurrentField: 'الإشارة إلى الحقل "{0}" في جدول Base الحالي. سيتم حفظه كـ [[#This Row],[{1}]] لمحرك الصيغ.',
       referenceTableField: 'الإشارة إلى الحقل "{0}" من جدول "{1}".',
       fieldNameColumn: "الاسم",
       fieldTypeColumn: "النوع",
@@ -330,8 +311,7 @@ const n = {
       formulaFormatPercent: "النسبة المئوية",
       formulaFormatDateTime: "التاريخ\x20/\x20الوقت",
       addDescriptionPlaceholder: "إضافة وصف",
-      numberingDescription:
-        "يعين تلقائيًا فهرسًا فريدًا متزايدًا يبدأ من 1 عند إنشاء سجل. لا يمكن تحرير القيم التي تم إنشاؤها.",
+      numberingDescription: "يعين تلقائيًا فهرسًا فريدًا متزايدًا يبدأ من 1 عند إنشاء سجل. لا يمكن تحرير القيم التي تم إنشاؤها.",
       optionColor: "لون\x20الخيار",
       separatorLocal: "محلي",
       separatorCommaPeriod: "فاصلة،\x20نقطة",
@@ -356,7 +336,7 @@ const n = {
       ratingIconLightning: "برق",
       ratingIconMedal: "ميدالية",
       increment: "زيادة",
-      decrement: "نقصان",
+      decrement: "نقصان"
     },
     cellEditor: {
       done: "تم",
@@ -372,8 +352,7 @@ const n = {
       deleteAttachment: "حذف المرفق {0}",
       deleteAttachmentConfirmTitle: "حذف هذا المرفق؟",
       deleteAttachmentsConfirmTitle: "حذف {0} مرفقات؟",
-      deleteAttachmentConfirmDescription:
-        "ستتم إزالة المرفقات المحددة من هذا السجل.",
+      deleteAttachmentConfirmDescription: "ستتم إزالة المرفقات المحددة من هذا السجل.",
       failedToAttachFile: "فشل إرفاق الملف",
       file: "ملف",
       invalidEmail: "عنوان\x20بريد\x20إلكتروني\x20غير\x20صالح",
@@ -384,7 +363,7 @@ const n = {
       selectOptions: "تحديد\x20الخيارات",
       previousMonth: "الشهر السابق",
       nextMonth: "الشهر التالي",
-      time: "الوقت",
+      time: "الوقت"
     },
     recordDetailField: {
       previousRecord: "السجل السابق",
@@ -397,7 +376,7 @@ const n = {
       empty: "فارغ",
       unassigned: "غير معين",
       editField: "تحرير\x20{0}",
-      noVisibleFields: "لا\x20توجد\x20حقول\x20مرئية",
+      noVisibleFields: "لا\x20توجد\x20حقول\x20مرئية"
     },
     fieldMenu: {
       createSharedBaseField: "ﻙﺮﺘﺸﻣ\x20ﻲﺳﺎﺳﺃ\x20ﻞﻘﺣ\x20ءﺎﺸﻧﺇ",
@@ -428,8 +407,8 @@ const n = {
         createdBy: "ﻡﺎﻈﻨﻟﺍ\x20ﻒﻟﺆﻣ\x20ﻞﻘﺣ",
         updatedBy: "ﻡﺎﻈﻨﻟﺍ ﻞﻳﺪﻌﺗ ﻝﺎﺠﻣ",
         createdAt: "ﻡﺎﻈﻨﻟﺍ ءﺎﺸﻧﺇ ﺖﻗﻭ",
-        updatedAt: "ﻡﺎﻈﻨﻟﺍ ﺚﻳﺪﺤﺗ ﺖﻗﻭ",
-      },
+        updatedAt: "ﻡﺎﻈﻨﻟﺍ ﺚﻳﺪﺤﺗ ﺖﻗﻭ"
+      }
     },
     fieldTypes: {
       text: "نص",
@@ -453,7 +432,7 @@ const n = {
       createdBy: "تم الإنشاء بواسطة",
       updatedBy: "تم التعديل بواسطة",
       createdAt: "تاريخ الإنشاء",
-      updatedAt: "تاريخ آخر تعديل",
+      updatedAt: "تاريخ آخر تعديل"
     },
     viewMenus: {
       customizeKanban: "تخصيص Kanban",
@@ -491,13 +470,11 @@ const n = {
       addCondition: "إضافة\x20شرط",
       calculateWorkingDaysOnly: "حساب أيام العمل فقط",
       customWorkingDays: "أيام العمل المخصصة",
-      customWorkingDaysHelp:
-        "تخصيص أيام العمل والإجازات لعرض Gantt هذا. إذا لم يتم التعيين، يتم استخدام الاثنين إلى الجمعة عند تمكين حساب أيام العمل.",
+      customWorkingDaysHelp: "تخصيص أيام العمل والإجازات لعرض Gantt هذا. إذا لم يتم التعيين، يتم استخدام الاثنين إلى الجمعة عند تمكين حساب أيام العمل.",
       notSet: "غير محدد",
       settings: "إعدادات",
       setWorkingDays: "تعيين أيام العمل",
-      setWorkingDaysDescription:
-        "تخصيص\x20أيام\x20العمل\x20والإجازات،\x20وتطبيقها\x20على\x20القاعدة\x20الحالية",
+      setWorkingDaysDescription: "تخصيص\x20أيام\x20العمل\x20والإجازات،\x20وتطبيقها\x20على\x20القاعدة\x20الحالية",
       closeWorkingDaysSettings: "إغلاق إعدادات أيام العمل",
       addWorkingDays: "إضافة\x20أيام\x20العمل",
       holidayName: "اسم العطلة",
@@ -506,8 +483,7 @@ const n = {
       add: "إضافة",
       removeWorkingDayException: "إزالة استثناء يوم العمل",
       legalWorkingDays: "أيام العمل القانونية",
-      legalWorkingDaysHelp:
-        "ستتوفر أيام العمل القانونية بعد توصيل واجهة برمجة تطبيقات التقويم الخارجية.",
+      legalWorkingDaysHelp: "ستتوفر أيام العمل القانونية بعد توصيل واجهة برمجة تطبيقات التقويم الخارجية.",
       mon: "الإثنين",
       tue: "الثلاثاء",
       wed: "الأربعاء",
@@ -524,7 +500,7 @@ const n = {
       groupByFieldFallback: "تجميع حسب الحقل",
       kanbanGroup: "مجموعة Kanban",
       required: "مطلوب",
-      kanbanGroupHelp: "تستخدم طرق عرض Kanban دائمًا حقل مجموعة واحد.",
+      kanbanGroupHelp: "تستخدم طرق عرض Kanban دائمًا حقل مجموعة واحد."
     },
     operators: {
       is: "هو",
@@ -536,7 +512,7 @@ const n = {
       greaterThan: "أكبر من",
       lessThan: "أقل من",
       before: "قبل",
-      after: "بعد",
+      after: "بعد"
     },
     viewSettings: {
       title: "إعدادات\x20العرض",
@@ -566,7 +542,7 @@ const n = {
       ganttViewDescription: "الجدول الزمني مع تواريخ البدء والانتهاء.",
       galleryView: "معرض",
       galleryViewDescription: "بطاقات بصرية لتصفح السجلات.",
-      copySuffix: "نسخ",
+      copySuffix: "نسخ"
     },
     tableSidebar: {
       searchTables: "بحث الجداول",
@@ -579,9 +555,12 @@ const n = {
       renameTable: "إعادة تسمية الجدول",
       duplicateTable: "تكرار\x20الجدول",
       deleteTable: "حذف الجدول",
-      defaultTableName: "جدول {0}",
+      defaultTableName: "جدول {0}"
     },
-    footer: { record: "سجل", records: "سجلات" },
+    footer: {
+      record: "سجل",
+      records: "سجلات"
+    },
     canvas: {
       addRecord: "إضافة\x20سجل",
       attachmentDropLabel: "إضافة ملفات إلى هذا السجل",
@@ -594,12 +573,12 @@ const n = {
       quarter: "ربع",
       today: "اليوم",
       week: "أسبوع",
-      year: "سنة",
+      year: "سنة"
     },
     empty: {
       value: "فارغ",
       noRecords: "لا توجد سجلات",
-      invalidView: "يحتاج هذا العرض إلى التكوين",
+      invalidView: "يحتاج هذا العرض إلى التكوين"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -617,19 +596,17 @@ const n = {
         engineering: "هندسة",
         financial: "مالي",
         lookup: "البحث والمرجع",
-        web: "ويب",
+        web: "ويب"
       },
       generic: {
         engineAbstract: "دالة\x20محرك\x20الصيغ\x20{0}",
-        engineDescription:
-          "{0}\x20مقدمة\x20من\x20محرك\x20صيغ\x20Univer.\x20يدعم\x20Base\x20مراجع\x20الحقول\x20مثل\x20TableName[[#This\x20Row],[Field]]\x20و\x20OtherTable[Field]،\x20لكنه\x20لا\x20يدعم\x20خلايا\x20A1،\x20نطاقات\x20A1:B10،\x20أو\x20مخرجات\x20المصفوفة\x20المنسكبة\x20في\x20حقول\x20صيغ\x20Base.",
+        engineDescription: "{0}\x20مقدمة\x20من\x20محرك\x20صيغ\x20Univer.\x20يدعم\x20Base\x20مراجع\x20الحقول\x20مثل\x20TableName[[#This\x20Row],[Field]]\x20و\x20OtherTable[Field]،\x20لكنه\x20لا\x20يدعم\x20خلايا\x20A1،\x20نطاقات\x20A1:B10،\x20أو\x20مخرجات\x20المصفوفة\x20المنسكبة\x20في\x20حقول\x20صيغ\x20Base.",
         argument: {
           name: "وسيطة",
-          detail:
-            "قيمة أو مرجع حقل أو مرجع حقل جدول أو تعبير مدعوم من محرك صيغ Univer.",
-        },
-      },
-    },
-  },
+          detail: "قيمة أو مرجع حقل أو مرجع حقل جدول أو تعبير مدعوم من محرك صيغ Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

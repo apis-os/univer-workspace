@@ -1,1 +1,312 @@
-import{DocChartInsertAnchorKind as v108,DocChartParagraphPosition as v109,DocumentChartConfigAdapter as v110,InsertDocChartCommand as v111,assertValidOptionalDocChartSize as v112,normalizeDocumentChartValues as v113}from"@univerjs-pro/docs-chart";import{ChartDataSourceRuntimeStatus as v114,ChartResourceRepository as v115,ChartTypeBits as v116,IChartDataSourceRuntimeService as v117,ResourceRefChartDataSourceAdapter as v118,toChartDataItem as v119,toChartModelConfig as v120}from"@univerjs-pro/engine-chart";import{FChart as v121,createChartBuilder as v122}from"@univerjs-pro/engine-chart/facade";import{DrawingTypeEnum as v123,ICommandService as v124,PositionedObjectLayoutType as v125,Tools as v126,getParagraphContentStartOffset as v127}from"@univerjs/core";import{DocSelectionManagerService as v128,normalizeTextRange as v129}from"@univerjs/docs";import{FDocument as v130}from"@univerjs/docs/facade";import{filter as v131,firstValueFrom as v132}from"rxjs";import{FEnum as v133}from"@univerjs/core/facade";function E(v65){"@babel/helpers - typeof";return E=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v38){return typeof v38;}:function(v39){return v39&&typeof Symbol=="function"&&v39.constructor===Symbol&&v39!==Symbol.prototype?"symbol":typeof v39;},E(v65);}function D(v66,v67){if(E(v66)!="object"||!v66)return v66;var v68=v66[Symbol.toPrimitive];if(v68!==undefined){var v69=v68.call(v66,v67||"default");if(E(v69)!="object")return v69;throw TypeError("@@toPrimitive must return a primitive value.");}return(v67==="string"?String:Number)(v66);}function O(v70){var v71=D(v70,"string");return E(v71)=="symbol"?v71:v71+"";}function k(v72,v73,v74){return(v73=O(v73))in v72?Object.defineProperty(v72,v73,{value:v74,enumerable:true,configurable:true,writable:true}):v72[v73]=v74,v72;}var A=class extends v121{constructor(v40,v41,v42,v43){super(v42,()=>new v110({unitId:v40.getUnitId(),chartId:v42,drawingId:v41,documentDataModel:v40,injector:v43}),(v18,v19,v20)=>v122({info:v18,description:v19,type:v20,normalizeSource:v6=>Array.isArray(v6)?{values:v126.deepClone(v6)}:{source:v118.toReference(v6)},extension:({getInfo:v7,setInfo:v8,setAbsolutePosition:v9,setSize:v10})=>({setPosition(v1){return v8("anchor",v1),this;},setLayout(v2){v2.position&&v9(v2.position["x"],v2.position["y"]);let v3=v7("size"),v4=v2.width??(v3==null?undefined:v3.width),v5=v2.height??(v3==null?undefined:v3.height);return v4!==undefined&&v5!==undefined&&v10(v4,v5),v8("layoutType",v2.layoutType),this;},setInline(){return v8("layoutType",v125.INLINE),this;},setFloating(){return v8("layoutType",v125.WRAP_SQUARE),this;}})}),v43),this._documentDataModel=v40,this._drawingId=v41,this._chartId=v42,k(this,"unitId",undefined),this.unitId=v40.getUnitId();}getDrawingId(){return this._drawingId;}},j=class extends v130{newChart(v44){return v122({type:v44,injector:this._injector,commitError:"Insert the document chart before updating it.",normalizeSource:v21=>Array.isArray(v21)?{values:v126.deepClone(v21)}:{source:v118.toReference(v21)},createInfo:()=>({anchor:undefined,layoutType:undefined}),extension:({getInfo:v22,setInfo:v23,setAbsolutePosition:v24,setSize:v25})=>({setPosition(v11){return v23("anchor",v11),this;},setLayout(v12){v12.position&&v24(v12.position["x"],v12.position["y"]);let v13=v22("size"),v14=v12.width??(v13==null?undefined:v13.width),v15=v12.height??(v13==null?undefined:v13.height);return v14!==undefined&&v15!==undefined&&v25(v14,v15),v23("layoutType",v12.layoutType),this;},setInline(){return v23("layoutType",v125.INLINE),this;},setFloating(){return v23("layoutType",v125.WRAP_SQUARE),this;}})});}async insertChart(v45){let v46=null;try{v46=v45.dataSource["values"]?null:await this._resolveReferencedValues(v45.dataSource["source"]);let v26=M(v45,v45.dataSource["values"]??v46.values),v27=v113(v26.values);if(v27.length===0)throw Error("Document chart values are required.");let v28=this.getDocumentDataModel(),v29=P(v28,this._injector,v26.insert),v30=this._injector["get"](v124).syncExecuteCommand(v111.id,{unitId:v28.getUnitId(),chart:{chartType:v26.chartType??v116.Column,style:v26.style,context:v26.context,dataAggregation:v26.dataAggregation},dataSource:{...(v26.dataSource??{values:v27})},textRange:v29.textRange,drawing:{layoutType:v29.layout["layoutType"]},width:v29.layout["width"],height:v29.layout["height"],position:v29.layout["position"]});if(!v30)throw Error("Failed to insert document chart.");let v31=this.getChart(v30.chartId);if(!v31)throw Error('Inserted document chart "'+v30.chartId+'" was not found.');return v31;}finally{v46==null||v46.handle["dispose"]();}}getChart(v47){let v48=this.getDocumentDataModel(),v49=B(v48,v47);return!v49||!this._getChartResource(v49.chartId)?null:this._injector["createInstance"](A,v48,v49.drawingId,v49.chartId,this._injector);}getCharts(){let v50=this.getDocumentDataModel(),v51=v50.getDrawings()??{};return(v50.getDrawingsOrder()??Object.keys(v51)).map(v32=>v51[v32]).filter(V).filter(v33=>this._getChartResource(v33.chartId)!=null).map(v34=>this._injector["createInstance"](A,v50,v34.drawingId,v34.chartId,this._injector));}_getChartResource(v52){return this._injector["get"](v115).getChart(this.getDocumentDataModel().getUnitId(),v52);}async _resolveReferencedValues(v53){let v54=this._injector["get"](v117).acquire(v53);try{let v35=await v132(v54.state$["pipe"](v131(({status:v16})=>v16!==v114.LOADING)));if(v35.status!==v114.READY||!v35.values)throw v35.error instanceof Error?v35.error:Error(v53.kind);return{values:v35.values["map"](v17=>[...v17]),handle:v54};}catch(v36){throw v54.dispose(),v36;}}};function M(v75,v76){var v77,v78;return N(v75.config,{anchor:v75.anchor,layout:{width:(v77=v75.size)==null?undefined:v77.width,height:(v78=v75.size)==null?undefined:v78.height,layoutType:v75.layoutType,position:v75.position}},v76,v75.dataSource);}function N(v79,v80,v81,v82){let v83=v81,v84=(v83[0]??[]).slice(1).map((v55,v56)=>{let v57=1+v56;return{index:v57,name:String(v55??""),items:v83.slice(1).map(v37=>v119(v37[v57]))};}),v85=v120({...v79,series:v126.deepClone(v79.series)},{series:v84});return{values:v83,dataSource:v82,chartType:v85.chartType,style:v85.style,context:{chartContext:v85.context},dataAggregation:v85.dataAggregation,insert:{at:v80.anchor,layout:v80.layout}};}function P(v86,v87,v88){var v89,v90,v91,v92;let v93=v88==null?undefined:v88.at;return{textRange:v93?I(v86,v87,v93):F(v87),layout:z({width:v88==null||(v89=v88.layout)==null?undefined:v89.width,height:v88==null||(v90=v88.layout)==null?undefined:v90.height,layoutType:v88==null||(v91=v88.layout)==null?undefined:v91.layoutType,position:v88==null||(v92=v88.layout)==null?undefined:v92.position})};}function F(v94){let v95=v94.get(v128).getActiveTextRange();return v95&&(v95.segmentId==null||v95.segmentId==="")?v129(v95):L(0);}function I(v96,v97,v98){if(v98.kind===v108.Selection){let v58=v97.get(v128).getActiveTextRange();if(!v58)throw Error("Cannot insert document chart at selection because there is no active text range.");if(v58.segmentId!=null&&v58.segmentId!=="")throw Error("Document chart insertion currently supports the body segment only.");return v129(v58);}if(v98.kind===v108.Paragraph){var v99;let v59=v96.getBody(),v60=v59==null||(v99=v59.paragraphs)==null?undefined:v99[v98.index];if(!v60)throw Error("Document paragraph at index "+v98.index+" was not found.");let v61=v59?v127(v59,v60):0;return L(v98.where===v109.Before?v61:v60.startIndex);}if(v98.kind===v108.TextRange){let v62=v98.endOffset??v98.startOffset;return R(v98.startOffset),R(v62),{startOffset:v98.startOffset,endOffset:v62,collapsed:v98.collapsed??v98.startOffset===v62,segmentId:""};}return R(v98.offset),L(v98.offset);}function L(v100){return R(v100),{startOffset:v100,endOffset:v100,collapsed:true,segmentId:""};}function R(v101){if(!Number.isFinite(v101)||v101<0)throw Error('Document chart insertion offset must be a non-negative finite number, got "'+v101+"\x22.");}function z(v102){if(v112(v102.width),v112(v102.height),v102.position&&(!Number.isFinite(v102.position["x"])||!Number.isFinite(v102.position["y"])))throw Error("Document chart position must contain finite x and y values.");return v102;}function B(v103,v104){let v105=v103.getDrawings()??{},v106=v105[v104];return V(v106)?v106:Object.values(v105).map(v63=>v63).find(v64=>V(v64)&&v64.chartId===v104)??null;}function V(v107){return(v107==null?undefined:v107.drawingType)===v123.DRAWING_CHART&&typeof v107.chartId=="string";}v130.extend(j);var H=class extends v133{get DocsChartInsertAnchorKind(){return v108;}get DocsChartLayoutType(){return v125;}};v133.extend(H);export{A as FDocumentChart};
+import { DocChartInsertAnchorKind as var_core_value_sig273D, DocChartParagraphPosition as var_core_value_sig9A0D, DocumentChartConfigAdapter as var_core_value_sigA319, InsertDocChartCommand as var_core_value_sig2D58, assertValidOptionalDocChartSize as var_core_value_sig223F, normalizeDocumentChartValues as var_core_value_sigD749 } from "@univerjs-pro/docs-chart";
+import { ChartDataSourceRuntimeStatus as var_core_value_sigCFFA, ChartResourceRepository as var_core_value_sig58C1, ChartTypeBits as var_core_value_sig5090, IChartDataSourceRuntimeService as var_core_value_sigC368, ResourceRefChartDataSourceAdapter as var_core_value_sigAD56, toChartDataItem as var_core_value_sigDB4A, toChartModelConfig as var_core_value_sig6418 } from "@univerjs-pro/engine-chart";
+import { FChart as var_core_value_sig1896, createChartBuilder as var_core_value_sig0285 } from "@univerjs-pro/engine-chart/facade";
+import { DrawingTypeEnum as var_core_value_sig777D, ICommandService as var_core_value_sig3F4C, PositionedObjectLayoutType as var_core_value_sigD65A, Tools as var_core_value_sig5A13, getParagraphContentStartOffset as var_core_value_sigF593 } from "@univerjs/core";
+import { DocSelectionManagerService as var_core_value_sig3607, normalizeTextRange as var_core_value_sigB512 } from "@univerjs/docs";
+import { FDocument as var_core_value_sigF2E6 } from "@univerjs/docs/facade";
+import { filter as var_core_value_sig34C8, firstValueFrom as var_core_value_sigB744 } from "rxjs";
+import { FEnum as var_core_value_sigEAE2 } from "@univerjs/core/facade";
+function E(var_core_value_sig86D0) {
+  "@babel/helpers - typeof";
+
+  return E = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigF9C7) {
+    return typeof var_core_value_sigF9C7;
+  } : function (var_core_value_sig8895) {
+    return var_core_value_sig8895 && typeof Symbol == "function" && var_core_value_sig8895.constructor === Symbol && var_core_value_sig8895 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig8895;
+  }, E(var_core_value_sig86D0);
+}
+function D(var_core_value_sig4CD2, var_core_value_sig48CA) {
+  if (E(var_core_value_sig4CD2) != "object" || !var_core_value_sig4CD2) return var_core_value_sig4CD2;
+  var var_core_value_sig50AF = var_core_value_sig4CD2[Symbol.toPrimitive];
+  if (var_core_value_sig50AF !== undefined) {
+    var var_core_value_sigA942 = var_core_value_sig50AF.call(var_core_value_sig4CD2, var_core_value_sig48CA || "default");
+    if (E(var_core_value_sigA942) != "object") return var_core_value_sigA942;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig48CA === "string" ? String : Number)(var_core_value_sig4CD2);
+}
+function O(var_core_value_sigA621) {
+  var var_core_value_sigBBFF = D(var_core_value_sigA621, "string");
+  return E(var_core_value_sigBBFF) == "symbol" ? var_core_value_sigBBFF : var_core_value_sigBBFF + "";
+}
+function k(var_core_value_sig8889, var_core_value_sig32F8, var_core_value_sig5B67) {
+  return (var_core_value_sig32F8 = O(var_core_value_sig32F8)) in var_core_value_sig8889 ? Object.defineProperty(var_core_value_sig8889, var_core_value_sig32F8, {
+    value: var_core_value_sig5B67,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig8889[var_core_value_sig32F8] = var_core_value_sig5B67, var_core_value_sig8889;
+}
+var A = class extends var_core_value_sig1896 {
+    constructor(var_core_value_sigC80B, var_core_value_sig284F, var_core_value_sigE154, var_core_value_sig4632) {
+      super(var_core_value_sigE154, () => new var_core_value_sigA319({
+        unitId: var_core_value_sigC80B.getUnitId(),
+        chartId: var_core_value_sigE154,
+        drawingId: var_core_value_sig284F,
+        documentDataModel: var_core_value_sigC80B,
+        injector: var_core_value_sig4632
+      }), (var_core_value_sig480E, var_core_value_sig26DB, var_core_value_sigF0F9) => var_core_value_sig0285({
+        info: var_core_value_sig480E,
+        description: var_core_value_sig26DB,
+        type: var_core_value_sigF0F9,
+        normalizeSource: var_core_value_sig3D7D => Array.isArray(var_core_value_sig3D7D) ? {
+          values: var_core_value_sig5A13.deepClone(var_core_value_sig3D7D)
+        } : {
+          source: var_core_value_sigAD56.toReference(var_core_value_sig3D7D)
+        },
+        extension: ({
+          getInfo: var_core_value_sig27E5,
+          setInfo: var_core_value_sig8061,
+          setAbsolutePosition: var_core_value_sig4D4C,
+          setSize: var_core_value_sigC9E0
+        }) => ({
+          setPosition(var_core_value_sig7524) {
+            return var_core_value_sig8061("anchor", var_core_value_sig7524), this;
+          },
+          setLayout(var_core_value_sig2AD8) {
+            var_core_value_sig2AD8.position && var_core_value_sig4D4C(var_core_value_sig2AD8.position["x"], var_core_value_sig2AD8.position["y"]);
+            let var_core_value_sig2AD0 = var_core_value_sig27E5("size"),
+              var_core_value_sig3EEE = var_core_value_sig2AD8.width ?? (var_core_value_sig2AD0 == null ? undefined : var_core_value_sig2AD0.width),
+              var_core_value_sigBC46 = var_core_value_sig2AD8.height ?? (var_core_value_sig2AD0 == null ? undefined : var_core_value_sig2AD0.height);
+            return var_core_value_sig3EEE !== undefined && var_core_value_sigBC46 !== undefined && var_core_value_sigC9E0(var_core_value_sig3EEE, var_core_value_sigBC46), var_core_value_sig8061("layoutType", var_core_value_sig2AD8.layoutType), this;
+          },
+          setInline() {
+            return var_core_value_sig8061("layoutType", var_core_value_sigD65A.INLINE), this;
+          },
+          setFloating() {
+            return var_core_value_sig8061("layoutType", var_core_value_sigD65A.WRAP_SQUARE), this;
+          }
+        })
+      }), var_core_value_sig4632), this._documentDataModel = var_core_value_sigC80B, this._drawingId = var_core_value_sig284F, this._chartId = var_core_value_sigE154, k(this, "unitId", undefined), this.unitId = var_core_value_sigC80B.getUnitId();
+    }
+    getDrawingId() {
+      return this._drawingId;
+    }
+  },
+  j = class extends var_core_value_sigF2E6 {
+    newChart(var_core_value_sig12F2) {
+      return var_core_value_sig0285({
+        type: var_core_value_sig12F2,
+        injector: this._injector,
+        commitError: "Insert the document chart before updating it.",
+        normalizeSource: var_core_value_sig1A0F => Array.isArray(var_core_value_sig1A0F) ? {
+          values: var_core_value_sig5A13.deepClone(var_core_value_sig1A0F)
+        } : {
+          source: var_core_value_sigAD56.toReference(var_core_value_sig1A0F)
+        },
+        createInfo: () => ({
+          anchor: undefined,
+          layoutType: undefined
+        }),
+        extension: ({
+          getInfo: var_core_value_sigFBA4,
+          setInfo: var_core_value_sig4383,
+          setAbsolutePosition: var_core_value_sig186C,
+          setSize: var_core_value_sigD955
+        }) => ({
+          setPosition(var_core_value_sig76BA) {
+            return var_core_value_sig4383("anchor", var_core_value_sig76BA), this;
+          },
+          setLayout(var_core_value_sigFBFA) {
+            var_core_value_sigFBFA.position && var_core_value_sig186C(var_core_value_sigFBFA.position["x"], var_core_value_sigFBFA.position["y"]);
+            let var_core_value_sigF602 = var_core_value_sigFBA4("size"),
+              var_core_value_sig1BBD = var_core_value_sigFBFA.width ?? (var_core_value_sigF602 == null ? undefined : var_core_value_sigF602.width),
+              var_core_value_sigF704 = var_core_value_sigFBFA.height ?? (var_core_value_sigF602 == null ? undefined : var_core_value_sigF602.height);
+            return var_core_value_sig1BBD !== undefined && var_core_value_sigF704 !== undefined && var_core_value_sigD955(var_core_value_sig1BBD, var_core_value_sigF704), var_core_value_sig4383("layoutType", var_core_value_sigFBFA.layoutType), this;
+          },
+          setInline() {
+            return var_core_value_sig4383("layoutType", var_core_value_sigD65A.INLINE), this;
+          },
+          setFloating() {
+            return var_core_value_sig4383("layoutType", var_core_value_sigD65A.WRAP_SQUARE), this;
+          }
+        })
+      });
+    }
+    async insertChart(var_core_value_sig2259) {
+      let var_core_value_sig9E2F = null;
+      try {
+        var_core_value_sig9E2F = var_core_value_sig2259.dataSource["values"] ? null : await this._resolveReferencedValues(var_core_value_sig2259.dataSource["source"]);
+        let var_core_value_sig48BD = M(var_core_value_sig2259, var_core_value_sig2259.dataSource["values"] ?? var_core_value_sig9E2F.values),
+          var_core_value_sig429F = var_core_value_sigD749(var_core_value_sig48BD.values);
+        if (var_core_value_sig429F.length === 0) throw Error("Document chart values are required.");
+        let var_core_value_sigF62A = this.getDocumentDataModel(),
+          var_core_value_sig8178 = P(var_core_value_sigF62A, this._injector, var_core_value_sig48BD.insert),
+          var_core_value_sigE9ED = this._injector["get"](var_core_value_sig3F4C).syncExecuteCommand(var_core_value_sig2D58.id, {
+            unitId: var_core_value_sigF62A.getUnitId(),
+            chart: {
+              chartType: var_core_value_sig48BD.chartType ?? var_core_value_sig5090.Column,
+              style: var_core_value_sig48BD.style,
+              context: var_core_value_sig48BD.context,
+              dataAggregation: var_core_value_sig48BD.dataAggregation
+            },
+            dataSource: {
+              ...(var_core_value_sig48BD.dataSource ?? {
+                values: var_core_value_sig429F
+              })
+            },
+            textRange: var_core_value_sig8178.textRange,
+            drawing: {
+              layoutType: var_core_value_sig8178.layout["layoutType"]
+            },
+            width: var_core_value_sig8178.layout["width"],
+            height: var_core_value_sig8178.layout["height"],
+            position: var_core_value_sig8178.layout["position"]
+          });
+        if (!var_core_value_sigE9ED) throw Error("Failed to insert document chart.");
+        let var_core_value_sigB577 = this.getChart(var_core_value_sigE9ED.chartId);
+        if (!var_core_value_sigB577) throw Error('Inserted document chart "' + var_core_value_sigE9ED.chartId + '" was not found.');
+        return var_core_value_sigB577;
+      } finally {
+        var_core_value_sig9E2F == null || var_core_value_sig9E2F.handle["dispose"]();
+      }
+    }
+    getChart(var_core_value_sigD082) {
+      let var_core_value_sigDBB7 = this.getDocumentDataModel(),
+        var_core_value_sigD0A8 = B(var_core_value_sigDBB7, var_core_value_sigD082);
+      return !var_core_value_sigD0A8 || !this._getChartResource(var_core_value_sigD0A8.chartId) ? null : this._injector["createInstance"](A, var_core_value_sigDBB7, var_core_value_sigD0A8.drawingId, var_core_value_sigD0A8.chartId, this._injector);
+    }
+    getCharts() {
+      let var_core_value_sigF4B9 = this.getDocumentDataModel(),
+        var_core_value_sig5CEE = var_core_value_sigF4B9.getDrawings() ?? {};
+      return (var_core_value_sigF4B9.getDrawingsOrder() ?? Object.keys(var_core_value_sig5CEE)).map(var_core_value_sig9572 => var_core_value_sig5CEE[var_core_value_sig9572]).filter(V).filter(var_core_value_sigD873 => this._getChartResource(var_core_value_sigD873.chartId) != null).map(var_core_value_sigA12B => this._injector["createInstance"](A, var_core_value_sigF4B9, var_core_value_sigA12B.drawingId, var_core_value_sigA12B.chartId, this._injector));
+    }
+    _getChartResource(var_core_value_sigE92A) {
+      return this._injector["get"](var_core_value_sig58C1).getChart(this.getDocumentDataModel().getUnitId(), var_core_value_sigE92A);
+    }
+    async _resolveReferencedValues(var_core_value_sig362B) {
+      let var_core_value_sig5CA5 = this._injector["get"](var_core_value_sigC368).acquire(var_core_value_sig362B);
+      try {
+        let var_core_value_sigF230 = await var_core_value_sigB744(var_core_value_sig5CA5.state$["pipe"](var_core_value_sig34C8(({
+          status: var_core_value_sig2BCF
+        }) => var_core_value_sig2BCF !== var_core_value_sigCFFA.LOADING)));
+        if (var_core_value_sigF230.status !== var_core_value_sigCFFA.READY || !var_core_value_sigF230.values) throw var_core_value_sigF230.error instanceof Error ? var_core_value_sigF230.error : Error(var_core_value_sig362B.kind);
+        return {
+          values: var_core_value_sigF230.values["map"](var_core_value_sig0D69 => [...var_core_value_sig0D69]),
+          handle: var_core_value_sig5CA5
+        };
+      } catch (var_core_value_sig09B8) {
+        throw var_core_value_sig5CA5.dispose(), var_core_value_sig09B8;
+      }
+    }
+  };
+function M(var_core_value_sig1758, var_core_value_sig4805) {
+  var var_core_value_sigE67E, var_core_value_sig2902;
+  return N(var_core_value_sig1758.config, {
+    anchor: var_core_value_sig1758.anchor,
+    layout: {
+      width: (var_core_value_sigE67E = var_core_value_sig1758.size) == null ? undefined : var_core_value_sigE67E.width,
+      height: (var_core_value_sig2902 = var_core_value_sig1758.size) == null ? undefined : var_core_value_sig2902.height,
+      layoutType: var_core_value_sig1758.layoutType,
+      position: var_core_value_sig1758.position
+    }
+  }, var_core_value_sig4805, var_core_value_sig1758.dataSource);
+}
+function N(var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809, var_core_value_sig2DAB) {
+  let var_core_value_sig877E = var_core_value_sig2809,
+    var_core_value_sig20C8 = (var_core_value_sig877E[0] ?? []).slice(1).map((var_core_value_sigE90F, var_core_value_sigEFD4) => {
+      let var_core_value_sig861B = 1 + var_core_value_sigEFD4;
+      return {
+        index: var_core_value_sig861B,
+        name: String(var_core_value_sigE90F ?? ""),
+        items: var_core_value_sig877E.slice(1).map(var_core_value_sig6F91 => var_core_value_sigDB4A(var_core_value_sig6F91[var_core_value_sig861B]))
+      };
+    }),
+    var_core_value_sigE9A7 = var_core_value_sig6418({
+      ...var_core_value_sig9989,
+      series: var_core_value_sig5A13.deepClone(var_core_value_sig9989.series)
+    }, {
+      series: var_core_value_sig20C8
+    });
+  return {
+    values: var_core_value_sig877E,
+    dataSource: var_core_value_sig2DAB,
+    chartType: var_core_value_sigE9A7.chartType,
+    style: var_core_value_sigE9A7.style,
+    context: {
+      chartContext: var_core_value_sigE9A7.context
+    },
+    dataAggregation: var_core_value_sigE9A7.dataAggregation,
+    insert: {
+      at: var_core_value_sig698E.anchor,
+      layout: var_core_value_sig698E.layout
+    }
+  };
+}
+function P(var_core_value_sigBECE, var_core_value_sig1B22, var_core_value_sig7F72) {
+  var var_core_value_sig7B2A, var_core_value_sig06CD, var_core_value_sigA5F1, var_core_value_sig97A2;
+  let var_core_value_sig07E9 = var_core_value_sig7F72 == null ? undefined : var_core_value_sig7F72.at;
+  return {
+    textRange: var_core_value_sig07E9 ? I(var_core_value_sigBECE, var_core_value_sig1B22, var_core_value_sig07E9) : F(var_core_value_sig1B22),
+    layout: z({
+      width: var_core_value_sig7F72 == null || (var_core_value_sig7B2A = var_core_value_sig7F72.layout) == null ? undefined : var_core_value_sig7B2A.width,
+      height: var_core_value_sig7F72 == null || (var_core_value_sig06CD = var_core_value_sig7F72.layout) == null ? undefined : var_core_value_sig06CD.height,
+      layoutType: var_core_value_sig7F72 == null || (var_core_value_sigA5F1 = var_core_value_sig7F72.layout) == null ? undefined : var_core_value_sigA5F1.layoutType,
+      position: var_core_value_sig7F72 == null || (var_core_value_sig97A2 = var_core_value_sig7F72.layout) == null ? undefined : var_core_value_sig97A2.position
+    })
+  };
+}
+function F(var_core_value_sig4F59) {
+  let var_core_value_sigF564 = var_core_value_sig4F59.get(var_core_value_sig3607).getActiveTextRange();
+  return var_core_value_sigF564 && (var_core_value_sigF564.segmentId == null || var_core_value_sigF564.segmentId === "") ? var_core_value_sigB512(var_core_value_sigF564) : L(0);
+}
+function I(var_core_value_sig8CFA, var_core_value_sig2E11, var_core_value_sig5B69) {
+  if (var_core_value_sig5B69.kind === var_core_value_sig273D.Selection) {
+    let var_core_value_sig5237 = var_core_value_sig2E11.get(var_core_value_sig3607).getActiveTextRange();
+    if (!var_core_value_sig5237) throw Error("Cannot insert document chart at selection because there is no active text range.");
+    if (var_core_value_sig5237.segmentId != null && var_core_value_sig5237.segmentId !== "") throw Error("Document chart insertion currently supports the body segment only.");
+    return var_core_value_sigB512(var_core_value_sig5237);
+  }
+  if (var_core_value_sig5B69.kind === var_core_value_sig273D.Paragraph) {
+    var var_core_value_sigB098;
+    let var_core_value_sigBB00 = var_core_value_sig8CFA.getBody(),
+      var_core_value_sig7E54 = var_core_value_sigBB00 == null || (var_core_value_sigB098 = var_core_value_sigBB00.paragraphs) == null ? undefined : var_core_value_sigB098[var_core_value_sig5B69.index];
+    if (!var_core_value_sig7E54) throw Error("Document paragraph at index " + var_core_value_sig5B69.index + " was not found.");
+    let var_core_value_sig9A8D = var_core_value_sigBB00 ? var_core_value_sigF593(var_core_value_sigBB00, var_core_value_sig7E54) : 0;
+    return L(var_core_value_sig5B69.where === var_core_value_sig9A0D.Before ? var_core_value_sig9A8D : var_core_value_sig7E54.startIndex);
+  }
+  if (var_core_value_sig5B69.kind === var_core_value_sig273D.TextRange) {
+    let var_core_value_sigC259 = var_core_value_sig5B69.endOffset ?? var_core_value_sig5B69.startOffset;
+    return R(var_core_value_sig5B69.startOffset), R(var_core_value_sigC259), {
+      startOffset: var_core_value_sig5B69.startOffset,
+      endOffset: var_core_value_sigC259,
+      collapsed: var_core_value_sig5B69.collapsed ?? var_core_value_sig5B69.startOffset === var_core_value_sigC259,
+      segmentId: ""
+    };
+  }
+  return R(var_core_value_sig5B69.offset), L(var_core_value_sig5B69.offset);
+}
+function L(var_core_value_sigCE71) {
+  return R(var_core_value_sigCE71), {
+    startOffset: var_core_value_sigCE71,
+    endOffset: var_core_value_sigCE71,
+    collapsed: true,
+    segmentId: ""
+  };
+}
+function R(var_core_value_sig21D8) {
+  if (!Number.isFinite(var_core_value_sig21D8) || var_core_value_sig21D8 < 0) throw Error('Document chart insertion offset must be a non-negative finite number, got "' + var_core_value_sig21D8 + "\x22.");
+}
+function z(var_core_value_sig2B65) {
+  if (var_core_value_sig223F(var_core_value_sig2B65.width), var_core_value_sig223F(var_core_value_sig2B65.height), var_core_value_sig2B65.position && (!Number.isFinite(var_core_value_sig2B65.position["x"]) || !Number.isFinite(var_core_value_sig2B65.position["y"]))) throw Error("Document chart position must contain finite x and y values.");
+  return var_core_value_sig2B65;
+}
+function B(var_core_value_sigD7EA, var_core_value_sigB33B) {
+  let var_core_value_sig24B9 = var_core_value_sigD7EA.getDrawings() ?? {},
+    var_core_value_sigE627 = var_core_value_sig24B9[var_core_value_sigB33B];
+  return V(var_core_value_sigE627) ? var_core_value_sigE627 : Object.values(var_core_value_sig24B9).map(var_core_value_sig9C9F => var_core_value_sig9C9F).find(var_core_value_sigFDEA => V(var_core_value_sigFDEA) && var_core_value_sigFDEA.chartId === var_core_value_sigB33B) ?? null;
+}
+function V(var_core_value_sigEF3E) {
+  return (var_core_value_sigEF3E == null ? undefined : var_core_value_sigEF3E.drawingType) === var_core_value_sig777D.DRAWING_CHART && typeof var_core_value_sigEF3E.chartId == "string";
+}
+var_core_value_sigF2E6.extend(j);
+var H = class extends var_core_value_sigEAE2 {
+  get DocsChartInsertAnchorKind() {
+    return var_core_value_sig273D;
+  }
+  get DocsChartLayoutType() {
+    return var_core_value_sigD65A;
+  }
+};
+var_core_value_sigEAE2.extend(H);
+export { A as FDocumentChart };

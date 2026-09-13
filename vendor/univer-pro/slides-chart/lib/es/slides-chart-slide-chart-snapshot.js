@@ -1,11 +1,53 @@
-import{ChartDataSourceRuntimeStatus,ChartResourceRepository,ChartResourceRuntimeService,DEFAULT_CHART_RESOURCE_HEADER_ROW,IChartDataSourceRuntimeService,ResourceRefChartDataSourceAdapter,UniverChartPlugin,buildChartDataSetFromValues,buildChartPreviewData,buildOrientedChartDataSet,chartConfigInterpreter,describeChartModel,isInlineChartDataSource,isReferencedChartDataSource,toChartCreateConfigSnapshot,toChartModelConfigReplacement,toChartModelUpdate}from"@univerjs-pro/engine-chart";
-import{AddSlideElementMutation,ISlideDrawingService,PageElementTypeEnum,PageTypeEnum,RemoveSlideElementMutation,ReorderSlideElementsCommand,UpdateSlideDrawingCommand,UpdateSlideElementMutation,getSlideCommandTarget}from"@univerjs-pro/slides";
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,Tools,UniverInstanceType,generateRandomId,getDrawingOrderIndex,merge,normalizeDrawingOrderIndex,sequenceExecute,touchDependencies}from"@univerjs/core";
-import{Subject,filter,firstValueFrom}from"rxjs";
-import{ShapeLineTypeEnum}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, ReorderSlideElementsCommand, UpdateSlideDrawingCommand, UpdateSlideElementMutation, getSlideCommandTarget } from "@univerjs-pro/slides";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { Subject, filter, firstValueFrom } from "rxjs";
+import { ShapeLineTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { L } from "./slides-chart-slide-chart-resource.js";
 import { B } from "./slides-chart-remove-slide-chart-data-source.js";
-const je={id:"slide.command.update-slide-chart-snapshot",type:CommandType.COMMAND,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522)=>{if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522)return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523=getSlideCommandTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(IUniverInstanceService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523)return false;let{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523,{chartId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525,patch:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(L).getChart(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527)return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(ICommandService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46529=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(IUndoRedoService),var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB54={unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524,chart:{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527,...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526}},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB55={unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524,chart:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527},var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28=[{id:B.id,params:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB54}],var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A29=[{id:B.id,params:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB55}];return sequenceExecute(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528).result?(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46529.pushUndoRedo({unitID:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524,undoMutations:var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A29,redoMutations:var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28}),true):false;}};
-
+const je = {
+  id: "slide.command.update-slide-chart-snapshot",
+  type: CommandType.COMMAND,
+  handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522) => {
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523 = getSlideCommandTarget(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(IUniverInstanceService), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523) return false;
+    let {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46523,
+      {
+        chartId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525,
+        patch: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(L).getChart(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46525);
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527) return false;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(ICommandService),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46529 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521.get(IUndoRedoService),
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB54 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524,
+        chart: {
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527,
+          ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526
+        }
+      },
+      var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB55 = {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524,
+        chart: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46527
+      },
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28 = [{
+        id: B.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB54
+      }],
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A29 = [{
+        id: B.id,
+        params: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB55
+      }];
+    return sequenceExecute(var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528).result ? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46529.pushUndoRedo({
+      unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46524,
+      undoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A29,
+      redoMutations: var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A28
+    }), true) : false;
+  }
+};
 export { je as UpdateSlideChartSnapshotCommand };

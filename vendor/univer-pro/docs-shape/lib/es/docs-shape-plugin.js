@@ -1,14 +1,57 @@
-import{IConnectorShapeHostAdapter,IShapeHostAdapterRegistry,ShapeModel,UniverShapePlugin,canApplyShapeFormulaLastValue,createDefaultInsertedShapeData,isConnectorShape}from"@univerjs-pro/engine-shape";
-import{ArrangeTypeEnum,BooleanNumber,CommandType,DependentOn,Disposable,DrawingTypeEnum,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSONX,Plugin,Tools,UniverInstanceType,WrapTextType,generateRandomId,getParagraphContentStartOffset,merge,touchDependencies}from"@univerjs/core";
-import{IDocDrawingAdapterService,InsertDocDrawingCommand,RemoveDocDrawingCommand,SetDocDrawingArrangeCommand,TextWrappingStyle,UniverDocsDrawingPlugin,UpdateDrawingDocTransformCommand,WRAPPING_STYLE_TO_LAYOUT_TYPE}from"@univerjs/docs-drawing";
-import{RichTextEditingMutation,buildDocTransform,docDrawingPositionToTransform}from"@univerjs/docs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { IConnectorShapeHostAdapter, IShapeHostAdapterRegistry, ShapeModel, UniverShapePlugin, canApplyShapeFormulaLastValue, createDefaultInsertedShapeData, isConnectorShape } from "@univerjs-pro/engine-shape";
+import { ArrangeTypeEnum, BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, Tools, UniverInstanceType, WrapTextType, generateRandomId, getParagraphContentStartOffset, merge, touchDependencies } from "@univerjs/core";
+import { IDocDrawingAdapterService, InsertDocDrawingCommand, RemoveDocDrawingCommand, SetDocDrawingArrangeCommand, TextWrappingStyle, UniverDocsDrawingPlugin, UpdateDrawingDocTransformCommand, WRAPPING_STYLE_TO_LAYOUT_TYPE } from "@univerjs/docs-drawing";
+import { RichTextEditingMutation, buildDocTransform, docDrawingPositionToTransform } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { G, H, U, V, W } from "./docs-shape-insert-doc-shape.js";
 import { q } from "./docs-shape-doc-shape-data.js";
 import { B } from "./docs-shape-docs-shape.js";
 import { J } from "./docs-shape-doc-shape-host-adapter.js";
-const z="DOC_SHAPE_PLUGIN";const Y={};let X=class extends Disposable{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46317,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46318,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319){super(),this._commandService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316,this._shapeHostAdapterRegistry=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46317,this._docDrawingAdapterService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46318,this._registerCommands(),this.disposeWithMe(this._shapeHostAdapterRegistry["register"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319)),this.disposeWithMe(this._docDrawingAdapterService["registerAdapter"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319)),this.disposeWithMe(this._commandService["onCommandExecuted"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655=>{if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.id!==RichTextEditingMutation.id)return;let{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656,actions:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.params;if(Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657,"docTransform")){for(let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 of Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657))var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319.refreshConnectedConnectors({hostType:UniverInstanceType.UNIVER_DOC,unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656,shapeId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461});}}));}_registerCommands(){[U,V,H,G,q,W].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661=>this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661)));}};function Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534){return Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534||Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324)&&Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534));}function Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538=new Set()){return JSONX.isNoop(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537)||!Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537)?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537[0]==="drawings"?(typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537[1]=="string"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537[1]):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537.slice(1).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325=>{Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325)&&typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325[0]=="string"&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325[0]);}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538):(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327=>{Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327)&&Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538);}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538);}let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46541=class extends Plugin{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46329=Y,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46330,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46331){super(),this._config=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46329,this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46330,this._configService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46331;let{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46332}=merge({},Y,this._config);this._configService["setConfig"]("docs-shape.config",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46332);}onStarting(){[[B],[J],[X]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4662=>this._injector["add"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4662)),touchDependencies(this._injector,[[B],[X]]);}};
-
+const z = "DOC_SHAPE_PLUGIN";
+const Y = {};
+let X = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46317, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46318, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319) {
+    super(), this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46316, this._shapeHostAdapterRegistry = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46317, this._docDrawingAdapterService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46318, this._registerCommands(), this.disposeWithMe(this._shapeHostAdapterRegistry["register"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319)), this.disposeWithMe(this._docDrawingAdapterService["registerAdapter"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319)), this.disposeWithMe(this._commandService["onCommandExecuted"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655 => {
+      if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.id !== RichTextEditingMutation.id) return;
+      let {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656,
+        actions: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657
+      } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4655.params;
+      if (Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657, "docTransform")) {
+        for (let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 of Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4657)) var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46319.refreshConnectedConnectors({
+          hostType: UniverInstanceType.UNIVER_DOC,
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4656,
+          shapeId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461
+        });
+      }
+    }));
+  }
+  _registerCommands() {
+    [U, V, H, G, q, W].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661 => this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4661)));
+  }
+};
+function Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534) {
+  return Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46533.some(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324 === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534 || Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324) && Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46324, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534));
+}
+function Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538 = new Set()) {
+  return JSONX.isNoop(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537) || !Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537[0] === "drawings" ? (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537[1] == "string" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537[1]) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537.slice(1).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325 => {
+    Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325) && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325[0] == "string" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46325[0]);
+  }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538) : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46537.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327 => {
+    Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327) && Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46327, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538);
+  }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46538);
+}
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46541 = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46329 = Y, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46330, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46331) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46329, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46330, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46331;
+    let {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46332
+    } = merge({}, Y, this._config);
+    this._configService["setConfig"]("docs-shape.config", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46332);
+  }
+  onStarting() {
+    [[B], [J], [X]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4662 => this._injector["add"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4662)), touchDependencies(this._injector, [[B], [X]]);
+  }
+};
 export { z as DOCS_SHAPE_PLUGIN, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46541 as UniverDocsShapePlugin };
-
 export { X };

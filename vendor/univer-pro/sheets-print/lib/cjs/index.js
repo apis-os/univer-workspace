@@ -1,1 +1,3021 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/license"),t=require("@univerjs-pro/print"),n=require("@univerjs/core"),r=require("@univerjs/sheets"),i=require("@univerjs/ui"),a=require("rxjs"),o=require("@univerjs/engine-render"),s=require("@univerjs/sheets-ui"),c=require("@univerjs/design"),l=require("@univerjs/icons"),u=require("react"),d=require("react/jsx-runtime"),f=require("@univerjs/docs"),p=require("@univerjs/docs-ui");const m=Number.parseInt(1788764290),h="UNIVER_SHEET_PERMISSION_ALERT_DIALOG_ID";function g(v515){"@babel/helpers - typeof";return g=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v139){return typeof v139;}:function(v140){return v140&&typeof Symbol=="function"&&v140.constructor===Symbol&&v140!==Symbol.prototype?"symbol":typeof v140;},g(v515);}function _(v516,v517){if(g(v516)!="object"||!v516)return v516;var v518=v516[Symbol.toPrimitive];if(v518!==undefined){var v519=v518.call(v516,v517||"default");if(g(v519)!="object")return v519;throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");}return(v517==="string"?String:Number)(v516);}function v(v520){var v521=_(v520,"string");return g(v521)=="symbol"?v521:v521+"";}function y(v522,v523,v524){return(v523=v(v523))in v522?Object.defineProperty(v522,v523,{value:v524,enumerable:true,configurable:true,writable:true}):v522[v523]=v524,v522;}const b=(0,n.createIdentifier)("univer-pro.sheet-print-dialog.service");var x=class extends n.Disposable{constructor(...v141){super(...v141),y(this,"visible$",new a["BehaviorSubject"](false)),y(this,"preparing$",new a["BehaviorSubject"](false));}get visible(){return this.visible$["getValue"]();}get preparing(){return this.preparing$["getValue"]();}open(){this.visible$["next"](true);}close(){this.visible$["next"](false);}setPreparing(v142){this.preparing$["next"](v142);}dispose(){this.visible$["complete"](),this.preparing$["complete"](),super.dispose();}};let S=function(v525){return v525.CurrentSheet="CurrentSheet",v525.workbook="Workbook",v525.CurrentSelection="CurrentSelection",v525.AllSelection="AllSelection",v525;}({}),C=function(v526){return v526.PageSize="PageSize",v526.WorkbookTitle="WorkbookTitle",v526.WorksheetTitle="WorksheetTitle",v526.Date="Date",v526.Time="Time",v526;}({}),w=function(v527){return v527.Row="Row",v527.Column="Column",v527;}({}),T=function(v528){return v528.WorkbookTitle="@WorkbookTitle",v528.WorksheetTitle="@WorksheetTitle",v528.DateA="@DateA",v528.DateB="@DateB",v528.DateC="@DateC",v528.DateD="@DateD",v528.DateE="@DateE",v528.TimeA="@TimeA",v528.TimeB="@TimeB",v528.TimeC="@TimeC",v528.TimeD="@TimeD",v528.Page="@Page",v528.SheetPage="@SheetPage",v528.PageTotal="@TotalPage",v528.SheetPageTotal="@TotalSheetPage",v528;}({});const E={topLeft:"",topCenter:"",topRight:"",bottomLeft:"",bottomCenter:"",bottomRight:""};function D(v529,v530){return function(v143,v144){v530(v143,v144,v529);};}function O(v531,v532,v533,v534){var v535=arguments.length,v536=v535<3?v532:v534===null?v534=Object.getOwnPropertyDescriptor(v532,v533):v534,v537;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v536=Reflect.decorate(v531,v532,v533,v534);else{for(var v538=v531.length-1;v538>=0;v538--)(v537=v531[v538])&&(v536=(v535<3?v537(v536):v535>3?v537(v532,v533,v536):v537(v532,v533))||v536);}return v535>3&&v536&&Object.defineProperty(v532,v533,v536),v536;}const k=(0,n.createIdentifier)("univer-pro.sheet-print-manager.service"),A=v539=>Math.floor(v539*100)/100,ee={startColumn:0,endColumn:0,startRow:0,endRow:0},j={startColumn:-1,startRow:-1,xSplit:0,ySplit:0};let M=class{constructor(v145,v146,v147,v148){this._univerInstanceService=v145,this._sheetsSelectionsSrv=v146,this._sheetPrintInterceptorService=v147,this._renderManagerService=v148,y(this,"_layoutConfig",{area:"CurrentSheet",subUnitIds:[],paperSize:n.PaperType["A4"],direction:t.PrintDirection["Portrait"],scale:t.PrintScale["Origin"],customScale:1,freeze:["Row","Column"],margin:t.PrintPaperMargin["Normal"],maxRowsEachPage:1/0,maxColumnsEachPage:1/0,marginCustom:{top:0,bottom:0,left:0,right:0}}),y(this,"_renderConfig",{gridlines:true,hAlign:t.PrintAlign["Middle"],vAlign:t.PrintAlign["Start"],headerFooter:[],headerFooterSetting:E,isCustomHeaderFooter:false}),y(this,"_layoutInfos",[]),y(this,"_layoutInfos$",new a["BehaviorSubject"](this._layoutInfos)),y(this,"_layoutConfig$",new a["BehaviorSubject"](this._layoutConfig)),y(this,"_renderConfig$",new a.BehaviorSubject(this._renderConfig)),y(this,"_printViewDisposable",null),y(this,"layoutConfig$",this._layoutConfig$["asObservable"]()),y(this,"renderConfig$",this._renderConfig$["asObservable"]()),y(this,"layoutInfos$",this._layoutInfos$["asObservable"]().pipe((0,a.debounceTime)(300)));}get layoutInfos(){return this._layoutInfos;}get renderConfig(){return this._renderConfig;}get layoutConfig(){return this._layoutConfig;}get paperSize(){let{paperSize:v149,direction:v150,pageSizeCustom:v151}=this._layoutConfig;if(v151)return v151;let v152=n.PAGE_SIZE[v149];return v150===t.PrintDirection["Portrait"]?{w:v152.width,h:v152.height}:{w:v152.height,h:v152.width};}get paperMargin(){return this._layoutConfig["margin"]===t.PrintPaperMargin["Custom"]?this._layoutConfig["marginCustom"]:t.PaperMarginMap[this._layoutConfig["margin"]];}updateLayoutConfig(v153){this._layoutConfig={...this._layoutConfig,...v153},this._layoutConfig$["next"](this._layoutConfig),this.reLayout();}replaceLayoutConfig(v154){this._layoutConfig=v154,this._layoutConfig$["next"](this._layoutConfig),this.reLayout();}updateRenderConfig(v155){this._renderConfig={...this._renderConfig,...v155},this._renderConfig$["next"](this._renderConfig);}replaceRenderConfig(v156){this._renderConfig=v156,this._renderConfig$["next"](this._renderConfig);}reLayout(){this._layoutInfos=this._calculate(),this._layoutInfos$["next"](this._layoutInfos);}reset(){this._layoutInfos=[],this._layoutInfos$["next"](this._layoutInfos),this._layoutConfig={...this._layoutConfig,area:"CurrentSheet",maxRowsEachPage:1/0,maxColumnsEachPage:1/0},this._layoutConfig$["next"](this._layoutConfig);}setPrintViewDisposable(v157){var v158;(v158=this._printViewDisposable)==null||v158.dispose(),this._printViewDisposable=v157;}disposePrintView(){var v159;(v159=this._printViewDisposable)==null||v159.dispose(),this._printViewDisposable=null;}_calculate(){let v160=this._calculateSubSheetRange(),v161=[];return v160.forEach(v50=>{if(v50){let v24=this._calculateSheetPages(v50);v24&&v161.push(v24);}}),v161;}_calculateSheetRangeById(v162,v163,v164){var v165;let v166=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]).getSheetBySheetId(v163);if(!v166)return;let v167=v166.getFreeze(),v168=v164??v166.getCellMatrixPrintRange(),v169=(v165=this._renderManagerService["getRenderUnitById"](v162))==null?undefined:v165.with(s.SheetSkeletonManagerService).ensureSkeleton(v163);if(!v169)return;if(v168){var v170;v169==null||(v170=v169.overflowCache)==null||v170.forValue((v25,v26,v27)=>{let{endColumn:v28}=v27;v28>v168.endColumn&&(v168.endColumn=v28);});}let v171=this._sheetPrintInterceptorService["interceptor"].fetchThroughInterceptors(this._sheetPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_RANGE)(v168,{unitId:v162,subUnitId:v163});return v171?this._calculateFinalRange(v163,{...v171,startColumn:Math.max(v167.startColumn-v167.xSplit,0),startRow:Math.max(v167.startRow-v167.ySplit,0)}):null;}_calculateCurrentSelectionRange(v172,v173){let v174=this._sheetsSelectionsSrv["getWorkbookSelections"](v172).getSelectionsOfWorksheet(v173);return v174?v174.map(v51=>this._calculateFinalRange(v173,v51.range)):[];}_calculateFinalRange(v175,v176){let v177=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),v178=v177.getSheetBySheetId(v175),v179=this._layoutConfig,v180=v177.getUnitId(),v181=this.paperSize,{top:v182,right:v183,bottom:v184,left:v185}=this.paperMargin;v181.h-=v182+v184,v181.w-=v185+v183;let v186=this._renderManagerService["getRenderUnitById"](v180).with(s.SheetSkeletonManagerService);if(v176.startRow>-1&&v176.startColumn>-1){let v52=v186.ensureSkeleton(v175);if(!v178||!v52)return null;let v53=v176.startRow,v54=v176.endRow,v55=v176.startColumn,v56=v176.endColumn,v57=v178.getFreeze(),v58=A(this._calculatePrintScale(v52,v176,v57)),v59=-1,v60=0,v61=-1,v62=0,v63=v52.columnWidthAccumulation,v64=v52.rowHeightAccumulation;if(v57.xSplit&&v179.freeze["includes"]("Column")){if(v56>=v57.startColumn){let v1=v58*(v63[v57.startColumn-1]-(v63[v57.startColumn-v57.xSplit-1]||0));v1<v181.w&&(v61=v57.startColumn,v62=v57.xSplit,v181.w-=v1);}else{let v2=v56+1,v3=v56+1-(v57.startColumn-v57.xSplit),v4=v58*(v63[v61-1]-(v63[v61-v62]-1||0));v4<v181.w&&(v61=v2,v62=v3,v181.w-=v4);}}if(v55=Math.max(v61,v55),v57.ySplit&&v179.freeze["includes"]("Row")){if(v54>=v57.startRow){let v5=v64[v57.startRow]-v64[v57.startRow-v57.ySplit];v5<v181.h&&(v59=v57.startRow,v60=v57.ySplit,v181.h-=v5);}else v59=v54+1,v60=v54+1-(v57.startRow-v57.ySplit),v181.h=v181.h-v64[v59]-v64[v59-v60];}return v53=Math.max(v59,v53),{unitId:v180,subUnitId:v175,range:{startRow:v53,endRow:v54,startColumn:v55,endColumn:v56},freeze:{startRow:v59,startColumn:v61,xSplit:v62,ySplit:v60},contentSize:v181,scale:v58};}return{unitId:v180,subUnitId:v175,range:ee,freeze:j,contentSize:v181,scale:1};}_calculatePrintScale(v187,v188,v189){let v190=v187.columnWidthAccumulation,v191=v187.rowHeightAccumulation,{xSplit:v192,ySplit:v193,startColumn:v194,startRow:v195}=v189,{startRow:v196,startColumn:v197}=v188,{endColumn:v198,endRow:v199}=v188;v196=v199<v195?v196:Math.max(v195,v196),v197=v198<v194?v197:Math.max(v194,v197);let{scale:v200,customScale:v201}=this._layoutConfig,v202=this.paperSize,v203=this.paperMargin,v204=v192>0?(v190[v194-1]||0)-(v190[v194-v192-1]||0):0,v205=v193>0?(v191[v195-1]||0)-(v191[v195-v193-1]||0):0,v206=v191[v199]-(v191[v196-1]||0),v207=v190[v198]-(v190[v197-1]||0),v208=v206+v205,v209=v207+v204;switch(v200){case t.PrintScale["Custom"]:return v201;case t.PrintScale["FitWidth"]:return Math.min(1,(v202.w-v203.left-v203.right)/v209);case t.PrintScale["FitHeight"]:return Math.min(1,(v202.h-v203.top-v203.bottom)/v208);case t.PrintScale["FitPage"]:return Math.min(1,(v202.w-v203.left-v203.right)/v209,(v202.h-v203.top-v203.bottom)/v208);default:return 1;}}_calculateSubSheetRange(){let{area:v210,subUnitIds:v211}=this._layoutConfig,v212=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),v213=v212.getUnitId();switch(v210){case"CurrentSheet":{var v214;let v29=(v214=v212.getActiveSheet())==null?undefined:v214.getSheetId();if(v29!=null){let v6=this._calculateSheetRangeById(v213,v29);if(v6)return[v6];let v7=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),v8=v7.getActiveSheet();return v8?this._calculateCurrentSelectionRange(v7.getUnitId(),v8.getSheetId()):(console.warn("No active sheet found"),[]);}return[];}case"CurrentSelection":{let v30=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),v31=v30.getActiveSheet();return v31?this._calculateCurrentSelectionRange(v30.getUnitId(),v31.getSheetId()):(console.warn("No active sheet found"),[]);}case"AllSelection":return this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]).getSheets().map(v32=>this._calculateCurrentSelectionRange(v213,v32.getSheetId())).flat();default:return(v211.length?v211:v212.getSheets().filter(v33=>!v33.isSheetHidden()).map(v34=>v34.getSheetId())).map(v35=>this._calculateSheetRangeById(v213,typeof v35=="string"?v35:v35.id,typeof v35=="string"?undefined:v35.range)).filter(Boolean);}}_calculateSheetPages(v215){let{subUnitId:v216,range:v217,freeze:v218,unitId:v219,scale:v220,contentSize:v221}=v215,v222=this._renderManagerService["getRenderUnitById"](v219).with(s.SheetSkeletonManagerService).ensureSkeleton(v216);if(!v222)return;let{rowHeightAccumulation:v223,columnWidthAccumulation:v224}=v222,{w:v225,h:v226}=v221,{startRow:v227,startColumn:v228,endColumn:v229,endRow:v230}=v217,v231=v65=>{let v66=v65,v67=this._layoutConfig["maxRowsEachPage"]<=v218.ySplit?1/0:this._layoutConfig["maxRowsEachPage"]-1-v218.ySplit+v65,v68=v65===0?0:v223[v65-1];for(;v66<v230;){let v9=(v223[v66]-v68)*v220,v10=(v223[v66+1]-v68)*v220;if(v66++,v9>=v226||v9<v226&&v10>v226)return{startRow:v65,endRow:Math.min(v66-1,v67)};}return{startRow:v65,endRow:Math.min(v66,v67)};},v232=v69=>{let v70=v69,v71=v69===0?0:v224[v69-1],v72=this._layoutConfig["maxColumnsEachPage"]<=v218.xSplit?1/0:this._layoutConfig["maxColumnsEachPage"]-1-v218.xSplit+v69;for(;v70<v229;){let v11=(v224[v70]-v71)*v220,v12=(v224[v70+1]-v71)*v220;if(v70++,v11<v225&&v12>v225||v11>=v225)return{startColumn:v69,endColumn:Math.min(v70-1,v72)};}return{startColumn:v69,endColumn:Math.min(v70,v72)};},v233=[],v234=v227;for(;v234<=v230;){let v36=v231(v234);v233.push(v36),v234=v36.endRow+1;}let v235=[],v236=v228;for(;v236<=v229;){let v37=v232(v236);v235.push(v37),v236=v37.endColumn+1;}let v237=[];for(let v73=0;v73<v233.length;v73++)for(let v38=0;v38<v235.length;v38++)v237.push({...v233[v73],...v235[v38]});return{unitId:v219,subUnitId:v216,pages:v237,freeze:v218,scale:v220,pageSize:this.paperSize,margin:this.paperMargin};}};M=O([D(0,n.IUniverInstanceService),D(1,(0,n.Inject)(r.SheetsSelectionsService)),D(2,(0,n.Inject)(s.SheetPrintInterceptorService)),D(3,o.IRenderManagerService)],M);const te=(v540,v541)=>{if(!v540||!v541)return true;let v542=(0,e.getLicenseInfo)(v540,v541).message,v543=(0,e.isFeatureAuthorizedWithinTime)(v542,"sf",m);return!((v542==null?undefined:v542.rt)===e.ReleaseType["NO_COMMERCIAL"]&&!v543);},N=(v544,v545,v546)=>{let v547={page:v544,isPro:false,timeValid:false};if(!v545||!v546)return v547;let v548=(0,e.getLicenseInfo)(v545,v546);if(v548.valid){let v238=v548.message,v239=(0,e.isFeatureAuthorizedWithinTime)(v238,"sf",m);v547.isPro=v239,v547.timeValid=v239,v547.page=(0,e.getSheetFeatureLimit)(v238,v239,"mpn",v544,v544,0);}return v547;};function P(v549){let{ls:v550,pbk:v551}=v549.get(n.IConfigService).getConfig(e.LS_CONFIG_KEY)??{};return N(3,v550,v551).isPro;}const F={id:"sheet.operation.print-open",type:n.CommandType["OPERATION"],handler:async v552=>{let v553=v552.get(b),v554=v552.get(n.IPermissionService),v555=v552.get(n.LocaleService),v556=v552.get(n.IUniverInstanceService),v557=v552.get(i.IDialogService),{ls:v558,pbk:v559}=v552.get(n.IConfigService).getConfig(e.LS_CONFIG_KEY)??{};if(!te(v558,v559))return false;let v560=v556.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]).getUnitId();if(!(v554.getPermissionPoint(new r.WorkbookPrintPermission(v560).id)??false)){let v240={id:h,title:{title:""},children:{label:"UNIVER_SHEET_PERMISSION_ALERT_DIALOG",errorMsg:v555.t("sheets-print.permission.printErr")},width:320,onClose:()=>v557.close(h),className:"sheet-permission-user-dialog"};throw v557.open(v240),Error("have not permission");}v553.setPreparing(true),v553.open();try{return await v552.get(t.IPrintPreparationService).prepare({unitId:v560,unitType:n.UniverInstanceType["UNIVER_SHEET"],dpr:1}),true;}catch(v241){throw v553.close(),v241;}finally{v553.setPreparing(false);}}},I={type:n.CommandType["OPERATION"],id:"sheet.operation.cancel-print",handler(v561){let v562=v561.get(b),v563=v561.get(k);return v562.close(),v563.reset(),true;}},L={type:n.CommandType["OPERATION"],id:"sheet.operation.confirm-print",handler(){return true;}},R={id:"sheet.operation.print",type:n.CommandType["COMMAND"],handler(v564,v565){if(!v565)return false;let v566=v564.get(n.ICommandService),v567=v564.get(k);return v567.replaceLayoutConfig(v565.layoutConfig),v567.replaceRenderConfig(v565.renderConfig),v566.syncExecuteCommand(L.id);}};function z(v568,v569){switch(v568){case"@WorkbookTitle":return v569.workbook["name"];case"@WorksheetTitle":return v569.worksheet["getName"]();case"@Page":return""+v569.page;case"@TotalPage":return""+v569.pageTotal;case"@TotalSheetPage":return""+v569.sheetPageTotal;case"@SheetPage":return""+v569.sheetPage;case"@DateA":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.dateA"));case"@DateB":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.dateB"));case"@DateC":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.dateC"));case"@DateD":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.dateD"));case"@DateE":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.dateE"));case"@TimeA":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.timeA"));case"@TimeB":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.timeB"));case"@TimeC":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.timeC"));case"@TimeD":return v569.now["format"](v569.localeService["t"]("sheets-print.headerFooter.timeD"));}}const ne=Object.values(T);function B(v570,v571){let v572=v570;return ne.forEach(v242=>{v572=v572.replaceAll(v242,z(v242,v571));}),v572;}const V="@[]@";function re(v573,v574){let v575=v573;v574.forEach(v243=>{v575=v575.replaceAll(v243.value,""+V+v243.label+V);});let v576=v575.split(V),v577=n.RichTextBuilder["create"]();return v576.forEach((v244,v245)=>{if(v244){if(v245%2==1){let v39=v244,v40={id:"d",documentStyle:{},drawings:{},drawingsOrder:[],body:{dataStream:v244,customBlocks:[],customRanges:[{startIndex:0,endIndex:v244.length-1,rangeId:(0,n.generateRandomId)(),rangeType:n.CustomRangeType["MENTION"],properties:{value:v574.find(v13=>v13.label===v39).value}}]}};v577.insertRichText(v40);}else v577.insertText(v244);}}),v577.getData();}function ie(v578){var v579;if(!(v578!=null&&v578.body))return"";let v580=n.RichTextBuilder["create"](n.Tools["deepClone"](v578));for(;(v579=v580.getData().body["customRanges"])!=null&&v579.length;){let v74=v580.getData().body["customRanges"][0];if(!v74)break;v580.delete(v74.startIndex,v74.endIndex+1-v74.startIndex),v580.insertText(v74.startIndex,v74.properties["value"]);}return v580.getData().body["dataStream"];}function ae(v581,v582){v581.getExtensionsByOrder().forEach(v246=>{var v247;let v248=(v247=v246.copyForPrinting)==null?undefined:v247.call(v246);v248&&v582.register(v248);});}var H=class extends n.Disposable{get _watermarkConfig(){return this._renderConfig["watermark"];}get key(){return this._key;}get engine(){return this._engine;}get container(){return this._container;}get root(){return this._root;}get renderConfig(){return this._renderConfig;}set renderConfig(v249){this._renderConfig=v249;}constructor(v250,v251,v252,v253=true,v254=1){super(),this._accessor=v250,this._config=v251,this._renderConfig=v252,this._isPreview=v253,this._previewScale=v254,y(this,"_engine",undefined),y(this,"_scene",undefined),y(this,"_key",undefined),y(this,"_unitId",undefined),y(this,"_subUnitId",undefined),y(this,"_viewMain",undefined),y(this,"_viewLeft",undefined),y(this,"_viewTop",undefined),y(this,"_viewLeftTop",undefined),y(this,"_viewRowBottom",null),y(this,"_viewColumnRight",null),y(this,"_container",document.createElement("div")),y(this,"_root",document.createElement("div")),y(this,"_skeleton",undefined),y(this,"_univerInstanceService",undefined),y(this,"_dirty",true),y(this,"_targetRender",undefined),y(this,"_effects",new n["DisposableCollection"]()),y(this,"_resourceCollector",new s["SheetPrintingResourceCollector"]()),y(this,"_spreadsheetObject",undefined),y(this,"_totalWidth",0),y(this,"_totalHeight",0);let{unitId:v255,subUnitId:v256}=this._config;this._unitId=v255,this._subUnitId=v256,this._key=v255+"_"+v256,this._univerInstanceService=this._accessor["get"](n.IUniverInstanceService);let v257=this._accessor["get"](o.IRenderManagerService);this._targetRender=v257.getRenderUnitById(v255);let v258=this._targetRender["with"](s.SheetSkeletonManagerService).ensureSkeleton(v256);this._skeleton=v258,this._root["className"]="__root",this._initRenderer();}dispose(){var v259;super.dispose(),this._effects["dispose"](),(v259=this._container["parentElement"])==null||v259.removeChild(this._container);}get paperSize(){let{w:v260,h:v261}=this._config["pageSize"];return{w:v260*this._previewScale,h:v261*this._previewScale};}get margin(){let v262=this._config["margin"];return{top:v262.top*this._previewScale,bottom:v262.bottom*this._previewScale,left:v262.left*this._previewScale,right:v262.right*this._previewScale};}_initRenderer(){let v263=this.paperSize,v264=this._config["scale"]*this._previewScale,v265=this._isPreview?Math.max(1,window.devicePixelRatio):1;this._engine=new o.Engine("",{elementWidth:v263.w,elementHeight:v263.h,dpr:v265,renderMode:o.CanvasRenderMode["Printing"]}),this._scene=new o.Scene(this._key,this._engine),this._scene["scale"](v264,v264),this._engine["mount"](this._container,this._isPreview),this._engine["getCanvas"]().getContext().setId(this._key+"_"+(0,n.generateRandomId)(4)),this._addComponent(),this._addViewport(),this.disposeWithMe({dispose:()=>{this._engine["dispose"](),this._scene["dispose"](),this.clearMemory();}});}clearMemory(){this._skeleton["resetCache"]();}setPreviewScale(v266){this._scene["scale"](this._config["scale"]*v266,this._config["scale"]*v266),this._previewScale=v266,this.markDirty(true);}updateConfig(v267){this._config=v267,this.markDirty(true);}markDirty(v268){this._dirty=v268;}_addComponent(){var v269;let v270=new o["Spreadsheet"]("__SpreadsheetPrintRender__",this._skeleton,false);v270.isPrinting=true;let v271=(v269=this._targetRender)==null?undefined:v269.mainComponent;if(v271&&ae(v271,v270),this._scene["addObject"](v270),this._spreadsheetObject=v270,this._config["includeHeaderDimensions"]){let v75=new o.SpreadsheetRowHeader("__RowHeaderPrint__",this._skeleton),v76=new o["SpreadsheetColumnHeader"]("__ColumnHeaderPrint__",this._skeleton);this._scene["addObjects"]([v75,v76],1);}let v272=this._accessor["get"](s.SheetPrintInterceptorService);v272.interceptor["fetchThroughInterceptors"](v272.interceptor["getInterceptPoints"]().PRINTING_COMPONENT_COLLECT)(undefined,{unitId:this._unitId,subUnitId:this._subUnitId,scene:this._scene,engine:this._engine,root:this._root,worksheet:this._skeleton["worksheet"],skeleton:this._skeleton,range:this._config["range"],offset:this._getTranslateOffset(),spreadsheet:this._spreadsheetObject,resourceCollector:this._resourceCollector});}_addViewport(){this._viewMain=new o.Viewport(o.SHEET_VIEWPORT_KEY["VIEW_MAIN"],this._scene,{explicitViewportWidthSet:true,explicitViewportHeightSet:true}),this._viewLeft=new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT"],this._scene,{explicitViewportWidthSet:true,explicitViewportHeightSet:true}),this._viewTop=new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_MAIN_TOP"],this._scene,{explicitViewportWidthSet:true,explicitViewportHeightSet:true}),this._viewLeftTop=new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT_TOP"],this._scene,{explicitViewportWidthSet:true,explicitViewportHeightSet:true}),this._config["includeHeaderDimensions"]&&(this._viewRowBottom=new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_ROW_BOTTOM"],this._scene,{explicitViewportWidthSet:true,explicitViewportHeightSet:true}),this._viewColumnRight=new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_COLUMN_RIGHT"],this._scene,{explicitViewportWidthSet:true,explicitViewportHeightSet:true}));}_resizeViewport(){let{freeze:v273,range:v274}=this._config,{xSplit:v275,ySplit:v276,startColumn:v277,startRow:v278}=v273,{rowHeaderWidth:v279,columnHeaderHeight:v280}=this._skeleton;this._scene["scale"](this._config["scale"]*this._previewScale,this._config["scale"]*this._previewScale);let v281=this._skeleton["getNoMergeCellWithCoordByIndex"](v278-v276,v277-v275,false),v282=this._skeleton["getNoMergeCellWithCoordByIndex"](v278,v277,false),v283=v275>0?v282.startX-v281.startX:0,v284=v276>0?v282.startY-v281.startY:0,v285={startX:v275>0?v281.startX:0,endX:v275>0?v282.startX:0,startY:v276>0?v281.startY:0,endY:v276>0?v282.startY:0},v286=this._skeleton["getNoMergeCellWithCoordByIndex"](v274.startRow,v274.startColumn,false),v287=this._scene["getPrecisionScale"](),v288=v77=>(0,o.fixLineWidthByScale)(v77,v287.scaleX),v289=v78=>(0,o.fixLineWidthByScale)(v78,v287.scaleY),v290=this._skeleton["getNoMergeCellWithCoordByIndex"](v274.endRow,v274.endColumn,false),v291=Math.max(0,v288(v290.endX)-Math.max(v286.startX,v285.endX)),v292=Math.max(0,v289(v290.endY)-v289(Math.max(v286.startY,v285.endY))),v293=1/Math.max(v287.scaleX,v287.scaleY),v294=this._config["includeHeaderDimensions"]?v279:0,v295=this._config["includeHeaderDimensions"]?v280:0,v296=v294+v283+v291+v293,v297=v295+v284+v292+v293;this._totalWidth=v296,this._totalHeight=v297;let v298={x:v283,y:v284},v299=v293,v300=v293,v301={x:v288(v290.endX)-v288(v291)-v288(Math.max(v286.startX,v285.endX)),y:v289(v290.endY)-v289(v292)-v289(Math.max(v286.startY,v285.endY))};if(v275>0&&v276>0?(this._viewLeftTop["enable"](),this._viewLeftTop["resizeWhenFreezeChange"]({top:0,left:0,height:v289(v298.y),width:v288(v298.x)}),this._viewLeftTop["updateScrollVal"]({viewportScrollX:v288(v285.startX)+v288(v279),viewportScrollY:v289(v285.startY)+v289(v280)})):this._viewLeftTop["disable"](),v275>0?(this._viewLeft["enable"](),this._viewLeft["resizeWhenFreezeChange"]({top:v288(v298.y),left:0,height:v289(v292)+v299+v301.y,width:v288(v298.x)}),this._viewLeft["updateScrollVal"]({viewportScrollX:v288(v285.startX)+v288(v279),viewportScrollY:v289(v286.startY)+v289(v280)-v289(v298.y)})):this._viewLeft["disable"](),v276>0?(this._viewTop["enable"](),this._viewTop["resizeWhenFreezeChange"]({top:0,left:v288(v298.x),height:v289(v298.y),width:v288(v291)+v300+v301.x}),this._viewTop["updateScrollVal"]({viewportScrollX:v288(v286.startX)+v288(v279)-v288(v298.x),viewportScrollY:v289(v285.startY)+v289(v280)})):this._viewTop["disable"](),this._config["includeHeaderDimensions"]){let v79=v288(v279),v80=v289(v280),v81=v288(v291)+v300+v301.x,v82=v289(v292)+v299+v301.y;this._viewMain["resizeWhenFreezeChange"]({top:v80,left:v79,height:v82,width:v81}),this._viewMain["updateScrollVal"]({viewportScrollX:v288(v286.startX),viewportScrollY:v289(v286.startY)}),this._viewRowBottom&&this._viewColumnRight&&(this._viewColumnRight["enable"](),this._viewColumnRight["resizeWhenFreezeChange"]({top:0,left:v79,height:v80,width:v81}),this._viewColumnRight["updateScrollVal"]({viewportScrollX:v288(v286.startX),viewportScrollY:0}),this._viewRowBottom["enable"](),this._viewRowBottom["resizeWhenFreezeChange"]({top:v80,left:0,height:v82,width:v79}),this._viewRowBottom["updateScrollVal"]({viewportScrollX:0,viewportScrollY:v289(v286.startY)}));}else this._viewMain["resizeWhenFreezeChange"]({top:v289(v298.y),left:v288(v298.x),height:v289(v292)+v299+v301.y,width:v288(v291)+v300+v301.x}),this._viewMain["updateScrollVal"]({viewportScrollX:v288(v286.startX)+v288(v279)-v288(v298.x),viewportScrollY:v289(v286.startY)+v289(v280)-v289(v298.y)});}_getTranslateOffset(){let v302=this.margin,{vAlign:v303,hAlign:v304}=this._renderConfig,v305=Math.max(this._scene["scaleX"],this._scene["scaleY"]),v306;switch(v304){case t.PrintAlign["Start"]:v306=v302.left;break;case t.PrintAlign["End"]:v306=this.paperSize["w"]-this._totalWidth*v305-v302.right;break;default:v306=v302.left+(this.paperSize["w"]-this._totalWidth*v305-v302.left-v302.right)/2;break;}let v307;switch(v303){case t.PrintAlign["Start"]:v307=v302.top;break;case t.PrintAlign["End"]:v307=this.paperSize["h"]-this._totalHeight*v305-v302.bottom;break;default:v307=(this.paperSize["h"]-this._totalHeight*v305-v302.top-v302.bottom)/2+v302.top;break;}return{offsetX:Math.round(v306),offsetY:Math.round(v307),scale:v305};}prepare(){this._resizeViewport(),this._effects["dispose"](),this._effects=new n["DisposableCollection"]();let v308=this._accessor["get"](s.SheetPrintInterceptorService),{offsetX:v309,offsetY:v310,scale:v311}=this._getTranslateOffset(),v312=v309,v313=v310;this._root["style"].left=v312+"px",this._root["style"].top=v313+"px";let v314=this._totalWidth*v311,v315=this._totalHeight*v311;this._root["style"].width=v314+"px",this._root["style"].height=v315+"px",this._root["style"].position="absolute",this._root["style"].overflow="hidden",v308.interceptor["fetchThroughInterceptors"](v308.interceptor["getInterceptPoints"]().PRINTING_DOM_COLLECT)(this._effects,{unitId:this._unitId,subUnitId:this._subUnitId,scene:this._scene,engine:this._engine,root:this._root,worksheet:this._skeleton["worksheet"],skeleton:this._skeleton,range:this._config["range"],offset:this._getTranslateOffset(),resourceCollector:this._resourceCollector});}_renderMainScene(){this._dirty&&this.prepare();let v316=this._engine["getCanvas"]().getContext(),{gridlines:v317}=this._renderConfig,{offsetX:v318,offsetY:v319}=this._getTranslateOffset();this._spreadsheetObject["setForceDisableGridlines"](!v317),this._spreadsheetObject["makeForceDirty"](),this._scene["makeDirty"](),v316.save(),v316.translateWithPrecision(v318,v319),this._scene["render"](),v316.restore();}_renderHeaderFooterByCustom(v320,v321,v322){let{w:v323,h:v324}=this.paperSize,v325=this._engine["getCanvas"]().getContext();v325.save(),v325.font="13px "+o.DEFAULT_FONTFACE_PLANE;let v326=19*this._previewScale,v327=20*this._previewScale,v328={workbook:v321,worksheet:v322,now:(0,n.dateKit)(),localeService:this._accessor["get"](n.LocaleService),page:this._config["page"],pageTotal:this._config["pageTotal"],sheetPageTotal:this._config["sheetPageTotal"],sheetPage:this._config["sheetPage"]};if(v320.topLeft){let v83=B(v320.topLeft,v328);v325.fillText(v83,v326,v327);}if(v320.topCenter){let v84=B(v320.topCenter,v328),v85=v325.measureText(v84);v325.fillText(v84,(v323-v85.width)/2,v327);}if(v320.topRight){let v86=B(v320.topRight,v328),v87=v325.measureText(v86);v325.fillText(v86,v323-v87.width-v326,v327);}if(v320.bottomLeft){let v88=B(v320.bottomLeft,v328);v325.fillText(v88,v326,v324-v327);}if(v320.bottomCenter){let v89=B(v320.bottomCenter,v328),v90=v325.measureText(v89);v325.fillText(v89,(v323-v90.width)/2,v324-v327);}if(v320.bottomRight){let v91=B(v320.bottomRight,v328),v92=v325.measureText(v91);v325.fillText(v91,v323-v92.width-v326,v324-v327);}v325.restore();}_renderHeaderFooter(){let v329=this._univerInstanceService["getUnit"](this._config["unitId"],n.UniverInstanceType["UNIVER_SHEET"]),v330=v329==null?undefined:v329.getSheetBySheetId(this._config["subUnitId"]),{headerFooter:v331,isCustomHeaderFooter:v332,headerFooterSetting:v333}=this._renderConfig,{w:v334,h:v335}=this.paperSize,v336=this._engine["getCanvas"]().getContext();if(!v329||!v330)return;if(v332&&v333){this._renderHeaderFooterByCustom(v333,v329,v330);return;}v336.save(),v336.font="13px\x20"+o.DEFAULT_FONTFACE_PLANE;let v337=19*this._previewScale,v338=20*this._previewScale;if(v331.includes("Date")||v331.includes("Time")){let v93=new Date().toLocaleString();v331.includes("Date")?v331.includes("Time")||(v93=new Date().toLocaleDateString()):v93=new Date().toLocaleTimeString(),v336.fillText(v93,v337,v335-v338);}v331.forEach(v94=>{switch(v94){case"WorkbookTitle":{let v14=v329.name,v15=v336.measureText(v14),v16=v15.fontBoundingBoxAscent+v15.fontBoundingBoxDescent;v336.fillText(v14,v337,v338+v16);break;}case"WorksheetTitle":{let v17=v330.getName(),v18=v336.measureText(v17),v19=v18.fontBoundingBoxAscent+v18.fontBoundingBoxDescent;v336.fillText(v17,v334-(v18.width+v337),v338+v19);break;}case"PageSize":{let v20=""+this._config["page"],v21=v336.measureText(v20);v336.fillText(v20,v334-(v21.width+v337),v335-v338);break;}default:break;}}),v336.restore();}_renderLimitWaterMark(){let v339=this._accessor["get"](n.LocaleService),v340=this._engine["getCanvas"]().getContext();v340.save();let v341=20*this._previewScale;v340.fillStyle="rgba(0,0,0,0.3)",v340.font="12px "+o.DEFAULT_FONTFACE_PLANE;let v342=v340.measureText(v339.t("sheets-print.limit.waterMark")),v343=(this.paperSize["w"]-v342.width)/2,v344=v342.fontBoundingBoxAscent+v342.fontBoundingBoxDescent;v340.fillText(v339.t("sheets-print.limit.waterMark"),v343,v341+v344),v340.fillText(v339.t("sheets-print.limit.waterMark"),v343,this.paperSize["h"]-v341),v340.restore();}render(){this._engine["clearCanvas"](),this._renderMainScene(),this._renderHeaderFooter(),this._watermarkConfig&&(0,o.renderWatermark)(this._engine["getCanvas"]().getContext(),this._watermarkConfig,this._watermarkConfig["image"],this._accessor["get"](n.UserManagerService).getCurrentUser());}renderOnReady(){let v345=this.engine["onTransformChange$"].subscribeEvent(()=>{this.render();});this.disposeWithMe(v345),this.waitForReady().then(()=>this.render());}waitForReady(v346){return this._resourceCollector["wait"](v346);}getImage(){return this._engine["getCanvas"]().toDataURL("image/png",1);}};function oe(v583){let v584=v583.reduce((v347,v348)=>v347+v348.pages["length"],0),v585=new Map(),v586=new Map();v583.forEach(v349=>{let v350=v349.pages["length"],v351=v586.get(v349.subUnitId)??0;v586.set(v349.subUnitId,v350+v351);});let v587=0;return v583.map(v352=>{let v353=v352.pages["length"],v354=v585.get(v352.subUnitId)??0,v355=v352.pages["map"]((v95,v96)=>(v587++,{...v352,range:v95,page:v587,pageTotal:v584,sheetPageTotal:v586.get(v352.subUnitId),sheetPage:v96+1+v354}));return v585.has(v352.subUnitId)?v585.set(v352.subUnitId,v585.get(v352.subUnitId)+v353):v585.set(v352.subUnitId,v353),v355;}).flat();}let se=0,U=class{constructor(v356,v357,v358,v359,v360,v361,v362){this._injector=v356,this._printDialogService=v357,this._sheetPrintManagerService=v358,this._renderManagerService=v359,this._messageService=v360,this._configService=v361,this._printPreparationService=v362;}async print(v363,v364){await Promise.all(Array.from(new Set(v363.map(v97=>v97.unitId)),v98=>this._printPreparationService["prepare"]({unitId:v98,unitType:n.UniverInstanceType["UNIVER_SHEET"],dpr:1})));let v365=oe(v363),{ls:v366,pbk:v367}=this._configService["getConfig"](e.LS_CONFIG_KEY)??{},v368=(0,e.isLocalCheck)()?1/0:N(3,v366,v367).page;v365=v365.slice(0,v368);let v369=document.createElement("div");v369.className=t.PRINT_CONTAINER_CLASS;let v370=v365.map(v99=>{let v100=new H(this._injector,v99,v364,false);return v100.container["className"]=t.PRINT_CANVAS_CLASS,v100;});v370.forEach(v101=>{v369.appendChild(v101.container),v101.container["appendChild"](v101.root),v101.prepare(),v101.markDirty(false);});let v371=this._sheetPrintManagerService["layoutConfig"],v372=n.PAGE_SIZE[v371.paperSize],v373=(0,t.createPrintStyle)(v372.width,v372.height,v371.direction);return document.body["appendChild"](v373),document.body["appendChild"](v369),await Promise.all(v370.map(v102=>v102.waitForReady())),new Promise(v103=>{window.onbeforeprint=()=>{v370.forEach(v22=>{v22.render(),v22.clearMemory();});},window.onafterprint=()=>{v370.forEach(v23=>{v23.dispose();}),document.body["removeChild"](v369),document.body["removeChild"](v373),this._printDialogService["close"](),this._sheetPrintManagerService["reset"](),this._messageService["removeAll"](),v370=[],v103(true);},window.print();});}getRangeImage(v374,v375,v376,v377){if(!P(this._injector)){let v104=(Date.now()-se)/1000;if(se=Date.now(),v104<=30)return false;}let v378=this._renderManagerService["getRenderUnitById"](v374);if(!v378)return false;let v379=v378.with(s.SheetSkeletonManagerService).ensureSkeleton(v375);if(!v379)return false;let v380=v379.columnWidthAccumulation[v376.endColumn]-(v379.columnWidthAccumulation[v376.startColumn-1]||0),v381=v379.rowHeightAccumulation[v376.endRow]-(v379.rowHeightAccumulation[v376.startRow-1]||0),v382=v379.columnHeaderHeight,v383=v379.rowHeaderWidth,v384=1.5,v385=new H(this._injector,{unitId:v374,subUnitId:v375,range:v376,freeze:j,scale:v384,page:1,pageSize:v377?{w:(v380+v383)*v384+1,h:(v381+v382)*v384+1}:{w:v380*v384+1,h:v381*v384+1},margin:t.PaperMarginMap[t.PrintPaperMargin["None"]],pageTotal:1,sheetPageTotal:1,sheetPage:1,includeHeaderDimensions:v377??false},{gridlines:true,hAlign:t.PrintAlign["Middle"],vAlign:t.PrintAlign["Middle"],headerFooter:[],headerFooterSetting:E,isCustomHeaderFooter:false},false),v386=document.createElement("div");v386.className=t.PRINT_CONTAINER_CLASS,v385.container["className"]=t.PRINT_CANVAS_CLASS,v386.appendChild(v385.container),document.body["appendChild"](v386),v385.prepare(),v385.render();let v387=v385.getImage();return v385.dispose(),document.body["removeChild"](v386),v387;}};U=O([D(0,(0,n.Inject)(n.Injector)),D(1,b),D(2,k),D(3,o.IRenderManagerService),D(4,i.IMessageService),D(5,n.IConfigService),D(6,t.IPrintPreparationService)],U);function ce(v588,v589){let v590=atob(v588.split(",")[1]),v591=new ArrayBuffer(v590.length),v592=new Uint8Array(v591);for(let v388=0;v388<v590.length;v388++)v592[v388]=v590.charCodeAt(v388);return new Blob([v591],{type:v589});}const W={type:n.CommandType["OPERATION"],id:"sheet.operation.screenshot",async handler(v593){var v594;let v595=v593.get(r.SheetsSelectionsService),v596=(v594=v595.getCurrentSelections())==null?undefined:v594[0],v597=v593.get(U),v598=v595.getCurrentLastSelection(),v599=v593.get(i.IMessageService),v600=v593.get(n.IUniverInstanceService),v601=v593.get(n.LocaleService);if(!v596||!v598)return false;let v602=(0,r.getSheetCommandTarget)(v600);if(!v602)return false;let{unitId:v603,subUnitId:v604}=v602,v605=v597.getRangeImage(v603,v604,v596.range);if(!v605)return false;try{return await navigator.clipboard["write"]([new ClipboardItem({"image/png":ce(v605,"image/png")})]),v599.show({type:c.MessageType["Success"],content:v601.t("sheets-print.screenshot.success")}),true;}catch{return v599.show({type:c.MessageType["Error"],content:v601.t("sheets-print.screenshot.fail")}),false;}}},G=(0,n.createIdentifier)("univer-pro.print-grid.service");var le=class extends n.Disposable{constructor(...v389){super(...v389),y(this,"_visible$",new a["BehaviorSubject"](false)),y(this,"visible$",this._visible$);}get visible(){return this._visible$["value"];}show(){this._visible$["next"](true);}hide(){this._visible$["next"](false);}dispose(){super.dispose(),this._visible$["complete"]();}};const ue="PRINT_GRID_SIDEBAR_COMPONENT",K={id:"sheet.operation.open-print-grid-sidebar",type:n.CommandType["OPERATION"],handler:v606=>{let v607=v606.get(i.ISidebarService),v608=v606.get(G),v609=v606.get(k),v610=v606.get(n.LocaleService);return v609.reLayout(),v608.show(),v607.open({header:{title:v610.t("sheets-print.grid.title")},children:{label:ue},onClose:()=>{},width:312}),true;}},q={id:"sheet.operation.close-print-grid-sidebar",type:n.CommandType["OPERATION"],handler:v611=>{let v612=v611.get(i.ISidebarService);return v611.get(G).hide(),v612.close(),true;}},de="sheet.menu.print";function fe(v613){return{id:de,type:i.MenuItemType["SUBITEMS"],icon:"PrintIcon",tooltip:"sheets-print.menu",hidden$:(0,i.getMenuHiddenObservable)(v613,n.UniverInstanceType["UNIVER_SHEET"]),disabled$:(0,s.getCurrentRangeDisable$)(v613,{workbookTypes:[r.WorkbookPrintPermission]})};}function pe(){return{id:F.id,type:i.MenuItemType["BUTTON"],title:"sheets-print.menu",icon:"PrintIcon"};}function me(v614){return{id:W.id,type:i.MenuItemType["BUTTON"],title:"sheets-print.screenshot.title",icon:"DownloadImageIcon",tooltip:"sheets-print.screenshot.title",hidden$:(0,i.getMenuHiddenObservable)(v614,n.UniverInstanceType["UNIVER_SHEET"]),disabled$:(0,s.getCurrentRangeDisable$)(v614,{workbookTypes:[r.WorkbookPrintPermission,r.WorkbookCopyPermission,r.WorkbookViewPermission],worksheetTypes:[r.WorksheetCopyPermission,r.WorksheetViewPermission],rangeTypes:[r.RangeProtectionPermissionViewPoint]})};}function he(){return{id:K.id,type:i.MenuItemType["BUTTON"],title:"sheets-print.grid.title",icon:"DocSettingIcon"};}const ge={[i.RibbonStartGroup["OTHERS"]]:{[de]:{order:0.01,gridLayout:{row:1,column:3,rowSpan:2,columnSpan:2,showLabel:true},menuItemFactory:fe,[F.id]:{order:0,menuItemFactory:pe},[K.id]:{order:1,menuItemFactory:he}}},[i.ContextMenuPosition["MAIN_AREA"]]:{[i.ContextMenuGroup["OTHERS"]]:{[W.id]:{order:2.1,menuItemFactory:me}}}};var _e="@univerjs-pro/sheets-print",ve="1.0.0-insiders.20260907-70fc579";const ye={},be=(0,u.memo)(function(){var v615,v616,v617,v618;let v619=(0,i.useDependency)(k),v620=(0,i.useDependency)(n.ICommandService),v621=(0,i.useObservable)(v619.layoutConfig$,v619.layoutConfig),v622=(0,i.useDependency)(n.LocaleService),v623=(0,i.useDependency)(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]);if(!v623)return console.error("No workbook found"),null;let v624=v623.getActiveSheet();if(!v624)return console.error("No active sheet found"),null;let v625=(v390,v391)=>{let v392=Math.max(0,v391||0),v393=v621.marginCustom||{top:0,left:0,right:0,bottom:0};v619.updateLayoutConfig({marginCustom:{...v393,[v390]:v392}});},v626=v624.getFreeze(),v627=v626.xSplit<=0,v628=v626.ySplit<=0,v629=()=>{v620.executeCommand(q.id);};return(0,d.jsxs)("div",{className:(0,c.clsx)("univer-flex\x20univer-h-full\x20univer-flex-col",c.scrollbarClassName),children:[(0,d.jsxs)("div",{className:"univer-flex-1 univer-overflow-y-auto",children:[(0,d.jsx)(c.FormLayout,{label:v622.t("sheets-print.area.title"),children:(0,d.jsx)(c.Select,{className:"univer-w-full",value:""+v621.area,onChange:v394=>{v619.updateLayoutConfig({area:v394});},options:[{label:v622.t("sheets-print.area.currentSheet"),value:"CurrentSheet"},{label:v622.t("sheets-print.area.currentSelection"),value:"CurrentSelection"}]})}),(0,d.jsx)(c.FormLayout,{label:v622.t("sheets-print.size.title"),children:(0,d.jsx)(c.Select,{className:"univer-w-full",value:v621.paperSize,options:[{label:v622.t("sheets-print.size.letter"),value:n.PaperType["Letter"]},{label:v622.t("sheets-print.size.tabloid"),value:n.PaperType["Tabloid"]},{label:v622.t("sheets-print.size.legal"),value:n.PaperType["Legal"]},{label:v622.t("sheets-print.size.statement"),value:n.PaperType["Statement"]},{label:v622.t("sheets-print.size.executive"),value:n.PaperType["Executive"]},{label:v622.t("sheets-print.size.folio"),value:n.PaperType["Folio"]},{label:v622.t("sheets-print.size.a3"),value:n.PaperType["A3"]},{label:v622.t("sheets-print.size.a4"),value:n.PaperType["A4"]},{label:v622.t("sheets-print.size.a5"),value:n.PaperType["A5"]},{label:v622.t("sheets-print.size.b4"),value:n.PaperType["B4"]},{label:v622.t("sheets-print.size.b5"),value:n.PaperType["B5"]}],onChange:v395=>{v619.updateLayoutConfig({paperSize:v395});}})}),(0,d.jsx)(c.FormLayout,{label:v622.t("sheets-print.margin.title"),children:(0,d.jsx)(c.Select,{className:"univer-w-full",value:v621.margin,options:[{label:v622.t("sheets-print.margin.normal"),value:t.PrintPaperMargin["Normal"]},{label:v622.t("sheets-print.margin.narrow"),value:t.PrintPaperMargin["Narrow"]},{label:v622.t("sheets-print.margin.wide"),value:t.PrintPaperMargin["Wide"]},{label:v622.t("sheets-print.margin.custom"),value:t.PrintPaperMargin["Custom"]}],onChange:v396=>{let v397=t.PaperMarginMap[v621.margin];v619.updateLayoutConfig({margin:v396,marginCustom:v396===t.PrintPaperMargin["Custom"]?v397:t.PaperMarginMap[v396]});}})}),v621.margin===t.PrintPaperMargin["Custom"]&&(0,d.jsx)(c.FormLayout,{children:(0,d.jsxs)("div",{className:"univer-grid univer-grid-cols-2 univer-gap-2",children:[(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v622.t("sheets-print.margin.top")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v615=v621.marginCustom)==null?undefined:v615.top)||0),onChange:v398=>v625("top",Number(v398))})]}),(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v622.t("sheets-print.margin.bottom")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v616=v621.marginCustom)==null?undefined:v616.bottom)||0),onChange:v399=>v625("bottom",Number(v399))})]}),(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v622.t("sheets-print.margin.left")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v617=v621.marginCustom)==null?undefined:v617.left)||0),onChange:v400=>v625("left",Number(v400))})]}),(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v622.t("sheets-print.margin.right")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v618=v621.marginCustom)==null?undefined:v618.right)||0),onChange:v401=>v625("right",Number(v401))})]})]})}),(0,d.jsx)(c.FormLayout,{label:v622.t("sheets-print.orientation.title"),children:(0,d.jsxs)(c.RadioGroup,{value:v621.direction,onChange:v402=>{v619.updateLayoutConfig({direction:v402});},children:[(0,d.jsx)(c.Radio,{value:t.PrintDirection["Portrait"],children:v622.t("sheets-print.orientation.portrait")}),(0,d.jsx)(c.Radio,{value:t.PrintDirection["Landscape"],children:v622.t("sheets-print.orientation.landscape")})]})}),(0,d.jsx)(c.FormLayout,{collapsable:true,label:v622.t("sheets-print.freeze.title"),children:(0,d.jsxs)(c.CheckboxGroup,{direction:"vertical",value:v621.freeze,onChange:v403=>{v619.updateLayoutConfig({freeze:v403});},children:[(0,d.jsx)(c.Checkbox,{disabled:v628,value:"Row",children:v622.t("sheets-print.freeze.row")}),(0,d.jsx)(c.Checkbox,{disabled:v627,value:"Column",children:v622.t("sheets-print.freeze.column")})]})}),(0,d.jsxs)(c.FormLayout,{collapsable:true,defaultCollapsed:true,label:v622.t("sheets-print.area.limit"),children:[(0,d.jsx)(c.FormLayout,{className:"univer-mb-2",label:v622.t("sheets-print.area.maxRowsEachPage"),children:(0,d.jsx)(c.Input,{value:v621.maxRowsEachPage===1/0?"":""+v621.maxRowsEachPage,onChange:v404=>{v619.updateLayoutConfig({maxRowsEachPage:!v404||Number.isNaN(Number(v404))?1/0:Number(v404)});}})}),(0,d.jsx)(c.FormLayout,{label:v622.t("sheets-print.area.maxColumnsEachPage"),children:(0,d.jsx)(c.Input,{value:v621.maxColumnsEachPage===1/0?"":""+v621.maxColumnsEachPage,onChange:v405=>{v619.updateLayoutConfig({maxColumnsEachPage:!v405||Number.isNaN(Number(v405))?1/0:Number(v405)});}})})]})]}),(0,d.jsxs)("div",{className:"univer-space-y-2 univer-border-t univer-pb-4",children:[(0,d.jsx)(c.Button,{type:"submit",variant:"primary",className:"univer-w-full",onClick:()=>{v620.executeCommand(F.id),v629();},children:v622.t("sheets-print.menu")}),(0,d.jsx)(c.Button,{type:"button",className:"univer-w-full",onClick:v629,children:v622.t("sheets-print.grid.closeAndHide")})]})]});});let J=class extends n.Disposable{constructor(v406,v407){super(),this._componentManager=v406,this._iconManager=v407,this._registerIcons(),this._registerComponents();}_registerIcons(){this.disposeWithMe(this._iconManager["register"]({DocSettingIcon:l.DocSettingIcon,PrintIcon:l.PrintIcon}));}_registerComponents(){this._componentManager["register"](ue,be);}};J=O([D(0,(0,n.Inject)(i.ComponentManager)),D(1,(0,n.Inject)(i.IconManager))],J);const xe=[6,4];var Se=class extends o.SheetExtension{constructor(v408,v409){super(),this._printGridService=v408,this._printManagerService=v409,y(this,"uKey","PrintGridExtension"),y(this,"Z_INDEX",61);}draw(v410,v411,v412,v413){if(v410.__mode==="printing"||!this._printGridService["visible"])return;let{worksheet:v414}=v412;if(!v414)return;let v415=this._printManagerService["layoutInfos"],v416=v414.getUnitId(),v417=v414.getSheetId(),v418=v415.find(v105=>v105.unitId===v416&&v105.subUnitId===v417);v418&&this._drawPrintGrid(v410,v412,v418);}_drawPrintGrid(v419,v420,v421){let{pages:v422}=v421,{rowHeightAccumulation:v423,columnWidthAccumulation:v424}=v420;v419.save(),v419.strokeStyle="#1890ff",v419.lineWidth=2,v419.setLineDash(xe);let v425=new Set(),v426=new Set();v422.forEach(v106=>{let{startRow:v107,endRow:v108,startColumn:v109,endColumn:v110}=v106,v111=v107===0?0:v423[v107-1],v112=v423[v108],v113=v109===0?0:v424[v109-1],v114=v424[v110];v425.add(v111),v425.add(v112),v426.add(v113),v426.add(v114);});let v427=Math.min(...Array.from(v426)),v428=Math.max(...Array.from(v426)),v429=Math.min(...Array.from(v425)),v430=Math.max(...Array.from(v425));v425.forEach(v115=>{v419.beginPath(),v419.moveTo(v427,v115),v419.lineTo(v428,v115),v419.stroke();}),v426.forEach(v116=>{v419.beginPath(),v419.moveTo(v116,v429),v419.lineTo(v116,v430),v419.stroke();}),v419.restore();}};let Y=class extends n.Disposable{constructor(v431,v432,v433){super(),this._context=v431;let v434=this._context["mainComponent"];this.disposeWithMe(v434.register(new Se(v432,v433)));}};Y=O([D(1,G),D(2,k)],Y);function Ce(v630){let[v631,v632]=(0,u.useState)();return(0,u.useEffect)(()=>{v630.then(v117=>{v632(()=>v117);});},[]),v631;}const X=({icon:v633,items:v634,active:v635,onChange:v636,onHover:v637,popupDirection:v638="top"})=>(0,d.jsxs)("div",{className:"univer-relative\x20univer-inline-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-gap-1\x20univer-rounded\x20univer-bg-gray-0\x20univer-px-2\x20univer-py-1\x20hover:univer-bg-gray-200\x20dark:!univer-bg-gray-900\x20hover:dark:!univer-bg-gray-700",onMouseEnter:()=>v637==null?undefined:v637(true),onMouseLeave:()=>v637==null?undefined:v637(false),children:[(0,d.jsx)("div",{className:"univer-flex univer-size-5 univer-items-center univer-justify-center univer-text-gray-900 dark:!univer-text-gray-0",children:v633}),(0,d.jsx)(l.MoreDownIcon,{className:"univer-size-3\x20univer-text-gray-900\x20univer-transition-transform\x20dark:!univer-text-gray-0"}),v635&&(0,d.jsx)("div",{style:{[v638]:"100%"},className:"univer-absolute univer-left-0 univer-z-[1000] univer-min-w-[200px] univer-px-0 univer-py-2",children:(0,d.jsx)("div",{className:"univer-solid univer-rounded-lg univer-border univer-border-gray-200 univer-bg-gray-0 univer-p-2 univer-shadow-lg dark:!univer-border-gray-700",children:v634.map(v435=>(0,d.jsxs)("div",{className:"univer-flex univer-cursor-pointer univer-flex-row univer-items-center univer-justify-between univer-rounded-md univer-px-2 univer-py-1.5 hover:univer-rounded hover:univer-bg-gray-300",onClick:()=>{v636==null||v636(v435.value),v637==null||v637(false);},children:[(0,d.jsx)("div",{className:"univer-text-base univer-text-gray-900 dark:!univer-text-gray-0",children:v435.label}),(0,d.jsx)("div",{className:"univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",children:v435.desc})]},v435.value))})})]}),we=v639=>{let{onSelect:v640,popupDirection:v641}=v639,[v642,v643]=(0,u.useState)(),v644=(0,i.useDependency)(n.LocaleService),v645=(0,i.useDependency)(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]),v646=v645.getActiveSheet(),v647=(0,u.useMemo)(()=>(0,n.dateKit)(),[]),v648=(0,u.useMemo)(()=>[{value:"@Page",label:v644.t("sheets-print.headerFooter.display.page"),desc:z("@Page",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@SheetPage",label:v644.t("sheets-print.headerFooter.display.sheetPage"),desc:z("@SheetPage",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@TotalPage",label:v644.t("sheets-print.headerFooter.display.pageTotal"),desc:z("@TotalPage",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@TotalSheetPage",label:v644.t("sheets-print.headerFooter.display.sheetPageTotal"),desc:z("@TotalSheetPage",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})}],[v644]),v649=(0,u.useMemo)(()=>[{value:"@WorkbookTitle",label:v644.t("sheets-print.headerFooter.display.title"),desc:z("@WorkbookTitle",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@WorksheetTitle",label:v644.t("sheets-print.headerFooter.display.sheet"),desc:z("@WorksheetTitle",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})}],[v644]),v650=(0,u.useMemo)(()=>[{value:"@DateA",label:v644.t("sheets-print.headerFooter.display.dateA"),desc:z("@DateA",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@DateB",label:v644.t("sheets-print.headerFooter.display.dateB"),desc:z("@DateB",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@DateC",label:v644.t("sheets-print.headerFooter.display.dateC"),desc:z("@DateC",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@DateD",label:v644.t("sheets-print.headerFooter.display.dateD"),desc:z("@DateD",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})}],[v644]),v651=(0,u.useMemo)(()=>[{value:"@TimeA",label:v644.t("sheets-print.headerFooter.display.timeA"),desc:z("@TimeA",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@TimeB",label:v644.t("sheets-print.headerFooter.display.timeB"),desc:z("@TimeB",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@TimeC",label:v644.t("sheets-print.headerFooter.display.timeC"),desc:z("@TimeC",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})},{value:"@TimeD",label:v644.t("sheets-print.headerFooter.display.timeD"),desc:z("@TimeD",{workbook:v645,worksheet:v646,page:1,sheetPage:1,pageTotal:99,sheetPageTotal:99,localeService:v644,now:v647})}],[v644]);return(0,d.jsxs)("div",{className:(0,c.clsx)("univer-rounded-md\x20univer-bg-gray-0\x20univer-p-1\x20univer-shadow\x20dark:!univer-bg-gray-900",c.borderClassName),children:[(0,d.jsx)(X,{icon:(0,d.jsx)(l.SheetIcon,{}),items:v648,onHover:v436=>v643(v436?"sheet":""),active:v642==="sheet",onChange:v640,popupDirection:v641}),(0,d.jsx)(X,{icon:(0,d.jsx)(l.TextIcon,{}),items:v649,onHover:v437=>v643(v437?"text":""),active:v642==="text",onChange:v640,popupDirection:v641}),(0,d.jsx)(X,{icon:(0,d.jsx)(l.CalendarIcon,{}),items:v650,onHover:v438=>v643(v438?"date":""),active:v642==="date",onChange:v640,popupDirection:v641}),(0,d.jsx)(X,{icon:(0,d.jsx)(l.ClockIcon,{}),items:v651,onHover:v439=>v643(v439?"time":""),active:v642==="time",onChange:v640,popupDirection:v641})]});};function Te({width:v652=697,height:v653=553,cols:v654=8,rows:v655=24,cellWidth:v656=87,cellHeight:v657=23,strokeColor:v658="#E5E5E5"}){let v659=(0,u.useMemo)(()=>{let v440=[];for(let v118=0;v118<v655;v118++)for(let v41=0;v41<v654;v41++)v440.push((0,d.jsx)("rect",{x:v41*v656+0.5,y:v118*v657+0.5,width:v656,height:v657,stroke:v658},v118+"-"+v41));return v440;},[v655,v654,v656,v657,v658]);return(0,d.jsx)("svg",{width:v652,height:v653,viewBox:"0 0 "+v652+"\x20"+v653,fill:"none",xmlns:"http://www.w3.org/2000/svg",children:v659});}const Z=v660=>{let{value:v661,onChange:v662,popupDirection:v663="top"}=v660,v664=(0,i.useDependency)(n.LocaleService),v665=(0,i.useDependency)(p.IEditorService),[v666,v667]=(0,u.useState)(false),v668=(0,u.useRef)(null),v669=(0,i.useDependency)(n.ICommandService),v670=[{value:"@Page",label:v664.t("sheets-print.headerFooter.display.page")},{value:"@SheetPage",label:v664.t("sheets-print.headerFooter.display.sheetPage")},{value:"@TotalPage",label:v664.t("sheets-print.headerFooter.display.pageTotal")},{value:"@TotalSheetPage",label:v664.t("sheets-print.headerFooter.display.sheetPageTotal")}],v671=[{value:"@WorkbookTitle",label:v664.t("sheets-print.headerFooter.display.title")},{value:"@WorksheetTitle",label:v664.t("sheets-print.headerFooter.display.sheet")}],v672=[{value:"@DateA",label:v664.t("sheets-print.headerFooter.display.dateA")},{value:"@DateB",label:v664.t("sheets-print.headerFooter.display.dateB")},{value:"@DateC",label:v664.t("sheets-print.headerFooter.display.dateC")},{value:"@DateD",label:v664.t("sheets-print.headerFooter.display.dateD")}],v673=[{value:"@TimeA",label:v664.t("sheets-print.headerFooter.display.timeA")},{value:"@TimeB",label:v664.t("sheets-print.headerFooter.display.timeB")},{value:"@TimeC",label:v664.t("sheets-print.headerFooter.display.timeC")},{value:"@TimeD",label:v664.t("sheets-print.headerFooter.display.timeD")}],v674=[...v670,...v671,...v672,...v673],[v675]=(0,u.useState)(()=>re(v661,v674));return(0,d.jsxs)("div",{className:"univer-relative univer-mx-2 univer-my-0 univer-flex-grow",children:[(0,d.jsx)(p.RichTextEditor,{editorRef:v668,initialValue:v675,onChange:v441=>{v662==null||v662(ie(v441));},onFocusChange:v442=>{v667(v442);},onClickOutside:()=>{var v443;(v443=v668.current)==null||v443.setSelectionRanges([]),v665.blur();},placeholder:v664.t("sheets-print.headerFooter.placeholder")}),(0,d.jsx)("div",{className:"univer-absolute univer-left-0 univer-z-[100]",style:{[v663]:36},children:v666&&(0,d.jsx)(we,{popupDirection:v663,onSelect:async v444=>{var v445;let v446=(v445=v668.current)==null?undefined:v445.getEditorId();if(!v668.current)return;let v447=v668.current["getCursorPosition"]();if(v447<0)return;let v448=v674.find(v119=>v119.value===v444);if(!v448)return;let v449={dataStream:v448.label,customRanges:[{startIndex:0,endIndex:v448.label["length"]-1,rangeId:(0,n.generateRandomId)(),rangeType:n.CustomRangeType["MENTION"],properties:{value:v448.value},wholeEntity:true}]};await(0,n.awaitTime)(0);let v450=n.BuildTextUtils["selection"].replace({selection:{startOffset:v447,endOffset:v447,collapsed:true},body:v449,doc:v668.current["getDocumentDataModel"]()});if(!v450)return;let v451={id:f.RichTextEditingMutation["id"],params:{unitId:v446,actions:[],textRanges:[{startOffset:v447+v449.dataStream["length"],endOffset:v447+v449.dataStream["length"],collapsed:true}],trigger:"mually"}},v452=n.JSONX["getInstance"]();v451.params["actions"]=v452.editOp(v450.serialize()),v669.syncExecuteCommand(v451.id,v451.params),setTimeout(()=>{v665.focus(v446);},0);}})})]});},Ee=v676=>{let{onClose:v677}=v676,v678=(0,i.useDependency)(k),v679=v678.renderConfig["headerFooterSetting"]??E,[v680,v681]=(0,u.useState)(v679.topLeft),[v682,v683]=(0,u.useState)(v679.topCenter),[v684,v685]=(0,u.useState)(v679.topRight),[v686,v687]=(0,u.useState)(v679.bottomLeft),[v688,v689]=(0,u.useState)(v679.bottomCenter),[v690,v691]=(0,u.useState)(v679.bottomRight),v692=(0,i.useDependency)(n.LocaleService);return(0,d.jsxs)("div",{className:"univer-absolute univer-inset-0 univer-z-[100] univer-flex univer-size-full univer-flex-col univer-overflow-hidden univer-bg-gray-0 dark:!univer-bg-gray-900",children:[(0,d.jsxs)("div",{className:(0,c.clsx)("univer-box-border univer-flex univer-h-16 univer-w-full univer-flex-none univer-flex-row univer-items-center univer-justify-between univer-bg-gray-0 univer-px-4 dark:!univer-bg-gray-900",c.borderBottomClassName),children:[(0,d.jsx)("div",{className:"univer-ml-2 univer-text-lg univer-font-medium univer-text-gray-900 dark:!univer-text-gray-0",children:v692.t("sheets-print.headerFooter.editCustomHeadFooter")}),(0,d.jsxs)("div",{className:"univer-relative\x20first:univer-mr-2",children:[(0,d.jsx)(c.Button,{className:"univer-mr-2",onClick:()=>{v677();},children:v692.t("sheets-print.header.cancel")}),(0,d.jsx)(c.Button,{variant:"primary",onClick:()=>{v677(),v678.updateRenderConfig({headerFooterSetting:{topLeft:v680,topCenter:v682,topRight:v684,bottomLeft:v686,bottomCenter:v688,bottomRight:v690}});},children:v692.t("sheets-print.headerFooter.submit")})]})]}),(0,d.jsx)("div",{className:"univer-flex univer-flex-1 univer-flex-col univer-overflow-hidden",children:(0,d.jsx)("div",{className:"univer-relative univer-box-border univer-flex univer-flex-1 univer-items-center univer-justify-center univer-overflow-hidden univer-bg-gray-200 dark:!univer-bg-gray-700",children:(0,d.jsxs)("div",{className:"unier-w-[761px] univer-mx-auto univer-my-4 univer-box-border univer-flex univer-flex-col univer-items-center univer-bg-gray-0 univer-px-6 univer-py-7 univer-shadow-lg dark:!univer-bg-gray-900",children:[(0,d.jsxs)("div",{className:"univer-flex univer-w-full",children:[(0,d.jsx)(Z,{value:v680,onChange:v453=>v681(v453)}),(0,d.jsx)(Z,{value:v682,onChange:v454=>v683(v454)}),(0,d.jsx)(Z,{value:v684,onChange:v455=>v685(v455)})]}),(0,d.jsx)("div",{className:"univer-mx-2 univer-my-5",children:(0,d.jsx)(Te,{})}),(0,d.jsxs)("div",{className:"univer-flex univer-w-full",children:[(0,d.jsx)(Z,{popupDirection:"bottom",value:v686,onChange:v456=>v687(v456)}),(0,d.jsx)(Z,{popupDirection:"bottom",value:v688,onChange:v457=>v689(v457)}),(0,d.jsx)(Z,{popupDirection:"bottom",value:v690,onChange:v458=>v691(v458)})]})]})})})]});},De=(v693,v694)=>{let v695=(0,u.useRef)(false);(0,u.useEffect)(()=>{if(v695.current)return v693();v695.current=true;},v694);},Oe=(0,u.forwardRef)((v696,v697)=>{let{config:v698,previewScale:v699}=v696,v700=(0,i.useDependency)(k),v701=(0,i.useDependency)(n.Injector),v702=(0,u.useRef)(null),v703=v700.paperSize,v704=(0,i.useObservable)(v700.renderConfig$,v700.renderConfig),v705=(0,i.useObservable)(v700.layoutConfig$,v700.layoutConfig),v706=Math.round(v699*(794/v703.w)*10)/10,[v707]=(0,u.useState)(()=>new H(v701,v698,v704,true,v706));return(0,u.useEffect)(()=>(v702.current&&(v707.container["style"].width="100%",v707.container["style"].height="100%",v707.container["style"].position="relative",v702.current["appendChild"](v707.container),v707.container["appendChild"](v707.root)),v707.render(),v707.renderOnReady(),()=>{var v120;queueMicrotask(()=>v707.dispose()),(v120=v702.current)==null||v120.removeChild(v707.container);}),[v707]),De(()=>{v707.renderConfig=v704,v707.render();},[v704]),De(()=>{v707.setPreviewScale(v706),v707.engine["resize"](),v707.render();},[v706]),De(()=>{v707.updateConfig(v698),v707.render();},[v698.freeze["startRow"],v698.freeze["startColumn"],v698.freeze["xSplit"],v698.freeze["ySplit"],v698.range["startRow"],v698.range["endRow"],v698.range["startColumn"],v698.range["endColumn"],v698.scale,v705.margin]),(0,d.jsx)("div",{ref:v697,children:(0,d.jsx)("div",{ref:v702,className:"univer-relative univer-mx-auto univer-mt-7 univer-flex-none univer-bg-gray-0 univer-shadow-lg dark:!univer-bg-gray-900",style:{width:v703.w*v706,height:v703.h*v706}})});}),ke=(0,u.memo)(({onShowFooterHeaderEditor:v708})=>{var v709,v710,v711,v712,v713;let v714=(0,i.useDependency)(k),v715=(0,i.useObservable)(v714.layoutConfig$,v714.layoutConfig),v716=(0,i.useObservable)(v714.renderConfig$,v714.renderConfig),v717=(0,i.useDependency)(n.LocaleService),v718=(0,i.useDependency)(n.IUniverInstanceService),v719=(0,i.useDependency)(n.ILocalStorageService),[v720,v721]=(0,u.useState)(null),v722=((v709=(0,i.useDependency)(n.IConfigService).getConfig("sheets-print.config"))==null?undefined:v709.enforceWatermark)??false;(0,u.useEffect)(()=>{let v459=false;return v719.getItem(o.UNIVER_WATERMARK_STORAGE_KEY).then(v121=>{if(v459)return;let v122,v123;(v121==null?undefined:v121.type)===o.IWatermarkTypeEnum["Image"]&&v121.config["image"]&&(v122=new Image(),v122.src=v121.config["image"].url),(v121==null?undefined:v121.type)===o.IWatermarkTypeEnum["UserInfo"]&&v121!=null&&v121.config["userInfo"]&&(v123=v121.config["userInfo"]);let v124=v121?{...v121,user:v123,image:v122}:null;v721(v124),v722&&v714.updateRenderConfig({watermark:v124});}),()=>{v459=true;};},[v722,v719,v714]);let v723=v718.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]),v724=v723.getSheets().filter(v460=>!v460.isSheetHidden()),v725=v723.getActiveSheet();if(!v725)return console.error("No active sheet found"),null;let v726=(v461,v462)=>{let v463=Math.max(0,v462||0),v464=v715.marginCustom||{top:0,left:0,right:0,bottom:0};v714.updateLayoutConfig({marginCustom:{...v464,[v461]:v463}});},v727=v725.getFreeze(),v728=v715.area!=="Workbook"&&v727.xSplit<=0,v729=v715.area!=="Workbook"&&v727.ySplit<=0;return(0,d.jsx)("div",{className:(0,c.clsx)("univer-h-full\x20univer-overflow-y-auto",c.scrollbarClassName),children:(0,d.jsxs)("div",{className:"univer-p-4",children:[(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.area.title"),children:(0,d.jsx)(c.Select,{className:"univer-w-full",value:""+v715.area,onChange:v465=>{v465==="Workbook"?v714.updateLayoutConfig({area:v465,subUnitIds:v724.map(v125=>v125.getSheetId())}):v714.updateLayoutConfig({area:v465});},options:[{label:v717.t("sheets-print.area.currentSheet"),value:"CurrentSheet"},{label:v717.t("sheets-print.area.workbook"),value:"Workbook"},{label:v717.t("sheets-print.area.currentSelection"),value:"CurrentSelection"},{label:v717.t("sheets-print.area.allSelection"),value:"AllSelection"}]})}),v715.area==="Workbook"?(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.selection.title"),children:(0,d.jsx)(c.Dropdown,{overlay:(0,d.jsx)("div",{className:(0,c.clsx)("univer-h-[200px] univer-w-[--radix-popper-anchor-width] univer-overflow-y-auto",c.scrollbarClassName),children:(0,d.jsx)(c.CheckboxGroup,{direction:"vertical",className:"univer-p-3",value:v715.subUnitIds["map"](v466=>typeof v466=="string"?v466:v466.id),onChange:v467=>{let v468=new Set(v467);if(v468.size===0)v714.updateLayoutConfig({subUnitIds:v724.map(v126=>v126.getSheetId())});else{let v127=[];v724.forEach(v42=>{let v43=v42.getSheetId();v468.has(v43)&&v127.push(v43);}),v714.updateLayoutConfig({subUnitIds:v127});}},children:v724.map(v469=>(0,d.jsx)(c.Checkbox,{value:v469.getSheetId(),children:v469.getName()},v469.getSheetId()))})}),children:(0,d.jsxs)("div",{className:(0,c.clsx)("univer-box-border univer-inline-flex univer-h-8 univer-w-full univer-min-w-36 univer-cursor-pointer univer-items-center univer-justify-between univer-gap-2 univer-rounded-lg univer-bg-gray-0 univer-px-2.5 univer-text-sm univer-transition-colors univer-duration-200 hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0",c.borderClassName),children:[(0,d.jsx)("span",{className:"univer-text-gray-500",children:v715.subUnitIds["length"]===v724.length||v715.subUnitIds["length"]===0?v717.t("sheets-print.selection.allWorkbook"):""+v715.subUnitIds["length"]+v717.t("sheets-print.selection.workbookUnit")}),(0,d.jsx)(l.MoreDownIcon,{})]})})}):null,(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.size.title"),children:(0,d.jsx)(c.Select,{className:"univer-w-full",value:v715.paperSize,options:[{label:v717.t("sheets-print.size.letter"),value:n.PaperType["Letter"]},{label:v717.t("sheets-print.size.tabloid"),value:n.PaperType["Tabloid"]},{label:v717.t("sheets-print.size.legal"),value:n.PaperType["Legal"]},{label:v717.t("sheets-print.size.statement"),value:n.PaperType["Statement"]},{label:v717.t("sheets-print.size.executive"),value:n.PaperType["Executive"]},{label:v717.t("sheets-print.size.folio"),value:n.PaperType["Folio"]},{label:v717.t("sheets-print.size.a3"),value:n.PaperType["A3"]},{label:v717.t("sheets-print.size.a4"),value:n.PaperType["A4"]},{label:v717.t("sheets-print.size.a5"),value:n.PaperType["A5"]},{label:v717.t("sheets-print.size.b4"),value:n.PaperType["B4"]},{label:v717.t("sheets-print.size.b5"),value:n.PaperType["B5"]}],onChange:v470=>{v714.updateLayoutConfig({paperSize:v470});}})}),(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.margin.title"),children:(0,d.jsx)(c.Select,{className:"univer-w-full",value:v715.margin,options:[{label:v717.t("sheets-print.margin.normal"),value:t.PrintPaperMargin["Normal"]},{label:v717.t("sheets-print.margin.narrow"),value:t.PrintPaperMargin["Narrow"]},{label:v717.t("sheets-print.margin.wide"),value:t.PrintPaperMargin["Wide"]},{label:v717.t("sheets-print.margin.custom"),value:t.PrintPaperMargin["Custom"]}],onChange:v471=>{let v472=t.PaperMarginMap[v715.margin];v714.updateLayoutConfig({margin:v471,marginCustom:v471===t.PrintPaperMargin["Custom"]?v472:t.PaperMarginMap[v471]});}})}),v715.margin===t.PrintPaperMargin["Custom"]&&(0,d.jsx)(c.FormLayout,{children:(0,d.jsxs)("div",{className:"univer-grid univer-grid-cols-2 univer-gap-2",children:[(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v717.t("sheets-print.margin.top")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v710=v715.marginCustom)==null?undefined:v710.top)||0),onChange:v473=>v726("top",Number(v473))})]}),(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v717.t("sheets-print.margin.bottom")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v711=v715.marginCustom)==null?undefined:v711.bottom)||0),onChange:v474=>v726("bottom",Number(v474))})]}),(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v717.t("sheets-print.margin.left")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v712=v715.marginCustom)==null?undefined:v712.left)||0),onChange:v475=>v726("left",Number(v475))})]}),(0,d.jsxs)("div",{children:[(0,d.jsx)("label",{className:"univer-mb-1 univer-block univer-text-xs univer-text-gray-500",children:v717.t("sheets-print.margin.right")}),(0,d.jsx)(c.Input,{type:"number",value:String(((v713=v715.marginCustom)==null?undefined:v713.right)||0),onChange:v476=>v726("right",Number(v476))})]})]})}),(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.orientation.title"),children:(0,d.jsxs)(c.RadioGroup,{value:v715.direction,onChange:v477=>{v714.updateLayoutConfig({direction:v477});},children:[(0,d.jsx)(c.Radio,{value:t.PrintDirection["Portrait"],children:v717.t("sheets-print.orientation.portrait")}),(0,d.jsx)(c.Radio,{value:t.PrintDirection["Landscape"],children:v717.t("sheets-print.orientation.landscape")})]})}),(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.scale.title"),children:(0,d.jsx)(c.Select,{className:"univer-w-full",value:v715.scale,options:[{label:v717.t("sheets-print.scale.normal"),value:t.PrintScale["Origin"]},{label:v717.t("sheets-print.scale.fitWidth"),value:t.PrintScale["FitWidth"]},{label:v717.t("sheets-print.scale.fitHeight"),value:t.PrintScale["FitHeight"]},{label:v717.t("sheets-print.scale.fitPage"),value:t.PrintScale["FitPage"]}],onChange:v478=>{v714.updateLayoutConfig({scale:v478});}})}),(0,d.jsxs)(c.FormLayout,{label:v717.t("sheets-print.formatting.title"),children:[(0,d.jsx)(c.Checkbox,{checked:v716.gridlines,onChange:v479=>{v714.updateRenderConfig({gridlines:v479});},children:v717.t("sheets-print.formatting.skeleton")}),v720&&!v722?(0,d.jsx)("div",{className:"univer-mt-3",children:(0,d.jsx)(c.Checkbox,{checked:!!v716.watermark,onChange:async v480=>{v480?v714.updateRenderConfig({watermark:v720}):v714.updateRenderConfig({watermark:undefined});},children:v717.t("sheets-print.formatting.waterMark")})}):null]}),(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.align.title"),children:(0,d.jsxs)("div",{className:"univer-flex univer-gap-2",children:[(0,d.jsx)(c.Select,{className:"!univer-min-w-0\x20univer-flex-1",value:v716.hAlign,options:[{label:v717.t("sheets-print.align.horizontal.middle"),value:t.PrintAlign["Middle"]},{label:v717.t("sheets-print.align.horizontal.start"),value:t.PrintAlign["Start"]},{label:v717.t("sheets-print.align.horizontal.end"),value:t.PrintAlign["End"]}],onChange:v481=>{v714.updateRenderConfig({hAlign:v481});}}),(0,d.jsx)(c.Select,{className:"!univer-min-w-0 univer-flex-1",value:v716.vAlign,options:[{label:v717.t("sheets-print.align.vertical.start"),value:t.PrintAlign["Start"]},{label:v717.t("sheets-print.align.vertical.end"),value:t.PrintAlign["End"]},{label:v717.t("sheets-print.align.vertical.middle"),value:t.PrintAlign["Middle"]}],onChange:v482=>{v714.updateRenderConfig({vAlign:v482});}})]})}),(0,d.jsxs)(c.FormLayout,{collapsable:true,label:v717.t("sheets-print.headerFooter.title"),children:[(0,d.jsxs)(c.CheckboxGroup,{direction:"vertical",disabled:v716.isCustomHeaderFooter,value:v716.headerFooter,onChange:v483=>{v714.updateRenderConfig({headerFooter:v483});},children:[(0,d.jsx)(c.Checkbox,{value:"PageSize",children:v717.t("sheets-print.headerFooter.page")}),(0,d.jsx)(c.Checkbox,{value:"WorkbookTitle",children:v717.t("sheets-print.headerFooter.workbook")}),(0,d.jsx)(c.Checkbox,{value:"WorksheetTitle",children:v717.t("sheets-print.headerFooter.sheet")}),(0,d.jsx)(c.Checkbox,{value:"Date",children:v717.t("sheets-print.headerFooter.date")}),(0,d.jsx)(c.Checkbox,{value:"Time",children:v717.t("sheets-print.headerFooter.time")})]}),(0,d.jsx)(c.FormLayout,{className:"univer-mt-3",label:(0,d.jsx)(c.Checkbox,{checked:v716.isCustomHeaderFooter,onChange:()=>{v714.updateRenderConfig({isCustomHeaderFooter:!v716.isCustomHeaderFooter});},children:v717.t("sheets-print.headerFooter.customHeadFooter")}),children:v716.isCustomHeaderFooter?(0,d.jsx)(c.Button,{className:"univer-my-1 univer-p-0",size:"small",variant:"link",onClick:()=>{v708();},children:v717.t("sheets-print.headerFooter.editCustomHeadFooter")}):null})]}),(0,d.jsx)(c.FormLayout,{collapsable:true,label:v717.t("sheets-print.freeze.title"),children:(0,d.jsxs)(c.CheckboxGroup,{direction:"vertical",value:v715.freeze,onChange:v484=>{v714.updateLayoutConfig({freeze:v484});},children:[(0,d.jsx)(c.Checkbox,{disabled:v729,value:"Row",children:v717.t("sheets-print.freeze.row")}),(0,d.jsx)(c.Checkbox,{disabled:v728,value:"Column",children:v717.t("sheets-print.freeze.column")})]})}),(0,d.jsxs)(c.FormLayout,{collapsable:true,defaultCollapsed:true,label:v717.t("sheets-print.area.limit"),children:[(0,d.jsx)(c.FormLayout,{className:"univer-mb-2",label:v717.t("sheets-print.area.maxRowsEachPage"),children:(0,d.jsx)(c.Input,{value:v715.maxRowsEachPage===1/0?"":""+v715.maxRowsEachPage,onChange:v485=>{v714.updateLayoutConfig({maxRowsEachPage:!v485||Number.isNaN(Number(v485))?1/0:Number(v485)});}})}),(0,d.jsx)(c.FormLayout,{label:v717.t("sheets-print.area.maxColumnsEachPage"),children:(0,d.jsx)(c.Input,{value:v715.maxColumnsEachPage===1/0?"":""+v715.maxColumnsEachPage,onChange:v486=>{v714.updateLayoutConfig({maxColumnsEachPage:!v486||Number.isNaN(Number(v486))?1/0:Number(v486)});}})})]})]})});}),Ae=0.1,je=()=>{let[v730,v731]=(0,u.useState)(false),v732=(0,i.useDependency)(k),v733=(0,i.useDependency)(n.ICommandService),v734=(0,i.useObservable)(v732.layoutInfos$,[]),[v735,v736]=(0,u.useState)(1),[v737,v738]=(0,u.useState)(false),v739=(0,i.useDependency)(b),v740=(0,i.useObservable)(v739.preparing$,v739.preparing),v741=(0,i.useDependency)(n.IUniverInstanceService),v742=(0,i.useDependency)(n.LocaleService),v743=(0,i.useDependency)(n.Injector),{ls:v744,pbk:v745}=(0,i.useDependency)(n.IConfigService).getConfig(e.LS_CONFIG_KEY)??{},{limit:v746,isPro:v747}=(0,u.useMemo)(()=>{let{page:v487,isPro:v488}=N(3,v744,v745);return{limit:v487,isPro:v488};},[v744,v745]),v748=(0,u.useRef)(null),v749=(0,i.useDependency)(i.IMessageService),v750=Ce(import(`@univerjs-pro/collaboration-client`).then(v489=>v489.CollaborationController,()=>undefined));(0,u.useEffect)(()=>{var v490;if(!v750)return;let v491=v741.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]);if(!v491)return;let v492=v491.getUnitId(),v493=v743.get(v750,n.Quantity["OPTIONAL"]),v494=v493==null||(v490=v493.getCollabEntity(v492))==null?undefined:v490.pauseCollaboration();return()=>{v494==null||v494.dispose();};},[v750,v743,v741]);let v751=(0,u.useMemo)(()=>oe(v734),[v734]),v752=(0,u.useMemo)(()=>v751.slice(0,v746),[v751,v746]),v753=v732.paperSize,v754=Math.round(v735*(794/v753.w)*10)/10,[v755,{wrapperStyle:v756,containerProps:v757}]=(0,i.useVirtualList)(v752,{containerTarget:v748,itemHeight:v753.h*v754+28,overscan:5}),v758=()=>{v733.executeCommand(I.id);},v759=()=>{v738(true),v749.show({content:v742.t("sheets-print.header.printing"),type:c.MessageType["Loading"]}),setTimeout(()=>{v733.executeCommand(L.id);},300);},v760=(0,i.useEvent)(()=>{v731(true);});return(0,d.jsxs)("div",{className:"univer-absolute univer-inset-0 univer-z-[100] univer-box-border univer-flex univer-size-full univer-flex-col univer-overflow-hidden univer-bg-gray-100 dark:!univer-bg-gray-900",children:[v730&&(0,d.jsx)(Ee,{onClose:()=>v731(false)}),v737&&(0,d.jsx)("div",{className:"univer-pointer-events-none univer-absolute univer-inset-0 univer-z-[1010] univer-flex univer-justify-center"}),(0,d.jsxs)("div",{className:(0,c.clsx)("univer-flex univer-h-16 univer-items-center univer-justify-between univer-bg-gray-0 univer-px-4 dark:!univer-bg-gray-900",c.borderBottomClassName),children:[(0,d.jsxs)("div",{className:"univer-ml-2 univer-text-base univer-font-medium univer-text-gray-900 dark:!univer-text-gray-0",children:[v742.t("sheets-print.header.total"),v752.length,v742.t("sheets-print.header.pages")]}),(0,d.jsxs)("div",{className:"univer-flex univer-gap-2",children:[(0,d.jsx)(c.Button,{onClick:v758,children:v742.t("sheets-print.header.cancel")}),(0,d.jsx)(c.Button,{variant:"primary",disabled:v740,onClick:v759,children:v742.t("sheets-print.header.next")})]})]}),(0,d.jsxs)("div",{className:"univer-flex\x20univer-flex-1\x20univer-overflow-hidden",children:[(0,d.jsxs)("div",{className:"univer-relative univer-box-border univer-flex univer-flex-1 univer-flex-col univer-overflow-hidden",children:[(0,d.jsx)("div",{ref:v748,className:(0,c.clsx)("univer-flex-1\x20univer-overflow-auto",c.scrollbarClassName),"aria-busy":v740,...v757,children:v740?(0,d.jsx)("div",{className:"univer-flex univer-size-full univer-items-center univer-justify-center",role:"status","aria-label":v742.t("sheets-print.header.printing"),children:(0,d.jsx)(l.LoadingMultiIcon,{className:"univer-size-8 univer-animate-spin univer-text-gray-500","aria-hidden":"true"})}):(0,d.jsx)("div",{style:v756,children:v755.map(v495=>(0,d.jsx)(Oe,{config:v495.data,page:v495.data["page"],previewScale:v735},v495.data["unitId"]+":"+v495.data["subUnitId"]+":"+v495.data["page"]+":"+v495.data["range"].startRow+":"+v495.data["range"].startColumn+":"+v495.data["range"].endRow+":"+v495.data["range"].endColumn))})}),!v740&&!v747&&(0,d.jsx)("div",{className:"univer-my-4 univer-text-center",children:(0,d.jsx)("a",{href:v742.t("sheets-print.limit.link"),target:"_blank",rel:"noreferrer noopener",children:v742.t("sheets-print.limit.page").replace("{limit}",""+v746)})}),!v740&&!v730&&(0,d.jsxs)("div",{className:"univer-absolute\x20univer-bottom-4\x20univer-right-4\x20univer-z-[1000]",children:[(0,d.jsx)("div",{className:"univer-z-[100] univer-mt-2 univer-flex univer-size-8 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-full univer-bg-gray-0 univer-shadow dark:!univer-bg-gray-900",onClick:()=>{v736(Math.min(v735+Ae,2));},children:(0,d.jsx)(l.IncreaseIcon,{})}),(0,d.jsx)("div",{className:"univer-z-[100] univer-mt-2 univer-flex univer-size-8 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-full univer-bg-gray-0 univer-shadow dark:!univer-bg-gray-900",onClick:()=>{v736(Math.max(v735-Ae,0.5));},children:(0,d.jsx)(l.ReduceIcon,{})})]})]}),(0,d.jsx)("div",{className:"univer-box-border univer-h-full univer-w-[312px] univer-flex-none univer-bg-gray-0 dark:!univer-bg-gray-900",children:(0,d.jsx)(ke,{onShowFooterHeaderEditor:v760})})]})]});},Me=()=>{let v761=(0,i.useDependency)(b);return(0,i.useObservable)(v761.visible$,v761.visible)?(0,d.jsx)(je,{}):null;},Ne={id:F.id,binding:i.KeyCode["P"]|i.MetaKeys["CTRL_COMMAND"],preconditions:s.whenSheetEditorFocused};let Q=class extends n.Disposable{constructor(v496,v497,v498,v499,v500,v501,v502,v503,v504,v505){super(),this._printDialogService=v496,this._commandService=v497,this._sheetPrintManagerService=v498,this._sheetPrintClientService=v499,this._menuManagerService=v500,this._shortcutService=v501,this._injector=v502,this._univerInstanceService=v503,this._renderManagerService=v504,this._uiPartsService=v505,this._initCommands(),this._initUIParts(),this._initMenus(),this._initShortcuts(),this._initCommandListener(),this._initConfigChangeListener(),this._initMutationListener();}_initCommands(){[F,I,L,W,R,K,q].forEach(v128=>this._commandService["registerCommand"](v128));}_initUIParts(){this.disposeWithMe(this._uiPartsService["registerComponent"](i.BuiltInUIPart["GLOBAL"],()=>(0,i.connectInjector)(Me,this._injector)));}_initShortcuts(){[Ne].forEach(v129=>{this._shortcutService["registerShortcut"](v129);});}_initMenus(){this._menuManagerService["mergeMenu"](ge);}_initConfigChangeListener(){this.disposeWithMe(this._printDialogService["visible$"].subscribe(v130=>{v130&&this._sheetPrintManagerService["reLayout"]();}));}_print(){let v506=this._sheetPrintManagerService["layoutInfos"],v507=this._sheetPrintManagerService["renderConfig"];return this._sheetPrintClientService["print"](v506,v507);}_initCommandListener(){this.disposeWithMe(this._commandService["onCommandExecuted"](v131=>{v131.id===L.id&&this._print();}));}_initMutationListener(){let v508=this._injector["get"](G);this.disposeWithMe(v508.visible$["subscribe"](()=>{let v132=this._univerInstanceService["getCurrentUnitOfType"](2);if(v132){let v44=v132.getUnitId(),v45=this._renderManagerService["getRenderUnitById"](v44);if(v45){var v133;(v133=v45.mainComponent)==null||v133.makeDirty();}}})),this.disposeWithMe(this._sheetPrintManagerService["layoutConfig$"].subscribe(()=>{if(!v508.visible)return;this._sheetPrintManagerService["reLayout"]();let v134=this._univerInstanceService["getCurrentUnitOfType"](2);if(v134){let v46=v134.getUnitId(),v47=this._renderManagerService["getRenderUnitById"](v46);if(v47){var v135;(v135=v47.mainComponent)==null||v135.makeDirty();}}})),this.disposeWithMe(this._commandService["onCommandExecuted"](v136=>{if(!v508.visible||[F.id,I.id,L.id,R.id,K.id,q.id].includes(v136.id))return;this._sheetPrintManagerService["reLayout"]();let v137=this._univerInstanceService["getCurrentUnitOfType"](2);if(v137){let v48=v137.getUnitId(),v49=this._renderManagerService["getRenderUnitById"](v48);if(v49){var v138;(v138=v49.mainComponent)==null||v138.makeDirty();}}}));}};Q=O([D(0,b),D(1,n.ICommandService),D(2,k),D(3,(0,n.Inject)(U)),D(4,i.IMenuManagerService),D(5,i.IShortcutService),D(6,(0,n.Inject)(n.Injector)),D(7,n.IUniverInstanceService),D(8,o.IRenderManagerService),D(9,i.IUIPartsService)],Q);let $=class extends n.Plugin{constructor(v509=ye,v510,v511,v512){super(),this._config=v509,this._injector=v510,this._configService=v511,this._renderManagerService=v512;let{menu:v513,...v514}=(0,n.merge)({},ye,this._config);v513&&this._configService["setConfig"]("menu",v513,{merge:true}),this._configService["setConfig"]("sheets-print.config",v514);}onReady(){this._injector["has"](t.IPrintPreparationService)||this._injector["add"]([t.IPrintPreparationService,{useClass:t.PrintPreparationService}]),(0,n.registerDependencies)(this._injector,[[k,{useClass:M}],[b,{useClass:x}],[G,{useClass:le}],[U],[J],[Q]]),this.disposeWithMe(this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_SHEET"],[Y])),(0,n.touchDependencies)(this._injector,[[J],[Q]]);}};y($,"pluginName","SHEET_PRINT_PLUGIN"),y($,"packageName",_e),y($,"version",ve),y($,"type",n.UniverInstanceType["UNIVER_SHEET"]),$=O([(0,n.DependentOn)(e.UniverLicensePlugin,o.UniverRenderEnginePlugin,r.UniverSheetsPlugin,s.UniverSheetsUIPlugin),D(1,(0,n.Inject)(n.Injector)),D(2,n.IConfigService),D(3,o.IRenderManagerService)],$),exports.CancelSheetPrintOperation=I,exports.ConfirmSheetPrintOperation=L,exports.ISheetPrintManagerService=k,exports.PrintArea=S,exports.PrintFreeze=w,exports.PrintHeaderFooter=C,exports.PrintHeaderFooterSymbol=T,exports.SheetPrintCanvasView=H,Object.defineProperty(exports,"SheetPrintClientService",{enumerable:true,get:function(){return U;}}),exports.SheetPrintOpenOperation=F,exports.SheetScreenShotOperation=W,exports.SheetsPrintMenuSchema=ge,Object.defineProperty(exports,"UniverSheetsPrintPlugin",{enumerable:true,get:function(){return $;}}),exports.defaultHeaderFooter=E,exports.hasPrintFacadePermission=P;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/license"),
+  t = require("@univerjs-pro/print"),
+  n = require("@univerjs/core"),
+  r = require("@univerjs/sheets"),
+  i = require("@univerjs/ui"),
+  a = require("rxjs"),
+  o = require("@univerjs/engine-render"),
+  s = require("@univerjs/sheets-ui"),
+  c = require("@univerjs/design"),
+  l = require("@univerjs/icons"),
+  u = require("react"),
+  d = require("react/jsx-runtime"),
+  f = require("@univerjs/docs"),
+  p = require("@univerjs/docs-ui");
+const m = Number.parseInt(1788764290),
+  h = "UNIVER_SHEET_PERMISSION_ALERT_DIALOG_ID";
+function g(var_core_value_sig5E16) {
+  "@babel/helpers - typeof";
+
+  return g = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig8EA0) {
+    return typeof var_core_value_sig8EA0;
+  } : function (var_core_value_sigA6F6) {
+    return var_core_value_sigA6F6 && typeof Symbol == "function" && var_core_value_sigA6F6.constructor === Symbol && var_core_value_sigA6F6 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigA6F6;
+  }, g(var_core_value_sig5E16);
+}
+function _(var_core_value_sig09F3, var_core_value_sig4592) {
+  if (g(var_core_value_sig09F3) != "object" || !var_core_value_sig09F3) return var_core_value_sig09F3;
+  var var_core_value_sigC5C4 = var_core_value_sig09F3[Symbol.toPrimitive];
+  if (var_core_value_sigC5C4 !== undefined) {
+    var var_core_value_sig1617 = var_core_value_sigC5C4.call(var_core_value_sig09F3, var_core_value_sig4592 || "default");
+    if (g(var_core_value_sig1617) != "object") return var_core_value_sig1617;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_core_value_sig4592 === "string" ? String : Number)(var_core_value_sig09F3);
+}
+function v(var_core_value_sig4169) {
+  var var_core_value_sig6D19 = _(var_core_value_sig4169, "string");
+  return g(var_core_value_sig6D19) == "symbol" ? var_core_value_sig6D19 : var_core_value_sig6D19 + "";
+}
+function y(var_core_value_sig279C, var_core_value_sigAC51, var_core_value_sig8986) {
+  return (var_core_value_sigAC51 = v(var_core_value_sigAC51)) in var_core_value_sig279C ? Object.defineProperty(var_core_value_sig279C, var_core_value_sigAC51, {
+    value: var_core_value_sig8986,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig279C[var_core_value_sigAC51] = var_core_value_sig8986, var_core_value_sig279C;
+}
+const b = (0, n.createIdentifier)("univer-pro.sheet-print-dialog.service");
+var x = class extends n.Disposable {
+  constructor(...var_core_value_sigCDDA) {
+    super(...var_core_value_sigCDDA), y(this, "visible$", new a["BehaviorSubject"](false)), y(this, "preparing$", new a["BehaviorSubject"](false));
+  }
+  get visible() {
+    return this.visible$["getValue"]();
+  }
+  get preparing() {
+    return this.preparing$["getValue"]();
+  }
+  open() {
+    this.visible$["next"](true);
+  }
+  close() {
+    this.visible$["next"](false);
+  }
+  setPreparing(var_core_value_sigE243) {
+    this.preparing$["next"](var_core_value_sigE243);
+  }
+  dispose() {
+    this.visible$["complete"](), this.preparing$["complete"](), super.dispose();
+  }
+};
+let S = function (var_core_value_sigCAF7) {
+    return var_core_value_sigCAF7.CurrentSheet = "CurrentSheet", var_core_value_sigCAF7.workbook = "Workbook", var_core_value_sigCAF7.CurrentSelection = "CurrentSelection", var_core_value_sigCAF7.AllSelection = "AllSelection", var_core_value_sigCAF7;
+  }({}),
+  C = function (var_core_value_sigED1C) {
+    return var_core_value_sigED1C.PageSize = "PageSize", var_core_value_sigED1C.WorkbookTitle = "WorkbookTitle", var_core_value_sigED1C.WorksheetTitle = "WorksheetTitle", var_core_value_sigED1C.Date = "Date", var_core_value_sigED1C.Time = "Time", var_core_value_sigED1C;
+  }({}),
+  w = function (var_core_value_sig726E) {
+    return var_core_value_sig726E.Row = "Row", var_core_value_sig726E.Column = "Column", var_core_value_sig726E;
+  }({}),
+  T = function (var_core_value_sig2CD3) {
+    return var_core_value_sig2CD3.WorkbookTitle = "@WorkbookTitle", var_core_value_sig2CD3.WorksheetTitle = "@WorksheetTitle", var_core_value_sig2CD3.DateA = "@DateA", var_core_value_sig2CD3.DateB = "@DateB", var_core_value_sig2CD3.DateC = "@DateC", var_core_value_sig2CD3.DateD = "@DateD", var_core_value_sig2CD3.DateE = "@DateE", var_core_value_sig2CD3.TimeA = "@TimeA", var_core_value_sig2CD3.TimeB = "@TimeB", var_core_value_sig2CD3.TimeC = "@TimeC", var_core_value_sig2CD3.TimeD = "@TimeD", var_core_value_sig2CD3.Page = "@Page", var_core_value_sig2CD3.SheetPage = "@SheetPage", var_core_value_sig2CD3.PageTotal = "@TotalPage", var_core_value_sig2CD3.SheetPageTotal = "@TotalSheetPage", var_core_value_sig2CD3;
+  }({});
+const E = {
+  topLeft: "",
+  topCenter: "",
+  topRight: "",
+  bottomLeft: "",
+  bottomCenter: "",
+  bottomRight: ""
+};
+function D(var_core_value_sig038E, var_core_value_sigAA1E) {
+  return function (var_core_value_sig74A8, var_core_value_sig21B2) {
+    var_core_value_sigAA1E(var_core_value_sig74A8, var_core_value_sig21B2, var_core_value_sig038E);
+  };
+}
+function O(var_core_value_sigC9F5, var_core_value_sig7EEA, var_core_value_sig59CE, var_core_value_sig33C8) {
+  var var_core_value_sig957F = arguments.length,
+    var_core_value_sig803B = var_core_value_sig957F < 3 ? var_core_value_sig7EEA : var_core_value_sig33C8 === null ? var_core_value_sig33C8 = Object.getOwnPropertyDescriptor(var_core_value_sig7EEA, var_core_value_sig59CE) : var_core_value_sig33C8,
+    var_core_value_sig5830;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig803B = Reflect.decorate(var_core_value_sigC9F5, var_core_value_sig7EEA, var_core_value_sig59CE, var_core_value_sig33C8);else {
+    for (var var_core_value_sig4A7C = var_core_value_sigC9F5.length - 1; var_core_value_sig4A7C >= 0; var_core_value_sig4A7C--) (var_core_value_sig5830 = var_core_value_sigC9F5[var_core_value_sig4A7C]) && (var_core_value_sig803B = (var_core_value_sig957F < 3 ? var_core_value_sig5830(var_core_value_sig803B) : var_core_value_sig957F > 3 ? var_core_value_sig5830(var_core_value_sig7EEA, var_core_value_sig59CE, var_core_value_sig803B) : var_core_value_sig5830(var_core_value_sig7EEA, var_core_value_sig59CE)) || var_core_value_sig803B);
+  }
+  return var_core_value_sig957F > 3 && var_core_value_sig803B && Object.defineProperty(var_core_value_sig7EEA, var_core_value_sig59CE, var_core_value_sig803B), var_core_value_sig803B;
+}
+const k = (0, n.createIdentifier)("univer-pro.sheet-print-manager.service"),
+  A = var_core_value_sigF975 => Math.floor(var_core_value_sigF975 * 100) / 100,
+  ee = {
+    startColumn: 0,
+    endColumn: 0,
+    startRow: 0,
+    endRow: 0
+  },
+  j = {
+    startColumn: -1,
+    startRow: -1,
+    xSplit: 0,
+    ySplit: 0
+  };
+let M = class {
+  constructor(var_core_value_sigDE08, var_core_value_sigACCB, var_core_value_sig7F33, var_core_value_sig0C53) {
+    this._univerInstanceService = var_core_value_sigDE08, this._sheetsSelectionsSrv = var_core_value_sigACCB, this._sheetPrintInterceptorService = var_core_value_sig7F33, this._renderManagerService = var_core_value_sig0C53, y(this, "_layoutConfig", {
+      area: "CurrentSheet",
+      subUnitIds: [],
+      paperSize: n.PaperType["A4"],
+      direction: t.PrintDirection["Portrait"],
+      scale: t.PrintScale["Origin"],
+      customScale: 1,
+      freeze: ["Row", "Column"],
+      margin: t.PrintPaperMargin["Normal"],
+      maxRowsEachPage: 1 / 0,
+      maxColumnsEachPage: 1 / 0,
+      marginCustom: {
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0
+      }
+    }), y(this, "_renderConfig", {
+      gridlines: true,
+      hAlign: t.PrintAlign["Middle"],
+      vAlign: t.PrintAlign["Start"],
+      headerFooter: [],
+      headerFooterSetting: E,
+      isCustomHeaderFooter: false
+    }), y(this, "_layoutInfos", []), y(this, "_layoutInfos$", new a["BehaviorSubject"](this._layoutInfos)), y(this, "_layoutConfig$", new a["BehaviorSubject"](this._layoutConfig)), y(this, "_renderConfig$", new a.BehaviorSubject(this._renderConfig)), y(this, "_printViewDisposable", null), y(this, "layoutConfig$", this._layoutConfig$["asObservable"]()), y(this, "renderConfig$", this._renderConfig$["asObservable"]()), y(this, "layoutInfos$", this._layoutInfos$["asObservable"]().pipe((0, a.debounceTime)(300)));
+  }
+  get layoutInfos() {
+    return this._layoutInfos;
+  }
+  get renderConfig() {
+    return this._renderConfig;
+  }
+  get layoutConfig() {
+    return this._layoutConfig;
+  }
+  get paperSize() {
+    let {
+      paperSize: var_core_value_sigEA04,
+      direction: var_core_value_sig7A62,
+      pageSizeCustom: var_core_value_sig8109
+    } = this._layoutConfig;
+    if (var_core_value_sig8109) return var_core_value_sig8109;
+    let var_core_value_sig7565 = n.PAGE_SIZE[var_core_value_sigEA04];
+    return var_core_value_sig7A62 === t.PrintDirection["Portrait"] ? {
+      w: var_core_value_sig7565.width,
+      h: var_core_value_sig7565.height
+    } : {
+      w: var_core_value_sig7565.height,
+      h: var_core_value_sig7565.width
+    };
+  }
+  get paperMargin() {
+    return this._layoutConfig["margin"] === t.PrintPaperMargin["Custom"] ? this._layoutConfig["marginCustom"] : t.PaperMarginMap[this._layoutConfig["margin"]];
+  }
+  updateLayoutConfig(var_core_value_sigD4FB) {
+    this._layoutConfig = {
+      ...this._layoutConfig,
+      ...var_core_value_sigD4FB
+    }, this._layoutConfig$["next"](this._layoutConfig), this.reLayout();
+  }
+  replaceLayoutConfig(var_core_value_sig3E71) {
+    this._layoutConfig = var_core_value_sig3E71, this._layoutConfig$["next"](this._layoutConfig), this.reLayout();
+  }
+  updateRenderConfig(var_core_value_sig01B3) {
+    this._renderConfig = {
+      ...this._renderConfig,
+      ...var_core_value_sig01B3
+    }, this._renderConfig$["next"](this._renderConfig);
+  }
+  replaceRenderConfig(var_core_value_sig7442) {
+    this._renderConfig = var_core_value_sig7442, this._renderConfig$["next"](this._renderConfig);
+  }
+  reLayout() {
+    this._layoutInfos = this._calculate(), this._layoutInfos$["next"](this._layoutInfos);
+  }
+  reset() {
+    this._layoutInfos = [], this._layoutInfos$["next"](this._layoutInfos), this._layoutConfig = {
+      ...this._layoutConfig,
+      area: "CurrentSheet",
+      maxRowsEachPage: 1 / 0,
+      maxColumnsEachPage: 1 / 0
+    }, this._layoutConfig$["next"](this._layoutConfig);
+  }
+  setPrintViewDisposable(var_core_value_sigDF87) {
+    var var_core_value_sig9EE0;
+    (var_core_value_sig9EE0 = this._printViewDisposable) == null || var_core_value_sig9EE0.dispose(), this._printViewDisposable = var_core_value_sigDF87;
+  }
+  disposePrintView() {
+    var var_core_value_sigF051;
+    (var_core_value_sigF051 = this._printViewDisposable) == null || var_core_value_sigF051.dispose(), this._printViewDisposable = null;
+  }
+  _calculate() {
+    let var_core_value_sig0B45 = this._calculateSubSheetRange(),
+      var_core_value_sig36F8 = [];
+    return var_core_value_sig0B45.forEach(var_core_value_sigF4B9 => {
+      if (var_core_value_sigF4B9) {
+        let var_core_value_sig186C = this._calculateSheetPages(var_core_value_sigF4B9);
+        var_core_value_sig186C && var_core_value_sig36F8.push(var_core_value_sig186C);
+      }
+    }), var_core_value_sig36F8;
+  }
+  _calculateSheetRangeById(var_core_value_sig03E1, var_core_value_sigBB57, var_core_value_sig7C4A) {
+    var var_core_value_sigE799;
+    let var_core_value_sigB601 = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]).getSheetBySheetId(var_core_value_sigBB57);
+    if (!var_core_value_sigB601) return;
+    let var_core_value_sig8B71 = var_core_value_sigB601.getFreeze(),
+      var_core_value_sigAEFB = var_core_value_sig7C4A ?? var_core_value_sigB601.getCellMatrixPrintRange(),
+      var_core_value_sig826B = (var_core_value_sigE799 = this._renderManagerService["getRenderUnitById"](var_core_value_sig03E1)) == null ? undefined : var_core_value_sigE799.with(s.SheetSkeletonManagerService).ensureSkeleton(var_core_value_sigBB57);
+    if (!var_core_value_sig826B) return;
+    if (var_core_value_sigAEFB) {
+      var var_core_value_sigCF89;
+      var_core_value_sig826B == null || (var_core_value_sigCF89 = var_core_value_sig826B.overflowCache) == null || var_core_value_sigCF89.forValue((var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig429F) => {
+        let {
+          endColumn: var_core_value_sigF62A
+        } = var_core_value_sig429F;
+        var_core_value_sigF62A > var_core_value_sigAEFB.endColumn && (var_core_value_sigAEFB.endColumn = var_core_value_sigF62A);
+      });
+    }
+    let var_core_value_sig00CB = this._sheetPrintInterceptorService["interceptor"].fetchThroughInterceptors(this._sheetPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_RANGE)(var_core_value_sigAEFB, {
+      unitId: var_core_value_sig03E1,
+      subUnitId: var_core_value_sigBB57
+    });
+    return var_core_value_sig00CB ? this._calculateFinalRange(var_core_value_sigBB57, {
+      ...var_core_value_sig00CB,
+      startColumn: Math.max(var_core_value_sig8B71.startColumn - var_core_value_sig8B71.xSplit, 0),
+      startRow: Math.max(var_core_value_sig8B71.startRow - var_core_value_sig8B71.ySplit, 0)
+    }) : null;
+  }
+  _calculateCurrentSelectionRange(var_core_value_sig77EE, var_core_value_sig9F76) {
+    let var_core_value_sigB008 = this._sheetsSelectionsSrv["getWorkbookSelections"](var_core_value_sig77EE).getSelectionsOfWorksheet(var_core_value_sig9F76);
+    return var_core_value_sigB008 ? var_core_value_sigB008.map(var_core_value_sig5CEE => this._calculateFinalRange(var_core_value_sig9F76, var_core_value_sig5CEE.range)) : [];
+  }
+  _calculateFinalRange(var_core_value_sig8721, var_core_value_sig08BA) {
+    let var_core_value_sigDBB5 = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),
+      var_core_value_sigCFAC = var_core_value_sigDBB5.getSheetBySheetId(var_core_value_sig8721),
+      var_core_value_sig237B = this._layoutConfig,
+      var_core_value_sigFEAB = var_core_value_sigDBB5.getUnitId(),
+      var_core_value_sigE347 = this.paperSize,
+      {
+        top: var_core_value_sig3C5B,
+        right: var_core_value_sig200B,
+        bottom: var_core_value_sig3863,
+        left: var_core_value_sigC97C
+      } = this.paperMargin;
+    var_core_value_sigE347.h -= var_core_value_sig3C5B + var_core_value_sig3863, var_core_value_sigE347.w -= var_core_value_sigC97C + var_core_value_sig200B;
+    let var_core_value_sigC4B1 = this._renderManagerService["getRenderUnitById"](var_core_value_sigFEAB).with(s.SheetSkeletonManagerService);
+    if (var_core_value_sig08BA.startRow > -1 && var_core_value_sig08BA.startColumn > -1) {
+      let var_core_value_sigE92A = var_core_value_sigC4B1.ensureSkeleton(var_core_value_sig8721);
+      if (!var_core_value_sigCFAC || !var_core_value_sigE92A) return null;
+      let var_core_value_sig362B = var_core_value_sig08BA.startRow,
+        var_core_value_sig5CA5 = var_core_value_sig08BA.endRow,
+        var_core_value_sigE90F = var_core_value_sig08BA.startColumn,
+        var_core_value_sigEFD4 = var_core_value_sig08BA.endColumn,
+        var_core_value_sig861B = var_core_value_sigCFAC.getFreeze(),
+        var_core_value_sig5237 = A(this._calculatePrintScale(var_core_value_sigE92A, var_core_value_sig08BA, var_core_value_sig861B)),
+        var_core_value_sigBB00 = -1,
+        var_core_value_sig7E54 = 0,
+        var_core_value_sig9A8D = -1,
+        var_core_value_sigC259 = 0,
+        var_core_value_sig9C9F = var_core_value_sigE92A.columnWidthAccumulation,
+        var_core_value_sigFDEA = var_core_value_sigE92A.rowHeightAccumulation;
+      if (var_core_value_sig861B.xSplit && var_core_value_sig237B.freeze["includes"]("Column")) {
+        if (var_core_value_sigEFD4 >= var_core_value_sig861B.startColumn) {
+          let var_core_value_sig7524 = var_core_value_sig5237 * (var_core_value_sig9C9F[var_core_value_sig861B.startColumn - 1] - (var_core_value_sig9C9F[var_core_value_sig861B.startColumn - var_core_value_sig861B.xSplit - 1] || 0));
+          var_core_value_sig7524 < var_core_value_sigE347.w && (var_core_value_sig9A8D = var_core_value_sig861B.startColumn, var_core_value_sigC259 = var_core_value_sig861B.xSplit, var_core_value_sigE347.w -= var_core_value_sig7524);
+        } else {
+          let var_core_value_sig2AD8 = var_core_value_sigEFD4 + 1,
+            var_core_value_sig2AD0 = var_core_value_sigEFD4 + 1 - (var_core_value_sig861B.startColumn - var_core_value_sig861B.xSplit),
+            var_core_value_sig3EEE = var_core_value_sig5237 * (var_core_value_sig9C9F[var_core_value_sig9A8D - 1] - (var_core_value_sig9C9F[var_core_value_sig9A8D - var_core_value_sigC259] - 1 || 0));
+          var_core_value_sig3EEE < var_core_value_sigE347.w && (var_core_value_sig9A8D = var_core_value_sig2AD8, var_core_value_sigC259 = var_core_value_sig2AD0, var_core_value_sigE347.w -= var_core_value_sig3EEE);
+        }
+      }
+      if (var_core_value_sigE90F = Math.max(var_core_value_sig9A8D, var_core_value_sigE90F), var_core_value_sig861B.ySplit && var_core_value_sig237B.freeze["includes"]("Row")) {
+        if (var_core_value_sig5CA5 >= var_core_value_sig861B.startRow) {
+          let var_core_value_sigBC46 = var_core_value_sigFDEA[var_core_value_sig861B.startRow] - var_core_value_sigFDEA[var_core_value_sig861B.startRow - var_core_value_sig861B.ySplit];
+          var_core_value_sigBC46 < var_core_value_sigE347.h && (var_core_value_sigBB00 = var_core_value_sig861B.startRow, var_core_value_sig7E54 = var_core_value_sig861B.ySplit, var_core_value_sigE347.h -= var_core_value_sigBC46);
+        } else var_core_value_sigBB00 = var_core_value_sig5CA5 + 1, var_core_value_sig7E54 = var_core_value_sig5CA5 + 1 - (var_core_value_sig861B.startRow - var_core_value_sig861B.ySplit), var_core_value_sigE347.h = var_core_value_sigE347.h - var_core_value_sigFDEA[var_core_value_sigBB00] - var_core_value_sigFDEA[var_core_value_sigBB00 - var_core_value_sig7E54];
+      }
+      return var_core_value_sig362B = Math.max(var_core_value_sigBB00, var_core_value_sig362B), {
+        unitId: var_core_value_sigFEAB,
+        subUnitId: var_core_value_sig8721,
+        range: {
+          startRow: var_core_value_sig362B,
+          endRow: var_core_value_sig5CA5,
+          startColumn: var_core_value_sigE90F,
+          endColumn: var_core_value_sigEFD4
+        },
+        freeze: {
+          startRow: var_core_value_sigBB00,
+          startColumn: var_core_value_sig9A8D,
+          xSplit: var_core_value_sigC259,
+          ySplit: var_core_value_sig7E54
+        },
+        contentSize: var_core_value_sigE347,
+        scale: var_core_value_sig5237
+      };
+    }
+    return {
+      unitId: var_core_value_sigFEAB,
+      subUnitId: var_core_value_sig8721,
+      range: ee,
+      freeze: j,
+      contentSize: var_core_value_sigE347,
+      scale: 1
+    };
+  }
+  _calculatePrintScale(var_core_value_sig1BD9, var_core_value_sigE43E, var_core_value_sigA937) {
+    let var_core_value_sigCAD5 = var_core_value_sig1BD9.columnWidthAccumulation,
+      var_core_value_sigE503 = var_core_value_sig1BD9.rowHeightAccumulation,
+      {
+        xSplit: var_core_value_sig48DD,
+        ySplit: var_core_value_sig5E6A,
+        startColumn: var_core_value_sigB7FC,
+        startRow: var_core_value_sig9CD9
+      } = var_core_value_sigA937,
+      {
+        startRow: var_core_value_sigFD0C,
+        startColumn: var_core_value_sig849B
+      } = var_core_value_sigE43E,
+      {
+        endColumn: var_core_value_sig5F1A,
+        endRow: var_core_value_sigB455
+      } = var_core_value_sigE43E;
+    var_core_value_sigFD0C = var_core_value_sigB455 < var_core_value_sig9CD9 ? var_core_value_sigFD0C : Math.max(var_core_value_sig9CD9, var_core_value_sigFD0C), var_core_value_sig849B = var_core_value_sig5F1A < var_core_value_sigB7FC ? var_core_value_sig849B : Math.max(var_core_value_sigB7FC, var_core_value_sig849B);
+    let {
+        scale: var_core_value_sig5241,
+        customScale: var_core_value_sigC6E5
+      } = this._layoutConfig,
+      var_core_value_sigCEFB = this.paperSize,
+      var_core_value_sig1537 = this.paperMargin,
+      var_core_value_sigE4C6 = var_core_value_sig48DD > 0 ? (var_core_value_sigCAD5[var_core_value_sigB7FC - 1] || 0) - (var_core_value_sigCAD5[var_core_value_sigB7FC - var_core_value_sig48DD - 1] || 0) : 0,
+      var_core_value_sig4313 = var_core_value_sig5E6A > 0 ? (var_core_value_sigE503[var_core_value_sig9CD9 - 1] || 0) - (var_core_value_sigE503[var_core_value_sig9CD9 - var_core_value_sig5E6A - 1] || 0) : 0,
+      var_core_value_sigFC87 = var_core_value_sigE503[var_core_value_sigB455] - (var_core_value_sigE503[var_core_value_sigFD0C - 1] || 0),
+      var_core_value_sig156F = var_core_value_sigCAD5[var_core_value_sig5F1A] - (var_core_value_sigCAD5[var_core_value_sig849B - 1] || 0),
+      var_core_value_sigDD51 = var_core_value_sigFC87 + var_core_value_sig4313,
+      var_core_value_sigF057 = var_core_value_sig156F + var_core_value_sigE4C6;
+    switch (var_core_value_sig5241) {
+      case t.PrintScale["Custom"]:
+        return var_core_value_sigC6E5;
+      case t.PrintScale["FitWidth"]:
+        return Math.min(1, (var_core_value_sigCEFB.w - var_core_value_sig1537.left - var_core_value_sig1537.right) / var_core_value_sigF057);
+      case t.PrintScale["FitHeight"]:
+        return Math.min(1, (var_core_value_sigCEFB.h - var_core_value_sig1537.top - var_core_value_sig1537.bottom) / var_core_value_sigDD51);
+      case t.PrintScale["FitPage"]:
+        return Math.min(1, (var_core_value_sigCEFB.w - var_core_value_sig1537.left - var_core_value_sig1537.right) / var_core_value_sigF057, (var_core_value_sigCEFB.h - var_core_value_sig1537.top - var_core_value_sig1537.bottom) / var_core_value_sigDD51);
+      default:
+        return 1;
+    }
+  }
+  _calculateSubSheetRange() {
+    let {
+        area: var_core_value_sig72F6,
+        subUnitIds: var_core_value_sig9FBA
+      } = this._layoutConfig,
+      var_core_value_sigFE01 = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),
+      var_core_value_sigA2CE = var_core_value_sigFE01.getUnitId();
+    switch (var_core_value_sig72F6) {
+      case "CurrentSheet":
+        {
+          var var_core_value_sig1975;
+          let var_core_value_sig8178 = (var_core_value_sig1975 = var_core_value_sigFE01.getActiveSheet()) == null ? undefined : var_core_value_sig1975.getSheetId();
+          if (var_core_value_sig8178 != null) {
+            let var_core_value_sig3D7D = this._calculateSheetRangeById(var_core_value_sigA2CE, var_core_value_sig8178);
+            if (var_core_value_sig3D7D) return [var_core_value_sig3D7D];
+            let var_core_value_sig27E5 = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),
+              var_core_value_sig8061 = var_core_value_sig27E5.getActiveSheet();
+            return var_core_value_sig8061 ? this._calculateCurrentSelectionRange(var_core_value_sig27E5.getUnitId(), var_core_value_sig8061.getSheetId()) : (console.warn("No active sheet found"), []);
+          }
+          return [];
+        }
+      case "CurrentSelection":
+        {
+          let var_core_value_sigE9ED = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),
+            var_core_value_sigB577 = var_core_value_sigE9ED.getActiveSheet();
+          return var_core_value_sigB577 ? this._calculateCurrentSelectionRange(var_core_value_sigE9ED.getUnitId(), var_core_value_sigB577.getSheetId()) : (console.warn("No active sheet found"), []);
+        }
+      case "AllSelection":
+        return this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]).getSheets().map(var_core_value_sig9572 => this._calculateCurrentSelectionRange(var_core_value_sigA2CE, var_core_value_sig9572.getSheetId())).flat();
+      default:
+        return (var_core_value_sig9FBA.length ? var_core_value_sig9FBA : var_core_value_sigFE01.getSheets().filter(var_core_value_sigD873 => !var_core_value_sigD873.isSheetHidden()).map(var_core_value_sigA12B => var_core_value_sigA12B.getSheetId())).map(var_core_value_sigF230 => this._calculateSheetRangeById(var_core_value_sigA2CE, typeof var_core_value_sigF230 == "string" ? var_core_value_sigF230 : var_core_value_sigF230.id, typeof var_core_value_sigF230 == "string" ? undefined : var_core_value_sigF230.range)).filter(Boolean);
+    }
+  }
+  _calculateSheetPages(var_core_value_sig6EA1) {
+    let {
+        subUnitId: var_core_value_sig029F,
+        range: var_core_value_sig3767,
+        freeze: var_core_value_sig670B,
+        unitId: var_core_value_sig6912,
+        scale: var_core_value_sigE235,
+        contentSize: var_core_value_sig7664
+      } = var_core_value_sig6EA1,
+      var_core_value_sig2281 = this._renderManagerService["getRenderUnitById"](var_core_value_sig6912).with(s.SheetSkeletonManagerService).ensureSkeleton(var_core_value_sig029F);
+    if (!var_core_value_sig2281) return;
+    let {
+        rowHeightAccumulation: var_core_value_sig5E86,
+        columnWidthAccumulation: var_core_value_sig6998
+      } = var_core_value_sig2281,
+      {
+        w: var_core_value_sigF639,
+        h: var_core_value_sigEAE5
+      } = var_core_value_sig7664,
+      {
+        startRow: var_core_value_sigE94C,
+        startColumn: var_core_value_sig6D47,
+        endColumn: var_core_value_sigCB82,
+        endRow: var_core_value_sigCF4E
+      } = var_core_value_sig3767,
+      var_core_value_sig6CAD = var_core_value_sig86D0 => {
+        let var_core_value_sig4CD2 = var_core_value_sig86D0,
+          var_core_value_sig48CA = this._layoutConfig["maxRowsEachPage"] <= var_core_value_sig670B.ySplit ? 1 / 0 : this._layoutConfig["maxRowsEachPage"] - 1 - var_core_value_sig670B.ySplit + var_core_value_sig86D0,
+          var_core_value_sig50AF = var_core_value_sig86D0 === 0 ? 0 : var_core_value_sig5E86[var_core_value_sig86D0 - 1];
+        for (; var_core_value_sig4CD2 < var_core_value_sigCF4E;) {
+          let var_core_value_sig4D4C = (var_core_value_sig5E86[var_core_value_sig4CD2] - var_core_value_sig50AF) * var_core_value_sigE235,
+            var_core_value_sigC9E0 = (var_core_value_sig5E86[var_core_value_sig4CD2 + 1] - var_core_value_sig50AF) * var_core_value_sigE235;
+          if (var_core_value_sig4CD2++, var_core_value_sig4D4C >= var_core_value_sigEAE5 || var_core_value_sig4D4C < var_core_value_sigEAE5 && var_core_value_sigC9E0 > var_core_value_sigEAE5) return {
+            startRow: var_core_value_sig86D0,
+            endRow: Math.min(var_core_value_sig4CD2 - 1, var_core_value_sig48CA)
+          };
+        }
+        return {
+          startRow: var_core_value_sig86D0,
+          endRow: Math.min(var_core_value_sig4CD2, var_core_value_sig48CA)
+        };
+      },
+      var_core_value_sig8CF5 = var_core_value_sigA942 => {
+        let var_core_value_sigA621 = var_core_value_sigA942,
+          var_core_value_sigBBFF = var_core_value_sigA942 === 0 ? 0 : var_core_value_sig6998[var_core_value_sigA942 - 1],
+          var_core_value_sig8889 = this._layoutConfig["maxColumnsEachPage"] <= var_core_value_sig670B.xSplit ? 1 / 0 : this._layoutConfig["maxColumnsEachPage"] - 1 - var_core_value_sig670B.xSplit + var_core_value_sigA942;
+        for (; var_core_value_sigA621 < var_core_value_sigCB82;) {
+          let var_core_value_sig76BA = (var_core_value_sig6998[var_core_value_sigA621] - var_core_value_sigBBFF) * var_core_value_sigE235,
+            var_core_value_sigFBFA = (var_core_value_sig6998[var_core_value_sigA621 + 1] - var_core_value_sigBBFF) * var_core_value_sigE235;
+          if (var_core_value_sigA621++, var_core_value_sig76BA < var_core_value_sigF639 && var_core_value_sigFBFA > var_core_value_sigF639 || var_core_value_sig76BA >= var_core_value_sigF639) return {
+            startColumn: var_core_value_sigA942,
+            endColumn: Math.min(var_core_value_sigA621 - 1, var_core_value_sig8889)
+          };
+        }
+        return {
+          startColumn: var_core_value_sigA942,
+          endColumn: Math.min(var_core_value_sigA621, var_core_value_sig8889)
+        };
+      },
+      var_core_value_sigDDD7 = [],
+      var_core_value_sigB2CE = var_core_value_sigE94C;
+    for (; var_core_value_sigB2CE <= var_core_value_sigCF4E;) {
+      let var_core_value_sig09B8 = var_core_value_sig6CAD(var_core_value_sigB2CE);
+      var_core_value_sigDDD7.push(var_core_value_sig09B8), var_core_value_sigB2CE = var_core_value_sig09B8.endRow + 1;
+    }
+    let var_core_value_sig443C = [],
+      var_core_value_sig39B1 = var_core_value_sig6D47;
+    for (; var_core_value_sig39B1 <= var_core_value_sigCB82;) {
+      let var_core_value_sig6F91 = var_core_value_sig8CF5(var_core_value_sig39B1);
+      var_core_value_sig443C.push(var_core_value_sig6F91), var_core_value_sig39B1 = var_core_value_sig6F91.endColumn + 1;
+    }
+    let var_core_value_sig210D = [];
+    for (let var_core_value_sig32F8 = 0; var_core_value_sig32F8 < var_core_value_sigDDD7.length; var_core_value_sig32F8++) for (let var_core_value_sigF9C7 = 0; var_core_value_sigF9C7 < var_core_value_sig443C.length; var_core_value_sigF9C7++) var_core_value_sig210D.push({
+      ...var_core_value_sigDDD7[var_core_value_sig32F8],
+      ...var_core_value_sig443C[var_core_value_sigF9C7]
+    });
+    return {
+      unitId: var_core_value_sig6912,
+      subUnitId: var_core_value_sig029F,
+      pages: var_core_value_sig210D,
+      freeze: var_core_value_sig670B,
+      scale: var_core_value_sigE235,
+      pageSize: this.paperSize,
+      margin: this.paperMargin
+    };
+  }
+};
+M = O([D(0, n.IUniverInstanceService), D(1, (0, n.Inject)(r.SheetsSelectionsService)), D(2, (0, n.Inject)(s.SheetPrintInterceptorService)), D(3, o.IRenderManagerService)], M);
+const te = (var_core_value_sigCDAF, var_core_value_sigA298) => {
+    if (!var_core_value_sigCDAF || !var_core_value_sigA298) return true;
+    let var_core_value_sig0B40 = (0, e.getLicenseInfo)(var_core_value_sigCDAF, var_core_value_sigA298).message,
+      var_core_value_sig330B = (0, e.isFeatureAuthorizedWithinTime)(var_core_value_sig0B40, "sf", m);
+    return !((var_core_value_sig0B40 == null ? undefined : var_core_value_sig0B40.rt) === e.ReleaseType["NO_COMMERCIAL"] && !var_core_value_sig330B);
+  },
+  N = (var_core_value_sig3625, var_core_value_sig0B4E, var_core_value_sig0E9F) => {
+    let var_core_value_sigE5BA = {
+      page: var_core_value_sig3625,
+      isPro: false,
+      timeValid: false
+    };
+    if (!var_core_value_sig0B4E || !var_core_value_sig0E9F) return var_core_value_sigE5BA;
+    let var_core_value_sig4A83 = (0, e.getLicenseInfo)(var_core_value_sig0B4E, var_core_value_sig0E9F);
+    if (var_core_value_sig4A83.valid) {
+      let var_core_value_sigB4B4 = var_core_value_sig4A83.message,
+        var_core_value_sigD407 = (0, e.isFeatureAuthorizedWithinTime)(var_core_value_sigB4B4, "sf", m);
+      var_core_value_sigE5BA.isPro = var_core_value_sigD407, var_core_value_sigE5BA.timeValid = var_core_value_sigD407, var_core_value_sigE5BA.page = (0, e.getSheetFeatureLimit)(var_core_value_sigB4B4, var_core_value_sigD407, "mpn", var_core_value_sig3625, var_core_value_sig3625, 0);
+    }
+    return var_core_value_sigE5BA;
+  };
+function P(var_core_value_sig58AA) {
+  let {
+    ls: var_core_value_sig84C4,
+    pbk: var_core_value_sigB6F7
+  } = var_core_value_sig58AA.get(n.IConfigService).getConfig(e.LS_CONFIG_KEY) ?? {};
+  return N(3, var_core_value_sig84C4, var_core_value_sigB6F7).isPro;
+}
+const F = {
+    id: "sheet.operation.print-open",
+    type: n.CommandType["OPERATION"],
+    handler: async var_core_value_sigB495 => {
+      let var_core_value_sig70D0 = var_core_value_sigB495.get(b),
+        var_core_value_sig2A8A = var_core_value_sigB495.get(n.IPermissionService),
+        var_core_value_sig3782 = var_core_value_sigB495.get(n.LocaleService),
+        var_core_value_sigD22E = var_core_value_sigB495.get(n.IUniverInstanceService),
+        var_core_value_sig3455 = var_core_value_sigB495.get(i.IDialogService),
+        {
+          ls: var_core_value_sig5CEF,
+          pbk: var_core_value_sig43D5
+        } = var_core_value_sigB495.get(n.IConfigService).getConfig(e.LS_CONFIG_KEY) ?? {};
+      if (!te(var_core_value_sig5CEF, var_core_value_sig43D5)) return false;
+      let var_core_value_sig1395 = var_core_value_sigD22E.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]).getUnitId();
+      if (!(var_core_value_sig2A8A.getPermissionPoint(new r.WorkbookPrintPermission(var_core_value_sig1395).id) ?? false)) {
+        let var_core_value_sig63F3 = {
+          id: h,
+          title: {
+            title: ""
+          },
+          children: {
+            label: "UNIVER_SHEET_PERMISSION_ALERT_DIALOG",
+            errorMsg: var_core_value_sig3782.t("sheets-print.permission.printErr")
+          },
+          width: 320,
+          onClose: () => var_core_value_sig3455.close(h),
+          className: "sheet-permission-user-dialog"
+        };
+        throw var_core_value_sig3455.open(var_core_value_sig63F3), Error("have not permission");
+      }
+      var_core_value_sig70D0.setPreparing(true), var_core_value_sig70D0.open();
+      try {
+        return await var_core_value_sigB495.get(t.IPrintPreparationService).prepare({
+          unitId: var_core_value_sig1395,
+          unitType: n.UniverInstanceType["UNIVER_SHEET"],
+          dpr: 1
+        }), true;
+      } catch (var_core_value_sig6A71) {
+        throw var_core_value_sig70D0.close(), var_core_value_sig6A71;
+      } finally {
+        var_core_value_sig70D0.setPreparing(false);
+      }
+    }
+  },
+  I = {
+    type: n.CommandType["OPERATION"],
+    id: "sheet.operation.cancel-print",
+    handler(var_core_value_sig9FA0) {
+      let var_core_value_sig055E = var_core_value_sig9FA0.get(b),
+        var_core_value_sig7C77 = var_core_value_sig9FA0.get(k);
+      return var_core_value_sig055E.close(), var_core_value_sig7C77.reset(), true;
+    }
+  },
+  L = {
+    type: n.CommandType["OPERATION"],
+    id: "sheet.operation.confirm-print",
+    handler() {
+      return true;
+    }
+  },
+  R = {
+    id: "sheet.operation.print",
+    type: n.CommandType["COMMAND"],
+    handler(var_core_value_sig9578, var_core_value_sigA2D3) {
+      if (!var_core_value_sigA2D3) return false;
+      let var_core_value_sigC218 = var_core_value_sig9578.get(n.ICommandService),
+        var_core_value_sigADEC = var_core_value_sig9578.get(k);
+      return var_core_value_sigADEC.replaceLayoutConfig(var_core_value_sigA2D3.layoutConfig), var_core_value_sigADEC.replaceRenderConfig(var_core_value_sigA2D3.renderConfig), var_core_value_sigC218.syncExecuteCommand(L.id);
+    }
+  };
+function z(var_core_value_sig3D8E, var_core_value_sig37E5) {
+  switch (var_core_value_sig3D8E) {
+    case "@WorkbookTitle":
+      return var_core_value_sig37E5.workbook["name"];
+    case "@WorksheetTitle":
+      return var_core_value_sig37E5.worksheet["getName"]();
+    case "@Page":
+      return "" + var_core_value_sig37E5.page;
+    case "@TotalPage":
+      return "" + var_core_value_sig37E5.pageTotal;
+    case "@TotalSheetPage":
+      return "" + var_core_value_sig37E5.sheetPageTotal;
+    case "@SheetPage":
+      return "" + var_core_value_sig37E5.sheetPage;
+    case "@DateA":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.dateA"));
+    case "@DateB":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.dateB"));
+    case "@DateC":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.dateC"));
+    case "@DateD":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.dateD"));
+    case "@DateE":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.dateE"));
+    case "@TimeA":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.timeA"));
+    case "@TimeB":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.timeB"));
+    case "@TimeC":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.timeC"));
+    case "@TimeD":
+      return var_core_value_sig37E5.now["format"](var_core_value_sig37E5.localeService["t"]("sheets-print.headerFooter.timeD"));
+  }
+}
+const ne = Object.values(T);
+function B(var_core_value_sigF079, var_core_value_sigFCA0) {
+  let var_core_value_sigC84D = var_core_value_sigF079;
+  return ne.forEach(var_core_value_sig3BF6 => {
+    var_core_value_sigC84D = var_core_value_sigC84D.replaceAll(var_core_value_sig3BF6, z(var_core_value_sig3BF6, var_core_value_sigFCA0));
+  }), var_core_value_sigC84D;
+}
+const V = "@[]@";
+function re(var_core_value_sigF2BC, var_core_value_sigD37B) {
+  let var_core_value_sigFA28 = var_core_value_sigF2BC;
+  var_core_value_sigD37B.forEach(var_core_value_sig38CE => {
+    var_core_value_sigFA28 = var_core_value_sigFA28.replaceAll(var_core_value_sig38CE.value, "" + V + var_core_value_sig38CE.label + V);
+  });
+  let var_core_value_sig93BE = var_core_value_sigFA28.split(V),
+    var_core_value_sigABEC = n.RichTextBuilder["create"]();
+  return var_core_value_sig93BE.forEach((var_core_value_sig62B7, var_core_value_sig37A8) => {
+    if (var_core_value_sig62B7) {
+      if (var_core_value_sig37A8 % 2 == 1) {
+        let var_core_value_sig8895 = var_core_value_sig62B7,
+          var_core_value_sigC80B = {
+            id: "d",
+            documentStyle: {},
+            drawings: {},
+            drawingsOrder: [],
+            body: {
+              dataStream: var_core_value_sig62B7,
+              customBlocks: [],
+              customRanges: [{
+                startIndex: 0,
+                endIndex: var_core_value_sig62B7.length - 1,
+                rangeId: (0, n.generateRandomId)(),
+                rangeType: n.CustomRangeType["MENTION"],
+                properties: {
+                  value: var_core_value_sigD37B.find(var_core_value_sigF602 => var_core_value_sigF602.label === var_core_value_sig8895).value
+                }
+              }]
+            }
+          };
+        var_core_value_sigABEC.insertRichText(var_core_value_sigC80B);
+      } else var_core_value_sigABEC.insertText(var_core_value_sig62B7);
+    }
+  }), var_core_value_sigABEC.getData();
+}
+function ie(var_core_value_sig2712) {
+  var var_core_value_sig0B9E;
+  if (!(var_core_value_sig2712 != null && var_core_value_sig2712.body)) return "";
+  let var_core_value_sigC545 = n.RichTextBuilder["create"](n.Tools["deepClone"](var_core_value_sig2712));
+  for (; (var_core_value_sig0B9E = var_core_value_sigC545.getData().body["customRanges"]) != null && var_core_value_sig0B9E.length;) {
+    let var_core_value_sig5B67 = var_core_value_sigC545.getData().body["customRanges"][0];
+    if (!var_core_value_sig5B67) break;
+    var_core_value_sigC545.delete(var_core_value_sig5B67.startIndex, var_core_value_sig5B67.endIndex + 1 - var_core_value_sig5B67.startIndex), var_core_value_sigC545.insertText(var_core_value_sig5B67.startIndex, var_core_value_sig5B67.properties["value"]);
+  }
+  return var_core_value_sigC545.getData().body["dataStream"];
+}
+function ae(var_core_value_sig12A7, var_core_value_sig6F4E) {
+  var_core_value_sig12A7.getExtensionsByOrder().forEach(var_core_value_sigA90D => {
+    var var_core_value_sig7A3C;
+    let var_core_value_sig0511 = (var_core_value_sig7A3C = var_core_value_sigA90D.copyForPrinting) == null ? undefined : var_core_value_sig7A3C.call(var_core_value_sigA90D);
+    var_core_value_sig0511 && var_core_value_sig6F4E.register(var_core_value_sig0511);
+  });
+}
+var H = class extends n.Disposable {
+  get _watermarkConfig() {
+    return this._renderConfig["watermark"];
+  }
+  get key() {
+    return this._key;
+  }
+  get engine() {
+    return this._engine;
+  }
+  get container() {
+    return this._container;
+  }
+  get root() {
+    return this._root;
+  }
+  get renderConfig() {
+    return this._renderConfig;
+  }
+  set renderConfig(var_core_value_sig1F44) {
+    this._renderConfig = var_core_value_sig1F44;
+  }
+  constructor(var_core_value_sigCB04, var_core_value_sig947E, var_core_value_sig4545, var_core_value_sigF39A = true, var_core_value_sigF79C = 1) {
+    super(), this._accessor = var_core_value_sigCB04, this._config = var_core_value_sig947E, this._renderConfig = var_core_value_sig4545, this._isPreview = var_core_value_sigF39A, this._previewScale = var_core_value_sigF79C, y(this, "_engine", undefined), y(this, "_scene", undefined), y(this, "_key", undefined), y(this, "_unitId", undefined), y(this, "_subUnitId", undefined), y(this, "_viewMain", undefined), y(this, "_viewLeft", undefined), y(this, "_viewTop", undefined), y(this, "_viewLeftTop", undefined), y(this, "_viewRowBottom", null), y(this, "_viewColumnRight", null), y(this, "_container", document.createElement("div")), y(this, "_root", document.createElement("div")), y(this, "_skeleton", undefined), y(this, "_univerInstanceService", undefined), y(this, "_dirty", true), y(this, "_targetRender", undefined), y(this, "_effects", new n["DisposableCollection"]()), y(this, "_resourceCollector", new s["SheetPrintingResourceCollector"]()), y(this, "_spreadsheetObject", undefined), y(this, "_totalWidth", 0), y(this, "_totalHeight", 0);
+    let {
+      unitId: var_core_value_sig2E54,
+      subUnitId: var_core_value_sig7658
+    } = this._config;
+    this._unitId = var_core_value_sig2E54, this._subUnitId = var_core_value_sig7658, this._key = var_core_value_sig2E54 + "_" + var_core_value_sig7658, this._univerInstanceService = this._accessor["get"](n.IUniverInstanceService);
+    let var_core_value_sigDCF5 = this._accessor["get"](o.IRenderManagerService);
+    this._targetRender = var_core_value_sigDCF5.getRenderUnitById(var_core_value_sig2E54);
+    let var_core_value_sigC786 = this._targetRender["with"](s.SheetSkeletonManagerService).ensureSkeleton(var_core_value_sig7658);
+    this._skeleton = var_core_value_sigC786, this._root["className"] = "__root", this._initRenderer();
+  }
+  dispose() {
+    var var_core_value_sigC0D9;
+    super.dispose(), this._effects["dispose"](), (var_core_value_sigC0D9 = this._container["parentElement"]) == null || var_core_value_sigC0D9.removeChild(this._container);
+  }
+  get paperSize() {
+    let {
+      w: var_core_value_sigF0511,
+      h: var_core_value_sig5825
+    } = this._config["pageSize"];
+    return {
+      w: var_core_value_sigF0511 * this._previewScale,
+      h: var_core_value_sig5825 * this._previewScale
+    };
+  }
+  get margin() {
+    let var_core_value_sig4EB7 = this._config["margin"];
+    return {
+      top: var_core_value_sig4EB7.top * this._previewScale,
+      bottom: var_core_value_sig4EB7.bottom * this._previewScale,
+      left: var_core_value_sig4EB7.left * this._previewScale,
+      right: var_core_value_sig4EB7.right * this._previewScale
+    };
+  }
+  _initRenderer() {
+    let var_core_value_sig73AF = this.paperSize,
+      var_core_value_sig548A = this._config["scale"] * this._previewScale,
+      var_core_value_sigE026 = this._isPreview ? Math.max(1, window.devicePixelRatio) : 1;
+    this._engine = new o.Engine("", {
+      elementWidth: var_core_value_sig73AF.w,
+      elementHeight: var_core_value_sig73AF.h,
+      dpr: var_core_value_sigE026,
+      renderMode: o.CanvasRenderMode["Printing"]
+    }), this._scene = new o.Scene(this._key, this._engine), this._scene["scale"](var_core_value_sig548A, var_core_value_sig548A), this._engine["mount"](this._container, this._isPreview), this._engine["getCanvas"]().getContext().setId(this._key + "_" + (0, n.generateRandomId)(4)), this._addComponent(), this._addViewport(), this.disposeWithMe({
+      dispose: () => {
+        this._engine["dispose"](), this._scene["dispose"](), this.clearMemory();
+      }
+    });
+  }
+  clearMemory() {
+    this._skeleton["resetCache"]();
+  }
+  setPreviewScale(var_core_value_sig339E) {
+    this._scene["scale"](this._config["scale"] * var_core_value_sig339E, this._config["scale"] * var_core_value_sig339E), this._previewScale = var_core_value_sig339E, this.markDirty(true);
+  }
+  updateConfig(var_core_value_sig7550) {
+    this._config = var_core_value_sig7550, this.markDirty(true);
+  }
+  markDirty(var_core_value_sig2983) {
+    this._dirty = var_core_value_sig2983;
+  }
+  _addComponent() {
+    var var_core_value_sigE1B0;
+    let var_core_value_sigD4FF = new o["Spreadsheet"]("__SpreadsheetPrintRender__", this._skeleton, false);
+    var_core_value_sigD4FF.isPrinting = true;
+    let var_core_value_sig1E5B = (var_core_value_sigE1B0 = this._targetRender) == null ? undefined : var_core_value_sigE1B0.mainComponent;
+    if (var_core_value_sig1E5B && ae(var_core_value_sig1E5B, var_core_value_sigD4FF), this._scene["addObject"](var_core_value_sigD4FF), this._spreadsheetObject = var_core_value_sigD4FF, this._config["includeHeaderDimensions"]) {
+      let var_core_value_sig1758 = new o.SpreadsheetRowHeader("__RowHeaderPrint__", this._skeleton),
+        var_core_value_sig4805 = new o["SpreadsheetColumnHeader"]("__ColumnHeaderPrint__", this._skeleton);
+      this._scene["addObjects"]([var_core_value_sig1758, var_core_value_sig4805], 1);
+    }
+    let var_core_value_sigB680 = this._accessor["get"](s.SheetPrintInterceptorService);
+    var_core_value_sigB680.interceptor["fetchThroughInterceptors"](var_core_value_sigB680.interceptor["getInterceptPoints"]().PRINTING_COMPONENT_COLLECT)(undefined, {
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      scene: this._scene,
+      engine: this._engine,
+      root: this._root,
+      worksheet: this._skeleton["worksheet"],
+      skeleton: this._skeleton,
+      range: this._config["range"],
+      offset: this._getTranslateOffset(),
+      spreadsheet: this._spreadsheetObject,
+      resourceCollector: this._resourceCollector
+    });
+  }
+  _addViewport() {
+    this._viewMain = new o.Viewport(o.SHEET_VIEWPORT_KEY["VIEW_MAIN"], this._scene, {
+      explicitViewportWidthSet: true,
+      explicitViewportHeightSet: true
+    }), this._viewLeft = new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT"], this._scene, {
+      explicitViewportWidthSet: true,
+      explicitViewportHeightSet: true
+    }), this._viewTop = new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_MAIN_TOP"], this._scene, {
+      explicitViewportWidthSet: true,
+      explicitViewportHeightSet: true
+    }), this._viewLeftTop = new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT_TOP"], this._scene, {
+      explicitViewportWidthSet: true,
+      explicitViewportHeightSet: true
+    }), this._config["includeHeaderDimensions"] && (this._viewRowBottom = new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_ROW_BOTTOM"], this._scene, {
+      explicitViewportWidthSet: true,
+      explicitViewportHeightSet: true
+    }), this._viewColumnRight = new o["Viewport"](o.SHEET_VIEWPORT_KEY["VIEW_COLUMN_RIGHT"], this._scene, {
+      explicitViewportWidthSet: true,
+      explicitViewportHeightSet: true
+    }));
+  }
+  _resizeViewport() {
+    let {
+        freeze: var_core_value_sig1F64,
+        range: var_core_value_sigDD1C
+      } = this._config,
+      {
+        xSplit: var_core_value_sig2C39,
+        ySplit: var_core_value_sigB7D1,
+        startColumn: var_core_value_sig64F0,
+        startRow: var_core_value_sig85B1
+      } = var_core_value_sig1F64,
+      {
+        rowHeaderWidth: var_core_value_sig3141,
+        columnHeaderHeight: var_core_value_sig2162
+      } = this._skeleton;
+    this._scene["scale"](this._config["scale"] * this._previewScale, this._config["scale"] * this._previewScale);
+    let var_core_value_sig2EAD = this._skeleton["getNoMergeCellWithCoordByIndex"](var_core_value_sig85B1 - var_core_value_sigB7D1, var_core_value_sig64F0 - var_core_value_sig2C39, false),
+      var_core_value_sig6774 = this._skeleton["getNoMergeCellWithCoordByIndex"](var_core_value_sig85B1, var_core_value_sig64F0, false),
+      var_core_value_sig340D = var_core_value_sig2C39 > 0 ? var_core_value_sig6774.startX - var_core_value_sig2EAD.startX : 0,
+      var_core_value_sig82D4 = var_core_value_sigB7D1 > 0 ? var_core_value_sig6774.startY - var_core_value_sig2EAD.startY : 0,
+      var_core_value_sigBDE4 = {
+        startX: var_core_value_sig2C39 > 0 ? var_core_value_sig2EAD.startX : 0,
+        endX: var_core_value_sig2C39 > 0 ? var_core_value_sig6774.startX : 0,
+        startY: var_core_value_sigB7D1 > 0 ? var_core_value_sig2EAD.startY : 0,
+        endY: var_core_value_sigB7D1 > 0 ? var_core_value_sig6774.startY : 0
+      },
+      var_core_value_sig7DF1 = this._skeleton["getNoMergeCellWithCoordByIndex"](var_core_value_sigDD1C.startRow, var_core_value_sigDD1C.startColumn, false),
+      var_core_value_sigDC86 = this._scene["getPrecisionScale"](),
+      var_core_value_sig0B0C = var_core_value_sigE67E => (0, o.fixLineWidthByScale)(var_core_value_sigE67E, var_core_value_sigDC86.scaleX),
+      var_core_value_sigA39E = var_core_value_sig2902 => (0, o.fixLineWidthByScale)(var_core_value_sig2902, var_core_value_sigDC86.scaleY),
+      var_core_value_sigBBEE = this._skeleton["getNoMergeCellWithCoordByIndex"](var_core_value_sigDD1C.endRow, var_core_value_sigDD1C.endColumn, false),
+      var_core_value_sig011D = Math.max(0, var_core_value_sig0B0C(var_core_value_sigBBEE.endX) - Math.max(var_core_value_sig7DF1.startX, var_core_value_sigBDE4.endX)),
+      var_core_value_sig6167 = Math.max(0, var_core_value_sigA39E(var_core_value_sigBBEE.endY) - var_core_value_sigA39E(Math.max(var_core_value_sig7DF1.startY, var_core_value_sigBDE4.endY))),
+      var_core_value_sig65A1 = 1 / Math.max(var_core_value_sigDC86.scaleX, var_core_value_sigDC86.scaleY),
+      var_core_value_sig7F19 = this._config["includeHeaderDimensions"] ? var_core_value_sig3141 : 0,
+      var_core_value_sig7827 = this._config["includeHeaderDimensions"] ? var_core_value_sig2162 : 0,
+      var_core_value_sig652C = var_core_value_sig7F19 + var_core_value_sig340D + var_core_value_sig011D + var_core_value_sig65A1,
+      var_core_value_sig7E32 = var_core_value_sig7827 + var_core_value_sig82D4 + var_core_value_sig6167 + var_core_value_sig65A1;
+    this._totalWidth = var_core_value_sig652C, this._totalHeight = var_core_value_sig7E32;
+    let var_core_value_sig4C07 = {
+        x: var_core_value_sig340D,
+        y: var_core_value_sig82D4
+      },
+      var_core_value_sig79AB = var_core_value_sig65A1,
+      var_core_value_sig8E74 = var_core_value_sig65A1,
+      var_core_value_sig104C = {
+        x: var_core_value_sig0B0C(var_core_value_sigBBEE.endX) - var_core_value_sig0B0C(var_core_value_sig011D) - var_core_value_sig0B0C(Math.max(var_core_value_sig7DF1.startX, var_core_value_sigBDE4.endX)),
+        y: var_core_value_sigA39E(var_core_value_sigBBEE.endY) - var_core_value_sigA39E(var_core_value_sig6167) - var_core_value_sigA39E(Math.max(var_core_value_sig7DF1.startY, var_core_value_sigBDE4.endY))
+      };
+    if (var_core_value_sig2C39 > 0 && var_core_value_sigB7D1 > 0 ? (this._viewLeftTop["enable"](), this._viewLeftTop["resizeWhenFreezeChange"]({
+      top: 0,
+      left: 0,
+      height: var_core_value_sigA39E(var_core_value_sig4C07.y),
+      width: var_core_value_sig0B0C(var_core_value_sig4C07.x)
+    }), this._viewLeftTop["updateScrollVal"]({
+      viewportScrollX: var_core_value_sig0B0C(var_core_value_sigBDE4.startX) + var_core_value_sig0B0C(var_core_value_sig3141),
+      viewportScrollY: var_core_value_sigA39E(var_core_value_sigBDE4.startY) + var_core_value_sigA39E(var_core_value_sig2162)
+    })) : this._viewLeftTop["disable"](), var_core_value_sig2C39 > 0 ? (this._viewLeft["enable"](), this._viewLeft["resizeWhenFreezeChange"]({
+      top: var_core_value_sig0B0C(var_core_value_sig4C07.y),
+      left: 0,
+      height: var_core_value_sigA39E(var_core_value_sig6167) + var_core_value_sig79AB + var_core_value_sig104C.y,
+      width: var_core_value_sig0B0C(var_core_value_sig4C07.x)
+    }), this._viewLeft["updateScrollVal"]({
+      viewportScrollX: var_core_value_sig0B0C(var_core_value_sigBDE4.startX) + var_core_value_sig0B0C(var_core_value_sig3141),
+      viewportScrollY: var_core_value_sigA39E(var_core_value_sig7DF1.startY) + var_core_value_sigA39E(var_core_value_sig2162) - var_core_value_sigA39E(var_core_value_sig4C07.y)
+    })) : this._viewLeft["disable"](), var_core_value_sigB7D1 > 0 ? (this._viewTop["enable"](), this._viewTop["resizeWhenFreezeChange"]({
+      top: 0,
+      left: var_core_value_sig0B0C(var_core_value_sig4C07.x),
+      height: var_core_value_sigA39E(var_core_value_sig4C07.y),
+      width: var_core_value_sig0B0C(var_core_value_sig011D) + var_core_value_sig8E74 + var_core_value_sig104C.x
+    }), this._viewTop["updateScrollVal"]({
+      viewportScrollX: var_core_value_sig0B0C(var_core_value_sig7DF1.startX) + var_core_value_sig0B0C(var_core_value_sig3141) - var_core_value_sig0B0C(var_core_value_sig4C07.x),
+      viewportScrollY: var_core_value_sigA39E(var_core_value_sigBDE4.startY) + var_core_value_sigA39E(var_core_value_sig2162)
+    })) : this._viewTop["disable"](), this._config["includeHeaderDimensions"]) {
+      let var_core_value_sig9989 = var_core_value_sig0B0C(var_core_value_sig3141),
+        var_core_value_sig698E = var_core_value_sigA39E(var_core_value_sig2162),
+        var_core_value_sig2809 = var_core_value_sig0B0C(var_core_value_sig011D) + var_core_value_sig8E74 + var_core_value_sig104C.x,
+        var_core_value_sig2DAB = var_core_value_sigA39E(var_core_value_sig6167) + var_core_value_sig79AB + var_core_value_sig104C.y;
+      this._viewMain["resizeWhenFreezeChange"]({
+        top: var_core_value_sig698E,
+        left: var_core_value_sig9989,
+        height: var_core_value_sig2DAB,
+        width: var_core_value_sig2809
+      }), this._viewMain["updateScrollVal"]({
+        viewportScrollX: var_core_value_sig0B0C(var_core_value_sig7DF1.startX),
+        viewportScrollY: var_core_value_sigA39E(var_core_value_sig7DF1.startY)
+      }), this._viewRowBottom && this._viewColumnRight && (this._viewColumnRight["enable"](), this._viewColumnRight["resizeWhenFreezeChange"]({
+        top: 0,
+        left: var_core_value_sig9989,
+        height: var_core_value_sig698E,
+        width: var_core_value_sig2809
+      }), this._viewColumnRight["updateScrollVal"]({
+        viewportScrollX: var_core_value_sig0B0C(var_core_value_sig7DF1.startX),
+        viewportScrollY: 0
+      }), this._viewRowBottom["enable"](), this._viewRowBottom["resizeWhenFreezeChange"]({
+        top: var_core_value_sig698E,
+        left: 0,
+        height: var_core_value_sig2DAB,
+        width: var_core_value_sig9989
+      }), this._viewRowBottom["updateScrollVal"]({
+        viewportScrollX: 0,
+        viewportScrollY: var_core_value_sigA39E(var_core_value_sig7DF1.startY)
+      }));
+    } else this._viewMain["resizeWhenFreezeChange"]({
+      top: var_core_value_sigA39E(var_core_value_sig4C07.y),
+      left: var_core_value_sig0B0C(var_core_value_sig4C07.x),
+      height: var_core_value_sigA39E(var_core_value_sig6167) + var_core_value_sig79AB + var_core_value_sig104C.y,
+      width: var_core_value_sig0B0C(var_core_value_sig011D) + var_core_value_sig8E74 + var_core_value_sig104C.x
+    }), this._viewMain["updateScrollVal"]({
+      viewportScrollX: var_core_value_sig0B0C(var_core_value_sig7DF1.startX) + var_core_value_sig0B0C(var_core_value_sig3141) - var_core_value_sig0B0C(var_core_value_sig4C07.x),
+      viewportScrollY: var_core_value_sigA39E(var_core_value_sig7DF1.startY) + var_core_value_sigA39E(var_core_value_sig2162) - var_core_value_sigA39E(var_core_value_sig4C07.y)
+    });
+  }
+  _getTranslateOffset() {
+    let var_core_value_sig841D = this.margin,
+      {
+        vAlign: var_core_value_sig90CB,
+        hAlign: var_core_value_sigBDF5
+      } = this._renderConfig,
+      var_core_value_sigACC6 = Math.max(this._scene["scaleX"], this._scene["scaleY"]),
+      var_core_value_sig1614;
+    switch (var_core_value_sigBDF5) {
+      case t.PrintAlign["Start"]:
+        var_core_value_sig1614 = var_core_value_sig841D.left;
+        break;
+      case t.PrintAlign["End"]:
+        var_core_value_sig1614 = this.paperSize["w"] - this._totalWidth * var_core_value_sigACC6 - var_core_value_sig841D.right;
+        break;
+      default:
+        var_core_value_sig1614 = var_core_value_sig841D.left + (this.paperSize["w"] - this._totalWidth * var_core_value_sigACC6 - var_core_value_sig841D.left - var_core_value_sig841D.right) / 2;
+        break;
+    }
+    let var_core_value_sig85C3;
+    switch (var_core_value_sig90CB) {
+      case t.PrintAlign["Start"]:
+        var_core_value_sig85C3 = var_core_value_sig841D.top;
+        break;
+      case t.PrintAlign["End"]:
+        var_core_value_sig85C3 = this.paperSize["h"] - this._totalHeight * var_core_value_sigACC6 - var_core_value_sig841D.bottom;
+        break;
+      default:
+        var_core_value_sig85C3 = (this.paperSize["h"] - this._totalHeight * var_core_value_sigACC6 - var_core_value_sig841D.top - var_core_value_sig841D.bottom) / 2 + var_core_value_sig841D.top;
+        break;
+    }
+    return {
+      offsetX: Math.round(var_core_value_sig1614),
+      offsetY: Math.round(var_core_value_sig85C3),
+      scale: var_core_value_sigACC6
+    };
+  }
+  prepare() {
+    this._resizeViewport(), this._effects["dispose"](), this._effects = new n["DisposableCollection"]();
+    let var_core_value_sigB996 = this._accessor["get"](s.SheetPrintInterceptorService),
+      {
+        offsetX: var_core_value_sig4BBA,
+        offsetY: var_core_value_sig6201,
+        scale: var_core_value_sig5151
+      } = this._getTranslateOffset(),
+      var_core_value_sigB542 = var_core_value_sig4BBA,
+      var_core_value_sigBB6C = var_core_value_sig6201;
+    this._root["style"].left = var_core_value_sigB542 + "px", this._root["style"].top = var_core_value_sigBB6C + "px";
+    let var_core_value_sigE2BF = this._totalWidth * var_core_value_sig5151,
+      var_core_value_sigB8C7 = this._totalHeight * var_core_value_sig5151;
+    this._root["style"].width = var_core_value_sigE2BF + "px", this._root["style"].height = var_core_value_sigB8C7 + "px", this._root["style"].position = "absolute", this._root["style"].overflow = "hidden", var_core_value_sigB996.interceptor["fetchThroughInterceptors"](var_core_value_sigB996.interceptor["getInterceptPoints"]().PRINTING_DOM_COLLECT)(this._effects, {
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      scene: this._scene,
+      engine: this._engine,
+      root: this._root,
+      worksheet: this._skeleton["worksheet"],
+      skeleton: this._skeleton,
+      range: this._config["range"],
+      offset: this._getTranslateOffset(),
+      resourceCollector: this._resourceCollector
+    });
+  }
+  _renderMainScene() {
+    this._dirty && this.prepare();
+    let var_core_value_sigA56E = this._engine["getCanvas"]().getContext(),
+      {
+        gridlines: var_core_value_sig1998
+      } = this._renderConfig,
+      {
+        offsetX: var_core_value_sigFF19,
+        offsetY: var_core_value_sig43B8
+      } = this._getTranslateOffset();
+    this._spreadsheetObject["setForceDisableGridlines"](!var_core_value_sig1998), this._spreadsheetObject["makeForceDirty"](), this._scene["makeDirty"](), var_core_value_sigA56E.save(), var_core_value_sigA56E.translateWithPrecision(var_core_value_sigFF19, var_core_value_sig43B8), this._scene["render"](), var_core_value_sigA56E.restore();
+  }
+  _renderHeaderFooterByCustom(var_core_value_sigD98F, var_core_value_sig66C0, var_core_value_sig9D15) {
+    let {
+        w: var_core_value_sigB785,
+        h: var_core_value_sig130F
+      } = this.paperSize,
+      var_core_value_sigC0E3 = this._engine["getCanvas"]().getContext();
+    var_core_value_sigC0E3.save(), var_core_value_sigC0E3.font = "13px " + o.DEFAULT_FONTFACE_PLANE;
+    let var_core_value_sig52F7 = 19 * this._previewScale,
+      var_core_value_sig866F = 20 * this._previewScale,
+      var_core_value_sigDE3D = {
+        workbook: var_core_value_sig66C0,
+        worksheet: var_core_value_sig9D15,
+        now: (0, n.dateKit)(),
+        localeService: this._accessor["get"](n.LocaleService),
+        page: this._config["page"],
+        pageTotal: this._config["pageTotal"],
+        sheetPageTotal: this._config["sheetPageTotal"],
+        sheetPage: this._config["sheetPage"]
+      };
+    if (var_core_value_sigD98F.topLeft) {
+      let var_core_value_sig877E = B(var_core_value_sigD98F.topLeft, var_core_value_sigDE3D);
+      var_core_value_sigC0E3.fillText(var_core_value_sig877E, var_core_value_sig52F7, var_core_value_sig866F);
+    }
+    if (var_core_value_sigD98F.topCenter) {
+      let var_core_value_sig20C8 = B(var_core_value_sigD98F.topCenter, var_core_value_sigDE3D),
+        var_core_value_sigE9A7 = var_core_value_sigC0E3.measureText(var_core_value_sig20C8);
+      var_core_value_sigC0E3.fillText(var_core_value_sig20C8, (var_core_value_sigB785 - var_core_value_sigE9A7.width) / 2, var_core_value_sig866F);
+    }
+    if (var_core_value_sigD98F.topRight) {
+      let var_core_value_sigBECE = B(var_core_value_sigD98F.topRight, var_core_value_sigDE3D),
+        var_core_value_sig1B22 = var_core_value_sigC0E3.measureText(var_core_value_sigBECE);
+      var_core_value_sigC0E3.fillText(var_core_value_sigBECE, var_core_value_sigB785 - var_core_value_sig1B22.width - var_core_value_sig52F7, var_core_value_sig866F);
+    }
+    if (var_core_value_sigD98F.bottomLeft) {
+      let var_core_value_sig7F72 = B(var_core_value_sigD98F.bottomLeft, var_core_value_sigDE3D);
+      var_core_value_sigC0E3.fillText(var_core_value_sig7F72, var_core_value_sig52F7, var_core_value_sig130F - var_core_value_sig866F);
+    }
+    if (var_core_value_sigD98F.bottomCenter) {
+      let var_core_value_sig7B2A = B(var_core_value_sigD98F.bottomCenter, var_core_value_sigDE3D),
+        var_core_value_sig06CD = var_core_value_sigC0E3.measureText(var_core_value_sig7B2A);
+      var_core_value_sigC0E3.fillText(var_core_value_sig7B2A, (var_core_value_sigB785 - var_core_value_sig06CD.width) / 2, var_core_value_sig130F - var_core_value_sig866F);
+    }
+    if (var_core_value_sigD98F.bottomRight) {
+      let var_core_value_sigA5F1 = B(var_core_value_sigD98F.bottomRight, var_core_value_sigDE3D),
+        var_core_value_sig97A2 = var_core_value_sigC0E3.measureText(var_core_value_sigA5F1);
+      var_core_value_sigC0E3.fillText(var_core_value_sigA5F1, var_core_value_sigB785 - var_core_value_sig97A2.width - var_core_value_sig52F7, var_core_value_sig130F - var_core_value_sig866F);
+    }
+    var_core_value_sigC0E3.restore();
+  }
+  _renderHeaderFooter() {
+    let var_core_value_sigF175 = this._univerInstanceService["getUnit"](this._config["unitId"], n.UniverInstanceType["UNIVER_SHEET"]),
+      var_core_value_sig6A18 = var_core_value_sigF175 == null ? undefined : var_core_value_sigF175.getSheetBySheetId(this._config["subUnitId"]),
+      {
+        headerFooter: var_core_value_sig4E3D,
+        isCustomHeaderFooter: var_core_value_sig49B0,
+        headerFooterSetting: var_core_value_sig2547
+      } = this._renderConfig,
+      {
+        w: var_core_value_sigBCA9,
+        h: var_core_value_sig4CDF
+      } = this.paperSize,
+      var_core_value_sig3F79 = this._engine["getCanvas"]().getContext();
+    if (!var_core_value_sigF175 || !var_core_value_sig6A18) return;
+    if (var_core_value_sig49B0 && var_core_value_sig2547) {
+      this._renderHeaderFooterByCustom(var_core_value_sig2547, var_core_value_sigF175, var_core_value_sig6A18);
+      return;
+    }
+    var_core_value_sig3F79.save(), var_core_value_sig3F79.font = "13px\x20" + o.DEFAULT_FONTFACE_PLANE;
+    let var_core_value_sig880E = 19 * this._previewScale,
+      var_core_value_sigC9ED = 20 * this._previewScale;
+    if (var_core_value_sig4E3D.includes("Date") || var_core_value_sig4E3D.includes("Time")) {
+      let var_core_value_sig07E9 = new Date().toLocaleString();
+      var_core_value_sig4E3D.includes("Date") ? var_core_value_sig4E3D.includes("Time") || (var_core_value_sig07E9 = new Date().toLocaleDateString()) : var_core_value_sig07E9 = new Date().toLocaleTimeString(), var_core_value_sig3F79.fillText(var_core_value_sig07E9, var_core_value_sig880E, var_core_value_sig4CDF - var_core_value_sigC9ED);
+    }
+    var_core_value_sig4E3D.forEach(var_core_value_sig4F59 => {
+      switch (var_core_value_sig4F59) {
+        case "WorkbookTitle":
+          {
+            let var_core_value_sig1BBD = var_core_value_sigF175.name,
+              var_core_value_sigF704 = var_core_value_sig3F79.measureText(var_core_value_sig1BBD),
+              var_core_value_sig2BCF = var_core_value_sigF704.fontBoundingBoxAscent + var_core_value_sigF704.fontBoundingBoxDescent;
+            var_core_value_sig3F79.fillText(var_core_value_sig1BBD, var_core_value_sig880E, var_core_value_sigC9ED + var_core_value_sig2BCF);
+            break;
+          }
+        case "WorksheetTitle":
+          {
+            let var_core_value_sig0D69 = var_core_value_sig6A18.getName(),
+              var_core_value_sig480E = var_core_value_sig3F79.measureText(var_core_value_sig0D69),
+              var_core_value_sig26DB = var_core_value_sig480E.fontBoundingBoxAscent + var_core_value_sig480E.fontBoundingBoxDescent;
+            var_core_value_sig3F79.fillText(var_core_value_sig0D69, var_core_value_sigBCA9 - (var_core_value_sig480E.width + var_core_value_sig880E), var_core_value_sigC9ED + var_core_value_sig26DB);
+            break;
+          }
+        case "PageSize":
+          {
+            let var_core_value_sigF0F9 = "" + this._config["page"],
+              var_core_value_sig1A0F = var_core_value_sig3F79.measureText(var_core_value_sigF0F9);
+            var_core_value_sig3F79.fillText(var_core_value_sigF0F9, var_core_value_sigBCA9 - (var_core_value_sig1A0F.width + var_core_value_sig880E), var_core_value_sig4CDF - var_core_value_sigC9ED);
+            break;
+          }
+        default:
+          break;
+      }
+    }), var_core_value_sig3F79.restore();
+  }
+  _renderLimitWaterMark() {
+    let var_core_value_sigB57B = this._accessor["get"](n.LocaleService),
+      var_core_value_sig780B = this._engine["getCanvas"]().getContext();
+    var_core_value_sig780B.save();
+    let var_core_value_sig7D1B = 20 * this._previewScale;
+    var_core_value_sig780B.fillStyle = "rgba(0,0,0,0.3)", var_core_value_sig780B.font = "12px " + o.DEFAULT_FONTFACE_PLANE;
+    let var_core_value_sig7BE0 = var_core_value_sig780B.measureText(var_core_value_sigB57B.t("sheets-print.limit.waterMark")),
+      var_core_value_sig7D40 = (this.paperSize["w"] - var_core_value_sig7BE0.width) / 2,
+      var_core_value_sig6C7E = var_core_value_sig7BE0.fontBoundingBoxAscent + var_core_value_sig7BE0.fontBoundingBoxDescent;
+    var_core_value_sig780B.fillText(var_core_value_sigB57B.t("sheets-print.limit.waterMark"), var_core_value_sig7D40, var_core_value_sig7D1B + var_core_value_sig6C7E), var_core_value_sig780B.fillText(var_core_value_sigB57B.t("sheets-print.limit.waterMark"), var_core_value_sig7D40, this.paperSize["h"] - var_core_value_sig7D1B), var_core_value_sig780B.restore();
+  }
+  render() {
+    this._engine["clearCanvas"](), this._renderMainScene(), this._renderHeaderFooter(), this._watermarkConfig && (0, o.renderWatermark)(this._engine["getCanvas"]().getContext(), this._watermarkConfig, this._watermarkConfig["image"], this._accessor["get"](n.UserManagerService).getCurrentUser());
+  }
+  renderOnReady() {
+    let var_core_value_sig68BE = this.engine["onTransformChange$"].subscribeEvent(() => {
+      this.render();
+    });
+    this.disposeWithMe(var_core_value_sig68BE), this.waitForReady().then(() => this.render());
+  }
+  waitForReady(var_core_value_sig04C6) {
+    return this._resourceCollector["wait"](var_core_value_sig04C6);
+  }
+  getImage() {
+    return this._engine["getCanvas"]().toDataURL("image/png", 1);
+  }
+};
+function oe(var_core_value_sigA021) {
+  let var_core_value_sig49D9 = var_core_value_sigA021.reduce((var_core_value_sigCA05, var_core_value_sig2F2B) => var_core_value_sigCA05 + var_core_value_sig2F2B.pages["length"], 0),
+    var_core_value_sig320C = new Map(),
+    var_core_value_sigE7F0 = new Map();
+  var_core_value_sigA021.forEach(var_core_value_sig70AF => {
+    let var_core_value_sigD04E = var_core_value_sig70AF.pages["length"],
+      var_core_value_sigB99B = var_core_value_sigE7F0.get(var_core_value_sig70AF.subUnitId) ?? 0;
+    var_core_value_sigE7F0.set(var_core_value_sig70AF.subUnitId, var_core_value_sigD04E + var_core_value_sigB99B);
+  });
+  let var_core_value_sigE837 = 0;
+  return var_core_value_sigA021.map(var_core_value_sig5A75 => {
+    let var_core_value_sig7BAF = var_core_value_sig5A75.pages["length"],
+      var_core_value_sig8F69 = var_core_value_sig320C.get(var_core_value_sig5A75.subUnitId) ?? 0,
+      var_core_value_sig6884 = var_core_value_sig5A75.pages["map"]((var_core_value_sigF564, var_core_value_sig8CFA) => (var_core_value_sigE837++, {
+        ...var_core_value_sig5A75,
+        range: var_core_value_sigF564,
+        page: var_core_value_sigE837,
+        pageTotal: var_core_value_sig49D9,
+        sheetPageTotal: var_core_value_sigE7F0.get(var_core_value_sig5A75.subUnitId),
+        sheetPage: var_core_value_sig8CFA + 1 + var_core_value_sig8F69
+      }));
+    return var_core_value_sig320C.has(var_core_value_sig5A75.subUnitId) ? var_core_value_sig320C.set(var_core_value_sig5A75.subUnitId, var_core_value_sig320C.get(var_core_value_sig5A75.subUnitId) + var_core_value_sig7BAF) : var_core_value_sig320C.set(var_core_value_sig5A75.subUnitId, var_core_value_sig7BAF), var_core_value_sig6884;
+  }).flat();
+}
+let se = 0,
+  U = class {
+    constructor(var_core_value_sig066E, var_core_value_sig9B0D, var_core_value_sig3D2C, var_core_value_sigC56D, var_core_value_sig3A17, var_core_value_sig938F, var_core_value_sigD948) {
+      this._injector = var_core_value_sig066E, this._printDialogService = var_core_value_sig9B0D, this._sheetPrintManagerService = var_core_value_sig3D2C, this._renderManagerService = var_core_value_sigC56D, this._messageService = var_core_value_sig3A17, this._configService = var_core_value_sig938F, this._printPreparationService = var_core_value_sigD948;
+    }
+    async print(var_core_value_sigBE5E, var_core_value_sig0281) {
+      await Promise.all(Array.from(new Set(var_core_value_sigBE5E.map(var_core_value_sig2E11 => var_core_value_sig2E11.unitId)), var_core_value_sig5B69 => this._printPreparationService["prepare"]({
+        unitId: var_core_value_sig5B69,
+        unitType: n.UniverInstanceType["UNIVER_SHEET"],
+        dpr: 1
+      })));
+      let var_core_value_sigED71 = oe(var_core_value_sigBE5E),
+        {
+          ls: var_core_value_sig281C,
+          pbk: var_core_value_sig3C92
+        } = this._configService["getConfig"](e.LS_CONFIG_KEY) ?? {},
+        var_core_value_sigB16B = (0, e.isLocalCheck)() ? 1 / 0 : N(3, var_core_value_sig281C, var_core_value_sig3C92).page;
+      var_core_value_sigED71 = var_core_value_sigED71.slice(0, var_core_value_sigB16B);
+      let var_core_value_sig585D = document.createElement("div");
+      var_core_value_sig585D.className = t.PRINT_CONTAINER_CLASS;
+      let var_core_value_sigE722 = var_core_value_sigED71.map(var_core_value_sigB098 => {
+        let var_core_value_sigCE71 = new H(this._injector, var_core_value_sigB098, var_core_value_sig0281, false);
+        return var_core_value_sigCE71.container["className"] = t.PRINT_CANVAS_CLASS, var_core_value_sigCE71;
+      });
+      var_core_value_sigE722.forEach(var_core_value_sig21D8 => {
+        var_core_value_sig585D.appendChild(var_core_value_sig21D8.container), var_core_value_sig21D8.container["appendChild"](var_core_value_sig21D8.root), var_core_value_sig21D8.prepare(), var_core_value_sig21D8.markDirty(false);
+      });
+      let var_core_value_sig062A = this._sheetPrintManagerService["layoutConfig"],
+        var_core_value_sig050A = n.PAGE_SIZE[var_core_value_sig062A.paperSize],
+        var_core_value_sig8B32 = (0, t.createPrintStyle)(var_core_value_sig050A.width, var_core_value_sig050A.height, var_core_value_sig062A.direction);
+      return document.body["appendChild"](var_core_value_sig8B32), document.body["appendChild"](var_core_value_sig585D), await Promise.all(var_core_value_sigE722.map(var_core_value_sig2B65 => var_core_value_sig2B65.waitForReady())), new Promise(var_core_value_sigD7EA => {
+        window.onbeforeprint = () => {
+          var_core_value_sigE722.forEach(var_core_value_sigFBA4 => {
+            var_core_value_sigFBA4.render(), var_core_value_sigFBA4.clearMemory();
+          });
+        }, window.onafterprint = () => {
+          var_core_value_sigE722.forEach(var_core_value_sig4383 => {
+            var_core_value_sig4383.dispose();
+          }), document.body["removeChild"](var_core_value_sig585D), document.body["removeChild"](var_core_value_sig8B32), this._printDialogService["close"](), this._sheetPrintManagerService["reset"](), this._messageService["removeAll"](), var_core_value_sigE722 = [], var_core_value_sigD7EA(true);
+        }, window.print();
+      });
+    }
+    getRangeImage(var_core_value_sig870F, var_core_value_sigB683, var_core_value_sig26EC, var_core_value_sigEEDB) {
+      if (!P(this._injector)) {
+        let var_core_value_sigB33B = (Date.now() - se) / 1000;
+        if (se = Date.now(), var_core_value_sigB33B <= 30) return false;
+      }
+      let var_core_value_sig36E7 = this._renderManagerService["getRenderUnitById"](var_core_value_sig870F);
+      if (!var_core_value_sig36E7) return false;
+      let var_core_value_sig6A78 = var_core_value_sig36E7.with(s.SheetSkeletonManagerService).ensureSkeleton(var_core_value_sigB683);
+      if (!var_core_value_sig6A78) return false;
+      let var_core_value_sigF7EF = var_core_value_sig6A78.columnWidthAccumulation[var_core_value_sig26EC.endColumn] - (var_core_value_sig6A78.columnWidthAccumulation[var_core_value_sig26EC.startColumn - 1] || 0),
+        var_core_value_sig27F9 = var_core_value_sig6A78.rowHeightAccumulation[var_core_value_sig26EC.endRow] - (var_core_value_sig6A78.rowHeightAccumulation[var_core_value_sig26EC.startRow - 1] || 0),
+        var_core_value_sig393E = var_core_value_sig6A78.columnHeaderHeight,
+        var_core_value_sigB609 = var_core_value_sig6A78.rowHeaderWidth,
+        var_core_value_sig390D = 1.5,
+        var_core_value_sigC928 = new H(this._injector, {
+          unitId: var_core_value_sig870F,
+          subUnitId: var_core_value_sigB683,
+          range: var_core_value_sig26EC,
+          freeze: j,
+          scale: var_core_value_sig390D,
+          page: 1,
+          pageSize: var_core_value_sigEEDB ? {
+            w: (var_core_value_sigF7EF + var_core_value_sigB609) * var_core_value_sig390D + 1,
+            h: (var_core_value_sig27F9 + var_core_value_sig393E) * var_core_value_sig390D + 1
+          } : {
+            w: var_core_value_sigF7EF * var_core_value_sig390D + 1,
+            h: var_core_value_sig27F9 * var_core_value_sig390D + 1
+          },
+          margin: t.PaperMarginMap[t.PrintPaperMargin["None"]],
+          pageTotal: 1,
+          sheetPageTotal: 1,
+          sheetPage: 1,
+          includeHeaderDimensions: var_core_value_sigEEDB ?? false
+        }, {
+          gridlines: true,
+          hAlign: t.PrintAlign["Middle"],
+          vAlign: t.PrintAlign["Middle"],
+          headerFooter: [],
+          headerFooterSetting: E,
+          isCustomHeaderFooter: false
+        }, false),
+        var_core_value_sig39B7 = document.createElement("div");
+      var_core_value_sig39B7.className = t.PRINT_CONTAINER_CLASS, var_core_value_sigC928.container["className"] = t.PRINT_CANVAS_CLASS, var_core_value_sig39B7.appendChild(var_core_value_sigC928.container), document.body["appendChild"](var_core_value_sig39B7), var_core_value_sigC928.prepare(), var_core_value_sigC928.render();
+      let var_core_value_sig18E0 = var_core_value_sigC928.getImage();
+      return var_core_value_sigC928.dispose(), document.body["removeChild"](var_core_value_sig39B7), var_core_value_sig18E0;
+    }
+  };
+U = O([D(0, (0, n.Inject)(n.Injector)), D(1, b), D(2, k), D(3, o.IRenderManagerService), D(4, i.IMessageService), D(5, n.IConfigService), D(6, t.IPrintPreparationService)], U);
+function ce(var_core_value_sig34F4, var_core_value_sigA45D) {
+  let var_core_value_sig1BC7 = atob(var_core_value_sig34F4.split(",")[1]),
+    var_core_value_sig4956 = new ArrayBuffer(var_core_value_sig1BC7.length),
+    var_core_value_sigCC9E = new Uint8Array(var_core_value_sig4956);
+  for (let var_core_value_sigE161 = 0; var_core_value_sigE161 < var_core_value_sig1BC7.length; var_core_value_sigE161++) var_core_value_sigCC9E[var_core_value_sigE161] = var_core_value_sig1BC7.charCodeAt(var_core_value_sigE161);
+  return new Blob([var_core_value_sig4956], {
+    type: var_core_value_sigA45D
+  });
+}
+const W = {
+    type: n.CommandType["OPERATION"],
+    id: "sheet.operation.screenshot",
+    async handler(var_core_value_sig444C) {
+      var var_core_value_sigE42E;
+      let var_core_value_sigF039 = var_core_value_sig444C.get(r.SheetsSelectionsService),
+        var_core_value_sigA321 = (var_core_value_sigE42E = var_core_value_sigF039.getCurrentSelections()) == null ? undefined : var_core_value_sigE42E[0],
+        var_core_value_sigBF4C = var_core_value_sig444C.get(U),
+        var_core_value_sig3457 = var_core_value_sigF039.getCurrentLastSelection(),
+        var_core_value_sig4A08 = var_core_value_sig444C.get(i.IMessageService),
+        var_core_value_sig1BC4 = var_core_value_sig444C.get(n.IUniverInstanceService),
+        var_core_value_sig9EAB = var_core_value_sig444C.get(n.LocaleService);
+      if (!var_core_value_sigA321 || !var_core_value_sig3457) return false;
+      let var_core_value_sigA5C3 = (0, r.getSheetCommandTarget)(var_core_value_sig1BC4);
+      if (!var_core_value_sigA5C3) return false;
+      let {
+          unitId: var_core_value_sig3A1E,
+          subUnitId: var_core_value_sigDC92
+        } = var_core_value_sigA5C3,
+        var_core_value_sig3515 = var_core_value_sigBF4C.getRangeImage(var_core_value_sig3A1E, var_core_value_sigDC92, var_core_value_sigA321.range);
+      if (!var_core_value_sig3515) return false;
+      try {
+        return await navigator.clipboard["write"]([new ClipboardItem({
+          "image/png": ce(var_core_value_sig3515, "image/png")
+        })]), var_core_value_sig4A08.show({
+          type: c.MessageType["Success"],
+          content: var_core_value_sig9EAB.t("sheets-print.screenshot.success")
+        }), true;
+      } catch {
+        return var_core_value_sig4A08.show({
+          type: c.MessageType["Error"],
+          content: var_core_value_sig9EAB.t("sheets-print.screenshot.fail")
+        }), false;
+      }
+    }
+  },
+  G = (0, n.createIdentifier)("univer-pro.print-grid.service");
+var le = class extends n.Disposable {
+  constructor(...var_core_value_sigBDEE) {
+    super(...var_core_value_sigBDEE), y(this, "_visible$", new a["BehaviorSubject"](false)), y(this, "visible$", this._visible$);
+  }
+  get visible() {
+    return this._visible$["value"];
+  }
+  show() {
+    this._visible$["next"](true);
+  }
+  hide() {
+    this._visible$["next"](false);
+  }
+  dispose() {
+    super.dispose(), this._visible$["complete"]();
+  }
+};
+const ue = "PRINT_GRID_SIDEBAR_COMPONENT",
+  K = {
+    id: "sheet.operation.open-print-grid-sidebar",
+    type: n.CommandType["OPERATION"],
+    handler: var_core_value_sigC2A0 => {
+      let var_core_value_sig7C65 = var_core_value_sigC2A0.get(i.ISidebarService),
+        var_core_value_sig7F05 = var_core_value_sigC2A0.get(G),
+        var_core_value_sig41F3 = var_core_value_sigC2A0.get(k),
+        var_core_value_sigF455 = var_core_value_sigC2A0.get(n.LocaleService);
+      return var_core_value_sig41F3.reLayout(), var_core_value_sig7F05.show(), var_core_value_sig7C65.open({
+        header: {
+          title: var_core_value_sigF455.t("sheets-print.grid.title")
+        },
+        children: {
+          label: ue
+        },
+        onClose: () => {},
+        width: 312
+      }), true;
+    }
+  },
+  q = {
+    id: "sheet.operation.close-print-grid-sidebar",
+    type: n.CommandType["OPERATION"],
+    handler: var_core_value_sig6E78 => {
+      let var_core_value_sigB3EE = var_core_value_sig6E78.get(i.ISidebarService);
+      return var_core_value_sig6E78.get(G).hide(), var_core_value_sigB3EE.close(), true;
+    }
+  },
+  de = "sheet.menu.print";
+function fe(var_core_value_sigC50A) {
+  return {
+    id: de,
+    type: i.MenuItemType["SUBITEMS"],
+    icon: "PrintIcon",
+    tooltip: "sheets-print.menu",
+    hidden$: (0, i.getMenuHiddenObservable)(var_core_value_sigC50A, n.UniverInstanceType["UNIVER_SHEET"]),
+    disabled$: (0, s.getCurrentRangeDisable$)(var_core_value_sigC50A, {
+      workbookTypes: [r.WorkbookPrintPermission]
+    })
+  };
+}
+function pe() {
+  return {
+    id: F.id,
+    type: i.MenuItemType["BUTTON"],
+    title: "sheets-print.menu",
+    icon: "PrintIcon"
+  };
+}
+function me(var_core_value_sig11D0) {
+  return {
+    id: W.id,
+    type: i.MenuItemType["BUTTON"],
+    title: "sheets-print.screenshot.title",
+    icon: "DownloadImageIcon",
+    tooltip: "sheets-print.screenshot.title",
+    hidden$: (0, i.getMenuHiddenObservable)(var_core_value_sig11D0, n.UniverInstanceType["UNIVER_SHEET"]),
+    disabled$: (0, s.getCurrentRangeDisable$)(var_core_value_sig11D0, {
+      workbookTypes: [r.WorkbookPrintPermission, r.WorkbookCopyPermission, r.WorkbookViewPermission],
+      worksheetTypes: [r.WorksheetCopyPermission, r.WorksheetViewPermission],
+      rangeTypes: [r.RangeProtectionPermissionViewPoint]
+    })
+  };
+}
+function he() {
+  return {
+    id: K.id,
+    type: i.MenuItemType["BUTTON"],
+    title: "sheets-print.grid.title",
+    icon: "DocSettingIcon"
+  };
+}
+const ge = {
+  [i.RibbonStartGroup["OTHERS"]]: {
+    [de]: {
+      order: 0.01,
+      gridLayout: {
+        row: 1,
+        column: 3,
+        rowSpan: 2,
+        columnSpan: 2,
+        showLabel: true
+      },
+      menuItemFactory: fe,
+      [F.id]: {
+        order: 0,
+        menuItemFactory: pe
+      },
+      [K.id]: {
+        order: 1,
+        menuItemFactory: he
+      }
+    }
+  },
+  [i.ContextMenuPosition["MAIN_AREA"]]: {
+    [i.ContextMenuGroup["OTHERS"]]: {
+      [W.id]: {
+        order: 2.1,
+        menuItemFactory: me
+      }
+    }
+  }
+};
+var _e = "@univerjs-pro/sheets-print",
+  ve = "1.0.0-insiders.20260907-70fc579";
+const ye = {},
+  be = (0, u.memo)(function () {
+    var var_core_value_sigB8ED, var_core_value_sig8EAE, var_core_value_sig1CDD, var_core_value_sig0DB1;
+    let var_core_value_sig68A2 = (0, i.useDependency)(k),
+      var_core_value_sigCC17 = (0, i.useDependency)(n.ICommandService),
+      var_core_value_sig32AE = (0, i.useObservable)(var_core_value_sig68A2.layoutConfig$, var_core_value_sig68A2.layoutConfig),
+      var_core_value_sigC753 = (0, i.useDependency)(n.LocaleService),
+      var_core_value_sigFFD1 = (0, i.useDependency)(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]);
+    if (!var_core_value_sigFFD1) return console.error("No workbook found"), null;
+    let var_core_value_sig81AE = var_core_value_sigFFD1.getActiveSheet();
+    if (!var_core_value_sig81AE) return console.error("No active sheet found"), null;
+    let var_core_value_sigF79F = (var_core_value_sig1F40, var_core_value_sig3FC7) => {
+        let var_core_value_sig1E1B = Math.max(0, var_core_value_sig3FC7 || 0),
+          var_core_value_sig3B10 = var_core_value_sig32AE.marginCustom || {
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
+          };
+        var_core_value_sig68A2.updateLayoutConfig({
+          marginCustom: {
+            ...var_core_value_sig3B10,
+            [var_core_value_sig1F40]: var_core_value_sig1E1B
+          }
+        });
+      },
+      var_core_value_sig0E54 = var_core_value_sig81AE.getFreeze(),
+      var_core_value_sig3B17 = var_core_value_sig0E54.xSplit <= 0,
+      var_core_value_sig6C4A = var_core_value_sig0E54.ySplit <= 0,
+      var_core_value_sig73D9 = () => {
+        var_core_value_sigCC17.executeCommand(q.id);
+      };
+    return (0, d.jsxs)("div", {
+      className: (0, c.clsx)("univer-flex\x20univer-h-full\x20univer-flex-col", c.scrollbarClassName),
+      children: [(0, d.jsxs)("div", {
+        className: "univer-flex-1 univer-overflow-y-auto",
+        children: [(0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigC753.t("sheets-print.area.title"),
+          children: (0, d.jsx)(c.Select, {
+            className: "univer-w-full",
+            value: "" + var_core_value_sig32AE.area,
+            onChange: var_core_value_sig89E6 => {
+              var_core_value_sig68A2.updateLayoutConfig({
+                area: var_core_value_sig89E6
+              });
+            },
+            options: [{
+              label: var_core_value_sigC753.t("sheets-print.area.currentSheet"),
+              value: "CurrentSheet"
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.area.currentSelection"),
+              value: "CurrentSelection"
+            }]
+          })
+        }), (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigC753.t("sheets-print.size.title"),
+          children: (0, d.jsx)(c.Select, {
+            className: "univer-w-full",
+            value: var_core_value_sig32AE.paperSize,
+            options: [{
+              label: var_core_value_sigC753.t("sheets-print.size.letter"),
+              value: n.PaperType["Letter"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.tabloid"),
+              value: n.PaperType["Tabloid"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.legal"),
+              value: n.PaperType["Legal"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.statement"),
+              value: n.PaperType["Statement"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.executive"),
+              value: n.PaperType["Executive"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.folio"),
+              value: n.PaperType["Folio"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.a3"),
+              value: n.PaperType["A3"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.a4"),
+              value: n.PaperType["A4"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.a5"),
+              value: n.PaperType["A5"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.b4"),
+              value: n.PaperType["B4"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.size.b5"),
+              value: n.PaperType["B5"]
+            }],
+            onChange: var_core_value_sig4743 => {
+              var_core_value_sig68A2.updateLayoutConfig({
+                paperSize: var_core_value_sig4743
+              });
+            }
+          })
+        }), (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigC753.t("sheets-print.margin.title"),
+          children: (0, d.jsx)(c.Select, {
+            className: "univer-w-full",
+            value: var_core_value_sig32AE.margin,
+            options: [{
+              label: var_core_value_sigC753.t("sheets-print.margin.normal"),
+              value: t.PrintPaperMargin["Normal"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.margin.narrow"),
+              value: t.PrintPaperMargin["Narrow"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.margin.wide"),
+              value: t.PrintPaperMargin["Wide"]
+            }, {
+              label: var_core_value_sigC753.t("sheets-print.margin.custom"),
+              value: t.PrintPaperMargin["Custom"]
+            }],
+            onChange: var_core_value_sigEB6A => {
+              let var_core_value_sig3D46 = t.PaperMarginMap[var_core_value_sig32AE.margin];
+              var_core_value_sig68A2.updateLayoutConfig({
+                margin: var_core_value_sigEB6A,
+                marginCustom: var_core_value_sigEB6A === t.PrintPaperMargin["Custom"] ? var_core_value_sig3D46 : t.PaperMarginMap[var_core_value_sigEB6A]
+              });
+            }
+          })
+        }), var_core_value_sig32AE.margin === t.PrintPaperMargin["Custom"] && (0, d.jsx)(c.FormLayout, {
+          children: (0, d.jsxs)("div", {
+            className: "univer-grid univer-grid-cols-2 univer-gap-2",
+            children: [(0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigC753.t("sheets-print.margin.top")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sigB8ED = var_core_value_sig32AE.marginCustom) == null ? undefined : var_core_value_sigB8ED.top) || 0),
+                onChange: var_core_value_sigCC93 => var_core_value_sigF79F("top", Number(var_core_value_sigCC93))
+              })]
+            }), (0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigC753.t("sheets-print.margin.bottom")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sig8EAE = var_core_value_sig32AE.marginCustom) == null ? undefined : var_core_value_sig8EAE.bottom) || 0),
+                onChange: var_core_value_sig5964 => var_core_value_sigF79F("bottom", Number(var_core_value_sig5964))
+              })]
+            }), (0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigC753.t("sheets-print.margin.left")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sig1CDD = var_core_value_sig32AE.marginCustom) == null ? undefined : var_core_value_sig1CDD.left) || 0),
+                onChange: var_core_value_sig808B => var_core_value_sigF79F("left", Number(var_core_value_sig808B))
+              })]
+            }), (0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigC753.t("sheets-print.margin.right")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sig0DB1 = var_core_value_sig32AE.marginCustom) == null ? undefined : var_core_value_sig0DB1.right) || 0),
+                onChange: var_core_value_sig2A26 => var_core_value_sigF79F("right", Number(var_core_value_sig2A26))
+              })]
+            })]
+          })
+        }), (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigC753.t("sheets-print.orientation.title"),
+          children: (0, d.jsxs)(c.RadioGroup, {
+            value: var_core_value_sig32AE.direction,
+            onChange: var_core_value_sig1179 => {
+              var_core_value_sig68A2.updateLayoutConfig({
+                direction: var_core_value_sig1179
+              });
+            },
+            children: [(0, d.jsx)(c.Radio, {
+              value: t.PrintDirection["Portrait"],
+              children: var_core_value_sigC753.t("sheets-print.orientation.portrait")
+            }), (0, d.jsx)(c.Radio, {
+              value: t.PrintDirection["Landscape"],
+              children: var_core_value_sigC753.t("sheets-print.orientation.landscape")
+            })]
+          })
+        }), (0, d.jsx)(c.FormLayout, {
+          collapsable: true,
+          label: var_core_value_sigC753.t("sheets-print.freeze.title"),
+          children: (0, d.jsxs)(c.CheckboxGroup, {
+            direction: "vertical",
+            value: var_core_value_sig32AE.freeze,
+            onChange: var_core_value_sigEA92 => {
+              var_core_value_sig68A2.updateLayoutConfig({
+                freeze: var_core_value_sigEA92
+              });
+            },
+            children: [(0, d.jsx)(c.Checkbox, {
+              disabled: var_core_value_sig6C4A,
+              value: "Row",
+              children: var_core_value_sigC753.t("sheets-print.freeze.row")
+            }), (0, d.jsx)(c.Checkbox, {
+              disabled: var_core_value_sig3B17,
+              value: "Column",
+              children: var_core_value_sigC753.t("sheets-print.freeze.column")
+            })]
+          })
+        }), (0, d.jsxs)(c.FormLayout, {
+          collapsable: true,
+          defaultCollapsed: true,
+          label: var_core_value_sigC753.t("sheets-print.area.limit"),
+          children: [(0, d.jsx)(c.FormLayout, {
+            className: "univer-mb-2",
+            label: var_core_value_sigC753.t("sheets-print.area.maxRowsEachPage"),
+            children: (0, d.jsx)(c.Input, {
+              value: var_core_value_sig32AE.maxRowsEachPage === 1 / 0 ? "" : "" + var_core_value_sig32AE.maxRowsEachPage,
+              onChange: var_core_value_sig8FD9 => {
+                var_core_value_sig68A2.updateLayoutConfig({
+                  maxRowsEachPage: !var_core_value_sig8FD9 || Number.isNaN(Number(var_core_value_sig8FD9)) ? 1 / 0 : Number(var_core_value_sig8FD9)
+                });
+              }
+            })
+          }), (0, d.jsx)(c.FormLayout, {
+            label: var_core_value_sigC753.t("sheets-print.area.maxColumnsEachPage"),
+            children: (0, d.jsx)(c.Input, {
+              value: var_core_value_sig32AE.maxColumnsEachPage === 1 / 0 ? "" : "" + var_core_value_sig32AE.maxColumnsEachPage,
+              onChange: var_core_value_sig1AE5 => {
+                var_core_value_sig68A2.updateLayoutConfig({
+                  maxColumnsEachPage: !var_core_value_sig1AE5 || Number.isNaN(Number(var_core_value_sig1AE5)) ? 1 / 0 : Number(var_core_value_sig1AE5)
+                });
+              }
+            })
+          })]
+        })]
+      }), (0, d.jsxs)("div", {
+        className: "univer-space-y-2 univer-border-t univer-pb-4",
+        children: [(0, d.jsx)(c.Button, {
+          type: "submit",
+          variant: "primary",
+          className: "univer-w-full",
+          onClick: () => {
+            var_core_value_sigCC17.executeCommand(F.id), var_core_value_sig73D9();
+          },
+          children: var_core_value_sigC753.t("sheets-print.menu")
+        }), (0, d.jsx)(c.Button, {
+          type: "button",
+          className: "univer-w-full",
+          onClick: var_core_value_sig73D9,
+          children: var_core_value_sigC753.t("sheets-print.grid.closeAndHide")
+        })]
+      })]
+    });
+  });
+let J = class extends n.Disposable {
+  constructor(var_core_value_sig7100, var_core_value_sigA19A) {
+    super(), this._componentManager = var_core_value_sig7100, this._iconManager = var_core_value_sigA19A, this._registerIcons(), this._registerComponents();
+  }
+  _registerIcons() {
+    this.disposeWithMe(this._iconManager["register"]({
+      DocSettingIcon: l.DocSettingIcon,
+      PrintIcon: l.PrintIcon
+    }));
+  }
+  _registerComponents() {
+    this._componentManager["register"](ue, be);
+  }
+};
+J = O([D(0, (0, n.Inject)(i.ComponentManager)), D(1, (0, n.Inject)(i.IconManager))], J);
+const xe = [6, 4];
+var Se = class extends o.SheetExtension {
+  constructor(var_core_value_sigD3F5, var_core_value_sig3082) {
+    super(), this._printGridService = var_core_value_sigD3F5, this._printManagerService = var_core_value_sig3082, y(this, "uKey", "PrintGridExtension"), y(this, "Z_INDEX", 61);
+  }
+  draw(var_core_value_sigF5D1, var_core_value_sig8775, var_core_value_sig481B, var_core_value_sig13D7) {
+    if (var_core_value_sigF5D1.__mode === "printing" || !this._printGridService["visible"]) return;
+    let {
+      worksheet: var_core_value_sig90C0
+    } = var_core_value_sig481B;
+    if (!var_core_value_sig90C0) return;
+    let var_core_value_sigF1B2 = this._printManagerService["layoutInfos"],
+      var_core_value_sigC2BB = var_core_value_sig90C0.getUnitId(),
+      var_core_value_sigD9DB = var_core_value_sig90C0.getSheetId(),
+      var_core_value_sigA363 = var_core_value_sigF1B2.find(var_core_value_sig24B9 => var_core_value_sig24B9.unitId === var_core_value_sigC2BB && var_core_value_sig24B9.subUnitId === var_core_value_sigD9DB);
+    var_core_value_sigA363 && this._drawPrintGrid(var_core_value_sigF5D1, var_core_value_sig481B, var_core_value_sigA363);
+  }
+  _drawPrintGrid(var_core_value_sigFBA5, var_core_value_sigAC47, var_core_value_sigA06F) {
+    let {
+        pages: var_core_value_sig770E
+      } = var_core_value_sigA06F,
+      {
+        rowHeightAccumulation: var_core_value_sig4654,
+        columnWidthAccumulation: var_core_value_sigB26B
+      } = var_core_value_sigAC47;
+    var_core_value_sigFBA5.save(), var_core_value_sigFBA5.strokeStyle = "#1890ff", var_core_value_sigFBA5.lineWidth = 2, var_core_value_sigFBA5.setLineDash(xe);
+    let var_core_value_sig019B = new Set(),
+      var_core_value_sigC6BC = new Set();
+    var_core_value_sig770E.forEach(var_core_value_sigE627 => {
+      let {
+          startRow: var_core_value_sigEF3E,
+          endRow: var_core_value_sig273D,
+          startColumn: var_core_value_sig9A0D,
+          endColumn: var_core_value_sigA319
+        } = var_core_value_sigE627,
+        var_core_value_sig2D58 = var_core_value_sigEF3E === 0 ? 0 : var_core_value_sig4654[var_core_value_sigEF3E - 1],
+        var_core_value_sig223F = var_core_value_sig4654[var_core_value_sig273D],
+        var_core_value_sigD749 = var_core_value_sig9A0D === 0 ? 0 : var_core_value_sigB26B[var_core_value_sig9A0D - 1],
+        var_core_value_sigCFFA = var_core_value_sigB26B[var_core_value_sigA319];
+      var_core_value_sig019B.add(var_core_value_sig2D58), var_core_value_sig019B.add(var_core_value_sig223F), var_core_value_sigC6BC.add(var_core_value_sigD749), var_core_value_sigC6BC.add(var_core_value_sigCFFA);
+    });
+    let var_core_value_sig8EC2 = Math.min(...Array.from(var_core_value_sigC6BC)),
+      var_core_value_sigA8C3 = Math.max(...Array.from(var_core_value_sigC6BC)),
+      var_core_value_sig5276 = Math.min(...Array.from(var_core_value_sig019B)),
+      var_core_value_sig031B = Math.max(...Array.from(var_core_value_sig019B));
+    var_core_value_sig019B.forEach(var_core_value_sig58C1 => {
+      var_core_value_sigFBA5.beginPath(), var_core_value_sigFBA5.moveTo(var_core_value_sig8EC2, var_core_value_sig58C1), var_core_value_sigFBA5.lineTo(var_core_value_sigA8C3, var_core_value_sig58C1), var_core_value_sigFBA5.stroke();
+    }), var_core_value_sigC6BC.forEach(var_core_value_sig5090 => {
+      var_core_value_sigFBA5.beginPath(), var_core_value_sigFBA5.moveTo(var_core_value_sig5090, var_core_value_sig5276), var_core_value_sigFBA5.lineTo(var_core_value_sig5090, var_core_value_sig031B), var_core_value_sigFBA5.stroke();
+    }), var_core_value_sigFBA5.restore();
+  }
+};
+let Y = class extends n.Disposable {
+  constructor(var_core_value_sig9DC0, var_core_value_sig95F0, var_core_value_sig9CCB) {
+    super(), this._context = var_core_value_sig9DC0;
+    let var_core_value_sigE718 = this._context["mainComponent"];
+    this.disposeWithMe(var_core_value_sigE718.register(new Se(var_core_value_sig95F0, var_core_value_sig9CCB)));
+  }
+};
+Y = O([D(1, G), D(2, k)], Y);
+function Ce(var_core_value_sigEAF8) {
+  let [var_core_value_sig0455, var_core_value_sig737C] = (0, u.useState)();
+  return (0, u.useEffect)(() => {
+    var_core_value_sigEAF8.then(var_core_value_sigC368 => {
+      var_core_value_sig737C(() => var_core_value_sigC368);
+    });
+  }, []), var_core_value_sig0455;
+}
+const X = ({
+    icon: var_core_value_sig5AF5,
+    items: var_core_value_sig9DE4,
+    active: var_core_value_sig77FA,
+    onChange: var_core_value_sigA4A7,
+    onHover: var_core_value_sigA4DF,
+    popupDirection: var_core_value_sigCC9D = "top"
+  }) => (0, d.jsxs)("div", {
+    className: "univer-relative\x20univer-inline-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-gap-1\x20univer-rounded\x20univer-bg-gray-0\x20univer-px-2\x20univer-py-1\x20hover:univer-bg-gray-200\x20dark:!univer-bg-gray-900\x20hover:dark:!univer-bg-gray-700",
+    onMouseEnter: () => var_core_value_sigA4DF == null ? undefined : var_core_value_sigA4DF(true),
+    onMouseLeave: () => var_core_value_sigA4DF == null ? undefined : var_core_value_sigA4DF(false),
+    children: [(0, d.jsx)("div", {
+      className: "univer-flex univer-size-5 univer-items-center univer-justify-center univer-text-gray-900 dark:!univer-text-gray-0",
+      children: var_core_value_sig5AF5
+    }), (0, d.jsx)(l.MoreDownIcon, {
+      className: "univer-size-3\x20univer-text-gray-900\x20univer-transition-transform\x20dark:!univer-text-gray-0"
+    }), var_core_value_sig77FA && (0, d.jsx)("div", {
+      style: {
+        [var_core_value_sigCC9D]: "100%"
+      },
+      className: "univer-absolute univer-left-0 univer-z-[1000] univer-min-w-[200px] univer-px-0 univer-py-2",
+      children: (0, d.jsx)("div", {
+        className: "univer-solid univer-rounded-lg univer-border univer-border-gray-200 univer-bg-gray-0 univer-p-2 univer-shadow-lg dark:!univer-border-gray-700",
+        children: var_core_value_sig9DE4.map(var_core_value_sigAEC8 => (0, d.jsxs)("div", {
+          className: "univer-flex univer-cursor-pointer univer-flex-row univer-items-center univer-justify-between univer-rounded-md univer-px-2 univer-py-1.5 hover:univer-rounded hover:univer-bg-gray-300",
+          onClick: () => {
+            var_core_value_sigA4A7 == null || var_core_value_sigA4A7(var_core_value_sigAEC8.value), var_core_value_sigA4DF == null || var_core_value_sigA4DF(false);
+          },
+          children: [(0, d.jsx)("div", {
+            className: "univer-text-base univer-text-gray-900 dark:!univer-text-gray-0",
+            children: var_core_value_sigAEC8.label
+          }), (0, d.jsx)("div", {
+            className: "univer-text-sm univer-text-gray-600 dark:!univer-text-gray-200",
+            children: var_core_value_sigAEC8.desc
+          })]
+        }, var_core_value_sigAEC8.value))
+      })
+    })]
+  }),
+  we = var_core_value_sig90F5 => {
+    let {
+        onSelect: var_core_value_sigD2BA,
+        popupDirection: var_core_value_sigCD3A
+      } = var_core_value_sig90F5,
+      [var_core_value_sig519D, var_core_value_sigC7E7] = (0, u.useState)(),
+      var_core_value_sig6E1C = (0, i.useDependency)(n.LocaleService),
+      var_core_value_sigFABC = (0, i.useDependency)(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]),
+      var_core_value_sig413D = var_core_value_sigFABC.getActiveSheet(),
+      var_core_value_sig5BCE = (0, u.useMemo)(() => (0, n.dateKit)(), []),
+      var_core_value_sig8EF0 = (0, u.useMemo)(() => [{
+        value: "@Page",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.page"),
+        desc: z("@Page", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@SheetPage",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.sheetPage"),
+        desc: z("@SheetPage", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@TotalPage",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.pageTotal"),
+        desc: z("@TotalPage", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@TotalSheetPage",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.sheetPageTotal"),
+        desc: z("@TotalSheetPage", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }], [var_core_value_sig6E1C]),
+      var_core_value_sig78AC = (0, u.useMemo)(() => [{
+        value: "@WorkbookTitle",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.title"),
+        desc: z("@WorkbookTitle", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@WorksheetTitle",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.sheet"),
+        desc: z("@WorksheetTitle", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }], [var_core_value_sig6E1C]),
+      var_core_value_sig4CEF = (0, u.useMemo)(() => [{
+        value: "@DateA",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.dateA"),
+        desc: z("@DateA", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@DateB",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.dateB"),
+        desc: z("@DateB", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@DateC",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.dateC"),
+        desc: z("@DateC", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@DateD",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.dateD"),
+        desc: z("@DateD", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }], [var_core_value_sig6E1C]),
+      var_core_value_sigD57D = (0, u.useMemo)(() => [{
+        value: "@TimeA",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.timeA"),
+        desc: z("@TimeA", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@TimeB",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.timeB"),
+        desc: z("@TimeB", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@TimeC",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.timeC"),
+        desc: z("@TimeC", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }, {
+        value: "@TimeD",
+        label: var_core_value_sig6E1C.t("sheets-print.headerFooter.display.timeD"),
+        desc: z("@TimeD", {
+          workbook: var_core_value_sigFABC,
+          worksheet: var_core_value_sig413D,
+          page: 1,
+          sheetPage: 1,
+          pageTotal: 99,
+          sheetPageTotal: 99,
+          localeService: var_core_value_sig6E1C,
+          now: var_core_value_sig5BCE
+        })
+      }], [var_core_value_sig6E1C]);
+    return (0, d.jsxs)("div", {
+      className: (0, c.clsx)("univer-rounded-md\x20univer-bg-gray-0\x20univer-p-1\x20univer-shadow\x20dark:!univer-bg-gray-900", c.borderClassName),
+      children: [(0, d.jsx)(X, {
+        icon: (0, d.jsx)(l.SheetIcon, {}),
+        items: var_core_value_sig8EF0,
+        onHover: var_core_value_sigB977 => var_core_value_sigC7E7(var_core_value_sigB977 ? "sheet" : ""),
+        active: var_core_value_sig519D === "sheet",
+        onChange: var_core_value_sigD2BA,
+        popupDirection: var_core_value_sigCD3A
+      }), (0, d.jsx)(X, {
+        icon: (0, d.jsx)(l.TextIcon, {}),
+        items: var_core_value_sig78AC,
+        onHover: var_core_value_sig2949 => var_core_value_sigC7E7(var_core_value_sig2949 ? "text" : ""),
+        active: var_core_value_sig519D === "text",
+        onChange: var_core_value_sigD2BA,
+        popupDirection: var_core_value_sigCD3A
+      }), (0, d.jsx)(X, {
+        icon: (0, d.jsx)(l.CalendarIcon, {}),
+        items: var_core_value_sig4CEF,
+        onHover: var_core_value_sig308A => var_core_value_sigC7E7(var_core_value_sig308A ? "date" : ""),
+        active: var_core_value_sig519D === "date",
+        onChange: var_core_value_sigD2BA,
+        popupDirection: var_core_value_sigCD3A
+      }), (0, d.jsx)(X, {
+        icon: (0, d.jsx)(l.ClockIcon, {}),
+        items: var_core_value_sigD57D,
+        onHover: var_core_value_sig528D => var_core_value_sigC7E7(var_core_value_sig528D ? "time" : ""),
+        active: var_core_value_sig519D === "time",
+        onChange: var_core_value_sigD2BA,
+        popupDirection: var_core_value_sigCD3A
+      })]
+    });
+  };
+function Te({
+  width: var_core_value_sig2CC7 = 697,
+  height: var_core_value_sig4784 = 553,
+  cols: var_core_value_sigC39E = 8,
+  rows: var_core_value_sig16C7 = 24,
+  cellWidth: var_core_value_sig7481 = 87,
+  cellHeight: var_core_value_sig08A3 = 23,
+  strokeColor: var_core_value_sig77D8 = "#E5E5E5"
+}) {
+  let var_core_value_sig78A3 = (0, u.useMemo)(() => {
+    let var_core_value_sigA309 = [];
+    for (let var_core_value_sigAD56 = 0; var_core_value_sigAD56 < var_core_value_sig16C7; var_core_value_sigAD56++) for (let var_core_value_sig284F = 0; var_core_value_sig284F < var_core_value_sigC39E; var_core_value_sig284F++) var_core_value_sigA309.push((0, d.jsx)("rect", {
+      x: var_core_value_sig284F * var_core_value_sig7481 + 0.5,
+      y: var_core_value_sigAD56 * var_core_value_sig08A3 + 0.5,
+      width: var_core_value_sig7481,
+      height: var_core_value_sig08A3,
+      stroke: var_core_value_sig77D8
+    }, var_core_value_sigAD56 + "-" + var_core_value_sig284F));
+    return var_core_value_sigA309;
+  }, [var_core_value_sig16C7, var_core_value_sigC39E, var_core_value_sig7481, var_core_value_sig08A3, var_core_value_sig77D8]);
+  return (0, d.jsx)("svg", {
+    width: var_core_value_sig2CC7,
+    height: var_core_value_sig4784,
+    viewBox: "0 0 " + var_core_value_sig2CC7 + "\x20" + var_core_value_sig4784,
+    fill: "none",
+    xmlns: "http://www.w3.org/2000/svg",
+    children: var_core_value_sig78A3
+  });
+}
+const Z = var_core_value_sig649B => {
+    let {
+        value: var_core_value_sig6256,
+        onChange: var_core_value_sigE7A6,
+        popupDirection: var_core_value_sigB505 = "top"
+      } = var_core_value_sig649B,
+      var_core_value_sig7428 = (0, i.useDependency)(n.LocaleService),
+      var_core_value_sig1DCE = (0, i.useDependency)(p.IEditorService),
+      [var_core_value_sig0567, var_core_value_sigA7F3] = (0, u.useState)(false),
+      var_core_value_sigEACD = (0, u.useRef)(null),
+      var_core_value_sig901E = (0, i.useDependency)(n.ICommandService),
+      var_core_value_sigF7BB = [{
+        value: "@Page",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.page")
+      }, {
+        value: "@SheetPage",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.sheetPage")
+      }, {
+        value: "@TotalPage",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.pageTotal")
+      }, {
+        value: "@TotalSheetPage",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.sheetPageTotal")
+      }],
+      var_core_value_sigFA38 = [{
+        value: "@WorkbookTitle",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.title")
+      }, {
+        value: "@WorksheetTitle",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.sheet")
+      }],
+      var_core_value_sig102B = [{
+        value: "@DateA",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.dateA")
+      }, {
+        value: "@DateB",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.dateB")
+      }, {
+        value: "@DateC",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.dateC")
+      }, {
+        value: "@DateD",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.dateD")
+      }],
+      var_core_value_sigA7DB = [{
+        value: "@TimeA",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.timeA")
+      }, {
+        value: "@TimeB",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.timeB")
+      }, {
+        value: "@TimeC",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.timeC")
+      }, {
+        value: "@TimeD",
+        label: var_core_value_sig7428.t("sheets-print.headerFooter.display.timeD")
+      }],
+      var_core_value_sig5EEE = [...var_core_value_sigF7BB, ...var_core_value_sigFA38, ...var_core_value_sig102B, ...var_core_value_sigA7DB],
+      [var_core_value_sig65B4] = (0, u.useState)(() => re(var_core_value_sig6256, var_core_value_sig5EEE));
+    return (0, d.jsxs)("div", {
+      className: "univer-relative univer-mx-2 univer-my-0 univer-flex-grow",
+      children: [(0, d.jsx)(p.RichTextEditor, {
+        editorRef: var_core_value_sigEACD,
+        initialValue: var_core_value_sig65B4,
+        onChange: var_core_value_sig9E20 => {
+          var_core_value_sigE7A6 == null || var_core_value_sigE7A6(ie(var_core_value_sig9E20));
+        },
+        onFocusChange: var_core_value_sig26BB => {
+          var_core_value_sigA7F3(var_core_value_sig26BB);
+        },
+        onClickOutside: () => {
+          var var_core_value_sig19B4;
+          (var_core_value_sig19B4 = var_core_value_sigEACD.current) == null || var_core_value_sig19B4.setSelectionRanges([]), var_core_value_sig1DCE.blur();
+        },
+        placeholder: var_core_value_sig7428.t("sheets-print.headerFooter.placeholder")
+      }), (0, d.jsx)("div", {
+        className: "univer-absolute univer-left-0 univer-z-[100]",
+        style: {
+          [var_core_value_sigB505]: 36
+        },
+        children: var_core_value_sig0567 && (0, d.jsx)(we, {
+          popupDirection: var_core_value_sigB505,
+          onSelect: async var_core_value_sig218A => {
+            var var_core_value_sig14CB;
+            let var_core_value_sigFDEE = (var_core_value_sig14CB = var_core_value_sigEACD.current) == null ? undefined : var_core_value_sig14CB.getEditorId();
+            if (!var_core_value_sigEACD.current) return;
+            let var_core_value_sigA676 = var_core_value_sigEACD.current["getCursorPosition"]();
+            if (var_core_value_sigA676 < 0) return;
+            let var_core_value_sigC27E = var_core_value_sig5EEE.find(var_core_value_sigDB4A => var_core_value_sigDB4A.value === var_core_value_sig218A);
+            if (!var_core_value_sigC27E) return;
+            let var_core_value_sigA70D = {
+              dataStream: var_core_value_sigC27E.label,
+              customRanges: [{
+                startIndex: 0,
+                endIndex: var_core_value_sigC27E.label["length"] - 1,
+                rangeId: (0, n.generateRandomId)(),
+                rangeType: n.CustomRangeType["MENTION"],
+                properties: {
+                  value: var_core_value_sigC27E.value
+                },
+                wholeEntity: true
+              }]
+            };
+            await (0, n.awaitTime)(0);
+            let var_core_value_sigCE10 = n.BuildTextUtils["selection"].replace({
+              selection: {
+                startOffset: var_core_value_sigA676,
+                endOffset: var_core_value_sigA676,
+                collapsed: true
+              },
+              body: var_core_value_sigA70D,
+              doc: var_core_value_sigEACD.current["getDocumentDataModel"]()
+            });
+            if (!var_core_value_sigCE10) return;
+            let var_core_value_sigA386 = {
+                id: f.RichTextEditingMutation["id"],
+                params: {
+                  unitId: var_core_value_sigFDEE,
+                  actions: [],
+                  textRanges: [{
+                    startOffset: var_core_value_sigA676 + var_core_value_sigA70D.dataStream["length"],
+                    endOffset: var_core_value_sigA676 + var_core_value_sigA70D.dataStream["length"],
+                    collapsed: true
+                  }],
+                  trigger: "mually"
+                }
+              },
+              var_core_value_sigCD82 = n.JSONX["getInstance"]();
+            var_core_value_sigA386.params["actions"] = var_core_value_sigCD82.editOp(var_core_value_sigCE10.serialize()), var_core_value_sig901E.syncExecuteCommand(var_core_value_sigA386.id, var_core_value_sigA386.params), setTimeout(() => {
+              var_core_value_sig1DCE.focus(var_core_value_sigFDEE);
+            }, 0);
+          }
+        })
+      })]
+    });
+  },
+  Ee = var_core_value_sigF98E => {
+    let {
+        onClose: var_core_value_sigA470
+      } = var_core_value_sigF98E,
+      var_core_value_sig19A1 = (0, i.useDependency)(k),
+      var_core_value_sig81F7 = var_core_value_sig19A1.renderConfig["headerFooterSetting"] ?? E,
+      [var_core_value_sigBE51, var_core_value_sigAAD1] = (0, u.useState)(var_core_value_sig81F7.topLeft),
+      [var_core_value_sigBC1A, var_core_value_sig3F3A] = (0, u.useState)(var_core_value_sig81F7.topCenter),
+      [var_core_value_sigA984, var_core_value_sigA504] = (0, u.useState)(var_core_value_sig81F7.topRight),
+      [var_core_value_sig05FF, var_core_value_sigFBF0] = (0, u.useState)(var_core_value_sig81F7.bottomLeft),
+      [var_core_value_sig2F95, var_core_value_sigF0E1] = (0, u.useState)(var_core_value_sig81F7.bottomCenter),
+      [var_core_value_sig2D8D, var_core_value_sigE5A6] = (0, u.useState)(var_core_value_sig81F7.bottomRight),
+      var_core_value_sigF449 = (0, i.useDependency)(n.LocaleService);
+    return (0, d.jsxs)("div", {
+      className: "univer-absolute univer-inset-0 univer-z-[100] univer-flex univer-size-full univer-flex-col univer-overflow-hidden univer-bg-gray-0 dark:!univer-bg-gray-900",
+      children: [(0, d.jsxs)("div", {
+        className: (0, c.clsx)("univer-box-border univer-flex univer-h-16 univer-w-full univer-flex-none univer-flex-row univer-items-center univer-justify-between univer-bg-gray-0 univer-px-4 dark:!univer-bg-gray-900", c.borderBottomClassName),
+        children: [(0, d.jsx)("div", {
+          className: "univer-ml-2 univer-text-lg univer-font-medium univer-text-gray-900 dark:!univer-text-gray-0",
+          children: var_core_value_sigF449.t("sheets-print.headerFooter.editCustomHeadFooter")
+        }), (0, d.jsxs)("div", {
+          className: "univer-relative\x20first:univer-mr-2",
+          children: [(0, d.jsx)(c.Button, {
+            className: "univer-mr-2",
+            onClick: () => {
+              var_core_value_sigA470();
+            },
+            children: var_core_value_sigF449.t("sheets-print.header.cancel")
+          }), (0, d.jsx)(c.Button, {
+            variant: "primary",
+            onClick: () => {
+              var_core_value_sigA470(), var_core_value_sig19A1.updateRenderConfig({
+                headerFooterSetting: {
+                  topLeft: var_core_value_sigBE51,
+                  topCenter: var_core_value_sigBC1A,
+                  topRight: var_core_value_sigA984,
+                  bottomLeft: var_core_value_sig05FF,
+                  bottomCenter: var_core_value_sig2F95,
+                  bottomRight: var_core_value_sig2D8D
+                }
+              });
+            },
+            children: var_core_value_sigF449.t("sheets-print.headerFooter.submit")
+          })]
+        })]
+      }), (0, d.jsx)("div", {
+        className: "univer-flex univer-flex-1 univer-flex-col univer-overflow-hidden",
+        children: (0, d.jsx)("div", {
+          className: "univer-relative univer-box-border univer-flex univer-flex-1 univer-items-center univer-justify-center univer-overflow-hidden univer-bg-gray-200 dark:!univer-bg-gray-700",
+          children: (0, d.jsxs)("div", {
+            className: "unier-w-[761px] univer-mx-auto univer-my-4 univer-box-border univer-flex univer-flex-col univer-items-center univer-bg-gray-0 univer-px-6 univer-py-7 univer-shadow-lg dark:!univer-bg-gray-900",
+            children: [(0, d.jsxs)("div", {
+              className: "univer-flex univer-w-full",
+              children: [(0, d.jsx)(Z, {
+                value: var_core_value_sigBE51,
+                onChange: var_core_value_sig44DD => var_core_value_sigAAD1(var_core_value_sig44DD)
+              }), (0, d.jsx)(Z, {
+                value: var_core_value_sigBC1A,
+                onChange: var_core_value_sig96FA => var_core_value_sig3F3A(var_core_value_sig96FA)
+              }), (0, d.jsx)(Z, {
+                value: var_core_value_sigA984,
+                onChange: var_core_value_sigAB68 => var_core_value_sigA504(var_core_value_sigAB68)
+              })]
+            }), (0, d.jsx)("div", {
+              className: "univer-mx-2 univer-my-5",
+              children: (0, d.jsx)(Te, {})
+            }), (0, d.jsxs)("div", {
+              className: "univer-flex univer-w-full",
+              children: [(0, d.jsx)(Z, {
+                popupDirection: "bottom",
+                value: var_core_value_sig05FF,
+                onChange: var_core_value_sig040A => var_core_value_sigFBF0(var_core_value_sig040A)
+              }), (0, d.jsx)(Z, {
+                popupDirection: "bottom",
+                value: var_core_value_sig2F95,
+                onChange: var_core_value_sig2AE0 => var_core_value_sigF0E1(var_core_value_sig2AE0)
+              }), (0, d.jsx)(Z, {
+                popupDirection: "bottom",
+                value: var_core_value_sig2D8D,
+                onChange: var_core_value_sigC349 => var_core_value_sigE5A6(var_core_value_sigC349)
+              })]
+            })]
+          })
+        })
+      })]
+    });
+  },
+  De = (var_core_value_sig38C5, var_core_value_sigC87D) => {
+    let var_core_value_sigCCDC = (0, u.useRef)(false);
+    (0, u.useEffect)(() => {
+      if (var_core_value_sigCCDC.current) return var_core_value_sig38C5();
+      var_core_value_sigCCDC.current = true;
+    }, var_core_value_sigC87D);
+  },
+  Oe = (0, u.forwardRef)((var_core_value_sigC310, var_core_value_sigA4E8) => {
+    let {
+        config: var_core_value_sigDC07,
+        previewScale: var_core_value_sig3474
+      } = var_core_value_sigC310,
+      var_core_value_sig4E80 = (0, i.useDependency)(k),
+      var_core_value_sigD23B = (0, i.useDependency)(n.Injector),
+      var_core_value_sig2B2A = (0, u.useRef)(null),
+      var_core_value_sig0B5C = var_core_value_sig4E80.paperSize,
+      var_core_value_sig7D42 = (0, i.useObservable)(var_core_value_sig4E80.renderConfig$, var_core_value_sig4E80.renderConfig),
+      var_core_value_sig8FDE = (0, i.useObservable)(var_core_value_sig4E80.layoutConfig$, var_core_value_sig4E80.layoutConfig),
+      var_core_value_sig78E6 = Math.round(var_core_value_sig3474 * (794 / var_core_value_sig0B5C.w) * 10) / 10,
+      [var_core_value_sig541F] = (0, u.useState)(() => new H(var_core_value_sigD23B, var_core_value_sigDC07, var_core_value_sig7D42, true, var_core_value_sig78E6));
+    return (0, u.useEffect)(() => (var_core_value_sig2B2A.current && (var_core_value_sig541F.container["style"].width = "100%", var_core_value_sig541F.container["style"].height = "100%", var_core_value_sig541F.container["style"].position = "relative", var_core_value_sig2B2A.current["appendChild"](var_core_value_sig541F.container), var_core_value_sig541F.container["appendChild"](var_core_value_sig541F.root)), var_core_value_sig541F.render(), var_core_value_sig541F.renderOnReady(), () => {
+      var var_core_value_sig6418;
+      queueMicrotask(() => var_core_value_sig541F.dispose()), (var_core_value_sig6418 = var_core_value_sig2B2A.current) == null || var_core_value_sig6418.removeChild(var_core_value_sig541F.container);
+    }), [var_core_value_sig541F]), De(() => {
+      var_core_value_sig541F.renderConfig = var_core_value_sig7D42, var_core_value_sig541F.render();
+    }, [var_core_value_sig7D42]), De(() => {
+      var_core_value_sig541F.setPreviewScale(var_core_value_sig78E6), var_core_value_sig541F.engine["resize"](), var_core_value_sig541F.render();
+    }, [var_core_value_sig78E6]), De(() => {
+      var_core_value_sig541F.updateConfig(var_core_value_sigDC07), var_core_value_sig541F.render();
+    }, [var_core_value_sigDC07.freeze["startRow"], var_core_value_sigDC07.freeze["startColumn"], var_core_value_sigDC07.freeze["xSplit"], var_core_value_sigDC07.freeze["ySplit"], var_core_value_sigDC07.range["startRow"], var_core_value_sigDC07.range["endRow"], var_core_value_sigDC07.range["startColumn"], var_core_value_sigDC07.range["endColumn"], var_core_value_sigDC07.scale, var_core_value_sig8FDE.margin]), (0, d.jsx)("div", {
+      ref: var_core_value_sigA4E8,
+      children: (0, d.jsx)("div", {
+        ref: var_core_value_sig2B2A,
+        className: "univer-relative univer-mx-auto univer-mt-7 univer-flex-none univer-bg-gray-0 univer-shadow-lg dark:!univer-bg-gray-900",
+        style: {
+          width: var_core_value_sig0B5C.w * var_core_value_sig78E6,
+          height: var_core_value_sig0B5C.h * var_core_value_sig78E6
+        }
+      })
+    });
+  }),
+  ke = (0, u.memo)(({
+    onShowFooterHeaderEditor: var_core_value_sig417B
+  }) => {
+    var var_core_value_sigAA90, var_core_value_sigE92D, var_core_value_sig9940, var_core_value_sig682D, var_core_value_sig1435;
+    let var_core_value_sig4082 = (0, i.useDependency)(k),
+      var_core_value_sigC049 = (0, i.useObservable)(var_core_value_sig4082.layoutConfig$, var_core_value_sig4082.layoutConfig),
+      var_core_value_sigE5C3 = (0, i.useObservable)(var_core_value_sig4082.renderConfig$, var_core_value_sig4082.renderConfig),
+      var_core_value_sigCCAA = (0, i.useDependency)(n.LocaleService),
+      var_core_value_sigF32D = (0, i.useDependency)(n.IUniverInstanceService),
+      var_core_value_sig9427 = (0, i.useDependency)(n.ILocalStorageService),
+      [var_core_value_sig21F4, var_core_value_sigA345] = (0, u.useState)(null),
+      var_core_value_sigA468 = ((var_core_value_sigAA90 = (0, i.useDependency)(n.IConfigService).getConfig("sheets-print.config")) == null ? undefined : var_core_value_sigAA90.enforceWatermark) ?? false;
+    (0, u.useEffect)(() => {
+      let var_core_value_sig9D96 = false;
+      return var_core_value_sig9427.getItem(o.UNIVER_WATERMARK_STORAGE_KEY).then(var_core_value_sig1896 => {
+        if (var_core_value_sig9D96) return;
+        let var_core_value_sig0285, var_core_value_sig777D;
+        (var_core_value_sig1896 == null ? undefined : var_core_value_sig1896.type) === o.IWatermarkTypeEnum["Image"] && var_core_value_sig1896.config["image"] && (var_core_value_sig0285 = new Image(), var_core_value_sig0285.src = var_core_value_sig1896.config["image"].url), (var_core_value_sig1896 == null ? undefined : var_core_value_sig1896.type) === o.IWatermarkTypeEnum["UserInfo"] && var_core_value_sig1896 != null && var_core_value_sig1896.config["userInfo"] && (var_core_value_sig777D = var_core_value_sig1896.config["userInfo"]);
+        let var_core_value_sig3F4C = var_core_value_sig1896 ? {
+          ...var_core_value_sig1896,
+          user: var_core_value_sig777D,
+          image: var_core_value_sig0285
+        } : null;
+        var_core_value_sigA345(var_core_value_sig3F4C), var_core_value_sigA468 && var_core_value_sig4082.updateRenderConfig({
+          watermark: var_core_value_sig3F4C
+        });
+      }), () => {
+        var_core_value_sig9D96 = true;
+      };
+    }, [var_core_value_sigA468, var_core_value_sig9427, var_core_value_sig4082]);
+    let var_core_value_sig1561 = var_core_value_sigF32D.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]),
+      var_core_value_sigDF14 = var_core_value_sig1561.getSheets().filter(var_core_value_sig2776 => !var_core_value_sig2776.isSheetHidden()),
+      var_core_value_sig842F = var_core_value_sig1561.getActiveSheet();
+    if (!var_core_value_sig842F) return console.error("No active sheet found"), null;
+    let var_core_value_sigC4C0 = (var_core_value_sig6FB2, var_core_value_sigEB43) => {
+        let var_core_value_sig4186 = Math.max(0, var_core_value_sigEB43 || 0),
+          var_core_value_sigF963 = var_core_value_sigC049.marginCustom || {
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0
+          };
+        var_core_value_sig4082.updateLayoutConfig({
+          marginCustom: {
+            ...var_core_value_sigF963,
+            [var_core_value_sig6FB2]: var_core_value_sig4186
+          }
+        });
+      },
+      var_core_value_sig214A = var_core_value_sig842F.getFreeze(),
+      var_core_value_sigCCC3 = var_core_value_sigC049.area !== "Workbook" && var_core_value_sig214A.xSplit <= 0,
+      var_core_value_sig986E = var_core_value_sigC049.area !== "Workbook" && var_core_value_sig214A.ySplit <= 0;
+    return (0, d.jsx)("div", {
+      className: (0, c.clsx)("univer-h-full\x20univer-overflow-y-auto", c.scrollbarClassName),
+      children: (0, d.jsxs)("div", {
+        className: "univer-p-4",
+        children: [(0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.area.title"),
+          children: (0, d.jsx)(c.Select, {
+            className: "univer-w-full",
+            value: "" + var_core_value_sigC049.area,
+            onChange: var_core_value_sigB608 => {
+              var_core_value_sigB608 === "Workbook" ? var_core_value_sig4082.updateLayoutConfig({
+                area: var_core_value_sigB608,
+                subUnitIds: var_core_value_sigDF14.map(var_core_value_sigD65A => var_core_value_sigD65A.getSheetId())
+              }) : var_core_value_sig4082.updateLayoutConfig({
+                area: var_core_value_sigB608
+              });
+            },
+            options: [{
+              label: var_core_value_sigCCAA.t("sheets-print.area.currentSheet"),
+              value: "CurrentSheet"
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.area.workbook"),
+              value: "Workbook"
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.area.currentSelection"),
+              value: "CurrentSelection"
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.area.allSelection"),
+              value: "AllSelection"
+            }]
+          })
+        }), var_core_value_sigC049.area === "Workbook" ? (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.selection.title"),
+          children: (0, d.jsx)(c.Dropdown, {
+            overlay: (0, d.jsx)("div", {
+              className: (0, c.clsx)("univer-h-[200px] univer-w-[--radix-popper-anchor-width] univer-overflow-y-auto", c.scrollbarClassName),
+              children: (0, d.jsx)(c.CheckboxGroup, {
+                direction: "vertical",
+                className: "univer-p-3",
+                value: var_core_value_sigC049.subUnitIds["map"](var_core_value_sigF866 => typeof var_core_value_sigF866 == "string" ? var_core_value_sigF866 : var_core_value_sigF866.id),
+                onChange: var_core_value_sig5EFB => {
+                  let var_core_value_sig3A85 = new Set(var_core_value_sig5EFB);
+                  if (var_core_value_sig3A85.size === 0) var_core_value_sig4082.updateLayoutConfig({
+                    subUnitIds: var_core_value_sigDF14.map(var_core_value_sig5A13 => var_core_value_sig5A13.getSheetId())
+                  });else {
+                    let var_core_value_sigF593 = [];
+                    var_core_value_sigDF14.forEach(var_core_value_sigE154 => {
+                      let var_core_value_sig4632 = var_core_value_sigE154.getSheetId();
+                      var_core_value_sig3A85.has(var_core_value_sig4632) && var_core_value_sigF593.push(var_core_value_sig4632);
+                    }), var_core_value_sig4082.updateLayoutConfig({
+                      subUnitIds: var_core_value_sigF593
+                    });
+                  }
+                },
+                children: var_core_value_sigDF14.map(var_core_value_sig2682 => (0, d.jsx)(c.Checkbox, {
+                  value: var_core_value_sig2682.getSheetId(),
+                  children: var_core_value_sig2682.getName()
+                }, var_core_value_sig2682.getSheetId()))
+              })
+            }),
+            children: (0, d.jsxs)("div", {
+              className: (0, c.clsx)("univer-box-border univer-inline-flex univer-h-8 univer-w-full univer-min-w-36 univer-cursor-pointer univer-items-center univer-justify-between univer-gap-2 univer-rounded-lg univer-bg-gray-0 univer-px-2.5 univer-text-sm univer-transition-colors univer-duration-200 hover:univer-border-primary-600 dark:!univer-bg-gray-700 dark:!univer-text-gray-0", c.borderClassName),
+              children: [(0, d.jsx)("span", {
+                className: "univer-text-gray-500",
+                children: var_core_value_sigC049.subUnitIds["length"] === var_core_value_sigDF14.length || var_core_value_sigC049.subUnitIds["length"] === 0 ? var_core_value_sigCCAA.t("sheets-print.selection.allWorkbook") : "" + var_core_value_sigC049.subUnitIds["length"] + var_core_value_sigCCAA.t("sheets-print.selection.workbookUnit")
+              }), (0, d.jsx)(l.MoreDownIcon, {})]
+            })
+          })
+        }) : null, (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.size.title"),
+          children: (0, d.jsx)(c.Select, {
+            className: "univer-w-full",
+            value: var_core_value_sigC049.paperSize,
+            options: [{
+              label: var_core_value_sigCCAA.t("sheets-print.size.letter"),
+              value: n.PaperType["Letter"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.tabloid"),
+              value: n.PaperType["Tabloid"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.legal"),
+              value: n.PaperType["Legal"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.statement"),
+              value: n.PaperType["Statement"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.executive"),
+              value: n.PaperType["Executive"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.folio"),
+              value: n.PaperType["Folio"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.a3"),
+              value: n.PaperType["A3"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.a4"),
+              value: n.PaperType["A4"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.a5"),
+              value: n.PaperType["A5"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.b4"),
+              value: n.PaperType["B4"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.size.b5"),
+              value: n.PaperType["B5"]
+            }],
+            onChange: var_core_value_sig4BB5 => {
+              var_core_value_sig4082.updateLayoutConfig({
+                paperSize: var_core_value_sig4BB5
+              });
+            }
+          })
+        }), (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.margin.title"),
+          children: (0, d.jsx)(c.Select, {
+            className: "univer-w-full",
+            value: var_core_value_sigC049.margin,
+            options: [{
+              label: var_core_value_sigCCAA.t("sheets-print.margin.normal"),
+              value: t.PrintPaperMargin["Normal"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.margin.narrow"),
+              value: t.PrintPaperMargin["Narrow"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.margin.wide"),
+              value: t.PrintPaperMargin["Wide"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.margin.custom"),
+              value: t.PrintPaperMargin["Custom"]
+            }],
+            onChange: var_core_value_sig6709 => {
+              let var_core_value_sig52CA = t.PaperMarginMap[var_core_value_sigC049.margin];
+              var_core_value_sig4082.updateLayoutConfig({
+                margin: var_core_value_sig6709,
+                marginCustom: var_core_value_sig6709 === t.PrintPaperMargin["Custom"] ? var_core_value_sig52CA : t.PaperMarginMap[var_core_value_sig6709]
+              });
+            }
+          })
+        }), var_core_value_sigC049.margin === t.PrintPaperMargin["Custom"] && (0, d.jsx)(c.FormLayout, {
+          children: (0, d.jsxs)("div", {
+            className: "univer-grid univer-grid-cols-2 univer-gap-2",
+            children: [(0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigCCAA.t("sheets-print.margin.top")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sigE92D = var_core_value_sigC049.marginCustom) == null ? undefined : var_core_value_sigE92D.top) || 0),
+                onChange: var_core_value_sigC030 => var_core_value_sigC4C0("top", Number(var_core_value_sigC030))
+              })]
+            }), (0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigCCAA.t("sheets-print.margin.bottom")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sig9940 = var_core_value_sigC049.marginCustom) == null ? undefined : var_core_value_sig9940.bottom) || 0),
+                onChange: var_core_value_sig88F6 => var_core_value_sigC4C0("bottom", Number(var_core_value_sig88F6))
+              })]
+            }), (0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigCCAA.t("sheets-print.margin.left")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sig682D = var_core_value_sigC049.marginCustom) == null ? undefined : var_core_value_sig682D.left) || 0),
+                onChange: var_core_value_sig37DB => var_core_value_sigC4C0("left", Number(var_core_value_sig37DB))
+              })]
+            }), (0, d.jsxs)("div", {
+              children: [(0, d.jsx)("label", {
+                className: "univer-mb-1 univer-block univer-text-xs univer-text-gray-500",
+                children: var_core_value_sigCCAA.t("sheets-print.margin.right")
+              }), (0, d.jsx)(c.Input, {
+                type: "number",
+                value: String(((var_core_value_sig1435 = var_core_value_sigC049.marginCustom) == null ? undefined : var_core_value_sig1435.right) || 0),
+                onChange: var_core_value_sig5542 => var_core_value_sigC4C0("right", Number(var_core_value_sig5542))
+              })]
+            })]
+          })
+        }), (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.orientation.title"),
+          children: (0, d.jsxs)(c.RadioGroup, {
+            value: var_core_value_sigC049.direction,
+            onChange: var_core_value_sigE0A9 => {
+              var_core_value_sig4082.updateLayoutConfig({
+                direction: var_core_value_sigE0A9
+              });
+            },
+            children: [(0, d.jsx)(c.Radio, {
+              value: t.PrintDirection["Portrait"],
+              children: var_core_value_sigCCAA.t("sheets-print.orientation.portrait")
+            }), (0, d.jsx)(c.Radio, {
+              value: t.PrintDirection["Landscape"],
+              children: var_core_value_sigCCAA.t("sheets-print.orientation.landscape")
+            })]
+          })
+        }), (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.scale.title"),
+          children: (0, d.jsx)(c.Select, {
+            className: "univer-w-full",
+            value: var_core_value_sigC049.scale,
+            options: [{
+              label: var_core_value_sigCCAA.t("sheets-print.scale.normal"),
+              value: t.PrintScale["Origin"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.scale.fitWidth"),
+              value: t.PrintScale["FitWidth"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.scale.fitHeight"),
+              value: t.PrintScale["FitHeight"]
+            }, {
+              label: var_core_value_sigCCAA.t("sheets-print.scale.fitPage"),
+              value: t.PrintScale["FitPage"]
+            }],
+            onChange: var_core_value_sigA73E => {
+              var_core_value_sig4082.updateLayoutConfig({
+                scale: var_core_value_sigA73E
+              });
+            }
+          })
+        }), (0, d.jsxs)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.formatting.title"),
+          children: [(0, d.jsx)(c.Checkbox, {
+            checked: var_core_value_sigE5C3.gridlines,
+            onChange: var_core_value_sig7620 => {
+              var_core_value_sig4082.updateRenderConfig({
+                gridlines: var_core_value_sig7620
+              });
+            },
+            children: var_core_value_sigCCAA.t("sheets-print.formatting.skeleton")
+          }), var_core_value_sig21F4 && !var_core_value_sigA468 ? (0, d.jsx)("div", {
+            className: "univer-mt-3",
+            children: (0, d.jsx)(c.Checkbox, {
+              checked: !!var_core_value_sigE5C3.watermark,
+              onChange: async var_core_value_sigB9FC => {
+                var_core_value_sigB9FC ? var_core_value_sig4082.updateRenderConfig({
+                  watermark: var_core_value_sig21F4
+                }) : var_core_value_sig4082.updateRenderConfig({
+                  watermark: undefined
+                });
+              },
+              children: var_core_value_sigCCAA.t("sheets-print.formatting.waterMark")
+            })
+          }) : null]
+        }), (0, d.jsx)(c.FormLayout, {
+          label: var_core_value_sigCCAA.t("sheets-print.align.title"),
+          children: (0, d.jsxs)("div", {
+            className: "univer-flex univer-gap-2",
+            children: [(0, d.jsx)(c.Select, {
+              className: "!univer-min-w-0\x20univer-flex-1",
+              value: var_core_value_sigE5C3.hAlign,
+              options: [{
+                label: var_core_value_sigCCAA.t("sheets-print.align.horizontal.middle"),
+                value: t.PrintAlign["Middle"]
+              }, {
+                label: var_core_value_sigCCAA.t("sheets-print.align.horizontal.start"),
+                value: t.PrintAlign["Start"]
+              }, {
+                label: var_core_value_sigCCAA.t("sheets-print.align.horizontal.end"),
+                value: t.PrintAlign["End"]
+              }],
+              onChange: var_core_value_sig5055 => {
+                var_core_value_sig4082.updateRenderConfig({
+                  hAlign: var_core_value_sig5055
+                });
+              }
+            }), (0, d.jsx)(c.Select, {
+              className: "!univer-min-w-0 univer-flex-1",
+              value: var_core_value_sigE5C3.vAlign,
+              options: [{
+                label: var_core_value_sigCCAA.t("sheets-print.align.vertical.start"),
+                value: t.PrintAlign["Start"]
+              }, {
+                label: var_core_value_sigCCAA.t("sheets-print.align.vertical.end"),
+                value: t.PrintAlign["End"]
+              }, {
+                label: var_core_value_sigCCAA.t("sheets-print.align.vertical.middle"),
+                value: t.PrintAlign["Middle"]
+              }],
+              onChange: var_core_value_sig3801 => {
+                var_core_value_sig4082.updateRenderConfig({
+                  vAlign: var_core_value_sig3801
+                });
+              }
+            })]
+          })
+        }), (0, d.jsxs)(c.FormLayout, {
+          collapsable: true,
+          label: var_core_value_sigCCAA.t("sheets-print.headerFooter.title"),
+          children: [(0, d.jsxs)(c.CheckboxGroup, {
+            direction: "vertical",
+            disabled: var_core_value_sigE5C3.isCustomHeaderFooter,
+            value: var_core_value_sigE5C3.headerFooter,
+            onChange: var_core_value_sig45F0 => {
+              var_core_value_sig4082.updateRenderConfig({
+                headerFooter: var_core_value_sig45F0
+              });
+            },
+            children: [(0, d.jsx)(c.Checkbox, {
+              value: "PageSize",
+              children: var_core_value_sigCCAA.t("sheets-print.headerFooter.page")
+            }), (0, d.jsx)(c.Checkbox, {
+              value: "WorkbookTitle",
+              children: var_core_value_sigCCAA.t("sheets-print.headerFooter.workbook")
+            }), (0, d.jsx)(c.Checkbox, {
+              value: "WorksheetTitle",
+              children: var_core_value_sigCCAA.t("sheets-print.headerFooter.sheet")
+            }), (0, d.jsx)(c.Checkbox, {
+              value: "Date",
+              children: var_core_value_sigCCAA.t("sheets-print.headerFooter.date")
+            }), (0, d.jsx)(c.Checkbox, {
+              value: "Time",
+              children: var_core_value_sigCCAA.t("sheets-print.headerFooter.time")
+            })]
+          }), (0, d.jsx)(c.FormLayout, {
+            className: "univer-mt-3",
+            label: (0, d.jsx)(c.Checkbox, {
+              checked: var_core_value_sigE5C3.isCustomHeaderFooter,
+              onChange: () => {
+                var_core_value_sig4082.updateRenderConfig({
+                  isCustomHeaderFooter: !var_core_value_sigE5C3.isCustomHeaderFooter
+                });
+              },
+              children: var_core_value_sigCCAA.t("sheets-print.headerFooter.customHeadFooter")
+            }),
+            children: var_core_value_sigE5C3.isCustomHeaderFooter ? (0, d.jsx)(c.Button, {
+              className: "univer-my-1 univer-p-0",
+              size: "small",
+              variant: "link",
+              onClick: () => {
+                var_core_value_sig417B();
+              },
+              children: var_core_value_sigCCAA.t("sheets-print.headerFooter.editCustomHeadFooter")
+            }) : null
+          })]
+        }), (0, d.jsx)(c.FormLayout, {
+          collapsable: true,
+          label: var_core_value_sigCCAA.t("sheets-print.freeze.title"),
+          children: (0, d.jsxs)(c.CheckboxGroup, {
+            direction: "vertical",
+            value: var_core_value_sigC049.freeze,
+            onChange: var_core_value_sigBC91 => {
+              var_core_value_sig4082.updateLayoutConfig({
+                freeze: var_core_value_sigBC91
+              });
+            },
+            children: [(0, d.jsx)(c.Checkbox, {
+              disabled: var_core_value_sig986E,
+              value: "Row",
+              children: var_core_value_sigCCAA.t("sheets-print.freeze.row")
+            }), (0, d.jsx)(c.Checkbox, {
+              disabled: var_core_value_sigCCC3,
+              value: "Column",
+              children: var_core_value_sigCCAA.t("sheets-print.freeze.column")
+            })]
+          })
+        }), (0, d.jsxs)(c.FormLayout, {
+          collapsable: true,
+          defaultCollapsed: true,
+          label: var_core_value_sigCCAA.t("sheets-print.area.limit"),
+          children: [(0, d.jsx)(c.FormLayout, {
+            className: "univer-mb-2",
+            label: var_core_value_sigCCAA.t("sheets-print.area.maxRowsEachPage"),
+            children: (0, d.jsx)(c.Input, {
+              value: var_core_value_sigC049.maxRowsEachPage === 1 / 0 ? "" : "" + var_core_value_sigC049.maxRowsEachPage,
+              onChange: var_core_value_sigCB88 => {
+                var_core_value_sig4082.updateLayoutConfig({
+                  maxRowsEachPage: !var_core_value_sigCB88 || Number.isNaN(Number(var_core_value_sigCB88)) ? 1 / 0 : Number(var_core_value_sigCB88)
+                });
+              }
+            })
+          }), (0, d.jsx)(c.FormLayout, {
+            label: var_core_value_sigCCAA.t("sheets-print.area.maxColumnsEachPage"),
+            children: (0, d.jsx)(c.Input, {
+              value: var_core_value_sigC049.maxColumnsEachPage === 1 / 0 ? "" : "" + var_core_value_sigC049.maxColumnsEachPage,
+              onChange: var_core_value_sig8D65 => {
+                var_core_value_sig4082.updateLayoutConfig({
+                  maxColumnsEachPage: !var_core_value_sig8D65 || Number.isNaN(Number(var_core_value_sig8D65)) ? 1 / 0 : Number(var_core_value_sig8D65)
+                });
+              }
+            })
+          })]
+        })]
+      })
+    });
+  }),
+  Ae = 0.1,
+  je = () => {
+    let [var_core_value_sig537C, var_core_value_sigBBBC] = (0, u.useState)(false),
+      var_core_value_sig5440 = (0, i.useDependency)(k),
+      var_core_value_sigE28B = (0, i.useDependency)(n.ICommandService),
+      var_core_value_sig0FD9 = (0, i.useObservable)(var_core_value_sig5440.layoutInfos$, []),
+      [var_core_value_sig5649, var_core_value_sigAF82] = (0, u.useState)(1),
+      [var_core_value_sig21A2, var_core_value_sig5C1D] = (0, u.useState)(false),
+      var_core_value_sig4CBA = (0, i.useDependency)(b),
+      var_core_value_sig8E65 = (0, i.useObservable)(var_core_value_sig4CBA.preparing$, var_core_value_sig4CBA.preparing),
+      var_core_value_sig772C = (0, i.useDependency)(n.IUniverInstanceService),
+      var_core_value_sigF309 = (0, i.useDependency)(n.LocaleService),
+      var_core_value_sig44F9 = (0, i.useDependency)(n.Injector),
+      {
+        ls: var_core_value_sigE532,
+        pbk: var_core_value_sigF381
+      } = (0, i.useDependency)(n.IConfigService).getConfig(e.LS_CONFIG_KEY) ?? {},
+      {
+        limit: var_core_value_sigCB92,
+        isPro: var_core_value_sigC844
+      } = (0, u.useMemo)(() => {
+        let {
+          page: var_core_value_sig8122,
+          isPro: var_core_value_sigEDC6
+        } = N(3, var_core_value_sigE532, var_core_value_sigF381);
+        return {
+          limit: var_core_value_sig8122,
+          isPro: var_core_value_sigEDC6
+        };
+      }, [var_core_value_sigE532, var_core_value_sigF381]),
+      var_core_value_sig2ED4 = (0, u.useRef)(null),
+      var_core_value_sig0477 = (0, i.useDependency)(i.IMessageService),
+      var_core_value_sig6FDF = Ce(import(`@univerjs-pro/collaboration-client`).then(var_core_value_sig611A => var_core_value_sig611A.CollaborationController, () => undefined));
+    (0, u.useEffect)(() => {
+      var var_core_value_sig6BD9;
+      if (!var_core_value_sig6FDF) return;
+      let var_core_value_sig7E56 = var_core_value_sig772C.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]);
+      if (!var_core_value_sig7E56) return;
+      let var_core_value_sig4161 = var_core_value_sig7E56.getUnitId(),
+        var_core_value_sig7580 = var_core_value_sig44F9.get(var_core_value_sig6FDF, n.Quantity["OPTIONAL"]),
+        var_core_value_sig1F18 = var_core_value_sig7580 == null || (var_core_value_sig6BD9 = var_core_value_sig7580.getCollabEntity(var_core_value_sig4161)) == null ? undefined : var_core_value_sig6BD9.pauseCollaboration();
+      return () => {
+        var_core_value_sig1F18 == null || var_core_value_sig1F18.dispose();
+      };
+    }, [var_core_value_sig6FDF, var_core_value_sig44F9, var_core_value_sig772C]);
+    let var_core_value_sig27C4 = (0, u.useMemo)(() => oe(var_core_value_sig0FD9), [var_core_value_sig0FD9]),
+      var_core_value_sig3E1A = (0, u.useMemo)(() => var_core_value_sig27C4.slice(0, var_core_value_sigCB92), [var_core_value_sig27C4, var_core_value_sigCB92]),
+      var_core_value_sig7FB0 = var_core_value_sig5440.paperSize,
+      var_core_value_sig5215 = Math.round(var_core_value_sig5649 * (794 / var_core_value_sig7FB0.w) * 10) / 10,
+      [var_core_value_sig5204, {
+        wrapperStyle: var_core_value_sig5E11,
+        containerProps: var_core_value_sig4D58
+      }] = (0, i.useVirtualList)(var_core_value_sig3E1A, {
+        containerTarget: var_core_value_sig2ED4,
+        itemHeight: var_core_value_sig7FB0.h * var_core_value_sig5215 + 28,
+        overscan: 5
+      }),
+      var_core_value_sig2DBD = () => {
+        var_core_value_sigE28B.executeCommand(I.id);
+      },
+      var_core_value_sig424E = () => {
+        var_core_value_sig5C1D(true), var_core_value_sig0477.show({
+          content: var_core_value_sigF309.t("sheets-print.header.printing"),
+          type: c.MessageType["Loading"]
+        }), setTimeout(() => {
+          var_core_value_sigE28B.executeCommand(L.id);
+        }, 300);
+      },
+      var_core_value_sigF481 = (0, i.useEvent)(() => {
+        var_core_value_sigBBBC(true);
+      });
+    return (0, d.jsxs)("div", {
+      className: "univer-absolute univer-inset-0 univer-z-[100] univer-box-border univer-flex univer-size-full univer-flex-col univer-overflow-hidden univer-bg-gray-100 dark:!univer-bg-gray-900",
+      children: [var_core_value_sig537C && (0, d.jsx)(Ee, {
+        onClose: () => var_core_value_sigBBBC(false)
+      }), var_core_value_sig21A2 && (0, d.jsx)("div", {
+        className: "univer-pointer-events-none univer-absolute univer-inset-0 univer-z-[1010] univer-flex univer-justify-center"
+      }), (0, d.jsxs)("div", {
+        className: (0, c.clsx)("univer-flex univer-h-16 univer-items-center univer-justify-between univer-bg-gray-0 univer-px-4 dark:!univer-bg-gray-900", c.borderBottomClassName),
+        children: [(0, d.jsxs)("div", {
+          className: "univer-ml-2 univer-text-base univer-font-medium univer-text-gray-900 dark:!univer-text-gray-0",
+          children: [var_core_value_sigF309.t("sheets-print.header.total"), var_core_value_sig3E1A.length, var_core_value_sigF309.t("sheets-print.header.pages")]
+        }), (0, d.jsxs)("div", {
+          className: "univer-flex univer-gap-2",
+          children: [(0, d.jsx)(c.Button, {
+            onClick: var_core_value_sig2DBD,
+            children: var_core_value_sigF309.t("sheets-print.header.cancel")
+          }), (0, d.jsx)(c.Button, {
+            variant: "primary",
+            disabled: var_core_value_sig8E65,
+            onClick: var_core_value_sig424E,
+            children: var_core_value_sigF309.t("sheets-print.header.next")
+          })]
+        })]
+      }), (0, d.jsxs)("div", {
+        className: "univer-flex\x20univer-flex-1\x20univer-overflow-hidden",
+        children: [(0, d.jsxs)("div", {
+          className: "univer-relative univer-box-border univer-flex univer-flex-1 univer-flex-col univer-overflow-hidden",
+          children: [(0, d.jsx)("div", {
+            ref: var_core_value_sig2ED4,
+            className: (0, c.clsx)("univer-flex-1\x20univer-overflow-auto", c.scrollbarClassName),
+            "aria-busy": var_core_value_sig8E65,
+            ...var_core_value_sig4D58,
+            children: var_core_value_sig8E65 ? (0, d.jsx)("div", {
+              className: "univer-flex univer-size-full univer-items-center univer-justify-center",
+              role: "status",
+              "aria-label": var_core_value_sigF309.t("sheets-print.header.printing"),
+              children: (0, d.jsx)(l.LoadingMultiIcon, {
+                className: "univer-size-8 univer-animate-spin univer-text-gray-500",
+                "aria-hidden": "true"
+              })
+            }) : (0, d.jsx)("div", {
+              style: var_core_value_sig5E11,
+              children: var_core_value_sig5204.map(var_core_value_sigD5A0 => (0, d.jsx)(Oe, {
+                config: var_core_value_sigD5A0.data,
+                page: var_core_value_sigD5A0.data["page"],
+                previewScale: var_core_value_sig5649
+              }, var_core_value_sigD5A0.data["unitId"] + ":" + var_core_value_sigD5A0.data["subUnitId"] + ":" + var_core_value_sigD5A0.data["page"] + ":" + var_core_value_sigD5A0.data["range"].startRow + ":" + var_core_value_sigD5A0.data["range"].startColumn + ":" + var_core_value_sigD5A0.data["range"].endRow + ":" + var_core_value_sigD5A0.data["range"].endColumn))
+            })
+          }), !var_core_value_sig8E65 && !var_core_value_sigC844 && (0, d.jsx)("div", {
+            className: "univer-my-4 univer-text-center",
+            children: (0, d.jsx)("a", {
+              href: var_core_value_sigF309.t("sheets-print.limit.link"),
+              target: "_blank",
+              rel: "noreferrer noopener",
+              children: var_core_value_sigF309.t("sheets-print.limit.page").replace("{limit}", "" + var_core_value_sigCB92)
+            })
+          }), !var_core_value_sig8E65 && !var_core_value_sig537C && (0, d.jsxs)("div", {
+            className: "univer-absolute\x20univer-bottom-4\x20univer-right-4\x20univer-z-[1000]",
+            children: [(0, d.jsx)("div", {
+              className: "univer-z-[100] univer-mt-2 univer-flex univer-size-8 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-full univer-bg-gray-0 univer-shadow dark:!univer-bg-gray-900",
+              onClick: () => {
+                var_core_value_sigAF82(Math.min(var_core_value_sig5649 + Ae, 2));
+              },
+              children: (0, d.jsx)(l.IncreaseIcon, {})
+            }), (0, d.jsx)("div", {
+              className: "univer-z-[100] univer-mt-2 univer-flex univer-size-8 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-full univer-bg-gray-0 univer-shadow dark:!univer-bg-gray-900",
+              onClick: () => {
+                var_core_value_sigAF82(Math.max(var_core_value_sig5649 - Ae, 0.5));
+              },
+              children: (0, d.jsx)(l.ReduceIcon, {})
+            })]
+          })]
+        }), (0, d.jsx)("div", {
+          className: "univer-box-border univer-h-full univer-w-[312px] univer-flex-none univer-bg-gray-0 dark:!univer-bg-gray-900",
+          children: (0, d.jsx)(ke, {
+            onShowFooterHeaderEditor: var_core_value_sigF481
+          })
+        })]
+      })]
+    });
+  },
+  Me = () => {
+    let var_core_value_sigD7F2 = (0, i.useDependency)(b);
+    return (0, i.useObservable)(var_core_value_sigD7F2.visible$, var_core_value_sigD7F2.visible) ? (0, d.jsx)(je, {}) : null;
+  },
+  Ne = {
+    id: F.id,
+    binding: i.KeyCode["P"] | i.MetaKeys["CTRL_COMMAND"],
+    preconditions: s.whenSheetEditorFocused
+  };
+let Q = class extends n.Disposable {
+  constructor(var_core_value_sig81B2, var_core_value_sigA0A5, var_core_value_sig10AA, var_core_value_sigE6D0, var_core_value_sig8E91, var_core_value_sig00BE, var_core_value_sig7BB5, var_core_value_sig6AAD, var_core_value_sig1157, var_core_value_sigA694) {
+    super(), this._printDialogService = var_core_value_sig81B2, this._commandService = var_core_value_sigA0A5, this._sheetPrintManagerService = var_core_value_sig10AA, this._sheetPrintClientService = var_core_value_sigE6D0, this._menuManagerService = var_core_value_sig8E91, this._shortcutService = var_core_value_sig00BE, this._injector = var_core_value_sig7BB5, this._univerInstanceService = var_core_value_sig6AAD, this._renderManagerService = var_core_value_sig1157, this._uiPartsService = var_core_value_sigA694, this._initCommands(), this._initUIParts(), this._initMenus(), this._initShortcuts(), this._initCommandListener(), this._initConfigChangeListener(), this._initMutationListener();
+  }
+  _initCommands() {
+    [F, I, L, W, R, K, q].forEach(var_core_value_sig3607 => this._commandService["registerCommand"](var_core_value_sig3607));
+  }
+  _initUIParts() {
+    this.disposeWithMe(this._uiPartsService["registerComponent"](i.BuiltInUIPart["GLOBAL"], () => (0, i.connectInjector)(Me, this._injector)));
+  }
+  _initShortcuts() {
+    [Ne].forEach(var_core_value_sigB512 => {
+      this._shortcutService["registerShortcut"](var_core_value_sigB512);
+    });
+  }
+  _initMenus() {
+    this._menuManagerService["mergeMenu"](ge);
+  }
+  _initConfigChangeListener() {
+    this.disposeWithMe(this._printDialogService["visible$"].subscribe(var_core_value_sigF2E6 => {
+      var_core_value_sigF2E6 && this._sheetPrintManagerService["reLayout"]();
+    }));
+  }
+  _print() {
+    let var_core_value_sig18E01 = this._sheetPrintManagerService["layoutInfos"],
+      var_core_value_sig0428 = this._sheetPrintManagerService["renderConfig"];
+    return this._sheetPrintClientService["print"](var_core_value_sig18E01, var_core_value_sig0428);
+  }
+  _initCommandListener() {
+    this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sig34C8 => {
+      var_core_value_sig34C8.id === L.id && this._print();
+    }));
+  }
+  _initMutationListener() {
+    let var_core_value_sigBE07 = this._injector["get"](G);
+    this.disposeWithMe(var_core_value_sigBE07.visible$["subscribe"](() => {
+      let var_core_value_sigB744 = this._univerInstanceService["getCurrentUnitOfType"](2);
+      if (var_core_value_sigB744) {
+        let var_core_value_sig12F2 = var_core_value_sigB744.getUnitId(),
+          var_core_value_sig2259 = this._renderManagerService["getRenderUnitById"](var_core_value_sig12F2);
+        if (var_core_value_sig2259) {
+          var var_core_value_sigEAE2;
+          (var_core_value_sigEAE2 = var_core_value_sig2259.mainComponent) == null || var_core_value_sigEAE2.makeDirty();
+        }
+      }
+    })), this.disposeWithMe(this._sheetPrintManagerService["layoutConfig$"].subscribe(() => {
+      if (!var_core_value_sigBE07.visible) return;
+      this._sheetPrintManagerService["reLayout"]();
+      let var_core_value_sigE68A = this._univerInstanceService["getCurrentUnitOfType"](2);
+      if (var_core_value_sigE68A) {
+        let var_core_value_sig9E2F = var_core_value_sigE68A.getUnitId(),
+          var_core_value_sigD082 = this._renderManagerService["getRenderUnitById"](var_core_value_sig9E2F);
+        if (var_core_value_sigD082) {
+          var var_core_value_sig3E68;
+          (var_core_value_sig3E68 = var_core_value_sigD082.mainComponent) == null || var_core_value_sig3E68.makeDirty();
+        }
+      }
+    })), this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sigF4C5 => {
+      if (!var_core_value_sigBE07.visible || [F.id, I.id, L.id, R.id, K.id, q.id].includes(var_core_value_sigF4C5.id)) return;
+      this._sheetPrintManagerService["reLayout"]();
+      let var_core_value_sig5410 = this._univerInstanceService["getCurrentUnitOfType"](2);
+      if (var_core_value_sig5410) {
+        let var_core_value_sigDBB7 = var_core_value_sig5410.getUnitId(),
+          var_core_value_sigD0A8 = this._renderManagerService["getRenderUnitById"](var_core_value_sigDBB7);
+        if (var_core_value_sigD0A8) {
+          var var_core_value_sig492F;
+          (var_core_value_sig492F = var_core_value_sigD0A8.mainComponent) == null || var_core_value_sig492F.makeDirty();
+        }
+      }
+    }));
+  }
+};
+Q = O([D(0, b), D(1, n.ICommandService), D(2, k), D(3, (0, n.Inject)(U)), D(4, i.IMenuManagerService), D(5, i.IShortcutService), D(6, (0, n.Inject)(n.Injector)), D(7, n.IUniverInstanceService), D(8, o.IRenderManagerService), D(9, i.IUIPartsService)], Q);
+let $ = class extends n.Plugin {
+  constructor(var_core_value_sig555F = ye, var_core_value_sig3D6F, var_core_value_sig336C, var_core_value_sig6E68) {
+    super(), this._config = var_core_value_sig555F, this._injector = var_core_value_sig3D6F, this._configService = var_core_value_sig336C, this._renderManagerService = var_core_value_sig6E68;
+    let {
+      menu: var_core_value_sig8DFE,
+      ...var_core_value_sig48EA
+    } = (0, n.merge)({}, ye, this._config);
+    var_core_value_sig8DFE && this._configService["setConfig"]("menu", var_core_value_sig8DFE, {
+      merge: true
+    }), this._configService["setConfig"]("sheets-print.config", var_core_value_sig48EA);
+  }
+  onReady() {
+    this._injector["has"](t.IPrintPreparationService) || this._injector["add"]([t.IPrintPreparationService, {
+      useClass: t.PrintPreparationService
+    }]), (0, n.registerDependencies)(this._injector, [[k, {
+      useClass: M
+    }], [b, {
+      useClass: x
+    }], [G, {
+      useClass: le
+    }], [U], [J], [Q]]), this.disposeWithMe(this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_SHEET"], [Y])), (0, n.touchDependencies)(this._injector, [[J], [Q]]);
+  }
+};
+y($, "pluginName", "SHEET_PRINT_PLUGIN"), y($, "packageName", _e), y($, "version", ve), y($, "type", n.UniverInstanceType["UNIVER_SHEET"]), $ = O([(0, n.DependentOn)(e.UniverLicensePlugin, o.UniverRenderEnginePlugin, r.UniverSheetsPlugin, s.UniverSheetsUIPlugin), D(1, (0, n.Inject)(n.Injector)), D(2, n.IConfigService), D(3, o.IRenderManagerService)], $), exports.CancelSheetPrintOperation = I, exports.ConfirmSheetPrintOperation = L, exports.ISheetPrintManagerService = k, exports.PrintArea = S, exports.PrintFreeze = w, exports.PrintHeaderFooter = C, exports.PrintHeaderFooterSymbol = T, exports.SheetPrintCanvasView = H, Object.defineProperty(exports, "SheetPrintClientService", {
+  enumerable: true,
+  get: function () {
+    return U;
+  }
+}), exports.SheetPrintOpenOperation = F, exports.SheetScreenShotOperation = W, exports.SheetsPrintMenuSchema = ge, Object.defineProperty(exports, "UniverSheetsPrintPlugin", {
+  enumerable: true,
+  get: function () {
+    return $;
+  }
+}), exports.defaultHeaderFooter = E, exports.hasPrintFacadePermission = P;

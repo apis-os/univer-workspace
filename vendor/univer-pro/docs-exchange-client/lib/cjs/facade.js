@@ -1,1 +1,23 @@
-let e=require("@univerjs-pro/docs-exchange-client"),t=require("@univerjs/core/facade");var n=class extends t.FUniver{importDocToUnitIdAsync(v1,v2){return this._injector["get"](e.IDocExchangeService).importDocToUnitId(v1,v2);}importDocToSnapshotAsync(v3,v4){return this._injector["get"](e.IDocExchangeService).importDocToSnapshot(v3,v4);}exportDocByUnitIdAsync(v5){return this._injector["get"](e.IDocExchangeService).exportDocByUnitId(v5);}exportDocBySnapshotAsync(v6){return this._injector["get"](e.IDocExchangeService).exportDocBySnapshot(v6);}transformSnapshotJsonToDocumentDataAsync(v7){return this._injector["get"](e.IDocExchangeService).transformSnapshotJsonToDocumentData(v7);}transformDocumentDataToSnapshotJsonAsync(v8){return this._injector["get"](e.IDocExchangeService).transformDocumentDataToSnapshotJson(v8);}};t.FUniver["extend"](n);
+let e = require("@univerjs-pro/docs-exchange-client"),
+  t = require("@univerjs/core/facade");
+var n = class extends t.FUniver {
+  importDocToUnitIdAsync(var_core_value_sig7524, var_core_value_sig2AD8) {
+    return this._injector["get"](e.IDocExchangeService).importDocToUnitId(var_core_value_sig7524, var_core_value_sig2AD8);
+  }
+  importDocToSnapshotAsync(var_core_value_sig2AD0, var_core_value_sig3EEE) {
+    return this._injector["get"](e.IDocExchangeService).importDocToSnapshot(var_core_value_sig2AD0, var_core_value_sig3EEE);
+  }
+  exportDocByUnitIdAsync(var_core_value_sigBC46) {
+    return this._injector["get"](e.IDocExchangeService).exportDocByUnitId(var_core_value_sigBC46);
+  }
+  exportDocBySnapshotAsync(var_core_value_sig3D7D) {
+    return this._injector["get"](e.IDocExchangeService).exportDocBySnapshot(var_core_value_sig3D7D);
+  }
+  transformSnapshotJsonToDocumentDataAsync(var_core_value_sig27E5) {
+    return this._injector["get"](e.IDocExchangeService).transformSnapshotJsonToDocumentData(var_core_value_sig27E5);
+  }
+  transformDocumentDataToSnapshotJsonAsync(var_core_value_sig8061) {
+    return this._injector["get"](e.IDocExchangeService).transformDocumentDataToSnapshotJson(var_core_value_sig8061);
+  }
+};
+t.FUniver["extend"](n);

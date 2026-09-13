@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Alta",
       rowHeightExtraTall: "Muy alta",
       conditionalColoring: "Coloración condicional",
-      conditionalColoringHelp:
-        'Haz clic en "Nueva condición" para aplicar colores según las condiciones definidas. Ten en cuenta que las condiciones superiores tienen prioridad.',
+      conditionalColoringHelp: 'Haz clic en "Nueva condición" para aplicar colores según las condiciones definidas. Ten en cuenta que las condiciones superiores tienen prioridad.',
       conditionalColoringSmart: "Aplicar color inteligente a todo",
       conditionalColor: "Color",
       conditionalCustomColor: "Personalizado",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "marcado",
       conditionalUnchecked: "desmarcado",
       statusDoneTitle: "El\x20estado\x20está\x20hecho",
-      statusDoneDescription:
-        "Aplique un marcador verde suave a los registros coincidentes.",
+      statusDoneDescription: "Aplique un marcador verde suave a los registros coincidentes.",
       statusBlockedTitle: "El\x20estado\x20está\x20bloqueado",
-      statusBlockedDescription:
-        "Aplicar\x20un\x20marcador\x20de\x20advertencia\x20a\x20los\x20registros\x20bloqueados.",
+      statusBlockedDescription: "Aplicar\x20un\x20marcador\x20de\x20advertencia\x20a\x20los\x20registros\x20bloqueados.",
       addField: "Añadir campo",
       undo: "Deshacer",
-      redo: "Rehacer",
+      redo: "Rehacer"
     },
     recordDetail: {
       untitledRecord: "Registro sin título",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Añadir más registros después de enviar",
       panelSize: "Tamaño\x20del\x20panel",
       fullScreen: "Pantalla completa",
-      exitFullScreen: "Salir de pantalla completa",
+      exitFullScreen: "Salir de pantalla completa"
     },
     recordLink: {
       searchRecords: "Buscar registros",
@@ -74,33 +71,26 @@ const n = {
       selectedCount: "{0} seleccionados",
       missingRecord: "Registro\x20eliminado",
       openRecord: "Abrir registro vinculado",
-      back: "Volver",
+      back: "Volver"
     },
     hierarchy: {
-      invalidField:
-        "Elige un campo de enlace a registro de valor único que apunte a esta tabla.",
-      missingRecord:
-        "El registro o el elemento principal ya no existe. Actualiza e inténtalo de nuevo.",
-      selfParent:
-        "Un\x20registro\x20no\x20puede\x20ser\x20su\x20propio\x20elemento\x20principal.",
+      invalidField: "Elige un campo de enlace a registro de valor único que apunte a esta tabla.",
+      missingRecord: "El registro o el elemento principal ya no existe. Actualiza e inténtalo de nuevo.",
+      selfParent: "Un\x20registro\x20no\x20puede\x20ser\x20su\x20propio\x20elemento\x20principal.",
       cycle: "Este movimiento crearía un ciclo de elementos principales.",
-      maxDepth:
-        "Este\x20movimiento\x20superaría\x20el\x20máximo\x20de\x20cinco\x20niveles\x20jerárquicos.",
-      sortedView:
-        "Quita la ordenación de la vista antes de reordenar los registros manualmente.",
-      operationFailed:
-        "No\x20se\x20pudo\x20aplicar\x20el\x20cambio\x20de\x20jerarquía.\x20Actualiza\x20e\x20inténtalo\x20de\x20nuevo.",
+      maxDepth: "Este\x20movimiento\x20superaría\x20el\x20máximo\x20de\x20cinco\x20niveles\x20jerárquicos.",
+      sortedView: "Quita la ordenación de la vista antes de reordenar los registros manualmente.",
+      operationFailed: "No\x20se\x20pudo\x20aplicar\x20el\x20cambio\x20de\x20jerarquía.\x20Actualiza\x20e\x20inténtalo\x20de\x20nuevo.",
       parent: "Elemento principal",
       parentFieldName: "Elementos\x20principales",
       children: "Subelementos",
       viewChildren: "Ver subelementos",
       root: "Registro raíz",
-      setParent: "Establecer elemento principal",
+      setParent: "Establecer elemento principal"
     },
     collaboration: {
       localStatus: "modo\x20local",
-      localTooltip:
-        "La\x20colaboración\x20está\x20deshabilitada\x20para\x20esta\x20base.",
+      localTooltip: "La\x20colaboración\x20está\x20deshabilitada\x20para\x20esta\x20base.",
       syncedStatus: "Sincronizado",
       syncedTooltip: "Todos los cambios están sincronizados.",
       syncingStatus: "Sincronización",
@@ -110,14 +100,14 @@ const n = {
       conflictStatus: "Conflicto",
       conflictTooltip: "Un conflicto de colaboración necesita atención.",
       notCollabStatus: "No\x20colaborativo",
-      notCollabTooltip: "Esta base no está en modo de colaboración.",
+      notCollabTooltip: "Esta base no está en modo de colaboración."
     },
     virtualRecord: {
       regrouped: "El registro se reagrupará",
       resorted: "El registro se reordenará",
       moved: "El registro se moverá en esta vista",
       filteredOut: "El\x20registro\x20está\x20oculto\x20en\x20esta\x20vista",
-      "delete d": "El registro fue eliminado",
+      "delete d": "El registro fue eliminado"
     },
     gridContext: {
       insert: "Insertar",
@@ -127,7 +117,7 @@ const n = {
       addSubRecord: "Añadir\x20subregistro",
       clearContent: "Borrar\x20contenido",
       deleteRecord: "Eliminar registro",
-      deleteRecords: "Eliminar\x20registros",
+      deleteRecords: "Eliminar\x20registros"
     },
     common: {
       apply: "Aplicar",
@@ -142,7 +132,7 @@ const n = {
       searchClose: "Cerrar búsqueda",
       value: "Valor",
       newCondition: "Nueva condición",
-      newBadge: "Nuevo",
+      newBadge: "Nuevo"
     },
     footerStat: {
       none: "Ninguno",
@@ -161,17 +151,16 @@ const n = {
       sum: "Suma\x20{0}",
       average: "Prom. {0}",
       min: "Mín. {0}",
-      max: "Máx. {0}",
+      max: "Máx. {0}"
     },
     confirmDelete: {
       tableTitle: "¿Eliminar esta tabla?",
       tableDescription: "Esta tabla y sus registros se eliminarán.",
-      tableReferenced:
-        "Esta tabla no se puede eliminar porque los siguientes campos hacen referencia a ella: {0}.",
+      tableReferenced: "Esta tabla no se puede eliminar porque los siguientes campos hacen referencia a ella: {0}.",
       viewTitle: "¿Eliminar esta vista?",
       viewDescription: "Esta\x20vista\x20se\x20eliminará.",
       fieldTitle: "¿Eliminar\x20este\x20campo?",
-      fieldDescription: "Este campo se eliminará de la tabla.",
+      fieldDescription: "Este campo se eliminará de la tabla."
     },
     duplicateTable: {
       title: "Duplicar tabla",
@@ -180,29 +169,26 @@ const n = {
       configurationsOnly: "Solo configuraciones",
       configurationsAndRecords: "Configuraciones y registros",
       action: "Duplicar",
-      copyName: "{0} copia",
+      copyName: "{0} copia"
     },
     tableNameValidation: {
       required: "Introduce un nombre para la tabla.",
       tooLong: "Utiliza 31 caracteres o menos.",
-      apostrophe:
-        "El nombre de la tabla no puede empezar ni terminar con un apóstrofo.",
-      invalidCharacters:
-        "El nombre de la tabla no puede contener : \\ / ? * [ ].",
+      apostrophe: "El nombre de la tabla no puede empezar ni terminar con un apóstrofo.",
+      invalidCharacters: "El nombre de la tabla no puede contener : \\ / ? * [ ].",
       duplicate: "Ya existe una tabla con este nombre.",
-      invalid: "Introduce un nombre de tabla válido.",
+      invalid: "Introduce un nombre de tabla válido."
     },
     clipboard: {
       recordsCopied: "{0} registros copiados",
-      attachmentsUploading: "Subiendo {0} archivos adjuntos...",
+      attachmentsUploading: "Subiendo {0} archivos adjuntos..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Tabla de destino",
       recordLinkDisplayField: "Campo de visualización",
       recordLinkPickerFields: "Campos auxiliares del selector",
       recordLinkAllowMultiple: "Permitir vincular varios registros",
-      recordLinkDescription:
-        "Guarda identificadores de registro estables. Usa fórmulas estándar de Excel como XLOOKUP y TEXTSPLIT para leer valores vinculados.",
+      recordLinkDescription: "Guarda identificadores de registro estables. Usa fórmulas estándar de Excel como XLOOKUP y TEXTSPLIT para leer valores vinculados.",
       fieldTitle: "Título del campo",
       fieldTitlePlaceholder: "Introduce un título de campo",
       fieldType: "Tipo de campo",
@@ -211,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Avanzado",
       defaultValue: "Valor predeterminado",
       newField: "Nuevo campo",
-      defaultSettingsReady:
-        "Este tipo de campo está listo con la configuración predeterminada.",
+      defaultSettingsReady: "Este tipo de campo está listo con la configuración predeterminada.",
       numberFormat: "Formato numérico",
       currencyFormat: "Formato de moneda",
       dateFormat: "Formato de fecha",
@@ -232,8 +217,7 @@ const n = {
       numberingType: "Tipo\x20de\x20numeración",
       autoIncrement: "Incremento automático",
       custom: "Personalizado",
-      customizeNumbering:
-        "Personalizar\x20formato\x20y\x20reglas\x20de\x20número/texto",
+      customizeNumbering: "Personalizar\x20formato\x20y\x20reglas\x20de\x20número/texto",
       preview: "Vista previa",
       incremental: "incremental",
       digits: "dígitos",
@@ -262,12 +246,9 @@ const n = {
       referenceOptionsHelp: "Referenciar datos de otras tablas como opciones",
       allowMultipleMembers: "Permitir añadir varios miembros en un registro",
       allowMultipleGroups: "Permitir añadir varios grupos en un registro",
-      defaultProviderMock:
-        "El\x20valor\x20predeterminado\x20se\x20resuelve\x20a\x20partir\x20de\x20{0}\x20elemento{2}\x20de\x20prueba\x20de\x20{1}.",
-      defaultProviderExternal:
-        "El valor predeterminado se resuelve desde el proveedor externo de {0} de Univer.",
-      linkPlaceholder:
-        "Introduce una URL (p. ej., univer.ai o https://univer.ai/skills).",
+      defaultProviderMock: "El\x20valor\x20predeterminado\x20se\x20resuelve\x20a\x20partir\x20de\x20{0}\x20elemento{2}\x20de\x20prueba\x20de\x20{1}.",
+      defaultProviderExternal: "El valor predeterminado se resuelve desde el proveedor externo de {0} de Univer.",
+      linkPlaceholder: "Introduce una URL (p. ej., univer.ai o https://univer.ai/skills).",
       phonePlaceholder: "Introduce\x20un\x20número\x20de\x20teléfono",
       currencySymbol: "Símbolo\x20de\x20moneda",
       thousandsSeparator: "Separador de miles",
@@ -291,8 +272,7 @@ const n = {
       targetValue: "Valor objetivo",
       searchGroups: "Buscar grupos",
       selectGroups: "Seleccionar grupos",
-      noProviderGroupData:
-        "No\x20hay\x20datos\x20de\x20grupo\x20del\x20proveedor\x20disponibles",
+      noProviderGroupData: "No\x20hay\x20datos\x20de\x20grupo\x20del\x20proveedor\x20disponibles",
       noMatchingGroups: "No hay grupos coincidentes.",
       searchMembers: "Buscar\x20miembros",
       selectMembers: "Seleccionar miembros",
@@ -301,10 +281,8 @@ const n = {
       noFormulaConfigured: "No\x20hay\x20fórmula\x20configurada",
       editFormula: "Editar fórmula",
       closeFormulaEditor: "Cerrar\x20editor\x20de\x20fórmulas",
-      formulaHint:
-        "Usa campos de la fila actual como [@[Amount]]. No se permiten A1:B10 ni referencias a celdas individuales.",
-      formulaReferenceError:
-        "Las referencias A1 y los rangos no son compatibles con las fórmulas de Base.",
+      formulaHint: "Usa campos de la fila actual como [@[Amount]]. No se permiten A1:B10 ni referencias a celdas individuales.",
+      formulaReferenceError: "Las referencias A1 y los rangos no son compatibles con las fórmulas de Base.",
       formulaTables: "Tablas",
       formulaFields: "Campos",
       formulaFunctions: "Funciones",
@@ -317,8 +295,7 @@ const n = {
       currentTableName: "Tabla\x20actual",
       currentTableField: "Campo de la tabla actual",
       fieldFromTable: "Campo de {0}",
-      referenceCurrentField:
-        'Referencia el campo "{0}" de la tabla Base actual. Se guardará como [[#This Row],[{1}]] para el motor de fórmulas.',
+      referenceCurrentField: 'Referencia el campo "{0}" de la tabla Base actual. Se guardará como [[#This Row],[{1}]] para el motor de fórmulas.',
       referenceTableField: 'Referencia el campo "{0}" de la tabla "{1}".',
       fieldNameColumn: "Nombre",
       fieldTypeColumn: "Tipo",
@@ -334,8 +311,7 @@ const n = {
       formulaFormatPercent: "Porcentaje",
       formulaFormatDateTime: "Fecha / Hora",
       addDescriptionPlaceholder: "Añadir una descripción",
-      numberingDescription:
-        "Asigna\x20automáticamente\x20un\x20índice\x20creciente\x20único\x20que\x20empieza\x20en\x201\x20cuando\x20se\x20crea\x20un\x20registro.\x20Los\x20valores\x20generados\x20no\x20se\x20pueden\x20editar.",
+      numberingDescription: "Asigna\x20automáticamente\x20un\x20índice\x20creciente\x20único\x20que\x20empieza\x20en\x201\x20cuando\x20se\x20crea\x20un\x20registro.\x20Los\x20valores\x20generados\x20no\x20se\x20pueden\x20editar.",
       optionColor: "Color de opción",
       separatorLocal: "Local",
       separatorCommaPeriod: "Coma, punto",
@@ -360,7 +336,7 @@ const n = {
       ratingIconLightning: "Rayo",
       ratingIconMedal: "Medalla",
       increment: "incrementar",
-      decrement: "disminuir",
+      decrement: "disminuir"
     },
     cellEditor: {
       done: "Listo",
@@ -376,8 +352,7 @@ const n = {
       deleteAttachment: "Eliminar adjunto {0}",
       deleteAttachmentConfirmTitle: "¿Eliminar este adjunto?",
       deleteAttachmentsConfirmTitle: "¿Eliminar {0} adjuntos?",
-      deleteAttachmentConfirmDescription:
-        "Los adjuntos seleccionados se eliminarán de este registro.",
+      deleteAttachmentConfirmDescription: "Los adjuntos seleccionados se eliminarán de este registro.",
       failedToAttachFile: "No se pudo adjuntar el archivo",
       file: "ARCHIVO",
       invalidEmail: "Dirección de correo no válida",
@@ -388,7 +363,7 @@ const n = {
       selectOptions: "Seleccionar\x20opciones",
       previousMonth: "Mes anterior",
       nextMonth: "Mes siguiente",
-      time: "Hora",
+      time: "Hora"
     },
     recordDetailField: {
       previousRecord: "Registro anterior",
@@ -401,7 +376,7 @@ const n = {
       empty: "Vacío",
       unassigned: "Sin asignar",
       editField: "Editar {0}",
-      noVisibleFields: "No hay campos visibles",
+      noVisibleFields: "No hay campos visibles"
     },
     fieldMenu: {
       createSharedBaseField: "Crear\x20un\x20campo\x20base\x20compartido",
@@ -432,8 +407,8 @@ const n = {
         createdBy: "Campo de autor del sistema",
         updatedBy: "Campo modificador del sistema",
         createdAt: "Hora de creación del sistema",
-        updatedAt: "Hora de actualización del sistema",
-      },
+        updatedAt: "Hora de actualización del sistema"
+      }
     },
     fieldTypes: {
       text: "Texto",
@@ -457,7 +432,7 @@ const n = {
       createdBy: "Creado por",
       updatedBy: "Modificado por",
       createdAt: "Fecha de creación",
-      updatedAt: "Fecha de última modificación",
+      updatedAt: "Fecha de última modificación"
     },
     viewMenus: {
       customizeKanban: "Personalizar Kanban",
@@ -495,24 +470,20 @@ const n = {
       addCondition: "Añadir condición",
       calculateWorkingDaysOnly: "Calcular solo días laborables",
       customWorkingDays: "Días\x20laborables\x20personalizados",
-      customWorkingDaysHelp:
-        "Personaliza los días laborables y libres para esta vista Gantt. Si no se configura, se usa de lunes a viernes cuando el cálculo de días laborables está activado.",
+      customWorkingDaysHelp: "Personaliza los días laborables y libres para esta vista Gantt. Si no se configura, se usa de lunes a viernes cuando el cálculo de días laborables está activado.",
       notSet: "No configurado",
       settings: "Configuración",
       setWorkingDays: "Configurar días laborables",
-      setWorkingDaysDescription:
-        "Personaliza\x20días\x20laborables\x20y\x20libres,\x20y\x20aplícalos\x20a\x20la\x20base\x20actual",
+      setWorkingDaysDescription: "Personaliza\x20días\x20laborables\x20y\x20libres,\x20y\x20aplícalos\x20a\x20la\x20base\x20actual",
       closeWorkingDaysSettings: "Cerrar configuración de días laborables",
       addWorkingDays: "Añadir\x20días\x20laborables",
       holidayName: "Nombre del festivo",
       dayOff: "Día libre",
       working: "Laborable",
       add: "Añadir",
-      removeWorkingDayException:
-        "Eliminar\x20excepción\x20de\x20día\x20laborable",
+      removeWorkingDayException: "Eliminar\x20excepción\x20de\x20día\x20laborable",
       legalWorkingDays: "Días laborables legales",
-      legalWorkingDaysHelp:
-        "Los días laborables legales estarán disponibles después de conectar una API de calendario externa.",
+      legalWorkingDaysHelp: "Los días laborables legales estarán disponibles después de conectar una API de calendario externa.",
       mon: "Lun",
       tue: "Mar",
       wed: "Mié",
@@ -529,7 +500,7 @@ const n = {
       groupByFieldFallback: "Agrupar por campo",
       kanbanGroup: "Grupo Kanban",
       required: "Obligatorio",
-      kanbanGroupHelp: "Las vistas Kanban siempre usan un campo de grupo.",
+      kanbanGroupHelp: "Las vistas Kanban siempre usan un campo de grupo."
     },
     operators: {
       is: "es",
@@ -541,7 +512,7 @@ const n = {
       greaterThan: "mayor que",
       lessThan: "menor que",
       before: "es anterior a",
-      after: "es posterior a",
+      after: "es posterior a"
     },
     viewSettings: {
       title: "Configuración de vista",
@@ -562,18 +533,16 @@ const n = {
       newGanttView: "Nueva vista Gantt",
       newGalleryView: "Nueva\x20vista\x20de\x20galería",
       gridView: "Cuadrícula",
-      gridViewDescription:
-        "Filas\x20y\x20campos\x20para\x20edición\x20detallada.",
+      gridViewDescription: "Filas\x20y\x20campos\x20para\x20edición\x20detallada.",
       kanbanView: "Kanban",
-      kanbanViewDescription:
-        "Tarjetas\x20agrupadas\x20por\x20un\x20campo\x20de\x20selección.",
+      kanbanViewDescription: "Tarjetas\x20agrupadas\x20por\x20un\x20campo\x20de\x20selección.",
       calendarView: "Calendario",
       calendarViewDescription: "Registros distribuidos por fecha.",
       ganttView: "Gantt",
       ganttViewDescription: "Cronograma con fechas de inicio y fin.",
       galleryView: "Galería",
       galleryViewDescription: "Tarjetas visuales para explorar registros.",
-      copySuffix: "Copia",
+      copySuffix: "Copia"
     },
     tableSidebar: {
       searchTables: "Buscar tablas",
@@ -586,9 +555,12 @@ const n = {
       renameTable: "Cambiar nombre de tabla",
       duplicateTable: "Duplicar tabla",
       deleteTable: "Eliminar tabla",
-      defaultTableName: "Tabla {0}",
+      defaultTableName: "Tabla {0}"
     },
-    footer: { record: "registro", records: "registros" },
+    footer: {
+      record: "registro",
+      records: "registros"
+    },
     canvas: {
       addRecord: "Añadir\x20registro",
       attachmentDropLabel: "Añadir archivos a este registro",
@@ -601,12 +573,12 @@ const n = {
       quarter: "Trimestre",
       today: "Hoy",
       week: "Semana",
-      year: "Año",
+      year: "Año"
     },
     empty: {
       value: "Vacío",
       noRecords: "No hay registros",
-      invalidView: "Esta\x20vista\x20necesita\x20configuración",
+      invalidView: "Esta\x20vista\x20necesita\x20configuración"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -624,19 +596,17 @@ const n = {
         engineering: "Ingeniería",
         financial: "Finanzas",
         lookup: "Búsqueda y referencia",
-        web: "Web",
+        web: "Web"
       },
       generic: {
         engineAbstract: "Función del motor de fórmulas {0}",
-        engineDescription:
-          "{0} la proporciona el motor de fórmulas de Univer. Base admite referencias de campo como TableName[[#This Row],[Field]] y OtherTable[Field], pero no admite celdas A1, rangos A1:B10 ni salida de matrices desbordadas en campos de fórmula de Base.",
+        engineDescription: "{0} la proporciona el motor de fórmulas de Univer. Base admite referencias de campo como TableName[[#This Row],[Field]] y OtherTable[Field], pero no admite celdas A1, rangos A1:B10 ni salida de matrices desbordadas en campos de fórmula de Base.",
         argument: {
           name: "argumento",
-          detail:
-            "Un valor, referencia de campo, referencia de campo de tabla o expresión compatible con el motor de fórmulas de Univer.",
-        },
-      },
-    },
-  },
+          detail: "Un valor, referencia de campo, referencia de campo de tabla o expresión compatible con el motor de fórmulas de Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

@@ -1,9 +1,87 @@
-import{ApplyPdfHistoryCommand,ApplyPdfMutationBatchMutation,DEFAULT_PDF_TABLE_THEME_PRESETS,PDF_A4_PAGE_HEIGHT_PT,PDF_A4_PAGE_WIDTH_PT,PDF_EDITOR_NATIVE_TEXT_VISUAL_EDIT_METADATA,PdfAnnotationType,PdfAssetType,PdfDisplayOpType,PdfEditorMutationSource,PdfExportDisposition,PdfListKind,PdfListPresetId,PdfObjectType,PdfSemanticRole,PdfTableCellVerticalAlign,PdfTextAnchor,createPdfDefaultDividerInsertionBbox,createPdfDefaultListInsertionBbox,createPdfDefaultParagraphInsertionBbox,createPdfDefaultTableInsertionLayout,createPdfDefaultTextBoxInsertionBbox,createPdfEditorSession,createPdfNativeTextHitTargets,createPdfPage,createPdfTableGrid,emuToPt,isPdfEditorDividerObject,normalizePdfEditorManagedImageResource,pdfAddAnnotationAction,pdfAddDividerAction,pdfAddImageAction,pdfAddListAction,pdfAddParagraphAction,pdfAddTableAction,pdfAddTextBoxAction,pdfChangeListLevelAction,pdfChangeListStyleAction,pdfCropImageAction,pdfDeleteObjectsAction,pdfEditTextAction,pdfInsertListItemAction,pdfInsertPageAction,pdfInsertParagraphBlockAction,pdfMoveObjectAction,pdfPromoteNativeTextAction,pdfRemoveListItemAction,pdfRemoveManagedImageAction,pdfRemoveParagraphBlockAction,pdfReorderObjectAction,pdfResizeTableAction,pdfSetListStartNumberAction,pdfUpdateManagedImageAction,pdfUpdateObjectAppearanceAction,pdfUpdateObjectStateAction,pdfUpdateObjectStrokeAction,pdfUpdateParagraphStyleAction,pdfUpdateTableCellStyleAction,pdfUpdateTableThemeAction,pdfUpdateTextRangeStyleAction,pdfUpdateTextStyleAction,ptToEmu}from"@univerjs-pro/pdfs";
-import{FBaseInitialable,FEnum,FUniver}from"@univerjs/core/facade";
-import{HorizontalAlign,ICommandService,IUndoRedoService,IUniverInstanceService,ImageSourceType,Inject,Injector,Tools,UniverInstanceType,generateRandomId}from"@univerjs/core";
+import { ApplyPdfHistoryCommand, ApplyPdfMutationBatchMutation, DEFAULT_PDF_TABLE_THEME_PRESETS, PDF_A4_PAGE_HEIGHT_PT, PDF_A4_PAGE_WIDTH_PT, PDF_EDITOR_NATIVE_TEXT_VISUAL_EDIT_METADATA, PdfAnnotationType, PdfAssetType, PdfDisplayOpType, PdfEditorMutationSource, PdfExportDisposition, PdfListKind, PdfListPresetId, PdfObjectType, PdfSemanticRole, PdfTableCellVerticalAlign, PdfTextAnchor, createPdfDefaultDividerInsertionBbox, createPdfDefaultListInsertionBbox, createPdfDefaultParagraphInsertionBbox, createPdfDefaultTableInsertionLayout, createPdfDefaultTextBoxInsertionBbox, createPdfEditorSession, createPdfNativeTextHitTargets, createPdfPage, createPdfTableGrid, emuToPt, isPdfEditorDividerObject, normalizePdfEditorManagedImageResource, pdfAddAnnotationAction, pdfAddDividerAction, pdfAddImageAction, pdfAddListAction, pdfAddParagraphAction, pdfAddTableAction, pdfAddTextBoxAction, pdfChangeListLevelAction, pdfChangeListStyleAction, pdfCropImageAction, pdfDeleteObjectsAction, pdfEditTextAction, pdfInsertListItemAction, pdfInsertPageAction, pdfInsertParagraphBlockAction, pdfMoveObjectAction, pdfPromoteNativeTextAction, pdfRemoveListItemAction, pdfRemoveManagedImageAction, pdfRemoveParagraphBlockAction, pdfReorderObjectAction, pdfResizeTableAction, pdfSetListStartNumberAction, pdfUpdateManagedImageAction, pdfUpdateObjectAppearanceAction, pdfUpdateObjectStateAction, pdfUpdateObjectStrokeAction, pdfUpdateParagraphStyleAction, pdfUpdateTableCellStyleAction, pdfUpdateTableThemeAction, pdfUpdateTextRangeStyleAction, pdfUpdateTextStyleAction, ptToEmu } from "@univerjs-pro/pdfs";
+import { FBaseInitialable, FEnum, FUniver } from "@univerjs/core/facade";
+import { HorizontalAlign, ICommandService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, Tools, UniverInstanceType, generateRandomId } from "@univerjs/core";
 import { O } from "./facade-pdfs-fpdf-page-element.js";
 import { D, ct, ht, lt, mt, st } from "./facade-internal-glue.js";
 import { it } from "./facade-pdfs-fpdf-image-builder.js";
-let R=class extends O{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216){super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215,PdfObjectType.IMAGE,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216);}getSource(){return this._getResource().source;}getImageSourceType(){return this._getResource().imageSourceType;}setSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223=this.toBuilder().setSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222).build();return this._applyBuilder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223),this;}getCrop(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227=this._getCurrentObject(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.crop;return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228?{left:emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[0]-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[0]),top:emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[1]-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[1]),right:emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[2]-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[0]),bottom:emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[3]-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[1])}:null;}setCrop(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231){mt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231);let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232=this._getCurrentObject();return D(this._model,this._injector,pdfCropImageAction,{pageId:this._pageId,objectId:this._objectId,cropRect:lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232.bbox)}),this;}getOpacity(){return this._getCurrentObject().opacity??1;}setOpacity(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235){return ht(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235),this._getCurrentObject(),D(this._model,this._injector,pdfUpdateObjectAppearanceAction,{pageId:this._pageId,objectId:this._objectId,opacity:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235}),this;}toBuilder(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237=this._getCurrentObject(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238=this._getResource();return new it(this._model["getUnitId"](),this._pageId,{id:this._objectId,source:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238.source,imageSourceType:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238.imageSourceType,transform:this.getTransform(),crop:this.getCrop()??undefined,opacity:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237.opacity,assetId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237.assetId});}remove(){this._getCurrentObject(),D(this._model,this._injector,pdfRemoveManagedImageAction,{pageId:this._pageId,objectId:this._objectId});}_getResource(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241=this._getCurrentObject(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242=this._model["getEditState"]().managedResources[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241.assetId];if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242)throw Error("Managed resource "+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241.assetId+"\x20for\x20PDF\x20image\x20"+this._objectId+"\x20no\x20longer\x20exists.");return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242;}_applyBuilder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46246=ct(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["transform"]);D(this._model,this._injector,pdfUpdateManagedImageAction,{pageId:this._pageId,objectId:this._objectId,resource:st(this._model,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245),cropRect:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["crop"]?lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["crop"],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46246.bbox):null,opacity:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["opacity"],...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46246});}};
-
+let R = class extends O {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46214, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46215, PdfObjectType.IMAGE, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46216);
+  }
+  getSource() {
+    return this._getResource().source;
+  }
+  getImageSourceType() {
+    return this._getResource().imageSourceType;
+  }
+  setSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223 = this.toBuilder().setSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46221, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46222).build();
+    return this._applyBuilder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46223), this;
+  }
+  getCrop() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227 = this._getCurrentObject(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.crop;
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228 ? {
+      left: emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[0] - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[0]),
+      top: emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[1] - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[1]),
+      right: emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[2] - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[0]),
+      bottom: emuToPt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46228[3] - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46227.bbox[1])
+    } : null;
+  }
+  setCrop(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231) {
+    mt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231);
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232 = this._getCurrentObject();
+    return D(this._model, this._injector, pdfCropImageAction, {
+      pageId: this._pageId,
+      objectId: this._objectId,
+      cropRect: lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232.bbox)
+    }), this;
+  }
+  getOpacity() {
+    return this._getCurrentObject().opacity ?? 1;
+  }
+  setOpacity(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235) {
+    return ht(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235), this._getCurrentObject(), D(this._model, this._injector, pdfUpdateObjectAppearanceAction, {
+      pageId: this._pageId,
+      objectId: this._objectId,
+      opacity: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235
+    }), this;
+  }
+  toBuilder() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237 = this._getCurrentObject(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238 = this._getResource();
+    return new it(this._model["getUnitId"](), this._pageId, {
+      id: this._objectId,
+      source: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238.source,
+      imageSourceType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238.imageSourceType,
+      transform: this.getTransform(),
+      crop: this.getCrop() ?? undefined,
+      opacity: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237.opacity,
+      assetId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237.assetId
+    });
+  }
+  remove() {
+    this._getCurrentObject(), D(this._model, this._injector, pdfRemoveManagedImageAction, {
+      pageId: this._pageId,
+      objectId: this._objectId
+    });
+  }
+  _getResource() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241 = this._getCurrentObject(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242 = this._model["getEditState"]().managedResources[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241.assetId];
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242) throw Error("Managed resource " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46241.assetId + "\x20for\x20PDF\x20image\x20" + this._objectId + "\x20no\x20longer\x20exists.");
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46242;
+  }
+  _applyBuilder(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46246 = ct(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["transform"]);
+    D(this._model, this._injector, pdfUpdateManagedImageAction, {
+      pageId: this._pageId,
+      objectId: this._objectId,
+      resource: st(this._model, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245),
+      cropRect: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["crop"] ? lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["crop"], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46246.bbox) : null,
+      opacity: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46245.element["opacity"],
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46246
+    });
+  }
+};
 export { R as FPdfImage };

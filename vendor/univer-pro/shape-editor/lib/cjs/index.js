@@ -1,1 +1,715 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/engine-shape"),t=require("@univerjs/core"),n=require("@univerjs-pro/engine-formula"),r=require("@univerjs-pro/license"),i=require("@univerjs/engine-formula"),a=require("rxjs");const o="shape-editor.config",s={},c={left:8,right:8,top:4,bottom:4};function l(v101,v102,v103){return{id:"shape-text-document",body:{dataStream:"\x0d\x0a",paragraphs:[{startIndex:0,paragraphId:(0,t.createParagraphId)(new Set()),paragraphStyle:{horizontalAlign:v101}}],textRuns:[]},documentStyle:{...(v103?{textStyle:v103}:null),renderConfig:{horizontalAlign:v101,verticalAlign:v102}}};}function u(v104){let v105=t.HorizontalAlign["LEFT"],v106=v104.verticalAlign??t.VerticalAlign["TOP"];return{fill:v104.fill??{fillType:e.ShapeFillEnum["NoFill"]},isTextBox:true,shapeText:{isHorizontal:v104.isHorizontal,textDirection:v104.isHorizontal?e.ShapeTextDirection["Horz"]:e.ShapeTextDirection["Vert"],text:"",autoFitType:e.ShapeTextAutoFitType["SpAutoFit"],textWrap:e.ShapeTextWrapType["None"],dataModel:{ha:v105,va:v106,doc:l(v105,v106,v104.textStyle)}},stroke:v104.stroke??{lineStrokeType:e.ShapeLineTypeEnum["NoLine"]}};}function d(v107={}){return{...u({fill:v107.fill,stroke:v107.stroke,isHorizontal:v107.isHorizontal??true,textStyle:v107.textStyle,verticalAlign:v107.verticalAlign??t.VerticalAlign["MIDDLE"]}),textRectPadding:{...c,...v107.textRectPadding},formulaBinding:{formula:v107.formula??"",...(v107.lastValue?{lastValue:v107.lastValue}:null),...(v107.numberFormatPattern?{numberFormat:{pattern:v107.numberFormatPattern}}:null)}};}function f(v108,v109){let v110=d({fill:v108.fill,stroke:v108.stroke});return{...v110,...v108,isTextBox:true,shapeText:v108.shapeText??v110.shapeText,textRectPadding:v108.textRectPadding??v110.textRectPadding,formulaBinding:v109};}const p=1.5,m=[{id:"black",accent:"#111827",dark:"#000000",filled:"#111827",softFill:"#f3f4f6",softStroke:"#6b7280"},{id:"blue",accent:"#4472c4",dark:"#1f4e79",filled:"#4472c4",softFill:"#eaf1fb",softStroke:"#8faadc"},{id:"orange",accent:"#ed7d31",dark:"#c55a11",filled:"#ed7d31",softFill:"#fbe5d6",softStroke:"#f4b183"},{id:"gray",accent:"#a6a6a6",dark:"#595959",filled:"#808080",softFill:"#f2f2f2",softStroke:"#bfbfbf"},{id:"yellow",accent:"#f2a900",dark:"#bf9000",filled:"#ffc000",softFill:"#fff8dc",softStroke:"#ffd966"},{id:"light-blue",accent:"#5b9bd5",dark:"#2e75b6",filled:"#5b9bd5",softFill:"#edf4fb",softStroke:"#9dc3e6"},{id:"green",accent:"#70ad47",dark:"#548235",filled:"#70ad47",softFill:"#edf7e6",softStroke:"#a9d18e"}];function h(v111){return{fillType:e.ShapeFillEnum["SolidFill"],color:v111,opacity:1};}function g(v112,v113=2,v114=e.ShapeLineDashEnum["Solid"]){return{lineStrokeType:e.ShapeLineTypeEnum["SolidLine"],color:v112,width:v113,opacity:1,dashType:v114};}function _(v115,v116,v117){return{id:v115,type:"shape",fill:h(v116),stroke:g(v117)};}function v(v118,v119){return{startArrow:{type:v118,size:e.ShapeArrowSizeEnum["Medium"]},endArrow:{type:v119,size:e.ShapeArrowSizeEnum["Medium"]}};}const y=[_("shape-white-black","#ffffff","#111827"),_("shape-white-blue","#ffffff","#4472c4"),_("shape-white-orange","#ffffff","#ed7d31"),_("shape-white-gray","#ffffff","#a6a6a6"),_("shape-yellow-orange","#fff2cc","#f2a900"),_("shape-blue-blue","#ddebf7","#5b9bd5"),_("shape-green-green","#e2f0d9","#70ad47"),...m.map(v120=>_("shape-soft-"+v120.id,v120.softFill,v120.softStroke)),...m.map(v121=>_("shape-filled-"+v121.id,v121.filled,v121.dark)),...m.map(v122=>_("shape-dark-"+v122.id,v122.dark,v122.accent))],b=[{id:"line-black-solid",type:"line",group:"solid",stroke:g("#111827",p),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["None"])},{id:"line-blue-solid",type:"line",group:"solid",stroke:g("#4472c4",p),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["None"])},{id:"line-orange-solid",type:"line",group:"solid",stroke:g("#ed7d31",p),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["None"])},{id:"line-gray-solid",type:"line",group:"solid",stroke:g("#a6a6a6",p),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["None"])},{id:"line-blue-end-arrow",type:"line",group:"solid",stroke:g("#4472c4",p),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["Arrow"])},{id:"line-green-two-way-arrow",type:"line",group:"solid",stroke:g("#70ad47",p),ln:v(e.ShapeArrowTypeEnum["Arrow"],e.ShapeArrowTypeEnum["Arrow"])},{id:"line-black-dashed",type:"line",group:"dashed",stroke:g("#111827",p,e.ShapeLineDashEnum["Dash"]),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["None"])},{id:"line-blue-dashed",type:"line",group:"dashed",stroke:g("#4472c4",p,e.ShapeLineDashEnum["Dash"]),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["None"])},{id:"line-gray-dashed",type:"line",group:"dashed",stroke:g("#a6a6a6",p,e.ShapeLineDashEnum["Dash"]),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["None"])},{id:"line-blue-dashed-end-arrow",type:"line",group:"dashed",stroke:g("#4472c4",p,e.ShapeLineDashEnum["Dash"]),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["Arrow"])},{id:"line-gray-dashed-end-arrow",type:"line",group:"dashed",stroke:g("#a6a6a6",p,e.ShapeLineDashEnum["Dash"]),ln:v(e.ShapeArrowTypeEnum["None"],e.ShapeArrowTypeEnum["Arrow"])},{id:"line-green-dashed-two-way-arrow",type:"line",group:"dashed",stroke:g("#70ad47",p,e.ShapeLineDashEnum["Dash"]),ln:v(e.ShapeArrowTypeEnum["Arrow"],e.ShapeArrowTypeEnum["Arrow"])}],x=[{id:"text-body-black",type:"text",textStyle:{color:"#111827",fontSize:18,bold:false}},{id:"text-title-black",type:"text",textStyle:{color:"#111827",fontSize:32,bold:true}},{id:"text-accent-blue",type:"text",textStyle:{color:"#4472c4",fontSize:28,bold:true}},{id:"text-accent-orange",type:"text",textStyle:{color:"#ed7d31",fontSize:28,bold:true}},{id:"text-note-gray",type:"text",textStyle:{color:"#6b7280",fontSize:14,bold:false}}],S=[...y,...b,...x];function C(v123){return S.find(v27=>v27.id===v123)??null;}function w(v124){return v124==="shape"?y:v124==="line"?b:x;}function T(v125){return v125.shapeType&&(0,e.isConnectorShape)(v125.shapeType)?"line":"shape";}function E(v126,v127){var v128,v129;if(v127.type==="text")return null;if(v127.type==="shape")return{...v126,fill:{...(v126.fill??{}),...v127.fill},stroke:{...(v126.stroke??{}),...v127.stroke}};let v130="ln"in v126?v126.ln:undefined;return{...v126,stroke:{...(v126.stroke??{}),...v127.stroke},ln:{...(v130??{}),...v127.ln,startArrow:{...((v130==null?undefined:v130.startArrow)??{}),...(((v128=v127.ln)==null?undefined:v128.startArrow)??{})},endArrow:{...((v130==null?undefined:v130.endArrow)??{}),...(((v129=v127.ln)==null?undefined:v129.endArrow)??{})}}};}function D(v131){return(v131??"").toLowerCase();}function O(v132){return(v132==null?undefined:v132.dashType)??e.ShapeLineDashEnum["Solid"];}function k(v133,v134){var v135;return(v133==null||(v135=v133[v134])==null?undefined:v135.type)??e.ShapeArrowTypeEnum["None"];}function A(v136,v137){var v138,v139,v140,v141;return D((v138=v136.fill)==null?undefined:v138.color)===D((v139=v137.fill)==null?undefined:v139.color)&&D((v140=v136.stroke)==null?undefined:v140.color)===D(v137.stroke["color"])&&(((v141=v136.stroke)==null?undefined:v141.width)??0)===v137.stroke["width"];}function j(v142,v143){var v144,v145;let v146="ln"in v142?v142.ln:undefined;return D((v144=v142.stroke)==null?undefined:v144.color)===D(v143.stroke["color"])&&(((v145=v142.stroke)==null?undefined:v145.width)??0)===v143.stroke["width"]&&O(v142.stroke)===O(v143.stroke)&&k(v146,"startArrow")===k(v143.ln,"startArrow")&&k(v146,"endArrow")===k(v143.ln,"endArrow");}function M(v147,v148){return v148.type==="shape"?A(v147,v148):v148.type==="line"&&j(v147,v148);}function N(v149){var v150;return((v150=w(T(v149)).find(v28=>M(v149,v28)))==null?undefined:v150.id)??null;}function P(v151,v152){try{return new e["ShapeModel"](v151.shapeType??e.ShapeTypeEnum["Rect"],"shape-type-conversion",v151).cloneShapeDataForShapeType(v152);}catch{return null;}}var F="@univerjs-pro/shape-editor",I="1.0.0-insiders.20260907-70fc579";function L(v153,v154){return(0,n.resolveFormulaResultPresentation)({numberFormat:v153.numberFormat,lastValue:v153.lastValue,result:v154});}function R(v155){"@babel/helpers - typeof";return R=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v29){return typeof v29;}:function(v30){return v30&&typeof Symbol=="function"&&v30.constructor===Symbol&&v30!==Symbol.prototype?"symbol":typeof v30;},R(v155);}function z(v156,v157){if(R(v156)!="object"||!v156)return v156;var v158=v156[Symbol.toPrimitive];if(v158!==undefined){var v159=v158.call(v156,v157||"default");if(R(v159)!="object")return v159;throw TypeError("@@toPrimitive must return a primitive value.");}return(v157==="string"?String:Number)(v156);}function B(v160){var v161=z(v160,"string");return R(v161)=="symbol"?v161:v161+"";}function V(v162,v163,v164){return(v163=B(v163))in v162?Object.defineProperty(v162,v163,{value:v164,enumerable:true,configurable:true,writable:true}):v162[v163]=v164,v162;}function H(v165,v166){return function(v31,v32){v166(v31,v32,v165);};}function U(v167,v168,v169,v170){var v171=arguments.length,v172=v171<3?v168:v170===null?v170=Object.getOwnPropertyDescriptor(v168,v169):v170,v173;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v172=Reflect.decorate(v167,v168,v169,v170);else{for(var v174=v167.length-1;v174>=0;v174--)(v173=v167[v174])&&(v172=(v171<3?v173(v172):v171>3?v173(v168,v169,v172):v173(v168,v169))||v172);}return v171>3&&v172&&Object.defineProperty(v168,v169,v172),v172;}let W=function(v175){return v175.EMPTY="empty",v175.PENDING="pending",v175.SUCCESS="success",v175.ERROR="error",v175;}({});function G(v176){return v176.unitId+"\x00"+v176.subUnitId+"\x00"+v176.shapeId;}let K=class extends t.Disposable{constructor(v33,v34){super(),this._registerOtherFormulaService=v33,this._hostExternalReferenceModel=v34,V(this,"_registrations",new Map()),V(this,"_formulaKeys",new Map()),V(this,"_presentationChanged$",new a["Subject"]()),V(this,"presentationChanged$",this._presentationChanged$["asObservable"]()),this.disposeWithMe(this._registerOtherFormulaService["formulaResult$"].subscribe(v10=>{for(let v3 of Object.values(v10))for(let v2 of Object.values(v3))for(let v1 of v2)this._updateFormulaResult(v1);}));}register(v35,v36){let v37=G(v35),v38=this._registrations["get"](v37),v39=this._hostExternalReferenceModel["getRevision"](v35.unitId);if(v38&&v38.binding["formula"]===v36.formula&&v38.referenceRevision===v39&&(v35.hostType===undefined||v38.hostType===v35.hostType)&&v38.formulaUnitId===v35.unitId&&v38.formulaSubUnitId===v35.subUnitId){v38.binding=v36;let v11=v38.formulaId?this._registerOtherFormulaService["getFormulaValueSync"](v38.formulaUnitId,v38.formulaSubUnitId,v38.formulaId)??undefined:undefined;v38.liveResult=v11,this._setPresentation(v37,L(v36,v11));return;}v38!=null&&v38.formulaId&&(this._registerOtherFormulaService["deleteFormula"](v38.formulaUnitId,v38.formulaSubUnitId,[v38.formulaId]),this._formulaKeys["delete"](v38.formulaId));let v40={...v35,hostType:v35.hostType??(v38==null?undefined:v38.hostType),binding:v36,referenceRevision:v39,formulaSubUnitId:v35.subUnitId,formulaUnitId:v35.unitId,presentation:L(v36,undefined)};if(this._registrations["set"](v37,v40),!v36.formula["trim"]()){this._setPresentation(v37,v40.presentation);return;}let v41=this._registerOtherFormulaService["registerFormulaWithRange"](v35.unitId,v35.subUnitId,v36.formula,undefined,{shapeId:v35.shapeId},i.OtherFormulaBizType["SHAPE"],v35.shapeId);v40.formulaId=v41,this._formulaKeys["set"](v41,v37);}update(v42,v43){this.register(v42,v43);}unregister(v44){let v45=G(v44),v46=this._registrations["get"](v45);v46&&(v46.formulaId&&(this._registerOtherFormulaService["deleteFormula"](v46.formulaUnitId,v46.formulaSubUnitId,[v46.formulaId]),this._formulaKeys["delete"](v46.formulaId)),this._registrations["delete"](v45));}unregisterUnit(v47){for(let v12 of[...this._registrations["values"]()])v12.unitId===v47&&this.unregister(v12);}syncUnit(v48,v49){let v50=v49.filter(v13=>v13.shapeData["formulaBinding"]),v51=new Set(v50.map(G));for(let v14 of[...this._registrations["values"]()])v14.unitId===v48&&!v51.has(G(v14))&&this.unregister(v14);for(let v15 of v50)this.register(v15,v15.shapeData["formulaBinding"]);}getPresentation(v52){var v53;return(v53=this._registrations["get"](G(v52)))==null?undefined:v53.presentation;}getResult(v54){let v55=this._registrations["get"](G(v54));return v55?this._createResult(v55,v55.presentation):undefined;}getRegisteredFormulas(){let v56=[];for(let v16 of this._registrations["values"]())v16.hostType!==undefined&&v56.push({identity:{hostType:v16.hostType,unitId:v16.unitId,subUnitId:v16.subUnitId,shapeId:v16.shapeId},binding:v16.binding,referenceRevision:v16.referenceRevision,liveResult:v16.liveResult,presentation:v16.presentation});return v56;}_updateFormulaResult(v57){let v58=this._formulaKeys["get"](v57.formulaId),v59=v58?this._registrations["get"](v58):undefined;!v58||!v59||(v59.liveResult=v57,this._setPresentation(v58,L(v59.binding,v57)));}_setPresentation(v60,v61){var v62,v63,v64,v65;let v66=this._registrations["get"](v60);if(!v66||v66.presentation["text"]===v61.text&&v66.presentation["color"]===v61.color&&v66.presentation["pattern"]===v61.pattern&&((v62=v66.presentation["cell"])==null?undefined:v62.t)===((v63=v61.cell)==null?undefined:v63.t)&&v66.presentation["source"]===v61.source&&v66.presentation["stale"]===v61.stale&&Object.is((v64=v66.presentation["cell"])==null?undefined:v64.v,(v65=v61.cell)==null?undefined:v65.v))return;let v67=v66.presentation;v66.presentation=v61,this._presentationChanged$["next"]({unitId:v66.unitId,subUnitId:v66.subUnitId,shapeId:v66.shapeId,presentation:v61,previousPresentation:v67,result:this._createResult(v66,v61),previousResult:this._createResult(v66,v67),animationEnabled:v66.binding["animationEnabled"]!==false&&!v67.stale});}_createResult(v68,v69){var v70,v71;let v72=(v70=v69.cell)==null?undefined:v70.v;return{status:v68.binding["formula"].trim()?v69.stale||v69.cell==null?"pending":typeof v72=="string"&&v72.startsWith("#")?"error":"success":"empty",value:v72,valueType:((v71=v69.cell)==null?undefined:v71.t)??undefined,displayText:v69.text,color:v69.color,numberFormat:v69.pattern,source:v69.source,stale:v69.stale};}dispose(){for(let v17 of this._registrations["values"]())v17.formulaId&&this._registerOtherFormulaService["deleteFormula"](v17.formulaUnitId,v17.formulaSubUnitId,[v17.formulaId]);this._registrations["clear"](),this._formulaKeys["clear"](),this._presentationChanged$["complete"](),super.dispose();}};K=U([H(0,(0,t.Inject)(i.RegisterOtherFormulaService)),H(1,(0,t.Inject)(n.HostExternalReferenceModel))],K);let q=class extends t.Disposable{constructor(v73,v74,v75){super(),this._instanceService=v73,this._shapeHostAdapterRegistry=v74,this._shapeFormulaService=v75,V(this,"_isDisposed",false),V(this,"_pendingUnitIds",new Set()),V(this,"_adapterBindings",new Map()),V(this,"_syncScheduled",false);let v76=this._shapeHostAdapterRegistry["adapterChanged$"].subscribe(v18=>{this._handleAdapterChange(v18);});this.disposeWithMe(()=>v76.unsubscribe());for(let v19 of this._shapeHostAdapterRegistry["list"]())this._bindAdapter(v19);this.disposeWithMe(this._instanceService["unitAdded$"].subscribe(({unit:v20})=>{this._queueSync(v20.getUnitId());})),this.disposeWithMe(this._instanceService["unitDisposed$"].subscribe(v21=>{this._shapeFormulaService["unregisterUnit"](v21.getUnitId());}));}_handleAdapterChange(v77){this._isDisposed||(v77.type==="registered"?this._bindAdapter(v77.adapter):this._unbindAdapter(v77.adapter));}_bindAdapter(v78){var v79;let v80=this._adapterBindings["get"](v78.hostType);if((v80==null?undefined:v80.adapter)===v78)return;v80==null||v80.unsubscribe();let v81=(v79=v78.shapeChanged$)==null?undefined:v79.subscribe(({unitId:v22})=>this._queueSync(v22));this._adapterBindings["set"](v78.hostType,{adapter:v78,unsubscribe:()=>v81==null?undefined:v81.unsubscribe()});for(let v23 of this._instanceService["getAllUnitsForType"](v78.hostType))this._syncUnit(v23.getUnitId());}_unbindAdapter(v82){let v83=this._adapterBindings["get"](v82.hostType);if((v83==null?undefined:v83.adapter)===v82){v83.unsubscribe(),this._adapterBindings["delete"](v82.hostType);for(let v4 of this._instanceService["getAllUnitsForType"](v82.hostType))this._shapeFormulaService["unregisterUnit"](v4.getUnitId());}}_queueSync(v84){this._pendingUnitIds["add"](v84),!this._syncScheduled&&(this._syncScheduled=true,queueMicrotask(()=>{if(this._syncScheduled=false,this._isDisposed)return;let v24=[...this._pendingUnitIds];this._pendingUnitIds["clear"](),v24.forEach(v5=>this._syncUnit(v5));}));}_syncUnit(v85){var v86,v87;let v88=this._instanceService["getUnitType"](v85);if(!(0,e.isShapeHostType)(v88))return;let v89=(v86=this._adapterBindings["get"](v88))==null?undefined:v86.adapter;v89&&this._shapeFormulaService["syncUnit"](v85,((v87=v89.listShapesInUnit)==null?undefined:v87.call(v89,v85))??[]);}dispose(){this._isDisposed=true;for(let v25 of this._adapterBindings["values"]())v25.unsubscribe();this._adapterBindings["clear"](),super.dispose();}};q=U([H(0,t.IUniverInstanceService),H(1,e.IShapeHostAdapterRegistry),H(2,(0,t.Inject)(K))],q);let J=class extends t.Disposable{constructor(v90,v91,v92,v93){super(),this._formulaService=v90,this._cacheEligibilityService=v91,this._shapeHostAdapterRegistry=v92,this.disposeWithMe(v93.registerProvider(this));}collectMutations(v94){let v95=[];for(let v26 of this._formulaService["getRegisteredFormulas"]()){var v96;if(!this._cacheEligibilityService["assess"](v26.binding["formula"],v26.liveResult).eligible)continue;let v6=(0,n.getScalarFormulaResultCell)(v26.liveResult),v7=v6?(0,n.toFormulaLastValue)(v6):null;if(!v7||Y(v26.binding["lastValue"],v7))continue;let v8=this._shapeHostAdapterRegistry["get"](v26.identity["hostType"]),v9=v8==null||(v96=v8.createFormulaLastValueMutation)==null?undefined:v96.call(v8,v26.identity,{expectedFormula:v26.binding["formula"],expectedReferenceRevision:v26.referenceRevision},v7);v9&&v95.push(v9);}return v95;}};J=U([H(0,(0,t.Inject)(K)),H(1,(0,t.Inject)(n.FormulaCacheEligibilityService)),H(2,e.IShapeHostAdapterRegistry),H(3,(0,t.Inject)(n.FormulaLastValuePersistenceService))],J);function Y(v177,v178){return(v177==null?undefined:v177.v)===v178.v&&(v177==null?undefined:v177.t)===v178.t&&(v177==null?undefined:v177.pattern)===v178.pattern;}let X=class extends t.Plugin{constructor(v97=s,v98,v99){super(),this._config=v97,this._injector=v98,this._configService=v99;let{...v100}=(0,t.merge)({},s,this._config);this._configService["setConfig"](o,v100);}onStarting(){this._injector["add"]([K]),this._injector["add"]([q]),this._injector["add"]([J]);}onReady(){(0,t.touchDependencies)(this._injector,[[q],[J]]);}};V(X,"type",t.UniverInstanceType["UNIVER_UNKNOWN"]),V(X,"pluginName","SHAPE_EDITOR_PLUGIN"),V(X,"packageName",F),V(X,"version",I),X=U([(0,t.DependentOn)(r.UniverLicensePlugin,n.UniverProFormulaEnginePlugin,e.UniverShapePlugin),H(1,(0,t.Inject)(t.Injector)),H(2,t.IConfigService)],X);function Z(v179,v180){var v181,v182,v183,v184;if(!v180)return v179;let v185=v180.text,v186=v179.body,v187=(v186==null||(v181=v186.textRuns)==null||(v181=v181[0])==null?undefined:v181.ts)??((v182=v179.documentStyle)==null?undefined:v182.textStyle)??{},v188=v180.color?{...v187,cl:{rgb:v180.color}}:v187,v189=v186==null||(v183=v186.paragraphs)==null?undefined:v183[0],v190=v186==null||(v184=v186.sectionBreaks)==null?undefined:v184[0],v191=(v189==null?undefined:v189.paragraphId)??(0,t.createParagraphId)(new Set());return{...v179,body:{...v186,dataStream:v185+"\x0d\x0a",textRuns:v185.length?[{st:0,ed:v185.length,ts:v188}]:[],paragraphs:[{...(v189??{}),startIndex:v185.length,paragraphId:v191}],sectionBreaks:v190?[{...v190,startIndex:v185.length+1}]:v186==null?undefined:v186.sectionBreaks}};}exports.FORMULA_SHAPE_DEFAULT_TEXT_RECT_PADDING=c,exports.FormulaShapeResultStatus=W,exports.SHAPE_EDITOR_PLUGIN_CONFIG_KEY=o,exports.SHAPE_LINE_QUICK_STYLE_PRESETS=b,exports.SHAPE_QUICK_STYLE_PRESETS=y,Object.defineProperty(exports,"ShapeFormulaService",{enumerable:true,get:function(){return K;}}),Object.defineProperty(exports,"UniverShapeEditorPlugin",{enumerable:true,get:function(){return X;}}),exports.applyQuickStyleToShapeData=E,exports.cloneShapeDataForType=P,exports.createFormulaShapeData=d,exports.createFormulaShapeDataFromShape=f,exports.createShapeFormulaDocument=Z,exports.createShapeTextBoxShapeData=u,exports.getShapeQuickStylePreset=C,exports.getShapeQuickStylePresets=w,exports.getShapeQuickStyleType=T,exports.resolveActiveShapeQuickStylePresetId=N,exports.resolveShapeFormulaPresentation=L;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/engine-shape"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs-pro/engine-formula"),
+  r = require("@univerjs-pro/license"),
+  i = require("@univerjs/engine-formula"),
+  a = require("rxjs");
+const o = "shape-editor.config",
+  s = {},
+  c = {
+    left: 8,
+    right: 8,
+    top: 4,
+    bottom: 4
+  };
+function l(var_core_value_sig21D8, var_core_value_sig2B65, var_core_value_sigD7EA) {
+  return {
+    id: "shape-text-document",
+    body: {
+      dataStream: "\x0d\x0a",
+      paragraphs: [{
+        startIndex: 0,
+        paragraphId: (0, t.createParagraphId)(new Set()),
+        paragraphStyle: {
+          horizontalAlign: var_core_value_sig21D8
+        }
+      }],
+      textRuns: []
+    },
+    documentStyle: {
+      ...(var_core_value_sigD7EA ? {
+        textStyle: var_core_value_sigD7EA
+      } : null),
+      renderConfig: {
+        horizontalAlign: var_core_value_sig21D8,
+        verticalAlign: var_core_value_sig2B65
+      }
+    }
+  };
+}
+function u(var_core_value_sigB33B) {
+  let var_core_value_sig24B9 = t.HorizontalAlign["LEFT"],
+    var_core_value_sigE627 = var_core_value_sigB33B.verticalAlign ?? t.VerticalAlign["TOP"];
+  return {
+    fill: var_core_value_sigB33B.fill ?? {
+      fillType: e.ShapeFillEnum["NoFill"]
+    },
+    isTextBox: true,
+    shapeText: {
+      isHorizontal: var_core_value_sigB33B.isHorizontal,
+      textDirection: var_core_value_sigB33B.isHorizontal ? e.ShapeTextDirection["Horz"] : e.ShapeTextDirection["Vert"],
+      text: "",
+      autoFitType: e.ShapeTextAutoFitType["SpAutoFit"],
+      textWrap: e.ShapeTextWrapType["None"],
+      dataModel: {
+        ha: var_core_value_sig24B9,
+        va: var_core_value_sigE627,
+        doc: l(var_core_value_sig24B9, var_core_value_sigE627, var_core_value_sigB33B.textStyle)
+      }
+    },
+    stroke: var_core_value_sigB33B.stroke ?? {
+      lineStrokeType: e.ShapeLineTypeEnum["NoLine"]
+    }
+  };
+}
+function d(var_core_value_sigEF3E = {}) {
+  return {
+    ...u({
+      fill: var_core_value_sigEF3E.fill,
+      stroke: var_core_value_sigEF3E.stroke,
+      isHorizontal: var_core_value_sigEF3E.isHorizontal ?? true,
+      textStyle: var_core_value_sigEF3E.textStyle,
+      verticalAlign: var_core_value_sigEF3E.verticalAlign ?? t.VerticalAlign["MIDDLE"]
+    }),
+    textRectPadding: {
+      ...c,
+      ...var_core_value_sigEF3E.textRectPadding
+    },
+    formulaBinding: {
+      formula: var_core_value_sigEF3E.formula ?? "",
+      ...(var_core_value_sigEF3E.lastValue ? {
+        lastValue: var_core_value_sigEF3E.lastValue
+      } : null),
+      ...(var_core_value_sigEF3E.numberFormatPattern ? {
+        numberFormat: {
+          pattern: var_core_value_sigEF3E.numberFormatPattern
+        }
+      } : null)
+    }
+  };
+}
+function f(var_core_value_sig273D, var_core_value_sig9A0D) {
+  let var_core_value_sigA319 = d({
+    fill: var_core_value_sig273D.fill,
+    stroke: var_core_value_sig273D.stroke
+  });
+  return {
+    ...var_core_value_sigA319,
+    ...var_core_value_sig273D,
+    isTextBox: true,
+    shapeText: var_core_value_sig273D.shapeText ?? var_core_value_sigA319.shapeText,
+    textRectPadding: var_core_value_sig273D.textRectPadding ?? var_core_value_sigA319.textRectPadding,
+    formulaBinding: var_core_value_sig9A0D
+  };
+}
+const p = 1.5,
+  m = [{
+    id: "black",
+    accent: "#111827",
+    dark: "#000000",
+    filled: "#111827",
+    softFill: "#f3f4f6",
+    softStroke: "#6b7280"
+  }, {
+    id: "blue",
+    accent: "#4472c4",
+    dark: "#1f4e79",
+    filled: "#4472c4",
+    softFill: "#eaf1fb",
+    softStroke: "#8faadc"
+  }, {
+    id: "orange",
+    accent: "#ed7d31",
+    dark: "#c55a11",
+    filled: "#ed7d31",
+    softFill: "#fbe5d6",
+    softStroke: "#f4b183"
+  }, {
+    id: "gray",
+    accent: "#a6a6a6",
+    dark: "#595959",
+    filled: "#808080",
+    softFill: "#f2f2f2",
+    softStroke: "#bfbfbf"
+  }, {
+    id: "yellow",
+    accent: "#f2a900",
+    dark: "#bf9000",
+    filled: "#ffc000",
+    softFill: "#fff8dc",
+    softStroke: "#ffd966"
+  }, {
+    id: "light-blue",
+    accent: "#5b9bd5",
+    dark: "#2e75b6",
+    filled: "#5b9bd5",
+    softFill: "#edf4fb",
+    softStroke: "#9dc3e6"
+  }, {
+    id: "green",
+    accent: "#70ad47",
+    dark: "#548235",
+    filled: "#70ad47",
+    softFill: "#edf7e6",
+    softStroke: "#a9d18e"
+  }];
+function h(var_core_value_sig2D58) {
+  return {
+    fillType: e.ShapeFillEnum["SolidFill"],
+    color: var_core_value_sig2D58,
+    opacity: 1
+  };
+}
+function g(var_core_value_sig223F, var_core_value_sigD749 = 2, var_core_value_sigCFFA = e.ShapeLineDashEnum["Solid"]) {
+  return {
+    lineStrokeType: e.ShapeLineTypeEnum["SolidLine"],
+    color: var_core_value_sig223F,
+    width: var_core_value_sigD749,
+    opacity: 1,
+    dashType: var_core_value_sigCFFA
+  };
+}
+function _(var_core_value_sig58C1, var_core_value_sig5090, var_core_value_sigC368) {
+  return {
+    id: var_core_value_sig58C1,
+    type: "shape",
+    fill: h(var_core_value_sig5090),
+    stroke: g(var_core_value_sigC368)
+  };
+}
+function v(var_core_value_sigAD56, var_core_value_sigDB4A) {
+  return {
+    startArrow: {
+      type: var_core_value_sigAD56,
+      size: e.ShapeArrowSizeEnum["Medium"]
+    },
+    endArrow: {
+      type: var_core_value_sigDB4A,
+      size: e.ShapeArrowSizeEnum["Medium"]
+    }
+  };
+}
+const y = [_("shape-white-black", "#ffffff", "#111827"), _("shape-white-blue", "#ffffff", "#4472c4"), _("shape-white-orange", "#ffffff", "#ed7d31"), _("shape-white-gray", "#ffffff", "#a6a6a6"), _("shape-yellow-orange", "#fff2cc", "#f2a900"), _("shape-blue-blue", "#ddebf7", "#5b9bd5"), _("shape-green-green", "#e2f0d9", "#70ad47"), ...m.map(var_core_value_sig6418 => _("shape-soft-" + var_core_value_sig6418.id, var_core_value_sig6418.softFill, var_core_value_sig6418.softStroke)), ...m.map(var_core_value_sig1896 => _("shape-filled-" + var_core_value_sig1896.id, var_core_value_sig1896.filled, var_core_value_sig1896.dark)), ...m.map(var_core_value_sig0285 => _("shape-dark-" + var_core_value_sig0285.id, var_core_value_sig0285.dark, var_core_value_sig0285.accent))],
+  b = [{
+    id: "line-black-solid",
+    type: "line",
+    group: "solid",
+    stroke: g("#111827", p),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["None"])
+  }, {
+    id: "line-blue-solid",
+    type: "line",
+    group: "solid",
+    stroke: g("#4472c4", p),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["None"])
+  }, {
+    id: "line-orange-solid",
+    type: "line",
+    group: "solid",
+    stroke: g("#ed7d31", p),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["None"])
+  }, {
+    id: "line-gray-solid",
+    type: "line",
+    group: "solid",
+    stroke: g("#a6a6a6", p),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["None"])
+  }, {
+    id: "line-blue-end-arrow",
+    type: "line",
+    group: "solid",
+    stroke: g("#4472c4", p),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["Arrow"])
+  }, {
+    id: "line-green-two-way-arrow",
+    type: "line",
+    group: "solid",
+    stroke: g("#70ad47", p),
+    ln: v(e.ShapeArrowTypeEnum["Arrow"], e.ShapeArrowTypeEnum["Arrow"])
+  }, {
+    id: "line-black-dashed",
+    type: "line",
+    group: "dashed",
+    stroke: g("#111827", p, e.ShapeLineDashEnum["Dash"]),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["None"])
+  }, {
+    id: "line-blue-dashed",
+    type: "line",
+    group: "dashed",
+    stroke: g("#4472c4", p, e.ShapeLineDashEnum["Dash"]),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["None"])
+  }, {
+    id: "line-gray-dashed",
+    type: "line",
+    group: "dashed",
+    stroke: g("#a6a6a6", p, e.ShapeLineDashEnum["Dash"]),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["None"])
+  }, {
+    id: "line-blue-dashed-end-arrow",
+    type: "line",
+    group: "dashed",
+    stroke: g("#4472c4", p, e.ShapeLineDashEnum["Dash"]),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["Arrow"])
+  }, {
+    id: "line-gray-dashed-end-arrow",
+    type: "line",
+    group: "dashed",
+    stroke: g("#a6a6a6", p, e.ShapeLineDashEnum["Dash"]),
+    ln: v(e.ShapeArrowTypeEnum["None"], e.ShapeArrowTypeEnum["Arrow"])
+  }, {
+    id: "line-green-dashed-two-way-arrow",
+    type: "line",
+    group: "dashed",
+    stroke: g("#70ad47", p, e.ShapeLineDashEnum["Dash"]),
+    ln: v(e.ShapeArrowTypeEnum["Arrow"], e.ShapeArrowTypeEnum["Arrow"])
+  }],
+  x = [{
+    id: "text-body-black",
+    type: "text",
+    textStyle: {
+      color: "#111827",
+      fontSize: 18,
+      bold: false
+    }
+  }, {
+    id: "text-title-black",
+    type: "text",
+    textStyle: {
+      color: "#111827",
+      fontSize: 32,
+      bold: true
+    }
+  }, {
+    id: "text-accent-blue",
+    type: "text",
+    textStyle: {
+      color: "#4472c4",
+      fontSize: 28,
+      bold: true
+    }
+  }, {
+    id: "text-accent-orange",
+    type: "text",
+    textStyle: {
+      color: "#ed7d31",
+      fontSize: 28,
+      bold: true
+    }
+  }, {
+    id: "text-note-gray",
+    type: "text",
+    textStyle: {
+      color: "#6b7280",
+      fontSize: 14,
+      bold: false
+    }
+  }],
+  S = [...y, ...b, ...x];
+function C(var_core_value_sig777D) {
+  return S.find(var_core_value_sig429F => var_core_value_sig429F.id === var_core_value_sig777D) ?? null;
+}
+function w(var_core_value_sig3F4C) {
+  return var_core_value_sig3F4C === "shape" ? y : var_core_value_sig3F4C === "line" ? b : x;
+}
+function T(var_core_value_sigD65A) {
+  return var_core_value_sigD65A.shapeType && (0, e.isConnectorShape)(var_core_value_sigD65A.shapeType) ? "line" : "shape";
+}
+function E(var_core_value_sig5A13, var_core_value_sigF593) {
+  var var_core_value_sig3607, var_core_value_sigB512;
+  if (var_core_value_sigF593.type === "text") return null;
+  if (var_core_value_sigF593.type === "shape") return {
+    ...var_core_value_sig5A13,
+    fill: {
+      ...(var_core_value_sig5A13.fill ?? {}),
+      ...var_core_value_sigF593.fill
+    },
+    stroke: {
+      ...(var_core_value_sig5A13.stroke ?? {}),
+      ...var_core_value_sigF593.stroke
+    }
+  };
+  let var_core_value_sigF2E6 = "ln" in var_core_value_sig5A13 ? var_core_value_sig5A13.ln : undefined;
+  return {
+    ...var_core_value_sig5A13,
+    stroke: {
+      ...(var_core_value_sig5A13.stroke ?? {}),
+      ...var_core_value_sigF593.stroke
+    },
+    ln: {
+      ...(var_core_value_sigF2E6 ?? {}),
+      ...var_core_value_sigF593.ln,
+      startArrow: {
+        ...((var_core_value_sigF2E6 == null ? undefined : var_core_value_sigF2E6.startArrow) ?? {}),
+        ...(((var_core_value_sig3607 = var_core_value_sigF593.ln) == null ? undefined : var_core_value_sig3607.startArrow) ?? {})
+      },
+      endArrow: {
+        ...((var_core_value_sigF2E6 == null ? undefined : var_core_value_sigF2E6.endArrow) ?? {}),
+        ...(((var_core_value_sigB512 = var_core_value_sigF593.ln) == null ? undefined : var_core_value_sigB512.endArrow) ?? {})
+      }
+    }
+  };
+}
+function D(var_core_value_sig34C8) {
+  return (var_core_value_sig34C8 ?? "").toLowerCase();
+}
+function O(var_core_value_sigB744) {
+  return (var_core_value_sigB744 == null ? undefined : var_core_value_sigB744.dashType) ?? e.ShapeLineDashEnum["Solid"];
+}
+function k(var_core_value_sigEAE2, var_core_value_sigE68A) {
+  var var_core_value_sig3E68;
+  return (var_core_value_sigEAE2 == null || (var_core_value_sig3E68 = var_core_value_sigEAE2[var_core_value_sigE68A]) == null ? undefined : var_core_value_sig3E68.type) ?? e.ShapeArrowTypeEnum["None"];
+}
+function A(var_core_value_sigF4C5, var_core_value_sig5410) {
+  var var_core_value_sig492F, var_core_value_sig8EA0, var_core_value_sigA6F6, var_core_value_sigCDDA;
+  return D((var_core_value_sig492F = var_core_value_sigF4C5.fill) == null ? undefined : var_core_value_sig492F.color) === D((var_core_value_sig8EA0 = var_core_value_sig5410.fill) == null ? undefined : var_core_value_sig8EA0.color) && D((var_core_value_sigA6F6 = var_core_value_sigF4C5.stroke) == null ? undefined : var_core_value_sigA6F6.color) === D(var_core_value_sig5410.stroke["color"]) && (((var_core_value_sigCDDA = var_core_value_sigF4C5.stroke) == null ? undefined : var_core_value_sigCDDA.width) ?? 0) === var_core_value_sig5410.stroke["width"];
+}
+function j(var_core_value_sigE243, var_core_value_sig74A8) {
+  var var_core_value_sig21B2, var_core_value_sigDE08;
+  let var_core_value_sigACCB = "ln" in var_core_value_sigE243 ? var_core_value_sigE243.ln : undefined;
+  return D((var_core_value_sig21B2 = var_core_value_sigE243.stroke) == null ? undefined : var_core_value_sig21B2.color) === D(var_core_value_sig74A8.stroke["color"]) && (((var_core_value_sigDE08 = var_core_value_sigE243.stroke) == null ? undefined : var_core_value_sigDE08.width) ?? 0) === var_core_value_sig74A8.stroke["width"] && O(var_core_value_sigE243.stroke) === O(var_core_value_sig74A8.stroke) && k(var_core_value_sigACCB, "startArrow") === k(var_core_value_sig74A8.ln, "startArrow") && k(var_core_value_sigACCB, "endArrow") === k(var_core_value_sig74A8.ln, "endArrow");
+}
+function M(var_core_value_sig7F33, var_core_value_sig0C53) {
+  return var_core_value_sig0C53.type === "shape" ? A(var_core_value_sig7F33, var_core_value_sig0C53) : var_core_value_sig0C53.type === "line" && j(var_core_value_sig7F33, var_core_value_sig0C53);
+}
+function N(var_core_value_sigEA04) {
+  var var_core_value_sig7A62;
+  return ((var_core_value_sig7A62 = w(T(var_core_value_sigEA04)).find(var_core_value_sigF62A => M(var_core_value_sigEA04, var_core_value_sigF62A))) == null ? undefined : var_core_value_sig7A62.id) ?? null;
+}
+function P(var_core_value_sig8109, var_core_value_sig7565) {
+  try {
+    return new e["ShapeModel"](var_core_value_sig8109.shapeType ?? e.ShapeTypeEnum["Rect"], "shape-type-conversion", var_core_value_sig8109).cloneShapeDataForShapeType(var_core_value_sig7565);
+  } catch {
+    return null;
+  }
+}
+var F = "@univerjs-pro/shape-editor",
+  I = "1.0.0-insiders.20260907-70fc579";
+function L(var_core_value_sigD4FB, var_core_value_sig3E71) {
+  return (0, n.resolveFormulaResultPresentation)({
+    numberFormat: var_core_value_sigD4FB.numberFormat,
+    lastValue: var_core_value_sigD4FB.lastValue,
+    result: var_core_value_sig3E71
+  });
+}
+function R(var_core_value_sig01B3) {
+  "@babel/helpers - typeof";
+
+  return R = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig8178) {
+    return typeof var_core_value_sig8178;
+  } : function (var_core_value_sigE9ED) {
+    return var_core_value_sigE9ED && typeof Symbol == "function" && var_core_value_sigE9ED.constructor === Symbol && var_core_value_sigE9ED !== Symbol.prototype ? "symbol" : typeof var_core_value_sigE9ED;
+  }, R(var_core_value_sig01B3);
+}
+function z(var_core_value_sig7442, var_core_value_sigDF87) {
+  if (R(var_core_value_sig7442) != "object" || !var_core_value_sig7442) return var_core_value_sig7442;
+  var var_core_value_sig9EE0 = var_core_value_sig7442[Symbol.toPrimitive];
+  if (var_core_value_sig9EE0 !== undefined) {
+    var var_core_value_sigF051 = var_core_value_sig9EE0.call(var_core_value_sig7442, var_core_value_sigDF87 || "default");
+    if (R(var_core_value_sigF051) != "object") return var_core_value_sigF051;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigDF87 === "string" ? String : Number)(var_core_value_sig7442);
+}
+function B(var_core_value_sig0B45) {
+  var var_core_value_sig36F8 = z(var_core_value_sig0B45, "string");
+  return R(var_core_value_sig36F8) == "symbol" ? var_core_value_sig36F8 : var_core_value_sig36F8 + "";
+}
+function V(var_core_value_sig03E1, var_core_value_sigBB57, var_core_value_sig7C4A) {
+  return (var_core_value_sigBB57 = B(var_core_value_sigBB57)) in var_core_value_sig03E1 ? Object.defineProperty(var_core_value_sig03E1, var_core_value_sigBB57, {
+    value: var_core_value_sig7C4A,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig03E1[var_core_value_sigBB57] = var_core_value_sig7C4A, var_core_value_sig03E1;
+}
+function H(var_core_value_sigE799, var_core_value_sigB601) {
+  return function (var_core_value_sigB577, var_core_value_sig9572) {
+    var_core_value_sigB601(var_core_value_sigB577, var_core_value_sig9572, var_core_value_sigE799);
+  };
+}
+function U(var_core_value_sig8B71, var_core_value_sigAEFB, var_core_value_sig826B, var_core_value_sigCF89) {
+  var var_core_value_sig00CB = arguments.length,
+    var_core_value_sig77EE = var_core_value_sig00CB < 3 ? var_core_value_sigAEFB : var_core_value_sigCF89 === null ? var_core_value_sigCF89 = Object.getOwnPropertyDescriptor(var_core_value_sigAEFB, var_core_value_sig826B) : var_core_value_sigCF89,
+    var_core_value_sig9F76;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig77EE = Reflect.decorate(var_core_value_sig8B71, var_core_value_sigAEFB, var_core_value_sig826B, var_core_value_sigCF89);else {
+    for (var var_core_value_sigB008 = var_core_value_sig8B71.length - 1; var_core_value_sigB008 >= 0; var_core_value_sigB008--) (var_core_value_sig9F76 = var_core_value_sig8B71[var_core_value_sigB008]) && (var_core_value_sig77EE = (var_core_value_sig00CB < 3 ? var_core_value_sig9F76(var_core_value_sig77EE) : var_core_value_sig00CB > 3 ? var_core_value_sig9F76(var_core_value_sigAEFB, var_core_value_sig826B, var_core_value_sig77EE) : var_core_value_sig9F76(var_core_value_sigAEFB, var_core_value_sig826B)) || var_core_value_sig77EE);
+  }
+  return var_core_value_sig00CB > 3 && var_core_value_sig77EE && Object.defineProperty(var_core_value_sigAEFB, var_core_value_sig826B, var_core_value_sig77EE), var_core_value_sig77EE;
+}
+let W = function (var_core_value_sig8721) {
+  return var_core_value_sig8721.EMPTY = "empty", var_core_value_sig8721.PENDING = "pending", var_core_value_sig8721.SUCCESS = "success", var_core_value_sig8721.ERROR = "error", var_core_value_sig8721;
+}({});
+function G(var_core_value_sig08BA) {
+  return var_core_value_sig08BA.unitId + "\x00" + var_core_value_sig08BA.subUnitId + "\x00" + var_core_value_sig08BA.shapeId;
+}
+let K = class extends t.Disposable {
+  constructor(var_core_value_sigD873, var_core_value_sigA12B) {
+    super(), this._registerOtherFormulaService = var_core_value_sigD873, this._hostExternalReferenceModel = var_core_value_sigA12B, V(this, "_registrations", new Map()), V(this, "_formulaKeys", new Map()), V(this, "_presentationChanged$", new a["Subject"]()), V(this, "presentationChanged$", this._presentationChanged$["asObservable"]()), this.disposeWithMe(this._registerOtherFormulaService["formulaResult$"].subscribe(var_core_value_sigC9E0 => {
+      for (let var_core_value_sig2AD0 of Object.values(var_core_value_sigC9E0)) for (let var_core_value_sig2AD8 of Object.values(var_core_value_sig2AD0)) for (let var_core_value_sig7524 of var_core_value_sig2AD8) this._updateFormulaResult(var_core_value_sig7524);
+    }));
+  }
+  register(var_core_value_sigF230, var_core_value_sig09B8) {
+    let var_core_value_sig6F91 = G(var_core_value_sigF230),
+      var_core_value_sigF9C7 = this._registrations["get"](var_core_value_sig6F91),
+      var_core_value_sig8895 = this._hostExternalReferenceModel["getRevision"](var_core_value_sigF230.unitId);
+    if (var_core_value_sigF9C7 && var_core_value_sigF9C7.binding["formula"] === var_core_value_sig09B8.formula && var_core_value_sigF9C7.referenceRevision === var_core_value_sig8895 && (var_core_value_sigF230.hostType === undefined || var_core_value_sigF9C7.hostType === var_core_value_sigF230.hostType) && var_core_value_sigF9C7.formulaUnitId === var_core_value_sigF230.unitId && var_core_value_sigF9C7.formulaSubUnitId === var_core_value_sigF230.subUnitId) {
+      var_core_value_sigF9C7.binding = var_core_value_sig09B8;
+      let var_core_value_sig76BA = var_core_value_sigF9C7.formulaId ? this._registerOtherFormulaService["getFormulaValueSync"](var_core_value_sigF9C7.formulaUnitId, var_core_value_sigF9C7.formulaSubUnitId, var_core_value_sigF9C7.formulaId) ?? undefined : undefined;
+      var_core_value_sigF9C7.liveResult = var_core_value_sig76BA, this._setPresentation(var_core_value_sig6F91, L(var_core_value_sig09B8, var_core_value_sig76BA));
+      return;
+    }
+    var_core_value_sigF9C7 != null && var_core_value_sigF9C7.formulaId && (this._registerOtherFormulaService["deleteFormula"](var_core_value_sigF9C7.formulaUnitId, var_core_value_sigF9C7.formulaSubUnitId, [var_core_value_sigF9C7.formulaId]), this._formulaKeys["delete"](var_core_value_sigF9C7.formulaId));
+    let var_core_value_sigC80B = {
+      ...var_core_value_sigF230,
+      hostType: var_core_value_sigF230.hostType ?? (var_core_value_sigF9C7 == null ? undefined : var_core_value_sigF9C7.hostType),
+      binding: var_core_value_sig09B8,
+      referenceRevision: var_core_value_sig8895,
+      formulaSubUnitId: var_core_value_sigF230.subUnitId,
+      formulaUnitId: var_core_value_sigF230.unitId,
+      presentation: L(var_core_value_sig09B8, undefined)
+    };
+    if (this._registrations["set"](var_core_value_sig6F91, var_core_value_sigC80B), !var_core_value_sig09B8.formula["trim"]()) {
+      this._setPresentation(var_core_value_sig6F91, var_core_value_sigC80B.presentation);
+      return;
+    }
+    let var_core_value_sig284F = this._registerOtherFormulaService["registerFormulaWithRange"](var_core_value_sigF230.unitId, var_core_value_sigF230.subUnitId, var_core_value_sig09B8.formula, undefined, {
+      shapeId: var_core_value_sigF230.shapeId
+    }, i.OtherFormulaBizType["SHAPE"], var_core_value_sigF230.shapeId);
+    var_core_value_sigC80B.formulaId = var_core_value_sig284F, this._formulaKeys["set"](var_core_value_sig284F, var_core_value_sig6F91);
+  }
+  update(var_core_value_sigE154, var_core_value_sig4632) {
+    this.register(var_core_value_sigE154, var_core_value_sig4632);
+  }
+  unregister(var_core_value_sig12F2) {
+    let var_core_value_sig2259 = G(var_core_value_sig12F2),
+      var_core_value_sig9E2F = this._registrations["get"](var_core_value_sig2259);
+    var_core_value_sig9E2F && (var_core_value_sig9E2F.formulaId && (this._registerOtherFormulaService["deleteFormula"](var_core_value_sig9E2F.formulaUnitId, var_core_value_sig9E2F.formulaSubUnitId, [var_core_value_sig9E2F.formulaId]), this._formulaKeys["delete"](var_core_value_sig9E2F.formulaId)), this._registrations["delete"](var_core_value_sig2259));
+  }
+  unregisterUnit(var_core_value_sigD082) {
+    for (let var_core_value_sigFBFA of [...this._registrations["values"]()]) var_core_value_sigFBFA.unitId === var_core_value_sigD082 && this.unregister(var_core_value_sigFBFA);
+  }
+  syncUnit(var_core_value_sigDBB7, var_core_value_sigD0A8) {
+    let var_core_value_sigF4B9 = var_core_value_sigD0A8.filter(var_core_value_sigF602 => var_core_value_sigF602.shapeData["formulaBinding"]),
+      var_core_value_sig5CEE = new Set(var_core_value_sigF4B9.map(G));
+    for (let var_core_value_sig1BBD of [...this._registrations["values"]()]) var_core_value_sig1BBD.unitId === var_core_value_sigDBB7 && !var_core_value_sig5CEE.has(G(var_core_value_sig1BBD)) && this.unregister(var_core_value_sig1BBD);
+    for (let var_core_value_sigF704 of var_core_value_sigF4B9) this.register(var_core_value_sigF704, var_core_value_sigF704.shapeData["formulaBinding"]);
+  }
+  getPresentation(var_core_value_sigE92A) {
+    var var_core_value_sig362B;
+    return (var_core_value_sig362B = this._registrations["get"](G(var_core_value_sigE92A))) == null ? undefined : var_core_value_sig362B.presentation;
+  }
+  getResult(var_core_value_sig5CA5) {
+    let var_core_value_sigE90F = this._registrations["get"](G(var_core_value_sig5CA5));
+    return var_core_value_sigE90F ? this._createResult(var_core_value_sigE90F, var_core_value_sigE90F.presentation) : undefined;
+  }
+  getRegisteredFormulas() {
+    let var_core_value_sigEFD4 = [];
+    for (let var_core_value_sig2BCF of this._registrations["values"]()) var_core_value_sig2BCF.hostType !== undefined && var_core_value_sigEFD4.push({
+      identity: {
+        hostType: var_core_value_sig2BCF.hostType,
+        unitId: var_core_value_sig2BCF.unitId,
+        subUnitId: var_core_value_sig2BCF.subUnitId,
+        shapeId: var_core_value_sig2BCF.shapeId
+      },
+      binding: var_core_value_sig2BCF.binding,
+      referenceRevision: var_core_value_sig2BCF.referenceRevision,
+      liveResult: var_core_value_sig2BCF.liveResult,
+      presentation: var_core_value_sig2BCF.presentation
+    });
+    return var_core_value_sigEFD4;
+  }
+  _updateFormulaResult(var_core_value_sig861B) {
+    let var_core_value_sig5237 = this._formulaKeys["get"](var_core_value_sig861B.formulaId),
+      var_core_value_sigBB00 = var_core_value_sig5237 ? this._registrations["get"](var_core_value_sig5237) : undefined;
+    !var_core_value_sig5237 || !var_core_value_sigBB00 || (var_core_value_sigBB00.liveResult = var_core_value_sig861B, this._setPresentation(var_core_value_sig5237, L(var_core_value_sigBB00.binding, var_core_value_sig861B)));
+  }
+  _setPresentation(var_core_value_sig7E54, var_core_value_sig9A8D) {
+    var var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0;
+    let var_core_value_sig4CD2 = this._registrations["get"](var_core_value_sig7E54);
+    if (!var_core_value_sig4CD2 || var_core_value_sig4CD2.presentation["text"] === var_core_value_sig9A8D.text && var_core_value_sig4CD2.presentation["color"] === var_core_value_sig9A8D.color && var_core_value_sig4CD2.presentation["pattern"] === var_core_value_sig9A8D.pattern && ((var_core_value_sigC259 = var_core_value_sig4CD2.presentation["cell"]) == null ? undefined : var_core_value_sigC259.t) === ((var_core_value_sig9C9F = var_core_value_sig9A8D.cell) == null ? undefined : var_core_value_sig9C9F.t) && var_core_value_sig4CD2.presentation["source"] === var_core_value_sig9A8D.source && var_core_value_sig4CD2.presentation["stale"] === var_core_value_sig9A8D.stale && Object.is((var_core_value_sigFDEA = var_core_value_sig4CD2.presentation["cell"]) == null ? undefined : var_core_value_sigFDEA.v, (var_core_value_sig86D0 = var_core_value_sig9A8D.cell) == null ? undefined : var_core_value_sig86D0.v)) return;
+    let var_core_value_sig48CA = var_core_value_sig4CD2.presentation;
+    var_core_value_sig4CD2.presentation = var_core_value_sig9A8D, this._presentationChanged$["next"]({
+      unitId: var_core_value_sig4CD2.unitId,
+      subUnitId: var_core_value_sig4CD2.subUnitId,
+      shapeId: var_core_value_sig4CD2.shapeId,
+      presentation: var_core_value_sig9A8D,
+      previousPresentation: var_core_value_sig48CA,
+      result: this._createResult(var_core_value_sig4CD2, var_core_value_sig9A8D),
+      previousResult: this._createResult(var_core_value_sig4CD2, var_core_value_sig48CA),
+      animationEnabled: var_core_value_sig4CD2.binding["animationEnabled"] !== false && !var_core_value_sig48CA.stale
+    });
+  }
+  _createResult(var_core_value_sig50AF, var_core_value_sigA942) {
+    var var_core_value_sigA621, var_core_value_sigBBFF;
+    let var_core_value_sig8889 = (var_core_value_sigA621 = var_core_value_sigA942.cell) == null ? undefined : var_core_value_sigA621.v;
+    return {
+      status: var_core_value_sig50AF.binding["formula"].trim() ? var_core_value_sigA942.stale || var_core_value_sigA942.cell == null ? "pending" : typeof var_core_value_sig8889 == "string" && var_core_value_sig8889.startsWith("#") ? "error" : "success" : "empty",
+      value: var_core_value_sig8889,
+      valueType: ((var_core_value_sigBBFF = var_core_value_sigA942.cell) == null ? undefined : var_core_value_sigBBFF.t) ?? undefined,
+      displayText: var_core_value_sigA942.text,
+      color: var_core_value_sigA942.color,
+      numberFormat: var_core_value_sigA942.pattern,
+      source: var_core_value_sigA942.source,
+      stale: var_core_value_sigA942.stale
+    };
+  }
+  dispose() {
+    for (let var_core_value_sig0D69 of this._registrations["values"]()) var_core_value_sig0D69.formulaId && this._registerOtherFormulaService["deleteFormula"](var_core_value_sig0D69.formulaUnitId, var_core_value_sig0D69.formulaSubUnitId, [var_core_value_sig0D69.formulaId]);
+    this._registrations["clear"](), this._formulaKeys["clear"](), this._presentationChanged$["complete"](), super.dispose();
+  }
+};
+K = U([H(0, (0, t.Inject)(i.RegisterOtherFormulaService)), H(1, (0, t.Inject)(n.HostExternalReferenceModel))], K);
+let q = class extends t.Disposable {
+  constructor(var_core_value_sig32F8, var_core_value_sig5B67, var_core_value_sig1758) {
+    super(), this._instanceService = var_core_value_sig32F8, this._shapeHostAdapterRegistry = var_core_value_sig5B67, this._shapeFormulaService = var_core_value_sig1758, V(this, "_isDisposed", false), V(this, "_pendingUnitIds", new Set()), V(this, "_adapterBindings", new Map()), V(this, "_syncScheduled", false);
+    let var_core_value_sig4805 = this._shapeHostAdapterRegistry["adapterChanged$"].subscribe(var_core_value_sig480E => {
+      this._handleAdapterChange(var_core_value_sig480E);
+    });
+    this.disposeWithMe(() => var_core_value_sig4805.unsubscribe());
+    for (let var_core_value_sig26DB of this._shapeHostAdapterRegistry["list"]()) this._bindAdapter(var_core_value_sig26DB);
+    this.disposeWithMe(this._instanceService["unitAdded$"].subscribe(({
+      unit: var_core_value_sigF0F9
+    }) => {
+      this._queueSync(var_core_value_sigF0F9.getUnitId());
+    })), this.disposeWithMe(this._instanceService["unitDisposed$"].subscribe(var_core_value_sig1A0F => {
+      this._shapeFormulaService["unregisterUnit"](var_core_value_sig1A0F.getUnitId());
+    }));
+  }
+  _handleAdapterChange(var_core_value_sigE67E) {
+    this._isDisposed || (var_core_value_sigE67E.type === "registered" ? this._bindAdapter(var_core_value_sigE67E.adapter) : this._unbindAdapter(var_core_value_sigE67E.adapter));
+  }
+  _bindAdapter(var_core_value_sig2902) {
+    var var_core_value_sig9989;
+    let var_core_value_sig698E = this._adapterBindings["get"](var_core_value_sig2902.hostType);
+    if ((var_core_value_sig698E == null ? undefined : var_core_value_sig698E.adapter) === var_core_value_sig2902) return;
+    var_core_value_sig698E == null || var_core_value_sig698E.unsubscribe();
+    let var_core_value_sig2809 = (var_core_value_sig9989 = var_core_value_sig2902.shapeChanged$) == null ? undefined : var_core_value_sig9989.subscribe(({
+      unitId: var_core_value_sigFBA4
+    }) => this._queueSync(var_core_value_sigFBA4));
+    this._adapterBindings["set"](var_core_value_sig2902.hostType, {
+      adapter: var_core_value_sig2902,
+      unsubscribe: () => var_core_value_sig2809 == null ? undefined : var_core_value_sig2809.unsubscribe()
+    });
+    for (let var_core_value_sig4383 of this._instanceService["getAllUnitsForType"](var_core_value_sig2902.hostType)) this._syncUnit(var_core_value_sig4383.getUnitId());
+  }
+  _unbindAdapter(var_core_value_sig2DAB) {
+    let var_core_value_sig877E = this._adapterBindings["get"](var_core_value_sig2DAB.hostType);
+    if ((var_core_value_sig877E == null ? undefined : var_core_value_sig877E.adapter) === var_core_value_sig2DAB) {
+      var_core_value_sig877E.unsubscribe(), this._adapterBindings["delete"](var_core_value_sig2DAB.hostType);
+      for (let var_core_value_sig3EEE of this._instanceService["getAllUnitsForType"](var_core_value_sig2DAB.hostType)) this._shapeFormulaService["unregisterUnit"](var_core_value_sig3EEE.getUnitId());
+    }
+  }
+  _queueSync(var_core_value_sig20C8) {
+    this._pendingUnitIds["add"](var_core_value_sig20C8), !this._syncScheduled && (this._syncScheduled = true, queueMicrotask(() => {
+      if (this._syncScheduled = false, this._isDisposed) return;
+      let var_core_value_sig186C = [...this._pendingUnitIds];
+      this._pendingUnitIds["clear"](), var_core_value_sig186C.forEach(var_core_value_sigBC46 => this._syncUnit(var_core_value_sigBC46));
+    }));
+  }
+  _syncUnit(var_core_value_sigE9A7) {
+    var var_core_value_sigBECE, var_core_value_sig1B22;
+    let var_core_value_sig7F72 = this._instanceService["getUnitType"](var_core_value_sigE9A7);
+    if (!(0, e.isShapeHostType)(var_core_value_sig7F72)) return;
+    let var_core_value_sig7B2A = (var_core_value_sigBECE = this._adapterBindings["get"](var_core_value_sig7F72)) == null ? undefined : var_core_value_sigBECE.adapter;
+    var_core_value_sig7B2A && this._shapeFormulaService["syncUnit"](var_core_value_sigE9A7, ((var_core_value_sig1B22 = var_core_value_sig7B2A.listShapesInUnit) == null ? undefined : var_core_value_sig1B22.call(var_core_value_sig7B2A, var_core_value_sigE9A7)) ?? []);
+  }
+  dispose() {
+    this._isDisposed = true;
+    for (let var_core_value_sigD955 of this._adapterBindings["values"]()) var_core_value_sigD955.unsubscribe();
+    this._adapterBindings["clear"](), super.dispose();
+  }
+};
+q = U([H(0, t.IUniverInstanceService), H(1, e.IShapeHostAdapterRegistry), H(2, (0, t.Inject)(K))], q);
+let J = class extends t.Disposable {
+  constructor(var_core_value_sig06CD, var_core_value_sigA5F1, var_core_value_sig97A2, var_core_value_sig07E9) {
+    super(), this._formulaService = var_core_value_sig06CD, this._cacheEligibilityService = var_core_value_sigA5F1, this._shapeHostAdapterRegistry = var_core_value_sig97A2, this.disposeWithMe(var_core_value_sig07E9.registerProvider(this));
+  }
+  collectMutations(var_core_value_sig4F59) {
+    let var_core_value_sigF564 = [];
+    for (let var_core_value_sig48BD of this._formulaService["getRegisteredFormulas"]()) {
+      var var_core_value_sig8CFA;
+      if (!this._cacheEligibilityService["assess"](var_core_value_sig48BD.binding["formula"], var_core_value_sig48BD.liveResult).eligible) continue;
+      let var_core_value_sig3D7D = (0, n.getScalarFormulaResultCell)(var_core_value_sig48BD.liveResult),
+        var_core_value_sig27E5 = var_core_value_sig3D7D ? (0, n.toFormulaLastValue)(var_core_value_sig3D7D) : null;
+      if (!var_core_value_sig27E5 || Y(var_core_value_sig48BD.binding["lastValue"], var_core_value_sig27E5)) continue;
+      let var_core_value_sig8061 = this._shapeHostAdapterRegistry["get"](var_core_value_sig48BD.identity["hostType"]),
+        var_core_value_sig4D4C = var_core_value_sig8061 == null || (var_core_value_sig8CFA = var_core_value_sig8061.createFormulaLastValueMutation) == null ? undefined : var_core_value_sig8CFA.call(var_core_value_sig8061, var_core_value_sig48BD.identity, {
+          expectedFormula: var_core_value_sig48BD.binding["formula"],
+          expectedReferenceRevision: var_core_value_sig48BD.referenceRevision
+        }, var_core_value_sig27E5);
+      var_core_value_sig4D4C && var_core_value_sigF564.push(var_core_value_sig4D4C);
+    }
+    return var_core_value_sigF564;
+  }
+};
+J = U([H(0, (0, t.Inject)(K)), H(1, (0, t.Inject)(n.FormulaCacheEligibilityService)), H(2, e.IShapeHostAdapterRegistry), H(3, (0, t.Inject)(n.FormulaLastValuePersistenceService))], J);
+function Y(var_core_value_sigDBB5, var_core_value_sigCFAC) {
+  return (var_core_value_sigDBB5 == null ? undefined : var_core_value_sigDBB5.v) === var_core_value_sigCFAC.v && (var_core_value_sigDBB5 == null ? undefined : var_core_value_sigDBB5.t) === var_core_value_sigCFAC.t && (var_core_value_sigDBB5 == null ? undefined : var_core_value_sigDBB5.pattern) === var_core_value_sigCFAC.pattern;
+}
+let X = class extends t.Plugin {
+  constructor(var_core_value_sig2E11 = s, var_core_value_sig5B69, var_core_value_sigB098) {
+    super(), this._config = var_core_value_sig2E11, this._injector = var_core_value_sig5B69, this._configService = var_core_value_sigB098;
+    let {
+      ...var_core_value_sigCE71
+    } = (0, t.merge)({}, s, this._config);
+    this._configService["setConfig"](o, var_core_value_sigCE71);
+  }
+  onStarting() {
+    this._injector["add"]([K]), this._injector["add"]([q]), this._injector["add"]([J]);
+  }
+  onReady() {
+    (0, t.touchDependencies)(this._injector, [[q], [J]]);
+  }
+};
+V(X, "type", t.UniverInstanceType["UNIVER_UNKNOWN"]), V(X, "pluginName", "SHAPE_EDITOR_PLUGIN"), V(X, "packageName", F), V(X, "version", I), X = U([(0, t.DependentOn)(r.UniverLicensePlugin, n.UniverProFormulaEnginePlugin, e.UniverShapePlugin), H(1, (0, t.Inject)(t.Injector)), H(2, t.IConfigService)], X);
+function Z(var_core_value_sig237B, var_core_value_sigFEAB) {
+  var var_core_value_sigE347, var_core_value_sig3C5B, var_core_value_sig200B, var_core_value_sig3863;
+  if (!var_core_value_sigFEAB) return var_core_value_sig237B;
+  let var_core_value_sigC97C = var_core_value_sigFEAB.text,
+    var_core_value_sigC4B1 = var_core_value_sig237B.body,
+    var_core_value_sig1BD9 = (var_core_value_sigC4B1 == null || (var_core_value_sigE347 = var_core_value_sigC4B1.textRuns) == null || (var_core_value_sigE347 = var_core_value_sigE347[0]) == null ? undefined : var_core_value_sigE347.ts) ?? ((var_core_value_sig3C5B = var_core_value_sig237B.documentStyle) == null ? undefined : var_core_value_sig3C5B.textStyle) ?? {},
+    var_core_value_sigE43E = var_core_value_sigFEAB.color ? {
+      ...var_core_value_sig1BD9,
+      cl: {
+        rgb: var_core_value_sigFEAB.color
+      }
+    } : var_core_value_sig1BD9,
+    var_core_value_sigA937 = var_core_value_sigC4B1 == null || (var_core_value_sig200B = var_core_value_sigC4B1.paragraphs) == null ? undefined : var_core_value_sig200B[0],
+    var_core_value_sigCAD5 = var_core_value_sigC4B1 == null || (var_core_value_sig3863 = var_core_value_sigC4B1.sectionBreaks) == null ? undefined : var_core_value_sig3863[0],
+    var_core_value_sigE503 = (var_core_value_sigA937 == null ? undefined : var_core_value_sigA937.paragraphId) ?? (0, t.createParagraphId)(new Set());
+  return {
+    ...var_core_value_sig237B,
+    body: {
+      ...var_core_value_sigC4B1,
+      dataStream: var_core_value_sigC97C + "\x0d\x0a",
+      textRuns: var_core_value_sigC97C.length ? [{
+        st: 0,
+        ed: var_core_value_sigC97C.length,
+        ts: var_core_value_sigE43E
+      }] : [],
+      paragraphs: [{
+        ...(var_core_value_sigA937 ?? {}),
+        startIndex: var_core_value_sigC97C.length,
+        paragraphId: var_core_value_sigE503
+      }],
+      sectionBreaks: var_core_value_sigCAD5 ? [{
+        ...var_core_value_sigCAD5,
+        startIndex: var_core_value_sigC97C.length + 1
+      }] : var_core_value_sigC4B1 == null ? undefined : var_core_value_sigC4B1.sectionBreaks
+    }
+  };
+}
+exports.FORMULA_SHAPE_DEFAULT_TEXT_RECT_PADDING = c, exports.FormulaShapeResultStatus = W, exports.SHAPE_EDITOR_PLUGIN_CONFIG_KEY = o, exports.SHAPE_LINE_QUICK_STYLE_PRESETS = b, exports.SHAPE_QUICK_STYLE_PRESETS = y, Object.defineProperty(exports, "ShapeFormulaService", {
+  enumerable: true,
+  get: function () {
+    return K;
+  }
+}), Object.defineProperty(exports, "UniverShapeEditorPlugin", {
+  enumerable: true,
+  get: function () {
+    return X;
+  }
+}), exports.applyQuickStyleToShapeData = E, exports.cloneShapeDataForType = P, exports.createFormulaShapeData = d, exports.createFormulaShapeDataFromShape = f, exports.createShapeFormulaDocument = Z, exports.createShapeTextBoxShapeData = u, exports.getShapeQuickStylePreset = C, exports.getShapeQuickStylePresets = w, exports.getShapeQuickStyleType = T, exports.resolveActiveShapeQuickStylePresetId = N, exports.resolveShapeFormulaPresentation = L;

@@ -1,24 +1,169 @@
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{ISlideDrawingService,PageElementTypeEnum,ReorderSlideElementsCommand,UniverSlidesPlugin,UpdateSlideDrawingCommand,getSlidePermissionValue,normalizeSlideDocumentDataStream,slideDocumentDataToPlainText}from"@univerjs-pro/slides";
-import{DEFAULT_SLIDE_TABLE_THEME_PRESETS,DeleteSlideTableColumnsCommand,DeleteSlideTableRowsCommand,InsertSlideTableColumnsCommand,InsertSlideTableRowsCommand,MergeSlideTableCellsCommand,MoveSlideTableColumnsCommand,MoveSlideTableRowsCommand,RemoveSlideTableCommand,RemoveSlideTableMutation,SLIDE_TABLE_CONTROL_GUTTER,SetSlideTableMutation,SlideTableBorderDashEnum,SlideTableBorderPresetEnum,SlideTableFillTypeEnum,SlideTableModelService,SlideTablePictureFillModeEnum,SlideTableResourceService,SlideTableTextDirectionEnum,SlideTableVerticalAlignEnum,UniverSlidesTablePlugin,UnmergeSlideTableCellsCommand,UpdateSlideTableCommand,buildBorderPresetPatch,buildDefaultSlideTableThemes,buildSlideTableCellTextDataPatch,buildSlideTableControls,buildSlideTableTriggers,canMoveSlideTableColumns,canMoveSlideTableRows,collectSlideTableMergeRanges,expandSlideTableRangeToMergedCells,findSlideTableMergeRange,freezeSlideTableTheme,getDefaultSlideTableBorder,hitTestSlideTableControl,hitTestSlideTableFloatingControl,hitTestSlideTableTrigger,isPointInRect,isSlideTableMultiCellRange,iterateSelectedSlideTableCells,mergeSlideTableCellStyle,mergeSlideTableCells,normalizeSlideTableCellRange,resolveSlideTableCellBoundaryBorder,resolveSlideTableCellRect,resolveSlideTableCellTextMargins,resolveSlideTableRenderModel,resolveSlideTableThemePalette,unmergeSlideTableCells}from"@univerjs-pro/slides-table";
-import{IEditorUIService,ISlideAlignmentGuideService,ISlideClipboardResourceAdapterService,ISlideDrawingStateService,ISlideEmbedFloatingActiveService,ISlideEmbedFocusOwnerService,ISlideEmbedMountService,ISlideTransformerVisibilityService,SLIDES_UI_PLUGIN_CONFIG_KEY,SLIDE_MAIN_VIEWPORT_KEY,SlideHitTestService,SlideInsertService,UniverSlidesUIPlugin,buildDrawingOKey,stripEditorUIDocumentData,withSlideEditPermission}from"@univerjs-pro/slides-ui";
-import{ArrangeTypeEnum,BooleanNumber,ColorKit,CommandType,DEFAULT_STYLES,DependentOn,Disposable,DocumentDataModel,DocumentFlavor,EDITOR_ACTIVATED,FOCUSING_COMMON_DRAWINGS,FOCUSING_SLIDE,HorizontalAlign,ICommandService,IConfigService,IContextService,IImageIoService,IPermissionService,IUniverInstanceService,Inject,Injector,LocaleService,Optional,Plugin,PresetListType,RxDisposable,ThemeService,Tools,UniverInstanceType,VerticalAlign,WrapStrategy,createParagraphId,generateRandomId,merge,toDisposable,touchDependencies}from"@univerjs/core";
-import{CURSOR_TYPE,DocumentSkeleton,DocumentViewModel,Documents,IRenderManagerService,RENDER_CLASS_TYPE,Rect,Transform,UniverRenderEnginePlugin,VERTICAL_ROTATE_ANGLE,Vector2,pxToNum}from"@univerjs/engine-render";
-import{BuiltInUIPart,ComponentManager,ContextMenuGroup,FONT_SIZE_LIST,FontFamilyDropdown,IContextMenuService,IMenuManagerService,IRibbonService,IShortcutService,IUIPartsService,IconManager,KeyCode,MenuItemType,MenuManagerPosition,MetaKeys,connectInjector,useDependency,useObservable}from"@univerjs/ui";
-import{BehaviorSubject,combineLatest,map,merge as mergeLocal,of,startWith}from"rxjs";
-import{AdjustHeightDoubleIcon,AdjustWidthDoubleIcon,AlignBottomIcon,AlignTextBothIcon,AlignTopIcon,AllBorderIcon,BoldIcon,CancelMergeIcon,CheckMarkIcon,DeleteColumnDoubleIcon,DeleteIcon,DeleteRowDoubleIcon,DownBorderDoubleIcon,FontColorDoubleIcon,FontSizeIncreaseIcon,FontSizeReduceIcon,HorizontalBorderDoubleIcon,HorizontallyIcon,InnerBorderDoubleIcon,InsertRowAboveDoubleIcon,InsertRowBelowDoubleIcon,ItalicIcon,LeftBorderDoubleIcon,LeftInsertColumnDoubleIcon,LeftJustifyingIcon,MergeAllIcon,MoreDownIcon,NoBorderIcon,OrderIcon,OuterBorderDoubleIcon,PaintBucketDoubleIcon,PaintIcon,RightBorderDoubleIcon,RightInsertColumnDoubleIcon,RightJustifyingIcon,ShapeBackgroundColorDoubleIcon,StrikethroughIcon,TextIcon,UnderlineIcon,UnorderIcon,UpBorderDoubleIcon,VerticalBorderDoubleIcon,VerticalCenterIcon}from"@univerjs/icons";
-import{FillStyleTabsEditor,keepFloatingToolbarPanelInteraction}from"@univerjs-pro/shape-editor-ui";
-import{Button,Checkbox,ColorPicker,Dropdown,InputNumber,Select,Separator,Tooltip,borderClassName,clsx}from"@univerjs/design";
-import{BulletListTypePicker,OrderListTypePicker,convertBodyToHtml,convertClipboardHtmlToDocumentData,removeClipboardHtmlImages}from"@univerjs/docs-ui";
-import{useCallback,useEffect,useMemo,useRef,useState}from"react";
-import{getImageSize}from"@univerjs/drawing";
-import{Fragment,jsx,jsxs}from"react/jsx-runtime";
-import{extractClipboardHtmlImageFiles,extractClipboardImageFiles,extractClipboardTextImageFile,isClipboardTextImage,normalizeClipboardImageFile}from"@univerjs/drawing-ui";
-import{UnitAction}from"@univerjs/protocol";
-import{parseHtmlTableClipboard}from"@univerjs-pro/docs-table";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { ISlideDrawingService, PageElementTypeEnum, ReorderSlideElementsCommand, UniverSlidesPlugin, UpdateSlideDrawingCommand, getSlidePermissionValue, normalizeSlideDocumentDataStream, slideDocumentDataToPlainText } from "@univerjs-pro/slides";
+import { DEFAULT_SLIDE_TABLE_THEME_PRESETS, DeleteSlideTableColumnsCommand, DeleteSlideTableRowsCommand, InsertSlideTableColumnsCommand, InsertSlideTableRowsCommand, MergeSlideTableCellsCommand, MoveSlideTableColumnsCommand, MoveSlideTableRowsCommand, RemoveSlideTableCommand, RemoveSlideTableMutation, SLIDE_TABLE_CONTROL_GUTTER, SetSlideTableMutation, SlideTableBorderDashEnum, SlideTableBorderPresetEnum, SlideTableFillTypeEnum, SlideTableModelService, SlideTablePictureFillModeEnum, SlideTableResourceService, SlideTableTextDirectionEnum, SlideTableVerticalAlignEnum, UniverSlidesTablePlugin, UnmergeSlideTableCellsCommand, UpdateSlideTableCommand, buildBorderPresetPatch, buildDefaultSlideTableThemes, buildSlideTableCellTextDataPatch, buildSlideTableControls, buildSlideTableTriggers, canMoveSlideTableColumns, canMoveSlideTableRows, collectSlideTableMergeRanges, expandSlideTableRangeToMergedCells, findSlideTableMergeRange, freezeSlideTableTheme, getDefaultSlideTableBorder, hitTestSlideTableControl, hitTestSlideTableFloatingControl, hitTestSlideTableTrigger, isPointInRect, isSlideTableMultiCellRange, iterateSelectedSlideTableCells, mergeSlideTableCellStyle, mergeSlideTableCells, normalizeSlideTableCellRange, resolveSlideTableCellBoundaryBorder, resolveSlideTableCellRect, resolveSlideTableCellTextMargins, resolveSlideTableRenderModel, resolveSlideTableThemePalette, unmergeSlideTableCells } from "@univerjs-pro/slides-table";
+import { IEditorUIService, ISlideAlignmentGuideService, ISlideClipboardResourceAdapterService, ISlideDrawingStateService, ISlideEmbedFloatingActiveService, ISlideEmbedFocusOwnerService, ISlideEmbedMountService, ISlideTransformerVisibilityService, SLIDES_UI_PLUGIN_CONFIG_KEY, SLIDE_MAIN_VIEWPORT_KEY, SlideHitTestService, SlideInsertService, UniverSlidesUIPlugin, buildDrawingOKey, stripEditorUIDocumentData, withSlideEditPermission } from "@univerjs-pro/slides-ui";
+import { ArrangeTypeEnum, BooleanNumber, ColorKit, CommandType, DEFAULT_STYLES, DependentOn, Disposable, DocumentDataModel, DocumentFlavor, EDITOR_ACTIVATED, FOCUSING_COMMON_DRAWINGS, FOCUSING_SLIDE, HorizontalAlign, ICommandService, IConfigService, IContextService, IImageIoService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, Optional, Plugin, PresetListType, RxDisposable, ThemeService, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createParagraphId, generateRandomId, merge, toDisposable, touchDependencies } from "@univerjs/core";
+import { CURSOR_TYPE, DocumentSkeleton, DocumentViewModel, Documents, IRenderManagerService, RENDER_CLASS_TYPE, Rect, Transform, UniverRenderEnginePlugin, VERTICAL_ROTATE_ANGLE, Vector2, pxToNum } from "@univerjs/engine-render";
+import { BuiltInUIPart, ComponentManager, ContextMenuGroup, FONT_SIZE_LIST, FontFamilyDropdown, IContextMenuService, IMenuManagerService, IRibbonService, IShortcutService, IUIPartsService, IconManager, KeyCode, MenuItemType, MenuManagerPosition, MetaKeys, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { BehaviorSubject, combineLatest, map, merge as mergeLocal, of, startWith } from "rxjs";
+import { AdjustHeightDoubleIcon, AdjustWidthDoubleIcon, AlignBottomIcon, AlignTextBothIcon, AlignTopIcon, AllBorderIcon, BoldIcon, CancelMergeIcon, CheckMarkIcon, DeleteColumnDoubleIcon, DeleteIcon, DeleteRowDoubleIcon, DownBorderDoubleIcon, FontColorDoubleIcon, FontSizeIncreaseIcon, FontSizeReduceIcon, HorizontalBorderDoubleIcon, HorizontallyIcon, InnerBorderDoubleIcon, InsertRowAboveDoubleIcon, InsertRowBelowDoubleIcon, ItalicIcon, LeftBorderDoubleIcon, LeftInsertColumnDoubleIcon, LeftJustifyingIcon, MergeAllIcon, MoreDownIcon, NoBorderIcon, OrderIcon, OuterBorderDoubleIcon, PaintBucketDoubleIcon, PaintIcon, RightBorderDoubleIcon, RightInsertColumnDoubleIcon, RightJustifyingIcon, ShapeBackgroundColorDoubleIcon, StrikethroughIcon, TextIcon, UnderlineIcon, UnorderIcon, UpBorderDoubleIcon, VerticalBorderDoubleIcon, VerticalCenterIcon } from "@univerjs/icons";
+import { FillStyleTabsEditor, keepFloatingToolbarPanelInteraction } from "@univerjs-pro/shape-editor-ui";
+import { Button, Checkbox, ColorPicker, Dropdown, InputNumber, Select, Separator, Tooltip, borderClassName, clsx } from "@univerjs/design";
+import { BulletListTypePicker, OrderListTypePicker, convertBodyToHtml, convertClipboardHtmlToDocumentData, removeClipboardHtmlImages } from "@univerjs/docs-ui";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getImageSize } from "@univerjs/drawing";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
+import { extractClipboardHtmlImageFiles, extractClipboardImageFiles, extractClipboardTextImageFile, isClipboardTextImage, normalizeClipboardImageFile } from "@univerjs/drawing-ui";
+import { UnitAction } from "@univerjs/protocol";
+import { parseHtmlTableClipboard } from "@univerjs-pro/docs-table";
 import { J } from "./slides-table-ui-slide-table-selection-context.js";
 import { q } from "./slides-table-ui-slide-table-context-menu-actions.js";
 import { Gr, Hr, Kr, Ur, Vr, Wr } from "./internal-core-endo.js";
-function Dr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463039,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463041=J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463041||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038)return null;let{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,elementId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,range:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463041;switch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463039){case q.InsertRowAbove:return{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertRows,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,elementId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,rowIndex:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startRow,count:Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)}};case q.InsertRowBelow:return{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertRows,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,elementId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,rowIndex:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endRow+1,count:Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)}};case q.InsertColumnLeft:return{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertColumns,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,elementId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,columnIndex:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startColumn,count:Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)}};case q.InsertColumnRight:return{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertColumns,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,elementId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,columnIndex:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endColumn+1,count:Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)}};case q.DeleteRows:return Ur(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038)?{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.deleteRows,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,startRow:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startRow,endRow:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endRow}}:null;case q.DeleteColumns:return Wr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038)?{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.deleteColumns,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,startColumn:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startColumn,endColumn:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endColumn}}:null;case q.MergeCells:return Vr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037)?{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.mergeCells,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,range:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046}}:null;case q.UnmergeCells:return Hr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038)?{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.unmergeCells,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,range:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046}}:null;case q.DistributeRows:return Jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.updateTable,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046,"row");case q.DistributeColumns:return Jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.updateTable,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046,"column");}}function Or(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463058,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463059){let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463059?normalizeSlideTableCellRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463059):{startRow:0,endRow:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.rows["length"]-1,startColumn:0,endColumn:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.columns["length"]-1};if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463058==="row"){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582=Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.rows),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56=Math.max(0,Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.startRow,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582.length-1)),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D57=Math.max(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56,Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.endRow,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582.length-1)),var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582.slice(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56,var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D57+1),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58=var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7.reduce((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670)=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669+(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670.height??24),0)/Math.max(1,var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7.length);for(let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671=var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56;var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671<=var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D57;var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671+=1)var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671].height=var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58;return{rows:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582};}let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060=Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.columns),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147=Math.max(0,Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.startColumn,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060.length-1)),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D148=Math.max(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147,Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.endColumn,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060.length-1)),var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A31=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060.slice(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147,var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D148+1),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D149=var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A31.reduce((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584)=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584.width,0)/Math.max(1,var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A31.length);for(let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585=var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147;var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585<=var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D148;var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585+=1)var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585].width=var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D149;return{columns:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060};}function Jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463194,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463195,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463196,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463197,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463198,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463199){return!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193||!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463199==="row"?Gr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463194):Kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463194))?null:{commandId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463195,params:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463196,tableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463197,patch:Or(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463199,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463198)}};}function Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207.endRow-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207.startRow+1;}function Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463209){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463209.endColumn-var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463209.startColumn+1;}
-
+function Dr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463039, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463041 = J(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038);
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463041 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038) return null;
+  let {
+    unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+    subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,
+    elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,
+    tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+    range: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046
+  } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463041;
+  switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463039) {
+    case q.InsertRowAbove:
+      return {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertRows,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,
+          elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          rowIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startRow,
+          count: Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)
+        }
+      };
+    case q.InsertRowBelow:
+      return {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertRows,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,
+          elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          rowIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endRow + 1,
+          count: Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)
+        }
+      };
+    case q.InsertColumnLeft:
+      return {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertColumns,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,
+          elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          columnIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startColumn,
+          count: Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)
+        }
+      };
+    case q.InsertColumnRight:
+      return {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.insertColumns,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463043,
+          elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463044,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          columnIndex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endColumn + 1,
+          count: Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046)
+        }
+      };
+    case q.DeleteRows:
+      return Ur(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038) ? {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.deleteRows,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          startRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startRow,
+          endRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endRow
+        }
+      } : null;
+    case q.DeleteColumns:
+      return Wr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038) ? {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.deleteColumns,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          startColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.startColumn,
+          endColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046.endColumn
+        }
+      } : null;
+    case q.MergeCells:
+      return Vr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037) ? {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.mergeCells,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          range: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046
+        }
+      } : null;
+    case q.UnmergeCells:
+      return Hr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038) ? {
+        commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.unmergeCells,
+        params: {
+          unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042,
+          tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045,
+          range: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046
+        }
+      } : null;
+    case q.DistributeRows:
+      return Jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.updateTable, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046, "row");
+    case q.DistributeColumns:
+      return Jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463037, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463038, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463040.updateTable, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463042, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463045, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463046, "column");
+  }
+}
+function Or(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463058, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463059) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463059 ? normalizeSlideTableCellRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463059) : {
+    startRow: 0,
+    endRow: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.rows["length"] - 1,
+    startColumn: 0,
+    endColumn: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.columns["length"] - 1
+  };
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463058 === "row") {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.rows),
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56 = Math.max(0, Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.startRow, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582.length - 1)),
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D57 = Math.max(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56, Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.endRow, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582.length - 1)),
+      var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582.slice(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D57 + 1),
+      var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7.reduce((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4669 + (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4670.height ?? 24), 0) / Math.max(1, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A7.length);
+    for (let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671 = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D56; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671 <= var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D57; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671 += 1) var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4671].height = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D58;
+    return {
+      rows: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46582
+    };
+  }
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060 = Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463057.columns),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147 = Math.max(0, Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.startColumn, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060.length - 1)),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D148 = Math.max(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147, Math.min(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB42.endColumn, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060.length - 1)),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A31 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060.slice(var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D148 + 1),
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D149 = var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A31.reduce((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46583 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46584.width, 0) / Math.max(1, var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A31.length);
+  for (let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585 = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D147; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585 <= var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D148; var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585 += 1) var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46585].width = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D149;
+  return {
+    columns: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463060
+  };
+}
+function Jr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463194, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463195, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463196, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463197, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463198, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463199) {
+  return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193 || !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463199 === "row" ? Gr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463194) : Kr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463194)) ? null : {
+    commandId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463195,
+    params: {
+      unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463196,
+      tableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463197,
+      patch: Or(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463193, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463199, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463198)
+    }
+  };
+}
+function Yr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207.endRow - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463207.startRow + 1;
+}
+function Xr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463209) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463209.endColumn - var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463209.startColumn + 1;
+}
 export { Dr as buildSlideTableContextMenuCommand };

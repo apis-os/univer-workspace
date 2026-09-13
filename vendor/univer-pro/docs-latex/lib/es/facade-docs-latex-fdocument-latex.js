@@ -1,8 +1,121 @@
-import{DOCS_LATEX_CUSTOM_RANGE_KIND,DocsLatexModel,InsertDocsLatexFormulaCommand,RemoveDocsLatexFormulaCommand,ReplaceDocsLatexFormulaWithTextCommand,UpdateDocsLatexFormulaCommand,getFormulaLatexFromRange,isDocsLatexFormulaRange,normalizeDocsLatexFormulaConfig}from"@univerjs-pro/docs-latex";
-import{CustomRangeType,ICommandService,Inject,RichTextBuilder,RichTextValue,generateRandomId,getParagraphContentStartOffset}from"@univerjs/core";
-import{FDocument,FDocumentParagraph,FDocumentTextRange}from"@univerjs/docs/facade";
-function y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180){"@babel/helpers - typeof";return y=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468){return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468;}:function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610&&typeof Symbol=="function"&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610.constructor===Symbol&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610!==Symbol.prototype?"symbol":typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610;},y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180);}function b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183){if(y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182)!="object"||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182)return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182;var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182[Symbol.toPrimitive];if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184!==undefined){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183||"default");if(y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185)!="object")return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185;throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");}return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183==="string"?String:Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182);}function x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191=b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190,"string");return y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191)=="symbol"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191+"";}function S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196){return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195=x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195))in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194?Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195,{value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196,enumerable:true,configurable:true,writable:true}):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194;}let T=class{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620){this._document=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616,this._rangeId=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617,this._segmentId=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618,this._commandService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619,this._model=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620,S(this,"_unitId",undefined),this._unitId=this._document["getId"]();}getId(){return this._rangeId;}getRange(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626=this._getCustomRange();return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626?{endOffset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.endIndex+1,rangeId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.rangeId,segmentId:this._segmentId,startOffset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.startIndex}:null;}getLatex(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628=this._getCustomRange(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629=this._getBody().dataStream;return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628?getFormulaLatexFromRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629):"";}getConfig(){return{...normalizeDocsLatexFormulaConfig(this._model["getFormula"](this._unitId,this._rangeId)),latex:this.getLatex()};}describe(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632=this.getRange();if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632)return null;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633=this._getContainingParagraph(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634=this._getBody(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633?getParagraphContentStartOffset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.startOffset,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633.startIndex)??var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.endOffset;return{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632,config:this.getConfig(),context:{after:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.dataStream["slice"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.endOffset,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636),before:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.dataStream["slice"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.startOffset)},latex:this.getLatex(),paragraphId:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633.paragraphId)??null,type:"latex"};}update(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642){return this._commandService["syncExecuteCommand"](UpdateDocsLatexFormulaCommand.id,{latex:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642.latex,properties:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642.properties,rangeId:this._rangeId,segmentId:this._segmentId,unitId:this._unitId});}remove(){return this._commandService["syncExecuteCommand"](RemoveDocsLatexFormulaCommand.id,{rangeId:this._rangeId,segmentId:this._segmentId,unitId:this._unitId});}replaceWithText(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644){return this._commandService["syncExecuteCommand"](ReplaceDocsLatexFormulaWithTextCommand.id,{rangeId:this._rangeId,segmentId:this._segmentId,text:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644,unitId:this._unitId});}_getBody(){return this._document["getBody"](this._segmentId);}_getCustomRange(){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646;return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646=this._getBody().customRanges)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.rangeId===this._rangeId&&isDocsLatexFormulaRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46));}_getContainingParagraph(){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649=this._getCustomRange();if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649)return;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650=this._getBody();return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650.paragraphs)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461=>getParagraphContentStartOffset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461)<=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649.startIndex&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649.endIndex<var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461.startIndex);}};
+import { DOCS_LATEX_CUSTOM_RANGE_KIND, DocsLatexModel, InsertDocsLatexFormulaCommand, RemoveDocsLatexFormulaCommand, ReplaceDocsLatexFormulaWithTextCommand, UpdateDocsLatexFormulaCommand, getFormulaLatexFromRange, isDocsLatexFormulaRange, normalizeDocsLatexFormulaConfig } from "@univerjs-pro/docs-latex";
+import { CustomRangeType, ICommandService, Inject, RichTextBuilder, RichTextValue, generateRandomId, getParagraphContentStartOffset } from "@univerjs/core";
+import { FDocument, FDocumentParagraph, FDocumentTextRange } from "@univerjs/docs/facade";
+function y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180) {
+  "@babel/helpers - typeof";
 
+  return y = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610;
+  }, y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180);
+}
+function b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183) {
+  if (y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46184.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183 || "default");
+    if (y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46183 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46182);
+}
+function x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 = b(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190, "string");
+  return y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46191 + "";
+}
+function S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195 = x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46194;
+}
+let T = class {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620) {
+    this._document = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616, this._rangeId = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617, this._segmentId = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619, this._model = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620, S(this, "_unitId", undefined), this._unitId = this._document["getId"]();
+  }
+  getId() {
+    return this._rangeId;
+  }
+  getRange() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 = this._getCustomRange();
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 ? {
+      endOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.endIndex + 1,
+      rangeId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.rangeId,
+      segmentId: this._segmentId,
+      startOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.startIndex
+    } : null;
+  }
+  getLatex() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 = this._getCustomRange(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 = this._getBody().dataStream;
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 ? getFormulaLatexFromRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629) : "";
+  }
+  getConfig() {
+    return {
+      ...normalizeDocsLatexFormulaConfig(this._model["getFormula"](this._unitId, this._rangeId)),
+      latex: this.getLatex()
+    };
+  }
+  describe() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632 = this.getRange();
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632) return null;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 = this._getContainingParagraph(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634 = this._getBody(),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 ? getParagraphContentStartOffset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.startOffset,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633.startIndex) ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.endOffset;
+    return {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632,
+      config: this.getConfig(),
+      context: {
+        after: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.dataStream["slice"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.endOffset, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636),
+        before: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4634.dataStream["slice"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4635, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4632.startOffset)
+      },
+      latex: this.getLatex(),
+      paragraphId: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4633.paragraphId) ?? null,
+      type: "latex"
+    };
+  }
+  update(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642) {
+    return this._commandService["syncExecuteCommand"](UpdateDocsLatexFormulaCommand.id, {
+      latex: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642.latex,
+      properties: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4642.properties,
+      rangeId: this._rangeId,
+      segmentId: this._segmentId,
+      unitId: this._unitId
+    });
+  }
+  remove() {
+    return this._commandService["syncExecuteCommand"](RemoveDocsLatexFormulaCommand.id, {
+      rangeId: this._rangeId,
+      segmentId: this._segmentId,
+      unitId: this._unitId
+    });
+  }
+  replaceWithText(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644) {
+    return this._commandService["syncExecuteCommand"](ReplaceDocsLatexFormulaWithTextCommand.id, {
+      rangeId: this._rangeId,
+      segmentId: this._segmentId,
+      text: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4644,
+      unitId: this._unitId
+    });
+  }
+  _getBody() {
+    return this._document["getBody"](this._segmentId);
+  }
+  _getCustomRange() {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646;
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646 = this._getBody().customRanges) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4646.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.rangeId === this._rangeId && isDocsLatexFormulaRange(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46));
+  }
+  _getContainingParagraph() {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649 = this._getCustomRange();
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649) return;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650 = this._getBody();
+    return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650.paragraphs) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4648.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461 => getParagraphContentStartOffset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4650, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461) <= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649.startIndex && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4649.endIndex < var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461.startIndex);
+  }
+};
 export { T as FDocumentLatex };
-
 export { S };

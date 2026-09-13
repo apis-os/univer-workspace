@@ -1,13 +1,39 @@
-import{BooleanNumber,BuildTextUtils,CommandType,DataStreamTreeTokenType,DependentOn,Disposable,DocumentBlockRangeType,ICommandService,IConfigService,IResourceManagerService,IUniverInstanceService,Inject,Injector,JSONX,Plugin,TextX,UniverInstanceType,containsInteriorInsertionOffset,containsStreamIndex,createParagraphId,generateRandomId,getBlockRangeInterval,getBodySliceForTextXAction,getParagraphContentStartOffset,getParagraphContentStartOffsets,getParagraphFollowingBlockOffset,getSingleDataStreamChange,intersectsOperationalIntervals,merge,shiftExclusiveRangeOnDelete,shiftExclusiveRangeOnInsert,shiftInclusiveRangeOnDelete,shiftInclusiveRangeOnInsert}from"@univerjs/core";
-import{Subject}from"rxjs";
-import{DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin,getContentInsertRange,isHeaderFooterSelection}from"@univerjs/docs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, BuildTextUtils, CommandType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentBlockRangeType, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, UniverInstanceType, containsInteriorInsertionOffset, containsStreamIndex, createParagraphId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getParagraphContentStartOffset, getParagraphContentStartOffsets, getParagraphFollowingBlockOffset, getSingleDataStreamChange, intersectsOperationalIntervals, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { Subject } from "rxjs";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange, isHeaderFooterSelection } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { y } from "./docs-code-metadata-resource.js";
 import { w } from "./docs-code-model.js";
 import { B, H, U, V, at, ct, ot, st } from "./docs-code-insert-below.js";
 import { T, Te } from "./docs-code-config.js";
-const X="DOC_CODE_PLUGIN";const xt={};let Q=class extends Disposable{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153){super(),this._resourceManagerService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152,this._docsCodeModel=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153,this._initResource();}_initResource(){this.disposeWithMe(this._resourceManagerService["registerPluginResource"]({pluginName:X,businesses:[UniverInstanceType.UNIVER_DOC],toJson:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468=>JSON.stringify(this._docsCodeModel["serialize"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468)),parseJson:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469=>y(JSON.parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469)),onLoad:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611)=>this._docsCodeModel["deserialize"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611),onUnLoad:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612=>this._docsCodeModel["removeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612)}));}};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46752=class extends Plugin{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46156=xt,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159){super(),this._config=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46156,this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157,this._commandService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158,this._configService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159;let{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160}=merge({},xt,this._config);this._configService["setConfig"]("docs-code.config",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160);}onStarting(){this._injector["add"]([w]),this._injector["add"]([Q]),this._injector["get"](w),this._injector["get"](Q),[B,at,st,V,H,ct,U,ot,Te,T].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613=>this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613)));}};
-
+const X = "DOC_CODE_PLUGIN";
+const xt = {};
+let Q = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153) {
+    super(), this._resourceManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152, this._docsCodeModel = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153, this._initResource();
+  }
+  _initResource() {
+    this.disposeWithMe(this._resourceManagerService["registerPluginResource"]({
+      pluginName: X,
+      businesses: [UniverInstanceType.UNIVER_DOC],
+      toJson: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468 => JSON.stringify(this._docsCodeModel["serialize"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468)),
+      parseJson: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469 => y(JSON.parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469)),
+      onLoad: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611) => this._docsCodeModel["deserialize"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611),
+      onUnLoad: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612 => this._docsCodeModel["removeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612)
+    }));
+  }
+};
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46752 = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46156 = xt, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46156, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46157, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46158, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46159;
+    let {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160
+    } = merge({}, xt, this._config);
+    this._configService["setConfig"]("docs-code.config", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46160);
+  }
+  onStarting() {
+    this._injector["add"]([w]), this._injector["add"]([Q]), this._injector["get"](w), this._injector["get"](Q), [B, at, st, V, H, ct, U, ot, Te, T].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613 => this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613)));
+  }
+};
 export { X as DOCS_CODE_PLUGIN, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46752 as UniverDocsCodePlugin };
-
 export { Q };

@@ -1,52 +1,45 @@
 const e = {
   "collaboration-client": {
-    collabClient: { tooltip: { reconnect: "Klik untuk Menyambung Kembali" } },
+    collabClient: {
+      tooltip: {
+        reconnect: "Klik untuk Menyambung Kembali"
+      }
+    },
     collabStatus: {
       fetchMiss: "Menyinkronkan data server...",
       conflict: "Konflik edit",
       notCollab: "File lokal",
       synced: "Tersinkron",
       syncing: "Menyinkronkan...",
-      offline: "Offline,\x20edit\x20akan\x20disimpan\x20secara\x20lokal",
+      offline: "Offline,\x20edit\x20akan\x20disimpan\x20secara\x20lokal"
     },
     session: {
       "connection-failed": "Koneksi gagal. Harap periksa jaringan Anda.",
       "will-retry": "Koneksi gagal. Kami akan mencoba lagi sebentar lagi.",
-      "room-full":
-        "Dokumen\x20telah\x20mencapai\x20batas\x20kolaborasinya.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-      "join-failed":
-        "Gagal bergabung dalam kolaborasi. Harap coba lagi nanti. Edit Anda akan disimpan secara lokal.",
-      "room-not-exists":
-        "Gagal bergabung dalam kolaborasi. Edit Anda akan disimpan secara lokal.",
-      "room-permission-denied":
-        "Tidak\x20ada\x20izin\x20kolaborasi.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
-      "room-cnt-exceeds":
-        "Jumlah dokumen kolaboratif melebihi batas. Edit Anda akan disimpan secara lokal.",
-      "collaboration-timeout":
-        "Server\x20tidak\x20merespons\x20permintaan\x20kolaborasi\x20Anda.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
+      "room-full": "Dokumen\x20telah\x20mencapai\x20batas\x20kolaborasinya.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
+      "join-failed": "Gagal bergabung dalam kolaborasi. Harap coba lagi nanti. Edit Anda akan disimpan secara lokal.",
+      "room-not-exists": "Gagal bergabung dalam kolaborasi. Edit Anda akan disimpan secara lokal.",
+      "room-permission-denied": "Tidak\x20ada\x20izin\x20kolaborasi.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal.",
+      "room-cnt-exceeds": "Jumlah dokumen kolaboratif melebihi batas. Edit Anda akan disimpan secara lokal.",
+      "collaboration-timeout": "Server\x20tidak\x20merespons\x20permintaan\x20kolaborasi\x20Anda.\x20Edit\x20Anda\x20akan\x20disimpan\x20secara\x20lokal."
     },
     conflict: {
       title: "Konflik Kolaborasi",
-      content:
-        "Ada\x20konflik\x20antara\x20salinan\x20lokal\x20Anda\x20dan\x20salinan\x20di\x20server.\x20Harap\x20simpan\x20edit\x20lokal\x20Anda,\x20karena\x20akan\x20hilang\x20saat\x20Anda\x20memuat\x20ulang\x20halaman.",
+      content: "Ada\x20konflik\x20antara\x20salinan\x20lokal\x20Anda\x20dan\x20salinan\x20di\x20server.\x20Harap\x20simpan\x20edit\x20lokal\x20Anda,\x20karena\x20akan\x20hilang\x20saat\x20Anda\x20memuat\x20ulang\x20halaman."
     },
     permission: {
       title: "Kesalahan\x20Autentikasi",
-      content:
-        "Tindakan Anda bertentangan dengan izin server. Harap simpan edit lokal Anda di tempat lain karena akan dibuang setelah menyegarkan halaman.",
+      content: "Tindakan Anda bertentangan dengan izin server. Harap simpan edit lokal Anda di tempat lain karena akan dibuang setelah menyegarkan halaman."
     },
     collaboration: {
       "single-unit": {
-        warning:
-          "Anda membuka file yang sama di tab lain. Jika terjadi kehilangan data, Anda tidak dapat mengedit di tab ini.",
+        warning: "Anda membuka file yang sama di tab lain. Jika terjadi kehilangan data, Anda tidak dapat mengedit di tab ini."
       },
-      closeRoom:
-        "Hak\x20edit\x20dicabut\x20karena\x20ruang\x20kolaboratif\x20ditutup.",
+      closeRoom: "Hak\x20edit\x20dicabut\x20karena\x20ruang\x20kolaboratif\x20ditutup."
     },
     auth: {
-      needGotoLoginAlert:
-        "Login\x20Anda\x20telah\x20kedaluwarsa,\x20klik\x20OK\x20untuk\x20login\x20ulang,\x20klik\x20Batal\x20untuk\x20menyimpan\x20edit\x20lokal\x20Anda.",
-    },
-  },
+      needGotoLoginAlert: "Login\x20Anda\x20telah\x20kedaluwarsa,\x20klik\x20OK\x20untuk\x20login\x20ulang,\x20klik\x20Batal\x20untuk\x20menyimpan\x20edit\x20lokal\x20Anda."
+    }
+  }
 };
 export { e as default };

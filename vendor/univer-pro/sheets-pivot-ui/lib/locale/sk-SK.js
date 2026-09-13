@@ -50,7 +50,7 @@ const e = {
       next: "Nasledujúca",
       other: "Iné",
       ok: "OK",
-      cancel: "Zrušiť",
+      cancel: "Zrušiť"
     },
     valueFilter: {
       title: "Filtre hodnôt",
@@ -72,7 +72,7 @@ const e = {
       bottomPercent: "Najnižšie percento",
       clear: "Vymazať filter",
       ok: "OK",
-      cancel: "Zrušiť",
+      cancel: "Zrušiť"
     },
     dateGroup: {
       title: "Zoskupenie d?t",
@@ -86,7 +86,7 @@ const e = {
       date: "Deň",
       hour: "Hodina",
       minute: "Minúta",
-      hourMinute: "Hodina-Minúta",
+      hourMinute: "Hodina-Minúta"
     },
     dialog: {
       fieldName: "Názov\x20poľa",
@@ -102,7 +102,7 @@ const e = {
         clearFilter: "Vyčistiť filter",
         blank: "(Prázdne)",
         cancel: "Zrušiť",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "Všeobecný",
@@ -114,20 +114,15 @@ const e = {
         formatTypes: "Typy formátu",
         confirm: "OK",
         cancel: "Zrušiť",
-        generalDesc:
-          "Všeobecný\x20formát\x20neobsahuje\x20žiadny\x20špecifický\x20formát\x20čísla.",
-        accountingDesc:
-          "Účtovnícky formát zarovnáva symboly meny a desatinné čiarky v stĺpci.",
-        currencyDesc:
-          "Formát meny sa používa pre všeobecné peňažné hodnoty, účtovnícky formát zarovnáva desatinné čiarky v stĺpci hodnôt.",
-        dateDesc:
-          "Formát dátumu zobrazuje poradové čísla dátumu a času ako dátumové hodnoty.",
-        thousandthPercentileDesc:
-          "Formát\x20tisícinového\x20percentilu\x20sa\x20používa\x20pre\x20všeobecné\x20čísla;\x20formáty\x20meny\x20a\x20účtovníctva\x20poskytujú\x20špecializované\x20formáty\x20pre\x20peňažné\x20hodnoty.",
+        generalDesc: "Všeobecný\x20formát\x20neobsahuje\x20žiadny\x20špecifický\x20formát\x20čísla.",
+        accountingDesc: "Účtovnícky formát zarovnáva symboly meny a desatinné čiarky v stĺpci.",
+        currencyDesc: "Formát meny sa používa pre všeobecné peňažné hodnoty, účtovnícky formát zarovnáva desatinné čiarky v stĺpci hodnôt.",
+        dateDesc: "Formát dátumu zobrazuje poradové čísla dátumu a času ako dátumové hodnoty.",
+        thousandthPercentileDesc: "Formát\x20tisícinového\x20percentilu\x20sa\x20používa\x20pre\x20všeobecné\x20čísla;\x20formáty\x20meny\x20a\x20účtovníctva\x20poskytujú\x20špecializované\x20formáty\x20pre\x20peňažné\x20hodnoty.",
         decimalPlaces: "Desatinné miesta",
         currencyTypes: "Typy meny",
         negativeNumberTypes: "Typy záporných čísel",
-        dateTypes: "Typy\x20dátumu",
+        dateTypes: "Typy\x20dátumu"
       },
       source: {
         insertPivotTable: "Vložiť kontingenčnú tabuľku",
@@ -135,8 +130,8 @@ const e = {
         position: "Umiestnenie kontingenčnej tabuľky",
         newSheet: "Nový hárok",
         existingSheet: "Existujúci hárok",
-        intersect: "Nesmie sa prekrývať so zdrojovými dátami",
-      },
+        intersect: "Nesmie sa prekrývať so zdrojovými dátami"
+      }
     },
     subtotal: {
       average: "Priemer",
@@ -149,7 +144,7 @@ const e = {
       stdDevp: "Smerodajná\x20odchýlka\x20populácie",
       sum: "Súčet",
       var: "Rozptyl",
-      varp: "Rozptyl populácie",
+      varp: "Rozptyl populácie"
     },
     subTotalText: "Medzisúčet",
     grandTotalText: "Celkový súčet",
@@ -175,24 +170,21 @@ const e = {
       layoutCompact: "Kompaktná\x20forma",
       layoutOutline: "Forma\x20osnovy",
       repeatRowLabels: "Opakovať menovky riadkov",
-      repeatColLabels: "Opakovať\x20menovky\x20stĺpcov",
+      repeatColLabels: "Opakovať\x20menovky\x20stĺpcov"
     },
     perform: {
       tips: "Tipy",
       info: "V cieľovej oblasti už sú údaje. Táto akcia prepíše existujúce údaje. Chcete pokračovať?",
       confirm: "Potvrdiť",
       cancel: "Zrušiť",
-      rowColError:
-        "Túto\x20zmenu\x20nie\x20je\x20možné\x20vykonať\x20na\x20vybraných\x20bunkách,\x20pretože\x20by\x20ovplyvnila\x20kontingenčnú\x20tabuľku.\x20Na\x20úpravu\x20správy\x20použite\x20zoznam\x20polí.\x20Ak\x20sa\x20pokúšate\x20vkladať\x20alebo\x20odstraňovať\x20bunky,\x20presuňte\x20kontingenčnú\x20tabuľku\x20a\x20skúste\x20to\x20znova.",
+      rowColError: "Túto\x20zmenu\x20nie\x20je\x20možné\x20vykonať\x20na\x20vybraných\x20bunkách,\x20pretože\x20by\x20ovplyvnila\x20kontingenčnú\x20tabuľku.\x20Na\x20úpravu\x20správy\x20použite\x20zoznam\x20polí.\x20Ak\x20sa\x20pokúšate\x20vkladať\x20alebo\x20odstraňovať\x20bunky,\x20presuňte\x20kontingenčnú\x20tabuľku\x20a\x20skúste\x20to\x20znova."
     },
     msg: {
       emptySourceRange: "Rozsah\x20zdroja\x20dát\x20je\x20prázdny",
       invalidSize: "Rozsah zdroja dát je neplatný",
-      mergeCellError:
-        "Do kontingenčnej tabuľky nie je možné vložiť zlúčené bunky",
+      mergeCellError: "Do kontingenčnej tabuľky nie je možné vložiť zlúčené bunky",
       editCellError: "V kontingenčnej tabuľke nie je možné upravovať bunky",
-      permissionError:
-        "V\x20chránenom\x20hárku\x20nie\x20je\x20možné\x20upravovať\x20kontingenčnú\x20tabuľku",
+      permissionError: "V\x20chránenom\x20hárku\x20nie\x20je\x20možné\x20upravovať\x20kontingenčnú\x20tabuľku"
     },
     averageName: "Priemer\x20z\x20",
     countName: "Počet\x20z\x20",
@@ -204,7 +196,7 @@ const e = {
     stdDevpName: "Smerodajná odchýlka populácie z ",
     sumName: "Súčet\x20z\x20",
     varName: "Rozptyl z ",
-    varpName: "Rozptyl populácie z ",
-  },
+    varpName: "Rozptyl populácie z "
+  }
 };
 export { e as default };

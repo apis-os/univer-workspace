@@ -1,21 +1,57 @@
-import{CollaborationEvent,CompressMutationService,EmptyMutationInfo,ISnapshotServerService,ITransformService,RevisionService,SnapshotService,UniverCollaborationPlugin,b64DecodeUnicode,isTransformChangesetsSuccess,isTransformMutationsWithChangesetFailure,isTransformMutationsWithChangesetSuccess,mapDocumentTypeToUniverInstanceType,parseChangesetToProtocol,parseProtocolChangeset,textEncoder,uuidv4}from"@univerjs-pro/collaboration";
-import{CommandType,DependentOn,Disposable,DisposableCollection,IAuthzIoService,ICommandService,IConfigService,IContextService,IImageIoService,ILogService,IMentionIOService,IPermissionService,IUndoRedoService,IUniverInstanceService,ImageSourceType,ImageUploadStatusType,Inject,Injector,JSONX,LocalUndoRedoService,LocaleService,MentionType,Optional,Plugin,Quantity,Rectangle,RxDisposable,Tools,UniverInstanceType,UserManagerService,Workbook,createIdentifier,generateRandomId,isInternalEditorID,merge,mergeOverrideWithDependencies,registerDependencies,resolveWithBasePath,sequenceExecute,toDisposable,touchDependencies}from"@univerjs/core";
-import{DocStateChangeManagerService,RichTextEditingMutation}from"@univerjs/docs";
-import{InsertSheetMutation,SetSelectionsOperation,SheetPermissionInitController,SheetsSelectionsService,WorkbookEditablePermission}from"@univerjs/sheets";
-import{BehaviorSubject,ReplaySubject,Subject,concatMap,firstValueFrom,map,merge as mergeLocal,of,shareReplay,take,takeUntil}from"rxjs";
-import{CmdRspCode,CombCmd,ErrorCode,FileSource,UnitAction,UnitObject}from"@univerjs/protocol";
-import{ITelemetryService}from"@univerjs/telemetry";
-import{delay,filter,map as mapLocal,take as takeLocal,takeUntil as takeUntilLocal}from"rxjs/operators";
-import{AddSlidePageMutation,EnsureSlideMasterPageMutation,MoveSlidePageMutation,RemoveSlidePageMutation}from"@univerjs-pro/slides";
-import{HTTPRequest,HTTPService,ISocketService,MergeInterceptorFactory,ThresholdInterceptorFactory,UniverNetworkPlugin}from"@univerjs/network";
-import{UniverLicensePlugin,getGlobalObject}from"@univerjs-pro/license";
-import{cbc}from"@noble/ciphers/aes.js";
-import{concatBytes,randomBytes,utf8ToBytes}from"@noble/ciphers/utils.js";
-import{DRAWING_IMAGE_ALLOW_IMAGE_LIST,getDrawingImageAllowSize}from"@univerjs/drawing";
+import { CollaborationEvent, CompressMutationService, EmptyMutationInfo, ISnapshotServerService, ITransformService, RevisionService, SnapshotService, UniverCollaborationPlugin, b64DecodeUnicode, isTransformChangesetsSuccess, isTransformMutationsWithChangesetFailure, isTransformMutationsWithChangesetSuccess, mapDocumentTypeToUniverInstanceType, parseChangesetToProtocol, parseProtocolChangeset, textEncoder, uuidv4 } from "@univerjs-pro/collaboration";
+import { CommandType, DependentOn, Disposable, DisposableCollection, IAuthzIoService, ICommandService, IConfigService, IContextService, IImageIoService, ILogService, IMentionIOService, IPermissionService, IUndoRedoService, IUniverInstanceService, ImageSourceType, ImageUploadStatusType, Inject, Injector, JSONX, LocalUndoRedoService, LocaleService, MentionType, Optional, Plugin, Quantity, Rectangle, RxDisposable, Tools, UniverInstanceType, UserManagerService, Workbook, createIdentifier, generateRandomId, isInternalEditorID, merge, mergeOverrideWithDependencies, registerDependencies, resolveWithBasePath, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { DocStateChangeManagerService, RichTextEditingMutation } from "@univerjs/docs";
+import { InsertSheetMutation, SetSelectionsOperation, SheetPermissionInitController, SheetsSelectionsService, WorkbookEditablePermission } from "@univerjs/sheets";
+import { BehaviorSubject, ReplaySubject, Subject, concatMap, firstValueFrom, map, merge as mergeLocal, of, shareReplay, take, takeUntil } from "rxjs";
+import { CmdRspCode, CombCmd, ErrorCode, FileSource, UnitAction, UnitObject } from "@univerjs/protocol";
+import { ITelemetryService } from "@univerjs/telemetry";
+import { delay, filter, map as mapLocal, take as takeLocal, takeUntil as takeUntilLocal } from "rxjs/operators";
+import { AddSlidePageMutation, EnsureSlideMasterPageMutation, MoveSlidePageMutation, RemoveSlidePageMutation } from "@univerjs-pro/slides";
+import { HTTPRequest, HTTPService, ISocketService, MergeInterceptorFactory, ThresholdInterceptorFactory, UniverNetworkPlugin } from "@univerjs/network";
+import { UniverLicensePlugin, getGlobalObject } from "@univerjs-pro/license";
+import { cbc } from "@noble/ciphers/aes.js";
+import { concatBytes, randomBytes, utf8ToBytes } from "@noble/ciphers/utils.js";
+import { DRAWING_IMAGE_ALLOW_IMAGE_LIST, getDrawingImageAllowSize } from "@univerjs/drawing";
 import { G, vn, z } from "./internal-glue.js";
 import { q } from "./collaboration-client-pending-state.js";
 import { Y } from "./collaboration-client-awaiting-with-pending-state.js";
 import { J } from "./collaboration-client-awaiting-state.js";
-let Z=class extends G{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46876,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46877,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46878,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46879,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46880,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46881,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46882,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46883,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46884,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46885){super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46876,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46877,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46878,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46879,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46880,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46883,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46884,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46882,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46885),this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46881,z(this,"status","offline");}appendMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46896){return this._pendingMutations["push"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46896),this._updateLocalCache(),this;}onRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46898){throw Error("[OfflineState]:\x20received\x20changeset.");}onRemoteAck(){throw Error("[OfflineState]:\x20received\x20acknowledgement.");}onRemoteRej(){throw Error("[OfflineState]: received rejection.");}onRemoteRetry(){return this;}toggleOffline(){return this;}toggleOnline(){let{_injector:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46900,_pendingMutations:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46901,_awaitingChangeset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46902,unitID:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46903,_handler:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46904,type:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46905}=this,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906=vn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46900,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46903,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46905,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46902,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46901,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46904);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906 instanceof q?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906._schedule():(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906 instanceof Y||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906 instanceof J)&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906.resend(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906;}resend(){throw Error("[OfflineState]: invalid calling to `resend`.");}};
-
+let Z = class extends G {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46876, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46877, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46878, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46879, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46880, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46881, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46882, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46883, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46884, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46885) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46876, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46877, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46878, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46879, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46880, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46883, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46884, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46882, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46885), this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46881, z(this, "status", "offline");
+  }
+  appendMutation(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46896) {
+    return this._pendingMutations["push"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46896), this._updateLocalCache(), this;
+  }
+  onRemoteChangeset(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46898) {
+    throw Error("[OfflineState]:\x20received\x20changeset.");
+  }
+  onRemoteAck() {
+    throw Error("[OfflineState]:\x20received\x20acknowledgement.");
+  }
+  onRemoteRej() {
+    throw Error("[OfflineState]: received rejection.");
+  }
+  onRemoteRetry() {
+    return this;
+  }
+  toggleOffline() {
+    return this;
+  }
+  toggleOnline() {
+    let {
+        _injector: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46900,
+        _pendingMutations: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46901,
+        _awaitingChangeset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46902,
+        unitID: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46903,
+        _handler: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46904,
+        type: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46905
+      } = this,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906 = vn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46900, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46903, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46905, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46902, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46901, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46904);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906 instanceof q ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906._schedule() : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906 instanceof Y || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906 instanceof J) && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906.resend(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46906;
+  }
+  resend() {
+    throw Error("[OfflineState]: invalid calling to `resend`.");
+  }
+};
 export { Z as OfflineState };

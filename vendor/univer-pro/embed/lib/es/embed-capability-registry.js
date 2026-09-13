@@ -1,15 +1,35 @@
-import{BooleanNumber,CommandType,DependentOn,Disposable,DrawingTypeEnum,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,ObjectMatrix,Plugin,Rectangle,Tools,UniverInstanceType,createBaseFormulaTableNameMap,createIdentifier,getOriginCellValue,merge,sequenceExecute,toDisposable,touchDependencies}from"@univerjs/core";
-import{InsertColMutation,InsertRowMutation,InsertSheetMutation,RemoveColMutation,RemoveRowMutation,RemoveSheetMutation,ReorderRangeMutation,SetRangeValuesMutation,SheetSkeletonService}from"@univerjs/sheets";
-import{DrawingApplyType,ISheetDrawingService,SetDrawingApplyMutation,SheetDrawingAnchorType,applySheetDrawingPlacement,getSheetDrawingPlacement}from"@univerjs/sheets-drawing";
-import{IFormulaReferenceDataProviderRegistry,createUnavailableReferenceDataResponse}from"@univerjs-pro/engine-formula";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{AddBoardElementMutation,IBoardElementService,RemoveBoardElementMutation,UpdateBoardElementMutation,collectBoardElementIdsForRemoveWithBoundConnectors,createEmbedBoardsFloatingElement,isEmbedBoardsFloatingElement}from"@univerjs-pro/boards";
-import{AddSlideElementMutation,AddSlidePageMutation,ISlideDrawingService,RemoveSlideElementMutation,RemoveSlidePageMutation,UpdateSlideElementMutation,createEmbedSlidesFloatingElement,createEmbedSlidesPage,getEmbedSlidesFloatingCustomData,resolvedSlideLayersToDrawingMap}from"@univerjs-pro/slides";
-import{IDrawingManagerService}from"@univerjs/drawing";
-import{ApplyBaseJson1Mutation,BaseJson1OpApplier,createEmbedBasesTable,createEmbedBasesTableAddMutation,createEmbedBasesTableRemoveMutation,ensureBaseTableCellLayout,getBaseCellFormulaValue}from"@univerjs-pro/bases";
-import{createDocsCustomBlockInsertMutation,createDocsCustomBlockRemoveMutation}from"@univerjs/docs";
-import{BehaviorSubject}from"rxjs";
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, ObjectMatrix, Plugin, Rectangle, Tools, UniverInstanceType, createBaseFormulaTableNameMap, createIdentifier, getOriginCellValue, merge, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { InsertColMutation, InsertRowMutation, InsertSheetMutation, RemoveColMutation, RemoveRowMutation, RemoveSheetMutation, ReorderRangeMutation, SetRangeValuesMutation, SheetSkeletonService } from "@univerjs/sheets";
+import { DrawingApplyType, ISheetDrawingService, SetDrawingApplyMutation, SheetDrawingAnchorType, applySheetDrawingPlacement, getSheetDrawingPlacement } from "@univerjs/sheets-drawing";
+import { IFormulaReferenceDataProviderRegistry, createUnavailableReferenceDataResponse } from "@univerjs-pro/engine-formula";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { AddBoardElementMutation, IBoardElementService, RemoveBoardElementMutation, UpdateBoardElementMutation, collectBoardElementIdsForRemoveWithBoundConnectors, createEmbedBoardsFloatingElement, isEmbedBoardsFloatingElement } from "@univerjs-pro/boards";
+import { AddSlideElementMutation, AddSlidePageMutation, ISlideDrawingService, RemoveSlideElementMutation, RemoveSlidePageMutation, UpdateSlideElementMutation, createEmbedSlidesFloatingElement, createEmbedSlidesPage, getEmbedSlidesFloatingCustomData, resolvedSlideLayersToDrawingMap } from "@univerjs-pro/slides";
+import { IDrawingManagerService } from "@univerjs/drawing";
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, createEmbedBasesTable, createEmbedBasesTableAddMutation, createEmbedBasesTableRemoveMutation, ensureBaseTableCellLayout, getBaseCellFormulaValue } from "@univerjs-pro/bases";
+import { createDocsCustomBlockInsertMutation, createDocsCustomBlockRemoveMutation } from "@univerjs/docs";
+import { BehaviorSubject } from "rxjs";
 import { x } from "./internal-core-endo.js";
-var W=class{constructor(){x(this,"_capabilities",new Map());}register(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366=this._key(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.hostType,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.childType,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.entry);if(this._capabilities["has"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366))throw Error("Embed capability already registered: "+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366);this._capabilities["set"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365);}registerMany(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369){var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653=>this.register(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653));}getCapability(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371){return this._capabilities["get"](this._key(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371.hostType,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371.childType,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371.entry));}list(){return[...this._capabilities["values"]()];}_key(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46374,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373+":"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46374+":"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375;}};
-
+var W = class {
+  constructor() {
+    x(this, "_capabilities", new Map());
+  }
+  register(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366 = this._key(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.hostType, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.childType, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365.entry);
+    if (this._capabilities["has"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366)) throw Error("Embed capability already registered: " + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366);
+    this._capabilities["set"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46366, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46365);
+  }
+  registerMany(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46369.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653 => this.register(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4653));
+  }
+  getCapability(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371) {
+    return this._capabilities["get"](this._key(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371.hostType, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371.childType, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46371.entry));
+  }
+  list() {
+    return [...this._capabilities["values"]()];
+  }
+  _key(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46374, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46373 + ":" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46374 + ":" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46375;
+  }
+};
 export { W as EmbedCapabilityRegistryService };

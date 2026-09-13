@@ -1,1 +1,236 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/embed"),t=require("@univerjs/core/facade"),n=require("@univerjs/core");const r={DocBlock:e.EmbedHostEntryEnum["DocsCustomBlock"],SheetTab:e.EmbedHostEntryEnum["SheetsSheetTab"],SheetFloating:e.EmbedHostEntryEnum["SheetsFloatingObject"],BaseTable:e.EmbedHostEntryEnum["BasesTableListBlock"],SlidePage:e.EmbedHostEntryEnum["SlidesPageListBlock"],SlideFloating:e.EmbedHostEntryEnum["SlidesFloatingObject"],BoardFloating:e.EmbedHostEntryEnum["BoardsFloatingObject"]};var i=class extends t.FEnum{get FEmbedHostSurface(){return r;}};t.FEnum["extend"](i);function a(v40,v41){return function(v2,v3){v41(v2,v3,v40);};}function o(v42,v43,v44,v45){var v46=arguments.length,v47=v46<3?v43:v45===null?v45=Object.getOwnPropertyDescriptor(v43,v44):v45,v48;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v47=Reflect.decorate(v42,v43,v44,v45);else{for(var v49=v42.length-1;v49>=0;v49--)(v48=v42[v49])&&(v47=(v46<3?v48(v47):v46>3?v48(v43,v44,v47):v48(v43,v44))||v47);}return v46>3&&v47&&Object.defineProperty(v43,v44,v47),v47;}let s=class extends t.FBase{constructor(v4,v5,v6,v7,v8,v9,v10,v11){super(),this._descriptor=v4,this._univerAPI=v5,this._injector=v6,this._commandService=v7,this._materializeService=v8,this._apiResolverRegistry=v9,this._modelService=v10,this._hostAdapterRegistry=v11;}getId(){return this._descriptor["embedId"];}getHostUnitId(){return this._descriptor["hostUnitId"];}getHostAnchorId(){return this._descriptor["hostAnchorId"];}getChildUnitId(){return this._descriptor["childUnitId"];}getHostType(){return this._descriptor["hostType"];}getChildType(){return this._descriptor["childType"];}getEntry(){return this._descriptor["entry"];}getDescriptor(){let v12=this._modelService["getDescriptor"](this._descriptor["hostUnitId"],this._descriptor["embedId"])??this._descriptor;return this._descriptor=v12,{...v12,source:{...v12.source},displayTarget:v12.displayTarget?{...v12.displayTarget}:undefined,context:this._hostAdapterRegistry["readContext"](v12)};}getBounds(){let v13=this.getDescriptor().context;return v13.resolved&&"bounds"in v13?{...v13.bounds}:null;}setBounds(v14){if(!c(this._descriptor["entry"]))throw new e["EmbedError"](e.EmbedErrorCode["CapabilityNotSupported"],{entry:this._descriptor["entry"],capability:"bounds"});return this._commandService["syncExecuteCommand"](e.SetEmbedBoundsCommand["id"],{hostUnitId:this._descriptor["hostUnitId"],embedId:this._descriptor["embedId"],bounds:v14});}getPlacement(){let v15=this.getDescriptor().context;return v15.resolved&&v15.entry===e.EmbedHostEntryEnum["SheetsFloatingObject"]?v15.placement:null;}setPlacement(v16){if(this._descriptor["entry"]!==e.EmbedHostEntryEnum["SheetsFloatingObject"])throw new e["EmbedError"](e.EmbedErrorCode["CapabilityNotSupported"],{entry:this._descriptor["entry"],capability:"sheet-placement"});return this._commandService["syncExecuteCommand"](e.SetEmbedSheetPlacementCommand["id"],{hostUnitId:this._descriptor["hostUnitId"],embedId:this._descriptor["embedId"],placement:v16});}getDisplayTarget(){return this._descriptor["displayTarget"]?{...this._descriptor["displayTarget"]}:undefined;}setDisplayTarget(v17){let v18=this._commandService["syncExecuteCommand"](e.SetEmbedDisplayTargetCommand["id"],{hostUnitId:this._descriptor["hostUnitId"],embedId:this._descriptor["embedId"],displayTarget:v17});return v18&&(this._descriptor={...this._descriptor,displayTarget:v17?{...v17}:undefined}),v18;}async loadAsync(v19={}){let{signal:v20,...v21}=v19,v22=await this._materializeService["materializeDescriptor"]({descriptor:this._descriptor,signal:v20,createOptions:{...e.EMBED_CHILD_CREATE_OPTIONS,...v21}});if(this._descriptor=v22,!v22.childUnitId||v22.childType==null)throw new e["EmbedError"](e.EmbedErrorCode["MaterializedChildUnitRequired"],{hostUnitId:v22.hostUnitId,embedId:v22.embedId});return this._apiResolverRegistry["resolve"]({unitId:v22.childUnitId,unitType:v22.childType,injector:this._injector,api:this._univerAPI});}remove(){return this._commandService["syncExecuteCommand"](e.RemoveEmbedCommand["id"],{hostUnitId:this._descriptor["hostUnitId"],embedId:this._descriptor["embedId"]});}};s=o([a(2,(0,n.Inject)(n.Injector)),a(3,n.ICommandService),a(4,(0,n.Inject)(e.EmbedReferencedUnitMaterializeService)),a(5,(0,n.Inject)(e.EmbedReferencedUnitApiResolverRegistryService)),a(6,(0,n.Inject)(e.EmbedModelService)),a(7,(0,n.Inject)(e.EmbedHostAdapterRegistryService))],s);function c(v50){return v50===e.EmbedHostEntryEnum["SheetsFloatingObject"]||v50===e.EmbedHostEntryEnum["SlidesFloatingObject"]||v50===e.EmbedHostEntryEnum["BoardsFloatingObject"];}var l=class extends t.FUniver{createEmbed(v23){if(v23.host["surface"]===r.SheetFloating&&u(v23.host["context"]))throw new e.EmbedError(e.EmbedErrorCode["SheetFloatingPlacementRequired"],{hostUnitId:v23.host["unitId"]});let v24=this._univerInstanceService["getUnitType"](v23.host["unitId"]);if(v24===n.UniverInstanceType["UNRECOGNIZED"])throw new e["EmbedError"](e.EmbedErrorCode["HostUnitNotFound"],{hostUnitId:v23.host["unitId"]});let v25=this._commandService["syncExecuteCommand"](e.CreateEmbedCommand["id"],{embedId:v23.embedId??"embed_"+(0,n.generateRandomId)(10),hostUnitId:v23.host["unitId"],hostType:v24,requestedHostAnchorId:v23.host["anchorId"],entry:v23.host["surface"],source:v23.content,mode:v23.interaction,sourceMeta:v23.sourceMeta,displayTarget:v23.displayTarget,hostContext:d(v23.host["context"])});if(!v25)throw new e.EmbedError(e.EmbedErrorCode["CreateFailed"],{hostUnitId:v23.host["unitId"],embedId:v23.embedId});return this._toFEmbed(v25);}removeEmbed(v26){return this._commandService["syncExecuteCommand"](e.RemoveEmbedCommand["id"],v26);}getEmbed(v27){let v28=this._injector["get"](e.EmbedModelService).getDescriptor(v27.hostUnitId,v27.embedId);return v28&&v28.lifecycle!=="soft-delete d"?this._toFEmbed(v28):null;}listEmbeds(v29={}){let v30=this._injector["get"](e.EmbedModelService);return(v29.hostUnitId?v30.getActiveDescriptors(v29.hostUnitId):v30.getAllActiveDescriptors()).map(v1=>this._toFEmbed(v1));}async loadUnitAsync(v31,v32={}){let{signal:v33,unitType:v34,...v35}=v32,v36=this._normalizeLoadUnitRef(v31),v37=await this._injector["get"](e.IReferencedUnitManagerService).ensure(v36,{unitType:v34,signal:v33,createOptions:v35});return this._injector["get"](e.EmbedReferencedUnitApiResolverRegistryService).resolve({unitId:v37.unitId,unitType:v37.unitType,injector:this._injector,api:this});}_normalizeLoadUnitRef(v38){return typeof v38=="string"?(0,e.normalizeResourceRefLocator)(v38):v38;}_toFEmbed(v39){return this._injector["createInstance"](s,v39,this);}};function u(v51){return!v51||typeof v51!="object"?false:"placement"in v51?v51.placement==null||typeof v51.placement!="object":"left"in v51||"top"in v51||"width"in v51||"height"in v51||"sheetTransform"in v51;}function d(v52){if(v52!==undefined)return!v52||typeof v52!="object"||Array.isArray(v52)?v52:{...v52};}t.FUniver["extend"](l),Object.defineProperty(exports,"FEmbed",{enumerable:true,get:function(){return s;}}),exports.FEmbedHostSurface=r,exports.FUniverEmbedMixin=l;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/embed"),
+  t = require("@univerjs/core/facade"),
+  n = require("@univerjs/core");
+const r = {
+  DocBlock: e.EmbedHostEntryEnum["DocsCustomBlock"],
+  SheetTab: e.EmbedHostEntryEnum["SheetsSheetTab"],
+  SheetFloating: e.EmbedHostEntryEnum["SheetsFloatingObject"],
+  BaseTable: e.EmbedHostEntryEnum["BasesTableListBlock"],
+  SlidePage: e.EmbedHostEntryEnum["SlidesPageListBlock"],
+  SlideFloating: e.EmbedHostEntryEnum["SlidesFloatingObject"],
+  BoardFloating: e.EmbedHostEntryEnum["BoardsFloatingObject"]
+};
+var i = class extends t.FEnum {
+  get FEmbedHostSurface() {
+    return r;
+  }
+};
+t.FEnum["extend"](i);
+function a(var_core_value_sigC80B, var_core_value_sig284F) {
+  return function (var_core_value_sig2AD8, var_core_value_sig2AD0) {
+    var_core_value_sig284F(var_core_value_sig2AD8, var_core_value_sig2AD0, var_core_value_sigC80B);
+  };
+}
+function o(var_core_value_sigE154, var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sig2259) {
+  var var_core_value_sig9E2F = arguments.length,
+    var_core_value_sigD082 = var_core_value_sig9E2F < 3 ? var_core_value_sig4632 : var_core_value_sig2259 === null ? var_core_value_sig2259 = Object.getOwnPropertyDescriptor(var_core_value_sig4632, var_core_value_sig12F2) : var_core_value_sig2259,
+    var_core_value_sigDBB7;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigD082 = Reflect.decorate(var_core_value_sigE154, var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sig2259);else {
+    for (var var_core_value_sigD0A8 = var_core_value_sigE154.length - 1; var_core_value_sigD0A8 >= 0; var_core_value_sigD0A8--) (var_core_value_sigDBB7 = var_core_value_sigE154[var_core_value_sigD0A8]) && (var_core_value_sigD082 = (var_core_value_sig9E2F < 3 ? var_core_value_sigDBB7(var_core_value_sigD082) : var_core_value_sig9E2F > 3 ? var_core_value_sigDBB7(var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sigD082) : var_core_value_sigDBB7(var_core_value_sig4632, var_core_value_sig12F2)) || var_core_value_sigD082);
+  }
+  return var_core_value_sig9E2F > 3 && var_core_value_sigD082 && Object.defineProperty(var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sigD082), var_core_value_sigD082;
+}
+let s = class extends t.FBase {
+  constructor(var_core_value_sig3EEE, var_core_value_sigBC46, var_core_value_sig3D7D, var_core_value_sig27E5, var_core_value_sig8061, var_core_value_sig4D4C, var_core_value_sigC9E0, var_core_value_sig76BA) {
+    super(), this._descriptor = var_core_value_sig3EEE, this._univerAPI = var_core_value_sigBC46, this._injector = var_core_value_sig3D7D, this._commandService = var_core_value_sig27E5, this._materializeService = var_core_value_sig8061, this._apiResolverRegistry = var_core_value_sig4D4C, this._modelService = var_core_value_sigC9E0, this._hostAdapterRegistry = var_core_value_sig76BA;
+  }
+  getId() {
+    return this._descriptor["embedId"];
+  }
+  getHostUnitId() {
+    return this._descriptor["hostUnitId"];
+  }
+  getHostAnchorId() {
+    return this._descriptor["hostAnchorId"];
+  }
+  getChildUnitId() {
+    return this._descriptor["childUnitId"];
+  }
+  getHostType() {
+    return this._descriptor["hostType"];
+  }
+  getChildType() {
+    return this._descriptor["childType"];
+  }
+  getEntry() {
+    return this._descriptor["entry"];
+  }
+  getDescriptor() {
+    let var_core_value_sigFBFA = this._modelService["getDescriptor"](this._descriptor["hostUnitId"], this._descriptor["embedId"]) ?? this._descriptor;
+    return this._descriptor = var_core_value_sigFBFA, {
+      ...var_core_value_sigFBFA,
+      source: {
+        ...var_core_value_sigFBFA.source
+      },
+      displayTarget: var_core_value_sigFBFA.displayTarget ? {
+        ...var_core_value_sigFBFA.displayTarget
+      } : undefined,
+      context: this._hostAdapterRegistry["readContext"](var_core_value_sigFBFA)
+    };
+  }
+  getBounds() {
+    let var_core_value_sigF602 = this.getDescriptor().context;
+    return var_core_value_sigF602.resolved && "bounds" in var_core_value_sigF602 ? {
+      ...var_core_value_sigF602.bounds
+    } : null;
+  }
+  setBounds(var_core_value_sig1BBD) {
+    if (!c(this._descriptor["entry"])) throw new e["EmbedError"](e.EmbedErrorCode["CapabilityNotSupported"], {
+      entry: this._descriptor["entry"],
+      capability: "bounds"
+    });
+    return this._commandService["syncExecuteCommand"](e.SetEmbedBoundsCommand["id"], {
+      hostUnitId: this._descriptor["hostUnitId"],
+      embedId: this._descriptor["embedId"],
+      bounds: var_core_value_sig1BBD
+    });
+  }
+  getPlacement() {
+    let var_core_value_sigF704 = this.getDescriptor().context;
+    return var_core_value_sigF704.resolved && var_core_value_sigF704.entry === e.EmbedHostEntryEnum["SheetsFloatingObject"] ? var_core_value_sigF704.placement : null;
+  }
+  setPlacement(var_core_value_sig2BCF) {
+    if (this._descriptor["entry"] !== e.EmbedHostEntryEnum["SheetsFloatingObject"]) throw new e["EmbedError"](e.EmbedErrorCode["CapabilityNotSupported"], {
+      entry: this._descriptor["entry"],
+      capability: "sheet-placement"
+    });
+    return this._commandService["syncExecuteCommand"](e.SetEmbedSheetPlacementCommand["id"], {
+      hostUnitId: this._descriptor["hostUnitId"],
+      embedId: this._descriptor["embedId"],
+      placement: var_core_value_sig2BCF
+    });
+  }
+  getDisplayTarget() {
+    return this._descriptor["displayTarget"] ? {
+      ...this._descriptor["displayTarget"]
+    } : undefined;
+  }
+  setDisplayTarget(var_core_value_sig0D69) {
+    let var_core_value_sig480E = this._commandService["syncExecuteCommand"](e.SetEmbedDisplayTargetCommand["id"], {
+      hostUnitId: this._descriptor["hostUnitId"],
+      embedId: this._descriptor["embedId"],
+      displayTarget: var_core_value_sig0D69
+    });
+    return var_core_value_sig480E && (this._descriptor = {
+      ...this._descriptor,
+      displayTarget: var_core_value_sig0D69 ? {
+        ...var_core_value_sig0D69
+      } : undefined
+    }), var_core_value_sig480E;
+  }
+  async loadAsync(var_core_value_sig26DB = {}) {
+    let {
+        signal: var_core_value_sigF0F9,
+        ...var_core_value_sig1A0F
+      } = var_core_value_sig26DB,
+      var_core_value_sigFBA4 = await this._materializeService["materializeDescriptor"]({
+        descriptor: this._descriptor,
+        signal: var_core_value_sigF0F9,
+        createOptions: {
+          ...e.EMBED_CHILD_CREATE_OPTIONS,
+          ...var_core_value_sig1A0F
+        }
+      });
+    if (this._descriptor = var_core_value_sigFBA4, !var_core_value_sigFBA4.childUnitId || var_core_value_sigFBA4.childType == null) throw new e["EmbedError"](e.EmbedErrorCode["MaterializedChildUnitRequired"], {
+      hostUnitId: var_core_value_sigFBA4.hostUnitId,
+      embedId: var_core_value_sigFBA4.embedId
+    });
+    return this._apiResolverRegistry["resolve"]({
+      unitId: var_core_value_sigFBA4.childUnitId,
+      unitType: var_core_value_sigFBA4.childType,
+      injector: this._injector,
+      api: this._univerAPI
+    });
+  }
+  remove() {
+    return this._commandService["syncExecuteCommand"](e.RemoveEmbedCommand["id"], {
+      hostUnitId: this._descriptor["hostUnitId"],
+      embedId: this._descriptor["embedId"]
+    });
+  }
+};
+s = o([a(2, (0, n.Inject)(n.Injector)), a(3, n.ICommandService), a(4, (0, n.Inject)(e.EmbedReferencedUnitMaterializeService)), a(5, (0, n.Inject)(e.EmbedReferencedUnitApiResolverRegistryService)), a(6, (0, n.Inject)(e.EmbedModelService)), a(7, (0, n.Inject)(e.EmbedHostAdapterRegistryService))], s);
+function c(var_core_value_sigF4B9) {
+  return var_core_value_sigF4B9 === e.EmbedHostEntryEnum["SheetsFloatingObject"] || var_core_value_sigF4B9 === e.EmbedHostEntryEnum["SlidesFloatingObject"] || var_core_value_sigF4B9 === e.EmbedHostEntryEnum["BoardsFloatingObject"];
+}
+var l = class extends t.FUniver {
+  createEmbed(var_core_value_sig4383) {
+    if (var_core_value_sig4383.host["surface"] === r.SheetFloating && u(var_core_value_sig4383.host["context"])) throw new e.EmbedError(e.EmbedErrorCode["SheetFloatingPlacementRequired"], {
+      hostUnitId: var_core_value_sig4383.host["unitId"]
+    });
+    let var_core_value_sig186C = this._univerInstanceService["getUnitType"](var_core_value_sig4383.host["unitId"]);
+    if (var_core_value_sig186C === n.UniverInstanceType["UNRECOGNIZED"]) throw new e["EmbedError"](e.EmbedErrorCode["HostUnitNotFound"], {
+      hostUnitId: var_core_value_sig4383.host["unitId"]
+    });
+    let var_core_value_sigD955 = this._commandService["syncExecuteCommand"](e.CreateEmbedCommand["id"], {
+      embedId: var_core_value_sig4383.embedId ?? "embed_" + (0, n.generateRandomId)(10),
+      hostUnitId: var_core_value_sig4383.host["unitId"],
+      hostType: var_core_value_sig186C,
+      requestedHostAnchorId: var_core_value_sig4383.host["anchorId"],
+      entry: var_core_value_sig4383.host["surface"],
+      source: var_core_value_sig4383.content,
+      mode: var_core_value_sig4383.interaction,
+      sourceMeta: var_core_value_sig4383.sourceMeta,
+      displayTarget: var_core_value_sig4383.displayTarget,
+      hostContext: d(var_core_value_sig4383.host["context"])
+    });
+    if (!var_core_value_sigD955) throw new e.EmbedError(e.EmbedErrorCode["CreateFailed"], {
+      hostUnitId: var_core_value_sig4383.host["unitId"],
+      embedId: var_core_value_sig4383.embedId
+    });
+    return this._toFEmbed(var_core_value_sigD955);
+  }
+  removeEmbed(var_core_value_sig48BD) {
+    return this._commandService["syncExecuteCommand"](e.RemoveEmbedCommand["id"], var_core_value_sig48BD);
+  }
+  getEmbed(var_core_value_sig429F) {
+    let var_core_value_sigF62A = this._injector["get"](e.EmbedModelService).getDescriptor(var_core_value_sig429F.hostUnitId, var_core_value_sig429F.embedId);
+    return var_core_value_sigF62A && var_core_value_sigF62A.lifecycle !== "soft-delete d" ? this._toFEmbed(var_core_value_sigF62A) : null;
+  }
+  listEmbeds(var_core_value_sig8178 = {}) {
+    let var_core_value_sigE9ED = this._injector["get"](e.EmbedModelService);
+    return (var_core_value_sig8178.hostUnitId ? var_core_value_sigE9ED.getActiveDescriptors(var_core_value_sig8178.hostUnitId) : var_core_value_sigE9ED.getAllActiveDescriptors()).map(var_core_value_sig7524 => this._toFEmbed(var_core_value_sig7524));
+  }
+  async loadUnitAsync(var_core_value_sigB577, var_core_value_sig9572 = {}) {
+    let {
+        signal: var_core_value_sigD873,
+        unitType: var_core_value_sigA12B,
+        ...var_core_value_sigF230
+      } = var_core_value_sig9572,
+      var_core_value_sig09B8 = this._normalizeLoadUnitRef(var_core_value_sigB577),
+      var_core_value_sig6F91 = await this._injector["get"](e.IReferencedUnitManagerService).ensure(var_core_value_sig09B8, {
+        unitType: var_core_value_sigA12B,
+        signal: var_core_value_sigD873,
+        createOptions: var_core_value_sigF230
+      });
+    return this._injector["get"](e.EmbedReferencedUnitApiResolverRegistryService).resolve({
+      unitId: var_core_value_sig6F91.unitId,
+      unitType: var_core_value_sig6F91.unitType,
+      injector: this._injector,
+      api: this
+    });
+  }
+  _normalizeLoadUnitRef(var_core_value_sigF9C7) {
+    return typeof var_core_value_sigF9C7 == "string" ? (0, e.normalizeResourceRefLocator)(var_core_value_sigF9C7) : var_core_value_sigF9C7;
+  }
+  _toFEmbed(var_core_value_sig8895) {
+    return this._injector["createInstance"](s, var_core_value_sig8895, this);
+  }
+};
+function u(var_core_value_sig5CEE) {
+  return !var_core_value_sig5CEE || typeof var_core_value_sig5CEE != "object" ? false : "placement" in var_core_value_sig5CEE ? var_core_value_sig5CEE.placement == null || typeof var_core_value_sig5CEE.placement != "object" : "left" in var_core_value_sig5CEE || "top" in var_core_value_sig5CEE || "width" in var_core_value_sig5CEE || "height" in var_core_value_sig5CEE || "sheetTransform" in var_core_value_sig5CEE;
+}
+function d(var_core_value_sigE92A) {
+  if (var_core_value_sigE92A !== undefined) return !var_core_value_sigE92A || typeof var_core_value_sigE92A != "object" || Array.isArray(var_core_value_sigE92A) ? var_core_value_sigE92A : {
+    ...var_core_value_sigE92A
+  };
+}
+t.FUniver["extend"](l), Object.defineProperty(exports, "FEmbed", {
+  enumerable: true,
+  get: function () {
+    return s;
+  }
+}), exports.FEmbedHostSurface = r, exports.FUniverEmbedMixin = l;

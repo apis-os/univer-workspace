@@ -1,44 +1,109 @@
-import{CommandType,DataStreamTreeTokenType,DependentOn,Disposable,ICommandService,IConfigService,ILogService,IResourceManagerService,IUniverInstanceService,ImageSourceType,Inject,Injector,InterceptorManager,JSON1,JSONX,LocaleType,ObjectMatrix,PARAGRAPH_ID_PREFIX as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46,Plugin,RANGE_TYPE as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461,Rectangle,SheetTypes,Tools,UniverInstanceType,createIdentifier,createInterceptorKey,generateRandomId,getTableCellTokenInterval,getTableRangeInterval,getTableRowTokenInterval,insertMatrixArray,isFormulaString,isRangesEqual,merge,moveMatrixArray,registerDependencies,spliceArray,touchDependencies,validateDocBodyStructure}from"@univerjs/core";
-import{ApplyBaseJson1Mutation,BaseJson1OpApplier,compressBaseRangeValuesPayload,decompressBaseRangeValuesPayload,isCompressedBaseRangeValuesPayload}from"@univerjs-pro/bases";
-import{AddBoardElementMutation,RemoveBoardElementMutation,RemoveBoardElementOnlyMutation,SetBoardElementOrderMutation,UpdateBoardElementMutation}from"@univerjs-pro/boards";
-import{SetMindMapElementMutation}from"@univerjs-pro/boards-mind";
-import{RemoveBoardTableMutation,SetBoardTableMutation}from"@univerjs-pro/boards-table";
-import{RichTextEditingMutation,transformDocumentTextRanges}from"@univerjs/docs";
-import{AddRangeProtectionMutation,AddWorksheetMergeMutation,AddWorksheetProtectionMutation,CopyWorksheetEndMutation,DeleteWorksheetProtectionMutation,EmptyMutation,InsertColCommand,InsertColMutation,InsertRowCommand,InsertRowMutation,InsertSheetMutation,MoveColsCommand,MoveColsMutation,MoveRangeMutation,MoveRowsCommand,MoveRowsMutation,RangeMergeUtil,RemoveColCommand,RemoveColMutation,RemoveNumfmtMutation,RemoveRowCommand,RemoveRowMutation,RemoveSheetMutation,RemoveWorksheetMergeMutation,ReorderRangeMutation,SetColDataMutation,SetColHiddenMutation,SetColVisibleMutation,SetFrozenMutation,SetNumfmtMutation,SetRangeProtectionMutation,SetRangeValuesMutation,SetRowDataMutation,SetRowHiddenMutation,SetRowVisibleMutation,SetSelectionsOperation,SetTabColorMutation,SetWorkbookNameMutation,SetWorksheetColWidthMutation,SetWorksheetHideMutation,SetWorksheetNameMutation,SetWorksheetOrderMutation,SetWorksheetPermissionPointsMutation,SetWorksheetProtectionMutation,SetWorksheetRowAutoHeightMutation,SetWorksheetRowHeightMutation,SetWorksheetRowIsAutoHeightMutation,handleBaseInsertRange,handleBaseMoveRowsCols,handleBaseRemoveRange,handleCommonDefaultRangeChangeWithEffectRefCommands,handleDefaultRangeChangeWithEffectRefCommands,rotateRange}from"@univerjs/sheets";
-import{ApplyPdfMutationBatchMutation,PDF_UNIT_SCHEMA as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462,PdfAssetStorageKind,PdfEditorMutationKind,createPdfDocumentFromShell,normalizePdfUnitData}from"@univerjs-pro/pdfs";
-import{AddCommentMutation,DeleteCommentMutation,UpdateCommentMutation,UpdateCommentRefMutation}from"@univerjs/thread-comment";
-import{AddConditionalRuleMutation,DeleteConditionalRuleMutation,MoveConditionalRuleMutation,SetConditionalRuleMutation}from"@univerjs/sheets-conditional-formatting";
-import{AddDataValidationMutation,RemoveDataValidationMutation,UpdateDataValidationMutation,UpdateRuleType}from"@univerjs/data-validation";
-import{AddHyperLinkMutation,RemoveHyperLinkMutation,UpdateHyperLinkMutation,UpdateHyperLinkRefMutation}from"@univerjs/sheets-hyper-link";
-import{ReCalcSheetsFilterMutation,RemoveSheetsFilterMutation,SetSheetsFilterCriteriaMutation,SetSheetsFilterRangeMutation}from"@univerjs/sheets-filter";
-import{AddDimensionOutlineMutation,ClearDimensionOutlinesMutation,DimensionOutlineAxis,RemoveDimensionOutlineMutation,SetDimensionOutlineCollapsedMutation,TransformDimensionOutlinesMutation,transformOutlinesByDelete,transformOutlinesByInsert,transformOutlinesByMove}from"@univerjs-pro/sheets-outline";
-import{ErrorType,LexerTreeBuilder,deserializeRangeWithSheetWithCache,generateStringWithSequence,sequenceNodeType,serializeRange,serializeRangeToRefString,singleReferenceToGrid}from"@univerjs/engine-formula";
-import{DrawingApplyType,SetDrawingApplyMutation}from"@univerjs/sheets-drawing";
-import{AddSlideElementMutation,AddSlidePageMutation,CancelSlideGroupMutation,MoveSlidePageMutation,RemoveSlideElementMutation,RemoveSlidePageMutation,SetSlideDrawingApplyMutation,SetSlideElementOrderMutation,SetSlideGroupMutation,SlideDrawingApplyType,UpdateSlideElementMutation,UpdateSlidePageBackgroundMutation}from"@univerjs-pro/slides";
-import{RemoveSlideChartDataSourceMutation,RemoveSlideChartSnapshotMutation,SetSlideChartDataSourceMutation,SetSlideChartSnapshotMutation}from"@univerjs-pro/slides-chart";
-import{RemoveSlideTableMutation,SetSlideTableMutation}from"@univerjs-pro/slides-table";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{BehaviorSubject}from"rxjs";
-import{ErrorCode,isError}from"@univerjs/protocol";
-import{v4 as uuidv4}from"uuid";
-import{wn}from"./collaboration-transform-mutation-failure.js";
-import{Ln}from"./collaboration-transform-service.js";
-import{Wn}from"./collaboration-transform-controller.js";
-import{In}from"./collaboration-itransform-service.js";
-import{cr}from"./collaboration-board-transform.js";
-import{dr}from"./collaboration-doc-transform.js";
-import{Jr}from"./collaboration-pdf-transform.js";
-import{cu}from"./collaboration-sheet-transform.js";
-import{Uu}from"./collaboration-slide-transform.js";
-import{Ef,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465485}from"./collaboration-plugin.js";
-import{ud}from"./collaboration-revision-service.js";
-import{md,pd}from"./collaboration-text-encoder.js";
-import{Md}from"./collaboration-b64-decode-unicode.js";
-import{Tf}from"./collaboration-snapshot-service.js";
-import{wf}from"./collaboration-isnapshot-server.js";
-import{sd}from"./collaboration-mutation-service.js";
-import{fd}from"./collaboration-snapshot-loading.js";
-import{Df}from"./collaboration-snapshot-save.js";
-const nd=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983=>{let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB599={};if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983)return{cellValue:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983,styleRefMap:undefined};let var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594=new Map();return{cellValue:new ObjectMatrix(Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983)).forValue((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461346,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461347,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348)=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348.s;if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349&&typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349=="object"){let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4=JSON.stringify(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398=var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594.get(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4);var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398??(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398=var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594.size,var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594.set(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398),var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB599[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348.s=""+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398;}}).getMatrix(),styleRefMap:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB599};},rd=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464986)=>!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464986?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985:new ObjectMatrix(Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985)).forValue((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461354,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461355,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356)=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356.s;if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357&&typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357=="string"){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464986[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357];var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356.s=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399);}}).getMatrix(),id=createInterceptorKey("COMPRESS_MUTATION_APPLY"),ad=createInterceptorKey("COMPRESS_MUTATION_SEND"),od="base.mutation.set-range-values";async function Nd({tasks:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055,handleTaskResult:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465056,limit:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465058=10,options:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465059={retryCount:3,retryDelay:200},onError:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465057}){if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055.length===0)return;let{retryCount:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465060,retryDelay:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465061}=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465059,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465062=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461447=>new Promise(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416=>setTimeout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461447)),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465063=async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461448=>{let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D73=0;for(;;)try{return await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461448();}catch(var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC52){if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465057==null||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465057(var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC52),var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D73++,var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D73>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465060)throw var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC52;await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465062(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465061);}},var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D130=0,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465064=Array.from({length:Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465058,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055.length)},async()=>{for(;;){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175=var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D130++;if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175>=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055.length)break;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176=await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465063(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175]);var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465056&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465056(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176=null;}});await Promise.all(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465064);}
-
+import { CommandType, DataStreamTreeTokenType, DependentOn, Disposable, ICommandService, IConfigService, ILogService, IResourceManagerService, IUniverInstanceService, ImageSourceType, Inject, Injector, InterceptorManager, JSON1, JSONX, LocaleType, ObjectMatrix, PARAGRAPH_ID_PREFIX as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46, Plugin, RANGE_TYPE as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461, Rectangle, SheetTypes, Tools, UniverInstanceType, createIdentifier, createInterceptorKey, generateRandomId, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, insertMatrixArray, isFormulaString, isRangesEqual, merge, moveMatrixArray, registerDependencies, spliceArray, touchDependencies, validateDocBodyStructure } from "@univerjs/core";
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, compressBaseRangeValuesPayload, decompressBaseRangeValuesPayload, isCompressedBaseRangeValuesPayload } from "@univerjs-pro/bases";
+import { AddBoardElementMutation, RemoveBoardElementMutation, RemoveBoardElementOnlyMutation, SetBoardElementOrderMutation, UpdateBoardElementMutation } from "@univerjs-pro/boards";
+import { SetMindMapElementMutation } from "@univerjs-pro/boards-mind";
+import { RemoveBoardTableMutation, SetBoardTableMutation } from "@univerjs-pro/boards-table";
+import { RichTextEditingMutation, transformDocumentTextRanges } from "@univerjs/docs";
+import { AddRangeProtectionMutation, AddWorksheetMergeMutation, AddWorksheetProtectionMutation, CopyWorksheetEndMutation, DeleteWorksheetProtectionMutation, EmptyMutation, InsertColCommand, InsertColMutation, InsertRowCommand, InsertRowMutation, InsertSheetMutation, MoveColsCommand, MoveColsMutation, MoveRangeMutation, MoveRowsCommand, MoveRowsMutation, RangeMergeUtil, RemoveColCommand, RemoveColMutation, RemoveNumfmtMutation, RemoveRowCommand, RemoveRowMutation, RemoveSheetMutation, RemoveWorksheetMergeMutation, ReorderRangeMutation, SetColDataMutation, SetColHiddenMutation, SetColVisibleMutation, SetFrozenMutation, SetNumfmtMutation, SetRangeProtectionMutation, SetRangeValuesMutation, SetRowDataMutation, SetRowHiddenMutation, SetRowVisibleMutation, SetSelectionsOperation, SetTabColorMutation, SetWorkbookNameMutation, SetWorksheetColWidthMutation, SetWorksheetHideMutation, SetWorksheetNameMutation, SetWorksheetOrderMutation, SetWorksheetPermissionPointsMutation, SetWorksheetProtectionMutation, SetWorksheetRowAutoHeightMutation, SetWorksheetRowHeightMutation, SetWorksheetRowIsAutoHeightMutation, handleBaseInsertRange, handleBaseMoveRowsCols, handleBaseRemoveRange, handleCommonDefaultRangeChangeWithEffectRefCommands, handleDefaultRangeChangeWithEffectRefCommands, rotateRange } from "@univerjs/sheets";
+import { ApplyPdfMutationBatchMutation, PDF_UNIT_SCHEMA as var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462, PdfAssetStorageKind, PdfEditorMutationKind, createPdfDocumentFromShell, normalizePdfUnitData } from "@univerjs-pro/pdfs";
+import { AddCommentMutation, DeleteCommentMutation, UpdateCommentMutation, UpdateCommentRefMutation } from "@univerjs/thread-comment";
+import { AddConditionalRuleMutation, DeleteConditionalRuleMutation, MoveConditionalRuleMutation, SetConditionalRuleMutation } from "@univerjs/sheets-conditional-formatting";
+import { AddDataValidationMutation, RemoveDataValidationMutation, UpdateDataValidationMutation, UpdateRuleType } from "@univerjs/data-validation";
+import { AddHyperLinkMutation, RemoveHyperLinkMutation, UpdateHyperLinkMutation, UpdateHyperLinkRefMutation } from "@univerjs/sheets-hyper-link";
+import { ReCalcSheetsFilterMutation, RemoveSheetsFilterMutation, SetSheetsFilterCriteriaMutation, SetSheetsFilterRangeMutation } from "@univerjs/sheets-filter";
+import { AddDimensionOutlineMutation, ClearDimensionOutlinesMutation, DimensionOutlineAxis, RemoveDimensionOutlineMutation, SetDimensionOutlineCollapsedMutation, TransformDimensionOutlinesMutation, transformOutlinesByDelete, transformOutlinesByInsert, transformOutlinesByMove } from "@univerjs-pro/sheets-outline";
+import { ErrorType, LexerTreeBuilder, deserializeRangeWithSheetWithCache, generateStringWithSequence, sequenceNodeType, serializeRange, serializeRangeToRefString, singleReferenceToGrid } from "@univerjs/engine-formula";
+import { DrawingApplyType, SetDrawingApplyMutation } from "@univerjs/sheets-drawing";
+import { AddSlideElementMutation, AddSlidePageMutation, CancelSlideGroupMutation, MoveSlidePageMutation, RemoveSlideElementMutation, RemoveSlidePageMutation, SetSlideDrawingApplyMutation, SetSlideElementOrderMutation, SetSlideGroupMutation, SlideDrawingApplyType, UpdateSlideElementMutation, UpdateSlidePageBackgroundMutation } from "@univerjs-pro/slides";
+import { RemoveSlideChartDataSourceMutation, RemoveSlideChartSnapshotMutation, SetSlideChartDataSourceMutation, SetSlideChartSnapshotMutation } from "@univerjs-pro/slides-chart";
+import { RemoveSlideTableMutation, SetSlideTableMutation } from "@univerjs-pro/slides-table";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { BehaviorSubject } from "rxjs";
+import { ErrorCode, isError } from "@univerjs/protocol";
+import { var_core_value_sig3EEE as uuidv4 } from "uuid";
+import { wn } from "./collaboration-transform-mutation-failure.js";
+import { Ln } from "./collaboration-transform-service.js";
+import { Wn } from "./collaboration-transform-controller.js";
+import { In } from "./collaboration-itransform-service.js";
+import { cr } from "./collaboration-board-transform.js";
+import { dr } from "./collaboration-doc-transform.js";
+import { Jr } from "./collaboration-pdf-transform.js";
+import { cu } from "./collaboration-sheet-transform.js";
+import { Uu } from "./collaboration-slide-transform.js";
+import { Ef, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465485 } from "./collaboration-plugin.js";
+import { ud } from "./collaboration-revision-service.js";
+import { md, pd } from "./collaboration-text-encoder.js";
+import { Md } from "./collaboration-b64-decode-unicode.js";
+import { Tf } from "./collaboration-snapshot-service.js";
+import { wf } from "./collaboration-isnapshot-server.js";
+import { sd } from "./collaboration-mutation-service.js";
+import { fd } from "./collaboration-snapshot-loading.js";
+import { Df } from "./collaboration-snapshot-save.js";
+const nd = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983 => {
+    let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB599 = {};
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983) return {
+      cellValue: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983,
+      styleRefMap: undefined
+    };
+    let var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594 = new Map();
+    return {
+      cellValue: new ObjectMatrix(Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464983)).forValue((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461346, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461347, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348) => {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348.s;
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349 && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349 == "object") {
+          let var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4 = JSON.stringify(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349),
+            var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 = var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594.get(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4);
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398 = var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594.size, var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B594.set(var_L0_core_endo_strVal_pure_O1_zalloc_nothrow_sig12FB4, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB599[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461349), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461348.s = "" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46398;
+        }
+      }).getMatrix(),
+      styleRefMap: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB599
+    };
+  },
+  rd = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464986) => !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464986 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985 : new ObjectMatrix(Tools.deepClone(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464985)).forValue((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461354, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461355, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356) => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356.s;
+    if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357 && typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357 == "string") {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464986[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461357];
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399 && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461356.s = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46399);
+    }
+  }).getMatrix(),
+  id = createInterceptorKey("COMPRESS_MUTATION_APPLY"),
+  ad = createInterceptorKey("COMPRESS_MUTATION_SEND"),
+  od = "base.mutation.set-range-values";
+async function Nd({
+  tasks: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055,
+  handleTaskResult: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465056,
+  limit: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465058 = 10,
+  options: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465059 = {
+    retryCount: 3,
+    retryDelay: 200
+  },
+  onError: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465057
+}) {
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055.length === 0) return;
+  let {
+      retryCount: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465060,
+      retryDelay: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465061
+    } = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465059,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465062 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461447 => new Promise(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416 => setTimeout(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461447)),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465063 = async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461448 => {
+      let var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D73 = 0;
+      for (;;) try {
+        return await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461448();
+      } catch (var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC52) {
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465057 == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465057(var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC52), var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D73++, var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D73 > var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465060) throw var_L0_core_endo_caughtError_pure_O1_zalloc_nothrow_sigEEC52;
+        await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465062(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465061);
+      }
+    },
+    var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D130 = 0,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465064 = Array.from({
+      length: Math.min(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465058, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055.length)
+    }, async () => {
+      for (;;) {
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175 = var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D130++;
+        if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175 >= var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055.length) break;
+        let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176 = await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465063(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465055[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175]);
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465056 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465056(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176 = null;
+      }
+    });
+  await Promise.all(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465064);
+}
 export { nd, rd, id, ad, od, Nd };

@@ -1,14 +1,28 @@
-import{BooleanNumber,CommandType,DependentOn,Disposable,DrawingTypeEnum,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,ObjectMatrix,Plugin,Rectangle,Tools,UniverInstanceType,createBaseFormulaTableNameMap,createIdentifier,getOriginCellValue,merge,sequenceExecute,toDisposable,touchDependencies}from"@univerjs/core";
-import{InsertColMutation,InsertRowMutation,InsertSheetMutation,RemoveColMutation,RemoveRowMutation,RemoveSheetMutation,ReorderRangeMutation,SetRangeValuesMutation,SheetSkeletonService}from"@univerjs/sheets";
-import{DrawingApplyType,ISheetDrawingService,SetDrawingApplyMutation,SheetDrawingAnchorType,applySheetDrawingPlacement,getSheetDrawingPlacement}from"@univerjs/sheets-drawing";
-import{IFormulaReferenceDataProviderRegistry,createUnavailableReferenceDataResponse}from"@univerjs-pro/engine-formula";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{AddBoardElementMutation,IBoardElementService,RemoveBoardElementMutation,UpdateBoardElementMutation,collectBoardElementIdsForRemoveWithBoundConnectors,createEmbedBoardsFloatingElement,isEmbedBoardsFloatingElement}from"@univerjs-pro/boards";
-import{AddSlideElementMutation,AddSlidePageMutation,ISlideDrawingService,RemoveSlideElementMutation,RemoveSlidePageMutation,UpdateSlideElementMutation,createEmbedSlidesFloatingElement,createEmbedSlidesPage,getEmbedSlidesFloatingCustomData,resolvedSlideLayersToDrawingMap}from"@univerjs-pro/slides";
-import{IDrawingManagerService}from"@univerjs/drawing";
-import{ApplyBaseJson1Mutation,BaseJson1OpApplier,createEmbedBasesTable,createEmbedBasesTableAddMutation,createEmbedBasesTableRemoveMutation,ensureBaseTableCellLayout,getBaseCellFormulaValue}from"@univerjs-pro/bases";
-import{createDocsCustomBlockInsertMutation,createDocsCustomBlockRemoveMutation}from"@univerjs/docs";
-import{BehaviorSubject}from"rxjs";
-function Ln(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591){switch(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591){case UniverInstanceType.UNIVER_SHEET:return"sheet";case UniverInstanceType.UNIVER_DOC:return"doc";case UniverInstanceType.UNIVER_SLIDE:return"slide";case UniverInstanceType.UNIVER_BASE:return"base";case UniverInstanceType.UNIVER_BOARD:return"board";default:throw Error("UNSUPPORTED_UNIT_TYPE:"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591);}}
-
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, ObjectMatrix, Plugin, Rectangle, Tools, UniverInstanceType, createBaseFormulaTableNameMap, createIdentifier, getOriginCellValue, merge, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { InsertColMutation, InsertRowMutation, InsertSheetMutation, RemoveColMutation, RemoveRowMutation, RemoveSheetMutation, ReorderRangeMutation, SetRangeValuesMutation, SheetSkeletonService } from "@univerjs/sheets";
+import { DrawingApplyType, ISheetDrawingService, SetDrawingApplyMutation, SheetDrawingAnchorType, applySheetDrawingPlacement, getSheetDrawingPlacement } from "@univerjs/sheets-drawing";
+import { IFormulaReferenceDataProviderRegistry, createUnavailableReferenceDataResponse } from "@univerjs-pro/engine-formula";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { AddBoardElementMutation, IBoardElementService, RemoveBoardElementMutation, UpdateBoardElementMutation, collectBoardElementIdsForRemoveWithBoundConnectors, createEmbedBoardsFloatingElement, isEmbedBoardsFloatingElement } from "@univerjs-pro/boards";
+import { AddSlideElementMutation, AddSlidePageMutation, ISlideDrawingService, RemoveSlideElementMutation, RemoveSlidePageMutation, UpdateSlideElementMutation, createEmbedSlidesFloatingElement, createEmbedSlidesPage, getEmbedSlidesFloatingCustomData, resolvedSlideLayersToDrawingMap } from "@univerjs-pro/slides";
+import { IDrawingManagerService } from "@univerjs/drawing";
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, createEmbedBasesTable, createEmbedBasesTableAddMutation, createEmbedBasesTableRemoveMutation, ensureBaseTableCellLayout, getBaseCellFormulaValue } from "@univerjs-pro/bases";
+import { createDocsCustomBlockInsertMutation, createDocsCustomBlockRemoveMutation } from "@univerjs/docs";
+import { BehaviorSubject } from "rxjs";
+function Ln(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591) {
+  switch (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591) {
+    case UniverInstanceType.UNIVER_SHEET:
+      return "sheet";
+    case UniverInstanceType.UNIVER_DOC:
+      return "doc";
+    case UniverInstanceType.UNIVER_SLIDE:
+      return "slide";
+    case UniverInstanceType.UNIVER_BASE:
+      return "base";
+    case UniverInstanceType.UNIVER_BOARD:
+      return "board";
+    default:
+      throw Error("UNSUPPORTED_UNIT_TYPE:" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461591);
+  }
+}
 export { Ln as toResourceRefUnitType };

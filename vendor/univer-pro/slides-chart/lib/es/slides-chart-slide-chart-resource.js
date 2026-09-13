@@ -1,9 +1,8 @@
-import{ChartDataSourceRuntimeStatus,ChartResourceRepository,ChartResourceRuntimeService,DEFAULT_CHART_RESOURCE_HEADER_ROW,IChartDataSourceRuntimeService,ResourceRefChartDataSourceAdapter,UniverChartPlugin,buildChartDataSetFromValues,buildChartPreviewData,buildOrientedChartDataSet,chartConfigInterpreter,describeChartModel,isInlineChartDataSource,isReferencedChartDataSource,toChartCreateConfigSnapshot,toChartModelConfigReplacement,toChartModelUpdate}from"@univerjs-pro/engine-chart";
-import{AddSlideElementMutation,ISlideDrawingService,PageElementTypeEnum,PageTypeEnum,RemoveSlideElementMutation,ReorderSlideElementsCommand,UpdateSlideDrawingCommand,UpdateSlideElementMutation,getSlideCommandTarget}from"@univerjs-pro/slides";
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,Tools,UniverInstanceType,generateRandomId,getDrawingOrderIndex,merge,normalizeDrawingOrderIndex,sequenceExecute,touchDependencies}from"@univerjs/core";
-import{Subject,filter,firstValueFrom}from"rxjs";
-import{ShapeLineTypeEnum}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-var L=class extends ChartResourceRepository{};
-
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, ReorderSlideElementsCommand, UpdateSlideDrawingCommand, UpdateSlideElementMutation, getSlideCommandTarget } from "@univerjs-pro/slides";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { Subject, filter, firstValueFrom } from "rxjs";
+import { ShapeLineTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+var L = class extends ChartResourceRepository {};
 export { L as SlideChartResourceService };

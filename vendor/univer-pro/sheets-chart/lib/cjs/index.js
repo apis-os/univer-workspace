@@ -1,1 +1,2515 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/engine-chart"),t=require("@univerjs/core"),n=require("@univerjs/sheets-drawing"),r=require("@univerjs/sheets"),i=require("rxjs"),a=require("@univerjs/engine-formula"),o=require("@univerjs/engine-render"),s=require("@univerjs-pro/license");const c=new Set([e.ChartTypeBits["Line"],e.ChartTypeBits["Column"],e.ChartTypeBits["ColumnStacked"],e.ChartTypeBits["ColumnPercentStacked"],e.ChartTypeBits["Bar"],e.ChartTypeBits["BarStacked"],e.ChartTypeBits["BarPercentStacked"],e.ChartTypeBits["Area"],e.ChartTypeBits["AreaStacked"],e.ChartTypeBits["AreaPercentStacked"],e.ChartTypeBits["Combination"],e.ChartTypeBits["Waterfall"]]);function l(v567){if(v567.length===0)return[];let v568=[v567[0]];for(let v179=1;v179<v567.length&&v567[v179]===v567[v179-1]+1;v179++)v568.push(v567[v179]);return v568;}function u(v569){return v569.length>=2&&v569.every((v180,v181)=>v181===0||v180===v569[v181-1]+1);}function d(v570,v571,v572){return v572?[v571[0]]:l(v570);}function f(v573,v574){let v575=(0,e.generateChartContext)(v573),v576=(0,e.canonicalizeChartContext)(v574.context??{}),v577=v575.categoryResourceIndexes??[],v578=v575.seriesResourceIndexes??[],v579=v576.categoryIndexes===undefined&&v576.seriesIndexes===undefined&&e.chartBitsUtils["baseOn"](v574.chartType,e.ChartTypeBits["Scatter"])&&v577.length===0&&v578.length>=2,v580=v576.categoryIndexes===undefined?d(v577,v578,v579):[...v576.categoryIndexes],v581=new Set(v580),v582=v576.seriesIndexes===undefined?v578.filter(v182=>!v581.has(v182)):[...v576.seriesIndexes],v583=v576.multiLevelCategoryAxis??(c.has(v574.chartType)&&u(v580));return{...v576,categoryIndexes:v580,multiLevelCategoryAxis:v583,seriesIndexes:v582};}function p(v584,v585){return(0,e.generateChartContext)(v584,v585,false);}function m(v586,v587,v588,v589){let v590=v588===undefined?undefined:{categoryIndexes:v588.categoryIndexes,seriesIndexes:v588.seriesIndexes};return f(v586,{chartType:v587,...(v588===undefined&&v589===undefined?{}:{context:{...v590,...v589}})});}function h(v591,v592,v593,v594){let{headers:v595,categoryIndexes:v596,categoryResourceIndexes:v597,categoryType:v598,seriesIndexes:v599,seriesResourceIndexes:v600,...v601}=v593,v602=m(v591,v592,v594,v601),v603=v601.multiLevelCategoryAxis??(v602.multiLevelCategoryAxis?true:undefined);return p(v591,{...v601,categoryIndexes:v602.categoryIndexes,seriesIndexes:v602.seriesIndexes,...(v603===undefined?{}:{multiLevelCategoryAxis:v603})});}function g(v604,v605,v606){return(0,e.reconcileChartContext)(v604,v606,v605);}function _(v607){let{mergeRanges:v608,worksheetRows:v609,worksheetColumns:v610,transpose:v611,fieldIndexOffset:v612=0}=v607,v613=new Map(v609.map((v183,v184)=>[v183,v184])),v614=new Map(v610.map((v185,v186)=>[v185,v186])),v615=[];for(let v187 of v608){let v72=v613.get(v187.startRow),v73=v614.get(v187.startColumn);if(v72===undefined||v73===undefined)continue;let v74=v609.filter(v36=>v36>=v187.startRow&&v36<=v187.endRow).length,v75=v610.filter(v37=>v37>=v187.startColumn&&v37<=v187.endColumn).length,v76=v611?v74:v75,v77=v611?v75:v74;if(v76!==1||v77<2)continue;let v78=(v611?v72:v73)+v612,v79=v611?v73:v72;v615.push({fieldIndex:v78,startIndex:v79,endIndex:v79+v77-1});}return v615.sort((v188,v189)=>v188.fieldIndex-v189.fieldIndex||v188.startIndex-v189.startIndex);}const v=v616=>{var v617;return((v617=v616.body)==null?undefined:v617.dataStream["replace"](/\r\n$/,""))||"";};function y(v618,v619,v620,v621,v622,v623,v624,v625){let{startRow:v626,startColumn:v627,endColumn:v628,endRow:v629}=v618,v630={};if(v626===v629)for(let v190=v627;v190<=v628;v190++){let v80=b(v619,v626,v190,v624,v630,v625),v81=v190-v627;v621.setValue(v620,v81,v80.value),v622.setValue(v620,v81,v80.sourceType),v623.setValue(v620,v81,v80.label);}if(v627===v628)for(let v191=v626;v191<=v629;v191++){let v82=b(v619,v191,v627,v624,v630,v625),v83=v191-v626;v621.setValue(v620,v83,v82.value),v622.setValue(v620,v83,v82.sourceType),v623.setValue(v620,v83,v82.label);}}function b(v631,v632,v633,v634,v635,v636){var v637;let v638=v631.getCell(v632,v633),v639=((v637=v631.getCellRaw)==null?undefined:v637.call(v631,v632,v633))??v638;return ee(v638,v634,v635,v639!=null&&v639.f||v639!=null&&v639.si?v639:v631.getCellWithFilteredInterceptors?v631.getCellWithFilteredInterceptors(v632,v633,"sheet-chart.source-value",v192=>v192.priority!==r.InterceptCellContentPriority["NUMFMT"]):v639,v636);}function ee(v640,v641,v642,v643=v640,v644){if(!v640||v640.v===undefined&&!v640.p||v640.v===null&&!v640.p)return{value:null,label:"",sourceType:e.ChartSourceDataTypeEnum["Null"]};let{v:v645,p:v646}=v640;if(v646){let v193=v(v646);return{value:v193,label:v193,sourceType:e.ChartSourceDataTypeEnum["STRING"]};}let v647=(0,t.getCellValueType)(v640),v648=String(v645);if(v647===t.CellValueType["STRING"]||v647===t.CellValueType["FORCE_STRING"])return{value:v648,label:v648,sourceType:e.ChartSourceDataTypeEnum["STRING"]};if(v647===t.CellValueType["BOOLEAN"]){let v194=!!v645;return{value:+!!v194,label:v194?"TRUE":"FALSE",sourceType:e.ChartSourceDataTypeEnum["BOOLEAN"]};}return v647===t.CellValueType["NUMBER"]?te(v640,v643,v648,v641,v642,v644):{value:v648,label:v648,sourceType:e.ChartSourceDataTypeEnum["STRING"]};}function te(v649,v650,v651,v652,v653,v654){var v655;let{v:v656,s:v657}=v649,v658=(v650==null?undefined:v650.v)!==undefined&&v650.v!==null?v650.v:v656,v659=(v655=v652.get((v650==null?undefined:v650.s)??v657))==null||(v655=v655.n)==null?undefined:v655.pattern,v660=typeof v658=="number"?v658:Number(v658),v661=Number.isFinite(v660),v662=typeof v658=="string"&&v661,v663=(v650==null?undefined:v650.v)!==undefined&&v650.v!==null&&v650.v!==v656;v659&&!v653[v659]&&(v653[v659]=t.numfmt["getFormatInfo"](v659));let v664=v659?v653[v659]:undefined;if(v664!=null&&v664.isDate){var v665;let v195=v661?v660:(v665=t.numfmt["parseDate"](String(v658),v654))==null?undefined:v665.v;return{value:v195==null?Number(v658):(0,e.excelDateToUnixMilliseconds)(v195,(v654==null?undefined:v654.dateSystem)!==t.DateSystem["Date1904"]),label:!v663&&v662&&v659?t.numfmt["format"](v659,v660,v654):v651,sourceType:e.ChartSourceDataTypeEnum["Date"]};}if(v659!==t.DEFAULT_NUMBER_FORMAT&&v664){var v666;return{value:v661?v660:((v666=t.numfmt["parseNumber"](String(v658)))==null?undefined:v666.v)??Number(v658),label:!v663&&v662&&v659?t.numfmt["format"](v659,v660,v654):v651,sourceType:e.ChartSourceDataTypeEnum["NUMBER"]};}return{value:Number(v658),label:v651,sourceType:e.ChartSourceDataTypeEnum["NUMBER"]};}function x({numfmtOptions:v667,range:v668,styles:v669,worksheet:v670}){let v671=[],v672=[];for(let v196=v668.startRow;v196<=v668.endRow;v196++)v670.getRowVisible(v196)&&v671.push(v196);for(let v197=v668.startColumn;v197<=v668.endColumn;v197++)v670.getColVisible(v197)&&v672.push(v197);let v673={};return{data:v671.map(v198=>v672.map(v84=>{let v85=b(v670,v198,v84,v669,v673,v667);return{value:v85.value,type:v85.sourceType,label:v85.label};})),rowIndexes:v671.map(v199=>v199-v668.startRow),columnIndexes:v672.map(v200=>v200-v668.startColumn),mergeRanges:v670.getMergeData().map(v201=>({startRow:v201.startRow-v668.startRow,endRow:v201.endRow-v668.startRow,startColumn:v201.startColumn-v668.startColumn,endColumn:v201.endColumn-v668.startColumn}))};}function S(v674){"@babel/helpers - typeof";return S=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v202){return typeof v202;}:function(v203){return v203&&typeof Symbol=="function"&&v203.constructor===Symbol&&v203!==Symbol.prototype?"symbol":typeof v203;},S(v674);}function ne(v675,v676){if(S(v675)!="object"||!v675)return v675;var v677=v675[Symbol.toPrimitive];if(v677!==undefined){var v678=v677.call(v675,v676||"default");if(S(v678)!="object")return v678;throw TypeError("@@toPrimitive must return a primitive value.");}return(v676==="string"?String:Number)(v675);}function C(v679){var v680=ne(v679,"string");return S(v680)=="symbol"?v680:v680+"";}function w(v681,v682,v683){return(v682=C(v682))in v681?Object.defineProperty(v681,v682,{value:v683,enumerable:true,configurable:true,writable:true}):v681[v682]=v683,v681;}var re=class extends e.ChartDataSource{constructor(v204,v205){super(),this._univerInstanceService=v204,w(this,"_snapshot$",undefined),w(this,"_projector",undefined),w(this,"_projectorHeaderRow",undefined),w(this,"_projectorIsRowDirection",undefined),w(this,"snapshot$",undefined),w(this,"rangeInfo$",undefined),w(this,"data$",undefined),w(this,"isRowDirection$",undefined),w(this,"canSwitchOrient$",undefined);let v206=t.Tools["deepClone"](v205),v207=v206.isRowDirection===undefined||v206.isRowDirection,v208={...v206,isRowDirection:v207},v209=this.convertDataSet(v208);this._snapshot$=new i.BehaviorSubject({revision:0,rangeRevision:0,rangeInfo:v208,dataSet:v209,isRowDirection:v207,canSwitchOrient:true}),this.snapshot$=this._snapshot$["pipe"]((0,i.map)(v86=>({...v86,rangeInfo:t.Tools["deepClone"](v86.rangeInfo)}))),this.rangeInfo$=this.snapshot$["pipe"]((0,i.map)(v87=>v87.rangeInfo)),this.data$=this.snapshot$["pipe"]((0,i.map)(v88=>v88.dataSet)),this.isRowDirection$=this.snapshot$["pipe"]((0,i.map)(v89=>v89.isRowDirection)),this.canSwitchOrient$=this.snapshot$["pipe"]((0,i.map)(v90=>v90.canSwitchOrient));}getRangeInfo(){return t.Tools["deepClone"](this._snapshot$["getValue"]().rangeInfo);}get isRowDirection(){return this._snapshot$["getValue"]().isRowDirection;}canSwitchOrient(){return true;}convertDataSet(v210=this.getRangeInfo()){let{headerRow:v211,rangeInfo:v212,isRowDirection:v213}=v210,{unitId:v214,subUnitId:v215,range:v216}=v212;if(v216.startColumn===-1||v216.startRow===-1)return{dimensions:[],source:[]};let v217=(0,r.getSheetCommandTarget)(this._univerInstanceService,{unitId:v214,subUnitId:v215});if(!v217)return{dimensions:[],source:[]};let{workbook:v218,worksheet:v219}=v217,v220=t.Range["transformRange"](v216,v219),v221=v218.getStyles(),v222=x({numfmtOptions:{locale:(0,t.getNumfmtLocaleTag)(v218.getSnapshot().locale),dateSystem:v218.getDateSystem()},range:v220,styles:v221,worksheet:v219});return this._getProjector(v211??e.CHART_HEADER_ROW_NONE,!!v213).project(v222);}_getProjector(v223,v224){let v225=!v224;return(!this._projector||this._projectorHeaderRow!==v223||this._projectorIsRowDirection!==v225)&&(this._projector=(0,e.createChartDataSetProjector)({headerRow:v223,isRowDirection:v225}),this._projectorHeaderRow=v223,this._projectorIsRowDirection=v225),this._projector;}getDataSet(){return this._snapshot$["getValue"]().dataSet;}getDimensionCount(){return this._snapshot$["getValue"]().dataSet["dimensions"].length;}refreshDataSet(){let v226=this._snapshot$["getValue"]();this._emit({...v226,dataSet:this.convertDataSet(v226.rangeInfo)},false);}_emit(v227,v228){let v229=this._snapshot$["getValue"]();this._snapshot$["next"]({...v227,revision:v229.revision+1,rangeRevision:v229.rangeRevision+ +!!v228});}dispose(){let v230=this._snapshot$["getValue"]();this._snapshot$["next"]({...v230,dataSet:this.getEmptyDataSet(),revision:v230.revision+1}),this._snapshot$["complete"](),this._projector=undefined,super.dispose();}},T=class extends e.ChartDataSource{constructor(v231,v232){super(),this._univerInstanceService=v231,w(this,"_snapshot$",undefined),w(this,"snapshot$",undefined),w(this,"rangeInfo$",undefined),w(this,"data$",undefined),w(this,"isRowDirection$",undefined),w(this,"canSwitchOrient$",undefined);let v233=this.convertDataSet(v232);this._snapshot$=new i["BehaviorSubject"]({revision:0,rangeRevision:0,rangeInfo:t.Tools["deepClone"](v232),dataSet:v233,isRowDirection:false,canSwitchOrient:false}),this.snapshot$=this._snapshot$["pipe"]((0,i.map)(v91=>({...v91,rangeInfo:t.Tools["deepClone"](v91.rangeInfo)}))),this.rangeInfo$=this.snapshot$["pipe"]((0,i.map)(v92=>v92.rangeInfo)),this.data$=this.snapshot$["pipe"]((0,i.map)(v93=>v93.dataSet)),this.isRowDirection$=this.snapshot$["pipe"]((0,i.map)(v94=>v94.isRowDirection)),this.canSwitchOrient$=this.snapshot$["pipe"]((0,i.map)(v95=>v95.canSwitchOrient));}canSwitchOrient(){return false;}getRangeInfo(){return t.Tools["deepClone"](this._snapshot$["getValue"]().rangeInfo);}get isRowDirection(){return this._snapshot$["getValue"]().isRowDirection;}convertDataSet(v234=this.getRangeInfo()){let v235=this._univerInstanceService,v236=[],v237={};for(let{header:v96}of v234){if(!v96){v236.push("");continue;}let{unitId:v38,subUnitId:v39,range:v40}=v96,v41=v235.getUnit(v38,t.UniverInstanceType["UNIVER_SHEET"]);if(!v41)return{dimensions:[],source:[]};let v42=v41.getSheetBySheetId(v39);if(!v42)return{dimensions:[],source:[]};let v43=v41.getStyles(),{label:v44}=b(v42,v40.startRow,v40.startColumn,v43,v237,{locale:(0,t.getNumfmtLocaleTag)(v41.getSnapshot().locale),dateSystem:v41.getDateSystem()});v236.push(v44);}let v238=0,v239=new t.ObjectMatrix(),v240=new t["ObjectMatrix"](),v241=new t["ObjectMatrix"](),v242=[],v243=[];for(let{range:v97}of v234){let{unitId:v45,subUnitId:v46,range:v47}=v97,v48=v235.getUnit(v45,t.UniverInstanceType["UNIVER_SHEET"]);if(!v48)return{dimensions:[],source:[]};let v49=v48.getSheetBySheetId(v46);if(!v49)return{dimensions:[],source:[]};y(v47,v49,v238,v239,v240,v241,v48.getStyles(),{locale:(0,t.getNumfmtLocaleTag)(v48.getSnapshot().locale),dateSystem:v48.getDateSystem()});let v50=v47.startRow===v47.endRow,v51=v47.startColumn===v47.endColumn,v52=true;if(v50?v52=v49.getRowVisible(v47.startRow):v51&&(v52=v49.getColVisible(v47.startColumn)),v52||v243.push(v238),v50||v51){let v17=v49.getMergeData().filter(v9=>v9.startRow>=v47.startRow&&v9.endRow<=v47.endRow&&v9.startColumn>=v47.startColumn&&v9.endColumn<=v47.endColumn),v18=Array.from({length:v47.endRow-v47.startRow+1},(v10,v11)=>v47.startRow+v11),v19=Array.from({length:v47.endColumn-v47.startColumn+1},(v12,v13)=>v47.startColumn+v13);v242.push(..._({mergeRanges:v17,worksheetRows:v18,worksheetColumns:v19,transpose:v50,fieldIndexOffset:v238}));}v238++;}return{dimensions:v236,source:v239.toArray(),sourceType:v240.toArray(),sourceLabels:v241.toArray(),...(v243.length?{hiddenFieldIndexes:v243}:{}),categorySpans:v242};}getDataSet(){return this._snapshot$["getValue"]().dataSet;}getDimensionCount(){return this._snapshot$["getValue"]().dataSet["dimensions"].length;}refreshDataSet(){let v244=this._snapshot$["getValue"]();this._emit({...v244,dataSet:this.convertDataSet(v244.rangeInfo)},false);}_emit(v245,v246){let v247=this._snapshot$["getValue"]();this._snapshot$["next"]({...v245,revision:v247.revision+1,rangeRevision:v247.rangeRevision+ +!!v246});}dispose(){let v248=this._snapshot$["getValue"]();this._snapshot$["next"]({...v248,dataSet:this.getEmptyDataSet(),revision:v248.revision+1}),this._snapshot$["complete"](),super.dispose();}};function ie(v684,v685){return Array.isArray(v685)?new T(v684,v685):new re(v684,v685);}function E(v686){return v686!==undefined&&v686.type!==e.ChartSourceDataTypeEnum["Null"];}function D(v687){return(v687==null?undefined:v687.type)===e.ChartSourceDataTypeEnum["STRING"]||(v687==null?undefined:v687.type)===e.ChartSourceDataTypeEnum["Date"];}function O(v688){return v688.every(v249=>v249===undefined||v249.type===e.ChartSourceDataTypeEnum["Null"]||D(v249));}function k(v689){return v689.some(D);}function A(v690,v691){let[v692,...v693]=v690.data[v691]??[];return v693.length<1||(v692==null?undefined:v692.type)!==e.ChartSourceDataTypeEnum["Null"]&&!D(v692)||!v693.every(E)?false:v693.every((v250,v251)=>v690.data["slice"](v691+1).some(v98=>{var v99;return((v99=v98[v251+1])==null?undefined:v99.type)===e.ChartSourceDataTypeEnum["NUMBER"];}));}function j(v694,v695){var v696;if(v694.data["length"]===0)return;if(v695){var v697;let v252=v694.data["findIndex"](v100=>v100.some(E));if(v252<0)return;let v253=v694.data["slice"](v252).map(v101=>v101[0]);return k(v253)&&O(v253)?((v697=v694.rowIndexes)==null?undefined:v697[v252])??v252:undefined;}let v698=v694.data["findIndex"](v254=>v254.some(E));if(v698<0)return;let v699=v694.data[v698];return k(v699)&&O(v699)||A(v694,v698)?((v696=v694.rowIndexes)==null?undefined:v696[v698])??v698:undefined;}function M(v700,v701){let v702=v701.headerRow??j(v700,v701.isRowDirection)??e.CHART_HEADER_ROW_NONE;return{dataSet:(0,e.createChartDataSetProjector)({headerRow:v702,isRowDirection:!v701.isRowDirection}).project(v700),headerRow:v702};}function ae(v703,v704){if(v703===undefined&&v704===undefined)return;let v705={};return v703!==undefined&&(v705.categoryIndexes=[...v703]),v704!==undefined&&(v705.seriesIndexes=[...v704]),v705;}function oe(v706,v707){let{dataSet:v708,headerRow:v709}=M(v706,v707),v710=ae(v707.categoryIndexes,v707.seriesIndexes),v711=f(v708,{chartType:v707.chartType,context:v710});return{dataSet:v708,mapping:{headerRow:v709,isRowDirection:v707.isRowDirection,categoryIndexes:v711.categoryIndexes??[],seriesIndexes:v711.seriesIndexes??[]}};}function N(v712,v713){return function(v255,v256){v713(v255,v256,v712);};}function P(v714,v715,v716,v717){var v718=arguments.length,v719=v718<3?v715:v717===null?v717=Object.getOwnPropertyDescriptor(v715,v716):v717,v720;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v719=Reflect.decorate(v714,v715,v716,v717);else{for(var v721=v714.length-1;v721>=0;v721--)(v720=v714[v721])&&(v719=(v718<3?v720(v719):v718>3?v720(v715,v716,v719):v720(v715,v716))||v719);}return v718>3&&v719&&Object.defineProperty(v715,v716,v719),v719;}let F=class extends t.Disposable{get activeChartModel(){return this._activeChartModel$["getValue"]();}constructor(v257){super(),this._injector=v257,w(this,"_activeChartModel$",new i.BehaviorSubject(null)),w(this,"_chartModels",new Map()),w(this,"_chartModelAdded$",new i["Subject"]()),w(this,"_chartModelRemoved$",new i.Subject()),w(this,"activeChartModel$",this._activeChartModel$["asObservable"]()),w(this,"chartModelAdded$",this._chartModelAdded$["asObservable"]()),w(this,"chartModelRemoved$",this._chartModelRemoved$["asObservable"]());}setActiveChartModel(v258){this._activeChartModel$["next"](v258);}getActiveChartModel(){return this._activeChartModel$["getValue"]();}getChartModel(v259){return this._chartModels["get"](v259);}createChartModel(v260,v261,v262=false){let v263=new e["ChartModel"](v260,v261,this._injector);v263.init(),this._chartModels["set"](v263.id,v263);let v264=v261.dataSource["getDataSet"](),v265=v263.context;return v263.setChartContext(p(v264,v265)),v262&&v263.assignStyle({titles:{title:{content:""}}}),this._chartModelAdded$["next"](v263),v263;}reconcileChartModelContext(v266){let v267=this._chartModels["get"](v266);return v267?g(v267.dataSource["getDataSet"](),v267.chartType,v267.context):undefined;}rebuildChartModelContextForDataSource(v268,v269,v270){let v271=this._chartModels["get"](v268);if(v271)return h(v269.getDataSet(),v271.chartType,v271.context,v270);}removeChartModel(v272){let v273=this._chartModels["get"](v272);return v273?(this._chartModels["delete"](v272),this.activeChartModel===v273&&this._activeChartModel$["next"](null),v273.dispose(),this._chartModelRemoved$["next"](v272),true):false;}dispose(){Array.from(this._chartModels["keys"]()).forEach(v102=>this.removeChartModel(v102)),this._activeChartModel$["complete"](),this._chartModelAdded$["complete"](),this._chartModelRemoved$["complete"](),super.dispose();}};F=P([N(0,(0,t.Inject)(t.Injector))],F);const I={Multi:"multi",Single:"single"};function L(v722){let{unitId:v723,subUnitId:v724,range:v725}=v722;return[v723,v724,v725.startRow,v725.endRow,v725.startColumn,v725.endColumn];}function R(v726){return JSON.stringify(Array.isArray(v726)?[I.Multi,v726.map(v274=>[v274.header?L(v274.header):null,L(v274.range)])]:[I.Single,L(v726.rangeInfo),v726.headerRow??null]);}function z(v727){return Array.isArray(v727)?R(v727):JSON.stringify([I.Single,L(v727.rangeInfo),v727.isRowDirection??true,v727.headerRow??null]);}const B=new Set([r.AddWorksheetMergeMutation["id"],r.SetRangeValuesMutation["id"],r.ReorderRangeMutation["id"],r.SetRowHiddenMutation["id"],r.SetRowVisibleMutation["id"],r.SetColHiddenMutation["id"],r.SetColVisibleMutation["id"],r.RemoveColMutation["id"],r.RemoveRowMutation["id"],r.MarkDirtyFilterChangeMutation["id"],r.SetNumfmtMutation["id"],r.RemoveNumfmtMutation["id"],r.RemoveWorksheetMergeMutation["id"]]),se=new Set([r.AddWorksheetMergeMutation["id"],r.RemoveWorksheetMergeMutation["id"],r.SetColHiddenMutation["id"],r.SetColVisibleMutation["id"],r.SetRowHiddenMutation["id"],r.SetRowVisibleMutation["id"]]),ce=Object.freeze({startRow:-1,startColumn:-1,endRow:0,endColumn:0});function le(v728){let v729=false,v730=false;return{dispose:()=>{v729=true;},publish:()=>{v729||v730||(v730=true,queueMicrotask(()=>{v730=false,v729||v728();}));}};}let V=class extends t.Disposable{constructor(v275,v276){super(),this._commandService=v275,this._refRangeService=v276,w(this,"_entries",new Map());}watch(v277,v278){let v279=R(v277),v280={rangeInfo:t.Tools["deepClone"](v277),callbacks:v278},v281=this._entries["get"](v279);v281||(v281={key:v279,consumers:new Set(),watcher:{dispose:()=>{}}},v281.watcher=this._watchRange(t.Tools["deepClone"](v277),()=>this._publishDataChanged(v281),v103=>this._publishRangeChanged(v281,v103)),this._entries["set"](v279,v281)),v281.consumers["add"](v280);let v282=false;return(0,t.toDisposable)(()=>{v282||(v282=true,v281.consumers["delete"](v280),!(v281.consumers["size"]>0||this._entries["get"](v279)!==v281)&&(this._entries["delete"](v279),v281.watcher["dispose"]()));});}_publishDataChanged(v283){Array.from(v283.consumers).forEach(v104=>v104.callbacks["onDataChanged"]());}_publishRangeChanged(v284,v285){Array.from(v284.consumers).forEach(v105=>{let v106;if(Array.isArray(v285))v106=t.Tools["deepClone"](v285);else{let v53=t.Tools["deepClone"](v105.rangeInfo);v53.rangeInfo=t.Tools["deepClone"](v285.rangeInfo),v285.headerRow===undefined?delete v53.headerRow:v53.headerRow=v285.headerRow,v106=v53;}v105.callbacks["onRangeChanged"](v106);});}_watchRange(v286,v287,v288){let v289=()=>v288(t.Tools["deepClone"](v286));return Array.isArray(v286)?this._watchMultiRange(v286,v287,v289):this._watchSingleRange(v286,v287,v289);}_watchSingleRange(v290,v291,v292){let{unitId:v293,subUnitId:v294,range:v295}=v290.rangeInfo;if(v290.headerRow===undefined||v290.headerRow===e.CHART_HEADER_ROW_NONE){let v107=this._watchSourceCommands([v290.rangeInfo],v291,v292),v108=this._refRangeService["watchRange"](v293,v294,v295,(v54,v55)=>{v290.rangeInfo["range"]=v55?{...v55}:this._emptyRange(),v292();});return(0,t.toDisposable)(()=>{v107.dispose(),v108.dispose();});}let v296={...v295,startRow:v295.startRow+v290.headerRow,endRow:v295.startRow+v290.headerRow},v297=le(()=>{let v109=v290.rangeInfo["range"];v296&&v109.startRow>=0?v290.headerRow=v296.startRow-v109.startRow:v290.headerRow=e.CHART_HEADER_ROW_NONE,v292();}),v298=this._watchSourceCommands([v290.rangeInfo],v291,v297.publish),v299=this._refRangeService["watchRange"](v293,v294,v295,(v110,v111)=>{v290.rangeInfo["range"]=v111?{...v111}:this._emptyRange(),v297.publish();}),v300=this._refRangeService["watchRange"](v293,v294,v296,(v112,v113)=>{v296=v113?{...v113}:null,v297.publish();});return(0,t.toDisposable)(()=>{v297.dispose(),v298.dispose(),v299.dispose(),v300.dispose();});}_watchMultiRange(v301,v302,v303){let v304=v301.flatMap(v114=>[v114.header,v114.range]).filter(v115=>!!v115),v305=le(v303),v306=this._watchSourceCommands(v304,v302,v305.publish),v307=v304.map(v116=>this._refRangeService["watchRange"](v116.unitId,v116.subUnitId,v116.range,(v56,v57)=>{v116.range=v57?{...v57}:this._emptyRange(),v305.publish();}));return(0,t.toDisposable)(()=>{v305.dispose(),v306.dispose(),v307.forEach(v58=>v58.dispose());});}_watchSourceCommands(v308,v309,v310){let v311=new Map();v308.forEach(v117=>{let v118=v311.get(v117.unitId);v118||(v118=new Map(),v311.set(v117.unitId,v118));let v119=v118.get(v117.subUnitId)??[];v119.push(v117),v118.set(v117.subUnitId,v119);});let v312=(v120,v121)=>{let v122=v59=>v121.some(v20=>t.Rectangle["intersects"](v20.range,v59));if(v120.id===r.SetRangeValuesMutation["id"]){let{cellValue:v60}=v120.params;v122(new t.ObjectMatrix(v60).getStartEndScope())&&v309();}else{if(v120.id===r.ReorderRangeMutation["id"]){let{range:v21}=v120.params;v122(v21)&&v309();}else{if(se.has(v120.id)){let{ranges:v14}=v120.params;v14.some(v122)&&v309();}else{if(v120.id===r.RemoveColMutation["id"]||v120.id===r.RemoveRowMutation["id"]){let{range:v7}=v120.params,v8=v121.filter(v4=>t.Rectangle["contains"](v7,v4.range));v8.length&&(v8.forEach(v5=>v5.range=this._emptyRange()),v310());}else{if(v120.id===r.MarkDirtyFilterChangeMutation["id"]){let{filterRange:v6}=v120.params;v122(v6)&&v309();}else{if(v120.id===r.SetNumfmtMutation["id"]){let{values:v3}=v120.params;Object.keys(v3).some(v1=>v3[v1].ranges["some"](v122))&&v309();}else{if(v120.id===r.RemoveNumfmtMutation["id"]){let{ranges:v2}=v120.params;v2.some(v122)&&v309();}}}}}}}};return this._commandService["onCommandExecuted"](v123=>{var v124;if(!B.has(v123.id))return;let{unitId:v125,subUnitId:v126}=v123.params,v127=(v124=v311.get(v125))==null?undefined:v124.get(v126);v127&&v312(v123,v127);});}_emptyRange(){return{...ce};}dispose(){this._entries["forEach"](v128=>v128.watcher["dispose"]()),this._entries["clear"](),super.dispose();}};V=P([N(0,t.ICommandService),N(1,(0,t.Inject)(r.RefRangeService))],V);var ue=class{constructor(v313,v314){this._release=v314,w(this,"_dataSource$",undefined),w(this,"_dataChanged$",new i["Subject"]()),w(this,"_entry",undefined),w(this,"_isDisposed",false),w(this,"dataSource$",undefined),w(this,"dataChanged$",undefined),this._entry=v313,this._dataSource$=new i["BehaviorSubject"](v313.dataSource),this.dataSource$=this._dataSource$["asObservable"](),this.dataChanged$=this._dataChanged$["asObservable"]();}get dataSource(){return this._dataSource$["getValue"]();}get entry(){return this._entry;}attach(v315){this._entry=v315,this._dataSource$["next"](v315.dataSource);}detach(v316){this._entry===v316&&(this._entry=undefined);}publishDataChanged(){this._dataChanged$["next"]();}dispose(){this._isDisposed||this._release(this);}complete(){this._isDisposed||(this._isDisposed=true,this._entry=undefined,this._dataSource$["complete"](),this._dataChanged$["complete"]());}};let H=class extends t.Disposable{constructor(v317,v318){super(),this._univerInstanceService=v317,this._rangeWatcherManager=v318,w(this,"_entries",new Map()),w(this,"_handles",new Set()),w(this,"_isDisposed",false);}acquire(v319){if(this._isDisposed)throw Error("Cannot\x20acquire\x20a\x20Sheet\x20chart\x20datasource\x20after\x20manager\x20disposal.");let v320=this._normalizeSourceSpec(v319),v321=this._getOrCreateEntry(v320),v322=new ue(v321,v129=>this._releaseHandle(v129));return v321.handles["add"](v322),this._handles["add"](v322),v322;}refreshAll(){this._entries["forEach"](v130=>this._refreshEntry(v130));}_getOrCreateEntry(v323){let v324=z(v323),v325=this._entries["get"](v324);if(v325)return v325;let v326=ie(this._univerInstanceService,v323),v327={key:v324,sourceSpec:v323,dataSource:v326,handles:new Set(),rangeWatcherLease:{dispose:()=>{}}};try{return v327.rangeWatcherLease=this._rangeWatcherManager["watch"](v323,{onDataChanged:()=>this._refreshEntry(v327),onRangeChanged:v61=>this._replaceEntryRange(v327,v61)}),this._entries["set"](v324,v327),v327;}catch(v131){throw v326.dispose(),v131;}}_refreshEntry(v328){this._entries["get"](v328.key)===v328&&(v328.dataSource["refreshDataSet"](),v328.handles["forEach"](v132=>v132.publishDataChanged()));}_replaceEntryRange(v329,v330){if(this._entries["get"](v329.key)!==v329)return;let v331=this._getOrCreateEntry(this._normalizeSourceSpec(v330));v331!==v329&&Array.from(v329.handles).forEach(v133=>this._moveHandle(v133,v329,v331));}_moveHandle(v332,v333,v334){v332.entry===v333&&(v334.handles["add"](v332),v332.attach(v334),v333.handles["delete"](v332),this._disposeEntryWithoutHandles(v333));}_releaseHandle(v335){let v336=v335.entry;v336&&(v336.handles["delete"](v335),v335.detach(v336),this._disposeEntryWithoutHandles(v336)),this._handles["delete"](v335),v335.complete();}_disposeEntryWithoutHandles(v337){v337.handles["size"]>0||this._entries["get"](v337.key)!==v337||(this._entries["delete"](v337.key),v337.rangeWatcherLease["dispose"](),v337.dataSource["dispose"]());}_normalizeSourceSpec(v338){let v339=t.Tools["deepClone"](v338);return Array.isArray(v339)?v339:{...v339,isRowDirection:v339.isRowDirection??true};}dispose(){this._isDisposed||(this._isDisposed=true,this._handles["forEach"](v134=>v134.complete()),this._handles["clear"](),this._entries["forEach"](v135=>{v135.rangeWatcherLease["dispose"](),v135.dataSource["dispose"]();}),this._entries["clear"](),super.dispose());}};H=P([N(0,(0,t.Inject)(t.IUniverInstanceService)),N(1,(0,t.Inject)(V))],H);let U=class extends t.Disposable{constructor(v340,v341,v342,v343){super(),this._resourcesManagerService=v340,this._univerInstanceService=v341,this._chartModelService=v342,this._dataSourceManager=v343,w(this,"_chartModelIdMap",new Map()),w(this,"_dataSourceBindings",new Map()),this.disposeWithMe(this._dataSourceManager),this._initSnapshot();}getSubUnitId(v344,v345){let v346=this._chartModelIdMap["get"](v344);if(!v346)return null;for(let[v136,v137]of v346.entries())if(v137.has(v345))return v136;return null;}getUnitChartModels(v347,v348){let v349=this._chartModelIdMap["get"](v347);if(!v349)return[];let v350=v349.get(v348);if(!v350)return[];let{_chartModelService:v351}=this;return Array.from(v350).map(v138=>v351.getChartModel(v138));}inferInitialChartMapping(v352,v353,v354){return this.inferInitialChartSource(v352,v353,v354).mapping;}inferInitialChartSource(v355,v356,v357){let v358=this._getInitialDataOrientation(v355)===e.DataOrientation["Row"];if(Array.isArray(v355)){let v139=ie(this._univerInstanceService,v355);try{let v62=v139.getDataSet(),v63=m(v62,v356,undefined,v357);return{dataSet:v62,mapping:{headerRow:e.CHART_HEADER_ROW_NONE,isRowDirection:false,categoryIndexes:v63.categoryIndexes??[],seriesIndexes:v63.seriesIndexes??[]}};}finally{v139.dispose();}}let{unitId:v359,subUnitId:v360,range:v361}=v355.rangeInfo,v362=(0,r.getSheetCommandTarget)(this._univerInstanceService,{unitId:v359,subUnitId:v360});if(!v362){let v140={dimensions:[],source:[]},v141=m(v140,v356,undefined,v357);return{dataSet:v140,mapping:{headerRow:v355.headerRow??e.CHART_HEADER_ROW_NONE,isRowDirection:v358,categoryIndexes:v141.categoryIndexes??[],seriesIndexes:v141.seriesIndexes??[]}};}let{workbook:v363,worksheet:v364}=v362,v365=x({numfmtOptions:{locale:(0,t.getNumfmtLocaleTag)(v363.getSnapshot().locale),dateSystem:v363.getDateSystem()},range:t.Range["transformRange"](v361,v364),styles:v363.getStyles(),worksheet:v364}),v366=v142=>oe(v365,{chartType:v356,isRowDirection:v142,...(v355.headerRow===undefined?{}:{headerRow:v355.headerRow}),...((v357==null?undefined:v357.categoryIndexes)===undefined?{}:{categoryIndexes:v357.categoryIndexes}),...((v357==null?undefined:v357.seriesIndexes)===undefined?{}:{seriesIndexes:v357.seriesIndexes})}),v367=v366(v358);if(v355.isRowDirection!==undefined||v367.mapping["seriesIndexes"].length>0)return v367;let v368=v366(!v358);return v368.mapping["seriesIndexes"].length>0?v368:v367;}_inferPrimaryDataOrientation(v369){if(Array.isArray(v369))return e.DataOrientation["Column"];let{range:v370}=v369.rangeInfo,{startRow:v371,endRow:v372,startColumn:v373,endColumn:v374}=v370;return v371===v372&&this._hasNonNumberCellInSingleRow(v369)||v372-v371>=v374-v373?e.DataOrientation["Column"]:e.DataOrientation["Row"];}_getInitialDataOrientation(v375){return!Array.isArray(v375)&&v375.isRowDirection!==undefined?v375.isRowDirection?e.DataOrientation["Row"]:e.DataOrientation["Column"]:this._inferPrimaryDataOrientation(v375);}_hasNonNumberCellInSingleRow(v376){let{unitId:v377,subUnitId:v378,range:v379}=v376.rangeInfo,v380=(0,r.getSheetCommandTarget)(this._univerInstanceService,{unitId:v377,subUnitId:v378});if(!v380)return false;let{workbook:v381,worksheet:v382}=v380,v383=v381.getStyles(),v384={};for(let v143=v379.startColumn;v143<=v379.endColumn;v143++)if(v382.getColVisible(v143)&&b(v382,v379.startRow,v143,v383,v384,{locale:(0,t.getNumfmtLocaleTag)(v381.getSnapshot().locale),dateSystem:v381.getDateSystem()}).sourceType!==e.ChartSourceDataTypeEnum["NUMBER"])return true;return false;}ensureChartModelCollection(v385,v386){let v387=this._chartModelIdMap["get"](v385);v387||(v387=new Map(),this._chartModelIdMap["set"](v385,v387));let v388=v387.get(v386);return v388||(v388=new Set(),v387.set(v386,v388)),v388;}getChartDataSource(v389){var v390;return(v390=this._chartModelService["getChartModel"](v389))==null?undefined:v390.dataSource;}getChartSourceSpec(v391){let v392=this.getChartDataSource(v391);return v392?t.Tools["deepClone"](v392.getRangeInfo()):undefined;}replaceChartDataSource(v393,v394){let v395=this.getChartModel(v393),v396=this._dataSourceBindings["get"](v393);if(!v395||!v396)return false;let{mapping:v397}=this.inferInitialChartSource(v394,v395.chartType),v398=this._applyInitialMappingToRangeInfo(v394,v397),v399=this._dataSourceManager["acquire"](v398),v400=this._chartModelService["rebuildChartModelContextForDataSource"](v393,v399.dataSource,v397);if(!v400)return v399.dispose(),false;if(v399.dataSource===v396.handle["dataSource"])return v399.dispose(),v395.setChartContext(v400),true;let v401=this._createDataSourceRuntimeBinding(v393,v399);return this._dataSourceBindings["set"](v393,v401),v395.replaceDataSource(v399.dataSource),this._disposeDataSourceRuntimeBinding(v396),v395.setChartContext(v400),true;}refreshChartSource(){this._dataSourceManager["refreshAll"]();}createChartModel(v402,v403,v404,v405=false){let{context:v406,dataAggregation:v407,id:v408,style:v409,rangeInfo:v410}=v404,v411=v408??(0,t.generateRandomId)(),{chartType:v412}=v404,v413=v410,v414=v406,v415=(v406==null?undefined:v406.categoryIndexes)!==undefined&&v406.seriesIndexes!==undefined,v416=Array.isArray(v410)||v410.headerRow!==undefined&&v410.isRowDirection!==undefined;if(!v415||!v416){let v144=this.inferInitialChartMapping(v410,v412,v406);v413=this._applyInitialMappingToRangeInfo(v410,v144),v414={...v406,categoryIndexes:v144.categoryIndexes,seriesIndexes:v144.seriesIndexes};}let v417=this._dataSourceManager["acquire"](v413),v418;try{v418=this._chartModelService["createChartModel"](v411,{dataSource:v417.dataSource,chartType:v412,dataAggregation:v407,style:v409,context:v414},v405);}catch(v145){throw v417.dispose(),v145;}let v419=this.ensureChartModelCollection(v402,v403);return v419.add(v418.id),this._dataSourceBindings["set"](v418.id,this._createDataSourceRuntimeBinding(v418.id,v417)),v418.onDispose(()=>{v419.delete(v418.id);let v146=this._dataSourceBindings["get"](v418.id);this._dataSourceBindings["delete"](v418.id),v146&&this._disposeDataSourceRuntimeBinding(v146);}),v418;}_applyInitialMappingToRangeInfo(v420,v421){if(Array.isArray(v420))return v420;let{headerRow:v422,isRowDirection:v423,...v424}=v420;return{...v424,isRowDirection:v421.isRowDirection,headerRow:v421.headerRow};}removeChartModel(v425){this._chartModelService["removeChartModel"](v425);}getChartModel(v426){return this._chartModelService["getChartModel"](v426);}_serializeChartForUnit(v427){let v428=this._chartModelIdMap["get"](v427);if(!v428)return"{}";let v429={};for(let v147 of v428.keys()){let v64=v428.get(v147);if(v64)for(let v22 of Array.from(v64)){let v15=this._chartModelService["getChartModel"](v22),v16=this.getChartDataSource(v22);v15&&v16&&(v429[v147]||(v429[v147]=[]),v429[v147].push({rangeInfo:v16.getRangeInfo(),...v15.serialize()}));}}return JSON.stringify(v429);}_createDataSourceRuntimeBinding(v430,v431){return{handle:v431,sourceSubscription:v431.dataSource$["pipe"]((0,i.skip)(1)).subscribe(v148=>{var v149;if(((v149=this._dataSourceBindings["get"](v430))==null?undefined:v149.handle)!==v431)return;let v150=this._chartModelService["getChartModel"](v430);if(!v150)return;let v151=this.inferInitialChartMapping(v148.getRangeInfo(),v150.chartType),v152=this._chartModelService["rebuildChartModelContextForDataSource"](v430,v148,v151);v150.replaceDataSource(v148),v152&&v150.setChartContext(v152);}),dataSubscription:v431.dataChanged$["subscribe"](()=>{var v153;((v153=this._dataSourceBindings["get"](v430))==null?undefined:v153.handle)===v431&&this._replaceReconciledContext(v430);})};}_disposeDataSourceRuntimeBinding(v432){v432.sourceSubscription["unsubscribe"](),v432.dataSubscription["unsubscribe"](),v432.handle["dispose"]();}_replaceReconciledContext(v433){let v434=this._chartModelService["getChartModel"](v433),v435=this._chartModelService["reconcileChartModelContext"](v433);v434&&v435&&v434.setChartContext(v435);}_deserializeChartForUnit(v436,v437){this._univerInstanceService["getUnit"](v436,t.UniverInstanceType["UNIVER_SHEET"])&&Object.keys(v437).forEach(v154=>{let v155=v437[v154];!v155||v155.length<=0||v155.forEach(v65=>{let{rangeInfo:v66}=v65;this.createChartModel(v436,v154,{...v65,rangeInfo:v66});});});}_initSnapshot(){this._resourcesManagerService["registerPluginResource"]({pluginName:"SHEET_CHART_PLUGIN",businesses:[t.UniverInstanceType["UNIVER_SHEET"]],toJson:v156=>this._serializeChartForUnit(v156),parseJson:v157=>JSON.parse(v157),onLoad:(v158,v159)=>{this._deserializeChartForUnit(v158,v159);},onUnLoad:v160=>{var v161;(v161=this._chartModelIdMap["get"](v160))==null||v161.forEach(v67=>{Array.from(v67.values()).forEach(v23=>{this._chartModelService["removeChartModel"](v23);});});}});}dispose(){Array.from(this._dataSourceBindings["keys"]()).forEach(v162=>this._chartModelService["removeChartModel"](v162)),this._dataSourceBindings["forEach"](v163=>this._disposeDataSourceRuntimeBinding(v163)),this._dataSourceBindings["clear"](),this._chartModelIdMap["clear"](),super.dispose();}};U=P([N(0,t.IResourceManagerService),N(1,t.IUniverInstanceService),N(2,(0,t.Inject)(F)),N(3,(0,t.Inject)(H))],U);function de(v731,v732){let{categoryIndexes:v733,multiLevelCategoryAxis:v734,seriesIndexes:v735,useDateAxis:v736,histogram:v737,...v738}=v731;return{...v738,...t.Tools["deepClone"](v732)};}const fe={id:"sheet.mutation.chart-update-config",type:t.CommandType["MUTATION"],handler:(v739,v740)=>{if(pe(v740))return false;let{chartModelId:v741}=v740,v742=v739.get(U).getChartModel(v741);return v742&&(v740.style!==undefined&&v742.assignStyle(v740.style),v740.context!==undefined&&v742.assignChartContext(v740.context),v740.dataAggregation!==undefined&&v742.assignDataAggregation(v740.dataAggregation),v740.chartType!==undefined&&v742.setChartType(v740.chartType)),true;}},W={id:"sheet.mutation.chart-replace-config",type:t.CommandType["MUTATION"],handler:(v743,v744)=>{if(pe(v744))return false;let v745=v743.get(U).getChartModel(v744.chartModelId);if(v745){if(v744.style!==undefined&&v745.setStyle(v744.style),v744.context!==undefined)try{let v164=(0,e.canonicalizeChartContext)(v744.context);v745.setChartContext(de(v745.context,v164));}catch{return false;}v744.dataAggregation!==undefined&&v745.setDataAggregation(v744.dataAggregation),v744.chartType!==undefined&&v745.setChartType(v744.chartType);}return true;}};function pe(v746){return!v746||!me(v746.style)||!me(v746.context)||!me(v746.dataAggregation);}function me(v747){return v747===undefined||typeof v747=="object"&&!!v747&&!Array.isArray(v747);}const G=Symbol("ReplaceSheetChartConfig"),K={id:"sheet.command.chart-update-config",type:t.CommandType["COMMAND"],handler:(v748,v749)=>{if(!v749)return false;let v750=v748.get(U),{unitId:v751,chartModelId:v752,chartType:v753,style:v754,dataAggregation:v755,context:v756}=v749,v757=v749[G]===true,v758=v750.getChartModel(v752);if(!v758)return false;let v759=v748.get(t.ICommandService),v760=v748.get(t.IUndoRedoService),v761={unitId:v751,chartModelId:v752};if(v753!==undefined&&(v761.chartType=v753),v754!==undefined&&(v761.style=v757?t.Tools["deepClone"](v754):he(v758.style,v754)),v755!==undefined&&(v761.dataAggregation=v757?t.Tools["deepClone"](v755):(0,e.mergeChartConfig)(v758.dataAggregation,v755)),v756!==undefined)try{v761.context=v757?(0,e.canonicalizeChartContext)(v756):(0,e.canonicalizeChartContext)((0,e.mergeChartConfig)((0,e.canonicalizeChartContext)(v758.context),v756));}catch{return false;}let v762={unitId:v751,chartModelId:v752};v753!==undefined&&(v762.chartType=v758.chartType),v761.style!==undefined&&(v762.style=t.Tools["deepClone"](v758.style)),v761.dataAggregation!==undefined&&(v762.dataAggregation=t.Tools["deepClone"](v758.dataAggregation)),v761.context!==undefined&&(v762.context=(0,e.canonicalizeChartContext)(v758.context));let v763=[{id:W.id,params:v761}],v764=[{id:W.id,params:v762}];return(0,t.sequenceExecute)(v763,v759).result?(v760.pushUndoRedo({unitID:v751,redoMutations:v763,undoMutations:v764}),true):false;}};function he(v765,v766){let{candlestick:v767,sunburst:v768,gauge:v769,chord:v770,...v771}=v766,v772=(0,e.mergeChartConfig)(v765,v771),v773={};return Object.prototype["hasOwnProperty"].call(v766,"candlestick")&&(v773.candlestick=v767),Object.prototype["hasOwnProperty"].call(v766,"sunburst")&&(v773.sunburst=v768),Object.prototype["hasOwnProperty"].call(v766,"gauge")&&(v773.gauge=v769),Object.prototype["hasOwnProperty"].call(v766,"chord")&&(v773.chord=v770),Object.keys(v773).length?(0,e.toChartModelUpdate)(v773,{currentStyle:v772}).style??{}:v772;}const q={id:"sheet.mutation.chart-update-source",type:t.CommandType["MUTATION"],handler:(v774,v775)=>{let{chartModelId:v776,rangeInfo:v777}=v775;return v774.get(U).replaceChartDataSource(v776,v777);}},ge={id:"sheet.command.chart-update-source",type:t.CommandType["COMMAND"],handler:(v778,v779)=>{if(!v779)return false;let v780=v778.get(U),{unitId:v781,chartModelId:v782,range:v783}=v779;if(!v780.getChartModel(v782))return false;let v784=v780.getChartDataSource(v782);if(!v784)return false;let v785=v778.get(t.ICommandService),v786=v778.get(t.IUndoRedoService),v787=[],v788=[],v789=v784.getRangeInfo(),v790={unitId:v781,chartModelId:v782,rangeInfo:v783},v791={unitId:v781,chartModelId:v782,rangeInfo:v789};return v787.push({id:q.id,params:v790}),v788.push({id:q.id,params:v791}),(0,t.sequenceExecute)(v787,v785).result?(v786.pushUndoRedo({unitID:v781,redoMutations:v787,undoMutations:v788}),true):false;}};let _e=function(v792){return v792.Auto="auto",v792.Row="row",v792.Column="column",v792.Rows="rows",v792.Columns="columns",v792.RowsAsSeries="rowsAsSeries",v792.ColumnsAsSeries="columnsAsSeries",v792;}({}),ve=function(v793){return v793.Range="range",v793.Ranges="ranges",v793;}({}),ye=function(v794){return v794.Error="error",v794;}({});function be(v795,v796){let v797=Y(v795,t.IUniverInstanceService);return(v797==null?undefined:v797.getUnit(v796,t.UniverInstanceType["UNIVER_SHEET"]))??(v797==null?undefined:v797.getCurrentUnitOfType(t.UniverInstanceType["UNIVER_SHEET"]))??null;}function xe(v798,v799,v800){var v801,v802;let v803=Y(v798.injector,n.ISheetDrawingService),v804=Y(v798.injector,r.SheetSkeletonService);if(!v803||!v804)return v800.push(J("COMMAND_FAILED","Chart layout services are not available.","layout")),null;let v805=v803.getDrawingByParam({unitId:v798.unitId,subUnitId:v798.subUnitId,drawingId:v798.chartId});if(!v805)return v800.push(J("COMMAND_FAILED","Chart drawing not found: "+v798.chartId+".","layout")),null;let v806=v804.ensureSkeleton(v798.unitId,v798.subUnitId);if(!v806)return v800.push(J("COMMAND_FAILED","Worksheet skeleton is not available for chart layout update.","layout")),null;let v807={...v805.transform};if(((v801=v799.size)==null?undefined:v801.width)!==undefined&&(v807.width=v799.size["width"]),((v802=v799.size)==null?undefined:v802.height)!==undefined&&(v807.height=v799.size["height"]),v799.anchor!==undefined){let v438=we(v798.unitId,v798.subUnitId,v799.anchor,v806,v800);v438&&(v807.left=v438.left,v807.top=v438.top);}return v799.position!==undefined&&(v807.left=v799.position["x"],v807.top=v799.position["y"]),{...v805,unitId:v798.unitId,subUnitId:v798.subUnitId,drawingId:v798.chartId,drawingType:t.DrawingTypeEnum["DRAWING_CHART"],transform:v807,sheetTransform:(0,n.transformToDrawingPosition)(v807,v806),axisAlignSheetTransform:(0,n.transformToAxisAlignPosition)(v807,v806)};}function Se(v808,v809,v810){if(v809.position)return v809.position;if(!v809.anchor)return;let v811=Y(v808.injector,r.SheetSkeletonService),v812=v811==null?undefined:v811.ensureSkeleton(v808.unitId,v808.subUnitId);if(!v812){v810.push(J("COMMAND_FAILED","Worksheet skeleton is not available for chart anchor.","anchor"));return;}let v813=we(v808.unitId,v808.subUnitId,v809.anchor,v812,v810);return v813?{x:v813.left??0,y:v813.top??0}:undefined;}function Ce(v814){var v815;let v816=Y(v814.injector,n.ISheetDrawingService),v817=v816==null?undefined:v816.getDrawingByParam({unitId:v814.unitId,subUnitId:v814.subUnitId,drawingId:v814.chartId});if(v817)return{position:v817.transform?{x:v817.transform["left"]??0,y:v817.transform["top"]??0}:undefined,size:v817.transform?{width:v817.transform["width"],height:v817.transform["height"]}:undefined,anchor:(v815=v817.sheetTransform)!=null&&v815.from?{row:v817.sheetTransform["from"].row,column:v817.sheetTransform["from"].column,rowOffset:v817.sheetTransform["from"].rowOffset,columnOffset:v817.sheetTransform["from"].columnOffset}:undefined};}function we(v818,v819,v820,v821,v822){let v823=Te(v820,v822);return v823?(0,r.convertPositionCellToSheetOverGrid)(v818,v819,{row:v823.row,column:v823.column,rowOffset:v823.rowOffset??0,columnOffset:v823.columnOffset??0},1,1,v821).transform:null;}function Te(v824,v825){if(typeof v824=="string")try{let v439=(0,a.deserializeRangeWithSheet)(v824);return{row:v439.range["startRow"],column:v439.range["startColumn"]};}catch(v440){return v825.push(J("INVALID_RANGE","Invalid chart source range: "+v824+".","layout.anchor",v440)),null;}return!Number.isInteger(v824.row)||!Number.isInteger(v824.column)||v824.row<0||v824.column<0?(v825.push(J("INVALID_RANGE","Chart\x20anchor\x20row\x20and\x20column\x20must\x20be\x20non-negative\x20integers.","layout.anchor")),null):v824;}function J(v826,v827,v828,v829){return{code:v826,severity:"error",message:v827,path:v828,details:v829};}function Y(v830,v831){try{return v830.get(v831);}catch{return null;}}function X(v832,v833,v834,v835="error",v836,v837){return{code:v832,severity:v835,message:v833,path:v834,details:v836,...v837};}function Ee(v838){return v838.some(v441=>v441.severity==="error");}function De(v839,v840,v841,v842="source"){if(v839==null)return v841.push(X("INVALID_RANGE","Chart source is required.",v842)),null;let v843=Ve(v839)?v839:undefined;if(v843&&"ranges"in v843)return"range"in v843&&v843.range!==undefined?(v841.push(X("INVALID_RANGE","Chart source must specify exactly one of range or ranges.",v842)),null):Oe(v843,v840,v841,v842);if(v843&&(!("range"in v843)||v843.range===undefined))return v841.push(X("INVALID_RANGE","Chart source must specify exactly one of range or ranges.",v842)),null;let v844=ze(v843?v843.range:v839,v841,v843?v842+".range":v842);if(!v844)return null;let v845=(v843==null?undefined:v843.unitId)??v840.unitId;if(v845!==v840.unitId)return v841.push(X("INVALID_RANGE","Chart\x20facade\x20create/update\x20only\x20supports\x20sources\x20in\x20the\x20same\x20workbook.",v842+".unitId")),null;let v846=(v843==null?undefined:v843.sheetName)??v844.sheetName,v847=v846,v848=(v843==null?undefined:v843.sheetId)??v840.subUnitId;if(v846){let v442=v840.workbook["getSheetBySheetName"](v846);if(!v442)return v841.push(X("INVALID_RANGE","Worksheet not found: "+v846+".",v842+".sheetName")),null;v848=v442.getSheetId();}else{if(v843!=null&&v843.sheetId){let v165=v840.workbook["getSheetBySheetId"](v843.sheetId);if(!v165)return v841.push(X("INVALID_RANGE","Worksheet not found: "+v843.sheetId+".",v842+".sheetId")),null;v847=v165.getName();}}Ie(v844.range,v841,v843?v842+".range":v842);let v849=He(v843==null?undefined:v843.orientation),v850=v843==null?undefined:v843.headerRow,v851={rangeInfo:{unitId:v845,subUnitId:v848,range:v844.range},...(v849===undefined?{}:{isRowDirection:v849}),...(v850===undefined?{}:{headerRow:v850})};return v850!==undefined&&!Re(v850,v844.range,v841,v842+".headerRow")?null:{kind:"range",range:v844.range,sourceSheetName:v847,isRowDirection:v849,rangeInfo:v851};}function Oe(v852,v853,v854,v855){if(!Array.isArray(v852.ranges)||v852.ranges["length"]===0)return v854.push(X("INVALID_RANGE","Chart source ranges must contain at least one vector.",v855+".ranges")),null;if(v852.unitId!==undefined&&v852.unitId!==v853.unitId)return v854.push(X("INVALID_RANGE","Chart\x20facade\x20create/update\x20only\x20supports\x20sources\x20in\x20the\x20same\x20workbook.",v855+".unitId")),null;let v856=[],v857,v858;v852.ranges["forEach"]((v443,v444)=>{let v445=v855+".ranges."+v444,v446=ke(v443==null?undefined:v443.range,v852,v853,v854,v445+".range"),v447=(v443==null?undefined:v443.header)===undefined?undefined:ke(v443.header,v852,v853,v854,v445+".header");if(!v446||(v443==null?undefined:v443.header)!==undefined&&!v447)return;let v448=v446.range,v449=v448.startRow===v448.endRow;if(v449===(v448.startColumn===v448.endColumn)){v854.push(X("INVALID_RANGE","Each\x20chart\x20source\x20vector\x20must\x20be\x20exactly\x20one\x20row\x20or\x20one\x20column.",v445+".range"));return;}let v450=v449,v451=v449?v448.endColumn-v448.startColumn+1:v448.endRow-v448.startRow+1;if(v858!==undefined&&v858!==v450){v854.push(X("INVALID_RANGE","All chart source vectors must have the same orientation.",v445+".range"));return;}if(v857!==undefined&&v857!==v451){v854.push(X("INVALID_RANGE","All chart source vectors must have equal length.",v445+".range"));return;}if(v447&&(v447.range["startRow"]!==v447.range["endRow"]||v447.range["startColumn"]!==v447.range["endColumn"])){v854.push(X("INVALID_RANGE","A chart source vector header must be a single cell.",v445+".header"));return;}v858=v450,v857=v451,v856.push({...(v447?{header:v447}:{}),range:v446});});let v859=He(v852.orientation);return v859!==undefined&&v858!==undefined&&v859!==v858&&v854.push(X("INVALID_RANGE","Chart source orientation must match the row or column vectors.",v855+".orientation")),v856.length===v852.ranges["length"]&&!Ee(v854)?{kind:"ranges",ranges:v856,isRowDirection:v858}:null;}function ke(v860,v861,v862,v863,v864){let v865=ze(v860,v863,v864);if(!v865)return null;let v866=v861.unitId??v862.unitId,v867=v865.sheetName??v861.sheetName,v868=v861.sheetId??v862.subUnitId;if(v867){let v452=v862.workbook["getSheetBySheetName"](v867);if(!v452)return v863.push(X("INVALID_RANGE","Worksheet not found: "+v867+".",v864)),null;v868=v452.getSheetId();}else{if(v861.sheetId&&!v862.workbook["getSheetBySheetId"](v861.sheetId))return v863.push(X("INVALID_RANGE","Worksheet\x20not\x20found:\x20"+v861.sheetId+".",v864)),null;}return Le(v865.range,v863,v864),{unitId:v866,subUnitId:v868,range:v865.range};}function Ae(v869,v870,v871=0){var v872,v873;let v874=(v872=v870.inferInitialChartSource)==null?undefined:v872.call(v870,v869.kind==="ranges"?v869.ranges:v869.rangeInfo);if(v874)return je(v874.dataSet,v871);if(v869.kind==="ranges")return v869.ranges["map"]((v453,v454)=>{var v455;let v456=v453.header,v457=v456?v870.workbook["getSheetBySheetId"](v456.subUnitId):null,v458=v870.workbook["getSheetBySheetId"](v453.range["subUnitId"]);return{index:v454,name:v456?String((v457==null||(v455=v457.getCell(v456.range["startRow"],v456.range["startColumn"]))==null?undefined:v455.v)??""):"",items:v458?Ne(v458,v453.range["range"],v869.isRowDirection):[]};}).filter(v459=>v459.index!==v871);let v875=v869.rangeInfo["rangeInfo"],v876=v870.workbook["getSheetBySheetId"](v875.subUnitId);if(!v876)return[];let v877=v869.isRowDirection??((v873=v870.resolveAutoIsRowDirection)==null?undefined:v873.call(v870,v869.rangeInfo))??true,v878=t.Range["transformRange"](v875.range,v876),{dataSet:v879}=M(x({numfmtOptions:{locale:(0,t.getNumfmtLocaleTag)(v870.workbook["getSnapshot"]().locale),dateSystem:v870.workbook["getDateSystem"]()},range:v878,styles:v870.workbook["getStyles"](),worksheet:v876}),{isRowDirection:v877,...(v869.rangeInfo["headerRow"]===undefined?{}:{headerRow:v869.rangeInfo["headerRow"]})});return je(v879,v871);}function je(v880,v881){return v880.source["map"]((v460,v461)=>({index:v461,name:Me(v880.dimensions[v461]),items:v460.map((v166,v167)=>{var v168;let v169=(0,e.toChartDataItem)(v166);return{...v169,label:((v168=v880.sourceLabels)==null||(v168=v168[v461])==null?undefined:v168[v167])??v169.label};})})).filter(v462=>v462.index!==v881);}function Me(v882){return typeof v882=="string"?v882:(v882==null?undefined:v882.displayName)??(v882==null?undefined:v882.name)??"";}function Ne(v883,v884,v885){let v886=[];if(v885)for(let v463=v884.startColumn;v463<=v884.endColumn;v463++){var v887;v886.push((0,e.toChartDataItem)((v887=v883.getCell(v884.startRow,v463))==null?undefined:v887.v));}else for(let v464=v884.startRow;v464<=v884.endRow;v464++){var v888;v886.push((0,e.toChartDataItem)((v888=v883.getCell(v464,v884.startColumn))==null?undefined:v888.v));}return v886;}function Pe(v889,v890){let{rangeInfo:v891,isRowDirection:v892,headerRow:v893}=v889,v894=v890==null?undefined:v890.getSheetBySheetId(v891.subUnitId),v895="auto";return v892!==undefined&&(v895=v892?"rows":"columns"),{range:v891.range,unitId:v891.unitId,sheetId:v891.subUnitId,sheetName:v894==null?undefined:v894.getName(),orientation:v895,...(v893===undefined?{}:{headerRow:v893})};}function Fe(v896,v897){var v898;let v899=v465=>{let v466=v897==null?undefined:v897.getSheetBySheetId(v465.subUnitId);return{range:v465.range,unitId:v465.unitId,sheetId:v465.subUnitId,sheetName:v466==null?undefined:v466.getName(),orientation:"auto"};},v900=(v898=v896[0])==null?undefined:v898.range["range"];return{ranges:v896.map(v467=>({range:v899(v467.range),...(v467.header?{header:v899(v467.header)}:{})})),orientation:v900&&v900.startRow===v900.endRow?"rows":"columns"};}function Ie(v901,v902,v903){Le(v901,v902,v903),v901.startRow===v901.endRow&&v901.startColumn===v901.endColumn&&v902.push(X("SINGLE_CELL_SOURCE","Chart\x20source\x20must\x20contain\x20more\x20than\x20one\x20cell.",v903));}function Le(v904,v905,v906){if(!Number.isInteger(v904.startRow)||!Number.isInteger(v904.endRow)||!Number.isInteger(v904.startColumn)||!Number.isInteger(v904.endColumn)){v905.push(X("INVALID_RANGE","Chart source range must use integer row and column indexes.",v906));return;}(v904.startRow>v904.endRow||v904.startColumn>v904.endColumn||v904.startRow<0||v904.startColumn<0)&&v905.push(X("INVALID_RANGE","Chart\x20source\x20range\x20is\x20invalid.",v906));}function Re(v907,v908,v909,v910){let v911=Number.isInteger(v907)&&(v907===e.CHART_HEADER_ROW_NONE||v907>=0&&v907<=v908.endRow-v908.startRow);return v911||v909.push(X("INVALID_RANGE","Chart source headerRow must be a zero-based row offset inside the source range.",v910)),v911;}function ze(v912,v913,v914){if(typeof v912=="string")try{let v468=(0,a.deserializeRangeWithSheet)(v912);return{range:v468.range,sheetName:v468.sheetName};}catch(v469){return v913.push(X("INVALID_RANGE","Invalid chart source range: "+v912+".",v914,"error",v469)),null;}return Be(v912)?{range:v912}:(v913.push(X("INVALID_RANGE","Chart source range must be a range string or IRange object.",v914)),null);}function Be(v915){return!!(v915&&typeof v915=="object"&&"startRow"in v915&&"endRow"in v915&&"startColumn"in v915&&"endColumn"in v915);}function Ve(v916){return!!(v916&&typeof v916=="object"&&!Be(v916));}function He(v917){switch(v917){case"row":case"rows":case"rowsAsSeries":return true;case"column":case"columns":case"columnsAsSeries":return false;default:return;}}var Ue=class{constructor(v470){this._context=v470,w(this,"_injector",undefined),this._injector=v470.injector;}describe(v471={},v472){let{chartId:v473,subUnitId:v474,unitId:v475}=this._context,v476=this._injector["get"](U),v477=this._getChartModel(),v478=v476.getChartSourceSpec(v473);if(!v478)throw Error("Chart source not found: "+v473);let v479=be(this._injector,v475)??undefined;return{...(0,e.describeChartModel)(v477,v471,v472),id:v473,source:Array.isArray(v478)?Fe(v478,v479):Pe(v478,v479),layout:Ce({unitId:v475,subUnitId:v474,chartId:v473,injector:this._injector})};}getInfo(){var v480,v481,v482,v483,v484;let v485=this.describe(),v486=this._injector["get"](U).getChartSourceSpec(this._context["chartId"]);if(!v486)throw Error("Chart\x20source\x20not\x20found:\x20"+this._context["chartId"]);let v487=Array.isArray(v486)?{ranges:v486.map(({header:v170,range:v171})=>({...(v170?{header:v170.range}:{}),range:v171.range})),orientation:((v480=v486[0])==null?undefined:v480.range["range"].startRow)===((v481=v486[0])==null?undefined:v481.range["range"].endRow)?"rows":"columns"}:Pe(v486),v488=(v482=v485.layout)==null?undefined:v482.size;return{config:(0,e.toChartCreateConfigSnapshot)(v485),dataSource:t.Tools["deepClone"](v487),position:t.Tools["deepClone"]((v483=v485.layout)==null?undefined:v483.position),size:(v488==null?undefined:v488.width)===undefined||v488.height===undefined?undefined:{width:v488.width,height:v488.height},anchor:t.Tools["deepClone"]((v484=v485.layout)==null?undefined:v484.anchor)};}commit(v489){var v490;let{chartId:v491,unitId:v492}=this._context,v493=this._getChartModel(),v494=(0,e.toChartModelUpdate)(v489,{series:(v490=v493.config)==null?undefined:v490.series,currentChartType:v493.chartType,currentStyle:v493.style,currentContext:v493.context,currentDataAggregation:v493.dataAggregation});if(!this._injector["get"](t.ICommandService).syncExecuteCommand(K.id,{unitId:v492,chartModelId:v491,...v494,[G]:true}))throw Error("Failed to update Sheet chart configuration.");}async update(v495){let v496={};return v495.anchor!==undefined&&(v496.anchor=v495.anchor),v495.position!==undefined&&(v496.position=v495.position),v495.size!==undefined&&(v496.size=v495.size),this.commitChanges(v495.dataSource,v495.config,v496);}async commitChanges(v497,v498,v499){this._resolveSourceRange(v497),this._replaceConfig(v498),this.commitHost({source:v497}),Object.keys(v499).length>0&&this.commitHost({layout:v499});}_replaceConfig(v500){var v501;let{chartId:v502,unitId:v503}=this._context,v504=this._getChartModel(),v505=(0,e.toChartModelConfigReplacement)(v500,{series:(v501=v504.config)==null?undefined:v501.series,currentStyle:v504.style});if(!this._injector["get"](t.ICommandService).syncExecuteCommand(K.id,{unitId:v503,chartModelId:v502,...v505,[G]:true}))throw Error("Failed to update Sheet chart configuration.");}setDataSource(v506){this.commitHost({source:v506});}setAbsolutePosition(v507,v508){this.commitHost({layout:{position:{x:v507,y:v508}}});}setSize(v509,v510){this.commitHost({layout:{size:{width:v509,height:v510}}});}arrange(v511){let{chartId:v512,subUnitId:v513,unitId:v514}=this._context,v515=this._injector["get"](n.ISheetDrawingService).getDrawingOrder(v514,v513),v516=v515.indexOf(v512);if(v516<0)throw Error("Sheet chart drawing not found: "+v512);if((0,t.getDrawingOrderIndex)(v516,v515.length,v511)!==v516&&!this._injector["get"](t.ICommandService).syncExecuteCommand(n.SetDrawingArrangeCommand["id"],{unitId:v514,subUnitId:v513,drawingIds:[v512],arrangeType:v511}))throw Error("Failed to arrange Sheet chart.");}setZOrder(v517){let{chartId:v518,subUnitId:v519,unitId:v520}=this._context,v521=this._injector["get"](n.ISheetDrawingService).getDrawingOrder(v520,v519),v522=v521.indexOf(v518);if(v522<0)throw Error("Sheet chart drawing not found: "+v518);if((0,t.normalizeDrawingOrderIndex)(v517,v521.length)!==v522&&!this._injector["get"](t.ICommandService).syncExecuteCommand(n.SetDrawingArrangeCommand["id"],{unitId:v520,subUnitId:v519,drawingIds:[v518],zOrder:v517}))throw Error("Failed\x20to\x20update\x20Sheet\x20chart\x20z-order.");}resolveData(v523,v524){let v525=this._getChartModel(),v526=v524?this.resolveSource(v524):undefined;return(0,e.buildChartPreviewData)(v525,v523,v526==null?undefined:v526.dataSet);}resolveSource(v527){let{rangeInfo:v528}=this._resolveSourceRange(v527),v529=this._injector["get"](U).inferInitialChartSource(v528,this._getChartModel().chartType);return{dataSet:v529.dataSet,isRowDirection:v529.mapping["isRowDirection"]};}commitHost(v530){let v531=this._injector["get"](t.ICommandService),{chartId:v532,subUnitId:v533,unitId:v534}=this._context;if(v530.source!==undefined){let{rangeInfo:v172}=this._resolveSourceRange(v530.source);if(!v531.syncExecuteCommand(ge.id,{unitId:v534,chartModelId:v532,range:v172}))throw Error("Failed\x20to\x20update\x20Sheet\x20chart\x20source.");}if(v530.layout!==undefined){let v173=[],v174=xe({unitId:v534,subUnitId:v533,chartId:v532,injector:this._injector},v530.layout,v173);if(v174||We(v173,"Invalid Sheet chart layout."),!(v174&&v531.syncExecuteCommand(n.SetSheetDrawingCommand["id"],{unitId:v534,drawings:[v174]})))throw Error("Failed\x20to\x20update\x20Sheet\x20chart\x20layout.");}}remove(){let{chartId:v535,subUnitId:v536,unitId:v537}=this._context;return this._injector["get"](t.ICommandService).executeCommand(n.RemoveSheetDrawingCommand["id"],{unitId:v537,drawings:[{unitId:v537,subUnitId:v536,drawingId:v535,drawingType:t.DrawingTypeEnum["DRAWING_CHART"]}]});}_resolveSourceRange(v538){let{subUnitId:v539,unitId:v540}=this._context,v541=this._injector["get"](U),v542=this._getChartModel(),v543=be(this._injector,v540);if(!v543)throw Error("Workbook\x20not\x20found:\x20"+v540);let v544=[],v545=De(v538,{unitId:v540,subUnitId:v539,workbook:v543,resolveAutoIsRowDirection:v175=>v541.inferInitialChartMapping(v175,v542.chartType).isRowDirection},v544);return v545||We(v544,"Invalid Sheet chart source."),{rangeInfo:v545.kind==="range"?v545.rangeInfo:v545.ranges};}_getChartModel(){let{chartId:v546}=this._context,v547=this._injector["get"](U).getChartModel(v546);if(!v547)throw Error("Chart\x20not\x20found:\x20"+v546);return v547;}};function We(v918,v919){throw Error(v918.map(({message:v548})=>v548).join(";\x20")||v919);}const Ge=Number.parseInt(1788764280),Ke=["2","4","268435460"],qe=["all"],Je=[];function Ye(v920){let{ls:v921,pbk:v922}=v920.get(t.IConfigService).getConfig(s.LS_CONFIG_KEY)??{};if(!v921||!v922)return Ke;let v923=(0,s.getLicenseInfo)(v921,v922),v924=v923.message;return v923.valid&&(0,s.isFeatureAuthorizedWithinTime)(v924,"sf",Ge)?(0,s.getSheetFeatureLimit)(v924,true,"c",qe,Ke,Je):Ke;}const Xe="sheets-chart.config",Ze={chartRenderMode:e.ChartRenderMode["Image"]};function Qe(v925){if(Array.isArray(v925))return{ranges:v925};let{headerRow:v926,rangeInfo:v927,isRowDirection:v928}=v925;return{range:v927.range,rangeUnitId:v927.unitId,rangeSubUnitId:v927.subUnitId,...(v928===undefined?{}:{isRowDirection:v928}),...(v926===undefined?{}:{headerRow:v926})};}function $e(v929){let v930=v929.unitId,v931=v929.subUnitId;return"ranges"in v929?v929.ranges:"range"in v929?{rangeInfo:{unitId:v929.rangeUnitId??v930,subUnitId:v929.rangeSubUnitId??v931,range:v929.range},...(v929.isRowDirection===undefined?{}:{isRowDirection:v929.isRowDirection}),...(v929.headerRow===undefined?{}:{headerRow:v929.headerRow})}:null;}const Z={id:"sheet.mutation.insert-chart",type:t.CommandType["MUTATION"],handler:(v932,v933)=>{let{unitId:v934,subUnitId:v935,chartId:v936,context:v937,style:v938,dataAggregation:v939}=v933,v940=$e(v933);return v940?(v932.get(U).createChartModel(v934,v935,{rangeInfo:v940,id:v936,chartType:v933.chartType,context:v937,style:v938,dataAggregation:v939},true),true):false;}},Q={id:"sheet.mutation.remove-chart",type:t.CommandType["MUTATION"],handler:(v941,v942)=>{let{chartId:v943}=v942;return v941.get(U).removeChartModel(v943),true;}};function et(v944){var v945;let v946=(v945=v944.config)==null||(v945=v945.style)==null?undefined:v945.backgroundColor;return v946===undefined?(0,e.resolveChartStyleBackgroundColor)({backgroundColor:v944.backgroundColor??null}):(0,e.resolveChartStyleBackgroundColor)({backgroundColor:v946});}function tt(v947,v948,v949,v950,v951,v952,v953){var v954;let v955={x:200,y:200},v956=v947.get(o.IRenderManagerService).getRenderUnitById(v950),v957=v956==null?undefined:v956.scene["getMainViewport"]();if(!v957)return v955;let v958=v948.getCurrentUnitOfType(t.UniverInstanceType["UNIVER_SHEET"]);if((v958==null?undefined:v958.getUnitId())!==v950||((v954=v949.getActiveSheet())==null?undefined:v954.getSheetId())!==v951)return v955;let{left:v959,top:v960,right:v961,bottom:v962}=v957.viewBound;return![v959,v960,v961,v962].every(Number.isFinite)||v961<=v959||v962<=v960?v955:{x:Math.max(0,Math.round(v959+(v961-v959-v952)/2)),y:Math.max(0,Math.round(v960+(v962-v960-v953)/2))};}const nt={type:t.CommandType["COMMAND"],id:"sheet.command.insert-chart",handler:async(v963,v964)=>{var v965,v966,v967;let{chartType:v968,source:v969}=v964,v970=Ye(v963);if(v970.length!==1&&!v970.includes(""+v968))return false;let v971=v963.get(t.IUniverInstanceService),v972=(0,r.getSheetCommandTarget)(v971,v964);if(!v972)return false;let v973=v963.get(r.SheetSkeletonService),{unitId:v974,subUnitId:v975,workbook:v976}=v972,v977=v973.ensureSkeleton(v974,v975);if(!v977)return false;let v978=v963.get(t.ICommandService),v979=v963.get(t.IUndoRedoService),v980=v963.get(r.SheetInterceptorService),v981=v963.get(n.ISheetDrawingService),v982=v963.get(e.ChartThemeService),v983=v963.get(U),v984=v964.chartId||(0,t.generateRandomId)(),v985;try{var v986;v985=((v986=v964.config)==null?undefined:v986.context)===undefined?undefined:(0,e.canonicalizeChartContext)(v964.config["context"]);}catch{return false;}let v987=v983.inferInitialChartSource(v969,((v965=v964.config)==null?undefined:v965.chartType)??v968,v985),v988=m(v987.dataSet,((v966=v964.config)==null?undefined:v966.chartType)??v968,v987.mapping,v985),v989=v969;if(!Array.isArray(v969)){let{headerRow:v549,isRowDirection:v550,...v551}=v969;v989={...v551,isRowDirection:v987.mapping["isRowDirection"],headerRow:v987.mapping["headerRow"]};}let v990={unitId:v974,subUnitId:v975,chartId:v984,chartType:v968,context:v988,...Qe(v989)},v991=(v967=v963.get(t.IConfigService).getConfig("sheets-chart.config"))==null?undefined:v967.defaultChartSize,v992=v964.width??(v991==null?undefined:v991.width)??e.defaultChartWidth,v993=v964.height??(v991==null?undefined:v991.height)??e.defaultChartHeight,{x:v994,y:v995}=v964.position??tt(v963,v971,v976,v974,v975,v992,v993),v996={from:v977.getCellIndexAndOffsetByPosition(v994,v995),to:v977.getCellIndexAndOffsetByPosition(v994+v992,v995+v993)},v997=v964.theme?v982.getTheme(v964.theme):v982.getDefaultTheme(),v998=et(v964),v999=v964.borderColor||v997.theme["borderColor"],v1000={unitId:v974,subUnitId:v975,drawingId:v984,drawingType:t.DrawingTypeEnum["DRAWING_CHART"],componentKey:"SheetsChartComponent",sheetTransform:v996,transform:{left:v994,top:v995,width:v992,height:v993},axisAlignSheetTransform:v996,data:{border:v999,background:v998},allowTransform:true},{undo:v1001,redo:v1002,objects:v1003}=v981.getBatchAddOp([v1000]),v1004=v980.onCommandExecute({id:n.InsertSheetDrawingCommand["id"],params:{unitId:v974,drawings:[v1000]}}),v1005=[...(v1004.preRedos??[]),{id:n.SetDrawingApplyMutation["id"],params:{unitId:v974,subUnitId:v975,op:v1002,objects:v1003,type:n.DrawingApplyType["INSERT"]}},{id:n.ClearSheetDrawingTransformerOperation["id"],params:[v974]},...v1004.redos,{id:Z.id,params:v990}],v1006=[{id:Q.id,params:{unitId:v974,subUnitId:v975,chartId:v984}},...(v1004.preUndos??[]),{id:n.SetDrawingApplyMutation["id"],params:{unitId:v974,subUnitId:v975,op:v1001,objects:v1003,type:n.DrawingApplyType["REMOVE"]}},{id:n.ClearSheetDrawingTransformerOperation["id"],params:[v974]},...v1004.undos];if(v964.config){let{unitId:v552,chartModelId:v553,chartType:v554,style:v555,dataAggregation:v556}=v964.config,v557={unitId:v552,chartModelId:v553};v554!==undefined&&(v557.chartType=v554),v555!==undefined&&(v557.style=v555),v556!==undefined&&(v557.dataAggregation=v556),(v554!==undefined||v555!==undefined||v556!==undefined)&&v1005.push({id:W.id,params:v557});}return(0,t.sequenceExecute)(v1005,v978).result?(v979.pushUndoRedo({unitID:v974,undoMutations:v1006,redoMutations:v1005}),true):false;}};var rt="@univerjs-pro/sheets-chart",it="1.0.0-insiders.20260907-70fc579";let at=class extends t.Disposable{constructor(v558,v559,v560,v561){super(),this._commandService=v558,this._sheetInterceptorService=v559,this._chartModelService=v560,this._sheetsChartService=v561,this._initCommands(),this._initCommandInterceptor();}_initCommands(){[nt,K,ge,Z,Q,fe,W,q].forEach(v176=>this.disposeWithMe(this._commandService["registerCommand"](v176)));}_initCommandInterceptor(){this.disposeWithMe(this._sheetInterceptorService["interceptCommand"]({getMutations:v177=>{if(v177.id===n.RemoveSheetDrawingCommand["id"]){let{drawings:v68}=v177.params,v69=v68.filter(v24=>v24.drawingType===t.DrawingTypeEnum["DRAWING_CHART"]);if(v69.length===0)return{preRedos:[],redos:[],preUndos:[],undos:[]};let v70=[],v71=[];return v69.forEach(v25=>{let{unitId:v26,subUnitId:v27,drawingId:v28}=v25,v29=this._chartModelService["getChartModel"](v28);if(!v29)return;let v30=this._sheetsChartService["getChartSourceSpec"](v28);if(!v30)throw TypeError("Fail to get data source range info, get: "+v30);v70.push({id:Q.id,params:{unitId:v26,subUnitId:v27,chartId:v28}});let{chartType:v31,context:v32,style:v33,dataAggregation:v34}=v29.serialize(),v35={unitId:v26,subUnitId:v27,chartId:v28,chartType:v31,...Qe(v30),context:v32,style:v33,dataAggregation:v34};v71.push({id:Z.id,params:v35});}),{preRedos:v70,redos:[],preUndos:[],undos:v71};}return{preRedos:[],redos:[],preUndos:[],undos:[]};}}));}};at=P([N(0,t.ICommandService),N(1,(0,t.Inject)(r.SheetInterceptorService)),N(2,(0,t.Inject)(F)),N(3,(0,t.Inject)(U))],at);const ot="SHEET_CHART_PLUGIN";let $=class extends t.Plugin{constructor(v562=Ze,v563,v564){super(),this._config=v562,this._injector=v563,this._configService=v564;let{...v565}=(0,t.merge)({},Ze,this._config);this._configService["setConfig"](Xe,v565);}onStarting(){let v566=this._injector;[[F],[V],[H],[U],[at]].forEach(v178=>v566.add(v178)),(0,t.touchDependencies)(v566,[[F],[U],[at]]);}};w($,"type",t.UniverInstanceType["UNIVER_SHEET"]),w($,"pluginName",ot),w($,"packageName",rt),w($,"version",it),$=P([(0,t.DependentOn)(e.UniverChartPlugin,s.UniverLicensePlugin,r.UniverSheetsPlugin),N(1,(0,t.Inject)(t.Injector)),N(2,t.IConfigService)],$),exports.ChartDiagnosticSeverity=ye,Object.defineProperty(exports,"ChartModelService",{enumerable:true,get:function(){return F;}}),exports.ChartSourceKind=ve,exports.ChartSourceOrientation=_e,exports.ChartUpdateConfigCommand=K,exports.ChartUpdateConfigMutation=fe,exports.ChartUpdateSourceCommand=ge,exports.ChartUpdateSourceConfigMutation=q,exports.InsertChartCommand=nt,exports.InsertSheetsChartMutation=Z,exports.RemoveSheetsChartMutation=Q,exports.ReplaceSheetChartConfig=G,exports.SHEETS_CHART_PLUGIN_CONFIG_KEY=Xe,exports.SHEETS_CHART_PLUGIN_NAME=ot,exports.SheetChartConfigAdapter=Ue,Object.defineProperty(exports,"SheetsChartService",{enumerable:true,get:function(){return U;}}),Object.defineProperty(exports,"UniverSheetsChartPlugin",{enumerable:true,get:function(){return $;}}),exports.getAllowedChartTypes=Ye,exports.resolveInitialChartPosition=Se,exports.resolveSourceSeries=Ae,exports.resolveSourceSpec=De,exports.toInsertChartMutationSource=Qe;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/engine-chart"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs/sheets-drawing"),
+  r = require("@univerjs/sheets"),
+  i = require("rxjs"),
+  a = require("@univerjs/engine-formula"),
+  o = require("@univerjs/engine-render"),
+  s = require("@univerjs-pro/license");
+const c = new Set([e.ChartTypeBits["Line"], e.ChartTypeBits["Column"], e.ChartTypeBits["ColumnStacked"], e.ChartTypeBits["ColumnPercentStacked"], e.ChartTypeBits["Bar"], e.ChartTypeBits["BarStacked"], e.ChartTypeBits["BarPercentStacked"], e.ChartTypeBits["Area"], e.ChartTypeBits["AreaStacked"], e.ChartTypeBits["AreaPercentStacked"], e.ChartTypeBits["Combination"], e.ChartTypeBits["Waterfall"]]);
+function l(var_core_value_sigADEC) {
+  if (var_core_value_sigADEC.length === 0) return [];
+  let var_core_value_sig3D8E = [var_core_value_sigADEC[0]];
+  for (let var_core_value_sig237B = 1; var_core_value_sig237B < var_core_value_sigADEC.length && var_core_value_sigADEC[var_core_value_sig237B] === var_core_value_sigADEC[var_core_value_sig237B - 1] + 1; var_core_value_sig237B++) var_core_value_sig3D8E.push(var_core_value_sigADEC[var_core_value_sig237B]);
+  return var_core_value_sig3D8E;
+}
+function u(var_core_value_sig37E5) {
+  return var_core_value_sig37E5.length >= 2 && var_core_value_sig37E5.every((var_core_value_sigFEAB, var_core_value_sigE347) => var_core_value_sigE347 === 0 || var_core_value_sigFEAB === var_core_value_sig37E5[var_core_value_sigE347 - 1] + 1);
+}
+function d(var_core_value_sigF079, var_core_value_sigFCA0, var_core_value_sigC84D) {
+  return var_core_value_sigC84D ? [var_core_value_sigFCA0[0]] : l(var_core_value_sigF079);
+}
+function f(var_core_value_sigF2BC, var_core_value_sigD37B) {
+  let var_core_value_sigFA28 = (0, e.generateChartContext)(var_core_value_sigF2BC),
+    var_core_value_sig93BE = (0, e.canonicalizeChartContext)(var_core_value_sigD37B.context ?? {}),
+    var_core_value_sigABEC = var_core_value_sigFA28.categoryResourceIndexes ?? [],
+    var_core_value_sig2712 = var_core_value_sigFA28.seriesResourceIndexes ?? [],
+    var_core_value_sig0B9E = var_core_value_sig93BE.categoryIndexes === undefined && var_core_value_sig93BE.seriesIndexes === undefined && e.chartBitsUtils["baseOn"](var_core_value_sigD37B.chartType, e.ChartTypeBits["Scatter"]) && var_core_value_sigABEC.length === 0 && var_core_value_sig2712.length >= 2,
+    var_core_value_sigC545 = var_core_value_sig93BE.categoryIndexes === undefined ? d(var_core_value_sigABEC, var_core_value_sig2712, var_core_value_sig0B9E) : [...var_core_value_sig93BE.categoryIndexes],
+    var_core_value_sig12A7 = new Set(var_core_value_sigC545),
+    var_core_value_sig6F4E = var_core_value_sig93BE.seriesIndexes === undefined ? var_core_value_sig2712.filter(var_core_value_sig3C5B => !var_core_value_sig12A7.has(var_core_value_sig3C5B)) : [...var_core_value_sig93BE.seriesIndexes],
+    var_core_value_sigA021 = var_core_value_sig93BE.multiLevelCategoryAxis ?? (c.has(var_core_value_sigD37B.chartType) && u(var_core_value_sigC545));
+  return {
+    ...var_core_value_sig93BE,
+    categoryIndexes: var_core_value_sigC545,
+    multiLevelCategoryAxis: var_core_value_sigA021,
+    seriesIndexes: var_core_value_sig6F4E
+  };
+}
+function p(var_core_value_sig49D9, var_core_value_sig320C) {
+  return (0, e.generateChartContext)(var_core_value_sig49D9, var_core_value_sig320C, false);
+}
+function m(var_core_value_sigE7F0, var_core_value_sigE837, var_core_value_sig34F4, var_core_value_sigA45D) {
+  let var_core_value_sig1BC7 = var_core_value_sig34F4 === undefined ? undefined : {
+    categoryIndexes: var_core_value_sig34F4.categoryIndexes,
+    seriesIndexes: var_core_value_sig34F4.seriesIndexes
+  };
+  return f(var_core_value_sigE7F0, {
+    chartType: var_core_value_sigE837,
+    ...(var_core_value_sig34F4 === undefined && var_core_value_sigA45D === undefined ? {} : {
+      context: {
+        ...var_core_value_sig1BC7,
+        ...var_core_value_sigA45D
+      }
+    })
+  });
+}
+function h(var_core_value_sig4956, var_core_value_sigCC9E, var_core_value_sig444C, var_core_value_sigE42E) {
+  let {
+      headers: var_core_value_sigF039,
+      categoryIndexes: var_core_value_sigA321,
+      categoryResourceIndexes: var_core_value_sigBF4C,
+      categoryType: var_core_value_sig3457,
+      seriesIndexes: var_core_value_sig4A08,
+      seriesResourceIndexes: var_core_value_sig1BC4,
+      ...var_core_value_sig9EAB
+    } = var_core_value_sig444C,
+    var_core_value_sigA5C3 = m(var_core_value_sig4956, var_core_value_sigCC9E, var_core_value_sigE42E, var_core_value_sig9EAB),
+    var_core_value_sig3A1E = var_core_value_sig9EAB.multiLevelCategoryAxis ?? (var_core_value_sigA5C3.multiLevelCategoryAxis ? true : undefined);
+  return p(var_core_value_sig4956, {
+    ...var_core_value_sig9EAB,
+    categoryIndexes: var_core_value_sigA5C3.categoryIndexes,
+    seriesIndexes: var_core_value_sigA5C3.seriesIndexes,
+    ...(var_core_value_sig3A1E === undefined ? {} : {
+      multiLevelCategoryAxis: var_core_value_sig3A1E
+    })
+  });
+}
+function g(var_core_value_sigDC92, var_core_value_sig3515, var_core_value_sigC2A0) {
+  return (0, e.reconcileChartContext)(var_core_value_sigDC92, var_core_value_sigC2A0, var_core_value_sig3515);
+}
+function _(var_core_value_sig7C65) {
+  let {
+      mergeRanges: var_core_value_sig7F05,
+      worksheetRows: var_core_value_sig41F3,
+      worksheetColumns: var_core_value_sigF455,
+      transpose: var_core_value_sig6E78,
+      fieldIndexOffset: var_core_value_sigB3EE = 0
+    } = var_core_value_sig7C65,
+    var_core_value_sigC50A = new Map(var_core_value_sig41F3.map((var_core_value_sig200B, var_core_value_sig3863) => [var_core_value_sig200B, var_core_value_sig3863])),
+    var_core_value_sig11D0 = new Map(var_core_value_sigF455.map((var_core_value_sigC97C, var_core_value_sigC4B1) => [var_core_value_sigC97C, var_core_value_sigC4B1])),
+    var_core_value_sigB8ED = [];
+  for (let var_core_value_sig1BD9 of var_core_value_sig7F05) {
+    let var_core_value_sig8889 = var_core_value_sigC50A.get(var_core_value_sig1BD9.startRow),
+      var_core_value_sig32F8 = var_core_value_sig11D0.get(var_core_value_sig1BD9.startColumn);
+    if (var_core_value_sig8889 === undefined || var_core_value_sig32F8 === undefined) continue;
+    let var_core_value_sig5B67 = var_core_value_sig41F3.filter(var_core_value_sig09B8 => var_core_value_sig09B8 >= var_core_value_sig1BD9.startRow && var_core_value_sig09B8 <= var_core_value_sig1BD9.endRow).length,
+      var_core_value_sig1758 = var_core_value_sigF455.filter(var_core_value_sig6F91 => var_core_value_sig6F91 >= var_core_value_sig1BD9.startColumn && var_core_value_sig6F91 <= var_core_value_sig1BD9.endColumn).length,
+      var_core_value_sig4805 = var_core_value_sig6E78 ? var_core_value_sig5B67 : var_core_value_sig1758,
+      var_core_value_sigE67E = var_core_value_sig6E78 ? var_core_value_sig1758 : var_core_value_sig5B67;
+    if (var_core_value_sig4805 !== 1 || var_core_value_sigE67E < 2) continue;
+    let var_core_value_sig2902 = (var_core_value_sig6E78 ? var_core_value_sig8889 : var_core_value_sig32F8) + var_core_value_sigB3EE,
+      var_core_value_sig9989 = var_core_value_sig6E78 ? var_core_value_sig32F8 : var_core_value_sig8889;
+    var_core_value_sigB8ED.push({
+      fieldIndex: var_core_value_sig2902,
+      startIndex: var_core_value_sig9989,
+      endIndex: var_core_value_sig9989 + var_core_value_sigE67E - 1
+    });
+  }
+  return var_core_value_sigB8ED.sort((var_core_value_sigE43E, var_core_value_sigA937) => var_core_value_sigE43E.fieldIndex - var_core_value_sigA937.fieldIndex || var_core_value_sigE43E.startIndex - var_core_value_sigA937.startIndex);
+}
+const v = var_core_value_sig8EAE => {
+  var var_core_value_sig1CDD;
+  return ((var_core_value_sig1CDD = var_core_value_sig8EAE.body) == null ? undefined : var_core_value_sig1CDD.dataStream["replace"](/\r\n$/, "")) || "";
+};
+function y(var_core_value_sig0DB1, var_core_value_sig68A2, var_core_value_sigCC17, var_core_value_sig32AE, var_core_value_sigC753, var_core_value_sigFFD1, var_core_value_sig81AE, var_core_value_sigF79F) {
+  let {
+      startRow: var_core_value_sig0E54,
+      startColumn: var_core_value_sig3B17,
+      endColumn: var_core_value_sig6C4A,
+      endRow: var_core_value_sig73D9
+    } = var_core_value_sig0DB1,
+    var_core_value_sigEAF8 = {};
+  if (var_core_value_sig0E54 === var_core_value_sig73D9) for (let var_core_value_sigCAD5 = var_core_value_sig3B17; var_core_value_sigCAD5 <= var_core_value_sig6C4A; var_core_value_sigCAD5++) {
+    let var_core_value_sig698E = b(var_core_value_sig68A2, var_core_value_sig0E54, var_core_value_sigCAD5, var_core_value_sig81AE, var_core_value_sigEAF8, var_core_value_sigF79F),
+      var_core_value_sig2809 = var_core_value_sigCAD5 - var_core_value_sig3B17;
+    var_core_value_sig32AE.setValue(var_core_value_sigCC17, var_core_value_sig2809, var_core_value_sig698E.value), var_core_value_sigC753.setValue(var_core_value_sigCC17, var_core_value_sig2809, var_core_value_sig698E.sourceType), var_core_value_sigFFD1.setValue(var_core_value_sigCC17, var_core_value_sig2809, var_core_value_sig698E.label);
+  }
+  if (var_core_value_sig3B17 === var_core_value_sig6C4A) for (let var_core_value_sigE503 = var_core_value_sig0E54; var_core_value_sigE503 <= var_core_value_sig73D9; var_core_value_sigE503++) {
+    let var_core_value_sig2DAB = b(var_core_value_sig68A2, var_core_value_sigE503, var_core_value_sig3B17, var_core_value_sig81AE, var_core_value_sigEAF8, var_core_value_sigF79F),
+      var_core_value_sig877E = var_core_value_sigE503 - var_core_value_sig0E54;
+    var_core_value_sig32AE.setValue(var_core_value_sigCC17, var_core_value_sig877E, var_core_value_sig2DAB.value), var_core_value_sigC753.setValue(var_core_value_sigCC17, var_core_value_sig877E, var_core_value_sig2DAB.sourceType), var_core_value_sigFFD1.setValue(var_core_value_sigCC17, var_core_value_sig877E, var_core_value_sig2DAB.label);
+  }
+}
+function b(var_core_value_sig0455, var_core_value_sig737C, var_core_value_sig5AF5, var_core_value_sig9DE4, var_core_value_sig77FA, var_core_value_sigA4A7) {
+  var var_core_value_sigA4DF;
+  let var_core_value_sigCC9D = var_core_value_sig0455.getCell(var_core_value_sig737C, var_core_value_sig5AF5),
+    var_core_value_sig90F5 = ((var_core_value_sigA4DF = var_core_value_sig0455.getCellRaw) == null ? undefined : var_core_value_sigA4DF.call(var_core_value_sig0455, var_core_value_sig737C, var_core_value_sig5AF5)) ?? var_core_value_sigCC9D;
+  return ee(var_core_value_sigCC9D, var_core_value_sig9DE4, var_core_value_sig77FA, var_core_value_sig90F5 != null && var_core_value_sig90F5.f || var_core_value_sig90F5 != null && var_core_value_sig90F5.si ? var_core_value_sig90F5 : var_core_value_sig0455.getCellWithFilteredInterceptors ? var_core_value_sig0455.getCellWithFilteredInterceptors(var_core_value_sig737C, var_core_value_sig5AF5, "sheet-chart.source-value", var_core_value_sig48DD => var_core_value_sig48DD.priority !== r.InterceptCellContentPriority["NUMFMT"]) : var_core_value_sig90F5, var_core_value_sigA4A7);
+}
+function ee(var_core_value_sigD2BA, var_core_value_sigCD3A, var_core_value_sig519D, var_core_value_sigC7E7 = var_core_value_sigD2BA, var_core_value_sig6E1C) {
+  if (!var_core_value_sigD2BA || var_core_value_sigD2BA.v === undefined && !var_core_value_sigD2BA.p || var_core_value_sigD2BA.v === null && !var_core_value_sigD2BA.p) return {
+    value: null,
+    label: "",
+    sourceType: e.ChartSourceDataTypeEnum["Null"]
+  };
+  let {
+    v: var_core_value_sigFABC,
+    p: var_core_value_sig413D
+  } = var_core_value_sigD2BA;
+  if (var_core_value_sig413D) {
+    let var_core_value_sig5E6A = v(var_core_value_sig413D);
+    return {
+      value: var_core_value_sig5E6A,
+      label: var_core_value_sig5E6A,
+      sourceType: e.ChartSourceDataTypeEnum["STRING"]
+    };
+  }
+  let var_core_value_sig5BCE = (0, t.getCellValueType)(var_core_value_sigD2BA),
+    var_core_value_sig8EF0 = String(var_core_value_sigFABC);
+  if (var_core_value_sig5BCE === t.CellValueType["STRING"] || var_core_value_sig5BCE === t.CellValueType["FORCE_STRING"]) return {
+    value: var_core_value_sig8EF0,
+    label: var_core_value_sig8EF0,
+    sourceType: e.ChartSourceDataTypeEnum["STRING"]
+  };
+  if (var_core_value_sig5BCE === t.CellValueType["BOOLEAN"]) {
+    let var_core_value_sigB7FC = !!var_core_value_sigFABC;
+    return {
+      value: +!!var_core_value_sigB7FC,
+      label: var_core_value_sigB7FC ? "TRUE" : "FALSE",
+      sourceType: e.ChartSourceDataTypeEnum["BOOLEAN"]
+    };
+  }
+  return var_core_value_sig5BCE === t.CellValueType["NUMBER"] ? te(var_core_value_sigD2BA, var_core_value_sigC7E7, var_core_value_sig8EF0, var_core_value_sigCD3A, var_core_value_sig519D, var_core_value_sig6E1C) : {
+    value: var_core_value_sig8EF0,
+    label: var_core_value_sig8EF0,
+    sourceType: e.ChartSourceDataTypeEnum["STRING"]
+  };
+}
+function te(var_core_value_sig78AC, var_core_value_sig4CEF, var_core_value_sigD57D, var_core_value_sig2CC7, var_core_value_sig4784, var_core_value_sigC39E) {
+  var var_core_value_sig16C7;
+  let {
+      v: var_core_value_sig7481,
+      s: var_core_value_sig08A3
+    } = var_core_value_sig78AC,
+    var_core_value_sig77D8 = (var_core_value_sig4CEF == null ? undefined : var_core_value_sig4CEF.v) !== undefined && var_core_value_sig4CEF.v !== null ? var_core_value_sig4CEF.v : var_core_value_sig7481,
+    var_core_value_sig78A3 = (var_core_value_sig16C7 = var_core_value_sig2CC7.get((var_core_value_sig4CEF == null ? undefined : var_core_value_sig4CEF.s) ?? var_core_value_sig08A3)) == null || (var_core_value_sig16C7 = var_core_value_sig16C7.n) == null ? undefined : var_core_value_sig16C7.pattern,
+    var_core_value_sig649B = typeof var_core_value_sig77D8 == "number" ? var_core_value_sig77D8 : Number(var_core_value_sig77D8),
+    var_core_value_sig6256 = Number.isFinite(var_core_value_sig649B),
+    var_core_value_sigE7A6 = typeof var_core_value_sig77D8 == "string" && var_core_value_sig6256,
+    var_core_value_sigB505 = (var_core_value_sig4CEF == null ? undefined : var_core_value_sig4CEF.v) !== undefined && var_core_value_sig4CEF.v !== null && var_core_value_sig4CEF.v !== var_core_value_sig7481;
+  var_core_value_sig78A3 && !var_core_value_sig4784[var_core_value_sig78A3] && (var_core_value_sig4784[var_core_value_sig78A3] = t.numfmt["getFormatInfo"](var_core_value_sig78A3));
+  let var_core_value_sig7428 = var_core_value_sig78A3 ? var_core_value_sig4784[var_core_value_sig78A3] : undefined;
+  if (var_core_value_sig7428 != null && var_core_value_sig7428.isDate) {
+    var var_core_value_sig1DCE;
+    let var_core_value_sig9CD9 = var_core_value_sig6256 ? var_core_value_sig649B : (var_core_value_sig1DCE = t.numfmt["parseDate"](String(var_core_value_sig77D8), var_core_value_sigC39E)) == null ? undefined : var_core_value_sig1DCE.v;
+    return {
+      value: var_core_value_sig9CD9 == null ? Number(var_core_value_sig77D8) : (0, e.excelDateToUnixMilliseconds)(var_core_value_sig9CD9, (var_core_value_sigC39E == null ? undefined : var_core_value_sigC39E.dateSystem) !== t.DateSystem["Date1904"]),
+      label: !var_core_value_sigB505 && var_core_value_sigE7A6 && var_core_value_sig78A3 ? t.numfmt["format"](var_core_value_sig78A3, var_core_value_sig649B, var_core_value_sigC39E) : var_core_value_sigD57D,
+      sourceType: e.ChartSourceDataTypeEnum["Date"]
+    };
+  }
+  if (var_core_value_sig78A3 !== t.DEFAULT_NUMBER_FORMAT && var_core_value_sig7428) {
+    var var_core_value_sig0567;
+    return {
+      value: var_core_value_sig6256 ? var_core_value_sig649B : ((var_core_value_sig0567 = t.numfmt["parseNumber"](String(var_core_value_sig77D8))) == null ? undefined : var_core_value_sig0567.v) ?? Number(var_core_value_sig77D8),
+      label: !var_core_value_sigB505 && var_core_value_sigE7A6 && var_core_value_sig78A3 ? t.numfmt["format"](var_core_value_sig78A3, var_core_value_sig649B, var_core_value_sigC39E) : var_core_value_sigD57D,
+      sourceType: e.ChartSourceDataTypeEnum["NUMBER"]
+    };
+  }
+  return {
+    value: Number(var_core_value_sig77D8),
+    label: var_core_value_sigD57D,
+    sourceType: e.ChartSourceDataTypeEnum["NUMBER"]
+  };
+}
+function x({
+  numfmtOptions: var_core_value_sigA7F3,
+  range: var_core_value_sigEACD,
+  styles: var_core_value_sig901E,
+  worksheet: var_core_value_sigF7BB
+}) {
+  let var_core_value_sigFA38 = [],
+    var_core_value_sig102B = [];
+  for (let var_core_value_sigFD0C = var_core_value_sigEACD.startRow; var_core_value_sigFD0C <= var_core_value_sigEACD.endRow; var_core_value_sigFD0C++) var_core_value_sigF7BB.getRowVisible(var_core_value_sigFD0C) && var_core_value_sigFA38.push(var_core_value_sigFD0C);
+  for (let var_core_value_sig849B = var_core_value_sigEACD.startColumn; var_core_value_sig849B <= var_core_value_sigEACD.endColumn; var_core_value_sig849B++) var_core_value_sigF7BB.getColVisible(var_core_value_sig849B) && var_core_value_sig102B.push(var_core_value_sig849B);
+  let var_core_value_sigA7DB = {};
+  return {
+    data: var_core_value_sigFA38.map(var_core_value_sig5F1A => var_core_value_sig102B.map(var_core_value_sig20C8 => {
+      let var_core_value_sigE9A7 = b(var_core_value_sigF7BB, var_core_value_sig5F1A, var_core_value_sig20C8, var_core_value_sig901E, var_core_value_sigA7DB, var_core_value_sigA7F3);
+      return {
+        value: var_core_value_sigE9A7.value,
+        type: var_core_value_sigE9A7.sourceType,
+        label: var_core_value_sigE9A7.label
+      };
+    })),
+    rowIndexes: var_core_value_sigFA38.map(var_core_value_sigB455 => var_core_value_sigB455 - var_core_value_sigEACD.startRow),
+    columnIndexes: var_core_value_sig102B.map(var_core_value_sig5241 => var_core_value_sig5241 - var_core_value_sigEACD.startColumn),
+    mergeRanges: var_core_value_sigF7BB.getMergeData().map(var_core_value_sigC6E5 => ({
+      startRow: var_core_value_sigC6E5.startRow - var_core_value_sigEACD.startRow,
+      endRow: var_core_value_sigC6E5.endRow - var_core_value_sigEACD.startRow,
+      startColumn: var_core_value_sigC6E5.startColumn - var_core_value_sigEACD.startColumn,
+      endColumn: var_core_value_sigC6E5.endColumn - var_core_value_sigEACD.startColumn
+    }))
+  };
+}
+function S(var_core_value_sig5EEE) {
+  "@babel/helpers - typeof";
+
+  return S = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigCEFB) {
+    return typeof var_core_value_sigCEFB;
+  } : function (var_core_value_sig1537) {
+    return var_core_value_sig1537 && typeof Symbol == "function" && var_core_value_sig1537.constructor === Symbol && var_core_value_sig1537 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig1537;
+  }, S(var_core_value_sig5EEE);
+}
+function ne(var_core_value_sig65B4, var_core_value_sigF98E) {
+  if (S(var_core_value_sig65B4) != "object" || !var_core_value_sig65B4) return var_core_value_sig65B4;
+  var var_core_value_sigA470 = var_core_value_sig65B4[Symbol.toPrimitive];
+  if (var_core_value_sigA470 !== undefined) {
+    var var_core_value_sig19A1 = var_core_value_sigA470.call(var_core_value_sig65B4, var_core_value_sigF98E || "default");
+    if (S(var_core_value_sig19A1) != "object") return var_core_value_sig19A1;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigF98E === "string" ? String : Number)(var_core_value_sig65B4);
+}
+function C(var_core_value_sig81F7) {
+  var var_core_value_sigBE51 = ne(var_core_value_sig81F7, "string");
+  return S(var_core_value_sigBE51) == "symbol" ? var_core_value_sigBE51 : var_core_value_sigBE51 + "";
+}
+function w(var_core_value_sigAAD1, var_core_value_sigBC1A, var_core_value_sig3F3A) {
+  return (var_core_value_sigBC1A = C(var_core_value_sigBC1A)) in var_core_value_sigAAD1 ? Object.defineProperty(var_core_value_sigAAD1, var_core_value_sigBC1A, {
+    value: var_core_value_sig3F3A,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigAAD1[var_core_value_sigBC1A] = var_core_value_sig3F3A, var_core_value_sigAAD1;
+}
+var re = class extends e.ChartDataSource {
+    constructor(var_core_value_sigE4C6, var_core_value_sig4313) {
+      super(), this._univerInstanceService = var_core_value_sigE4C6, w(this, "_snapshot$", undefined), w(this, "_projector", undefined), w(this, "_projectorHeaderRow", undefined), w(this, "_projectorIsRowDirection", undefined), w(this, "snapshot$", undefined), w(this, "rangeInfo$", undefined), w(this, "data$", undefined), w(this, "isRowDirection$", undefined), w(this, "canSwitchOrient$", undefined);
+      let var_core_value_sigFC87 = t.Tools["deepClone"](var_core_value_sig4313),
+        var_core_value_sig156F = var_core_value_sigFC87.isRowDirection === undefined || var_core_value_sigFC87.isRowDirection,
+        var_core_value_sigDD51 = {
+          ...var_core_value_sigFC87,
+          isRowDirection: var_core_value_sig156F
+        },
+        var_core_value_sigF057 = this.convertDataSet(var_core_value_sigDD51);
+      this._snapshot$ = new i.BehaviorSubject({
+        revision: 0,
+        rangeRevision: 0,
+        rangeInfo: var_core_value_sigDD51,
+        dataSet: var_core_value_sigF057,
+        isRowDirection: var_core_value_sig156F,
+        canSwitchOrient: true
+      }), this.snapshot$ = this._snapshot$["pipe"]((0, i.map)(var_core_value_sigBECE => ({
+        ...var_core_value_sigBECE,
+        rangeInfo: t.Tools["deepClone"](var_core_value_sigBECE.rangeInfo)
+      }))), this.rangeInfo$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sig1B22 => var_core_value_sig1B22.rangeInfo)), this.data$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sig7F72 => var_core_value_sig7F72.dataSet)), this.isRowDirection$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sig7B2A => var_core_value_sig7B2A.isRowDirection)), this.canSwitchOrient$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sig06CD => var_core_value_sig06CD.canSwitchOrient));
+    }
+    getRangeInfo() {
+      return t.Tools["deepClone"](this._snapshot$["getValue"]().rangeInfo);
+    }
+    get isRowDirection() {
+      return this._snapshot$["getValue"]().isRowDirection;
+    }
+    canSwitchOrient() {
+      return true;
+    }
+    convertDataSet(var_core_value_sig72F6 = this.getRangeInfo()) {
+      let {
+          headerRow: var_core_value_sig9FBA,
+          rangeInfo: var_core_value_sigFE01,
+          isRowDirection: var_core_value_sigA2CE
+        } = var_core_value_sig72F6,
+        {
+          unitId: var_core_value_sig1975,
+          subUnitId: var_core_value_sig6EA1,
+          range: var_core_value_sig029F
+        } = var_core_value_sigFE01;
+      if (var_core_value_sig029F.startColumn === -1 || var_core_value_sig029F.startRow === -1) return {
+        dimensions: [],
+        source: []
+      };
+      let var_core_value_sig3767 = (0, r.getSheetCommandTarget)(this._univerInstanceService, {
+        unitId: var_core_value_sig1975,
+        subUnitId: var_core_value_sig6EA1
+      });
+      if (!var_core_value_sig3767) return {
+        dimensions: [],
+        source: []
+      };
+      let {
+          workbook: var_core_value_sig670B,
+          worksheet: var_core_value_sig6912
+        } = var_core_value_sig3767,
+        var_core_value_sigE235 = t.Range["transformRange"](var_core_value_sig029F, var_core_value_sig6912),
+        var_core_value_sig7664 = var_core_value_sig670B.getStyles(),
+        var_core_value_sig2281 = x({
+          numfmtOptions: {
+            locale: (0, t.getNumfmtLocaleTag)(var_core_value_sig670B.getSnapshot().locale),
+            dateSystem: var_core_value_sig670B.getDateSystem()
+          },
+          range: var_core_value_sigE235,
+          styles: var_core_value_sig7664,
+          worksheet: var_core_value_sig6912
+        });
+      return this._getProjector(var_core_value_sig9FBA ?? e.CHART_HEADER_ROW_NONE, !!var_core_value_sigA2CE).project(var_core_value_sig2281);
+    }
+    _getProjector(var_core_value_sig5E86, var_core_value_sig6998) {
+      let var_core_value_sigF639 = !var_core_value_sig6998;
+      return (!this._projector || this._projectorHeaderRow !== var_core_value_sig5E86 || this._projectorIsRowDirection !== var_core_value_sigF639) && (this._projector = (0, e.createChartDataSetProjector)({
+        headerRow: var_core_value_sig5E86,
+        isRowDirection: var_core_value_sigF639
+      }), this._projectorHeaderRow = var_core_value_sig5E86, this._projectorIsRowDirection = var_core_value_sigF639), this._projector;
+    }
+    getDataSet() {
+      return this._snapshot$["getValue"]().dataSet;
+    }
+    getDimensionCount() {
+      return this._snapshot$["getValue"]().dataSet["dimensions"].length;
+    }
+    refreshDataSet() {
+      let var_core_value_sigEAE5 = this._snapshot$["getValue"]();
+      this._emit({
+        ...var_core_value_sigEAE5,
+        dataSet: this.convertDataSet(var_core_value_sigEAE5.rangeInfo)
+      }, false);
+    }
+    _emit(var_core_value_sigE94C, var_core_value_sig6D47) {
+      let var_core_value_sigCB82 = this._snapshot$["getValue"]();
+      this._snapshot$["next"]({
+        ...var_core_value_sigE94C,
+        revision: var_core_value_sigCB82.revision + 1,
+        rangeRevision: var_core_value_sigCB82.rangeRevision + +!!var_core_value_sig6D47
+      });
+    }
+    dispose() {
+      let var_core_value_sigCF4E = this._snapshot$["getValue"]();
+      this._snapshot$["next"]({
+        ...var_core_value_sigCF4E,
+        dataSet: this.getEmptyDataSet(),
+        revision: var_core_value_sigCF4E.revision + 1
+      }), this._snapshot$["complete"](), this._projector = undefined, super.dispose();
+    }
+  },
+  T = class extends e.ChartDataSource {
+    constructor(var_core_value_sig6CAD, var_core_value_sig8CF5) {
+      super(), this._univerInstanceService = var_core_value_sig6CAD, w(this, "_snapshot$", undefined), w(this, "snapshot$", undefined), w(this, "rangeInfo$", undefined), w(this, "data$", undefined), w(this, "isRowDirection$", undefined), w(this, "canSwitchOrient$", undefined);
+      let var_core_value_sigDDD7 = this.convertDataSet(var_core_value_sig8CF5);
+      this._snapshot$ = new i["BehaviorSubject"]({
+        revision: 0,
+        rangeRevision: 0,
+        rangeInfo: t.Tools["deepClone"](var_core_value_sig8CF5),
+        dataSet: var_core_value_sigDDD7,
+        isRowDirection: false,
+        canSwitchOrient: false
+      }), this.snapshot$ = this._snapshot$["pipe"]((0, i.map)(var_core_value_sigA5F1 => ({
+        ...var_core_value_sigA5F1,
+        rangeInfo: t.Tools["deepClone"](var_core_value_sigA5F1.rangeInfo)
+      }))), this.rangeInfo$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sig97A2 => var_core_value_sig97A2.rangeInfo)), this.data$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sig07E9 => var_core_value_sig07E9.dataSet)), this.isRowDirection$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sig4F59 => var_core_value_sig4F59.isRowDirection)), this.canSwitchOrient$ = this.snapshot$["pipe"]((0, i.map)(var_core_value_sigF564 => var_core_value_sigF564.canSwitchOrient));
+    }
+    canSwitchOrient() {
+      return false;
+    }
+    getRangeInfo() {
+      return t.Tools["deepClone"](this._snapshot$["getValue"]().rangeInfo);
+    }
+    get isRowDirection() {
+      return this._snapshot$["getValue"]().isRowDirection;
+    }
+    convertDataSet(var_core_value_sigB2CE = this.getRangeInfo()) {
+      let var_core_value_sig443C = this._univerInstanceService,
+        var_core_value_sig39B1 = [],
+        var_core_value_sig210D = {};
+      for (let {
+        header: var_core_value_sig8CFA
+      } of var_core_value_sigB2CE) {
+        if (!var_core_value_sig8CFA) {
+          var_core_value_sig39B1.push("");
+          continue;
+        }
+        let {
+            unitId: var_core_value_sigF9C7,
+            subUnitId: var_core_value_sig8895,
+            range: var_core_value_sigC80B
+          } = var_core_value_sig8CFA,
+          var_core_value_sig284F = var_core_value_sig443C.getUnit(var_core_value_sigF9C7, t.UniverInstanceType["UNIVER_SHEET"]);
+        if (!var_core_value_sig284F) return {
+          dimensions: [],
+          source: []
+        };
+        let var_core_value_sigE154 = var_core_value_sig284F.getSheetBySheetId(var_core_value_sig8895);
+        if (!var_core_value_sigE154) return {
+          dimensions: [],
+          source: []
+        };
+        let var_core_value_sig4632 = var_core_value_sig284F.getStyles(),
+          {
+            label: var_core_value_sig12F2
+          } = b(var_core_value_sigE154, var_core_value_sigC80B.startRow, var_core_value_sigC80B.startColumn, var_core_value_sig4632, var_core_value_sig210D, {
+            locale: (0, t.getNumfmtLocaleTag)(var_core_value_sig284F.getSnapshot().locale),
+            dateSystem: var_core_value_sig284F.getDateSystem()
+          });
+        var_core_value_sig39B1.push(var_core_value_sig12F2);
+      }
+      let var_core_value_sigB4B4 = 0,
+        var_core_value_sigD407 = new t.ObjectMatrix(),
+        var_core_value_sig63F3 = new t["ObjectMatrix"](),
+        var_core_value_sig6A71 = new t["ObjectMatrix"](),
+        var_core_value_sig3BF6 = [],
+        var_core_value_sig38CE = [];
+      for (let {
+        range: var_core_value_sig2E11
+      } of var_core_value_sigB2CE) {
+        let {
+            unitId: var_core_value_sig2259,
+            subUnitId: var_core_value_sig9E2F,
+            range: var_core_value_sigD082
+          } = var_core_value_sig2E11,
+          var_core_value_sigDBB7 = var_core_value_sig443C.getUnit(var_core_value_sig2259, t.UniverInstanceType["UNIVER_SHEET"]);
+        if (!var_core_value_sigDBB7) return {
+          dimensions: [],
+          source: []
+        };
+        let var_core_value_sigD0A8 = var_core_value_sigDBB7.getSheetBySheetId(var_core_value_sig9E2F);
+        if (!var_core_value_sigD0A8) return {
+          dimensions: [],
+          source: []
+        };
+        y(var_core_value_sigD082, var_core_value_sigD0A8, var_core_value_sigB4B4, var_core_value_sigD407, var_core_value_sig63F3, var_core_value_sig6A71, var_core_value_sigDBB7.getStyles(), {
+          locale: (0, t.getNumfmtLocaleTag)(var_core_value_sigDBB7.getSnapshot().locale),
+          dateSystem: var_core_value_sigDBB7.getDateSystem()
+        });
+        let var_core_value_sigF4B9 = var_core_value_sigD082.startRow === var_core_value_sigD082.endRow,
+          var_core_value_sig5CEE = var_core_value_sigD082.startColumn === var_core_value_sigD082.endColumn,
+          var_core_value_sigE92A = true;
+        if (var_core_value_sigF4B9 ? var_core_value_sigE92A = var_core_value_sigD0A8.getRowVisible(var_core_value_sigD082.startRow) : var_core_value_sig5CEE && (var_core_value_sigE92A = var_core_value_sigD0A8.getColVisible(var_core_value_sigD082.startColumn)), var_core_value_sigE92A || var_core_value_sig38CE.push(var_core_value_sigB4B4), var_core_value_sigF4B9 || var_core_value_sig5CEE) {
+          let var_core_value_sig0D69 = var_core_value_sigD0A8.getMergeData().filter(var_core_value_sig4D4C => var_core_value_sig4D4C.startRow >= var_core_value_sigD082.startRow && var_core_value_sig4D4C.endRow <= var_core_value_sigD082.endRow && var_core_value_sig4D4C.startColumn >= var_core_value_sigD082.startColumn && var_core_value_sig4D4C.endColumn <= var_core_value_sigD082.endColumn),
+            var_core_value_sig480E = Array.from({
+              length: var_core_value_sigD082.endRow - var_core_value_sigD082.startRow + 1
+            }, (var_core_value_sigC9E0, var_core_value_sig76BA) => var_core_value_sigD082.startRow + var_core_value_sig76BA),
+            var_core_value_sig26DB = Array.from({
+              length: var_core_value_sigD082.endColumn - var_core_value_sigD082.startColumn + 1
+            }, (var_core_value_sigFBFA, var_core_value_sigF602) => var_core_value_sigD082.startColumn + var_core_value_sigF602);
+          var_core_value_sig3BF6.push(..._({
+            mergeRanges: var_core_value_sig0D69,
+            worksheetRows: var_core_value_sig480E,
+            worksheetColumns: var_core_value_sig26DB,
+            transpose: var_core_value_sigF4B9,
+            fieldIndexOffset: var_core_value_sigB4B4
+          }));
+        }
+        var_core_value_sigB4B4++;
+      }
+      return {
+        dimensions: var_core_value_sig39B1,
+        source: var_core_value_sigD407.toArray(),
+        sourceType: var_core_value_sig63F3.toArray(),
+        sourceLabels: var_core_value_sig6A71.toArray(),
+        ...(var_core_value_sig38CE.length ? {
+          hiddenFieldIndexes: var_core_value_sig38CE
+        } : {}),
+        categorySpans: var_core_value_sig3BF6
+      };
+    }
+    getDataSet() {
+      return this._snapshot$["getValue"]().dataSet;
+    }
+    getDimensionCount() {
+      return this._snapshot$["getValue"]().dataSet["dimensions"].length;
+    }
+    refreshDataSet() {
+      let var_core_value_sig62B7 = this._snapshot$["getValue"]();
+      this._emit({
+        ...var_core_value_sig62B7,
+        dataSet: this.convertDataSet(var_core_value_sig62B7.rangeInfo)
+      }, false);
+    }
+    _emit(var_core_value_sig37A8, var_core_value_sigA90D) {
+      let var_core_value_sig7A3C = this._snapshot$["getValue"]();
+      this._snapshot$["next"]({
+        ...var_core_value_sig37A8,
+        revision: var_core_value_sig7A3C.revision + 1,
+        rangeRevision: var_core_value_sig7A3C.rangeRevision + +!!var_core_value_sigA90D
+      });
+    }
+    dispose() {
+      let var_core_value_sig0511 = this._snapshot$["getValue"]();
+      this._snapshot$["next"]({
+        ...var_core_value_sig0511,
+        dataSet: this.getEmptyDataSet(),
+        revision: var_core_value_sig0511.revision + 1
+      }), this._snapshot$["complete"](), super.dispose();
+    }
+  };
+function ie(var_core_value_sigA984, var_core_value_sigA504) {
+  return Array.isArray(var_core_value_sigA504) ? new T(var_core_value_sigA984, var_core_value_sigA504) : new re(var_core_value_sigA984, var_core_value_sigA504);
+}
+function E(var_core_value_sig05FF) {
+  return var_core_value_sig05FF !== undefined && var_core_value_sig05FF.type !== e.ChartSourceDataTypeEnum["Null"];
+}
+function D(var_core_value_sigFBF0) {
+  return (var_core_value_sigFBF0 == null ? undefined : var_core_value_sigFBF0.type) === e.ChartSourceDataTypeEnum["STRING"] || (var_core_value_sigFBF0 == null ? undefined : var_core_value_sigFBF0.type) === e.ChartSourceDataTypeEnum["Date"];
+}
+function O(var_core_value_sig2F95) {
+  return var_core_value_sig2F95.every(var_core_value_sig1F44 => var_core_value_sig1F44 === undefined || var_core_value_sig1F44.type === e.ChartSourceDataTypeEnum["Null"] || D(var_core_value_sig1F44));
+}
+function k(var_core_value_sigF0E1) {
+  return var_core_value_sigF0E1.some(D);
+}
+function A(var_core_value_sig2D8D, var_core_value_sigE5A6) {
+  let [var_core_value_sigF449, ...var_core_value_sig38C5] = var_core_value_sig2D8D.data[var_core_value_sigE5A6] ?? [];
+  return var_core_value_sig38C5.length < 1 || (var_core_value_sigF449 == null ? undefined : var_core_value_sigF449.type) !== e.ChartSourceDataTypeEnum["Null"] && !D(var_core_value_sigF449) || !var_core_value_sig38C5.every(E) ? false : var_core_value_sig38C5.every((var_core_value_sigCB04, var_core_value_sig947E) => var_core_value_sig2D8D.data["slice"](var_core_value_sigE5A6 + 1).some(var_core_value_sig5B69 => {
+    var var_core_value_sigB098;
+    return ((var_core_value_sigB098 = var_core_value_sig5B69[var_core_value_sig947E + 1]) == null ? undefined : var_core_value_sigB098.type) === e.ChartSourceDataTypeEnum["NUMBER"];
+  }));
+}
+function j(var_core_value_sigC87D, var_core_value_sigCCDC) {
+  var var_core_value_sigC310;
+  if (var_core_value_sigC87D.data["length"] === 0) return;
+  if (var_core_value_sigCCDC) {
+    var var_core_value_sigA4E8;
+    let var_core_value_sig4545 = var_core_value_sigC87D.data["findIndex"](var_core_value_sigCE71 => var_core_value_sigCE71.some(E));
+    if (var_core_value_sig4545 < 0) return;
+    let var_core_value_sigF39A = var_core_value_sigC87D.data["slice"](var_core_value_sig4545).map(var_core_value_sig21D8 => var_core_value_sig21D8[0]);
+    return k(var_core_value_sigF39A) && O(var_core_value_sigF39A) ? ((var_core_value_sigA4E8 = var_core_value_sigC87D.rowIndexes) == null ? undefined : var_core_value_sigA4E8[var_core_value_sig4545]) ?? var_core_value_sig4545 : undefined;
+  }
+  let var_core_value_sigDC07 = var_core_value_sigC87D.data["findIndex"](var_core_value_sigF79C => var_core_value_sigF79C.some(E));
+  if (var_core_value_sigDC07 < 0) return;
+  let var_core_value_sig3474 = var_core_value_sigC87D.data[var_core_value_sigDC07];
+  return k(var_core_value_sig3474) && O(var_core_value_sig3474) || A(var_core_value_sigC87D, var_core_value_sigDC07) ? ((var_core_value_sigC310 = var_core_value_sigC87D.rowIndexes) == null ? undefined : var_core_value_sigC310[var_core_value_sigDC07]) ?? var_core_value_sigDC07 : undefined;
+}
+function M(var_core_value_sig4E80, var_core_value_sigD23B) {
+  let var_core_value_sig2B2A = var_core_value_sigD23B.headerRow ?? j(var_core_value_sig4E80, var_core_value_sigD23B.isRowDirection) ?? e.CHART_HEADER_ROW_NONE;
+  return {
+    dataSet: (0, e.createChartDataSetProjector)({
+      headerRow: var_core_value_sig2B2A,
+      isRowDirection: !var_core_value_sigD23B.isRowDirection
+    }).project(var_core_value_sig4E80),
+    headerRow: var_core_value_sig2B2A
+  };
+}
+function ae(var_core_value_sig0B5C, var_core_value_sig7D42) {
+  if (var_core_value_sig0B5C === undefined && var_core_value_sig7D42 === undefined) return;
+  let var_core_value_sig8FDE = {};
+  return var_core_value_sig0B5C !== undefined && (var_core_value_sig8FDE.categoryIndexes = [...var_core_value_sig0B5C]), var_core_value_sig7D42 !== undefined && (var_core_value_sig8FDE.seriesIndexes = [...var_core_value_sig7D42]), var_core_value_sig8FDE;
+}
+function oe(var_core_value_sig78E6, var_core_value_sig541F) {
+  let {
+      dataSet: var_core_value_sig417B,
+      headerRow: var_core_value_sigAA90
+    } = M(var_core_value_sig78E6, var_core_value_sig541F),
+    var_core_value_sigE92D = ae(var_core_value_sig541F.categoryIndexes, var_core_value_sig541F.seriesIndexes),
+    var_core_value_sig9940 = f(var_core_value_sig417B, {
+      chartType: var_core_value_sig541F.chartType,
+      context: var_core_value_sigE92D
+    });
+  return {
+    dataSet: var_core_value_sig417B,
+    mapping: {
+      headerRow: var_core_value_sigAA90,
+      isRowDirection: var_core_value_sig541F.isRowDirection,
+      categoryIndexes: var_core_value_sig9940.categoryIndexes ?? [],
+      seriesIndexes: var_core_value_sig9940.seriesIndexes ?? []
+    }
+  };
+}
+function N(var_core_value_sig682D, var_core_value_sig1435) {
+  return function (var_core_value_sig2E54, var_core_value_sig7658) {
+    var_core_value_sig1435(var_core_value_sig2E54, var_core_value_sig7658, var_core_value_sig682D);
+  };
+}
+function P(var_core_value_sig4082, var_core_value_sigC049, var_core_value_sigE5C3, var_core_value_sigCCAA) {
+  var var_core_value_sigF32D = arguments.length,
+    var_core_value_sig9427 = var_core_value_sigF32D < 3 ? var_core_value_sigC049 : var_core_value_sigCCAA === null ? var_core_value_sigCCAA = Object.getOwnPropertyDescriptor(var_core_value_sigC049, var_core_value_sigE5C3) : var_core_value_sigCCAA,
+    var_core_value_sig21F4;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig9427 = Reflect.decorate(var_core_value_sig4082, var_core_value_sigC049, var_core_value_sigE5C3, var_core_value_sigCCAA);else {
+    for (var var_core_value_sigA345 = var_core_value_sig4082.length - 1; var_core_value_sigA345 >= 0; var_core_value_sigA345--) (var_core_value_sig21F4 = var_core_value_sig4082[var_core_value_sigA345]) && (var_core_value_sig9427 = (var_core_value_sigF32D < 3 ? var_core_value_sig21F4(var_core_value_sig9427) : var_core_value_sigF32D > 3 ? var_core_value_sig21F4(var_core_value_sigC049, var_core_value_sigE5C3, var_core_value_sig9427) : var_core_value_sig21F4(var_core_value_sigC049, var_core_value_sigE5C3)) || var_core_value_sig9427);
+  }
+  return var_core_value_sigF32D > 3 && var_core_value_sig9427 && Object.defineProperty(var_core_value_sigC049, var_core_value_sigE5C3, var_core_value_sig9427), var_core_value_sig9427;
+}
+let F = class extends t.Disposable {
+  get activeChartModel() {
+    return this._activeChartModel$["getValue"]();
+  }
+  constructor(var_core_value_sigDCF5) {
+    super(), this._injector = var_core_value_sigDCF5, w(this, "_activeChartModel$", new i.BehaviorSubject(null)), w(this, "_chartModels", new Map()), w(this, "_chartModelAdded$", new i["Subject"]()), w(this, "_chartModelRemoved$", new i.Subject()), w(this, "activeChartModel$", this._activeChartModel$["asObservable"]()), w(this, "chartModelAdded$", this._chartModelAdded$["asObservable"]()), w(this, "chartModelRemoved$", this._chartModelRemoved$["asObservable"]());
+  }
+  setActiveChartModel(var_core_value_sigC786) {
+    this._activeChartModel$["next"](var_core_value_sigC786);
+  }
+  getActiveChartModel() {
+    return this._activeChartModel$["getValue"]();
+  }
+  getChartModel(var_core_value_sigC0D9) {
+    return this._chartModels["get"](var_core_value_sigC0D9);
+  }
+  createChartModel(var_core_value_sigF051, var_core_value_sig5825, var_core_value_sig4EB7 = false) {
+    let var_core_value_sig73AF = new e["ChartModel"](var_core_value_sigF051, var_core_value_sig5825, this._injector);
+    var_core_value_sig73AF.init(), this._chartModels["set"](var_core_value_sig73AF.id, var_core_value_sig73AF);
+    let var_core_value_sig548A = var_core_value_sig5825.dataSource["getDataSet"](),
+      var_core_value_sigE026 = var_core_value_sig73AF.context;
+    return var_core_value_sig73AF.setChartContext(p(var_core_value_sig548A, var_core_value_sigE026)), var_core_value_sig4EB7 && var_core_value_sig73AF.assignStyle({
+      titles: {
+        title: {
+          content: ""
+        }
+      }
+    }), this._chartModelAdded$["next"](var_core_value_sig73AF), var_core_value_sig73AF;
+  }
+  reconcileChartModelContext(var_core_value_sig339E) {
+    let var_core_value_sig7550 = this._chartModels["get"](var_core_value_sig339E);
+    return var_core_value_sig7550 ? g(var_core_value_sig7550.dataSource["getDataSet"](), var_core_value_sig7550.chartType, var_core_value_sig7550.context) : undefined;
+  }
+  rebuildChartModelContextForDataSource(var_core_value_sig2983, var_core_value_sigE1B0, var_core_value_sigD4FF) {
+    let var_core_value_sig1E5B = this._chartModels["get"](var_core_value_sig2983);
+    if (var_core_value_sig1E5B) return h(var_core_value_sigE1B0.getDataSet(), var_core_value_sig1E5B.chartType, var_core_value_sig1E5B.context, var_core_value_sigD4FF);
+  }
+  removeChartModel(var_core_value_sigB680) {
+    let var_core_value_sig1F64 = this._chartModels["get"](var_core_value_sigB680);
+    return var_core_value_sig1F64 ? (this._chartModels["delete"](var_core_value_sigB680), this.activeChartModel === var_core_value_sig1F64 && this._activeChartModel$["next"](null), var_core_value_sig1F64.dispose(), this._chartModelRemoved$["next"](var_core_value_sigB680), true) : false;
+  }
+  dispose() {
+    Array.from(this._chartModels["keys"]()).forEach(var_core_value_sig2B65 => this.removeChartModel(var_core_value_sig2B65)), this._activeChartModel$["complete"](), this._chartModelAdded$["complete"](), this._chartModelRemoved$["complete"](), super.dispose();
+  }
+};
+F = P([N(0, (0, t.Inject)(t.Injector))], F);
+const I = {
+  Multi: "multi",
+  Single: "single"
+};
+function L(var_core_value_sigA468) {
+  let {
+    unitId: var_core_value_sig1561,
+    subUnitId: var_core_value_sigDF14,
+    range: var_core_value_sig842F
+  } = var_core_value_sigA468;
+  return [var_core_value_sig1561, var_core_value_sigDF14, var_core_value_sig842F.startRow, var_core_value_sig842F.endRow, var_core_value_sig842F.startColumn, var_core_value_sig842F.endColumn];
+}
+function R(var_core_value_sigC4C0) {
+  return JSON.stringify(Array.isArray(var_core_value_sigC4C0) ? [I.Multi, var_core_value_sigC4C0.map(var_core_value_sigDD1C => [var_core_value_sigDD1C.header ? L(var_core_value_sigDD1C.header) : null, L(var_core_value_sigDD1C.range)])] : [I.Single, L(var_core_value_sigC4C0.rangeInfo), var_core_value_sigC4C0.headerRow ?? null]);
+}
+function z(var_core_value_sig214A) {
+  return Array.isArray(var_core_value_sig214A) ? R(var_core_value_sig214A) : JSON.stringify([I.Single, L(var_core_value_sig214A.rangeInfo), var_core_value_sig214A.isRowDirection ?? true, var_core_value_sig214A.headerRow ?? null]);
+}
+const B = new Set([r.AddWorksheetMergeMutation["id"], r.SetRangeValuesMutation["id"], r.ReorderRangeMutation["id"], r.SetRowHiddenMutation["id"], r.SetRowVisibleMutation["id"], r.SetColHiddenMutation["id"], r.SetColVisibleMutation["id"], r.RemoveColMutation["id"], r.RemoveRowMutation["id"], r.MarkDirtyFilterChangeMutation["id"], r.SetNumfmtMutation["id"], r.RemoveNumfmtMutation["id"], r.RemoveWorksheetMergeMutation["id"]]),
+  se = new Set([r.AddWorksheetMergeMutation["id"], r.RemoveWorksheetMergeMutation["id"], r.SetColHiddenMutation["id"], r.SetColVisibleMutation["id"], r.SetRowHiddenMutation["id"], r.SetRowVisibleMutation["id"]]),
+  ce = Object.freeze({
+    startRow: -1,
+    startColumn: -1,
+    endRow: 0,
+    endColumn: 0
+  });
+function le(var_core_value_sigCCC3) {
+  let var_core_value_sig986E = false,
+    var_core_value_sig537C = false;
+  return {
+    dispose: () => {
+      var_core_value_sig986E = true;
+    },
+    publish: () => {
+      var_core_value_sig986E || var_core_value_sig537C || (var_core_value_sig537C = true, queueMicrotask(() => {
+        var_core_value_sig537C = false, var_core_value_sig986E || var_core_value_sigCCC3();
+      }));
+    }
+  };
+}
+let V = class extends t.Disposable {
+  constructor(var_core_value_sig2C39, var_core_value_sigB7D1) {
+    super(), this._commandService = var_core_value_sig2C39, this._refRangeService = var_core_value_sigB7D1, w(this, "_entries", new Map());
+  }
+  watch(var_core_value_sig64F0, var_core_value_sig85B1) {
+    let var_core_value_sig3141 = R(var_core_value_sig64F0),
+      var_core_value_sig2162 = {
+        rangeInfo: t.Tools["deepClone"](var_core_value_sig64F0),
+        callbacks: var_core_value_sig85B1
+      },
+      var_core_value_sig2EAD = this._entries["get"](var_core_value_sig3141);
+    var_core_value_sig2EAD || (var_core_value_sig2EAD = {
+      key: var_core_value_sig3141,
+      consumers: new Set(),
+      watcher: {
+        dispose: () => {}
+      }
+    }, var_core_value_sig2EAD.watcher = this._watchRange(t.Tools["deepClone"](var_core_value_sig64F0), () => this._publishDataChanged(var_core_value_sig2EAD), var_core_value_sigD7EA => this._publishRangeChanged(var_core_value_sig2EAD, var_core_value_sigD7EA)), this._entries["set"](var_core_value_sig3141, var_core_value_sig2EAD)), var_core_value_sig2EAD.consumers["add"](var_core_value_sig2162);
+    let var_core_value_sig6774 = false;
+    return (0, t.toDisposable)(() => {
+      var_core_value_sig6774 || (var_core_value_sig6774 = true, var_core_value_sig2EAD.consumers["delete"](var_core_value_sig2162), !(var_core_value_sig2EAD.consumers["size"] > 0 || this._entries["get"](var_core_value_sig3141) !== var_core_value_sig2EAD) && (this._entries["delete"](var_core_value_sig3141), var_core_value_sig2EAD.watcher["dispose"]()));
+    });
+  }
+  _publishDataChanged(var_core_value_sig340D) {
+    Array.from(var_core_value_sig340D.consumers).forEach(var_core_value_sigB33B => var_core_value_sigB33B.callbacks["onDataChanged"]());
+  }
+  _publishRangeChanged(var_core_value_sig82D4, var_core_value_sigBDE4) {
+    Array.from(var_core_value_sig82D4.consumers).forEach(var_core_value_sig24B9 => {
+      let var_core_value_sigE627;
+      if (Array.isArray(var_core_value_sigBDE4)) var_core_value_sigE627 = t.Tools["deepClone"](var_core_value_sigBDE4);else {
+        let var_core_value_sig362B = t.Tools["deepClone"](var_core_value_sig24B9.rangeInfo);
+        var_core_value_sig362B.rangeInfo = t.Tools["deepClone"](var_core_value_sigBDE4.rangeInfo), var_core_value_sigBDE4.headerRow === undefined ? delete var_core_value_sig362B.headerRow : var_core_value_sig362B.headerRow = var_core_value_sigBDE4.headerRow, var_core_value_sigE627 = var_core_value_sig362B;
+      }
+      var_core_value_sig24B9.callbacks["onRangeChanged"](var_core_value_sigE627);
+    });
+  }
+  _watchRange(var_core_value_sig7DF1, var_core_value_sigDC86, var_core_value_sig0B0C) {
+    let var_core_value_sigA39E = () => var_core_value_sig0B0C(t.Tools["deepClone"](var_core_value_sig7DF1));
+    return Array.isArray(var_core_value_sig7DF1) ? this._watchMultiRange(var_core_value_sig7DF1, var_core_value_sigDC86, var_core_value_sigA39E) : this._watchSingleRange(var_core_value_sig7DF1, var_core_value_sigDC86, var_core_value_sigA39E);
+  }
+  _watchSingleRange(var_core_value_sigBBEE, var_core_value_sig011D, var_core_value_sig6167) {
+    let {
+      unitId: var_core_value_sig65A1,
+      subUnitId: var_core_value_sig7F19,
+      range: var_core_value_sig7827
+    } = var_core_value_sigBBEE.rangeInfo;
+    if (var_core_value_sigBBEE.headerRow === undefined || var_core_value_sigBBEE.headerRow === e.CHART_HEADER_ROW_NONE) {
+      let var_core_value_sigEF3E = this._watchSourceCommands([var_core_value_sigBBEE.rangeInfo], var_core_value_sig011D, var_core_value_sig6167),
+        var_core_value_sig273D = this._refRangeService["watchRange"](var_core_value_sig65A1, var_core_value_sig7F19, var_core_value_sig7827, (var_core_value_sig5CA5, var_core_value_sigE90F) => {
+          var_core_value_sigBBEE.rangeInfo["range"] = var_core_value_sigE90F ? {
+            ...var_core_value_sigE90F
+          } : this._emptyRange(), var_core_value_sig6167();
+        });
+      return (0, t.toDisposable)(() => {
+        var_core_value_sigEF3E.dispose(), var_core_value_sig273D.dispose();
+      });
+    }
+    let var_core_value_sig652C = {
+        ...var_core_value_sig7827,
+        startRow: var_core_value_sig7827.startRow + var_core_value_sigBBEE.headerRow,
+        endRow: var_core_value_sig7827.startRow + var_core_value_sigBBEE.headerRow
+      },
+      var_core_value_sig7E32 = le(() => {
+        let var_core_value_sig9A0D = var_core_value_sigBBEE.rangeInfo["range"];
+        var_core_value_sig652C && var_core_value_sig9A0D.startRow >= 0 ? var_core_value_sigBBEE.headerRow = var_core_value_sig652C.startRow - var_core_value_sig9A0D.startRow : var_core_value_sigBBEE.headerRow = e.CHART_HEADER_ROW_NONE, var_core_value_sig6167();
+      }),
+      var_core_value_sig4C07 = this._watchSourceCommands([var_core_value_sigBBEE.rangeInfo], var_core_value_sig011D, var_core_value_sig7E32.publish),
+      var_core_value_sig79AB = this._refRangeService["watchRange"](var_core_value_sig65A1, var_core_value_sig7F19, var_core_value_sig7827, (var_core_value_sigA319, var_core_value_sig2D58) => {
+        var_core_value_sigBBEE.rangeInfo["range"] = var_core_value_sig2D58 ? {
+          ...var_core_value_sig2D58
+        } : this._emptyRange(), var_core_value_sig7E32.publish();
+      }),
+      var_core_value_sig8E74 = this._refRangeService["watchRange"](var_core_value_sig65A1, var_core_value_sig7F19, var_core_value_sig652C, (var_core_value_sig223F, var_core_value_sigD749) => {
+        var_core_value_sig652C = var_core_value_sigD749 ? {
+          ...var_core_value_sigD749
+        } : null, var_core_value_sig7E32.publish();
+      });
+    return (0, t.toDisposable)(() => {
+      var_core_value_sig7E32.dispose(), var_core_value_sig4C07.dispose(), var_core_value_sig79AB.dispose(), var_core_value_sig8E74.dispose();
+    });
+  }
+  _watchMultiRange(var_core_value_sig104C, var_core_value_sig841D, var_core_value_sig90CB) {
+    let var_core_value_sigBDF5 = var_core_value_sig104C.flatMap(var_core_value_sigCFFA => [var_core_value_sigCFFA.header, var_core_value_sigCFFA.range]).filter(var_core_value_sig58C1 => !!var_core_value_sig58C1),
+      var_core_value_sigACC6 = le(var_core_value_sig90CB),
+      var_core_value_sig1614 = this._watchSourceCommands(var_core_value_sigBDF5, var_core_value_sig841D, var_core_value_sigACC6.publish),
+      var_core_value_sig85C3 = var_core_value_sigBDF5.map(var_core_value_sig5090 => this._refRangeService["watchRange"](var_core_value_sig5090.unitId, var_core_value_sig5090.subUnitId, var_core_value_sig5090.range, (var_core_value_sigEFD4, var_core_value_sig861B) => {
+        var_core_value_sig5090.range = var_core_value_sig861B ? {
+          ...var_core_value_sig861B
+        } : this._emptyRange(), var_core_value_sigACC6.publish();
+      }));
+    return (0, t.toDisposable)(() => {
+      var_core_value_sigACC6.dispose(), var_core_value_sig1614.dispose(), var_core_value_sig85C3.forEach(var_core_value_sig5237 => var_core_value_sig5237.dispose());
+    });
+  }
+  _watchSourceCommands(var_core_value_sigB996, var_core_value_sig4BBA, var_core_value_sig6201) {
+    let var_core_value_sig5151 = new Map();
+    var_core_value_sigB996.forEach(var_core_value_sigC368 => {
+      let var_core_value_sigAD56 = var_core_value_sig5151.get(var_core_value_sigC368.unitId);
+      var_core_value_sigAD56 || (var_core_value_sigAD56 = new Map(), var_core_value_sig5151.set(var_core_value_sigC368.unitId, var_core_value_sigAD56));
+      let var_core_value_sigDB4A = var_core_value_sigAD56.get(var_core_value_sigC368.subUnitId) ?? [];
+      var_core_value_sigDB4A.push(var_core_value_sigC368), var_core_value_sigAD56.set(var_core_value_sigC368.subUnitId, var_core_value_sigDB4A);
+    });
+    let var_core_value_sigB542 = (var_core_value_sig6418, var_core_value_sig1896) => {
+      let var_core_value_sig0285 = var_core_value_sigBB00 => var_core_value_sig1896.some(var_core_value_sigF0F9 => t.Rectangle["intersects"](var_core_value_sigF0F9.range, var_core_value_sigBB00));
+      if (var_core_value_sig6418.id === r.SetRangeValuesMutation["id"]) {
+        let {
+          cellValue: var_core_value_sig7E54
+        } = var_core_value_sig6418.params;
+        var_core_value_sig0285(new t.ObjectMatrix(var_core_value_sig7E54).getStartEndScope()) && var_core_value_sig4BBA();
+      } else {
+        if (var_core_value_sig6418.id === r.ReorderRangeMutation["id"]) {
+          let {
+            range: var_core_value_sig1A0F
+          } = var_core_value_sig6418.params;
+          var_core_value_sig0285(var_core_value_sig1A0F) && var_core_value_sig4BBA();
+        } else {
+          if (se.has(var_core_value_sig6418.id)) {
+            let {
+              ranges: var_core_value_sig1BBD
+            } = var_core_value_sig6418.params;
+            var_core_value_sig1BBD.some(var_core_value_sig0285) && var_core_value_sig4BBA();
+          } else {
+            if (var_core_value_sig6418.id === r.RemoveColMutation["id"] || var_core_value_sig6418.id === r.RemoveRowMutation["id"]) {
+              let {
+                  range: var_core_value_sig27E5
+                } = var_core_value_sig6418.params,
+                var_core_value_sig8061 = var_core_value_sig1896.filter(var_core_value_sig3EEE => t.Rectangle["contains"](var_core_value_sig27E5, var_core_value_sig3EEE.range));
+              var_core_value_sig8061.length && (var_core_value_sig8061.forEach(var_core_value_sigBC46 => var_core_value_sigBC46.range = this._emptyRange()), var_core_value_sig6201());
+            } else {
+              if (var_core_value_sig6418.id === r.MarkDirtyFilterChangeMutation["id"]) {
+                let {
+                  filterRange: var_core_value_sig3D7D
+                } = var_core_value_sig6418.params;
+                var_core_value_sig0285(var_core_value_sig3D7D) && var_core_value_sig4BBA();
+              } else {
+                if (var_core_value_sig6418.id === r.SetNumfmtMutation["id"]) {
+                  let {
+                    values: var_core_value_sig2AD0
+                  } = var_core_value_sig6418.params;
+                  Object.keys(var_core_value_sig2AD0).some(var_core_value_sig7524 => var_core_value_sig2AD0[var_core_value_sig7524].ranges["some"](var_core_value_sig0285)) && var_core_value_sig4BBA();
+                } else {
+                  if (var_core_value_sig6418.id === r.RemoveNumfmtMutation["id"]) {
+                    let {
+                      ranges: var_core_value_sig2AD8
+                    } = var_core_value_sig6418.params;
+                    var_core_value_sig2AD8.some(var_core_value_sig0285) && var_core_value_sig4BBA();
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    return this._commandService["onCommandExecuted"](var_core_value_sig777D => {
+      var var_core_value_sig3F4C;
+      if (!B.has(var_core_value_sig777D.id)) return;
+      let {
+          unitId: var_core_value_sigD65A,
+          subUnitId: var_core_value_sig5A13
+        } = var_core_value_sig777D.params,
+        var_core_value_sigF593 = (var_core_value_sig3F4C = var_core_value_sig5151.get(var_core_value_sigD65A)) == null ? undefined : var_core_value_sig3F4C.get(var_core_value_sig5A13);
+      var_core_value_sigF593 && var_core_value_sigB542(var_core_value_sig777D, var_core_value_sigF593);
+    });
+  }
+  _emptyRange() {
+    return {
+      ...ce
+    };
+  }
+  dispose() {
+    this._entries["forEach"](var_core_value_sig3607 => var_core_value_sig3607.watcher["dispose"]()), this._entries["clear"](), super.dispose();
+  }
+};
+V = P([N(0, t.ICommandService), N(1, (0, t.Inject)(r.RefRangeService))], V);
+var ue = class {
+  constructor(var_core_value_sigBB6C, var_core_value_sigE2BF) {
+    this._release = var_core_value_sigE2BF, w(this, "_dataSource$", undefined), w(this, "_dataChanged$", new i["Subject"]()), w(this, "_entry", undefined), w(this, "_isDisposed", false), w(this, "dataSource$", undefined), w(this, "dataChanged$", undefined), this._entry = var_core_value_sigBB6C, this._dataSource$ = new i["BehaviorSubject"](var_core_value_sigBB6C.dataSource), this.dataSource$ = this._dataSource$["asObservable"](), this.dataChanged$ = this._dataChanged$["asObservable"]();
+  }
+  get dataSource() {
+    return this._dataSource$["getValue"]();
+  }
+  get entry() {
+    return this._entry;
+  }
+  attach(var_core_value_sigB8C7) {
+    this._entry = var_core_value_sigB8C7, this._dataSource$["next"](var_core_value_sigB8C7.dataSource);
+  }
+  detach(var_core_value_sigA56E) {
+    this._entry === var_core_value_sigA56E && (this._entry = undefined);
+  }
+  publishDataChanged() {
+    this._dataChanged$["next"]();
+  }
+  dispose() {
+    this._isDisposed || this._release(this);
+  }
+  complete() {
+    this._isDisposed || (this._isDisposed = true, this._entry = undefined, this._dataSource$["complete"](), this._dataChanged$["complete"]());
+  }
+};
+let H = class extends t.Disposable {
+  constructor(var_core_value_sig1998, var_core_value_sigFF19) {
+    super(), this._univerInstanceService = var_core_value_sig1998, this._rangeWatcherManager = var_core_value_sigFF19, w(this, "_entries", new Map()), w(this, "_handles", new Set()), w(this, "_isDisposed", false);
+  }
+  acquire(var_core_value_sig43B8) {
+    if (this._isDisposed) throw Error("Cannot\x20acquire\x20a\x20Sheet\x20chart\x20datasource\x20after\x20manager\x20disposal.");
+    let var_core_value_sigD98F = this._normalizeSourceSpec(var_core_value_sig43B8),
+      var_core_value_sig66C0 = this._getOrCreateEntry(var_core_value_sigD98F),
+      var_core_value_sig9D15 = new ue(var_core_value_sig66C0, var_core_value_sigB512 => this._releaseHandle(var_core_value_sigB512));
+    return var_core_value_sig66C0.handles["add"](var_core_value_sig9D15), this._handles["add"](var_core_value_sig9D15), var_core_value_sig9D15;
+  }
+  refreshAll() {
+    this._entries["forEach"](var_core_value_sigF2E6 => this._refreshEntry(var_core_value_sigF2E6));
+  }
+  _getOrCreateEntry(var_core_value_sigB785) {
+    let var_core_value_sig130F = z(var_core_value_sigB785),
+      var_core_value_sigC0E3 = this._entries["get"](var_core_value_sig130F);
+    if (var_core_value_sigC0E3) return var_core_value_sigC0E3;
+    let var_core_value_sig52F7 = ie(this._univerInstanceService, var_core_value_sigB785),
+      var_core_value_sig866F = {
+        key: var_core_value_sig130F,
+        sourceSpec: var_core_value_sigB785,
+        dataSource: var_core_value_sig52F7,
+        handles: new Set(),
+        rangeWatcherLease: {
+          dispose: () => {}
+        }
+      };
+    try {
+      return var_core_value_sig866F.rangeWatcherLease = this._rangeWatcherManager["watch"](var_core_value_sigB785, {
+        onDataChanged: () => this._refreshEntry(var_core_value_sig866F),
+        onRangeChanged: var_core_value_sig9A8D => this._replaceEntryRange(var_core_value_sig866F, var_core_value_sig9A8D)
+      }), this._entries["set"](var_core_value_sig130F, var_core_value_sig866F), var_core_value_sig866F;
+    } catch (var_core_value_sig34C8) {
+      throw var_core_value_sig52F7.dispose(), var_core_value_sig34C8;
+    }
+  }
+  _refreshEntry(var_core_value_sigDE3D) {
+    this._entries["get"](var_core_value_sigDE3D.key) === var_core_value_sigDE3D && (var_core_value_sigDE3D.dataSource["refreshDataSet"](), var_core_value_sigDE3D.handles["forEach"](var_core_value_sigB744 => var_core_value_sigB744.publishDataChanged()));
+  }
+  _replaceEntryRange(var_core_value_sigF175, var_core_value_sig6A18) {
+    if (this._entries["get"](var_core_value_sigF175.key) !== var_core_value_sigF175) return;
+    let var_core_value_sig4E3D = this._getOrCreateEntry(this._normalizeSourceSpec(var_core_value_sig6A18));
+    var_core_value_sig4E3D !== var_core_value_sigF175 && Array.from(var_core_value_sigF175.handles).forEach(var_core_value_sigEAE2 => this._moveHandle(var_core_value_sigEAE2, var_core_value_sigF175, var_core_value_sig4E3D));
+  }
+  _moveHandle(var_core_value_sig49B0, var_core_value_sig2547, var_core_value_sigBCA9) {
+    var_core_value_sig49B0.entry === var_core_value_sig2547 && (var_core_value_sigBCA9.handles["add"](var_core_value_sig49B0), var_core_value_sig49B0.attach(var_core_value_sigBCA9), var_core_value_sig2547.handles["delete"](var_core_value_sig49B0), this._disposeEntryWithoutHandles(var_core_value_sig2547));
+  }
+  _releaseHandle(var_core_value_sig4CDF) {
+    let var_core_value_sig3F79 = var_core_value_sig4CDF.entry;
+    var_core_value_sig3F79 && (var_core_value_sig3F79.handles["delete"](var_core_value_sig4CDF), var_core_value_sig4CDF.detach(var_core_value_sig3F79), this._disposeEntryWithoutHandles(var_core_value_sig3F79)), this._handles["delete"](var_core_value_sig4CDF), var_core_value_sig4CDF.complete();
+  }
+  _disposeEntryWithoutHandles(var_core_value_sig880E) {
+    var_core_value_sig880E.handles["size"] > 0 || this._entries["get"](var_core_value_sig880E.key) !== var_core_value_sig880E || (this._entries["delete"](var_core_value_sig880E.key), var_core_value_sig880E.rangeWatcherLease["dispose"](), var_core_value_sig880E.dataSource["dispose"]());
+  }
+  _normalizeSourceSpec(var_core_value_sigC9ED) {
+    let var_core_value_sigB57B = t.Tools["deepClone"](var_core_value_sigC9ED);
+    return Array.isArray(var_core_value_sigB57B) ? var_core_value_sigB57B : {
+      ...var_core_value_sigB57B,
+      isRowDirection: var_core_value_sigB57B.isRowDirection ?? true
+    };
+  }
+  dispose() {
+    this._isDisposed || (this._isDisposed = true, this._handles["forEach"](var_core_value_sigE68A => var_core_value_sigE68A.complete()), this._handles["clear"](), this._entries["forEach"](var_core_value_sig3E68 => {
+      var_core_value_sig3E68.rangeWatcherLease["dispose"](), var_core_value_sig3E68.dataSource["dispose"]();
+    }), this._entries["clear"](), super.dispose());
+  }
+};
+H = P([N(0, (0, t.Inject)(t.IUniverInstanceService)), N(1, (0, t.Inject)(V))], H);
+let U = class extends t.Disposable {
+  constructor(var_core_value_sig780B, var_core_value_sig7D1B, var_core_value_sig7BE0, var_core_value_sig7D40) {
+    super(), this._resourcesManagerService = var_core_value_sig780B, this._univerInstanceService = var_core_value_sig7D1B, this._chartModelService = var_core_value_sig7BE0, this._dataSourceManager = var_core_value_sig7D40, w(this, "_chartModelIdMap", new Map()), w(this, "_dataSourceBindings", new Map()), this.disposeWithMe(this._dataSourceManager), this._initSnapshot();
+  }
+  getSubUnitId(var_core_value_sig6C7E, var_core_value_sig68BE) {
+    let var_core_value_sig04C6 = this._chartModelIdMap["get"](var_core_value_sig6C7E);
+    if (!var_core_value_sig04C6) return null;
+    for (let [var_core_value_sigF4C5, var_core_value_sig5410] of var_core_value_sig04C6.entries()) if (var_core_value_sig5410.has(var_core_value_sig68BE)) return var_core_value_sigF4C5;
+    return null;
+  }
+  getUnitChartModels(var_core_value_sigCA05, var_core_value_sig2F2B) {
+    let var_core_value_sig70AF = this._chartModelIdMap["get"](var_core_value_sigCA05);
+    if (!var_core_value_sig70AF) return [];
+    let var_core_value_sigD04E = var_core_value_sig70AF.get(var_core_value_sig2F2B);
+    if (!var_core_value_sigD04E) return [];
+    let {
+      _chartModelService: var_core_value_sigB99B
+    } = this;
+    return Array.from(var_core_value_sigD04E).map(var_core_value_sig492F => var_core_value_sigB99B.getChartModel(var_core_value_sig492F));
+  }
+  inferInitialChartMapping(var_core_value_sig5A75, var_core_value_sig7BAF, var_core_value_sig8F69) {
+    return this.inferInitialChartSource(var_core_value_sig5A75, var_core_value_sig7BAF, var_core_value_sig8F69).mapping;
+  }
+  inferInitialChartSource(var_core_value_sig6884, var_core_value_sig066E, var_core_value_sig9B0D) {
+    let var_core_value_sig3D2C = this._getInitialDataOrientation(var_core_value_sig6884) === e.DataOrientation["Row"];
+    if (Array.isArray(var_core_value_sig6884)) {
+      let var_core_value_sig8EA0 = ie(this._univerInstanceService, var_core_value_sig6884);
+      try {
+        let var_core_value_sigC259 = var_core_value_sig8EA0.getDataSet(),
+          var_core_value_sig9C9F = m(var_core_value_sigC259, var_core_value_sig066E, undefined, var_core_value_sig9B0D);
+        return {
+          dataSet: var_core_value_sigC259,
+          mapping: {
+            headerRow: e.CHART_HEADER_ROW_NONE,
+            isRowDirection: false,
+            categoryIndexes: var_core_value_sig9C9F.categoryIndexes ?? [],
+            seriesIndexes: var_core_value_sig9C9F.seriesIndexes ?? []
+          }
+        };
+      } finally {
+        var_core_value_sig8EA0.dispose();
+      }
+    }
+    let {
+        unitId: var_core_value_sigC56D,
+        subUnitId: var_core_value_sig3A17,
+        range: var_core_value_sig938F
+      } = var_core_value_sig6884.rangeInfo,
+      var_core_value_sigD948 = (0, r.getSheetCommandTarget)(this._univerInstanceService, {
+        unitId: var_core_value_sigC56D,
+        subUnitId: var_core_value_sig3A17
+      });
+    if (!var_core_value_sigD948) {
+      let var_core_value_sigA6F6 = {
+          dimensions: [],
+          source: []
+        },
+        var_core_value_sigCDDA = m(var_core_value_sigA6F6, var_core_value_sig066E, undefined, var_core_value_sig9B0D);
+      return {
+        dataSet: var_core_value_sigA6F6,
+        mapping: {
+          headerRow: var_core_value_sig6884.headerRow ?? e.CHART_HEADER_ROW_NONE,
+          isRowDirection: var_core_value_sig3D2C,
+          categoryIndexes: var_core_value_sigCDDA.categoryIndexes ?? [],
+          seriesIndexes: var_core_value_sigCDDA.seriesIndexes ?? []
+        }
+      };
+    }
+    let {
+        workbook: var_core_value_sigBE5E,
+        worksheet: var_core_value_sig0281
+      } = var_core_value_sigD948,
+      var_core_value_sigED71 = x({
+        numfmtOptions: {
+          locale: (0, t.getNumfmtLocaleTag)(var_core_value_sigBE5E.getSnapshot().locale),
+          dateSystem: var_core_value_sigBE5E.getDateSystem()
+        },
+        range: t.Range["transformRange"](var_core_value_sig938F, var_core_value_sig0281),
+        styles: var_core_value_sigBE5E.getStyles(),
+        worksheet: var_core_value_sig0281
+      }),
+      var_core_value_sig281C = var_core_value_sigE243 => oe(var_core_value_sigED71, {
+        chartType: var_core_value_sig066E,
+        isRowDirection: var_core_value_sigE243,
+        ...(var_core_value_sig6884.headerRow === undefined ? {} : {
+          headerRow: var_core_value_sig6884.headerRow
+        }),
+        ...((var_core_value_sig9B0D == null ? undefined : var_core_value_sig9B0D.categoryIndexes) === undefined ? {} : {
+          categoryIndexes: var_core_value_sig9B0D.categoryIndexes
+        }),
+        ...((var_core_value_sig9B0D == null ? undefined : var_core_value_sig9B0D.seriesIndexes) === undefined ? {} : {
+          seriesIndexes: var_core_value_sig9B0D.seriesIndexes
+        })
+      }),
+      var_core_value_sig3C92 = var_core_value_sig281C(var_core_value_sig3D2C);
+    if (var_core_value_sig6884.isRowDirection !== undefined || var_core_value_sig3C92.mapping["seriesIndexes"].length > 0) return var_core_value_sig3C92;
+    let var_core_value_sigB16B = var_core_value_sig281C(!var_core_value_sig3D2C);
+    return var_core_value_sigB16B.mapping["seriesIndexes"].length > 0 ? var_core_value_sigB16B : var_core_value_sig3C92;
+  }
+  _inferPrimaryDataOrientation(var_core_value_sig585D) {
+    if (Array.isArray(var_core_value_sig585D)) return e.DataOrientation["Column"];
+    let {
+        range: var_core_value_sigE722
+      } = var_core_value_sig585D.rangeInfo,
+      {
+        startRow: var_core_value_sig062A,
+        endRow: var_core_value_sig050A,
+        startColumn: var_core_value_sig8B32,
+        endColumn: var_core_value_sig870F
+      } = var_core_value_sigE722;
+    return var_core_value_sig062A === var_core_value_sig050A && this._hasNonNumberCellInSingleRow(var_core_value_sig585D) || var_core_value_sig050A - var_core_value_sig062A >= var_core_value_sig870F - var_core_value_sig8B32 ? e.DataOrientation["Column"] : e.DataOrientation["Row"];
+  }
+  _getInitialDataOrientation(var_core_value_sigB683) {
+    return !Array.isArray(var_core_value_sigB683) && var_core_value_sigB683.isRowDirection !== undefined ? var_core_value_sigB683.isRowDirection ? e.DataOrientation["Row"] : e.DataOrientation["Column"] : this._inferPrimaryDataOrientation(var_core_value_sigB683);
+  }
+  _hasNonNumberCellInSingleRow(var_core_value_sig26EC) {
+    let {
+        unitId: var_core_value_sigEEDB,
+        subUnitId: var_core_value_sig36E7,
+        range: var_core_value_sig6A78
+      } = var_core_value_sig26EC.rangeInfo,
+      var_core_value_sigF7EF = (0, r.getSheetCommandTarget)(this._univerInstanceService, {
+        unitId: var_core_value_sigEEDB,
+        subUnitId: var_core_value_sig36E7
+      });
+    if (!var_core_value_sigF7EF) return false;
+    let {
+        workbook: var_core_value_sig27F9,
+        worksheet: var_core_value_sig393E
+      } = var_core_value_sigF7EF,
+      var_core_value_sigB609 = var_core_value_sig27F9.getStyles(),
+      var_core_value_sig390D = {};
+    for (let var_core_value_sig74A8 = var_core_value_sig6A78.startColumn; var_core_value_sig74A8 <= var_core_value_sig6A78.endColumn; var_core_value_sig74A8++) if (var_core_value_sig393E.getColVisible(var_core_value_sig74A8) && b(var_core_value_sig393E, var_core_value_sig6A78.startRow, var_core_value_sig74A8, var_core_value_sigB609, var_core_value_sig390D, {
+      locale: (0, t.getNumfmtLocaleTag)(var_core_value_sig27F9.getSnapshot().locale),
+      dateSystem: var_core_value_sig27F9.getDateSystem()
+    }).sourceType !== e.ChartSourceDataTypeEnum["NUMBER"]) return true;
+    return false;
+  }
+  ensureChartModelCollection(var_core_value_sigC928, var_core_value_sig39B7) {
+    let var_core_value_sig18E0 = this._chartModelIdMap["get"](var_core_value_sigC928);
+    var_core_value_sig18E0 || (var_core_value_sig18E0 = new Map(), this._chartModelIdMap["set"](var_core_value_sigC928, var_core_value_sig18E0));
+    let var_core_value_sigE161 = var_core_value_sig18E0.get(var_core_value_sig39B7);
+    return var_core_value_sigE161 || (var_core_value_sigE161 = new Set(), var_core_value_sig18E0.set(var_core_value_sig39B7, var_core_value_sigE161)), var_core_value_sigE161;
+  }
+  getChartDataSource(var_core_value_sigBDEE) {
+    var var_core_value_sig1F40;
+    return (var_core_value_sig1F40 = this._chartModelService["getChartModel"](var_core_value_sigBDEE)) == null ? undefined : var_core_value_sig1F40.dataSource;
+  }
+  getChartSourceSpec(var_core_value_sig3FC7) {
+    let var_core_value_sig1E1B = this.getChartDataSource(var_core_value_sig3FC7);
+    return var_core_value_sig1E1B ? t.Tools["deepClone"](var_core_value_sig1E1B.getRangeInfo()) : undefined;
+  }
+  replaceChartDataSource(var_core_value_sig3B10, var_core_value_sig89E6) {
+    let var_core_value_sig4743 = this.getChartModel(var_core_value_sig3B10),
+      var_core_value_sigEB6A = this._dataSourceBindings["get"](var_core_value_sig3B10);
+    if (!var_core_value_sig4743 || !var_core_value_sigEB6A) return false;
+    let {
+        mapping: var_core_value_sig3D46
+      } = this.inferInitialChartSource(var_core_value_sig89E6, var_core_value_sig4743.chartType),
+      var_core_value_sigCC93 = this._applyInitialMappingToRangeInfo(var_core_value_sig89E6, var_core_value_sig3D46),
+      var_core_value_sig5964 = this._dataSourceManager["acquire"](var_core_value_sigCC93),
+      var_core_value_sig808B = this._chartModelService["rebuildChartModelContextForDataSource"](var_core_value_sig3B10, var_core_value_sig5964.dataSource, var_core_value_sig3D46);
+    if (!var_core_value_sig808B) return var_core_value_sig5964.dispose(), false;
+    if (var_core_value_sig5964.dataSource === var_core_value_sigEB6A.handle["dataSource"]) return var_core_value_sig5964.dispose(), var_core_value_sig4743.setChartContext(var_core_value_sig808B), true;
+    let var_core_value_sig2A26 = this._createDataSourceRuntimeBinding(var_core_value_sig3B10, var_core_value_sig5964);
+    return this._dataSourceBindings["set"](var_core_value_sig3B10, var_core_value_sig2A26), var_core_value_sig4743.replaceDataSource(var_core_value_sig5964.dataSource), this._disposeDataSourceRuntimeBinding(var_core_value_sigEB6A), var_core_value_sig4743.setChartContext(var_core_value_sig808B), true;
+  }
+  refreshChartSource() {
+    this._dataSourceManager["refreshAll"]();
+  }
+  createChartModel(var_core_value_sig1179, var_core_value_sigEA92, var_core_value_sig8FD9, var_core_value_sig1AE5 = false) {
+    let {
+        context: var_core_value_sig7100,
+        dataAggregation: var_core_value_sigA19A,
+        id: var_core_value_sigD3F5,
+        style: var_core_value_sig3082,
+        rangeInfo: var_core_value_sigF5D1
+      } = var_core_value_sig8FD9,
+      var_core_value_sig8775 = var_core_value_sigD3F5 ?? (0, t.generateRandomId)(),
+      {
+        chartType: var_core_value_sig481B
+      } = var_core_value_sig8FD9,
+      var_core_value_sig13D7 = var_core_value_sigF5D1,
+      var_core_value_sig90C0 = var_core_value_sig7100,
+      var_core_value_sigF1B2 = (var_core_value_sig7100 == null ? undefined : var_core_value_sig7100.categoryIndexes) !== undefined && var_core_value_sig7100.seriesIndexes !== undefined,
+      var_core_value_sigC2BB = Array.isArray(var_core_value_sigF5D1) || var_core_value_sigF5D1.headerRow !== undefined && var_core_value_sigF5D1.isRowDirection !== undefined;
+    if (!var_core_value_sigF1B2 || !var_core_value_sigC2BB) {
+      let var_core_value_sig21B2 = this.inferInitialChartMapping(var_core_value_sigF5D1, var_core_value_sig481B, var_core_value_sig7100);
+      var_core_value_sig13D7 = this._applyInitialMappingToRangeInfo(var_core_value_sigF5D1, var_core_value_sig21B2), var_core_value_sig90C0 = {
+        ...var_core_value_sig7100,
+        categoryIndexes: var_core_value_sig21B2.categoryIndexes,
+        seriesIndexes: var_core_value_sig21B2.seriesIndexes
+      };
+    }
+    let var_core_value_sigD9DB = this._dataSourceManager["acquire"](var_core_value_sig13D7),
+      var_core_value_sigA363;
+    try {
+      var_core_value_sigA363 = this._chartModelService["createChartModel"](var_core_value_sig8775, {
+        dataSource: var_core_value_sigD9DB.dataSource,
+        chartType: var_core_value_sig481B,
+        dataAggregation: var_core_value_sigA19A,
+        style: var_core_value_sig3082,
+        context: var_core_value_sig90C0
+      }, var_core_value_sig1AE5);
+    } catch (var_core_value_sigDE08) {
+      throw var_core_value_sigD9DB.dispose(), var_core_value_sigDE08;
+    }
+    let var_core_value_sigFBA5 = this.ensureChartModelCollection(var_core_value_sig1179, var_core_value_sigEA92);
+    return var_core_value_sigFBA5.add(var_core_value_sigA363.id), this._dataSourceBindings["set"](var_core_value_sigA363.id, this._createDataSourceRuntimeBinding(var_core_value_sigA363.id, var_core_value_sigD9DB)), var_core_value_sigA363.onDispose(() => {
+      var_core_value_sigFBA5.delete(var_core_value_sigA363.id);
+      let var_core_value_sigACCB = this._dataSourceBindings["get"](var_core_value_sigA363.id);
+      this._dataSourceBindings["delete"](var_core_value_sigA363.id), var_core_value_sigACCB && this._disposeDataSourceRuntimeBinding(var_core_value_sigACCB);
+    }), var_core_value_sigA363;
+  }
+  _applyInitialMappingToRangeInfo(var_core_value_sigAC47, var_core_value_sigA06F) {
+    if (Array.isArray(var_core_value_sigAC47)) return var_core_value_sigAC47;
+    let {
+      headerRow: var_core_value_sig770E,
+      isRowDirection: var_core_value_sig4654,
+      ...var_core_value_sigB26B
+    } = var_core_value_sigAC47;
+    return {
+      ...var_core_value_sigB26B,
+      isRowDirection: var_core_value_sigA06F.isRowDirection,
+      headerRow: var_core_value_sigA06F.headerRow
+    };
+  }
+  removeChartModel(var_core_value_sig019B) {
+    this._chartModelService["removeChartModel"](var_core_value_sig019B);
+  }
+  getChartModel(var_core_value_sigC6BC) {
+    return this._chartModelService["getChartModel"](var_core_value_sigC6BC);
+  }
+  _serializeChartForUnit(var_core_value_sig8EC2) {
+    let var_core_value_sigA8C3 = this._chartModelIdMap["get"](var_core_value_sig8EC2);
+    if (!var_core_value_sigA8C3) return "{}";
+    let var_core_value_sig5276 = {};
+    for (let var_core_value_sig7F33 of var_core_value_sigA8C3.keys()) {
+      let var_core_value_sigFDEA = var_core_value_sigA8C3.get(var_core_value_sig7F33);
+      if (var_core_value_sigFDEA) for (let var_core_value_sigFBA4 of Array.from(var_core_value_sigFDEA)) {
+        let var_core_value_sigF704 = this._chartModelService["getChartModel"](var_core_value_sigFBA4),
+          var_core_value_sig2BCF = this.getChartDataSource(var_core_value_sigFBA4);
+        var_core_value_sigF704 && var_core_value_sig2BCF && (var_core_value_sig5276[var_core_value_sig7F33] || (var_core_value_sig5276[var_core_value_sig7F33] = []), var_core_value_sig5276[var_core_value_sig7F33].push({
+          rangeInfo: var_core_value_sig2BCF.getRangeInfo(),
+          ...var_core_value_sigF704.serialize()
+        }));
+      }
+    }
+    return JSON.stringify(var_core_value_sig5276);
+  }
+  _createDataSourceRuntimeBinding(var_core_value_sig031B, var_core_value_sig9DC0) {
+    return {
+      handle: var_core_value_sig9DC0,
+      sourceSubscription: var_core_value_sig9DC0.dataSource$["pipe"]((0, i.skip)(1)).subscribe(var_core_value_sig0C53 => {
+        var var_core_value_sigEA04;
+        if (((var_core_value_sigEA04 = this._dataSourceBindings["get"](var_core_value_sig031B)) == null ? undefined : var_core_value_sigEA04.handle) !== var_core_value_sig9DC0) return;
+        let var_core_value_sig7A62 = this._chartModelService["getChartModel"](var_core_value_sig031B);
+        if (!var_core_value_sig7A62) return;
+        let var_core_value_sig8109 = this.inferInitialChartMapping(var_core_value_sig0C53.getRangeInfo(), var_core_value_sig7A62.chartType),
+          var_core_value_sig7565 = this._chartModelService["rebuildChartModelContextForDataSource"](var_core_value_sig031B, var_core_value_sig0C53, var_core_value_sig8109);
+        var_core_value_sig7A62.replaceDataSource(var_core_value_sig0C53), var_core_value_sig7565 && var_core_value_sig7A62.setChartContext(var_core_value_sig7565);
+      }),
+      dataSubscription: var_core_value_sig9DC0.dataChanged$["subscribe"](() => {
+        var var_core_value_sigD4FB;
+        ((var_core_value_sigD4FB = this._dataSourceBindings["get"](var_core_value_sig031B)) == null ? undefined : var_core_value_sigD4FB.handle) === var_core_value_sig9DC0 && this._replaceReconciledContext(var_core_value_sig031B);
+      })
+    };
+  }
+  _disposeDataSourceRuntimeBinding(var_core_value_sig95F0) {
+    var_core_value_sig95F0.sourceSubscription["unsubscribe"](), var_core_value_sig95F0.dataSubscription["unsubscribe"](), var_core_value_sig95F0.handle["dispose"]();
+  }
+  _replaceReconciledContext(var_core_value_sig9CCB) {
+    let var_core_value_sigE718 = this._chartModelService["getChartModel"](var_core_value_sig9CCB),
+      var_core_value_sigAEC8 = this._chartModelService["reconcileChartModelContext"](var_core_value_sig9CCB);
+    var_core_value_sigE718 && var_core_value_sigAEC8 && var_core_value_sigE718.setChartContext(var_core_value_sigAEC8);
+  }
+  _deserializeChartForUnit(var_core_value_sigB977, var_core_value_sig2949) {
+    this._univerInstanceService["getUnit"](var_core_value_sigB977, t.UniverInstanceType["UNIVER_SHEET"]) && Object.keys(var_core_value_sig2949).forEach(var_core_value_sig3E71 => {
+      let var_core_value_sig01B3 = var_core_value_sig2949[var_core_value_sig3E71];
+      !var_core_value_sig01B3 || var_core_value_sig01B3.length <= 0 || var_core_value_sig01B3.forEach(var_core_value_sig86D0 => {
+        let {
+          rangeInfo: var_core_value_sig4CD2
+        } = var_core_value_sig86D0;
+        this.createChartModel(var_core_value_sigB977, var_core_value_sig3E71, {
+          ...var_core_value_sig86D0,
+          rangeInfo: var_core_value_sig4CD2
+        });
+      });
+    });
+  }
+  _initSnapshot() {
+    this._resourcesManagerService["registerPluginResource"]({
+      pluginName: "SHEET_CHART_PLUGIN",
+      businesses: [t.UniverInstanceType["UNIVER_SHEET"]],
+      toJson: var_core_value_sig7442 => this._serializeChartForUnit(var_core_value_sig7442),
+      parseJson: var_core_value_sigDF87 => JSON.parse(var_core_value_sigDF87),
+      onLoad: (var_core_value_sig9EE0, var_core_value_sigF0511) => {
+        this._deserializeChartForUnit(var_core_value_sig9EE0, var_core_value_sigF0511);
+      },
+      onUnLoad: var_core_value_sig0B45 => {
+        var var_core_value_sig36F8;
+        (var_core_value_sig36F8 = this._chartModelIdMap["get"](var_core_value_sig0B45)) == null || var_core_value_sig36F8.forEach(var_core_value_sig48CA => {
+          Array.from(var_core_value_sig48CA.values()).forEach(var_core_value_sig4383 => {
+            this._chartModelService["removeChartModel"](var_core_value_sig4383);
+          });
+        });
+      }
+    });
+  }
+  dispose() {
+    Array.from(this._dataSourceBindings["keys"]()).forEach(var_core_value_sig03E1 => this._chartModelService["removeChartModel"](var_core_value_sig03E1)), this._dataSourceBindings["forEach"](var_core_value_sigBB57 => this._disposeDataSourceRuntimeBinding(var_core_value_sigBB57)), this._dataSourceBindings["clear"](), this._chartModelIdMap["clear"](), super.dispose();
+  }
+};
+U = P([N(0, t.IResourceManagerService), N(1, t.IUniverInstanceService), N(2, (0, t.Inject)(F)), N(3, (0, t.Inject)(H))], U);
+function de(var_core_value_sigBBBC, var_core_value_sig5440) {
+  let {
+    categoryIndexes: var_core_value_sigE28B,
+    multiLevelCategoryAxis: var_core_value_sig0FD9,
+    seriesIndexes: var_core_value_sig5649,
+    useDateAxis: var_core_value_sigAF82,
+    histogram: var_core_value_sig21A2,
+    ...var_core_value_sig5C1D
+  } = var_core_value_sigBBBC;
+  return {
+    ...var_core_value_sig5C1D,
+    ...t.Tools["deepClone"](var_core_value_sig5440)
+  };
+}
+const fe = {
+    id: "sheet.mutation.chart-update-config",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sig4CBA, var_core_value_sig8E65) => {
+      if (pe(var_core_value_sig8E65)) return false;
+      let {
+          chartModelId: var_core_value_sig772C
+        } = var_core_value_sig8E65,
+        var_core_value_sigF309 = var_core_value_sig4CBA.get(U).getChartModel(var_core_value_sig772C);
+      return var_core_value_sigF309 && (var_core_value_sig8E65.style !== undefined && var_core_value_sigF309.assignStyle(var_core_value_sig8E65.style), var_core_value_sig8E65.context !== undefined && var_core_value_sigF309.assignChartContext(var_core_value_sig8E65.context), var_core_value_sig8E65.dataAggregation !== undefined && var_core_value_sigF309.assignDataAggregation(var_core_value_sig8E65.dataAggregation), var_core_value_sig8E65.chartType !== undefined && var_core_value_sigF309.setChartType(var_core_value_sig8E65.chartType)), true;
+    }
+  },
+  W = {
+    id: "sheet.mutation.chart-replace-config",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sig44F9, var_core_value_sigE532) => {
+      if (pe(var_core_value_sigE532)) return false;
+      let var_core_value_sigF381 = var_core_value_sig44F9.get(U).getChartModel(var_core_value_sigE532.chartModelId);
+      if (var_core_value_sigF381) {
+        if (var_core_value_sigE532.style !== undefined && var_core_value_sigF381.setStyle(var_core_value_sigE532.style), var_core_value_sigE532.context !== undefined) try {
+          let var_core_value_sig7C4A = (0, e.canonicalizeChartContext)(var_core_value_sigE532.context);
+          var_core_value_sigF381.setChartContext(de(var_core_value_sigF381.context, var_core_value_sig7C4A));
+        } catch {
+          return false;
+        }
+        var_core_value_sigE532.dataAggregation !== undefined && var_core_value_sigF381.setDataAggregation(var_core_value_sigE532.dataAggregation), var_core_value_sigE532.chartType !== undefined && var_core_value_sigF381.setChartType(var_core_value_sigE532.chartType);
+      }
+      return true;
+    }
+  };
+function pe(var_core_value_sigCB92) {
+  return !var_core_value_sigCB92 || !me(var_core_value_sigCB92.style) || !me(var_core_value_sigCB92.context) || !me(var_core_value_sigCB92.dataAggregation);
+}
+function me(var_core_value_sigC844) {
+  return var_core_value_sigC844 === undefined || typeof var_core_value_sigC844 == "object" && !!var_core_value_sigC844 && !Array.isArray(var_core_value_sigC844);
+}
+const G = Symbol("ReplaceSheetChartConfig"),
+  K = {
+    id: "sheet.command.chart-update-config",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sig2ED4, var_core_value_sig0477) => {
+      if (!var_core_value_sig0477) return false;
+      let var_core_value_sig6FDF = var_core_value_sig2ED4.get(U),
+        {
+          unitId: var_core_value_sig27C4,
+          chartModelId: var_core_value_sig3E1A,
+          chartType: var_core_value_sig7FB0,
+          style: var_core_value_sig5215,
+          dataAggregation: var_core_value_sig5204,
+          context: var_core_value_sig5E11
+        } = var_core_value_sig0477,
+        var_core_value_sig4D58 = var_core_value_sig0477[G] === true,
+        var_core_value_sig2DBD = var_core_value_sig6FDF.getChartModel(var_core_value_sig3E1A);
+      if (!var_core_value_sig2DBD) return false;
+      let var_core_value_sig424E = var_core_value_sig2ED4.get(t.ICommandService),
+        var_core_value_sigF481 = var_core_value_sig2ED4.get(t.IUndoRedoService),
+        var_core_value_sigD7F2 = {
+          unitId: var_core_value_sig27C4,
+          chartModelId: var_core_value_sig3E1A
+        };
+      if (var_core_value_sig7FB0 !== undefined && (var_core_value_sigD7F2.chartType = var_core_value_sig7FB0), var_core_value_sig5215 !== undefined && (var_core_value_sigD7F2.style = var_core_value_sig4D58 ? t.Tools["deepClone"](var_core_value_sig5215) : he(var_core_value_sig2DBD.style, var_core_value_sig5215)), var_core_value_sig5204 !== undefined && (var_core_value_sigD7F2.dataAggregation = var_core_value_sig4D58 ? t.Tools["deepClone"](var_core_value_sig5204) : (0, e.mergeChartConfig)(var_core_value_sig2DBD.dataAggregation, var_core_value_sig5204)), var_core_value_sig5E11 !== undefined) try {
+        var_core_value_sigD7F2.context = var_core_value_sig4D58 ? (0, e.canonicalizeChartContext)(var_core_value_sig5E11) : (0, e.canonicalizeChartContext)((0, e.mergeChartConfig)((0, e.canonicalizeChartContext)(var_core_value_sig2DBD.context), var_core_value_sig5E11));
+      } catch {
+        return false;
+      }
+      let var_core_value_sig7CF3 = {
+        unitId: var_core_value_sig27C4,
+        chartModelId: var_core_value_sig3E1A
+      };
+      var_core_value_sig7FB0 !== undefined && (var_core_value_sig7CF3.chartType = var_core_value_sig2DBD.chartType), var_core_value_sigD7F2.style !== undefined && (var_core_value_sig7CF3.style = t.Tools["deepClone"](var_core_value_sig2DBD.style)), var_core_value_sigD7F2.dataAggregation !== undefined && (var_core_value_sig7CF3.dataAggregation = t.Tools["deepClone"](var_core_value_sig2DBD.dataAggregation)), var_core_value_sigD7F2.context !== undefined && (var_core_value_sig7CF3.context = (0, e.canonicalizeChartContext)(var_core_value_sig2DBD.context));
+      let var_core_value_sig9DC6 = [{
+          id: W.id,
+          params: var_core_value_sigD7F2
+        }],
+        var_core_value_sig6643 = [{
+          id: W.id,
+          params: var_core_value_sig7CF3
+        }];
+      return (0, t.sequenceExecute)(var_core_value_sig9DC6, var_core_value_sig424E).result ? (var_core_value_sigF481.pushUndoRedo({
+        unitID: var_core_value_sig27C4,
+        redoMutations: var_core_value_sig9DC6,
+        undoMutations: var_core_value_sig6643
+      }), true) : false;
+    }
+  };
+function he(var_core_value_sig4124, var_core_value_sigBF1C) {
+  let {
+      candlestick: var_core_value_sigEEEF,
+      sunburst: var_core_value_sig9A01,
+      gauge: var_core_value_sig674F,
+      chord: var_core_value_sigC8F6,
+      ...var_core_value_sig8A26
+    } = var_core_value_sigBF1C,
+    var_core_value_sigD073 = (0, e.mergeChartConfig)(var_core_value_sig4124, var_core_value_sig8A26),
+    var_core_value_sigF631 = {};
+  return Object.prototype["hasOwnProperty"].call(var_core_value_sigBF1C, "candlestick") && (var_core_value_sigF631.candlestick = var_core_value_sigEEEF), Object.prototype["hasOwnProperty"].call(var_core_value_sigBF1C, "sunburst") && (var_core_value_sigF631.sunburst = var_core_value_sig9A01), Object.prototype["hasOwnProperty"].call(var_core_value_sigBF1C, "gauge") && (var_core_value_sigF631.gauge = var_core_value_sig674F), Object.prototype["hasOwnProperty"].call(var_core_value_sigBF1C, "chord") && (var_core_value_sigF631.chord = var_core_value_sigC8F6), Object.keys(var_core_value_sigF631).length ? (0, e.toChartModelUpdate)(var_core_value_sigF631, {
+    currentStyle: var_core_value_sigD073
+  }).style ?? {} : var_core_value_sigD073;
+}
+const q = {
+    id: "sheet.mutation.chart-update-source",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sig2278, var_core_value_sig7053) => {
+      let {
+        chartModelId: var_core_value_sig52F1,
+        rangeInfo: var_core_value_sig1E74
+      } = var_core_value_sig7053;
+      return var_core_value_sig2278.get(U).replaceChartDataSource(var_core_value_sig52F1, var_core_value_sig1E74);
+    }
+  },
+  ge = {
+    id: "sheet.command.chart-update-source",
+    type: t.CommandType["COMMAND"],
+    handler: (var_core_value_sig1E84, var_core_value_sig133B) => {
+      if (!var_core_value_sig133B) return false;
+      let var_core_value_sig69B8 = var_core_value_sig1E84.get(U),
+        {
+          unitId: var_core_value_sig983D,
+          chartModelId: var_core_value_sig9A03,
+          range: var_core_value_sig3363
+        } = var_core_value_sig133B;
+      if (!var_core_value_sig69B8.getChartModel(var_core_value_sig9A03)) return false;
+      let var_core_value_sigF64A = var_core_value_sig69B8.getChartDataSource(var_core_value_sig9A03);
+      if (!var_core_value_sigF64A) return false;
+      let var_core_value_sig25EC = var_core_value_sig1E84.get(t.ICommandService),
+        var_core_value_sigA790 = var_core_value_sig1E84.get(t.IUndoRedoService),
+        var_core_value_sig9A5E = [],
+        var_core_value_sig01B9 = [],
+        var_core_value_sigD6A9 = var_core_value_sigF64A.getRangeInfo(),
+        var_core_value_sig0FCF = {
+          unitId: var_core_value_sig983D,
+          chartModelId: var_core_value_sig9A03,
+          rangeInfo: var_core_value_sig3363
+        },
+        var_core_value_sigCF96 = {
+          unitId: var_core_value_sig983D,
+          chartModelId: var_core_value_sig9A03,
+          rangeInfo: var_core_value_sigD6A9
+        };
+      return var_core_value_sig9A5E.push({
+        id: q.id,
+        params: var_core_value_sig0FCF
+      }), var_core_value_sig01B9.push({
+        id: q.id,
+        params: var_core_value_sigCF96
+      }), (0, t.sequenceExecute)(var_core_value_sig9A5E, var_core_value_sig25EC).result ? (var_core_value_sigA790.pushUndoRedo({
+        unitID: var_core_value_sig983D,
+        redoMutations: var_core_value_sig9A5E,
+        undoMutations: var_core_value_sig01B9
+      }), true) : false;
+    }
+  };
+let _e = function (var_core_value_sigC4E9) {
+    return var_core_value_sigC4E9.Auto = "auto", var_core_value_sigC4E9.Row = "row", var_core_value_sigC4E9.Column = "column", var_core_value_sigC4E9.Rows = "rows", var_core_value_sigC4E9.Columns = "columns", var_core_value_sigC4E9.RowsAsSeries = "rowsAsSeries", var_core_value_sigC4E9.ColumnsAsSeries = "columnsAsSeries", var_core_value_sigC4E9;
+  }({}),
+  ve = function (var_core_value_sigF612) {
+    return var_core_value_sigF612.Range = "range", var_core_value_sigF612.Ranges = "ranges", var_core_value_sigF612;
+  }({}),
+  ye = function (var_core_value_sigAA6C) {
+    return var_core_value_sigAA6C.Error = "error", var_core_value_sigAA6C;
+  }({});
+function be(var_core_value_sig8BFA, var_core_value_sig236B) {
+  let var_core_value_sig1951 = Y(var_core_value_sig8BFA, t.IUniverInstanceService);
+  return (var_core_value_sig1951 == null ? undefined : var_core_value_sig1951.getUnit(var_core_value_sig236B, t.UniverInstanceType["UNIVER_SHEET"])) ?? (var_core_value_sig1951 == null ? undefined : var_core_value_sig1951.getCurrentUnitOfType(t.UniverInstanceType["UNIVER_SHEET"])) ?? null;
+}
+function xe(var_core_value_sigFEA0, var_core_value_sig931A, var_core_value_sigEE7D) {
+  var var_core_value_sig3585, var_core_value_sig31A8;
+  let var_core_value_sigA4DA = Y(var_core_value_sigFEA0.injector, n.ISheetDrawingService),
+    var_core_value_sig6FC0 = Y(var_core_value_sigFEA0.injector, r.SheetSkeletonService);
+  if (!var_core_value_sigA4DA || !var_core_value_sig6FC0) return var_core_value_sigEE7D.push(J("COMMAND_FAILED", "Chart layout services are not available.", "layout")), null;
+  let var_core_value_sig6217 = var_core_value_sigA4DA.getDrawingByParam({
+    unitId: var_core_value_sigFEA0.unitId,
+    subUnitId: var_core_value_sigFEA0.subUnitId,
+    drawingId: var_core_value_sigFEA0.chartId
+  });
+  if (!var_core_value_sig6217) return var_core_value_sigEE7D.push(J("COMMAND_FAILED", "Chart drawing not found: " + var_core_value_sigFEA0.chartId + ".", "layout")), null;
+  let var_core_value_sigB805 = var_core_value_sig6FC0.ensureSkeleton(var_core_value_sigFEA0.unitId, var_core_value_sigFEA0.subUnitId);
+  if (!var_core_value_sigB805) return var_core_value_sigEE7D.push(J("COMMAND_FAILED", "Worksheet skeleton is not available for chart layout update.", "layout")), null;
+  let var_core_value_sig4FAE = {
+    ...var_core_value_sig6217.transform
+  };
+  if (((var_core_value_sig3585 = var_core_value_sig931A.size) == null ? undefined : var_core_value_sig3585.width) !== undefined && (var_core_value_sig4FAE.width = var_core_value_sig931A.size["width"]), ((var_core_value_sig31A8 = var_core_value_sig931A.size) == null ? undefined : var_core_value_sig31A8.height) !== undefined && (var_core_value_sig4FAE.height = var_core_value_sig931A.size["height"]), var_core_value_sig931A.anchor !== undefined) {
+    let var_core_value_sig308A = we(var_core_value_sigFEA0.unitId, var_core_value_sigFEA0.subUnitId, var_core_value_sig931A.anchor, var_core_value_sigB805, var_core_value_sigEE7D);
+    var_core_value_sig308A && (var_core_value_sig4FAE.left = var_core_value_sig308A.left, var_core_value_sig4FAE.top = var_core_value_sig308A.top);
+  }
+  return var_core_value_sig931A.position !== undefined && (var_core_value_sig4FAE.left = var_core_value_sig931A.position["x"], var_core_value_sig4FAE.top = var_core_value_sig931A.position["y"]), {
+    ...var_core_value_sig6217,
+    unitId: var_core_value_sigFEA0.unitId,
+    subUnitId: var_core_value_sigFEA0.subUnitId,
+    drawingId: var_core_value_sigFEA0.chartId,
+    drawingType: t.DrawingTypeEnum["DRAWING_CHART"],
+    transform: var_core_value_sig4FAE,
+    sheetTransform: (0, n.transformToDrawingPosition)(var_core_value_sig4FAE, var_core_value_sigB805),
+    axisAlignSheetTransform: (0, n.transformToAxisAlignPosition)(var_core_value_sig4FAE, var_core_value_sigB805)
+  };
+}
+function Se(var_core_value_sig1FCC, var_core_value_sigB7F9, var_core_value_sigB1A2) {
+  if (var_core_value_sigB7F9.position) return var_core_value_sigB7F9.position;
+  if (!var_core_value_sigB7F9.anchor) return;
+  let var_core_value_sig526D = Y(var_core_value_sig1FCC.injector, r.SheetSkeletonService),
+    var_core_value_sigBDB5 = var_core_value_sig526D == null ? undefined : var_core_value_sig526D.ensureSkeleton(var_core_value_sig1FCC.unitId, var_core_value_sig1FCC.subUnitId);
+  if (!var_core_value_sigBDB5) {
+    var_core_value_sigB1A2.push(J("COMMAND_FAILED", "Worksheet skeleton is not available for chart anchor.", "anchor"));
+    return;
+  }
+  let var_core_value_sig59CE = we(var_core_value_sig1FCC.unitId, var_core_value_sig1FCC.subUnitId, var_core_value_sigB7F9.anchor, var_core_value_sigBDB5, var_core_value_sigB1A2);
+  return var_core_value_sig59CE ? {
+    x: var_core_value_sig59CE.left ?? 0,
+    y: var_core_value_sig59CE.top ?? 0
+  } : undefined;
+}
+function Ce(var_core_value_sig3AD7) {
+  var var_core_value_sig04E4;
+  let var_core_value_sigD8F0 = Y(var_core_value_sig3AD7.injector, n.ISheetDrawingService),
+    var_core_value_sig1475 = var_core_value_sigD8F0 == null ? undefined : var_core_value_sigD8F0.getDrawingByParam({
+      unitId: var_core_value_sig3AD7.unitId,
+      subUnitId: var_core_value_sig3AD7.subUnitId,
+      drawingId: var_core_value_sig3AD7.chartId
+    });
+  if (var_core_value_sig1475) return {
+    position: var_core_value_sig1475.transform ? {
+      x: var_core_value_sig1475.transform["left"] ?? 0,
+      y: var_core_value_sig1475.transform["top"] ?? 0
+    } : undefined,
+    size: var_core_value_sig1475.transform ? {
+      width: var_core_value_sig1475.transform["width"],
+      height: var_core_value_sig1475.transform["height"]
+    } : undefined,
+    anchor: (var_core_value_sig04E4 = var_core_value_sig1475.sheetTransform) != null && var_core_value_sig04E4.from ? {
+      row: var_core_value_sig1475.sheetTransform["from"].row,
+      column: var_core_value_sig1475.sheetTransform["from"].column,
+      rowOffset: var_core_value_sig1475.sheetTransform["from"].rowOffset,
+      columnOffset: var_core_value_sig1475.sheetTransform["from"].columnOffset
+    } : undefined
+  };
+}
+function we(var_core_value_sig08B7, var_core_value_sig2008, var_core_value_sig496B, var_core_value_sig7161, var_core_value_sig2AB8) {
+  let var_core_value_sig3FCF = Te(var_core_value_sig496B, var_core_value_sig2AB8);
+  return var_core_value_sig3FCF ? (0, r.convertPositionCellToSheetOverGrid)(var_core_value_sig08B7, var_core_value_sig2008, {
+    row: var_core_value_sig3FCF.row,
+    column: var_core_value_sig3FCF.column,
+    rowOffset: var_core_value_sig3FCF.rowOffset ?? 0,
+    columnOffset: var_core_value_sig3FCF.columnOffset ?? 0
+  }, 1, 1, var_core_value_sig7161).transform : null;
+}
+function Te(var_core_value_sig675A, var_core_value_sig837F) {
+  if (typeof var_core_value_sig675A == "string") try {
+    let var_core_value_sig528D = (0, a.deserializeRangeWithSheet)(var_core_value_sig675A);
+    return {
+      row: var_core_value_sig528D.range["startRow"],
+      column: var_core_value_sig528D.range["startColumn"]
+    };
+  } catch (var_core_value_sigA309) {
+    return var_core_value_sig837F.push(J("INVALID_RANGE", "Invalid chart source range: " + var_core_value_sig675A + ".", "layout.anchor", var_core_value_sigA309)), null;
+  }
+  return !Number.isInteger(var_core_value_sig675A.row) || !Number.isInteger(var_core_value_sig675A.column) || var_core_value_sig675A.row < 0 || var_core_value_sig675A.column < 0 ? (var_core_value_sig837F.push(J("INVALID_RANGE", "Chart\x20anchor\x20row\x20and\x20column\x20must\x20be\x20non-negative\x20integers.", "layout.anchor")), null) : var_core_value_sig675A;
+}
+function J(var_core_value_sig9D6E, var_core_value_sigB205, var_core_value_sigBF78, var_core_value_sig8AF3) {
+  return {
+    code: var_core_value_sig9D6E,
+    severity: "error",
+    message: var_core_value_sigB205,
+    path: var_core_value_sigBF78,
+    details: var_core_value_sig8AF3
+  };
+}
+function Y(var_core_value_sigA0CC, var_core_value_sigB3A1) {
+  try {
+    return var_core_value_sigA0CC.get(var_core_value_sigB3A1);
+  } catch {
+    return null;
+  }
+}
+function X(var_core_value_sig1FB9, var_core_value_sig53A9, var_core_value_sigDACD, var_core_value_sig691E = "error", var_core_value_sigD6D6, var_core_value_sig0347) {
+  return {
+    code: var_core_value_sig1FB9,
+    severity: var_core_value_sig691E,
+    message: var_core_value_sig53A9,
+    path: var_core_value_sigDACD,
+    details: var_core_value_sigD6D6,
+    ...var_core_value_sig0347
+  };
+}
+function Ee(var_core_value_sig52A3) {
+  return var_core_value_sig52A3.some(var_core_value_sig9E20 => var_core_value_sig9E20.severity === "error");
+}
+function De(var_core_value_sigAD91, var_core_value_sigF64E, var_core_value_sig9B3D, var_core_value_sigB217 = "source") {
+  if (var_core_value_sigAD91 == null) return var_core_value_sig9B3D.push(X("INVALID_RANGE", "Chart source is required.", var_core_value_sigB217)), null;
+  let var_core_value_sig1FE6 = Ve(var_core_value_sigAD91) ? var_core_value_sigAD91 : undefined;
+  if (var_core_value_sig1FE6 && "ranges" in var_core_value_sig1FE6) return "range" in var_core_value_sig1FE6 && var_core_value_sig1FE6.range !== undefined ? (var_core_value_sig9B3D.push(X("INVALID_RANGE", "Chart source must specify exactly one of range or ranges.", var_core_value_sigB217)), null) : Oe(var_core_value_sig1FE6, var_core_value_sigF64E, var_core_value_sig9B3D, var_core_value_sigB217);
+  if (var_core_value_sig1FE6 && (!("range" in var_core_value_sig1FE6) || var_core_value_sig1FE6.range === undefined)) return var_core_value_sig9B3D.push(X("INVALID_RANGE", "Chart source must specify exactly one of range or ranges.", var_core_value_sigB217)), null;
+  let var_core_value_sig2471 = ze(var_core_value_sig1FE6 ? var_core_value_sig1FE6.range : var_core_value_sigAD91, var_core_value_sig9B3D, var_core_value_sig1FE6 ? var_core_value_sigB217 + ".range" : var_core_value_sigB217);
+  if (!var_core_value_sig2471) return null;
+  let var_core_value_sigD1FC = (var_core_value_sig1FE6 == null ? undefined : var_core_value_sig1FE6.unitId) ?? var_core_value_sigF64E.unitId;
+  if (var_core_value_sigD1FC !== var_core_value_sigF64E.unitId) return var_core_value_sig9B3D.push(X("INVALID_RANGE", "Chart\x20facade\x20create/update\x20only\x20supports\x20sources\x20in\x20the\x20same\x20workbook.", var_core_value_sigB217 + ".unitId")), null;
+  let var_core_value_sigE2F9 = (var_core_value_sig1FE6 == null ? undefined : var_core_value_sig1FE6.sheetName) ?? var_core_value_sig2471.sheetName,
+    var_core_value_sigD689 = var_core_value_sigE2F9,
+    var_core_value_sig7AE3 = (var_core_value_sig1FE6 == null ? undefined : var_core_value_sig1FE6.sheetId) ?? var_core_value_sigF64E.subUnitId;
+  if (var_core_value_sigE2F9) {
+    let var_core_value_sig26BB = var_core_value_sigF64E.workbook["getSheetBySheetName"](var_core_value_sigE2F9);
+    if (!var_core_value_sig26BB) return var_core_value_sig9B3D.push(X("INVALID_RANGE", "Worksheet not found: " + var_core_value_sigE2F9 + ".", var_core_value_sigB217 + ".sheetName")), null;
+    var_core_value_sig7AE3 = var_core_value_sig26BB.getSheetId();
+  } else {
+    if (var_core_value_sig1FE6 != null && var_core_value_sig1FE6.sheetId) {
+      let var_core_value_sigE799 = var_core_value_sigF64E.workbook["getSheetBySheetId"](var_core_value_sig1FE6.sheetId);
+      if (!var_core_value_sigE799) return var_core_value_sig9B3D.push(X("INVALID_RANGE", "Worksheet not found: " + var_core_value_sig1FE6.sheetId + ".", var_core_value_sigB217 + ".sheetId")), null;
+      var_core_value_sigD689 = var_core_value_sigE799.getName();
+    }
+  }
+  Ie(var_core_value_sig2471.range, var_core_value_sig9B3D, var_core_value_sig1FE6 ? var_core_value_sigB217 + ".range" : var_core_value_sigB217);
+  let var_core_value_sig1EB3 = He(var_core_value_sig1FE6 == null ? undefined : var_core_value_sig1FE6.orientation),
+    var_core_value_sigE120 = var_core_value_sig1FE6 == null ? undefined : var_core_value_sig1FE6.headerRow,
+    var_core_value_sigD6E7 = {
+      rangeInfo: {
+        unitId: var_core_value_sigD1FC,
+        subUnitId: var_core_value_sig7AE3,
+        range: var_core_value_sig2471.range
+      },
+      ...(var_core_value_sig1EB3 === undefined ? {} : {
+        isRowDirection: var_core_value_sig1EB3
+      }),
+      ...(var_core_value_sigE120 === undefined ? {} : {
+        headerRow: var_core_value_sigE120
+      })
+    };
+  return var_core_value_sigE120 !== undefined && !Re(var_core_value_sigE120, var_core_value_sig2471.range, var_core_value_sig9B3D, var_core_value_sigB217 + ".headerRow") ? null : {
+    kind: "range",
+    range: var_core_value_sig2471.range,
+    sourceSheetName: var_core_value_sigD689,
+    isRowDirection: var_core_value_sig1EB3,
+    rangeInfo: var_core_value_sigD6E7
+  };
+}
+function Oe(var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig6BD0) {
+  if (!Array.isArray(var_core_value_sig3669.ranges) || var_core_value_sig3669.ranges["length"] === 0) return var_core_value_sig20BE.push(X("INVALID_RANGE", "Chart source ranges must contain at least one vector.", var_core_value_sig6BD0 + ".ranges")), null;
+  if (var_core_value_sig3669.unitId !== undefined && var_core_value_sig3669.unitId !== var_core_value_sig5CBC.unitId) return var_core_value_sig20BE.push(X("INVALID_RANGE", "Chart\x20facade\x20create/update\x20only\x20supports\x20sources\x20in\x20the\x20same\x20workbook.", var_core_value_sig6BD0 + ".unitId")), null;
+  let var_core_value_sig8C15 = [],
+    var_core_value_sig6DF7,
+    var_core_value_sigB411;
+  var_core_value_sig3669.ranges["forEach"]((var_core_value_sig19B4, var_core_value_sig218A) => {
+    let var_core_value_sig14CB = var_core_value_sig6BD0 + ".ranges." + var_core_value_sig218A,
+      var_core_value_sigFDEE = ke(var_core_value_sig19B4 == null ? undefined : var_core_value_sig19B4.range, var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig14CB + ".range"),
+      var_core_value_sigA676 = (var_core_value_sig19B4 == null ? undefined : var_core_value_sig19B4.header) === undefined ? undefined : ke(var_core_value_sig19B4.header, var_core_value_sig3669, var_core_value_sig5CBC, var_core_value_sig20BE, var_core_value_sig14CB + ".header");
+    if (!var_core_value_sigFDEE || (var_core_value_sig19B4 == null ? undefined : var_core_value_sig19B4.header) !== undefined && !var_core_value_sigA676) return;
+    let var_core_value_sigC27E = var_core_value_sigFDEE.range,
+      var_core_value_sigA70D = var_core_value_sigC27E.startRow === var_core_value_sigC27E.endRow;
+    if (var_core_value_sigA70D === (var_core_value_sigC27E.startColumn === var_core_value_sigC27E.endColumn)) {
+      var_core_value_sig20BE.push(X("INVALID_RANGE", "Each\x20chart\x20source\x20vector\x20must\x20be\x20exactly\x20one\x20row\x20or\x20one\x20column.", var_core_value_sig14CB + ".range"));
+      return;
+    }
+    let var_core_value_sigCE10 = var_core_value_sigA70D,
+      var_core_value_sigA386 = var_core_value_sigA70D ? var_core_value_sigC27E.endColumn - var_core_value_sigC27E.startColumn + 1 : var_core_value_sigC27E.endRow - var_core_value_sigC27E.startRow + 1;
+    if (var_core_value_sigB411 !== undefined && var_core_value_sigB411 !== var_core_value_sigCE10) {
+      var_core_value_sig20BE.push(X("INVALID_RANGE", "All chart source vectors must have the same orientation.", var_core_value_sig14CB + ".range"));
+      return;
+    }
+    if (var_core_value_sig6DF7 !== undefined && var_core_value_sig6DF7 !== var_core_value_sigA386) {
+      var_core_value_sig20BE.push(X("INVALID_RANGE", "All chart source vectors must have equal length.", var_core_value_sig14CB + ".range"));
+      return;
+    }
+    if (var_core_value_sigA676 && (var_core_value_sigA676.range["startRow"] !== var_core_value_sigA676.range["endRow"] || var_core_value_sigA676.range["startColumn"] !== var_core_value_sigA676.range["endColumn"])) {
+      var_core_value_sig20BE.push(X("INVALID_RANGE", "A chart source vector header must be a single cell.", var_core_value_sig14CB + ".header"));
+      return;
+    }
+    var_core_value_sigB411 = var_core_value_sigCE10, var_core_value_sig6DF7 = var_core_value_sigA386, var_core_value_sig8C15.push({
+      ...(var_core_value_sigA676 ? {
+        header: var_core_value_sigA676
+      } : {}),
+      range: var_core_value_sigFDEE
+    });
+  });
+  let var_core_value_sigA81B = He(var_core_value_sig3669.orientation);
+  return var_core_value_sigA81B !== undefined && var_core_value_sigB411 !== undefined && var_core_value_sigA81B !== var_core_value_sigB411 && var_core_value_sig20BE.push(X("INVALID_RANGE", "Chart source orientation must match the row or column vectors.", var_core_value_sig6BD0 + ".orientation")), var_core_value_sig8C15.length === var_core_value_sig3669.ranges["length"] && !Ee(var_core_value_sig20BE) ? {
+    kind: "ranges",
+    ranges: var_core_value_sig8C15,
+    isRowDirection: var_core_value_sigB411
+  } : null;
+}
+function ke(var_core_value_sigFE8D, var_core_value_sig8595, var_core_value_sigF8DE, var_core_value_sigFE76, var_core_value_sig84C8) {
+  let var_core_value_sig80C0 = ze(var_core_value_sigFE8D, var_core_value_sigFE76, var_core_value_sig84C8);
+  if (!var_core_value_sig80C0) return null;
+  let var_core_value_sig22B4 = var_core_value_sig8595.unitId ?? var_core_value_sigF8DE.unitId,
+    var_core_value_sigBB37 = var_core_value_sig80C0.sheetName ?? var_core_value_sig8595.sheetName,
+    var_core_value_sig0C51 = var_core_value_sig8595.sheetId ?? var_core_value_sigF8DE.subUnitId;
+  if (var_core_value_sigBB37) {
+    let var_core_value_sigCD82 = var_core_value_sigF8DE.workbook["getSheetBySheetName"](var_core_value_sigBB37);
+    if (!var_core_value_sigCD82) return var_core_value_sigFE76.push(X("INVALID_RANGE", "Worksheet not found: " + var_core_value_sigBB37 + ".", var_core_value_sig84C8)), null;
+    var_core_value_sig0C51 = var_core_value_sigCD82.getSheetId();
+  } else {
+    if (var_core_value_sig8595.sheetId && !var_core_value_sigF8DE.workbook["getSheetBySheetId"](var_core_value_sig8595.sheetId)) return var_core_value_sigFE76.push(X("INVALID_RANGE", "Worksheet\x20not\x20found:\x20" + var_core_value_sig8595.sheetId + ".", var_core_value_sig84C8)), null;
+  }
+  return Le(var_core_value_sig80C0.range, var_core_value_sigFE76, var_core_value_sig84C8), {
+    unitId: var_core_value_sig22B4,
+    subUnitId: var_core_value_sig0C51,
+    range: var_core_value_sig80C0.range
+  };
+}
+function Ae(var_core_value_sigADA4, var_core_value_sig0E48, var_core_value_sig495B = 0) {
+  var var_core_value_sig310C, var_core_value_sig759E;
+  let var_core_value_sig6C80 = (var_core_value_sig310C = var_core_value_sig0E48.inferInitialChartSource) == null ? undefined : var_core_value_sig310C.call(var_core_value_sig0E48, var_core_value_sigADA4.kind === "ranges" ? var_core_value_sigADA4.ranges : var_core_value_sigADA4.rangeInfo);
+  if (var_core_value_sig6C80) return je(var_core_value_sig6C80.dataSet, var_core_value_sig495B);
+  if (var_core_value_sigADA4.kind === "ranges") return var_core_value_sigADA4.ranges["map"]((var_core_value_sig44DD, var_core_value_sig96FA) => {
+    var var_core_value_sigAB68;
+    let var_core_value_sig040A = var_core_value_sig44DD.header,
+      var_core_value_sig2AE0 = var_core_value_sig040A ? var_core_value_sig0E48.workbook["getSheetBySheetId"](var_core_value_sig040A.subUnitId) : null,
+      var_core_value_sigC349 = var_core_value_sig0E48.workbook["getSheetBySheetId"](var_core_value_sig44DD.range["subUnitId"]);
+    return {
+      index: var_core_value_sig96FA,
+      name: var_core_value_sig040A ? String((var_core_value_sig2AE0 == null || (var_core_value_sigAB68 = var_core_value_sig2AE0.getCell(var_core_value_sig040A.range["startRow"], var_core_value_sig040A.range["startColumn"])) == null ? undefined : var_core_value_sigAB68.v) ?? "") : "",
+      items: var_core_value_sigC349 ? Ne(var_core_value_sigC349, var_core_value_sig44DD.range["range"], var_core_value_sigADA4.isRowDirection) : []
+    };
+  }).filter(var_core_value_sig9D96 => var_core_value_sig9D96.index !== var_core_value_sig495B);
+  let var_core_value_sig6B99 = var_core_value_sigADA4.rangeInfo["rangeInfo"],
+    var_core_value_sig6ADC = var_core_value_sig0E48.workbook["getSheetBySheetId"](var_core_value_sig6B99.subUnitId);
+  if (!var_core_value_sig6ADC) return [];
+  let var_core_value_sig41AD = var_core_value_sigADA4.isRowDirection ?? ((var_core_value_sig759E = var_core_value_sig0E48.resolveAutoIsRowDirection) == null ? undefined : var_core_value_sig759E.call(var_core_value_sig0E48, var_core_value_sigADA4.rangeInfo)) ?? true,
+    var_core_value_sigDBC2 = t.Range["transformRange"](var_core_value_sig6B99.range, var_core_value_sig6ADC),
+    {
+      dataSet: var_core_value_sig7739
+    } = M(x({
+      numfmtOptions: {
+        locale: (0, t.getNumfmtLocaleTag)(var_core_value_sig0E48.workbook["getSnapshot"]().locale),
+        dateSystem: var_core_value_sig0E48.workbook["getDateSystem"]()
+      },
+      range: var_core_value_sigDBC2,
+      styles: var_core_value_sig0E48.workbook["getStyles"](),
+      worksheet: var_core_value_sig6ADC
+    }), {
+      isRowDirection: var_core_value_sig41AD,
+      ...(var_core_value_sigADA4.rangeInfo["headerRow"] === undefined ? {} : {
+        headerRow: var_core_value_sigADA4.rangeInfo["headerRow"]
+      })
+    });
+  return je(var_core_value_sig7739, var_core_value_sig495B);
+}
+function je(var_core_value_sig4040, var_core_value_sig1AAA) {
+  return var_core_value_sig4040.source["map"]((var_core_value_sig2776, var_core_value_sig6FB2) => ({
+    index: var_core_value_sig6FB2,
+    name: Me(var_core_value_sig4040.dimensions[var_core_value_sig6FB2]),
+    items: var_core_value_sig2776.map((var_core_value_sigB601, var_core_value_sig8B71) => {
+      var var_core_value_sigAEFB;
+      let var_core_value_sig826B = (0, e.toChartDataItem)(var_core_value_sigB601);
+      return {
+        ...var_core_value_sig826B,
+        label: ((var_core_value_sigAEFB = var_core_value_sig4040.sourceLabels) == null || (var_core_value_sigAEFB = var_core_value_sigAEFB[var_core_value_sig6FB2]) == null ? undefined : var_core_value_sigAEFB[var_core_value_sig8B71]) ?? var_core_value_sig826B.label
+      };
+    })
+  })).filter(var_core_value_sigEB43 => var_core_value_sigEB43.index !== var_core_value_sig1AAA);
+}
+function Me(var_core_value_sig58DB) {
+  return typeof var_core_value_sig58DB == "string" ? var_core_value_sig58DB : (var_core_value_sig58DB == null ? undefined : var_core_value_sig58DB.displayName) ?? (var_core_value_sig58DB == null ? undefined : var_core_value_sig58DB.name) ?? "";
+}
+function Ne(var_core_value_sig4840, var_core_value_sigB76D, var_core_value_sig1015) {
+  let var_core_value_sig6223 = [];
+  if (var_core_value_sig1015) for (let var_core_value_sig4186 = var_core_value_sigB76D.startColumn; var_core_value_sig4186 <= var_core_value_sigB76D.endColumn; var_core_value_sig4186++) {
+    var var_core_value_sigC6B6;
+    var_core_value_sig6223.push((0, e.toChartDataItem)((var_core_value_sigC6B6 = var_core_value_sig4840.getCell(var_core_value_sigB76D.startRow, var_core_value_sig4186)) == null ? undefined : var_core_value_sigC6B6.v));
+  } else for (let var_core_value_sigF963 = var_core_value_sigB76D.startRow; var_core_value_sigF963 <= var_core_value_sigB76D.endRow; var_core_value_sigF963++) {
+    var var_core_value_sig498A;
+    var_core_value_sig6223.push((0, e.toChartDataItem)((var_core_value_sig498A = var_core_value_sig4840.getCell(var_core_value_sigF963, var_core_value_sigB76D.startColumn)) == null ? undefined : var_core_value_sig498A.v));
+  }
+  return var_core_value_sig6223;
+}
+function Pe(var_core_value_sigEF45, var_core_value_sig36FE) {
+  let {
+      rangeInfo: var_core_value_sig3AF5,
+      isRowDirection: var_core_value_sig14E6,
+      headerRow: var_core_value_sig8690
+    } = var_core_value_sigEF45,
+    var_core_value_sigDF29 = var_core_value_sig36FE == null ? undefined : var_core_value_sig36FE.getSheetBySheetId(var_core_value_sig3AF5.subUnitId),
+    var_core_value_sigC0F8 = "auto";
+  return var_core_value_sig14E6 !== undefined && (var_core_value_sigC0F8 = var_core_value_sig14E6 ? "rows" : "columns"), {
+    range: var_core_value_sig3AF5.range,
+    unitId: var_core_value_sig3AF5.unitId,
+    sheetId: var_core_value_sig3AF5.subUnitId,
+    sheetName: var_core_value_sigDF29 == null ? undefined : var_core_value_sigDF29.getName(),
+    orientation: var_core_value_sigC0F8,
+    ...(var_core_value_sig8690 === undefined ? {} : {
+      headerRow: var_core_value_sig8690
+    })
+  };
+}
+function Fe(var_core_value_sig3C75, var_core_value_sig992D) {
+  var var_core_value_sigE4E4;
+  let var_core_value_sigA4B0 = var_core_value_sigB608 => {
+      let var_core_value_sigF866 = var_core_value_sig992D == null ? undefined : var_core_value_sig992D.getSheetBySheetId(var_core_value_sigB608.subUnitId);
+      return {
+        range: var_core_value_sigB608.range,
+        unitId: var_core_value_sigB608.unitId,
+        sheetId: var_core_value_sigB608.subUnitId,
+        sheetName: var_core_value_sigF866 == null ? undefined : var_core_value_sigF866.getName(),
+        orientation: "auto"
+      };
+    },
+    var_core_value_sig5F50 = (var_core_value_sigE4E4 = var_core_value_sig3C75[0]) == null ? undefined : var_core_value_sigE4E4.range["range"];
+  return {
+    ranges: var_core_value_sig3C75.map(var_core_value_sig5EFB => ({
+      range: var_core_value_sigA4B0(var_core_value_sig5EFB.range),
+      ...(var_core_value_sig5EFB.header ? {
+        header: var_core_value_sigA4B0(var_core_value_sig5EFB.header)
+      } : {})
+    })),
+    orientation: var_core_value_sig5F50 && var_core_value_sig5F50.startRow === var_core_value_sig5F50.endRow ? "rows" : "columns"
+  };
+}
+function Ie(var_core_value_sig4494, var_core_value_sigFFAF, var_core_value_sig478B) {
+  Le(var_core_value_sig4494, var_core_value_sigFFAF, var_core_value_sig478B), var_core_value_sig4494.startRow === var_core_value_sig4494.endRow && var_core_value_sig4494.startColumn === var_core_value_sig4494.endColumn && var_core_value_sigFFAF.push(X("SINGLE_CELL_SOURCE", "Chart\x20source\x20must\x20contain\x20more\x20than\x20one\x20cell.", var_core_value_sig478B));
+}
+function Le(var_core_value_sig1E21, var_core_value_sig9DBF, var_core_value_sig36CC) {
+  if (!Number.isInteger(var_core_value_sig1E21.startRow) || !Number.isInteger(var_core_value_sig1E21.endRow) || !Number.isInteger(var_core_value_sig1E21.startColumn) || !Number.isInteger(var_core_value_sig1E21.endColumn)) {
+    var_core_value_sig9DBF.push(X("INVALID_RANGE", "Chart source range must use integer row and column indexes.", var_core_value_sig36CC));
+    return;
+  }
+  (var_core_value_sig1E21.startRow > var_core_value_sig1E21.endRow || var_core_value_sig1E21.startColumn > var_core_value_sig1E21.endColumn || var_core_value_sig1E21.startRow < 0 || var_core_value_sig1E21.startColumn < 0) && var_core_value_sig9DBF.push(X("INVALID_RANGE", "Chart\x20source\x20range\x20is\x20invalid.", var_core_value_sig36CC));
+}
+function Re(var_core_value_sigA568, var_core_value_sigD22D, var_core_value_sig85D5, var_core_value_sig5D2E) {
+  let var_core_value_sig7221 = Number.isInteger(var_core_value_sigA568) && (var_core_value_sigA568 === e.CHART_HEADER_ROW_NONE || var_core_value_sigA568 >= 0 && var_core_value_sigA568 <= var_core_value_sigD22D.endRow - var_core_value_sigD22D.startRow);
+  return var_core_value_sig7221 || var_core_value_sig85D5.push(X("INVALID_RANGE", "Chart source headerRow must be a zero-based row offset inside the source range.", var_core_value_sig5D2E)), var_core_value_sig7221;
+}
+function ze(var_core_value_sig0A5A, var_core_value_sigE6D6, var_core_value_sig8507) {
+  if (typeof var_core_value_sig0A5A == "string") try {
+    let var_core_value_sig3A85 = (0, a.deserializeRangeWithSheet)(var_core_value_sig0A5A);
+    return {
+      range: var_core_value_sig3A85.range,
+      sheetName: var_core_value_sig3A85.sheetName
+    };
+  } catch (var_core_value_sig2682) {
+    return var_core_value_sigE6D6.push(X("INVALID_RANGE", "Invalid chart source range: " + var_core_value_sig0A5A + ".", var_core_value_sig8507, "error", var_core_value_sig2682)), null;
+  }
+  return Be(var_core_value_sig0A5A) ? {
+    range: var_core_value_sig0A5A
+  } : (var_core_value_sigE6D6.push(X("INVALID_RANGE", "Chart source range must be a range string or IRange object.", var_core_value_sig8507)), null);
+}
+function Be(var_core_value_sig8A7F) {
+  return !!(var_core_value_sig8A7F && typeof var_core_value_sig8A7F == "object" && "startRow" in var_core_value_sig8A7F && "endRow" in var_core_value_sig8A7F && "startColumn" in var_core_value_sig8A7F && "endColumn" in var_core_value_sig8A7F);
+}
+function Ve(var_core_value_sig9E81) {
+  return !!(var_core_value_sig9E81 && typeof var_core_value_sig9E81 == "object" && !Be(var_core_value_sig9E81));
+}
+function He(var_core_value_sig8295) {
+  switch (var_core_value_sig8295) {
+    case "row":
+    case "rows":
+    case "rowsAsSeries":
+      return true;
+    case "column":
+    case "columns":
+    case "columnsAsSeries":
+      return false;
+    default:
+      return;
+  }
+}
+var Ue = class {
+  constructor(var_core_value_sig4BB5) {
+    this._context = var_core_value_sig4BB5, w(this, "_injector", undefined), this._injector = var_core_value_sig4BB5.injector;
+  }
+  describe(var_core_value_sig6709 = {}, var_core_value_sig52CA) {
+    let {
+        chartId: var_core_value_sigC030,
+        subUnitId: var_core_value_sig88F6,
+        unitId: var_core_value_sig37DB
+      } = this._context,
+      var_core_value_sig5542 = this._injector["get"](U),
+      var_core_value_sigE0A9 = this._getChartModel(),
+      var_core_value_sigA73E = var_core_value_sig5542.getChartSourceSpec(var_core_value_sigC030);
+    if (!var_core_value_sigA73E) throw Error("Chart source not found: " + var_core_value_sigC030);
+    let var_core_value_sig7620 = be(this._injector, var_core_value_sig37DB) ?? undefined;
+    return {
+      ...(0, e.describeChartModel)(var_core_value_sigE0A9, var_core_value_sig6709, var_core_value_sig52CA),
+      id: var_core_value_sigC030,
+      source: Array.isArray(var_core_value_sigA73E) ? Fe(var_core_value_sigA73E, var_core_value_sig7620) : Pe(var_core_value_sigA73E, var_core_value_sig7620),
+      layout: Ce({
+        unitId: var_core_value_sig37DB,
+        subUnitId: var_core_value_sig88F6,
+        chartId: var_core_value_sigC030,
+        injector: this._injector
+      })
+    };
+  }
+  getInfo() {
+    var var_core_value_sigB9FC, var_core_value_sig5055, var_core_value_sig3801, var_core_value_sig45F0, var_core_value_sigBC91;
+    let var_core_value_sigCB88 = this.describe(),
+      var_core_value_sig8D65 = this._injector["get"](U).getChartSourceSpec(this._context["chartId"]);
+    if (!var_core_value_sig8D65) throw Error("Chart\x20source\x20not\x20found:\x20" + this._context["chartId"]);
+    let var_core_value_sig8122 = Array.isArray(var_core_value_sig8D65) ? {
+        ranges: var_core_value_sig8D65.map(({
+          header: var_core_value_sigCF89,
+          range: var_core_value_sig00CB
+        }) => ({
+          ...(var_core_value_sigCF89 ? {
+            header: var_core_value_sigCF89.range
+          } : {}),
+          range: var_core_value_sig00CB.range
+        })),
+        orientation: ((var_core_value_sigB9FC = var_core_value_sig8D65[0]) == null ? undefined : var_core_value_sigB9FC.range["range"].startRow) === ((var_core_value_sig5055 = var_core_value_sig8D65[0]) == null ? undefined : var_core_value_sig5055.range["range"].endRow) ? "rows" : "columns"
+      } : Pe(var_core_value_sig8D65),
+      var_core_value_sigEDC6 = (var_core_value_sig3801 = var_core_value_sigCB88.layout) == null ? undefined : var_core_value_sig3801.size;
+    return {
+      config: (0, e.toChartCreateConfigSnapshot)(var_core_value_sigCB88),
+      dataSource: t.Tools["deepClone"](var_core_value_sig8122),
+      position: t.Tools["deepClone"]((var_core_value_sig45F0 = var_core_value_sigCB88.layout) == null ? undefined : var_core_value_sig45F0.position),
+      size: (var_core_value_sigEDC6 == null ? undefined : var_core_value_sigEDC6.width) === undefined || var_core_value_sigEDC6.height === undefined ? undefined : {
+        width: var_core_value_sigEDC6.width,
+        height: var_core_value_sigEDC6.height
+      },
+      anchor: t.Tools["deepClone"]((var_core_value_sigBC91 = var_core_value_sigCB88.layout) == null ? undefined : var_core_value_sigBC91.anchor)
+    };
+  }
+  commit(var_core_value_sig611A) {
+    var var_core_value_sig6BD9;
+    let {
+        chartId: var_core_value_sig7E56,
+        unitId: var_core_value_sig4161
+      } = this._context,
+      var_core_value_sig7580 = this._getChartModel(),
+      var_core_value_sig1F18 = (0, e.toChartModelUpdate)(var_core_value_sig611A, {
+        series: (var_core_value_sig6BD9 = var_core_value_sig7580.config) == null ? undefined : var_core_value_sig6BD9.series,
+        currentChartType: var_core_value_sig7580.chartType,
+        currentStyle: var_core_value_sig7580.style,
+        currentContext: var_core_value_sig7580.context,
+        currentDataAggregation: var_core_value_sig7580.dataAggregation
+      });
+    if (!this._injector["get"](t.ICommandService).syncExecuteCommand(K.id, {
+      unitId: var_core_value_sig4161,
+      chartModelId: var_core_value_sig7E56,
+      ...var_core_value_sig1F18,
+      [G]: true
+    })) throw Error("Failed to update Sheet chart configuration.");
+  }
+  async update(var_core_value_sigD5A0) {
+    let var_core_value_sig81B2 = {};
+    return var_core_value_sigD5A0.anchor !== undefined && (var_core_value_sig81B2.anchor = var_core_value_sigD5A0.anchor), var_core_value_sigD5A0.position !== undefined && (var_core_value_sig81B2.position = var_core_value_sigD5A0.position), var_core_value_sigD5A0.size !== undefined && (var_core_value_sig81B2.size = var_core_value_sigD5A0.size), this.commitChanges(var_core_value_sigD5A0.dataSource, var_core_value_sigD5A0.config, var_core_value_sig81B2);
+  }
+  async commitChanges(var_core_value_sigA0A5, var_core_value_sig10AA, var_core_value_sigE6D0) {
+    this._resolveSourceRange(var_core_value_sigA0A5), this._replaceConfig(var_core_value_sig10AA), this.commitHost({
+      source: var_core_value_sigA0A5
+    }), Object.keys(var_core_value_sigE6D0).length > 0 && this.commitHost({
+      layout: var_core_value_sigE6D0
+    });
+  }
+  _replaceConfig(var_core_value_sig8E91) {
+    var var_core_value_sig00BE;
+    let {
+        chartId: var_core_value_sig7BB5,
+        unitId: var_core_value_sig6AAD
+      } = this._context,
+      var_core_value_sig1157 = this._getChartModel(),
+      var_core_value_sigA694 = (0, e.toChartModelConfigReplacement)(var_core_value_sig8E91, {
+        series: (var_core_value_sig00BE = var_core_value_sig1157.config) == null ? undefined : var_core_value_sig00BE.series,
+        currentStyle: var_core_value_sig1157.style
+      });
+    if (!this._injector["get"](t.ICommandService).syncExecuteCommand(K.id, {
+      unitId: var_core_value_sig6AAD,
+      chartModelId: var_core_value_sig7BB5,
+      ...var_core_value_sigA694,
+      [G]: true
+    })) throw Error("Failed to update Sheet chart configuration.");
+  }
+  setDataSource(var_core_value_sig18E01) {
+    this.commitHost({
+      source: var_core_value_sig18E01
+    });
+  }
+  setAbsolutePosition(var_core_value_sig0428, var_core_value_sigBE07) {
+    this.commitHost({
+      layout: {
+        position: {
+          x: var_core_value_sig0428,
+          y: var_core_value_sigBE07
+        }
+      }
+    });
+  }
+  setSize(var_core_value_sig555F, var_core_value_sig3D6F) {
+    this.commitHost({
+      layout: {
+        size: {
+          width: var_core_value_sig555F,
+          height: var_core_value_sig3D6F
+        }
+      }
+    });
+  }
+  arrange(var_core_value_sig336C) {
+    let {
+        chartId: var_core_value_sig6E68,
+        subUnitId: var_core_value_sig8DFE,
+        unitId: var_core_value_sig48EA
+      } = this._context,
+      var_core_value_sig5E16 = this._injector["get"](n.ISheetDrawingService).getDrawingOrder(var_core_value_sig48EA, var_core_value_sig8DFE),
+      var_core_value_sig09F3 = var_core_value_sig5E16.indexOf(var_core_value_sig6E68);
+    if (var_core_value_sig09F3 < 0) throw Error("Sheet chart drawing not found: " + var_core_value_sig6E68);
+    if ((0, t.getDrawingOrderIndex)(var_core_value_sig09F3, var_core_value_sig5E16.length, var_core_value_sig336C) !== var_core_value_sig09F3 && !this._injector["get"](t.ICommandService).syncExecuteCommand(n.SetDrawingArrangeCommand["id"], {
+      unitId: var_core_value_sig48EA,
+      subUnitId: var_core_value_sig8DFE,
+      drawingIds: [var_core_value_sig6E68],
+      arrangeType: var_core_value_sig336C
+    })) throw Error("Failed to arrange Sheet chart.");
+  }
+  setZOrder(var_core_value_sig4592) {
+    let {
+        chartId: var_core_value_sigC5C4,
+        subUnitId: var_core_value_sig1617,
+        unitId: var_core_value_sig4169
+      } = this._context,
+      var_core_value_sig6D19 = this._injector["get"](n.ISheetDrawingService).getDrawingOrder(var_core_value_sig4169, var_core_value_sig1617),
+      var_core_value_sig279C = var_core_value_sig6D19.indexOf(var_core_value_sigC5C4);
+    if (var_core_value_sig279C < 0) throw Error("Sheet chart drawing not found: " + var_core_value_sigC5C4);
+    if ((0, t.normalizeDrawingOrderIndex)(var_core_value_sig4592, var_core_value_sig6D19.length) !== var_core_value_sig279C && !this._injector["get"](t.ICommandService).syncExecuteCommand(n.SetDrawingArrangeCommand["id"], {
+      unitId: var_core_value_sig4169,
+      subUnitId: var_core_value_sig1617,
+      drawingIds: [var_core_value_sigC5C4],
+      zOrder: var_core_value_sig4592
+    })) throw Error("Failed\x20to\x20update\x20Sheet\x20chart\x20z-order.");
+  }
+  resolveData(var_core_value_sigAC51, var_core_value_sig8986) {
+    let var_core_value_sigCAF7 = this._getChartModel(),
+      var_core_value_sigED1C = var_core_value_sig8986 ? this.resolveSource(var_core_value_sig8986) : undefined;
+    return (0, e.buildChartPreviewData)(var_core_value_sigCAF7, var_core_value_sigAC51, var_core_value_sigED1C == null ? undefined : var_core_value_sigED1C.dataSet);
+  }
+  resolveSource(var_core_value_sig726E) {
+    let {
+        rangeInfo: var_core_value_sig2CD3
+      } = this._resolveSourceRange(var_core_value_sig726E),
+      var_core_value_sig038E = this._injector["get"](U).inferInitialChartSource(var_core_value_sig2CD3, this._getChartModel().chartType);
+    return {
+      dataSet: var_core_value_sig038E.dataSet,
+      isRowDirection: var_core_value_sig038E.mapping["isRowDirection"]
+    };
+  }
+  commitHost(var_core_value_sigAA1E) {
+    let var_core_value_sigC9F5 = this._injector["get"](t.ICommandService),
+      {
+        chartId: var_core_value_sig7EEA,
+        subUnitId: var_core_value_sig59CE1,
+        unitId: var_core_value_sig33C8
+      } = this._context;
+    if (var_core_value_sigAA1E.source !== undefined) {
+      let {
+        rangeInfo: var_core_value_sig77EE
+      } = this._resolveSourceRange(var_core_value_sigAA1E.source);
+      if (!var_core_value_sigC9F5.syncExecuteCommand(ge.id, {
+        unitId: var_core_value_sig33C8,
+        chartModelId: var_core_value_sig7EEA,
+        range: var_core_value_sig77EE
+      })) throw Error("Failed\x20to\x20update\x20Sheet\x20chart\x20source.");
+    }
+    if (var_core_value_sigAA1E.layout !== undefined) {
+      let var_core_value_sig9F76 = [],
+        var_core_value_sigB008 = xe({
+          unitId: var_core_value_sig33C8,
+          subUnitId: var_core_value_sig59CE1,
+          chartId: var_core_value_sig7EEA,
+          injector: this._injector
+        }, var_core_value_sigAA1E.layout, var_core_value_sig9F76);
+      if (var_core_value_sigB008 || We(var_core_value_sig9F76, "Invalid Sheet chart layout."), !(var_core_value_sigB008 && var_core_value_sigC9F5.syncExecuteCommand(n.SetSheetDrawingCommand["id"], {
+        unitId: var_core_value_sig33C8,
+        drawings: [var_core_value_sigB008]
+      }))) throw Error("Failed\x20to\x20update\x20Sheet\x20chart\x20layout.");
+    }
+  }
+  remove() {
+    let {
+      chartId: var_core_value_sig957F,
+      subUnitId: var_core_value_sig803B,
+      unitId: var_core_value_sig5830
+    } = this._context;
+    return this._injector["get"](t.ICommandService).executeCommand(n.RemoveSheetDrawingCommand["id"], {
+      unitId: var_core_value_sig5830,
+      drawings: [{
+        unitId: var_core_value_sig5830,
+        subUnitId: var_core_value_sig803B,
+        drawingId: var_core_value_sig957F,
+        drawingType: t.DrawingTypeEnum["DRAWING_CHART"]
+      }]
+    });
+  }
+  _resolveSourceRange(var_core_value_sig4A7C) {
+    let {
+        subUnitId: var_core_value_sigF975,
+        unitId: var_core_value_sigCDAF
+      } = this._context,
+      var_core_value_sigA298 = this._injector["get"](U),
+      var_core_value_sig0B40 = this._getChartModel(),
+      var_core_value_sig330B = be(this._injector, var_core_value_sigCDAF);
+    if (!var_core_value_sig330B) throw Error("Workbook\x20not\x20found:\x20" + var_core_value_sigCDAF);
+    let var_core_value_sig3625 = [],
+      var_core_value_sig0B4E = De(var_core_value_sig4A7C, {
+        unitId: var_core_value_sigCDAF,
+        subUnitId: var_core_value_sigF975,
+        workbook: var_core_value_sig330B,
+        resolveAutoIsRowDirection: var_core_value_sig8721 => var_core_value_sigA298.inferInitialChartMapping(var_core_value_sig8721, var_core_value_sig0B40.chartType).isRowDirection
+      }, var_core_value_sig3625);
+    return var_core_value_sig0B4E || We(var_core_value_sig3625, "Invalid Sheet chart source."), {
+      rangeInfo: var_core_value_sig0B4E.kind === "range" ? var_core_value_sig0B4E.rangeInfo : var_core_value_sig0B4E.ranges
+    };
+  }
+  _getChartModel() {
+    let {
+        chartId: var_core_value_sig0E9F
+      } = this._context,
+      var_core_value_sigE5BA = this._injector["get"](U).getChartModel(var_core_value_sig0E9F);
+    if (!var_core_value_sigE5BA) throw Error("Chart\x20not\x20found:\x20" + var_core_value_sig0E9F);
+    return var_core_value_sigE5BA;
+  }
+};
+function We(var_core_value_sigA975, var_core_value_sig1263) {
+  throw Error(var_core_value_sigA975.map(({
+    message: var_core_value_sig4A83
+  }) => var_core_value_sig4A83).join(";\x20") || var_core_value_sig1263);
+}
+const Ge = Number.parseInt(1788764280),
+  Ke = ["2", "4", "268435460"],
+  qe = ["all"],
+  Je = [];
+function Ye(var_core_value_sig457C) {
+  let {
+    ls: var_core_value_sigA4E6,
+    pbk: var_core_value_sig934F
+  } = var_core_value_sig457C.get(t.IConfigService).getConfig(s.LS_CONFIG_KEY) ?? {};
+  if (!var_core_value_sigA4E6 || !var_core_value_sig934F) return Ke;
+  let var_core_value_sig74A7 = (0, s.getLicenseInfo)(var_core_value_sigA4E6, var_core_value_sig934F),
+    var_core_value_sig3685 = var_core_value_sig74A7.message;
+  return var_core_value_sig74A7.valid && (0, s.isFeatureAuthorizedWithinTime)(var_core_value_sig3685, "sf", Ge) ? (0, s.getSheetFeatureLimit)(var_core_value_sig3685, true, "c", qe, Ke, Je) : Ke;
+}
+const Xe = "sheets-chart.config",
+  Ze = {
+    chartRenderMode: e.ChartRenderMode["Image"]
+  };
+function Qe(var_core_value_sigC621) {
+  if (Array.isArray(var_core_value_sigC621)) return {
+    ranges: var_core_value_sigC621
+  };
+  let {
+    headerRow: var_core_value_sig86D7,
+    rangeInfo: var_core_value_sig431B,
+    isRowDirection: var_core_value_sig5C7C
+  } = var_core_value_sigC621;
+  return {
+    range: var_core_value_sig431B.range,
+    rangeUnitId: var_core_value_sig431B.unitId,
+    rangeSubUnitId: var_core_value_sig431B.subUnitId,
+    ...(var_core_value_sig5C7C === undefined ? {} : {
+      isRowDirection: var_core_value_sig5C7C
+    }),
+    ...(var_core_value_sig86D7 === undefined ? {} : {
+      headerRow: var_core_value_sig86D7
+    })
+  };
+}
+function $e(var_core_value_sig87E2) {
+  let var_core_value_sig2E04 = var_core_value_sig87E2.unitId,
+    var_core_value_sig2EDD = var_core_value_sig87E2.subUnitId;
+  return "ranges" in var_core_value_sig87E2 ? var_core_value_sig87E2.ranges : "range" in var_core_value_sig87E2 ? {
+    rangeInfo: {
+      unitId: var_core_value_sig87E2.rangeUnitId ?? var_core_value_sig2E04,
+      subUnitId: var_core_value_sig87E2.rangeSubUnitId ?? var_core_value_sig2EDD,
+      range: var_core_value_sig87E2.range
+    },
+    ...(var_core_value_sig87E2.isRowDirection === undefined ? {} : {
+      isRowDirection: var_core_value_sig87E2.isRowDirection
+    }),
+    ...(var_core_value_sig87E2.headerRow === undefined ? {} : {
+      headerRow: var_core_value_sig87E2.headerRow
+    })
+  } : null;
+}
+const Z = {
+    id: "sheet.mutation.insert-chart",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sig27D2, var_core_value_sig355D) => {
+      let {
+          unitId: var_core_value_sig8B21,
+          subUnitId: var_core_value_sigEB36,
+          chartId: var_core_value_sig5C27,
+          context: var_core_value_sigD494,
+          style: var_core_value_sigBF6D,
+          dataAggregation: var_core_value_sigD051
+        } = var_core_value_sig355D,
+        var_core_value_sig16D9 = $e(var_core_value_sig355D);
+      return var_core_value_sig16D9 ? (var_core_value_sig27D2.get(U).createChartModel(var_core_value_sig8B21, var_core_value_sigEB36, {
+        rangeInfo: var_core_value_sig16D9,
+        id: var_core_value_sig5C27,
+        chartType: var_core_value_sig355D.chartType,
+        context: var_core_value_sigD494,
+        style: var_core_value_sigBF6D,
+        dataAggregation: var_core_value_sigD051
+      }, true), true) : false;
+    }
+  },
+  Q = {
+    id: "sheet.mutation.remove-chart",
+    type: t.CommandType["MUTATION"],
+    handler: (var_core_value_sigF378, var_core_value_sig5F6C) => {
+      let {
+        chartId: var_core_value_sig7E85
+      } = var_core_value_sig5F6C;
+      return var_core_value_sigF378.get(U).removeChartModel(var_core_value_sig7E85), true;
+    }
+  };
+function et(var_core_value_sigF204) {
+  var var_core_value_sig7A15;
+  let var_core_value_sigEEA6 = (var_core_value_sig7A15 = var_core_value_sigF204.config) == null || (var_core_value_sig7A15 = var_core_value_sig7A15.style) == null ? undefined : var_core_value_sig7A15.backgroundColor;
+  return var_core_value_sigEEA6 === undefined ? (0, e.resolveChartStyleBackgroundColor)({
+    backgroundColor: var_core_value_sigF204.backgroundColor ?? null
+  }) : (0, e.resolveChartStyleBackgroundColor)({
+    backgroundColor: var_core_value_sigEEA6
+  });
+}
+function tt(var_core_value_sigEAE1, var_core_value_sigC69F, var_core_value_sig0442, var_core_value_sig697A, var_core_value_sigDB65, var_core_value_sig045E, var_core_value_sig4524) {
+  var var_core_value_sig64D5;
+  let var_core_value_sig9678 = {
+      x: 200,
+      y: 200
+    },
+    var_core_value_sig5E74 = var_core_value_sigEAE1.get(o.IRenderManagerService).getRenderUnitById(var_core_value_sig697A),
+    var_core_value_sig75FC = var_core_value_sig5E74 == null ? undefined : var_core_value_sig5E74.scene["getMainViewport"]();
+  if (!var_core_value_sig75FC) return var_core_value_sig9678;
+  let var_core_value_sig639A = var_core_value_sigC69F.getCurrentUnitOfType(t.UniverInstanceType["UNIVER_SHEET"]);
+  if ((var_core_value_sig639A == null ? undefined : var_core_value_sig639A.getUnitId()) !== var_core_value_sig697A || ((var_core_value_sig64D5 = var_core_value_sig0442.getActiveSheet()) == null ? undefined : var_core_value_sig64D5.getSheetId()) !== var_core_value_sigDB65) return var_core_value_sig9678;
+  let {
+    left: var_core_value_sig567C,
+    top: var_core_value_sig825F,
+    right: var_core_value_sig546D,
+    bottom: var_core_value_sig8078
+  } = var_core_value_sig75FC.viewBound;
+  return ![var_core_value_sig567C, var_core_value_sig825F, var_core_value_sig546D, var_core_value_sig8078].every(Number.isFinite) || var_core_value_sig546D <= var_core_value_sig567C || var_core_value_sig8078 <= var_core_value_sig825F ? var_core_value_sig9678 : {
+    x: Math.max(0, Math.round(var_core_value_sig567C + (var_core_value_sig546D - var_core_value_sig567C - var_core_value_sig045E) / 2)),
+    y: Math.max(0, Math.round(var_core_value_sig825F + (var_core_value_sig8078 - var_core_value_sig825F - var_core_value_sig4524) / 2))
+  };
+}
+const nt = {
+  type: t.CommandType["COMMAND"],
+  id: "sheet.command.insert-chart",
+  handler: async (var_core_value_sigDCED, var_core_value_sig2829) => {
+    var var_core_value_sig6EE2, var_core_value_sig4CCC, var_core_value_sig6E47;
+    let {
+        chartType: var_core_value_sigB64D,
+        source: var_core_value_sig2407
+      } = var_core_value_sig2829,
+      var_core_value_sigE4D0 = Ye(var_core_value_sigDCED);
+    if (var_core_value_sigE4D0.length !== 1 && !var_core_value_sigE4D0.includes("" + var_core_value_sigB64D)) return false;
+    let var_core_value_sigD5F1 = var_core_value_sigDCED.get(t.IUniverInstanceService),
+      var_core_value_sigBC19 = (0, r.getSheetCommandTarget)(var_core_value_sigD5F1, var_core_value_sig2829);
+    if (!var_core_value_sigBC19) return false;
+    let var_core_value_sig4F3C = var_core_value_sigDCED.get(r.SheetSkeletonService),
+      {
+        unitId: var_core_value_sig8D44,
+        subUnitId: var_core_value_sig1660,
+        workbook: var_core_value_sigEE7B
+      } = var_core_value_sigBC19,
+      var_core_value_sig44DF = var_core_value_sig4F3C.ensureSkeleton(var_core_value_sig8D44, var_core_value_sig1660);
+    if (!var_core_value_sig44DF) return false;
+    let var_core_value_sig7E48 = var_core_value_sigDCED.get(t.ICommandService),
+      var_core_value_sig7B9E = var_core_value_sigDCED.get(t.IUndoRedoService),
+      var_core_value_sig5C3B = var_core_value_sigDCED.get(r.SheetInterceptorService),
+      var_core_value_sig4002 = var_core_value_sigDCED.get(n.ISheetDrawingService),
+      var_core_value_sig4153 = var_core_value_sigDCED.get(e.ChartThemeService),
+      var_core_value_sig2825 = var_core_value_sigDCED.get(U),
+      var_core_value_sig5FD0 = var_core_value_sig2829.chartId || (0, t.generateRandomId)(),
+      var_core_value_sigA7E3;
+    try {
+      var var_core_value_sigA784;
+      var_core_value_sigA7E3 = ((var_core_value_sigA784 = var_core_value_sig2829.config) == null ? undefined : var_core_value_sigA784.context) === undefined ? undefined : (0, e.canonicalizeChartContext)(var_core_value_sig2829.config["context"]);
+    } catch {
+      return false;
+    }
+    let var_core_value_sig4406 = var_core_value_sig2825.inferInitialChartSource(var_core_value_sig2407, ((var_core_value_sig6EE2 = var_core_value_sig2829.config) == null ? undefined : var_core_value_sig6EE2.chartType) ?? var_core_value_sigB64D, var_core_value_sigA7E3),
+      var_core_value_sig6806 = m(var_core_value_sig4406.dataSet, ((var_core_value_sig4CCC = var_core_value_sig2829.config) == null ? undefined : var_core_value_sig4CCC.chartType) ?? var_core_value_sigB64D, var_core_value_sig4406.mapping, var_core_value_sigA7E3),
+      var_core_value_sigD4AA = var_core_value_sig2407;
+    if (!Array.isArray(var_core_value_sig2407)) {
+      let {
+        headerRow: var_core_value_sig58AA,
+        isRowDirection: var_core_value_sig84C4,
+        ...var_core_value_sigB6F7
+      } = var_core_value_sig2407;
+      var_core_value_sigD4AA = {
+        ...var_core_value_sigB6F7,
+        isRowDirection: var_core_value_sig4406.mapping["isRowDirection"],
+        headerRow: var_core_value_sig4406.mapping["headerRow"]
+      };
+    }
+    let var_core_value_sigDC41 = {
+        unitId: var_core_value_sig8D44,
+        subUnitId: var_core_value_sig1660,
+        chartId: var_core_value_sig5FD0,
+        chartType: var_core_value_sigB64D,
+        context: var_core_value_sig6806,
+        ...Qe(var_core_value_sigD4AA)
+      },
+      var_core_value_sigFB47 = (var_core_value_sig6E47 = var_core_value_sigDCED.get(t.IConfigService).getConfig("sheets-chart.config")) == null ? undefined : var_core_value_sig6E47.defaultChartSize,
+      var_core_value_sig9B3D1 = var_core_value_sig2829.width ?? (var_core_value_sigFB47 == null ? undefined : var_core_value_sigFB47.width) ?? e.defaultChartWidth,
+      var_core_value_sigC1CF = var_core_value_sig2829.height ?? (var_core_value_sigFB47 == null ? undefined : var_core_value_sigFB47.height) ?? e.defaultChartHeight,
+      {
+        x: var_core_value_sigEE12,
+        y: var_core_value_sigD70C
+      } = var_core_value_sig2829.position ?? tt(var_core_value_sigDCED, var_core_value_sigD5F1, var_core_value_sigEE7B, var_core_value_sig8D44, var_core_value_sig1660, var_core_value_sig9B3D1, var_core_value_sigC1CF),
+      var_core_value_sigF047 = {
+        from: var_core_value_sig44DF.getCellIndexAndOffsetByPosition(var_core_value_sigEE12, var_core_value_sigD70C),
+        to: var_core_value_sig44DF.getCellIndexAndOffsetByPosition(var_core_value_sigEE12 + var_core_value_sig9B3D1, var_core_value_sigD70C + var_core_value_sigC1CF)
+      },
+      var_core_value_sigC2F9 = var_core_value_sig2829.theme ? var_core_value_sig4153.getTheme(var_core_value_sig2829.theme) : var_core_value_sig4153.getDefaultTheme(),
+      var_core_value_sig1F51 = et(var_core_value_sig2829),
+      var_core_value_sig29F5 = var_core_value_sig2829.borderColor || var_core_value_sigC2F9.theme["borderColor"],
+      var_core_value_sig5A51 = {
+        unitId: var_core_value_sig8D44,
+        subUnitId: var_core_value_sig1660,
+        drawingId: var_core_value_sig5FD0,
+        drawingType: t.DrawingTypeEnum["DRAWING_CHART"],
+        componentKey: "SheetsChartComponent",
+        sheetTransform: var_core_value_sigF047,
+        transform: {
+          left: var_core_value_sigEE12,
+          top: var_core_value_sigD70C,
+          width: var_core_value_sig9B3D1,
+          height: var_core_value_sigC1CF
+        },
+        axisAlignSheetTransform: var_core_value_sigF047,
+        data: {
+          border: var_core_value_sig29F5,
+          background: var_core_value_sig1F51
+        },
+        allowTransform: true
+      },
+      {
+        undo: var_core_value_sigF1D1,
+        redo: var_core_value_sig370E,
+        objects: var_core_value_sigDE14
+      } = var_core_value_sig4002.getBatchAddOp([var_core_value_sig5A51]),
+      var_core_value_sig02CB = var_core_value_sig5C3B.onCommandExecute({
+        id: n.InsertSheetDrawingCommand["id"],
+        params: {
+          unitId: var_core_value_sig8D44,
+          drawings: [var_core_value_sig5A51]
+        }
+      }),
+      var_core_value_sig6CBB = [...(var_core_value_sig02CB.preRedos ?? []), {
+        id: n.SetDrawingApplyMutation["id"],
+        params: {
+          unitId: var_core_value_sig8D44,
+          subUnitId: var_core_value_sig1660,
+          op: var_core_value_sig370E,
+          objects: var_core_value_sigDE14,
+          type: n.DrawingApplyType["INSERT"]
+        }
+      }, {
+        id: n.ClearSheetDrawingTransformerOperation["id"],
+        params: [var_core_value_sig8D44]
+      }, ...var_core_value_sig02CB.redos, {
+        id: Z.id,
+        params: var_core_value_sigDC41
+      }],
+      var_core_value_sig68DA = [{
+        id: Q.id,
+        params: {
+          unitId: var_core_value_sig8D44,
+          subUnitId: var_core_value_sig1660,
+          chartId: var_core_value_sig5FD0
+        }
+      }, ...(var_core_value_sig02CB.preUndos ?? []), {
+        id: n.SetDrawingApplyMutation["id"],
+        params: {
+          unitId: var_core_value_sig8D44,
+          subUnitId: var_core_value_sig1660,
+          op: var_core_value_sigF1D1,
+          objects: var_core_value_sigDE14,
+          type: n.DrawingApplyType["REMOVE"]
+        }
+      }, {
+        id: n.ClearSheetDrawingTransformerOperation["id"],
+        params: [var_core_value_sig8D44]
+      }, ...var_core_value_sig02CB.undos];
+    if (var_core_value_sig2829.config) {
+      let {
+          unitId: var_core_value_sigB495,
+          chartModelId: var_core_value_sig70D0,
+          chartType: var_core_value_sig2A8A,
+          style: var_core_value_sig3782,
+          dataAggregation: var_core_value_sigD22E
+        } = var_core_value_sig2829.config,
+        var_core_value_sig3455 = {
+          unitId: var_core_value_sigB495,
+          chartModelId: var_core_value_sig70D0
+        };
+      var_core_value_sig2A8A !== undefined && (var_core_value_sig3455.chartType = var_core_value_sig2A8A), var_core_value_sig3782 !== undefined && (var_core_value_sig3455.style = var_core_value_sig3782), var_core_value_sigD22E !== undefined && (var_core_value_sig3455.dataAggregation = var_core_value_sigD22E), (var_core_value_sig2A8A !== undefined || var_core_value_sig3782 !== undefined || var_core_value_sigD22E !== undefined) && var_core_value_sig6CBB.push({
+        id: W.id,
+        params: var_core_value_sig3455
+      });
+    }
+    return (0, t.sequenceExecute)(var_core_value_sig6CBB, var_core_value_sig7E48).result ? (var_core_value_sig7B9E.pushUndoRedo({
+      unitID: var_core_value_sig8D44,
+      undoMutations: var_core_value_sig68DA,
+      redoMutations: var_core_value_sig6CBB
+    }), true) : false;
+  }
+};
+var rt = "@univerjs-pro/sheets-chart",
+  it = "1.0.0-insiders.20260907-70fc579";
+let at = class extends t.Disposable {
+  constructor(var_core_value_sig5CEF, var_core_value_sig43D5, var_core_value_sig1395, var_core_value_sig9FA0) {
+    super(), this._commandService = var_core_value_sig5CEF, this._sheetInterceptorService = var_core_value_sig43D5, this._chartModelService = var_core_value_sig1395, this._sheetsChartService = var_core_value_sig9FA0, this._initCommands(), this._initCommandInterceptor();
+  }
+  _initCommands() {
+    [nt, K, ge, Z, Q, fe, W, q].forEach(var_core_value_sig08BA => this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sig08BA)));
+  }
+  _initCommandInterceptor() {
+    this.disposeWithMe(this._sheetInterceptorService["interceptCommand"]({
+      getMutations: var_core_value_sigDBB5 => {
+        if (var_core_value_sigDBB5.id === n.RemoveSheetDrawingCommand["id"]) {
+          let {
+              drawings: var_core_value_sig50AF
+            } = var_core_value_sigDBB5.params,
+            var_core_value_sigA942 = var_core_value_sig50AF.filter(var_core_value_sig186C => var_core_value_sig186C.drawingType === t.DrawingTypeEnum["DRAWING_CHART"]);
+          if (var_core_value_sigA942.length === 0) return {
+            preRedos: [],
+            redos: [],
+            preUndos: [],
+            undos: []
+          };
+          let var_core_value_sigA621 = [],
+            var_core_value_sigBBFF = [];
+          return var_core_value_sigA942.forEach(var_core_value_sigD955 => {
+            let {
+                unitId: var_core_value_sig48BD,
+                subUnitId: var_core_value_sig429F,
+                drawingId: var_core_value_sigF62A
+              } = var_core_value_sigD955,
+              var_core_value_sig8178 = this._chartModelService["getChartModel"](var_core_value_sigF62A);
+            if (!var_core_value_sig8178) return;
+            let var_core_value_sigE9ED = this._sheetsChartService["getChartSourceSpec"](var_core_value_sigF62A);
+            if (!var_core_value_sigE9ED) throw TypeError("Fail to get data source range info, get: " + var_core_value_sigE9ED);
+            var_core_value_sigA621.push({
+              id: Q.id,
+              params: {
+                unitId: var_core_value_sig48BD,
+                subUnitId: var_core_value_sig429F,
+                chartId: var_core_value_sigF62A
+              }
+            });
+            let {
+                chartType: var_core_value_sigB577,
+                context: var_core_value_sig9572,
+                style: var_core_value_sigD873,
+                dataAggregation: var_core_value_sigA12B
+              } = var_core_value_sig8178.serialize(),
+              var_core_value_sigF230 = {
+                unitId: var_core_value_sig48BD,
+                subUnitId: var_core_value_sig429F,
+                chartId: var_core_value_sigF62A,
+                chartType: var_core_value_sigB577,
+                ...Qe(var_core_value_sigE9ED),
+                context: var_core_value_sig9572,
+                style: var_core_value_sigD873,
+                dataAggregation: var_core_value_sigA12B
+              };
+            var_core_value_sigBBFF.push({
+              id: Z.id,
+              params: var_core_value_sigF230
+            });
+          }), {
+            preRedos: var_core_value_sigA621,
+            redos: [],
+            preUndos: [],
+            undos: var_core_value_sigBBFF
+          };
+        }
+        return {
+          preRedos: [],
+          redos: [],
+          preUndos: [],
+          undos: []
+        };
+      }
+    }));
+  }
+};
+at = P([N(0, t.ICommandService), N(1, (0, t.Inject)(r.SheetInterceptorService)), N(2, (0, t.Inject)(F)), N(3, (0, t.Inject)(U))], at);
+const ot = "SHEET_CHART_PLUGIN";
+let $ = class extends t.Plugin {
+  constructor(var_core_value_sig055E = Ze, var_core_value_sig7C77, var_core_value_sig9578) {
+    super(), this._config = var_core_value_sig055E, this._injector = var_core_value_sig7C77, this._configService = var_core_value_sig9578;
+    let {
+      ...var_core_value_sigA2D3
+    } = (0, t.merge)({}, Ze, this._config);
+    this._configService["setConfig"](Xe, var_core_value_sigA2D3);
+  }
+  onStarting() {
+    let var_core_value_sigC218 = this._injector;
+    [[F], [V], [H], [U], [at]].forEach(var_core_value_sigCFAC => var_core_value_sigC218.add(var_core_value_sigCFAC)), (0, t.touchDependencies)(var_core_value_sigC218, [[F], [U], [at]]);
+  }
+};
+w($, "type", t.UniverInstanceType["UNIVER_SHEET"]), w($, "pluginName", ot), w($, "packageName", rt), w($, "version", it), $ = P([(0, t.DependentOn)(e.UniverChartPlugin, s.UniverLicensePlugin, r.UniverSheetsPlugin), N(1, (0, t.Inject)(t.Injector)), N(2, t.IConfigService)], $), exports.ChartDiagnosticSeverity = ye, Object.defineProperty(exports, "ChartModelService", {
+  enumerable: true,
+  get: function () {
+    return F;
+  }
+}), exports.ChartSourceKind = ve, exports.ChartSourceOrientation = _e, exports.ChartUpdateConfigCommand = K, exports.ChartUpdateConfigMutation = fe, exports.ChartUpdateSourceCommand = ge, exports.ChartUpdateSourceConfigMutation = q, exports.InsertChartCommand = nt, exports.InsertSheetsChartMutation = Z, exports.RemoveSheetsChartMutation = Q, exports.ReplaceSheetChartConfig = G, exports.SHEETS_CHART_PLUGIN_CONFIG_KEY = Xe, exports.SHEETS_CHART_PLUGIN_NAME = ot, exports.SheetChartConfigAdapter = Ue, Object.defineProperty(exports, "SheetsChartService", {
+  enumerable: true,
+  get: function () {
+    return U;
+  }
+}), Object.defineProperty(exports, "UniverSheetsChartPlugin", {
+  enumerable: true,
+  get: function () {
+    return $;
+  }
+}), exports.getAllowedChartTypes = Ye, exports.resolveInitialChartPosition = Se, exports.resolveSourceSeries = Ae, exports.resolveSourceSpec = De, exports.toInsertChartMutationSource = Qe;

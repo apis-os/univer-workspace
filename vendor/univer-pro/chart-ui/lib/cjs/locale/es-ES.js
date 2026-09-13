@@ -3,19 +3,21 @@ const e = {
     dataSource: {
       inlineMode: "En línea",
       referencedMode: "Referenciada",
-      sourceType: "Tipo de origen",
+      sourceType: "Tipo de origen"
     },
     editor: {
       defaultColor: "Color predeterminado",
-      fontSize: "Tamaño\x20de\x20fuente",
+      fontSize: "Tamaño\x20de\x20fuente"
     },
-    setup: { stack: "Apilar", percentStacked: "Apilar\x20porcentaje" },
+    setup: {
+      stack: "Apilar",
+      percentStacked: "Apilar\x20porcentaje"
+    },
     chartTypes: {
       line: "Gráfico\x20de\x20líneas",
       column: "Gráfico de columnas",
       columnStacked: "Apilar · Gráfico de columnas",
-      columnPercentStacked:
-        "Apilar\x20porcentaje\x20·\x20Gráfico\x20de\x20columnas",
+      columnPercentStacked: "Apilar\x20porcentaje\x20·\x20Gráfico\x20de\x20columnas",
       bar: "Gráfico de barras",
       barStacked: "Gráfico de barras apiladas",
       barPercentStacked: "Gráfico de barras apiladas porcentual",
@@ -43,7 +45,7 @@ const e = {
       treemap: "Mapa de árbol",
       sunburst: "Diagrama de rayos solares",
       gauge: "Gráfico de indicador",
-      chord: "Diagrama\x20de\x20cuerdas",
+      chord: "Diagrama\x20de\x20cuerdas"
     },
     section: {
       waterfall: "Gráfico\x20de\x20cascada",
@@ -62,7 +64,7 @@ const e = {
       treemap: "Gráfico de mapa de árbol",
       sunburst: "gráfico\x20de\x20rayos\x20solares",
       gauge: "Tabla\x20de\x20calibres",
-      chord: "tabla de acordes",
+      chord: "tabla de acordes"
     },
     presentation: {
       backgroundColor: "Color de fondo",
@@ -77,7 +79,7 @@ const e = {
       wrap: "Leyenda envolvente",
       selectMode: "Modo de selección",
       visualMapType: "mapa visual",
-      align: "Alineación",
+      align: "Alineación"
     },
     numberFormat: {
       source: "Formato\x20fuente",
@@ -89,21 +91,16 @@ const e = {
       accountingType: "Contabilidad",
       thousandsType: "Percentil milésimo",
       formatTypes: "Tipos de formato",
-      generalDesc:
-        "El\x20formato\x20general\x20no\x20contiene\x20ningún\x20formato\x20de\x20número\x20específico.",
-      accountingDesc:
-        "El formato de número contable alinea los símbolos de moneda y los puntos decimales en una columna.",
-      currencyDesc:
-        "El formato de moneda se utiliza para valores monetarios generales, el formato contable alinea los puntos decimales en una columna de valores.",
-      dateDesc:
-        "El\x20formato\x20de\x20fecha\x20muestra\x20los\x20números\x20de\x20serie\x20de\x20fecha\x20y\x20hora\x20como\x20valores\x20de\x20fecha.",
-      thousandsDesc:
-        "El\x20formato\x20de\x20percentil\x20milésimo\x20se\x20utiliza\x20para\x20números\x20generales,\x20los\x20formatos\x20de\x20moneda\x20y\x20contable\x20proporcionan\x20formatos\x20especializados\x20para\x20valores\x20monetarios.",
+      generalDesc: "El\x20formato\x20general\x20no\x20contiene\x20ningún\x20formato\x20de\x20número\x20específico.",
+      accountingDesc: "El formato de número contable alinea los símbolos de moneda y los puntos decimales en una columna.",
+      currencyDesc: "El formato de moneda se utiliza para valores monetarios generales, el formato contable alinea los puntos decimales en una columna de valores.",
+      dateDesc: "El\x20formato\x20de\x20fecha\x20muestra\x20los\x20números\x20de\x20serie\x20de\x20fecha\x20y\x20hora\x20como\x20valores\x20de\x20fecha.",
+      thousandsDesc: "El\x20formato\x20de\x20percentil\x20milésimo\x20se\x20utiliza\x20para\x20números\x20generales,\x20los\x20formatos\x20de\x20moneda\x20y\x20contable\x20proporcionan\x20formatos\x20especializados\x20para\x20valores\x20monetarios.",
       decimalPlaces: "Decimales",
       currencyTypes: "Tipos de moneda",
       negativeNumberTypes: "Tipos\x20de\x20números\x20negativos",
       dateTypes: "Tipos\x20de\x20fecha",
-      setFormat: "Establecer formato de etiqueta",
+      setFormat: "Establecer formato de etiqueta"
     },
     series: {
       rightAxis: "Eje derecho",
@@ -126,7 +123,7 @@ const e = {
       emptyRect: "Rectángulo vacío",
       emptyRoundRect: "Rectángulo redondeado vacío",
       emptyPin: "Marcador vacío",
-      emptyArrow: "Flecha\x20vacía",
+      emptyArrow: "Flecha\x20vacía"
     },
     lineAndArea: {
       lineStyle: "Estilo\x20de\x20línea",
@@ -136,7 +133,7 @@ const e = {
       invalidValues: "Valores\x20no\x20válidos",
       breakLine: "Línea de ruptura",
       connect: "Conectar puntos de datos",
-      zero: "Tratar como cero",
+      zero: "Tratar como cero"
     },
     axis: {
       useDateAxis: "Tratar etiquetas como fechas",
@@ -152,13 +149,13 @@ const e = {
       tickLength: "longitud de garrapata",
       tickWidth: "Ancho\x20de\x20marca",
       tickColor: "color\x20de\x20marca",
-      tickPosition: "Posición de la marca",
+      tickPosition: "Posición de la marca"
     },
     indicator: {
       lineColor: "Color\x20de\x20la\x20línea\x20del\x20indicador",
       lineType: "Tipo\x20de\x20línea\x20indicadora",
       labelBackground: "Fondo de la etiqueta",
-      labelText: "Color del texto de la etiqueta",
+      labelText: "Color del texto de la etiqueta"
     },
     trendline: {
       add: "Agregar línea de tendencia",
@@ -175,21 +172,23 @@ const e = {
       order: "Orden",
       period: "Periodo",
       formulaColor: "Color\x20de\x20fórmula",
-      r2Color: "color R²",
+      r2Color: "color R²"
     },
-    pareto: { includeZeroValues: "Incluir valores cero" },
+    pareto: {
+      includeZeroValues: "Incluir valores cero"
+    },
     plotArea: {
       label: "Área de trazado",
       manual: "Manual",
       left: "Izquierda (%)",
       top: "Superior (%)",
       width: "Ancho (%)",
-      height: "Alto (%)",
+      height: "Alto (%)"
     },
     bar: {
       layout: "Espaciado de barras",
       gapWidth: "Ancho del intervalo (%)",
-      overlap: "Superposición\x20de\x20series\x20(%)",
+      overlap: "Superposición\x20de\x20series\x20(%)"
     },
     pie: {
       mode: "Forma del gráfico",
@@ -222,18 +221,21 @@ const e = {
       paddingAngle: "Espaciado\x20de\x20cortes",
       halfPie: "Semicírculo",
       rosePie: "pastel de rosas",
-      labelLine: "Línea de etiqueta",
+      labelLine: "Línea de etiqueta"
     },
     radar: {
       shape: "Forma\x20de\x20radar",
       polygon: "Polígono",
-      fill: "Relleno de área",
+      fill: "Relleno de área"
     },
     funnel: {
       gap: "Brecha\x20de\x20artículo",
-      absoluteValues: "Usar valores absolutos",
+      absoluteValues: "Usar valores absolutos"
     },
-    heatmap: { unit: "unidad de valor", labels: "Etiquetas de celda" },
+    heatmap: {
+      unit: "unidad de valor",
+      labels: "Etiquetas de celda"
+    },
     relation: {
       nodes: "Nodos",
       interaction: "Interacción",
@@ -244,7 +246,7 @@ const e = {
       valueSize: "Tamaño de nodos por valor",
       rotateLabels: "Rotar\x20etiquetas",
       gravity: "gravedad",
-      repulsion: "Repulsión",
+      repulsion: "Repulsión"
     },
     wordCloud: {
       maskImage: "ID de imagen de máscara",
@@ -255,7 +257,7 @@ const e = {
       heart: "corazón",
       "triangle-forward": "Triángulo\x20delantero",
       pentagon: "Pentágono",
-      star: "estrella",
+      star: "estrella"
     },
     waterfall: {
       styleTarget: "Objetivo de estilo",
@@ -265,7 +267,7 @@ const e = {
       arrangement: "cascada",
       subtotal: "Subtotal",
       includeSubtotal: "Usar\x20subtotal",
-      connector: "Línea conectora",
+      connector: "Línea conectora"
     },
     candlestick: {
       candle: "Vela",
@@ -286,9 +288,8 @@ const e = {
       wickOpacity: "Opacidad de la mecha",
       candleWidth: "Ancho de vela",
       hollow: "vela\x20hueca",
-      columnsError:
-        "Los datos del gráfico de velas requieren las columnas Categoría, Apertura, Máximo, Mínimo y Cierre.",
-      series: "Serie OHLC",
+      columnsError: "Los datos del gráfico de velas requieren las columnas Categoría, Apertura, Máximo, Mínimo y Cierre.",
+      series: "Serie OHLC"
     },
     histogram: {
       binGap: "Espacio en el contenedor",
@@ -299,7 +300,7 @@ const e = {
       binWidth: "Ancho\x20del\x20contenedor",
       underflow: "Umbral de desbordamiento inferior",
       overflow: "Umbral de desbordamiento",
-      frequency: "Frecuencia",
+      frequency: "Frecuencia"
     },
     treemap: {
       parentLabelLayout: "Diseño de etiqueta principal",
@@ -307,8 +308,7 @@ const e = {
       overlapping: "superpuestas",
       leafLabel: "Etiquetas\x20de\x20hojas",
       hierarchy: "Campos de jerarquía",
-      diagnostic:
-        "El mapa de árbol requiere al menos un campo de jerarquía y un campo de valor numérico.",
+      diagnostic: "El mapa de árbol requiere al menos un campo de jerarquía y un campo de valor numérico."
     },
     sunburst: {
       hierarchy: "Jerarquía",
@@ -318,8 +318,7 @@ const e = {
       removeHierarchy: "Eliminar campo de jerarquía",
       centerLabel: "Total central",
       labelFormat: "Estilo\x20de\x20etiqueta",
-      diagnostic:
-        "El\x20gráfico\x20radial\x20jerárquico\x20requiere\x20al\x20menos\x20un\x20campo\x20de\x20jerarquía\x20y\x20un\x20campo\x20de\x20valor\x20numérico.",
+      diagnostic: "El\x20gráfico\x20radial\x20jerárquico\x20requiere\x20al\x20menos\x20un\x20campo\x20de\x20jerarquía\x20y\x20un\x20campo\x20de\x20valor\x20numérico."
     },
     gauge: {
       scale: "Escala",
@@ -348,12 +347,9 @@ const e = {
       customized: "Personalizado",
       axisLabelNumberFormat: "Formato numérico de las etiquetas del eje",
       detailNumberFormat: "Formato de número de detalle",
-      emptyDiagnostic:
-        "El gráfico de indicador requiere al menos un valor numérico finito.",
-      mappingDiagnostic:
-        "El gráfico de indicador requiere un campo de etiqueta y exactamente un campo de valor.",
-      configDiagnostic:
-        "La configuración del gráfico de indicador no es válida. Compruebe la escala, los intervalos, las proporciones y los tamaños.",
+      emptyDiagnostic: "El gráfico de indicador requiere al menos un valor numérico finito.",
+      mappingDiagnostic: "El gráfico de indicador requiere un campo de etiqueta y exactamente un campo de valor.",
+      configDiagnostic: "La configuración del gráfico de indicador no es válida. Compruebe la escala, los intervalos, las proporciones y los tamaños."
     },
     chord: {
       source: "Fuente",
@@ -375,13 +371,10 @@ const e = {
       gradient: "Degradado",
       adjacency: "Nodos adyacentes",
       self: "Nodo actual",
-      emptyDiagnostic:
-        "El diagrama de cuerdas requiere al menos una relación con peso positivo entre dos nodos distintos.",
-      mappingDiagnostic:
-        "El diagrama de cuerdas requiere campos de origen y destino distintos y, opcionalmente, un campo de valor diferente.",
-      configDiagnostic:
-        "La configuración del diagrama de cuerdas no es válida. Compruebe los ángulos, los radios, la opacidad y los tamaños.",
-      associatedValue: "Valor asociado",
+      emptyDiagnostic: "El diagrama de cuerdas requiere al menos una relación con peso positivo entre dos nodos distintos.",
+      mappingDiagnostic: "El diagrama de cuerdas requiere campos de origen y destino distintos y, opcionalmente, un campo de valor diferente.",
+      configDiagnostic: "La configuración del diagrama de cuerdas no es válida. Compruebe los ángulos, los radios, la opacidad y los tamaños.",
+      associatedValue: "Valor asociado"
     },
     common: {
       category: "Categoría",
@@ -432,16 +425,27 @@ const e = {
         right: "Derecha",
         bottom: "Abajo",
         left: "Izquierda",
-        hide: "Ocultar",
+        hide: "Ocultar"
       },
-      axisAlign: { start: "Inicio", center: "Centro", end: "Fin" },
-      textAlign: { left: "Izquierda", center: "Centro", right: "Derecha" },
+      axisAlign: {
+        start: "Inicio",
+        center: "Centro",
+        end: "Fin"
+      },
+      textAlign: {
+        left: "Izquierda",
+        center: "Centro",
+        right: "Derecha"
+      },
       legendSelectMode: {
         single: "Único",
         multiple: "Múltiple",
-        disabled: "Desactivado",
+        disabled: "Desactivado"
       },
-      visualMapType: { continuous: "Continuo", piecewise: "Por tramos" },
+      visualMapType: {
+        continuous: "Continuo",
+        piecewise: "Por tramos"
+      },
       default: "Predeterminado",
       reset: "Reiniciar",
       color: "Color",
@@ -487,13 +491,12 @@ const e = {
       cancel: "Cancelar",
       insert: "Insertar",
       apply: "Aplicar",
-      duplicate: "Duplicar",
+      duplicate: "Duplicar"
     },
     inlineTable: {
-      pasteHint:
-        "Pegue\x20una\x20tabla\x20de\x20Hojas\x20de\x20cálculo,\x20Excel\x20o\x20una\x20página\x20web\x20para\x20reemplazar\x20los\x20datos\x20en\x20línea.",
+      pasteHint: "Pegue\x20una\x20tabla\x20de\x20Hojas\x20de\x20cálculo,\x20Excel\x20o\x20una\x20página\x20web\x20para\x20reemplazar\x20los\x20datos\x20en\x20línea.",
       addRow: "Agregar fila",
-      addColumn: "Agregar columna",
+      addColumn: "Agregar columna"
     },
     floatMenu: {
       menuTitle: {
@@ -502,7 +505,7 @@ const e = {
         gridline: "Línea de cuadrícula",
         tick: "Marca\x20de\x20graduación",
         mark: "marca",
-        dataLabel: "Etiqueta de datos",
+        dataLabel: "Etiqueta de datos"
       },
       field: {
         position: "Posición",
@@ -511,11 +514,17 @@ const e = {
         map: "mapa",
         rotate: "girar",
         labelText: "Texto de etiqueta",
-        titleText: "Texto\x20del\x20título",
+        titleText: "Texto\x20del\x20título"
       },
-      action: { more: "Más" },
-      control: { labels: "Etiquetas", line: "Línea", reverse: "Invertir" },
-    },
-  },
+      action: {
+        more: "Más"
+      },
+      control: {
+        labels: "Etiquetas",
+        line: "Línea",
+        reverse: "Invertir"
+      }
+    }
+  }
 };
 module.exports = e;

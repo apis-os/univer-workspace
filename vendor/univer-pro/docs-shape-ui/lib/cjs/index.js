@@ -1,1 +1,2797 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/shape-editor-ui"),t=require("@univerjs/docs-ui"),n=require("@univerjs/ui"),r=require("@univerjs-pro/docs-shape"),i=require("@univerjs-pro/engine-shape"),a=require("@univerjs-pro/shape-editor"),o=require("@univerjs/core"),s=require("@univerjs/docs"),c=require("@univerjs/docs-drawing"),l=require("@univerjs/engine-render"),u=require("@univerjs/drawing"),d=require("@univerjs/drawing-ui"),f=require("react/jsx-runtime"),p=require("rxjs"),m=require("@univerjs-pro/license"),h=require("@univerjs/docs-drawing-ui"),g=require("@univerjs/icons"),_=require("react");function v(v682,v683){if(v683){if((0,i.isConnectorShape)(v682)&&(v683.startArrow||v683.endArrow))return{ln:{startArrow:v683.startArrow?{type:i.ShapeArrowTypeEnum["Arrow"],size:i.ShapeArrowSizeEnum["Medium"]}:undefined,endArrow:v683.endArrow?{type:i.ShapeArrowTypeEnum["Arrow"],size:i.ShapeArrowSizeEnum["Large"]}:undefined}};if(v682===i.ShapeTypeEnum["Rect"]&&(v683.horizontal||v683.vertical))return(0,a.createShapeTextBoxShapeData)({fill:{fillType:i.ShapeFillEnum["SolidFill"],color:"#3B82F6"},isHorizontal:!!v683.horizontal,stroke:{lineStrokeType:i.ShapeLineTypeEnum["SolidLine"],width:1,color:"#2563EB"}});}}function y(v684,v685){var v686;let v687=v685.segmentId??"",v688=(v686=v684.getSelfOrHeaderFooterModel(v687))==null?undefined:v686.getBody();if(!v688)return null;let v689=v688.paragraphs??[],v690=v689.find(v232=>{let v233=(0,o.getParagraphContentStartOffset)(v688,v232);return v685.startOffset>=v233&&v685.startOffset<=v232.startIndex;})??v689[v689.length-1];return v690?{paragraphId:v690.paragraphId,segmentId:v687,position:r.DocShapeAnchorPosition["OFFSET"],offset:v685.startOffset-(0,o.getParagraphContentStartOffset)(v688,v690)}:null;}function b(v691,v692,v693){var v694,v695;if(!v693)return null;let v696=(v694=v691.get(l.IRenderManagerService).getRenderUnitById(v692))==null?undefined:v694.with(t.DocParagraphMenuService).activeTarget;if(!v696)return null;let v697=v693==="below"?{startOffset:v696.moveRange["endOffset"],endOffset:v696.moveRange["endOffset"]}:v696.menuRange;return{startOffset:v697.startOffset,endOffset:v697.endOffset,collapsed:v697.startOffset===v697.endOffset,segmentId:((v695=v696.paragraph)==null?undefined:v695.segmentId)??""};}const x={type:o.CommandType["COMMAND"],id:"doc.command.menu-insert-shape",handler:async(v698,v699)=>{let v700=v698.get(o.IUniverInstanceService).getCurrentUnitOfType(o.UniverInstanceType["UNIVER_DOC"]);if(!v700)return false;let v701=v698.get(o.ICommandService),v702=v700.getUnitId(),v703=v699.shapeId??(0,o.generateRandomId)(),v704=v699.width??r.DEFAULT_DOC_SHAPE_WIDTH,v705=v699.height??r.DEFAULT_DOC_SHAPE_HEIGHT,v706=v699.shapeData??v(v699.value,v699.enhanceParams),v707=b(v698,v702,v699.paragraphMenuPlacement)??v698.get(s.DocSelectionManagerService).getActiveTextRange();if(!v707)return false;let v708=y(v700,v707);return v708?!!v701.syncExecuteCommand(r.InsertDocShapeCommand["id"],{unitId:v702,shapeId:v703,shapeType:v699.value,shapeData:v706,transform:{width:v704,height:v705},placement:{wrappingStyle:c.TextWrappingStyle["INLINE"],anchor:v708}}):false;}},S="doc.shape.edit.panel",C="docs-shape-ui.ribbon.shape-format",w="doc.shape.object-list.panel",T=(0,o.createInternalEditorID)("SHAPE_TEXT"),E="doc.shape.text.float-menu",D={id:"doc.operation.open-shape-object-list-panel",type:o.CommandType["COMMAND"],handler:(v709,v710)=>{let v711=v709.get(n.ISidebarService),v712=v709.get(o.LocaleService),v713=v709.get(u.IDrawingManagerService);return(v710==null?undefined:v710.value)==="close"?(v711.close(w),true):(v711.open({id:w,header:{title:v712.t("docs-shape-ui.objectListPanel.title")},children:{label:w},onClose:()=>{v713.focusDrawing(null);},width:360}),true);}},O={type:o.CommandType["OPERATION"],id:"doc.operation.open-doc-shape-format-panel",handler(){return true;}};function k(v714){let v715=v714.get(u.IDrawingManagerService).getFocusDrawings(),v716=v715.length===1?v715[0]:null;if(!v716||v716.drawingType!==o.DrawingTypeEnum["DRAWING_SHAPE"])return null;let v717=v714.get(r.DocsShapeService),v718=v717.getShapeTypeById(v716.unitId,v716.subUnitId,v716.drawingId),v719=v717.getShapeDataById(v716.unitId,v716.subUnitId,v716.drawingId);return v718===undefined||!v719?null:{drawing:v716,shapeData:v719,shapeType:v718};}const A={id:"doc.operation.apply-shape-quick-style",type:o.CommandType["OPERATION"],handler:(v720,v721)=>{let v722=k(v720),v723=(0,a.getShapeQuickStylePreset)((v721==null?undefined:v721.presetId)??(v721==null?undefined:v721.value)??"");if(!v722||!v723||v723.type!==(0,a.getShapeQuickStyleType)(v722.shapeData))return false;let v724=(0,a.applyQuickStyleToShapeData)(v722.shapeData,v723);if(!v724)return false;let{drawing:v725}=v722;return v720.get(o.ICommandService).executeCommand(r.UpdateDocShapeDataCommand["id"],{unitId:v725.unitId,shapeId:v725.drawingId,shapeData:v724,oldShapeJSON:{oldShapeData:v722.shapeData}});}},j={id:"doc.operation.update-shape-type",type:o.CommandType["OPERATION"],handler:(v726,v727)=>{let v728=k(v726),v729=(v727==null?undefined:v727.shapeType)??(v727==null?undefined:v727.value);if(!v728||!v729||(0,i.isConnectorShape)(v728.shapeType)||(0,i.isConnectorShape)(v729))return false;let v730=(0,a.cloneShapeDataForType)(v728.shapeData,v729);if(!v730)return false;let{drawing:v731}=v728;return v726.get(o.ICommandService).executeCommand(r.UpdateDocShapeDataCommand["id"],{unitId:v731.unitId,shapeId:v731.drawingId,shapeType:v729,shapeData:v730,replaceShapeData:true,oldShapeJSON:{oldShapeType:v728.shapeType,oldShapeData:v728.shapeData}});}};function M(v732,v733){return function(v234,v235){v733(v234,v235,v732);};}function N(v734,v735,v736,v737){var v738=arguments.length,v739=v738<3?v735:v737===null?v737=Object.getOwnPropertyDescriptor(v735,v736):v737,v740;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v739=Reflect.decorate(v734,v735,v736,v737);else{for(var v741=v734.length-1;v741>=0;v741--)(v740=v734[v741])&&(v739=(v738<3?v740(v739):v738>3?v740(v735,v736,v739):v740(v735,v736))||v739);}return v738>3&&v739&&Object.defineProperty(v735,v736,v739),v739;}let P=class extends o.Disposable{constructor(v236,v237){super(),this._clipService=v236,this._drawingManagerService=v237,this._registerImageShapeClipDelegate(),this._clipService["setCanUseShapeClip"](true),this.disposeWithMe({dispose:()=>this._clipService["setCanUseShapeClip"](false)});}_registerImageShapeClipDelegate(){let v238=new Map(),v239=this._clipService["registerClipDelegate"]((v82,v83,v84,v85,v86)=>{let v87=v83;if(v87===i.ShapeTypeEnum["None"]||v83==="custom")return false;try{let v21=v238.get(v83);return v21||(v21=new i["ShapeModel"](v87,"clip-"+v83),v238.set(v83,v21)),v21.clearAdjustValue(),v86&&Object.keys(v86).length>0&&v21.setShapeData({adjustValues:v86},true),v21.updateContext({width:v84,height:v85}),v21.buildClipPath(v82,{left:0,top:0,width:v84,height:v85});}catch{return false;}});this.disposeWithMe(v239),this.disposeWithMe({dispose:()=>v238.clear()});}clipByShape(v240,v241,v242,v243,v244){let v245=this._drawingManagerService["getDrawingData"](v240,v241)[v242];!v245||v245.drawingType!==o.DrawingTypeEnum["DRAWING_IMAGE"]||this._drawingManagerService["featurePluginUpdateNotification"]([{...v245,prstGeom:v243,adjustValues:v244}]);}};P=N([M(0,(0,o.Inject)(d.DrawingImageClipService)),M(1,(0,o.Inject)(u.IDrawingManagerService))],P);const F="doc.shape.picker.component",I="doc.image-clip.shape-picker.component";function ee({onShapeClick:v742,excludeGroups:v743}){return(0,f.jsx)(e.ShapePickerPanel,{excludeGroups:v743,onShapeClick:v742,scrollContainer:"parent"});}function L(){let v744=(0,n.useDependency)(u.IDrawingManagerService),v745=(0,n.useDependency)(P);return(0,f.jsx)(e.ShapePickerDropdown,{buttonLabel:"docs-shape-ui.crop.shape",excludeGroups:[e.ShapeGroupEnum["Line"]],onShapeClick:v246=>{let v247=v744.getFocusDrawings().find(v88=>v88.drawingType===o.DrawingTypeEnum["DRAWING_IMAGE"]);if(!v247)return;let{unitId:v248,subUnitId:v249,drawingId:v250}=v247;v745.clipByShape(v248,v249,v250,v246.type);}});}function te(){let v746=(0,n.useDependency)(n.ComponentManager),v747=(0,n.useDependency)(u.IDrawingManagerService),v748=(0,n.useDependency)(o.IUniverInstanceService),v749=v747.getFocusDrawings()[0],v750=v749?v748.getUnitType(v749.unitId):undefined,v751=v750===o.UniverInstanceType["UNIVER_DOC"]?I:v750===o.UniverInstanceType["UNIVER_SHEET"]?"sheet.image-clip.shape-picker.component":undefined,v752=v751?v746.get(v751):undefined;return v752?(0,f.jsx)(v752,{}):null;}function ne({paragraphMenuPlacement:v753}){let v754=(0,n.useDependency)(o.ICommandService);return(0,f.jsx)(ee,{onShapeClick:v251=>{v754.executeCommand(x.id,{paragraphMenuPlacement:v753,value:v251.type,enhanceParams:{endArrow:v251.endArrow,startArrow:v251.startArrow,horizontal:v251.horizontal,vertical:v251.vertical}});}});}function re(v755){return v252=>({id:x.id,type:n.MenuItemType["SELECTOR"],selections:[{label:{name:F,hoverable:false,selectable:false,props:v755?{id:x.id,paragraphMenuPlacement:v755}:{id:x.id}}}],icon:"ShapeIcon",title:"docs-shape-ui.insertShape",tooltip:"docs-shape-ui.insertShape",hidden$:(0,n.getMenuHiddenObservable)(v252,o.UniverInstanceType["UNIVER_DOC"])});}const ie=re(),ae=re("below"),oe=re("target");function se(v756){return{id:D.id,type:n.MenuItemType["BUTTON"],icon:"ObjectLayersIcon",title:"docs-shape-ui.objectListPanel.open",tooltip:"docs-shape-ui.objectListPanel.open",hidden$:(0,n.getMenuHiddenObservable)(v756,o.UniverInstanceType["UNIVER_DOC"])};}function R(v757,v758,v759,v760,v761,v762){let v763={unitId:v758,shapeId:v760,shapeData:v762,oldShapeJSON:v761};return v757.executeCommand(r.UpdateDocShapeDataCommand["id"],v763);}function ce(v764,v765,v766,v767,v768,v769){let v770={unitId:v765,shapeId:v767,shapeData:v769,oldShapeJSON:v768};return v764.executeCommand(r.UpdateDocShapeDataCommand["id"],v770);}const le="docs-shape-ui.shape-format.quick-style-gallery",ue="docs-shape-ui.shape-format.style-ribbon-control",de="docs-shape-ui.shape-format.text-ribbon-control",fe="docs-shape-ui.shape-format.formula-ribbon-control",pe="docs-shape-ui.shape-format.wrapping-style-label",z=[{value:c.TextWrappingStyle["INLINE"],label:"docs-shape-ui.textWrap.inline",icon:"DocsShapeWrapInlineIcon"},{value:c.TextWrappingStyle["WRAP_SQUARE"],label:"docs-shape-ui.textWrap.square",icon:"DocsShapeWrapSquareIcon"},{value:c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"],label:"docs-shape-ui.textWrap.topAndBottom",icon:"DocsShapeWrapTopBottomIcon"},{value:c.TextWrappingStyle["BEHIND_TEXT"],label:"docs-shape-ui.textWrap.behindText",icon:"DocsShapeWrapBehindTextIcon"},{value:c.TextWrappingStyle["IN_FRONT_OF_TEXT"],label:"docs-shape-ui.textWrap.inFrontText",icon:"DocsShapeWrapInFrontOfTextIcon"}];function B(){let v771=(0,n.useDependency)(o.ICommandService),v772=(0,n.useDependency)(u.IDrawingManagerService),v773=(0,n.useDependency)(r.DocsShapeService),v774=()=>{var v253;let v254=v772.getFocusDrawings();if(v254.length!==1||((v253=v254[0])==null?undefined:v253.drawingType)!==o.DrawingTypeEnum["DRAWING_SHAPE"])return null;let{unitId:v255,subUnitId:v256,drawingId:v257}=v254[0],v258=v773.getShapeTypeById(v255,v256,v257),v259=v773.getShapeDataById(v255,v256,v257);return v258===undefined||!v259?null:{unitId:v255,subUnitId:v256,drawingId:v257,shapeType:v258,shapeData:v259};},v775=(0,n.useObservable)(()=>new p.Observable(v89=>{let v90=()=>v89.next(v774()),v91=v772.focus$["subscribe"](v90),v92=v771.onCommandExecuted(v22=>{v22.id===r.UpdateDocShapeDataMutation["id"]&&v90();});return v90(),()=>{v91.unsubscribe(),v92.dispose();};}),v774(),false,[v771,v773,v772]);return{selection:v775,updateShapeData:v260=>{v775&&R(v771,v775.unitId,v775.subUnitId,v775.drawingId,{oldShapeData:v775.shapeData},v260);}};}function me(){let{selection:v776,updateShapeData:v777}=B();return v776?(0,f.jsx)(e.ShapeStyleRibbonControl,{shapeData:v776.shapeData,shapeType:v776.shapeType,onUpdateShapeData:v777}):null;}function he(){let v778=(0,n.useDependency)(o.ICommandService),v779=(0,n.useDependency)(o.LocaleService),{selection:v780}=B();return v780?(0,f.jsx)(e.ShapeQuickStyleGallery,{type:(0,a.getShapeQuickStyleType)(v780.shapeData),ariaLabel:v779.t("docs-shape-ui.quickStyles"),activePresetId:(0,a.resolveActiveShapeQuickStylePresetId)(v780.shapeData),onSelect:v261=>v778.executeCommand(A.id,{presetId:v261})}):null;}function ge(){let{selection:v781,updateShapeData:v782}=B();return v781?(0,f.jsx)(e.ShapeTextRibbonControl,{fontFamilyPopupDataComponent:"docs-shape-format-font-family-menu",shapeData:v781.shapeData,onUpdateShapeData:v782}):null;}function _e(){var v783;let{selection:v784,updateShapeData:v785}=B(),v786=(0,e.useFormulaShapeToolbar)({hostType:o.UniverInstanceType["UNIVER_DOC"],unitId:(v784==null?undefined:v784.unitId)??"",subUnitId:(v784==null?undefined:v784.subUnitId)??"",shapeId:(v784==null?undefined:v784.drawingId)??"",shapeData:v784==null?undefined:v784.shapeData,registerBinding:false,showLabels:true,dropdownSide:"bottom",onUpdateBinding:v262=>v785({formulaBinding:v262})}),v787=((v783=v786.extensionGroups)==null?undefined:v783.flatMap(v263=>v263.actions).filter(v264=>v264.visible!==false))??[];return v784!=null&&v784.shapeData["formulaBinding"]?(0,f.jsx)(e.ShapeFormulaRibbonControl,{actions:v787,panel:v786.panel}):null;}function ve({value:v788}){let v789=(0,n.useDependency)(o.LocaleService),v790=z.find(v265=>v265.value===v788)??z[0];return v790?(0,f.jsx)("span",{children:v789.t(v790.label)}):null;}const ye="docs-shape-ui.ribbon.shape-format.style-control",be="docs-shape-ui.ribbon.shape-format.text-control",xe="docs-shape-ui.ribbon.shape-format.formula-control",Se="docs-shape-ui.ribbon.shape-format.arrange-forward",Ce="docs-shape-ui.ribbon.shape-format.arrange-backward",we="docs-shape-ui.ribbon.shape-format.arrange-front",Te="docs-shape-ui.ribbon.shape-format.arrange-back",Ee="docs-shape-ui.ribbon.shape-format.wrapping-style";function De(v791){let v792=v791.get(o.ICommandService),v793=v791.get(u.IDrawingManagerService),v794=v791.get(r.DocsShapeService);return new p["Observable"](v266=>{let v267=()=>{let v93=V(v791),v94=v93?v794.getShapeDataById(v93.unitId,v93.subUnitId,v93.drawingId):null;v266.next(v94?(0,a.resolveActiveShapeQuickStylePresetId)(v94)??"":"");},v268=v793.focus$["subscribe"](v267),v269=v792.onCommandExecuted(v95=>{v95.id===r.UpdateDocShapeDataMutation["id"]&&v267();});return v267(),()=>{v268.unsubscribe(),v269.dispose();};});}function V(v795){var v796;let v797=v795.get(u.IDrawingManagerService).getFocusDrawings();return v797.length===1&&((v796=v797[0])==null?undefined:v796.drawingType)===o.DrawingTypeEnum["DRAWING_SHAPE"]?v797[0]:null;}function Oe(v798){return(v798==null?undefined:v798.layoutType)===o.PositionedObjectLayoutType["WRAP_NONE"]?v798.behindDoc===o.BooleanNumber["TRUE"]?c.TextWrappingStyle["BEHIND_TEXT"]:c.TextWrappingStyle["IN_FRONT_OF_TEXT"]:(v798==null?undefined:v798.layoutType)===o.PositionedObjectLayoutType["WRAP_SQUARE"]?c.TextWrappingStyle["WRAP_SQUARE"]:(v798==null?undefined:v798.layoutType)===o.PositionedObjectLayoutType["WRAP_TOP_AND_BOTTOM"]?c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"]:c.TextWrappingStyle["INLINE"];}function ke(v799){let v800=v799.get(o.ICommandService),v801=v799.get(u.IDrawingManagerService),v802=v799.get(o.IUniverInstanceService);return new p["Observable"](v270=>{let v271=()=>{var v96;let v97=V(v799),v98=v97?v802.getUnit(v97.unitId,o.UniverInstanceType["UNIVER_DOC"]):undefined;v270.next(Oe(v97?v98==null||(v96=v98.getSnapshot().drawings)==null?undefined:v96[v97.drawingId]:undefined));},v272=v801.focus$["subscribe"](v271),v273=v800.onCommandExecuted(v99=>{v99.id===s.RichTextEditingMutation["id"]&&v271();});return v271(),()=>{v272.unsubscribe(),v273.dispose();};}).pipe((0,p.distinctUntilChanged)());}function H(v803,v804=false){let v805=v803.get(o.ICommandService),v806=v803.get(u.IDrawingManagerService),v807=v803.get(r.DocsShapeService);return new p["Observable"](v274=>{let v275=()=>{let v100=V(v803);if(!v100){v274.next(true);return;}let v101=v807.getShapeDataById(v100.unitId,v100.subUnitId,v100.drawingId);v274.next(!v101||v804&&v101.formulaBinding==null);},v276=v806.focus$["subscribe"](v275),v277=v805.onCommandExecuted(v102=>{v102.id===r.UpdateDocShapeDataMutation["id"]&&v275();});return v275(),()=>{v276.unsubscribe(),v277.dispose();};});}function Ae(v808){let v809=v808.get(u.IDrawingManagerService),v810=v808.get(r.DocsShapeService);return v809.focus$["pipe"]((0,p.startWith)(v809.getFocusDrawings()),(0,p.map)(()=>{let v278=V(v808),v279=v278?v810.getShapeTypeById(v278.unitId,v278.subUnitId,v278.drawingId):undefined;return v279===undefined||(0,i.isConnectorShape)(v279);}));}function je(v811){return{id:A.id,type:n.MenuItemType["SELECTOR"],icon:"PaintIcon",title:"shape-editor-ui.toolbar.quickStyles",tooltip:"shape-editor-ui.toolbar.quickStyles",selections:[{label:{name:le,hoverable:false,selectable:false}}],value$:De(v811),hidden$:H(v811)};}function Me(v812){return{id:j.id,type:n.MenuItemType["SELECTOR"],icon:"ShapeIcon",title:"shape-editor-ui.toolbar.changeShape",tooltip:"shape-editor-ui.toolbar.changeShape",slot:true,selections:[{label:{name:e.SHAPE_CHANGE_PICKER_COMPONENT,hoverable:false,selectable:false}}],hidden$:Ae(v812)};}function Ne(v813,v814,v815=false){return v280=>({id:v813,type:n.MenuItemType["BUTTON"],label:{name:v814,hoverable:false,selectable:false},hidden$:H(v280,v815)});}const Pe=Ne(ye,ue),Fe=Ne(be,de),Ie=Ne(xe,fe,true);function Le(v816){return{id:Ee,type:n.MenuItemType["SELECTOR"],icon:z[0].icon,label:pe,selectionsCommandId:c.UpdateDocDrawingWrappingStyleCommand["id"],selections:z.map(({icon:v281,label:v282,value:v283})=>({value:v283,label:v282,icon:v281,params:()=>{let v103=V(v816);return v103?{unitId:v103.unitId,subUnitId:v103.subUnitId,drawings:[{unitId:v103.unitId,subUnitId:v103.subUnitId,drawingId:v103.drawingId}],wrappingStyle:v283}:undefined;}})),value$:ke(v816),hidden$:H(v816)};}function U(v817,v818,v819,v820){return v284=>({id:v817,commandId:c.SetDocDrawingArrangeCommand["id"],type:n.MenuItemType["BUTTON"],icon:v819,title:v820,tooltip:v820,hidden$:H(v284),params:()=>{let v104=V(v284);return v104?{unitId:v104.unitId,subUnitId:v104.subUnitId,drawingIds:[v104.drawingId],arrangeType:v818}:undefined;}});}const Re=U(Se,o.ArrangeTypeEnum["forward"],"MoveUpIcon","shape-editor-ui.arrange.forward"),ze=U(Ce,o.ArrangeTypeEnum["backward"],"MoveDownIcon","shape-editor-ui.arrange.backward"),Be=U(we,o.ArrangeTypeEnum["front"],"TopmostIcon","shape-editor-ui.arrange.front"),Ve=U(Te,o.ArrangeTypeEnum["back"],"BottomIcon","shape-editor-ui.arrange.back");function He(v821){return{id:O.id,type:n.MenuItemType["BUTTON"],icon:"ShapeFormatSettingIcon",title:"docs-shape-ui.formatShape",tooltip:"docs-shape-ui.formatShape",hidden$:H(v821),params:()=>{let v285=V(v821);return v285?{unitId:v285.unitId,subUnitId:v285.subUnitId,drawingId:v285.drawingId}:undefined;}};}const Ue={[n.MenuManagerPosition["RIBBON"]]:{[C]:{order:100,title:"docs-shape-ui.formatShape",contextual:true,"docs-shape-ui.ribbon.shape-format.quick-styles":{order:0,[A.id]:{order:0,gridLayout:{row:1,column:1,showLabel:true},menuItemFactory:je},[j.id]:{order:1,gridLayout:{row:2,column:1,showLabel:true},menuItemFactory:Me}},"docs-shape-ui.ribbon.shape-format.style":{order:1,[ye]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,width:104},menuItemFactory:Pe}},"docs-shape-ui.ribbon.shape-format.text":{order:2,[be]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,width:344},menuItemFactory:Fe}},"docs-shape-ui.ribbon.shape-format.arrange":{order:3,[Ee]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,columnSpan:2,showLabel:true},menuItemFactory:Le},[Se]:{order:1,gridLayout:{row:1,column:3},menuItemFactory:Re},[Ce]:{order:2,gridLayout:{row:2,column:3},menuItemFactory:ze},[we]:{order:3,gridLayout:{row:1,column:4},menuItemFactory:Be},[Te]:{order:4,gridLayout:{row:2,column:4},menuItemFactory:Ve}},"docs-shape-ui.ribbon.shape-format.formula":{order:4,[xe]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,width:120},menuItemFactory:Ie}},"docs-shape-ui.ribbon.shape-format.advanced":{order:5,[O.id]:{order:0,gridLayout:{row:1,column:1,showLabel:true},menuItemFactory:He},[e.ToggleShapeFloatingToolbarOperation["id"]]:{order:1,gridLayout:{row:2,column:1,showLabel:true},menuItemFactory:e.ShapeFloatingToolbarToggleFactory}}}}},We={[n.RibbonInsertGroup["MEDIA"]]:{[x.id]:{order:4,menuItemFactory:v822=>({...ie(v822),title:undefined})}},[n.RibbonInsertGroup["OTHERS"]]:{[D.id]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,showLabel:true},menuItemFactory:se}},[n.ContextMenuPosition["PARAGRAPH"]]:{[n.ContextMenuGroup["LAYOUT"]]:{[t.INSERT_BELLOW_MENU_ID]:{[x.id]:{replace:true,order:8,menuItemFactory:ae}}},[t.DOC_CONTENT_INSERT_MENU_ID]:{[n.ContextMenuGroup["LAYOUT"]]:{[x.id]:{replace:true,order:8,menuItemFactory:ae}}},[t.EMPTY_PARAGRAPH_MENU_ID]:{[n.ContextMenuGroup["LAYOUT"]]:{[x.id]:{replace:true,order:8,menuItemFactory:oe}}},[t.DOC_PARAGRAPH_T_INSERT_MENU_ID]:{insert:{[x.id]:{replace:true,order:2,menuItemFactory:ie}}},[t.DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID]:{insert:{[x.id+".below"]:{replace:true,order:2,menuItemFactory:ae}}}}};var Ge="@univerjs-pro/docs-shape-ui",Ke="1.0.0-insiders.20260907-70fc579";const qe={type:o.CommandType["OPERATION"],id:"doc.operation.close-doc-shape-format-panel",handler(){return true;}},Je={};function Ye(v823){return v823.trim()||undefined;}function Xe(v824,v825,v826){var v827,v828;return((v827=v824.name)==null?undefined:v827.trim())||((v828=v824.title)==null?undefined:v828.trim())||(0,d.getObjectListPanelTypeName)(v826,(0,e.getDrawingTypeNameKey)(v824.drawingType))+"\x20"+(v825+1);}function Ze(){let v829=(0,n.useDependency)(o.LocaleService),v830=(0,n.useDependency)(o.ICommandService),v831=(0,n.useDependency)(o.IUniverInstanceService),v832=(0,n.useDependency)(c.IDocDrawingService),v833=(0,n.useDependency)(u.IDrawingManagerService),v834=(0,n.useDependency)(l.IRenderManagerService),[,v835]=(0,_.useReducer)(v286=>v286+1,0),v836=v831.getCurrentUnitOfType(o.UniverInstanceType["UNIVER_DOC"]),v837=(v836==null?undefined:v836.getUnitId())??"",v838=v837,v839=(0,n.useObservable)(()=>v833.focus$,v833.getFocusDrawings(),false,[v833]);(0,_.useEffect)(()=>{let v287=v830.onCommandExecuted(()=>v835());return()=>v287.dispose();},[v830]);let v840=(0,_.useMemo)(()=>(0,d.getObjectListPanelLabels)(v829),[v829]),v841=v837?v832.getDrawingData(v837,v838):{},v842=(v837?v832.getDrawingOrder(v837,v838):[]).map(v288=>v841[v288]).filter(v289=>!!v289).reverse(),v843=v842.reduce((v290,v291)=>(v290[(0,d.getObjectListPanelSectionIdForDrawingType)(v291.drawingType)]+=1,v290),{canvas:0,floating:0}),v844={canvas:0,floating:0},v845=v842.map((v292,v293)=>{let v294=(0,d.getObjectListPanelSectionIdForDrawingType)(v292.drawingType),v295=v294===d.OBJECT_LIST_FLOATING_SECTION_ID,v296=v844[v294]++;return{id:v292.drawingId,name:Xe(v292,v293,v829),description:v292.description,visible:v292.hidden!==true,selectable:v292.selectable!==false,sectionId:v294,sectionTitle:v295?v840.sectionFloating:v840.sectionCanvas,capabilities:v295?{arrange:false,reorder:false}:undefined,canMoveForward:!v295&&v296>0,canMoveBackward:!v295&&v296<v843.canvas-1,canReorder:!v295};}),v846=(0,_.useMemo)(()=>(v839??[]).filter(v105=>v105.unitId===v837&&v105.subUnitId===v838).map(v106=>v106.drawingId),[v839,v838,v837]),v847=v846[v846.length-1]??null,v848=v297=>v832.getDrawingByParam({unitId:v837,subUnitId:v838,drawingId:v297})??null,v849=async v298=>{!v837||!v298.length||(await v830.executeCommand(r.UpdateDocDrawingMetadataCommand["id"],{unitId:v837,patches:v298}));},v850=(v299,v300)=>{if(!v837)return;let v301=v300?v846.includes(v299)?v846.filter(v107=>v107!==v299):[...v846,v299]:[v299];v830.syncExecuteCommand(u.SetDrawingSelectedOperation["id"],v301.map(v108=>({unitId:v837,subUnitId:v838,drawingId:v108})));let v302=v301[v301.length-1];v302?(0,e.activateDrawingObject)(v834,{unitId:v837,subUnitId:v838,drawingId:v302}):(0,e.clearActiveDrawingObjects)(v834,v837);},v851=async(v303,v304)=>{await v849(v303.map(v109=>v848(v109)).filter(v110=>!!v110).filter(v111=>v111.hidden!==true!==v304).map(v112=>({drawingId:v112.drawingId,hidden:!v304})));},v852=async v305=>{let v306=v848(v305);v306&&(await v849([{drawingId:v305,selectable:v306.selectable===false&&undefined}]));},v853=async(v307,v308)=>{let v309=v848(v307),v310=Ye(v308);!v309||(v309.name??undefined)===v310&&(v309.title||undefined)===v310||(await v849([{drawingId:v307,name:v310,title:v310}]));},v854=async(v311,v312)=>{let v313=v848(v311),v314=Ye(v312);!v313||(v313.description??undefined)===v314||(await v849([{drawingId:v311,description:v314}]));},v855=async(v315,v316)=>{v837&&(await v830.executeCommand(c.SetDocDrawingArrangeCommand["id"],{unitId:v837,subUnitId:v838,drawingIds:[v315],arrangeType:v316}));};return v837?(0,f.jsx)(d.ObjectListPanelBase,{items:v845,selectedIds:v846,focusedId:v847,labels:v840,onSelect:v850,onSetVisible:v851,onCommitName:v853,onCommitDescription:v854,onMoveForward:async v317=>v855(v317,o.ArrangeTypeEnum["forward"]),onMoveBackward:async v318=>v855(v318,o.ArrangeTypeEnum["backward"]),onToggleSelectable:v852}):(0,f.jsx)("div",{className:"univer-flex\x20univer-size-full\x20univer-items-center\x20univer-justify-center\x20univer-text-sm\x20univer-text-gray-500",children:v840.title});}let W=class{constructor(v319){this._renderManagerService=v319;}updateShapeFillImage(v320,v321){let v322=this._renderManagerService["getRenderUnitById"](v320.unitId),v323=v322==null?undefined:v322.scene;if(!v323)return;let v324=(0,u.getDrawingShapeKeyByDrawingSearch)(v320),v325=v323.getObjectIncludeInGroup(v324);v325==null||v325.setFillImage(v321);}};W=N([M(0,l.IRenderManagerService)],W);function Qe(){let v856=(0,n.useDependency)(u.IDrawingManagerService),v857=(0,n.useObservable)(()=>v856.focus$,v856.getFocusDrawings(),false,[v856]);return v857.length===0?null:(0,f.jsx)("div",{children:(0,f.jsxs)("div",{className:"univer-box-border univer-px-4 univer-text-sm",children:[(0,f.jsx)(d.DrawingCommonPanel,{drawings:v857,hasCropper:false}),(0,f.jsx)(h.DocDrawingTextWrap,{drawings:v857}),(0,f.jsx)(h.DocDrawingPosition,{drawings:v857})]})});}function $e(v858){let{unitId:v859,subUnitId:v860,shapeId:v861}=v858,v862=(0,n.useDependency)(o.ICommandService),v863=(0,n.useDependency)(W);return(0,f.jsx)(e.ShapeEditPanel,{...v858,positionEditor:(0,f.jsx)(Qe,{}),onUpdateShapeData:(v326,v327)=>{R(v862,v859,v860,v861,v326,v327);},onUpdateLineShapeData:(v328,v329)=>{ce(v862,v859,v860,v861,v328,v329);},onUpdateShapeFillImage:v330=>{v863.updateShapeFillImage({unitId:v859,subUnitId:v860,drawingId:v861},v330);}});}const et="doc.shape.floating-toolbar";function tt(v864,v865){var v866;let v867=v864==null||(v866=v864.getSnapshot().drawings)==null?undefined:v866[v865];return v867?v867.layoutType===o.PositionedObjectLayoutType["WRAP_NONE"]?v867.behindDoc===o.BooleanNumber["TRUE"]?c.TextWrappingStyle["BEHIND_TEXT"]:c.TextWrappingStyle["IN_FRONT_OF_TEXT"]:v867.layoutType===o.PositionedObjectLayoutType["WRAP_SQUARE"]?c.TextWrappingStyle["WRAP_SQUARE"]:v867.layoutType===o.PositionedObjectLayoutType["WRAP_TOP_AND_BOTTOM"]?c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"]:c.TextWrappingStyle["INLINE"]:c.TextWrappingStyle["INLINE"];}function nt(v868){let v869=(0,n.useDependency)(e.ShapeFloatingToolbarService),v870=(0,n.useObservable)(()=>v869.visible$,v869.getVisible(),false,[v869]),v871=v868.popup["extraProps"];return v870?(0,f.jsx)(rt,{...v871,canvasElement:v868.popup["canvasElement"]}):null;}function rt(v872){let v873=(0,n.useDependency)(o.ICommandService),v874=(0,n.useDependency)(o.LocaleService),v875=(0,n.useDependency)(r.DocsShapeService),v876=(0,n.useDependency)(o.IUniverInstanceService),{unitId:v877,subUnitId:v878,drawingId:v879,shapeType:v880}=v872,[v881,v882]=(0,_.useState)(v872.shapeData),v883=v876.getUnit(v877,o.UniverInstanceType["UNIVER_DOC"])??undefined,[v884,v885]=(0,_.useState)(()=>tt(v883,v879)),v886=(0,_.useMemo)(()=>(0,e.getTextStyle)(v881),[v881]),v887=(0,_.useMemo)(()=>(0,e.getTextModel)(v881),[v881]);(0,_.useEffect)(()=>{let v331=v873.onCommandExecuted(v113=>{if(v113.id!==r.UpdateDocShapeDataMutation["id"])return;let v114=v875.getShapeDataById(v877,v878,v879);v114&&v882(v114);});return()=>v331.dispose();},[v873,v875,v879,v878,v877]);let v888=v332=>{v882(v115=>({...v115,...v332}));},v889=v333=>{let v334=(0,e.buildShapeTextDataUpdate)(v881,v333);R(v873,v877,v878,v879,{oldShapeData:{shapeText:v881.shapeText}},v334),v888(v334);},v890=v335=>{v885(v335),v873.executeCommand(c.UpdateDocDrawingWrappingStyleCommand["id"],{unitId:v877,subUnitId:v878,drawings:[{unitId:v877,subUnitId:v878,drawingId:v879}],wrappingStyle:v335});},v891=(0,e.useFormulaShapeToolbar)({hostType:o.UniverInstanceType["UNIVER_DOC"],unitId:v877,subUnitId:v878,shapeId:v879,shapeData:v881,onUpdateBinding:v336=>{let v337={formulaBinding:v336};R(v873,v877,v878,v879,{oldShapeData:{formulaBinding:v881.formulaBinding}},v337),v888(v337);}}),v892=[{label:v874.t("docs-shape-ui.textWrap.inline"),value:c.TextWrappingStyle["INLINE"],icon:(0,f.jsx)(g.TextWrapShapeIcon,{})},{label:v874.t("docs-shape-ui.textWrap.square"),value:c.TextWrappingStyle["WRAP_SQUARE"],icon:(0,f.jsx)(g.TextWrapShapeIcon,{})},{label:v874.t("docs-shape-ui.textWrap.topAndBottom"),value:c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"],icon:(0,f.jsx)(g.TextWrapShapeIcon,{})},{label:v874.t("docs-shape-ui.textWrap.behindText"),value:c.TextWrappingStyle["BEHIND_TEXT"],icon:(0,f.jsx)(g.TextWrapShapeIcon,{})},{label:v874.t("docs-shape-ui.textWrap.inFrontText"),value:c.TextWrappingStyle["IN_FRONT_OF_TEXT"],icon:(0,f.jsx)(g.TextWrapShapeIcon,{})}];return(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)(e.ShapeFloatingToolbar,{canvasElement:v872.canvasElement,shapeData:v881,shapeType:v880,textStyle:{ff:i.ShapeDefaultConfig["shapeText"].fontFamily,fs:i.ShapeDefaultConfig["shapeText"].fontSize,cl:{rgb:i.ShapeDefaultConfig["shapeText"].color},...v886},textModel:v887?{ha:v887.ha??o.HorizontalAlign["LEFT"],va:v887.va??o.VerticalAlign["TOP"]}:null,wrappingStyle:v884,wrappingStyleOptions:v892,enableShapeFillReset:true,enableShapeStrokeReset:true,enableTextBackgroundReset:true,defaultFillColor:i.ShapeDefaultConfig["fill"],defaultGradientEndColor:i.ShapeDefaultConfig["gradientEndColor"],defaultStrokeColor:i.ShapeDefaultConfig["stroke"],extensionGroups:v891.extensionGroups,floatingObjectToolbarPosition:n.FloatingObjectToolbarPosition["DOC"],onUpdateShapeData:(v338,v339)=>{R(v873,v877,v878,v879,v338,v339),v339&&v888(v339);},onUpdateText:v889,onUpdateWrappingStyle:v340=>v890(v340),onOpenPanel:()=>{v873.executeCommand(O.id,{unitId:v877,subUnitId:v878,drawingId:v879});},onDelete:()=>{v873.executeCommand(c.RemoveDocDrawingCommand["id"],{unitId:v877,drawings:[{unitId:v877,subUnitId:v878,drawingId:v879}]});}}),v891.panel]});}function it({variant:v893,extend:v894,...v895}){let v896=(0,f.jsx)("rect",{x:"7",y:"5.5",width:"6",height:"9",rx:"1",fill:"currentColor",fillOpacity:"0.14",stroke:"currentColor",strokeWidth:"1.2"});return(0,f.jsxs)("svg",{"aria-hidden":"true",fill:"none",height:"1em",viewBox:"0 0 20 20",width:"1em",...v895,children:[v893==="inline"&&(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)("path",{d:"M2\x203.5h16M2\x2016.5h16M2\x2010h5M13\x2010h5",stroke:"currentColor",strokeLinecap:"round",strokeWidth:"1.2"}),(0,f.jsx)("rect",{x:"8",y:"7",width:"4",height:"6",rx:"0.8",fill:"currentColor",fillOpacity:"0.14",stroke:"currentColor",strokeWidth:"1.2"})]}),v893==="square"&&(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)("path",{d:"M2 3h16M2 7.5h3M15 7.5h3M2 10h3M15 10h3M2 12.5h3M15 12.5h3M2 17h16",stroke:"currentColor",strokeLinecap:"round",strokeWidth:"1.2"}),v896]}),v893==="top-bottom"&&(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)("path",{d:"M2 3h16M2 17h16",stroke:"currentColor",strokeLinecap:"round",strokeWidth:"1.2"}),v896]}),v893==="behind"&&(0,f.jsxs)(f.Fragment,{children:[v896,(0,f.jsx)("path",{d:"M2 3h16M2 7.5h16M2 10h16M2 12.5h16M2 17h16",stroke:"currentColor",strokeLinecap:"round",strokeWidth:"1.2"})]}),v893==="front"&&(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)("path",{d:"M2\x203h16M2\x207.5h16M2\x2010h16M2\x2012.5h16M2\x2017h16",stroke:"currentColor",strokeLinecap:"round",strokeWidth:"1.2"}),(0,f.jsx)("rect",{x:"7",y:"5.5",width:"6",height:"9",rx:"1",fill:"currentColor"})]})]});}const G=v897=>v341=>(0,f.jsx)(it,{...v341,variant:v897}),at={DocsShapeWrapInlineIcon:G("inline"),DocsShapeWrapSquareIcon:G("square"),DocsShapeWrapTopBottomIcon:G("top-bottom"),DocsShapeWrapBehindTextIcon:G("behind"),DocsShapeWrapInFrontOfTextIcon:G("front")};function K(v898){"@babel/helpers - typeof";return K=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v342){return typeof v342;}:function(v343){return v343&&typeof Symbol=="function"&&v343.constructor===Symbol&&v343!==Symbol.prototype?"symbol":typeof v343;},K(v898);}function ot(v899,v900){if(K(v899)!="object"||!v899)return v899;var v901=v899[Symbol.toPrimitive];if(v901!==undefined){var v902=v901.call(v899,v900||"default");if(K(v902)!="object")return v902;throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");}return(v900==="string"?String:Number)(v899);}function st(v903){var v904=ot(v903,"string");return K(v904)=="symbol"?v904:v904+"";}function q(v905,v906,v907){return(v906=st(v906))in v905?Object.defineProperty(v905,v906,{value:v907,enumerable:true,configurable:true,writable:true}):v905[v906]=v907,v905;}let J=class extends o.Disposable{constructor(v344,v345){super(),this._permissionService=v344,this._instanceService=v345,q(this,"_editingParams$",new p["BehaviorSubject"](null)),q(this,"editingParams$",this._editingParams$["asObservable"]()),q(this,"_onSavingEditorData$",new p["BehaviorSubject"](false)),q(this,"onSavingEditorData$",this._onSavingEditorData$["asObservable"]()),this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(()=>{let v116=this.getEditing();v116!=null&&v116.visible&&!this._canEdit(v116)&&this.setEditing(null);}));}dispose(){this._editingParams$["next"](null),this._editingParams$["complete"](),this._onSavingEditorData$["next"](false),this._onSavingEditorData$["complete"](),super.dispose();}setEditing(v346){v346!=null&&v346.visible&&!this._canEdit(v346)||(this._editingParams$["next"](v346),v346??this._onSavingEditorData$["next"](false));}setOnSavingEditorData(v347){this._onSavingEditorData$["next"](v347);}getEditing(){return this._editingParams$["getValue"]();}_canEdit(v348){let v349=this._instanceService["getUnit"](v348.unitId,o.UniverInstanceType["UNIVER_DOC"]);if(!v349)return true;let v350=(0,s.getDocumentDrawingSegmentId)(v349,v348.shapeId);return(0,s.canEditDocumentTargets)(this._permissionService,v348.unitId,[...(0,s.getDocumentEntityParentPermissionObjectIds)(v349,v350,"drawing",v348.shapeId),(0,s.getDocumentEntityPermissionObjectId)(v350,"drawing",v348.shapeId)]);}completeEditing(v351){this.getEditing()&&(this.setOnSavingEditorData(true),requestAnimationFrame(()=>{this.setEditing(null);}));}cancelEditing(){this.getEditing()&&this.setEditing(null);}};J=N([M(0,o.IPermissionService),M(1,o.IUniverInstanceService)],J);const ct=(0,_.memo)(()=>{let v908=(0,n.useDependency)(J),v909=(0,n.useDependency)(r.DocsShapeService),v910=(0,n.useDependency)(u.IDrawingManagerService),v911=(0,n.useDependency)(o.ICommandService);return(0,f.jsx)(e.ShapeTextEditorContainer,{adapter:(0,_.useMemo)(()=>({getShapeModel:(v117,v118,v119)=>v909.getShapeModel(v117,v118,v119),getShapeData:(v120,v121,v122)=>v909.getShapeDataById(v120,v121,v122),getDrawingTransform:(v123,v124,v125)=>{let v126=v910.getDrawingByParam({unitId:v123,subUnitId:v124,drawingId:v125});return v126==null?undefined:v126.transform;},updateShapeText:({unitId:v127,shapeId:v128,shapeText:v129,oldShapeText:v130})=>{v911.executeCommand(r.UpdateDocShapeDataCommand["id"],{unitId:v127,shapeId:v128,shapeData:{shapeText:v129},oldShapeJSON:{oldShapeData:{shapeText:v130}}});},updateHostSize:({unitId:v131,subUnitId:v132,shapeId:v133,width:v134,height:v135})=>{v911.executeCommand(c.UpdateDrawingDocTransformCommand["id"],{unitId:v131,subUnitId:v132,drawings:[{drawingId:v133,key:"size",value:{width:v134,height:v135}}]});},allowHostSizeShrink:({unitId:v136,subUnitId:v137,shapeId:v138})=>(0,e.shouldAllowShapeTextEditorHostSizeShrink)(v909.getShapeDataById(v136,v137,v138))}),[v911,v909,v910]),editingService:v908,editorUnitId:T,positionOptions:(0,_.useMemo)(()=>({viewportKeys:{main:t.VIEWPORT_KEY["VIEW_MAIN"]}}),[])});});let Y=class extends o.Disposable{constructor(v352,v353){super(),this._componentManager=v352,this._iconManager=v353,this._registerIcons(),this._registerComponents();}_registerIcons(){this._iconManager["has"]("ObjectLayersIcon")||this.disposeWithMe(this._iconManager["register"]({ObjectLayersIcon:g.ObjectLayersIcon})),this._iconManager["has"]("BottomIcon")||this.disposeWithMe(this._iconManager["register"]({BottomIcon:g.BottomIcon})),this._iconManager["has"]("MoveDownIcon")||this.disposeWithMe(this._iconManager["register"]({MoveDownIcon:g.MoveDownIcon})),this._iconManager["has"]("MoveUpIcon")||this.disposeWithMe(this._iconManager["register"]({MoveUpIcon:g.MoveUpIcon})),this._iconManager["has"]("ShapeFormatSettingIcon")||this.disposeWithMe(this._iconManager["register"]({ShapeFormatSettingIcon:g.ShapeFormatSettingIcon})),this._iconManager["has"]("TopmostIcon")||this.disposeWithMe(this._iconManager["register"]({TopmostIcon:g.TopmostIcon})),this.disposeWithMe(this._iconManager["register"](at));}_registerComponents(){this.disposeWithMe(this._componentManager["register"](S,$e)),this.disposeWithMe(this._componentManager["register"](w,Ze)),this.disposeWithMe(this._componentManager["register"](et,nt)),this.disposeWithMe(this._componentManager["register"](ue,me)),this.disposeWithMe(this._componentManager["register"](le,he)),this.disposeWithMe(this._componentManager["register"](de,ge)),this.disposeWithMe(this._componentManager["register"](fe,_e)),this.disposeWithMe(this._componentManager["register"](pe,ve)),this.disposeWithMe(this._componentManager["register"](E,e.ShapeTextFloatToolbar)),this.disposeWithMe(this._componentManager["register"](F,ne)),this.disposeWithMe(this._componentManager["register"](I,L)),this._componentManager["get"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT)||this.disposeWithMe(this._componentManager["register"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT,te)),this.disposeWithMe(this._componentManager["register"]("DocsShapeTextEditorContainer",ct));}};Y=N([M(0,(0,o.Inject)(n.ComponentManager)),M(1,(0,o.Inject)(n.IconManager))],Y);var lt=class extends l.Shape{constructor(v354,v355){super(v354,v355),q(this,"_shapeId",null),q(this,"_adjName",null),q(this,"_unitId",null),q(this,"_subUnitId",null),v355&&this.setShapeProps(v355);}getDrawingSearch(){return{unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._shapeId};}setShapeProps(v356){v356.shapeId!==undefined&&(this._shapeId=v356.shapeId),v356.adjName!==undefined&&(this._adjName=v356.adjName),v356.unitId!==undefined&&(this._unitId=v356.unitId),v356.subUnitId!==undefined&&(this._subUnitId=v356.subUnitId),this.transformByState({width:v356.width,height:v356.height});}_draw(v357){l.Circle["drawWith"](v357,{radius:i.ShapeDefaultConfig["adjHandleSize"],fill:i.ShapeDefaultConfig["adjHandleFill"],stroke:i.ShapeDefaultConfig["adjHandleStroke"],strokeWidth:1,evented:true});}};function ut(v912,v913,v914){let v915=(0,e.resolveShapeTextEditorBehaviorShapeData)(v912,{...v913,dataModel:{...(v913.dataModel??{}),...(v914?{doc:v914}:null)}}),v916=(0,e.resolveShapeTextEditorWrapStrategy)(v915);return{clip:(0,e.shouldClipShapeTextDocument)(v915,v916),wrapStrategy:v916};}var X=class extends l.Shape{constructor(v358,v359){super(v358,v359),q(this,"_props",undefined),q(this,"_formulaAnimation",new e["FormulaShapeAnimationController"](()=>this.makeDirty(true),()=>this._applyFormulaAutoFitSize())),q(this,"_transformCalculateSrcRect",true),q(this,"_drawingType",o.DrawingTypeEnum["DRAWING_SHAPE"]),q(this,"isDrawingObject",true),this._props={...v359},this._formulaAnimation["setPresentation"](v359.formulaPresentation,v359.animateFormulaPresentation!==false),this._init(),this._applyFormulaAutoFitSize();}_init(){this.onTransformChange$["subscribeEvent"](v139=>{this._updateSrcRectByTransform(v139);});}setPrstGeom(v360){this._props["prstGeom"]=v360;}setEditing(v361){this._props["isEditing"]=v361,this.makeDirty(true);}setFormulaPresentation(v362,v363=true){this._formulaAnimation["setPresentation"](v362,v363),this._props["formulaPresentation"]=v362,this._applyFormulaAutoFitSize(),this.makeDirty(true);}_applyFormulaAutoFitSize(){let v364=this._props["shapeModel"],v365=v364.getShapeTextData(),v366=(0,e.normalizeShapeTextModel)(v365==null?undefined:v365.dataModel),v367=v366==null?undefined:v366.doc,v368=this._formulaAnimation["getAutoFitPresentations"]();if(!v367||v368.length===0)return;v364.updateContext({width:this.width,height:this.height});let v369=(0,e.resolveFormulaShapeAutoFitSize)({documentData:v368.map(v140=>(0,a.createShapeFormulaDocument)(v367,v140)),height:this.height,shapeData:v364.getShapeData(),textRect:v364.getShapeTextRect({left:0,top:0,width:this.width,height:this.height}),width:this.width});if(v369){var v370;this.resize(v369.width,v369.height),(v370=this.getScene())==null||(v370=v370.getTransformer())==null||v370.debounceRefreshControls();}}get unitId(){return this._props["unitId"];}get subUnitId(){return this._props["subUnitId"];}_updateSrcRectByTransform(v371){if(this._props["srcRect"]==null||!this._transformCalculateSrcRect)return;let{width:v372,height:v373}=this,{width:v374=0,height:v375=0}=v371.preValue,{left:v376=0,top:v377=0,right:v378=0,bottom:v379=0}=this._props["srcRect"],v380=v376,v381=v377,v382=v378,v383=v379,v384=false;if(v374!==0&&v374!==v372){let v141=v376/v374,v142=v378/v374;v380=v372*v141,v382=v372*v142,v384=true;}if(v375!==0&&v375!==v373){let v143=v377/v375,v144=v379/v375;v381=v373*v143,v383=v373*v144,v384=true;}v384&&this.setSrcRect({left:v380,top:v381,right:v382,bottom:v383});}setSrcRect(v385){this._props["srcRect"]=v385,this.makeDirty(true);}setFillImage(v386){this._props["image"]=v386,this.makeDirty(true);}set transform(v387){this._transform=v387;}get transform(){this._transform||this._setTransForm();let v388=this._transform["clone"]();return this.transformForAngle(v388);}get shapeModel(){return this._props["shapeModel"];}get shapeId(){return this._props["shapeId"];}get classType(){return l.RENDER_CLASS_TYPE["SHAPE"];}_draw(v389,v390,v391,v392){let v393=this._props["shapeModel"];if(!v393||!v390)return;let v394=v391??this.width,v395=v392??this.height,v396={shapeType:v393.getShapeType(),width:v394,height:v395},v397={renderMode:i.ShapeRenderModeEnum["Path"],oKey:this.oKey,image:this._props["image"],angle:this.angle};v393.updateContext(v396),v389.save();let v398={top:0,left:0,width:v394,height:v395},v399=v393.getDrawingEffectBounds(v398);v399?this._renderWithCache(v389,v399,v145=>{v393.render(v145,v398,v397);}):(this._releaseRenderCache(),v393.render(v389,v398,v397)),v389.restore();let v400=v393.getShapeTextData(),v401=v393.getShapeTextRect(v398),v402=v393.isLineShape();if(v400&&v401&&!v402){v389.save(),this.getState().flipX&&v389.scale(-1,1);let v146=v394/2,v147=v395/2;v389.translate(-v146,-v147),v389.beginPath(),this._drawShapeText(v389,v400,v401),v389.restore();}}getDrawingPoints(v403){}_drawShapeText(v404,v405,v406){var v407;this._props["isEditing"]||(!((v407=v405.dataModel)!=null&&v407.doc)&&"isRichText"in v405&&v405.isRichText===false?this._drawSimpleText(v404,v405,v406):this._drawRichText(v404,v405,v406));}_drawSimpleText(v408,v409,v410){this._drawRichText(v408,{...v409,text:v409.text??"",dataModel:{doc:(0,e.plainShapeTextToDocumentData)(v409,"docs-shape-text-"+this.oKey)}},v410);}_drawRichText(v411,v412,v413){(0,e.drawFormulaShapeAnimationLayers)(v411,this._formulaAnimation,(v148,v149)=>{this._drawRichTextLayer(v148,v412,v413,v149);});}_drawRichTextLayer(v414,v415,v416,v417){let v418=this._props["localeService"];if(!v415.dataModel||!v418){v418||console.warn("[DrawingShape] LocaleService is required for rich text rendering");return;}let v419=(0,e.normalizeShapeTextModel)(v415.dataModel);if(!v419)return;let v420=v419.doc;if(!v420)return;let v421=(0,a.createShapeFormulaDocument)(v420,v417),v422=v419.va??o.VerticalAlign["TOP"],v423=v419.ha??o.HorizontalAlign["LEFT"],v424=ut(this._props["shapeModel"].getShapeData(),v415,v421),v425=v415.isHorizontal,v426=new o["DocumentDataModel"]((0,e.prepareShapeTextDocumentData)(v421,{isHorizontal:v425!==false,textRect:v416,verticalAlign:v422,horizontalAlign:v423,wrapStrategy:v424.wrapStrategy})),v427=new l["DocumentViewModel"](v426),v428=l.DocumentSkeleton["create"](v427,v418);v428.calculate();let v429=v428.getActualSize().actualHeight,v430=(0,e.resolveShapeTextDocumentRenderLayout)({contentHeight:v429,verticalAlign:v422,viewportHeight:v416.height});v426.updateDocumentStyle({pageSize:{width:v425===false?v416.height:v416.width,height:v430.contentHeight}}),v426.updateDocumentDataMargin({t:v430.marginTop}),v428.calculate();let v431=new l["Documents"]("shape-text-"+this.oKey,v428,{pageMarginLeft:0,pageMarginTop:0,onTextFillImageLoaded:()=>this.makeDirty(true)});v431.resize(v416.width,v430.contentHeight),v414.save(),v414.translateWithPrecision(v416.left,v416.top),v424.clip&&(v414.beginPath(),v414.rect(0,v430.clipTop,v416.width,v430.clipHeight),v414.clip()),v430.contentVerticalOffset&&v414.translateWithPrecision(0,v430.contentVerticalOffset),v431.draw(v414),v414.restore(),v431.dispose(),v428.dispose(),v427.dispose(),v426.dispose();}render(v432,v433,v434=false){if(!this.visible)return this.makeDirty(false),this;let{width:v435,height:v436,left:v437,top:v438}=this,v439=this.getRealBound();if(v435=v439.width,v436=v439.height,v437=v439.left,v438=v439.top,this.isRender(v433)){let{top:v150,left:v151,bottom:v152,right:v153}=v433.viewBound;if(v435+this.strokeWidth+v437<v151||v153<v437||v436+this.strokeWidth+v438<v150||v152<v438)return this;}let v440=v437+v435/2,v441=v438+v436/2,v442=this.transform["getMatrix"]();if(this._props["isEditing"]){let v154=this.getState(),v155=new l["Transform"]();v155.composeMatrix({...v154}),v442=v155.getMatrix();}return v432.save(),this._props["shapeModel"].isRenderLinePointsMode===true||v432.transform(v442[0],v442[1],v442[2],v442[3],v440,v441),this._draw(v432,v433,v435,v436),v432.restore(),this.makeDirty(false),this;}getInverseCoord(v443){let{left:v444,top:v445,width:v446,height:v447}=this.getRealBound(),v448=this.transform["getMatrix"](),v449=v444+v446/2,v450=v445+v447/2,v451=new l["Transform"]([v448[0],v448[1],v448[2],v448[3],v449,v450]),v452=this.getParent();return(this.isInGroup&&(v452==null?undefined:v452.classType)===l.RENDER_CLASS_TYPE["GROUP"]?v452.ancestorTransform["multiply"](v451):v451).invert().applyPoint(v443);}isHit(v453){let{left:v454,top:v455,width:v456,height:v457}=this.getRealBound(),v458=v454+v456/2,v459=v455+v457/2,v460=this.transform["getMatrix"](),v461=new l["Transform"]([v460[0],v460[1],v460[2],v460[3],v458,v459]),v462=this.getParent(),v463=(this.isInGroup&&(v462==null?undefined:v462.classType)===l.RENDER_CLASS_TYPE["GROUP"]?v462.ancestorTransform["multiply"](v461):v461).invert().applyPoint(v453),v464=v456/2,v465=v457/2,v466=this._props["shapeModel"];return v466&&v466.isLineShape()?v466.isHitLine(v463.x,v463.y,v456,v457):v463.x>=-v464-this.strokeWidth/2&&v463.x<=v464+this.strokeWidth/2&&v463.y>=-v465-this.strokeWidth/2&&v463.y<=v465+this.strokeWidth/2;}dispose(){this._formulaAnimation["dispose"](),this._props["shapeModel"]=null,super.dispose();}};let Z=class extends o.Disposable{constructor(v467,v468,v469,v470){super(),this._context=v467,this._drawingManagerService=v468,this._docsShapeService=v469,this._commandService=v470,q(this,"_activeShapeId",null),q(this,"_unitId",null),q(this,"_subUnitId",null),q(this,"_activeShapeAdjustPointList",undefined),q(this,"_adjustPointObjects",[]),q(this,"_baseShapeLeft",0),q(this,"_baseShapeTop",0),q(this,"_baseShapeWidth",0),q(this,"_baseShapeHeight",0),q(this,"_isStartAdjusting",false),q(this,"_isShouldShowDrawingShapeAdjust",false),q(this,"_activeAdjustInfo",undefined),q(this,"_activeShapeModel",undefined),q(this,"_adjHandlerPointerMove",undefined),q(this,"_adjHandlerPointerUp",undefined),this._registerDrawingFocusChangeHandler(),this._registerDrawingTransformHandler();}clearAdjustControls(){this._clearShapeAdjustControls();}refreshAdjustControls(){this._updateShapeAdjustControls(true);}_getShapeAdjustPointListById(v471,v472,v473){var v474;return(v474=this._docsShapeService["getShapeModel"](v471,v472,v473))==null?undefined:v474.getDrawingPoints();}_getShapeAdjustInfosById(v475,v476,v477,v478){var v479;return(v479=this._docsShapeService["getShapeModel"](v475,v476,v477))==null?undefined:v479.getAdjustInfoByName(v478);}_getActiveDrawingParam(){return this._unitId===null||this._subUnitId===null||this._activeShapeId===null?null:this._drawingManagerService["getDrawingByParam"]({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId})??null;}_getActiveDrawingShape(v480){if(this._unitId===null||this._subUnitId===null||this._activeShapeId===null)return null;let v481=(0,u.getDrawingShapeKeyByDrawingSearch)({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId}),v482=v480.getObjectIncludeInGroup(v481);return v482 instanceof X?v482:null;}_createShapeAdjustControls(v483=false){if(this._unitId===null||this._subUnitId===null||this._activeShapeId===null)return;let v484=this._getActiveDrawingParam();if((v484==null?undefined:v484.drawingType)!==o.DrawingTypeEnum["DRAWING_SHAPE"]||!v484.transform)return;let v485=this._docsShapeService["getShapeModel"](this._unitId,this._subUnitId,this._activeShapeId);if(!v485||v485.isLineShape())return;let{left:v488=0,top:v489=0,width:v490=0,height:v491=0,flipX:v486,flipY:v487,angle:v492=0}=v484.transform;(v483||!this._activeShapeAdjustPointList)&&(v485.updateContext({width:v490,height:v491}),this._activeShapeAdjustPointList=v485.getDrawingPoints());let v493=this._activeShapeAdjustPointList;if(!(v493!=null&&v493.length))return;let{scene:v494}=this._context;for(let v156 of v493){let v23=this._toVisualAdjustPoint(v156,v490,v491,!!v486,!!v487,v492);this._addShapeAdjustControl(v494,v23,v23.adjName,v488,v489,this._unitId,this._subUnitId);}}_toVisualAdjustPoint(v495,v496,v497,v498,v499,v500){let v501=v495.x,v502=v495.y;if(v498&&(v501=v496-v501),v499&&(v502=v497-v502),v500!==0){let v157=v496/2,v158=v497/2,v159=v500*Math.PI/180,v160=Math.cos(v159),v161=Math.sin(v159),v162=v501-v157,v163=v502-v158;v501=v157+(v162*v160-v163*v161),v502=v158+(v162*v161+v163*v160);}return{x:v501,y:v502,adjName:v495.adjName};}_updateShapeAdjustControls(v503=false){v503&&this._clearShapeAdjustControls(),this._createShapeAdjustControls(v503);}_addShapeAdjustControl(v504,v505,v506,v507,v508,v509,v510){if(!this._activeShapeId)return;let v511="doc-shape-adjust-point-"+this._activeShapeId+"-"+v506,v512=v504.getObjectIncludeInGroup(v511);if(v512){v512.transformByState({left:v505.x+v507-i.ShapeDefaultConfig["adjHandleSize"],top:v505.y+v508-i.ShapeDefaultConfig["adjHandleSize"]}),v512.makeDirty(true);return;}let v513=new lt(v511,{left:v505.x+v507-i.ShapeDefaultConfig["adjHandleSize"],top:v505.y+v508-i.ShapeDefaultConfig["adjHandleSize"],adjName:v506,shapeId:this._activeShapeId,unitId:v509,subUnitId:v510,width:i.ShapeDefaultConfig["adjHandleSize"]+8,height:i.ShapeDefaultConfig["adjHandleSize"]+8,zIndex:l.DRAWING_OBJECT_LAYER_INDEX+1,evented:true});this._adjustPointObjects["push"](v513),this._attachAdjustEvent(v513,v504,v506),v504.addObject(v513,l.DRAWING_OBJECT_LAYER_INDEX+1);}_clearShapeAdjustControls(){this._adjustPointObjects["forEach"](v164=>v164.dispose()),this._adjustPointObjects=[];}_updateAdjustControlPositions(){this._createShapeAdjustControls();}_toScenePoint(v514,v515,v516){let v517=l.Vector2["FromArray"]([v515,v516]),v518=v514.getActiveViewportByCoord(v517)??v514.getViewports()[0];return(v518==null?undefined:v518.transformVector2SceneCoord(v517))??v517;}_attachAdjustEvent(v519,v520,v521){this.disposeWithMe((0,o.toDisposable)(v519.onPointerDown$["subscribeEvent"]((v165,v166)=>{var v167;let v168=v519.getDrawingSearch();this._activeAdjustInfo=this._getShapeAdjustInfosById(v168.unitId,v168.subUnitId,v168.drawingId,v521),this._activeShapeModel=this._docsShapeService["getShapeModel"](v168.unitId,v168.subUnitId,v168.drawingId);let v169=this._getActiveDrawingParam(),v170=v169==null?undefined:v169.transform;if(!v169||!v170||!this._activeShapeModel)return;this._baseShapeLeft=v170.left||0,this._baseShapeTop=v170.top||0,this._baseShapeWidth=v170.width||0,this._baseShapeHeight=v170.height||0;let v171=!!v170.flipX,v172=!!v170.flipY,v173=v170.angle||0,v174={...(((v167=this._activeAdjustInfo)==null?undefined:v167.currentAdjustValues)??{})};this._isStartAdjusting=true,v520.disableObjectsEvent(),this._adjHandlerPointerMove=v520.onPointerMove$["subscribeEvent"]((v24,v25)=>{var v26;if(!this._isStartAdjusting||!this._activeShapeModel||!this._activeAdjustInfo)return;v520.disableObjectsEvent(),v520.setCursor(l.CURSOR_TYPE["CROSSHAIR"]);let v27=this._toScenePoint(v520,v24.offsetX,v24.offsetY),v28=v27.x-this._baseShapeLeft,v29=v27.y-this._baseShapeTop;if(v173!==0){let v5=this._baseShapeWidth/2,v6=this._baseShapeHeight/2,v7=v173*Math.PI/180,v8=Math.cos(v7),v9=Math.sin(v7),v10=v28-v5,v11=v29-v6;v28=v5+(v10*v8+v11*v9),v29=v6+(-v10*v9+v11*v8);}v171&&(v28=this._baseShapeWidth-v28),v172&&(v29=this._baseShapeHeight-v29);let v30={left:0,top:0,width:this._baseShapeWidth,height:this._baseShapeHeight},v31=this._activeShapeModel["calcAdjValues"](v30,{x:v28,y:v29},this._activeAdjustInfo,v171,v172);if(Object.keys(v31).length!==0){for(let[v2,v3]of Object.entries(v31))this._activeShapeModel["setAdjustValueByName"](v2,v3);this._activeShapeModel["updateContext"]({width:this._baseShapeWidth,height:this._baseShapeHeight}),(v26=this._getActiveDrawingShape(v520))==null||v26.makeDirty(true),this._activeShapeAdjustPointList=this._getShapeAdjustPointListById(v168.unitId,v168.subUnitId,v168.drawingId),this._updateAdjustControlPositions(),v25.stopPropagation();}}),this._adjHandlerPointerUp=v520.onPointerUp$["subscribeEvent"]((v32,v33)=>{var v34,v35;(v34=this._adjHandlerPointerMove)==null||v34.unsubscribe(),(v35=this._adjHandlerPointerUp)==null||v35.unsubscribe(),v520.resetCursor();let v36=this._activeAdjustInfo;if(v36&&this._activeShapeModel){let v12={};for(let v4 of Object.keys(v36.currentAdjustValues)){let v1=this._activeShapeModel["getAdjustValueByName"](v4);v1!==undefined&&(v12[v4]=v1);}Object.keys(v12).length>0&&R(this._commandService,v168.unitId,v168.subUnitId,v168.drawingId,{oldShapeData:{adjustValues:v174}},{adjustValues:v12});}this._activeAdjustInfo=undefined,this._activeShapeModel=undefined,this._isStartAdjusting=false,v520.enableObjectsEvent(),v33.stopPropagation();}),v166.stopPropagation();})));}_registerDrawingTransformHandler(){let{scene:v522}=this._context,v523=v522.getTransformerByCreate();this.disposeWithMe(v523.changeStart$["subscribe"](v175=>{this._createShapeAdjustControls(),v175.objects!==null&&v175.objects["size"]===1&&v175.objects["values"]().next().value instanceof X&&(this._isShouldShowDrawingShapeAdjust=true);})),this.disposeWithMe(v523.changing$["subscribe"](()=>{this._isShouldShowDrawingShapeAdjust&&this._clearShapeAdjustControls();})),this.disposeWithMe(v522.onPointerUp$["subscribeEvent"](()=>{this._isShouldShowDrawingShapeAdjust&&(this._isShouldShowDrawingShapeAdjust=false,this._createShapeAdjustControls());})),this.disposeWithMe(v523.changeEnd$["subscribe"](()=>{this._unitId&&this._subUnitId&&this._activeShapeId&&(this._activeShapeAdjustPointList=this._getShapeAdjustPointListById(this._unitId,this._subUnitId,this._activeShapeId),this._updateAdjustControlPositions());}));}_registerDrawingFocusChangeHandler(){this.disposeWithMe(this._commandService["onCommandExecuted"](v176=>{if(v176.id!==r.UpdateDocShapeDataMutation["id"])return;let{unitId:v177,shapeId:v178}=v176.params;v177===this._unitId&&v178===this._activeShapeId&&this.refreshAdjustControls();})),this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v179=>{if(v179.length===1){let v37=v179[0],v38=this._drawingManagerService["getDrawingByParam"](v37);if((v38==null?undefined:v38.drawingType)===o.DrawingTypeEnum["DRAWING_SHAPE"]){this._activeShapeId=v37.drawingId,this._unitId=v37.unitId,this._subUnitId=v37.subUnitId,this._activeShapeAdjustPointList=this._getShapeAdjustPointListById(v37.unitId,v37.subUnitId,v37.drawingId),this._clearShapeAdjustControls(),this._createShapeAdjustControls();return;}}this._activeShapeId=null,this._activeShapeAdjustPointList=undefined,this._unitId=null,this._subUnitId=null,this._clearShapeAdjustControls();})),this.disposeWithMe((0,p.merge)(this._drawingManagerService["update$"],this._drawingManagerService["refreshTransform$"]).subscribe(v180=>{var v181;let v182=v180.find(v39=>v39.drawingId===this._activeShapeId&&v39.unitId===this._unitId&&v39.subUnitId===this._subUnitId);v182&&((v181=this._drawingManagerService["getDrawingByParam"](v182))==null?undefined:v181.drawingType)===o.DrawingTypeEnum["DRAWING_SHAPE"]&&this._updateShapeAdjustControls(true);})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v183=>{for(let v40 of v183)this._activeShapeId===v40.drawingId&&(this._activeShapeId=null,this._activeShapeAdjustPointList=undefined,this._unitId=null,this._subUnitId=null,this._clearShapeAdjustControls());}));}};Z=N([M(1,u.IDrawingManagerService),M(2,(0,o.Inject)(r.DocsShapeService)),M(3,o.ICommandService)],Z);function dt(v917){return v917.behindText===true||v917.behindText===o.BooleanNumber["TRUE"]||v917.layoutType===o.PositionedObjectLayoutType["WRAP_NONE"]&&v917.behindDoc===o.BooleanNumber["TRUE"]?t.DOCS_COMPONENT_MAIN_LAYER_INDEX-1:l.DRAWING_OBJECT_LAYER_INDEX;}let Q=class extends o.Disposable{constructor(v524,v525,v526,v527,v528,v529,v530){super(),this._drawingManagerService=v524,this._docsShapeService=v525,this._localeService=v526,this._imageIoService=v527,this._urlImageService=v528,this._shapeTextEditingService=v529,this._shapeFormulaService=v530,q(this,"_formulaShapes",new Map()),this.disposeWithMe(this._shapeFormulaService["presentationChanged$"].subscribe(v184=>{var v185;(v185=this._formulaShapes["get"](this._formulaKey(v184.unitId,v184.subUnitId,v184.shapeId)))==null||v185.forEach(v41=>v41.setFormulaPresentation(v184.presentation,v184.animationEnabled));})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v186=>{v186.forEach(v42=>{this._shapeFormulaService["unregister"]({unitId:v42.unitId,subUnitId:v42.subUnitId,shapeId:v42.drawingId}),this._formulaShapes["delete"](this._formulaKey(v42.unitId,v42.subUnitId,v42.drawingId));});}));}renderDrawingShape(v531,v532){let{transform:v533,drawingType:v534,srcRect:v535,prstGeom:v536,groupId:v537,unitId:v538,subUnitId:v539,drawingId:v540,isMultiTransform:v541,transforms:v542,hidden:v543,selectable:v544}=v531;if(v534!==o.DrawingTypeEnum["DRAWING_SHAPE"]||!this._drawingManagerService["getDrawingVisible"]()||v533==null)return;let v545=this._drawingManagerService["getDrawingEditable"](),v546=v541&&v542?v542:[v533],v547=[];for(let v187 of v546){let{left:v43,top:v44,width:v45,height:v46,angle:v47,flipX:v48,flipY:v49,skewX:v50,skewY:v51}=v187,v52=v546.indexOf(v187),v53=(0,u.getDrawingShapeKeyByDrawingSearch)({unitId:v538,subUnitId:v539,drawingId:v540},v541?v52:undefined),v54=v532.getObjectIncludeInGroup(v53);if(v54!=null){let v13={unitId:v538,subUnitId:v539,shapeId:v540};v54 instanceof X&&this.refreshFormulaPresentation(v54,v13),v54.transformByState({left:v43,top:v44,width:v45,height:v46,angle:v47,flipX:v48,flipY:v49,skewX:v50,skewY:v51});continue;}let v55=this._drawingManagerService["getDrawingOrder"](v538,v539),v56=v55.indexOf(v540);if(v532.getObjectIncludeInGroup(v53)||!this._drawingManagerService["getDrawingVisible"]())continue;let v57=this._docsShapeService["getShapeModel"](v538,v539,v540);if(!v57)continue;let v58=(0,i.isConnectorShape)(v57.getShapeType())?{...e.SHAPE_EDITOR_TRANSFORMER_CONFIG,rotateEnabled:false,resizeEnabled:false,borderEnabled:false}:e.SHAPE_EDITOR_TRANSFORMER_CONFIG,v59=v57.getShapeData().formulaBinding,v60={unitId:v538,subUnitId:v539,shapeId:v540};v59&&this._shapeFormulaService["register"](v60,v59);let v61=new X(v53,{...v187,zIndex:v56===-1?v55.length-1:v56,shapeModel:v57,localeService:this._localeService,shapeId:v540,unitId:v538,subUnitId:v539,visible:v543!==true,evented:v544!==false,formulaPresentation:v59?this._shapeFormulaService["getPresentation"](v60):undefined,animateFormulaPresentation:(v59==null?undefined:v59.animationEnabled)!==false,transformerConfig:v58});if(v59){let v14=this._formulaKey(v538,v539,v540),v15=this._formulaShapes["get"](v14)??new Set();v15.add(v61),this._formulaShapes["set"](v14,v15);}this.disposeWithMe((0,o.toDisposable)(v61.onDblclick$["subscribeEvent"]((v16,v17)=>{v57.isLineShape()||v59||(this._shapeTextEditingService["setEditing"]({visible:true,unitId:v538,subUnitId:v539,shapeId:v540,shapeKey:v61.oKey}),v17.stopPropagation());}))),v532.addObject(v61,dt(v531)),v545&&v532.attachTransformerTo(v61),v537&&(0,d.insertGroupObject)({drawingId:v537,unitId:v538,subUnitId:v539},v61,v532,this._drawingManagerService),v536!=null&&v61.setPrstGeom(v536),v535!=null&&v61.setSrcRect(v535),this._loadShapePictureFill(v61,v57.getShapeData()),v547.push(v61);}return v547;}_formulaKey(v548,v549,v550){return v548+"\x00"+v549+"\x00"+v550;}refreshFormulaPresentation(v551,v552){let v553=this._docsShapeService["getShapeModel"](v552.unitId,v552.subUnitId,v552.shapeId),v554=v553==null?undefined:v553.getShapeData().formulaBinding,v555=this._formulaKey(v552.unitId,v552.subUnitId,v552.shapeId);if(v554){this._shapeFormulaService["register"](v552,v554);let v188=this._formulaShapes["get"](v555)??new Set();v188.add(v551),this._formulaShapes["set"](v555,v188);}else{var v556;this._shapeFormulaService["unregister"](v552),(v556=this._formulaShapes["get"](v555))==null||v556.delete(v551);}v551.setFormulaPresentation(v554?this._shapeFormulaService["getPresentation"](v552):undefined,(v554==null?undefined:v554.animationEnabled)!==false);}refreshShapeFillImage(v557){let v558=v557.shapeModel["getShapeData"](),v559=v558.fill;if(!v559||v559.fillType!==i.ShapeFillEnum["PictureFill"]||!v559.fillImageSource){v557.setFillImage(undefined);return;}this._loadShapePictureFill(v557,v558);}_loadShapePictureFill(v560,v561){let v562=v561.fill;if(!v562||v562.fillType!==i.ShapeFillEnum["PictureFill"]||!v562.fillImageSource)return;let v563=v562.fillImageSource,v564=v562.fillImageSourceType??i.ImageSourceTypeEnum["URL"],v565=this._imageIoService["getImageSourceCache"](v563,v564);if(v565){v560.setFillImage(v565);return;}this._loadAndSetImage(v560,v563,v564);}async _loadAndSetImage(v566,v567,v568){let v569;try{if(v568===i.ImageSourceTypeEnum["UUID"])v569=await this._imageIoService["getImage"](v567);else{if(v568===i.ImageSourceTypeEnum["URL"])try{v569=await this._urlImageService["getImage"](v567);}catch{v569=v567;}else v569=v567;}}catch(v189){console.error("[ShapeRender] Failed to resolve picture fill source",v189);return;}let v570=new window.Image();v570.onload=()=>{this._imageIoService["addImageSourceCache"](v567,v568,v570),v566.setFillImage(v570);},v570.onerror=()=>{console.error("[ShapeRender] Failed to load picture fill image",v567);},v570.src=v569;}};Q=N([M(0,u.IDrawingManagerService),M(1,(0,o.Inject)(r.DocsShapeService)),M(2,(0,o.Inject)(o.LocaleService)),M(3,o.IImageIoService),M(4,o.IURLImageService),M(5,(0,o.Inject)(J)),M(6,(0,o.Inject)(a.ShapeFormulaService))],Q);let ft=class extends o.Disposable{constructor(v571,v572,v573){super(),this._docPrintInterceptorService=v571,this._drawingManagerService=v572,this._shapeRenderController=v573,this._initPrinting();}_initPrinting(){this.disposeWithMe(this._docPrintInterceptorService["interceptor"].intercept(this._docPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_COMPONENT_COLLECT,{handler:(v190,v191,v192)=>{var v193;let{unitId:v194,scene:v195,skeleton:v196}=v191,{pageIndex:v197}=v191,v198=(v193=this._drawingManagerService["getDrawingDataForUnit"](v194))==null?undefined:v193[v194],v199=pt(this._docPrintInterceptorService,v196,v197);return v198==null||v198.order["forEach"](v62=>{if(v199&&!v199.has(v62))return;let v63=v198.data[v62];v63.drawingType===o.DrawingTypeEnum["DRAWING_SHAPE"]&&!v63.hidden&&this._shapeRenderController["renderDrawingShape"](v63,v195);}),v192(v190);}}));}};ft=N([M(0,(0,o.Inject)(t.DocPrintInterceptorService)),M(1,u.IDrawingManagerService),M(2,(0,o.Inject)(Q))],ft);function pt(v918,v919,v920){var v921,v922;let v923=v918;if(v923.getPageDrawingIds)return v923.getPageDrawingIds(v919,v920);let v924=v919.getSkeletonData();if(!v924||v924.pages["length"]<=1||v920==null)return null;let v925=new Set(),v926=v924.pages[v920];if(!v926)return v925;mt(v926,v925);let v927=(v921=v924.skeHeaders["get"](v926.headerId))==null?undefined:v921.get(v926.pageWidth),v928=(v922=v924.skeFooters["get"](v926.footerId))==null?undefined:v922.get(v926.pageWidth);return v927&&mt(v927,v925),v928&&mt(v928,v925),v925;}function mt(v929,v930){for(let v574 of v929.skeDrawings["keys"]())v930.add(v574);for(let v575 of v929.skeTables["values"]())for(let v200 of v575.rows)for(let v64 of v200.cells)mt(v64,v930);}const ht="docs-shape-contextual-ribbon";let gt=class extends o.Disposable{constructor(v576,v577,v578,v579,v580,v581){super(),this._menuManagerService=v576,this._ribbonService=v577,this._drawingManagerService=v578,this._univerInstanceService=v579,this._renderManagerService=v580,this._shapeFloatingToolbarService=v581,q(this,"_visible",false),this._menuManagerService["mergeMenu"](Ue),this.disposeWithMe((0,o.toDisposable)(this._drawingManagerService["focus$"].subscribe(()=>this._update()))),this._update();}dispose(){this._shapeFloatingToolbarService["setFallbackVisible"](false,ht),this._hide(),super.dispose();}_update(){var v582;let v583=this._drawingManagerService["getFocusDrawings"](),v584=v583.length===1?v583[0]:undefined;if((v584==null?undefined:v584.drawingType)!==o.DrawingTypeEnum["DRAWING_SHAPE"]||this._univerInstanceService["getUnitType"](v584.unitId)!==o.UniverInstanceType["UNIVER_DOC"]){this._shapeFloatingToolbarService["setFallbackVisible"](false,ht),this._hide();return;}let v585=(0,e.resolveShapeContextualRibbonHostMode)((v582=this._renderManagerService["getRenderUnitById"](v584.unitId))==null?undefined:v582.engine["getCanvasElement"]())==="isolated";if(this._shapeFloatingToolbarService["setFallbackVisible"](v585,ht),v585){this._hide();return;}this._visible||(this._visible=true,this._ribbonService["showContextualTab"](C,{activate:true}));}_hide(){this._visible&&(this._visible=false,this._ribbonService["hideContextualTab"](C),this._ribbonService["setCollapsedIds"]([]));}};gt=N([M(0,n.IMenuManagerService),M(1,n.IRibbonService),M(2,u.IDrawingManagerService),M(3,o.IUniverInstanceService),M(4,l.IRenderManagerService),M(5,(0,o.Inject)(e.ShapeFloatingToolbarService))],gt);function _t(v931,v932){let v933=v931;for(;v933;){if(v932(v933))return v933;v933=typeof v933.getParent=="function"?v933.getParent():null;}return null;}function vt(v934){return _t(v934,v586=>v586 instanceof X);}function yt(v935){return(v935==null?undefined:v935.formulaBinding)==null;}let bt=class extends o.Disposable{constructor(v587,v588,v589,v590,v591,v592){super(),this._context=v587,this._shapeTextEditingService=v588,this._drawingManagerService=v589,this._contextService=v590,this._docLayoutInteractionService=v591,this._docsShapeService=v592,q(this,"_lastEditingShapeKey",null),q(this,"_layoutInteraction",null),this._initEvents(),this._initSelection(),this._initEditingParams();}dispose(){this._endLayoutInteraction(),super.dispose();}_initEvents(){let{scene:v593}=this._context;this.disposeWithMe(v593.onDblclick$["subscribeEvent"]((v201,v202)=>{let{offsetX:v203,offsetY:v204}=v201,v205=l.Vector2["FromArray"]([v203,v204]),v206=vt(v593.pick(v205))??this._getFocusedShapeAtPoint(v205);if(v206){v202.stopPropagation();let v65=this._docsShapeService["getShapeModel"](v206.unitId,v206.subUnitId,v206.shapeId);if(!v65||(0,i.isConnectorShape)(v65.getShapeType())||!yt(v65.getShapeData()))return;this._shapeTextEditingService["setEditing"]({visible:true,unitId:v206.unitId,subUnitId:v206.subUnitId,shapeId:v206.shapeId,shapeKey:v206.oKey});}}));}_getFocusedShapeAtPoint(v594){let{scene:v595}=this._context;return this._drawingManagerService["getFocusDrawings"]().map(v207=>v595.getObjectIncludeInGroup((0,u.getDrawingShapeKeyByDrawingSearch)(v207))).find(v208=>v208 instanceof X&&v208.isHit(v594))??null;}_initSelection(){this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v209=>{if(v209.length===1){let v66=v209[0],v67=this._drawingManagerService["getDrawingByParam"](v66);if((v67==null?undefined:v67.drawingType)===o.DrawingTypeEnum["DRAWING_SHAPE"]){let v18=this._shapeTextEditingService["getEditing"]();if((v18==null?undefined:v18.shapeId)===v66.drawingId&&v18.visible)return;(0,i.isConnectorShape)(this._docsShapeService["getShapeType"](v66.unitId,v66.subUnitId,v66.drawingId))&&this._shapeTextEditingService["setEditing"](null);}else this._shapeTextEditingService["getEditing"]()&&(this._shapeTextEditingService["setOnSavingEditorData"](true),requestAnimationFrame(()=>{this._shapeTextEditingService["setEditing"](null);}));}else this._shapeTextEditingService["getEditing"]()&&(this._shapeTextEditingService["setOnSavingEditorData"](true),requestAnimationFrame(()=>{this._shapeTextEditingService["setEditing"](null);}));})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v210=>{let v211=this._shapeTextEditingService["getEditing"]();v211&&v210.some(v68=>v68.drawingId===v211.shapeId)&&this._shapeTextEditingService["setEditing"](null);}));}_initEditingParams(){this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(v212=>{(v212==null?undefined:v212.visible)===true&&v212.unitId===this._context["unitId"]?this._layoutInteraction??=this._docLayoutInteractionService["beginInteraction"]():this._endLayoutInteraction();let{scene:v213}=this._context;if(this._lastEditingShapeKey){let v69=v213.getObjectIncludeInGroup(this._lastEditingShapeKey);v69&&v69.setEditing(false);}if(v212){let v70=!!v212.visible,v71=v213.getObjectIncludeInGroup(v212.shapeKey);v71&&(v71.setEditing(v70),this._lastEditingShapeKey=v212.shapeKey),this._contextService["setContextValue"](o.FOCUSING_SHAPE_TEXT_EDITOR,v70);}else this._lastEditingShapeKey=null,this._contextService["setContextValue"](o.FOCUSING_SHAPE_TEXT_EDITOR,false);}));}_endLayoutInteraction(){var v596;(v596=this._layoutInteraction)==null||v596.dispose(),this._layoutInteraction=null;}};bt=N([M(1,(0,o.Inject)(J)),M(2,u.IDrawingManagerService),M(3,o.IContextService),M(4,(0,o.Inject)(t.DocLayoutInteractionService)),M(5,(0,o.Inject)(r.DocsShapeService))],bt);let xt=class extends e.ShapeTextFloatMenuRenderControllerBase{constructor(v597,v598,v599,v600,v601,v602,v603,v604,v605,v606){super(v597,v598,v599,v600,v601,v602,v603,v604,v605,v606,{componentKey:E,editorUnitId:T});}};xt=N([M(1,(0,o.Inject)(s.DocSelectionManagerService)),M(2,(0,o.Inject)(t.DocCanvasPopManagerService)),M(3,(0,o.Inject)(t.DocSelectionRenderService)),M(4,o.ICommandService),M(5,(0,o.Inject)(t.DocEventManagerService)),M(6,(0,o.Inject)(e.ShapeTextHyperLinkPopupService)),M(7,(0,o.Inject)(s.DocInterceptorService)),M(8,(0,o.Inject)(t.DocRenderController)),M(9,(0,o.Inject)(J))],xt);let St=class extends o.Disposable{constructor(v607,v608,v609,v610){super(),this._commandService=v607,this._renderManagerService=v608,this._drawingManagerService=v609,this._docDrawingShapeRenderController=v610,this._initialize();}_initialize(){this.disposeWithMe(this._drawingManagerService["add$"].subscribe(v214=>this._insertShapes(v214))),this.disposeWithMe(this._drawingManagerService["update$"].subscribe(v215=>{v215.forEach(v72=>this._updateShape(v72));})),this.disposeWithMe(this._commandService["onCommandExecuted"](v216=>{if(v216.id!==r.UpdateDocShapeDataMutation["id"])return;let{unitId:v217,shapeId:v218}=v216.params;this._refreshShapeData({unitId:v217,subUnitId:v217,drawingId:v218});}));}_insertShapes(v611){v611.forEach(v219=>{let v220=this._getSceneByUnitId(v219.unitId);if(!v220)return;let v221=this._drawingManagerService["getDrawingByParam"](v219);(v221==null?undefined:v221.drawingType)===o.DrawingTypeEnum["DRAWING_SHAPE"]&&this._docDrawingShapeRenderController["renderDrawingShape"](v221,v220.scene);});}_updateShape(v612){let v613=this._drawingManagerService["getDrawingByParam"](v612);if((v613==null?undefined:v613.drawingType)!==o.DrawingTypeEnum["DRAWING_SHAPE"])return;let v614=this._getSceneByUnitId(v612.unitId);if(!v614||v613.transform==null)return;let v615=(0,u.getDrawingShapeKeyByDrawingSearch)(v612),v616=v614.scene["getObjectIncludeInGroup"](v615);v616&&(v616.setSrcRect(v613.srcRect),v616.setPrstGeom(v613.prstGeom),v616.makeDirty(true));}_refreshShapeData(v617){let v618=this._getSceneByUnitId(v617.unitId);if(!v618)return;let v619=(0,u.getDrawingShapeKeyByDrawingSearch)(v617),v620=v618.scene["getObjectIncludeInGroup"](v619);v620&&(this._docDrawingShapeRenderController["refreshShapeFillImage"](v620),this._docDrawingShapeRenderController["refreshFormulaPresentation"](v620,{unitId:v617.unitId,subUnitId:v617.subUnitId,shapeId:v617.drawingId}),v620.makeDirty(true));}_getSceneByUnitId(v621){if(v621==null)return null;let v622=this._renderManagerService["getRenderUnitById"](v621),v623=v622==null?undefined:v622.scene;return v623==null?null:{scene:v623};}};St=N([M(0,o.ICommandService),M(1,l.IRenderManagerService),M(2,u.IDrawingManagerService),M(3,(0,o.Inject)(Q))],St);let Ct=class extends o.Disposable{constructor(v624,v625,v626,v627,v628,v629,v630,v631,v632,v633,v634,v635){super(),this._univerInstanceService=v624,this._sidebarService=v625,this._menuManagerService=v626,this._docsShapeService=v627,this._localeService=v628,this._commandService=v629,this._drawingManagerService=v630,this._docCanvasPopManagerService=v631,this._renderManagerService=v632,this._contextService=v633,this._shapeTextEditingService=v634,this._permissionService=v635,q(this,"_sidebarDisposable",null),q(this,"_activeShapeInfo",null),q(this,"_isOpenedShapeEditPanel",false),q(this,"_shapeEditPanelVersion",0),q(this,"_disposePopupsByUnit",new Map()),q(this,"_popupTargetKeys",new Map()),this._initMenu(),this.disposeWithMe(this._univerInstanceService["getCurrentTypeOfUnit$"](o.UniverInstanceType["UNIVER_DOC"]).subscribe(v222=>{if(!v222){var v223;(v223=this._sidebarDisposable)==null||v223.dispose();}})),this._registerOperations(),this.disposeWithMe((0,e.bindRenderTransformerLifecycle)(this._renderManagerService,o.UniverInstanceType["UNIVER_DOC"],v224=>this._popupMenuListener(v224))),this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(v225=>{v225&&this._clearPopups(undefined,true);})),this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(()=>{this._drawingManagerService["getFocusDrawings"]().some(v73=>v73.drawingType===o.DrawingTypeEnum["DRAWING_SHAPE"]&&this._univerInstanceService["getUnitType"](v73.unitId)===o.UniverInstanceType["UNIVER_DOC"]&&!this._canEditShape(v73.unitId,v73.drawingId))&&(this._clearPopups(undefined,true),this._closeShapeEditPanel());}));}_initMenu(){this._menuManagerService["mergeMenu"](We);}getShapePopupMenus(v636,v637,v638,v639){return[{label:"docs-shape-ui.openPanel",index:0,commandId:O.id,commandParams:{unitId:v636,subUnitId:v637,drawingId:v638},disable:v639===o.DrawingTypeEnum["DRAWING_DOM"]},{label:"docs-shape-ui.deleteShape",index:1,commandId:c.RemoveDocDrawingCommand["id"],commandParams:{unitId:v636,drawings:[{unitId:v636,subUnitId:v637,drawingId:v638}]},disable:false},{label:"docs-shape-ui.hidePanel",index:2,commandId:qe.id,commandParams:{unitId:v636,subUnitId:v637,drawingId:v638},disable:false}];}_getShapeInfo(v640,v641,v642){let v643=this._docsShapeService["getShapeTypeById"](v640,v641,v642),v644=this._docsShapeService["getShapeDataById"](v640,v641,v642);return v643!==undefined&&v644!==undefined?{shapeData:v644,shapeId:v642,shapeType:v643,unitId:v640,subUnitId:v641,version:this._shapeEditPanelVersion,disableShapeOption:false}:null;}_clearPopups(v645,v646=false){if(v645==null){[...this._disposePopupsByUnit["keys"]()].forEach(v74=>this._clearPopups(v74,v646));return;}let v647=this._disposePopupsByUnit["get"](v645);if(v647){for(let v75=v647.length-1;v75>=0;--v75){let v19=v647[v75];(v646||v19.canDispose())&&(v19.dispose(),v647.splice(v75,1));}v647.length===0&&(this._disposePopupsByUnit["delete"](v645),this._popupTargetKeys["delete"](v645));}}_getDisposePopups(v648){let v649=this._disposePopupsByUnit["get"](v648);if(v649)return v649;let v650=[];return this._disposePopupsByUnit["set"](v648,v650),v650;}_popupMenuListener(v651){var v652;let v653=new o["DisposableCollection"](),v654=(v652=this._renderManagerService["getAllRenderersOfType"](o.UniverInstanceType["UNIVER_DOC"]).find(v226=>v226.scene["getTransformerByCreate"]()===v651))==null?undefined:v652.unitId;return v654?(v653.add(v651.createControl$["subscribe"](()=>this._handleCreateControl(v651,v654))),v653.add(v651.clearControl$["subscribe"](()=>{this._clearPopups(v654),queueMicrotask(()=>{v651.getSelectedObjectMap().size>0||(this._contextService["setContextValue"](o.FOCUSING_COMMON_DRAWINGS,false),this._drawingManagerService["focusDrawing"](null));});})),v653.add(v651.changing$["subscribe"](()=>{this._clearPopups(v654,true);})),v653):v653;}_handleCreateControl(v655,v656){let v657=v655.getSelectedObjectMap();if(this._isOpenedShapeEditPanel){this._clearPopups(v656,true);return;}if(v657.size>1){this._clearPopups(v656);return;}let v658=v657.values().next().value;if(!v658){this._clearPopups(v656);return;}let v659=this._drawingManagerService["getDrawingOKey"](v658.oKey);if(!v659||v659.drawingType!==o.DrawingTypeEnum["DRAWING_SHAPE"]){this._clearPopups(v656);return;}let{unitId:v660,subUnitId:v661,drawingId:v662,drawingType:v663}=v659;if(!this._canEditShape(v660,v662)){this._clearPopups(v656,true);return;}let v664=this._getShapeInfo(v660,v661,v662);if(!v664){this._clearPopups(v656);return;}let v665=this._disposePopupsByUnit["get"](v656),v666=v660+":"+v661+":"+v662;if(this._popupTargetKeys["get"](v656)===v666&&v665&&v665.length>0)return;this._clearPopups(v656);let v667=this._renderManagerService["getRenderUnitById"](v660),v668=((v667==null?undefined:v667.isMainScene)===false?v667.with(t.DocCanvasPopManagerService):this._docCanvasPopManagerService).attachPopupToObject(v658,{componentKey:et,direction:"vertical-center",offset:[0,e.SHEET_DOC_SHAPE_FLOATING_TOOLBAR_TOP_OFFSET],extraProps:{unitId:v660,subUnitId:v661,drawingId:v662,drawingType:v663,shapeType:v664.shapeType,shapeData:v664.shapeData}},v660);this.disposeWithMe(v668),this._getDisposePopups(v656).push(v668),this._popupTargetKeys["set"](v656,v666),this._drawingManagerService["getFocusDrawings"]().some(v227=>v227.unitId===v660&&v227.subUnitId===v661&&v227.drawingId===v662)||this._drawingManagerService["focusDrawing"]([{unitId:v660,subUnitId:v661,drawingId:v662}]);}_canEditShape(v669,v670){let v671=this._univerInstanceService["getUnit"](v669,o.UniverInstanceType["UNIVER_DOC"]);if(!v671)return false;let v672=(0,s.getDocumentDrawingSegmentId)(v671,v670);return(0,s.canEditDocumentTargets)(this._permissionService,v669,[...(0,s.getDocumentEntityParentPermissionObjectIds)(v671,v672,"drawing",v670),(0,s.getDocumentEntityPermissionObjectId)(v672,"drawing",v670)]);}_registerOperations(){this.disposeWithMe(this._commandService["onCommandExecuted"](v228=>{if(v228.id===O.id){let{unitId:v76,subUnitId:v77,drawingId:v78}=v228.params;this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v76,v77,v78),this._clearPopups(undefined,true),this._openShapeEditPanel();}if(v228.id===qe.id&&(this._activeShapeInfo=null,this._closeShapeEditPanel()),v228.id===r.UpdateDocShapeDataMutation["id"]){let{unitId:v79,shapeId:v80}=v228.params;if(this._activeShapeInfo&&this._activeShapeInfo["shapeId"]===v80){let v20=this._getShapeInfo(v79,this._activeShapeInfo["subUnitId"],v80);v20&&(this._shapeEditPanelVersion+=1,v20.version=this._shapeEditPanelVersion,this._activeShapeInfo=v20,this._isOpenedShapeEditPanel&&this._openShapeEditPanel());}}})),this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v229=>{if(this._isOpenedShapeEditPanel===false)return;if(v229.length===0){this._activeShapeInfo=null,this._closeShapeEditPanel();return;}if(v229.length===1&&v229[0].drawingType===o.DrawingTypeEnum["DRAWING_SHAPE"]&&(this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v229[0].unitId,v229[0].subUnitId,v229[0].drawingId),this._activeShapeInfo)){this._openShapeEditPanel();return;}let v230=v229.filter(v81=>v81.drawingType===o.DrawingTypeEnum["DRAWING_SHAPE"]);if(v229.length>1&&v230.length===v229.length){if(this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v229[0].unitId,v229[0].subUnitId,v229[0].drawingId),this._activeShapeInfo){this._openShapeEditPanel();return;}}else{if(this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v229[0].unitId,v229[0].subUnitId,v229[0].drawingId),this._activeShapeInfo){this._activeShapeInfo["disableShapeOption"]=true,this._openShapeEditPanel();return;}}this._closeShapeEditPanel();}));}_openShapeEditPanel(){this._activeShapeInfo&&(this._sidebarDisposable=this._sidebarService["open"]({id:S,header:{title:this._localeService["t"]("docs-shape-ui.formatShape")},width:388,children:{label:S,...this._activeShapeInfo},onClose:()=>{this._drawingManagerService["focusDrawing"](null),this._contextService["setContextValue"](o.FOCUSING_COMMON_DRAWINGS,false),this._sidebarDisposable=null;}}),this._isOpenedShapeEditPanel=true);}_closeShapeEditPanel(){this._isOpenedShapeEditPanel=false,this._sidebarService["close"](S),this._sidebarDisposable=null,this._contextService["setContextValue"](o.FOCUSING_COMMON_DRAWINGS,false),this._drawingManagerService["focusDrawing"](null);}};Ct=N([M(0,o.IUniverInstanceService),M(1,(0,o.Inject)(n.ISidebarService)),M(2,n.IMenuManagerService),M(3,(0,o.Inject)(r.DocsShapeService)),M(4,(0,o.Inject)(o.LocaleService)),M(5,o.ICommandService),M(6,u.IDrawingManagerService),M(7,(0,o.Inject)(t.DocCanvasPopManagerService)),M(8,l.IRenderManagerService),M(9,o.IContextService),M(10,(0,o.Inject)(J)),M(11,o.IPermissionService)],Ct);let $=class extends o.Plugin{constructor(v673=Je,v674,v675,v676,v677){super(),this._config=v673,this._injector=v674,this._commandService=v675,this._configService=v676,this._renderManagerService=v677;let{menu:v678,...v679}=(0,o.merge)({},Je,this._config);v678&&this._configService["setConfig"]("menu",v678,{merge:true}),this._configService["setConfig"]("docs-shape-ui.config",v679),this._initCommands();}onStarting(){this._injector["add"]([Y]),this._injector["get"](Y),(0,o.registerDependencies)(this._injector,[[Ct],[St],[Q],[ft],[Z],[P],[W],[J],[gt]]),this._initUIPart();}onReady(){this._renderManagerService["registerRenderModule"](o.UniverInstanceType["UNIVER_DOC"],[Z]),this._renderManagerService["registerRenderModule"](o.UniverInstanceType["UNIVER_DOC"],[bt]),(0,o.touchDependencies)(this._injector,[[Ct],[St],[Q],[ft],[P],[W],[J],[gt]]);}onRendered(){this._renderManagerService["registerRenderModule"](o.UniverInstanceType["UNIVER_DOC"],[xt]);}_initCommands(){[x,qe,O,D,A,j].forEach(v231=>this.disposeWithMe(this._commandService["registerCommand"](v231)));}_initUIPart(){let v680=this._injector,v681=v680.get(n.IUIPartsService);this.disposeWithMe(v681.registerComponent(n.BuiltInUIPart["CONTENT"],()=>(0,n.connectInjector)(ct,v680)));}};q($,"type",o.UniverInstanceType["UNIVER_DOC"]),q($,"pluginName","DOCS_SHAPE_UI_PLUGIN"),q($,"packageName",Ge),q($,"version",Ke),$=N([(0,o.DependentOn)(m.UniverLicensePlugin,s.UniverDocsPlugin,u.UniverDrawingPlugin,d.UniverDrawingUIPlugin,l.UniverRenderEnginePlugin,t.UniverDocsUIPlugin,a.UniverShapeEditorPlugin,h.UniverDocsDrawingUIPlugin,r.UniverDocsShapePlugin,e.UniverShapeEditorUIPlugin),M(1,(0,o.Inject)(o.Injector)),M(2,o.ICommandService),M(3,o.IConfigService),M(4,l.IRenderManagerService)],$),exports.DocsShapeUIMenuSchema=We,Object.defineProperty(exports,"UniverDocsShapeUIPlugin",{enumerable:true,get:function(){return $;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/shape-editor-ui"),
+  t = require("@univerjs/docs-ui"),
+  n = require("@univerjs/ui"),
+  r = require("@univerjs-pro/docs-shape"),
+  i = require("@univerjs-pro/engine-shape"),
+  a = require("@univerjs-pro/shape-editor"),
+  o = require("@univerjs/core"),
+  s = require("@univerjs/docs"),
+  c = require("@univerjs/docs-drawing"),
+  l = require("@univerjs/engine-render"),
+  u = require("@univerjs/drawing"),
+  d = require("@univerjs/drawing-ui"),
+  f = require("react/jsx-runtime"),
+  p = require("rxjs"),
+  m = require("@univerjs-pro/license"),
+  h = require("@univerjs/docs-drawing-ui"),
+  g = require("@univerjs/icons"),
+  _ = require("react");
+function v(var_core_value_sigBC1A, var_core_value_sig3F3A) {
+  if (var_core_value_sig3F3A) {
+    if ((0, i.isConnectorShape)(var_core_value_sigBC1A) && (var_core_value_sig3F3A.startArrow || var_core_value_sig3F3A.endArrow)) return {
+      ln: {
+        startArrow: var_core_value_sig3F3A.startArrow ? {
+          type: i.ShapeArrowTypeEnum["Arrow"],
+          size: i.ShapeArrowSizeEnum["Medium"]
+        } : undefined,
+        endArrow: var_core_value_sig3F3A.endArrow ? {
+          type: i.ShapeArrowTypeEnum["Arrow"],
+          size: i.ShapeArrowSizeEnum["Large"]
+        } : undefined
+      }
+    };
+    if (var_core_value_sigBC1A === i.ShapeTypeEnum["Rect"] && (var_core_value_sig3F3A.horizontal || var_core_value_sig3F3A.vertical)) return (0, a.createShapeTextBoxShapeData)({
+      fill: {
+        fillType: i.ShapeFillEnum["SolidFill"],
+        color: "#3B82F6"
+      },
+      isHorizontal: !!var_core_value_sig3F3A.horizontal,
+      stroke: {
+        lineStrokeType: i.ShapeLineTypeEnum["SolidLine"],
+        width: 1,
+        color: "#2563EB"
+      }
+    });
+  }
+}
+function y(var_core_value_sigA984, var_core_value_sigA504) {
+  var var_core_value_sig05FF;
+  let var_core_value_sigFBF0 = var_core_value_sigA504.segmentId ?? "",
+    var_core_value_sig2F95 = (var_core_value_sig05FF = var_core_value_sigA984.getSelfOrHeaderFooterModel(var_core_value_sigFBF0)) == null ? undefined : var_core_value_sig05FF.getBody();
+  if (!var_core_value_sig2F95) return null;
+  let var_core_value_sigF0E1 = var_core_value_sig2F95.paragraphs ?? [],
+    var_core_value_sig2D8D = var_core_value_sigF0E1.find(var_core_value_sig8CF5 => {
+      let var_core_value_sigDDD7 = (0, o.getParagraphContentStartOffset)(var_core_value_sig2F95, var_core_value_sig8CF5);
+      return var_core_value_sigA504.startOffset >= var_core_value_sigDDD7 && var_core_value_sigA504.startOffset <= var_core_value_sig8CF5.startIndex;
+    }) ?? var_core_value_sigF0E1[var_core_value_sigF0E1.length - 1];
+  return var_core_value_sig2D8D ? {
+    paragraphId: var_core_value_sig2D8D.paragraphId,
+    segmentId: var_core_value_sigFBF0,
+    position: r.DocShapeAnchorPosition["OFFSET"],
+    offset: var_core_value_sigA504.startOffset - (0, o.getParagraphContentStartOffset)(var_core_value_sig2F95, var_core_value_sig2D8D)
+  } : null;
+}
+function b(var_core_value_sigE5A6, var_core_value_sigF449, var_core_value_sig38C5) {
+  var var_core_value_sigC87D, var_core_value_sigCCDC;
+  if (!var_core_value_sig38C5) return null;
+  let var_core_value_sigC310 = (var_core_value_sigC87D = var_core_value_sigE5A6.get(l.IRenderManagerService).getRenderUnitById(var_core_value_sigF449)) == null ? undefined : var_core_value_sigC87D.with(t.DocParagraphMenuService).activeTarget;
+  if (!var_core_value_sigC310) return null;
+  let var_core_value_sigA4E8 = var_core_value_sig38C5 === "below" ? {
+    startOffset: var_core_value_sigC310.moveRange["endOffset"],
+    endOffset: var_core_value_sigC310.moveRange["endOffset"]
+  } : var_core_value_sigC310.menuRange;
+  return {
+    startOffset: var_core_value_sigA4E8.startOffset,
+    endOffset: var_core_value_sigA4E8.endOffset,
+    collapsed: var_core_value_sigA4E8.startOffset === var_core_value_sigA4E8.endOffset,
+    segmentId: ((var_core_value_sigCCDC = var_core_value_sigC310.paragraph) == null ? undefined : var_core_value_sigCCDC.segmentId) ?? ""
+  };
+}
+const x = {
+    type: o.CommandType["COMMAND"],
+    id: "doc.command.menu-insert-shape",
+    handler: async (var_core_value_sigDC07, var_core_value_sig3474) => {
+      let var_core_value_sig4E80 = var_core_value_sigDC07.get(o.IUniverInstanceService).getCurrentUnitOfType(o.UniverInstanceType["UNIVER_DOC"]);
+      if (!var_core_value_sig4E80) return false;
+      let var_core_value_sigD23B = var_core_value_sigDC07.get(o.ICommandService),
+        var_core_value_sig2B2A = var_core_value_sig4E80.getUnitId(),
+        var_core_value_sig0B5C = var_core_value_sig3474.shapeId ?? (0, o.generateRandomId)(),
+        var_core_value_sig7D42 = var_core_value_sig3474.width ?? r.DEFAULT_DOC_SHAPE_WIDTH,
+        var_core_value_sig8FDE = var_core_value_sig3474.height ?? r.DEFAULT_DOC_SHAPE_HEIGHT,
+        var_core_value_sig78E6 = var_core_value_sig3474.shapeData ?? v(var_core_value_sig3474.value, var_core_value_sig3474.enhanceParams),
+        var_core_value_sig541F = b(var_core_value_sigDC07, var_core_value_sig2B2A, var_core_value_sig3474.paragraphMenuPlacement) ?? var_core_value_sigDC07.get(s.DocSelectionManagerService).getActiveTextRange();
+      if (!var_core_value_sig541F) return false;
+      let var_core_value_sig417B = y(var_core_value_sig4E80, var_core_value_sig541F);
+      return var_core_value_sig417B ? !!var_core_value_sigD23B.syncExecuteCommand(r.InsertDocShapeCommand["id"], {
+        unitId: var_core_value_sig2B2A,
+        shapeId: var_core_value_sig0B5C,
+        shapeType: var_core_value_sig3474.value,
+        shapeData: var_core_value_sig78E6,
+        transform: {
+          width: var_core_value_sig7D42,
+          height: var_core_value_sig8FDE
+        },
+        placement: {
+          wrappingStyle: c.TextWrappingStyle["INLINE"],
+          anchor: var_core_value_sig417B
+        }
+      }) : false;
+    }
+  },
+  S = "doc.shape.edit.panel",
+  C = "docs-shape-ui.ribbon.shape-format",
+  w = "doc.shape.object-list.panel",
+  T = (0, o.createInternalEditorID)("SHAPE_TEXT"),
+  E = "doc.shape.text.float-menu",
+  D = {
+    id: "doc.operation.open-shape-object-list-panel",
+    type: o.CommandType["COMMAND"],
+    handler: (var_core_value_sigAA90, var_core_value_sigE92D) => {
+      let var_core_value_sig9940 = var_core_value_sigAA90.get(n.ISidebarService),
+        var_core_value_sig682D = var_core_value_sigAA90.get(o.LocaleService),
+        var_core_value_sig1435 = var_core_value_sigAA90.get(u.IDrawingManagerService);
+      return (var_core_value_sigE92D == null ? undefined : var_core_value_sigE92D.value) === "close" ? (var_core_value_sig9940.close(w), true) : (var_core_value_sig9940.open({
+        id: w,
+        header: {
+          title: var_core_value_sig682D.t("docs-shape-ui.objectListPanel.title")
+        },
+        children: {
+          label: w
+        },
+        onClose: () => {
+          var_core_value_sig1435.focusDrawing(null);
+        },
+        width: 360
+      }), true);
+    }
+  },
+  O = {
+    type: o.CommandType["OPERATION"],
+    id: "doc.operation.open-doc-shape-format-panel",
+    handler() {
+      return true;
+    }
+  };
+function k(var_core_value_sig4082) {
+  let var_core_value_sigC049 = var_core_value_sig4082.get(u.IDrawingManagerService).getFocusDrawings(),
+    var_core_value_sigE5C3 = var_core_value_sigC049.length === 1 ? var_core_value_sigC049[0] : null;
+  if (!var_core_value_sigE5C3 || var_core_value_sigE5C3.drawingType !== o.DrawingTypeEnum["DRAWING_SHAPE"]) return null;
+  let var_core_value_sigCCAA = var_core_value_sig4082.get(r.DocsShapeService),
+    var_core_value_sigF32D = var_core_value_sigCCAA.getShapeTypeById(var_core_value_sigE5C3.unitId, var_core_value_sigE5C3.subUnitId, var_core_value_sigE5C3.drawingId),
+    var_core_value_sig9427 = var_core_value_sigCCAA.getShapeDataById(var_core_value_sigE5C3.unitId, var_core_value_sigE5C3.subUnitId, var_core_value_sigE5C3.drawingId);
+  return var_core_value_sigF32D === undefined || !var_core_value_sig9427 ? null : {
+    drawing: var_core_value_sigE5C3,
+    shapeData: var_core_value_sig9427,
+    shapeType: var_core_value_sigF32D
+  };
+}
+const A = {
+    id: "doc.operation.apply-shape-quick-style",
+    type: o.CommandType["OPERATION"],
+    handler: (var_core_value_sig21F4, var_core_value_sigA345) => {
+      let var_core_value_sigA468 = k(var_core_value_sig21F4),
+        var_core_value_sig1561 = (0, a.getShapeQuickStylePreset)((var_core_value_sigA345 == null ? undefined : var_core_value_sigA345.presetId) ?? (var_core_value_sigA345 == null ? undefined : var_core_value_sigA345.value) ?? "");
+      if (!var_core_value_sigA468 || !var_core_value_sig1561 || var_core_value_sig1561.type !== (0, a.getShapeQuickStyleType)(var_core_value_sigA468.shapeData)) return false;
+      let var_core_value_sigDF14 = (0, a.applyQuickStyleToShapeData)(var_core_value_sigA468.shapeData, var_core_value_sig1561);
+      if (!var_core_value_sigDF14) return false;
+      let {
+        drawing: var_core_value_sig842F
+      } = var_core_value_sigA468;
+      return var_core_value_sig21F4.get(o.ICommandService).executeCommand(r.UpdateDocShapeDataCommand["id"], {
+        unitId: var_core_value_sig842F.unitId,
+        shapeId: var_core_value_sig842F.drawingId,
+        shapeData: var_core_value_sigDF14,
+        oldShapeJSON: {
+          oldShapeData: var_core_value_sigA468.shapeData
+        }
+      });
+    }
+  },
+  j = {
+    id: "doc.operation.update-shape-type",
+    type: o.CommandType["OPERATION"],
+    handler: (var_core_value_sigC4C0, var_core_value_sig214A) => {
+      let var_core_value_sigCCC3 = k(var_core_value_sigC4C0),
+        var_core_value_sig986E = (var_core_value_sig214A == null ? undefined : var_core_value_sig214A.shapeType) ?? (var_core_value_sig214A == null ? undefined : var_core_value_sig214A.value);
+      if (!var_core_value_sigCCC3 || !var_core_value_sig986E || (0, i.isConnectorShape)(var_core_value_sigCCC3.shapeType) || (0, i.isConnectorShape)(var_core_value_sig986E)) return false;
+      let var_core_value_sig537C = (0, a.cloneShapeDataForType)(var_core_value_sigCCC3.shapeData, var_core_value_sig986E);
+      if (!var_core_value_sig537C) return false;
+      let {
+        drawing: var_core_value_sigBBBC
+      } = var_core_value_sigCCC3;
+      return var_core_value_sigC4C0.get(o.ICommandService).executeCommand(r.UpdateDocShapeDataCommand["id"], {
+        unitId: var_core_value_sigBBBC.unitId,
+        shapeId: var_core_value_sigBBBC.drawingId,
+        shapeType: var_core_value_sig986E,
+        shapeData: var_core_value_sig537C,
+        replaceShapeData: true,
+        oldShapeJSON: {
+          oldShapeType: var_core_value_sigCCC3.shapeType,
+          oldShapeData: var_core_value_sigCCC3.shapeData
+        }
+      });
+    }
+  };
+function M(var_core_value_sig5440, var_core_value_sigE28B) {
+  return function (var_core_value_sigB2CE, var_core_value_sig443C) {
+    var_core_value_sigE28B(var_core_value_sigB2CE, var_core_value_sig443C, var_core_value_sig5440);
+  };
+}
+function N(var_core_value_sig0FD9, var_core_value_sig5649, var_core_value_sigAF82, var_core_value_sig21A2) {
+  var var_core_value_sig5C1D = arguments.length,
+    var_core_value_sig4CBA = var_core_value_sig5C1D < 3 ? var_core_value_sig5649 : var_core_value_sig21A2 === null ? var_core_value_sig21A2 = Object.getOwnPropertyDescriptor(var_core_value_sig5649, var_core_value_sigAF82) : var_core_value_sig21A2,
+    var_core_value_sig8E65;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig4CBA = Reflect.decorate(var_core_value_sig0FD9, var_core_value_sig5649, var_core_value_sigAF82, var_core_value_sig21A2);else {
+    for (var var_core_value_sig772C = var_core_value_sig0FD9.length - 1; var_core_value_sig772C >= 0; var_core_value_sig772C--) (var_core_value_sig8E65 = var_core_value_sig0FD9[var_core_value_sig772C]) && (var_core_value_sig4CBA = (var_core_value_sig5C1D < 3 ? var_core_value_sig8E65(var_core_value_sig4CBA) : var_core_value_sig5C1D > 3 ? var_core_value_sig8E65(var_core_value_sig5649, var_core_value_sigAF82, var_core_value_sig4CBA) : var_core_value_sig8E65(var_core_value_sig5649, var_core_value_sigAF82)) || var_core_value_sig4CBA);
+  }
+  return var_core_value_sig5C1D > 3 && var_core_value_sig4CBA && Object.defineProperty(var_core_value_sig5649, var_core_value_sigAF82, var_core_value_sig4CBA), var_core_value_sig4CBA;
+}
+let P = class extends o.Disposable {
+  constructor(var_core_value_sig39B1, var_core_value_sig210D) {
+    super(), this._clipService = var_core_value_sig39B1, this._drawingManagerService = var_core_value_sig210D, this._registerImageShapeClipDelegate(), this._clipService["setCanUseShapeClip"](true), this.disposeWithMe({
+      dispose: () => this._clipService["setCanUseShapeClip"](false)
+    });
+  }
+  _registerImageShapeClipDelegate() {
+    let var_core_value_sigB4B4 = new Map(),
+      var_core_value_sigD407 = this._clipService["registerClipDelegate"]((var_core_value_sig2DAB, var_core_value_sig877E, var_core_value_sig20C8, var_core_value_sigE9A7, var_core_value_sigBECE) => {
+        let var_core_value_sig1B22 = var_core_value_sig877E;
+        if (var_core_value_sig1B22 === i.ShapeTypeEnum["None"] || var_core_value_sig877E === "custom") return false;
+        try {
+          let var_core_value_sig1A0F = var_core_value_sigB4B4.get(var_core_value_sig877E);
+          return var_core_value_sig1A0F || (var_core_value_sig1A0F = new i["ShapeModel"](var_core_value_sig1B22, "clip-" + var_core_value_sig877E), var_core_value_sigB4B4.set(var_core_value_sig877E, var_core_value_sig1A0F)), var_core_value_sig1A0F.clearAdjustValue(), var_core_value_sigBECE && Object.keys(var_core_value_sigBECE).length > 0 && var_core_value_sig1A0F.setShapeData({
+            adjustValues: var_core_value_sigBECE
+          }, true), var_core_value_sig1A0F.updateContext({
+            width: var_core_value_sig20C8,
+            height: var_core_value_sigE9A7
+          }), var_core_value_sig1A0F.buildClipPath(var_core_value_sig2DAB, {
+            left: 0,
+            top: 0,
+            width: var_core_value_sig20C8,
+            height: var_core_value_sigE9A7
+          });
+        } catch {
+          return false;
+        }
+      });
+    this.disposeWithMe(var_core_value_sigD407), this.disposeWithMe({
+      dispose: () => var_core_value_sigB4B4.clear()
+    });
+  }
+  clipByShape(var_core_value_sig63F3, var_core_value_sig6A71, var_core_value_sig3BF6, var_core_value_sig38CE, var_core_value_sig62B7) {
+    let var_core_value_sig37A8 = this._drawingManagerService["getDrawingData"](var_core_value_sig63F3, var_core_value_sig6A71)[var_core_value_sig3BF6];
+    !var_core_value_sig37A8 || var_core_value_sig37A8.drawingType !== o.DrawingTypeEnum["DRAWING_IMAGE"] || this._drawingManagerService["featurePluginUpdateNotification"]([{
+      ...var_core_value_sig37A8,
+      prstGeom: var_core_value_sig38CE,
+      adjustValues: var_core_value_sig62B7
+    }]);
+  }
+};
+P = N([M(0, (0, o.Inject)(d.DrawingImageClipService)), M(1, (0, o.Inject)(u.IDrawingManagerService))], P);
+const F = "doc.shape.picker.component",
+  I = "doc.image-clip.shape-picker.component";
+function ee({
+  onShapeClick: var_core_value_sigF309,
+  excludeGroups: var_core_value_sig44F9
+}) {
+  return (0, f.jsx)(e.ShapePickerPanel, {
+    excludeGroups: var_core_value_sig44F9,
+    onShapeClick: var_core_value_sigF309,
+    scrollContainer: "parent"
+  });
+}
+function L() {
+  let var_core_value_sigE532 = (0, n.useDependency)(u.IDrawingManagerService),
+    var_core_value_sigF381 = (0, n.useDependency)(P);
+  return (0, f.jsx)(e.ShapePickerDropdown, {
+    buttonLabel: "docs-shape-ui.crop.shape",
+    excludeGroups: [e.ShapeGroupEnum["Line"]],
+    onShapeClick: var_core_value_sigA90D => {
+      let var_core_value_sig7A3C = var_core_value_sigE532.getFocusDrawings().find(var_core_value_sig7F72 => var_core_value_sig7F72.drawingType === o.DrawingTypeEnum["DRAWING_IMAGE"]);
+      if (!var_core_value_sig7A3C) return;
+      let {
+        unitId: var_core_value_sig0511,
+        subUnitId: var_core_value_sig1F44,
+        drawingId: var_core_value_sigCB04
+      } = var_core_value_sig7A3C;
+      var_core_value_sigF381.clipByShape(var_core_value_sig0511, var_core_value_sig1F44, var_core_value_sigCB04, var_core_value_sigA90D.type);
+    }
+  });
+}
+function te() {
+  let var_core_value_sigCB92 = (0, n.useDependency)(n.ComponentManager),
+    var_core_value_sigC844 = (0, n.useDependency)(u.IDrawingManagerService),
+    var_core_value_sig2ED4 = (0, n.useDependency)(o.IUniverInstanceService),
+    var_core_value_sig0477 = var_core_value_sigC844.getFocusDrawings()[0],
+    var_core_value_sig6FDF = var_core_value_sig0477 ? var_core_value_sig2ED4.getUnitType(var_core_value_sig0477.unitId) : undefined,
+    var_core_value_sig27C4 = var_core_value_sig6FDF === o.UniverInstanceType["UNIVER_DOC"] ? I : var_core_value_sig6FDF === o.UniverInstanceType["UNIVER_SHEET"] ? "sheet.image-clip.shape-picker.component" : undefined,
+    var_core_value_sig3E1A = var_core_value_sig27C4 ? var_core_value_sigCB92.get(var_core_value_sig27C4) : undefined;
+  return var_core_value_sig3E1A ? (0, f.jsx)(var_core_value_sig3E1A, {}) : null;
+}
+function ne({
+  paragraphMenuPlacement: var_core_value_sig7FB0
+}) {
+  let var_core_value_sig5215 = (0, n.useDependency)(o.ICommandService);
+  return (0, f.jsx)(ee, {
+    onShapeClick: var_core_value_sig947E => {
+      var_core_value_sig5215.executeCommand(x.id, {
+        paragraphMenuPlacement: var_core_value_sig7FB0,
+        value: var_core_value_sig947E.type,
+        enhanceParams: {
+          endArrow: var_core_value_sig947E.endArrow,
+          startArrow: var_core_value_sig947E.startArrow,
+          horizontal: var_core_value_sig947E.horizontal,
+          vertical: var_core_value_sig947E.vertical
+        }
+      });
+    }
+  });
+}
+function re(var_core_value_sig5204) {
+  return var_core_value_sig4545 => ({
+    id: x.id,
+    type: n.MenuItemType["SELECTOR"],
+    selections: [{
+      label: {
+        name: F,
+        hoverable: false,
+        selectable: false,
+        props: var_core_value_sig5204 ? {
+          id: x.id,
+          paragraphMenuPlacement: var_core_value_sig5204
+        } : {
+          id: x.id
+        }
+      }
+    }],
+    icon: "ShapeIcon",
+    title: "docs-shape-ui.insertShape",
+    tooltip: "docs-shape-ui.insertShape",
+    hidden$: (0, n.getMenuHiddenObservable)(var_core_value_sig4545, o.UniverInstanceType["UNIVER_DOC"])
+  });
+}
+const ie = re(),
+  ae = re("below"),
+  oe = re("target");
+function se(var_core_value_sig5E11) {
+  return {
+    id: D.id,
+    type: n.MenuItemType["BUTTON"],
+    icon: "ObjectLayersIcon",
+    title: "docs-shape-ui.objectListPanel.open",
+    tooltip: "docs-shape-ui.objectListPanel.open",
+    hidden$: (0, n.getMenuHiddenObservable)(var_core_value_sig5E11, o.UniverInstanceType["UNIVER_DOC"])
+  };
+}
+function R(var_core_value_sig4D58, var_core_value_sig2DBD, var_core_value_sig424E, var_core_value_sigF481, var_core_value_sigD7F2, var_core_value_sig7CF3) {
+  let var_core_value_sig9DC6 = {
+    unitId: var_core_value_sig2DBD,
+    shapeId: var_core_value_sigF481,
+    shapeData: var_core_value_sig7CF3,
+    oldShapeJSON: var_core_value_sigD7F2
+  };
+  return var_core_value_sig4D58.executeCommand(r.UpdateDocShapeDataCommand["id"], var_core_value_sig9DC6);
+}
+function ce(var_core_value_sig6643, var_core_value_sig4124, var_core_value_sigBF1C, var_core_value_sigEEEF, var_core_value_sig9A01, var_core_value_sig674F) {
+  let var_core_value_sigC8F6 = {
+    unitId: var_core_value_sig4124,
+    shapeId: var_core_value_sigEEEF,
+    shapeData: var_core_value_sig674F,
+    oldShapeJSON: var_core_value_sig9A01
+  };
+  return var_core_value_sig6643.executeCommand(r.UpdateDocShapeDataCommand["id"], var_core_value_sigC8F6);
+}
+const le = "docs-shape-ui.shape-format.quick-style-gallery",
+  ue = "docs-shape-ui.shape-format.style-ribbon-control",
+  de = "docs-shape-ui.shape-format.text-ribbon-control",
+  fe = "docs-shape-ui.shape-format.formula-ribbon-control",
+  pe = "docs-shape-ui.shape-format.wrapping-style-label",
+  z = [{
+    value: c.TextWrappingStyle["INLINE"],
+    label: "docs-shape-ui.textWrap.inline",
+    icon: "DocsShapeWrapInlineIcon"
+  }, {
+    value: c.TextWrappingStyle["WRAP_SQUARE"],
+    label: "docs-shape-ui.textWrap.square",
+    icon: "DocsShapeWrapSquareIcon"
+  }, {
+    value: c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"],
+    label: "docs-shape-ui.textWrap.topAndBottom",
+    icon: "DocsShapeWrapTopBottomIcon"
+  }, {
+    value: c.TextWrappingStyle["BEHIND_TEXT"],
+    label: "docs-shape-ui.textWrap.behindText",
+    icon: "DocsShapeWrapBehindTextIcon"
+  }, {
+    value: c.TextWrappingStyle["IN_FRONT_OF_TEXT"],
+    label: "docs-shape-ui.textWrap.inFrontText",
+    icon: "DocsShapeWrapInFrontOfTextIcon"
+  }];
+function B() {
+  let var_core_value_sig8A26 = (0, n.useDependency)(o.ICommandService),
+    var_core_value_sigD073 = (0, n.useDependency)(u.IDrawingManagerService),
+    var_core_value_sigF631 = (0, n.useDependency)(r.DocsShapeService),
+    var_core_value_sig2278 = () => {
+      var var_core_value_sigF39A;
+      let var_core_value_sigF79C = var_core_value_sigD073.getFocusDrawings();
+      if (var_core_value_sigF79C.length !== 1 || ((var_core_value_sigF39A = var_core_value_sigF79C[0]) == null ? undefined : var_core_value_sigF39A.drawingType) !== o.DrawingTypeEnum["DRAWING_SHAPE"]) return null;
+      let {
+          unitId: var_core_value_sig2E54,
+          subUnitId: var_core_value_sig7658,
+          drawingId: var_core_value_sigDCF5
+        } = var_core_value_sigF79C[0],
+        var_core_value_sigC786 = var_core_value_sigF631.getShapeTypeById(var_core_value_sig2E54, var_core_value_sig7658, var_core_value_sigDCF5),
+        var_core_value_sigC0D9 = var_core_value_sigF631.getShapeDataById(var_core_value_sig2E54, var_core_value_sig7658, var_core_value_sigDCF5);
+      return var_core_value_sigC786 === undefined || !var_core_value_sigC0D9 ? null : {
+        unitId: var_core_value_sig2E54,
+        subUnitId: var_core_value_sig7658,
+        drawingId: var_core_value_sigDCF5,
+        shapeType: var_core_value_sigC786,
+        shapeData: var_core_value_sigC0D9
+      };
+    },
+    var_core_value_sig7053 = (0, n.useObservable)(() => new p.Observable(var_core_value_sig7B2A => {
+      let var_core_value_sig06CD = () => var_core_value_sig7B2A.next(var_core_value_sig2278()),
+        var_core_value_sigA5F1 = var_core_value_sigD073.focus$["subscribe"](var_core_value_sig06CD),
+        var_core_value_sig97A2 = var_core_value_sig8A26.onCommandExecuted(var_core_value_sigFBA4 => {
+          var_core_value_sigFBA4.id === r.UpdateDocShapeDataMutation["id"] && var_core_value_sig06CD();
+        });
+      return var_core_value_sig06CD(), () => {
+        var_core_value_sigA5F1.unsubscribe(), var_core_value_sig97A2.dispose();
+      };
+    }), var_core_value_sig2278(), false, [var_core_value_sig8A26, var_core_value_sigF631, var_core_value_sigD073]);
+  return {
+    selection: var_core_value_sig7053,
+    updateShapeData: var_core_value_sigF051 => {
+      var_core_value_sig7053 && R(var_core_value_sig8A26, var_core_value_sig7053.unitId, var_core_value_sig7053.subUnitId, var_core_value_sig7053.drawingId, {
+        oldShapeData: var_core_value_sig7053.shapeData
+      }, var_core_value_sigF051);
+    }
+  };
+}
+function me() {
+  let {
+    selection: var_core_value_sig52F1,
+    updateShapeData: var_core_value_sig1E74
+  } = B();
+  return var_core_value_sig52F1 ? (0, f.jsx)(e.ShapeStyleRibbonControl, {
+    shapeData: var_core_value_sig52F1.shapeData,
+    shapeType: var_core_value_sig52F1.shapeType,
+    onUpdateShapeData: var_core_value_sig1E74
+  }) : null;
+}
+function he() {
+  let var_core_value_sig1E84 = (0, n.useDependency)(o.ICommandService),
+    var_core_value_sig133B = (0, n.useDependency)(o.LocaleService),
+    {
+      selection: var_core_value_sig69B8
+    } = B();
+  return var_core_value_sig69B8 ? (0, f.jsx)(e.ShapeQuickStyleGallery, {
+    type: (0, a.getShapeQuickStyleType)(var_core_value_sig69B8.shapeData),
+    ariaLabel: var_core_value_sig133B.t("docs-shape-ui.quickStyles"),
+    activePresetId: (0, a.resolveActiveShapeQuickStylePresetId)(var_core_value_sig69B8.shapeData),
+    onSelect: var_core_value_sig5825 => var_core_value_sig1E84.executeCommand(A.id, {
+      presetId: var_core_value_sig5825
+    })
+  }) : null;
+}
+function ge() {
+  let {
+    selection: var_core_value_sig983D,
+    updateShapeData: var_core_value_sig9A03
+  } = B();
+  return var_core_value_sig983D ? (0, f.jsx)(e.ShapeTextRibbonControl, {
+    fontFamilyPopupDataComponent: "docs-shape-format-font-family-menu",
+    shapeData: var_core_value_sig983D.shapeData,
+    onUpdateShapeData: var_core_value_sig9A03
+  }) : null;
+}
+function _e() {
+  var var_core_value_sig3363;
+  let {
+      selection: var_core_value_sigF64A,
+      updateShapeData: var_core_value_sig25EC
+    } = B(),
+    var_core_value_sigA790 = (0, e.useFormulaShapeToolbar)({
+      hostType: o.UniverInstanceType["UNIVER_DOC"],
+      unitId: (var_core_value_sigF64A == null ? undefined : var_core_value_sigF64A.unitId) ?? "",
+      subUnitId: (var_core_value_sigF64A == null ? undefined : var_core_value_sigF64A.subUnitId) ?? "",
+      shapeId: (var_core_value_sigF64A == null ? undefined : var_core_value_sigF64A.drawingId) ?? "",
+      shapeData: var_core_value_sigF64A == null ? undefined : var_core_value_sigF64A.shapeData,
+      registerBinding: false,
+      showLabels: true,
+      dropdownSide: "bottom",
+      onUpdateBinding: var_core_value_sig4EB7 => var_core_value_sig25EC({
+        formulaBinding: var_core_value_sig4EB7
+      })
+    }),
+    var_core_value_sig9A5E = ((var_core_value_sig3363 = var_core_value_sigA790.extensionGroups) == null ? undefined : var_core_value_sig3363.flatMap(var_core_value_sig73AF => var_core_value_sig73AF.actions).filter(var_core_value_sig548A => var_core_value_sig548A.visible !== false)) ?? [];
+  return var_core_value_sigF64A != null && var_core_value_sigF64A.shapeData["formulaBinding"] ? (0, f.jsx)(e.ShapeFormulaRibbonControl, {
+    actions: var_core_value_sig9A5E,
+    panel: var_core_value_sigA790.panel
+  }) : null;
+}
+function ve({
+  value: var_core_value_sig01B9
+}) {
+  let var_core_value_sigD6A9 = (0, n.useDependency)(o.LocaleService),
+    var_core_value_sig0FCF = z.find(var_core_value_sigE026 => var_core_value_sigE026.value === var_core_value_sig01B9) ?? z[0];
+  return var_core_value_sig0FCF ? (0, f.jsx)("span", {
+    children: var_core_value_sigD6A9.t(var_core_value_sig0FCF.label)
+  }) : null;
+}
+const ye = "docs-shape-ui.ribbon.shape-format.style-control",
+  be = "docs-shape-ui.ribbon.shape-format.text-control",
+  xe = "docs-shape-ui.ribbon.shape-format.formula-control",
+  Se = "docs-shape-ui.ribbon.shape-format.arrange-forward",
+  Ce = "docs-shape-ui.ribbon.shape-format.arrange-backward",
+  we = "docs-shape-ui.ribbon.shape-format.arrange-front",
+  Te = "docs-shape-ui.ribbon.shape-format.arrange-back",
+  Ee = "docs-shape-ui.ribbon.shape-format.wrapping-style";
+function De(var_core_value_sigCF96) {
+  let var_core_value_sigC4E9 = var_core_value_sigCF96.get(o.ICommandService),
+    var_core_value_sigF612 = var_core_value_sigCF96.get(u.IDrawingManagerService),
+    var_core_value_sigAA6C = var_core_value_sigCF96.get(r.DocsShapeService);
+  return new p["Observable"](var_core_value_sig339E => {
+    let var_core_value_sig7550 = () => {
+        let var_core_value_sig07E9 = V(var_core_value_sigCF96),
+          var_core_value_sig4F59 = var_core_value_sig07E9 ? var_core_value_sigAA6C.getShapeDataById(var_core_value_sig07E9.unitId, var_core_value_sig07E9.subUnitId, var_core_value_sig07E9.drawingId) : null;
+        var_core_value_sig339E.next(var_core_value_sig4F59 ? (0, a.resolveActiveShapeQuickStylePresetId)(var_core_value_sig4F59) ?? "" : "");
+      },
+      var_core_value_sig2983 = var_core_value_sigF612.focus$["subscribe"](var_core_value_sig7550),
+      var_core_value_sigE1B0 = var_core_value_sigC4E9.onCommandExecuted(var_core_value_sigF564 => {
+        var_core_value_sigF564.id === r.UpdateDocShapeDataMutation["id"] && var_core_value_sig7550();
+      });
+    return var_core_value_sig7550(), () => {
+      var_core_value_sig2983.unsubscribe(), var_core_value_sigE1B0.dispose();
+    };
+  });
+}
+function V(var_core_value_sig8BFA) {
+  var var_core_value_sig236B;
+  let var_core_value_sig1951 = var_core_value_sig8BFA.get(u.IDrawingManagerService).getFocusDrawings();
+  return var_core_value_sig1951.length === 1 && ((var_core_value_sig236B = var_core_value_sig1951[0]) == null ? undefined : var_core_value_sig236B.drawingType) === o.DrawingTypeEnum["DRAWING_SHAPE"] ? var_core_value_sig1951[0] : null;
+}
+function Oe(var_core_value_sigFEA0) {
+  return (var_core_value_sigFEA0 == null ? undefined : var_core_value_sigFEA0.layoutType) === o.PositionedObjectLayoutType["WRAP_NONE"] ? var_core_value_sigFEA0.behindDoc === o.BooleanNumber["TRUE"] ? c.TextWrappingStyle["BEHIND_TEXT"] : c.TextWrappingStyle["IN_FRONT_OF_TEXT"] : (var_core_value_sigFEA0 == null ? undefined : var_core_value_sigFEA0.layoutType) === o.PositionedObjectLayoutType["WRAP_SQUARE"] ? c.TextWrappingStyle["WRAP_SQUARE"] : (var_core_value_sigFEA0 == null ? undefined : var_core_value_sigFEA0.layoutType) === o.PositionedObjectLayoutType["WRAP_TOP_AND_BOTTOM"] ? c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"] : c.TextWrappingStyle["INLINE"];
+}
+function ke(var_core_value_sig931A) {
+  let var_core_value_sigEE7D = var_core_value_sig931A.get(o.ICommandService),
+    var_core_value_sig3585 = var_core_value_sig931A.get(u.IDrawingManagerService),
+    var_core_value_sig31A8 = var_core_value_sig931A.get(o.IUniverInstanceService);
+  return new p["Observable"](var_core_value_sigD4FF => {
+    let var_core_value_sig1E5B = () => {
+        var var_core_value_sig8CFA;
+        let var_core_value_sig2E11 = V(var_core_value_sig931A),
+          var_core_value_sig5B69 = var_core_value_sig2E11 ? var_core_value_sig31A8.getUnit(var_core_value_sig2E11.unitId, o.UniverInstanceType["UNIVER_DOC"]) : undefined;
+        var_core_value_sigD4FF.next(Oe(var_core_value_sig2E11 ? var_core_value_sig5B69 == null || (var_core_value_sig8CFA = var_core_value_sig5B69.getSnapshot().drawings) == null ? undefined : var_core_value_sig8CFA[var_core_value_sig2E11.drawingId] : undefined));
+      },
+      var_core_value_sigB680 = var_core_value_sig3585.focus$["subscribe"](var_core_value_sig1E5B),
+      var_core_value_sig1F64 = var_core_value_sigEE7D.onCommandExecuted(var_core_value_sigB098 => {
+        var_core_value_sigB098.id === s.RichTextEditingMutation["id"] && var_core_value_sig1E5B();
+      });
+    return var_core_value_sig1E5B(), () => {
+      var_core_value_sigB680.unsubscribe(), var_core_value_sig1F64.dispose();
+    };
+  }).pipe((0, p.distinctUntilChanged)());
+}
+function H(var_core_value_sigA4DA, var_core_value_sig6FC0 = false) {
+  let var_core_value_sig6217 = var_core_value_sigA4DA.get(o.ICommandService),
+    var_core_value_sigB805 = var_core_value_sigA4DA.get(u.IDrawingManagerService),
+    var_core_value_sig4FAE = var_core_value_sigA4DA.get(r.DocsShapeService);
+  return new p["Observable"](var_core_value_sigDD1C => {
+    let var_core_value_sig2C39 = () => {
+        let var_core_value_sigCE71 = V(var_core_value_sigA4DA);
+        if (!var_core_value_sigCE71) {
+          var_core_value_sigDD1C.next(true);
+          return;
+        }
+        let var_core_value_sig21D8 = var_core_value_sig4FAE.getShapeDataById(var_core_value_sigCE71.unitId, var_core_value_sigCE71.subUnitId, var_core_value_sigCE71.drawingId);
+        var_core_value_sigDD1C.next(!var_core_value_sig21D8 || var_core_value_sig6FC0 && var_core_value_sig21D8.formulaBinding == null);
+      },
+      var_core_value_sigB7D1 = var_core_value_sigB805.focus$["subscribe"](var_core_value_sig2C39),
+      var_core_value_sig64F0 = var_core_value_sig6217.onCommandExecuted(var_core_value_sig2B65 => {
+        var_core_value_sig2B65.id === r.UpdateDocShapeDataMutation["id"] && var_core_value_sig2C39();
+      });
+    return var_core_value_sig2C39(), () => {
+      var_core_value_sigB7D1.unsubscribe(), var_core_value_sig64F0.dispose();
+    };
+  });
+}
+function Ae(var_core_value_sig1FCC) {
+  let var_core_value_sigB7F9 = var_core_value_sig1FCC.get(u.IDrawingManagerService),
+    var_core_value_sigB1A2 = var_core_value_sig1FCC.get(r.DocsShapeService);
+  return var_core_value_sigB7F9.focus$["pipe"]((0, p.startWith)(var_core_value_sigB7F9.getFocusDrawings()), (0, p.map)(() => {
+    let var_core_value_sig85B1 = V(var_core_value_sig1FCC),
+      var_core_value_sig3141 = var_core_value_sig85B1 ? var_core_value_sigB1A2.getShapeTypeById(var_core_value_sig85B1.unitId, var_core_value_sig85B1.subUnitId, var_core_value_sig85B1.drawingId) : undefined;
+    return var_core_value_sig3141 === undefined || (0, i.isConnectorShape)(var_core_value_sig3141);
+  }));
+}
+function je(var_core_value_sig526D) {
+  return {
+    id: A.id,
+    type: n.MenuItemType["SELECTOR"],
+    icon: "PaintIcon",
+    title: "shape-editor-ui.toolbar.quickStyles",
+    tooltip: "shape-editor-ui.toolbar.quickStyles",
+    selections: [{
+      label: {
+        name: le,
+        hoverable: false,
+        selectable: false
+      }
+    }],
+    value$: De(var_core_value_sig526D),
+    hidden$: H(var_core_value_sig526D)
+  };
+}
+function Me(var_core_value_sigBDB5) {
+  return {
+    id: j.id,
+    type: n.MenuItemType["SELECTOR"],
+    icon: "ShapeIcon",
+    title: "shape-editor-ui.toolbar.changeShape",
+    tooltip: "shape-editor-ui.toolbar.changeShape",
+    slot: true,
+    selections: [{
+      label: {
+        name: e.SHAPE_CHANGE_PICKER_COMPONENT,
+        hoverable: false,
+        selectable: false
+      }
+    }],
+    hidden$: Ae(var_core_value_sigBDB5)
+  };
+}
+function Ne(var_core_value_sig59CE, var_core_value_sig3AD7, var_core_value_sig04E4 = false) {
+  return var_core_value_sig2162 => ({
+    id: var_core_value_sig59CE,
+    type: n.MenuItemType["BUTTON"],
+    label: {
+      name: var_core_value_sig3AD7,
+      hoverable: false,
+      selectable: false
+    },
+    hidden$: H(var_core_value_sig2162, var_core_value_sig04E4)
+  });
+}
+const Pe = Ne(ye, ue),
+  Fe = Ne(be, de),
+  Ie = Ne(xe, fe, true);
+function Le(var_core_value_sigD8F0) {
+  return {
+    id: Ee,
+    type: n.MenuItemType["SELECTOR"],
+    icon: z[0].icon,
+    label: pe,
+    selectionsCommandId: c.UpdateDocDrawingWrappingStyleCommand["id"],
+    selections: z.map(({
+      icon: var_core_value_sig2EAD,
+      label: var_core_value_sig6774,
+      value: var_core_value_sig340D
+    }) => ({
+      value: var_core_value_sig340D,
+      label: var_core_value_sig6774,
+      icon: var_core_value_sig2EAD,
+      params: () => {
+        let var_core_value_sigD7EA = V(var_core_value_sigD8F0);
+        return var_core_value_sigD7EA ? {
+          unitId: var_core_value_sigD7EA.unitId,
+          subUnitId: var_core_value_sigD7EA.subUnitId,
+          drawings: [{
+            unitId: var_core_value_sigD7EA.unitId,
+            subUnitId: var_core_value_sigD7EA.subUnitId,
+            drawingId: var_core_value_sigD7EA.drawingId
+          }],
+          wrappingStyle: var_core_value_sig340D
+        } : undefined;
+      }
+    })),
+    value$: ke(var_core_value_sigD8F0),
+    hidden$: H(var_core_value_sigD8F0)
+  };
+}
+function U(var_core_value_sig1475, var_core_value_sig08B7, var_core_value_sig2008, var_core_value_sig496B) {
+  return var_core_value_sig82D4 => ({
+    id: var_core_value_sig1475,
+    commandId: c.SetDocDrawingArrangeCommand["id"],
+    type: n.MenuItemType["BUTTON"],
+    icon: var_core_value_sig2008,
+    title: var_core_value_sig496B,
+    tooltip: var_core_value_sig496B,
+    hidden$: H(var_core_value_sig82D4),
+    params: () => {
+      let var_core_value_sigB33B = V(var_core_value_sig82D4);
+      return var_core_value_sigB33B ? {
+        unitId: var_core_value_sigB33B.unitId,
+        subUnitId: var_core_value_sigB33B.subUnitId,
+        drawingIds: [var_core_value_sigB33B.drawingId],
+        arrangeType: var_core_value_sig08B7
+      } : undefined;
+    }
+  });
+}
+const Re = U(Se, o.ArrangeTypeEnum["forward"], "MoveUpIcon", "shape-editor-ui.arrange.forward"),
+  ze = U(Ce, o.ArrangeTypeEnum["backward"], "MoveDownIcon", "shape-editor-ui.arrange.backward"),
+  Be = U(we, o.ArrangeTypeEnum["front"], "TopmostIcon", "shape-editor-ui.arrange.front"),
+  Ve = U(Te, o.ArrangeTypeEnum["back"], "BottomIcon", "shape-editor-ui.arrange.back");
+function He(var_core_value_sig7161) {
+  return {
+    id: O.id,
+    type: n.MenuItemType["BUTTON"],
+    icon: "ShapeFormatSettingIcon",
+    title: "docs-shape-ui.formatShape",
+    tooltip: "docs-shape-ui.formatShape",
+    hidden$: H(var_core_value_sig7161),
+    params: () => {
+      let var_core_value_sigBDE4 = V(var_core_value_sig7161);
+      return var_core_value_sigBDE4 ? {
+        unitId: var_core_value_sigBDE4.unitId,
+        subUnitId: var_core_value_sigBDE4.subUnitId,
+        drawingId: var_core_value_sigBDE4.drawingId
+      } : undefined;
+    }
+  };
+}
+const Ue = {
+    [n.MenuManagerPosition["RIBBON"]]: {
+      [C]: {
+        order: 100,
+        title: "docs-shape-ui.formatShape",
+        contextual: true,
+        "docs-shape-ui.ribbon.shape-format.quick-styles": {
+          order: 0,
+          [A.id]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: je
+          },
+          [j.id]: {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: Me
+          }
+        },
+        "docs-shape-ui.ribbon.shape-format.style": {
+          order: 1,
+          [ye]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 104
+            },
+            menuItemFactory: Pe
+          }
+        },
+        "docs-shape-ui.ribbon.shape-format.text": {
+          order: 2,
+          [be]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 344
+            },
+            menuItemFactory: Fe
+          }
+        },
+        "docs-shape-ui.ribbon.shape-format.arrange": {
+          order: 3,
+          [Ee]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              columnSpan: 2,
+              showLabel: true
+            },
+            menuItemFactory: Le
+          },
+          [Se]: {
+            order: 1,
+            gridLayout: {
+              row: 1,
+              column: 3
+            },
+            menuItemFactory: Re
+          },
+          [Ce]: {
+            order: 2,
+            gridLayout: {
+              row: 2,
+              column: 3
+            },
+            menuItemFactory: ze
+          },
+          [we]: {
+            order: 3,
+            gridLayout: {
+              row: 1,
+              column: 4
+            },
+            menuItemFactory: Be
+          },
+          [Te]: {
+            order: 4,
+            gridLayout: {
+              row: 2,
+              column: 4
+            },
+            menuItemFactory: Ve
+          }
+        },
+        "docs-shape-ui.ribbon.shape-format.formula": {
+          order: 4,
+          [xe]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 120
+            },
+            menuItemFactory: Ie
+          }
+        },
+        "docs-shape-ui.ribbon.shape-format.advanced": {
+          order: 5,
+          [O.id]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: He
+          },
+          [e.ToggleShapeFloatingToolbarOperation["id"]]: {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: e.ShapeFloatingToolbarToggleFactory
+          }
+        }
+      }
+    }
+  },
+  We = {
+    [n.RibbonInsertGroup["MEDIA"]]: {
+      [x.id]: {
+        order: 4,
+        menuItemFactory: var_core_value_sig2AB8 => ({
+          ...ie(var_core_value_sig2AB8),
+          title: undefined
+        })
+      }
+    },
+    [n.RibbonInsertGroup["OTHERS"]]: {
+      [D.id]: {
+        order: 0,
+        gridLayout: {
+          row: 1,
+          column: 1,
+          rowSpan: 2,
+          showLabel: true
+        },
+        menuItemFactory: se
+      }
+    },
+    [n.ContextMenuPosition["PARAGRAPH"]]: {
+      [n.ContextMenuGroup["LAYOUT"]]: {
+        [t.INSERT_BELLOW_MENU_ID]: {
+          [x.id]: {
+            replace: true,
+            order: 8,
+            menuItemFactory: ae
+          }
+        }
+      },
+      [t.DOC_CONTENT_INSERT_MENU_ID]: {
+        [n.ContextMenuGroup["LAYOUT"]]: {
+          [x.id]: {
+            replace: true,
+            order: 8,
+            menuItemFactory: ae
+          }
+        }
+      },
+      [t.EMPTY_PARAGRAPH_MENU_ID]: {
+        [n.ContextMenuGroup["LAYOUT"]]: {
+          [x.id]: {
+            replace: true,
+            order: 8,
+            menuItemFactory: oe
+          }
+        }
+      },
+      [t.DOC_PARAGRAPH_T_INSERT_MENU_ID]: {
+        insert: {
+          [x.id]: {
+            replace: true,
+            order: 2,
+            menuItemFactory: ie
+          }
+        }
+      },
+      [t.DOC_PARAGRAPH_T_INSERT_BELOW_MENU_ID]: {
+        insert: {
+          [x.id + ".below"]: {
+            replace: true,
+            order: 2,
+            menuItemFactory: ae
+          }
+        }
+      }
+    }
+  };
+var Ge = "@univerjs-pro/docs-shape-ui",
+  Ke = "1.0.0-insiders.20260907-70fc579";
+const qe = {
+    type: o.CommandType["OPERATION"],
+    id: "doc.operation.close-doc-shape-format-panel",
+    handler() {
+      return true;
+    }
+  },
+  Je = {};
+function Ye(var_core_value_sig3FCF) {
+  return var_core_value_sig3FCF.trim() || undefined;
+}
+function Xe(var_core_value_sig675A, var_core_value_sig837F, var_core_value_sig9D6E) {
+  var var_core_value_sigB205, var_core_value_sigBF78;
+  return ((var_core_value_sigB205 = var_core_value_sig675A.name) == null ? undefined : var_core_value_sigB205.trim()) || ((var_core_value_sigBF78 = var_core_value_sig675A.title) == null ? undefined : var_core_value_sigBF78.trim()) || (0, d.getObjectListPanelTypeName)(var_core_value_sig9D6E, (0, e.getDrawingTypeNameKey)(var_core_value_sig675A.drawingType)) + "\x20" + (var_core_value_sig837F + 1);
+}
+function Ze() {
+  let var_core_value_sig8AF3 = (0, n.useDependency)(o.LocaleService),
+    var_core_value_sigA0CC = (0, n.useDependency)(o.ICommandService),
+    var_core_value_sigB3A1 = (0, n.useDependency)(o.IUniverInstanceService),
+    var_core_value_sig1FB9 = (0, n.useDependency)(c.IDocDrawingService),
+    var_core_value_sig53A9 = (0, n.useDependency)(u.IDrawingManagerService),
+    var_core_value_sigDACD = (0, n.useDependency)(l.IRenderManagerService),
+    [, var_core_value_sig691E] = (0, _.useReducer)(var_core_value_sig7DF1 => var_core_value_sig7DF1 + 1, 0),
+    var_core_value_sigD6D6 = var_core_value_sigB3A1.getCurrentUnitOfType(o.UniverInstanceType["UNIVER_DOC"]),
+    var_core_value_sig0347 = (var_core_value_sigD6D6 == null ? undefined : var_core_value_sigD6D6.getUnitId()) ?? "",
+    var_core_value_sig52A3 = var_core_value_sig0347,
+    var_core_value_sigAD91 = (0, n.useObservable)(() => var_core_value_sig53A9.focus$, var_core_value_sig53A9.getFocusDrawings(), false, [var_core_value_sig53A9]);
+  (0, _.useEffect)(() => {
+    let var_core_value_sigDC86 = var_core_value_sigA0CC.onCommandExecuted(() => var_core_value_sig691E());
+    return () => var_core_value_sigDC86.dispose();
+  }, [var_core_value_sigA0CC]);
+  let var_core_value_sigF64E = (0, _.useMemo)(() => (0, d.getObjectListPanelLabels)(var_core_value_sig8AF3), [var_core_value_sig8AF3]),
+    var_core_value_sig9B3D = var_core_value_sig0347 ? var_core_value_sig1FB9.getDrawingData(var_core_value_sig0347, var_core_value_sig52A3) : {},
+    var_core_value_sigB217 = (var_core_value_sig0347 ? var_core_value_sig1FB9.getDrawingOrder(var_core_value_sig0347, var_core_value_sig52A3) : []).map(var_core_value_sig0B0C => var_core_value_sig9B3D[var_core_value_sig0B0C]).filter(var_core_value_sigA39E => !!var_core_value_sigA39E).reverse(),
+    var_core_value_sig1FE6 = var_core_value_sigB217.reduce((var_core_value_sigBBEE, var_core_value_sig011D) => (var_core_value_sigBBEE[(0, d.getObjectListPanelSectionIdForDrawingType)(var_core_value_sig011D.drawingType)] += 1, var_core_value_sigBBEE), {
+      canvas: 0,
+      floating: 0
+    }),
+    var_core_value_sig2471 = {
+      canvas: 0,
+      floating: 0
+    },
+    var_core_value_sigD1FC = var_core_value_sigB217.map((var_core_value_sig6167, var_core_value_sig65A1) => {
+      let var_core_value_sig7F19 = (0, d.getObjectListPanelSectionIdForDrawingType)(var_core_value_sig6167.drawingType),
+        var_core_value_sig7827 = var_core_value_sig7F19 === d.OBJECT_LIST_FLOATING_SECTION_ID,
+        var_core_value_sig652C = var_core_value_sig2471[var_core_value_sig7F19]++;
+      return {
+        id: var_core_value_sig6167.drawingId,
+        name: Xe(var_core_value_sig6167, var_core_value_sig65A1, var_core_value_sig8AF3),
+        description: var_core_value_sig6167.description,
+        visible: var_core_value_sig6167.hidden !== true,
+        selectable: var_core_value_sig6167.selectable !== false,
+        sectionId: var_core_value_sig7F19,
+        sectionTitle: var_core_value_sig7827 ? var_core_value_sigF64E.sectionFloating : var_core_value_sigF64E.sectionCanvas,
+        capabilities: var_core_value_sig7827 ? {
+          arrange: false,
+          reorder: false
+        } : undefined,
+        canMoveForward: !var_core_value_sig7827 && var_core_value_sig652C > 0,
+        canMoveBackward: !var_core_value_sig7827 && var_core_value_sig652C < var_core_value_sig1FE6.canvas - 1,
+        canReorder: !var_core_value_sig7827
+      };
+    }),
+    var_core_value_sigE2F9 = (0, _.useMemo)(() => (var_core_value_sigAD91 ?? []).filter(var_core_value_sig24B9 => var_core_value_sig24B9.unitId === var_core_value_sig0347 && var_core_value_sig24B9.subUnitId === var_core_value_sig52A3).map(var_core_value_sigE627 => var_core_value_sigE627.drawingId), [var_core_value_sigAD91, var_core_value_sig52A3, var_core_value_sig0347]),
+    var_core_value_sigD689 = var_core_value_sigE2F9[var_core_value_sigE2F9.length - 1] ?? null,
+    var_core_value_sig7AE3 = var_core_value_sig7E32 => var_core_value_sig1FB9.getDrawingByParam({
+      unitId: var_core_value_sig0347,
+      subUnitId: var_core_value_sig52A3,
+      drawingId: var_core_value_sig7E32
+    }) ?? null,
+    var_core_value_sig1EB3 = async var_core_value_sig4C07 => {
+      !var_core_value_sig0347 || !var_core_value_sig4C07.length || (await var_core_value_sigA0CC.executeCommand(r.UpdateDocDrawingMetadataCommand["id"], {
+        unitId: var_core_value_sig0347,
+        patches: var_core_value_sig4C07
+      }));
+    },
+    var_core_value_sigE120 = (var_core_value_sig79AB, var_core_value_sig8E74) => {
+      if (!var_core_value_sig0347) return;
+      let var_core_value_sig104C = var_core_value_sig8E74 ? var_core_value_sigE2F9.includes(var_core_value_sig79AB) ? var_core_value_sigE2F9.filter(var_core_value_sigEF3E => var_core_value_sigEF3E !== var_core_value_sig79AB) : [...var_core_value_sigE2F9, var_core_value_sig79AB] : [var_core_value_sig79AB];
+      var_core_value_sigA0CC.syncExecuteCommand(u.SetDrawingSelectedOperation["id"], var_core_value_sig104C.map(var_core_value_sig273D => ({
+        unitId: var_core_value_sig0347,
+        subUnitId: var_core_value_sig52A3,
+        drawingId: var_core_value_sig273D
+      })));
+      let var_core_value_sig841D = var_core_value_sig104C[var_core_value_sig104C.length - 1];
+      var_core_value_sig841D ? (0, e.activateDrawingObject)(var_core_value_sigDACD, {
+        unitId: var_core_value_sig0347,
+        subUnitId: var_core_value_sig52A3,
+        drawingId: var_core_value_sig841D
+      }) : (0, e.clearActiveDrawingObjects)(var_core_value_sigDACD, var_core_value_sig0347);
+    },
+    var_core_value_sigD6E7 = async (var_core_value_sig90CB, var_core_value_sigBDF5) => {
+      await var_core_value_sig1EB3(var_core_value_sig90CB.map(var_core_value_sig9A0D => var_core_value_sig7AE3(var_core_value_sig9A0D)).filter(var_core_value_sigA319 => !!var_core_value_sigA319).filter(var_core_value_sig2D58 => var_core_value_sig2D58.hidden !== true !== var_core_value_sigBDF5).map(var_core_value_sig223F => ({
+        drawingId: var_core_value_sig223F.drawingId,
+        hidden: !var_core_value_sigBDF5
+      })));
+    },
+    var_core_value_sig3669 = async var_core_value_sigACC6 => {
+      let var_core_value_sig1614 = var_core_value_sig7AE3(var_core_value_sigACC6);
+      var_core_value_sig1614 && (await var_core_value_sig1EB3([{
+        drawingId: var_core_value_sigACC6,
+        selectable: var_core_value_sig1614.selectable === false && undefined
+      }]));
+    },
+    var_core_value_sig5CBC = async (var_core_value_sig85C3, var_core_value_sigB996) => {
+      let var_core_value_sig4BBA = var_core_value_sig7AE3(var_core_value_sig85C3),
+        var_core_value_sig6201 = Ye(var_core_value_sigB996);
+      !var_core_value_sig4BBA || (var_core_value_sig4BBA.name ?? undefined) === var_core_value_sig6201 && (var_core_value_sig4BBA.title || undefined) === var_core_value_sig6201 || (await var_core_value_sig1EB3([{
+        drawingId: var_core_value_sig85C3,
+        name: var_core_value_sig6201,
+        title: var_core_value_sig6201
+      }]));
+    },
+    var_core_value_sig20BE = async (var_core_value_sig5151, var_core_value_sigB542) => {
+      let var_core_value_sigBB6C = var_core_value_sig7AE3(var_core_value_sig5151),
+        var_core_value_sigE2BF = Ye(var_core_value_sigB542);
+      !var_core_value_sigBB6C || (var_core_value_sigBB6C.description ?? undefined) === var_core_value_sigE2BF || (await var_core_value_sig1EB3([{
+        drawingId: var_core_value_sig5151,
+        description: var_core_value_sigE2BF
+      }]));
+    },
+    var_core_value_sig6BD0 = async (var_core_value_sigB8C7, var_core_value_sigA56E) => {
+      var_core_value_sig0347 && (await var_core_value_sigA0CC.executeCommand(c.SetDocDrawingArrangeCommand["id"], {
+        unitId: var_core_value_sig0347,
+        subUnitId: var_core_value_sig52A3,
+        drawingIds: [var_core_value_sigB8C7],
+        arrangeType: var_core_value_sigA56E
+      }));
+    };
+  return var_core_value_sig0347 ? (0, f.jsx)(d.ObjectListPanelBase, {
+    items: var_core_value_sigD1FC,
+    selectedIds: var_core_value_sigE2F9,
+    focusedId: var_core_value_sigD689,
+    labels: var_core_value_sigF64E,
+    onSelect: var_core_value_sigE120,
+    onSetVisible: var_core_value_sigD6E7,
+    onCommitName: var_core_value_sig5CBC,
+    onCommitDescription: var_core_value_sig20BE,
+    onMoveForward: async var_core_value_sig1998 => var_core_value_sig6BD0(var_core_value_sig1998, o.ArrangeTypeEnum["forward"]),
+    onMoveBackward: async var_core_value_sigFF19 => var_core_value_sig6BD0(var_core_value_sigFF19, o.ArrangeTypeEnum["backward"]),
+    onToggleSelectable: var_core_value_sig3669
+  }) : (0, f.jsx)("div", {
+    className: "univer-flex\x20univer-size-full\x20univer-items-center\x20univer-justify-center\x20univer-text-sm\x20univer-text-gray-500",
+    children: var_core_value_sigF64E.title
+  });
+}
+let W = class {
+  constructor(var_core_value_sig43B8) {
+    this._renderManagerService = var_core_value_sig43B8;
+  }
+  updateShapeFillImage(var_core_value_sigD98F, var_core_value_sig66C0) {
+    let var_core_value_sig9D15 = this._renderManagerService["getRenderUnitById"](var_core_value_sigD98F.unitId),
+      var_core_value_sigB785 = var_core_value_sig9D15 == null ? undefined : var_core_value_sig9D15.scene;
+    if (!var_core_value_sigB785) return;
+    let var_core_value_sig130F = (0, u.getDrawingShapeKeyByDrawingSearch)(var_core_value_sigD98F),
+      var_core_value_sigC0E3 = var_core_value_sigB785.getObjectIncludeInGroup(var_core_value_sig130F);
+    var_core_value_sigC0E3 == null || var_core_value_sigC0E3.setFillImage(var_core_value_sig66C0);
+  }
+};
+W = N([M(0, l.IRenderManagerService)], W);
+function Qe() {
+  let var_core_value_sig8C15 = (0, n.useDependency)(u.IDrawingManagerService),
+    var_core_value_sig6DF7 = (0, n.useObservable)(() => var_core_value_sig8C15.focus$, var_core_value_sig8C15.getFocusDrawings(), false, [var_core_value_sig8C15]);
+  return var_core_value_sig6DF7.length === 0 ? null : (0, f.jsx)("div", {
+    children: (0, f.jsxs)("div", {
+      className: "univer-box-border univer-px-4 univer-text-sm",
+      children: [(0, f.jsx)(d.DrawingCommonPanel, {
+        drawings: var_core_value_sig6DF7,
+        hasCropper: false
+      }), (0, f.jsx)(h.DocDrawingTextWrap, {
+        drawings: var_core_value_sig6DF7
+      }), (0, f.jsx)(h.DocDrawingPosition, {
+        drawings: var_core_value_sig6DF7
+      })]
+    })
+  });
+}
+function $e(var_core_value_sigB411) {
+  let {
+      unitId: var_core_value_sigA81B,
+      subUnitId: var_core_value_sigFE8D,
+      shapeId: var_core_value_sig8595
+    } = var_core_value_sigB411,
+    var_core_value_sigF8DE = (0, n.useDependency)(o.ICommandService),
+    var_core_value_sigFE76 = (0, n.useDependency)(W);
+  return (0, f.jsx)(e.ShapeEditPanel, {
+    ...var_core_value_sigB411,
+    positionEditor: (0, f.jsx)(Qe, {}),
+    onUpdateShapeData: (var_core_value_sig52F7, var_core_value_sig866F) => {
+      R(var_core_value_sigF8DE, var_core_value_sigA81B, var_core_value_sigFE8D, var_core_value_sig8595, var_core_value_sig52F7, var_core_value_sig866F);
+    },
+    onUpdateLineShapeData: (var_core_value_sigDE3D, var_core_value_sigF175) => {
+      ce(var_core_value_sigF8DE, var_core_value_sigA81B, var_core_value_sigFE8D, var_core_value_sig8595, var_core_value_sigDE3D, var_core_value_sigF175);
+    },
+    onUpdateShapeFillImage: var_core_value_sig6A18 => {
+      var_core_value_sigFE76.updateShapeFillImage({
+        unitId: var_core_value_sigA81B,
+        subUnitId: var_core_value_sigFE8D,
+        drawingId: var_core_value_sig8595
+      }, var_core_value_sig6A18);
+    }
+  });
+}
+const et = "doc.shape.floating-toolbar";
+function tt(var_core_value_sig84C8, var_core_value_sig80C0) {
+  var var_core_value_sig22B4;
+  let var_core_value_sigBB37 = var_core_value_sig84C8 == null || (var_core_value_sig22B4 = var_core_value_sig84C8.getSnapshot().drawings) == null ? undefined : var_core_value_sig22B4[var_core_value_sig80C0];
+  return var_core_value_sigBB37 ? var_core_value_sigBB37.layoutType === o.PositionedObjectLayoutType["WRAP_NONE"] ? var_core_value_sigBB37.behindDoc === o.BooleanNumber["TRUE"] ? c.TextWrappingStyle["BEHIND_TEXT"] : c.TextWrappingStyle["IN_FRONT_OF_TEXT"] : var_core_value_sigBB37.layoutType === o.PositionedObjectLayoutType["WRAP_SQUARE"] ? c.TextWrappingStyle["WRAP_SQUARE"] : var_core_value_sigBB37.layoutType === o.PositionedObjectLayoutType["WRAP_TOP_AND_BOTTOM"] ? c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"] : c.TextWrappingStyle["INLINE"] : c.TextWrappingStyle["INLINE"];
+}
+function nt(var_core_value_sig0C51) {
+  let var_core_value_sigADA4 = (0, n.useDependency)(e.ShapeFloatingToolbarService),
+    var_core_value_sig0E48 = (0, n.useObservable)(() => var_core_value_sigADA4.visible$, var_core_value_sigADA4.getVisible(), false, [var_core_value_sigADA4]),
+    var_core_value_sig495B = var_core_value_sig0C51.popup["extraProps"];
+  return var_core_value_sig0E48 ? (0, f.jsx)(rt, {
+    ...var_core_value_sig495B,
+    canvasElement: var_core_value_sig0C51.popup["canvasElement"]
+  }) : null;
+}
+function rt(var_core_value_sig310C) {
+  let var_core_value_sig759E = (0, n.useDependency)(o.ICommandService),
+    var_core_value_sig6C80 = (0, n.useDependency)(o.LocaleService),
+    var_core_value_sig6B99 = (0, n.useDependency)(r.DocsShapeService),
+    var_core_value_sig6ADC = (0, n.useDependency)(o.IUniverInstanceService),
+    {
+      unitId: var_core_value_sig41AD,
+      subUnitId: var_core_value_sigDBC2,
+      drawingId: var_core_value_sig7739,
+      shapeType: var_core_value_sig4040
+    } = var_core_value_sig310C,
+    [var_core_value_sig1AAA, var_core_value_sig58DB] = (0, _.useState)(var_core_value_sig310C.shapeData),
+    var_core_value_sig4840 = var_core_value_sig6ADC.getUnit(var_core_value_sig41AD, o.UniverInstanceType["UNIVER_DOC"]) ?? undefined,
+    [var_core_value_sigB76D, var_core_value_sig1015] = (0, _.useState)(() => tt(var_core_value_sig4840, var_core_value_sig7739)),
+    var_core_value_sig6223 = (0, _.useMemo)(() => (0, e.getTextStyle)(var_core_value_sig1AAA), [var_core_value_sig1AAA]),
+    var_core_value_sigC6B6 = (0, _.useMemo)(() => (0, e.getTextModel)(var_core_value_sig1AAA), [var_core_value_sig1AAA]);
+  (0, _.useEffect)(() => {
+    let var_core_value_sig4E3D = var_core_value_sig759E.onCommandExecuted(var_core_value_sigD749 => {
+      if (var_core_value_sigD749.id !== r.UpdateDocShapeDataMutation["id"]) return;
+      let var_core_value_sigCFFA = var_core_value_sig6B99.getShapeDataById(var_core_value_sig41AD, var_core_value_sigDBC2, var_core_value_sig7739);
+      var_core_value_sigCFFA && var_core_value_sig58DB(var_core_value_sigCFFA);
+    });
+    return () => var_core_value_sig4E3D.dispose();
+  }, [var_core_value_sig759E, var_core_value_sig6B99, var_core_value_sig7739, var_core_value_sigDBC2, var_core_value_sig41AD]);
+  let var_core_value_sig498A = var_core_value_sig49B0 => {
+      var_core_value_sig58DB(var_core_value_sig58C1 => ({
+        ...var_core_value_sig58C1,
+        ...var_core_value_sig49B0
+      }));
+    },
+    var_core_value_sigEF45 = var_core_value_sig2547 => {
+      let var_core_value_sigBCA9 = (0, e.buildShapeTextDataUpdate)(var_core_value_sig1AAA, var_core_value_sig2547);
+      R(var_core_value_sig759E, var_core_value_sig41AD, var_core_value_sigDBC2, var_core_value_sig7739, {
+        oldShapeData: {
+          shapeText: var_core_value_sig1AAA.shapeText
+        }
+      }, var_core_value_sigBCA9), var_core_value_sig498A(var_core_value_sigBCA9);
+    },
+    var_core_value_sig36FE = var_core_value_sig4CDF => {
+      var_core_value_sig1015(var_core_value_sig4CDF), var_core_value_sig759E.executeCommand(c.UpdateDocDrawingWrappingStyleCommand["id"], {
+        unitId: var_core_value_sig41AD,
+        subUnitId: var_core_value_sigDBC2,
+        drawings: [{
+          unitId: var_core_value_sig41AD,
+          subUnitId: var_core_value_sigDBC2,
+          drawingId: var_core_value_sig7739
+        }],
+        wrappingStyle: var_core_value_sig4CDF
+      });
+    },
+    var_core_value_sig3AF5 = (0, e.useFormulaShapeToolbar)({
+      hostType: o.UniverInstanceType["UNIVER_DOC"],
+      unitId: var_core_value_sig41AD,
+      subUnitId: var_core_value_sigDBC2,
+      shapeId: var_core_value_sig7739,
+      shapeData: var_core_value_sig1AAA,
+      onUpdateBinding: var_core_value_sig3F79 => {
+        let var_core_value_sig880E = {
+          formulaBinding: var_core_value_sig3F79
+        };
+        R(var_core_value_sig759E, var_core_value_sig41AD, var_core_value_sigDBC2, var_core_value_sig7739, {
+          oldShapeData: {
+            formulaBinding: var_core_value_sig1AAA.formulaBinding
+          }
+        }, var_core_value_sig880E), var_core_value_sig498A(var_core_value_sig880E);
+      }
+    }),
+    var_core_value_sig14E6 = [{
+      label: var_core_value_sig6C80.t("docs-shape-ui.textWrap.inline"),
+      value: c.TextWrappingStyle["INLINE"],
+      icon: (0, f.jsx)(g.TextWrapShapeIcon, {})
+    }, {
+      label: var_core_value_sig6C80.t("docs-shape-ui.textWrap.square"),
+      value: c.TextWrappingStyle["WRAP_SQUARE"],
+      icon: (0, f.jsx)(g.TextWrapShapeIcon, {})
+    }, {
+      label: var_core_value_sig6C80.t("docs-shape-ui.textWrap.topAndBottom"),
+      value: c.TextWrappingStyle["WRAP_TOP_AND_BOTTOM"],
+      icon: (0, f.jsx)(g.TextWrapShapeIcon, {})
+    }, {
+      label: var_core_value_sig6C80.t("docs-shape-ui.textWrap.behindText"),
+      value: c.TextWrappingStyle["BEHIND_TEXT"],
+      icon: (0, f.jsx)(g.TextWrapShapeIcon, {})
+    }, {
+      label: var_core_value_sig6C80.t("docs-shape-ui.textWrap.inFrontText"),
+      value: c.TextWrappingStyle["IN_FRONT_OF_TEXT"],
+      icon: (0, f.jsx)(g.TextWrapShapeIcon, {})
+    }];
+  return (0, f.jsxs)(f.Fragment, {
+    children: [(0, f.jsx)(e.ShapeFloatingToolbar, {
+      canvasElement: var_core_value_sig310C.canvasElement,
+      shapeData: var_core_value_sig1AAA,
+      shapeType: var_core_value_sig4040,
+      textStyle: {
+        ff: i.ShapeDefaultConfig["shapeText"].fontFamily,
+        fs: i.ShapeDefaultConfig["shapeText"].fontSize,
+        cl: {
+          rgb: i.ShapeDefaultConfig["shapeText"].color
+        },
+        ...var_core_value_sig6223
+      },
+      textModel: var_core_value_sigC6B6 ? {
+        ha: var_core_value_sigC6B6.ha ?? o.HorizontalAlign["LEFT"],
+        va: var_core_value_sigC6B6.va ?? o.VerticalAlign["TOP"]
+      } : null,
+      wrappingStyle: var_core_value_sigB76D,
+      wrappingStyleOptions: var_core_value_sig14E6,
+      enableShapeFillReset: true,
+      enableShapeStrokeReset: true,
+      enableTextBackgroundReset: true,
+      defaultFillColor: i.ShapeDefaultConfig["fill"],
+      defaultGradientEndColor: i.ShapeDefaultConfig["gradientEndColor"],
+      defaultStrokeColor: i.ShapeDefaultConfig["stroke"],
+      extensionGroups: var_core_value_sig3AF5.extensionGroups,
+      floatingObjectToolbarPosition: n.FloatingObjectToolbarPosition["DOC"],
+      onUpdateShapeData: (var_core_value_sigC9ED, var_core_value_sigB57B) => {
+        R(var_core_value_sig759E, var_core_value_sig41AD, var_core_value_sigDBC2, var_core_value_sig7739, var_core_value_sigC9ED, var_core_value_sigB57B), var_core_value_sigB57B && var_core_value_sig498A(var_core_value_sigB57B);
+      },
+      onUpdateText: var_core_value_sigEF45,
+      onUpdateWrappingStyle: var_core_value_sig780B => var_core_value_sig36FE(var_core_value_sig780B),
+      onOpenPanel: () => {
+        var_core_value_sig759E.executeCommand(O.id, {
+          unitId: var_core_value_sig41AD,
+          subUnitId: var_core_value_sigDBC2,
+          drawingId: var_core_value_sig7739
+        });
+      },
+      onDelete: () => {
+        var_core_value_sig759E.executeCommand(c.RemoveDocDrawingCommand["id"], {
+          unitId: var_core_value_sig41AD,
+          drawings: [{
+            unitId: var_core_value_sig41AD,
+            subUnitId: var_core_value_sigDBC2,
+            drawingId: var_core_value_sig7739
+          }]
+        });
+      }
+    }), var_core_value_sig3AF5.panel]
+  });
+}
+function it({
+  variant: var_core_value_sig8690,
+  extend: var_core_value_sigDF29,
+  ...var_core_value_sigC0F8
+}) {
+  let var_core_value_sig3C75 = (0, f.jsx)("rect", {
+    x: "7",
+    y: "5.5",
+    width: "6",
+    height: "9",
+    rx: "1",
+    fill: "currentColor",
+    fillOpacity: "0.14",
+    stroke: "currentColor",
+    strokeWidth: "1.2"
+  });
+  return (0, f.jsxs)("svg", {
+    "aria-hidden": "true",
+    fill: "none",
+    height: "1em",
+    viewBox: "0 0 20 20",
+    width: "1em",
+    ...var_core_value_sigC0F8,
+    children: [var_core_value_sig8690 === "inline" && (0, f.jsxs)(f.Fragment, {
+      children: [(0, f.jsx)("path", {
+        d: "M2\x203.5h16M2\x2016.5h16M2\x2010h5M13\x2010h5",
+        stroke: "currentColor",
+        strokeLinecap: "round",
+        strokeWidth: "1.2"
+      }), (0, f.jsx)("rect", {
+        x: "8",
+        y: "7",
+        width: "4",
+        height: "6",
+        rx: "0.8",
+        fill: "currentColor",
+        fillOpacity: "0.14",
+        stroke: "currentColor",
+        strokeWidth: "1.2"
+      })]
+    }), var_core_value_sig8690 === "square" && (0, f.jsxs)(f.Fragment, {
+      children: [(0, f.jsx)("path", {
+        d: "M2 3h16M2 7.5h3M15 7.5h3M2 10h3M15 10h3M2 12.5h3M15 12.5h3M2 17h16",
+        stroke: "currentColor",
+        strokeLinecap: "round",
+        strokeWidth: "1.2"
+      }), var_core_value_sig3C75]
+    }), var_core_value_sig8690 === "top-bottom" && (0, f.jsxs)(f.Fragment, {
+      children: [(0, f.jsx)("path", {
+        d: "M2 3h16M2 17h16",
+        stroke: "currentColor",
+        strokeLinecap: "round",
+        strokeWidth: "1.2"
+      }), var_core_value_sig3C75]
+    }), var_core_value_sig8690 === "behind" && (0, f.jsxs)(f.Fragment, {
+      children: [var_core_value_sig3C75, (0, f.jsx)("path", {
+        d: "M2 3h16M2 7.5h16M2 10h16M2 12.5h16M2 17h16",
+        stroke: "currentColor",
+        strokeLinecap: "round",
+        strokeWidth: "1.2"
+      })]
+    }), var_core_value_sig8690 === "front" && (0, f.jsxs)(f.Fragment, {
+      children: [(0, f.jsx)("path", {
+        d: "M2\x203h16M2\x207.5h16M2\x2010h16M2\x2012.5h16M2\x2017h16",
+        stroke: "currentColor",
+        strokeLinecap: "round",
+        strokeWidth: "1.2"
+      }), (0, f.jsx)("rect", {
+        x: "7",
+        y: "5.5",
+        width: "6",
+        height: "9",
+        rx: "1",
+        fill: "currentColor"
+      })]
+    })]
+  });
+}
+const G = var_core_value_sig992D => var_core_value_sig7D1B => (0, f.jsx)(it, {
+    ...var_core_value_sig7D1B,
+    variant: var_core_value_sig992D
+  }),
+  at = {
+    DocsShapeWrapInlineIcon: G("inline"),
+    DocsShapeWrapSquareIcon: G("square"),
+    DocsShapeWrapTopBottomIcon: G("top-bottom"),
+    DocsShapeWrapBehindTextIcon: G("behind"),
+    DocsShapeWrapInFrontOfTextIcon: G("front")
+  };
+function K(var_core_value_sigE4E4) {
+  "@babel/helpers - typeof";
+
+  return K = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig7BE0) {
+    return typeof var_core_value_sig7BE0;
+  } : function (var_core_value_sig7D40) {
+    return var_core_value_sig7D40 && typeof Symbol == "function" && var_core_value_sig7D40.constructor === Symbol && var_core_value_sig7D40 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig7D40;
+  }, K(var_core_value_sigE4E4);
+}
+function ot(var_core_value_sigA4B0, var_core_value_sig5F50) {
+  if (K(var_core_value_sigA4B0) != "object" || !var_core_value_sigA4B0) return var_core_value_sigA4B0;
+  var var_core_value_sig4494 = var_core_value_sigA4B0[Symbol.toPrimitive];
+  if (var_core_value_sig4494 !== undefined) {
+    var var_core_value_sigFFAF = var_core_value_sig4494.call(var_core_value_sigA4B0, var_core_value_sig5F50 || "default");
+    if (K(var_core_value_sigFFAF) != "object") return var_core_value_sigFFAF;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_core_value_sig5F50 === "string" ? String : Number)(var_core_value_sigA4B0);
+}
+function st(var_core_value_sig478B) {
+  var var_core_value_sig1E21 = ot(var_core_value_sig478B, "string");
+  return K(var_core_value_sig1E21) == "symbol" ? var_core_value_sig1E21 : var_core_value_sig1E21 + "";
+}
+function q(var_core_value_sig9DBF, var_core_value_sig36CC, var_core_value_sigA568) {
+  return (var_core_value_sig36CC = st(var_core_value_sig36CC)) in var_core_value_sig9DBF ? Object.defineProperty(var_core_value_sig9DBF, var_core_value_sig36CC, {
+    value: var_core_value_sigA568,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig9DBF[var_core_value_sig36CC] = var_core_value_sigA568, var_core_value_sig9DBF;
+}
+let J = class extends o.Disposable {
+  constructor(var_core_value_sig6C7E, var_core_value_sig68BE) {
+    super(), this._permissionService = var_core_value_sig6C7E, this._instanceService = var_core_value_sig68BE, q(this, "_editingParams$", new p["BehaviorSubject"](null)), q(this, "editingParams$", this._editingParams$["asObservable"]()), q(this, "_onSavingEditorData$", new p["BehaviorSubject"](false)), q(this, "onSavingEditorData$", this._onSavingEditorData$["asObservable"]()), this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(() => {
+      let var_core_value_sig5090 = this.getEditing();
+      var_core_value_sig5090 != null && var_core_value_sig5090.visible && !this._canEdit(var_core_value_sig5090) && this.setEditing(null);
+    }));
+  }
+  dispose() {
+    this._editingParams$["next"](null), this._editingParams$["complete"](), this._onSavingEditorData$["next"](false), this._onSavingEditorData$["complete"](), super.dispose();
+  }
+  setEditing(var_core_value_sig04C6) {
+    var_core_value_sig04C6 != null && var_core_value_sig04C6.visible && !this._canEdit(var_core_value_sig04C6) || (this._editingParams$["next"](var_core_value_sig04C6), var_core_value_sig04C6 ?? this._onSavingEditorData$["next"](false));
+  }
+  setOnSavingEditorData(var_core_value_sigCA05) {
+    this._onSavingEditorData$["next"](var_core_value_sigCA05);
+  }
+  getEditing() {
+    return this._editingParams$["getValue"]();
+  }
+  _canEdit(var_core_value_sig2F2B) {
+    let var_core_value_sig70AF = this._instanceService["getUnit"](var_core_value_sig2F2B.unitId, o.UniverInstanceType["UNIVER_DOC"]);
+    if (!var_core_value_sig70AF) return true;
+    let var_core_value_sigD04E = (0, s.getDocumentDrawingSegmentId)(var_core_value_sig70AF, var_core_value_sig2F2B.shapeId);
+    return (0, s.canEditDocumentTargets)(this._permissionService, var_core_value_sig2F2B.unitId, [...(0, s.getDocumentEntityParentPermissionObjectIds)(var_core_value_sig70AF, var_core_value_sigD04E, "drawing", var_core_value_sig2F2B.shapeId), (0, s.getDocumentEntityPermissionObjectId)(var_core_value_sigD04E, "drawing", var_core_value_sig2F2B.shapeId)]);
+  }
+  completeEditing(var_core_value_sigB99B) {
+    this.getEditing() && (this.setOnSavingEditorData(true), requestAnimationFrame(() => {
+      this.setEditing(null);
+    }));
+  }
+  cancelEditing() {
+    this.getEditing() && this.setEditing(null);
+  }
+};
+J = N([M(0, o.IPermissionService), M(1, o.IUniverInstanceService)], J);
+const ct = (0, _.memo)(() => {
+  let var_core_value_sigD22D = (0, n.useDependency)(J),
+    var_core_value_sig85D5 = (0, n.useDependency)(r.DocsShapeService),
+    var_core_value_sig5D2E = (0, n.useDependency)(u.IDrawingManagerService),
+    var_core_value_sig7221 = (0, n.useDependency)(o.ICommandService);
+  return (0, f.jsx)(e.ShapeTextEditorContainer, {
+    adapter: (0, _.useMemo)(() => ({
+      getShapeModel: (var_core_value_sigC368, var_core_value_sigAD56, var_core_value_sigDB4A) => var_core_value_sig85D5.getShapeModel(var_core_value_sigC368, var_core_value_sigAD56, var_core_value_sigDB4A),
+      getShapeData: (var_core_value_sig6418, var_core_value_sig1896, var_core_value_sig0285) => var_core_value_sig85D5.getShapeDataById(var_core_value_sig6418, var_core_value_sig1896, var_core_value_sig0285),
+      getDrawingTransform: (var_core_value_sig777D, var_core_value_sig3F4C, var_core_value_sigD65A) => {
+        let var_core_value_sig5A13 = var_core_value_sig5D2E.getDrawingByParam({
+          unitId: var_core_value_sig777D,
+          subUnitId: var_core_value_sig3F4C,
+          drawingId: var_core_value_sigD65A
+        });
+        return var_core_value_sig5A13 == null ? undefined : var_core_value_sig5A13.transform;
+      },
+      updateShapeText: ({
+        unitId: var_core_value_sigF593,
+        shapeId: var_core_value_sig3607,
+        shapeText: var_core_value_sigB512,
+        oldShapeText: var_core_value_sigF2E6
+      }) => {
+        var_core_value_sig7221.executeCommand(r.UpdateDocShapeDataCommand["id"], {
+          unitId: var_core_value_sigF593,
+          shapeId: var_core_value_sig3607,
+          shapeData: {
+            shapeText: var_core_value_sigB512
+          },
+          oldShapeJSON: {
+            oldShapeData: {
+              shapeText: var_core_value_sigF2E6
+            }
+          }
+        });
+      },
+      updateHostSize: ({
+        unitId: var_core_value_sig34C8,
+        subUnitId: var_core_value_sigB744,
+        shapeId: var_core_value_sigEAE2,
+        width: var_core_value_sigE68A,
+        height: var_core_value_sig3E68
+      }) => {
+        var_core_value_sig7221.executeCommand(c.UpdateDrawingDocTransformCommand["id"], {
+          unitId: var_core_value_sig34C8,
+          subUnitId: var_core_value_sigB744,
+          drawings: [{
+            drawingId: var_core_value_sigEAE2,
+            key: "size",
+            value: {
+              width: var_core_value_sigE68A,
+              height: var_core_value_sig3E68
+            }
+          }]
+        });
+      },
+      allowHostSizeShrink: ({
+        unitId: var_core_value_sigF4C5,
+        subUnitId: var_core_value_sig5410,
+        shapeId: var_core_value_sig492F
+      }) => (0, e.shouldAllowShapeTextEditorHostSizeShrink)(var_core_value_sig85D5.getShapeDataById(var_core_value_sigF4C5, var_core_value_sig5410, var_core_value_sig492F))
+    }), [var_core_value_sig7221, var_core_value_sig85D5, var_core_value_sig5D2E]),
+    editingService: var_core_value_sigD22D,
+    editorUnitId: T,
+    positionOptions: (0, _.useMemo)(() => ({
+      viewportKeys: {
+        main: t.VIEWPORT_KEY["VIEW_MAIN"]
+      }
+    }), [])
+  });
+});
+let Y = class extends o.Disposable {
+  constructor(var_core_value_sig5A75, var_core_value_sig7BAF) {
+    super(), this._componentManager = var_core_value_sig5A75, this._iconManager = var_core_value_sig7BAF, this._registerIcons(), this._registerComponents();
+  }
+  _registerIcons() {
+    this._iconManager["has"]("ObjectLayersIcon") || this.disposeWithMe(this._iconManager["register"]({
+      ObjectLayersIcon: g.ObjectLayersIcon
+    })), this._iconManager["has"]("BottomIcon") || this.disposeWithMe(this._iconManager["register"]({
+      BottomIcon: g.BottomIcon
+    })), this._iconManager["has"]("MoveDownIcon") || this.disposeWithMe(this._iconManager["register"]({
+      MoveDownIcon: g.MoveDownIcon
+    })), this._iconManager["has"]("MoveUpIcon") || this.disposeWithMe(this._iconManager["register"]({
+      MoveUpIcon: g.MoveUpIcon
+    })), this._iconManager["has"]("ShapeFormatSettingIcon") || this.disposeWithMe(this._iconManager["register"]({
+      ShapeFormatSettingIcon: g.ShapeFormatSettingIcon
+    })), this._iconManager["has"]("TopmostIcon") || this.disposeWithMe(this._iconManager["register"]({
+      TopmostIcon: g.TopmostIcon
+    })), this.disposeWithMe(this._iconManager["register"](at));
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](S, $e)), this.disposeWithMe(this._componentManager["register"](w, Ze)), this.disposeWithMe(this._componentManager["register"](et, nt)), this.disposeWithMe(this._componentManager["register"](ue, me)), this.disposeWithMe(this._componentManager["register"](le, he)), this.disposeWithMe(this._componentManager["register"](de, ge)), this.disposeWithMe(this._componentManager["register"](fe, _e)), this.disposeWithMe(this._componentManager["register"](pe, ve)), this.disposeWithMe(this._componentManager["register"](E, e.ShapeTextFloatToolbar)), this.disposeWithMe(this._componentManager["register"](F, ne)), this.disposeWithMe(this._componentManager["register"](I, L)), this._componentManager["get"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT) || this.disposeWithMe(this._componentManager["register"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT, te)), this.disposeWithMe(this._componentManager["register"]("DocsShapeTextEditorContainer", ct));
+  }
+};
+Y = N([M(0, (0, o.Inject)(n.ComponentManager)), M(1, (0, o.Inject)(n.IconManager))], Y);
+var lt = class extends l.Shape {
+  constructor(var_core_value_sig8F69, var_core_value_sig6884) {
+    super(var_core_value_sig8F69, var_core_value_sig6884), q(this, "_shapeId", null), q(this, "_adjName", null), q(this, "_unitId", null), q(this, "_subUnitId", null), var_core_value_sig6884 && this.setShapeProps(var_core_value_sig6884);
+  }
+  getDrawingSearch() {
+    return {
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      drawingId: this._shapeId
+    };
+  }
+  setShapeProps(var_core_value_sig066E) {
+    var_core_value_sig066E.shapeId !== undefined && (this._shapeId = var_core_value_sig066E.shapeId), var_core_value_sig066E.adjName !== undefined && (this._adjName = var_core_value_sig066E.adjName), var_core_value_sig066E.unitId !== undefined && (this._unitId = var_core_value_sig066E.unitId), var_core_value_sig066E.subUnitId !== undefined && (this._subUnitId = var_core_value_sig066E.subUnitId), this.transformByState({
+      width: var_core_value_sig066E.width,
+      height: var_core_value_sig066E.height
+    });
+  }
+  _draw(var_core_value_sig9B0D) {
+    l.Circle["drawWith"](var_core_value_sig9B0D, {
+      radius: i.ShapeDefaultConfig["adjHandleSize"],
+      fill: i.ShapeDefaultConfig["adjHandleFill"],
+      stroke: i.ShapeDefaultConfig["adjHandleStroke"],
+      strokeWidth: 1,
+      evented: true
+    });
+  }
+};
+function ut(var_core_value_sig0A5A, var_core_value_sigE6D6, var_core_value_sig8507) {
+  let var_core_value_sig8A7F = (0, e.resolveShapeTextEditorBehaviorShapeData)(var_core_value_sig0A5A, {
+      ...var_core_value_sigE6D6,
+      dataModel: {
+        ...(var_core_value_sigE6D6.dataModel ?? {}),
+        ...(var_core_value_sig8507 ? {
+          doc: var_core_value_sig8507
+        } : null)
+      }
+    }),
+    var_core_value_sig9E81 = (0, e.resolveShapeTextEditorWrapStrategy)(var_core_value_sig8A7F);
+  return {
+    clip: (0, e.shouldClipShapeTextDocument)(var_core_value_sig8A7F, var_core_value_sig9E81),
+    wrapStrategy: var_core_value_sig9E81
+  };
+}
+var X = class extends l.Shape {
+  constructor(var_core_value_sig3D2C, var_core_value_sigC56D) {
+    super(var_core_value_sig3D2C, var_core_value_sigC56D), q(this, "_props", undefined), q(this, "_formulaAnimation", new e["FormulaShapeAnimationController"](() => this.makeDirty(true), () => this._applyFormulaAutoFitSize())), q(this, "_transformCalculateSrcRect", true), q(this, "_drawingType", o.DrawingTypeEnum["DRAWING_SHAPE"]), q(this, "isDrawingObject", true), this._props = {
+      ...var_core_value_sigC56D
+    }, this._formulaAnimation["setPresentation"](var_core_value_sigC56D.formulaPresentation, var_core_value_sigC56D.animateFormulaPresentation !== false), this._init(), this._applyFormulaAutoFitSize();
+  }
+  _init() {
+    this.onTransformChange$["subscribeEvent"](var_core_value_sig8EA0 => {
+      this._updateSrcRectByTransform(var_core_value_sig8EA0);
+    });
+  }
+  setPrstGeom(var_core_value_sig3A17) {
+    this._props["prstGeom"] = var_core_value_sig3A17;
+  }
+  setEditing(var_core_value_sig938F) {
+    this._props["isEditing"] = var_core_value_sig938F, this.makeDirty(true);
+  }
+  setFormulaPresentation(var_core_value_sigD948, var_core_value_sigBE5E = true) {
+    this._formulaAnimation["setPresentation"](var_core_value_sigD948, var_core_value_sigBE5E), this._props["formulaPresentation"] = var_core_value_sigD948, this._applyFormulaAutoFitSize(), this.makeDirty(true);
+  }
+  _applyFormulaAutoFitSize() {
+    let var_core_value_sig0281 = this._props["shapeModel"],
+      var_core_value_sigED71 = var_core_value_sig0281.getShapeTextData(),
+      var_core_value_sig281C = (0, e.normalizeShapeTextModel)(var_core_value_sigED71 == null ? undefined : var_core_value_sigED71.dataModel),
+      var_core_value_sig3C92 = var_core_value_sig281C == null ? undefined : var_core_value_sig281C.doc,
+      var_core_value_sigB16B = this._formulaAnimation["getAutoFitPresentations"]();
+    if (!var_core_value_sig3C92 || var_core_value_sigB16B.length === 0) return;
+    var_core_value_sig0281.updateContext({
+      width: this.width,
+      height: this.height
+    });
+    let var_core_value_sig585D = (0, e.resolveFormulaShapeAutoFitSize)({
+      documentData: var_core_value_sigB16B.map(var_core_value_sigA6F6 => (0, a.createShapeFormulaDocument)(var_core_value_sig3C92, var_core_value_sigA6F6)),
+      height: this.height,
+      shapeData: var_core_value_sig0281.getShapeData(),
+      textRect: var_core_value_sig0281.getShapeTextRect({
+        left: 0,
+        top: 0,
+        width: this.width,
+        height: this.height
+      }),
+      width: this.width
+    });
+    if (var_core_value_sig585D) {
+      var var_core_value_sigE722;
+      this.resize(var_core_value_sig585D.width, var_core_value_sig585D.height), (var_core_value_sigE722 = this.getScene()) == null || (var_core_value_sigE722 = var_core_value_sigE722.getTransformer()) == null || var_core_value_sigE722.debounceRefreshControls();
+    }
+  }
+  get unitId() {
+    return this._props["unitId"];
+  }
+  get subUnitId() {
+    return this._props["subUnitId"];
+  }
+  _updateSrcRectByTransform(var_core_value_sig062A) {
+    if (this._props["srcRect"] == null || !this._transformCalculateSrcRect) return;
+    let {
+        width: var_core_value_sig050A,
+        height: var_core_value_sig8B32
+      } = this,
+      {
+        width: var_core_value_sig870F = 0,
+        height: var_core_value_sigB683 = 0
+      } = var_core_value_sig062A.preValue,
+      {
+        left: var_core_value_sig26EC = 0,
+        top: var_core_value_sigEEDB = 0,
+        right: var_core_value_sig36E7 = 0,
+        bottom: var_core_value_sig6A78 = 0
+      } = this._props["srcRect"],
+      var_core_value_sigF7EF = var_core_value_sig26EC,
+      var_core_value_sig27F9 = var_core_value_sigEEDB,
+      var_core_value_sig393E = var_core_value_sig36E7,
+      var_core_value_sigB609 = var_core_value_sig6A78,
+      var_core_value_sig390D = false;
+    if (var_core_value_sig870F !== 0 && var_core_value_sig870F !== var_core_value_sig050A) {
+      let var_core_value_sigCDDA = var_core_value_sig26EC / var_core_value_sig870F,
+        var_core_value_sigE243 = var_core_value_sig36E7 / var_core_value_sig870F;
+      var_core_value_sigF7EF = var_core_value_sig050A * var_core_value_sigCDDA, var_core_value_sig393E = var_core_value_sig050A * var_core_value_sigE243, var_core_value_sig390D = true;
+    }
+    if (var_core_value_sigB683 !== 0 && var_core_value_sigB683 !== var_core_value_sig8B32) {
+      let var_core_value_sig74A8 = var_core_value_sigEEDB / var_core_value_sigB683,
+        var_core_value_sig21B2 = var_core_value_sig6A78 / var_core_value_sigB683;
+      var_core_value_sig27F9 = var_core_value_sig8B32 * var_core_value_sig74A8, var_core_value_sigB609 = var_core_value_sig8B32 * var_core_value_sig21B2, var_core_value_sig390D = true;
+    }
+    var_core_value_sig390D && this.setSrcRect({
+      left: var_core_value_sigF7EF,
+      top: var_core_value_sig27F9,
+      right: var_core_value_sig393E,
+      bottom: var_core_value_sigB609
+    });
+  }
+  setSrcRect(var_core_value_sigC928) {
+    this._props["srcRect"] = var_core_value_sigC928, this.makeDirty(true);
+  }
+  setFillImage(var_core_value_sig39B7) {
+    this._props["image"] = var_core_value_sig39B7, this.makeDirty(true);
+  }
+  set transform(var_core_value_sig18E0) {
+    this._transform = var_core_value_sig18E0;
+  }
+  get transform() {
+    this._transform || this._setTransForm();
+    let var_core_value_sigE161 = this._transform["clone"]();
+    return this.transformForAngle(var_core_value_sigE161);
+  }
+  get shapeModel() {
+    return this._props["shapeModel"];
+  }
+  get shapeId() {
+    return this._props["shapeId"];
+  }
+  get classType() {
+    return l.RENDER_CLASS_TYPE["SHAPE"];
+  }
+  _draw(var_core_value_sigBDEE, var_core_value_sig1F40, var_core_value_sig3FC7, var_core_value_sig1E1B) {
+    let var_core_value_sig3B10 = this._props["shapeModel"];
+    if (!var_core_value_sig3B10 || !var_core_value_sig1F40) return;
+    let var_core_value_sig89E6 = var_core_value_sig3FC7 ?? this.width,
+      var_core_value_sig4743 = var_core_value_sig1E1B ?? this.height,
+      var_core_value_sigEB6A = {
+        shapeType: var_core_value_sig3B10.getShapeType(),
+        width: var_core_value_sig89E6,
+        height: var_core_value_sig4743
+      },
+      var_core_value_sig3D46 = {
+        renderMode: i.ShapeRenderModeEnum["Path"],
+        oKey: this.oKey,
+        image: this._props["image"],
+        angle: this.angle
+      };
+    var_core_value_sig3B10.updateContext(var_core_value_sigEB6A), var_core_value_sigBDEE.save();
+    let var_core_value_sigCC93 = {
+        top: 0,
+        left: 0,
+        width: var_core_value_sig89E6,
+        height: var_core_value_sig4743
+      },
+      var_core_value_sig5964 = var_core_value_sig3B10.getDrawingEffectBounds(var_core_value_sigCC93);
+    var_core_value_sig5964 ? this._renderWithCache(var_core_value_sigBDEE, var_core_value_sig5964, var_core_value_sigDE08 => {
+      var_core_value_sig3B10.render(var_core_value_sigDE08, var_core_value_sigCC93, var_core_value_sig3D46);
+    }) : (this._releaseRenderCache(), var_core_value_sig3B10.render(var_core_value_sigBDEE, var_core_value_sigCC93, var_core_value_sig3D46)), var_core_value_sigBDEE.restore();
+    let var_core_value_sig808B = var_core_value_sig3B10.getShapeTextData(),
+      var_core_value_sig2A26 = var_core_value_sig3B10.getShapeTextRect(var_core_value_sigCC93),
+      var_core_value_sig1179 = var_core_value_sig3B10.isLineShape();
+    if (var_core_value_sig808B && var_core_value_sig2A26 && !var_core_value_sig1179) {
+      var_core_value_sigBDEE.save(), this.getState().flipX && var_core_value_sigBDEE.scale(-1, 1);
+      let var_core_value_sigACCB = var_core_value_sig89E6 / 2,
+        var_core_value_sig7F33 = var_core_value_sig4743 / 2;
+      var_core_value_sigBDEE.translate(-var_core_value_sigACCB, -var_core_value_sig7F33), var_core_value_sigBDEE.beginPath(), this._drawShapeText(var_core_value_sigBDEE, var_core_value_sig808B, var_core_value_sig2A26), var_core_value_sigBDEE.restore();
+    }
+  }
+  getDrawingPoints(var_core_value_sigEA92) {}
+  _drawShapeText(var_core_value_sig8FD9, var_core_value_sig1AE5, var_core_value_sig7100) {
+    var var_core_value_sigA19A;
+    this._props["isEditing"] || (!((var_core_value_sigA19A = var_core_value_sig1AE5.dataModel) != null && var_core_value_sigA19A.doc) && "isRichText" in var_core_value_sig1AE5 && var_core_value_sig1AE5.isRichText === false ? this._drawSimpleText(var_core_value_sig8FD9, var_core_value_sig1AE5, var_core_value_sig7100) : this._drawRichText(var_core_value_sig8FD9, var_core_value_sig1AE5, var_core_value_sig7100));
+  }
+  _drawSimpleText(var_core_value_sigD3F5, var_core_value_sig3082, var_core_value_sigF5D1) {
+    this._drawRichText(var_core_value_sigD3F5, {
+      ...var_core_value_sig3082,
+      text: var_core_value_sig3082.text ?? "",
+      dataModel: {
+        doc: (0, e.plainShapeTextToDocumentData)(var_core_value_sig3082, "docs-shape-text-" + this.oKey)
+      }
+    }, var_core_value_sigF5D1);
+  }
+  _drawRichText(var_core_value_sig8775, var_core_value_sig481B, var_core_value_sig13D7) {
+    (0, e.drawFormulaShapeAnimationLayers)(var_core_value_sig8775, this._formulaAnimation, (var_core_value_sig0C53, var_core_value_sigEA04) => {
+      this._drawRichTextLayer(var_core_value_sig0C53, var_core_value_sig481B, var_core_value_sig13D7, var_core_value_sigEA04);
+    });
+  }
+  _drawRichTextLayer(var_core_value_sig90C0, var_core_value_sigF1B2, var_core_value_sigC2BB, var_core_value_sigD9DB) {
+    let var_core_value_sigA363 = this._props["localeService"];
+    if (!var_core_value_sigF1B2.dataModel || !var_core_value_sigA363) {
+      var_core_value_sigA363 || console.warn("[DrawingShape] LocaleService is required for rich text rendering");
+      return;
+    }
+    let var_core_value_sigFBA5 = (0, e.normalizeShapeTextModel)(var_core_value_sigF1B2.dataModel);
+    if (!var_core_value_sigFBA5) return;
+    let var_core_value_sigAC47 = var_core_value_sigFBA5.doc;
+    if (!var_core_value_sigAC47) return;
+    let var_core_value_sigA06F = (0, a.createShapeFormulaDocument)(var_core_value_sigAC47, var_core_value_sigD9DB),
+      var_core_value_sig770E = var_core_value_sigFBA5.va ?? o.VerticalAlign["TOP"],
+      var_core_value_sig4654 = var_core_value_sigFBA5.ha ?? o.HorizontalAlign["LEFT"],
+      var_core_value_sigB26B = ut(this._props["shapeModel"].getShapeData(), var_core_value_sigF1B2, var_core_value_sigA06F),
+      var_core_value_sig019B = var_core_value_sigF1B2.isHorizontal,
+      var_core_value_sigC6BC = new o["DocumentDataModel"]((0, e.prepareShapeTextDocumentData)(var_core_value_sigA06F, {
+        isHorizontal: var_core_value_sig019B !== false,
+        textRect: var_core_value_sigC2BB,
+        verticalAlign: var_core_value_sig770E,
+        horizontalAlign: var_core_value_sig4654,
+        wrapStrategy: var_core_value_sigB26B.wrapStrategy
+      })),
+      var_core_value_sig8EC2 = new l["DocumentViewModel"](var_core_value_sigC6BC),
+      var_core_value_sigA8C3 = l.DocumentSkeleton["create"](var_core_value_sig8EC2, var_core_value_sigA363);
+    var_core_value_sigA8C3.calculate();
+    let var_core_value_sig5276 = var_core_value_sigA8C3.getActualSize().actualHeight,
+      var_core_value_sig031B = (0, e.resolveShapeTextDocumentRenderLayout)({
+        contentHeight: var_core_value_sig5276,
+        verticalAlign: var_core_value_sig770E,
+        viewportHeight: var_core_value_sigC2BB.height
+      });
+    var_core_value_sigC6BC.updateDocumentStyle({
+      pageSize: {
+        width: var_core_value_sig019B === false ? var_core_value_sigC2BB.height : var_core_value_sigC2BB.width,
+        height: var_core_value_sig031B.contentHeight
+      }
+    }), var_core_value_sigC6BC.updateDocumentDataMargin({
+      t: var_core_value_sig031B.marginTop
+    }), var_core_value_sigA8C3.calculate();
+    let var_core_value_sig9DC0 = new l["Documents"]("shape-text-" + this.oKey, var_core_value_sigA8C3, {
+      pageMarginLeft: 0,
+      pageMarginTop: 0,
+      onTextFillImageLoaded: () => this.makeDirty(true)
+    });
+    var_core_value_sig9DC0.resize(var_core_value_sigC2BB.width, var_core_value_sig031B.contentHeight), var_core_value_sig90C0.save(), var_core_value_sig90C0.translateWithPrecision(var_core_value_sigC2BB.left, var_core_value_sigC2BB.top), var_core_value_sigB26B.clip && (var_core_value_sig90C0.beginPath(), var_core_value_sig90C0.rect(0, var_core_value_sig031B.clipTop, var_core_value_sigC2BB.width, var_core_value_sig031B.clipHeight), var_core_value_sig90C0.clip()), var_core_value_sig031B.contentVerticalOffset && var_core_value_sig90C0.translateWithPrecision(0, var_core_value_sig031B.contentVerticalOffset), var_core_value_sig9DC0.draw(var_core_value_sig90C0), var_core_value_sig90C0.restore(), var_core_value_sig9DC0.dispose(), var_core_value_sigA8C3.dispose(), var_core_value_sig8EC2.dispose(), var_core_value_sigC6BC.dispose();
+  }
+  render(var_core_value_sig95F0, var_core_value_sig9CCB, var_core_value_sigE718 = false) {
+    if (!this.visible) return this.makeDirty(false), this;
+    let {
+        width: var_core_value_sigAEC8,
+        height: var_core_value_sigB977,
+        left: var_core_value_sig2949,
+        top: var_core_value_sig308A
+      } = this,
+      var_core_value_sig528D = this.getRealBound();
+    if (var_core_value_sigAEC8 = var_core_value_sig528D.width, var_core_value_sigB977 = var_core_value_sig528D.height, var_core_value_sig2949 = var_core_value_sig528D.left, var_core_value_sig308A = var_core_value_sig528D.top, this.isRender(var_core_value_sig9CCB)) {
+      let {
+        top: var_core_value_sig7A62,
+        left: var_core_value_sig8109,
+        bottom: var_core_value_sig7565,
+        right: var_core_value_sigD4FB
+      } = var_core_value_sig9CCB.viewBound;
+      if (var_core_value_sigAEC8 + this.strokeWidth + var_core_value_sig2949 < var_core_value_sig8109 || var_core_value_sigD4FB < var_core_value_sig2949 || var_core_value_sigB977 + this.strokeWidth + var_core_value_sig308A < var_core_value_sig7A62 || var_core_value_sig7565 < var_core_value_sig308A) return this;
+    }
+    let var_core_value_sigA309 = var_core_value_sig2949 + var_core_value_sigAEC8 / 2,
+      var_core_value_sig9E20 = var_core_value_sig308A + var_core_value_sigB977 / 2,
+      var_core_value_sig26BB = this.transform["getMatrix"]();
+    if (this._props["isEditing"]) {
+      let var_core_value_sig3E71 = this.getState(),
+        var_core_value_sig01B3 = new l["Transform"]();
+      var_core_value_sig01B3.composeMatrix({
+        ...var_core_value_sig3E71
+      }), var_core_value_sig26BB = var_core_value_sig01B3.getMatrix();
+    }
+    return var_core_value_sig95F0.save(), this._props["shapeModel"].isRenderLinePointsMode === true || var_core_value_sig95F0.transform(var_core_value_sig26BB[0], var_core_value_sig26BB[1], var_core_value_sig26BB[2], var_core_value_sig26BB[3], var_core_value_sigA309, var_core_value_sig9E20), this._draw(var_core_value_sig95F0, var_core_value_sig9CCB, var_core_value_sigAEC8, var_core_value_sigB977), var_core_value_sig95F0.restore(), this.makeDirty(false), this;
+  }
+  getInverseCoord(var_core_value_sig19B4) {
+    let {
+        left: var_core_value_sig218A,
+        top: var_core_value_sig14CB,
+        width: var_core_value_sigFDEE,
+        height: var_core_value_sigA676
+      } = this.getRealBound(),
+      var_core_value_sigC27E = this.transform["getMatrix"](),
+      var_core_value_sigA70D = var_core_value_sig218A + var_core_value_sigFDEE / 2,
+      var_core_value_sigCE10 = var_core_value_sig14CB + var_core_value_sigA676 / 2,
+      var_core_value_sigA386 = new l["Transform"]([var_core_value_sigC27E[0], var_core_value_sigC27E[1], var_core_value_sigC27E[2], var_core_value_sigC27E[3], var_core_value_sigA70D, var_core_value_sigCE10]),
+      var_core_value_sigCD82 = this.getParent();
+    return (this.isInGroup && (var_core_value_sigCD82 == null ? undefined : var_core_value_sigCD82.classType) === l.RENDER_CLASS_TYPE["GROUP"] ? var_core_value_sigCD82.ancestorTransform["multiply"](var_core_value_sigA386) : var_core_value_sigA386).invert().applyPoint(var_core_value_sig19B4);
+  }
+  isHit(var_core_value_sig44DD) {
+    let {
+        left: var_core_value_sig96FA,
+        top: var_core_value_sigAB68,
+        width: var_core_value_sig040A,
+        height: var_core_value_sig2AE0
+      } = this.getRealBound(),
+      var_core_value_sigC349 = var_core_value_sig96FA + var_core_value_sig040A / 2,
+      var_core_value_sig9D96 = var_core_value_sigAB68 + var_core_value_sig2AE0 / 2,
+      var_core_value_sig2776 = this.transform["getMatrix"](),
+      var_core_value_sig6FB2 = new l["Transform"]([var_core_value_sig2776[0], var_core_value_sig2776[1], var_core_value_sig2776[2], var_core_value_sig2776[3], var_core_value_sigC349, var_core_value_sig9D96]),
+      var_core_value_sigEB43 = this.getParent(),
+      var_core_value_sig4186 = (this.isInGroup && (var_core_value_sigEB43 == null ? undefined : var_core_value_sigEB43.classType) === l.RENDER_CLASS_TYPE["GROUP"] ? var_core_value_sigEB43.ancestorTransform["multiply"](var_core_value_sig6FB2) : var_core_value_sig6FB2).invert().applyPoint(var_core_value_sig44DD),
+      var_core_value_sigF963 = var_core_value_sig040A / 2,
+      var_core_value_sigB608 = var_core_value_sig2AE0 / 2,
+      var_core_value_sigF866 = this._props["shapeModel"];
+    return var_core_value_sigF866 && var_core_value_sigF866.isLineShape() ? var_core_value_sigF866.isHitLine(var_core_value_sig4186.x, var_core_value_sig4186.y, var_core_value_sig040A, var_core_value_sig2AE0) : var_core_value_sig4186.x >= -var_core_value_sigF963 - this.strokeWidth / 2 && var_core_value_sig4186.x <= var_core_value_sigF963 + this.strokeWidth / 2 && var_core_value_sig4186.y >= -var_core_value_sigB608 - this.strokeWidth / 2 && var_core_value_sig4186.y <= var_core_value_sigB608 + this.strokeWidth / 2;
+  }
+  dispose() {
+    this._formulaAnimation["dispose"](), this._props["shapeModel"] = null, super.dispose();
+  }
+};
+let Z = class extends o.Disposable {
+  constructor(var_core_value_sig5EFB, var_core_value_sig3A85, var_core_value_sig2682, var_core_value_sig4BB5) {
+    super(), this._context = var_core_value_sig5EFB, this._drawingManagerService = var_core_value_sig3A85, this._docsShapeService = var_core_value_sig2682, this._commandService = var_core_value_sig4BB5, q(this, "_activeShapeId", null), q(this, "_unitId", null), q(this, "_subUnitId", null), q(this, "_activeShapeAdjustPointList", undefined), q(this, "_adjustPointObjects", []), q(this, "_baseShapeLeft", 0), q(this, "_baseShapeTop", 0), q(this, "_baseShapeWidth", 0), q(this, "_baseShapeHeight", 0), q(this, "_isStartAdjusting", false), q(this, "_isShouldShowDrawingShapeAdjust", false), q(this, "_activeAdjustInfo", undefined), q(this, "_activeShapeModel", undefined), q(this, "_adjHandlerPointerMove", undefined), q(this, "_adjHandlerPointerUp", undefined), this._registerDrawingFocusChangeHandler(), this._registerDrawingTransformHandler();
+  }
+  clearAdjustControls() {
+    this._clearShapeAdjustControls();
+  }
+  refreshAdjustControls() {
+    this._updateShapeAdjustControls(true);
+  }
+  _getShapeAdjustPointListById(var_core_value_sig6709, var_core_value_sig52CA, var_core_value_sigC030) {
+    var var_core_value_sig88F6;
+    return (var_core_value_sig88F6 = this._docsShapeService["getShapeModel"](var_core_value_sig6709, var_core_value_sig52CA, var_core_value_sigC030)) == null ? undefined : var_core_value_sig88F6.getDrawingPoints();
+  }
+  _getShapeAdjustInfosById(var_core_value_sig37DB, var_core_value_sig5542, var_core_value_sigE0A9, var_core_value_sigA73E) {
+    var var_core_value_sig7620;
+    return (var_core_value_sig7620 = this._docsShapeService["getShapeModel"](var_core_value_sig37DB, var_core_value_sig5542, var_core_value_sigE0A9)) == null ? undefined : var_core_value_sig7620.getAdjustInfoByName(var_core_value_sigA73E);
+  }
+  _getActiveDrawingParam() {
+    return this._unitId === null || this._subUnitId === null || this._activeShapeId === null ? null : this._drawingManagerService["getDrawingByParam"]({
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      drawingId: this._activeShapeId
+    }) ?? null;
+  }
+  _getActiveDrawingShape(var_core_value_sigB9FC) {
+    if (this._unitId === null || this._subUnitId === null || this._activeShapeId === null) return null;
+    let var_core_value_sig5055 = (0, u.getDrawingShapeKeyByDrawingSearch)({
+        unitId: this._unitId,
+        subUnitId: this._subUnitId,
+        drawingId: this._activeShapeId
+      }),
+      var_core_value_sig3801 = var_core_value_sigB9FC.getObjectIncludeInGroup(var_core_value_sig5055);
+    return var_core_value_sig3801 instanceof X ? var_core_value_sig3801 : null;
+  }
+  _createShapeAdjustControls(var_core_value_sig45F0 = false) {
+    if (this._unitId === null || this._subUnitId === null || this._activeShapeId === null) return;
+    let var_core_value_sigBC91 = this._getActiveDrawingParam();
+    if ((var_core_value_sigBC91 == null ? undefined : var_core_value_sigBC91.drawingType) !== o.DrawingTypeEnum["DRAWING_SHAPE"] || !var_core_value_sigBC91.transform) return;
+    let var_core_value_sigCB88 = this._docsShapeService["getShapeModel"](this._unitId, this._subUnitId, this._activeShapeId);
+    if (!var_core_value_sigCB88 || var_core_value_sigCB88.isLineShape()) return;
+    let {
+      left: var_core_value_sigEDC6 = 0,
+      top: var_core_value_sig611A = 0,
+      width: var_core_value_sig6BD9 = 0,
+      height: var_core_value_sig7E56 = 0,
+      flipX: var_core_value_sig8D65,
+      flipY: var_core_value_sig8122,
+      angle: var_core_value_sig4161 = 0
+    } = var_core_value_sigBC91.transform;
+    (var_core_value_sig45F0 || !this._activeShapeAdjustPointList) && (var_core_value_sigCB88.updateContext({
+      width: var_core_value_sig6BD9,
+      height: var_core_value_sig7E56
+    }), this._activeShapeAdjustPointList = var_core_value_sigCB88.getDrawingPoints());
+    let var_core_value_sig7580 = this._activeShapeAdjustPointList;
+    if (!(var_core_value_sig7580 != null && var_core_value_sig7580.length)) return;
+    let {
+      scene: var_core_value_sig1F18
+    } = this._context;
+    for (let var_core_value_sig7442 of var_core_value_sig7580) {
+      let var_core_value_sig4383 = this._toVisualAdjustPoint(var_core_value_sig7442, var_core_value_sig6BD9, var_core_value_sig7E56, !!var_core_value_sig8D65, !!var_core_value_sig8122, var_core_value_sig4161);
+      this._addShapeAdjustControl(var_core_value_sig1F18, var_core_value_sig4383, var_core_value_sig4383.adjName, var_core_value_sigEDC6, var_core_value_sig611A, this._unitId, this._subUnitId);
+    }
+  }
+  _toVisualAdjustPoint(var_core_value_sigD5A0, var_core_value_sig81B2, var_core_value_sigA0A5, var_core_value_sig10AA, var_core_value_sigE6D0, var_core_value_sig8E91) {
+    let var_core_value_sig00BE = var_core_value_sigD5A0.x,
+      var_core_value_sig7BB5 = var_core_value_sigD5A0.y;
+    if (var_core_value_sig10AA && (var_core_value_sig00BE = var_core_value_sig81B2 - var_core_value_sig00BE), var_core_value_sigE6D0 && (var_core_value_sig7BB5 = var_core_value_sigA0A5 - var_core_value_sig7BB5), var_core_value_sig8E91 !== 0) {
+      let var_core_value_sigDF87 = var_core_value_sig81B2 / 2,
+        var_core_value_sig9EE0 = var_core_value_sigA0A5 / 2,
+        var_core_value_sigF0511 = var_core_value_sig8E91 * Math.PI / 180,
+        var_core_value_sig0B45 = Math.cos(var_core_value_sigF0511),
+        var_core_value_sig36F8 = Math.sin(var_core_value_sigF0511),
+        var_core_value_sig03E1 = var_core_value_sig00BE - var_core_value_sigDF87,
+        var_core_value_sigBB57 = var_core_value_sig7BB5 - var_core_value_sig9EE0;
+      var_core_value_sig00BE = var_core_value_sigDF87 + (var_core_value_sig03E1 * var_core_value_sig0B45 - var_core_value_sigBB57 * var_core_value_sig36F8), var_core_value_sig7BB5 = var_core_value_sig9EE0 + (var_core_value_sig03E1 * var_core_value_sig36F8 + var_core_value_sigBB57 * var_core_value_sig0B45);
+    }
+    return {
+      x: var_core_value_sig00BE,
+      y: var_core_value_sig7BB5,
+      adjName: var_core_value_sigD5A0.adjName
+    };
+  }
+  _updateShapeAdjustControls(var_core_value_sig6AAD = false) {
+    var_core_value_sig6AAD && this._clearShapeAdjustControls(), this._createShapeAdjustControls(var_core_value_sig6AAD);
+  }
+  _addShapeAdjustControl(var_core_value_sig1157, var_core_value_sigA694, var_core_value_sig18E01, var_core_value_sig0428, var_core_value_sigBE07, var_core_value_sig555F, var_core_value_sig3D6F) {
+    if (!this._activeShapeId) return;
+    let var_core_value_sig336C = "doc-shape-adjust-point-" + this._activeShapeId + "-" + var_core_value_sig18E01,
+      var_core_value_sig6E68 = var_core_value_sig1157.getObjectIncludeInGroup(var_core_value_sig336C);
+    if (var_core_value_sig6E68) {
+      var_core_value_sig6E68.transformByState({
+        left: var_core_value_sigA694.x + var_core_value_sig0428 - i.ShapeDefaultConfig["adjHandleSize"],
+        top: var_core_value_sigA694.y + var_core_value_sigBE07 - i.ShapeDefaultConfig["adjHandleSize"]
+      }), var_core_value_sig6E68.makeDirty(true);
+      return;
+    }
+    let var_core_value_sig8DFE = new lt(var_core_value_sig336C, {
+      left: var_core_value_sigA694.x + var_core_value_sig0428 - i.ShapeDefaultConfig["adjHandleSize"],
+      top: var_core_value_sigA694.y + var_core_value_sigBE07 - i.ShapeDefaultConfig["adjHandleSize"],
+      adjName: var_core_value_sig18E01,
+      shapeId: this._activeShapeId,
+      unitId: var_core_value_sig555F,
+      subUnitId: var_core_value_sig3D6F,
+      width: i.ShapeDefaultConfig["adjHandleSize"] + 8,
+      height: i.ShapeDefaultConfig["adjHandleSize"] + 8,
+      zIndex: l.DRAWING_OBJECT_LAYER_INDEX + 1,
+      evented: true
+    });
+    this._adjustPointObjects["push"](var_core_value_sig8DFE), this._attachAdjustEvent(var_core_value_sig8DFE, var_core_value_sig1157, var_core_value_sig18E01), var_core_value_sig1157.addObject(var_core_value_sig8DFE, l.DRAWING_OBJECT_LAYER_INDEX + 1);
+  }
+  _clearShapeAdjustControls() {
+    this._adjustPointObjects["forEach"](var_core_value_sig7C4A => var_core_value_sig7C4A.dispose()), this._adjustPointObjects = [];
+  }
+  _updateAdjustControlPositions() {
+    this._createShapeAdjustControls();
+  }
+  _toScenePoint(var_core_value_sig48EA, var_core_value_sig5E16, var_core_value_sig09F3) {
+    let var_core_value_sig4592 = l.Vector2["FromArray"]([var_core_value_sig5E16, var_core_value_sig09F3]),
+      var_core_value_sigC5C4 = var_core_value_sig48EA.getActiveViewportByCoord(var_core_value_sig4592) ?? var_core_value_sig48EA.getViewports()[0];
+    return (var_core_value_sigC5C4 == null ? undefined : var_core_value_sigC5C4.transformVector2SceneCoord(var_core_value_sig4592)) ?? var_core_value_sig4592;
+  }
+  _attachAdjustEvent(var_core_value_sig1617, var_core_value_sig4169, var_core_value_sig6D19) {
+    this.disposeWithMe((0, o.toDisposable)(var_core_value_sig1617.onPointerDown$["subscribeEvent"]((var_core_value_sigE799, var_core_value_sigB601) => {
+      var var_core_value_sig8B71;
+      let var_core_value_sigAEFB = var_core_value_sig1617.getDrawingSearch();
+      this._activeAdjustInfo = this._getShapeAdjustInfosById(var_core_value_sigAEFB.unitId, var_core_value_sigAEFB.subUnitId, var_core_value_sigAEFB.drawingId, var_core_value_sig6D19), this._activeShapeModel = this._docsShapeService["getShapeModel"](var_core_value_sigAEFB.unitId, var_core_value_sigAEFB.subUnitId, var_core_value_sigAEFB.drawingId);
+      let var_core_value_sig826B = this._getActiveDrawingParam(),
+        var_core_value_sigCF89 = var_core_value_sig826B == null ? undefined : var_core_value_sig826B.transform;
+      if (!var_core_value_sig826B || !var_core_value_sigCF89 || !this._activeShapeModel) return;
+      this._baseShapeLeft = var_core_value_sigCF89.left || 0, this._baseShapeTop = var_core_value_sigCF89.top || 0, this._baseShapeWidth = var_core_value_sigCF89.width || 0, this._baseShapeHeight = var_core_value_sigCF89.height || 0;
+      let var_core_value_sig00CB = !!var_core_value_sigCF89.flipX,
+        var_core_value_sig77EE = !!var_core_value_sigCF89.flipY,
+        var_core_value_sig9F76 = var_core_value_sigCF89.angle || 0,
+        var_core_value_sigB008 = {
+          ...(((var_core_value_sig8B71 = this._activeAdjustInfo) == null ? undefined : var_core_value_sig8B71.currentAdjustValues) ?? {})
+        };
+      this._isStartAdjusting = true, var_core_value_sig4169.disableObjectsEvent(), this._adjHandlerPointerMove = var_core_value_sig4169.onPointerMove$["subscribeEvent"]((var_core_value_sig186C, var_core_value_sigD955) => {
+        var var_core_value_sig48BD;
+        if (!this._isStartAdjusting || !this._activeShapeModel || !this._activeAdjustInfo) return;
+        var_core_value_sig4169.disableObjectsEvent(), var_core_value_sig4169.setCursor(l.CURSOR_TYPE["CROSSHAIR"]);
+        let var_core_value_sig429F = this._toScenePoint(var_core_value_sig4169, var_core_value_sig186C.offsetX, var_core_value_sig186C.offsetY),
+          var_core_value_sigF62A = var_core_value_sig429F.x - this._baseShapeLeft,
+          var_core_value_sig8178 = var_core_value_sig429F.y - this._baseShapeTop;
+        if (var_core_value_sig9F76 !== 0) {
+          let var_core_value_sigBC46 = this._baseShapeWidth / 2,
+            var_core_value_sig3D7D = this._baseShapeHeight / 2,
+            var_core_value_sig27E5 = var_core_value_sig9F76 * Math.PI / 180,
+            var_core_value_sig8061 = Math.cos(var_core_value_sig27E5),
+            var_core_value_sig4D4C = Math.sin(var_core_value_sig27E5),
+            var_core_value_sigC9E0 = var_core_value_sigF62A - var_core_value_sigBC46,
+            var_core_value_sig76BA = var_core_value_sig8178 - var_core_value_sig3D7D;
+          var_core_value_sigF62A = var_core_value_sigBC46 + (var_core_value_sigC9E0 * var_core_value_sig8061 + var_core_value_sig76BA * var_core_value_sig4D4C), var_core_value_sig8178 = var_core_value_sig3D7D + (-var_core_value_sigC9E0 * var_core_value_sig4D4C + var_core_value_sig76BA * var_core_value_sig8061);
+        }
+        var_core_value_sig00CB && (var_core_value_sigF62A = this._baseShapeWidth - var_core_value_sigF62A), var_core_value_sig77EE && (var_core_value_sig8178 = this._baseShapeHeight - var_core_value_sig8178);
+        let var_core_value_sigE9ED = {
+            left: 0,
+            top: 0,
+            width: this._baseShapeWidth,
+            height: this._baseShapeHeight
+          },
+          var_core_value_sigB577 = this._activeShapeModel["calcAdjValues"](var_core_value_sigE9ED, {
+            x: var_core_value_sigF62A,
+            y: var_core_value_sig8178
+          }, this._activeAdjustInfo, var_core_value_sig00CB, var_core_value_sig77EE);
+        if (Object.keys(var_core_value_sigB577).length !== 0) {
+          for (let [var_core_value_sig2AD8, var_core_value_sig2AD0] of Object.entries(var_core_value_sigB577)) this._activeShapeModel["setAdjustValueByName"](var_core_value_sig2AD8, var_core_value_sig2AD0);
+          this._activeShapeModel["updateContext"]({
+            width: this._baseShapeWidth,
+            height: this._baseShapeHeight
+          }), (var_core_value_sig48BD = this._getActiveDrawingShape(var_core_value_sig4169)) == null || var_core_value_sig48BD.makeDirty(true), this._activeShapeAdjustPointList = this._getShapeAdjustPointListById(var_core_value_sigAEFB.unitId, var_core_value_sigAEFB.subUnitId, var_core_value_sigAEFB.drawingId), this._updateAdjustControlPositions(), var_core_value_sigD955.stopPropagation();
+        }
+      }), this._adjHandlerPointerUp = var_core_value_sig4169.onPointerUp$["subscribeEvent"]((var_core_value_sig9572, var_core_value_sigD873) => {
+        var var_core_value_sigA12B, var_core_value_sigF230;
+        (var_core_value_sigA12B = this._adjHandlerPointerMove) == null || var_core_value_sigA12B.unsubscribe(), (var_core_value_sigF230 = this._adjHandlerPointerUp) == null || var_core_value_sigF230.unsubscribe(), var_core_value_sig4169.resetCursor();
+        let var_core_value_sig09B8 = this._activeAdjustInfo;
+        if (var_core_value_sig09B8 && this._activeShapeModel) {
+          let var_core_value_sigFBFA = {};
+          for (let var_core_value_sig3EEE of Object.keys(var_core_value_sig09B8.currentAdjustValues)) {
+            let var_core_value_sig7524 = this._activeShapeModel["getAdjustValueByName"](var_core_value_sig3EEE);
+            var_core_value_sig7524 !== undefined && (var_core_value_sigFBFA[var_core_value_sig3EEE] = var_core_value_sig7524);
+          }
+          Object.keys(var_core_value_sigFBFA).length > 0 && R(this._commandService, var_core_value_sigAEFB.unitId, var_core_value_sigAEFB.subUnitId, var_core_value_sigAEFB.drawingId, {
+            oldShapeData: {
+              adjustValues: var_core_value_sigB008
+            }
+          }, {
+            adjustValues: var_core_value_sigFBFA
+          });
+        }
+        this._activeAdjustInfo = undefined, this._activeShapeModel = undefined, this._isStartAdjusting = false, var_core_value_sig4169.enableObjectsEvent(), var_core_value_sigD873.stopPropagation();
+      }), var_core_value_sigB601.stopPropagation();
+    })));
+  }
+  _registerDrawingTransformHandler() {
+    let {
+        scene: var_core_value_sig279C
+      } = this._context,
+      var_core_value_sigAC51 = var_core_value_sig279C.getTransformerByCreate();
+    this.disposeWithMe(var_core_value_sigAC51.changeStart$["subscribe"](var_core_value_sig8721 => {
+      this._createShapeAdjustControls(), var_core_value_sig8721.objects !== null && var_core_value_sig8721.objects["size"] === 1 && var_core_value_sig8721.objects["values"]().next().value instanceof X && (this._isShouldShowDrawingShapeAdjust = true);
+    })), this.disposeWithMe(var_core_value_sigAC51.changing$["subscribe"](() => {
+      this._isShouldShowDrawingShapeAdjust && this._clearShapeAdjustControls();
+    })), this.disposeWithMe(var_core_value_sig279C.onPointerUp$["subscribeEvent"](() => {
+      this._isShouldShowDrawingShapeAdjust && (this._isShouldShowDrawingShapeAdjust = false, this._createShapeAdjustControls());
+    })), this.disposeWithMe(var_core_value_sigAC51.changeEnd$["subscribe"](() => {
+      this._unitId && this._subUnitId && this._activeShapeId && (this._activeShapeAdjustPointList = this._getShapeAdjustPointListById(this._unitId, this._subUnitId, this._activeShapeId), this._updateAdjustControlPositions());
+    }));
+  }
+  _registerDrawingFocusChangeHandler() {
+    this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sig08BA => {
+      if (var_core_value_sig08BA.id !== r.UpdateDocShapeDataMutation["id"]) return;
+      let {
+        unitId: var_core_value_sigDBB5,
+        shapeId: var_core_value_sigCFAC
+      } = var_core_value_sig08BA.params;
+      var_core_value_sigDBB5 === this._unitId && var_core_value_sigCFAC === this._activeShapeId && this.refreshAdjustControls();
+    })), this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sig237B => {
+      if (var_core_value_sig237B.length === 1) {
+        let var_core_value_sig6F91 = var_core_value_sig237B[0],
+          var_core_value_sigF9C7 = this._drawingManagerService["getDrawingByParam"](var_core_value_sig6F91);
+        if ((var_core_value_sigF9C7 == null ? undefined : var_core_value_sigF9C7.drawingType) === o.DrawingTypeEnum["DRAWING_SHAPE"]) {
+          this._activeShapeId = var_core_value_sig6F91.drawingId, this._unitId = var_core_value_sig6F91.unitId, this._subUnitId = var_core_value_sig6F91.subUnitId, this._activeShapeAdjustPointList = this._getShapeAdjustPointListById(var_core_value_sig6F91.unitId, var_core_value_sig6F91.subUnitId, var_core_value_sig6F91.drawingId), this._clearShapeAdjustControls(), this._createShapeAdjustControls();
+          return;
+        }
+      }
+      this._activeShapeId = null, this._activeShapeAdjustPointList = undefined, this._unitId = null, this._subUnitId = null, this._clearShapeAdjustControls();
+    })), this.disposeWithMe((0, p.merge)(this._drawingManagerService["update$"], this._drawingManagerService["refreshTransform$"]).subscribe(var_core_value_sigFEAB => {
+      var var_core_value_sigE347;
+      let var_core_value_sig3C5B = var_core_value_sigFEAB.find(var_core_value_sig8895 => var_core_value_sig8895.drawingId === this._activeShapeId && var_core_value_sig8895.unitId === this._unitId && var_core_value_sig8895.subUnitId === this._subUnitId);
+      var_core_value_sig3C5B && ((var_core_value_sigE347 = this._drawingManagerService["getDrawingByParam"](var_core_value_sig3C5B)) == null ? undefined : var_core_value_sigE347.drawingType) === o.DrawingTypeEnum["DRAWING_SHAPE"] && this._updateShapeAdjustControls(true);
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sig200B => {
+      for (let var_core_value_sigC80B of var_core_value_sig200B) this._activeShapeId === var_core_value_sigC80B.drawingId && (this._activeShapeId = null, this._activeShapeAdjustPointList = undefined, this._unitId = null, this._subUnitId = null, this._clearShapeAdjustControls());
+    }));
+  }
+};
+Z = N([M(1, u.IDrawingManagerService), M(2, (0, o.Inject)(r.DocsShapeService)), M(3, o.ICommandService)], Z);
+function dt(var_core_value_sig8295) {
+  return var_core_value_sig8295.behindText === true || var_core_value_sig8295.behindText === o.BooleanNumber["TRUE"] || var_core_value_sig8295.layoutType === o.PositionedObjectLayoutType["WRAP_NONE"] && var_core_value_sig8295.behindDoc === o.BooleanNumber["TRUE"] ? t.DOCS_COMPONENT_MAIN_LAYER_INDEX - 1 : l.DRAWING_OBJECT_LAYER_INDEX;
+}
+let Q = class extends o.Disposable {
+  constructor(var_core_value_sig8986, var_core_value_sigCAF7, var_core_value_sigED1C, var_core_value_sig726E, var_core_value_sig2CD3, var_core_value_sig038E, var_core_value_sigAA1E) {
+    super(), this._drawingManagerService = var_core_value_sig8986, this._docsShapeService = var_core_value_sigCAF7, this._localeService = var_core_value_sigED1C, this._imageIoService = var_core_value_sig726E, this._urlImageService = var_core_value_sig2CD3, this._shapeTextEditingService = var_core_value_sig038E, this._shapeFormulaService = var_core_value_sigAA1E, q(this, "_formulaShapes", new Map()), this.disposeWithMe(this._shapeFormulaService["presentationChanged$"].subscribe(var_core_value_sig3863 => {
+      var var_core_value_sigC97C;
+      (var_core_value_sigC97C = this._formulaShapes["get"](this._formulaKey(var_core_value_sig3863.unitId, var_core_value_sig3863.subUnitId, var_core_value_sig3863.shapeId))) == null || var_core_value_sigC97C.forEach(var_core_value_sig284F => var_core_value_sig284F.setFormulaPresentation(var_core_value_sig3863.presentation, var_core_value_sig3863.animationEnabled));
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sigC4B1 => {
+      var_core_value_sigC4B1.forEach(var_core_value_sigE154 => {
+        this._shapeFormulaService["unregister"]({
+          unitId: var_core_value_sigE154.unitId,
+          subUnitId: var_core_value_sigE154.subUnitId,
+          shapeId: var_core_value_sigE154.drawingId
+        }), this._formulaShapes["delete"](this._formulaKey(var_core_value_sigE154.unitId, var_core_value_sigE154.subUnitId, var_core_value_sigE154.drawingId));
+      });
+    }));
+  }
+  renderDrawingShape(var_core_value_sigC9F5, var_core_value_sig7EEA) {
+    let {
+      transform: var_core_value_sig59CE1,
+      drawingType: var_core_value_sig33C8,
+      srcRect: var_core_value_sig957F,
+      prstGeom: var_core_value_sig803B,
+      groupId: var_core_value_sig5830,
+      unitId: var_core_value_sig4A7C,
+      subUnitId: var_core_value_sigF975,
+      drawingId: var_core_value_sigCDAF,
+      isMultiTransform: var_core_value_sigA298,
+      transforms: var_core_value_sig0B40,
+      hidden: var_core_value_sig330B,
+      selectable: var_core_value_sig3625
+    } = var_core_value_sigC9F5;
+    if (var_core_value_sig33C8 !== o.DrawingTypeEnum["DRAWING_SHAPE"] || !this._drawingManagerService["getDrawingVisible"]() || var_core_value_sig59CE1 == null) return;
+    let var_core_value_sig0B4E = this._drawingManagerService["getDrawingEditable"](),
+      var_core_value_sig0E9F = var_core_value_sigA298 && var_core_value_sig0B40 ? var_core_value_sig0B40 : [var_core_value_sig59CE1],
+      var_core_value_sigE5BA = [];
+    for (let var_core_value_sig1BD9 of var_core_value_sig0E9F) {
+      let {
+          left: var_core_value_sig4632,
+          top: var_core_value_sig12F2,
+          width: var_core_value_sig2259,
+          height: var_core_value_sig9E2F,
+          angle: var_core_value_sigD082,
+          flipX: var_core_value_sigDBB7,
+          flipY: var_core_value_sigD0A8,
+          skewX: var_core_value_sigF4B9,
+          skewY: var_core_value_sig5CEE
+        } = var_core_value_sig1BD9,
+        var_core_value_sigE92A = var_core_value_sig0E9F.indexOf(var_core_value_sig1BD9),
+        var_core_value_sig362B = (0, u.getDrawingShapeKeyByDrawingSearch)({
+          unitId: var_core_value_sig4A7C,
+          subUnitId: var_core_value_sigF975,
+          drawingId: var_core_value_sigCDAF
+        }, var_core_value_sigA298 ? var_core_value_sigE92A : undefined),
+        var_core_value_sig5CA5 = var_core_value_sig7EEA.getObjectIncludeInGroup(var_core_value_sig362B);
+      if (var_core_value_sig5CA5 != null) {
+        let var_core_value_sigF602 = {
+          unitId: var_core_value_sig4A7C,
+          subUnitId: var_core_value_sigF975,
+          shapeId: var_core_value_sigCDAF
+        };
+        var_core_value_sig5CA5 instanceof X && this.refreshFormulaPresentation(var_core_value_sig5CA5, var_core_value_sigF602), var_core_value_sig5CA5.transformByState({
+          left: var_core_value_sig4632,
+          top: var_core_value_sig12F2,
+          width: var_core_value_sig2259,
+          height: var_core_value_sig9E2F,
+          angle: var_core_value_sigD082,
+          flipX: var_core_value_sigDBB7,
+          flipY: var_core_value_sigD0A8,
+          skewX: var_core_value_sigF4B9,
+          skewY: var_core_value_sig5CEE
+        });
+        continue;
+      }
+      let var_core_value_sigE90F = this._drawingManagerService["getDrawingOrder"](var_core_value_sig4A7C, var_core_value_sigF975),
+        var_core_value_sigEFD4 = var_core_value_sigE90F.indexOf(var_core_value_sigCDAF);
+      if (var_core_value_sig7EEA.getObjectIncludeInGroup(var_core_value_sig362B) || !this._drawingManagerService["getDrawingVisible"]()) continue;
+      let var_core_value_sig861B = this._docsShapeService["getShapeModel"](var_core_value_sig4A7C, var_core_value_sigF975, var_core_value_sigCDAF);
+      if (!var_core_value_sig861B) continue;
+      let var_core_value_sig5237 = (0, i.isConnectorShape)(var_core_value_sig861B.getShapeType()) ? {
+          ...e.SHAPE_EDITOR_TRANSFORMER_CONFIG,
+          rotateEnabled: false,
+          resizeEnabled: false,
+          borderEnabled: false
+        } : e.SHAPE_EDITOR_TRANSFORMER_CONFIG,
+        var_core_value_sigBB00 = var_core_value_sig861B.getShapeData().formulaBinding,
+        var_core_value_sig7E54 = {
+          unitId: var_core_value_sig4A7C,
+          subUnitId: var_core_value_sigF975,
+          shapeId: var_core_value_sigCDAF
+        };
+      var_core_value_sigBB00 && this._shapeFormulaService["register"](var_core_value_sig7E54, var_core_value_sigBB00);
+      let var_core_value_sig9A8D = new X(var_core_value_sig362B, {
+        ...var_core_value_sig1BD9,
+        zIndex: var_core_value_sigEFD4 === -1 ? var_core_value_sigE90F.length - 1 : var_core_value_sigEFD4,
+        shapeModel: var_core_value_sig861B,
+        localeService: this._localeService,
+        shapeId: var_core_value_sigCDAF,
+        unitId: var_core_value_sig4A7C,
+        subUnitId: var_core_value_sigF975,
+        visible: var_core_value_sig330B !== true,
+        evented: var_core_value_sig3625 !== false,
+        formulaPresentation: var_core_value_sigBB00 ? this._shapeFormulaService["getPresentation"](var_core_value_sig7E54) : undefined,
+        animateFormulaPresentation: (var_core_value_sigBB00 == null ? undefined : var_core_value_sigBB00.animationEnabled) !== false,
+        transformerConfig: var_core_value_sig5237
+      });
+      if (var_core_value_sigBB00) {
+        let var_core_value_sig1BBD = this._formulaKey(var_core_value_sig4A7C, var_core_value_sigF975, var_core_value_sigCDAF),
+          var_core_value_sigF704 = this._formulaShapes["get"](var_core_value_sig1BBD) ?? new Set();
+        var_core_value_sigF704.add(var_core_value_sig9A8D), this._formulaShapes["set"](var_core_value_sig1BBD, var_core_value_sigF704);
+      }
+      this.disposeWithMe((0, o.toDisposable)(var_core_value_sig9A8D.onDblclick$["subscribeEvent"]((var_core_value_sig2BCF, var_core_value_sig0D69) => {
+        var_core_value_sig861B.isLineShape() || var_core_value_sigBB00 || (this._shapeTextEditingService["setEditing"]({
+          visible: true,
+          unitId: var_core_value_sig4A7C,
+          subUnitId: var_core_value_sigF975,
+          shapeId: var_core_value_sigCDAF,
+          shapeKey: var_core_value_sig9A8D.oKey
+        }), var_core_value_sig0D69.stopPropagation());
+      }))), var_core_value_sig7EEA.addObject(var_core_value_sig9A8D, dt(var_core_value_sigC9F5)), var_core_value_sig0B4E && var_core_value_sig7EEA.attachTransformerTo(var_core_value_sig9A8D), var_core_value_sig5830 && (0, d.insertGroupObject)({
+        drawingId: var_core_value_sig5830,
+        unitId: var_core_value_sig4A7C,
+        subUnitId: var_core_value_sigF975
+      }, var_core_value_sig9A8D, var_core_value_sig7EEA, this._drawingManagerService), var_core_value_sig803B != null && var_core_value_sig9A8D.setPrstGeom(var_core_value_sig803B), var_core_value_sig957F != null && var_core_value_sig9A8D.setSrcRect(var_core_value_sig957F), this._loadShapePictureFill(var_core_value_sig9A8D, var_core_value_sig861B.getShapeData()), var_core_value_sigE5BA.push(var_core_value_sig9A8D);
+    }
+    return var_core_value_sigE5BA;
+  }
+  _formulaKey(var_core_value_sig4A83, var_core_value_sig58AA, var_core_value_sig84C4) {
+    return var_core_value_sig4A83 + "\x00" + var_core_value_sig58AA + "\x00" + var_core_value_sig84C4;
+  }
+  refreshFormulaPresentation(var_core_value_sigB6F7, var_core_value_sigB495) {
+    let var_core_value_sig70D0 = this._docsShapeService["getShapeModel"](var_core_value_sigB495.unitId, var_core_value_sigB495.subUnitId, var_core_value_sigB495.shapeId),
+      var_core_value_sig2A8A = var_core_value_sig70D0 == null ? undefined : var_core_value_sig70D0.getShapeData().formulaBinding,
+      var_core_value_sig3782 = this._formulaKey(var_core_value_sigB495.unitId, var_core_value_sigB495.subUnitId, var_core_value_sigB495.shapeId);
+    if (var_core_value_sig2A8A) {
+      this._shapeFormulaService["register"](var_core_value_sigB495, var_core_value_sig2A8A);
+      let var_core_value_sigE43E = this._formulaShapes["get"](var_core_value_sig3782) ?? new Set();
+      var_core_value_sigE43E.add(var_core_value_sigB6F7), this._formulaShapes["set"](var_core_value_sig3782, var_core_value_sigE43E);
+    } else {
+      var var_core_value_sigD22E;
+      this._shapeFormulaService["unregister"](var_core_value_sigB495), (var_core_value_sigD22E = this._formulaShapes["get"](var_core_value_sig3782)) == null || var_core_value_sigD22E.delete(var_core_value_sigB6F7);
+    }
+    var_core_value_sigB6F7.setFormulaPresentation(var_core_value_sig2A8A ? this._shapeFormulaService["getPresentation"](var_core_value_sigB495) : undefined, (var_core_value_sig2A8A == null ? undefined : var_core_value_sig2A8A.animationEnabled) !== false);
+  }
+  refreshShapeFillImage(var_core_value_sig3455) {
+    let var_core_value_sig5CEF = var_core_value_sig3455.shapeModel["getShapeData"](),
+      var_core_value_sig43D5 = var_core_value_sig5CEF.fill;
+    if (!var_core_value_sig43D5 || var_core_value_sig43D5.fillType !== i.ShapeFillEnum["PictureFill"] || !var_core_value_sig43D5.fillImageSource) {
+      var_core_value_sig3455.setFillImage(undefined);
+      return;
+    }
+    this._loadShapePictureFill(var_core_value_sig3455, var_core_value_sig5CEF);
+  }
+  _loadShapePictureFill(var_core_value_sig1395, var_core_value_sig9FA0) {
+    let var_core_value_sig055E = var_core_value_sig9FA0.fill;
+    if (!var_core_value_sig055E || var_core_value_sig055E.fillType !== i.ShapeFillEnum["PictureFill"] || !var_core_value_sig055E.fillImageSource) return;
+    let var_core_value_sig7C77 = var_core_value_sig055E.fillImageSource,
+      var_core_value_sig9578 = var_core_value_sig055E.fillImageSourceType ?? i.ImageSourceTypeEnum["URL"],
+      var_core_value_sigA2D3 = this._imageIoService["getImageSourceCache"](var_core_value_sig7C77, var_core_value_sig9578);
+    if (var_core_value_sigA2D3) {
+      var_core_value_sig1395.setFillImage(var_core_value_sigA2D3);
+      return;
+    }
+    this._loadAndSetImage(var_core_value_sig1395, var_core_value_sig7C77, var_core_value_sig9578);
+  }
+  async _loadAndSetImage(var_core_value_sigC218, var_core_value_sigADEC, var_core_value_sig3D8E) {
+    let var_core_value_sig37E5;
+    try {
+      if (var_core_value_sig3D8E === i.ImageSourceTypeEnum["UUID"]) var_core_value_sig37E5 = await this._imageIoService["getImage"](var_core_value_sigADEC);else {
+        if (var_core_value_sig3D8E === i.ImageSourceTypeEnum["URL"]) try {
+          var_core_value_sig37E5 = await this._urlImageService["getImage"](var_core_value_sigADEC);
+        } catch {
+          var_core_value_sig37E5 = var_core_value_sigADEC;
+        } else var_core_value_sig37E5 = var_core_value_sigADEC;
+      }
+    } catch (var_core_value_sigA937) {
+      console.error("[ShapeRender] Failed to resolve picture fill source", var_core_value_sigA937);
+      return;
+    }
+    let var_core_value_sigF079 = new window.Image();
+    var_core_value_sigF079.onload = () => {
+      this._imageIoService["addImageSourceCache"](var_core_value_sigADEC, var_core_value_sig3D8E, var_core_value_sigF079), var_core_value_sigC218.setFillImage(var_core_value_sigF079);
+    }, var_core_value_sigF079.onerror = () => {
+      console.error("[ShapeRender] Failed to load picture fill image", var_core_value_sigADEC);
+    }, var_core_value_sigF079.src = var_core_value_sig37E5;
+  }
+};
+Q = N([M(0, u.IDrawingManagerService), M(1, (0, o.Inject)(r.DocsShapeService)), M(2, (0, o.Inject)(o.LocaleService)), M(3, o.IImageIoService), M(4, o.IURLImageService), M(5, (0, o.Inject)(J)), M(6, (0, o.Inject)(a.ShapeFormulaService))], Q);
+let ft = class extends o.Disposable {
+  constructor(var_core_value_sigFCA0, var_core_value_sigC84D, var_core_value_sigF2BC) {
+    super(), this._docPrintInterceptorService = var_core_value_sigFCA0, this._drawingManagerService = var_core_value_sigC84D, this._shapeRenderController = var_core_value_sigF2BC, this._initPrinting();
+  }
+  _initPrinting() {
+    this.disposeWithMe(this._docPrintInterceptorService["interceptor"].intercept(this._docPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_COMPONENT_COLLECT, {
+      handler: (var_core_value_sigCAD5, var_core_value_sigE503, var_core_value_sig48DD) => {
+        var var_core_value_sig5E6A;
+        let {
+            unitId: var_core_value_sigB7FC,
+            scene: var_core_value_sig9CD9,
+            skeleton: var_core_value_sigFD0C
+          } = var_core_value_sigE503,
+          {
+            pageIndex: var_core_value_sig849B
+          } = var_core_value_sigE503,
+          var_core_value_sig5F1A = (var_core_value_sig5E6A = this._drawingManagerService["getDrawingDataForUnit"](var_core_value_sigB7FC)) == null ? undefined : var_core_value_sig5E6A[var_core_value_sigB7FC],
+          var_core_value_sigB455 = pt(this._docPrintInterceptorService, var_core_value_sigFD0C, var_core_value_sig849B);
+        return var_core_value_sig5F1A == null || var_core_value_sig5F1A.order["forEach"](var_core_value_sigC259 => {
+          if (var_core_value_sigB455 && !var_core_value_sigB455.has(var_core_value_sigC259)) return;
+          let var_core_value_sig9C9F = var_core_value_sig5F1A.data[var_core_value_sigC259];
+          var_core_value_sig9C9F.drawingType === o.DrawingTypeEnum["DRAWING_SHAPE"] && !var_core_value_sig9C9F.hidden && this._shapeRenderController["renderDrawingShape"](var_core_value_sig9C9F, var_core_value_sig9CD9);
+        }), var_core_value_sig48DD(var_core_value_sigCAD5);
+      }
+    }));
+  }
+};
+ft = N([M(0, (0, o.Inject)(t.DocPrintInterceptorService)), M(1, u.IDrawingManagerService), M(2, (0, o.Inject)(Q))], ft);
+function pt(var_core_value_sigA975, var_core_value_sig1263, var_core_value_sig457C) {
+  var var_core_value_sigA4E6, var_core_value_sig934F;
+  let var_core_value_sig74A7 = var_core_value_sigA975;
+  if (var_core_value_sig74A7.getPageDrawingIds) return var_core_value_sig74A7.getPageDrawingIds(var_core_value_sig1263, var_core_value_sig457C);
+  let var_core_value_sig3685 = var_core_value_sig1263.getSkeletonData();
+  if (!var_core_value_sig3685 || var_core_value_sig3685.pages["length"] <= 1 || var_core_value_sig457C == null) return null;
+  let var_core_value_sigC621 = new Set(),
+    var_core_value_sig86D7 = var_core_value_sig3685.pages[var_core_value_sig457C];
+  if (!var_core_value_sig86D7) return var_core_value_sigC621;
+  mt(var_core_value_sig86D7, var_core_value_sigC621);
+  let var_core_value_sig431B = (var_core_value_sigA4E6 = var_core_value_sig3685.skeHeaders["get"](var_core_value_sig86D7.headerId)) == null ? undefined : var_core_value_sigA4E6.get(var_core_value_sig86D7.pageWidth),
+    var_core_value_sig5C7C = (var_core_value_sig934F = var_core_value_sig3685.skeFooters["get"](var_core_value_sig86D7.footerId)) == null ? undefined : var_core_value_sig934F.get(var_core_value_sig86D7.pageWidth);
+  return var_core_value_sig431B && mt(var_core_value_sig431B, var_core_value_sigC621), var_core_value_sig5C7C && mt(var_core_value_sig5C7C, var_core_value_sigC621), var_core_value_sigC621;
+}
+function mt(var_core_value_sig87E2, var_core_value_sig2E04) {
+  for (let var_core_value_sigD37B of var_core_value_sig87E2.skeDrawings["keys"]()) var_core_value_sig2E04.add(var_core_value_sigD37B);
+  for (let var_core_value_sigFA28 of var_core_value_sig87E2.skeTables["values"]()) for (let var_core_value_sig5241 of var_core_value_sigFA28.rows) for (let var_core_value_sigFDEA of var_core_value_sig5241.cells) mt(var_core_value_sigFDEA, var_core_value_sig2E04);
+}
+const ht = "docs-shape-contextual-ribbon";
+let gt = class extends o.Disposable {
+  constructor(var_core_value_sig93BE, var_core_value_sigABEC, var_core_value_sig2712, var_core_value_sig0B9E, var_core_value_sigC545, var_core_value_sig12A7) {
+    super(), this._menuManagerService = var_core_value_sig93BE, this._ribbonService = var_core_value_sigABEC, this._drawingManagerService = var_core_value_sig2712, this._univerInstanceService = var_core_value_sig0B9E, this._renderManagerService = var_core_value_sigC545, this._shapeFloatingToolbarService = var_core_value_sig12A7, q(this, "_visible", false), this._menuManagerService["mergeMenu"](Ue), this.disposeWithMe((0, o.toDisposable)(this._drawingManagerService["focus$"].subscribe(() => this._update()))), this._update();
+  }
+  dispose() {
+    this._shapeFloatingToolbarService["setFallbackVisible"](false, ht), this._hide(), super.dispose();
+  }
+  _update() {
+    var var_core_value_sig6F4E;
+    let var_core_value_sigA021 = this._drawingManagerService["getFocusDrawings"](),
+      var_core_value_sig49D9 = var_core_value_sigA021.length === 1 ? var_core_value_sigA021[0] : undefined;
+    if ((var_core_value_sig49D9 == null ? undefined : var_core_value_sig49D9.drawingType) !== o.DrawingTypeEnum["DRAWING_SHAPE"] || this._univerInstanceService["getUnitType"](var_core_value_sig49D9.unitId) !== o.UniverInstanceType["UNIVER_DOC"]) {
+      this._shapeFloatingToolbarService["setFallbackVisible"](false, ht), this._hide();
+      return;
+    }
+    let var_core_value_sig320C = (0, e.resolveShapeContextualRibbonHostMode)((var_core_value_sig6F4E = this._renderManagerService["getRenderUnitById"](var_core_value_sig49D9.unitId)) == null ? undefined : var_core_value_sig6F4E.engine["getCanvasElement"]()) === "isolated";
+    if (this._shapeFloatingToolbarService["setFallbackVisible"](var_core_value_sig320C, ht), var_core_value_sig320C) {
+      this._hide();
+      return;
+    }
+    this._visible || (this._visible = true, this._ribbonService["showContextualTab"](C, {
+      activate: true
+    }));
+  }
+  _hide() {
+    this._visible && (this._visible = false, this._ribbonService["hideContextualTab"](C), this._ribbonService["setCollapsedIds"]([]));
+  }
+};
+gt = N([M(0, n.IMenuManagerService), M(1, n.IRibbonService), M(2, u.IDrawingManagerService), M(3, o.IUniverInstanceService), M(4, l.IRenderManagerService), M(5, (0, o.Inject)(e.ShapeFloatingToolbarService))], gt);
+function _t(var_core_value_sig2EDD, var_core_value_sig27D2) {
+  let var_core_value_sig355D = var_core_value_sig2EDD;
+  for (; var_core_value_sig355D;) {
+    if (var_core_value_sig27D2(var_core_value_sig355D)) return var_core_value_sig355D;
+    var_core_value_sig355D = typeof var_core_value_sig355D.getParent == "function" ? var_core_value_sig355D.getParent() : null;
+  }
+  return null;
+}
+function vt(var_core_value_sig8B21) {
+  return _t(var_core_value_sig8B21, var_core_value_sigE7F0 => var_core_value_sigE7F0 instanceof X);
+}
+function yt(var_core_value_sigEB36) {
+  return (var_core_value_sigEB36 == null ? undefined : var_core_value_sigEB36.formulaBinding) == null;
+}
+let bt = class extends o.Disposable {
+  constructor(var_core_value_sigE837, var_core_value_sig34F4, var_core_value_sigA45D, var_core_value_sig1BC7, var_core_value_sig4956, var_core_value_sigCC9E) {
+    super(), this._context = var_core_value_sigE837, this._shapeTextEditingService = var_core_value_sig34F4, this._drawingManagerService = var_core_value_sigA45D, this._contextService = var_core_value_sig1BC7, this._docLayoutInteractionService = var_core_value_sig4956, this._docsShapeService = var_core_value_sigCC9E, q(this, "_lastEditingShapeKey", null), q(this, "_layoutInteraction", null), this._initEvents(), this._initSelection(), this._initEditingParams();
+  }
+  dispose() {
+    this._endLayoutInteraction(), super.dispose();
+  }
+  _initEvents() {
+    let {
+      scene: var_core_value_sig444C
+    } = this._context;
+    this.disposeWithMe(var_core_value_sig444C.onDblclick$["subscribeEvent"]((var_core_value_sigC6E5, var_core_value_sigCEFB) => {
+      let {
+          offsetX: var_core_value_sig1537,
+          offsetY: var_core_value_sigE4C6
+        } = var_core_value_sigC6E5,
+        var_core_value_sig4313 = l.Vector2["FromArray"]([var_core_value_sig1537, var_core_value_sigE4C6]),
+        var_core_value_sigFC87 = vt(var_core_value_sig444C.pick(var_core_value_sig4313)) ?? this._getFocusedShapeAtPoint(var_core_value_sig4313);
+      if (var_core_value_sigFC87) {
+        var_core_value_sigCEFB.stopPropagation();
+        let var_core_value_sig86D0 = this._docsShapeService["getShapeModel"](var_core_value_sigFC87.unitId, var_core_value_sigFC87.subUnitId, var_core_value_sigFC87.shapeId);
+        if (!var_core_value_sig86D0 || (0, i.isConnectorShape)(var_core_value_sig86D0.getShapeType()) || !yt(var_core_value_sig86D0.getShapeData())) return;
+        this._shapeTextEditingService["setEditing"]({
+          visible: true,
+          unitId: var_core_value_sigFC87.unitId,
+          subUnitId: var_core_value_sigFC87.subUnitId,
+          shapeId: var_core_value_sigFC87.shapeId,
+          shapeKey: var_core_value_sigFC87.oKey
+        });
+      }
+    }));
+  }
+  _getFocusedShapeAtPoint(var_core_value_sigE42E) {
+    let {
+      scene: var_core_value_sigF039
+    } = this._context;
+    return this._drawingManagerService["getFocusDrawings"]().map(var_core_value_sig156F => var_core_value_sigF039.getObjectIncludeInGroup((0, u.getDrawingShapeKeyByDrawingSearch)(var_core_value_sig156F))).find(var_core_value_sigDD51 => var_core_value_sigDD51 instanceof X && var_core_value_sigDD51.isHit(var_core_value_sigE42E)) ?? null;
+  }
+  _initSelection() {
+    this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sigF057 => {
+      if (var_core_value_sigF057.length === 1) {
+        let var_core_value_sig4CD2 = var_core_value_sigF057[0],
+          var_core_value_sig48CA = this._drawingManagerService["getDrawingByParam"](var_core_value_sig4CD2);
+        if ((var_core_value_sig48CA == null ? undefined : var_core_value_sig48CA.drawingType) === o.DrawingTypeEnum["DRAWING_SHAPE"]) {
+          let var_core_value_sig480E = this._shapeTextEditingService["getEditing"]();
+          if ((var_core_value_sig480E == null ? undefined : var_core_value_sig480E.shapeId) === var_core_value_sig4CD2.drawingId && var_core_value_sig480E.visible) return;
+          (0, i.isConnectorShape)(this._docsShapeService["getShapeType"](var_core_value_sig4CD2.unitId, var_core_value_sig4CD2.subUnitId, var_core_value_sig4CD2.drawingId)) && this._shapeTextEditingService["setEditing"](null);
+        } else this._shapeTextEditingService["getEditing"]() && (this._shapeTextEditingService["setOnSavingEditorData"](true), requestAnimationFrame(() => {
+          this._shapeTextEditingService["setEditing"](null);
+        }));
+      } else this._shapeTextEditingService["getEditing"]() && (this._shapeTextEditingService["setOnSavingEditorData"](true), requestAnimationFrame(() => {
+        this._shapeTextEditingService["setEditing"](null);
+      }));
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sig72F6 => {
+      let var_core_value_sig9FBA = this._shapeTextEditingService["getEditing"]();
+      var_core_value_sig9FBA && var_core_value_sig72F6.some(var_core_value_sig50AF => var_core_value_sig50AF.drawingId === var_core_value_sig9FBA.shapeId) && this._shapeTextEditingService["setEditing"](null);
+    }));
+  }
+  _initEditingParams() {
+    this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(var_core_value_sigFE01 => {
+      (var_core_value_sigFE01 == null ? undefined : var_core_value_sigFE01.visible) === true && var_core_value_sigFE01.unitId === this._context["unitId"] ? this._layoutInteraction ??= this._docLayoutInteractionService["beginInteraction"]() : this._endLayoutInteraction();
+      let {
+        scene: var_core_value_sigA2CE
+      } = this._context;
+      if (this._lastEditingShapeKey) {
+        let var_core_value_sigA942 = var_core_value_sigA2CE.getObjectIncludeInGroup(this._lastEditingShapeKey);
+        var_core_value_sigA942 && var_core_value_sigA942.setEditing(false);
+      }
+      if (var_core_value_sigFE01) {
+        let var_core_value_sigA621 = !!var_core_value_sigFE01.visible,
+          var_core_value_sigBBFF = var_core_value_sigA2CE.getObjectIncludeInGroup(var_core_value_sigFE01.shapeKey);
+        var_core_value_sigBBFF && (var_core_value_sigBBFF.setEditing(var_core_value_sigA621), this._lastEditingShapeKey = var_core_value_sigFE01.shapeKey), this._contextService["setContextValue"](o.FOCUSING_SHAPE_TEXT_EDITOR, var_core_value_sigA621);
+      } else this._lastEditingShapeKey = null, this._contextService["setContextValue"](o.FOCUSING_SHAPE_TEXT_EDITOR, false);
+    }));
+  }
+  _endLayoutInteraction() {
+    var var_core_value_sigA321;
+    (var_core_value_sigA321 = this._layoutInteraction) == null || var_core_value_sigA321.dispose(), this._layoutInteraction = null;
+  }
+};
+bt = N([M(1, (0, o.Inject)(J)), M(2, u.IDrawingManagerService), M(3, o.IContextService), M(4, (0, o.Inject)(t.DocLayoutInteractionService)), M(5, (0, o.Inject)(r.DocsShapeService))], bt);
+let xt = class extends e.ShapeTextFloatMenuRenderControllerBase {
+  constructor(var_core_value_sigBF4C, var_core_value_sig3457, var_core_value_sig4A08, var_core_value_sig1BC4, var_core_value_sig9EAB, var_core_value_sigA5C3, var_core_value_sig3A1E, var_core_value_sigDC92, var_core_value_sig3515, var_core_value_sigC2A0) {
+    super(var_core_value_sigBF4C, var_core_value_sig3457, var_core_value_sig4A08, var_core_value_sig1BC4, var_core_value_sig9EAB, var_core_value_sigA5C3, var_core_value_sig3A1E, var_core_value_sigDC92, var_core_value_sig3515, var_core_value_sigC2A0, {
+      componentKey: E,
+      editorUnitId: T
+    });
+  }
+};
+xt = N([M(1, (0, o.Inject)(s.DocSelectionManagerService)), M(2, (0, o.Inject)(t.DocCanvasPopManagerService)), M(3, (0, o.Inject)(t.DocSelectionRenderService)), M(4, o.ICommandService), M(5, (0, o.Inject)(t.DocEventManagerService)), M(6, (0, o.Inject)(e.ShapeTextHyperLinkPopupService)), M(7, (0, o.Inject)(s.DocInterceptorService)), M(8, (0, o.Inject)(t.DocRenderController)), M(9, (0, o.Inject)(J))], xt);
+let St = class extends o.Disposable {
+  constructor(var_core_value_sig7C65, var_core_value_sig7F05, var_core_value_sig41F3, var_core_value_sigF455) {
+    super(), this._commandService = var_core_value_sig7C65, this._renderManagerService = var_core_value_sig7F05, this._drawingManagerService = var_core_value_sig41F3, this._docDrawingShapeRenderController = var_core_value_sigF455, this._initialize();
+  }
+  _initialize() {
+    this.disposeWithMe(this._drawingManagerService["add$"].subscribe(var_core_value_sig1975 => this._insertShapes(var_core_value_sig1975))), this.disposeWithMe(this._drawingManagerService["update$"].subscribe(var_core_value_sig6EA1 => {
+      var_core_value_sig6EA1.forEach(var_core_value_sig8889 => this._updateShape(var_core_value_sig8889));
+    })), this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sig029F => {
+      if (var_core_value_sig029F.id !== r.UpdateDocShapeDataMutation["id"]) return;
+      let {
+        unitId: var_core_value_sig3767,
+        shapeId: var_core_value_sig670B
+      } = var_core_value_sig029F.params;
+      this._refreshShapeData({
+        unitId: var_core_value_sig3767,
+        subUnitId: var_core_value_sig3767,
+        drawingId: var_core_value_sig670B
+      });
+    }));
+  }
+  _insertShapes(var_core_value_sig6E78) {
+    var_core_value_sig6E78.forEach(var_core_value_sig6912 => {
+      let var_core_value_sigE235 = this._getSceneByUnitId(var_core_value_sig6912.unitId);
+      if (!var_core_value_sigE235) return;
+      let var_core_value_sig7664 = this._drawingManagerService["getDrawingByParam"](var_core_value_sig6912);
+      (var_core_value_sig7664 == null ? undefined : var_core_value_sig7664.drawingType) === o.DrawingTypeEnum["DRAWING_SHAPE"] && this._docDrawingShapeRenderController["renderDrawingShape"](var_core_value_sig7664, var_core_value_sigE235.scene);
+    });
+  }
+  _updateShape(var_core_value_sigB3EE) {
+    let var_core_value_sigC50A = this._drawingManagerService["getDrawingByParam"](var_core_value_sigB3EE);
+    if ((var_core_value_sigC50A == null ? undefined : var_core_value_sigC50A.drawingType) !== o.DrawingTypeEnum["DRAWING_SHAPE"]) return;
+    let var_core_value_sig11D0 = this._getSceneByUnitId(var_core_value_sigB3EE.unitId);
+    if (!var_core_value_sig11D0 || var_core_value_sigC50A.transform == null) return;
+    let var_core_value_sigB8ED = (0, u.getDrawingShapeKeyByDrawingSearch)(var_core_value_sigB3EE),
+      var_core_value_sig8EAE = var_core_value_sig11D0.scene["getObjectIncludeInGroup"](var_core_value_sigB8ED);
+    var_core_value_sig8EAE && (var_core_value_sig8EAE.setSrcRect(var_core_value_sigC50A.srcRect), var_core_value_sig8EAE.setPrstGeom(var_core_value_sigC50A.prstGeom), var_core_value_sig8EAE.makeDirty(true));
+  }
+  _refreshShapeData(var_core_value_sig1CDD) {
+    let var_core_value_sig0DB1 = this._getSceneByUnitId(var_core_value_sig1CDD.unitId);
+    if (!var_core_value_sig0DB1) return;
+    let var_core_value_sig68A2 = (0, u.getDrawingShapeKeyByDrawingSearch)(var_core_value_sig1CDD),
+      var_core_value_sigCC17 = var_core_value_sig0DB1.scene["getObjectIncludeInGroup"](var_core_value_sig68A2);
+    var_core_value_sigCC17 && (this._docDrawingShapeRenderController["refreshShapeFillImage"](var_core_value_sigCC17), this._docDrawingShapeRenderController["refreshFormulaPresentation"](var_core_value_sigCC17, {
+      unitId: var_core_value_sig1CDD.unitId,
+      subUnitId: var_core_value_sig1CDD.subUnitId,
+      shapeId: var_core_value_sig1CDD.drawingId
+    }), var_core_value_sigCC17.makeDirty(true));
+  }
+  _getSceneByUnitId(var_core_value_sig32AE) {
+    if (var_core_value_sig32AE == null) return null;
+    let var_core_value_sigC753 = this._renderManagerService["getRenderUnitById"](var_core_value_sig32AE),
+      var_core_value_sigFFD1 = var_core_value_sigC753 == null ? undefined : var_core_value_sigC753.scene;
+    return var_core_value_sigFFD1 == null ? null : {
+      scene: var_core_value_sigFFD1
+    };
+  }
+};
+St = N([M(0, o.ICommandService), M(1, l.IRenderManagerService), M(2, u.IDrawingManagerService), M(3, (0, o.Inject)(Q))], St);
+let Ct = class extends o.Disposable {
+  constructor(var_core_value_sig81AE, var_core_value_sigF79F, var_core_value_sig0E54, var_core_value_sig3B17, var_core_value_sig6C4A, var_core_value_sig73D9, var_core_value_sigEAF8, var_core_value_sig0455, var_core_value_sig737C, var_core_value_sig5AF5, var_core_value_sig9DE4, var_core_value_sig77FA) {
+    super(), this._univerInstanceService = var_core_value_sig81AE, this._sidebarService = var_core_value_sigF79F, this._menuManagerService = var_core_value_sig0E54, this._docsShapeService = var_core_value_sig3B17, this._localeService = var_core_value_sig6C4A, this._commandService = var_core_value_sig73D9, this._drawingManagerService = var_core_value_sigEAF8, this._docCanvasPopManagerService = var_core_value_sig0455, this._renderManagerService = var_core_value_sig737C, this._contextService = var_core_value_sig5AF5, this._shapeTextEditingService = var_core_value_sig9DE4, this._permissionService = var_core_value_sig77FA, q(this, "_sidebarDisposable", null), q(this, "_activeShapeInfo", null), q(this, "_isOpenedShapeEditPanel", false), q(this, "_shapeEditPanelVersion", 0), q(this, "_disposePopupsByUnit", new Map()), q(this, "_popupTargetKeys", new Map()), this._initMenu(), this.disposeWithMe(this._univerInstanceService["getCurrentTypeOfUnit$"](o.UniverInstanceType["UNIVER_DOC"]).subscribe(var_core_value_sig2281 => {
+      if (!var_core_value_sig2281) {
+        var var_core_value_sig5E86;
+        (var_core_value_sig5E86 = this._sidebarDisposable) == null || var_core_value_sig5E86.dispose();
+      }
+    })), this._registerOperations(), this.disposeWithMe((0, e.bindRenderTransformerLifecycle)(this._renderManagerService, o.UniverInstanceType["UNIVER_DOC"], var_core_value_sig6998 => this._popupMenuListener(var_core_value_sig6998))), this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(var_core_value_sigF639 => {
+      var_core_value_sigF639 && this._clearPopups(undefined, true);
+    })), this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(() => {
+      this._drawingManagerService["getFocusDrawings"]().some(var_core_value_sig32F8 => var_core_value_sig32F8.drawingType === o.DrawingTypeEnum["DRAWING_SHAPE"] && this._univerInstanceService["getUnitType"](var_core_value_sig32F8.unitId) === o.UniverInstanceType["UNIVER_DOC"] && !this._canEditShape(var_core_value_sig32F8.unitId, var_core_value_sig32F8.drawingId)) && (this._clearPopups(undefined, true), this._closeShapeEditPanel());
+    }));
+  }
+  _initMenu() {
+    this._menuManagerService["mergeMenu"](We);
+  }
+  getShapePopupMenus(var_core_value_sigA4A7, var_core_value_sigA4DF, var_core_value_sigCC9D, var_core_value_sig90F5) {
+    return [{
+      label: "docs-shape-ui.openPanel",
+      index: 0,
+      commandId: O.id,
+      commandParams: {
+        unitId: var_core_value_sigA4A7,
+        subUnitId: var_core_value_sigA4DF,
+        drawingId: var_core_value_sigCC9D
+      },
+      disable: var_core_value_sig90F5 === o.DrawingTypeEnum["DRAWING_DOM"]
+    }, {
+      label: "docs-shape-ui.deleteShape",
+      index: 1,
+      commandId: c.RemoveDocDrawingCommand["id"],
+      commandParams: {
+        unitId: var_core_value_sigA4A7,
+        drawings: [{
+          unitId: var_core_value_sigA4A7,
+          subUnitId: var_core_value_sigA4DF,
+          drawingId: var_core_value_sigCC9D
+        }]
+      },
+      disable: false
+    }, {
+      label: "docs-shape-ui.hidePanel",
+      index: 2,
+      commandId: qe.id,
+      commandParams: {
+        unitId: var_core_value_sigA4A7,
+        subUnitId: var_core_value_sigA4DF,
+        drawingId: var_core_value_sigCC9D
+      },
+      disable: false
+    }];
+  }
+  _getShapeInfo(var_core_value_sigD2BA, var_core_value_sigCD3A, var_core_value_sig519D) {
+    let var_core_value_sigC7E7 = this._docsShapeService["getShapeTypeById"](var_core_value_sigD2BA, var_core_value_sigCD3A, var_core_value_sig519D),
+      var_core_value_sig6E1C = this._docsShapeService["getShapeDataById"](var_core_value_sigD2BA, var_core_value_sigCD3A, var_core_value_sig519D);
+    return var_core_value_sigC7E7 !== undefined && var_core_value_sig6E1C !== undefined ? {
+      shapeData: var_core_value_sig6E1C,
+      shapeId: var_core_value_sig519D,
+      shapeType: var_core_value_sigC7E7,
+      unitId: var_core_value_sigD2BA,
+      subUnitId: var_core_value_sigCD3A,
+      version: this._shapeEditPanelVersion,
+      disableShapeOption: false
+    } : null;
+  }
+  _clearPopups(var_core_value_sigFABC, var_core_value_sig413D = false) {
+    if (var_core_value_sigFABC == null) {
+      [...this._disposePopupsByUnit["keys"]()].forEach(var_core_value_sig5B67 => this._clearPopups(var_core_value_sig5B67, var_core_value_sig413D));
+      return;
+    }
+    let var_core_value_sig5BCE = this._disposePopupsByUnit["get"](var_core_value_sigFABC);
+    if (var_core_value_sig5BCE) {
+      for (let var_core_value_sig1758 = var_core_value_sig5BCE.length - 1; var_core_value_sig1758 >= 0; --var_core_value_sig1758) {
+        let var_core_value_sig26DB = var_core_value_sig5BCE[var_core_value_sig1758];
+        (var_core_value_sig413D || var_core_value_sig26DB.canDispose()) && (var_core_value_sig26DB.dispose(), var_core_value_sig5BCE.splice(var_core_value_sig1758, 1));
+      }
+      var_core_value_sig5BCE.length === 0 && (this._disposePopupsByUnit["delete"](var_core_value_sigFABC), this._popupTargetKeys["delete"](var_core_value_sigFABC));
+    }
+  }
+  _getDisposePopups(var_core_value_sig8EF0) {
+    let var_core_value_sig78AC = this._disposePopupsByUnit["get"](var_core_value_sig8EF0);
+    if (var_core_value_sig78AC) return var_core_value_sig78AC;
+    let var_core_value_sig4CEF = [];
+    return this._disposePopupsByUnit["set"](var_core_value_sig8EF0, var_core_value_sig4CEF), var_core_value_sig4CEF;
+  }
+  _popupMenuListener(var_core_value_sigD57D) {
+    var var_core_value_sig2CC7;
+    let var_core_value_sig4784 = new o["DisposableCollection"](),
+      var_core_value_sigC39E = (var_core_value_sig2CC7 = this._renderManagerService["getAllRenderersOfType"](o.UniverInstanceType["UNIVER_DOC"]).find(var_core_value_sigEAE5 => var_core_value_sigEAE5.scene["getTransformerByCreate"]() === var_core_value_sigD57D)) == null ? undefined : var_core_value_sig2CC7.unitId;
+    return var_core_value_sigC39E ? (var_core_value_sig4784.add(var_core_value_sigD57D.createControl$["subscribe"](() => this._handleCreateControl(var_core_value_sigD57D, var_core_value_sigC39E))), var_core_value_sig4784.add(var_core_value_sigD57D.clearControl$["subscribe"](() => {
+      this._clearPopups(var_core_value_sigC39E), queueMicrotask(() => {
+        var_core_value_sigD57D.getSelectedObjectMap().size > 0 || (this._contextService["setContextValue"](o.FOCUSING_COMMON_DRAWINGS, false), this._drawingManagerService["focusDrawing"](null));
+      });
+    })), var_core_value_sig4784.add(var_core_value_sigD57D.changing$["subscribe"](() => {
+      this._clearPopups(var_core_value_sigC39E, true);
+    })), var_core_value_sig4784) : var_core_value_sig4784;
+  }
+  _handleCreateControl(var_core_value_sig16C7, var_core_value_sig7481) {
+    let var_core_value_sig08A3 = var_core_value_sig16C7.getSelectedObjectMap();
+    if (this._isOpenedShapeEditPanel) {
+      this._clearPopups(var_core_value_sig7481, true);
+      return;
+    }
+    if (var_core_value_sig08A3.size > 1) {
+      this._clearPopups(var_core_value_sig7481);
+      return;
+    }
+    let var_core_value_sig77D8 = var_core_value_sig08A3.values().next().value;
+    if (!var_core_value_sig77D8) {
+      this._clearPopups(var_core_value_sig7481);
+      return;
+    }
+    let var_core_value_sig78A3 = this._drawingManagerService["getDrawingOKey"](var_core_value_sig77D8.oKey);
+    if (!var_core_value_sig78A3 || var_core_value_sig78A3.drawingType !== o.DrawingTypeEnum["DRAWING_SHAPE"]) {
+      this._clearPopups(var_core_value_sig7481);
+      return;
+    }
+    let {
+      unitId: var_core_value_sig649B,
+      subUnitId: var_core_value_sig6256,
+      drawingId: var_core_value_sigE7A6,
+      drawingType: var_core_value_sigB505
+    } = var_core_value_sig78A3;
+    if (!this._canEditShape(var_core_value_sig649B, var_core_value_sigE7A6)) {
+      this._clearPopups(var_core_value_sig7481, true);
+      return;
+    }
+    let var_core_value_sig7428 = this._getShapeInfo(var_core_value_sig649B, var_core_value_sig6256, var_core_value_sigE7A6);
+    if (!var_core_value_sig7428) {
+      this._clearPopups(var_core_value_sig7481);
+      return;
+    }
+    let var_core_value_sig1DCE = this._disposePopupsByUnit["get"](var_core_value_sig7481),
+      var_core_value_sig0567 = var_core_value_sig649B + ":" + var_core_value_sig6256 + ":" + var_core_value_sigE7A6;
+    if (this._popupTargetKeys["get"](var_core_value_sig7481) === var_core_value_sig0567 && var_core_value_sig1DCE && var_core_value_sig1DCE.length > 0) return;
+    this._clearPopups(var_core_value_sig7481);
+    let var_core_value_sigA7F3 = this._renderManagerService["getRenderUnitById"](var_core_value_sig649B),
+      var_core_value_sigEACD = ((var_core_value_sigA7F3 == null ? undefined : var_core_value_sigA7F3.isMainScene) === false ? var_core_value_sigA7F3.with(t.DocCanvasPopManagerService) : this._docCanvasPopManagerService).attachPopupToObject(var_core_value_sig77D8, {
+        componentKey: et,
+        direction: "vertical-center",
+        offset: [0, e.SHEET_DOC_SHAPE_FLOATING_TOOLBAR_TOP_OFFSET],
+        extraProps: {
+          unitId: var_core_value_sig649B,
+          subUnitId: var_core_value_sig6256,
+          drawingId: var_core_value_sigE7A6,
+          drawingType: var_core_value_sigB505,
+          shapeType: var_core_value_sig7428.shapeType,
+          shapeData: var_core_value_sig7428.shapeData
+        }
+      }, var_core_value_sig649B);
+    this.disposeWithMe(var_core_value_sigEACD), this._getDisposePopups(var_core_value_sig7481).push(var_core_value_sigEACD), this._popupTargetKeys["set"](var_core_value_sig7481, var_core_value_sig0567), this._drawingManagerService["getFocusDrawings"]().some(var_core_value_sigE94C => var_core_value_sigE94C.unitId === var_core_value_sig649B && var_core_value_sigE94C.subUnitId === var_core_value_sig6256 && var_core_value_sigE94C.drawingId === var_core_value_sigE7A6) || this._drawingManagerService["focusDrawing"]([{
+      unitId: var_core_value_sig649B,
+      subUnitId: var_core_value_sig6256,
+      drawingId: var_core_value_sigE7A6
+    }]);
+  }
+  _canEditShape(var_core_value_sig901E, var_core_value_sigF7BB) {
+    let var_core_value_sigFA38 = this._univerInstanceService["getUnit"](var_core_value_sig901E, o.UniverInstanceType["UNIVER_DOC"]);
+    if (!var_core_value_sigFA38) return false;
+    let var_core_value_sig102B = (0, s.getDocumentDrawingSegmentId)(var_core_value_sigFA38, var_core_value_sigF7BB);
+    return (0, s.canEditDocumentTargets)(this._permissionService, var_core_value_sig901E, [...(0, s.getDocumentEntityParentPermissionObjectIds)(var_core_value_sigFA38, var_core_value_sig102B, "drawing", var_core_value_sigF7BB), (0, s.getDocumentEntityPermissionObjectId)(var_core_value_sig102B, "drawing", var_core_value_sigF7BB)]);
+  }
+  _registerOperations() {
+    this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sig6D47 => {
+      if (var_core_value_sig6D47.id === O.id) {
+        let {
+          unitId: var_core_value_sig4805,
+          subUnitId: var_core_value_sigE67E,
+          drawingId: var_core_value_sig2902
+        } = var_core_value_sig6D47.params;
+        this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902), this._clearPopups(undefined, true), this._openShapeEditPanel();
+      }
+      if (var_core_value_sig6D47.id === qe.id && (this._activeShapeInfo = null, this._closeShapeEditPanel()), var_core_value_sig6D47.id === r.UpdateDocShapeDataMutation["id"]) {
+        let {
+          unitId: var_core_value_sig9989,
+          shapeId: var_core_value_sig698E
+        } = var_core_value_sig6D47.params;
+        if (this._activeShapeInfo && this._activeShapeInfo["shapeId"] === var_core_value_sig698E) {
+          let var_core_value_sigF0F9 = this._getShapeInfo(var_core_value_sig9989, this._activeShapeInfo["subUnitId"], var_core_value_sig698E);
+          var_core_value_sigF0F9 && (this._shapeEditPanelVersion += 1, var_core_value_sigF0F9.version = this._shapeEditPanelVersion, this._activeShapeInfo = var_core_value_sigF0F9, this._isOpenedShapeEditPanel && this._openShapeEditPanel());
+        }
+      }
+    })), this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sigCB82 => {
+      if (this._isOpenedShapeEditPanel === false) return;
+      if (var_core_value_sigCB82.length === 0) {
+        this._activeShapeInfo = null, this._closeShapeEditPanel();
+        return;
+      }
+      if (var_core_value_sigCB82.length === 1 && var_core_value_sigCB82[0].drawingType === o.DrawingTypeEnum["DRAWING_SHAPE"] && (this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sigCB82[0].unitId, var_core_value_sigCB82[0].subUnitId, var_core_value_sigCB82[0].drawingId), this._activeShapeInfo)) {
+        this._openShapeEditPanel();
+        return;
+      }
+      let var_core_value_sigCF4E = var_core_value_sigCB82.filter(var_core_value_sig2809 => var_core_value_sig2809.drawingType === o.DrawingTypeEnum["DRAWING_SHAPE"]);
+      if (var_core_value_sigCB82.length > 1 && var_core_value_sigCF4E.length === var_core_value_sigCB82.length) {
+        if (this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sigCB82[0].unitId, var_core_value_sigCB82[0].subUnitId, var_core_value_sigCB82[0].drawingId), this._activeShapeInfo) {
+          this._openShapeEditPanel();
+          return;
+        }
+      } else {
+        if (this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sigCB82[0].unitId, var_core_value_sigCB82[0].subUnitId, var_core_value_sigCB82[0].drawingId), this._activeShapeInfo) {
+          this._activeShapeInfo["disableShapeOption"] = true, this._openShapeEditPanel();
+          return;
+        }
+      }
+      this._closeShapeEditPanel();
+    }));
+  }
+  _openShapeEditPanel() {
+    this._activeShapeInfo && (this._sidebarDisposable = this._sidebarService["open"]({
+      id: S,
+      header: {
+        title: this._localeService["t"]("docs-shape-ui.formatShape")
+      },
+      width: 388,
+      children: {
+        label: S,
+        ...this._activeShapeInfo
+      },
+      onClose: () => {
+        this._drawingManagerService["focusDrawing"](null), this._contextService["setContextValue"](o.FOCUSING_COMMON_DRAWINGS, false), this._sidebarDisposable = null;
+      }
+    }), this._isOpenedShapeEditPanel = true);
+  }
+  _closeShapeEditPanel() {
+    this._isOpenedShapeEditPanel = false, this._sidebarService["close"](S), this._sidebarDisposable = null, this._contextService["setContextValue"](o.FOCUSING_COMMON_DRAWINGS, false), this._drawingManagerService["focusDrawing"](null);
+  }
+};
+Ct = N([M(0, o.IUniverInstanceService), M(1, (0, o.Inject)(n.ISidebarService)), M(2, n.IMenuManagerService), M(3, (0, o.Inject)(r.DocsShapeService)), M(4, (0, o.Inject)(o.LocaleService)), M(5, o.ICommandService), M(6, u.IDrawingManagerService), M(7, (0, o.Inject)(t.DocCanvasPopManagerService)), M(8, l.IRenderManagerService), M(9, o.IContextService), M(10, (0, o.Inject)(J)), M(11, o.IPermissionService)], Ct);
+let $ = class extends o.Plugin {
+  constructor(var_core_value_sigA7DB = Je, var_core_value_sig5EEE, var_core_value_sig65B4, var_core_value_sigF98E, var_core_value_sigA470) {
+    super(), this._config = var_core_value_sigA7DB, this._injector = var_core_value_sig5EEE, this._commandService = var_core_value_sig65B4, this._configService = var_core_value_sigF98E, this._renderManagerService = var_core_value_sigA470;
+    let {
+      menu: var_core_value_sig19A1,
+      ...var_core_value_sig81F7
+    } = (0, o.merge)({}, Je, this._config);
+    var_core_value_sig19A1 && this._configService["setConfig"]("menu", var_core_value_sig19A1, {
+      merge: true
+    }), this._configService["setConfig"]("docs-shape-ui.config", var_core_value_sig81F7), this._initCommands();
+  }
+  onStarting() {
+    this._injector["add"]([Y]), this._injector["get"](Y), (0, o.registerDependencies)(this._injector, [[Ct], [St], [Q], [ft], [Z], [P], [W], [J], [gt]]), this._initUIPart();
+  }
+  onReady() {
+    this._renderManagerService["registerRenderModule"](o.UniverInstanceType["UNIVER_DOC"], [Z]), this._renderManagerService["registerRenderModule"](o.UniverInstanceType["UNIVER_DOC"], [bt]), (0, o.touchDependencies)(this._injector, [[Ct], [St], [Q], [ft], [P], [W], [J], [gt]]);
+  }
+  onRendered() {
+    this._renderManagerService["registerRenderModule"](o.UniverInstanceType["UNIVER_DOC"], [xt]);
+  }
+  _initCommands() {
+    [x, qe, O, D, A, j].forEach(var_core_value_sig6CAD => this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sig6CAD)));
+  }
+  _initUIPart() {
+    let var_core_value_sigBE51 = this._injector,
+      var_core_value_sigAAD1 = var_core_value_sigBE51.get(n.IUIPartsService);
+    this.disposeWithMe(var_core_value_sigAAD1.registerComponent(n.BuiltInUIPart["CONTENT"], () => (0, n.connectInjector)(ct, var_core_value_sigBE51)));
+  }
+};
+q($, "type", o.UniverInstanceType["UNIVER_DOC"]), q($, "pluginName", "DOCS_SHAPE_UI_PLUGIN"), q($, "packageName", Ge), q($, "version", Ke), $ = N([(0, o.DependentOn)(m.UniverLicensePlugin, s.UniverDocsPlugin, u.UniverDrawingPlugin, d.UniverDrawingUIPlugin, l.UniverRenderEnginePlugin, t.UniverDocsUIPlugin, a.UniverShapeEditorPlugin, h.UniverDocsDrawingUIPlugin, r.UniverDocsShapePlugin, e.UniverShapeEditorUIPlugin), M(1, (0, o.Inject)(o.Injector)), M(2, o.ICommandService), M(3, o.IConfigService), M(4, l.IRenderManagerService)], $), exports.DocsShapeUIMenuSchema = We, Object.defineProperty(exports, "UniverDocsShapeUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return $;
+  }
+});

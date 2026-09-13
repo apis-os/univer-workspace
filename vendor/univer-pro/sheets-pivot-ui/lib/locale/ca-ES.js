@@ -33,8 +33,7 @@ const e = {
       percentOfRowTotal: "%\x20del\x20total\x20de\x20fila",
       percentOfColumnTotal: "% del total de columna",
       percentOfParentRowTotal: "% del total de la fila principal",
-      percentOfParentColumnTotal:
-        "%\x20del\x20total\x20de\x20la\x20columna\x20principal",
+      percentOfParentColumnTotal: "%\x20del\x20total\x20de\x20la\x20columna\x20principal",
       index: "Índex",
       percentOfParent: "% del total principal",
       percentOf: "% de",
@@ -51,7 +50,7 @@ const e = {
       next: "Següent",
       other: "Altre",
       ok: "D’acord",
-      cancel: "Cancel·la",
+      cancel: "Cancel·la"
     },
     valueFilter: {
       title: "Filtres\x20de\x20valors",
@@ -73,7 +72,7 @@ const e = {
       bottomPercent: "Percentatge inferior",
       clear: "Esborra el filtre",
       ok: "D’acord",
-      cancel: "Cancel·la",
+      cancel: "Cancel·la"
     },
     dateGroup: {
       title: "Agrupaci?\x20de\x20dates",
@@ -87,7 +86,7 @@ const e = {
       date: "Dia",
       hour: "Hora",
       minute: "Minut",
-      hourMinute: "Hora-Minut",
+      hourMinute: "Hora-Minut"
     },
     dialog: {
       fieldName: "Nom del camp",
@@ -103,7 +102,7 @@ const e = {
         clearFilter: "Esborrar filtre",
         blank: "(En\x20blanc)",
         cancel: "Cancel·lar",
-        confirm: "D\x27acord",
+        confirm: "D\x27acord"
       },
       numfmt: {
         general: "General",
@@ -115,20 +114,15 @@ const e = {
         formatTypes: "Tipus de format",
         confirm: "D'acord",
         cancel: "Cancel·lar",
-        generalDesc:
-          "El format general no conté cap format de nombre específic.",
-        accountingDesc:
-          "El format de nombre comptable alinea els símbols de moneda i els punts decimals en una columna.",
-        currencyDesc:
-          "El\x20format\x20de\x20moneda\x20s\x27utilitza\x20per\x20a\x20valors\x20monetaris\x20generals,\x20el\x20format\x20comptable\x20alinea\x20els\x20punts\x20decimals\x20en\x20una\x20columna\x20de\x20valors.",
-        dateDesc:
-          "El format de data mostra els números de sèrie de data i hora com a valors de data.",
-        thousandthPercentileDesc:
-          "El format de percentil mil·lèsima s'utilitza per a nombres generals, els formats de moneda i comptable proporcionen formats especialitzats per a valors monetaris.",
+        generalDesc: "El format general no conté cap format de nombre específic.",
+        accountingDesc: "El format de nombre comptable alinea els símbols de moneda i els punts decimals en una columna.",
+        currencyDesc: "El\x20format\x20de\x20moneda\x20s\x27utilitza\x20per\x20a\x20valors\x20monetaris\x20generals,\x20el\x20format\x20comptable\x20alinea\x20els\x20punts\x20decimals\x20en\x20una\x20columna\x20de\x20valors.",
+        dateDesc: "El format de data mostra els números de sèrie de data i hora com a valors de data.",
+        thousandthPercentileDesc: "El format de percentil mil·lèsima s'utilitza per a nombres generals, els formats de moneda i comptable proporcionen formats especialitzats per a valors monetaris.",
         decimalPlaces: "Decimals",
         currencyTypes: "Tipus\x20de\x20moneda",
         negativeNumberTypes: "Tipus de nombres negatius",
-        dateTypes: "Tipus de data",
+        dateTypes: "Tipus de data"
       },
       source: {
         insertPivotTable: "Inserir taula dinàmica",
@@ -136,8 +130,8 @@ const e = {
         position: "Ubicació de la taula dinàmica",
         newSheet: "Full nou",
         existingSheet: "Full\x20existent",
-        intersect: "No pot superposar-se amb la font de dades",
-      },
+        intersect: "No pot superposar-se amb la font de dades"
+      }
     },
     subtotal: {
       average: "Mitjana",
@@ -150,7 +144,7 @@ const e = {
       stdDevp: "Desviació estàndard de població",
       sum: "Suma",
       var: "Variància",
-      varp: "Variància de població",
+      varp: "Variància de població"
     },
     subTotalText: "Subtotal",
     grandTotalText: "Total general",
@@ -176,25 +170,21 @@ const e = {
       layoutCompact: "Format\x20compacte",
       layoutOutline: "Format\x20d\x27esquema",
       repeatRowLabels: "Repetir\x20etiquetes\x20de\x20fila",
-      repeatColLabels: "Repetir etiquetes de columna",
+      repeatColLabels: "Repetir etiquetes de columna"
     },
     perform: {
       tips: "Consells",
       info: "Ja hi ha dades a l'àrea de destinació. Aquesta acció sobreescriurà les dades existents. Voleu continuar?",
       confirm: "Confirmar",
       cancel: "Cancel·lar",
-      rowColError:
-        "Aquest canvi no es pot fer a les cel·les seleccionades perquè afectaria la taula dinàmica. Utilitzeu la llista de camps per modificar l'informe. Si intenteu inserir o eliminar cel·les, moveu la taula dinàmica i torneu-ho a provar.",
+      rowColError: "Aquest canvi no es pot fer a les cel·les seleccionades perquè afectaria la taula dinàmica. Utilitzeu la llista de camps per modificar l'informe. Si intenteu inserir o eliminar cel·les, moveu la taula dinàmica i torneu-ho a provar."
     },
     msg: {
-      emptySourceRange:
-        "L\x27interval\x20de\x20la\x20font\x20de\x20dades\x20està\x20buit",
+      emptySourceRange: "L\x27interval\x20de\x20la\x20font\x20de\x20dades\x20està\x20buit",
       invalidSize: "L'interval de la font de dades no és vàlid",
-      mergeCellError:
-        "No es poden inserir cel·les fusionades en una taula dinàmica",
+      mergeCellError: "No es poden inserir cel·les fusionades en una taula dinàmica",
       editCellError: "No es poden editar cel·les en una taula dinàmica",
-      permissionError:
-        "No\x20es\x20pot\x20editar\x20la\x20taula\x20dinàmica\x20en\x20un\x20full\x20protegit",
+      permissionError: "No\x20es\x20pot\x20editar\x20la\x20taula\x20dinàmica\x20en\x20un\x20full\x20protegit"
     },
     averageName: "Mitjana de ",
     countName: "Recompte de ",
@@ -206,7 +196,7 @@ const e = {
     stdDevpName: "DesvEstP de ",
     sumName: "Suma de ",
     varName: "Var de ",
-    varpName: "VarP de ",
-  },
+    varpName: "VarP de "
+  }
 };
 export { e as default };

@@ -1,1 +1,155 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/engine-chart"),t=require("@univerjs-pro/engine-chart/facade"),n=require("@univerjs-pro/sheets-chart"),r=require("@univerjs/core"),i=require("@univerjs/sheets/facade"),a=require("@univerjs/core/facade");var o=class extends t.FChart{constructor(v14,v15,v16,v17){super(v16,()=>new n["SheetChartConfigAdapter"]({unitId:v14,subUnitId:v15,chartId:v16,injector:v17}),(v5,v6,v7)=>(0,t.createChartBuilder)({info:v5,description:v6,type:v7,normalizeSource:v2=>v2,extension:({setInfo:v3})=>({setPosition(v1){return v3("anchor",v1),this;}})}),v17),this.unitId=v14,this.subUnitId=v15,this.chartId=v16;}getRange(){let v18=this._injector["get"](n.SheetsChartService).getChartSourceSpec(this.chartId);return v18&&!Array.isArray(v18)?v18:undefined;}setPosition(v19){return this._createSheetAdapter().commitHost({layout:{anchor:v19}}),this;}_createSheetAdapter(){return new n["SheetChartConfigAdapter"]({unitId:this.unitId,subUnitId:this.subUnitId,chartId:this.chartId,injector:this._injector});}},s=class extends i.FWorksheet{newChart(v20){return(0,t.createChartBuilder)({type:v20,injector:this._injector,commitError:"Insert the Sheet chart before updating it.",normalizeSource:v8=>v8,createInfo:()=>({anchor:undefined}),extension:({setInfo:v9})=>({setPosition(v4){return v9("anchor",v4),this;}})});}async insertChart(v21){var v22,v23,v24;let{config:v25,dataSource:v26,anchor:v27,position:v28,size:v29}=v21,v30={...v25,source:v26,anchor:v27,position:v28,size:v29},v31=(0,e.chartTypeToBits)(v30.type),v32=this._chartSourceContext(v31),v33=[],v34=(0,n.resolveSourceSpec)(v30.source,v32,v33);if(!v34||v33.some(v10=>v10.severity===n.ChartDiagnosticSeverity["Error"]))throw Error(v33.map(v11=>v11.message).join(";\x20")||"Invalid Sheet chart source.");let v35=(0,r.generateRandomId)(),v36=(0,e.toChartModelConfig)(v30,{series:(0,n.resolveSourceSeries)(v34,v32,((v22=v30.mapping)==null?undefined:v22.categoryIndex)??0)}),v37=(0,n.resolveInitialChartPosition)({unitId:v32.unitId,subUnitId:v32.subUnitId,injector:this.getInject()},v30,v33),v38={unitId:v32.unitId,subUnitId:v32.subUnitId,chartId:v35,chartType:v31,source:v34.kind===n.ChartSourceKind["Range"]?v34.rangeInfo:v34.ranges,position:v37,width:(v23=v30.size)==null?undefined:v23.width,height:(v24=v30.size)==null?undefined:v24.height,theme:v30.theme??undefined,config:{unitId:v32.unitId,chartModelId:v35,style:v36.style,context:v36.context,dataAggregation:v36.dataAggregation}};if(!(await this.getInject().get(r.ICommandService).executeCommand(n.InsertChartCommand["id"],v38)))throw Error("Failed to create Sheet chart.");return this._injector["createInstance"](o,v32.unitId,v32.subUnitId,v35,this._injector);}getChart(v39){let{unitId:v40,subUnitId:v41}=this._chartSourceContext(),v42=this.getInject().get(n.SheetsChartService);return v42.getChartModel(v39)&&v42.getSubUnitId(v40,v39)===v41?this._injector["createInstance"](o,v40,v41,v39,this._injector):null;}getCharts(){let{unitId:v43,subUnitId:v44}=this._chartSourceContext();return this.getInject().get(n.SheetsChartService).getUnitChartModels(v43,v44).filter(Boolean).map(v12=>this._injector["createInstance"](o,v43,v44,v12.id,this._injector));}_chartSourceContext(v45){let v46=this.getWorkbook(),v47=this.getInject().get(n.SheetsChartService);return{unitId:v46.getUnitId(),subUnitId:this.getSheetId(),workbook:v46,...(v45===undefined?{}:{inferInitialChartSource:v13=>v47.inferInitialChartSource(v13,v45)})};}};i.FWorksheet["extend"](s);var c=class extends a.FEnum{get ChartSourceOrientation(){return n.ChartSourceOrientation;}};a.FEnum["extend"](c),exports.FSheetChart=o;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/engine-chart"),
+  t = require("@univerjs-pro/engine-chart/facade"),
+  n = require("@univerjs-pro/sheets-chart"),
+  r = require("@univerjs/core"),
+  i = require("@univerjs/sheets/facade"),
+  a = require("@univerjs/core/facade");
+var o = class extends t.FChart {
+    constructor(var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sig2BCF, var_core_value_sig0D69) {
+      super(var_core_value_sig2BCF, () => new n["SheetChartConfigAdapter"]({
+        unitId: var_core_value_sig1BBD,
+        subUnitId: var_core_value_sigF704,
+        chartId: var_core_value_sig2BCF,
+        injector: var_core_value_sig0D69
+      }), (var_core_value_sigBC46, var_core_value_sig3D7D, var_core_value_sig27E5) => (0, t.createChartBuilder)({
+        info: var_core_value_sigBC46,
+        description: var_core_value_sig3D7D,
+        type: var_core_value_sig27E5,
+        normalizeSource: var_core_value_sig2AD8 => var_core_value_sig2AD8,
+        extension: ({
+          setInfo: var_core_value_sig2AD0
+        }) => ({
+          setPosition(var_core_value_sig7524) {
+            return var_core_value_sig2AD0("anchor", var_core_value_sig7524), this;
+          }
+        })
+      }), var_core_value_sig0D69), this.unitId = var_core_value_sig1BBD, this.subUnitId = var_core_value_sigF704, this.chartId = var_core_value_sig2BCF;
+    }
+    getRange() {
+      let var_core_value_sig480E = this._injector["get"](n.SheetsChartService).getChartSourceSpec(this.chartId);
+      return var_core_value_sig480E && !Array.isArray(var_core_value_sig480E) ? var_core_value_sig480E : undefined;
+    }
+    setPosition(var_core_value_sig26DB) {
+      return this._createSheetAdapter().commitHost({
+        layout: {
+          anchor: var_core_value_sig26DB
+        }
+      }), this;
+    }
+    _createSheetAdapter() {
+      return new n["SheetChartConfigAdapter"]({
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        chartId: this.chartId,
+        injector: this._injector
+      });
+    }
+  },
+  s = class extends i.FWorksheet {
+    newChart(var_core_value_sigF0F9) {
+      return (0, t.createChartBuilder)({
+        type: var_core_value_sigF0F9,
+        injector: this._injector,
+        commitError: "Insert the Sheet chart before updating it.",
+        normalizeSource: var_core_value_sig8061 => var_core_value_sig8061,
+        createInfo: () => ({
+          anchor: undefined
+        }),
+        extension: ({
+          setInfo: var_core_value_sig4D4C
+        }) => ({
+          setPosition(var_core_value_sig3EEE) {
+            return var_core_value_sig4D4C("anchor", var_core_value_sig3EEE), this;
+          }
+        })
+      });
+    }
+    async insertChart(var_core_value_sig1A0F) {
+      var var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sig186C;
+      let {
+          config: var_core_value_sigD955,
+          dataSource: var_core_value_sig48BD,
+          anchor: var_core_value_sig429F,
+          position: var_core_value_sigF62A,
+          size: var_core_value_sig8178
+        } = var_core_value_sig1A0F,
+        var_core_value_sigE9ED = {
+          ...var_core_value_sigD955,
+          source: var_core_value_sig48BD,
+          anchor: var_core_value_sig429F,
+          position: var_core_value_sigF62A,
+          size: var_core_value_sig8178
+        },
+        var_core_value_sigB577 = (0, e.chartTypeToBits)(var_core_value_sigE9ED.type),
+        var_core_value_sig9572 = this._chartSourceContext(var_core_value_sigB577),
+        var_core_value_sigD873 = [],
+        var_core_value_sigA12B = (0, n.resolveSourceSpec)(var_core_value_sigE9ED.source, var_core_value_sig9572, var_core_value_sigD873);
+      if (!var_core_value_sigA12B || var_core_value_sigD873.some(var_core_value_sigC9E0 => var_core_value_sigC9E0.severity === n.ChartDiagnosticSeverity["Error"])) throw Error(var_core_value_sigD873.map(var_core_value_sig76BA => var_core_value_sig76BA.message).join(";\x20") || "Invalid Sheet chart source.");
+      let var_core_value_sigF230 = (0, r.generateRandomId)(),
+        var_core_value_sig09B8 = (0, e.toChartModelConfig)(var_core_value_sigE9ED, {
+          series: (0, n.resolveSourceSeries)(var_core_value_sigA12B, var_core_value_sig9572, ((var_core_value_sigFBA4 = var_core_value_sigE9ED.mapping) == null ? undefined : var_core_value_sigFBA4.categoryIndex) ?? 0)
+        }),
+        var_core_value_sig6F91 = (0, n.resolveInitialChartPosition)({
+          unitId: var_core_value_sig9572.unitId,
+          subUnitId: var_core_value_sig9572.subUnitId,
+          injector: this.getInject()
+        }, var_core_value_sigE9ED, var_core_value_sigD873),
+        var_core_value_sigF9C7 = {
+          unitId: var_core_value_sig9572.unitId,
+          subUnitId: var_core_value_sig9572.subUnitId,
+          chartId: var_core_value_sigF230,
+          chartType: var_core_value_sigB577,
+          source: var_core_value_sigA12B.kind === n.ChartSourceKind["Range"] ? var_core_value_sigA12B.rangeInfo : var_core_value_sigA12B.ranges,
+          position: var_core_value_sig6F91,
+          width: (var_core_value_sig4383 = var_core_value_sigE9ED.size) == null ? undefined : var_core_value_sig4383.width,
+          height: (var_core_value_sig186C = var_core_value_sigE9ED.size) == null ? undefined : var_core_value_sig186C.height,
+          theme: var_core_value_sigE9ED.theme ?? undefined,
+          config: {
+            unitId: var_core_value_sig9572.unitId,
+            chartModelId: var_core_value_sigF230,
+            style: var_core_value_sig09B8.style,
+            context: var_core_value_sig09B8.context,
+            dataAggregation: var_core_value_sig09B8.dataAggregation
+          }
+        };
+      if (!(await this.getInject().get(r.ICommandService).executeCommand(n.InsertChartCommand["id"], var_core_value_sigF9C7))) throw Error("Failed to create Sheet chart.");
+      return this._injector["createInstance"](o, var_core_value_sig9572.unitId, var_core_value_sig9572.subUnitId, var_core_value_sigF230, this._injector);
+    }
+    getChart(var_core_value_sig8895) {
+      let {
+          unitId: var_core_value_sigC80B,
+          subUnitId: var_core_value_sig284F
+        } = this._chartSourceContext(),
+        var_core_value_sigE154 = this.getInject().get(n.SheetsChartService);
+      return var_core_value_sigE154.getChartModel(var_core_value_sig8895) && var_core_value_sigE154.getSubUnitId(var_core_value_sigC80B, var_core_value_sig8895) === var_core_value_sig284F ? this._injector["createInstance"](o, var_core_value_sigC80B, var_core_value_sig284F, var_core_value_sig8895, this._injector) : null;
+    }
+    getCharts() {
+      let {
+        unitId: var_core_value_sig4632,
+        subUnitId: var_core_value_sig12F2
+      } = this._chartSourceContext();
+      return this.getInject().get(n.SheetsChartService).getUnitChartModels(var_core_value_sig4632, var_core_value_sig12F2).filter(Boolean).map(var_core_value_sigFBFA => this._injector["createInstance"](o, var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sigFBFA.id, this._injector));
+    }
+    _chartSourceContext(var_core_value_sig2259) {
+      let var_core_value_sig9E2F = this.getWorkbook(),
+        var_core_value_sigD082 = this.getInject().get(n.SheetsChartService);
+      return {
+        unitId: var_core_value_sig9E2F.getUnitId(),
+        subUnitId: this.getSheetId(),
+        workbook: var_core_value_sig9E2F,
+        ...(var_core_value_sig2259 === undefined ? {} : {
+          inferInitialChartSource: var_core_value_sigF602 => var_core_value_sigD082.inferInitialChartSource(var_core_value_sigF602, var_core_value_sig2259)
+        })
+      };
+    }
+  };
+i.FWorksheet["extend"](s);
+var c = class extends a.FEnum {
+  get ChartSourceOrientation() {
+    return n.ChartSourceOrientation;
+  }
+};
+a.FEnum["extend"](c), exports.FSheetChart = o;

@@ -1,13 +1,46 @@
-import{BooleanNumber,ColorKit,CommandType,CustomCommandExecutionError,DependentOn,Disposable,DrawingTypeEnum,GridType,HorizontalAlign,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,PermissionStatus,Plugin,Tools,UnitModel,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createParagraphId,createSectionId,generateRandomId,merge,normalizeDrawingOrderIndex,sequenceExecute,toDisposable}from"@univerjs/core";
-import{BehaviorSubject,Subject,map,merge as mergeLocal,mergeMap}from"rxjs";
-import{UnitDrawingService}from"@univerjs/drawing";
-import{IShapeHostAdapterRegistry,ShapeArrowSizeEnum,ShapeArrowTypeEnum,ShapeFillEnum,ShapeLineCapEnum,ShapeLineDashEnum,ShapeLineJoinEnum,ShapeLineTypeEnum,ShapeOperatorEnum,ShapeTextAutoFitType,ShapeTextDirection,ShapeTextWrapType,ShapeTypeEnum,UniverShapePlugin,canApplyShapeFormulaLastValue,computeConnectorRouteLayout,createUniqueShapeName,isConnectorShape,isCurvedConnectorShape,resolveConnectorRoutePoints,resolveShapeConnectionPoint,resolveShapeDefaultInsertSize}from"@univerjs-pro/engine-shape";
-import{UnitAction,UnitObject}from"@univerjs/protocol";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { id } from "./internal-core-endo.js";
 import { M } from "./boards-board-element-type.js";
 import { Da } from "./boards-embed-boards-floating-custom-key.js";
 import { ka } from "./boards-embed-boards-floating-custom-data.js";
-function Oa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588){return{id:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.hostAnchorId,type:M.Shape,name:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.embedId,transform:{left:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.left??80,top:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.top??80,width:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.width??560,height:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.height??360,rotation:0},shapeData:{shapeType:ShapeTypeEnum.Rect,fill:{fillType:ShapeFillEnum.NoFill},stroke:{lineStrokeType:ShapeLineTypeEnum.NoLine}},custom:{[Da]:{version:1,embedId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.embedId,hostAnchorId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.hostAnchorId,childUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.childUnitId,childType:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.childType}}};}function Aa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598){return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598.type)===M.Shape&&ka(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598)!=null;}
-
+function Oa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588) {
+  return {
+    id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.hostAnchorId,
+    type: M.Shape,
+    name: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.embedId,
+    transform: {
+      left: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.left ?? 80,
+      top: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.top ?? 80,
+      width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.width ?? 560,
+      height: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.height ?? 360,
+      rotation: 0
+    },
+    shapeData: {
+      shapeType: ShapeTypeEnum.Rect,
+      fill: {
+        fillType: ShapeFillEnum.NoFill
+      },
+      stroke: {
+        lineStrokeType: ShapeLineTypeEnum.NoLine
+      }
+    },
+    custom: {
+      [Da]: {
+        version: 1,
+        embedId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.embedId,
+        hostAnchorId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.hostAnchorId,
+        childUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.childUnitId,
+        childType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463588.childType
+      }
+    }
+  };
+}
+function Aa(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598.type) === M.Shape && ka(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463598) != null;
+}
 export { Oa as createEmbedBoardsFloatingElement, Aa as isEmbedBoardsFloatingElement };

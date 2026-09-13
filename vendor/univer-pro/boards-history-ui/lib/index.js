@@ -1,1 +1,470 @@
-import{BoardsHistoryDiffService as v163,UniverBoardsHistoryPlugin as v164}from"@univerjs-pro/boards-history";import{BoardWorkbench as v165,IBoardSettingsMenuContributionService as v166,UniverBoardsUIPlugin as v167,getBoardElementRenderObjectKey as v168}from"@univerjs-pro/boards-ui";import{AuthzIoHttpService as v169,COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as v170,CollaborationController as v171,CollaborationImageIoService as v172,DataLoaderService as v173,SnapshotServerOverHTTPService as v174,UniverCollaborationClientPlugin as v175}from"@univerjs-pro/collaboration-client";import{LS_CONFIG_KEY as v176,UniverLicensePlugin as v177}from"@univerjs-pro/license";import{CommandType as v178,DependentOn as v179,Disposable as v180,DisposableCollection as v181,IAuthzIoService as v182,ICommandService as v183,IConfigService as v184,IImageIoService as v185,ILogService as v186,IUniverInstanceService as v187,Inject as v188,Injector as v189,LocaleService as v190,Plugin as v191,ThemeService as v192,Univer as v193,UniverInstanceType as v194,merge as v195,registerDependencies as v196}from"@univerjs/core";import{HistoryIcon as v197}from"@univerjs/icons";import{AddBoardElementMutation as v198,AddBoardElementOperation as v199,AddBoardElementsOperation as v200,BeginBoardContainerOperation as v201,BeginBoardSwimlaneOperation as v202,BoardElementType as v203,CommitBoardContainerTransformOperation as v204,DisbandBoardContainerOperation as v205,FitBoardContainerToContentOperation as v206,InsertBoardChartCommand as v207,InsertBoardTableOperation as v208,NormalizeBoardConnectorRoutingCommand as v209,RemoveBoardConnectorLabelCommand as v210,RemoveBoardElementCommand as v211,RemoveBoardElementMutation as v212,RemoveBoardElementOperation as v213,RemoveBoardElementsOperation as v214,RemoveBoardSwimlaneLaneOperation as v215,ReorderBoardElementsOperation as v216,ReorderBoardObjectListElementOperation as v217,ReparentBoardElementsOperation as v218,SetBoardConnectorLabelStyleCommand as v219,SetBoardConnectorLabelTextCommand as v220,SetBoardContainerAutoResizeOperation as v221,SetBoardContainerMembershipLockOperation as v222,SetBoardElementsMetadataOperation as v223,SetBoardNameCommand as v224,SetBoardPageBackgroundCommand as v225,SetBoardSwimlaneLaneSizeOperation as v226,SetBoardSwimlaneLanesOperation as v227,SetBoardThemeOperation as v228,UniverBoardsPlugin as v229,UpdateBoardElementCommand as v230,UpdateBoardElementMutation as v231,UpdateBoardElementsCommand as v232,WrapBoardElementsInContainerOperation as v233,getBoardsEmptySnapshot as v234}from"@univerjs-pro/boards";import{ChangeBoardChartDataSourceCommand as v235,DuplicateBoardChartDataSourceCommand as v236,UniverBoardsChartPlugin as v237,UpdateBoardChartConfigCommand as v238,UpdateBoardChartDataSourceCommand as v239}from"@univerjs-pro/boards-chart";import{UniverBoardsChartUIPlugin as v240}from"@univerjs-pro/boards-chart-ui";import{AddMindMapChildOperation as v241,AddMindMapSiblingOperation as v242,ChangeMindMapBranchLineTypeOperation as v243,ChangeMindMapLayoutOperation as v244,DeleteMindMapNodeOperation as v245,DetachMindMapNodeOperation as v246,ImportMindMapOpmlOperation as v247,InsertBoardMindMapOperation as v248,LayoutMindMapOperation as v249,PasteMindMapAsNewMindMapOperation as v250,PasteMindMapNodeOperation as v251,PromoteMindMapNodeOperation as v252,ReflowMindMapCommand as v253,ReparentMindMapNodeOperation as v254,SetMindMapElementMutation as v255,ToggleMindMapNodeCollapseOperation as v256,TranslateMindMapOperation as v257,UniverBoardsMindPlugin as v258,UpdateMindMapIncomingConnectorOperation as v259,UpdateMindMapNodeOperation as v260,UpdateMindMapNodesOperation as v261,getMindMapContainerMeta as v262,getMindMapNodeMeta as v263}from"@univerjs-pro/boards-mind";import{UniverBoardsMindUIPlugin as v264}from"@univerjs-pro/boards-mind-ui";import{DeleteBoardTableColumnsCommand as v265,DeleteBoardTableRowsCommand as v266,InsertBoardTableColumnsCommand as v267,InsertBoardTableRowsCommand as v268,MergeBoardTableCellsCommand as v269,MoveBoardTableColumnsCommand as v270,MoveBoardTableRowsCommand as v271,RemoveBoardTableCommand as v272,ResizeBoardTableColumnsCommand as v273,ResizeBoardTableRowsCommand as v274,SetBoardTableBorderPresetCommand as v275,SetBoardTableCellStyleCommand as v276,SetBoardTableCellTextCommand as v277,UniverBoardsTablePlugin as v278,UnmergeBoardTableCellsCommand as v279,UpdateBoardTableCommand as v280}from"@univerjs-pro/boards-table";import{UniverBoardsTableUIPlugin as v281}from"@univerjs-pro/boards-table-ui";import{CollaborationEvent as v282,ISnapshotServerService as v283,SnapshotService as v284,UniverCollaborationPlugin as v285}from"@univerjs-pro/collaboration";import{UniverDocsLatexPlugin as v286}from"@univerjs-pro/docs-latex";import{UniverDocsLatexUIPlugin as v287}from"@univerjs-pro/docs-latex-ui";import{HistoryRestoreService as v288,HistoryUnitAdapterRegistryService as v289,UniverEditHistoryPlugin as v290,isHistoryRestoreAcknowledgement as v291}from"@univerjs-pro/edit-history";import{UniverInkPlugin as v292}from"@univerjs-pro/ink";import{UniverInkUIPlugin as v293}from"@univerjs-pro/ink-ui";import{UniverDocsPlugin as v294}from"@univerjs/docs";import{UniverDocsUIPlugin as v295}from"@univerjs/docs-ui";import{UniverDrawingPlugin as v296}from"@univerjs/drawing";import{UniverRenderEnginePlugin as v297}from"@univerjs/engine-render";import{UniverNetworkPlugin as v298}from"@univerjs/network";import{BuiltInUIPart as v299,IUIPartsService as v300,UI_PLUGIN_CONFIG_KEY as v301,UniverUIPlugin as v302,connectInjector as v303}from"@univerjs/ui";import{Subject as v304,filter as v305,firstValueFrom as v306,takeUntil as v307,timeout as v308}from"rxjs";import{HistoryActionSummaryService as v309,HistoryCanvasHighlightService as v310,HistoryRenderAdapterRegistryService as v311,UniverEditHistoryUIPlugin as v312}from"@univerjs-pro/edit-history-ui";import{jsx as v313}from"react/jsx-runtime";const F="boards-history-ui.config",I={historyServerUrl:"/universer-api/history"};var L="@univerjs-pro/boards-history-ui",R="1.0.0-insiders.20260907-70fc579";function ln(){return v313(v165,{embedded:true,fitOnMount:true});}function z(v129,v130){return function(v23,v24){v130(v23,v24,v129);};}function B(v131,v132,v133,v134){var v135=arguments.length,v136=v135<3?v132:v134===null?v134=Object.getOwnPropertyDescriptor(v132,v133):v134,v137;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v136=Reflect.decorate(v131,v132,v133,v134);else{for(var v138=v131.length-1;v138>=0;v138--)(v137=v131[v138])&&(v136=(v135<3?v137(v136):v135>3?v137(v132,v133,v136):v137(v132,v133))||v136);}return v135>3&&v136&&Object.defineProperty(v132,v133,v136),v136;}let V=class extends v180{constructor(v25,v26){super(),this.disposeWithMe(v26.registerComponent(v299.CONTENT,()=>v303(ln,v25)));}};V=B([z(0,v188(v189)),z(1,v300)],V);const un=new Map([[v224.id,"boards-history-ui.action.renameBoard"],[v225.id,"boards-history-ui.action.updateBackground"],[v228.id,"boards-history-ui.action.updateTheme"],[v199.id,"boards-history-ui.action.insertObject"],[v200.id,"boards-history-ui.action.insertObject"],[v211.id,"boards-history-ui.action.deleteObject"],[v214.id,"boards-history-ui.action.deleteObject"],[v230.id,"boards-history-ui.action.updateObject"],[v232.id,"boards-history-ui.action.updateObject"],[v216.id,"boards-history-ui.action.reorderObject"],[v217.id,"boards-history-ui.action.reorderObject"],[v218.id,"boards-history-ui.action.moveObject"],[v223.id,"boards-history-ui.action.updateObject"],[v220.id,"boards-history-ui.action.updateConnector"],[v219.id,"boards-history-ui.action.updateConnector"],[v210.id,"boards-history-ui.action.updateConnector"],[v209.id,"boards-history-ui.action.updateConnector"],[v201.id,"boards-history-ui.action.insertContainer"],[v233.id,"boards-history-ui.action.insertContainer"],[v205.id,"boards-history-ui.action.deleteContainer"],[v204.id,"boards-history-ui.action.updateContainer"],[v206.id,"boards-history-ui.action.updateContainer"],[v221.id,"boards-history-ui.action.updateContainer"],[v222.id,"boards-history-ui.action.updateContainer"],[v202.id,"boards-history-ui.action.insertSwimlane"],[v227.id,"boards-history-ui.action.updateSwimlane"],[v226.id,"boards-history-ui.action.updateSwimlane"],[v215.id,"boards-history-ui.action.updateSwimlane"],[v248.id,"boards-history-ui.action.insertMindMap"],[v247.id,"boards-history-ui.action.insertMindMap"],[v250.id,"boards-history-ui.action.insertMindMap"],[v241.id,"boards-history-ui.action.insertMindMapNode"],[v242.id,"boards-history-ui.action.insertMindMapNode"],[v251.id,"boards-history-ui.action.insertMindMapNode"],[v245.id,"boards-history-ui.action.deleteMindMapNode"],[v260.id,"boards-history-ui.action.updateMindMap"],[v261.id,"boards-history-ui.action.updateMindMap"],[v259.id,"boards-history-ui.action.updateMindMap"],[v244.id,"boards-history-ui.action.updateMindMapLayout"],[v249.id,"boards-history-ui.action.updateMindMapLayout"],[v243.id,"boards-history-ui.action.updateMindMapLayout"],[v253.id,"boards-history-ui.action.updateMindMapLayout"],[v254.id,"boards-history-ui.action.moveMindMapNode"],[v252.id,"boards-history-ui.action.moveMindMapNode"],[v246.id,"boards-history-ui.action.moveMindMapNode"],[v257.id,"boards-history-ui.action.moveMindMapNode"],[v256.id,"boards-history-ui.action.updateMindMap"],[v208.id,"boards-history-ui.action.insertTable"],[v272.id,"boards-history-ui.action.deleteTable"],[v268.id,"boards-history-ui.action.insertTableRows"],[v266.id,"boards-history-ui.action.deleteTableRows"],[v271.id,"boards-history-ui.action.moveTableRows"],[v274.id,"boards-history-ui.action.resizeTableRows"],[v267.id,"boards-history-ui.action.insertTableColumns"],[v265.id,"boards-history-ui.action.deleteTableColumns"],[v270.id,"boards-history-ui.action.moveTableColumns"],[v273.id,"boards-history-ui.action.resizeTableColumns"],[v269.id,"boards-history-ui.action.mergeTableCells"],[v279.id,"boards-history-ui.action.unmergeTableCells"],[v277.id,"boards-history-ui.action.editTableCell"],[v276.id,"boards-history-ui.action.formatTable"],[v275.id,"boards-history-ui.action.formatTable"],[v280.id,"boards-history-ui.action.updateTable"],[v207.id,"boards-history-ui.action.insertChart"],[v235.id,"boards-history-ui.action.updateChart"],[v236.id,"boards-history-ui.action.updateChart"],[v239.id,"boards-history-ui.action.updateChart"],[v238.id,"boards-history-ui.action.updateChart"]]),H=new Map([[v203.Text,{insert:"boards-history-ui.action.insertTextBox",update:"boards-history-ui.action.updateTextBox",delete:"boards-history-ui.action.deleteTextBox"}],[v203.Shape,{insert:"boards-history-ui.action.insertShape",update:"boards-history-ui.action.updateShape",delete:"boards-history-ui.action.deleteShape"}],[v203.Image,{insert:"boards-history-ui.action.insertImage",update:"boards-history-ui.action.updateImage",delete:"boards-history-ui.action.deleteImage"}],[v203.Diagram,{insert:"boards-history-ui.action.insertDiagram",update:"boards-history-ui.action.updateDiagram",delete:"boards-history-ui.action.deleteDiagram"}],[v203.Media,{insert:"boards-history-ui.action.insertMedia",update:"boards-history-ui.action.updateMedia",delete:"boards-history-ui.action.deleteMedia"}],[v203.Group,{insert:"boards-history-ui.action.insertGroup",update:"boards-history-ui.action.updateGroup",delete:"boards-history-ui.action.deleteGroup"}],[v203.Connector,{insert:"boards-history-ui.action.insertConnector",update:"boards-history-ui.action.updateConnector",delete:"boards-history-ui.action.deleteConnector"}],[v203.Table,{insert:"boards-history-ui.action.insertTable",update:"boards-history-ui.action.updateTable",delete:"boards-history-ui.action.deleteTable"}],[v203.Chart,{insert:"boards-history-ui.action.insertChart",update:"boards-history-ui.action.updateChart",delete:"boards-history-ui.action.deleteChart"}]]),dn=new Set([v198.id,v199.id,v200.id]),fn=new Set([v230.id,v231.id,v232.id]),pn=new Set([v211.id,v212.id,v213.id,v214.id]);let U=class extends v180{constructor(v27,v28){super(),this._localeService=v28,this.disposeWithMe(v27.register(v194.UNIVER_BOARD,this));}resolve(v29){let v30=new Set(W(v29,v198.id).map(v1=>v1.id)),v31=hn(v29),v32=gn(v29,v30),v33=mn(v29),v34=[...v31,...v32,...v33].map(v2=>this._localeService["t"](v2)),v35=[...v29.commandIds].flatMap(v3=>{if(v31.length>0&&dn.has(v3)||v32.length>0&&fn.has(v3)||v33.length>0&&pn.has(v3))return[];let v4=un.get(v3);return v4?[this._localeService["t"](v4)]:[];}),v36=[...new Set([...v34,...v35])];return v36.length>0?v36:v29.commandIds["has"](v255.id)?[this._localeService["t"]("boards-history-ui.action.updateMindMap")]:v29.commandIds["has"](v198.id)?[this._localeService["t"]("boards-history-ui.action.insertObject")]:v29.commandIds["has"](v212.id)?[this._localeService["t"]("boards-history-ui.action.deleteObject")]:v29.commandIds["has"](v231.id)?[this._localeService["t"]("boards-history-ui.action.updateObject")]:[];}};U=B([z(0,v188(v309)),z(1,v188(v190))],U);function mn(v139){let v140=v139.mutations["flatMap"](v37=>{var v38;if(v37.id!==v212.id||!G(v37.params))return[];if(v37.params["elementType"]===v203.Container)return v37.params["containerKind"]==="swimlane"?["boards-history-ui.action.deleteSwimlane"]:["boards-history-ui.action.deleteContainer"];let v39=vn(v37.params["elementType"])?(v38=H.get(v37.params["elementType"]))==null?undefined:v38.delete:undefined;return v39?[v39]:[];});return[...new Set(v140)];}function hn(v141){let v142=W(v141,v198.id).flatMap(v40=>{var v41;if(v262(v40))return["boards-history-ui.action.insertMindMap"];if(v263(v40))return["boards-history-ui.action.insertMindMapNode"];if(v40.type===v203.Container)return v40.containerData["kind"]==="swimlane"?["boards-history-ui.action.insertSwimlane"]:["boards-history-ui.action.insertContainer"];let v42=(v41=H.get(v40.type))==null?undefined:v41.insert;return v42?[v42]:[];});return[...new Set(v142)];}function gn(v143,v144){let v145=[...W(v143,v255.id),...W(v143,v231.id)].filter(v43=>!v144.has(v43.id)).flatMap(v44=>{var v45;if(v262(v44)||v263(v44))return["boards-history-ui.action.updateMindMap"];if(v44.type===v203.Container)return v44.containerData["kind"]==="swimlane"?["boards-history-ui.action.updateSwimlane"]:["boards-history-ui.action.updateContainer"];let v46=(v45=H.get(v44.type))==null?undefined:v45.update;return v46?[v46]:[];});return[...new Set(v145)];}function W(v146,v147){return v146.mutations["flatMap"](v47=>v47.id!==v147||!G(v47.params)||!_n(v47.params["element"])?[]:[v47.params["element"]]);}function _n(v148){if(!G(v148)||typeof v148.id!="string"||!G(v148.transform))return false;switch(v148.type){case v203.Placeholder:case v203.Text:case v203.Shape:case v203.Image:case v203.Chart:case v203.Table:case v203.Diagram:case v203.Media:case v203.Group:case v203.Connector:case v203.Container:return true;default:return false;}}function vn(v149){switch(v149){case v203.Placeholder:case v203.Text:case v203.Shape:case v203.Image:case v203.Chart:case v203.Table:case v203.Diagram:case v203.Media:case v203.Group:case v203.Connector:case v203.Container:return true;default:return false;}}function G(v150){return typeof v150=="object"&&!!v150;}function K(v151){"@babel/helpers - typeof";return K=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v48){return typeof v48;}:function(v49){return v49&&typeof Symbol=="function"&&v49.constructor===Symbol&&v49!==Symbol.prototype?"symbol":typeof v49;},K(v151);}function yn(v152,v153){if(K(v152)!="object"||!v152)return v152;var v154=v152[Symbol.toPrimitive];if(v154!==undefined){var v155=v154.call(v152,v153||"default");if(K(v155)!="object")return v155;throw TypeError("@@toPrimitive must return a primitive value.");}return(v153==="string"?String:Number)(v152);}function bn(v156){var v157=yn(v156,"string");return K(v157)=="symbol"?v157:v157+"";}function q(v158,v159,v160){return(v159=bn(v159))in v158?Object.defineProperty(v158,v159,{value:v160,enumerable:true,configurable:true,writable:true}):v158[v159]=v160,v158;}let J=class extends v180{constructor(v50,v51,v52,v53,v54){super(),this._diffService=v50,this._snapshotService=v52,this._univerInstanceService=v53,this._highlightService=v54,q(this,"type",v194.UNIVER_BOARD),q(this,"_changes",new Map()),q(this,"_changesGeneration",0),q(this,"_loadGeneration",0),q(this,"_loadQueue",Promise.resolve()),q(this,"_unitId",""),this.disposeWithMe(v51.register(this));}loadRevision(v55,v56){let v57=++this._loadGeneration,v58=this._loadQueue["catch"](()=>undefined).then(async()=>{if(v57!==this._loadGeneration)return;this._getBoard(v55)&&this._univerInstanceService["disposeUnit"](v55);let v5=await this._snapshotService["loadBoard"](v55,v56.endRevision);if(v57!==this._loadGeneration){this._getBoard(v55)===v5&&this._univerInstanceService["disposeUnit"](v55);return;}this._univerInstanceService["focusUnit"](v55);});return this._loadQueue=v58,v58;}async loadChanges(v59,v60){this._unitId=v59;let v61=++this._changesGeneration,v62=await this._diffService["compare"](v59,v60);v61===this._changesGeneration&&(this._changes["clear"](),v62.forEach(v6=>this._changes["set"](v6.id,v6)),await this._renderHighlights(v59));}close(){++this._changesGeneration,++this._loadGeneration,this._changes["clear"](),this._unitId&&=(this._highlightService["clear"](this._unitId),"");}_getBoard(v63){return this._univerInstanceService["getUnit"](v63,v194.UNIVER_BOARD)??null;}_renderHighlights(v64){let v65=this._getBoard(v64);if(!v65)return Promise.resolve();let v66=v65.getActivePageId(),v67=Array.from(this._changes["values"]()).filter(v7=>v7.pageId===v66).map(v8=>({id:v8.id,kind:v8.kind,objectKey:v8.elementId?v168(v64,v8.elementId):undefined,outlineOnly:v8.kind==="delete"||!v8.elementId}));return this._highlightService["show"](v64,v67);}};J=B([z(0,v188(v163)),z(1,v188(v311)),z(2,v188(v284)),z(3,v187),z(4,v188(v310))],J);let Y=class extends v312{constructor(v68,v69,v70,v71){let{collaborationClientConfig:v72,...v73}=v68;super(v73,v69,v70,v71),this._injector=v69,v70.setConfig(v170,v72);}onStarting(){super.onStarting(),v196(this._injector,[[v283,{useClass:v174}],[U],[J],[V]]),this._injector["get"](U),this._injector["get"](J),this._injector["get"](V);}};q(Y,"pluginName","UNIVER_BOARDS_HISTORY_VIEWER_PLUGIN"),q(Y,"packageName",L),q(Y,"version",R),q(Y,"type",v194.UNIVER_UNKNOWN),Y=B([v179(v177,v164,v167),z(1,v188(v189)),z(2,v184),z(3,v186)],Y);let X=class extends v180{constructor(v74,v75,v76,v77,v78,v79,v80,v81){super(),this._configService=v74,this._restoreService=v75,this._adapterRegistry=v76,this._localeService=v77,this._themeService=v78,this._collaborationController=v79,this._dataLoaderService=v80,this._univerInstanceService=v81,q(this,"_historyUniver",null),q(this,"_opening",null),q(this,"_openGeneration",0),q(this,"_sessionDisposables",new v181()),q(this,"_container",null),q(this,"_unitId",""),q(this,"_location",undefined);}open(v82){if(this._historyUniver)return Promise.resolve();if(this._opening)return this._opening;let v83=++this._openGeneration,v84=this._open(v82,v83).finally(()=>{this._opening===v84&&(this._opening=null);});return this._opening=v84,v84;}async _open(v85,v86){let v87=this._adapterRegistry["get"](v194.UNIVER_BOARD);if(!v87)throw Error("[BoardsHistoryLoaderService]: Board history adapter is not registered.");let v88=await Promise.all([v87.canView(v85),v87.canRevert(v85)]).catch(v9=>{if(v86===this._openGeneration)throw v9;return null;});if(!v88||v86!==this._openGeneration)return;let[v89,v90]=v88;if(!v89)throw Error("[BoardsHistoryLoaderService]:\x20The\x20current\x20user\x20cannot\x20view\x20history\x20for\x20this\x20Board.");this._unitId=v85,this._location=v87.captureLocation(v85);let v91=this._ensureContainer();v91.style["display"]="block";let v92=this._localeService["getCurrentLocale"](),v93=this._localeService["getLocales"](),v94=new v193({theme:this._themeService["getCurrentTheme"](),darkMode:this._themeService["darkMode"],locale:v92,locales:v93?{[v92]:v93}:undefined,direction:this._localeService["getDirection"](),override:[[v182,{useClass:v169}]]});this._historyUniver=v94,this._syncViewerServices(v94,v91);try{this._registerChildPlugins(v94,v90,v91),v94.createUnit(v194.UNIVER_BOARD,v234(v85,""));}catch(v10){throw v86===this._openGeneration?this.close():v94.dispose(),v10;}}close(){++this._openGeneration,this._opening=null,this._sessionDisposables["dispose"]();let v95=this._historyUniver;this._historyUniver=null,v95==null||v95.dispose(),this._unitId="",this._location=undefined,this._container&&(this._container["style"].display="none");}_syncViewerServices(v96,v97){let v98=v96.__getInjector(),v99=v98.get(v190),v100=v98.get(v192);this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(v11=>{v100.setDarkMode(v11);})),this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(v12=>{v100.setTheme(v12);})),this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(v13=>{let v14=this._localeService["getLocales"]();v14&&v99.load({[v13]:v14}),v99.setLocale(v13);})),this._sessionDisposables["add"](this._localeService["direction$"].subscribe(v15=>{v99.setDirection(v15),v97.dir=v15,v97.style["direction"]=v15;}));}async restore(v101){var v102;let v103=this._unitId,v104=this._location,v105=this._collaborationController["getCollabEntity"](v103);if(!v105)throw Error("[BoardsHistoryLoaderService]: Collaboration is not ready for this Board.");let v106=new v304(),v107=v306(v105.session["event$"].pipe(v305(v16=>v16.eventID===v282.CHANGESET_ACK),v305(v17=>v291(v17,v101)),v307(v106),v308(10000)));try{if(!(await this._restoreService["restore"](v103,v194.UNIVER_BOARD,v101)))throw Error("[BoardsHistoryLoaderService]: The restore command was not accepted.");await v107;}catch(v18){throw v106.next(),await v107.catch(()=>undefined),v18;}finally{v106.complete();}this.close(),this._univerInstanceService["disposeUnit"](v103),await this._dataLoaderService["loadUnit"](v103,v194.UNIVER_BOARD),await((v102=this._adapterRegistry["get"](v194.UNIVER_BOARD))==null?undefined:v102.restoreLocation(v103,v104));}_ensureContainer(){var v108;if(this._container)return this._container;let v109=this._configService["getConfig"](F),v110=(v109==null?undefined:v109.univerContainerId)??((v108=this._configService["getConfig"](v301))==null?undefined:v108.container),v111=typeof v110=="string"?document.getElementById(v110):v110;if(!v111)throw Error("[BoardsHistoryLoaderService]: Configure a valid Univer container before opening history.");let v112=document.createElement("div");return Object.assign(v112.style,{position:"absolute",inset:"0",zIndex:"49",display:"none"}),v111.appendChild(v112),this._container=v112,v112;}_registerChildPlugins(v113,v114,v115){let v116=this._configService["getConfig"](v176),v117=this._configService["getConfig"](F),v118=[[v177,{license:v116==null?undefined:v116.ls}],[v297],[v302,{container:v115,header:true,toolbar:false,footer:true,contextMenu:false}],[v298],[v296,{override:[[v185,{useClass:v172}]]}],[v294],[v295],[v286],[v287],[v292],[v293],[v229],[v167,{showToolbar:false,workbench:{content:false}}],[v237],[v240],[v258],[v264],[v278],[v281],[v285],[v290,{historyServerUrl:v117==null?undefined:v117.historyServerUrl}],[v164]],v119=new Set();[...v118,...((v117==null?undefined:v117.viewerPlugins)??[])].forEach(([v19,v20])=>{if(v119.has(v19.pluginName))throw Error("[BoardsHistoryLoaderService]: Plugin "+v19.pluginName+" has already been registered.");v119.add(v19.pluginName),v113.registerPlugin(v19,v20);}),v113.registerPlugin(Y,{viewerMode:true,descriptor:{unitId:this._unitId,type:v194.UNIVER_BOARD},canRestore:v114,onClose:()=>this.close(),onRestore:v21=>this.restore(v21),collaborationClientConfig:this._configService["getConfig"](v170)});}dispose(){var v120;this.close(),(v120=this._container)==null||v120.remove(),this._container=null,super.dispose();}};X=B([z(0,v184),z(1,v188(v288)),z(2,v188(v289)),z(3,v188(v190)),z(4,v188(v192)),z(5,v188(v171)),z(6,v188(v173)),z(7,v187)],X);const Z={id:"boards-history-ui.operation.open",type:v178.OPERATION,handler:v161=>{let v162=v161.get(v187).getCurrentUnitOfType(v194.UNIVER_BOARD);return v162?(v161.get(X).open(v162.getUnitId()).catch(v121=>{v161.get(v186).error("[OpenBoardsHistoryOperation]: Failed to open Board history.",v121);}),true):false;}};let Q=class extends v180{constructor(v122,v123,v124){super(),this.disposeWithMe(v122.registerCommand(Z)),this.disposeWithMe(v123.register({id:Z.id,menuItemId:Z.id,group:"action",order:100,icon:v197,label:()=>v124.t("boards-history-ui.menu.history"),onClick:v22=>v22.executeCommand(Z.id)}));}};Q=B([z(0,v183),z(1,v188(v166)),z(2,v188(v190))],Q);let $=class extends v191{constructor(v125=I,v126,v127){super(),this._config=v125,this._injector=v126,this._configService=v127;let{...v128}=v195({},I,this._config);this._configService["setConfig"](F,v128);}onStarting(){v196(this._injector,[[X],[Q]]),this._injector["get"](Q);}};q($,"pluginName","UNIVER_BOARDS_HISTORY_UI_PLUGIN"),q($,"packageName",L),q($,"version",R),q($,"type",v194.UNIVER_BOARD),$=B([v179(v177,v175,v164,v167),z(1,v188(v189)),z(2,v184)],$);export{F as BOARDS_HISTORY_UI_PLUGIN_CONFIG_KEY,$ as UniverBoardsHistoryUIPlugin};
+import { BoardsHistoryDiffService as var_core_value_sigBB57, UniverBoardsHistoryPlugin as var_core_value_sig7C4A } from "@univerjs-pro/boards-history";
+import { BoardWorkbench as var_core_value_sigE799, IBoardSettingsMenuContributionService as var_core_value_sigB601, UniverBoardsUIPlugin as var_core_value_sig8B71, getBoardElementRenderObjectKey as var_core_value_sigAEFB } from "@univerjs-pro/boards-ui";
+import { AuthzIoHttpService as var_core_value_sig826B, COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as var_core_value_sigCF89, CollaborationController as var_core_value_sig00CB, CollaborationImageIoService as var_core_value_sig77EE, DataLoaderService as var_core_value_sig9F76, SnapshotServerOverHTTPService as var_core_value_sigB008, UniverCollaborationClientPlugin as var_core_value_sig8721 } from "@univerjs-pro/collaboration-client";
+import { LS_CONFIG_KEY as var_core_value_sig08BA, UniverLicensePlugin as var_core_value_sigDBB5 } from "@univerjs-pro/license";
+import { CommandType as var_core_value_sigCFAC, DependentOn as var_core_value_sig237B, Disposable as var_core_value_sigFEAB, DisposableCollection as var_core_value_sigE347, IAuthzIoService as var_core_value_sig3C5B, ICommandService as var_core_value_sig200B, IConfigService as var_core_value_sig3863, IImageIoService as var_core_value_sigC97C, ILogService as var_core_value_sigC4B1, IUniverInstanceService as var_core_value_sig1BD9, Inject as var_core_value_sigE43E, Injector as var_core_value_sigA937, LocaleService as var_core_value_sigCAD5, Plugin as var_core_value_sigE503, ThemeService as var_core_value_sig48DD, Univer as var_core_value_sig5E6A, UniverInstanceType as var_core_value_sigB7FC, merge as var_core_value_sig9CD9, registerDependencies as var_core_value_sigFD0C } from "@univerjs/core";
+import { HistoryIcon as var_core_value_sig849B } from "@univerjs/icons";
+import { AddBoardElementMutation as var_core_value_sig5F1A, AddBoardElementOperation as var_core_value_sigB455, AddBoardElementsOperation as var_core_value_sig5241, BeginBoardContainerOperation as var_core_value_sigC6E5, BeginBoardSwimlaneOperation as var_core_value_sigCEFB, BoardElementType as var_core_value_sig1537, CommitBoardContainerTransformOperation as var_core_value_sigE4C6, DisbandBoardContainerOperation as var_core_value_sig4313, FitBoardContainerToContentOperation as var_core_value_sigFC87, InsertBoardChartCommand as var_core_value_sig156F, InsertBoardTableOperation as var_core_value_sigDD51, NormalizeBoardConnectorRoutingCommand as var_core_value_sigF057, RemoveBoardConnectorLabelCommand as var_core_value_sig72F6, RemoveBoardElementCommand as var_core_value_sig9FBA, RemoveBoardElementMutation as var_core_value_sigFE01, RemoveBoardElementOperation as var_core_value_sigA2CE, RemoveBoardElementsOperation as var_core_value_sig1975, RemoveBoardSwimlaneLaneOperation as var_core_value_sig6EA1, ReorderBoardElementsOperation as var_core_value_sig029F, ReorderBoardObjectListElementOperation as var_core_value_sig3767, ReparentBoardElementsOperation as var_core_value_sig670B, SetBoardConnectorLabelStyleCommand as var_core_value_sig6912, SetBoardConnectorLabelTextCommand as var_core_value_sigE235, SetBoardContainerAutoResizeOperation as var_core_value_sig7664, SetBoardContainerMembershipLockOperation as var_core_value_sig2281, SetBoardElementsMetadataOperation as var_core_value_sig5E86, SetBoardNameCommand as var_core_value_sig6998, SetBoardPageBackgroundCommand as var_core_value_sigF639, SetBoardSwimlaneLaneSizeOperation as var_core_value_sigEAE5, SetBoardSwimlaneLanesOperation as var_core_value_sigE94C, SetBoardThemeOperation as var_core_value_sig6D47, UniverBoardsPlugin as var_core_value_sigCB82, UpdateBoardElementCommand as var_core_value_sigCF4E, UpdateBoardElementMutation as var_core_value_sig6CAD, UpdateBoardElementsCommand as var_core_value_sig8CF5, WrapBoardElementsInContainerOperation as var_core_value_sigDDD7, getBoardsEmptySnapshot as var_core_value_sigB2CE } from "@univerjs-pro/boards";
+import { ChangeBoardChartDataSourceCommand as var_core_value_sig443C, DuplicateBoardChartDataSourceCommand as var_core_value_sig39B1, UniverBoardsChartPlugin as var_core_value_sig210D, UpdateBoardChartConfigCommand as var_core_value_sigB4B4, UpdateBoardChartDataSourceCommand as var_core_value_sigD407 } from "@univerjs-pro/boards-chart";
+import { UniverBoardsChartUIPlugin as var_core_value_sig63F3 } from "@univerjs-pro/boards-chart-ui";
+import { AddMindMapChildOperation as var_core_value_sig6A71, AddMindMapSiblingOperation as var_core_value_sig3BF6, ChangeMindMapBranchLineTypeOperation as var_core_value_sig38CE, ChangeMindMapLayoutOperation as var_core_value_sig62B7, DeleteMindMapNodeOperation as var_core_value_sig37A8, DetachMindMapNodeOperation as var_core_value_sigA90D, ImportMindMapOpmlOperation as var_core_value_sig7A3C, InsertBoardMindMapOperation as var_core_value_sig0511, LayoutMindMapOperation as var_core_value_sig1F44, PasteMindMapAsNewMindMapOperation as var_core_value_sigCB04, PasteMindMapNodeOperation as var_core_value_sig947E, PromoteMindMapNodeOperation as var_core_value_sig4545, ReflowMindMapCommand as var_core_value_sigF39A, ReparentMindMapNodeOperation as var_core_value_sigF79C, SetMindMapElementMutation as var_core_value_sig2E54, ToggleMindMapNodeCollapseOperation as var_core_value_sig7658, TranslateMindMapOperation as var_core_value_sigDCF5, UniverBoardsMindPlugin as var_core_value_sigC786, UpdateMindMapIncomingConnectorOperation as var_core_value_sigC0D9, UpdateMindMapNodeOperation as var_core_value_sigF051, UpdateMindMapNodesOperation as var_core_value_sig5825, getMindMapContainerMeta as var_core_value_sig4EB7, getMindMapNodeMeta as var_core_value_sig73AF } from "@univerjs-pro/boards-mind";
+import { UniverBoardsMindUIPlugin as var_core_value_sig548A } from "@univerjs-pro/boards-mind-ui";
+import { DeleteBoardTableColumnsCommand as var_core_value_sigE026, DeleteBoardTableRowsCommand as var_core_value_sig339E, InsertBoardTableColumnsCommand as var_core_value_sig7550, InsertBoardTableRowsCommand as var_core_value_sig2983, MergeBoardTableCellsCommand as var_core_value_sigE1B0, MoveBoardTableColumnsCommand as var_core_value_sigD4FF, MoveBoardTableRowsCommand as var_core_value_sig1E5B, RemoveBoardTableCommand as var_core_value_sigB680, ResizeBoardTableColumnsCommand as var_core_value_sig1F64, ResizeBoardTableRowsCommand as var_core_value_sigDD1C, SetBoardTableBorderPresetCommand as var_core_value_sig2C39, SetBoardTableCellStyleCommand as var_core_value_sigB7D1, SetBoardTableCellTextCommand as var_core_value_sig64F0, UniverBoardsTablePlugin as var_core_value_sig85B1, UnmergeBoardTableCellsCommand as var_core_value_sig3141, UpdateBoardTableCommand as var_core_value_sig2162 } from "@univerjs-pro/boards-table";
+import { UniverBoardsTableUIPlugin as var_core_value_sig2EAD } from "@univerjs-pro/boards-table-ui";
+import { CollaborationEvent as var_core_value_sig6774, ISnapshotServerService as var_core_value_sig340D, SnapshotService as var_core_value_sig82D4, UniverCollaborationPlugin as var_core_value_sigBDE4 } from "@univerjs-pro/collaboration";
+import { UniverDocsLatexPlugin as var_core_value_sig7DF1 } from "@univerjs-pro/docs-latex";
+import { UniverDocsLatexUIPlugin as var_core_value_sigDC86 } from "@univerjs-pro/docs-latex-ui";
+import { HistoryRestoreService as var_core_value_sig0B0C, HistoryUnitAdapterRegistryService as var_core_value_sigA39E, UniverEditHistoryPlugin as var_core_value_sigBBEE, isHistoryRestoreAcknowledgement as var_core_value_sig011D } from "@univerjs-pro/edit-history";
+import { UniverInkPlugin as var_core_value_sig6167 } from "@univerjs-pro/ink";
+import { UniverInkUIPlugin as var_core_value_sig65A1 } from "@univerjs-pro/ink-ui";
+import { UniverDocsPlugin as var_core_value_sig7F19 } from "@univerjs/docs";
+import { UniverDocsUIPlugin as var_core_value_sig7827 } from "@univerjs/docs-ui";
+import { UniverDrawingPlugin as var_core_value_sig652C } from "@univerjs/drawing";
+import { UniverRenderEnginePlugin as var_core_value_sig7E32 } from "@univerjs/engine-render";
+import { UniverNetworkPlugin as var_core_value_sig4C07 } from "@univerjs/network";
+import { BuiltInUIPart as var_core_value_sig79AB, IUIPartsService as var_core_value_sig8E74, UI_PLUGIN_CONFIG_KEY as var_core_value_sig104C, UniverUIPlugin as var_core_value_sig841D, connectInjector as var_core_value_sig90CB } from "@univerjs/ui";
+import { Subject as var_core_value_sigBDF5, filter as var_core_value_sigACC6, firstValueFrom as var_core_value_sig1614, takeUntil as var_core_value_sig85C3, timeout as var_core_value_sigB996 } from "rxjs";
+import { HistoryActionSummaryService as var_core_value_sig4BBA, HistoryCanvasHighlightService as var_core_value_sig6201, HistoryRenderAdapterRegistryService as var_core_value_sig5151, UniverEditHistoryUIPlugin as var_core_value_sigB542 } from "@univerjs-pro/edit-history-ui";
+import { jsx as var_core_value_sigBB6C } from "react/jsx-runtime";
+const F = "boards-history-ui.config",
+  I = {
+    historyServerUrl: "/universer-api/history"
+  };
+var L = "@univerjs-pro/boards-history-ui",
+  R = "1.0.0-insiders.20260907-70fc579";
+function ln() {
+  return var_core_value_sigBB6C(var_core_value_sigE799, {
+    embedded: true,
+    fitOnMount: true
+  });
+}
+function z(var_core_value_sigB512, var_core_value_sigF2E6) {
+  return function (var_core_value_sig4383, var_core_value_sig186C) {
+    var_core_value_sigF2E6(var_core_value_sig4383, var_core_value_sig186C, var_core_value_sigB512);
+  };
+}
+function B(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A) {
+  var var_core_value_sig3E68 = arguments.length,
+    var_core_value_sigF4C5 = var_core_value_sig3E68 < 3 ? var_core_value_sigB744 : var_core_value_sigE68A === null ? var_core_value_sigE68A = Object.getOwnPropertyDescriptor(var_core_value_sigB744, var_core_value_sigEAE2) : var_core_value_sigE68A,
+    var_core_value_sig5410;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigF4C5 = Reflect.decorate(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A);else {
+    for (var var_core_value_sig492F = var_core_value_sig34C8.length - 1; var_core_value_sig492F >= 0; var_core_value_sig492F--) (var_core_value_sig5410 = var_core_value_sig34C8[var_core_value_sig492F]) && (var_core_value_sigF4C5 = (var_core_value_sig3E68 < 3 ? var_core_value_sig5410(var_core_value_sigF4C5) : var_core_value_sig3E68 > 3 ? var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5) : var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2)) || var_core_value_sigF4C5);
+  }
+  return var_core_value_sig3E68 > 3 && var_core_value_sigF4C5 && Object.defineProperty(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5), var_core_value_sigF4C5;
+}
+let V = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sigD955, var_core_value_sig48BD) {
+    super(), this.disposeWithMe(var_core_value_sig48BD.registerComponent(var_core_value_sig79AB.CONTENT, () => var_core_value_sig90CB(ln, var_core_value_sigD955)));
+  }
+};
+V = B([z(0, var_core_value_sigE43E(var_core_value_sigA937)), z(1, var_core_value_sig8E74)], V);
+const un = new Map([[var_core_value_sig6998.id, "boards-history-ui.action.renameBoard"], [var_core_value_sigF639.id, "boards-history-ui.action.updateBackground"], [var_core_value_sig6D47.id, "boards-history-ui.action.updateTheme"], [var_core_value_sigB455.id, "boards-history-ui.action.insertObject"], [var_core_value_sig5241.id, "boards-history-ui.action.insertObject"], [var_core_value_sig9FBA.id, "boards-history-ui.action.deleteObject"], [var_core_value_sig1975.id, "boards-history-ui.action.deleteObject"], [var_core_value_sigCF4E.id, "boards-history-ui.action.updateObject"], [var_core_value_sig8CF5.id, "boards-history-ui.action.updateObject"], [var_core_value_sig029F.id, "boards-history-ui.action.reorderObject"], [var_core_value_sig3767.id, "boards-history-ui.action.reorderObject"], [var_core_value_sig670B.id, "boards-history-ui.action.moveObject"], [var_core_value_sig5E86.id, "boards-history-ui.action.updateObject"], [var_core_value_sigE235.id, "boards-history-ui.action.updateConnector"], [var_core_value_sig6912.id, "boards-history-ui.action.updateConnector"], [var_core_value_sig72F6.id, "boards-history-ui.action.updateConnector"], [var_core_value_sigF057.id, "boards-history-ui.action.updateConnector"], [var_core_value_sigC6E5.id, "boards-history-ui.action.insertContainer"], [var_core_value_sigDDD7.id, "boards-history-ui.action.insertContainer"], [var_core_value_sig4313.id, "boards-history-ui.action.deleteContainer"], [var_core_value_sigE4C6.id, "boards-history-ui.action.updateContainer"], [var_core_value_sigFC87.id, "boards-history-ui.action.updateContainer"], [var_core_value_sig7664.id, "boards-history-ui.action.updateContainer"], [var_core_value_sig2281.id, "boards-history-ui.action.updateContainer"], [var_core_value_sigCEFB.id, "boards-history-ui.action.insertSwimlane"], [var_core_value_sigE94C.id, "boards-history-ui.action.updateSwimlane"], [var_core_value_sigEAE5.id, "boards-history-ui.action.updateSwimlane"], [var_core_value_sig6EA1.id, "boards-history-ui.action.updateSwimlane"], [var_core_value_sig0511.id, "boards-history-ui.action.insertMindMap"], [var_core_value_sig7A3C.id, "boards-history-ui.action.insertMindMap"], [var_core_value_sigCB04.id, "boards-history-ui.action.insertMindMap"], [var_core_value_sig6A71.id, "boards-history-ui.action.insertMindMapNode"], [var_core_value_sig3BF6.id, "boards-history-ui.action.insertMindMapNode"], [var_core_value_sig947E.id, "boards-history-ui.action.insertMindMapNode"], [var_core_value_sig37A8.id, "boards-history-ui.action.deleteMindMapNode"], [var_core_value_sigF051.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sig5825.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sigC0D9.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sig62B7.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sig1F44.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sig38CE.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sigF39A.id, "boards-history-ui.action.updateMindMapLayout"], [var_core_value_sigF79C.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sig4545.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sigA90D.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sigDCF5.id, "boards-history-ui.action.moveMindMapNode"], [var_core_value_sig7658.id, "boards-history-ui.action.updateMindMap"], [var_core_value_sigDD51.id, "boards-history-ui.action.insertTable"], [var_core_value_sigB680.id, "boards-history-ui.action.deleteTable"], [var_core_value_sig2983.id, "boards-history-ui.action.insertTableRows"], [var_core_value_sig339E.id, "boards-history-ui.action.deleteTableRows"], [var_core_value_sig1E5B.id, "boards-history-ui.action.moveTableRows"], [var_core_value_sigDD1C.id, "boards-history-ui.action.resizeTableRows"], [var_core_value_sig7550.id, "boards-history-ui.action.insertTableColumns"], [var_core_value_sigE026.id, "boards-history-ui.action.deleteTableColumns"], [var_core_value_sigD4FF.id, "boards-history-ui.action.moveTableColumns"], [var_core_value_sig1F64.id, "boards-history-ui.action.resizeTableColumns"], [var_core_value_sigE1B0.id, "boards-history-ui.action.mergeTableCells"], [var_core_value_sig3141.id, "boards-history-ui.action.unmergeTableCells"], [var_core_value_sig64F0.id, "boards-history-ui.action.editTableCell"], [var_core_value_sigB7D1.id, "boards-history-ui.action.formatTable"], [var_core_value_sig2C39.id, "boards-history-ui.action.formatTable"], [var_core_value_sig2162.id, "boards-history-ui.action.updateTable"], [var_core_value_sig156F.id, "boards-history-ui.action.insertChart"], [var_core_value_sig443C.id, "boards-history-ui.action.updateChart"], [var_core_value_sig39B1.id, "boards-history-ui.action.updateChart"], [var_core_value_sigD407.id, "boards-history-ui.action.updateChart"], [var_core_value_sigB4B4.id, "boards-history-ui.action.updateChart"]]),
+  H = new Map([[var_core_value_sig1537.Text, {
+    insert: "boards-history-ui.action.insertTextBox",
+    update: "boards-history-ui.action.updateTextBox",
+    delete: "boards-history-ui.action.deleteTextBox"
+  }], [var_core_value_sig1537.Shape, {
+    insert: "boards-history-ui.action.insertShape",
+    update: "boards-history-ui.action.updateShape",
+    delete: "boards-history-ui.action.deleteShape"
+  }], [var_core_value_sig1537.Image, {
+    insert: "boards-history-ui.action.insertImage",
+    update: "boards-history-ui.action.updateImage",
+    delete: "boards-history-ui.action.deleteImage"
+  }], [var_core_value_sig1537.Diagram, {
+    insert: "boards-history-ui.action.insertDiagram",
+    update: "boards-history-ui.action.updateDiagram",
+    delete: "boards-history-ui.action.deleteDiagram"
+  }], [var_core_value_sig1537.Media, {
+    insert: "boards-history-ui.action.insertMedia",
+    update: "boards-history-ui.action.updateMedia",
+    delete: "boards-history-ui.action.deleteMedia"
+  }], [var_core_value_sig1537.Group, {
+    insert: "boards-history-ui.action.insertGroup",
+    update: "boards-history-ui.action.updateGroup",
+    delete: "boards-history-ui.action.deleteGroup"
+  }], [var_core_value_sig1537.Connector, {
+    insert: "boards-history-ui.action.insertConnector",
+    update: "boards-history-ui.action.updateConnector",
+    delete: "boards-history-ui.action.deleteConnector"
+  }], [var_core_value_sig1537.Table, {
+    insert: "boards-history-ui.action.insertTable",
+    update: "boards-history-ui.action.updateTable",
+    delete: "boards-history-ui.action.deleteTable"
+  }], [var_core_value_sig1537.Chart, {
+    insert: "boards-history-ui.action.insertChart",
+    update: "boards-history-ui.action.updateChart",
+    delete: "boards-history-ui.action.deleteChart"
+  }]]),
+  dn = new Set([var_core_value_sig5F1A.id, var_core_value_sigB455.id, var_core_value_sig5241.id]),
+  fn = new Set([var_core_value_sigCF4E.id, var_core_value_sig6CAD.id, var_core_value_sig8CF5.id]),
+  pn = new Set([var_core_value_sig9FBA.id, var_core_value_sigFE01.id, var_core_value_sigA2CE.id, var_core_value_sig1975.id]);
+let U = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sig429F, var_core_value_sigF62A) {
+    super(), this._localeService = var_core_value_sigF62A, this.disposeWithMe(var_core_value_sig429F.register(var_core_value_sigB7FC.UNIVER_BOARD, this));
+  }
+  resolve(var_core_value_sig8178) {
+    let var_core_value_sigE9ED = new Set(W(var_core_value_sig8178, var_core_value_sig5F1A.id).map(var_core_value_sig7524 => var_core_value_sig7524.id)),
+      var_core_value_sigB577 = hn(var_core_value_sig8178),
+      var_core_value_sig9572 = gn(var_core_value_sig8178, var_core_value_sigE9ED),
+      var_core_value_sigD873 = mn(var_core_value_sig8178),
+      var_core_value_sigA12B = [...var_core_value_sigB577, ...var_core_value_sig9572, ...var_core_value_sigD873].map(var_core_value_sig2AD8 => this._localeService["t"](var_core_value_sig2AD8)),
+      var_core_value_sigF230 = [...var_core_value_sig8178.commandIds].flatMap(var_core_value_sig2AD0 => {
+        if (var_core_value_sigB577.length > 0 && dn.has(var_core_value_sig2AD0) || var_core_value_sig9572.length > 0 && fn.has(var_core_value_sig2AD0) || var_core_value_sigD873.length > 0 && pn.has(var_core_value_sig2AD0)) return [];
+        let var_core_value_sig3EEE = un.get(var_core_value_sig2AD0);
+        return var_core_value_sig3EEE ? [this._localeService["t"](var_core_value_sig3EEE)] : [];
+      }),
+      var_core_value_sig09B8 = [...new Set([...var_core_value_sigA12B, ...var_core_value_sigF230])];
+    return var_core_value_sig09B8.length > 0 ? var_core_value_sig09B8 : var_core_value_sig8178.commandIds["has"](var_core_value_sig2E54.id) ? [this._localeService["t"]("boards-history-ui.action.updateMindMap")] : var_core_value_sig8178.commandIds["has"](var_core_value_sig5F1A.id) ? [this._localeService["t"]("boards-history-ui.action.insertObject")] : var_core_value_sig8178.commandIds["has"](var_core_value_sigFE01.id) ? [this._localeService["t"]("boards-history-ui.action.deleteObject")] : var_core_value_sig8178.commandIds["has"](var_core_value_sig6CAD.id) ? [this._localeService["t"]("boards-history-ui.action.updateObject")] : [];
+  }
+};
+U = B([z(0, var_core_value_sigE43E(var_core_value_sig4BBA)), z(1, var_core_value_sigE43E(var_core_value_sigCAD5))], U);
+function mn(var_core_value_sig8EA0) {
+  let var_core_value_sigA6F6 = var_core_value_sig8EA0.mutations["flatMap"](var_core_value_sig6F91 => {
+    var var_core_value_sigF9C7;
+    if (var_core_value_sig6F91.id !== var_core_value_sigFE01.id || !G(var_core_value_sig6F91.params)) return [];
+    if (var_core_value_sig6F91.params["elementType"] === var_core_value_sig1537.Container) return var_core_value_sig6F91.params["containerKind"] === "swimlane" ? ["boards-history-ui.action.deleteSwimlane"] : ["boards-history-ui.action.deleteContainer"];
+    let var_core_value_sig8895 = vn(var_core_value_sig6F91.params["elementType"]) ? (var_core_value_sigF9C7 = H.get(var_core_value_sig6F91.params["elementType"])) == null ? undefined : var_core_value_sigF9C7.delete : undefined;
+    return var_core_value_sig8895 ? [var_core_value_sig8895] : [];
+  });
+  return [...new Set(var_core_value_sigA6F6)];
+}
+function hn(var_core_value_sigCDDA) {
+  let var_core_value_sigE243 = W(var_core_value_sigCDDA, var_core_value_sig5F1A.id).flatMap(var_core_value_sigC80B => {
+    var var_core_value_sig284F;
+    if (var_core_value_sig4EB7(var_core_value_sigC80B)) return ["boards-history-ui.action.insertMindMap"];
+    if (var_core_value_sig73AF(var_core_value_sigC80B)) return ["boards-history-ui.action.insertMindMapNode"];
+    if (var_core_value_sigC80B.type === var_core_value_sig1537.Container) return var_core_value_sigC80B.containerData["kind"] === "swimlane" ? ["boards-history-ui.action.insertSwimlane"] : ["boards-history-ui.action.insertContainer"];
+    let var_core_value_sigE154 = (var_core_value_sig284F = H.get(var_core_value_sigC80B.type)) == null ? undefined : var_core_value_sig284F.insert;
+    return var_core_value_sigE154 ? [var_core_value_sigE154] : [];
+  });
+  return [...new Set(var_core_value_sigE243)];
+}
+function gn(var_core_value_sig74A8, var_core_value_sig21B2) {
+  let var_core_value_sigDE08 = [...W(var_core_value_sig74A8, var_core_value_sig2E54.id), ...W(var_core_value_sig74A8, var_core_value_sig6CAD.id)].filter(var_core_value_sig4632 => !var_core_value_sig21B2.has(var_core_value_sig4632.id)).flatMap(var_core_value_sig12F2 => {
+    var var_core_value_sig2259;
+    if (var_core_value_sig4EB7(var_core_value_sig12F2) || var_core_value_sig73AF(var_core_value_sig12F2)) return ["boards-history-ui.action.updateMindMap"];
+    if (var_core_value_sig12F2.type === var_core_value_sig1537.Container) return var_core_value_sig12F2.containerData["kind"] === "swimlane" ? ["boards-history-ui.action.updateSwimlane"] : ["boards-history-ui.action.updateContainer"];
+    let var_core_value_sig9E2F = (var_core_value_sig2259 = H.get(var_core_value_sig12F2.type)) == null ? undefined : var_core_value_sig2259.update;
+    return var_core_value_sig9E2F ? [var_core_value_sig9E2F] : [];
+  });
+  return [...new Set(var_core_value_sigDE08)];
+}
+function W(var_core_value_sigACCB, var_core_value_sig7F33) {
+  return var_core_value_sigACCB.mutations["flatMap"](var_core_value_sigD082 => var_core_value_sigD082.id !== var_core_value_sig7F33 || !G(var_core_value_sigD082.params) || !_n(var_core_value_sigD082.params["element"]) ? [] : [var_core_value_sigD082.params["element"]]);
+}
+function _n(var_core_value_sig0C53) {
+  if (!G(var_core_value_sig0C53) || typeof var_core_value_sig0C53.id != "string" || !G(var_core_value_sig0C53.transform)) return false;
+  switch (var_core_value_sig0C53.type) {
+    case var_core_value_sig1537.Placeholder:
+    case var_core_value_sig1537.Text:
+    case var_core_value_sig1537.Shape:
+    case var_core_value_sig1537.Image:
+    case var_core_value_sig1537.Chart:
+    case var_core_value_sig1537.Table:
+    case var_core_value_sig1537.Diagram:
+    case var_core_value_sig1537.Media:
+    case var_core_value_sig1537.Group:
+    case var_core_value_sig1537.Connector:
+    case var_core_value_sig1537.Container:
+      return true;
+    default:
+      return false;
+  }
+}
+function vn(var_core_value_sigEA04) {
+  switch (var_core_value_sigEA04) {
+    case var_core_value_sig1537.Placeholder:
+    case var_core_value_sig1537.Text:
+    case var_core_value_sig1537.Shape:
+    case var_core_value_sig1537.Image:
+    case var_core_value_sig1537.Chart:
+    case var_core_value_sig1537.Table:
+    case var_core_value_sig1537.Diagram:
+    case var_core_value_sig1537.Media:
+    case var_core_value_sig1537.Group:
+    case var_core_value_sig1537.Connector:
+    case var_core_value_sig1537.Container:
+      return true;
+    default:
+      return false;
+  }
+}
+function G(var_core_value_sig7A62) {
+  return typeof var_core_value_sig7A62 == "object" && !!var_core_value_sig7A62;
+}
+function K(var_core_value_sig8109) {
+  "@babel/helpers - typeof";
+
+  return K = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigDBB7) {
+    return typeof var_core_value_sigDBB7;
+  } : function (var_core_value_sigD0A8) {
+    return var_core_value_sigD0A8 && typeof Symbol == "function" && var_core_value_sigD0A8.constructor === Symbol && var_core_value_sigD0A8 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigD0A8;
+  }, K(var_core_value_sig8109);
+}
+function yn(var_core_value_sig7565, var_core_value_sigD4FB) {
+  if (K(var_core_value_sig7565) != "object" || !var_core_value_sig7565) return var_core_value_sig7565;
+  var var_core_value_sig3E71 = var_core_value_sig7565[Symbol.toPrimitive];
+  if (var_core_value_sig3E71 !== undefined) {
+    var var_core_value_sig01B3 = var_core_value_sig3E71.call(var_core_value_sig7565, var_core_value_sigD4FB || "default");
+    if (K(var_core_value_sig01B3) != "object") return var_core_value_sig01B3;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigD4FB === "string" ? String : Number)(var_core_value_sig7565);
+}
+function bn(var_core_value_sig7442) {
+  var var_core_value_sigDF87 = yn(var_core_value_sig7442, "string");
+  return K(var_core_value_sigDF87) == "symbol" ? var_core_value_sigDF87 : var_core_value_sigDF87 + "";
+}
+function q(var_core_value_sig9EE0, var_core_value_sigF0511, var_core_value_sig0B45) {
+  return (var_core_value_sigF0511 = bn(var_core_value_sigF0511)) in var_core_value_sig9EE0 ? Object.defineProperty(var_core_value_sig9EE0, var_core_value_sigF0511, {
+    value: var_core_value_sig0B45,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig9EE0[var_core_value_sigF0511] = var_core_value_sig0B45, var_core_value_sig9EE0;
+}
+let J = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sigF4B9, var_core_value_sig5CEE, var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5) {
+    super(), this._diffService = var_core_value_sigF4B9, this._snapshotService = var_core_value_sigE92A, this._univerInstanceService = var_core_value_sig362B, this._highlightService = var_core_value_sig5CA5, q(this, "type", var_core_value_sigB7FC.UNIVER_BOARD), q(this, "_changes", new Map()), q(this, "_changesGeneration", 0), q(this, "_loadGeneration", 0), q(this, "_loadQueue", Promise.resolve()), q(this, "_unitId", ""), this.disposeWithMe(var_core_value_sig5CEE.register(this));
+  }
+  loadRevision(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    let var_core_value_sig861B = ++this._loadGeneration,
+      var_core_value_sig5237 = this._loadQueue["catch"](() => undefined).then(async () => {
+        if (var_core_value_sig861B !== this._loadGeneration) return;
+        this._getBoard(var_core_value_sigE90F) && this._univerInstanceService["disposeUnit"](var_core_value_sigE90F);
+        let var_core_value_sigBC46 = await this._snapshotService["loadBoard"](var_core_value_sigE90F, var_core_value_sigEFD4.endRevision);
+        if (var_core_value_sig861B !== this._loadGeneration) {
+          this._getBoard(var_core_value_sigE90F) === var_core_value_sigBC46 && this._univerInstanceService["disposeUnit"](var_core_value_sigE90F);
+          return;
+        }
+        this._univerInstanceService["focusUnit"](var_core_value_sigE90F);
+      });
+    return this._loadQueue = var_core_value_sig5237, var_core_value_sig5237;
+  }
+  async loadChanges(var_core_value_sigBB00, var_core_value_sig7E54) {
+    this._unitId = var_core_value_sigBB00;
+    let var_core_value_sig9A8D = ++this._changesGeneration,
+      var_core_value_sigC259 = await this._diffService["compare"](var_core_value_sigBB00, var_core_value_sig7E54);
+    var_core_value_sig9A8D === this._changesGeneration && (this._changes["clear"](), var_core_value_sigC259.forEach(var_core_value_sig3D7D => this._changes["set"](var_core_value_sig3D7D.id, var_core_value_sig3D7D)), await this._renderHighlights(var_core_value_sigBB00));
+  }
+  close() {
+    ++this._changesGeneration, ++this._loadGeneration, this._changes["clear"](), this._unitId &&= (this._highlightService["clear"](this._unitId), "");
+  }
+  _getBoard(var_core_value_sig9C9F) {
+    return this._univerInstanceService["getUnit"](var_core_value_sig9C9F, var_core_value_sigB7FC.UNIVER_BOARD) ?? null;
+  }
+  _renderHighlights(var_core_value_sigFDEA) {
+    let var_core_value_sig86D0 = this._getBoard(var_core_value_sigFDEA);
+    if (!var_core_value_sig86D0) return Promise.resolve();
+    let var_core_value_sig4CD2 = var_core_value_sig86D0.getActivePageId(),
+      var_core_value_sig48CA = Array.from(this._changes["values"]()).filter(var_core_value_sig27E5 => var_core_value_sig27E5.pageId === var_core_value_sig4CD2).map(var_core_value_sig8061 => ({
+        id: var_core_value_sig8061.id,
+        kind: var_core_value_sig8061.kind,
+        objectKey: var_core_value_sig8061.elementId ? var_core_value_sigAEFB(var_core_value_sigFDEA, var_core_value_sig8061.elementId) : undefined,
+        outlineOnly: var_core_value_sig8061.kind === "delete" || !var_core_value_sig8061.elementId
+      }));
+    return this._highlightService["show"](var_core_value_sigFDEA, var_core_value_sig48CA);
+  }
+};
+J = B([z(0, var_core_value_sigE43E(var_core_value_sigBB57)), z(1, var_core_value_sigE43E(var_core_value_sig5151)), z(2, var_core_value_sigE43E(var_core_value_sig82D4)), z(3, var_core_value_sig1BD9), z(4, var_core_value_sigE43E(var_core_value_sig6201))], J);
+let Y = class extends var_core_value_sigB542 {
+  constructor(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF) {
+    let {
+      collaborationClientConfig: var_core_value_sig8889,
+      ...var_core_value_sig32F8
+    } = var_core_value_sig50AF;
+    super(var_core_value_sig32F8, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF), this._injector = var_core_value_sigA942, var_core_value_sigA621.setConfig(var_core_value_sigCF89, var_core_value_sig8889);
+  }
+  onStarting() {
+    super.onStarting(), var_core_value_sigFD0C(this._injector, [[var_core_value_sig340D, {
+      useClass: var_core_value_sigB008
+    }], [U], [J], [V]]), this._injector["get"](U), this._injector["get"](J), this._injector["get"](V);
+  }
+};
+q(Y, "pluginName", "UNIVER_BOARDS_HISTORY_VIEWER_PLUGIN"), q(Y, "packageName", L), q(Y, "version", R), q(Y, "type", var_core_value_sigB7FC.UNIVER_UNKNOWN), Y = B([var_core_value_sig237B(var_core_value_sigDBB5, var_core_value_sig7C4A, var_core_value_sig8B71), z(1, var_core_value_sigE43E(var_core_value_sigA937)), z(2, var_core_value_sig3863), z(3, var_core_value_sigC4B1)], Y);
+let X = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sig5B67, var_core_value_sig1758, var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902, var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+    super(), this._configService = var_core_value_sig5B67, this._restoreService = var_core_value_sig1758, this._adapterRegistry = var_core_value_sig4805, this._localeService = var_core_value_sigE67E, this._themeService = var_core_value_sig2902, this._collaborationController = var_core_value_sig9989, this._dataLoaderService = var_core_value_sig698E, this._univerInstanceService = var_core_value_sig2809, q(this, "_historyUniver", null), q(this, "_opening", null), q(this, "_openGeneration", 0), q(this, "_sessionDisposables", new var_core_value_sigE347()), q(this, "_container", null), q(this, "_unitId", ""), q(this, "_location", undefined);
+  }
+  open(var_core_value_sig2DAB) {
+    if (this._historyUniver) return Promise.resolve();
+    if (this._opening) return this._opening;
+    let var_core_value_sig877E = ++this._openGeneration,
+      var_core_value_sig20C8 = this._open(var_core_value_sig2DAB, var_core_value_sig877E).finally(() => {
+        this._opening === var_core_value_sig20C8 && (this._opening = null);
+      });
+    return this._opening = var_core_value_sig20C8, var_core_value_sig20C8;
+  }
+  async _open(var_core_value_sigE9A7, var_core_value_sigBECE) {
+    let var_core_value_sig1B22 = this._adapterRegistry["get"](var_core_value_sigB7FC.UNIVER_BOARD);
+    if (!var_core_value_sig1B22) throw Error("[BoardsHistoryLoaderService]: Board history adapter is not registered.");
+    let var_core_value_sig7F72 = await Promise.all([var_core_value_sig1B22.canView(var_core_value_sigE9A7), var_core_value_sig1B22.canRevert(var_core_value_sigE9A7)]).catch(var_core_value_sig4D4C => {
+      if (var_core_value_sigBECE === this._openGeneration) throw var_core_value_sig4D4C;
+      return null;
+    });
+    if (!var_core_value_sig7F72 || var_core_value_sigBECE !== this._openGeneration) return;
+    let [var_core_value_sig7B2A, var_core_value_sig06CD] = var_core_value_sig7F72;
+    if (!var_core_value_sig7B2A) throw Error("[BoardsHistoryLoaderService]:\x20The\x20current\x20user\x20cannot\x20view\x20history\x20for\x20this\x20Board.");
+    this._unitId = var_core_value_sigE9A7, this._location = var_core_value_sig1B22.captureLocation(var_core_value_sigE9A7);
+    let var_core_value_sigA5F1 = this._ensureContainer();
+    var_core_value_sigA5F1.style["display"] = "block";
+    let var_core_value_sig97A2 = this._localeService["getCurrentLocale"](),
+      var_core_value_sig07E9 = this._localeService["getLocales"](),
+      var_core_value_sig4F59 = new var_core_value_sig5E6A({
+        theme: this._themeService["getCurrentTheme"](),
+        darkMode: this._themeService["darkMode"],
+        locale: var_core_value_sig97A2,
+        locales: var_core_value_sig07E9 ? {
+          [var_core_value_sig97A2]: var_core_value_sig07E9
+        } : undefined,
+        direction: this._localeService["getDirection"](),
+        override: [[var_core_value_sig3C5B, {
+          useClass: var_core_value_sig826B
+        }]]
+      });
+    this._historyUniver = var_core_value_sig4F59, this._syncViewerServices(var_core_value_sig4F59, var_core_value_sigA5F1);
+    try {
+      this._registerChildPlugins(var_core_value_sig4F59, var_core_value_sig06CD, var_core_value_sigA5F1), var_core_value_sig4F59.createUnit(var_core_value_sigB7FC.UNIVER_BOARD, var_core_value_sigB2CE(var_core_value_sigE9A7, ""));
+    } catch (var_core_value_sigC9E0) {
+      throw var_core_value_sigBECE === this._openGeneration ? this.close() : var_core_value_sig4F59.dispose(), var_core_value_sigC9E0;
+    }
+  }
+  close() {
+    ++this._openGeneration, this._opening = null, this._sessionDisposables["dispose"]();
+    let var_core_value_sigF564 = this._historyUniver;
+    this._historyUniver = null, var_core_value_sigF564 == null || var_core_value_sigF564.dispose(), this._unitId = "", this._location = undefined, this._container && (this._container["style"].display = "none");
+  }
+  _syncViewerServices(var_core_value_sig8CFA, var_core_value_sig2E11) {
+    let var_core_value_sig5B69 = var_core_value_sig8CFA.__getInjector(),
+      var_core_value_sigB098 = var_core_value_sig5B69.get(var_core_value_sigCAD5),
+      var_core_value_sigCE71 = var_core_value_sig5B69.get(var_core_value_sig48DD);
+    this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(var_core_value_sig76BA => {
+      var_core_value_sigCE71.setDarkMode(var_core_value_sig76BA);
+    })), this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(var_core_value_sigFBFA => {
+      var_core_value_sigCE71.setTheme(var_core_value_sigFBFA);
+    })), this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(var_core_value_sigF602 => {
+      let var_core_value_sig1BBD = this._localeService["getLocales"]();
+      var_core_value_sig1BBD && var_core_value_sigB098.load({
+        [var_core_value_sigF602]: var_core_value_sig1BBD
+      }), var_core_value_sigB098.setLocale(var_core_value_sigF602);
+    })), this._sessionDisposables["add"](this._localeService["direction$"].subscribe(var_core_value_sigF704 => {
+      var_core_value_sigB098.setDirection(var_core_value_sigF704), var_core_value_sig2E11.dir = var_core_value_sigF704, var_core_value_sig2E11.style["direction"] = var_core_value_sigF704;
+    }));
+  }
+  async restore(var_core_value_sig21D8) {
+    var var_core_value_sig2B65;
+    let var_core_value_sigD7EA = this._unitId,
+      var_core_value_sigB33B = this._location,
+      var_core_value_sig24B9 = this._collaborationController["getCollabEntity"](var_core_value_sigD7EA);
+    if (!var_core_value_sig24B9) throw Error("[BoardsHistoryLoaderService]: Collaboration is not ready for this Board.");
+    let var_core_value_sigE627 = new var_core_value_sigBDF5(),
+      var_core_value_sigEF3E = var_core_value_sig1614(var_core_value_sig24B9.session["event$"].pipe(var_core_value_sigACC6(var_core_value_sig2BCF => var_core_value_sig2BCF.eventID === var_core_value_sig6774.CHANGESET_ACK), var_core_value_sigACC6(var_core_value_sig0D69 => var_core_value_sig011D(var_core_value_sig0D69, var_core_value_sig21D8)), var_core_value_sig85C3(var_core_value_sigE627), var_core_value_sigB996(10000)));
+    try {
+      if (!(await this._restoreService["restore"](var_core_value_sigD7EA, var_core_value_sigB7FC.UNIVER_BOARD, var_core_value_sig21D8))) throw Error("[BoardsHistoryLoaderService]: The restore command was not accepted.");
+      await var_core_value_sigEF3E;
+    } catch (var_core_value_sig480E) {
+      throw var_core_value_sigE627.next(), await var_core_value_sigEF3E.catch(() => undefined), var_core_value_sig480E;
+    } finally {
+      var_core_value_sigE627.complete();
+    }
+    this.close(), this._univerInstanceService["disposeUnit"](var_core_value_sigD7EA), await this._dataLoaderService["loadUnit"](var_core_value_sigD7EA, var_core_value_sigB7FC.UNIVER_BOARD), await ((var_core_value_sig2B65 = this._adapterRegistry["get"](var_core_value_sigB7FC.UNIVER_BOARD)) == null ? undefined : var_core_value_sig2B65.restoreLocation(var_core_value_sigD7EA, var_core_value_sigB33B));
+  }
+  _ensureContainer() {
+    var var_core_value_sig273D;
+    if (this._container) return this._container;
+    let var_core_value_sig9A0D = this._configService["getConfig"](F),
+      var_core_value_sigA319 = (var_core_value_sig9A0D == null ? undefined : var_core_value_sig9A0D.univerContainerId) ?? ((var_core_value_sig273D = this._configService["getConfig"](var_core_value_sig104C)) == null ? undefined : var_core_value_sig273D.container),
+      var_core_value_sig2D58 = typeof var_core_value_sigA319 == "string" ? document.getElementById(var_core_value_sigA319) : var_core_value_sigA319;
+    if (!var_core_value_sig2D58) throw Error("[BoardsHistoryLoaderService]: Configure a valid Univer container before opening history.");
+    let var_core_value_sig223F = document.createElement("div");
+    return Object.assign(var_core_value_sig223F.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "49",
+      display: "none"
+    }), var_core_value_sig2D58.appendChild(var_core_value_sig223F), this._container = var_core_value_sig223F, var_core_value_sig223F;
+  }
+  _registerChildPlugins(var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sig58C1) {
+    let var_core_value_sig5090 = this._configService["getConfig"](var_core_value_sig08BA),
+      var_core_value_sigC368 = this._configService["getConfig"](F),
+      var_core_value_sigAD56 = [[var_core_value_sigDBB5, {
+        license: var_core_value_sig5090 == null ? undefined : var_core_value_sig5090.ls
+      }], [var_core_value_sig7E32], [var_core_value_sig841D, {
+        container: var_core_value_sig58C1,
+        header: true,
+        toolbar: false,
+        footer: true,
+        contextMenu: false
+      }], [var_core_value_sig4C07], [var_core_value_sig652C, {
+        override: [[var_core_value_sigC97C, {
+          useClass: var_core_value_sig77EE
+        }]]
+      }], [var_core_value_sig7F19], [var_core_value_sig7827], [var_core_value_sig7DF1], [var_core_value_sigDC86], [var_core_value_sig6167], [var_core_value_sig65A1], [var_core_value_sigCB82], [var_core_value_sig8B71, {
+        showToolbar: false,
+        workbench: {
+          content: false
+        }
+      }], [var_core_value_sig210D], [var_core_value_sig63F3], [var_core_value_sigC786], [var_core_value_sig548A], [var_core_value_sig85B1], [var_core_value_sig2EAD], [var_core_value_sigBDE4], [var_core_value_sigBBEE, {
+        historyServerUrl: var_core_value_sigC368 == null ? undefined : var_core_value_sigC368.historyServerUrl
+      }], [var_core_value_sig7C4A]],
+      var_core_value_sigDB4A = new Set();
+    [...var_core_value_sigAD56, ...((var_core_value_sigC368 == null ? undefined : var_core_value_sigC368.viewerPlugins) ?? [])].forEach(([var_core_value_sig26DB, var_core_value_sigF0F9]) => {
+      if (var_core_value_sigDB4A.has(var_core_value_sig26DB.pluginName)) throw Error("[BoardsHistoryLoaderService]: Plugin " + var_core_value_sig26DB.pluginName + " has already been registered.");
+      var_core_value_sigDB4A.add(var_core_value_sig26DB.pluginName), var_core_value_sigD749.registerPlugin(var_core_value_sig26DB, var_core_value_sigF0F9);
+    }), var_core_value_sigD749.registerPlugin(Y, {
+      viewerMode: true,
+      descriptor: {
+        unitId: this._unitId,
+        type: var_core_value_sigB7FC.UNIVER_BOARD
+      },
+      canRestore: var_core_value_sigCFFA,
+      onClose: () => this.close(),
+      onRestore: var_core_value_sig1A0F => this.restore(var_core_value_sig1A0F),
+      collaborationClientConfig: this._configService["getConfig"](var_core_value_sigCF89)
+    });
+  }
+  dispose() {
+    var var_core_value_sig6418;
+    this.close(), (var_core_value_sig6418 = this._container) == null || var_core_value_sig6418.remove(), this._container = null, super.dispose();
+  }
+};
+X = B([z(0, var_core_value_sig3863), z(1, var_core_value_sigE43E(var_core_value_sig0B0C)), z(2, var_core_value_sigE43E(var_core_value_sigA39E)), z(3, var_core_value_sigE43E(var_core_value_sigCAD5)), z(4, var_core_value_sigE43E(var_core_value_sig48DD)), z(5, var_core_value_sigE43E(var_core_value_sig00CB)), z(6, var_core_value_sigE43E(var_core_value_sig9F76)), z(7, var_core_value_sig1BD9)], X);
+const Z = {
+  id: "boards-history-ui.operation.open",
+  type: var_core_value_sigCFAC.OPERATION,
+  handler: var_core_value_sig36F8 => {
+    let var_core_value_sig03E1 = var_core_value_sig36F8.get(var_core_value_sig1BD9).getCurrentUnitOfType(var_core_value_sigB7FC.UNIVER_BOARD);
+    return var_core_value_sig03E1 ? (var_core_value_sig36F8.get(X).open(var_core_value_sig03E1.getUnitId()).catch(var_core_value_sig1896 => {
+      var_core_value_sig36F8.get(var_core_value_sigC4B1).error("[OpenBoardsHistoryOperation]: Failed to open Board history.", var_core_value_sig1896);
+    }), true) : false;
+  }
+};
+let Q = class extends var_core_value_sigFEAB {
+  constructor(var_core_value_sig0285, var_core_value_sig777D, var_core_value_sig3F4C) {
+    super(), this.disposeWithMe(var_core_value_sig0285.registerCommand(Z)), this.disposeWithMe(var_core_value_sig777D.register({
+      id: Z.id,
+      menuItemId: Z.id,
+      group: "action",
+      order: 100,
+      icon: var_core_value_sig849B,
+      label: () => var_core_value_sig3F4C.t("boards-history-ui.menu.history"),
+      onClick: var_core_value_sigFBA4 => var_core_value_sigFBA4.executeCommand(Z.id)
+    }));
+  }
+};
+Q = B([z(0, var_core_value_sig200B), z(1, var_core_value_sigE43E(var_core_value_sigB601)), z(2, var_core_value_sigE43E(var_core_value_sigCAD5))], Q);
+let $ = class extends var_core_value_sigE503 {
+  constructor(var_core_value_sigD65A = I, var_core_value_sig5A13, var_core_value_sigF593) {
+    super(), this._config = var_core_value_sigD65A, this._injector = var_core_value_sig5A13, this._configService = var_core_value_sigF593;
+    let {
+      ...var_core_value_sig3607
+    } = var_core_value_sig9CD9({}, I, this._config);
+    this._configService["setConfig"](F, var_core_value_sig3607);
+  }
+  onStarting() {
+    var_core_value_sigFD0C(this._injector, [[X], [Q]]), this._injector["get"](Q);
+  }
+};
+q($, "pluginName", "UNIVER_BOARDS_HISTORY_UI_PLUGIN"), q($, "packageName", L), q($, "version", R), q($, "type", var_core_value_sigB7FC.UNIVER_BOARD), $ = B([var_core_value_sig237B(var_core_value_sigDBB5, var_core_value_sig8721, var_core_value_sig7C4A, var_core_value_sig8B71), z(1, var_core_value_sigE43E(var_core_value_sigA937)), z(2, var_core_value_sig3863)], $);
+export { F as BOARDS_HISTORY_UI_PLUGIN_CONFIG_KEY, $ as UniverBoardsHistoryUIPlugin };

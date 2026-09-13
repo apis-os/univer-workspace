@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Hoch",
       rowHeightExtraTall: "Sehr hoch",
       conditionalColoring: "Bedingte Farbgebung",
-      conditionalColoringHelp:
-        "Klicken\x20Sie\x20auf\x20\x22Neue\x20Bedingung\x22,\x20um\x20Farben\x20anhand\x20definierter\x20Bedingungen\x20anzuwenden.\x20Bitte\x20beachten\x20Sie,\x20dass\x20weiter\x20oben\x20stehende\x20Bedingungen\x20Vorrang\x20haben.",
+      conditionalColoringHelp: "Klicken\x20Sie\x20auf\x20\x22Neue\x20Bedingung\x22,\x20um\x20Farben\x20anhand\x20definierter\x20Bedingungen\x20anzuwenden.\x20Bitte\x20beachten\x20Sie,\x20dass\x20weiter\x20oben\x20stehende\x20Bedingungen\x20Vorrang\x20haben.",
       conditionalColoringSmart: "Intelligente Farbe auf alle anwenden",
       conditionalColor: "Farbe",
       conditionalCustomColor: "Benutzerdefiniert",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "aktiviert",
       conditionalUnchecked: "deaktiviert",
       statusDoneTitle: "Der Status lautet „Fertig“.",
-      statusDoneDescription:
-        "Tragen Sie einen weichen grünen Marker auf übereinstimmende Datensätze auf.",
+      statusDoneDescription: "Tragen Sie einen weichen grünen Marker auf übereinstimmende Datensätze auf.",
       statusBlockedTitle: "Der Status lautet „Blockiert“.",
-      statusBlockedDescription:
-        "Versehen Sie blockierte Datensätze mit einer Warnmarkierung.",
+      statusBlockedDescription: "Versehen Sie blockierte Datensätze mit einer Warnmarkierung.",
       addField: "Feld hinzufügen",
       undo: "Rückgängig",
-      redo: "Wiederholen",
+      redo: "Wiederholen"
     },
     recordDetail: {
       untitledRecord: "Unbenannter Datensatz",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Nach dem Absenden weitere Datensätze hinzufügen",
       panelSize: "Panelgröße",
       fullScreen: "Vollbild",
-      exitFullScreen: "Vollbild beenden",
+      exitFullScreen: "Vollbild beenden"
     },
     recordLink: {
       searchRecords: "Datensätze suchen",
@@ -74,29 +71,22 @@ const n = {
       selectedCount: "{0} ausgewählt",
       missingRecord: "Gelöschter Datensatz",
       openRecord: "Verknüpften Datensatz öffnen",
-      back: "Zurück",
+      back: "Zurück"
     },
     hierarchy: {
-      invalidField:
-        "Wählen Sie ein einwertiges Datensatzverknüpfungsfeld, das auf diese Tabelle verweist.",
-      missingRecord:
-        "Der Datensatz oder übergeordnete Eintrag existiert nicht mehr. Aktualisieren Sie die Ansicht und versuchen Sie es erneut.",
-      selfParent:
-        "Ein Datensatz kann nicht sein eigener übergeordneter Eintrag sein.",
-      cycle:
-        "Diese\x20Verschiebung\x20würde\x20einen\x20übergeordneten\x20Zyklus\x20erzeugen.",
-      maxDepth:
-        "Diese Verschiebung würde die maximale Hierarchietiefe von fünf Ebenen überschreiten.",
-      sortedView:
-        "Entfernen Sie die Sortierung der Ansicht, bevor Sie Datensätze manuell neu anordnen.",
-      operationFailed:
-        "Die Hierarchieänderung konnte nicht angewendet werden. Aktualisieren Sie die Ansicht und versuchen Sie es erneut.",
+      invalidField: "Wählen Sie ein einwertiges Datensatzverknüpfungsfeld, das auf diese Tabelle verweist.",
+      missingRecord: "Der Datensatz oder übergeordnete Eintrag existiert nicht mehr. Aktualisieren Sie die Ansicht und versuchen Sie es erneut.",
+      selfParent: "Ein Datensatz kann nicht sein eigener übergeordneter Eintrag sein.",
+      cycle: "Diese\x20Verschiebung\x20würde\x20einen\x20übergeordneten\x20Zyklus\x20erzeugen.",
+      maxDepth: "Diese Verschiebung würde die maximale Hierarchietiefe von fünf Ebenen überschreiten.",
+      sortedView: "Entfernen Sie die Sortierung der Ansicht, bevor Sie Datensätze manuell neu anordnen.",
+      operationFailed: "Die Hierarchieänderung konnte nicht angewendet werden. Aktualisieren Sie die Ansicht und versuchen Sie es erneut.",
       parent: "Übergeordnet",
       parentFieldName: "Übergeordnete Elemente",
       children: "Unterelemente",
       viewChildren: "Unterelemente\x20anzeigen",
       root: "Stammdatensatz",
-      setParent: "Übergeordneten Eintrag festlegen",
+      setParent: "Übergeordneten Eintrag festlegen"
     },
     collaboration: {
       localStatus: "Lokaler Modus",
@@ -106,20 +96,18 @@ const n = {
       syncingStatus: "Synchronisierung",
       syncingTooltip: "Änderungen werden synchronisiert.",
       offlineStatus: "Offline",
-      offlineTooltip:
-        "Verbindung\x20verloren.\x20Klicken\x20Sie,\x20um\x20die\x20Verbindung\x20wiederherzustellen.",
+      offlineTooltip: "Verbindung\x20verloren.\x20Klicken\x20Sie,\x20um\x20die\x20Verbindung\x20wiederherzustellen.",
       conflictStatus: "Konflikt",
       conflictTooltip: "Ein Kooperationskonflikt braucht Aufmerksamkeit.",
       notCollabStatus: "Nicht kooperativ",
-      notCollabTooltip:
-        "Diese Basis befindet sich nicht im Kollaborationsmodus.",
+      notCollabTooltip: "Diese Basis befindet sich nicht im Kollaborationsmodus."
     },
     virtualRecord: {
       regrouped: "Datensatz wird neu gruppiert",
       resorted: "Datensatz wird neu sortiert",
       moved: "Datensatz wird in dieser Ansicht verschoben",
       filteredOut: "Datensatz ist in dieser Ansicht ausgeblendet",
-      "delete d": "Datensatz wurde gelöscht",
+      "delete d": "Datensatz wurde gelöscht"
     },
     gridContext: {
       insert: "Einfügen",
@@ -129,7 +117,7 @@ const n = {
       addSubRecord: "Unterdatensatz hinzufügen",
       clearContent: "Inhalt\x20löschen",
       deleteRecord: "Datensatz löschen",
-      deleteRecords: "Datensätze löschen",
+      deleteRecords: "Datensätze löschen"
     },
     common: {
       apply: "Anwenden",
@@ -144,7 +132,7 @@ const n = {
       searchClose: "Suche schließen",
       value: "Wert",
       newCondition: "Neue Bedingung",
-      newBadge: "Neu",
+      newBadge: "Neu"
     },
     footerStat: {
       none: "Keine",
@@ -163,18 +151,16 @@ const n = {
       sum: "Summe {0}",
       average: "Durchschn.\x20{0}",
       min: "Min.\x20{0}",
-      max: "Max. {0}",
+      max: "Max. {0}"
     },
     confirmDelete: {
       tableTitle: "Diese Tabelle löschen?",
-      tableDescription:
-        "Diese\x20Tabelle\x20und\x20ihre\x20Datensätze\x20werden\x20entfernt.",
-      tableReferenced:
-        "Diese Tabelle kann nicht gelöscht werden, da folgende Felder darauf verweisen: {0}.",
+      tableDescription: "Diese\x20Tabelle\x20und\x20ihre\x20Datensätze\x20werden\x20entfernt.",
+      tableReferenced: "Diese Tabelle kann nicht gelöscht werden, da folgende Felder darauf verweisen: {0}.",
       viewTitle: "Diese Ansicht löschen?",
       viewDescription: "Diese\x20Ansicht\x20wird\x20entfernt.",
       fieldTitle: "Dieses\x20Feld\x20löschen?",
-      fieldDescription: "Dieses Feld wird aus der Tabelle entfernt.",
+      fieldDescription: "Dieses Feld wird aus der Tabelle entfernt."
     },
     duplicateTable: {
       title: "Tabelle duplizieren",
@@ -183,29 +169,26 @@ const n = {
       configurationsOnly: "Nur\x20Konfigurationen",
       configurationsAndRecords: "Konfigurationen und Datensätze",
       action: "Duplizieren",
-      copyName: "{0} Kopie",
+      copyName: "{0} Kopie"
     },
     tableNameValidation: {
       required: "Geben Sie einen Tabellennamen ein.",
       tooLong: "Verwenden Sie höchstens 31 Zeichen.",
-      apostrophe:
-        "Ein\x20Tabellenname\x20darf\x20nicht\x20mit\x20einem\x20Apostroph\x20beginnen\x20oder\x20enden.",
-      invalidCharacters:
-        "Ein\x20Tabellenname\x20darf\x20:\x20\x5c\x20/\x20?\x20*\x20[\x20]\x20nicht\x20enthalten.",
+      apostrophe: "Ein\x20Tabellenname\x20darf\x20nicht\x20mit\x20einem\x20Apostroph\x20beginnen\x20oder\x20enden.",
+      invalidCharacters: "Ein\x20Tabellenname\x20darf\x20:\x20\x5c\x20/\x20?\x20*\x20[\x20]\x20nicht\x20enthalten.",
       duplicate: "Eine Tabelle mit diesem Namen ist bereits vorhanden.",
-      invalid: "Geben\x20Sie\x20einen\x20gültigen\x20Tabellennamen\x20ein.",
+      invalid: "Geben\x20Sie\x20einen\x20gültigen\x20Tabellennamen\x20ein."
     },
     clipboard: {
       recordsCopied: "{0} Datensätze kopiert",
-      attachmentsUploading: "{0} Anhänge werden hochgeladen...",
+      attachmentsUploading: "{0} Anhänge werden hochgeladen..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Zieltabelle",
       recordLinkDisplayField: "Anzeigefeld",
       recordLinkPickerFields: "Zusätzliche Auswahlfelder",
       recordLinkAllowMultiple: "Mehrere Datensätze verknüpfen",
-      recordLinkDescription:
-        "Speichert\x20stabile\x20Datensatz-IDs.\x20Verknüpfte\x20Werte\x20können\x20mit\x20Standard-Excel-Formeln\x20wie\x20XLOOKUP\x20und\x20TEXTSPLIT\x20gelesen\x20werden.",
+      recordLinkDescription: "Speichert\x20stabile\x20Datensatz-IDs.\x20Verknüpfte\x20Werte\x20können\x20mit\x20Standard-Excel-Formeln\x20wie\x20XLOOKUP\x20und\x20TEXTSPLIT\x20gelesen\x20werden.",
       fieldTitle: "Feldtitel",
       fieldTitlePlaceholder: "Feldtitel\x20eingeben",
       fieldType: "Feldtyp",
@@ -214,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Erweitert",
       defaultValue: "Standardwert",
       newField: "Neues Feld",
-      defaultSettingsReady:
-        "Dieser Feldtyp ist mit Standardeinstellungen bereit.",
+      defaultSettingsReady: "Dieser Feldtyp ist mit Standardeinstellungen bereit.",
       numberFormat: "Zahlenformat",
       currencyFormat: "Währungsformat",
       dateFormat: "Datumsformat",
@@ -261,17 +243,12 @@ const n = {
       filterByField: "Nach {0} filtern",
       createKanbanWithField: "Kanban mit {0} erstellen",
       deleteField: "Feld löschen",
-      referenceOptionsHelp:
-        "Daten aus anderen Tabellen als Optionen referenzieren",
-      allowMultipleMembers:
-        "Mehrere\x20Mitglieder\x20in\x20einem\x20Datensatz\x20erlauben",
+      referenceOptionsHelp: "Daten aus anderen Tabellen als Optionen referenzieren",
+      allowMultipleMembers: "Mehrere\x20Mitglieder\x20in\x20einem\x20Datensatz\x20erlauben",
       allowMultipleGroups: "Mehrere Gruppen in einem Datensatz erlauben",
-      defaultProviderMock:
-        "Der Standardwert wird aus {0} simulierten {1}-Element{2} ermittelt.",
-      defaultProviderExternal:
-        "Der Standardwert wird aus dem externen Univer-{0}-Anbieter ermittelt.",
-      linkPlaceholder:
-        "URL\x20eingeben\x20(z.\x20B.\x20univer.ai\x20oder\x20https://univer.ai/skills).",
+      defaultProviderMock: "Der Standardwert wird aus {0} simulierten {1}-Element{2} ermittelt.",
+      defaultProviderExternal: "Der Standardwert wird aus dem externen Univer-{0}-Anbieter ermittelt.",
+      linkPlaceholder: "URL\x20eingeben\x20(z.\x20B.\x20univer.ai\x20oder\x20https://univer.ai/skills).",
       phonePlaceholder: "Telefonnummer eingeben",
       currencySymbol: "Währungssymbol",
       thousandsSeparator: "Tausendertrennzeichen",
@@ -295,8 +272,7 @@ const n = {
       targetValue: "Zielwert",
       searchGroups: "Gruppen\x20suchen",
       selectGroups: "Gruppen\x20auswählen",
-      noProviderGroupData:
-        "Keine\x20Gruppendaten\x20vom\x20Anbieter\x20verfügbar",
+      noProviderGroupData: "Keine\x20Gruppendaten\x20vom\x20Anbieter\x20verfügbar",
       noMatchingGroups: "Keine passenden Gruppen.",
       searchMembers: "Mitglieder suchen",
       selectMembers: "Mitglieder auswählen",
@@ -305,10 +281,8 @@ const n = {
       noFormulaConfigured: "Keine Formel konfiguriert",
       editFormula: "Formel bearbeiten",
       closeFormulaEditor: "Formeleditor schließen",
-      formulaHint:
-        "Verwenden Sie Felder der aktuellen Zeile wie [@[Amount]]. A1:B10 und einzelne Zellbezüge sind nicht erlaubt.",
-      formulaReferenceError:
-        "A1-Bezüge und Bereiche werden in Base-Formeln nicht unterstützt.",
+      formulaHint: "Verwenden Sie Felder der aktuellen Zeile wie [@[Amount]]. A1:B10 und einzelne Zellbezüge sind nicht erlaubt.",
+      formulaReferenceError: "A1-Bezüge und Bereiche werden in Base-Formeln nicht unterstützt.",
       formulaTables: "Tabellen",
       formulaFields: "Felder",
       formulaFunctions: "Funktionen",
@@ -321,8 +295,7 @@ const n = {
       currentTableName: "Aktuelle Tabelle",
       currentTableField: "Feld der aktuellen Tabelle",
       fieldFromTable: "Feld aus {0}",
-      referenceCurrentField:
-        'Referenziert das Feld "{0}" in der aktuellen Base-Tabelle. Es wird für die Formel-Engine als [[#This Row],[{1}]] gespeichert.',
+      referenceCurrentField: 'Referenziert das Feld "{0}" in der aktuellen Base-Tabelle. Es wird für die Formel-Engine als [[#This Row],[{1}]] gespeichert.',
       referenceTableField: 'Referenziert das Feld "{0}" aus der Tabelle "{1}".',
       fieldNameColumn: "Name",
       fieldTypeColumn: "Typ",
@@ -338,8 +311,7 @@ const n = {
       formulaFormatPercent: "Prozent",
       formulaFormatDateTime: "Datum / Uhrzeit",
       addDescriptionPlaceholder: "Beschreibung\x20hinzufügen",
-      numberingDescription:
-        "Weist beim Erstellen eines Datensatzes automatisch einen eindeutigen, ab 1 aufsteigenden Index zu. Generierte Werte können nicht bearbeitet werden.",
+      numberingDescription: "Weist beim Erstellen eines Datensatzes automatisch einen eindeutigen, ab 1 aufsteigenden Index zu. Generierte Werte können nicht bearbeitet werden.",
       optionColor: "Optionsfarbe",
       separatorLocal: "Lokal",
       separatorCommaPeriod: "Komma, Punkt",
@@ -364,7 +336,7 @@ const n = {
       ratingIconLightning: "Blitz",
       ratingIconMedal: "Medaille",
       increment: "erhöhen",
-      decrement: "verringern",
+      decrement: "verringern"
     },
     cellEditor: {
       done: "Fertig",
@@ -380,8 +352,7 @@ const n = {
       deleteAttachment: "Anhang\x20{0}\x20löschen",
       deleteAttachmentConfirmTitle: "Diesen\x20Anhang\x20löschen?",
       deleteAttachmentsConfirmTitle: "{0}\x20Anhänge\x20löschen?",
-      deleteAttachmentConfirmDescription:
-        "Die ausgewählten Anhänge werden aus diesem Datensatz entfernt.",
+      deleteAttachmentConfirmDescription: "Die ausgewählten Anhänge werden aus diesem Datensatz entfernt.",
       failedToAttachFile: "Datei konnte nicht angehängt werden",
       file: "DATEI",
       invalidEmail: "Ungültige E-Mail-Adresse",
@@ -392,7 +363,7 @@ const n = {
       selectOptions: "Optionen auswählen",
       previousMonth: "Vorheriger Monat",
       nextMonth: "Nächster\x20Monat",
-      time: "Uhrzeit",
+      time: "Uhrzeit"
     },
     recordDetailField: {
       previousRecord: "Vorheriger Datensatz",
@@ -405,12 +376,11 @@ const n = {
       empty: "Leer",
       unassigned: "Nicht zugewiesen",
       editField: "{0} bearbeiten",
-      noVisibleFields: "Keine sichtbaren Felder",
+      noVisibleFields: "Keine sichtbaren Felder"
     },
     fieldMenu: {
       createSharedBaseField: "Erstellen Sie ein gemeinsames Basisfeld",
-      closeAddFieldMenu:
-        "Schließen\x20Sie\x20das\x20Menü\x20„Feld\x20hinzufügen“.",
+      closeAddFieldMenu: "Schließen\x20Sie\x20das\x20Menü\x20„Feld\x20hinzufügen“.",
       searchFieldType: "Suchfeldtyp",
       comingSoon: "Kommt bald",
       selectFieldType: "Wählen Sie einen Feldtyp aus",
@@ -437,8 +407,8 @@ const n = {
         createdBy: "Feld „Systemautor“.",
         updatedBy: "Systemmodifikatorfeld",
         createdAt: "Vom System erstellte Zeit",
-        updatedAt: "Systemaktualisierungszeit",
-      },
+        updatedAt: "Systemaktualisierungszeit"
+      }
     },
     fieldTypes: {
       text: "Text",
@@ -462,7 +432,7 @@ const n = {
       createdBy: "Erstellt\x20von",
       updatedBy: "Geändert von",
       createdAt: "Erstellungsdatum",
-      updatedAt: "Datum\x20der\x20letzten\x20Änderung",
+      updatedAt: "Datum\x20der\x20letzten\x20Änderung"
     },
     viewMenus: {
       customizeKanban: "Kanban anpassen",
@@ -500,13 +470,11 @@ const n = {
       addCondition: "Bedingung hinzufügen",
       calculateWorkingDaysOnly: "Nur\x20Arbeitstage\x20berechnen",
       customWorkingDays: "Benutzerdefinierte Arbeitstage",
-      customWorkingDaysHelp:
-        "Passen Sie Arbeitstage und freie Tage für diese Gantt-Ansicht an. Wenn nicht festgelegt, wird Montag bis Freitag verwendet, wenn die Arbeitstagsberechnung aktiviert ist.",
+      customWorkingDaysHelp: "Passen Sie Arbeitstage und freie Tage für diese Gantt-Ansicht an. Wenn nicht festgelegt, wird Montag bis Freitag verwendet, wenn die Arbeitstagsberechnung aktiviert ist.",
       notSet: "Nicht festgelegt",
       settings: "Einstellungen",
       setWorkingDays: "Arbeitstage festlegen",
-      setWorkingDaysDescription:
-        "Arbeitstage\x20und\x20freie\x20Tage\x20anpassen\x20und\x20auf\x20die\x20aktuelle\x20Base\x20anwenden",
+      setWorkingDaysDescription: "Arbeitstage\x20und\x20freie\x20Tage\x20anpassen\x20und\x20auf\x20die\x20aktuelle\x20Base\x20anwenden",
       closeWorkingDaysSettings: "Arbeitstageinstellungen schließen",
       addWorkingDays: "Arbeitstage hinzufügen",
       holidayName: "Feiertagsname",
@@ -515,8 +483,7 @@ const n = {
       add: "Hinzufügen",
       removeWorkingDayException: "Arbeitstag-Ausnahme entfernen",
       legalWorkingDays: "Gesetzliche Arbeitstage",
-      legalWorkingDaysHelp:
-        "Gesetzliche\x20Arbeitstage\x20sind\x20verfügbar,\x20nachdem\x20eine\x20externe\x20Kalender-API\x20verbunden\x20wurde.",
+      legalWorkingDaysHelp: "Gesetzliche\x20Arbeitstage\x20sind\x20verfügbar,\x20nachdem\x20eine\x20externe\x20Kalender-API\x20verbunden\x20wurde.",
       mon: "Mo",
       tue: "Di",
       wed: "Mi",
@@ -533,7 +500,7 @@ const n = {
       groupByFieldFallback: "Nach Feld gruppieren",
       kanbanGroup: "Kanban-Gruppe",
       required: "Erforderlich",
-      kanbanGroupHelp: "Kanban-Ansichten verwenden immer ein Gruppenfeld.",
+      kanbanGroupHelp: "Kanban-Ansichten verwenden immer ein Gruppenfeld."
     },
     operators: {
       is: "ist",
@@ -545,7 +512,7 @@ const n = {
       greaterThan: "größer\x20als",
       lessThan: "kleiner als",
       before: "ist vor",
-      after: "ist\x20nach",
+      after: "ist\x20nach"
     },
     viewSettings: {
       title: "Ansichtseinstellungen",
@@ -554,8 +521,7 @@ const n = {
       scrollLeft: "Ansichten nach links scrollen",
       scrollRight: "Ansichten nach rechts scrollen",
       createViewTitle: "Ansicht erstellen",
-      createViewDescription:
-        "Wählen\x20Sie,\x20wie\x20diese\x20Tabelle\x20projiziert\x20werden\x20soll.",
+      createViewDescription: "Wählen\x20Sie,\x20wie\x20diese\x20Tabelle\x20projiziert\x20werden\x20soll.",
       setAsFirstTab: "Als erste Registerkarte festlegen",
       renameView: "Ansicht umbenennen",
       duplicateView: "Ansicht duplizieren",
@@ -575,9 +541,8 @@ const n = {
       ganttView: "Gantt",
       ganttViewDescription: "Zeitachse mit Start- und Enddaten.",
       galleryView: "Galerie",
-      galleryViewDescription:
-        "Visuelle\x20Karten\x20zum\x20Durchsuchen\x20von\x20Datensätzen.",
-      copySuffix: "Kopie",
+      galleryViewDescription: "Visuelle\x20Karten\x20zum\x20Durchsuchen\x20von\x20Datensätzen.",
+      copySuffix: "Kopie"
     },
     tableSidebar: {
       searchTables: "Tabellen\x20suchen",
@@ -590,9 +555,12 @@ const n = {
       renameTable: "Tabelle\x20umbenennen",
       duplicateTable: "Tabelle duplizieren",
       deleteTable: "Tabelle löschen",
-      defaultTableName: "Tabelle\x20{0}",
+      defaultTableName: "Tabelle\x20{0}"
     },
-    footer: { record: "Datensatz", records: "Datensätze" },
+    footer: {
+      record: "Datensatz",
+      records: "Datensätze"
+    },
     canvas: {
       addRecord: "Datensatz hinzufügen",
       attachmentDropLabel: "Dateien zu diesem Datensatz hinzufügen",
@@ -605,12 +573,12 @@ const n = {
       quarter: "Quartal",
       today: "Heute",
       week: "Woche",
-      year: "Jahr",
+      year: "Jahr"
     },
     empty: {
       value: "Leer",
       noRecords: "Keine Datensätze",
-      invalidView: "Diese Ansicht muss konfiguriert werden",
+      invalidView: "Diese Ansicht muss konfiguriert werden"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -628,19 +596,17 @@ const n = {
         engineering: "Technik",
         financial: "Finanzen",
         lookup: "Suche und Verweis",
-        web: "Web",
+        web: "Web"
       },
       generic: {
         engineAbstract: "{0}-Formel-Engine-Funktion",
-        engineDescription:
-          "{0}\x20wird\x20von\x20der\x20Univer-Formel-Engine\x20bereitgestellt.\x20Base\x20unterstützt\x20Feldbezüge\x20wie\x20TableName[[#This\x20Row],[Field]]\x20und\x20OtherTable[Field],\x20aber\x20keine\x20A1-Zellen,\x20A1:B10-Bereiche\x20oder\x20überlaufende\x20Array-Ausgaben\x20in\x20Base-Formelfeldern.",
+        engineDescription: "{0}\x20wird\x20von\x20der\x20Univer-Formel-Engine\x20bereitgestellt.\x20Base\x20unterstützt\x20Feldbezüge\x20wie\x20TableName[[#This\x20Row],[Field]]\x20und\x20OtherTable[Field],\x20aber\x20keine\x20A1-Zellen,\x20A1:B10-Bereiche\x20oder\x20überlaufende\x20Array-Ausgaben\x20in\x20Base-Formelfeldern.",
         argument: {
           name: "Argument",
-          detail:
-            "Ein Wert, Feldbezug, Tabellenfeldbezug oder Ausdruck, der von der Univer-Formel-Engine unterstützt wird.",
-        },
-      },
-    },
-  },
+          detail: "Ein Wert, Feldbezug, Tabellenfeldbezug oder Ausdruck, der von der Univer-Formel-Engine unterstützt wird."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

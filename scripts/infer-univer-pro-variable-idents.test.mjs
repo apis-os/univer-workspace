@@ -9,7 +9,8 @@ import {
   inferStatementLikePieces,
   splitHugeModule,
   statementLikeCutOffsets,
-  uniqueifyCollidingInferredNames
+  uniqueifyCollidingInferredNames,
+  renameLeftoverCrypticTokens
 } from "./infer-univer-pro-variable-idents.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -219,6 +220,30 @@ test("infers complete inner cryptic functions when the parent IIFE does not pars
   assert.ok(inferred >= 1, "inner function v18468 must infer");
   assert.match(src, /"keep"/);
   assert.doesNotMatch(src, /\bv18467\b/);
+});
+
+test("token-renames leftover after a regex literal that contains quotes", () => {
+  const original =
+    'var hd=/([&<>"\'])/g;function v18356(v18354){return v18356+"keep";}\n' +
+    "export { host as publicApi };\n";
+  const { src, renamed } = renameLeftoverCrypticTokens(original, "vendor/univer-pro/engine-chart/lib/es/index.js");
+  assert.ok(renamed >= 1);
+  assert.doesNotMatch(src, /function v18356/);
+  assert.doesNotMatch(src, /\(v18354\)/);
+  assert.match(src, /"keep"/);
+  assert.match(src, /as publicApi/);
+});
+
+test("token-renames leftover cryptic identifiers but keeps string leftovers and Comb keys", () => {
+  const original =
+    "function host(v18482){ v18482.prototype.x = 1; return v18482 + \"v18482\"; }\n" +
+    "export { host as publicApi };\n";
+  const { src, renamed } = renameLeftoverCrypticTokens(original, "vendor/univer-pro/engine-chart/lib/es/index.js");
+  assert.ok(renamed >= 1);
+  assert.doesNotMatch(src, /host\(v18482\)/);
+  assert.doesNotMatch(src, /return v18482 /);
+  assert.match(src, /"v18482"/);
+  assert.match(src, /as publicApi/);
 });
 
 test("unique-ifies colliding inferred const names so leftover bindings can parse", () => {

@@ -1,9 +1,23 @@
-import{BooleanNumber,CommandType,DOC_RANGE_TYPE,DashStyleType,DataStreamTreeTokenType,DependentOn,Disposable,DocumentFlavor,ICommandService,IConfigService,IResourceManagerService,IUniverInstanceService,Inject,Injector,JSONX,ObjectRelativeFromH,ObjectRelativeFromV,Plugin,TableAlignmentType,TableRowHeightRule,TableSizeType,TableTextWrapType,TextX,Tools,UniverInstanceType,containsInteriorInsertionOffset,createParagraphId,createSectionId,generateRandomId,getBlockRangeInterval,getBodySliceForTextXAction,getCustomBlockIdsInSelections,getParagraphContentStartOffset,getTableCellTokenInterval,getTableRangeInterval,getTableRowTokenInterval,merge}from"@univerjs/core";
-import{DocHistoryAction,DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin,getContentInsertRange}from"@univerjs/docs";
-import{Subject}from"rxjs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, CommandType, DOC_RANGE_TYPE, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentFlavor, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getCustomBlockIdsInSelections, getParagraphContentStartOffset, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, merge } from "@univerjs/core";
+import { DocHistoryAction, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { A, E, O, Xe, ze } from "./internal-core-endo.js";
 import { Me } from "./docs-table-unmerge-cells.js";
-function Fe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009=E(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.documentData,{cloneBody:false,tableIds:[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.tableId]}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010=Xe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.tableId),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011=O(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012=ze(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011.startRow,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011.startColumn);if(!Me(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.documentData,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.tableId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011)||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012)throw Error("[DocsTable]:\x20Cannot\x20unmerge\x20an\x20unmerged\x20cell.");return A(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193=>{delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193.rowSpan,delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193.columnSpan;}),{nextDocumentData:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009,range:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012};}
-
+function Fe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009 = E(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.documentData, {
+      cloneBody: false,
+      tableIds: [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.tableId]
+    }),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010 = Xe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.tableId),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011 = O(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008),
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012 = ze(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011.startRow, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011.startColumn);
+  if (!Me(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.documentData, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461008.tableId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461011) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012) throw Error("[DocsTable]:\x20Cannot\x20unmerge\x20an\x20unmerged\x20cell.");
+  return A(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461010, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193 => {
+    delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193.rowSpan, delete var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193.columnSpan;
+  }), {
+    nextDocumentData: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461009,
+    range: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461012
+  };
+}
 export { Fe as buildUnmergeCellsActions };

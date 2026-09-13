@@ -5,8 +5,7 @@ const e = {
     sourceRangeLabel: "Font de dades",
     sourceRangePlaceholder: "La font de dades s'ha actualitzat",
     sourceFieldTile: "Camps\x20de\x20la\x20font\x20de\x20dades",
-    sourceFieldDescription:
-      "Arrossegueu\x20camps\x20a\x20les\x20àrees\x20de\x20sota",
+    sourceFieldDescription: "Arrossegueu\x20camps\x20a\x20les\x20àrees\x20de\x20sota",
     searchFieldPlaceholder: "Cerca camps",
     noMatchingFields: "No hi ha camps coincidents",
     filter: "Filtre",
@@ -33,8 +32,7 @@ const e = {
       percentOfGrandTotal: "% del total general",
       percentOfRowTotal: "% del total de fila",
       percentOfColumnTotal: "% del total de columna",
-      percentOfParentRowTotal:
-        "%\x20del\x20total\x20de\x20la\x20fila\x20principal",
+      percentOfParentRowTotal: "%\x20del\x20total\x20de\x20la\x20fila\x20principal",
       percentOfParentColumnTotal: "% del total de la columna principal",
       index: "Índex",
       percentOfParent: "%\x20del\x20total\x20principal",
@@ -52,7 +50,7 @@ const e = {
       next: "Següent",
       other: "Altre",
       ok: "D’acord",
-      cancel: "Cancel·la",
+      cancel: "Cancel·la"
     },
     valueFilter: {
       title: "Filtres de valors",
@@ -74,7 +72,7 @@ const e = {
       bottomPercent: "Percentatge inferior",
       clear: "Esborra el filtre",
       ok: "D’acord",
-      cancel: "Cancel·la",
+      cancel: "Cancel·la"
     },
     dateGroup: {
       title: "Agrupaci? de dates",
@@ -88,7 +86,7 @@ const e = {
       date: "Dia",
       hour: "Hora",
       minute: "Minut",
-      hourMinute: "Hora-Minut",
+      hourMinute: "Hora-Minut"
     },
     dialog: {
       fieldName: "Nom del camp",
@@ -104,7 +102,7 @@ const e = {
         clearFilter: "Esborrar filtre",
         blank: "(En blanc)",
         cancel: "Cancel·lar",
-        confirm: "D\x27acord",
+        confirm: "D\x27acord"
       },
       numfmt: {
         general: "General",
@@ -116,20 +114,15 @@ const e = {
         formatTypes: "Tipus\x20de\x20format",
         confirm: "D'acord",
         cancel: "Cancel·lar",
-        generalDesc:
-          "El format general no conté cap format de nombre específic.",
-        accountingDesc:
-          "El\x20format\x20de\x20nombre\x20comptable\x20alinea\x20els\x20símbols\x20de\x20moneda\x20i\x20els\x20punts\x20decimals\x20en\x20una\x20columna.",
-        currencyDesc:
-          "El format de moneda s'utilitza per a valors monetaris generals, el format comptable alinea els punts decimals en una columna de valors.",
-        dateDesc:
-          "El\x20format\x20de\x20data\x20mostra\x20els\x20números\x20de\x20sèrie\x20de\x20data\x20i\x20hora\x20com\x20a\x20valors\x20de\x20data.",
-        thousandthPercentileDesc:
-          "El format de percentil mil·lèsima s'utilitza per a nombres generals, els formats de moneda i comptable proporcionen formats especialitzats per a valors monetaris.",
+        generalDesc: "El format general no conté cap format de nombre específic.",
+        accountingDesc: "El\x20format\x20de\x20nombre\x20comptable\x20alinea\x20els\x20símbols\x20de\x20moneda\x20i\x20els\x20punts\x20decimals\x20en\x20una\x20columna.",
+        currencyDesc: "El format de moneda s'utilitza per a valors monetaris generals, el format comptable alinea els punts decimals en una columna de valors.",
+        dateDesc: "El\x20format\x20de\x20data\x20mostra\x20els\x20números\x20de\x20sèrie\x20de\x20data\x20i\x20hora\x20com\x20a\x20valors\x20de\x20data.",
+        thousandthPercentileDesc: "El format de percentil mil·lèsima s'utilitza per a nombres generals, els formats de moneda i comptable proporcionen formats especialitzats per a valors monetaris.",
         decimalPlaces: "Decimals",
         currencyTypes: "Tipus de moneda",
         negativeNumberTypes: "Tipus\x20de\x20nombres\x20negatius",
-        dateTypes: "Tipus de data",
+        dateTypes: "Tipus de data"
       },
       source: {
         insertPivotTable: "Inserir\x20taula\x20dinàmica",
@@ -137,8 +130,8 @@ const e = {
         position: "Ubicació de la taula dinàmica",
         newSheet: "Full nou",
         existingSheet: "Full\x20existent",
-        intersect: "No pot superposar-se amb la font de dades",
-      },
+        intersect: "No pot superposar-se amb la font de dades"
+      }
     },
     subtotal: {
       average: "Mitjana",
@@ -151,7 +144,7 @@ const e = {
       stdDevp: "Desviació estàndard de població",
       sum: "Suma",
       var: "Variància",
-      varp: "Variància de població",
+      varp: "Variància de població"
     },
     subTotalText: "Subtotal",
     grandTotalText: "Total general",
@@ -177,25 +170,21 @@ const e = {
       layoutCompact: "Format compacte",
       layoutOutline: "Format d'esquema",
       repeatRowLabels: "Repetir\x20etiquetes\x20de\x20fila",
-      repeatColLabels: "Repetir\x20etiquetes\x20de\x20columna",
+      repeatColLabels: "Repetir\x20etiquetes\x20de\x20columna"
     },
     perform: {
       tips: "Consells",
       info: "Ja hi ha dades a l'àrea de destinació. Aquesta acció sobreescriurà les dades existents. Voleu continuar?",
       confirm: "Confirmar",
       cancel: "Cancel·lar",
-      rowColError:
-        "Aquest canvi no es pot fer a les cel·les seleccionades perquè afectaria la taula dinàmica. Utilitzeu la llista de camps per modificar l'informe. Si intenteu inserir o eliminar cel·les, moveu la taula dinàmica i torneu-ho a provar.",
+      rowColError: "Aquest canvi no es pot fer a les cel·les seleccionades perquè afectaria la taula dinàmica. Utilitzeu la llista de camps per modificar l'informe. Si intenteu inserir o eliminar cel·les, moveu la taula dinàmica i torneu-ho a provar."
     },
     msg: {
       emptySourceRange: "L'interval de la font de dades està buit",
-      invalidSize:
-        "L\x27interval\x20de\x20la\x20font\x20de\x20dades\x20no\x20és\x20vàlid",
-      mergeCellError:
-        "No es poden inserir cel·les fusionades en una taula dinàmica",
+      invalidSize: "L\x27interval\x20de\x20la\x20font\x20de\x20dades\x20no\x20és\x20vàlid",
+      mergeCellError: "No es poden inserir cel·les fusionades en una taula dinàmica",
       editCellError: "No es poden editar cel·les en una taula dinàmica",
-      permissionError:
-        "No\x20es\x20pot\x20editar\x20la\x20taula\x20dinàmica\x20en\x20un\x20full\x20protegit",
+      permissionError: "No\x20es\x20pot\x20editar\x20la\x20taula\x20dinàmica\x20en\x20un\x20full\x20protegit"
     },
     averageName: "Mitjana de ",
     countName: "Recompte\x20de\x20",
@@ -207,7 +196,7 @@ const e = {
     stdDevpName: "DesvEstP de ",
     sumName: "Suma de ",
     varName: "Var de ",
-    varpName: "VarP de ",
-  },
+    varpName: "VarP de "
+  }
 };
 module.exports = e;

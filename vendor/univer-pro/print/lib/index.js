@@ -1,1 +1,99 @@
-import{createIdentifier as v28,toDisposable as v29}from"@univerjs/core";let n=function(v6){return v6.Portrait="Portrait",v6.Landscape="Landscape",v6;}({}),r=function(v7){return v7.Origin="Origin",v7.FitWidth="FitWidth",v7.FitHeight="FitHeight",v7.FitPage="FitPage",v7.Custom="Custom",v7;}({}),i=function(v8){return v8.Start="Start",v8.End="End",v8.Middle="Middle",v8;}({}),a=function(v9){return v9.Normal="Normal",v9.Narrow="Narrow",v9.Wide="Wide",v9.None="None",v9.Custom="Custom",v9;}({});const o={Normal:{left:53,right:53,top:56,bottom:56},Narrow:{left:19,right:19,top:56,bottom:56},Wide:{left:75,right:75,top:75,bottom:75},None:{left:0,right:0,top:0,bottom:0},Custom:{left:0,right:0,top:0,bottom:0}},s="printing-canvas-container",c="printing-canvas";function l(v10,v11,v12){let v13=v12==="Portrait"?v10:v11,v14=v12==="Portrait"?v11:v10,v15="\n ."+c+"\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20position:\x20relative;\x0a\x20\x20\x20\x20}\x0a\x20\x20\x20\x20@media\x20print\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20html\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20width:\x20fit-content;\x0a\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20body\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20overflow:\x20auto\x20!important;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20width:\x20fit-content;\x0a\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20@page\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20size:\x20"+v13+"px "+v14+"px; \n }\n @page {\n margin: 0;\n visibility: hidden;\n }\n body > * {\n display: none!important;\n }\n ."+s+" {\n display: block!important;\n height: fit-content;\n overflow: visible;\n top: 0;\n width: fit-content;\n }\n ."+s+" * {\n display: block!important;\n }\n ."+c+"\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20page-break-after:\x20always!important;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20height:\x20"+v14+"px;\n width: "+v13+"px;\n position: relative;\n }\n }",v16=document.createElement("style");return v16.innerHTML=v15,v16.className="offline-printing-css",v16;}function u(v17){"@babel/helpers - typeof";return u=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v2){return typeof v2;}:function(v3){return v3&&typeof Symbol=="function"&&v3.constructor===Symbol&&v3!==Symbol.prototype?"symbol":typeof v3;},u(v17);}function d(v18,v19){if(u(v18)!="object"||!v18)return v18;var v20=v18[Symbol.toPrimitive];if(v20!==undefined){var v21=v20.call(v18,v19||"default");if(u(v21)!="object")return v21;throw TypeError("@@toPrimitive must return a primitive value.");}return(v19==="string"?String:Number)(v18);}function f(v22){var v23=ox3ee768,v24=d(v22,v23(538));return u(v24)=="symbol"?v24:v24+"";}function p(v25,v26,v27){return(v26=f(v26))in v25?Object.defineProperty(v25,v26,{value:v27,enumerable:true,configurable:true,writable:true}):v25[v26]=v27,v25;}const m=v28("pro.print-preparation.service");var h=class{constructor(){p(this,"_contributions",new Set());}registerContribution(v4){return this._contributions["add"](v4),v29(()=>this._contributions["delete"](v4));}async prepare(v5){await Promise.all(Array.from(this._contributions,v1=>v1.prepare(v5)));}};export{m as IPrintPreparationService,c as PRINT_CANVAS_CLASS,s as PRINT_CONTAINER_CLASS,o as PaperMarginMap,i as PrintAlign,n as PrintDirection,a as PrintPaperMargin,h as PrintPreparationService,r as PrintScale,l as createPrintStyle};
+import { createIdentifier as var_core_value_sigF62A, toDisposable as var_core_value_sig8178 } from "@univerjs/core";
+let n = function (var_core_value_sig3D7D) {
+    return var_core_value_sig3D7D.Portrait = "Portrait", var_core_value_sig3D7D.Landscape = "Landscape", var_core_value_sig3D7D;
+  }({}),
+  r = function (var_core_value_sig27E5) {
+    return var_core_value_sig27E5.Origin = "Origin", var_core_value_sig27E5.FitWidth = "FitWidth", var_core_value_sig27E5.FitHeight = "FitHeight", var_core_value_sig27E5.FitPage = "FitPage", var_core_value_sig27E5.Custom = "Custom", var_core_value_sig27E5;
+  }({}),
+  i = function (var_core_value_sig8061) {
+    return var_core_value_sig8061.Start = "Start", var_core_value_sig8061.End = "End", var_core_value_sig8061.Middle = "Middle", var_core_value_sig8061;
+  }({}),
+  a = function (var_core_value_sig4D4C) {
+    return var_core_value_sig4D4C.Normal = "Normal", var_core_value_sig4D4C.Narrow = "Narrow", var_core_value_sig4D4C.Wide = "Wide", var_core_value_sig4D4C.None = "None", var_core_value_sig4D4C.Custom = "Custom", var_core_value_sig4D4C;
+  }({});
+const o = {
+    Normal: {
+      left: 53,
+      right: 53,
+      top: 56,
+      bottom: 56
+    },
+    Narrow: {
+      left: 19,
+      right: 19,
+      top: 56,
+      bottom: 56
+    },
+    Wide: {
+      left: 75,
+      right: 75,
+      top: 75,
+      bottom: 75
+    },
+    None: {
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0
+    },
+    Custom: {
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0
+    }
+  },
+  s = "printing-canvas-container",
+  c = "printing-canvas";
+function l(var_core_value_sigC9E0, var_core_value_sig76BA, var_core_value_sigFBFA) {
+  let var_core_value_sigF602 = var_core_value_sigFBFA === "Portrait" ? var_core_value_sigC9E0 : var_core_value_sig76BA,
+    var_core_value_sig1BBD = var_core_value_sigFBFA === "Portrait" ? var_core_value_sig76BA : var_core_value_sigC9E0,
+    var_core_value_sigF704 = "\n ." + c + "\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20position:\x20relative;\x0a\x20\x20\x20\x20}\x0a\x20\x20\x20\x20@media\x20print\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20html\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20width:\x20fit-content;\x0a\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20body\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20overflow:\x20auto\x20!important;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20width:\x20fit-content;\x0a\x20\x20\x20\x20\x20\x20\x20\x20}\x0a\x20\x20\x20\x20\x20\x20\x20\x20@page\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20size:\x20" + var_core_value_sigF602 + "px " + var_core_value_sig1BBD + "px; \n }\n @page {\n margin: 0;\n visibility: hidden;\n }\n body > * {\n display: none!important;\n }\n ." + s + " {\n display: block!important;\n height: fit-content;\n overflow: visible;\n top: 0;\n width: fit-content;\n }\n ." + s + " * {\n display: block!important;\n }\n ." + c + "\x20{\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20page-break-after:\x20always!important;\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20height:\x20" + var_core_value_sig1BBD + "px;\n width: " + var_core_value_sigF602 + "px;\n position: relative;\n }\n }",
+    var_core_value_sig2BCF = document.createElement("style");
+  return var_core_value_sig2BCF.innerHTML = var_core_value_sigF704, var_core_value_sig2BCF.className = "offline-printing-css", var_core_value_sig2BCF;
+}
+function u(var_core_value_sig0D69) {
+  "@babel/helpers - typeof";
+
+  return u = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig2AD8) {
+    return typeof var_core_value_sig2AD8;
+  } : function (var_core_value_sig2AD0) {
+    return var_core_value_sig2AD0 && typeof Symbol == "function" && var_core_value_sig2AD0.constructor === Symbol && var_core_value_sig2AD0 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig2AD0;
+  }, u(var_core_value_sig0D69);
+}
+function d(var_core_value_sig480E, var_core_value_sig26DB) {
+  if (u(var_core_value_sig480E) != "object" || !var_core_value_sig480E) return var_core_value_sig480E;
+  var var_core_value_sigF0F9 = var_core_value_sig480E[Symbol.toPrimitive];
+  if (var_core_value_sigF0F9 !== undefined) {
+    var var_core_value_sig1A0F = var_core_value_sigF0F9.call(var_core_value_sig480E, var_core_value_sig26DB || "default");
+    if (u(var_core_value_sig1A0F) != "object") return var_core_value_sig1A0F;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig26DB === "string" ? String : Number)(var_core_value_sig480E);
+}
+function f(var_core_value_sigFBA4) {
+  var var_core_value_sig4383 = ox3ee768,
+    var_core_value_sig186C = d(var_core_value_sigFBA4, var_core_value_sig4383(538));
+  return u(var_core_value_sig186C) == "symbol" ? var_core_value_sig186C : var_core_value_sig186C + "";
+}
+function p(var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig429F) {
+  return (var_core_value_sig48BD = f(var_core_value_sig48BD)) in var_core_value_sigD955 ? Object.defineProperty(var_core_value_sigD955, var_core_value_sig48BD, {
+    value: var_core_value_sig429F,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigD955[var_core_value_sig48BD] = var_core_value_sig429F, var_core_value_sigD955;
+}
+const m = var_core_value_sigF62A("pro.print-preparation.service");
+var h = class {
+  constructor() {
+    p(this, "_contributions", new Set());
+  }
+  registerContribution(var_core_value_sig3EEE) {
+    return this._contributions["add"](var_core_value_sig3EEE), var_core_value_sig8178(() => this._contributions["delete"](var_core_value_sig3EEE));
+  }
+  async prepare(var_core_value_sigBC46) {
+    await Promise.all(Array.from(this._contributions, var_core_value_sig7524 => var_core_value_sig7524.prepare(var_core_value_sigBC46)));
+  }
+};
+export { m as IPrintPreparationService, c as PRINT_CANVAS_CLASS, s as PRINT_CONTAINER_CLASS, o as PaperMarginMap, i as PrintAlign, n as PrintDirection, a as PrintPaperMargin, h as PrintPreparationService, r as PrintScale, l as createPrintStyle };

@@ -50,7 +50,7 @@ const e = {
       next: "Nächstes",
       other: "Sonstige",
       ok: "OK",
-      cancel: "Abbrechen",
+      cancel: "Abbrechen"
     },
     valueFilter: {
       title: "Wertfilter",
@@ -72,7 +72,7 @@ const e = {
       bottomPercent: "Unterste Prozent",
       clear: "Filter löschen",
       ok: "OK",
-      cancel: "Abbrechen",
+      cancel: "Abbrechen"
     },
     dateGroup: {
       title: "Datumsgruppierung",
@@ -86,7 +86,7 @@ const e = {
       date: "Tag",
       hour: "Stunde",
       minute: "Minute",
-      hourMinute: "Stunde-Minute",
+      hourMinute: "Stunde-Minute"
     },
     dialog: {
       fieldName: "Feldname",
@@ -102,7 +102,7 @@ const e = {
         clearFilter: "Filter\x20löschen",
         blank: "(Leer)",
         cancel: "Abbrechen",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "Allgemein",
@@ -114,20 +114,15 @@ const e = {
         formatTypes: "Formattypen",
         confirm: "OK",
         cancel: "Abbrechen",
-        generalDesc:
-          "Das Allgemein-Format enthält kein spezifisches Zahlenformat.",
-        accountingDesc:
-          "Das Buchhaltungsformat richtet Währungssymbole und Dezimalstellen in einer Spalte aus.",
-        currencyDesc:
-          "Das\x20Währungsformat\x20wird\x20für\x20allgemeine\x20Geldbeträge\x20verwendet,\x20das\x20Buchhaltungsformat\x20richtet\x20Dezimalstellen\x20in\x20einer\x20Wertespalte\x20aus.",
-        dateDesc:
-          "Das Datumsformat zeigt Datums- und Zeitseriennummern als Datumsangaben an.",
-        thousandthPercentileDesc:
-          "Das Tausendstel-Prozent-Format wird für allgemeine Zahlen verwendet, Währungs- und Buchhaltungsformate bieten spezialisierte Formate für Geldbeträge.",
+        generalDesc: "Das Allgemein-Format enthält kein spezifisches Zahlenformat.",
+        accountingDesc: "Das Buchhaltungsformat richtet Währungssymbole und Dezimalstellen in einer Spalte aus.",
+        currencyDesc: "Das\x20Währungsformat\x20wird\x20für\x20allgemeine\x20Geldbeträge\x20verwendet,\x20das\x20Buchhaltungsformat\x20richtet\x20Dezimalstellen\x20in\x20einer\x20Wertespalte\x20aus.",
+        dateDesc: "Das Datumsformat zeigt Datums- und Zeitseriennummern als Datumsangaben an.",
+        thousandthPercentileDesc: "Das Tausendstel-Prozent-Format wird für allgemeine Zahlen verwendet, Währungs- und Buchhaltungsformate bieten spezialisierte Formate für Geldbeträge.",
         decimalPlaces: "Dezimalstellen",
         currencyTypes: "Währungstypen",
         negativeNumberTypes: "Negative Zahlen-Typen",
-        dateTypes: "Datumstypen",
+        dateTypes: "Datumstypen"
       },
       source: {
         insertPivotTable: "Pivot-Tabelle\x20einfügen",
@@ -135,9 +130,8 @@ const e = {
         position: "Pivot-Tabellen-Position",
         newSheet: "Neues Blatt",
         existingSheet: "Bestehendes Blatt",
-        intersect:
-          "Darf\x20sich\x20nicht\x20mit\x20Quelldaten\x20überschneiden",
-      },
+        intersect: "Darf\x20sich\x20nicht\x20mit\x20Quelldaten\x20überschneiden"
+      }
     },
     subtotal: {
       average: "Mittelwert",
@@ -150,7 +144,7 @@ const e = {
       stdDevp: "Standardabweichung\x20der\x20Grundgesamtheit",
       sum: "Summe",
       var: "Varianz",
-      varp: "Varianz der Grundgesamtheit",
+      varp: "Varianz der Grundgesamtheit"
     },
     subTotalText: "Zwischensumme",
     grandTotalText: "Gesamtergebnis",
@@ -176,25 +170,21 @@ const e = {
       layoutCompact: "Kompaktformat",
       layoutOutline: "Gliederungsformat",
       repeatRowLabels: "Zeilenbeschriftungen wiederholen",
-      repeatColLabels: "Spaltenbeschriftungen wiederholen",
+      repeatColLabels: "Spaltenbeschriftungen wiederholen"
     },
     perform: {
       tips: "Hinweis",
       info: "Im Zielbereich befinden sich bereits Daten. Diese Aktion überschreibt die vorhandenen Daten. Möchten Sie fortfahren?",
       confirm: "Bestätigen",
       cancel: "Abbrechen",
-      rowColError:
-        "Diese Änderung kann für die ausgewählten Zellen nicht vorgenommen werden, da sie die Pivot-Tabelle beeinträchtigen würde. Bitte verwenden Sie die Feldliste, um den Bericht zu ändern. Wenn Sie Zellen einfügen oder löschen möchten, verschieben Sie die Pivot-Tabelle und versuchen Sie es erneut.",
+      rowColError: "Diese Änderung kann für die ausgewählten Zellen nicht vorgenommen werden, da sie die Pivot-Tabelle beeinträchtigen würde. Bitte verwenden Sie die Feldliste, um den Bericht zu ändern. Wenn Sie Zellen einfügen oder löschen möchten, verschieben Sie die Pivot-Tabelle und versuchen Sie es erneut."
     },
     msg: {
       emptySourceRange: "Datenquellenbereich ist leer",
       invalidSize: "Datenquellenbereich ist ungültig",
-      mergeCellError:
-        "Verbundene Zellen können nicht in eine Pivot-Tabelle eingefügt werden",
-      editCellError:
-        "Zellen in der Pivot-Tabelle können nicht bearbeitet werden",
-      permissionError:
-        "Pivot-Tabelle in einem geschützten Blatt kann nicht bearbeitet werden",
+      mergeCellError: "Verbundene Zellen können nicht in eine Pivot-Tabelle eingefügt werden",
+      editCellError: "Zellen in der Pivot-Tabelle können nicht bearbeitet werden",
+      permissionError: "Pivot-Tabelle in einem geschützten Blatt kann nicht bearbeitet werden"
     },
     averageName: "Mittelwert\x20von\x20",
     countName: "Anzahl von ",
@@ -206,7 +196,7 @@ const e = {
     stdDevpName: "StdDevp von ",
     sumName: "Summe\x20von\x20",
     varName: "Var von ",
-    varpName: "Varp von ",
-  },
+    varpName: "Varp von "
+  }
 };
 export { e as default };

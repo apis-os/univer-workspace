@@ -1,1 +1,74 @@
-import{FBoard as v17}from"@univerjs-pro/boards/facade";import*as v18 from"@univerjs/thread-comment";var n=class extends v17{_initialize(v5){let v6;Object.defineProperty(this,"_threadCommentService",{get:()=>v6??=v5.get(v18.ThreadCommentFacadeService)});}createElementCommentAsync(v7,v8,v9={}){if(!this._boardModel["getActivePage"]().elements[v7])throw Error('Board element "'+v7+'" was not found.');let v10=this._boardModel["getActivePageId"]();return this._threadCommentService["createCommentAsync"]({...v9,unitId:this._boardModel["getUnitId"](),subUnitId:v10,anchor:{kind:v18.ThreadCommentAnchorKind["BOARD_ELEMENT"],pageId:v10,elementId:v7},content:v8});}createPositionCommentAsync(v11,v12,v13={}){if(!Number.isFinite(v11.x)||!Number.isFinite(v11.y))throw TypeError("Board comment position must contain finite x and y values.");let v14=this._boardModel["getActivePageId"]();return this._threadCommentService["createCommentAsync"]({...v13,unitId:this._boardModel["getUnitId"](),subUnitId:v14,anchor:{kind:v18.ThreadCommentAnchorKind["BOARD_POSITION"],pageId:v14,...v11},content:v12});}getElementComments(v15){return this._threadCommentService["getComments"]({unitIds:[this._boardModel["getUnitId"]()],subUnitIds:[this._boardModel["getActivePageId"]()],anchorKinds:[v18.ThreadCommentAnchorKind["BOARD_ELEMENT"]]}).filter(v1=>{var v2;return((v2=v1.anchor)==null?undefined:v2.kind)===v18.ThreadCommentAnchorKind["BOARD_ELEMENT"]&&v1.anchor["elementId"]===v15;});}async listElementCommentsAsync(v16){return(await this._threadCommentService["listCommentsAsync"]({unitIds:[this._boardModel["getUnitId"]()],subUnitIds:[this._boardModel["getActivePageId"]()],anchorKinds:[v18.ThreadCommentAnchorKind["BOARD_ELEMENT"]]})).filter(v3=>{var v4;return((v4=v3.anchor)==null?undefined:v4.kind)===v18.ThreadCommentAnchorKind["BOARD_ELEMENT"]&&v3.anchor["elementId"]===v16;});}getComments(){return this._threadCommentService["getComments"]({unitIds:[this._boardModel["getUnitId"]()],anchorKinds:[v18.ThreadCommentAnchorKind["BOARD_ELEMENT"],v18.ThreadCommentAnchorKind["BOARD_POSITION"]]});}listCommentsAsync(){return this._threadCommentService["listCommentsAsync"]({unitIds:[this._boardModel["getUnitId"]()],anchorKinds:[v18.ThreadCommentAnchorKind["BOARD_ELEMENT"],v18.ThreadCommentAnchorKind["BOARD_POSITION"]]});}};v17.extend(n);export{n as FBoardThreadCommentMixin};
+import { FBoard as var_core_value_sig0D69 } from "@univerjs-pro/boards/facade";
+import * as var_core_value_sig480E from "@univerjs/thread-comment";
+var n = class extends var_core_value_sig0D69 {
+  _initialize(var_core_value_sigBC46) {
+    let var_core_value_sig3D7D;
+    Object.defineProperty(this, "_threadCommentService", {
+      get: () => var_core_value_sig3D7D ??= var_core_value_sigBC46.get(var_core_value_sig480E.ThreadCommentFacadeService)
+    });
+  }
+  createElementCommentAsync(var_core_value_sig27E5, var_core_value_sig8061, var_core_value_sig4D4C = {}) {
+    if (!this._boardModel["getActivePage"]().elements[var_core_value_sig27E5]) throw Error('Board element "' + var_core_value_sig27E5 + '" was not found.');
+    let var_core_value_sigC9E0 = this._boardModel["getActivePageId"]();
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_core_value_sig4D4C,
+      unitId: this._boardModel["getUnitId"](),
+      subUnitId: var_core_value_sigC9E0,
+      anchor: {
+        kind: var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_ELEMENT"],
+        pageId: var_core_value_sigC9E0,
+        elementId: var_core_value_sig27E5
+      },
+      content: var_core_value_sig8061
+    });
+  }
+  createPositionCommentAsync(var_core_value_sig76BA, var_core_value_sigFBFA, var_core_value_sigF602 = {}) {
+    if (!Number.isFinite(var_core_value_sig76BA.x) || !Number.isFinite(var_core_value_sig76BA.y)) throw TypeError("Board comment position must contain finite x and y values.");
+    let var_core_value_sig1BBD = this._boardModel["getActivePageId"]();
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_core_value_sigF602,
+      unitId: this._boardModel["getUnitId"](),
+      subUnitId: var_core_value_sig1BBD,
+      anchor: {
+        kind: var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_POSITION"],
+        pageId: var_core_value_sig1BBD,
+        ...var_core_value_sig76BA
+      },
+      content: var_core_value_sigFBFA
+    });
+  }
+  getElementComments(var_core_value_sigF704) {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      subUnitIds: [this._boardModel["getActivePageId"]()],
+      anchorKinds: [var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_ELEMENT"]]
+    }).filter(var_core_value_sig7524 => {
+      var var_core_value_sig2AD8;
+      return ((var_core_value_sig2AD8 = var_core_value_sig7524.anchor) == null ? undefined : var_core_value_sig2AD8.kind) === var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_ELEMENT"] && var_core_value_sig7524.anchor["elementId"] === var_core_value_sigF704;
+    });
+  }
+  async listElementCommentsAsync(var_core_value_sig2BCF) {
+    return (await this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      subUnitIds: [this._boardModel["getActivePageId"]()],
+      anchorKinds: [var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_ELEMENT"]]
+    })).filter(var_core_value_sig2AD0 => {
+      var var_core_value_sig3EEE;
+      return ((var_core_value_sig3EEE = var_core_value_sig2AD0.anchor) == null ? undefined : var_core_value_sig3EEE.kind) === var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_ELEMENT"] && var_core_value_sig2AD0.anchor["elementId"] === var_core_value_sig2BCF;
+    });
+  }
+  getComments() {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      anchorKinds: [var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_ELEMENT"], var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_POSITION"]]
+    });
+  }
+  listCommentsAsync() {
+    return this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      anchorKinds: [var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_ELEMENT"], var_core_value_sig480E.ThreadCommentAnchorKind["BOARD_POSITION"]]
+    });
+  }
+};
+var_core_value_sig0D69.extend(n);
+export { n as FBoardThreadCommentMixin };

@@ -50,7 +50,7 @@ const e = {
       next: "Next",
       other: "Other",
       ok: "OK",
-      cancel: "Cancel",
+      cancel: "Cancel"
     },
     valueFilter: {
       title: "Value Filters",
@@ -72,7 +72,7 @@ const e = {
       bottomPercent: "Bottom\x20Percent",
       clear: "Clear\x20Filter",
       ok: "OK",
-      cancel: "Cancel",
+      cancel: "Cancel"
     },
     dateGroup: {
       title: "Date\x20Group",
@@ -86,7 +86,7 @@ const e = {
       date: "Date",
       hour: "Hour",
       minute: "Minute",
-      hourMinute: "Hour-Minute",
+      hourMinute: "Hour-Minute"
     },
     dialog: {
       fieldName: "Field\x20Name",
@@ -102,7 +102,7 @@ const e = {
         clearFilter: "Clear Filter",
         blank: "(Blank)",
         cancel: "Cancel",
-        confirm: "OK",
+        confirm: "OK"
       },
       numfmt: {
         general: "General",
@@ -114,20 +114,15 @@ const e = {
         formatTypes: "Format Types",
         confirm: "OK",
         cancel: "Cancel",
-        generalDesc:
-          "General\x20format\x20does\x20not\x20contain\x20any\x20specific\x20number\x20format.",
-        accountingDesc:
-          "Accounting number format aligns currency symbols and decimal points in a column.",
-        currencyDesc:
-          "Currency format is used for general monetary values, accounting format aligns decimal points in a column of values.",
-        dateDesc:
-          "Date\x20format\x20displays\x20date\x20and\x20time\x20serial\x20numbers\x20as\x20date\x20values.",
-        thousandthPercentileDesc:
-          "Thousandth\x20percentile\x20format\x20is\x20used\x20for\x20general\x20numbers,\x20currency\x20and\x20accounting\x20formats\x20provide\x20specialized\x20formats\x20for\x20monetary\x20values.",
+        generalDesc: "General\x20format\x20does\x20not\x20contain\x20any\x20specific\x20number\x20format.",
+        accountingDesc: "Accounting number format aligns currency symbols and decimal points in a column.",
+        currencyDesc: "Currency format is used for general monetary values, accounting format aligns decimal points in a column of values.",
+        dateDesc: "Date\x20format\x20displays\x20date\x20and\x20time\x20serial\x20numbers\x20as\x20date\x20values.",
+        thousandthPercentileDesc: "Thousandth\x20percentile\x20format\x20is\x20used\x20for\x20general\x20numbers,\x20currency\x20and\x20accounting\x20formats\x20provide\x20specialized\x20formats\x20for\x20monetary\x20values.",
         decimalPlaces: "Decimal Places",
         currencyTypes: "Currency\x20Types",
         negativeNumberTypes: "Negative Number Types",
-        dateTypes: "Date Types",
+        dateTypes: "Date Types"
       },
       source: {
         insertPivotTable: "Insert Pivot Table",
@@ -135,8 +130,8 @@ const e = {
         position: "Pivot Table Placement",
         newSheet: "New Sheet",
         existingSheet: "Existing\x20Sheet",
-        intersect: "Cannot overlap with source data",
-      },
+        intersect: "Cannot overlap with source data"
+      }
     },
     subtotal: {
       average: "Average",
@@ -149,7 +144,7 @@ const e = {
       stdDevp: "Population Standard Deviation",
       sum: "Sum",
       var: "Variance",
-      varp: "Population Variance",
+      varp: "Population Variance"
     },
     subTotalText: "Subtotal",
     grandTotalText: "Grand\x20Total",
@@ -175,22 +170,21 @@ const e = {
       layoutCompact: "Compact\x20form",
       layoutOutline: "Outline form",
       repeatRowLabels: "Repeat\x20row\x20labels",
-      repeatColLabels: "Repeat column labels",
+      repeatColLabels: "Repeat column labels"
     },
     perform: {
       tips: "Tips",
       info: "There is already data in the target area. This action will overwrite the existing data. Do you want to continue?",
       confirm: "Confirm",
       cancel: "Cancel",
-      rowColError:
-        "This change cannot be made to the selected cells because it would affect the pivot table. Please use the field list to modify the report. If you are trying to insert or delete cells, move the pivot table and try again.",
+      rowColError: "This change cannot be made to the selected cells because it would affect the pivot table. Please use the field list to modify the report. If you are trying to insert or delete cells, move the pivot table and try again."
     },
     msg: {
       emptySourceRange: "Data\x20source\x20range\x20is\x20empty",
       invalidSize: "Data source range is invalid",
       mergeCellError: "Cannot insert merged cells into pivot table",
       editCellError: "Cannot edit cells in pivot table",
-      permissionError: "Cannot edit pivot table in a protected sheet",
+      permissionError: "Cannot edit pivot table in a protected sheet"
     },
     averageName: "Average\x20of\x20",
     countName: "Count of ",
@@ -202,7 +196,7 @@ const e = {
     stdDevpName: "StdDevp\x20of\x20",
     sumName: "Sum\x20of\x20",
     varName: "Var of ",
-    varpName: "Varp of ",
-  },
+    varpName: "Varp of "
+  }
 };
 export { e as default };

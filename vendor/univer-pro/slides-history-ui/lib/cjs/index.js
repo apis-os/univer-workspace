@@ -1,1 +1,460 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/collaboration-client"),t=require("@univerjs-pro/license"),n=require("@univerjs-pro/slides-history"),r=require("@univerjs-pro/slides-ui"),i=require("@univerjs/core"),a=require("@univerjs/icons"),o=require("@univerjs/ui"),s=require("@univerjs-pro/collaboration"),c=require("@univerjs-pro/edit-history"),l=require("@univerjs-pro/slides"),u=require("@univerjs-pro/slides-chart"),d=require("@univerjs-pro/slides-chart-ui"),f=require("@univerjs-pro/slides-table"),p=require("@univerjs-pro/slides-table-ui"),m=require("@univerjs/docs"),h=require("@univerjs/docs-ui"),g=require("@univerjs/drawing"),_=require("@univerjs/engine-render"),v=require("@univerjs/network"),y=require("rxjs"),b=require("@univerjs-pro/edit-history-ui");const x="slides-history-ui.config",S={historyServerUrl:"/universer-api/history"};var C="@univerjs-pro/slides-history-ui",w="1.0.0-insiders.20260907-70fc579";function T(v129,v130){return function(v22,v23){v130(v22,v23,v129);};}function E(v131,v132,v133,v134){var v135=arguments.length,v136=v135<3?v132:v134===null?v134=Object.getOwnPropertyDescriptor(v132,v133):v134,v137;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v136=Reflect.decorate(v131,v132,v133,v134);else{for(var v138=v131.length-1;v138>=0;v138--)(v137=v131[v138])&&(v136=(v135<3?v137(v136):v135>3?v137(v132,v133,v136):v137(v132,v133))||v136);}return v135>3&&v136&&Object.defineProperty(v132,v133,v136),v136;}let D=class extends i.Disposable{constructor(v24){super(),this.disposeWithMe(v24.register("SlidesHistoryIcon",a.HistoryIcon));}};D=E([T(0,(0,i.Inject)(o.IconManager))],D);const O=new Map([[l.SetSlideNameCommand["id"],"slides-history-ui.action.renameSlide"],[l.AddSlidePageCommand["id"],"slides-history-ui.action.insertSlide"],[l.CreateSlideByLayoutCommand["id"],"slides-history-ui.action.insertSlide"],[l.RemoveSlidePageCommand["id"],"slides-history-ui.action.deleteSlide"],[l.MoveSlidePageCommand["id"],"slides-history-ui.action.moveSlide"],[l.SetSlidePageSizeCommand["id"],"slides-history-ui.action.updatePageSize"],[l.UpdateSlidePageBackgroundCommand["id"],"slides-history-ui.action.updateBackground"],[l.SetPresentationBackgroundGraphicsCommand["id"],"slides-history-ui.action.updateBackgroundGraphics"],[l.SetSlideTransitionCommand["id"],"slides-history-ui.action.updateTransition"],[l.SetSlideSpeakerNotesCommand["id"],"slides-history-ui.action.updateSpeakerNotes"],[l.AddSlideElementCommand["id"],"slides-history-ui.action.insertObject"],[l.RemoveSlideElementCommand["id"],"slides-history-ui.action.deleteObject"],[l.UpdateSlideDrawingCommand["id"],"slides-history-ui.action.updateObject"],[l.ReorderSlideElementsCommand["id"],"slides-history-ui.action.reorderObject"],[l.SetSlideGroupMutation["id"],"slides-history-ui.action.groupObjects"],[l.CancelSlideGroupMutation["id"],"slides-history-ui.action.ungroupObjects"],[l.UpdateSlideSmartArtCommand["id"],"slides-history-ui.action.updateSmartArt"],[l.ConvertSlideSmartArtToShapesCommand["id"],"slides-history-ui.action.convertSmartArt"],[f.InsertSlideTableCommand["id"],"slides-history-ui.action.insertTable"],[f.RemoveSlideTableCommand["id"],"slides-history-ui.action.deleteTable"],[f.InsertSlideTableRowsCommand["id"],"slides-history-ui.action.insertTableRows"],[f.DeleteSlideTableRowsCommand["id"],"slides-history-ui.action.deleteTableRows"],[f.MoveSlideTableRowsCommand["id"],"slides-history-ui.action.moveTableRows"],[f.InsertSlideTableColumnsCommand["id"],"slides-history-ui.action.insertTableColumns"],[f.DeleteSlideTableColumnsCommand["id"],"slides-history-ui.action.deleteTableColumns"],[f.MoveSlideTableColumnsCommand["id"],"slides-history-ui.action.moveTableColumns"],[f.MergeSlideTableCellsCommand["id"],"slides-history-ui.action.mergeTableCells"],[f.UnmergeSlideTableCellsCommand["id"],"slides-history-ui.action.unmergeTableCells"],[f.UpdateSlideTableCommand["id"],"slides-history-ui.action.updateTable"],[u.InsertSlideChartCommand["id"],"slides-history-ui.action.insertChart"],[u.RemoveSlideChartCommand["id"],"slides-history-ui.action.deleteChart"],[u.ChangeSlideChartDataSourceCommand["id"],"slides-history-ui.action.updateChart"],[u.DuplicateSlideChartDataSourceCommand["id"],"slides-history-ui.action.updateChart"],[u.UpdateSlideChartDataSourceCommand["id"],"slides-history-ui.action.updateChart"],[u.UpdateSlideChartConfigCommand["id"],"slides-history-ui.action.updateChart"],[u.UpdateSlideChartSnapshotCommand["id"],"slides-history-ui.action.updateChart"]]),k=new Map([[l.PageElementTypeEnum["Text"],{insert:"slides-history-ui.action.insertTextBox",update:"slides-history-ui.action.updateTextBox",delete:"slides-history-ui.action.deleteTextBox"}],[l.PageElementTypeEnum["Shape"],{insert:"slides-history-ui.action.insertShape",update:"slides-history-ui.action.updateShape",delete:"slides-history-ui.action.deleteShape"}],[l.PageElementTypeEnum["Image"],{insert:"slides-history-ui.action.insertImage",update:"slides-history-ui.action.updateImage",delete:"slides-history-ui.action.deleteImage"}],[l.PageElementTypeEnum["Diagram"],{insert:"slides-history-ui.action.insertDiagram",update:"slides-history-ui.action.updateDiagram",delete:"slides-history-ui.action.deleteDiagram"}],[l.PageElementTypeEnum["Media"],{insert:"slides-history-ui.action.insertMedia",update:"slides-history-ui.action.updateMedia",delete:"slides-history-ui.action.deleteMedia"}],[l.PageElementTypeEnum["Group"],{insert:"slides-history-ui.action.insertGroup",update:"slides-history-ui.action.updateGroup",delete:"slides-history-ui.action.deleteGroup"}],[l.PageElementTypeEnum["Connector"],{insert:"slides-history-ui.action.insertConnector",update:"slides-history-ui.action.updateConnector",delete:"slides-history-ui.action.deleteConnector"}],[l.PageElementTypeEnum["Table"],{insert:"slides-history-ui.action.insertTable",update:"slides-history-ui.action.updateTable",delete:"slides-history-ui.action.deleteTable"}],[l.PageElementTypeEnum["Chart"],{insert:"slides-history-ui.action.insertChart",update:"slides-history-ui.action.updateChart",delete:"slides-history-ui.action.deleteChart"}]]),A=new Set([l.AddSlideElementCommand["id"],l.AddSlideElementMutation["id"]]),j=new Set([l.UpdateSlideDrawingCommand["id"],l.UpdateSlideElementMutation["id"]]),M=new Set([l.RemoveSlideElementCommand["id"],l.RemoveSlideElementMutation["id"]]);let N=class extends i.Disposable{constructor(v25,v26){super(),this._localeService=v26,this.disposeWithMe(v25.register(i.UniverInstanceType["UNIVER_SLIDE"],this));}resolve(v27){let v28=v27.commandIds["has"](l.SetSlideGroupMutation["id"])||v27.commandIds["has"](l.CancelSlideGroupMutation["id"])||v27.commandIds["has"](l.ConvertSlideSmartArtToShapesCommand["id"]),v29=I(v27,l.AddSlideElementMutation["id"]),v30=v28?[]:F(v27,l.AddSlideElementMutation["id"],"insert"),v31=v28||v27.commandIds["has"](l.UpdateSlideSmartArtCommand["id"])?[]:F(v27,l.UpdateSlideElementMutation["id"],"update",v29),v32=v28?[]:P(v27),v33=[...v30,...v31,...v32].map(v2=>this._localeService["t"](v2)),v34=[...v27.commandIds].flatMap(v3=>{if(v30.length>0&&A.has(v3)||v31.length>0&&j.has(v3)||v32.length>0&&M.has(v3))return[];let v4=O.get(v3);return v4?[this._localeService["t"](v4)]:[];}),v35=[...new Set([...v33,...v34])];return v35.length>0?v35:v27.commandIds["has"](l.AddSlideElementMutation["id"])?[this._localeService["t"]("slides-history-ui.action.insertObject")]:v27.commandIds["has"](l.RemoveSlideElementMutation["id"])?[this._localeService["t"]("slides-history-ui.action.deleteObject")]:v27.commandIds["has"](l.UpdateSlideElementMutation["id"])?[this._localeService["t"]("slides-history-ui.action.updateObject")]:[];}};N=E([T(0,(0,i.Inject)(b.HistoryActionSummaryService)),T(1,(0,i.Inject)(i.LocaleService))],N);function P(v139){let v140=v139.mutations["flatMap"](v36=>{var v37;if(v36.id!==l.RemoveSlideElementMutation["id"]||!R(v36.params))return[];let v38=L(v36.params["elementType"])?(v37=k.get(v36.params["elementType"]))==null?undefined:v37.delete:undefined;return v38?[v38]:[];});return[...new Set(v140)];}function F(v141,v142,v143,v144=new Set()){let v145=v141.mutations["flatMap"](v39=>v39.id!==v142||!R(v39.params)||!R(v39.params["element"])||typeof v39.params["element"].id=="string"&&v144.has(v39.params["element"].id)?[]:L(v39.params["element"].type)?[v39.params["element"].type]:[]).flatMap(v40=>{var v41;let v42=(v41=k.get(v40))==null?undefined:v41[v143];return v42?[v42]:[];});return[...new Set(v145)];}function I(v146,v147){let v148=v146.mutations["flatMap"](v43=>v43.id!==v147||!R(v43.params)||!R(v43.params["element"])?[]:typeof v43.params["element"].id=="string"?[v43.params["element"].id]:[]);return new Set(v148);}function L(v149){switch(v149){case l.PageElementTypeEnum["Placeholder"]:case l.PageElementTypeEnum["Text"]:case l.PageElementTypeEnum["Shape"]:case l.PageElementTypeEnum["Image"]:case l.PageElementTypeEnum["Chart"]:case l.PageElementTypeEnum["Table"]:case l.PageElementTypeEnum["Diagram"]:case l.PageElementTypeEnum["Media"]:case l.PageElementTypeEnum["Group"]:case l.PageElementTypeEnum["Connector"]:return true;default:return false;}}function R(v150){return typeof v150=="object"&&!!v150;}function z(v151){"@babel/helpers - typeof";return z=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v44){return typeof v44;}:function(v45){return v45&&typeof Symbol=="function"&&v45.constructor===Symbol&&v45!==Symbol.prototype?"symbol":typeof v45;},z(v151);}function B(v152,v153){if(z(v152)!="object"||!v152)return v152;var v154=v152[Symbol.toPrimitive];if(v154!==undefined){var v155=v154.call(v152,v153||"default");if(z(v155)!="object")return v155;throw TypeError("@@toPrimitive must return a primitive value.");}return(v153==="string"?String:Number)(v152);}function V(v156){var v157=B(v156,"string");return z(v157)=="symbol"?v157:v157+"";}function H(v158,v159,v160){return(v159=V(v159))in v158?Object.defineProperty(v158,v159,{value:v160,enumerable:true,configurable:true,writable:true}):v158[v159]=v160,v158;}let U=class extends i.Disposable{constructor(v46,v47,v48,v49,v50,v51){super(),this._diffService=v46,this._snapshotService=v48,this._univerInstanceService=v49,this._logService=v50,this._highlightService=v51,H(this,"type",i.UniverInstanceType["UNIVER_SLIDE"]),H(this,"_changes",new Map()),H(this,"_changesGeneration",0),H(this,"_loadGeneration",0),H(this,"_loadQueue",Promise.resolve()),H(this,"_unitId",""),H(this,"_activeSlideSubscription",null),this.disposeWithMe(v47.register(this));}loadRevision(v52,v53){let v54=++this._loadGeneration,v55=this._loadQueue["catch"](()=>undefined).then(async()=>{if(v54!==this._loadGeneration)return;this._clearActiveSlideSubscription(),this._getSlide(v52)&&this._univerInstanceService["disposeUnit"](v52);let v5=await this._snapshotService["loadSlide"](v52,v53.endRevision);if(v54!==this._loadGeneration){this._getSlide(v52)===v5&&this._univerInstanceService["disposeUnit"](v52);return;}this._bindActiveSlide(v5,v52),this._univerInstanceService["focusUnit"](v52);});return this._loadQueue=v55,v55;}async loadChanges(v56,v57){this._unitId=v56;let v58=++this._changesGeneration,v59=await this._diffService["compare"](v56,v57);v58===this._changesGeneration&&(this._changes["clear"](),v59.forEach(v6=>this._changes["set"](v6.id,v6)),await this._renderHighlights(v56));}close(){++this._changesGeneration,++this._loadGeneration,this._clearActiveSlideSubscription(),this._changes["clear"](),this._unitId&&=(this._highlightService["clear"](this._unitId),"");}_getSlide(v60){return this._univerInstanceService["getUnit"](v60,i.UniverInstanceType["UNIVER_SLIDE"])??null;}_bindActiveSlide(v61,v62){this._activeSlideSubscription=v61.pageManager["activeSlideId$"].subscribe(()=>{this._unitId===v62&&this._renderHighlights(v62).catch(v1=>{this._logService["error"]("[SlidesHistoryRenderAdapterService]: Failed to render slide history highlights.",v1);});});}_clearActiveSlideSubscription(){var v63;(v63=this._activeSlideSubscription)==null||v63.unsubscribe(),this._activeSlideSubscription=null;}_renderHighlights(v64){var v65;let v66=this._getSlide(v64),v67=v66==null||(v65=v66.pageManager["getActiveSlide"]())==null?undefined:v65.getId();if(!v67)return Promise.resolve();let v68=Array.from(this._changes["values"]()).filter(v7=>v7.slideId===v67).map(v8=>({id:v8.id,kind:v8.kind,objectKey:v8.drawingId?(0,r.buildDrawingOKey)(v64,v67,v8.drawingId):undefined,fallbackObjectKey:r.SLIDE_PAGE_RECT_KEY,outlineOnly:v8.kind==="delete"||!v8.drawingId}));return this._highlightService["show"](v64,v68);}dispose(){this.close(),super.dispose();}};U=E([T(0,(0,i.Inject)(n.SlidesHistoryDiffService)),T(1,(0,i.Inject)(b.HistoryRenderAdapterRegistryService)),T(2,(0,i.Inject)(s.SnapshotService)),T(3,i.IUniverInstanceService),T(4,i.ILogService),T(5,(0,i.Inject)(b.HistoryCanvasHighlightService))],U);let W=class extends b.UniverEditHistoryUIPlugin{constructor(v69,v70,v71,v72){let{collaborationClientConfig:v73,...v74}=v69;super(v74,v70,v71,v72),this._injector=v70,v71.setConfig(e.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY,v73);}onStarting(){super.onStarting(),(0,i.registerDependencies)(this._injector,[[s.ISnapshotServerService,{useClass:e.SnapshotServerOverHTTPService}],[N],[U]]),this._injector["get"](N),this._injector["get"](U);}};H(W,"pluginName","UNIVER_SLIDES_HISTORY_VIEWER_PLUGIN"),H(W,"packageName",C),H(W,"version",w),H(W,"type",i.UniverInstanceType["UNIVER_UNKNOWN"]),W=E([(0,i.DependentOn)(t.UniverLicensePlugin,n.UniverSlidesHistoryPlugin,r.UniverSlidesUIPlugin),T(1,(0,i.Inject)(i.Injector)),T(2,i.IConfigService),T(3,i.ILogService)],W);let G=class extends i.Disposable{constructor(v75,v76,v77,v78,v79,v80,v81,v82){super(),this._configService=v75,this._restoreService=v76,this._adapterRegistry=v77,this._localeService=v78,this._themeService=v79,this._collaborationController=v80,this._dataLoaderService=v81,this._univerInstanceService=v82,H(this,"_historyUniver",null),H(this,"_opening",null),H(this,"_openGeneration",0),H(this,"_sessionDisposables",new i["DisposableCollection"]()),H(this,"_container",null),H(this,"_unitId",""),H(this,"_location",undefined);}open(v83){if(this._historyUniver)return Promise.resolve();if(this._opening)return this._opening;let v84=++this._openGeneration,v85=this._open(v83,v84).finally(()=>{this._opening===v85&&(this._opening=null);});return this._opening=v85,v85;}async _open(v86,v87){let v88=this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_SLIDE"]);if(!v88)throw Error("[SlidesHistoryLoaderService]:\x20Slides\x20history\x20adapter\x20is\x20not\x20registered.");let v89=await Promise.all([v88.canView(v86),v88.canRevert(v86)]).catch(v9=>{if(v87===this._openGeneration)throw v9;return null;});if(!v89||v87!==this._openGeneration)return;let[v90,v91]=v89;if(!v90)throw Error("[SlidesHistoryLoaderService]: The current user cannot view history for this presentation.");this._unitId=v86,this._location=v88.captureLocation(v86);let v92=this._ensureContainer();v92.style["display"]="block";let v93=this._localeService["getCurrentLocale"](),v94=this._localeService["getLocales"](),v95=new i["Univer"]({theme:this._themeService["getCurrentTheme"](),darkMode:this._themeService["darkMode"],locale:v93,locales:v94?{[v93]:v94}:undefined,direction:this._localeService["getDirection"](),override:[[i.IAuthzIoService,{useClass:e.AuthzIoHttpService}]]});this._historyUniver=v95,this._syncViewerServices(v95,v92);try{this._registerChildPlugins(v95,v91,v92),v95.createUnit(i.UniverInstanceType["UNIVER_SLIDE"],(0,l.getSlidesEmptySnapshot)(v86));}catch(v10){throw v87===this._openGeneration?this.close():v95.dispose(),v10;}}close(){++this._openGeneration,this._opening=null,this._sessionDisposables["dispose"]();let v96=this._historyUniver;this._historyUniver=null,v96==null||v96.dispose(),this._unitId="",this._location=undefined,this._container&&(this._container["style"].display="none");}_syncViewerServices(v97,v98){let v99=v97.__getInjector(),v100=v99.get(i.LocaleService),v101=v99.get(i.ThemeService);this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(v11=>{v101.setDarkMode(v11);})),this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(v12=>{v101.setTheme(v12);})),this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(v13=>{let v14=this._localeService["getLocales"]();v14&&v100.load({[v13]:v14}),v100.setLocale(v13);})),this._sessionDisposables["add"](this._localeService["direction$"].subscribe(v15=>{v100.setDirection(v15),v98.dir=v15,v98.style["direction"]=v15;}));}async restore(v102){var v103;let v104=this._unitId,v105=this._location,v106=this._collaborationController["getCollabEntity"](v104);if(!v106)throw Error("[SlidesHistoryLoaderService]: Collaboration is not ready for this presentation.");let v107=new y["Subject"](),v108=(0,y.firstValueFrom)(v106.session["event$"].pipe((0,y.filter)(v16=>v16.eventID===s.CollaborationEvent["CHANGESET_ACK"]),(0,y.filter)(v17=>(0,c.isHistoryRestoreAcknowledgement)(v17,v102)),(0,y.takeUntil)(v107),(0,y.timeout)(10000)));try{if(!(await this._restoreService["restore"](v104,i.UniverInstanceType["UNIVER_SLIDE"],v102)))throw Error("[SlidesHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.");await v108;}catch(v18){throw v107.next(),await v108.catch(()=>undefined),v18;}finally{v107.complete();}this.close(),this._univerInstanceService["disposeUnit"](v104),await this._dataLoaderService["loadUnit"](v104,i.UniverInstanceType["UNIVER_SLIDE"]),await((v103=this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_SLIDE"]))==null?undefined:v103.restoreLocation(v104,v105));}_ensureContainer(){var v109;if(this._container)return this._container;let v110=this._configService["getConfig"](x),v111=(v110==null?undefined:v110.univerContainerId)??((v109=this._configService["getConfig"](o.UI_PLUGIN_CONFIG_KEY))==null?undefined:v109.container),v112=typeof v111=="string"?document.getElementById(v111):v111;if(!v112)throw Error("[SlidesHistoryLoaderService]:\x20Configure\x20a\x20valid\x20Univer\x20container\x20before\x20opening\x20history.");let v113=document.createElement("div");return Object.assign(v113.style,{position:"absolute",inset:"0",zIndex:"49",display:"none"}),v112.appendChild(v113),this._container=v113,v113;}_registerChildPlugins(v114,v115,v116){let v117=this._configService["getConfig"](t.LS_CONFIG_KEY),v118=this._configService["getConfig"](x),v119=[[t.UniverLicensePlugin,{license:v117==null?undefined:v117.ls}],[_.UniverRenderEnginePlugin],[o.UniverUIPlugin,{container:v116,header:true,toolbar:false,footer:true,contextMenu:false}],[v.UniverNetworkPlugin],[m.UniverDocsPlugin],[h.UniverDocsUIPlugin],[g.UniverDrawingPlugin,{override:[[i.IImageIoService,{useClass:e.CollaborationImageIoService}]]}],[l.UniverSlidesPlugin],[r.UniverSlidesUIPlugin],[u.UniverSlidesChartPlugin],[d.UniverSlidesChartUIPlugin],[f.UniverSlidesTablePlugin],[p.UniverSlidesTableUIPlugin],[s.UniverCollaborationPlugin],[c.UniverEditHistoryPlugin,{historyServerUrl:v118==null?undefined:v118.historyServerUrl}],[n.UniverSlidesHistoryPlugin]],v120=new Set();[...v119,...((v118==null?undefined:v118.viewerPlugins)??[])].forEach(([v19,v20])=>{if(v120.has(v19.pluginName))throw Error("[SlidesHistoryLoaderService]: Plugin "+v19.pluginName+" has already been registered.");v120.add(v19.pluginName),v114.registerPlugin(v19,v20);}),v114.registerPlugin(W,{viewerMode:true,descriptor:{unitId:this._unitId,type:i.UniverInstanceType["UNIVER_SLIDE"]},canRestore:v115,onClose:()=>this.close(),onRestore:v21=>this.restore(v21),collaborationClientConfig:this._configService["getConfig"](e.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY)});}dispose(){var v121;this.close(),(v121=this._container)==null||v121.remove(),this._container=null,super.dispose();}};G=E([T(0,i.IConfigService),T(1,(0,i.Inject)(c.HistoryRestoreService)),T(2,(0,i.Inject)(c.HistoryUnitAdapterRegistryService)),T(3,(0,i.Inject)(i.LocaleService)),T(4,(0,i.Inject)(i.ThemeService)),T(5,(0,i.Inject)(e.CollaborationController)),T(6,(0,i.Inject)(e.DataLoaderService)),T(7,i.IUniverInstanceService)],G);const K={id:"slides-history-ui.operation.open",type:i.CommandType["OPERATION"],handler:v161=>{let v162=v161.get(i.IUniverInstanceService).getCurrentUnitOfType(i.UniverInstanceType["UNIVER_SLIDE"]);return v162?(v161.get(G).open(v162.getUnitId()).catch(v122=>{v161.get(i.ILogService).error("[OpenSlidesHistoryOperation]:\x20Failed\x20to\x20open\x20Slides\x20history.",v122);}),true):false;}},q={[o.RibbonStartGroup["OTHERS"]]:{[K.id]:{order:100,gridLayout:{row:1,column:3,rowSpan:2,columnSpan:2,showLabel:true},menuItemFactory:J}}};function J(v163){return{id:K.id,type:o.MenuItemType["BUTTON"],icon:"SlidesHistoryIcon",title:"slides-history-ui.menu.history",tooltip:"slides-history-ui.menu.history",hidden$:(0,o.getMenuHiddenObservable)(v163,i.UniverInstanceType["UNIVER_SLIDE"])};}let Y=class extends i.Disposable{constructor(v123,v124){super(),this.disposeWithMe(v123.registerCommand(K)),v124.mergeMenu(q);}};Y=E([T(0,i.ICommandService),T(1,o.IMenuManagerService)],Y);let X=class extends i.Plugin{constructor(v125=S,v126,v127){super(),this._config=v125,this._injector=v126,this._configService=v127;let{...v128}=(0,i.merge)({},S,this._config);this._configService["setConfig"](x,v128);}onStarting(){(0,i.registerDependencies)(this._injector,[[D],[G],[Y]]),this._injector["get"](D),this._injector["get"](Y);}};H(X,"pluginName","UNIVER_SLIDES_HISTORY_UI_PLUGIN"),H(X,"packageName",C),H(X,"version",w),H(X,"type",i.UniverInstanceType["UNIVER_SLIDE"]),X=E([(0,i.DependentOn)(t.UniverLicensePlugin,e.UniverCollaborationClientPlugin,n.UniverSlidesHistoryPlugin,r.UniverSlidesUIPlugin),T(1,(0,i.Inject)(i.Injector)),T(2,i.IConfigService)],X),exports.SLIDES_HISTORY_UI_PLUGIN_CONFIG_KEY=x,Object.defineProperty(exports,"UniverSlidesHistoryUIPlugin",{enumerable:true,get:function(){return X;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/collaboration-client"),
+  t = require("@univerjs-pro/license"),
+  n = require("@univerjs-pro/slides-history"),
+  r = require("@univerjs-pro/slides-ui"),
+  i = require("@univerjs/core"),
+  a = require("@univerjs/icons"),
+  o = require("@univerjs/ui"),
+  s = require("@univerjs-pro/collaboration"),
+  c = require("@univerjs-pro/edit-history"),
+  l = require("@univerjs-pro/slides"),
+  u = require("@univerjs-pro/slides-chart"),
+  d = require("@univerjs-pro/slides-chart-ui"),
+  f = require("@univerjs-pro/slides-table"),
+  p = require("@univerjs-pro/slides-table-ui"),
+  m = require("@univerjs/docs"),
+  h = require("@univerjs/docs-ui"),
+  g = require("@univerjs/drawing"),
+  _ = require("@univerjs/engine-render"),
+  v = require("@univerjs/network"),
+  y = require("rxjs"),
+  b = require("@univerjs-pro/edit-history-ui");
+const x = "slides-history-ui.config",
+  S = {
+    historyServerUrl: "/universer-api/history"
+  };
+var C = "@univerjs-pro/slides-history-ui",
+  w = "1.0.0-insiders.20260907-70fc579";
+function T(var_core_value_sigB512, var_core_value_sigF2E6) {
+  return function (var_core_value_sigFBA4, var_core_value_sig4383) {
+    var_core_value_sigF2E6(var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sigB512);
+  };
+}
+function E(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A) {
+  var var_core_value_sig3E68 = arguments.length,
+    var_core_value_sigF4C5 = var_core_value_sig3E68 < 3 ? var_core_value_sigB744 : var_core_value_sigE68A === null ? var_core_value_sigE68A = Object.getOwnPropertyDescriptor(var_core_value_sigB744, var_core_value_sigEAE2) : var_core_value_sigE68A,
+    var_core_value_sig5410;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigF4C5 = Reflect.decorate(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A);else {
+    for (var var_core_value_sig492F = var_core_value_sig34C8.length - 1; var_core_value_sig492F >= 0; var_core_value_sig492F--) (var_core_value_sig5410 = var_core_value_sig34C8[var_core_value_sig492F]) && (var_core_value_sigF4C5 = (var_core_value_sig3E68 < 3 ? var_core_value_sig5410(var_core_value_sigF4C5) : var_core_value_sig3E68 > 3 ? var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5) : var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2)) || var_core_value_sigF4C5);
+  }
+  return var_core_value_sig3E68 > 3 && var_core_value_sigF4C5 && Object.defineProperty(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5), var_core_value_sigF4C5;
+}
+let D = class extends i.Disposable {
+  constructor(var_core_value_sig186C) {
+    super(), this.disposeWithMe(var_core_value_sig186C.register("SlidesHistoryIcon", a.HistoryIcon));
+  }
+};
+D = E([T(0, (0, i.Inject)(o.IconManager))], D);
+const O = new Map([[l.SetSlideNameCommand["id"], "slides-history-ui.action.renameSlide"], [l.AddSlidePageCommand["id"], "slides-history-ui.action.insertSlide"], [l.CreateSlideByLayoutCommand["id"], "slides-history-ui.action.insertSlide"], [l.RemoveSlidePageCommand["id"], "slides-history-ui.action.deleteSlide"], [l.MoveSlidePageCommand["id"], "slides-history-ui.action.moveSlide"], [l.SetSlidePageSizeCommand["id"], "slides-history-ui.action.updatePageSize"], [l.UpdateSlidePageBackgroundCommand["id"], "slides-history-ui.action.updateBackground"], [l.SetPresentationBackgroundGraphicsCommand["id"], "slides-history-ui.action.updateBackgroundGraphics"], [l.SetSlideTransitionCommand["id"], "slides-history-ui.action.updateTransition"], [l.SetSlideSpeakerNotesCommand["id"], "slides-history-ui.action.updateSpeakerNotes"], [l.AddSlideElementCommand["id"], "slides-history-ui.action.insertObject"], [l.RemoveSlideElementCommand["id"], "slides-history-ui.action.deleteObject"], [l.UpdateSlideDrawingCommand["id"], "slides-history-ui.action.updateObject"], [l.ReorderSlideElementsCommand["id"], "slides-history-ui.action.reorderObject"], [l.SetSlideGroupMutation["id"], "slides-history-ui.action.groupObjects"], [l.CancelSlideGroupMutation["id"], "slides-history-ui.action.ungroupObjects"], [l.UpdateSlideSmartArtCommand["id"], "slides-history-ui.action.updateSmartArt"], [l.ConvertSlideSmartArtToShapesCommand["id"], "slides-history-ui.action.convertSmartArt"], [f.InsertSlideTableCommand["id"], "slides-history-ui.action.insertTable"], [f.RemoveSlideTableCommand["id"], "slides-history-ui.action.deleteTable"], [f.InsertSlideTableRowsCommand["id"], "slides-history-ui.action.insertTableRows"], [f.DeleteSlideTableRowsCommand["id"], "slides-history-ui.action.deleteTableRows"], [f.MoveSlideTableRowsCommand["id"], "slides-history-ui.action.moveTableRows"], [f.InsertSlideTableColumnsCommand["id"], "slides-history-ui.action.insertTableColumns"], [f.DeleteSlideTableColumnsCommand["id"], "slides-history-ui.action.deleteTableColumns"], [f.MoveSlideTableColumnsCommand["id"], "slides-history-ui.action.moveTableColumns"], [f.MergeSlideTableCellsCommand["id"], "slides-history-ui.action.mergeTableCells"], [f.UnmergeSlideTableCellsCommand["id"], "slides-history-ui.action.unmergeTableCells"], [f.UpdateSlideTableCommand["id"], "slides-history-ui.action.updateTable"], [u.InsertSlideChartCommand["id"], "slides-history-ui.action.insertChart"], [u.RemoveSlideChartCommand["id"], "slides-history-ui.action.deleteChart"], [u.ChangeSlideChartDataSourceCommand["id"], "slides-history-ui.action.updateChart"], [u.DuplicateSlideChartDataSourceCommand["id"], "slides-history-ui.action.updateChart"], [u.UpdateSlideChartDataSourceCommand["id"], "slides-history-ui.action.updateChart"], [u.UpdateSlideChartConfigCommand["id"], "slides-history-ui.action.updateChart"], [u.UpdateSlideChartSnapshotCommand["id"], "slides-history-ui.action.updateChart"]]),
+  k = new Map([[l.PageElementTypeEnum["Text"], {
+    insert: "slides-history-ui.action.insertTextBox",
+    update: "slides-history-ui.action.updateTextBox",
+    delete: "slides-history-ui.action.deleteTextBox"
+  }], [l.PageElementTypeEnum["Shape"], {
+    insert: "slides-history-ui.action.insertShape",
+    update: "slides-history-ui.action.updateShape",
+    delete: "slides-history-ui.action.deleteShape"
+  }], [l.PageElementTypeEnum["Image"], {
+    insert: "slides-history-ui.action.insertImage",
+    update: "slides-history-ui.action.updateImage",
+    delete: "slides-history-ui.action.deleteImage"
+  }], [l.PageElementTypeEnum["Diagram"], {
+    insert: "slides-history-ui.action.insertDiagram",
+    update: "slides-history-ui.action.updateDiagram",
+    delete: "slides-history-ui.action.deleteDiagram"
+  }], [l.PageElementTypeEnum["Media"], {
+    insert: "slides-history-ui.action.insertMedia",
+    update: "slides-history-ui.action.updateMedia",
+    delete: "slides-history-ui.action.deleteMedia"
+  }], [l.PageElementTypeEnum["Group"], {
+    insert: "slides-history-ui.action.insertGroup",
+    update: "slides-history-ui.action.updateGroup",
+    delete: "slides-history-ui.action.deleteGroup"
+  }], [l.PageElementTypeEnum["Connector"], {
+    insert: "slides-history-ui.action.insertConnector",
+    update: "slides-history-ui.action.updateConnector",
+    delete: "slides-history-ui.action.deleteConnector"
+  }], [l.PageElementTypeEnum["Table"], {
+    insert: "slides-history-ui.action.insertTable",
+    update: "slides-history-ui.action.updateTable",
+    delete: "slides-history-ui.action.deleteTable"
+  }], [l.PageElementTypeEnum["Chart"], {
+    insert: "slides-history-ui.action.insertChart",
+    update: "slides-history-ui.action.updateChart",
+    delete: "slides-history-ui.action.deleteChart"
+  }]]),
+  A = new Set([l.AddSlideElementCommand["id"], l.AddSlideElementMutation["id"]]),
+  j = new Set([l.UpdateSlideDrawingCommand["id"], l.UpdateSlideElementMutation["id"]]),
+  M = new Set([l.RemoveSlideElementCommand["id"], l.RemoveSlideElementMutation["id"]]);
+let N = class extends i.Disposable {
+  constructor(var_core_value_sigD955, var_core_value_sig48BD) {
+    super(), this._localeService = var_core_value_sig48BD, this.disposeWithMe(var_core_value_sigD955.register(i.UniverInstanceType["UNIVER_SLIDE"], this));
+  }
+  resolve(var_core_value_sig429F) {
+    let var_core_value_sigF62A = var_core_value_sig429F.commandIds["has"](l.SetSlideGroupMutation["id"]) || var_core_value_sig429F.commandIds["has"](l.CancelSlideGroupMutation["id"]) || var_core_value_sig429F.commandIds["has"](l.ConvertSlideSmartArtToShapesCommand["id"]),
+      var_core_value_sig8178 = I(var_core_value_sig429F, l.AddSlideElementMutation["id"]),
+      var_core_value_sigE9ED = var_core_value_sigF62A ? [] : F(var_core_value_sig429F, l.AddSlideElementMutation["id"], "insert"),
+      var_core_value_sigB577 = var_core_value_sigF62A || var_core_value_sig429F.commandIds["has"](l.UpdateSlideSmartArtCommand["id"]) ? [] : F(var_core_value_sig429F, l.UpdateSlideElementMutation["id"], "update", var_core_value_sig8178),
+      var_core_value_sig9572 = var_core_value_sigF62A ? [] : P(var_core_value_sig429F),
+      var_core_value_sigD873 = [...var_core_value_sigE9ED, ...var_core_value_sigB577, ...var_core_value_sig9572].map(var_core_value_sig2AD8 => this._localeService["t"](var_core_value_sig2AD8)),
+      var_core_value_sigA12B = [...var_core_value_sig429F.commandIds].flatMap(var_core_value_sig2AD0 => {
+        if (var_core_value_sigE9ED.length > 0 && A.has(var_core_value_sig2AD0) || var_core_value_sigB577.length > 0 && j.has(var_core_value_sig2AD0) || var_core_value_sig9572.length > 0 && M.has(var_core_value_sig2AD0)) return [];
+        let var_core_value_sig3EEE = O.get(var_core_value_sig2AD0);
+        return var_core_value_sig3EEE ? [this._localeService["t"](var_core_value_sig3EEE)] : [];
+      }),
+      var_core_value_sigF230 = [...new Set([...var_core_value_sigD873, ...var_core_value_sigA12B])];
+    return var_core_value_sigF230.length > 0 ? var_core_value_sigF230 : var_core_value_sig429F.commandIds["has"](l.AddSlideElementMutation["id"]) ? [this._localeService["t"]("slides-history-ui.action.insertObject")] : var_core_value_sig429F.commandIds["has"](l.RemoveSlideElementMutation["id"]) ? [this._localeService["t"]("slides-history-ui.action.deleteObject")] : var_core_value_sig429F.commandIds["has"](l.UpdateSlideElementMutation["id"]) ? [this._localeService["t"]("slides-history-ui.action.updateObject")] : [];
+  }
+};
+N = E([T(0, (0, i.Inject)(b.HistoryActionSummaryService)), T(1, (0, i.Inject)(i.LocaleService))], N);
+function P(var_core_value_sig8EA0) {
+  let var_core_value_sigA6F6 = var_core_value_sig8EA0.mutations["flatMap"](var_core_value_sig09B8 => {
+    var var_core_value_sig6F91;
+    if (var_core_value_sig09B8.id !== l.RemoveSlideElementMutation["id"] || !R(var_core_value_sig09B8.params)) return [];
+    let var_core_value_sigF9C7 = L(var_core_value_sig09B8.params["elementType"]) ? (var_core_value_sig6F91 = k.get(var_core_value_sig09B8.params["elementType"])) == null ? undefined : var_core_value_sig6F91.delete : undefined;
+    return var_core_value_sigF9C7 ? [var_core_value_sigF9C7] : [];
+  });
+  return [...new Set(var_core_value_sigA6F6)];
+}
+function F(var_core_value_sigCDDA, var_core_value_sigE243, var_core_value_sig74A8, var_core_value_sig21B2 = new Set()) {
+  let var_core_value_sigDE08 = var_core_value_sigCDDA.mutations["flatMap"](var_core_value_sig8895 => var_core_value_sig8895.id !== var_core_value_sigE243 || !R(var_core_value_sig8895.params) || !R(var_core_value_sig8895.params["element"]) || typeof var_core_value_sig8895.params["element"].id == "string" && var_core_value_sig21B2.has(var_core_value_sig8895.params["element"].id) ? [] : L(var_core_value_sig8895.params["element"].type) ? [var_core_value_sig8895.params["element"].type] : []).flatMap(var_core_value_sigC80B => {
+    var var_core_value_sig284F;
+    let var_core_value_sigE154 = (var_core_value_sig284F = k.get(var_core_value_sigC80B)) == null ? undefined : var_core_value_sig284F[var_core_value_sig74A8];
+    return var_core_value_sigE154 ? [var_core_value_sigE154] : [];
+  });
+  return [...new Set(var_core_value_sigDE08)];
+}
+function I(var_core_value_sigACCB, var_core_value_sig7F33) {
+  let var_core_value_sig0C53 = var_core_value_sigACCB.mutations["flatMap"](var_core_value_sig4632 => var_core_value_sig4632.id !== var_core_value_sig7F33 || !R(var_core_value_sig4632.params) || !R(var_core_value_sig4632.params["element"]) ? [] : typeof var_core_value_sig4632.params["element"].id == "string" ? [var_core_value_sig4632.params["element"].id] : []);
+  return new Set(var_core_value_sig0C53);
+}
+function L(var_core_value_sigEA04) {
+  switch (var_core_value_sigEA04) {
+    case l.PageElementTypeEnum["Placeholder"]:
+    case l.PageElementTypeEnum["Text"]:
+    case l.PageElementTypeEnum["Shape"]:
+    case l.PageElementTypeEnum["Image"]:
+    case l.PageElementTypeEnum["Chart"]:
+    case l.PageElementTypeEnum["Table"]:
+    case l.PageElementTypeEnum["Diagram"]:
+    case l.PageElementTypeEnum["Media"]:
+    case l.PageElementTypeEnum["Group"]:
+    case l.PageElementTypeEnum["Connector"]:
+      return true;
+    default:
+      return false;
+  }
+}
+function R(var_core_value_sig7A62) {
+  return typeof var_core_value_sig7A62 == "object" && !!var_core_value_sig7A62;
+}
+function z(var_core_value_sig8109) {
+  "@babel/helpers - typeof";
+
+  return z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig12F2) {
+    return typeof var_core_value_sig12F2;
+  } : function (var_core_value_sig2259) {
+    return var_core_value_sig2259 && typeof Symbol == "function" && var_core_value_sig2259.constructor === Symbol && var_core_value_sig2259 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig2259;
+  }, z(var_core_value_sig8109);
+}
+function B(var_core_value_sig7565, var_core_value_sigD4FB) {
+  if (z(var_core_value_sig7565) != "object" || !var_core_value_sig7565) return var_core_value_sig7565;
+  var var_core_value_sig3E71 = var_core_value_sig7565[Symbol.toPrimitive];
+  if (var_core_value_sig3E71 !== undefined) {
+    var var_core_value_sig01B3 = var_core_value_sig3E71.call(var_core_value_sig7565, var_core_value_sigD4FB || "default");
+    if (z(var_core_value_sig01B3) != "object") return var_core_value_sig01B3;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigD4FB === "string" ? String : Number)(var_core_value_sig7565);
+}
+function V(var_core_value_sig7442) {
+  var var_core_value_sigDF87 = B(var_core_value_sig7442, "string");
+  return z(var_core_value_sigDF87) == "symbol" ? var_core_value_sigDF87 : var_core_value_sigDF87 + "";
+}
+function H(var_core_value_sig9EE0, var_core_value_sigF051, var_core_value_sig0B45) {
+  return (var_core_value_sigF051 = V(var_core_value_sigF051)) in var_core_value_sig9EE0 ? Object.defineProperty(var_core_value_sig9EE0, var_core_value_sigF051, {
+    value: var_core_value_sig0B45,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig9EE0[var_core_value_sigF051] = var_core_value_sig0B45, var_core_value_sig9EE0;
+}
+let U = class extends i.Disposable {
+  constructor(var_core_value_sig9E2F, var_core_value_sigD082, var_core_value_sigDBB7, var_core_value_sigD0A8, var_core_value_sigF4B9, var_core_value_sig5CEE) {
+    super(), this._diffService = var_core_value_sig9E2F, this._snapshotService = var_core_value_sigDBB7, this._univerInstanceService = var_core_value_sigD0A8, this._logService = var_core_value_sigF4B9, this._highlightService = var_core_value_sig5CEE, H(this, "type", i.UniverInstanceType["UNIVER_SLIDE"]), H(this, "_changes", new Map()), H(this, "_changesGeneration", 0), H(this, "_loadGeneration", 0), H(this, "_loadQueue", Promise.resolve()), H(this, "_unitId", ""), H(this, "_activeSlideSubscription", null), this.disposeWithMe(var_core_value_sigD082.register(this));
+  }
+  loadRevision(var_core_value_sigE92A, var_core_value_sig362B) {
+    let var_core_value_sig5CA5 = ++this._loadGeneration,
+      var_core_value_sigE90F = this._loadQueue["catch"](() => undefined).then(async () => {
+        if (var_core_value_sig5CA5 !== this._loadGeneration) return;
+        this._clearActiveSlideSubscription(), this._getSlide(var_core_value_sigE92A) && this._univerInstanceService["disposeUnit"](var_core_value_sigE92A);
+        let var_core_value_sigBC46 = await this._snapshotService["loadSlide"](var_core_value_sigE92A, var_core_value_sig362B.endRevision);
+        if (var_core_value_sig5CA5 !== this._loadGeneration) {
+          this._getSlide(var_core_value_sigE92A) === var_core_value_sigBC46 && this._univerInstanceService["disposeUnit"](var_core_value_sigE92A);
+          return;
+        }
+        this._bindActiveSlide(var_core_value_sigBC46, var_core_value_sigE92A), this._univerInstanceService["focusUnit"](var_core_value_sigE92A);
+      });
+    return this._loadQueue = var_core_value_sigE90F, var_core_value_sigE90F;
+  }
+  async loadChanges(var_core_value_sigEFD4, var_core_value_sig861B) {
+    this._unitId = var_core_value_sigEFD4;
+    let var_core_value_sig5237 = ++this._changesGeneration,
+      var_core_value_sigBB00 = await this._diffService["compare"](var_core_value_sigEFD4, var_core_value_sig861B);
+    var_core_value_sig5237 === this._changesGeneration && (this._changes["clear"](), var_core_value_sigBB00.forEach(var_core_value_sig3D7D => this._changes["set"](var_core_value_sig3D7D.id, var_core_value_sig3D7D)), await this._renderHighlights(var_core_value_sigEFD4));
+  }
+  close() {
+    ++this._changesGeneration, ++this._loadGeneration, this._clearActiveSlideSubscription(), this._changes["clear"](), this._unitId &&= (this._highlightService["clear"](this._unitId), "");
+  }
+  _getSlide(var_core_value_sig7E54) {
+    return this._univerInstanceService["getUnit"](var_core_value_sig7E54, i.UniverInstanceType["UNIVER_SLIDE"]) ?? null;
+  }
+  _bindActiveSlide(var_core_value_sig9A8D, var_core_value_sigC259) {
+    this._activeSlideSubscription = var_core_value_sig9A8D.pageManager["activeSlideId$"].subscribe(() => {
+      this._unitId === var_core_value_sigC259 && this._renderHighlights(var_core_value_sigC259).catch(var_core_value_sig7524 => {
+        this._logService["error"]("[SlidesHistoryRenderAdapterService]: Failed to render slide history highlights.", var_core_value_sig7524);
+      });
+    });
+  }
+  _clearActiveSlideSubscription() {
+    var var_core_value_sig9C9F;
+    (var_core_value_sig9C9F = this._activeSlideSubscription) == null || var_core_value_sig9C9F.unsubscribe(), this._activeSlideSubscription = null;
+  }
+  _renderHighlights(var_core_value_sigFDEA) {
+    var var_core_value_sig86D0;
+    let var_core_value_sig4CD2 = this._getSlide(var_core_value_sigFDEA),
+      var_core_value_sig48CA = var_core_value_sig4CD2 == null || (var_core_value_sig86D0 = var_core_value_sig4CD2.pageManager["getActiveSlide"]()) == null ? undefined : var_core_value_sig86D0.getId();
+    if (!var_core_value_sig48CA) return Promise.resolve();
+    let var_core_value_sig50AF = Array.from(this._changes["values"]()).filter(var_core_value_sig27E5 => var_core_value_sig27E5.slideId === var_core_value_sig48CA).map(var_core_value_sig8061 => ({
+      id: var_core_value_sig8061.id,
+      kind: var_core_value_sig8061.kind,
+      objectKey: var_core_value_sig8061.drawingId ? (0, r.buildDrawingOKey)(var_core_value_sigFDEA, var_core_value_sig48CA, var_core_value_sig8061.drawingId) : undefined,
+      fallbackObjectKey: r.SLIDE_PAGE_RECT_KEY,
+      outlineOnly: var_core_value_sig8061.kind === "delete" || !var_core_value_sig8061.drawingId
+    }));
+    return this._highlightService["show"](var_core_value_sigFDEA, var_core_value_sig50AF);
+  }
+  dispose() {
+    this.close(), super.dispose();
+  }
+};
+U = E([T(0, (0, i.Inject)(n.SlidesHistoryDiffService)), T(1, (0, i.Inject)(b.HistoryRenderAdapterRegistryService)), T(2, (0, i.Inject)(s.SnapshotService)), T(3, i.IUniverInstanceService), T(4, i.ILogService), T(5, (0, i.Inject)(b.HistoryCanvasHighlightService))], U);
+let W = class extends b.UniverEditHistoryUIPlugin {
+  constructor(var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF, var_core_value_sig8889) {
+    let {
+      collaborationClientConfig: var_core_value_sig32F8,
+      ...var_core_value_sig5B67
+    } = var_core_value_sigA942;
+    super(var_core_value_sig5B67, var_core_value_sigA621, var_core_value_sigBBFF, var_core_value_sig8889), this._injector = var_core_value_sigA621, var_core_value_sigBBFF.setConfig(e.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY, var_core_value_sig32F8);
+  }
+  onStarting() {
+    super.onStarting(), (0, i.registerDependencies)(this._injector, [[s.ISnapshotServerService, {
+      useClass: e.SnapshotServerOverHTTPService
+    }], [N], [U]]), this._injector["get"](N), this._injector["get"](U);
+  }
+};
+H(W, "pluginName", "UNIVER_SLIDES_HISTORY_VIEWER_PLUGIN"), H(W, "packageName", C), H(W, "version", w), H(W, "type", i.UniverInstanceType["UNIVER_UNKNOWN"]), W = E([(0, i.DependentOn)(t.UniverLicensePlugin, n.UniverSlidesHistoryPlugin, r.UniverSlidesUIPlugin), T(1, (0, i.Inject)(i.Injector)), T(2, i.IConfigService), T(3, i.ILogService)], W);
+let G = class extends i.Disposable {
+  constructor(var_core_value_sig1758, var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902, var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809, var_core_value_sig2DAB) {
+    super(), this._configService = var_core_value_sig1758, this._restoreService = var_core_value_sig4805, this._adapterRegistry = var_core_value_sigE67E, this._localeService = var_core_value_sig2902, this._themeService = var_core_value_sig9989, this._collaborationController = var_core_value_sig698E, this._dataLoaderService = var_core_value_sig2809, this._univerInstanceService = var_core_value_sig2DAB, H(this, "_historyUniver", null), H(this, "_opening", null), H(this, "_openGeneration", 0), H(this, "_sessionDisposables", new i["DisposableCollection"]()), H(this, "_container", null), H(this, "_unitId", ""), H(this, "_location", undefined);
+  }
+  open(var_core_value_sig877E) {
+    if (this._historyUniver) return Promise.resolve();
+    if (this._opening) return this._opening;
+    let var_core_value_sig20C8 = ++this._openGeneration,
+      var_core_value_sigE9A7 = this._open(var_core_value_sig877E, var_core_value_sig20C8).finally(() => {
+        this._opening === var_core_value_sigE9A7 && (this._opening = null);
+      });
+    return this._opening = var_core_value_sigE9A7, var_core_value_sigE9A7;
+  }
+  async _open(var_core_value_sigBECE, var_core_value_sig1B22) {
+    let var_core_value_sig7F72 = this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_SLIDE"]);
+    if (!var_core_value_sig7F72) throw Error("[SlidesHistoryLoaderService]:\x20Slides\x20history\x20adapter\x20is\x20not\x20registered.");
+    let var_core_value_sig7B2A = await Promise.all([var_core_value_sig7F72.canView(var_core_value_sigBECE), var_core_value_sig7F72.canRevert(var_core_value_sigBECE)]).catch(var_core_value_sig4D4C => {
+      if (var_core_value_sig1B22 === this._openGeneration) throw var_core_value_sig4D4C;
+      return null;
+    });
+    if (!var_core_value_sig7B2A || var_core_value_sig1B22 !== this._openGeneration) return;
+    let [var_core_value_sig06CD, var_core_value_sigA5F1] = var_core_value_sig7B2A;
+    if (!var_core_value_sig06CD) throw Error("[SlidesHistoryLoaderService]: The current user cannot view history for this presentation.");
+    this._unitId = var_core_value_sigBECE, this._location = var_core_value_sig7F72.captureLocation(var_core_value_sigBECE);
+    let var_core_value_sig97A2 = this._ensureContainer();
+    var_core_value_sig97A2.style["display"] = "block";
+    let var_core_value_sig07E9 = this._localeService["getCurrentLocale"](),
+      var_core_value_sig4F59 = this._localeService["getLocales"](),
+      var_core_value_sigF564 = new i["Univer"]({
+        theme: this._themeService["getCurrentTheme"](),
+        darkMode: this._themeService["darkMode"],
+        locale: var_core_value_sig07E9,
+        locales: var_core_value_sig4F59 ? {
+          [var_core_value_sig07E9]: var_core_value_sig4F59
+        } : undefined,
+        direction: this._localeService["getDirection"](),
+        override: [[i.IAuthzIoService, {
+          useClass: e.AuthzIoHttpService
+        }]]
+      });
+    this._historyUniver = var_core_value_sigF564, this._syncViewerServices(var_core_value_sigF564, var_core_value_sig97A2);
+    try {
+      this._registerChildPlugins(var_core_value_sigF564, var_core_value_sigA5F1, var_core_value_sig97A2), var_core_value_sigF564.createUnit(i.UniverInstanceType["UNIVER_SLIDE"], (0, l.getSlidesEmptySnapshot)(var_core_value_sigBECE));
+    } catch (var_core_value_sigC9E0) {
+      throw var_core_value_sig1B22 === this._openGeneration ? this.close() : var_core_value_sigF564.dispose(), var_core_value_sigC9E0;
+    }
+  }
+  close() {
+    ++this._openGeneration, this._opening = null, this._sessionDisposables["dispose"]();
+    let var_core_value_sig8CFA = this._historyUniver;
+    this._historyUniver = null, var_core_value_sig8CFA == null || var_core_value_sig8CFA.dispose(), this._unitId = "", this._location = undefined, this._container && (this._container["style"].display = "none");
+  }
+  _syncViewerServices(var_core_value_sig2E11, var_core_value_sig5B69) {
+    let var_core_value_sigB098 = var_core_value_sig2E11.__getInjector(),
+      var_core_value_sigCE71 = var_core_value_sigB098.get(i.LocaleService),
+      var_core_value_sig21D8 = var_core_value_sigB098.get(i.ThemeService);
+    this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(var_core_value_sig76BA => {
+      var_core_value_sig21D8.setDarkMode(var_core_value_sig76BA);
+    })), this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(var_core_value_sigFBFA => {
+      var_core_value_sig21D8.setTheme(var_core_value_sigFBFA);
+    })), this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(var_core_value_sigF602 => {
+      let var_core_value_sig1BBD = this._localeService["getLocales"]();
+      var_core_value_sig1BBD && var_core_value_sigCE71.load({
+        [var_core_value_sigF602]: var_core_value_sig1BBD
+      }), var_core_value_sigCE71.setLocale(var_core_value_sigF602);
+    })), this._sessionDisposables["add"](this._localeService["direction$"].subscribe(var_core_value_sigF704 => {
+      var_core_value_sigCE71.setDirection(var_core_value_sigF704), var_core_value_sig5B69.dir = var_core_value_sigF704, var_core_value_sig5B69.style["direction"] = var_core_value_sigF704;
+    }));
+  }
+  async restore(var_core_value_sig2B65) {
+    var var_core_value_sigD7EA;
+    let var_core_value_sigB33B = this._unitId,
+      var_core_value_sig24B9 = this._location,
+      var_core_value_sigE627 = this._collaborationController["getCollabEntity"](var_core_value_sigB33B);
+    if (!var_core_value_sigE627) throw Error("[SlidesHistoryLoaderService]: Collaboration is not ready for this presentation.");
+    let var_core_value_sigEF3E = new y["Subject"](),
+      var_core_value_sig273D = (0, y.firstValueFrom)(var_core_value_sigE627.session["event$"].pipe((0, y.filter)(var_core_value_sig2BCF => var_core_value_sig2BCF.eventID === s.CollaborationEvent["CHANGESET_ACK"]), (0, y.filter)(var_core_value_sig0D69 => (0, c.isHistoryRestoreAcknowledgement)(var_core_value_sig0D69, var_core_value_sig2B65)), (0, y.takeUntil)(var_core_value_sigEF3E), (0, y.timeout)(10000)));
+    try {
+      if (!(await this._restoreService["restore"](var_core_value_sigB33B, i.UniverInstanceType["UNIVER_SLIDE"], var_core_value_sig2B65))) throw Error("[SlidesHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.");
+      await var_core_value_sig273D;
+    } catch (var_core_value_sig480E) {
+      throw var_core_value_sigEF3E.next(), await var_core_value_sig273D.catch(() => undefined), var_core_value_sig480E;
+    } finally {
+      var_core_value_sigEF3E.complete();
+    }
+    this.close(), this._univerInstanceService["disposeUnit"](var_core_value_sigB33B), await this._dataLoaderService["loadUnit"](var_core_value_sigB33B, i.UniverInstanceType["UNIVER_SLIDE"]), await ((var_core_value_sigD7EA = this._adapterRegistry["get"](i.UniverInstanceType["UNIVER_SLIDE"])) == null ? undefined : var_core_value_sigD7EA.restoreLocation(var_core_value_sigB33B, var_core_value_sig24B9));
+  }
+  _ensureContainer() {
+    var var_core_value_sig9A0D;
+    if (this._container) return this._container;
+    let var_core_value_sigA319 = this._configService["getConfig"](x),
+      var_core_value_sig2D58 = (var_core_value_sigA319 == null ? undefined : var_core_value_sigA319.univerContainerId) ?? ((var_core_value_sig9A0D = this._configService["getConfig"](o.UI_PLUGIN_CONFIG_KEY)) == null ? undefined : var_core_value_sig9A0D.container),
+      var_core_value_sig223F = typeof var_core_value_sig2D58 == "string" ? document.getElementById(var_core_value_sig2D58) : var_core_value_sig2D58;
+    if (!var_core_value_sig223F) throw Error("[SlidesHistoryLoaderService]:\x20Configure\x20a\x20valid\x20Univer\x20container\x20before\x20opening\x20history.");
+    let var_core_value_sigD749 = document.createElement("div");
+    return Object.assign(var_core_value_sigD749.style, {
+      position: "absolute",
+      inset: "0",
+      zIndex: "49",
+      display: "none"
+    }), var_core_value_sig223F.appendChild(var_core_value_sigD749), this._container = var_core_value_sigD749, var_core_value_sigD749;
+  }
+  _registerChildPlugins(var_core_value_sigCFFA, var_core_value_sig58C1, var_core_value_sig5090) {
+    let var_core_value_sigC368 = this._configService["getConfig"](t.LS_CONFIG_KEY),
+      var_core_value_sigAD56 = this._configService["getConfig"](x),
+      var_core_value_sigDB4A = [[t.UniverLicensePlugin, {
+        license: var_core_value_sigC368 == null ? undefined : var_core_value_sigC368.ls
+      }], [_.UniverRenderEnginePlugin], [o.UniverUIPlugin, {
+        container: var_core_value_sig5090,
+        header: true,
+        toolbar: false,
+        footer: true,
+        contextMenu: false
+      }], [v.UniverNetworkPlugin], [m.UniverDocsPlugin], [h.UniverDocsUIPlugin], [g.UniverDrawingPlugin, {
+        override: [[i.IImageIoService, {
+          useClass: e.CollaborationImageIoService
+        }]]
+      }], [l.UniverSlidesPlugin], [r.UniverSlidesUIPlugin], [u.UniverSlidesChartPlugin], [d.UniverSlidesChartUIPlugin], [f.UniverSlidesTablePlugin], [p.UniverSlidesTableUIPlugin], [s.UniverCollaborationPlugin], [c.UniverEditHistoryPlugin, {
+        historyServerUrl: var_core_value_sigAD56 == null ? undefined : var_core_value_sigAD56.historyServerUrl
+      }], [n.UniverSlidesHistoryPlugin]],
+      var_core_value_sig6418 = new Set();
+    [...var_core_value_sigDB4A, ...((var_core_value_sigAD56 == null ? undefined : var_core_value_sigAD56.viewerPlugins) ?? [])].forEach(([var_core_value_sig26DB, var_core_value_sigF0F9]) => {
+      if (var_core_value_sig6418.has(var_core_value_sig26DB.pluginName)) throw Error("[SlidesHistoryLoaderService]: Plugin " + var_core_value_sig26DB.pluginName + " has already been registered.");
+      var_core_value_sig6418.add(var_core_value_sig26DB.pluginName), var_core_value_sigCFFA.registerPlugin(var_core_value_sig26DB, var_core_value_sigF0F9);
+    }), var_core_value_sigCFFA.registerPlugin(W, {
+      viewerMode: true,
+      descriptor: {
+        unitId: this._unitId,
+        type: i.UniverInstanceType["UNIVER_SLIDE"]
+      },
+      canRestore: var_core_value_sig58C1,
+      onClose: () => this.close(),
+      onRestore: var_core_value_sig1A0F => this.restore(var_core_value_sig1A0F),
+      collaborationClientConfig: this._configService["getConfig"](e.COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY)
+    });
+  }
+  dispose() {
+    var var_core_value_sig1896;
+    this.close(), (var_core_value_sig1896 = this._container) == null || var_core_value_sig1896.remove(), this._container = null, super.dispose();
+  }
+};
+G = E([T(0, i.IConfigService), T(1, (0, i.Inject)(c.HistoryRestoreService)), T(2, (0, i.Inject)(c.HistoryUnitAdapterRegistryService)), T(3, (0, i.Inject)(i.LocaleService)), T(4, (0, i.Inject)(i.ThemeService)), T(5, (0, i.Inject)(e.CollaborationController)), T(6, (0, i.Inject)(e.DataLoaderService)), T(7, i.IUniverInstanceService)], G);
+const K = {
+    id: "slides-history-ui.operation.open",
+    type: i.CommandType["OPERATION"],
+    handler: var_core_value_sig36F8 => {
+      let var_core_value_sig03E1 = var_core_value_sig36F8.get(i.IUniverInstanceService).getCurrentUnitOfType(i.UniverInstanceType["UNIVER_SLIDE"]);
+      return var_core_value_sig03E1 ? (var_core_value_sig36F8.get(G).open(var_core_value_sig03E1.getUnitId()).catch(var_core_value_sig0285 => {
+        var_core_value_sig36F8.get(i.ILogService).error("[OpenSlidesHistoryOperation]:\x20Failed\x20to\x20open\x20Slides\x20history.", var_core_value_sig0285);
+      }), true) : false;
+    }
+  },
+  q = {
+    [o.RibbonStartGroup["OTHERS"]]: {
+      [K.id]: {
+        order: 100,
+        gridLayout: {
+          row: 1,
+          column: 3,
+          rowSpan: 2,
+          columnSpan: 2,
+          showLabel: true
+        },
+        menuItemFactory: J
+      }
+    }
+  };
+function J(var_core_value_sigBB57) {
+  return {
+    id: K.id,
+    type: o.MenuItemType["BUTTON"],
+    icon: "SlidesHistoryIcon",
+    title: "slides-history-ui.menu.history",
+    tooltip: "slides-history-ui.menu.history",
+    hidden$: (0, o.getMenuHiddenObservable)(var_core_value_sigBB57, i.UniverInstanceType["UNIVER_SLIDE"])
+  };
+}
+let Y = class extends i.Disposable {
+  constructor(var_core_value_sig777D, var_core_value_sig3F4C) {
+    super(), this.disposeWithMe(var_core_value_sig777D.registerCommand(K)), var_core_value_sig3F4C.mergeMenu(q);
+  }
+};
+Y = E([T(0, i.ICommandService), T(1, o.IMenuManagerService)], Y);
+let X = class extends i.Plugin {
+  constructor(var_core_value_sigD65A = S, var_core_value_sig5A13, var_core_value_sigF593) {
+    super(), this._config = var_core_value_sigD65A, this._injector = var_core_value_sig5A13, this._configService = var_core_value_sigF593;
+    let {
+      ...var_core_value_sig3607
+    } = (0, i.merge)({}, S, this._config);
+    this._configService["setConfig"](x, var_core_value_sig3607);
+  }
+  onStarting() {
+    (0, i.registerDependencies)(this._injector, [[D], [G], [Y]]), this._injector["get"](D), this._injector["get"](Y);
+  }
+};
+H(X, "pluginName", "UNIVER_SLIDES_HISTORY_UI_PLUGIN"), H(X, "packageName", C), H(X, "version", w), H(X, "type", i.UniverInstanceType["UNIVER_SLIDE"]), X = E([(0, i.DependentOn)(t.UniverLicensePlugin, e.UniverCollaborationClientPlugin, n.UniverSlidesHistoryPlugin, r.UniverSlidesUIPlugin), T(1, (0, i.Inject)(i.Injector)), T(2, i.IConfigService)], X), exports.SLIDES_HISTORY_UI_PLUGIN_CONFIG_KEY = x, Object.defineProperty(exports, "UniverSlidesHistoryUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return X;
+  }
+});

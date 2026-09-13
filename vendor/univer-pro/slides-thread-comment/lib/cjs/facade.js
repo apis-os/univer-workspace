@@ -1,1 +1,147 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getPrototypeOf,a=Object.prototype["hasOwnProperty"],o=(v30,v31,v32,v33)=>{if(v31&&typeof v31=="object"||typeof v31=="function"){for(var v34=r(v31),v35=0,v36=v34.length,v37;v35<v36;v35++)v37=v34[v35],!a.call(v30,v37)&&v37!==v32&&t(v30,v37,{get:(v1=>v31[v1]).bind(null,v37),enumerable:!(v33=n(v31,v37))||v33.enumerable});}return v30;},s=(v38,v39,v40)=>(v40=v38==null?{}:e(i(v38)),o(v39||!v38||!v38.__esModule?t(v40,"default",{value:v38,enumerable:true}):v40,v38));let c=require("@univerjs-pro/slides/facade"),l=require("@univerjs/thread-comment");l=s(l);const u=new WeakMap();function d(v41){return Number.isFinite(v41.x)&&Number.isFinite(v41.y)&&v41.x>=0&&v41.x<=1&&v41.y>=0&&v41.y<=1;}var f=class extends c.FSlide{_initialize(v10){let v11;Object.defineProperty(this,"_threadCommentService",{get:()=>v11??=v10.get(l.ThreadCommentFacadeService)});}createPositionCommentAsync(v12,v13,v14={}){if(!d(v12))throw RangeError("Slide comment position must use normalized x and y values from 0 to 1.");let v15=this._slidePage["getId"]();return this._threadCommentService["createCommentAsync"]({...v14,unitId:this._slideModel["getUnitId"](),subUnitId:v15,anchor:{kind:l.ThreadCommentAnchorKind["SLIDE_POSITION"],pageId:v15,...v12},content:v13});}createElementCommentAsync(v16,v17,v18={}){if(!this._slidePage["getData"]().elements[v16])throw Error('Slide element "'+v16+"\x22\x20was\x20not\x20found.");let v19=this._slidePage["getId"]();return this._threadCommentService["createCommentAsync"]({...v18,unitId:this._slideModel["getUnitId"](),subUnitId:v19,anchor:{kind:l.ThreadCommentAnchorKind["SLIDE_ELEMENT"],pageId:v19,elementId:v16},content:v17});}getElementComments(v20){let v21=this._slidePage["getId"]();return this._threadCommentService["getComments"]({unitIds:[this._slideModel["getUnitId"]()],subUnitIds:[v21],anchorKinds:[l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]}).filter(v2=>{var v3;return((v3=v2.anchor)==null?undefined:v3.kind)===l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]&&v2.anchor["elementId"]===v20;});}async listElementCommentsAsync(v22){let v23=this._slidePage["getId"]();return(await this._threadCommentService["listCommentsAsync"]({unitIds:[this._slideModel["getUnitId"]()],subUnitIds:[v23],anchorKinds:[l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]})).filter(v4=>{var v5;return((v5=v4.anchor)==null?undefined:v5.kind)===l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]&&v4.anchor["elementId"]===v22;});}getComments(){let v24=this._slidePage["getId"]();return this._threadCommentService["getComments"]({unitIds:[this._slideModel["getUnitId"]()],subUnitIds:[v24],anchorKinds:[l.ThreadCommentAnchorKind["SLIDE_ELEMENT"],l.ThreadCommentAnchorKind["SLIDE_POSITION"]]});}listCommentsAsync(){let v25=this._slidePage["getId"]();return this._threadCommentService["listCommentsAsync"]({unitIds:[this._slideModel["getUnitId"]()],subUnitIds:[v25],anchorKinds:[l.ThreadCommentAnchorKind["SLIDE_ELEMENT"],l.ThreadCommentAnchorKind["SLIDE_POSITION"]]});}},p=class extends c.FPageElement{_getThreadCommentService(){let v26=u.get(this);if(v26)return v26;let v27=this._injector["get"](l.ThreadCommentFacadeService);return u.set(this,v27),v27;}createCommentAsync(v28,v29={}){return this._getThreadCommentService().createCommentAsync({...v29,unitId:this.unitId,subUnitId:this.subUnitId,anchor:{kind:l.ThreadCommentAnchorKind["SLIDE_ELEMENT"],pageId:this.subUnitId,elementId:this.elementId},content:v28});}getComments(){return this._getThreadCommentService().getComments({unitIds:[this.unitId],subUnitIds:[this.subUnitId],anchorKinds:[l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]}).filter(v6=>{var v7;return((v7=v6.anchor)==null?undefined:v7.kind)===l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]&&v6.anchor["elementId"]===this.elementId;});}async listCommentsAsync(){return(await this._getThreadCommentService().listCommentsAsync({unitIds:[this.unitId],subUnitIds:[this.subUnitId],anchorKinds:[l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]})).filter(v8=>{var v9;return((v9=v8.anchor)==null?undefined:v9.kind)===l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]&&v8.anchor["elementId"]===this.elementId;});}};c.FSlide["extend"](f),c.FPageElement["extend"](p),exports.FSlidePageElementThreadCommentMixin=p,exports.FSlideThreadCommentMixin=f;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+var e = Object.create,
+  t = Object.defineProperty,
+  n = Object.getOwnPropertyDescriptor,
+  r = Object.getOwnPropertyNames,
+  i = Object.getPrototypeOf,
+  a = Object.prototype["hasOwnProperty"],
+  o = (var_core_value_sigE9ED, var_core_value_sigB577, var_core_value_sig9572, var_core_value_sigD873) => {
+    if (var_core_value_sigB577 && typeof var_core_value_sigB577 == "object" || typeof var_core_value_sigB577 == "function") {
+      for (var var_core_value_sigA12B = r(var_core_value_sigB577), var_core_value_sigF230 = 0, var_core_value_sig09B8 = var_core_value_sigA12B.length, var_core_value_sig6F91; var_core_value_sigF230 < var_core_value_sig09B8; var_core_value_sigF230++) var_core_value_sig6F91 = var_core_value_sigA12B[var_core_value_sigF230], !a.call(var_core_value_sigE9ED, var_core_value_sig6F91) && var_core_value_sig6F91 !== var_core_value_sig9572 && t(var_core_value_sigE9ED, var_core_value_sig6F91, {
+        get: (var_core_value_sig7524 => var_core_value_sigB577[var_core_value_sig7524]).bind(null, var_core_value_sig6F91),
+        enumerable: !(var_core_value_sigD873 = n(var_core_value_sigB577, var_core_value_sig6F91)) || var_core_value_sigD873.enumerable
+      });
+    }
+    return var_core_value_sigE9ED;
+  },
+  s = (var_core_value_sigF9C7, var_core_value_sig8895, var_core_value_sigC80B) => (var_core_value_sigC80B = var_core_value_sigF9C7 == null ? {} : e(i(var_core_value_sigF9C7)), o(var_core_value_sig8895 || !var_core_value_sigF9C7 || !var_core_value_sigF9C7.__esModule ? t(var_core_value_sigC80B, "default", {
+    value: var_core_value_sigF9C7,
+    enumerable: true
+  }) : var_core_value_sigC80B, var_core_value_sigF9C7));
+let c = require("@univerjs-pro/slides/facade"),
+  l = require("@univerjs/thread-comment");
+l = s(l);
+const u = new WeakMap();
+function d(var_core_value_sig284F) {
+  return Number.isFinite(var_core_value_sig284F.x) && Number.isFinite(var_core_value_sig284F.y) && var_core_value_sig284F.x >= 0 && var_core_value_sig284F.x <= 1 && var_core_value_sig284F.y >= 0 && var_core_value_sig284F.y <= 1;
+}
+var f = class extends c.FSlide {
+    _initialize(var_core_value_sigC9E0) {
+      let var_core_value_sig76BA;
+      Object.defineProperty(this, "_threadCommentService", {
+        get: () => var_core_value_sig76BA ??= var_core_value_sigC9E0.get(l.ThreadCommentFacadeService)
+      });
+    }
+    createPositionCommentAsync(var_core_value_sigFBFA, var_core_value_sigF602, var_core_value_sig1BBD = {}) {
+      if (!d(var_core_value_sigFBFA)) throw RangeError("Slide comment position must use normalized x and y values from 0 to 1.");
+      let var_core_value_sigF704 = this._slidePage["getId"]();
+      return this._threadCommentService["createCommentAsync"]({
+        ...var_core_value_sig1BBD,
+        unitId: this._slideModel["getUnitId"](),
+        subUnitId: var_core_value_sigF704,
+        anchor: {
+          kind: l.ThreadCommentAnchorKind["SLIDE_POSITION"],
+          pageId: var_core_value_sigF704,
+          ...var_core_value_sigFBFA
+        },
+        content: var_core_value_sigF602
+      });
+    }
+    createElementCommentAsync(var_core_value_sig2BCF, var_core_value_sig0D69, var_core_value_sig480E = {}) {
+      if (!this._slidePage["getData"]().elements[var_core_value_sig2BCF]) throw Error('Slide element "' + var_core_value_sig2BCF + "\x22\x20was\x20not\x20found.");
+      let var_core_value_sig26DB = this._slidePage["getId"]();
+      return this._threadCommentService["createCommentAsync"]({
+        ...var_core_value_sig480E,
+        unitId: this._slideModel["getUnitId"](),
+        subUnitId: var_core_value_sig26DB,
+        anchor: {
+          kind: l.ThreadCommentAnchorKind["SLIDE_ELEMENT"],
+          pageId: var_core_value_sig26DB,
+          elementId: var_core_value_sig2BCF
+        },
+        content: var_core_value_sig0D69
+      });
+    }
+    getElementComments(var_core_value_sigF0F9) {
+      let var_core_value_sig1A0F = this._slidePage["getId"]();
+      return this._threadCommentService["getComments"]({
+        unitIds: [this._slideModel["getUnitId"]()],
+        subUnitIds: [var_core_value_sig1A0F],
+        anchorKinds: [l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]
+      }).filter(var_core_value_sig2AD8 => {
+        var var_core_value_sig2AD0;
+        return ((var_core_value_sig2AD0 = var_core_value_sig2AD8.anchor) == null ? undefined : var_core_value_sig2AD0.kind) === l.ThreadCommentAnchorKind["SLIDE_ELEMENT"] && var_core_value_sig2AD8.anchor["elementId"] === var_core_value_sigF0F9;
+      });
+    }
+    async listElementCommentsAsync(var_core_value_sigFBA4) {
+      let var_core_value_sig4383 = this._slidePage["getId"]();
+      return (await this._threadCommentService["listCommentsAsync"]({
+        unitIds: [this._slideModel["getUnitId"]()],
+        subUnitIds: [var_core_value_sig4383],
+        anchorKinds: [l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]
+      })).filter(var_core_value_sig3EEE => {
+        var var_core_value_sigBC46;
+        return ((var_core_value_sigBC46 = var_core_value_sig3EEE.anchor) == null ? undefined : var_core_value_sigBC46.kind) === l.ThreadCommentAnchorKind["SLIDE_ELEMENT"] && var_core_value_sig3EEE.anchor["elementId"] === var_core_value_sigFBA4;
+      });
+    }
+    getComments() {
+      let var_core_value_sig186C = this._slidePage["getId"]();
+      return this._threadCommentService["getComments"]({
+        unitIds: [this._slideModel["getUnitId"]()],
+        subUnitIds: [var_core_value_sig186C],
+        anchorKinds: [l.ThreadCommentAnchorKind["SLIDE_ELEMENT"], l.ThreadCommentAnchorKind["SLIDE_POSITION"]]
+      });
+    }
+    listCommentsAsync() {
+      let var_core_value_sigD955 = this._slidePage["getId"]();
+      return this._threadCommentService["listCommentsAsync"]({
+        unitIds: [this._slideModel["getUnitId"]()],
+        subUnitIds: [var_core_value_sigD955],
+        anchorKinds: [l.ThreadCommentAnchorKind["SLIDE_ELEMENT"], l.ThreadCommentAnchorKind["SLIDE_POSITION"]]
+      });
+    }
+  },
+  p = class extends c.FPageElement {
+    _getThreadCommentService() {
+      let var_core_value_sig48BD = u.get(this);
+      if (var_core_value_sig48BD) return var_core_value_sig48BD;
+      let var_core_value_sig429F = this._injector["get"](l.ThreadCommentFacadeService);
+      return u.set(this, var_core_value_sig429F), var_core_value_sig429F;
+    }
+    createCommentAsync(var_core_value_sigF62A, var_core_value_sig8178 = {}) {
+      return this._getThreadCommentService().createCommentAsync({
+        ...var_core_value_sig8178,
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        anchor: {
+          kind: l.ThreadCommentAnchorKind["SLIDE_ELEMENT"],
+          pageId: this.subUnitId,
+          elementId: this.elementId
+        },
+        content: var_core_value_sigF62A
+      });
+    }
+    getComments() {
+      return this._getThreadCommentService().getComments({
+        unitIds: [this.unitId],
+        subUnitIds: [this.subUnitId],
+        anchorKinds: [l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]
+      }).filter(var_core_value_sig3D7D => {
+        var var_core_value_sig27E5;
+        return ((var_core_value_sig27E5 = var_core_value_sig3D7D.anchor) == null ? undefined : var_core_value_sig27E5.kind) === l.ThreadCommentAnchorKind["SLIDE_ELEMENT"] && var_core_value_sig3D7D.anchor["elementId"] === this.elementId;
+      });
+    }
+    async listCommentsAsync() {
+      return (await this._getThreadCommentService().listCommentsAsync({
+        unitIds: [this.unitId],
+        subUnitIds: [this.subUnitId],
+        anchorKinds: [l.ThreadCommentAnchorKind["SLIDE_ELEMENT"]]
+      })).filter(var_core_value_sig8061 => {
+        var var_core_value_sig4D4C;
+        return ((var_core_value_sig4D4C = var_core_value_sig8061.anchor) == null ? undefined : var_core_value_sig4D4C.kind) === l.ThreadCommentAnchorKind["SLIDE_ELEMENT"] && var_core_value_sig8061.anchor["elementId"] === this.elementId;
+      });
+    }
+  };
+c.FSlide["extend"](f), c.FPageElement["extend"](p), exports.FSlidePageElementThreadCommentMixin = p, exports.FSlideThreadCommentMixin = f;

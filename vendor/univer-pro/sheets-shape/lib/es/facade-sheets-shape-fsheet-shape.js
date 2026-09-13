@@ -1,8 +1,58 @@
-import{IShapeHostAdapterRegistry,isConnectorShape}from"@univerjs-pro/engine-shape";
-import{FConnectorShape,FShape}from"@univerjs-pro/engine-shape/facade";
-import{ICommandService,UniverInstanceType}from"@univerjs/core";
-import{FWorksheet}from"@univerjs/sheets/facade";
-import{ISheetDrawingService,SetSheetDrawingPlacementCommand,SheetDrawingAnchorType,getSheetDrawingPlacement}from"@univerjs/sheets-drawing";
-let p=class extends FShape{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611){super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610),this._sheetDrawingService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611;}getPlacement(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617=this._sheetDrawingService["getDrawingByParam"]({unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawingId:this._shapeRef["shapeId"]});return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617?getSheetDrawingPlacement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617):null;}setPlacement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619){return this._commandService["syncExecuteCommand"](SetSheetDrawingPlacementCommand.id,{unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawings:[{drawingId:this._shapeRef["shapeId"],placement:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619}]});}setPosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627=this._sheetDrawingService["getDrawingByParam"]({unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawingId:this._shapeRef["shapeId"]});if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627)return console.warn('[Sheet Shape Facade]: Shape "'+this._shapeRef["shapeId"]+"\x22\x20was\x20not\x20found."),this;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.transform)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625.width,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.transform)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.height;return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628==null||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629==null?(console.warn('[Sheet Shape Facade]: Shape "'+this._shapeRef["shapeId"]+'" has no transform extent.'),this):(this._commandService["syncExecuteCommand"](SetSheetDrawingPlacementCommand.id,{unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawings:[{drawingId:this._shapeRef["shapeId"],placement:{kind:SheetDrawingAnchorType.Position,from:{row:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621,column:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622,rowOffset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623,columnOffset:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624},width:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628,height:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629}}]}),this);}};
-
+import { IShapeHostAdapterRegistry, isConnectorShape } from "@univerjs-pro/engine-shape";
+import { FConnectorShape, FShape } from "@univerjs-pro/engine-shape/facade";
+import { ICommandService, UniverInstanceType } from "@univerjs/core";
+import { FWorksheet } from "@univerjs/sheets/facade";
+import { ISheetDrawingService, SetSheetDrawingPlacementCommand, SheetDrawingAnchorType, getSheetDrawingPlacement } from "@univerjs/sheets-drawing";
+let p = class extends FShape {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611) {
+    super(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610), this._sheetDrawingService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611;
+  }
+  getPlacement() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 = this._sheetDrawingService["getDrawingByParam"]({
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawingId: this._shapeRef["shapeId"]
+    });
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617 ? getSheetDrawingPlacement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617) : null;
+  }
+  setPlacement(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619) {
+    return this._commandService["syncExecuteCommand"](SetSheetDrawingPlacementCommand.id, {
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawings: [{
+        drawingId: this._shapeRef["shapeId"],
+        placement: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619
+      }]
+    });
+  }
+  setPosition(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627 = this._sheetDrawingService["getDrawingByParam"]({
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawingId: this._shapeRef["shapeId"]
+    });
+    if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627) return console.warn('[Sheet Shape Facade]: Shape "' + this._shapeRef["shapeId"] + "\x22\x20was\x20not\x20found."), this;
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.transform) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625.width,
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627.transform) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626.height;
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628 == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629 == null ? (console.warn('[Sheet Shape Facade]: Shape "' + this._shapeRef["shapeId"] + '" has no transform extent.'), this) : (this._commandService["syncExecuteCommand"](SetSheetDrawingPlacementCommand.id, {
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawings: [{
+        drawingId: this._shapeRef["shapeId"],
+        placement: {
+          kind: SheetDrawingAnchorType.Position,
+          from: {
+            row: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621,
+            column: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622,
+            rowOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623,
+            columnOffset: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4624
+          },
+          width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628,
+          height: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629
+        }
+      }]
+    }), this);
+  }
+};
 export { p as FSheetShape };

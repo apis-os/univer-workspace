@@ -1,6 +1,145 @@
-import{BASES_UI_PLUGIN_CONFIG_KEY,BaseEditorService,BaseSelectionService,BaseUIStateService}from"@univerjs-pro/bases-ui";
-import{IConfigService}from"@univerjs/core";
-import{FUniver}from"@univerjs/core/facade";
-function s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666){"@babel/helpers - typeof";return s=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612){return typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612;}:function(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614){return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614&&typeof Symbol=="function"&&var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.constructor===Symbol&&var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614!==Symbol.prototype?"symbol":typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614;},s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666);}function c(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669){if(s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668)!="object"||!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668)return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668;var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668[Symbol.toPrimitive];if(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670!==undefined){var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670.call(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669||"default");if(s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671)!="object")return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671;throw TypeError("@@toPrimitive must return a primitive value.");}return(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669==="string"?String:Number)(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668);}function l(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676){var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677=ox37e622,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678=c(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677(218));return s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678)==var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677(233)?var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678+"";}function u(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4684){return(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683=l(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683))in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682?Object.defineProperty(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683,{value:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4684,enumerable:true,configurable:true,writable:true}):var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683]=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4684,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682;}var d=class{constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4617,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618=new BaseEditorService(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616),var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4619){this._stateService=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616,this._selectionService=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4617,this._editorService=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618,this._configService=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4619,u(this,"_localConfig",{});}getActiveTableId(){return this._stateService["getState"]().activeTableId??null;}getActiveViewId(){return this._stateService["getState"]().activeViewId??null;}async activateTable(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624){this._stateService["activateTable"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624);}async activateView(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626){this._stateService["activateView"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626);}getSelection(){return this._selectionService["getSelection"]();}setSelection(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4628){this._selectionService["setSelection"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4628);}scrollToRecord(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631={}){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.viewId??this.getActiveViewId();var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632&&this._stateService["setScrollState"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632,{x:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.x??0,y:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.y??0});}scrollToField(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637={}){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637.viewId??this.getActiveViewId();var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638&&this._stateService["setScrollState"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638,{x:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637.x??0,y:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637.y??0});}startEditingCell(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642){this._editorService["startEditingCell"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642);}stopEditingCell(){this._editorService["stopEditingCell"]();}openLeftSidebar(){this._stateService["setLeftSidebarVisible"](true);}closeLeftSidebar(){this._stateService["setLeftSidebarVisible"](false);}openRightSidebar(){this._stateService["setRightSidebarVisible"](true);}closeRightSidebar(){this._stateService["setRightSidebarVisible"](false);}openRecordDetail(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644){this._stateService["openRecordDetail"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644);}openDraftRecordDetail(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4646={}){this._stateService["openDraftRecordDetail"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4646);}closeRecordDetail(){this._stateService["closeRecordDetail"]();}openFieldConfigPanel(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648){this._stateService["getState"]().openPanels["fieldConfig"]=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648;}openViewSettingsPanel(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650){this._stateService["getState"]().openPanels["viewSettings"]=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650;}getPersonOptions(){return[...(this._getBaseUIConfig().personOptions??[])];}setPersonOptions(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4652){this._updateBaseUIConfig({personOptions:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4652});}getGroupOptions(){return[...(this._getBaseUIConfig().groupOptions??[])];}setGroupOptions(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654){this._updateBaseUIConfig({groupOptions:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654});}getRenderedView(){return null;}_getBaseUIConfig(){var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656=ox37e622,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657;return((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657=this[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656(227)])==null?undefined:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657.getConfig(BASES_UI_PLUGIN_CONFIG_KEY))??this._localConfig;}_updateBaseUIConfig(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660){var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661=ox37e622,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4662;this[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661(238)]={...this._getBaseUIConfig(),...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660},(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4662=this[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661(227)])==null||var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4662[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661(229)](BASES_UI_PLUGIN_CONFIG_KEY,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660,{merge:true});}},f=class extends FUniver{getBaseUI(){return new d(this._injector["get"](BaseUIStateService),this._injector["get"](BaseSelectionService),this._injector["get"](BaseEditorService),this._injector["get"](IConfigService));}};
+import { BASES_UI_PLUGIN_CONFIG_KEY, BaseEditorService, BaseSelectionService, BaseUIStateService } from "@univerjs-pro/bases-ui";
+import { IConfigService } from "@univerjs/core";
+import { FUniver } from "@univerjs/core/facade";
+function s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666) {
+  "@babel/helpers - typeof";
 
+  return s = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612) {
+    return typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612;
+  } : function (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614) {
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614 && typeof Symbol == "function" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.constructor === Symbol && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614 !== Symbol.prototype ? "symbol" : typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614;
+  }, s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666);
+}
+function c(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669) {
+  if (s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668) != "object" || !var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668) return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668;
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668[Symbol.toPrimitive];
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670 !== undefined) {
+    var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670.call(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669 || "default");
+    if (s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671) != "object") return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4671;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4669 === "string" ? String : Number)(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668);
+}
+function l(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676) {
+  var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677 = ox37e622,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678 = c(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677(218));
+  return s(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678) == var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4677(233) ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678 : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4678 + "";
+}
+function u(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4684) {
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683 = l(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683)) in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682 ? Object.defineProperty(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683, {
+    value: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4684,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4683] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4684, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4682;
+}
+var d = class {
+    constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4617, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618 = new BaseEditorService(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4619) {
+      this._stateService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616, this._selectionService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4617, this._editorService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618, this._configService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4619, u(this, "_localConfig", {});
+    }
+    getActiveTableId() {
+      return this._stateService["getState"]().activeTableId ?? null;
+    }
+    getActiveViewId() {
+      return this._stateService["getState"]().activeViewId ?? null;
+    }
+    async activateTable(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624) {
+      this._stateService["activateTable"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624);
+    }
+    async activateView(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626) {
+      this._stateService["activateView"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626);
+    }
+    getSelection() {
+      return this._selectionService["getSelection"]();
+    }
+    setSelection(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4628) {
+      this._selectionService["setSelection"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4628);
+    }
+    scrollToRecord(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631 = {}) {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.viewId ?? this.getActiveViewId();
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632 && this._stateService["setScrollState"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4632, {
+        x: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.x ?? 0,
+        y: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.y ?? 0
+      });
+    }
+    scrollToField(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637 = {}) {
+      let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637.viewId ?? this.getActiveViewId();
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638 && this._stateService["setScrollState"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638, {
+        x: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637.x ?? 0,
+        y: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4637.y ?? 0
+      });
+    }
+    startEditingCell(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642) {
+      this._editorService["startEditingCell"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642);
+    }
+    stopEditingCell() {
+      this._editorService["stopEditingCell"]();
+    }
+    openLeftSidebar() {
+      this._stateService["setLeftSidebarVisible"](true);
+    }
+    closeLeftSidebar() {
+      this._stateService["setLeftSidebarVisible"](false);
+    }
+    openRightSidebar() {
+      this._stateService["setRightSidebarVisible"](true);
+    }
+    closeRightSidebar() {
+      this._stateService["setRightSidebarVisible"](false);
+    }
+    openRecordDetail(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644) {
+      this._stateService["openRecordDetail"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644);
+    }
+    openDraftRecordDetail(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4646 = {}) {
+      this._stateService["openDraftRecordDetail"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4646);
+    }
+    closeRecordDetail() {
+      this._stateService["closeRecordDetail"]();
+    }
+    openFieldConfigPanel(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648) {
+      this._stateService["getState"]().openPanels["fieldConfig"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648;
+    }
+    openViewSettingsPanel(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650) {
+      this._stateService["getState"]().openPanels["viewSettings"] = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650;
+    }
+    getPersonOptions() {
+      return [...(this._getBaseUIConfig().personOptions ?? [])];
+    }
+    setPersonOptions(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4652) {
+      this._updateBaseUIConfig({
+        personOptions: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4652
+      });
+    }
+    getGroupOptions() {
+      return [...(this._getBaseUIConfig().groupOptions ?? [])];
+    }
+    setGroupOptions(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654) {
+      this._updateBaseUIConfig({
+        groupOptions: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654
+      });
+    }
+    getRenderedView() {
+      return null;
+    }
+    _getBaseUIConfig() {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656 = ox37e622,
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657;
+      return ((var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657 = this[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656(227)]) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657.getConfig(BASES_UI_PLUGIN_CONFIG_KEY)) ?? this._localConfig;
+    }
+    _updateBaseUIConfig(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660) {
+      var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661 = ox37e622,
+        var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4662;
+      this[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661(238)] = {
+        ...this._getBaseUIConfig(),
+        ...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660
+      }, (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4662 = this[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661(227)]) == null || var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4662[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4661(229)](BASES_UI_PLUGIN_CONFIG_KEY, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4660, {
+        merge: true
+      });
+    }
+  },
+  f = class extends FUniver {
+    getBaseUI() {
+      return new d(this._injector["get"](BaseUIStateService), this._injector["get"](BaseSelectionService), this._injector["get"](BaseEditorService), this._injector["get"](IConfigService));
+    }
+  };
 export { d as FBaseUI, f as FUniverBaseUIMixin };

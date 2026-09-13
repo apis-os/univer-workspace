@@ -1,1 +1,4670 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/shape-editor-ui"),t=require("@univerjs/ui"),n=require("@univerjs-pro/engine-shape"),r=require("@univerjs-pro/shape-editor"),i=require("@univerjs-pro/sheets-shape"),a=require("@univerjs/core"),o=require("@univerjs/sheets"),s=require("@univerjs/drawing"),c=require("@univerjs/engine-render"),l=require("@univerjs/sheets-ui"),u=require("rxjs"),d=require("@univerjs/drawing-ui"),f=require("react/jsx-runtime"),p=require("@univerjs/sheets-drawing"),m=require("@univerjs-pro/license"),h=require("@univerjs/docs"),g=require("@univerjs/docs-ui"),_=require("@univerjs/sheets-drawing-ui"),v=require("@univerjs/icons"),y=require("react"),b=require("@univerjs/design");function x(v1445,v1446){let v1447={};for(let v641 of Object.keys(v1446)){let v347=v1446[v641],v348=v1445[v641];if(v347!==undefined){if(v348===undefined){v1447[v641]=undefined;continue;}typeof v347=="object"&&v347&&!Array.isArray(v347)&&typeof v348=="object"&&v348&&!Array.isArray(v348)?v1447[v641]=x(v348,v347):v1447[v641]=v348;}}return v1447;}const S={type:a.CommandType["COMMAND"],id:"sheet.command.update-shape-data",handler:(v1448,v1449)=>{let v1450=v1448.get(i.SheetsShapeService),{unitId:v1451,subUnitId:v1452,shapeType:v1453,shapeId:v1454,shapeData:v1455,replaceShapeData:v1456,oldShapeJSON:v1457}=v1449;if(!v1450.getShapeModel(v1451,v1452,v1454))return false;let v1458=v1448.get(a.ICommandService),v1459=v1448.get(a.IUndoRedoService),{oldShapeType:v1460,oldShapeData:v1461={}}=v1457,v1462=v1456?v1461:x(v1461,v1455||{}),v1463={id:i.UpdateSheetsShapeDataMutation["id"],params:{unitId:v1451,subUnitId:v1452,shapeId:v1454,shapeType:v1453,shapeData:v1455,replace:v1456}},v1464={id:i.UpdateSheetsShapeDataMutation["id"],params:{unitId:v1451,subUnitId:v1452,shapeId:v1454,shapeType:v1460,shapeData:v1462,replace:v1456}};return v1458.syncExecuteCommand(v1463.id,v1463.params)?(v1459.pushUndoRedo({unitID:v1451,undoMutations:[v1464],redoMutations:[v1463]}),true):false;}};function C(v1465,v1466,v1467,v1468,v1469,v1470){let v1471={unitId:v1466,subUnitId:v1467,shapeId:v1468,shapeData:v1470,oldShapeJSON:v1469};return v1465.executeCommand(S.id,v1471);}function w(v1472,v1473,v1474,v1475,v1476,v1477){let v1478={unitId:v1473,subUnitId:v1474,shapeId:v1475,shapeData:v1477,oldShapeJSON:v1476};return v1472.executeCommand(S.id,v1478);}function T(v1479){"@babel/helpers - typeof";return T=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v642){return typeof v642;}:function(v643){return v643&&typeof Symbol=="function"&&v643.constructor===Symbol&&v643!==Symbol.prototype?"symbol":typeof v643;},T(v1479);}function ee(v1480,v1481){if(T(v1480)!="object"||!v1480)return v1480;var v1482=v1480[Symbol.toPrimitive];if(v1482!==undefined){var v1483=v1482.call(v1480,v1481||"default");if(T(v1483)!="object")return v1483;throw TypeError("@@toPrimitive must return a primitive value.");}return(v1481==="string"?String:Number)(v1480);}function E(v1484){var v1485=ee(v1484,"string");return T(v1485)=="symbol"?v1485:v1485+"";}function D(v1486,v1487,v1488){return(v1487=E(v1487))in v1486?Object.defineProperty(v1486,v1487,{value:v1488,enumerable:true,configurable:true,writable:true}):v1486[v1487]=v1488,v1486;}function O(v1489,v1490,v1491){let v1492=(0,e.resolveShapeTextEditorBehaviorShapeData)(v1489,{...v1490,dataModel:{...(v1490.dataModel??{}),...(v1491?{doc:v1491}:null)}}),v1493=(0,e.resolveShapeTextEditorWrapStrategy)(v1492);return{clip:(0,e.shouldClipShapeTextDocument)(v1492,v1493),wrapStrategy:v1493};}var k=class extends c.Shape{constructor(v644,v645){super(v644,v645),D(this,"_props",undefined),D(this,"_formulaAnimation",new e["FormulaShapeAnimationController"](()=>this.makeDirty(true),()=>this._applyFormulaAutoFitSize())),D(this,"_transformCalculateSrcRect",true),D(this,"_drawingType",a.DrawingTypeEnum["DRAWING_SHAPE"]),D(this,"isDrawingObject",true),this._props={...v645},this._formulaAnimation["setPresentation"](v645.formulaPresentation,v645.animateFormulaPresentation!==false),this._init(),this._applyFormulaAutoFitSize();}_init(){this.onTransformChange$["subscribeEvent"](v349=>{this._updateSrcRectByTransform(v349);});}setPrstGeom(v646){this._props["prstGeom"]=v646;}setEditing(v647){this._props["isEditing"]=v647,this.makeDirty(true);}setFormulaPresentation(v648,v649=true){this._formulaAnimation["setPresentation"](v648,v649),this._props["formulaPresentation"]=v648,this._applyFormulaAutoFitSize(),this.makeDirty(true);}_applyFormulaAutoFitSize(){let v650=this._props["shapeModel"],v651=v650.getShapeTextData(),v652=(0,e.normalizeShapeTextModel)(v651==null?undefined:v651.dataModel),v653=v652==null?undefined:v652.doc,v654=this._formulaAnimation["getAutoFitPresentations"]();if(!v653||v654.length===0)return;v650.updateContext({width:this.width,height:this.height});let v655=(0,e.resolveFormulaShapeAutoFitSize)({documentData:v654.map(v350=>(0,r.createShapeFormulaDocument)(v653,v350)),height:this.height,shapeData:v650.getShapeData(),textRect:v650.getShapeTextRect({left:0,top:0,width:this.width,height:this.height}),width:this.width});if(v655){var v656;this.resize(v655.width,v655.height),(v656=this.getScene())==null||(v656=v656.getTransformer())==null||v656.debounceRefreshControls();}}get unitId(){return this._props["unitId"];}get subUnitId(){return this._props["subUnitId"];}_updateSrcRectByTransform(v657){if(this._props["srcRect"]==null||!this._transformCalculateSrcRect)return;let{width:v658,height:v659}=this,{width:v660=0,height:v661=0}=v657.preValue,{left:v662=0,top:v663=0,right:v664=0,bottom:v665=0}=this._props["srcRect"],v666=v662,v667=v663,v668=v664,v669=v665,v670=false;if(v660!==0&&v660!==v658){let v351=v662/v660,v352=v664/v660;v666=v658*v351,v668=v658*v352,v670=true;}if(v661!==0&&v661!==v659){let v353=v663/v661,v354=v665/v661;v667=v659*v353,v669=v659*v354,v670=true;}v670&&this.setSrcRect({left:v666,top:v667,right:v668,bottom:v669});}setSrcRect(v671){this._props["srcRect"]=v671,this.makeDirty(true);}setFillImage(v672){this._props["image"]=v672,this.makeDirty(true);}set transform(v673){this._transform=v673;}get transform(){this._transform||this._setTransForm();let v674=this._transform["clone"]();return this.transformForAngle(v674);}get shapeModel(){return this._props["shapeModel"];}get shapeId(){return this._props["shapeId"];}get classType(){return c.RENDER_CLASS_TYPE["SHAPE"];}_draw(v675,v676,v677,v678){let v679=this._props["shapeModel"];if(!v679||!v676)return;let v680=v677??this.width,v681=v678??this.height,v682={shapeType:v679.getShapeType(),width:v680,height:v681},v683={renderMode:n.ShapeRenderModeEnum["Path"],oKey:this.oKey,image:this._props["image"],angle:this.angle};v679.updateContext(v682),v675.save();let v684={top:0,left:0,width:v680,height:v681},v685=v679.getDrawingEffectBounds(v684);v685?this._renderWithCache(v675,v685,v355=>{v679.render(v355,v684,v683);}):(this._releaseRenderCache(),v679.render(v675,v684,v683)),v675.restore();let v686=v679.getShapeTextData(),v687=v679.getShapeTextRect(v684),v688=v679.isLineShape();if(v686&&v687&&!v688){v675.save(),this.getState().flipX&&v675.scale(-1,1);let v356=v680/2,v357=v681/2;v675.translate(-v356,-v357),v675.beginPath(),this._drawShapeText(v675,v686,v687),v675.restore();}}getDrawingPoints(v689){}_drawShapeText(v690,v691,v692){var v693;this._props["isEditing"]||(!((v693=v691.dataModel)!=null&&v693.doc)&&"isRichText"in v691&&v691.isRichText===false?this._drawSimpleText(v690,v691,v692):this._drawRichText(v690,v691,v692));}_drawSimpleText(v694,v695,v696){this._drawRichText(v694,{...v695,text:v695.text??"",dataModel:{doc:(0,e.plainShapeTextToDocumentData)(v695,"sheets-shape-text-"+this.oKey)}},v696);}_drawRichText(v697,v698,v699){(0,e.drawFormulaShapeAnimationLayers)(v697,this._formulaAnimation,(v358,v359)=>{this._drawRichTextLayer(v358,v698,v699,v359);});}_drawRichTextLayer(v700,v701,v702,v703){let v704=this._props["localeService"];if(!v701.dataModel||!v704)return;let v705=(0,e.normalizeShapeTextModel)(v701.dataModel);if(!v705)return;let v706=v705.doc;if(!v706)return;let v707=(0,r.createShapeFormulaDocument)(v706,v703),v708=v705.va??a.VerticalAlign["TOP"],v709=v705.ha??a.HorizontalAlign["LEFT"],v710=O(this._props["shapeModel"].getShapeData(),v701,v707),v711=v701.isHorizontal,v712=new a.DocumentDataModel((0,e.prepareShapeTextDocumentData)(v707,{isHorizontal:v711!==false,textRect:v702,verticalAlign:v708,horizontalAlign:v709,wrapStrategy:v710.wrapStrategy})),v713=new c.DocumentViewModel(v712),v714=c.DocumentSkeleton["create"](v713,v704);v714.calculate();let v715=v714.getActualSize().actualHeight,v716=(0,e.resolveShapeTextDocumentRenderLayout)({contentHeight:v715,verticalAlign:v708,viewportHeight:v702.height});v712.updateDocumentStyle({pageSize:{width:v711===false?v702.height:v702.width,height:v716.contentHeight}}),v712.updateDocumentDataMargin({t:v716.marginTop}),v714.calculate();let v717=new c["Documents"]("shape-text-"+this.oKey,v714,{pageMarginLeft:0,pageMarginTop:0,onTextFillImageLoaded:()=>this.makeDirty(true)});v717.resize(v702.width,v716.contentHeight),v700.save(),v700.translateWithPrecision(v702.left,v702.top),v710.clip&&(v700.beginPath(),v700.rect(0,v716.clipTop,v702.width,v716.clipHeight),v700.clip()),v716.contentVerticalOffset&&v700.translateWithPrecision(0,v716.contentVerticalOffset),v717.draw(v700),v700.restore(),v717.dispose(),v714.dispose(),v713.dispose(),v712.dispose();}render(v718,v719,v720=false){if(!this.visible)return this.makeDirty(false),this;let{width:v721,height:v722,left:v723,top:v724}=this,v725=this.getRealBound();if(v721=v725.width,v722=v725.height,v723=v725.left,v724=v725.top,this.isRender(v719)){let{top:v360,left:v361,bottom:v362,right:v363}=v719.viewBound;if(v721+this.strokeWidth+v723<v361||v363<v723||v722+this.strokeWidth+v724<v360||v362<v724)return this;}let v726=v723+v721/2,v727=v724+v722/2,v728=this.transform["getMatrix"]();if(this._props["isEditing"]){let v364=this.getState(),v365=new c["Transform"]();v365.composeMatrix({...v364}),v728=v365.getMatrix();}return v718.save(),this._props["shapeModel"].isRenderLinePointsMode===true||v718.transform(v728[0],v728[1],v728[2],v728[3],v726,v727),this._draw(v718,v719,v721,v722),v718.restore(),this.makeDirty(false),this;}getInverseCoord(v729){let{left:v730,top:v731,width:v732,height:v733}=this.getRealBound(),v734=this.transform["getMatrix"](),v735=v730+v732/2,v736=v731+v733/2,v737=new c["Transform"]([v734[0],v734[1],v734[2],v734[3],v735,v736]),v738=this.getParent();return(this.isInGroup&&(v738==null?undefined:v738.classType)===c.RENDER_CLASS_TYPE["GROUP"]?v738.ancestorTransform["multiply"](v737):v737).invert().applyPoint(v729);}isHit(v739){let{left:v740,top:v741,width:v742,height:v743}=this.getRealBound(),v744=v740+v742/2,v745=v741+v743/2,v746=this.transform["getMatrix"](),v747=new c.Transform([v746[0],v746[1],v746[2],v746[3],v744,v745]),v748=this.getParent(),v749=(this.isInGroup&&(v748==null?undefined:v748.classType)===c.RENDER_CLASS_TYPE["GROUP"]?v748.ancestorTransform["multiply"](v747):v747).invert().applyPoint(v739),v750=v742/2,v751=v743/2,v752=this._props["shapeModel"];return v752&&v752.isLineShape()?v752.isHitLine(v749.x,v749.y,v742,v743):v749.x>=-v750-this.strokeWidth/2&&v749.x<=v750+this.strokeWidth/2&&v749.y>=-v751-this.strokeWidth/2&&v749.y<=v751+this.strokeWidth/2;}dispose(){this._formulaAnimation["dispose"](),this._props["shapeModel"]=null,super.dispose();}},A=class extends c.Shape{constructor(v753,v754){super(v753,v754),D(this,"_shapeId",null),D(this,"_adjName",null),D(this,"_unitId",null),D(this,"_subUnitId",null),v754&&this.setShapeProps(v754);}getDrawingSearch(){return{unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._shapeId};}setShapeProps(v755){v755.shapeId!==undefined&&(this._shapeId=v755.shapeId),v755.adjName!==undefined&&(this._adjName=v755.adjName),v755.unitId!==undefined&&(this._unitId=v755.unitId),v755.subUnitId!==undefined&&(this._subUnitId=v755.subUnitId),this.transformByState({width:v755.width,height:v755.height});}_draw(v756){c.Circle["drawWith"](v756,{radius:n.ShapeDefaultConfig["adjHandleSize"],fill:n.ShapeDefaultConfig["adjHandleFill"],stroke:n.ShapeDefaultConfig["adjHandleStroke"],strokeWidth:1,evented:true});}};function j(v1494,v1495){return function(v757,v758){v1495(v757,v758,v1494);};}function M(v1496,v1497,v1498,v1499){var v1500=arguments.length,v1501=v1500<3?v1497:v1499===null?v1499=Object.getOwnPropertyDescriptor(v1497,v1498):v1499,v1502;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v1501=Reflect.decorate(v1496,v1497,v1498,v1499);else{for(var v1503=v1496.length-1;v1503>=0;v1503--)(v1502=v1496[v1503])&&(v1501=(v1500<3?v1502(v1501):v1500>3?v1502(v1497,v1498,v1501):v1502(v1497,v1498))||v1501);}return v1500>3&&v1501&&Object.defineProperty(v1497,v1498,v1501),v1501;}let N=class extends a.Disposable{constructor(v759,v760,v761,v762,v763,v764){super(),this._drawingManagerService=v759,this._sheetsShapeService=v760,this._localeService=v761,this._imageIoService=v762,this._urlImageService=v763,this._shapeFormulaService=v764,D(this,"_formulaShapes",new Map()),this.disposeWithMe(this._shapeFormulaService["presentationChanged$"].subscribe(v366=>{var v367;(v367=this._formulaShapes["get"](this._formulaKey(v366.unitId,v366.subUnitId,v366.shapeId)))==null||v367.forEach(v113=>v113.setFormulaPresentation(v366.presentation,v366.animationEnabled));})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v368=>{v368.forEach(v114=>{this._shapeFormulaService["unregister"]({unitId:v114.unitId,subUnitId:v114.subUnitId,shapeId:v114.drawingId}),this._formulaShapes["delete"](this._formulaKey(v114.unitId,v114.subUnitId,v114.drawingId));});}));}renderDrawingShape(v765,v766,v767){let{transform:v768,drawingType:v769,srcRect:v770,prstGeom:v771,groupId:v772,unitId:v773,subUnitId:v774,drawingId:v775,isMultiTransform:v776,transforms:v777,hidden:v778,selectable:v779}=v765;if(v769!==a.DrawingTypeEnum["DRAWING_SHAPE"]||!this._drawingManagerService["getDrawingVisible"]()||v768==null)return;let v780=this._drawingManagerService["getDrawingEditable"](),v781=v776&&v777?v777:[v768],v782=[];for(let v369 of v781){let{left:v115,top:v116,width:v117,height:v118,angle:v119,flipX:v120,flipY:v121,skewX:v122,skewY:v123}=v369,v124=v781.indexOf(v369),v125=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v773,subUnitId:v774,drawingId:v775},v776?v124:undefined),v126=v766.getObjectIncludeInGroup(v125);if(v126!=null){let v36={unitId:v773,subUnitId:v774,shapeId:v775};v126 instanceof k&&this.refreshFormulaPresentation(v126,v36),v126.transformByState({left:v115,top:v116,width:v117,height:v118,angle:v119,flipX:v120,flipY:v121,skewX:v122,skewY:v123});continue;}let v127=this._drawingManagerService["getDrawingOrder"](v773,v774),v128=v127.indexOf(v775);if(v766.getObjectIncludeInGroup(v125)||!this._drawingManagerService["getDrawingVisible"]())continue;let v129=this._sheetsShapeService["getShapeModel"](v773,v774,v775);if(!v129)continue;let v130=(0,n.isConnectorShape)(v129.getShapeType())?{...e.SHAPE_EDITOR_TRANSFORMER_CONFIG,rotateEnabled:false,resizeEnabled:false,borderEnabled:false}:e.SHAPE_EDITOR_TRANSFORMER_CONFIG,v131=v129.getShapeData().formulaBinding,v132={unitId:v773,subUnitId:v774,shapeId:v775};v131&&this._shapeFormulaService["register"](v132,v131);let v133=new k(v125,{...v369,zIndex:v128===-1?v127.length-1:v128,shapeModel:v129,localeService:this._localeService,shapeId:v775,unitId:v773,subUnitId:v774,visible:v778!==true,evented:v779!==false,formulaPresentation:v131?this._shapeFormulaService["getPresentation"](v132):undefined,animateFormulaPresentation:(v131==null?undefined:v131.animationEnabled)!==false,transformerConfig:v130});if(v131){let v37=this._formulaKey(v773,v774,v775),v38=this._formulaShapes["get"](v37)??new Set();v38.add(v133),this._formulaShapes["set"](v37,v38);}v766.addObject(v133,c.DRAWING_OBJECT_LAYER_INDEX),v780&&v766.attachTransformerTo(v133),v772&&(0,d.insertGroupObject)({drawingId:v772,unitId:v773,subUnitId:v774},v133,v766,this._drawingManagerService),v771!=null&&v133.setPrstGeom(v771),v770!=null&&v133.setSrcRect(v770);let v134=this._loadShapePictureFill(v133,v129.getShapeData());if(v134){var v783;v767==null||(v783=v767.resourceCollector)==null||v783.add(v134);}v782.push(v133);}return v782;}_formulaKey(v784,v785,v786){return v784+"\x00"+v785+"\x00"+v786;}refreshFormulaPresentation(v787,v788){let v789=this._sheetsShapeService["getShapeModel"](v788.unitId,v788.subUnitId,v788.shapeId),v790=v789==null?undefined:v789.getShapeData().formulaBinding,v791=this._formulaKey(v788.unitId,v788.subUnitId,v788.shapeId);if(v790){this._shapeFormulaService["register"](v788,v790);let v370=this._formulaShapes["get"](v791)??new Set();v370.add(v787),this._formulaShapes["set"](v791,v370);}else{var v792;this._shapeFormulaService["unregister"](v788),(v792=this._formulaShapes["get"](v791))==null||v792.delete(v787);}v787.setFormulaPresentation(v790?this._shapeFormulaService["getPresentation"](v788):undefined,(v790==null?undefined:v790.animationEnabled)!==false);}refreshShapeFillImage(v793){let v794=v793.shapeModel["getShapeData"](),v795=v794.fill;if(!v795||v795.fillType!==n.ShapeFillEnum["PictureFill"]||!v795.fillImageSource){v793.setFillImage(undefined);return;}this._loadShapePictureFill(v793,v794);}_loadShapePictureFill(v796,v797){let v798=v797.fill;if(!v798||v798.fillType!==n.ShapeFillEnum["PictureFill"]||!v798.fillImageSource)return;let v799=v798.fillImageSource,v800=v798.fillImageSourceType??n.ImageSourceTypeEnum["URL"],v801=this._imageIoService["getImageSourceCache"](v799,v800);if(v801){v796.setFillImage(v801);return;}return this._loadAndSetImage(v796,v799,v800);}async _loadAndSetImage(v802,v803,v804){let v805;try{if(v804===n.ImageSourceTypeEnum["UUID"])v805=await this._imageIoService["getImage"](v803);else{if(v804===n.ImageSourceTypeEnum["URL"])try{v805=await this._urlImageService["getImage"](v803);}catch{v805=v803;}else v805=v803;}}catch(v371){console.error("[ShapeRender] Failed to resolve picture fill source",v371);return;}await new Promise(v372=>{let v373=new window["Image"]();v373.onload=()=>{this._imageIoService["addImageSourceCache"](v803,v804,v373),v802.setFillImage(v373),v372();},v373.onerror=()=>{console.error("[ShapeRender] Failed to load picture fill image",v803),v372();},v373.src=v805;});}};N=M([j(0,s.IDrawingManagerService),j(1,(0,a.Inject)(i.SheetsShapeService)),j(2,(0,a.Inject)(a.LocaleService)),j(3,a.IImageIoService),j(4,a.IURLImageService),j(5,(0,a.Inject)(r.ShapeFormulaService))],N);let P=class extends a.Disposable{constructor(v806,v807,v808,v809,v810,v811){super(),this._drawingManagerService=v806,this._sheetsShapeService=v807,this._renderManagerService=v808,this._sheetDrawingShapeRenderController=v809,this._univerInstanceService=v810,this._commandService=v811,D(this,"_activeShapeId",null),D(this,"_unitId",null),D(this,"_subUnitId",null),D(this,"_activeShapeAdjustPointList",undefined),D(this,"_shapes",[]),D(this,"_baseShapeLeft",0),D(this,"_baseShapeTop",0),D(this,"_baseShapeWidth",0),D(this,"_baseShapeHeight",0),D(this,"_isStartAdjusting",false),D(this,"_activeAdjustInfo",undefined),D(this,"_activeShapeModel",undefined),D(this,"_adjHandlerPointerMove",undefined),D(this,"_adjHandlerPointerUp",undefined),D(this,"_isShouldShowDrawingShapeAdjust",false),this._registerDrawingFocusChangeHandler(),this._registerDrawingMoveHandler();}_getShapeAdjustPointListById(v812,v813,v814){let v815=this._sheetsShapeService["getShapeModel"](v812,v813,v814);if(v815)return v815.getDrawingPoints();}clearAdjustControls(){this._clearShapeAdjustControls();}refreshAdjustControls(){this._updateShapeAdjustControls(true);}setShouldShowAdjust(v816){this._isShouldShowDrawingShapeAdjust=v816;}_getShapeAdjustInfosById(v817,v818,v819,v820){let v821=this._sheetsShapeService["getShapeModel"](v817,v818,v819);if(v821)return v821.getAdjustInfoByName(v820);}_createShapeAdjustControls(v822=false){if(this._unitId===null||this._subUnitId===null||this._activeShapeId===null)return;let v823=this._renderManagerService["getRenderUnitById"](this._unitId);if(!v823||!v823.with(l.SheetSkeletonManagerService).getCurrentSkeleton())return;let{scene:v824}=v823,v825={unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId},v826=this._drawingManagerService["getDrawingByParam"](v825),{transform:v827}=v826;if(!v827||v826.drawingType!==a.DrawingTypeEnum["DRAWING_SHAPE"])return;let{left:v828,top:v829,width:v830,height:v831,flipX:v832,flipY:v833,angle:v834=0}=v827;if(v828===undefined||v829===undefined)return;if(v822){let v374=this._sheetsShapeService["getShapeModel"](this._unitId,this._subUnitId,this._activeShapeId);v374==null||v374.updateContext({width:v830??0,height:v831??0}),this._activeShapeAdjustPointList=v374==null?undefined:v374.getDrawingPoints();}let v835=this._activeShapeAdjustPointList;for(let v375=0;v375<v835.length;v375++){let v135=v835[v375],v136=v135.x,v137=v135.y;if(v832&&(v136=(v830||0)-v136),v833&&(v137=(v831||0)-v137),v834!==0){let v39=(v830||0)/2,v40=(v831||0)/2,v41=v834*Math.PI/180,v42=Math.cos(v41),v43=Math.sin(v41),v44=v136-v39,v45=v137-v40;v136=v39+(v44*v42-v45*v43),v137=v40+(v44*v43+v45*v42);}let v138={x:v136,y:v137,adjName:v135.adjName};this._addShapeAdjustControl(v824,v138,v138.adjName,v828,v829,this._unitId,this._subUnitId);}}_updateShapeAdjustControls(v836=false){v836&&(this._clearShapeAdjustControls(),this._createShapeAdjustControls(v836));}_addShapeAdjustControl(v837,v838,v839,v840,v841,v842,v843){if(!this._activeShapeId)return;let v844=v837.getObjectIncludeInGroup("shape-adjust-point-"+this._activeShapeId+"-"+v839);if(v844){v844.transformByState({left:v838.x+v840-n.ShapeDefaultConfig["adjHandleSize"],top:v838.y+v841-n.ShapeDefaultConfig["adjHandleSize"]});return;}let v845={left:v838.x+v840-n.ShapeDefaultConfig["adjHandleSize"],top:v838.y+v841-n.ShapeDefaultConfig["adjHandleSize"],adjName:v839,shapeId:this._activeShapeId,unitId:v842,subUnitId:v843,width:n.ShapeDefaultConfig["adjHandleSize"]+8,height:n.ShapeDefaultConfig["adjHandleSize"]+8,zIndex:c.DRAWING_OBJECT_LAYER_INDEX+1,evented:true},v846=new A("shape-adjust-point-"+this._activeShapeId+"-"+v839,v845);this._shapes["push"](v846),this._attachAdjustEvent(v846,v837,v839),v837.addObject(v846,c.DRAWING_OBJECT_LAYER_INDEX+1);}_clearShapeAdjustControls(){this._shapes["length"]!==0&&(this._shapes["forEach"](v376=>{v376.dispose();}),this._shapes=[]);}_updateAdjustControlPositions(){this._createShapeAdjustControls();}_getScrollInfo(v847,v848){var v849;let v850={x:0,y:0};if(!v847||!v848)return v850;let v851=this._renderManagerService["getRenderUnitById"](v847);if(!v851||!v851.with(l.SheetSkeletonManagerService).getSkeleton(v848))return v850;let v852=v851.with(l.SheetScrollManagerService),v853=v852==null?undefined:v852.getCurrentScrollState();if(!v853)return v850;let v854=(v849=this._univerInstanceService["getUnit"](v847))==null?undefined:v849.getSheetBySheetId(v848);if(!v854)return v850;let v855=(0,l.getViewportByCell)(v853.sheetViewStartRow,v853.sheetViewStartColumn,v851.scene,v854);return v855?{x:v855.viewportScrollX,y:v855.viewportScrollY}:v850;}_getZoomRatio(v856,v857){var v858;let v859=(v858=this._univerInstanceService["getUnit"](v856))==null?undefined:v858.getSheetBySheetId(v857);return(v859==null?undefined:v859.getZoomRatio())??1;}_attachAdjustEvent(v860,v861,v862){this.disposeWithMe((0,a.toDisposable)(v860.onPointerDown$["subscribeEvent"]((v377,v378)=>{var v379,v380,v381,v382;let v383=v860.getDrawingSearch();this._activeAdjustInfo=this._getShapeAdjustInfosById(v383.unitId,v383.subUnitId,v383.drawingId,v862),this._activeShapeModel=this._sheetsShapeService["getShapeModel"](v383.unitId,v383.subUnitId,v383.drawingId);let v384=this._drawingManagerService["getDrawingByParam"]({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId}),{transform:v385}=v384;if(v385){let{left:v139,top:v140,width:v141,height:v142}=v385;this._baseShapeLeft=v139||0,this._baseShapeTop=v140||0,this._baseShapeWidth=v141||0,this._baseShapeHeight=v142||0;}let v386=!!((v379=v384.transform)!=null&&v379.flipX),v387=!!((v380=v384.transform)!=null&&v380.flipY),v388=((v381=v384.transform)==null?undefined:v381.angle)||0;this._isStartAdjusting=true,v861.disableObjectsEvent();let v389={...(((v382=this._activeAdjustInfo)==null?undefined:v382.currentAdjustValues)??{})};this._adjHandlerPointerMove=v861.onPointerMove$["subscribeEvent"]((v143,v144)=>{if(!this._isStartAdjusting)return;let{offsetX:v145,offsetY:v146}=v143,v147=this._activeAdjustInfo;if(this._activeShapeModel&&v147){v861.disableObjectsEvent(),v861.setCursor(c.CURSOR_TYPE["CROSSHAIR"]);let v46={left:0,top:0,width:this._baseShapeWidth,height:this._baseShapeHeight},v47=this._getScrollInfo(this._unitId,this._subUnitId),v48=this._getZoomRatio(this._unitId,this._subUnitId),v49=v145/v48+v47.x-this._baseShapeLeft,v50=v146/v48+v47.y-this._baseShapeTop;if(v388!==0){let v3=this._baseShapeWidth/2,v4=this._baseShapeHeight/2,v5=v388*Math.PI/180,v6=Math.cos(v5),v7=Math.sin(v5),v8=v49-v3,v9=v50-v4;v49=v3+(v8*v6+v9*v7),v50=v4+(-v8*v7+v9*v6);}v386&&(v49=this._baseShapeWidth-v49),v387&&(v50=this._baseShapeHeight-v50);let v51={x:v49,y:v50},v52=this._activeShapeModel["calcAdjValues"](v46,v51,v147,v386,v387);if(Object.keys(v52).length===0)return;for(let[v10,v11]of Object.entries(v52))this._activeShapeModel["setAdjustValueByName"](v10,v11);this._activeShapeModel["updateContext"]({width:this._baseShapeWidth,height:this._baseShapeHeight});let v53=this._drawingManagerService["getDrawingByParam"]({unitId:v383.unitId,subUnitId:v383.subUnitId,drawingId:v383.drawingId});v53&&(this._sheetDrawingShapeRenderController["renderDrawingShape"](v53,v861),this._activeShapeAdjustPointList=this._getShapeAdjustPointListById(v383.unitId,v383.subUnitId,v383.drawingId),this._updateAdjustControlPositions());}v144.stopPropagation();}),this._adjHandlerPointerUp=v861.onPointerUp$["subscribeEvent"]((v148,v149)=>{this._adjHandlerPointerMove["unsubscribe"](),this._adjHandlerPointerUp["unsubscribe"](),v861.resetCursor();let v150=this._activeAdjustInfo;if(v150){let v54=v383.unitId,v55=v383.subUnitId,v56=v383.drawingId,v57={};for(let v12 of Object.keys(v150.currentAdjustValues)){var v151;let v1=(v151=this._activeShapeModel)==null?undefined:v151.getAdjustValueByName(v12);v1!==undefined&&(v57[v12]=v1);}Object.keys(v57).length>0&&C(this._commandService,v54,v55,v56,{oldShapeData:{adjustValues:v389}},{adjustValues:v57});}this._activeAdjustInfo=undefined,this._activeShapeModel=undefined,this._isStartAdjusting=false,v149.stopPropagation(),v861.enableObjectsEvent();}),v378.stopPropagation();})));}_registerDrawingMoveHandler(){let v863=this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]);this.disposeWithMe(v863.pipe((0,u.switchMap)(v390=>v390?v390.activeSheet$["pipe"]((0,u.switchMap)(v152=>{if(!v152)return u.EMPTY;let v153=v390.getUnitId(),v154=this._renderManagerService["getRenderUnitById"](v153),v155=v154==null?undefined:v154.scene;return v155?(0,u.of)(v155):u.EMPTY;})):u.EMPTY)).subscribe(v391=>{let v392=v391.getTransformerByCreate();this.disposeWithMe(v391.onPointerMove$["subscribeEvent"](()=>{this._isShouldShowDrawingShapeAdjust;})),this.disposeWithMe(v392.changeStart$["subscribe"](v156=>{let{objects:v157}=v156;this._createShapeAdjustControls(),v157!==null&&v157.size===1&&v157.values().next().value instanceof k&&this.setShouldShowAdjust(true);})),this.disposeWithMe(v392.changing$["subscribe"](()=>{this._isShouldShowDrawingShapeAdjust&&this._clearShapeAdjustControls();})),this.disposeWithMe(v391.onPointerUp$["subscribeEvent"](()=>{this._isShouldShowDrawingShapeAdjust&&(this.setShouldShowAdjust(false),this._createShapeAdjustControls());})),this.disposeWithMe(v392.changeEnd$["subscribe"](()=>{this._unitId&&this._subUnitId&&this._activeShapeId&&this._drawingManagerService["getDrawingByParam"]({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId})&&(this._activeShapeAdjustPointList=this._getShapeAdjustPointListById(this._unitId,this._subUnitId,this._activeShapeId),this._updateAdjustControlPositions());}));}));}_registerDrawingFocusChangeHandler(){this.disposeWithMe(this._commandService["onCommandExecuted"](v393=>{if(v393.id!==i.UpdateSheetsShapeDataMutation["id"])return;let{unitId:v394,subUnitId:v395,shapeId:v396}=v393.params;v394===this._unitId&&v395===this._subUnitId&&v396===this._activeShapeId&&this.refreshAdjustControls();})),this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v397=>{if(v397.length===1){let v158=v397[0];if(v158.drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]&&this._univerInstanceService["getUnitType"](v158.unitId)===a.UniverInstanceType["UNIVER_SHEET"]){this._activeShapeId=v158.drawingId;let{unitId:v58,subUnitId:v59}=v158;this._activeShapeAdjustPointList=this._getShapeAdjustPointListById(v58,v59,this._activeShapeId),this._unitId=v58,this._subUnitId=v59,this._clearShapeAdjustControls(),this._createShapeAdjustControls();return;}}this._activeShapeId=null,this._activeShapeAdjustPointList=undefined,this._unitId=null,this._subUnitId=null,this._clearShapeAdjustControls();})),this.disposeWithMe(this._drawingManagerService["update$"].subscribe(v398=>{if(v398.length===1){var v399;let v159=v398[0];((v399=this._drawingManagerService["getDrawingByParam"](v159))==null?undefined:v399.drawingType)===a.DrawingTypeEnum["DRAWING_SHAPE"]&&this._updateShapeAdjustControls(true);}})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v400=>{for(let v160 of v400)this._activeShapeId===v160.drawingId&&(this._activeShapeId=null,this._activeShapeAdjustPointList=undefined,this._unitId=null,this._subUnitId=null,this._clearShapeAdjustControls());}));}};P=M([j(0,s.IDrawingManagerService),j(1,(0,a.Inject)(i.SheetsShapeService)),j(2,(0,a.Inject)(c.IRenderManagerService)),j(3,(0,a.Inject)(N)),j(4,a.IUniverInstanceService),j(5,a.ICommandService)],P);const F={id:"drawing.operation.set-drawing-active",type:a.CommandType["OPERATION"],handler:(v1504,v1505)=>{let v1506=v1504.get(s.IDrawingManagerService),v1507=v1504.get(c.IRenderManagerService),v1508=v1504.get(P);if(v1505==null)return true;if(v1505.length>0){var v1509;let v864=(v1509=v1507.getRenderUnitById(v1505[0].unitId))==null?undefined:v1509.scene;if(v864){let{unitId:v401,subUnitId:v402,drawingId:v403}=v1505[0],v404=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v401,subUnitId:v402,drawingId:v403},undefined),v405=v864.getObjectIncludeInGroup(v404);if(v405){var v1510;(v1510=v1507.getRenderUnitById(v1505[0].unitId))==null||(v1510=v1510.scene["getTransformer"]())==null||v1510.activeAnObject(v405);}}v1506.focusDrawing(v1505),v1508.setShouldShowAdjust(false);}return true;}},I={type:a.CommandType["COMMAND"],id:"sheet.command.menu-insert-shape",handler:async(v1511,v1512)=>{let v1513=(0,o.getSheetCommandTarget)(v1511.get(a.IUniverInstanceService));if(!v1513)return false;let v1514=v1511.get(o.SheetsSelectionsService).getCurrentLastSelection();if(!v1514)return false;let v1515=v1511.get(a.ICommandService),{unitId:v1516,subUnitId:v1517}=v1513,{value:v1518,enhanceParams:v1519}=v1512,{range:v1520}=v1514,v1521={unitId:v1516,subUnitId:v1517,shapeType:v1518,range:v1520,shapeId:(0,a.generateRandomId)()};if(v1519){let v865=(0,n.isConnectorShape)(v1518),v866=v1518===n.ShapeTypeEnum["Rect"];v865&&(v1519.startArrow||v1519.endArrow)&&(v1521.shapeData={ln:{startArrow:v1519.startArrow?{type:n.ShapeArrowTypeEnum["Arrow"],size:n.ShapeArrowSizeEnum["Medium"]}:undefined,endArrow:v1519.endArrow?{type:n.ShapeArrowTypeEnum["Arrow"],size:n.ShapeArrowSizeEnum["Large"]}:undefined}}),v866&&(v1519.horizontal||v1519.vertical)&&(v1521.shapeData=(0,r.createShapeTextBoxShapeData)({fill:{fillType:n.ShapeFillEnum["SolidFill"],color:"#FFFFFF"},isHorizontal:!!v1519.horizontal,stroke:{lineStrokeType:n.ShapeLineTypeEnum["SolidLine"],width:1,color:"#bcbcbc"}}));}let v1522=v1515.syncExecuteCommand(i.InsertShapeCommand["id"],v1521);return setTimeout(()=>{v1515.executeCommand(F.id,[{unitId:v1516,subUnitId:v1517,drawingId:v1521.shapeId}]);},200),v1522;}},L="sheet.shape.edit.panel",R="sheet.shape.object-list.panel",z="sheet.shape.floating-toolbar",B="sheets-shape-ui.ribbon.shape-format",te=(0,a.createInternalEditorID)("SHAPE_TEXT"),ne="sheet.shape.text.float-menu",re={id:"sheet.operation.open-shape-object-list-panel",type:a.CommandType["COMMAND"],handler:(v1523,v1524)=>{let v1525=v1523.get(t.ISidebarService),v1526=v1523.get(a.LocaleService),v1527=v1523.get(a.IUniverInstanceService),v1528=v1523.get(a.ICommandService);return(0,o.getSheetCommandTarget)(v1527)?(v1524==null?undefined:v1524.value)==="close"?(v1525.close(R),true):(v1525.open({id:R,header:{title:v1526.t("sheets-shape-ui.objectListPanel.title")},children:{label:R},onClose:()=>{v1528.syncExecuteCommand(s.SetDrawingSelectedOperation["id"],[]);},width:360}),true):false;}},V={type:a.CommandType["OPERATION"],id:"sheet.operation.open-sheet-shape-format-panel",handler(){return true;}};function ie(v1529){let v1530=v1529.get(s.IDrawingManagerService).getFocusDrawings(),v1531=v1530.length===1?v1530[0]:null;if(!v1531||v1531.drawingType!==a.DrawingTypeEnum["DRAWING_SHAPE"])return null;let v1532=v1529.get(i.SheetsShapeService),v1533=v1532.getShapeTypeById(v1531.unitId,v1531.subUnitId,v1531.drawingId),v1534=v1532.getShapeDataById(v1531.unitId,v1531.subUnitId,v1531.drawingId);return v1533===undefined||!v1534?null:{drawing:v1531,shapeData:v1534,shapeType:v1533};}const H={id:"sheet.operation.apply-shape-quick-style",type:a.CommandType["OPERATION"],handler:(v1535,v1536)=>{let v1537=ie(v1535),v1538=(0,r.getShapeQuickStylePreset)((v1536==null?undefined:v1536.presetId)??(v1536==null?undefined:v1536.value)??"");if(!v1537||!v1538||v1538.type!==(0,r.getShapeQuickStyleType)(v1537.shapeData))return false;let v1539=(0,r.applyQuickStyleToShapeData)(v1537.shapeData,v1538);if(!v1539)return false;let{drawing:v1540}=v1537;return v1535.get(a.ICommandService).executeCommand(S.id,{unitId:v1540.unitId,subUnitId:v1540.subUnitId,shapeId:v1540.drawingId,shapeData:v1539,oldShapeJSON:{oldShapeData:v1537.shapeData}});}},ae={id:"sheet.operation.update-shape-type",type:a.CommandType["OPERATION"],handler:(v1541,v1542)=>{let v1543=ie(v1541),v1544=(v1542==null?undefined:v1542.shapeType)??(v1542==null?undefined:v1542.value);if(!v1543||!v1544||(0,n.isConnectorShape)(v1543.shapeType)||(0,n.isConnectorShape)(v1544))return false;let v1545=(0,r.cloneShapeDataForType)(v1543.shapeData,v1544);if(!v1545)return false;let{drawing:v1546}=v1543;return v1541.get(a.ICommandService).executeCommand(S.id,{unitId:v1546.unitId,subUnitId:v1546.subUnitId,shapeId:v1546.drawingId,shapeType:v1544,shapeData:v1545,replaceShapeData:true,oldShapeJSON:{oldShapeType:v1543.shapeType,oldShapeData:v1543.shapeData}});}};let U=class extends a.Disposable{constructor(v867,v868){super(),this._clipService=v867,this._drawingManagerService=v868,this._registerImageShapeClipDelegate(),this._clipService["setCanUseShapeClip"](true),this.disposeWithMe({dispose:()=>this._clipService["setCanUseShapeClip"](false)});}_registerImageShapeClipDelegate(){let v869=this._clipService,v870=new Map(),v871=v869.registerClipDelegate((v406,v407,v408,v409,v410)=>{let v411=v407;if(v411===n.ShapeTypeEnum["None"]||v407==="custom")return false;try{let v161=v870.get(v407);return v161||(v161=new n["ShapeModel"](v411,"clip-"+v407),v870.set(v407,v161)),v161.clearAdjustValue(),v410&&Object.keys(v410).length>0&&v161.setShapeData({adjustValues:v410},true),v161.updateContext({width:v408,height:v409}),v161.buildClipPath(v406,{left:0,top:0,width:v408,height:v409});}catch{return false;}});this.disposeWithMe(v871),this.disposeWithMe({dispose:()=>v870.clear()});}clipByShape(v872,v873,v874,v875,v876){let v877=this._drawingManagerService["getDrawingData"](v872,v873);if(!v877[v874])return;let v878={...v877[v874],prstGeom:v875,adjustValues:v876};this._drawingManagerService["featurePluginUpdateNotification"]([v878]);}};U=M([j(0,(0,a.Inject)(d.DrawingImageClipService)),j(1,(0,a.Inject)(s.IDrawingManagerService))],U);const oe="sheet.shape.picker.component",se="sheet.image-clip.shape-picker.component";function ce({onShapeClick:v1547,excludeGroups:v1548}){return(0,f.jsx)(e.ShapePickerPanel,{excludeGroups:v1548,onShapeClick:v1547,scrollContainer:"parent"});}function le(){let v1549=(0,t.useDependency)(s.IDrawingManagerService),v1550=(0,t.useDependency)(U);return(0,f.jsx)(e.ShapePickerDropdown,{buttonLabel:"sheets-shape-ui.imagePanel.crop.shape",excludeGroups:[e.ShapeGroupEnum["Line"]],onShapeClick:v879=>{let v880=v1549.getFocusDrawings().find(v412=>v412.drawingType===a.DrawingTypeEnum["DRAWING_IMAGE"]);if(!v880)return;let{unitId:v881,subUnitId:v882,drawingId:v883}=v880;v1550.clipByShape(v881,v882,v883,v879.type);}});}function ue(){let v1551=(0,t.useDependency)(t.ComponentManager),v1552=(0,t.useDependency)(s.IDrawingManagerService),v1553=(0,t.useDependency)(a.IUniverInstanceService),v1554=v1552.getFocusDrawings()[0],v1555=v1554?v1553.getUnitType(v1554.unitId):undefined,v1556=v1555===a.UniverInstanceType["UNIVER_DOC"]?"doc.image-clip.shape-picker.component":v1555===a.UniverInstanceType["UNIVER_SHEET"]?se:undefined,v1557=v1556?v1551.get(v1556):undefined;return v1557?(0,f.jsx)(v1557,{}):null;}function de(){let v1558=(0,t.useDependency)(a.ICommandService);return(0,f.jsx)(ce,{onShapeClick:v884=>{v1558.executeCommand(I.id,{value:v884.type,enhanceParams:{endArrow:v884.endArrow,startArrow:v884.startArrow,horizontal:v884.horizontal,vertical:v884.vertical}});}});}function fe(v1559){let v1560=v1559.get(a.IUniverInstanceService);return{id:I.id,type:t.MenuItemType["SELECTOR"],selections:[{label:{name:oe,hoverable:false,selectable:false,props:{id:I.id}}}],icon:"ShapeIcon",tooltip:"sheets-shape-ui.insertShape",activated$:(0,l.deriveStateFromActiveSheet$)(v1560,false,()=>new u["Observable"](v413=>{v413.next(false);})),hidden$:(0,t.getMenuHiddenObservable)(v1559,a.UniverInstanceType["UNIVER_SHEET"]),disabled$:(0,l.getCurrentRangeDisable$)(v1559)};}function pe(v1561){let v1562=v1561.get(a.IUniverInstanceService);return{id:re.id,type:t.MenuItemType["BUTTON"],icon:"ObjectLayersIcon",title:"sheets-shape-ui.objectListPanel.open",tooltip:"sheets-shape-ui.objectListPanel.open",activated$:(0,l.deriveStateFromActiveSheet$)(v1562,false,()=>new u["Observable"](v414=>{v414.next(false);})),hidden$:(0,t.getMenuHiddenObservable)(v1561,a.UniverInstanceType["UNIVER_SHEET"]),disabled$:(0,l.getCurrentRangeDisable$)(v1561)};}const me="sheet.menu.shape.flip-horizontal",he="sheet.menu.shape.flip-vertical";function ge(v1563){let v1564=v1563.get(s.IDrawingManagerService).getFocusDrawings();return v1564.length===1&&v1564[0].drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]?v1564[0]:null;}function _e(v1565){let v1566=v1565.get(s.IDrawingManagerService);return v1566.focus$["pipe"]((0,u.startWith)(v1566.getFocusDrawings()),(0,u.map)(v885=>v885.length!==1||v885[0].drawingType!==a.DrawingTypeEnum["DRAWING_SHAPE"]));}function ve(v1567){return{id:me,commandId:i.ToggleSheetsShapeFlipCommand["id"],type:t.MenuItemType["BUTTON"],title:"sheets-shape-ui.flipHorizontal",tooltip:"sheets-shape-ui.flipHorizontal",icon:"FlipHorizontalIcon",hidden$:_e(v1567),params:()=>{let v886=ge(v1567);return v886?{unitId:v886.unitId,subUnitId:v886.subUnitId,shapeId:v886.drawingId,flipH:true}:undefined;}};}function ye(v1568){return{id:he,commandId:i.ToggleSheetsShapeFlipCommand["id"],type:t.MenuItemType["BUTTON"],title:"sheets-shape-ui.flipVertical",tooltip:"sheets-shape-ui.flipVertical",icon:"FlipVerticalIcon",hidden$:_e(v1568),params:()=>{let v887=ge(v1568);return v887?{unitId:v887.unitId,subUnitId:v887.subUnitId,shapeId:v887.drawingId,flipV:true}:undefined;}};}const be="sheets-shape-ui.shape-format.quick-style-gallery",xe="sheets-shape-ui.shape-format.style-ribbon-control",Se="sheets-shape-ui.shape-format.text-ribbon-control",Ce="sheets-shape-ui.shape-format.formula-ribbon-control";function W(){let v1569=(0,t.useDependency)(a.ICommandService),v1570=(0,t.useDependency)(s.IDrawingManagerService),v1571=(0,t.useDependency)(i.SheetsShapeService),v1572=()=>{var v888;let v889=v1570.getFocusDrawings();if(v889.length!==1||((v888=v889[0])==null?undefined:v888.drawingType)!==a.DrawingTypeEnum["DRAWING_SHAPE"])return null;let{unitId:v890,subUnitId:v891,drawingId:v892}=v889[0],v893=v1571.getShapeTypeById(v890,v891,v892),v894=v1571.getShapeDataById(v890,v891,v892);return v893===undefined||!v894?null:{unitId:v890,subUnitId:v891,drawingId:v892,shapeType:v893,shapeData:v894};},v1573=(0,t.useObservable)(()=>new u["Observable"](v415=>{let v416=()=>v415.next(v1572()),v417=v1570.focus$["subscribe"](v416),v418=v1569.onCommandExecuted(v162=>{v162.id===i.UpdateSheetsShapeDataMutation["id"]&&v416();});return v416(),()=>{v417.unsubscribe(),v418.dispose();};}),v1572(),false,[v1569,v1570,v1571]);return{selection:v1573,updateShapeData:v895=>{v1573&&C(v1569,v1573.unitId,v1573.subUnitId,v1573.drawingId,{oldShapeData:v1573.shapeData},v895);}};}function we(){let{selection:v1574,updateShapeData:v1575}=W();return v1574?(0,f.jsx)(e.ShapeStyleRibbonControl,{shapeData:v1574.shapeData,shapeType:v1574.shapeType,onUpdateShapeData:v1575}):null;}function Te(){let v1576=(0,t.useDependency)(a.ICommandService),v1577=(0,t.useDependency)(a.LocaleService),{selection:v1578}=W();return v1578?(0,f.jsx)(e.ShapeQuickStyleGallery,{type:(0,r.getShapeQuickStyleType)(v1578.shapeData),ariaLabel:v1577.t("sheets-shape-ui.quickStyles"),activePresetId:(0,r.resolveActiveShapeQuickStylePresetId)(v1578.shapeData),onSelect:v896=>v1576.executeCommand(H.id,{presetId:v896})}):null;}function Ee(){let{selection:v1579,updateShapeData:v1580}=W();return v1579?(0,f.jsx)(e.ShapeTextRibbonControl,{fontFamilyPopupDataComponent:"sheets-shape-format-font-family-menu",shapeData:v1579.shapeData,onUpdateShapeData:v1580}):null;}function De(){var v1581;let{selection:v1582,updateShapeData:v1583}=W(),v1584=(0,e.useFormulaShapeToolbar)({hostType:a.UniverInstanceType["UNIVER_SHEET"],unitId:(v1582==null?undefined:v1582.unitId)??"",subUnitId:(v1582==null?undefined:v1582.subUnitId)??"",shapeId:(v1582==null?undefined:v1582.drawingId)??"",shapeData:v1582==null?undefined:v1582.shapeData,registerBinding:false,showLabels:true,dropdownSide:"bottom",onUpdateBinding:v897=>v1583({formulaBinding:v897})}),v1585=((v1581=v1584.extensionGroups)==null?undefined:v1581.flatMap(v898=>v898.actions).filter(v899=>v899.visible!==false))??[];return v1582!=null&&v1582.shapeData["formulaBinding"]?(0,f.jsx)(e.ShapeFormulaRibbonControl,{actions:v1585,panel:v1584.panel}):null;}const Oe="sheets-shape-ui.ribbon.shape-format.style-control",ke="sheets-shape-ui.ribbon.shape-format.text-control",Ae="sheets-shape-ui.ribbon.shape-format.formula-control",je="sheets-shape-ui.ribbon.shape-format.arrange-forward",Me="sheets-shape-ui.ribbon.shape-format.arrange-backward",Ne="sheets-shape-ui.ribbon.shape-format.arrange-front",Pe="sheets-shape-ui.ribbon.shape-format.arrange-back";function Fe(v1586){let v1587=v1586.get(a.ICommandService),v1588=v1586.get(s.IDrawingManagerService),v1589=v1586.get(i.SheetsShapeService);return new u["Observable"](v900=>{let v901=()=>{let v419=G(v1586),v420=v419?v1589.getShapeDataById(v419.unitId,v419.subUnitId,v419.drawingId):null;v900.next(v420?(0,r.resolveActiveShapeQuickStylePresetId)(v420)??"":"");},v902=v1588.focus$["subscribe"](v901),v903=v1587.onCommandExecuted(v421=>{v421.id===i.UpdateSheetsShapeDataMutation["id"]&&v901();});return v901(),()=>{v902.unsubscribe(),v903.dispose();};});}function G(v1590){var v1591;let v1592=v1590.get(s.IDrawingManagerService).getFocusDrawings();return v1592.length===1&&((v1591=v1592[0])==null?undefined:v1591.drawingType)===a.DrawingTypeEnum["DRAWING_SHAPE"]?v1592[0]:null;}function K(v1593,v1594=false){let v1595=v1593.get(a.ICommandService),v1596=v1593.get(s.IDrawingManagerService),v1597=v1593.get(i.SheetsShapeService);return new u["Observable"](v904=>{let v905=()=>{let v422=G(v1593);if(!v422){v904.next(true);return;}let v423=v1597.getShapeDataById(v422.unitId,v422.subUnitId,v422.drawingId);v904.next(!v423||v1594&&v423.formulaBinding==null);},v906=v1596.focus$["subscribe"](v905),v907=v1595.onCommandExecuted(v424=>{v424.id===i.UpdateSheetsShapeDataMutation["id"]&&v905();});return v905(),()=>{v906.unsubscribe(),v907.dispose();};});}function Ie(v1598){let v1599=v1598.get(s.IDrawingManagerService),v1600=v1598.get(i.SheetsShapeService);return v1599.focus$["pipe"]((0,u.startWith)(v1599.getFocusDrawings()),(0,u.map)(()=>{let v908=G(v1598),v909=v908?v1600.getShapeTypeById(v908.unitId,v908.subUnitId,v908.drawingId):undefined;return v909===undefined||(0,n.isConnectorShape)(v909);}));}function Le(v1601){return{id:H.id,type:t.MenuItemType["SELECTOR"],icon:"PaintIcon",title:"shape-editor-ui.toolbar.quickStyles",tooltip:"shape-editor-ui.toolbar.quickStyles",selections:[{label:{name:be,hoverable:false,selectable:false}}],value$:Fe(v1601),hidden$:K(v1601)};}function Re(v1602){return{id:ae.id,type:t.MenuItemType["SELECTOR"],icon:"ShapeIcon",title:"shape-editor-ui.toolbar.changeShape",tooltip:"shape-editor-ui.toolbar.changeShape",slot:true,selections:[{label:{name:e.SHAPE_CHANGE_PICKER_COMPONENT,hoverable:false,selectable:false}}],hidden$:Ie(v1602)};}function ze(v1603,v1604,v1605=false){return v910=>({id:v1603,type:t.MenuItemType["BUTTON"],label:{name:v1604,hoverable:false,selectable:false},hidden$:K(v910,v1605)});}const Be=ze(Oe,xe),Ve=ze(ke,Se),He=ze(Ae,Ce,true);function q(v1606,v1607,v1608,v1609){return v911=>({id:v1606,commandId:p.SetDrawingArrangeCommand["id"],type:t.MenuItemType["BUTTON"],icon:v1608,title:v1609,tooltip:v1609,hidden$:K(v911),params:()=>{let v425=G(v911);return v425?{unitId:v425.unitId,subUnitId:v425.subUnitId,drawingIds:[v425.drawingId],arrangeType:v1607}:undefined;}});}const Ue=q(je,a.ArrangeTypeEnum["forward"],"MoveUpIcon","shape-editor-ui.arrange.forward"),We=q(Me,a.ArrangeTypeEnum["backward"],"MoveDownIcon","shape-editor-ui.arrange.backward"),Ge=q(Ne,a.ArrangeTypeEnum["front"],"TopmostIcon","shape-editor-ui.arrange.front"),Ke=q(Pe,a.ArrangeTypeEnum["back"],"BottomIcon","shape-editor-ui.arrange.back");function qe(v1610){return{id:V.id,type:t.MenuItemType["BUTTON"],icon:"ShapeFormatSettingIcon",title:"sheets-shape-ui.formatShape",tooltip:"sheets-shape-ui.formatShape",hidden$:K(v1610),params:()=>{let v912=G(v1610);return v912?{unitId:v912.unitId,subUnitId:v912.subUnitId,drawingId:v912.drawingId}:undefined;}};}const Je={[t.MenuManagerPosition["RIBBON"]]:{[B]:{order:100,title:"sheets-shape-ui.formatShape",contextual:true,"sheets-shape-ui.ribbon.shape-format.quick-styles":{order:0,[H.id]:{order:0,gridLayout:{row:1,column:1,showLabel:true},menuItemFactory:Le},[ae.id]:{order:1,gridLayout:{row:2,column:1,showLabel:true},menuItemFactory:Re}},"sheets-shape-ui.ribbon.shape-format.style":{order:1,[Oe]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,width:104},menuItemFactory:Be}},"sheets-shape-ui.ribbon.shape-format.text":{order:2,[ke]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,width:344},menuItemFactory:Ve}},"sheets-shape-ui.ribbon.shape-format.arrange":{order:3,[me]:{order:0,gridLayout:{row:1,column:1},menuItemFactory:ve},[he]:{order:1,gridLayout:{row:2,column:1},menuItemFactory:ye},[je]:{order:2,gridLayout:{row:1,column:2},menuItemFactory:Ue},[Me]:{order:3,gridLayout:{row:2,column:2},menuItemFactory:We},[Ne]:{order:4,gridLayout:{row:1,column:3},menuItemFactory:Ge},[Pe]:{order:5,gridLayout:{row:2,column:3},menuItemFactory:Ke}},"sheets-shape-ui.ribbon.shape-format.formula":{order:4,[Ae]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,width:120},menuItemFactory:He}},"sheets-shape-ui.ribbon.shape-format.advanced":{order:5,[V.id]:{order:0,gridLayout:{row:1,column:1,showLabel:true},menuItemFactory:qe},[e.ToggleShapeFloatingToolbarOperation["id"]]:{order:1,gridLayout:{row:2,column:1,showLabel:true},menuItemFactory:e.ShapeFloatingToolbarToggleFactory}}}}},Ye={[t.RibbonInsertGroup["MEDIA"]]:{[I.id]:{order:4,menuItemFactory:fe}},[t.RibbonInsertGroup["OTHERS"]]:{[re.id]:{order:0,gridLayout:{row:1,column:1,rowSpan:2,showLabel:true},menuItemFactory:pe}},[t.ContextMenuPosition["DRAWING"]]:{[t.ContextMenuGroup["OTHERS"]]:{[me]:{order:4,menuItemFactory:ve},[he]:{order:5,menuItemFactory:ye}}}};var Xe="@univerjs-pro/sheets-shape-ui",Ze="1.0.0-insiders.20260907-70fc579";const Qe={type:a.CommandType["OPERATION"],id:"sheet.operation.close-sheet-shape-format-panel",handler(){return true;}},$e={};function et(v1611){return v1611.trim()||undefined;}function tt(v1612,v1613,v1614){var v1615;return((v1615=v1612.name)==null?undefined:v1615.trim())||(0,d.getObjectListPanelTypeName)(v1614,(0,e.getDrawingTypeNameKey)(v1612.drawingType))+"\x20"+(v1613+1);}function nt(){var v1616;let v1617=(0,t.useDependency)(a.LocaleService),v1618=(0,t.useDependency)(a.ICommandService),v1619=(0,t.useDependency)(a.IUniverInstanceService),v1620=(0,t.useDependency)(p.ISheetDrawingService),v1621=(0,t.useDependency)(s.IDrawingManagerService),v1622=(0,t.useDependency)(c.IRenderManagerService),[,v1623]=(0,y.useReducer)(v913=>v913+1,0),v1624=v1619.getCurrentUnitOfType(a.UniverInstanceType["UNIVER_SHEET"]),v1625=(v1624==null?undefined:v1624.getUnitId())??"",v1626=(v1624==null||(v1616=v1624.getActiveSheet())==null?undefined:v1616.getSheetId())??"",v1627=(0,t.useObservable)(()=>v1621.focus$,v1621.getFocusDrawings(),false,[v1621]);(0,y.useEffect)(()=>{let v914=v1618.onCommandExecuted(()=>v1623());return()=>v914.dispose();},[v1618]);let v1628=(0,y.useMemo)(()=>(0,d.getObjectListPanelLabels)(v1617),[v1617]),v1629=v1625&&v1626?v1620.getDrawingData(v1625,v1626):{},v1630=(v1625&&v1626?v1620.getDrawingOrder(v1625,v1626):[]).map(v915=>v1629[v915]).filter(v916=>!!v916).reverse(),v1631=v1630.reduce((v917,v918)=>(v917[(0,d.getObjectListPanelSectionIdForDrawingType)(v918.drawingType)]+=1,v917),{canvas:0,floating:0}),v1632={canvas:0,floating:0},v1633=v1630.map((v919,v920)=>{let v921=(0,d.getObjectListPanelSectionIdForDrawingType)(v919.drawingType),v922=v921===d.OBJECT_LIST_FLOATING_SECTION_ID,v923=v1632[v921]++;return{id:v919.drawingId,name:tt(v919,v920,v1617),description:v919.description,visible:v919.hidden!==true,selectable:v919.selectable!==false,sectionId:v921,sectionTitle:v922?v1628.sectionFloating:v1628.sectionCanvas,capabilities:v922?{arrange:false,reorder:false}:undefined,canMoveForward:!v922&&v923>0,canMoveBackward:!v922&&v923<v1631.canvas-1,canReorder:!v922};}),v1634=(0,y.useMemo)(()=>(v1627??[]).filter(v426=>v426.unitId===v1625&&v426.subUnitId===v1626).map(v427=>v427.drawingId),[v1627,v1626,v1625]),v1635=v1634[v1634.length-1]??null,v1636=v924=>v1620.getDrawingByParam({unitId:v1625,subUnitId:v1626,drawingId:v924})??null,v1637=async v925=>{!v1625||!v925.length||(await v1618.executeCommand(p.SetSheetDrawingCommand["id"],{unitId:v1625,drawings:v925}));},v1638=async(v926,v927)=>{v1636(v926)&&(await v1637([{unitId:v1625,subUnitId:v1626,drawingId:v926,...v927}]));},v1639=(v928,v929)=>{if(!v1625||!v1626)return;let v930=v929?v1634.includes(v928)?v1634.filter(v428=>v428!==v928):[...v1634,v928]:[v928];v1618.syncExecuteCommand(s.SetDrawingSelectedOperation["id"],v930.map(v429=>({unitId:v1625,subUnitId:v1626,drawingId:v429})));let v931=v930[v930.length-1];v931?(0,e.activateDrawingObject)(v1622,{unitId:v1625,subUnitId:v1626,drawingId:v931}):(0,e.clearActiveDrawingObjects)(v1622,v1625);},v1640=async(v932,v933)=>{await v1637(v932.map(v430=>v1636(v430)).filter(v431=>!!v431).filter(v432=>v432.hidden!==true!==v933).map(v433=>({unitId:v1625,subUnitId:v1626,drawingId:v433.drawingId,hidden:!v933})));},v1641=async v934=>{let v935=v1636(v934);v935&&(await v1638(v934,{selectable:v935.selectable===false&&undefined}));},v1642=async(v936,v937)=>{var v938;let v939=et(v937);(((v938=v1636(v936))==null?undefined:v938.name)??undefined)!==v939&&(await v1638(v936,{name:v939}));},v1643=async(v940,v941)=>{var v942;let v943=et(v941);(((v942=v1636(v940))==null?undefined:v942.description)??undefined)!==v943&&(await v1638(v940,{description:v943}));},v1644=async(v944,v945)=>{!v1625||!v1626||(await v1618.executeCommand(p.SetDrawingArrangeCommand["id"],{unitId:v1625,subUnitId:v1626,drawingIds:[v944],arrangeType:v945}));};return!v1625||!v1626?(0,f.jsx)("div",{className:"univer-flex univer-size-full univer-items-center univer-justify-center univer-text-sm univer-text-gray-500",children:v1628.title}):(0,f.jsx)(d.ObjectListPanelBase,{items:v1633,selectedIds:v1634,focusedId:v1635,labels:v1628,onSelect:v1639,onSetVisible:v1640,onCommitName:v1642,onCommitDescription:v1643,onMoveForward:async v946=>v1644(v946,a.ArrangeTypeEnum["forward"]),onMoveBackward:async v947=>v1644(v947,a.ArrangeTypeEnum["backward"]),onToggleSelectable:v1641});}let J=class{constructor(v948){this._renderManagerService=v948;}updateShapeFillImage(v949,v950){let v951=this._renderManagerService["getRenderUnitById"](v949.unitId),v952=v951==null?undefined:v951.scene;if(!v952)return;let v953=(0,s.getDrawingShapeKeyByDrawingSearch)(v949),v954=v952.getObjectIncludeInGroup(v953);v954==null||v954.setFillImage(v950);}};J=M([j(0,c.IRenderManagerService)],J);function rt(){let v1645=(0,t.useDependency)(s.IDrawingManagerService),v1646=(0,t.useObservable)(()=>v1645.focus$,v1645.getFocusDrawings(),false,[v1645]);return v1646.length===0?null:(0,f.jsx)("div",{children:(0,f.jsxs)("div",{className:"univer-box-border univer-px-4 univer-text-sm",children:[(0,f.jsx)(d.DrawingCommonPanel,{drawings:v1646,hasCropper:false}),(0,f.jsx)(_.SheetDrawingAnchor,{drawings:v1646})]})});}function it(v1647){let{unitId:v1648,subUnitId:v1649,shapeId:v1650}=v1647,v1651=(0,t.useDependency)(a.ICommandService),v1652=(0,t.useDependency)(J);return(0,f.jsx)(e.ShapeEditPanel,{...v1647,positionEditor:(0,f.jsx)(rt,{}),onUpdateShapeData:(v955,v956)=>{C(v1651,v1648,v1649,v1650,v955,v956);},onUpdateLineShapeData:(v957,v958)=>{w(v1651,v1648,v1649,v1650,v957,v958);},onUpdateShapeFillImage:v959=>{v1652.updateShapeFillImage({unitId:v1648,subUnitId:v1649,drawingId:v1650},v959);}});}function at(v1653){let v1654=(0,t.useDependency)(e.ShapeFloatingToolbarService),{mobile:v1655}=(0,y.useContext)(b.ConfigContext),v1656=(0,t.useObservable)(()=>v1654.visible$,v1654.getVisible(),false,[v1654]),v1657=v1653.popup["extraProps"];return!v1657||!v1656||v1655?null:(0,f.jsx)(ot,{...v1657,canvasElement:v1653.popup["canvasElement"]});}function ot(v1658){let v1659=(0,t.useDependency)(a.ICommandService),v1660=(0,t.useDependency)(i.SheetsShapeService),{unitId:v1661,subUnitId:v1662,drawingId:v1663,drawingType:v1664,shapeType:v1665}=v1658,[v1666,v1667]=(0,y.useState)(v1658.shapeData),v1668=(0,y.useMemo)(()=>(0,e.getTextStyle)(v1666),[v1666]),v1669=(0,y.useMemo)(()=>(0,e.getTextModel)(v1666),[v1666]);(0,y.useEffect)(()=>{let v960=v1659.onCommandExecuted(v434=>{if(v434.id!==i.UpdateSheetsShapeDataMutation["id"])return;let v435=v1660.getShapeDataById(v1661,v1662,v1663);v435&&v1667(v435);});return()=>v960.dispose();},[v1659,v1663,v1660,v1662,v1661]);let v1670=v961=>{v1667(v436=>({...v436,...v961}));},v1671=v962=>{let v963=(0,e.buildShapeTextDataUpdate)(v1666,v962);C(v1659,v1661,v1662,v1663,{oldShapeData:{shapeText:v1666.shapeText}},v963),v1670(v963);},v1672=(0,e.useFormulaShapeToolbar)({hostType:a.UniverInstanceType["UNIVER_SHEET"],unitId:v1661,subUnitId:v1662,shapeId:v1663,shapeData:v1666,onUpdateBinding:v964=>{let v965={formulaBinding:v964};C(v1659,v1661,v1662,v1663,{oldShapeData:{formulaBinding:v1666.formulaBinding}},v965),v1670(v965);}});return(0,f.jsxs)(f.Fragment,{children:[(0,f.jsx)(e.ShapeFloatingToolbar,{canvasElement:v1658.canvasElement,shapeData:v1666,shapeType:v1665,textStyle:{ff:n.ShapeDefaultConfig["shapeText"].fontFamily,fs:n.ShapeDefaultConfig["shapeText"].fontSize,cl:{rgb:n.ShapeDefaultConfig["shapeText"].color},...v1668},textModel:v1669?{ha:v1669.ha??a.HorizontalAlign["LEFT"],va:v1669.va??a.VerticalAlign["TOP"]}:null,enableShapeFillReset:true,enableShapeStrokeReset:true,enableTextBackgroundReset:true,defaultFillColor:n.ShapeDefaultConfig["fill"],defaultGradientEndColor:n.ShapeDefaultConfig["gradientEndColor"],defaultStrokeColor:n.ShapeDefaultConfig["stroke"],extensionGroups:v1672.extensionGroups,floatingObjectToolbarPosition:t.FloatingObjectToolbarPosition["SHEET"],onUpdateShapeData:(v966,v967)=>{C(v1659,v1661,v1662,v1663,v966,v967),v967&&v1670(v967);},onUpdateText:v1671,onOpenPanel:()=>{v1659.executeCommand(V.id,{unitId:v1661,subUnitId:v1662,drawingId:v1663});},onDelete:()=>{v1659.executeCommand(p.RemoveSheetDrawingCommand["id"],{unitId:v1661,drawings:[{unitId:v1661,subUnitId:v1662,drawingId:v1663,drawingType:v1664}]});}}),v1672.panel]});}let Y=class extends a.Disposable{constructor(v968){super(),this._permissionService=v968,D(this,"_editingParams$",new u["BehaviorSubject"](null)),D(this,"editingParams$",this._editingParams$["asObservable"]()),D(this,"_onSavingEditorData$",new u["BehaviorSubject"](false)),D(this,"onSavingEditorData$",this._onSavingEditorData$["asObservable"]()),this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(()=>{let v437=this.getEditing();v437!=null&&v437.visible&&!this._canEdit(v437)&&this.setEditing(null);}));}dispose(){this._editingParams$["next"](null),this._editingParams$["complete"](),this._onSavingEditorData$["next"](false),this._onSavingEditorData$["complete"](),super.dispose();}setEditing(v969){v969!=null&&v969.visible&&!this._canEdit(v969)||(this._editingParams$["next"](v969),v969??this._onSavingEditorData$["next"](false));}setOnSavingEditorData(v970){this._onSavingEditorData$["next"](v970);}getEditing(){return this._editingParams$["getValue"]();}_canEdit(v971){let v972=this._permissionService["getPermissionPoint"](new o["WorkbookEditablePermission"](v971.unitId).id),v973=this._permissionService["getPermissionPoint"](new o.WorksheetEditPermission(v971.unitId,v971.subUnitId).id);return((v972==null?undefined:v972.value)??true)&&((v973==null?undefined:v973.value)??true);}completeEditing(v974){this.getEditing()&&(this.setOnSavingEditorData(true),requestAnimationFrame(()=>{this.setEditing(null);}));}cancelEditing(){this.getEditing()&&this.setEditing(null);}};Y=M([j(0,a.IPermissionService)],Y);function st(v1673){return!!v1673&&"axisAlignSheetTransform"in v1673&&"sheetTransform"in v1673;}const ct=(0,y.memo)(()=>{let v1674=(0,t.useDependency)(Y),v1675=(0,t.useDependency)(i.SheetsShapeService),v1676=(0,t.useDependency)(s.IDrawingManagerService),v1677=(0,t.useDependency)(a.ICommandService),v1678=(0,t.useDependency)(t.UndoRedoGroupService),v1679=(0,t.useDependency)(c.IRenderManagerService);return(0,f.jsx)(e.ShapeTextEditorContainer,{adapter:(0,y.useMemo)(()=>({getShapeModel:(v438,v439,v440)=>v1675.getShapeModel(v438,v439,v440),getShapeData:(v441,v442,v443)=>v1675.getShapeDataById(v441,v442,v443),getDrawingTransform:(v444,v445,v446)=>{let v447=v1676.getDrawingByParam({unitId:v444,subUnitId:v445,drawingId:v446});return v447==null?undefined:v447.transform;},updateShapeText:({unitId:v448,subUnitId:v449,shapeId:v450,shapeText:v451,oldShapeText:v452,hostSize:v453})=>{v1678.run(v448,()=>{var v163;let v164=v1677.syncExecuteCommand(S.id,{unitId:v448,subUnitId:v449,shapeId:v450,shapeData:{shapeText:v451},oldShapeJSON:{oldShapeData:{shapeText:v452}}});if(!v164||!v453)return v164;let v165=v1676.getDrawingByParam({unitId:v448,subUnitId:v449,drawingId:v450}),v166=v165==null?undefined:v165.transform;if(!st(v165)||!v166)return false;let v167={...v166,width:v453.width,height:v453.height},v168=(v163=v1679.getRenderUnitById(v448))==null||(v163=v163.with(l.SheetSkeletonManagerService).getSkeletonParam(v449))==null?undefined:v163.skeleton;return v1677.syncExecuteCommand(p.SetSheetDrawingCommand["id"],{unitId:v448,drawings:[{...v165,transform:v167,sheetTransform:v168?(0,p.transformToDrawingPosition)(v167,v168)??v165.sheetTransform:v165.sheetTransform,axisAlignSheetTransform:v168?(0,p.transformToAxisAlignPosition)(v167,v168)??v165.axisAlignSheetTransform:v165.axisAlignSheetTransform}]});});},updateHostSize:({unitId:v454,subUnitId:v455,shapeId:v456,width:v457,height:v458})=>{var v459;let v460=v1676.getDrawingByParam({unitId:v454,subUnitId:v455,drawingId:v456}),v461=v460==null?undefined:v460.transform;if(!st(v460)||!v461)return;let v462={...v461,width:v457,height:v458},v463=(v459=v1679.getRenderUnitById(v454))==null||(v459=v459.with(l.SheetSkeletonManagerService).getSkeletonParam(v455))==null?undefined:v459.skeleton,v464=v463?(0,p.transformToDrawingPosition)(v462,v463)??v460.sheetTransform:v460.sheetTransform,v465=v463?(0,p.transformToAxisAlignPosition)(v462,v463)??v460.axisAlignSheetTransform:v460.axisAlignSheetTransform;v1677.executeCommand(p.SetSheetDrawingCommand["id"],{unitId:v454,drawings:[{...v460,transform:v462,sheetTransform:v464,axisAlignSheetTransform:v465}]});},allowHostSizeShrink:({unitId:v466,subUnitId:v467,shapeId:v468})=>(0,e.shouldAllowShapeTextEditorHostSizeShrink)(v1675.getShapeDataById(v466,v467,v468)),deferHostSizeUpdateDuringEditing:()=>true}),[v1677,v1676,v1679,v1675,v1678]),editingService:v1674,editorUnitId:te,positionOptions:(0,y.useMemo)(()=>({viewportKeys:{main:c.SHEET_VIEWPORT_KEY["VIEW_MAIN"],leftTop:c.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT_TOP"],top:c.SHEET_VIEWPORT_KEY["VIEW_MAIN_TOP"],left:c.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT"]},getSkeleton:(v469,v470)=>{var v471;return((v471=v469.with(l.SheetSkeletonManagerService).getSkeletonParam(v470.subUnitId))==null?undefined:v471.skeleton)??null;}}),[])});});let lt=class extends a.Disposable{constructor(v975,v976){super(),this._componentManager=v975,this._iconManager=v976,this._registerIcons(),this._registerComponents();}_registerIcons(){this._iconManager["has"]("ObjectLayersIcon")||this.disposeWithMe(this._iconManager["register"]({ObjectLayersIcon:v.ObjectLayersIcon})),this._iconManager["has"]("FlipHorizontalIcon")||this.disposeWithMe(this._iconManager["register"]({FlipHorizontalIcon:v.FlipHorizontalIcon})),this._iconManager["has"]("FlipVerticalIcon")||this.disposeWithMe(this._iconManager["register"]({FlipVerticalIcon:v.FlipVerticalIcon})),this._iconManager["has"]("BottomIcon")||this.disposeWithMe(this._iconManager["register"]({BottomIcon:v.BottomIcon})),this._iconManager["has"]("MoveDownIcon")||this.disposeWithMe(this._iconManager["register"]({MoveDownIcon:v.MoveDownIcon})),this._iconManager["has"]("MoveUpIcon")||this.disposeWithMe(this._iconManager["register"]({MoveUpIcon:v.MoveUpIcon})),this._iconManager["has"]("ShapeFormatSettingIcon")||this.disposeWithMe(this._iconManager["register"]({ShapeFormatSettingIcon:v.ShapeFormatSettingIcon})),this._iconManager["has"]("TopmostIcon")||this.disposeWithMe(this._iconManager["register"]({TopmostIcon:v.TopmostIcon}));}_registerComponents(){this.disposeWithMe(this._componentManager["register"](L,it)),this.disposeWithMe(this._componentManager["register"](R,nt)),this.disposeWithMe(this._componentManager["register"](oe,de)),this.disposeWithMe(this._componentManager["register"](se,le)),this._componentManager["get"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT)||this.disposeWithMe(this._componentManager["register"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT,ue)),this.disposeWithMe(this._componentManager["register"](z,at)),this.disposeWithMe(this._componentManager["register"](xe,we)),this.disposeWithMe(this._componentManager["register"](be,Te)),this.disposeWithMe(this._componentManager["register"](Se,Ee)),this.disposeWithMe(this._componentManager["register"](Ce,De)),this.disposeWithMe(this._componentManager["register"](ne,e.ShapeTextFloatToolbar)),this.disposeWithMe(this._componentManager["register"]("SheetShapeTextEditorContainer",ct));}};lt=M([j(0,(0,a.Inject)(t.ComponentManager)),j(1,(0,a.Inject)(t.IconManager))],lt);let ut=class extends a.Disposable{constructor(v977,v978,v979,v980,v981){super(),this._context=v977,this._drawingManagerService=v978,this._renderManagerService=v979,this._univerInstanceService=v980,this._imageShapeClipController=v981,D(this,"_activeImageId",null),D(this,"_unitId",null),D(this,"_subUnitId",null),D(this,"_activeAdjustPointList",undefined),D(this,"_shapes",[]),D(this,"_baseLeft",0),D(this,"_baseTop",0),D(this,"_baseWidth",0),D(this,"_baseHeight",0),D(this,"_isStartAdjusting",false),D(this,"_activeAdjustInfo",undefined),D(this,"_activeShapeModel",undefined),D(this,"_adjHandlerPointerMove",undefined),D(this,"_adjHandlerPointerUp",undefined),D(this,"_isImagePointerDown",false),this._registerFocusChangeHandler(),this._registerMoveHandler();}clearAdjustControls(){this._clearControls();}refreshAdjustControls(){this._clearControls(),this._createControls(true);}_getOrCreateShapeModel(v982,v983,v984,v985){let v986=v982;if(v986!==n.ShapeTypeEnum["None"]&&v982!=="custom")try{let v472=new n.ShapeModel(v986,"clip-adj-"+v982);return v985&&v472.setShapeData({adjustValues:v985},true),v472.updateContext({width:v983,height:v984}),v472;}catch{return;}}_getImageDrawingInfo(v987,v988,v989){let v990={unitId:v987,subUnitId:v988,drawingId:v989},v991=this._drawingManagerService["getDrawingByParam"](v990);if(!(!v991||v991.drawingType!==a.DrawingTypeEnum["DRAWING_IMAGE"]))return v991;}_getImagePrstGeom(v992,v993,v994){let v995=this._renderManagerService["getRenderUnitById"](v992);if(!v995)return;let{scene:v996}=v995,v997=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v992,subUnitId:v993,drawingId:v994}),v998=v996.getObject(v997);if(v998 instanceof c.Image){let v473=v998.prstGeom;if(v473)return{prstGeom:v473,adjustValues:v998.prstGeomAdjValues};}}_createControls(v999=false){if(!this._unitId||!this._subUnitId||!this._activeImageId)return;let v1000=this._renderManagerService["getRenderUnitById"](this._unitId);if(!v1000||!v1000.with(l.SheetSkeletonManagerService).getCurrentSkeleton())return;let{scene:v1001}=v1000,v1002=this._getImageDrawingInfo(this._unitId,this._subUnitId,this._activeImageId);if(!v1002)return;let{transform:v1003}=v1002;if(!v1003)return;let{left:v1004,top:v1005,width:v1006,height:v1007,flipX:v1008,flipY:v1009,angle:v1010=0}=v1003;if(v1004===undefined||v1005===undefined)return;let v1011=this._getImagePrstGeom(this._unitId,this._subUnitId,this._activeImageId);if(!v1011)return;if(v999){let v474=this._getOrCreateShapeModel(v1011.prstGeom,v1006||0,v1007||0,v1011.adjustValues);if(!v474)return;this._activeAdjustPointList=v474.getDrawingPoints();}let v1012=this._activeAdjustPointList;if(!(!v1012||v1012.length===0))for(let v475=0;v475<v1012.length;v475++){let v169=v1012[v475],v170=v169.x,v171=v169.y;if(v1008&&(v170=(v1006||0)-v170),v1009&&(v171=(v1007||0)-v171),v1010!==0){let v60=(v1006||0)/2,v61=(v1007||0)/2,v62=v1010*Math.PI/180,v63=Math.cos(v62),v64=Math.sin(v62),v65=v170-v60,v66=v171-v61;v170=v60+(v65*v63-v66*v64),v171=v61+(v65*v64+v66*v63);}let v172={x:v170,y:v171,adjName:v169.adjName};this._addControl(v1001,v172,v172.adjName,v1004,v1005,this._unitId,this._subUnitId);}}_addControl(v1013,v1014,v1015,v1016,v1017,v1018,v1019){if(!this._activeImageId)return;let v1020="image-clip-adjust-point-"+this._activeImageId+"-"+v1015,v1021=v1013.getObjectIncludeInGroup(v1020);if(v1021){v1021.transformByState({left:v1014.x+v1016-n.ShapeDefaultConfig["adjHandleSize"],top:v1014.y+v1017-n.ShapeDefaultConfig["adjHandleSize"]});return;}let v1022=new A(v1020,{left:v1014.x+v1016-n.ShapeDefaultConfig["adjHandleSize"],top:v1014.y+v1017-n.ShapeDefaultConfig["adjHandleSize"],adjName:v1015,shapeId:this._activeImageId,unitId:v1018,subUnitId:v1019,width:n.ShapeDefaultConfig["adjHandleSize"]+8,height:n.ShapeDefaultConfig["adjHandleSize"]+8,zIndex:c.DRAWING_OBJECT_LAYER_INDEX+1,evented:true});this._shapes["push"](v1022),this._attachAdjustEvent(v1022,v1013,v1015),v1013.addObject(v1022,c.DRAWING_OBJECT_LAYER_INDEX+1);}_clearControls(){this._shapes["length"]!==0&&(this._shapes["forEach"](v476=>v476.dispose()),this._shapes=[]);}_getScrollInfo(v1023,v1024){var v1025;let v1026={x:0,y:0},v1027=this._renderManagerService["getRenderUnitById"](v1023);if(!v1027||!v1027.with(l.SheetSkeletonManagerService).getSkeleton(v1024))return v1026;let v1028=v1027.with(l.SheetScrollManagerService),v1029=v1028==null?undefined:v1028.getCurrentScrollState();if(!v1029)return v1026;let v1030=(v1025=this._univerInstanceService["getUnit"](v1023))==null?undefined:v1025.getSheetBySheetId(v1024);if(!v1030)return v1026;let v1031=(0,l.getViewportByCell)(v1029.sheetViewStartRow,v1029.sheetViewStartColumn,v1027.scene,v1030);return v1031?{x:v1031.viewportScrollX,y:v1031.viewportScrollY}:v1026;}_getZoomRatio(v1032,v1033){var v1034;let v1035=(v1034=this._univerInstanceService["getUnit"](v1032))==null?undefined:v1034.getSheetBySheetId(v1033);return(v1035==null?undefined:v1035.getZoomRatio())??1;}_attachAdjustEvent(v1036,v1037,v1038){this.disposeWithMe((0,a.toDisposable)(v1036.onPointerDown$["subscribeEvent"]((v477,v478)=>{var v479,v480,v481;let{unitId:v482,subUnitId:v483,drawingId:v484}=v1036.getDrawingSearch(),v485=this._getImageDrawingInfo(v482,v483,v484);if(!(v485!=null&&v485.transform))return;let{left:v486,top:v487,width:v488,height:v489}=v485.transform;this._baseLeft=v486||0,this._baseTop=v487||0,this._baseWidth=v488||0,this._baseHeight=v489||0;let v490=!!((v479=v485.transform)!=null&&v479.flipX),v491=!!((v480=v485.transform)!=null&&v480.flipY),v492=((v481=v485.transform)==null?undefined:v481.angle)||0,v493=this._getImagePrstGeom(v482,v483,v484);if(!v493)return;let v494=this._getOrCreateShapeModel(v493.prstGeom,this._baseWidth,this._baseHeight,v493.adjustValues);if(!v494||(this._activeShapeModel=v494,this._activeAdjustInfo=v494.getAdjustInfoByName(v1038),!this._activeAdjustInfo))return;this._isStartAdjusting=true,v1037.disableObjectsEvent();let v495=v493.prstGeom;this._adjHandlerPointerMove=v1037.onPointerMove$["subscribeEvent"]((v173,v174)=>{if(!this._isStartAdjusting)return;let{offsetX:v175,offsetY:v176}=v173,v177=this._activeAdjustInfo;if(!this._activeShapeModel||!v177)return;v1037.disableObjectsEvent(),v1037.setCursor(c.CURSOR_TYPE["CROSSHAIR"]);let v178={left:0,top:0,width:this._baseWidth,height:this._baseHeight},v179=this._getScrollInfo(v482,v483),v180=this._getZoomRatio(v482,v483),v181=v175/v180+v179.x-this._baseLeft,v182=v176/v180+v179.y-this._baseTop;if(v492!==0){let v67=this._baseWidth/2,v68=this._baseHeight/2,v69=v492*Math.PI/180,v70=Math.cos(v69),v71=Math.sin(v69),v72=v181-v67,v73=v182-v68;v181=v67+(v72*v70+v73*v71),v182=v68+(-v72*v71+v73*v70);}v490&&(v181=this._baseWidth-v181),v491&&(v182=this._baseHeight-v182);let v183=this._activeShapeModel["calcAdjValues"](v178,{x:v181,y:v182},v177,v490,v491);if(Object.keys(v183).length!==0){for(let[v13,v14]of Object.entries(v183))this._activeShapeModel["setAdjustValueByName"](v13,v14);this._activeShapeModel["updateContext"]({width:this._baseWidth,height:this._baseHeight}),this._updateImageAdjValues(v482,v483,v484,v183),this._activeAdjustPointList=this._activeShapeModel["getDrawingPoints"](),this._createControls(),v174.stopPropagation();}}),this._adjHandlerPointerUp=v1037.onPointerUp$["subscribeEvent"]((v184,v185)=>{if(this._adjHandlerPointerMove["unsubscribe"](),this._adjHandlerPointerUp["unsubscribe"](),v1037.resetCursor(),this._activeShapeModel){let v74=this._activeShapeModel["getAdjustNames"](),v75={};for(let v15 of v74){let v2=this._activeShapeModel["getAdjustValueByName"](v15);v2!==undefined&&(v75[v15]=v2);}this._imageShapeClipController["clipByShape"](v482,v483,v484,v495,v75);}this._activeAdjustInfo=undefined,this._activeShapeModel=undefined,this._isStartAdjusting=false,v185.stopPropagation(),v1037.enableObjectsEvent();}),v478.stopPropagation();})));}_updateImageAdjValues(v1039,v1040,v1041,v1042){let v1043=this._renderManagerService["getRenderUnitById"](v1039);if(!v1043)return;let{scene:v1044}=v1043,v1045=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v1039,subUnitId:v1040,drawingId:v1041}),v1046=v1044.getObject(v1045);if(v1046 instanceof c.Image){let v496=v1046.prstGeomAdjValues??{};v1046.setPrstGeomAdjValues({...v496,...v1042}),v1046.makeDirty(true);}}_registerMoveHandler(){let v1047=this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]);this.disposeWithMe(v1047.pipe((0,u.switchMap)(v497=>v497?v497.activeSheet$["pipe"]((0,u.switchMap)(v186=>{if(!v186)return u.EMPTY;let v187=v497.getUnitId(),v188=this._renderManagerService["getRenderUnitById"](v187),v189=v188==null?undefined:v188.scene;return v189?(0,u.of)(v189):u.EMPTY;})):u.EMPTY)).subscribe(v498=>{let v499=v498.getTransformerByCreate();this.disposeWithMe(v498.onPointerMove$["subscribeEvent"](()=>{this._isImagePointerDown&&this._clearControls();})),this.disposeWithMe(v499.changeStart$["subscribe"](v190=>{let{objects:v191}=v190;if(this._createControls(),v191!==null&&v191.size===1){let v76=v191.values().next().value;v76 instanceof c.Image&&v76.prstGeom&&(this._isImagePointerDown=true);}})),this.disposeWithMe(v499.changing$["subscribe"](()=>{this._isImagePointerDown&&this._clearControls();})),this.disposeWithMe(v498.onPointerUp$["subscribeEvent"](()=>{this._isImagePointerDown&&(this._isImagePointerDown=false,this._createControls());})),this.disposeWithMe(v499.changeEnd$["subscribe"](()=>{if(this._unitId&&this._subUnitId&&this._activeImageId){let v77=this._getImagePrstGeom(this._unitId,this._subUnitId,this._activeImageId);if(v77){var v192,v193;let v16=this._getImageDrawingInfo(this._unitId,this._subUnitId,this._activeImageId),v17=(v16==null||(v192=v16.transform)==null?undefined:v192.width)||0,v18=(v16==null||(v193=v16.transform)==null?undefined:v193.height)||0,v19=this._getOrCreateShapeModel(v77.prstGeom,v17,v18,v77.adjustValues);v19&&(this._activeAdjustPointList=v19.getDrawingPoints(),this._clearControls(),this._createControls(true));}}}));}));}_registerFocusChangeHandler(){this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v500=>{if(v500.length===1){let v194=v500[0];if(v194.drawingType===a.DrawingTypeEnum["DRAWING_IMAGE"]){let{unitId:v78,subUnitId:v79,drawingId:v80}=v194,v81=this._getImagePrstGeom(v78,v79,v80);if(v81){var v501,v502;this._activeImageId=v80,this._unitId=v78,this._subUnitId=v79;let v20=this._getImageDrawingInfo(v78,v79,v80),v21=(v20==null||(v501=v20.transform)==null?undefined:v501.width)||0,v22=(v20==null||(v502=v20.transform)==null?undefined:v502.height)||0,v23=this._getOrCreateShapeModel(v81.prstGeom,v21,v22,v81.adjustValues);v23&&(this._activeAdjustPointList=v23.getDrawingPoints()),this._clearControls(),this._createControls(true);}else this._resetState();}else this._resetState();}else this._resetState();})),this.disposeWithMe(this._drawingManagerService["update$"].subscribe(v503=>{if(v503.length===1){let v195=v503[0],v196=this._drawingManagerService["getDrawingByParam"](v195);(v196==null?undefined:v196.drawingType)===a.DrawingTypeEnum["DRAWING_IMAGE"]&&this._activeImageId===v195.drawingId&&(this._clearControls(),this._createControls(true));}})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v504=>{for(let v197 of v504)this._activeImageId===v197.drawingId&&this._resetState();}));}_resetState(){this._activeImageId=null,this._unitId=null,this._subUnitId=null,this._activeAdjustPointList=undefined,this._clearControls();}};ut=M([j(1,s.IDrawingManagerService),j(2,(0,a.Inject)(c.IRenderManagerService)),j(3,a.IUniverInstanceService),j(4,(0,a.Inject)(U))],ut);const dt="sheets-shape-contextual-ribbon";let ft=class extends a.Disposable{constructor(v1048,v1049,v1050,v1051,v1052,v1053){super(),this._menuManagerService=v1048,this._ribbonService=v1049,this._drawingManagerService=v1050,this._univerInstanceService=v1051,this._renderManagerService=v1052,this._shapeFloatingToolbarService=v1053,D(this,"_visible",false),this._menuManagerService["mergeMenu"](Je),this.disposeWithMe((0,a.toDisposable)(this._drawingManagerService["focus$"].subscribe(()=>this._update()))),this._update();}dispose(){this._shapeFloatingToolbarService["setFallbackVisible"](false,dt),this._hide(),super.dispose();}_update(){var v1054;let v1055=this._drawingManagerService["getFocusDrawings"](),v1056=v1055.length===1?v1055[0]:undefined;if((v1056==null?undefined:v1056.drawingType)!==a.DrawingTypeEnum["DRAWING_SHAPE"]||this._univerInstanceService["getUnitType"](v1056.unitId)!==a.UniverInstanceType["UNIVER_SHEET"]){this._shapeFloatingToolbarService["setFallbackVisible"](false,dt),this._hide();return;}let v1057=(0,e.resolveShapeContextualRibbonHostMode)((v1054=this._renderManagerService["getRenderUnitById"](v1056.unitId))==null?undefined:v1054.engine["getCanvasElement"]())==="isolated";if(this._shapeFloatingToolbarService["setFallbackVisible"](v1057,dt),v1057){this._hide();return;}this._visible||(this._visible=true,this._ribbonService["showContextualTab"](B,{activate:true}));}_hide(){this._visible&&(this._visible=false,this._ribbonService["hideContextualTab"](B),this._ribbonService["setCollapsedIds"]([]));}};ft=M([j(0,t.IMenuManagerService),j(1,t.IRibbonService),j(2,s.IDrawingManagerService),j(3,a.IUniverInstanceService),j(4,c.IRenderManagerService),j(5,(0,a.Inject)(e.ShapeFloatingToolbarService))],ft);function pt(v1680,v1681,v1682,v1683){let v1684=(0,s.getOrCreateDrawingCopyPlan)(v1680,v1681,v1682),v1685=[];for(let v1058 of v1681){let v505=v1684.idMap["get"](v1058.drawingId),v506=v1683(v1058);!v505||!v506||v1685.push({targetShapeId:v505,source:v506});}return v1685;}let mt=class extends a.Disposable{constructor(v1059,v1060,v1061,v1062){super(),this._univerInstanceService=v1059,this._sheetInterceptorService=v1060,this._sheetDrawingService=v1061,this._sheetsShapeService=v1062,this._initSheetChange();}_initSheetChange(){this.disposeWithMe(this._sheetInterceptorService["interceptCommand"]({getMutations:v507=>{if(v507.id===o.RemoveSheetCommand["id"]){let v198=(0,o.getSheetCommandTarget)(this._univerInstanceService,v507.params);if(!v198)return{redos:[],undos:[]};let{unitId:v199,subUnitId:v200}=v198,v201=this._sheetDrawingService["getDrawingData"](v199,v200),v202=Object.values(v201).filter(v82=>v82.drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]);if(v202.length===0)return{redos:[],undos:[]};let v203=[],v204=[];for(let v83=0;v83<v202.length;v83++){let v24=v202[v83],v25=this._sheetsShapeService["getShapeModel"](v24.unitId,v24.subUnitId,v24.drawingId);v25&&(v203.push({id:i.RemoveSheetsShapeMutation["id"],params:{unitId:v199,subUnitId:v200,shapeId:v24.drawingId}}),v204.push({id:i.InsertSheetsShapeMutation["id"],params:{unitId:v199,subUnitId:v200,shapeId:v24.drawingId,shapeType:v25.getShapeType(),shapeData:JSON.parse(JSON.stringify(v25.getShapeData()))}}));}return{redos:v203,undos:v204};}else{if(v507.id===o.CopySheetCommand["id"]){let{unitId:v84,subUnitId:v85,targetSubUnitId:v86,copyContext:v87}=v507.params;if(!v84||!v85||!v86)return{redos:[],undos:[]};let v88=this._sheetDrawingService["getDrawingData"](v84,v85),v89=Object.values(v88).filter(v26=>v26.drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]);if(v89.length===0)return{redos:[],undos:[]};let v90=pt(v87,v89,{unitId:v84,sourceSubUnitId:v85,targetSubUnitId:v86},v27=>{let v28=this._sheetsShapeService["getShapeModel"](v27.unitId,v27.subUnitId,v27.drawingId);if(v28)return{shapeType:v28.getShapeType(),shapeData:JSON.parse(JSON.stringify(v28.getShapeData()))};}),v91=[],v92=[];for(let{targetShapeId:v29,source:v30}of v90)v91.push({id:i.InsertSheetsShapeMutation["id"],params:{unitId:v84,subUnitId:v86,shapeId:v29,shapeType:v30.shapeType,shapeData:v30.shapeData}}),v92.push({id:i.RemoveSheetsShapeMutation["id"],params:{unitId:v84,subUnitId:v86,shapeId:v29}});return{redos:v91,undos:v92};}}return{redos:[],undos:[]};}}));}};mt=M([j(0,(0,a.Inject)(a.IUniverInstanceService)),j(1,(0,a.Inject)(o.SheetInterceptorService)),j(2,(0,a.Inject)(p.ISheetDrawingService)),j(3,(0,a.Inject)(i.SheetsShapeService))],mt);function ht(v1686){return v1686.line?null:v1686.mobile?v1686.formula?"mobile-formula":"mobile-text":v1686.formula?null:"desktop-text";}let gt=class extends a.Disposable{constructor(v1063,v1064,v1065,v1066,v1067,v1068){super(),this._context=v1063,this._shapeTextEditingService=v1064,this._mobileShapeEditorService=v1065,this._drawingManagerService=v1066,this._contextService=v1067,this._sheetsShapeService=v1068,D(this,"_lastEditingShapeKey",null),this._initEvents(),this._initSelection(),this._initEditingParams();}_initEvents(){let{scene:v1069}=this._context;this.disposeWithMe(v1069.onDblclick$["subscribeEvent"](v508=>{let{offsetX:v509,offsetY:v510}=v508,v511=v1069.pick(c.Vector2["FromArray"]([v509,v510]));if(v511 instanceof k){let v205=this._sheetsShapeService["getShapeModel"](v511.unitId,v511.subUnitId,v511.shapeId),v206=(0,n.isConnectorShape)(this._sheetsShapeService["getShapeType"](v511.unitId,v511.subUnitId,v511.shapeId)),v207=ht({formula:!!(v205!=null&&v205.getShapeData().formulaBinding),line:v206,mobile:this._contextService["getContextValue"](t.MOBILE_UI_MODE)});if(!v207)return;if(v207==="mobile-formula"||v207==="mobile-text"){this._mobileShapeEditorService["open"](v207==="mobile-formula"?"formula":"text",{hostType:a.UniverInstanceType["UNIVER_SHEET"],unitId:v511.unitId,subUnitId:v511.subUnitId,shapeId:v511.shapeId});return;}this._shapeTextEditingService["setEditing"]({visible:true,unitId:v511.unitId,subUnitId:v511.subUnitId,shapeId:v511.shapeId,shapeKey:v511.oKey});}}));}_initSelection(){this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v512=>{if(v512.length===1){let v208=v512[0],v209=this._drawingManagerService["getDrawingByParam"](v208);if((v209==null?undefined:v209.drawingType)===a.DrawingTypeEnum["DRAWING_SHAPE"]){var v513;let v93=this._shapeTextEditingService["getEditing"]();if((v93==null?undefined:v93.shapeId)===v208.drawingId&&v93.visible)return;let v94=(0,n.isConnectorShape)(this._sheetsShapeService["getShapeType"](v208.unitId,v208.subUnitId,v208.drawingId)),v95=!!((v513=this._sheetsShapeService["getShapeModel"](v208.unitId,v208.subUnitId,v208.drawingId))!=null&&v513.getShapeData().formulaBinding);(v94||v95)&&this._shapeTextEditingService["setEditing"](null);}else this._shapeTextEditingService["getEditing"]()&&(this._shapeTextEditingService["setOnSavingEditorData"](true),requestAnimationFrame(()=>{this._shapeTextEditingService["setEditing"](null);}));}else this._shapeTextEditingService["getEditing"]()&&(this._shapeTextEditingService["setOnSavingEditorData"](true),requestAnimationFrame(()=>{this._shapeTextEditingService["setEditing"](null);}));})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v514=>{let v515=this._shapeTextEditingService["getEditing"]();v515&&v514.some(v210=>v210.drawingId===v515.shapeId)&&this._shapeTextEditingService["setEditing"](null);}));}_initEditingParams(){this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(v516=>{let{scene:v517}=this._context;if(this._lastEditingShapeKey){let v211=v517.getObjectIncludeInGroup(this._lastEditingShapeKey);v211&&v211.setEditing(false);}if(v516){let v212=!!v516.visible,v213=v517.getObjectIncludeInGroup(v516.shapeKey);v213&&(v213.setEditing(v212),this._lastEditingShapeKey=v516.shapeKey),this._contextService["setContextValue"](a.FOCUSING_SHAPE_TEXT_EDITOR,v212);}else this._lastEditingShapeKey=null,this._contextService["setContextValue"](a.FOCUSING_SHAPE_TEXT_EDITOR,false);}));}};gt=M([j(1,(0,a.Inject)(Y)),j(2,(0,a.Inject)(e.MobileShapeEditorService)),j(3,s.IDrawingManagerService),j(4,a.IContextService),j(5,(0,a.Inject)(i.SheetsShapeService))],gt);let _t=class extends e.ShapeTextFloatMenuRenderControllerBase{constructor(v1070,v1071,v1072,v1073,v1074,v1075,v1076,v1077,v1078,v1079){super(v1070,v1071,v1072,v1073,v1074,v1075,v1076,v1077,v1078,v1079,{componentKey:ne,editorUnitId:te});}};_t=M([j(1,(0,a.Inject)(h.DocSelectionManagerService)),j(2,(0,a.Inject)(g.DocCanvasPopManagerService)),j(3,(0,a.Inject)(g.DocSelectionRenderService)),j(4,a.ICommandService),j(5,(0,a.Inject)(g.DocEventManagerService)),j(6,(0,a.Inject)(e.ShapeTextHyperLinkPopupService)),j(7,(0,a.Inject)(h.DocInterceptorService)),j(8,(0,a.Inject)(g.DocRenderController)),j(9,(0,a.Inject)(Y))],_t);let X=class extends a.Disposable{constructor(v1080,v1081,v1082,v1083,v1084,v1085){super(),this._commandService=v1080,this._renderManagerService=v1081,this._drawingManagerService=v1082,this._currentUniverService=v1083,this._drawingRenderService=v1084,this._sheetDrawingShapeRenderController=v1085,D(this,"_insertingShapeKeys",new Set()),this._initialize();}_initialize(){this._drawingAddListener(),this._commandExecutedListener(),this._shapeUpdateListener();}_drawingAddListener(){this.disposeWithMe(this._drawingManagerService["add$"].subscribe(v518=>{this._insertShapes(v518);}));}_commandExecutedListener(){this.disposeWithMe(this._commandService["onCommandExecuted"]((v519,v520)=>{if(v519.id===i.UpdateSheetsShapeDataMutation["id"]){let{unitId:v214,subUnitId:v215,shapeId:v216}=v519.params,v217=this._getSceneAndTransformerByDrawingSearch(v214),v218=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v214,subUnitId:v215,drawingId:v216}),v219=v217==null?undefined:v217.scene["getObjectIncludeInGroup"](v218);v219&&(this._sheetDrawingShapeRenderController["refreshShapeFillImage"](v219),this._sheetDrawingShapeRenderController["refreshFormulaPresentation"](v219,{unitId:v214,subUnitId:v215,shapeId:v216}),v219.makeDirty(true));return;}if(v519.id===i.InsertSheetsShapeMutation["id"]){var v521;let{unitId:v220,subUnitId:v221,shapeId:v222}=v519.params,v223=this._getSceneAndTransformerByDrawingSearch(v220);if(v223==null)return;let{scene:v224}=v223,v225=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v220,subUnitId:v221,drawingId:v222}),v226=v224.getObjectIncludeInGroup(v225);if(!((v521=this._renderManagerService["getRenderUnitById"](v220))!=null&&v521.with(l.SheetSkeletonManagerService).getSkeleton(v221)))return false;if(v226)return;if(v520!=null&&v520.fromChangeset){queueMicrotask(()=>{this._disposed||this._insertShapes([{unitId:v220,subUnitId:v221,drawingId:v222}]);});return;}this._insertShapes([{unitId:v220,subUnitId:v221,drawingId:v222}]);}}));}_shapeUpdateListener(){this.disposeWithMe(this._drawingManagerService["update$"].subscribe(v522=>{v522.forEach(v227=>{let{unitId:v228,subUnitId:v229,drawingId:v230}=v227,v231=this._drawingManagerService["getDrawingByParam"](v227);if(v231==null)return;let{transform:v232,drawingType:v233,srcRect:v234,prstGeom:v235}=v231;if(v233!==a.DrawingTypeEnum["DRAWING_SHAPE"])return;let v236=this._getSceneAndTransformerByDrawingSearch(v228);if(v236==null)return;let{scene:v237,transformer:v238}=v236;if(v232==null)return true;let v239=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v228,subUnitId:v229,drawingId:v230}),v240=v237.getObjectIncludeInGroup(v239);if(v240==null)return true;v240.setSrcRect(v234),v240.setPrstGeom(v235);});}));}_insertShapes(v1086){for(let v523 of v1086){var v1087;let{unitId:v241,subUnitId:v242,drawingId:v243}=v523,v244=this._getSceneAndTransformerByDrawingSearch(v241),v245=(v1087=(0,d.getCurrentUnitInfo)(this._currentUniverService,v241))==null?undefined:v1087.subUnitId;if(v244==null||v245!==v242)return;let v246=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v241,subUnitId:v242,drawingId:v243});if(this._insertingShapeKeys["has"](v246)||v244.scene["getObjectIncludeInGroup"](v246)!=null)return;let v247=this._drawingManagerService["getDrawingByParam"](v523);if(v247==null||v247.drawingType!==a.DrawingTypeEnum["DRAWING_SHAPE"])return;if((0,n.isConnectorShape)((v247.data||{}).shapeType)){let v96=v247.transform;v96&&(v247.transform={...v96,rotateEnabled:false,resizeEnabled:false,borderEnabled:false});}this._insertingShapeKeys["add"](v246);try{this._sheetDrawingShapeRenderController["renderDrawingShape"](v247,v244.scene);}finally{this._insertingShapeKeys["delete"](v246);}queueMicrotask(()=>{if(this._disposed)return;let v97=(0,s.getDrawingShapeKeyByDrawingSearch)(v523);if(!v244.scene["getObjectIncludeInGroup"](v97))return;let v98=this._drawingManagerService["getDrawingByParam"](v523);v98&&this._drawingManagerService["refreshTransform"]([v98]);});}}_getSceneAndTransformerByDrawingSearch(v1088){if(v1088==null)return;let v1089=this._renderManagerService["getRenderUnitById"](v1088),v1090=v1089==null?undefined:v1089.scene;return v1090==null?null:{scene:v1090,transformer:v1090.getTransformerByCreate()};}};X=M([j(0,a.ICommandService),j(1,c.IRenderManagerService),j(2,s.IDrawingManagerService),j(3,a.IUniverInstanceService),j(4,(0,a.Inject)(d.DrawingRenderService)),j(5,(0,a.Inject)(N))],X);const vt={normal:{fill:n.ShapeDefaultConfig["cxnPointFill"],stroke:n.ShapeDefaultConfig["cxnPointStroke"],strokeWidth:n.ShapeDefaultConfig["cxnPointStrokeWidth"]},highlighted:{fill:"#4285f4",stroke:"#1a73e8",strokeWidth:2}};var yt=class extends c.Shape{constructor(v1091,v1092){super(v1091,v1092),D(this,"_targetShapeId",""),D(this,"_cxnIndex",-1),D(this,"_unitId",""),D(this,"_subUnitId",""),D(this,"_isHighlighted",false),v1092&&this.setShapeProps(v1092);}getConnectionInfo(){return{unitId:this._unitId,subUnitId:this._subUnitId,shapeId:this._targetShapeId,cxnIndex:this._cxnIndex};}setHighlighted(v1093){this._isHighlighted!==v1093&&(this._isHighlighted=v1093,this.makeDirty(true));}isHighlighted(){return this._isHighlighted;}setShapeProps(v1094){v1094.targetShapeId!==undefined&&(this._targetShapeId=v1094.targetShapeId),v1094.cxnIndex!==undefined&&(this._cxnIndex=v1094.cxnIndex),v1094.unitId!==undefined&&(this._unitId=v1094.unitId),v1094.subUnitId!==undefined&&(this._subUnitId=v1094.subUnitId),v1094.isHighlighted!==undefined&&(this._isHighlighted=v1094.isHighlighted),this.transformByState({width:v1094.width??n.ShapeDefaultConfig["cxnPointRadius"]*2,height:v1094.height??n.ShapeDefaultConfig["cxnPointRadius"]*2});}_draw(v1095){let v1096=this._isHighlighted?vt.highlighted:vt.normal;c.Circle["drawWith"](v1095,{radius:n.ShapeDefaultConfig["cxnPointRadius"],fill:v1096.fill,stroke:v1096.stroke,strokeWidth:v1096.strokeWidth,evented:true});}};let Z=class extends a.Disposable{constructor(v1097,v1098,v1099,v1100){super(),this._context=v1097,this._renderManagerService=v1098,this._drawingManagerService=v1099,this._sheetsShapeService=v1100,D(this,"_connectionSiteObjects",[]),D(this,"_activeTargetShapeId",null),D(this,"_highlightedSiteIndex",-1),D(this,"_currentScene",null),D(this,"_unitId",""),D(this,"_subUnitId",""),D(this,"_draggingConnectorId",null);}startConnectionDetection(v1101,v1102,v1103,v1104){this._currentScene=v1101,this._unitId=v1102,this._subUnitId=v1103,this._draggingConnectorId=v1104;}updateConnectionDetection(v1105){if(!this._currentScene)return null;let v1106=this._findShapeAtPoint(v1105);return v1106?(this._activeTargetShapeId!==v1106.shapeId&&(this._clearConnectionSites(),this._showConnectionSites(v1106.shapeId,v1106.shapeModel),this._activeTargetShapeId=v1106.shapeId),this._findNearestConnectionSite(v1105)):(this._activeTargetShapeId!==null&&(this._clearConnectionSites(),this._activeTargetShapeId=null),null);}endConnectionDetection(){this._clearConnectionSites(),this._currentScene=null,this._activeTargetShapeId=null,this._highlightedSiteIndex=-1,this._draggingConnectorId=null;}getConnectionRelation(){return this._activeTargetShapeId===null||this._highlightedSiteIndex<0?null:{shapeId:this._activeTargetShapeId,cxnIndex:this._highlightedSiteIndex};}_findShapeAtPoint(v1107){let v1108=this._drawingManagerService["getDrawingData"](this._unitId,this._subUnitId);for(let v524 of Object.keys(v1108)){if(v524===this._draggingConnectorId||v1108[v524].drawingType!==a.DrawingTypeEnum["DRAWING_SHAPE"])continue;let v248=this._sheetsShapeService["getShapeModel"](this._unitId,this._subUnitId,v524);if(!v248||(0,n.isConnectorShape)(v248.getShapeType())||v248.getConnectionSiteList().length===0||!this._currentScene)continue;let v249=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:v524}),v250=this._currentScene["getObjectIncludeInGroup"](v249);if(!v250)continue;let{left:v251,top:v252,width:v253,height:v254}=v250.getRealBound(),v255=v251+v253/2,v256=v252+v254/2,v257=v250.transform["getMatrix"](),v258=new c.Transform([v257[0],v257[1],v257[2],v257[3],v255,v256]),v259=v250.getParent(),v260=(v250.isInGroup&&(v259==null?undefined:v259.classType)===c.RENDER_CLASS_TYPE["GROUP"]?v259.ancestorTransform["multiply"](v258):v258).invert().applyPoint(v1107),v261=v253/2,v262=v254/2;if(v260.x>=-v261-5&&v260.x<=v261+5&&v260.y>=-v262-5&&v260.y<=v262+5)return{shapeId:v524,shapeModel:v248};}return null;}_showConnectionSites(v1109,v1110){if(!this._currentScene)return;let v1111=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:v1109}),v1112=this._currentScene["getObjectIncludeInGroup"](v1111);if(!v1112)return;let{left:v1113,top:v1114,width:v1115,height:v1116}=v1112.getRealBound(),v1117=v1113+v1115/2,v1118=v1114+v1116/2,v1119=v1112.transform["getMatrix"](),v1120=new c["Transform"]([v1119[0],v1119[1],v1119[2],v1119[3],v1117,v1118]),v1121=v1112.getParent(),v1122=v1112.isInGroup&&(v1121==null?undefined:v1121.classType)===c.RENDER_CLASS_TYPE["GROUP"]?v1121.ancestorTransform["multiply"](v1120):v1120;v1110.updateContext({width:v1115,height:v1116});let v1123=v1110.getConnectionSiteList();for(let v525 of v1123){let v263=v525.x-v1115/2,v264=v525.y-v1116/2,v265=v1122.applyPoint({x:v263,y:v264}),v266=v265.x,v267=v265.y,v268=new yt("connection-site-"+v1109+"-"+v525.index,{left:v266-n.ShapeDefaultConfig["cxnPointRadius"],top:v267-n.ShapeDefaultConfig["cxnPointRadius"],targetShapeId:v1109,cxnIndex:v525.index,unitId:this._unitId,subUnitId:this._subUnitId,width:n.ShapeDefaultConfig["cxnPointRadius"]*2,height:n.ShapeDefaultConfig["cxnPointRadius"]*2,zIndex:c.DRAWING_OBJECT_LAYER_INDEX+2,evented:false});this._connectionSiteObjects["push"](v268),this._currentScene["addObject"](v268,c.DRAWING_OBJECT_LAYER_INDEX+2);}}_findNearestConnectionSite(v1124){let v1125=null,v1126=1/0,v1127=null;for(let v526 of this._connectionSiteObjects){let v269=v526.left+n.ShapeDefaultConfig["cxnPointRadius"],v270=v526.top+n.ShapeDefaultConfig["cxnPointRadius"],v271=v1124.x-v269,v272=v1124.y-v270,v273=Math.sqrt(v271*v271+v272*v272);v273<v1126&&(v1126=v273,v1125=v526,v1127={x:v269,y:v270});}let v1128=v1126<=10&&v1125?v1125.getConnectionInfo().cxnIndex:-1;if(v1128!==this._highlightedSiteIndex){for(let v274 of this._connectionSiteObjects){let v99=v274.getConnectionInfo();v274.setHighlighted(v99.cxnIndex===v1128);}this._highlightedSiteIndex=v1128;}if(v1126<=10&&v1125&&v1127){let v527=v1125.getConnectionInfo(),v528=this._getConnectionSiteAngle(v527.shapeId,v527.cxnIndex);return{shapeId:v527.shapeId,cxnIndex:v527.cxnIndex,unitId:v527.unitId,subUnitId:v527.subUnitId,worldPoint:v1127,angle:v528};}return null;}_getConnectionSiteAngle(v1129,v1130){let v1131=this._sheetsShapeService["getShapeModel"](this._unitId,this._subUnitId,v1129);if(!v1131)return 0;let v1132=this._drawingManagerService["getDrawingByParam"]({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:v1129});if(!(v1132!=null&&v1132.transform))return 0;let{width:v1133=0,height:v1134=0,flipX:v1135=false,flipY:v1136=false}=v1132.transform;v1131.updateContext({width:v1133,height:v1134});let v1137=v1131.getConnectionSiteList().find(v529=>v529.index===v1130);if(!v1137)return 0;let v1138=v1137.ang/60000;return v1135&&(v1138=180-v1138),v1136&&(v1138=-v1138),v1138=(v1138%360+360)%360,v1138;}_clearConnectionSites(){for(let v530 of this._connectionSiteObjects)v530.dispose();this._connectionSiteObjects=[],this._highlightedSiteIndex=-1;}dispose(){this._clearConnectionSites(),super.dispose();}};Z=M([j(1,(0,a.Inject)(c.IRenderManagerService)),j(2,(0,a.Inject)(s.IDrawingManagerService)),j(3,(0,a.Inject)(i.SheetsShapeService))],Z);let bt=class extends a.Disposable{constructor(v1139,v1140,v1141,v1142,v1143){super(),this._sheetSkeletonService=v1139,this._sheetClipboardService=v1140,this._sheetDrawingService=v1141,this._shapeService=v1142,this._groupCopyPasteController=v1143,D(this,"_copyInfo",undefined),this._initCopyPaste(),this._registerGroupFeaturePasteHook();}get _focusedDrawings(){return this._sheetDrawingService["getFocusDrawings"]();}_registerGroupFeaturePasteHook(){this._groupCopyPasteController["registerFeaturePasteHook"](({fromUnitId:v531,fromSubUnitId:v532,toUnitId:v533,toSubUnitId:v534,idMap:v535})=>{let v536=[],v537=[];for(let[v275,v276]of v535.entries()){let v100=this._shapeService["getShapeModel"](v531,v532,v275);if(!v100)continue;let v101=v100.getShapeType(),v102=JSON.parse(JSON.stringify(v100.getShapeData()));if(v102.relation){var v538,v539;let v31=(v538=v102.relation["from"])==null?undefined:v538.shapeId,v32=(v539=v102.relation["to"])==null?undefined:v539.shapeId,v33=!v31||v535.has(v31),v34=!v32||v535.has(v32);v33&&v31&&v102.relation["from"]?v102.relation["from"]={...v102.relation["from"],shapeId:v535.get(v31)}:v102.relation["from"]=undefined,v34&&v32&&v102.relation["to"]?v102.relation["to"]={...v102.relation["to"],shapeId:v535.get(v32)}:v102.relation["to"]=undefined;}v536.push({id:i.InsertSheetsShapeMutation["id"],params:{unitId:v533,subUnitId:v534,shapeId:v276,shapeType:v101,shapeData:v102}}),v537.push({id:i.RemoveSheetsShapeMutation["id"],params:{unitId:v533,subUnitId:v534,shapeId:v276}});}return{redos:v536,undos:v537};});}_initCopyPaste(){this.disposeWithMe(this._sheetClipboardService["addClipboardHook"]({id:"sheets-shape-ui",onBeforeCopyFocusedObject:(v540,v541,v542)=>{this._copyInfo=null;let v543=this._focusedDrawings["filter"](v277=>v277.drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]);return v543.length===0?false:(this._copyInfo={unitId:v540,subUnitId:v541,copyType:v542,drawings:v543},true);},onBeforeCopy:(v544,v545,v546,v547)=>{this._copyInfo=null,this._createCopyInfoByRange(v544,v545,v546,v547);},onPasteCells:(v548,v549,v550,v551)=>{if(!v551.copyId||!v548||!this._copyInfo)return{redos:[],undos:[]};let{pasteType:v552}=v551;return v552===l.PREDEFINED_HOOK_NAME["DEFAULT_PASTE"]?this._generatePasteMutations(v549,this._copyInfo["copyType"]===l.COPY_TYPE["CUT"]):{redos:[],undos:[]};}}));}_createCopyInfoByRange(v1144,v1145,v1146,v1147){let v1148=this._sheetSkeletonService["getSkeleton"](v1144,v1145);if(!v1148)return;let v1149=(0,o.attachRangeWithCoord)(v1148,v1146);if(!v1149)return;let{startX:v1150,endX:v1151,startY:v1152,endY:v1153}=v1149,v1154=this._sheetDrawingService["getDrawingData"](v1144,v1145),v1155=[];for(let[v553,v554]of Object.entries(v1154)){if(v554.drawingType!==a.DrawingTypeEnum["DRAWING_SHAPE"])continue;let{transform:v278}=v554;if(!v278)continue;let{left:v279=0,top:v280=0,width:v281=0,height:v282=0}=v278;v1150<=v279&&v1151>=v279+v281&&v1152<=v280&&v1153>=v280+v282&&v1155.push(v554);}v1155.length>0&&(this._copyInfo={unitId:v1144,subUnitId:v1145,copyType:v1147,copyRange:v1146,drawings:v1155});}_generatePasteMutations(v1156,v1157){let{unitId:v1158,subUnitId:v1159,range:v1160}=v1156,v1161=this._sheetSkeletonService["getSkeleton"](v1158,v1159);if(!v1161)return{redos:[],undos:[]};let v1162=(0,o.discreteRangeToRange)(v1160),{unitId:v1163,subUnitId:v1164,copyRange:v1165,drawings:v1166}=this._copyInfo,v1167=this._sheetSkeletonService["getSkeleton"](v1163,v1164);if(!v1167)return{redos:[],undos:[]};let v1168;if(!v1165){let v555=1/0,v556=1/0;for(let v283 of v1166){let{left:v103=0,top:v104=0}=v283.transform??{};v103<v555&&(v555=v103),v104<v556&&(v556=v104);}v555!==1/0&&v556!==1/0&&(v1168={left:v555,top:v556});}let v1169=new Map();if(!v1157){for(let v284 of v1166)v1169.set(v284.drawingId,(0,a.generateRandomId)());}let v1170=[],v1171=[];for(let v557 of v1166){let{drawingId:v285,transform:v286,sheetTransform:v287}=v557;if(!v286||!v287)continue;let v288=this._updateTransform({transform:v286,sheetTransform:v287},{skeleton:v1167,range:v1165},{skeleton:v1161,range:v1162},v1168);if(v1157){let{redos:v105,undos:v106}=this._generateCutPasteMutations({fromUnitId:v1163,fromSubUnitId:v1164,toUnitId:v1158,toSubUnitId:v1159,drawing:v557,newTransforms:v288});v1170.push(...v105),v1171.push(...v106);continue;}let{redos:v289,undos:v290}=this._generateCopyPasteMutations({toUnitId:v1158,toSubUnitId:v1159,drawing:v557,newTransforms:v288,newDrawingId:v1169.get(v285),idMap:v1169});v1170.push(...v289),v1171.push(...v290);}return{redos:v1170,undos:v1171};}_generateCutPasteMutations(v1172){let{fromUnitId:v1173,fromSubUnitId:v1174,toUnitId:v1175,toSubUnitId:v1176,drawing:v1177,newTransforms:v1178}=v1172,v1179={...v1177,unitId:v1175,subUnitId:v1176,transform:v1178.transform,sheetTransform:v1178.sheetTransform};if(v1175===v1173&&v1176===v1174){let{redo:v558,undo:v559,objects:v560}=this._sheetDrawingService["getBatchUpdateOp"]([v1179]);return{redos:[{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1175,subUnitId:v1176,type:p.DrawingApplyType["UPDATE"],op:v558,objects:v560}}],undos:[{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1175,subUnitId:v1176,type:p.DrawingApplyType["UPDATE"],op:v559,objects:v560}}]};}else{let v561=this._sheetDrawingService["getBatchRemoveOp"]([v1177]),v562=this._sheetDrawingService["getBatchAddOp"]([v1179]),v563=this._shapeService["getShapeModel"](v1177.unitId,v1177.subUnitId,v1177.drawingId);if(!v563)return{redos:[],undos:[]};let v564=v563.getShapeType(),v565=JSON.parse(JSON.stringify(v563.getShapeData()));return{redos:[{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1173,subUnitId:v1174,type:p.DrawingApplyType["REMOVE"],op:v561.redo,objects:v561.objects}},{id:i.RemoveSheetsShapeMutation["id"],params:{unitId:v1173,subUnitId:v1174,shapeId:v1177.drawingId}},{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1175,subUnitId:v1176,type:p.DrawingApplyType["INSERT"],op:v562.redo,objects:v562.objects}},{id:i.InsertSheetsShapeMutation["id"],params:{unitId:v1175,subUnitId:v1176,shapeId:v1177.drawingId,shapeType:v564,shapeData:v565}}],undos:[{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1173,subUnitId:v1174,type:p.DrawingApplyType["INSERT"],op:v561.undo,objects:v561.objects}},{id:i.InsertSheetsShapeMutation["id"],params:{unitId:v1173,subUnitId:v1174,shapeId:v1177.drawingId,shapeType:v564,shapeData:v565}},{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1175,subUnitId:v1176,type:p.DrawingApplyType["REMOVE"],op:v562.undo,objects:v562.objects}},{id:i.RemoveSheetsShapeMutation["id"],params:{unitId:v1175,subUnitId:v1176,shapeId:v1177.drawingId}}]};}}_generateCopyPasteMutations(v1180){let{toUnitId:v1181,toSubUnitId:v1182,drawing:v1183,newTransforms:v1184,newDrawingId:v1185,idMap:v1186}=v1180,v1187={...v1183,unitId:v1181,subUnitId:v1182,drawingId:v1185,transform:v1184.transform,sheetTransform:v1184.sheetTransform},{redo:v1188,undo:v1189,objects:v1190}=this._sheetDrawingService["getBatchAddOp"]([v1187]),v1191=this._shapeService["getShapeModel"](v1183.unitId,v1183.subUnitId,v1183.drawingId);if(!v1191)return{redos:[],undos:[]};let v1192=v1191.getShapeType(),v1193=JSON.parse(JSON.stringify(v1191.getShapeData()));if(v1193.relation){var v1194,v1195;let v566=(v1194=v1193.relation["from"])==null?undefined:v1194.shapeId,v567=(v1195=v1193.relation["to"])==null?undefined:v1195.shapeId,v568=!v566||v1186.has(v566),v569=!v567||v1186.has(v567);v568&&v566&&v1193.relation["from"]?v1193.relation["from"]={...v1193.relation["from"],shapeId:v1186.get(v566)}:v1193.relation["from"]=undefined,v569&&v567&&v1193.relation["to"]?v1193.relation["to"]={...v1193.relation["to"],shapeId:v1186.get(v567)}:v1193.relation["to"]=undefined;}return{redos:[{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1181,subUnitId:v1182,type:p.DrawingApplyType["INSERT"],op:v1188,objects:v1190}},{id:i.InsertSheetsShapeMutation["id"],params:{unitId:v1181,subUnitId:v1182,shapeId:v1185,shapeType:v1192,shapeData:v1193}}],undos:[{id:p.SetDrawingApplyMutation["id"],params:{unitId:v1181,subUnitId:v1182,type:p.DrawingApplyType["REMOVE"],op:v1189,objects:v1190}},{id:i.RemoveSheetsShapeMutation["id"],params:{unitId:v1181,subUnitId:v1182,shapeId:v1185}}]};}_updateTransform(v1196,v1197,v1198,v1199){let{range:v1200,skeleton:v1201}=v1197,{range:v1202,skeleton:v1203}=v1198,{transform:v1204,sheetTransform:v1205}=v1196,v1206={...v1204};if(v1200){let v570=(0,o.attachRangeWithCoord)(v1201,v1200),v571=(0,o.attachRangeWithCoord)(v1203,v1202);if(v570&&v571){let v291=v571.startX-v570.startX,v292=v571.startY-v570.startY;v1206.left=(v1206.left??0)+v291,v1206.top=(v1206.top??0)+v292;}}else{let v572=(0,o.attachRangeWithCoord)(v1203,v1202);if(v1199&&v572){let v293=(v1206.left??0)-v1199.left,v294=(v1206.top??0)-v1199.top;v1206.left=v572.startX+v293,v1206.top=v572.startY+v294;}else v1206.left=v572==null?undefined:v572.startX,v1206.top=v572==null?undefined:v572.startY;}return{transform:v1206,sheetTransform:(0,p.transformToDrawingPosition)(v1206,v1203)??v1205};}};bt=M([j(0,(0,a.Inject)(o.SheetSkeletonService)),j(1,(0,a.Inject)(l.ISheetClipboardService)),j(2,(0,a.Inject)(p.ISheetDrawingService)),j(3,(0,a.Inject)(i.SheetsShapeService)),j(4,(0,a.Inject)(_.SheetsDrawingGroupCopyPasteController))],bt);var xt=class extends c.Shape{constructor(v1207,v1208){super(v1207,v1208),D(this,"_shapeId",null),D(this,"_index",null),D(this,"_unitId",null),D(this,"_subUnitId",null),D(this,"_isStartConnectorPoint",false),v1208&&this.setShapeProps(v1208);}getDrawingSearch(){return{unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._shapeId};}setShapeProps(v1209){v1209.shapeId!==undefined&&(this._shapeId=v1209.shapeId),v1209.unitId!==undefined&&(this._unitId=v1209.unitId),v1209.subUnitId!==undefined&&(this._subUnitId=v1209.subUnitId),v1209.isStartConnectorPoint!==undefined&&(this._isStartConnectorPoint=v1209.isStartConnectorPoint),this.transformByState({width:v1209.width,height:v1209.height});}_draw(v1210){c.Circle["drawWith"](v1210,{radius:n.ShapeDefaultConfig["cxnPointRadius"],fill:n.ShapeDefaultConfig["cxnPointFill"],stroke:n.ShapeDefaultConfig["cxnPointStroke"],strokeWidth:n.ShapeDefaultConfig["cxnPointStrokeWidth"],evented:true});}};let St=class extends a.Disposable{constructor(v1211,v1212,v1213,v1214,v1215,v1216,v1217,v1218){super(),this._context=v1211,this._commandService=v1212,this._renderManagerService=v1213,this._drawingManagerService=v1214,this._univerInstanceService=v1215,this._sheetsShapeService=v1216,this._sheetShapeAdjustController=v1217,this._sheetBasicShapeConnectionPointController=v1218,D(this,"_activeShapeId",undefined),D(this,"_unitId",undefined),D(this,"_subUnitId",undefined),D(this,"_connectorObjects",[]),D(this,"_baseDrawingRect",{left:0,top:0,width:0,height:0,flipX:false,flipY:false}),D(this,"_activeShapeModel",undefined),D(this,"_isConnecting",false),D(this,"_isDrawingShapePointDown",false),D(this,"_hasReset",false),D(this,"_cxtHandlerPointerMove",undefined),D(this,"_cxtHandlerPointerUp",undefined),D(this,"_currentConnectionTarget",null),this._initialize();}_initialize(){this._registerDrawingFocusChangeHandler(),this._registerDrawingMoveHandler();}_getDrawingRect(){if(!this._unitId||!this._subUnitId||!this._activeShapeId)return;let v1219={unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId},{transform:v1220}=this._drawingManagerService["getDrawingByParam"](v1219);if(v1220)return{left:v1220.left||0,top:v1220.top||0,width:v1220.width||0,height:v1220.height||0,flipX:v1220.flipX||false,flipY:v1220.flipY||false,angle:v1220.angle};}_addShapeConnectorHandlerObjects(){if(this._unitId===undefined||this._subUnitId===undefined||this._activeShapeId===undefined)return;let v1221=this._renderManagerService["getRenderUnitById"](this._unitId);if(!v1221||!v1221.with(l.SheetSkeletonManagerService).getCurrentSkeleton())return;let{scene:v1222}=v1221,v1223=this._getDrawingRect();if(!v1223)return;let v1224=this._sheetsShapeService["getShapeModel"](this._unitId,this._subUnitId,this._activeShapeId);if(!v1224||!(0,n.isConnectorShape)(v1224.getShapeType()))return;let v1225=v1224.getConnectorLinePoints();if(v1225.length<2)return;let v1226=new n["ConnectorCoordinateTransform"](v1223),v1227=v1225[0],v1228=v1225[v1225.length-1],v1229=v1226.localToWorld(v1227),v1230=v1226.localToWorld(v1228);this._addShapeConnectorHandlerObject(v1222,{...v1229},true),this._addShapeConnectorHandlerObject(v1222,{...v1230},false);}_addShapeConnectorHandlerObject(v1231,v1232,v1233){if(this._activeShapeId===undefined||this._unitId===undefined||this._subUnitId===undefined)return;let v1234="connector-handler-"+this._unitId+"-"+this._subUnitId+"-"+this._activeShapeId+"-"+(v1233?"start":"end"),v1235=v1231.getObjectIncludeInGroup(v1234);if(v1235){v1235.transformByState({left:v1232.x-n.ShapeDefaultConfig["cxnPointRadius"],top:v1232.y-n.ShapeDefaultConfig["cxnPointRadius"]});return;}let v1236=new xt(v1234,{left:v1232.x-n.ShapeDefaultConfig["cxnPointRadius"],top:v1232.y-n.ShapeDefaultConfig["cxnPointRadius"],shapeId:this._activeShapeId,unitId:this._unitId,subUnitId:this._subUnitId,isStartConnectorPoint:v1233,width:n.ShapeDefaultConfig["cxnPointRadius"]*2,height:n.ShapeDefaultConfig["cxnPointRadius"]*2,zIndex:c.DRAWING_OBJECT_LAYER_INDEX+1,evented:true});this._connectorObjects["push"](v1236),this._attachConnectorObjectEvent(v1236,v1231,v1233),v1231.addObject(v1236,c.DRAWING_OBJECT_LAYER_INDEX+1);}_getScrollInfo(v1237,v1238){var v1239;let v1240={x:0,y:0};if(!v1237||!v1238)return v1240;let v1241=this._renderManagerService["getRenderUnitById"](v1237);if(!v1241||!v1241.with(l.SheetSkeletonManagerService).getSkeleton(v1238))return v1240;let v1242=v1241.with(l.SheetScrollManagerService),v1243=v1242==null?undefined:v1242.getCurrentScrollState();if(!v1243)return v1240;let v1244=(v1239=this._univerInstanceService["getUnit"](v1237))==null?undefined:v1239.getSheetBySheetId(v1238);if(!v1244)return v1240;let v1245=(0,l.getViewportByCell)(v1243.sheetViewStartRow,v1243.sheetViewStartColumn,v1241.scene,v1244);return v1245?{x:v1245.viewportScrollX,y:v1245.viewportScrollY}:v1240;}_getZoomRatio(v1246,v1247){var v1248;let v1249=(v1248=this._univerInstanceService["getUnit"](v1246))==null?undefined:v1248.getSheetBySheetId(v1247);return(v1249==null?undefined:v1249.getZoomRatio())??1;}_handleConnectorPointerUp(v1250,v1251,v1252,v1253,v1254){this._cxtHandlerPointerMove["unsubscribe"](),this._cxtHandlerPointerUp["unsubscribe"](),this._sheetShapeAdjustController["refreshAdjustControls"]();let v1255=this._currentConnectionTarget;this._sheetBasicShapeConnectionPointController["endConnectionDetection"]();let v1256=this._getScrollInfo(this._unitId,this._subUnitId),v1257=this._getZoomRatio(this._unitId,this._subUnitId),v1258={x:v1252.offsetX/v1257+v1256.x,y:v1252.offsetY/v1257+v1256.y},v1259=v1255?v1255.worldPoint:v1258,v1260=v1253?this._activeShapeModel["getEndConnectInfo"]():this._activeShapeModel["getStartConnectInfo"](),v1261=this._activeShapeModel["getShapeType"]();v1260?this._handleConnectedEndpointPointerUp(v1260,v1259,v1253,v1255,v1254):this._handleFreeEndpointPointerUp(v1251,v1259,v1253,v1255,v1254,v1261),this._isConnecting=false,this._hasReset=false,this._currentConnectionTarget=null,v1250.enableObjectsEvent();}_handleFreeEndpointPointerUp(v1262,v1263,v1264,v1265,v1266,v1267){let v1268=v1267===n.ShapeTypeEnum["Line"]||v1267===n.ShapeTypeEnum["StraightConnector1"],v1269=v1264?v1263:v1262,v1270=v1264?v1262:v1263,v1271=this._activeShapeModel["getConnectorLinePoints"](),v1272=(0,n.isCurvedConnectorShape)(this._activeShapeModel["getShapeType"]()),v1273=n.ConnectorCoordinateTransform["getBentTypeFromPoints"](v1271,v1272),v1274=v1268?n.ConnectorCoordinateTransform["computeStraightConnectorLayout"](v1269,v1270):n.ConnectorCoordinateTransform["computeConnectorResizeLayout"](v1262,v1263,v1264,v1273);v1265?this._executeConnectionCommand(v1274,v1265,v1264,v1266):this._executeResizeCommand(v1274,v1266);}_handleConnectedEndpointPointerUp(v1275,v1276,v1277,v1278,v1279){let v1280=this._getConnectPointInfo(v1275);if(!v1280)return;let v1281=v1278?v1278.angle:this._calculateFreeEndpointAngle(v1280.point,v1276),v1282;if(v1278){let v573=this._drawingManagerService["getDrawingByParam"]({unitId:v1278.unitId,subUnitId:v1278.subUnitId,drawingId:v1278.shapeId});if(v573!=null&&v573.transform){let{left:v296=0,top:v297=0,width:v298=0,height:v299=0,angle:v295}=v573.transform;v1282=(0,n.getBasicShapeRotateBound)({left:v296,top:v297,width:v298,height:v299},v295||0);}else v1282={left:v1276.x,top:v1276.y,width:0,height:0};}else v1282={left:v1276.x,top:v1276.y,width:0,height:0};let v1283={point:v1276,angle:v1281,bounds:v1282},v1284=v1277?v1283:v1280,v1285=v1277?v1280:v1283,v1286=this._activeShapeModel["getShapeType"](),v1287=(0,n.routeConnectorLineShape)(v1284,v1285,v1286);this._activeShapeModel["removeLinePoints"]();let v1288=(0,n.computeConnectorRouteLayout)(v1287,v1286);v1278?this._executeConnectedRouteConnectionCommand(v1288,v1278,v1275,v1277,v1279):this._executeConnectedRouteResizeCommand(v1288,v1275,v1277,v1279);}_executeConnectionCommand(v1289,v1290,v1291,v1292){let v1293=this._activeShapeModel["getShapeData"]().relation,v1294={...v1293},v1295={shapeId:v1290.shapeId,cxnIndex:v1290.cxnIndex};v1291?v1294.from=v1295:v1294.to=v1295;let v1296=this._activeShapeModel["getShapeType"](),v1297=(0,n.computeConnectorRouteLayout)(v1289.worldPoints,v1296),v1298={unitId:this._unitId,subUnitId:this._subUnitId,connectorShapeId:this._activeShapeId,width:v1289.worldRect["width"],height:v1289.worldRect["height"],left:v1289.worldRect["left"],top:v1289.worldRect["top"],flipX:v1289.worldRect["flipX"]||false,flipY:v1289.worldRect["flipY"]||false,newAdjustValues:v1297.adjustValues,oldAdjustValues:v1292,oldRelation:v1293,newRelation:v1294,newLineType:v1297.lineType,oldLineType:v1296};this._commandService["executeCommand"](i.UpdateConnectorRelationCommand["id"],v1298);}_executeResizeCommand(v1299,v1300){let v1301=this._activeShapeModel["getShapeType"](),v1302=(0,n.computeConnectorRouteLayout)(v1299.worldPoints,v1301),v1303={unitId:this._unitId,subUnitId:this._subUnitId,shapeId:this._activeShapeId,width:v1299.worldRect["width"],height:v1299.worldRect["height"],left:v1299.worldRect["left"],top:v1299.worldRect["top"],flipX:v1299.worldRect["flipX"]||false,flipY:v1299.worldRect["flipY"]||false,angle:v1299.worldRect["angle"]||0,newAdjustValues:v1302.adjustValues,oldAdjustValues:v1300,newLineType:v1302.lineType,oldLineType:v1301};this._commandService["executeCommand"](i.UpdateLineShapeResizeCommand["id"],v1303);}_executeConnectedRouteConnectionCommand(v1304,v1305,v1306,v1307,v1308){let v1309=this._activeShapeModel["getShapeData"]().relation,v1310={...v1309},v1311={shapeId:v1305.shapeId,cxnIndex:v1305.cxnIndex};v1307?(v1310.from=v1311,v1310.to=v1306):(v1310.from=v1306,v1310.to=v1311);let v1312={unitId:this._unitId,subUnitId:this._subUnitId,connectorShapeId:this._activeShapeId,width:v1304.worldRect["width"],height:v1304.worldRect["height"],left:v1304.worldRect["left"],top:v1304.worldRect["top"],flipX:v1304.worldRect["flipX"]||false,flipY:v1304.worldRect["flipY"]||false,oldAdjustValues:v1308,newAdjustValues:v1304.adjustValues,newLineType:v1304.lineType,rotation:v1304.rotation,oldRelation:v1309,newRelation:v1310};this._commandService["executeCommand"](i.UpdateConnectorRelationCommand["id"],v1312);}_executeConnectedRouteResizeCommand(v1313,v1314,v1315,v1316){let v1317=this._activeShapeModel["getShapeData"]().relation,v1318={};v1315?(v1318.to=v1314,v1318.from=undefined):(v1318.from=v1314,v1318.to=undefined);let v1319={unitId:this._unitId,subUnitId:this._subUnitId,connectorShapeId:this._activeShapeId,width:v1313.worldRect["width"],height:v1313.worldRect["height"],left:v1313.worldRect["left"],top:v1313.worldRect["top"],flipX:v1313.worldRect["flipX"]||false,flipY:v1313.worldRect["flipY"]||false,oldAdjustValues:v1316,newAdjustValues:v1313.adjustValues,newLineType:v1313.lineType,rotation:v1313.rotation,oldRelation:v1317,newRelation:v1318};this._commandService["executeCommand"](i.UpdateConnectorRelationCommand["id"],v1319);}_attachConnectorObjectEvent(v1320,v1321,v1322){this.disposeWithMe((0,a.toDisposable)(v1320.onPointerDown$["subscribeEvent"]((v574,v575)=>{let v576=v1320.getDrawingSearch();if(this._activeShapeModel=this._sheetsShapeService["getShapeModel"](v576.unitId,v576.subUnitId,v576.drawingId),!this._activeShapeModel)return;let v577={};this._activeShapeModel["getAdjustNames"]().forEach(v300=>{let v301=this._activeShapeModel["getAdjustValueByName"](v300);v301!==undefined&&(v577[v300]=v301);});let v578=this._getDrawingRect();if(!v578)return;this._baseDrawingRect={...v578};let v579=new n["ConnectorCoordinateTransform"](this._baseDrawingRect),v580=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId}),v581=v1321.getObjectIncludeInGroup(v580);this._isConnecting=true,v1321.disableObjectsEvent(),this._sheetBasicShapeConnectionPointController["startConnectionDetection"](v1321,this._unitId,this._subUnitId,this._activeShapeId),this._currentConnectionTarget=null;let v582=this._activeShapeModel["getConnectorLinePoints"](),v583=v582[0],v584=v582[v582.length-1],v585=v1322?v579.localToWorld(v584):v579.localToWorld(v583);this._cxtHandlerPointerMove=v1321.onPointerMove$["subscribeEvent"]((v302,v303)=>{if(!this._isConnecting||!this._activeShapeModel)return;this._hasReset||=(this._sheetShapeAdjustController["clearAdjustControls"](),this._activeShapeModel["clearAdjustValue"](),true);let v304=this._getScrollInfo(this._unitId,this._subUnitId),v305=this._getZoomRatio(this._unitId,this._subUnitId),v306={x:v302.offsetX/v305+v304.x,y:v302.offsetY/v305+v304.y},v307=this._sheetBasicShapeConnectionPointController["updateConnectionDetection"](v306);if(v307){let{shapeId:v107,unitId:v108,subUnitId:v109}=v307;if(v107&&v108&&v109){let v35=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v108,subUnitId:v109,drawingId:v107});v307.angle=(v1321.getObjectIncludeInGroup(v35).angle||0)+v307.angle;}}this._currentConnectionTarget=v307;let v308=v1322?this._activeShapeModel["getEndConnectInfo"]():this._activeShapeModel["getStartConnectInfo"]();if(v308){this._handleConnectedEndpointMove(v308,v306,v1322,v581,v1320);return;}this._handleFreeEndpointMove(v306,v585,v1322,v581,v1320);}),this._cxtHandlerPointerUp=v1321.onPointerUp$["subscribeEvent"]((v309,v310)=>{this._handleConnectorPointerUp(v1321,v585,v309,v1322,v577);}),v575.stopPropagation();})));}_handleBasicShapeUpdateConnectorLineShape(v1323,v1324,v1325){let v1326=this._sheetsShapeService["getBasicShapeRelation"](v1323,v1324,v1325);if(!v1326||v1326.length===0)return;let v1327=this._renderManagerService["getRenderUnitById"](v1323);if(!v1327)return;let{scene:v1328}=v1327;for(let v586 of v1326){let v311=v586.lineShapeId,v312=this._sheetsShapeService["getShapeModel"](v1323,v1324,v311);if(!v312)continue;let v313=v312.getStartConnectInfo(),v314=v312.getEndConnectInfo(),v315=(v313==null?undefined:v313.shapeId)===v1325,v316=(0,s.getDrawingShapeKeyByDrawingSearch)({unitId:v1323,subUnitId:v1324,drawingId:v311}),v317=v1328.getObjectIncludeInGroup(v316);if(!v317)continue;let v318=this._drawingManagerService["getDrawingByParam"]({unitId:v1323,subUnitId:v1324,drawingId:v311});v318!=null&&v318.transform&&(v313&&v314?this._rerouteConnectorLine(v1323,v1324,v311,v312,v313,v314,v317):this._moveConnectorWithShape(v1323,v1324,v311,v312,v315?v313:v314,v315,v318,v317));}}_rerouteConnectorLine(v1329,v1330,v1331,v1332,v1333,v1334,v1335){let v1336=this._unitId,v1337=this._subUnitId;this._unitId=v1329,this._subUnitId=v1330;let v1338=this._getConnectPointInfo(v1333),v1339=this._getConnectPointInfo(v1334);if(this._unitId=v1336,this._subUnitId=v1337,!v1338||!v1339)return;let v1340=v1332.getShapeType(),v1341=(0,n.routeConnectorLineShape)(v1338,v1339,v1340);v1341&&v1332.updateLinePoints(v1341);let v1342=(0,n.computeConnectorRouteLayout)(v1341,v1340);v1342.lineType!==v1340&&v1332.changeShapeType(v1342.lineType),v1332.clearAdjustValue();for(let[v587,v588]of Object.entries(v1342.adjustValues))v1332.setAdjustValueByName(v587,v588);v1332.updateContext({width:v1342.worldRect["width"],height:v1342.worldRect["height"]}),v1335.transformByState({flipX:v1342.worldRect["flipX"],flipY:v1342.worldRect["flipY"],left:v1342.worldRect["left"],top:v1342.worldRect["top"],width:v1342.worldRect["width"],height:v1342.worldRect["height"],angle:v1342.rotation}),v1332.removeLinePoints();}_moveConnectorWithShape(v1343,v1344,v1345,v1346,v1347,v1348,v1349,v1350){let v1351=this._unitId,v1352=this._subUnitId;this._unitId=v1343,this._subUnitId=v1344;let v1353=this._getConnectPointInfo(v1347);if(this._unitId=v1351,this._subUnitId=v1352,!v1353)return;let{left:v1354=0,top:v1355=0,width:v1356=0,height:v1357=0,flipX:v1358=false,flipY:v1359=false}=v1349.transform,v1360=v1346.getConnectorLinePoints();if(v1360.length<2)return;let v1361=new n["ConnectorCoordinateTransform"]({left:v1354,top:v1355,width:v1356,height:v1357,flipX:v1358,flipY:v1359}),v1362=v1348?v1360[v1360.length-1]:v1360[0],v1363=v1361.localToWorld(v1362),v1364=n.ConnectorCoordinateTransform["computeConnectorResizeLayout"](v1363,v1353.point,!v1348);v1350.transformByState({flipX:v1364.worldRect["flipX"],flipY:v1364.worldRect["flipY"],left:v1364.worldRect["left"],top:v1364.worldRect["top"],width:v1364.worldRect["width"],height:v1364.worldRect["height"],angle:v1364.worldRect["angle"]}),v1350.makeDirty(true);}_clearShapeConnectorHandlerObjects(){this._connectorObjects["length"]!==0&&(this._connectorObjects["forEach"](v589=>{v589.dispose();}),this._connectorObjects=[]);}_registerDrawingMoveHandler(){let v1365=this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]);this.disposeWithMe(v1365.pipe((0,u.switchMap)(v590=>v590?v590.activeSheet$["pipe"]((0,u.switchMap)(v319=>{if(!v319)return u.EMPTY;let v320=v590.getUnitId(),v321=this._renderManagerService["getRenderUnitById"](v320),v322=v321==null?undefined:v321.scene;return v322?(0,u.of)(v322):u.EMPTY;})):u.EMPTY)).subscribe(v591=>{let v592=v591.getTransformerByCreate();this.disposeWithMe(v591.onPointerMove$["subscribeEvent"](v323=>{this._isDrawingShapePointDown&&this._activeShapeId&&this._clearShapeConnectorHandlerObjects();})),this.disposeWithMe(v592.changeStart$["subscribe"](v324=>{let{objects:v325}=v324;this._clearShapeConnectorHandlerObjects(),v325!==null&&v325.size===1&&v325.values().next().value instanceof k&&(this._isDrawingShapePointDown=true);})),this.disposeWithMe(v592.changing$["subscribe"](v326=>{this._isDrawingShapePointDown&&this._clearShapeConnectorHandlerObjects();})),this.disposeWithMe(v591.onPointerUp$["subscribeEvent"](()=>{this._isDrawingShapePointDown&&(this._isDrawingShapePointDown=false,this._addShapeConnectorHandlerObjects());})),this.disposeWithMe(v592.changeEnd$["subscribe"](()=>{this._unitId&&this._subUnitId&&this._activeShapeId&&this._drawingManagerService["getDrawingByParam"]({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:this._activeShapeId})&&(this._clearShapeConnectorHandlerObjects(),this._addShapeConnectorHandlerObjects());}));}));}_registerDrawingFocusChangeHandler(){this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v593=>{if(v593.length===1){let v327=v593[0];if(v327.drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]){let v110=this._sheetsShapeService["getShapeModel"](v327.unitId,v327.subUnitId,v327.drawingId);if(v110&&(0,n.isConnectorShape)(v110.getShapeType())){this._activeShapeId=v327.drawingId,this._unitId=v327.unitId,this._subUnitId=v327.subUnitId,this._clearShapeConnectorHandlerObjects(),this._addShapeConnectorHandlerObjects();return;}}}this._activeShapeId=undefined,this._unitId=undefined,this._subUnitId=undefined,this._clearShapeConnectorHandlerObjects();})),this.disposeWithMe(this._drawingManagerService["update$"].subscribe(v594=>{if(v594.length===1){var v595;let v328=v594[0],v329=(v595=this._drawingManagerService["getDrawingByParam"](v328))==null?undefined:v595.drawingType;v329===a.DrawingTypeEnum["DRAWING_SHAPE"]&&v328.drawingId===this._activeShapeId?(this._clearShapeConnectorHandlerObjects(),this._addShapeConnectorHandlerObjects()):!this._activeShapeId&&v329===a.DrawingTypeEnum["DRAWING_SHAPE"]&&this._handleBasicShapeUpdateConnectorLineShape(v328.unitId,v328.subUnitId,v328.drawingId);}})),this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(v596=>{for(let v330 of v596){let{drawingId:v111}=v330;if(this._activeShapeId===v111){this._reset();return;}}}));}_handleConnectedEndpointMove(v1366,v1367,v1368,v1369,v1370){var v1371;if(!this._activeShapeModel)return;let v1372=this._getConnectPointInfo(v1366);if(!v1372)return;let v1373=this._currentConnectionTarget?this._currentConnectionTarget["worldPoint"]:v1367,v1374=this._currentConnectionTarget?this._currentConnectionTarget["angle"]:this._calculateFreeEndpointAngle(v1372.point,v1373),v1375;if(this._currentConnectionTarget){let v597=this._drawingManagerService["getDrawingByParam"]({unitId:this._currentConnectionTarget["unitId"],subUnitId:this._currentConnectionTarget["subUnitId"],drawingId:this._currentConnectionTarget["shapeId"]});if(v597!=null&&v597.transform){let{left:v332=0,top:v333=0,width:v334=0,height:v335=0,angle:v331}=v597.transform;v1375=(0,n.getBasicShapeRotateBound)({left:v332,top:v333,width:v334,height:v335},v331||0);}else v1375={left:v1373.x,top:v1373.y,width:0,height:0};}else v1375={left:v1373.x,top:v1373.y,width:0,height:0};let v1376={point:v1373,angle:v1374,bounds:v1375},v1377=v1368?v1376:v1372,v1378=v1368?v1372:v1376,v1379=this._activeShapeModel["getShapeType"](),v1380=(0,n.routeConnectorLineShape)(v1377,v1378,v1379);v1380&&this._activeShapeModel["updateLinePoints"](v1380);let v1381=(0,n.computeConnectorRouteLayout)(v1380,v1379);v1381.lineType!==v1379&&this._activeShapeModel["changeShapeType"](v1381.lineType);for(let[v598,v599]of Object.entries(v1381.adjustValues))this._activeShapeModel["setAdjustValueByName"](v598,v599);this._activeShapeModel["updateContext"]({width:v1381.worldRect["width"],height:v1381.worldRect["height"]}),v1369.transformByState({flipX:v1381.worldRect["flipX"],flipY:v1381.worldRect["flipY"],left:v1381.worldRect["left"],top:v1381.worldRect["top"],width:v1381.worldRect["width"],height:v1381.worldRect["height"],angle:v1381.rotation}),v1369.makeDirty(true);let v1382=((v1371=this._currentConnectionTarget)==null?undefined:v1371.worldPoint)??v1367;v1370.transformByState({left:v1382.x-n.ShapeDefaultConfig["cxnPointRadius"],top:v1382.y-n.ShapeDefaultConfig["cxnPointRadius"]});}_handleFreeEndpointMove(v1383,v1384,v1385,v1386,v1387){var v1388,v1389;let v1390=((v1388=this._currentConnectionTarget)==null?undefined:v1388.worldPoint)??v1383,v1391=n.ConnectorCoordinateTransform["computeConnectorResizeLayout"](v1384,v1390,v1385);v1386.transformByState({flipX:v1391.worldRect["flipX"],flipY:v1391.worldRect["flipY"],left:v1391.worldRect["left"],top:v1391.worldRect["top"],width:v1391.worldRect["width"],height:v1391.worldRect["height"],angle:v1391.worldRect["angle"]});let v1392=((v1389=this._currentConnectionTarget)==null?undefined:v1389.worldPoint)??v1383;v1387.transformByState({left:v1392.x-n.ShapeDefaultConfig["cxnPointRadius"],top:v1392.y-n.ShapeDefaultConfig["cxnPointRadius"]});}_getConnectPointInfo(v1393){if(!this._unitId||!this._subUnitId)return null;let{shapeId:v1394,cxnIndex:v1395}=v1393,v1396=this._sheetsShapeService["getShapeModel"](this._unitId,this._subUnitId,v1394);if(!v1396)return null;let v1397=this._drawingManagerService["getDrawingByParam"]({unitId:this._unitId,subUnitId:this._subUnitId,drawingId:v1394});if(!(v1397!=null&&v1397.transform))return null;let{left:v1399=0,top:v1400=0,width:v1401=0,height:v1402=0,flipX:v1403=false,flipY:v1404=false,angle:v1398}=v1397.transform;v1396.updateContext({width:v1401,height:v1402});let v1405=v1396.getConnectionSiteList().find(v600=>v600.index===v1395);if(!v1405)return null;let v1406=v1403?v1401-v1405.x:v1405.x,v1407=v1404?v1402-v1405.y:v1405.y;if(v1398!==0&&v1398!=null){let v601=v1398*Math.PI/180,v602=Math.cos(v601),v603=Math.sin(v601),v604=v1401/2,v605=v1402/2,v606=v1406-v604,v607=v1407-v605;v1406=v604+v606*v602-v607*v603,v1407=v605+v606*v603+v607*v602;}v1406+=v1399,v1407+=v1400;let v1408=v1405.ang/60000;v1403&&(v1408=180-v1408),v1404&&(v1408=-v1408),v1408+=v1398||0,v1408=(v1408%360+360)%360;let v1409=(0,n.getBasicShapeRotateBound)({left:v1399,top:v1400,width:v1401,height:v1402},v1398||0);return{point:{x:v1406,y:v1407},angle:v1408,bounds:v1409};}_calculateFreeEndpointAngle(v1410,v1411){let v1412=v1411.x-v1410.x,v1413=v1411.y-v1410.y;return Math.abs(v1412)>=Math.abs(v1413)?v1412>=0?180:0:v1413>=0?270:90;}_reset(){this._activeShapeId=undefined,this._unitId=undefined,this._subUnitId=undefined,this._clearShapeConnectorHandlerObjects();}dispose(){this._clearShapeConnectorHandlerObjects(),super.dispose();}};St=M([j(1,a.ICommandService),j(2,c.IRenderManagerService),j(3,s.IDrawingManagerService),j(4,a.IUniverInstanceService),j(5,(0,a.Inject)(i.SheetsShapeService)),j(6,(0,a.Inject)(P)),j(7,(0,a.Inject)(Z))],St);let Ct=class extends a.Disposable{constructor(v1414,v1415,v1416){super(),this._sheetPrintInterceptorService=v1414,this._drawingManagerService=v1415,this._shapeRenderController=v1416,this._initPrinting();}_initPrinting(){this.disposeWithMe(this._sheetPrintInterceptorService["interceptor"].intercept(this._sheetPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_COMPONENT_COLLECT,{handler:(v608,v609,v610)=>{var v611;let{unitId:v612,subUnitId:v613,scene:v614,resourceCollector:v615}=v609,v616=(v611=this._drawingManagerService["getDrawingDataForUnit"](v612))==null?undefined:v611[v613];return v616==null||v616.order["forEach"](v336=>{let v337=v616.data[v336];v337.drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]&&!v337.hidden&&this._shapeRenderController["renderDrawingShape"](v337,v614,{resourceCollector:v615});}),v610(v608);}}));}};Ct=M([j(0,(0,a.Inject)(l.SheetPrintInterceptorService)),j(1,s.IDrawingManagerService),j(2,(0,a.Inject)(N))],Ct);let wt=class extends a.Disposable{constructor(v1417,v1418,v1419){super(),this._commandService=v1417,this._localeService=v1418,this._sheetPermissionCheckController=v1419,this._initPermission();}_initPermission(){this.disposeWithMe(this._commandService["beforeCommandExecuted"](v617=>{let v618,v619;if(v617.id===i.InsertShapeCommand["id"]||v617.id===i.SetShapeDrawingDataCommand["id"]||v617.id===i.UpdateConnectorRelationCommand["id"]){let v338=v617.params;v618=v338.unitId,v619=v338.subUnitId;}!v618||!v619||this._sheetPermissionCheckController["permissionCheckWithoutRange"]({workbookTypes:[o.WorkbookEditablePermission],worksheetTypes:[o.WorksheetEditPermission]},v618,v619)||this._sheetPermissionCheckController["blockExecuteWithoutPermission"](this._localeService["t"]("sheets-shape-ui.permission.editErr"));}));}};wt=M([j(0,(0,a.Inject)(a.ICommandService)),j(1,(0,a.Inject)(a.LocaleService)),j(2,(0,a.Inject)(o.SheetPermissionCheckController))],wt);let Q=class extends a.Disposable{constructor(v1420,v1421,v1422,v1423,v1424,v1425,v1426,v1427,v1428,v1429,v1430){super(),this._univerInstanceService=v1420,this._sidebarService=v1421,this._menuManagerService=v1422,this._sheetsShapeService=v1423,this._localeService=v1424,this._commandService=v1425,this._drawingManagerService=v1426,this._sheetCanvasPopManagerService=v1427,this._contextService=v1428,this._renderManagerService=v1429,this._shapeTextEditingService=v1430,D(this,"_sidebarDisposable",null),D(this,"_activeShapeInfo",null),D(this,"_isOpenedShapeEditPanel",false),D(this,"_shapeEditPanelVersion",0),D(this,"_shapePopupMenuDisposable",null),D(this,"_disposePopups",[]),this._initMenu(),this.disposeWithMe(this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]).subscribe(v620=>{if(!v620){var v621;(v621=this._sidebarDisposable)==null||v621.dispose();}})),this._registerOperations(),this.initShapePopupMenu(),this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(v622=>{v622&&this._clearPopups();}));}_initMenu(){this._menuManagerService["mergeMenu"](Ye);}initShapePopupMenu(){this._shapePopupMenuDisposable||=this.disposeWithMe((0,e.bindRenderTransformerLifecycle)(this._renderManagerService,a.UniverInstanceType["UNIVER_SHEET"],v623=>this._popupMenuListener(v623)));}_getShapeInfo(v1431,v1432,v1433){let v1434=this._sheetsShapeService["getShapeTypeById"](v1431,v1432,v1433),v1435=this._sheetsShapeService["getShapeDataById"](v1431,v1432,v1433);return v1434!==undefined&&v1435!==undefined?{shapeData:v1435,shapeId:v1433,shapeType:v1434,unitId:v1431,subUnitId:v1432,version:this._shapeEditPanelVersion,disableShapeOption:false}:null;}_clearPopups(){this._disposePopups["forEach"](v624=>v624.dispose()),this._disposePopups["length"]=0;}_popupMenuListener(v1436){let v1437=new a["DisposableCollection"]();return v1437.add(v1436.createControl$["subscribe"](()=>{let v625=v1436.getSelectedObjectMap();if(this._clearPopups(),this._isOpenedShapeEditPanel||v625.size>1)return;let v626=v625.values().next().value;if(!v626)return;let v627=this._drawingManagerService["getDrawingOKey"](v626.oKey);if(!v627||v627.drawingType!==a.DrawingTypeEnum["DRAWING_SHAPE"])return;let{unitId:v628,subUnitId:v629,drawingId:v630,drawingType:v631}=v627,v632=this._getShapeInfo(v628,v629,v630);if(!v632)return;this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS,true);let v633=this._renderManagerService["getRenderUnitById"](v628),v634=((v633==null?undefined:v633.isMainScene)===false?v633.with(l.SheetCanvasPopManagerService):this._sheetCanvasPopManagerService).attachPopupToObject(v626,{componentKey:z,direction:"vertical-center",offset:[0,e.SHEET_DOC_SHAPE_FLOATING_TOOLBAR_TOP_OFFSET],extraProps:{unitId:v628,subUnitId:v629,drawingId:v630,drawingType:v631,shapeType:v632.shapeType,shapeData:v632.shapeData}});this._disposePopups["push"](this.disposeWithMe(v634)),this._drawingManagerService["getFocusDrawings"]().find(v339=>v339.unitId===v628&&v339.subUnitId===v629&&v339.drawingId===v630)||this._drawingManagerService["focusDrawing"]([{unitId:v628,subUnitId:v629,drawingId:v630}]);})),v1437.add(v1436.clearControl$["subscribe"](()=>{this._clearPopups(),this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS,false),this._drawingManagerService["focusDrawing"](null);})),v1437.add(v1436.changing$["subscribe"](()=>{this._clearPopups();})),v1437.add(v1436.changeStart$["subscribe"](()=>{this._clearPopups();})),(0,a.toDisposable)(()=>{v1437.dispose(),this._clearPopups();});}_registerOperations(){this.disposeWithMe(this._commandService["onCommandExecuted"](v635=>{if(v635.id===V.id){let{unitId:v340,subUnitId:v341,drawingId:v342}=v635.params;this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v340,v341,v342),this._clearPopups(),this._openShapeEditPanel();}if(v635.id===Qe.id&&(this._activeShapeInfo=null,this._closeShapeEditPanel()),v635.id===i.UpdateSheetsShapeDataMutation["id"]){let{unitId:v343,subUnitId:v344,shapeId:v345}=v635.params;if(this._activeShapeInfo&&this._activeShapeInfo["shapeId"]===v345){let v112=this._getShapeInfo(v343,v344,v345);v112&&(this._shapeEditPanelVersion+=1,v112.version=this._shapeEditPanelVersion,this._activeShapeInfo=v112,this._isOpenedShapeEditPanel&&this._openShapeEditPanel());}}})),this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(v636=>{if(this._isOpenedShapeEditPanel===false)return;if(v636.length===0){this._activeShapeInfo=null,this._closeShapeEditPanel();return;}if(v636.length===1&&v636[0].drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]&&(this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v636[0].unitId,v636[0].subUnitId,v636[0].drawingId),this._activeShapeInfo)){this._openShapeEditPanel();return;}let v637=v636.filter(v346=>v346.drawingType===a.DrawingTypeEnum["DRAWING_SHAPE"]);if(v636.length>1&&v637.length===v636.length){if(this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v636[0].unitId,v636[0].subUnitId,v636[0].drawingId),this._activeShapeInfo){this._openShapeEditPanel();return;}}else{if(this._shapeEditPanelVersion+=1,this._activeShapeInfo=this._getShapeInfo(v636[0].unitId,v636[0].subUnitId,v636[0].drawingId),this._activeShapeInfo){this._activeShapeInfo["disableShapeOption"]=true,this._openShapeEditPanel();return;}}this._closeShapeEditPanel();}));}_openShapeEditPanel(){this._activeShapeInfo&&(this._sidebarDisposable=this._sidebarService["open"]({id:L,header:{title:this._localeService["t"]("sheets-shape-ui.formatShape")},width:388,children:{label:L,...this._activeShapeInfo},onClose:()=>{this._drawingManagerService["focusDrawing"](null),this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS,false),this._sidebarDisposable=null;}}),this._isOpenedShapeEditPanel=true);}_closeShapeEditPanel(){this._isOpenedShapeEditPanel=false,this._sidebarService["close"](L),this._sidebarDisposable=null,this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS,false),this._drawingManagerService["focusDrawing"](null);}};Q=M([j(0,a.IUniverInstanceService),j(1,(0,a.Inject)(t.ISidebarService)),j(2,t.IMenuManagerService),j(3,(0,a.Inject)(i.SheetsShapeService)),j(4,(0,a.Inject)(a.LocaleService)),j(5,a.ICommandService),j(6,s.IDrawingManagerService),j(7,(0,a.Inject)(l.SheetCanvasPopManagerService)),j(8,a.IContextService),j(9,c.IRenderManagerService),j(10,(0,a.Inject)(Y))],Q);let $=class extends a.Plugin{constructor(v1438=$e,v1439,v1440,v1441,v1442){super(),this._config=v1438,this._injector=v1439,this._commandService=v1440,this._configService=v1441,this._renderManagerService=v1442;let{...v1443}=(0,a.merge)({},$e,this._config);this._configService["setConfig"]("sheets-shape-ui.config",v1443),this._initCommands();}onRendered(){this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_DOC"],[_t]),(0,a.touchDependencies)(this._injector,[[Q],[X],[N],[Ct]]);}onSteady(){this._injector["get"](Q).initShapePopupMenu();}onReady(){[[Z],[P],[bt]].forEach(v638=>this._injector["add"](v638)),(0,a.touchDependencies)(this._injector,[[bt],[P]]),this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"],[Z]),this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"],[ut]),this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"],[St]),this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"],[gt]);}onStarting(){this._injector["add"]([lt]),this._injector["get"](lt);let v1444=this._injector;[[Q],[X],[N],[Ct],[J],[Y],[mt],[U],[wt],[ft]].forEach(v639=>v1444.add(v639)),(0,a.touchDependencies)(this._injector,[[Q],[X],[N],[J],[Y],[mt],[U],[wt],[ft]]);}_initCommands(){[I,S,Qe,V,re,F,H,ae].forEach(v640=>this.disposeWithMe(this._commandService["registerCommand"](v640)));}};D($,"type",a.UniverInstanceType["UNIVER_SHEET"]),D($,"pluginName","SHEET_SHAPE_UI_PLUGIN"),D($,"packageName",Xe),D($,"version",Ze),$=M([(0,a.DependentOn)(m.UniverLicensePlugin,h.UniverDocsPlugin,s.UniverDrawingPlugin,d.UniverDrawingUIPlugin,c.UniverRenderEnginePlugin,o.UniverSheetsPlugin,g.UniverDocsUIPlugin,p.UniverSheetsDrawingPlugin,r.UniverShapeEditorPlugin,_.UniverSheetsDrawingUIPlugin,i.UniverSheetsShapePlugin,l.UniverSheetsUIPlugin,e.UniverShapeEditorUIPlugin),j(1,(0,a.Inject)(a.Injector)),j(2,a.ICommandService),j(3,a.IConfigService),j(4,c.IRenderManagerService)],$),exports.SheetsShapeUIContextualRibbonSchema=Je,exports.SheetsShapeUIMenuSchema=Ye,Object.defineProperty(exports,"UniverSheetsShapeUIPlugin",{enumerable:true,get:function(){return $;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/shape-editor-ui"),
+  t = require("@univerjs/ui"),
+  n = require("@univerjs-pro/engine-shape"),
+  r = require("@univerjs-pro/shape-editor"),
+  i = require("@univerjs-pro/sheets-shape"),
+  a = require("@univerjs/core"),
+  o = require("@univerjs/sheets"),
+  s = require("@univerjs/drawing"),
+  c = require("@univerjs/engine-render"),
+  l = require("@univerjs/sheets-ui"),
+  u = require("rxjs"),
+  d = require("@univerjs/drawing-ui"),
+  f = require("react/jsx-runtime"),
+  p = require("@univerjs/sheets-drawing"),
+  m = require("@univerjs-pro/license"),
+  h = require("@univerjs/docs"),
+  g = require("@univerjs/docs-ui"),
+  _ = require("@univerjs/sheets-drawing-ui"),
+  v = require("@univerjs/icons"),
+  y = require("react"),
+  b = require("@univerjs/design");
+function x(var_core_value_sig7835, var_core_value_sig1257) {
+  let var_core_value_sig97E2 = {};
+  for (let var_core_value_sigCD3A of Object.keys(var_core_value_sig1257)) {
+    let var_core_value_sigCA05 = var_core_value_sig1257[var_core_value_sigCD3A],
+      var_core_value_sig2F2B = var_core_value_sig7835[var_core_value_sigCD3A];
+    if (var_core_value_sigCA05 !== undefined) {
+      if (var_core_value_sig2F2B === undefined) {
+        var_core_value_sig97E2[var_core_value_sigCD3A] = undefined;
+        continue;
+      }
+      typeof var_core_value_sigCA05 == "object" && var_core_value_sigCA05 && !Array.isArray(var_core_value_sigCA05) && typeof var_core_value_sig2F2B == "object" && var_core_value_sig2F2B && !Array.isArray(var_core_value_sig2F2B) ? var_core_value_sig97E2[var_core_value_sigCD3A] = x(var_core_value_sig2F2B, var_core_value_sigCA05) : var_core_value_sig97E2[var_core_value_sigCD3A] = var_core_value_sig2F2B;
+    }
+  }
+  return var_core_value_sig97E2;
+}
+const S = {
+  type: a.CommandType["COMMAND"],
+  id: "sheet.command.update-shape-data",
+  handler: (var_core_value_sigBFA3, var_core_value_sig6663) => {
+    let var_core_value_sigB250 = var_core_value_sigBFA3.get(i.SheetsShapeService),
+      {
+        unitId: var_core_value_sig4EAB,
+        subUnitId: var_core_value_sig2FD0,
+        shapeType: var_core_value_sig035C,
+        shapeId: var_core_value_sigA7F0,
+        shapeData: var_core_value_sig6AE2,
+        replaceShapeData: var_core_value_sigFD17,
+        oldShapeJSON: var_core_value_sigA5E0
+      } = var_core_value_sig6663;
+    if (!var_core_value_sigB250.getShapeModel(var_core_value_sig4EAB, var_core_value_sig2FD0, var_core_value_sigA7F0)) return false;
+    let var_core_value_sigC38F = var_core_value_sigBFA3.get(a.ICommandService),
+      var_core_value_sigFAFE = var_core_value_sigBFA3.get(a.IUndoRedoService),
+      {
+        oldShapeType: var_core_value_sig2B86,
+        oldShapeData: var_core_value_sig8873 = {}
+      } = var_core_value_sigA5E0,
+      var_core_value_sigB9C5 = var_core_value_sigFD17 ? var_core_value_sig8873 : x(var_core_value_sig8873, var_core_value_sig6AE2 || {}),
+      var_core_value_sig511D = {
+        id: i.UpdateSheetsShapeDataMutation["id"],
+        params: {
+          unitId: var_core_value_sig4EAB,
+          subUnitId: var_core_value_sig2FD0,
+          shapeId: var_core_value_sigA7F0,
+          shapeType: var_core_value_sig035C,
+          shapeData: var_core_value_sig6AE2,
+          replace: var_core_value_sigFD17
+        }
+      },
+      var_core_value_sig1610 = {
+        id: i.UpdateSheetsShapeDataMutation["id"],
+        params: {
+          unitId: var_core_value_sig4EAB,
+          subUnitId: var_core_value_sig2FD0,
+          shapeId: var_core_value_sigA7F0,
+          shapeType: var_core_value_sig2B86,
+          shapeData: var_core_value_sigB9C5,
+          replace: var_core_value_sigFD17
+        }
+      };
+    return var_core_value_sigC38F.syncExecuteCommand(var_core_value_sig511D.id, var_core_value_sig511D.params) ? (var_core_value_sigFAFE.pushUndoRedo({
+      unitID: var_core_value_sig4EAB,
+      undoMutations: [var_core_value_sig1610],
+      redoMutations: [var_core_value_sig511D]
+    }), true) : false;
+  }
+};
+function C(var_core_value_sig23AB, var_core_value_sigA15D, var_core_value_sig7E90, var_core_value_sig03F7, var_core_value_sig756F, var_core_value_sig0DB1) {
+  let var_core_value_sig4950 = {
+    unitId: var_core_value_sigA15D,
+    subUnitId: var_core_value_sig7E90,
+    shapeId: var_core_value_sig03F7,
+    shapeData: var_core_value_sig0DB1,
+    oldShapeJSON: var_core_value_sig756F
+  };
+  return var_core_value_sig23AB.executeCommand(S.id, var_core_value_sig4950);
+}
+function w(var_core_value_sig4424, var_core_value_sig57E8, var_core_value_sig76B6, var_core_value_sig89BC, var_core_value_sig2191, var_core_value_sig3B2E) {
+  let var_core_value_sig5A9A = {
+    unitId: var_core_value_sig57E8,
+    subUnitId: var_core_value_sig76B6,
+    shapeId: var_core_value_sig89BC,
+    shapeData: var_core_value_sig3B2E,
+    oldShapeJSON: var_core_value_sig2191
+  };
+  return var_core_value_sig4424.executeCommand(S.id, var_core_value_sig5A9A);
+}
+function T(var_core_value_sigB524) {
+  "@babel/helpers - typeof";
+
+  return T = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig519D) {
+    return typeof var_core_value_sig519D;
+  } : function (var_core_value_sigC7E7) {
+    return var_core_value_sigC7E7 && typeof Symbol == "function" && var_core_value_sigC7E7.constructor === Symbol && var_core_value_sigC7E7 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigC7E7;
+  }, T(var_core_value_sigB524);
+}
+function ee(var_core_value_sig8CFB, var_core_value_sigB52C) {
+  if (T(var_core_value_sig8CFB) != "object" || !var_core_value_sig8CFB) return var_core_value_sig8CFB;
+  var var_core_value_sigA4B8 = var_core_value_sig8CFB[Symbol.toPrimitive];
+  if (var_core_value_sigA4B8 !== undefined) {
+    var var_core_value_sigFF9C = var_core_value_sigA4B8.call(var_core_value_sig8CFB, var_core_value_sigB52C || "default");
+    if (T(var_core_value_sigFF9C) != "object") return var_core_value_sigFF9C;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigB52C === "string" ? String : Number)(var_core_value_sig8CFB);
+}
+function E(var_core_value_sig278D) {
+  var var_core_value_sigC0FE = ee(var_core_value_sig278D, "string");
+  return T(var_core_value_sigC0FE) == "symbol" ? var_core_value_sigC0FE : var_core_value_sigC0FE + "";
+}
+function D(var_core_value_sigDD22, var_core_value_sig2D35, var_core_value_sig7A4B) {
+  return (var_core_value_sig2D35 = E(var_core_value_sig2D35)) in var_core_value_sigDD22 ? Object.defineProperty(var_core_value_sigDD22, var_core_value_sig2D35, {
+    value: var_core_value_sig7A4B,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigDD22[var_core_value_sig2D35] = var_core_value_sig7A4B, var_core_value_sigDD22;
+}
+function O(var_core_value_sigE50A, var_core_value_sigC8AC, var_core_value_sig8E63) {
+  let var_core_value_sig300D = (0, e.resolveShapeTextEditorBehaviorShapeData)(var_core_value_sigE50A, {
+      ...var_core_value_sigC8AC,
+      dataModel: {
+        ...(var_core_value_sigC8AC.dataModel ?? {}),
+        ...(var_core_value_sig8E63 ? {
+          doc: var_core_value_sig8E63
+        } : null)
+      }
+    }),
+    var_core_value_sig520B = (0, e.resolveShapeTextEditorWrapStrategy)(var_core_value_sig300D);
+  return {
+    clip: (0, e.shouldClipShapeTextDocument)(var_core_value_sig300D, var_core_value_sig520B),
+    wrapStrategy: var_core_value_sig520B
+  };
+}
+var k = class extends c.Shape {
+    constructor(var_core_value_sig6E1C, var_core_value_sigFABC) {
+      super(var_core_value_sig6E1C, var_core_value_sigFABC), D(this, "_props", undefined), D(this, "_formulaAnimation", new e["FormulaShapeAnimationController"](() => this.makeDirty(true), () => this._applyFormulaAutoFitSize())), D(this, "_transformCalculateSrcRect", true), D(this, "_drawingType", a.DrawingTypeEnum["DRAWING_SHAPE"]), D(this, "isDrawingObject", true), this._props = {
+        ...var_core_value_sigFABC
+      }, this._formulaAnimation["setPresentation"](var_core_value_sigFABC.formulaPresentation, var_core_value_sigFABC.animateFormulaPresentation !== false), this._init(), this._applyFormulaAutoFitSize();
+    }
+    _init() {
+      this.onTransformChange$["subscribeEvent"](var_core_value_sig70AF => {
+        this._updateSrcRectByTransform(var_core_value_sig70AF);
+      });
+    }
+    setPrstGeom(var_core_value_sig413D) {
+      this._props["prstGeom"] = var_core_value_sig413D;
+    }
+    setEditing(var_core_value_sig5BCE) {
+      this._props["isEditing"] = var_core_value_sig5BCE, this.makeDirty(true);
+    }
+    setFormulaPresentation(var_core_value_sig8EF0, var_core_value_sig78AC = true) {
+      this._formulaAnimation["setPresentation"](var_core_value_sig8EF0, var_core_value_sig78AC), this._props["formulaPresentation"] = var_core_value_sig8EF0, this._applyFormulaAutoFitSize(), this.makeDirty(true);
+    }
+    _applyFormulaAutoFitSize() {
+      let var_core_value_sig4CEF = this._props["shapeModel"],
+        var_core_value_sigD57D = var_core_value_sig4CEF.getShapeTextData(),
+        var_core_value_sig2CC7 = (0, e.normalizeShapeTextModel)(var_core_value_sigD57D == null ? undefined : var_core_value_sigD57D.dataModel),
+        var_core_value_sig4784 = var_core_value_sig2CC7 == null ? undefined : var_core_value_sig2CC7.doc,
+        var_core_value_sigC39E = this._formulaAnimation["getAutoFitPresentations"]();
+      if (!var_core_value_sig4784 || var_core_value_sigC39E.length === 0) return;
+      var_core_value_sig4CEF.updateContext({
+        width: this.width,
+        height: this.height
+      });
+      let var_core_value_sig16C7 = (0, e.resolveFormulaShapeAutoFitSize)({
+        documentData: var_core_value_sigC39E.map(var_core_value_sigD04E => (0, r.createShapeFormulaDocument)(var_core_value_sig4784, var_core_value_sigD04E)),
+        height: this.height,
+        shapeData: var_core_value_sig4CEF.getShapeData(),
+        textRect: var_core_value_sig4CEF.getShapeTextRect({
+          left: 0,
+          top: 0,
+          width: this.width,
+          height: this.height
+        }),
+        width: this.width
+      });
+      if (var_core_value_sig16C7) {
+        var var_core_value_sig7481;
+        this.resize(var_core_value_sig16C7.width, var_core_value_sig16C7.height), (var_core_value_sig7481 = this.getScene()) == null || (var_core_value_sig7481 = var_core_value_sig7481.getTransformer()) == null || var_core_value_sig7481.debounceRefreshControls();
+      }
+    }
+    get unitId() {
+      return this._props["unitId"];
+    }
+    get subUnitId() {
+      return this._props["subUnitId"];
+    }
+    _updateSrcRectByTransform(var_core_value_sig08A3) {
+      if (this._props["srcRect"] == null || !this._transformCalculateSrcRect) return;
+      let {
+          width: var_core_value_sig77D8,
+          height: var_core_value_sig78A3
+        } = this,
+        {
+          width: var_core_value_sig649B = 0,
+          height: var_core_value_sig6256 = 0
+        } = var_core_value_sig08A3.preValue,
+        {
+          left: var_core_value_sigE7A6 = 0,
+          top: var_core_value_sigB505 = 0,
+          right: var_core_value_sig7428 = 0,
+          bottom: var_core_value_sig1DCE = 0
+        } = this._props["srcRect"],
+        var_core_value_sig0567 = var_core_value_sigE7A6,
+        var_core_value_sigA7F3 = var_core_value_sigB505,
+        var_core_value_sigEACD = var_core_value_sig7428,
+        var_core_value_sig901E = var_core_value_sig1DCE,
+        var_core_value_sigF7BB = false;
+      if (var_core_value_sig649B !== 0 && var_core_value_sig649B !== var_core_value_sig77D8) {
+        let var_core_value_sigB99B = var_core_value_sigE7A6 / var_core_value_sig649B,
+          var_core_value_sig5A75 = var_core_value_sig7428 / var_core_value_sig649B;
+        var_core_value_sig0567 = var_core_value_sig77D8 * var_core_value_sigB99B, var_core_value_sigEACD = var_core_value_sig77D8 * var_core_value_sig5A75, var_core_value_sigF7BB = true;
+      }
+      if (var_core_value_sig6256 !== 0 && var_core_value_sig6256 !== var_core_value_sig78A3) {
+        let var_core_value_sig7BAF = var_core_value_sigB505 / var_core_value_sig6256,
+          var_core_value_sig8F69 = var_core_value_sig1DCE / var_core_value_sig6256;
+        var_core_value_sigA7F3 = var_core_value_sig78A3 * var_core_value_sig7BAF, var_core_value_sig901E = var_core_value_sig78A3 * var_core_value_sig8F69, var_core_value_sigF7BB = true;
+      }
+      var_core_value_sigF7BB && this.setSrcRect({
+        left: var_core_value_sig0567,
+        top: var_core_value_sigA7F3,
+        right: var_core_value_sigEACD,
+        bottom: var_core_value_sig901E
+      });
+    }
+    setSrcRect(var_core_value_sigFA38) {
+      this._props["srcRect"] = var_core_value_sigFA38, this.makeDirty(true);
+    }
+    setFillImage(var_core_value_sig102B) {
+      this._props["image"] = var_core_value_sig102B, this.makeDirty(true);
+    }
+    set transform(var_core_value_sigA7DB) {
+      this._transform = var_core_value_sigA7DB;
+    }
+    get transform() {
+      this._transform || this._setTransForm();
+      let var_core_value_sig5EEE = this._transform["clone"]();
+      return this.transformForAngle(var_core_value_sig5EEE);
+    }
+    get shapeModel() {
+      return this._props["shapeModel"];
+    }
+    get shapeId() {
+      return this._props["shapeId"];
+    }
+    get classType() {
+      return c.RENDER_CLASS_TYPE["SHAPE"];
+    }
+    _draw(var_core_value_sig65B4, var_core_value_sigF98E, var_core_value_sigA470, var_core_value_sig19A1) {
+      let var_core_value_sig81F7 = this._props["shapeModel"];
+      if (!var_core_value_sig81F7 || !var_core_value_sigF98E) return;
+      let var_core_value_sigBE51 = var_core_value_sigA470 ?? this.width,
+        var_core_value_sigAAD1 = var_core_value_sig19A1 ?? this.height,
+        var_core_value_sigBC1A = {
+          shapeType: var_core_value_sig81F7.getShapeType(),
+          width: var_core_value_sigBE51,
+          height: var_core_value_sigAAD1
+        },
+        var_core_value_sig3F3A = {
+          renderMode: n.ShapeRenderModeEnum["Path"],
+          oKey: this.oKey,
+          image: this._props["image"],
+          angle: this.angle
+        };
+      var_core_value_sig81F7.updateContext(var_core_value_sigBC1A), var_core_value_sig65B4.save();
+      let var_core_value_sigA984 = {
+          top: 0,
+          left: 0,
+          width: var_core_value_sigBE51,
+          height: var_core_value_sigAAD1
+        },
+        var_core_value_sigA504 = var_core_value_sig81F7.getDrawingEffectBounds(var_core_value_sigA984);
+      var_core_value_sigA504 ? this._renderWithCache(var_core_value_sig65B4, var_core_value_sigA504, var_core_value_sig6884 => {
+        var_core_value_sig81F7.render(var_core_value_sig6884, var_core_value_sigA984, var_core_value_sig3F3A);
+      }) : (this._releaseRenderCache(), var_core_value_sig81F7.render(var_core_value_sig65B4, var_core_value_sigA984, var_core_value_sig3F3A)), var_core_value_sig65B4.restore();
+      let var_core_value_sig05FF = var_core_value_sig81F7.getShapeTextData(),
+        var_core_value_sigFBF0 = var_core_value_sig81F7.getShapeTextRect(var_core_value_sigA984),
+        var_core_value_sig2F95 = var_core_value_sig81F7.isLineShape();
+      if (var_core_value_sig05FF && var_core_value_sigFBF0 && !var_core_value_sig2F95) {
+        var_core_value_sig65B4.save(), this.getState().flipX && var_core_value_sig65B4.scale(-1, 1);
+        let var_core_value_sig066E = var_core_value_sigBE51 / 2,
+          var_core_value_sig9B0D = var_core_value_sigAAD1 / 2;
+        var_core_value_sig65B4.translate(-var_core_value_sig066E, -var_core_value_sig9B0D), var_core_value_sig65B4.beginPath(), this._drawShapeText(var_core_value_sig65B4, var_core_value_sig05FF, var_core_value_sigFBF0), var_core_value_sig65B4.restore();
+      }
+    }
+    getDrawingPoints(var_core_value_sigF0E1) {}
+    _drawShapeText(var_core_value_sig2D8D, var_core_value_sigE5A6, var_core_value_sigF449) {
+      var var_core_value_sig38C5;
+      this._props["isEditing"] || (!((var_core_value_sig38C5 = var_core_value_sigE5A6.dataModel) != null && var_core_value_sig38C5.doc) && "isRichText" in var_core_value_sigE5A6 && var_core_value_sigE5A6.isRichText === false ? this._drawSimpleText(var_core_value_sig2D8D, var_core_value_sigE5A6, var_core_value_sigF449) : this._drawRichText(var_core_value_sig2D8D, var_core_value_sigE5A6, var_core_value_sigF449));
+    }
+    _drawSimpleText(var_core_value_sigC87D, var_core_value_sigCCDC, var_core_value_sigC310) {
+      this._drawRichText(var_core_value_sigC87D, {
+        ...var_core_value_sigCCDC,
+        text: var_core_value_sigCCDC.text ?? "",
+        dataModel: {
+          doc: (0, e.plainShapeTextToDocumentData)(var_core_value_sigCCDC, "sheets-shape-text-" + this.oKey)
+        }
+      }, var_core_value_sigC310);
+    }
+    _drawRichText(var_core_value_sigA4E8, var_core_value_sigDC07, var_core_value_sig3474) {
+      (0, e.drawFormulaShapeAnimationLayers)(var_core_value_sigA4E8, this._formulaAnimation, (var_core_value_sig3D2C, var_core_value_sigC56D) => {
+        this._drawRichTextLayer(var_core_value_sig3D2C, var_core_value_sigDC07, var_core_value_sig3474, var_core_value_sigC56D);
+      });
+    }
+    _drawRichTextLayer(var_core_value_sig4E80, var_core_value_sigD23B, var_core_value_sig2B2A, var_core_value_sig0B5C) {
+      let var_core_value_sig7D42 = this._props["localeService"];
+      if (!var_core_value_sigD23B.dataModel || !var_core_value_sig7D42) return;
+      let var_core_value_sig8FDE = (0, e.normalizeShapeTextModel)(var_core_value_sigD23B.dataModel);
+      if (!var_core_value_sig8FDE) return;
+      let var_core_value_sig78E6 = var_core_value_sig8FDE.doc;
+      if (!var_core_value_sig78E6) return;
+      let var_core_value_sig541F = (0, r.createShapeFormulaDocument)(var_core_value_sig78E6, var_core_value_sig0B5C),
+        var_core_value_sig417B = var_core_value_sig8FDE.va ?? a.VerticalAlign["TOP"],
+        var_core_value_sigAA90 = var_core_value_sig8FDE.ha ?? a.HorizontalAlign["LEFT"],
+        var_core_value_sigE92D = O(this._props["shapeModel"].getShapeData(), var_core_value_sigD23B, var_core_value_sig541F),
+        var_core_value_sig9940 = var_core_value_sigD23B.isHorizontal,
+        var_core_value_sig682D = new a.DocumentDataModel((0, e.prepareShapeTextDocumentData)(var_core_value_sig541F, {
+          isHorizontal: var_core_value_sig9940 !== false,
+          textRect: var_core_value_sig2B2A,
+          verticalAlign: var_core_value_sig417B,
+          horizontalAlign: var_core_value_sigAA90,
+          wrapStrategy: var_core_value_sigE92D.wrapStrategy
+        })),
+        var_core_value_sig1435 = new c.DocumentViewModel(var_core_value_sig682D),
+        var_core_value_sig4082 = c.DocumentSkeleton["create"](var_core_value_sig1435, var_core_value_sig7D42);
+      var_core_value_sig4082.calculate();
+      let var_core_value_sigC049 = var_core_value_sig4082.getActualSize().actualHeight,
+        var_core_value_sigE5C3 = (0, e.resolveShapeTextDocumentRenderLayout)({
+          contentHeight: var_core_value_sigC049,
+          verticalAlign: var_core_value_sig417B,
+          viewportHeight: var_core_value_sig2B2A.height
+        });
+      var_core_value_sig682D.updateDocumentStyle({
+        pageSize: {
+          width: var_core_value_sig9940 === false ? var_core_value_sig2B2A.height : var_core_value_sig2B2A.width,
+          height: var_core_value_sigE5C3.contentHeight
+        }
+      }), var_core_value_sig682D.updateDocumentDataMargin({
+        t: var_core_value_sigE5C3.marginTop
+      }), var_core_value_sig4082.calculate();
+      let var_core_value_sigCCAA = new c["Documents"]("shape-text-" + this.oKey, var_core_value_sig4082, {
+        pageMarginLeft: 0,
+        pageMarginTop: 0,
+        onTextFillImageLoaded: () => this.makeDirty(true)
+      });
+      var_core_value_sigCCAA.resize(var_core_value_sig2B2A.width, var_core_value_sigE5C3.contentHeight), var_core_value_sig4E80.save(), var_core_value_sig4E80.translateWithPrecision(var_core_value_sig2B2A.left, var_core_value_sig2B2A.top), var_core_value_sigE92D.clip && (var_core_value_sig4E80.beginPath(), var_core_value_sig4E80.rect(0, var_core_value_sigE5C3.clipTop, var_core_value_sig2B2A.width, var_core_value_sigE5C3.clipHeight), var_core_value_sig4E80.clip()), var_core_value_sigE5C3.contentVerticalOffset && var_core_value_sig4E80.translateWithPrecision(0, var_core_value_sigE5C3.contentVerticalOffset), var_core_value_sigCCAA.draw(var_core_value_sig4E80), var_core_value_sig4E80.restore(), var_core_value_sigCCAA.dispose(), var_core_value_sig4082.dispose(), var_core_value_sig1435.dispose(), var_core_value_sig682D.dispose();
+    }
+    render(var_core_value_sigF32D, var_core_value_sig9427, var_core_value_sig21F4 = false) {
+      if (!this.visible) return this.makeDirty(false), this;
+      let {
+          width: var_core_value_sigA345,
+          height: var_core_value_sigA468,
+          left: var_core_value_sig1561,
+          top: var_core_value_sigDF14
+        } = this,
+        var_core_value_sig842F = this.getRealBound();
+      if (var_core_value_sigA345 = var_core_value_sig842F.width, var_core_value_sigA468 = var_core_value_sig842F.height, var_core_value_sig1561 = var_core_value_sig842F.left, var_core_value_sigDF14 = var_core_value_sig842F.top, this.isRender(var_core_value_sig9427)) {
+        let {
+          top: var_core_value_sig3A17,
+          left: var_core_value_sig938F,
+          bottom: var_core_value_sigD948,
+          right: var_core_value_sigBE5E
+        } = var_core_value_sig9427.viewBound;
+        if (var_core_value_sigA345 + this.strokeWidth + var_core_value_sig1561 < var_core_value_sig938F || var_core_value_sigBE5E < var_core_value_sig1561 || var_core_value_sigA468 + this.strokeWidth + var_core_value_sigDF14 < var_core_value_sig3A17 || var_core_value_sigD948 < var_core_value_sigDF14) return this;
+      }
+      let var_core_value_sigC4C0 = var_core_value_sig1561 + var_core_value_sigA345 / 2,
+        var_core_value_sig214A = var_core_value_sigDF14 + var_core_value_sigA468 / 2,
+        var_core_value_sigCCC3 = this.transform["getMatrix"]();
+      if (this._props["isEditing"]) {
+        let var_core_value_sig0281 = this.getState(),
+          var_core_value_sigED71 = new c["Transform"]();
+        var_core_value_sigED71.composeMatrix({
+          ...var_core_value_sig0281
+        }), var_core_value_sigCCC3 = var_core_value_sigED71.getMatrix();
+      }
+      return var_core_value_sigF32D.save(), this._props["shapeModel"].isRenderLinePointsMode === true || var_core_value_sigF32D.transform(var_core_value_sigCCC3[0], var_core_value_sigCCC3[1], var_core_value_sigCCC3[2], var_core_value_sigCCC3[3], var_core_value_sigC4C0, var_core_value_sig214A), this._draw(var_core_value_sigF32D, var_core_value_sig9427, var_core_value_sigA345, var_core_value_sigA468), var_core_value_sigF32D.restore(), this.makeDirty(false), this;
+    }
+    getInverseCoord(var_core_value_sig986E) {
+      let {
+          left: var_core_value_sig537C,
+          top: var_core_value_sigBBBC,
+          width: var_core_value_sig5440,
+          height: var_core_value_sigE28B
+        } = this.getRealBound(),
+        var_core_value_sig0FD9 = this.transform["getMatrix"](),
+        var_core_value_sig5649 = var_core_value_sig537C + var_core_value_sig5440 / 2,
+        var_core_value_sigAF82 = var_core_value_sigBBBC + var_core_value_sigE28B / 2,
+        var_core_value_sig21A2 = new c["Transform"]([var_core_value_sig0FD9[0], var_core_value_sig0FD9[1], var_core_value_sig0FD9[2], var_core_value_sig0FD9[3], var_core_value_sig5649, var_core_value_sigAF82]),
+        var_core_value_sig5C1D = this.getParent();
+      return (this.isInGroup && (var_core_value_sig5C1D == null ? undefined : var_core_value_sig5C1D.classType) === c.RENDER_CLASS_TYPE["GROUP"] ? var_core_value_sig5C1D.ancestorTransform["multiply"](var_core_value_sig21A2) : var_core_value_sig21A2).invert().applyPoint(var_core_value_sig986E);
+    }
+    isHit(var_core_value_sig4CBA) {
+      let {
+          left: var_core_value_sig8E65,
+          top: var_core_value_sig772C,
+          width: var_core_value_sigF309,
+          height: var_core_value_sig44F9
+        } = this.getRealBound(),
+        var_core_value_sigE532 = var_core_value_sig8E65 + var_core_value_sigF309 / 2,
+        var_core_value_sigF381 = var_core_value_sig772C + var_core_value_sig44F9 / 2,
+        var_core_value_sigCB92 = this.transform["getMatrix"](),
+        var_core_value_sigC844 = new c.Transform([var_core_value_sigCB92[0], var_core_value_sigCB92[1], var_core_value_sigCB92[2], var_core_value_sigCB92[3], var_core_value_sigE532, var_core_value_sigF381]),
+        var_core_value_sig2ED4 = this.getParent(),
+        var_core_value_sig0477 = (this.isInGroup && (var_core_value_sig2ED4 == null ? undefined : var_core_value_sig2ED4.classType) === c.RENDER_CLASS_TYPE["GROUP"] ? var_core_value_sig2ED4.ancestorTransform["multiply"](var_core_value_sigC844) : var_core_value_sigC844).invert().applyPoint(var_core_value_sig4CBA),
+        var_core_value_sig6FDF = var_core_value_sigF309 / 2,
+        var_core_value_sig27C4 = var_core_value_sig44F9 / 2,
+        var_core_value_sig3E1A = this._props["shapeModel"];
+      return var_core_value_sig3E1A && var_core_value_sig3E1A.isLineShape() ? var_core_value_sig3E1A.isHitLine(var_core_value_sig0477.x, var_core_value_sig0477.y, var_core_value_sigF309, var_core_value_sig44F9) : var_core_value_sig0477.x >= -var_core_value_sig6FDF - this.strokeWidth / 2 && var_core_value_sig0477.x <= var_core_value_sig6FDF + this.strokeWidth / 2 && var_core_value_sig0477.y >= -var_core_value_sig27C4 - this.strokeWidth / 2 && var_core_value_sig0477.y <= var_core_value_sig27C4 + this.strokeWidth / 2;
+    }
+    dispose() {
+      this._formulaAnimation["dispose"](), this._props["shapeModel"] = null, super.dispose();
+    }
+  },
+  A = class extends c.Shape {
+    constructor(var_core_value_sig7FB0, var_core_value_sig5215) {
+      super(var_core_value_sig7FB0, var_core_value_sig5215), D(this, "_shapeId", null), D(this, "_adjName", null), D(this, "_unitId", null), D(this, "_subUnitId", null), var_core_value_sig5215 && this.setShapeProps(var_core_value_sig5215);
+    }
+    getDrawingSearch() {
+      return {
+        unitId: this._unitId,
+        subUnitId: this._subUnitId,
+        drawingId: this._shapeId
+      };
+    }
+    setShapeProps(var_core_value_sig5204) {
+      var_core_value_sig5204.shapeId !== undefined && (this._shapeId = var_core_value_sig5204.shapeId), var_core_value_sig5204.adjName !== undefined && (this._adjName = var_core_value_sig5204.adjName), var_core_value_sig5204.unitId !== undefined && (this._unitId = var_core_value_sig5204.unitId), var_core_value_sig5204.subUnitId !== undefined && (this._subUnitId = var_core_value_sig5204.subUnitId), this.transformByState({
+        width: var_core_value_sig5204.width,
+        height: var_core_value_sig5204.height
+      });
+    }
+    _draw(var_core_value_sig5E11) {
+      c.Circle["drawWith"](var_core_value_sig5E11, {
+        radius: n.ShapeDefaultConfig["adjHandleSize"],
+        fill: n.ShapeDefaultConfig["adjHandleFill"],
+        stroke: n.ShapeDefaultConfig["adjHandleStroke"],
+        strokeWidth: 1,
+        evented: true
+      });
+    }
+  };
+function j(var_core_value_sigFE26, var_core_value_sig1019) {
+  return function (var_core_value_sig4D58, var_core_value_sig2DBD) {
+    var_core_value_sig1019(var_core_value_sig4D58, var_core_value_sig2DBD, var_core_value_sigFE26);
+  };
+}
+function M(var_core_value_sig32AB, var_core_value_sig72BE, var_core_value_sig3E4A, var_core_value_sig3171) {
+  var var_core_value_sigEBC4 = arguments.length,
+    var_core_value_sig788B = var_core_value_sigEBC4 < 3 ? var_core_value_sig72BE : var_core_value_sig3171 === null ? var_core_value_sig3171 = Object.getOwnPropertyDescriptor(var_core_value_sig72BE, var_core_value_sig3E4A) : var_core_value_sig3171,
+    var_core_value_sig9A80;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig788B = Reflect.decorate(var_core_value_sig32AB, var_core_value_sig72BE, var_core_value_sig3E4A, var_core_value_sig3171);else {
+    for (var var_core_value_sig7C69 = var_core_value_sig32AB.length - 1; var_core_value_sig7C69 >= 0; var_core_value_sig7C69--) (var_core_value_sig9A80 = var_core_value_sig32AB[var_core_value_sig7C69]) && (var_core_value_sig788B = (var_core_value_sigEBC4 < 3 ? var_core_value_sig9A80(var_core_value_sig788B) : var_core_value_sigEBC4 > 3 ? var_core_value_sig9A80(var_core_value_sig72BE, var_core_value_sig3E4A, var_core_value_sig788B) : var_core_value_sig9A80(var_core_value_sig72BE, var_core_value_sig3E4A)) || var_core_value_sig788B);
+  }
+  return var_core_value_sigEBC4 > 3 && var_core_value_sig788B && Object.defineProperty(var_core_value_sig72BE, var_core_value_sig3E4A, var_core_value_sig788B), var_core_value_sig788B;
+}
+let N = class extends a.Disposable {
+  constructor(var_core_value_sig424E, var_core_value_sigF481, var_core_value_sigD7F2, var_core_value_sig7CF3, var_core_value_sig9DC6, var_core_value_sig6643) {
+    super(), this._drawingManagerService = var_core_value_sig424E, this._sheetsShapeService = var_core_value_sigF481, this._localeService = var_core_value_sigD7F2, this._imageIoService = var_core_value_sig7CF3, this._urlImageService = var_core_value_sig9DC6, this._shapeFormulaService = var_core_value_sig6643, D(this, "_formulaShapes", new Map()), this.disposeWithMe(this._shapeFormulaService["presentationChanged$"].subscribe(var_core_value_sig281C => {
+      var var_core_value_sig3C92;
+      (var_core_value_sig3C92 = this._formulaShapes["get"](this._formulaKey(var_core_value_sig281C.unitId, var_core_value_sig281C.subUnitId, var_core_value_sig281C.shapeId))) == null || var_core_value_sig3C92.forEach(var_core_value_sigD749 => var_core_value_sigD749.setFormulaPresentation(var_core_value_sig281C.presentation, var_core_value_sig281C.animationEnabled));
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sigB16B => {
+      var_core_value_sigB16B.forEach(var_core_value_sigCFFA => {
+        this._shapeFormulaService["unregister"]({
+          unitId: var_core_value_sigCFFA.unitId,
+          subUnitId: var_core_value_sigCFFA.subUnitId,
+          shapeId: var_core_value_sigCFFA.drawingId
+        }), this._formulaShapes["delete"](this._formulaKey(var_core_value_sigCFFA.unitId, var_core_value_sigCFFA.subUnitId, var_core_value_sigCFFA.drawingId));
+      });
+    }));
+  }
+  renderDrawingShape(var_core_value_sig4124, var_core_value_sigBF1C, var_core_value_sigEEEF) {
+    let {
+      transform: var_core_value_sig9A01,
+      drawingType: var_core_value_sig674F,
+      srcRect: var_core_value_sigC8F6,
+      prstGeom: var_core_value_sig8A26,
+      groupId: var_core_value_sigD073,
+      unitId: var_core_value_sigF631,
+      subUnitId: var_core_value_sig2278,
+      drawingId: var_core_value_sig7053,
+      isMultiTransform: var_core_value_sig52F1,
+      transforms: var_core_value_sig1E74,
+      hidden: var_core_value_sig1E84,
+      selectable: var_core_value_sig133B
+    } = var_core_value_sig4124;
+    if (var_core_value_sig674F !== a.DrawingTypeEnum["DRAWING_SHAPE"] || !this._drawingManagerService["getDrawingVisible"]() || var_core_value_sig9A01 == null) return;
+    let var_core_value_sig69B8 = this._drawingManagerService["getDrawingEditable"](),
+      var_core_value_sig983D = var_core_value_sig52F1 && var_core_value_sig1E74 ? var_core_value_sig1E74 : [var_core_value_sig9A01],
+      var_core_value_sig9A03 = [];
+    for (let var_core_value_sig585D of var_core_value_sig983D) {
+      let {
+          left: var_core_value_sig58C1,
+          top: var_core_value_sig5090,
+          width: var_core_value_sigC368,
+          height: var_core_value_sigAD56,
+          angle: var_core_value_sigDB4A,
+          flipX: var_core_value_sig6418,
+          flipY: var_core_value_sig1896,
+          skewX: var_core_value_sig0285,
+          skewY: var_core_value_sig777D
+        } = var_core_value_sig585D,
+        var_core_value_sig3F4C = var_core_value_sig983D.indexOf(var_core_value_sig585D),
+        var_core_value_sigD65A = (0, s.getDrawingShapeKeyByDrawingSearch)({
+          unitId: var_core_value_sigF631,
+          subUnitId: var_core_value_sig2278,
+          drawingId: var_core_value_sig7053
+        }, var_core_value_sig52F1 ? var_core_value_sig3F4C : undefined),
+        var_core_value_sig5A13 = var_core_value_sigBF1C.getObjectIncludeInGroup(var_core_value_sigD65A);
+      if (var_core_value_sig5A13 != null) {
+        let var_core_value_sig09B8 = {
+          unitId: var_core_value_sigF631,
+          subUnitId: var_core_value_sig2278,
+          shapeId: var_core_value_sig7053
+        };
+        var_core_value_sig5A13 instanceof k && this.refreshFormulaPresentation(var_core_value_sig5A13, var_core_value_sig09B8), var_core_value_sig5A13.transformByState({
+          left: var_core_value_sig58C1,
+          top: var_core_value_sig5090,
+          width: var_core_value_sigC368,
+          height: var_core_value_sigAD56,
+          angle: var_core_value_sigDB4A,
+          flipX: var_core_value_sig6418,
+          flipY: var_core_value_sig1896,
+          skewX: var_core_value_sig0285,
+          skewY: var_core_value_sig777D
+        });
+        continue;
+      }
+      let var_core_value_sigF593 = this._drawingManagerService["getDrawingOrder"](var_core_value_sigF631, var_core_value_sig2278),
+        var_core_value_sig3607 = var_core_value_sigF593.indexOf(var_core_value_sig7053);
+      if (var_core_value_sigBF1C.getObjectIncludeInGroup(var_core_value_sigD65A) || !this._drawingManagerService["getDrawingVisible"]()) continue;
+      let var_core_value_sigB512 = this._sheetsShapeService["getShapeModel"](var_core_value_sigF631, var_core_value_sig2278, var_core_value_sig7053);
+      if (!var_core_value_sigB512) continue;
+      let var_core_value_sigF2E6 = (0, n.isConnectorShape)(var_core_value_sigB512.getShapeType()) ? {
+          ...e.SHAPE_EDITOR_TRANSFORMER_CONFIG,
+          rotateEnabled: false,
+          resizeEnabled: false,
+          borderEnabled: false
+        } : e.SHAPE_EDITOR_TRANSFORMER_CONFIG,
+        var_core_value_sig34C8 = var_core_value_sigB512.getShapeData().formulaBinding,
+        var_core_value_sigB744 = {
+          unitId: var_core_value_sigF631,
+          subUnitId: var_core_value_sig2278,
+          shapeId: var_core_value_sig7053
+        };
+      var_core_value_sig34C8 && this._shapeFormulaService["register"](var_core_value_sigB744, var_core_value_sig34C8);
+      let var_core_value_sigEAE2 = new k(var_core_value_sigD65A, {
+        ...var_core_value_sig585D,
+        zIndex: var_core_value_sig3607 === -1 ? var_core_value_sigF593.length - 1 : var_core_value_sig3607,
+        shapeModel: var_core_value_sigB512,
+        localeService: this._localeService,
+        shapeId: var_core_value_sig7053,
+        unitId: var_core_value_sigF631,
+        subUnitId: var_core_value_sig2278,
+        visible: var_core_value_sig1E84 !== true,
+        evented: var_core_value_sig133B !== false,
+        formulaPresentation: var_core_value_sig34C8 ? this._shapeFormulaService["getPresentation"](var_core_value_sigB744) : undefined,
+        animateFormulaPresentation: (var_core_value_sig34C8 == null ? undefined : var_core_value_sig34C8.animationEnabled) !== false,
+        transformerConfig: var_core_value_sigF2E6
+      });
+      if (var_core_value_sig34C8) {
+        let var_core_value_sig6F91 = this._formulaKey(var_core_value_sigF631, var_core_value_sig2278, var_core_value_sig7053),
+          var_core_value_sigF9C7 = this._formulaShapes["get"](var_core_value_sig6F91) ?? new Set();
+        var_core_value_sigF9C7.add(var_core_value_sigEAE2), this._formulaShapes["set"](var_core_value_sig6F91, var_core_value_sigF9C7);
+      }
+      var_core_value_sigBF1C.addObject(var_core_value_sigEAE2, c.DRAWING_OBJECT_LAYER_INDEX), var_core_value_sig69B8 && var_core_value_sigBF1C.attachTransformerTo(var_core_value_sigEAE2), var_core_value_sigD073 && (0, d.insertGroupObject)({
+        drawingId: var_core_value_sigD073,
+        unitId: var_core_value_sigF631,
+        subUnitId: var_core_value_sig2278
+      }, var_core_value_sigEAE2, var_core_value_sigBF1C, this._drawingManagerService), var_core_value_sig8A26 != null && var_core_value_sigEAE2.setPrstGeom(var_core_value_sig8A26), var_core_value_sigC8F6 != null && var_core_value_sigEAE2.setSrcRect(var_core_value_sigC8F6);
+      let var_core_value_sigE68A = this._loadShapePictureFill(var_core_value_sigEAE2, var_core_value_sigB512.getShapeData());
+      if (var_core_value_sigE68A) {
+        var var_core_value_sig3363;
+        var_core_value_sigEEEF == null || (var_core_value_sig3363 = var_core_value_sigEEEF.resourceCollector) == null || var_core_value_sig3363.add(var_core_value_sigE68A);
+      }
+      var_core_value_sig9A03.push(var_core_value_sigEAE2);
+    }
+    return var_core_value_sig9A03;
+  }
+  _formulaKey(var_core_value_sigF64A, var_core_value_sig25EC, var_core_value_sigA790) {
+    return var_core_value_sigF64A + "\x00" + var_core_value_sig25EC + "\x00" + var_core_value_sigA790;
+  }
+  refreshFormulaPresentation(var_core_value_sig9A5E, var_core_value_sig01B9) {
+    let var_core_value_sigD6A9 = this._sheetsShapeService["getShapeModel"](var_core_value_sig01B9.unitId, var_core_value_sig01B9.subUnitId, var_core_value_sig01B9.shapeId),
+      var_core_value_sig0FCF = var_core_value_sigD6A9 == null ? undefined : var_core_value_sigD6A9.getShapeData().formulaBinding,
+      var_core_value_sigCF96 = this._formulaKey(var_core_value_sig01B9.unitId, var_core_value_sig01B9.subUnitId, var_core_value_sig01B9.shapeId);
+    if (var_core_value_sig0FCF) {
+      this._shapeFormulaService["register"](var_core_value_sig01B9, var_core_value_sig0FCF);
+      let var_core_value_sigE722 = this._formulaShapes["get"](var_core_value_sigCF96) ?? new Set();
+      var_core_value_sigE722.add(var_core_value_sig9A5E), this._formulaShapes["set"](var_core_value_sigCF96, var_core_value_sigE722);
+    } else {
+      var var_core_value_sigC4E9;
+      this._shapeFormulaService["unregister"](var_core_value_sig01B9), (var_core_value_sigC4E9 = this._formulaShapes["get"](var_core_value_sigCF96)) == null || var_core_value_sigC4E9.delete(var_core_value_sig9A5E);
+    }
+    var_core_value_sig9A5E.setFormulaPresentation(var_core_value_sig0FCF ? this._shapeFormulaService["getPresentation"](var_core_value_sig01B9) : undefined, (var_core_value_sig0FCF == null ? undefined : var_core_value_sig0FCF.animationEnabled) !== false);
+  }
+  refreshShapeFillImage(var_core_value_sigF612) {
+    let var_core_value_sigAA6C = var_core_value_sigF612.shapeModel["getShapeData"](),
+      var_core_value_sig8BFA = var_core_value_sigAA6C.fill;
+    if (!var_core_value_sig8BFA || var_core_value_sig8BFA.fillType !== n.ShapeFillEnum["PictureFill"] || !var_core_value_sig8BFA.fillImageSource) {
+      var_core_value_sigF612.setFillImage(undefined);
+      return;
+    }
+    this._loadShapePictureFill(var_core_value_sigF612, var_core_value_sigAA6C);
+  }
+  _loadShapePictureFill(var_core_value_sig236B, var_core_value_sig1951) {
+    let var_core_value_sigFEA0 = var_core_value_sig1951.fill;
+    if (!var_core_value_sigFEA0 || var_core_value_sigFEA0.fillType !== n.ShapeFillEnum["PictureFill"] || !var_core_value_sigFEA0.fillImageSource) return;
+    let var_core_value_sig931A = var_core_value_sigFEA0.fillImageSource,
+      var_core_value_sigEE7D = var_core_value_sigFEA0.fillImageSourceType ?? n.ImageSourceTypeEnum["URL"],
+      var_core_value_sig3585 = this._imageIoService["getImageSourceCache"](var_core_value_sig931A, var_core_value_sigEE7D);
+    if (var_core_value_sig3585) {
+      var_core_value_sig236B.setFillImage(var_core_value_sig3585);
+      return;
+    }
+    return this._loadAndSetImage(var_core_value_sig236B, var_core_value_sig931A, var_core_value_sigEE7D);
+  }
+  async _loadAndSetImage(var_core_value_sig31A8, var_core_value_sigA4DA, var_core_value_sig6FC0) {
+    let var_core_value_sig6217;
+    try {
+      if (var_core_value_sig6FC0 === n.ImageSourceTypeEnum["UUID"]) var_core_value_sig6217 = await this._imageIoService["getImage"](var_core_value_sigA4DA);else {
+        if (var_core_value_sig6FC0 === n.ImageSourceTypeEnum["URL"]) try {
+          var_core_value_sig6217 = await this._urlImageService["getImage"](var_core_value_sigA4DA);
+        } catch {
+          var_core_value_sig6217 = var_core_value_sigA4DA;
+        } else var_core_value_sig6217 = var_core_value_sigA4DA;
+      }
+    } catch (var_core_value_sig062A) {
+      console.error("[ShapeRender] Failed to resolve picture fill source", var_core_value_sig062A);
+      return;
+    }
+    await new Promise(var_core_value_sig050A => {
+      let var_core_value_sig8B32 = new window["Image"]();
+      var_core_value_sig8B32.onload = () => {
+        this._imageIoService["addImageSourceCache"](var_core_value_sigA4DA, var_core_value_sig6FC0, var_core_value_sig8B32), var_core_value_sig31A8.setFillImage(var_core_value_sig8B32), var_core_value_sig050A();
+      }, var_core_value_sig8B32.onerror = () => {
+        console.error("[ShapeRender] Failed to load picture fill image", var_core_value_sigA4DA), var_core_value_sig050A();
+      }, var_core_value_sig8B32.src = var_core_value_sig6217;
+    });
+  }
+};
+N = M([j(0, s.IDrawingManagerService), j(1, (0, a.Inject)(i.SheetsShapeService)), j(2, (0, a.Inject)(a.LocaleService)), j(3, a.IImageIoService), j(4, a.IURLImageService), j(5, (0, a.Inject)(r.ShapeFormulaService))], N);
+let P = class extends a.Disposable {
+  constructor(var_core_value_sigB805, var_core_value_sig4FAE, var_core_value_sig1FCC, var_core_value_sigB7F9, var_core_value_sigB1A2, var_core_value_sig526D) {
+    super(), this._drawingManagerService = var_core_value_sigB805, this._sheetsShapeService = var_core_value_sig4FAE, this._renderManagerService = var_core_value_sig1FCC, this._sheetDrawingShapeRenderController = var_core_value_sigB7F9, this._univerInstanceService = var_core_value_sigB1A2, this._commandService = var_core_value_sig526D, D(this, "_activeShapeId", null), D(this, "_unitId", null), D(this, "_subUnitId", null), D(this, "_activeShapeAdjustPointList", undefined), D(this, "_shapes", []), D(this, "_baseShapeLeft", 0), D(this, "_baseShapeTop", 0), D(this, "_baseShapeWidth", 0), D(this, "_baseShapeHeight", 0), D(this, "_isStartAdjusting", false), D(this, "_activeAdjustInfo", undefined), D(this, "_activeShapeModel", undefined), D(this, "_adjHandlerPointerMove", undefined), D(this, "_adjHandlerPointerUp", undefined), D(this, "_isShouldShowDrawingShapeAdjust", false), this._registerDrawingFocusChangeHandler(), this._registerDrawingMoveHandler();
+  }
+  _getShapeAdjustPointListById(var_core_value_sigBDB5, var_core_value_sig59CE, var_core_value_sig3AD7) {
+    let var_core_value_sig04E4 = this._sheetsShapeService["getShapeModel"](var_core_value_sigBDB5, var_core_value_sig59CE, var_core_value_sig3AD7);
+    if (var_core_value_sig04E4) return var_core_value_sig04E4.getDrawingPoints();
+  }
+  clearAdjustControls() {
+    this._clearShapeAdjustControls();
+  }
+  refreshAdjustControls() {
+    this._updateShapeAdjustControls(true);
+  }
+  setShouldShowAdjust(var_core_value_sigD8F0) {
+    this._isShouldShowDrawingShapeAdjust = var_core_value_sigD8F0;
+  }
+  _getShapeAdjustInfosById(var_core_value_sig1475, var_core_value_sig08B7, var_core_value_sig2008, var_core_value_sig496B) {
+    let var_core_value_sig7161 = this._sheetsShapeService["getShapeModel"](var_core_value_sig1475, var_core_value_sig08B7, var_core_value_sig2008);
+    if (var_core_value_sig7161) return var_core_value_sig7161.getAdjustInfoByName(var_core_value_sig496B);
+  }
+  _createShapeAdjustControls(var_core_value_sig2AB8 = false) {
+    if (this._unitId === null || this._subUnitId === null || this._activeShapeId === null) return;
+    let var_core_value_sig3FCF = this._renderManagerService["getRenderUnitById"](this._unitId);
+    if (!var_core_value_sig3FCF || !var_core_value_sig3FCF.with(l.SheetSkeletonManagerService).getCurrentSkeleton()) return;
+    let {
+        scene: var_core_value_sig675A
+      } = var_core_value_sig3FCF,
+      var_core_value_sig837F = {
+        unitId: this._unitId,
+        subUnitId: this._subUnitId,
+        drawingId: this._activeShapeId
+      },
+      var_core_value_sig9D6E = this._drawingManagerService["getDrawingByParam"](var_core_value_sig837F),
+      {
+        transform: var_core_value_sigB205
+      } = var_core_value_sig9D6E;
+    if (!var_core_value_sigB205 || var_core_value_sig9D6E.drawingType !== a.DrawingTypeEnum["DRAWING_SHAPE"]) return;
+    let {
+      left: var_core_value_sigBF78,
+      top: var_core_value_sig8AF3,
+      width: var_core_value_sigA0CC,
+      height: var_core_value_sigB3A1,
+      flipX: var_core_value_sig1FB9,
+      flipY: var_core_value_sig53A9,
+      angle: var_core_value_sigDACD = 0
+    } = var_core_value_sigB205;
+    if (var_core_value_sigBF78 === undefined || var_core_value_sig8AF3 === undefined) return;
+    if (var_core_value_sig2AB8) {
+      let var_core_value_sig870F = this._sheetsShapeService["getShapeModel"](this._unitId, this._subUnitId, this._activeShapeId);
+      var_core_value_sig870F == null || var_core_value_sig870F.updateContext({
+        width: var_core_value_sigA0CC ?? 0,
+        height: var_core_value_sigB3A1 ?? 0
+      }), this._activeShapeAdjustPointList = var_core_value_sig870F == null ? undefined : var_core_value_sig870F.getDrawingPoints();
+    }
+    let var_core_value_sig691E = this._activeShapeAdjustPointList;
+    for (let var_core_value_sigB683 = 0; var_core_value_sigB683 < var_core_value_sig691E.length; var_core_value_sigB683++) {
+      let var_core_value_sig3E68 = var_core_value_sig691E[var_core_value_sigB683],
+        var_core_value_sigF4C5 = var_core_value_sig3E68.x,
+        var_core_value_sig5410 = var_core_value_sig3E68.y;
+      if (var_core_value_sig1FB9 && (var_core_value_sigF4C5 = (var_core_value_sigA0CC || 0) - var_core_value_sigF4C5), var_core_value_sig53A9 && (var_core_value_sig5410 = (var_core_value_sigB3A1 || 0) - var_core_value_sig5410), var_core_value_sigDACD !== 0) {
+        let var_core_value_sig8895 = (var_core_value_sigA0CC || 0) / 2,
+          var_core_value_sigC80B = (var_core_value_sigB3A1 || 0) / 2,
+          var_core_value_sig284F = var_core_value_sigDACD * Math.PI / 180,
+          var_core_value_sigE154 = Math.cos(var_core_value_sig284F),
+          var_core_value_sig4632 = Math.sin(var_core_value_sig284F),
+          var_core_value_sig12F2 = var_core_value_sigF4C5 - var_core_value_sig8895,
+          var_core_value_sig2259 = var_core_value_sig5410 - var_core_value_sigC80B;
+        var_core_value_sigF4C5 = var_core_value_sig8895 + (var_core_value_sig12F2 * var_core_value_sigE154 - var_core_value_sig2259 * var_core_value_sig4632), var_core_value_sig5410 = var_core_value_sigC80B + (var_core_value_sig12F2 * var_core_value_sig4632 + var_core_value_sig2259 * var_core_value_sigE154);
+      }
+      let var_core_value_sig492F = {
+        x: var_core_value_sigF4C5,
+        y: var_core_value_sig5410,
+        adjName: var_core_value_sig3E68.adjName
+      };
+      this._addShapeAdjustControl(var_core_value_sig675A, var_core_value_sig492F, var_core_value_sig492F.adjName, var_core_value_sigBF78, var_core_value_sig8AF3, this._unitId, this._subUnitId);
+    }
+  }
+  _updateShapeAdjustControls(var_core_value_sigD6D6 = false) {
+    var_core_value_sigD6D6 && (this._clearShapeAdjustControls(), this._createShapeAdjustControls(var_core_value_sigD6D6));
+  }
+  _addShapeAdjustControl(var_core_value_sig0347, var_core_value_sig52A3, var_core_value_sigAD91, var_core_value_sigF64E, var_core_value_sig9B3D, var_core_value_sigB217, var_core_value_sig1FE6) {
+    if (!this._activeShapeId) return;
+    let var_core_value_sig2471 = var_core_value_sig0347.getObjectIncludeInGroup("shape-adjust-point-" + this._activeShapeId + "-" + var_core_value_sigAD91);
+    if (var_core_value_sig2471) {
+      var_core_value_sig2471.transformByState({
+        left: var_core_value_sig52A3.x + var_core_value_sigF64E - n.ShapeDefaultConfig["adjHandleSize"],
+        top: var_core_value_sig52A3.y + var_core_value_sig9B3D - n.ShapeDefaultConfig["adjHandleSize"]
+      });
+      return;
+    }
+    let var_core_value_sigD1FC = {
+        left: var_core_value_sig52A3.x + var_core_value_sigF64E - n.ShapeDefaultConfig["adjHandleSize"],
+        top: var_core_value_sig52A3.y + var_core_value_sig9B3D - n.ShapeDefaultConfig["adjHandleSize"],
+        adjName: var_core_value_sigAD91,
+        shapeId: this._activeShapeId,
+        unitId: var_core_value_sigB217,
+        subUnitId: var_core_value_sig1FE6,
+        width: n.ShapeDefaultConfig["adjHandleSize"] + 8,
+        height: n.ShapeDefaultConfig["adjHandleSize"] + 8,
+        zIndex: c.DRAWING_OBJECT_LAYER_INDEX + 1,
+        evented: true
+      },
+      var_core_value_sigE2F9 = new A("shape-adjust-point-" + this._activeShapeId + "-" + var_core_value_sigAD91, var_core_value_sigD1FC);
+    this._shapes["push"](var_core_value_sigE2F9), this._attachAdjustEvent(var_core_value_sigE2F9, var_core_value_sig0347, var_core_value_sigAD91), var_core_value_sig0347.addObject(var_core_value_sigE2F9, c.DRAWING_OBJECT_LAYER_INDEX + 1);
+  }
+  _clearShapeAdjustControls() {
+    this._shapes["length"] !== 0 && (this._shapes["forEach"](var_core_value_sig26EC => {
+      var_core_value_sig26EC.dispose();
+    }), this._shapes = []);
+  }
+  _updateAdjustControlPositions() {
+    this._createShapeAdjustControls();
+  }
+  _getScrollInfo(var_core_value_sigD689, var_core_value_sig7AE3) {
+    var var_core_value_sig1EB3;
+    let var_core_value_sigE120 = {
+      x: 0,
+      y: 0
+    };
+    if (!var_core_value_sigD689 || !var_core_value_sig7AE3) return var_core_value_sigE120;
+    let var_core_value_sigD6E7 = this._renderManagerService["getRenderUnitById"](var_core_value_sigD689);
+    if (!var_core_value_sigD6E7 || !var_core_value_sigD6E7.with(l.SheetSkeletonManagerService).getSkeleton(var_core_value_sig7AE3)) return var_core_value_sigE120;
+    let var_core_value_sig3669 = var_core_value_sigD6E7.with(l.SheetScrollManagerService),
+      var_core_value_sig5CBC = var_core_value_sig3669 == null ? undefined : var_core_value_sig3669.getCurrentScrollState();
+    if (!var_core_value_sig5CBC) return var_core_value_sigE120;
+    let var_core_value_sig20BE = (var_core_value_sig1EB3 = this._univerInstanceService["getUnit"](var_core_value_sigD689)) == null ? undefined : var_core_value_sig1EB3.getSheetBySheetId(var_core_value_sig7AE3);
+    if (!var_core_value_sig20BE) return var_core_value_sigE120;
+    let var_core_value_sig6BD0 = (0, l.getViewportByCell)(var_core_value_sig5CBC.sheetViewStartRow, var_core_value_sig5CBC.sheetViewStartColumn, var_core_value_sigD6E7.scene, var_core_value_sig20BE);
+    return var_core_value_sig6BD0 ? {
+      x: var_core_value_sig6BD0.viewportScrollX,
+      y: var_core_value_sig6BD0.viewportScrollY
+    } : var_core_value_sigE120;
+  }
+  _getZoomRatio(var_core_value_sig8C15, var_core_value_sig6DF7) {
+    var var_core_value_sigB411;
+    let var_core_value_sigA81B = (var_core_value_sigB411 = this._univerInstanceService["getUnit"](var_core_value_sig8C15)) == null ? undefined : var_core_value_sigB411.getSheetBySheetId(var_core_value_sig6DF7);
+    return (var_core_value_sigA81B == null ? undefined : var_core_value_sigA81B.getZoomRatio()) ?? 1;
+  }
+  _attachAdjustEvent(var_core_value_sigFE8D, var_core_value_sig8595, var_core_value_sigF8DE) {
+    this.disposeWithMe((0, a.toDisposable)(var_core_value_sigFE8D.onPointerDown$["subscribeEvent"]((var_core_value_sigEEDB, var_core_value_sig36E7) => {
+      var var_core_value_sig6A78, var_core_value_sigF7EF, var_core_value_sig27F9, var_core_value_sig393E;
+      let var_core_value_sigB609 = var_core_value_sigFE8D.getDrawingSearch();
+      this._activeAdjustInfo = this._getShapeAdjustInfosById(var_core_value_sigB609.unitId, var_core_value_sigB609.subUnitId, var_core_value_sigB609.drawingId, var_core_value_sigF8DE), this._activeShapeModel = this._sheetsShapeService["getShapeModel"](var_core_value_sigB609.unitId, var_core_value_sigB609.subUnitId, var_core_value_sigB609.drawingId);
+      let var_core_value_sig390D = this._drawingManagerService["getDrawingByParam"]({
+          unitId: this._unitId,
+          subUnitId: this._subUnitId,
+          drawingId: this._activeShapeId
+        }),
+        {
+          transform: var_core_value_sigC928
+        } = var_core_value_sig390D;
+      if (var_core_value_sigC928) {
+        let {
+          left: var_core_value_sig8EA0,
+          top: var_core_value_sigA6F6,
+          width: var_core_value_sigCDDA,
+          height: var_core_value_sigE243
+        } = var_core_value_sigC928;
+        this._baseShapeLeft = var_core_value_sig8EA0 || 0, this._baseShapeTop = var_core_value_sigA6F6 || 0, this._baseShapeWidth = var_core_value_sigCDDA || 0, this._baseShapeHeight = var_core_value_sigE243 || 0;
+      }
+      let var_core_value_sig39B7 = !!((var_core_value_sig6A78 = var_core_value_sig390D.transform) != null && var_core_value_sig6A78.flipX),
+        var_core_value_sig18E0 = !!((var_core_value_sigF7EF = var_core_value_sig390D.transform) != null && var_core_value_sigF7EF.flipY),
+        var_core_value_sigE161 = ((var_core_value_sig27F9 = var_core_value_sig390D.transform) == null ? undefined : var_core_value_sig27F9.angle) || 0;
+      this._isStartAdjusting = true, var_core_value_sig8595.disableObjectsEvent();
+      let var_core_value_sigBDEE = {
+        ...(((var_core_value_sig393E = this._activeAdjustInfo) == null ? undefined : var_core_value_sig393E.currentAdjustValues) ?? {})
+      };
+      this._adjHandlerPointerMove = var_core_value_sig8595.onPointerMove$["subscribeEvent"]((var_core_value_sig74A8, var_core_value_sig21B2) => {
+        if (!this._isStartAdjusting) return;
+        let {
+            offsetX: var_core_value_sigDE08,
+            offsetY: var_core_value_sigACCB
+          } = var_core_value_sig74A8,
+          var_core_value_sig7F33 = this._activeAdjustInfo;
+        if (this._activeShapeModel && var_core_value_sig7F33) {
+          var_core_value_sig8595.disableObjectsEvent(), var_core_value_sig8595.setCursor(c.CURSOR_TYPE["CROSSHAIR"]);
+          let var_core_value_sig9E2F = {
+              left: 0,
+              top: 0,
+              width: this._baseShapeWidth,
+              height: this._baseShapeHeight
+            },
+            var_core_value_sigD082 = this._getScrollInfo(this._unitId, this._subUnitId),
+            var_core_value_sigDBB7 = this._getZoomRatio(this._unitId, this._subUnitId),
+            var_core_value_sigD0A8 = var_core_value_sigDE08 / var_core_value_sigDBB7 + var_core_value_sigD082.x - this._baseShapeLeft,
+            var_core_value_sigF4B9 = var_core_value_sigACCB / var_core_value_sigDBB7 + var_core_value_sigD082.y - this._baseShapeTop;
+          if (var_core_value_sigE161 !== 0) {
+            let var_core_value_sig2AD0 = this._baseShapeWidth / 2,
+              var_core_value_sig3EEE = this._baseShapeHeight / 2,
+              var_core_value_sigBC46 = var_core_value_sigE161 * Math.PI / 180,
+              var_core_value_sig3D7D = Math.cos(var_core_value_sigBC46),
+              var_core_value_sig27E5 = Math.sin(var_core_value_sigBC46),
+              var_core_value_sig8061 = var_core_value_sigD0A8 - var_core_value_sig2AD0,
+              var_core_value_sig4D4C = var_core_value_sigF4B9 - var_core_value_sig3EEE;
+            var_core_value_sigD0A8 = var_core_value_sig2AD0 + (var_core_value_sig8061 * var_core_value_sig3D7D + var_core_value_sig4D4C * var_core_value_sig27E5), var_core_value_sigF4B9 = var_core_value_sig3EEE + (-var_core_value_sig8061 * var_core_value_sig27E5 + var_core_value_sig4D4C * var_core_value_sig3D7D);
+          }
+          var_core_value_sig39B7 && (var_core_value_sigD0A8 = this._baseShapeWidth - var_core_value_sigD0A8), var_core_value_sig18E0 && (var_core_value_sigF4B9 = this._baseShapeHeight - var_core_value_sigF4B9);
+          let var_core_value_sig5CEE = {
+              x: var_core_value_sigD0A8,
+              y: var_core_value_sigF4B9
+            },
+            var_core_value_sigE92A = this._activeShapeModel["calcAdjValues"](var_core_value_sig9E2F, var_core_value_sig5CEE, var_core_value_sig7F33, var_core_value_sig39B7, var_core_value_sig18E0);
+          if (Object.keys(var_core_value_sigE92A).length === 0) return;
+          for (let [var_core_value_sigC9E0, var_core_value_sig76BA] of Object.entries(var_core_value_sigE92A)) this._activeShapeModel["setAdjustValueByName"](var_core_value_sigC9E0, var_core_value_sig76BA);
+          this._activeShapeModel["updateContext"]({
+            width: this._baseShapeWidth,
+            height: this._baseShapeHeight
+          });
+          let var_core_value_sig362B = this._drawingManagerService["getDrawingByParam"]({
+            unitId: var_core_value_sigB609.unitId,
+            subUnitId: var_core_value_sigB609.subUnitId,
+            drawingId: var_core_value_sigB609.drawingId
+          });
+          var_core_value_sig362B && (this._sheetDrawingShapeRenderController["renderDrawingShape"](var_core_value_sig362B, var_core_value_sig8595), this._activeShapeAdjustPointList = this._getShapeAdjustPointListById(var_core_value_sigB609.unitId, var_core_value_sigB609.subUnitId, var_core_value_sigB609.drawingId), this._updateAdjustControlPositions());
+        }
+        var_core_value_sig21B2.stopPropagation();
+      }), this._adjHandlerPointerUp = var_core_value_sig8595.onPointerUp$["subscribeEvent"]((var_core_value_sig0C53, var_core_value_sigEA04) => {
+        this._adjHandlerPointerMove["unsubscribe"](), this._adjHandlerPointerUp["unsubscribe"](), var_core_value_sig8595.resetCursor();
+        let var_core_value_sig7A62 = this._activeAdjustInfo;
+        if (var_core_value_sig7A62) {
+          let var_core_value_sig5CA5 = var_core_value_sigB609.unitId,
+            var_core_value_sigE90F = var_core_value_sigB609.subUnitId,
+            var_core_value_sigEFD4 = var_core_value_sigB609.drawingId,
+            var_core_value_sig861B = {};
+          for (let var_core_value_sigFBFA of Object.keys(var_core_value_sig7A62.currentAdjustValues)) {
+            var var_core_value_sig8109;
+            let var_core_value_sig7524 = (var_core_value_sig8109 = this._activeShapeModel) == null ? undefined : var_core_value_sig8109.getAdjustValueByName(var_core_value_sigFBFA);
+            var_core_value_sig7524 !== undefined && (var_core_value_sig861B[var_core_value_sigFBFA] = var_core_value_sig7524);
+          }
+          Object.keys(var_core_value_sig861B).length > 0 && C(this._commandService, var_core_value_sig5CA5, var_core_value_sigE90F, var_core_value_sigEFD4, {
+            oldShapeData: {
+              adjustValues: var_core_value_sigBDEE
+            }
+          }, {
+            adjustValues: var_core_value_sig861B
+          });
+        }
+        this._activeAdjustInfo = undefined, this._activeShapeModel = undefined, this._isStartAdjusting = false, var_core_value_sigEA04.stopPropagation(), var_core_value_sig8595.enableObjectsEvent();
+      }), var_core_value_sig36E7.stopPropagation();
+    })));
+  }
+  _registerDrawingMoveHandler() {
+    let var_core_value_sigFE76 = this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]);
+    this.disposeWithMe(var_core_value_sigFE76.pipe((0, u.switchMap)(var_core_value_sig1F40 => var_core_value_sig1F40 ? var_core_value_sig1F40.activeSheet$["pipe"]((0, u.switchMap)(var_core_value_sig7565 => {
+      if (!var_core_value_sig7565) return u.EMPTY;
+      let var_core_value_sigD4FB = var_core_value_sig1F40.getUnitId(),
+        var_core_value_sig3E71 = this._renderManagerService["getRenderUnitById"](var_core_value_sigD4FB),
+        var_core_value_sig01B3 = var_core_value_sig3E71 == null ? undefined : var_core_value_sig3E71.scene;
+      return var_core_value_sig01B3 ? (0, u.of)(var_core_value_sig01B3) : u.EMPTY;
+    })) : u.EMPTY)).subscribe(var_core_value_sig3FC7 => {
+      let var_core_value_sig1E1B = var_core_value_sig3FC7.getTransformerByCreate();
+      this.disposeWithMe(var_core_value_sig3FC7.onPointerMove$["subscribeEvent"](() => {
+        this._isShouldShowDrawingShapeAdjust;
+      })), this.disposeWithMe(var_core_value_sig1E1B.changeStart$["subscribe"](var_core_value_sig7442 => {
+        let {
+          objects: var_core_value_sigDF87
+        } = var_core_value_sig7442;
+        this._createShapeAdjustControls(), var_core_value_sigDF87 !== null && var_core_value_sigDF87.size === 1 && var_core_value_sigDF87.values().next().value instanceof k && this.setShouldShowAdjust(true);
+      })), this.disposeWithMe(var_core_value_sig1E1B.changing$["subscribe"](() => {
+        this._isShouldShowDrawingShapeAdjust && this._clearShapeAdjustControls();
+      })), this.disposeWithMe(var_core_value_sig3FC7.onPointerUp$["subscribeEvent"](() => {
+        this._isShouldShowDrawingShapeAdjust && (this.setShouldShowAdjust(false), this._createShapeAdjustControls());
+      })), this.disposeWithMe(var_core_value_sig1E1B.changeEnd$["subscribe"](() => {
+        this._unitId && this._subUnitId && this._activeShapeId && this._drawingManagerService["getDrawingByParam"]({
+          unitId: this._unitId,
+          subUnitId: this._subUnitId,
+          drawingId: this._activeShapeId
+        }) && (this._activeShapeAdjustPointList = this._getShapeAdjustPointListById(this._unitId, this._subUnitId, this._activeShapeId), this._updateAdjustControlPositions());
+      }));
+    }));
+  }
+  _registerDrawingFocusChangeHandler() {
+    this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sig3B10 => {
+      if (var_core_value_sig3B10.id !== i.UpdateSheetsShapeDataMutation["id"]) return;
+      let {
+        unitId: var_core_value_sig89E6,
+        subUnitId: var_core_value_sig4743,
+        shapeId: var_core_value_sigEB6A
+      } = var_core_value_sig3B10.params;
+      var_core_value_sig89E6 === this._unitId && var_core_value_sig4743 === this._subUnitId && var_core_value_sigEB6A === this._activeShapeId && this.refreshAdjustControls();
+    })), this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sig3D46 => {
+      if (var_core_value_sig3D46.length === 1) {
+        let var_core_value_sig9EE0 = var_core_value_sig3D46[0];
+        if (var_core_value_sig9EE0.drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"] && this._univerInstanceService["getUnitType"](var_core_value_sig9EE0.unitId) === a.UniverInstanceType["UNIVER_SHEET"]) {
+          this._activeShapeId = var_core_value_sig9EE0.drawingId;
+          let {
+            unitId: var_core_value_sig5237,
+            subUnitId: var_core_value_sigBB00
+          } = var_core_value_sig9EE0;
+          this._activeShapeAdjustPointList = this._getShapeAdjustPointListById(var_core_value_sig5237, var_core_value_sigBB00, this._activeShapeId), this._unitId = var_core_value_sig5237, this._subUnitId = var_core_value_sigBB00, this._clearShapeAdjustControls(), this._createShapeAdjustControls();
+          return;
+        }
+      }
+      this._activeShapeId = null, this._activeShapeAdjustPointList = undefined, this._unitId = null, this._subUnitId = null, this._clearShapeAdjustControls();
+    })), this.disposeWithMe(this._drawingManagerService["update$"].subscribe(var_core_value_sigCC93 => {
+      if (var_core_value_sigCC93.length === 1) {
+        var var_core_value_sig5964;
+        let var_core_value_sigF051 = var_core_value_sigCC93[0];
+        ((var_core_value_sig5964 = this._drawingManagerService["getDrawingByParam"](var_core_value_sigF051)) == null ? undefined : var_core_value_sig5964.drawingType) === a.DrawingTypeEnum["DRAWING_SHAPE"] && this._updateShapeAdjustControls(true);
+      }
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sig808B => {
+      for (let var_core_value_sig0B45 of var_core_value_sig808B) this._activeShapeId === var_core_value_sig0B45.drawingId && (this._activeShapeId = null, this._activeShapeAdjustPointList = undefined, this._unitId = null, this._subUnitId = null, this._clearShapeAdjustControls());
+    }));
+  }
+};
+P = M([j(0, s.IDrawingManagerService), j(1, (0, a.Inject)(i.SheetsShapeService)), j(2, (0, a.Inject)(c.IRenderManagerService)), j(3, (0, a.Inject)(N)), j(4, a.IUniverInstanceService), j(5, a.ICommandService)], P);
+const F = {
+    id: "drawing.operation.set-drawing-active",
+    type: a.CommandType["OPERATION"],
+    handler: (var_core_value_sig01EF, var_core_value_sig3603) => {
+      let var_core_value_sigC163 = var_core_value_sig01EF.get(s.IDrawingManagerService),
+        var_core_value_sigF5F3 = var_core_value_sig01EF.get(c.IRenderManagerService),
+        var_core_value_sig5E69 = var_core_value_sig01EF.get(P);
+      if (var_core_value_sig3603 == null) return true;
+      if (var_core_value_sig3603.length > 0) {
+        var var_core_value_sig7B39;
+        let var_core_value_sig84C8 = (var_core_value_sig7B39 = var_core_value_sigF5F3.getRenderUnitById(var_core_value_sig3603[0].unitId)) == null ? undefined : var_core_value_sig7B39.scene;
+        if (var_core_value_sig84C8) {
+          let {
+              unitId: var_core_value_sig2A26,
+              subUnitId: var_core_value_sig1179,
+              drawingId: var_core_value_sigEA92
+            } = var_core_value_sig3603[0],
+            var_core_value_sig8FD9 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+              unitId: var_core_value_sig2A26,
+              subUnitId: var_core_value_sig1179,
+              drawingId: var_core_value_sigEA92
+            }, undefined),
+            var_core_value_sig1AE5 = var_core_value_sig84C8.getObjectIncludeInGroup(var_core_value_sig8FD9);
+          if (var_core_value_sig1AE5) {
+            var var_core_value_sigDCAB;
+            (var_core_value_sigDCAB = var_core_value_sigF5F3.getRenderUnitById(var_core_value_sig3603[0].unitId)) == null || (var_core_value_sigDCAB = var_core_value_sigDCAB.scene["getTransformer"]()) == null || var_core_value_sigDCAB.activeAnObject(var_core_value_sig1AE5);
+          }
+        }
+        var_core_value_sigC163.focusDrawing(var_core_value_sig3603), var_core_value_sig5E69.setShouldShowAdjust(false);
+      }
+      return true;
+    }
+  },
+  I = {
+    type: a.CommandType["COMMAND"],
+    id: "sheet.command.menu-insert-shape",
+    handler: async (var_core_value_sigF569, var_core_value_sig2A9F) => {
+      let var_core_value_sigB14A = (0, o.getSheetCommandTarget)(var_core_value_sigF569.get(a.IUniverInstanceService));
+      if (!var_core_value_sigB14A) return false;
+      let var_core_value_sig4401 = var_core_value_sigF569.get(o.SheetsSelectionsService).getCurrentLastSelection();
+      if (!var_core_value_sig4401) return false;
+      let var_core_value_sig4D6A = var_core_value_sigF569.get(a.ICommandService),
+        {
+          unitId: var_core_value_sigEF80,
+          subUnitId: var_core_value_sig526D1
+        } = var_core_value_sigB14A,
+        {
+          value: var_core_value_sigD78B,
+          enhanceParams: var_core_value_sigCB8C
+        } = var_core_value_sig2A9F,
+        {
+          range: var_core_value_sigD217
+        } = var_core_value_sig4401,
+        var_core_value_sigEB0F = {
+          unitId: var_core_value_sigEF80,
+          subUnitId: var_core_value_sig526D1,
+          shapeType: var_core_value_sigD78B,
+          range: var_core_value_sigD217,
+          shapeId: (0, a.generateRandomId)()
+        };
+      if (var_core_value_sigCB8C) {
+        let var_core_value_sig80C0 = (0, n.isConnectorShape)(var_core_value_sigD78B),
+          var_core_value_sig22B4 = var_core_value_sigD78B === n.ShapeTypeEnum["Rect"];
+        var_core_value_sig80C0 && (var_core_value_sigCB8C.startArrow || var_core_value_sigCB8C.endArrow) && (var_core_value_sigEB0F.shapeData = {
+          ln: {
+            startArrow: var_core_value_sigCB8C.startArrow ? {
+              type: n.ShapeArrowTypeEnum["Arrow"],
+              size: n.ShapeArrowSizeEnum["Medium"]
+            } : undefined,
+            endArrow: var_core_value_sigCB8C.endArrow ? {
+              type: n.ShapeArrowTypeEnum["Arrow"],
+              size: n.ShapeArrowSizeEnum["Large"]
+            } : undefined
+          }
+        }), var_core_value_sig22B4 && (var_core_value_sigCB8C.horizontal || var_core_value_sigCB8C.vertical) && (var_core_value_sigEB0F.shapeData = (0, r.createShapeTextBoxShapeData)({
+          fill: {
+            fillType: n.ShapeFillEnum["SolidFill"],
+            color: "#FFFFFF"
+          },
+          isHorizontal: !!var_core_value_sigCB8C.horizontal,
+          stroke: {
+            lineStrokeType: n.ShapeLineTypeEnum["SolidLine"],
+            width: 1,
+            color: "#bcbcbc"
+          }
+        }));
+      }
+      let var_core_value_sigDC44 = var_core_value_sig4D6A.syncExecuteCommand(i.InsertShapeCommand["id"], var_core_value_sigEB0F);
+      return setTimeout(() => {
+        var_core_value_sig4D6A.executeCommand(F.id, [{
+          unitId: var_core_value_sigEF80,
+          subUnitId: var_core_value_sig526D1,
+          drawingId: var_core_value_sigEB0F.shapeId
+        }]);
+      }, 200), var_core_value_sigDC44;
+    }
+  },
+  L = "sheet.shape.edit.panel",
+  R = "sheet.shape.object-list.panel",
+  z = "sheet.shape.floating-toolbar",
+  B = "sheets-shape-ui.ribbon.shape-format",
+  te = (0, a.createInternalEditorID)("SHAPE_TEXT"),
+  ne = "sheet.shape.text.float-menu",
+  re = {
+    id: "sheet.operation.open-shape-object-list-panel",
+    type: a.CommandType["COMMAND"],
+    handler: (var_core_value_sigDEFC, var_core_value_sigE842) => {
+      let var_core_value_sigA77A = var_core_value_sigDEFC.get(t.ISidebarService),
+        var_core_value_sig0701 = var_core_value_sigDEFC.get(a.LocaleService),
+        var_core_value_sig5DCA = var_core_value_sigDEFC.get(a.IUniverInstanceService),
+        var_core_value_sigF1AB = var_core_value_sigDEFC.get(a.ICommandService);
+      return (0, o.getSheetCommandTarget)(var_core_value_sig5DCA) ? (var_core_value_sigE842 == null ? undefined : var_core_value_sigE842.value) === "close" ? (var_core_value_sigA77A.close(R), true) : (var_core_value_sigA77A.open({
+        id: R,
+        header: {
+          title: var_core_value_sig0701.t("sheets-shape-ui.objectListPanel.title")
+        },
+        children: {
+          label: R
+        },
+        onClose: () => {
+          var_core_value_sigF1AB.syncExecuteCommand(s.SetDrawingSelectedOperation["id"], []);
+        },
+        width: 360
+      }), true) : false;
+    }
+  },
+  V = {
+    type: a.CommandType["OPERATION"],
+    id: "sheet.operation.open-sheet-shape-format-panel",
+    handler() {
+      return true;
+    }
+  };
+function ie(var_core_value_sig902F) {
+  let var_core_value_sig6BD7 = var_core_value_sig902F.get(s.IDrawingManagerService).getFocusDrawings(),
+    var_core_value_sig63E0 = var_core_value_sig6BD7.length === 1 ? var_core_value_sig6BD7[0] : null;
+  if (!var_core_value_sig63E0 || var_core_value_sig63E0.drawingType !== a.DrawingTypeEnum["DRAWING_SHAPE"]) return null;
+  let var_core_value_sig1B87 = var_core_value_sig902F.get(i.SheetsShapeService),
+    var_core_value_sig580B = var_core_value_sig1B87.getShapeTypeById(var_core_value_sig63E0.unitId, var_core_value_sig63E0.subUnitId, var_core_value_sig63E0.drawingId),
+    var_core_value_sig4836 = var_core_value_sig1B87.getShapeDataById(var_core_value_sig63E0.unitId, var_core_value_sig63E0.subUnitId, var_core_value_sig63E0.drawingId);
+  return var_core_value_sig580B === undefined || !var_core_value_sig4836 ? null : {
+    drawing: var_core_value_sig63E0,
+    shapeData: var_core_value_sig4836,
+    shapeType: var_core_value_sig580B
+  };
+}
+const H = {
+    id: "sheet.operation.apply-shape-quick-style",
+    type: a.CommandType["OPERATION"],
+    handler: (var_core_value_sig4C06, var_core_value_sig4D56) => {
+      let var_core_value_sig7C26 = ie(var_core_value_sig4C06),
+        var_core_value_sigBC59 = (0, r.getShapeQuickStylePreset)((var_core_value_sig4D56 == null ? undefined : var_core_value_sig4D56.presetId) ?? (var_core_value_sig4D56 == null ? undefined : var_core_value_sig4D56.value) ?? "");
+      if (!var_core_value_sig7C26 || !var_core_value_sigBC59 || var_core_value_sigBC59.type !== (0, r.getShapeQuickStyleType)(var_core_value_sig7C26.shapeData)) return false;
+      let var_core_value_sig544E = (0, r.applyQuickStyleToShapeData)(var_core_value_sig7C26.shapeData, var_core_value_sigBC59);
+      if (!var_core_value_sig544E) return false;
+      let {
+        drawing: var_core_value_sigCE8A
+      } = var_core_value_sig7C26;
+      return var_core_value_sig4C06.get(a.ICommandService).executeCommand(S.id, {
+        unitId: var_core_value_sigCE8A.unitId,
+        subUnitId: var_core_value_sigCE8A.subUnitId,
+        shapeId: var_core_value_sigCE8A.drawingId,
+        shapeData: var_core_value_sig544E,
+        oldShapeJSON: {
+          oldShapeData: var_core_value_sig7C26.shapeData
+        }
+      });
+    }
+  },
+  ae = {
+    id: "sheet.operation.update-shape-type",
+    type: a.CommandType["OPERATION"],
+    handler: (var_core_value_sig0718, var_core_value_sig1B22) => {
+      let var_core_value_sig8854 = ie(var_core_value_sig0718),
+        var_core_value_sig5275 = (var_core_value_sig1B22 == null ? undefined : var_core_value_sig1B22.shapeType) ?? (var_core_value_sig1B22 == null ? undefined : var_core_value_sig1B22.value);
+      if (!var_core_value_sig8854 || !var_core_value_sig5275 || (0, n.isConnectorShape)(var_core_value_sig8854.shapeType) || (0, n.isConnectorShape)(var_core_value_sig5275)) return false;
+      let var_core_value_sig4F9D = (0, r.cloneShapeDataForType)(var_core_value_sig8854.shapeData, var_core_value_sig5275);
+      if (!var_core_value_sig4F9D) return false;
+      let {
+        drawing: var_core_value_sig278E
+      } = var_core_value_sig8854;
+      return var_core_value_sig0718.get(a.ICommandService).executeCommand(S.id, {
+        unitId: var_core_value_sig278E.unitId,
+        subUnitId: var_core_value_sig278E.subUnitId,
+        shapeId: var_core_value_sig278E.drawingId,
+        shapeType: var_core_value_sig5275,
+        shapeData: var_core_value_sig4F9D,
+        replaceShapeData: true,
+        oldShapeJSON: {
+          oldShapeType: var_core_value_sig8854.shapeType,
+          oldShapeData: var_core_value_sig8854.shapeData
+        }
+      });
+    }
+  };
+let U = class extends a.Disposable {
+  constructor(var_core_value_sigBB37, var_core_value_sig0C51) {
+    super(), this._clipService = var_core_value_sigBB37, this._drawingManagerService = var_core_value_sig0C51, this._registerImageShapeClipDelegate(), this._clipService["setCanUseShapeClip"](true), this.disposeWithMe({
+      dispose: () => this._clipService["setCanUseShapeClip"](false)
+    });
+  }
+  _registerImageShapeClipDelegate() {
+    let var_core_value_sigADA4 = this._clipService,
+      var_core_value_sig0E48 = new Map(),
+      var_core_value_sig495B = var_core_value_sigADA4.registerClipDelegate((var_core_value_sig7100, var_core_value_sigA19A, var_core_value_sigD3F5, var_core_value_sig3082, var_core_value_sigF5D1) => {
+        let var_core_value_sig8775 = var_core_value_sigA19A;
+        if (var_core_value_sig8775 === n.ShapeTypeEnum["None"] || var_core_value_sigA19A === "custom") return false;
+        try {
+          let var_core_value_sig36F8 = var_core_value_sig0E48.get(var_core_value_sigA19A);
+          return var_core_value_sig36F8 || (var_core_value_sig36F8 = new n["ShapeModel"](var_core_value_sig8775, "clip-" + var_core_value_sigA19A), var_core_value_sig0E48.set(var_core_value_sigA19A, var_core_value_sig36F8)), var_core_value_sig36F8.clearAdjustValue(), var_core_value_sigF5D1 && Object.keys(var_core_value_sigF5D1).length > 0 && var_core_value_sig36F8.setShapeData({
+            adjustValues: var_core_value_sigF5D1
+          }, true), var_core_value_sig36F8.updateContext({
+            width: var_core_value_sigD3F5,
+            height: var_core_value_sig3082
+          }), var_core_value_sig36F8.buildClipPath(var_core_value_sig7100, {
+            left: 0,
+            top: 0,
+            width: var_core_value_sigD3F5,
+            height: var_core_value_sig3082
+          });
+        } catch {
+          return false;
+        }
+      });
+    this.disposeWithMe(var_core_value_sig495B), this.disposeWithMe({
+      dispose: () => var_core_value_sig0E48.clear()
+    });
+  }
+  clipByShape(var_core_value_sig310C, var_core_value_sig759E, var_core_value_sig6C80, var_core_value_sig6B99, var_core_value_sig6ADC) {
+    let var_core_value_sig41AD = this._drawingManagerService["getDrawingData"](var_core_value_sig310C, var_core_value_sig759E);
+    if (!var_core_value_sig41AD[var_core_value_sig6C80]) return;
+    let var_core_value_sigDBC2 = {
+      ...var_core_value_sig41AD[var_core_value_sig6C80],
+      prstGeom: var_core_value_sig6B99,
+      adjustValues: var_core_value_sig6ADC
+    };
+    this._drawingManagerService["featurePluginUpdateNotification"]([var_core_value_sigDBC2]);
+  }
+};
+U = M([j(0, (0, a.Inject)(d.DrawingImageClipService)), j(1, (0, a.Inject)(s.IDrawingManagerService))], U);
+const oe = "sheet.shape.picker.component",
+  se = "sheet.image-clip.shape-picker.component";
+function ce({
+  onShapeClick: var_core_value_sig2921,
+  excludeGroups: var_core_value_sig3959
+}) {
+  return (0, f.jsx)(e.ShapePickerPanel, {
+    excludeGroups: var_core_value_sig3959,
+    onShapeClick: var_core_value_sig2921,
+    scrollContainer: "parent"
+  });
+}
+function le() {
+  let var_core_value_sig926F = (0, t.useDependency)(s.IDrawingManagerService),
+    var_core_value_sig9414 = (0, t.useDependency)(U);
+  return (0, f.jsx)(e.ShapePickerDropdown, {
+    buttonLabel: "sheets-shape-ui.imagePanel.crop.shape",
+    excludeGroups: [e.ShapeGroupEnum["Line"]],
+    onShapeClick: var_core_value_sig7739 => {
+      let var_core_value_sig4040 = var_core_value_sig926F.getFocusDrawings().find(var_core_value_sig481B => var_core_value_sig481B.drawingType === a.DrawingTypeEnum["DRAWING_IMAGE"]);
+      if (!var_core_value_sig4040) return;
+      let {
+        unitId: var_core_value_sig1AAA,
+        subUnitId: var_core_value_sig58DB,
+        drawingId: var_core_value_sig4840
+      } = var_core_value_sig4040;
+      var_core_value_sig9414.clipByShape(var_core_value_sig1AAA, var_core_value_sig58DB, var_core_value_sig4840, var_core_value_sig7739.type);
+    }
+  });
+}
+function ue() {
+  let var_core_value_sig32E7 = (0, t.useDependency)(t.ComponentManager),
+    var_core_value_sigD8C3 = (0, t.useDependency)(s.IDrawingManagerService),
+    var_core_value_sig3A44 = (0, t.useDependency)(a.IUniverInstanceService),
+    var_core_value_sig0642 = var_core_value_sigD8C3.getFocusDrawings()[0],
+    var_core_value_sig786E = var_core_value_sig0642 ? var_core_value_sig3A44.getUnitType(var_core_value_sig0642.unitId) : undefined,
+    var_core_value_sigFC47 = var_core_value_sig786E === a.UniverInstanceType["UNIVER_DOC"] ? "doc.image-clip.shape-picker.component" : var_core_value_sig786E === a.UniverInstanceType["UNIVER_SHEET"] ? se : undefined,
+    var_core_value_sig48E2 = var_core_value_sigFC47 ? var_core_value_sig32E7.get(var_core_value_sigFC47) : undefined;
+  return var_core_value_sig48E2 ? (0, f.jsx)(var_core_value_sig48E2, {}) : null;
+}
+function de() {
+  let var_core_value_sig2FCA = (0, t.useDependency)(a.ICommandService);
+  return (0, f.jsx)(ce, {
+    onShapeClick: var_core_value_sigB76D => {
+      var_core_value_sig2FCA.executeCommand(I.id, {
+        value: var_core_value_sigB76D.type,
+        enhanceParams: {
+          endArrow: var_core_value_sigB76D.endArrow,
+          startArrow: var_core_value_sigB76D.startArrow,
+          horizontal: var_core_value_sigB76D.horizontal,
+          vertical: var_core_value_sigB76D.vertical
+        }
+      });
+    }
+  });
+}
+function fe(var_core_value_sig04F2) {
+  let var_core_value_sig2CFC = var_core_value_sig04F2.get(a.IUniverInstanceService);
+  return {
+    id: I.id,
+    type: t.MenuItemType["SELECTOR"],
+    selections: [{
+      label: {
+        name: oe,
+        hoverable: false,
+        selectable: false,
+        props: {
+          id: I.id
+        }
+      }
+    }],
+    icon: "ShapeIcon",
+    tooltip: "sheets-shape-ui.insertShape",
+    activated$: (0, l.deriveStateFromActiveSheet$)(var_core_value_sig2CFC, false, () => new u["Observable"](var_core_value_sig13D7 => {
+      var_core_value_sig13D7.next(false);
+    })),
+    hidden$: (0, t.getMenuHiddenObservable)(var_core_value_sig04F2, a.UniverInstanceType["UNIVER_SHEET"]),
+    disabled$: (0, l.getCurrentRangeDisable$)(var_core_value_sig04F2)
+  };
+}
+function pe(var_core_value_sig5CEB) {
+  let var_core_value_sig4935 = var_core_value_sig5CEB.get(a.IUniverInstanceService);
+  return {
+    id: re.id,
+    type: t.MenuItemType["BUTTON"],
+    icon: "ObjectLayersIcon",
+    title: "sheets-shape-ui.objectListPanel.open",
+    tooltip: "sheets-shape-ui.objectListPanel.open",
+    activated$: (0, l.deriveStateFromActiveSheet$)(var_core_value_sig4935, false, () => new u["Observable"](var_core_value_sig90C0 => {
+      var_core_value_sig90C0.next(false);
+    })),
+    hidden$: (0, t.getMenuHiddenObservable)(var_core_value_sig5CEB, a.UniverInstanceType["UNIVER_SHEET"]),
+    disabled$: (0, l.getCurrentRangeDisable$)(var_core_value_sig5CEB)
+  };
+}
+const me = "sheet.menu.shape.flip-horizontal",
+  he = "sheet.menu.shape.flip-vertical";
+function ge(var_core_value_sig1832) {
+  let var_core_value_sig79D7 = var_core_value_sig1832.get(s.IDrawingManagerService).getFocusDrawings();
+  return var_core_value_sig79D7.length === 1 && var_core_value_sig79D7[0].drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"] ? var_core_value_sig79D7[0] : null;
+}
+function _e(var_core_value_sig5E01) {
+  let var_core_value_sigBBE4 = var_core_value_sig5E01.get(s.IDrawingManagerService);
+  return var_core_value_sigBBE4.focus$["pipe"]((0, u.startWith)(var_core_value_sigBBE4.getFocusDrawings()), (0, u.map)(var_core_value_sig1015 => var_core_value_sig1015.length !== 1 || var_core_value_sig1015[0].drawingType !== a.DrawingTypeEnum["DRAWING_SHAPE"]));
+}
+function ve(var_core_value_sig96B3) {
+  return {
+    id: me,
+    commandId: i.ToggleSheetsShapeFlipCommand["id"],
+    type: t.MenuItemType["BUTTON"],
+    title: "sheets-shape-ui.flipHorizontal",
+    tooltip: "sheets-shape-ui.flipHorizontal",
+    icon: "FlipHorizontalIcon",
+    hidden$: _e(var_core_value_sig96B3),
+    params: () => {
+      let var_core_value_sig6223 = ge(var_core_value_sig96B3);
+      return var_core_value_sig6223 ? {
+        unitId: var_core_value_sig6223.unitId,
+        subUnitId: var_core_value_sig6223.subUnitId,
+        shapeId: var_core_value_sig6223.drawingId,
+        flipH: true
+      } : undefined;
+    }
+  };
+}
+function ye(var_core_value_sig9CF2) {
+  return {
+    id: he,
+    commandId: i.ToggleSheetsShapeFlipCommand["id"],
+    type: t.MenuItemType["BUTTON"],
+    title: "sheets-shape-ui.flipVertical",
+    tooltip: "sheets-shape-ui.flipVertical",
+    icon: "FlipVerticalIcon",
+    hidden$: _e(var_core_value_sig9CF2),
+    params: () => {
+      let var_core_value_sigC6B6 = ge(var_core_value_sig9CF2);
+      return var_core_value_sigC6B6 ? {
+        unitId: var_core_value_sigC6B6.unitId,
+        subUnitId: var_core_value_sigC6B6.subUnitId,
+        shapeId: var_core_value_sigC6B6.drawingId,
+        flipV: true
+      } : undefined;
+    }
+  };
+}
+const be = "sheets-shape-ui.shape-format.quick-style-gallery",
+  xe = "sheets-shape-ui.shape-format.style-ribbon-control",
+  Se = "sheets-shape-ui.shape-format.text-ribbon-control",
+  Ce = "sheets-shape-ui.shape-format.formula-ribbon-control";
+function W() {
+  let var_core_value_sig666D = (0, t.useDependency)(a.ICommandService),
+    var_core_value_sigBD53 = (0, t.useDependency)(s.IDrawingManagerService),
+    var_core_value_sigD11F = (0, t.useDependency)(i.SheetsShapeService),
+    var_core_value_sig62231 = () => {
+      var var_core_value_sig498A;
+      let var_core_value_sigEF45 = var_core_value_sigBD53.getFocusDrawings();
+      if (var_core_value_sigEF45.length !== 1 || ((var_core_value_sig498A = var_core_value_sigEF45[0]) == null ? undefined : var_core_value_sig498A.drawingType) !== a.DrawingTypeEnum["DRAWING_SHAPE"]) return null;
+      let {
+          unitId: var_core_value_sig36FE,
+          subUnitId: var_core_value_sig3AF5,
+          drawingId: var_core_value_sig14E6
+        } = var_core_value_sigEF45[0],
+        var_core_value_sig8690 = var_core_value_sigD11F.getShapeTypeById(var_core_value_sig36FE, var_core_value_sig3AF5, var_core_value_sig14E6),
+        var_core_value_sigDF29 = var_core_value_sigD11F.getShapeDataById(var_core_value_sig36FE, var_core_value_sig3AF5, var_core_value_sig14E6);
+      return var_core_value_sig8690 === undefined || !var_core_value_sigDF29 ? null : {
+        unitId: var_core_value_sig36FE,
+        subUnitId: var_core_value_sig3AF5,
+        drawingId: var_core_value_sig14E6,
+        shapeType: var_core_value_sig8690,
+        shapeData: var_core_value_sigDF29
+      };
+    },
+    var_core_value_sig7653 = (0, t.useObservable)(() => new u["Observable"](var_core_value_sigF1B2 => {
+      let var_core_value_sigC2BB = () => var_core_value_sigF1B2.next(var_core_value_sig62231()),
+        var_core_value_sigD9DB = var_core_value_sigBD53.focus$["subscribe"](var_core_value_sigC2BB),
+        var_core_value_sigA363 = var_core_value_sig666D.onCommandExecuted(var_core_value_sig03E1 => {
+          var_core_value_sig03E1.id === i.UpdateSheetsShapeDataMutation["id"] && var_core_value_sigC2BB();
+        });
+      return var_core_value_sigC2BB(), () => {
+        var_core_value_sigD9DB.unsubscribe(), var_core_value_sigA363.dispose();
+      };
+    }), var_core_value_sig62231(), false, [var_core_value_sig666D, var_core_value_sigBD53, var_core_value_sigD11F]);
+  return {
+    selection: var_core_value_sig7653,
+    updateShapeData: var_core_value_sigC0F8 => {
+      var_core_value_sig7653 && C(var_core_value_sig666D, var_core_value_sig7653.unitId, var_core_value_sig7653.subUnitId, var_core_value_sig7653.drawingId, {
+        oldShapeData: var_core_value_sig7653.shapeData
+      }, var_core_value_sigC0F8);
+    }
+  };
+}
+function we() {
+  let {
+    selection: var_core_value_sigF65B,
+    updateShapeData: var_core_value_sig4A94
+  } = W();
+  return var_core_value_sigF65B ? (0, f.jsx)(e.ShapeStyleRibbonControl, {
+    shapeData: var_core_value_sigF65B.shapeData,
+    shapeType: var_core_value_sigF65B.shapeType,
+    onUpdateShapeData: var_core_value_sig4A94
+  }) : null;
+}
+function Te() {
+  let var_core_value_sigEB59 = (0, t.useDependency)(a.ICommandService),
+    var_core_value_sigD9B0 = (0, t.useDependency)(a.LocaleService),
+    {
+      selection: var_core_value_sigB7D6
+    } = W();
+  return var_core_value_sigB7D6 ? (0, f.jsx)(e.ShapeQuickStyleGallery, {
+    type: (0, r.getShapeQuickStyleType)(var_core_value_sigB7D6.shapeData),
+    ariaLabel: var_core_value_sigD9B0.t("sheets-shape-ui.quickStyles"),
+    activePresetId: (0, r.resolveActiveShapeQuickStylePresetId)(var_core_value_sigB7D6.shapeData),
+    onSelect: var_core_value_sig3C75 => var_core_value_sigEB59.executeCommand(H.id, {
+      presetId: var_core_value_sig3C75
+    })
+  }) : null;
+}
+function Ee() {
+  let {
+    selection: var_core_value_sigCF1F,
+    updateShapeData: var_core_value_sig4DD1
+  } = W();
+  return var_core_value_sigCF1F ? (0, f.jsx)(e.ShapeTextRibbonControl, {
+    fontFamilyPopupDataComponent: "sheets-shape-format-font-family-menu",
+    shapeData: var_core_value_sigCF1F.shapeData,
+    onUpdateShapeData: var_core_value_sig4DD1
+  }) : null;
+}
+function De() {
+  var var_core_value_sig1293;
+  let {
+      selection: var_core_value_sigC999,
+      updateShapeData: var_core_value_sig9D8F
+    } = W(),
+    var_core_value_sig8270 = (0, e.useFormulaShapeToolbar)({
+      hostType: a.UniverInstanceType["UNIVER_SHEET"],
+      unitId: (var_core_value_sigC999 == null ? undefined : var_core_value_sigC999.unitId) ?? "",
+      subUnitId: (var_core_value_sigC999 == null ? undefined : var_core_value_sigC999.subUnitId) ?? "",
+      shapeId: (var_core_value_sigC999 == null ? undefined : var_core_value_sigC999.drawingId) ?? "",
+      shapeData: var_core_value_sigC999 == null ? undefined : var_core_value_sigC999.shapeData,
+      registerBinding: false,
+      showLabels: true,
+      dropdownSide: "bottom",
+      onUpdateBinding: var_core_value_sig992D => var_core_value_sig9D8F({
+        formulaBinding: var_core_value_sig992D
+      })
+    }),
+    var_core_value_sig95D9 = ((var_core_value_sig1293 = var_core_value_sig8270.extensionGroups) == null ? undefined : var_core_value_sig1293.flatMap(var_core_value_sigE4E4 => var_core_value_sigE4E4.actions).filter(var_core_value_sigA4B0 => var_core_value_sigA4B0.visible !== false)) ?? [];
+  return var_core_value_sigC999 != null && var_core_value_sigC999.shapeData["formulaBinding"] ? (0, f.jsx)(e.ShapeFormulaRibbonControl, {
+    actions: var_core_value_sig95D9,
+    panel: var_core_value_sig8270.panel
+  }) : null;
+}
+const Oe = "sheets-shape-ui.ribbon.shape-format.style-control",
+  ke = "sheets-shape-ui.ribbon.shape-format.text-control",
+  Ae = "sheets-shape-ui.ribbon.shape-format.formula-control",
+  je = "sheets-shape-ui.ribbon.shape-format.arrange-forward",
+  Me = "sheets-shape-ui.ribbon.shape-format.arrange-backward",
+  Ne = "sheets-shape-ui.ribbon.shape-format.arrange-front",
+  Pe = "sheets-shape-ui.ribbon.shape-format.arrange-back";
+function Fe(var_core_value_sig0E92) {
+  let var_core_value_sig45CD = var_core_value_sig0E92.get(a.ICommandService),
+    var_core_value_sigAD84 = var_core_value_sig0E92.get(s.IDrawingManagerService),
+    var_core_value_sigD513 = var_core_value_sig0E92.get(i.SheetsShapeService);
+  return new u["Observable"](var_core_value_sig5F50 => {
+    let var_core_value_sig4494 = () => {
+        let var_core_value_sigFBA5 = G(var_core_value_sig0E92),
+          var_core_value_sigAC47 = var_core_value_sigFBA5 ? var_core_value_sigD513.getShapeDataById(var_core_value_sigFBA5.unitId, var_core_value_sigFBA5.subUnitId, var_core_value_sigFBA5.drawingId) : null;
+        var_core_value_sig5F50.next(var_core_value_sigAC47 ? (0, r.resolveActiveShapeQuickStylePresetId)(var_core_value_sigAC47) ?? "" : "");
+      },
+      var_core_value_sigFFAF = var_core_value_sigAD84.focus$["subscribe"](var_core_value_sig4494),
+      var_core_value_sig478B = var_core_value_sig45CD.onCommandExecuted(var_core_value_sigA06F => {
+        var_core_value_sigA06F.id === i.UpdateSheetsShapeDataMutation["id"] && var_core_value_sig4494();
+      });
+    return var_core_value_sig4494(), () => {
+      var_core_value_sigFFAF.unsubscribe(), var_core_value_sig478B.dispose();
+    };
+  });
+}
+function G(var_core_value_sig36BD) {
+  var var_core_value_sig0413;
+  let var_core_value_sig15B6 = var_core_value_sig36BD.get(s.IDrawingManagerService).getFocusDrawings();
+  return var_core_value_sig15B6.length === 1 && ((var_core_value_sig0413 = var_core_value_sig15B6[0]) == null ? undefined : var_core_value_sig0413.drawingType) === a.DrawingTypeEnum["DRAWING_SHAPE"] ? var_core_value_sig15B6[0] : null;
+}
+function K(var_core_value_sigFEBF, var_core_value_sigBBA2 = false) {
+  let var_core_value_sigC9A1 = var_core_value_sigFEBF.get(a.ICommandService),
+    var_core_value_sigE469 = var_core_value_sigFEBF.get(s.IDrawingManagerService),
+    var_core_value_sigA499 = var_core_value_sigFEBF.get(i.SheetsShapeService);
+  return new u["Observable"](var_core_value_sig1E21 => {
+    let var_core_value_sig9DBF = () => {
+        let var_core_value_sig770E = G(var_core_value_sigFEBF);
+        if (!var_core_value_sig770E) {
+          var_core_value_sig1E21.next(true);
+          return;
+        }
+        let var_core_value_sig4654 = var_core_value_sigA499.getShapeDataById(var_core_value_sig770E.unitId, var_core_value_sig770E.subUnitId, var_core_value_sig770E.drawingId);
+        var_core_value_sig1E21.next(!var_core_value_sig4654 || var_core_value_sigBBA2 && var_core_value_sig4654.formulaBinding == null);
+      },
+      var_core_value_sig36CC = var_core_value_sigE469.focus$["subscribe"](var_core_value_sig9DBF),
+      var_core_value_sigA568 = var_core_value_sigC9A1.onCommandExecuted(var_core_value_sigB26B => {
+        var_core_value_sigB26B.id === i.UpdateSheetsShapeDataMutation["id"] && var_core_value_sig9DBF();
+      });
+    return var_core_value_sig9DBF(), () => {
+      var_core_value_sig36CC.unsubscribe(), var_core_value_sigA568.dispose();
+    };
+  });
+}
+function Ie(var_core_value_sig4CC3) {
+  let var_core_value_sig70B3 = var_core_value_sig4CC3.get(s.IDrawingManagerService),
+    var_core_value_sig422B = var_core_value_sig4CC3.get(i.SheetsShapeService);
+  return var_core_value_sig70B3.focus$["pipe"]((0, u.startWith)(var_core_value_sig70B3.getFocusDrawings()), (0, u.map)(() => {
+    let var_core_value_sigD22D = G(var_core_value_sig4CC3),
+      var_core_value_sig85D5 = var_core_value_sigD22D ? var_core_value_sig422B.getShapeTypeById(var_core_value_sigD22D.unitId, var_core_value_sigD22D.subUnitId, var_core_value_sigD22D.drawingId) : undefined;
+    return var_core_value_sig85D5 === undefined || (0, n.isConnectorShape)(var_core_value_sig85D5);
+  }));
+}
+function Le(var_core_value_sig1038) {
+  return {
+    id: H.id,
+    type: t.MenuItemType["SELECTOR"],
+    icon: "PaintIcon",
+    title: "shape-editor-ui.toolbar.quickStyles",
+    tooltip: "shape-editor-ui.toolbar.quickStyles",
+    selections: [{
+      label: {
+        name: be,
+        hoverable: false,
+        selectable: false
+      }
+    }],
+    value$: Fe(var_core_value_sig1038),
+    hidden$: K(var_core_value_sig1038)
+  };
+}
+function Re(var_core_value_sigC3E6) {
+  return {
+    id: ae.id,
+    type: t.MenuItemType["SELECTOR"],
+    icon: "ShapeIcon",
+    title: "shape-editor-ui.toolbar.changeShape",
+    tooltip: "shape-editor-ui.toolbar.changeShape",
+    slot: true,
+    selections: [{
+      label: {
+        name: e.SHAPE_CHANGE_PICKER_COMPONENT,
+        hoverable: false,
+        selectable: false
+      }
+    }],
+    hidden$: Ie(var_core_value_sigC3E6)
+  };
+}
+function ze(var_core_value_sig3710, var_core_value_sig9726, var_core_value_sigFC9B = false) {
+  return var_core_value_sig5D2E => ({
+    id: var_core_value_sig3710,
+    type: t.MenuItemType["BUTTON"],
+    label: {
+      name: var_core_value_sig9726,
+      hoverable: false,
+      selectable: false
+    },
+    hidden$: K(var_core_value_sig5D2E, var_core_value_sigFC9B)
+  });
+}
+const Be = ze(Oe, xe),
+  Ve = ze(ke, Se),
+  He = ze(Ae, Ce, true);
+function q(var_core_value_sig943E, var_core_value_sigEF36, var_core_value_sigD4B1, var_core_value_sigE5D8) {
+  return var_core_value_sig7221 => ({
+    id: var_core_value_sig943E,
+    commandId: p.SetDrawingArrangeCommand["id"],
+    type: t.MenuItemType["BUTTON"],
+    icon: var_core_value_sigD4B1,
+    title: var_core_value_sigE5D8,
+    tooltip: var_core_value_sigE5D8,
+    hidden$: K(var_core_value_sig7221),
+    params: () => {
+      let var_core_value_sig019B = G(var_core_value_sig7221);
+      return var_core_value_sig019B ? {
+        unitId: var_core_value_sig019B.unitId,
+        subUnitId: var_core_value_sig019B.subUnitId,
+        drawingIds: [var_core_value_sig019B.drawingId],
+        arrangeType: var_core_value_sigEF36
+      } : undefined;
+    }
+  });
+}
+const Ue = q(je, a.ArrangeTypeEnum["forward"], "MoveUpIcon", "shape-editor-ui.arrange.forward"),
+  We = q(Me, a.ArrangeTypeEnum["backward"], "MoveDownIcon", "shape-editor-ui.arrange.backward"),
+  Ge = q(Ne, a.ArrangeTypeEnum["front"], "TopmostIcon", "shape-editor-ui.arrange.front"),
+  Ke = q(Pe, a.ArrangeTypeEnum["back"], "BottomIcon", "shape-editor-ui.arrange.back");
+function qe(var_core_value_sig74AF) {
+  return {
+    id: V.id,
+    type: t.MenuItemType["BUTTON"],
+    icon: "ShapeFormatSettingIcon",
+    title: "sheets-shape-ui.formatShape",
+    tooltip: "sheets-shape-ui.formatShape",
+    hidden$: K(var_core_value_sig74AF),
+    params: () => {
+      let var_core_value_sig0A5A = G(var_core_value_sig74AF);
+      return var_core_value_sig0A5A ? {
+        unitId: var_core_value_sig0A5A.unitId,
+        subUnitId: var_core_value_sig0A5A.subUnitId,
+        drawingId: var_core_value_sig0A5A.drawingId
+      } : undefined;
+    }
+  };
+}
+const Je = {
+    [t.MenuManagerPosition["RIBBON"]]: {
+      [B]: {
+        order: 100,
+        title: "sheets-shape-ui.formatShape",
+        contextual: true,
+        "sheets-shape-ui.ribbon.shape-format.quick-styles": {
+          order: 0,
+          [H.id]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: Le
+          },
+          [ae.id]: {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: Re
+          }
+        },
+        "sheets-shape-ui.ribbon.shape-format.style": {
+          order: 1,
+          [Oe]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 104
+            },
+            menuItemFactory: Be
+          }
+        },
+        "sheets-shape-ui.ribbon.shape-format.text": {
+          order: 2,
+          [ke]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 344
+            },
+            menuItemFactory: Ve
+          }
+        },
+        "sheets-shape-ui.ribbon.shape-format.arrange": {
+          order: 3,
+          [me]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1
+            },
+            menuItemFactory: ve
+          },
+          [he]: {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1
+            },
+            menuItemFactory: ye
+          },
+          [je]: {
+            order: 2,
+            gridLayout: {
+              row: 1,
+              column: 2
+            },
+            menuItemFactory: Ue
+          },
+          [Me]: {
+            order: 3,
+            gridLayout: {
+              row: 2,
+              column: 2
+            },
+            menuItemFactory: We
+          },
+          [Ne]: {
+            order: 4,
+            gridLayout: {
+              row: 1,
+              column: 3
+            },
+            menuItemFactory: Ge
+          },
+          [Pe]: {
+            order: 5,
+            gridLayout: {
+              row: 2,
+              column: 3
+            },
+            menuItemFactory: Ke
+          }
+        },
+        "sheets-shape-ui.ribbon.shape-format.formula": {
+          order: 4,
+          [Ae]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              rowSpan: 2,
+              width: 120
+            },
+            menuItemFactory: He
+          }
+        },
+        "sheets-shape-ui.ribbon.shape-format.advanced": {
+          order: 5,
+          [V.id]: {
+            order: 0,
+            gridLayout: {
+              row: 1,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: qe
+          },
+          [e.ToggleShapeFloatingToolbarOperation["id"]]: {
+            order: 1,
+            gridLayout: {
+              row: 2,
+              column: 1,
+              showLabel: true
+            },
+            menuItemFactory: e.ShapeFloatingToolbarToggleFactory
+          }
+        }
+      }
+    }
+  },
+  Ye = {
+    [t.RibbonInsertGroup["MEDIA"]]: {
+      [I.id]: {
+        order: 4,
+        menuItemFactory: fe
+      }
+    },
+    [t.RibbonInsertGroup["OTHERS"]]: {
+      [re.id]: {
+        order: 0,
+        gridLayout: {
+          row: 1,
+          column: 1,
+          rowSpan: 2,
+          showLabel: true
+        },
+        menuItemFactory: pe
+      }
+    },
+    [t.ContextMenuPosition["DRAWING"]]: {
+      [t.ContextMenuGroup["OTHERS"]]: {
+        [me]: {
+          order: 4,
+          menuItemFactory: ve
+        },
+        [he]: {
+          order: 5,
+          menuItemFactory: ye
+        }
+      }
+    }
+  };
+var Xe = "@univerjs-pro/sheets-shape-ui",
+  Ze = "1.0.0-insiders.20260907-70fc579";
+const Qe = {
+    type: a.CommandType["OPERATION"],
+    id: "sheet.operation.close-sheet-shape-format-panel",
+    handler() {
+      return true;
+    }
+  },
+  $e = {};
+function et(var_core_value_sigBABA) {
+  return var_core_value_sigBABA.trim() || undefined;
+}
+function tt(var_core_value_sigA723, var_core_value_sig991C, var_core_value_sigF909) {
+  var var_core_value_sigDD0E;
+  return ((var_core_value_sigDD0E = var_core_value_sigA723.name) == null ? undefined : var_core_value_sigDD0E.trim()) || (0, d.getObjectListPanelTypeName)(var_core_value_sigF909, (0, e.getDrawingTypeNameKey)(var_core_value_sigA723.drawingType)) + "\x20" + (var_core_value_sig991C + 1);
+}
+function nt() {
+  var var_core_value_sigF2A0;
+  let var_core_value_sig116F = (0, t.useDependency)(a.LocaleService),
+    var_core_value_sigA64C = (0, t.useDependency)(a.ICommandService),
+    var_core_value_sigAF94 = (0, t.useDependency)(a.IUniverInstanceService),
+    var_core_value_sig1E9F = (0, t.useDependency)(p.ISheetDrawingService),
+    var_core_value_sig3CC6 = (0, t.useDependency)(s.IDrawingManagerService),
+    var_core_value_sig041B = (0, t.useDependency)(c.IRenderManagerService),
+    [, var_core_value_sig3610] = (0, y.useReducer)(var_core_value_sigE6D6 => var_core_value_sigE6D6 + 1, 0),
+    var_core_value_sig62F3 = var_core_value_sigAF94.getCurrentUnitOfType(a.UniverInstanceType["UNIVER_SHEET"]),
+    var_core_value_sig8063 = (var_core_value_sig62F3 == null ? undefined : var_core_value_sig62F3.getUnitId()) ?? "",
+    var_core_value_sig555A = (var_core_value_sig62F3 == null || (var_core_value_sigF2A0 = var_core_value_sig62F3.getActiveSheet()) == null ? undefined : var_core_value_sigF2A0.getSheetId()) ?? "",
+    var_core_value_sigF562 = (0, t.useObservable)(() => var_core_value_sig3CC6.focus$, var_core_value_sig3CC6.getFocusDrawings(), false, [var_core_value_sig3CC6]);
+  (0, y.useEffect)(() => {
+    let var_core_value_sig8507 = var_core_value_sigA64C.onCommandExecuted(() => var_core_value_sig3610());
+    return () => var_core_value_sig8507.dispose();
+  }, [var_core_value_sigA64C]);
+  let var_core_value_sig5913 = (0, y.useMemo)(() => (0, d.getObjectListPanelLabels)(var_core_value_sig116F), [var_core_value_sig116F]),
+    var_core_value_sigA1AF = var_core_value_sig8063 && var_core_value_sig555A ? var_core_value_sig1E9F.getDrawingData(var_core_value_sig8063, var_core_value_sig555A) : {},
+    var_core_value_sig6324 = (var_core_value_sig8063 && var_core_value_sig555A ? var_core_value_sig1E9F.getDrawingOrder(var_core_value_sig8063, var_core_value_sig555A) : []).map(var_core_value_sig8A7F => var_core_value_sigA1AF[var_core_value_sig8A7F]).filter(var_core_value_sig9E81 => !!var_core_value_sig9E81).reverse(),
+    var_core_value_sig7EE4 = var_core_value_sig6324.reduce((var_core_value_sig8295, var_core_value_sigA975) => (var_core_value_sig8295[(0, d.getObjectListPanelSectionIdForDrawingType)(var_core_value_sigA975.drawingType)] += 1, var_core_value_sig8295), {
+      canvas: 0,
+      floating: 0
+    }),
+    var_core_value_sigE3D7 = {
+      canvas: 0,
+      floating: 0
+    },
+    var_core_value_sig54C6 = var_core_value_sig6324.map((var_core_value_sig1263, var_core_value_sig457C) => {
+      let var_core_value_sigA4E6 = (0, d.getObjectListPanelSectionIdForDrawingType)(var_core_value_sig1263.drawingType),
+        var_core_value_sig934F = var_core_value_sigA4E6 === d.OBJECT_LIST_FLOATING_SECTION_ID,
+        var_core_value_sig74A7 = var_core_value_sigE3D7[var_core_value_sigA4E6]++;
+      return {
+        id: var_core_value_sig1263.drawingId,
+        name: tt(var_core_value_sig1263, var_core_value_sig457C, var_core_value_sig116F),
+        description: var_core_value_sig1263.description,
+        visible: var_core_value_sig1263.hidden !== true,
+        selectable: var_core_value_sig1263.selectable !== false,
+        sectionId: var_core_value_sigA4E6,
+        sectionTitle: var_core_value_sig934F ? var_core_value_sig5913.sectionFloating : var_core_value_sig5913.sectionCanvas,
+        capabilities: var_core_value_sig934F ? {
+          arrange: false,
+          reorder: false
+        } : undefined,
+        canMoveForward: !var_core_value_sig934F && var_core_value_sig74A7 > 0,
+        canMoveBackward: !var_core_value_sig934F && var_core_value_sig74A7 < var_core_value_sig7EE4.canvas - 1,
+        canReorder: !var_core_value_sig934F
+      };
+    }),
+    var_core_value_sigE843 = (0, y.useMemo)(() => (var_core_value_sigF562 ?? []).filter(var_core_value_sigC6BC => var_core_value_sigC6BC.unitId === var_core_value_sig8063 && var_core_value_sigC6BC.subUnitId === var_core_value_sig555A).map(var_core_value_sig8EC2 => var_core_value_sig8EC2.drawingId), [var_core_value_sigF562, var_core_value_sig555A, var_core_value_sig8063]),
+    var_core_value_sig2EB2 = var_core_value_sigE843[var_core_value_sigE843.length - 1] ?? null,
+    var_core_value_sig683A = var_core_value_sig3685 => var_core_value_sig1E9F.getDrawingByParam({
+      unitId: var_core_value_sig8063,
+      subUnitId: var_core_value_sig555A,
+      drawingId: var_core_value_sig3685
+    }) ?? null,
+    var_core_value_sig109B = async var_core_value_sigC621 => {
+      !var_core_value_sig8063 || !var_core_value_sigC621.length || (await var_core_value_sigA64C.executeCommand(p.SetSheetDrawingCommand["id"], {
+        unitId: var_core_value_sig8063,
+        drawings: var_core_value_sigC621
+      }));
+    },
+    var_core_value_sig6DD0 = async (var_core_value_sig86D7, var_core_value_sig431B) => {
+      var_core_value_sig683A(var_core_value_sig86D7) && (await var_core_value_sig109B([{
+        unitId: var_core_value_sig8063,
+        subUnitId: var_core_value_sig555A,
+        drawingId: var_core_value_sig86D7,
+        ...var_core_value_sig431B
+      }]));
+    },
+    var_core_value_sigB5D3 = (var_core_value_sig5C7C, var_core_value_sig87E2) => {
+      if (!var_core_value_sig8063 || !var_core_value_sig555A) return;
+      let var_core_value_sig2E04 = var_core_value_sig87E2 ? var_core_value_sigE843.includes(var_core_value_sig5C7C) ? var_core_value_sigE843.filter(var_core_value_sigA8C3 => var_core_value_sigA8C3 !== var_core_value_sig5C7C) : [...var_core_value_sigE843, var_core_value_sig5C7C] : [var_core_value_sig5C7C];
+      var_core_value_sigA64C.syncExecuteCommand(s.SetDrawingSelectedOperation["id"], var_core_value_sig2E04.map(var_core_value_sig5276 => ({
+        unitId: var_core_value_sig8063,
+        subUnitId: var_core_value_sig555A,
+        drawingId: var_core_value_sig5276
+      })));
+      let var_core_value_sig2EDD = var_core_value_sig2E04[var_core_value_sig2E04.length - 1];
+      var_core_value_sig2EDD ? (0, e.activateDrawingObject)(var_core_value_sig041B, {
+        unitId: var_core_value_sig8063,
+        subUnitId: var_core_value_sig555A,
+        drawingId: var_core_value_sig2EDD
+      }) : (0, e.clearActiveDrawingObjects)(var_core_value_sig041B, var_core_value_sig8063);
+    },
+    var_core_value_sig6085 = async (var_core_value_sig27D2, var_core_value_sig355D) => {
+      await var_core_value_sig109B(var_core_value_sig27D2.map(var_core_value_sig031B => var_core_value_sig683A(var_core_value_sig031B)).filter(var_core_value_sig9DC0 => !!var_core_value_sig9DC0).filter(var_core_value_sig95F0 => var_core_value_sig95F0.hidden !== true !== var_core_value_sig355D).map(var_core_value_sig9CCB => ({
+        unitId: var_core_value_sig8063,
+        subUnitId: var_core_value_sig555A,
+        drawingId: var_core_value_sig9CCB.drawingId,
+        hidden: !var_core_value_sig355D
+      })));
+    },
+    var_core_value_sig2507 = async var_core_value_sig8B21 => {
+      let var_core_value_sigEB36 = var_core_value_sig683A(var_core_value_sig8B21);
+      var_core_value_sigEB36 && (await var_core_value_sig6DD0(var_core_value_sig8B21, {
+        selectable: var_core_value_sigEB36.selectable === false && undefined
+      }));
+    },
+    var_core_value_sig5870 = async (var_core_value_sig5C27, var_core_value_sigD494) => {
+      var var_core_value_sigBF6D;
+      let var_core_value_sigD051 = et(var_core_value_sigD494);
+      (((var_core_value_sigBF6D = var_core_value_sig683A(var_core_value_sig5C27)) == null ? undefined : var_core_value_sigBF6D.name) ?? undefined) !== var_core_value_sigD051 && (await var_core_value_sig6DD0(var_core_value_sig5C27, {
+        name: var_core_value_sigD051
+      }));
+    },
+    var_core_value_sig827F = async (var_core_value_sig16D9, var_core_value_sigF378) => {
+      var var_core_value_sig5F6C;
+      let var_core_value_sig7E85 = et(var_core_value_sigF378);
+      (((var_core_value_sig5F6C = var_core_value_sig683A(var_core_value_sig16D9)) == null ? undefined : var_core_value_sig5F6C.description) ?? undefined) !== var_core_value_sig7E85 && (await var_core_value_sig6DD0(var_core_value_sig16D9, {
+        description: var_core_value_sig7E85
+      }));
+    },
+    var_core_value_sig2452 = async (var_core_value_sigF204, var_core_value_sig7A15) => {
+      !var_core_value_sig8063 || !var_core_value_sig555A || (await var_core_value_sigA64C.executeCommand(p.SetDrawingArrangeCommand["id"], {
+        unitId: var_core_value_sig8063,
+        subUnitId: var_core_value_sig555A,
+        drawingIds: [var_core_value_sigF204],
+        arrangeType: var_core_value_sig7A15
+      }));
+    };
+  return !var_core_value_sig8063 || !var_core_value_sig555A ? (0, f.jsx)("div", {
+    className: "univer-flex univer-size-full univer-items-center univer-justify-center univer-text-sm univer-text-gray-500",
+    children: var_core_value_sig5913.title
+  }) : (0, f.jsx)(d.ObjectListPanelBase, {
+    items: var_core_value_sig54C6,
+    selectedIds: var_core_value_sigE843,
+    focusedId: var_core_value_sig2EB2,
+    labels: var_core_value_sig5913,
+    onSelect: var_core_value_sigB5D3,
+    onSetVisible: var_core_value_sig6085,
+    onCommitName: var_core_value_sig5870,
+    onCommitDescription: var_core_value_sig827F,
+    onMoveForward: async var_core_value_sigEEA6 => var_core_value_sig2452(var_core_value_sigEEA6, a.ArrangeTypeEnum["forward"]),
+    onMoveBackward: async var_core_value_sigEAE1 => var_core_value_sig2452(var_core_value_sigEAE1, a.ArrangeTypeEnum["backward"]),
+    onToggleSelectable: var_core_value_sig2507
+  });
+}
+let J = class {
+  constructor(var_core_value_sigC69F) {
+    this._renderManagerService = var_core_value_sigC69F;
+  }
+  updateShapeFillImage(var_core_value_sig0442, var_core_value_sig697A) {
+    let var_core_value_sigDB65 = this._renderManagerService["getRenderUnitById"](var_core_value_sig0442.unitId),
+      var_core_value_sig045E = var_core_value_sigDB65 == null ? undefined : var_core_value_sigDB65.scene;
+    if (!var_core_value_sig045E) return;
+    let var_core_value_sig4524 = (0, s.getDrawingShapeKeyByDrawingSearch)(var_core_value_sig0442),
+      var_core_value_sig64D5 = var_core_value_sig045E.getObjectIncludeInGroup(var_core_value_sig4524);
+    var_core_value_sig64D5 == null || var_core_value_sig64D5.setFillImage(var_core_value_sig697A);
+  }
+};
+J = M([j(0, c.IRenderManagerService)], J);
+function rt() {
+  let var_core_value_sig50D0 = (0, t.useDependency)(s.IDrawingManagerService),
+    var_core_value_sig5EBB = (0, t.useObservable)(() => var_core_value_sig50D0.focus$, var_core_value_sig50D0.getFocusDrawings(), false, [var_core_value_sig50D0]);
+  return var_core_value_sig5EBB.length === 0 ? null : (0, f.jsx)("div", {
+    children: (0, f.jsxs)("div", {
+      className: "univer-box-border univer-px-4 univer-text-sm",
+      children: [(0, f.jsx)(d.DrawingCommonPanel, {
+        drawings: var_core_value_sig5EBB,
+        hasCropper: false
+      }), (0, f.jsx)(_.SheetDrawingAnchor, {
+        drawings: var_core_value_sig5EBB
+      })]
+    })
+  });
+}
+function it(var_core_value_sig5E99) {
+  let {
+      unitId: var_core_value_sig3FB3,
+      subUnitId: var_core_value_sig0214,
+      shapeId: var_core_value_sig5153
+    } = var_core_value_sig5E99,
+    var_core_value_sigF323 = (0, t.useDependency)(a.ICommandService),
+    var_core_value_sig0C32 = (0, t.useDependency)(J);
+  return (0, f.jsx)(e.ShapeEditPanel, {
+    ...var_core_value_sig5E99,
+    positionEditor: (0, f.jsx)(rt, {}),
+    onUpdateShapeData: (var_core_value_sig9678, var_core_value_sig5E74) => {
+      C(var_core_value_sigF323, var_core_value_sig3FB3, var_core_value_sig0214, var_core_value_sig5153, var_core_value_sig9678, var_core_value_sig5E74);
+    },
+    onUpdateLineShapeData: (var_core_value_sig75FC, var_core_value_sig639A) => {
+      w(var_core_value_sigF323, var_core_value_sig3FB3, var_core_value_sig0214, var_core_value_sig5153, var_core_value_sig75FC, var_core_value_sig639A);
+    },
+    onUpdateShapeFillImage: var_core_value_sig567C => {
+      var_core_value_sig0C32.updateShapeFillImage({
+        unitId: var_core_value_sig3FB3,
+        subUnitId: var_core_value_sig0214,
+        drawingId: var_core_value_sig5153
+      }, var_core_value_sig567C);
+    }
+  });
+}
+function at(var_core_value_sig1D89) {
+  let var_core_value_sig2616 = (0, t.useDependency)(e.ShapeFloatingToolbarService),
+    {
+      mobile: var_core_value_sig97EF
+    } = (0, y.useContext)(b.ConfigContext),
+    var_core_value_sigA0C0 = (0, t.useObservable)(() => var_core_value_sig2616.visible$, var_core_value_sig2616.getVisible(), false, [var_core_value_sig2616]),
+    var_core_value_sigAD4B = var_core_value_sig1D89.popup["extraProps"];
+  return !var_core_value_sigAD4B || !var_core_value_sigA0C0 || var_core_value_sig97EF ? null : (0, f.jsx)(ot, {
+    ...var_core_value_sigAD4B,
+    canvasElement: var_core_value_sig1D89.popup["canvasElement"]
+  });
+}
+function ot(var_core_value_sig06EA) {
+  let var_core_value_sigF3C7 = (0, t.useDependency)(a.ICommandService),
+    var_core_value_sig5633 = (0, t.useDependency)(i.SheetsShapeService),
+    {
+      unitId: var_core_value_sig2492,
+      subUnitId: var_core_value_sig39F2,
+      drawingId: var_core_value_sigAD47,
+      drawingType: var_core_value_sig1722,
+      shapeType: var_core_value_sig7F86
+    } = var_core_value_sig06EA,
+    [var_core_value_sigF69D, var_core_value_sig7CB9] = (0, y.useState)(var_core_value_sig06EA.shapeData),
+    var_core_value_sigC1D8 = (0, y.useMemo)(() => (0, e.getTextStyle)(var_core_value_sigF69D), [var_core_value_sigF69D]),
+    var_core_value_sigCF8B = (0, y.useMemo)(() => (0, e.getTextModel)(var_core_value_sigF69D), [var_core_value_sigF69D]);
+  (0, y.useEffect)(() => {
+    let var_core_value_sig825F = var_core_value_sigF3C7.onCommandExecuted(var_core_value_sigE718 => {
+      if (var_core_value_sigE718.id !== i.UpdateSheetsShapeDataMutation["id"]) return;
+      let var_core_value_sigAEC8 = var_core_value_sig5633.getShapeDataById(var_core_value_sig2492, var_core_value_sig39F2, var_core_value_sigAD47);
+      var_core_value_sigAEC8 && var_core_value_sig7CB9(var_core_value_sigAEC8);
+    });
+    return () => var_core_value_sig825F.dispose();
+  }, [var_core_value_sigF3C7, var_core_value_sigAD47, var_core_value_sig5633, var_core_value_sig39F2, var_core_value_sig2492]);
+  let var_core_value_sigCD15 = var_core_value_sig546D => {
+      var_core_value_sig7CB9(var_core_value_sigB977 => ({
+        ...var_core_value_sigB977,
+        ...var_core_value_sig546D
+      }));
+    },
+    var_core_value_sig524D = var_core_value_sig8078 => {
+      let var_core_value_sigDCED = (0, e.buildShapeTextDataUpdate)(var_core_value_sigF69D, var_core_value_sig8078);
+      C(var_core_value_sigF3C7, var_core_value_sig2492, var_core_value_sig39F2, var_core_value_sigAD47, {
+        oldShapeData: {
+          shapeText: var_core_value_sigF69D.shapeText
+        }
+      }, var_core_value_sigDCED), var_core_value_sigCD15(var_core_value_sigDCED);
+    },
+    var_core_value_sigD7F4 = (0, e.useFormulaShapeToolbar)({
+      hostType: a.UniverInstanceType["UNIVER_SHEET"],
+      unitId: var_core_value_sig2492,
+      subUnitId: var_core_value_sig39F2,
+      shapeId: var_core_value_sigAD47,
+      shapeData: var_core_value_sigF69D,
+      onUpdateBinding: var_core_value_sig2829 => {
+        let var_core_value_sig6EE2 = {
+          formulaBinding: var_core_value_sig2829
+        };
+        C(var_core_value_sigF3C7, var_core_value_sig2492, var_core_value_sig39F2, var_core_value_sigAD47, {
+          oldShapeData: {
+            formulaBinding: var_core_value_sigF69D.formulaBinding
+          }
+        }, var_core_value_sig6EE2), var_core_value_sigCD15(var_core_value_sig6EE2);
+      }
+    });
+  return (0, f.jsxs)(f.Fragment, {
+    children: [(0, f.jsx)(e.ShapeFloatingToolbar, {
+      canvasElement: var_core_value_sig06EA.canvasElement,
+      shapeData: var_core_value_sigF69D,
+      shapeType: var_core_value_sig7F86,
+      textStyle: {
+        ff: n.ShapeDefaultConfig["shapeText"].fontFamily,
+        fs: n.ShapeDefaultConfig["shapeText"].fontSize,
+        cl: {
+          rgb: n.ShapeDefaultConfig["shapeText"].color
+        },
+        ...var_core_value_sigC1D8
+      },
+      textModel: var_core_value_sigCF8B ? {
+        ha: var_core_value_sigCF8B.ha ?? a.HorizontalAlign["LEFT"],
+        va: var_core_value_sigCF8B.va ?? a.VerticalAlign["TOP"]
+      } : null,
+      enableShapeFillReset: true,
+      enableShapeStrokeReset: true,
+      enableTextBackgroundReset: true,
+      defaultFillColor: n.ShapeDefaultConfig["fill"],
+      defaultGradientEndColor: n.ShapeDefaultConfig["gradientEndColor"],
+      defaultStrokeColor: n.ShapeDefaultConfig["stroke"],
+      extensionGroups: var_core_value_sigD7F4.extensionGroups,
+      floatingObjectToolbarPosition: t.FloatingObjectToolbarPosition["SHEET"],
+      onUpdateShapeData: (var_core_value_sig4CCC, var_core_value_sig6E47) => {
+        C(var_core_value_sigF3C7, var_core_value_sig2492, var_core_value_sig39F2, var_core_value_sigAD47, var_core_value_sig4CCC, var_core_value_sig6E47), var_core_value_sig6E47 && var_core_value_sigCD15(var_core_value_sig6E47);
+      },
+      onUpdateText: var_core_value_sig524D,
+      onOpenPanel: () => {
+        var_core_value_sigF3C7.executeCommand(V.id, {
+          unitId: var_core_value_sig2492,
+          subUnitId: var_core_value_sig39F2,
+          drawingId: var_core_value_sigAD47
+        });
+      },
+      onDelete: () => {
+        var_core_value_sigF3C7.executeCommand(p.RemoveSheetDrawingCommand["id"], {
+          unitId: var_core_value_sig2492,
+          drawings: [{
+            unitId: var_core_value_sig2492,
+            subUnitId: var_core_value_sig39F2,
+            drawingId: var_core_value_sigAD47,
+            drawingType: var_core_value_sig1722
+          }]
+        });
+      }
+    }), var_core_value_sigD7F4.panel]
+  });
+}
+let Y = class extends a.Disposable {
+  constructor(var_core_value_sigB64D) {
+    super(), this._permissionService = var_core_value_sigB64D, D(this, "_editingParams$", new u["BehaviorSubject"](null)), D(this, "editingParams$", this._editingParams$["asObservable"]()), D(this, "_onSavingEditorData$", new u["BehaviorSubject"](false)), D(this, "onSavingEditorData$", this._onSavingEditorData$["asObservable"]()), this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(() => {
+      let var_core_value_sig2949 = this.getEditing();
+      var_core_value_sig2949 != null && var_core_value_sig2949.visible && !this._canEdit(var_core_value_sig2949) && this.setEditing(null);
+    }));
+  }
+  dispose() {
+    this._editingParams$["next"](null), this._editingParams$["complete"](), this._onSavingEditorData$["next"](false), this._onSavingEditorData$["complete"](), super.dispose();
+  }
+  setEditing(var_core_value_sig2407) {
+    var_core_value_sig2407 != null && var_core_value_sig2407.visible && !this._canEdit(var_core_value_sig2407) || (this._editingParams$["next"](var_core_value_sig2407), var_core_value_sig2407 ?? this._onSavingEditorData$["next"](false));
+  }
+  setOnSavingEditorData(var_core_value_sigE4D0) {
+    this._onSavingEditorData$["next"](var_core_value_sigE4D0);
+  }
+  getEditing() {
+    return this._editingParams$["getValue"]();
+  }
+  _canEdit(var_core_value_sigD5F1) {
+    let var_core_value_sigBC19 = this._permissionService["getPermissionPoint"](new o["WorkbookEditablePermission"](var_core_value_sigD5F1.unitId).id),
+      var_core_value_sig4F3C = this._permissionService["getPermissionPoint"](new o.WorksheetEditPermission(var_core_value_sigD5F1.unitId, var_core_value_sigD5F1.subUnitId).id);
+    return ((var_core_value_sigBC19 == null ? undefined : var_core_value_sigBC19.value) ?? true) && ((var_core_value_sig4F3C == null ? undefined : var_core_value_sig4F3C.value) ?? true);
+  }
+  completeEditing(var_core_value_sig8D44) {
+    this.getEditing() && (this.setOnSavingEditorData(true), requestAnimationFrame(() => {
+      this.setEditing(null);
+    }));
+  }
+  cancelEditing() {
+    this.getEditing() && this.setEditing(null);
+  }
+};
+Y = M([j(0, a.IPermissionService)], Y);
+function st(var_core_value_sig7B87) {
+  return !!var_core_value_sig7B87 && "axisAlignSheetTransform" in var_core_value_sig7B87 && "sheetTransform" in var_core_value_sig7B87;
+}
+const ct = (0, y.memo)(() => {
+  let var_core_value_sig933D = (0, t.useDependency)(Y),
+    var_core_value_sig6ACE = (0, t.useDependency)(i.SheetsShapeService),
+    var_core_value_sig7675 = (0, t.useDependency)(s.IDrawingManagerService),
+    var_core_value_sig21B8 = (0, t.useDependency)(a.ICommandService),
+    var_core_value_sigD545 = (0, t.useDependency)(t.UndoRedoGroupService),
+    var_core_value_sig91C9 = (0, t.useDependency)(c.IRenderManagerService);
+  return (0, f.jsx)(e.ShapeTextEditorContainer, {
+    adapter: (0, y.useMemo)(() => ({
+      getShapeModel: (var_core_value_sig308A, var_core_value_sig528D, var_core_value_sigA309) => var_core_value_sig6ACE.getShapeModel(var_core_value_sig308A, var_core_value_sig528D, var_core_value_sigA309),
+      getShapeData: (var_core_value_sig9E20, var_core_value_sig26BB, var_core_value_sig19B4) => var_core_value_sig6ACE.getShapeDataById(var_core_value_sig9E20, var_core_value_sig26BB, var_core_value_sig19B4),
+      getDrawingTransform: (var_core_value_sig218A, var_core_value_sig14CB, var_core_value_sigFDEE) => {
+        let var_core_value_sigA676 = var_core_value_sig7675.getDrawingByParam({
+          unitId: var_core_value_sig218A,
+          subUnitId: var_core_value_sig14CB,
+          drawingId: var_core_value_sigFDEE
+        });
+        return var_core_value_sigA676 == null ? undefined : var_core_value_sigA676.transform;
+      },
+      updateShapeText: ({
+        unitId: var_core_value_sigC27E,
+        subUnitId: var_core_value_sigA70D,
+        shapeId: var_core_value_sigCE10,
+        shapeText: var_core_value_sigA386,
+        oldShapeText: var_core_value_sigCD82,
+        hostSize: var_core_value_sig44DD
+      }) => {
+        var_core_value_sigD545.run(var_core_value_sigC27E, () => {
+          var var_core_value_sigBB57;
+          let var_core_value_sig7C4A = var_core_value_sig21B8.syncExecuteCommand(S.id, {
+            unitId: var_core_value_sigC27E,
+            subUnitId: var_core_value_sigA70D,
+            shapeId: var_core_value_sigCE10,
+            shapeData: {
+              shapeText: var_core_value_sigA386
+            },
+            oldShapeJSON: {
+              oldShapeData: {
+                shapeText: var_core_value_sigCD82
+              }
+            }
+          });
+          if (!var_core_value_sig7C4A || !var_core_value_sig44DD) return var_core_value_sig7C4A;
+          let var_core_value_sigE799 = var_core_value_sig7675.getDrawingByParam({
+              unitId: var_core_value_sigC27E,
+              subUnitId: var_core_value_sigA70D,
+              drawingId: var_core_value_sigCE10
+            }),
+            var_core_value_sigB601 = var_core_value_sigE799 == null ? undefined : var_core_value_sigE799.transform;
+          if (!st(var_core_value_sigE799) || !var_core_value_sigB601) return false;
+          let var_core_value_sig8B71 = {
+              ...var_core_value_sigB601,
+              width: var_core_value_sig44DD.width,
+              height: var_core_value_sig44DD.height
+            },
+            var_core_value_sigAEFB = (var_core_value_sigBB57 = var_core_value_sig91C9.getRenderUnitById(var_core_value_sigC27E)) == null || (var_core_value_sigBB57 = var_core_value_sigBB57.with(l.SheetSkeletonManagerService).getSkeletonParam(var_core_value_sigA70D)) == null ? undefined : var_core_value_sigBB57.skeleton;
+          return var_core_value_sig21B8.syncExecuteCommand(p.SetSheetDrawingCommand["id"], {
+            unitId: var_core_value_sigC27E,
+            drawings: [{
+              ...var_core_value_sigE799,
+              transform: var_core_value_sig8B71,
+              sheetTransform: var_core_value_sigAEFB ? (0, p.transformToDrawingPosition)(var_core_value_sig8B71, var_core_value_sigAEFB) ?? var_core_value_sigE799.sheetTransform : var_core_value_sigE799.sheetTransform,
+              axisAlignSheetTransform: var_core_value_sigAEFB ? (0, p.transformToAxisAlignPosition)(var_core_value_sig8B71, var_core_value_sigAEFB) ?? var_core_value_sigE799.axisAlignSheetTransform : var_core_value_sigE799.axisAlignSheetTransform
+            }]
+          });
+        });
+      },
+      updateHostSize: ({
+        unitId: var_core_value_sig96FA,
+        subUnitId: var_core_value_sigAB68,
+        shapeId: var_core_value_sig040A,
+        width: var_core_value_sig2AE0,
+        height: var_core_value_sigC349
+      }) => {
+        var var_core_value_sig9D96;
+        let var_core_value_sig2776 = var_core_value_sig7675.getDrawingByParam({
+            unitId: var_core_value_sig96FA,
+            subUnitId: var_core_value_sigAB68,
+            drawingId: var_core_value_sig040A
+          }),
+          var_core_value_sig6FB2 = var_core_value_sig2776 == null ? undefined : var_core_value_sig2776.transform;
+        if (!st(var_core_value_sig2776) || !var_core_value_sig6FB2) return;
+        let var_core_value_sigEB43 = {
+            ...var_core_value_sig6FB2,
+            width: var_core_value_sig2AE0,
+            height: var_core_value_sigC349
+          },
+          var_core_value_sig4186 = (var_core_value_sig9D96 = var_core_value_sig91C9.getRenderUnitById(var_core_value_sig96FA)) == null || (var_core_value_sig9D96 = var_core_value_sig9D96.with(l.SheetSkeletonManagerService).getSkeletonParam(var_core_value_sigAB68)) == null ? undefined : var_core_value_sig9D96.skeleton,
+          var_core_value_sigF963 = var_core_value_sig4186 ? (0, p.transformToDrawingPosition)(var_core_value_sigEB43, var_core_value_sig4186) ?? var_core_value_sig2776.sheetTransform : var_core_value_sig2776.sheetTransform,
+          var_core_value_sigB608 = var_core_value_sig4186 ? (0, p.transformToAxisAlignPosition)(var_core_value_sigEB43, var_core_value_sig4186) ?? var_core_value_sig2776.axisAlignSheetTransform : var_core_value_sig2776.axisAlignSheetTransform;
+        var_core_value_sig21B8.executeCommand(p.SetSheetDrawingCommand["id"], {
+          unitId: var_core_value_sig96FA,
+          drawings: [{
+            ...var_core_value_sig2776,
+            transform: var_core_value_sigEB43,
+            sheetTransform: var_core_value_sigF963,
+            axisAlignSheetTransform: var_core_value_sigB608
+          }]
+        });
+      },
+      allowHostSizeShrink: ({
+        unitId: var_core_value_sigF866,
+        subUnitId: var_core_value_sig5EFB,
+        shapeId: var_core_value_sig3A85
+      }) => (0, e.shouldAllowShapeTextEditorHostSizeShrink)(var_core_value_sig6ACE.getShapeDataById(var_core_value_sigF866, var_core_value_sig5EFB, var_core_value_sig3A85)),
+      deferHostSizeUpdateDuringEditing: () => true
+    }), [var_core_value_sig21B8, var_core_value_sig7675, var_core_value_sig91C9, var_core_value_sig6ACE, var_core_value_sigD545]),
+    editingService: var_core_value_sig933D,
+    editorUnitId: te,
+    positionOptions: (0, y.useMemo)(() => ({
+      viewportKeys: {
+        main: c.SHEET_VIEWPORT_KEY["VIEW_MAIN"],
+        leftTop: c.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT_TOP"],
+        top: c.SHEET_VIEWPORT_KEY["VIEW_MAIN_TOP"],
+        left: c.SHEET_VIEWPORT_KEY["VIEW_MAIN_LEFT"]
+      },
+      getSkeleton: (var_core_value_sig2682, var_core_value_sig4BB5) => {
+        var var_core_value_sig6709;
+        return ((var_core_value_sig6709 = var_core_value_sig2682.with(l.SheetSkeletonManagerService).getSkeletonParam(var_core_value_sig4BB5.subUnitId)) == null ? undefined : var_core_value_sig6709.skeleton) ?? null;
+      }
+    }), [])
+  });
+});
+let lt = class extends a.Disposable {
+  constructor(var_core_value_sig1660, var_core_value_sigEE7B) {
+    super(), this._componentManager = var_core_value_sig1660, this._iconManager = var_core_value_sigEE7B, this._registerIcons(), this._registerComponents();
+  }
+  _registerIcons() {
+    this._iconManager["has"]("ObjectLayersIcon") || this.disposeWithMe(this._iconManager["register"]({
+      ObjectLayersIcon: v.ObjectLayersIcon
+    })), this._iconManager["has"]("FlipHorizontalIcon") || this.disposeWithMe(this._iconManager["register"]({
+      FlipHorizontalIcon: v.FlipHorizontalIcon
+    })), this._iconManager["has"]("FlipVerticalIcon") || this.disposeWithMe(this._iconManager["register"]({
+      FlipVerticalIcon: v.FlipVerticalIcon
+    })), this._iconManager["has"]("BottomIcon") || this.disposeWithMe(this._iconManager["register"]({
+      BottomIcon: v.BottomIcon
+    })), this._iconManager["has"]("MoveDownIcon") || this.disposeWithMe(this._iconManager["register"]({
+      MoveDownIcon: v.MoveDownIcon
+    })), this._iconManager["has"]("MoveUpIcon") || this.disposeWithMe(this._iconManager["register"]({
+      MoveUpIcon: v.MoveUpIcon
+    })), this._iconManager["has"]("ShapeFormatSettingIcon") || this.disposeWithMe(this._iconManager["register"]({
+      ShapeFormatSettingIcon: v.ShapeFormatSettingIcon
+    })), this._iconManager["has"]("TopmostIcon") || this.disposeWithMe(this._iconManager["register"]({
+      TopmostIcon: v.TopmostIcon
+    }));
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](L, it)), this.disposeWithMe(this._componentManager["register"](R, nt)), this.disposeWithMe(this._componentManager["register"](oe, de)), this.disposeWithMe(this._componentManager["register"](se, le)), this._componentManager["get"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT) || this.disposeWithMe(this._componentManager["register"](d.IMAGE_CLIP_SHAPE_PICKER_COMPONENT, ue)), this.disposeWithMe(this._componentManager["register"](z, at)), this.disposeWithMe(this._componentManager["register"](xe, we)), this.disposeWithMe(this._componentManager["register"](be, Te)), this.disposeWithMe(this._componentManager["register"](Se, Ee)), this.disposeWithMe(this._componentManager["register"](Ce, De)), this.disposeWithMe(this._componentManager["register"](ne, e.ShapeTextFloatToolbar)), this.disposeWithMe(this._componentManager["register"]("SheetShapeTextEditorContainer", ct));
+  }
+};
+lt = M([j(0, (0, a.Inject)(t.ComponentManager)), j(1, (0, a.Inject)(t.IconManager))], lt);
+let ut = class extends a.Disposable {
+  constructor(var_core_value_sig44DF, var_core_value_sig7E48, var_core_value_sig7B9E, var_core_value_sig5C3B, var_core_value_sig4002) {
+    super(), this._context = var_core_value_sig44DF, this._drawingManagerService = var_core_value_sig7E48, this._renderManagerService = var_core_value_sig7B9E, this._univerInstanceService = var_core_value_sig5C3B, this._imageShapeClipController = var_core_value_sig4002, D(this, "_activeImageId", null), D(this, "_unitId", null), D(this, "_subUnitId", null), D(this, "_activeAdjustPointList", undefined), D(this, "_shapes", []), D(this, "_baseLeft", 0), D(this, "_baseTop", 0), D(this, "_baseWidth", 0), D(this, "_baseHeight", 0), D(this, "_isStartAdjusting", false), D(this, "_activeAdjustInfo", undefined), D(this, "_activeShapeModel", undefined), D(this, "_adjHandlerPointerMove", undefined), D(this, "_adjHandlerPointerUp", undefined), D(this, "_isImagePointerDown", false), this._registerFocusChangeHandler(), this._registerMoveHandler();
+  }
+  clearAdjustControls() {
+    this._clearControls();
+  }
+  refreshAdjustControls() {
+    this._clearControls(), this._createControls(true);
+  }
+  _getOrCreateShapeModel(var_core_value_sig4153, var_core_value_sig2825, var_core_value_sig5FD0, var_core_value_sigA7E3) {
+    let var_core_value_sigA784 = var_core_value_sig4153;
+    if (var_core_value_sigA784 !== n.ShapeTypeEnum["None"] && var_core_value_sig4153 !== "custom") try {
+      let var_core_value_sig52CA = new n.ShapeModel(var_core_value_sigA784, "clip-adj-" + var_core_value_sig4153);
+      return var_core_value_sigA7E3 && var_core_value_sig52CA.setShapeData({
+        adjustValues: var_core_value_sigA7E3
+      }, true), var_core_value_sig52CA.updateContext({
+        width: var_core_value_sig2825,
+        height: var_core_value_sig5FD0
+      }), var_core_value_sig52CA;
+    } catch {
+      return;
+    }
+  }
+  _getImageDrawingInfo(var_core_value_sig4406, var_core_value_sig6806, var_core_value_sigD4AA) {
+    let var_core_value_sigDC41 = {
+        unitId: var_core_value_sig4406,
+        subUnitId: var_core_value_sig6806,
+        drawingId: var_core_value_sigD4AA
+      },
+      var_core_value_sigFB47 = this._drawingManagerService["getDrawingByParam"](var_core_value_sigDC41);
+    if (!(!var_core_value_sigFB47 || var_core_value_sigFB47.drawingType !== a.DrawingTypeEnum["DRAWING_IMAGE"])) return var_core_value_sigFB47;
+  }
+  _getImagePrstGeom(var_core_value_sig9B3D1, var_core_value_sigC1CF, var_core_value_sigEE12) {
+    let var_core_value_sigD70C = this._renderManagerService["getRenderUnitById"](var_core_value_sig9B3D1);
+    if (!var_core_value_sigD70C) return;
+    let {
+        scene: var_core_value_sigF047
+      } = var_core_value_sigD70C,
+      var_core_value_sigC2F9 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+        unitId: var_core_value_sig9B3D1,
+        subUnitId: var_core_value_sigC1CF,
+        drawingId: var_core_value_sigEE12
+      }),
+      var_core_value_sig1F51 = var_core_value_sigF047.getObject(var_core_value_sigC2F9);
+    if (var_core_value_sig1F51 instanceof c.Image) {
+      let var_core_value_sigC030 = var_core_value_sig1F51.prstGeom;
+      if (var_core_value_sigC030) return {
+        prstGeom: var_core_value_sigC030,
+        adjustValues: var_core_value_sig1F51.prstGeomAdjValues
+      };
+    }
+  }
+  _createControls(var_core_value_sig29F5 = false) {
+    if (!this._unitId || !this._subUnitId || !this._activeImageId) return;
+    let var_core_value_sig5A51 = this._renderManagerService["getRenderUnitById"](this._unitId);
+    if (!var_core_value_sig5A51 || !var_core_value_sig5A51.with(l.SheetSkeletonManagerService).getCurrentSkeleton()) return;
+    let {
+        scene: var_core_value_sigF1D1
+      } = var_core_value_sig5A51,
+      var_core_value_sig370E = this._getImageDrawingInfo(this._unitId, this._subUnitId, this._activeImageId);
+    if (!var_core_value_sig370E) return;
+    let {
+      transform: var_core_value_sigDE14
+    } = var_core_value_sig370E;
+    if (!var_core_value_sigDE14) return;
+    let {
+      left: var_core_value_sig02CB,
+      top: var_core_value_sig6CBB,
+      width: var_core_value_sig68DA,
+      height: var_core_value_sig64D8,
+      flipX: var_core_value_sigD755,
+      flipY: var_core_value_sigF897,
+      angle: var_core_value_sigA578 = 0
+    } = var_core_value_sigDE14;
+    if (var_core_value_sig02CB === undefined || var_core_value_sig6CBB === undefined) return;
+    let var_core_value_sig0260 = this._getImagePrstGeom(this._unitId, this._subUnitId, this._activeImageId);
+    if (!var_core_value_sig0260) return;
+    if (var_core_value_sig29F5) {
+      let var_core_value_sig88F6 = this._getOrCreateShapeModel(var_core_value_sig0260.prstGeom, var_core_value_sig68DA || 0, var_core_value_sig64D8 || 0, var_core_value_sig0260.adjustValues);
+      if (!var_core_value_sig88F6) return;
+      this._activeAdjustPointList = var_core_value_sig88F6.getDrawingPoints();
+    }
+    let var_core_value_sig034D = this._activeAdjustPointList;
+    if (!(!var_core_value_sig034D || var_core_value_sig034D.length === 0)) for (let var_core_value_sig37DB = 0; var_core_value_sig37DB < var_core_value_sig034D.length; var_core_value_sig37DB++) {
+      let var_core_value_sig826B = var_core_value_sig034D[var_core_value_sig37DB],
+        var_core_value_sigCF89 = var_core_value_sig826B.x,
+        var_core_value_sig00CB = var_core_value_sig826B.y;
+      if (var_core_value_sigD755 && (var_core_value_sigCF89 = (var_core_value_sig68DA || 0) - var_core_value_sigCF89), var_core_value_sigF897 && (var_core_value_sig00CB = (var_core_value_sig64D8 || 0) - var_core_value_sig00CB), var_core_value_sigA578 !== 0) {
+        let var_core_value_sig7E54 = (var_core_value_sig68DA || 0) / 2,
+          var_core_value_sig9A8D = (var_core_value_sig64D8 || 0) / 2,
+          var_core_value_sigC259 = var_core_value_sigA578 * Math.PI / 180,
+          var_core_value_sig9C9F = Math.cos(var_core_value_sigC259),
+          var_core_value_sigFDEA = Math.sin(var_core_value_sigC259),
+          var_core_value_sig86D0 = var_core_value_sigCF89 - var_core_value_sig7E54,
+          var_core_value_sig4CD2 = var_core_value_sig00CB - var_core_value_sig9A8D;
+        var_core_value_sigCF89 = var_core_value_sig7E54 + (var_core_value_sig86D0 * var_core_value_sig9C9F - var_core_value_sig4CD2 * var_core_value_sigFDEA), var_core_value_sig00CB = var_core_value_sig9A8D + (var_core_value_sig86D0 * var_core_value_sigFDEA + var_core_value_sig4CD2 * var_core_value_sig9C9F);
+      }
+      let var_core_value_sig77EE = {
+        x: var_core_value_sigCF89,
+        y: var_core_value_sig00CB,
+        adjName: var_core_value_sig826B.adjName
+      };
+      this._addControl(var_core_value_sigF1D1, var_core_value_sig77EE, var_core_value_sig77EE.adjName, var_core_value_sig02CB, var_core_value_sig6CBB, this._unitId, this._subUnitId);
+    }
+  }
+  _addControl(var_core_value_sig89EC, var_core_value_sig9975, var_core_value_sigD6D9, var_core_value_sig2637, var_core_value_sigAF1D, var_core_value_sigC92D, var_core_value_sigEA3D) {
+    if (!this._activeImageId) return;
+    let var_core_value_sig2841 = "image-clip-adjust-point-" + this._activeImageId + "-" + var_core_value_sigD6D9,
+      var_core_value_sig9FE1 = var_core_value_sig89EC.getObjectIncludeInGroup(var_core_value_sig2841);
+    if (var_core_value_sig9FE1) {
+      var_core_value_sig9FE1.transformByState({
+        left: var_core_value_sig9975.x + var_core_value_sig2637 - n.ShapeDefaultConfig["adjHandleSize"],
+        top: var_core_value_sig9975.y + var_core_value_sigAF1D - n.ShapeDefaultConfig["adjHandleSize"]
+      });
+      return;
+    }
+    let var_core_value_sig9DAA = new A(var_core_value_sig2841, {
+      left: var_core_value_sig9975.x + var_core_value_sig2637 - n.ShapeDefaultConfig["adjHandleSize"],
+      top: var_core_value_sig9975.y + var_core_value_sigAF1D - n.ShapeDefaultConfig["adjHandleSize"],
+      adjName: var_core_value_sigD6D9,
+      shapeId: this._activeImageId,
+      unitId: var_core_value_sigC92D,
+      subUnitId: var_core_value_sigEA3D,
+      width: n.ShapeDefaultConfig["adjHandleSize"] + 8,
+      height: n.ShapeDefaultConfig["adjHandleSize"] + 8,
+      zIndex: c.DRAWING_OBJECT_LAYER_INDEX + 1,
+      evented: true
+    });
+    this._shapes["push"](var_core_value_sig9DAA), this._attachAdjustEvent(var_core_value_sig9DAA, var_core_value_sig89EC, var_core_value_sigD6D9), var_core_value_sig89EC.addObject(var_core_value_sig9DAA, c.DRAWING_OBJECT_LAYER_INDEX + 1);
+  }
+  _clearControls() {
+    this._shapes["length"] !== 0 && (this._shapes["forEach"](var_core_value_sig5542 => var_core_value_sig5542.dispose()), this._shapes = []);
+  }
+  _getScrollInfo(var_core_value_sig1F8A, var_core_value_sigEBB4) {
+    var var_core_value_sig2B74;
+    let var_core_value_sig0483 = {
+        x: 0,
+        y: 0
+      },
+      var_core_value_sig4A48 = this._renderManagerService["getRenderUnitById"](var_core_value_sig1F8A);
+    if (!var_core_value_sig4A48 || !var_core_value_sig4A48.with(l.SheetSkeletonManagerService).getSkeleton(var_core_value_sigEBB4)) return var_core_value_sig0483;
+    let var_core_value_sigD170 = var_core_value_sig4A48.with(l.SheetScrollManagerService),
+      var_core_value_sig90E5 = var_core_value_sigD170 == null ? undefined : var_core_value_sigD170.getCurrentScrollState();
+    if (!var_core_value_sig90E5) return var_core_value_sig0483;
+    let var_core_value_sig7000 = (var_core_value_sig2B74 = this._univerInstanceService["getUnit"](var_core_value_sig1F8A)) == null ? undefined : var_core_value_sig2B74.getSheetBySheetId(var_core_value_sigEBB4);
+    if (!var_core_value_sig7000) return var_core_value_sig0483;
+    let var_core_value_sigD7C5 = (0, l.getViewportByCell)(var_core_value_sig90E5.sheetViewStartRow, var_core_value_sig90E5.sheetViewStartColumn, var_core_value_sig4A48.scene, var_core_value_sig7000);
+    return var_core_value_sigD7C5 ? {
+      x: var_core_value_sigD7C5.viewportScrollX,
+      y: var_core_value_sigD7C5.viewportScrollY
+    } : var_core_value_sig0483;
+  }
+  _getZoomRatio(var_core_value_sig3633, var_core_value_sig1DF5) {
+    var var_core_value_sig90A3;
+    let var_core_value_sig28BE = (var_core_value_sig90A3 = this._univerInstanceService["getUnit"](var_core_value_sig3633)) == null ? undefined : var_core_value_sig90A3.getSheetBySheetId(var_core_value_sig1DF5);
+    return (var_core_value_sig28BE == null ? undefined : var_core_value_sig28BE.getZoomRatio()) ?? 1;
+  }
+  _attachAdjustEvent(var_core_value_sig0224, var_core_value_sig854B, var_core_value_sig1FF6) {
+    this.disposeWithMe((0, a.toDisposable)(var_core_value_sig0224.onPointerDown$["subscribeEvent"]((var_core_value_sigE0A9, var_core_value_sigA73E) => {
+      var var_core_value_sig7620, var_core_value_sigB9FC, var_core_value_sig5055;
+      let {
+          unitId: var_core_value_sig3801,
+          subUnitId: var_core_value_sig45F0,
+          drawingId: var_core_value_sigBC91
+        } = var_core_value_sig0224.getDrawingSearch(),
+        var_core_value_sigCB88 = this._getImageDrawingInfo(var_core_value_sig3801, var_core_value_sig45F0, var_core_value_sigBC91);
+      if (!(var_core_value_sigCB88 != null && var_core_value_sigCB88.transform)) return;
+      let {
+        left: var_core_value_sig8D65,
+        top: var_core_value_sig8122,
+        width: var_core_value_sigEDC6,
+        height: var_core_value_sig611A
+      } = var_core_value_sigCB88.transform;
+      this._baseLeft = var_core_value_sig8D65 || 0, this._baseTop = var_core_value_sig8122 || 0, this._baseWidth = var_core_value_sigEDC6 || 0, this._baseHeight = var_core_value_sig611A || 0;
+      let var_core_value_sig6BD9 = !!((var_core_value_sig7620 = var_core_value_sigCB88.transform) != null && var_core_value_sig7620.flipX),
+        var_core_value_sig7E56 = !!((var_core_value_sigB9FC = var_core_value_sigCB88.transform) != null && var_core_value_sigB9FC.flipY),
+        var_core_value_sig4161 = ((var_core_value_sig5055 = var_core_value_sigCB88.transform) == null ? undefined : var_core_value_sig5055.angle) || 0,
+        var_core_value_sig7580 = this._getImagePrstGeom(var_core_value_sig3801, var_core_value_sig45F0, var_core_value_sigBC91);
+      if (!var_core_value_sig7580) return;
+      let var_core_value_sig1F18 = this._getOrCreateShapeModel(var_core_value_sig7580.prstGeom, this._baseWidth, this._baseHeight, var_core_value_sig7580.adjustValues);
+      if (!var_core_value_sig1F18 || (this._activeShapeModel = var_core_value_sig1F18, this._activeAdjustInfo = var_core_value_sig1F18.getAdjustInfoByName(var_core_value_sig1FF6), !this._activeAdjustInfo)) return;
+      this._isStartAdjusting = true, var_core_value_sig854B.disableObjectsEvent();
+      let var_core_value_sigD5A0 = var_core_value_sig7580.prstGeom;
+      this._adjHandlerPointerMove = var_core_value_sig854B.onPointerMove$["subscribeEvent"]((var_core_value_sig9F76, var_core_value_sigB008) => {
+        if (!this._isStartAdjusting) return;
+        let {
+            offsetX: var_core_value_sig8721,
+            offsetY: var_core_value_sig08BA
+          } = var_core_value_sig9F76,
+          var_core_value_sigDBB5 = this._activeAdjustInfo;
+        if (!this._activeShapeModel || !var_core_value_sigDBB5) return;
+        var_core_value_sig854B.disableObjectsEvent(), var_core_value_sig854B.setCursor(c.CURSOR_TYPE["CROSSHAIR"]);
+        let var_core_value_sigCFAC = {
+            left: 0,
+            top: 0,
+            width: this._baseWidth,
+            height: this._baseHeight
+          },
+          var_core_value_sig237B = this._getScrollInfo(var_core_value_sig3801, var_core_value_sig45F0),
+          var_core_value_sigFEAB = this._getZoomRatio(var_core_value_sig3801, var_core_value_sig45F0),
+          var_core_value_sigE347 = var_core_value_sig8721 / var_core_value_sigFEAB + var_core_value_sig237B.x - this._baseLeft,
+          var_core_value_sig3C5B = var_core_value_sig08BA / var_core_value_sigFEAB + var_core_value_sig237B.y - this._baseTop;
+        if (var_core_value_sig4161 !== 0) {
+          let var_core_value_sig48CA = this._baseWidth / 2,
+            var_core_value_sig50AF = this._baseHeight / 2,
+            var_core_value_sigA942 = var_core_value_sig4161 * Math.PI / 180,
+            var_core_value_sigA621 = Math.cos(var_core_value_sigA942),
+            var_core_value_sigBBFF = Math.sin(var_core_value_sigA942),
+            var_core_value_sig8889 = var_core_value_sigE347 - var_core_value_sig48CA,
+            var_core_value_sig32F8 = var_core_value_sig3C5B - var_core_value_sig50AF;
+          var_core_value_sigE347 = var_core_value_sig48CA + (var_core_value_sig8889 * var_core_value_sigA621 + var_core_value_sig32F8 * var_core_value_sigBBFF), var_core_value_sig3C5B = var_core_value_sig50AF + (-var_core_value_sig8889 * var_core_value_sigBBFF + var_core_value_sig32F8 * var_core_value_sigA621);
+        }
+        var_core_value_sig6BD9 && (var_core_value_sigE347 = this._baseWidth - var_core_value_sigE347), var_core_value_sig7E56 && (var_core_value_sig3C5B = this._baseHeight - var_core_value_sig3C5B);
+        let var_core_value_sig200B = this._activeShapeModel["calcAdjValues"](var_core_value_sigCFAC, {
+          x: var_core_value_sigE347,
+          y: var_core_value_sig3C5B
+        }, var_core_value_sigDBB5, var_core_value_sig6BD9, var_core_value_sig7E56);
+        if (Object.keys(var_core_value_sig200B).length !== 0) {
+          for (let [var_core_value_sigF602, var_core_value_sig1BBD] of Object.entries(var_core_value_sig200B)) this._activeShapeModel["setAdjustValueByName"](var_core_value_sigF602, var_core_value_sig1BBD);
+          this._activeShapeModel["updateContext"]({
+            width: this._baseWidth,
+            height: this._baseHeight
+          }), this._updateImageAdjValues(var_core_value_sig3801, var_core_value_sig45F0, var_core_value_sigBC91, var_core_value_sig200B), this._activeAdjustPointList = this._activeShapeModel["getDrawingPoints"](), this._createControls(), var_core_value_sigB008.stopPropagation();
+        }
+      }), this._adjHandlerPointerUp = var_core_value_sig854B.onPointerUp$["subscribeEvent"]((var_core_value_sig3863, var_core_value_sigC97C) => {
+        if (this._adjHandlerPointerMove["unsubscribe"](), this._adjHandlerPointerUp["unsubscribe"](), var_core_value_sig854B.resetCursor(), this._activeShapeModel) {
+          let var_core_value_sig5B67 = this._activeShapeModel["getAdjustNames"](),
+            var_core_value_sig1758 = {};
+          for (let var_core_value_sigF704 of var_core_value_sig5B67) {
+            let var_core_value_sig2AD8 = this._activeShapeModel["getAdjustValueByName"](var_core_value_sigF704);
+            var_core_value_sig2AD8 !== undefined && (var_core_value_sig1758[var_core_value_sigF704] = var_core_value_sig2AD8);
+          }
+          this._imageShapeClipController["clipByShape"](var_core_value_sig3801, var_core_value_sig45F0, var_core_value_sigBC91, var_core_value_sigD5A0, var_core_value_sig1758);
+        }
+        this._activeAdjustInfo = undefined, this._activeShapeModel = undefined, this._isStartAdjusting = false, var_core_value_sigC97C.stopPropagation(), var_core_value_sig854B.enableObjectsEvent();
+      }), var_core_value_sigA73E.stopPropagation();
+    })));
+  }
+  _updateImageAdjValues(var_core_value_sig4B27, var_core_value_sig3A41, var_core_value_sig269A, var_core_value_sigBF53) {
+    let var_core_value_sigD9BB = this._renderManagerService["getRenderUnitById"](var_core_value_sig4B27);
+    if (!var_core_value_sigD9BB) return;
+    let {
+        scene: var_core_value_sigF549
+      } = var_core_value_sigD9BB,
+      var_core_value_sigC125 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+        unitId: var_core_value_sig4B27,
+        subUnitId: var_core_value_sig3A41,
+        drawingId: var_core_value_sig269A
+      }),
+      var_core_value_sigB63D = var_core_value_sigF549.getObject(var_core_value_sigC125);
+    if (var_core_value_sigB63D instanceof c.Image) {
+      let var_core_value_sig81B2 = var_core_value_sigB63D.prstGeomAdjValues ?? {};
+      var_core_value_sigB63D.setPrstGeomAdjValues({
+        ...var_core_value_sig81B2,
+        ...var_core_value_sigBF53
+      }), var_core_value_sigB63D.makeDirty(true);
+    }
+  }
+  _registerMoveHandler() {
+    let var_core_value_sig8255 = this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]);
+    this.disposeWithMe(var_core_value_sig8255.pipe((0, u.switchMap)(var_core_value_sigA0A5 => var_core_value_sigA0A5 ? var_core_value_sigA0A5.activeSheet$["pipe"]((0, u.switchMap)(var_core_value_sigC4B1 => {
+      if (!var_core_value_sigC4B1) return u.EMPTY;
+      let var_core_value_sig1BD9 = var_core_value_sigA0A5.getUnitId(),
+        var_core_value_sigE43E = this._renderManagerService["getRenderUnitById"](var_core_value_sig1BD9),
+        var_core_value_sigA937 = var_core_value_sigE43E == null ? undefined : var_core_value_sigE43E.scene;
+      return var_core_value_sigA937 ? (0, u.of)(var_core_value_sigA937) : u.EMPTY;
+    })) : u.EMPTY)).subscribe(var_core_value_sig10AA => {
+      let var_core_value_sigE6D0 = var_core_value_sig10AA.getTransformerByCreate();
+      this.disposeWithMe(var_core_value_sig10AA.onPointerMove$["subscribeEvent"](() => {
+        this._isImagePointerDown && this._clearControls();
+      })), this.disposeWithMe(var_core_value_sigE6D0.changeStart$["subscribe"](var_core_value_sigCAD5 => {
+        let {
+          objects: var_core_value_sigE503
+        } = var_core_value_sigCAD5;
+        if (this._createControls(), var_core_value_sigE503 !== null && var_core_value_sigE503.size === 1) {
+          let var_core_value_sig4805 = var_core_value_sigE503.values().next().value;
+          var_core_value_sig4805 instanceof c.Image && var_core_value_sig4805.prstGeom && (this._isImagePointerDown = true);
+        }
+      })), this.disposeWithMe(var_core_value_sigE6D0.changing$["subscribe"](() => {
+        this._isImagePointerDown && this._clearControls();
+      })), this.disposeWithMe(var_core_value_sig10AA.onPointerUp$["subscribeEvent"](() => {
+        this._isImagePointerDown && (this._isImagePointerDown = false, this._createControls());
+      })), this.disposeWithMe(var_core_value_sigE6D0.changeEnd$["subscribe"](() => {
+        if (this._unitId && this._subUnitId && this._activeImageId) {
+          let var_core_value_sigE67E = this._getImagePrstGeom(this._unitId, this._subUnitId, this._activeImageId);
+          if (var_core_value_sigE67E) {
+            var var_core_value_sig48DD, var_core_value_sig5E6A;
+            let var_core_value_sig2BCF = this._getImageDrawingInfo(this._unitId, this._subUnitId, this._activeImageId),
+              var_core_value_sig0D69 = (var_core_value_sig2BCF == null || (var_core_value_sig48DD = var_core_value_sig2BCF.transform) == null ? undefined : var_core_value_sig48DD.width) || 0,
+              var_core_value_sig480E = (var_core_value_sig2BCF == null || (var_core_value_sig5E6A = var_core_value_sig2BCF.transform) == null ? undefined : var_core_value_sig5E6A.height) || 0,
+              var_core_value_sig26DB = this._getOrCreateShapeModel(var_core_value_sigE67E.prstGeom, var_core_value_sig0D69, var_core_value_sig480E, var_core_value_sigE67E.adjustValues);
+            var_core_value_sig26DB && (this._activeAdjustPointList = var_core_value_sig26DB.getDrawingPoints(), this._clearControls(), this._createControls(true));
+          }
+        }
+      }));
+    }));
+  }
+  _registerFocusChangeHandler() {
+    this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sig8E91 => {
+      if (var_core_value_sig8E91.length === 1) {
+        let var_core_value_sigB7FC = var_core_value_sig8E91[0];
+        if (var_core_value_sigB7FC.drawingType === a.DrawingTypeEnum["DRAWING_IMAGE"]) {
+          let {
+              unitId: var_core_value_sig2902,
+              subUnitId: var_core_value_sig9989,
+              drawingId: var_core_value_sig698E
+            } = var_core_value_sigB7FC,
+            var_core_value_sig2809 = this._getImagePrstGeom(var_core_value_sig2902, var_core_value_sig9989, var_core_value_sig698E);
+          if (var_core_value_sig2809) {
+            var var_core_value_sig00BE, var_core_value_sig7BB5;
+            this._activeImageId = var_core_value_sig698E, this._unitId = var_core_value_sig2902, this._subUnitId = var_core_value_sig9989;
+            let var_core_value_sigF0F9 = this._getImageDrawingInfo(var_core_value_sig2902, var_core_value_sig9989, var_core_value_sig698E),
+              var_core_value_sig1A0F = (var_core_value_sigF0F9 == null || (var_core_value_sig00BE = var_core_value_sigF0F9.transform) == null ? undefined : var_core_value_sig00BE.width) || 0,
+              var_core_value_sigFBA4 = (var_core_value_sigF0F9 == null || (var_core_value_sig7BB5 = var_core_value_sigF0F9.transform) == null ? undefined : var_core_value_sig7BB5.height) || 0,
+              var_core_value_sig4383 = this._getOrCreateShapeModel(var_core_value_sig2809.prstGeom, var_core_value_sig1A0F, var_core_value_sigFBA4, var_core_value_sig2809.adjustValues);
+            var_core_value_sig4383 && (this._activeAdjustPointList = var_core_value_sig4383.getDrawingPoints()), this._clearControls(), this._createControls(true);
+          } else this._resetState();
+        } else this._resetState();
+      } else this._resetState();
+    })), this.disposeWithMe(this._drawingManagerService["update$"].subscribe(var_core_value_sig6AAD => {
+      if (var_core_value_sig6AAD.length === 1) {
+        let var_core_value_sig9CD9 = var_core_value_sig6AAD[0],
+          var_core_value_sigFD0C = this._drawingManagerService["getDrawingByParam"](var_core_value_sig9CD9);
+        (var_core_value_sigFD0C == null ? undefined : var_core_value_sigFD0C.drawingType) === a.DrawingTypeEnum["DRAWING_IMAGE"] && this._activeImageId === var_core_value_sig9CD9.drawingId && (this._clearControls(), this._createControls(true));
+      }
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sig1157 => {
+      for (let var_core_value_sig849B of var_core_value_sig1157) this._activeImageId === var_core_value_sig849B.drawingId && this._resetState();
+    }));
+  }
+  _resetState() {
+    this._activeImageId = null, this._unitId = null, this._subUnitId = null, this._activeAdjustPointList = undefined, this._clearControls();
+  }
+};
+ut = M([j(1, s.IDrawingManagerService), j(2, (0, a.Inject)(c.IRenderManagerService)), j(3, a.IUniverInstanceService), j(4, (0, a.Inject)(U))], ut);
+const dt = "sheets-shape-contextual-ribbon";
+let ft = class extends a.Disposable {
+  constructor(var_core_value_sigBFC7, var_core_value_sig933F, var_core_value_sig29DE, var_core_value_sig4AFB, var_core_value_sigC7EA, var_core_value_sigDAB9) {
+    super(), this._menuManagerService = var_core_value_sigBFC7, this._ribbonService = var_core_value_sig933F, this._drawingManagerService = var_core_value_sig29DE, this._univerInstanceService = var_core_value_sig4AFB, this._renderManagerService = var_core_value_sigC7EA, this._shapeFloatingToolbarService = var_core_value_sigDAB9, D(this, "_visible", false), this._menuManagerService["mergeMenu"](Je), this.disposeWithMe((0, a.toDisposable)(this._drawingManagerService["focus$"].subscribe(() => this._update()))), this._update();
+  }
+  dispose() {
+    this._shapeFloatingToolbarService["setFallbackVisible"](false, dt), this._hide(), super.dispose();
+  }
+  _update() {
+    var var_core_value_sig9CF7;
+    let var_core_value_sigCCE5 = this._drawingManagerService["getFocusDrawings"](),
+      var_core_value_sig5933 = var_core_value_sigCCE5.length === 1 ? var_core_value_sigCCE5[0] : undefined;
+    if ((var_core_value_sig5933 == null ? undefined : var_core_value_sig5933.drawingType) !== a.DrawingTypeEnum["DRAWING_SHAPE"] || this._univerInstanceService["getUnitType"](var_core_value_sig5933.unitId) !== a.UniverInstanceType["UNIVER_SHEET"]) {
+      this._shapeFloatingToolbarService["setFallbackVisible"](false, dt), this._hide();
+      return;
+    }
+    let var_core_value_sig884B = (0, e.resolveShapeContextualRibbonHostMode)((var_core_value_sig9CF7 = this._renderManagerService["getRenderUnitById"](var_core_value_sig5933.unitId)) == null ? undefined : var_core_value_sig9CF7.engine["getCanvasElement"]()) === "isolated";
+    if (this._shapeFloatingToolbarService["setFallbackVisible"](var_core_value_sig884B, dt), var_core_value_sig884B) {
+      this._hide();
+      return;
+    }
+    this._visible || (this._visible = true, this._ribbonService["showContextualTab"](B, {
+      activate: true
+    }));
+  }
+  _hide() {
+    this._visible && (this._visible = false, this._ribbonService["hideContextualTab"](B), this._ribbonService["setCollapsedIds"]([]));
+  }
+};
+ft = M([j(0, t.IMenuManagerService), j(1, t.IRibbonService), j(2, s.IDrawingManagerService), j(3, a.IUniverInstanceService), j(4, c.IRenderManagerService), j(5, (0, a.Inject)(e.ShapeFloatingToolbarService))], ft);
+function pt(var_core_value_sig64BA, var_core_value_sig3FD5, var_core_value_sig1008, var_core_value_sigB9F4) {
+  let var_core_value_sig2D23 = (0, s.getOrCreateDrawingCopyPlan)(var_core_value_sig64BA, var_core_value_sig3FD5, var_core_value_sig1008),
+    var_core_value_sigF2E0 = [];
+  for (let var_core_value_sig4E30 of var_core_value_sig3FD5) {
+    let var_core_value_sigA694 = var_core_value_sig2D23.idMap["get"](var_core_value_sig4E30.drawingId),
+      var_core_value_sig18E01 = var_core_value_sigB9F4(var_core_value_sig4E30);
+    !var_core_value_sigA694 || !var_core_value_sig18E01 || var_core_value_sigF2E0.push({
+      targetShapeId: var_core_value_sigA694,
+      source: var_core_value_sig18E01
+    });
+  }
+  return var_core_value_sigF2E0;
+}
+let mt = class extends a.Disposable {
+  constructor(var_core_value_sig9730, var_core_value_sig8E4A, var_core_value_sig300B, var_core_value_sig8457) {
+    super(), this._univerInstanceService = var_core_value_sig9730, this._sheetInterceptorService = var_core_value_sig8E4A, this._sheetDrawingService = var_core_value_sig300B, this._sheetsShapeService = var_core_value_sig8457, this._initSheetChange();
+  }
+  _initSheetChange() {
+    this.disposeWithMe(this._sheetInterceptorService["interceptCommand"]({
+      getMutations: var_core_value_sig0428 => {
+        if (var_core_value_sig0428.id === o.RemoveSheetCommand["id"]) {
+          let var_core_value_sig5F1A = (0, o.getSheetCommandTarget)(this._univerInstanceService, var_core_value_sig0428.params);
+          if (!var_core_value_sig5F1A) return {
+            redos: [],
+            undos: []
+          };
+          let {
+              unitId: var_core_value_sigB455,
+              subUnitId: var_core_value_sig5241
+            } = var_core_value_sig5F1A,
+            var_core_value_sigC6E5 = this._sheetDrawingService["getDrawingData"](var_core_value_sigB455, var_core_value_sig5241),
+            var_core_value_sigCEFB = Object.values(var_core_value_sigC6E5).filter(var_core_value_sig2DAB => var_core_value_sig2DAB.drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"]);
+          if (var_core_value_sigCEFB.length === 0) return {
+            redos: [],
+            undos: []
+          };
+          let var_core_value_sig1537 = [],
+            var_core_value_sigE4C6 = [];
+          for (let var_core_value_sig877E = 0; var_core_value_sig877E < var_core_value_sigCEFB.length; var_core_value_sig877E++) {
+            let var_core_value_sig186C = var_core_value_sigCEFB[var_core_value_sig877E],
+              var_core_value_sigD955 = this._sheetsShapeService["getShapeModel"](var_core_value_sig186C.unitId, var_core_value_sig186C.subUnitId, var_core_value_sig186C.drawingId);
+            var_core_value_sigD955 && (var_core_value_sig1537.push({
+              id: i.RemoveSheetsShapeMutation["id"],
+              params: {
+                unitId: var_core_value_sigB455,
+                subUnitId: var_core_value_sig5241,
+                shapeId: var_core_value_sig186C.drawingId
+              }
+            }), var_core_value_sigE4C6.push({
+              id: i.InsertSheetsShapeMutation["id"],
+              params: {
+                unitId: var_core_value_sigB455,
+                subUnitId: var_core_value_sig5241,
+                shapeId: var_core_value_sig186C.drawingId,
+                shapeType: var_core_value_sigD955.getShapeType(),
+                shapeData: JSON.parse(JSON.stringify(var_core_value_sigD955.getShapeData()))
+              }
+            }));
+          }
+          return {
+            redos: var_core_value_sig1537,
+            undos: var_core_value_sigE4C6
+          };
+        } else {
+          if (var_core_value_sig0428.id === o.CopySheetCommand["id"]) {
+            let {
+              unitId: var_core_value_sig20C8,
+              subUnitId: var_core_value_sigE9A7,
+              targetSubUnitId: var_core_value_sigBECE,
+              copyContext: var_core_value_sig1B221
+            } = var_core_value_sig0428.params;
+            if (!var_core_value_sig20C8 || !var_core_value_sigE9A7 || !var_core_value_sigBECE) return {
+              redos: [],
+              undos: []
+            };
+            let var_core_value_sig7F72 = this._sheetDrawingService["getDrawingData"](var_core_value_sig20C8, var_core_value_sigE9A7),
+              var_core_value_sig7B2A = Object.values(var_core_value_sig7F72).filter(var_core_value_sig48BD => var_core_value_sig48BD.drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"]);
+            if (var_core_value_sig7B2A.length === 0) return {
+              redos: [],
+              undos: []
+            };
+            let var_core_value_sig06CD = pt(var_core_value_sig1B221, var_core_value_sig7B2A, {
+                unitId: var_core_value_sig20C8,
+                sourceSubUnitId: var_core_value_sigE9A7,
+                targetSubUnitId: var_core_value_sigBECE
+              }, var_core_value_sig429F => {
+                let var_core_value_sigF62A = this._sheetsShapeService["getShapeModel"](var_core_value_sig429F.unitId, var_core_value_sig429F.subUnitId, var_core_value_sig429F.drawingId);
+                if (var_core_value_sigF62A) return {
+                  shapeType: var_core_value_sigF62A.getShapeType(),
+                  shapeData: JSON.parse(JSON.stringify(var_core_value_sigF62A.getShapeData()))
+                };
+              }),
+              var_core_value_sigA5F1 = [],
+              var_core_value_sig97A2 = [];
+            for (let {
+              targetShapeId: var_core_value_sig8178,
+              source: var_core_value_sigE9ED
+            } of var_core_value_sig06CD) var_core_value_sigA5F1.push({
+              id: i.InsertSheetsShapeMutation["id"],
+              params: {
+                unitId: var_core_value_sig20C8,
+                subUnitId: var_core_value_sigBECE,
+                shapeId: var_core_value_sig8178,
+                shapeType: var_core_value_sigE9ED.shapeType,
+                shapeData: var_core_value_sigE9ED.shapeData
+              }
+            }), var_core_value_sig97A2.push({
+              id: i.RemoveSheetsShapeMutation["id"],
+              params: {
+                unitId: var_core_value_sig20C8,
+                subUnitId: var_core_value_sigBECE,
+                shapeId: var_core_value_sig8178
+              }
+            });
+            return {
+              redos: var_core_value_sigA5F1,
+              undos: var_core_value_sig97A2
+            };
+          }
+        }
+        return {
+          redos: [],
+          undos: []
+        };
+      }
+    }));
+  }
+};
+mt = M([j(0, (0, a.Inject)(a.IUniverInstanceService)), j(1, (0, a.Inject)(o.SheetInterceptorService)), j(2, (0, a.Inject)(p.ISheetDrawingService)), j(3, (0, a.Inject)(i.SheetsShapeService))], mt);
+function ht(var_core_value_sig9214) {
+  return var_core_value_sig9214.line ? null : var_core_value_sig9214.mobile ? var_core_value_sig9214.formula ? "mobile-formula" : "mobile-text" : var_core_value_sig9214.formula ? null : "desktop-text";
+}
+let gt = class extends a.Disposable {
+  constructor(var_core_value_sigB30D, var_core_value_sigDB33, var_core_value_sig6C8C, var_core_value_sig7A5E, var_core_value_sig838E, var_core_value_sig9A5B) {
+    super(), this._context = var_core_value_sigB30D, this._shapeTextEditingService = var_core_value_sigDB33, this._mobileShapeEditorService = var_core_value_sig6C8C, this._drawingManagerService = var_core_value_sig7A5E, this._contextService = var_core_value_sig838E, this._sheetsShapeService = var_core_value_sig9A5B, D(this, "_lastEditingShapeKey", null), this._initEvents(), this._initSelection(), this._initEditingParams();
+  }
+  _initEvents() {
+    let {
+      scene: var_core_value_sigC860
+    } = this._context;
+    this.disposeWithMe(var_core_value_sigC860.onDblclick$["subscribeEvent"](var_core_value_sigBE07 => {
+      let {
+          offsetX: var_core_value_sig555F,
+          offsetY: var_core_value_sig3D6F
+        } = var_core_value_sigBE07,
+        var_core_value_sig336C = var_core_value_sigC860.pick(c.Vector2["FromArray"]([var_core_value_sig555F, var_core_value_sig3D6F]));
+      if (var_core_value_sig336C instanceof k) {
+        let var_core_value_sig4313 = this._sheetsShapeService["getShapeModel"](var_core_value_sig336C.unitId, var_core_value_sig336C.subUnitId, var_core_value_sig336C.shapeId),
+          var_core_value_sigFC87 = (0, n.isConnectorShape)(this._sheetsShapeService["getShapeType"](var_core_value_sig336C.unitId, var_core_value_sig336C.subUnitId, var_core_value_sig336C.shapeId)),
+          var_core_value_sig156F = ht({
+            formula: !!(var_core_value_sig4313 != null && var_core_value_sig4313.getShapeData().formulaBinding),
+            line: var_core_value_sigFC87,
+            mobile: this._contextService["getContextValue"](t.MOBILE_UI_MODE)
+          });
+        if (!var_core_value_sig156F) return;
+        if (var_core_value_sig156F === "mobile-formula" || var_core_value_sig156F === "mobile-text") {
+          this._mobileShapeEditorService["open"](var_core_value_sig156F === "mobile-formula" ? "formula" : "text", {
+            hostType: a.UniverInstanceType["UNIVER_SHEET"],
+            unitId: var_core_value_sig336C.unitId,
+            subUnitId: var_core_value_sig336C.subUnitId,
+            shapeId: var_core_value_sig336C.shapeId
+          });
+          return;
+        }
+        this._shapeTextEditingService["setEditing"]({
+          visible: true,
+          unitId: var_core_value_sig336C.unitId,
+          subUnitId: var_core_value_sig336C.subUnitId,
+          shapeId: var_core_value_sig336C.shapeId,
+          shapeKey: var_core_value_sig336C.oKey
+        });
+      }
+    }));
+  }
+  _initSelection() {
+    this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sig6E68 => {
+      if (var_core_value_sig6E68.length === 1) {
+        let var_core_value_sigDD51 = var_core_value_sig6E68[0],
+          var_core_value_sigF057 = this._drawingManagerService["getDrawingByParam"](var_core_value_sigDD51);
+        if ((var_core_value_sigF057 == null ? undefined : var_core_value_sigF057.drawingType) === a.DrawingTypeEnum["DRAWING_SHAPE"]) {
+          var var_core_value_sig8DFE;
+          let var_core_value_sig07E9 = this._shapeTextEditingService["getEditing"]();
+          if ((var_core_value_sig07E9 == null ? undefined : var_core_value_sig07E9.shapeId) === var_core_value_sigDD51.drawingId && var_core_value_sig07E9.visible) return;
+          let var_core_value_sig4F59 = (0, n.isConnectorShape)(this._sheetsShapeService["getShapeType"](var_core_value_sigDD51.unitId, var_core_value_sigDD51.subUnitId, var_core_value_sigDD51.drawingId)),
+            var_core_value_sigF564 = !!((var_core_value_sig8DFE = this._sheetsShapeService["getShapeModel"](var_core_value_sigDD51.unitId, var_core_value_sigDD51.subUnitId, var_core_value_sigDD51.drawingId)) != null && var_core_value_sig8DFE.getShapeData().formulaBinding);
+          (var_core_value_sig4F59 || var_core_value_sigF564) && this._shapeTextEditingService["setEditing"](null);
+        } else this._shapeTextEditingService["getEditing"]() && (this._shapeTextEditingService["setOnSavingEditorData"](true), requestAnimationFrame(() => {
+          this._shapeTextEditingService["setEditing"](null);
+        }));
+      } else this._shapeTextEditingService["getEditing"]() && (this._shapeTextEditingService["setOnSavingEditorData"](true), requestAnimationFrame(() => {
+        this._shapeTextEditingService["setEditing"](null);
+      }));
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sig48EA => {
+      let var_core_value_sig5E16 = this._shapeTextEditingService["getEditing"]();
+      var_core_value_sig5E16 && var_core_value_sig48EA.some(var_core_value_sig72F6 => var_core_value_sig72F6.drawingId === var_core_value_sig5E16.shapeId) && this._shapeTextEditingService["setEditing"](null);
+    }));
+  }
+  _initEditingParams() {
+    this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(var_core_value_sig09F3 => {
+      let {
+        scene: var_core_value_sig4592
+      } = this._context;
+      if (this._lastEditingShapeKey) {
+        let var_core_value_sig9FBA = var_core_value_sig4592.getObjectIncludeInGroup(this._lastEditingShapeKey);
+        var_core_value_sig9FBA && var_core_value_sig9FBA.setEditing(false);
+      }
+      if (var_core_value_sig09F3) {
+        let var_core_value_sigFE01 = !!var_core_value_sig09F3.visible,
+          var_core_value_sigA2CE = var_core_value_sig4592.getObjectIncludeInGroup(var_core_value_sig09F3.shapeKey);
+        var_core_value_sigA2CE && (var_core_value_sigA2CE.setEditing(var_core_value_sigFE01), this._lastEditingShapeKey = var_core_value_sig09F3.shapeKey), this._contextService["setContextValue"](a.FOCUSING_SHAPE_TEXT_EDITOR, var_core_value_sigFE01);
+      } else this._lastEditingShapeKey = null, this._contextService["setContextValue"](a.FOCUSING_SHAPE_TEXT_EDITOR, false);
+    }));
+  }
+};
+gt = M([j(1, (0, a.Inject)(Y)), j(2, (0, a.Inject)(e.MobileShapeEditorService)), j(3, s.IDrawingManagerService), j(4, a.IContextService), j(5, (0, a.Inject)(i.SheetsShapeService))], gt);
+let _t = class extends e.ShapeTextFloatMenuRenderControllerBase {
+  constructor(var_core_value_sigE64C, var_core_value_sigF39B, var_core_value_sig9B88, var_core_value_sig992A, var_core_value_sig6281, var_core_value_sig9B01, var_core_value_sigA724, var_core_value_sig385E, var_core_value_sig10D3, var_core_value_sig41F2) {
+    super(var_core_value_sigE64C, var_core_value_sigF39B, var_core_value_sig9B88, var_core_value_sig992A, var_core_value_sig6281, var_core_value_sig9B01, var_core_value_sigA724, var_core_value_sig385E, var_core_value_sig10D3, var_core_value_sig41F2, {
+      componentKey: ne,
+      editorUnitId: te
+    });
+  }
+};
+_t = M([j(1, (0, a.Inject)(h.DocSelectionManagerService)), j(2, (0, a.Inject)(g.DocCanvasPopManagerService)), j(3, (0, a.Inject)(g.DocSelectionRenderService)), j(4, a.ICommandService), j(5, (0, a.Inject)(g.DocEventManagerService)), j(6, (0, a.Inject)(e.ShapeTextHyperLinkPopupService)), j(7, (0, a.Inject)(h.DocInterceptorService)), j(8, (0, a.Inject)(g.DocRenderController)), j(9, (0, a.Inject)(Y))], _t);
+let X = class extends a.Disposable {
+  constructor(var_core_value_sig32DD, var_core_value_sig7A88, var_core_value_sig6CFC, var_core_value_sig3EC0, var_core_value_sigEA69, var_core_value_sigF42A) {
+    super(), this._commandService = var_core_value_sig32DD, this._renderManagerService = var_core_value_sig7A88, this._drawingManagerService = var_core_value_sig6CFC, this._currentUniverService = var_core_value_sig3EC0, this._drawingRenderService = var_core_value_sigEA69, this._sheetDrawingShapeRenderController = var_core_value_sigF42A, D(this, "_insertingShapeKeys", new Set()), this._initialize();
+  }
+  _initialize() {
+    this._drawingAddListener(), this._commandExecutedListener(), this._shapeUpdateListener();
+  }
+  _drawingAddListener() {
+    this.disposeWithMe(this._drawingManagerService["add$"].subscribe(var_core_value_sigC5C4 => {
+      this._insertShapes(var_core_value_sigC5C4);
+    }));
+  }
+  _commandExecutedListener() {
+    this.disposeWithMe(this._commandService["onCommandExecuted"]((var_core_value_sig1617, var_core_value_sig4169) => {
+      if (var_core_value_sig1617.id === i.UpdateSheetsShapeDataMutation["id"]) {
+        let {
+            unitId: var_core_value_sig1975,
+            subUnitId: var_core_value_sig6EA1,
+            shapeId: var_core_value_sig029F
+          } = var_core_value_sig1617.params,
+          var_core_value_sig3767 = this._getSceneAndTransformerByDrawingSearch(var_core_value_sig1975),
+          var_core_value_sig670B = (0, s.getDrawingShapeKeyByDrawingSearch)({
+            unitId: var_core_value_sig1975,
+            subUnitId: var_core_value_sig6EA1,
+            drawingId: var_core_value_sig029F
+          }),
+          var_core_value_sig6912 = var_core_value_sig3767 == null ? undefined : var_core_value_sig3767.scene["getObjectIncludeInGroup"](var_core_value_sig670B);
+        var_core_value_sig6912 && (this._sheetDrawingShapeRenderController["refreshShapeFillImage"](var_core_value_sig6912), this._sheetDrawingShapeRenderController["refreshFormulaPresentation"](var_core_value_sig6912, {
+          unitId: var_core_value_sig1975,
+          subUnitId: var_core_value_sig6EA1,
+          shapeId: var_core_value_sig029F
+        }), var_core_value_sig6912.makeDirty(true));
+        return;
+      }
+      if (var_core_value_sig1617.id === i.InsertSheetsShapeMutation["id"]) {
+        var var_core_value_sig6D19;
+        let {
+            unitId: var_core_value_sigE235,
+            subUnitId: var_core_value_sig7664,
+            shapeId: var_core_value_sig2281
+          } = var_core_value_sig1617.params,
+          var_core_value_sig5E86 = this._getSceneAndTransformerByDrawingSearch(var_core_value_sigE235);
+        if (var_core_value_sig5E86 == null) return;
+        let {
+            scene: var_core_value_sig6998
+          } = var_core_value_sig5E86,
+          var_core_value_sigF639 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+            unitId: var_core_value_sigE235,
+            subUnitId: var_core_value_sig7664,
+            drawingId: var_core_value_sig2281
+          }),
+          var_core_value_sigEAE5 = var_core_value_sig6998.getObjectIncludeInGroup(var_core_value_sigF639);
+        if (!((var_core_value_sig6D19 = this._renderManagerService["getRenderUnitById"](var_core_value_sigE235)) != null && var_core_value_sig6D19.with(l.SheetSkeletonManagerService).getSkeleton(var_core_value_sig7664))) return false;
+        if (var_core_value_sigEAE5) return;
+        if (var_core_value_sig4169 != null && var_core_value_sig4169.fromChangeset) {
+          queueMicrotask(() => {
+            this._disposed || this._insertShapes([{
+              unitId: var_core_value_sigE235,
+              subUnitId: var_core_value_sig7664,
+              drawingId: var_core_value_sig2281
+            }]);
+          });
+          return;
+        }
+        this._insertShapes([{
+          unitId: var_core_value_sigE235,
+          subUnitId: var_core_value_sig7664,
+          drawingId: var_core_value_sig2281
+        }]);
+      }
+    }));
+  }
+  _shapeUpdateListener() {
+    this.disposeWithMe(this._drawingManagerService["update$"].subscribe(var_core_value_sig279C => {
+      var_core_value_sig279C.forEach(var_core_value_sigE94C => {
+        let {
+            unitId: var_core_value_sig6D47,
+            subUnitId: var_core_value_sigCB82,
+            drawingId: var_core_value_sigCF4E
+          } = var_core_value_sigE94C,
+          var_core_value_sig6CAD = this._drawingManagerService["getDrawingByParam"](var_core_value_sigE94C);
+        if (var_core_value_sig6CAD == null) return;
+        let {
+          transform: var_core_value_sig8CF5,
+          drawingType: var_core_value_sigDDD7,
+          srcRect: var_core_value_sigB2CE,
+          prstGeom: var_core_value_sig443C
+        } = var_core_value_sig6CAD;
+        if (var_core_value_sigDDD7 !== a.DrawingTypeEnum["DRAWING_SHAPE"]) return;
+        let var_core_value_sig39B1 = this._getSceneAndTransformerByDrawingSearch(var_core_value_sig6D47);
+        if (var_core_value_sig39B1 == null) return;
+        let {
+          scene: var_core_value_sig210D,
+          transformer: var_core_value_sigB4B4
+        } = var_core_value_sig39B1;
+        if (var_core_value_sig8CF5 == null) return true;
+        let var_core_value_sigD407 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+            unitId: var_core_value_sig6D47,
+            subUnitId: var_core_value_sigCB82,
+            drawingId: var_core_value_sigCF4E
+          }),
+          var_core_value_sig63F3 = var_core_value_sig210D.getObjectIncludeInGroup(var_core_value_sigD407);
+        if (var_core_value_sig63F3 == null) return true;
+        var_core_value_sig63F3.setSrcRect(var_core_value_sigB2CE), var_core_value_sig63F3.setPrstGeom(var_core_value_sig443C);
+      });
+    }));
+  }
+  _insertShapes(var_core_value_sig898E) {
+    for (let var_core_value_sigAC51 of var_core_value_sig898E) {
+      var var_core_value_sigC481;
+      let {
+          unitId: var_core_value_sig6A71,
+          subUnitId: var_core_value_sig3BF6,
+          drawingId: var_core_value_sig38CE
+        } = var_core_value_sigAC51,
+        var_core_value_sig62B7 = this._getSceneAndTransformerByDrawingSearch(var_core_value_sig6A71),
+        var_core_value_sig37A8 = (var_core_value_sigC481 = (0, d.getCurrentUnitInfo)(this._currentUniverService, var_core_value_sig6A71)) == null ? undefined : var_core_value_sigC481.subUnitId;
+      if (var_core_value_sig62B7 == null || var_core_value_sig37A8 !== var_core_value_sig3BF6) return;
+      let var_core_value_sigA90D = (0, s.getDrawingShapeKeyByDrawingSearch)({
+        unitId: var_core_value_sig6A71,
+        subUnitId: var_core_value_sig3BF6,
+        drawingId: var_core_value_sig38CE
+      });
+      if (this._insertingShapeKeys["has"](var_core_value_sigA90D) || var_core_value_sig62B7.scene["getObjectIncludeInGroup"](var_core_value_sigA90D) != null) return;
+      let var_core_value_sig7A3C = this._drawingManagerService["getDrawingByParam"](var_core_value_sigAC51);
+      if (var_core_value_sig7A3C == null || var_core_value_sig7A3C.drawingType !== a.DrawingTypeEnum["DRAWING_SHAPE"]) return;
+      if ((0, n.isConnectorShape)((var_core_value_sig7A3C.data || {}).shapeType)) {
+        let var_core_value_sig8CFA = var_core_value_sig7A3C.transform;
+        var_core_value_sig8CFA && (var_core_value_sig7A3C.transform = {
+          ...var_core_value_sig8CFA,
+          rotateEnabled: false,
+          resizeEnabled: false,
+          borderEnabled: false
+        });
+      }
+      this._insertingShapeKeys["add"](var_core_value_sigA90D);
+      try {
+        this._sheetDrawingShapeRenderController["renderDrawingShape"](var_core_value_sig7A3C, var_core_value_sig62B7.scene);
+      } finally {
+        this._insertingShapeKeys["delete"](var_core_value_sigA90D);
+      }
+      queueMicrotask(() => {
+        if (this._disposed) return;
+        let var_core_value_sig2E11 = (0, s.getDrawingShapeKeyByDrawingSearch)(var_core_value_sigAC51);
+        if (!var_core_value_sig62B7.scene["getObjectIncludeInGroup"](var_core_value_sig2E11)) return;
+        let var_core_value_sig5B69 = this._drawingManagerService["getDrawingByParam"](var_core_value_sigAC51);
+        var_core_value_sig5B69 && this._drawingManagerService["refreshTransform"]([var_core_value_sig5B69]);
+      });
+    }
+  }
+  _getSceneAndTransformerByDrawingSearch(var_core_value_sig27B7) {
+    if (var_core_value_sig27B7 == null) return;
+    let var_core_value_sig2DAD = this._renderManagerService["getRenderUnitById"](var_core_value_sig27B7),
+      var_core_value_sig00DE = var_core_value_sig2DAD == null ? undefined : var_core_value_sig2DAD.scene;
+    return var_core_value_sig00DE == null ? null : {
+      scene: var_core_value_sig00DE,
+      transformer: var_core_value_sig00DE.getTransformerByCreate()
+    };
+  }
+};
+X = M([j(0, a.ICommandService), j(1, c.IRenderManagerService), j(2, s.IDrawingManagerService), j(3, a.IUniverInstanceService), j(4, (0, a.Inject)(d.DrawingRenderService)), j(5, (0, a.Inject)(N))], X);
+const vt = {
+  normal: {
+    fill: n.ShapeDefaultConfig["cxnPointFill"],
+    stroke: n.ShapeDefaultConfig["cxnPointStroke"],
+    strokeWidth: n.ShapeDefaultConfig["cxnPointStrokeWidth"]
+  },
+  highlighted: {
+    fill: "#4285f4",
+    stroke: "#1a73e8",
+    strokeWidth: 2
+  }
+};
+var yt = class extends c.Shape {
+  constructor(var_core_value_sigEF7C, var_core_value_sig07E7) {
+    super(var_core_value_sigEF7C, var_core_value_sig07E7), D(this, "_targetShapeId", ""), D(this, "_cxnIndex", -1), D(this, "_unitId", ""), D(this, "_subUnitId", ""), D(this, "_isHighlighted", false), var_core_value_sig07E7 && this.setShapeProps(var_core_value_sig07E7);
+  }
+  getConnectionInfo() {
+    return {
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      shapeId: this._targetShapeId,
+      cxnIndex: this._cxnIndex
+    };
+  }
+  setHighlighted(var_core_value_sig6005) {
+    this._isHighlighted !== var_core_value_sig6005 && (this._isHighlighted = var_core_value_sig6005, this.makeDirty(true));
+  }
+  isHighlighted() {
+    return this._isHighlighted;
+  }
+  setShapeProps(var_core_value_sig25A4) {
+    var_core_value_sig25A4.targetShapeId !== undefined && (this._targetShapeId = var_core_value_sig25A4.targetShapeId), var_core_value_sig25A4.cxnIndex !== undefined && (this._cxnIndex = var_core_value_sig25A4.cxnIndex), var_core_value_sig25A4.unitId !== undefined && (this._unitId = var_core_value_sig25A4.unitId), var_core_value_sig25A4.subUnitId !== undefined && (this._subUnitId = var_core_value_sig25A4.subUnitId), var_core_value_sig25A4.isHighlighted !== undefined && (this._isHighlighted = var_core_value_sig25A4.isHighlighted), this.transformByState({
+      width: var_core_value_sig25A4.width ?? n.ShapeDefaultConfig["cxnPointRadius"] * 2,
+      height: var_core_value_sig25A4.height ?? n.ShapeDefaultConfig["cxnPointRadius"] * 2
+    });
+  }
+  _draw(var_core_value_sigB591) {
+    let var_core_value_sigB272 = this._isHighlighted ? vt.highlighted : vt.normal;
+    c.Circle["drawWith"](var_core_value_sigB591, {
+      radius: n.ShapeDefaultConfig["cxnPointRadius"],
+      fill: var_core_value_sigB272.fill,
+      stroke: var_core_value_sigB272.stroke,
+      strokeWidth: var_core_value_sigB272.strokeWidth,
+      evented: true
+    });
+  }
+};
+let Z = class extends a.Disposable {
+  constructor(var_core_value_sig6F52, var_core_value_sig09C4, var_core_value_sig8E3E, var_core_value_sigC3D3) {
+    super(), this._context = var_core_value_sig6F52, this._renderManagerService = var_core_value_sig09C4, this._drawingManagerService = var_core_value_sig8E3E, this._sheetsShapeService = var_core_value_sigC3D3, D(this, "_connectionSiteObjects", []), D(this, "_activeTargetShapeId", null), D(this, "_highlightedSiteIndex", -1), D(this, "_currentScene", null), D(this, "_unitId", ""), D(this, "_subUnitId", ""), D(this, "_draggingConnectorId", null);
+  }
+  startConnectionDetection(var_core_value_sig1451, var_core_value_sigAD57, var_core_value_sig58A8, var_core_value_sigEC1A) {
+    this._currentScene = var_core_value_sig1451, this._unitId = var_core_value_sigAD57, this._subUnitId = var_core_value_sig58A8, this._draggingConnectorId = var_core_value_sigEC1A;
+  }
+  updateConnectionDetection(var_core_value_sigBDED) {
+    if (!this._currentScene) return null;
+    let var_core_value_sig4BFF = this._findShapeAtPoint(var_core_value_sigBDED);
+    return var_core_value_sig4BFF ? (this._activeTargetShapeId !== var_core_value_sig4BFF.shapeId && (this._clearConnectionSites(), this._showConnectionSites(var_core_value_sig4BFF.shapeId, var_core_value_sig4BFF.shapeModel), this._activeTargetShapeId = var_core_value_sig4BFF.shapeId), this._findNearestConnectionSite(var_core_value_sigBDED)) : (this._activeTargetShapeId !== null && (this._clearConnectionSites(), this._activeTargetShapeId = null), null);
+  }
+  endConnectionDetection() {
+    this._clearConnectionSites(), this._currentScene = null, this._activeTargetShapeId = null, this._highlightedSiteIndex = -1, this._draggingConnectorId = null;
+  }
+  getConnectionRelation() {
+    return this._activeTargetShapeId === null || this._highlightedSiteIndex < 0 ? null : {
+      shapeId: this._activeTargetShapeId,
+      cxnIndex: this._highlightedSiteIndex
+    };
+  }
+  _findShapeAtPoint(var_core_value_sig40E7) {
+    let var_core_value_sigEDBA = this._drawingManagerService["getDrawingData"](this._unitId, this._subUnitId);
+    for (let var_core_value_sig8986 of Object.keys(var_core_value_sigEDBA)) {
+      if (var_core_value_sig8986 === this._draggingConnectorId || var_core_value_sigEDBA[var_core_value_sig8986].drawingType !== a.DrawingTypeEnum["DRAWING_SHAPE"]) continue;
+      let var_core_value_sig0511 = this._sheetsShapeService["getShapeModel"](this._unitId, this._subUnitId, var_core_value_sig8986);
+      if (!var_core_value_sig0511 || (0, n.isConnectorShape)(var_core_value_sig0511.getShapeType()) || var_core_value_sig0511.getConnectionSiteList().length === 0 || !this._currentScene) continue;
+      let var_core_value_sig1F44 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+          unitId: this._unitId,
+          subUnitId: this._subUnitId,
+          drawingId: var_core_value_sig8986
+        }),
+        var_core_value_sigCB04 = this._currentScene["getObjectIncludeInGroup"](var_core_value_sig1F44);
+      if (!var_core_value_sigCB04) continue;
+      let {
+          left: var_core_value_sig947E,
+          top: var_core_value_sig4545,
+          width: var_core_value_sigF39A,
+          height: var_core_value_sigF79C
+        } = var_core_value_sigCB04.getRealBound(),
+        var_core_value_sig2E54 = var_core_value_sig947E + var_core_value_sigF39A / 2,
+        var_core_value_sig7658 = var_core_value_sig4545 + var_core_value_sigF79C / 2,
+        var_core_value_sigDCF5 = var_core_value_sigCB04.transform["getMatrix"](),
+        var_core_value_sigC786 = new c.Transform([var_core_value_sigDCF5[0], var_core_value_sigDCF5[1], var_core_value_sigDCF5[2], var_core_value_sigDCF5[3], var_core_value_sig2E54, var_core_value_sig7658]),
+        var_core_value_sigC0D9 = var_core_value_sigCB04.getParent(),
+        var_core_value_sigF0511 = (var_core_value_sigCB04.isInGroup && (var_core_value_sigC0D9 == null ? undefined : var_core_value_sigC0D9.classType) === c.RENDER_CLASS_TYPE["GROUP"] ? var_core_value_sigC0D9.ancestorTransform["multiply"](var_core_value_sigC786) : var_core_value_sigC786).invert().applyPoint(var_core_value_sig40E7),
+        var_core_value_sig5825 = var_core_value_sigF39A / 2,
+        var_core_value_sig4EB7 = var_core_value_sigF79C / 2;
+      if (var_core_value_sigF0511.x >= -var_core_value_sig5825 - 5 && var_core_value_sigF0511.x <= var_core_value_sig5825 + 5 && var_core_value_sigF0511.y >= -var_core_value_sig4EB7 - 5 && var_core_value_sigF0511.y <= var_core_value_sig4EB7 + 5) return {
+        shapeId: var_core_value_sig8986,
+        shapeModel: var_core_value_sig0511
+      };
+    }
+    return null;
+  }
+  _showConnectionSites(var_core_value_sigE863, var_core_value_sig04B4) {
+    if (!this._currentScene) return;
+    let var_core_value_sig1C07 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+        unitId: this._unitId,
+        subUnitId: this._subUnitId,
+        drawingId: var_core_value_sigE863
+      }),
+      var_core_value_sig93D6 = this._currentScene["getObjectIncludeInGroup"](var_core_value_sig1C07);
+    if (!var_core_value_sig93D6) return;
+    let {
+        left: var_core_value_sigDD05,
+        top: var_core_value_sig3932,
+        width: var_core_value_sig48B2,
+        height: var_core_value_sig57DF
+      } = var_core_value_sig93D6.getRealBound(),
+      var_core_value_sigC985 = var_core_value_sigDD05 + var_core_value_sig48B2 / 2,
+      var_core_value_sig8DA6 = var_core_value_sig3932 + var_core_value_sig57DF / 2,
+      var_core_value_sigCA69 = var_core_value_sig93D6.transform["getMatrix"](),
+      var_core_value_sigB77C = new c["Transform"]([var_core_value_sigCA69[0], var_core_value_sigCA69[1], var_core_value_sigCA69[2], var_core_value_sigCA69[3], var_core_value_sigC985, var_core_value_sig8DA6]),
+      var_core_value_sig9AFF = var_core_value_sig93D6.getParent(),
+      var_core_value_sig3545 = var_core_value_sig93D6.isInGroup && (var_core_value_sig9AFF == null ? undefined : var_core_value_sig9AFF.classType) === c.RENDER_CLASS_TYPE["GROUP"] ? var_core_value_sig9AFF.ancestorTransform["multiply"](var_core_value_sigB77C) : var_core_value_sigB77C;
+    var_core_value_sig04B4.updateContext({
+      width: var_core_value_sig48B2,
+      height: var_core_value_sig57DF
+    });
+    let var_core_value_sig5EE4 = var_core_value_sig04B4.getConnectionSiteList();
+    for (let var_core_value_sigCAF7 of var_core_value_sig5EE4) {
+      let var_core_value_sig73AF = var_core_value_sigCAF7.x - var_core_value_sig48B2 / 2,
+        var_core_value_sig548A = var_core_value_sigCAF7.y - var_core_value_sig57DF / 2,
+        var_core_value_sigE026 = var_core_value_sig3545.applyPoint({
+          x: var_core_value_sig73AF,
+          y: var_core_value_sig548A
+        }),
+        var_core_value_sig339E = var_core_value_sigE026.x,
+        var_core_value_sig7550 = var_core_value_sigE026.y,
+        var_core_value_sig2983 = new yt("connection-site-" + var_core_value_sigE863 + "-" + var_core_value_sigCAF7.index, {
+          left: var_core_value_sig339E - n.ShapeDefaultConfig["cxnPointRadius"],
+          top: var_core_value_sig7550 - n.ShapeDefaultConfig["cxnPointRadius"],
+          targetShapeId: var_core_value_sigE863,
+          cxnIndex: var_core_value_sigCAF7.index,
+          unitId: this._unitId,
+          subUnitId: this._subUnitId,
+          width: n.ShapeDefaultConfig["cxnPointRadius"] * 2,
+          height: n.ShapeDefaultConfig["cxnPointRadius"] * 2,
+          zIndex: c.DRAWING_OBJECT_LAYER_INDEX + 2,
+          evented: false
+        });
+      this._connectionSiteObjects["push"](var_core_value_sig2983), this._currentScene["addObject"](var_core_value_sig2983, c.DRAWING_OBJECT_LAYER_INDEX + 2);
+    }
+  }
+  _findNearestConnectionSite(var_core_value_sig7EAB) {
+    let var_core_value_sig56B9 = null,
+      var_core_value_sig90CF = 1 / 0,
+      var_core_value_sigA3861 = null;
+    for (let var_core_value_sigED1C of this._connectionSiteObjects) {
+      let var_core_value_sigE1B0 = var_core_value_sigED1C.left + n.ShapeDefaultConfig["cxnPointRadius"],
+        var_core_value_sigD4FF = var_core_value_sigED1C.top + n.ShapeDefaultConfig["cxnPointRadius"],
+        var_core_value_sig1E5B = var_core_value_sig7EAB.x - var_core_value_sigE1B0,
+        var_core_value_sigB680 = var_core_value_sig7EAB.y - var_core_value_sigD4FF,
+        var_core_value_sig1F64 = Math.sqrt(var_core_value_sig1E5B * var_core_value_sig1E5B + var_core_value_sigB680 * var_core_value_sigB680);
+      var_core_value_sig1F64 < var_core_value_sig90CF && (var_core_value_sig90CF = var_core_value_sig1F64, var_core_value_sig56B9 = var_core_value_sigED1C, var_core_value_sigA3861 = {
+        x: var_core_value_sigE1B0,
+        y: var_core_value_sigD4FF
+      });
+    }
+    let var_core_value_sigCD6E = var_core_value_sig90CF <= 10 && var_core_value_sig56B9 ? var_core_value_sig56B9.getConnectionInfo().cxnIndex : -1;
+    if (var_core_value_sigCD6E !== this._highlightedSiteIndex) {
+      for (let var_core_value_sigDD1C of this._connectionSiteObjects) {
+        let var_core_value_sigB098 = var_core_value_sigDD1C.getConnectionInfo();
+        var_core_value_sigDD1C.setHighlighted(var_core_value_sigB098.cxnIndex === var_core_value_sigCD6E);
+      }
+      this._highlightedSiteIndex = var_core_value_sigCD6E;
+    }
+    if (var_core_value_sig90CF <= 10 && var_core_value_sig56B9 && var_core_value_sigA3861) {
+      let var_core_value_sig726E = var_core_value_sig56B9.getConnectionInfo(),
+        var_core_value_sig2CD3 = this._getConnectionSiteAngle(var_core_value_sig726E.shapeId, var_core_value_sig726E.cxnIndex);
+      return {
+        shapeId: var_core_value_sig726E.shapeId,
+        cxnIndex: var_core_value_sig726E.cxnIndex,
+        unitId: var_core_value_sig726E.unitId,
+        subUnitId: var_core_value_sig726E.subUnitId,
+        worldPoint: var_core_value_sigA3861,
+        angle: var_core_value_sig2CD3
+      };
+    }
+    return null;
+  }
+  _getConnectionSiteAngle(var_core_value_sigFD9D, var_core_value_sigA2A4) {
+    let var_core_value_sigA1AC = this._sheetsShapeService["getShapeModel"](this._unitId, this._subUnitId, var_core_value_sigFD9D);
+    if (!var_core_value_sigA1AC) return 0;
+    let var_core_value_sig6180 = this._drawingManagerService["getDrawingByParam"]({
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      drawingId: var_core_value_sigFD9D
+    });
+    if (!(var_core_value_sig6180 != null && var_core_value_sig6180.transform)) return 0;
+    let {
+      width: var_core_value_sigB93D = 0,
+      height: var_core_value_sigB17C = 0,
+      flipX: var_core_value_sig69B6 = false,
+      flipY: var_core_value_sig708D = false
+    } = var_core_value_sig6180.transform;
+    var_core_value_sigA1AC.updateContext({
+      width: var_core_value_sigB93D,
+      height: var_core_value_sigB17C
+    });
+    let var_core_value_sig1ED2 = var_core_value_sigA1AC.getConnectionSiteList().find(var_core_value_sig038E => var_core_value_sig038E.index === var_core_value_sigA2A4);
+    if (!var_core_value_sig1ED2) return 0;
+    let var_core_value_sig94C1 = var_core_value_sig1ED2.ang / 60000;
+    return var_core_value_sig69B6 && (var_core_value_sig94C1 = 180 - var_core_value_sig94C1), var_core_value_sig708D && (var_core_value_sig94C1 = -var_core_value_sig94C1), var_core_value_sig94C1 = (var_core_value_sig94C1 % 360 + 360) % 360, var_core_value_sig94C1;
+  }
+  _clearConnectionSites() {
+    for (let var_core_value_sigAA1E of this._connectionSiteObjects) var_core_value_sigAA1E.dispose();
+    this._connectionSiteObjects = [], this._highlightedSiteIndex = -1;
+  }
+  dispose() {
+    this._clearConnectionSites(), super.dispose();
+  }
+};
+Z = M([j(1, (0, a.Inject)(c.IRenderManagerService)), j(2, (0, a.Inject)(s.IDrawingManagerService)), j(3, (0, a.Inject)(i.SheetsShapeService))], Z);
+let bt = class extends a.Disposable {
+  constructor(var_core_value_sigABAC, var_core_value_sigFAE6, var_core_value_sig06AC, var_core_value_sig57E2, var_core_value_sig01FC) {
+    super(), this._sheetSkeletonService = var_core_value_sigABAC, this._sheetClipboardService = var_core_value_sigFAE6, this._sheetDrawingService = var_core_value_sig06AC, this._shapeService = var_core_value_sig57E2, this._groupCopyPasteController = var_core_value_sig01FC, D(this, "_copyInfo", undefined), this._initCopyPaste(), this._registerGroupFeaturePasteHook();
+  }
+  get _focusedDrawings() {
+    return this._sheetDrawingService["getFocusDrawings"]();
+  }
+  _registerGroupFeaturePasteHook() {
+    this._groupCopyPasteController["registerFeaturePasteHook"](({
+      fromUnitId: var_core_value_sigC9F5,
+      fromSubUnitId: var_core_value_sig7EEA,
+      toUnitId: var_core_value_sig59CE1,
+      toSubUnitId: var_core_value_sig33C8,
+      idMap: var_core_value_sig957F
+    }) => {
+      let var_core_value_sig803B = [],
+        var_core_value_sig5830 = [];
+      for (let [var_core_value_sig2C39, var_core_value_sigB7D1] of var_core_value_sig957F.entries()) {
+        let var_core_value_sigCE71 = this._shapeService["getShapeModel"](var_core_value_sigC9F5, var_core_value_sig7EEA, var_core_value_sig2C39);
+        if (!var_core_value_sigCE71) continue;
+        let var_core_value_sig21D8 = var_core_value_sigCE71.getShapeType(),
+          var_core_value_sig2B65 = JSON.parse(JSON.stringify(var_core_value_sigCE71.getShapeData()));
+        if (var_core_value_sig2B65.relation) {
+          var var_core_value_sig4A7C, var_core_value_sigF975;
+          let var_core_value_sigB577 = (var_core_value_sig4A7C = var_core_value_sig2B65.relation["from"]) == null ? undefined : var_core_value_sig4A7C.shapeId,
+            var_core_value_sig9572 = (var_core_value_sigF975 = var_core_value_sig2B65.relation["to"]) == null ? undefined : var_core_value_sigF975.shapeId,
+            var_core_value_sigD873 = !var_core_value_sigB577 || var_core_value_sig957F.has(var_core_value_sigB577),
+            var_core_value_sigA12B = !var_core_value_sig9572 || var_core_value_sig957F.has(var_core_value_sig9572);
+          var_core_value_sigD873 && var_core_value_sigB577 && var_core_value_sig2B65.relation["from"] ? var_core_value_sig2B65.relation["from"] = {
+            ...var_core_value_sig2B65.relation["from"],
+            shapeId: var_core_value_sig957F.get(var_core_value_sigB577)
+          } : var_core_value_sig2B65.relation["from"] = undefined, var_core_value_sigA12B && var_core_value_sig9572 && var_core_value_sig2B65.relation["to"] ? var_core_value_sig2B65.relation["to"] = {
+            ...var_core_value_sig2B65.relation["to"],
+            shapeId: var_core_value_sig957F.get(var_core_value_sig9572)
+          } : var_core_value_sig2B65.relation["to"] = undefined;
+        }
+        var_core_value_sig803B.push({
+          id: i.InsertSheetsShapeMutation["id"],
+          params: {
+            unitId: var_core_value_sig59CE1,
+            subUnitId: var_core_value_sig33C8,
+            shapeId: var_core_value_sigB7D1,
+            shapeType: var_core_value_sig21D8,
+            shapeData: var_core_value_sig2B65
+          }
+        }), var_core_value_sig5830.push({
+          id: i.RemoveSheetsShapeMutation["id"],
+          params: {
+            unitId: var_core_value_sig59CE1,
+            subUnitId: var_core_value_sig33C8,
+            shapeId: var_core_value_sigB7D1
+          }
+        });
+      }
+      return {
+        redos: var_core_value_sig803B,
+        undos: var_core_value_sig5830
+      };
+    });
+  }
+  _initCopyPaste() {
+    this.disposeWithMe(this._sheetClipboardService["addClipboardHook"]({
+      id: "sheets-shape-ui",
+      onBeforeCopyFocusedObject: (var_core_value_sigCDAF, var_core_value_sigA298, var_core_value_sig0B40) => {
+        this._copyInfo = null;
+        let var_core_value_sig330B = this._focusedDrawings["filter"](var_core_value_sig64F0 => var_core_value_sig64F0.drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"]);
+        return var_core_value_sig330B.length === 0 ? false : (this._copyInfo = {
+          unitId: var_core_value_sigCDAF,
+          subUnitId: var_core_value_sigA298,
+          copyType: var_core_value_sig0B40,
+          drawings: var_core_value_sig330B
+        }, true);
+      },
+      onBeforeCopy: (var_core_value_sig3625, var_core_value_sig0B4E, var_core_value_sig0E9F, var_core_value_sigE5BA) => {
+        this._copyInfo = null, this._createCopyInfoByRange(var_core_value_sig3625, var_core_value_sig0B4E, var_core_value_sig0E9F, var_core_value_sigE5BA);
+      },
+      onPasteCells: (var_core_value_sig4A83, var_core_value_sig58AA, var_core_value_sig84C4, var_core_value_sigB6F7) => {
+        if (!var_core_value_sigB6F7.copyId || !var_core_value_sig4A83 || !this._copyInfo) return {
+          redos: [],
+          undos: []
+        };
+        let {
+          pasteType: var_core_value_sigB495
+        } = var_core_value_sigB6F7;
+        return var_core_value_sigB495 === l.PREDEFINED_HOOK_NAME["DEFAULT_PASTE"] ? this._generatePasteMutations(var_core_value_sig58AA, this._copyInfo["copyType"] === l.COPY_TYPE["CUT"]) : {
+          redos: [],
+          undos: []
+        };
+      }
+    }));
+  }
+  _createCopyInfoByRange(var_core_value_sig10FC, var_core_value_sig5374, var_core_value_sigB66D, var_core_value_sigD0F0) {
+    let var_core_value_sig8E31 = this._sheetSkeletonService["getSkeleton"](var_core_value_sig10FC, var_core_value_sig5374);
+    if (!var_core_value_sig8E31) return;
+    let var_core_value_sig8339 = (0, o.attachRangeWithCoord)(var_core_value_sig8E31, var_core_value_sigB66D);
+    if (!var_core_value_sig8339) return;
+    let {
+        startX: var_core_value_sigA01E,
+        endX: var_core_value_sigA41E,
+        startY: var_core_value_sig939C,
+        endY: var_core_value_sigA49E
+      } = var_core_value_sig8339,
+      var_core_value_sig6DEB = this._sheetDrawingService["getDrawingData"](var_core_value_sig10FC, var_core_value_sig5374),
+      var_core_value_sig2F0D = [];
+    for (let [var_core_value_sig70D0, var_core_value_sig2A8A] of Object.entries(var_core_value_sig6DEB)) {
+      if (var_core_value_sig2A8A.drawingType !== a.DrawingTypeEnum["DRAWING_SHAPE"]) continue;
+      let {
+        transform: var_core_value_sig85B1
+      } = var_core_value_sig2A8A;
+      if (!var_core_value_sig85B1) continue;
+      let {
+        left: var_core_value_sig3141 = 0,
+        top: var_core_value_sig2162 = 0,
+        width: var_core_value_sig2EAD = 0,
+        height: var_core_value_sig6774 = 0
+      } = var_core_value_sig85B1;
+      var_core_value_sigA01E <= var_core_value_sig3141 && var_core_value_sigA41E >= var_core_value_sig3141 + var_core_value_sig2EAD && var_core_value_sig939C <= var_core_value_sig2162 && var_core_value_sigA49E >= var_core_value_sig2162 + var_core_value_sig6774 && var_core_value_sig2F0D.push(var_core_value_sig2A8A);
+    }
+    var_core_value_sig2F0D.length > 0 && (this._copyInfo = {
+      unitId: var_core_value_sig10FC,
+      subUnitId: var_core_value_sig5374,
+      copyType: var_core_value_sigD0F0,
+      copyRange: var_core_value_sigB66D,
+      drawings: var_core_value_sig2F0D
+    });
+  }
+  _generatePasteMutations(var_core_value_sig5141, var_core_value_sigA9E0) {
+    let {
+        unitId: var_core_value_sig751D,
+        subUnitId: var_core_value_sig2E9A,
+        range: var_core_value_sigE105
+      } = var_core_value_sig5141,
+      var_core_value_sig0BD6 = this._sheetSkeletonService["getSkeleton"](var_core_value_sig751D, var_core_value_sig2E9A);
+    if (!var_core_value_sig0BD6) return {
+      redos: [],
+      undos: []
+    };
+    let var_core_value_sig3070 = (0, o.discreteRangeToRange)(var_core_value_sigE105),
+      {
+        unitId: var_core_value_sigC66D,
+        subUnitId: var_core_value_sig8EC5,
+        copyRange: var_core_value_sig1056,
+        drawings: var_core_value_sig6EE5
+      } = this._copyInfo,
+      var_core_value_sig9DD9 = this._sheetSkeletonService["getSkeleton"](var_core_value_sigC66D, var_core_value_sig8EC5);
+    if (!var_core_value_sig9DD9) return {
+      redos: [],
+      undos: []
+    };
+    let var_core_value_sig09AC;
+    if (!var_core_value_sig1056) {
+      let var_core_value_sig3782 = 1 / 0,
+        var_core_value_sigD22E = 1 / 0;
+      for (let var_core_value_sig340D of var_core_value_sig6EE5) {
+        let {
+          left: var_core_value_sigD7EA = 0,
+          top: var_core_value_sigB33B = 0
+        } = var_core_value_sig340D.transform ?? {};
+        var_core_value_sigD7EA < var_core_value_sig3782 && (var_core_value_sig3782 = var_core_value_sigD7EA), var_core_value_sigB33B < var_core_value_sigD22E && (var_core_value_sigD22E = var_core_value_sigB33B);
+      }
+      var_core_value_sig3782 !== 1 / 0 && var_core_value_sigD22E !== 1 / 0 && (var_core_value_sig09AC = {
+        left: var_core_value_sig3782,
+        top: var_core_value_sigD22E
+      });
+    }
+    let var_core_value_sig1613 = new Map();
+    if (!var_core_value_sigA9E0) {
+      for (let var_core_value_sig82D4 of var_core_value_sig6EE5) var_core_value_sig1613.set(var_core_value_sig82D4.drawingId, (0, a.generateRandomId)());
+    }
+    let var_core_value_sigADC6 = [],
+      var_core_value_sig4620 = [];
+    for (let var_core_value_sig3455 of var_core_value_sig6EE5) {
+      let {
+        drawingId: var_core_value_sigBDE4,
+        transform: var_core_value_sig7DF1,
+        sheetTransform: var_core_value_sigDC86
+      } = var_core_value_sig3455;
+      if (!var_core_value_sig7DF1 || !var_core_value_sigDC86) continue;
+      let var_core_value_sig0B0C = this._updateTransform({
+        transform: var_core_value_sig7DF1,
+        sheetTransform: var_core_value_sigDC86
+      }, {
+        skeleton: var_core_value_sig9DD9,
+        range: var_core_value_sig1056
+      }, {
+        skeleton: var_core_value_sig0BD6,
+        range: var_core_value_sig3070
+      }, var_core_value_sig09AC);
+      if (var_core_value_sigA9E0) {
+        let {
+          redos: var_core_value_sig24B9,
+          undos: var_core_value_sigE627
+        } = this._generateCutPasteMutations({
+          fromUnitId: var_core_value_sigC66D,
+          fromSubUnitId: var_core_value_sig8EC5,
+          toUnitId: var_core_value_sig751D,
+          toSubUnitId: var_core_value_sig2E9A,
+          drawing: var_core_value_sig3455,
+          newTransforms: var_core_value_sig0B0C
+        });
+        var_core_value_sigADC6.push(...var_core_value_sig24B9), var_core_value_sig4620.push(...var_core_value_sigE627);
+        continue;
+      }
+      let {
+        redos: var_core_value_sigA39E,
+        undos: var_core_value_sigBBEE
+      } = this._generateCopyPasteMutations({
+        toUnitId: var_core_value_sig751D,
+        toSubUnitId: var_core_value_sig2E9A,
+        drawing: var_core_value_sig3455,
+        newTransforms: var_core_value_sig0B0C,
+        newDrawingId: var_core_value_sig1613.get(var_core_value_sigBDE4),
+        idMap: var_core_value_sig1613
+      });
+      var_core_value_sigADC6.push(...var_core_value_sigA39E), var_core_value_sig4620.push(...var_core_value_sigBBEE);
+    }
+    return {
+      redos: var_core_value_sigADC6,
+      undos: var_core_value_sig4620
+    };
+  }
+  _generateCutPasteMutations(var_core_value_sig07FB) {
+    let {
+        fromUnitId: var_core_value_sig617E,
+        fromSubUnitId: var_core_value_sigC85E,
+        toUnitId: var_core_value_sig8293,
+        toSubUnitId: var_core_value_sig050D,
+        drawing: var_core_value_sig37AE,
+        newTransforms: var_core_value_sig5B51
+      } = var_core_value_sig07FB,
+      var_core_value_sig64FF = {
+        ...var_core_value_sig37AE,
+        unitId: var_core_value_sig8293,
+        subUnitId: var_core_value_sig050D,
+        transform: var_core_value_sig5B51.transform,
+        sheetTransform: var_core_value_sig5B51.sheetTransform
+      };
+    if (var_core_value_sig8293 === var_core_value_sig617E && var_core_value_sig050D === var_core_value_sigC85E) {
+      let {
+        redo: var_core_value_sig5CEF,
+        undo: var_core_value_sig43D5,
+        objects: var_core_value_sig1395
+      } = this._sheetDrawingService["getBatchUpdateOp"]([var_core_value_sig64FF]);
+      return {
+        redos: [{
+          id: p.SetDrawingApplyMutation["id"],
+          params: {
+            unitId: var_core_value_sig8293,
+            subUnitId: var_core_value_sig050D,
+            type: p.DrawingApplyType["UPDATE"],
+            op: var_core_value_sig5CEF,
+            objects: var_core_value_sig1395
+          }
+        }],
+        undos: [{
+          id: p.SetDrawingApplyMutation["id"],
+          params: {
+            unitId: var_core_value_sig8293,
+            subUnitId: var_core_value_sig050D,
+            type: p.DrawingApplyType["UPDATE"],
+            op: var_core_value_sig43D5,
+            objects: var_core_value_sig1395
+          }
+        }]
+      };
+    } else {
+      let var_core_value_sig9FA0 = this._sheetDrawingService["getBatchRemoveOp"]([var_core_value_sig37AE]),
+        var_core_value_sig055E = this._sheetDrawingService["getBatchAddOp"]([var_core_value_sig64FF]),
+        var_core_value_sig7C77 = this._shapeService["getShapeModel"](var_core_value_sig37AE.unitId, var_core_value_sig37AE.subUnitId, var_core_value_sig37AE.drawingId);
+      if (!var_core_value_sig7C77) return {
+        redos: [],
+        undos: []
+      };
+      let var_core_value_sig9578 = var_core_value_sig7C77.getShapeType(),
+        var_core_value_sigA2D3 = JSON.parse(JSON.stringify(var_core_value_sig7C77.getShapeData()));
+      return {
+        redos: [{
+          id: p.SetDrawingApplyMutation["id"],
+          params: {
+            unitId: var_core_value_sig617E,
+            subUnitId: var_core_value_sigC85E,
+            type: p.DrawingApplyType["REMOVE"],
+            op: var_core_value_sig9FA0.redo,
+            objects: var_core_value_sig9FA0.objects
+          }
+        }, {
+          id: i.RemoveSheetsShapeMutation["id"],
+          params: {
+            unitId: var_core_value_sig617E,
+            subUnitId: var_core_value_sigC85E,
+            shapeId: var_core_value_sig37AE.drawingId
+          }
+        }, {
+          id: p.SetDrawingApplyMutation["id"],
+          params: {
+            unitId: var_core_value_sig8293,
+            subUnitId: var_core_value_sig050D,
+            type: p.DrawingApplyType["INSERT"],
+            op: var_core_value_sig055E.redo,
+            objects: var_core_value_sig055E.objects
+          }
+        }, {
+          id: i.InsertSheetsShapeMutation["id"],
+          params: {
+            unitId: var_core_value_sig8293,
+            subUnitId: var_core_value_sig050D,
+            shapeId: var_core_value_sig37AE.drawingId,
+            shapeType: var_core_value_sig9578,
+            shapeData: var_core_value_sigA2D3
+          }
+        }],
+        undos: [{
+          id: p.SetDrawingApplyMutation["id"],
+          params: {
+            unitId: var_core_value_sig617E,
+            subUnitId: var_core_value_sigC85E,
+            type: p.DrawingApplyType["INSERT"],
+            op: var_core_value_sig9FA0.undo,
+            objects: var_core_value_sig9FA0.objects
+          }
+        }, {
+          id: i.InsertSheetsShapeMutation["id"],
+          params: {
+            unitId: var_core_value_sig617E,
+            subUnitId: var_core_value_sigC85E,
+            shapeId: var_core_value_sig37AE.drawingId,
+            shapeType: var_core_value_sig9578,
+            shapeData: var_core_value_sigA2D3
+          }
+        }, {
+          id: p.SetDrawingApplyMutation["id"],
+          params: {
+            unitId: var_core_value_sig8293,
+            subUnitId: var_core_value_sig050D,
+            type: p.DrawingApplyType["REMOVE"],
+            op: var_core_value_sig055E.undo,
+            objects: var_core_value_sig055E.objects
+          }
+        }, {
+          id: i.RemoveSheetsShapeMutation["id"],
+          params: {
+            unitId: var_core_value_sig8293,
+            subUnitId: var_core_value_sig050D,
+            shapeId: var_core_value_sig37AE.drawingId
+          }
+        }]
+      };
+    }
+  }
+  _generateCopyPasteMutations(var_core_value_sig86F4) {
+    let {
+        toUnitId: var_core_value_sig9E0F,
+        toSubUnitId: var_core_value_sig3A42,
+        drawing: var_core_value_sig8802,
+        newTransforms: var_core_value_sig95D5,
+        newDrawingId: var_core_value_sigE027,
+        idMap: var_core_value_sigE537
+      } = var_core_value_sig86F4,
+      var_core_value_sig5D84 = {
+        ...var_core_value_sig8802,
+        unitId: var_core_value_sig9E0F,
+        subUnitId: var_core_value_sig3A42,
+        drawingId: var_core_value_sigE027,
+        transform: var_core_value_sig95D5.transform,
+        sheetTransform: var_core_value_sig95D5.sheetTransform
+      },
+      {
+        redo: var_core_value_sigD120,
+        undo: var_core_value_sigAA05,
+        objects: var_core_value_sigC04C
+      } = this._sheetDrawingService["getBatchAddOp"]([var_core_value_sig5D84]),
+      var_core_value_sig2069 = this._shapeService["getShapeModel"](var_core_value_sig8802.unitId, var_core_value_sig8802.subUnitId, var_core_value_sig8802.drawingId);
+    if (!var_core_value_sig2069) return {
+      redos: [],
+      undos: []
+    };
+    let var_core_value_sig5176 = var_core_value_sig2069.getShapeType(),
+      var_core_value_sig71A1 = JSON.parse(JSON.stringify(var_core_value_sig2069.getShapeData()));
+    if (var_core_value_sig71A1.relation) {
+      var var_core_value_sig72AD, var_core_value_sig9ABE;
+      let var_core_value_sigC218 = (var_core_value_sig72AD = var_core_value_sig71A1.relation["from"]) == null ? undefined : var_core_value_sig72AD.shapeId,
+        var_core_value_sigADEC = (var_core_value_sig9ABE = var_core_value_sig71A1.relation["to"]) == null ? undefined : var_core_value_sig9ABE.shapeId,
+        var_core_value_sig3D8E = !var_core_value_sigC218 || var_core_value_sigE537.has(var_core_value_sigC218),
+        var_core_value_sig37E5 = !var_core_value_sigADEC || var_core_value_sigE537.has(var_core_value_sigADEC);
+      var_core_value_sig3D8E && var_core_value_sigC218 && var_core_value_sig71A1.relation["from"] ? var_core_value_sig71A1.relation["from"] = {
+        ...var_core_value_sig71A1.relation["from"],
+        shapeId: var_core_value_sigE537.get(var_core_value_sigC218)
+      } : var_core_value_sig71A1.relation["from"] = undefined, var_core_value_sig37E5 && var_core_value_sigADEC && var_core_value_sig71A1.relation["to"] ? var_core_value_sig71A1.relation["to"] = {
+        ...var_core_value_sig71A1.relation["to"],
+        shapeId: var_core_value_sigE537.get(var_core_value_sigADEC)
+      } : var_core_value_sig71A1.relation["to"] = undefined;
+    }
+    return {
+      redos: [{
+        id: p.SetDrawingApplyMutation["id"],
+        params: {
+          unitId: var_core_value_sig9E0F,
+          subUnitId: var_core_value_sig3A42,
+          type: p.DrawingApplyType["INSERT"],
+          op: var_core_value_sigD120,
+          objects: var_core_value_sigC04C
+        }
+      }, {
+        id: i.InsertSheetsShapeMutation["id"],
+        params: {
+          unitId: var_core_value_sig9E0F,
+          subUnitId: var_core_value_sig3A42,
+          shapeId: var_core_value_sigE027,
+          shapeType: var_core_value_sig5176,
+          shapeData: var_core_value_sig71A1
+        }
+      }],
+      undos: [{
+        id: p.SetDrawingApplyMutation["id"],
+        params: {
+          unitId: var_core_value_sig9E0F,
+          subUnitId: var_core_value_sig3A42,
+          type: p.DrawingApplyType["REMOVE"],
+          op: var_core_value_sigAA05,
+          objects: var_core_value_sigC04C
+        }
+      }, {
+        id: i.RemoveSheetsShapeMutation["id"],
+        params: {
+          unitId: var_core_value_sig9E0F,
+          subUnitId: var_core_value_sig3A42,
+          shapeId: var_core_value_sigE027
+        }
+      }]
+    };
+  }
+  _updateTransform(var_core_value_sig8EF01, var_core_value_sig234B, var_core_value_sig8169, var_core_value_sigC5FB) {
+    let {
+        range: var_core_value_sig5453,
+        skeleton: var_core_value_sig8725
+      } = var_core_value_sig234B,
+      {
+        range: var_core_value_sig513B,
+        skeleton: var_core_value_sig5501
+      } = var_core_value_sig8169,
+      {
+        transform: var_core_value_sig7784,
+        sheetTransform: var_core_value_sigB706
+      } = var_core_value_sig8EF01,
+      var_core_value_sig5FD01 = {
+        ...var_core_value_sig7784
+      };
+    if (var_core_value_sig5453) {
+      let var_core_value_sigF079 = (0, o.attachRangeWithCoord)(var_core_value_sig8725, var_core_value_sig5453),
+        var_core_value_sigFCA0 = (0, o.attachRangeWithCoord)(var_core_value_sig5501, var_core_value_sig513B);
+      if (var_core_value_sigF079 && var_core_value_sigFCA0) {
+        let var_core_value_sig011D = var_core_value_sigFCA0.startX - var_core_value_sigF079.startX,
+          var_core_value_sig6167 = var_core_value_sigFCA0.startY - var_core_value_sigF079.startY;
+        var_core_value_sig5FD01.left = (var_core_value_sig5FD01.left ?? 0) + var_core_value_sig011D, var_core_value_sig5FD01.top = (var_core_value_sig5FD01.top ?? 0) + var_core_value_sig6167;
+      }
+    } else {
+      let var_core_value_sigC84D = (0, o.attachRangeWithCoord)(var_core_value_sig5501, var_core_value_sig513B);
+      if (var_core_value_sigC5FB && var_core_value_sigC84D) {
+        let var_core_value_sig65A1 = (var_core_value_sig5FD01.left ?? 0) - var_core_value_sigC5FB.left,
+          var_core_value_sig7F19 = (var_core_value_sig5FD01.top ?? 0) - var_core_value_sigC5FB.top;
+        var_core_value_sig5FD01.left = var_core_value_sigC84D.startX + var_core_value_sig65A1, var_core_value_sig5FD01.top = var_core_value_sigC84D.startY + var_core_value_sig7F19;
+      } else var_core_value_sig5FD01.left = var_core_value_sigC84D == null ? undefined : var_core_value_sigC84D.startX, var_core_value_sig5FD01.top = var_core_value_sigC84D == null ? undefined : var_core_value_sigC84D.startY;
+    }
+    return {
+      transform: var_core_value_sig5FD01,
+      sheetTransform: (0, p.transformToDrawingPosition)(var_core_value_sig5FD01, var_core_value_sig5501) ?? var_core_value_sigB706
+    };
+  }
+};
+bt = M([j(0, (0, a.Inject)(o.SheetSkeletonService)), j(1, (0, a.Inject)(l.ISheetClipboardService)), j(2, (0, a.Inject)(p.ISheetDrawingService)), j(3, (0, a.Inject)(i.SheetsShapeService)), j(4, (0, a.Inject)(_.SheetsDrawingGroupCopyPasteController))], bt);
+var xt = class extends c.Shape {
+  constructor(var_core_value_sig77E3, var_core_value_sigB071) {
+    super(var_core_value_sig77E3, var_core_value_sigB071), D(this, "_shapeId", null), D(this, "_index", null), D(this, "_unitId", null), D(this, "_subUnitId", null), D(this, "_isStartConnectorPoint", false), var_core_value_sigB071 && this.setShapeProps(var_core_value_sigB071);
+  }
+  getDrawingSearch() {
+    return {
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      drawingId: this._shapeId
+    };
+  }
+  setShapeProps(var_core_value_sig15FE) {
+    var_core_value_sig15FE.shapeId !== undefined && (this._shapeId = var_core_value_sig15FE.shapeId), var_core_value_sig15FE.unitId !== undefined && (this._unitId = var_core_value_sig15FE.unitId), var_core_value_sig15FE.subUnitId !== undefined && (this._subUnitId = var_core_value_sig15FE.subUnitId), var_core_value_sig15FE.isStartConnectorPoint !== undefined && (this._isStartConnectorPoint = var_core_value_sig15FE.isStartConnectorPoint), this.transformByState({
+      width: var_core_value_sig15FE.width,
+      height: var_core_value_sig15FE.height
+    });
+  }
+  _draw(var_core_value_sigCF47) {
+    c.Circle["drawWith"](var_core_value_sigCF47, {
+      radius: n.ShapeDefaultConfig["cxnPointRadius"],
+      fill: n.ShapeDefaultConfig["cxnPointFill"],
+      stroke: n.ShapeDefaultConfig["cxnPointStroke"],
+      strokeWidth: n.ShapeDefaultConfig["cxnPointStrokeWidth"],
+      evented: true
+    });
+  }
+};
+let St = class extends a.Disposable {
+  constructor(var_core_value_sigB0F9, var_core_value_sigAF12, var_core_value_sigC60C, var_core_value_sig1C3C, var_core_value_sig71CF, var_core_value_sigC341, var_core_value_sigBA47, var_core_value_sig3DF7) {
+    super(), this._context = var_core_value_sigB0F9, this._commandService = var_core_value_sigAF12, this._renderManagerService = var_core_value_sigC60C, this._drawingManagerService = var_core_value_sig1C3C, this._univerInstanceService = var_core_value_sig71CF, this._sheetsShapeService = var_core_value_sigC341, this._sheetShapeAdjustController = var_core_value_sigBA47, this._sheetBasicShapeConnectionPointController = var_core_value_sig3DF7, D(this, "_activeShapeId", undefined), D(this, "_unitId", undefined), D(this, "_subUnitId", undefined), D(this, "_connectorObjects", []), D(this, "_baseDrawingRect", {
+      left: 0,
+      top: 0,
+      width: 0,
+      height: 0,
+      flipX: false,
+      flipY: false
+    }), D(this, "_activeShapeModel", undefined), D(this, "_isConnecting", false), D(this, "_isDrawingShapePointDown", false), D(this, "_hasReset", false), D(this, "_cxtHandlerPointerMove", undefined), D(this, "_cxtHandlerPointerUp", undefined), D(this, "_currentConnectionTarget", null), this._initialize();
+  }
+  _initialize() {
+    this._registerDrawingFocusChangeHandler(), this._registerDrawingMoveHandler();
+  }
+  _getDrawingRect() {
+    if (!this._unitId || !this._subUnitId || !this._activeShapeId) return;
+    let var_core_value_sigD49F = {
+        unitId: this._unitId,
+        subUnitId: this._subUnitId,
+        drawingId: this._activeShapeId
+      },
+      {
+        transform: var_core_value_sigCECC
+      } = this._drawingManagerService["getDrawingByParam"](var_core_value_sigD49F);
+    if (var_core_value_sigCECC) return {
+      left: var_core_value_sigCECC.left || 0,
+      top: var_core_value_sigCECC.top || 0,
+      width: var_core_value_sigCECC.width || 0,
+      height: var_core_value_sigCECC.height || 0,
+      flipX: var_core_value_sigCECC.flipX || false,
+      flipY: var_core_value_sigCECC.flipY || false,
+      angle: var_core_value_sigCECC.angle
+    };
+  }
+  _addShapeConnectorHandlerObjects() {
+    if (this._unitId === undefined || this._subUnitId === undefined || this._activeShapeId === undefined) return;
+    let var_core_value_sig0F47 = this._renderManagerService["getRenderUnitById"](this._unitId);
+    if (!var_core_value_sig0F47 || !var_core_value_sig0F47.with(l.SheetSkeletonManagerService).getCurrentSkeleton()) return;
+    let {
+        scene: var_core_value_sig6B29
+      } = var_core_value_sig0F47,
+      var_core_value_sig28E2 = this._getDrawingRect();
+    if (!var_core_value_sig28E2) return;
+    let var_core_value_sig1578 = this._sheetsShapeService["getShapeModel"](this._unitId, this._subUnitId, this._activeShapeId);
+    if (!var_core_value_sig1578 || !(0, n.isConnectorShape)(var_core_value_sig1578.getShapeType())) return;
+    let var_core_value_sig52ED = var_core_value_sig1578.getConnectorLinePoints();
+    if (var_core_value_sig52ED.length < 2) return;
+    let var_core_value_sig135F = new n["ConnectorCoordinateTransform"](var_core_value_sig28E2),
+      var_core_value_sig416D = var_core_value_sig52ED[0],
+      var_core_value_sigAD5D = var_core_value_sig52ED[var_core_value_sig52ED.length - 1],
+      var_core_value_sig1B8A = var_core_value_sig135F.localToWorld(var_core_value_sig416D),
+      var_core_value_sigFB18 = var_core_value_sig135F.localToWorld(var_core_value_sigAD5D);
+    this._addShapeConnectorHandlerObject(var_core_value_sig6B29, {
+      ...var_core_value_sig1B8A
+    }, true), this._addShapeConnectorHandlerObject(var_core_value_sig6B29, {
+      ...var_core_value_sigFB18
+    }, false);
+  }
+  _addShapeConnectorHandlerObject(var_core_value_sig703C, var_core_value_sig96CF, var_core_value_sig49F1) {
+    if (this._activeShapeId === undefined || this._unitId === undefined || this._subUnitId === undefined) return;
+    let var_core_value_sig2F7B = "connector-handler-" + this._unitId + "-" + this._subUnitId + "-" + this._activeShapeId + "-" + (var_core_value_sig49F1 ? "start" : "end"),
+      var_core_value_sigB0DF = var_core_value_sig703C.getObjectIncludeInGroup(var_core_value_sig2F7B);
+    if (var_core_value_sigB0DF) {
+      var_core_value_sigB0DF.transformByState({
+        left: var_core_value_sig96CF.x - n.ShapeDefaultConfig["cxnPointRadius"],
+        top: var_core_value_sig96CF.y - n.ShapeDefaultConfig["cxnPointRadius"]
+      });
+      return;
+    }
+    let var_core_value_sig2E44 = new xt(var_core_value_sig2F7B, {
+      left: var_core_value_sig96CF.x - n.ShapeDefaultConfig["cxnPointRadius"],
+      top: var_core_value_sig96CF.y - n.ShapeDefaultConfig["cxnPointRadius"],
+      shapeId: this._activeShapeId,
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      isStartConnectorPoint: var_core_value_sig49F1,
+      width: n.ShapeDefaultConfig["cxnPointRadius"] * 2,
+      height: n.ShapeDefaultConfig["cxnPointRadius"] * 2,
+      zIndex: c.DRAWING_OBJECT_LAYER_INDEX + 1,
+      evented: true
+    });
+    this._connectorObjects["push"](var_core_value_sig2E44), this._attachConnectorObjectEvent(var_core_value_sig2E44, var_core_value_sig703C, var_core_value_sig49F1), var_core_value_sig703C.addObject(var_core_value_sig2E44, c.DRAWING_OBJECT_LAYER_INDEX + 1);
+  }
+  _getScrollInfo(var_core_value_sig8560, var_core_value_sig138D) {
+    var var_core_value_sig1E26;
+    let var_core_value_sig5C6C = {
+      x: 0,
+      y: 0
+    };
+    if (!var_core_value_sig8560 || !var_core_value_sig138D) return var_core_value_sig5C6C;
+    let var_core_value_sigBE85 = this._renderManagerService["getRenderUnitById"](var_core_value_sig8560);
+    if (!var_core_value_sigBE85 || !var_core_value_sigBE85.with(l.SheetSkeletonManagerService).getSkeleton(var_core_value_sig138D)) return var_core_value_sig5C6C;
+    let var_core_value_sig56DE = var_core_value_sigBE85.with(l.SheetScrollManagerService),
+      var_core_value_sig0278 = var_core_value_sig56DE == null ? undefined : var_core_value_sig56DE.getCurrentScrollState();
+    if (!var_core_value_sig0278) return var_core_value_sig5C6C;
+    let var_core_value_sig08A6 = (var_core_value_sig1E26 = this._univerInstanceService["getUnit"](var_core_value_sig8560)) == null ? undefined : var_core_value_sig1E26.getSheetBySheetId(var_core_value_sig138D);
+    if (!var_core_value_sig08A6) return var_core_value_sig5C6C;
+    let var_core_value_sig04E1 = (0, l.getViewportByCell)(var_core_value_sig0278.sheetViewStartRow, var_core_value_sig0278.sheetViewStartColumn, var_core_value_sigBE85.scene, var_core_value_sig08A6);
+    return var_core_value_sig04E1 ? {
+      x: var_core_value_sig04E1.viewportScrollX,
+      y: var_core_value_sig04E1.viewportScrollY
+    } : var_core_value_sig5C6C;
+  }
+  _getZoomRatio(var_core_value_sigC504, var_core_value_sig0515) {
+    var var_core_value_sig9F34;
+    let var_core_value_sig0247 = (var_core_value_sig9F34 = this._univerInstanceService["getUnit"](var_core_value_sigC504)) == null ? undefined : var_core_value_sig9F34.getSheetBySheetId(var_core_value_sig0515);
+    return (var_core_value_sig0247 == null ? undefined : var_core_value_sig0247.getZoomRatio()) ?? 1;
+  }
+  _handleConnectorPointerUp(var_core_value_sig6030, var_core_value_sig0137, var_core_value_sig14F3, var_core_value_sig34E8, var_core_value_sigCFE7) {
+    this._cxtHandlerPointerMove["unsubscribe"](), this._cxtHandlerPointerUp["unsubscribe"](), this._sheetShapeAdjustController["refreshAdjustControls"]();
+    let var_core_value_sigECBC = this._currentConnectionTarget;
+    this._sheetBasicShapeConnectionPointController["endConnectionDetection"]();
+    let var_core_value_sig65D2 = this._getScrollInfo(this._unitId, this._subUnitId),
+      var_core_value_sig4306 = this._getZoomRatio(this._unitId, this._subUnitId),
+      var_core_value_sigFCD3 = {
+        x: var_core_value_sig14F3.offsetX / var_core_value_sig4306 + var_core_value_sig65D2.x,
+        y: var_core_value_sig14F3.offsetY / var_core_value_sig4306 + var_core_value_sig65D2.y
+      },
+      var_core_value_sig147A = var_core_value_sigECBC ? var_core_value_sigECBC.worldPoint : var_core_value_sigFCD3,
+      var_core_value_sig829F = var_core_value_sig34E8 ? this._activeShapeModel["getEndConnectInfo"]() : this._activeShapeModel["getStartConnectInfo"](),
+      var_core_value_sig534C = this._activeShapeModel["getShapeType"]();
+    var_core_value_sig829F ? this._handleConnectedEndpointPointerUp(var_core_value_sig829F, var_core_value_sig147A, var_core_value_sig34E8, var_core_value_sigECBC, var_core_value_sigCFE7) : this._handleFreeEndpointPointerUp(var_core_value_sig0137, var_core_value_sig147A, var_core_value_sig34E8, var_core_value_sigECBC, var_core_value_sigCFE7, var_core_value_sig534C), this._isConnecting = false, this._hasReset = false, this._currentConnectionTarget = null, var_core_value_sig6030.enableObjectsEvent();
+  }
+  _handleFreeEndpointPointerUp(var_core_value_sigABB7, var_core_value_sig9071, var_core_value_sig01A9, var_core_value_sig9477, var_core_value_sig917C, var_core_value_sig27E2) {
+    let var_core_value_sig10D7 = var_core_value_sig27E2 === n.ShapeTypeEnum["Line"] || var_core_value_sig27E2 === n.ShapeTypeEnum["StraightConnector1"],
+      var_core_value_sig5A1A = var_core_value_sig01A9 ? var_core_value_sig9071 : var_core_value_sigABB7,
+      var_core_value_sig77D2 = var_core_value_sig01A9 ? var_core_value_sigABB7 : var_core_value_sig9071,
+      var_core_value_sig625E = this._activeShapeModel["getConnectorLinePoints"](),
+      var_core_value_sig6F04 = (0, n.isCurvedConnectorShape)(this._activeShapeModel["getShapeType"]()),
+      var_core_value_sig48DA = n.ConnectorCoordinateTransform["getBentTypeFromPoints"](var_core_value_sig625E, var_core_value_sig6F04),
+      var_core_value_sigD327 = var_core_value_sig10D7 ? n.ConnectorCoordinateTransform["computeStraightConnectorLayout"](var_core_value_sig5A1A, var_core_value_sig77D2) : n.ConnectorCoordinateTransform["computeConnectorResizeLayout"](var_core_value_sigABB7, var_core_value_sig9071, var_core_value_sig01A9, var_core_value_sig48DA);
+    var_core_value_sig9477 ? this._executeConnectionCommand(var_core_value_sigD327, var_core_value_sig9477, var_core_value_sig01A9, var_core_value_sig917C) : this._executeResizeCommand(var_core_value_sigD327, var_core_value_sig917C);
+  }
+  _handleConnectedEndpointPointerUp(var_core_value_sig6694, var_core_value_sig2A21, var_core_value_sig0836, var_core_value_sigD95C, var_core_value_sig692E) {
+    let var_core_value_sig3FAF = this._getConnectPointInfo(var_core_value_sig6694);
+    if (!var_core_value_sig3FAF) return;
+    let var_core_value_sig378B = var_core_value_sigD95C ? var_core_value_sigD95C.angle : this._calculateFreeEndpointAngle(var_core_value_sig3FAF.point, var_core_value_sig2A21),
+      var_core_value_sigDE50;
+    if (var_core_value_sigD95C) {
+      let var_core_value_sigF2BC = this._drawingManagerService["getDrawingByParam"]({
+        unitId: var_core_value_sigD95C.unitId,
+        subUnitId: var_core_value_sigD95C.subUnitId,
+        drawingId: var_core_value_sigD95C.shapeId
+      });
+      if (var_core_value_sigF2BC != null && var_core_value_sigF2BC.transform) {
+        let {
+          left: var_core_value_sig652C = 0,
+          top: var_core_value_sig7E32 = 0,
+          width: var_core_value_sig4C07 = 0,
+          height: var_core_value_sig79AB = 0,
+          angle: var_core_value_sig7827
+        } = var_core_value_sigF2BC.transform;
+        var_core_value_sigDE50 = (0, n.getBasicShapeRotateBound)({
+          left: var_core_value_sig652C,
+          top: var_core_value_sig7E32,
+          width: var_core_value_sig4C07,
+          height: var_core_value_sig79AB
+        }, var_core_value_sig7827 || 0);
+      } else var_core_value_sigDE50 = {
+        left: var_core_value_sig2A21.x,
+        top: var_core_value_sig2A21.y,
+        width: 0,
+        height: 0
+      };
+    } else var_core_value_sigDE50 = {
+      left: var_core_value_sig2A21.x,
+      top: var_core_value_sig2A21.y,
+      width: 0,
+      height: 0
+    };
+    let var_core_value_sig3094 = {
+        point: var_core_value_sig2A21,
+        angle: var_core_value_sig378B,
+        bounds: var_core_value_sigDE50
+      },
+      var_core_value_sig86CC = var_core_value_sig0836 ? var_core_value_sig3094 : var_core_value_sig3FAF,
+      var_core_value_sig7868 = var_core_value_sig0836 ? var_core_value_sig3FAF : var_core_value_sig3094,
+      var_core_value_sig9921 = this._activeShapeModel["getShapeType"](),
+      var_core_value_sig59BF = (0, n.routeConnectorLineShape)(var_core_value_sig86CC, var_core_value_sig7868, var_core_value_sig9921);
+    this._activeShapeModel["removeLinePoints"]();
+    let var_core_value_sigF001 = (0, n.computeConnectorRouteLayout)(var_core_value_sig59BF, var_core_value_sig9921);
+    var_core_value_sigD95C ? this._executeConnectedRouteConnectionCommand(var_core_value_sigF001, var_core_value_sigD95C, var_core_value_sig6694, var_core_value_sig0836, var_core_value_sig692E) : this._executeConnectedRouteResizeCommand(var_core_value_sigF001, var_core_value_sig6694, var_core_value_sig0836, var_core_value_sig692E);
+  }
+  _executeConnectionCommand(var_core_value_sigE511, var_core_value_sig1C81, var_core_value_sig2C6A, var_core_value_sig7207) {
+    let var_core_value_sig297F = this._activeShapeModel["getShapeData"]().relation,
+      var_core_value_sigA95A = {
+        ...var_core_value_sig297F
+      },
+      var_core_value_sig94D6 = {
+        shapeId: var_core_value_sig1C81.shapeId,
+        cxnIndex: var_core_value_sig1C81.cxnIndex
+      };
+    var_core_value_sig2C6A ? var_core_value_sigA95A.from = var_core_value_sig94D6 : var_core_value_sigA95A.to = var_core_value_sig94D6;
+    let var_core_value_sigC22E = this._activeShapeModel["getShapeType"](),
+      var_core_value_sig2321 = (0, n.computeConnectorRouteLayout)(var_core_value_sigE511.worldPoints, var_core_value_sigC22E),
+      var_core_value_sigFF33 = {
+        unitId: this._unitId,
+        subUnitId: this._subUnitId,
+        connectorShapeId: this._activeShapeId,
+        width: var_core_value_sigE511.worldRect["width"],
+        height: var_core_value_sigE511.worldRect["height"],
+        left: var_core_value_sigE511.worldRect["left"],
+        top: var_core_value_sigE511.worldRect["top"],
+        flipX: var_core_value_sigE511.worldRect["flipX"] || false,
+        flipY: var_core_value_sigE511.worldRect["flipY"] || false,
+        newAdjustValues: var_core_value_sig2321.adjustValues,
+        oldAdjustValues: var_core_value_sig7207,
+        oldRelation: var_core_value_sig297F,
+        newRelation: var_core_value_sigA95A,
+        newLineType: var_core_value_sig2321.lineType,
+        oldLineType: var_core_value_sigC22E
+      };
+    this._commandService["executeCommand"](i.UpdateConnectorRelationCommand["id"], var_core_value_sigFF33);
+  }
+  _executeResizeCommand(var_core_value_sig16E0, var_core_value_sig213C) {
+    let var_core_value_sig31F8 = this._activeShapeModel["getShapeType"](),
+      var_core_value_sig6905 = (0, n.computeConnectorRouteLayout)(var_core_value_sig16E0.worldPoints, var_core_value_sig31F8),
+      var_core_value_sigC3C0 = {
+        unitId: this._unitId,
+        subUnitId: this._subUnitId,
+        shapeId: this._activeShapeId,
+        width: var_core_value_sig16E0.worldRect["width"],
+        height: var_core_value_sig16E0.worldRect["height"],
+        left: var_core_value_sig16E0.worldRect["left"],
+        top: var_core_value_sig16E0.worldRect["top"],
+        flipX: var_core_value_sig16E0.worldRect["flipX"] || false,
+        flipY: var_core_value_sig16E0.worldRect["flipY"] || false,
+        angle: var_core_value_sig16E0.worldRect["angle"] || 0,
+        newAdjustValues: var_core_value_sig6905.adjustValues,
+        oldAdjustValues: var_core_value_sig213C,
+        newLineType: var_core_value_sig6905.lineType,
+        oldLineType: var_core_value_sig31F8
+      };
+    this._commandService["executeCommand"](i.UpdateLineShapeResizeCommand["id"], var_core_value_sigC3C0);
+  }
+  _executeConnectedRouteConnectionCommand(var_core_value_sig1F39, var_core_value_sig9256, var_core_value_sig98A0, var_core_value_sig3EBD, var_core_value_sig1AC3) {
+    let var_core_value_sig66B8 = this._activeShapeModel["getShapeData"]().relation,
+      var_core_value_sig4C7F = {
+        ...var_core_value_sig66B8
+      },
+      var_core_value_sig2543 = {
+        shapeId: var_core_value_sig9256.shapeId,
+        cxnIndex: var_core_value_sig9256.cxnIndex
+      };
+    var_core_value_sig3EBD ? (var_core_value_sig4C7F.from = var_core_value_sig2543, var_core_value_sig4C7F.to = var_core_value_sig98A0) : (var_core_value_sig4C7F.from = var_core_value_sig98A0, var_core_value_sig4C7F.to = var_core_value_sig2543);
+    let var_core_value_sigB230 = {
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      connectorShapeId: this._activeShapeId,
+      width: var_core_value_sig1F39.worldRect["width"],
+      height: var_core_value_sig1F39.worldRect["height"],
+      left: var_core_value_sig1F39.worldRect["left"],
+      top: var_core_value_sig1F39.worldRect["top"],
+      flipX: var_core_value_sig1F39.worldRect["flipX"] || false,
+      flipY: var_core_value_sig1F39.worldRect["flipY"] || false,
+      oldAdjustValues: var_core_value_sig1AC3,
+      newAdjustValues: var_core_value_sig1F39.adjustValues,
+      newLineType: var_core_value_sig1F39.lineType,
+      rotation: var_core_value_sig1F39.rotation,
+      oldRelation: var_core_value_sig66B8,
+      newRelation: var_core_value_sig4C7F
+    };
+    this._commandService["executeCommand"](i.UpdateConnectorRelationCommand["id"], var_core_value_sigB230);
+  }
+  _executeConnectedRouteResizeCommand(var_core_value_sig407E, var_core_value_sig88CB, var_core_value_sigD615, var_core_value_sigB708) {
+    let var_core_value_sig60EF = this._activeShapeModel["getShapeData"]().relation,
+      var_core_value_sigA6FB = {};
+    var_core_value_sigD615 ? (var_core_value_sigA6FB.to = var_core_value_sig88CB, var_core_value_sigA6FB.from = undefined) : (var_core_value_sigA6FB.from = var_core_value_sig88CB, var_core_value_sigA6FB.to = undefined);
+    let var_core_value_sigD6EA = {
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      connectorShapeId: this._activeShapeId,
+      width: var_core_value_sig407E.worldRect["width"],
+      height: var_core_value_sig407E.worldRect["height"],
+      left: var_core_value_sig407E.worldRect["left"],
+      top: var_core_value_sig407E.worldRect["top"],
+      flipX: var_core_value_sig407E.worldRect["flipX"] || false,
+      flipY: var_core_value_sig407E.worldRect["flipY"] || false,
+      oldAdjustValues: var_core_value_sigB708,
+      newAdjustValues: var_core_value_sig407E.adjustValues,
+      newLineType: var_core_value_sig407E.lineType,
+      rotation: var_core_value_sig407E.rotation,
+      oldRelation: var_core_value_sig60EF,
+      newRelation: var_core_value_sigA6FB
+    };
+    this._commandService["executeCommand"](i.UpdateConnectorRelationCommand["id"], var_core_value_sigD6EA);
+  }
+  _attachConnectorObjectEvent(var_core_value_sigA2D31, var_core_value_sig727A, var_core_value_sig6AF1) {
+    this.disposeWithMe((0, a.toDisposable)(var_core_value_sigA2D31.onPointerDown$["subscribeEvent"]((var_core_value_sigD37B, var_core_value_sigFA28) => {
+      let var_core_value_sig93BE = var_core_value_sigA2D31.getDrawingSearch();
+      if (this._activeShapeModel = this._sheetsShapeService["getShapeModel"](var_core_value_sig93BE.unitId, var_core_value_sig93BE.subUnitId, var_core_value_sig93BE.drawingId), !this._activeShapeModel) return;
+      let var_core_value_sigABEC = {};
+      this._activeShapeModel["getAdjustNames"]().forEach(var_core_value_sig8E74 => {
+        let var_core_value_sig104C = this._activeShapeModel["getAdjustValueByName"](var_core_value_sig8E74);
+        var_core_value_sig104C !== undefined && (var_core_value_sigABEC[var_core_value_sig8E74] = var_core_value_sig104C);
+      });
+      let var_core_value_sig2712 = this._getDrawingRect();
+      if (!var_core_value_sig2712) return;
+      this._baseDrawingRect = {
+        ...var_core_value_sig2712
+      };
+      let var_core_value_sig0B9E = new n["ConnectorCoordinateTransform"](this._baseDrawingRect),
+        var_core_value_sigC545 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+          unitId: this._unitId,
+          subUnitId: this._subUnitId,
+          drawingId: this._activeShapeId
+        }),
+        var_core_value_sig12A7 = var_core_value_sig727A.getObjectIncludeInGroup(var_core_value_sigC545);
+      this._isConnecting = true, var_core_value_sig727A.disableObjectsEvent(), this._sheetBasicShapeConnectionPointController["startConnectionDetection"](var_core_value_sig727A, this._unitId, this._subUnitId, this._activeShapeId), this._currentConnectionTarget = null;
+      let var_core_value_sig6F4E = this._activeShapeModel["getConnectorLinePoints"](),
+        var_core_value_sigA021 = var_core_value_sig6F4E[0],
+        var_core_value_sig49D9 = var_core_value_sig6F4E[var_core_value_sig6F4E.length - 1],
+        var_core_value_sig320C = var_core_value_sig6AF1 ? var_core_value_sig0B9E.localToWorld(var_core_value_sig49D9) : var_core_value_sig0B9E.localToWorld(var_core_value_sigA021);
+      this._cxtHandlerPointerMove = var_core_value_sig727A.onPointerMove$["subscribeEvent"]((var_core_value_sig841D, var_core_value_sig90CB) => {
+        if (!this._isConnecting || !this._activeShapeModel) return;
+        this._hasReset ||= (this._sheetShapeAdjustController["clearAdjustControls"](), this._activeShapeModel["clearAdjustValue"](), true);
+        let var_core_value_sigBDF5 = this._getScrollInfo(this._unitId, this._subUnitId),
+          var_core_value_sigACC6 = this._getZoomRatio(this._unitId, this._subUnitId),
+          var_core_value_sig1614 = {
+            x: var_core_value_sig841D.offsetX / var_core_value_sigACC6 + var_core_value_sigBDF5.x,
+            y: var_core_value_sig841D.offsetY / var_core_value_sigACC6 + var_core_value_sigBDF5.y
+          },
+          var_core_value_sig85C3 = this._sheetBasicShapeConnectionPointController["updateConnectionDetection"](var_core_value_sig1614);
+        if (var_core_value_sig85C3) {
+          let {
+            shapeId: var_core_value_sigEF3E,
+            unitId: var_core_value_sig273D,
+            subUnitId: var_core_value_sig9A0D
+          } = var_core_value_sig85C3;
+          if (var_core_value_sigEF3E && var_core_value_sig273D && var_core_value_sig9A0D) {
+            let var_core_value_sigF230 = (0, s.getDrawingShapeKeyByDrawingSearch)({
+              unitId: var_core_value_sig273D,
+              subUnitId: var_core_value_sig9A0D,
+              drawingId: var_core_value_sigEF3E
+            });
+            var_core_value_sig85C3.angle = (var_core_value_sig727A.getObjectIncludeInGroup(var_core_value_sigF230).angle || 0) + var_core_value_sig85C3.angle;
+          }
+        }
+        this._currentConnectionTarget = var_core_value_sig85C3;
+        let var_core_value_sigB996 = var_core_value_sig6AF1 ? this._activeShapeModel["getEndConnectInfo"]() : this._activeShapeModel["getStartConnectInfo"]();
+        if (var_core_value_sigB996) {
+          this._handleConnectedEndpointMove(var_core_value_sigB996, var_core_value_sig1614, var_core_value_sig6AF1, var_core_value_sig12A7, var_core_value_sigA2D31);
+          return;
+        }
+        this._handleFreeEndpointMove(var_core_value_sig1614, var_core_value_sig320C, var_core_value_sig6AF1, var_core_value_sig12A7, var_core_value_sigA2D31);
+      }), this._cxtHandlerPointerUp = var_core_value_sig727A.onPointerUp$["subscribeEvent"]((var_core_value_sig4BBA, var_core_value_sig6201) => {
+        this._handleConnectorPointerUp(var_core_value_sig727A, var_core_value_sig320C, var_core_value_sig4BBA, var_core_value_sig6AF1, var_core_value_sigABEC);
+      }), var_core_value_sigFA28.stopPropagation();
+    })));
+  }
+  _handleBasicShapeUpdateConnectorLineShape(var_core_value_sig3F6A, var_core_value_sig23B4, var_core_value_sig350C) {
+    let var_core_value_sig2335 = this._sheetsShapeService["getBasicShapeRelation"](var_core_value_sig3F6A, var_core_value_sig23B4, var_core_value_sig350C);
+    if (!var_core_value_sig2335 || var_core_value_sig2335.length === 0) return;
+    let var_core_value_sig6233 = this._renderManagerService["getRenderUnitById"](var_core_value_sig3F6A);
+    if (!var_core_value_sig6233) return;
+    let {
+      scene: var_core_value_sig4230
+    } = var_core_value_sig6233;
+    for (let var_core_value_sigE7F0 of var_core_value_sig2335) {
+      let var_core_value_sig5151 = var_core_value_sigE7F0.lineShapeId,
+        var_core_value_sigB542 = this._sheetsShapeService["getShapeModel"](var_core_value_sig3F6A, var_core_value_sig23B4, var_core_value_sig5151);
+      if (!var_core_value_sigB542) continue;
+      let var_core_value_sigBB6C = var_core_value_sigB542.getStartConnectInfo(),
+        var_core_value_sigE2BF = var_core_value_sigB542.getEndConnectInfo(),
+        var_core_value_sigB8C7 = (var_core_value_sigBB6C == null ? undefined : var_core_value_sigBB6C.shapeId) === var_core_value_sig350C,
+        var_core_value_sigA56E = (0, s.getDrawingShapeKeyByDrawingSearch)({
+          unitId: var_core_value_sig3F6A,
+          subUnitId: var_core_value_sig23B4,
+          drawingId: var_core_value_sig5151
+        }),
+        var_core_value_sig1998 = var_core_value_sig4230.getObjectIncludeInGroup(var_core_value_sigA56E);
+      if (!var_core_value_sig1998) continue;
+      let var_core_value_sigFF19 = this._drawingManagerService["getDrawingByParam"]({
+        unitId: var_core_value_sig3F6A,
+        subUnitId: var_core_value_sig23B4,
+        drawingId: var_core_value_sig5151
+      });
+      var_core_value_sigFF19 != null && var_core_value_sigFF19.transform && (var_core_value_sigBB6C && var_core_value_sigE2BF ? this._rerouteConnectorLine(var_core_value_sig3F6A, var_core_value_sig23B4, var_core_value_sig5151, var_core_value_sigB542, var_core_value_sigBB6C, var_core_value_sigE2BF, var_core_value_sig1998) : this._moveConnectorWithShape(var_core_value_sig3F6A, var_core_value_sig23B4, var_core_value_sig5151, var_core_value_sigB542, var_core_value_sigB8C7 ? var_core_value_sigBB6C : var_core_value_sigE2BF, var_core_value_sigB8C7, var_core_value_sigFF19, var_core_value_sig1998));
+    }
+  }
+  _rerouteConnectorLine(var_core_value_sig6136, var_core_value_sigD25E, var_core_value_sigE1BC, var_core_value_sigCF44, var_core_value_sig3C97, var_core_value_sigA920, var_core_value_sigAD561) {
+    let var_core_value_sig0454 = this._unitId,
+      var_core_value_sigEE1A = this._subUnitId;
+    this._unitId = var_core_value_sig6136, this._subUnitId = var_core_value_sigD25E;
+    let var_core_value_sig4107 = this._getConnectPointInfo(var_core_value_sig3C97),
+      var_core_value_sigF35C = this._getConnectPointInfo(var_core_value_sigA920);
+    if (this._unitId = var_core_value_sig0454, this._subUnitId = var_core_value_sigEE1A, !var_core_value_sig4107 || !var_core_value_sigF35C) return;
+    let var_core_value_sigEF8D = var_core_value_sigCF44.getShapeType(),
+      var_core_value_sigE025 = (0, n.routeConnectorLineShape)(var_core_value_sig4107, var_core_value_sigF35C, var_core_value_sigEF8D);
+    var_core_value_sigE025 && var_core_value_sigCF44.updateLinePoints(var_core_value_sigE025);
+    let var_core_value_sigD549 = (0, n.computeConnectorRouteLayout)(var_core_value_sigE025, var_core_value_sigEF8D);
+    var_core_value_sigD549.lineType !== var_core_value_sigEF8D && var_core_value_sigCF44.changeShapeType(var_core_value_sigD549.lineType), var_core_value_sigCF44.clearAdjustValue();
+    for (let [var_core_value_sigE837, var_core_value_sig34F4] of Object.entries(var_core_value_sigD549.adjustValues)) var_core_value_sigCF44.setAdjustValueByName(var_core_value_sigE837, var_core_value_sig34F4);
+    var_core_value_sigCF44.updateContext({
+      width: var_core_value_sigD549.worldRect["width"],
+      height: var_core_value_sigD549.worldRect["height"]
+    }), var_core_value_sigAD561.transformByState({
+      flipX: var_core_value_sigD549.worldRect["flipX"],
+      flipY: var_core_value_sigD549.worldRect["flipY"],
+      left: var_core_value_sigD549.worldRect["left"],
+      top: var_core_value_sigD549.worldRect["top"],
+      width: var_core_value_sigD549.worldRect["width"],
+      height: var_core_value_sigD549.worldRect["height"],
+      angle: var_core_value_sigD549.rotation
+    }), var_core_value_sigCF44.removeLinePoints();
+  }
+  _moveConnectorWithShape(var_core_value_sigC79E, var_core_value_sig9221, var_core_value_sig0351, var_core_value_sig4686, var_core_value_sig8E1C, var_core_value_sigD719, var_core_value_sig323C, var_core_value_sig015D) {
+    let var_core_value_sigBF8B = this._unitId,
+      var_core_value_sigF7CE = this._subUnitId;
+    this._unitId = var_core_value_sigC79E, this._subUnitId = var_core_value_sig9221;
+    let var_core_value_sig7CF1 = this._getConnectPointInfo(var_core_value_sig8E1C);
+    if (this._unitId = var_core_value_sigBF8B, this._subUnitId = var_core_value_sigF7CE, !var_core_value_sig7CF1) return;
+    let {
+        left: var_core_value_sigA552 = 0,
+        top: var_core_value_sigAE32 = 0,
+        width: var_core_value_sig9B4D = 0,
+        height: var_core_value_sig2704 = 0,
+        flipX: var_core_value_sigD0CC = false,
+        flipY: var_core_value_sigF347 = false
+      } = var_core_value_sig323C.transform,
+      var_core_value_sig80C6 = var_core_value_sig4686.getConnectorLinePoints();
+    if (var_core_value_sig80C6.length < 2) return;
+    let var_core_value_sigEBFB = new n["ConnectorCoordinateTransform"]({
+        left: var_core_value_sigA552,
+        top: var_core_value_sigAE32,
+        width: var_core_value_sig9B4D,
+        height: var_core_value_sig2704,
+        flipX: var_core_value_sigD0CC,
+        flipY: var_core_value_sigF347
+      }),
+      var_core_value_sigF3BF = var_core_value_sigD719 ? var_core_value_sig80C6[var_core_value_sig80C6.length - 1] : var_core_value_sig80C6[0],
+      var_core_value_sigAE58 = var_core_value_sigEBFB.localToWorld(var_core_value_sigF3BF),
+      var_core_value_sig8E13 = n.ConnectorCoordinateTransform["computeConnectorResizeLayout"](var_core_value_sigAE58, var_core_value_sig7CF1.point, !var_core_value_sigD719);
+    var_core_value_sig015D.transformByState({
+      flipX: var_core_value_sig8E13.worldRect["flipX"],
+      flipY: var_core_value_sig8E13.worldRect["flipY"],
+      left: var_core_value_sig8E13.worldRect["left"],
+      top: var_core_value_sig8E13.worldRect["top"],
+      width: var_core_value_sig8E13.worldRect["width"],
+      height: var_core_value_sig8E13.worldRect["height"],
+      angle: var_core_value_sig8E13.worldRect["angle"]
+    }), var_core_value_sig015D.makeDirty(true);
+  }
+  _clearShapeConnectorHandlerObjects() {
+    this._connectorObjects["length"] !== 0 && (this._connectorObjects["forEach"](var_core_value_sigA45D => {
+      var_core_value_sigA45D.dispose();
+    }), this._connectorObjects = []);
+  }
+  _registerDrawingMoveHandler() {
+    let var_core_value_sig3AAF = this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]);
+    this.disposeWithMe(var_core_value_sig3AAF.pipe((0, u.switchMap)(var_core_value_sig1BC7 => var_core_value_sig1BC7 ? var_core_value_sig1BC7.activeSheet$["pipe"]((0, u.switchMap)(var_core_value_sig43B8 => {
+      if (!var_core_value_sig43B8) return u.EMPTY;
+      let var_core_value_sigD98F = var_core_value_sig1BC7.getUnitId(),
+        var_core_value_sig66C0 = this._renderManagerService["getRenderUnitById"](var_core_value_sigD98F),
+        var_core_value_sig9D15 = var_core_value_sig66C0 == null ? undefined : var_core_value_sig66C0.scene;
+      return var_core_value_sig9D15 ? (0, u.of)(var_core_value_sig9D15) : u.EMPTY;
+    })) : u.EMPTY)).subscribe(var_core_value_sig4956 => {
+      let var_core_value_sigCC9E = var_core_value_sig4956.getTransformerByCreate();
+      this.disposeWithMe(var_core_value_sig4956.onPointerMove$["subscribeEvent"](var_core_value_sigB785 => {
+        this._isDrawingShapePointDown && this._activeShapeId && this._clearShapeConnectorHandlerObjects();
+      })), this.disposeWithMe(var_core_value_sigCC9E.changeStart$["subscribe"](var_core_value_sig130F => {
+        let {
+          objects: var_core_value_sigC0E3
+        } = var_core_value_sig130F;
+        this._clearShapeConnectorHandlerObjects(), var_core_value_sigC0E3 !== null && var_core_value_sigC0E3.size === 1 && var_core_value_sigC0E3.values().next().value instanceof k && (this._isDrawingShapePointDown = true);
+      })), this.disposeWithMe(var_core_value_sigCC9E.changing$["subscribe"](var_core_value_sig52F7 => {
+        this._isDrawingShapePointDown && this._clearShapeConnectorHandlerObjects();
+      })), this.disposeWithMe(var_core_value_sig4956.onPointerUp$["subscribeEvent"](() => {
+        this._isDrawingShapePointDown && (this._isDrawingShapePointDown = false, this._addShapeConnectorHandlerObjects());
+      })), this.disposeWithMe(var_core_value_sigCC9E.changeEnd$["subscribe"](() => {
+        this._unitId && this._subUnitId && this._activeShapeId && this._drawingManagerService["getDrawingByParam"]({
+          unitId: this._unitId,
+          subUnitId: this._subUnitId,
+          drawingId: this._activeShapeId
+        }) && (this._clearShapeConnectorHandlerObjects(), this._addShapeConnectorHandlerObjects());
+      }));
+    }));
+  }
+  _registerDrawingFocusChangeHandler() {
+    this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sig444C => {
+      if (var_core_value_sig444C.length === 1) {
+        let var_core_value_sig866F = var_core_value_sig444C[0];
+        if (var_core_value_sig866F.drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"]) {
+          let var_core_value_sigA319 = this._sheetsShapeService["getShapeModel"](var_core_value_sig866F.unitId, var_core_value_sig866F.subUnitId, var_core_value_sig866F.drawingId);
+          if (var_core_value_sigA319 && (0, n.isConnectorShape)(var_core_value_sigA319.getShapeType())) {
+            this._activeShapeId = var_core_value_sig866F.drawingId, this._unitId = var_core_value_sig866F.unitId, this._subUnitId = var_core_value_sig866F.subUnitId, this._clearShapeConnectorHandlerObjects(), this._addShapeConnectorHandlerObjects();
+            return;
+          }
+        }
+      }
+      this._activeShapeId = undefined, this._unitId = undefined, this._subUnitId = undefined, this._clearShapeConnectorHandlerObjects();
+    })), this.disposeWithMe(this._drawingManagerService["update$"].subscribe(var_core_value_sigE42E => {
+      if (var_core_value_sigE42E.length === 1) {
+        var var_core_value_sigF039;
+        let var_core_value_sigDE3D = var_core_value_sigE42E[0],
+          var_core_value_sigF175 = (var_core_value_sigF039 = this._drawingManagerService["getDrawingByParam"](var_core_value_sigDE3D)) == null ? undefined : var_core_value_sigF039.drawingType;
+        var_core_value_sigF175 === a.DrawingTypeEnum["DRAWING_SHAPE"] && var_core_value_sigDE3D.drawingId === this._activeShapeId ? (this._clearShapeConnectorHandlerObjects(), this._addShapeConnectorHandlerObjects()) : !this._activeShapeId && var_core_value_sigF175 === a.DrawingTypeEnum["DRAWING_SHAPE"] && this._handleBasicShapeUpdateConnectorLineShape(var_core_value_sigDE3D.unitId, var_core_value_sigDE3D.subUnitId, var_core_value_sigDE3D.drawingId);
+      }
+    })), this.disposeWithMe(this._drawingManagerService["remove$"].subscribe(var_core_value_sigA321 => {
+      for (let var_core_value_sig6A18 of var_core_value_sigA321) {
+        let {
+          drawingId: var_core_value_sig2D58
+        } = var_core_value_sig6A18;
+        if (this._activeShapeId === var_core_value_sig2D58) {
+          this._reset();
+          return;
+        }
+      }
+    }));
+  }
+  _handleConnectedEndpointMove(var_core_value_sig134E, var_core_value_sigA3C0, var_core_value_sig723F, var_core_value_sigD044, var_core_value_sig9797) {
+    var var_core_value_sig8533;
+    if (!this._activeShapeModel) return;
+    let var_core_value_sig57C5 = this._getConnectPointInfo(var_core_value_sig134E);
+    if (!var_core_value_sig57C5) return;
+    let var_core_value_sig0DE9 = this._currentConnectionTarget ? this._currentConnectionTarget["worldPoint"] : var_core_value_sigA3C0,
+      var_core_value_sigB00D = this._currentConnectionTarget ? this._currentConnectionTarget["angle"] : this._calculateFreeEndpointAngle(var_core_value_sig57C5.point, var_core_value_sig0DE9),
+      var_core_value_sig57C8;
+    if (this._currentConnectionTarget) {
+      let var_core_value_sigBF4C = this._drawingManagerService["getDrawingByParam"]({
+        unitId: this._currentConnectionTarget["unitId"],
+        subUnitId: this._currentConnectionTarget["subUnitId"],
+        drawingId: this._currentConnectionTarget["shapeId"]
+      });
+      if (var_core_value_sigBF4C != null && var_core_value_sigBF4C.transform) {
+        let {
+          left: var_core_value_sig49B0 = 0,
+          top: var_core_value_sig2547 = 0,
+          width: var_core_value_sigBCA9 = 0,
+          height: var_core_value_sig4CDF = 0,
+          angle: var_core_value_sig4E3D
+        } = var_core_value_sigBF4C.transform;
+        var_core_value_sig57C8 = (0, n.getBasicShapeRotateBound)({
+          left: var_core_value_sig49B0,
+          top: var_core_value_sig2547,
+          width: var_core_value_sigBCA9,
+          height: var_core_value_sig4CDF
+        }, var_core_value_sig4E3D || 0);
+      } else var_core_value_sig57C8 = {
+        left: var_core_value_sig0DE9.x,
+        top: var_core_value_sig0DE9.y,
+        width: 0,
+        height: 0
+      };
+    } else var_core_value_sig57C8 = {
+      left: var_core_value_sig0DE9.x,
+      top: var_core_value_sig0DE9.y,
+      width: 0,
+      height: 0
+    };
+    let var_core_value_sigC27D = {
+        point: var_core_value_sig0DE9,
+        angle: var_core_value_sigB00D,
+        bounds: var_core_value_sig57C8
+      },
+      var_core_value_sig7B95 = var_core_value_sig723F ? var_core_value_sigC27D : var_core_value_sig57C5,
+      var_core_value_sig7D59 = var_core_value_sig723F ? var_core_value_sig57C5 : var_core_value_sigC27D,
+      var_core_value_sig5863 = this._activeShapeModel["getShapeType"](),
+      var_core_value_sig5BE7 = (0, n.routeConnectorLineShape)(var_core_value_sig7B95, var_core_value_sig7D59, var_core_value_sig5863);
+    var_core_value_sig5BE7 && this._activeShapeModel["updateLinePoints"](var_core_value_sig5BE7);
+    let var_core_value_sigC74A = (0, n.computeConnectorRouteLayout)(var_core_value_sig5BE7, var_core_value_sig5863);
+    var_core_value_sigC74A.lineType !== var_core_value_sig5863 && this._activeShapeModel["changeShapeType"](var_core_value_sigC74A.lineType);
+    for (let [var_core_value_sig3457, var_core_value_sig4A08] of Object.entries(var_core_value_sigC74A.adjustValues)) this._activeShapeModel["setAdjustValueByName"](var_core_value_sig3457, var_core_value_sig4A08);
+    this._activeShapeModel["updateContext"]({
+      width: var_core_value_sigC74A.worldRect["width"],
+      height: var_core_value_sigC74A.worldRect["height"]
+    }), var_core_value_sigD044.transformByState({
+      flipX: var_core_value_sigC74A.worldRect["flipX"],
+      flipY: var_core_value_sigC74A.worldRect["flipY"],
+      left: var_core_value_sigC74A.worldRect["left"],
+      top: var_core_value_sigC74A.worldRect["top"],
+      width: var_core_value_sigC74A.worldRect["width"],
+      height: var_core_value_sigC74A.worldRect["height"],
+      angle: var_core_value_sigC74A.rotation
+    }), var_core_value_sigD044.makeDirty(true);
+    let var_core_value_sig8F6A = ((var_core_value_sig8533 = this._currentConnectionTarget) == null ? undefined : var_core_value_sig8533.worldPoint) ?? var_core_value_sigA3C0;
+    var_core_value_sig9797.transformByState({
+      left: var_core_value_sig8F6A.x - n.ShapeDefaultConfig["cxnPointRadius"],
+      top: var_core_value_sig8F6A.y - n.ShapeDefaultConfig["cxnPointRadius"]
+    });
+  }
+  _handleFreeEndpointMove(var_core_value_sig46EA, var_core_value_sig626C, var_core_value_sig9077, var_core_value_sigC76C, var_core_value_sigB23A) {
+    var var_core_value_sigBA66, var_core_value_sig3DF0;
+    let var_core_value_sig0512 = ((var_core_value_sigBA66 = this._currentConnectionTarget) == null ? undefined : var_core_value_sigBA66.worldPoint) ?? var_core_value_sig46EA,
+      var_core_value_sig4B2B = n.ConnectorCoordinateTransform["computeConnectorResizeLayout"](var_core_value_sig626C, var_core_value_sig0512, var_core_value_sig9077);
+    var_core_value_sigC76C.transformByState({
+      flipX: var_core_value_sig4B2B.worldRect["flipX"],
+      flipY: var_core_value_sig4B2B.worldRect["flipY"],
+      left: var_core_value_sig4B2B.worldRect["left"],
+      top: var_core_value_sig4B2B.worldRect["top"],
+      width: var_core_value_sig4B2B.worldRect["width"],
+      height: var_core_value_sig4B2B.worldRect["height"],
+      angle: var_core_value_sig4B2B.worldRect["angle"]
+    });
+    let var_core_value_sigDF88 = ((var_core_value_sig3DF0 = this._currentConnectionTarget) == null ? undefined : var_core_value_sig3DF0.worldPoint) ?? var_core_value_sig46EA;
+    var_core_value_sigB23A.transformByState({
+      left: var_core_value_sigDF88.x - n.ShapeDefaultConfig["cxnPointRadius"],
+      top: var_core_value_sigDF88.y - n.ShapeDefaultConfig["cxnPointRadius"]
+    });
+  }
+  _getConnectPointInfo(var_core_value_sigDB93) {
+    if (!this._unitId || !this._subUnitId) return null;
+    let {
+        shapeId: var_core_value_sig67CF,
+        cxnIndex: var_core_value_sigCA96
+      } = var_core_value_sigDB93,
+      var_core_value_sig6C5E = this._sheetsShapeService["getShapeModel"](this._unitId, this._subUnitId, var_core_value_sig67CF);
+    if (!var_core_value_sig6C5E) return null;
+    let var_core_value_sig4997 = this._drawingManagerService["getDrawingByParam"]({
+      unitId: this._unitId,
+      subUnitId: this._subUnitId,
+      drawingId: var_core_value_sig67CF
+    });
+    if (!(var_core_value_sig4997 != null && var_core_value_sig4997.transform)) return null;
+    let {
+      left: var_core_value_sigE835 = 0,
+      top: var_core_value_sig4644 = 0,
+      width: var_core_value_sig9DED = 0,
+      height: var_core_value_sig7DE6 = 0,
+      flipX: var_core_value_sig120E = false,
+      flipY: var_core_value_sigD79B = false,
+      angle: var_core_value_sig7290
+    } = var_core_value_sig4997.transform;
+    var_core_value_sig6C5E.updateContext({
+      width: var_core_value_sig9DED,
+      height: var_core_value_sig7DE6
+    });
+    let var_core_value_sig92A3 = var_core_value_sig6C5E.getConnectionSiteList().find(var_core_value_sig1BC4 => var_core_value_sig1BC4.index === var_core_value_sigCA96);
+    if (!var_core_value_sig92A3) return null;
+    let var_core_value_sig8911 = var_core_value_sig120E ? var_core_value_sig9DED - var_core_value_sig92A3.x : var_core_value_sig92A3.x,
+      var_core_value_sig8D1B = var_core_value_sigD79B ? var_core_value_sig7DE6 - var_core_value_sig92A3.y : var_core_value_sig92A3.y;
+    if (var_core_value_sig7290 !== 0 && var_core_value_sig7290 != null) {
+      let var_core_value_sig9EAB = var_core_value_sig7290 * Math.PI / 180,
+        var_core_value_sigA5C3 = Math.cos(var_core_value_sig9EAB),
+        var_core_value_sig3A1E = Math.sin(var_core_value_sig9EAB),
+        var_core_value_sigDC92 = var_core_value_sig9DED / 2,
+        var_core_value_sig3515 = var_core_value_sig7DE6 / 2,
+        var_core_value_sigC2A0 = var_core_value_sig8911 - var_core_value_sigDC92,
+        var_core_value_sig7C65 = var_core_value_sig8D1B - var_core_value_sig3515;
+      var_core_value_sig8911 = var_core_value_sigDC92 + var_core_value_sigC2A0 * var_core_value_sigA5C3 - var_core_value_sig7C65 * var_core_value_sig3A1E, var_core_value_sig8D1B = var_core_value_sig3515 + var_core_value_sigC2A0 * var_core_value_sig3A1E + var_core_value_sig7C65 * var_core_value_sigA5C3;
+    }
+    var_core_value_sig8911 += var_core_value_sigE835, var_core_value_sig8D1B += var_core_value_sig4644;
+    let var_core_value_sigA915 = var_core_value_sig92A3.ang / 60000;
+    var_core_value_sig120E && (var_core_value_sigA915 = 180 - var_core_value_sigA915), var_core_value_sigD79B && (var_core_value_sigA915 = -var_core_value_sigA915), var_core_value_sigA915 += var_core_value_sig7290 || 0, var_core_value_sigA915 = (var_core_value_sigA915 % 360 + 360) % 360;
+    let var_core_value_sigE1F7 = (0, n.getBasicShapeRotateBound)({
+      left: var_core_value_sigE835,
+      top: var_core_value_sig4644,
+      width: var_core_value_sig9DED,
+      height: var_core_value_sig7DE6
+    }, var_core_value_sig7290 || 0);
+    return {
+      point: {
+        x: var_core_value_sig8911,
+        y: var_core_value_sig8D1B
+      },
+      angle: var_core_value_sigA915,
+      bounds: var_core_value_sigE1F7
+    };
+  }
+  _calculateFreeEndpointAngle(var_core_value_sig4BE7, var_core_value_sigF9FF) {
+    let var_core_value_sigE0E3 = var_core_value_sigF9FF.x - var_core_value_sig4BE7.x,
+      var_core_value_sig3AB3 = var_core_value_sigF9FF.y - var_core_value_sig4BE7.y;
+    return Math.abs(var_core_value_sigE0E3) >= Math.abs(var_core_value_sig3AB3) ? var_core_value_sigE0E3 >= 0 ? 180 : 0 : var_core_value_sig3AB3 >= 0 ? 270 : 90;
+  }
+  _reset() {
+    this._activeShapeId = undefined, this._unitId = undefined, this._subUnitId = undefined, this._clearShapeConnectorHandlerObjects();
+  }
+  dispose() {
+    this._clearShapeConnectorHandlerObjects(), super.dispose();
+  }
+};
+St = M([j(1, a.ICommandService), j(2, c.IRenderManagerService), j(3, s.IDrawingManagerService), j(4, a.IUniverInstanceService), j(5, (0, a.Inject)(i.SheetsShapeService)), j(6, (0, a.Inject)(P)), j(7, (0, a.Inject)(Z))], St);
+let Ct = class extends a.Disposable {
+  constructor(var_core_value_sig816E, var_core_value_sigE6F3, var_core_value_sig3EE1) {
+    super(), this._sheetPrintInterceptorService = var_core_value_sig816E, this._drawingManagerService = var_core_value_sigE6F3, this._shapeRenderController = var_core_value_sig3EE1, this._initPrinting();
+  }
+  _initPrinting() {
+    this.disposeWithMe(this._sheetPrintInterceptorService["interceptor"].intercept(this._sheetPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_COMPONENT_COLLECT, {
+      handler: (var_core_value_sig7F05, var_core_value_sig41F3, var_core_value_sigF455) => {
+        var var_core_value_sig6E78;
+        let {
+            unitId: var_core_value_sigB3EE,
+            subUnitId: var_core_value_sigC50A,
+            scene: var_core_value_sig11D0,
+            resourceCollector: var_core_value_sigB8ED
+          } = var_core_value_sig41F3,
+          var_core_value_sig8EAE = (var_core_value_sig6E78 = this._drawingManagerService["getDrawingDataForUnit"](var_core_value_sigB3EE)) == null ? undefined : var_core_value_sig6E78[var_core_value_sigC50A];
+        return var_core_value_sig8EAE == null || var_core_value_sig8EAE.order["forEach"](var_core_value_sig3F79 => {
+          let var_core_value_sig880E = var_core_value_sig8EAE.data[var_core_value_sig3F79];
+          var_core_value_sig880E.drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"] && !var_core_value_sig880E.hidden && this._shapeRenderController["renderDrawingShape"](var_core_value_sig880E, var_core_value_sig11D0, {
+            resourceCollector: var_core_value_sigB8ED
+          });
+        }), var_core_value_sigF455(var_core_value_sig7F05);
+      }
+    }));
+  }
+};
+Ct = M([j(0, (0, a.Inject)(l.SheetPrintInterceptorService)), j(1, s.IDrawingManagerService), j(2, (0, a.Inject)(N))], Ct);
+let wt = class extends a.Disposable {
+  constructor(var_core_value_sig9673, var_core_value_sig4917, var_core_value_sig3BE6) {
+    super(), this._commandService = var_core_value_sig9673, this._localeService = var_core_value_sig4917, this._sheetPermissionCheckController = var_core_value_sig3BE6, this._initPermission();
+  }
+  _initPermission() {
+    this.disposeWithMe(this._commandService["beforeCommandExecuted"](var_core_value_sig1CDD => {
+      let var_core_value_sig0DB11, var_core_value_sig68A2;
+      if (var_core_value_sig1CDD.id === i.InsertShapeCommand["id"] || var_core_value_sig1CDD.id === i.SetShapeDrawingDataCommand["id"] || var_core_value_sig1CDD.id === i.UpdateConnectorRelationCommand["id"]) {
+        let var_core_value_sigC9ED = var_core_value_sig1CDD.params;
+        var_core_value_sig0DB11 = var_core_value_sigC9ED.unitId, var_core_value_sig68A2 = var_core_value_sigC9ED.subUnitId;
+      }
+      !var_core_value_sig0DB11 || !var_core_value_sig68A2 || this._sheetPermissionCheckController["permissionCheckWithoutRange"]({
+        workbookTypes: [o.WorkbookEditablePermission],
+        worksheetTypes: [o.WorksheetEditPermission]
+      }, var_core_value_sig0DB11, var_core_value_sig68A2) || this._sheetPermissionCheckController["blockExecuteWithoutPermission"](this._localeService["t"]("sheets-shape-ui.permission.editErr"));
+    }));
+  }
+};
+wt = M([j(0, (0, a.Inject)(a.ICommandService)), j(1, (0, a.Inject)(a.LocaleService)), j(2, (0, a.Inject)(o.SheetPermissionCheckController))], wt);
+let Q = class extends a.Disposable {
+  constructor(var_core_value_sigA1C9, var_core_value_sig77D6, var_core_value_sigE3CE, var_core_value_sig219B, var_core_value_sig4493, var_core_value_sig8B9C, var_core_value_sigA35B, var_core_value_sig82DD, var_core_value_sigAAC7, var_core_value_sig1999, var_core_value_sigFB45) {
+    super(), this._univerInstanceService = var_core_value_sigA1C9, this._sidebarService = var_core_value_sig77D6, this._menuManagerService = var_core_value_sigE3CE, this._sheetsShapeService = var_core_value_sig219B, this._localeService = var_core_value_sig4493, this._commandService = var_core_value_sig8B9C, this._drawingManagerService = var_core_value_sigA35B, this._sheetCanvasPopManagerService = var_core_value_sig82DD, this._contextService = var_core_value_sigAAC7, this._renderManagerService = var_core_value_sig1999, this._shapeTextEditingService = var_core_value_sigFB45, D(this, "_sidebarDisposable", null), D(this, "_activeShapeInfo", null), D(this, "_isOpenedShapeEditPanel", false), D(this, "_shapeEditPanelVersion", 0), D(this, "_shapePopupMenuDisposable", null), D(this, "_disposePopups", []), this._initMenu(), this.disposeWithMe(this._univerInstanceService["getCurrentTypeOfUnit$"](a.UniverInstanceType["UNIVER_SHEET"]).subscribe(var_core_value_sigCC17 => {
+      if (!var_core_value_sigCC17) {
+        var var_core_value_sig32AE;
+        (var_core_value_sig32AE = this._sidebarDisposable) == null || var_core_value_sig32AE.dispose();
+      }
+    })), this._registerOperations(), this.initShapePopupMenu(), this.disposeWithMe(this._shapeTextEditingService["editingParams$"].subscribe(var_core_value_sigC753 => {
+      var_core_value_sigC753 && this._clearPopups();
+    }));
+  }
+  _initMenu() {
+    this._menuManagerService["mergeMenu"](Ye);
+  }
+  initShapePopupMenu() {
+    this._shapePopupMenuDisposable ||= this.disposeWithMe((0, e.bindRenderTransformerLifecycle)(this._renderManagerService, a.UniverInstanceType["UNIVER_SHEET"], var_core_value_sigFFD1 => this._popupMenuListener(var_core_value_sigFFD1)));
+  }
+  _getShapeInfo(var_core_value_sigB86C, var_core_value_sigD892, var_core_value_sig6086) {
+    let var_core_value_sigAED2 = this._sheetsShapeService["getShapeTypeById"](var_core_value_sigB86C, var_core_value_sigD892, var_core_value_sig6086),
+      var_core_value_sig3516 = this._sheetsShapeService["getShapeDataById"](var_core_value_sigB86C, var_core_value_sigD892, var_core_value_sig6086);
+    return var_core_value_sigAED2 !== undefined && var_core_value_sig3516 !== undefined ? {
+      shapeData: var_core_value_sig3516,
+      shapeId: var_core_value_sig6086,
+      shapeType: var_core_value_sigAED2,
+      unitId: var_core_value_sigB86C,
+      subUnitId: var_core_value_sigD892,
+      version: this._shapeEditPanelVersion,
+      disableShapeOption: false
+    } : null;
+  }
+  _clearPopups() {
+    this._disposePopups["forEach"](var_core_value_sig81AE => var_core_value_sig81AE.dispose()), this._disposePopups["length"] = 0;
+  }
+  _popupMenuListener(var_core_value_sigCDCD) {
+    let var_core_value_sig206A = new a["DisposableCollection"]();
+    return var_core_value_sig206A.add(var_core_value_sigCDCD.createControl$["subscribe"](() => {
+      let var_core_value_sigF79F = var_core_value_sigCDCD.getSelectedObjectMap();
+      if (this._clearPopups(), this._isOpenedShapeEditPanel || var_core_value_sigF79F.size > 1) return;
+      let var_core_value_sig0E54 = var_core_value_sigF79F.values().next().value;
+      if (!var_core_value_sig0E54) return;
+      let var_core_value_sig3B17 = this._drawingManagerService["getDrawingOKey"](var_core_value_sig0E54.oKey);
+      if (!var_core_value_sig3B17 || var_core_value_sig3B17.drawingType !== a.DrawingTypeEnum["DRAWING_SHAPE"]) return;
+      let {
+          unitId: var_core_value_sig6C4A,
+          subUnitId: var_core_value_sig73D9,
+          drawingId: var_core_value_sigEAF8,
+          drawingType: var_core_value_sig0455
+        } = var_core_value_sig3B17,
+        var_core_value_sig737C = this._getShapeInfo(var_core_value_sig6C4A, var_core_value_sig73D9, var_core_value_sigEAF8);
+      if (!var_core_value_sig737C) return;
+      this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS, true);
+      let var_core_value_sig5AF5 = this._renderManagerService["getRenderUnitById"](var_core_value_sig6C4A),
+        var_core_value_sig9DE4 = ((var_core_value_sig5AF5 == null ? undefined : var_core_value_sig5AF5.isMainScene) === false ? var_core_value_sig5AF5.with(l.SheetCanvasPopManagerService) : this._sheetCanvasPopManagerService).attachPopupToObject(var_core_value_sig0E54, {
+          componentKey: z,
+          direction: "vertical-center",
+          offset: [0, e.SHEET_DOC_SHAPE_FLOATING_TOOLBAR_TOP_OFFSET],
+          extraProps: {
+            unitId: var_core_value_sig6C4A,
+            subUnitId: var_core_value_sig73D9,
+            drawingId: var_core_value_sigEAF8,
+            drawingType: var_core_value_sig0455,
+            shapeType: var_core_value_sig737C.shapeType,
+            shapeData: var_core_value_sig737C.shapeData
+          }
+        });
+      this._disposePopups["push"](this.disposeWithMe(var_core_value_sig9DE4)), this._drawingManagerService["getFocusDrawings"]().find(var_core_value_sigB57B => var_core_value_sigB57B.unitId === var_core_value_sig6C4A && var_core_value_sigB57B.subUnitId === var_core_value_sig73D9 && var_core_value_sigB57B.drawingId === var_core_value_sigEAF8) || this._drawingManagerService["focusDrawing"]([{
+        unitId: var_core_value_sig6C4A,
+        subUnitId: var_core_value_sig73D9,
+        drawingId: var_core_value_sigEAF8
+      }]);
+    })), var_core_value_sig206A.add(var_core_value_sigCDCD.clearControl$["subscribe"](() => {
+      this._clearPopups(), this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS, false), this._drawingManagerService["focusDrawing"](null);
+    })), var_core_value_sig206A.add(var_core_value_sigCDCD.changing$["subscribe"](() => {
+      this._clearPopups();
+    })), var_core_value_sig206A.add(var_core_value_sigCDCD.changeStart$["subscribe"](() => {
+      this._clearPopups();
+    })), (0, a.toDisposable)(() => {
+      var_core_value_sig206A.dispose(), this._clearPopups();
+    });
+  }
+  _registerOperations() {
+    this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sig77FA => {
+      if (var_core_value_sig77FA.id === V.id) {
+        let {
+          unitId: var_core_value_sig780B,
+          subUnitId: var_core_value_sig7D1B,
+          drawingId: var_core_value_sig7BE0
+        } = var_core_value_sig77FA.params;
+        this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sig780B, var_core_value_sig7D1B, var_core_value_sig7BE0), this._clearPopups(), this._openShapeEditPanel();
+      }
+      if (var_core_value_sig77FA.id === Qe.id && (this._activeShapeInfo = null, this._closeShapeEditPanel()), var_core_value_sig77FA.id === i.UpdateSheetsShapeDataMutation["id"]) {
+        let {
+          unitId: var_core_value_sig7D40,
+          subUnitId: var_core_value_sig6C7E,
+          shapeId: var_core_value_sig68BE
+        } = var_core_value_sig77FA.params;
+        if (this._activeShapeInfo && this._activeShapeInfo["shapeId"] === var_core_value_sig68BE) {
+          let var_core_value_sig223F = this._getShapeInfo(var_core_value_sig7D40, var_core_value_sig6C7E, var_core_value_sig68BE);
+          var_core_value_sig223F && (this._shapeEditPanelVersion += 1, var_core_value_sig223F.version = this._shapeEditPanelVersion, this._activeShapeInfo = var_core_value_sig223F, this._isOpenedShapeEditPanel && this._openShapeEditPanel());
+        }
+      }
+    })), this.disposeWithMe(this._drawingManagerService["focus$"].subscribe(var_core_value_sigA4A7 => {
+      if (this._isOpenedShapeEditPanel === false) return;
+      if (var_core_value_sigA4A7.length === 0) {
+        this._activeShapeInfo = null, this._closeShapeEditPanel();
+        return;
+      }
+      if (var_core_value_sigA4A7.length === 1 && var_core_value_sigA4A7[0].drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"] && (this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sigA4A7[0].unitId, var_core_value_sigA4A7[0].subUnitId, var_core_value_sigA4A7[0].drawingId), this._activeShapeInfo)) {
+        this._openShapeEditPanel();
+        return;
+      }
+      let var_core_value_sigA4DF = var_core_value_sigA4A7.filter(var_core_value_sig04C6 => var_core_value_sig04C6.drawingType === a.DrawingTypeEnum["DRAWING_SHAPE"]);
+      if (var_core_value_sigA4A7.length > 1 && var_core_value_sigA4DF.length === var_core_value_sigA4A7.length) {
+        if (this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sigA4A7[0].unitId, var_core_value_sigA4A7[0].subUnitId, var_core_value_sigA4A7[0].drawingId), this._activeShapeInfo) {
+          this._openShapeEditPanel();
+          return;
+        }
+      } else {
+        if (this._shapeEditPanelVersion += 1, this._activeShapeInfo = this._getShapeInfo(var_core_value_sigA4A7[0].unitId, var_core_value_sigA4A7[0].subUnitId, var_core_value_sigA4A7[0].drawingId), this._activeShapeInfo) {
+          this._activeShapeInfo["disableShapeOption"] = true, this._openShapeEditPanel();
+          return;
+        }
+      }
+      this._closeShapeEditPanel();
+    }));
+  }
+  _openShapeEditPanel() {
+    this._activeShapeInfo && (this._sidebarDisposable = this._sidebarService["open"]({
+      id: L,
+      header: {
+        title: this._localeService["t"]("sheets-shape-ui.formatShape")
+      },
+      width: 388,
+      children: {
+        label: L,
+        ...this._activeShapeInfo
+      },
+      onClose: () => {
+        this._drawingManagerService["focusDrawing"](null), this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS, false), this._sidebarDisposable = null;
+      }
+    }), this._isOpenedShapeEditPanel = true);
+  }
+  _closeShapeEditPanel() {
+    this._isOpenedShapeEditPanel = false, this._sidebarService["close"](L), this._sidebarDisposable = null, this._contextService["setContextValue"](a.FOCUSING_COMMON_DRAWINGS, false), this._drawingManagerService["focusDrawing"](null);
+  }
+};
+Q = M([j(0, a.IUniverInstanceService), j(1, (0, a.Inject)(t.ISidebarService)), j(2, t.IMenuManagerService), j(3, (0, a.Inject)(i.SheetsShapeService)), j(4, (0, a.Inject)(a.LocaleService)), j(5, a.ICommandService), j(6, s.IDrawingManagerService), j(7, (0, a.Inject)(l.SheetCanvasPopManagerService)), j(8, a.IContextService), j(9, c.IRenderManagerService), j(10, (0, a.Inject)(Y))], Q);
+let $ = class extends a.Plugin {
+  constructor(var_core_value_sig1EFE = $e, var_core_value_sig9904, var_core_value_sig39C7, var_core_value_sigA022, var_core_value_sig913A) {
+    super(), this._config = var_core_value_sig1EFE, this._injector = var_core_value_sig9904, this._commandService = var_core_value_sig39C7, this._configService = var_core_value_sigA022, this._renderManagerService = var_core_value_sig913A;
+    let {
+      ...var_core_value_sig991D
+    } = (0, a.merge)({}, $e, this._config);
+    this._configService["setConfig"]("sheets-shape-ui.config", var_core_value_sig991D), this._initCommands();
+  }
+  onRendered() {
+    this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_DOC"], [_t]), (0, a.touchDependencies)(this._injector, [[Q], [X], [N], [Ct]]);
+  }
+  onSteady() {
+    this._injector["get"](Q).initShapePopupMenu();
+  }
+  onReady() {
+    [[Z], [P], [bt]].forEach(var_core_value_sigCC9D => this._injector["add"](var_core_value_sigCC9D)), (0, a.touchDependencies)(this._injector, [[bt], [P]]), this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"], [Z]), this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"], [ut]), this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"], [St]), this._renderManagerService["registerRenderModule"](a.UniverInstanceType["UNIVER_SHEET"], [gt]);
+  }
+  onStarting() {
+    this._injector["add"]([lt]), this._injector["get"](lt);
+    let var_core_value_sig3E9C = this._injector;
+    [[Q], [X], [N], [Ct], [J], [Y], [mt], [U], [wt], [ft]].forEach(var_core_value_sig90F5 => var_core_value_sig3E9C.add(var_core_value_sig90F5)), (0, a.touchDependencies)(this._injector, [[Q], [X], [N], [J], [Y], [mt], [U], [wt], [ft]]);
+  }
+  _initCommands() {
+    [I, S, Qe, V, re, F, H, ae].forEach(var_core_value_sigD2BA => this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sigD2BA)));
+  }
+};
+D($, "type", a.UniverInstanceType["UNIVER_SHEET"]), D($, "pluginName", "SHEET_SHAPE_UI_PLUGIN"), D($, "packageName", Xe), D($, "version", Ze), $ = M([(0, a.DependentOn)(m.UniverLicensePlugin, h.UniverDocsPlugin, s.UniverDrawingPlugin, d.UniverDrawingUIPlugin, c.UniverRenderEnginePlugin, o.UniverSheetsPlugin, g.UniverDocsUIPlugin, p.UniverSheetsDrawingPlugin, r.UniverShapeEditorPlugin, _.UniverSheetsDrawingUIPlugin, i.UniverSheetsShapePlugin, l.UniverSheetsUIPlugin, e.UniverShapeEditorUIPlugin), j(1, (0, a.Inject)(a.Injector)), j(2, a.ICommandService), j(3, a.IConfigService), j(4, c.IRenderManagerService)], $), exports.SheetsShapeUIContextualRibbonSchema = Je, exports.SheetsShapeUIMenuSchema = Ye, Object.defineProperty(exports, "UniverSheetsShapeUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return $;
+  }
+});

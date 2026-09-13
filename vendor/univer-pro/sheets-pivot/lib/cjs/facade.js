@@ -1,1 +1,1341 @@
-let e=require("@univerjs-pro/engine-pivot"),t=require("@univerjs-pro/sheets-pivot"),n=require("@univerjs/core"),r=require("@univerjs/sheets/facade"),i=require("@univerjs/core/facade"),a=require("rxjs");function o(v446){"@babel/helpers - typeof";return o=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v186){return typeof v186;}:function(v187){return v187&&typeof Symbol=="function"&&v187.constructor===Symbol&&v187!==Symbol.prototype?"symbol":typeof v187;},o(v446);}function s(v447,v448){if(o(v447)!="object"||!v447)return v447;var v449=v447[Symbol.toPrimitive];if(v449!==undefined){var v450=v449.call(v447,v448||"default");if(o(v450)!="object")return v450;throw TypeError("@@toPrimitive must return a primitive value.");}return(v448==="string"?String:Number)(v447);}function c(v451){var v452=s(v451,"string");return o(v452)=="symbol"?v452:v452+"";}function l(v453,v454,v455){return(v454=c(v454))in v453?Object.defineProperty(v453,v454,{value:v455,enumerable:true,configurable:true,writable:true}):v453[v454]=v455,v453;}const u={type:e.PivotShowAsTypeEnum["normal"],baseFieldId:"",baseItem:""};function d(v456){return{...v456,expected:Array.isArray(v456.expected)?v456.expected["concat"]():v456.expected};}var f=class{constructor(v188,v189,v190,v191){l(this,"unitId",undefined),l(this,"subUnitId",undefined),l(this,"pivotTableId",undefined),l(this,"_injector",undefined),this.unitId=v188,this.subUnitId=v189,this.pivotTableId=v190,this._injector=v191;}getConfig(){return this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId,this.subUnitId,this.pivotTableId);}getId(){return this.pivotTableId;}getSourceRangeInfo(){var v192;let v193=(v192=this.getConfig())==null?undefined:v192.sourceRangeInfo;if(v193)return{...v193,range:{...v193.range}};}getTargetCellInfo(){var v194;let v195=(v194=this.getConfig())==null?undefined:v194.targetCellInfo;if(v195)return{...v195};}getOptions(){var v196;let v197=(v196=this.getConfig())==null?undefined:v196.fieldsConfig["options"];if(v197)return{...v197};}getLayout(){var v198;let v199=(v198=this.getConfig())==null?undefined:v198.fieldsConfig;if(v199)return v199.layout??e.PivotLayoutTypeEnum["tabular"];}getPivotTableMatrixInfo(){return this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableMatrixInfo(this.unitId,this.subUnitId,this.pivotTableId);}setFieldsConfig(v200){let v201=this._injector["get"](n.ICommandService),v202={unitId:this.unitId,subUnitId:this.subUnitId,pivotTableId:this.pivotTableId,pivotTableConfig:v200};return v201.executeCommand(t.SetPivotFieldsConfigCommand["id"],v202);}setOptions(v203){let v204=this._injector["get"](n.ICommandService),v205={unitId:this.unitId,subUnitId:this.subUnitId,pivotTableId:this.pivotTableId,options:v203};return v204.executeCommand(t.SetPivotOptionCommand["id"],v205);}setLayout(v206){let v207=this._injector["get"](n.ICommandService),v208={unitId:this.unitId,subUnitId:this.subUnitId,pivotTableId:this.pivotTableId,layout:v206};return v207.executeCommand(t.SetPivotLayoutCommand["id"],v208);}setSourceRange(v209){let v210=this._injector["get"](n.ICommandService),v211={unitId:this.unitId,subUnitId:this.subUnitId,token:this.pivotTableId,dataRangeInfo:v209};return v210.executeCommand(t.UpdatePivotTableSourceRangeCommand["id"],v211);}updateSourceRange(v212){return this.setSourceRange(v212);}reset(v213){let v214=this._injector["get"](n.ICommandService),v215={unitId:this.unitId,subUnitId:this.subUnitId,pivotTableId:this.pivotTableId,resetArea:v213};return v214.executeCommand(t.ResetPivotFieldsConfigCommand["id"],v215);}getPivotTableId(){return this.pivotTableId;}getFieldSetting(v216){let v217=this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId,this.subUnitId,this.pivotTableId),v218=v217==null?undefined:v217.fieldsConfig;if(v218)return v218.dimension[v216]||v218.measure[v216];}getSourceFieldsInfo(){let v219=this._injector,v220=this.unitId,v221=this.pivotTableId,v222=v219.get(t.SheetsPivotTableConfigModel).getCollection(v220,v221);if(v222){let v70=v222.fieldIds,v71=v222.fields,v72=v222.displayNameRecord,v73=[];for(let v44 of v70){let v24=v71[v44];if(v24){let v14={id:v44,name:v24.name,fieldDataType:v24.fieldDataType};v72&&v72[v44]!==undefined&&(v14.displayName=v72[v44]),v73.push(v14);}}return v73;}return[];}getValueFilter(v223){var v224;let v225=this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId,this.subUnitId,this.pivotTableId),v226=v225==null?undefined:v225.fieldsConfig["valueFilter"],v227=v226==null||(v224=v226.find(v74=>v74.fieldId===v223))==null?undefined:v224.filterInfo;return v227?d(v227):undefined;}getValueFilters(){let v228=this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId,this.subUnitId,this.pivotTableId),v229=v228==null?undefined:v228.fieldsConfig["valueFilter"];return(v229==null?undefined:v229.map(({fieldId:v75,filterInfo:v76})=>({fieldId:v75,filterInfo:d(v76)})))||[];}getFieldIdsByArea(v230){let v231=this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId,this.subUnitId,this.pivotTableId),v232=v231==null?undefined:v231.fieldsConfig;if(v232)switch(v230){case e.PivotTableFiledAreaEnum["Column"]:return v232.columnFields["concat"]();case e.PivotTableFiledAreaEnum["Row"]:return v232.rowFields["concat"]();case e.PivotTableFiledAreaEnum["Value"]:return v232.valueFields["concat"]();case e.PivotTableFiledAreaEnum["Filter"]:return v232.filterFields["concat"]();case e.PivotTableFiledAreaEnum["Hidden"]:return v232.hiddenFields["concat"]();}return[];}getPivotTableRangeInfo(){var v233;let v234=(v233=this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableRangeInfo(this.unitId,this.subUnitId,this.pivotTableId))==null?undefined:v233.rangeInfo;if(v234)return(0,t.unionPivotViewRange)(v234);}async remove(){return this._injector["get"](n.ICommandService).executeCommand(t.RemovePivotTableCommand["id"],{unitId:this.unitId,subUnitId:this.subUnitId,pivotTableId:this.pivotTableId});}async addField(v235,v236,v237){let v238=this._injector,v239=this.unitId,v240=this.subUnitId,v241=this.pivotTableId,v242=v238.get(n.ICommandService),v243=v238.get(t.SheetsPivotTableConfigModel),v244=v243.getPivotTableConfig(v239,v240,v241),v245=v243.getCollection(v239,v241);if(!v244||!v245)return false;let v246=v235;typeof v246=="number"&&(v246=v243.getCollection(v239,v241).fieldIds[v235]);let v247={unitId:v239,subUnitId:v240,pivotTableId:v241,dataFieldId:v246,fieldArea:v236,index:v237};return v242.executeCommand(t.AddPivotFieldCommand["id"],v247);}async removeField(v248){let v249=this._injector,v250=this.unitId,v251=this.subUnitId,v252=this.pivotTableId,v253=v249.get(n.ICommandService),v254={unitId:v250,subUnitId:v251,pivotTableId:v252,fieldIds:v248};return v253.executeCommand(t.RemovePivotFieldCommand["id"],v254);}async updateFieldPosition(v255,v256,v257){let v258=this._injector,v259=this.unitId,v260=this.subUnitId,v261=this.pivotTableId,v262=v258.get(n.ICommandService),v263={unitId:v259,subUnitId:v260,pivotTableId:v261,fieldId:v255,area:v256,index:v257};return v262.executeCommand(t.MovePivotFieldCommand["id"],v263);}async updateValuePosition(v264,v265){let v266=this._injector,v267=this.unitId,v268=this.subUnitId,v269=this.pivotTableId,v270=v266.get(n.ICommandService),v271={unitId:v267,subUnitId:v268,pivotTableId:v269,position:v264,index:v265};return v270.executeCommand(t.UpdatePivotValuePositionCommand["id"],v271);}async setSubtotalType(v272,v273){return this.setFieldSetting(v272,{subtotalType:v273});}async setFieldSetting(v274,v275){var v276;let v277=this._injector,v278=this.unitId,v279=this.subUnitId,v280=this.pivotTableId,v281=v277.get(n.ICommandService),v282=this._getPivotPanelTableFieldInfo(v274),v283=v282?this._getPivotPanelSourceFieldInfo(v282.dataFieldId):undefined;if(!v282||!v283||v275.showDataAs!==undefined&&!((v276=this.getConfig())!=null&&v276.fieldsConfig["measure"][v274]))return console.warn("[Pivot Table]: The pivot table field info is invalid"),false;let v284={unitId:v278,subUnitId:v279,pivotTableId:v280,tableFieldId:v274,displayName:v275.displayName,format:v275.format,subtotalType:v275.subtotalType,showDataAs:v275.showDataAs===undefined?undefined:{...v275.showDataAs},tableFieldInfo:v282,dataFieldInfo:v283};return v281.executeCommand(t.UpdatePivotFieldSettingCommand["id"],v284);}getShowDataAs(v285){var v286;let v287=this.getFieldSetting(v285);if(!(!v287||!("subtotal"in v287)))return((v286=v287.showDataAs)==null?undefined:v286.type)===undefined?{...u}:{...v287.showDataAs};}setShowDataAs(v288,v289){return this.setFieldSetting(v288,{showDataAs:v289});}resetShowDataAs(v290){return this.setShowDataAs(v290,{...u});}async setLabelSort(v291,v292){let v293=this._injector,v294=this.unitId,v295=this.subUnitId,v296=this.pivotTableId,v297=v293.get(n.ICommandService),v298={unitId:v294,subUnitId:v295,tableFieldId:v291,pivotTableId:v296,info:v292};return v297.executeCommand(t.SetPivotSortCommand["id"],v298);}async clearLabelSort(v299){return this._injector["get"](n.ICommandService).executeCommand(t.SetPivotSortCommand["id"],{unitId:this.unitId,subUnitId:this.subUnitId,pivotTableId:this.pivotTableId,tableFieldId:v299,info:undefined});}async setLabelManualFilter(v300,v301,v302){let v303=this._injector,v304=this.unitId,v305=this.subUnitId,v306=this.pivotTableId,v307=v303.get(n.ICommandService),v308={unitId:v304,subUnitId:v305,pivotTableId:v306,tableFieldId:v300,items:v301,isAll:v302};return v307.executeCommand(t.SetPivotFilterCommand["id"],v308);}async setValueFilter(v309,v310){var v311;let v312=this._injector,v313=this.unitId,v314=this.subUnitId,v315=this.pivotTableId,v316=(v311=this.getConfig())==null?undefined:v311.fieldsConfig,v317=!!(v316&&(v316.rowFields["includes"](v309)||v316.columnFields["includes"](v309)));if(!v316||!v317||v310!==undefined&&(!v316.measure[v310.valueFieldId]||!(0,e.isValueFilterOperator)(v310.operator)))return false;let v318=v312.get(n.ICommandService),v319={unitId:v313,subUnitId:v314,pivotTableId:v315,fieldId:v309,valueFilterInfo:v310?d({...v310,type:e.PivotFilterTypeEnum["ValueFilter"]}):undefined};return v318.executeCommand(t.SetPivotValueFilterCommand["id"],v319);}clearValueFilter(v320){return this.setValueFilter(v320,undefined);}async renameField(v321,v322){return this.setFieldSetting(v321,{displayName:v322});}async move(v323,v324,v325){let v326=this._injector["get"](n.ICommandService),v327=this._injector["get"](n.IUniverInstanceService).getUnit(this.unitId),v328=v327==null?undefined:v327.getSheetBySheetName(v323);if(!v327||!v328)throw Error("[Pivot\x20Table]:\x20Target\x20sheet\x20is\x20not\x20valid");return v326.executeCommand(t.MovePivotTableCommand["id"],{pivotTableId:this.pivotTableId,targetCellInfo:{subUnitId:v328.getSheetId(),unitId:this.unitId,row:v324,col:v325},originTargetInfo:{subUnitId:this.subUnitId,unitId:this.unitId}});}async setDateGroupType(v329,v330){let v331=this._injector,v332=this.unitId,v333=this.subUnitId,v334=this.pivotTableId,v335=v331.get(n.ICommandService),v336={unitId:v332,subUnitId:v333,pivotTableId:v334,tableFieldId:v329,dateType:v330};return v335.executeCommand(t.SetPivotDateGroupCommand["id"],v336);}async setCellCollapse(v337,v338,v339){return this._isCellInCurrentPivotTable(v337,v338)?this._injector["get"](n.ICommandService).executeCommand(t.SetPivotCollapseCommand["id"],{unitId:this.unitId,subUnitId:this.subUnitId,row:v337,col:v338,collapse:v339}):false;}async drillDown(v340,v341){return this._isCellInCurrentPivotTable(v340,v341)?this._injector["get"](n.ICommandService).executeCommand(t.PivotDrillDownCommand["id"],{row:v340,col:v341}):false;}_getPivotPanelTableFieldInfo(v342){let v343=this.getConfig(),v344=(v343==null?undefined:v343.fieldsConfig["dimension"][v342])||(v343==null?undefined:v343.fieldsConfig["measure"][v342]);if(!v344)return;let v345={tableFieldId:v342,displayName:v344.displayName,dataFieldId:v344.dataFieldId,format:v344.format};return"subtotal"in v344&&(v345.subTotalType=v344.subtotal,v345.showDataAs={...v344.showDataAs}),v345;}_getPivotPanelSourceFieldInfo(v346){var v347;let v348=this._injector["get"](t.SheetsPivotTableConfigModel).getCollection(this.unitId,this.pivotTableId),v349=(v348==null?undefined:v348.fields[v346])||(v348==null?undefined:v348.customFields["find"](v77=>v77.id===v346));if(v349)return{id:v349.id,dataFieldId:v349.id,name:(v348==null||(v347=v348.displayNameRecord)==null?undefined:v347[v349.id])??v349.name,type:v349.fieldDataType,checked:this._isDataFieldUsed(v349.id),pivotTableId:this.pivotTableId};}_isDataFieldUsed(v350){let v351=this.getConfig();return v351?Object.values(v351.fieldsConfig["dimension"]).some(v78=>v78.dataFieldId===v350)||Object.values(v351.fieldsConfig["measure"]).some(v79=>v79.dataFieldId===v350):false;}_isCellInCurrentPivotTable(v352,v353){return this._injector["get"](t.SheetsPivotTableAdaptorModel).getPivotTableIdByCell(this.unitId,this.subUnitId,v352,v353)===this.pivotTableId;}},p=class extends r.FWorkbook{async addPivotTable(v354,v355,v356){let v357=this._injector,v358=v357.get(n.ICommandService),v359=(0,e.generateHexNumber)(8),v360={positionType:v355,pivotTableId:v359,pivotTableConfig:{targetCellInfo:v356,sourceRangeInfo:v354,isEmpty:true}};if(await v358.executeCommand(t.AddPivotTableCommand["id"],v360)){let v80=v357.get(t.SheetsPivotTableConfigModel);if(await this._waitForPivotTableReady(v80,v356.unitId,v356.subUnitId,v359))return new f(v356.unitId,v356.subUnitId,v359,v357);}}_waitForPivotTableReady(v361,v362,v363,v364){let v365=()=>!!(v361.getPivotTableConfig(v362,v363,v364)&&v361.getCollection(v362,v364));return v365()?Promise.resolve(true):new Promise(v81=>{let v82=false,v83,v84=[],v85=v45=>{v82||(v82=true,v83&&clearTimeout(v83),v84.forEach(v25=>v25.unsubscribe()),v81(v45));},v86=()=>{v365()&&v85(true);};v84=[v361.pivotConfigChange$["subscribe"](v86),v361.configVersion$["subscribe"](v86)],v83=setTimeout(()=>v85(false),10000),v86();});}getPivotTableByCell(v366,v367,v368,v369){let v370=this._injector,v371=v370.get(t.SheetsPivotTableAdaptorModel).getPivotTableIdByCell(v366,v367,v368,v369);if(v371)return new f(v366,v367,v371,v370);}getPivotTableById(v372){let v373=this._injector,v374=v373.get(t.SheetsPivotTableConfigModel).getTargetByPivotTableId(this.getId(),v372);if(v374)return new f(v374.unitId,v374.subUnitId,v372,v373);}};r.FWorkbook["extend"](p);var m=class extends r.FWorksheet{getPivotTableByCell(v375,v376){let v377=this._injector,v378=v377.get(t.SheetsPivotTableAdaptorModel),v379=this._workbook["getUnitId"](),v380=this.getSheetId(),v381=v378.getPivotTableIdByCell(v379,v380,v375,v376);if(v381)return new f(v379,v380,v381,v377);}};r.FWorksheet["extend"](m);var h=class extends i.FEnum{get PivotSubtotalTypeEnum(){return e.PivotSubtotalTypeEnum;}get PivotFilterTypeEnum(){return e.PivotFilterTypeEnum;}get PivotTableFiledAreaEnum(){return e.PivotTableFiledAreaEnum;}get PivotTableValuePositionEnum(){return e.PivotTableValuePositionEnum;}get PivotDataFieldDataTypeEnum(){return e.PivotDataFieldDataTypeEnum;}get PivotDataFieldSortTypeEnum(){return e.PivotDataFieldSortTypeEnum;}get PivotDataFieldSortOperatorEnum(){return e.PivotDataFieldSortOperatorEnum;}get PivotFilterOperatorEnum(){return e.ST_PivotFilterOperatorEnum;}get PositionTypeEnum(){return t.PositionType;}get PivotTableChangeTypeEnum(){return e.PivotTableChangeTypeEnum;}get PivotDateGroupFieldDateTypeEnum(){return e.PivotDateGroupFieldDateTypeEnum;}get PivotShowAsTypeEnum(){return e.PivotShowAsTypeEnum;}get PivotShowAsBaseItemTypeEnum(){return e.PivotShowAsBaseItemTypeEnum;}get PivotLayoutTypeEnum(){return e.PivotLayoutTypeEnum;}get PivotSubtotalPositionEnum(){return e.PivotSubtotalPositionEnum;}get PivotCallbackEnum(){return e.PivotCallbackEnum;}get PivotDataFieldTypeEnum(){return e.PivotDataFieldTypeEnum;}get PivotDateGroupFieldDateSystemEnum(){return e.PivotDateGroupFieldDateSystemEnum;}get PivotCellStyleTypeEnum(){return e.PivotCellStyleTypeEnum;}get PivotViewCellValueTypeEnum(){return e.PivotViewCellValueTypeEnum;}};i.FEnum["extend"](h);var g=class extends i.FEventName{get PivotTableAdded(){return"PivotTableAdded";}get BeforePivotTableAdd(){return"BeforePivotTableAdd";}get PivotTableRemoved(){return"PivotTableRemoved";}get PivotTableMoved(){return"PivotTableMoved";}get PivotTableRendered(){return"PivotTableRendered";}get PivotTableFieldAdded(){return"PivotTableFieldAdded";}get PivotTableFieldRemoved(){return"PivotTableFieldRemoved";}get PivotTableFieldMoved(){return"PivotTableFieldMoved";}get PivotTableFieldCollapseChanged(){return"PivotTableFieldCollapseChanged";}get PivotTableFieldFilterChanged(){return"PivotTableFieldFilterChanged";}get PivotTableFieldSortChanged(){return"PivotTableFieldSortChanged";}get PivotTableFieldSettingChanged(){return"PivotTableFieldSettingChanged";}get PivotTableValuePositionChanged(){return"PivotTableValuePositionChanged";}};i.FEventName["extend"](g);const _="YYYY-MM-DD";function v(v457,v458=n.DateSystem["Date1900"]){return(0,n.excelDateTimeSerial)(new Date(v457),v458);}function y(v459,v460,v461,v462){let v463=[],v464=[],v465=[],{showRowGrandTotal:v466,showRowSubTotal:v467}=v462,{cornerView:v468,colView:v469,rowView:v470,dataView:v471,formatMap:v472}=v460,v473=v468.getRowCount(),v474=v468.getColCount();for(let v382=0;v382<v473;v382++)for(let v87=0;v87<v474;v87++){var v475;let v46={...((v475=v468.data)==null||(v475=v475[v382])==null?undefined:v475[v87])};v46.v&&(v463[v382]||(v463[v382]=[]),v465[v382]||(v465[v382]=[]),v463[v382][v87]=v46.v,v465[v382][v87]=v46.v);}for(let v383=0;v383<v469.getRowCount();v383++){var v476;let v88=v469==null||(v476=v469.headerMap)==null||(v476=v476[v383])==null?undefined:v476.tableFieldId,v89=v88?v472[v88]:"";for(let v47=0;v47<v469.getColCount();v47++){var v477;let v26={...((v477=v469.data)==null||(v477=v477[v383])==null?undefined:v477[v47])};if((v26==null?undefined:v26.v)!==undefined){let v15=v89?n.numfmt["format"](v89,Number(v26.v)):v26.v;(v26==null?undefined:v26.s)===e.PivotCellStyleTypeEnum["Subtotal"]?v15=v461?"小计 "+v15:"Total "+v15:(v26==null?undefined:v26.s)===e.PivotCellStyleTypeEnum["GrandTotal"]&&(v15=v461?"总计\x20"+v15:"Grand Total "+v15),(v26==null?undefined:v26.t)===e.PivotViewCellValueTypeEnum["blank"]&&(v15=v461?"（空白）":"(blank)"),(v26==null?undefined:v26.t)===e.PivotViewCellValueTypeEnum["other"]&&(v15=v461?"（其他）":"(other)"),v463[v383]||(v463[v383]=[]),v465[v383]||(v465[v383]=[]),v463[v383][v47+v474]=v15,v465[v383][v47+v474]=v15;}}}let v478=0,v479=0,v480=0;for(let v384=0;v384<v470.getRowCount();v384++){let v90=v470.info[v384];if(!v467&&v90.isBottomTotal&&v90.level!==0){v480++,v479=0;continue;}if(!(!v466&&v90.isBottomTotal&&v90.level===0)){for(let v27=0;v27<v470.getColCount();v27++){var v481,v482;let v16={...((v481=v470.data)==null||(v481=v481[v384])==null?undefined:v481[v27])},v17=v470==null||(v482=v470.headerMap)==null||(v482=v482[v27])==null?undefined:v482.tableFieldId,v18=v17?v472[v17]:"";if((v16==null?undefined:v16.v)!==undefined){let v1=v18?n.numfmt["format"](v18,Number(v16.v)):v16.v;(v16==null?undefined:v16.s)===e.PivotCellStyleTypeEnum["Subtotal"]?v1=v461?"小计 "+v1:"Total "+v1:(v16==null?undefined:v16.s)===e.PivotCellStyleTypeEnum["GrandTotal"]&&(v1=v461?"总计 "+v1:"Grand Total "+v1),(v16==null?undefined:v16.t)===e.PivotViewCellValueTypeEnum["blank"]&&(v1=v461?"（空白）":"(blank)"),(v16==null?undefined:v16.t)===e.PivotViewCellValueTypeEnum["other"]&&(v1=v461?"（其他）":"(other)"),v463[v478+v473]||(v463[v478+v473]=[]);let v2=v464[v480];v2||(v2=[...v465],v464[v480]=v2),v2[v479+v473]||(v2[v479+v473]=[]),v2[v479+v473][v27]=v1,v463[v478+v473][v27]=v1;}}v478++,v470.info[v384].isBottomTotal?(v480++,v479=0):v479++;}}v478=0,v480=0,v479=0;for(let v385=0;v385<v471.getRowCount();v385++){let v91=v470.info[v385];if(!v467&&v91.isBottomTotal&&v91.level!==0){v480++,v479=0;continue;}if(!(!v466&&v91.isBottomTotal&&v91.level===0)){for(let v28=0;v28<v471.getColCount();v28++){var v483;let v19={...((v483=v471.data)==null||(v483=v483[v385])==null?undefined:v483[v28])};if(v19.v){let v3=v470.info[v385].valueIndex,v4=v469.info[v28].valueIndex,v5=Math.max(v3,v4),v6=v459.getValueFields().concat(),v7="";v7=v5<0?v6[0]??"":v6[v5]??"";let v8=v472[v7]??"";v463[v478+v473]||(v463[v478+v473]=[]);let v9=v464[v480];v9||(v9=[...v465],v464[v480]=v9),v9[v479+v473]||(v9[v479+v473]=[]);let v10=v8?n.numfmt["format"](v8,Number(v19.v)):v19.v;v9[v479+v473][v28+v474]=v10,v463[v478+v473][v28+v474]=v10;}}v478++,v470.info[v385].isBottomTotal?(v480++,v479=0):v479++;}}return{dataArr:v463,dataArrWithSplit:v464};}var b=class{constructor(v386,v387,v388,v389){l(this,"_pivot",undefined),l(this,"_sourceData",undefined),l(this,"_injector",undefined),l(this,"_isZhCN",undefined),l(this,"_id",undefined),this._injector=v386,this._pivot=v387,this._sourceData=v388,this._id=v389;let v390=this._injector["get"](n.LocaleService);this._isZhCN=v390.getCurrentLocale()===n.LocaleType["ZH_CN"];}_getSourceIdByName(v391){let v392=this._pivot["getDataFieldIdByDisplayName"](v391);if(!v392)throw Error("[PivotTable]: The field name "+v391+" is not found in the pivot table.");return v392;}addFieldWithName(v393,v394){let v395=this._getSourceIdByName(v393),v396=this._pivot["addFieldWithSourceId"](v395,v394);if(!v396)throw Error("[PivotTable]: add field "+v393+" failed.");if(v394===e.PivotTableFiledAreaEnum["Value"]){let v92=v396.getId(),v93=this._pivot["getDataFieldByTableId"](v92);if(v93){let v48=v93==null?undefined:v93.getFieldDataType();this._pivot["setSubtotalType"](v92,v48===e.PivotDataFieldDataTypeEnum["number"]?e.PivotSubtotalTypeEnum["sum"]:e.PivotSubtotalTypeEnum["count"]);}let v94=this._pivot["getValueIndex"](),v95=this._pivot["getValuePosition"](),v96=this._pivot["getFieldCountByArea"](e.PivotTableFiledAreaEnum["Value"]);if(v94===-1&&v96>1){let v49=v95===e.PivotTableValuePositionEnum["None"]?e.PivotTableValuePositionEnum["Column"]:v95,v50=v49===e.PivotTableValuePositionEnum["Row"]?e.PivotTableFiledAreaEnum["Row"]:e.PivotTableFiledAreaEnum["Column"];this._pivot["updateValuePosition"](v49,this._pivot["getFieldCountByArea"](v50));}}else{if(v394===e.PivotTableFiledAreaEnum["Row"]||v394===e.PivotTableFiledAreaEnum["Column"]){let v51=v396.getId(),v52=this._pivot["getDataFieldByTableId"](v51);if(v52&&(v52==null?undefined:v52.getFieldDataType())===e.PivotDataFieldDataTypeEnum["date"]){let v29=v52.getformat();v29&&this._pivot["setFieldFormat"](v51,v29);}}}return v396;}addFilterFieldWithName(v397,v398){let v399=this._getSourceIdByName(v397),v400=this._pivot["addFieldWithSourceId"](v399,e.PivotTableFiledAreaEnum["Filter"]);return v400.setFilterInfo(v398),v400;}addValueFieldWithName(v401,v402){let v403=this.addFieldWithName(v401,e.PivotTableFiledAreaEnum["Value"]);return v402!=null&&v402.subtotal&&v403.setSubtotal(v402==null?undefined:v402.subtotal),v403;}removeFieldWithName(v404){let v405=this._getSourceIdByName(v404);this._pivot["getTableFieldsByDataFieldId"](v405).forEach(v97=>{let v98=v97.getId();this._pivot["removeField"](v98);});}getResultByCalculate(v406={}){let v407=this._pivot["query"](),{dataArr:v408,dataArrWithSplit:v409}=y(this._pivot,v407,this._isZhCN,v406);return{dataArr:v408,dataArrWithSplit:v409};}getNameWithColumnIndex(v410){return this._pivot["getFieldDisplayNames"]()[v410];}reset(){this._pivot["reset"]();}resetDimension(v411){this._pivot["reset"](v411);}getFieldDataTypeByColumnIndex(v412){let v413=this._pivot["dataFieldsCollection"],v414=v413.getFieldIds()[v412];if(v414)return v413.getFieldById(v414).getFieldDataType();}getFieldDataTypeByFieldName(v415){let v416=this._getSourceIdByName(v415),v417=this._pivot["dataFieldsCollection"].getFieldById(v416);return v417==null?undefined:v417.getFieldDataType();}getDimensionInfo(){let v418={};return[[e.PivotTableFiledAreaEnum["Row"],"row"],[e.PivotTableFiledAreaEnum["Column"],"column"],[e.PivotTableFiledAreaEnum["Filter"],"filter"],[e.PivotTableFiledAreaEnum["Value"],"value"]].forEach(v99=>{let[v100,v101]=v99;this._pivot["iterateFieldByArea"](v100,v53=>{v418[v101]||(v418[v101]=[]),v418[v101].push(v53.getSourceName());});}),Object.keys(v418).length>0?v418:undefined;}getPivotSourceData(){return this._sourceData;}getLayout(){return this._pivot["getLayout"]();}setLayout(v419){this._pivot["setLayout"](v419);}setOptions(v420){this._pivot["setOptions"](v420);}remove(){this._pivot["dispose"]();}},x=class extends e.DataFieldManager{getRangeData(v421){if(Array.isArray(v421)&&v421.length>0){let v102=[],v103=v421[0],v104={},v105=v421[1];for(let v54=0;v54<v105.length;v54++){let v30=v105[v54];if(typeof v30=="object"&&v30 instanceof Date)v104[v54]=_;else{if(typeof v30=="string"){let v11=new Date(v30);Number.isNaN(v11.getTime())||(v104[v54]=_);}}}for(let v55=1;v55<v421.length;v55++){let v31=v421[v55],v32=[];for(let v20=0;v20<v31.length;v20++)if(v104[v20]){let v12=v31[v20],v13={v:v((typeof v12=="object"&&v12 instanceof Date?v12:new Date(v12)).getTime()),f:v104[v20]};v32.push(v13);}else v32.push(v31[v20]);v102.push(v32);}return{header:v103,data:v102};}else throw Error("[DataFieldManager]: Data is not a valid array");}},S=class extends i.FUniver{_initialize(v422){let v423=v422.get(n.ICommandService);this.disposeWithMe(this.registerEventHandler(this.Event["BeforePivotTableAdd"],()=>v423.beforeCommandExecuted(v56=>{switch(v56.id){case t.MovePivotTableCommand["id"]:{let v21=v56.params;this._fireBeforeMovePivotTableEvent(v21);break;}}}))),this.disposeWithMe(this.registerEventHandler(this.Event["BeforePivotTableMove"],()=>v423.beforeCommandExecuted(v57=>{switch(v57.id){case t.AddPivotTableWithConfigCommand["id"]:case t.AddPivotTableCommand["id"]:{let v22=v57.params;this._fireBeforeAddPivotTableEvent(v22);break;}}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableAdded"],()=>v423.onCommandExecuted(v58=>{if(v58.id===t.AddPivotTableWithConfigCommand["id"]||v58.id===t.AddPivotTableCommand["id"]){let v33=v58.params;this._fireAddPivotTableEvent(v33);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableMoved"],()=>v423.onCommandExecuted(v59=>{if(v59.id===t.MovePivotTableCommand["id"]){let v34=v59.params;this._fireMovedPivotTableEvent(v34);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableRemoved"],()=>v423.onCommandExecuted(v60=>{if(v60.id===t.RemovePivotTableMutation["id"]){let v35=v60.params;this._firePivotTableRemovedEvent(v35);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldAdded"],()=>v423.onCommandExecuted(v61=>{if(v61.id===t.AddPivotFieldCommand["id"]){let v36=v61.params;this._firePivotTableFieldAddedEvent(v36);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldRemoved"],()=>v423.onCommandExecuted(v62=>{if(v62.id===t.RemovePivotFieldCommand["id"]){let v37=v62.params;this._firePivotTableFieldRemovedEvent(v37);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldMoved"],()=>v423.onCommandExecuted(v63=>{if(v63.id===t.MovePivotFieldCommand["id"]){let v38=v63.params;this._firePivotTableFieldMovedEvent(v38);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldCollapseChanged"],()=>v423.onCommandExecuted(v64=>{if(v64.id===t.SetPivotCollapseCommand["id"]){let v39=v64.params;this._firePivotTableFieldCollapsedEvent(v39);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldFilterChanged"],()=>v423.onCommandExecuted(v65=>{if(v65.id===t.SetPivotFilterCommand["id"]){let v40=v65.params;this._firePivotTableFieldFilterChangedEvent(v40);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldSortChanged"],()=>v423.onCommandExecuted(v66=>{if(v66.id===t.SetPivotSortCommand["id"]){let v41=v66.params;this._firePivotTableFieldSortChangedEvent(v41);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldSettingChanged"],()=>v423.onCommandExecuted(v67=>{if(v67.id===t.UpdatePivotFieldSettingCommand["id"]){let v42=v67.params;this._firePivotTableFieldSettingChangedEvent(v42);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableValuePositionChanged"],()=>v423.onCommandExecuted(v68=>{if(v68.id===t.UpdatePivotValuePositionCommand["id"]){let v43=v68.params;this._firePivotTableValuePositionChangedEvent(v43);}})));let v424=v422.get(n.LifecycleService),v425=new n["DisposableCollection"]();this.disposeWithMe(v424.lifecycle$["subscribe"](v106=>{if(v106===n.LifecycleStages["Ready"]){if(!v422.has(t.SheetsPivotTableAdaptorModel))return;let v69=v422.get(t.SheetsPivotTableAdaptorModel);v425.dispose(),v425.add(this.registerEventHandler(this.Event["PivotTableRendered"],()=>v69.viewUpdate$["pipe"]((0,a.auditTime)(50)).subscribe(v23=>{this._fireRenderPivotTableEvent(v23);}))),this.disposeWithMe(v425);}}));}_firePivotTableFieldAddedEvent(v426){if(v426){let{unitId:v107,subUnitId:v108,pivotTableId:v109,dataFieldId:v110,fieldArea:v111,index:v112}=v426;this.fireEvent(this.Event["PivotTableFieldAdded"],{unitId:v107,subUnitId:v108,pivotTableId:v109,dataFieldId:v110,fieldArea:v111,index:v112});}}_firePivotTableFieldRemovedEvent(v427){if(v427){let{unitId:v113,subUnitId:v114,pivotTableId:v115,fieldIds:v116}=v427;this.fireEvent(this.Event["PivotTableFieldRemoved"],{unitId:v113,subUnitId:v114,pivotTableId:v115,fieldIds:v116.concat()});}}_firePivotTableFieldMovedEvent(v428){if(v428){let{unitId:v117,subUnitId:v118,pivotTableId:v119,fieldId:v120,area:v121,index:v122}=v428;this.fireEvent(this.Event["PivotTableFieldMoved"],{unitId:v117,subUnitId:v118,pivotTableId:v119,fieldId:v120,area:v121,index:v122});}}_firePivotTableFieldCollapsedEvent(v429){if(v429){let{unitId:v123,subUnitId:v124,row:v125,col:v126,collapse:v127}=v429;this.fireEvent(this.Event["PivotTableFieldCollapseChanged"],{unitId:v123,subUnitId:v124,row:v125,col:v126,collapse:v127});}}_firePivotTableFieldFilterChangedEvent(v430){if(v430){let{unitId:v128,subUnitId:v129,pivotTableId:v130,tableFieldId:v131,items:v132,isAll:v133}=v430;this.fireEvent(this.Event["PivotTableFieldFilterChanged"],{unitId:v128,subUnitId:v129,pivotTableId:v130,tableFieldId:v131,items:v132.concat(),isAll:v133});}}_firePivotTableFieldSortChangedEvent(v431){if(v431){let{unitId:v134,subUnitId:v135,pivotTableId:v136,tableFieldId:v137,info:v138}=v431;this.fireEvent(this.Event["PivotTableFieldSortChanged"],{unitId:v134,subUnitId:v135,pivotTableId:v136,tableFieldId:v137,info:v138?{...v138}:undefined});}}_firePivotTableFieldSettingChangedEvent(v432){if(v432){let{unitId:v139,subUnitId:v140,tableFieldId:v141,pivotTableId:v142,displayName:v143,format:v144,subtotalType:v145,showDataAs:v146,tableFieldInfo:v147,dataFieldInfo:v148}=v432;this.fireEvent(this.Event["PivotTableFieldSettingChanged"],{unitId:v139,subUnitId:v140,tableFieldId:v141,pivotTableId:v142,displayName:v143,format:v144,subtotalType:v145,showDataAs:v146===undefined?undefined:{...v146},tableFieldInfo:v147,dataFieldInfo:v148});}}_firePivotTableValuePositionChangedEvent(v433){if(v433){let{pivotTableId:v149,position:v150,index:v151}=v433;this.fireEvent(this.Event["PivotTableValuePositionChanged"],{pivotTableId:v149,position:v150,index:v151});}}_fireAddPivotTableEvent(v434){if(v434){let{positionType:v152,pivotTableId:v153,pivotTableConfig:v154}=v434,{targetCellInfo:v155,sourceRangeInfo:v156}=v154,{unitId:v157}=v155;this.fireEvent(this.Event["PivotTableAdded"],{unitId:v157,positionType:v152,pivotTableId:v153,sourceRangeInfo:{startRow:v156.range["startRow"],endRow:v156.range["endRow"],startColumn:v156.range["startColumn"],endColumn:v156.range["endColumn"],unitId:v156.unitId,subUnitId:v156.subUnitId,sheetName:v156.sheetName},targetCellInfo:{row:v155.row,column:v155.col,sheetName:v155.sheetName,unitId:v155.unitId,subUnitId:v155.subUnitId}});}}_fireBeforeAddPivotTableEvent(v435){if(v435){let{positionType:v158,pivotTableId:v159,pivotTableConfig:v160}=v435,{targetCellInfo:v161,sourceRangeInfo:v162}=v160,{unitId:v163}=v161,v164={unitId:v163,positionType:v158,pivotTableId:v159,sourceRangeInfo:{startRow:v162.range["startRow"],endRow:v162.range["endRow"],startColumn:v162.range["startColumn"],endColumn:v162.range["endColumn"],unitId:v162.unitId,subUnitId:v162.subUnitId,sheetName:v162.sheetName},targetCellInfo:{row:v161.row,column:v161.col,sheetName:v161.sheetName,unitId:v161.unitId,subUnitId:v161.subUnitId},cancel:false};if(this.fireEvent(this.Event["BeforePivotTableAdd"],v164),v164.cancel)throw Error("Before\x20add\x20pivot\x20table\x20event\x20canceled");}}_firePivotTableRemovedEvent(v436){if(v436){let{unitId:v165,pivotTableId:v166}=v436;this.fireEvent(this.Event["PivotTableRemoved"],{unitId:v165,pivotTableId:v166});}}_fireBeforeMovePivotTableEvent(v437){if(v437){let{originTargetInfo:v167,pivotTableId:v168,targetCellInfo:v169}=v437,{unitId:v170}=v167,v171=this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(v167.unitId,v167.subUnitId,v168);if(!v171)return;let v172={unitId:v170,pivotTableId:v168,originTargetInfo:{row:v171.targetCellInfo["row"],column:v171.targetCellInfo["col"],unitId:v171.targetCellInfo["unitId"],subUnitId:v171.targetCellInfo["subUnitId"]},targetCellInfo:{row:v169.row,column:v169.col,unitId:v169.unitId,subUnitId:v169.subUnitId},cancel:false};if(this.fireEvent(this.Event["BeforePivotTableMove"],v172),v172.cancel)throw Error("Before move pivot table event canceled");}}_fireMovedPivotTableEvent(v438){if(v438){let{originTargetInfo:v173,pivotTableId:v174,targetCellInfo:v175}=v438,{unitId:v176}=v173,v177=this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(v173.unitId,v173.subUnitId,v174);if(!v177)return;this.fireEvent(this.Event["PivotTableMoved"],{unitId:v176,pivotTableId:v174,originTargetInfo:{row:v177.targetCellInfo["row"],column:v177.targetCellInfo["col"],unitId:v177.targetCellInfo["unitId"],subUnitId:v177.targetCellInfo["subUnitId"]},targetCellInfo:{row:v175.row,column:v175.col,unitId:v175.unitId,subUnitId:v175.subUnitId}});}}_fireRenderPivotTableEvent(v439){if(v439){let{unitId:v178,subUnitId:v179,pivotTableId:v180,type:v181,rangesCache:v182,isEmpty:v183}=v439;this.fireEvent(this.Event["PivotTableRendered"],{unitId:v178,subUnitId:v179,pivotTableId:v180,changeType:v181,isEmpty:!!v183,rangeInfo:v182});}}generatePivotTable(v440,v441){let v442=(v441?new v441():new x()).createCollection("data",v440),v443=v440[0];v442.getFieldIds().forEach((v184,v185)=>{v442.setDisplayName(v184,v443[v185]);});let v444=(0,e.generateHexNumber)(8),v445=new e["PivotTable"](v442,undefined,v444);return new b(this._injector,v445,v440,v444);}};i.FUniver["extend"](S);
+let e = require("@univerjs-pro/engine-pivot"),
+  t = require("@univerjs-pro/sheets-pivot"),
+  n = require("@univerjs/core"),
+  r = require("@univerjs/sheets/facade"),
+  i = require("@univerjs/core/facade"),
+  a = require("rxjs");
+function o(var_core_value_sigFDEE) {
+  "@babel/helpers - typeof";
+
+  return o = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigC4B1) {
+    return typeof var_core_value_sigC4B1;
+  } : function (var_core_value_sig1BD9) {
+    return var_core_value_sig1BD9 && typeof Symbol == "function" && var_core_value_sig1BD9.constructor === Symbol && var_core_value_sig1BD9 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig1BD9;
+  }, o(var_core_value_sigFDEE);
+}
+function s(var_core_value_sigA676, var_core_value_sigC27E) {
+  if (o(var_core_value_sigA676) != "object" || !var_core_value_sigA676) return var_core_value_sigA676;
+  var var_core_value_sigA70D = var_core_value_sigA676[Symbol.toPrimitive];
+  if (var_core_value_sigA70D !== undefined) {
+    var var_core_value_sigCE10 = var_core_value_sigA70D.call(var_core_value_sigA676, var_core_value_sigC27E || "default");
+    if (o(var_core_value_sigCE10) != "object") return var_core_value_sigCE10;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigC27E === "string" ? String : Number)(var_core_value_sigA676);
+}
+function c(var_core_value_sigA386) {
+  var var_core_value_sigCD82 = s(var_core_value_sigA386, "string");
+  return o(var_core_value_sigCD82) == "symbol" ? var_core_value_sigCD82 : var_core_value_sigCD82 + "";
+}
+function l(var_core_value_sig44DD, var_core_value_sig96FA, var_core_value_sigAB68) {
+  return (var_core_value_sig96FA = c(var_core_value_sig96FA)) in var_core_value_sig44DD ? Object.defineProperty(var_core_value_sig44DD, var_core_value_sig96FA, {
+    value: var_core_value_sigAB68,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig44DD[var_core_value_sig96FA] = var_core_value_sigAB68, var_core_value_sig44DD;
+}
+const u = {
+  type: e.PivotShowAsTypeEnum["normal"],
+  baseFieldId: "",
+  baseItem: ""
+};
+function d(var_core_value_sig040A) {
+  return {
+    ...var_core_value_sig040A,
+    expected: Array.isArray(var_core_value_sig040A.expected) ? var_core_value_sig040A.expected["concat"]() : var_core_value_sig040A.expected
+  };
+}
+var f = class {
+    constructor(var_core_value_sigE43E, var_core_value_sigA937, var_core_value_sigCAD5, var_core_value_sigE503) {
+      l(this, "unitId", undefined), l(this, "subUnitId", undefined), l(this, "pivotTableId", undefined), l(this, "_injector", undefined), this.unitId = var_core_value_sigE43E, this.subUnitId = var_core_value_sigA937, this.pivotTableId = var_core_value_sigCAD5, this._injector = var_core_value_sigE503;
+    }
+    getConfig() {
+      return this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId);
+    }
+    getId() {
+      return this.pivotTableId;
+    }
+    getSourceRangeInfo() {
+      var var_core_value_sig48DD;
+      let var_core_value_sig5E6A = (var_core_value_sig48DD = this.getConfig()) == null ? undefined : var_core_value_sig48DD.sourceRangeInfo;
+      if (var_core_value_sig5E6A) return {
+        ...var_core_value_sig5E6A,
+        range: {
+          ...var_core_value_sig5E6A.range
+        }
+      };
+    }
+    getTargetCellInfo() {
+      var var_core_value_sigB7FC;
+      let var_core_value_sig9CD9 = (var_core_value_sigB7FC = this.getConfig()) == null ? undefined : var_core_value_sigB7FC.targetCellInfo;
+      if (var_core_value_sig9CD9) return {
+        ...var_core_value_sig9CD9
+      };
+    }
+    getOptions() {
+      var var_core_value_sigFD0C;
+      let var_core_value_sig849B = (var_core_value_sigFD0C = this.getConfig()) == null ? undefined : var_core_value_sigFD0C.fieldsConfig["options"];
+      if (var_core_value_sig849B) return {
+        ...var_core_value_sig849B
+      };
+    }
+    getLayout() {
+      var var_core_value_sig5F1A;
+      let var_core_value_sigB455 = (var_core_value_sig5F1A = this.getConfig()) == null ? undefined : var_core_value_sig5F1A.fieldsConfig;
+      if (var_core_value_sigB455) return var_core_value_sigB455.layout ?? e.PivotLayoutTypeEnum["tabular"];
+    }
+    getPivotTableMatrixInfo() {
+      return this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableMatrixInfo(this.unitId, this.subUnitId, this.pivotTableId);
+    }
+    setFieldsConfig(var_core_value_sig5241) {
+      let var_core_value_sigC6E5 = this._injector["get"](n.ICommandService),
+        var_core_value_sigCEFB = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          pivotTableConfig: var_core_value_sig5241
+        };
+      return var_core_value_sigC6E5.executeCommand(t.SetPivotFieldsConfigCommand["id"], var_core_value_sigCEFB);
+    }
+    setOptions(var_core_value_sig1537) {
+      let var_core_value_sigE4C6 = this._injector["get"](n.ICommandService),
+        var_core_value_sig4313 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          options: var_core_value_sig1537
+        };
+      return var_core_value_sigE4C6.executeCommand(t.SetPivotOptionCommand["id"], var_core_value_sig4313);
+    }
+    setLayout(var_core_value_sigFC87) {
+      let var_core_value_sig156F = this._injector["get"](n.ICommandService),
+        var_core_value_sigDD51 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          layout: var_core_value_sigFC87
+        };
+      return var_core_value_sig156F.executeCommand(t.SetPivotLayoutCommand["id"], var_core_value_sigDD51);
+    }
+    setSourceRange(var_core_value_sigF057) {
+      let var_core_value_sig72F6 = this._injector["get"](n.ICommandService),
+        var_core_value_sig9FBA = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          token: this.pivotTableId,
+          dataRangeInfo: var_core_value_sigF057
+        };
+      return var_core_value_sig72F6.executeCommand(t.UpdatePivotTableSourceRangeCommand["id"], var_core_value_sig9FBA);
+    }
+    updateSourceRange(var_core_value_sigFE01) {
+      return this.setSourceRange(var_core_value_sigFE01);
+    }
+    reset(var_core_value_sigA2CE) {
+      let var_core_value_sig1975 = this._injector["get"](n.ICommandService),
+        var_core_value_sig6EA1 = {
+          unitId: this.unitId,
+          subUnitId: this.subUnitId,
+          pivotTableId: this.pivotTableId,
+          resetArea: var_core_value_sigA2CE
+        };
+      return var_core_value_sig1975.executeCommand(t.ResetPivotFieldsConfigCommand["id"], var_core_value_sig6EA1);
+    }
+    getPivotTableId() {
+      return this.pivotTableId;
+    }
+    getFieldSetting(var_core_value_sig029F) {
+      let var_core_value_sig3767 = this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_core_value_sig670B = var_core_value_sig3767 == null ? undefined : var_core_value_sig3767.fieldsConfig;
+      if (var_core_value_sig670B) return var_core_value_sig670B.dimension[var_core_value_sig029F] || var_core_value_sig670B.measure[var_core_value_sig029F];
+    }
+    getSourceFieldsInfo() {
+      let var_core_value_sig6912 = this._injector,
+        var_core_value_sigE235 = this.unitId,
+        var_core_value_sig7664 = this.pivotTableId,
+        var_core_value_sig2281 = var_core_value_sig6912.get(t.SheetsPivotTableConfigModel).getCollection(var_core_value_sigE235, var_core_value_sig7664);
+      if (var_core_value_sig2281) {
+        let var_core_value_sigA621 = var_core_value_sig2281.fieldIds,
+          var_core_value_sigBBFF = var_core_value_sig2281.fields,
+          var_core_value_sig8889 = var_core_value_sig2281.displayNameRecord,
+          var_core_value_sig32F8 = [];
+        for (let var_core_value_sig12F2 of var_core_value_sigA621) {
+          let var_core_value_sig186C = var_core_value_sigBBFF[var_core_value_sig12F2];
+          if (var_core_value_sig186C) {
+            let var_core_value_sig1BBD = {
+              id: var_core_value_sig12F2,
+              name: var_core_value_sig186C.name,
+              fieldDataType: var_core_value_sig186C.fieldDataType
+            };
+            var_core_value_sig8889 && var_core_value_sig8889[var_core_value_sig12F2] !== undefined && (var_core_value_sig1BBD.displayName = var_core_value_sig8889[var_core_value_sig12F2]), var_core_value_sig32F8.push(var_core_value_sig1BBD);
+          }
+        }
+        return var_core_value_sig32F8;
+      }
+      return [];
+    }
+    getValueFilter(var_core_value_sig5E86) {
+      var var_core_value_sig6998;
+      let var_core_value_sigF639 = this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_core_value_sigEAE5 = var_core_value_sigF639 == null ? undefined : var_core_value_sigF639.fieldsConfig["valueFilter"],
+        var_core_value_sigE94C = var_core_value_sigEAE5 == null || (var_core_value_sig6998 = var_core_value_sigEAE5.find(var_core_value_sig5B67 => var_core_value_sig5B67.fieldId === var_core_value_sig5E86)) == null ? undefined : var_core_value_sig6998.filterInfo;
+      return var_core_value_sigE94C ? d(var_core_value_sigE94C) : undefined;
+    }
+    getValueFilters() {
+      let var_core_value_sig6D47 = this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_core_value_sigCB82 = var_core_value_sig6D47 == null ? undefined : var_core_value_sig6D47.fieldsConfig["valueFilter"];
+      return (var_core_value_sigCB82 == null ? undefined : var_core_value_sigCB82.map(({
+        fieldId: var_core_value_sig1758,
+        filterInfo: var_core_value_sig4805
+      }) => ({
+        fieldId: var_core_value_sig1758,
+        filterInfo: d(var_core_value_sig4805)
+      }))) || [];
+    }
+    getFieldIdsByArea(var_core_value_sigCF4E) {
+      let var_core_value_sig6CAD = this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(this.unitId, this.subUnitId, this.pivotTableId),
+        var_core_value_sig8CF5 = var_core_value_sig6CAD == null ? undefined : var_core_value_sig6CAD.fieldsConfig;
+      if (var_core_value_sig8CF5) switch (var_core_value_sigCF4E) {
+        case e.PivotTableFiledAreaEnum["Column"]:
+          return var_core_value_sig8CF5.columnFields["concat"]();
+        case e.PivotTableFiledAreaEnum["Row"]:
+          return var_core_value_sig8CF5.rowFields["concat"]();
+        case e.PivotTableFiledAreaEnum["Value"]:
+          return var_core_value_sig8CF5.valueFields["concat"]();
+        case e.PivotTableFiledAreaEnum["Filter"]:
+          return var_core_value_sig8CF5.filterFields["concat"]();
+        case e.PivotTableFiledAreaEnum["Hidden"]:
+          return var_core_value_sig8CF5.hiddenFields["concat"]();
+      }
+      return [];
+    }
+    getPivotTableRangeInfo() {
+      var var_core_value_sigDDD7;
+      let var_core_value_sigB2CE = (var_core_value_sigDDD7 = this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableRangeInfo(this.unitId, this.subUnitId, this.pivotTableId)) == null ? undefined : var_core_value_sigDDD7.rangeInfo;
+      if (var_core_value_sigB2CE) return (0, t.unionPivotViewRange)(var_core_value_sigB2CE);
+    }
+    async remove() {
+      return this._injector["get"](n.ICommandService).executeCommand(t.RemovePivotTableCommand["id"], {
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        pivotTableId: this.pivotTableId
+      });
+    }
+    async addField(var_core_value_sig443C, var_core_value_sig39B1, var_core_value_sig210D) {
+      let var_core_value_sigB4B4 = this._injector,
+        var_core_value_sigD407 = this.unitId,
+        var_core_value_sig63F3 = this.subUnitId,
+        var_core_value_sig6A71 = this.pivotTableId,
+        var_core_value_sig3BF6 = var_core_value_sigB4B4.get(n.ICommandService),
+        var_core_value_sig38CE = var_core_value_sigB4B4.get(t.SheetsPivotTableConfigModel),
+        var_core_value_sig62B7 = var_core_value_sig38CE.getPivotTableConfig(var_core_value_sigD407, var_core_value_sig63F3, var_core_value_sig6A71),
+        var_core_value_sig37A8 = var_core_value_sig38CE.getCollection(var_core_value_sigD407, var_core_value_sig6A71);
+      if (!var_core_value_sig62B7 || !var_core_value_sig37A8) return false;
+      let var_core_value_sigA90D = var_core_value_sig443C;
+      typeof var_core_value_sigA90D == "number" && (var_core_value_sigA90D = var_core_value_sig38CE.getCollection(var_core_value_sigD407, var_core_value_sig6A71).fieldIds[var_core_value_sig443C]);
+      let var_core_value_sig7A3C = {
+        unitId: var_core_value_sigD407,
+        subUnitId: var_core_value_sig63F3,
+        pivotTableId: var_core_value_sig6A71,
+        dataFieldId: var_core_value_sigA90D,
+        fieldArea: var_core_value_sig39B1,
+        index: var_core_value_sig210D
+      };
+      return var_core_value_sig3BF6.executeCommand(t.AddPivotFieldCommand["id"], var_core_value_sig7A3C);
+    }
+    async removeField(var_core_value_sig0511) {
+      let var_core_value_sig1F44 = this._injector,
+        var_core_value_sigCB04 = this.unitId,
+        var_core_value_sig947E = this.subUnitId,
+        var_core_value_sig4545 = this.pivotTableId,
+        var_core_value_sigF39A = var_core_value_sig1F44.get(n.ICommandService),
+        var_core_value_sigF79C = {
+          unitId: var_core_value_sigCB04,
+          subUnitId: var_core_value_sig947E,
+          pivotTableId: var_core_value_sig4545,
+          fieldIds: var_core_value_sig0511
+        };
+      return var_core_value_sigF39A.executeCommand(t.RemovePivotFieldCommand["id"], var_core_value_sigF79C);
+    }
+    async updateFieldPosition(var_core_value_sig2E54, var_core_value_sig7658, var_core_value_sigDCF5) {
+      let var_core_value_sigC786 = this._injector,
+        var_core_value_sigC0D9 = this.unitId,
+        var_core_value_sigF051 = this.subUnitId,
+        var_core_value_sig5825 = this.pivotTableId,
+        var_core_value_sig4EB7 = var_core_value_sigC786.get(n.ICommandService),
+        var_core_value_sig73AF = {
+          unitId: var_core_value_sigC0D9,
+          subUnitId: var_core_value_sigF051,
+          pivotTableId: var_core_value_sig5825,
+          fieldId: var_core_value_sig2E54,
+          area: var_core_value_sig7658,
+          index: var_core_value_sigDCF5
+        };
+      return var_core_value_sig4EB7.executeCommand(t.MovePivotFieldCommand["id"], var_core_value_sig73AF);
+    }
+    async updateValuePosition(var_core_value_sig548A, var_core_value_sigE026) {
+      let var_core_value_sig339E = this._injector,
+        var_core_value_sig7550 = this.unitId,
+        var_core_value_sig2983 = this.subUnitId,
+        var_core_value_sigE1B0 = this.pivotTableId,
+        var_core_value_sigD4FF = var_core_value_sig339E.get(n.ICommandService),
+        var_core_value_sig1E5B = {
+          unitId: var_core_value_sig7550,
+          subUnitId: var_core_value_sig2983,
+          pivotTableId: var_core_value_sigE1B0,
+          position: var_core_value_sig548A,
+          index: var_core_value_sigE026
+        };
+      return var_core_value_sigD4FF.executeCommand(t.UpdatePivotValuePositionCommand["id"], var_core_value_sig1E5B);
+    }
+    async setSubtotalType(var_core_value_sigB680, var_core_value_sig1F64) {
+      return this.setFieldSetting(var_core_value_sigB680, {
+        subtotalType: var_core_value_sig1F64
+      });
+    }
+    async setFieldSetting(var_core_value_sigDD1C, var_core_value_sig2C39) {
+      var var_core_value_sigB7D1;
+      let var_core_value_sig64F0 = this._injector,
+        var_core_value_sig85B1 = this.unitId,
+        var_core_value_sig3141 = this.subUnitId,
+        var_core_value_sig2162 = this.pivotTableId,
+        var_core_value_sig2EAD = var_core_value_sig64F0.get(n.ICommandService),
+        var_core_value_sig6774 = this._getPivotPanelTableFieldInfo(var_core_value_sigDD1C),
+        var_core_value_sig340D = var_core_value_sig6774 ? this._getPivotPanelSourceFieldInfo(var_core_value_sig6774.dataFieldId) : undefined;
+      if (!var_core_value_sig6774 || !var_core_value_sig340D || var_core_value_sig2C39.showDataAs !== undefined && !((var_core_value_sigB7D1 = this.getConfig()) != null && var_core_value_sigB7D1.fieldsConfig["measure"][var_core_value_sigDD1C])) return console.warn("[Pivot Table]: The pivot table field info is invalid"), false;
+      let var_core_value_sig82D4 = {
+        unitId: var_core_value_sig85B1,
+        subUnitId: var_core_value_sig3141,
+        pivotTableId: var_core_value_sig2162,
+        tableFieldId: var_core_value_sigDD1C,
+        displayName: var_core_value_sig2C39.displayName,
+        format: var_core_value_sig2C39.format,
+        subtotalType: var_core_value_sig2C39.subtotalType,
+        showDataAs: var_core_value_sig2C39.showDataAs === undefined ? undefined : {
+          ...var_core_value_sig2C39.showDataAs
+        },
+        tableFieldInfo: var_core_value_sig6774,
+        dataFieldInfo: var_core_value_sig340D
+      };
+      return var_core_value_sig2EAD.executeCommand(t.UpdatePivotFieldSettingCommand["id"], var_core_value_sig82D4);
+    }
+    getShowDataAs(var_core_value_sigBDE4) {
+      var var_core_value_sig7DF1;
+      let var_core_value_sigDC86 = this.getFieldSetting(var_core_value_sigBDE4);
+      if (!(!var_core_value_sigDC86 || !("subtotal" in var_core_value_sigDC86))) return ((var_core_value_sig7DF1 = var_core_value_sigDC86.showDataAs) == null ? undefined : var_core_value_sig7DF1.type) === undefined ? {
+        ...u
+      } : {
+        ...var_core_value_sigDC86.showDataAs
+      };
+    }
+    setShowDataAs(var_core_value_sig0B0C, var_core_value_sigA39E) {
+      return this.setFieldSetting(var_core_value_sig0B0C, {
+        showDataAs: var_core_value_sigA39E
+      });
+    }
+    resetShowDataAs(var_core_value_sigBBEE) {
+      return this.setShowDataAs(var_core_value_sigBBEE, {
+        ...u
+      });
+    }
+    async setLabelSort(var_core_value_sig011D, var_core_value_sig6167) {
+      let var_core_value_sig65A1 = this._injector,
+        var_core_value_sig7F19 = this.unitId,
+        var_core_value_sig7827 = this.subUnitId,
+        var_core_value_sig652C = this.pivotTableId,
+        var_core_value_sig7E32 = var_core_value_sig65A1.get(n.ICommandService),
+        var_core_value_sig4C07 = {
+          unitId: var_core_value_sig7F19,
+          subUnitId: var_core_value_sig7827,
+          tableFieldId: var_core_value_sig011D,
+          pivotTableId: var_core_value_sig652C,
+          info: var_core_value_sig6167
+        };
+      return var_core_value_sig7E32.executeCommand(t.SetPivotSortCommand["id"], var_core_value_sig4C07);
+    }
+    async clearLabelSort(var_core_value_sig79AB) {
+      return this._injector["get"](n.ICommandService).executeCommand(t.SetPivotSortCommand["id"], {
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        pivotTableId: this.pivotTableId,
+        tableFieldId: var_core_value_sig79AB,
+        info: undefined
+      });
+    }
+    async setLabelManualFilter(var_core_value_sig8E74, var_core_value_sig104C, var_core_value_sig841D) {
+      let var_core_value_sig90CB = this._injector,
+        var_core_value_sigBDF5 = this.unitId,
+        var_core_value_sigACC6 = this.subUnitId,
+        var_core_value_sig1614 = this.pivotTableId,
+        var_core_value_sig85C3 = var_core_value_sig90CB.get(n.ICommandService),
+        var_core_value_sigB996 = {
+          unitId: var_core_value_sigBDF5,
+          subUnitId: var_core_value_sigACC6,
+          pivotTableId: var_core_value_sig1614,
+          tableFieldId: var_core_value_sig8E74,
+          items: var_core_value_sig104C,
+          isAll: var_core_value_sig841D
+        };
+      return var_core_value_sig85C3.executeCommand(t.SetPivotFilterCommand["id"], var_core_value_sigB996);
+    }
+    async setValueFilter(var_core_value_sig4BBA, var_core_value_sig6201) {
+      var var_core_value_sig5151;
+      let var_core_value_sigB542 = this._injector,
+        var_core_value_sigBB6C = this.unitId,
+        var_core_value_sigE2BF = this.subUnitId,
+        var_core_value_sigB8C7 = this.pivotTableId,
+        var_core_value_sigA56E = (var_core_value_sig5151 = this.getConfig()) == null ? undefined : var_core_value_sig5151.fieldsConfig,
+        var_core_value_sig1998 = !!(var_core_value_sigA56E && (var_core_value_sigA56E.rowFields["includes"](var_core_value_sig4BBA) || var_core_value_sigA56E.columnFields["includes"](var_core_value_sig4BBA)));
+      if (!var_core_value_sigA56E || !var_core_value_sig1998 || var_core_value_sig6201 !== undefined && (!var_core_value_sigA56E.measure[var_core_value_sig6201.valueFieldId] || !(0, e.isValueFilterOperator)(var_core_value_sig6201.operator))) return false;
+      let var_core_value_sigFF19 = var_core_value_sigB542.get(n.ICommandService),
+        var_core_value_sig43B8 = {
+          unitId: var_core_value_sigBB6C,
+          subUnitId: var_core_value_sigE2BF,
+          pivotTableId: var_core_value_sigB8C7,
+          fieldId: var_core_value_sig4BBA,
+          valueFilterInfo: var_core_value_sig6201 ? d({
+            ...var_core_value_sig6201,
+            type: e.PivotFilterTypeEnum["ValueFilter"]
+          }) : undefined
+        };
+      return var_core_value_sigFF19.executeCommand(t.SetPivotValueFilterCommand["id"], var_core_value_sig43B8);
+    }
+    clearValueFilter(var_core_value_sigD98F) {
+      return this.setValueFilter(var_core_value_sigD98F, undefined);
+    }
+    async renameField(var_core_value_sig66C0, var_core_value_sig9D15) {
+      return this.setFieldSetting(var_core_value_sig66C0, {
+        displayName: var_core_value_sig9D15
+      });
+    }
+    async move(var_core_value_sigB785, var_core_value_sig130F, var_core_value_sigC0E3) {
+      let var_core_value_sig52F7 = this._injector["get"](n.ICommandService),
+        var_core_value_sig866F = this._injector["get"](n.IUniverInstanceService).getUnit(this.unitId),
+        var_core_value_sigDE3D = var_core_value_sig866F == null ? undefined : var_core_value_sig866F.getSheetBySheetName(var_core_value_sigB785);
+      if (!var_core_value_sig866F || !var_core_value_sigDE3D) throw Error("[Pivot\x20Table]:\x20Target\x20sheet\x20is\x20not\x20valid");
+      return var_core_value_sig52F7.executeCommand(t.MovePivotTableCommand["id"], {
+        pivotTableId: this.pivotTableId,
+        targetCellInfo: {
+          subUnitId: var_core_value_sigDE3D.getSheetId(),
+          unitId: this.unitId,
+          row: var_core_value_sig130F,
+          col: var_core_value_sigC0E3
+        },
+        originTargetInfo: {
+          subUnitId: this.subUnitId,
+          unitId: this.unitId
+        }
+      });
+    }
+    async setDateGroupType(var_core_value_sigF175, var_core_value_sig6A18) {
+      let var_core_value_sig4E3D = this._injector,
+        var_core_value_sig49B0 = this.unitId,
+        var_core_value_sig2547 = this.subUnitId,
+        var_core_value_sigBCA9 = this.pivotTableId,
+        var_core_value_sig4CDF = var_core_value_sig4E3D.get(n.ICommandService),
+        var_core_value_sig3F79 = {
+          unitId: var_core_value_sig49B0,
+          subUnitId: var_core_value_sig2547,
+          pivotTableId: var_core_value_sigBCA9,
+          tableFieldId: var_core_value_sigF175,
+          dateType: var_core_value_sig6A18
+        };
+      return var_core_value_sig4CDF.executeCommand(t.SetPivotDateGroupCommand["id"], var_core_value_sig3F79);
+    }
+    async setCellCollapse(var_core_value_sig880E, var_core_value_sigC9ED, var_core_value_sigB57B) {
+      return this._isCellInCurrentPivotTable(var_core_value_sig880E, var_core_value_sigC9ED) ? this._injector["get"](n.ICommandService).executeCommand(t.SetPivotCollapseCommand["id"], {
+        unitId: this.unitId,
+        subUnitId: this.subUnitId,
+        row: var_core_value_sig880E,
+        col: var_core_value_sigC9ED,
+        collapse: var_core_value_sigB57B
+      }) : false;
+    }
+    async drillDown(var_core_value_sig780B, var_core_value_sig7D1B) {
+      return this._isCellInCurrentPivotTable(var_core_value_sig780B, var_core_value_sig7D1B) ? this._injector["get"](n.ICommandService).executeCommand(t.PivotDrillDownCommand["id"], {
+        row: var_core_value_sig780B,
+        col: var_core_value_sig7D1B
+      }) : false;
+    }
+    _getPivotPanelTableFieldInfo(var_core_value_sig7BE0) {
+      let var_core_value_sig7D40 = this.getConfig(),
+        var_core_value_sig6C7E = (var_core_value_sig7D40 == null ? undefined : var_core_value_sig7D40.fieldsConfig["dimension"][var_core_value_sig7BE0]) || (var_core_value_sig7D40 == null ? undefined : var_core_value_sig7D40.fieldsConfig["measure"][var_core_value_sig7BE0]);
+      if (!var_core_value_sig6C7E) return;
+      let var_core_value_sig68BE = {
+        tableFieldId: var_core_value_sig7BE0,
+        displayName: var_core_value_sig6C7E.displayName,
+        dataFieldId: var_core_value_sig6C7E.dataFieldId,
+        format: var_core_value_sig6C7E.format
+      };
+      return "subtotal" in var_core_value_sig6C7E && (var_core_value_sig68BE.subTotalType = var_core_value_sig6C7E.subtotal, var_core_value_sig68BE.showDataAs = {
+        ...var_core_value_sig6C7E.showDataAs
+      }), var_core_value_sig68BE;
+    }
+    _getPivotPanelSourceFieldInfo(var_core_value_sig04C6) {
+      var var_core_value_sigCA05;
+      let var_core_value_sig2F2B = this._injector["get"](t.SheetsPivotTableConfigModel).getCollection(this.unitId, this.pivotTableId),
+        var_core_value_sig70AF = (var_core_value_sig2F2B == null ? undefined : var_core_value_sig2F2B.fields[var_core_value_sig04C6]) || (var_core_value_sig2F2B == null ? undefined : var_core_value_sig2F2B.customFields["find"](var_core_value_sigE67E => var_core_value_sigE67E.id === var_core_value_sig04C6));
+      if (var_core_value_sig70AF) return {
+        id: var_core_value_sig70AF.id,
+        dataFieldId: var_core_value_sig70AF.id,
+        name: (var_core_value_sig2F2B == null || (var_core_value_sigCA05 = var_core_value_sig2F2B.displayNameRecord) == null ? undefined : var_core_value_sigCA05[var_core_value_sig70AF.id]) ?? var_core_value_sig70AF.name,
+        type: var_core_value_sig70AF.fieldDataType,
+        checked: this._isDataFieldUsed(var_core_value_sig70AF.id),
+        pivotTableId: this.pivotTableId
+      };
+    }
+    _isDataFieldUsed(var_core_value_sigD04E) {
+      let var_core_value_sigB99B = this.getConfig();
+      return var_core_value_sigB99B ? Object.values(var_core_value_sigB99B.fieldsConfig["dimension"]).some(var_core_value_sig2902 => var_core_value_sig2902.dataFieldId === var_core_value_sigD04E) || Object.values(var_core_value_sigB99B.fieldsConfig["measure"]).some(var_core_value_sig9989 => var_core_value_sig9989.dataFieldId === var_core_value_sigD04E) : false;
+    }
+    _isCellInCurrentPivotTable(var_core_value_sig5A75, var_core_value_sig7BAF) {
+      return this._injector["get"](t.SheetsPivotTableAdaptorModel).getPivotTableIdByCell(this.unitId, this.subUnitId, var_core_value_sig5A75, var_core_value_sig7BAF) === this.pivotTableId;
+    }
+  },
+  p = class extends r.FWorkbook {
+    async addPivotTable(var_core_value_sig8F69, var_core_value_sig6884, var_core_value_sig066E) {
+      let var_core_value_sig9B0D = this._injector,
+        var_core_value_sig3D2C = var_core_value_sig9B0D.get(n.ICommandService),
+        var_core_value_sigC56D = (0, e.generateHexNumber)(8),
+        var_core_value_sig3A17 = {
+          positionType: var_core_value_sig6884,
+          pivotTableId: var_core_value_sigC56D,
+          pivotTableConfig: {
+            targetCellInfo: var_core_value_sig066E,
+            sourceRangeInfo: var_core_value_sig8F69,
+            isEmpty: true
+          }
+        };
+      if (await var_core_value_sig3D2C.executeCommand(t.AddPivotTableCommand["id"], var_core_value_sig3A17)) {
+        let var_core_value_sig698E = var_core_value_sig9B0D.get(t.SheetsPivotTableConfigModel);
+        if (await this._waitForPivotTableReady(var_core_value_sig698E, var_core_value_sig066E.unitId, var_core_value_sig066E.subUnitId, var_core_value_sigC56D)) return new f(var_core_value_sig066E.unitId, var_core_value_sig066E.subUnitId, var_core_value_sigC56D, var_core_value_sig9B0D);
+      }
+    }
+    _waitForPivotTableReady(var_core_value_sig938F, var_core_value_sigD948, var_core_value_sigBE5E, var_core_value_sig0281) {
+      let var_core_value_sigED71 = () => !!(var_core_value_sig938F.getPivotTableConfig(var_core_value_sigD948, var_core_value_sigBE5E, var_core_value_sig0281) && var_core_value_sig938F.getCollection(var_core_value_sigD948, var_core_value_sig0281));
+      return var_core_value_sigED71() ? Promise.resolve(true) : new Promise(var_core_value_sig2809 => {
+        let var_core_value_sig2DAB = false,
+          var_core_value_sig877E,
+          var_core_value_sig20C8 = [],
+          var_core_value_sigE9A7 = var_core_value_sig2259 => {
+            var_core_value_sig2DAB || (var_core_value_sig2DAB = true, var_core_value_sig877E && clearTimeout(var_core_value_sig877E), var_core_value_sig20C8.forEach(var_core_value_sigD955 => var_core_value_sigD955.unsubscribe()), var_core_value_sig2809(var_core_value_sig2259));
+          },
+          var_core_value_sigBECE = () => {
+            var_core_value_sigED71() && var_core_value_sigE9A7(true);
+          };
+        var_core_value_sig20C8 = [var_core_value_sig938F.pivotConfigChange$["subscribe"](var_core_value_sigBECE), var_core_value_sig938F.configVersion$["subscribe"](var_core_value_sigBECE)], var_core_value_sig877E = setTimeout(() => var_core_value_sigE9A7(false), 10000), var_core_value_sigBECE();
+      });
+    }
+    getPivotTableByCell(var_core_value_sig281C, var_core_value_sig3C92, var_core_value_sigB16B, var_core_value_sig585D) {
+      let var_core_value_sigE722 = this._injector,
+        var_core_value_sig062A = var_core_value_sigE722.get(t.SheetsPivotTableAdaptorModel).getPivotTableIdByCell(var_core_value_sig281C, var_core_value_sig3C92, var_core_value_sigB16B, var_core_value_sig585D);
+      if (var_core_value_sig062A) return new f(var_core_value_sig281C, var_core_value_sig3C92, var_core_value_sig062A, var_core_value_sigE722);
+    }
+    getPivotTableById(var_core_value_sig050A) {
+      let var_core_value_sig8B32 = this._injector,
+        var_core_value_sig870F = var_core_value_sig8B32.get(t.SheetsPivotTableConfigModel).getTargetByPivotTableId(this.getId(), var_core_value_sig050A);
+      if (var_core_value_sig870F) return new f(var_core_value_sig870F.unitId, var_core_value_sig870F.subUnitId, var_core_value_sig050A, var_core_value_sig8B32);
+    }
+  };
+r.FWorkbook["extend"](p);
+var m = class extends r.FWorksheet {
+  getPivotTableByCell(var_core_value_sigB683, var_core_value_sig26EC) {
+    let var_core_value_sigEEDB = this._injector,
+      var_core_value_sig36E7 = var_core_value_sigEEDB.get(t.SheetsPivotTableAdaptorModel),
+      var_core_value_sig6A78 = this._workbook["getUnitId"](),
+      var_core_value_sigF7EF = this.getSheetId(),
+      var_core_value_sig27F9 = var_core_value_sig36E7.getPivotTableIdByCell(var_core_value_sig6A78, var_core_value_sigF7EF, var_core_value_sigB683, var_core_value_sig26EC);
+    if (var_core_value_sig27F9) return new f(var_core_value_sig6A78, var_core_value_sigF7EF, var_core_value_sig27F9, var_core_value_sigEEDB);
+  }
+};
+r.FWorksheet["extend"](m);
+var h = class extends i.FEnum {
+  get PivotSubtotalTypeEnum() {
+    return e.PivotSubtotalTypeEnum;
+  }
+  get PivotFilterTypeEnum() {
+    return e.PivotFilterTypeEnum;
+  }
+  get PivotTableFiledAreaEnum() {
+    return e.PivotTableFiledAreaEnum;
+  }
+  get PivotTableValuePositionEnum() {
+    return e.PivotTableValuePositionEnum;
+  }
+  get PivotDataFieldDataTypeEnum() {
+    return e.PivotDataFieldDataTypeEnum;
+  }
+  get PivotDataFieldSortTypeEnum() {
+    return e.PivotDataFieldSortTypeEnum;
+  }
+  get PivotDataFieldSortOperatorEnum() {
+    return e.PivotDataFieldSortOperatorEnum;
+  }
+  get PivotFilterOperatorEnum() {
+    return e.ST_PivotFilterOperatorEnum;
+  }
+  get PositionTypeEnum() {
+    return t.PositionType;
+  }
+  get PivotTableChangeTypeEnum() {
+    return e.PivotTableChangeTypeEnum;
+  }
+  get PivotDateGroupFieldDateTypeEnum() {
+    return e.PivotDateGroupFieldDateTypeEnum;
+  }
+  get PivotShowAsTypeEnum() {
+    return e.PivotShowAsTypeEnum;
+  }
+  get PivotShowAsBaseItemTypeEnum() {
+    return e.PivotShowAsBaseItemTypeEnum;
+  }
+  get PivotLayoutTypeEnum() {
+    return e.PivotLayoutTypeEnum;
+  }
+  get PivotSubtotalPositionEnum() {
+    return e.PivotSubtotalPositionEnum;
+  }
+  get PivotCallbackEnum() {
+    return e.PivotCallbackEnum;
+  }
+  get PivotDataFieldTypeEnum() {
+    return e.PivotDataFieldTypeEnum;
+  }
+  get PivotDateGroupFieldDateSystemEnum() {
+    return e.PivotDateGroupFieldDateSystemEnum;
+  }
+  get PivotCellStyleTypeEnum() {
+    return e.PivotCellStyleTypeEnum;
+  }
+  get PivotViewCellValueTypeEnum() {
+    return e.PivotViewCellValueTypeEnum;
+  }
+};
+i.FEnum["extend"](h);
+var g = class extends i.FEventName {
+  get PivotTableAdded() {
+    return "PivotTableAdded";
+  }
+  get BeforePivotTableAdd() {
+    return "BeforePivotTableAdd";
+  }
+  get PivotTableRemoved() {
+    return "PivotTableRemoved";
+  }
+  get PivotTableMoved() {
+    return "PivotTableMoved";
+  }
+  get PivotTableRendered() {
+    return "PivotTableRendered";
+  }
+  get PivotTableFieldAdded() {
+    return "PivotTableFieldAdded";
+  }
+  get PivotTableFieldRemoved() {
+    return "PivotTableFieldRemoved";
+  }
+  get PivotTableFieldMoved() {
+    return "PivotTableFieldMoved";
+  }
+  get PivotTableFieldCollapseChanged() {
+    return "PivotTableFieldCollapseChanged";
+  }
+  get PivotTableFieldFilterChanged() {
+    return "PivotTableFieldFilterChanged";
+  }
+  get PivotTableFieldSortChanged() {
+    return "PivotTableFieldSortChanged";
+  }
+  get PivotTableFieldSettingChanged() {
+    return "PivotTableFieldSettingChanged";
+  }
+  get PivotTableValuePositionChanged() {
+    return "PivotTableValuePositionChanged";
+  }
+};
+i.FEventName["extend"](g);
+const _ = "YYYY-MM-DD";
+function v(var_core_value_sig2AE0, var_core_value_sigC349 = n.DateSystem["Date1900"]) {
+  return (0, n.excelDateTimeSerial)(new Date(var_core_value_sig2AE0), var_core_value_sigC349);
+}
+function y(var_core_value_sig9D96, var_core_value_sig2776, var_core_value_sig6FB2, var_core_value_sigEB43) {
+  let var_core_value_sig4186 = [],
+    var_core_value_sigF963 = [],
+    var_core_value_sigB608 = [],
+    {
+      showRowGrandTotal: var_core_value_sigF866,
+      showRowSubTotal: var_core_value_sig5EFB
+    } = var_core_value_sigEB43,
+    {
+      cornerView: var_core_value_sig3A85,
+      colView: var_core_value_sig2682,
+      rowView: var_core_value_sig4BB5,
+      dataView: var_core_value_sig6709,
+      formatMap: var_core_value_sig52CA
+    } = var_core_value_sig2776,
+    var_core_value_sigC030 = var_core_value_sig3A85.getRowCount(),
+    var_core_value_sig88F6 = var_core_value_sig3A85.getColCount();
+  for (let var_core_value_sig393E = 0; var_core_value_sig393E < var_core_value_sigC030; var_core_value_sig393E++) for (let var_core_value_sig1B22 = 0; var_core_value_sig1B22 < var_core_value_sig88F6; var_core_value_sig1B22++) {
+    var var_core_value_sig37DB;
+    let var_core_value_sig9E2F = {
+      ...((var_core_value_sig37DB = var_core_value_sig3A85.data) == null || (var_core_value_sig37DB = var_core_value_sig37DB[var_core_value_sig393E]) == null ? undefined : var_core_value_sig37DB[var_core_value_sig1B22])
+    };
+    var_core_value_sig9E2F.v && (var_core_value_sig4186[var_core_value_sig393E] || (var_core_value_sig4186[var_core_value_sig393E] = []), var_core_value_sigB608[var_core_value_sig393E] || (var_core_value_sigB608[var_core_value_sig393E] = []), var_core_value_sig4186[var_core_value_sig393E][var_core_value_sig1B22] = var_core_value_sig9E2F.v, var_core_value_sigB608[var_core_value_sig393E][var_core_value_sig1B22] = var_core_value_sig9E2F.v);
+  }
+  for (let var_core_value_sigB609 = 0; var_core_value_sigB609 < var_core_value_sig2682.getRowCount(); var_core_value_sigB609++) {
+    var var_core_value_sig5542;
+    let var_core_value_sig7F72 = var_core_value_sig2682 == null || (var_core_value_sig5542 = var_core_value_sig2682.headerMap) == null || (var_core_value_sig5542 = var_core_value_sig5542[var_core_value_sigB609]) == null ? undefined : var_core_value_sig5542.tableFieldId,
+      var_core_value_sig7B2A = var_core_value_sig7F72 ? var_core_value_sig52CA[var_core_value_sig7F72] : "";
+    for (let var_core_value_sigD082 = 0; var_core_value_sigD082 < var_core_value_sig2682.getColCount(); var_core_value_sigD082++) {
+      var var_core_value_sigE0A9;
+      let var_core_value_sig48BD = {
+        ...((var_core_value_sigE0A9 = var_core_value_sig2682.data) == null || (var_core_value_sigE0A9 = var_core_value_sigE0A9[var_core_value_sigB609]) == null ? undefined : var_core_value_sigE0A9[var_core_value_sigD082])
+      };
+      if ((var_core_value_sig48BD == null ? undefined : var_core_value_sig48BD.v) !== undefined) {
+        let var_core_value_sigF704 = var_core_value_sig7B2A ? n.numfmt["format"](var_core_value_sig7B2A, Number(var_core_value_sig48BD.v)) : var_core_value_sig48BD.v;
+        (var_core_value_sig48BD == null ? undefined : var_core_value_sig48BD.s) === e.PivotCellStyleTypeEnum["Subtotal"] ? var_core_value_sigF704 = var_core_value_sig6FB2 ? "小计 " + var_core_value_sigF704 : "Total " + var_core_value_sigF704 : (var_core_value_sig48BD == null ? undefined : var_core_value_sig48BD.s) === e.PivotCellStyleTypeEnum["GrandTotal"] && (var_core_value_sigF704 = var_core_value_sig6FB2 ? "总计\x20" + var_core_value_sigF704 : "Grand Total " + var_core_value_sigF704), (var_core_value_sig48BD == null ? undefined : var_core_value_sig48BD.t) === e.PivotViewCellValueTypeEnum["blank"] && (var_core_value_sigF704 = var_core_value_sig6FB2 ? "（空白）" : "(blank)"), (var_core_value_sig48BD == null ? undefined : var_core_value_sig48BD.t) === e.PivotViewCellValueTypeEnum["other"] && (var_core_value_sigF704 = var_core_value_sig6FB2 ? "（其他）" : "(other)"), var_core_value_sig4186[var_core_value_sigB609] || (var_core_value_sig4186[var_core_value_sigB609] = []), var_core_value_sigB608[var_core_value_sigB609] || (var_core_value_sigB608[var_core_value_sigB609] = []), var_core_value_sig4186[var_core_value_sigB609][var_core_value_sigD082 + var_core_value_sig88F6] = var_core_value_sigF704, var_core_value_sigB608[var_core_value_sigB609][var_core_value_sigD082 + var_core_value_sig88F6] = var_core_value_sigF704;
+      }
+    }
+  }
+  let var_core_value_sigA73E = 0,
+    var_core_value_sig7620 = 0,
+    var_core_value_sigB9FC = 0;
+  for (let var_core_value_sig390D = 0; var_core_value_sig390D < var_core_value_sig4BB5.getRowCount(); var_core_value_sig390D++) {
+    let var_core_value_sig06CD = var_core_value_sig4BB5.info[var_core_value_sig390D];
+    if (!var_core_value_sig5EFB && var_core_value_sig06CD.isBottomTotal && var_core_value_sig06CD.level !== 0) {
+      var_core_value_sigB9FC++, var_core_value_sig7620 = 0;
+      continue;
+    }
+    if (!(!var_core_value_sigF866 && var_core_value_sig06CD.isBottomTotal && var_core_value_sig06CD.level === 0)) {
+      for (let var_core_value_sig429F = 0; var_core_value_sig429F < var_core_value_sig4BB5.getColCount(); var_core_value_sig429F++) {
+        var var_core_value_sig5055, var_core_value_sig3801;
+        let var_core_value_sig2BCF = {
+            ...((var_core_value_sig5055 = var_core_value_sig4BB5.data) == null || (var_core_value_sig5055 = var_core_value_sig5055[var_core_value_sig390D]) == null ? undefined : var_core_value_sig5055[var_core_value_sig429F])
+          },
+          var_core_value_sig0D69 = var_core_value_sig4BB5 == null || (var_core_value_sig3801 = var_core_value_sig4BB5.headerMap) == null || (var_core_value_sig3801 = var_core_value_sig3801[var_core_value_sig429F]) == null ? undefined : var_core_value_sig3801.tableFieldId,
+          var_core_value_sig480E = var_core_value_sig0D69 ? var_core_value_sig52CA[var_core_value_sig0D69] : "";
+        if ((var_core_value_sig2BCF == null ? undefined : var_core_value_sig2BCF.v) !== undefined) {
+          let var_core_value_sig7524 = var_core_value_sig480E ? n.numfmt["format"](var_core_value_sig480E, Number(var_core_value_sig2BCF.v)) : var_core_value_sig2BCF.v;
+          (var_core_value_sig2BCF == null ? undefined : var_core_value_sig2BCF.s) === e.PivotCellStyleTypeEnum["Subtotal"] ? var_core_value_sig7524 = var_core_value_sig6FB2 ? "小计 " + var_core_value_sig7524 : "Total " + var_core_value_sig7524 : (var_core_value_sig2BCF == null ? undefined : var_core_value_sig2BCF.s) === e.PivotCellStyleTypeEnum["GrandTotal"] && (var_core_value_sig7524 = var_core_value_sig6FB2 ? "总计 " + var_core_value_sig7524 : "Grand Total " + var_core_value_sig7524), (var_core_value_sig2BCF == null ? undefined : var_core_value_sig2BCF.t) === e.PivotViewCellValueTypeEnum["blank"] && (var_core_value_sig7524 = var_core_value_sig6FB2 ? "（空白）" : "(blank)"), (var_core_value_sig2BCF == null ? undefined : var_core_value_sig2BCF.t) === e.PivotViewCellValueTypeEnum["other"] && (var_core_value_sig7524 = var_core_value_sig6FB2 ? "（其他）" : "(other)"), var_core_value_sig4186[var_core_value_sigA73E + var_core_value_sigC030] || (var_core_value_sig4186[var_core_value_sigA73E + var_core_value_sigC030] = []);
+          let var_core_value_sig2AD8 = var_core_value_sigF963[var_core_value_sigB9FC];
+          var_core_value_sig2AD8 || (var_core_value_sig2AD8 = [...var_core_value_sigB608], var_core_value_sigF963[var_core_value_sigB9FC] = var_core_value_sig2AD8), var_core_value_sig2AD8[var_core_value_sig7620 + var_core_value_sigC030] || (var_core_value_sig2AD8[var_core_value_sig7620 + var_core_value_sigC030] = []), var_core_value_sig2AD8[var_core_value_sig7620 + var_core_value_sigC030][var_core_value_sig429F] = var_core_value_sig7524, var_core_value_sig4186[var_core_value_sigA73E + var_core_value_sigC030][var_core_value_sig429F] = var_core_value_sig7524;
+        }
+      }
+      var_core_value_sigA73E++, var_core_value_sig4BB5.info[var_core_value_sig390D].isBottomTotal ? (var_core_value_sigB9FC++, var_core_value_sig7620 = 0) : var_core_value_sig7620++;
+    }
+  }
+  var_core_value_sigA73E = 0, var_core_value_sigB9FC = 0, var_core_value_sig7620 = 0;
+  for (let var_core_value_sigC928 = 0; var_core_value_sigC928 < var_core_value_sig6709.getRowCount(); var_core_value_sigC928++) {
+    let var_core_value_sigA5F1 = var_core_value_sig4BB5.info[var_core_value_sigC928];
+    if (!var_core_value_sig5EFB && var_core_value_sigA5F1.isBottomTotal && var_core_value_sigA5F1.level !== 0) {
+      var_core_value_sigB9FC++, var_core_value_sig7620 = 0;
+      continue;
+    }
+    if (!(!var_core_value_sigF866 && var_core_value_sigA5F1.isBottomTotal && var_core_value_sigA5F1.level === 0)) {
+      for (let var_core_value_sigF62A = 0; var_core_value_sigF62A < var_core_value_sig6709.getColCount(); var_core_value_sigF62A++) {
+        var var_core_value_sig45F0;
+        let var_core_value_sig26DB = {
+          ...((var_core_value_sig45F0 = var_core_value_sig6709.data) == null || (var_core_value_sig45F0 = var_core_value_sig45F0[var_core_value_sigC928]) == null ? undefined : var_core_value_sig45F0[var_core_value_sigF62A])
+        };
+        if (var_core_value_sig26DB.v) {
+          let var_core_value_sig2AD0 = var_core_value_sig4BB5.info[var_core_value_sigC928].valueIndex,
+            var_core_value_sig3EEE = var_core_value_sig2682.info[var_core_value_sigF62A].valueIndex,
+            var_core_value_sigBC46 = Math.max(var_core_value_sig2AD0, var_core_value_sig3EEE),
+            var_core_value_sig3D7D = var_core_value_sig9D96.getValueFields().concat(),
+            var_core_value_sig27E5 = "";
+          var_core_value_sig27E5 = var_core_value_sigBC46 < 0 ? var_core_value_sig3D7D[0] ?? "" : var_core_value_sig3D7D[var_core_value_sigBC46] ?? "";
+          let var_core_value_sig8061 = var_core_value_sig52CA[var_core_value_sig27E5] ?? "";
+          var_core_value_sig4186[var_core_value_sigA73E + var_core_value_sigC030] || (var_core_value_sig4186[var_core_value_sigA73E + var_core_value_sigC030] = []);
+          let var_core_value_sig4D4C = var_core_value_sigF963[var_core_value_sigB9FC];
+          var_core_value_sig4D4C || (var_core_value_sig4D4C = [...var_core_value_sigB608], var_core_value_sigF963[var_core_value_sigB9FC] = var_core_value_sig4D4C), var_core_value_sig4D4C[var_core_value_sig7620 + var_core_value_sigC030] || (var_core_value_sig4D4C[var_core_value_sig7620 + var_core_value_sigC030] = []);
+          let var_core_value_sigC9E0 = var_core_value_sig8061 ? n.numfmt["format"](var_core_value_sig8061, Number(var_core_value_sig26DB.v)) : var_core_value_sig26DB.v;
+          var_core_value_sig4D4C[var_core_value_sig7620 + var_core_value_sigC030][var_core_value_sigF62A + var_core_value_sig88F6] = var_core_value_sigC9E0, var_core_value_sig4186[var_core_value_sigA73E + var_core_value_sigC030][var_core_value_sigF62A + var_core_value_sig88F6] = var_core_value_sigC9E0;
+        }
+      }
+      var_core_value_sigA73E++, var_core_value_sig4BB5.info[var_core_value_sigC928].isBottomTotal ? (var_core_value_sigB9FC++, var_core_value_sig7620 = 0) : var_core_value_sig7620++;
+    }
+  }
+  return {
+    dataArr: var_core_value_sig4186,
+    dataArrWithSplit: var_core_value_sigF963
+  };
+}
+var b = class {
+    constructor(var_core_value_sig39B7, var_core_value_sig18E0, var_core_value_sigE161, var_core_value_sigBDEE) {
+      l(this, "_pivot", undefined), l(this, "_sourceData", undefined), l(this, "_injector", undefined), l(this, "_isZhCN", undefined), l(this, "_id", undefined), this._injector = var_core_value_sig39B7, this._pivot = var_core_value_sig18E0, this._sourceData = var_core_value_sigE161, this._id = var_core_value_sigBDEE;
+      let var_core_value_sig1F40 = this._injector["get"](n.LocaleService);
+      this._isZhCN = var_core_value_sig1F40.getCurrentLocale() === n.LocaleType["ZH_CN"];
+    }
+    _getSourceIdByName(var_core_value_sig3FC7) {
+      let var_core_value_sig1E1B = this._pivot["getDataFieldIdByDisplayName"](var_core_value_sig3FC7);
+      if (!var_core_value_sig1E1B) throw Error("[PivotTable]: The field name " + var_core_value_sig3FC7 + " is not found in the pivot table.");
+      return var_core_value_sig1E1B;
+    }
+    addFieldWithName(var_core_value_sig3B10, var_core_value_sig89E6) {
+      let var_core_value_sig4743 = this._getSourceIdByName(var_core_value_sig3B10),
+        var_core_value_sigEB6A = this._pivot["addFieldWithSourceId"](var_core_value_sig4743, var_core_value_sig89E6);
+      if (!var_core_value_sigEB6A) throw Error("[PivotTable]: add field " + var_core_value_sig3B10 + " failed.");
+      if (var_core_value_sig89E6 === e.PivotTableFiledAreaEnum["Value"]) {
+        let var_core_value_sig97A2 = var_core_value_sigEB6A.getId(),
+          var_core_value_sig07E9 = this._pivot["getDataFieldByTableId"](var_core_value_sig97A2);
+        if (var_core_value_sig07E9) {
+          let var_core_value_sigDBB7 = var_core_value_sig07E9 == null ? undefined : var_core_value_sig07E9.getFieldDataType();
+          this._pivot["setSubtotalType"](var_core_value_sig97A2, var_core_value_sigDBB7 === e.PivotDataFieldDataTypeEnum["number"] ? e.PivotSubtotalTypeEnum["sum"] : e.PivotSubtotalTypeEnum["count"]);
+        }
+        let var_core_value_sig4F59 = this._pivot["getValueIndex"](),
+          var_core_value_sigF564 = this._pivot["getValuePosition"](),
+          var_core_value_sig8CFA = this._pivot["getFieldCountByArea"](e.PivotTableFiledAreaEnum["Value"]);
+        if (var_core_value_sig4F59 === -1 && var_core_value_sig8CFA > 1) {
+          let var_core_value_sigD0A8 = var_core_value_sigF564 === e.PivotTableValuePositionEnum["None"] ? e.PivotTableValuePositionEnum["Column"] : var_core_value_sigF564,
+            var_core_value_sigF4B9 = var_core_value_sigD0A8 === e.PivotTableValuePositionEnum["Row"] ? e.PivotTableFiledAreaEnum["Row"] : e.PivotTableFiledAreaEnum["Column"];
+          this._pivot["updateValuePosition"](var_core_value_sigD0A8, this._pivot["getFieldCountByArea"](var_core_value_sigF4B9));
+        }
+      } else {
+        if (var_core_value_sig89E6 === e.PivotTableFiledAreaEnum["Row"] || var_core_value_sig89E6 === e.PivotTableFiledAreaEnum["Column"]) {
+          let var_core_value_sig5CEE = var_core_value_sigEB6A.getId(),
+            var_core_value_sigE92A = this._pivot["getDataFieldByTableId"](var_core_value_sig5CEE);
+          if (var_core_value_sigE92A && (var_core_value_sigE92A == null ? undefined : var_core_value_sigE92A.getFieldDataType()) === e.PivotDataFieldDataTypeEnum["date"]) {
+            let var_core_value_sig8178 = var_core_value_sigE92A.getformat();
+            var_core_value_sig8178 && this._pivot["setFieldFormat"](var_core_value_sig5CEE, var_core_value_sig8178);
+          }
+        }
+      }
+      return var_core_value_sigEB6A;
+    }
+    addFilterFieldWithName(var_core_value_sig3D46, var_core_value_sigCC93) {
+      let var_core_value_sig5964 = this._getSourceIdByName(var_core_value_sig3D46),
+        var_core_value_sig808B = this._pivot["addFieldWithSourceId"](var_core_value_sig5964, e.PivotTableFiledAreaEnum["Filter"]);
+      return var_core_value_sig808B.setFilterInfo(var_core_value_sigCC93), var_core_value_sig808B;
+    }
+    addValueFieldWithName(var_core_value_sig2A26, var_core_value_sig1179) {
+      let var_core_value_sigEA92 = this.addFieldWithName(var_core_value_sig2A26, e.PivotTableFiledAreaEnum["Value"]);
+      return var_core_value_sig1179 != null && var_core_value_sig1179.subtotal && var_core_value_sigEA92.setSubtotal(var_core_value_sig1179 == null ? undefined : var_core_value_sig1179.subtotal), var_core_value_sigEA92;
+    }
+    removeFieldWithName(var_core_value_sig8FD9) {
+      let var_core_value_sig1AE5 = this._getSourceIdByName(var_core_value_sig8FD9);
+      this._pivot["getTableFieldsByDataFieldId"](var_core_value_sig1AE5).forEach(var_core_value_sig2E11 => {
+        let var_core_value_sig5B69 = var_core_value_sig2E11.getId();
+        this._pivot["removeField"](var_core_value_sig5B69);
+      });
+    }
+    getResultByCalculate(var_core_value_sig7100 = {}) {
+      let var_core_value_sigA19A = this._pivot["query"](),
+        {
+          dataArr: var_core_value_sigD3F5,
+          dataArrWithSplit: var_core_value_sig3082
+        } = y(this._pivot, var_core_value_sigA19A, this._isZhCN, var_core_value_sig7100);
+      return {
+        dataArr: var_core_value_sigD3F5,
+        dataArrWithSplit: var_core_value_sig3082
+      };
+    }
+    getNameWithColumnIndex(var_core_value_sigF5D1) {
+      return this._pivot["getFieldDisplayNames"]()[var_core_value_sigF5D1];
+    }
+    reset() {
+      this._pivot["reset"]();
+    }
+    resetDimension(var_core_value_sig8775) {
+      this._pivot["reset"](var_core_value_sig8775);
+    }
+    getFieldDataTypeByColumnIndex(var_core_value_sig481B) {
+      let var_core_value_sig13D7 = this._pivot["dataFieldsCollection"],
+        var_core_value_sig90C0 = var_core_value_sig13D7.getFieldIds()[var_core_value_sig481B];
+      if (var_core_value_sig90C0) return var_core_value_sig13D7.getFieldById(var_core_value_sig90C0).getFieldDataType();
+    }
+    getFieldDataTypeByFieldName(var_core_value_sigF1B2) {
+      let var_core_value_sigC2BB = this._getSourceIdByName(var_core_value_sigF1B2),
+        var_core_value_sigD9DB = this._pivot["dataFieldsCollection"].getFieldById(var_core_value_sigC2BB);
+      return var_core_value_sigD9DB == null ? undefined : var_core_value_sigD9DB.getFieldDataType();
+    }
+    getDimensionInfo() {
+      let var_core_value_sigA363 = {};
+      return [[e.PivotTableFiledAreaEnum["Row"], "row"], [e.PivotTableFiledAreaEnum["Column"], "column"], [e.PivotTableFiledAreaEnum["Filter"], "filter"], [e.PivotTableFiledAreaEnum["Value"], "value"]].forEach(var_core_value_sigB098 => {
+        let [var_core_value_sigCE71, var_core_value_sig21D8] = var_core_value_sigB098;
+        this._pivot["iterateFieldByArea"](var_core_value_sigCE71, var_core_value_sig362B => {
+          var_core_value_sigA363[var_core_value_sig21D8] || (var_core_value_sigA363[var_core_value_sig21D8] = []), var_core_value_sigA363[var_core_value_sig21D8].push(var_core_value_sig362B.getSourceName());
+        });
+      }), Object.keys(var_core_value_sigA363).length > 0 ? var_core_value_sigA363 : undefined;
+    }
+    getPivotSourceData() {
+      return this._sourceData;
+    }
+    getLayout() {
+      return this._pivot["getLayout"]();
+    }
+    setLayout(var_core_value_sigFBA5) {
+      this._pivot["setLayout"](var_core_value_sigFBA5);
+    }
+    setOptions(var_core_value_sigAC47) {
+      this._pivot["setOptions"](var_core_value_sigAC47);
+    }
+    remove() {
+      this._pivot["dispose"]();
+    }
+  },
+  x = class extends e.DataFieldManager {
+    getRangeData(var_core_value_sigA06F) {
+      if (Array.isArray(var_core_value_sigA06F) && var_core_value_sigA06F.length > 0) {
+        let var_core_value_sig2B65 = [],
+          var_core_value_sigD7EA = var_core_value_sigA06F[0],
+          var_core_value_sigB33B = {},
+          var_core_value_sig24B9 = var_core_value_sigA06F[1];
+        for (let var_core_value_sig5CA5 = 0; var_core_value_sig5CA5 < var_core_value_sig24B9.length; var_core_value_sig5CA5++) {
+          let var_core_value_sigE9ED = var_core_value_sig24B9[var_core_value_sig5CA5];
+          if (typeof var_core_value_sigE9ED == "object" && var_core_value_sigE9ED instanceof Date) var_core_value_sigB33B[var_core_value_sig5CA5] = _;else {
+            if (typeof var_core_value_sigE9ED == "string") {
+              let var_core_value_sig76BA = new Date(var_core_value_sigE9ED);
+              Number.isNaN(var_core_value_sig76BA.getTime()) || (var_core_value_sigB33B[var_core_value_sig5CA5] = _);
+            }
+          }
+        }
+        for (let var_core_value_sigE90F = 1; var_core_value_sigE90F < var_core_value_sigA06F.length; var_core_value_sigE90F++) {
+          let var_core_value_sigB577 = var_core_value_sigA06F[var_core_value_sigE90F],
+            var_core_value_sig9572 = [];
+          for (let var_core_value_sigF0F9 = 0; var_core_value_sigF0F9 < var_core_value_sigB577.length; var_core_value_sigF0F9++) if (var_core_value_sigB33B[var_core_value_sigF0F9]) {
+            let var_core_value_sigFBFA = var_core_value_sigB577[var_core_value_sigF0F9],
+              var_core_value_sigF602 = {
+                v: v((typeof var_core_value_sigFBFA == "object" && var_core_value_sigFBFA instanceof Date ? var_core_value_sigFBFA : new Date(var_core_value_sigFBFA)).getTime()),
+                f: var_core_value_sigB33B[var_core_value_sigF0F9]
+              };
+            var_core_value_sig9572.push(var_core_value_sigF602);
+          } else var_core_value_sig9572.push(var_core_value_sigB577[var_core_value_sigF0F9]);
+          var_core_value_sig2B65.push(var_core_value_sig9572);
+        }
+        return {
+          header: var_core_value_sigD7EA,
+          data: var_core_value_sig2B65
+        };
+      } else throw Error("[DataFieldManager]: Data is not a valid array");
+    }
+  },
+  S = class extends i.FUniver {
+    _initialize(var_core_value_sig770E) {
+      let var_core_value_sig4654 = var_core_value_sig770E.get(n.ICommandService);
+      this.disposeWithMe(this.registerEventHandler(this.Event["BeforePivotTableAdd"], () => var_core_value_sig4654.beforeCommandExecuted(var_core_value_sigEFD4 => {
+        switch (var_core_value_sigEFD4.id) {
+          case t.MovePivotTableCommand["id"]:
+            {
+              let var_core_value_sig1A0F = var_core_value_sigEFD4.params;
+              this._fireBeforeMovePivotTableEvent(var_core_value_sig1A0F);
+              break;
+            }
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["BeforePivotTableMove"], () => var_core_value_sig4654.beforeCommandExecuted(var_core_value_sig861B => {
+        switch (var_core_value_sig861B.id) {
+          case t.AddPivotTableWithConfigCommand["id"]:
+          case t.AddPivotTableCommand["id"]:
+            {
+              let var_core_value_sigFBA4 = var_core_value_sig861B.params;
+              this._fireBeforeAddPivotTableEvent(var_core_value_sigFBA4);
+              break;
+            }
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableAdded"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig5237 => {
+        if (var_core_value_sig5237.id === t.AddPivotTableWithConfigCommand["id"] || var_core_value_sig5237.id === t.AddPivotTableCommand["id"]) {
+          let var_core_value_sigD873 = var_core_value_sig5237.params;
+          this._fireAddPivotTableEvent(var_core_value_sigD873);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableMoved"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sigBB00 => {
+        if (var_core_value_sigBB00.id === t.MovePivotTableCommand["id"]) {
+          let var_core_value_sigA12B = var_core_value_sigBB00.params;
+          this._fireMovedPivotTableEvent(var_core_value_sigA12B);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableRemoved"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig7E54 => {
+        if (var_core_value_sig7E54.id === t.RemovePivotTableMutation["id"]) {
+          let var_core_value_sigF230 = var_core_value_sig7E54.params;
+          this._firePivotTableRemovedEvent(var_core_value_sigF230);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldAdded"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig9A8D => {
+        if (var_core_value_sig9A8D.id === t.AddPivotFieldCommand["id"]) {
+          let var_core_value_sig09B8 = var_core_value_sig9A8D.params;
+          this._firePivotTableFieldAddedEvent(var_core_value_sig09B8);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldRemoved"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sigC259 => {
+        if (var_core_value_sigC259.id === t.RemovePivotFieldCommand["id"]) {
+          let var_core_value_sig6F91 = var_core_value_sigC259.params;
+          this._firePivotTableFieldRemovedEvent(var_core_value_sig6F91);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldMoved"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig9C9F => {
+        if (var_core_value_sig9C9F.id === t.MovePivotFieldCommand["id"]) {
+          let var_core_value_sigF9C7 = var_core_value_sig9C9F.params;
+          this._firePivotTableFieldMovedEvent(var_core_value_sigF9C7);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldCollapseChanged"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sigFDEA => {
+        if (var_core_value_sigFDEA.id === t.SetPivotCollapseCommand["id"]) {
+          let var_core_value_sig8895 = var_core_value_sigFDEA.params;
+          this._firePivotTableFieldCollapsedEvent(var_core_value_sig8895);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldFilterChanged"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig86D0 => {
+        if (var_core_value_sig86D0.id === t.SetPivotFilterCommand["id"]) {
+          let var_core_value_sigC80B = var_core_value_sig86D0.params;
+          this._firePivotTableFieldFilterChangedEvent(var_core_value_sigC80B);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldSortChanged"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig4CD2 => {
+        if (var_core_value_sig4CD2.id === t.SetPivotSortCommand["id"]) {
+          let var_core_value_sig284F = var_core_value_sig4CD2.params;
+          this._firePivotTableFieldSortChangedEvent(var_core_value_sig284F);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableFieldSettingChanged"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig48CA => {
+        if (var_core_value_sig48CA.id === t.UpdatePivotFieldSettingCommand["id"]) {
+          let var_core_value_sigE154 = var_core_value_sig48CA.params;
+          this._firePivotTableFieldSettingChangedEvent(var_core_value_sigE154);
+        }
+      }))), this.disposeWithMe(this.registerEventHandler(this.Event["PivotTableValuePositionChanged"], () => var_core_value_sig4654.onCommandExecuted(var_core_value_sig50AF => {
+        if (var_core_value_sig50AF.id === t.UpdatePivotValuePositionCommand["id"]) {
+          let var_core_value_sig4632 = var_core_value_sig50AF.params;
+          this._firePivotTableValuePositionChangedEvent(var_core_value_sig4632);
+        }
+      })));
+      let var_core_value_sigB26B = var_core_value_sig770E.get(n.LifecycleService),
+        var_core_value_sig019B = new n["DisposableCollection"]();
+      this.disposeWithMe(var_core_value_sigB26B.lifecycle$["subscribe"](var_core_value_sigE627 => {
+        if (var_core_value_sigE627 === n.LifecycleStages["Ready"]) {
+          if (!var_core_value_sig770E.has(t.SheetsPivotTableAdaptorModel)) return;
+          let var_core_value_sigA942 = var_core_value_sig770E.get(t.SheetsPivotTableAdaptorModel);
+          var_core_value_sig019B.dispose(), var_core_value_sig019B.add(this.registerEventHandler(this.Event["PivotTableRendered"], () => var_core_value_sigA942.viewUpdate$["pipe"]((0, a.auditTime)(50)).subscribe(var_core_value_sig4383 => {
+            this._fireRenderPivotTableEvent(var_core_value_sig4383);
+          }))), this.disposeWithMe(var_core_value_sig019B);
+        }
+      }));
+    }
+    _firePivotTableFieldAddedEvent(var_core_value_sigC6BC) {
+      if (var_core_value_sigC6BC) {
+        let {
+          unitId: var_core_value_sigEF3E,
+          subUnitId: var_core_value_sig273D,
+          pivotTableId: var_core_value_sig9A0D,
+          dataFieldId: var_core_value_sigA319,
+          fieldArea: var_core_value_sig2D58,
+          index: var_core_value_sig223F
+        } = var_core_value_sigC6BC;
+        this.fireEvent(this.Event["PivotTableFieldAdded"], {
+          unitId: var_core_value_sigEF3E,
+          subUnitId: var_core_value_sig273D,
+          pivotTableId: var_core_value_sig9A0D,
+          dataFieldId: var_core_value_sigA319,
+          fieldArea: var_core_value_sig2D58,
+          index: var_core_value_sig223F
+        });
+      }
+    }
+    _firePivotTableFieldRemovedEvent(var_core_value_sig8EC2) {
+      if (var_core_value_sig8EC2) {
+        let {
+          unitId: var_core_value_sigD749,
+          subUnitId: var_core_value_sigCFFA,
+          pivotTableId: var_core_value_sig58C1,
+          fieldIds: var_core_value_sig5090
+        } = var_core_value_sig8EC2;
+        this.fireEvent(this.Event["PivotTableFieldRemoved"], {
+          unitId: var_core_value_sigD749,
+          subUnitId: var_core_value_sigCFFA,
+          pivotTableId: var_core_value_sig58C1,
+          fieldIds: var_core_value_sig5090.concat()
+        });
+      }
+    }
+    _firePivotTableFieldMovedEvent(var_core_value_sigA8C3) {
+      if (var_core_value_sigA8C3) {
+        let {
+          unitId: var_core_value_sigC368,
+          subUnitId: var_core_value_sigAD56,
+          pivotTableId: var_core_value_sigDB4A,
+          fieldId: var_core_value_sig6418,
+          area: var_core_value_sig1896,
+          index: var_core_value_sig0285
+        } = var_core_value_sigA8C3;
+        this.fireEvent(this.Event["PivotTableFieldMoved"], {
+          unitId: var_core_value_sigC368,
+          subUnitId: var_core_value_sigAD56,
+          pivotTableId: var_core_value_sigDB4A,
+          fieldId: var_core_value_sig6418,
+          area: var_core_value_sig1896,
+          index: var_core_value_sig0285
+        });
+      }
+    }
+    _firePivotTableFieldCollapsedEvent(var_core_value_sig5276) {
+      if (var_core_value_sig5276) {
+        let {
+          unitId: var_core_value_sig777D,
+          subUnitId: var_core_value_sig3F4C,
+          row: var_core_value_sigD65A,
+          col: var_core_value_sig5A13,
+          collapse: var_core_value_sigF593
+        } = var_core_value_sig5276;
+        this.fireEvent(this.Event["PivotTableFieldCollapseChanged"], {
+          unitId: var_core_value_sig777D,
+          subUnitId: var_core_value_sig3F4C,
+          row: var_core_value_sigD65A,
+          col: var_core_value_sig5A13,
+          collapse: var_core_value_sigF593
+        });
+      }
+    }
+    _firePivotTableFieldFilterChangedEvent(var_core_value_sig031B) {
+      if (var_core_value_sig031B) {
+        let {
+          unitId: var_core_value_sig3607,
+          subUnitId: var_core_value_sigB512,
+          pivotTableId: var_core_value_sigF2E6,
+          tableFieldId: var_core_value_sig34C8,
+          items: var_core_value_sigB744,
+          isAll: var_core_value_sigEAE2
+        } = var_core_value_sig031B;
+        this.fireEvent(this.Event["PivotTableFieldFilterChanged"], {
+          unitId: var_core_value_sig3607,
+          subUnitId: var_core_value_sigB512,
+          pivotTableId: var_core_value_sigF2E6,
+          tableFieldId: var_core_value_sig34C8,
+          items: var_core_value_sigB744.concat(),
+          isAll: var_core_value_sigEAE2
+        });
+      }
+    }
+    _firePivotTableFieldSortChangedEvent(var_core_value_sig9DC0) {
+      if (var_core_value_sig9DC0) {
+        let {
+          unitId: var_core_value_sigE68A,
+          subUnitId: var_core_value_sig3E68,
+          pivotTableId: var_core_value_sigF4C5,
+          tableFieldId: var_core_value_sig5410,
+          info: var_core_value_sig492F
+        } = var_core_value_sig9DC0;
+        this.fireEvent(this.Event["PivotTableFieldSortChanged"], {
+          unitId: var_core_value_sigE68A,
+          subUnitId: var_core_value_sig3E68,
+          pivotTableId: var_core_value_sigF4C5,
+          tableFieldId: var_core_value_sig5410,
+          info: var_core_value_sig492F ? {
+            ...var_core_value_sig492F
+          } : undefined
+        });
+      }
+    }
+    _firePivotTableFieldSettingChangedEvent(var_core_value_sig95F0) {
+      if (var_core_value_sig95F0) {
+        let {
+          unitId: var_core_value_sig8EA0,
+          subUnitId: var_core_value_sigA6F6,
+          tableFieldId: var_core_value_sigCDDA,
+          pivotTableId: var_core_value_sigE243,
+          displayName: var_core_value_sig74A8,
+          format: var_core_value_sig21B2,
+          subtotalType: var_core_value_sigDE08,
+          showDataAs: var_core_value_sigACCB,
+          tableFieldInfo: var_core_value_sig7F33,
+          dataFieldInfo: var_core_value_sig0C53
+        } = var_core_value_sig95F0;
+        this.fireEvent(this.Event["PivotTableFieldSettingChanged"], {
+          unitId: var_core_value_sig8EA0,
+          subUnitId: var_core_value_sigA6F6,
+          tableFieldId: var_core_value_sigCDDA,
+          pivotTableId: var_core_value_sigE243,
+          displayName: var_core_value_sig74A8,
+          format: var_core_value_sig21B2,
+          subtotalType: var_core_value_sigDE08,
+          showDataAs: var_core_value_sigACCB === undefined ? undefined : {
+            ...var_core_value_sigACCB
+          },
+          tableFieldInfo: var_core_value_sig7F33,
+          dataFieldInfo: var_core_value_sig0C53
+        });
+      }
+    }
+    _firePivotTableValuePositionChangedEvent(var_core_value_sig9CCB) {
+      if (var_core_value_sig9CCB) {
+        let {
+          pivotTableId: var_core_value_sigEA04,
+          position: var_core_value_sig7A62,
+          index: var_core_value_sig8109
+        } = var_core_value_sig9CCB;
+        this.fireEvent(this.Event["PivotTableValuePositionChanged"], {
+          pivotTableId: var_core_value_sigEA04,
+          position: var_core_value_sig7A62,
+          index: var_core_value_sig8109
+        });
+      }
+    }
+    _fireAddPivotTableEvent(var_core_value_sigE718) {
+      if (var_core_value_sigE718) {
+        let {
+            positionType: var_core_value_sig7565,
+            pivotTableId: var_core_value_sigD4FB,
+            pivotTableConfig: var_core_value_sig3E71
+          } = var_core_value_sigE718,
+          {
+            targetCellInfo: var_core_value_sig01B3,
+            sourceRangeInfo: var_core_value_sig7442
+          } = var_core_value_sig3E71,
+          {
+            unitId: var_core_value_sigDF87
+          } = var_core_value_sig01B3;
+        this.fireEvent(this.Event["PivotTableAdded"], {
+          unitId: var_core_value_sigDF87,
+          positionType: var_core_value_sig7565,
+          pivotTableId: var_core_value_sigD4FB,
+          sourceRangeInfo: {
+            startRow: var_core_value_sig7442.range["startRow"],
+            endRow: var_core_value_sig7442.range["endRow"],
+            startColumn: var_core_value_sig7442.range["startColumn"],
+            endColumn: var_core_value_sig7442.range["endColumn"],
+            unitId: var_core_value_sig7442.unitId,
+            subUnitId: var_core_value_sig7442.subUnitId,
+            sheetName: var_core_value_sig7442.sheetName
+          },
+          targetCellInfo: {
+            row: var_core_value_sig01B3.row,
+            column: var_core_value_sig01B3.col,
+            sheetName: var_core_value_sig01B3.sheetName,
+            unitId: var_core_value_sig01B3.unitId,
+            subUnitId: var_core_value_sig01B3.subUnitId
+          }
+        });
+      }
+    }
+    _fireBeforeAddPivotTableEvent(var_core_value_sigAEC8) {
+      if (var_core_value_sigAEC8) {
+        let {
+            positionType: var_core_value_sig9EE0,
+            pivotTableId: var_core_value_sigF0511,
+            pivotTableConfig: var_core_value_sig0B45
+          } = var_core_value_sigAEC8,
+          {
+            targetCellInfo: var_core_value_sig36F8,
+            sourceRangeInfo: var_core_value_sig03E1
+          } = var_core_value_sig0B45,
+          {
+            unitId: var_core_value_sigBB57
+          } = var_core_value_sig36F8,
+          var_core_value_sig7C4A = {
+            unitId: var_core_value_sigBB57,
+            positionType: var_core_value_sig9EE0,
+            pivotTableId: var_core_value_sigF0511,
+            sourceRangeInfo: {
+              startRow: var_core_value_sig03E1.range["startRow"],
+              endRow: var_core_value_sig03E1.range["endRow"],
+              startColumn: var_core_value_sig03E1.range["startColumn"],
+              endColumn: var_core_value_sig03E1.range["endColumn"],
+              unitId: var_core_value_sig03E1.unitId,
+              subUnitId: var_core_value_sig03E1.subUnitId,
+              sheetName: var_core_value_sig03E1.sheetName
+            },
+            targetCellInfo: {
+              row: var_core_value_sig36F8.row,
+              column: var_core_value_sig36F8.col,
+              sheetName: var_core_value_sig36F8.sheetName,
+              unitId: var_core_value_sig36F8.unitId,
+              subUnitId: var_core_value_sig36F8.subUnitId
+            },
+            cancel: false
+          };
+        if (this.fireEvent(this.Event["BeforePivotTableAdd"], var_core_value_sig7C4A), var_core_value_sig7C4A.cancel) throw Error("Before\x20add\x20pivot\x20table\x20event\x20canceled");
+      }
+    }
+    _firePivotTableRemovedEvent(var_core_value_sigB977) {
+      if (var_core_value_sigB977) {
+        let {
+          unitId: var_core_value_sigE799,
+          pivotTableId: var_core_value_sigB601
+        } = var_core_value_sigB977;
+        this.fireEvent(this.Event["PivotTableRemoved"], {
+          unitId: var_core_value_sigE799,
+          pivotTableId: var_core_value_sigB601
+        });
+      }
+    }
+    _fireBeforeMovePivotTableEvent(var_core_value_sig2949) {
+      if (var_core_value_sig2949) {
+        let {
+            originTargetInfo: var_core_value_sig8B71,
+            pivotTableId: var_core_value_sigAEFB,
+            targetCellInfo: var_core_value_sig826B
+          } = var_core_value_sig2949,
+          {
+            unitId: var_core_value_sigCF89
+          } = var_core_value_sig8B71,
+          var_core_value_sig00CB = this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(var_core_value_sig8B71.unitId, var_core_value_sig8B71.subUnitId, var_core_value_sigAEFB);
+        if (!var_core_value_sig00CB) return;
+        let var_core_value_sig77EE = {
+          unitId: var_core_value_sigCF89,
+          pivotTableId: var_core_value_sigAEFB,
+          originTargetInfo: {
+            row: var_core_value_sig00CB.targetCellInfo["row"],
+            column: var_core_value_sig00CB.targetCellInfo["col"],
+            unitId: var_core_value_sig00CB.targetCellInfo["unitId"],
+            subUnitId: var_core_value_sig00CB.targetCellInfo["subUnitId"]
+          },
+          targetCellInfo: {
+            row: var_core_value_sig826B.row,
+            column: var_core_value_sig826B.col,
+            unitId: var_core_value_sig826B.unitId,
+            subUnitId: var_core_value_sig826B.subUnitId
+          },
+          cancel: false
+        };
+        if (this.fireEvent(this.Event["BeforePivotTableMove"], var_core_value_sig77EE), var_core_value_sig77EE.cancel) throw Error("Before move pivot table event canceled");
+      }
+    }
+    _fireMovedPivotTableEvent(var_core_value_sig308A) {
+      if (var_core_value_sig308A) {
+        let {
+            originTargetInfo: var_core_value_sig9F76,
+            pivotTableId: var_core_value_sigB008,
+            targetCellInfo: var_core_value_sig8721
+          } = var_core_value_sig308A,
+          {
+            unitId: var_core_value_sig08BA
+          } = var_core_value_sig9F76,
+          var_core_value_sigDBB5 = this._injector["get"](t.SheetsPivotTableConfigModel).getPivotTableConfig(var_core_value_sig9F76.unitId, var_core_value_sig9F76.subUnitId, var_core_value_sigB008);
+        if (!var_core_value_sigDBB5) return;
+        this.fireEvent(this.Event["PivotTableMoved"], {
+          unitId: var_core_value_sig08BA,
+          pivotTableId: var_core_value_sigB008,
+          originTargetInfo: {
+            row: var_core_value_sigDBB5.targetCellInfo["row"],
+            column: var_core_value_sigDBB5.targetCellInfo["col"],
+            unitId: var_core_value_sigDBB5.targetCellInfo["unitId"],
+            subUnitId: var_core_value_sigDBB5.targetCellInfo["subUnitId"]
+          },
+          targetCellInfo: {
+            row: var_core_value_sig8721.row,
+            column: var_core_value_sig8721.col,
+            unitId: var_core_value_sig8721.unitId,
+            subUnitId: var_core_value_sig8721.subUnitId
+          }
+        });
+      }
+    }
+    _fireRenderPivotTableEvent(var_core_value_sig528D) {
+      if (var_core_value_sig528D) {
+        let {
+          unitId: var_core_value_sigCFAC,
+          subUnitId: var_core_value_sig237B,
+          pivotTableId: var_core_value_sigFEAB,
+          type: var_core_value_sigE347,
+          rangesCache: var_core_value_sig3C5B,
+          isEmpty: var_core_value_sig200B
+        } = var_core_value_sig528D;
+        this.fireEvent(this.Event["PivotTableRendered"], {
+          unitId: var_core_value_sigCFAC,
+          subUnitId: var_core_value_sig237B,
+          pivotTableId: var_core_value_sigFEAB,
+          changeType: var_core_value_sigE347,
+          isEmpty: !!var_core_value_sig200B,
+          rangeInfo: var_core_value_sig3C5B
+        });
+      }
+    }
+    generatePivotTable(var_core_value_sigA309, var_core_value_sig9E20) {
+      let var_core_value_sig26BB = (var_core_value_sig9E20 ? new var_core_value_sig9E20() : new x()).createCollection("data", var_core_value_sigA309),
+        var_core_value_sig19B4 = var_core_value_sigA309[0];
+      var_core_value_sig26BB.getFieldIds().forEach((var_core_value_sig3863, var_core_value_sigC97C) => {
+        var_core_value_sig26BB.setDisplayName(var_core_value_sig3863, var_core_value_sig19B4[var_core_value_sigC97C]);
+      });
+      let var_core_value_sig218A = (0, e.generateHexNumber)(8),
+        var_core_value_sig14CB = new e["PivotTable"](var_core_value_sig26BB, undefined, var_core_value_sig218A);
+      return new b(this._injector, var_core_value_sig14CB, var_core_value_sigA309, var_core_value_sig218A);
+    }
+  };
+i.FUniver["extend"](S);

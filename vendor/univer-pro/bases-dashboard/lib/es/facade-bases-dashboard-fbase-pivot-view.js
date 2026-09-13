@@ -1,7 +1,80 @@
-import{CreateBaseViewCommand,DeleteBaseViewCommand,RenameBaseViewCommand,getBaseDashboardPermissionObjectId,getBaseTablePermissionObjectId,getBaseViewPermissionObjectId}from"@univerjs-pro/bases";
-import{BaseDashboardAPIContextService,BaseDashboardWidgetType,CalculateBasePivotCommand,CreateBaseDashboardCommand,DeleteBaseDashboardCommand,RemoveBaseDashboardWidgetCommand,UpdateBaseDashboardCommand,UpdateBasePivotViewCommand,UpsertBaseDashboardWidgetCommand,createBasePivotTable,createDefaultBasePivotViewConfig}from"@univerjs-pro/bases-dashboard";
-import{FBase,FBaseObjectPermission}from"@univerjs-pro/bases/facade";
-import{BASE_RECORD_ID_FIELD_ID,BaseViewType,Tools,UniverInstanceType,generateRandomId}from"@univerjs/core";
-var E=class{constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4655,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4658,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659){this._unitId=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654,this._tableId=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4655,this._viewId=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656,this._instanceService=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657,this._commandService=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4658,this._permissionService=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659;}getId(){return this._viewId;}getPermission(){return new FBaseObjectPermission(this._unitId,getBaseViewPermissionObjectId(this._tableId,this._viewId),[getBaseTablePermissionObjectId(this._tableId)],this._commandService,this._permissionService);}getTableId(){return this._tableId;}getName(){return this._getView().name;}setName(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666){return this._commandService["syncExecuteCommand"](RenameBaseViewCommand.id,{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId,name:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666});}getSnapshot(){return Tools.deepClone(this._getView());}getConfig(){return Tools.deepClone(this._getView().config);}getPivotTable(){return createBasePivotTable(this._getTable(),this._getView().config["pivot"]);}updateConfig(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668){return this._commandService["syncExecuteCommand"](UpdateBasePivotViewCommand.id,{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId,patch:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668)});}calculate(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670=[]){return this._commandService["executeCommand"](CalculateBasePivotCommand.id,{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId,filters:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670});}delete(){return this._commandService["syncExecuteCommand"](DeleteBaseViewCommand.id,{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId});}_getBase(){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4672=this._instanceService["getUnit"](this._unitId,UniverInstanceType.UNIVER_BASE);if(!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4672)throw Error("Base\x20not\x20found:\x20"+this._unitId);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4672;}_getTable(){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4674=this._getBase().getSnapshot().tables[this._tableId];if(!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4674)throw Error("Table not found: "+this._tableId);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4674;}_getView(){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676=this._getTable().views[this._viewId];if(!D(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676))throw Error("Pivot\x20View\x20not\x20found:\x20"+this._viewId);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676;}};function D(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138){return(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138==null?undefined:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.type)===BaseViewType.Pivot&&typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config=="object"&&var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config!==null&&"pivot"in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config&&"chart"in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config;}
-
+import { CreateBaseViewCommand, DeleteBaseViewCommand, RenameBaseViewCommand, getBaseDashboardPermissionObjectId, getBaseTablePermissionObjectId, getBaseViewPermissionObjectId } from "@univerjs-pro/bases";
+import { BaseDashboardAPIContextService, BaseDashboardWidgetType, CalculateBasePivotCommand, CreateBaseDashboardCommand, DeleteBaseDashboardCommand, RemoveBaseDashboardWidgetCommand, UpdateBaseDashboardCommand, UpdateBasePivotViewCommand, UpsertBaseDashboardWidgetCommand, createBasePivotTable, createDefaultBasePivotViewConfig } from "@univerjs-pro/bases-dashboard";
+import { FBase, FBaseObjectPermission } from "@univerjs-pro/bases/facade";
+import { BASE_RECORD_ID_FIELD_ID, BaseViewType, Tools, UniverInstanceType, generateRandomId } from "@univerjs/core";
+var E = class {
+  constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4655, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4658, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659) {
+    this._unitId = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4654, this._tableId = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4655, this._viewId = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4656, this._instanceService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4657, this._commandService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4658, this._permissionService = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4659;
+  }
+  getId() {
+    return this._viewId;
+  }
+  getPermission() {
+    return new FBaseObjectPermission(this._unitId, getBaseViewPermissionObjectId(this._tableId, this._viewId), [getBaseTablePermissionObjectId(this._tableId)], this._commandService, this._permissionService);
+  }
+  getTableId() {
+    return this._tableId;
+  }
+  getName() {
+    return this._getView().name;
+  }
+  setName(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666) {
+    return this._commandService["syncExecuteCommand"](RenameBaseViewCommand.id, {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId,
+      name: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4666
+    });
+  }
+  getSnapshot() {
+    return Tools.deepClone(this._getView());
+  }
+  getConfig() {
+    return Tools.deepClone(this._getView().config);
+  }
+  getPivotTable() {
+    return createBasePivotTable(this._getTable(), this._getView().config["pivot"]);
+  }
+  updateConfig(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668) {
+    return this._commandService["syncExecuteCommand"](UpdateBasePivotViewCommand.id, {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId,
+      patch: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4668)
+    });
+  }
+  calculate(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670 = []) {
+    return this._commandService["executeCommand"](CalculateBasePivotCommand.id, {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId,
+      filters: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4670
+    });
+  }
+  delete() {
+    return this._commandService["syncExecuteCommand"](DeleteBaseViewCommand.id, {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId
+    });
+  }
+  _getBase() {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4672 = this._instanceService["getUnit"](this._unitId, UniverInstanceType.UNIVER_BASE);
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4672) throw Error("Base\x20not\x20found:\x20" + this._unitId);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4672;
+  }
+  _getTable() {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4674 = this._getBase().getSnapshot().tables[this._tableId];
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4674) throw Error("Table not found: " + this._tableId);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4674;
+  }
+  _getView() {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676 = this._getTable().views[this._viewId];
+    if (!D(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676)) throw Error("Pivot\x20View\x20not\x20found:\x20" + this._viewId);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4676;
+  }
+};
+function D(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138) {
+  return (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138 == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.type) === BaseViewType.Pivot && typeof var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config == "object" && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config !== null && "pivot" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config && "chart" in var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46138.config;
+}
 export { E as FBasePivotView };

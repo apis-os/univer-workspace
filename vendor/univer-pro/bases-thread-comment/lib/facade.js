@@ -1,1 +1,47 @@
-import{FBaseTableRecord as v11}from"@univerjs-pro/bases/facade";import*as v12 from"@univerjs/thread-comment";var n=class extends v11{_initialize(v7){let v8;Object.defineProperty(this,"_threadCommentService",{get:()=>v8??=v7.get(v12.ThreadCommentFacadeService)});}createCommentAsync(v9,v10={}){return this._threadCommentService["createCommentAsync"]({...v10,unitId:this._baseUnitId,subUnitId:this._baseTableId,anchor:{kind:v12.ThreadCommentAnchorKind["BASE_RECORD"],tableId:this._baseTableId,recordId:this._recordId},content:v9});}getComments(){return this._threadCommentService["getComments"]({unitIds:[this._baseUnitId],subUnitIds:[this._baseTableId],anchorKinds:[v12.ThreadCommentAnchorKind["BASE_RECORD"]]}).filter(v1=>{var v2=ox29b1c3,v3;return((v3=v1[v2(346)])==null?undefined:v3.kind)===v12[v2(345)][v2(366)]&&v1.anchor[v2(347)]===this._recordId;});}async listCommentsAsync(){return(await this._threadCommentService["listCommentsAsync"]({unitIds:[this._baseUnitId],subUnitIds:[this._baseTableId],anchorKinds:[v12.ThreadCommentAnchorKind["BASE_RECORD"]]})).filter(v4=>{var v5=ox1d91fa,v6;return((v6=v4[v5(346)])==null?undefined:v6.kind)===v12.ThreadCommentAnchorKind[v5(366)]&&v4.anchor[v5(347)]===this[v5(365)];});}};v11.extend(n);export{n as FBaseTableRecordThreadCommentMixin};
+import { FBaseTableRecord as var_core_value_sig76BA } from "@univerjs-pro/bases/facade";
+import * as var_core_value_sigFBFA from "@univerjs/thread-comment";
+var n = class extends var_core_value_sig76BA {
+  _initialize(var_core_value_sig27E5) {
+    let var_core_value_sig8061;
+    Object.defineProperty(this, "_threadCommentService", {
+      get: () => var_core_value_sig8061 ??= var_core_value_sig27E5.get(var_core_value_sigFBFA.ThreadCommentFacadeService)
+    });
+  }
+  createCommentAsync(var_core_value_sig4D4C, var_core_value_sigC9E0 = {}) {
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_core_value_sigC9E0,
+      unitId: this._baseUnitId,
+      subUnitId: this._baseTableId,
+      anchor: {
+        kind: var_core_value_sigFBFA.ThreadCommentAnchorKind["BASE_RECORD"],
+        tableId: this._baseTableId,
+        recordId: this._recordId
+      },
+      content: var_core_value_sig4D4C
+    });
+  }
+  getComments() {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._baseUnitId],
+      subUnitIds: [this._baseTableId],
+      anchorKinds: [var_core_value_sigFBFA.ThreadCommentAnchorKind["BASE_RECORD"]]
+    }).filter(var_core_value_sig7524 => {
+      var var_core_value_sig2AD8 = ox29b1c3,
+        var_core_value_sig2AD0;
+      return ((var_core_value_sig2AD0 = var_core_value_sig7524[var_core_value_sig2AD8(346)]) == null ? undefined : var_core_value_sig2AD0.kind) === var_core_value_sigFBFA[var_core_value_sig2AD8(345)][var_core_value_sig2AD8(366)] && var_core_value_sig7524.anchor[var_core_value_sig2AD8(347)] === this._recordId;
+    });
+  }
+  async listCommentsAsync() {
+    return (await this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._baseUnitId],
+      subUnitIds: [this._baseTableId],
+      anchorKinds: [var_core_value_sigFBFA.ThreadCommentAnchorKind["BASE_RECORD"]]
+    })).filter(var_core_value_sig3EEE => {
+      var var_core_value_sigBC46 = ox1d91fa,
+        var_core_value_sig3D7D;
+      return ((var_core_value_sig3D7D = var_core_value_sig3EEE[var_core_value_sigBC46(346)]) == null ? undefined : var_core_value_sig3D7D.kind) === var_core_value_sigFBFA.ThreadCommentAnchorKind[var_core_value_sigBC46(366)] && var_core_value_sig3EEE.anchor[var_core_value_sigBC46(347)] === this[var_core_value_sigBC46(365)];
+    });
+  }
+};
+var_core_value_sig76BA.extend(n);
+export { n as FBaseTableRecordThreadCommentMixin };

@@ -1,7 +1,14 @@
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,ThemeService,Tools,UniverInstanceType,generateRandomId,merge,sequenceExecute,touchDependencies}from'@univerjs/core';
-import{AddSlideElementMutation,ISlideDrawingService,PageElementTypeEnum,PageTypeEnum,RemoveSlideElementMutation,UpdateSlideElementMutation,getSlideCommandTarget,plainTextToSlideDocumentData}from'@univerjs-pro/slides';
-import{Subject}from'rxjs';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
-function Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461079){return"univerFrozenTable:"+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461079;}function Bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094){return{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094,'id':Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093)};}
-
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, ThemeService, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from '@univerjs/core';
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, UpdateSlideElementMutation, getSlideCommandTarget, plainTextToSlideDocumentData } from '@univerjs-pro/slides';
+import { Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+function Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461079) {
+  return "univerFrozenTable:" + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461079;
+}
+function Bt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094) {
+  return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461094,
+    'id': Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461093)
+  };
+}
 export { Bt as freezeSlideTableTheme };

@@ -1,15 +1,74 @@
-import{UniverInkPlugin}from"@univerjs-pro/ink";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{DependentOn,Disposable,IConfigService,Inject,Injector,LocaleService,Plugin,UniverInstanceType,createIdentifier,merge,toDisposable}from"@univerjs/core";
-import{BuiltInUIPart,IUIPartsService,connectInjector,useDependency,useObservable}from"@univerjs/ui";
-import{BehaviorSubject}from"rxjs";
-import{ShapeFloatingToolbarMenuPanel}from"@univerjs-pro/shape-editor-ui";
-import{Button,ColorPicker,Dropdown,Separator,Tooltip,clsx}from"@univerjs/design";
-import{CloseIcon,ColorWheelMultiIcon,MoreDownIcon,StrokeSize1Icon,StrokeSize2Icon,StrokeSize3Icon,StrokeSize4Icon,StrokeSize5Icon}from"@univerjs/icons";
-import{useState}from"react";
-import{jsx,jsxs}from"react/jsx-runtime";
+import { UniverInkPlugin } from "@univerjs-pro/ink";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DependentOn, Disposable, IConfigService, Inject, Injector, LocaleService, Plugin, UniverInstanceType, createIdentifier, merge, toDisposable } from "@univerjs/core";
+import { BuiltInUIPart, IUIPartsService, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { BehaviorSubject } from "rxjs";
+import { ShapeFloatingToolbarMenuPanel } from "@univerjs-pro/shape-editor-ui";
+import { Button, ColorPicker, Dropdown, Separator, Tooltip, clsx } from "@univerjs/design";
+import { CloseIcon, ColorWheelMultiIcon, MoreDownIcon, StrokeSize1Icon, StrokeSize2Icon, StrokeSize3Icon, StrokeSize4Icon, StrokeSize5Icon } from "@univerjs/icons";
+import { useState } from "react";
+import { jsx, jsxs } from "react/jsx-runtime";
 import { L } from "./internal-glue.js";
 import { z } from "./ink-ui-iink-uistate.js";
-function B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100==="brush"||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100==="highlighter"||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100==="eraser"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100:"pen";}var V=class extends Disposable{constructor(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611){super(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611),L(this,"_state$",new BehaviorSubject({active:false,toolbarVisible:false,tool:"pen",...z.pen,session:null})),L(this,"state$",this._state$["asObservable"]());}dispose(){this._state$["complete"](),super.dispose();}getState(){return this._state$["getValue"]();}beginInkMode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614=B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.tool);this._state$["next"]({...this.getState(),...z[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614],active:true,toolbarVisible:true,tool:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614,session:{unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.unitId,subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.subUnitId}});}cancelInkMode(){this._state$["next"]({...this.getState(),active:false,toolbarVisible:false,session:null});}selectTool(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617){this._state$["next"]({...this.getState(),...z[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617],tool:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617});}setWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619){!Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619)||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619<=0||this._state$["next"]({...this.getState(),width:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619});}setColor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621){var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621&&this._state$["next"]({...this.getState(),color:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621});}};
-
+function B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100 === "brush" || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100 === "highlighter" || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100 === "eraser" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46100 : "pen";
+}
+var V = class extends Disposable {
+  constructor(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611) {
+    super(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611), L(this, "_state$", new BehaviorSubject({
+      active: false,
+      toolbarVisible: false,
+      tool: "pen",
+      ...z.pen,
+      session: null
+    })), L(this, "state$", this._state$["asObservable"]());
+  }
+  dispose() {
+    this._state$["complete"](), super.dispose();
+  }
+  getState() {
+    return this._state$["getValue"]();
+  }
+  beginInkMode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614 = B(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.tool);
+    this._state$["next"]({
+      ...this.getState(),
+      ...z[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614],
+      active: true,
+      toolbarVisible: true,
+      tool: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614,
+      session: {
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.unitId,
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613.subUnitId
+      }
+    });
+  }
+  cancelInkMode() {
+    this._state$["next"]({
+      ...this.getState(),
+      active: false,
+      toolbarVisible: false,
+      session: null
+    });
+  }
+  selectTool(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617) {
+    this._state$["next"]({
+      ...this.getState(),
+      ...z[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617],
+      tool: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617
+    });
+  }
+  setWidth(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619) {
+    !Number.isFinite(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619 <= 0 || this._state$["next"]({
+      ...this.getState(),
+      width: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4619
+    });
+  }
+  setColor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621 && this._state$["next"]({
+      ...this.getState(),
+      color: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621
+    });
+  }
+};
 export { V as InkUIStateService };

@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Grand",
       rowHeightExtraTall: "Très\x20grand",
       conditionalColoring: "Coloration conditionnelle",
-      conditionalColoringHelp:
-        "Cliquez\x20sur\x20\x22Nouvelle\x20condition\x22\x20pour\x20appliquer\x20des\x20couleurs\x20selon\x20les\x20conditions\x20définies.\x20Notez\x20que\x20les\x20conditions\x20placées\x20plus\x20haut\x20sont\x20prioritaires.",
+      conditionalColoringHelp: "Cliquez\x20sur\x20\x22Nouvelle\x20condition\x22\x20pour\x20appliquer\x20des\x20couleurs\x20selon\x20les\x20conditions\x20définies.\x20Notez\x20que\x20les\x20conditions\x20placées\x20plus\x20haut\x20sont\x20prioritaires.",
       conditionalColoringSmart: "Appliquer la couleur intelligente à tout",
       conditionalColor: "Couleur",
       conditionalCustomColor: "Personnalisé",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "coché",
       conditionalUnchecked: "décoché",
       statusDoneTitle: "Le statut est terminé",
-      statusDoneDescription:
-        "Appliquez un marqueur vert tendre aux enregistrements correspondants.",
+      statusDoneDescription: "Appliquez un marqueur vert tendre aux enregistrements correspondants.",
       statusBlockedTitle: "Le\x20statut\x20est\x20bloqué",
-      statusBlockedDescription:
-        "Appliquez un marqueur d'avertissement aux enregistrements bloqués.",
+      statusBlockedDescription: "Appliquez un marqueur d'avertissement aux enregistrements bloqués.",
       addField: "Ajouter un champ",
       undo: "Annuler",
-      redo: "Rétablir",
+      redo: "Rétablir"
     },
     recordDetail: {
       untitledRecord: "Enregistrement sans titre",
@@ -63,11 +60,10 @@ const n = {
       deleteConfirmTitle: "Supprimer cet enregistrement ?",
       deleteConfirmDescription: "Cet enregistrement sera supprimé.",
       submit: "Envoyer",
-      addMoreAfterSubmission:
-        "Ajouter\x20d\x27autres\x20enregistrements\x20après\x20l\x27envoi",
+      addMoreAfterSubmission: "Ajouter\x20d\x27autres\x20enregistrements\x20après\x20l\x27envoi",
       panelSize: "Taille du panneau",
       fullScreen: "Plein écran",
-      exitFullScreen: "Quitter le plein écran",
+      exitFullScreen: "Quitter le plein écran"
     },
     recordLink: {
       searchRecords: "Rechercher des enregistrements",
@@ -75,27 +71,22 @@ const n = {
       selectedCount: "{0} sélectionné(s)",
       missingRecord: "Enregistrement\x20supprimé",
       openRecord: "Ouvrir l’enregistrement lié",
-      back: "Retour",
+      back: "Retour"
     },
     hierarchy: {
-      invalidField:
-        "Choisissez un champ de lien vers un enregistrement à valeur unique qui pointe vers cette table.",
-      missingRecord:
-        "L'enregistrement ou le parent n'existe plus. Actualisez et réessayez.",
+      invalidField: "Choisissez un champ de lien vers un enregistrement à valeur unique qui pointe vers cette table.",
+      missingRecord: "L'enregistrement ou le parent n'existe plus. Actualisez et réessayez.",
       selfParent: "Un enregistrement ne peut pas être son propre parent.",
       cycle: "Ce\x20déplacement\x20créerait\x20une\x20boucle\x20de\x20parenté.",
-      maxDepth:
-        "Ce\x20déplacement\x20dépasserait\x20la\x20limite\x20de\x20cinq\x20niveaux\x20hiérarchiques.",
-      sortedView:
-        "Supprimez le tri de la vue avant de réorganiser manuellement les enregistrements.",
-      operationFailed:
-        "La\x20modification\x20de\x20la\x20hiérarchie\x20n\x27a\x20pas\x20pu\x20être\x20appliquée.\x20Actualisez\x20et\x20réessayez.",
+      maxDepth: "Ce\x20déplacement\x20dépasserait\x20la\x20limite\x20de\x20cinq\x20niveaux\x20hiérarchiques.",
+      sortedView: "Supprimez le tri de la vue avant de réorganiser manuellement les enregistrements.",
+      operationFailed: "La\x20modification\x20de\x20la\x20hiérarchie\x20n\x27a\x20pas\x20pu\x20être\x20appliquée.\x20Actualisez\x20et\x20réessayez.",
       parent: "Parent",
       parentFieldName: "Éléments\x20parents",
       children: "Sous-éléments",
       viewChildren: "Afficher les sous-éléments",
       root: "Enregistrement racine",
-      setParent: "Définir\x20le\x20parent",
+      setParent: "Définir\x20le\x20parent"
     },
     collaboration: {
       localStatus: "Mode local",
@@ -107,18 +98,16 @@ const n = {
       offlineStatus: "Hors ligne",
       offlineTooltip: "Connexion perdue. Cliquez pour vous reconnecter.",
       conflictStatus: "Conflit",
-      conflictTooltip:
-        "Un\x20conflit\x20de\x20collaboration\x20nécessite\x20une\x20attention\x20particulière.",
+      conflictTooltip: "Un\x20conflit\x20de\x20collaboration\x20nécessite\x20une\x20attention\x20particulière.",
       notCollabStatus: "Pas collaboratif",
-      notCollabTooltip:
-        "Cette\x20base\x20n\x27est\x20pas\x20en\x20mode\x20collaboration.",
+      notCollabTooltip: "Cette\x20base\x20n\x27est\x20pas\x20en\x20mode\x20collaboration."
     },
     virtualRecord: {
       regrouped: "L’enregistrement sera regroupé",
       resorted: "L’enregistrement sera retrié",
       moved: "L’enregistrement sera déplacé dans cette vue",
       filteredOut: "L’enregistrement est masqué dans cette vue",
-      "delete d": "L’enregistrement a été supprimé",
+      "delete d": "L’enregistrement a été supprimé"
     },
     gridContext: {
       insert: "Insérer",
@@ -128,7 +117,7 @@ const n = {
       addSubRecord: "Ajouter un sous-enregistrement",
       clearContent: "Effacer le contenu",
       deleteRecord: "Supprimer\x20l\x27enregistrement",
-      deleteRecords: "Supprimer\x20les\x20enregistrements",
+      deleteRecords: "Supprimer\x20les\x20enregistrements"
     },
     common: {
       apply: "Appliquer",
@@ -143,7 +132,7 @@ const n = {
       searchClose: "Fermer la recherche",
       value: "Valeur",
       newCondition: "Nouvelle\x20condition",
-      newBadge: "Nouveau",
+      newBadge: "Nouveau"
     },
     footerStat: {
       none: "Aucun",
@@ -162,18 +151,16 @@ const n = {
       sum: "Somme {0}",
       average: "Moy. {0}",
       min: "Min\u00a0{0}",
-      max: "{0}\x20maximum",
+      max: "{0}\x20maximum"
     },
     confirmDelete: {
       tableTitle: "Supprimer cette table ?",
-      tableDescription:
-        "Cette\x20table\x20et\x20ses\x20enregistrements\x20seront\x20supprimés.",
-      tableReferenced:
-        "Cette\x20table\x20ne\x20peut\x20pas\x20être\x20supprimée,\x20car\x20les\x20champs\x20suivants\x20la\x20référencent\x20:\x20{0}.",
+      tableDescription: "Cette\x20table\x20et\x20ses\x20enregistrements\x20seront\x20supprimés.",
+      tableReferenced: "Cette\x20table\x20ne\x20peut\x20pas\x20être\x20supprimée,\x20car\x20les\x20champs\x20suivants\x20la\x20référencent\x20:\x20{0}.",
       viewTitle: "Supprimer\x20cette\x20vue\x20?",
       viewDescription: "Cette\x20vue\x20sera\x20supprimée.",
       fieldTitle: "Supprimer ce champ ?",
-      fieldDescription: "Ce champ sera supprimé de la table.",
+      fieldDescription: "Ce champ sera supprimé de la table."
     },
     duplicateTable: {
       title: "Dupliquer la table",
@@ -182,29 +169,26 @@ const n = {
       configurationsOnly: "Configurations uniquement",
       configurationsAndRecords: "Configurations et enregistrements",
       action: "Dupliquer",
-      copyName: "{0}\x20copie",
+      copyName: "{0}\x20copie"
     },
     tableNameValidation: {
       required: "Saisissez un nom de table.",
       tooLong: "Utilisez 31 caractères ou moins.",
-      apostrophe:
-        "Le nom de la table ne peut pas commencer ni se terminer par une apostrophe.",
-      invalidCharacters:
-        "Le nom de la table ne peut pas contenir : \\ / ? * [ ].",
+      apostrophe: "Le nom de la table ne peut pas commencer ni se terminer par une apostrophe.",
+      invalidCharacters: "Le nom de la table ne peut pas contenir : \\ / ? * [ ].",
       duplicate: "Une table portant ce nom existe déjà.",
-      invalid: "Saisissez\x20un\x20nom\x20de\x20table\x20valide.",
+      invalid: "Saisissez\x20un\x20nom\x20de\x20table\x20valide."
     },
     clipboard: {
       recordsCopied: "{0}\x20enregistrements\x20copiés",
-      attachmentsUploading: "Téléversement de {0} pièces jointes...",
+      attachmentsUploading: "Téléversement de {0} pièces jointes..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Table cible",
       recordLinkDisplayField: "Champ d’affichage",
       recordLinkPickerFields: "Champs auxiliaires du sélecteur",
       recordLinkAllowMultiple: "Autoriser plusieurs enregistrements liés",
-      recordLinkDescription:
-        "Stocke\x20des\x20ID\x20d’enregistrement\x20stables.\x20Utilisez\x20des\x20formules\x20Excel\x20standard\x20comme\x20XLOOKUP\x20et\x20TEXTSPLIT\x20pour\x20lire\x20les\x20valeurs\x20liées.",
+      recordLinkDescription: "Stocke\x20des\x20ID\x20d’enregistrement\x20stables.\x20Utilisez\x20des\x20formules\x20Excel\x20standard\x20comme\x20XLOOKUP\x20et\x20TEXTSPLIT\x20pour\x20lire\x20les\x20valeurs\x20liées.",
       fieldTitle: "Titre\x20du\x20champ",
       fieldTitlePlaceholder: "Saisissez un titre de champ",
       fieldType: "Type de champ",
@@ -213,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Avancé",
       defaultValue: "Valeur\x20par\x20défaut",
       newField: "Nouveau champ",
-      defaultSettingsReady:
-        "Ce type de champ est prêt avec les paramètres par défaut.",
+      defaultSettingsReady: "Ce type de champ est prêt avec les paramètres par défaut.",
       numberFormat: "Format numérique",
       currencyFormat: "Format\x20monétaire",
       dateFormat: "Format de date",
@@ -260,17 +243,12 @@ const n = {
       filterByField: "Filtrer par {0}",
       createKanbanWithField: "Créer un Kanban avec {0}",
       deleteField: "Supprimer le champ",
-      referenceOptionsHelp:
-        "Référencer\x20les\x20données\x20d\x27autres\x20tables\x20comme\x20options",
-      allowMultipleMembers:
-        "Autoriser plusieurs membres dans un enregistrement",
+      referenceOptionsHelp: "Référencer\x20les\x20données\x20d\x27autres\x20tables\x20comme\x20options",
+      allowMultipleMembers: "Autoriser plusieurs membres dans un enregistrement",
       allowMultipleGroups: "Autoriser plusieurs groupes dans un enregistrement",
-      defaultProviderMock:
-        "La valeur par défaut est résolue à partir de {0} élément{2} {1} fictif{3}.",
-      defaultProviderExternal:
-        "La\x20valeur\x20par\x20défaut\x20est\x20résolue\x20depuis\x20le\x20fournisseur\x20externe\x20Univer\x20{0}.",
-      linkPlaceholder:
-        "Saisissez\x20une\x20URL\x20(p.\x20ex.\x20univer.ai\x20ou\x20https://univer.ai/skills).",
+      defaultProviderMock: "La valeur par défaut est résolue à partir de {0} élément{2} {1} fictif{3}.",
+      defaultProviderExternal: "La\x20valeur\x20par\x20défaut\x20est\x20résolue\x20depuis\x20le\x20fournisseur\x20externe\x20Univer\x20{0}.",
+      linkPlaceholder: "Saisissez\x20une\x20URL\x20(p.\x20ex.\x20univer.ai\x20ou\x20https://univer.ai/skills).",
       phonePlaceholder: "Saisissez un numéro de téléphone",
       currencySymbol: "Symbole monétaire",
       thousandsSeparator: "Séparateur de milliers",
@@ -303,10 +281,8 @@ const n = {
       noFormulaConfigured: "Aucune formule configurée",
       editFormula: "Modifier la formule",
       closeFormulaEditor: "Fermer l'éditeur de formule",
-      formulaHint:
-        "Utilisez des champs de la ligne actuelle comme [@[Amount]]. A1:B10 et les références à des cellules individuelles ne sont pas autorisés.",
-      formulaReferenceError:
-        "Les références A1 et les plages ne sont pas prises en charge dans les formules Base.",
+      formulaHint: "Utilisez des champs de la ligne actuelle comme [@[Amount]]. A1:B10 et les références à des cellules individuelles ne sont pas autorisés.",
+      formulaReferenceError: "Les références A1 et les plages ne sont pas prises en charge dans les formules Base.",
       formulaTables: "Tableaux",
       formulaFields: "Champs",
       formulaFunctions: "Fonctions",
@@ -319,8 +295,7 @@ const n = {
       currentTableName: "Table actuelle",
       currentTableField: "Champ de la table actuelle",
       fieldFromTable: "Champ de {0}",
-      referenceCurrentField:
-        'Référence le champ "{0}" de la table Base actuelle. Il sera enregistré sous [[#This Row],[{1}]] pour le moteur de formule.',
+      referenceCurrentField: 'Référence le champ "{0}" de la table Base actuelle. Il sera enregistré sous [[#This Row],[{1}]] pour le moteur de formule.',
       referenceTableField: 'Référence le champ "{0}" de la table "{1}".',
       fieldNameColumn: "Nom",
       fieldTypeColumn: "Type",
@@ -336,8 +311,7 @@ const n = {
       formulaFormatPercent: "Pourcentage",
       formulaFormatDateTime: "Date / Heure",
       addDescriptionPlaceholder: "Ajouter une description",
-      numberingDescription:
-        "Attribue automatiquement un index croissant unique à partir de 1 lors de la création d'un enregistrement. Les valeurs générées ne peuvent pas être modifiées.",
+      numberingDescription: "Attribue automatiquement un index croissant unique à partir de 1 lors de la création d'un enregistrement. Les valeurs générées ne peuvent pas être modifiées.",
       optionColor: "Couleur de l'option",
       separatorLocal: "Locale",
       separatorCommaPeriod: "Virgule, point",
@@ -362,7 +336,7 @@ const n = {
       ratingIconLightning: "Éclair",
       ratingIconMedal: "Médaille",
       increment: "incrémenter",
-      decrement: "décrémenter",
+      decrement: "décrémenter"
     },
     cellEditor: {
       done: "Terminé",
@@ -378,8 +352,7 @@ const n = {
       deleteAttachment: "Supprimer\x20la\x20pièce\x20jointe\x20{0}",
       deleteAttachmentConfirmTitle: "Supprimer cette pièce jointe ?",
       deleteAttachmentsConfirmTitle: "Supprimer {0} pièces jointes ?",
-      deleteAttachmentConfirmDescription:
-        "Les pièces jointes sélectionnées seront retirées de cet enregistrement.",
+      deleteAttachmentConfirmDescription: "Les pièces jointes sélectionnées seront retirées de cet enregistrement.",
       failedToAttachFile: "Échec\x20de\x20l\x27ajout\x20du\x20fichier",
       file: "FICHIER",
       invalidEmail: "Adresse e-mail invalide",
@@ -390,7 +363,7 @@ const n = {
       selectOptions: "Sélectionner des options",
       previousMonth: "Mois\x20précédent",
       nextMonth: "Mois suivant",
-      time: "Heure",
+      time: "Heure"
     },
     recordDetailField: {
       previousRecord: "Enregistrement précédent",
@@ -403,7 +376,7 @@ const n = {
       empty: "Vide",
       unassigned: "Non attribué",
       editField: "Modifier\x20{0}",
-      noVisibleFields: "Aucun champ visible",
+      noVisibleFields: "Aucun champ visible"
     },
     fieldMenu: {
       createSharedBaseField: "Créer un champ de base partagé",
@@ -434,8 +407,8 @@ const n = {
         createdBy: "Champ Auteur du système",
         updatedBy: "Champ du modificateur système",
         createdAt: "Heure de création du système",
-        updatedAt: "Heure de mise à jour du système",
-      },
+        updatedAt: "Heure de mise à jour du système"
+      }
     },
     fieldTypes: {
       text: "Texte",
@@ -459,7 +432,7 @@ const n = {
       createdBy: "Créé par",
       updatedBy: "Modifié\x20par",
       createdAt: "Date de création",
-      updatedAt: "Date de dernière modification",
+      updatedAt: "Date de dernière modification"
     },
     viewMenus: {
       customizeKanban: "Personnaliser Kanban",
@@ -474,8 +447,7 @@ const n = {
       normal: "Normale",
       normalDescription: "Titre à gauche, champs à droite",
       compose: "Composer",
-      composeDescription:
-        "Champs\x20en\x20ligne\x20avec\x20retour\x20à\x20la\x20ligne",
+      composeDescription: "Champs\x20en\x20ligne\x20avec\x20retour\x20à\x20la\x20ligne",
       cardSize: "Taille de la carte",
       small: "Petite",
       medium: "Moyen",
@@ -498,13 +470,11 @@ const n = {
       addCondition: "Ajouter une condition",
       calculateWorkingDaysOnly: "Calculer uniquement les jours ouvrés",
       customWorkingDays: "Jours ouvrés personnalisés",
-      customWorkingDaysHelp:
-        "Personnalisez les jours ouvrés et les jours de repos pour cette vue Gantt. Si rien n'est défini, du lundi au vendredi est utilisé lorsque le calcul des jours ouvrés est activé.",
+      customWorkingDaysHelp: "Personnalisez les jours ouvrés et les jours de repos pour cette vue Gantt. Si rien n'est défini, du lundi au vendredi est utilisé lorsque le calcul des jours ouvrés est activé.",
       notSet: "Non défini",
       settings: "Paramètres",
       setWorkingDays: "Définir les jours ouvrés",
-      setWorkingDaysDescription:
-        "Personnaliser\x20les\x20jours\x20ouvrés\x20et\x20les\x20jours\x20de\x20repos,\x20puis\x20les\x20appliquer\x20à\x20la\x20base\x20actuelle",
+      setWorkingDaysDescription: "Personnaliser\x20les\x20jours\x20ouvrés\x20et\x20les\x20jours\x20de\x20repos,\x20puis\x20les\x20appliquer\x20à\x20la\x20base\x20actuelle",
       closeWorkingDaysSettings: "Fermer les paramètres des jours ouvrés",
       addWorkingDays: "Ajouter des jours ouvrés",
       holidayName: "Nom\x20du\x20jour\x20férié",
@@ -513,8 +483,7 @@ const n = {
       add: "Ajouter",
       removeWorkingDayException: "Supprimer l'exception de jour ouvré",
       legalWorkingDays: "Jours ouvrés légaux",
-      legalWorkingDaysHelp:
-        "Les jours ouvrés légaux seront disponibles après la connexion d'une API de calendrier externe.",
+      legalWorkingDaysHelp: "Les jours ouvrés légaux seront disponibles après la connexion d'une API de calendrier externe.",
       mon: "Lun",
       tue: "Mar",
       wed: "Mer",
@@ -531,8 +500,7 @@ const n = {
       groupByFieldFallback: "Grouper par champ",
       kanbanGroup: "Groupe Kanban",
       required: "Obligatoire",
-      kanbanGroupHelp:
-        "Les\x20vues\x20Kanban\x20utilisent\x20toujours\x20un\x20champ\x20de\x20groupe.",
+      kanbanGroupHelp: "Les\x20vues\x20Kanban\x20utilisent\x20toujours\x20un\x20champ\x20de\x20groupe."
     },
     operators: {
       is: "est",
@@ -544,7 +512,7 @@ const n = {
       greaterThan: "supérieur\x20à",
       lessThan: "inférieur à",
       before: "est avant",
-      after: "est après",
+      after: "est après"
     },
     viewSettings: {
       title: "Paramètres\x20de\x20la\x20vue",
@@ -553,8 +521,7 @@ const n = {
       scrollLeft: "Faire défiler les vues vers la gauche",
       scrollRight: "Faire défiler les vues vers la droite",
       createViewTitle: "Créer une vue",
-      createViewDescription:
-        "Choisissez comment cette table doit être projetée.",
+      createViewDescription: "Choisissez comment cette table doit être projetée.",
       setAsFirstTab: "Définir comme premier onglet",
       renameView: "Renommer la vue",
       duplicateView: "Dupliquer la vue",
@@ -568,16 +535,14 @@ const n = {
       gridView: "Grille",
       gridViewDescription: "Lignes et champs pour une modification détaillée.",
       kanbanView: "Kanban",
-      kanbanViewDescription:
-        "Cartes\x20regroupées\x20par\x20un\x20champ\x20de\x20sélection.",
+      kanbanViewDescription: "Cartes\x20regroupées\x20par\x20un\x20champ\x20de\x20sélection.",
       calendarView: "Calendrier",
       calendarViewDescription: "Enregistrements disposés par date.",
       ganttView: "Gantt",
       ganttViewDescription: "Chronologie avec dates de début et de fin.",
       galleryView: "Galerie",
-      galleryViewDescription:
-        "Cartes visuelles pour parcourir les enregistrements.",
-      copySuffix: "Copie",
+      galleryViewDescription: "Cartes visuelles pour parcourir les enregistrements.",
+      copySuffix: "Copie"
     },
     tableSidebar: {
       searchTables: "Rechercher\x20des\x20tables",
@@ -590,9 +555,12 @@ const n = {
       renameTable: "Renommer\x20la\x20table",
       duplicateTable: "Dupliquer la table",
       deleteTable: "Supprimer la table",
-      defaultTableName: "Tableau {0}",
+      defaultTableName: "Tableau {0}"
     },
-    footer: { record: "enregistrement", records: "enregistrements" },
+    footer: {
+      record: "enregistrement",
+      records: "enregistrements"
+    },
     canvas: {
       addRecord: "Ajouter un enregistrement",
       attachmentDropLabel: "Ajouter des fichiers à cet enregistrement",
@@ -605,12 +573,12 @@ const n = {
       quarter: "Trimestre",
       today: "Aujourd'hui",
       week: "Semaine",
-      year: "Année",
+      year: "Année"
     },
     empty: {
       value: "Vide",
       noRecords: "Aucun enregistrement",
-      invalidView: "Cette\x20vue\x20doit\x20être\x20configurée",
+      invalidView: "Cette\x20vue\x20doit\x20être\x20configurée"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -628,19 +596,17 @@ const n = {
         engineering: "Ingénierie",
         financial: "Finance",
         lookup: "Recherche et référence",
-        web: "Internet",
+        web: "Internet"
       },
       generic: {
         engineAbstract: "Fonction du moteur de formules {0}",
-        engineDescription:
-          "{0} est fournie par le moteur de formules Univer. Base prend en charge les références de champ comme TableName[[#This Row],[Field]] et OtherTable[Field], mais ne prend pas en charge les cellules A1, les plages A1:B10 ni les sorties de tableaux déversés dans les champs de formule Base.",
+        engineDescription: "{0} est fournie par le moteur de formules Univer. Base prend en charge les références de champ comme TableName[[#This Row],[Field]] et OtherTable[Field], mais ne prend pas en charge les cellules A1, les plages A1:B10 ni les sorties de tableaux déversés dans les champs de formule Base.",
         argument: {
           name: "argument",
-          detail:
-            "Une valeur, une référence de champ, une référence de champ de table ou une expression prise en charge par le moteur de formules Univer.",
-        },
-      },
-    },
-  },
+          detail: "Une valeur, une référence de champ, une référence de champ de table ou une expression prise en charge par le moteur de formules Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

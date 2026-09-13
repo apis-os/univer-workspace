@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "بلند",
       rowHeightExtraTall: "خیلی بلند",
       conditionalColoring: "رنگ‌آمیزی شرطی",
-      conditionalColoringHelp:
-        "برای\x20اعمال\x20رنگ‌ها\x20بر\x20اساس\x20شرایط\x20تعریف‌شده،\x20روی\x20«شرط\x20جدید»\x20کلیک\x20کنید.\x20توجه\x20داشته\x20باشید\x20که\x20شرایط\x20بالاتر\x20اولویت\x20دارند.",
+      conditionalColoringHelp: "برای\x20اعمال\x20رنگ‌ها\x20بر\x20اساس\x20شرایط\x20تعریف‌شده،\x20روی\x20«شرط\x20جدید»\x20کلیک\x20کنید.\x20توجه\x20داشته\x20باشید\x20که\x20شرایط\x20بالاتر\x20اولویت\x20دارند.",
       conditionalColoringSmart: "اعمال رنگ هوشمند برای همه",
       conditionalColor: "رنگ",
       conditionalCustomColor: "سفارشی",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "بررسی شد",
       conditionalUnchecked: "بدون علامت",
       statusDoneTitle: "وضعیت انجام شد",
-      statusDoneDescription:
-        "یک نشانگر سبز ملایم روی رکوردهای منطبق اعمال کنید.",
+      statusDoneDescription: "یک نشانگر سبز ملایم روی رکوردهای منطبق اعمال کنید.",
       statusBlockedTitle: "وضعیت مسدود شده است",
-      statusBlockedDescription:
-        "یک\x20نشانگر\x20هشدار\x20برای\x20رکوردهای\x20مسدود\x20شده\x20اعمال\x20کنید.",
+      statusBlockedDescription: "یک\x20نشانگر\x20هشدار\x20برای\x20رکوردهای\x20مسدود\x20شده\x20اعمال\x20کنید.",
       addField: "افزودن فیلد",
       undo: "واگرد",
-      redo: "بازانجام",
+      redo: "بازانجام"
     },
     recordDetail: {
       untitledRecord: "رکورد بدون عنوان",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "افزودن رکوردهای بیشتر پس از ارسال",
       panelSize: "اندازه پنل",
       fullScreen: "تمام‌صفحه",
-      exitFullScreen: "خروج از تمام‌صفحه",
+      exitFullScreen: "خروج از تمام‌صفحه"
     },
     recordLink: {
       searchRecords: "جستجوی\x20رکوردها",
@@ -74,26 +71,22 @@ const n = {
       selectedCount: "{0} انتخاب شده",
       missingRecord: "رکورد حذف‌شده",
       openRecord: "باز کردن رکورد مرتبط",
-      back: "بازگشت",
+      back: "بازگشت"
     },
     hierarchy: {
-      invalidField:
-        "یک فیلد پیوند رکورد تک‌مقداری انتخاب کنید که به این جدول اشاره دارد.",
-      missingRecord:
-        "رکورد یا والد دیگر وجود ندارد. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.",
+      invalidField: "یک فیلد پیوند رکورد تک‌مقداری انتخاب کنید که به این جدول اشاره دارد.",
+      missingRecord: "رکورد یا والد دیگر وجود ندارد. صفحه را تازه‌سازی کنید و دوباره تلاش کنید.",
       selfParent: "یک رکورد نمی‌تواند والد خودش باشد.",
       cycle: "این جابه‌جایی یک چرخهٔ والد ایجاد می‌کند.",
       maxDepth: "این جابه‌جایی از حداکثر پنج سطح سلسله‌مراتب فراتر می‌رود.",
-      sortedView:
-        "پیش\x20از\x20تغییر\x20دستی\x20ترتیب\x20رکوردها،\x20مرتب‌سازی\x20نما\x20را\x20پاک\x20کنید.",
-      operationFailed:
-        "تغییر\x20سلسله‌مراتب\x20اعمال\x20نشد.\x20صفحه\x20را\x20تازه‌سازی\x20کنید\x20و\x20دوباره\x20تلاش\x20کنید.",
+      sortedView: "پیش\x20از\x20تغییر\x20دستی\x20ترتیب\x20رکوردها،\x20مرتب‌سازی\x20نما\x20را\x20پاک\x20کنید.",
+      operationFailed: "تغییر\x20سلسله‌مراتب\x20اعمال\x20نشد.\x20صفحه\x20را\x20تازه‌سازی\x20کنید\x20و\x20دوباره\x20تلاش\x20کنید.",
       parent: "والد",
       parentFieldName: "موارد والد",
       children: "زیرمجموعه‌ها",
       viewChildren: "نمایش زیرمجموعه‌ها",
       root: "رکورد ریشه",
-      setParent: "تنظیم والد",
+      setParent: "تنظیم والد"
     },
     collaboration: {
       localStatus: "حالت محلی",
@@ -103,19 +96,18 @@ const n = {
       syncingStatus: "در حال همگام سازی",
       syncingTooltip: "تغییرات در حال همگام سازی هستند.",
       offlineStatus: "آفلاین",
-      offlineTooltip:
-        "اتصال\x20قطع\x20شد.\x20برای\x20اتصال\x20مجدد\x20کلیک\x20کنید.",
+      offlineTooltip: "اتصال\x20قطع\x20شد.\x20برای\x20اتصال\x20مجدد\x20کلیک\x20کنید.",
       conflictStatus: "درگیری",
       conflictTooltip: "تضاد همکاری نیاز به توجه دارد.",
       notCollabStatus: "مشارکتی نیست",
-      notCollabTooltip: "این پایگاه در حالت همکاری نیست.",
+      notCollabTooltip: "این پایگاه در حالت همکاری نیست."
     },
     virtualRecord: {
       regrouped: "رکورد\x20دوباره\x20گروه‌بندی\x20می‌شود",
       resorted: "رکورد\x20دوباره\x20مرتب\x20می‌شود",
       moved: "رکورد در این نما جابه‌جا می‌شود",
       filteredOut: "رکورد\x20در\x20این\x20نما\x20پنهان\x20شده\x20است",
-      "delete d": "رکورد حذف شد",
+      "delete d": "رکورد حذف شد"
     },
     gridContext: {
       insert: "درج",
@@ -125,7 +117,7 @@ const n = {
       addSubRecord: "افزودن زیررکورد",
       clearContent: "محتوا را پاک کنید",
       deleteRecord: "حذف رکورد",
-      deleteRecords: "حذف رکوردها",
+      deleteRecords: "حذف رکوردها"
     },
     common: {
       apply: "اعمال",
@@ -140,7 +132,7 @@ const n = {
       searchClose: "بستن جستجو",
       value: "مقدار",
       newCondition: "شرط\x20جدید",
-      newBadge: "جدید",
+      newBadge: "جدید"
     },
     footerStat: {
       none: "هیچ‌کدام",
@@ -159,17 +151,16 @@ const n = {
       sum: "جمع {0}",
       average: "میانگین {0}",
       min: "حداقل {0}",
-      max: "حداکثر {0}",
+      max: "حداکثر {0}"
     },
     confirmDelete: {
       tableTitle: "این جدول حذف شود؟",
       tableDescription: "این جدول و رکوردهای آن حذف خواهند شد.",
-      tableReferenced:
-        "این جدول قابل حذف نیست، زیرا فیلدهای زیر به آن ارجاع می‌دهند: {0}.",
+      tableReferenced: "این جدول قابل حذف نیست، زیرا فیلدهای زیر به آن ارجاع می‌دهند: {0}.",
       viewTitle: "این نما حذف شود؟",
       viewDescription: "این نما حذف خواهد شد.",
       fieldTitle: "این فیلد حذف شود؟",
-      fieldDescription: "این فیلد از جدول حذف خواهد شد.",
+      fieldDescription: "این فیلد از جدول حذف خواهد شد."
     },
     duplicateTable: {
       title: "تکثیر جدول",
@@ -178,7 +169,7 @@ const n = {
       configurationsOnly: "فقط پیکربندی‌ها",
       configurationsAndRecords: "پیکربندی‌ها\x20و\x20رکوردها",
       action: "تکثیر",
-      copyName: "{0} کپی",
+      copyName: "{0} کپی"
     },
     tableNameValidation: {
       required: "نام جدول را وارد کنید.",
@@ -186,19 +177,18 @@ const n = {
       apostrophe: "نام جدول نمی‌تواند با آپاستروف شروع یا تمام شود.",
       invalidCharacters: "نام جدول نمی‌تواند شامل : \\ / ? * [ ] باشد.",
       duplicate: "جدولی با این نام از قبل وجود دارد.",
-      invalid: "یک نام معتبر برای جدول وارد کنید.",
+      invalid: "یک نام معتبر برای جدول وارد کنید."
     },
     clipboard: {
       recordsCopied: "{0}\x20رکورد\x20کپی\x20شد",
-      attachmentsUploading: "در\x20حال\x20بارگذاری\x20{0}\x20پیوست...",
+      attachmentsUploading: "در\x20حال\x20بارگذاری\x20{0}\x20پیوست..."
     },
     fieldConfig: {
       recordLinkTargetTable: "جدول\x20مقصد",
       recordLinkDisplayField: "فیلد نمایش",
       recordLinkPickerFields: "فیلدهای کمکی انتخاب‌گر",
       recordLinkAllowMultiple: "اجازه پیوند چند رکورد",
-      recordLinkDescription:
-        "شناسه‌های پایدار رکورد را ذخیره می‌کند. برای خواندن مقادیر مرتبط از فرمول‌های استاندارد Excel مانند XLOOKUP و TEXTSPLIT استفاده کنید.",
+      recordLinkDescription: "شناسه‌های پایدار رکورد را ذخیره می‌کند. برای خواندن مقادیر مرتبط از فرمول‌های استاندارد Excel مانند XLOOKUP و TEXTSPLIT استفاده کنید.",
       fieldTitle: "عنوان فیلد",
       fieldTitlePlaceholder: "عنوان\x20فیلد\x20را\x20وارد\x20کنید",
       fieldType: "نوع\x20فیلد",
@@ -255,14 +245,10 @@ const n = {
       deleteField: "حذف\x20فیلد",
       referenceOptionsHelp: "ارجاع داده ها از جداول دیگر به عنوان گزینه",
       allowMultipleMembers: "اضافه کردن چند عضو در یک رکورد را مجاز کنید",
-      allowMultipleGroups:
-        "امکان\x20افزودن\x20چند\x20گروه\x20در\x20یک\x20رکورد",
-      defaultProviderMock:
-        "مقدار پیش‌فرض از {0} مورد ساختگی {1} به‌دست می‌آید.",
-      defaultProviderExternal:
-        "مقدار پیش‌فرض از ارائه‌دهنده خارجی Univer {0} دریافت می‌شود.",
-      linkPlaceholder:
-        "یک\x20نشانی\x20وب\x20وارد\x20کنید\x20(برای\x20مثال\x20univer.ai\x20یا\x20https://univer.ai/skills).",
+      allowMultipleGroups: "امکان\x20افزودن\x20چند\x20گروه\x20در\x20یک\x20رکورد",
+      defaultProviderMock: "مقدار پیش‌فرض از {0} مورد ساختگی {1} به‌دست می‌آید.",
+      defaultProviderExternal: "مقدار پیش‌فرض از ارائه‌دهنده خارجی Univer {0} دریافت می‌شود.",
+      linkPlaceholder: "یک\x20نشانی\x20وب\x20وارد\x20کنید\x20(برای\x20مثال\x20univer.ai\x20یا\x20https://univer.ai/skills).",
       phonePlaceholder: "یک شماره تلفن وارد کنید",
       currencySymbol: "نماد ارز",
       thousandsSeparator: "جداکننده\x20هزاران",
@@ -286,8 +272,7 @@ const n = {
       targetValue: "ارزش هدف",
       searchGroups: "جستجو در گروه ها",
       selectGroups: "گروه ها را انتخاب کنید",
-      noProviderGroupData:
-        "هیچ\x20داده\x20گروه\x20ارائه\x20دهنده\x20در\x20دسترس\x20نیست",
+      noProviderGroupData: "هیچ\x20داده\x20گروه\x20ارائه\x20دهنده\x20در\x20دسترس\x20نیست",
       noMatchingGroups: "هیچ گروه منطبقی وجود ندارد.",
       searchMembers: "جستجوی اعضا",
       selectMembers: "اعضا را انتخاب کنید",
@@ -296,10 +281,8 @@ const n = {
       noFormulaConfigured: "هیچ فرمولی پیکربندی نشده است",
       editFormula: "فرمول را ویرایش کنید",
       closeFormulaEditor: "ویرایشگر\x20فرمول\x20را\x20ببندید",
-      formulaHint:
-        "از\x20فیلدهای\x20ردیف\x20فعلی\x20مانند\x20[@[Amount]]\x20استفاده\x20کنید.\x20محدوده\x20A1:B10\x20و\x20ارجاع\x20به\x20یک\x20سلول\x20مجاز\x20نیست.",
-      formulaReferenceError:
-        "مراجع\x20و\x20محدوده\x20های\x20A1\x20در\x20فرمول\x20های\x20پایه\x20پشتیبانی\x20نمی\x20شوند.",
+      formulaHint: "از\x20فیلدهای\x20ردیف\x20فعلی\x20مانند\x20[@[Amount]]\x20استفاده\x20کنید.\x20محدوده\x20A1:B10\x20و\x20ارجاع\x20به\x20یک\x20سلول\x20مجاز\x20نیست.",
+      formulaReferenceError: "مراجع\x20و\x20محدوده\x20های\x20A1\x20در\x20فرمول\x20های\x20پایه\x20پشتیبانی\x20نمی\x20شوند.",
       formulaTables: "جداول",
       formulaFields: "فیلدها",
       formulaFunctions: "توابع",
@@ -312,8 +295,7 @@ const n = {
       currentTableName: "جدول فعلی",
       currentTableField: "فیلد\x20جدول\x20فعلی",
       fieldFromTable: "فیلد از {0}",
-      referenceCurrentField:
-        "به فیلد «{0}» در جدول Base فعلی ارجاع دهید. این فیلد برای موتور فرمول به‌صورت [[#This Row],[{1}]] ذخیره می‌شود.",
+      referenceCurrentField: "به فیلد «{0}» در جدول Base فعلی ارجاع دهید. این فیلد برای موتور فرمول به‌صورت [[#This Row],[{1}]] ذخیره می‌شود.",
       referenceTableField: "به فیلد «{0}» از جدول «{1}» ارجاع دهید.",
       fieldNameColumn: "نام",
       fieldTypeColumn: "نوع",
@@ -329,8 +311,7 @@ const n = {
       formulaFormatPercent: "درصد",
       formulaFormatDateTime: "تاریخ / زمان",
       addDescriptionPlaceholder: "توضیحات\x20اضافه\x20کنید",
-      numberingDescription:
-        "افزایش منحصر به فرد را از 1 تخصیص می دهد. مقادیر تولید شده قابل ویرایش نیستند.",
+      numberingDescription: "افزایش منحصر به فرد را از 1 تخصیص می دهد. مقادیر تولید شده قابل ویرایش نیستند.",
       optionColor: "رنگ گزینه",
       separatorLocal: "محلی",
       separatorCommaPeriod: "کاما،\x20نقطه",
@@ -355,7 +336,7 @@ const n = {
       ratingIconLightning: "رعد و برق",
       ratingIconMedal: "مدال",
       increment: "افزایش",
-      decrement: "کاهش",
+      decrement: "کاهش"
     },
     cellEditor: {
       done: "انجام شد",
@@ -371,8 +352,7 @@ const n = {
       deleteAttachment: "حذف پیوست {0}",
       deleteAttachmentConfirmTitle: "این پیوست حذف شود؟",
       deleteAttachmentsConfirmTitle: "{0} پیوست حذف شوند؟",
-      deleteAttachmentConfirmDescription:
-        "پیوست‌های\x20انتخاب‌شده\x20از\x20این\x20رکورد\x20حذف\x20خواهند\x20شد.",
+      deleteAttachmentConfirmDescription: "پیوست‌های\x20انتخاب‌شده\x20از\x20این\x20رکورد\x20حذف\x20خواهند\x20شد.",
       failedToAttachFile: "فایل پیوست نشد",
       file: "فایل",
       invalidEmail: "آدرس ایمیل نامعتبر است",
@@ -383,7 +363,7 @@ const n = {
       selectOptions: "گزینه\x20ها\x20را\x20انتخاب\x20کنید",
       previousMonth: "ماه قبل",
       nextMonth: "ماه آینده",
-      time: "زمان",
+      time: "زمان"
     },
     recordDetailField: {
       previousRecord: "رکورد\x20قبلی",
@@ -396,7 +376,7 @@ const n = {
       empty: "خالی",
       unassigned: "واگذار نشده است",
       editField: "ویرایش {0}",
-      noVisibleFields: "هیچ فیلد قابل مشاهده ای وجود ندارد",
+      noVisibleFields: "هیچ فیلد قابل مشاهده ای وجود ندارد"
     },
     fieldMenu: {
       createSharedBaseField: "یک فیلد پایه مشترک ایجاد کنید",
@@ -427,8 +407,8 @@ const n = {
         createdBy: "فیلد\x20نویسنده\x20سیستم",
         updatedBy: "فیلد اصلاح کننده سیستم",
         createdAt: "زمان\x20ایجاد\x20سیستم",
-        updatedAt: "زمان به روز رسانی سیستم",
-      },
+        updatedAt: "زمان به روز رسانی سیستم"
+      }
     },
     fieldTypes: {
       text: "متن",
@@ -452,7 +432,7 @@ const n = {
       createdBy: "ایجاد\x20شده\x20توسط",
       updatedBy: "اصلاح\x20شده\x20توسط",
       createdAt: "تاریخ ایجاد",
-      updatedAt: "آخرین\x20تاریخ\x20اصلاح",
+      updatedAt: "آخرین\x20تاریخ\x20اصلاح"
     },
     viewMenus: {
       customizeKanban: "کانبان\x20را\x20سفارشی\x20کنید",
@@ -490,13 +470,11 @@ const n = {
       addCondition: "شرط اضافه کنید",
       calculateWorkingDaysOnly: "فقط روزهای کاری را محاسبه کنید",
       customWorkingDays: "روزهای\x20کاری\x20سفارشی",
-      customWorkingDaysHelp:
-        "روزهای\x20کاری\x20و\x20تعطیل\x20این\x20نمای\x20گانت\x20را\x20سفارشی\x20کنید.\x20اگر\x20تنظیم\x20نشود،\x20هنگام\x20فعال\x20بودن\x20محاسبه\x20روز\x20کاری\x20از\x20دوشنبه\x20تا\x20جمعه\x20استفاده\x20می‌شود.",
+      customWorkingDaysHelp: "روزهای\x20کاری\x20و\x20تعطیل\x20این\x20نمای\x20گانت\x20را\x20سفارشی\x20کنید.\x20اگر\x20تنظیم\x20نشود،\x20هنگام\x20فعال\x20بودن\x20محاسبه\x20روز\x20کاری\x20از\x20دوشنبه\x20تا\x20جمعه\x20استفاده\x20می‌شود.",
       notSet: "تنظیم\x20نشده",
       settings: "تنظیمات",
       setWorkingDays: "روزهای کاری را تعیین کنید",
-      setWorkingDaysDescription:
-        "روزهای کاری و روزهای تعطیل را سفارشی کنید و آنها را در پایگاه فعلی اعمال کنید",
+      setWorkingDaysDescription: "روزهای کاری و روزهای تعطیل را سفارشی کنید و آنها را در پایگاه فعلی اعمال کنید",
       closeWorkingDaysSettings: "تنظیمات روزهای کاری را ببندید",
       addWorkingDays: "اضافه کردن روزهای کاری",
       holidayName: "نام\x20تعطیلات",
@@ -505,8 +483,7 @@ const n = {
       add: "اضافه کنید",
       removeWorkingDayException: "حذف استثنای روز کاری",
       legalWorkingDays: "روزهای کاری قانونی",
-      legalWorkingDaysHelp:
-        "روزهای کاری قانونی پس از اتصال یک API تقویم خارجی در دسترس خواهد بود.",
+      legalWorkingDaysHelp: "روزهای کاری قانونی پس از اتصال یک API تقویم خارجی در دسترس خواهد بود.",
       mon: "دوشنبه",
       tue: "سه\x20شنبه",
       wed: "چهارشنبه",
@@ -523,7 +500,7 @@ const n = {
       groupByFieldFallback: "گروه به رشته",
       kanbanGroup: "گروه\x20کانبان",
       required: "مورد نیاز",
-      kanbanGroupHelp: "نماهای کانبان همیشه از یک فیلد گروهی استفاده می کنند.",
+      kanbanGroupHelp: "نماهای کانبان همیشه از یک فیلد گروهی استفاده می کنند."
     },
     operators: {
       is: "است",
@@ -535,7 +512,7 @@ const n = {
       greaterThan: "بیشتر از",
       lessThan: "کمتر از",
       before: "قبل است",
-      after: "پس\x20از\x20آن\x20است",
+      after: "پس\x20از\x20آن\x20است"
     },
     viewSettings: {
       title: "تنظیمات\x20نما",
@@ -558,16 +535,14 @@ const n = {
       gridView: "شبکه",
       gridViewDescription: "سطرها و فیلدها برای ویرایش دقیق.",
       kanbanView: "کانبان",
-      kanbanViewDescription:
-        "کارت‌هایی که بر اساس یک فیلد انتخابی گروه‌بندی می‌شوند.",
+      kanbanViewDescription: "کارت‌هایی که بر اساس یک فیلد انتخابی گروه‌بندی می‌شوند.",
       calendarView: "تقویم",
       calendarViewDescription: "سوابق ثبت شده بر اساس تاریخ",
       ganttView: "گانت",
-      ganttViewDescription:
-        "جدول\x20زمانی\x20با\x20تاریخ\x20شروع\x20و\x20پایان.",
+      ganttViewDescription: "جدول\x20زمانی\x20با\x20تاریخ\x20شروع\x20و\x20پایان.",
       galleryView: "گالری",
       galleryViewDescription: "کارت\x20های\x20بصری\x20برای\x20مرور\x20سوابق.",
-      copySuffix: "کپی کنید",
+      copySuffix: "کپی کنید"
     },
     tableSidebar: {
       searchTables: "جستجو در جداول",
@@ -580,9 +555,12 @@ const n = {
       renameTable: "تغییر نام جدول",
       duplicateTable: "جدول تکراری",
       deleteTable: "حذف جدول",
-      defaultTableName: "جدول {0}",
+      defaultTableName: "جدول {0}"
     },
-    footer: { record: "ثبت\x20کنید", records: "رکوردها" },
+    footer: {
+      record: "ثبت\x20کنید",
+      records: "رکوردها"
+    },
     canvas: {
       addRecord: "رکورد اضافه کنید",
       attachmentDropLabel: "افزودن فایل به این رکورد",
@@ -595,12 +573,12 @@ const n = {
       quarter: "ربع",
       today: "امروز",
       week: "هفته",
-      year: "سال",
+      year: "سال"
     },
     empty: {
       value: "خالی",
       noRecords: "رکوردی\x20وجود\x20ندارد",
-      invalidView: "این نما باید پیکربندی شود",
+      invalidView: "این نما باید پیکربندی شود"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -618,19 +596,17 @@ const n = {
         engineering: "مهندسی",
         financial: "مالی",
         lookup: "جستجو و مرجع",
-        web: "وب",
+        web: "وب"
       },
       generic: {
         engineAbstract: "عملکرد موتور فرمول {0}",
-        engineDescription:
-          "{0} توسط موتور فرمول Univer ارائه می‌شود. Base از ارجاع‌های فیلدی مانند TableName[[#This Row],[Field]] و OtherTable[Field] پشتیبانی می‌کند، اما از سلول‌های A1، محدوده‌های A1:B10 یا خروجی آرایه‌ای سرریز‌شده در فیلدهای فرمول Base پشتیبانی نمی‌کند.",
+        engineDescription: "{0} توسط موتور فرمول Univer ارائه می‌شود. Base از ارجاع‌های فیلدی مانند TableName[[#This Row],[Field]] و OtherTable[Field] پشتیبانی می‌کند، اما از سلول‌های A1، محدوده‌های A1:B10 یا خروجی آرایه‌ای سرریز‌شده در فیلدهای فرمول Base پشتیبانی نمی‌کند.",
         argument: {
           name: "آرگومان",
-          detail:
-            "مقدار، ارجاع فیلد، ارجاع فیلد جدول یا عبارتی که موتور فرمول Univer پشتیبانی می‌کند.",
-        },
-      },
-    },
-  },
+          detail: "مقدار، ارجاع فیلد، ارجاع فیلد جدول یا عبارتی که موتور فرمول Univer پشتیبانی می‌کند."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

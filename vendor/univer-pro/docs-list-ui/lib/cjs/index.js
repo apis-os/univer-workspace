@@ -1,1 +1,694 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/docs-list"),t=require("@univerjs-pro/license"),n=require("@univerjs/core"),r=require("@univerjs/docs"),i=require("@univerjs/docs-ui"),a=require("@univerjs/engine-render"),o=require("@univerjs/ui"),s=require("@univerjs/design"),c=require("react/jsx-runtime"),l=require("react"),u=require("rxjs");var d="@univerjs-pro/docs-list-ui",f="1.0.0-insiders.20260907-70fc579";const p={},m="docs-list-ui.context-menu",h=[{label:"1",type:n.ListGlyphType["DECIMAL"]},{label:"A",type:n.ListGlyphType["UPPER_LETTER"]},{label:"a",type:n.ListGlyphType["LOWER_LETTER"]},{label:"I",type:n.ListGlyphType["UPPER_ROMAN"]},{label:"i",type:n.ListGlyphType["LOWER_ROMAN"]}],g=["●","○","■","➢","★"];function _(v148){var v149;let v150=(v149=v148.popup)==null?undefined:v149.extraProps,v151=(0,o.useDependency)(n.LocaleService);return(0,c.jsxs)("section",{className:"univer-box-border\x20univer-w-48\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-py-1.5\x20univer-text-xs\x20univer-shadow-lg","data-u-comp":m,children:[(0,c.jsx)("div",{className:"univer-grid univer-grid-cols-5 univer-justify-items-center univer-gap-1 univer-px-2.5 univer-py-1",children:h.map(v33=>(0,c.jsx)(s.Button,{size:"small",type:"button",disabled:v150==null?undefined:v150.readOnly,onClick:()=>{var v1;return v150==null||(v1=v150.onSetGlyphType)==null?undefined:v1.call(v150,v33.type);},children:v33.label},v33.label))}),(0,c.jsx)(s.Separator,{}),(0,c.jsx)("div",{className:"univer-grid univer-grid-cols-5 univer-justify-items-center univer-gap-1 univer-px-2.5 univer-py-1",children:g.map(v34=>(0,c.jsx)(s.Button,{size:"small",type:"button",disabled:v150==null?undefined:v150.readOnly,onClick:()=>{var v2;return v150==null||(v2=v150.onSetGlyphSymbol)==null?undefined:v2.call(v150,v34);},children:v34},v34))}),(0,c.jsx)(s.Separator,{}),(0,c.jsx)(v,{disabled:v150==null?undefined:v150.readOnly,onClick:v150==null?undefined:v150.onMoreBullets,children:v151.t("docs-list-ui.moreBullets")}),(v150==null?undefined:v150.showNumberingControls)&&(0,c.jsxs)(c.Fragment,{children:[(0,c.jsx)(v,{disabled:v150==null?undefined:v150.readOnly,onClick:v150==null?undefined:v150.onEditPrefixSuffix,children:v151.t("docs-list-ui.editPrefixSuffix")}),(0,c.jsx)(v,{disabled:v150==null?undefined:v150.readOnly,onClick:()=>{var v35;return v150==null||(v35=v150.onSetStartNumber)==null?undefined:v35.call(v150,1);},children:v151.t("docs-list-ui.restartNumbering")}),(0,c.jsx)(v,{disabled:v150==null?undefined:v150.readOnly,onClick:v150==null?undefined:v150.onRestartAt,children:v151.t("docs-list-ui.restartAt")})]}),(0,c.jsx)(v,{disabled:(v150==null?undefined:v150.readOnly)||!(v150!=null&&v150.canPromote),onClick:v150==null?undefined:v150.onPromote,children:v151.t("docs-list-ui.promote")}),(0,c.jsx)(v,{disabled:(v150==null?undefined:v150.readOnly)||!(v150!=null&&v150.canDemote),onClick:v150==null?undefined:v150.onDemote,children:v151.t("docs-list-ui.demote")}),(0,c.jsx)(s.Separator,{}),(0,c.jsx)(v,{onClick:v150==null?undefined:v150.onSelectItem,children:v151.t("docs-list-ui.selectListItem")}),(0,c.jsx)(v,{onClick:v150==null?undefined:v150.onSelectCurrentLevel,children:v151.t("docs-list-ui.selectCurrentLevel")}),(0,c.jsx)(v,{onClick:v150==null?undefined:v150.onSelectCurrentList,children:v151.t("docs-list-ui.selectCurrentList")})]});}function v(v152){return(0,c.jsx)(s.Button,{size:"small",variant:"ghost",type:"button",className:"univer-w-full\x20univer-justify-start",disabled:v152.disabled,onClick:v36=>{var v37;v36.preventDefault(),(v37=v152.onClick)==null||v37.call(v152);},children:v152.children});}const y="docs-list-ui.more-bullets-dialog";function b(v153){var v154;let v155=(v154=v153.popup)==null?undefined:v154.extraProps,v156=(0,o.useDependency)(n.LocaleService),v157=(0,l.useMemo)(()=>e.DOCS_LIST_MORE_BULLETS["map"]((v3,v4)=>({id:v3+"-"+v4,symbol:v3})),[]);return(0,c.jsxs)("section",{className:"univer-box-border univer-w-[420px] univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-4 univer-text-sm univer-shadow-lg","data-u-comp":y,children:[(0,c.jsxs)("header",{className:"univer-mb-3 univer-flex univer-items-center univer-justify-between",children:[(0,c.jsx)("h2",{className:"univer-m-0 univer-text-lg univer-font-medium univer-text-gray-900",children:v156.t("docs-list-ui.moreBullets")}),(0,c.jsx)(s.Button,{type:"button",size:"icon",variant:"ghost",className:"univer-text-xl",onClick:v155==null?undefined:v155.onClose,"aria-label":v156.t("docs-list-ui.close"),children:"×"})]}),(0,c.jsx)("div",{className:"univer-grid univer-max-h-[260px] univer-grid-cols-10 univer-gap-1 univer-overflow-y-auto univer-pr-1",children:v157.map(({id:v38,symbol:v39})=>(0,c.jsx)(s.Button,{type:"button",size:"icon",className:"univer-text-base",onClick:()=>{var v5;return v155==null||(v5=v155.onSelect)==null?undefined:v5.call(v155,v39);},children:v39},v38))})]});}const x="docs-list-ui.prefix-suffix-dialog";function S(v158){var v159;let v160=(v159=v158.popup)==null?undefined:v159.extraProps,v161=(0,o.useDependency)(n.LocaleService),[v162,v163]=(0,l.useState)(""),[v164,v165]=(0,l.useState)("."),[v166,v167]=(0,l.useState)(true);return(0,c.jsxs)("form",{className:"univer-box-border univer-w-[456px] univer-rounded-xl univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-6 univer-text-sm univer-shadow-xl",onSubmit:v40=>{var v41;v40.preventDefault(),v160==null||(v41=v160.onApply)==null||v41.call(v160,v162,v164,v166?e.DocsListSelectionMode["List"]:e.DocsListSelectionMode["Level"]);},children:[(0,c.jsx)("h2",{className:"univer-m-0 univer-mb-6 univer-text-3xl univer-font-medium univer-text-gray-900",children:v161.t("docs-list-ui.prefixAndSuffix")}),(0,c.jsxs)("div",{className:"univer-flex univer-items-end univer-gap-4",children:[(0,c.jsxs)("label",{className:"univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",children:[(0,c.jsx)("span",{children:v161.t("docs-list-ui.prefix")}),(0,c.jsx)(s.Input,{size:"large",inputClass:"univer-h-16\x20univer-text-xl",value:v162,onChange:v163,placeholder:v161.t("docs-list-ui.noPrefix")})]}),(0,c.jsx)("span",{className:"univer-w-6 univer-flex-none univer-pb-5 univer-text-center univer-text-xl univer-text-gray-700",children:"A"}),(0,c.jsxs)("label",{className:"univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",children:[(0,c.jsx)("span",{children:v161.t("docs-list-ui.suffix")}),(0,c.jsx)(s.Input,{size:"large",inputClass:"univer-h-16 univer-text-xl",value:v164,onChange:v165})]})]}),(0,c.jsx)(s.Checkbox,{className:"univer-mt-6 univer-text-xl",checked:v166,onChange:v42=>v167(!!v42),children:v161.t("docs-list-ui.applyToEntireList")}),(0,c.jsxs)("footer",{className:"univer-mt-10 univer-flex univer-items-center univer-justify-end univer-gap-4",children:[(0,c.jsx)(s.Button,{type:"button",variant:"default",onClick:v160==null?undefined:v160.onClose,children:v161.t("docs-list-ui.cancel")}),(0,c.jsx)(s.Button,{type:"submit",variant:"primary",children:v161.t("docs-list-ui.ok")})]})]});}const C="docs-list-ui.start-number-dialog";function w(v168){var v169;let v170=(v169=v168.popup)==null?undefined:v169.extraProps,v171=(0,o.useDependency)(n.LocaleService),[v172,v173]=(0,l.useState)(1);return(0,c.jsxs)("section",{className:"univer-box-border univer-w-[260px] univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-4 univer-text-sm univer-shadow-lg","data-u-comp":C,children:[(0,c.jsx)("h2",{className:"univer-m-0 univer-mb-3 univer-text-lg univer-font-medium univer-text-gray-900",children:v171.t("docs-list-ui.restartAt")}),(0,c.jsx)(s.InputNumber,{className:"univer-w-full",min:1,step:1,precision:0,value:v172,onChange:v173}),(0,c.jsxs)("footer",{className:"univer-mt-4 univer-flex univer-justify-end univer-gap-2",children:[(0,c.jsx)(s.Button,{type:"button",variant:"default",onClick:v170==null?undefined:v170.onClose,children:v171.t("docs-list-ui.cancel")}),(0,c.jsx)(s.Button,{type:"button",variant:"primary",onClick:()=>{var v43;return v170==null||(v43=v170.onApply)==null?undefined:v43.call(v170,Math.max(1,v172??1));},children:v171.t("docs-list-ui.ok")})]})]});}function T(v174,v175){return function(v44,v45){v175(v44,v45,v174);};}function E(v176,v177,v178,v179){var v180=arguments.length,v181=v180<3?v177:v179===null?v179=Object.getOwnPropertyDescriptor(v177,v178):v179,v182;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v181=Reflect.decorate(v176,v177,v178,v179);else{for(var v183=v176.length-1;v183>=0;v183--)(v182=v176[v183])&&(v181=(v180<3?v182(v181):v180>3?v182(v177,v178,v181):v182(v177,v178))||v181);}return v180>3&&v181&&Object.defineProperty(v177,v178,v181),v181;}let D=class extends n.Disposable{constructor(v46){super(),this._componentManager=v46,this._registerComponents();}_registerComponents(){this.disposeWithMe(this._componentManager["register"](m,_)),this.disposeWithMe(this._componentManager["register"](y,b)),this.disposeWithMe(this._componentManager["register"](x,S)),this.disposeWithMe(this._componentManager["register"](C,w));}};D=E([T(0,(0,n.Inject)(o.ComponentManager))],D);function O(v184){"@babel/helpers - typeof";return O=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v47){return typeof v47;}:function(v48){return v48&&typeof Symbol=="function"&&v48.constructor===Symbol&&v48!==Symbol.prototype?"symbol":typeof v48;},O(v184);}function k(v185,v186){if(O(v185)!="object"||!v185)return v185;var v187=v185[Symbol.toPrimitive];if(v187!==undefined){var v188=v187.call(v185,v186||"default");if(O(v188)!="object")return v188;throw TypeError("@@toPrimitive must return a primitive value.");}return(v186==="string"?String:Number)(v185);}function A(v189){var v190=k(v189,"string");return O(v190)=="symbol"?v190:v190+"";}function j(v191,v192,v193){return(v192=A(v192))in v191?Object.defineProperty(v191,v192,{value:v193,enumerable:true,configurable:true,writable:true}):v191[v192]=v193,v191;}const M={marker:null,anchor:null,open:false};var N=class{constructor(){j(this,"_menuState$",new u["BehaviorSubject"](M)),j(this,"_markerSelection$",new u["BehaviorSubject"](null)),j(this,"menuState$",this._menuState$["asObservable"]()),j(this,"markerSelection$",this._markerSelection$["asObservable"]());}get menuState(){return this._menuState$["value"];}get markerSelection(){return this._markerSelection$["value"];}nextClickMode(v49){let v50=this.markerSelection;return v50&&this._getMarkerGroupKey(v50.marker)===this._getMarkerGroupKey(v49)?e.DocsListSelectionMode["Item"]:e.DocsListSelectionMode["Level"];}contextMenuMode(v51){let v52=this.markerSelection;return!v52||this._getMarkerListKey(v52.marker)!==this._getMarkerListKey(v51)?e.DocsListSelectionMode["Level"]:v52.mode==="list"?e.DocsListSelectionMode["List"]:this._getMarkerGroupKey(v52.marker)===this._getMarkerGroupKey(v51)?v52.mode:e.DocsListSelectionMode["Level"];}openMenu(v53,v54){this._menuState$["next"]({marker:v53,anchor:v54,open:true});}closeMenu(){this._menuState$["next"](M);}setMarkerSelection(v55,v56){this._markerSelection$["next"]({marker:v55,mode:v56});}clearMarkerSelection(){this._markerSelection$["next"](null);}_getMarkerGroupKey(v57){return(v57.segmentId??"")+":"+v57.listId+":"+v57.nestingLevel;}_getMarkerListKey(v58){return(v58.segmentId??"")+":"+v58.listId;}};let P=class extends n.Disposable{constructor(v59,v60,v61,v62,v63,v64,v65,v66){super(),this._context=v59,this._commandService=v60,this._docSelectionManagerService=v61,this._docEventManagerService=v62,this._docCanvasPopManagerService=v63,this._contextMenuService=v64,this._selectionService=v65,this._permissionService=v66,j(this,"_menuDisposable",null),j(this,"_docRangesBeforeMarkerPointer",null),j(this,"_ignoreTextSelectionBefore",0),j(this,"_openContextMenuTimer",null),this._initMarkerPointerSelectionPreserve(),this._initMarkerClick(),this._initMarkerContextMenu(),this._initMarkerSelectionRender(),this._initTextSelectionClear(),this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(()=>this._closeContextMenu()));}_initMarkerPointerSelectionPreserve(){let v67=this._context["mainComponent"]??this._context["scene"];this.disposeWithMe(v67.onPointerDown$["subscribeEvent"]({next:([v6])=>{this._docEventManagerService["isPointerOnBullet"](v6.offsetX,v6.offsetY)?this._docRangesBeforeMarkerPointer=[...(this._docSelectionManagerService["getDocRanges"]()??[])]:this._docRangesBeforeMarkerPointer=null;},priority:-12000}));}_initMarkerClick(){this.disposeWithMe(this._docEventManagerService["clickBullets$"].subscribe(v7=>{let v8=this._toMarkerInfo(v7);if(!I(v8.listType))return;let v9=this._selectionService["nextClickMode"](v8);this._selectMarker(v8,v9);}));}_initMarkerContextMenu(){this.disposeWithMe(this._docEventManagerService["contextMenuBullets$"].subscribe(v10=>{let v11=this._toMarkerInfo(v10);I(v11.listType)&&this._openMarkerContextMenuFromOffset(v11,v10.x,v10.y);}));}_openMarkerContextMenuFromOffset(v68,v69,v70){let v71=z(v69,v70,this._context["scene"]),v72=this._selectionService["contextMenuMode"](v68);this._selectionService["openMenu"](v68,v71),this._selectMarker(v68,v72),this._scheduleOpenContextMenu(v68,v71.x,v71.y);}_scheduleOpenContextMenu(v73,v74,v75){this._clearOpenContextMenuTimer(),this._openContextMenuTimer=setTimeout(()=>{this._openContextMenuTimer=null,this._openContextMenu(v73,v74,v75);},0);}_initMarkerSelectionRender(){this.disposeWithMe(this._selectionService["markerSelection$"].subscribe(()=>this._makeDirty())),this.disposeWithMe(this._context["scene"].afterRender$["subscribe"](v12=>{let v13=this._selectionService["markerSelection"];if(!v12||!v13)return;let v14=v12.getContext();v14&&this._drawMarkerSelection(v14);}));}_initTextSelectionClear(){this.disposeWithMe(this._docSelectionManagerService["textSelection$"].subscribe(v15=>{Date.now()<this._ignoreTextSelectionBefore||this._selectionService["markerSelection"]&&(v15.textRanges["length"]||v15.rectRanges["length"])&&this._selectionService["clearMarkerSelection"]();}));}_openContextMenu(v76,v77,v78){this._contextMenuService["hideContextMenu"](),this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"]({bottom:v78,left:v77,right:v77,top:v78},{componentKey:m,direction:"bottom-left",extraProps:{marker:v76,readOnly:!this._canEditDocument(),canDemote:v76.nestingLevel<8,canPromote:v76.nestingLevel>0,showNumberingControls:this._isOrderedMarker(v76),onClose:()=>this._closeContextMenu(),onDemote:()=>this._executeMarkerCommand(e.DocsListDemoteCommand["id"],v76),onEditPrefixSuffix:()=>this._openPrefixSuffixDialog(v76,v77,v78),onMoreBullets:()=>this._openMoreBulletsDialog(v76,v77,v78),onPromote:()=>this._executeMarkerCommand(e.DocsListPromoteCommand["id"],v76),onRestartAt:()=>this._openStartNumberDialog(v76,v77,v78),onSelectCurrentLevel:()=>this._selectMarkerAndClose(v76,e.DocsListSelectionMode["Level"]),onSelectCurrentList:()=>this._selectMarkerAndClose(v76,e.DocsListSelectionMode["List"]),onSelectItem:()=>this._selectMarkerAndClose(v76,e.DocsListSelectionMode["Item"]),onSetGlyphSymbol:v16=>this._executeMarkerCommand(e.DocsListSetGlyphSymbolCommand["id"],v76,{symbol:v16}),onSetGlyphType:v17=>this._executeMarkerCommand(e.DocsListSetGlyphTypeCommand["id"],v76,{glyphType:v17}),onSetPrefixSuffix:(v18,v19)=>this._executeMarkerCommand(e.DocsListSetPrefixSuffixCommand["id"],v76,{prefix:v18,suffix:v19}),onSetStartNumber:v20=>this._executeMarkerCommand(e.DocsListSetStartNumberCommand["id"],v76,v20===1?{restartFromPrevious:true,startNumber:v20}:{startNumber:v20})},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]);}_openMoreBulletsDialog(v79,v80,v81){this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(v80,v81),{componentKey:y,direction:"bottom-left",extraProps:{onClose:()=>this._closeContextMenu(),onSelect:v21=>this._executeMarkerCommand(e.DocsListSetGlyphSymbolCommand["id"],v79,{symbol:v21})},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]);}_openPrefixSuffixDialog(v82,v83,v84){this._isOrderedMarker(v82)&&(this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(v83,v84),{componentKey:x,direction:"bottom-left",extraProps:{onApply:(v22,v23,v24)=>this._executeMarkerCommand(e.DocsListSetPrefixSuffixCommand["id"],v82,{prefix:v22,suffix:v23,mode:v24}),onClose:()=>this._closeContextMenu()},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]));}_openStartNumberDialog(v85,v86,v87){this._closeContextMenu(),this._menuDisposable=this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(v86,v87),{componentKey:C,direction:"bottom-left",extraProps:{onApply:v25=>this._executeMarkerCommand(e.DocsListSetStartNumberCommand["id"],v85,{startNumber:v25}),onClose:()=>this._closeContextMenu()},onClickOutside:()=>this._closeContextMenu(),onContextMenu:()=>this._closeContextMenu()},this._context["unitId"]);}_closeContextMenu(){var v88;this._clearOpenContextMenuTimer(),(v88=this._menuDisposable)==null||v88.dispose(),this._menuDisposable=null,this._selectionService["closeMenu"]();}_canEditDocument(){return(0,r.canEditDocumentTargets)(this._permissionService,this._context["unitId"],[]);}_clearOpenContextMenuTimer(){this._openContextMenuTimer!=null&&(clearTimeout(this._openContextMenuTimer),this._openContextMenuTimer=null);}_executeMarkerCommand(v89,v90,v91={}){this._commandService["executeCommand"](v89,{paragraphStartIndex:v90.paragraphStartIndex,segmentId:v90.segmentId,mode:this._getCommandMode(v90,v91.mode),...v91}),this._closeContextMenu();}_getCommandMode(v92,v93){if(v93===e.DocsListSelectionMode["Item"]||v93===e.DocsListSelectionMode["Level"]||v93===e.DocsListSelectionMode["List"])return v93;let v94=this._selectionService["markerSelection"];return!v94||v94.marker["listId"]!==v92.listId||(v94.marker["segmentId"]??"")!==(v92.segmentId??"")?e.DocsListSelectionMode["Level"]:v94.mode;}_selectMarker(v95,v96){let v97=this._docRangesBeforeMarkerPointer??[...(this._docSelectionManagerService["getDocRanges"]()??[])];this._ignoreTextSelectionBefore=Date.now()+400,this._selectionService["setMarkerSelection"](v95,v96),this._makeDirty(),this._docRangesBeforeMarkerPointer=null,v97.length&&queueMicrotask(()=>{this._docSelectionManagerService["replaceDocRanges"](v97,{unitId:this._context["unitId"],subUnitId:this._context["unitId"]},false,{forceFocus:false});});}_selectMarkerAndClose(v98,v99){this._selectMarker(v98,v99),this._closeContextMenu();}_drawMarkerSelection(v100){let v101=this._getSelectedBulletBounds();v101.length&&(v100.save(),v100.fillStyle="#8ab4f8",v100.globalAlpha=0.45,v101.forEach(v26=>{let v27=this._getMarkerSelectionRect(v26);v100.fillRect(v27.x,v27.y,v27.width,v27.height);}),v100.restore());}_getMarkerSelectionRect(v102){let v103=L(v102.rect,this._context["scene"]),v104=this._isBulletMarker(v102)?v103.height*0.72:v103.height*1.15;return{...v103,width:Math.min(v103.width,Math.max(8,v104))};}_isBulletMarker(v105){var v106,v107,v108,v109;let v110=(v106=v105.paragraph["bullet"])==null?undefined:v106.listType,v111=((v107=v105.paragraph["bullet"])==null?undefined:v107.nestingLevel)??0,v112=v110&&(((v108=this._context["unit"].lists)==null?undefined:v108[v110])??n.PRESET_LIST_TYPE[v110])||null,v113=v112==null||(v109=v112.nestingLevel)==null?undefined:v109[v111];return(v113==null?undefined:v113.glyphType)===n.ListGlyphType["BULLET"]||!!(v113!=null&&v113.glyphSymbol);}_isOrderedMarker(v114){var v115,v116;let v117=((v115=this._context["unit"].lists)==null?undefined:v115[v114.listType])??n.PRESET_LIST_TYPE[v114.listType],v118=v117==null||(v116=v117.nestingLevel)==null?undefined:v116[v114.nestingLevel];return!!(v118&&v118.glyphType!==n.ListGlyphType["BULLET"]&&!v118.glyphSymbol);}_getSelectedBulletBounds(){let v119=this._selectionService["markerSelection"];if(!v119)return[];let{marker:v120,mode:v121}=v119;return I(v120.listType)?this._getSelectedFallbackBulletBounds(v120,v121).concat(this._docEventManagerService["getBulletBounds"]().filter(v28=>this._isMarkerBoundSelected(v28,v120,v121)&&!this._hasFallbackBoundForMarker(v28.paragraph["startIndex"],v28.segmentId))):[];}_getSelectedFallbackBulletBounds(v122,v123){var v124;return(((v124=this._context["unit"].getBody())==null?undefined:v124.paragraphs)??[]).filter(v29=>this._isParagraphSelected(v29,v122,v123)).map(v30=>{let v31=this._docEventManagerService["findParagraphBoundByIndex"](v30.startIndex);return F(v31)?(0,i.getListMarkerFallbackBound)(v31,v30):null;}).filter(v32=>v32!=null);}_hasFallbackBoundForMarker(v125,v126){let v127=this._docEventManagerService["findParagraphBoundByIndex"](v125);return F(v127)&&(v127.segmentId??"")===(v126??"");}_isMarkerBoundSelected(v128,v129,v130){return this._isParagraphSelected(v128.paragraph,v129,v130)&&(v128.segmentId??"")===(v129.segmentId??"");}_isParagraphSelected(v131,v132,v133){let v134=v131.bullet;return!v134||v134.listId!==v132.listId||!I(v134.listType)?false:v133==="item"?v131.startIndex===v132.paragraphStartIndex:v133==="list"||v134.nestingLevel===v132.nestingLevel;}_makeDirty(){var v135;(v135=this._context["mainComponent"])==null||v135.makeDirty(true),this._context["scene"].makeDirty();}_getAnchorRect(v136,v137){return{bottom:v137,left:v136,right:v136,top:v137};}_toMarkerInfo(v138){var v139,v140,v141;return{paragraphStartIndex:v138.paragraph["startIndex"],listId:((v139=v138.paragraph["bullet"])==null?undefined:v139.listId)??"",listType:((v140=v138.paragraph["bullet"])==null?undefined:v140.listType)??"",nestingLevel:((v141=v138.paragraph["bullet"])==null?undefined:v141.nestingLevel)??0,segmentId:v138.segmentId};}};P=E([T(1,n.ICommandService),T(2,(0,n.Inject)(r.DocSelectionManagerService)),T(3,(0,n.Inject)(i.DocEventManagerService)),T(4,(0,n.Inject)(i.DocCanvasPopManagerService)),T(5,o.IContextMenuService),T(6,(0,n.Inject)(N)),T(7,n.IPermissionService)],P);function F(v194){return!!(v194&&typeof v194=="object"&&"tableId"in v194);}function I(v195){return v195!==n.PresetListType["CHECK_LIST"]&&v195!==n.PresetListType["CHECK_LIST_CHECKED"];}function L(v196,v197){let v198=R(v196.left,v196.top,v197),v199=R(v196.right,v196.bottom,v197);return{height:v199.y-v198.y,width:v199.x-v198.x,x:v198.x,y:v198.y};}function R(v200,v201,v202){let{scaleX:v203,scaleY:v204}=v202.getAncestorScale(),v205=v202.getViewport("viewMain");return v205?{x:(v200-v205.viewportScrollX)*v203,y:(v201-v205.viewportScrollY)*v204}:{x:v200,y:v201};}function z(v206,v207,v208){let{scaleX:v209,scaleY:v210}=v208.getAncestorScale(),v211=v208.getViewport("viewMain");return v211?{x:v206/v209+v211.viewportScrollX,y:v207/v210+v211.viewportScrollY}:{x:v206,y:v207};}let B=class extends n.Plugin{constructor(v142=p,v143,v144,v145){super(),this._config=v142,this._injector=v143,this._renderManagerService=v144,this._configService=v145;let{menu:v146,...v147}=(0,n.merge)({},p,this._config);v146&&this._configService["setConfig"]("menu",v146,{merge:true}),this._configService["setConfig"]("docs-list-ui.config",v147);}onStarting(){this._injector["add"]([D]),this._injector["add"]([N]),this._injector["get"](N),this._injector["get"](D);}onRendered(){this.disposeWithMe(this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_DOC"],[P]));}};j(B,"pluginName",e.DOCS_LIST_PLUGIN+"_UI_PLUGIN"),j(B,"packageName",d),j(B,"version",f),j(B,"type",n.UniverInstanceType["UNIVER_DOC"]),B=E([(0,n.DependentOn)(t.UniverLicensePlugin,r.UniverDocsPlugin,a.UniverRenderEnginePlugin,i.UniverDocsUIPlugin,e.UniverDocsListPlugin),T(1,(0,n.Inject)(n.Injector)),T(2,a.IRenderManagerService),T(3,n.IConfigService)],B),Object.defineProperty(exports,"UniverDocsListUIPlugin",{enumerable:true,get:function(){return B;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/docs-list"),
+  t = require("@univerjs-pro/license"),
+  n = require("@univerjs/core"),
+  r = require("@univerjs/docs"),
+  i = require("@univerjs/docs-ui"),
+  a = require("@univerjs/engine-render"),
+  o = require("@univerjs/ui"),
+  s = require("@univerjs/design"),
+  c = require("react/jsx-runtime"),
+  l = require("react"),
+  u = require("rxjs");
+var d = "@univerjs-pro/docs-list-ui",
+  f = "1.0.0-insiders.20260907-70fc579";
+const p = {},
+  m = "docs-list-ui.context-menu",
+  h = [{
+    label: "1",
+    type: n.ListGlyphType["DECIMAL"]
+  }, {
+    label: "A",
+    type: n.ListGlyphType["UPPER_LETTER"]
+  }, {
+    label: "a",
+    type: n.ListGlyphType["LOWER_LETTER"]
+  }, {
+    label: "I",
+    type: n.ListGlyphType["UPPER_ROMAN"]
+  }, {
+    label: "i",
+    type: n.ListGlyphType["LOWER_ROMAN"]
+  }],
+  g = ["●", "○", "■", "➢", "★"];
+function _(var_core_value_sig0C53) {
+  var var_core_value_sigEA04;
+  let var_core_value_sig7A62 = (var_core_value_sigEA04 = var_core_value_sig0C53.popup) == null ? undefined : var_core_value_sigEA04.extraProps,
+    var_core_value_sig8109 = (0, o.useDependency)(n.LocaleService);
+  return (0, c.jsxs)("section", {
+    className: "univer-box-border\x20univer-w-48\x20univer-rounded-lg\x20univer-border\x20univer-border-solid\x20univer-border-gray-200\x20univer-bg-gray-0\x20univer-py-1.5\x20univer-text-xs\x20univer-shadow-lg",
+    "data-u-comp": m,
+    children: [(0, c.jsx)("div", {
+      className: "univer-grid univer-grid-cols-5 univer-justify-items-center univer-gap-1 univer-px-2.5 univer-py-1",
+      children: h.map(var_core_value_sigD873 => (0, c.jsx)(s.Button, {
+        size: "small",
+        type: "button",
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sig7524;
+          return var_core_value_sig7A62 == null || (var_core_value_sig7524 = var_core_value_sig7A62.onSetGlyphType) == null ? undefined : var_core_value_sig7524.call(var_core_value_sig7A62, var_core_value_sigD873.type);
+        },
+        children: var_core_value_sigD873.label
+      }, var_core_value_sigD873.label))
+    }), (0, c.jsx)(s.Separator, {}), (0, c.jsx)("div", {
+      className: "univer-grid univer-grid-cols-5 univer-justify-items-center univer-gap-1 univer-px-2.5 univer-py-1",
+      children: g.map(var_core_value_sigA12B => (0, c.jsx)(s.Button, {
+        size: "small",
+        type: "button",
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sig2AD8;
+          return var_core_value_sig7A62 == null || (var_core_value_sig2AD8 = var_core_value_sig7A62.onSetGlyphSymbol) == null ? undefined : var_core_value_sig2AD8.call(var_core_value_sig7A62, var_core_value_sigA12B);
+        },
+        children: var_core_value_sigA12B
+      }, var_core_value_sigA12B))
+    }), (0, c.jsx)(s.Separator, {}), (0, c.jsx)(v, {
+      disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onMoreBullets,
+      children: var_core_value_sig8109.t("docs-list-ui.moreBullets")
+    }), (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.showNumberingControls) && (0, c.jsxs)(c.Fragment, {
+      children: [(0, c.jsx)(v, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onEditPrefixSuffix,
+        children: var_core_value_sig8109.t("docs-list-ui.editPrefixSuffix")
+      }), (0, c.jsx)(v, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: () => {
+          var var_core_value_sigF230;
+          return var_core_value_sig7A62 == null || (var_core_value_sigF230 = var_core_value_sig7A62.onSetStartNumber) == null ? undefined : var_core_value_sigF230.call(var_core_value_sig7A62, 1);
+        },
+        children: var_core_value_sig8109.t("docs-list-ui.restartNumbering")
+      }), (0, c.jsx)(v, {
+        disabled: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly,
+        onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onRestartAt,
+        children: var_core_value_sig8109.t("docs-list-ui.restartAt")
+      })]
+    }), (0, c.jsx)(v, {
+      disabled: (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly) || !(var_core_value_sig7A62 != null && var_core_value_sig7A62.canPromote),
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onPromote,
+      children: var_core_value_sig8109.t("docs-list-ui.promote")
+    }), (0, c.jsx)(v, {
+      disabled: (var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.readOnly) || !(var_core_value_sig7A62 != null && var_core_value_sig7A62.canDemote),
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onDemote,
+      children: var_core_value_sig8109.t("docs-list-ui.demote")
+    }), (0, c.jsx)(s.Separator, {}), (0, c.jsx)(v, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectItem,
+      children: var_core_value_sig8109.t("docs-list-ui.selectListItem")
+    }), (0, c.jsx)(v, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectCurrentLevel,
+      children: var_core_value_sig8109.t("docs-list-ui.selectCurrentLevel")
+    }), (0, c.jsx)(v, {
+      onClick: var_core_value_sig7A62 == null ? undefined : var_core_value_sig7A62.onSelectCurrentList,
+      children: var_core_value_sig8109.t("docs-list-ui.selectCurrentList")
+    })]
+  });
+}
+function v(var_core_value_sig7565) {
+  return (0, c.jsx)(s.Button, {
+    size: "small",
+    variant: "ghost",
+    type: "button",
+    className: "univer-w-full\x20univer-justify-start",
+    disabled: var_core_value_sig7565.disabled,
+    onClick: var_core_value_sig09B8 => {
+      var var_core_value_sig6F91;
+      var_core_value_sig09B8.preventDefault(), (var_core_value_sig6F91 = var_core_value_sig7565.onClick) == null || var_core_value_sig6F91.call(var_core_value_sig7565);
+    },
+    children: var_core_value_sig7565.children
+  });
+}
+const y = "docs-list-ui.more-bullets-dialog";
+function b(var_core_value_sigD4FB) {
+  var var_core_value_sig3E71;
+  let var_core_value_sig01B3 = (var_core_value_sig3E71 = var_core_value_sigD4FB.popup) == null ? undefined : var_core_value_sig3E71.extraProps,
+    var_core_value_sig7442 = (0, o.useDependency)(n.LocaleService),
+    var_core_value_sigDF87 = (0, l.useMemo)(() => e.DOCS_LIST_MORE_BULLETS["map"]((var_core_value_sig2AD0, var_core_value_sig3EEE) => ({
+      id: var_core_value_sig2AD0 + "-" + var_core_value_sig3EEE,
+      symbol: var_core_value_sig2AD0
+    })), []);
+  return (0, c.jsxs)("section", {
+    className: "univer-box-border univer-w-[420px] univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-4 univer-text-sm univer-shadow-lg",
+    "data-u-comp": y,
+    children: [(0, c.jsxs)("header", {
+      className: "univer-mb-3 univer-flex univer-items-center univer-justify-between",
+      children: [(0, c.jsx)("h2", {
+        className: "univer-m-0 univer-text-lg univer-font-medium univer-text-gray-900",
+        children: var_core_value_sig7442.t("docs-list-ui.moreBullets")
+      }), (0, c.jsx)(s.Button, {
+        type: "button",
+        size: "icon",
+        variant: "ghost",
+        className: "univer-text-xl",
+        onClick: var_core_value_sig01B3 == null ? undefined : var_core_value_sig01B3.onClose,
+        "aria-label": var_core_value_sig7442.t("docs-list-ui.close"),
+        children: "×"
+      })]
+    }), (0, c.jsx)("div", {
+      className: "univer-grid univer-max-h-[260px] univer-grid-cols-10 univer-gap-1 univer-overflow-y-auto univer-pr-1",
+      children: var_core_value_sigDF87.map(({
+        id: var_core_value_sigF9C7,
+        symbol: var_core_value_sig8895
+      }) => (0, c.jsx)(s.Button, {
+        type: "button",
+        size: "icon",
+        className: "univer-text-base",
+        onClick: () => {
+          var var_core_value_sigBC46;
+          return var_core_value_sig01B3 == null || (var_core_value_sigBC46 = var_core_value_sig01B3.onSelect) == null ? undefined : var_core_value_sigBC46.call(var_core_value_sig01B3, var_core_value_sig8895);
+        },
+        children: var_core_value_sig8895
+      }, var_core_value_sigF9C7))
+    })]
+  });
+}
+const x = "docs-list-ui.prefix-suffix-dialog";
+function S(var_core_value_sig9EE0) {
+  var var_core_value_sigF051;
+  let var_core_value_sig0B45 = (var_core_value_sigF051 = var_core_value_sig9EE0.popup) == null ? undefined : var_core_value_sigF051.extraProps,
+    var_core_value_sig36F8 = (0, o.useDependency)(n.LocaleService),
+    [var_core_value_sig03E1, var_core_value_sigBB57] = (0, l.useState)(""),
+    [var_core_value_sig7C4A, var_core_value_sigE799] = (0, l.useState)("."),
+    [var_core_value_sigB601, var_core_value_sig8B71] = (0, l.useState)(true);
+  return (0, c.jsxs)("form", {
+    className: "univer-box-border univer-w-[456px] univer-rounded-xl univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-6 univer-text-sm univer-shadow-xl",
+    onSubmit: var_core_value_sigC80B => {
+      var var_core_value_sig284F;
+      var_core_value_sigC80B.preventDefault(), var_core_value_sig0B45 == null || (var_core_value_sig284F = var_core_value_sig0B45.onApply) == null || var_core_value_sig284F.call(var_core_value_sig0B45, var_core_value_sig03E1, var_core_value_sig7C4A, var_core_value_sigB601 ? e.DocsListSelectionMode["List"] : e.DocsListSelectionMode["Level"]);
+    },
+    children: [(0, c.jsx)("h2", {
+      className: "univer-m-0 univer-mb-6 univer-text-3xl univer-font-medium univer-text-gray-900",
+      children: var_core_value_sig36F8.t("docs-list-ui.prefixAndSuffix")
+    }), (0, c.jsxs)("div", {
+      className: "univer-flex univer-items-end univer-gap-4",
+      children: [(0, c.jsxs)("label", {
+        className: "univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",
+        children: [(0, c.jsx)("span", {
+          children: var_core_value_sig36F8.t("docs-list-ui.prefix")
+        }), (0, c.jsx)(s.Input, {
+          size: "large",
+          inputClass: "univer-h-16\x20univer-text-xl",
+          value: var_core_value_sig03E1,
+          onChange: var_core_value_sigBB57,
+          placeholder: var_core_value_sig36F8.t("docs-list-ui.noPrefix")
+        })]
+      }), (0, c.jsx)("span", {
+        className: "univer-w-6 univer-flex-none univer-pb-5 univer-text-center univer-text-xl univer-text-gray-700",
+        children: "A"
+      }), (0, c.jsxs)("label", {
+        className: "univer-flex univer-w-44 univer-flex-none univer-flex-col univer-gap-2 univer-text-sm univer-font-medium univer-text-gray-700",
+        children: [(0, c.jsx)("span", {
+          children: var_core_value_sig36F8.t("docs-list-ui.suffix")
+        }), (0, c.jsx)(s.Input, {
+          size: "large",
+          inputClass: "univer-h-16 univer-text-xl",
+          value: var_core_value_sig7C4A,
+          onChange: var_core_value_sigE799
+        })]
+      })]
+    }), (0, c.jsx)(s.Checkbox, {
+      className: "univer-mt-6 univer-text-xl",
+      checked: var_core_value_sigB601,
+      onChange: var_core_value_sigE154 => var_core_value_sig8B71(!!var_core_value_sigE154),
+      children: var_core_value_sig36F8.t("docs-list-ui.applyToEntireList")
+    }), (0, c.jsxs)("footer", {
+      className: "univer-mt-10 univer-flex univer-items-center univer-justify-end univer-gap-4",
+      children: [(0, c.jsx)(s.Button, {
+        type: "button",
+        variant: "default",
+        onClick: var_core_value_sig0B45 == null ? undefined : var_core_value_sig0B45.onClose,
+        children: var_core_value_sig36F8.t("docs-list-ui.cancel")
+      }), (0, c.jsx)(s.Button, {
+        type: "submit",
+        variant: "primary",
+        children: var_core_value_sig36F8.t("docs-list-ui.ok")
+      })]
+    })]
+  });
+}
+const C = "docs-list-ui.start-number-dialog";
+function w(var_core_value_sigAEFB) {
+  var var_core_value_sig826B;
+  let var_core_value_sigCF89 = (var_core_value_sig826B = var_core_value_sigAEFB.popup) == null ? undefined : var_core_value_sig826B.extraProps,
+    var_core_value_sig00CB = (0, o.useDependency)(n.LocaleService),
+    [var_core_value_sig77EE, var_core_value_sig9F76] = (0, l.useState)(1);
+  return (0, c.jsxs)("section", {
+    className: "univer-box-border univer-w-[260px] univer-rounded-lg univer-border univer-border-solid univer-border-gray-200 univer-bg-gray-0 univer-p-4 univer-text-sm univer-shadow-lg",
+    "data-u-comp": C,
+    children: [(0, c.jsx)("h2", {
+      className: "univer-m-0 univer-mb-3 univer-text-lg univer-font-medium univer-text-gray-900",
+      children: var_core_value_sig00CB.t("docs-list-ui.restartAt")
+    }), (0, c.jsx)(s.InputNumber, {
+      className: "univer-w-full",
+      min: 1,
+      step: 1,
+      precision: 0,
+      value: var_core_value_sig77EE,
+      onChange: var_core_value_sig9F76
+    }), (0, c.jsxs)("footer", {
+      className: "univer-mt-4 univer-flex univer-justify-end univer-gap-2",
+      children: [(0, c.jsx)(s.Button, {
+        type: "button",
+        variant: "default",
+        onClick: var_core_value_sigCF89 == null ? undefined : var_core_value_sigCF89.onClose,
+        children: var_core_value_sig00CB.t("docs-list-ui.cancel")
+      }), (0, c.jsx)(s.Button, {
+        type: "button",
+        variant: "primary",
+        onClick: () => {
+          var var_core_value_sig4632;
+          return var_core_value_sigCF89 == null || (var_core_value_sig4632 = var_core_value_sigCF89.onApply) == null ? undefined : var_core_value_sig4632.call(var_core_value_sigCF89, Math.max(1, var_core_value_sig77EE ?? 1));
+        },
+        children: var_core_value_sig00CB.t("docs-list-ui.ok")
+      })]
+    })]
+  });
+}
+function T(var_core_value_sigB008, var_core_value_sig8721) {
+  return function (var_core_value_sig12F2, var_core_value_sig2259) {
+    var_core_value_sig8721(var_core_value_sig12F2, var_core_value_sig2259, var_core_value_sigB008);
+  };
+}
+function E(var_core_value_sig08BA, var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sig237B) {
+  var var_core_value_sigFEAB = arguments.length,
+    var_core_value_sigE347 = var_core_value_sigFEAB < 3 ? var_core_value_sigDBB5 : var_core_value_sig237B === null ? var_core_value_sig237B = Object.getOwnPropertyDescriptor(var_core_value_sigDBB5, var_core_value_sigCFAC) : var_core_value_sig237B,
+    var_core_value_sig3C5B;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigE347 = Reflect.decorate(var_core_value_sig08BA, var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sig237B);else {
+    for (var var_core_value_sig200B = var_core_value_sig08BA.length - 1; var_core_value_sig200B >= 0; var_core_value_sig200B--) (var_core_value_sig3C5B = var_core_value_sig08BA[var_core_value_sig200B]) && (var_core_value_sigE347 = (var_core_value_sigFEAB < 3 ? var_core_value_sig3C5B(var_core_value_sigE347) : var_core_value_sigFEAB > 3 ? var_core_value_sig3C5B(var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sigE347) : var_core_value_sig3C5B(var_core_value_sigDBB5, var_core_value_sigCFAC)) || var_core_value_sigE347);
+  }
+  return var_core_value_sigFEAB > 3 && var_core_value_sigE347 && Object.defineProperty(var_core_value_sigDBB5, var_core_value_sigCFAC, var_core_value_sigE347), var_core_value_sigE347;
+}
+let D = class extends n.Disposable {
+  constructor(var_core_value_sig9E2F) {
+    super(), this._componentManager = var_core_value_sig9E2F, this._registerComponents();
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](m, _)), this.disposeWithMe(this._componentManager["register"](y, b)), this.disposeWithMe(this._componentManager["register"](x, S)), this.disposeWithMe(this._componentManager["register"](C, w));
+  }
+};
+D = E([T(0, (0, n.Inject)(o.ComponentManager))], D);
+function O(var_core_value_sig3863) {
+  "@babel/helpers - typeof";
+
+  return O = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigD082) {
+    return typeof var_core_value_sigD082;
+  } : function (var_core_value_sigDBB7) {
+    return var_core_value_sigDBB7 && typeof Symbol == "function" && var_core_value_sigDBB7.constructor === Symbol && var_core_value_sigDBB7 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigDBB7;
+  }, O(var_core_value_sig3863);
+}
+function k(var_core_value_sigC97C, var_core_value_sigC4B1) {
+  if (O(var_core_value_sigC97C) != "object" || !var_core_value_sigC97C) return var_core_value_sigC97C;
+  var var_core_value_sig1BD9 = var_core_value_sigC97C[Symbol.toPrimitive];
+  if (var_core_value_sig1BD9 !== undefined) {
+    var var_core_value_sigE43E = var_core_value_sig1BD9.call(var_core_value_sigC97C, var_core_value_sigC4B1 || "default");
+    if (O(var_core_value_sigE43E) != "object") return var_core_value_sigE43E;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigC4B1 === "string" ? String : Number)(var_core_value_sigC97C);
+}
+function A(var_core_value_sigA937) {
+  var var_core_value_sigCAD5 = k(var_core_value_sigA937, "string");
+  return O(var_core_value_sigCAD5) == "symbol" ? var_core_value_sigCAD5 : var_core_value_sigCAD5 + "";
+}
+function j(var_core_value_sigE503, var_core_value_sig48DD, var_core_value_sig5E6A) {
+  return (var_core_value_sig48DD = A(var_core_value_sig48DD)) in var_core_value_sigE503 ? Object.defineProperty(var_core_value_sigE503, var_core_value_sig48DD, {
+    value: var_core_value_sig5E6A,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigE503[var_core_value_sig48DD] = var_core_value_sig5E6A, var_core_value_sigE503;
+}
+const M = {
+  marker: null,
+  anchor: null,
+  open: false
+};
+var N = class {
+  constructor() {
+    j(this, "_menuState$", new u["BehaviorSubject"](M)), j(this, "_markerSelection$", new u["BehaviorSubject"](null)), j(this, "menuState$", this._menuState$["asObservable"]()), j(this, "markerSelection$", this._markerSelection$["asObservable"]());
+  }
+  get menuState() {
+    return this._menuState$["value"];
+  }
+  get markerSelection() {
+    return this._markerSelection$["value"];
+  }
+  nextClickMode(var_core_value_sigD0A8) {
+    let var_core_value_sigF4B9 = this.markerSelection;
+    return var_core_value_sigF4B9 && this._getMarkerGroupKey(var_core_value_sigF4B9.marker) === this._getMarkerGroupKey(var_core_value_sigD0A8) ? e.DocsListSelectionMode["Item"] : e.DocsListSelectionMode["Level"];
+  }
+  contextMenuMode(var_core_value_sig5CEE) {
+    let var_core_value_sigE92A = this.markerSelection;
+    return !var_core_value_sigE92A || this._getMarkerListKey(var_core_value_sigE92A.marker) !== this._getMarkerListKey(var_core_value_sig5CEE) ? e.DocsListSelectionMode["Level"] : var_core_value_sigE92A.mode === "list" ? e.DocsListSelectionMode["List"] : this._getMarkerGroupKey(var_core_value_sigE92A.marker) === this._getMarkerGroupKey(var_core_value_sig5CEE) ? var_core_value_sigE92A.mode : e.DocsListSelectionMode["Level"];
+  }
+  openMenu(var_core_value_sig362B, var_core_value_sig5CA5) {
+    this._menuState$["next"]({
+      marker: var_core_value_sig362B,
+      anchor: var_core_value_sig5CA5,
+      open: true
+    });
+  }
+  closeMenu() {
+    this._menuState$["next"](M);
+  }
+  setMarkerSelection(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    this._markerSelection$["next"]({
+      marker: var_core_value_sigE90F,
+      mode: var_core_value_sigEFD4
+    });
+  }
+  clearMarkerSelection() {
+    this._markerSelection$["next"](null);
+  }
+  _getMarkerGroupKey(var_core_value_sig861B) {
+    return (var_core_value_sig861B.segmentId ?? "") + ":" + var_core_value_sig861B.listId + ":" + var_core_value_sig861B.nestingLevel;
+  }
+  _getMarkerListKey(var_core_value_sig5237) {
+    return (var_core_value_sig5237.segmentId ?? "") + ":" + var_core_value_sig5237.listId;
+  }
+};
+let P = class extends n.Disposable {
+  constructor(var_core_value_sigBB00, var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2) {
+    super(), this._context = var_core_value_sigBB00, this._commandService = var_core_value_sig7E54, this._docSelectionManagerService = var_core_value_sig9A8D, this._docEventManagerService = var_core_value_sigC259, this._docCanvasPopManagerService = var_core_value_sig9C9F, this._contextMenuService = var_core_value_sigFDEA, this._selectionService = var_core_value_sig86D0, this._permissionService = var_core_value_sig4CD2, j(this, "_menuDisposable", null), j(this, "_docRangesBeforeMarkerPointer", null), j(this, "_ignoreTextSelectionBefore", 0), j(this, "_openContextMenuTimer", null), this._initMarkerPointerSelectionPreserve(), this._initMarkerClick(), this._initMarkerContextMenu(), this._initMarkerSelectionRender(), this._initTextSelectionClear(), this.disposeWithMe(this._permissionService["permissionPointUpdate$"].subscribe(() => this._closeContextMenu()));
+  }
+  _initMarkerPointerSelectionPreserve() {
+    let var_core_value_sig48CA = this._context["mainComponent"] ?? this._context["scene"];
+    this.disposeWithMe(var_core_value_sig48CA.onPointerDown$["subscribeEvent"]({
+      next: ([var_core_value_sig3D7D]) => {
+        this._docEventManagerService["isPointerOnBullet"](var_core_value_sig3D7D.offsetX, var_core_value_sig3D7D.offsetY) ? this._docRangesBeforeMarkerPointer = [...(this._docSelectionManagerService["getDocRanges"]() ?? [])] : this._docRangesBeforeMarkerPointer = null;
+      },
+      priority: -12000
+    }));
+  }
+  _initMarkerClick() {
+    this.disposeWithMe(this._docEventManagerService["clickBullets$"].subscribe(var_core_value_sig27E5 => {
+      let var_core_value_sig8061 = this._toMarkerInfo(var_core_value_sig27E5);
+      if (!I(var_core_value_sig8061.listType)) return;
+      let var_core_value_sig4D4C = this._selectionService["nextClickMode"](var_core_value_sig8061);
+      this._selectMarker(var_core_value_sig8061, var_core_value_sig4D4C);
+    }));
+  }
+  _initMarkerContextMenu() {
+    this.disposeWithMe(this._docEventManagerService["contextMenuBullets$"].subscribe(var_core_value_sigC9E0 => {
+      let var_core_value_sig76BA = this._toMarkerInfo(var_core_value_sigC9E0);
+      I(var_core_value_sig76BA.listType) && this._openMarkerContextMenuFromOffset(var_core_value_sig76BA, var_core_value_sigC9E0.x, var_core_value_sigC9E0.y);
+    }));
+  }
+  _openMarkerContextMenuFromOffset(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621) {
+    let var_core_value_sigBBFF = z(var_core_value_sigA942, var_core_value_sigA621, this._context["scene"]),
+      var_core_value_sig8889 = this._selectionService["contextMenuMode"](var_core_value_sig50AF);
+    this._selectionService["openMenu"](var_core_value_sig50AF, var_core_value_sigBBFF), this._selectMarker(var_core_value_sig50AF, var_core_value_sig8889), this._scheduleOpenContextMenu(var_core_value_sig50AF, var_core_value_sigBBFF.x, var_core_value_sigBBFF.y);
+  }
+  _scheduleOpenContextMenu(var_core_value_sig32F8, var_core_value_sig5B67, var_core_value_sig1758) {
+    this._clearOpenContextMenuTimer(), this._openContextMenuTimer = setTimeout(() => {
+      this._openContextMenuTimer = null, this._openContextMenu(var_core_value_sig32F8, var_core_value_sig5B67, var_core_value_sig1758);
+    }, 0);
+  }
+  _initMarkerSelectionRender() {
+    this.disposeWithMe(this._selectionService["markerSelection$"].subscribe(() => this._makeDirty())), this.disposeWithMe(this._context["scene"].afterRender$["subscribe"](var_core_value_sigFBFA => {
+      let var_core_value_sigF602 = this._selectionService["markerSelection"];
+      if (!var_core_value_sigFBFA || !var_core_value_sigF602) return;
+      let var_core_value_sig1BBD = var_core_value_sigFBFA.getContext();
+      var_core_value_sig1BBD && this._drawMarkerSelection(var_core_value_sig1BBD);
+    }));
+  }
+  _initTextSelectionClear() {
+    this.disposeWithMe(this._docSelectionManagerService["textSelection$"].subscribe(var_core_value_sigF704 => {
+      Date.now() < this._ignoreTextSelectionBefore || this._selectionService["markerSelection"] && (var_core_value_sigF704.textRanges["length"] || var_core_value_sigF704.rectRanges["length"]) && this._selectionService["clearMarkerSelection"]();
+    }));
+  }
+  _openContextMenu(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902) {
+    this._contextMenuService["hideContextMenu"](), this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"]({
+      bottom: var_core_value_sig2902,
+      left: var_core_value_sigE67E,
+      right: var_core_value_sigE67E,
+      top: var_core_value_sig2902
+    }, {
+      componentKey: m,
+      direction: "bottom-left",
+      extraProps: {
+        marker: var_core_value_sig4805,
+        readOnly: !this._canEditDocument(),
+        canDemote: var_core_value_sig4805.nestingLevel < 8,
+        canPromote: var_core_value_sig4805.nestingLevel > 0,
+        showNumberingControls: this._isOrderedMarker(var_core_value_sig4805),
+        onClose: () => this._closeContextMenu(),
+        onDemote: () => this._executeMarkerCommand(e.DocsListDemoteCommand["id"], var_core_value_sig4805),
+        onEditPrefixSuffix: () => this._openPrefixSuffixDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onMoreBullets: () => this._openMoreBulletsDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onPromote: () => this._executeMarkerCommand(e.DocsListPromoteCommand["id"], var_core_value_sig4805),
+        onRestartAt: () => this._openStartNumberDialog(var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902),
+        onSelectCurrentLevel: () => this._selectMarkerAndClose(var_core_value_sig4805, e.DocsListSelectionMode["Level"]),
+        onSelectCurrentList: () => this._selectMarkerAndClose(var_core_value_sig4805, e.DocsListSelectionMode["List"]),
+        onSelectItem: () => this._selectMarkerAndClose(var_core_value_sig4805, e.DocsListSelectionMode["Item"]),
+        onSetGlyphSymbol: var_core_value_sig2BCF => this._executeMarkerCommand(e.DocsListSetGlyphSymbolCommand["id"], var_core_value_sig4805, {
+          symbol: var_core_value_sig2BCF
+        }),
+        onSetGlyphType: var_core_value_sig0D69 => this._executeMarkerCommand(e.DocsListSetGlyphTypeCommand["id"], var_core_value_sig4805, {
+          glyphType: var_core_value_sig0D69
+        }),
+        onSetPrefixSuffix: (var_core_value_sig480E, var_core_value_sig26DB) => this._executeMarkerCommand(e.DocsListSetPrefixSuffixCommand["id"], var_core_value_sig4805, {
+          prefix: var_core_value_sig480E,
+          suffix: var_core_value_sig26DB
+        }),
+        onSetStartNumber: var_core_value_sigF0F9 => this._executeMarkerCommand(e.DocsListSetStartNumberCommand["id"], var_core_value_sig4805, var_core_value_sigF0F9 === 1 ? {
+          restartFromPrevious: true,
+          startNumber: var_core_value_sigF0F9
+        } : {
+          startNumber: var_core_value_sigF0F9
+        })
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _openMoreBulletsDialog(var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+    this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sig698E, var_core_value_sig2809), {
+      componentKey: y,
+      direction: "bottom-left",
+      extraProps: {
+        onClose: () => this._closeContextMenu(),
+        onSelect: var_core_value_sig1A0F => this._executeMarkerCommand(e.DocsListSetGlyphSymbolCommand["id"], var_core_value_sig9989, {
+          symbol: var_core_value_sig1A0F
+        })
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _openPrefixSuffixDialog(var_core_value_sig2DAB, var_core_value_sig877E, var_core_value_sig20C8) {
+    this._isOrderedMarker(var_core_value_sig2DAB) && (this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sig877E, var_core_value_sig20C8), {
+      componentKey: x,
+      direction: "bottom-left",
+      extraProps: {
+        onApply: (var_core_value_sigFBA4, var_core_value_sig4383, var_core_value_sig186C) => this._executeMarkerCommand(e.DocsListSetPrefixSuffixCommand["id"], var_core_value_sig2DAB, {
+          prefix: var_core_value_sigFBA4,
+          suffix: var_core_value_sig4383,
+          mode: var_core_value_sig186C
+        }),
+        onClose: () => this._closeContextMenu()
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]));
+  }
+  _openStartNumberDialog(var_core_value_sigE9A7, var_core_value_sigBECE, var_core_value_sig1B22) {
+    this._closeContextMenu(), this._menuDisposable = this._docCanvasPopManagerService["attachPopupToRect"](this._getAnchorRect(var_core_value_sigBECE, var_core_value_sig1B22), {
+      componentKey: C,
+      direction: "bottom-left",
+      extraProps: {
+        onApply: var_core_value_sigD955 => this._executeMarkerCommand(e.DocsListSetStartNumberCommand["id"], var_core_value_sigE9A7, {
+          startNumber: var_core_value_sigD955
+        }),
+        onClose: () => this._closeContextMenu()
+      },
+      onClickOutside: () => this._closeContextMenu(),
+      onContextMenu: () => this._closeContextMenu()
+    }, this._context["unitId"]);
+  }
+  _closeContextMenu() {
+    var var_core_value_sig7F72;
+    this._clearOpenContextMenuTimer(), (var_core_value_sig7F72 = this._menuDisposable) == null || var_core_value_sig7F72.dispose(), this._menuDisposable = null, this._selectionService["closeMenu"]();
+  }
+  _canEditDocument() {
+    return (0, r.canEditDocumentTargets)(this._permissionService, this._context["unitId"], []);
+  }
+  _clearOpenContextMenuTimer() {
+    this._openContextMenuTimer != null && (clearTimeout(this._openContextMenuTimer), this._openContextMenuTimer = null);
+  }
+  _executeMarkerCommand(var_core_value_sig7B2A, var_core_value_sig06CD, var_core_value_sigA5F1 = {}) {
+    this._commandService["executeCommand"](var_core_value_sig7B2A, {
+      paragraphStartIndex: var_core_value_sig06CD.paragraphStartIndex,
+      segmentId: var_core_value_sig06CD.segmentId,
+      mode: this._getCommandMode(var_core_value_sig06CD, var_core_value_sigA5F1.mode),
+      ...var_core_value_sigA5F1
+    }), this._closeContextMenu();
+  }
+  _getCommandMode(var_core_value_sig97A2, var_core_value_sig07E9) {
+    if (var_core_value_sig07E9 === e.DocsListSelectionMode["Item"] || var_core_value_sig07E9 === e.DocsListSelectionMode["Level"] || var_core_value_sig07E9 === e.DocsListSelectionMode["List"]) return var_core_value_sig07E9;
+    let var_core_value_sig4F59 = this._selectionService["markerSelection"];
+    return !var_core_value_sig4F59 || var_core_value_sig4F59.marker["listId"] !== var_core_value_sig97A2.listId || (var_core_value_sig4F59.marker["segmentId"] ?? "") !== (var_core_value_sig97A2.segmentId ?? "") ? e.DocsListSelectionMode["Level"] : var_core_value_sig4F59.mode;
+  }
+  _selectMarker(var_core_value_sigF564, var_core_value_sig8CFA) {
+    let var_core_value_sig2E11 = this._docRangesBeforeMarkerPointer ?? [...(this._docSelectionManagerService["getDocRanges"]() ?? [])];
+    this._ignoreTextSelectionBefore = Date.now() + 400, this._selectionService["setMarkerSelection"](var_core_value_sigF564, var_core_value_sig8CFA), this._makeDirty(), this._docRangesBeforeMarkerPointer = null, var_core_value_sig2E11.length && queueMicrotask(() => {
+      this._docSelectionManagerService["replaceDocRanges"](var_core_value_sig2E11, {
+        unitId: this._context["unitId"],
+        subUnitId: this._context["unitId"]
+      }, false, {
+        forceFocus: false
+      });
+    });
+  }
+  _selectMarkerAndClose(var_core_value_sig5B69, var_core_value_sigB098) {
+    this._selectMarker(var_core_value_sig5B69, var_core_value_sigB098), this._closeContextMenu();
+  }
+  _drawMarkerSelection(var_core_value_sigCE71) {
+    let var_core_value_sig21D8 = this._getSelectedBulletBounds();
+    var_core_value_sig21D8.length && (var_core_value_sigCE71.save(), var_core_value_sigCE71.fillStyle = "#8ab4f8", var_core_value_sigCE71.globalAlpha = 0.45, var_core_value_sig21D8.forEach(var_core_value_sig48BD => {
+      let var_core_value_sig429F = this._getMarkerSelectionRect(var_core_value_sig48BD);
+      var_core_value_sigCE71.fillRect(var_core_value_sig429F.x, var_core_value_sig429F.y, var_core_value_sig429F.width, var_core_value_sig429F.height);
+    }), var_core_value_sigCE71.restore());
+  }
+  _getMarkerSelectionRect(var_core_value_sig2B65) {
+    let var_core_value_sigD7EA = L(var_core_value_sig2B65.rect, this._context["scene"]),
+      var_core_value_sigB33B = this._isBulletMarker(var_core_value_sig2B65) ? var_core_value_sigD7EA.height * 0.72 : var_core_value_sigD7EA.height * 1.15;
+    return {
+      ...var_core_value_sigD7EA,
+      width: Math.min(var_core_value_sigD7EA.width, Math.max(8, var_core_value_sigB33B))
+    };
+  }
+  _isBulletMarker(var_core_value_sig24B9) {
+    var var_core_value_sigE627, var_core_value_sigEF3E, var_core_value_sig273D, var_core_value_sig9A0D;
+    let var_core_value_sigA319 = (var_core_value_sigE627 = var_core_value_sig24B9.paragraph["bullet"]) == null ? undefined : var_core_value_sigE627.listType,
+      var_core_value_sig2D58 = ((var_core_value_sigEF3E = var_core_value_sig24B9.paragraph["bullet"]) == null ? undefined : var_core_value_sigEF3E.nestingLevel) ?? 0,
+      var_core_value_sig223F = var_core_value_sigA319 && (((var_core_value_sig273D = this._context["unit"].lists) == null ? undefined : var_core_value_sig273D[var_core_value_sigA319]) ?? n.PRESET_LIST_TYPE[var_core_value_sigA319]) || null,
+      var_core_value_sigD749 = var_core_value_sig223F == null || (var_core_value_sig9A0D = var_core_value_sig223F.nestingLevel) == null ? undefined : var_core_value_sig9A0D[var_core_value_sig2D58];
+    return (var_core_value_sigD749 == null ? undefined : var_core_value_sigD749.glyphType) === n.ListGlyphType["BULLET"] || !!(var_core_value_sigD749 != null && var_core_value_sigD749.glyphSymbol);
+  }
+  _isOrderedMarker(var_core_value_sigCFFA) {
+    var var_core_value_sig58C1, var_core_value_sig5090;
+    let var_core_value_sigC368 = ((var_core_value_sig58C1 = this._context["unit"].lists) == null ? undefined : var_core_value_sig58C1[var_core_value_sigCFFA.listType]) ?? n.PRESET_LIST_TYPE[var_core_value_sigCFFA.listType],
+      var_core_value_sigAD56 = var_core_value_sigC368 == null || (var_core_value_sig5090 = var_core_value_sigC368.nestingLevel) == null ? undefined : var_core_value_sig5090[var_core_value_sigCFFA.nestingLevel];
+    return !!(var_core_value_sigAD56 && var_core_value_sigAD56.glyphType !== n.ListGlyphType["BULLET"] && !var_core_value_sigAD56.glyphSymbol);
+  }
+  _getSelectedBulletBounds() {
+    let var_core_value_sigDB4A = this._selectionService["markerSelection"];
+    if (!var_core_value_sigDB4A) return [];
+    let {
+      marker: var_core_value_sig6418,
+      mode: var_core_value_sig1896
+    } = var_core_value_sigDB4A;
+    return I(var_core_value_sig6418.listType) ? this._getSelectedFallbackBulletBounds(var_core_value_sig6418, var_core_value_sig1896).concat(this._docEventManagerService["getBulletBounds"]().filter(var_core_value_sigF62A => this._isMarkerBoundSelected(var_core_value_sigF62A, var_core_value_sig6418, var_core_value_sig1896) && !this._hasFallbackBoundForMarker(var_core_value_sigF62A.paragraph["startIndex"], var_core_value_sigF62A.segmentId))) : [];
+  }
+  _getSelectedFallbackBulletBounds(var_core_value_sig0285, var_core_value_sig777D) {
+    var var_core_value_sig3F4C;
+    return (((var_core_value_sig3F4C = this._context["unit"].getBody()) == null ? undefined : var_core_value_sig3F4C.paragraphs) ?? []).filter(var_core_value_sig8178 => this._isParagraphSelected(var_core_value_sig8178, var_core_value_sig0285, var_core_value_sig777D)).map(var_core_value_sigE9ED => {
+      let var_core_value_sigB577 = this._docEventManagerService["findParagraphBoundByIndex"](var_core_value_sigE9ED.startIndex);
+      return F(var_core_value_sigB577) ? (0, i.getListMarkerFallbackBound)(var_core_value_sigB577, var_core_value_sigE9ED) : null;
+    }).filter(var_core_value_sig9572 => var_core_value_sig9572 != null);
+  }
+  _hasFallbackBoundForMarker(var_core_value_sigD65A, var_core_value_sig5A13) {
+    let var_core_value_sigF593 = this._docEventManagerService["findParagraphBoundByIndex"](var_core_value_sigD65A);
+    return F(var_core_value_sigF593) && (var_core_value_sigF593.segmentId ?? "") === (var_core_value_sig5A13 ?? "");
+  }
+  _isMarkerBoundSelected(var_core_value_sig3607, var_core_value_sigB512, var_core_value_sigF2E6) {
+    return this._isParagraphSelected(var_core_value_sig3607.paragraph, var_core_value_sigB512, var_core_value_sigF2E6) && (var_core_value_sig3607.segmentId ?? "") === (var_core_value_sigB512.segmentId ?? "");
+  }
+  _isParagraphSelected(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2) {
+    let var_core_value_sigE68A = var_core_value_sig34C8.bullet;
+    return !var_core_value_sigE68A || var_core_value_sigE68A.listId !== var_core_value_sigB744.listId || !I(var_core_value_sigE68A.listType) ? false : var_core_value_sigEAE2 === "item" ? var_core_value_sig34C8.startIndex === var_core_value_sigB744.paragraphStartIndex : var_core_value_sigEAE2 === "list" || var_core_value_sigE68A.nestingLevel === var_core_value_sigB744.nestingLevel;
+  }
+  _makeDirty() {
+    var var_core_value_sig3E68;
+    (var_core_value_sig3E68 = this._context["mainComponent"]) == null || var_core_value_sig3E68.makeDirty(true), this._context["scene"].makeDirty();
+  }
+  _getAnchorRect(var_core_value_sigF4C5, var_core_value_sig5410) {
+    return {
+      bottom: var_core_value_sig5410,
+      left: var_core_value_sigF4C5,
+      right: var_core_value_sigF4C5,
+      top: var_core_value_sig5410
+    };
+  }
+  _toMarkerInfo(var_core_value_sig492F) {
+    var var_core_value_sig8EA0, var_core_value_sigA6F6, var_core_value_sigCDDA;
+    return {
+      paragraphStartIndex: var_core_value_sig492F.paragraph["startIndex"],
+      listId: ((var_core_value_sig8EA0 = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sig8EA0.listId) ?? "",
+      listType: ((var_core_value_sigA6F6 = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sigA6F6.listType) ?? "",
+      nestingLevel: ((var_core_value_sigCDDA = var_core_value_sig492F.paragraph["bullet"]) == null ? undefined : var_core_value_sigCDDA.nestingLevel) ?? 0,
+      segmentId: var_core_value_sig492F.segmentId
+    };
+  }
+};
+P = E([T(1, n.ICommandService), T(2, (0, n.Inject)(r.DocSelectionManagerService)), T(3, (0, n.Inject)(i.DocEventManagerService)), T(4, (0, n.Inject)(i.DocCanvasPopManagerService)), T(5, o.IContextMenuService), T(6, (0, n.Inject)(N)), T(7, n.IPermissionService)], P);
+function F(var_core_value_sigB7FC) {
+  return !!(var_core_value_sigB7FC && typeof var_core_value_sigB7FC == "object" && "tableId" in var_core_value_sigB7FC);
+}
+function I(var_core_value_sig9CD9) {
+  return var_core_value_sig9CD9 !== n.PresetListType["CHECK_LIST"] && var_core_value_sig9CD9 !== n.PresetListType["CHECK_LIST_CHECKED"];
+}
+function L(var_core_value_sigFD0C, var_core_value_sig849B) {
+  let var_core_value_sig5F1A = R(var_core_value_sigFD0C.left, var_core_value_sigFD0C.top, var_core_value_sig849B),
+    var_core_value_sigB455 = R(var_core_value_sigFD0C.right, var_core_value_sigFD0C.bottom, var_core_value_sig849B);
+  return {
+    height: var_core_value_sigB455.y - var_core_value_sig5F1A.y,
+    width: var_core_value_sigB455.x - var_core_value_sig5F1A.x,
+    x: var_core_value_sig5F1A.x,
+    y: var_core_value_sig5F1A.y
+  };
+}
+function R(var_core_value_sig5241, var_core_value_sigC6E5, var_core_value_sigCEFB) {
+  let {
+      scaleX: var_core_value_sig1537,
+      scaleY: var_core_value_sigE4C6
+    } = var_core_value_sigCEFB.getAncestorScale(),
+    var_core_value_sig4313 = var_core_value_sigCEFB.getViewport("viewMain");
+  return var_core_value_sig4313 ? {
+    x: (var_core_value_sig5241 - var_core_value_sig4313.viewportScrollX) * var_core_value_sig1537,
+    y: (var_core_value_sigC6E5 - var_core_value_sig4313.viewportScrollY) * var_core_value_sigE4C6
+  } : {
+    x: var_core_value_sig5241,
+    y: var_core_value_sigC6E5
+  };
+}
+function z(var_core_value_sigFC87, var_core_value_sig156F, var_core_value_sigDD51) {
+  let {
+      scaleX: var_core_value_sigF057,
+      scaleY: var_core_value_sig72F6
+    } = var_core_value_sigDD51.getAncestorScale(),
+    var_core_value_sig9FBA = var_core_value_sigDD51.getViewport("viewMain");
+  return var_core_value_sig9FBA ? {
+    x: var_core_value_sigFC87 / var_core_value_sigF057 + var_core_value_sig9FBA.viewportScrollX,
+    y: var_core_value_sig156F / var_core_value_sig72F6 + var_core_value_sig9FBA.viewportScrollY
+  } : {
+    x: var_core_value_sigFC87,
+    y: var_core_value_sig156F
+  };
+}
+let B = class extends n.Plugin {
+  constructor(var_core_value_sigE243 = p, var_core_value_sig74A8, var_core_value_sig21B2, var_core_value_sigDE08) {
+    super(), this._config = var_core_value_sigE243, this._injector = var_core_value_sig74A8, this._renderManagerService = var_core_value_sig21B2, this._configService = var_core_value_sigDE08;
+    let {
+      menu: var_core_value_sigACCB,
+      ...var_core_value_sig7F33
+    } = (0, n.merge)({}, p, this._config);
+    var_core_value_sigACCB && this._configService["setConfig"]("menu", var_core_value_sigACCB, {
+      merge: true
+    }), this._configService["setConfig"]("docs-list-ui.config", var_core_value_sig7F33);
+  }
+  onStarting() {
+    this._injector["add"]([D]), this._injector["add"]([N]), this._injector["get"](N), this._injector["get"](D);
+  }
+  onRendered() {
+    this.disposeWithMe(this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_DOC"], [P]));
+  }
+};
+j(B, "pluginName", e.DOCS_LIST_PLUGIN + "_UI_PLUGIN"), j(B, "packageName", d), j(B, "version", f), j(B, "type", n.UniverInstanceType["UNIVER_DOC"]), B = E([(0, n.DependentOn)(t.UniverLicensePlugin, r.UniverDocsPlugin, a.UniverRenderEnginePlugin, i.UniverDocsUIPlugin, e.UniverDocsListPlugin), T(1, (0, n.Inject)(n.Injector)), T(2, a.IRenderManagerService), T(3, n.IConfigService)], B), Object.defineProperty(exports, "UniverDocsListUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return B;
+  }
+});

@@ -1,1 +1,324 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/bases"),t=require("@univerjs-pro/bases-dashboard"),n=require("@univerjs-pro/bases/facade"),r=require("@univerjs/core");var i=class{constructor(v5,v6,v7){this._unitId=v5,this._dashboardId=v6,this._context=v7;}getId(){return this._dashboardId;}getPermission(){return new n["FBaseObjectPermission"](this._unitId,(0,e.getBaseDashboardPermissionObjectId)(this._dashboardId),[],this._context["commandService"],this._context["permissionService"]);}getSnapshot(){let v8=this._context["resourceService"].getDashboard(this._unitId,this._dashboardId);if(!v8)throw Error("Dashboard\x20not\x20found:\x20"+this._dashboardId);return v8;}getName(){return this.getSnapshot().name;}getWidgets(){let v9=this.getSnapshot();return v9.widgetOrder["flatMap"](v1=>v9.widgets[v1]?[v9.widgets[v1]]:[]);}getWidgetById(v10){return this.getSnapshot().widgets[v10]??null;}setName(v11){return this._context["commandService"].syncExecuteCommand(t.UpdateBaseDashboardCommand["id"],{unitId:this._unitId,dashboard:{...this.getSnapshot(),name:v11}});}upsertWidget(v12,v13){return this._context["commandService"].syncExecuteCommand(t.UpsertBaseDashboardWidgetCommand["id"],{unitId:this._unitId,dashboardId:this._dashboardId,widget:r.Tools["deepClone"](v12),index:v13});}addPivotChart(v14,v15,v16){let v17={id:v16.id??"pivot-chart-"+(0,r.generateRandomId)(8),type:t.BaseDashboardWidgetType["PivotChart"],tableId:v14,pivotViewId:v15,layout:r.Tools["deepClone"](v16.layout),...(v16.title===undefined?null:{title:v16.title}),...(v16.chart===undefined?null:{chart:r.Tools["deepClone"](v16.chart)})};return this._addWidget(v17,v16.index);}addTableFilter(v18,v19){let v20={id:v19.id??"table-filter-"+(0,r.generateRandomId)(8),type:t.BaseDashboardWidgetType["TableFilter"],tableId:v18,filter:r.Tools["deepClone"](v19.filter??null),layout:r.Tools["deepClone"](v19.layout),...(v19.title===undefined?null:{title:v19.title})};return this._addWidget(v20,v19.index);}addText(v21){let v22={id:v21.id??"text-"+(0,r.generateRandomId)(8),type:t.BaseDashboardWidgetType["Text"],document:r.Tools["deepClone"](v21.document),layout:r.Tools["deepClone"](v21.layout),...(v21.title===undefined?null:{title:v21.title}),...(v21.appearance===undefined?null:{appearance:r.Tools["deepClone"](v21.appearance)})};return this._addWidget(v22,v21.index);}addImage(v23){let v24={id:v23.id??"image-"+(0,r.generateRandomId)(8),type:t.BaseDashboardWidgetType["Image"],source:v23.source,sourceType:v23.sourceType,displayMode:v23.displayMode??"cover",layout:r.Tools["deepClone"](v23.layout),...(v23.title===undefined?null:{title:v23.title}),...(v23.alt===undefined?null:{alt:v23.alt})};return this._addWidget(v24,v23.index);}addFormulaShape(v25,v26){let v27={id:v26.id??"formula-shape-"+(0,r.generateRandomId)(8),type:t.BaseDashboardWidgetType["FormulaShape"],tableId:v25,shapeType:v26.shapeType,shapeData:r.Tools["deepClone"](v26.shapeData),layout:r.Tools["deepClone"](v26.layout),...(v26.title===undefined?null:{title:v26.title}),...(v26.description===undefined?null:{description:v26.description}),...(v26.appearance===undefined?null:{appearance:r.Tools["deepClone"](v26.appearance)})};return this._addWidget(v27,v26.index);}moveWidget(v28,v29){let v30=this.getWidgetById(v28);return v30?this._context["commandService"].syncExecuteCommand(t.UpsertBaseDashboardWidgetCommand["id"],{unitId:this._unitId,dashboardId:this._dashboardId,widget:v30,index:v29}):false;}removeWidget(v31){return this._context["commandService"].syncExecuteCommand(t.RemoveBaseDashboardWidgetCommand["id"],{unitId:this._unitId,dashboardId:this._dashboardId,widgetId:v31});}delete(){return this._context["commandService"].syncExecuteCommand(t.DeleteBaseDashboardCommand["id"],{unitId:this._unitId,dashboardId:this._dashboardId});}_addWidget(v32,v33){if(!this._context["commandService"].syncExecuteCommand(t.UpsertBaseDashboardWidgetCommand["id"],{unitId:this._unitId,dashboardId:this._dashboardId,widget:r.Tools["deepClone"](v32),index:v33}))throw Error("Failed to add Dashboard "+v32.type+' widget "'+v32.id+'". Verify that the Dashboard and referenced Base tables or Pivot Views exist.');return r.Tools["deepClone"](v32);}};function a(v75,v76,v77,v78){let v79=(v78==null?undefined:v78.id)??"dashboard-"+(0,r.generateRandomId)(8),v80={unitId:v76,dashboard:{id:v79,name:v77,widgetOrder:[],widgets:{}},index:v78==null?undefined:v78.index};if(!v75.commandService["syncExecuteCommand"](t.CreateBaseDashboardCommand["id"],v80))throw Error("Failed to create dashboard: "+v77);return new i(v76,v79,v75);}var o=class{constructor(v34,v35,v36,v37,v38,v39){this._unitId=v34,this._tableId=v35,this._viewId=v36,this._instanceService=v37,this._commandService=v38,this._permissionService=v39;}getId(){return this._viewId;}getPermission(){return new n["FBaseObjectPermission"](this._unitId,(0,e.getBaseViewPermissionObjectId)(this._tableId,this._viewId),[(0,e.getBaseTablePermissionObjectId)(this._tableId)],this._commandService,this._permissionService);}getTableId(){return this._tableId;}getName(){return this._getView().name;}setName(v40){return this._commandService["syncExecuteCommand"](e.RenameBaseViewCommand["id"],{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId,name:v40});}getSnapshot(){return r.Tools["deepClone"](this._getView());}getConfig(){return r.Tools["deepClone"](this._getView().config);}getPivotTable(){return(0,t.createBasePivotTable)(this._getTable(),this._getView().config["pivot"]);}updateConfig(v41){return this._commandService["syncExecuteCommand"](t.UpdateBasePivotViewCommand["id"],{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId,patch:r.Tools["deepClone"](v41)});}calculate(v42=[]){return this._commandService["executeCommand"](t.CalculateBasePivotCommand["id"],{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId,filters:v42});}delete(){return this._commandService["syncExecuteCommand"](e.DeleteBaseViewCommand["id"],{unitId:this._unitId,tableId:this._tableId,viewId:this._viewId});}_getBase(){let v43=this._instanceService["getUnit"](this._unitId,r.UniverInstanceType["UNIVER_BASE"]);if(!v43)throw Error("Base not found: "+this._unitId);return v43;}_getTable(){let v44=this._getBase().getSnapshot().tables[this._tableId];if(!v44)throw Error("Table not found: "+this._tableId);return v44;}_getView(){let v45=this._getTable().views[this._viewId];if(!s(v45))throw Error("Pivot\x20View\x20not\x20found:\x20"+this._viewId);return v45;}};function s(v81){return(v81==null?undefined:v81.type)===r.BaseViewType["Pivot"]&&typeof v81.config=="object"&&v81.config!==null&&"pivot"in v81.config&&"chart"in v81.config;}const c=new WeakMap();var l=class extends n.FBase{getDashboards(){let v46=this._getDashboardFacadeContext(),v47=this.getId(),v48=v46.resourceService["getResource"](v47);return v48.dashboardOrder["flatMap"](v2=>v48.dashboards[v2]?[new i(v47,v2,v46)]:[]);}getDashboardById(v49){let v50=this._getDashboardFacadeContext(),v51=this.getId();return v50.resourceService["getDashboard"](v51,v49)?new i(v51,v49,v50):null;}createDashboard(v52,v53){return a(this._getDashboardFacadeContext(),this.getId(),v52,v53);}getPivotViews(v54){let v55=this._getDashboardFacadeContext(),v56=this.getBase().getSnapshot().tables[v54];return v56?v56.viewOrder["flatMap"](v3=>{var v4;return((v4=v56.views[v3])==null?undefined:v4.type)===r.BaseViewType["Pivot"]?[new o(this.getId(),v54,v3,v55.instanceService,v55.commandService,v55.permissionService)]:[];}):[];}getPivotView(v57,v58){var v59;let v60=this._getDashboardFacadeContext(),v61=(v59=this.getBase().getSnapshot().tables[v57])==null?undefined:v59.views[v58];return(v61==null?undefined:v61.type)===r.BaseViewType["Pivot"]?new o(this.getId(),v57,v58,v60.instanceService,v60.commandService,v60.permissionService):null;}createPivotView(v62,v63,v64){var v65,v66,v67;let v68=this._getDashboardFacadeContext(),v69=this.getBase().getSnapshot().tables[v63];if(!v69)throw Error('Cannot create Pivot View "'+v62+'": table not found: '+v63);let v70=(0,t.createDefaultBasePivotViewConfig)(v69),v71={pivot:(v64==null||(v65=v64.config)==null?undefined:v65.pivot)??v70.pivot,chart:{...v70.chart,...(v64==null||(v66=v64.config)==null?undefined:v66.chart)},displayMode:(v64==null||(v67=v64.config)==null?undefined:v67.displayMode)??v70.displayMode},v72=(v64==null?undefined:v64.id)??"pivot-"+(0,r.generateRandomId)(8),v73={id:v72,tableId:v63,name:v62,type:r.BaseViewType["Pivot"],config:v71,fieldOrder:[...v69.fieldOrder],fieldSettings:{[r.BASE_RECORD_ID_FIELD_ID]:{hidden:true}}};if(!v68.commandService["syncExecuteCommand"](e.CreateBaseViewCommand["id"],{unitId:this.getId(),tableId:v63,view:v73,index:v64==null?undefined:v64.index}))throw Error('Failed to create Pivot View "'+v62+'" in table: '+v63);return new o(this.getId(),v63,v72,v68.instanceService,v68.commandService,v68.permissionService);}_getDashboardFacadeContext(){let v74=c.get(this);return v74||(v74=this._injector["get"](t.BaseDashboardAPIContextService),c.set(this,v74)),v74;}};n.FBase["extend"](l),exports.FBaseDashboard=i,exports.FBasePivotView=o;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/bases"),
+  t = require("@univerjs-pro/bases-dashboard"),
+  n = require("@univerjs-pro/bases/facade"),
+  r = require("@univerjs/core");
+var i = class {
+  constructor(var_core_value_sigBC46, var_core_value_sig3D7D, var_core_value_sig27E5) {
+    this._unitId = var_core_value_sigBC46, this._dashboardId = var_core_value_sig3D7D, this._context = var_core_value_sig27E5;
+  }
+  getId() {
+    return this._dashboardId;
+  }
+  getPermission() {
+    return new n["FBaseObjectPermission"](this._unitId, (0, e.getBaseDashboardPermissionObjectId)(this._dashboardId), [], this._context["commandService"], this._context["permissionService"]);
+  }
+  getSnapshot() {
+    let var_core_value_sig8061 = this._context["resourceService"].getDashboard(this._unitId, this._dashboardId);
+    if (!var_core_value_sig8061) throw Error("Dashboard\x20not\x20found:\x20" + this._dashboardId);
+    return var_core_value_sig8061;
+  }
+  getName() {
+    return this.getSnapshot().name;
+  }
+  getWidgets() {
+    let var_core_value_sig4D4C = this.getSnapshot();
+    return var_core_value_sig4D4C.widgetOrder["flatMap"](var_core_value_sig7524 => var_core_value_sig4D4C.widgets[var_core_value_sig7524] ? [var_core_value_sig4D4C.widgets[var_core_value_sig7524]] : []);
+  }
+  getWidgetById(var_core_value_sigC9E0) {
+    return this.getSnapshot().widgets[var_core_value_sigC9E0] ?? null;
+  }
+  setName(var_core_value_sig76BA) {
+    return this._context["commandService"].syncExecuteCommand(t.UpdateBaseDashboardCommand["id"], {
+      unitId: this._unitId,
+      dashboard: {
+        ...this.getSnapshot(),
+        name: var_core_value_sig76BA
+      }
+    });
+  }
+  upsertWidget(var_core_value_sigFBFA, var_core_value_sigF602) {
+    return this._context["commandService"].syncExecuteCommand(t.UpsertBaseDashboardWidgetCommand["id"], {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widget: r.Tools["deepClone"](var_core_value_sigFBFA),
+      index: var_core_value_sigF602
+    });
+  }
+  addPivotChart(var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sig2BCF) {
+    let var_core_value_sig0D69 = {
+      id: var_core_value_sig2BCF.id ?? "pivot-chart-" + (0, r.generateRandomId)(8),
+      type: t.BaseDashboardWidgetType["PivotChart"],
+      tableId: var_core_value_sig1BBD,
+      pivotViewId: var_core_value_sigF704,
+      layout: r.Tools["deepClone"](var_core_value_sig2BCF.layout),
+      ...(var_core_value_sig2BCF.title === undefined ? null : {
+        title: var_core_value_sig2BCF.title
+      }),
+      ...(var_core_value_sig2BCF.chart === undefined ? null : {
+        chart: r.Tools["deepClone"](var_core_value_sig2BCF.chart)
+      })
+    };
+    return this._addWidget(var_core_value_sig0D69, var_core_value_sig2BCF.index);
+  }
+  addTableFilter(var_core_value_sig480E, var_core_value_sig26DB) {
+    let var_core_value_sigF0F9 = {
+      id: var_core_value_sig26DB.id ?? "table-filter-" + (0, r.generateRandomId)(8),
+      type: t.BaseDashboardWidgetType["TableFilter"],
+      tableId: var_core_value_sig480E,
+      filter: r.Tools["deepClone"](var_core_value_sig26DB.filter ?? null),
+      layout: r.Tools["deepClone"](var_core_value_sig26DB.layout),
+      ...(var_core_value_sig26DB.title === undefined ? null : {
+        title: var_core_value_sig26DB.title
+      })
+    };
+    return this._addWidget(var_core_value_sigF0F9, var_core_value_sig26DB.index);
+  }
+  addText(var_core_value_sig1A0F) {
+    let var_core_value_sigFBA4 = {
+      id: var_core_value_sig1A0F.id ?? "text-" + (0, r.generateRandomId)(8),
+      type: t.BaseDashboardWidgetType["Text"],
+      document: r.Tools["deepClone"](var_core_value_sig1A0F.document),
+      layout: r.Tools["deepClone"](var_core_value_sig1A0F.layout),
+      ...(var_core_value_sig1A0F.title === undefined ? null : {
+        title: var_core_value_sig1A0F.title
+      }),
+      ...(var_core_value_sig1A0F.appearance === undefined ? null : {
+        appearance: r.Tools["deepClone"](var_core_value_sig1A0F.appearance)
+      })
+    };
+    return this._addWidget(var_core_value_sigFBA4, var_core_value_sig1A0F.index);
+  }
+  addImage(var_core_value_sig4383) {
+    let var_core_value_sig186C = {
+      id: var_core_value_sig4383.id ?? "image-" + (0, r.generateRandomId)(8),
+      type: t.BaseDashboardWidgetType["Image"],
+      source: var_core_value_sig4383.source,
+      sourceType: var_core_value_sig4383.sourceType,
+      displayMode: var_core_value_sig4383.displayMode ?? "cover",
+      layout: r.Tools["deepClone"](var_core_value_sig4383.layout),
+      ...(var_core_value_sig4383.title === undefined ? null : {
+        title: var_core_value_sig4383.title
+      }),
+      ...(var_core_value_sig4383.alt === undefined ? null : {
+        alt: var_core_value_sig4383.alt
+      })
+    };
+    return this._addWidget(var_core_value_sig186C, var_core_value_sig4383.index);
+  }
+  addFormulaShape(var_core_value_sigD955, var_core_value_sig48BD) {
+    let var_core_value_sig429F = {
+      id: var_core_value_sig48BD.id ?? "formula-shape-" + (0, r.generateRandomId)(8),
+      type: t.BaseDashboardWidgetType["FormulaShape"],
+      tableId: var_core_value_sigD955,
+      shapeType: var_core_value_sig48BD.shapeType,
+      shapeData: r.Tools["deepClone"](var_core_value_sig48BD.shapeData),
+      layout: r.Tools["deepClone"](var_core_value_sig48BD.layout),
+      ...(var_core_value_sig48BD.title === undefined ? null : {
+        title: var_core_value_sig48BD.title
+      }),
+      ...(var_core_value_sig48BD.description === undefined ? null : {
+        description: var_core_value_sig48BD.description
+      }),
+      ...(var_core_value_sig48BD.appearance === undefined ? null : {
+        appearance: r.Tools["deepClone"](var_core_value_sig48BD.appearance)
+      })
+    };
+    return this._addWidget(var_core_value_sig429F, var_core_value_sig48BD.index);
+  }
+  moveWidget(var_core_value_sigF62A, var_core_value_sig8178) {
+    let var_core_value_sigE9ED = this.getWidgetById(var_core_value_sigF62A);
+    return var_core_value_sigE9ED ? this._context["commandService"].syncExecuteCommand(t.UpsertBaseDashboardWidgetCommand["id"], {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widget: var_core_value_sigE9ED,
+      index: var_core_value_sig8178
+    }) : false;
+  }
+  removeWidget(var_core_value_sigB577) {
+    return this._context["commandService"].syncExecuteCommand(t.RemoveBaseDashboardWidgetCommand["id"], {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widgetId: var_core_value_sigB577
+    });
+  }
+  delete() {
+    return this._context["commandService"].syncExecuteCommand(t.DeleteBaseDashboardCommand["id"], {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId
+    });
+  }
+  _addWidget(var_core_value_sig9572, var_core_value_sigD873) {
+    if (!this._context["commandService"].syncExecuteCommand(t.UpsertBaseDashboardWidgetCommand["id"], {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widget: r.Tools["deepClone"](var_core_value_sig9572),
+      index: var_core_value_sigD873
+    })) throw Error("Failed to add Dashboard " + var_core_value_sig9572.type + ' widget "' + var_core_value_sig9572.id + '". Verify that the Dashboard and referenced Base tables or Pivot Views exist.');
+    return r.Tools["deepClone"](var_core_value_sig9572);
+  }
+};
+function a(var_core_value_sig1758, var_core_value_sig4805, var_core_value_sigE67E, var_core_value_sig2902) {
+  let var_core_value_sig9989 = (var_core_value_sig2902 == null ? undefined : var_core_value_sig2902.id) ?? "dashboard-" + (0, r.generateRandomId)(8),
+    var_core_value_sig698E = {
+      unitId: var_core_value_sig4805,
+      dashboard: {
+        id: var_core_value_sig9989,
+        name: var_core_value_sigE67E,
+        widgetOrder: [],
+        widgets: {}
+      },
+      index: var_core_value_sig2902 == null ? undefined : var_core_value_sig2902.index
+    };
+  if (!var_core_value_sig1758.commandService["syncExecuteCommand"](t.CreateBaseDashboardCommand["id"], var_core_value_sig698E)) throw Error("Failed to create dashboard: " + var_core_value_sigE67E);
+  return new i(var_core_value_sig4805, var_core_value_sig9989, var_core_value_sig1758);
+}
+var o = class {
+  constructor(var_core_value_sigA12B, var_core_value_sigF230, var_core_value_sig09B8, var_core_value_sig6F91, var_core_value_sigF9C7, var_core_value_sig8895) {
+    this._unitId = var_core_value_sigA12B, this._tableId = var_core_value_sigF230, this._viewId = var_core_value_sig09B8, this._instanceService = var_core_value_sig6F91, this._commandService = var_core_value_sigF9C7, this._permissionService = var_core_value_sig8895;
+  }
+  getId() {
+    return this._viewId;
+  }
+  getPermission() {
+    return new n["FBaseObjectPermission"](this._unitId, (0, e.getBaseViewPermissionObjectId)(this._tableId, this._viewId), [(0, e.getBaseTablePermissionObjectId)(this._tableId)], this._commandService, this._permissionService);
+  }
+  getTableId() {
+    return this._tableId;
+  }
+  getName() {
+    return this._getView().name;
+  }
+  setName(var_core_value_sigC80B) {
+    return this._commandService["syncExecuteCommand"](e.RenameBaseViewCommand["id"], {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId,
+      name: var_core_value_sigC80B
+    });
+  }
+  getSnapshot() {
+    return r.Tools["deepClone"](this._getView());
+  }
+  getConfig() {
+    return r.Tools["deepClone"](this._getView().config);
+  }
+  getPivotTable() {
+    return (0, t.createBasePivotTable)(this._getTable(), this._getView().config["pivot"]);
+  }
+  updateConfig(var_core_value_sig284F) {
+    return this._commandService["syncExecuteCommand"](t.UpdateBasePivotViewCommand["id"], {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId,
+      patch: r.Tools["deepClone"](var_core_value_sig284F)
+    });
+  }
+  calculate(var_core_value_sigE154 = []) {
+    return this._commandService["executeCommand"](t.CalculateBasePivotCommand["id"], {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId,
+      filters: var_core_value_sigE154
+    });
+  }
+  delete() {
+    return this._commandService["syncExecuteCommand"](e.DeleteBaseViewCommand["id"], {
+      unitId: this._unitId,
+      tableId: this._tableId,
+      viewId: this._viewId
+    });
+  }
+  _getBase() {
+    let var_core_value_sig4632 = this._instanceService["getUnit"](this._unitId, r.UniverInstanceType["UNIVER_BASE"]);
+    if (!var_core_value_sig4632) throw Error("Base not found: " + this._unitId);
+    return var_core_value_sig4632;
+  }
+  _getTable() {
+    let var_core_value_sig12F2 = this._getBase().getSnapshot().tables[this._tableId];
+    if (!var_core_value_sig12F2) throw Error("Table not found: " + this._tableId);
+    return var_core_value_sig12F2;
+  }
+  _getView() {
+    let var_core_value_sig2259 = this._getTable().views[this._viewId];
+    if (!s(var_core_value_sig2259)) throw Error("Pivot\x20View\x20not\x20found:\x20" + this._viewId);
+    return var_core_value_sig2259;
+  }
+};
+function s(var_core_value_sig2809) {
+  return (var_core_value_sig2809 == null ? undefined : var_core_value_sig2809.type) === r.BaseViewType["Pivot"] && typeof var_core_value_sig2809.config == "object" && var_core_value_sig2809.config !== null && "pivot" in var_core_value_sig2809.config && "chart" in var_core_value_sig2809.config;
+}
+const c = new WeakMap();
+var l = class extends n.FBase {
+  getDashboards() {
+    let var_core_value_sig9E2F = this._getDashboardFacadeContext(),
+      var_core_value_sigD082 = this.getId(),
+      var_core_value_sigDBB7 = var_core_value_sig9E2F.resourceService["getResource"](var_core_value_sigD082);
+    return var_core_value_sigDBB7.dashboardOrder["flatMap"](var_core_value_sig2AD8 => var_core_value_sigDBB7.dashboards[var_core_value_sig2AD8] ? [new i(var_core_value_sigD082, var_core_value_sig2AD8, var_core_value_sig9E2F)] : []);
+  }
+  getDashboardById(var_core_value_sigD0A8) {
+    let var_core_value_sigF4B9 = this._getDashboardFacadeContext(),
+      var_core_value_sig5CEE = this.getId();
+    return var_core_value_sigF4B9.resourceService["getDashboard"](var_core_value_sig5CEE, var_core_value_sigD0A8) ? new i(var_core_value_sig5CEE, var_core_value_sigD0A8, var_core_value_sigF4B9) : null;
+  }
+  createDashboard(var_core_value_sigE92A, var_core_value_sig362B) {
+    return a(this._getDashboardFacadeContext(), this.getId(), var_core_value_sigE92A, var_core_value_sig362B);
+  }
+  getPivotViews(var_core_value_sig5CA5) {
+    let var_core_value_sigE90F = this._getDashboardFacadeContext(),
+      var_core_value_sigEFD4 = this.getBase().getSnapshot().tables[var_core_value_sig5CA5];
+    return var_core_value_sigEFD4 ? var_core_value_sigEFD4.viewOrder["flatMap"](var_core_value_sig2AD0 => {
+      var var_core_value_sig3EEE;
+      return ((var_core_value_sig3EEE = var_core_value_sigEFD4.views[var_core_value_sig2AD0]) == null ? undefined : var_core_value_sig3EEE.type) === r.BaseViewType["Pivot"] ? [new o(this.getId(), var_core_value_sig5CA5, var_core_value_sig2AD0, var_core_value_sigE90F.instanceService, var_core_value_sigE90F.commandService, var_core_value_sigE90F.permissionService)] : [];
+    }) : [];
+  }
+  getPivotView(var_core_value_sig861B, var_core_value_sig5237) {
+    var var_core_value_sigBB00;
+    let var_core_value_sig7E54 = this._getDashboardFacadeContext(),
+      var_core_value_sig9A8D = (var_core_value_sigBB00 = this.getBase().getSnapshot().tables[var_core_value_sig861B]) == null ? undefined : var_core_value_sigBB00.views[var_core_value_sig5237];
+    return (var_core_value_sig9A8D == null ? undefined : var_core_value_sig9A8D.type) === r.BaseViewType["Pivot"] ? new o(this.getId(), var_core_value_sig861B, var_core_value_sig5237, var_core_value_sig7E54.instanceService, var_core_value_sig7E54.commandService, var_core_value_sig7E54.permissionService) : null;
+  }
+  createPivotView(var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA) {
+    var var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sig48CA;
+    let var_core_value_sig50AF = this._getDashboardFacadeContext(),
+      var_core_value_sigA942 = this.getBase().getSnapshot().tables[var_core_value_sig9C9F];
+    if (!var_core_value_sigA942) throw Error('Cannot create Pivot View "' + var_core_value_sigC259 + '": table not found: ' + var_core_value_sig9C9F);
+    let var_core_value_sigA621 = (0, t.createDefaultBasePivotViewConfig)(var_core_value_sigA942),
+      var_core_value_sigBBFF = {
+        pivot: (var_core_value_sigFDEA == null || (var_core_value_sig86D0 = var_core_value_sigFDEA.config) == null ? undefined : var_core_value_sig86D0.pivot) ?? var_core_value_sigA621.pivot,
+        chart: {
+          ...var_core_value_sigA621.chart,
+          ...(var_core_value_sigFDEA == null || (var_core_value_sig4CD2 = var_core_value_sigFDEA.config) == null ? undefined : var_core_value_sig4CD2.chart)
+        },
+        displayMode: (var_core_value_sigFDEA == null || (var_core_value_sig48CA = var_core_value_sigFDEA.config) == null ? undefined : var_core_value_sig48CA.displayMode) ?? var_core_value_sigA621.displayMode
+      },
+      var_core_value_sig8889 = (var_core_value_sigFDEA == null ? undefined : var_core_value_sigFDEA.id) ?? "pivot-" + (0, r.generateRandomId)(8),
+      var_core_value_sig32F8 = {
+        id: var_core_value_sig8889,
+        tableId: var_core_value_sig9C9F,
+        name: var_core_value_sigC259,
+        type: r.BaseViewType["Pivot"],
+        config: var_core_value_sigBBFF,
+        fieldOrder: [...var_core_value_sigA942.fieldOrder],
+        fieldSettings: {
+          [r.BASE_RECORD_ID_FIELD_ID]: {
+            hidden: true
+          }
+        }
+      };
+    if (!var_core_value_sig50AF.commandService["syncExecuteCommand"](e.CreateBaseViewCommand["id"], {
+      unitId: this.getId(),
+      tableId: var_core_value_sig9C9F,
+      view: var_core_value_sig32F8,
+      index: var_core_value_sigFDEA == null ? undefined : var_core_value_sigFDEA.index
+    })) throw Error('Failed to create Pivot View "' + var_core_value_sigC259 + '" in table: ' + var_core_value_sig9C9F);
+    return new o(this.getId(), var_core_value_sig9C9F, var_core_value_sig8889, var_core_value_sig50AF.instanceService, var_core_value_sig50AF.commandService, var_core_value_sig50AF.permissionService);
+  }
+  _getDashboardFacadeContext() {
+    let var_core_value_sig5B67 = c.get(this);
+    return var_core_value_sig5B67 || (var_core_value_sig5B67 = this._injector["get"](t.BaseDashboardAPIContextService), c.set(this, var_core_value_sig5B67)), var_core_value_sig5B67;
+  }
+};
+n.FBase["extend"](l), exports.FBaseDashboard = i, exports.FBasePivotView = o;

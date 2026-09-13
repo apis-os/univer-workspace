@@ -1,1 +1,305 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/docs-latex"),t=require("@univerjs/core"),n=require("@univerjs/docs/facade");function r(v100){"@babel/helpers - typeof";return r=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v9){return typeof v9;}:function(v10){return v10&&typeof Symbol=="function"&&v10.constructor===Symbol&&v10!==Symbol.prototype?"symbol":typeof v10;},r(v100);}function i(v101,v102){if(r(v101)!="object"||!v101)return v101;var v103=v101[Symbol.toPrimitive];if(v103!==undefined){var v104=v103.call(v101,v102||"default");if(r(v104)!="object")return v104;throw TypeError("@@toPrimitive must return a primitive value.");}return(v102==="string"?String:Number)(v101);}function a(v105){var v106=i(v105,"string");return r(v106)=="symbol"?v106:v106+"";}function o(v107,v108,v109){return(v108=a(v108))in v107?Object.defineProperty(v107,v108,{value:v109,enumerable:true,configurable:true,writable:true}):v107[v108]=v109,v107;}function s(v110,v111){return function(v11,v12){v111(v11,v12,v110);};}function c(v112,v113,v114,v115){var v116=arguments.length,v117=v116<3?v113:v115===null?v115=Object.getOwnPropertyDescriptor(v113,v114):v115,v118;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v117=Reflect.decorate(v112,v113,v114,v115);else{for(var v119=v112.length-1;v119>=0;v119--)(v118=v112[v119])&&(v117=(v116<3?v118(v117):v116>3?v118(v113,v114,v117):v118(v113,v114))||v117);}return v116>3&&v117&&Object.defineProperty(v113,v114,v117),v117;}let l=class{constructor(v13,v14,v15,v16,v17){this._document=v13,this._rangeId=v14,this._segmentId=v15,this._commandService=v16,this._model=v17,o(this,"_unitId",undefined),this._unitId=this._document["getId"]();}getId(){return this._rangeId;}getRange(){let v18=this._getCustomRange();return v18?{endOffset:v18.endIndex+1,rangeId:v18.rangeId,segmentId:this._segmentId,startOffset:v18.startIndex}:null;}getLatex(){let v19=this._getCustomRange(),v20=this._getBody().dataStream;return v19?(0,e.getFormulaLatexFromRange)(v19,v20):"";}getConfig(){return{...(0,e.normalizeDocsLatexFormulaConfig)(this._model["getFormula"](this._unitId,this._rangeId)),latex:this.getLatex()};}describe(){let v21=this.getRange();if(!v21)return null;let v22=this._getContainingParagraph(),v23=this._getBody(),v24=v22?(0,t.getParagraphContentStartOffset)(v23,v22):v21.startOffset,v25=(v22==null?undefined:v22.startIndex)??v21.endOffset;return{...v21,config:this.getConfig(),context:{after:v23.dataStream["slice"](v21.endOffset,v25),before:v23.dataStream["slice"](v24,v21.startOffset)},latex:this.getLatex(),paragraphId:(v22==null?undefined:v22.paragraphId)??null,type:"latex"};}update(v26){return this._commandService["syncExecuteCommand"](e.UpdateDocsLatexFormulaCommand["id"],{latex:v26.latex,properties:v26.properties,rangeId:this._rangeId,segmentId:this._segmentId,unitId:this._unitId});}remove(){return this._commandService["syncExecuteCommand"](e.RemoveDocsLatexFormulaCommand["id"],{rangeId:this._rangeId,segmentId:this._segmentId,unitId:this._unitId});}replaceWithText(v27){return this._commandService["syncExecuteCommand"](e.ReplaceDocsLatexFormulaWithTextCommand["id"],{rangeId:this._rangeId,segmentId:this._segmentId,text:v27,unitId:this._unitId});}_getBody(){return this._document["getBody"](this._segmentId);}_getCustomRange(){var v28;return(v28=this._getBody().customRanges)==null?undefined:v28.find(v1=>v1.rangeId===this._rangeId&&(0,e.isDocsLatexFormulaRange)(v1));}_getContainingParagraph(){var v29;let v30=this._getCustomRange();if(!v30)return;let v31=this._getBody();return(v29=v31.paragraphs)==null?undefined:v29.find(v2=>(0,t.getParagraphContentStartOffset)(v31,v2)<=v30.startIndex&&v30.endIndex<v2.startIndex);}};l=c([s(3,t.ICommandService),s(4,(0,t.Inject)(e.DocsLatexModel))],l);var u=class extends n.FDocument{constructor(...v32){super(...v32),o(this,"_docsLatexCommandService",undefined);}_initialize(v33){this._docsLatexCommandService=v33.get(t.ICommandService);}getLatexFormulas(v34=""){return this._getLatexRanges(v34).map(v3=>this._createFDocumentLatex(v3.rangeId,v34));}getLatexFormula(v35,v36=""){return this._getLatexRanges(v36).some(v4=>v4.rangeId===v35)?this._createFDocumentLatex(v35,v36):null;}getLatexFormulaAt(v37,v38=""){let v39=this._getLatexRanges(v38).find(v5=>v5.startIndex<=v37&&v37<=v5.endIndex);return v39?this._createFDocumentLatex(v39.rangeId,v38):null;}findLatexFormulaByText(v40,v41=""){let v42=this._getLatexRanges(v41).find(v6=>this._getLatexFromRange(v6,v41).includes(v40));return v42?this._createFDocumentLatex(v42.rangeId,v41):null;}findLatexFormulas(v43,v44=""){let v45=typeof v43=="string"?{latex:v43}:v43;return this._getLatexRanges(v44).filter(v7=>!(v45.rangeId&&v7.rangeId!==v45.rangeId||v45.latex&&!this._getLatexFromRange(v7,v44).includes(v45.latex))).map(v8=>this._createFDocumentLatex(v8.rangeId,v44));}insertLatexAtOffset(v46,v47,v48={}){return this._insertLatexFormula({endOffset:v46,latex:v47,properties:v48.properties,segmentId:v48.segmentId,startOffset:v46,unitId:this.getId()});}insertLatexAtSelection(v49,v50={}){return this._insertLatexFormula({latex:v49,properties:v50.properties,unitId:this.getId()});}_insertLatexFormula(v51){let v52=this._docsLatexCommandService["syncExecuteCommand"](e.InsertDocsLatexFormulaCommand["id"],v51);return v52?this._createFDocumentLatex(v52.rangeId,v52.segmentId):null;}_getLatexRanges(v53){var v54;return((v54=this.getBody(v53).customRanges)==null?undefined:v54.filter(e.isDocsLatexFormulaRange))??[];}_createFDocumentLatex(v55,v56){return this._injector["createInstance"](l,this,v55,v56);}_getLatexFromRange(v57,v58){return(0,e.getFormulaLatexFromRange)(v57,this.getBody(v58).dataStream);}};n.FDocument["extend"](u);var d=class extends n.FDocumentParagraph{constructor(...v59){super(...v59),o(this,"_docsLatexCommandService",undefined);}_initialize(v60){this._docsLatexCommandService=v60.get(t.ICommandService);}appendLatex(v61,v62={}){let{endOffset:v63}=this.getInfo();return this._insertLatex(v63,v61,v62);}prependLatex(v64,v65={}){let{startOffset:v66}=this.getInfo();return this._insertLatex(v66,v64,v65);}_insertLatex(v67,v68,v69){let v70=this.getSegmentId(),v71={endOffset:v67,latex:v68,properties:v69.properties,segmentId:v70,startOffset:v67,unitId:this._document["getId"]()},v72=this._docsLatexCommandService["syncExecuteCommand"](e.InsertDocsLatexFormulaCommand["id"],v71);return v72?this._injector["createInstance"](l,this._document,v72.rangeId,v72.segmentId):null;}};n.FDocumentParagraph["extend"](d);var f=class extends n.FDocumentTextRange{constructor(...v73){super(...v73),o(this,"_docsLatexCommandService",undefined);}_initialize(v74){this._docsLatexCommandService=v74.get(t.ICommandService);}replaceWithLatex(v75,v76={}){let{endOffset:v77,segmentId:v79="",startOffset:v78}=this.getRange();return this._insertLatex(v78,v77,v79,v75,v76);}insertLatexBefore(v80,v81={}){let{segmentId:v83="",startOffset:v82}=this.getRange();return this._insertLatex(v82,v82,v83,v80,v81);}insertLatexAfter(v84,v85={}){let{endOffset:v86,segmentId:v87=""}=this.getRange();return this._insertLatex(v86,v86,v87,v84,v85);}_insertLatex(v88,v89,v90,v91,v92){let v93={endOffset:v89,latex:v91,properties:v92.properties,segmentId:v90,startOffset:v88,unitId:this._document["getId"]()},v94=this._docsLatexCommandService["syncExecuteCommand"](e.InsertDocsLatexFormulaCommand["id"],v93);return v94?this._injector["createInstance"](l,this._document,v94.rangeId,v94.segmentId):null;}};n.FDocumentTextRange["extend"](f);var p=class extends t.RichTextBuilder{latex(v95,v96={}){var v97;let v98=v95.trim();if(!v98)return this;let v99=((v97=v96.rangeId)==null?undefined:v97.trim())||(0,t.generateRandomId)();return this.insertRichText(t.RichTextValue["create"]({id:"d",documentStyle:{},body:{dataStream:v98,customRanges:[{startIndex:0,endIndex:v98.length-1,rangeId:v99,rangeType:t.CustomRangeType["CUSTOM"],wholeEntity:true,properties:{kind:e.DOCS_LATEX_CUSTOM_RANGE_KIND}}]}}));}};t.RichTextBuilder["extend"](p),Object.defineProperty(exports,"FDocumentLatex",{enumerable:true,get:function(){return l;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/docs-latex"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs/docs/facade");
+function r(var_core_value_sigCE71) {
+  "@babel/helpers - typeof";
+
+  return r = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig4D4C) {
+    return typeof var_core_value_sig4D4C;
+  } : function (var_core_value_sigC9E0) {
+    return var_core_value_sigC9E0 && typeof Symbol == "function" && var_core_value_sigC9E0.constructor === Symbol && var_core_value_sigC9E0 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigC9E0;
+  }, r(var_core_value_sigCE71);
+}
+function i(var_core_value_sig21D8, var_core_value_sig2B65) {
+  if (r(var_core_value_sig21D8) != "object" || !var_core_value_sig21D8) return var_core_value_sig21D8;
+  var var_core_value_sigD7EA = var_core_value_sig21D8[Symbol.toPrimitive];
+  if (var_core_value_sigD7EA !== undefined) {
+    var var_core_value_sigB33B = var_core_value_sigD7EA.call(var_core_value_sig21D8, var_core_value_sig2B65 || "default");
+    if (r(var_core_value_sigB33B) != "object") return var_core_value_sigB33B;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig2B65 === "string" ? String : Number)(var_core_value_sig21D8);
+}
+function a(var_core_value_sig24B9) {
+  var var_core_value_sigE627 = i(var_core_value_sig24B9, "string");
+  return r(var_core_value_sigE627) == "symbol" ? var_core_value_sigE627 : var_core_value_sigE627 + "";
+}
+function o(var_core_value_sigEF3E, var_core_value_sig273D, var_core_value_sig9A0D) {
+  return (var_core_value_sig273D = a(var_core_value_sig273D)) in var_core_value_sigEF3E ? Object.defineProperty(var_core_value_sigEF3E, var_core_value_sig273D, {
+    value: var_core_value_sig9A0D,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigEF3E[var_core_value_sig273D] = var_core_value_sig9A0D, var_core_value_sigEF3E;
+}
+function s(var_core_value_sigA319, var_core_value_sig2D58) {
+  return function (var_core_value_sig76BA, var_core_value_sigFBFA) {
+    var_core_value_sig2D58(var_core_value_sig76BA, var_core_value_sigFBFA, var_core_value_sigA319);
+  };
+}
+function c(var_core_value_sig223F, var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sig58C1) {
+  var var_core_value_sig5090 = arguments.length,
+    var_core_value_sigC368 = var_core_value_sig5090 < 3 ? var_core_value_sigD749 : var_core_value_sig58C1 === null ? var_core_value_sig58C1 = Object.getOwnPropertyDescriptor(var_core_value_sigD749, var_core_value_sigCFFA) : var_core_value_sig58C1,
+    var_core_value_sigAD56;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigC368 = Reflect.decorate(var_core_value_sig223F, var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sig58C1);else {
+    for (var var_core_value_sigDB4A = var_core_value_sig223F.length - 1; var_core_value_sigDB4A >= 0; var_core_value_sigDB4A--) (var_core_value_sigAD56 = var_core_value_sig223F[var_core_value_sigDB4A]) && (var_core_value_sigC368 = (var_core_value_sig5090 < 3 ? var_core_value_sigAD56(var_core_value_sigC368) : var_core_value_sig5090 > 3 ? var_core_value_sigAD56(var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sigC368) : var_core_value_sigAD56(var_core_value_sigD749, var_core_value_sigCFFA)) || var_core_value_sigC368);
+  }
+  return var_core_value_sig5090 > 3 && var_core_value_sigC368 && Object.defineProperty(var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sigC368), var_core_value_sigC368;
+}
+let l = class {
+  constructor(var_core_value_sigF602, var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sig2BCF, var_core_value_sig0D69) {
+    this._document = var_core_value_sigF602, this._rangeId = var_core_value_sig1BBD, this._segmentId = var_core_value_sigF704, this._commandService = var_core_value_sig2BCF, this._model = var_core_value_sig0D69, o(this, "_unitId", undefined), this._unitId = this._document["getId"]();
+  }
+  getId() {
+    return this._rangeId;
+  }
+  getRange() {
+    let var_core_value_sig480E = this._getCustomRange();
+    return var_core_value_sig480E ? {
+      endOffset: var_core_value_sig480E.endIndex + 1,
+      rangeId: var_core_value_sig480E.rangeId,
+      segmentId: this._segmentId,
+      startOffset: var_core_value_sig480E.startIndex
+    } : null;
+  }
+  getLatex() {
+    let var_core_value_sig26DB = this._getCustomRange(),
+      var_core_value_sigF0F9 = this._getBody().dataStream;
+    return var_core_value_sig26DB ? (0, e.getFormulaLatexFromRange)(var_core_value_sig26DB, var_core_value_sigF0F9) : "";
+  }
+  getConfig() {
+    return {
+      ...(0, e.normalizeDocsLatexFormulaConfig)(this._model["getFormula"](this._unitId, this._rangeId)),
+      latex: this.getLatex()
+    };
+  }
+  describe() {
+    let var_core_value_sig1A0F = this.getRange();
+    if (!var_core_value_sig1A0F) return null;
+    let var_core_value_sigFBA4 = this._getContainingParagraph(),
+      var_core_value_sig4383 = this._getBody(),
+      var_core_value_sig186C = var_core_value_sigFBA4 ? (0, t.getParagraphContentStartOffset)(var_core_value_sig4383, var_core_value_sigFBA4) : var_core_value_sig1A0F.startOffset,
+      var_core_value_sigD955 = (var_core_value_sigFBA4 == null ? undefined : var_core_value_sigFBA4.startIndex) ?? var_core_value_sig1A0F.endOffset;
+    return {
+      ...var_core_value_sig1A0F,
+      config: this.getConfig(),
+      context: {
+        after: var_core_value_sig4383.dataStream["slice"](var_core_value_sig1A0F.endOffset, var_core_value_sigD955),
+        before: var_core_value_sig4383.dataStream["slice"](var_core_value_sig186C, var_core_value_sig1A0F.startOffset)
+      },
+      latex: this.getLatex(),
+      paragraphId: (var_core_value_sigFBA4 == null ? undefined : var_core_value_sigFBA4.paragraphId) ?? null,
+      type: "latex"
+    };
+  }
+  update(var_core_value_sig48BD) {
+    return this._commandService["syncExecuteCommand"](e.UpdateDocsLatexFormulaCommand["id"], {
+      latex: var_core_value_sig48BD.latex,
+      properties: var_core_value_sig48BD.properties,
+      rangeId: this._rangeId,
+      segmentId: this._segmentId,
+      unitId: this._unitId
+    });
+  }
+  remove() {
+    return this._commandService["syncExecuteCommand"](e.RemoveDocsLatexFormulaCommand["id"], {
+      rangeId: this._rangeId,
+      segmentId: this._segmentId,
+      unitId: this._unitId
+    });
+  }
+  replaceWithText(var_core_value_sig429F) {
+    return this._commandService["syncExecuteCommand"](e.ReplaceDocsLatexFormulaWithTextCommand["id"], {
+      rangeId: this._rangeId,
+      segmentId: this._segmentId,
+      text: var_core_value_sig429F,
+      unitId: this._unitId
+    });
+  }
+  _getBody() {
+    return this._document["getBody"](this._segmentId);
+  }
+  _getCustomRange() {
+    var var_core_value_sigF62A;
+    return (var_core_value_sigF62A = this._getBody().customRanges) == null ? undefined : var_core_value_sigF62A.find(var_core_value_sig7524 => var_core_value_sig7524.rangeId === this._rangeId && (0, e.isDocsLatexFormulaRange)(var_core_value_sig7524));
+  }
+  _getContainingParagraph() {
+    var var_core_value_sig8178;
+    let var_core_value_sigE9ED = this._getCustomRange();
+    if (!var_core_value_sigE9ED) return;
+    let var_core_value_sigB577 = this._getBody();
+    return (var_core_value_sig8178 = var_core_value_sigB577.paragraphs) == null ? undefined : var_core_value_sig8178.find(var_core_value_sig2AD8 => (0, t.getParagraphContentStartOffset)(var_core_value_sigB577, var_core_value_sig2AD8) <= var_core_value_sigE9ED.startIndex && var_core_value_sigE9ED.endIndex < var_core_value_sig2AD8.startIndex);
+  }
+};
+l = c([s(3, t.ICommandService), s(4, (0, t.Inject)(e.DocsLatexModel))], l);
+var u = class extends n.FDocument {
+  constructor(...var_core_value_sig9572) {
+    super(...var_core_value_sig9572), o(this, "_docsLatexCommandService", undefined);
+  }
+  _initialize(var_core_value_sigD873) {
+    this._docsLatexCommandService = var_core_value_sigD873.get(t.ICommandService);
+  }
+  getLatexFormulas(var_core_value_sigA12B = "") {
+    return this._getLatexRanges(var_core_value_sigA12B).map(var_core_value_sig2AD0 => this._createFDocumentLatex(var_core_value_sig2AD0.rangeId, var_core_value_sigA12B));
+  }
+  getLatexFormula(var_core_value_sigF230, var_core_value_sig09B8 = "") {
+    return this._getLatexRanges(var_core_value_sig09B8).some(var_core_value_sig3EEE => var_core_value_sig3EEE.rangeId === var_core_value_sigF230) ? this._createFDocumentLatex(var_core_value_sigF230, var_core_value_sig09B8) : null;
+  }
+  getLatexFormulaAt(var_core_value_sig6F91, var_core_value_sigF9C7 = "") {
+    let var_core_value_sig8895 = this._getLatexRanges(var_core_value_sigF9C7).find(var_core_value_sigBC46 => var_core_value_sigBC46.startIndex <= var_core_value_sig6F91 && var_core_value_sig6F91 <= var_core_value_sigBC46.endIndex);
+    return var_core_value_sig8895 ? this._createFDocumentLatex(var_core_value_sig8895.rangeId, var_core_value_sigF9C7) : null;
+  }
+  findLatexFormulaByText(var_core_value_sigC80B, var_core_value_sig284F = "") {
+    let var_core_value_sigE154 = this._getLatexRanges(var_core_value_sig284F).find(var_core_value_sig3D7D => this._getLatexFromRange(var_core_value_sig3D7D, var_core_value_sig284F).includes(var_core_value_sigC80B));
+    return var_core_value_sigE154 ? this._createFDocumentLatex(var_core_value_sigE154.rangeId, var_core_value_sig284F) : null;
+  }
+  findLatexFormulas(var_core_value_sig4632, var_core_value_sig12F2 = "") {
+    let var_core_value_sig2259 = typeof var_core_value_sig4632 == "string" ? {
+      latex: var_core_value_sig4632
+    } : var_core_value_sig4632;
+    return this._getLatexRanges(var_core_value_sig12F2).filter(var_core_value_sig27E5 => !(var_core_value_sig2259.rangeId && var_core_value_sig27E5.rangeId !== var_core_value_sig2259.rangeId || var_core_value_sig2259.latex && !this._getLatexFromRange(var_core_value_sig27E5, var_core_value_sig12F2).includes(var_core_value_sig2259.latex))).map(var_core_value_sig8061 => this._createFDocumentLatex(var_core_value_sig8061.rangeId, var_core_value_sig12F2));
+  }
+  insertLatexAtOffset(var_core_value_sig9E2F, var_core_value_sigD082, var_core_value_sigDBB7 = {}) {
+    return this._insertLatexFormula({
+      endOffset: var_core_value_sig9E2F,
+      latex: var_core_value_sigD082,
+      properties: var_core_value_sigDBB7.properties,
+      segmentId: var_core_value_sigDBB7.segmentId,
+      startOffset: var_core_value_sig9E2F,
+      unitId: this.getId()
+    });
+  }
+  insertLatexAtSelection(var_core_value_sigD0A8, var_core_value_sigF4B9 = {}) {
+    return this._insertLatexFormula({
+      latex: var_core_value_sigD0A8,
+      properties: var_core_value_sigF4B9.properties,
+      unitId: this.getId()
+    });
+  }
+  _insertLatexFormula(var_core_value_sig5CEE) {
+    let var_core_value_sigE92A = this._docsLatexCommandService["syncExecuteCommand"](e.InsertDocsLatexFormulaCommand["id"], var_core_value_sig5CEE);
+    return var_core_value_sigE92A ? this._createFDocumentLatex(var_core_value_sigE92A.rangeId, var_core_value_sigE92A.segmentId) : null;
+  }
+  _getLatexRanges(var_core_value_sig362B) {
+    var var_core_value_sig5CA5;
+    return ((var_core_value_sig5CA5 = this.getBody(var_core_value_sig362B).customRanges) == null ? undefined : var_core_value_sig5CA5.filter(e.isDocsLatexFormulaRange)) ?? [];
+  }
+  _createFDocumentLatex(var_core_value_sigE90F, var_core_value_sigEFD4) {
+    return this._injector["createInstance"](l, this, var_core_value_sigE90F, var_core_value_sigEFD4);
+  }
+  _getLatexFromRange(var_core_value_sig861B, var_core_value_sig5237) {
+    return (0, e.getFormulaLatexFromRange)(var_core_value_sig861B, this.getBody(var_core_value_sig5237).dataStream);
+  }
+};
+n.FDocument["extend"](u);
+var d = class extends n.FDocumentParagraph {
+  constructor(...var_core_value_sigBB00) {
+    super(...var_core_value_sigBB00), o(this, "_docsLatexCommandService", undefined);
+  }
+  _initialize(var_core_value_sig7E54) {
+    this._docsLatexCommandService = var_core_value_sig7E54.get(t.ICommandService);
+  }
+  appendLatex(var_core_value_sig9A8D, var_core_value_sigC259 = {}) {
+    let {
+      endOffset: var_core_value_sig9C9F
+    } = this.getInfo();
+    return this._insertLatex(var_core_value_sig9C9F, var_core_value_sig9A8D, var_core_value_sigC259);
+  }
+  prependLatex(var_core_value_sigFDEA, var_core_value_sig86D0 = {}) {
+    let {
+      startOffset: var_core_value_sig4CD2
+    } = this.getInfo();
+    return this._insertLatex(var_core_value_sig4CD2, var_core_value_sigFDEA, var_core_value_sig86D0);
+  }
+  _insertLatex(var_core_value_sig48CA, var_core_value_sig50AF, var_core_value_sigA942) {
+    let var_core_value_sigA621 = this.getSegmentId(),
+      var_core_value_sigBBFF = {
+        endOffset: var_core_value_sig48CA,
+        latex: var_core_value_sig50AF,
+        properties: var_core_value_sigA942.properties,
+        segmentId: var_core_value_sigA621,
+        startOffset: var_core_value_sig48CA,
+        unitId: this._document["getId"]()
+      },
+      var_core_value_sig8889 = this._docsLatexCommandService["syncExecuteCommand"](e.InsertDocsLatexFormulaCommand["id"], var_core_value_sigBBFF);
+    return var_core_value_sig8889 ? this._injector["createInstance"](l, this._document, var_core_value_sig8889.rangeId, var_core_value_sig8889.segmentId) : null;
+  }
+};
+n.FDocumentParagraph["extend"](d);
+var f = class extends n.FDocumentTextRange {
+  constructor(...var_core_value_sig32F8) {
+    super(...var_core_value_sig32F8), o(this, "_docsLatexCommandService", undefined);
+  }
+  _initialize(var_core_value_sig5B67) {
+    this._docsLatexCommandService = var_core_value_sig5B67.get(t.ICommandService);
+  }
+  replaceWithLatex(var_core_value_sig1758, var_core_value_sig4805 = {}) {
+    let {
+      endOffset: var_core_value_sigE67E,
+      segmentId: var_core_value_sig9989 = "",
+      startOffset: var_core_value_sig2902
+    } = this.getRange();
+    return this._insertLatex(var_core_value_sig2902, var_core_value_sigE67E, var_core_value_sig9989, var_core_value_sig1758, var_core_value_sig4805);
+  }
+  insertLatexBefore(var_core_value_sig698E, var_core_value_sig2809 = {}) {
+    let {
+      segmentId: var_core_value_sig877E = "",
+      startOffset: var_core_value_sig2DAB
+    } = this.getRange();
+    return this._insertLatex(var_core_value_sig2DAB, var_core_value_sig2DAB, var_core_value_sig877E, var_core_value_sig698E, var_core_value_sig2809);
+  }
+  insertLatexAfter(var_core_value_sig20C8, var_core_value_sigE9A7 = {}) {
+    let {
+      endOffset: var_core_value_sigBECE,
+      segmentId: var_core_value_sig1B22 = ""
+    } = this.getRange();
+    return this._insertLatex(var_core_value_sigBECE, var_core_value_sigBECE, var_core_value_sig1B22, var_core_value_sig20C8, var_core_value_sigE9A7);
+  }
+  _insertLatex(var_core_value_sig7F72, var_core_value_sig7B2A, var_core_value_sig06CD, var_core_value_sigA5F1, var_core_value_sig97A2) {
+    let var_core_value_sig07E9 = {
+        endOffset: var_core_value_sig7B2A,
+        latex: var_core_value_sigA5F1,
+        properties: var_core_value_sig97A2.properties,
+        segmentId: var_core_value_sig06CD,
+        startOffset: var_core_value_sig7F72,
+        unitId: this._document["getId"]()
+      },
+      var_core_value_sig4F59 = this._docsLatexCommandService["syncExecuteCommand"](e.InsertDocsLatexFormulaCommand["id"], var_core_value_sig07E9);
+    return var_core_value_sig4F59 ? this._injector["createInstance"](l, this._document, var_core_value_sig4F59.rangeId, var_core_value_sig4F59.segmentId) : null;
+  }
+};
+n.FDocumentTextRange["extend"](f);
+var p = class extends t.RichTextBuilder {
+  latex(var_core_value_sigF564, var_core_value_sig8CFA = {}) {
+    var var_core_value_sig2E11;
+    let var_core_value_sig5B69 = var_core_value_sigF564.trim();
+    if (!var_core_value_sig5B69) return this;
+    let var_core_value_sigB098 = ((var_core_value_sig2E11 = var_core_value_sig8CFA.rangeId) == null ? undefined : var_core_value_sig2E11.trim()) || (0, t.generateRandomId)();
+    return this.insertRichText(t.RichTextValue["create"]({
+      id: "d",
+      documentStyle: {},
+      body: {
+        dataStream: var_core_value_sig5B69,
+        customRanges: [{
+          startIndex: 0,
+          endIndex: var_core_value_sig5B69.length - 1,
+          rangeId: var_core_value_sigB098,
+          rangeType: t.CustomRangeType["CUSTOM"],
+          wholeEntity: true,
+          properties: {
+            kind: e.DOCS_LATEX_CUSTOM_RANGE_KIND
+          }
+        }]
+      }
+    }));
+  }
+};
+t.RichTextBuilder["extend"](p), Object.defineProperty(exports, "FDocumentLatex", {
+  enumerable: true,
+  get: function () {
+    return l;
+  }
+});

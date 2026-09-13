@@ -1,1 +1,156 @@
-let e=require("@univerjs-pro/sheets-print"),t=require("@univerjs/core"),n=require("@univerjs/sheets/facade"),r=require("@univerjs/core/facade"),i=require("@univerjs-pro/print");var a=class extends n.FWorkbook{updatePrintConfig(v19){return this._injector["get"](e.ISheetPrintManagerService).updateLayoutConfig(v19),this;}updatePrintRenderConfig(v20){return this._injector["get"](e.ISheetPrintManagerService).updateRenderConfig(v20),this;}print(){return this._injector["get"](t.ICommandService).syncExecuteCommand(e.ConfirmSheetPrintOperation["id"]);}openPrintDialog(){return this._injector["get"](t.ICommandService).syncExecuteCommand(e.SheetPrintOpenOperation["id"]);}closePrintDialog(){return this._injector["get"](t.ICommandService).syncExecuteCommand(e.CancelSheetPrintOperation["id"]);}async saveScreenshotToClipboard(){return(0,e.hasPrintFacadePermission)(this._injector)?this._injector["get"](t.ICommandService).executeCommand(e.SheetScreenShotOperation["id"]):false;}};n.FWorkbook["extend"](a);var o=class extends n.FRange{getScreenshot(v21){return(0,e.hasPrintFacadePermission)(this._injector)?this._injector["get"](e.SheetPrintClientService).getRangeImage(this._workbook["getUnitId"](),this._worksheet["getSheetId"](),this._range,v21==null?undefined:v21.includeHeaders):false;}};n.FRange["extend"](o);var s=class extends r.FEventName{get BeforeSheetPrintOpen(){return"BeforeSheetPrintOpen";}get BeforeSheetPrintConfirm(){return"BeforeSheetPrintConfirm";}get BeforeSheetPrintCanceled(){return"BeforeSheetPrintCanceled";}get SheetPrintOpen(){return"SheetPrintOpen";}get SheetPrintConfirmed(){return"SheetPrintConfirmed";}get SheetPrintCanceled(){return"SheetPrintCanceled";}};r.FEventName["extend"](s);var c=class extends r.FEnum{get PrintArea(){return e.PrintArea;}get PrintAlign(){return i.PrintAlign;}get PrintPaperSize(){return t.PaperType;}get PrintPaperMargin(){return i.PrintPaperMargin;}get PrintScale(){return i.PrintScale;}get PrintDirection(){return i.PrintDirection;}get PrintFreeze(){return e.PrintFreeze;}get PrintHeaderFooter(){return e.PrintHeaderFooter;}get PrintHeaderFooterSymbol(){return e.PrintHeaderFooterSymbol;}};r.FEnum["extend"](c);var l=class extends r.FUniver{_initialize(v22){let v23=v22.get(t.ICommandService);this.disposeWithMe(this.registerEventHandler(this.Event["BeforeSheetPrintOpen"],()=>v23.beforeCommandExecuted(v13=>{if(v13.id===e.SheetPrintOpenOperation["id"]){let v1=this.getActiveWorkbook();if(!v1)return;let v2={workbook:v1,worksheet:v1.getActiveSheet()};if(v2==null)return;if(this.fireEvent(this.Event["BeforeSheetPrintOpen"],v2),v2.cancel)throw new t["CanceledError"]();}}))),this.disposeWithMe(this.registerEventHandler(this.Event["BeforeSheetPrintConfirm"],()=>v23.beforeCommandExecuted(v14=>{if(v14.id===e.ConfirmSheetPrintOperation["id"]){let v3=v22.get(e.ISheetPrintManagerService);if(!this.getActiveWorkbook())return;let v4={layoutConfig:v3.layoutConfig,renderConfig:v3.renderConfig};if(v4==null)return;if(this.fireEvent(this.Event["BeforeSheetPrintConfirm"],v4),v4.cancel)throw new t["CanceledError"]();}}))),this.disposeWithMe(this.registerEventHandler(this.Event["BeforeSheetPrintCanceled"],()=>v23.beforeCommandExecuted(v15=>{if(v15.id===e.CancelSheetPrintOperation["id"]){let v5=v22.get(e.ISheetPrintManagerService);if(!this.getActiveWorkbook())return;let v6={layoutConfig:v5.layoutConfig,renderConfig:v5.renderConfig};if(v6==null)return;if(this.fireEvent(this.Event["BeforeSheetPrintCanceled"],v6),v6.cancel)throw new t.CanceledError();}}))),this.disposeWithMe(this.registerEventHandler(this.Event["SheetPrintOpen"],()=>v23.onCommandExecuted(v16=>{if(v16.id===e.SheetPrintOpenOperation["id"]){let v7=this.getActiveWorkbook();if(!v7)return;let v8={workbook:v7,worksheet:v7.getActiveSheet()};if(v8==null)return;this.fireEvent(this.Event["SheetPrintOpen"],v8);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["SheetPrintConfirmed"],()=>v23.onCommandExecuted(v17=>{if(v17.id===e.ConfirmSheetPrintOperation["id"]){let v9=v22.get(e.ISheetPrintManagerService);if(!this.getActiveWorkbook())return;let v10={layoutConfig:v9.layoutConfig,renderConfig:v9.renderConfig};if(v10==null)return;this.fireEvent(this.Event["SheetPrintConfirmed"],v10);}}))),this.disposeWithMe(this.registerEventHandler(this.Event["SheetPrintCanceled"],()=>v23.onCommandExecuted(v18=>{if(v18.id===e.CancelSheetPrintOperation["id"]){let v11=v22.get(e.ISheetPrintManagerService);if(!this.getActiveWorkbook())return;let v12={layoutConfig:v11.layoutConfig,renderConfig:v11.renderConfig};if(v12==null)return;this.fireEvent(this.Event["SheetPrintCanceled"],v12);}})));}};r.FUniver["extend"](l);
+let e = require("@univerjs-pro/sheets-print"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs/sheets/facade"),
+  r = require("@univerjs/core/facade"),
+  i = require("@univerjs-pro/print");
+var a = class extends n.FWorkbook {
+  updatePrintConfig(var_core_value_sig26DB) {
+    return this._injector["get"](e.ISheetPrintManagerService).updateLayoutConfig(var_core_value_sig26DB), this;
+  }
+  updatePrintRenderConfig(var_core_value_sigF0F9) {
+    return this._injector["get"](e.ISheetPrintManagerService).updateRenderConfig(var_core_value_sigF0F9), this;
+  }
+  print() {
+    return this._injector["get"](t.ICommandService).syncExecuteCommand(e.ConfirmSheetPrintOperation["id"]);
+  }
+  openPrintDialog() {
+    return this._injector["get"](t.ICommandService).syncExecuteCommand(e.SheetPrintOpenOperation["id"]);
+  }
+  closePrintDialog() {
+    return this._injector["get"](t.ICommandService).syncExecuteCommand(e.CancelSheetPrintOperation["id"]);
+  }
+  async saveScreenshotToClipboard() {
+    return (0, e.hasPrintFacadePermission)(this._injector) ? this._injector["get"](t.ICommandService).executeCommand(e.SheetScreenShotOperation["id"]) : false;
+  }
+};
+n.FWorkbook["extend"](a);
+var o = class extends n.FRange {
+  getScreenshot(var_core_value_sig1A0F) {
+    return (0, e.hasPrintFacadePermission)(this._injector) ? this._injector["get"](e.SheetPrintClientService).getRangeImage(this._workbook["getUnitId"](), this._worksheet["getSheetId"](), this._range, var_core_value_sig1A0F == null ? undefined : var_core_value_sig1A0F.includeHeaders) : false;
+  }
+};
+n.FRange["extend"](o);
+var s = class extends r.FEventName {
+  get BeforeSheetPrintOpen() {
+    return "BeforeSheetPrintOpen";
+  }
+  get BeforeSheetPrintConfirm() {
+    return "BeforeSheetPrintConfirm";
+  }
+  get BeforeSheetPrintCanceled() {
+    return "BeforeSheetPrintCanceled";
+  }
+  get SheetPrintOpen() {
+    return "SheetPrintOpen";
+  }
+  get SheetPrintConfirmed() {
+    return "SheetPrintConfirmed";
+  }
+  get SheetPrintCanceled() {
+    return "SheetPrintCanceled";
+  }
+};
+r.FEventName["extend"](s);
+var c = class extends r.FEnum {
+  get PrintArea() {
+    return e.PrintArea;
+  }
+  get PrintAlign() {
+    return i.PrintAlign;
+  }
+  get PrintPaperSize() {
+    return t.PaperType;
+  }
+  get PrintPaperMargin() {
+    return i.PrintPaperMargin;
+  }
+  get PrintScale() {
+    return i.PrintScale;
+  }
+  get PrintDirection() {
+    return i.PrintDirection;
+  }
+  get PrintFreeze() {
+    return e.PrintFreeze;
+  }
+  get PrintHeaderFooter() {
+    return e.PrintHeaderFooter;
+  }
+  get PrintHeaderFooterSymbol() {
+    return e.PrintHeaderFooterSymbol;
+  }
+};
+r.FEnum["extend"](c);
+var l = class extends r.FUniver {
+  _initialize(var_core_value_sigFBA4) {
+    let var_core_value_sig4383 = var_core_value_sigFBA4.get(t.ICommandService);
+    this.disposeWithMe(this.registerEventHandler(this.Event["BeforeSheetPrintOpen"], () => var_core_value_sig4383.beforeCommandExecuted(var_core_value_sigF602 => {
+      if (var_core_value_sigF602.id === e.SheetPrintOpenOperation["id"]) {
+        let var_core_value_sig7524 = this.getActiveWorkbook();
+        if (!var_core_value_sig7524) return;
+        let var_core_value_sig2AD8 = {
+          workbook: var_core_value_sig7524,
+          worksheet: var_core_value_sig7524.getActiveSheet()
+        };
+        if (var_core_value_sig2AD8 == null) return;
+        if (this.fireEvent(this.Event["BeforeSheetPrintOpen"], var_core_value_sig2AD8), var_core_value_sig2AD8.cancel) throw new t["CanceledError"]();
+      }
+    }))), this.disposeWithMe(this.registerEventHandler(this.Event["BeforeSheetPrintConfirm"], () => var_core_value_sig4383.beforeCommandExecuted(var_core_value_sig1BBD => {
+      if (var_core_value_sig1BBD.id === e.ConfirmSheetPrintOperation["id"]) {
+        let var_core_value_sig2AD0 = var_core_value_sigFBA4.get(e.ISheetPrintManagerService);
+        if (!this.getActiveWorkbook()) return;
+        let var_core_value_sig3EEE = {
+          layoutConfig: var_core_value_sig2AD0.layoutConfig,
+          renderConfig: var_core_value_sig2AD0.renderConfig
+        };
+        if (var_core_value_sig3EEE == null) return;
+        if (this.fireEvent(this.Event["BeforeSheetPrintConfirm"], var_core_value_sig3EEE), var_core_value_sig3EEE.cancel) throw new t["CanceledError"]();
+      }
+    }))), this.disposeWithMe(this.registerEventHandler(this.Event["BeforeSheetPrintCanceled"], () => var_core_value_sig4383.beforeCommandExecuted(var_core_value_sigF704 => {
+      if (var_core_value_sigF704.id === e.CancelSheetPrintOperation["id"]) {
+        let var_core_value_sigBC46 = var_core_value_sigFBA4.get(e.ISheetPrintManagerService);
+        if (!this.getActiveWorkbook()) return;
+        let var_core_value_sig3D7D = {
+          layoutConfig: var_core_value_sigBC46.layoutConfig,
+          renderConfig: var_core_value_sigBC46.renderConfig
+        };
+        if (var_core_value_sig3D7D == null) return;
+        if (this.fireEvent(this.Event["BeforeSheetPrintCanceled"], var_core_value_sig3D7D), var_core_value_sig3D7D.cancel) throw new t.CanceledError();
+      }
+    }))), this.disposeWithMe(this.registerEventHandler(this.Event["SheetPrintOpen"], () => var_core_value_sig4383.onCommandExecuted(var_core_value_sig2BCF => {
+      if (var_core_value_sig2BCF.id === e.SheetPrintOpenOperation["id"]) {
+        let var_core_value_sig27E5 = this.getActiveWorkbook();
+        if (!var_core_value_sig27E5) return;
+        let var_core_value_sig8061 = {
+          workbook: var_core_value_sig27E5,
+          worksheet: var_core_value_sig27E5.getActiveSheet()
+        };
+        if (var_core_value_sig8061 == null) return;
+        this.fireEvent(this.Event["SheetPrintOpen"], var_core_value_sig8061);
+      }
+    }))), this.disposeWithMe(this.registerEventHandler(this.Event["SheetPrintConfirmed"], () => var_core_value_sig4383.onCommandExecuted(var_core_value_sig0D69 => {
+      if (var_core_value_sig0D69.id === e.ConfirmSheetPrintOperation["id"]) {
+        let var_core_value_sig4D4C = var_core_value_sigFBA4.get(e.ISheetPrintManagerService);
+        if (!this.getActiveWorkbook()) return;
+        let var_core_value_sigC9E0 = {
+          layoutConfig: var_core_value_sig4D4C.layoutConfig,
+          renderConfig: var_core_value_sig4D4C.renderConfig
+        };
+        if (var_core_value_sigC9E0 == null) return;
+        this.fireEvent(this.Event["SheetPrintConfirmed"], var_core_value_sigC9E0);
+      }
+    }))), this.disposeWithMe(this.registerEventHandler(this.Event["SheetPrintCanceled"], () => var_core_value_sig4383.onCommandExecuted(var_core_value_sig480E => {
+      if (var_core_value_sig480E.id === e.CancelSheetPrintOperation["id"]) {
+        let var_core_value_sig76BA = var_core_value_sigFBA4.get(e.ISheetPrintManagerService);
+        if (!this.getActiveWorkbook()) return;
+        let var_core_value_sigFBFA = {
+          layoutConfig: var_core_value_sig76BA.layoutConfig,
+          renderConfig: var_core_value_sig76BA.renderConfig
+        };
+        if (var_core_value_sigFBFA == null) return;
+        this.fireEvent(this.Event["SheetPrintCanceled"], var_core_value_sigFBFA);
+      }
+    })));
+  }
+};
+r.FUniver["extend"](l);

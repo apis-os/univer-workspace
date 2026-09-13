@@ -1,11 +1,186 @@
-import{BooleanNumber,ColorKit,CommandType,CustomCommandExecutionError,DependentOn,Disposable,DrawingTypeEnum,GridType,HorizontalAlign,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,PermissionStatus,Plugin,Tools,UnitModel,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createParagraphId,createSectionId,generateRandomId,merge,normalizeDrawingOrderIndex,sequenceExecute,toDisposable}from"@univerjs/core";
-import{BehaviorSubject,Subject,map,merge as mergeLocal,mergeMap}from"rxjs";
-import{UnitDrawingService}from"@univerjs/drawing";
-import{IShapeHostAdapterRegistry,ShapeArrowSizeEnum,ShapeArrowTypeEnum,ShapeFillEnum,ShapeLineCapEnum,ShapeLineDashEnum,ShapeLineJoinEnum,ShapeLineTypeEnum,ShapeOperatorEnum,ShapeTextAutoFitType,ShapeTextDirection,ShapeTextWrapType,ShapeTypeEnum,UniverShapePlugin,canApplyShapeFormulaLastValue,computeConnectorRouteLayout,createUniqueShapeName,isConnectorShape,isCurvedConnectorShape,resolveConnectorRoutePoints,resolveShapeConnectionPoint,resolveShapeDefaultInsertSize}from"@univerjs-pro/engine-shape";
-import{UnitAction,UnitObject}from"@univerjs/protocol";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-const ze={Top:0,Right:1,Bottom:2,Left:3},Be={top:ze.Top,right:ze.Right,bottom:ze.Bottom,left:ze.Left},Ve=12,He={Start:"start",Center:"center",End:"end",Path:"path",Auto:"auto"},Ue={Left:"left",OnPath:"onPath",Right:"right"},We={Horizontal:"horizontal",FollowPath:"followPath",Auto:"auto"},Ge={AutoSize:"autoSize",FixedWidth:"fixedWidth",FixedSize:"fixedSize"},Ke={Path:"path",Canvas:"canvas"},qe="default",Je={default:"Default",classic:"Classic",vintage:"Vintage",gray:"Gray",vibrant:"Vibrant",blue:"Blue"},Ye="#ffffff",Xe="#1f2329",Ze="#1f2329",Qe={primary:"boardFillPrimary",decision:"boardFillDecision",data:"boardFillData",accent:"boardFillAccent",warning:"boardFillWarning",danger:"boardFillDanger",neutral:"boardFillNeutral",purple:"boardFillPurple"},var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB215={primary:"boardStrokePrimary",decision:"boardStrokeDecision",data:"boardStrokeData",accent:"boardStrokeAccent",warning:"boardStrokeWarning",danger:"boardStrokeDanger",neutral:"boardStrokeNeutral",purple:"boardStrokePurple"},et={primary:"boardTextPrimary",decision:"boardTextDecision",data:"boardTextData",accent:"boardTextAccent",warning:"boardTextWarning",danger:"boardTextDanger",neutral:"boardTextNeutral",purple:"boardTextPurple"},N={boardStroke:Xe,boardText:Ze,boardFillPrimary:"#eef3fb",boardFillDecision:"#fff1cc",boardFillData:"#ddf3e4",boardFillAccent:"#e6ecff",boardFillWarning:"#ffe7d6",boardFillDanger:"#ffe0df",boardFillNeutral:"#f3f4f6",boardFillPurple:"#eee8ff",boardStrokePrimary:"#5b8cff",boardStrokeDecision:"#ff9d3d",boardStrokeData:"#52d053",boardStrokeAccent:"#5b8cff",boardStrokeWarning:"#ff9d3d",boardStrokeDanger:"#ff6666",boardStrokeNeutral:"#c2c7cc",boardStrokePurple:"#925cff",boardTextPrimary:Ze,boardTextDecision:Ze,boardTextData:Ze,boardTextAccent:Ze,boardTextWarning:Ze,boardTextDanger:Ze,boardTextNeutral:Ze,boardTextPurple:Ze,boardFillHeader:"#1f2329",boardTextOnHeader:Ye,boardStrokeHeader:"#1f2329",boardFillStrong:"#1f2329",boardTextOnStrong:Ye,boardStrokeStrong:"#1f2329"},tt={blueStroke:"#5b8cff",blueFill:"#dfe8ff",grayStroke:"#c2c7cc",grayFill:"#f1f3f5",orangeStroke:"#ff9d3d",orangeFill:"#ffe9cc",greenStroke:"#52d053",greenFill:"#dcf7da",redStroke:"#ff6666",redFill:"#ffe1e1",purpleStroke:"#925cff",purpleFill:"#eadfff"},nt={darkPurple:"#403a60",darkPurpleStroke:"#342f50",teal:"#70b7a5",tealStroke:"#5aa894",mustard:"#efbf57",mustardStroke:"#dda947",rust:"#bf5d42",rustStroke:"#a94d35",periwinkle:"#7784c6",periwinkleStroke:"#6875b7",cream:"#efe3cc",creamStroke:"#e2d3b8",lightText:"#f6f0e8",darkText:"#2f3340"},rt={black:"#000000",white:"#ffffff",ink:"#2f333a",dark:"#252a32",line:"#343941",muted:"#f5f6f7",lightText:"#f3f4f6",darkText:"#40444c"},it={blue:"#2d73d9",blueStroke:"#2563c9",orange:"#f26b4a",orangeStroke:"#df5b3d",paleOrange:"#fde7df",yellow:"#ffd45a",yellowStroke:"#efc14a",green:"#59b87d",greenStroke:"#4aa66e",black:"#1a1a1a",blackStroke:"#111111",lightText:"#f7f8fb",darkText:"#2f3340"},at={blue:"#4b55e7",blueStroke:"#6874ff",blueDark:"#3f49d7",lightFill:"#f1f3ff",lightText:"#f7f8fb",darkText:"#40444c"};
-
+import { BooleanNumber, ColorKit, CommandType, CustomCommandExecutionError, DependentOn, Disposable, DrawingTypeEnum, GridType, HorizontalAlign, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, PermissionStatus, Plugin, Tools, UnitModel, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createParagraphId, createSectionId, generateRandomId, merge, normalizeDrawingOrderIndex, sequenceExecute, toDisposable } from "@univerjs/core";
+import { BehaviorSubject, Subject, map, merge as mergeLocal, mergeMap } from "rxjs";
+import { UnitDrawingService } from "@univerjs/drawing";
+import { IShapeHostAdapterRegistry, ShapeArrowSizeEnum, ShapeArrowTypeEnum, ShapeFillEnum, ShapeLineCapEnum, ShapeLineDashEnum, ShapeLineJoinEnum, ShapeLineTypeEnum, ShapeOperatorEnum, ShapeTextAutoFitType, ShapeTextDirection, ShapeTextWrapType, ShapeTypeEnum, UniverShapePlugin, canApplyShapeFormulaLastValue, computeConnectorRouteLayout, createUniqueShapeName, isConnectorShape, isCurvedConnectorShape, resolveConnectorRoutePoints, resolveShapeConnectionPoint, resolveShapeDefaultInsertSize } from "@univerjs-pro/engine-shape";
+import { UnitAction, UnitObject } from "@univerjs/protocol";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+const ze = {
+    Top: 0,
+    Right: 1,
+    Bottom: 2,
+    Left: 3
+  },
+  Be = {
+    top: ze.Top,
+    right: ze.Right,
+    bottom: ze.Bottom,
+    left: ze.Left
+  },
+  Ve = 12,
+  He = {
+    Start: "start",
+    Center: "center",
+    End: "end",
+    Path: "path",
+    Auto: "auto"
+  },
+  Ue = {
+    Left: "left",
+    OnPath: "onPath",
+    Right: "right"
+  },
+  We = {
+    Horizontal: "horizontal",
+    FollowPath: "followPath",
+    Auto: "auto"
+  },
+  Ge = {
+    AutoSize: "autoSize",
+    FixedWidth: "fixedWidth",
+    FixedSize: "fixedSize"
+  },
+  Ke = {
+    Path: "path",
+    Canvas: "canvas"
+  },
+  qe = "default",
+  Je = {
+    default: "Default",
+    classic: "Classic",
+    vintage: "Vintage",
+    gray: "Gray",
+    vibrant: "Vibrant",
+    blue: "Blue"
+  },
+  Ye = "#ffffff",
+  Xe = "#1f2329",
+  Ze = "#1f2329",
+  Qe = {
+    primary: "boardFillPrimary",
+    decision: "boardFillDecision",
+    data: "boardFillData",
+    accent: "boardFillAccent",
+    warning: "boardFillWarning",
+    danger: "boardFillDanger",
+    neutral: "boardFillNeutral",
+    purple: "boardFillPurple"
+  },
+  var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB215 = {
+    primary: "boardStrokePrimary",
+    decision: "boardStrokeDecision",
+    data: "boardStrokeData",
+    accent: "boardStrokeAccent",
+    warning: "boardStrokeWarning",
+    danger: "boardStrokeDanger",
+    neutral: "boardStrokeNeutral",
+    purple: "boardStrokePurple"
+  },
+  et = {
+    primary: "boardTextPrimary",
+    decision: "boardTextDecision",
+    data: "boardTextData",
+    accent: "boardTextAccent",
+    warning: "boardTextWarning",
+    danger: "boardTextDanger",
+    neutral: "boardTextNeutral",
+    purple: "boardTextPurple"
+  },
+  N = {
+    boardStroke: Xe,
+    boardText: Ze,
+    boardFillPrimary: "#eef3fb",
+    boardFillDecision: "#fff1cc",
+    boardFillData: "#ddf3e4",
+    boardFillAccent: "#e6ecff",
+    boardFillWarning: "#ffe7d6",
+    boardFillDanger: "#ffe0df",
+    boardFillNeutral: "#f3f4f6",
+    boardFillPurple: "#eee8ff",
+    boardStrokePrimary: "#5b8cff",
+    boardStrokeDecision: "#ff9d3d",
+    boardStrokeData: "#52d053",
+    boardStrokeAccent: "#5b8cff",
+    boardStrokeWarning: "#ff9d3d",
+    boardStrokeDanger: "#ff6666",
+    boardStrokeNeutral: "#c2c7cc",
+    boardStrokePurple: "#925cff",
+    boardTextPrimary: Ze,
+    boardTextDecision: Ze,
+    boardTextData: Ze,
+    boardTextAccent: Ze,
+    boardTextWarning: Ze,
+    boardTextDanger: Ze,
+    boardTextNeutral: Ze,
+    boardTextPurple: Ze,
+    boardFillHeader: "#1f2329",
+    boardTextOnHeader: Ye,
+    boardStrokeHeader: "#1f2329",
+    boardFillStrong: "#1f2329",
+    boardTextOnStrong: Ye,
+    boardStrokeStrong: "#1f2329"
+  },
+  tt = {
+    blueStroke: "#5b8cff",
+    blueFill: "#dfe8ff",
+    grayStroke: "#c2c7cc",
+    grayFill: "#f1f3f5",
+    orangeStroke: "#ff9d3d",
+    orangeFill: "#ffe9cc",
+    greenStroke: "#52d053",
+    greenFill: "#dcf7da",
+    redStroke: "#ff6666",
+    redFill: "#ffe1e1",
+    purpleStroke: "#925cff",
+    purpleFill: "#eadfff"
+  },
+  nt = {
+    darkPurple: "#403a60",
+    darkPurpleStroke: "#342f50",
+    teal: "#70b7a5",
+    tealStroke: "#5aa894",
+    mustard: "#efbf57",
+    mustardStroke: "#dda947",
+    rust: "#bf5d42",
+    rustStroke: "#a94d35",
+    periwinkle: "#7784c6",
+    periwinkleStroke: "#6875b7",
+    cream: "#efe3cc",
+    creamStroke: "#e2d3b8",
+    lightText: "#f6f0e8",
+    darkText: "#2f3340"
+  },
+  rt = {
+    black: "#000000",
+    white: "#ffffff",
+    ink: "#2f333a",
+    dark: "#252a32",
+    line: "#343941",
+    muted: "#f5f6f7",
+    lightText: "#f3f4f6",
+    darkText: "#40444c"
+  },
+  it = {
+    blue: "#2d73d9",
+    blueStroke: "#2563c9",
+    orange: "#f26b4a",
+    orangeStroke: "#df5b3d",
+    paleOrange: "#fde7df",
+    yellow: "#ffd45a",
+    yellowStroke: "#efc14a",
+    green: "#59b87d",
+    greenStroke: "#4aa66e",
+    black: "#1a1a1a",
+    blackStroke: "#111111",
+    lightText: "#f7f8fb",
+    darkText: "#2f3340"
+  },
+  at = {
+    blue: "#4b55e7",
+    blueStroke: "#6874ff",
+    blueDark: "#3f49d7",
+    lightFill: "#f1f3ff",
+    lightText: "#f7f8fb",
+    darkText: "#40444c"
+  };
 export { ze as BoardConnectorSite, Be as BoardConnectorSiteBySide, Ve as BOARD_CONNECTOR_ENDPOINT_SNAP_THRESHOLD, He as BoardConnectorLabelAnchor, Ue as BoardConnectorLabelSide, We as BoardConnectorLabelOrientation, Ge as BoardConnectorLabelSizing, Ke as BoardConnectorLabelOffsetSpace };
-
 export { Xe, Ze, N, Ye, qe, Je, tt, nt, rt, it, at, Qe, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB215, et };

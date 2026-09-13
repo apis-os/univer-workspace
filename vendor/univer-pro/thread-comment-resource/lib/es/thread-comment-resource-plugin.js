@@ -1,8 +1,52 @@
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{DependentOn,IConfigService,Inject,Injector,Plugin,merge}from"@univerjs/core";
-import{IThreadCommentDataSourceService,UniverThreadCommentPlugin}from"@univerjs/thread-comment";
-const d={};var f=class{async addComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462;}async updateComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464){return true;}async resolveComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466){return true;}async deleteComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611){return true;}async listComments(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618){return[];}saveCommentToSnapshot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622){return{id:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.id,threadId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.threadId,ref:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.ref};}};let h=class{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629){this._dataSource=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628,this._threadCommentDataSourceService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629,this.init();}init(){this._threadCommentDataSourceService["dataSource"]=this._dataSource;}};let b=class extends Plugin{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636=d,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638){super(),this._config=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636,this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637,this._configService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638;let{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639}=merge({},d,this._config);this._configService["setConfig"]("thread-comment-resource.config",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639);}onStarting(){[[f],[h]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46=>{this._injector["add"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46);}),this._injector["get"](h);}};
-
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DependentOn, IConfigService, Inject, Injector, Plugin, merge } from "@univerjs/core";
+import { IThreadCommentDataSourceService, UniverThreadCommentPlugin } from "@univerjs/thread-comment";
+const d = {};
+var f = class {
+  async addComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462;
+  }
+  async updateComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D464) {
+    return true;
+  }
+  async resolveComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466) {
+    return true;
+  }
+  async deleteComment(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4610, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611) {
+    return true;
+  }
+  async listComments(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4618) {
+    return [];
+  }
+  saveCommentToSnapshot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622) {
+    return {
+      id: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.id,
+      threadId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.threadId,
+      ref: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.ref
+    };
+  }
+};
+let h = class {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629) {
+    this._dataSource = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4628, this._threadCommentDataSourceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4629, this.init();
+  }
+  init() {
+    this._threadCommentDataSourceService["dataSource"] = this._dataSource;
+  }
+};
+let b = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636 = d, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4636, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4637, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4638;
+    let {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639
+    } = merge({}, d, this._config);
+    this._configService["setConfig"]("thread-comment-resource.config", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4639);
+  }
+  onStarting() {
+    [[f], [h]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 => {
+      this._injector["add"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46);
+    }), this._injector["get"](h);
+  }
+};
 export { b as UniverThreadCommentResourcePlugin };
-
 export { h, f };

@@ -1,13 +1,67 @@
-import{ApplyBaseJson1Mutation,BaseJson1OpApplier,BaseJson1OpFactory,IBaseProjectionService,IBaseViewRegistryService,UniverBasesPlugin,UniverRemoteBasesPlugin,canEditBaseTargets,getBaseDashboardPermissionObjectId,getBaseTablePermissionObjectId,getBaseViewPermissionObjectId,matchesBaseCondition,normalizeBaseDateSerial,resolveBaseDateFieldConfig}from"@univerjs-pro/bases";
-import{BaseFieldType,BaseFilterConjunction,BaseFilterOperator,BaseViewType,CommandType,CustomCommandExecutionError,DependentOn,Disposable,ICommandService,IConfigService,IPermissionService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,ImageSourceType,Inject,Injector,Optional,Plugin,Tools,UniverInstanceType,generateRandomId,merge,sequenceExecute,touchDependencies}from"@univerjs/core";
-import{BehaviorSubject,filter,map}from"rxjs";
-import{ChartModel,ChartTypeBits,StaticChartSource,UniverChartPlugin,generateChartContext,reconcileChartContext}from"@univerjs-pro/engine-chart";
-import{DataFieldManager,PivotTable,PivotTableFiledAreaEnum,PivotView,isErrorValue,isPrefixValue}from"@univerjs-pro/engine-pivot";
-import{IShapeHostAdapterRegistry,UniverShapePlugin,canApplyShapeFormulaLastValue}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{UniverShapeEditorPlugin,createFormulaShapeData}from"@univerjs-pro/shape-editor";
-import{DataSyncPrimaryController}from"@univerjs/rpc";
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, BaseJson1OpFactory, IBaseProjectionService, IBaseViewRegistryService, UniverBasesPlugin, UniverRemoteBasesPlugin, canEditBaseTargets, getBaseDashboardPermissionObjectId, getBaseTablePermissionObjectId, getBaseViewPermissionObjectId, matchesBaseCondition, normalizeBaseDateSerial, resolveBaseDateFieldConfig } from "@univerjs-pro/bases";
+import { BaseFieldType, BaseFilterConjunction, BaseFilterOperator, BaseViewType, CommandType, CustomCommandExecutionError, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, ImageSourceType, Inject, Injector, Optional, Plugin, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { BehaviorSubject, filter, map } from "rxjs";
+import { ChartModel, ChartTypeBits, StaticChartSource, UniverChartPlugin, generateChartContext, reconcileChartContext } from "@univerjs-pro/engine-chart";
+import { DataFieldManager, PivotTable, PivotTableFiledAreaEnum, PivotView, isErrorValue, isPrefixValue } from "@univerjs-pro/engine-pivot";
+import { IShapeHostAdapterRegistry, UniverShapePlugin, canApplyShapeFormulaLastValue } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { UniverShapeEditorPlugin, createFormulaShapeData } from "@univerjs-pro/shape-editor";
+import { DataSyncPrimaryController } from "@univerjs/rpc";
 import { E, j } from "./internal-glue.js";
-var A=class extends Disposable{constructor(...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4697){super(...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4697),E(this,"_resources",new Map()),E(this,"_change$",new BehaviorSubject(null)),E(this,"change$",this._change$["asObservable"]());}getResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4699){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100=this._resources["get"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4699);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100||(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100=j(),this._resources["set"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4699,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100)),Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100);}getDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46103,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46104){var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46105;let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106=(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46105=this._resources["get"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46103))==null?undefined:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46105.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46104];return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106?Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106):undefined;}setDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114=this._getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111),var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A=!!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id];if(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id]=Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112),!var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A){let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113===undefined?var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboardOrder["length"]:Math.max(0,Math.min(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboardOrder["length"]));var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboardOrder["splice"](var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1,0,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id);}this._change$["next"]({unitId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111,dashboardId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id});}removeDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46119,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121=this._getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46119);if(!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120])return false;delete var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120];let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46122=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboardOrder["indexOf"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46122>=0&&var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboardOrder["splice"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46122,1),this._change$["next"]({unitId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46119,dashboardId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120}),true;}loadUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46127,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46128){this._resources["set"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46127,Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46128)),this._change$["next"]({unitId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46127});}unloadUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131){this._resources["delete"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131),this._change$["next"]({unitId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131});}serializeUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46133){return JSON.stringify(this._getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46133));}dispose(){this._resources["clear"](),this._change$["complete"](),super.dispose();}_getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46135){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136=this._resources["get"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46135);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136||(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136=j(),this._resources["set"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46135,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136)),var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136;}};
-
+var A = class extends Disposable {
+  constructor(...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4697) {
+    super(...var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4697), E(this, "_resources", new Map()), E(this, "_change$", new BehaviorSubject(null)), E(this, "change$", this._change$["asObservable"]());
+  }
+  getResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4699) {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100 = this._resources["get"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4699);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100 || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100 = j(), this._resources["set"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4699, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100)), Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46100);
+  }
+  getDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46103, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46104) {
+    var var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46105;
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106 = (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46105 = this._resources["get"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46103)) == null ? undefined : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46105.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46104];
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106 ? Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46106) : undefined;
+  }
+  setDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113) {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114 = this._getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111),
+      var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A = !!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id];
+    if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id] = Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112), !var_L0_db_endo_isFlag_pure_O1_zalloc_nothrow_sigD81A) {
+      let var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113 === undefined ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboardOrder["length"] : Math.max(0, Math.min(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46113, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboardOrder["length"]));
+      var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46114.dashboardOrder["splice"](var_L0_db_endo_countVal_pure_O1_zalloc_nothrow_sig108D1, 0, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id);
+    }
+    this._change$["next"]({
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46111,
+      dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46112.id
+    });
+  }
+  removeDashboard(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46119, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120) {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121 = this._getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46119);
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120]) return false;
+    delete var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboards[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120];
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46122 = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboardOrder["indexOf"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46122 >= 0 && var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46121.dashboardOrder["splice"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46122, 1), this._change$["next"]({
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46119,
+      dashboardId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46120
+    }), true;
+  }
+  loadUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46127, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46128) {
+    this._resources["set"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46127, Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46128)), this._change$["next"]({
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46127
+    });
+  }
+  unloadUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131) {
+    this._resources["delete"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131), this._change$["next"]({
+      unitId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46131
+    });
+  }
+  serializeUnit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46133) {
+    return JSON.stringify(this._getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46133));
+  }
+  dispose() {
+    this._resources["clear"](), this._change$["complete"](), super.dispose();
+  }
+  _getMutableResource(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46135) {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136 = this._resources["get"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46135);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136 || (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136 = j(), this._resources["set"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46135, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136)), var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46136;
+  }
+};
 export { A as BaseDashboardResourceService };

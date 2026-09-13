@@ -1,12 +1,15 @@
-import{AddBoardElementMutation,BoardElementType,IBoardChartAdapterService,IBoardElementService,RemoveBoardElementCommand,RemoveBoardElementMutation,ReorderBoardElementsOperation,UniverBoardsPlugin,UpdateBoardElementCommand,UpdateBoardElementMutation,createAddBoardElementsMutationInfos}from"@univerjs-pro/boards";
-import{ChartDataSourceRuntimeStatus,ChartResourceRepository,ChartResourceRuntimeService,ChartTypeBits,DEFAULT_CHART_RESOURCE_HEADER_ROW,IChartDataSourceRuntimeService,ResourceRefChartDataSourceAdapter,UniverChartPlugin,buildChartDataSetFromValues,buildChartPreviewData,buildOrientedChartDataSet,chartConfigInterpreter,createChartStarterRows,describeChartModel,isInlineChartDataSource,isReferencedChartDataSource,omitUndefinedFields,toChartCreateConfigSnapshot,toChartModelConfigReplacement,toChartModelUpdate}from"@univerjs-pro/engine-chart";
-import{ArrangeTypeEnum,CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,Inject,Injector,Plugin,Tools,UniverInstanceType,generateRandomId,getDrawingOrderIndex,merge,normalizeDrawingOrderIndex,sequenceExecute,touchDependencies}from"@univerjs/core";
-import{filter,firstValueFrom}from"rxjs";
-import{ShapeLineTypeEnum}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { AddBoardElementMutation, BoardElementType, IBoardChartAdapterService, IBoardElementService, RemoveBoardElementCommand, RemoveBoardElementMutation, ReorderBoardElementsOperation, UniverBoardsPlugin, UpdateBoardElementCommand, UpdateBoardElementMutation, createAddBoardElementsMutationInfos } from "@univerjs-pro/boards";
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, ChartTypeBits, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, createChartStarterRows, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, omitUndefinedFields, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { ArrangeTypeEnum, CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, Inject, Injector, Plugin, Tools, UniverInstanceType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { filter, firstValueFrom } from "rxjs";
+import { ShapeLineTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { U } from "./boards-chart-board-chart-adapter.js";
-const K={id:"board.command.change-chart-data-source",type:CommandType.COMMAND,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417)=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416.get(U).changeChartDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417):false},Ie=Symbol("ReplaceBoardChartConfig");
-
+const K = {
+    id: "board.command.change-chart-data-source",
+    type: CommandType.COMMAND,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417) => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46416.get(U).changeChartDataSource(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46417) : false
+  },
+  Ie = Symbol("ReplaceBoardChartConfig");
 export { K as ChangeBoardChartDataSourceCommand };
-
 export { Ie };

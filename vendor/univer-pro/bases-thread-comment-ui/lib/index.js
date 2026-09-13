@@ -1,1 +1,256 @@
-import{UniverBasesPlugin as v82,getBasePermissionValue as v83}from"@univerjs-pro/bases";import{UniverBasesThreadCommentPlugin as v84}from"@univerjs-pro/bases-thread-comment";import{BASE_TOOLBAR_BEFORE_EXTRA_ACTIONS as v85,IBaseRecordActionService as v86,IBaseUIStateService as v87,UniverBasesUIPlugin as v88}from"@univerjs-pro/bases-ui";import{UniverLicensePlugin as v89}from"@univerjs-pro/license";import{BaseDataModel as v90,CommandType as v91,DependentOn as v92,Disposable as v93,ICommandService as v94,IConfigService as v95,IPermissionService as v96,IUniverInstanceService as v97,Inject as v98,Injector as v99,LocaleService as v100,Plugin as v101,UniverInstanceType as v102,UserManagerService as v103,merge as v104}from"@univerjs/core";import{ThreadCommentDraftService as v105,ThreadCommentPanel as v106,ThreadCommentPanelService as v107,UniverThreadCommentUIPlugin as v108}from"@univerjs/thread-comment-ui";import{ComponentManager as v109,ISidebarService as v110,useDependency as v111,useObservable as v112}from"@univerjs/ui";import{Button as v113,Tooltip as v114}from"@univerjs/design";import{CommentIcon as v115}from"@univerjs/icons";import{jsx as v116}from"react/jsx-runtime";import{ThreadCommentAnchorKind as v117,ThreadCommentModel as v118,deserializeThreadCommentAnchor as v119,serializeThreadCommentAnchor as v120}from"@univerjs/thread-comment";import{map as v121,merge as v122}from"rxjs";import{UnitAction as v123}from"@univerjs/protocol";const R="bases-thread-comment-ui.config",z={};var B="@univerjs-pro/bases-thread-comment-ui",V="1.0.0-insiders.20260907-70fc579";const H="univer.base.thread-comment-panel",U={id:"base.operation.open-comment-panel",type:v91.OPERATION,handler(v41){let v42=v41.get(v107);return v41.get(v110).open({header:{title:"bases-thread-comment-ui.openComments"},children:{label:H},width:320,onClose:()=>v42.setPanelVisible(false)}),v42.setPanelVisible(true),true;}};function W(){let v43=v111(v94),v44=v111(v100).t("bases-thread-comment-ui.openComments");return v116(v114,{title:v44,placement:"top",children:v116(v113,{"aria-label":v44,className:"univer-size-8 univer-p-0",type:"button",variant:"text",onClick:()=>v43.executeCommand(U.id),children:v116(v115,{})})});}function G(){let v45=v111(v97),v46=v111(v87),v47=v111(v105),v48=v111(v103),v49=v45.getCurrentUnitOfType(v102.UNIVER_BASE),v50=v112(v47.draft$,v47.draft),v51=v46.state$["pipe"](v121(v21=>v21.activeTableId)),v52=v50&&v50.unitId===(v49==null?undefined:v49.getUnitId())?{id:"",threadId:"",unitId:v50.unitId,subUnitId:v50.subUnitId,ref:v120(v50.anchor),dT:"",personId:v48.getCurrentUser().userID,text:{dataStream:"\x0d\x0a"}}:null;return v49 instanceof v90?v116(v106,{unitId:v49.getUnitId(),subUnitId$:v51,type:v102.UNIVER_BASE,onAdd:()=>undefined,disableAdd:true,getSubUnitName:v22=>{var v23;return((v23=v49.getSnapshot().tables[v22])==null?undefined:v23.name)??v22;},tempComment:v52,onTempCommentClose:()=>v47.cancel(),formatRef:v24=>K(v24.ref,v49)}):null;}function K(v53,v54){let v55=v119(v53);if((v55==null?undefined:v55.kind)!==v117.BASE_RECORD)return v53;let v56=v54.getSnapshot().tables[v55.tableId],v57=v56==null?undefined:v56.fields[v56.primaryFieldId],v58=v56==null?undefined:v56.records[v55.recordId],v59=v57?(v58==null?undefined:v58.values[v57.id])??v57.defaultValue:null;return(v59==null?"":String(v59).trim())||"#"+v55.recordId;}function q(v60,v61){return function(v25,v26){v61(v25,v26,v60);};}function J(v62,v63,v64,v65){var v66=arguments.length,v67=v66<3?v63:v65===null?v65=Object.getOwnPropertyDescriptor(v63,v64):v65,v68;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v67=Reflect.decorate(v62,v63,v64,v65);else{for(var v69=v62.length-1;v69>=0;v69--)(v68=v62[v69])&&(v67=(v66<3?v68(v67):v66>3?v68(v63,v64,v67):v68(v63,v64))||v67);}return v66>3&&v67&&Object.defineProperty(v63,v64,v67),v67;}let Y=class extends v93{constructor(v27){super(),this._componentManager=v27,this._registerComponents();}_registerComponents(){this.disposeWithMe(this._componentManager["register"](H,G)),this.disposeWithMe(this._componentManager["register"](v85,W));}};Y=J([q(0,v98(v109))],Y);function ie(v70,v71){v70.open({header:{title:"bases-thread-comment-ui.addComment"},children:{label:H},width:320,onClose:()=>v71.setPanelVisible(false)}),v71.setPanelVisible(true);}let X=class extends v93{constructor(v28,v29,v30,v31,v32,v33,v34){super(),this.disposeWithMe(v28.registerCommand(U)),this.disposeWithMe(v29.register({id:"base-record-comment",label:"bases-thread-comment-ui.addComment",changed$:v122(v30.commentUpdate$,v32.activeCommentId$,v32.hoveredCommentId$),getBadgeCounts:({unitId:v8,tableId:v9})=>{let v10=new Map();return v30.query({unitIds:[v8],subUnitIds:[v9],anchorKinds:[v117.BASE_RECORD],resolved:false}).forEach(({root:v3})=>{let v4=v119(v3.ref);(v4==null?undefined:v4.kind)===v117.BASE_RECORD&&v4.tableId===v9&&v10.set(v4.recordId,(v10.get(v4.recordId)??0)+1);}),v10;},getFocusedRecordId:({unitId:v11,tableId:v12})=>{for(let v5 of[v32.hoveredCommentId,v32.activeCommentId]){if((v5==null?undefined:v5.unitId)!==v11||v5.subUnitId!==v12)continue;let v1=v30.getComment(v11,v12,v5.commentId),v2=v1&&v119(v1.ref);if((v2==null?undefined:v2.kind)===v117.BASE_RECORD&&v2.tableId===v12)return v2.recordId;}},execute:({unitId:v13,tableId:v14,recordId:v15,trigger:v16})=>{var v17;let v18=v30.query({unitIds:[v13],subUnitIds:[v14],anchorKinds:[v117.BASE_RECORD],resolved:false}).filter(({root:v6})=>{let v7=v119(v6.ref);return(v7==null?undefined:v7.kind)===v117.BASE_RECORD&&v7.tableId===v14&&v7.recordId===v15;}),v19=(v17=v18[v18.length-1])==null?undefined:v17.root;if(v16==="badge"&&v19)v31.cancel(),v32.setActiveComment({unitId:v13,subUnitId:v14,commentId:v19.id});else{if(!v83(v33,v13,v13,v123.Comment))return;v32.setActiveComment(undefined),v31.place({unitId:v13,subUnitId:v14,anchor:{kind:v117.BASE_RECORD,tableId:v14,recordId:v15}});}ie(v34,v32);}}));}};X=J([q(0,v94),q(1,v86),q(2,v98(v118)),q(3,v98(v105)),q(4,v98(v107)),q(5,v96),q(6,v110)],X);function Z(v72){"@babel/helpers - typeof";return Z=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v35){return typeof v35;}:function(v36){return v36&&typeof Symbol=="function"&&v36.constructor===Symbol&&v36!==Symbol.prototype?"symbol":typeof v36;},Z(v72);}function ae(v73,v74){if(Z(v73)!="object"||!v73)return v73;var v75=v73[Symbol.toPrimitive];if(v75!==undefined){var v76=v75.call(v73,v74||"default");if(Z(v76)!="object")return v76;throw TypeError("@@toPrimitive must return a primitive value.");}return(v74==="string"?String:Number)(v73);}function oe(v77){var v78=ae(v77,"string");return Z(v78)=="symbol"?v78:v78+"";}function Q(v79,v80,v81){return(v80=oe(v80))in v79?Object.defineProperty(v79,v80,{value:v81,enumerable:true,configurable:true,writable:true}):v79[v80]=v81,v79;}const se=[[Y],[X]];let $=class extends v101{constructor(v37=z,v38,v39){super(),this._config=v37,this._injector=v38,this._configService=v39;let{...v40}=v104({},z,this._config);this._configService["setConfig"](R,v40);}onStarting(){se.forEach(v20=>{this._injector["add"](v20);}),this._injector["get"](Y);}onReady(){this._injector["get"](X);}};Q($,"pluginName","UNIVER_BASES_THREAD_COMMENT_UI_PLUGIN"),Q($,"packageName",B),Q($,"version",V),Q($,"type",v102.UNIVER_BASE),$=J([v92(v82,v84,v88,v89,v108),q(1,v98(v99)),q(2,v95)],$);export{R as BASES_THREAD_COMMENT_UI_PLUGIN_CONFIG_KEY,$ as UniverBasesThreadCommentUIPlugin};
+import { UniverBasesPlugin as var_core_value_sig2DAB, getBasePermissionValue as var_core_value_sig877E } from "@univerjs-pro/bases";
+import { UniverBasesThreadCommentPlugin as var_core_value_sig20C8 } from "@univerjs-pro/bases-thread-comment";
+import { BASE_TOOLBAR_BEFORE_EXTRA_ACTIONS as var_core_value_sigE9A7, IBaseRecordActionService as var_core_value_sigBECE, IBaseUIStateService as var_core_value_sig1B22, UniverBasesUIPlugin as var_core_value_sig7F72 } from "@univerjs-pro/bases-ui";
+import { UniverLicensePlugin as var_core_value_sig7B2A } from "@univerjs-pro/license";
+import { BaseDataModel as var_core_value_sig06CD, CommandType as var_core_value_sigA5F1, DependentOn as var_core_value_sig97A2, Disposable as var_core_value_sig07E9, ICommandService as var_core_value_sig4F59, IConfigService as var_core_value_sigF564, IPermissionService as var_core_value_sig8CFA, IUniverInstanceService as var_core_value_sig2E11, Inject as var_core_value_sig5B69, Injector as var_core_value_sigB098, LocaleService as var_core_value_sigCE71, Plugin as var_core_value_sig21D8, UniverInstanceType as var_core_value_sig2B65, UserManagerService as var_core_value_sigD7EA, merge as var_core_value_sigB33B } from "@univerjs/core";
+import { ThreadCommentDraftService as var_core_value_sig24B9, ThreadCommentPanel as var_core_value_sigE627, ThreadCommentPanelService as var_core_value_sigEF3E, UniverThreadCommentUIPlugin as var_core_value_sig273D } from "@univerjs/thread-comment-ui";
+import { ComponentManager as var_core_value_sig9A0D, ISidebarService as var_core_value_sigA319, useDependency as var_core_value_sig2D58, useObservable as var_core_value_sig223F } from "@univerjs/ui";
+import { Button as var_core_value_sigD749, Tooltip as var_core_value_sigCFFA } from "@univerjs/design";
+import { CommentIcon as var_core_value_sig58C1 } from "@univerjs/icons";
+import { jsx as var_core_value_sig5090 } from "react/jsx-runtime";
+import { ThreadCommentAnchorKind as var_core_value_sigC368, ThreadCommentModel as var_core_value_sigAD56, deserializeThreadCommentAnchor as var_core_value_sigDB4A, serializeThreadCommentAnchor as var_core_value_sig6418 } from "@univerjs/thread-comment";
+import { map as var_core_value_sig1896, merge as var_core_value_sig0285 } from "rxjs";
+import { UnitAction as var_core_value_sig777D } from "@univerjs/protocol";
+const R = "bases-thread-comment-ui.config",
+  z = {};
+var B = "@univerjs-pro/bases-thread-comment-ui",
+  V = "1.0.0-insiders.20260907-70fc579";
+const H = "univer.base.thread-comment-panel",
+  U = {
+    id: "base.operation.open-comment-panel",
+    type: var_core_value_sigA5F1.OPERATION,
+    handler(var_core_value_sig284F) {
+      let var_core_value_sigE154 = var_core_value_sig284F.get(var_core_value_sigEF3E);
+      return var_core_value_sig284F.get(var_core_value_sigA319).open({
+        header: {
+          title: "bases-thread-comment-ui.openComments"
+        },
+        children: {
+          label: H
+        },
+        width: 320,
+        onClose: () => var_core_value_sigE154.setPanelVisible(false)
+      }), var_core_value_sigE154.setPanelVisible(true), true;
+    }
+  };
+function W() {
+  let var_core_value_sig4632 = var_core_value_sig2D58(var_core_value_sig4F59),
+    var_core_value_sig12F2 = var_core_value_sig2D58(var_core_value_sigCE71).t("bases-thread-comment-ui.openComments");
+  return var_core_value_sig5090(var_core_value_sigCFFA, {
+    title: var_core_value_sig12F2,
+    placement: "top",
+    children: var_core_value_sig5090(var_core_value_sigD749, {
+      "aria-label": var_core_value_sig12F2,
+      className: "univer-size-8 univer-p-0",
+      type: "button",
+      variant: "text",
+      onClick: () => var_core_value_sig4632.executeCommand(U.id),
+      children: var_core_value_sig5090(var_core_value_sig58C1, {})
+    })
+  });
+}
+function G() {
+  let var_core_value_sig2259 = var_core_value_sig2D58(var_core_value_sig2E11),
+    var_core_value_sig9E2F = var_core_value_sig2D58(var_core_value_sig1B22),
+    var_core_value_sigD082 = var_core_value_sig2D58(var_core_value_sig24B9),
+    var_core_value_sigDBB7 = var_core_value_sig2D58(var_core_value_sigD7EA),
+    var_core_value_sigD0A8 = var_core_value_sig2259.getCurrentUnitOfType(var_core_value_sig2B65.UNIVER_BASE),
+    var_core_value_sigF4B9 = var_core_value_sig223F(var_core_value_sigD082.draft$, var_core_value_sigD082.draft),
+    var_core_value_sig5CEE = var_core_value_sig9E2F.state$["pipe"](var_core_value_sig1896(var_core_value_sig1A0F => var_core_value_sig1A0F.activeTableId)),
+    var_core_value_sigE92A = var_core_value_sigF4B9 && var_core_value_sigF4B9.unitId === (var_core_value_sigD0A8 == null ? undefined : var_core_value_sigD0A8.getUnitId()) ? {
+      id: "",
+      threadId: "",
+      unitId: var_core_value_sigF4B9.unitId,
+      subUnitId: var_core_value_sigF4B9.subUnitId,
+      ref: var_core_value_sig6418(var_core_value_sigF4B9.anchor),
+      dT: "",
+      personId: var_core_value_sigDBB7.getCurrentUser().userID,
+      text: {
+        dataStream: "\x0d\x0a"
+      }
+    } : null;
+  return var_core_value_sigD0A8 instanceof var_core_value_sig06CD ? var_core_value_sig5090(var_core_value_sigE627, {
+    unitId: var_core_value_sigD0A8.getUnitId(),
+    subUnitId$: var_core_value_sig5CEE,
+    type: var_core_value_sig2B65.UNIVER_BASE,
+    onAdd: () => undefined,
+    disableAdd: true,
+    getSubUnitName: var_core_value_sigFBA4 => {
+      var var_core_value_sig4383;
+      return ((var_core_value_sig4383 = var_core_value_sigD0A8.getSnapshot().tables[var_core_value_sigFBA4]) == null ? undefined : var_core_value_sig4383.name) ?? var_core_value_sigFBA4;
+    },
+    tempComment: var_core_value_sigE92A,
+    onTempCommentClose: () => var_core_value_sigD082.cancel(),
+    formatRef: var_core_value_sig186C => K(var_core_value_sig186C.ref, var_core_value_sigD0A8)
+  }) : null;
+}
+function K(var_core_value_sig362B, var_core_value_sig5CA5) {
+  let var_core_value_sigE90F = var_core_value_sigDB4A(var_core_value_sig362B);
+  if ((var_core_value_sigE90F == null ? undefined : var_core_value_sigE90F.kind) !== var_core_value_sigC368.BASE_RECORD) return var_core_value_sig362B;
+  let var_core_value_sigEFD4 = var_core_value_sig5CA5.getSnapshot().tables[var_core_value_sigE90F.tableId],
+    var_core_value_sig861B = var_core_value_sigEFD4 == null ? undefined : var_core_value_sigEFD4.fields[var_core_value_sigEFD4.primaryFieldId],
+    var_core_value_sig5237 = var_core_value_sigEFD4 == null ? undefined : var_core_value_sigEFD4.records[var_core_value_sigE90F.recordId],
+    var_core_value_sigBB00 = var_core_value_sig861B ? (var_core_value_sig5237 == null ? undefined : var_core_value_sig5237.values[var_core_value_sig861B.id]) ?? var_core_value_sig861B.defaultValue : null;
+  return (var_core_value_sigBB00 == null ? "" : String(var_core_value_sigBB00).trim()) || "#" + var_core_value_sigE90F.recordId;
+}
+function q(var_core_value_sig7E54, var_core_value_sig9A8D) {
+  return function (var_core_value_sigD955, var_core_value_sig48BD) {
+    var_core_value_sig9A8D(var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig7E54);
+  };
+}
+function J(var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0) {
+  var var_core_value_sig4CD2 = arguments.length,
+    var_core_value_sig48CA = var_core_value_sig4CD2 < 3 ? var_core_value_sig9C9F : var_core_value_sig86D0 === null ? var_core_value_sig86D0 = Object.getOwnPropertyDescriptor(var_core_value_sig9C9F, var_core_value_sigFDEA) : var_core_value_sig86D0,
+    var_core_value_sig50AF;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig48CA = Reflect.decorate(var_core_value_sigC259, var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0);else {
+    for (var var_core_value_sigA942 = var_core_value_sigC259.length - 1; var_core_value_sigA942 >= 0; var_core_value_sigA942--) (var_core_value_sig50AF = var_core_value_sigC259[var_core_value_sigA942]) && (var_core_value_sig48CA = (var_core_value_sig4CD2 < 3 ? var_core_value_sig50AF(var_core_value_sig48CA) : var_core_value_sig4CD2 > 3 ? var_core_value_sig50AF(var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig48CA) : var_core_value_sig50AF(var_core_value_sig9C9F, var_core_value_sigFDEA)) || var_core_value_sig48CA);
+  }
+  return var_core_value_sig4CD2 > 3 && var_core_value_sig48CA && Object.defineProperty(var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig48CA), var_core_value_sig48CA;
+}
+let Y = class extends var_core_value_sig07E9 {
+  constructor(var_core_value_sig429F) {
+    super(), this._componentManager = var_core_value_sig429F, this._registerComponents();
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](H, G)), this.disposeWithMe(this._componentManager["register"](var_core_value_sigE9A7, W));
+  }
+};
+Y = J([q(0, var_core_value_sig5B69(var_core_value_sig9A0D))], Y);
+function ie(var_core_value_sigA621, var_core_value_sigBBFF) {
+  var_core_value_sigA621.open({
+    header: {
+      title: "bases-thread-comment-ui.addComment"
+    },
+    children: {
+      label: H
+    },
+    width: 320,
+    onClose: () => var_core_value_sigBBFF.setPanelVisible(false)
+  }), var_core_value_sigBBFF.setPanelVisible(true);
+}
+let X = class extends var_core_value_sig07E9 {
+  constructor(var_core_value_sigF62A, var_core_value_sig8178, var_core_value_sigE9ED, var_core_value_sigB577, var_core_value_sig9572, var_core_value_sigD873, var_core_value_sigA12B) {
+    super(), this.disposeWithMe(var_core_value_sigF62A.registerCommand(U)), this.disposeWithMe(var_core_value_sig8178.register({
+      id: "base-record-comment",
+      label: "bases-thread-comment-ui.addComment",
+      changed$: var_core_value_sig0285(var_core_value_sigE9ED.commentUpdate$, var_core_value_sig9572.activeCommentId$, var_core_value_sig9572.hoveredCommentId$),
+      getBadgeCounts: ({
+        unitId: var_core_value_sig8061,
+        tableId: var_core_value_sig4D4C
+      }) => {
+        let var_core_value_sigC9E0 = new Map();
+        return var_core_value_sigE9ED.query({
+          unitIds: [var_core_value_sig8061],
+          subUnitIds: [var_core_value_sig4D4C],
+          anchorKinds: [var_core_value_sigC368.BASE_RECORD],
+          resolved: false
+        }).forEach(({
+          root: var_core_value_sig2AD0
+        }) => {
+          let var_core_value_sig3EEE = var_core_value_sigDB4A(var_core_value_sig2AD0.ref);
+          (var_core_value_sig3EEE == null ? undefined : var_core_value_sig3EEE.kind) === var_core_value_sigC368.BASE_RECORD && var_core_value_sig3EEE.tableId === var_core_value_sig4D4C && var_core_value_sigC9E0.set(var_core_value_sig3EEE.recordId, (var_core_value_sigC9E0.get(var_core_value_sig3EEE.recordId) ?? 0) + 1);
+        }), var_core_value_sigC9E0;
+      },
+      getFocusedRecordId: ({
+        unitId: var_core_value_sig76BA,
+        tableId: var_core_value_sigFBFA
+      }) => {
+        for (let var_core_value_sigBC46 of [var_core_value_sig9572.hoveredCommentId, var_core_value_sig9572.activeCommentId]) {
+          if ((var_core_value_sigBC46 == null ? undefined : var_core_value_sigBC46.unitId) !== var_core_value_sig76BA || var_core_value_sigBC46.subUnitId !== var_core_value_sigFBFA) continue;
+          let var_core_value_sig7524 = var_core_value_sigE9ED.getComment(var_core_value_sig76BA, var_core_value_sigFBFA, var_core_value_sigBC46.commentId),
+            var_core_value_sig2AD8 = var_core_value_sig7524 && var_core_value_sigDB4A(var_core_value_sig7524.ref);
+          if ((var_core_value_sig2AD8 == null ? undefined : var_core_value_sig2AD8.kind) === var_core_value_sigC368.BASE_RECORD && var_core_value_sig2AD8.tableId === var_core_value_sigFBFA) return var_core_value_sig2AD8.recordId;
+        }
+      },
+      execute: ({
+        unitId: var_core_value_sigF602,
+        tableId: var_core_value_sig1BBD,
+        recordId: var_core_value_sigF704,
+        trigger: var_core_value_sig2BCF
+      }) => {
+        var var_core_value_sig0D69;
+        let var_core_value_sig480E = var_core_value_sigE9ED.query({
+            unitIds: [var_core_value_sigF602],
+            subUnitIds: [var_core_value_sig1BBD],
+            anchorKinds: [var_core_value_sigC368.BASE_RECORD],
+            resolved: false
+          }).filter(({
+            root: var_core_value_sig3D7D
+          }) => {
+            let var_core_value_sig27E5 = var_core_value_sigDB4A(var_core_value_sig3D7D.ref);
+            return (var_core_value_sig27E5 == null ? undefined : var_core_value_sig27E5.kind) === var_core_value_sigC368.BASE_RECORD && var_core_value_sig27E5.tableId === var_core_value_sig1BBD && var_core_value_sig27E5.recordId === var_core_value_sigF704;
+          }),
+          var_core_value_sig26DB = (var_core_value_sig0D69 = var_core_value_sig480E[var_core_value_sig480E.length - 1]) == null ? undefined : var_core_value_sig0D69.root;
+        if (var_core_value_sig2BCF === "badge" && var_core_value_sig26DB) var_core_value_sigB577.cancel(), var_core_value_sig9572.setActiveComment({
+          unitId: var_core_value_sigF602,
+          subUnitId: var_core_value_sig1BBD,
+          commentId: var_core_value_sig26DB.id
+        });else {
+          if (!var_core_value_sig877E(var_core_value_sigD873, var_core_value_sigF602, var_core_value_sigF602, var_core_value_sig777D.Comment)) return;
+          var_core_value_sig9572.setActiveComment(undefined), var_core_value_sigB577.place({
+            unitId: var_core_value_sigF602,
+            subUnitId: var_core_value_sig1BBD,
+            anchor: {
+              kind: var_core_value_sigC368.BASE_RECORD,
+              tableId: var_core_value_sig1BBD,
+              recordId: var_core_value_sigF704
+            }
+          });
+        }
+        ie(var_core_value_sigA12B, var_core_value_sig9572);
+      }
+    }));
+  }
+};
+X = J([q(0, var_core_value_sig4F59), q(1, var_core_value_sigBECE), q(2, var_core_value_sig5B69(var_core_value_sigAD56)), q(3, var_core_value_sig5B69(var_core_value_sig24B9)), q(4, var_core_value_sig5B69(var_core_value_sigEF3E)), q(5, var_core_value_sig8CFA), q(6, var_core_value_sigA319)], X);
+function Z(var_core_value_sig8889) {
+  "@babel/helpers - typeof";
+
+  return Z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigF230) {
+    return typeof var_core_value_sigF230;
+  } : function (var_core_value_sig09B8) {
+    return var_core_value_sig09B8 && typeof Symbol == "function" && var_core_value_sig09B8.constructor === Symbol && var_core_value_sig09B8 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig09B8;
+  }, Z(var_core_value_sig8889);
+}
+function ae(var_core_value_sig32F8, var_core_value_sig5B67) {
+  if (Z(var_core_value_sig32F8) != "object" || !var_core_value_sig32F8) return var_core_value_sig32F8;
+  var var_core_value_sig1758 = var_core_value_sig32F8[Symbol.toPrimitive];
+  if (var_core_value_sig1758 !== undefined) {
+    var var_core_value_sig4805 = var_core_value_sig1758.call(var_core_value_sig32F8, var_core_value_sig5B67 || "default");
+    if (Z(var_core_value_sig4805) != "object") return var_core_value_sig4805;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig5B67 === "string" ? String : Number)(var_core_value_sig32F8);
+}
+function oe(var_core_value_sigE67E) {
+  var var_core_value_sig2902 = ae(var_core_value_sigE67E, "string");
+  return Z(var_core_value_sig2902) == "symbol" ? var_core_value_sig2902 : var_core_value_sig2902 + "";
+}
+function Q(var_core_value_sig9989, var_core_value_sig698E, var_core_value_sig2809) {
+  return (var_core_value_sig698E = oe(var_core_value_sig698E)) in var_core_value_sig9989 ? Object.defineProperty(var_core_value_sig9989, var_core_value_sig698E, {
+    value: var_core_value_sig2809,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig9989[var_core_value_sig698E] = var_core_value_sig2809, var_core_value_sig9989;
+}
+const se = [[Y], [X]];
+let $ = class extends var_core_value_sig21D8 {
+  constructor(var_core_value_sig6F91 = z, var_core_value_sigF9C7, var_core_value_sig8895) {
+    super(), this._config = var_core_value_sig6F91, this._injector = var_core_value_sigF9C7, this._configService = var_core_value_sig8895;
+    let {
+      ...var_core_value_sigC80B
+    } = var_core_value_sigB33B({}, z, this._config);
+    this._configService["setConfig"](R, var_core_value_sigC80B);
+  }
+  onStarting() {
+    se.forEach(var_core_value_sigF0F9 => {
+      this._injector["add"](var_core_value_sigF0F9);
+    }), this._injector["get"](Y);
+  }
+  onReady() {
+    this._injector["get"](X);
+  }
+};
+Q($, "pluginName", "UNIVER_BASES_THREAD_COMMENT_UI_PLUGIN"), Q($, "packageName", B), Q($, "version", V), Q($, "type", var_core_value_sig2B65.UNIVER_BASE), $ = J([var_core_value_sig97A2(var_core_value_sig2DAB, var_core_value_sig20C8, var_core_value_sig7F72, var_core_value_sig7B2A, var_core_value_sig273D), q(1, var_core_value_sig5B69(var_core_value_sigB098)), q(2, var_core_value_sigF564)], $);
+export { R as BASES_THREAD_COMMENT_UI_PLUGIN_CONFIG_KEY, $ as UniverBasesThreadCommentUIPlugin };

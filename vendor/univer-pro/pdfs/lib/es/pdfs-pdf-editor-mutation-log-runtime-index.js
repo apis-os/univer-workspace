@@ -1,7 +1,21 @@
-import{CommandType,DEFAULT_STYLES,DependentOn,Disposable,ICommandService,IConfigService,IUniverInstanceService,ImageSourceType,Inject,Injector,Plugin,UnitModel,UniverInstanceType,generateRandomId,merge}from'@univerjs/core';
-import{BehaviorSubject,Subject}from'rxjs';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
 import { rp } from "./internal-core-endo.js";
-function op(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466582=rp.get(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581);if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466582)return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466582;let var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B5984=new Map(),var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A307=[];var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581.batches['forEach'](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281=>{var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B5984.set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281.id,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281.mutations["forEach"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46426=>{var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46426.kind==="insertPage"&&var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A307.push(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46426.payload);});});let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB196={'batchById':var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B5984,'insertedPages':var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A307};return rp.set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581,var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB196),var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB196;}
-
+function op(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466582 = rp.get(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581);
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466582) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466582;
+  let var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B5984 = new Map(),
+    var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A307 = [];
+  var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581.batches['forEach'](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281 => {
+    var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B5984.set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281.id, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461281.mutations["forEach"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46426 => {
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46426.kind === "insertPage" && var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A307.push(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46426.payload);
+    });
+  });
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB196 = {
+    'batchById': var_L0_core_endo_itemsMap_pure_O1_zalloc_nothrow_sig6B5984,
+    'insertedPages': var_L0_core_endo_itemsList_pure_O1_zalloc_nothrow_sigE78A307
+  };
+  return rp.set(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466581, var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB196), var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB196;
+}
 export { op as getPdfEditorMutationLogRuntimeIndex };

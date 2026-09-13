@@ -1,15 +1,38 @@
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{DependentOn,Disposable,IConfigService,ILogService,IUniverInstanceService,Inject,Injector,LocaleService,Plugin,UniverInstanceType,createIdentifier,merge,registerDependencies,resolveWithBasePath,toDisposable,touchDependencies}from"@univerjs/core";
-import{HTTPEventType,HTTPResponseError,HTTPService,UniverNetworkPlugin}from"@univerjs/network";
-import{ClockIcon,CloseIcon,DirectExportIcon,DocsMultiIcon,ErrorIcon,ExportIcon,FolderIcon,LoadingMultiIcon,ShareRangeIcon,SheetsMultiIcon,SlidesMultiIcon,SuccessIcon}from"@univerjs/icons";
-import{BuiltInUIPart,ComponentManager,IMessageService,IUIPartsService,IconManager,connectInjector,useDependency,useObservable}from"@univerjs/ui";
-import{Button,MessageType,Radio,Select,Tooltip,clsx,scrollbarClassName}from"@univerjs/design";
-import{useRef,useState}from"react";
-import{ErrorCode,FileSource}from"@univerjs/protocol";
-import{jsx,jsxs}from"react/jsx-runtime";
-import{BehaviorSubject,Subject}from"rxjs";
-import{ISnapshotServerService,SnapshotService,b64EncodeUnicode,textDecoder,textEncoder}from"@univerjs-pro/collaboration";
-import{deflateSync}from"fflate";
-function vt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.workbook;if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609)return null;let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8={};var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.sheets&&Object.keys(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.sheets).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.sheets[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402];var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402]={...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403,originalMeta:b64EncodeUnicode(textDecoder.decode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403.originalMeta))};});let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46610=b64EncodeUnicode(textDecoder.decode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.originalMeta));return{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608,workbook:{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609,originalMeta:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46610,sheets:var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8},doc:{},slide:undefined,board:undefined,pdf:undefined};}
-
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DependentOn, Disposable, IConfigService, ILogService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, UniverInstanceType, createIdentifier, merge, registerDependencies, resolveWithBasePath, toDisposable, touchDependencies } from "@univerjs/core";
+import { HTTPEventType, HTTPResponseError, HTTPService, UniverNetworkPlugin } from "@univerjs/network";
+import { ClockIcon, CloseIcon, DirectExportIcon, DocsMultiIcon, ErrorIcon, ExportIcon, FolderIcon, LoadingMultiIcon, ShareRangeIcon, SheetsMultiIcon, SlidesMultiIcon, SuccessIcon } from "@univerjs/icons";
+import { BuiltInUIPart, ComponentManager, IMessageService, IUIPartsService, IconManager, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { Button, MessageType, Radio, Select, Tooltip, clsx, scrollbarClassName } from "@univerjs/design";
+import { useRef, useState } from "react";
+import { ErrorCode, FileSource } from "@univerjs/protocol";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { BehaviorSubject, Subject } from "rxjs";
+import { ISnapshotServerService, SnapshotService, b64EncodeUnicode, textDecoder, textEncoder } from "@univerjs-pro/collaboration";
+import { deflateSync } from "fflate";
+function vt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608.workbook;
+  if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609) return null;
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8 = {};
+  var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.sheets && Object.keys(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.sheets).forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402 => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.sheets[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402];
+    var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46402] = {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403,
+      originalMeta: b64EncodeUnicode(textDecoder.decode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46403.originalMeta))
+    };
+  });
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46610 = b64EncodeUnicode(textDecoder.decode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609.originalMeta));
+  return {
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46608,
+    workbook: {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46609,
+      originalMeta: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46610,
+      sheets: var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8
+    },
+    doc: {},
+    slide: undefined,
+    board: undefined,
+    pdf: undefined
+  };
+}
 export { vt as transformWorkbookSnapshotMetaToString };

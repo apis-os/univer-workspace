@@ -1,11 +1,25 @@
-import{BooleanNumber,BuildTextUtils,CommandType,DataStreamTreeTokenType,DependentOn,Disposable,DocumentBlockRangeType,ICommandService,IConfigService,IResourceManagerService,IUniverInstanceService,Inject,Injector,JSONX,Plugin,TextX,UniverInstanceType,containsInteriorInsertionOffset,containsStreamIndex,createParagraphId,generateRandomId,getBlockRangeInterval,getBodySliceForTextXAction,getParagraphContentStartOffset,getParagraphContentStartOffsets,getParagraphFollowingBlockOffset,getSingleDataStreamChange,intersectsOperationalIntervals,merge,shiftExclusiveRangeOnDelete,shiftExclusiveRangeOnInsert,shiftInclusiveRangeOnDelete,shiftInclusiveRangeOnInsert}from"@univerjs/core";
-import{Subject}from"rxjs";
-import{DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin,getContentInsertRange,isHeaderFooterSelection}from"@univerjs/docs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, BuildTextUtils, CommandType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentBlockRangeType, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, UniverInstanceType, containsInteriorInsertionOffset, containsStreamIndex, createParagraphId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getParagraphContentStartOffset, getParagraphContentStartOffsets, getParagraphFollowingBlockOffset, getSingleDataStreamChange, intersectsOperationalIntervals, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { Subject } from "rxjs";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange, isHeaderFooterSelection } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { Se } from "./internal-glue.js";
 import { w } from "./docs-code-model.js";
-function v(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166){return{...Se,...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166};}const Te={id:"docs-code.mutation.set-config",type:CommandType.MUTATION,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205)=>!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.unitId)||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.blockId?false:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204.get(w).setCodeConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.unitId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.blockId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.config),true)},T={id:"docs-code.mutation.remove-config",type:CommandType.MUTATION,handler:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207)=>!(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207!=null&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.unitId)||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.blockId?false:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206.get(w).removeCode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.unitId,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.blockId),true)},Ee="monospace";
-
+function v(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166) {
+  return {
+    ...Se,
+    ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46166
+  };
+}
+const Te = {
+    id: "docs-code.mutation.set-config",
+    type: CommandType.MUTATION,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205) => !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.blockId ? false : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204.get(w).setCodeConfig(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.blockId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46205.config), true)
+  },
+  T = {
+    id: "docs-code.mutation.remove-config",
+    type: CommandType.MUTATION,
+    handler: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207) => !(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207 != null && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.unitId) || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.blockId ? false : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46206.get(w).removeCode(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.unitId, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46207.blockId), true)
+  },
+  Ee = "monospace";
 export { v as normalizeDocsCodeConfig, Te as SetDocsCodeConfigMutation, T as RemoveDocsCodeConfigMutation };
-
 export { Ee };

@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Cao",
       rowHeightExtraTall: "Rất cao",
       conditionalColoring: "Tô màu có điều kiện",
-      conditionalColoringHelp:
-        "Nhấp\x20vào\x20\x22Điều\x20kiện\x20mới\x22\x20để\x20áp\x20dụng\x20màu\x20dựa\x20trên\x20các\x20điều\x20kiện\x20đã\x20xác\x20định.\x20Các\x20điều\x20kiện\x20ở\x20phía\x20trên\x20có\x20mức\x20ưu\x20tiên\x20cao\x20hơn.",
+      conditionalColoringHelp: "Nhấp\x20vào\x20\x22Điều\x20kiện\x20mới\x22\x20để\x20áp\x20dụng\x20màu\x20dựa\x20trên\x20các\x20điều\x20kiện\x20đã\x20xác\x20định.\x20Các\x20điều\x20kiện\x20ở\x20phía\x20trên\x20có\x20mức\x20ưu\x20tiên\x20cao\x20hơn.",
       conditionalColoringSmart: "Áp dụng màu thông minh cho tất cả",
       conditionalColor: "Màu",
       conditionalCustomColor: "Tùy chỉnh",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "đã kiểm tra",
       conditionalUnchecked: "bỏ chọn",
       statusDoneTitle: "Trạng thái đã hoàn tất",
-      statusDoneDescription:
-        "Áp dụng điểm đánh dấu màu xanh lá cây mềm cho các bản ghi phù hợp.",
+      statusDoneDescription: "Áp dụng điểm đánh dấu màu xanh lá cây mềm cho các bản ghi phù hợp.",
       statusBlockedTitle: "Trạng thái bị chặn",
-      statusBlockedDescription:
-        "Áp dụng điểm đánh dấu cảnh báo cho các bản ghi bị chặn.",
+      statusBlockedDescription: "Áp dụng điểm đánh dấu cảnh báo cho các bản ghi bị chặn.",
       addField: "Thêm\x20trường",
       undo: "Hoàn tác",
-      redo: "Làm lại",
+      redo: "Làm lại"
     },
     recordDetail: {
       untitledRecord: "Bản\x20ghi\x20chưa\x20đặt\x20tên",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Thêm bản ghi sau khi gửi",
       panelSize: "Kích thước bảng",
       fullScreen: "Toàn màn hình",
-      exitFullScreen: "Thoát toàn màn hình",
+      exitFullScreen: "Thoát toàn màn hình"
     },
     recordLink: {
       searchRecords: "Tìm\x20kiếm\x20bản\x20ghi",
@@ -74,28 +71,22 @@ const n = {
       selectedCount: "Đã chọn {0}",
       missingRecord: "Bản ghi đã xóa",
       openRecord: "Mở bản ghi liên kết",
-      back: "Quay lại",
+      back: "Quay lại"
     },
     hierarchy: {
-      invalidField:
-        "Chọn một trường liên kết bản ghi một giá trị trỏ tới bảng này.",
-      missingRecord:
-        "Bản ghi hoặc mục cha không còn tồn tại. Hãy làm mới và thử lại.",
-      selfParent:
-        "Một\x20bản\x20ghi\x20không\x20thể\x20là\x20mục\x20cha\x20của\x20chính\x20nó.",
+      invalidField: "Chọn một trường liên kết bản ghi một giá trị trỏ tới bảng này.",
+      missingRecord: "Bản ghi hoặc mục cha không còn tồn tại. Hãy làm mới và thử lại.",
+      selfParent: "Một\x20bản\x20ghi\x20không\x20thể\x20là\x20mục\x20cha\x20của\x20chính\x20nó.",
       cycle: "Thao tác di chuyển này sẽ tạo vòng lặp mục cha.",
-      maxDepth:
-        "Thao tác di chuyển này sẽ vượt quá giới hạn tối đa năm cấp phân cấp.",
-      sortedView:
-        "Hãy xóa sắp xếp của chế độ xem trước khi sắp xếp lại bản ghi theo cách thủ công.",
-      operationFailed:
-        "Không\x20thể\x20áp\x20dụng\x20thay\x20đổi\x20phân\x20cấp.\x20Hãy\x20làm\x20mới\x20và\x20thử\x20lại.",
+      maxDepth: "Thao tác di chuyển này sẽ vượt quá giới hạn tối đa năm cấp phân cấp.",
+      sortedView: "Hãy xóa sắp xếp của chế độ xem trước khi sắp xếp lại bản ghi theo cách thủ công.",
+      operationFailed: "Không\x20thể\x20áp\x20dụng\x20thay\x20đổi\x20phân\x20cấp.\x20Hãy\x20làm\x20mới\x20và\x20thử\x20lại.",
       parent: "Mục cha",
       parentFieldName: "Các mục cha",
       children: "Mục con",
       viewChildren: "Xem mục con",
       root: "Bản ghi gốc",
-      setParent: "Đặt mục cha",
+      setParent: "Đặt mục cha"
     },
     collaboration: {
       localStatus: "Chế độ cục bộ",
@@ -109,14 +100,14 @@ const n = {
       conflictStatus: "Xung đột",
       conflictTooltip: "Một cuộc xung đột hợp tác cần được chú ý.",
       notCollabStatus: "Không hợp tác",
-      notCollabTooltip: "Cơ sở này không ở chế độ cộng tác.",
+      notCollabTooltip: "Cơ sở này không ở chế độ cộng tác."
     },
     virtualRecord: {
       regrouped: "Bản ghi sẽ được nhóm lại",
       resorted: "Bản ghi sẽ được sắp xếp lại",
       moved: "Bản ghi sẽ di chuyển trong chế độ xem này",
       filteredOut: "Bản ghi bị ẩn trong chế độ xem này",
-      "delete d": "Bản\x20ghi\x20đã\x20bị\x20xóa",
+      "delete d": "Bản\x20ghi\x20đã\x20bị\x20xóa"
     },
     gridContext: {
       insert: "Chèn",
@@ -126,7 +117,7 @@ const n = {
       addSubRecord: "Thêm\x20bản\x20ghi\x20con",
       clearContent: "Xóa nội dung",
       deleteRecord: "Xóa bản ghi",
-      deleteRecords: "Xóa\x20bản\x20ghi",
+      deleteRecords: "Xóa\x20bản\x20ghi"
     },
     common: {
       apply: "Áp dụng",
@@ -141,7 +132,7 @@ const n = {
       searchClose: "Đóng tìm kiếm",
       value: "Giá trị",
       newCondition: "Điều kiện mới",
-      newBadge: "Mới",
+      newBadge: "Mới"
     },
     footerStat: {
       none: "Không",
@@ -160,18 +151,16 @@ const n = {
       sum: "Tổng {0}",
       average: "Trung bình {0}",
       min: "tối thiểu {0}",
-      max: "Tối đa {0}",
+      max: "Tối đa {0}"
     },
     confirmDelete: {
       tableTitle: "Xóa bảng này?",
-      tableDescription:
-        "Bảng\x20này\x20và\x20các\x20bản\x20ghi\x20của\x20nó\x20sẽ\x20bị\x20xóa.",
-      tableReferenced:
-        "Không\x20thể\x20xóa\x20bảng\x20này\x20vì\x20các\x20trường\x20sau\x20đang\x20tham\x20chiếu\x20đến\x20bảng:\x20{0}.",
+      tableDescription: "Bảng\x20này\x20và\x20các\x20bản\x20ghi\x20của\x20nó\x20sẽ\x20bị\x20xóa.",
+      tableReferenced: "Không\x20thể\x20xóa\x20bảng\x20này\x20vì\x20các\x20trường\x20sau\x20đang\x20tham\x20chiếu\x20đến\x20bảng:\x20{0}.",
       viewTitle: "Xóa dạng xem này?",
       viewDescription: "Dạng xem này sẽ bị xóa.",
       fieldTitle: "Xóa trường này?",
-      fieldDescription: "Trường này sẽ bị xóa khỏi bảng.",
+      fieldDescription: "Trường này sẽ bị xóa khỏi bảng."
     },
     duplicateTable: {
       title: "Nhân\x20bản\x20bảng",
@@ -180,29 +169,26 @@ const n = {
       configurationsOnly: "Chỉ\x20cấu\x20hình",
       configurationsAndRecords: "Cấu hình và bản ghi",
       action: "Nhân bản",
-      copyName: "{0} bản sao",
+      copyName: "{0} bản sao"
     },
     tableNameValidation: {
       required: "Nhập tên bảng.",
       tooLong: "Sử dụng tối đa 31 ký tự.",
-      apostrophe:
-        "Tên\x20bảng\x20không\x20được\x20bắt\x20đầu\x20hoặc\x20kết\x20thúc\x20bằng\x20dấu\x20nháy\x20đơn.",
+      apostrophe: "Tên\x20bảng\x20không\x20được\x20bắt\x20đầu\x20hoặc\x20kết\x20thúc\x20bằng\x20dấu\x20nháy\x20đơn.",
       invalidCharacters: "Tên bảng không được chứa : \\ / ? * [ ].",
       duplicate: "Đã tồn tại bảng có tên này.",
-      invalid: "Nhập\x20tên\x20bảng\x20hợp\x20lệ.",
+      invalid: "Nhập\x20tên\x20bảng\x20hợp\x20lệ."
     },
     clipboard: {
       recordsCopied: "Đã sao chép {0} bản ghi",
-      attachmentsUploading:
-        "Đang\x20tải\x20lên\x20{0}\x20tệp\x20đính\x20kèm...",
+      attachmentsUploading: "Đang\x20tải\x20lên\x20{0}\x20tệp\x20đính\x20kèm..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Bảng\x20đích",
       recordLinkDisplayField: "Trường hiển thị",
       recordLinkPickerFields: "Trường phụ trong bộ chọn",
       recordLinkAllowMultiple: "Cho phép liên kết nhiều bản ghi",
-      recordLinkDescription:
-        "Lưu ID bản ghi ổn định. Dùng các công thức Excel chuẩn như XLOOKUP và TEXTSPLIT để đọc giá trị liên kết.",
+      recordLinkDescription: "Lưu ID bản ghi ổn định. Dùng các công thức Excel chuẩn như XLOOKUP và TEXTSPLIT để đọc giá trị liên kết.",
       fieldTitle: "Tiêu đề trường",
       fieldTitlePlaceholder: "Nhập tiêu đề trường",
       fieldType: "Loại trường",
@@ -257,16 +243,12 @@ const n = {
       filterByField: "Lọc theo {0}",
       createKanbanWithField: "Tạo Kanban bằng {0}",
       deleteField: "Xóa trường",
-      referenceOptionsHelp:
-        "Dữ liệu tham chiếu từ các bảng khác dưới dạng tùy chọn",
+      referenceOptionsHelp: "Dữ liệu tham chiếu từ các bảng khác dưới dạng tùy chọn",
       allowMultipleMembers: "Cho phép thêm nhiều thành viên vào một bản ghi",
       allowMultipleGroups: "Cho phép thêm nhiều nhóm vào một bản ghi",
-      defaultProviderMock:
-        "Giá trị mặc định được phân giải từ {0} mô phỏng {1} mục{2}.",
-      defaultProviderExternal:
-        "Giá\x20trị\x20mặc\x20định\x20được\x20giải\x20quyết\x20từ\x20nhà\x20cung\x20cấp\x20Univer\x20{0}\x20bên\x20ngoài.",
-      linkPlaceholder:
-        "Nhập URL (ví dụ: univer.ai hoặc https://univer.ai/skills).",
+      defaultProviderMock: "Giá trị mặc định được phân giải từ {0} mô phỏng {1} mục{2}.",
+      defaultProviderExternal: "Giá\x20trị\x20mặc\x20định\x20được\x20giải\x20quyết\x20từ\x20nhà\x20cung\x20cấp\x20Univer\x20{0}\x20bên\x20ngoài.",
+      linkPlaceholder: "Nhập URL (ví dụ: univer.ai hoặc https://univer.ai/skills).",
       phonePlaceholder: "Nhập\x20số\x20điện\x20thoại",
       currencySymbol: "Ký hiệu tiền tệ",
       thousandsSeparator: "Dấu\x20phân\x20cách\x20hàng\x20nghìn",
@@ -296,14 +278,11 @@ const n = {
       selectMembers: "Chọn\x20thành\x20viên",
       noProviderData: "Không có sẵn dữ liệu nhà cung cấp",
       noMatchingMembers: "Không\x20có\x20thành\x20viên\x20phù\x20hợp.",
-      noFormulaConfigured:
-        "Không\x20có\x20công\x20thức\x20nào\x20được\x20định\x20cấu\x20hình",
+      noFormulaConfigured: "Không\x20có\x20công\x20thức\x20nào\x20được\x20định\x20cấu\x20hình",
       editFormula: "Chỉnh sửa công thức",
       closeFormulaEditor: "Đóng trình soạn thảo công thức",
-      formulaHint:
-        "Sử\x20dụng\x20các\x20trường\x20của\x20hàng\x20hiện\x20tại\x20như\x20[@[Số\x20tiền]].\x20A1:B10\x20và\x20tham\x20chiếu\x20ô\x20đơn\x20không\x20được\x20phép.",
-      formulaReferenceError:
-        "Các\x20tham\x20chiếu\x20và\x20phạm\x20vi\x20A1\x20không\x20được\x20hỗ\x20trợ\x20trong\x20các\x20công\x20thức\x20Cơ\x20sở.",
+      formulaHint: "Sử\x20dụng\x20các\x20trường\x20của\x20hàng\x20hiện\x20tại\x20như\x20[@[Số\x20tiền]].\x20A1:B10\x20và\x20tham\x20chiếu\x20ô\x20đơn\x20không\x20được\x20phép.",
+      formulaReferenceError: "Các\x20tham\x20chiếu\x20và\x20phạm\x20vi\x20A1\x20không\x20được\x20hỗ\x20trợ\x20trong\x20các\x20công\x20thức\x20Cơ\x20sở.",
       formulaTables: "Bàn",
       formulaFields: "Trường",
       formulaFunctions: "Chức\x20năng",
@@ -316,8 +295,7 @@ const n = {
       currentTableName: "Bảng\x20hiện\x20tại",
       currentTableField: "Trường bảng hiện tại",
       fieldFromTable: "Trường\x20từ\x20{0}",
-      referenceCurrentField:
-        'Tham chiếu trường "{0}" trong bảng Base hiện tại. Trường này sẽ được lưu dưới dạng [[#This Row],[{1}]] cho bộ máy công thức.',
+      referenceCurrentField: 'Tham chiếu trường "{0}" trong bảng Base hiện tại. Trường này sẽ được lưu dưới dạng [[#This Row],[{1}]] cho bộ máy công thức.',
       referenceTableField: 'Tham chiếu trường "{0}" từ bảng "{1}".',
       fieldNameColumn: "Tên",
       fieldTypeColumn: "Loại",
@@ -333,8 +311,7 @@ const n = {
       formulaFormatPercent: "Phần trăm",
       formulaFormatDateTime: "Ngày/Giờ",
       addDescriptionPlaceholder: "Thêm mô tả",
-      numberingDescription:
-        "Tự\x20động\x20gán\x20chỉ\x20số\x20tăng\x20duy\x20nhất\x20bắt\x20đầu\x20từ\x201\x20khi\x20bản\x20ghi\x20được\x20tạo.\x20Các\x20giá\x20trị\x20đã\x20tạo\x20không\x20thể\x20chỉnh\x20sửa\x20được.",
+      numberingDescription: "Tự\x20động\x20gán\x20chỉ\x20số\x20tăng\x20duy\x20nhất\x20bắt\x20đầu\x20từ\x201\x20khi\x20bản\x20ghi\x20được\x20tạo.\x20Các\x20giá\x20trị\x20đã\x20tạo\x20không\x20thể\x20chỉnh\x20sửa\x20được.",
       optionColor: "Màu tùy chọn",
       separatorLocal: "Địa phương",
       separatorCommaPeriod: "Dấu phẩy, dấu chấm",
@@ -359,7 +336,7 @@ const n = {
       ratingIconLightning: "Sét",
       ratingIconMedal: "Huy chương",
       increment: "gia tăng",
-      decrement: "giảm đi",
+      decrement: "giảm đi"
     },
     cellEditor: {
       done: "Xong",
@@ -375,8 +352,7 @@ const n = {
       deleteAttachment: "Xóa tệp đính kèm {0}",
       deleteAttachmentConfirmTitle: "Xóa tệp đính kèm này?",
       deleteAttachmentsConfirmTitle: "Xóa {0} tệp đính kèm?",
-      deleteAttachmentConfirmDescription:
-        "Các tệp đính kèm đã chọn sẽ bị xóa khỏi bản ghi này.",
+      deleteAttachmentConfirmDescription: "Các tệp đính kèm đã chọn sẽ bị xóa khỏi bản ghi này.",
       failedToAttachFile: "Không thể đính kèm tập tin",
       file: "TỆP",
       invalidEmail: "Địa chỉ email không hợp lệ",
@@ -387,7 +363,7 @@ const n = {
       selectOptions: "Chọn tùy chọn",
       previousMonth: "Tháng trước",
       nextMonth: "Tháng\x20tiếp\x20theo",
-      time: "Thời gian",
+      time: "Thời gian"
     },
     recordDetailField: {
       previousRecord: "Bản ghi trước đó",
@@ -400,7 +376,7 @@ const n = {
       empty: "Trống",
       unassigned: "Chưa được chỉ định",
       editField: "Chỉnh sửa {0}",
-      noVisibleFields: "Không có trường hiển thị",
+      noVisibleFields: "Không có trường hiển thị"
     },
     fieldMenu: {
       createSharedBaseField: "Tạo trường cơ sở dùng chung",
@@ -431,8 +407,8 @@ const n = {
         createdBy: "Trường tác giả hệ thống",
         updatedBy: "Trường sửa đổi hệ thống",
         createdAt: "Thời\x20gian\x20tạo\x20hệ\x20thống",
-        updatedAt: "Thời gian cập nhật hệ thống",
-      },
+        updatedAt: "Thời gian cập nhật hệ thống"
+      }
     },
     fieldTypes: {
       text: "Văn bản",
@@ -456,7 +432,7 @@ const n = {
       createdBy: "Được tạo bởi",
       updatedBy: "được sửa đổi bởi",
       createdAt: "Ngày tạo",
-      updatedAt: "Ngày sửa đổi lần cuối",
+      updatedAt: "Ngày sửa đổi lần cuối"
     },
     viewMenus: {
       customizeKanban: "Tùy chỉnh Kanban",
@@ -494,13 +470,11 @@ const n = {
       addCondition: "Thêm điều kiện",
       calculateWorkingDaysOnly: "Chỉ\x20tính\x20ngày\x20làm\x20việc",
       customWorkingDays: "Ngày làm việc tùy chỉnh",
-      customWorkingDaysHelp:
-        "Tùy\x20chỉnh\x20ngày\x20làm\x20việc\x20và\x20ngày\x20nghỉ\x20cho\x20chế\x20độ\x20xem\x20Gantt\x20này.\x20Nếu\x20không\x20được\x20đặt,\x20Thứ\x20Hai\x20đến\x20Thứ\x20Sáu\x20sẽ\x20được\x20sử\x20dụng\x20khi\x20tính\x20năng\x20tính\x20toán\x20ngày\x20làm\x20việc\x20được\x20bật.",
+      customWorkingDaysHelp: "Tùy\x20chỉnh\x20ngày\x20làm\x20việc\x20và\x20ngày\x20nghỉ\x20cho\x20chế\x20độ\x20xem\x20Gantt\x20này.\x20Nếu\x20không\x20được\x20đặt,\x20Thứ\x20Hai\x20đến\x20Thứ\x20Sáu\x20sẽ\x20được\x20sử\x20dụng\x20khi\x20tính\x20năng\x20tính\x20toán\x20ngày\x20làm\x20việc\x20được\x20bật.",
       notSet: "Chưa thiết lập",
       settings: "Cài đặt",
       setWorkingDays: "Đặt ngày làm việc",
-      setWorkingDaysDescription:
-        "Tùy chỉnh ngày làm việc và ngày nghỉ và áp dụng chúng cho cơ sở hiện tại",
+      setWorkingDaysDescription: "Tùy chỉnh ngày làm việc và ngày nghỉ và áp dụng chúng cho cơ sở hiện tại",
       closeWorkingDaysSettings: "Đóng cài đặt ngày làm việc",
       addWorkingDays: "Thêm ngày làm việc",
       holidayName: "Tên ngày lễ",
@@ -509,8 +483,7 @@ const n = {
       add: "Thêm vào",
       removeWorkingDayException: "Xóa ngoại lệ ngày làm việc",
       legalWorkingDays: "Ngày làm việc hợp pháp",
-      legalWorkingDaysHelp:
-        "Ngày làm việc hợp pháp sẽ có sau khi API lịch bên ngoài được kết nối.",
+      legalWorkingDaysHelp: "Ngày làm việc hợp pháp sẽ có sau khi API lịch bên ngoài được kết nối.",
       mon: "Thứ hai",
       tue: "thứ ba",
       wed: "Thứ tư",
@@ -527,7 +500,7 @@ const n = {
       groupByFieldFallback: "Nhóm theo lĩnh vực",
       kanbanGroup: "Nhóm Kanban",
       required: "Yêu cầu",
-      kanbanGroupHelp: "Chế độ xem Kanban luôn sử dụng một trường nhóm.",
+      kanbanGroupHelp: "Chế độ xem Kanban luôn sử dụng một trường nhóm."
     },
     operators: {
       is: "là",
@@ -539,7 +512,7 @@ const n = {
       greaterThan: "lớn hơn",
       lessThan: "ít\x20hơn",
       before: "là trước đây",
-      after: "là sau",
+      after: "là sau"
     },
     viewSettings: {
       title: "Cài đặt dạng xem",
@@ -564,13 +537,12 @@ const n = {
       kanbanView: "Kanban",
       kanbanViewDescription: "Các thẻ được nhóm theo một trường đã chọn.",
       calendarView: "Lịch",
-      calendarViewDescription:
-        "Hồ\x20sơ\x20được\x20sắp\x20xếp\x20theo\x20ngày.",
+      calendarViewDescription: "Hồ\x20sơ\x20được\x20sắp\x20xếp\x20theo\x20ngày.",
       ganttView: "Gantt",
       ganttViewDescription: "Dòng thời gian có ngày bắt đầu và ngày kết thúc.",
       galleryView: "Phòng trưng bày",
       galleryViewDescription: "Thẻ\x20trực\x20quan\x20để\x20duyệt\x20hồ\x20sơ.",
-      copySuffix: "Sao chép",
+      copySuffix: "Sao chép"
     },
     tableSidebar: {
       searchTables: "Tìm kiếm bảng",
@@ -578,15 +550,17 @@ const n = {
       newTable: "Mới",
       collapse: "Sụp đổ",
       expand: "Mở rộng",
-      resizeTableSidebar:
-        "Thay\x20đổi\x20kích\x20thước\x20thanh\x20bên\x20của\x20bảng",
+      resizeTableSidebar: "Thay\x20đổi\x20kích\x20thước\x20thanh\x20bên\x20của\x20bảng",
       configureTable: "Định cấu hình {0}",
       renameTable: "Đổi tên bảng",
       duplicateTable: "Bảng trùng lặp",
       deleteTable: "Xóa\x20bảng",
-      defaultTableName: "Bảng\x20{0}",
+      defaultTableName: "Bảng\x20{0}"
     },
-    footer: { record: "ghi", records: "hồ sơ" },
+    footer: {
+      record: "ghi",
+      records: "hồ sơ"
+    },
     canvas: {
       addRecord: "Thêm bản ghi",
       attachmentDropLabel: "Thêm tệp vào bản ghi này",
@@ -599,12 +573,12 @@ const n = {
       quarter: "Quý",
       today: "Hôm nay",
       week: "Tuần",
-      year: "Năm",
+      year: "Năm"
     },
     empty: {
       value: "Trống",
       noRecords: "Không có bản ghi",
-      invalidView: "Chế độ xem này cần được định cấu hình",
+      invalidView: "Chế độ xem này cần được định cấu hình"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -622,19 +596,17 @@ const n = {
         engineering: "Kỹ\x20thuật",
         financial: "Tài chính",
         lookup: "Tra cứu và tham khảo",
-        web: "Web",
+        web: "Web"
       },
       generic: {
         engineAbstract: "{0} chức năng của công cụ công thức",
-        engineDescription:
-          "{0} được cung cấp bởi công cụ công thức Univer. Base hỗ trợ các tham chiếu trường như TableName[[#This Row],[Field]] và OtherTable[Field], nhưng không hỗ trợ các ô A1, phạm vi A1:B10 hoặc đầu ra mảng tràn trong các trường công thức cơ sở.",
+        engineDescription: "{0} được cung cấp bởi công cụ công thức Univer. Base hỗ trợ các tham chiếu trường như TableName[[#This Row],[Field]] và OtherTable[Field], nhưng không hỗ trợ các ô A1, phạm vi A1:B10 hoặc đầu ra mảng tràn trong các trường công thức cơ sở.",
         argument: {
           name: "lý lẽ",
-          detail:
-            "Một giá trị, tham chiếu trường, tham chiếu trường bảng hoặc biểu thức được công cụ công thức Univer hỗ trợ.",
-        },
-      },
-    },
-  },
+          detail: "Một giá trị, tham chiếu trường, tham chiếu trường bảng hoặc biểu thức được công cụ công thức Univer hỗ trợ."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

@@ -1,1 +1,133 @@
-import{IShapeHostAdapterRegistry as v46,isConnectorShape as v47}from"@univerjs-pro/engine-shape";import{FConnectorShape as v48,FShape as v49}from"@univerjs-pro/engine-shape/facade";import{ICommandService as v50,UniverInstanceType as v51}from"@univerjs/core";import{FWorksheet as v52}from"@univerjs/sheets/facade";import{ISheetDrawingService as v53,SetSheetDrawingPlacementCommand as v54,SheetDrawingAnchorType as v55,getSheetDrawingPlacement as v56}from"@univerjs/sheets-drawing";function d(v36,v37){return function(v8,v9){v37(v8,v9,v36);};}function f(v38,v39,v40,v41){var v42=arguments.length,v43=v42<3?v39:v41===null?v41=Object.getOwnPropertyDescriptor(v39,v40):v41,v44;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v43=Reflect.decorate(v38,v39,v40,v41);else{for(var v45=v38.length-1;v45>=0;v45--)(v44=v38[v45])&&(v43=(v42<3?v44(v43):v42>3?v44(v39,v40,v43):v44(v39,v40))||v43);}return v42>3&&v43&&Object.defineProperty(v39,v40,v43),v43;}let p=class extends v49{constructor(v10,v11,v12,v13,v14){super(v10,v11,v12,v13),this._sheetDrawingService=v14;}getPlacement(){let v15=this._sheetDrawingService["getDrawingByParam"]({unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawingId:this._shapeRef["shapeId"]});return v15?v56(v15):null;}setPlacement(v16){return this._commandService["syncExecuteCommand"](v54.id,{unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawings:[{drawingId:this._shapeRef["shapeId"],placement:v16}]});}setPosition(v17,v18,v19,v20){var v21,v22;let v23=this._sheetDrawingService["getDrawingByParam"]({unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawingId:this._shapeRef["shapeId"]});if(!v23)return console.warn('[Sheet Shape Facade]: Shape "'+this._shapeRef["shapeId"]+"\x22\x20was\x20not\x20found."),this;let v24=(v21=v23.transform)==null?undefined:v21.width,v25=(v22=v23.transform)==null?undefined:v22.height;return v24==null||v25==null?(console.warn('[Sheet Shape Facade]: Shape "'+this._shapeRef["shapeId"]+'" has no transform extent.'),this):(this._commandService["syncExecuteCommand"](v54.id,{unitId:this._shapeRef["unitId"],subUnitId:this._shapeRef["subUnitId"],drawings:[{drawingId:this._shapeRef["shapeId"],placement:{kind:v55.Position,from:{row:v17,column:v18,rowOffset:v19,columnOffset:v20},width:v24,height:v25}}]}),this);}};p=f([d(2,v46),d(3,v50),d(4,v53)],p);var m=class extends v52{insertShape(v26){let v27=this._getShapeAdapter();if(!v27)return null;try{let v2=v27.createShape(this._getShapeScope(),v26);return v2?this._createShapeHandle(v2):(console.warn("[Sheet Shape Facade]: Failed to insert Shape."),null);}catch(v3){return console.warn("[Sheet Shape Facade]: Failed to insert Shape.",v3),null;}}getShape(v28){let v29=this._getShapeAdapter();if(!v29)return null;try{let v4={...this._getShapeScope(),shapeId:v28},v5=v29.getShape(v4);return v5?this._createShapeHandle(v5):(console.warn('[Sheet Shape Facade]: Shape "'+v28+'" was not found.'),null);}catch(v6){return console.warn('[Sheet Shape Facade]: Failed to read Shape "'+v28+"\x22.",v6),null;}}getShapes(){let v30=this._getShapeAdapter();if(!v30)return[];try{return v30.listShapes(this._getShapeScope()).map(v1=>this._createShapeHandle(v1));}catch(v7){return console.warn("[Sheet Shape Facade]: Failed to list Shapes.",v7),[];}}_getShapeScope(){return{hostType:v51.UNIVER_SHEET,unitId:this.getWorkbook().getUnitId(),subUnitId:this.getSheetId()};}_getShapeAdapter(){return this._injector["get"](v46).get(v51.UNIVER_SHEET);}_createShapeHandle(v31){let{unitId:v32,subUnitId:v33,shapeId:v34}=v31,v35={unitId:v32,subUnitId:v33,shapeId:v34,hostType:v51.UNIVER_SHEET};return v47(v31.shapeType)?this._injector["createInstance"](v48,v35,this._injector):this._injector["createInstance"](p,v35,this._injector);}};v52.extend(m);export{p as FSheetShape};
+import { IShapeHostAdapterRegistry as var_core_value_sig9E2F, isConnectorShape as var_core_value_sigD082 } from "@univerjs-pro/engine-shape";
+import { FConnectorShape as var_core_value_sigDBB7, FShape as var_core_value_sigD0A8 } from "@univerjs-pro/engine-shape/facade";
+import { ICommandService as var_core_value_sigF4B9, UniverInstanceType as var_core_value_sig5CEE } from "@univerjs/core";
+import { FWorksheet as var_core_value_sigE92A } from "@univerjs/sheets/facade";
+import { ISheetDrawingService as var_core_value_sig362B, SetSheetDrawingPlacementCommand as var_core_value_sig5CA5, SheetDrawingAnchorType as var_core_value_sigE90F, getSheetDrawingPlacement as var_core_value_sigEFD4 } from "@univerjs/sheets-drawing";
+function d(var_core_value_sig09B8, var_core_value_sig6F91) {
+  return function (var_core_value_sig8061, var_core_value_sig4D4C) {
+    var_core_value_sig6F91(var_core_value_sig8061, var_core_value_sig4D4C, var_core_value_sig09B8);
+  };
+}
+function f(var_core_value_sigF9C7, var_core_value_sig8895, var_core_value_sigC80B, var_core_value_sig284F) {
+  var var_core_value_sigE154 = arguments.length,
+    var_core_value_sig4632 = var_core_value_sigE154 < 3 ? var_core_value_sig8895 : var_core_value_sig284F === null ? var_core_value_sig284F = Object.getOwnPropertyDescriptor(var_core_value_sig8895, var_core_value_sigC80B) : var_core_value_sig284F,
+    var_core_value_sig12F2;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig4632 = Reflect.decorate(var_core_value_sigF9C7, var_core_value_sig8895, var_core_value_sigC80B, var_core_value_sig284F);else {
+    for (var var_core_value_sig2259 = var_core_value_sigF9C7.length - 1; var_core_value_sig2259 >= 0; var_core_value_sig2259--) (var_core_value_sig12F2 = var_core_value_sigF9C7[var_core_value_sig2259]) && (var_core_value_sig4632 = (var_core_value_sigE154 < 3 ? var_core_value_sig12F2(var_core_value_sig4632) : var_core_value_sigE154 > 3 ? var_core_value_sig12F2(var_core_value_sig8895, var_core_value_sigC80B, var_core_value_sig4632) : var_core_value_sig12F2(var_core_value_sig8895, var_core_value_sigC80B)) || var_core_value_sig4632);
+  }
+  return var_core_value_sigE154 > 3 && var_core_value_sig4632 && Object.defineProperty(var_core_value_sig8895, var_core_value_sigC80B, var_core_value_sig4632), var_core_value_sig4632;
+}
+let p = class extends var_core_value_sigD0A8 {
+  constructor(var_core_value_sigC9E0, var_core_value_sig76BA, var_core_value_sigFBFA, var_core_value_sigF602, var_core_value_sig1BBD) {
+    super(var_core_value_sigC9E0, var_core_value_sig76BA, var_core_value_sigFBFA, var_core_value_sigF602), this._sheetDrawingService = var_core_value_sig1BBD;
+  }
+  getPlacement() {
+    let var_core_value_sigF704 = this._sheetDrawingService["getDrawingByParam"]({
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawingId: this._shapeRef["shapeId"]
+    });
+    return var_core_value_sigF704 ? var_core_value_sigEFD4(var_core_value_sigF704) : null;
+  }
+  setPlacement(var_core_value_sig2BCF) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig5CA5.id, {
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawings: [{
+        drawingId: this._shapeRef["shapeId"],
+        placement: var_core_value_sig2BCF
+      }]
+    });
+  }
+  setPosition(var_core_value_sig0D69, var_core_value_sig480E, var_core_value_sig26DB, var_core_value_sigF0F9) {
+    var var_core_value_sig1A0F, var_core_value_sigFBA4;
+    let var_core_value_sig4383 = this._sheetDrawingService["getDrawingByParam"]({
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawingId: this._shapeRef["shapeId"]
+    });
+    if (!var_core_value_sig4383) return console.warn('[Sheet Shape Facade]: Shape "' + this._shapeRef["shapeId"] + "\x22\x20was\x20not\x20found."), this;
+    let var_core_value_sig186C = (var_core_value_sig1A0F = var_core_value_sig4383.transform) == null ? undefined : var_core_value_sig1A0F.width,
+      var_core_value_sigD955 = (var_core_value_sigFBA4 = var_core_value_sig4383.transform) == null ? undefined : var_core_value_sigFBA4.height;
+    return var_core_value_sig186C == null || var_core_value_sigD955 == null ? (console.warn('[Sheet Shape Facade]: Shape "' + this._shapeRef["shapeId"] + '" has no transform extent.'), this) : (this._commandService["syncExecuteCommand"](var_core_value_sig5CA5.id, {
+      unitId: this._shapeRef["unitId"],
+      subUnitId: this._shapeRef["subUnitId"],
+      drawings: [{
+        drawingId: this._shapeRef["shapeId"],
+        placement: {
+          kind: var_core_value_sigE90F.Position,
+          from: {
+            row: var_core_value_sig0D69,
+            column: var_core_value_sig480E,
+            rowOffset: var_core_value_sig26DB,
+            columnOffset: var_core_value_sigF0F9
+          },
+          width: var_core_value_sig186C,
+          height: var_core_value_sigD955
+        }
+      }]
+    }), this);
+  }
+};
+p = f([d(2, var_core_value_sig9E2F), d(3, var_core_value_sigF4B9), d(4, var_core_value_sig362B)], p);
+var m = class extends var_core_value_sigE92A {
+  insertShape(var_core_value_sig48BD) {
+    let var_core_value_sig429F = this._getShapeAdapter();
+    if (!var_core_value_sig429F) return null;
+    try {
+      let var_core_value_sig2AD8 = var_core_value_sig429F.createShape(this._getShapeScope(), var_core_value_sig48BD);
+      return var_core_value_sig2AD8 ? this._createShapeHandle(var_core_value_sig2AD8) : (console.warn("[Sheet Shape Facade]: Failed to insert Shape."), null);
+    } catch (var_core_value_sig2AD0) {
+      return console.warn("[Sheet Shape Facade]: Failed to insert Shape.", var_core_value_sig2AD0), null;
+    }
+  }
+  getShape(var_core_value_sigF62A) {
+    let var_core_value_sig8178 = this._getShapeAdapter();
+    if (!var_core_value_sig8178) return null;
+    try {
+      let var_core_value_sig3EEE = {
+          ...this._getShapeScope(),
+          shapeId: var_core_value_sigF62A
+        },
+        var_core_value_sigBC46 = var_core_value_sig8178.getShape(var_core_value_sig3EEE);
+      return var_core_value_sigBC46 ? this._createShapeHandle(var_core_value_sigBC46) : (console.warn('[Sheet Shape Facade]: Shape "' + var_core_value_sigF62A + '" was not found.'), null);
+    } catch (var_core_value_sig3D7D) {
+      return console.warn('[Sheet Shape Facade]: Failed to read Shape "' + var_core_value_sigF62A + "\x22.", var_core_value_sig3D7D), null;
+    }
+  }
+  getShapes() {
+    let var_core_value_sigE9ED = this._getShapeAdapter();
+    if (!var_core_value_sigE9ED) return [];
+    try {
+      return var_core_value_sigE9ED.listShapes(this._getShapeScope()).map(var_core_value_sig7524 => this._createShapeHandle(var_core_value_sig7524));
+    } catch (var_core_value_sig27E5) {
+      return console.warn("[Sheet Shape Facade]: Failed to list Shapes.", var_core_value_sig27E5), [];
+    }
+  }
+  _getShapeScope() {
+    return {
+      hostType: var_core_value_sig5CEE.UNIVER_SHEET,
+      unitId: this.getWorkbook().getUnitId(),
+      subUnitId: this.getSheetId()
+    };
+  }
+  _getShapeAdapter() {
+    return this._injector["get"](var_core_value_sig9E2F).get(var_core_value_sig5CEE.UNIVER_SHEET);
+  }
+  _createShapeHandle(var_core_value_sigB577) {
+    let {
+        unitId: var_core_value_sig9572,
+        subUnitId: var_core_value_sigD873,
+        shapeId: var_core_value_sigA12B
+      } = var_core_value_sigB577,
+      var_core_value_sigF230 = {
+        unitId: var_core_value_sig9572,
+        subUnitId: var_core_value_sigD873,
+        shapeId: var_core_value_sigA12B,
+        hostType: var_core_value_sig5CEE.UNIVER_SHEET
+      };
+    return var_core_value_sigD082(var_core_value_sigB577.shapeType) ? this._injector["createInstance"](var_core_value_sigDBB7, var_core_value_sigF230, this._injector) : this._injector["createInstance"](p, var_core_value_sigF230, this._injector);
+  }
+};
+var_core_value_sigE92A.extend(m);
+export { p as FSheetShape };

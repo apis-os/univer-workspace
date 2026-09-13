@@ -1,9 +1,9 @@
-import{ChartDataSourceRuntimeStatus,ChartResourceRepository,ChartResourceRuntimeService,DEFAULT_CHART_RESOURCE_HEADER_ROW,IChartDataSourceRuntimeService,ResourceRefChartDataSourceAdapter,UniverChartPlugin,buildChartDataSetFromValues,buildChartPreviewData,buildOrientedChartDataSet,chartConfigInterpreter,describeChartModel,isInlineChartDataSource,isReferencedChartDataSource,toChartCreateConfigSnapshot,toChartModelConfigReplacement,toChartModelUpdate}from"@univerjs-pro/engine-chart";
-import{BooleanNumber,CommandType,DependentOn,Disposable,DrawingTypeEnum,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSONX,ObjectRelativeFromH,ObjectRelativeFromV,Plugin,PositionedObjectLayoutType,Tools,UniverInstanceType,WrapTextType,generateRandomId,getDrawingOrderIndex,merge,normalizeDrawingOrderIndex,sequenceExecute,touchDependencies}from"@univerjs/core";
-import{IDocDrawingAdapterService,IDocDrawingService,InsertDocDrawingCommand,SetDocDrawingArrangeCommand,UniverDocsDrawingPlugin}from"@univerjs/docs-drawing";
-import{filter,firstValueFrom}from"rxjs";
-import{RichTextEditingMutation,buildDocTransform,normalizeTextRange}from"@univerjs/docs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { ChartDataSourceRuntimeStatus, ChartResourceRepository, ChartResourceRuntimeService, DEFAULT_CHART_RESOURCE_HEADER_ROW, IChartDataSourceRuntimeService, ResourceRefChartDataSourceAdapter, UniverChartPlugin, buildChartDataSetFromValues, buildChartPreviewData, buildOrientedChartDataSet, chartConfigInterpreter, describeChartModel, isInlineChartDataSource, isReferencedChartDataSource, toChartCreateConfigSnapshot, toChartModelConfigReplacement, toChartModelUpdate } from "@univerjs-pro/engine-chart";
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, PositionedObjectLayoutType, Tools, UniverInstanceType, WrapTextType, generateRandomId, getDrawingOrderIndex, merge, normalizeDrawingOrderIndex, sequenceExecute, touchDependencies } from "@univerjs/core";
+import { IDocDrawingAdapterService, IDocDrawingService, InsertDocDrawingCommand, SetDocDrawingArrangeCommand, UniverDocsDrawingPlugin } from "@univerjs/docs-drawing";
+import { filter, firstValueFrom } from "rxjs";
+import { RichTextEditingMutation, buildDocTransform, normalizeTextRange } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { Re, ze } from "./docs-chart-insert-doc-chart.js";
 import { H } from "./docs-chart-doc-chart-model.js";
 import { Q } from "./docs-chart-doc-chart-drawing-adapter.js";
@@ -13,8 +13,73 @@ import { U, W } from "./docs-chart-doc-chart-data-source.js";
 import { z } from "./docs-chart-doc-chart-config.js";
 import { J } from "./docs-chart-doc-chart-drawing.js";
 import { I, L } from "./docs-chart-remove-doc-chart-snapshot.js";
-function Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546){"@babel/helpers - typeof";return Y=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232){return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232;}:function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234&&typeof Symbol=="function"&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234.constructor===Symbol&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234!==Symbol.prototype?"symbol":typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234;},Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546);}function Ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46549){if(Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548)!="object"||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548)return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548;var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548[Symbol.toPrimitive];if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550!==undefined){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46549||"default");if(Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551)!="object")return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551;throw TypeError("@@toPrimitive must return a primitive value.");}return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46549==="string"?String:Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548);}function qe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46556){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557=Ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46556,"string");return Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557)=="symbol"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557+"";}function X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562){return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561=qe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561))in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560?Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561,{value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562,enumerable:true,configurable:true,writable:true}):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560;}let Z=class extends Disposable{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46236,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238){super(),this._resourceManagerService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46236,this._resourceService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237,this._modelService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238,X(this,"_resourceDisposable",null),this._initResource();}_initResource(){this._resourceDisposable=this._resourceManagerService["registerPluginResource"]({pluginName:"DOC_CHART_PLUGIN",businesses:[UniverInstanceType.UNIVER_DOC],toJson:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466=>this._resourceService["serializeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466),parseJson:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467=>JSON.parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467),onLoad:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469)=>{this._resourceService["loadUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469);},onUnLoad:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612=>{this._modelService["removeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612),this._resourceService["unloadUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612);}}),this.disposeWithMe(this._resourceDisposable);}};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46570=class extends Plugin{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258=Re,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261){super(),this._config=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258,this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259,this._configService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260,this._commandService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261;let{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262}=merge({},Re,this._config);this._configService["setConfig"]("docs-chart.config",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262),this._initCommands();}onStarting(){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268=this._injector;[[ChartResourceRepository],[H],[Q],[Z]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620)),this.disposeWithMe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268.get(IDocDrawingAdapterService).registerAdapter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268.get(Q))),touchDependencies(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268,[[ChartResourceRepository],[H],[Q],[Z]]);}_initCommands(){[ze,F,Ue,W,z,J,U,L,N,M,P,I].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621=>{this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621));});}};
+function Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546) {
+  "@babel/helpers - typeof";
 
+  return Y = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46232;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46234;
+  }, Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46546);
+}
+function Ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46549) {
+  if (Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46550.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46549 || "default");
+    if (Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46551;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46549 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46548);
+}
+function qe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46556) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557 = Ke(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46556, "string");
+  return Y(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46557 + "";
+}
+function X(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561 = qe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46561] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46562, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46560;
+}
+let Z = class extends Disposable {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46236, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238) {
+    super(), this._resourceManagerService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46236, this._resourceService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46237, this._modelService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46238, X(this, "_resourceDisposable", null), this._initResource();
+  }
+  _initResource() {
+    this._resourceDisposable = this._resourceManagerService["registerPluginResource"]({
+      pluginName: "DOC_CHART_PLUGIN",
+      businesses: [UniverInstanceType.UNIVER_DOC],
+      toJson: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466 => this._resourceService["serializeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466),
+      parseJson: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467 => JSON.parse(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467),
+      onLoad: (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469) => {
+        this._resourceService["loadUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D468, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469);
+      },
+      onUnLoad: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612 => {
+        this._modelService["removeUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612), this._resourceService["unloadUnit"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612);
+      }
+    }), this.disposeWithMe(this._resourceDisposable);
+  }
+};
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46570 = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258 = Re, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46258, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46259, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46260, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46261;
+    let {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262
+    } = merge({}, Re, this._config);
+    this._configService["setConfig"]("docs-chart.config", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46262), this._initCommands();
+  }
+  onStarting() {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268 = this._injector;
+    [[ChartResourceRepository], [H], [Q], [Z]].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268.add(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4620)), this.disposeWithMe(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268.get(IDocDrawingAdapterService).registerAdapter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268.get(Q))), touchDependencies(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46268, [[ChartResourceRepository], [H], [Q], [Z]]);
+  }
+  _initCommands() {
+    [ze, F, Ue, W, z, J, U, L, N, M, P, I].forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621));
+    });
+  }
+};
 export { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46570 as UniverDocsChartPlugin };
-
 export { Z, X };

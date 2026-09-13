@@ -1,15 +1,31 @@
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{DependentOn,Disposable,IConfigService,ILogService,IUniverInstanceService,Inject,Injector,LocaleService,Plugin,UniverInstanceType,createIdentifier,merge,registerDependencies,resolveWithBasePath,toDisposable,touchDependencies}from"@univerjs/core";
-import{HTTPEventType,HTTPResponseError,HTTPService,UniverNetworkPlugin}from"@univerjs/network";
-import{ClockIcon,CloseIcon,DirectExportIcon,DocsMultiIcon,ErrorIcon,ExportIcon,FolderIcon,LoadingMultiIcon,ShareRangeIcon,SheetsMultiIcon,SlidesMultiIcon,SuccessIcon}from"@univerjs/icons";
-import{BuiltInUIPart,ComponentManager,IMessageService,IUIPartsService,IconManager,connectInjector,useDependency,useObservable}from"@univerjs/ui";
-import{Button,MessageType,Radio,Select,Tooltip,clsx,scrollbarClassName}from"@univerjs/design";
-import{useRef,useState}from"react";
-import{ErrorCode,FileSource}from"@univerjs/protocol";
-import{jsx,jsxs}from"react/jsx-runtime";
-import{BehaviorSubject,Subject}from"rxjs";
-import{ISnapshotServerService,SnapshotService,b64EncodeUnicode,textDecoder,textEncoder}from"@univerjs-pro/collaboration";
-import{deflateSync}from"fflate";
-let Xe=function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.UNDEFINED=0]="UNDEFINED",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.UNIT=1]="UNIT",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.JSON=2]="JSON",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.UNRECOGNIZED=-1]="UNRECOGNIZED",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526;}({}),Ze=function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.XLSX="xlsx",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.CSV="csv",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.TSV="tsv",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.DOCX="docx",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.PPTX="pptx",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.PDF="pdf",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528;}({}),Qe=function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530.MODERN="modern",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530.TRADITIONAL="traditional",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530;}({}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616=function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.AUTO="auto",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.TABLES="tables",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.SHEETS="sheets",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.HYBRID="hybrid",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532;}({}),et=function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.CONVERT_THEN_VALUES="convert-then-values",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.VALUES="values",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.TEXT="text",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.FAIL="fail",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534;}({}),tt=function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536.TABLES="tables",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536.RANGES="ranges",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536;}({});
-
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { DependentOn, Disposable, IConfigService, ILogService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, UniverInstanceType, createIdentifier, merge, registerDependencies, resolveWithBasePath, toDisposable, touchDependencies } from "@univerjs/core";
+import { HTTPEventType, HTTPResponseError, HTTPService, UniverNetworkPlugin } from "@univerjs/network";
+import { ClockIcon, CloseIcon, DirectExportIcon, DocsMultiIcon, ErrorIcon, ExportIcon, FolderIcon, LoadingMultiIcon, ShareRangeIcon, SheetsMultiIcon, SlidesMultiIcon, SuccessIcon } from "@univerjs/icons";
+import { BuiltInUIPart, ComponentManager, IMessageService, IUIPartsService, IconManager, connectInjector, useDependency, useObservable } from "@univerjs/ui";
+import { Button, MessageType, Radio, Select, Tooltip, clsx, scrollbarClassName } from "@univerjs/design";
+import { useRef, useState } from "react";
+import { ErrorCode, FileSource } from "@univerjs/protocol";
+import { jsx, jsxs } from "react/jsx-runtime";
+import { BehaviorSubject, Subject } from "rxjs";
+import { ISnapshotServerService, SnapshotService, b64EncodeUnicode, textDecoder, textEncoder } from "@univerjs-pro/collaboration";
+import { deflateSync } from "fflate";
+let Xe = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.UNDEFINED = 0] = "UNDEFINED", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.UNIT = 1] = "UNIT", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.JSON = 2] = "JSON", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526.UNRECOGNIZED = -1] = "UNRECOGNIZED", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46526;
+  }({}),
+  Ze = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.XLSX = "xlsx", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.CSV = "csv", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.TSV = "tsv", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.DOCX = "docx", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.PPTX = "pptx", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528.PDF = "pdf", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46528;
+  }({}),
+  Qe = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530.MODERN = "modern", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530.TRADITIONAL = "traditional", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46530;
+  }({}),
+  var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616 = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.AUTO = "auto", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.TABLES = "tables", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.SHEETS = "sheets", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532.HYBRID = "hybrid", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46532;
+  }({}),
+  et = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.CONVERT_THEN_VALUES = "convert-then-values", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.VALUES = "values", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.TEXT = "text", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534.FAIL = "fail", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46534;
+  }({}),
+  tt = function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536.TABLES = "tables", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536.RANGES = "ranges", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46536;
+  }({});
 export { Xe as ImportOutputType, Ze as ExchangeFormat, Qe as ExchangeDocType, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46616 as ExchangeBaseImportMode, et as ExchangeBaseFormulaPolicy, tt as ExchangeBaseExportMode };

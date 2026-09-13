@@ -1,1 +1,186 @@
-import{BASES_UI_PLUGIN_CONFIG_KEY as v45,BaseEditorService as v46,BaseSelectionService as v47,BaseUIStateService as v48}from"@univerjs-pro/bases-ui";import{IConfigService as v49}from"@univerjs/core";import{FUniver as v50}from"@univerjs/core/facade";var o=class{constructor(v1,v2,v3){this._viewId=v1,this._viewType=v2,this._controller=v3;}getViewId(){return this._viewId;}getViewType(){return this._viewType;}getViewport(){return{x:0,y:0,width:0,height:0};}refresh(){this._controller["invalidate"]();}hitTest(v4,v5){let v6=this._controller["hitTest"](v4,v5);switch(v6==null?undefined:v6.type){case"grid-attachment-add":case"grid-attachment-expand":case"grid-attachment-item":return{type:"grid-cell",tableId:v6.tableId,viewId:v6.viewId,recordId:v6.recordId,fieldId:v6.fieldId,virtual:v6.virtual};default:return v6;}}};function s(v34){"@babel/helpers - typeof";return s=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v7){return typeof v7;}:function(v8){return v8&&typeof Symbol=="function"&&v8.constructor===Symbol&&v8!==Symbol.prototype?"symbol":typeof v8;},s(v34);}function c(v35,v36){if(s(v35)!="object"||!v35)return v35;var v37=v35[Symbol.toPrimitive];if(v37!==undefined){var v38=v37.call(v35,v36||"default");if(s(v38)!="object")return v38;throw TypeError("@@toPrimitive must return a primitive value.");}return(v36==="string"?String:Number)(v35);}function l(v39){var v40=ox37e622,v41=c(v39,v40(218));return s(v41)==v40(233)?v41:v41+"";}function u(v42,v43,v44){return(v43=l(v43))in v42?Object.defineProperty(v42,v43,{value:v44,enumerable:true,configurable:true,writable:true}):v42[v43]=v44,v42;}var d=class{constructor(v9,v10,v11=new v46(v9),v12){this._stateService=v9,this._selectionService=v10,this._editorService=v11,this._configService=v12,u(this,"_localConfig",{});}getActiveTableId(){return this._stateService["getState"]().activeTableId??null;}getActiveViewId(){return this._stateService["getState"]().activeViewId??null;}async activateTable(v13){this._stateService["activateTable"](v13);}async activateView(v14){this._stateService["activateView"](v14);}getSelection(){return this._selectionService["getSelection"]();}setSelection(v15){this._selectionService["setSelection"](v15);}scrollToRecord(v16,v17={}){let v18=v17.viewId??this.getActiveViewId();v18&&this._stateService["setScrollState"](v18,{x:v17.x??0,y:v17.y??0});}scrollToField(v19,v20={}){let v21=v20.viewId??this.getActiveViewId();v21&&this._stateService["setScrollState"](v21,{x:v20.x??0,y:v20.y??0});}startEditingCell(v22){this._editorService["startEditingCell"](v22);}stopEditingCell(){this._editorService["stopEditingCell"]();}openLeftSidebar(){this._stateService["setLeftSidebarVisible"](true);}closeLeftSidebar(){this._stateService["setLeftSidebarVisible"](false);}openRightSidebar(){this._stateService["setRightSidebarVisible"](true);}closeRightSidebar(){this._stateService["setRightSidebarVisible"](false);}openRecordDetail(v23){this._stateService["openRecordDetail"](v23);}openDraftRecordDetail(v24={}){this._stateService["openDraftRecordDetail"](v24);}closeRecordDetail(){this._stateService["closeRecordDetail"]();}openFieldConfigPanel(v25){this._stateService["getState"]().openPanels["fieldConfig"]=v25;}openViewSettingsPanel(v26){this._stateService["getState"]().openPanels["viewSettings"]=v26;}getPersonOptions(){return[...(this._getBaseUIConfig().personOptions??[])];}setPersonOptions(v27){this._updateBaseUIConfig({personOptions:v27});}getGroupOptions(){return[...(this._getBaseUIConfig().groupOptions??[])];}setGroupOptions(v28){this._updateBaseUIConfig({groupOptions:v28});}getRenderedView(){return null;}_getBaseUIConfig(){var v29=ox37e622,v30;return((v30=this[v29(227)])==null?undefined:v30.getConfig(v45))??this._localConfig;}_updateBaseUIConfig(v31){var v32=ox37e622,v33;this[v32(238)]={...this._getBaseUIConfig(),...v31},(v33=this[v32(227)])==null||v33[v32(229)](v45,v31,{merge:true});}},f=class extends v50{getBaseUI(){return new d(this._injector["get"](v48),this._injector["get"](v47),this._injector["get"](v46),this._injector["get"](v49));}};v50.extend(f);export{o as FBaseRenderedView,d as FBaseUI,f as FUniverBaseUIMixin};
+import { BASES_UI_PLUGIN_CONFIG_KEY as var_core_value_sig2259, BaseEditorService as var_core_value_sig9E2F, BaseSelectionService as var_core_value_sigD082, BaseUIStateService as var_core_value_sigDBB7 } from "@univerjs-pro/bases-ui";
+import { IConfigService as var_core_value_sigD0A8 } from "@univerjs/core";
+import { FUniver as var_core_value_sigF4B9 } from "@univerjs/core/facade";
+var o = class {
+  constructor(var_core_value_sig7524, var_core_value_sig2AD8, var_core_value_sig2AD0) {
+    this._viewId = var_core_value_sig7524, this._viewType = var_core_value_sig2AD8, this._controller = var_core_value_sig2AD0;
+  }
+  getViewId() {
+    return this._viewId;
+  }
+  getViewType() {
+    return this._viewType;
+  }
+  getViewport() {
+    return {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0
+    };
+  }
+  refresh() {
+    this._controller["invalidate"]();
+  }
+  hitTest(var_core_value_sig3EEE, var_core_value_sigBC46) {
+    let var_core_value_sig3D7D = this._controller["hitTest"](var_core_value_sig3EEE, var_core_value_sigBC46);
+    switch (var_core_value_sig3D7D == null ? undefined : var_core_value_sig3D7D.type) {
+      case "grid-attachment-add":
+      case "grid-attachment-expand":
+      case "grid-attachment-item":
+        return {
+          type: "grid-cell",
+          tableId: var_core_value_sig3D7D.tableId,
+          viewId: var_core_value_sig3D7D.viewId,
+          recordId: var_core_value_sig3D7D.recordId,
+          fieldId: var_core_value_sig3D7D.fieldId,
+          virtual: var_core_value_sig3D7D.virtual
+        };
+      default:
+        return var_core_value_sig3D7D;
+    }
+  }
+};
+function s(var_core_value_sigA12B) {
+  "@babel/helpers - typeof";
+
+  return s = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig27E5) {
+    return typeof var_core_value_sig27E5;
+  } : function (var_core_value_sig8061) {
+    return var_core_value_sig8061 && typeof Symbol == "function" && var_core_value_sig8061.constructor === Symbol && var_core_value_sig8061 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig8061;
+  }, s(var_core_value_sigA12B);
+}
+function c(var_core_value_sigF230, var_core_value_sig09B8) {
+  if (s(var_core_value_sigF230) != "object" || !var_core_value_sigF230) return var_core_value_sigF230;
+  var var_core_value_sig6F91 = var_core_value_sigF230[Symbol.toPrimitive];
+  if (var_core_value_sig6F91 !== undefined) {
+    var var_core_value_sigF9C7 = var_core_value_sig6F91.call(var_core_value_sigF230, var_core_value_sig09B8 || "default");
+    if (s(var_core_value_sigF9C7) != "object") return var_core_value_sigF9C7;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig09B8 === "string" ? String : Number)(var_core_value_sigF230);
+}
+function l(var_core_value_sig8895) {
+  var var_core_value_sigC80B = ox37e622,
+    var_core_value_sig284F = c(var_core_value_sig8895, var_core_value_sigC80B(218));
+  return s(var_core_value_sig284F) == var_core_value_sigC80B(233) ? var_core_value_sig284F : var_core_value_sig284F + "";
+}
+function u(var_core_value_sigE154, var_core_value_sig4632, var_core_value_sig12F2) {
+  return (var_core_value_sig4632 = l(var_core_value_sig4632)) in var_core_value_sigE154 ? Object.defineProperty(var_core_value_sigE154, var_core_value_sig4632, {
+    value: var_core_value_sig12F2,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigE154[var_core_value_sig4632] = var_core_value_sig12F2, var_core_value_sigE154;
+}
+var d = class {
+    constructor(var_core_value_sig4D4C, var_core_value_sigC9E0, var_core_value_sig76BA = new var_core_value_sig9E2F(var_core_value_sig4D4C), var_core_value_sigFBFA) {
+      this._stateService = var_core_value_sig4D4C, this._selectionService = var_core_value_sigC9E0, this._editorService = var_core_value_sig76BA, this._configService = var_core_value_sigFBFA, u(this, "_localConfig", {});
+    }
+    getActiveTableId() {
+      return this._stateService["getState"]().activeTableId ?? null;
+    }
+    getActiveViewId() {
+      return this._stateService["getState"]().activeViewId ?? null;
+    }
+    async activateTable(var_core_value_sigF602) {
+      this._stateService["activateTable"](var_core_value_sigF602);
+    }
+    async activateView(var_core_value_sig1BBD) {
+      this._stateService["activateView"](var_core_value_sig1BBD);
+    }
+    getSelection() {
+      return this._selectionService["getSelection"]();
+    }
+    setSelection(var_core_value_sigF704) {
+      this._selectionService["setSelection"](var_core_value_sigF704);
+    }
+    scrollToRecord(var_core_value_sig2BCF, var_core_value_sig0D69 = {}) {
+      let var_core_value_sig480E = var_core_value_sig0D69.viewId ?? this.getActiveViewId();
+      var_core_value_sig480E && this._stateService["setScrollState"](var_core_value_sig480E, {
+        x: var_core_value_sig0D69.x ?? 0,
+        y: var_core_value_sig0D69.y ?? 0
+      });
+    }
+    scrollToField(var_core_value_sig26DB, var_core_value_sigF0F9 = {}) {
+      let var_core_value_sig1A0F = var_core_value_sigF0F9.viewId ?? this.getActiveViewId();
+      var_core_value_sig1A0F && this._stateService["setScrollState"](var_core_value_sig1A0F, {
+        x: var_core_value_sigF0F9.x ?? 0,
+        y: var_core_value_sigF0F9.y ?? 0
+      });
+    }
+    startEditingCell(var_core_value_sigFBA4) {
+      this._editorService["startEditingCell"](var_core_value_sigFBA4);
+    }
+    stopEditingCell() {
+      this._editorService["stopEditingCell"]();
+    }
+    openLeftSidebar() {
+      this._stateService["setLeftSidebarVisible"](true);
+    }
+    closeLeftSidebar() {
+      this._stateService["setLeftSidebarVisible"](false);
+    }
+    openRightSidebar() {
+      this._stateService["setRightSidebarVisible"](true);
+    }
+    closeRightSidebar() {
+      this._stateService["setRightSidebarVisible"](false);
+    }
+    openRecordDetail(var_core_value_sig4383) {
+      this._stateService["openRecordDetail"](var_core_value_sig4383);
+    }
+    openDraftRecordDetail(var_core_value_sig186C = {}) {
+      this._stateService["openDraftRecordDetail"](var_core_value_sig186C);
+    }
+    closeRecordDetail() {
+      this._stateService["closeRecordDetail"]();
+    }
+    openFieldConfigPanel(var_core_value_sigD955) {
+      this._stateService["getState"]().openPanels["fieldConfig"] = var_core_value_sigD955;
+    }
+    openViewSettingsPanel(var_core_value_sig48BD) {
+      this._stateService["getState"]().openPanels["viewSettings"] = var_core_value_sig48BD;
+    }
+    getPersonOptions() {
+      return [...(this._getBaseUIConfig().personOptions ?? [])];
+    }
+    setPersonOptions(var_core_value_sig429F) {
+      this._updateBaseUIConfig({
+        personOptions: var_core_value_sig429F
+      });
+    }
+    getGroupOptions() {
+      return [...(this._getBaseUIConfig().groupOptions ?? [])];
+    }
+    setGroupOptions(var_core_value_sigF62A) {
+      this._updateBaseUIConfig({
+        groupOptions: var_core_value_sigF62A
+      });
+    }
+    getRenderedView() {
+      return null;
+    }
+    _getBaseUIConfig() {
+      var var_core_value_sig8178 = ox37e622,
+        var_core_value_sigE9ED;
+      return ((var_core_value_sigE9ED = this[var_core_value_sig8178(227)]) == null ? undefined : var_core_value_sigE9ED.getConfig(var_core_value_sig2259)) ?? this._localConfig;
+    }
+    _updateBaseUIConfig(var_core_value_sigB577) {
+      var var_core_value_sig9572 = ox37e622,
+        var_core_value_sigD873;
+      this[var_core_value_sig9572(238)] = {
+        ...this._getBaseUIConfig(),
+        ...var_core_value_sigB577
+      }, (var_core_value_sigD873 = this[var_core_value_sig9572(227)]) == null || var_core_value_sigD873[var_core_value_sig9572(229)](var_core_value_sig2259, var_core_value_sigB577, {
+        merge: true
+      });
+    }
+  },
+  f = class extends var_core_value_sigF4B9 {
+    getBaseUI() {
+      return new d(this._injector["get"](var_core_value_sigDBB7), this._injector["get"](var_core_value_sigD082), this._injector["get"](var_core_value_sig9E2F), this._injector["get"](var_core_value_sigD0A8));
+    }
+  };
+var_core_value_sigF4B9.extend(f);
+export { o as FBaseRenderedView, d as FBaseUI, f as FUniverBaseUIMixin };

@@ -1,8 +1,9 @@
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,ThemeService,Tools,UniverInstanceType,generateRandomId,merge,sequenceExecute,touchDependencies}from'@univerjs/core';
-import{AddSlideElementMutation,ISlideDrawingService,PageElementTypeEnum,PageTypeEnum,RemoveSlideElementMutation,UpdateSlideElementMutation,getSlideCommandTarget,plainTextToSlideDocumentData}from'@univerjs-pro/slides';
-import{Subject}from'rxjs';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, ThemeService, Tools, UniverInstanceType, generateRandomId, merge, sequenceExecute, touchDependencies } from '@univerjs/core';
+import { AddSlideElementMutation, ISlideDrawingService, PageElementTypeEnum, PageTypeEnum, RemoveSlideElementMutation, UpdateSlideElementMutation, getSlideCommandTarget, plainTextToSlideDocumentData } from '@univerjs-pro/slides';
+import { Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
 import { Rn } from "./slides-table-point-in-rect.js";
-function Ln(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461719,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461720,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461721){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461719.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314=>Rn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461720,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461721,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314.rect))??null;}
-
+function Ln(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461719, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461720, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461721) {
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461719.find(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314 => Rn(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461720, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461721, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46314.rect)) ?? null;
+}
 export { Ln as hitTestSlideTableControl };

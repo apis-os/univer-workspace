@@ -3,10 +3,16 @@ const e = {
     dataSource: {
       inlineMode: "Inline",
       referencedMode: "Referenziert",
-      sourceType: "Quelltyp",
+      sourceType: "Quelltyp"
     },
-    editor: { defaultColor: "Standardfarbe", fontSize: "Schriftgröße" },
-    setup: { stack: "Stapeln", percentStacked: "Prozentstapel" },
+    editor: {
+      defaultColor: "Standardfarbe",
+      fontSize: "Schriftgröße"
+    },
+    setup: {
+      stack: "Stapeln",
+      percentStacked: "Prozentstapel"
+    },
     chartTypes: {
       line: "Liniendiagramm",
       column: "Säulendiagramm",
@@ -39,7 +45,7 @@ const e = {
       treemap: "Treemap-Diagramm",
       sunburst: "Sunburst-Diagramm",
       gauge: "Tachometerdiagramm",
-      chord: "Akkorddiagramm",
+      chord: "Akkorddiagramm"
     },
     section: {
       waterfall: "Wasserfalldiagramm",
@@ -58,7 +64,7 @@ const e = {
       treemap: "Baumkartendiagramm",
       sunburst: "Sunburst-Diagramm",
       gauge: "Gauge-Diagramm",
-      chord: "Akkordtabelle",
+      chord: "Akkordtabelle"
     },
     presentation: {
       backgroundColor: "Hintergrundfarbe",
@@ -73,7 +79,7 @@ const e = {
       wrap: "Wrap-Legende",
       selectMode: "Auswahlmodus",
       visualMapType: "Visuelle\x20Karte",
-      align: "Ausrichtung",
+      align: "Ausrichtung"
     },
     numberFormat: {
       source: "Quellformat",
@@ -85,21 +91,16 @@ const e = {
       accountingType: "Buchhaltung",
       thousandsType: "Tausendstel-Prozentil",
       formatTypes: "Formattypen",
-      generalDesc:
-        "Das Allgemein-Format enthält kein spezifisches Zahlenformat.",
-      accountingDesc:
-        "Das\x20Buchhaltungszahlenformat\x20richtet\x20Währungssymbole\x20und\x20Dezimalpunkte\x20in\x20einer\x20Spalte\x20aus.",
-      currencyDesc:
-        "Das Währungsformat wird für allgemeine monetäre Werte verwendet, das Buchhaltungsformat richtet Dezimalpunkte in einer Spalte von Werten aus.",
-      dateDesc:
-        "Das Datumsformat zeigt Datums- und Zeitseriennummern als Datumswerte an.",
-      thousandsDesc:
-        "Das\x20Tausendstel-Prozentil-Format\x20wird\x20für\x20allgemeine\x20Zahlen\x20verwendet,\x20Währungs-\x20und\x20Buchhaltungsformate\x20bieten\x20spezialisierte\x20Formate\x20für\x20monetäre\x20Werte.",
+      generalDesc: "Das Allgemein-Format enthält kein spezifisches Zahlenformat.",
+      accountingDesc: "Das\x20Buchhaltungszahlenformat\x20richtet\x20Währungssymbole\x20und\x20Dezimalpunkte\x20in\x20einer\x20Spalte\x20aus.",
+      currencyDesc: "Das Währungsformat wird für allgemeine monetäre Werte verwendet, das Buchhaltungsformat richtet Dezimalpunkte in einer Spalte von Werten aus.",
+      dateDesc: "Das Datumsformat zeigt Datums- und Zeitseriennummern als Datumswerte an.",
+      thousandsDesc: "Das\x20Tausendstel-Prozentil-Format\x20wird\x20für\x20allgemeine\x20Zahlen\x20verwendet,\x20Währungs-\x20und\x20Buchhaltungsformate\x20bieten\x20spezialisierte\x20Formate\x20für\x20monetäre\x20Werte.",
       decimalPlaces: "Dezimalstellen",
       currencyTypes: "Währungstypen",
       negativeNumberTypes: "Negative Zahlentypen",
       dateTypes: "Datumstypen",
-      setFormat: "Beschriftungsformat festlegen",
+      setFormat: "Beschriftungsformat festlegen"
     },
     series: {
       rightAxis: "Rechte Achse",
@@ -122,7 +123,7 @@ const e = {
       emptyRect: "Leeres Rechteck",
       emptyRoundRect: "Leeres abgerundetes Rechteck",
       emptyPin: "Leerer\x20Pin",
-      emptyArrow: "Leerer Pfeil",
+      emptyArrow: "Leerer Pfeil"
     },
     lineAndArea: {
       lineStyle: "Linienstil",
@@ -132,7 +133,7 @@ const e = {
       invalidValues: "Ungültige Werte",
       breakLine: "Bruchlinie",
       connect: "Datenpunkte verbinden",
-      zero: "Als\x20Null\x20behandeln",
+      zero: "Als\x20Null\x20behandeln"
     },
     axis: {
       useDateAxis: "Beschriftungen als Datumswerte behandeln",
@@ -148,13 +149,13 @@ const e = {
       tickLength: "Tick-Länge",
       tickWidth: "Tick-Breite",
       tickColor: "Farbe ankreuzen",
-      tickPosition: "Häkchenposition",
+      tickPosition: "Häkchenposition"
     },
     indicator: {
       lineColor: "Farbe der Indikatorlinie",
       lineType: "Typ der Indikatorlinie",
       labelBackground: "Etikettenhintergrund",
-      labelText: "Beschriftungstextfarbe",
+      labelText: "Beschriftungstextfarbe"
     },
     trendline: {
       add: "Trendlinie hinzufügen",
@@ -171,21 +172,23 @@ const e = {
       order: "Bestellen",
       period: "Zeitraum",
       formulaColor: "Formelfarbe",
-      r2Color: "R²-Farbe",
+      r2Color: "R²-Farbe"
     },
-    pareto: { includeZeroValues: "Schließen\x20Sie\x20Nullwerte\x20ein" },
+    pareto: {
+      includeZeroValues: "Schließen\x20Sie\x20Nullwerte\x20ein"
+    },
     plotArea: {
       label: "Zeichnungsfläche",
       manual: "Manuell",
       left: "Links (%)",
       top: "Oben (%)",
       width: "Breite (%)",
-      height: "Höhe (%)",
+      height: "Höhe (%)"
     },
     bar: {
       layout: "Balkenabstand",
       gapWidth: "Abstandsbreite (%)",
-      overlap: "Reihenüberlappung\x20(%)",
+      overlap: "Reihenüberlappung\x20(%)"
     },
     pie: {
       mode: "Diagrammform",
@@ -218,14 +221,21 @@ const e = {
       paddingAngle: "Scheibenabstand",
       halfPie: "Halbkreisdiagramm",
       rosePie: "Rosenkuchen",
-      labelLine: "Beschriftungszeile",
+      labelLine: "Beschriftungszeile"
     },
-    radar: { shape: "Radarform", polygon: "Polygon", fill: "Flächenfüllung" },
+    radar: {
+      shape: "Radarform",
+      polygon: "Polygon",
+      fill: "Flächenfüllung"
+    },
     funnel: {
       gap: "Artikellücke",
-      absoluteValues: "Verwenden\x20Sie\x20absolute\x20Werte",
+      absoluteValues: "Verwenden\x20Sie\x20absolute\x20Werte"
     },
-    heatmap: { unit: "Werteinheit", labels: "Zelletiketten" },
+    heatmap: {
+      unit: "Werteinheit",
+      labels: "Zelletiketten"
+    },
     relation: {
       nodes: "Knoten",
       interaction: "Interaktion",
@@ -236,7 +246,7 @@ const e = {
       valueSize: "Größe der Knoten nach Wert",
       rotateLabels: "Etiketten\x20drehen",
       gravity: "Schwerkraft",
-      repulsion: "Abstoßung",
+      repulsion: "Abstoßung"
     },
     wordCloud: {
       maskImage: "Bild-ID maskieren",
@@ -247,7 +257,7 @@ const e = {
       heart: "Herz",
       "triangle-forward": "Vorwärtsdreieck",
       pentagon: "Fünfeck",
-      star: "Stern",
+      star: "Stern"
     },
     waterfall: {
       styleTarget: "Stilziel",
@@ -257,7 +267,7 @@ const e = {
       arrangement: "Wasserfall",
       subtotal: "Zwischensumme",
       includeSubtotal: "Zwischensumme verwenden",
-      connector: "Verbindungslinie",
+      connector: "Verbindungslinie"
     },
     candlestick: {
       candle: "Kerze",
@@ -278,9 +288,8 @@ const e = {
       wickOpacity: "Dochtopazität",
       candleWidth: "Kerzenbreite",
       hollow: "Hohle Kerze",
-      columnsError:
-        "Kerzendiagrammdaten\x20benötigen\x20die\x20Spalten\x20Kategorie,\x20Eröffnung,\x20Hoch,\x20Tief\x20und\x20Schluss.",
-      series: "OHLC-Reihe",
+      columnsError: "Kerzendiagrammdaten\x20benötigen\x20die\x20Spalten\x20Kategorie,\x20Eröffnung,\x20Hoch,\x20Tief\x20und\x20Schluss.",
+      series: "OHLC-Reihe"
     },
     histogram: {
       binGap: "Mülllücke",
@@ -291,7 +300,7 @@ const e = {
       binWidth: "Behälterbreite",
       underflow: "Unterlaufschwelle",
       overflow: "Überlaufschwelle",
-      frequency: "Häufigkeit",
+      frequency: "Häufigkeit"
     },
     treemap: {
       parentLabelLayout: "Layout des übergeordneten Etiketts",
@@ -299,8 +308,7 @@ const e = {
       overlapping: "Überlappend",
       leafLabel: "Blattetiketten",
       hierarchy: "Hierarchiefelder",
-      diagnostic:
-        "Ein Treemap-Diagramm benötigt mindestens ein Hierarchiefeld und ein numerisches Wertefeld.",
+      diagnostic: "Ein Treemap-Diagramm benötigt mindestens ein Hierarchiefeld und ein numerisches Wertefeld."
     },
     sunburst: {
       hierarchy: "Hierarchie",
@@ -310,8 +318,7 @@ const e = {
       removeHierarchy: "Hierarchiefeld\x20entfernen",
       centerLabel: "Gesamtsumme in der Mitte",
       labelFormat: "Etikettenstil",
-      diagnostic:
-        "Ein\x20Sunburst-Diagramm\x20benötigt\x20mindestens\x20ein\x20Hierarchiefeld\x20und\x20ein\x20numerisches\x20Wertefeld.",
+      diagnostic: "Ein\x20Sunburst-Diagramm\x20benötigt\x20mindestens\x20ein\x20Hierarchiefeld\x20und\x20ein\x20numerisches\x20Wertefeld."
     },
     gauge: {
       scale: "Maßstab",
@@ -340,12 +347,9 @@ const e = {
       customized: "Benutzerdefiniert",
       axisLabelNumberFormat: "Zahlenformat der Achsenbeschriftung",
       detailNumberFormat: "Detailliertes Zahlenformat",
-      emptyDiagnostic:
-        "Ein Tachometerdiagramm benötigt mindestens einen endlichen numerischen Wert.",
-      mappingDiagnostic:
-        "Ein Tachometerdiagramm benötigt ein Beschriftungsfeld und genau ein Wertefeld.",
-      configDiagnostic:
-        "Die\x20Konfiguration\x20des\x20Tachometerdiagramms\x20ist\x20ungültig.\x20Prüfen\x20Sie\x20Skala,\x20Bereiche,\x20Verhältnisse\x20und\x20Größen.",
+      emptyDiagnostic: "Ein Tachometerdiagramm benötigt mindestens einen endlichen numerischen Wert.",
+      mappingDiagnostic: "Ein Tachometerdiagramm benötigt ein Beschriftungsfeld und genau ein Wertefeld.",
+      configDiagnostic: "Die\x20Konfiguration\x20des\x20Tachometerdiagramms\x20ist\x20ungültig.\x20Prüfen\x20Sie\x20Skala,\x20Bereiche,\x20Verhältnisse\x20und\x20Größen."
     },
     chord: {
       source: "Quelle",
@@ -367,13 +371,10 @@ const e = {
       gradient: "Farbverlauf",
       adjacency: "Benachbarte Knoten",
       self: "Aktueller\x20Knoten",
-      emptyDiagnostic:
-        "Ein Sehnendiagramm benötigt mindestens eine positiv gewichtete Beziehung zwischen zwei verschiedenen Knoten.",
-      mappingDiagnostic:
-        "Ein\x20Sehnendiagramm\x20benötigt\x20unterschiedliche\x20Quell-\x20und\x20Zielfelder\x20sowie\x20optional\x20ein\x20davon\x20verschiedenes\x20Wertefeld.",
-      configDiagnostic:
-        "Die Konfiguration des Sehnendiagramms ist ungültig. Prüfen Sie Winkel, Radien, Deckkraft und Größen.",
-      associatedValue: "Zugeordneter Wert",
+      emptyDiagnostic: "Ein Sehnendiagramm benötigt mindestens eine positiv gewichtete Beziehung zwischen zwei verschiedenen Knoten.",
+      mappingDiagnostic: "Ein\x20Sehnendiagramm\x20benötigt\x20unterschiedliche\x20Quell-\x20und\x20Zielfelder\x20sowie\x20optional\x20ein\x20davon\x20verschiedenes\x20Wertefeld.",
+      configDiagnostic: "Die Konfiguration des Sehnendiagramms ist ungültig. Prüfen Sie Winkel, Radien, Deckkraft und Größen.",
+      associatedValue: "Zugeordneter Wert"
     },
     common: {
       category: "Kategorie",
@@ -424,16 +425,27 @@ const e = {
         right: "Rechts",
         bottom: "Unten",
         left: "Links",
-        hide: "Ausblenden",
+        hide: "Ausblenden"
       },
-      axisAlign: { start: "Anfang", center: "Mitte", end: "Ende" },
-      textAlign: { left: "Links", center: "Mitte", right: "Rechts" },
+      axisAlign: {
+        start: "Anfang",
+        center: "Mitte",
+        end: "Ende"
+      },
+      textAlign: {
+        left: "Links",
+        center: "Mitte",
+        right: "Rechts"
+      },
       legendSelectMode: {
         single: "Einzeln",
         multiple: "Mehrfach",
-        disabled: "Deaktiviert",
+        disabled: "Deaktiviert"
       },
-      visualMapType: { continuous: "Kontinuierlich", piecewise: "Stückweise" },
+      visualMapType: {
+        continuous: "Kontinuierlich",
+        piecewise: "Stückweise"
+      },
       default: "Standard",
       reset: "Zurücksetzen",
       color: "Farbe",
@@ -479,13 +491,12 @@ const e = {
       cancel: "Abbrechen",
       insert: "Einfügen",
       apply: "Anwenden",
-      duplicate: "Duplizieren",
+      duplicate: "Duplizieren"
     },
     inlineTable: {
-      pasteHint:
-        "Fügen Sie eine Tabelle aus Tabellen, Excel oder einer Webseite ein, um die Inline-Daten zu ersetzen.",
+      pasteHint: "Fügen Sie eine Tabelle aus Tabellen, Excel oder einer Webseite ein, um die Inline-Daten zu ersetzen.",
       addRow: "Zeile\x20hinzufügen",
-      addColumn: "Spalte hinzufügen",
+      addColumn: "Spalte hinzufügen"
     },
     floatMenu: {
       menuTitle: {
@@ -494,7 +505,7 @@ const e = {
         gridline: "Gitternetzlinie",
         tick: "Teilstrich",
         mark: "Zeichen",
-        dataLabel: "Datenbeschriftung",
+        dataLabel: "Datenbeschriftung"
       },
       field: {
         position: "Position",
@@ -503,11 +514,17 @@ const e = {
         map: "Karte",
         rotate: "Drehen",
         labelText: "Beschriftungstext",
-        titleText: "Titeltext",
+        titleText: "Titeltext"
       },
-      action: { more: "Mehr" },
-      control: { labels: "Beschriftungen", line: "Linie", reverse: "Umkehren" },
-    },
-  },
+      action: {
+        more: "Mehr"
+      },
+      control: {
+        labels: "Beschriftungen",
+        line: "Linie",
+        reverse: "Umkehren"
+      }
+    }
+  }
 };
 module.exports = e;

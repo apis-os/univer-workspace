@@ -1,11 +1,25 @@
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,Tools,UniverInstanceType,merge,registerDependencies,toDisposable}from"@univerjs/core";
-import{RevertRevisionMutation,UniverCollaborationPlugin,parseProtocolChangeset}from"@univerjs-pro/collaboration";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{HTTPService}from"@univerjs/network";
-import{ErrorCode}from"@univerjs/protocol";
-import{BehaviorSubject}from"rxjs";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, merge, registerDependencies, toDisposable } from "@univerjs/core";
+import { RevertRevisionMutation, UniverCollaborationPlugin, parseProtocolChangeset } from "@univerjs-pro/collaboration";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { HTTPService } from "@univerjs/network";
+import { ErrorCode } from "@univerjs/protocol";
+import { BehaviorSubject } from "rxjs";
 import { T } from "./edit-history-as-record.js";
 import { P } from "./internal-glue.js";
-function Ae(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46520,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623){return(Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46520)?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46520:[]).flatMap((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129)=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130=T(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521];if(typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131!="string")return[];let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132=P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128);return[{stableId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131,position:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129,...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132===undefined?{}:{displayName:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132}),value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128)}];});}
-
+function Ae(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46520, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4623) {
+  return (Array.isArray(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46520) ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46520 : []).flatMap((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129) => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130 = T(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128),
+      var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46130[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46521];
+    if (typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131 != "string") return [];
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132 = P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128);
+    return [{
+      stableId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131,
+      position: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46129,
+      ...(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132 === undefined ? {} : {
+        displayName: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132
+      }),
+      value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46522(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46128)
+    }];
+  });
+}
 export { Ae as arrayComparisonEntries };

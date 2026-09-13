@@ -1,7 +1,27 @@
-import{CommandType,DEFAULT_STYLES,DependentOn,Disposable,ICommandService,IConfigService,IUniverInstanceService,ImageSourceType,Inject,Injector,Plugin,UnitModel,UniverInstanceType,generateRandomId,merge}from'@univerjs/core';
-import{BehaviorSubject,Subject}from'rxjs';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
+import { CommandType, DEFAULT_STYLES, DependentOn, Disposable, ICommandService, IConfigService, IUniverInstanceService, ImageSourceType, Inject, Injector, Plugin, UnitModel, UniverInstanceType, generateRandomId, merge } from '@univerjs/core';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
 import { Ur, wr } from "./internal-core-endo.js";
-function bi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473){return{'ctm':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.ctm,'fill':{'color':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fill,'opacity':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fillAlpha},'stroke':wr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473),'alpha':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fillAlpha,'blendMode':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.blendMode,'textState':{'fontId':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fontName,'fontSize':Ur(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473),'charSpacing':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.charSpacing,'wordSpacing':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.wordSpacing,'horizontalScale':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.horizontalScale,'leading':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.leading,'renderingMode':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.renderingMode,'rise':var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.rise}};}
-
+function bi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473) {
+  return {
+    'ctm': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.ctm,
+    'fill': {
+      'color': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fill,
+      'opacity': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fillAlpha
+    },
+    'stroke': wr(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473),
+    'alpha': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fillAlpha,
+    'blendMode': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.blendMode,
+    'textState': {
+      'fontId': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.fontName,
+      'fontSize': Ur(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473),
+      'charSpacing': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.charSpacing,
+      'wordSpacing': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.wordSpacing,
+      'horizontalScale': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.horizontalScale,
+      'leading': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.leading,
+      'renderingMode': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.renderingMode,
+      'rise': var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463473.rise
+    }
+  };
+}
 export { bi as createGraphicsStateFromParserState };

@@ -1,12 +1,133 @@
-import{IDialogService,IMenuManagerService,MenuItemType,RibbonStartGroup,getMenuHiddenObservable}from"@univerjs/ui";
-import{ClientSnapshotServerService,EXPORT_FORMAT_DIALOG,ExchangeFormat,IExchangeOperateService,IExchangeService,UniverExchangeClientPlugin,isCurrentUnitLoadedFromServer,transformSheetBlockMetaToString,transformWorkbookSnapshotMetaToString}from"@univerjs-pro/exchange-client";
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IResourceLoaderService,IUniverInstanceService,Inject,Injector,LocaleService,Plugin,UniverInstanceType,createIdentifier,merge}from"@univerjs/core";
-import{b64DecodeUnicode,getSheetBlocksFromSnapshot,transformSnapshotToWorkbookData,transformWorkbookDataToSnapshot}from"@univerjs-pro/collaboration";
-import{WorkbookExportPermission}from"@univerjs/sheets";
-import{getCurrentRangeDisable$}from"@univerjs/sheets-ui";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { IDialogService, IMenuManagerService, MenuItemType, RibbonStartGroup, getMenuHiddenObservable } from "@univerjs/ui";
+import { ClientSnapshotServerService, EXPORT_FORMAT_DIALOG, ExchangeFormat, IExchangeOperateService, IExchangeService, UniverExchangeClientPlugin, isCurrentUnitLoadedFromServer, transformSheetBlockMetaToString, transformWorkbookSnapshotMetaToString } from "@univerjs-pro/exchange-client";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IResourceLoaderService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, UniverInstanceType, createIdentifier, merge } from "@univerjs/core";
+import { b64DecodeUnicode, getSheetBlocksFromSnapshot, transformSnapshotToWorkbookData, transformWorkbookDataToSnapshot } from "@univerjs-pro/collaboration";
+import { WorkbookExportPermission } from "@univerjs/sheets";
+import { getCurrentRangeDisable$ } from "@univerjs/sheets-ui";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { I, R, X, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185 } from "./sheets-exchange-client-plugin.js";
 import { F } from "./sheets-exchange-client-isheet-exchange.js";
-function N(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114){return function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467){var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113);};}function P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121=arguments.length,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121<3?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120===null?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120=Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122=Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120);else{for(var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.length-1;var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D>=0;var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D--)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D])&&(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121<3?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121>3?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119))||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122);}return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121>3&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122&&Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122;}I=P([N(0,Inject(IExchangeService)),N(1,IConfigService)],I);const L=createIdentifier("sheets-exchange-client.sheet-exchange-operate.service");R=P([N(0,Inject(F)),N(1,Inject(IExchangeOperateService)),N(2,IUniverInstanceService),N(3,IResourceLoaderService)],R);function z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133;return{selectedId:((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131.getActiveSheet(true))==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132.getSheetId())??((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131.getSheets()[0])==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133.getSheetId())??"",items:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131.getSheets().map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690=>({label:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.getName(),value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.getSheetId()}))};}const B={id:"sheets-exchange-client.operation.import-sheet",type:CommandType.OPERATION,handler:async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137.get(L);return isCurrentUnitLoadedFromServer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137,UniverInstanceType.UNIVER_SHEET)?await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138.importSheetToUnitId():await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138.importSheetToSnapshot(),true;}},V={id:"sheets-exchange-client.operation.export-sheet-by-format",type:CommandType.OPERATION,handler:async(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142)=>{if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142)return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141.get(L);return isCurrentUnitLoadedFromServer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141,UniverInstanceType.UNIVER_SHEET)?await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.exportSheetByUnitId(undefined,undefined,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.format,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.sheetId):await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.exportSheetBySnapshot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.format,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.sheetId),true;}},H={id:"sheets-exchange-client.operation.export-sheet",type:CommandType.OPERATION,handler:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);if(!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148)return false;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149=z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(IDialogService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(ICommandService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(LocaleService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153=null,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154=()=>{var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153==null||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153.dispose(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153=null;};return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150.open({id:"sheets-exchange-client.dialog.export-format",title:{title:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152.t("sheets-exchange-client.download")},width:420,draggable:false,mask:true,maskClosable:false,children:{label:{name:EXPORT_FORMAT_DIALOG,props:{formats:[ExchangeFormat.XLSX,ExchangeFormat.CSV,ExchangeFormat.TSV],...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149,onCancel:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154,onConfirm:async(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692)=>{await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151.executeCommand(V.id,{format:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691,sheetId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154();}}}},onClose:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154}),true;}},U="sheets-exchange-client.operation.exchange";var J="@univerjs-pro/sheets-exchange-client",Y="1.0.0-insiders.20260907-70fc579";X=P([N(0,ICommandService),N(1,IMenuManagerService)],X);function Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165){"@babel/helpers - typeof";return Z=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699){return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699;}:function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101&&typeof Symbol=="function"&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101.constructor===Symbol&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101!==Symbol.prototype?"symbol":typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101;},Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165);}function re(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168){if(Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167)!="object"||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167)return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167;var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167[Symbol.toPrimitive];if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169!==undefined){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168||"default");if(Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170)!="object")return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170;throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");}return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168==="string"?String:Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167);}function ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176=re(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175,"string");return Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176)=="symbol"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176+"";}function Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181){return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180=ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180))in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179?Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180,{value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181,enumerable:true,configurable:true,writable:true}):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179;}Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185,"pluginName","SHEET_EXCHANGE_CLIENT_PLUGIN"),Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185,"packageName",J),Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185,"version",Y),Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185,"type",UniverInstanceType.UNIVER_SHEET),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185=P([DependentOn(UniverLicensePlugin,UniverExchangeClientPlugin),N(1,Inject(Injector)),N(2,IConfigService)],var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185);
+function N(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114) {
+  return function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467) {
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46114(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46113);
+  };
+}
+function P(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 = arguments.length,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120 === null ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120 = Object.getOwnPropertyDescriptor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120,
+    var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122 = Reflect.decorate(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46120);else {
+    for (var var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117.length - 1; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D >= 0; var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D--) (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46117[var_L0_core_endo_countVal_pure_O1_zalloc_nothrow_sig108D]) && (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 < 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 > 3 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46123(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119)) || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122);
+  }
+  return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46121 > 3 && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122 && Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46118, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46119, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46122;
+}
+I = P([N(0, Inject(IExchangeService)), N(1, IConfigService)], I);
+const L = createIdentifier("sheets-exchange-client.sheet-exchange-operate.service");
+R = P([N(0, Inject(F)), N(1, Inject(IExchangeOperateService)), N(2, IUniverInstanceService), N(3, IResourceLoaderService)], R);
+function z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133;
+  return {
+    selectedId: ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131.getActiveSheet(true)) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46132.getSheetId()) ?? ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131.getSheets()[0]) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46133.getSheetId()) ?? "",
+    items: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46131.getSheets().map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690 => ({
+      label: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.getName(),
+      value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4690.getSheetId()
+    }))
+  };
+}
+const B = {
+    id: "sheets-exchange-client.operation.import-sheet",
+    type: CommandType.OPERATION,
+    handler: async var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137.get(L);
+      return isCurrentUnitLoadedFromServer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46137, UniverInstanceType.UNIVER_SHEET) ? await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138.importSheetToUnitId() : await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46138.importSheetToSnapshot(), true;
+    }
+  },
+  V = {
+    id: "sheets-exchange-client.operation.export-sheet-by-format",
+    type: CommandType.OPERATION,
+    handler: async (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142) => {
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141.get(L);
+      return isCurrentUnitLoadedFromServer(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46141, UniverInstanceType.UNIVER_SHEET) ? await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.exportSheetByUnitId(undefined, undefined, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.format, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.sheetId) : await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46143.exportSheetBySnapshot(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.format, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46142.sheetId), true;
+    }
+  },
+  H = {
+    id: "sheets-exchange-client.operation.export-sheet",
+    type: CommandType.OPERATION,
+    handler: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147 => {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_SHEET);
+      if (!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148) return false;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149 = z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46148),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(IDialogService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(ICommandService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46147.get(LocaleService),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153 = null,
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154 = () => {
+          var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153 == null || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153.dispose(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153 = null;
+        };
+      return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46153 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46150.open({
+        id: "sheets-exchange-client.dialog.export-format",
+        title: {
+          title: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46152.t("sheets-exchange-client.download")
+        },
+        width: 420,
+        draggable: false,
+        mask: true,
+        maskClosable: false,
+        children: {
+          label: {
+            name: EXPORT_FORMAT_DIALOG,
+            props: {
+              formats: [ExchangeFormat.XLSX, ExchangeFormat.CSV, ExchangeFormat.TSV],
+              ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46149,
+              onCancel: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154,
+              onConfirm: async (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692) => {
+                await var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46151.executeCommand(V.id, {
+                  format: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691,
+                  sheetId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4692
+                }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154();
+              }
+            }
+          }
+        },
+        onClose: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46154
+      }), true;
+    }
+  },
+  U = "sheets-exchange-client.operation.exchange";
+var J = "@univerjs-pro/sheets-exchange-client",
+  Y = "1.0.0-insiders.20260907-70fc579";
+X = P([N(0, ICommandService), N(1, IMenuManagerService)], X);
+function Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165) {
+  "@babel/helpers - typeof";
 
+  return Z = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4699;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46101;
+  }, Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46165);
+}
+function re(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168) {
+  if (Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46169.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168 || "default");
+    if (Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46170;
+    throw TypeError("@@toPrimitive\x20must\x20return\x20a\x20primitive\x20value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46168 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46167);
+}
+function ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176 = re(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46175, "string");
+  return Z(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46176 + "";
+}
+function Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180 = ie(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46180] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46181, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46179;
+}
+Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185, "pluginName", "SHEET_EXCHANGE_CLIENT_PLUGIN"), Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185, "packageName", J), Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185, "version", Y), Q(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185, "type", UniverInstanceType.UNIVER_SHEET), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185 = P([DependentOn(UniverLicensePlugin, UniverExchangeClientPlugin), N(1, Inject(Injector)), N(2, IConfigService)], var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46185);
 export { B, H, V, L, U };

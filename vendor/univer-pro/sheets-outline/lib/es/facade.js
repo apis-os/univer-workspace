@@ -1,1 +1,59 @@
-import{AddDimensionOutlineCommand,ClearDimensionOutlinesCommand,DimensionOutlineAxis,DimensionOutlineErrorReason,RemoveDimensionOutlineCommand,SetDimensionOutlineCollapsedCommand,SheetsOutlineModel}from"@univerjs-pro/sheets-outline";import{FEnum}from"@univerjs/core/facade";import{FWorksheet}from"@univerjs/sheets/facade";var l=class extends FEnum{get DimensionOutlineAxis(){return DimensionOutlineAxis;}get DimensionOutlineErrorReason(){return DimensionOutlineErrorReason;}};FEnum.extend(l);var u=class extends FWorksheet{addRowOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462){return this._addDimensionOutline(DimensionOutlineAxis.ROW,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462);}addColumnOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466){return this._addDimensionOutline(DimensionOutlineAxis.COLUMN,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466);}removeDimensionOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469){return this._commandService["syncExecuteCommand"](RemoveDimensionOutlineCommand.id,{unitId:this._workbook["getUnitId"](),subUnitId:this._worksheet["getSheetId"](),outlineId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469}),this;}setDimensionOutlineCollapsed(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612){return this._commandService["syncExecuteCommand"](SetDimensionOutlineCollapsedCommand.id,{unitId:this._workbook["getUnitId"](),subUnitId:this._worksheet["getSheetId"](),outlineId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611,collapsed:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612}),this;}clearDimensionOutlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617){return this._commandService["syncExecuteCommand"](ClearDimensionOutlinesCommand.id,{unitId:this._workbook["getUnitId"](),subUnitId:this._worksheet["getSheetId"](),axis:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615,start:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616,end:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617}),this;}getDimensionOutlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622=this._injector["get"](SheetsOutlineModel).getOutlines(this._workbook["getUnitId"](),this._worksheet["getSheetId"]());return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.axis===var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622;}_addDimensionOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627){return this._commandService["syncExecuteCommand"](AddDimensionOutlineCommand.id,{unitId:this._workbook["getUnitId"](),subUnitId:this._worksheet["getSheetId"](),axis:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625,start:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626,end:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626+var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627-1}),this;}};FWorksheet.extend(u);export{};
+import { AddDimensionOutlineCommand, ClearDimensionOutlinesCommand, DimensionOutlineAxis, DimensionOutlineErrorReason, RemoveDimensionOutlineCommand, SetDimensionOutlineCollapsedCommand, SheetsOutlineModel } from "@univerjs-pro/sheets-outline";
+import { FEnum } from "@univerjs/core/facade";
+import { FWorksheet } from "@univerjs/sheets/facade";
+var l = class extends FEnum {
+  get DimensionOutlineAxis() {
+    return DimensionOutlineAxis;
+  }
+  get DimensionOutlineErrorReason() {
+    return DimensionOutlineErrorReason;
+  }
+};
+FEnum.extend(l);
+var u = class extends FWorksheet {
+  addRowOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462) {
+    return this._addDimensionOutline(DimensionOutlineAxis.ROW, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462);
+  }
+  addColumnOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466) {
+    return this._addDimensionOutline(DimensionOutlineAxis.COLUMN, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D465, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D466);
+  }
+  removeDimensionOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469) {
+    return this._commandService["syncExecuteCommand"](RemoveDimensionOutlineCommand.id, {
+      unitId: this._workbook["getUnitId"](),
+      subUnitId: this._worksheet["getSheetId"](),
+      outlineId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D469
+    }), this;
+  }
+  setDimensionOutlineCollapsed(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612) {
+    return this._commandService["syncExecuteCommand"](SetDimensionOutlineCollapsedCommand.id, {
+      unitId: this._workbook["getUnitId"](),
+      subUnitId: this._worksheet["getSheetId"](),
+      outlineId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4611,
+      collapsed: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4612
+    }), this;
+  }
+  clearDimensionOutlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617) {
+    return this._commandService["syncExecuteCommand"](ClearDimensionOutlinesCommand.id, {
+      unitId: this._workbook["getUnitId"](),
+      subUnitId: this._worksheet["getSheetId"](),
+      axis: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4615,
+      start: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4616,
+      end: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4617
+    }), this;
+  }
+  getDimensionOutlines(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621) {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622 = this._injector["get"](SheetsOutlineModel).getOutlines(this._workbook["getUnitId"](), this._worksheet["getSheetId"]());
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621 ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622.filter(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46 => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46.axis === var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4621) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4622;
+  }
+  _addDimensionOutline(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627) {
+    return this._commandService["syncExecuteCommand"](AddDimensionOutlineCommand.id, {
+      unitId: this._workbook["getUnitId"](),
+      subUnitId: this._worksheet["getSheetId"](),
+      axis: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4625,
+      start: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626,
+      end: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4626 + var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4627 - 1
+    }), this;
+  }
+};
+FWorksheet.extend(u);
+export {};

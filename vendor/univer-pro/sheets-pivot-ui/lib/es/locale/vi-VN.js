@@ -5,8 +5,7 @@ const e = {
     sourceRangeLabel: "Nguồn dữ liệu",
     sourceRangePlaceholder: "Nguồn dữ liệu đã được cập nhật",
     sourceFieldTile: "Trường dữ liệu",
-    sourceFieldDescription:
-      "Kéo\x20trường\x20vào\x20các\x20khu\x20vực\x20dưới\x20đây",
+    sourceFieldDescription: "Kéo\x20trường\x20vào\x20các\x20khu\x20vực\x20dưới\x20đây",
     searchFieldPlaceholder: "Tìm kiếm trường",
     noMatchingFields: "Không có trường phù hợp",
     filter: "Lọc",
@@ -51,7 +50,7 @@ const e = {
       next: "Tiếp\x20theo",
       other: "Khác",
       ok: "OK",
-      cancel: "Hủy",
+      cancel: "Hủy"
     },
     valueFilter: {
       title: "Bộ lọc giá trị",
@@ -73,7 +72,7 @@ const e = {
       bottomPercent: "Phần trăm thấp nhất",
       clear: "Xóa bộ lọc",
       ok: "OK",
-      cancel: "Hủy",
+      cancel: "Hủy"
     },
     dateGroup: {
       title: "Nh?m\x20ng?y",
@@ -87,7 +86,7 @@ const e = {
       date: "Ngày",
       hour: "Giờ",
       minute: "Phút",
-      hourMinute: "Giờ-Phút",
+      hourMinute: "Giờ-Phút"
     },
     dialog: {
       fieldName: "Tên trường",
@@ -103,7 +102,7 @@ const e = {
         clearFilter: "Xóa\x20lọc",
         blank: "(Trống)",
         cancel: "Hủy bỏ",
-        confirm: "Xác nhận",
+        confirm: "Xác nhận"
       },
       numfmt: {
         general: "Chung",
@@ -115,20 +114,15 @@ const e = {
         formatTypes: "Loại định dạng",
         confirm: "Xác nhận",
         cancel: "Hủy bỏ",
-        generalDesc:
-          "Định\x20dạng\x20chung\x20không\x20bao\x20gồm\x20bất\x20kỳ\x20định\x20dạng\x20số\x20cụ\x20thể\x20nào.",
-        accountingDesc:
-          "Định dạng số kế toán có thể căn chỉnh biểu tượng tiền tệ và dấu thập phân trong một cột.",
-        currencyDesc:
-          "Định dạng tiền tệ dùng để biểu diễn các giá trị tiền tệ chung, định dạng kế toán có thể căn chỉnh dấu thập phân trong một cột số.",
-        dateDesc:
-          "Định\x20dạng\x20ngày\x20sẽ\x20hiển\x20thị\x20giá\x20trị\x20ngày\x20từ\x20một\x20chuỗi\x20số\x20ngày\x20và\x20thời\x20gian.",
-        thousandthPercentileDesc:
-          "Định dạng phân vị nghìn dùng để biểu diễn số chung, định dạng tiền tệ và kế toán cung cấp định dạng đặc biệt để tính toán giá trị tiền tệ.",
+        generalDesc: "Định\x20dạng\x20chung\x20không\x20bao\x20gồm\x20bất\x20kỳ\x20định\x20dạng\x20số\x20cụ\x20thể\x20nào.",
+        accountingDesc: "Định dạng số kế toán có thể căn chỉnh biểu tượng tiền tệ và dấu thập phân trong một cột.",
+        currencyDesc: "Định dạng tiền tệ dùng để biểu diễn các giá trị tiền tệ chung, định dạng kế toán có thể căn chỉnh dấu thập phân trong một cột số.",
+        dateDesc: "Định\x20dạng\x20ngày\x20sẽ\x20hiển\x20thị\x20giá\x20trị\x20ngày\x20từ\x20một\x20chuỗi\x20số\x20ngày\x20và\x20thời\x20gian.",
+        thousandthPercentileDesc: "Định dạng phân vị nghìn dùng để biểu diễn số chung, định dạng tiền tệ và kế toán cung cấp định dạng đặc biệt để tính toán giá trị tiền tệ.",
         decimalPlaces: "Số thập phân",
         currencyTypes: "Loại tiền tệ",
         negativeNumberTypes: "Loại số âm",
-        dateTypes: "Loại\x20ngày",
+        dateTypes: "Loại\x20ngày"
       },
       source: {
         insertPivotTable: "Chèn Bảng Pivot",
@@ -136,8 +130,8 @@ const e = {
         position: "Vị\x20trí\x20đặt\x20Bảng\x20Pivot",
         newSheet: "Bảng mới",
         existingSheet: "Bảng hiện có",
-        intersect: "Không thể chồng lên dữ liệu nguồn",
-      },
+        intersect: "Không thể chồng lên dữ liệu nguồn"
+      }
     },
     subtotal: {
       average: "Trung bình",
@@ -150,7 +144,7 @@ const e = {
       stdDevp: "Độ\x20lệch\x20chuẩn\x20tổng\x20thể",
       sum: "Tổng",
       var: "Phương\x20sai",
-      varp: "Phương sai tổng thể",
+      varp: "Phương sai tổng thể"
     },
     subTotalText: "Tổng phụ",
     grandTotalText: "Tổng cộng",
@@ -176,23 +170,21 @@ const e = {
       layoutCompact: "Dạng thu gọn",
       layoutOutline: "Dạng dàn ý",
       repeatRowLabels: "Lặp lại nhãn hàng",
-      repeatColLabels: "Lặp lại nhãn cột",
+      repeatColLabels: "Lặp lại nhãn cột"
     },
     perform: {
       tips: "Mẹo",
       info: "Khu vực mục tiêu đã có dữ liệu, thao tác này sẽ ghi đè dữ liệu hiện có. Bạn có muốn tiếp tục không?",
       confirm: "Xác nhận",
       cancel: "Hủy bỏ",
-      rowColError:
-        "Không\x20thể\x20thực\x20hiện\x20thay\x20đổi\x20cho\x20ô\x20đã\x20chọn\x20vì\x20nó\x20sẽ\x20ảnh\x20hưởng\x20đến\x20bảng\x20Pivot.\x20Vui\x20lòng\x20sử\x20dụng\x20danh\x20sách\x20trường\x20để\x20thay\x20đổi\x20báo\x20cáo.\x20Nếu\x20bạn\x20đang\x20cố\x20chèn\x20hoặc\x20xóa\x20ô,\x20hãy\x20di\x20chuyển\x20bảng\x20Pivot\x20rồi\x20thử\x20lại.",
+      rowColError: "Không\x20thể\x20thực\x20hiện\x20thay\x20đổi\x20cho\x20ô\x20đã\x20chọn\x20vì\x20nó\x20sẽ\x20ảnh\x20hưởng\x20đến\x20bảng\x20Pivot.\x20Vui\x20lòng\x20sử\x20dụng\x20danh\x20sách\x20trường\x20để\x20thay\x20đổi\x20báo\x20cáo.\x20Nếu\x20bạn\x20đang\x20cố\x20chèn\x20hoặc\x20xóa\x20ô,\x20hãy\x20di\x20chuyển\x20bảng\x20Pivot\x20rồi\x20thử\x20lại."
     },
     msg: {
       emptySourceRange: "Vui lòng chọn nguồn dữ liệu",
       invalidSize: "Kích\x20thước\x20dữ\x20liệu\x20không\x20hợp\x20lệ",
       mergeCellError: "Không thể chèn ô đã gộp vào bảng Pivot",
       editCellError: "Không thể chỉnh sửa ô trong bảng Pivot",
-      permissionError:
-        "Không thể chỉnh sửa bảng Pivot trong bảng đã được bảo vệ",
+      permissionError: "Không thể chỉnh sửa bảng Pivot trong bảng đã được bảo vệ"
     },
     averageName: "Giá trị trung bình:",
     countName: "Số lượng:",
@@ -204,7 +196,7 @@ const e = {
     stdDevpName: "Độ\x20lệch\x20chuẩn\x20toàn\x20phần:",
     sumName: "Tổng:",
     varName: "Phương sai:",
-    varpName: "Phương sai toàn phần:",
-  },
+    varpName: "Phương sai toàn phần:"
+  }
 };
 export { e as default };

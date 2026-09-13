@@ -1,20 +1,67 @@
-import{BoardModel,BoardToolType,IBoardElementService,UniverBoardsPlugin,getBoardPermissionValue}from"@univerjs-pro/boards";
-import{BOARD_RENDER_LAYER_INDEX,BOARD_RENDER_OBJECT_Z_INDEX,BoardElementContextMenuPosition,IBoardElementStateService,IBoardToolbarContributionService,IBoardUIStateService,UniverBoardsUIPlugin,getBoardElementRenderObjectKey,hitTestBoardElementAtPoint}from"@univerjs-pro/boards-ui";
-import{CommandType,DependentOn,Disposable,ICommandService,IConfigService,IPermissionService,IUniverInstanceService,Inject,Injector,LocaleService,Plugin,RxDisposable,ThemeService,UniverInstanceType,UserManagerService,merge,toDisposable}from"@univerjs/core";
-import{UnitAction}from"@univerjs/protocol";
-import{ThreadCommentAnchorKind,ThreadCommentModel,deserializeThreadCommentAnchor,serializeThreadCommentAnchor}from"@univerjs/thread-comment";
-import{ThreadCommentCanvasOverlay,ThreadCommentDraftService,ThreadCommentPanel,ThreadCommentPanelService,UniverThreadCommentUIPlugin}from"@univerjs/thread-comment-ui";
-import{ComponentManager,ContextMenuGroup,FloatingObjectToolbarPosition,IMenuManagerService,ISidebarService,IconManager,MenuItemType,getMenuHiddenObservable,useDependency,useObservable}from"@univerjs/ui";
-import{UniverBoardsThreadCommentPlugin}from"@univerjs-pro/boards-thread-comment";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{IRenderManagerService,UniverRenderEnginePlugin}from"@univerjs/engine-render";
-import{CommentIcon,InsertCommentDoubleIcon}from"@univerjs/icons";
-import{useMemo}from"react";
-import{combineLatest,distinctUntilChanged,map,of,pairwise,startWith,takeUntil}from"rxjs";
-import{jsx}from"react/jsx-runtime";
+import { BoardModel, BoardToolType, IBoardElementService, UniverBoardsPlugin, getBoardPermissionValue } from "@univerjs-pro/boards";
+import { BOARD_RENDER_LAYER_INDEX, BOARD_RENDER_OBJECT_Z_INDEX, BoardElementContextMenuPosition, IBoardElementStateService, IBoardToolbarContributionService, IBoardUIStateService, UniverBoardsUIPlugin, getBoardElementRenderObjectKey, hitTestBoardElementAtPoint } from "@univerjs-pro/boards-ui";
+import { CommandType, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUniverInstanceService, Inject, Injector, LocaleService, Plugin, RxDisposable, ThemeService, UniverInstanceType, UserManagerService, merge, toDisposable } from "@univerjs/core";
+import { UnitAction } from "@univerjs/protocol";
+import { ThreadCommentAnchorKind, ThreadCommentModel, deserializeThreadCommentAnchor, serializeThreadCommentAnchor } from "@univerjs/thread-comment";
+import { ThreadCommentCanvasOverlay, ThreadCommentDraftService, ThreadCommentPanel, ThreadCommentPanelService, UniverThreadCommentUIPlugin } from "@univerjs/thread-comment-ui";
+import { ComponentManager, ContextMenuGroup, FloatingObjectToolbarPosition, IMenuManagerService, ISidebarService, IconManager, MenuItemType, getMenuHiddenObservable, useDependency, useObservable } from "@univerjs/ui";
+import { UniverBoardsThreadCommentPlugin } from "@univerjs-pro/boards-thread-comment";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { IRenderManagerService, UniverRenderEnginePlugin } from "@univerjs/engine-render";
+import { CommentIcon, InsertCommentDoubleIcon } from "@univerjs/icons";
+import { useMemo } from "react";
+import { combineLatest, distinctUntilChanged, map, of, pairwise, startWith, takeUntil } from "rxjs";
+import { jsx } from "react/jsx-runtime";
 import { L } from "./internal-glue.js";
-function R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.get(ThreadCommentPanelService);var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.get(ISidebarService).open({header:{title:"boards-thread-comment-ui.addComment"},children:{label:L},width:320,onClose:()=>var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.setPanelVisible(false)}),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.setPanelVisible(true);}const z={id:"board.operation.open-comment-panel",type:CommandType.OPERATION,handler(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193){return R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193),true;}},B={id:"board.operation.start-comment-placement",type:CommandType.OPERATION,handler(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195){let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD);return!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196||!getBoardPermissionValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(IPermissionService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196.getUnitId(),UnitAction.Comment)?false:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(IBoardUIStateService).setActiveTool(BoardToolType.Select),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(ThreadCommentDraftService).startPlacement(UniverInstanceType.UNIVER_BOARD,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196.getUnitId()),true);}},V={id:"board.operation.add-element-comment",type:CommandType.OPERATION,handler(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200;let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(IBoardElementStateService).getSnapshot(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getActivePageId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.focusedId??var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.selectedIds[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.selectedIds["length"]-1];return!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204||((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.context)==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200.unitId)!==var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId()||var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.context["subUnitId"]!==var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203||!getBoardPermissionValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(IPermissionService),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId(),var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId(),UnitAction.Comment)?false:(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(ThreadCommentDraftService).place({unitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId(),subUnitId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203,anchor:{kind:ThreadCommentAnchorKind.BOARD_ELEMENT,pageId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203,elementId:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204}}),R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199),true);}},H="boards-thread-comment-ui.config",U={};
-
+function R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189) {
+  let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.get(ThreadCommentPanelService);
+  var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46189.get(ISidebarService).open({
+    header: {
+      title: "boards-thread-comment-ui.addComment"
+    },
+    children: {
+      label: L
+    },
+    width: 320,
+    onClose: () => var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.setPanelVisible(false)
+  }), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46190.setPanelVisible(true);
+}
+const z = {
+    id: "board.operation.open-comment-panel",
+    type: CommandType.OPERATION,
+    handler(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193) {
+      return R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46193), true;
+    }
+  },
+  B = {
+    id: "board.operation.start-comment-placement",
+    type: CommandType.OPERATION,
+    handler(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195) {
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD);
+      return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196 || !getBoardPermissionValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(IPermissionService), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196.getUnitId(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196.getUnitId(), UnitAction.Comment) ? false : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(IBoardUIStateService).setActiveTool(BoardToolType.Select), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46195.get(ThreadCommentDraftService).startPlacement(UniverInstanceType.UNIVER_BOARD, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46196.getUnitId()), true);
+    }
+  },
+  V = {
+    id: "board.operation.add-element-comment",
+    type: CommandType.OPERATION,
+    handler(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199) {
+      var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200;
+      let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(IUniverInstanceService).getCurrentUnitOfType(UniverInstanceType.UNIVER_BOARD),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(IBoardElementStateService).getSnapshot(),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getActivePageId(),
+        var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.focusedId ?? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.selectedIds[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.selectedIds["length"] - 1];
+      return !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203 || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204 || ((var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.context) == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46200.unitId) !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId() || var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46202.context["subUnitId"] !== var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203 || !getBoardPermissionValue(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(IPermissionService), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId(), var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId(), UnitAction.Comment) ? false : (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199.get(ThreadCommentDraftService).place({
+        unitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46201.getUnitId(),
+        subUnitId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203,
+        anchor: {
+          kind: ThreadCommentAnchorKind.BOARD_ELEMENT,
+          pageId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46203,
+          elementId: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46204
+        }
+      }), R(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46199), true);
+    }
+  },
+  H = "boards-thread-comment-ui.config",
+  U = {};
 export { z as OpenBoardCommentPanelOperation, B as StartBoardCommentPlacementOperation, H as BOARDS_THREAD_COMMENT_UI_PLUGIN_CONFIG_KEY };
-
 export { V, U };

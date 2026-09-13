@@ -1,1 +1,12 @@
-import{OpenSlidePrintDialogOperation as v3,SlidePrintOperation as v4}from"@univerjs-pro/slides-print";import{FUniver as v5}from"@univerjs/core/facade";var r=class extends v5{printSlidesAsync(v1){return this._commandService["executeCommand"](v4.id,v1);}openSlidesPrintDialog(v2){return this._commandService["syncExecuteCommand"](v3.id,v2);}};v5.extend(r);export{};
+import { OpenSlidePrintDialogOperation as var_core_value_sig2AD0, SlidePrintOperation as var_core_value_sig3EEE } from "@univerjs-pro/slides-print";
+import { FUniver as var_core_value_sigBC46 } from "@univerjs/core/facade";
+var r = class extends var_core_value_sigBC46 {
+  printSlidesAsync(var_core_value_sig7524) {
+    return this._commandService["executeCommand"](var_core_value_sig3EEE.id, var_core_value_sig7524);
+  }
+  openSlidesPrintDialog(var_core_value_sig2AD8) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig2AD0.id, var_core_value_sig2AD8);
+  }
+};
+var_core_value_sigBC46.extend(r);
+export {};

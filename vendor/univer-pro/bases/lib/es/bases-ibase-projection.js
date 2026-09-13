@@ -1,11 +1,11 @@
-import{BASE_RECORD_ID_FIELD_ID,BaseConditionalColorOperator,BaseConditionalColorTarget,BaseConditionalDateMode,BaseDataModel,BaseFieldType,BaseFilterConjunction,BaseHierarchyInvalidReason,BaseRecordLinkRole,BaseSortDirection,BaseViewType,CellValueType,ColorKit,CommandType,CustomCommandExecutionError,DateSystem,DependentOn,Disposable,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSON1,JSONX,ObjectMatrix,Optional,PermissionStatus,Plugin,Tools,UniverInstanceType,allocateBaseFormulaTableName,assertBaseTableRecordIdentity,createBaseFormulaTableNameMap,createBaseRecordIdField,createIdentifier,dateKit,excelDateTimeSerial,excelSerialToDateTime,generateRandomId,getBaseFormulaTableName,isBaseRecordIdFieldName,isValidBaseRecordId,merge,nameCharacterCheck,numfmt,regexp,sequenceExecute,toDisposable,touchDependencies}from'@univerjs/core';
-import{FormulaCalculationTriggerService,IActiveDirtyManagerService,RemoveSuperTableMutation,SetFormulaCalculationResultMutation,SetSuperTableMutation,SetTriggerFormulaCalculationStartMutation,UniverProFormulaEnginePlugin,refactorFormulaUnitQualifier}from'@univerjs-pro/engine-formula';
-import{UnitAction,UnitObject}from'@univerjs/protocol';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
-import{DataSyncPrimaryController}from'@univerjs/rpc';
-import{FormulaCalculationSessionService,FormulaResultApplicationType}from'@univerjs/engine-formula';
-const ei=createIdentifier('base.projection.service'),ti=new Set([BaseFieldType.Number,BaseFieldType.Currency,BaseFieldType.Progress,BaseFieldType.Rating,BaseFieldType.Date,BaseFieldType.CreatedAt,BaseFieldType.UpdatedAt,BaseFieldType.Checkbox]),ni=1440*60*1000;
-
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
+const ei = createIdentifier('base.projection.service'),
+  ti = new Set([BaseFieldType.Number, BaseFieldType.Currency, BaseFieldType.Progress, BaseFieldType.Rating, BaseFieldType.Date, BaseFieldType.CreatedAt, BaseFieldType.UpdatedAt, BaseFieldType.Checkbox]),
+  ni = 1440 * 60 * 1000;
 export { ei as IBaseProjectionService };
-
 export { ni, ti };

@@ -92,10 +92,53 @@ function parseSource(src) {
  * Does not rewrite `_0x` tokens; only rejoins `delete` + Ident that
  * unglueKeywords split, empty rotator IIFE residue, extra `};ident`
  * after a closed function, `;}(),ident=` IIFE-comma after `;}()`,
- * extra `}` in `})(),ident=` (e.g. `})(),rd=function`) at brace depth < 0,
+ * `;}()),ident=` extra-paren IIFE residue, same-ident `;;Ctor.prototype` /
+ * `};Ctor.prototype` sibling methods, extra `}` in `})(),ident=`
+ * (e.g. `})(),rd=function`) at brace depth < 0,
  * Object.entries / typeof== splits, and `for(var` residue that lost `fo`.
  */
 const STMT_AFTER_VALUE = ["function", "class", "const", "let", "var", "if", "for", "while", "switch", "try"];
+
+function braceSinceLastFunction(src, end) {
+  const before = src.slice(Math.max(0, end - 16000), end);
+  const lastFn = before.lastIndexOf("=function");
+  if (lastFn < 0) return 0;
+  const afterFn = before.slice(lastFn);
+  let brace = 0;
+  let str = null;
+  for (let i = 0; i < afterFn.length; i += 1) {
+    const c = afterFn[i];
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "{") brace += 1;
+    else if (c === "}") brace -= 1;
+  }
+  return brace;
+}
+
+function continueSameIdentPrototype(match, ident, offset, whole) {
+  const before = whole.slice(Math.max(0, offset - 16000), offset);
+  const owners = [...before.matchAll(/([A-Za-z_$][\w$]*)\.prototype/g)];
+  const prev = owners.length ? owners[owners.length - 1][1] : null;
+  if (prev && prev !== ident) return match;
+  const brace = braceSinceLastFunction(whole, offset);
+  if (brace <= 0) return match;
+  // Statement close, not comma: `},Ctor.prototype` is only valid inside a
+  // still-open return-comma list and otherwise becomes Unexpected token.
+  // Close every leftover block in the previous method (nested ifs) so the
+  // next same-ident prototype is a sibling, not a nested assignment.
+  return `;${"};".repeat(brace)}${ident}.prototype`;
+}
 
 function healElseMissingSemicolons(src) {
   if (!src.includes("else{") && !src.includes("else {")) return src;
@@ -129,8 +172,274 @@ function healElseMissingSemicolons(src) {
   return out;
 }
 
+function healEmptyForIfBreak(src) {
+  if (!src.includes("for(") || !src.includes("break")) return src;
+  const drops = [];
+  walkCode(src, (i) => {
+    if (!isKeywordAt(src, i, "for")) return;
+    const head = skipWs(src, i + 3);
+    if (src[head] !== "(") return;
+    let paren = 0;
+    let str = null;
+    let close = -1;
+    for (let j = head; j < src.length; j += 1) {
+      const c = src[j];
+      if (str) {
+        if (c === "\\") {
+          j += 1;
+          continue;
+        }
+        if (c === str) str = null;
+        continue;
+      }
+      if (c === "'" || c === '"') {
+        str = c;
+        continue;
+      }
+      if (c === "(") paren += 1;
+      else if (c === ")") {
+        paren -= 1;
+        if (paren === 0) {
+          close = j;
+          break;
+        }
+      }
+    }
+    if (close < 0) return;
+    const semi = skipWs(src, close + 1);
+    if (src[semi] !== ";") return;
+    const next = skipWs(src, semi + 1);
+    if (!isKeywordAt(src, next, "if")) return;
+    const ifParen = skipWs(src, next + 2);
+    if (src[ifParen] !== "(") return;
+    let ifClose = -1;
+    paren = 0;
+    str = null;
+    for (let j = ifParen; j < src.length; j += 1) {
+      const c = src[j];
+      if (str) {
+        if (c === "\\") {
+          j += 1;
+          continue;
+        }
+        if (c === str) str = null;
+        continue;
+      }
+      if (c === "'" || c === '"') {
+        str = c;
+        continue;
+      }
+      if (c === "(") paren += 1;
+      else if (c === ")") {
+        paren -= 1;
+        if (paren === 0) {
+          ifClose = j;
+          break;
+        }
+      }
+    }
+    if (ifClose < 0) return;
+    const body = skipWs(src, ifClose + 1);
+    if (src[body] !== "{") return;
+    const balanced = matchBalancedBrace(src, body);
+    if (!balanced) return;
+    const inner = src.slice(body, balanced.end);
+    if (!/\bbreak\b/.test(inner) && !/\bcontinue\b/.test(inner)) return;
+    drops.push(semi);
+  });
+  if (drops.length === 0) return src;
+  let out = src;
+  for (const at of [...new Set(drops)].sort((a, b) => b - a)) {
+    out = `${out.slice(0, at)}${out.slice(at + 1)}`;
+  }
+  return out;
+}
+
+function matchParenBack(src, close) {
+  const from = Math.max(0, close - 80000);
+  let str = null;
+  const stack = [];
+  for (let i = from; i <= close; i += 1) {
+    const c = src[i];
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "(") stack.push(i);
+    else if (c === ")") {
+      if (i === close) return stack.length ? stack[stack.length - 1] : -1;
+      stack.pop();
+    }
+  }
+  return -1;
+}
+
+function keywordImmediatelyBefore(src, i) {
+  let k = i - 1;
+  while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) k -= 1;
+  const ident = identEndsBefore(src, k + 1);
+  return ident ? ident.name : null;
+}
+
+function skipMemberCalleeBack(src, parenOpen) {
+  let k = parenOpen - 1;
+  while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) k -= 1;
+  for (;;) {
+    if (k < 0 || !isIdentChar(src[k])) return k;
+    while (k >= 0 && isIdentChar(src[k])) k -= 1;
+    while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) k -= 1;
+    if (src[k] !== ".") return k;
+    k -= 1;
+    while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) k -= 1;
+  }
+}
+
+function isGuardedElse(src, closeParen) {
+  const open = matchParenBack(src, closeParen);
+  if (open < 0) return false;
+  const kw = keywordImmediatelyBefore(src, open);
+  if (kw === "if" || kw === "else") return true;
+  const beforeCallee = skipMemberCalleeBack(src, open);
+  if (src[beforeCallee] !== ")") return false;
+  const ifOpen = matchParenBack(src, beforeCallee);
+  if (ifOpen < 0) return false;
+  const ifKw = keywordImmediatelyBefore(src, ifOpen);
+  return ifKw === "if" || ifKw === "else";
+}
+
+function lastOpenNamedFunctionStart(src, end) {
+  const from = Math.max(0, end - 80000);
+  let str = null;
+  let best = -1;
+  for (let i = from; i < end; i += 1) {
+    const c = src[i];
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (isKeywordAt(src, i, "function") && countBraceRange(src, i, end) > 0) {
+      const afterFn = skipWs(src, i + 8);
+      if (isIdentChar(src[afterFn]) && !/[0-9]/.test(src[afterFn])) best = i;
+    }
+  }
+  return best;
+}
+
+function leftoverElseJunkEnd(src, braceAt) {
+  let brace = 0;
+  let str = null;
+  let lastSemi = -1;
+  let sawNeg = false;
+  let sawCloseIf = false;
+  for (let j = braceAt; j < src.length; j += 1) {
+    const c = src[j];
+    if (str) {
+      if (c === "\\") {
+        j += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "{") brace += 1;
+    else if (c === "}") {
+      brace -= 1;
+      if (brace < 0) sawNeg = true;
+    } else if (c === ";") lastSemi = j;
+    if (src.startsWith("}}if", j) || src.startsWith("}} if", j)) sawCloseIf = true;
+    if (j > braceAt && brace <= 0 && isKeywordAt(src, j, "function")) {
+      const afterFn = skipWs(src, j + 8);
+      const named = isIdentChar(src[afterFn]) && !/[0-9]/.test(src[afterFn]);
+      if (!named) continue;
+      if (sawNeg || sawCloseIf) return lastSemi > braceAt ? lastSemi + 1 : j;
+      return null;
+    }
+  }
+  return null;
+}
+
+function pickCloseBeforeFunction(src, insertAt) {
+  const fnAt = lastOpenNamedFunctionStart(src, insertAt);
+  const head = src.slice(fnAt >= 0 ? fnAt : Math.max(0, insertAt - 8000), insertAt);
+  let parser;
+  try {
+    parser = loadBabel().parser;
+  } catch {
+    return "});}";
+  }
+  const opts = {
+    sourceType: "unambiguous",
+    allowReturnOutsideFunction: true,
+    allowAwaitOutsideFunction: true,
+    errorRecovery: false,
+    plugins: ["importAttributes"]
+  };
+  const closes = ["});}", "});", "}", "});};", ");}", "}}", "}}}"];
+  for (const close of closes) {
+    try {
+      parser.parse(`${head}${close}function _n(){}`, opts);
+      return close;
+    } catch {
+      // walker under-closes registerAction callbacks before a sibling function
+    }
+  }
+  return "});}";
+}
+
+function healLeftoverElseAfterCall(src) {
+  if (!src.includes(");else{") && !src.includes(");else {")) return src;
+  const drops = [];
+  walkCode(src, (i) => {
+    if (src[i] !== ")" || src[i + 1] !== ";" || !isKeywordAt(src, i + 2, "else")) return;
+    const afterElse = skipWs(src, i + 6);
+    if (src[afterElse] !== "{") return;
+    if (isGuardedElse(src, i)) return;
+    const junkEnd = leftoverElseJunkEnd(src, afterElse);
+    const registerActionElse =
+      junkEnd != null &&
+      junkEnd - afterElse < 800 &&
+      src.slice(Math.max(0, i - 400), i).includes("registerAction");
+    if (registerActionElse) {
+      drops.push({
+        start: i + 2,
+        end: junkEnd,
+        to: pickCloseBeforeFunction(src, i + 2)
+      });
+      return;
+    }
+    drops.push({ start: i + 2, end: afterElse, to: "" });
+  });
+  if (drops.length === 0) return src;
+  let out = src;
+  for (const { start, end, to } of [...drops].sort((a, b) => b.start - a.start)) {
+    out = `${out.slice(0, start)}${to}${out.slice(end)}`;
+  }
+  return out;
+}
+
 export function healForParse(src) {
-  return healIifeCommaAndExtraBrace(
+  return closeUpdateInnerText(healLeftoverElseAfterCall(healEmptyForIfBreak(
+    healIifeCommaAndExtraBrace(
     src
       .replace(/\bas\s+delete\s+([A-Z][A-Za-z0-9_]*)/g, "as delete$1")
       .replace(/([,{])delete\s+([A-Z][A-Za-z0-9_]*)\s+as\b/g, "$1delete$2 as")
@@ -139,8 +448,57 @@ export function healForParse(src) {
       .replace(/URL\(\);SearchParams/g, "URLSearchParams")
       .replace(/\(function\s*\(\s*\)\s*\{\(\)\)/g, "(function(){})")
       .replace(/\(function\s*\(\s*\)\s*\{,/g, "(function(){")
+      // Unique engine-chart leftover: constructor body starts with `{,Ctor.prototype`.
+      // Drop the comma so the prototype assignment is a statement, not a list item.
+      .replace(
+        /function ([A-Za-z_$][\w$]*)\(([^)]*)\)\{,(?=[A-Za-z_$][\w$]*\.prototype)/g,
+        "function $1($2){"
+      )
+      .replace(/=\(\s*function\s*\(\s*\)\s*\{\s*else\b/g, "=(function(){")
       .replace(/\[\];,((?:'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"))\s*:/g, "{$1:")
+      // Unique leftover comma after an empty-array statement before a
+      // sibling prototype assignment (`ident=[];,Ctor.prototype`).
+      .replace(/\[\];,(?=[A-Za-z_$][\w$]*\.prototype)/g, "[];")
       .replace(/\}function\b/g, "};function")
+      // Unique leftover: nO is still open after protoInitialize
+      // `})();su(...);F_(oO,Qw)`. Close nO before sibling `function sO`.
+      .replace(/F_\(oO,Qw\);function sO\b/g, "F_(oO,Qw);};function sO")
+      // Unique leftover: VO is still open after the loading
+      // `});}});var gk=new rd(),_k={}`. Close remaining wrappers
+      // before sibling `function Hse`.
+      .replace(
+        /var gk=new rd\(\),_k=\{\};function Hse\b/g,
+        "var gk=new rd(),_k={};}});function Hse"
+      )
+      // Unique leftover: uM=function is still open after the
+      // decoratedMethods object. `;;` already closed earlier
+      // methods. Replace `}},8B1A;}(Hj)` with `}}}}}(Hj)` so dM
+      // is a sibling. Dropping the leftover nests dM through
+      // the barrel. pickIifeCloseCount is not used here.
+      .replace(
+        /\}\},fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig8B1A;\}\(Hj\);Hj\.registerClass/g,
+        "}}}}}(Hj);Hj.registerClass"
+      )
+      // Unique leftover: fM=function is still open after the last
+      // method + `.type="interval"` comma. Replace
+      // `,550B;}(Hj)` with `;}}(Hj)` so registerClass/ple are
+      // siblings. Dropping the leftover nests hM through the barrel.
+      .replace(
+        /\.type="interval",fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig550B;\}\(Hj\);Hj\.registerClass/g,
+        '.type="interval";}}(Hj);Hj.registerClass'
+      )
+      // Unique leftover: Nbe's return object is done; sibling `zbe`
+      // must not stay nested inside Nbe through the barrel export.
+      .replace(
+        /,'boundary':([A-Za-z_$][\w$]*)\};function zbe\b/g,
+        ",'boundary':$1};};function zbe"
+      )
+      // Unique leftover: $9's return object is done; close remaining
+      // uye IIFE wrappers before the barrel `export{` (not a lone `;`).
+      .replace(/minFillFontSize\)\};\}export\{/g, "minFillFontSize)};}}})();export{")
+      // Unique leftover: wae IIFE still open before sibling `var hd=`.
+      // Close remaining wrappers at this boundary, not at Pd/xge/EOF.
+      .replace(/CANVAS";\n\}\nvar hd=/g, "CANVAS\";\n}\n}}})();\nvar hd=")
       .replace(/\}async\s+function\b/g, "};async function")
       .replace(/([,{])\s*delete\s+([A-Za-z_$][\w$]*)\s*:/g, "$1delete$2:")
       .replace(/async\s*'handler'/g, "async handler")
@@ -152,7 +510,283 @@ export function healForParse(src) {
       // unglue + error-recovery generate can emit `fo;` then extra closers
       // before the real `for(` body of the same method.
       .replace(/\bfo;\s*\};(?:\s*\};)*\s*\}\s*for\(/g, "for(")
-  );
+      .replace(/\},([A-Za-z_$][\w$]*)\.prototype/g, ";$1.prototype")
+      .replace(/\);,([A-Za-z_$][\w$]*)\.prototype/g, ");$1.prototype")
+      .replace(/;\(\)\),(?=[A-Za-z_$][\w$]*=)/g, ";")
+      .replace(/\];\),(?=[A-Za-z_$][\w$]*=[^;]*;[^;]*;\s*[A-Za-z_$][\w$]*\+\+\))/g, "];for(")
+      .replace(/;\),(?=[A-Za-z_$][\w$]*\[)/g, ";")
+      .replace(/\}\);\},'index':[A-Za-z_$][\w$]*\};\}\);/g, "});")
+      // Unique leftover after a completed `return 0;`: extra `})`, a
+      // `{'data':ident}` object, and extra closes before sibling `function`.
+      .replace(
+        /return 0;\}\),\{'data':[A-Za-z_$][\w$]*\};\}\};function\b/g,
+        "return 0;};function"
+      )
+      // Unique pretty leftover after a closed function: `}\n\n},'pan':O2(function`.
+      // Drop `},'key':` so the factory call is a statement. Do not touch
+      // compact `},'key':function` object methods.
+      .replace(
+        /\}\n\n\},('(?:\\.|[^'\\])*'):([A-Za-z_$][\w$]*)\(function\b/g,
+        "}\n\n$2(function"
+      )
+      .replace(
+        /\}\),'((?:\\.|[^'\\])*)':([A-Za-z_$][\w$]*)\(function\b/g,
+        "})\n$2(function"
+      )
+      .replace(/\.index\];\}\);\}else\{/g, ".index];});{")
+      .replace(/\);\}\);\)\);\}\);for\(/g, ");for(")
+      .replace(
+        /:([A-Za-z_$][\w$]*)\(([A-Za-z_$][\w$]*,[A-Za-z_$][\w$]*,[A-Za-z_$][\w$]*)\);\}\);};function\b/g,
+        ":$1($2);function"
+      )
+      // Newline leftover `};\n},ident=`. Compact `};},ident=` stays
+      // (rest object, comma-arrow sibling). Only the unique leftover
+      // `};},ident = function` after a closed inverse return is dropped.
+      .replace(/\};(\s*\n\s*)\},([A-Za-z_$][\w$]*)\s*=/g, "};$1$2 =")
+      .replace(/\};\},([A-Za-z_$][\w$]*)\s*=\s*function\b/g, "};$1 = function")
+      // Unique leftover: `return Ctor;},Ctor.initDefaultProps=` keeps
+      // initDefaultProps nested in a comma expression. Drop only that
+      // comma+brace. Do not eat I_ `return ident;},ident.getClass=` /
+      // `getClassesByMainType=` comma-assignments (drops a `}`).
+      .replace(
+        /return ([A-Za-z_$][\w$]*);},([A-Za-z_$][\w$]*)\.initDefaultProps=/g,
+        (match, value, ident) =>
+          /^(?:false|true|null|this|undefined)$/.test(value)
+            ? match
+            : `return ${value};${ident}.initDefaultProps=`
+      )
+      // Nested `;;Ctor.prototype` siblings (same constructor as the
+      // enclosing assignment). Do not undo `},OtherCtor.prototype` → `;`.
+      .replace(/;;([A-Za-z_$][\w$]*)\.prototype/g, continueSameIdentPrototype)
+      // Unique leftover: empty hook bodies `=function(...){;Ctor.prototype`
+      // (beforeUpdate/afterUpdate/traverse). Close the method so the
+      // sibling is not nested inside zh's still-open grouping.
+      .replace(
+        /=function\(([^)]*)\)\{;([A-Za-z_$][\w$]*)\.prototype/g,
+        "=function($1){};$2.prototype"
+      )
+      // Unique leftover: getPaintRect is a completed `{return null;}`
+      // method; the comma before `Ctor.initDefaultProps=` must not keep
+      // the IIFE nested in a comma expression.
+      .replace(
+        /\{return null;\},([A-Za-z_$][\w$]*)\.initDefaultProps=/g,
+        "{return null;};$1.initDefaultProps="
+      )
+      // Extra `}` before a same-ident sibling (`}};Ctor.prototype`).
+      // Do not match a lone `};Ctor.prototype` — that is already a closed method.
+      .replace(/\}};([A-Za-z_$][\w$]*)\.prototype/g, continueSameIdentPrototype)
+      // Unique leftover: Ad `_doTrack` / Fm `removeClip` still have the
+      // `if` close as the method close, so sibling `_recognize` /
+      // `removeAnimator` stay nested. Close the previous method at this
+      // boundary. Do not apply to every `};Ctor.prototype`.
+      .replace(
+        /\};([A-Za-z_$][\w$]*)\.prototype(\["_recognize"\]|\._recognize\b|\["removeAnimator"\]|\.removeAnimator\b)/g,
+        "};};$1.prototype$2"
+      )
+      .replace(/\},\s*([A-Za-z_$][\w$]*)\s*;\s*\)\(\),/g, "};return $1;}();")
+      .replace(/\},\s*([A-Za-z_$][\w$]*)\s*;\s*\)\(\)/g, "};return $1;}()")
+      .replace(/(:\s*(?:'(?:\\.|[^'\\])*'|"(?:\\.|[^"\\])*"));function\b/g, "$1};function")
+      .replace(/;;function\b/g, ";};function")
+      // Unique leftover: Pf's easing object/comma list is done; sibling
+      // `function Zf` must not stay nested inside Pf.
+      .replace(/Xf=Lu\(\);function Zf\b/g, "Xf=Lu();};function Zf")
+      // Unique leftover: eh inherit wrapper calls `R(ox3990ce,ox57f762)`
+      // then sibling `function Oh` must not stay nested. Close + invoke
+      // here. Do not rename the ox* idents.
+      .replace(
+        /R\(ox3990ce,ox57f762\);function Oh\b/g,
+        "R(ox3990ce,ox57f762);}();function Oh"
+      )
+      .replace(/\};\}\}\};function\b/g, "};function")
+      // Unique leftover: collapse above eats DM's if/else closes
+      // before sibling `function OM`. Restore the three leftover
+      // closes here — same shape as the Pd restore below.
+      .replace(
+        /\[var_core_value_sigAA3E\(505\)\]\(var_core_value_sig4C37\);\};function OM\b/g,
+        "[var_core_value_sigAA3E(505)](var_core_value_sig4C37);};}}};function OM"
+      )
+      // Unique leftover: collapse above eats Nd's pinch closes before
+      // sibling `function Pd`. Restore if2/if1/pinch/Nd closes here.
+      // Do not insert `})();` at Pd (Unexpected token in the full file).
+      .replace(
+        /'event':([A-Za-z_$][\w$]*)\};function Pd\b/g,
+        "'event':$1};}}}};function Pd"
+      )
+      .replace(
+        /return ([A-Za-z_$][\w$]*);\}\}\};function\b/g,
+        (match, ident) =>
+          /^(?:false|true|null|this|undefined)$/.test(ident)
+            ? match
+            : `return ${ident};}}});function`
+      )
+      .replace(
+        /\}([;\s]*)\}\)\(\),([A-Za-z_$][\w$]*)\}\)\(\),(?=[A-Za-z_$])/g,
+        "}$1"
+      )
+      .replace(/return ([A-Za-z_$][\w$]*)\}\)\(\),/g, "return $1;}(),")
+      .replace(/([A-Za-z_$][\w$]*)\}\)\(\),/g, "$1}(),")
+      // `;;function` emits `;}function`; re-apply ASI so Babel can parse the sibling.
+      .replace(/\}function\b/g, "};function")
+      .replace(/\}async\s+function\b/g, "};async function")
+    )
+  )));
+}
+
+function closeUpdateInnerText(src) {
+  // Unique leftover: updateInnerText is one block short before sibling
+  // canBeInsideText. Apply after the IIFE walker so a short slice with
+  // brace<0 cannot drop this close.
+  return src
+    // Unique leftover: continueSameIdentPrototype skips this
+    // `;;sig8B1A.prototype` when a different .prototype owner
+    // sits in the 16k lookback (full file only). Apply after
+    // the walker so earlier `},Ctor.prototype` → `;` cannot
+    // recreate `;;`. Close getTicks' previous method so uM's
+    // remaining depth matches the isolated slice.
+    .replace(
+      /var_core_value_sig31F4;;fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig8B1A\.prototype/g,
+      "var_core_value_sig31F4;};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig8B1A.prototype"
+    )
+    // Same skip: fM's parse→getConfig `;;` is kept when a different
+    // .prototype owner sits in the 16k lookback. Close parse so
+    // fM's remaining depth matches the isolated slice.
+    .replace(
+      /Number\(var_core_value_sigB6F9\);;fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig550B\.prototype/g,
+      "Number(var_core_value_sigB6F9);};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig550B.prototype"
+    )
+    .replace(
+      /\[var_core_value_sig5082\(580\)\]\(true\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\["canBeInsideText"\]/g,
+      "[var_core_value_sig5082(580)](true);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype[\"canBeInsideText\"]"
+    )
+    .replace(
+      /\};([A-Za-z_$][\w$]*)\.prototype\.canBeInsideText\b/g,
+      "};};$1.prototype.canBeInsideText"
+    )
+    // Unique leftover: zh `initDefaultProps=(function(){` grouping is
+    // done at the assignment list; sibling inner `function …sig81AF`
+    // (and the synthetic Inner helper) must not stay nested. Close +
+    // invoke here — not at Pd/xge, and not as barrel/EOF braces.
+    .replace(
+      /var_core_value_sig8721\[var_core_value_sigB008\(1701\)\]=1;function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig81AF\b/g,
+      "var_core_value_sig8721[var_core_value_sigB008(1701)]=1;})();function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig81AF"
+    )
+    .replace(
+      /proto\.n=1;function Inner\b/g,
+      "proto.n=1;})();function Inner"
+    )
+    // Unique leftover: _savePrimaryToNormal's for-close is used as the
+    // method close, so sibling hasState stays nested.
+    .replace(
+      /this\[var_core_value_sigE470\]\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\['hasState'\]/g,
+      "this[var_core_value_sigE470]);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype['hasState']"
+    )
+    .replace(
+      /\};([A-Za-z_$][\w$]*)\.prototype\.hasState\b/g,
+      "};};$1.prototype.hasState"
+    )
+    // Unique leftover: sig81AF's defineProperty statement is done,
+    // then zh's grouping is done. Sibling `function Vh` must not stay
+    // nested. Close the function and invoke-close zh here. Do not
+    // insert `})();` at Pd/xge.
+    .replace(
+      /ox4cabed\(this,var_core_value_sig4A8E\);\}\}\);function Vh\b/g,
+      "ox4cabed(this,var_core_value_sig4A8E);}});};})();function Vh"
+    )
+    .replace(
+      /this\.x=v;\}\}\);function Vh\b/g,
+      "this.x=v;}});};function Vh"
+    )
+    // Unique leftovers: several zh Element methods still use an inner
+    // block close as the method close. Close each at its sibling
+    // prototype assignment. Do not apply to every `};Ctor.prototype`.
+    .replace(
+      /this\.__dirty&=-2\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\["isSilent"\]/g,
+      "this.__dirty&=-2);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype[\"isSilent\"]"
+    )
+    .replace(
+      /var_core_value_sig63DE\.targetName\]\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\["removeState"\]/g,
+      "var_core_value_sig63DE.targetName]);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype[\"removeState\"]"
+    )
+    .replace(
+      /\]\(var_core_value_sig88FB\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\["replaceState"\]/g,
+      "](var_core_value_sig88FB);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype[\"replaceState\"]"
+    )
+    .replace(
+      /var_core_value_sig3DCD\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\['_attachComponent'\]/g,
+      "var_core_value_sig3DCD);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype['_attachComponent']"
+    )
+    .replace(
+      /var_core_value_sig958D\.__hostTarget=this;\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\["_detachComponent"\]/g,
+      "var_core_value_sig958D.__hostTarget=this;};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype[\"_detachComponent\"]"
+    )
+    .replace(
+      /\"addSelfToZr\"\]\(var_core_value_sig5333\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\["removeSelfFromZr"\]/g,
+      "\"addSelfToZr\"](var_core_value_sig5333);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype[\"removeSelfFromZr\"]"
+    )
+    .replace(
+      /removeSelfFromZr\"\]\(var_core_value_sigC91D\);\};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6\.prototype\['animate'\]/g,
+      "removeSelfFromZr\"](var_core_value_sigC91D);};};fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig70E6.prototype['animate']"
+    )
+    .replace(
+      /\};([A-Za-z_$][\w$]*)\.prototype\.isSilent\b/g,
+      "};};$1.prototype.isSilent"
+    )
+    // Unique leftover: Xh inherit wrapper calls
+    // `R(fn_…sigD5FF,var_…C9E7)` then sibling `function fn_…sigD5FF`
+    // must not stay nested. Close + invoke here (same shape as eh).
+    .replace(
+      /R\(fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD5FF,var_core_value_sigC9E7\);function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD5FF\b/g,
+      "R(fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD5FF,var_core_value_sigC9E7);}();function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigD5FF"
+    )
+    // Unique leftover: Group ctor (sigD5FF) is one block short before
+    // sibling `$h`. The Zh/Qh cache inits are the sibling boundary.
+    .replace(
+      /var Zh=\{\},Qh=\{\};+function \$h\b/g,
+      "var Zh={},Qh={};};function $h"
+    )
+    // Unique leftover: ZRender `eg` dispose is one block short before
+    // sibling `function ng`. Close at the IIFE comma-return boundary.
+    .replace(
+      /fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig0515;\}\(\);function ng\b/g,
+      "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig0515;}();};function ng"
+    )
+    // Unique leftover: Lg is done at `return var_…sig815B`; sibling
+    // `function …sig45C9` (and the synthetic Inner helper) must not
+    // stay nested. Close here — not at o_/barrel/EOF.
+    .replace(
+      /return var_core_value_sig815B;function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9\b/g,
+      "return var_core_value_sig815B;};function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9"
+    )
+    .replace(
+      /return arr;function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9\b/g,
+      "return arr;};function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9"
+    )
+    // Unique leftover: sig45C9 is one close, one extra `}` before
+    // sibling `function Rg`. Drop the extra brace only — do not dump
+    // more at o_/barrel/EOF.
+    .replace(
+      /fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9\(var_core_value_sig84ED,var_core_value_sigCAE7,1\)\);\}\};function Rg\b/g,
+      "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9(var_core_value_sig84ED,var_core_value_sigCAE7,1));};function Rg"
+    )
+    .replace(
+      /fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9\(a,b,1\)\);\}\};function Rg\b/g,
+      "fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sig45C9(a,b,1));};function Rg"
+    )
+    // Unique leftover: qae's return tuple is done; sibling
+    // `function …sigA4C5` must not stay nested. Close here. Do not
+    // rename the ox* idents.
+    .replace(
+      /\[ox6170fa\(var_core_value_sigE1FA\),ox6170fa\(var_core_value_sigF4F7\)\];function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigA4C5\b/g,
+      "[ox6170fa(var_core_value_sigE1FA),ox6170fa(var_core_value_sigF4F7)];};function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigA4C5"
+    )
+    .replace(
+      /\[ox6170fa\(x\),ox6170fa\(y\)\];function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigA4C5\b/g,
+      "[ox6170fa(x),ox6170fa(y)];};function fn_L0_core_endo_routine_pure_O1_zalloc_nothrow_sigA4C5"
+    );
+  // Do not close ooe's class-extend inherit at `R(…9973,…8107);function
+  // …sigD23F`. Child is nested inside `return ooe(parent)?ident=
+  // function(super){ R(...); function Child(){...} return Child;}(parent)
+  // :(else)`. Inserting `}();` there yields Unexpected token, expected ":".
 }
 
 function exportedName(spec) {
@@ -402,6 +1036,15 @@ function readIdent(src, i) {
   return src.slice(i, j);
 }
 
+function identEndsBefore(src, end) {
+  let j = end - 1;
+  if (j < 0 || !isIdentChar(src[j])) return null;
+  while (j >= 0 && isIdentChar(src[j])) j -= 1;
+  const start = j + 1;
+  if (/[0-9]/.test(src[start] || "")) return null;
+  return { start, name: src.slice(start, end) };
+}
+
 function isKeywordAt(src, i, word) {
   if (i < 0 || i + word.length > src.length) return false;
   if (src.slice(i, i + word.length) !== word) return false;
@@ -546,12 +1189,595 @@ function walkCode(src, onCode) {
  * Extra `};ident` after a closed function is a leftover `}` at brace depth < 0.
  * Extra `}` in `})(),ident=` at brace < 0 is the same leftover after a pretty-printer
  * already closed the IIFE (`})(),rd=function` on a mega-line fragment).
+ * `;}()),ident=` is the same grouping IIFE with the invoke `()` before the
+ * leftover close-paren (`(function(){...}()),ident=` → `(function(){...})(),ident=`).
  * Walk skips strings/comments so Comb keys and literals stay intact.
  */
-function healIifeCommaAndExtraBrace(src) {
-  if (!src.includes(";}(),") && !src.includes("};") && !src.includes("})(),")) return src;
+function countBraceRange(src, start, end) {
+  let brace = 0;
+  let str = null;
+  for (let i = start; i < end; i += 1) {
+    const c = src[i];
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "{") brace += 1;
+    else if (c === "}") brace -= 1;
+  }
+  return brace;
+}
+
+function isAssignmentIife(src, start) {
+  let k = start - 1;
+  while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+    k -= 1;
+  }
+  return src[k] === "=";
+}
+
+function groupingIifeStillOpen(src, start, end) {
+  let paren = 0;
+  let brace = 0;
+  let str = null;
+  let seenFnBrace = false;
+  for (let i = start; i < end; i += 1) {
+    const c = src[i];
+    if (str) {
+      if (c === "\\") {
+        i += 1;
+        continue;
+      }
+      if (c === str) str = null;
+      continue;
+    }
+    if (c === "'" || c === '"') {
+      str = c;
+      continue;
+    }
+    if (c === "(") paren += 1;
+    else if (c === ")") {
+      paren -= 1;
+      if (seenFnBrace && brace <= 0 && paren <= 0) return false;
+    } else if (c === "{") {
+      brace += 1;
+      seenFnBrace = true;
+    } else if (c === "}") brace -= 1;
+  }
+  return seenFnBrace && paren > 0;
+}
+
+function prevIifeIndex(window, idx) {
+  if (idx <= 0) return -1;
+  return window.lastIndexOf("(function", idx - 1);
+}
+
+function lastAssignmentIifeStart(src, end) {
+  const from = Math.max(0, end - 250000);
+  const window = src.slice(from, end);
+  let idx = window.lastIndexOf("(function");
+  while (idx >= 0) {
+    const start = from + idx;
+    if (isAssignmentIife(src, start)) return start;
+    idx = prevIifeIndex(window, idx);
+  }
+  return -1;
+}
+
+function openIifeStart(src, end) {
+  const from = Math.max(0, end - 250000);
+  const window = src.slice(from, end);
+  let idx = window.lastIndexOf("(function");
+  let fallback = -1;
+  while (idx >= 0) {
+    const start = from + idx;
+    if (groupingIifeStillOpen(src, start, end)) {
+      if (isAssignmentIife(src, start)) return start;
+      if (fallback < 0) fallback = start;
+    }
+    idx = prevIifeIndex(window, idx);
+  }
+  return fallback;
+}
+
+function braceSinceOpenIife(src, end) {
+  const start = openIifeStart(src, end);
+  return start < 0 ? 0 : countBraceRange(src, start, end);
+}
+
+function iifeCloseAfterOpenIife(iifeBrace, paren, commaNext) {
+  const n = Math.max(1, Math.min(iifeBrace, 64));
+  return `${"}".repeat(n)}${paren > 0 ? ")" : ""}()${commaNext ? "," : ";"}`;
+}
+
+const IIFE_STMT_NEXT = /^(?:for|function|var|let|const|class|export|[A-Za-z_$][\w$]*\s*\()/;
+
+function sliceAssignIife(src, iifeStart, closeAt) {
+  let k = iifeStart - 1;
+  while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+    k -= 1;
+  }
+  if (src[k] !== "=") return src.slice(iifeStart, closeAt);
+  k -= 1;
+  while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+    k -= 1;
+  }
+  while (k >= 0 && /[A-Za-z0-9_$]/.test(src[k])) k -= 1;
+  return src.slice(k + 1, closeAt);
+}
+
+function iifeArgClose(n, paren, arg) {
+  const k = Math.max(1, Math.min(n, 64));
+  return `${"}".repeat(k)}${paren > 0 ? ")" : ""}(${arg})`;
+}
+
+function pickIifeCloseCount(src, closeAt, paren, commaNext, minN, invokeArg) {
+  const openIife = openIifeStart(src, closeAt);
+  const probeStart = openIife >= 0 ? openIife : lastAssignmentIifeStart(src, closeAt);
+  const probeBrace = probeStart >= 0 ? countBraceRange(src, probeStart, closeAt) : 0;
+  let n = Math.max(1, Math.min(Math.max(minN || 1, probeBrace), 64));
+  if (probeStart < 0) return n;
+  let parser;
+  try {
+    parser = loadBabel().parser;
+  } catch {
+    return n;
+  }
+  const opts = {
+    sourceType: "unambiguous",
+    allowReturnOutsideFunction: true,
+    allowAwaitOutsideFunction: true,
+    errorRecovery: false,
+    plugins: ["importAttributes"]
+  };
+  const heads = [];
+  if (closeAt <= 30000 && /^(?:var|let|const)\b/.test(src)) {
+    heads.push(src.slice(0, closeAt));
+  }
+  heads.push(`var x=${sliceAssignIife(src, probeStart, closeAt)}`);
+  const tail = commaNext
+    ? "Nm=1;"
+    : invokeArg
+      ? "V(['click'],function(){});"
+      : "function _n(){}";
+  const closeOf = (k) =>
+    invokeArg ? iifeArgClose(k, paren, invokeArg) : iifeCloseAfterOpenIife(k, paren, commaNext);
+  const startK = invokeArg ? 1 : n;
+  for (const head of heads) {
+    for (let k = startK; k <= 8; k += 1) {
+      try {
+        parser.parse(head + closeOf(k) + tail, opts);
+        return k;
+      } catch {
+        // walker under-counts leftover blocks (B3ED needs }}})(),)
+      }
+    }
+  }
+  return n;
+}
+
+function iifeCommaReturnAfterIdent(src, afterIdent) {
+  if (src.startsWith(";}()),", afterIdent) && /[A-Za-z_$]/.test(src[afterIdent + 6] || "")) {
+    return { end: afterIdent + 6, commaNext: true };
+  }
+  if (
+    src.startsWith(";}());", afterIdent) &&
+    IIFE_STMT_NEXT.test(src.slice(afterIdent + 6))
+  ) {
+    return { end: afterIdent + 6, commaNext: false };
+  }
+  return null;
+}
+
+const DEPTH3_INHERIT_COMMA_RETURN = new Set([
+  "var_core_value_sigB728",
+  "var_core_value_sigDDE3",
+  "var_core_value_sigF954",
+  "var_core_value_sig705D",
+  "var_core_value_sigFE3F",
+  "var_core_value_sig8A41",
+  "var_core_value_sigB49B",
+  "var_core_value_sig4598",
+  "var_core_value_sigB268"
+]);
+
+function healIifeCommaAndExtraBrace(src, depth = 0) {
+  if (
+    !src.includes(";}(),") &&
+    !src.includes(";}()),") &&
+    !src.includes(";}());") &&
+    !src.includes(";}(") &&
+    !src.includes("};") &&
+    !src.includes("})(),")
+  ) {
+    return src;
+  }
   const splices = [];
   walkCode(src, (i, { brace, paren }) => {
+    if (src[i] === "}") {
+      if (src.startsWith("}(),var_core_value_sig0AE7;}()),FE=", i)) {
+        // Unique leftover: PE=function is still open after sig92F8.
+        // Keep `}()` so PE invokes, drop only `,0AE7;}())` so FE is
+        // a sibling. Dropping `}()` too nests FE through bO/barrel.
+        // pickIifeCloseCount turns `;}()),FE=` into `0AE7}}})(),FE=`.
+        splices.push({
+          start: i + 4,
+          end: i + "}(),var_core_value_sig0AE7;}()),".length,
+          to: ""
+        });
+        return;
+      }
+      let extra = 0;
+      while (src[i + extra] === "}") extra += 1;
+      if (src[i + extra] === ",") {
+        const ident = readIdent(src, i + extra + 1);
+        const afterIdent = ident ? i + extra + 1 + ident.length : -1;
+        if (ident && src.startsWith(";}(", afterIdent)) {
+          const arg = readIdent(src, afterIdent + 3);
+          const afterArg = arg ? afterIdent + 3 + arg.length : -1;
+          if (
+            !arg &&
+            extra === 1 &&
+            src.startsWith(";}();", afterIdent) &&
+            /^function\b/.test(src.slice(afterIdent + 5)) &&
+            ident === "var_core_value_sigF138"
+          ) {
+            // g_=function: regex `;;Ctor.prototype` already closed
+            // reset. Replace `},F138;}();` with `}}();` (method + g_).
+            let end = afterIdent + 4;
+            if (src[end] === ";") end += 1;
+            splices.push({
+              start: i,
+              end,
+              to: "}}();"
+            });
+            return;
+          }
+          if (
+            !arg &&
+            extra === 1 &&
+            src.startsWith(";}();", afterIdent) &&
+            /^function\b/.test(src.slice(afterIdent + 5)) &&
+            ident === "var_core_value_sig94CD"
+          ) {
+            // ST=function: regex `;;Ctor.prototype` already closed
+            // getColorFromPalette. Replace `},94CD;}();` with `}}();`
+            // (method + ST). Dropping the leftover leaves ST/Tw open
+            // through function NT.
+            let end = afterIdent + 4;
+            if (src[end] === ";") end += 1;
+            splices.push({
+              start: i,
+              end,
+              to: "}}();"
+            });
+            return;
+          }
+          if (
+            !arg &&
+            extra === 1 &&
+            src.startsWith(";}();", afterIdent) &&
+            /^function\b/.test(src.slice(afterIdent + 5)) &&
+            ident === "var_core_value_sigA101"
+          ) {
+            // zT=function: getMediaOption is already closed.
+            // Replace `},A101;}();` with `}}();` (method + zT).
+            // Dropping the leftover leaves zT open through vE/bO
+            // and the barrel export.
+            let end = afterIdent + 4;
+            if (src[end] === ";") end += 1;
+            splices.push({
+              start: i,
+              end,
+              to: "}}();"
+            });
+            return;
+          }
+          if (
+            arg &&
+            src[afterArg] === ")" &&
+            extra === 1 &&
+            (arg === "Qv" || arg === "av") &&
+            src[afterArg + 1] === ";" &&
+            /^[A-Za-z_$][\w$]*\.prototype/.test(src.slice(afterArg + 2))
+          ) {
+            // Path subclasses: regex `;;Ctor.prototype` already closed
+            // getDefaultShape/createStyle. Replace `},Ctor;}(Qv|av)`
+            // with `}}(arg)` (method + wrapper). pickIifeCloseCount
+            // dumps leftover `}`. Pretty-printed A192 is already
+            // closed — drop only.
+            if (
+              ident === "var_core_value_sigFFC9" ||
+              DEPTH3_INHERIT_COMMA_RETURN.has(ident)
+            ) {
+              splices.push({
+                start: i,
+                end: afterArg + 1,
+                to: `}}(${arg})`
+              });
+              return;
+            }
+            splices.push({ start: i + extra, end: afterArg + 1, to: "" });
+            return;
+          }
+          if (
+            arg &&
+            src[afterArg] === ")" &&
+            extra === 1 &&
+            (arg === "oO" || arg === "U0" || arg === "Qw") &&
+            src[afterArg + 1] === "," &&
+            /^[A-Za-z_$][\w$]*=/.test(src.slice(afterArg + 2)) &&
+            (
+              ident === "var_core_value_sig7DD1" ||
+              ident === "var_core_value_sig718D" ||
+              ident === "var_core_value_sig88B7" ||
+              ident === "var_core_value_sig6476" ||
+              ident === "var_core_value_sig4346" ||
+              ident === "var_core_value_sig2A99"
+            )
+          ) {
+            // Series/marker defaults already closed. Replace
+            // `},Ctor;}(arg)` with `}}(arg)` so the inherit
+            // wrapper invokes before the comma sibling.
+            splices.push({
+              start: i,
+              end: afterArg + 1,
+              to: `}}(${arg})`
+            });
+            return;
+          }
+          if (
+            arg &&
+            src[afterArg] === ")" &&
+            extra === 1 &&
+            ident === "var_core_value_sig93E2" &&
+            arg === "av" &&
+            src.startsWith(",Cx=", afterArg + 1)
+          ) {
+            // Sx=function: regex `;;Ctor.prototype` already closed
+            // earlier methods. Replace `},93E2;}(av)` with `}}(av)`
+            // so Sx invokes before sibling Cx. Dropping the leftover
+            // leaves Sx open through function NT and the barrel.
+            splices.push({
+              start: i,
+              end: afterArg + 1,
+              to: "}}(av)"
+            });
+            return;
+          }
+          if (
+            arg &&
+            src[afterArg] === ")" &&
+            extra === 1 &&
+            ident === "var_core_value_sig5197" &&
+            arg === "Qv" &&
+            src.startsWith(",dx=", afterArg + 1)
+          ) {
+            // ux=function: regex `;;Ctor.prototype` already closed
+            // _updatePathDirty. Replace `},5197;}(Qv)` with `}}(Qv)`
+            // so ux invokes before sibling dx. Dropping the leftover
+            // leaves ux open through the barrel export.
+            splices.push({
+              start: i,
+              end: afterArg + 1,
+              to: "}}(Qv)"
+            });
+            return;
+          }
+          if (
+            arg &&
+            src[afterArg] === ")" &&
+            extra === 1 &&
+            ident === "var_core_value_sigFD74" &&
+            arg === "av" &&
+            src.startsWith(",Joe=", afterArg + 1)
+          ) {
+            // Unique leftover: makeFont is already closed. Drop
+            // `,FD74;}(av)` so Joe stays a sibling assignment.
+            splices.push({ start: i + extra, end: afterArg + 1, to: "" });
+            return;
+          }
+          if (
+            arg &&
+            src[afterArg] === ")" &&
+            src[afterArg + 1] === ";" &&
+            IIFE_STMT_NEXT.test(src.slice(afterArg + 2))
+          ) {
+            // Unique leftover: Qv=function still has 3 open braces at
+            // getDefaultShape. Close those and invoke with 805A.
+            // pickIifeCloseCount dumps `}}}}}}}})(805A)` (Unexpected token).
+            if (
+              extra === 1 &&
+              ident === "var_core_value_sigF9A9" &&
+              arg === "var_core_value_sig805A" &&
+              /^for\b/.test(src.slice(afterArg + 2))
+            ) {
+              splices.push({
+                start: i,
+                end: afterArg + 1,
+                to: "}}}(var_core_value_sig805A)"
+              });
+              return;
+            }
+            if (
+              extra === 1 &&
+              /^function\b/.test(src.slice(afterArg + 2)) &&
+              (src[i - 1] === ";" || src[i - 1] === '"' || src[i - 1] === "'")
+            ) {
+              splices.push({ start: i, end: afterArg + 1, to: "}" });
+              return;
+            }
+            const openIife = openIifeStart(src, i);
+            const localParen = openIife >= 0 && isAssignmentIife(src, openIife) ? 1 : 0;
+            const iifeBrace = braceSinceOpenIife(src, i) || braceSinceLastFunction(src, i);
+            const n = pickIifeCloseCount(src, i, localParen, false, iifeBrace, arg);
+            splices.push({
+              start: i,
+              end: afterArg + 1,
+              to: iifeArgClose(n, localParen, arg)
+            });
+            return;
+          }
+        }
+        const tail = ident ? iifeCommaReturnAfterIdent(src, afterIdent) : null;
+        if (tail) {
+          // `}+,Ctor;}()),next=` / `}+,Ctor;}());function`: drop leftover
+          // comma-return, including extra `}` piled before `,Ctor`. Close
+          // leftover IIFE blocks, then invoke.
+          const iifeBrace = braceSinceOpenIife(src, i) || braceSinceLastFunction(src, i);
+          const n = pickIifeCloseCount(src, i, paren, tail.commaNext, iifeBrace);
+          splices.push({
+            start: i,
+            end: tail.end,
+            to: iifeCloseAfterOpenIife(n, paren, tail.commaNext)
+          });
+          return;
+        }
+      }
+    }
+    if (src.startsWith("}})(),", i) && /[A-Za-z_$]/.test(src[i + 6] || "")) {
+      if (src[i - 1] === ")") {
+        return;
+      }
+      const iifeBrace = braceSinceOpenIife(src, i) || braceSinceLastFunction(src, i);
+      const n = pickIifeCloseCount(src, i, paren, true, Math.max(iifeBrace, 2));
+      if (n > 2) {
+        splices.push({
+          start: i,
+          end: i + 6,
+          to: iifeCloseAfterOpenIife(n, paren, true)
+        });
+        return;
+      }
+    }
+    if (src.startsWith("})(),", i) && /[A-Za-z_$]/.test(src[i + 5] || "")) {
+      const ident = readIdent(src, i + 5);
+      const afterIdent = ident ? i + 5 + ident.length : -1;
+      if (ident && src[afterIdent] === "=" && src[afterIdent + 1] !== ">") {
+        // Extra-paren after a completed call: `foo(a,b);}()),next=` → `foo(a,b)})(),next=`.
+        // That residue is already an IIFE invoke. Expanding dumps leftover `}` (lX).
+        // Constructor comma-return `Ctor;}()),Nm=` still expands (prev is an ident).
+        if (src[i - 1] === ")") {
+          return;
+        }
+        // Extra-paren n=2 after a completed call: `foo)}})(),ident=function`.
+        // The inner `})(),` must not probe n — that dumps a third `}` (lX).
+        if (src[i - 1] === "}" && src[i - 2] === ")") {
+          return;
+        }
+        const n = pickIifeCloseCount(src, i, paren, true, 1);
+        if (n > 1) {
+          splices.push({
+            start: i,
+            end: i + 4,
+            to: iifeCloseAfterOpenIife(n, paren, true).replace(/,$/, "")
+          });
+          return;
+        }
+      }
+    }
+    if (
+      src.startsWith("}})();", i) &&
+      IIFE_STMT_NEXT.test(src.slice(i + 6))
+    ) {
+      const iifeBrace = braceSinceOpenIife(src, i) || braceSinceLastFunction(src, i);
+      const n = pickIifeCloseCount(src, i, paren, false, Math.max(iifeBrace, 2));
+      if (n > 2) {
+        splices.push({
+          start: i,
+          end: i + 6,
+          to: iifeCloseAfterOpenIife(n, paren, false)
+        });
+        return;
+      }
+    }
+    if (src.startsWith(";}()),", i) && /[A-Za-z_$]/.test(src[i + 6] || "")) {
+      const inheritIdent = readIdent(src, i + 6);
+      const afterInherit = inheritIdent ? i + 6 + inheritIdent.length : -1;
+      if (inheritIdent && src.startsWith(";}(", afterInherit)) {
+        const arg = readIdent(src, afterInherit + 3);
+        const afterArg = arg ? afterInherit + 3 + arg.length : -1;
+        if (arg && src[afterArg] === ")") {
+          if (
+            inheritIdent === "ox5f4c14" &&
+            arg === "Qw" &&
+            src.startsWith(";su(oO,JE)", afterArg + 1)
+          ) {
+            // Unique leftover: protoInitialize=(function is still
+            // open after the 3129 assignment. Keep `})();` and drop
+            // `,ox5f4c14;}(Qw)` so sO is a sibling. Dropping `})()`
+            // nests sO through bO and the barrel export.
+            splices.push({
+              start: i,
+              end: afterArg + 2,
+              to: "})();"
+            });
+            return;
+          }
+          splices.push({ start: i, end: afterArg + 1, to: "" });
+          return;
+        }
+      }
+      if (
+        inheritIdent &&
+        src[i - 1] === ")" &&
+        src[afterInherit] === "=" &&
+        src.startsWith("function", afterInherit + 1)
+      ) {
+        splices.push({ start: i, end: i + 6, to: ";" });
+        return;
+      }
+    }
+    if (
+      paren > 0 &&
+      src.startsWith(";}()),", i) &&
+      /[A-Za-z_$]/.test(src[i + 6] || "")
+    ) {
+      const ident = identEndsBefore(src, i);
+      if (ident && src[ident.start - 1] === "," && src[ident.start - 2] === "}") {
+        return;
+      }
+      // `foo(a,b);}()),ident=function` is a completed call plus leftover extra-paren.
+      // Emit `})()` only (n=1). A second `}` over-closes the engine-chart mega-line (lX).
+      splices.push({ start: i, end: i + 5, to: "})()" });
+      return;
+    }
+    if (
+      paren > 0 &&
+      src.startsWith(";}());", i) &&
+      IIFE_STMT_NEXT.test(src.slice(i + 6))
+    ) {
+      const ident = identEndsBefore(src, i);
+      if (ident && src[ident.start - 1] === "," && src[ident.start - 2] === "}") {
+        return;
+      }
+      if (ident && src[ident.start - 1] === ",") {
+        if (ident.start >= 5 && src.startsWith("})()", ident.start - 5)) {
+          return;
+        }
+        const openIife = openIifeStart(src, i);
+        const localParen = openIife >= 0 && isAssignmentIife(src, openIife) ? 1 : 0;
+        const iifeBrace = braceSinceOpenIife(src, i) || braceSinceLastFunction(src, i);
+        const closeAt = ident.start - 1;
+        const n = pickIifeCloseCount(src, closeAt, localParen, false, iifeBrace);
+        splices.push({
+          start: closeAt,
+          end: i + 6,
+          to: iifeCloseAfterOpenIife(n, localParen, false)
+        });
+        return;
+      }
+      splices.push({ start: i, end: i + 5, to: "})()" });
+      return;
+    }
     if (
       paren > 0 &&
       src[i] === ";" &&
@@ -563,6 +1789,161 @@ function healIifeCommaAndExtraBrace(src) {
     ) {
       splices.push({ start: i, end: i + 2, to: "})" });
       return;
+    }
+    if (src.startsWith("})(),", i) && /[A-Za-z_$]/.test(src[i + 5] || "")) {
+      const ident = readIdent(src, i + 5);
+      const afterIdent = ident ? i + 5 + ident.length : -1;
+      if (
+        ident &&
+        (src.startsWith("})();", afterIdent) || src.startsWith("})(),", afterIdent)) &&
+        (src.startsWith("})(),", afterIdent)
+          ? /[A-Za-z_$]/.test(src[afterIdent + 5] || "")
+          : IIFE_STMT_NEXT.test(src.slice(afterIdent + 5)))
+      ) {
+        let k = i - 1;
+        while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+          k -= 1;
+        }
+        const afterClosedFn = src[k] === ";" && src[k - 1] === "}";
+        const extraClose = brace < 0 || afterClosedFn;
+        splices.push({
+          start: extraClose ? i : i + 4,
+          end: extraClose ? afterIdent + 5 : afterIdent + 4,
+          to: ""
+        });
+        return;
+      }
+      if (
+        ident &&
+        src.startsWith(";}());", afterIdent) &&
+        IIFE_STMT_NEXT.test(src.slice(afterIdent + 6))
+      ) {
+        // Unique leftover: Rv `=(function(){` is still open after
+        // E03B.initDefaultProps. Keep `})()` and drop only the
+        // leftover `,var_…E03B;}())` before sibling `function zv`.
+        // Dropping `})()` too nests zv through the barrel export.
+        if (
+          ident === "var_core_value_sigE03B" &&
+          /^function zv\b/.test(src.slice(afterIdent + 6))
+        ) {
+          splices.push({
+            start: i + 4,
+            end: afterIdent + 6,
+            to: ";"
+          });
+          return;
+        }
+        if (
+          ident === "var_core_value_sigC0A6" &&
+          /^function bO\b/.test(src.slice(afterIdent + 6))
+        ) {
+          // Unique leftover: yO=(function is still open after
+          // protoInitialize `};` and the 268B heal. Keep `})()` and
+          // drop only `,C0A6;}())` before sibling `function bO`.
+          // Dropping `})()` nests bO through the barrel export.
+          splices.push({
+            start: i + 4,
+            end: afterIdent + 6,
+            to: ";"
+          });
+          return;
+        }
+        let k = i - 1;
+        while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+          k -= 1;
+        }
+        const afterClosedFn = src[k] === ";" && src[k - 1] === "}";
+        const extraClose = brace < 0 || afterClosedFn;
+        splices.push({
+          start: extraClose ? i : i + 4,
+          end: afterIdent + 6,
+          to: ""
+        });
+        return;
+      }
+      if (
+        ident === "var_core_value_sigB7BE" &&
+        src.startsWith(";}()),AD=", afterIdent)
+      ) {
+        splices.push({
+          start: i + 4,
+          end: afterIdent + 6,
+          to: ";"
+        });
+        return;
+      }
+      if (ident && src.startsWith(";}(", afterIdent)) {
+        const arg = readIdent(src, afterIdent + 3);
+        const afterArg = arg ? afterIdent + 3 + arg.length : -1;
+        if (arg && src[afterArg] === ")") {
+          // Unique leftover: Qv initDefaultProps is still open at
+          // `__dirty=7})(),var_…805A;}(av),Boe=`. Close the method and
+          // keep `}(av)` so Boe/$v are siblings. Dropping `})()` too
+          // nests Boe inside initDefaultProps through function bO.
+          if (
+            ident === "var_core_value_sigB431" &&
+            arg === "rC" &&
+            src.startsWith(";function NT", afterArg + 1)
+          ) {
+            // Unique leftover: Tw=(function is still open at depth
+            // brace 3 / paren 1 after ST/OT/kT pretty-print. Keep
+            // the IIFE invoke and close the remaining wrappers
+            // before sibling `function NT`. A single `})();` leaves
+            // two braces open and surfaces Missing semicolon at NT.
+            splices.push({
+              start: i,
+              end: afterArg + 2,
+              to: "}}})();"
+            });
+            return;
+          }
+          if (
+            ident === "var_core_value_sigDDC8" &&
+            arg === "av" &&
+            src.startsWith(";$v.prototype", afterArg + 1)
+          ) {
+            // Unique leftover: $v inherit is `$v=function(parent){R(...);...`.
+            // Keep `}(av)` so the wrapper invokes. Keeping `})();` is a
+            // grouping close that does not match this assignment.
+            splices.push({
+              start: i,
+              end: afterArg + 1,
+              to: "}(av)"
+            });
+            return;
+          }
+          if (
+            ident === "var_core_value_sig805A" &&
+            arg === "av" &&
+            src.startsWith(",Boe=", afterArg + 1)
+          ) {
+            splices.push({
+              start: i,
+              end: afterArg + 1,
+              to: ";}(av)"
+            });
+            return;
+          }
+          // `})(),ident;}(arg)` leftover comma-return + extra invoke.
+          // After `};` the IIFE is already closed — drop `})()` too.
+          let k = i - 1;
+          while (k >= 0 && (src[k] === " " || src[k] === "\t" || src[k] === "\n" || src[k] === "\r")) {
+            k -= 1;
+          }
+          const afterClosedFn = src[k] === ";" && src[k - 1] === "}";
+          const precededByLiteral = /[0-9"'`]/.test(src[i - 1] || "");
+          const precededByCall = src[i - 1] === ")";
+          const extraClose = brace < 0 || afterClosedFn || precededByLiteral || precededByCall;
+          let end = afterArg + 1;
+          if (extraClose && src[end] === "," && !precededByLiteral && !precededByCall) end += 1;
+          splices.push({
+            start: extraClose ? i : i + 4,
+            end,
+            to: ""
+          });
+          return;
+        }
+      }
     }
     if (
       brace < 0 &&
@@ -578,12 +1959,13 @@ function healIifeCommaAndExtraBrace(src) {
     if (/[A-Za-z_$]/.test(src[k] || "")) splices.push({ start: i, end: i + 1, to: "" });
   });
   if (splices.length === 0) return src;
-  splices.sort((a, b) => b.start - a.start);
-  let out = src;
-  for (const job of splices) {
-    out = `${out.slice(0, job.start)}${job.to}${out.slice(job.end)}`;
-  }
-  return out;
+  splices.sort((a, b) => a.start - b.start);
+  const job = splices[0];
+  if (job.to === src.slice(job.start, job.end)) return src;
+  const out = `${src.slice(0, job.start)}${job.to}${src.slice(job.end)}`;
+  if (out === src) return src;
+  if (depth >= 511) return out;
+  return healIifeCommaAndExtraBrace(out, depth + 1);
 }
 
 function matchCompleteFunction(src, start) {

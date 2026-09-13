@@ -1,1 +1,395 @@
-Object["defineProperty"](exports,Symbol["toStringTag"],{value:"Module"});let e=require("@univerjs-pro/collaboration-client"),t=require("@univerjs-pro/license"),n=require("@univerjs/core"),r=require("@univerjs/network"),i=require("@univerjs/thread-comment"),a=require("@univerjs/thread-comment-ui"),o=require("@univerjs/protocol"),s=require("rxjs");var c="@univerjs-pro/thread-comment-datasource",l="1.0.0-insiders.20260907-70fc579";const u={},d=v117=>(0x0,n["dateKit"])(new Date(+v117))["format"]("YYYY/MM/DD HH:mm");function f(v118){if(!v118)return null;try{let v39=JSON["parse"](v118);return(0x0,i["isThreadCommentDocumentBody"])(v39)?v39:null;}catch{return null;}}const p=async(v119,v120)=>{let v121=v119["get"](n["UserManagerService"]),v122=v119["get"](r["HTTPService"]);v120["forEach"](v40=>{v121["getUser"](v40)&&v120["delete"](v40);}),v120["size"]&&(await v122["get"]("/universer-api/user/list",{params:{userIDs:[...v120]}}))["body"]["users"]["forEach"](v41=>{v41&&v121["addUser"](v41);});};function m(v123,v124){return function(v42,v43){v124(v42,v43,v123);};};function h(v125,v126,v127,v128){var v129=arguments[ox49c1ca(0x91)],v130=v129<0x3?v126:v128===null?v128=Object[ox49c1ca(0xb6)](v126,v127):v128,v131;if(typeof Reflect==ox49c1ca(0x86)&&typeof Reflect[ox49c1ca(0xd1)]==ox49c1ca(0xdf))v130=Reflect["decorate"](v125,v126,v127,v128);else{for(var v132=v125[ox49c1ca(0x91)]-0x1;v132>=0x0;v132--)(v131=v125[v132])&&(v130=(v129<0x3?v131(v130):v129>0x3?v131(v126,v127,v130):v131(v126,v127))||v130);}return v129>0x3&&v130&&Object[ox49c1ca(0x98)](v126,v127,v130),v130;}let g=class extends n["Disposable"]{constructor(v44,v45,v46,v47){super(),this[ox2c014f(0xab)]=v44,this[ox2c014f(0xde)]=v45,this[ox2c014f(0xec)]=v46,this[ox2c014f(0xba)]=v47,this["_init"](),this[ox2c014f(0xbf)]();}["_initUserSync"](){this[ox22e269(0xb5)](this[ox22e269(0xde)]["commentUpdate$"]["pipe"]((0x0,s[ox22e269(0xc4)])(0x10))[ox22e269(0xc0)](v7=>{const v8=ox22e269;let v9=new Set();v7[v8(0x8d)](v4=>{const v5=v8;switch(v4[v5(0xdb)]){case"add":{let v1=v4[v5(0xaa)]["personId"];v9[v5(0x90)](v1);break;}default:break;}}),p(this[v8(0xba)],v9);}));}["_deleteComment"](v48,v49,v50){let v51=this[ox3cbd4c(0xde)][ox3cbd4c(0x82)](v48,v49,v50);v51&&(v51["parentId"]?this[ox3cbd4c(0xde)][ox3cbd4c(0xd7)](v48,v49,v50):this[ox3cbd4c(0xde)][ox3cbd4c(0xb2)](v48,v49,v51["threadId"]));}["_resolveComment"](v52,v53,v54,v55){(v55===o[ox5cd70f(0xcb)][ox5cd70f(0x87)]||v55===o["CommentSolvedStatus"][ox5cd70f(0xf9)])&&this["_threadCommentModel"]["resolveComment"](v52,v53,v54,v55===o[ox5cd70f(0xcb)][ox5cd70f(0x87)]);}["_init"](){this[ox40857b(0xb5)](this["_commentService"][ox40857b(0xfb)][ox40857b(0xc0)](v10=>{const v11=ox40857b;var v12;let v13=(v12=this[v11(0xde)][v11(0xe4)](v10[v11(0xd4)])[v11(0xf6)](v6=>v6[v11(0xc6)]===v10[v11(0xc6)]))==null?void 0x0:v12[v11(0xfa)];if(!v13)return;let{unitId:v14,subUnitId:v15}=v13;switch(v10[v11(0xef)]&&this[v11(0xec)]["addUser"](v10[v11(0xef)]),v10["type"]){case o[v11(0xa5)]["Reply"]:{var v16;let v2=f(v10[v11(0xf7)]);if(!v10[v11(0x88)]||!v10["createTimestamp"]||!v2)return;this[v11(0xde)][v11(0xea)](v14,v15,{unitId:v14,subUnitId:v15,ref:"",id:v10[v11(0x88)],dT:d(+v10[v11(0xbc)]),threadId:v10["threadId"],personId:((v16=v10["user"])==null?void 0x0:v16[v11(0x9d)])??v10["userId"],text:v2,parentId:v13["id"]});break;}case o[v11(0xa5)][v11(0xb3)]:if(!v10[v11(0x88)]){this[v11(0xde)]["deleteThread"](v14,v15,v13["threadId"]);break;}this[v11(0xf2)](v14,v15,v10[v11(0x88)]);break;case o[v11(0xa5)][v11(0xb7)]:{let v3=f(v10[v11(0xf7)]);if(!v10[v11(0x88)]||!v3)return;this[v11(0xde)][v11(0x89)](v14,v15,{commentId:v10[v11(0x88)],text:v3});break;}case o["CommentUpdateEventType"][v11(0xa7)]:this["_resolveComment"](v14,v15,v13["id"],v10["solved"]);break;default:break;}}));}};g=h([m(0x0,(0x0,n["Inject"])(e["CommentService"])),m(0x1,(0x0,n["Inject"])(i["ThreadCommentModel"])),m(0x2,(0x0,n["Inject"])(n["UserManagerService"])),m(0x3,(0x0,n["Inject"])(n["Injector"]))],g);function _(v133,v134){let v135=Number(v133==null?void 0x0:v133[ox572ebe(0xbc)]);return!!(v133&&v133["replyId"]&&v133[ox572ebe(0xc6)]===v134&&v133[ox572ebe(0xc7)]&&Number["isFinite"](v135)&&v135>0x0);};function v(v136,v137){let v138=v136[ox5428b2(0xe3)][0x0];if(!v136[ox5428b2(0xc6)]||!_(v138,v136[ox5428b2(0xc6)]))throw Error(ox5428b2(0xb8));return{...v137,id:v138[ox5428b2(0x88)],resolved:v136[ox5428b2(0x8c)]===0x1,dT:d(v138["createTimestamp"]),personId:v138["userId"],threadId:v138[ox5428b2(0xc6)]};};function y(v139,v140,v141,v142){if((v139==null?void 0x0:v139[ox51836d(0xc6)])===v140&&v139[ox51836d(0xe3)][ox51836d(0x91)]>0x0){let v56=(v17,v18)=>{const v19=ox51836d;if(!_(v17,v140))return null;let v20=f(v17[v19(0xf7)]);return v20?{id:v17["replyId"],threadId:v17[v19(0xc6)],dT:d(v17[v19(0xbc)]),personId:v17[v19(0xc7)],resolved:v139[v19(0x8c)]===o[v19(0xcb)][v19(0x87)],unitId:v141,subUnitId:v142,text:v20,parentId:v18}:null;},v57=v56(v139[ox51836d(0xe3)][0x0]);if(!v57)return null;let v58=new Set([v57["id"]]),v59=v139[ox51836d(0xe3)]["slice"](0x1)[ox51836d(0x8a)](v21=>{const v22=ox51836d;let v23=v56(v21,v57["id"]);return!v23||v58[v22(0xd5)](v23["id"])?[]:(v58[v22(0x90)](v23["id"]),[v23]);});return{...v57,children:v59};}return null;}let b=class{constructor(v60,v61,v62){this[ox3031ce(0xda)]=v60,this[ox3031ce(0xec)]=v61,this[ox3031ce(0x93)]=v62;}async["addComment"](v63){var v64;let{parentId:v65,unitId:v66,text:v67,threadId:v68}=v63,v69=((v64=v67["customRanges"])==null?void 0x0:v64[ox744ba0(0xf8)](v24=>v24[ox744ba0(0x7d)]===n[ox744ba0(0x9e)]["COMMENT"])[ox744ba0(0xf0)](v25=>v25[ox744ba0(0xd0)]))??[],v70=JSON[ox744ba0(0xc8)](v67),v71=(await this["_sessionService"]["requireSession"](v66))[ox744ba0(0xad)]();if(v65){let v26={memberId:v71,unitId:v66,content:v70,mention:v69,threadId:v68},v27=await this[ox744ba0(0xda)][ox744ba0(0x7f)]("/universer-api/comment/unit/"+v66+"/reply",{body:v26}),v28=v27["body"][ox744ba0(0xfe)];if(v27[ox744ba0(0xaf)][ox744ba0(0x9c)]&&v27[ox744ba0(0xaf)]["error"][ox744ba0(0x9b)]!==0x1||!_(v28,v68)){var v72;throw Error(((v72=v27[ox744ba0(0xaf)][ox744ba0(0x9c)])==null?void 0x0:v72[ox744ba0(0x85)])??"Comment\x20service\x20did\x20not\x20return\x20the\x20created\x20reply");}return{...v63,id:v28[ox744ba0(0x88)],dT:(0x0,n[ox744ba0(0xf3)])(+v28[ox744ba0(0xbc)])[ox744ba0(0xcd)](ox744ba0(0xf4)),personId:v28["userId"]};}else{let v29={memberId:v71,unitId:v66,content:v70,mention:v69},v30=await this[ox744ba0(0xda)][ox744ba0(0x7f)](ox744ba0(0x9f)+v66+ox744ba0(0x100),{body:v29});if(v30[ox744ba0(0xaf)][ox744ba0(0x9c)]&&v30[ox744ba0(0xaf)][ox744ba0(0x9c)]["code"]!==0x1||!v30[ox744ba0(0xaf)]["comment"]){var v73;throw Error(((v73=v30[ox744ba0(0xaf)][ox744ba0(0x9c)])==null?void 0x0:v73[ox744ba0(0x85)])??ox744ba0(0xe6));}return v(v30[ox744ba0(0xaf)]["comment"],v63);}}async["updateComment"](v74){var v75;let{text:v76,unitId:v77}=v74,v78=((v75=v76[ox5bd57c(0xb0)])==null?void 0x0:v75[ox5bd57c(0xf8)](v31=>v31[ox5bd57c(0x7d)]===n[ox5bd57c(0x9e)][ox5bd57c(0x8f)])[ox5bd57c(0xf0)](v32=>v32[ox5bd57c(0xd0)]))??[],v79=JSON[ox5bd57c(0xc8)](v76),v80=v74[ox5bd57c(0xc6)],v81=v74["id"],v82={memberId:(await this[ox5bd57c(0x93)][ox5bd57c(0x84)](v77))["getMemberID"](),unitId:v77,threadId:v80,mention:v78,content:v79,replyId:v81},v83=await this[ox5bd57c(0xda)][ox5bd57c(0x7f)](ox5bd57c(0x9f)+v77+"/edit",{body:v82});return!v83[ox5bd57c(0xaf)][ox5bd57c(0x9c)]||v83[ox5bd57c(0xaf)]["error"]["code"]===0x1;}async["resolveComment"](v84){let{unitId:v85}=v84,v86=v84[ox5c5f94(0xc6)],v87={memberId:(await this[ox5c5f94(0x93)]["requireSession"](v85))["getMemberID"](),unitId:v85,threadId:v86,solved:v84["resolved"]?o[ox5c5f94(0xcb)][ox5c5f94(0x87)]:o[ox5c5f94(0xcb)][ox5c5f94(0xf9)]},v88=await this[ox5c5f94(0xda)]["post"](ox5c5f94(0x9f)+v85+ox5c5f94(0xbd),{body:v87});return!v88[ox5c5f94(0xaf)][ox5c5f94(0x9c)]||v88[ox5c5f94(0xaf)]["error"][ox5c5f94(0x9b)]===0x1;}["deleteComment"](v89,v90,v91,v92){return this[ox4a900b(0xf2)](v89,v91,v92);}["deleteThread"](v93,v94,v95){return this[ox5dc8e4(0xf2)](v93,v95);}async["_deleteComment"](v96,v97,v98){let v99={memberId:(await this[ox5bb716(0x93)][ox5bb716(0x84)](v96))[ox5bb716(0xad)](),threadId:v97,replyId:v98,unitId:v96},v100=await this["_httpService"][ox5bb716(0x7f)]("/universer-api/comment/unit/"+v96+ox5bb716(0xd3),{body:v99});return!v100["body"][ox5bb716(0x9c)]||v100[ox5bb716(0xaf)][ox5bb716(0x9c)][ox5bb716(0x9b)]===0x1;}async["listComments"](v101,v102,v103){let v104={unitId:v101,threadId:v103},v105=await this["_httpService"][ox426734(0x7f)](ox426734(0x9f)+v101+ox426734(0x101),{body:v104});if(v105[ox426734(0xaf)][ox426734(0x9c)]&&v105[ox426734(0xaf)]["error"][ox426734(0x9b)]!==0x1)throw Error(v105[ox426734(0xaf)]["error"][ox426734(0x85)]||ox426734(0xac));let v106=v103[ox426734(0xf0)](v33=>{const v34=ox426734;var v35;return y((v35=v105[v34(0xaf)][v34(0xbb)])==null?void 0x0:v35[v33],v33,v101,v102);})[ox426734(0xf8)](Boolean);return Object["values"](v105[ox426734(0xaf)]["users"]??{})[ox426734(0x8d)](v36=>{const v37=ox426734;this[v37(0xec)][v37(0xeb)](v36);}),v106;}["saveCommentToSnapshot"](v107){return{id:v107["id"],threadId:v107["threadId"],ref:v107["ref"]};}};b=h([m(0x0,(0x0,n["Inject"])(r["HTTPService"])),m(0x1,(0x0,n["Inject"])(n["UserManagerService"])),m(0x2,(0x0,n["Inject"])(e["CollaborationSessionService"]))],b);let x=class extends n["Disposable"]{constructor(v108,v109){super(),this[ox1890c7(0xa0)]=v108,this[ox1890c7(0x92)]=v109,this[ox1890c7(0x96)]();}["_initDataSource"](){this[oxdc6c04(0xa0)][oxdc6c04(0xa1)]=this[oxdc6c04(0x92)],this["_threadCommentDataSourceService"][oxdc6c04(0xdd)]=!0x1;}};x=h([m(0x0,i["IThreadCommentDataSourceService"]),m(0x1,(0x0,n["Inject"])(b))],x);function S(v143){"@babel/helpers - typeof";return S=typeof Symbol==ox49e6ba(0xdf)&&typeof Symbol["iterator"]=="symbol"?function(v110){return typeof v110;}:function(v111){const v112=ox49e6ba;return v111&&typeof Symbol==v112(0xdf)&&v111[v112(0xe5)]===Symbol&&v111!==Symbol["prototype"]?v112(0xe8):typeof v111;},S(v143);};function C(v144,v145){if(S(v144)!="object"||!v144)return v144;var v146=v144[Symbol["toPrimitive"]];if(v146!==void 0x0){var v147=v146[ox53e911(0xcf)](v144,v145||ox53e911(0xa3));if(S(v147)!=ox53e911(0x86))return v147;throw TypeError(ox53e911(0xed));}return(v145===ox53e911(0x97)?String:Number)(v144);};function w(v148){var v149=C(v148,"string");return S(v149)==ox4fa8c5(0xe8)?v149:v149+"";};function T(v150,v151,v152){return(v151=w(v151))in v150?Object[ox5cc2ee(0x98)](v150,v151,{value:v152,enumerable:!0x0,configurable:!0x0,writable:!0x0}):v150[v151]=v152,v150;}let E=class extends n["Plugin"]{constructor(v113=u,v114,v115){super(),this[ox113488(0xff)]=v113,this[ox113488(0xba)]=v114,this["_configService"]=v115;let{...v116}=(0x0,n[ox113488(0x8e)])({},u,this[ox113488(0xff)]);this["_configService"][ox113488(0xd9)](ox113488(0xe1),v116);}["onStarting"](){[[b],[x],[g]]["forEach"](v38=>{this[ox1283fc(0xba)][ox1283fc(0x90)](v38);});}["onReady"](){this[ox3bb508(0xba)][ox3bb508(0xbe)](x),this[ox3bb508(0xba)][ox3bb508(0xbe)](g);}};T(E,"pluginName","UNIVER_THREAD_COMMENT_DATA_SOURCE_PLUGIN"),T(E,"packageName",c),T(E,"version",l),E=h([(0x0,n["DependentOn"])(t["UniverLicensePlugin"],r["UniverNetworkPlugin"],i["UniverThreadCommentPlugin"],a["UniverThreadCommentUIPlugin"],e["UniverCollaborationClientPlugin"]),m(0x1,(0x0,n["Inject"])(n["Injector"])),m(0x2,n["IConfigService"])],E),Object["defineProperty"](exports,"UniverThreadCommentDataSourcePlugin",{enumerable:!0x0,get:function(){return E;}});
+Object["defineProperty"](exports, Symbol["toStringTag"], {
+  value: "Module"
+});
+let e = require("@univerjs-pro/collaboration-client"),
+  t = require("@univerjs-pro/license"),
+  n = require("@univerjs/core"),
+  r = require("@univerjs/network"),
+  i = require("@univerjs/thread-comment"),
+  a = require("@univerjs/thread-comment-ui"),
+  o = require("@univerjs/protocol"),
+  s = require("rxjs");
+var c = "@univerjs-pro/thread-comment-datasource",
+  l = "1.0.0-insiders.20260907-70fc579";
+const u = {},
+  d = var_core_value_sigC368 => (0x0, n["dateKit"])(new Date(+var_core_value_sigC368))["format"]("YYYY/MM/DD HH:mm");
+function f(var_core_value_sigAD56) {
+  if (!var_core_value_sigAD56) return null;
+  try {
+    let var_core_value_sig8895 = JSON["parse"](var_core_value_sigAD56);
+    return (0x0, i["isThreadCommentDocumentBody"])(var_core_value_sig8895) ? var_core_value_sig8895 : null;
+  } catch {
+    return null;
+  }
+}
+const p = async (var_core_value_sigDB4A, var_core_value_sig6418) => {
+  let var_core_value_sig1896 = var_core_value_sigDB4A["get"](n["UserManagerService"]),
+    var_core_value_sig0285 = var_core_value_sigDB4A["get"](r["HTTPService"]);
+  var_core_value_sig6418["forEach"](var_core_value_sigC80B => {
+    var_core_value_sig1896["getUser"](var_core_value_sigC80B) && var_core_value_sig6418["delete"](var_core_value_sigC80B);
+  }), var_core_value_sig6418["size"] && (await var_core_value_sig0285["get"]("/universer-api/user/list", {
+    params: {
+      userIDs: [...var_core_value_sig6418]
+    }
+  }))["body"]["users"]["forEach"](var_core_value_sig284F => {
+    var_core_value_sig284F && var_core_value_sig1896["addUser"](var_core_value_sig284F);
+  });
+};
+function m(var_core_value_sig777D, var_core_value_sig3F4C) {
+  return function (var_core_value_sigE154, var_core_value_sig4632) {
+    var_core_value_sig3F4C(var_core_value_sigE154, var_core_value_sig4632, var_core_value_sig777D);
+  };
+}
+;
+function h(var_core_value_sigD65A, var_core_value_sig5A13, var_core_value_sigF593, var_core_value_sig3607) {
+  var var_core_value_sigB512 = arguments[ox49c1ca(0x91)],
+    var_core_value_sigF2E6 = var_core_value_sigB512 < 0x3 ? var_core_value_sig5A13 : var_core_value_sig3607 === null ? var_core_value_sig3607 = Object[ox49c1ca(0xb6)](var_core_value_sig5A13, var_core_value_sigF593) : var_core_value_sig3607,
+    var_core_value_sig34C8;
+  if (typeof Reflect == ox49c1ca(0x86) && typeof Reflect[ox49c1ca(0xd1)] == ox49c1ca(0xdf)) var_core_value_sigF2E6 = Reflect["decorate"](var_core_value_sigD65A, var_core_value_sig5A13, var_core_value_sigF593, var_core_value_sig3607);else {
+    for (var var_core_value_sigB744 = var_core_value_sigD65A[ox49c1ca(0x91)] - 0x1; var_core_value_sigB744 >= 0x0; var_core_value_sigB744--) (var_core_value_sig34C8 = var_core_value_sigD65A[var_core_value_sigB744]) && (var_core_value_sigF2E6 = (var_core_value_sigB512 < 0x3 ? var_core_value_sig34C8(var_core_value_sigF2E6) : var_core_value_sigB512 > 0x3 ? var_core_value_sig34C8(var_core_value_sig5A13, var_core_value_sigF593, var_core_value_sigF2E6) : var_core_value_sig34C8(var_core_value_sig5A13, var_core_value_sigF593)) || var_core_value_sigF2E6);
+  }
+  return var_core_value_sigB512 > 0x3 && var_core_value_sigF2E6 && Object[ox49c1ca(0x98)](var_core_value_sig5A13, var_core_value_sigF593, var_core_value_sigF2E6), var_core_value_sigF2E6;
+}
+let g = class extends n["Disposable"] {
+  constructor(var_core_value_sig12F2, var_core_value_sig2259, var_core_value_sig9E2F, var_core_value_sigD082) {
+    super(), this[ox2c014f(0xab)] = var_core_value_sig12F2, this[ox2c014f(0xde)] = var_core_value_sig2259, this[ox2c014f(0xec)] = var_core_value_sig9E2F, this[ox2c014f(0xba)] = var_core_value_sigD082, this["_init"](), this[ox2c014f(0xbf)]();
+  }
+  ["_initUserSync"]() {
+    this[ox22e269(0xb5)](this[ox22e269(0xde)]["commentUpdate$"]["pipe"]((0x0, s[ox22e269(0xc4)])(0x10))[ox22e269(0xc0)](var_core_value_sig27E5 => {
+      const var_core_value_sig8061 = ox22e269;
+      let var_core_value_sig4D4C = new Set();
+      var_core_value_sig27E5[var_core_value_sig8061(0x8d)](var_core_value_sig3EEE => {
+        const var_core_value_sigBC46 = var_core_value_sig8061;
+        switch (var_core_value_sig3EEE[var_core_value_sigBC46(0xdb)]) {
+          case "add":
+            {
+              let var_core_value_sig7524 = var_core_value_sig3EEE[var_core_value_sigBC46(0xaa)]["personId"];
+              var_core_value_sig4D4C[var_core_value_sigBC46(0x90)](var_core_value_sig7524);
+              break;
+            }
+          default:
+            break;
+        }
+      }), p(this[var_core_value_sig8061(0xba)], var_core_value_sig4D4C);
+    }));
+  }
+  ["_deleteComment"](var_core_value_sigDBB7, var_core_value_sigD0A8, var_core_value_sigF4B9) {
+    let var_core_value_sig5CEE = this[ox3cbd4c(0xde)][ox3cbd4c(0x82)](var_core_value_sigDBB7, var_core_value_sigD0A8, var_core_value_sigF4B9);
+    var_core_value_sig5CEE && (var_core_value_sig5CEE["parentId"] ? this[ox3cbd4c(0xde)][ox3cbd4c(0xd7)](var_core_value_sigDBB7, var_core_value_sigD0A8, var_core_value_sigF4B9) : this[ox3cbd4c(0xde)][ox3cbd4c(0xb2)](var_core_value_sigDBB7, var_core_value_sigD0A8, var_core_value_sig5CEE["threadId"]));
+  }
+  ["_resolveComment"](var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5, var_core_value_sigE90F) {
+    (var_core_value_sigE90F === o[ox5cd70f(0xcb)][ox5cd70f(0x87)] || var_core_value_sigE90F === o["CommentSolvedStatus"][ox5cd70f(0xf9)]) && this["_threadCommentModel"]["resolveComment"](var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5, var_core_value_sigE90F === o[ox5cd70f(0xcb)][ox5cd70f(0x87)]);
+  }
+  ["_init"]() {
+    this[ox40857b(0xb5)](this["_commentService"][ox40857b(0xfb)][ox40857b(0xc0)](var_core_value_sigC9E0 => {
+      const var_core_value_sig76BA = ox40857b;
+      var var_core_value_sigFBFA;
+      let var_core_value_sigF602 = (var_core_value_sigFBFA = this[var_core_value_sig76BA(0xde)][var_core_value_sig76BA(0xe4)](var_core_value_sigC9E0[var_core_value_sig76BA(0xd4)])[var_core_value_sig76BA(0xf6)](var_core_value_sig3D7D => var_core_value_sig3D7D[var_core_value_sig76BA(0xc6)] === var_core_value_sigC9E0[var_core_value_sig76BA(0xc6)])) == null ? void 0x0 : var_core_value_sigFBFA[var_core_value_sig76BA(0xfa)];
+      if (!var_core_value_sigF602) return;
+      let {
+        unitId: var_core_value_sig1BBD,
+        subUnitId: var_core_value_sigF704
+      } = var_core_value_sigF602;
+      switch (var_core_value_sigC9E0[var_core_value_sig76BA(0xef)] && this[var_core_value_sig76BA(0xec)]["addUser"](var_core_value_sigC9E0[var_core_value_sig76BA(0xef)]), var_core_value_sigC9E0["type"]) {
+        case o[var_core_value_sig76BA(0xa5)]["Reply"]:
+          {
+            var var_core_value_sig2BCF;
+            let var_core_value_sig2AD8 = f(var_core_value_sigC9E0[var_core_value_sig76BA(0xf7)]);
+            if (!var_core_value_sigC9E0[var_core_value_sig76BA(0x88)] || !var_core_value_sigC9E0["createTimestamp"] || !var_core_value_sig2AD8) return;
+            this[var_core_value_sig76BA(0xde)][var_core_value_sig76BA(0xea)](var_core_value_sig1BBD, var_core_value_sigF704, {
+              unitId: var_core_value_sig1BBD,
+              subUnitId: var_core_value_sigF704,
+              ref: "",
+              id: var_core_value_sigC9E0[var_core_value_sig76BA(0x88)],
+              dT: d(+var_core_value_sigC9E0[var_core_value_sig76BA(0xbc)]),
+              threadId: var_core_value_sigC9E0["threadId"],
+              personId: ((var_core_value_sig2BCF = var_core_value_sigC9E0["user"]) == null ? void 0x0 : var_core_value_sig2BCF[var_core_value_sig76BA(0x9d)]) ?? var_core_value_sigC9E0["userId"],
+              text: var_core_value_sig2AD8,
+              parentId: var_core_value_sigF602["id"]
+            });
+            break;
+          }
+        case o[var_core_value_sig76BA(0xa5)][var_core_value_sig76BA(0xb3)]:
+          if (!var_core_value_sigC9E0[var_core_value_sig76BA(0x88)]) {
+            this[var_core_value_sig76BA(0xde)]["deleteThread"](var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sigF602["threadId"]);
+            break;
+          }
+          this[var_core_value_sig76BA(0xf2)](var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sigC9E0[var_core_value_sig76BA(0x88)]);
+          break;
+        case o[var_core_value_sig76BA(0xa5)][var_core_value_sig76BA(0xb7)]:
+          {
+            let var_core_value_sig2AD0 = f(var_core_value_sigC9E0[var_core_value_sig76BA(0xf7)]);
+            if (!var_core_value_sigC9E0[var_core_value_sig76BA(0x88)] || !var_core_value_sig2AD0) return;
+            this[var_core_value_sig76BA(0xde)][var_core_value_sig76BA(0x89)](var_core_value_sig1BBD, var_core_value_sigF704, {
+              commentId: var_core_value_sigC9E0[var_core_value_sig76BA(0x88)],
+              text: var_core_value_sig2AD0
+            });
+            break;
+          }
+        case o["CommentUpdateEventType"][var_core_value_sig76BA(0xa7)]:
+          this["_resolveComment"](var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sigF602["id"], var_core_value_sigC9E0["solved"]);
+          break;
+        default:
+          break;
+      }
+    }));
+  }
+};
+g = h([m(0x0, (0x0, n["Inject"])(e["CommentService"])), m(0x1, (0x0, n["Inject"])(i["ThreadCommentModel"])), m(0x2, (0x0, n["Inject"])(n["UserManagerService"])), m(0x3, (0x0, n["Inject"])(n["Injector"]))], g);
+function _(var_core_value_sigEAE2, var_core_value_sigE68A) {
+  let var_core_value_sig3E68 = Number(var_core_value_sigEAE2 == null ? void 0x0 : var_core_value_sigEAE2[ox572ebe(0xbc)]);
+  return !!(var_core_value_sigEAE2 && var_core_value_sigEAE2["replyId"] && var_core_value_sigEAE2[ox572ebe(0xc6)] === var_core_value_sigE68A && var_core_value_sigEAE2[ox572ebe(0xc7)] && Number["isFinite"](var_core_value_sig3E68) && var_core_value_sig3E68 > 0x0);
+}
+;
+function v(var_core_value_sigF4C5, var_core_value_sig5410) {
+  let var_core_value_sig492F = var_core_value_sigF4C5[ox5428b2(0xe3)][0x0];
+  if (!var_core_value_sigF4C5[ox5428b2(0xc6)] || !_(var_core_value_sig492F, var_core_value_sigF4C5[ox5428b2(0xc6)])) throw Error(ox5428b2(0xb8));
+  return {
+    ...var_core_value_sig5410,
+    id: var_core_value_sig492F[ox5428b2(0x88)],
+    resolved: var_core_value_sigF4C5[ox5428b2(0x8c)] === 0x1,
+    dT: d(var_core_value_sig492F["createTimestamp"]),
+    personId: var_core_value_sig492F["userId"],
+    threadId: var_core_value_sig492F[ox5428b2(0xc6)]
+  };
+}
+;
+function y(var_core_value_sig8EA0, var_core_value_sigA6F6, var_core_value_sigCDDA, var_core_value_sigE243) {
+  if ((var_core_value_sig8EA0 == null ? void 0x0 : var_core_value_sig8EA0[ox51836d(0xc6)]) === var_core_value_sigA6F6 && var_core_value_sig8EA0[ox51836d(0xe3)][ox51836d(0x91)] > 0x0) {
+    let var_core_value_sigEFD4 = (var_core_value_sig0D69, var_core_value_sig480E) => {
+        const var_core_value_sig26DB = ox51836d;
+        if (!_(var_core_value_sig0D69, var_core_value_sigA6F6)) return null;
+        let var_core_value_sigF0F9 = f(var_core_value_sig0D69[var_core_value_sig26DB(0xf7)]);
+        return var_core_value_sigF0F9 ? {
+          id: var_core_value_sig0D69["replyId"],
+          threadId: var_core_value_sig0D69[var_core_value_sig26DB(0xc6)],
+          dT: d(var_core_value_sig0D69[var_core_value_sig26DB(0xbc)]),
+          personId: var_core_value_sig0D69[var_core_value_sig26DB(0xc7)],
+          resolved: var_core_value_sig8EA0[var_core_value_sig26DB(0x8c)] === o[var_core_value_sig26DB(0xcb)][var_core_value_sig26DB(0x87)],
+          unitId: var_core_value_sigCDDA,
+          subUnitId: var_core_value_sigE243,
+          text: var_core_value_sigF0F9,
+          parentId: var_core_value_sig480E
+        } : null;
+      },
+      var_core_value_sig861B = var_core_value_sigEFD4(var_core_value_sig8EA0[ox51836d(0xe3)][0x0]);
+    if (!var_core_value_sig861B) return null;
+    let var_core_value_sig5237 = new Set([var_core_value_sig861B["id"]]),
+      var_core_value_sigBB00 = var_core_value_sig8EA0[ox51836d(0xe3)]["slice"](0x1)[ox51836d(0x8a)](var_core_value_sig1A0F => {
+        const var_core_value_sigFBA4 = ox51836d;
+        let var_core_value_sig4383 = var_core_value_sigEFD4(var_core_value_sig1A0F, var_core_value_sig861B["id"]);
+        return !var_core_value_sig4383 || var_core_value_sig5237[var_core_value_sigFBA4(0xd5)](var_core_value_sig4383["id"]) ? [] : (var_core_value_sig5237[var_core_value_sigFBA4(0x90)](var_core_value_sig4383["id"]), [var_core_value_sig4383]);
+      });
+    return {
+      ...var_core_value_sig861B,
+      children: var_core_value_sigBB00
+    };
+  }
+  return null;
+}
+let b = class {
+  constructor(var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC259) {
+    this[ox3031ce(0xda)] = var_core_value_sig7E54, this[ox3031ce(0xec)] = var_core_value_sig9A8D, this[ox3031ce(0x93)] = var_core_value_sigC259;
+  }
+  async ["addComment"](var_core_value_sig9C9F) {
+    var var_core_value_sigFDEA;
+    let {
+        parentId: var_core_value_sig86D0,
+        unitId: var_core_value_sig4CD2,
+        text: var_core_value_sig48CA,
+        threadId: var_core_value_sig50AF
+      } = var_core_value_sig9C9F,
+      var_core_value_sigA942 = ((var_core_value_sigFDEA = var_core_value_sig48CA["customRanges"]) == null ? void 0x0 : var_core_value_sigFDEA[ox744ba0(0xf8)](var_core_value_sig186C => var_core_value_sig186C[ox744ba0(0x7d)] === n[ox744ba0(0x9e)]["COMMENT"])[ox744ba0(0xf0)](var_core_value_sigD955 => var_core_value_sigD955[ox744ba0(0xd0)])) ?? [],
+      var_core_value_sigA621 = JSON[ox744ba0(0xc8)](var_core_value_sig48CA),
+      var_core_value_sigBBFF = (await this["_sessionService"]["requireSession"](var_core_value_sig4CD2))[ox744ba0(0xad)]();
+    if (var_core_value_sig86D0) {
+      let var_core_value_sig48BD = {
+          memberId: var_core_value_sigBBFF,
+          unitId: var_core_value_sig4CD2,
+          content: var_core_value_sigA621,
+          mention: var_core_value_sigA942,
+          threadId: var_core_value_sig50AF
+        },
+        var_core_value_sig429F = await this[ox744ba0(0xda)][ox744ba0(0x7f)]("/universer-api/comment/unit/" + var_core_value_sig4CD2 + "/reply", {
+          body: var_core_value_sig48BD
+        }),
+        var_core_value_sigF62A = var_core_value_sig429F["body"][ox744ba0(0xfe)];
+      if (var_core_value_sig429F[ox744ba0(0xaf)][ox744ba0(0x9c)] && var_core_value_sig429F[ox744ba0(0xaf)]["error"][ox744ba0(0x9b)] !== 0x1 || !_(var_core_value_sigF62A, var_core_value_sig50AF)) {
+        var var_core_value_sig8889;
+        throw Error(((var_core_value_sig8889 = var_core_value_sig429F[ox744ba0(0xaf)][ox744ba0(0x9c)]) == null ? void 0x0 : var_core_value_sig8889[ox744ba0(0x85)]) ?? "Comment\x20service\x20did\x20not\x20return\x20the\x20created\x20reply");
+      }
+      return {
+        ...var_core_value_sig9C9F,
+        id: var_core_value_sigF62A[ox744ba0(0x88)],
+        dT: (0x0, n[ox744ba0(0xf3)])(+var_core_value_sigF62A[ox744ba0(0xbc)])[ox744ba0(0xcd)](ox744ba0(0xf4)),
+        personId: var_core_value_sigF62A["userId"]
+      };
+    } else {
+      let var_core_value_sig8178 = {
+          memberId: var_core_value_sigBBFF,
+          unitId: var_core_value_sig4CD2,
+          content: var_core_value_sigA621,
+          mention: var_core_value_sigA942
+        },
+        var_core_value_sigE9ED = await this[ox744ba0(0xda)][ox744ba0(0x7f)](ox744ba0(0x9f) + var_core_value_sig4CD2 + ox744ba0(0x100), {
+          body: var_core_value_sig8178
+        });
+      if (var_core_value_sigE9ED[ox744ba0(0xaf)][ox744ba0(0x9c)] && var_core_value_sigE9ED[ox744ba0(0xaf)][ox744ba0(0x9c)]["code"] !== 0x1 || !var_core_value_sigE9ED[ox744ba0(0xaf)]["comment"]) {
+        var var_core_value_sig32F8;
+        throw Error(((var_core_value_sig32F8 = var_core_value_sigE9ED[ox744ba0(0xaf)][ox744ba0(0x9c)]) == null ? void 0x0 : var_core_value_sig32F8[ox744ba0(0x85)]) ?? ox744ba0(0xe6));
+      }
+      return v(var_core_value_sigE9ED[ox744ba0(0xaf)]["comment"], var_core_value_sig9C9F);
+    }
+  }
+  async ["updateComment"](var_core_value_sig5B67) {
+    var var_core_value_sig1758;
+    let {
+        text: var_core_value_sig4805,
+        unitId: var_core_value_sigE67E
+      } = var_core_value_sig5B67,
+      var_core_value_sig2902 = ((var_core_value_sig1758 = var_core_value_sig4805[ox5bd57c(0xb0)]) == null ? void 0x0 : var_core_value_sig1758[ox5bd57c(0xf8)](var_core_value_sigB577 => var_core_value_sigB577[ox5bd57c(0x7d)] === n[ox5bd57c(0x9e)][ox5bd57c(0x8f)])[ox5bd57c(0xf0)](var_core_value_sig9572 => var_core_value_sig9572[ox5bd57c(0xd0)])) ?? [],
+      var_core_value_sig9989 = JSON[ox5bd57c(0xc8)](var_core_value_sig4805),
+      var_core_value_sig698E = var_core_value_sig5B67[ox5bd57c(0xc6)],
+      var_core_value_sig2809 = var_core_value_sig5B67["id"],
+      var_core_value_sig2DAB = {
+        memberId: (await this[ox5bd57c(0x93)][ox5bd57c(0x84)](var_core_value_sigE67E))["getMemberID"](),
+        unitId: var_core_value_sigE67E,
+        threadId: var_core_value_sig698E,
+        mention: var_core_value_sig2902,
+        content: var_core_value_sig9989,
+        replyId: var_core_value_sig2809
+      },
+      var_core_value_sig877E = await this[ox5bd57c(0xda)][ox5bd57c(0x7f)](ox5bd57c(0x9f) + var_core_value_sigE67E + "/edit", {
+        body: var_core_value_sig2DAB
+      });
+    return !var_core_value_sig877E[ox5bd57c(0xaf)][ox5bd57c(0x9c)] || var_core_value_sig877E[ox5bd57c(0xaf)]["error"]["code"] === 0x1;
+  }
+  async ["resolveComment"](var_core_value_sig20C8) {
+    let {
+        unitId: var_core_value_sigE9A7
+      } = var_core_value_sig20C8,
+      var_core_value_sigBECE = var_core_value_sig20C8[ox5c5f94(0xc6)],
+      var_core_value_sig1B22 = {
+        memberId: (await this[ox5c5f94(0x93)]["requireSession"](var_core_value_sigE9A7))["getMemberID"](),
+        unitId: var_core_value_sigE9A7,
+        threadId: var_core_value_sigBECE,
+        solved: var_core_value_sig20C8["resolved"] ? o[ox5c5f94(0xcb)][ox5c5f94(0x87)] : o[ox5c5f94(0xcb)][ox5c5f94(0xf9)]
+      },
+      var_core_value_sig7F72 = await this[ox5c5f94(0xda)]["post"](ox5c5f94(0x9f) + var_core_value_sigE9A7 + ox5c5f94(0xbd), {
+        body: var_core_value_sig1B22
+      });
+    return !var_core_value_sig7F72[ox5c5f94(0xaf)][ox5c5f94(0x9c)] || var_core_value_sig7F72[ox5c5f94(0xaf)]["error"][ox5c5f94(0x9b)] === 0x1;
+  }
+  ["deleteComment"](var_core_value_sig7B2A, var_core_value_sig06CD, var_core_value_sigA5F1, var_core_value_sig97A2) {
+    return this[ox4a900b(0xf2)](var_core_value_sig7B2A, var_core_value_sigA5F1, var_core_value_sig97A2);
+  }
+  ["deleteThread"](var_core_value_sig07E9, var_core_value_sig4F59, var_core_value_sigF564) {
+    return this[ox5dc8e4(0xf2)](var_core_value_sig07E9, var_core_value_sigF564);
+  }
+  async ["_deleteComment"](var_core_value_sig8CFA, var_core_value_sig2E11, var_core_value_sig5B69) {
+    let var_core_value_sigB098 = {
+        memberId: (await this[ox5bb716(0x93)][ox5bb716(0x84)](var_core_value_sig8CFA))[ox5bb716(0xad)](),
+        threadId: var_core_value_sig2E11,
+        replyId: var_core_value_sig5B69,
+        unitId: var_core_value_sig8CFA
+      },
+      var_core_value_sigCE71 = await this["_httpService"][ox5bb716(0x7f)]("/universer-api/comment/unit/" + var_core_value_sig8CFA + ox5bb716(0xd3), {
+        body: var_core_value_sigB098
+      });
+    return !var_core_value_sigCE71["body"][ox5bb716(0x9c)] || var_core_value_sigCE71[ox5bb716(0xaf)][ox5bb716(0x9c)][ox5bb716(0x9b)] === 0x1;
+  }
+  async ["listComments"](var_core_value_sig21D8, var_core_value_sig2B65, var_core_value_sigD7EA) {
+    let var_core_value_sigB33B = {
+        unitId: var_core_value_sig21D8,
+        threadId: var_core_value_sigD7EA
+      },
+      var_core_value_sig24B9 = await this["_httpService"][ox426734(0x7f)](ox426734(0x9f) + var_core_value_sig21D8 + ox426734(0x101), {
+        body: var_core_value_sigB33B
+      });
+    if (var_core_value_sig24B9[ox426734(0xaf)][ox426734(0x9c)] && var_core_value_sig24B9[ox426734(0xaf)]["error"][ox426734(0x9b)] !== 0x1) throw Error(var_core_value_sig24B9[ox426734(0xaf)]["error"][ox426734(0x85)] || ox426734(0xac));
+    let var_core_value_sigE627 = var_core_value_sigD7EA[ox426734(0xf0)](var_core_value_sigD873 => {
+      const var_core_value_sigA12B = ox426734;
+      var var_core_value_sigF230;
+      return y((var_core_value_sigF230 = var_core_value_sig24B9[var_core_value_sigA12B(0xaf)][var_core_value_sigA12B(0xbb)]) == null ? void 0x0 : var_core_value_sigF230[var_core_value_sigD873], var_core_value_sigD873, var_core_value_sig21D8, var_core_value_sig2B65);
+    })[ox426734(0xf8)](Boolean);
+    return Object["values"](var_core_value_sig24B9[ox426734(0xaf)]["users"] ?? {})[ox426734(0x8d)](var_core_value_sig09B8 => {
+      const var_core_value_sig6F91 = ox426734;
+      this[var_core_value_sig6F91(0xec)][var_core_value_sig6F91(0xeb)](var_core_value_sig09B8);
+    }), var_core_value_sigE627;
+  }
+  ["saveCommentToSnapshot"](var_core_value_sigEF3E) {
+    return {
+      id: var_core_value_sigEF3E["id"],
+      threadId: var_core_value_sigEF3E["threadId"],
+      ref: var_core_value_sigEF3E["ref"]
+    };
+  }
+};
+b = h([m(0x0, (0x0, n["Inject"])(r["HTTPService"])), m(0x1, (0x0, n["Inject"])(n["UserManagerService"])), m(0x2, (0x0, n["Inject"])(e["CollaborationSessionService"]))], b);
+let x = class extends n["Disposable"] {
+  constructor(var_core_value_sig273D, var_core_value_sig9A0D) {
+    super(), this[ox1890c7(0xa0)] = var_core_value_sig273D, this[ox1890c7(0x92)] = var_core_value_sig9A0D, this[ox1890c7(0x96)]();
+  }
+  ["_initDataSource"]() {
+    this[oxdc6c04(0xa0)][oxdc6c04(0xa1)] = this[oxdc6c04(0x92)], this["_threadCommentDataSourceService"][oxdc6c04(0xdd)] = !0x1;
+  }
+};
+x = h([m(0x0, i["IThreadCommentDataSourceService"]), m(0x1, (0x0, n["Inject"])(b))], x);
+function S(var_core_value_sig74A8) {
+  "@babel/helpers - typeof";
+
+  return S = typeof Symbol == ox49e6ba(0xdf) && typeof Symbol["iterator"] == "symbol" ? function (var_core_value_sigA319) {
+    return typeof var_core_value_sigA319;
+  } : function (var_core_value_sig2D58) {
+    const var_core_value_sig223F = ox49e6ba;
+    return var_core_value_sig2D58 && typeof Symbol == var_core_value_sig223F(0xdf) && var_core_value_sig2D58[var_core_value_sig223F(0xe5)] === Symbol && var_core_value_sig2D58 !== Symbol["prototype"] ? var_core_value_sig223F(0xe8) : typeof var_core_value_sig2D58;
+  }, S(var_core_value_sig74A8);
+}
+;
+function C(var_core_value_sig21B2, var_core_value_sigDE08) {
+  if (S(var_core_value_sig21B2) != "object" || !var_core_value_sig21B2) return var_core_value_sig21B2;
+  var var_core_value_sigACCB = var_core_value_sig21B2[Symbol["toPrimitive"]];
+  if (var_core_value_sigACCB !== void 0x0) {
+    var var_core_value_sig7F33 = var_core_value_sigACCB[ox53e911(0xcf)](var_core_value_sig21B2, var_core_value_sigDE08 || ox53e911(0xa3));
+    if (S(var_core_value_sig7F33) != ox53e911(0x86)) return var_core_value_sig7F33;
+    throw TypeError(ox53e911(0xed));
+  }
+  return (var_core_value_sigDE08 === ox53e911(0x97) ? String : Number)(var_core_value_sig21B2);
+}
+;
+function w(var_core_value_sig0C53) {
+  var var_core_value_sigEA04 = C(var_core_value_sig0C53, "string");
+  return S(var_core_value_sigEA04) == ox4fa8c5(0xe8) ? var_core_value_sigEA04 : var_core_value_sigEA04 + "";
+}
+;
+function T(var_core_value_sig7A62, var_core_value_sig8109, var_core_value_sig7565) {
+  return (var_core_value_sig8109 = w(var_core_value_sig8109)) in var_core_value_sig7A62 ? Object[ox5cc2ee(0x98)](var_core_value_sig7A62, var_core_value_sig8109, {
+    value: var_core_value_sig7565,
+    enumerable: !0x0,
+    configurable: !0x0,
+    writable: !0x0
+  }) : var_core_value_sig7A62[var_core_value_sig8109] = var_core_value_sig7565, var_core_value_sig7A62;
+}
+let E = class extends n["Plugin"] {
+  constructor(var_core_value_sigD749 = u, var_core_value_sigCFFA, var_core_value_sig58C1) {
+    super(), this[ox113488(0xff)] = var_core_value_sigD749, this[ox113488(0xba)] = var_core_value_sigCFFA, this["_configService"] = var_core_value_sig58C1;
+    let {
+      ...var_core_value_sig5090
+    } = (0x0, n[ox113488(0x8e)])({}, u, this[ox113488(0xff)]);
+    this["_configService"][ox113488(0xd9)](ox113488(0xe1), var_core_value_sig5090);
+  }
+  ["onStarting"]() {
+    [[b], [x], [g]]["forEach"](var_core_value_sigF9C7 => {
+      this[ox1283fc(0xba)][ox1283fc(0x90)](var_core_value_sigF9C7);
+    });
+  }
+  ["onReady"]() {
+    this[ox3bb508(0xba)][ox3bb508(0xbe)](x), this[ox3bb508(0xba)][ox3bb508(0xbe)](g);
+  }
+};
+T(E, "pluginName", "UNIVER_THREAD_COMMENT_DATA_SOURCE_PLUGIN"), T(E, "packageName", c), T(E, "version", l), E = h([(0x0, n["DependentOn"])(t["UniverLicensePlugin"], r["UniverNetworkPlugin"], i["UniverThreadCommentPlugin"], a["UniverThreadCommentUIPlugin"], e["UniverCollaborationClientPlugin"]), m(0x1, (0x0, n["Inject"])(n["Injector"])), m(0x2, n["IConfigService"])], E), Object["defineProperty"](exports, "UniverThreadCommentDataSourcePlugin", {
+  enumerable: !0x0,
+  get: function () {
+    return E;
+  }
+});

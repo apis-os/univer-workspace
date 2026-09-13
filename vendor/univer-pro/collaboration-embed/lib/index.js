@@ -1,1 +1,141 @@
-import{SnapshotService as v41,UniverCollaborationPlugin as v42}from"@univerjs-pro/collaboration";import{CollaborationController as v43,UniverCollaborationClientPlugin as v44}from"@univerjs-pro/collaboration-client";import{EmbedResourceRefProviderRegistryService as v45,RESOURCE_REF_FILE_KIND as v46,UniverEmbedPlugin as v47}from"@univerjs-pro/embed";import{UniverLicensePlugin as v48}from"@univerjs-pro/license";import{DependentOn as v49,IConfigService as v50,Inject as v51,Injector as v52,Plugin as v53,UniverInstanceType as v54,merge as v55}from"@univerjs/core";const h="collaboration-embed.config",g={};var _="@univerjs-pro/collaboration-embed",v="1.0.0-insiders.20260907-70fc579";const y="collaboration-univer-uri-provider",b=100,x="COLLABORATION_EMBED_UNSUPPORTED_UNIT_TYPE";function S(v15,v16){return{registrationId:y,priority:100,match:{fileKinds:[v46.SELF],unitTypes:["sheet","doc","slide","base","board"]},provider:{ensureUnit:v6=>C(v6,v15,v16)}};}async function C(v17,v18,v19){let v20=v17.ref["unit"].selector;switch(v17.unitType){case v54.UNIVER_SHEET:{let v1=await v18.loadSheet(v20,0,undefined,{createOptions:v17.createOptions});return await v19.readyForCollab(v1.getUnitId()),{unitId:v1.getUnitId(),unitType:v54.UNIVER_SHEET};}case v54.UNIVER_DOC:{let v2=await v18.loadDoc(v20,0,undefined,{createOptions:v17.createOptions});return await v19.readyForCollab(v2.getUnitId()),{unitId:v2.getUnitId(),unitType:v54.UNIVER_DOC};}case v54.UNIVER_SLIDE:{let v3=await v18.loadSlide(v20,0,undefined,{createOptions:v17.createOptions});return await v19.readyForCollab(v3.getUnitId()),{unitId:v3.getUnitId(),unitType:v54.UNIVER_SLIDE};}case v54.UNIVER_BASE:{let v4=await v18.loadBase(v20,0,undefined,{createOptions:v17.createOptions});return await v19.readyForCollab(v4.getUnitId()),{unitId:v4.getUnitId(),unitType:v54.UNIVER_BASE};}case v54.UNIVER_BOARD:{let v5=await v18.loadBoard(v20,0,undefined,{createOptions:v17.createOptions});return await v19.readyForCollab(v5.getUnitId()),{unitId:v5.getUnitId(),unitType:v54.UNIVER_BOARD};}default:throw Error(x);}}function w(v21,v22){return function(v7,v8){v22(v7,v8,v21);};}function T(v23,v24,v25,v26){var v27=arguments.length,v28=v27<3?v24:v26===null?v26=Object.getOwnPropertyDescriptor(v24,v25):v26,v29;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v28=Reflect.decorate(v23,v24,v25,v26);else{for(var v30=v23.length-1;v30>=0;v30--)(v29=v23[v30])&&(v28=(v27<3?v29(v28):v27>3?v29(v24,v25,v28):v29(v24,v25))||v28);}return v27>3&&v28&&Object.defineProperty(v24,v25,v28),v28;}function E(v31){"@babel/helpers - typeof";return E=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v9){return typeof v9;}:function(v10){return v10&&typeof Symbol=="function"&&v10.constructor===Symbol&&v10!==Symbol.prototype?"symbol":typeof v10;},E(v31);}function D(v32,v33){if(E(v32)!="object"||!v32)return v32;var v34=v32[Symbol.toPrimitive];if(v34!==undefined){var v35=v34.call(v32,v33||"default");if(E(v35)!="object")return v35;throw TypeError("@@toPrimitive must return a primitive value.");}return(v33==="string"?String:Number)(v32);}function O(v36){var v37=D(v36,"string");return E(v37)=="symbol"?v37:v37+"";}function k(v38,v39,v40){return(v39=O(v39))in v38?Object.defineProperty(v38,v39,{value:v40,enumerable:true,configurable:true,writable:true}):v38[v39]=v40,v38;}let A=class extends v53{constructor(v11=g,v12,v13){super(),this._config=v11,this._injector=v12,this._configService=v13;let{...v14}=v55({},g,this._config);this._configService["setConfig"](h,v14);}onStarting(){this.disposeWithMe(this._injector["get"](v45).registerUnitProvider(S(this._injector["get"](v41),this._injector["get"](v43))));}};k(A,"type",v54.UNIVER_UNKNOWN),k(A,"pluginName","UNIVER_COLLABORATION_EMBED_PLUGIN"),k(A,"packageName",_),k(A,"version",v),A=T([v49(v48,v42,v47,v44),w(1,v51(v52)),w(2,v50)],A);export{h as COLLABORATION_EMBED_PLUGIN_CONFIG_KEY,y as COLLABORATION_EMBED_RESOURCE_REF_PROVIDER_ID,b as COLLABORATION_EMBED_RESOURCE_REF_PROVIDER_PRIORITY,x as COLLABORATION_EMBED_UNSUPPORTED_UNIT_TYPE,A as UniverCollaborationEmbedPlugin,S as createCollaborationEmbedResourceRefProvider};
+import { SnapshotService as var_core_value_sig284F, UniverCollaborationPlugin as var_core_value_sigE154 } from "@univerjs-pro/collaboration";
+import { CollaborationController as var_core_value_sig4632, UniverCollaborationClientPlugin as var_core_value_sig12F2 } from "@univerjs-pro/collaboration-client";
+import { EmbedResourceRefProviderRegistryService as var_core_value_sig2259, RESOURCE_REF_FILE_KIND as var_core_value_sig9E2F, UniverEmbedPlugin as var_core_value_sigD082 } from "@univerjs-pro/embed";
+import { UniverLicensePlugin as var_core_value_sigDBB7 } from "@univerjs-pro/license";
+import { DependentOn as var_core_value_sigD0A8, IConfigService as var_core_value_sigF4B9, Inject as var_core_value_sig5CEE, Injector as var_core_value_sigE92A, Plugin as var_core_value_sig362B, UniverInstanceType as var_core_value_sig5CA5, merge as var_core_value_sigE90F } from "@univerjs/core";
+const h = "collaboration-embed.config",
+  g = {};
+var _ = "@univerjs-pro/collaboration-embed",
+  v = "1.0.0-insiders.20260907-70fc579";
+const y = "collaboration-univer-uri-provider",
+  b = 100,
+  x = "COLLABORATION_EMBED_UNSUPPORTED_UNIT_TYPE";
+function S(var_core_value_sigF704, var_core_value_sig2BCF) {
+  return {
+    registrationId: y,
+    priority: 100,
+    match: {
+      fileKinds: [var_core_value_sig9E2F.SELF],
+      unitTypes: ["sheet", "doc", "slide", "base", "board"]
+    },
+    provider: {
+      ensureUnit: var_core_value_sig3D7D => C(var_core_value_sig3D7D, var_core_value_sigF704, var_core_value_sig2BCF)
+    }
+  };
+}
+async function C(var_core_value_sig0D69, var_core_value_sig480E, var_core_value_sig26DB) {
+  let var_core_value_sigF0F9 = var_core_value_sig0D69.ref["unit"].selector;
+  switch (var_core_value_sig0D69.unitType) {
+    case var_core_value_sig5CA5.UNIVER_SHEET:
+      {
+        let var_core_value_sig7524 = await var_core_value_sig480E.loadSheet(var_core_value_sigF0F9, 0, undefined, {
+          createOptions: var_core_value_sig0D69.createOptions
+        });
+        return await var_core_value_sig26DB.readyForCollab(var_core_value_sig7524.getUnitId()), {
+          unitId: var_core_value_sig7524.getUnitId(),
+          unitType: var_core_value_sig5CA5.UNIVER_SHEET
+        };
+      }
+    case var_core_value_sig5CA5.UNIVER_DOC:
+      {
+        let var_core_value_sig2AD8 = await var_core_value_sig480E.loadDoc(var_core_value_sigF0F9, 0, undefined, {
+          createOptions: var_core_value_sig0D69.createOptions
+        });
+        return await var_core_value_sig26DB.readyForCollab(var_core_value_sig2AD8.getUnitId()), {
+          unitId: var_core_value_sig2AD8.getUnitId(),
+          unitType: var_core_value_sig5CA5.UNIVER_DOC
+        };
+      }
+    case var_core_value_sig5CA5.UNIVER_SLIDE:
+      {
+        let var_core_value_sig2AD0 = await var_core_value_sig480E.loadSlide(var_core_value_sigF0F9, 0, undefined, {
+          createOptions: var_core_value_sig0D69.createOptions
+        });
+        return await var_core_value_sig26DB.readyForCollab(var_core_value_sig2AD0.getUnitId()), {
+          unitId: var_core_value_sig2AD0.getUnitId(),
+          unitType: var_core_value_sig5CA5.UNIVER_SLIDE
+        };
+      }
+    case var_core_value_sig5CA5.UNIVER_BASE:
+      {
+        let var_core_value_sig3EEE = await var_core_value_sig480E.loadBase(var_core_value_sigF0F9, 0, undefined, {
+          createOptions: var_core_value_sig0D69.createOptions
+        });
+        return await var_core_value_sig26DB.readyForCollab(var_core_value_sig3EEE.getUnitId()), {
+          unitId: var_core_value_sig3EEE.getUnitId(),
+          unitType: var_core_value_sig5CA5.UNIVER_BASE
+        };
+      }
+    case var_core_value_sig5CA5.UNIVER_BOARD:
+      {
+        let var_core_value_sigBC46 = await var_core_value_sig480E.loadBoard(var_core_value_sigF0F9, 0, undefined, {
+          createOptions: var_core_value_sig0D69.createOptions
+        });
+        return await var_core_value_sig26DB.readyForCollab(var_core_value_sigBC46.getUnitId()), {
+          unitId: var_core_value_sigBC46.getUnitId(),
+          unitType: var_core_value_sig5CA5.UNIVER_BOARD
+        };
+      }
+    default:
+      throw Error(x);
+  }
+}
+function w(var_core_value_sig1A0F, var_core_value_sigFBA4) {
+  return function (var_core_value_sig27E5, var_core_value_sig8061) {
+    var_core_value_sigFBA4(var_core_value_sig27E5, var_core_value_sig8061, var_core_value_sig1A0F);
+  };
+}
+function T(var_core_value_sig4383, var_core_value_sig186C, var_core_value_sigD955, var_core_value_sig48BD) {
+  var var_core_value_sig429F = arguments.length,
+    var_core_value_sigF62A = var_core_value_sig429F < 3 ? var_core_value_sig186C : var_core_value_sig48BD === null ? var_core_value_sig48BD = Object.getOwnPropertyDescriptor(var_core_value_sig186C, var_core_value_sigD955) : var_core_value_sig48BD,
+    var_core_value_sig8178;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigF62A = Reflect.decorate(var_core_value_sig4383, var_core_value_sig186C, var_core_value_sigD955, var_core_value_sig48BD);else {
+    for (var var_core_value_sigE9ED = var_core_value_sig4383.length - 1; var_core_value_sigE9ED >= 0; var_core_value_sigE9ED--) (var_core_value_sig8178 = var_core_value_sig4383[var_core_value_sigE9ED]) && (var_core_value_sigF62A = (var_core_value_sig429F < 3 ? var_core_value_sig8178(var_core_value_sigF62A) : var_core_value_sig429F > 3 ? var_core_value_sig8178(var_core_value_sig186C, var_core_value_sigD955, var_core_value_sigF62A) : var_core_value_sig8178(var_core_value_sig186C, var_core_value_sigD955)) || var_core_value_sigF62A);
+  }
+  return var_core_value_sig429F > 3 && var_core_value_sigF62A && Object.defineProperty(var_core_value_sig186C, var_core_value_sigD955, var_core_value_sigF62A), var_core_value_sigF62A;
+}
+function E(var_core_value_sigB577) {
+  "@babel/helpers - typeof";
+
+  return E = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig4D4C) {
+    return typeof var_core_value_sig4D4C;
+  } : function (var_core_value_sigC9E0) {
+    return var_core_value_sigC9E0 && typeof Symbol == "function" && var_core_value_sigC9E0.constructor === Symbol && var_core_value_sigC9E0 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigC9E0;
+  }, E(var_core_value_sigB577);
+}
+function D(var_core_value_sig9572, var_core_value_sigD873) {
+  if (E(var_core_value_sig9572) != "object" || !var_core_value_sig9572) return var_core_value_sig9572;
+  var var_core_value_sigA12B = var_core_value_sig9572[Symbol.toPrimitive];
+  if (var_core_value_sigA12B !== undefined) {
+    var var_core_value_sigF230 = var_core_value_sigA12B.call(var_core_value_sig9572, var_core_value_sigD873 || "default");
+    if (E(var_core_value_sigF230) != "object") return var_core_value_sigF230;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigD873 === "string" ? String : Number)(var_core_value_sig9572);
+}
+function O(var_core_value_sig09B8) {
+  var var_core_value_sig6F91 = D(var_core_value_sig09B8, "string");
+  return E(var_core_value_sig6F91) == "symbol" ? var_core_value_sig6F91 : var_core_value_sig6F91 + "";
+}
+function k(var_core_value_sigF9C7, var_core_value_sig8895, var_core_value_sigC80B) {
+  return (var_core_value_sig8895 = O(var_core_value_sig8895)) in var_core_value_sigF9C7 ? Object.defineProperty(var_core_value_sigF9C7, var_core_value_sig8895, {
+    value: var_core_value_sigC80B,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigF9C7[var_core_value_sig8895] = var_core_value_sigC80B, var_core_value_sigF9C7;
+}
+let A = class extends var_core_value_sig362B {
+  constructor(var_core_value_sig76BA = g, var_core_value_sigFBFA, var_core_value_sigF602) {
+    super(), this._config = var_core_value_sig76BA, this._injector = var_core_value_sigFBFA, this._configService = var_core_value_sigF602;
+    let {
+      ...var_core_value_sig1BBD
+    } = var_core_value_sigE90F({}, g, this._config);
+    this._configService["setConfig"](h, var_core_value_sig1BBD);
+  }
+  onStarting() {
+    this.disposeWithMe(this._injector["get"](var_core_value_sig2259).registerUnitProvider(S(this._injector["get"](var_core_value_sig284F), this._injector["get"](var_core_value_sig4632))));
+  }
+};
+k(A, "type", var_core_value_sig5CA5.UNIVER_UNKNOWN), k(A, "pluginName", "UNIVER_COLLABORATION_EMBED_PLUGIN"), k(A, "packageName", _), k(A, "version", v), A = T([var_core_value_sigD0A8(var_core_value_sigDBB7, var_core_value_sigE154, var_core_value_sigD082, var_core_value_sig12F2), w(1, var_core_value_sig5CEE(var_core_value_sigE92A)), w(2, var_core_value_sigF4B9)], A);
+export { h as COLLABORATION_EMBED_PLUGIN_CONFIG_KEY, y as COLLABORATION_EMBED_RESOURCE_REF_PROVIDER_ID, b as COLLABORATION_EMBED_RESOURCE_REF_PROVIDER_PRIORITY, x as COLLABORATION_EMBED_UNSUPPORTED_UNIT_TYPE, A as UniverCollaborationEmbedPlugin, S as createCollaborationEmbedResourceRefProvider };

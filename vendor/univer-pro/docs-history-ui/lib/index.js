@@ -1,1 +1,441 @@
-import{AuthzIoHttpService as v158,COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as v159,CollaborationController as v160,DataLoaderService as v161,SnapshotServerOverHTTPService as v162,UniverCollaborationClientPlugin as v163}from"@univerjs-pro/collaboration-client";import{DocsHistoryDiffService as v164,UniverDocsHistoryPlugin as v165,createDocHistoryDisplay as v166}from"@univerjs-pro/docs-history";import{LS_CONFIG_KEY as v167,UniverLicensePlugin as v168}from"@univerjs-pro/license";import{CommandType as v169,DependentOn as v170,Disposable as v171,DisposableCollection as v172,IAuthzIoService as v173,ICommandService as v174,IConfigService as v175,ILogService as v176,IResourceLoaderService as v177,IUniverInstanceService as v178,Inject as v179,Injector as v180,LocaleService as v181,Plugin as v182,ThemeService as v183,Univer as v184,UniverInstanceType as v185,generateRandomId as v186,merge as v187,registerDependencies as v188}from"@univerjs/core";import{AfterSpaceCommand as v189,AlignOperationCommand as v190,BreakLineCommand as v191,ChangeListNestingLevelCommand as v192,ChangeListTypeCommand as v193,CoverContentCommand as v194,CreateDocTableCommand as v195,CutContentCommand as v196,DeleteCurrentParagraphCommand as v197,DeleteCustomBlockCommand as v198,DeleteLeftCommand as v199,DeleteRightCommand as v200,DocFloatMenuService as v201,DocParagraphMenuService as v202,DocTableDeleteColumnsCommand as v203,DocTableDeleteRowsCommand as v204,DocTableDeleteTableCommand as v205,DocTableInsertColumnCommand as v206,DocTableInsertRowCommand as v207,DocTableTabCommand as v208,EnterCommand as v209,HorizontalLineCommand as v210,IMEInputCommand as v211,InnerPasteCommand as v212,ListOperationCommand as v213,MergeTwoParagraphCommand as v214,MoveDocBlockCommand as v215,ReplaceSelectionCommand as v216,ReplaceSnapshotCommand as v217,ReplaceTextRunsCommand as v218,SetInlineFormatCommand as v219,SetParagraphNamedStyleCommand as v220,TabCommand as v221,ToggleCheckListCommand as v222,UniverDocsUIPlugin as v223}from"@univerjs/docs-ui";import{HistoryIcon as v224}from"@univerjs/icons";import{IMenuManagerService as v225,IconManager as v226,MenuItemType as v227,RibbonStartGroup as v228,UI_PLUGIN_CONFIG_KEY as v229,UniverUIPlugin as v230,getMenuHiddenObservable as v231}from"@univerjs/ui";import{CollaborationEvent as v232,ISnapshotServerService as v233,SnapshotService as v234,UniverCollaborationPlugin as v235}from"@univerjs-pro/collaboration";import{DocsCalloutCancelEmptyParagraphCommand as v236,DocsCalloutConsumeBoundaryDeleteCommand as v237,DocsCalloutDeleteCommand as v238,DocsCalloutInsertBelowCommand as v239,DocsCalloutInsertCommand as v240,DocsCalloutResetColorsCommand as v241,DocsCalloutSetTextColorCommand as v242,DocsCalloutUnwrapCommand as v243,DocsCalloutUpdateCommand as v244,UniverDocsCalloutPlugin as v245}from"@univerjs-pro/docs-callout";import{UniverDocsCalloutUIPlugin as v246}from"@univerjs-pro/docs-callout-ui";import{ChangeDocChartDataSourceCommand as v247,DuplicateDocChartDataSourceCommand as v248,InsertDocChartCommand as v249,RemoveDocChartCommand as v250,RemoveDocChartSnapshotMutation as v251,UniverDocsChartPlugin as v252,UpdateDocChartConfigCommand as v253,UpdateDocChartDataSourceCommand as v254,UpdateDocChartDrawingCommand as v255,UpdateDocChartSnapshotCommand as v256}from"@univerjs-pro/docs-chart";import{UniverDocsChartUIPlugin as v257}from"@univerjs-pro/docs-chart-ui";import{DocsCodeCancelEmptyParagraphCommand as v258,DocsCodeConsumeBoundaryDeleteCommand as v259,DocsCodeInsertCommand as v260,DocsCodeRemoveCommand as v261,DocsCodeUnwrapCommand as v262,DocsCodeUpdateCommand as v263,UniverDocsCodePlugin as v264}from"@univerjs-pro/docs-code";import{UniverDocsCodeUIPlugin as v265}from"@univerjs-pro/docs-code-ui";import{AddDocColumnCommand as v266,DeleteDocColumnCommand as v267,DeleteDocColumnGroupCommand as v268,InsertDocColumnGroupCommand as v269,NormalizeDocColumnGroupCommand as v270,ResizeDocColumnGroupCommand as v271,UniverDocsColumnPlugin as v272}from"@univerjs-pro/docs-column";import{UniverDocsColumnUIPlugin as v273}from"@univerjs-pro/docs-column-ui";import{ConvertDocFormulaToTextCommand as v274,InsertDocFormulaCommand as v275,RemoveDocFormulaCommand as v276,ReplaceDocFormulaWithTextCommand as v277,SetDocFormulaNumberFormatCommand as v278,UniverDocsFormulaPlugin as v279,UpdateDocFormulaCommand as v280}from"@univerjs-pro/docs-formula";import{UniverDocsFormulaUIPlugin as v281}from"@univerjs-pro/docs-formula-ui";import{InsertDocsLatexFormulaCommand as v282,RemoveDocsLatexFormulaCommand as v283,ReplaceDocsLatexFormulaWithTextCommand as v284,UniverDocsLatexPlugin as v285,UpdateDocsLatexFormulaCommand as v286}from"@univerjs-pro/docs-latex";import{UniverDocsLatexUIPlugin as v287}from"@univerjs-pro/docs-latex-ui";import{DocsListDemoteCommand as v288,DocsListInsertCommand as v289,DocsListPromoteCommand as v290,DocsListSetGlyphSymbolCommand as v291,DocsListSetGlyphTypeCommand as v292,DocsListSetPrefixSuffixCommand as v293,DocsListSetStartNumberCommand as v294,UniverDocsListPlugin as v295}from"@univerjs-pro/docs-list";import{UniverDocsListUIPlugin as v296}from"@univerjs-pro/docs-list-ui";import{DocsQuoteCancelEmptyParagraphCommand as v297,DocsQuoteExitCommand as v298,DocsQuoteInsertBelowCommand as v299,DocsQuoteInsertCommand as v300,DocsQuoteRemoveCommand as v301,DocsQuoteUnwrapCommand as v302,DocsQuoteUpdateStyleCommand as v303,UniverDocsQuotePlugin as v304}from"@univerjs-pro/docs-quote";import{UniverDocsQuoteUIPlugin as v305}from"@univerjs-pro/docs-quote-ui";import{InsertDocShapeCommand as v306,UniverDocsShapePlugin as v307,UpdateDocDrawingMetadataCommand as v308,UpdateDocShapeDataCommand as v309}from"@univerjs-pro/docs-shape";import{UniverDocsShapeUIPlugin as v310}from"@univerjs-pro/docs-shape-ui";import{DocsTableDeleteColumnsCommand as v311,DocsTableDeleteRowsCommand as v312,DocsTableDeleteTableCommand as v313,DocsTableDistributeColumnsCommand as v314,DocsTableDistributeRowsCommand as v315,DocsTableInsertColumnsCommand as v316,DocsTableInsertRowsCommand as v317,DocsTableInsertTableCommand as v318,DocsTableInsertTitleRowCommand as v319,DocsTableMergeCellsCommand as v320,DocsTableMoveColumnsCommand as v321,DocsTableMoveRowsCommand as v322,DocsTableMoveTableCommand as v323,DocsTableResizeColumnCommand as v324,DocsTableResizeRowCommand as v325,DocsTableSetColumnTypeCommand as v326,DocsTableSetHeaderRowCountCommand as v327,DocsTableSetTableBackgroundCommand as v328,DocsTableSetTableBorderColorCommand as v329,DocsTableSetTableBorderCommand as v330,DocsTableSetTableBorderStyleCommand as v331,DocsTableSetTableBorderWidthCommand as v332,DocsTableSetTableVerticalAlignCommand as v333,DocsTableSortTableCommand as v334,DocsTableUnmergeCellsCommand as v335,UniverDocsTablePlugin as v336}from"@univerjs-pro/docs-table";import{UniverDocsTableUIPlugin as v337}from"@univerjs-pro/docs-table-ui";import{HistoryRestoreService as v338,HistoryUnitAdapterRegistryService as v339,UniverEditHistoryPlugin as v340,isHistoryRestoreAcknowledgement as v341}from"@univerjs-pro/edit-history";import{UniverProFormulaEnginePlugin as v342}from"@univerjs-pro/engine-formula";import{UniverShapeEditorUIPlugin as v343}from"@univerjs-pro/shape-editor-ui";import{CreateHeaderFooterCommand as v344,DeleteDocumentSectionBreakCommand as v345,DeleteTextCommand as v346,DocHistoryAction as v347,InsertDocumentColumnBreakCommand as v348,InsertDocumentSectionBreakCommand as v349,InsertTextCommand as v350,RichTextEditingMutation as v351,SetDocumentDefaultParagraphStyleCommand as v352,SetDocumentNameCommand as v353,SetSectionHeaderFooterLinkCommand as v354,UniverDocsPlugin as v355,UpdateDocumentParagraphStyleCommand as v356,UpdateDocumentSectionCommand as v357,UpdateTextCommand as v358}from"@univerjs/docs";import{InsertDocDrawingCommand as v359,RemoveDocDrawingCommand as v360,SetDocDrawingArrangeCommand as v361,UniverDocsDrawingPlugin as v362,UpdateDocDrawingWrappingStyleCommand as v363,UpdateDrawingDocTransformCommand as v364}from"@univerjs/docs-drawing";import{UniverDocsDrawingUIPlugin as v365}from"@univerjs/docs-drawing-ui";import{DocHyperLinkCommandId as v366,UniverDocsHyperLinkPlugin as v367}from"@univerjs/docs-hyper-link";import{UniverDocsHyperLinkUIPlugin as v368}from"@univerjs/docs-hyper-link-ui";import{UniverDrawingPlugin as v369}from"@univerjs/drawing";import{UniverDrawingUIPlugin as v370}from"@univerjs/drawing-ui";import{IRenderManagerService as v371,UniverRenderEnginePlugin as v372}from"@univerjs/engine-render";import{UniverNetworkPlugin as v373}from"@univerjs/network";import{Subject as v374,filter as v375,firstValueFrom as v376,takeUntil as v377,timeout as v378}from"rxjs";import{HistoryActionSummaryService as v379,HistoryHighlightService as v380,HistoryRenderAdapterRegistryService as v381,UniverEditHistoryUIPlugin as v382}from"@univerjs-pro/edit-history-ui";const B="docs-history-ui.config",wr={historyServerUrl:"/universer-api/history"};var Tr="@univerjs-pro/docs-history-ui",Er="1.0.0-insiders.20260907-70fc579";function V(v129,v130){return function(v21,v22){v130(v21,v22,v129);};}function H(v131,v132,v133,v134){var v135=arguments.length,v136=v135<3?v132:v134===null?v134=Object.getOwnPropertyDescriptor(v132,v133):v134,v137;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v136=Reflect.decorate(v131,v132,v133,v134);else{for(var v138=v131.length-1;v138>=0;v138--)(v137=v131[v138])&&(v136=(v135<3?v137(v136):v135>3?v137(v132,v133,v136):v137(v132,v133))||v136);}return v135>3&&v136&&Object.defineProperty(v132,v133,v136),v136;}let U=class extends v171{constructor(v23){super(),this.disposeWithMe(v23.register("DocsHistoryIcon",v224));}};U=H([V(0,v179(v226))],U);const Dr={[v347.DeleteChart]:"docs-history-ui.action.deleteChart",[v347.DeleteDivider]:"docs-history-ui.action.deleteDivider",[v347.DeleteImage]:"docs-history-ui.action.deleteImage",[v347.DeleteShape]:"docs-history-ui.action.deleteShape",[v347.EditTableCell]:"docs-history-ui.action.editTableCell",[v347.FormatParagraph]:"docs-history-ui.action.formatParagraph",[v347.InsertCustomRange]:"docs-history-ui.action.insertCustomRange",[v347.UpdateImage]:"docs-history-ui.action.updateImage",[v347.UpdatePageLayout]:"docs-history-ui.action.updatePageLayout"},Or=new Map([[v353.id,"docs-history-ui.action.renameDocument"],[v350.id,"docs-history-ui.action.insertText"],[v211.id,"docs-history-ui.action.insertText"],[v191.id,"docs-history-ui.action.insertText"],[v212.id,"docs-history-ui.action.insertText"],[v216.id,"docs-history-ui.action.insertText"],[v346.id,"docs-history-ui.action.deleteText"],[v196.id,"docs-history-ui.action.deleteText"],[v199.id,"docs-history-ui.action.deleteText"],[v200.id,"docs-history-ui.action.deleteText"],[v197.id,"docs-history-ui.action.deleteText"],[v214.id,"docs-history-ui.action.deleteText"],[v198.id,"docs-history-ui.action.deleteBlock"],[v358.id,"docs-history-ui.action.formatText"],[v219.id,"docs-history-ui.action.formatText"],[v218.id,"docs-history-ui.action.formatText"],[v356.id,"docs-history-ui.action.formatParagraph"],[v352.id,"docs-history-ui.action.formatParagraph"],[v190.id,"docs-history-ui.action.formatParagraph"],[v189.id,"docs-history-ui.action.formatParagraph"],[v209.id,"docs-history-ui.action.formatParagraph"],[v221.id,"docs-history-ui.action.formatParagraph"],[v220.id,"docs-history-ui.action.changeHeading"],[v213.id,"docs-history-ui.action.updateList"],[v193.id,"docs-history-ui.action.updateList"],[v192.id,"docs-history-ui.action.updateList"],[v222.id,"docs-history-ui.action.updateList"],[v289.id,"docs-history-ui.action.updateList"],[v292.id,"docs-history-ui.action.updateList"],[v291.id,"docs-history-ui.action.updateList"],[v293.id,"docs-history-ui.action.updateList"],[v294.id,"docs-history-ui.action.updateList"],[v290.id,"docs-history-ui.action.updateList"],[v288.id,"docs-history-ui.action.updateList"],[v215.id,"docs-history-ui.action.moveBlock"],[v210.id,"docs-history-ui.action.insertDivider"],[v357.id,"docs-history-ui.action.updatePageLayout"],[v349.id,"docs-history-ui.action.updatePageLayout"],[v345.id,"docs-history-ui.action.updatePageLayout"],[v348.id,"docs-history-ui.action.updatePageLayout"],[v344.id,"docs-history-ui.action.updateHeaderFooter"],[v354.id,"docs-history-ui.action.updateHeaderFooter"],[v366.Add,"docs-history-ui.action.insertLink"],[v366.Update,"docs-history-ui.action.updateLink"],[v366.Delete,"docs-history-ui.action.deleteLink"],[v318.id,"docs-history-ui.action.insertTable"],[v195.id,"docs-history-ui.action.insertTable"],[v313.id,"docs-history-ui.action.deleteTable"],[v205.id,"docs-history-ui.action.deleteTable"],[v317.id,"docs-history-ui.action.insertTableRows"],[v312.id,"docs-history-ui.action.deleteTableRows"],[v322.id,"docs-history-ui.action.moveTableRows"],[v316.id,"docs-history-ui.action.insertTableColumns"],[v311.id,"docs-history-ui.action.deleteTableColumns"],[v321.id,"docs-history-ui.action.moveTableColumns"],[v323.id,"docs-history-ui.action.moveTable"],[v324.id,"docs-history-ui.action.resizeTableColumns"],[v325.id,"docs-history-ui.action.resizeTableRows"],[v314.id,"docs-history-ui.action.distributeTableColumns"],[v315.id,"docs-history-ui.action.distributeTableRows"],[v319.id,"docs-history-ui.action.updateTableHeader"],[v326.id,"docs-history-ui.action.updateTableColumns"],[v327.id,"docs-history-ui.action.updateTableHeader"],[v328.id,"docs-history-ui.action.formatTable"],[v329.id,"docs-history-ui.action.formatTable"],[v330.id,"docs-history-ui.action.formatTable"],[v331.id,"docs-history-ui.action.formatTable"],[v332.id,"docs-history-ui.action.formatTable"],[v333.id,"docs-history-ui.action.formatTable"],[v320.id,"docs-history-ui.action.mergeTableCells"],[v335.id,"docs-history-ui.action.unmergeTableCells"],[v334.id,"docs-history-ui.action.sortTable"],[v203.id,"docs-history-ui.action.deleteTableColumns"],[v204.id,"docs-history-ui.action.deleteTableRows"],[v206.id,"docs-history-ui.action.insertTableColumns"],[v207.id,"docs-history-ui.action.insertTableRows"],[v208.id,"docs-history-ui.action.editTableCell"],[v359.id,"docs-history-ui.action.insertImage"],[v360.id,"docs-history-ui.action.deleteImage"],[v364.id,"docs-history-ui.action.updateDrawing"],[v363.id,"docs-history-ui.action.updateDrawing"],[v361.id,"docs-history-ui.action.updateDrawing"],[v306.id,"docs-history-ui.action.insertShape"],[v309.id,"docs-history-ui.action.updateShape"],[v308.id,"docs-history-ui.action.updateShape"],[v249.id,"docs-history-ui.action.insertChart"],[v250.id,"docs-history-ui.action.deleteChart"],[v251.id,"docs-history-ui.action.deleteChart"],[v253.id,"docs-history-ui.action.updateChart"],[v254.id,"docs-history-ui.action.updateChart"],[v255.id,"docs-history-ui.action.updateChart"],[v256.id,"docs-history-ui.action.updateChart"],[v247.id,"docs-history-ui.action.updateChart"],[v248.id,"docs-history-ui.action.updateChart"],[v240.id,"docs-history-ui.action.insertCallout"],[v239.id,"docs-history-ui.action.insertCallout"],[v238.id,"docs-history-ui.action.deleteCallout"],[v243.id,"docs-history-ui.action.deleteCallout"],[v236.id,"docs-history-ui.action.deleteCallout"],[v237.id,"docs-history-ui.action.updateCallout"],[v241.id,"docs-history-ui.action.updateCallout"],[v242.id,"docs-history-ui.action.updateCallout"],[v244.id,"docs-history-ui.action.updateCallout"],[v260.id,"docs-history-ui.action.insertCodeBlock"],[v261.id,"docs-history-ui.action.deleteCodeBlock"],[v262.id,"docs-history-ui.action.deleteCodeBlock"],[v258.id,"docs-history-ui.action.deleteCodeBlock"],[v259.id,"docs-history-ui.action.updateCodeBlock"],[v263.id,"docs-history-ui.action.updateCodeBlock"],[v300.id,"docs-history-ui.action.insertQuote"],[v299.id,"docs-history-ui.action.insertQuote"],[v301.id,"docs-history-ui.action.deleteQuote"],[v302.id,"docs-history-ui.action.deleteQuote"],[v297.id,"docs-history-ui.action.deleteQuote"],[v298.id,"docs-history-ui.action.updateQuote"],[v303.id,"docs-history-ui.action.updateQuote"],[v269.id,"docs-history-ui.action.insertColumns"],[v266.id,"docs-history-ui.action.updateColumns"],[v267.id,"docs-history-ui.action.updateColumns"],[v268.id,"docs-history-ui.action.updateColumns"],[v270.id,"docs-history-ui.action.updateColumns"],[v271.id,"docs-history-ui.action.updateColumns"],[v275.id,"docs-history-ui.action.insertFormula"],[v280.id,"docs-history-ui.action.updateFormula"],[v278.id,"docs-history-ui.action.updateFormula"],[v276.id,"docs-history-ui.action.deleteFormula"],[v274.id,"docs-history-ui.action.deleteFormula"],[v277.id,"docs-history-ui.action.deleteFormula"],[v282.id,"docs-history-ui.action.insertFormula"],[v286.id,"docs-history-ui.action.updateFormula"],[v283.id,"docs-history-ui.action.deleteFormula"],[v284.id,"docs-history-ui.action.deleteFormula"],[v194.id,"docs-history-ui.action.editDocument"],[v217.id,"docs-history-ui.action.editDocument"]]),kr=new Set([v361.id,v363.id,v364.id]),Ar=new Set([v253.id,v254.id,v255.id,v256.id,v308.id,v309.id]);let W=class extends v171{constructor(v24,v25){super(),this._localeService=v25,this.disposeWithMe(v24.register(v185.UNIVER_DOC,this));}resolve(v26){let v27=jr(v26),v28=v27.has(v347.InsertCustomRange),v29=v27.has(v347.UpdateImage),v30=v27.has(v347.DeleteChart)||v27.has(v347.DeleteImage)||v27.has(v347.DeleteShape),v31=Mr(v26),v32=v26.commandIds["has"](v306.id)||v26.commandIds["has"](v249.id),v33=[...Ar].some(v1=>v26.commandIds["has"](v1)),v34=v31.map(v2=>this._localeService["t"](v2));v34.push(...[...v27].map(v3=>this._localeService["t"](Dr[v3])));let v35=[...v26.commandIds].flatMap(v4=>{if(v28&&v4===v216.id||v32&&v4===v359.id||(v30||v31.length>0)&&v4===v360.id||(v33||v29)&&kr.has(v4))return[];let v5=Or.get(v4);return v5?[this._localeService["t"](v5)]:[];}),v36=[...new Set([...v34,...v35])];return v36.length>0?v36:v26.commandIds["has"](v351.id)?[this._localeService["t"]("docs-history-ui.action.editDocument")]:[];}};W=H([V(0,v179(v379)),V(1,v179(v181))],W);function jr(v139){let v140=new Set();return v139.mutations["forEach"](v37=>{if(!Nr(v37.params))return;let{historyAction:v38}=v37.params;G(v38)&&v140.add(v38);let{historyActions:v39}=v37.params;Array.isArray(v39)&&v39.forEach(v6=>{G(v6)&&v140.add(v6);});}),v140;}function G(v141){return v141===v347.DeleteChart||v141===v347.DeleteDivider||v141===v347.DeleteImage||v141===v347.DeleteShape||v141===v347.EditTableCell||v141===v347.FormatParagraph||v141===v347.InsertCustomRange||v141===v347.UpdateImage||v141===v347.UpdatePageLayout;}function Mr(v142){if(!v142.commandIds["has"](v360.id))return[];let v143=v142.mutations["flatMap"](v40=>Nr(v40.params)?typeof v40.params["chartId"]=="string"?["docs-history-ui.action.deleteChart"]:typeof v40.params["shapeId"]=="string"?["docs-history-ui.action.deleteShape"]:typeof v40.params["drawingId"]=="string"?["docs-history-ui.action.deleteImage"]:[]:[]);return[...new Set(v143)];}function Nr(v144){return typeof v144=="object"&&!!v144;}function K(v145){"@babel/helpers - typeof";return K=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v41){return typeof v41;}:function(v42){return v42&&typeof Symbol=="function"&&v42.constructor===Symbol&&v42!==Symbol.prototype?"symbol":typeof v42;},K(v145);}function Pr(v146,v147){if(K(v146)!="object"||!v146)return v146;var v148=v146[Symbol.toPrimitive];if(v148!==undefined){var v149=v148.call(v146,v147||"default");if(K(v149)!="object")return v149;throw TypeError("@@toPrimitive must return a primitive value.");}return(v147==="string"?String:Number)(v146);}function Fr(v150){var v151=Pr(v150,"string");return K(v151)=="symbol"?v151:v151+"";}function q(v152,v153,v154){return(v153=Fr(v153))in v152?Object.defineProperty(v152,v153,{value:v154,enumerable:true,configurable:true,writable:true}):v152[v153]=v154,v152;}let J=class extends v171{constructor(v43,v44,v45,v46,v47,v48){super(),this._diffService=v43,this._snapshotService=v45,this._resourceLoaderService=v46,this._univerInstanceService=v47,this._highlightService=v48,q(this,"type",v185.UNIVER_DOC),q(this,"_changesGeneration",0),q(this,"_loadGeneration",0),q(this,"_loadQueue",Promise.resolve()),this.disposeWithMe(v44.register(this));}loadRevision(v49,v50){let v51=++this._loadGeneration,v52=this._loadQueue["catch"](()=>undefined).then(async()=>{if(v51!==this._loadGeneration)return;this._getDocument(v49)&&this._univerInstanceService["disposeUnit"](v49);let v7=await this._snapshotService["loadDoc"](v49,v50.endRevision);if(v7.setDisabled(true),v51!==this._loadGeneration){this._getDocument(v49)===v7&&this._univerInstanceService["disposeUnit"](v49);return;}this._univerInstanceService["focusUnit"](v49);});return this._loadQueue=v52,v52;}async loadChanges(v53,v54){let v55=++this._changesGeneration,v56=await this._diffService["compare"](v53,v54);if(v55!==this._changesGeneration)return;let v57=this._getDocument(v53);if(!v57)return;let v58=v166(this._resourceLoaderService["saveUnit"](v53)??v57.getSnapshot(),v56.changes,{insert:this._highlightService["getStyle"]("insert"),delete:this._highlightService["getStyle"]("delete"),update:this._highlightService["getStyle"]("update")});v55===this._changesGeneration&&(this._univerInstanceService["disposeUnit"](v53),this._univerInstanceService["createUnit"](v185.UNIVER_DOC,v58.snapshot).setDisabled(true),this._univerInstanceService["focusUnit"](v53));}close(){++this._changesGeneration,++this._loadGeneration;}_getDocument(v59){return this._univerInstanceService["getUnit"](v59,v185.UNIVER_DOC)??null;}};J=H([V(0,v179(v164)),V(1,v179(v381)),V(2,v179(v234)),V(3,v177),V(4,v178),V(5,v179(v380))],J);let Y=class extends v382{constructor(v60,v61,v62,v63){let{collaborationClientConfig:v64,...v65}=v60;super(v65,v61,v62,v63),this._injector=v61,v62.setConfig(v159,v64);}onStarting(){super.onStarting(),v188(this._injector,[[v233,{useClass:v162}],[W],[J]]),this._injector["get"](W),this._injector["get"](J);}};q(Y,"pluginName","UNIVER_DOCS_HISTORY_VIEWER_PLUGIN"),q(Y,"packageName",Tr),q(Y,"version",Er),q(Y,"type",v185.UNIVER_UNKNOWN),Y=H([v170(v168,v165,v223),V(1,v179(v180)),V(2,v175),V(3,v176)],Y);let X=class extends v171{constructor(v66,v67,v68,v69,v70,v71,v72,v73,v74){super(),this._configService=v66,this._restoreService=v67,this._adapterRegistry=v68,this._localeService=v69,this._themeService=v70,this._collaborationController=v71,this._dataLoaderService=v72,this._univerInstanceService=v73,this._renderManagerService=v74,q(this,"_historyUniver",null),q(this,"_opening",null),q(this,"_openGeneration",0),q(this,"_sessionDisposables",new v172()),q(this,"_container",null),q(this,"_ownsContainer",false),q(this,"_unitId",""),q(this,"_location",undefined),q(this,"_suppressedHostUnitId","");}open(v75){if(this._historyUniver)return Promise.resolve();if(this._opening)return this._opening;let v76=++this._openGeneration,v77=this._open(v75,v76).finally(()=>{this._opening===v77&&(this._opening=null);});return this._opening=v77,v77;}async _open(v78,v79){let v80=this._adapterRegistry["get"](v185.UNIVER_DOC);if(!v80)throw Error("[DocsHistoryLoaderService]: Docs history adapter is not registered.");let v81=v80.captureLocation(v78),v82=await Promise.all([v80.canView(v78),v80.canRevert(v78)]).catch(v8=>{if(v79===this._openGeneration)throw v8;return null;});if(!v82||v79!==this._openGeneration)return;let[v83,v84]=v82;if(!v83)throw Error("[DocsHistoryLoaderService]:\x20The\x20current\x20user\x20cannot\x20view\x20history\x20for\x20this\x20document.");this._unitId=v78,this._location=v81;let v85=this._ensureContainer(),v86=this._localeService["getCurrentLocale"](),v87=this._localeService["getLocales"](),v88=new v184({theme:this._themeService["getCurrentTheme"](),darkMode:this._themeService["darkMode"],locale:v86,locales:v87?{[v86]:v87}:undefined,direction:this._localeService["getDirection"](),override:[[v173,{useClass:v158}]]});this._historyUniver=v88;try{this._suppressHostMenus(v78),v85.style["display"]="block",this._syncViewerServices(v88,v85),this._registerChildPlugins(v88,v84,v85),this._createPlaceholderDocument(v88);}catch(v9){throw v79===this._openGeneration?this.close():(v85.style["display"]="none",this._restoreHostMenus(),v88.dispose()),v9;}}close(){++this._openGeneration,this._opening=null,this._sessionDisposables["dispose"]();let v89=this._historyUniver;this._historyUniver=null,v89==null||v89.dispose();let v90=this._container;v90&&(v90.style["display"]="none"),this._restoreHostMenus(),this._unitId="",this._location=undefined;}_syncViewerServices(v91,v92){let v93=v91.__getInjector(),v94=v93.get(v181),v95=v93.get(v183);this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(v10=>{v95.setDarkMode(v10);})),this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(v11=>{v95.setTheme(v11);})),this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(v12=>{let v13=this._localeService["getLocales"]();v13&&v94.load({[v12]:v13}),v94.setLocale(v12);})),this._sessionDisposables["add"](this._localeService["direction$"].subscribe(v14=>{v94.setDirection(v14),v92.dir=v14,v92.style["direction"]=v14;}));}async restore(v96){var v97;let v98=this._unitId,v99=this._location,v100=this._collaborationController["getCollabEntity"](v98);if(!v100)throw Error("[DocsHistoryLoaderService]: Collaboration is not ready for this document.");let v101=new v374(),v102=v376(v100.session["event$"].pipe(v375(v15=>v15.eventID===v232.CHANGESET_ACK),v375(v16=>v341(v16,v96)),v377(v101),v378(10000)));try{if(!(await this._restoreService["restore"](v98,v185.UNIVER_DOC,v96)))throw Error("[DocsHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.");await v102;}catch(v17){throw v101.next(),await v102.catch(()=>undefined),v17;}finally{v101.complete();}this.close(),this._univerInstanceService["disposeUnit"](v98),await this._dataLoaderService["loadUnit"](v98,v185.UNIVER_DOC),await((v97=this._adapterRegistry["get"](v185.UNIVER_DOC))==null?undefined:v97.restoreLocation(v98,v99));}_ensureContainer(){var v103;if(this._container)return this._container;let v104=this._configService["getConfig"](B),v105=(v103=this._configService["getConfig"](v229))==null?undefined:v103.container,v106=(v104==null?undefined:v104.univerContainerId)??v105,v107=typeof v106=="string"?document.getElementById(v106):v106;if(!v107)throw Error("[DocsHistoryLoaderService]: Configure a valid Univer container before opening history.");let v108=document.createElement("div");return v108.style["position"]="absolute",v108.style["inset"]="0",v108.style["zIndex"]="49",v108.style["display"]="none",v107.appendChild(v108),this._container=v108,this._ownsContainer=true,v108;}_registerChildPlugins(v109,v110,v111){let v112=this._configService["getConfig"](v167),v113=this._configService["getConfig"](B),v114=[[v168,{license:v112==null?undefined:v112.ls}],[v372],[v230,{container:v111,header:true,toolbar:false,footer:true,contextMenu:false}],[v373],[v369],[v370],[v355,{hasScroll:false}],[v223],[v362],[v365],[v342],[v343],[v279],[v281],[v336],[v337],[v245],[v246],[v264],[v265],[v304],[v305],[v272],[v273],[v285],[v287],[v295],[v296],[v307],[v310],[v252],[v257],[v367],[v368],[v235],[v340,{historyServerUrl:v113==null?undefined:v113.historyServerUrl}],[v165]],v115=new Set();[...v114,...((v113==null?undefined:v113.viewerPlugins)??[])].forEach(([v18,v19])=>{if(v115.has(v18.pluginName))throw Error("[DocsHistoryLoaderService]: Plugin "+v18.pluginName+" has already been registered.");v115.add(v18.pluginName),v109.registerPlugin(v18,v19);}),v109.registerPlugin(Y,{viewerMode:true,descriptor:{unitId:this._unitId,type:v185.UNIVER_DOC},canRestore:v110,onClose:()=>this.close(),onRestore:v20=>this.restore(v20),collaborationClientConfig:this._configService["getConfig"](v159)});}_createPlaceholderDocument(v116){v116.createUnit(v185.UNIVER_DOC,{id:this._unitId,body:{dataStream:"\x0d\x0a",paragraphs:[{startIndex:0,paragraphId:v186()}],sectionBreaks:[{startIndex:1,sectionId:v186()}]},documentStyle:{}}).setDisabled(true);}_suppressHostMenus(v117){let v118=this._renderManagerService["getRenderUnitById"](v117);(v118==null?undefined:v118.type)===v185.UNIVER_DOC&&(this._suppressedHostUnitId=v117,v118.with(v201).setSuppressed(true),v118.with(v202).hideParagraphMenu(true));}_restoreHostMenus(){let v119=this._suppressedHostUnitId;if(this._suppressedHostUnitId="",!v119)return;let v120=this._renderManagerService["getRenderUnitById"](v119);(v120==null?undefined:v120.type)===v185.UNIVER_DOC&&v120.with(v201).setSuppressed(false);}dispose(){if(this.close(),this._ownsContainer){var v121;(v121=this._container)==null||v121.remove();}this._container=null,this._ownsContainer=false,super.dispose();}};X=H([V(0,v175),V(1,v179(v338)),V(2,v179(v339)),V(3,v179(v181)),V(4,v179(v183)),V(5,v179(v160)),V(6,v179(v161)),V(7,v178),V(8,v371)],X);const Z={id:"docs-history-ui.operation.open",type:v169.OPERATION,handler:v155=>{let v156=v155.get(v178).getCurrentUnitOfType(v185.UNIVER_DOC);return v156?(v155.get(X).open(v156.getUnitId()).catch(v122=>{v155.get(v176).error("[OpenDocsHistoryOperation]: Failed to open document history.",v122);}),true):false;}},Ir={[v228.OTHERS]:{[Z.id]:{order:100,gridLayout:{row:1,column:3,rowSpan:2,columnSpan:2,showLabel:true},menuItemFactory:Lr}}};function Lr(v157){return{id:Z.id,type:v227.BUTTON,icon:"DocsHistoryIcon",title:"docs-history-ui.menu.history",tooltip:"docs-history-ui.menu.history",hidden$:v231(v157,v185.UNIVER_DOC)};}let Q=class extends v171{constructor(v123,v124){super(),this.disposeWithMe(v123.registerCommand(Z)),v124.mergeMenu(Ir);}};Q=H([V(0,v174),V(1,v225)],Q);let $=class extends v182{constructor(v125=wr,v126,v127){super(),this._config=v125,this._injector=v126,this._configService=v127;let{...v128}=v187({},wr,this._config);this._configService["setConfig"](B,v128);}onStarting(){v188(this._injector,[[U],[X],[Q]]),this._injector["get"](U),this._injector["get"](Q);}};q($,"pluginName","UNIVER_DOCS_HISTORY_UI_PLUGIN"),q($,"packageName",Tr),q($,"version",Er),q($,"type",v185.UNIVER_DOC),$=H([v170(v168,v163,v165,v223),V(1,v179(v180)),V(2,v175)],$);export{B as DOCS_HISTORY_UI_PLUGIN_CONFIG_KEY,$ as UniverDocsHistoryUIPlugin};
+import { AuthzIoHttpService as var_core_value_sig9EE0, COLLABORATION_CLIENT_PLUGIN_CONFIG_KEY as var_core_value_sigF051, CollaborationController as var_core_value_sig0B45, DataLoaderService as var_core_value_sig36F8, SnapshotServerOverHTTPService as var_core_value_sig03E1, UniverCollaborationClientPlugin as var_core_value_sigBB57 } from "@univerjs-pro/collaboration-client";
+import { DocsHistoryDiffService as var_core_value_sig7C4A, UniverDocsHistoryPlugin as var_core_value_sigE799, createDocHistoryDisplay as var_core_value_sigB601 } from "@univerjs-pro/docs-history";
+import { LS_CONFIG_KEY as var_core_value_sig8B71, UniverLicensePlugin as var_core_value_sigAEFB } from "@univerjs-pro/license";
+import { CommandType as var_core_value_sig826B, DependentOn as var_core_value_sigCF89, Disposable as var_core_value_sig00CB, DisposableCollection as var_core_value_sig77EE, IAuthzIoService as var_core_value_sig9F76, ICommandService as var_core_value_sigB008, IConfigService as var_core_value_sig8721, ILogService as var_core_value_sig08BA, IResourceLoaderService as var_core_value_sigDBB5, IUniverInstanceService as var_core_value_sigCFAC, Inject as var_core_value_sig237B, Injector as var_core_value_sigFEAB, LocaleService as var_core_value_sigE347, Plugin as var_core_value_sig3C5B, ThemeService as var_core_value_sig200B, Univer as var_core_value_sig3863, UniverInstanceType as var_core_value_sigC97C, generateRandomId as var_core_value_sigC4B1, merge as var_core_value_sig1BD9, registerDependencies as var_core_value_sigE43E } from "@univerjs/core";
+import { AfterSpaceCommand as var_core_value_sigA937, AlignOperationCommand as var_core_value_sigCAD5, BreakLineCommand as var_core_value_sigE503, ChangeListNestingLevelCommand as var_core_value_sig48DD, ChangeListTypeCommand as var_core_value_sig5E6A, CoverContentCommand as var_core_value_sigB7FC, CreateDocTableCommand as var_core_value_sig9CD9, CutContentCommand as var_core_value_sigFD0C, DeleteCurrentParagraphCommand as var_core_value_sig849B, DeleteCustomBlockCommand as var_core_value_sig5F1A, DeleteLeftCommand as var_core_value_sigB455, DeleteRightCommand as var_core_value_sig5241, DocFloatMenuService as var_core_value_sigC6E5, DocParagraphMenuService as var_core_value_sigCEFB, DocTableDeleteColumnsCommand as var_core_value_sig1537, DocTableDeleteRowsCommand as var_core_value_sigE4C6, DocTableDeleteTableCommand as var_core_value_sig4313, DocTableInsertColumnCommand as var_core_value_sigFC87, DocTableInsertRowCommand as var_core_value_sig156F, DocTableTabCommand as var_core_value_sigDD51, EnterCommand as var_core_value_sigF057, HorizontalLineCommand as var_core_value_sig72F6, IMEInputCommand as var_core_value_sig9FBA, InnerPasteCommand as var_core_value_sigFE01, ListOperationCommand as var_core_value_sigA2CE, MergeTwoParagraphCommand as var_core_value_sig1975, MoveDocBlockCommand as var_core_value_sig6EA1, ReplaceSelectionCommand as var_core_value_sig029F, ReplaceSnapshotCommand as var_core_value_sig3767, ReplaceTextRunsCommand as var_core_value_sig670B, SetInlineFormatCommand as var_core_value_sig6912, SetParagraphNamedStyleCommand as var_core_value_sigE235, TabCommand as var_core_value_sig7664, ToggleCheckListCommand as var_core_value_sig2281, UniverDocsUIPlugin as var_core_value_sig5E86 } from "@univerjs/docs-ui";
+import { HistoryIcon as var_core_value_sig6998 } from "@univerjs/icons";
+import { IMenuManagerService as var_core_value_sigF639, IconManager as var_core_value_sigEAE5, MenuItemType as var_core_value_sigE94C, RibbonStartGroup as var_core_value_sig6D47, UI_PLUGIN_CONFIG_KEY as var_core_value_sigCB82, UniverUIPlugin as var_core_value_sigCF4E, getMenuHiddenObservable as var_core_value_sig6CAD } from "@univerjs/ui";
+import { CollaborationEvent as var_core_value_sig8CF5, ISnapshotServerService as var_core_value_sigDDD7, SnapshotService as var_core_value_sigB2CE, UniverCollaborationPlugin as var_core_value_sig443C } from "@univerjs-pro/collaboration";
+import { DocsCalloutCancelEmptyParagraphCommand as var_core_value_sig39B1, DocsCalloutConsumeBoundaryDeleteCommand as var_core_value_sig210D, DocsCalloutDeleteCommand as var_core_value_sigB4B4, DocsCalloutInsertBelowCommand as var_core_value_sigD407, DocsCalloutInsertCommand as var_core_value_sig63F3, DocsCalloutResetColorsCommand as var_core_value_sig6A71, DocsCalloutSetTextColorCommand as var_core_value_sig3BF6, DocsCalloutUnwrapCommand as var_core_value_sig38CE, DocsCalloutUpdateCommand as var_core_value_sig62B7, UniverDocsCalloutPlugin as var_core_value_sig37A8 } from "@univerjs-pro/docs-callout";
+import { UniverDocsCalloutUIPlugin as var_core_value_sigA90D } from "@univerjs-pro/docs-callout-ui";
+import { ChangeDocChartDataSourceCommand as var_core_value_sig7A3C, DuplicateDocChartDataSourceCommand as var_core_value_sig0511, InsertDocChartCommand as var_core_value_sig1F44, RemoveDocChartCommand as var_core_value_sigCB04, RemoveDocChartSnapshotMutation as var_core_value_sig947E, UniverDocsChartPlugin as var_core_value_sig4545, UpdateDocChartConfigCommand as var_core_value_sigF39A, UpdateDocChartDataSourceCommand as var_core_value_sigF79C, UpdateDocChartDrawingCommand as var_core_value_sig2E54, UpdateDocChartSnapshotCommand as var_core_value_sig7658 } from "@univerjs-pro/docs-chart";
+import { UniverDocsChartUIPlugin as var_core_value_sigDCF5 } from "@univerjs-pro/docs-chart-ui";
+import { DocsCodeCancelEmptyParagraphCommand as var_core_value_sigC786, DocsCodeConsumeBoundaryDeleteCommand as var_core_value_sigC0D9, DocsCodeInsertCommand as var_core_value_sigF0511, DocsCodeRemoveCommand as var_core_value_sig5825, DocsCodeUnwrapCommand as var_core_value_sig4EB7, DocsCodeUpdateCommand as var_core_value_sig73AF, UniverDocsCodePlugin as var_core_value_sig548A } from "@univerjs-pro/docs-code";
+import { UniverDocsCodeUIPlugin as var_core_value_sigE026 } from "@univerjs-pro/docs-code-ui";
+import { AddDocColumnCommand as var_core_value_sig339E, DeleteDocColumnCommand as var_core_value_sig7550, DeleteDocColumnGroupCommand as var_core_value_sig2983, InsertDocColumnGroupCommand as var_core_value_sigE1B0, NormalizeDocColumnGroupCommand as var_core_value_sigD4FF, ResizeDocColumnGroupCommand as var_core_value_sig1E5B, UniverDocsColumnPlugin as var_core_value_sigB680 } from "@univerjs-pro/docs-column";
+import { UniverDocsColumnUIPlugin as var_core_value_sig1F64 } from "@univerjs-pro/docs-column-ui";
+import { ConvertDocFormulaToTextCommand as var_core_value_sigDD1C, InsertDocFormulaCommand as var_core_value_sig2C39, RemoveDocFormulaCommand as var_core_value_sigB7D1, ReplaceDocFormulaWithTextCommand as var_core_value_sig64F0, SetDocFormulaNumberFormatCommand as var_core_value_sig85B1, UniverDocsFormulaPlugin as var_core_value_sig3141, UpdateDocFormulaCommand as var_core_value_sig2162 } from "@univerjs-pro/docs-formula";
+import { UniverDocsFormulaUIPlugin as var_core_value_sig2EAD } from "@univerjs-pro/docs-formula-ui";
+import { InsertDocsLatexFormulaCommand as var_core_value_sig6774, RemoveDocsLatexFormulaCommand as var_core_value_sig340D, ReplaceDocsLatexFormulaWithTextCommand as var_core_value_sig82D4, UniverDocsLatexPlugin as var_core_value_sigBDE4, UpdateDocsLatexFormulaCommand as var_core_value_sig7DF1 } from "@univerjs-pro/docs-latex";
+import { UniverDocsLatexUIPlugin as var_core_value_sigDC86 } from "@univerjs-pro/docs-latex-ui";
+import { DocsListDemoteCommand as var_core_value_sig0B0C, DocsListInsertCommand as var_core_value_sigA39E, DocsListPromoteCommand as var_core_value_sigBBEE, DocsListSetGlyphSymbolCommand as var_core_value_sig011D, DocsListSetGlyphTypeCommand as var_core_value_sig6167, DocsListSetPrefixSuffixCommand as var_core_value_sig65A1, DocsListSetStartNumberCommand as var_core_value_sig7F19, UniverDocsListPlugin as var_core_value_sig7827 } from "@univerjs-pro/docs-list";
+import { UniverDocsListUIPlugin as var_core_value_sig652C } from "@univerjs-pro/docs-list-ui";
+import { DocsQuoteCancelEmptyParagraphCommand as var_core_value_sig7E32, DocsQuoteExitCommand as var_core_value_sig4C07, DocsQuoteInsertBelowCommand as var_core_value_sig79AB, DocsQuoteInsertCommand as var_core_value_sig8E74, DocsQuoteRemoveCommand as var_core_value_sig104C, DocsQuoteUnwrapCommand as var_core_value_sig841D, DocsQuoteUpdateStyleCommand as var_core_value_sig90CB, UniverDocsQuotePlugin as var_core_value_sigBDF5 } from "@univerjs-pro/docs-quote";
+import { UniverDocsQuoteUIPlugin as var_core_value_sigACC6 } from "@univerjs-pro/docs-quote-ui";
+import { InsertDocShapeCommand as var_core_value_sig1614, UniverDocsShapePlugin as var_core_value_sig85C3, UpdateDocDrawingMetadataCommand as var_core_value_sigB996, UpdateDocShapeDataCommand as var_core_value_sig4BBA } from "@univerjs-pro/docs-shape";
+import { UniverDocsShapeUIPlugin as var_core_value_sig6201 } from "@univerjs-pro/docs-shape-ui";
+import { DocsTableDeleteColumnsCommand as var_core_value_sig5151, DocsTableDeleteRowsCommand as var_core_value_sigB542, DocsTableDeleteTableCommand as var_core_value_sigBB6C, DocsTableDistributeColumnsCommand as var_core_value_sigE2BF, DocsTableDistributeRowsCommand as var_core_value_sigB8C7, DocsTableInsertColumnsCommand as var_core_value_sigA56E, DocsTableInsertRowsCommand as var_core_value_sig1998, DocsTableInsertTableCommand as var_core_value_sigFF19, DocsTableInsertTitleRowCommand as var_core_value_sig43B8, DocsTableMergeCellsCommand as var_core_value_sigD98F, DocsTableMoveColumnsCommand as var_core_value_sig66C0, DocsTableMoveRowsCommand as var_core_value_sig9D15, DocsTableMoveTableCommand as var_core_value_sigB785, DocsTableResizeColumnCommand as var_core_value_sig130F, DocsTableResizeRowCommand as var_core_value_sigC0E3, DocsTableSetColumnTypeCommand as var_core_value_sig52F7, DocsTableSetHeaderRowCountCommand as var_core_value_sig866F, DocsTableSetTableBackgroundCommand as var_core_value_sigDE3D, DocsTableSetTableBorderColorCommand as var_core_value_sigF175, DocsTableSetTableBorderCommand as var_core_value_sig6A18, DocsTableSetTableBorderStyleCommand as var_core_value_sig4E3D, DocsTableSetTableBorderWidthCommand as var_core_value_sig49B0, DocsTableSetTableVerticalAlignCommand as var_core_value_sig2547, DocsTableSortTableCommand as var_core_value_sigBCA9, DocsTableUnmergeCellsCommand as var_core_value_sig4CDF, UniverDocsTablePlugin as var_core_value_sig3F79 } from "@univerjs-pro/docs-table";
+import { UniverDocsTableUIPlugin as var_core_value_sig880E } from "@univerjs-pro/docs-table-ui";
+import { HistoryRestoreService as var_core_value_sigC9ED, HistoryUnitAdapterRegistryService as var_core_value_sigB57B, UniverEditHistoryPlugin as var_core_value_sig780B, isHistoryRestoreAcknowledgement as var_core_value_sig7D1B } from "@univerjs-pro/edit-history";
+import { UniverProFormulaEnginePlugin as var_core_value_sig7BE0 } from "@univerjs-pro/engine-formula";
+import { UniverShapeEditorUIPlugin as var_core_value_sig7D40 } from "@univerjs-pro/shape-editor-ui";
+import { CreateHeaderFooterCommand as var_core_value_sig6C7E, DeleteDocumentSectionBreakCommand as var_core_value_sig68BE, DeleteTextCommand as var_core_value_sig04C6, DocHistoryAction as var_core_value_sigCA05, InsertDocumentColumnBreakCommand as var_core_value_sig2F2B, InsertDocumentSectionBreakCommand as var_core_value_sig70AF, InsertTextCommand as var_core_value_sigD04E, RichTextEditingMutation as var_core_value_sigB99B, SetDocumentDefaultParagraphStyleCommand as var_core_value_sig5A75, SetDocumentNameCommand as var_core_value_sig7BAF, SetSectionHeaderFooterLinkCommand as var_core_value_sig8F69, UniverDocsPlugin as var_core_value_sig6884, UpdateDocumentParagraphStyleCommand as var_core_value_sig066E, UpdateDocumentSectionCommand as var_core_value_sig9B0D, UpdateTextCommand as var_core_value_sig3D2C } from "@univerjs/docs";
+import { InsertDocDrawingCommand as var_core_value_sigC56D, RemoveDocDrawingCommand as var_core_value_sig3A17, SetDocDrawingArrangeCommand as var_core_value_sig938F, UniverDocsDrawingPlugin as var_core_value_sigD948, UpdateDocDrawingWrappingStyleCommand as var_core_value_sigBE5E, UpdateDrawingDocTransformCommand as var_core_value_sig0281 } from "@univerjs/docs-drawing";
+import { UniverDocsDrawingUIPlugin as var_core_value_sigED71 } from "@univerjs/docs-drawing-ui";
+import { DocHyperLinkCommandId as var_core_value_sig281C, UniverDocsHyperLinkPlugin as var_core_value_sig3C92 } from "@univerjs/docs-hyper-link";
+import { UniverDocsHyperLinkUIPlugin as var_core_value_sigB16B } from "@univerjs/docs-hyper-link-ui";
+import { UniverDrawingPlugin as var_core_value_sig585D } from "@univerjs/drawing";
+import { UniverDrawingUIPlugin as var_core_value_sigE722 } from "@univerjs/drawing-ui";
+import { IRenderManagerService as var_core_value_sig062A, UniverRenderEnginePlugin as var_core_value_sig050A } from "@univerjs/engine-render";
+import { UniverNetworkPlugin as var_core_value_sig8B32 } from "@univerjs/network";
+import { Subject as var_core_value_sig870F, filter as var_core_value_sigB683, firstValueFrom as var_core_value_sig26EC, takeUntil as var_core_value_sigEEDB, timeout as var_core_value_sig36E7 } from "rxjs";
+import { HistoryActionSummaryService as var_core_value_sig6A78, HistoryHighlightService as var_core_value_sigF7EF, HistoryRenderAdapterRegistryService as var_core_value_sig27F9, UniverEditHistoryUIPlugin as var_core_value_sig393E } from "@univerjs-pro/edit-history-ui";
+const B = "docs-history-ui.config",
+  wr = {
+    historyServerUrl: "/universer-api/history"
+  };
+var Tr = "@univerjs-pro/docs-history-ui",
+  Er = "1.0.0-insiders.20260907-70fc579";
+function V(var_core_value_sigB512, var_core_value_sigF2E6) {
+  return function (var_core_value_sig1A0F, var_core_value_sigFBA4) {
+    var_core_value_sigF2E6(var_core_value_sig1A0F, var_core_value_sigFBA4, var_core_value_sigB512);
+  };
+}
+function H(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A) {
+  var var_core_value_sig3E68 = arguments.length,
+    var_core_value_sigF4C5 = var_core_value_sig3E68 < 3 ? var_core_value_sigB744 : var_core_value_sigE68A === null ? var_core_value_sigE68A = Object.getOwnPropertyDescriptor(var_core_value_sigB744, var_core_value_sigEAE2) : var_core_value_sigE68A,
+    var_core_value_sig5410;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigF4C5 = Reflect.decorate(var_core_value_sig34C8, var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigE68A);else {
+    for (var var_core_value_sig492F = var_core_value_sig34C8.length - 1; var_core_value_sig492F >= 0; var_core_value_sig492F--) (var_core_value_sig5410 = var_core_value_sig34C8[var_core_value_sig492F]) && (var_core_value_sigF4C5 = (var_core_value_sig3E68 < 3 ? var_core_value_sig5410(var_core_value_sigF4C5) : var_core_value_sig3E68 > 3 ? var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5) : var_core_value_sig5410(var_core_value_sigB744, var_core_value_sigEAE2)) || var_core_value_sigF4C5);
+  }
+  return var_core_value_sig3E68 > 3 && var_core_value_sigF4C5 && Object.defineProperty(var_core_value_sigB744, var_core_value_sigEAE2, var_core_value_sigF4C5), var_core_value_sigF4C5;
+}
+let U = class extends var_core_value_sig00CB {
+  constructor(var_core_value_sig4383) {
+    super(), this.disposeWithMe(var_core_value_sig4383.register("DocsHistoryIcon", var_core_value_sig6998));
+  }
+};
+U = H([V(0, var_core_value_sig237B(var_core_value_sigEAE5))], U);
+const Dr = {
+    [var_core_value_sigCA05.DeleteChart]: "docs-history-ui.action.deleteChart",
+    [var_core_value_sigCA05.DeleteDivider]: "docs-history-ui.action.deleteDivider",
+    [var_core_value_sigCA05.DeleteImage]: "docs-history-ui.action.deleteImage",
+    [var_core_value_sigCA05.DeleteShape]: "docs-history-ui.action.deleteShape",
+    [var_core_value_sigCA05.EditTableCell]: "docs-history-ui.action.editTableCell",
+    [var_core_value_sigCA05.FormatParagraph]: "docs-history-ui.action.formatParagraph",
+    [var_core_value_sigCA05.InsertCustomRange]: "docs-history-ui.action.insertCustomRange",
+    [var_core_value_sigCA05.UpdateImage]: "docs-history-ui.action.updateImage",
+    [var_core_value_sigCA05.UpdatePageLayout]: "docs-history-ui.action.updatePageLayout"
+  },
+  Or = new Map([[var_core_value_sig7BAF.id, "docs-history-ui.action.renameDocument"], [var_core_value_sigD04E.id, "docs-history-ui.action.insertText"], [var_core_value_sig9FBA.id, "docs-history-ui.action.insertText"], [var_core_value_sigE503.id, "docs-history-ui.action.insertText"], [var_core_value_sigFE01.id, "docs-history-ui.action.insertText"], [var_core_value_sig029F.id, "docs-history-ui.action.insertText"], [var_core_value_sig04C6.id, "docs-history-ui.action.deleteText"], [var_core_value_sigFD0C.id, "docs-history-ui.action.deleteText"], [var_core_value_sigB455.id, "docs-history-ui.action.deleteText"], [var_core_value_sig5241.id, "docs-history-ui.action.deleteText"], [var_core_value_sig849B.id, "docs-history-ui.action.deleteText"], [var_core_value_sig1975.id, "docs-history-ui.action.deleteText"], [var_core_value_sig5F1A.id, "docs-history-ui.action.deleteBlock"], [var_core_value_sig3D2C.id, "docs-history-ui.action.formatText"], [var_core_value_sig6912.id, "docs-history-ui.action.formatText"], [var_core_value_sig670B.id, "docs-history-ui.action.formatText"], [var_core_value_sig066E.id, "docs-history-ui.action.formatParagraph"], [var_core_value_sig5A75.id, "docs-history-ui.action.formatParagraph"], [var_core_value_sigCAD5.id, "docs-history-ui.action.formatParagraph"], [var_core_value_sigA937.id, "docs-history-ui.action.formatParagraph"], [var_core_value_sigF057.id, "docs-history-ui.action.formatParagraph"], [var_core_value_sig7664.id, "docs-history-ui.action.formatParagraph"], [var_core_value_sigE235.id, "docs-history-ui.action.changeHeading"], [var_core_value_sigA2CE.id, "docs-history-ui.action.updateList"], [var_core_value_sig5E6A.id, "docs-history-ui.action.updateList"], [var_core_value_sig48DD.id, "docs-history-ui.action.updateList"], [var_core_value_sig2281.id, "docs-history-ui.action.updateList"], [var_core_value_sigA39E.id, "docs-history-ui.action.updateList"], [var_core_value_sig6167.id, "docs-history-ui.action.updateList"], [var_core_value_sig011D.id, "docs-history-ui.action.updateList"], [var_core_value_sig65A1.id, "docs-history-ui.action.updateList"], [var_core_value_sig7F19.id, "docs-history-ui.action.updateList"], [var_core_value_sigBBEE.id, "docs-history-ui.action.updateList"], [var_core_value_sig0B0C.id, "docs-history-ui.action.updateList"], [var_core_value_sig6EA1.id, "docs-history-ui.action.moveBlock"], [var_core_value_sig72F6.id, "docs-history-ui.action.insertDivider"], [var_core_value_sig9B0D.id, "docs-history-ui.action.updatePageLayout"], [var_core_value_sig70AF.id, "docs-history-ui.action.updatePageLayout"], [var_core_value_sig68BE.id, "docs-history-ui.action.updatePageLayout"], [var_core_value_sig2F2B.id, "docs-history-ui.action.updatePageLayout"], [var_core_value_sig6C7E.id, "docs-history-ui.action.updateHeaderFooter"], [var_core_value_sig8F69.id, "docs-history-ui.action.updateHeaderFooter"], [var_core_value_sig281C.Add, "docs-history-ui.action.insertLink"], [var_core_value_sig281C.Update, "docs-history-ui.action.updateLink"], [var_core_value_sig281C.Delete, "docs-history-ui.action.deleteLink"], [var_core_value_sigFF19.id, "docs-history-ui.action.insertTable"], [var_core_value_sig9CD9.id, "docs-history-ui.action.insertTable"], [var_core_value_sigBB6C.id, "docs-history-ui.action.deleteTable"], [var_core_value_sig4313.id, "docs-history-ui.action.deleteTable"], [var_core_value_sig1998.id, "docs-history-ui.action.insertTableRows"], [var_core_value_sigB542.id, "docs-history-ui.action.deleteTableRows"], [var_core_value_sig9D15.id, "docs-history-ui.action.moveTableRows"], [var_core_value_sigA56E.id, "docs-history-ui.action.insertTableColumns"], [var_core_value_sig5151.id, "docs-history-ui.action.deleteTableColumns"], [var_core_value_sig66C0.id, "docs-history-ui.action.moveTableColumns"], [var_core_value_sigB785.id, "docs-history-ui.action.moveTable"], [var_core_value_sig130F.id, "docs-history-ui.action.resizeTableColumns"], [var_core_value_sigC0E3.id, "docs-history-ui.action.resizeTableRows"], [var_core_value_sigE2BF.id, "docs-history-ui.action.distributeTableColumns"], [var_core_value_sigB8C7.id, "docs-history-ui.action.distributeTableRows"], [var_core_value_sig43B8.id, "docs-history-ui.action.updateTableHeader"], [var_core_value_sig52F7.id, "docs-history-ui.action.updateTableColumns"], [var_core_value_sig866F.id, "docs-history-ui.action.updateTableHeader"], [var_core_value_sigDE3D.id, "docs-history-ui.action.formatTable"], [var_core_value_sigF175.id, "docs-history-ui.action.formatTable"], [var_core_value_sig6A18.id, "docs-history-ui.action.formatTable"], [var_core_value_sig4E3D.id, "docs-history-ui.action.formatTable"], [var_core_value_sig49B0.id, "docs-history-ui.action.formatTable"], [var_core_value_sig2547.id, "docs-history-ui.action.formatTable"], [var_core_value_sigD98F.id, "docs-history-ui.action.mergeTableCells"], [var_core_value_sig4CDF.id, "docs-history-ui.action.unmergeTableCells"], [var_core_value_sigBCA9.id, "docs-history-ui.action.sortTable"], [var_core_value_sig1537.id, "docs-history-ui.action.deleteTableColumns"], [var_core_value_sigE4C6.id, "docs-history-ui.action.deleteTableRows"], [var_core_value_sigFC87.id, "docs-history-ui.action.insertTableColumns"], [var_core_value_sig156F.id, "docs-history-ui.action.insertTableRows"], [var_core_value_sigDD51.id, "docs-history-ui.action.editTableCell"], [var_core_value_sigC56D.id, "docs-history-ui.action.insertImage"], [var_core_value_sig3A17.id, "docs-history-ui.action.deleteImage"], [var_core_value_sig0281.id, "docs-history-ui.action.updateDrawing"], [var_core_value_sigBE5E.id, "docs-history-ui.action.updateDrawing"], [var_core_value_sig938F.id, "docs-history-ui.action.updateDrawing"], [var_core_value_sig1614.id, "docs-history-ui.action.insertShape"], [var_core_value_sig4BBA.id, "docs-history-ui.action.updateShape"], [var_core_value_sigB996.id, "docs-history-ui.action.updateShape"], [var_core_value_sig1F44.id, "docs-history-ui.action.insertChart"], [var_core_value_sigCB04.id, "docs-history-ui.action.deleteChart"], [var_core_value_sig947E.id, "docs-history-ui.action.deleteChart"], [var_core_value_sigF39A.id, "docs-history-ui.action.updateChart"], [var_core_value_sigF79C.id, "docs-history-ui.action.updateChart"], [var_core_value_sig2E54.id, "docs-history-ui.action.updateChart"], [var_core_value_sig7658.id, "docs-history-ui.action.updateChart"], [var_core_value_sig7A3C.id, "docs-history-ui.action.updateChart"], [var_core_value_sig0511.id, "docs-history-ui.action.updateChart"], [var_core_value_sig63F3.id, "docs-history-ui.action.insertCallout"], [var_core_value_sigD407.id, "docs-history-ui.action.insertCallout"], [var_core_value_sigB4B4.id, "docs-history-ui.action.deleteCallout"], [var_core_value_sig38CE.id, "docs-history-ui.action.deleteCallout"], [var_core_value_sig39B1.id, "docs-history-ui.action.deleteCallout"], [var_core_value_sig210D.id, "docs-history-ui.action.updateCallout"], [var_core_value_sig6A71.id, "docs-history-ui.action.updateCallout"], [var_core_value_sig3BF6.id, "docs-history-ui.action.updateCallout"], [var_core_value_sig62B7.id, "docs-history-ui.action.updateCallout"], [var_core_value_sigF0511.id, "docs-history-ui.action.insertCodeBlock"], [var_core_value_sig5825.id, "docs-history-ui.action.deleteCodeBlock"], [var_core_value_sig4EB7.id, "docs-history-ui.action.deleteCodeBlock"], [var_core_value_sigC786.id, "docs-history-ui.action.deleteCodeBlock"], [var_core_value_sigC0D9.id, "docs-history-ui.action.updateCodeBlock"], [var_core_value_sig73AF.id, "docs-history-ui.action.updateCodeBlock"], [var_core_value_sig8E74.id, "docs-history-ui.action.insertQuote"], [var_core_value_sig79AB.id, "docs-history-ui.action.insertQuote"], [var_core_value_sig104C.id, "docs-history-ui.action.deleteQuote"], [var_core_value_sig841D.id, "docs-history-ui.action.deleteQuote"], [var_core_value_sig7E32.id, "docs-history-ui.action.deleteQuote"], [var_core_value_sig4C07.id, "docs-history-ui.action.updateQuote"], [var_core_value_sig90CB.id, "docs-history-ui.action.updateQuote"], [var_core_value_sigE1B0.id, "docs-history-ui.action.insertColumns"], [var_core_value_sig339E.id, "docs-history-ui.action.updateColumns"], [var_core_value_sig7550.id, "docs-history-ui.action.updateColumns"], [var_core_value_sig2983.id, "docs-history-ui.action.updateColumns"], [var_core_value_sigD4FF.id, "docs-history-ui.action.updateColumns"], [var_core_value_sig1E5B.id, "docs-history-ui.action.updateColumns"], [var_core_value_sig2C39.id, "docs-history-ui.action.insertFormula"], [var_core_value_sig2162.id, "docs-history-ui.action.updateFormula"], [var_core_value_sig85B1.id, "docs-history-ui.action.updateFormula"], [var_core_value_sigB7D1.id, "docs-history-ui.action.deleteFormula"], [var_core_value_sigDD1C.id, "docs-history-ui.action.deleteFormula"], [var_core_value_sig64F0.id, "docs-history-ui.action.deleteFormula"], [var_core_value_sig6774.id, "docs-history-ui.action.insertFormula"], [var_core_value_sig7DF1.id, "docs-history-ui.action.updateFormula"], [var_core_value_sig340D.id, "docs-history-ui.action.deleteFormula"], [var_core_value_sig82D4.id, "docs-history-ui.action.deleteFormula"], [var_core_value_sigB7FC.id, "docs-history-ui.action.editDocument"], [var_core_value_sig3767.id, "docs-history-ui.action.editDocument"]]),
+  kr = new Set([var_core_value_sig938F.id, var_core_value_sigBE5E.id, var_core_value_sig0281.id]),
+  Ar = new Set([var_core_value_sigF39A.id, var_core_value_sigF79C.id, var_core_value_sig2E54.id, var_core_value_sig7658.id, var_core_value_sigB996.id, var_core_value_sig4BBA.id]);
+let W = class extends var_core_value_sig00CB {
+  constructor(var_core_value_sig186C, var_core_value_sigD955) {
+    super(), this._localeService = var_core_value_sigD955, this.disposeWithMe(var_core_value_sig186C.register(var_core_value_sigC97C.UNIVER_DOC, this));
+  }
+  resolve(var_core_value_sig48BD) {
+    let var_core_value_sig429F = jr(var_core_value_sig48BD),
+      var_core_value_sigF62A = var_core_value_sig429F.has(var_core_value_sigCA05.InsertCustomRange),
+      var_core_value_sig8178 = var_core_value_sig429F.has(var_core_value_sigCA05.UpdateImage),
+      var_core_value_sigE9ED = var_core_value_sig429F.has(var_core_value_sigCA05.DeleteChart) || var_core_value_sig429F.has(var_core_value_sigCA05.DeleteImage) || var_core_value_sig429F.has(var_core_value_sigCA05.DeleteShape),
+      var_core_value_sigB577 = Mr(var_core_value_sig48BD),
+      var_core_value_sig9572 = var_core_value_sig48BD.commandIds["has"](var_core_value_sig1614.id) || var_core_value_sig48BD.commandIds["has"](var_core_value_sig1F44.id),
+      var_core_value_sigD873 = [...Ar].some(var_core_value_sig7524 => var_core_value_sig48BD.commandIds["has"](var_core_value_sig7524)),
+      var_core_value_sigA12B = var_core_value_sigB577.map(var_core_value_sig2AD8 => this._localeService["t"](var_core_value_sig2AD8));
+    var_core_value_sigA12B.push(...[...var_core_value_sig429F].map(var_core_value_sig2AD0 => this._localeService["t"](Dr[var_core_value_sig2AD0])));
+    let var_core_value_sigF230 = [...var_core_value_sig48BD.commandIds].flatMap(var_core_value_sig3EEE => {
+        if (var_core_value_sigF62A && var_core_value_sig3EEE === var_core_value_sig029F.id || var_core_value_sig9572 && var_core_value_sig3EEE === var_core_value_sigC56D.id || (var_core_value_sigE9ED || var_core_value_sigB577.length > 0) && var_core_value_sig3EEE === var_core_value_sig3A17.id || (var_core_value_sigD873 || var_core_value_sig8178) && kr.has(var_core_value_sig3EEE)) return [];
+        let var_core_value_sigBC46 = Or.get(var_core_value_sig3EEE);
+        return var_core_value_sigBC46 ? [this._localeService["t"](var_core_value_sigBC46)] : [];
+      }),
+      var_core_value_sig09B8 = [...new Set([...var_core_value_sigA12B, ...var_core_value_sigF230])];
+    return var_core_value_sig09B8.length > 0 ? var_core_value_sig09B8 : var_core_value_sig48BD.commandIds["has"](var_core_value_sigB99B.id) ? [this._localeService["t"]("docs-history-ui.action.editDocument")] : [];
+  }
+};
+W = H([V(0, var_core_value_sig237B(var_core_value_sig6A78)), V(1, var_core_value_sig237B(var_core_value_sigE347))], W);
+function jr(var_core_value_sig8EA0) {
+  let var_core_value_sigA6F6 = new Set();
+  return var_core_value_sig8EA0.mutations["forEach"](var_core_value_sig6F91 => {
+    if (!Nr(var_core_value_sig6F91.params)) return;
+    let {
+      historyAction: var_core_value_sigF9C7
+    } = var_core_value_sig6F91.params;
+    G(var_core_value_sigF9C7) && var_core_value_sigA6F6.add(var_core_value_sigF9C7);
+    let {
+      historyActions: var_core_value_sig8895
+    } = var_core_value_sig6F91.params;
+    Array.isArray(var_core_value_sig8895) && var_core_value_sig8895.forEach(var_core_value_sig3D7D => {
+      G(var_core_value_sig3D7D) && var_core_value_sigA6F6.add(var_core_value_sig3D7D);
+    });
+  }), var_core_value_sigA6F6;
+}
+function G(var_core_value_sigCDDA) {
+  return var_core_value_sigCDDA === var_core_value_sigCA05.DeleteChart || var_core_value_sigCDDA === var_core_value_sigCA05.DeleteDivider || var_core_value_sigCDDA === var_core_value_sigCA05.DeleteImage || var_core_value_sigCDDA === var_core_value_sigCA05.DeleteShape || var_core_value_sigCDDA === var_core_value_sigCA05.EditTableCell || var_core_value_sigCDDA === var_core_value_sigCA05.FormatParagraph || var_core_value_sigCDDA === var_core_value_sigCA05.InsertCustomRange || var_core_value_sigCDDA === var_core_value_sigCA05.UpdateImage || var_core_value_sigCDDA === var_core_value_sigCA05.UpdatePageLayout;
+}
+function Mr(var_core_value_sigE243) {
+  if (!var_core_value_sigE243.commandIds["has"](var_core_value_sig3A17.id)) return [];
+  let var_core_value_sig74A8 = var_core_value_sigE243.mutations["flatMap"](var_core_value_sigC80B => Nr(var_core_value_sigC80B.params) ? typeof var_core_value_sigC80B.params["chartId"] == "string" ? ["docs-history-ui.action.deleteChart"] : typeof var_core_value_sigC80B.params["shapeId"] == "string" ? ["docs-history-ui.action.deleteShape"] : typeof var_core_value_sigC80B.params["drawingId"] == "string" ? ["docs-history-ui.action.deleteImage"] : [] : []);
+  return [...new Set(var_core_value_sig74A8)];
+}
+function Nr(var_core_value_sig21B2) {
+  return typeof var_core_value_sig21B2 == "object" && !!var_core_value_sig21B2;
+}
+function K(var_core_value_sigDE08) {
+  "@babel/helpers - typeof";
+
+  return K = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig284F) {
+    return typeof var_core_value_sig284F;
+  } : function (var_core_value_sigE154) {
+    return var_core_value_sigE154 && typeof Symbol == "function" && var_core_value_sigE154.constructor === Symbol && var_core_value_sigE154 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigE154;
+  }, K(var_core_value_sigDE08);
+}
+function Pr(var_core_value_sigACCB, var_core_value_sig7F33) {
+  if (K(var_core_value_sigACCB) != "object" || !var_core_value_sigACCB) return var_core_value_sigACCB;
+  var var_core_value_sig0C53 = var_core_value_sigACCB[Symbol.toPrimitive];
+  if (var_core_value_sig0C53 !== undefined) {
+    var var_core_value_sigEA04 = var_core_value_sig0C53.call(var_core_value_sigACCB, var_core_value_sig7F33 || "default");
+    if (K(var_core_value_sigEA04) != "object") return var_core_value_sigEA04;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig7F33 === "string" ? String : Number)(var_core_value_sigACCB);
+}
+function Fr(var_core_value_sig7A62) {
+  var var_core_value_sig8109 = Pr(var_core_value_sig7A62, "string");
+  return K(var_core_value_sig8109) == "symbol" ? var_core_value_sig8109 : var_core_value_sig8109 + "";
+}
+function q(var_core_value_sig7565, var_core_value_sigD4FB, var_core_value_sig3E71) {
+  return (var_core_value_sigD4FB = Fr(var_core_value_sigD4FB)) in var_core_value_sig7565 ? Object.defineProperty(var_core_value_sig7565, var_core_value_sigD4FB, {
+    value: var_core_value_sig3E71,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig7565[var_core_value_sigD4FB] = var_core_value_sig3E71, var_core_value_sig7565;
+}
+let J = class extends var_core_value_sig00CB {
+  constructor(var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sig2259, var_core_value_sig9E2F, var_core_value_sigD082, var_core_value_sigDBB7) {
+    super(), this._diffService = var_core_value_sig4632, this._snapshotService = var_core_value_sig2259, this._resourceLoaderService = var_core_value_sig9E2F, this._univerInstanceService = var_core_value_sigD082, this._highlightService = var_core_value_sigDBB7, q(this, "type", var_core_value_sigC97C.UNIVER_DOC), q(this, "_changesGeneration", 0), q(this, "_loadGeneration", 0), q(this, "_loadQueue", Promise.resolve()), this.disposeWithMe(var_core_value_sig12F2.register(this));
+  }
+  loadRevision(var_core_value_sigD0A8, var_core_value_sigF4B9) {
+    let var_core_value_sig5CEE = ++this._loadGeneration,
+      var_core_value_sigE92A = this._loadQueue["catch"](() => undefined).then(async () => {
+        if (var_core_value_sig5CEE !== this._loadGeneration) return;
+        this._getDocument(var_core_value_sigD0A8) && this._univerInstanceService["disposeUnit"](var_core_value_sigD0A8);
+        let var_core_value_sig27E5 = await this._snapshotService["loadDoc"](var_core_value_sigD0A8, var_core_value_sigF4B9.endRevision);
+        if (var_core_value_sig27E5.setDisabled(true), var_core_value_sig5CEE !== this._loadGeneration) {
+          this._getDocument(var_core_value_sigD0A8) === var_core_value_sig27E5 && this._univerInstanceService["disposeUnit"](var_core_value_sigD0A8);
+          return;
+        }
+        this._univerInstanceService["focusUnit"](var_core_value_sigD0A8);
+      });
+    return this._loadQueue = var_core_value_sigE92A, var_core_value_sigE92A;
+  }
+  async loadChanges(var_core_value_sig362B, var_core_value_sig5CA5) {
+    let var_core_value_sigE90F = ++this._changesGeneration,
+      var_core_value_sigEFD4 = await this._diffService["compare"](var_core_value_sig362B, var_core_value_sig5CA5);
+    if (var_core_value_sigE90F !== this._changesGeneration) return;
+    let var_core_value_sig861B = this._getDocument(var_core_value_sig362B);
+    if (!var_core_value_sig861B) return;
+    let var_core_value_sig5237 = var_core_value_sigB601(this._resourceLoaderService["saveUnit"](var_core_value_sig362B) ?? var_core_value_sig861B.getSnapshot(), var_core_value_sigEFD4.changes, {
+      insert: this._highlightService["getStyle"]("insert"),
+      delete: this._highlightService["getStyle"]("delete"),
+      update: this._highlightService["getStyle"]("update")
+    });
+    var_core_value_sigE90F === this._changesGeneration && (this._univerInstanceService["disposeUnit"](var_core_value_sig362B), this._univerInstanceService["createUnit"](var_core_value_sigC97C.UNIVER_DOC, var_core_value_sig5237.snapshot).setDisabled(true), this._univerInstanceService["focusUnit"](var_core_value_sig362B));
+  }
+  close() {
+    ++this._changesGeneration, ++this._loadGeneration;
+  }
+  _getDocument(var_core_value_sigBB00) {
+    return this._univerInstanceService["getUnit"](var_core_value_sigBB00, var_core_value_sigC97C.UNIVER_DOC) ?? null;
+  }
+};
+J = H([V(0, var_core_value_sig237B(var_core_value_sig7C4A)), V(1, var_core_value_sig237B(var_core_value_sig27F9)), V(2, var_core_value_sig237B(var_core_value_sigB2CE)), V(3, var_core_value_sigDBB5), V(4, var_core_value_sigCFAC), V(5, var_core_value_sig237B(var_core_value_sigF7EF))], J);
+let Y = class extends var_core_value_sig393E {
+  constructor(var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F) {
+    let {
+      collaborationClientConfig: var_core_value_sigFDEA,
+      ...var_core_value_sig86D0
+    } = var_core_value_sig7E54;
+    super(var_core_value_sig86D0, var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F), this._injector = var_core_value_sig9A8D, var_core_value_sigC259.setConfig(var_core_value_sigF051, var_core_value_sigFDEA);
+  }
+  onStarting() {
+    super.onStarting(), var_core_value_sigE43E(this._injector, [[var_core_value_sigDDD7, {
+      useClass: var_core_value_sig03E1
+    }], [W], [J]]), this._injector["get"](W), this._injector["get"](J);
+  }
+};
+q(Y, "pluginName", "UNIVER_DOCS_HISTORY_VIEWER_PLUGIN"), q(Y, "packageName", Tr), q(Y, "version", Er), q(Y, "type", var_core_value_sigC97C.UNIVER_UNKNOWN), Y = H([var_core_value_sigCF89(var_core_value_sigAEFB, var_core_value_sigE799, var_core_value_sig5E86), V(1, var_core_value_sig237B(var_core_value_sigFEAB)), V(2, var_core_value_sig8721), V(3, var_core_value_sig08BA)], Y);
+let X = class extends var_core_value_sig00CB {
+  constructor(var_core_value_sig4CD2, var_core_value_sig48CA, var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF, var_core_value_sig8889, var_core_value_sig32F8, var_core_value_sig5B67) {
+    super(), this._configService = var_core_value_sig4CD2, this._restoreService = var_core_value_sig48CA, this._adapterRegistry = var_core_value_sig50AF, this._localeService = var_core_value_sigA942, this._themeService = var_core_value_sigA621, this._collaborationController = var_core_value_sigBBFF, this._dataLoaderService = var_core_value_sig8889, this._univerInstanceService = var_core_value_sig32F8, this._renderManagerService = var_core_value_sig5B67, q(this, "_historyUniver", null), q(this, "_opening", null), q(this, "_openGeneration", 0), q(this, "_sessionDisposables", new var_core_value_sig77EE()), q(this, "_container", null), q(this, "_ownsContainer", false), q(this, "_unitId", ""), q(this, "_location", undefined), q(this, "_suppressedHostUnitId", "");
+  }
+  open(var_core_value_sig1758) {
+    if (this._historyUniver) return Promise.resolve();
+    if (this._opening) return this._opening;
+    let var_core_value_sig4805 = ++this._openGeneration,
+      var_core_value_sigE67E = this._open(var_core_value_sig1758, var_core_value_sig4805).finally(() => {
+        this._opening === var_core_value_sigE67E && (this._opening = null);
+      });
+    return this._opening = var_core_value_sigE67E, var_core_value_sigE67E;
+  }
+  async _open(var_core_value_sig2902, var_core_value_sig9989) {
+    let var_core_value_sig698E = this._adapterRegistry["get"](var_core_value_sigC97C.UNIVER_DOC);
+    if (!var_core_value_sig698E) throw Error("[DocsHistoryLoaderService]: Docs history adapter is not registered.");
+    let var_core_value_sig2809 = var_core_value_sig698E.captureLocation(var_core_value_sig2902),
+      var_core_value_sig2DAB = await Promise.all([var_core_value_sig698E.canView(var_core_value_sig2902), var_core_value_sig698E.canRevert(var_core_value_sig2902)]).catch(var_core_value_sig8061 => {
+        if (var_core_value_sig9989 === this._openGeneration) throw var_core_value_sig8061;
+        return null;
+      });
+    if (!var_core_value_sig2DAB || var_core_value_sig9989 !== this._openGeneration) return;
+    let [var_core_value_sig877E, var_core_value_sig20C8] = var_core_value_sig2DAB;
+    if (!var_core_value_sig877E) throw Error("[DocsHistoryLoaderService]:\x20The\x20current\x20user\x20cannot\x20view\x20history\x20for\x20this\x20document.");
+    this._unitId = var_core_value_sig2902, this._location = var_core_value_sig2809;
+    let var_core_value_sigE9A7 = this._ensureContainer(),
+      var_core_value_sigBECE = this._localeService["getCurrentLocale"](),
+      var_core_value_sig1B22 = this._localeService["getLocales"](),
+      var_core_value_sig7F72 = new var_core_value_sig3863({
+        theme: this._themeService["getCurrentTheme"](),
+        darkMode: this._themeService["darkMode"],
+        locale: var_core_value_sigBECE,
+        locales: var_core_value_sig1B22 ? {
+          [var_core_value_sigBECE]: var_core_value_sig1B22
+        } : undefined,
+        direction: this._localeService["getDirection"](),
+        override: [[var_core_value_sig9F76, {
+          useClass: var_core_value_sig9EE0
+        }]]
+      });
+    this._historyUniver = var_core_value_sig7F72;
+    try {
+      this._suppressHostMenus(var_core_value_sig2902), var_core_value_sigE9A7.style["display"] = "block", this._syncViewerServices(var_core_value_sig7F72, var_core_value_sigE9A7), this._registerChildPlugins(var_core_value_sig7F72, var_core_value_sig20C8, var_core_value_sigE9A7), this._createPlaceholderDocument(var_core_value_sig7F72);
+    } catch (var_core_value_sig4D4C) {
+      throw var_core_value_sig9989 === this._openGeneration ? this.close() : (var_core_value_sigE9A7.style["display"] = "none", this._restoreHostMenus(), var_core_value_sig7F72.dispose()), var_core_value_sig4D4C;
+    }
+  }
+  close() {
+    ++this._openGeneration, this._opening = null, this._sessionDisposables["dispose"]();
+    let var_core_value_sig7B2A = this._historyUniver;
+    this._historyUniver = null, var_core_value_sig7B2A == null || var_core_value_sig7B2A.dispose();
+    let var_core_value_sig06CD = this._container;
+    var_core_value_sig06CD && (var_core_value_sig06CD.style["display"] = "none"), this._restoreHostMenus(), this._unitId = "", this._location = undefined;
+  }
+  _syncViewerServices(var_core_value_sigA5F1, var_core_value_sig97A2) {
+    let var_core_value_sig07E9 = var_core_value_sigA5F1.__getInjector(),
+      var_core_value_sig4F59 = var_core_value_sig07E9.get(var_core_value_sigE347),
+      var_core_value_sigF564 = var_core_value_sig07E9.get(var_core_value_sig200B);
+    this._sessionDisposables["add"](this._themeService["darkMode$"].subscribe(var_core_value_sigC9E0 => {
+      var_core_value_sigF564.setDarkMode(var_core_value_sigC9E0);
+    })), this._sessionDisposables["add"](this._themeService["currentTheme$"].subscribe(var_core_value_sig76BA => {
+      var_core_value_sigF564.setTheme(var_core_value_sig76BA);
+    })), this._sessionDisposables["add"](this._localeService["currentLocale$"].subscribe(var_core_value_sigFBFA => {
+      let var_core_value_sigF602 = this._localeService["getLocales"]();
+      var_core_value_sigF602 && var_core_value_sig4F59.load({
+        [var_core_value_sigFBFA]: var_core_value_sigF602
+      }), var_core_value_sig4F59.setLocale(var_core_value_sigFBFA);
+    })), this._sessionDisposables["add"](this._localeService["direction$"].subscribe(var_core_value_sig1BBD => {
+      var_core_value_sig4F59.setDirection(var_core_value_sig1BBD), var_core_value_sig97A2.dir = var_core_value_sig1BBD, var_core_value_sig97A2.style["direction"] = var_core_value_sig1BBD;
+    }));
+  }
+  async restore(var_core_value_sig8CFA) {
+    var var_core_value_sig2E11;
+    let var_core_value_sig5B69 = this._unitId,
+      var_core_value_sigB098 = this._location,
+      var_core_value_sigCE71 = this._collaborationController["getCollabEntity"](var_core_value_sig5B69);
+    if (!var_core_value_sigCE71) throw Error("[DocsHistoryLoaderService]: Collaboration is not ready for this document.");
+    let var_core_value_sig21D8 = new var_core_value_sig870F(),
+      var_core_value_sig2B65 = var_core_value_sig26EC(var_core_value_sigCE71.session["event$"].pipe(var_core_value_sigB683(var_core_value_sigF704 => var_core_value_sigF704.eventID === var_core_value_sig8CF5.CHANGESET_ACK), var_core_value_sigB683(var_core_value_sig2BCF => var_core_value_sig7D1B(var_core_value_sig2BCF, var_core_value_sig8CFA)), var_core_value_sigEEDB(var_core_value_sig21D8), var_core_value_sig36E7(10000)));
+    try {
+      if (!(await this._restoreService["restore"](var_core_value_sig5B69, var_core_value_sigC97C.UNIVER_DOC, var_core_value_sig8CFA))) throw Error("[DocsHistoryLoaderService]:\x20The\x20restore\x20command\x20was\x20not\x20accepted.");
+      await var_core_value_sig2B65;
+    } catch (var_core_value_sig0D69) {
+      throw var_core_value_sig21D8.next(), await var_core_value_sig2B65.catch(() => undefined), var_core_value_sig0D69;
+    } finally {
+      var_core_value_sig21D8.complete();
+    }
+    this.close(), this._univerInstanceService["disposeUnit"](var_core_value_sig5B69), await this._dataLoaderService["loadUnit"](var_core_value_sig5B69, var_core_value_sigC97C.UNIVER_DOC), await ((var_core_value_sig2E11 = this._adapterRegistry["get"](var_core_value_sigC97C.UNIVER_DOC)) == null ? undefined : var_core_value_sig2E11.restoreLocation(var_core_value_sig5B69, var_core_value_sigB098));
+  }
+  _ensureContainer() {
+    var var_core_value_sigD7EA;
+    if (this._container) return this._container;
+    let var_core_value_sigB33B = this._configService["getConfig"](B),
+      var_core_value_sig24B9 = (var_core_value_sigD7EA = this._configService["getConfig"](var_core_value_sigCB82)) == null ? undefined : var_core_value_sigD7EA.container,
+      var_core_value_sigE627 = (var_core_value_sigB33B == null ? undefined : var_core_value_sigB33B.univerContainerId) ?? var_core_value_sig24B9,
+      var_core_value_sigEF3E = typeof var_core_value_sigE627 == "string" ? document.getElementById(var_core_value_sigE627) : var_core_value_sigE627;
+    if (!var_core_value_sigEF3E) throw Error("[DocsHistoryLoaderService]: Configure a valid Univer container before opening history.");
+    let var_core_value_sig273D = document.createElement("div");
+    return var_core_value_sig273D.style["position"] = "absolute", var_core_value_sig273D.style["inset"] = "0", var_core_value_sig273D.style["zIndex"] = "49", var_core_value_sig273D.style["display"] = "none", var_core_value_sigEF3E.appendChild(var_core_value_sig273D), this._container = var_core_value_sig273D, this._ownsContainer = true, var_core_value_sig273D;
+  }
+  _registerChildPlugins(var_core_value_sig9A0D, var_core_value_sigA319, var_core_value_sig2D58) {
+    let var_core_value_sig223F = this._configService["getConfig"](var_core_value_sig8B71),
+      var_core_value_sigD749 = this._configService["getConfig"](B),
+      var_core_value_sigCFFA = [[var_core_value_sigAEFB, {
+        license: var_core_value_sig223F == null ? undefined : var_core_value_sig223F.ls
+      }], [var_core_value_sig050A], [var_core_value_sigCF4E, {
+        container: var_core_value_sig2D58,
+        header: true,
+        toolbar: false,
+        footer: true,
+        contextMenu: false
+      }], [var_core_value_sig8B32], [var_core_value_sig585D], [var_core_value_sigE722], [var_core_value_sig6884, {
+        hasScroll: false
+      }], [var_core_value_sig5E86], [var_core_value_sigD948], [var_core_value_sigED71], [var_core_value_sig7BE0], [var_core_value_sig7D40], [var_core_value_sig3141], [var_core_value_sig2EAD], [var_core_value_sig3F79], [var_core_value_sig880E], [var_core_value_sig37A8], [var_core_value_sigA90D], [var_core_value_sig548A], [var_core_value_sigE026], [var_core_value_sigBDF5], [var_core_value_sigACC6], [var_core_value_sigB680], [var_core_value_sig1F64], [var_core_value_sigBDE4], [var_core_value_sigDC86], [var_core_value_sig7827], [var_core_value_sig652C], [var_core_value_sig85C3], [var_core_value_sig6201], [var_core_value_sig4545], [var_core_value_sigDCF5], [var_core_value_sig3C92], [var_core_value_sigB16B], [var_core_value_sig443C], [var_core_value_sig780B, {
+        historyServerUrl: var_core_value_sigD749 == null ? undefined : var_core_value_sigD749.historyServerUrl
+      }], [var_core_value_sigE799]],
+      var_core_value_sig58C1 = new Set();
+    [...var_core_value_sigCFFA, ...((var_core_value_sigD749 == null ? undefined : var_core_value_sigD749.viewerPlugins) ?? [])].forEach(([var_core_value_sig480E, var_core_value_sig26DB]) => {
+      if (var_core_value_sig58C1.has(var_core_value_sig480E.pluginName)) throw Error("[DocsHistoryLoaderService]: Plugin " + var_core_value_sig480E.pluginName + " has already been registered.");
+      var_core_value_sig58C1.add(var_core_value_sig480E.pluginName), var_core_value_sig9A0D.registerPlugin(var_core_value_sig480E, var_core_value_sig26DB);
+    }), var_core_value_sig9A0D.registerPlugin(Y, {
+      viewerMode: true,
+      descriptor: {
+        unitId: this._unitId,
+        type: var_core_value_sigC97C.UNIVER_DOC
+      },
+      canRestore: var_core_value_sigA319,
+      onClose: () => this.close(),
+      onRestore: var_core_value_sigF0F9 => this.restore(var_core_value_sigF0F9),
+      collaborationClientConfig: this._configService["getConfig"](var_core_value_sigF051)
+    });
+  }
+  _createPlaceholderDocument(var_core_value_sig5090) {
+    var_core_value_sig5090.createUnit(var_core_value_sigC97C.UNIVER_DOC, {
+      id: this._unitId,
+      body: {
+        dataStream: "\x0d\x0a",
+        paragraphs: [{
+          startIndex: 0,
+          paragraphId: var_core_value_sigC4B1()
+        }],
+        sectionBreaks: [{
+          startIndex: 1,
+          sectionId: var_core_value_sigC4B1()
+        }]
+      },
+      documentStyle: {}
+    }).setDisabled(true);
+  }
+  _suppressHostMenus(var_core_value_sigC368) {
+    let var_core_value_sigAD56 = this._renderManagerService["getRenderUnitById"](var_core_value_sigC368);
+    (var_core_value_sigAD56 == null ? undefined : var_core_value_sigAD56.type) === var_core_value_sigC97C.UNIVER_DOC && (this._suppressedHostUnitId = var_core_value_sigC368, var_core_value_sigAD56.with(var_core_value_sigC6E5).setSuppressed(true), var_core_value_sigAD56.with(var_core_value_sigCEFB).hideParagraphMenu(true));
+  }
+  _restoreHostMenus() {
+    let var_core_value_sigDB4A = this._suppressedHostUnitId;
+    if (this._suppressedHostUnitId = "", !var_core_value_sigDB4A) return;
+    let var_core_value_sig6418 = this._renderManagerService["getRenderUnitById"](var_core_value_sigDB4A);
+    (var_core_value_sig6418 == null ? undefined : var_core_value_sig6418.type) === var_core_value_sigC97C.UNIVER_DOC && var_core_value_sig6418.with(var_core_value_sigC6E5).setSuppressed(false);
+  }
+  dispose() {
+    if (this.close(), this._ownsContainer) {
+      var var_core_value_sig1896;
+      (var_core_value_sig1896 = this._container) == null || var_core_value_sig1896.remove();
+    }
+    this._container = null, this._ownsContainer = false, super.dispose();
+  }
+};
+X = H([V(0, var_core_value_sig8721), V(1, var_core_value_sig237B(var_core_value_sigC9ED)), V(2, var_core_value_sig237B(var_core_value_sigB57B)), V(3, var_core_value_sig237B(var_core_value_sigE347)), V(4, var_core_value_sig237B(var_core_value_sig200B)), V(5, var_core_value_sig237B(var_core_value_sig0B45)), V(6, var_core_value_sig237B(var_core_value_sig36F8)), V(7, var_core_value_sigCFAC), V(8, var_core_value_sig062A)], X);
+const Z = {
+    id: "docs-history-ui.operation.open",
+    type: var_core_value_sig826B.OPERATION,
+    handler: var_core_value_sig01B3 => {
+      let var_core_value_sig7442 = var_core_value_sig01B3.get(var_core_value_sigCFAC).getCurrentUnitOfType(var_core_value_sigC97C.UNIVER_DOC);
+      return var_core_value_sig7442 ? (var_core_value_sig01B3.get(X).open(var_core_value_sig7442.getUnitId()).catch(var_core_value_sig0285 => {
+        var_core_value_sig01B3.get(var_core_value_sig08BA).error("[OpenDocsHistoryOperation]: Failed to open document history.", var_core_value_sig0285);
+      }), true) : false;
+    }
+  },
+  Ir = {
+    [var_core_value_sig6D47.OTHERS]: {
+      [Z.id]: {
+        order: 100,
+        gridLayout: {
+          row: 1,
+          column: 3,
+          rowSpan: 2,
+          columnSpan: 2,
+          showLabel: true
+        },
+        menuItemFactory: Lr
+      }
+    }
+  };
+function Lr(var_core_value_sigDF87) {
+  return {
+    id: Z.id,
+    type: var_core_value_sigE94C.BUTTON,
+    icon: "DocsHistoryIcon",
+    title: "docs-history-ui.menu.history",
+    tooltip: "docs-history-ui.menu.history",
+    hidden$: var_core_value_sig6CAD(var_core_value_sigDF87, var_core_value_sigC97C.UNIVER_DOC)
+  };
+}
+let Q = class extends var_core_value_sig00CB {
+  constructor(var_core_value_sig777D, var_core_value_sig3F4C) {
+    super(), this.disposeWithMe(var_core_value_sig777D.registerCommand(Z)), var_core_value_sig3F4C.mergeMenu(Ir);
+  }
+};
+Q = H([V(0, var_core_value_sigB008), V(1, var_core_value_sigF639)], Q);
+let $ = class extends var_core_value_sig3C5B {
+  constructor(var_core_value_sigD65A = wr, var_core_value_sig5A13, var_core_value_sigF593) {
+    super(), this._config = var_core_value_sigD65A, this._injector = var_core_value_sig5A13, this._configService = var_core_value_sigF593;
+    let {
+      ...var_core_value_sig3607
+    } = var_core_value_sig1BD9({}, wr, this._config);
+    this._configService["setConfig"](B, var_core_value_sig3607);
+  }
+  onStarting() {
+    var_core_value_sigE43E(this._injector, [[U], [X], [Q]]), this._injector["get"](U), this._injector["get"](Q);
+  }
+};
+q($, "pluginName", "UNIVER_DOCS_HISTORY_UI_PLUGIN"), q($, "packageName", Tr), q($, "version", Er), q($, "type", var_core_value_sigC97C.UNIVER_DOC), $ = H([var_core_value_sigCF89(var_core_value_sigAEFB, var_core_value_sigBB57, var_core_value_sigE799, var_core_value_sig5E86), V(1, var_core_value_sig237B(var_core_value_sigFEAB)), V(2, var_core_value_sig8721)], $);
+export { B as DOCS_HISTORY_UI_PLUGIN_CONFIG_KEY, $ as UniverDocsHistoryUIPlugin };

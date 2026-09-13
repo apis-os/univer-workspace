@@ -1,1 +1,35 @@
-import{FFormula as v7,FFormula as v8}from"@univerjs/engine-formula/facade";import{FormulaReferenceType as v9,RemoveHostExternalReferenceCommand as v10,UpsertHostExternalReferenceCommand as v11,buildFormulaReference as v12}from"@univerjs-pro/engine-formula";import{FEnum as v13}from"@univerjs/core/facade";import{UniverInstanceType as v14}from"@univerjs/core";var c=class extends v13{get FormulaReferenceType(){return v9;}};v13.extend(c);var l=class extends v8{buildReference(v1){let{hostUnitId:v2,unit:v3,target:v4}=v1;if(!v2||!v3.unitId)throw Error("Formula reference authoring requires stable Host and Source Unit IDs.");if(v3.unitId!==v2&&!this._commandService["syncExecuteCommand"](v11.id,{unitId:v2,qualifier:v3.formulaQualifier,sourceUnitId:v3.unitId,sourceUnitType:v4.kind===v9.SHEET_RANGE?v14.UNIVER_SHEET:v14.UNIVER_BASE}))throw Error("Failed\x20to\x20bind\x20external\x20formula\x20reference\x20\x22"+v3.formulaQualifier+"\x22.");return v12(v1);}upsertExternalReference(v5){return this._commandService["syncExecuteCommand"](v11.id,v5);}removeExternalReference(v6){return this._commandService["syncExecuteCommand"](v10.id,v6);}};v8.extend(l);export{v7 as FFormula};
+import { FFormula as var_core_value_sig27E5, FFormula as var_core_value_sig8061 } from "@univerjs/engine-formula/facade";
+import { FormulaReferenceType as var_core_value_sig4D4C, RemoveHostExternalReferenceCommand as var_core_value_sigC9E0, UpsertHostExternalReferenceCommand as var_core_value_sig76BA, buildFormulaReference as var_core_value_sigFBFA } from "@univerjs-pro/engine-formula";
+import { FEnum as var_core_value_sigF602 } from "@univerjs/core/facade";
+import { UniverInstanceType as var_core_value_sig1BBD } from "@univerjs/core";
+var c = class extends var_core_value_sigF602 {
+  get FormulaReferenceType() {
+    return var_core_value_sig4D4C;
+  }
+};
+var_core_value_sigF602.extend(c);
+var l = class extends var_core_value_sig8061 {
+  buildReference(var_core_value_sig7524) {
+    let {
+      hostUnitId: var_core_value_sig2AD8,
+      unit: var_core_value_sig2AD0,
+      target: var_core_value_sig3EEE
+    } = var_core_value_sig7524;
+    if (!var_core_value_sig2AD8 || !var_core_value_sig2AD0.unitId) throw Error("Formula reference authoring requires stable Host and Source Unit IDs.");
+    if (var_core_value_sig2AD0.unitId !== var_core_value_sig2AD8 && !this._commandService["syncExecuteCommand"](var_core_value_sig76BA.id, {
+      unitId: var_core_value_sig2AD8,
+      qualifier: var_core_value_sig2AD0.formulaQualifier,
+      sourceUnitId: var_core_value_sig2AD0.unitId,
+      sourceUnitType: var_core_value_sig3EEE.kind === var_core_value_sig4D4C.SHEET_RANGE ? var_core_value_sig1BBD.UNIVER_SHEET : var_core_value_sig1BBD.UNIVER_BASE
+    })) throw Error("Failed\x20to\x20bind\x20external\x20formula\x20reference\x20\x22" + var_core_value_sig2AD0.formulaQualifier + "\x22.");
+    return var_core_value_sigFBFA(var_core_value_sig7524);
+  }
+  upsertExternalReference(var_core_value_sigBC46) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig76BA.id, var_core_value_sigBC46);
+  }
+  removeExternalReference(var_core_value_sig3D7D) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigC9E0.id, var_core_value_sig3D7D);
+  }
+};
+var_core_value_sig8061.extend(l);
+export { var_core_value_sig27E5 as FFormula };

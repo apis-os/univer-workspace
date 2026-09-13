@@ -3,10 +3,16 @@ const e = {
     dataSource: {
       inlineMode: "Nội tuyến",
       referencedMode: "Tham\x20chiếu",
-      sourceType: "Loại\x20nguồn",
+      sourceType: "Loại\x20nguồn"
     },
-    editor: { defaultColor: "Màu mặc định", fontSize: "Cỡ chữ" },
-    setup: { stack: "Chồng", percentStacked: "Phần trăm chồng" },
+    editor: {
+      defaultColor: "Màu mặc định",
+      fontSize: "Cỡ chữ"
+    },
+    setup: {
+      stack: "Chồng",
+      percentStacked: "Phần trăm chồng"
+    },
     chartTypes: {
       line: "Biểu đồ đường",
       column: "Biểu đồ cột",
@@ -39,7 +45,7 @@ const e = {
       treemap: "Biểu đồ cây",
       sunburst: "Biểu\x20đồ\x20phân\x20cấp\x20dạng\x20vòng",
       gauge: "Biểu đồ đồng hồ",
-      chord: "Biểu đồ dây cung",
+      chord: "Biểu đồ dây cung"
     },
     section: {
       waterfall: "Biểu đồ thác nước",
@@ -58,7 +64,7 @@ const e = {
       treemap: "Biểu\x20đồ\x20dạng\x20cây",
       sunburst: "Biểu đồ tia nắng",
       gauge: "biểu\x20đồ\x20đo",
-      chord: "Bảng hợp âm",
+      chord: "Bảng hợp âm"
     },
     presentation: {
       backgroundColor: "Màu nền",
@@ -73,7 +79,7 @@ const e = {
       wrap: "Truyền thuyết quấn",
       selectMode: "Chế\x20độ\x20lựa\x20chọn",
       visualMapType: "Bản\x20đồ\x20trực\x20quan",
-      align: "Căn\x20chỉnh",
+      align: "Căn\x20chỉnh"
     },
     numberFormat: {
       source: "Định dạng nguồn",
@@ -85,21 +91,16 @@ const e = {
       accountingType: "Kế\x20toán",
       thousandsType: "Phần nghìn",
       formatTypes: "Các loại định dạng",
-      generalDesc:
-        "Định\x20dạng\x20chung\x20không\x20áp\x20dụng\x20định\x20dạng\x20số\x20cụ\x20thể\x20nào.",
-      accountingDesc:
-        "Định dạng kế toán căn chỉnh ký hiệu tiền tệ và dấu thập phân theo cột.",
-      currencyDesc:
-        "Định dạng tiền tệ dùng cho các giá trị tài chính chung, trong khi định dạng kế toán căn chỉnh dấu thập phân theo cột giá trị.",
-      dateDesc:
-        "Định dạng ngày hiển thị số sê-ri ngày giờ dưới dạng giá trị ngày tháng.",
-      thousandsDesc:
-        "Định\x20dạng\x20phần\x20nghìn\x20dùng\x20cho\x20các\x20số\x20thông\x20thường;\x20định\x20dạng\x20tiền\x20tệ\x20và\x20kế\x20toán\x20cung\x20cấp\x20các\x20tùy\x20chọn\x20chuyên\x20biệt\x20cho\x20giá\x20trị\x20tài\x20chính.",
+      generalDesc: "Định\x20dạng\x20chung\x20không\x20áp\x20dụng\x20định\x20dạng\x20số\x20cụ\x20thể\x20nào.",
+      accountingDesc: "Định dạng kế toán căn chỉnh ký hiệu tiền tệ và dấu thập phân theo cột.",
+      currencyDesc: "Định dạng tiền tệ dùng cho các giá trị tài chính chung, trong khi định dạng kế toán căn chỉnh dấu thập phân theo cột giá trị.",
+      dateDesc: "Định dạng ngày hiển thị số sê-ri ngày giờ dưới dạng giá trị ngày tháng.",
+      thousandsDesc: "Định\x20dạng\x20phần\x20nghìn\x20dùng\x20cho\x20các\x20số\x20thông\x20thường;\x20định\x20dạng\x20tiền\x20tệ\x20và\x20kế\x20toán\x20cung\x20cấp\x20các\x20tùy\x20chọn\x20chuyên\x20biệt\x20cho\x20giá\x20trị\x20tài\x20chính.",
       decimalPlaces: "Số chữ số thập phân",
       currencyTypes: "Loại tiền tệ",
       negativeNumberTypes: "Kiểu số âm",
       dateTypes: "Kiểu ngày tháng",
-      setFormat: "Thiết lập định dạng nhãn",
+      setFormat: "Thiết lập định dạng nhãn"
     },
     series: {
       rightAxis: "Trục\x20phải",
@@ -122,7 +123,7 @@ const e = {
       emptyRect: "Hình chữ nhật trống",
       emptyRoundRect: "Hình chữ nhật bo góc trống",
       emptyPin: "Hình ghim trống",
-      emptyArrow: "Mũi\x20tên\x20trống",
+      emptyArrow: "Mũi\x20tên\x20trống"
     },
     lineAndArea: {
       lineStyle: "Kiểu đường",
@@ -132,7 +133,7 @@ const e = {
       invalidValues: "Giá trị không hợp lệ",
       breakLine: "Đường\x20ngắt",
       connect: "Kết nối các điểm dữ liệu",
-      zero: "Coi\x20như\x20số\x20không",
+      zero: "Coi\x20như\x20số\x20không"
     },
     axis: {
       useDateAxis: "Xem nhãn là ngày",
@@ -148,13 +149,13 @@ const e = {
       tickLength: "Độ dài đánh dấu",
       tickWidth: "Đánh dấu chiều rộng",
       tickColor: "Đánh dấu màu",
-      tickPosition: "Đánh dấu vị trí",
+      tickPosition: "Đánh dấu vị trí"
     },
     indicator: {
       lineColor: "Màu đường chỉ báo",
       lineType: "Loại đường chỉ báo",
       labelBackground: "Nền nhãn",
-      labelText: "Màu văn bản nhãn",
+      labelText: "Màu văn bản nhãn"
     },
     trendline: {
       add: "Thêm đường xu hướng",
@@ -171,21 +172,23 @@ const e = {
       order: "Đặt hàng",
       period: "Thời\x20kỳ",
       formulaColor: "Màu công thức",
-      r2Color: "màu\x20R²",
+      r2Color: "màu\x20R²"
     },
-    pareto: { includeZeroValues: "Bao gồm các giá trị bằng 0" },
+    pareto: {
+      includeZeroValues: "Bao gồm các giá trị bằng 0"
+    },
     plotArea: {
       label: "Vùng vẽ",
       manual: "Thủ\x20công",
       left: "Bên trái (%)",
       top: "Phía trên (%)",
       width: "Chiều rộng (%)",
-      height: "Chiều cao (%)",
+      height: "Chiều cao (%)"
     },
     bar: {
       layout: "Khoảng\x20cách\x20thanh",
       gapWidth: "Độ rộng khoảng cách (%)",
-      overlap: "Độ\x20chồng\x20lấp\x20chuỗi\x20(%)",
+      overlap: "Độ\x20chồng\x20lấp\x20chuỗi\x20(%)"
     },
     pie: {
       mode: "Hình\x20dạng\x20biểu\x20đồ",
@@ -218,18 +221,21 @@ const e = {
       paddingAngle: "Khoảng cách lát cắt",
       halfPie: "Nửa hình tròn",
       rosePie: "Bánh hoa hồng",
-      labelLine: "Dòng nhãn",
+      labelLine: "Dòng nhãn"
     },
     radar: {
       shape: "Hình\x20dạng\x20radar",
       polygon: "Đa giác",
-      fill: "Diện tích lấp đầy",
+      fill: "Diện tích lấp đầy"
     },
     funnel: {
       gap: "Khoảng\x20cách\x20vật\x20phẩm",
-      absoluteValues: "Sử dụng giá trị tuyệt đối",
+      absoluteValues: "Sử dụng giá trị tuyệt đối"
     },
-    heatmap: { unit: "Đơn\x20vị\x20giá\x20trị", labels: "Nhãn di động" },
+    heatmap: {
+      unit: "Đơn\x20vị\x20giá\x20trị",
+      labels: "Nhãn di động"
+    },
     relation: {
       nodes: "Nút",
       interaction: "Tương\x20tác",
@@ -240,7 +246,7 @@ const e = {
       valueSize: "Kích\x20thước\x20nút\x20theo\x20giá\x20trị",
       rotateLabels: "Xoay\x20nhãn",
       gravity: "Trọng lực",
-      repulsion: "Lực\x20đẩy",
+      repulsion: "Lực\x20đẩy"
     },
     wordCloud: {
       maskImage: "ID hình ảnh mặt nạ",
@@ -251,7 +257,7 @@ const e = {
       heart: "trái tim",
       "triangle-forward": "Tam giác tiến",
       pentagon: "Lầu Năm Góc",
-      star: "Ngôi sao",
+      star: "Ngôi sao"
     },
     waterfall: {
       styleTarget: "Đối tượng kiểu",
@@ -261,7 +267,7 @@ const e = {
       arrangement: "thác nước",
       subtotal: "Tổng phụ",
       includeSubtotal: "Sử dụng tổng phụ",
-      connector: "Đường kết nối",
+      connector: "Đường kết nối"
     },
     candlestick: {
       candle: "Nến",
@@ -282,9 +288,8 @@ const e = {
       wickOpacity: "Độ\x20mờ\x20của\x20bấc",
       candleWidth: "Chiều\x20rộng\x20nến",
       hollow: "Nến\x20rỗng",
-      columnsError:
-        "Dữ liệu biểu đồ nến cần các cột Danh mục, Mở cửa, Cao nhất, Thấp nhất và Đóng cửa.",
-      series: "Chuỗi OHLC",
+      columnsError: "Dữ liệu biểu đồ nến cần các cột Danh mục, Mở cửa, Cao nhất, Thấp nhất và Đóng cửa.",
+      series: "Chuỗi OHLC"
     },
     histogram: {
       binGap: "Khoảng cách thùng",
@@ -295,7 +300,7 @@ const e = {
       binWidth: "Chiều rộng thùng",
       underflow: "Ngưỡng dòng chảy thấp",
       overflow: "Ngưỡng tràn",
-      frequency: "Tần\x20suất",
+      frequency: "Tần\x20suất"
     },
     treemap: {
       parentLabelLayout: "Bố cục nhãn gốc",
@@ -303,8 +308,7 @@ const e = {
       overlapping: "Chồng\x20chéo",
       leafLabel: "Nhãn lá",
       hierarchy: "Trường phân cấp",
-      diagnostic:
-        "Biểu đồ cây cần ít nhất một trường phân cấp và một trường giá trị số.",
+      diagnostic: "Biểu đồ cây cần ít nhất một trường phân cấp và một trường giá trị số."
     },
     sunburst: {
       hierarchy: "Hệ thống phân cấp",
@@ -314,8 +318,7 @@ const e = {
       removeHierarchy: "Xóa trường phân cấp",
       centerLabel: "Tổng ở giữa",
       labelFormat: "Kiểu nhãn",
-      diagnostic:
-        "Biểu đồ sunburst cần ít nhất một trường phân cấp và một trường giá trị số.",
+      diagnostic: "Biểu đồ sunburst cần ít nhất một trường phân cấp và một trường giá trị số."
     },
     gauge: {
       scale: "quy mô",
@@ -345,10 +348,8 @@ const e = {
       axisLabelNumberFormat: "Định dạng số của nhãn trục",
       detailNumberFormat: "Định dạng số chi tiết",
       emptyDiagnostic: "Biểu đồ đồng hồ cần ít nhất một giá trị số hữu hạn.",
-      mappingDiagnostic:
-        "Biểu\x20đồ\x20đồng\x20hồ\x20cần\x20một\x20trường\x20nhãn\x20và\x20đúng\x20một\x20trường\x20giá\x20trị.",
-      configDiagnostic:
-        "Cấu hình biểu đồ đồng hồ không hợp lệ. Hãy kiểm tra thang đo, phạm vi, tỷ lệ và kích thước.",
+      mappingDiagnostic: "Biểu\x20đồ\x20đồng\x20hồ\x20cần\x20một\x20trường\x20nhãn\x20và\x20đúng\x20một\x20trường\x20giá\x20trị.",
+      configDiagnostic: "Cấu hình biểu đồ đồng hồ không hợp lệ. Hãy kiểm tra thang đo, phạm vi, tỷ lệ và kích thước."
     },
     chord: {
       source: "Nguồn",
@@ -370,13 +371,10 @@ const e = {
       gradient: "Chuyển sắc",
       adjacency: "Nút liền kề",
       self: "Nút\x20hiện\x20tại",
-      emptyDiagnostic:
-        "Biểu đồ dây cung cần ít nhất một quan hệ có trọng số dương giữa hai nút khác nhau.",
-      mappingDiagnostic:
-        "Biểu đồ dây cung cần các trường Nguồn và Đích khác nhau cùng một trường Giá trị khác biệt không bắt buộc.",
-      configDiagnostic:
-        "Cấu hình biểu đồ dây cung không hợp lệ. Hãy kiểm tra góc, bán kính, độ mờ và kích thước.",
-      associatedValue: "Giá trị liên kết",
+      emptyDiagnostic: "Biểu đồ dây cung cần ít nhất một quan hệ có trọng số dương giữa hai nút khác nhau.",
+      mappingDiagnostic: "Biểu đồ dây cung cần các trường Nguồn và Đích khác nhau cùng một trường Giá trị khác biệt không bắt buộc.",
+      configDiagnostic: "Cấu hình biểu đồ dây cung không hợp lệ. Hãy kiểm tra góc, bán kính, độ mờ và kích thước.",
+      associatedValue: "Giá trị liên kết"
     },
     common: {
       category: "Danh mục",
@@ -427,16 +425,27 @@ const e = {
         right: "Phải",
         bottom: "Dưới cùng",
         left: "Trái",
-        hide: "Ẩn",
+        hide: "Ẩn"
       },
-      axisAlign: { start: "Bắt\x20đầu", center: "Giữa", end: "Kết thúc" },
-      textAlign: { left: "Trái", center: "Giữa", right: "Phải" },
+      axisAlign: {
+        start: "Bắt\x20đầu",
+        center: "Giữa",
+        end: "Kết thúc"
+      },
+      textAlign: {
+        left: "Trái",
+        center: "Giữa",
+        right: "Phải"
+      },
       legendSelectMode: {
         single: "Chọn một",
         multiple: "Chọn\x20nhiều",
-        disabled: "Đã\x20tắt",
+        disabled: "Đã\x20tắt"
       },
-      visualMapType: { continuous: "Liên tục", piecewise: "Phân\x20đoạn" },
+      visualMapType: {
+        continuous: "Liên tục",
+        piecewise: "Phân\x20đoạn"
+      },
       default: "Mặc\x20định",
       reset: "Đặt lại",
       color: "Màu sắc",
@@ -482,13 +491,12 @@ const e = {
       cancel: "Hủy",
       insert: "Chèn",
       apply: "Áp dụng",
-      duplicate: "Nhân bản",
+      duplicate: "Nhân bản"
     },
     inlineTable: {
-      pasteHint:
-        "Dán bảng từ Trang tính, Excel hoặc trang web để thay thế dữ liệu nội tuyến.",
+      pasteHint: "Dán bảng từ Trang tính, Excel hoặc trang web để thay thế dữ liệu nội tuyến.",
       addRow: "Thêm hàng",
-      addColumn: "Thêm cột",
+      addColumn: "Thêm cột"
     },
     floatMenu: {
       menuTitle: {
@@ -497,7 +505,7 @@ const e = {
         gridline: "Đường lưới",
         tick: "Vạch chia",
         mark: "Dấu",
-        dataLabel: "Nhãn dữ liệu",
+        dataLabel: "Nhãn dữ liệu"
       },
       field: {
         position: "Vị trí",
@@ -506,11 +514,17 @@ const e = {
         map: "Bản đồ",
         rotate: "Xoay",
         labelText: "Văn bản nhãn",
-        titleText: "Văn\x20bản\x20tiêu\x20đề",
+        titleText: "Văn\x20bản\x20tiêu\x20đề"
       },
-      action: { more: "Thêm" },
-      control: { labels: "Nhãn", line: "Đường", reverse: "Đảo ngược" },
-    },
-  },
+      action: {
+        more: "Thêm"
+      },
+      control: {
+        labels: "Nhãn",
+        line: "Đường",
+        reverse: "Đảo ngược"
+      }
+    }
+  }
 };
 export { e as default };

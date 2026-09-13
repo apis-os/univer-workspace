@@ -1,13 +1,74 @@
-import{AddBoardElementMutation,BOARD_MIND_MAP_CONNECTOR_ROLE,BOARD_MIND_MAP_CONTAINER_ROLE,BOARD_MIND_MAP_DECORATION_ROLE,BOARD_MIND_MAP_MODE_ID,BOARD_MIND_MAP_NODE_ROLE,BoardElementType,IBoardElementService,RemoveBoardElementMutation,SetBoardElementOrderMutation,UniverBoardsPlugin,createAddBoardElementsMutationInfos,createBoardConnectorElement,createBoardContainerElement,createBoardTextBoxShapeElement,createBoardTextBoxShapeTextData,mergeBoardRichTextDocument,offsetBoardConnectorGeometry,resolveBoardElementLocalTransformForParent,resolveBoardElementWorldBounds,resolveBoardElementWorldTransform,shapeTextToBoardDocumentTextStyle}from"@univerjs-pro/boards";
-import{BooleanNumber,CommandType,DependentOn,Disposable,HorizontalAlign,ICommandService,IConfigService,IUndoRedoService,IUniverInstanceService,Inject,Injector,Plugin,Tools,UniverInstanceType,VerticalAlign,WrapStrategy,createIdentifier,createInternalEditorID,generateRandomId,merge,sequenceExecute}from"@univerjs/core";
-import{ShapeFillEnum,ShapeLineTypeEnum,ShapeModel,ShapeTypeEnum}from"@univerjs-pro/engine-shape";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { AddBoardElementMutation, BOARD_MIND_MAP_CONNECTOR_ROLE, BOARD_MIND_MAP_CONTAINER_ROLE, BOARD_MIND_MAP_DECORATION_ROLE, BOARD_MIND_MAP_MODE_ID, BOARD_MIND_MAP_NODE_ROLE, BoardElementType, IBoardElementService, RemoveBoardElementMutation, SetBoardElementOrderMutation, UniverBoardsPlugin, createAddBoardElementsMutationInfos, createBoardConnectorElement, createBoardContainerElement, createBoardTextBoxShapeElement, createBoardTextBoxShapeTextData, mergeBoardRichTextDocument, offsetBoardConnectorGeometry, resolveBoardElementLocalTransformForParent, resolveBoardElementWorldBounds, resolveBoardElementWorldTransform, shapeTextToBoardDocumentTextStyle } from "@univerjs-pro/boards";
+import { BooleanNumber, CommandType, DependentOn, Disposable, HorizontalAlign, ICommandService, IConfigService, IUndoRedoService, IUniverInstanceService, Inject, Injector, Plugin, Tools, UniverInstanceType, VerticalAlign, WrapStrategy, createIdentifier, createInternalEditorID, generateRandomId, merge, sequenceExecute } from "@univerjs/core";
+import { ShapeFillEnum, ShapeLineTypeEnum, ShapeModel, ShapeTypeEnum } from "@univerjs-pro/engine-shape";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { Bt } from "./boards-mind-imind-map-clipboard.js";
 import { G, Pt } from "./boards-mind-mind-map-element.js";
 import { kr } from "./boards-mind-reflow-mind-map.js";
 import { Qr } from "./boards-mind-export-mind-map-opml-operation.js";
-function It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461199){"@babel/helpers - typeof";return It=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229){return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229;}:function(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231){return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231&&typeof Symbol=="function"&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231.constructor===Symbol&&var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231!==Symbol.prototype?"symbol":typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231;},It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461199);}function Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461202){if(It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201)!="object"||!var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201)return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201;var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461203=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201[Symbol.toPrimitive];if(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461203!==undefined){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461203.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461202||"default");if(It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204)!="object")return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204;throw TypeError("@@toPrimitive must return a primitive value.");}return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461202==="string"?String:Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201);}function Rt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461209){var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210=Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461209,"string");return It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210)=="symbol"?var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210+"";}function zt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461215){return(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214=Rt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214))in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213?Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214,{value:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461215,enumerable:true,configurable:true,writable:true}):var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214]=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461215,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213;}var Vt=class extends Disposable{constructor(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233){super(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233),zt(this,"_payload",null);}setPayload(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235){this._payload=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235;}getPayload(){return this._payload;}dispose(){this._payload=null,super.dispose();}};const ti={};let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462371=class extends Plugin{constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46617=ti,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46618,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46619,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46620){super(),this._config=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46617,this._injector=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46618,this._commandService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46619,this._configService=var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46620;let{...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46621}=merge({},ti,this._config);this._configService["setConfig"]("boards-mind.config",var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46621);}onStarting(){this._injector["add"]([Bt,{useClass:Vt}]),this.disposeWithMe(this._commandService["registerCommand"](G)),this.disposeWithMe(this._commandService["registerCommand"](Pt)),kr.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689=>{this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689));}),Qr.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691=>{this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691));});}};
+function It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461199) {
+  "@babel/helpers - typeof";
 
+  return It = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229) {
+    return typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46229;
+  } : function (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231) {
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231 && typeof Symbol == "function" && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231.constructor === Symbol && var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231 !== Symbol.prototype ? "symbol" : typeof var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46231;
+  }, It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461199);
+}
+function Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461202) {
+  if (It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201) != "object" || !var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201) return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201;
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461203 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201[Symbol.toPrimitive];
+  if (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461203 !== undefined) {
+    var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204 = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461203.call(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461202 || "default");
+    if (It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204) != "object") return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461204;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461202 === "string" ? String : Number)(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461201);
+}
+function Rt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461209) {
+  var var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210 = Lt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461209, "string");
+  return It(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210) == "symbol" ? var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210 : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461210 + "";
+}
+function zt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461215) {
+  return (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214 = Rt(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214)) in var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213 ? Object.defineProperty(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214, {
+    value: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461215,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461214] = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461215, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461213;
+}
+var Vt = class extends Disposable {
+  constructor(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233) {
+    super(...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46233), zt(this, "_payload", null);
+  }
+  setPayload(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235) {
+    this._payload = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46235;
+  }
+  getPayload() {
+    return this._payload;
+  }
+  dispose() {
+    this._payload = null, super.dispose();
+  }
+};
+const ti = {};
+let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462371 = class extends Plugin {
+  constructor(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46617 = ti, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46618, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46619, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46620) {
+    super(), this._config = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46617, this._injector = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46618, this._commandService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46619, this._configService = var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46620;
+    let {
+      ...var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46621
+    } = merge({}, ti, this._config);
+    this._configService["setConfig"]("boards-mind.config", var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46621);
+  }
+  onStarting() {
+    this._injector["add"]([Bt, {
+      useClass: Vt
+    }]), this.disposeWithMe(this._commandService["registerCommand"](G)), this.disposeWithMe(this._commandService["registerCommand"](Pt)), kr.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4689));
+    }), Qr.forEach(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4691));
+    });
+  }
+};
 export { var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D462371 as UniverBoardsMindPlugin };
-
 export { zt };

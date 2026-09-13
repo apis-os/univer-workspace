@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Tall",
       rowHeightExtraTall: "Extra Tall",
       conditionalColoring: "Conditional Coloring",
-      conditionalColoringHelp:
-        'Click "New Condition" to apply colors based on defined conditions. Please note higher conditions are prioritized.',
+      conditionalColoringHelp: 'Click "New Condition" to apply colors based on defined conditions. Please note higher conditions are prioritized.',
       conditionalColoringSmart: "Apply Smart Color to All",
       conditionalColor: "Color",
       conditionalCustomColor: "Custom",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "checked",
       conditionalUnchecked: "unchecked",
       statusDoneTitle: "Status is Done",
-      statusDoneDescription:
-        "Apply\x20a\x20soft\x20green\x20marker\x20to\x20matching\x20records.",
+      statusDoneDescription: "Apply\x20a\x20soft\x20green\x20marker\x20to\x20matching\x20records.",
       statusBlockedTitle: "Status\x20is\x20Blocked",
-      statusBlockedDescription:
-        "Apply\x20a\x20warning\x20marker\x20to\x20blocked\x20records.",
+      statusBlockedDescription: "Apply\x20a\x20warning\x20marker\x20to\x20blocked\x20records.",
       addField: "Add field",
       undo: "Undo",
-      redo: "Redo",
+      redo: "Redo"
     },
     recordDetail: {
       untitledRecord: "Untitled\x20record",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Add more records after submission",
       panelSize: "Panel size",
       fullScreen: "Full\x20screen",
-      exitFullScreen: "Exit full screen",
+      exitFullScreen: "Exit full screen"
     },
     recordLink: {
       searchRecords: "Search records",
@@ -74,25 +71,22 @@ const n = {
       selectedCount: "{0} selected",
       missingRecord: "Deleted record",
       openRecord: "Open linked record",
-      back: "Back",
+      back: "Back"
     },
     hierarchy: {
-      invalidField:
-        "Choose a single-value Record Link that points to this table.",
-      missingRecord:
-        "The record or parent no longer exists. Refresh and try again.",
+      invalidField: "Choose a single-value Record Link that points to this table.",
+      missingRecord: "The record or parent no longer exists. Refresh and try again.",
       selfParent: "A record cannot be its own parent.",
       cycle: "This\x20move\x20would\x20create\x20a\x20parent\x20cycle.",
       maxDepth: "This move would exceed the maximum of five hierarchy levels.",
       sortedView: "Clear the view sort before manually reordering records.",
-      operationFailed:
-        "The\x20hierarchy\x20change\x20could\x20not\x20be\x20applied.\x20Refresh\x20and\x20try\x20again.",
+      operationFailed: "The\x20hierarchy\x20change\x20could\x20not\x20be\x20applied.\x20Refresh\x20and\x20try\x20again.",
       parent: "Parent",
       parentFieldName: "Parent Items",
       children: "Subitems",
       viewChildren: "View\x20subitems",
       root: "Root record",
-      setParent: "Set\x20parent",
+      setParent: "Set\x20parent"
     },
     collaboration: {
       localStatus: "Local\x20mode",
@@ -106,14 +100,14 @@ const n = {
       conflictStatus: "Conflict",
       conflictTooltip: "A\x20collaboration\x20conflict\x20needs\x20attention.",
       notCollabStatus: "Not\x20collaborative",
-      notCollabTooltip: "This base is not in collaboration mode.",
+      notCollabTooltip: "This base is not in collaboration mode."
     },
     virtualRecord: {
       regrouped: "Record will be regrouped",
       resorted: "Record will be resorted",
       moved: "Record will move in this view",
       filteredOut: "Record is hidden by this view",
-      "delete d": "Record\x20was\x20deleted",
+      "delete d": "Record\x20was\x20deleted"
     },
     gridContext: {
       insert: "Insert",
@@ -123,7 +117,7 @@ const n = {
       addSubRecord: "Add\x20sub-record",
       clearContent: "Clear content",
       deleteRecord: "Delete record",
-      deleteRecords: "Delete records",
+      deleteRecords: "Delete records"
     },
     common: {
       apply: "Apply",
@@ -138,7 +132,7 @@ const n = {
       searchClose: "Close search",
       value: "Value",
       newCondition: "New condition",
-      newBadge: "New",
+      newBadge: "New"
     },
     footerStat: {
       none: "None",
@@ -157,17 +151,16 @@ const n = {
       sum: "Sum {0}",
       average: "Avg {0}",
       min: "Min {0}",
-      max: "Max\x20{0}",
+      max: "Max\x20{0}"
     },
     confirmDelete: {
       tableTitle: "Delete this table?",
       tableDescription: "This table and its records will be removed.",
-      tableReferenced:
-        "This table cannot be delete d because it is referenced by: {0}.",
+      tableReferenced: "This table cannot be delete d because it is referenced by: {0}.",
       viewTitle: "Delete this view?",
       viewDescription: "This\x20view\x20will\x20be\x20removed.",
       fieldTitle: "Delete this field?",
-      fieldDescription: "This field will be removed from the table.",
+      fieldDescription: "This field will be removed from the table."
     },
     duplicateTable: {
       title: "Duplicate table",
@@ -176,28 +169,26 @@ const n = {
       configurationsOnly: "Configurations only",
       configurationsAndRecords: "Configurations and records",
       action: "Duplicate",
-      copyName: "{0} Copy",
+      copyName: "{0} Copy"
     },
     tableNameValidation: {
       required: "Enter\x20a\x20table\x20name.",
       tooLong: "Use 31 characters or fewer.",
-      apostrophe:
-        "A\x20table\x20name\x20cannot\x20start\x20or\x20end\x20with\x20an\x20apostrophe.",
+      apostrophe: "A\x20table\x20name\x20cannot\x20start\x20or\x20end\x20with\x20an\x20apostrophe.",
       invalidCharacters: "A table name cannot contain : \\ / ? * [ ].",
       duplicate: "A table with this name already exists.",
-      invalid: "Enter a valid table name.",
+      invalid: "Enter a valid table name."
     },
     clipboard: {
       recordsCopied: "{0} records copied",
-      attachmentsUploading: "Uploading {0} attachments...",
+      attachmentsUploading: "Uploading {0} attachments..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Target table",
       recordLinkDisplayField: "Display field",
       recordLinkPickerFields: "Supporting fields in picker",
       recordLinkAllowMultiple: "Allow linking multiple records",
-      recordLinkDescription:
-        "Stores stable record IDs. Use standard Excel formulas such as XLOOKUP and TEXTSPLIT to read linked values.",
+      recordLinkDescription: "Stores stable record IDs. Use standard Excel formulas such as XLOOKUP and TEXTSPLIT to read linked values.",
       fieldTitle: "Field\x20title",
       fieldTitlePlaceholder: "Enter a field title",
       fieldType: "Field type",
@@ -253,15 +244,11 @@ const n = {
       createKanbanWithField: "Create\x20Kanban\x20with\x20{0}",
       deleteField: "Delete Field",
       referenceOptionsHelp: "Reference data from other tables as options",
-      allowMultipleMembers:
-        "Allow\x20adding\x20multiple\x20members\x20in\x20one\x20record",
+      allowMultipleMembers: "Allow\x20adding\x20multiple\x20members\x20in\x20one\x20record",
       allowMultipleGroups: "Allow adding multiple groups in one record",
-      defaultProviderMock:
-        "Default value is resolved from {0} mock {1} item{2}.",
-      defaultProviderExternal:
-        "Default value is resolved from the external Univer {0} provider.",
-      linkPlaceholder:
-        "Enter\x20a\x20URL\x20(e.g.\x20univer.ai\x20or\x20https://univer.ai/skills).",
+      defaultProviderMock: "Default value is resolved from {0} mock {1} item{2}.",
+      defaultProviderExternal: "Default value is resolved from the external Univer {0} provider.",
+      linkPlaceholder: "Enter\x20a\x20URL\x20(e.g.\x20univer.ai\x20or\x20https://univer.ai/skills).",
       phonePlaceholder: "Enter a phone number",
       currencySymbol: "Currency symbol",
       thousandsSeparator: "Thousands separator",
@@ -294,10 +281,8 @@ const n = {
       noFormulaConfigured: "No\x20formula\x20configured",
       editFormula: "Edit formula",
       closeFormulaEditor: "Close formula editor",
-      formulaHint:
-        "Use current-row fields like [@[Amount]]. A1:B10 and single cell references are not allowed.",
-      formulaReferenceError:
-        "A1\x20references\x20and\x20ranges\x20are\x20not\x20supported\x20in\x20Base\x20formulas.",
+      formulaHint: "Use current-row fields like [@[Amount]]. A1:B10 and single cell references are not allowed.",
+      formulaReferenceError: "A1\x20references\x20and\x20ranges\x20are\x20not\x20supported\x20in\x20Base\x20formulas.",
       formulaTables: "Tables",
       formulaFields: "Fields",
       formulaFunctions: "Functions",
@@ -310,8 +295,7 @@ const n = {
       currentTableName: "Current table",
       currentTableField: "Current table field",
       fieldFromTable: "Field from {0}",
-      referenceCurrentField:
-        'Reference the "{0}" field in the current Base table. It will be saved as [[#This Row],[{1}]] for the formula engine.',
+      referenceCurrentField: 'Reference the "{0}" field in the current Base table. It will be saved as [[#This Row],[{1}]] for the formula engine.',
       referenceTableField: 'Reference the "{0}" field from the "{1}" table.',
       fieldNameColumn: "Name",
       fieldTypeColumn: "Type",
@@ -327,8 +311,7 @@ const n = {
       formulaFormatPercent: "Percent",
       formulaFormatDateTime: "Date / Time",
       addDescriptionPlaceholder: "Add a description",
-      numberingDescription:
-        "Automatically assigns a unique increasing index starting from 1 when a record is created. Generated values cannot be edited.",
+      numberingDescription: "Automatically assigns a unique increasing index starting from 1 when a record is created. Generated values cannot be edited.",
       optionColor: "Option color",
       separatorLocal: "Local",
       separatorCommaPeriod: "Comma, period",
@@ -353,7 +336,7 @@ const n = {
       ratingIconLightning: "Lightning",
       ratingIconMedal: "Medal",
       increment: "increment",
-      decrement: "decrement",
+      decrement: "decrement"
     },
     cellEditor: {
       done: "Done",
@@ -369,8 +352,7 @@ const n = {
       deleteAttachment: "Delete attachment {0}",
       deleteAttachmentConfirmTitle: "Delete this attachment?",
       deleteAttachmentsConfirmTitle: "Delete {0} attachments?",
-      deleteAttachmentConfirmDescription:
-        "The selected attachments will be removed from this record.",
+      deleteAttachmentConfirmDescription: "The selected attachments will be removed from this record.",
       failedToAttachFile: "Failed to attach file",
       file: "FILE",
       invalidEmail: "Invalid email address",
@@ -381,7 +363,7 @@ const n = {
       selectOptions: "Select options",
       previousMonth: "Previous month",
       nextMonth: "Next\x20month",
-      time: "Time",
+      time: "Time"
     },
     recordDetailField: {
       previousRecord: "Previous\x20record",
@@ -394,7 +376,7 @@ const n = {
       empty: "Empty",
       unassigned: "Unassigned",
       editField: "Edit {0}",
-      noVisibleFields: "No visible fields",
+      noVisibleFields: "No visible fields"
     },
     fieldMenu: {
       createSharedBaseField: "Create a shared Base field",
@@ -425,8 +407,8 @@ const n = {
         createdBy: "System author field",
         updatedBy: "System modifier field",
         createdAt: "System\x20created\x20time",
-        updatedAt: "System updated time",
-      },
+        updatedAt: "System updated time"
+      }
     },
     fieldTypes: {
       text: "Text",
@@ -450,7 +432,7 @@ const n = {
       createdBy: "Created By",
       updatedBy: "Modified\x20By",
       createdAt: "Date Created",
-      updatedAt: "Last\x20Modified\x20Date",
+      updatedAt: "Last\x20Modified\x20Date"
     },
     viewMenus: {
       customizeKanban: "Customize Kanban",
@@ -488,13 +470,11 @@ const n = {
       addCondition: "Add condition",
       calculateWorkingDaysOnly: "Calculate working days only",
       customWorkingDays: "Custom working days",
-      customWorkingDaysHelp:
-        "Customize working days and days off for this Gantt view. If not set, Monday to Friday is used when working-day calculation is enabled.",
+      customWorkingDaysHelp: "Customize working days and days off for this Gantt view. If not set, Monday to Friday is used when working-day calculation is enabled.",
       notSet: "Not set",
       settings: "Settings",
       setWorkingDays: "Set working days",
-      setWorkingDaysDescription:
-        "Customize working days and days off, and apply them to the current base",
+      setWorkingDaysDescription: "Customize working days and days off, and apply them to the current base",
       closeWorkingDaysSettings: "Close working days settings",
       addWorkingDays: "Add working days",
       holidayName: "Holiday name",
@@ -503,8 +483,7 @@ const n = {
       add: "Add",
       removeWorkingDayException: "Remove working day exception",
       legalWorkingDays: "Legal working days",
-      legalWorkingDaysHelp:
-        "Legal\x20working\x20days\x20will\x20be\x20available\x20after\x20an\x20external\x20calendar\x20API\x20is\x20connected.",
+      legalWorkingDaysHelp: "Legal\x20working\x20days\x20will\x20be\x20available\x20after\x20an\x20external\x20calendar\x20API\x20is\x20connected.",
       mon: "Mon",
       tue: "Tue",
       wed: "Wed",
@@ -521,7 +500,7 @@ const n = {
       groupByFieldFallback: "Group by field",
       kanbanGroup: "Kanban group",
       required: "Required",
-      kanbanGroupHelp: "Kanban views always use one group field.",
+      kanbanGroupHelp: "Kanban views always use one group field."
     },
     operators: {
       is: "is",
@@ -533,7 +512,7 @@ const n = {
       greaterThan: "greater than",
       lessThan: "less than",
       before: "is\x20before",
-      after: "is after",
+      after: "is after"
     },
     viewSettings: {
       title: "View Settings",
@@ -563,7 +542,7 @@ const n = {
       ganttViewDescription: "Timeline\x20with\x20start\x20and\x20end\x20dates.",
       galleryView: "Gallery",
       galleryViewDescription: "Visual cards for browsing records.",
-      copySuffix: "Copy",
+      copySuffix: "Copy"
     },
     tableSidebar: {
       searchTables: "Search tables",
@@ -576,9 +555,12 @@ const n = {
       renameTable: "Rename Table",
       duplicateTable: "Duplicate Table",
       deleteTable: "Delete Table",
-      defaultTableName: "Table {0}",
+      defaultTableName: "Table {0}"
     },
-    footer: { record: "record", records: "records" },
+    footer: {
+      record: "record",
+      records: "records"
+    },
     canvas: {
       addRecord: "Add record",
       attachmentDropLabel: "Add files to this record",
@@ -591,12 +573,12 @@ const n = {
       quarter: "Quarter",
       today: "Today",
       week: "Week",
-      year: "Year",
+      year: "Year"
     },
     empty: {
       value: "Empty",
       noRecords: "No records",
-      invalidView: "This view needs to be configured",
+      invalidView: "This view needs to be configured"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -614,19 +596,17 @@ const n = {
         engineering: "Engineering",
         financial: "Financial",
         lookup: "Lookup and reference",
-        web: "Web",
+        web: "Web"
       },
       generic: {
         engineAbstract: "{0} formula engine function",
-        engineDescription:
-          "{0}\x20is\x20provided\x20by\x20the\x20Univer\x20formula\x20engine.\x20Base\x20supports\x20field\x20references\x20such\x20as\x20TableName[[#This\x20Row],[Field]]\x20and\x20OtherTable[Field],\x20but\x20does\x20not\x20support\x20A1\x20cells,\x20A1:B10\x20ranges,\x20or\x20spilled\x20array\x20output\x20in\x20Base\x20formula\x20fields.",
+        engineDescription: "{0}\x20is\x20provided\x20by\x20the\x20Univer\x20formula\x20engine.\x20Base\x20supports\x20field\x20references\x20such\x20as\x20TableName[[#This\x20Row],[Field]]\x20and\x20OtherTable[Field],\x20but\x20does\x20not\x20support\x20A1\x20cells,\x20A1:B10\x20ranges,\x20or\x20spilled\x20array\x20output\x20in\x20Base\x20formula\x20fields.",
         argument: {
           name: "argument",
-          detail:
-            "A value, field reference, table field reference, or expression supported by the Univer formula engine.",
-        },
-      },
-    },
-  },
+          detail: "A value, field reference, table field reference, or expression supported by the Univer formula engine."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

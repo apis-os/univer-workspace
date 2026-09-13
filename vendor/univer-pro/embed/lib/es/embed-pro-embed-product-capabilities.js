@@ -1,15 +1,230 @@
-import{BooleanNumber,CommandType,DependentOn,Disposable,DrawingTypeEnum,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,ObjectMatrix,Plugin,Rectangle,Tools,UniverInstanceType,createBaseFormulaTableNameMap,createIdentifier,getOriginCellValue,merge,sequenceExecute,toDisposable,touchDependencies}from"@univerjs/core";
-import{InsertColMutation,InsertRowMutation,InsertSheetMutation,RemoveColMutation,RemoveRowMutation,RemoveSheetMutation,ReorderRangeMutation,SetRangeValuesMutation,SheetSkeletonService}from"@univerjs/sheets";
-import{DrawingApplyType,ISheetDrawingService,SetDrawingApplyMutation,SheetDrawingAnchorType,applySheetDrawingPlacement,getSheetDrawingPlacement}from"@univerjs/sheets-drawing";
-import{IFormulaReferenceDataProviderRegistry,createUnavailableReferenceDataResponse}from"@univerjs-pro/engine-formula";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-import{AddBoardElementMutation,IBoardElementService,RemoveBoardElementMutation,UpdateBoardElementMutation,collectBoardElementIdsForRemoveWithBoundConnectors,createEmbedBoardsFloatingElement,isEmbedBoardsFloatingElement}from"@univerjs-pro/boards";
-import{AddSlideElementMutation,AddSlidePageMutation,ISlideDrawingService,RemoveSlideElementMutation,RemoveSlidePageMutation,UpdateSlideElementMutation,createEmbedSlidesFloatingElement,createEmbedSlidesPage,getEmbedSlidesFloatingCustomData,resolvedSlideLayersToDrawingMap}from"@univerjs-pro/slides";
-import{IDrawingManagerService}from"@univerjs/drawing";
-import{ApplyBaseJson1Mutation,BaseJson1OpApplier,createEmbedBasesTable,createEmbedBasesTableAddMutation,createEmbedBasesTableRemoveMutation,ensureBaseTableCellLayout,getBaseCellFormulaValue}from"@univerjs-pro/bases";
-import{createDocsCustomBlockInsertMutation,createDocsCustomBlockRemoveMutation}from"@univerjs/docs";
-import{BehaviorSubject}from"rxjs";
+import { BooleanNumber, CommandType, DependentOn, Disposable, DrawingTypeEnum, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, ObjectMatrix, Plugin, Rectangle, Tools, UniverInstanceType, createBaseFormulaTableNameMap, createIdentifier, getOriginCellValue, merge, sequenceExecute, toDisposable, touchDependencies } from "@univerjs/core";
+import { InsertColMutation, InsertRowMutation, InsertSheetMutation, RemoveColMutation, RemoveRowMutation, RemoveSheetMutation, ReorderRangeMutation, SetRangeValuesMutation, SheetSkeletonService } from "@univerjs/sheets";
+import { DrawingApplyType, ISheetDrawingService, SetDrawingApplyMutation, SheetDrawingAnchorType, applySheetDrawingPlacement, getSheetDrawingPlacement } from "@univerjs/sheets-drawing";
+import { IFormulaReferenceDataProviderRegistry, createUnavailableReferenceDataResponse } from "@univerjs-pro/engine-formula";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+import { AddBoardElementMutation, IBoardElementService, RemoveBoardElementMutation, UpdateBoardElementMutation, collectBoardElementIdsForRemoveWithBoundConnectors, createEmbedBoardsFloatingElement, isEmbedBoardsFloatingElement } from "@univerjs-pro/boards";
+import { AddSlideElementMutation, AddSlidePageMutation, ISlideDrawingService, RemoveSlideElementMutation, RemoveSlidePageMutation, UpdateSlideElementMutation, createEmbedSlidesFloatingElement, createEmbedSlidesPage, getEmbedSlidesFloatingCustomData, resolvedSlideLayersToDrawingMap } from "@univerjs-pro/slides";
+import { IDrawingManagerService } from "@univerjs/drawing";
+import { ApplyBaseJson1Mutation, BaseJson1OpApplier, createEmbedBasesTable, createEmbedBasesTableAddMutation, createEmbedBasesTableRemoveMutation, ensureBaseTableCellLayout, getBaseCellFormulaValue } from "@univerjs-pro/bases";
+import { createDocsCustomBlockInsertMutation, createDocsCustomBlockRemoveMutation } from "@univerjs/docs";
+import { BehaviorSubject } from "rxjs";
 import { b } from "./embed-host-anchor-mutation-id.js";
-const wr=[{hostType:UniverInstanceType.UNIVER_DOC,childType:UniverInstanceType.UNIVER_BOARD,entry:b.DocsCustomBlock,mode:"float",layout:"content-bounds-fit",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_DOC,childType:UniverInstanceType.UNIVER_SHEET,entry:b.DocsCustomBlock,mode:"float",layout:"docs-sticky-sheet",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_DOC,childType:UniverInstanceType.UNIVER_BASE,entry:b.DocsCustomBlock,mode:"float",layout:"docs-sticky-base",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_DOC,childType:UniverInstanceType.UNIVER_SLIDE,entry:b.DocsCustomBlock,mode:"float",layout:"aspect-fit",menuBehavior:"floating",nestedEmbed:false}],Tr=[{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_BOARD,entry:b.SheetsFloatingObject,mode:"float",renderHost:"sheets-drawing-dom",layout:"content-bounds-fit",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_BOARD,entry:b.SheetsSheetTab,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_DOC,entry:b.SheetsFloatingObject,mode:"float",renderHost:"sheets-drawing-dom",layout:"doc-width-scale",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_SLIDE,entry:b.SheetsFloatingObject,mode:"float",renderHost:"sheets-drawing-dom",layout:"aspect-fit",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_BASE,entry:b.SheetsFloatingObject,mode:"float",renderHost:"sheets-drawing-dom",layout:"scroll-contained",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_BASE,entry:b.SheetsSheetTab,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_DOC,entry:b.SheetsSheetTab,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SHEET,childType:UniverInstanceType.UNIVER_SLIDE,entry:b.SheetsSheetTab,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false}],Er=[{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_BOARD,entry:b.SlidesFloatingObject,mode:"float",renderHost:"slides-object-dom",layout:"content-bounds-fit",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_BOARD,entry:b.SlidesPageListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_SHEET,entry:b.SlidesFloatingObject,mode:"float",renderHost:"slides-object-dom",layout:"scroll-contained",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_BASE,entry:b.SlidesFloatingObject,mode:"float",renderHost:"slides-object-dom",layout:"scroll-contained",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_DOC,entry:b.SlidesFloatingObject,mode:"float",renderHost:"slides-object-dom",layout:"doc-width-scale",menuBehavior:"floating",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_SHEET,entry:b.SlidesPageListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_BASE,entry:b.SlidesPageListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_SLIDE,childType:UniverInstanceType.UNIVER_DOC,entry:b.SlidesPageListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false}],Dr=[{hostType:UniverInstanceType.UNIVER_BASE,childType:UniverInstanceType.UNIVER_BOARD,entry:b.BasesTableListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_BASE,childType:UniverInstanceType.UNIVER_SHEET,entry:b.BasesTableListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_BASE,childType:UniverInstanceType.UNIVER_DOC,entry:b.BasesTableListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false},{hostType:UniverInstanceType.UNIVER_BASE,childType:UniverInstanceType.UNIVER_SLIDE,entry:b.BasesTableListBlock,mode:"tab",layout:"tab-peer",menuBehavior:"host-override",nestedEmbed:false}],Or=[UniverInstanceType.UNIVER_SHEET,UniverInstanceType.UNIVER_DOC,UniverInstanceType.UNIVER_SLIDE,UniverInstanceType.UNIVER_BASE].map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743=>({hostType:UniverInstanceType.UNIVER_BOARD,childType:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743,entry:b.BoardsFloatingObject,mode:"float",renderHost:"boards-object-dom",layout:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743===UniverInstanceType.UNIVER_DOC?"doc-width-scale":var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743===UniverInstanceType.UNIVER_SLIDE?"aspect-fit":"scroll-contained",menuBehavior:"floating",nestedEmbed:false}));function kr(){return[...wr,...Tr,...Er,...Dr,...Or];}
-
+const wr = [{
+    hostType: UniverInstanceType.UNIVER_DOC,
+    childType: UniverInstanceType.UNIVER_BOARD,
+    entry: b.DocsCustomBlock,
+    mode: "float",
+    layout: "content-bounds-fit",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_DOC,
+    childType: UniverInstanceType.UNIVER_SHEET,
+    entry: b.DocsCustomBlock,
+    mode: "float",
+    layout: "docs-sticky-sheet",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_DOC,
+    childType: UniverInstanceType.UNIVER_BASE,
+    entry: b.DocsCustomBlock,
+    mode: "float",
+    layout: "docs-sticky-base",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_DOC,
+    childType: UniverInstanceType.UNIVER_SLIDE,
+    entry: b.DocsCustomBlock,
+    mode: "float",
+    layout: "aspect-fit",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }],
+  Tr = [{
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_BOARD,
+    entry: b.SheetsFloatingObject,
+    mode: "float",
+    renderHost: "sheets-drawing-dom",
+    layout: "content-bounds-fit",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_BOARD,
+    entry: b.SheetsSheetTab,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_DOC,
+    entry: b.SheetsFloatingObject,
+    mode: "float",
+    renderHost: "sheets-drawing-dom",
+    layout: "doc-width-scale",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_SLIDE,
+    entry: b.SheetsFloatingObject,
+    mode: "float",
+    renderHost: "sheets-drawing-dom",
+    layout: "aspect-fit",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_BASE,
+    entry: b.SheetsFloatingObject,
+    mode: "float",
+    renderHost: "sheets-drawing-dom",
+    layout: "scroll-contained",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_BASE,
+    entry: b.SheetsSheetTab,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_DOC,
+    entry: b.SheetsSheetTab,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SHEET,
+    childType: UniverInstanceType.UNIVER_SLIDE,
+    entry: b.SheetsSheetTab,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }],
+  Er = [{
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_BOARD,
+    entry: b.SlidesFloatingObject,
+    mode: "float",
+    renderHost: "slides-object-dom",
+    layout: "content-bounds-fit",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_BOARD,
+    entry: b.SlidesPageListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_SHEET,
+    entry: b.SlidesFloatingObject,
+    mode: "float",
+    renderHost: "slides-object-dom",
+    layout: "scroll-contained",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_BASE,
+    entry: b.SlidesFloatingObject,
+    mode: "float",
+    renderHost: "slides-object-dom",
+    layout: "scroll-contained",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_DOC,
+    entry: b.SlidesFloatingObject,
+    mode: "float",
+    renderHost: "slides-object-dom",
+    layout: "doc-width-scale",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_SHEET,
+    entry: b.SlidesPageListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_BASE,
+    entry: b.SlidesPageListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_SLIDE,
+    childType: UniverInstanceType.UNIVER_DOC,
+    entry: b.SlidesPageListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }],
+  Dr = [{
+    hostType: UniverInstanceType.UNIVER_BASE,
+    childType: UniverInstanceType.UNIVER_BOARD,
+    entry: b.BasesTableListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_BASE,
+    childType: UniverInstanceType.UNIVER_SHEET,
+    entry: b.BasesTableListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_BASE,
+    childType: UniverInstanceType.UNIVER_DOC,
+    entry: b.BasesTableListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }, {
+    hostType: UniverInstanceType.UNIVER_BASE,
+    childType: UniverInstanceType.UNIVER_SLIDE,
+    entry: b.BasesTableListBlock,
+    mode: "tab",
+    layout: "tab-peer",
+    menuBehavior: "host-override",
+    nestedEmbed: false
+  }],
+  Or = [UniverInstanceType.UNIVER_SHEET, UniverInstanceType.UNIVER_DOC, UniverInstanceType.UNIVER_SLIDE, UniverInstanceType.UNIVER_BASE].map(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743 => ({
+    hostType: UniverInstanceType.UNIVER_BOARD,
+    childType: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743,
+    entry: b.BoardsFloatingObject,
+    mode: "float",
+    renderHost: "boards-object-dom",
+    layout: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743 === UniverInstanceType.UNIVER_DOC ? "doc-width-scale" : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D461743 === UniverInstanceType.UNIVER_SLIDE ? "aspect-fit" : "scroll-contained",
+    menuBehavior: "floating",
+    nestedEmbed: false
+  }));
+function kr() {
+  return [...wr, ...Tr, ...Er, ...Dr, ...Or];
+}
 export { kr as createProEmbedProductCapabilities };

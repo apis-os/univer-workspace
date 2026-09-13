@@ -1,1 +1,68 @@
-import"@univerjs/docs-drawing/facade";import{IShapeHostAdapterRegistry as v14,isConnectorShape as v15}from"@univerjs-pro/engine-shape";import{FConnectorShape as v16,FShape as v17}from"@univerjs-pro/engine-shape/facade";import{UniverInstanceType as v18}from"@univerjs/core";import{FDocument as v19}from"@univerjs/docs/facade";import{DocShapeAnchorPosition as v20}from"@univerjs-pro/docs-shape";import{FEnum as v21}from"@univerjs/core/facade";var c=class extends v19{insertShape(v7){let v8=this._getShapeAdapter();if(!v8)return null;try{let v2=v8.createShape(this._getShapeScope(),v7);return v2?this._createShapeHandle(v2):(console.warn("[Doc Shape Facade]: Failed to insert Shape."),null);}catch(v3){return console.warn("[Doc\x20Shape\x20Facade]:\x20Failed\x20to\x20insert\x20Shape.",v3),null;}}getShape(v9){let v10=this._getShapeAdapter();if(!v10)return null;try{let v4=v10.getShape({...this._getShapeScope(),shapeId:v9});return v4?this._createShapeHandle(v4):(console.warn("[Doc\x20Shape\x20Facade]:\x20Shape\x20\x22"+v9+'" was not found.'),null);}catch(v5){return console.warn('[Doc Shape Facade]: Failed to read Shape "'+v9+"\x22.",v5),null;}}getShapes(){let v11=this._getShapeAdapter();if(!v11)return[];try{return v11.listShapes(this._getShapeScope()).map(v1=>this._createShapeHandle(v1));}catch(v6){return console.warn("[Doc Shape Facade]: Failed to list Shapes.",v6),[];}}_getShapeScope(){return{hostType:v18.UNIVER_DOC,unitId:this.getId(),subUnitId:this.getId()};}_getShapeAdapter(){return this._injector["get"](v14).get(v18.UNIVER_DOC);}_createShapeHandle(v12){let v13={hostType:v18.UNIVER_DOC,unitId:v12.unitId,subUnitId:v12.subUnitId,shapeId:v12.shapeId};return v15(v12.shapeType)?this._injector["createInstance"](v16,v13,this._injector):this._injector["createInstance"](v17,v13,this._injector);}};v19.extend(c);var l=class extends v21{get DocShapeAnchorPosition(){return v20;}};v21.extend(l);export{};
+import "@univerjs/docs-drawing/facade";
+import { IShapeHostAdapterRegistry as var_core_value_sig1BBD, isConnectorShape as var_core_value_sigF704 } from "@univerjs-pro/engine-shape";
+import { FConnectorShape as var_core_value_sig2BCF, FShape as var_core_value_sig0D69 } from "@univerjs-pro/engine-shape/facade";
+import { UniverInstanceType as var_core_value_sig480E } from "@univerjs/core";
+import { FDocument as var_core_value_sig26DB } from "@univerjs/docs/facade";
+import { DocShapeAnchorPosition as var_core_value_sigF0F9 } from "@univerjs-pro/docs-shape";
+import { FEnum as var_core_value_sig1A0F } from "@univerjs/core/facade";
+var c = class extends var_core_value_sig26DB {
+  insertShape(var_core_value_sig27E5) {
+    let var_core_value_sig8061 = this._getShapeAdapter();
+    if (!var_core_value_sig8061) return null;
+    try {
+      let var_core_value_sig2AD8 = var_core_value_sig8061.createShape(this._getShapeScope(), var_core_value_sig27E5);
+      return var_core_value_sig2AD8 ? this._createShapeHandle(var_core_value_sig2AD8) : (console.warn("[Doc Shape Facade]: Failed to insert Shape."), null);
+    } catch (var_core_value_sig2AD0) {
+      return console.warn("[Doc\x20Shape\x20Facade]:\x20Failed\x20to\x20insert\x20Shape.", var_core_value_sig2AD0), null;
+    }
+  }
+  getShape(var_core_value_sig4D4C) {
+    let var_core_value_sigC9E0 = this._getShapeAdapter();
+    if (!var_core_value_sigC9E0) return null;
+    try {
+      let var_core_value_sig3EEE = var_core_value_sigC9E0.getShape({
+        ...this._getShapeScope(),
+        shapeId: var_core_value_sig4D4C
+      });
+      return var_core_value_sig3EEE ? this._createShapeHandle(var_core_value_sig3EEE) : (console.warn("[Doc\x20Shape\x20Facade]:\x20Shape\x20\x22" + var_core_value_sig4D4C + '" was not found.'), null);
+    } catch (var_core_value_sigBC46) {
+      return console.warn('[Doc Shape Facade]: Failed to read Shape "' + var_core_value_sig4D4C + "\x22.", var_core_value_sigBC46), null;
+    }
+  }
+  getShapes() {
+    let var_core_value_sig76BA = this._getShapeAdapter();
+    if (!var_core_value_sig76BA) return [];
+    try {
+      return var_core_value_sig76BA.listShapes(this._getShapeScope()).map(var_core_value_sig7524 => this._createShapeHandle(var_core_value_sig7524));
+    } catch (var_core_value_sig3D7D) {
+      return console.warn("[Doc Shape Facade]: Failed to list Shapes.", var_core_value_sig3D7D), [];
+    }
+  }
+  _getShapeScope() {
+    return {
+      hostType: var_core_value_sig480E.UNIVER_DOC,
+      unitId: this.getId(),
+      subUnitId: this.getId()
+    };
+  }
+  _getShapeAdapter() {
+    return this._injector["get"](var_core_value_sig1BBD).get(var_core_value_sig480E.UNIVER_DOC);
+  }
+  _createShapeHandle(var_core_value_sigFBFA) {
+    let var_core_value_sigF602 = {
+      hostType: var_core_value_sig480E.UNIVER_DOC,
+      unitId: var_core_value_sigFBFA.unitId,
+      subUnitId: var_core_value_sigFBFA.subUnitId,
+      shapeId: var_core_value_sigFBFA.shapeId
+    };
+    return var_core_value_sigF704(var_core_value_sigFBFA.shapeType) ? this._injector["createInstance"](var_core_value_sig2BCF, var_core_value_sigF602, this._injector) : this._injector["createInstance"](var_core_value_sig0D69, var_core_value_sigF602, this._injector);
+  }
+};
+var_core_value_sig26DB.extend(c);
+var l = class extends var_core_value_sig1A0F {
+  get DocShapeAnchorPosition() {
+    return var_core_value_sigF0F9;
+  }
+};
+var_core_value_sig1A0F.extend(l);
+export {};

@@ -1,1 +1,234 @@
-import{IMenuManagerService as v66,MenuItemType as v67,RibbonStartGroup as v68,getMenuHiddenObservable as v69}from"@univerjs/ui";import{ClientSnapshotServerService as v70,ExchangeFormat as v71,IExchangeOperateService as v72,IExchangeService as v73,UniverExchangeClientPlugin as v74,isCurrentUnitLoadedFromServer as v75}from"@univerjs-pro/exchange-client";import{CommandType as v76,DependentOn as v77,Disposable as v78,ICommandService as v79,IConfigService as v80,IResourceLoaderService as v81,IUniverInstanceService as v82,Inject as v83,Injector as v84,Plugin as v85,UniverInstanceType as v86,createIdentifier as v87,merge as v88}from"@univerjs/core";import{b64EncodeUnicode as v89,textDecoder as v90,transformSlideDataToSnapshot as v91,transformSnapshotToSlideData as v92}from"@univerjs-pro/collaboration";import{UniverLicensePlugin as v93}from"@univerjs-pro/license";function O(v38,v39){return function(v5,v6){v39(v5,v6,v38);};}function k(v40,v41,v42,v43){var v44=arguments.length,v45=v44<3?v41:v43===null?v43=Object.getOwnPropertyDescriptor(v41,v42):v43,v46;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v45=Reflect.decorate(v40,v41,v42,v43);else{for(var v47=v40.length-1;v47>=0;v47--)(v46=v40[v47])&&(v45=(v44<3?v46(v45):v44>3?v46(v41,v42,v45):v46(v41,v42))||v45);}return v44>3&&v45&&Object.defineProperty(v41,v42,v45),v45;}function A(v48){let v49=v48.slide??v48.doc;if(!v49)return null;let v50=typeof v49.originalMeta=="string"?v49.originalMeta:v89(v90.decode(v49.originalMeta));return{...v48,workbook:{},doc:{},slide:{...v49,originalMeta:v50},board:undefined,pdf:undefined};}const j=v87("slides-exchange-client.slide-exchange.service");let M=class{constructor(v7){this._exchangeService=v7;}importSlideToUnitId(v8){return this._exchangeService["importFileToUnitId"](v8,v86.UNIVER_SLIDE);}async importSlideToSnapshot(v9){let v10=await this._exchangeService["importFileToJson"](v9,v86.UNIVER_SLIDE);return v10!=null&&v10.snapshot?this.transformSnapshotJsonToSlideData(v10):undefined;}exportSlideByUnitId(v11){return this._exchangeService["exportFileByUnitId"](v11,v86.UNIVER_SLIDE,v71.PPTX);}async exportSlideBySnapshot(v12){let v13=await this.transformSlideDataToSnapshotJson(v12);return this._exchangeService["exportFileBySnapshot"](v13,v86.UNIVER_SLIDE,v71.PPTX);}async transformSnapshotJsonToSlideData(v14){return v92(v14.snapshot);}async transformSlideDataToSnapshotJson(v15){let v16=new v70(),{snapshot:v17}=await v91(v15.resources,v15,v15.id,v15.rev??0,v16),v18=A(v17);if(!v18)throw Error("Failed to transform Slide snapshot to string");return{snapshot:v18,sheetBlocks:{}};}};M=k([O(0,v83(v73))],M);const N=v87("slides-exchange-client.slide-exchange-operate.service");let P=class{constructor(v19,v20,v21,v22){this._slideExchangeService=v19,this._exchangeOperateService=v20,this._univerInstanceService=v21,this._resourceLoaderService=v22;}importSlideToUnitId(){return this._exchangeOperateService["importFileToUnitId"](v86.UNIVER_SLIDE,v1=>this._slideExchangeService["importSlideToUnitId"](v1));}importSlideToSnapshot(){return this._exchangeOperateService["importFileToSnapshot"](v86.UNIVER_SLIDE,v2=>this._slideExchangeService["importSlideToSnapshot"](v2));}exportSlideByUnitId(v23,v24){let v25=this._getCurrentSlide();return this._exchangeOperateService["exportFile"](()=>this._slideExchangeService["exportSlideByUnitId"](v23??v25.getUnitId()),v24??v25.getSnapshot().name,v71.PPTX);}exportSlideBySnapshot(){let v26=this._getCurrentSlide(),v27=this._resourceLoaderService["saveUnit"](v26.getUnitId())??v26.getSnapshot();return this._exchangeOperateService["exportFile"](()=>this._slideExchangeService["exportSlideBySnapshot"](v27),v27.name,v71.PPTX);}_getCurrentSlide(){let v28=this._univerInstanceService["getCurrentUnitOfType"](v86.UNIVER_SLIDE);if(!v28)throw Error("No unit of type "+v86.UNIVER_SLIDE+" is currently active.");return v28;}};P=k([O(0,v83(j)),O(1,v83(v72)),O(2,v82),O(3,v81)],P);const F={id:"slides-exchange-client.operation.import-slide",type:v76.OPERATION,handler:async v51=>{let v52=v51.get(N);return v75(v51,v86.UNIVER_SLIDE)?await v52.importSlideToUnitId():await v52.importSlideToSnapshot(),true;}},I={id:"slides-exchange-client.operation.export-slide",type:v76.OPERATION,handler:async v53=>{let v54=v53.get(N);return v75(v53,v86.UNIVER_SLIDE)?await v54.exportSlideByUnitId():await v54.exportSlideBySnapshot(),true;}},L="slides-exchange-client.operation.exchange";function R(v55){return{id:L,type:v67.SUBITEMS,icon:"DirectExportIcon",tooltip:"slides-exchange-client.file",hidden$:v69(v55,v86.UNIVER_SLIDE)};}function z(){return{id:F.id,type:v67.BUTTON,title:"slides-exchange-client.upload",icon:"FolderIcon"};}function B(){return{id:I.id,type:v67.BUTTON,title:"slides-exchange-client.download",icon:"ExportIcon"};}const V={[v68.OTHERS]:{[L]:{order:0.3,gridLayout:{row:1,column:3,rowSpan:2,showLabel:true},menuItemFactory:R,[F.id]:{order:0,menuItemFactory:z},[I.id]:{order:1,menuItemFactory:B}}}};var H="@univerjs-pro/slides-exchange-client",U="1.0.0-insiders.20260907-70fc579";const W={};let G=class extends v78{constructor(v29,v30){super(),this._commandService=v29,this._menuManagerService=v30,this._initCommands(),this._initMenus();}_initCommands(){[F,I].forEach(v3=>{this.disposeWithMe(this._commandService["registerCommand"](v3));});}_initMenus(){this._menuManagerService["mergeMenu"](V);}};G=k([O(0,v79),O(1,v66)],G);function K(v56){"@babel/helpers - typeof";return K=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v31){return typeof v31;}:function(v32){return v32&&typeof Symbol=="function"&&v32.constructor===Symbol&&v32!==Symbol.prototype?"symbol":typeof v32;},K(v56);}function q(v57,v58){if(K(v57)!="object"||!v57)return v57;var v59=v57[Symbol.toPrimitive];if(v59!==undefined){var v60=v59.call(v57,v58||"default");if(K(v60)!="object")return v60;throw TypeError("@@toPrimitive must return a primitive value.");}return(v58==="string"?String:Number)(v57);}function J(v61){var v62=q(v61,"string");return K(v62)=="symbol"?v62:v62+"";}function Y(v63,v64,v65){return(v64=J(v64))in v63?Object.defineProperty(v63,v64,{value:v65,enumerable:true,configurable:true,writable:true}):v63[v64]=v65,v63;}let X=class extends v85{constructor(v33=W,v34,v35){super(),this._config=v33,this._injector=v34,this._configService=v35;let{menu:v36,...v37}=v88({},W,this._config);v36&&this._configService["setConfig"]("menu",v36,{merge:true}),this._configService["setConfig"]("slides-exchange-client.config",v37);}onStarting(){[[j,{useClass:M}],[N,{useClass:P}],[G]].forEach(v4=>this._injector["add"](v4));}onReady(){this._injector["get"](G);}};Y(X,"pluginName","SLIDES_EXCHANGE_CLIENT_PLUGIN"),Y(X,"packageName",H),Y(X,"version",U),Y(X,"type",v86.UNIVER_SLIDE),X=k([v77(v93,v74),O(1,v83(v84)),O(2,v80)],X);export{j as ISlideExchangeService,V as SlidesExchangeClientMenuSchema,X as UniverSlidesExchangeClientPlugin};
+import { IMenuManagerService as var_core_value_sig4CD2, MenuItemType as var_core_value_sig48CA, RibbonStartGroup as var_core_value_sig50AF, getMenuHiddenObservable as var_core_value_sigA942 } from "@univerjs/ui";
+import { ClientSnapshotServerService as var_core_value_sigA621, ExchangeFormat as var_core_value_sigBBFF, IExchangeOperateService as var_core_value_sig8889, IExchangeService as var_core_value_sig32F8, UniverExchangeClientPlugin as var_core_value_sig5B67, isCurrentUnitLoadedFromServer as var_core_value_sig1758 } from "@univerjs-pro/exchange-client";
+import { CommandType as var_core_value_sig4805, DependentOn as var_core_value_sigE67E, Disposable as var_core_value_sig2902, ICommandService as var_core_value_sig9989, IConfigService as var_core_value_sig698E, IResourceLoaderService as var_core_value_sig2809, IUniverInstanceService as var_core_value_sig2DAB, Inject as var_core_value_sig877E, Injector as var_core_value_sig20C8, Plugin as var_core_value_sigE9A7, UniverInstanceType as var_core_value_sigBECE, createIdentifier as var_core_value_sig1B22, merge as var_core_value_sig7F72 } from "@univerjs/core";
+import { b64EncodeUnicode as var_core_value_sig7B2A, textDecoder as var_core_value_sig06CD, transformSlideDataToSnapshot as var_core_value_sigA5F1, transformSnapshotToSlideData as var_core_value_sig97A2 } from "@univerjs-pro/collaboration";
+import { UniverLicensePlugin as var_core_value_sig07E9 } from "@univerjs-pro/license";
+function O(var_core_value_sigF9C7, var_core_value_sig8895) {
+  return function (var_core_value_sigBC46, var_core_value_sig3D7D) {
+    var_core_value_sig8895(var_core_value_sigBC46, var_core_value_sig3D7D, var_core_value_sigF9C7);
+  };
+}
+function k(var_core_value_sigC80B, var_core_value_sig284F, var_core_value_sigE154, var_core_value_sig4632) {
+  var var_core_value_sig12F2 = arguments.length,
+    var_core_value_sig2259 = var_core_value_sig12F2 < 3 ? var_core_value_sig284F : var_core_value_sig4632 === null ? var_core_value_sig4632 = Object.getOwnPropertyDescriptor(var_core_value_sig284F, var_core_value_sigE154) : var_core_value_sig4632,
+    var_core_value_sig9E2F;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig2259 = Reflect.decorate(var_core_value_sigC80B, var_core_value_sig284F, var_core_value_sigE154, var_core_value_sig4632);else {
+    for (var var_core_value_sigD082 = var_core_value_sigC80B.length - 1; var_core_value_sigD082 >= 0; var_core_value_sigD082--) (var_core_value_sig9E2F = var_core_value_sigC80B[var_core_value_sigD082]) && (var_core_value_sig2259 = (var_core_value_sig12F2 < 3 ? var_core_value_sig9E2F(var_core_value_sig2259) : var_core_value_sig12F2 > 3 ? var_core_value_sig9E2F(var_core_value_sig284F, var_core_value_sigE154, var_core_value_sig2259) : var_core_value_sig9E2F(var_core_value_sig284F, var_core_value_sigE154)) || var_core_value_sig2259);
+  }
+  return var_core_value_sig12F2 > 3 && var_core_value_sig2259 && Object.defineProperty(var_core_value_sig284F, var_core_value_sigE154, var_core_value_sig2259), var_core_value_sig2259;
+}
+function A(var_core_value_sigDBB7) {
+  let var_core_value_sigD0A8 = var_core_value_sigDBB7.slide ?? var_core_value_sigDBB7.doc;
+  if (!var_core_value_sigD0A8) return null;
+  let var_core_value_sigF4B9 = typeof var_core_value_sigD0A8.originalMeta == "string" ? var_core_value_sigD0A8.originalMeta : var_core_value_sig7B2A(var_core_value_sig06CD.decode(var_core_value_sigD0A8.originalMeta));
+  return {
+    ...var_core_value_sigDBB7,
+    workbook: {},
+    doc: {},
+    slide: {
+      ...var_core_value_sigD0A8,
+      originalMeta: var_core_value_sigF4B9
+    },
+    board: undefined,
+    pdf: undefined
+  };
+}
+const j = var_core_value_sig1B22("slides-exchange-client.slide-exchange.service");
+let M = class {
+  constructor(var_core_value_sig27E5) {
+    this._exchangeService = var_core_value_sig27E5;
+  }
+  importSlideToUnitId(var_core_value_sig8061) {
+    return this._exchangeService["importFileToUnitId"](var_core_value_sig8061, var_core_value_sigBECE.UNIVER_SLIDE);
+  }
+  async importSlideToSnapshot(var_core_value_sig4D4C) {
+    let var_core_value_sigC9E0 = await this._exchangeService["importFileToJson"](var_core_value_sig4D4C, var_core_value_sigBECE.UNIVER_SLIDE);
+    return var_core_value_sigC9E0 != null && var_core_value_sigC9E0.snapshot ? this.transformSnapshotJsonToSlideData(var_core_value_sigC9E0) : undefined;
+  }
+  exportSlideByUnitId(var_core_value_sig76BA) {
+    return this._exchangeService["exportFileByUnitId"](var_core_value_sig76BA, var_core_value_sigBECE.UNIVER_SLIDE, var_core_value_sigBBFF.PPTX);
+  }
+  async exportSlideBySnapshot(var_core_value_sigFBFA) {
+    let var_core_value_sigF602 = await this.transformSlideDataToSnapshotJson(var_core_value_sigFBFA);
+    return this._exchangeService["exportFileBySnapshot"](var_core_value_sigF602, var_core_value_sigBECE.UNIVER_SLIDE, var_core_value_sigBBFF.PPTX);
+  }
+  async transformSnapshotJsonToSlideData(var_core_value_sig1BBD) {
+    return var_core_value_sig97A2(var_core_value_sig1BBD.snapshot);
+  }
+  async transformSlideDataToSnapshotJson(var_core_value_sigF704) {
+    let var_core_value_sig2BCF = new var_core_value_sigA621(),
+      {
+        snapshot: var_core_value_sig0D69
+      } = await var_core_value_sigA5F1(var_core_value_sigF704.resources, var_core_value_sigF704, var_core_value_sigF704.id, var_core_value_sigF704.rev ?? 0, var_core_value_sig2BCF),
+      var_core_value_sig480E = A(var_core_value_sig0D69);
+    if (!var_core_value_sig480E) throw Error("Failed to transform Slide snapshot to string");
+    return {
+      snapshot: var_core_value_sig480E,
+      sheetBlocks: {}
+    };
+  }
+};
+M = k([O(0, var_core_value_sig877E(var_core_value_sig32F8))], M);
+const N = var_core_value_sig1B22("slides-exchange-client.slide-exchange-operate.service");
+let P = class {
+  constructor(var_core_value_sig26DB, var_core_value_sigF0F9, var_core_value_sig1A0F, var_core_value_sigFBA4) {
+    this._slideExchangeService = var_core_value_sig26DB, this._exchangeOperateService = var_core_value_sigF0F9, this._univerInstanceService = var_core_value_sig1A0F, this._resourceLoaderService = var_core_value_sigFBA4;
+  }
+  importSlideToUnitId() {
+    return this._exchangeOperateService["importFileToUnitId"](var_core_value_sigBECE.UNIVER_SLIDE, var_core_value_sig7524 => this._slideExchangeService["importSlideToUnitId"](var_core_value_sig7524));
+  }
+  importSlideToSnapshot() {
+    return this._exchangeOperateService["importFileToSnapshot"](var_core_value_sigBECE.UNIVER_SLIDE, var_core_value_sig2AD8 => this._slideExchangeService["importSlideToSnapshot"](var_core_value_sig2AD8));
+  }
+  exportSlideByUnitId(var_core_value_sig4383, var_core_value_sig186C) {
+    let var_core_value_sigD955 = this._getCurrentSlide();
+    return this._exchangeOperateService["exportFile"](() => this._slideExchangeService["exportSlideByUnitId"](var_core_value_sig4383 ?? var_core_value_sigD955.getUnitId()), var_core_value_sig186C ?? var_core_value_sigD955.getSnapshot().name, var_core_value_sigBBFF.PPTX);
+  }
+  exportSlideBySnapshot() {
+    let var_core_value_sig48BD = this._getCurrentSlide(),
+      var_core_value_sig429F = this._resourceLoaderService["saveUnit"](var_core_value_sig48BD.getUnitId()) ?? var_core_value_sig48BD.getSnapshot();
+    return this._exchangeOperateService["exportFile"](() => this._slideExchangeService["exportSlideBySnapshot"](var_core_value_sig429F), var_core_value_sig429F.name, var_core_value_sigBBFF.PPTX);
+  }
+  _getCurrentSlide() {
+    let var_core_value_sigF62A = this._univerInstanceService["getCurrentUnitOfType"](var_core_value_sigBECE.UNIVER_SLIDE);
+    if (!var_core_value_sigF62A) throw Error("No unit of type " + var_core_value_sigBECE.UNIVER_SLIDE + " is currently active.");
+    return var_core_value_sigF62A;
+  }
+};
+P = k([O(0, var_core_value_sig877E(j)), O(1, var_core_value_sig877E(var_core_value_sig8889)), O(2, var_core_value_sig2DAB), O(3, var_core_value_sig2809)], P);
+const F = {
+    id: "slides-exchange-client.operation.import-slide",
+    type: var_core_value_sig4805.OPERATION,
+    handler: async var_core_value_sig5CEE => {
+      let var_core_value_sigE92A = var_core_value_sig5CEE.get(N);
+      return var_core_value_sig1758(var_core_value_sig5CEE, var_core_value_sigBECE.UNIVER_SLIDE) ? await var_core_value_sigE92A.importSlideToUnitId() : await var_core_value_sigE92A.importSlideToSnapshot(), true;
+    }
+  },
+  I = {
+    id: "slides-exchange-client.operation.export-slide",
+    type: var_core_value_sig4805.OPERATION,
+    handler: async var_core_value_sig362B => {
+      let var_core_value_sig5CA5 = var_core_value_sig362B.get(N);
+      return var_core_value_sig1758(var_core_value_sig362B, var_core_value_sigBECE.UNIVER_SLIDE) ? await var_core_value_sig5CA5.exportSlideByUnitId() : await var_core_value_sig5CA5.exportSlideBySnapshot(), true;
+    }
+  },
+  L = "slides-exchange-client.operation.exchange";
+function R(var_core_value_sigE90F) {
+  return {
+    id: L,
+    type: var_core_value_sig48CA.SUBITEMS,
+    icon: "DirectExportIcon",
+    tooltip: "slides-exchange-client.file",
+    hidden$: var_core_value_sigA942(var_core_value_sigE90F, var_core_value_sigBECE.UNIVER_SLIDE)
+  };
+}
+function z() {
+  return {
+    id: F.id,
+    type: var_core_value_sig48CA.BUTTON,
+    title: "slides-exchange-client.upload",
+    icon: "FolderIcon"
+  };
+}
+function B() {
+  return {
+    id: I.id,
+    type: var_core_value_sig48CA.BUTTON,
+    title: "slides-exchange-client.download",
+    icon: "ExportIcon"
+  };
+}
+const V = {
+  [var_core_value_sig50AF.OTHERS]: {
+    [L]: {
+      order: 0.3,
+      gridLayout: {
+        row: 1,
+        column: 3,
+        rowSpan: 2,
+        showLabel: true
+      },
+      menuItemFactory: R,
+      [F.id]: {
+        order: 0,
+        menuItemFactory: z
+      },
+      [I.id]: {
+        order: 1,
+        menuItemFactory: B
+      }
+    }
+  }
+};
+var H = "@univerjs-pro/slides-exchange-client",
+  U = "1.0.0-insiders.20260907-70fc579";
+const W = {};
+let G = class extends var_core_value_sig2902 {
+  constructor(var_core_value_sig8178, var_core_value_sigE9ED) {
+    super(), this._commandService = var_core_value_sig8178, this._menuManagerService = var_core_value_sigE9ED, this._initCommands(), this._initMenus();
+  }
+  _initCommands() {
+    [F, I].forEach(var_core_value_sig2AD0 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sig2AD0));
+    });
+  }
+  _initMenus() {
+    this._menuManagerService["mergeMenu"](V);
+  }
+};
+G = k([O(0, var_core_value_sig9989), O(1, var_core_value_sig4CD2)], G);
+function K(var_core_value_sigEFD4) {
+  "@babel/helpers - typeof";
+
+  return K = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigB577) {
+    return typeof var_core_value_sigB577;
+  } : function (var_core_value_sig9572) {
+    return var_core_value_sig9572 && typeof Symbol == "function" && var_core_value_sig9572.constructor === Symbol && var_core_value_sig9572 !== Symbol.prototype ? "symbol" : typeof var_core_value_sig9572;
+  }, K(var_core_value_sigEFD4);
+}
+function q(var_core_value_sig861B, var_core_value_sig5237) {
+  if (K(var_core_value_sig861B) != "object" || !var_core_value_sig861B) return var_core_value_sig861B;
+  var var_core_value_sigBB00 = var_core_value_sig861B[Symbol.toPrimitive];
+  if (var_core_value_sigBB00 !== undefined) {
+    var var_core_value_sig7E54 = var_core_value_sigBB00.call(var_core_value_sig861B, var_core_value_sig5237 || "default");
+    if (K(var_core_value_sig7E54) != "object") return var_core_value_sig7E54;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig5237 === "string" ? String : Number)(var_core_value_sig861B);
+}
+function J(var_core_value_sig9A8D) {
+  var var_core_value_sigC259 = q(var_core_value_sig9A8D, "string");
+  return K(var_core_value_sigC259) == "symbol" ? var_core_value_sigC259 : var_core_value_sigC259 + "";
+}
+function Y(var_core_value_sig9C9F, var_core_value_sigFDEA, var_core_value_sig86D0) {
+  return (var_core_value_sigFDEA = J(var_core_value_sigFDEA)) in var_core_value_sig9C9F ? Object.defineProperty(var_core_value_sig9C9F, var_core_value_sigFDEA, {
+    value: var_core_value_sig86D0,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig9C9F[var_core_value_sigFDEA] = var_core_value_sig86D0, var_core_value_sig9C9F;
+}
+let X = class extends var_core_value_sigE9A7 {
+  constructor(var_core_value_sigD873 = W, var_core_value_sigA12B, var_core_value_sigF230) {
+    super(), this._config = var_core_value_sigD873, this._injector = var_core_value_sigA12B, this._configService = var_core_value_sigF230;
+    let {
+      menu: var_core_value_sig09B8,
+      ...var_core_value_sig6F91
+    } = var_core_value_sig7F72({}, W, this._config);
+    var_core_value_sig09B8 && this._configService["setConfig"]("menu", var_core_value_sig09B8, {
+      merge: true
+    }), this._configService["setConfig"]("slides-exchange-client.config", var_core_value_sig6F91);
+  }
+  onStarting() {
+    [[j, {
+      useClass: M
+    }], [N, {
+      useClass: P
+    }], [G]].forEach(var_core_value_sig3EEE => this._injector["add"](var_core_value_sig3EEE));
+  }
+  onReady() {
+    this._injector["get"](G);
+  }
+};
+Y(X, "pluginName", "SLIDES_EXCHANGE_CLIENT_PLUGIN"), Y(X, "packageName", H), Y(X, "version", U), Y(X, "type", var_core_value_sigBECE.UNIVER_SLIDE), X = k([var_core_value_sigE67E(var_core_value_sig07E9, var_core_value_sig5B67), O(1, var_core_value_sig877E(var_core_value_sig20C8)), O(2, var_core_value_sig698E)], X);
+export { j as ISlideExchangeService, V as SlidesExchangeClientMenuSchema, X as UniverSlidesExchangeClientPlugin };

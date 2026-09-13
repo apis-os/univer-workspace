@@ -1,1 +1,109 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/license"),t=require("@univerjs/core"),n=require("@univerjs/thread-comment");var r="@univerjs-pro/thread-comment-resource",i="1.0.0-insiders.20260907-70fc579";const a={};var o=class{async addComment(v2){return v2;}async updateComment(v3){return true;}async resolveComment(v4){return true;}async deleteComment(v5,v6,v7,v8){return true;}async listComments(v9,v10,v11){return[];}saveCommentToSnapshot(v12){return{id:v12.id,threadId:v12.threadId,ref:v12.ref};}};function s(v23,v24){return function(v13,v14){v24(v13,v14,v23);};}function c(v25,v26,v27,v28){var v29=ox856bdc,v30=arguments[v29(316)],v31=v30<3?v26:v28===null?v28=Object[v29(336)](v26,v27):v28,v32;if(typeof Reflect=="object"&&typeof Reflect[v29(286)]==v29(319))v31=Reflect.decorate(v25,v26,v27,v28);else{for(var v33=v25[v29(316)]-1;v33>=0;v33--)(v32=v25[v33])&&(v31=(v30<3?v32(v31):v30>3?v32(v26,v27,v31):v32(v26,v27))||v31);}return v30>3&&v31&&Object[v29(328)](v26,v27,v31),v31;}let l=class{constructor(v15,v16){this._dataSource=v15,this._threadCommentDataSourceService=v16,this.init();}init(){this._threadCommentDataSourceService["dataSource"]=this._dataSource;}};l=c([s(0,(0,t.Inject)(o)),s(1,n.IThreadCommentDataSourceService)],l);function u(v34){"@babel/helpers - typeof";return u=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v17){return typeof v17;}:function(v18){return v18&&typeof Symbol=="function"&&v18.constructor===Symbol&&v18!==Symbol.prototype?"symbol":typeof v18;},u(v34);}function d(v35,v36){if(u(v35)!="object"||!v35)return v35;var v37=v35[Symbol.toPrimitive];if(v37!==undefined){var v38=v37.call(v35,v36||"default");if(u(v38)!="object")return v38;throw TypeError("@@toPrimitive must return a primitive value.");}return(v36==="string"?String:Number)(v35);}function f(v39){var v40=ox856bdc,v41=d(v39,v40(285));return u(v41)=="symbol"?v41:v41+"";}function p(v42,v43,v44){return(v43=f(v43))in v42?Object.defineProperty(v42,v43,{value:v44,enumerable:true,configurable:true,writable:true}):v42[v43]=v44,v42;}let m=class extends t.Plugin{constructor(v19=a,v20,v21){super(),this._config=v19,this._injector=v20,this._configService=v21;let{...v22}=(0,t.merge)({},a,this._config);this._configService["setConfig"]("thread-comment-resource.config",v22);}onStarting(){[[o],[l]].forEach(v1=>{this._injector["add"](v1);}),this._injector["get"](l);}};p(m,"pluginName","UniverThreadCommentResourcePlugin"),p(m,"packageName",r),p(m,"version",i),m=c([(0,t.DependentOn)(e.UniverLicensePlugin,n.UniverThreadCommentPlugin),s(1,(0,t.Inject)(t.Injector)),s(2,t.IConfigService)],m),Object.defineProperty(exports,"UniverThreadCommentResourcePlugin",{enumerable:true,get:function(){return m;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/license"),
+  t = require("@univerjs/core"),
+  n = require("@univerjs/thread-comment");
+var r = "@univerjs-pro/thread-comment-resource",
+  i = "1.0.0-insiders.20260907-70fc579";
+const a = {};
+var o = class {
+  async addComment(var_core_value_sig2AD8) {
+    return var_core_value_sig2AD8;
+  }
+  async updateComment(var_core_value_sig2AD0) {
+    return true;
+  }
+  async resolveComment(var_core_value_sig3EEE) {
+    return true;
+  }
+  async deleteComment(var_core_value_sigBC46, var_core_value_sig3D7D, var_core_value_sig27E5, var_core_value_sig8061) {
+    return true;
+  }
+  async listComments(var_core_value_sig4D4C, var_core_value_sigC9E0, var_core_value_sig76BA) {
+    return [];
+  }
+  saveCommentToSnapshot(var_core_value_sigFBFA) {
+    return {
+      id: var_core_value_sigFBFA.id,
+      threadId: var_core_value_sigFBFA.threadId,
+      ref: var_core_value_sigFBFA.ref
+    };
+  }
+};
+function s(var_core_value_sig4383, var_core_value_sig186C) {
+  return function (var_core_value_sigF602, var_core_value_sig1BBD) {
+    var_core_value_sig186C(var_core_value_sigF602, var_core_value_sig1BBD, var_core_value_sig4383);
+  };
+}
+function c(var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigF62A) {
+  var var_core_value_sig8178 = ox856bdc,
+    var_core_value_sigE9ED = arguments[var_core_value_sig8178(316)],
+    var_core_value_sigB577 = var_core_value_sigE9ED < 3 ? var_core_value_sig48BD : var_core_value_sigF62A === null ? var_core_value_sigF62A = Object[var_core_value_sig8178(336)](var_core_value_sig48BD, var_core_value_sig429F) : var_core_value_sigF62A,
+    var_core_value_sig9572;
+  if (typeof Reflect == "object" && typeof Reflect[var_core_value_sig8178(286)] == var_core_value_sig8178(319)) var_core_value_sigB577 = Reflect.decorate(var_core_value_sigD955, var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigF62A);else {
+    for (var var_core_value_sigD873 = var_core_value_sigD955[var_core_value_sig8178(316)] - 1; var_core_value_sigD873 >= 0; var_core_value_sigD873--) (var_core_value_sig9572 = var_core_value_sigD955[var_core_value_sigD873]) && (var_core_value_sigB577 = (var_core_value_sigE9ED < 3 ? var_core_value_sig9572(var_core_value_sigB577) : var_core_value_sigE9ED > 3 ? var_core_value_sig9572(var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigB577) : var_core_value_sig9572(var_core_value_sig48BD, var_core_value_sig429F)) || var_core_value_sigB577);
+  }
+  return var_core_value_sigE9ED > 3 && var_core_value_sigB577 && Object[var_core_value_sig8178(328)](var_core_value_sig48BD, var_core_value_sig429F, var_core_value_sigB577), var_core_value_sigB577;
+}
+let l = class {
+  constructor(var_core_value_sigF704, var_core_value_sig2BCF) {
+    this._dataSource = var_core_value_sigF704, this._threadCommentDataSourceService = var_core_value_sig2BCF, this.init();
+  }
+  init() {
+    this._threadCommentDataSourceService["dataSource"] = this._dataSource;
+  }
+};
+l = c([s(0, (0, t.Inject)(o)), s(1, n.IThreadCommentDataSourceService)], l);
+function u(var_core_value_sigA12B) {
+  "@babel/helpers - typeof";
+
+  return u = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig0D69) {
+    return typeof var_core_value_sig0D69;
+  } : function (var_core_value_sig480E) {
+    return var_core_value_sig480E && typeof Symbol == "function" && var_core_value_sig480E.constructor === Symbol && var_core_value_sig480E !== Symbol.prototype ? "symbol" : typeof var_core_value_sig480E;
+  }, u(var_core_value_sigA12B);
+}
+function d(var_core_value_sigF230, var_core_value_sig09B8) {
+  if (u(var_core_value_sigF230) != "object" || !var_core_value_sigF230) return var_core_value_sigF230;
+  var var_core_value_sig6F91 = var_core_value_sigF230[Symbol.toPrimitive];
+  if (var_core_value_sig6F91 !== undefined) {
+    var var_core_value_sigF9C7 = var_core_value_sig6F91.call(var_core_value_sigF230, var_core_value_sig09B8 || "default");
+    if (u(var_core_value_sigF9C7) != "object") return var_core_value_sigF9C7;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig09B8 === "string" ? String : Number)(var_core_value_sigF230);
+}
+function f(var_core_value_sig8895) {
+  var var_core_value_sigC80B = ox856bdc,
+    var_core_value_sig284F = d(var_core_value_sig8895, var_core_value_sigC80B(285));
+  return u(var_core_value_sig284F) == "symbol" ? var_core_value_sig284F : var_core_value_sig284F + "";
+}
+function p(var_core_value_sigE154, var_core_value_sig4632, var_core_value_sig12F2) {
+  return (var_core_value_sig4632 = f(var_core_value_sig4632)) in var_core_value_sigE154 ? Object.defineProperty(var_core_value_sigE154, var_core_value_sig4632, {
+    value: var_core_value_sig12F2,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigE154[var_core_value_sig4632] = var_core_value_sig12F2, var_core_value_sigE154;
+}
+let m = class extends t.Plugin {
+  constructor(var_core_value_sig26DB = a, var_core_value_sigF0F9, var_core_value_sig1A0F) {
+    super(), this._config = var_core_value_sig26DB, this._injector = var_core_value_sigF0F9, this._configService = var_core_value_sig1A0F;
+    let {
+      ...var_core_value_sigFBA4
+    } = (0, t.merge)({}, a, this._config);
+    this._configService["setConfig"]("thread-comment-resource.config", var_core_value_sigFBA4);
+  }
+  onStarting() {
+    [[o], [l]].forEach(var_core_value_sig7524 => {
+      this._injector["add"](var_core_value_sig7524);
+    }), this._injector["get"](l);
+  }
+};
+p(m, "pluginName", "UniverThreadCommentResourcePlugin"), p(m, "packageName", r), p(m, "version", i), m = c([(0, t.DependentOn)(e.UniverLicensePlugin, n.UniverThreadCommentPlugin), s(1, (0, t.Inject)(t.Injector)), s(2, t.IConfigService)], m), Object.defineProperty(exports, "UniverThreadCommentResourcePlugin", {
+  enumerable: true,
+  get: function () {
+    return m;
+  }
+});

@@ -1,1 +1,98 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getPrototypeOf,a=Object.prototype["hasOwnProperty"],o=(v20,v21,v22,v23)=>{if(v21&&typeof v21=="object"||typeof v21=="function"){for(var v24=r(v21),v25=0,v26=v24.length,v27;v25<v26;v25++)v27=v24[v25],!a.call(v20,v27)&&v27!==v22&&t(v20,v27,{get:(v1=>v21[v1]).bind(null,v27),enumerable:!(v23=n(v21,v27))||v23.enumerable});}return v20;},s=(v28,v29,v30)=>(v30=v28==null?{}:e(i(v28)),o(v29||!v28||!v28.__esModule?t(v30,"default",{value:v28,enumerable:true}):v30,v28));let c=require("@univerjs-pro/boards/facade"),l=require("@univerjs/thread-comment");l=s(l);var u=class extends c.FBoard{_initialize(v8){let v9;Object.defineProperty(this,"_threadCommentService",{get:()=>v9??=v8.get(l.ThreadCommentFacadeService)});}createElementCommentAsync(v10,v11,v12={}){if(!this._boardModel["getActivePage"]().elements[v10])throw Error('Board element "'+v10+'" was not found.');let v13=this._boardModel["getActivePageId"]();return this._threadCommentService["createCommentAsync"]({...v12,unitId:this._boardModel["getUnitId"](),subUnitId:v13,anchor:{kind:l.ThreadCommentAnchorKind["BOARD_ELEMENT"],pageId:v13,elementId:v10},content:v11});}createPositionCommentAsync(v14,v15,v16={}){if(!Number.isFinite(v14.x)||!Number.isFinite(v14.y))throw TypeError("Board comment position must contain finite x and y values.");let v17=this._boardModel["getActivePageId"]();return this._threadCommentService["createCommentAsync"]({...v16,unitId:this._boardModel["getUnitId"](),subUnitId:v17,anchor:{kind:l.ThreadCommentAnchorKind["BOARD_POSITION"],pageId:v17,...v14},content:v15});}getElementComments(v18){return this._threadCommentService["getComments"]({unitIds:[this._boardModel["getUnitId"]()],subUnitIds:[this._boardModel["getActivePageId"]()],anchorKinds:[l.ThreadCommentAnchorKind["BOARD_ELEMENT"]]}).filter(v2=>{var v3=ox1d4676,v4;return((v4=v2[v3(197)])==null?undefined:v4[v3(218)])===l[v3(244)][v3(242)]&&v2[v3(197)][v3(224)]===v18;});}async listElementCommentsAsync(v19){return(await this._threadCommentService["listCommentsAsync"]({unitIds:[this._boardModel["getUnitId"]()],subUnitIds:[this._boardModel["getActivePageId"]()],anchorKinds:[l.ThreadCommentAnchorKind["BOARD_ELEMENT"]]})).filter(v5=>{var v6=ox368104,v7;return((v7=v5[v6(197)])==null?undefined:v7[v6(218)])===l[v6(244)].BOARD_ELEMENT&&v5[v6(197)][v6(224)]===v19;});}getComments(){return this._threadCommentService["getComments"]({unitIds:[this._boardModel["getUnitId"]()],anchorKinds:[l.ThreadCommentAnchorKind["BOARD_ELEMENT"],l.ThreadCommentAnchorKind["BOARD_POSITION"]]});}listCommentsAsync(){return this._threadCommentService["listCommentsAsync"]({unitIds:[this._boardModel["getUnitId"]()],anchorKinds:[l.ThreadCommentAnchorKind["BOARD_ELEMENT"],l.ThreadCommentAnchorKind["BOARD_POSITION"]]});}};c.FBoard["extend"](u),exports.FBoardThreadCommentMixin=u;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+var e = Object.create,
+  t = Object.defineProperty,
+  n = Object.getOwnPropertyDescriptor,
+  r = Object.getOwnPropertyNames,
+  i = Object.getPrototypeOf,
+  a = Object.prototype["hasOwnProperty"],
+  o = (var_core_value_sigF0F9, var_core_value_sig1A0F, var_core_value_sigFBA4, var_core_value_sig4383) => {
+    if (var_core_value_sig1A0F && typeof var_core_value_sig1A0F == "object" || typeof var_core_value_sig1A0F == "function") {
+      for (var var_core_value_sig186C = r(var_core_value_sig1A0F), var_core_value_sigD955 = 0, var_core_value_sig48BD = var_core_value_sig186C.length, var_core_value_sig429F; var_core_value_sigD955 < var_core_value_sig48BD; var_core_value_sigD955++) var_core_value_sig429F = var_core_value_sig186C[var_core_value_sigD955], !a.call(var_core_value_sigF0F9, var_core_value_sig429F) && var_core_value_sig429F !== var_core_value_sigFBA4 && t(var_core_value_sigF0F9, var_core_value_sig429F, {
+        get: (var_core_value_sig7524 => var_core_value_sig1A0F[var_core_value_sig7524]).bind(null, var_core_value_sig429F),
+        enumerable: !(var_core_value_sig4383 = n(var_core_value_sig1A0F, var_core_value_sig429F)) || var_core_value_sig4383.enumerable
+      });
+    }
+    return var_core_value_sigF0F9;
+  },
+  s = (var_core_value_sigF62A, var_core_value_sig8178, var_core_value_sigE9ED) => (var_core_value_sigE9ED = var_core_value_sigF62A == null ? {} : e(i(var_core_value_sigF62A)), o(var_core_value_sig8178 || !var_core_value_sigF62A || !var_core_value_sigF62A.__esModule ? t(var_core_value_sigE9ED, "default", {
+    value: var_core_value_sigF62A,
+    enumerable: true
+  }) : var_core_value_sigE9ED, var_core_value_sigF62A));
+let c = require("@univerjs-pro/boards/facade"),
+  l = require("@univerjs/thread-comment");
+l = s(l);
+var u = class extends c.FBoard {
+  _initialize(var_core_value_sig8061) {
+    let var_core_value_sig4D4C;
+    Object.defineProperty(this, "_threadCommentService", {
+      get: () => var_core_value_sig4D4C ??= var_core_value_sig8061.get(l.ThreadCommentFacadeService)
+    });
+  }
+  createElementCommentAsync(var_core_value_sigC9E0, var_core_value_sig76BA, var_core_value_sigFBFA = {}) {
+    if (!this._boardModel["getActivePage"]().elements[var_core_value_sigC9E0]) throw Error('Board element "' + var_core_value_sigC9E0 + '" was not found.');
+    let var_core_value_sigF602 = this._boardModel["getActivePageId"]();
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_core_value_sigFBFA,
+      unitId: this._boardModel["getUnitId"](),
+      subUnitId: var_core_value_sigF602,
+      anchor: {
+        kind: l.ThreadCommentAnchorKind["BOARD_ELEMENT"],
+        pageId: var_core_value_sigF602,
+        elementId: var_core_value_sigC9E0
+      },
+      content: var_core_value_sig76BA
+    });
+  }
+  createPositionCommentAsync(var_core_value_sig1BBD, var_core_value_sigF704, var_core_value_sig2BCF = {}) {
+    if (!Number.isFinite(var_core_value_sig1BBD.x) || !Number.isFinite(var_core_value_sig1BBD.y)) throw TypeError("Board comment position must contain finite x and y values.");
+    let var_core_value_sig0D69 = this._boardModel["getActivePageId"]();
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_core_value_sig2BCF,
+      unitId: this._boardModel["getUnitId"](),
+      subUnitId: var_core_value_sig0D69,
+      anchor: {
+        kind: l.ThreadCommentAnchorKind["BOARD_POSITION"],
+        pageId: var_core_value_sig0D69,
+        ...var_core_value_sig1BBD
+      },
+      content: var_core_value_sigF704
+    });
+  }
+  getElementComments(var_core_value_sig480E) {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      subUnitIds: [this._boardModel["getActivePageId"]()],
+      anchorKinds: [l.ThreadCommentAnchorKind["BOARD_ELEMENT"]]
+    }).filter(var_core_value_sig2AD8 => {
+      var var_core_value_sig2AD0 = ox1d4676,
+        var_core_value_sig3EEE;
+      return ((var_core_value_sig3EEE = var_core_value_sig2AD8[var_core_value_sig2AD0(197)]) == null ? undefined : var_core_value_sig3EEE[var_core_value_sig2AD0(218)]) === l[var_core_value_sig2AD0(244)][var_core_value_sig2AD0(242)] && var_core_value_sig2AD8[var_core_value_sig2AD0(197)][var_core_value_sig2AD0(224)] === var_core_value_sig480E;
+    });
+  }
+  async listElementCommentsAsync(var_core_value_sig26DB) {
+    return (await this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      subUnitIds: [this._boardModel["getActivePageId"]()],
+      anchorKinds: [l.ThreadCommentAnchorKind["BOARD_ELEMENT"]]
+    })).filter(var_core_value_sigBC46 => {
+      var var_core_value_sig3D7D = ox368104,
+        var_core_value_sig27E5;
+      return ((var_core_value_sig27E5 = var_core_value_sigBC46[var_core_value_sig3D7D(197)]) == null ? undefined : var_core_value_sig27E5[var_core_value_sig3D7D(218)]) === l[var_core_value_sig3D7D(244)].BOARD_ELEMENT && var_core_value_sigBC46[var_core_value_sig3D7D(197)][var_core_value_sig3D7D(224)] === var_core_value_sig26DB;
+    });
+  }
+  getComments() {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      anchorKinds: [l.ThreadCommentAnchorKind["BOARD_ELEMENT"], l.ThreadCommentAnchorKind["BOARD_POSITION"]]
+    });
+  }
+  listCommentsAsync() {
+    return this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._boardModel["getUnitId"]()],
+      anchorKinds: [l.ThreadCommentAnchorKind["BOARD_ELEMENT"], l.ThreadCommentAnchorKind["BOARD_POSITION"]]
+    });
+  }
+};
+c.FBoard["extend"](u), exports.FBoardThreadCommentMixin = u;

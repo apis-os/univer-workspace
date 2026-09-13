@@ -50,7 +50,7 @@ const e = {
       next: "Siguiente",
       other: "Otro",
       ok: "Aceptar",
-      cancel: "Cancelar",
+      cancel: "Cancelar"
     },
     valueFilter: {
       title: "Filtros de valor",
@@ -72,7 +72,7 @@ const e = {
       bottomPercent: "Porcentaje inferior",
       clear: "Borrar filtro",
       ok: "Aceptar",
-      cancel: "Cancelar",
+      cancel: "Cancelar"
     },
     dateGroup: {
       title: "Agrupaci?n\x20de\x20fechas",
@@ -86,7 +86,7 @@ const e = {
       date: "Día",
       hour: "Hora",
       minute: "Minuto",
-      hourMinute: "Hora-Minuto",
+      hourMinute: "Hora-Minuto"
     },
     dialog: {
       fieldName: "Nombre del campo",
@@ -102,7 +102,7 @@ const e = {
         clearFilter: "Borrar filtro",
         blank: "(Vacío)",
         cancel: "Cancelar",
-        confirm: "Aceptar",
+        confirm: "Aceptar"
       },
       numfmt: {
         general: "General",
@@ -114,20 +114,15 @@ const e = {
         formatTypes: "Tipos de formato",
         confirm: "Aceptar",
         cancel: "Cancelar",
-        generalDesc:
-          "El formato general no contiene ningún formato de número específico.",
-        accountingDesc:
-          "El formato de número contable alinea los símbolos de moneda y los puntos decimales en una columna.",
-        currencyDesc:
-          "El formato de moneda se utiliza para valores monetarios generales, el formato contable alinea los puntos decimales en una columna de valores.",
-        dateDesc:
-          "El\x20formato\x20de\x20fecha\x20muestra\x20los\x20números\x20de\x20serie\x20de\x20fecha\x20y\x20hora\x20como\x20valores\x20de\x20fecha.",
-        thousandthPercentileDesc:
-          "El\x20formato\x20de\x20percentil\x20milésimo\x20se\x20utiliza\x20para\x20números\x20generales,\x20los\x20formatos\x20de\x20moneda\x20y\x20contable\x20proporcionan\x20formatos\x20especializados\x20para\x20valores\x20monetarios.",
+        generalDesc: "El formato general no contiene ningún formato de número específico.",
+        accountingDesc: "El formato de número contable alinea los símbolos de moneda y los puntos decimales en una columna.",
+        currencyDesc: "El formato de moneda se utiliza para valores monetarios generales, el formato contable alinea los puntos decimales en una columna de valores.",
+        dateDesc: "El\x20formato\x20de\x20fecha\x20muestra\x20los\x20números\x20de\x20serie\x20de\x20fecha\x20y\x20hora\x20como\x20valores\x20de\x20fecha.",
+        thousandthPercentileDesc: "El\x20formato\x20de\x20percentil\x20milésimo\x20se\x20utiliza\x20para\x20números\x20generales,\x20los\x20formatos\x20de\x20moneda\x20y\x20contable\x20proporcionan\x20formatos\x20especializados\x20para\x20valores\x20monetarios.",
         decimalPlaces: "Decimales",
         currencyTypes: "Tipos de moneda",
         negativeNumberTypes: "Tipos\x20de\x20números\x20negativos",
-        dateTypes: "Tipos de fecha",
+        dateTypes: "Tipos de fecha"
       },
       source: {
         insertPivotTable: "Insertar tabla dinámica",
@@ -135,8 +130,8 @@ const e = {
         position: "Ubicación de la tabla dinámica",
         newSheet: "Nueva hoja",
         existingSheet: "Hoja existente",
-        intersect: "No puede superponerse con la fuente de datos",
-      },
+        intersect: "No puede superponerse con la fuente de datos"
+      }
     },
     subtotal: {
       average: "Promedio",
@@ -149,7 +144,7 @@ const e = {
       stdDevp: "Desviación estándar de población",
       sum: "Suma",
       var: "Varianza",
-      varp: "Varianza\x20de\x20población",
+      varp: "Varianza\x20de\x20población"
     },
     subTotalText: "Subtotal",
     grandTotalText: "Total general",
@@ -175,24 +170,21 @@ const e = {
       layoutCompact: "Formato\x20compacto",
       layoutOutline: "Formato\x20de\x20esquema",
       repeatRowLabels: "Repetir etiquetas de fila",
-      repeatColLabels: "Repetir etiquetas de columna",
+      repeatColLabels: "Repetir etiquetas de columna"
     },
     perform: {
       tips: "Consejos",
       info: "Ya\x20hay\x20datos\x20en\x20el\x20área\x20de\x20destino.\x20Esta\x20acción\x20sobrescribirá\x20los\x20datos\x20existentes.\x20¿Desea\x20continuar?",
       confirm: "Confirmar",
       cancel: "Cancelar",
-      rowColError:
-        "Este cambio no se puede realizar en las celdas seleccionadas porque afectaría la tabla dinámica. Use la lista de campos para modificar el informe. Si intenta insertar o eliminar celdas, mueva la tabla dinámica e inténtelo de nuevo.",
+      rowColError: "Este cambio no se puede realizar en las celdas seleccionadas porque afectaría la tabla dinámica. Use la lista de campos para modificar el informe. Si intenta insertar o eliminar celdas, mueva la tabla dinámica e inténtelo de nuevo."
     },
     msg: {
       emptySourceRange: "El rango de la fuente de datos está vacío",
       invalidSize: "El rango de la fuente de datos no es válido",
-      mergeCellError:
-        "No se pueden insertar celdas combinadas en una tabla dinámica",
+      mergeCellError: "No se pueden insertar celdas combinadas en una tabla dinámica",
       editCellError: "No se pueden editar celdas en una tabla dinámica",
-      permissionError:
-        "No se puede editar la tabla dinámica en una hoja protegida",
+      permissionError: "No se puede editar la tabla dinámica en una hoja protegida"
     },
     averageName: "Promedio de ",
     countName: "Conteo de ",
@@ -204,7 +196,7 @@ const e = {
     stdDevpName: "DesvEstP\x20de\x20",
     sumName: "Suma de ",
     varName: "Var de ",
-    varpName: "VarP\x20de\x20",
-  },
+    varpName: "VarP\x20de\x20"
+  }
 };
 module.exports = e;

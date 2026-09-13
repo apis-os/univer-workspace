@@ -1,7 +1,21 @@
-import{BooleanNumber,BuildTextUtils,CommandType,DashStyleType,DataStreamTreeTokenType,DependentOn,Disposable,DocumentBlockRangeType,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSONX,Plugin,TextX,TextXActionType,UniverInstanceType,containsInteriorInsertionOffset,containsStreamIndex,createParagraphId,generateRandomId,getBlockRangeInterval,getBodySliceForTextXAction,getParagraphContentStartOffset,getParagraphContentStartOffsets,getParagraphFollowingBlockOffset,getSingleDataStreamChange,intersectsOperationalIntervals,merge,shiftExclusiveRangeOnDelete,shiftExclusiveRangeOnInsert,shiftInclusiveRangeOnDelete,shiftInclusiveRangeOnInsert}from"@univerjs/core";
-import{Subject}from"rxjs";
-import{DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin,getContentInsertRange,isHeaderFooterSelection}from"@univerjs/docs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
-const y={icon:"🎨",showIcon:true,backgroundColor:"",borderColor:"",borderWidth:1,borderOpacity:1,borderStyle:DashStyleType.SOLID,borderRadius:8,paddingTop:16,paddingRight:20,paddingBottom:16,paddingLeft:20,iconSize:24,iconGap:16};
-
+import { BooleanNumber, BuildTextUtils, CommandType, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentBlockRangeType, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, TextXActionType, UniverInstanceType, containsInteriorInsertionOffset, containsStreamIndex, createParagraphId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getParagraphContentStartOffset, getParagraphContentStartOffsets, getParagraphFollowingBlockOffset, getSingleDataStreamChange, intersectsOperationalIntervals, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { Subject } from "rxjs";
+import { DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange, isHeaderFooterSelection } from "@univerjs/docs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
+const y = {
+  icon: "🎨",
+  showIcon: true,
+  backgroundColor: "",
+  borderColor: "",
+  borderWidth: 1,
+  borderOpacity: 1,
+  borderStyle: DashStyleType.SOLID,
+  borderRadius: 8,
+  paddingTop: 16,
+  paddingRight: 20,
+  paddingBottom: 16,
+  paddingLeft: 20,
+  iconSize: 24,
+  iconGap: 16
+};
 export { y as DEFAULT_CALLOUT_CONFIG };

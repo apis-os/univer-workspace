@@ -3,13 +3,16 @@ const e = {
     dataSource: {
       inlineMode: "En línia",
       referencedMode: "Referenciada",
-      sourceType: "Tipus d’origen",
+      sourceType: "Tipus d’origen"
     },
     editor: {
       defaultColor: "Color\x20per\x20defecte",
-      fontSize: "Mida de la lletra",
+      fontSize: "Mida de la lletra"
     },
-    setup: { stack: "Apilar", percentStacked: "Apilar percentatge" },
+    setup: {
+      stack: "Apilar",
+      percentStacked: "Apilar percentatge"
+    },
     chartTypes: {
       line: "Gràfic\x20de\x20línies",
       column: "Gràfic de columnes",
@@ -42,7 +45,7 @@ const e = {
       treemap: "Mapa\x20d\x27arbre",
       sunburst: "Gràfic de raigs solars",
       gauge: "Gràfic d'indicador",
-      chord: "Diagrama de cordes",
+      chord: "Diagrama de cordes"
     },
     section: {
       waterfall: "Gràfic de cascada",
@@ -61,7 +64,7 @@ const e = {
       treemap: "Gràfic de mapa d'arbre",
       sunburst: "Gràfic Sunburst",
       gauge: "Gràfic de mesura",
-      chord: "Taula\x20d\x27acords",
+      chord: "Taula\x20d\x27acords"
     },
     presentation: {
       backgroundColor: "Color de fons",
@@ -76,7 +79,7 @@ const e = {
       wrap: "Embolica la llegenda",
       selectMode: "Mode de selecció",
       visualMapType: "Mapa\x20visual",
-      align: "Alineació",
+      align: "Alineació"
     },
     numberFormat: {
       source: "Format d'origen",
@@ -89,19 +92,15 @@ const e = {
       thousandsType: "Percentil\x20mil·lèsima",
       formatTypes: "Tipus de format",
       generalDesc: "El format general no conté cap format de nombre específic.",
-      accountingDesc:
-        "El\x20format\x20de\x20nombre\x20comptable\x20alinea\x20els\x20símbols\x20de\x20moneda\x20i\x20els\x20punts\x20decimals\x20en\x20una\x20columna.",
-      currencyDesc:
-        "El format de moneda s'utilitza per a valors monetaris generals, el format comptable alinea els punts decimals en una columna de valors.",
-      dateDesc:
-        "El\x20format\x20de\x20data\x20mostra\x20els\x20números\x20de\x20sèrie\x20de\x20data\x20i\x20hora\x20com\x20a\x20valors\x20de\x20data.",
-      thousandsDesc:
-        "El\x20format\x20de\x20percentil\x20mil·lèsima\x20s\x27utilitza\x20per\x20a\x20nombres\x20generals,\x20els\x20formats\x20de\x20moneda\x20i\x20comptable\x20proporcionen\x20formats\x20especialitzats\x20per\x20a\x20valors\x20monetaris.",
+      accountingDesc: "El\x20format\x20de\x20nombre\x20comptable\x20alinea\x20els\x20símbols\x20de\x20moneda\x20i\x20els\x20punts\x20decimals\x20en\x20una\x20columna.",
+      currencyDesc: "El format de moneda s'utilitza per a valors monetaris generals, el format comptable alinea els punts decimals en una columna de valors.",
+      dateDesc: "El\x20format\x20de\x20data\x20mostra\x20els\x20números\x20de\x20sèrie\x20de\x20data\x20i\x20hora\x20com\x20a\x20valors\x20de\x20data.",
+      thousandsDesc: "El\x20format\x20de\x20percentil\x20mil·lèsima\x20s\x27utilitza\x20per\x20a\x20nombres\x20generals,\x20els\x20formats\x20de\x20moneda\x20i\x20comptable\x20proporcionen\x20formats\x20especialitzats\x20per\x20a\x20valors\x20monetaris.",
       decimalPlaces: "Decimals",
       currencyTypes: "Tipus\x20de\x20moneda",
       negativeNumberTypes: "Tipus de nombres negatius",
       dateTypes: "Tipus de data",
-      setFormat: "Establir format d'etiqueta",
+      setFormat: "Establir format d'etiqueta"
     },
     series: {
       rightAxis: "Eix\x20dret",
@@ -124,7 +123,7 @@ const e = {
       emptyRect: "Rectangle buit",
       emptyRoundRect: "Rectangle arrodonit buit",
       emptyPin: "Marcador buit",
-      emptyArrow: "Fletxa buida",
+      emptyArrow: "Fletxa buida"
     },
     lineAndArea: {
       lineStyle: "Estil de línia",
@@ -134,7 +133,7 @@ const e = {
       invalidValues: "Valors no vàlids",
       breakLine: "Trenca\x20la\x20línia",
       connect: "Connecteu\x20punts\x20de\x20dades",
-      zero: "Tractar com a zero",
+      zero: "Tractar com a zero"
     },
     axis: {
       useDateAxis: "Tracta les etiquetes com a dates",
@@ -150,13 +149,13 @@ const e = {
       tickLength: "Longitud de la marca",
       tickWidth: "Amplada de la marca",
       tickColor: "Color de la marca",
-      tickPosition: "Posició de la marca",
+      tickPosition: "Posició de la marca"
     },
     indicator: {
       lineColor: "Color\x20de\x20la\x20línia\x20indicadora",
       lineType: "Tipus\x20de\x20línia\x20indicadora",
       labelBackground: "Fons de l'etiqueta",
-      labelText: "Color del text de l'etiqueta",
+      labelText: "Color del text de l'etiqueta"
     },
     trendline: {
       add: "Afegir\x20línia\x20de\x20tendència",
@@ -173,21 +172,23 @@ const e = {
       order: "Ordre",
       period: "Període",
       formulaColor: "Color de la fórmula",
-      r2Color: "Color R²",
+      r2Color: "Color R²"
     },
-    pareto: { includeZeroValues: "Inclou valors zero" },
+    pareto: {
+      includeZeroValues: "Inclou valors zero"
+    },
     plotArea: {
       label: "Àrea\x20de\x20traçat",
       manual: "Manual",
       left: "Esquerra (%)",
       top: "Superior (%)",
       width: "Amplada (%)",
-      height: "Alçada\x20(%)",
+      height: "Alçada\x20(%)"
     },
     bar: {
       layout: "Espaiat de les barres",
       gapWidth: "Amplada de l'espai (%)",
-      overlap: "Superposició\x20de\x20sèries\x20(%)",
+      overlap: "Superposició\x20de\x20sèries\x20(%)"
     },
     pie: {
       mode: "Forma del gràfic",
@@ -220,20 +221,20 @@ const e = {
       paddingAngle: "Espaiat entre llesques",
       halfPie: "Semicercle",
       rosePie: "Pastís de roses",
-      labelLine: "Línia d'etiquetes",
+      labelLine: "Línia d'etiquetes"
     },
     radar: {
       shape: "Forma de radar",
       polygon: "Polígon",
-      fill: "Omplir\x20l\x27àrea",
+      fill: "Omplir\x20l\x27àrea"
     },
     funnel: {
       gap: "Buit d'article",
-      absoluteValues: "Utilitzeu\x20valors\x20absoluts",
+      absoluteValues: "Utilitzeu\x20valors\x20absoluts"
     },
     heatmap: {
       unit: "Unitat\x20de\x20valor",
-      labels: "Etiquetes\x20cel·lulars",
+      labels: "Etiquetes\x20cel·lulars"
     },
     relation: {
       nodes: "Nodes",
@@ -245,7 +246,7 @@ const e = {
       valueSize: "Mida\x20els\x20nodes\x20per\x20valor",
       rotateLabels: "Gira les etiquetes",
       gravity: "Gravetat",
-      repulsion: "Repulsió",
+      repulsion: "Repulsió"
     },
     wordCloud: {
       maskImage: "ID de la imatge de la màscara",
@@ -256,7 +257,7 @@ const e = {
       heart: "Cor",
       "triangle-forward": "Triangle\x20cap\x20endavant",
       pentagon: "Pentàgon",
-      star: "Estrella",
+      star: "Estrella"
     },
     waterfall: {
       styleTarget: "Destinació de l’estil",
@@ -266,7 +267,7 @@ const e = {
       arrangement: "Cascada",
       subtotal: "Subtotal",
       includeSubtotal: "Utilitzeu el subtotal",
-      connector: "Línia de connector",
+      connector: "Línia de connector"
     },
     candlestick: {
       candle: "Espelma",
@@ -287,9 +288,8 @@ const e = {
       wickOpacity: "Opacitat de la metxa",
       candleWidth: "Amplada de l'espelma",
       hollow: "Espelma\x20buida",
-      columnsError:
-        "Les dades del gràfic d’espelmes necessiten les columnes Categoria, Obertura, Màxim, Mínim i Tancament.",
-      series: "Sèrie OHLC",
+      columnsError: "Les dades del gràfic d’espelmes necessiten les columnes Categoria, Obertura, Màxim, Mínim i Tancament.",
+      series: "Sèrie OHLC"
     },
     histogram: {
       binGap: "Espai\x20de\x20la\x20paperera",
@@ -300,7 +300,7 @@ const e = {
       binWidth: "Amplada del contenidor",
       underflow: "Llindar de desbordament inferior",
       overflow: "Llindar de desbordament",
-      frequency: "Freqüència",
+      frequency: "Freqüència"
     },
     treemap: {
       parentLabelLayout: "Disseny de l'etiqueta principal",
@@ -308,8 +308,7 @@ const e = {
       overlapping: "Superposició",
       leafLabel: "Etiquetes\x20de\x20fulles",
       hierarchy: "Camps de jerarquia",
-      diagnostic:
-        "El mapa d’arbre necessita almenys un camp jeràrquic i un camp de valor numèric.",
+      diagnostic: "El mapa d’arbre necessita almenys un camp jeràrquic i un camp de valor numèric."
     },
     sunburst: {
       hierarchy: "Jerarquia",
@@ -319,8 +318,7 @@ const e = {
       removeHierarchy: "Elimina el camp de la jerarquia",
       centerLabel: "Total central",
       labelFormat: "Estil d'etiqueta",
-      diagnostic:
-        "El\x20gràfic\x20de\x20raigs\x20solars\x20necessita\x20almenys\x20un\x20camp\x20jeràrquic\x20i\x20un\x20camp\x20de\x20valor\x20numèric.",
+      diagnostic: "El\x20gràfic\x20de\x20raigs\x20solars\x20necessita\x20almenys\x20un\x20camp\x20jeràrquic\x20i\x20un\x20camp\x20de\x20valor\x20numèric."
     },
     gauge: {
       scale: "Escala",
@@ -349,12 +347,9 @@ const e = {
       customized: "Personalitzat",
       axisLabelNumberFormat: "Format numèric de les etiquetes de l’eix",
       detailNumberFormat: "Format de nombre detallat",
-      emptyDiagnostic:
-        "El gràfic d’indicador necessita almenys un valor numèric finit.",
-      mappingDiagnostic:
-        "El gràfic d’indicador necessita un camp d’etiqueta i exactament un camp de valor.",
-      configDiagnostic:
-        "La configuració del gràfic d’indicador no és vàlida. Comproveu l’escala, els intervals, les proporcions i les mides.",
+      emptyDiagnostic: "El gràfic d’indicador necessita almenys un valor numèric finit.",
+      mappingDiagnostic: "El gràfic d’indicador necessita un camp d’etiqueta i exactament un camp de valor.",
+      configDiagnostic: "La configuració del gràfic d’indicador no és vàlida. Comproveu l’escala, els intervals, les proporcions i les mides."
     },
     chord: {
       source: "Font",
@@ -367,8 +362,7 @@ const e = {
       minAngle: "Angle mínim",
       innerRadius: "Radi\x20interior",
       outerRadius: "Radi exterior",
-      invalidRadii:
-        "El radi interior ha de ser més petit que el radi exterior.",
+      invalidRadii: "El radi interior ha de ser més petit que el radi exterior.",
       rotation: "Rotació",
       distance: "Distància",
       width: "Amplada",
@@ -377,13 +371,10 @@ const e = {
       gradient: "Degradat",
       adjacency: "Nodes\x20adjacents",
       self: "Node actual",
-      emptyDiagnostic:
-        "El diagrama de cordes necessita almenys una relació de pes positiu entre dos nodes diferents.",
-      mappingDiagnostic:
-        "El diagrama de cordes necessita camps d’origen i destinació diferents i, opcionalment, un camp de valor diferent.",
-      configDiagnostic:
-        "La configuració del diagrama de cordes no és vàlida. Comproveu els angles, els radis, l’opacitat i les mides.",
-      associatedValue: "Valor\x20associat",
+      emptyDiagnostic: "El diagrama de cordes necessita almenys una relació de pes positiu entre dos nodes diferents.",
+      mappingDiagnostic: "El diagrama de cordes necessita camps d’origen i destinació diferents i, opcionalment, un camp de valor diferent.",
+      configDiagnostic: "La configuració del diagrama de cordes no és vàlida. Comproveu els angles, els radis, l’opacitat i les mides.",
+      associatedValue: "Valor\x20associat"
     },
     common: {
       category: "Categoria",
@@ -434,16 +425,27 @@ const e = {
         right: "Dreta",
         bottom: "Inferior",
         left: "Esquerra",
-        hide: "Amagar",
+        hide: "Amagar"
       },
-      axisAlign: { start: "Inici", center: "Centre", end: "Fi" },
-      textAlign: { left: "Esquerra", center: "Centre", right: "Dreta" },
+      axisAlign: {
+        start: "Inici",
+        center: "Centre",
+        end: "Fi"
+      },
+      textAlign: {
+        left: "Esquerra",
+        center: "Centre",
+        right: "Dreta"
+      },
       legendSelectMode: {
         single: "Individual",
         multiple: "Múltiple",
-        disabled: "Desactivat",
+        disabled: "Desactivat"
       },
-      visualMapType: { continuous: "Contínua", piecewise: "Per\x20trams" },
+      visualMapType: {
+        continuous: "Contínua",
+        piecewise: "Per\x20trams"
+      },
       default: "Per defecte",
       reset: "Restableix",
       color: "Color",
@@ -489,13 +491,12 @@ const e = {
       cancel: "Cancel·la",
       insert: "Insereix",
       apply: "Aplica",
-      duplicate: "Duplica",
+      duplicate: "Duplica"
     },
     inlineTable: {
-      pasteHint:
-        "Enganxeu una taula de Fulls de càlcul, Excel o una pàgina web per substituir les dades en línia.",
+      pasteHint: "Enganxeu una taula de Fulls de càlcul, Excel o una pàgina web per substituir les dades en línia.",
       addRow: "Afegeix fila",
-      addColumn: "Afegeix una columna",
+      addColumn: "Afegeix una columna"
     },
     floatMenu: {
       menuTitle: {
@@ -504,7 +505,7 @@ const e = {
         gridline: "Línia de quadrícula",
         tick: "Marca\x20de\x20graduació",
         mark: "Marca",
-        dataLabel: "Etiqueta de dades",
+        dataLabel: "Etiqueta de dades"
       },
       field: {
         position: "Posició",
@@ -513,11 +514,17 @@ const e = {
         map: "Mapa",
         rotate: "Gira",
         labelText: "Text d'etiqueta",
-        titleText: "Text del títol",
+        titleText: "Text del títol"
       },
-      action: { more: "Més" },
-      control: { labels: "Etiquetes", line: "Línia", reverse: "Inverteix" },
-    },
-  },
+      action: {
+        more: "Més"
+      },
+      control: {
+        labels: "Etiquetes",
+        line: "Línia",
+        reverse: "Inverteix"
+      }
+    }
+  }
 };
 export { e as default };

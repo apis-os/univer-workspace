@@ -3,10 +3,16 @@ const e = {
     dataSource: {
       inlineMode: "Wbudowane",
       referencedMode: "Odwołanie",
-      sourceType: "Typ źródła",
+      sourceType: "Typ źródła"
     },
-    editor: { defaultColor: "Domyślny kolor", fontSize: "Rozmiar\x20czcionki" },
-    setup: { stack: "Stos", percentStacked: "Stos\x20procentowy" },
+    editor: {
+      defaultColor: "Domyślny kolor",
+      fontSize: "Rozmiar\x20czcionki"
+    },
+    setup: {
+      stack: "Stos",
+      percentStacked: "Stos\x20procentowy"
+    },
     chartTypes: {
       line: "Wykres liniowy",
       column: "Wykres kolumnowy",
@@ -39,7 +45,7 @@ const e = {
       treemap: "Mapa drzewa",
       sunburst: "Wykres pierścieniowy",
       gauge: "Wykres wskaźnikowy",
-      chord: "Diagram\x20cięciwowy",
+      chord: "Diagram\x20cięciwowy"
     },
     section: {
       waterfall: "Wykres wodospadowy",
@@ -58,7 +64,7 @@ const e = {
       treemap: "Wykres mapy drzewa",
       sunburst: "Wykres rozbłysku słońca",
       gauge: "Wykres miernika",
-      chord: "Wykres akordów",
+      chord: "Wykres akordów"
     },
     presentation: {
       backgroundColor: "Kolor tła",
@@ -73,7 +79,7 @@ const e = {
       wrap: "Zawiń legendę",
       selectMode: "Tryb selekcji",
       visualMapType: "Mapa wizualna",
-      align: "Wyrównanie",
+      align: "Wyrównanie"
     },
     numberFormat: {
       source: "Format\x20źródłowy",
@@ -85,21 +91,16 @@ const e = {
       accountingType: "Księgowość",
       thousandsType: "Percentyl\x20tysięczny",
       formatTypes: "Typy formatu",
-      generalDesc:
-        "Format ogólny nie zawiera żadnego konkretnego formatu liczbowego.",
-      accountingDesc:
-        "Format liczbowy księgowości wyrównuje symbole walutowe i miejsca dziesiętne w kolumnie.",
-      currencyDesc:
-        "Format walutowy jest używany dla ogólnych wartości pieniężnych, format księgowy wyrównuje miejsca dziesiętne w kolumnie wartości.",
-      dateDesc:
-        "Format\x20daty\x20wyświetla\x20numery\x20seryjne\x20daty\x20i\x20czasu\x20jako\x20wartości\x20daty.",
-      thousandsDesc:
-        "Format\x20percentyla\x20tysięcznego\x20jest\x20używany\x20dla\x20ogólnych\x20liczb,\x20formaty\x20walutowe\x20i\x20księgowe\x20zapewniają\x20wyspecjalizowane\x20formaty\x20dla\x20wartości\x20pieniężnych.",
+      generalDesc: "Format ogólny nie zawiera żadnego konkretnego formatu liczbowego.",
+      accountingDesc: "Format liczbowy księgowości wyrównuje symbole walutowe i miejsca dziesiętne w kolumnie.",
+      currencyDesc: "Format walutowy jest używany dla ogólnych wartości pieniężnych, format księgowy wyrównuje miejsca dziesiętne w kolumnie wartości.",
+      dateDesc: "Format\x20daty\x20wyświetla\x20numery\x20seryjne\x20daty\x20i\x20czasu\x20jako\x20wartości\x20daty.",
+      thousandsDesc: "Format\x20percentyla\x20tysięcznego\x20jest\x20używany\x20dla\x20ogólnych\x20liczb,\x20formaty\x20walutowe\x20i\x20księgowe\x20zapewniają\x20wyspecjalizowane\x20formaty\x20dla\x20wartości\x20pieniężnych.",
       decimalPlaces: "Miejsca\x20dziesiętne",
       currencyTypes: "Typy\x20walut",
       negativeNumberTypes: "Typy liczb ujemnych",
       dateTypes: "Typy\x20dat",
-      setFormat: "Ustaw\x20format\x20etykiety",
+      setFormat: "Ustaw\x20format\x20etykiety"
     },
     series: {
       rightAxis: "Prawa oś",
@@ -122,7 +123,7 @@ const e = {
       emptyRect: "Pusty prostokąt",
       emptyRoundRect: "Pusty zaokrąglony prostokąt",
       emptyPin: "Pusta szpilka",
-      emptyArrow: "Pusta strzałka",
+      emptyArrow: "Pusta strzałka"
     },
     lineAndArea: {
       lineStyle: "Styl\x20linii",
@@ -132,7 +133,7 @@ const e = {
       invalidValues: "Nieprawidłowe\x20wartości",
       breakLine: "Linia\x20przerwania",
       connect: "Połącz punkty danych",
-      zero: "Traktuj jako zero",
+      zero: "Traktuj jako zero"
     },
     axis: {
       useDateAxis: "Traktuj\x20etykiety\x20jako\x20daty",
@@ -148,13 +149,13 @@ const e = {
       tickLength: "Długość kleszcza",
       tickWidth: "Szerokość kleszcza",
       tickColor: "Zaznacz kolor",
-      tickPosition: "Zaznacz\x20pozycję",
+      tickPosition: "Zaznacz\x20pozycję"
     },
     indicator: {
       lineColor: "Kolor linii wskaźnika",
       lineType: "Typ\x20linii\x20wskaźnika",
       labelBackground: "Tło etykiety",
-      labelText: "Kolor tekstu etykiety",
+      labelText: "Kolor tekstu etykiety"
     },
     trendline: {
       add: "Dodaj linię trendu",
@@ -171,21 +172,23 @@ const e = {
       order: "Zamów",
       period: "Okres",
       formulaColor: "Kolor formuły",
-      r2Color: "Kolor R²",
+      r2Color: "Kolor R²"
     },
-    pareto: { includeZeroValues: "Uwzględnij wartości zerowe" },
+    pareto: {
+      includeZeroValues: "Uwzględnij wartości zerowe"
+    },
     plotArea: {
       label: "Obszar kreślenia",
       manual: "Ręcznie",
       left: "Lewo (%)",
       top: "Góra (%)",
       width: "Szerokość (%)",
-      height: "Wysokość\x20(%)",
+      height: "Wysokość\x20(%)"
     },
     bar: {
       layout: "Odstępy\x20między\x20słupkami",
       gapWidth: "Szerokość przerwy (%)",
-      overlap: "Nakładanie serii (%)",
+      overlap: "Nakładanie serii (%)"
     },
     pie: {
       mode: "Kształt wykresu",
@@ -218,18 +221,21 @@ const e = {
       paddingAngle: "Odstęp plasterków",
       halfPie: "Półkole",
       rosePie: "Ciasto różane",
-      labelLine: "Linia etykiety",
+      labelLine: "Linia etykiety"
     },
     radar: {
       shape: "Kształt radaru",
       polygon: "Wielokąt",
-      fill: "Wypełnienie\x20obszaru",
+      fill: "Wypełnienie\x20obszaru"
     },
     funnel: {
       gap: "Luka\x20w\x20przedmiocie",
-      absoluteValues: "Użyj wartości bezwzględnych",
+      absoluteValues: "Użyj wartości bezwzględnych"
     },
-    heatmap: { unit: "Jednostka wartości", labels: "Etykiety komórek" },
+    heatmap: {
+      unit: "Jednostka wartości",
+      labels: "Etykiety komórek"
+    },
     relation: {
       nodes: "Węzły",
       interaction: "Interakcja",
@@ -240,7 +246,7 @@ const e = {
       valueSize: "Rozmiar\x20węzłów\x20według\x20wartości",
       rotateLabels: "Obróć etykiety",
       gravity: "Grawitacja",
-      repulsion: "Wstręt",
+      repulsion: "Wstręt"
     },
     wordCloud: {
       maskImage: "Identyfikator obrazu maski",
@@ -251,7 +257,7 @@ const e = {
       heart: "Serce",
       "triangle-forward": "Trójkąt do przodu",
       pentagon: "Pięciokąt",
-      star: "Gwiazda",
+      star: "Gwiazda"
     },
     waterfall: {
       styleTarget: "Cel\x20stylu",
@@ -261,7 +267,7 @@ const e = {
       arrangement: "Wodospad",
       subtotal: "Suma częściowa",
       includeSubtotal: "Użyj sumy częściowej",
-      connector: "Linia złącza",
+      connector: "Linia złącza"
     },
     candlestick: {
       candle: "Świeca",
@@ -282,9 +288,8 @@ const e = {
       wickOpacity: "Nieprzezroczystość knota",
       candleWidth: "Szerokość świecy",
       hollow: "Pusta\x20świeca",
-      columnsError:
-        "Dane\x20wykresu\x20świecowego\x20wymagają\x20kolumn\x20Kategoria,\x20Otwarcie,\x20Maksimum,\x20Minimum\x20i\x20Zamknięcie.",
-      series: "Seria OHLC",
+      columnsError: "Dane\x20wykresu\x20świecowego\x20wymagają\x20kolumn\x20Kategoria,\x20Otwarcie,\x20Maksimum,\x20Minimum\x20i\x20Zamknięcie.",
+      series: "Seria OHLC"
     },
     histogram: {
       binGap: "Szczelina pojemnika",
@@ -295,7 +300,7 @@ const e = {
       binWidth: "Szerokość\x20pojemnika",
       underflow: "Próg niedomiaru",
       overflow: "Próg przepełnienia",
-      frequency: "Częstotliwość",
+      frequency: "Częstotliwość"
     },
     treemap: {
       parentLabelLayout: "Układ\x20etykiety\x20nadrzędnej",
@@ -303,8 +308,7 @@ const e = {
       overlapping: "Nakładające\x20się",
       leafLabel: "Etykiety liści",
       hierarchy: "Pola hierarchii",
-      diagnostic:
-        "Mapa drzewa wymaga co najmniej jednego pola hierarchii i jednego liczbowego pola wartości.",
+      diagnostic: "Mapa drzewa wymaga co najmniej jednego pola hierarchii i jednego liczbowego pola wartości."
     },
     sunburst: {
       hierarchy: "Hierarchia",
@@ -314,8 +318,7 @@ const e = {
       removeHierarchy: "Usuń pole hierarchii",
       centerLabel: "Suma środkowa",
       labelFormat: "Styl etykiety",
-      diagnostic:
-        "Wykres\x20pierścieniowy\x20wymaga\x20co\x20najmniej\x20jednego\x20pola\x20hierarchii\x20i\x20jednego\x20liczbowego\x20pola\x20wartości.",
+      diagnostic: "Wykres\x20pierścieniowy\x20wymaga\x20co\x20najmniej\x20jednego\x20pola\x20hierarchii\x20i\x20jednego\x20liczbowego\x20pola\x20wartości."
     },
     gauge: {
       scale: "Skala",
@@ -344,12 +347,9 @@ const e = {
       customized: "Niestandardowy",
       axisLabelNumberFormat: "Format liczb etykiet osi",
       detailNumberFormat: "Format liczb szczegółowych",
-      emptyDiagnostic:
-        "Wykres\x20wskaźnikowy\x20wymaga\x20co\x20najmniej\x20jednej\x20skończonej\x20wartości\x20liczbowej.",
-      mappingDiagnostic:
-        "Wykres wskaźnikowy wymaga jednego pola etykiety i dokładnie jednego pola wartości.",
-      configDiagnostic:
-        "Konfiguracja wykresu wskaźnikowego jest nieprawidłowa. Sprawdź skalę, zakresy, proporcje i rozmiary.",
+      emptyDiagnostic: "Wykres\x20wskaźnikowy\x20wymaga\x20co\x20najmniej\x20jednej\x20skończonej\x20wartości\x20liczbowej.",
+      mappingDiagnostic: "Wykres wskaźnikowy wymaga jednego pola etykiety i dokładnie jednego pola wartości.",
+      configDiagnostic: "Konfiguracja wykresu wskaźnikowego jest nieprawidłowa. Sprawdź skalę, zakresy, proporcje i rozmiary."
     },
     chord: {
       source: "Źródło",
@@ -362,8 +362,7 @@ const e = {
       minAngle: "Minimalny kąt",
       innerRadius: "Promień wewnętrzny",
       outerRadius: "Promień zewnętrzny",
-      invalidRadii:
-        "Promień\x20wewnętrzny\x20musi\x20być\x20mniejszy\x20niż\x20promień\x20zewnętrzny.",
+      invalidRadii: "Promień\x20wewnętrzny\x20musi\x20być\x20mniejszy\x20niż\x20promień\x20zewnętrzny.",
       rotation: "Obrót",
       distance: "Odległość",
       width: "Szerokość",
@@ -372,13 +371,10 @@ const e = {
       gradient: "Gradient",
       adjacency: "Sąsiednie węzły",
       self: "Bieżący węzeł",
-      emptyDiagnostic:
-        "Diagram cięciwowy wymaga co najmniej jednej relacji o dodatniej wadze między dwoma różnymi węzłami.",
-      mappingDiagnostic:
-        "Diagram cięciwowy wymaga różnych pól Źródło i Cel oraz opcjonalnego, odrębnego pola Wartość.",
-      configDiagnostic:
-        "Konfiguracja diagramu cięciwowego jest nieprawidłowa. Sprawdź kąty, promienie, krycie i rozmiary.",
-      associatedValue: "Wartość powiązana",
+      emptyDiagnostic: "Diagram cięciwowy wymaga co najmniej jednej relacji o dodatniej wadze między dwoma różnymi węzłami.",
+      mappingDiagnostic: "Diagram cięciwowy wymaga różnych pól Źródło i Cel oraz opcjonalnego, odrębnego pola Wartość.",
+      configDiagnostic: "Konfiguracja diagramu cięciwowego jest nieprawidłowa. Sprawdź kąty, promienie, krycie i rozmiary.",
+      associatedValue: "Wartość powiązana"
     },
     common: {
       category: "Kategoria",
@@ -429,16 +425,27 @@ const e = {
         right: "Prawo",
         bottom: "Dół",
         left: "Lewo",
-        hide: "Ukryj",
+        hide: "Ukryj"
       },
-      axisAlign: { start: "Początek", center: "Środek", end: "Koniec" },
-      textAlign: { left: "Lewo", center: "Środek", right: "Prawo" },
+      axisAlign: {
+        start: "Początek",
+        center: "Środek",
+        end: "Koniec"
+      },
+      textAlign: {
+        left: "Lewo",
+        center: "Środek",
+        right: "Prawo"
+      },
       legendSelectMode: {
         single: "Pojedynczo",
         multiple: "Wielokrotny",
-        disabled: "Wyłączone",
+        disabled: "Wyłączone"
       },
-      visualMapType: { continuous: "Ciągłe", piecewise: "Odcinkowy" },
+      visualMapType: {
+        continuous: "Ciągłe",
+        piecewise: "Odcinkowy"
+      },
       default: "Domyślne",
       reset: "Zresetuj",
       color: "Kolor",
@@ -484,13 +491,12 @@ const e = {
       cancel: "Anuluj",
       insert: "Wstaw",
       apply: "Zastosuj",
-      duplicate: "Duplikuj",
+      duplicate: "Duplikuj"
     },
     inlineTable: {
-      pasteHint:
-        "Wklej tabelę z Arkuszy, Excela lub strony internetowej, aby zastąpić dane wbudowane.",
+      pasteHint: "Wklej tabelę z Arkuszy, Excela lub strony internetowej, aby zastąpić dane wbudowane.",
       addRow: "Dodaj wiersz",
-      addColumn: "Dodaj kolumnę",
+      addColumn: "Dodaj kolumnę"
     },
     floatMenu: {
       menuTitle: {
@@ -499,7 +505,7 @@ const e = {
         gridline: "Linia\x20siatki",
         tick: "Znacznik",
         mark: "Znak",
-        dataLabel: "Etykieta danych",
+        dataLabel: "Etykieta danych"
       },
       field: {
         position: "Pozycja",
@@ -508,11 +514,17 @@ const e = {
         map: "Mapa",
         rotate: "Obróć",
         labelText: "Tekst\x20etykiety",
-        titleText: "Tekst\x20tytułu",
+        titleText: "Tekst\x20tytułu"
       },
-      action: { more: "Więcej" },
-      control: { labels: "Etykiety", line: "Linia", reverse: "Odwróć" },
-    },
-  },
+      action: {
+        more: "Więcej"
+      },
+      control: {
+        labels: "Etykiety",
+        line: "Linia",
+        reverse: "Odwróć"
+      }
+    }
+  }
 };
 export { e as default };

@@ -1,1 +1,591 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/slides"),t=require("@univerjs-pro/slides-ui"),n=require("@univerjs/core"),r=require("@univerjs/thread-comment"),i=require("@univerjs/thread-comment-ui"),a=require("@univerjs/ui"),o=require("@univerjs-pro/license"),s=require("@univerjs-pro/slides-thread-comment"),c=require("@univerjs/engine-render"),l=require("@univerjs/icons"),u=require("@univerjs/protocol"),d=require("react"),f=require("rxjs"),p=require("react/jsx-runtime");const m="univer.slide.thread-comment-panel";function h(v114){let v115=v114.get(i.ThreadCommentPanelService);v114.get(a.ISidebarService).open({header:{title:"slides-thread-comment-ui.addComment"},children:{label:m},width:320,onClose:()=>v115.setPanelVisible(false)}),v115.setPanelVisible(true);}const g={id:"slide.operation.open-comment-panel",type:n.CommandType["OPERATION"],handler(v116){return h(v116),true;}},_={id:"slide.operation.start-comment-placement",type:n.CommandType["OPERATION"],handler(v117){let v118=v117.get(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SLIDE"]);return v118!=null&&v118.pageManager["getActiveSlide"]()?(v117.get(t.SlideInsertService).cancelPendingInsert(),v117.get(i.ThreadCommentDraftService).startPlacement(n.UniverInstanceType["UNIVER_SLIDE"],v118.getUnitId()),true):false;}},v={id:"slide.operation.add-element-comment",type:n.CommandType["OPERATION"],handler(v119){var v120;let v121=v119.get(e.ISlideDrawingService).getFocusDrawings()[0],v122=v119.get(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SLIDE"]);return!v121||!v122||v121.unitId!==v122.getUnitId()||v121.subUnitId!==((v120=v122.pageManager["getActiveSlide"]())==null?undefined:v120.getId())?false:(v119.get(i.ThreadCommentDraftService).place({unitId:v121.unitId,subUnitId:v121.subUnitId,anchor:{kind:r.ThreadCommentAnchorKind["SLIDE_ELEMENT"],pageId:v121.subUnitId,elementId:v121.drawingId}}),h(v119),true);}},y="slides-thread-comment-ui.config",b={};var x="@univerjs-pro/slides-thread-comment-ui",S="1.0.0-insiders.20260907-70fc579";function C(){let v123=(0,a.useDependency)(n.IUniverInstanceService),v124=(0,a.useDependency)(n.ICommandService),v125=(0,a.useDependency)(i.ThreadCommentDraftService),v126=(0,a.useDependency)(n.UserManagerService),v127=(0,a.useDependency)(e.ISlideDrawingService),v128=v123.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SLIDE"]),v129=v128 instanceof e.SlideModel?v128:undefined,v130=(0,a.useDependency)(n.IPermissionService);(0,a.useObservable)(()=>v130.permissionPointUpdate$,undefined,false,[v130]);let v131=(0,a.useObservable)(v125.draft$,v125.draft),v132=(0,d.useMemo)(()=>(v129==null?undefined:v129.pageManager["activeSlideId$"])??(0,f.of)(undefined),[v129]),v133=v131&&v131.unitId===(v129==null?undefined:v129.getUnitId())?{id:"",threadId:"",unitId:v131.unitId,subUnitId:v131.subUnitId,ref:(0,r.serializeThreadCommentAnchor)(v131.anchor),dT:"",personId:v126.getCurrentUser().userID,text:{dataStream:"\x0d\x0a"}}:null;if(!v129)return null;let v134=!(0,e.getSlidePermissionValue)(v130,v129.getUnitId(),v129.getUnitId(),u.UnitAction["Comment"]);return(0,p.jsx)(i.ThreadCommentPanel,{unitId:v129.getUnitId(),subUnitId$:v132,type:n.UniverInstanceType["UNIVER_SLIDE"],onAdd:()=>v124.executeCommand(_.id),disableAdd:v134,getSubUnitName:v26=>{var v27;return((v27=v129.pageManager["getPage"](v26))==null?undefined:v27.name)??"";},tempComment:v133,onTempCommentClose:()=>v125.cancel(),formatRef:v28=>w(v28,v127)});}function w(v135,v136){let v137=(0,r.deserializeThreadCommentAnchor)(v135.ref);if((v137==null?undefined:v137.kind)===r.ThreadCommentAnchorKind["SLIDE_ELEMENT"]){let v29=v136.getDrawingData(v135.unitId,v137.pageId??v135.subUnitId)[v137.elementId];return v29?(0,e.getSlideElementDisplayName)(v29.element):v137.elementId;}return(v137==null?undefined:v137.kind)===r.ThreadCommentAnchorKind["SLIDE_POSITION"]?Math.round(v137.x*100)+"%, "+Math.round(v137.y*100)+"%":v135.ref;}function T(v138,v139){return function(v30,v31){v139(v30,v31,v138);};}function E(v140,v141,v142,v143){var v144=arguments.length,v145=v144<3?v141:v143===null?v143=Object.getOwnPropertyDescriptor(v141,v142):v143,v146;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v145=Reflect.decorate(v140,v141,v142,v143);else{for(var v147=v140.length-1;v147>=0;v147--)(v146=v140[v147])&&(v145=(v144<3?v146(v145):v144>3?v146(v141,v142,v145):v146(v141,v142))||v145);}return v144>3&&v145&&Object.defineProperty(v141,v142,v145),v145;}let D=class extends n.Disposable{constructor(v32,v33){super(),this._componentManager=v32,this._iconManager=v33,this._registerIcons(),this._registerComponents();}_registerIcons(){this.disposeWithMe(this._iconManager["register"]({CommentIcon:l.CommentIcon,InsertCommentDoubleIcon:l.InsertCommentDoubleIcon}));}_registerComponents(){this.disposeWithMe(this._componentManager["register"](m,C));}};D=E([T(0,(0,n.Inject)(a.ComponentManager)),T(1,(0,n.Inject)(a.IconManager))],D);function O(v148,v149,v150,v151){return{x:v150>0?Math.max(0,Math.min(1,v148/v150)):0,y:v151>0?Math.max(0,Math.min(1,v149/v151)):0};}function k(v152){"@babel/helpers - typeof";return k=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v34){return typeof v34;}:function(v35){return v35&&typeof Symbol=="function"&&v35.constructor===Symbol&&v35!==Symbol.prototype?"symbol":typeof v35;},k(v152);}function A(v153,v154){if(k(v153)!="object"||!v153)return v153;var v155=v153[Symbol.toPrimitive];if(v155!==undefined){var v156=v155.call(v153,v154||"default");if(k(v156)!="object")return v156;throw TypeError("@@toPrimitive must return a primitive value.");}return(v154==="string"?String:Number)(v153);}function j(v157){var v158=A(v157,"string");return k(v158)=="symbol"?v158:v158+"";}function M(v159,v160,v161){return(v160=j(v160))in v159?Object.defineProperty(v159,v160,{value:v161,enumerable:true,configurable:true,writable:true}):v159[v160]=v161,v159;}function N(v162){let v163=new Map();return v162.forEach(v36=>{let v37=v36.x+"\x00"+v36.y,v38=v163.get(v37);if(v38){v38.commentId=v36.commentId,v38.commentIds["push"](v36.commentId),v38.count+=1;return;}v163.set(v37,{...v36,commentIds:[v36.commentId],count:1});}),Array.from(v163.values());}function P(v164,v165){return!v164.active||v164.unitId!==v165;}let F=class extends n.RxDisposable{constructor(v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49){super(),this._renderContext=v39,this._commandService=v40,this._instanceService=v41,this._drawingService=v42,this._draftService=v43,this._commentModel=v44,this._panelService=v45,this._hitTestService=v46,this._insertService=v47,this._playbackService=v48,this._themeService=v49,M(this,"_overlay",undefined),M(this,"_commentsVisible",undefined),this._commentsVisible=P(this._playbackService["getSnapshot"](),this._renderContext["unitId"]),this._overlay=new i["ThreadCommentCanvasOverlay"]("slide-thread-comment-overlay",{...this._getColors(),zoomRatio:1,markers:[],underlines:[]}),this._commentsVisible||this._overlay["hide"](),this._renderContext["scene"].addObject(this._overlay,10100),this.disposeWithMe((0,n.toDisposable)(this._overlay["onPointerDown$"].subscribeEvent((v5,v6)=>this._onOverlayPointerDown(v6)))),this.disposeWithMe((0,n.toDisposable)(this._overlay["onPointerLeave$"].subscribeEvent(()=>this._overlay["clearHover"]()))),this.disposeWithMe((0,n.toDisposable)(this._renderContext["scene"].onPointerDown$["subscribeEvent"]((v7,v8)=>this._onPointerDown(v7,v8)))),this.disposeWithMe((0,n.toDisposable)(this._renderContext["scene"].onPointerMove$["subscribeEvent"](v9=>this._onPointerMove(v9)))),this.disposeWithMe((0,n.toDisposable)(this._hitTestService["onPointerDown$"].subscribe(v10=>{this._onDrawingPointerDown(v10);})));let v50=this._getModel();v50&&(this.disposeWithMe(v50.pageManager["activeSlideId$"].pipe((0,f.takeUntil)(this.dispose$)).subscribe(()=>this._syncOverlay())),this.disposeWithMe(v50.zoomRatio$["pipe"]((0,f.takeUntil)(this.dispose$)).subscribe(()=>this._syncOverlay()))),this.disposeWithMe((0,n.toDisposable)(this._renderContext["engine"].onTransformChange$["subscribeEvent"](()=>queueMicrotask(()=>{this._disposed||this._syncOverlay();})))),this.disposeWithMe(this._commentModel["commentUpdate$"].pipe((0,f.takeUntil)(this.dispose$)).subscribe(v11=>{v11.unitId===this._renderContext["unitId"]&&this._syncOverlay();})),[this._panelService["activeCommentId$"],this._panelService["hoveredCommentId$"]].forEach(v12=>{this.disposeWithMe(v12.pipe((0,f.takeUntil)(this.dispose$)).subscribe(()=>this._syncOverlay()));}),[this._drawingService["add$"],this._drawingService["update$"],this._drawingService["remove$"]].forEach(v13=>{this.disposeWithMe(v13.pipe((0,f.takeUntil)(this.dispose$)).subscribe(v3=>{v3.some(v1=>v1.unitId===this._renderContext["unitId"])&&this._syncOverlay();}));}),this.disposeWithMe(this._draftService["placementType$"].pipe((0,f.takeUntil)(this.dispose$)).subscribe(v14=>{v14!==n.UniverInstanceType["UNIVER_SLIDE"]&&this._overlay["updateState"]({previewMarker:null,previewUnderline:null});})),this.disposeWithMe(this._insertService["pendingInsert$"].pipe((0,f.takeUntil)(this.dispose$)).subscribe(v15=>{v15&&this._draftService["placementType"]===n.UniverInstanceType["UNIVER_SLIDE"]&&this._draftService["cancel"]();})),this.disposeWithMe(this._themeService["currentTheme$"].pipe((0,f.takeUntil)(this.dispose$)).subscribe(()=>this._syncOverlay())),this._initPlaybackVisibility(),this._syncOverlay();}_initPlaybackVisibility(){this.disposeWithMe(this._playbackService["state$"].pipe((0,f.takeUntil)(this.dispose$)).subscribe(v16=>{let v17=P(v16,this._renderContext["unitId"]);if(v17!==this._commentsVisible){if(this._commentsVisible=v17,v17){this._overlay["show"](),this._syncOverlay();return;}this._draftService["placementType"]===n.UniverInstanceType["UNIVER_SLIDE"]&&this._draftService["cancel"](),this._overlay["clearHover"](),this._overlay["updateState"]({markers:[],underlines:[],focusedCommentIds:[],focusOutlines:[],previewMarker:null,previewUnderline:null}),this._overlay["hide"]();}}));}_onDrawingPointerDown(v51){!this._commentsVisible||this._draftService["placementType"]!==n.UniverInstanceType["UNIVER_SLIDE"]||(v51.nativeEvent["button"]??0)!==0||(this._draftService["place"]({unitId:v51.drawing["unitId"],subUnitId:v51.drawing["subUnitId"],anchor:{kind:r.ThreadCommentAnchorKind["SLIDE_ELEMENT"],pageId:v51.drawing["subUnitId"],elementId:v51.drawing["drawingId"]}}),this._overlay["updateState"]({previewMarker:null,previewUnderline:null}),this._commandService["executeCommand"](g.id).catch(()=>undefined));}_onPointerDown(v52,v53){if(!this._commentsVisible||this._draftService["placementType"]!==n.UniverInstanceType["UNIVER_SLIDE"]||(v52.button??0)!==0)return;let v54=this._getModel(),v55=v54==null?undefined:v54.pageManager["getActiveSlide"]();if(!v54||!v55){this._draftService["cancel"]();return;}let v56=this._hitTestService["hitTest"](v52.offsetX,v52.offsetY),v57=v55.getId(),v58=this._toScenePoint(v52.offsetX,v52.offsetY),v59=this._getPageRect(v54),v60=O(v58.x-v59.left,v58.y-v59.top,v59.width,v59.height);this._draftService["place"]({unitId:v54.getUnitId(),subUnitId:v57,anchor:v56?{kind:r.ThreadCommentAnchorKind["SLIDE_ELEMENT"],pageId:v57,elementId:v56.drawing["drawingId"]}:{kind:r.ThreadCommentAnchorKind["SLIDE_POSITION"],pageId:v57,...v60}}),this._overlay["updateState"]({previewMarker:null,previewUnderline:null}),v53.stopPropagation(),this._commandService["executeCommand"](g.id).catch(()=>undefined);}_onPointerMove(v61){if(!this._commentsVisible||this._draftService["placementType"]!==n.UniverInstanceType["UNIVER_SLIDE"])return;let v62=this._hitTestService["hitTest"](v61.offsetX,v61.offsetY),v63=v62?this._getElementUnderline(v62.drawing["drawingId"]):null,v64=this._toScenePoint(v61.offsetX,v61.offsetY);if(v63){this._overlay["updateState"]({previewMarker:v64,previewUnderline:v63});return;}this._overlay["updateState"]({previewMarker:v64,previewUnderline:null});}_onOverlayPointerDown(v65){var v66;if(!this._commentsVisible)return;let v67=this._getModel(),v68=v67==null||(v66=v67.pageManager["getActiveSlide"]())==null?undefined:v66.getId(),v69=this._overlay["hitCommentId"];!v67||!v68||!v69||(this._panelService["setActiveComment"]({unitId:v67.getUnitId(),subUnitId:v68,commentId:v69,trigger:"slide-canvas"}),v65.stopPropagation(),this._commandService["executeCommand"](g.id).catch(()=>undefined));}_syncOverlay(){var v70;if(!this._commentsVisible)return;let v71=this._getModel(),v72=v71==null||(v70=v71.pageManager["getActiveSlide"]())==null?undefined:v70.getId();if(!v71||!v72){this._overlay["updateState"]({markers:[],underlines:[],focusedCommentIds:[],focusOutlines:[]});return;}let v73=this._getPageRect(v71),v74=[],v75=new Map();this._commentModel["query"]({unitIds:[v71.getUnitId()],subUnitIds:[v72],anchorKinds:[r.ThreadCommentAnchorKind["SLIDE_ELEMENT"],r.ThreadCommentAnchorKind["SLIDE_POSITION"]],resolved:false}).forEach(({root:v18})=>{let v19=(0,r.deserializeThreadCommentAnchor)(v18.ref);if((v19==null?undefined:v19.kind)===r.ThreadCommentAnchorKind["SLIDE_POSITION"])v74.push({commentId:v18.id,x:v73.left+v19.x*v73.width,y:v73.top+v19.y*v73.height});else{if((v19==null?undefined:v19.kind)===r.ThreadCommentAnchorKind["SLIDE_ELEMENT"]){let v2=this._getElementUnderline(v19.elementId,v18.id);v2&&v75.set(v19.elementId,v2);}}}),this._overlay["updateState"]({...this._getColors(),zoomRatio:v71.getZoomRatio(),markers:N(v74),underlines:Array.from(v75.values()),...this._getFocusState(v71,v72)});}_getElementUnderline(v76,v77=""){let v78=this._getElementOutline(v76),v79=this._getModel();return!v79||!v78?null:{commentId:v77,left:v78.left,top:v78.top+v78.height+2/v79.getZoomRatio(),width:v78.width};}_getElementOutline(v80){var v81,v82;let v83=this._getModel(),v84=v83==null||(v81=v83.pageManager["getActiveSlide"]())==null?undefined:v81.getId();if(!v83||!v84)return null;let v85=this._renderContext["scene"],v86=(0,t.buildDrawingOKey)(v83.getUnitId(),v84,v80),v87=((v82=v85.getObjectIncludeInGroup)==null?undefined:v82.call(v85,v86))??v85.getObject(v86);if(!v87)return null;let v88=v87.getRealBound();return{left:v88.left,top:v88.top,width:v88.width,height:v88.height};}_getFocusState(v89,v90){let v91=[],v92=new Map();return[this._panelService["activeCommentId"],this._panelService["hoveredCommentId"]].forEach(v20=>{if(!v20||v20.unitId!==v89.getUnitId()||v20.subUnitId!==v90)return;let v21=this._commentModel["getComment"](v20.unitId,v20.subUnitId,v20.commentId);if(!v21)return;v91.push(v20.commentId);let v22=(0,r.deserializeThreadCommentAnchor)(v21.ref);if((v22==null?undefined:v22.kind)===r.ThreadCommentAnchorKind["SLIDE_ELEMENT"]&&!v92.has(v22.elementId)){let v4=this._getElementOutline(v22.elementId);v4&&v92.set(v22.elementId,v4);}}),{focusedCommentIds:v91,focusOutlines:Array.from(v92.values())};}_getPageRect(v93){let v94=this._renderContext["scene"].getObject(t.SLIDE_PAGE_RECT_KEY),v95=v93.getSnapshot().defaultPageSize;return{left:(v94==null?undefined:v94.left)??0,top:(v94==null?undefined:v94.top)??0,width:(v94==null?undefined:v94.width)??v95.width,height:(v94==null?undefined:v94.height)??v95.height};}_getColors(){return{accentColor:this._themeService["getColorFromTheme"]("yellow.400"),foregroundColor:this._themeService["getColorFromTheme"]("gray.900"),outlineColor:this._themeService["getColorFromTheme"]("white")};}_getModel(){return this._instanceService["getUnit"](this._renderContext["unitId"],n.UniverInstanceType["UNIVER_SLIDE"])??null;}_toScenePoint(v96,v97){var v98,v99,v100;let v101=new c["Vector2"](v96,v97),v102=this._renderContext["scene"],v103=((v98=v102.getActiveViewportByCoord)==null?undefined:v98.call(v102,v101))??((v99=v102.getMainViewport)==null?undefined:v99.call(v102));return(v103==null||(v100=v103.transformVector2SceneCoord)==null?undefined:v100.call(v103,v101))??v101;}};F=E([T(1,n.ICommandService),T(2,n.IUniverInstanceService),T(3,(0,n.Inject)(e.ISlideDrawingService)),T(4,(0,n.Inject)(i.ThreadCommentDraftService)),T(5,(0,n.Inject)(r.ThreadCommentModel)),T(6,(0,n.Inject)(i.ThreadCommentPanelService)),T(7,(0,n.Inject)(t.SlideHitTestService)),T(8,(0,n.Inject)(t.SlideInsertService)),T(9,t.ISlidePlaybackService),T(10,(0,n.Inject)(n.ThemeService))],F);function I(v166){let v167=v166.get(n.IUniverInstanceService),v168=v166.get(n.IPermissionService);return(0,f.combineLatest)([v167.getCurrentTypeOfUnit$(n.UniverInstanceType["UNIVER_SLIDE"]),v168.permissionPointUpdate$["pipe"]((0,f.startWith)(undefined))]).pipe((0,f.map)(([v104])=>!v104||!(0,e.getSlidePermissionValue)(v168,v104.getUnitId(),v104.getUnitId(),u.UnitAction["Comment"])));}function L(v169){return{id:g.id,type:a.MenuItemType["BUTTON"],icon:"CommentIcon",title:"slides-thread-comment-ui.openComments",tooltip:"slides-thread-comment-ui.openComments",hidden$:(0,a.getMenuHiddenObservable)(v169,n.UniverInstanceType["UNIVER_SLIDE"])};}function R(v170){return{id:_.id,type:a.MenuItemType["BUTTON"],icon:"InsertCommentDoubleIcon",title:"slides-thread-comment-ui.addComment",tooltip:"slides-thread-comment-ui.addComment",hidden$:(0,a.getMenuHiddenObservable)(v170,n.UniverInstanceType["UNIVER_SLIDE"]),disabled$:I(v170)};}function z(v171){return{id:v.id,type:a.MenuItemType["BUTTON"],icon:"InsertCommentDoubleIcon",title:"slides-thread-comment-ui.addComment",tooltip:"slides-thread-comment-ui.addComment",disabled$:I(v171)};}const B={[a.MenuManagerPosition["RIBBON"]]:{[t.SLIDE_SHAPE_FORMAT_RIBBON_TAB]:{[t.SLIDE_SHAPE_FORMAT_RIBBON_GROUP_ADVANCED]:{[v.id]:{order:2,gridLayout:{row:1,column:2,rowSpan:2,showLabel:true},menuItemFactory:z}}}}},V={[a.RibbonStartGroup["OTHERS"]]:{[g.id]:{order:10,gridLayout:{row:1,column:10,showLabel:true},menuItemFactory:L},[_.id]:{order:10.1,gridLayout:{row:2,column:10,showLabel:true},menuItemFactory:R}},[t.SlideContextMenuPosition["DRAWING"]]:{[a.ContextMenuGroup["OTHERS"]]:{[v.id]:{order:0,menuItemFactory:z}}},[a.FloatingObjectToolbarPosition["SLIDE"]]:{[v.id]:{order:10,menuItemFactory:z}}};function H(v172,v173,v174){return v172.query({unitIds:[v173],subUnitIds:[v174],resolved:false}).length;}function U({unitId:v175,pageId:v176,setActivePage:v177}){let v178=(0,a.useDependency)(n.ICommandService),v179=(0,a.useDependency)(r.ThreadCommentModel),v180=(0,a.useDependency)(n.LocaleService);(0,a.useObservable)(()=>v179.commentUpdate$["pipe"]((0,f.filter)(v23=>v23.unitId===v175&&v23.subUnitId===v176)),undefined,false,[v179,v176,v175]);let v181=H(v179,v175,v176);return v181===0?null:(0,p.jsx)("button",{type:"button","aria-label":v180.t("slides-thread-comment-ui.addComment"),title:v180.t("slides-thread-comment-ui.addComment"),onClick:v105=>{v105.stopPropagation(),v177(v176),v178.executeCommand(g.id);},className:"univer-absolute -univer-right-1.5 -univer-top-1.5 univer-z-[4] univer-flex univer-h-7 univer-min-w-7 univer-cursor-pointer univer-select-none univer-items-center univer-justify-center univer-rounded-lg univer-border-2 univer-border-solid univer-border-gray-0 univer-bg-yellow-400 univer-px-1.5 univer-text-sm univer-font-semibold univer-leading-none univer-text-gray-0 univer-transition hover:univer-brightness-95 focus-visible:univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-primary-500",children:v181});}let W=class extends n.Disposable{constructor(v106,v107,v108){super(),[v,g,_].forEach(v24=>this.disposeWithMe(v106.registerCommand(v24))),v107.mergeMenu(V),v107.mergeMenu(B),this.disposeWithMe(v108.registerComponent(t.SLIDE_THUMBNAIL_OVERLAY_PART,()=>U));}};W=E([T(0,n.ICommandService),T(1,a.IMenuManagerService),T(2,a.IUIPartsService)],W);const G=[[D],[W]];let K=class extends n.Plugin{constructor(v109=b,v110,v111,v112){super(),this._config=v109,this._injector=v110,this._configService=v111,this._renderManagerService=v112;let{...v113}=(0,n.merge)({},b,this._config);this._configService["setConfig"](y,v113);}onStarting(){G.forEach(v25=>{this._injector["add"](v25);}),this._injector["get"](D);}onRendered(){this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_SLIDE"],[F]),this._injector["get"](W);}};M(K,"pluginName","UNIVER_SLIDES_THREAD_COMMENT_UI_PLUGIN"),M(K,"packageName",x),M(K,"version",S),M(K,"type",n.UniverInstanceType["UNIVER_SLIDE"]),K=E([(0,n.DependentOn)(o.UniverLicensePlugin,s.UniverSlidesThreadCommentPlugin,t.UniverSlidesUIPlugin,c.UniverRenderEnginePlugin,i.UniverThreadCommentUIPlugin),T(1,(0,n.Inject)(n.Injector)),T(2,n.IConfigService),T(3,c.IRenderManagerService)],K),exports.OpenSlideCommentPanelOperation=g,exports.SLIDES_THREAD_COMMENT_UI_PLUGIN_CONFIG_KEY=y,exports.StartSlideCommentPlacementOperation=_,Object.defineProperty(exports,"UniverSlidesThreadCommentUIPlugin",{enumerable:true,get:function(){return K;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/slides"),
+  t = require("@univerjs-pro/slides-ui"),
+  n = require("@univerjs/core"),
+  r = require("@univerjs/thread-comment"),
+  i = require("@univerjs/thread-comment-ui"),
+  a = require("@univerjs/ui"),
+  o = require("@univerjs-pro/license"),
+  s = require("@univerjs-pro/slides-thread-comment"),
+  c = require("@univerjs/engine-render"),
+  l = require("@univerjs/icons"),
+  u = require("@univerjs/protocol"),
+  d = require("react"),
+  f = require("rxjs"),
+  p = require("react/jsx-runtime");
+const m = "univer.slide.thread-comment-panel";
+function h(var_core_value_sigCFFA) {
+  let var_core_value_sig58C1 = var_core_value_sigCFFA.get(i.ThreadCommentPanelService);
+  var_core_value_sigCFFA.get(a.ISidebarService).open({
+    header: {
+      title: "slides-thread-comment-ui.addComment"
+    },
+    children: {
+      label: m
+    },
+    width: 320,
+    onClose: () => var_core_value_sig58C1.setPanelVisible(false)
+  }), var_core_value_sig58C1.setPanelVisible(true);
+}
+const g = {
+    id: "slide.operation.open-comment-panel",
+    type: n.CommandType["OPERATION"],
+    handler(var_core_value_sig5090) {
+      return h(var_core_value_sig5090), true;
+    }
+  },
+  _ = {
+    id: "slide.operation.start-comment-placement",
+    type: n.CommandType["OPERATION"],
+    handler(var_core_value_sigC368) {
+      let var_core_value_sigAD56 = var_core_value_sigC368.get(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SLIDE"]);
+      return var_core_value_sigAD56 != null && var_core_value_sigAD56.pageManager["getActiveSlide"]() ? (var_core_value_sigC368.get(t.SlideInsertService).cancelPendingInsert(), var_core_value_sigC368.get(i.ThreadCommentDraftService).startPlacement(n.UniverInstanceType["UNIVER_SLIDE"], var_core_value_sigAD56.getUnitId()), true) : false;
+    }
+  },
+  v = {
+    id: "slide.operation.add-element-comment",
+    type: n.CommandType["OPERATION"],
+    handler(var_core_value_sigDB4A) {
+      var var_core_value_sig6418;
+      let var_core_value_sig1896 = var_core_value_sigDB4A.get(e.ISlideDrawingService).getFocusDrawings()[0],
+        var_core_value_sig0285 = var_core_value_sigDB4A.get(n.IUniverInstanceService).getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SLIDE"]);
+      return !var_core_value_sig1896 || !var_core_value_sig0285 || var_core_value_sig1896.unitId !== var_core_value_sig0285.getUnitId() || var_core_value_sig1896.subUnitId !== ((var_core_value_sig6418 = var_core_value_sig0285.pageManager["getActiveSlide"]()) == null ? undefined : var_core_value_sig6418.getId()) ? false : (var_core_value_sigDB4A.get(i.ThreadCommentDraftService).place({
+        unitId: var_core_value_sig1896.unitId,
+        subUnitId: var_core_value_sig1896.subUnitId,
+        anchor: {
+          kind: r.ThreadCommentAnchorKind["SLIDE_ELEMENT"],
+          pageId: var_core_value_sig1896.subUnitId,
+          elementId: var_core_value_sig1896.drawingId
+        }
+      }), h(var_core_value_sigDB4A), true);
+    }
+  },
+  y = "slides-thread-comment-ui.config",
+  b = {};
+var x = "@univerjs-pro/slides-thread-comment-ui",
+  S = "1.0.0-insiders.20260907-70fc579";
+function C() {
+  let var_core_value_sig777D = (0, a.useDependency)(n.IUniverInstanceService),
+    var_core_value_sig3F4C = (0, a.useDependency)(n.ICommandService),
+    var_core_value_sigD65A = (0, a.useDependency)(i.ThreadCommentDraftService),
+    var_core_value_sig5A13 = (0, a.useDependency)(n.UserManagerService),
+    var_core_value_sigF593 = (0, a.useDependency)(e.ISlideDrawingService),
+    var_core_value_sig3607 = var_core_value_sig777D.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SLIDE"]),
+    var_core_value_sigB512 = var_core_value_sig3607 instanceof e.SlideModel ? var_core_value_sig3607 : undefined,
+    var_core_value_sigF2E6 = (0, a.useDependency)(n.IPermissionService);
+  (0, a.useObservable)(() => var_core_value_sigF2E6.permissionPointUpdate$, undefined, false, [var_core_value_sigF2E6]);
+  let var_core_value_sig34C8 = (0, a.useObservable)(var_core_value_sigD65A.draft$, var_core_value_sigD65A.draft),
+    var_core_value_sigB744 = (0, d.useMemo)(() => (var_core_value_sigB512 == null ? undefined : var_core_value_sigB512.pageManager["activeSlideId$"]) ?? (0, f.of)(undefined), [var_core_value_sigB512]),
+    var_core_value_sigEAE2 = var_core_value_sig34C8 && var_core_value_sig34C8.unitId === (var_core_value_sigB512 == null ? undefined : var_core_value_sigB512.getUnitId()) ? {
+      id: "",
+      threadId: "",
+      unitId: var_core_value_sig34C8.unitId,
+      subUnitId: var_core_value_sig34C8.subUnitId,
+      ref: (0, r.serializeThreadCommentAnchor)(var_core_value_sig34C8.anchor),
+      dT: "",
+      personId: var_core_value_sig5A13.getCurrentUser().userID,
+      text: {
+        dataStream: "\x0d\x0a"
+      }
+    } : null;
+  if (!var_core_value_sigB512) return null;
+  let var_core_value_sigE68A = !(0, e.getSlidePermissionValue)(var_core_value_sigF2E6, var_core_value_sigB512.getUnitId(), var_core_value_sigB512.getUnitId(), u.UnitAction["Comment"]);
+  return (0, p.jsx)(i.ThreadCommentPanel, {
+    unitId: var_core_value_sigB512.getUnitId(),
+    subUnitId$: var_core_value_sigB744,
+    type: n.UniverInstanceType["UNIVER_SLIDE"],
+    onAdd: () => var_core_value_sig3F4C.executeCommand(_.id),
+    disableAdd: var_core_value_sigE68A,
+    getSubUnitName: var_core_value_sig48BD => {
+      var var_core_value_sig429F;
+      return ((var_core_value_sig429F = var_core_value_sigB512.pageManager["getPage"](var_core_value_sig48BD)) == null ? undefined : var_core_value_sig429F.name) ?? "";
+    },
+    tempComment: var_core_value_sigEAE2,
+    onTempCommentClose: () => var_core_value_sigD65A.cancel(),
+    formatRef: var_core_value_sigF62A => w(var_core_value_sigF62A, var_core_value_sigF593)
+  });
+}
+function w(var_core_value_sig3E68, var_core_value_sigF4C5) {
+  let var_core_value_sig5410 = (0, r.deserializeThreadCommentAnchor)(var_core_value_sig3E68.ref);
+  if ((var_core_value_sig5410 == null ? undefined : var_core_value_sig5410.kind) === r.ThreadCommentAnchorKind["SLIDE_ELEMENT"]) {
+    let var_core_value_sig8178 = var_core_value_sigF4C5.getDrawingData(var_core_value_sig3E68.unitId, var_core_value_sig5410.pageId ?? var_core_value_sig3E68.subUnitId)[var_core_value_sig5410.elementId];
+    return var_core_value_sig8178 ? (0, e.getSlideElementDisplayName)(var_core_value_sig8178.element) : var_core_value_sig5410.elementId;
+  }
+  return (var_core_value_sig5410 == null ? undefined : var_core_value_sig5410.kind) === r.ThreadCommentAnchorKind["SLIDE_POSITION"] ? Math.round(var_core_value_sig5410.x * 100) + "%, " + Math.round(var_core_value_sig5410.y * 100) + "%" : var_core_value_sig3E68.ref;
+}
+function T(var_core_value_sig492F, var_core_value_sig8EA0) {
+  return function (var_core_value_sigE9ED, var_core_value_sigB577) {
+    var_core_value_sig8EA0(var_core_value_sigE9ED, var_core_value_sigB577, var_core_value_sig492F);
+  };
+}
+function E(var_core_value_sigA6F6, var_core_value_sigCDDA, var_core_value_sigE243, var_core_value_sig74A8) {
+  var var_core_value_sig21B2 = arguments.length,
+    var_core_value_sigDE08 = var_core_value_sig21B2 < 3 ? var_core_value_sigCDDA : var_core_value_sig74A8 === null ? var_core_value_sig74A8 = Object.getOwnPropertyDescriptor(var_core_value_sigCDDA, var_core_value_sigE243) : var_core_value_sig74A8,
+    var_core_value_sigACCB;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigDE08 = Reflect.decorate(var_core_value_sigA6F6, var_core_value_sigCDDA, var_core_value_sigE243, var_core_value_sig74A8);else {
+    for (var var_core_value_sig7F33 = var_core_value_sigA6F6.length - 1; var_core_value_sig7F33 >= 0; var_core_value_sig7F33--) (var_core_value_sigACCB = var_core_value_sigA6F6[var_core_value_sig7F33]) && (var_core_value_sigDE08 = (var_core_value_sig21B2 < 3 ? var_core_value_sigACCB(var_core_value_sigDE08) : var_core_value_sig21B2 > 3 ? var_core_value_sigACCB(var_core_value_sigCDDA, var_core_value_sigE243, var_core_value_sigDE08) : var_core_value_sigACCB(var_core_value_sigCDDA, var_core_value_sigE243)) || var_core_value_sigDE08);
+  }
+  return var_core_value_sig21B2 > 3 && var_core_value_sigDE08 && Object.defineProperty(var_core_value_sigCDDA, var_core_value_sigE243, var_core_value_sigDE08), var_core_value_sigDE08;
+}
+let D = class extends n.Disposable {
+  constructor(var_core_value_sig9572, var_core_value_sigD873) {
+    super(), this._componentManager = var_core_value_sig9572, this._iconManager = var_core_value_sigD873, this._registerIcons(), this._registerComponents();
+  }
+  _registerIcons() {
+    this.disposeWithMe(this._iconManager["register"]({
+      CommentIcon: l.CommentIcon,
+      InsertCommentDoubleIcon: l.InsertCommentDoubleIcon
+    }));
+  }
+  _registerComponents() {
+    this.disposeWithMe(this._componentManager["register"](m, C));
+  }
+};
+D = E([T(0, (0, n.Inject)(a.ComponentManager)), T(1, (0, n.Inject)(a.IconManager))], D);
+function O(var_core_value_sig0C53, var_core_value_sigEA04, var_core_value_sig7A62, var_core_value_sig8109) {
+  return {
+    x: var_core_value_sig7A62 > 0 ? Math.max(0, Math.min(1, var_core_value_sig0C53 / var_core_value_sig7A62)) : 0,
+    y: var_core_value_sig8109 > 0 ? Math.max(0, Math.min(1, var_core_value_sigEA04 / var_core_value_sig8109)) : 0
+  };
+}
+function k(var_core_value_sig7565) {
+  "@babel/helpers - typeof";
+
+  return k = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigA12B) {
+    return typeof var_core_value_sigA12B;
+  } : function (var_core_value_sigF230) {
+    return var_core_value_sigF230 && typeof Symbol == "function" && var_core_value_sigF230.constructor === Symbol && var_core_value_sigF230 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigF230;
+  }, k(var_core_value_sig7565);
+}
+function A(var_core_value_sigD4FB, var_core_value_sig3E71) {
+  if (k(var_core_value_sigD4FB) != "object" || !var_core_value_sigD4FB) return var_core_value_sigD4FB;
+  var var_core_value_sig01B3 = var_core_value_sigD4FB[Symbol.toPrimitive];
+  if (var_core_value_sig01B3 !== undefined) {
+    var var_core_value_sig7442 = var_core_value_sig01B3.call(var_core_value_sigD4FB, var_core_value_sig3E71 || "default");
+    if (k(var_core_value_sig7442) != "object") return var_core_value_sig7442;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig3E71 === "string" ? String : Number)(var_core_value_sigD4FB);
+}
+function j(var_core_value_sigDF87) {
+  var var_core_value_sig9EE0 = A(var_core_value_sigDF87, "string");
+  return k(var_core_value_sig9EE0) == "symbol" ? var_core_value_sig9EE0 : var_core_value_sig9EE0 + "";
+}
+function M(var_core_value_sigF051, var_core_value_sig0B45, var_core_value_sig36F8) {
+  return (var_core_value_sig0B45 = j(var_core_value_sig0B45)) in var_core_value_sigF051 ? Object.defineProperty(var_core_value_sigF051, var_core_value_sig0B45, {
+    value: var_core_value_sig36F8,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigF051[var_core_value_sig0B45] = var_core_value_sig36F8, var_core_value_sigF051;
+}
+function N(var_core_value_sig03E1) {
+  let var_core_value_sigBB57 = new Map();
+  return var_core_value_sig03E1.forEach(var_core_value_sig09B8 => {
+    let var_core_value_sig6F91 = var_core_value_sig09B8.x + "\x00" + var_core_value_sig09B8.y,
+      var_core_value_sigF9C7 = var_core_value_sigBB57.get(var_core_value_sig6F91);
+    if (var_core_value_sigF9C7) {
+      var_core_value_sigF9C7.commentId = var_core_value_sig09B8.commentId, var_core_value_sigF9C7.commentIds["push"](var_core_value_sig09B8.commentId), var_core_value_sigF9C7.count += 1;
+      return;
+    }
+    var_core_value_sigBB57.set(var_core_value_sig6F91, {
+      ...var_core_value_sig09B8,
+      commentIds: [var_core_value_sig09B8.commentId],
+      count: 1
+    });
+  }), Array.from(var_core_value_sigBB57.values());
+}
+function P(var_core_value_sig7C4A, var_core_value_sigE799) {
+  return !var_core_value_sig7C4A.active || var_core_value_sig7C4A.unitId !== var_core_value_sigE799;
+}
+let F = class extends n.RxDisposable {
+  constructor(var_core_value_sig8895, var_core_value_sigC80B, var_core_value_sig284F, var_core_value_sigE154, var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sig2259, var_core_value_sig9E2F, var_core_value_sigD082, var_core_value_sigDBB7, var_core_value_sigD0A8) {
+    super(), this._renderContext = var_core_value_sig8895, this._commandService = var_core_value_sigC80B, this._instanceService = var_core_value_sig284F, this._drawingService = var_core_value_sigE154, this._draftService = var_core_value_sig4632, this._commentModel = var_core_value_sig12F2, this._panelService = var_core_value_sig2259, this._hitTestService = var_core_value_sig9E2F, this._insertService = var_core_value_sigD082, this._playbackService = var_core_value_sigDBB7, this._themeService = var_core_value_sigD0A8, M(this, "_overlay", undefined), M(this, "_commentsVisible", undefined), this._commentsVisible = P(this._playbackService["getSnapshot"](), this._renderContext["unitId"]), this._overlay = new i["ThreadCommentCanvasOverlay"]("slide-thread-comment-overlay", {
+      ...this._getColors(),
+      zoomRatio: 1,
+      markers: [],
+      underlines: []
+    }), this._commentsVisible || this._overlay["hide"](), this._renderContext["scene"].addObject(this._overlay, 10100), this.disposeWithMe((0, n.toDisposable)(this._overlay["onPointerDown$"].subscribeEvent((var_core_value_sigBC46, var_core_value_sig3D7D) => this._onOverlayPointerDown(var_core_value_sig3D7D)))), this.disposeWithMe((0, n.toDisposable)(this._overlay["onPointerLeave$"].subscribeEvent(() => this._overlay["clearHover"]()))), this.disposeWithMe((0, n.toDisposable)(this._renderContext["scene"].onPointerDown$["subscribeEvent"]((var_core_value_sig27E5, var_core_value_sig8061) => this._onPointerDown(var_core_value_sig27E5, var_core_value_sig8061)))), this.disposeWithMe((0, n.toDisposable)(this._renderContext["scene"].onPointerMove$["subscribeEvent"](var_core_value_sig4D4C => this._onPointerMove(var_core_value_sig4D4C)))), this.disposeWithMe((0, n.toDisposable)(this._hitTestService["onPointerDown$"].subscribe(var_core_value_sigC9E0 => {
+      this._onDrawingPointerDown(var_core_value_sigC9E0);
+    })));
+    let var_core_value_sigF4B9 = this._getModel();
+    var_core_value_sigF4B9 && (this.disposeWithMe(var_core_value_sigF4B9.pageManager["activeSlideId$"].pipe((0, f.takeUntil)(this.dispose$)).subscribe(() => this._syncOverlay())), this.disposeWithMe(var_core_value_sigF4B9.zoomRatio$["pipe"]((0, f.takeUntil)(this.dispose$)).subscribe(() => this._syncOverlay()))), this.disposeWithMe((0, n.toDisposable)(this._renderContext["engine"].onTransformChange$["subscribeEvent"](() => queueMicrotask(() => {
+      this._disposed || this._syncOverlay();
+    })))), this.disposeWithMe(this._commentModel["commentUpdate$"].pipe((0, f.takeUntil)(this.dispose$)).subscribe(var_core_value_sig76BA => {
+      var_core_value_sig76BA.unitId === this._renderContext["unitId"] && this._syncOverlay();
+    })), [this._panelService["activeCommentId$"], this._panelService["hoveredCommentId$"]].forEach(var_core_value_sigFBFA => {
+      this.disposeWithMe(var_core_value_sigFBFA.pipe((0, f.takeUntil)(this.dispose$)).subscribe(() => this._syncOverlay()));
+    }), [this._drawingService["add$"], this._drawingService["update$"], this._drawingService["remove$"]].forEach(var_core_value_sigF602 => {
+      this.disposeWithMe(var_core_value_sigF602.pipe((0, f.takeUntil)(this.dispose$)).subscribe(var_core_value_sig2AD0 => {
+        var_core_value_sig2AD0.some(var_core_value_sig7524 => var_core_value_sig7524.unitId === this._renderContext["unitId"]) && this._syncOverlay();
+      }));
+    }), this.disposeWithMe(this._draftService["placementType$"].pipe((0, f.takeUntil)(this.dispose$)).subscribe(var_core_value_sig1BBD => {
+      var_core_value_sig1BBD !== n.UniverInstanceType["UNIVER_SLIDE"] && this._overlay["updateState"]({
+        previewMarker: null,
+        previewUnderline: null
+      });
+    })), this.disposeWithMe(this._insertService["pendingInsert$"].pipe((0, f.takeUntil)(this.dispose$)).subscribe(var_core_value_sigF704 => {
+      var_core_value_sigF704 && this._draftService["placementType"] === n.UniverInstanceType["UNIVER_SLIDE"] && this._draftService["cancel"]();
+    })), this.disposeWithMe(this._themeService["currentTheme$"].pipe((0, f.takeUntil)(this.dispose$)).subscribe(() => this._syncOverlay())), this._initPlaybackVisibility(), this._syncOverlay();
+  }
+  _initPlaybackVisibility() {
+    this.disposeWithMe(this._playbackService["state$"].pipe((0, f.takeUntil)(this.dispose$)).subscribe(var_core_value_sig2BCF => {
+      let var_core_value_sig0D69 = P(var_core_value_sig2BCF, this._renderContext["unitId"]);
+      if (var_core_value_sig0D69 !== this._commentsVisible) {
+        if (this._commentsVisible = var_core_value_sig0D69, var_core_value_sig0D69) {
+          this._overlay["show"](), this._syncOverlay();
+          return;
+        }
+        this._draftService["placementType"] === n.UniverInstanceType["UNIVER_SLIDE"] && this._draftService["cancel"](), this._overlay["clearHover"](), this._overlay["updateState"]({
+          markers: [],
+          underlines: [],
+          focusedCommentIds: [],
+          focusOutlines: [],
+          previewMarker: null,
+          previewUnderline: null
+        }), this._overlay["hide"]();
+      }
+    }));
+  }
+  _onDrawingPointerDown(var_core_value_sig5CEE) {
+    !this._commentsVisible || this._draftService["placementType"] !== n.UniverInstanceType["UNIVER_SLIDE"] || (var_core_value_sig5CEE.nativeEvent["button"] ?? 0) !== 0 || (this._draftService["place"]({
+      unitId: var_core_value_sig5CEE.drawing["unitId"],
+      subUnitId: var_core_value_sig5CEE.drawing["subUnitId"],
+      anchor: {
+        kind: r.ThreadCommentAnchorKind["SLIDE_ELEMENT"],
+        pageId: var_core_value_sig5CEE.drawing["subUnitId"],
+        elementId: var_core_value_sig5CEE.drawing["drawingId"]
+      }
+    }), this._overlay["updateState"]({
+      previewMarker: null,
+      previewUnderline: null
+    }), this._commandService["executeCommand"](g.id).catch(() => undefined));
+  }
+  _onPointerDown(var_core_value_sigE92A, var_core_value_sig362B) {
+    if (!this._commentsVisible || this._draftService["placementType"] !== n.UniverInstanceType["UNIVER_SLIDE"] || (var_core_value_sigE92A.button ?? 0) !== 0) return;
+    let var_core_value_sig5CA5 = this._getModel(),
+      var_core_value_sigE90F = var_core_value_sig5CA5 == null ? undefined : var_core_value_sig5CA5.pageManager["getActiveSlide"]();
+    if (!var_core_value_sig5CA5 || !var_core_value_sigE90F) {
+      this._draftService["cancel"]();
+      return;
+    }
+    let var_core_value_sigEFD4 = this._hitTestService["hitTest"](var_core_value_sigE92A.offsetX, var_core_value_sigE92A.offsetY),
+      var_core_value_sig861B = var_core_value_sigE90F.getId(),
+      var_core_value_sig5237 = this._toScenePoint(var_core_value_sigE92A.offsetX, var_core_value_sigE92A.offsetY),
+      var_core_value_sigBB00 = this._getPageRect(var_core_value_sig5CA5),
+      var_core_value_sig7E54 = O(var_core_value_sig5237.x - var_core_value_sigBB00.left, var_core_value_sig5237.y - var_core_value_sigBB00.top, var_core_value_sigBB00.width, var_core_value_sigBB00.height);
+    this._draftService["place"]({
+      unitId: var_core_value_sig5CA5.getUnitId(),
+      subUnitId: var_core_value_sig861B,
+      anchor: var_core_value_sigEFD4 ? {
+        kind: r.ThreadCommentAnchorKind["SLIDE_ELEMENT"],
+        pageId: var_core_value_sig861B,
+        elementId: var_core_value_sigEFD4.drawing["drawingId"]
+      } : {
+        kind: r.ThreadCommentAnchorKind["SLIDE_POSITION"],
+        pageId: var_core_value_sig861B,
+        ...var_core_value_sig7E54
+      }
+    }), this._overlay["updateState"]({
+      previewMarker: null,
+      previewUnderline: null
+    }), var_core_value_sig362B.stopPropagation(), this._commandService["executeCommand"](g.id).catch(() => undefined);
+  }
+  _onPointerMove(var_core_value_sig9A8D) {
+    if (!this._commentsVisible || this._draftService["placementType"] !== n.UniverInstanceType["UNIVER_SLIDE"]) return;
+    let var_core_value_sigC259 = this._hitTestService["hitTest"](var_core_value_sig9A8D.offsetX, var_core_value_sig9A8D.offsetY),
+      var_core_value_sig9C9F = var_core_value_sigC259 ? this._getElementUnderline(var_core_value_sigC259.drawing["drawingId"]) : null,
+      var_core_value_sigFDEA = this._toScenePoint(var_core_value_sig9A8D.offsetX, var_core_value_sig9A8D.offsetY);
+    if (var_core_value_sig9C9F) {
+      this._overlay["updateState"]({
+        previewMarker: var_core_value_sigFDEA,
+        previewUnderline: var_core_value_sig9C9F
+      });
+      return;
+    }
+    this._overlay["updateState"]({
+      previewMarker: var_core_value_sigFDEA,
+      previewUnderline: null
+    });
+  }
+  _onOverlayPointerDown(var_core_value_sig86D0) {
+    var var_core_value_sig4CD2;
+    if (!this._commentsVisible) return;
+    let var_core_value_sig48CA = this._getModel(),
+      var_core_value_sig50AF = var_core_value_sig48CA == null || (var_core_value_sig4CD2 = var_core_value_sig48CA.pageManager["getActiveSlide"]()) == null ? undefined : var_core_value_sig4CD2.getId(),
+      var_core_value_sigA942 = this._overlay["hitCommentId"];
+    !var_core_value_sig48CA || !var_core_value_sig50AF || !var_core_value_sigA942 || (this._panelService["setActiveComment"]({
+      unitId: var_core_value_sig48CA.getUnitId(),
+      subUnitId: var_core_value_sig50AF,
+      commentId: var_core_value_sigA942,
+      trigger: "slide-canvas"
+    }), var_core_value_sig86D0.stopPropagation(), this._commandService["executeCommand"](g.id).catch(() => undefined));
+  }
+  _syncOverlay() {
+    var var_core_value_sigA621;
+    if (!this._commentsVisible) return;
+    let var_core_value_sigBBFF = this._getModel(),
+      var_core_value_sig8889 = var_core_value_sigBBFF == null || (var_core_value_sigA621 = var_core_value_sigBBFF.pageManager["getActiveSlide"]()) == null ? undefined : var_core_value_sigA621.getId();
+    if (!var_core_value_sigBBFF || !var_core_value_sig8889) {
+      this._overlay["updateState"]({
+        markers: [],
+        underlines: [],
+        focusedCommentIds: [],
+        focusOutlines: []
+      });
+      return;
+    }
+    let var_core_value_sig32F8 = this._getPageRect(var_core_value_sigBBFF),
+      var_core_value_sig5B67 = [],
+      var_core_value_sig1758 = new Map();
+    this._commentModel["query"]({
+      unitIds: [var_core_value_sigBBFF.getUnitId()],
+      subUnitIds: [var_core_value_sig8889],
+      anchorKinds: [r.ThreadCommentAnchorKind["SLIDE_ELEMENT"], r.ThreadCommentAnchorKind["SLIDE_POSITION"]],
+      resolved: false
+    }).forEach(({
+      root: var_core_value_sig480E
+    }) => {
+      let var_core_value_sig26DB = (0, r.deserializeThreadCommentAnchor)(var_core_value_sig480E.ref);
+      if ((var_core_value_sig26DB == null ? undefined : var_core_value_sig26DB.kind) === r.ThreadCommentAnchorKind["SLIDE_POSITION"]) var_core_value_sig5B67.push({
+        commentId: var_core_value_sig480E.id,
+        x: var_core_value_sig32F8.left + var_core_value_sig26DB.x * var_core_value_sig32F8.width,
+        y: var_core_value_sig32F8.top + var_core_value_sig26DB.y * var_core_value_sig32F8.height
+      });else {
+        if ((var_core_value_sig26DB == null ? undefined : var_core_value_sig26DB.kind) === r.ThreadCommentAnchorKind["SLIDE_ELEMENT"]) {
+          let var_core_value_sig2AD8 = this._getElementUnderline(var_core_value_sig26DB.elementId, var_core_value_sig480E.id);
+          var_core_value_sig2AD8 && var_core_value_sig1758.set(var_core_value_sig26DB.elementId, var_core_value_sig2AD8);
+        }
+      }
+    }), this._overlay["updateState"]({
+      ...this._getColors(),
+      zoomRatio: var_core_value_sigBBFF.getZoomRatio(),
+      markers: N(var_core_value_sig5B67),
+      underlines: Array.from(var_core_value_sig1758.values()),
+      ...this._getFocusState(var_core_value_sigBBFF, var_core_value_sig8889)
+    });
+  }
+  _getElementUnderline(var_core_value_sig4805, var_core_value_sigE67E = "") {
+    let var_core_value_sig2902 = this._getElementOutline(var_core_value_sig4805),
+      var_core_value_sig9989 = this._getModel();
+    return !var_core_value_sig9989 || !var_core_value_sig2902 ? null : {
+      commentId: var_core_value_sigE67E,
+      left: var_core_value_sig2902.left,
+      top: var_core_value_sig2902.top + var_core_value_sig2902.height + 2 / var_core_value_sig9989.getZoomRatio(),
+      width: var_core_value_sig2902.width
+    };
+  }
+  _getElementOutline(var_core_value_sig698E) {
+    var var_core_value_sig2809, var_core_value_sig2DAB;
+    let var_core_value_sig877E = this._getModel(),
+      var_core_value_sig20C8 = var_core_value_sig877E == null || (var_core_value_sig2809 = var_core_value_sig877E.pageManager["getActiveSlide"]()) == null ? undefined : var_core_value_sig2809.getId();
+    if (!var_core_value_sig877E || !var_core_value_sig20C8) return null;
+    let var_core_value_sigE9A7 = this._renderContext["scene"],
+      var_core_value_sigBECE = (0, t.buildDrawingOKey)(var_core_value_sig877E.getUnitId(), var_core_value_sig20C8, var_core_value_sig698E),
+      var_core_value_sig1B22 = ((var_core_value_sig2DAB = var_core_value_sigE9A7.getObjectIncludeInGroup) == null ? undefined : var_core_value_sig2DAB.call(var_core_value_sigE9A7, var_core_value_sigBECE)) ?? var_core_value_sigE9A7.getObject(var_core_value_sigBECE);
+    if (!var_core_value_sig1B22) return null;
+    let var_core_value_sig7F72 = var_core_value_sig1B22.getRealBound();
+    return {
+      left: var_core_value_sig7F72.left,
+      top: var_core_value_sig7F72.top,
+      width: var_core_value_sig7F72.width,
+      height: var_core_value_sig7F72.height
+    };
+  }
+  _getFocusState(var_core_value_sig7B2A, var_core_value_sig06CD) {
+    let var_core_value_sigA5F1 = [],
+      var_core_value_sig97A2 = new Map();
+    return [this._panelService["activeCommentId"], this._panelService["hoveredCommentId"]].forEach(var_core_value_sigF0F9 => {
+      if (!var_core_value_sigF0F9 || var_core_value_sigF0F9.unitId !== var_core_value_sig7B2A.getUnitId() || var_core_value_sigF0F9.subUnitId !== var_core_value_sig06CD) return;
+      let var_core_value_sig1A0F = this._commentModel["getComment"](var_core_value_sigF0F9.unitId, var_core_value_sigF0F9.subUnitId, var_core_value_sigF0F9.commentId);
+      if (!var_core_value_sig1A0F) return;
+      var_core_value_sigA5F1.push(var_core_value_sigF0F9.commentId);
+      let var_core_value_sigFBA4 = (0, r.deserializeThreadCommentAnchor)(var_core_value_sig1A0F.ref);
+      if ((var_core_value_sigFBA4 == null ? undefined : var_core_value_sigFBA4.kind) === r.ThreadCommentAnchorKind["SLIDE_ELEMENT"] && !var_core_value_sig97A2.has(var_core_value_sigFBA4.elementId)) {
+        let var_core_value_sig3EEE = this._getElementOutline(var_core_value_sigFBA4.elementId);
+        var_core_value_sig3EEE && var_core_value_sig97A2.set(var_core_value_sigFBA4.elementId, var_core_value_sig3EEE);
+      }
+    }), {
+      focusedCommentIds: var_core_value_sigA5F1,
+      focusOutlines: Array.from(var_core_value_sig97A2.values())
+    };
+  }
+  _getPageRect(var_core_value_sig07E9) {
+    let var_core_value_sig4F59 = this._renderContext["scene"].getObject(t.SLIDE_PAGE_RECT_KEY),
+      var_core_value_sigF564 = var_core_value_sig07E9.getSnapshot().defaultPageSize;
+    return {
+      left: (var_core_value_sig4F59 == null ? undefined : var_core_value_sig4F59.left) ?? 0,
+      top: (var_core_value_sig4F59 == null ? undefined : var_core_value_sig4F59.top) ?? 0,
+      width: (var_core_value_sig4F59 == null ? undefined : var_core_value_sig4F59.width) ?? var_core_value_sigF564.width,
+      height: (var_core_value_sig4F59 == null ? undefined : var_core_value_sig4F59.height) ?? var_core_value_sigF564.height
+    };
+  }
+  _getColors() {
+    return {
+      accentColor: this._themeService["getColorFromTheme"]("yellow.400"),
+      foregroundColor: this._themeService["getColorFromTheme"]("gray.900"),
+      outlineColor: this._themeService["getColorFromTheme"]("white")
+    };
+  }
+  _getModel() {
+    return this._instanceService["getUnit"](this._renderContext["unitId"], n.UniverInstanceType["UNIVER_SLIDE"]) ?? null;
+  }
+  _toScenePoint(var_core_value_sig8CFA, var_core_value_sig2E11) {
+    var var_core_value_sig5B69, var_core_value_sigB098, var_core_value_sigCE71;
+    let var_core_value_sig21D8 = new c["Vector2"](var_core_value_sig8CFA, var_core_value_sig2E11),
+      var_core_value_sig2B65 = this._renderContext["scene"],
+      var_core_value_sigD7EA = ((var_core_value_sig5B69 = var_core_value_sig2B65.getActiveViewportByCoord) == null ? undefined : var_core_value_sig5B69.call(var_core_value_sig2B65, var_core_value_sig21D8)) ?? ((var_core_value_sigB098 = var_core_value_sig2B65.getMainViewport) == null ? undefined : var_core_value_sigB098.call(var_core_value_sig2B65));
+    return (var_core_value_sigD7EA == null || (var_core_value_sigCE71 = var_core_value_sigD7EA.transformVector2SceneCoord) == null ? undefined : var_core_value_sigCE71.call(var_core_value_sigD7EA, var_core_value_sig21D8)) ?? var_core_value_sig21D8;
+  }
+};
+F = E([T(1, n.ICommandService), T(2, n.IUniverInstanceService), T(3, (0, n.Inject)(e.ISlideDrawingService)), T(4, (0, n.Inject)(i.ThreadCommentDraftService)), T(5, (0, n.Inject)(r.ThreadCommentModel)), T(6, (0, n.Inject)(i.ThreadCommentPanelService)), T(7, (0, n.Inject)(t.SlideHitTestService)), T(8, (0, n.Inject)(t.SlideInsertService)), T(9, t.ISlidePlaybackService), T(10, (0, n.Inject)(n.ThemeService))], F);
+function I(var_core_value_sigB601) {
+  let var_core_value_sig8B71 = var_core_value_sigB601.get(n.IUniverInstanceService),
+    var_core_value_sigAEFB = var_core_value_sigB601.get(n.IPermissionService);
+  return (0, f.combineLatest)([var_core_value_sig8B71.getCurrentTypeOfUnit$(n.UniverInstanceType["UNIVER_SLIDE"]), var_core_value_sigAEFB.permissionPointUpdate$["pipe"]((0, f.startWith)(undefined))]).pipe((0, f.map)(([var_core_value_sigB33B]) => !var_core_value_sigB33B || !(0, e.getSlidePermissionValue)(var_core_value_sigAEFB, var_core_value_sigB33B.getUnitId(), var_core_value_sigB33B.getUnitId(), u.UnitAction["Comment"])));
+}
+function L(var_core_value_sig826B) {
+  return {
+    id: g.id,
+    type: a.MenuItemType["BUTTON"],
+    icon: "CommentIcon",
+    title: "slides-thread-comment-ui.openComments",
+    tooltip: "slides-thread-comment-ui.openComments",
+    hidden$: (0, a.getMenuHiddenObservable)(var_core_value_sig826B, n.UniverInstanceType["UNIVER_SLIDE"])
+  };
+}
+function R(var_core_value_sigCF89) {
+  return {
+    id: _.id,
+    type: a.MenuItemType["BUTTON"],
+    icon: "InsertCommentDoubleIcon",
+    title: "slides-thread-comment-ui.addComment",
+    tooltip: "slides-thread-comment-ui.addComment",
+    hidden$: (0, a.getMenuHiddenObservable)(var_core_value_sigCF89, n.UniverInstanceType["UNIVER_SLIDE"]),
+    disabled$: I(var_core_value_sigCF89)
+  };
+}
+function z(var_core_value_sig00CB) {
+  return {
+    id: v.id,
+    type: a.MenuItemType["BUTTON"],
+    icon: "InsertCommentDoubleIcon",
+    title: "slides-thread-comment-ui.addComment",
+    tooltip: "slides-thread-comment-ui.addComment",
+    disabled$: I(var_core_value_sig00CB)
+  };
+}
+const B = {
+    [a.MenuManagerPosition["RIBBON"]]: {
+      [t.SLIDE_SHAPE_FORMAT_RIBBON_TAB]: {
+        [t.SLIDE_SHAPE_FORMAT_RIBBON_GROUP_ADVANCED]: {
+          [v.id]: {
+            order: 2,
+            gridLayout: {
+              row: 1,
+              column: 2,
+              rowSpan: 2,
+              showLabel: true
+            },
+            menuItemFactory: z
+          }
+        }
+      }
+    }
+  },
+  V = {
+    [a.RibbonStartGroup["OTHERS"]]: {
+      [g.id]: {
+        order: 10,
+        gridLayout: {
+          row: 1,
+          column: 10,
+          showLabel: true
+        },
+        menuItemFactory: L
+      },
+      [_.id]: {
+        order: 10.1,
+        gridLayout: {
+          row: 2,
+          column: 10,
+          showLabel: true
+        },
+        menuItemFactory: R
+      }
+    },
+    [t.SlideContextMenuPosition["DRAWING"]]: {
+      [a.ContextMenuGroup["OTHERS"]]: {
+        [v.id]: {
+          order: 0,
+          menuItemFactory: z
+        }
+      }
+    },
+    [a.FloatingObjectToolbarPosition["SLIDE"]]: {
+      [v.id]: {
+        order: 10,
+        menuItemFactory: z
+      }
+    }
+  };
+function H(var_core_value_sig77EE, var_core_value_sig9F76, var_core_value_sigB008) {
+  return var_core_value_sig77EE.query({
+    unitIds: [var_core_value_sig9F76],
+    subUnitIds: [var_core_value_sigB008],
+    resolved: false
+  }).length;
+}
+function U({
+  unitId: var_core_value_sig8721,
+  pageId: var_core_value_sig08BA,
+  setActivePage: var_core_value_sigDBB5
+}) {
+  let var_core_value_sigCFAC = (0, a.useDependency)(n.ICommandService),
+    var_core_value_sig237B = (0, a.useDependency)(r.ThreadCommentModel),
+    var_core_value_sigFEAB = (0, a.useDependency)(n.LocaleService);
+  (0, a.useObservable)(() => var_core_value_sig237B.commentUpdate$["pipe"]((0, f.filter)(var_core_value_sig4383 => var_core_value_sig4383.unitId === var_core_value_sig8721 && var_core_value_sig4383.subUnitId === var_core_value_sig08BA)), undefined, false, [var_core_value_sig237B, var_core_value_sig08BA, var_core_value_sig8721]);
+  let var_core_value_sigE347 = H(var_core_value_sig237B, var_core_value_sig8721, var_core_value_sig08BA);
+  return var_core_value_sigE347 === 0 ? null : (0, p.jsx)("button", {
+    type: "button",
+    "aria-label": var_core_value_sigFEAB.t("slides-thread-comment-ui.addComment"),
+    title: var_core_value_sigFEAB.t("slides-thread-comment-ui.addComment"),
+    onClick: var_core_value_sig24B9 => {
+      var_core_value_sig24B9.stopPropagation(), var_core_value_sigDBB5(var_core_value_sig08BA), var_core_value_sigCFAC.executeCommand(g.id);
+    },
+    className: "univer-absolute -univer-right-1.5 -univer-top-1.5 univer-z-[4] univer-flex univer-h-7 univer-min-w-7 univer-cursor-pointer univer-select-none univer-items-center univer-justify-center univer-rounded-lg univer-border-2 univer-border-solid univer-border-gray-0 univer-bg-yellow-400 univer-px-1.5 univer-text-sm univer-font-semibold univer-leading-none univer-text-gray-0 univer-transition hover:univer-brightness-95 focus-visible:univer-outline-none focus-visible:univer-ring-2 focus-visible:univer-ring-primary-500",
+    children: var_core_value_sigE347
+  });
+}
+let W = class extends n.Disposable {
+  constructor(var_core_value_sigE627, var_core_value_sigEF3E, var_core_value_sig273D) {
+    super(), [v, g, _].forEach(var_core_value_sig186C => this.disposeWithMe(var_core_value_sigE627.registerCommand(var_core_value_sig186C))), var_core_value_sigEF3E.mergeMenu(V), var_core_value_sigEF3E.mergeMenu(B), this.disposeWithMe(var_core_value_sig273D.registerComponent(t.SLIDE_THUMBNAIL_OVERLAY_PART, () => U));
+  }
+};
+W = E([T(0, n.ICommandService), T(1, a.IMenuManagerService), T(2, a.IUIPartsService)], W);
+const G = [[D], [W]];
+let K = class extends n.Plugin {
+  constructor(var_core_value_sig9A0D = b, var_core_value_sigA319, var_core_value_sig2D58, var_core_value_sig223F) {
+    super(), this._config = var_core_value_sig9A0D, this._injector = var_core_value_sigA319, this._configService = var_core_value_sig2D58, this._renderManagerService = var_core_value_sig223F;
+    let {
+      ...var_core_value_sigD749
+    } = (0, n.merge)({}, b, this._config);
+    this._configService["setConfig"](y, var_core_value_sigD749);
+  }
+  onStarting() {
+    G.forEach(var_core_value_sigD955 => {
+      this._injector["add"](var_core_value_sigD955);
+    }), this._injector["get"](D);
+  }
+  onRendered() {
+    this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_SLIDE"], [F]), this._injector["get"](W);
+  }
+};
+M(K, "pluginName", "UNIVER_SLIDES_THREAD_COMMENT_UI_PLUGIN"), M(K, "packageName", x), M(K, "version", S), M(K, "type", n.UniverInstanceType["UNIVER_SLIDE"]), K = E([(0, n.DependentOn)(o.UniverLicensePlugin, s.UniverSlidesThreadCommentPlugin, t.UniverSlidesUIPlugin, c.UniverRenderEnginePlugin, i.UniverThreadCommentUIPlugin), T(1, (0, n.Inject)(n.Injector)), T(2, n.IConfigService), T(3, c.IRenderManagerService)], K), exports.OpenSlideCommentPanelOperation = g, exports.SLIDES_THREAD_COMMENT_UI_PLUGIN_CONFIG_KEY = y, exports.StartSlideCommentPlacementOperation = _, Object.defineProperty(exports, "UniverSlidesThreadCommentUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return K;
+  }
+});

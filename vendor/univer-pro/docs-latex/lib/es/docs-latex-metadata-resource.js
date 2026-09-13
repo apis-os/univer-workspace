@@ -1,8 +1,12 @@
-import{CommandType,CustomRangeType,DataStreamTreeTokenType,DependentOn,Disposable,ICommandService,IConfigService,IResourceManagerService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSONX,Plugin,TextX,UniverInstanceType,generateRandomId,getBodySliceForTextXAction,getCustomRangeInterval,getRichTextEditPath,merge,shiftExclusiveRangeOnDelete,shiftExclusiveRangeOnInsert,shiftInclusiveRangeOnDelete,shiftInclusiveRangeOnInsert}from"@univerjs/core";
-import{DOC_SELECTION_OPTION_PRESERVE_CARET,DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin}from"@univerjs/docs";
-import{Subject}from"rxjs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { CommandType, CustomRangeType, DataStreamTreeTokenType, DependentOn, Disposable, ICommandService, IConfigService, IResourceManagerService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSONX, Plugin, TextX, UniverInstanceType, generateRandomId, getBodySliceForTextXAction, getCustomRangeInterval, getRichTextEditPath, merge, shiftExclusiveRangeOnDelete, shiftExclusiveRangeOnInsert, shiftInclusiveRangeOnDelete, shiftInclusiveRangeOnInsert } from "@univerjs/core";
+import { DOC_SELECTION_OPTION_PRESERVE_CARET, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { x } from "./docs-latex-formula-config.js";
-function S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126){let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126.formulas)??{};return{formulas:Object.fromEntries(Object.entries(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB).map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614])=>[var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613,x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614)]))};}
-
+function S(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126) {
+  let var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D46126.formulas) ?? {};
+  return {
+    formulas: Object.fromEntries(Object.entries(var_L0_core_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB).map(([var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614]) => [var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4613, x(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D4614)]))
+  };
+}
 export { S as normalizeDocsLatexMetadataResource };

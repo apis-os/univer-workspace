@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Vysoká",
       rowHeightExtraTall: "Veľmi vysoká",
       conditionalColoring: "Podmienené sfarbenie",
-      conditionalColoringHelp:
-        "Kliknutím na položku „Nová podmienka“ použite farby podľa definovaných podmienok. Podmienky umiestnené vyššie majú vyššiu prioritu.",
+      conditionalColoringHelp: "Kliknutím na položku „Nová podmienka“ použite farby podľa definovaných podmienok. Podmienky umiestnené vyššie majú vyššiu prioritu.",
       conditionalColoringSmart: "Použiť inteligentnú farbu na všetko",
       conditionalColor: "Farba",
       conditionalCustomColor: "Vlastné",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "skontrolované",
       conditionalUnchecked: "nezačiarknuté",
       statusDoneTitle: "Stav\x20je\x20Hotovo",
-      statusDoneDescription:
-        "Na\x20zodpovedajúce\x20záznamy\x20naneste\x20mäkkú\x20zelenú\x20značku.",
+      statusDoneDescription: "Na\x20zodpovedajúce\x20záznamy\x20naneste\x20mäkkú\x20zelenú\x20značku.",
       statusBlockedTitle: "Stav\x20je\x20blokovaný",
-      statusBlockedDescription:
-        "Použite varovnú značku na zablokované záznamy.",
+      statusBlockedDescription: "Použite varovnú značku na zablokované záznamy.",
       addField: "Pridať pole",
       undo: "Späť",
-      redo: "Znova",
+      redo: "Znova"
     },
     recordDetail: {
       untitledRecord: "Záznam bez názvu",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Po\x20odoslaní\x20pridať\x20ďalšie\x20záznamy",
       panelSize: "Veľkosť panela",
       fullScreen: "Celá obrazovka",
-      exitFullScreen: "Ukončiť\x20celú\x20obrazovku",
+      exitFullScreen: "Ukončiť\x20celú\x20obrazovku"
     },
     recordLink: {
       searchRecords: "Hľadať\x20záznamy",
@@ -74,28 +71,22 @@ const n = {
       selectedCount: "Vybrané: {0}",
       missingRecord: "Odstránený\x20záznam",
       openRecord: "Otvoriť prepojený záznam",
-      back: "Späť",
+      back: "Späť"
     },
     hierarchy: {
-      invalidField:
-        "Vyberte pole prepojenia na záznam s jednou hodnotou, ktoré odkazuje na túto tabuľku.",
-      missingRecord:
-        "Záznam\x20alebo\x20nadradená\x20položka\x20už\x20neexistuje.\x20Obnovte\x20stránku\x20a\x20skúste\x20to\x20znova.",
+      invalidField: "Vyberte pole prepojenia na záznam s jednou hodnotou, ktoré odkazuje na túto tabuľku.",
+      missingRecord: "Záznam\x20alebo\x20nadradená\x20položka\x20už\x20neexistuje.\x20Obnovte\x20stránku\x20a\x20skúste\x20to\x20znova.",
       selfParent: "Záznam nemôže byť sám sebe nadradenou položkou.",
-      cycle:
-        "Tento\x20presun\x20by\x20vytvoril\x20cyklus\x20nadradených\x20položiek.",
-      maxDepth:
-        "Tento\x20presun\x20by\x20prekročil\x20maximálnu\x20hĺbku\x20hierarchie\x20päť\x20úrovní.",
-      sortedView:
-        "Pred manuálnou zmenou poradia záznamov zrušte zoradenie zobrazenia.",
-      operationFailed:
-        "Zmenu hierarchie sa nepodarilo použiť. Obnovte stránku a skúste to znova.",
+      cycle: "Tento\x20presun\x20by\x20vytvoril\x20cyklus\x20nadradených\x20položiek.",
+      maxDepth: "Tento\x20presun\x20by\x20prekročil\x20maximálnu\x20hĺbku\x20hierarchie\x20päť\x20úrovní.",
+      sortedView: "Pred manuálnou zmenou poradia záznamov zrušte zoradenie zobrazenia.",
+      operationFailed: "Zmenu hierarchie sa nepodarilo použiť. Obnovte stránku a skúste to znova.",
       parent: "Nadradená\x20položka",
       parentFieldName: "Nadradené položky",
       children: "Podpoložky",
       viewChildren: "Zobraziť podpoložky",
       root: "Koreňový záznam",
-      setParent: "Nastaviť nadradenú položku",
+      setParent: "Nastaviť nadradenú položku"
     },
     collaboration: {
       localStatus: "Miestny\x20režim",
@@ -109,14 +100,14 @@ const n = {
       conflictStatus: "Konflikt",
       conflictTooltip: "Konflikt\x20spolupráce\x20si\x20vyžaduje\x20pozornosť.",
       notCollabStatus: "Nie kolaboratívne",
-      notCollabTooltip: "Táto základňa nie je v režime spolupráce.",
+      notCollabTooltip: "Táto základňa nie je v režime spolupráce."
     },
     virtualRecord: {
       regrouped: "Záznam bude znova zoskupený",
       resorted: "Záznam\x20bude\x20znova\x20zoradený",
       moved: "Záznam sa v tomto zobrazení presunie",
       filteredOut: "Záznam je v tomto zobrazení skrytý",
-      "delete d": "Záznam bol odstránený",
+      "delete d": "Záznam bol odstránený"
     },
     gridContext: {
       insert: "Vložiť",
@@ -126,7 +117,7 @@ const n = {
       addSubRecord: "Pridať podradený záznam",
       clearContent: "Prehľadný\x20obsah",
       deleteRecord: "Odstrániť záznam",
-      deleteRecords: "Odstrániť záznamy",
+      deleteRecords: "Odstrániť záznamy"
     },
     common: {
       apply: "Použiť",
@@ -141,7 +132,7 @@ const n = {
       searchClose: "Zavrieť vyhľadávanie",
       value: "Hodnota",
       newCondition: "Nová podmienka",
-      newBadge: "Nové",
+      newBadge: "Nové"
     },
     footerStat: {
       none: "Žiadne",
@@ -160,17 +151,16 @@ const n = {
       sum: "Súčet {0}",
       average: "Priem. {0}",
       min: "Min.\x20{0}",
-      max: "Max {0}",
+      max: "Max {0}"
     },
     confirmDelete: {
       tableTitle: "Odstrániť túto tabuľku?",
       tableDescription: "Táto tabuľka a jej záznamy budú odstránené.",
-      tableReferenced:
-        "Túto\x20tabuľku\x20nemožno\x20odstrániť,\x20pretože\x20na\x20ňu\x20odkazujú\x20nasledujúce\x20polia:\x20{0}.",
+      tableReferenced: "Túto\x20tabuľku\x20nemožno\x20odstrániť,\x20pretože\x20na\x20ňu\x20odkazujú\x20nasledujúce\x20polia:\x20{0}.",
       viewTitle: "Odstrániť toto zobrazenie?",
       viewDescription: "Toto zobrazenie bude odstránené.",
       fieldTitle: "Odstrániť\x20toto\x20pole?",
-      fieldDescription: "Toto pole bude odstránené z tabuľky.",
+      fieldDescription: "Toto pole bude odstránené z tabuľky."
     },
     duplicateTable: {
       title: "Duplikovať tabuľku",
@@ -179,7 +169,7 @@ const n = {
       configurationsOnly: "Iba\x20konfigurácie",
       configurationsAndRecords: "Konfigurácie a záznamy",
       action: "Duplikovať",
-      copyName: "{0} kópia",
+      copyName: "{0} kópia"
     },
     tableNameValidation: {
       required: "Zadajte\x20názov\x20tabuľky.",
@@ -187,19 +177,18 @@ const n = {
       apostrophe: "Názov tabuľky sa nemôže začínať ani končiť apostrofom.",
       invalidCharacters: "Názov tabuľky nemôže obsahovať : \\ / ? * [ ].",
       duplicate: "Tabuľka\x20s\x20týmto\x20názvom\x20už\x20existuje.",
-      invalid: "Zadajte platný názov tabuľky.",
+      invalid: "Zadajte platný názov tabuľky."
     },
     clipboard: {
       recordsCopied: "Skopírovaných záznamov: {0}",
-      attachmentsUploading: "Nahráva sa {0} príloh...",
+      attachmentsUploading: "Nahráva sa {0} príloh..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Cieľová tabuľka",
       recordLinkDisplayField: "Zobrazované pole",
       recordLinkPickerFields: "Pomocné\x20polia\x20výberu",
       recordLinkAllowMultiple: "Povoliť\x20prepojenie\x20viacerých\x20záznamov",
-      recordLinkDescription:
-        "Ukladá\x20stabilné\x20ID\x20záznamov.\x20Prepojené\x20hodnoty\x20možno\x20čítať\x20štandardnými\x20vzorcami\x20Excel,\x20napríklad\x20XLOOKUP\x20a\x20TEXTSPLIT.",
+      recordLinkDescription: "Ukladá\x20stabilné\x20ID\x20záznamov.\x20Prepojené\x20hodnoty\x20možno\x20čítať\x20štandardnými\x20vzorcami\x20Excel,\x20napríklad\x20XLOOKUP\x20a\x20TEXTSPLIT.",
       fieldTitle: "Názov poľa",
       fieldTitlePlaceholder: "Zadajte názov poľa",
       fieldType: "Typ poľa",
@@ -208,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Rozšírené",
       defaultValue: "Predvolená hodnota",
       newField: "Nové pole",
-      defaultSettingsReady:
-        "Tento\x20typ\x20poľa\x20je\x20pripravený\x20s\x20predvolenými\x20nastaveniami.",
+      defaultSettingsReady: "Tento\x20typ\x20poľa\x20je\x20pripravený\x20s\x20predvolenými\x20nastaveniami.",
       numberFormat: "Formát čísla",
       currencyFormat: "Formát\x20meny",
       dateFormat: "Formát dátumu",
@@ -256,16 +244,11 @@ const n = {
       createKanbanWithField: "Vytvoriť Kanban s {0}",
       deleteField: "Odstrániť pole",
       referenceOptionsHelp: "Referenčné údaje z iných tabuliek ako možnosti",
-      allowMultipleMembers:
-        "Povoliť\x20pridanie\x20viacerých\x20členov\x20do\x20jedného\x20záznamu",
-      allowMultipleGroups:
-        "Povoliť pridanie viacerých skupín do jedného záznamu",
-      defaultProviderMock:
-        "Predvolená hodnota je vyriešená z {0} simulovanej {1} položky{2}.",
-      defaultProviderExternal:
-        "Predvolená\x20hodnota\x20je\x20vyriešená\x20od\x20externého\x20poskytovateľa\x20Univer\x20{0}.",
-      linkPlaceholder:
-        "Zadajte URL (napríklad univer.ai alebo https://univer.ai/skills).",
+      allowMultipleMembers: "Povoliť\x20pridanie\x20viacerých\x20členov\x20do\x20jedného\x20záznamu",
+      allowMultipleGroups: "Povoliť pridanie viacerých skupín do jedného záznamu",
+      defaultProviderMock: "Predvolená hodnota je vyriešená z {0} simulovanej {1} položky{2}.",
+      defaultProviderExternal: "Predvolená\x20hodnota\x20je\x20vyriešená\x20od\x20externého\x20poskytovateľa\x20Univer\x20{0}.",
+      linkPlaceholder: "Zadajte URL (napríklad univer.ai alebo https://univer.ai/skills).",
       phonePlaceholder: "Zadajte\x20telefónne\x20číslo",
       currencySymbol: "Symbol meny",
       thousandsSeparator: "Oddeľovač\x20tisícok",
@@ -289,8 +272,7 @@ const n = {
       targetValue: "Cieľová hodnota",
       searchGroups: "Hľadať\x20skupiny",
       selectGroups: "Vyberte\x20skupiny",
-      noProviderGroupData:
-        "Nie sú k dispozícii žiadne údaje skupiny poskytovateľov",
+      noProviderGroupData: "Nie sú k dispozícii žiadne údaje skupiny poskytovateľov",
       noMatchingGroups: "Žiadne zodpovedajúce skupiny.",
       searchMembers: "Vyhľadajte členov",
       selectMembers: "Vyberte členov",
@@ -299,10 +281,8 @@ const n = {
       noFormulaConfigured: "Nie\x20je\x20nakonfigurovaný\x20žiadny\x20vzorec",
       editFormula: "Upraviť vzorec",
       closeFormulaEditor: "Zatvorte editor vzorcov",
-      formulaHint:
-        "Použite polia aktuálneho riadka ako [@[Suma]]. A1:B10 a odkazy na jednotlivé bunky nie sú povolené.",
-      formulaReferenceError:
-        "Referencie a rozsahy A1 nie sú v základných vzorcoch podporované.",
+      formulaHint: "Použite polia aktuálneho riadka ako [@[Suma]]. A1:B10 a odkazy na jednotlivé bunky nie sú povolené.",
+      formulaReferenceError: "Referencie a rozsahy A1 nie sú v základných vzorcoch podporované.",
       formulaTables: "Tabuľky",
       formulaFields: "Polia",
       formulaFunctions: "Funkcie",
@@ -315,8 +295,7 @@ const n = {
       currentTableName: "Aktuálna tabuľka",
       currentTableField: "Aktuálne pole tabuľky",
       fieldFromTable: "Pole z {0}",
-      referenceCurrentField:
-        "Odkážte sa na pole „{0}“ v aktuálnej tabuľke Base. Pre výpočtový modul sa uloží ako [[#This Row],[{1}]].",
+      referenceCurrentField: "Odkážte sa na pole „{0}“ v aktuálnej tabuľke Base. Pre výpočtový modul sa uloží ako [[#This Row],[{1}]].",
       referenceTableField: "Odkážte sa na pole „{0}“ z tabuľky „{1}“.",
       fieldNameColumn: "Názov",
       fieldTypeColumn: "Typ",
@@ -332,8 +311,7 @@ const n = {
       formulaFormatPercent: "Percento",
       formulaFormatDateTime: "Dátum/čas",
       addDescriptionPlaceholder: "Pridajte popis",
-      numberingDescription:
-        "Automaticky\x20priradí\x20jedinečný\x20rastúci\x20index\x20začínajúci\x20od\x201\x20pri\x20vytvorení\x20záznamu.\x20Vygenerované\x20hodnoty\x20nie\x20je\x20možné\x20upravovať.",
+      numberingDescription: "Automaticky\x20priradí\x20jedinečný\x20rastúci\x20index\x20začínajúci\x20od\x201\x20pri\x20vytvorení\x20záznamu.\x20Vygenerované\x20hodnoty\x20nie\x20je\x20možné\x20upravovať.",
       optionColor: "Farba\x20možnosti",
       separatorLocal: "Miestne",
       separatorCommaPeriod: "Čiarka, bodka",
@@ -358,7 +336,7 @@ const n = {
       ratingIconLightning: "Blesk",
       ratingIconMedal: "medailu",
       increment: "prírastok",
-      decrement: "dekrementovať",
+      decrement: "dekrementovať"
     },
     cellEditor: {
       done: "Hotovo",
@@ -374,8 +352,7 @@ const n = {
       deleteAttachment: "Odstrániť\x20prílohu\x20{0}",
       deleteAttachmentConfirmTitle: "Odstrániť túto prílohu?",
       deleteAttachmentsConfirmTitle: "Odstrániť {0} príloh?",
-      deleteAttachmentConfirmDescription:
-        "Vybrané prílohy budú odstránené z tohto záznamu.",
+      deleteAttachmentConfirmDescription: "Vybrané prílohy budú odstránené z tohto záznamu.",
       failedToAttachFile: "Nepodarilo sa pripojiť súbor",
       file: "SÚBOR",
       invalidEmail: "Neplatná e-mailová adresa",
@@ -386,7 +363,7 @@ const n = {
       selectOptions: "Vyberte možnosti",
       previousMonth: "Predchádzajúci mesiac",
       nextMonth: "Budúci mesiac",
-      time: "Čas",
+      time: "Čas"
     },
     recordDetailField: {
       previousRecord: "Predchádzajúci záznam",
@@ -399,7 +376,7 @@ const n = {
       empty: "Prázdne",
       unassigned: "Nepriradené",
       editField: "Upraviť {0}",
-      noVisibleFields: "Žiadne viditeľné polia",
+      noVisibleFields: "Žiadne viditeľné polia"
     },
     fieldMenu: {
       createSharedBaseField: "Vytvorte zdieľané pole Base",
@@ -430,8 +407,8 @@ const n = {
         createdBy: "Pole\x20autora\x20systému",
         updatedBy: "Pole modifikátora systému",
         createdAt: "Čas\x20vytvorený\x20systémom",
-        updatedAt: "Čas\x20aktualizácie\x20systému",
-      },
+        updatedAt: "Čas\x20aktualizácie\x20systému"
+      }
     },
     fieldTypes: {
       text: "Text",
@@ -455,7 +432,7 @@ const n = {
       createdBy: "Vytvoril",
       updatedBy: "Upravil",
       createdAt: "Dátum vytvorenia",
-      updatedAt: "Dátum poslednej zmeny",
+      updatedAt: "Dátum poslednej zmeny"
     },
     viewMenus: {
       customizeKanban: "Prispôsobte si Kanban",
@@ -493,13 +470,11 @@ const n = {
       addCondition: "Pridať\x20podmienku",
       calculateWorkingDaysOnly: "Počítajte iba pracovné dni",
       customWorkingDays: "Vlastné pracovné dni",
-      customWorkingDaysHelp:
-        "Prispôsobte si pracovné dni a dni voľna pre tento Ganttov pohľad. Ak nie je nastavené, pri aktivácii výpočtu pracovného dňa sa použije pondelok až piatok.",
+      customWorkingDaysHelp: "Prispôsobte si pracovné dni a dni voľna pre tento Ganttov pohľad. Ak nie je nastavené, pri aktivácii výpočtu pracovného dňa sa použije pondelok až piatok.",
       notSet: "Nenastavené",
       settings: "Nastavenia",
       setWorkingDays: "Nastavte\x20pracovné\x20dni",
-      setWorkingDaysDescription:
-        "Prispôsobte si pracovné dni a dni voľna a aplikujte ich na aktuálny základ",
+      setWorkingDaysDescription: "Prispôsobte si pracovné dni a dni voľna a aplikujte ich na aktuálny základ",
       closeWorkingDaysSettings: "Zatvorte nastavenia pracovných dní",
       addWorkingDays: "Pridajte\x20pracovné\x20dni",
       holidayName: "Názov dovolenky",
@@ -508,8 +483,7 @@ const n = {
       add: "Pridať",
       removeWorkingDayException: "Odstrániť výnimku pracovného dňa",
       legalWorkingDays: "Zákonné pracovné dni",
-      legalWorkingDaysHelp:
-        "Zákonné\x20pracovné\x20dni\x20budú\x20k\x20dispozícii\x20po\x20pripojení\x20externého\x20kalendára\x20API.",
+      legalWorkingDaysHelp: "Zákonné\x20pracovné\x20dni\x20budú\x20k\x20dispozícii\x20po\x20pripojení\x20externého\x20kalendára\x20API.",
       mon: "Po",
       tue: "Ut",
       wed: "St",
@@ -526,8 +500,7 @@ const n = {
       groupByFieldFallback: "Zoskupiť podľa poľa",
       kanbanGroup: "Skupina\x20Kanban",
       required: "Povinné",
-      kanbanGroupHelp:
-        "Kanban\x20zobrazenia\x20vždy\x20používajú\x20jedno\x20skupinové\x20pole.",
+      kanbanGroupHelp: "Kanban\x20zobrazenia\x20vždy\x20používajú\x20jedno\x20skupinové\x20pole."
     },
     operators: {
       is: "je",
@@ -539,7 +512,7 @@ const n = {
       greaterThan: "väčší ako",
       lessThan: "menej ako",
       before: "je predtým",
-      after: "je po",
+      after: "je po"
     },
     viewSettings: {
       title: "Nastavenia\x20zobrazenia",
@@ -568,9 +541,8 @@ const n = {
       ganttView: "Gantt",
       ganttViewDescription: "Časová os s dátumami začiatku a konca.",
       galleryView: "Galéria",
-      galleryViewDescription:
-        "Vizuálne\x20karty\x20na\x20prehliadanie\x20záznamov.",
-      copySuffix: "Kopírovať",
+      galleryViewDescription: "Vizuálne\x20karty\x20na\x20prehliadanie\x20záznamov.",
+      copySuffix: "Kopírovať"
     },
     tableSidebar: {
       searchTables: "Vyhľadajte\x20tabuľky",
@@ -583,9 +555,12 @@ const n = {
       renameTable: "Premenovať tabuľku",
       duplicateTable: "Duplicitná tabuľka",
       deleteTable: "Odstrániť\x20tabuľku",
-      defaultTableName: "Tabuľka {0}",
+      defaultTableName: "Tabuľka {0}"
     },
-    footer: { record: "záznam", records: "záznamy" },
+    footer: {
+      record: "záznam",
+      records: "záznamy"
+    },
     canvas: {
       addRecord: "Pridať záznam",
       attachmentDropLabel: "Pridať súbory k tomuto záznamu",
@@ -598,12 +573,12 @@ const n = {
       quarter: "Štvrťrok",
       today: "Dnes",
       week: "týždeň",
-      year: "rok",
+      year: "rok"
     },
     empty: {
       value: "Prázdne",
       noRecords: "Žiadne záznamy",
-      invalidView: "Toto\x20zobrazenie\x20je\x20potrebné\x20nakonfigurovať",
+      invalidView: "Toto\x20zobrazenie\x20je\x20potrebné\x20nakonfigurovať"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -621,19 +596,17 @@ const n = {
         engineering: "Strojárstvo",
         financial: "Finančné",
         lookup: "Vyhľadanie a referencia",
-        web: "Web",
+        web: "Web"
       },
       generic: {
         engineAbstract: "{0} funkcia motora vzorcov",
-        engineDescription:
-          "{0} poskytuje vzorec Univer. Base podporuje odkazy na polia, ako je tabuľka[Pole] a InáTabuľka[Pole], ale nepodporuje bunky A1, rozsahy A1:B10 ani výstup rozliateho poľa v poliach základného vzorca.",
+        engineDescription: "{0} poskytuje vzorec Univer. Base podporuje odkazy na polia, ako je tabuľka[Pole] a InáTabuľka[Pole], ale nepodporuje bunky A1, rozsahy A1:B10 ani výstup rozliateho poľa v poliach základného vzorca.",
         argument: {
           name: "argument",
-          detail:
-            "Hodnota, odkaz na pole, odkaz na pole tabuľky alebo výraz, ktorý podporuje vzorec Univer.",
-        },
-      },
-    },
-  },
+          detail: "Hodnota, odkaz na pole, odkaz na pole tabuľky alebo výraz, ktorý podporuje vzorec Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

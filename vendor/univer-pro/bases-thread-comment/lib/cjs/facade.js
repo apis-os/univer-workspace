@@ -1,1 +1,69 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});var e=Object.create,t=Object.defineProperty,n=Object.getOwnPropertyDescriptor,r=Object.getOwnPropertyNames,i=Object.getPrototypeOf,a=Object.prototype["hasOwnProperty"],o=(v12,v13,v14,v15)=>{if(v13&&typeof v13=="object"||typeof v13=="function"){for(var v16=r(v13),v17=0,v18=v16.length,v19;v17<v18;v17++)v19=v16[v17],!a.call(v12,v19)&&v19!==v14&&t(v12,v19,{get:(v1=>v13[v1]).bind(null,v19),enumerable:!(v15=n(v13,v19))||v15.enumerable});}return v12;},s=(v20,v21,v22)=>(v22=v20==null?{}:e(i(v20)),o(v21||!v20||!v20.__esModule?t(v22,"default",{value:v20,enumerable:true}):v22,v20));let c=require("@univerjs-pro/bases/facade"),l=require("@univerjs/thread-comment");l=s(l);var u=class extends c.FBaseTableRecord{_initialize(v8){let v9;Object.defineProperty(this,"_threadCommentService",{get:()=>v9??=v8.get(l.ThreadCommentFacadeService)});}createCommentAsync(v10,v11={}){return this._threadCommentService["createCommentAsync"]({...v11,unitId:this._baseUnitId,subUnitId:this._baseTableId,anchor:{kind:l.ThreadCommentAnchorKind["BASE_RECORD"],tableId:this._baseTableId,recordId:this._recordId},content:v10});}getComments(){return this._threadCommentService["getComments"]({unitIds:[this._baseUnitId],subUnitIds:[this._baseTableId],anchorKinds:[l.ThreadCommentAnchorKind["BASE_RECORD"]]}).filter(v2=>{var v3=ox54a505,v4;return((v4=v2.anchor)==null?undefined:v4[v3(224)])===l[v3(223)].BASE_RECORD&&v2[v3(230)][v3(238)]===this[v3(246)];});}async listCommentsAsync(){return(await this._threadCommentService["listCommentsAsync"]({unitIds:[this._baseUnitId],subUnitIds:[this._baseTableId],anchorKinds:[l.ThreadCommentAnchorKind["BASE_RECORD"]]})).filter(v5=>{var v6=ox2b6766,v7;return((v7=v5[v6(230)])==null?undefined:v7.kind)===l[v6(223)].BASE_RECORD&&v5[v6(230)][v6(238)]===this[v6(246)];});}};c.FBaseTableRecord["extend"](u),exports.FBaseTableRecordThreadCommentMixin=u;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+var e = Object.create,
+  t = Object.defineProperty,
+  n = Object.getOwnPropertyDescriptor,
+  r = Object.getOwnPropertyNames,
+  i = Object.getPrototypeOf,
+  a = Object.prototype["hasOwnProperty"],
+  o = (var_core_value_sigFBFA, var_core_value_sigF602, var_core_value_sig1BBD, var_core_value_sigF704) => {
+    if (var_core_value_sigF602 && typeof var_core_value_sigF602 == "object" || typeof var_core_value_sigF602 == "function") {
+      for (var var_core_value_sig2BCF = r(var_core_value_sigF602), var_core_value_sig0D69 = 0, var_core_value_sig480E = var_core_value_sig2BCF.length, var_core_value_sig26DB; var_core_value_sig0D69 < var_core_value_sig480E; var_core_value_sig0D69++) var_core_value_sig26DB = var_core_value_sig2BCF[var_core_value_sig0D69], !a.call(var_core_value_sigFBFA, var_core_value_sig26DB) && var_core_value_sig26DB !== var_core_value_sig1BBD && t(var_core_value_sigFBFA, var_core_value_sig26DB, {
+        get: (var_core_value_sig7524 => var_core_value_sigF602[var_core_value_sig7524]).bind(null, var_core_value_sig26DB),
+        enumerable: !(var_core_value_sigF704 = n(var_core_value_sigF602, var_core_value_sig26DB)) || var_core_value_sigF704.enumerable
+      });
+    }
+    return var_core_value_sigFBFA;
+  },
+  s = (var_core_value_sigF0F9, var_core_value_sig1A0F, var_core_value_sigFBA4) => (var_core_value_sigFBA4 = var_core_value_sigF0F9 == null ? {} : e(i(var_core_value_sigF0F9)), o(var_core_value_sig1A0F || !var_core_value_sigF0F9 || !var_core_value_sigF0F9.__esModule ? t(var_core_value_sigFBA4, "default", {
+    value: var_core_value_sigF0F9,
+    enumerable: true
+  }) : var_core_value_sigFBA4, var_core_value_sigF0F9));
+let c = require("@univerjs-pro/bases/facade"),
+  l = require("@univerjs/thread-comment");
+l = s(l);
+var u = class extends c.FBaseTableRecord {
+  _initialize(var_core_value_sig8061) {
+    let var_core_value_sig4D4C;
+    Object.defineProperty(this, "_threadCommentService", {
+      get: () => var_core_value_sig4D4C ??= var_core_value_sig8061.get(l.ThreadCommentFacadeService)
+    });
+  }
+  createCommentAsync(var_core_value_sigC9E0, var_core_value_sig76BA = {}) {
+    return this._threadCommentService["createCommentAsync"]({
+      ...var_core_value_sig76BA,
+      unitId: this._baseUnitId,
+      subUnitId: this._baseTableId,
+      anchor: {
+        kind: l.ThreadCommentAnchorKind["BASE_RECORD"],
+        tableId: this._baseTableId,
+        recordId: this._recordId
+      },
+      content: var_core_value_sigC9E0
+    });
+  }
+  getComments() {
+    return this._threadCommentService["getComments"]({
+      unitIds: [this._baseUnitId],
+      subUnitIds: [this._baseTableId],
+      anchorKinds: [l.ThreadCommentAnchorKind["BASE_RECORD"]]
+    }).filter(var_core_value_sig2AD8 => {
+      var var_core_value_sig2AD0 = ox54a505,
+        var_core_value_sig3EEE;
+      return ((var_core_value_sig3EEE = var_core_value_sig2AD8.anchor) == null ? undefined : var_core_value_sig3EEE[var_core_value_sig2AD0(224)]) === l[var_core_value_sig2AD0(223)].BASE_RECORD && var_core_value_sig2AD8[var_core_value_sig2AD0(230)][var_core_value_sig2AD0(238)] === this[var_core_value_sig2AD0(246)];
+    });
+  }
+  async listCommentsAsync() {
+    return (await this._threadCommentService["listCommentsAsync"]({
+      unitIds: [this._baseUnitId],
+      subUnitIds: [this._baseTableId],
+      anchorKinds: [l.ThreadCommentAnchorKind["BASE_RECORD"]]
+    })).filter(var_core_value_sigBC46 => {
+      var var_core_value_sig3D7D = ox2b6766,
+        var_core_value_sig27E5;
+      return ((var_core_value_sig27E5 = var_core_value_sigBC46[var_core_value_sig3D7D(230)]) == null ? undefined : var_core_value_sig27E5.kind) === l[var_core_value_sig3D7D(223)].BASE_RECORD && var_core_value_sigBC46[var_core_value_sig3D7D(230)][var_core_value_sig3D7D(238)] === this[var_core_value_sig3D7D(246)];
+    });
+  }
+};
+c.FBaseTableRecord["extend"](u), exports.FBaseTableRecordThreadCommentMixin = u;

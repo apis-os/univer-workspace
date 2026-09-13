@@ -1,1 +1,322 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/bases-ui"),t=require("@univerjs-pro/exchange-client"),n=require("@univerjs-pro/license"),r=require("@univerjs/core"),i=require("@univerjs/ui"),a=require("@univerjs-pro/collaboration"),o=require("@univerjs/design"),s=require("@univerjs/icons"),c=require("react/jsx-runtime");var l="@univerjs-pro/bases-exchange-client",u="1.0.0-insiders.20260907-70fc579";const d={importSourceMode:t.ExchangeBaseImportMode["AUTO"],importFormulaPolicy:t.ExchangeBaseFormulaPolicy["CONVERT_THEN_VALUES"],exportStructureMode:t.ExchangeBaseExportMode["TABLES"],exportFormulaPolicy:t.ExchangeBaseFormulaPolicy["FAIL"]};function f(v62,v63){return function(v7,v8){v63(v7,v8,v62);};}function p(v64,v65,v66,v67){var v68=arguments.length,v69=v68<3?v65:v67===null?v67=Object.getOwnPropertyDescriptor(v65,v66):v67,v70;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v69=Reflect.decorate(v64,v65,v66,v67);else{for(var v71=v64.length-1;v71>=0;v71--)(v70=v64[v71])&&(v69=(v68<3?v70(v69):v68>3?v70(v65,v66,v69):v70(v65,v66))||v69);}return v68>3&&v69&&Object.defineProperty(v65,v66,v69),v69;}const m=(0,r.createIdentifier)("bases-exchange-client.base-exchange.service");let h=class{constructor(v9,v10){this._exchangeService=v9,this._configService=v10;}importBaseToUnitId(v11){let v12=this._createImportOptions();return this._exchangeService["importFileToUnitId"](v11,r.UniverInstanceType["UNIVER_BASE"],{base:v12});}async importBaseToSnapshot(v13){let v14=this._createImportOptions(),v15=await this._exchangeService["importFileToJson"](v13,r.UniverInstanceType["UNIVER_BASE"],{base:v14});return v15?this.transformSnapshotJsonToBaseData(v15):undefined;}exportBaseByUnitId(v16,v17=t.ExchangeFormat["XLSX"],v18){let v19=this._createExportOptions(v17,v18);return this._exchangeService["exportFileByUnitId"](v16,r.UniverInstanceType["UNIVER_BASE"],v17,v19?{base:v19}:undefined);}async exportBaseBySnapshot(v20,v21=t.ExchangeFormat["XLSX"],v22){let v23=await this.transformBaseDataToSnapshotJson(v20),v24=this._createExportOptions(v21,v22);return this._exchangeService["exportFileBySnapshot"](v23,r.UniverInstanceType["UNIVER_BASE"],v21,v24?{base:v24}:undefined);}transformSnapshotJsonToBaseData(v25){let v26=Object.values(v25.sheetBlocks||{}).map(v1=>({...v1,data:v1.data?JSON.parse((0,a.b64DecodeUnicode)(v1.data)):undefined}));return(0,a.transformSnapshotToBaseData)(v25.snapshot,v26);}async transformBaseDataToSnapshotJson(v27){let v28={metadata:undefined},v29=new t["ClientSnapshotServerService"](),{snapshot:v30}=await(0,a.transformBaseDataToSnapshot)(v28,v27,v27.id,v27.rev??0,v29),v31=(0,t.transformWorkbookSnapshotMetaToString)(v30);if(!v31)throw Error("Failed\x20to\x20transform\x20Base\x20snapshot\x20to\x20string");return{snapshot:v31,sheetBlocks:(0,t.transformSheetBlockMetaToString)(await(0,a.getSheetBlocksFromSnapshot)(v30,v29))};}_getConfig(){return this._configService["getConfig"]("bases-exchange-client.config")??d;}_createImportOptions(){let v32=this._getConfig();return{xlsx:{baseMode:v32.importSourceMode,baseFormulaPolicy:v32.importFormulaPolicy}};}_createExportOptions(v33,v34){if(v33===t.ExchangeFormat["XLSX"]){let v2=this._getConfig();return{xlsx:{baseExportMode:v2.exportStructureMode,baseFormulaPolicy:v2.exportFormulaPolicy}};}return v34?{csv:{tableId:v34}}:undefined;}};h=p([f(0,(0,r.Inject)(t.IExchangeService)),f(1,r.IConfigService)],h);const g=(0,r.createIdentifier)("bases-exchange-client.base-exchange-operate.service");let _=class{constructor(v35,v36,v37,v38){this._baseExchangeService=v35,this._exchangeOperateService=v36,this._univerInstanceService=v37,this._resourceLoaderService=v38;}importBaseToUnitId(){return this._exchangeOperateService["importFileToUnitId"](r.UniverInstanceType["UNIVER_BASE"],v3=>this._baseExchangeService["importBaseToUnitId"](v3));}importBaseToSnapshot(){return this._exchangeOperateService["importFileToSnapshot"](r.UniverInstanceType["UNIVER_BASE"],v4=>this._baseExchangeService["importBaseToSnapshot"](v4));}exportBaseByUnitId(v39,v40){let v41=this._getCurrentBase();return this._exchangeOperateService["exportFile"](()=>this._baseExchangeService["exportBaseByUnitId"](v41.getUnitId(),v39,v40),v41.getSnapshot().name,v39);}exportBaseBySnapshot(v42,v43){let v44=this._getCurrentBase(),v45=this._resourceLoaderService["saveUnit"](v44.getUnitId())??v44.getSnapshot();return this._exchangeOperateService["exportFile"](()=>this._baseExchangeService["exportBaseBySnapshot"](v45,v42,v43),v45.name,v42);}_getCurrentBase(){let v46=this._univerInstanceService["getCurrentUnitOfType"](r.UniverInstanceType["UNIVER_BASE"]);if(!v46)throw Error("No\x20unit\x20of\x20type\x20"+r.UniverInstanceType["UNIVER_BASE"]+" is currently active.");return v46;}};_=p([f(0,(0,r.Inject)(m)),f(1,(0,r.Inject)(t.IExchangeOperateService)),f(2,r.IUniverInstanceService),f(3,r.IResourceLoaderService)],_);function v(v72,v73){var v74;let v75=v72.getSnapshot(),v76=v75.tableOrder["map"](v47=>v75.tables[v47]).filter(Boolean).map(v48=>({label:v48.name,value:v48.id}));return{selectedId:v76.some(v49=>v49.value===v73)?v73:((v74=v76[0])==null?undefined:v74.value)??"",items:v76};}const y={id:"bases-exchange-client.operation.import-base",type:r.CommandType["OPERATION"],handler:async v77=>{let v78=v77.get(g);return(0,t.isCurrentUnitLoadedFromServer)(v77,r.UniverInstanceType["UNIVER_BASE"])?await v78.importBaseToUnitId():await v78.importBaseToSnapshot(),true;}},b={id:"bases-exchange-client.operation.export-base-by-format",type:r.CommandType["OPERATION"],handler:async(v79,v80)=>{if(!v80)return false;let v81=v79.get(g);return(0,t.isCurrentUnitLoadedFromServer)(v79,r.UniverInstanceType["UNIVER_BASE"])?await v81.exportBaseByUnitId(v80.format,v80.tableId):await v81.exportBaseBySnapshot(v80.format,v80.tableId),true;}},x={id:"bases-exchange-client.operation.export-base",type:r.CommandType["OPERATION"],handler:v82=>{let v83=v82.get(r.IUniverInstanceService).getCurrentUnitOfType(r.UniverInstanceType["UNIVER_BASE"]);if(!v83)return false;let v84=v(v83,v82.get(e.IBaseUIStateService).getState().activeTableId),v85=v82.get(i.IDialogService),v86=v82.get(r.ICommandService),v87=v82.get(r.LocaleService),v88=null,v89=()=>{v88==null||v88.dispose(),v88=null;};return v88=v85.open({id:"bases-exchange-client.dialog.export-format",title:{title:v87.t("bases-exchange-client.download")},width:420,draggable:false,mask:true,maskClosable:false,children:{label:{name:t.EXPORT_FORMAT_DIALOG,props:{formats:[t.ExchangeFormat["XLSX"],t.ExchangeFormat["CSV"],t.ExchangeFormat["TSV"]],...v84,onCancel:v89,onConfirm:async(v50,v51)=>{await v86.executeCommand(b.id,{format:v50,tableId:v51}),v89();}}}},onClose:v89}),true;}};function S(){var v90;let v91=(0,i.useDependency)(r.ICommandService),v92=(0,i.useDependency)(r.IConfigService),v93=(0,i.useDependency)(r.LocaleService),v94=v93.t("bases-exchange-client.file");return(0,c.jsx)(o.Tooltip,{title:v94,placement:"top",children:(0,c.jsx)(o.DropdownMenu,{align:"end",sideOffset:8,items:[...((v90=v92.getConfig("menu"))!=null&&(v90=v90[y.id])!=null&&v90.hidden?[]:[{type:"item",children:(0,c.jsxs)("span",{className:"univer-flex\x20univer-items-center\x20univer-gap-2",children:[(0,c.jsx)(s.FolderIcon,{}),v93.t("bases-exchange-client.upload")]}),onSelect:()=>v91.executeCommand(y.id)}]),{type:"item",children:(0,c.jsxs)("span",{className:"univer-flex univer-items-center univer-gap-2",children:[(0,c.jsx)(s.ExportIcon,{}),v93.t("bases-exchange-client.download")]}),onSelect:()=>v91.executeCommand(x.id)}],children:(0,c.jsxs)(o.Button,{type:"button",variant:"text",className:"univer-h-8 univer-gap-1 univer-px-2","aria-label":v94,children:[(0,c.jsx)(s.DirectExportIcon,{}),(0,c.jsx)(s.MoreDownIcon,{className:"univer-size-3"})]})})});}let C=class extends r.Disposable{constructor(v52,v53,v54){super(),this._commandService=v52,[y,x,b].forEach(v5=>{this.disposeWithMe(this._commandService["registerCommand"](v5));}),this.disposeWithMe(v54.registerComponent(e.BASE_TOOLBAR_EXTRA_ACTIONS,()=>(0,i.connectInjector)(S,v53)));}};C=p([f(0,r.ICommandService),f(1,(0,r.Inject)(r.Injector)),f(2,i.IUIPartsService)],C);function w(v95){"@babel/helpers - typeof";return w=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v55){return typeof v55;}:function(v56){return v56&&typeof Symbol=="function"&&v56.constructor===Symbol&&v56!==Symbol.prototype?"symbol":typeof v56;},w(v95);}function T(v96,v97){if(w(v96)!="object"||!v96)return v96;var v98=v96[Symbol.toPrimitive];if(v98!==undefined){var v99=v98.call(v96,v97||"default");if(w(v99)!="object")return v99;throw TypeError("@@toPrimitive must return a primitive value.");}return(v97==="string"?String:Number)(v96);}function E(v100){var v101=T(v100,"string");return w(v101)=="symbol"?v101:v101+"";}function D(v102,v103,v104){return(v103=E(v103))in v102?Object.defineProperty(v102,v103,{value:v104,enumerable:true,configurable:true,writable:true}):v102[v103]=v104,v102;}let O=class extends r.Plugin{constructor(v57=d,v58,v59){super(),this._config=v57,this._injector=v58,this._configService=v59;let{menu:v60,...v61}=(0,r.merge)({},d,this._config);v60&&this._configService["setConfig"]("menu",v60,{merge:true}),this._configService["setConfig"]("bases-exchange-client.config",v61);}onStarting(){[[m,{useClass:h}],[g,{useClass:_}],[C]].forEach(v6=>this._injector["add"](v6));}onReady(){this._injector["get"](C);}};D(O,"pluginName","BASES_EXCHANGE_CLIENT_PLUGIN"),D(O,"packageName",l),D(O,"version",u),D(O,"type",r.UniverInstanceType["UNIVER_BASE"]),O=p([(0,r.DependentOn)(n.UniverLicensePlugin,e.UniverBasesUIPlugin,t.UniverExchangeClientPlugin),f(1,(0,r.Inject)(r.Injector)),f(2,r.IConfigService)],O),exports.IBaseExchangeService=m,Object.defineProperty(exports,"UniverBasesExchangeClientPlugin",{enumerable:true,get:function(){return O;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/bases-ui"),
+  t = require("@univerjs-pro/exchange-client"),
+  n = require("@univerjs-pro/license"),
+  r = require("@univerjs/core"),
+  i = require("@univerjs/ui"),
+  a = require("@univerjs-pro/collaboration"),
+  o = require("@univerjs/design"),
+  s = require("@univerjs/icons"),
+  c = require("react/jsx-runtime");
+var l = "@univerjs-pro/bases-exchange-client",
+  u = "1.0.0-insiders.20260907-70fc579";
+const d = {
+  importSourceMode: t.ExchangeBaseImportMode["AUTO"],
+  importFormulaPolicy: t.ExchangeBaseFormulaPolicy["CONVERT_THEN_VALUES"],
+  exportStructureMode: t.ExchangeBaseExportMode["TABLES"],
+  exportFormulaPolicy: t.ExchangeBaseFormulaPolicy["FAIL"]
+};
+function f(var_core_value_sigC259, var_core_value_sig9C9F) {
+  return function (var_core_value_sig27E5, var_core_value_sig8061) {
+    var_core_value_sig9C9F(var_core_value_sig27E5, var_core_value_sig8061, var_core_value_sigC259);
+  };
+}
+function p(var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sig48CA) {
+  var var_core_value_sig50AF = arguments.length,
+    var_core_value_sigA942 = var_core_value_sig50AF < 3 ? var_core_value_sig86D0 : var_core_value_sig48CA === null ? var_core_value_sig48CA = Object.getOwnPropertyDescriptor(var_core_value_sig86D0, var_core_value_sig4CD2) : var_core_value_sig48CA,
+    var_core_value_sigA621;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigA942 = Reflect.decorate(var_core_value_sigFDEA, var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sig48CA);else {
+    for (var var_core_value_sigBBFF = var_core_value_sigFDEA.length - 1; var_core_value_sigBBFF >= 0; var_core_value_sigBBFF--) (var_core_value_sigA621 = var_core_value_sigFDEA[var_core_value_sigBBFF]) && (var_core_value_sigA942 = (var_core_value_sig50AF < 3 ? var_core_value_sigA621(var_core_value_sigA942) : var_core_value_sig50AF > 3 ? var_core_value_sigA621(var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sigA942) : var_core_value_sigA621(var_core_value_sig86D0, var_core_value_sig4CD2)) || var_core_value_sigA942);
+  }
+  return var_core_value_sig50AF > 3 && var_core_value_sigA942 && Object.defineProperty(var_core_value_sig86D0, var_core_value_sig4CD2, var_core_value_sigA942), var_core_value_sigA942;
+}
+const m = (0, r.createIdentifier)("bases-exchange-client.base-exchange.service");
+let h = class {
+  constructor(var_core_value_sig4D4C, var_core_value_sigC9E0) {
+    this._exchangeService = var_core_value_sig4D4C, this._configService = var_core_value_sigC9E0;
+  }
+  importBaseToUnitId(var_core_value_sig76BA) {
+    let var_core_value_sigFBFA = this._createImportOptions();
+    return this._exchangeService["importFileToUnitId"](var_core_value_sig76BA, r.UniverInstanceType["UNIVER_BASE"], {
+      base: var_core_value_sigFBFA
+    });
+  }
+  async importBaseToSnapshot(var_core_value_sigF602) {
+    let var_core_value_sig1BBD = this._createImportOptions(),
+      var_core_value_sigF704 = await this._exchangeService["importFileToJson"](var_core_value_sigF602, r.UniverInstanceType["UNIVER_BASE"], {
+        base: var_core_value_sig1BBD
+      });
+    return var_core_value_sigF704 ? this.transformSnapshotJsonToBaseData(var_core_value_sigF704) : undefined;
+  }
+  exportBaseByUnitId(var_core_value_sig2BCF, var_core_value_sig0D69 = t.ExchangeFormat["XLSX"], var_core_value_sig480E) {
+    let var_core_value_sig26DB = this._createExportOptions(var_core_value_sig0D69, var_core_value_sig480E);
+    return this._exchangeService["exportFileByUnitId"](var_core_value_sig2BCF, r.UniverInstanceType["UNIVER_BASE"], var_core_value_sig0D69, var_core_value_sig26DB ? {
+      base: var_core_value_sig26DB
+    } : undefined);
+  }
+  async exportBaseBySnapshot(var_core_value_sigF0F9, var_core_value_sig1A0F = t.ExchangeFormat["XLSX"], var_core_value_sigFBA4) {
+    let var_core_value_sig4383 = await this.transformBaseDataToSnapshotJson(var_core_value_sigF0F9),
+      var_core_value_sig186C = this._createExportOptions(var_core_value_sig1A0F, var_core_value_sigFBA4);
+    return this._exchangeService["exportFileBySnapshot"](var_core_value_sig4383, r.UniverInstanceType["UNIVER_BASE"], var_core_value_sig1A0F, var_core_value_sig186C ? {
+      base: var_core_value_sig186C
+    } : undefined);
+  }
+  transformSnapshotJsonToBaseData(var_core_value_sigD955) {
+    let var_core_value_sig48BD = Object.values(var_core_value_sigD955.sheetBlocks || {}).map(var_core_value_sig7524 => ({
+      ...var_core_value_sig7524,
+      data: var_core_value_sig7524.data ? JSON.parse((0, a.b64DecodeUnicode)(var_core_value_sig7524.data)) : undefined
+    }));
+    return (0, a.transformSnapshotToBaseData)(var_core_value_sigD955.snapshot, var_core_value_sig48BD);
+  }
+  async transformBaseDataToSnapshotJson(var_core_value_sig429F) {
+    let var_core_value_sigF62A = {
+        metadata: undefined
+      },
+      var_core_value_sig8178 = new t["ClientSnapshotServerService"](),
+      {
+        snapshot: var_core_value_sigE9ED
+      } = await (0, a.transformBaseDataToSnapshot)(var_core_value_sigF62A, var_core_value_sig429F, var_core_value_sig429F.id, var_core_value_sig429F.rev ?? 0, var_core_value_sig8178),
+      var_core_value_sigB577 = (0, t.transformWorkbookSnapshotMetaToString)(var_core_value_sigE9ED);
+    if (!var_core_value_sigB577) throw Error("Failed\x20to\x20transform\x20Base\x20snapshot\x20to\x20string");
+    return {
+      snapshot: var_core_value_sigB577,
+      sheetBlocks: (0, t.transformSheetBlockMetaToString)(await (0, a.getSheetBlocksFromSnapshot)(var_core_value_sigE9ED, var_core_value_sig8178))
+    };
+  }
+  _getConfig() {
+    return this._configService["getConfig"]("bases-exchange-client.config") ?? d;
+  }
+  _createImportOptions() {
+    let var_core_value_sig9572 = this._getConfig();
+    return {
+      xlsx: {
+        baseMode: var_core_value_sig9572.importSourceMode,
+        baseFormulaPolicy: var_core_value_sig9572.importFormulaPolicy
+      }
+    };
+  }
+  _createExportOptions(var_core_value_sigD873, var_core_value_sigA12B) {
+    if (var_core_value_sigD873 === t.ExchangeFormat["XLSX"]) {
+      let var_core_value_sig2AD8 = this._getConfig();
+      return {
+        xlsx: {
+          baseExportMode: var_core_value_sig2AD8.exportStructureMode,
+          baseFormulaPolicy: var_core_value_sig2AD8.exportFormulaPolicy
+        }
+      };
+    }
+    return var_core_value_sigA12B ? {
+      csv: {
+        tableId: var_core_value_sigA12B
+      }
+    } : undefined;
+  }
+};
+h = p([f(0, (0, r.Inject)(t.IExchangeService)), f(1, r.IConfigService)], h);
+const g = (0, r.createIdentifier)("bases-exchange-client.base-exchange-operate.service");
+let _ = class {
+  constructor(var_core_value_sigF230, var_core_value_sig09B8, var_core_value_sig6F91, var_core_value_sigF9C7) {
+    this._baseExchangeService = var_core_value_sigF230, this._exchangeOperateService = var_core_value_sig09B8, this._univerInstanceService = var_core_value_sig6F91, this._resourceLoaderService = var_core_value_sigF9C7;
+  }
+  importBaseToUnitId() {
+    return this._exchangeOperateService["importFileToUnitId"](r.UniverInstanceType["UNIVER_BASE"], var_core_value_sig2AD0 => this._baseExchangeService["importBaseToUnitId"](var_core_value_sig2AD0));
+  }
+  importBaseToSnapshot() {
+    return this._exchangeOperateService["importFileToSnapshot"](r.UniverInstanceType["UNIVER_BASE"], var_core_value_sig3EEE => this._baseExchangeService["importBaseToSnapshot"](var_core_value_sig3EEE));
+  }
+  exportBaseByUnitId(var_core_value_sig8895, var_core_value_sigC80B) {
+    let var_core_value_sig284F = this._getCurrentBase();
+    return this._exchangeOperateService["exportFile"](() => this._baseExchangeService["exportBaseByUnitId"](var_core_value_sig284F.getUnitId(), var_core_value_sig8895, var_core_value_sigC80B), var_core_value_sig284F.getSnapshot().name, var_core_value_sig8895);
+  }
+  exportBaseBySnapshot(var_core_value_sigE154, var_core_value_sig4632) {
+    let var_core_value_sig12F2 = this._getCurrentBase(),
+      var_core_value_sig2259 = this._resourceLoaderService["saveUnit"](var_core_value_sig12F2.getUnitId()) ?? var_core_value_sig12F2.getSnapshot();
+    return this._exchangeOperateService["exportFile"](() => this._baseExchangeService["exportBaseBySnapshot"](var_core_value_sig2259, var_core_value_sigE154, var_core_value_sig4632), var_core_value_sig2259.name, var_core_value_sigE154);
+  }
+  _getCurrentBase() {
+    let var_core_value_sig9E2F = this._univerInstanceService["getCurrentUnitOfType"](r.UniverInstanceType["UNIVER_BASE"]);
+    if (!var_core_value_sig9E2F) throw Error("No\x20unit\x20of\x20type\x20" + r.UniverInstanceType["UNIVER_BASE"] + " is currently active.");
+    return var_core_value_sig9E2F;
+  }
+};
+_ = p([f(0, (0, r.Inject)(m)), f(1, (0, r.Inject)(t.IExchangeOperateService)), f(2, r.IUniverInstanceService), f(3, r.IResourceLoaderService)], _);
+function v(var_core_value_sig8889, var_core_value_sig32F8) {
+  var var_core_value_sig5B67;
+  let var_core_value_sig1758 = var_core_value_sig8889.getSnapshot(),
+    var_core_value_sig4805 = var_core_value_sig1758.tableOrder["map"](var_core_value_sigD082 => var_core_value_sig1758.tables[var_core_value_sigD082]).filter(Boolean).map(var_core_value_sigDBB7 => ({
+      label: var_core_value_sigDBB7.name,
+      value: var_core_value_sigDBB7.id
+    }));
+  return {
+    selectedId: var_core_value_sig4805.some(var_core_value_sigD0A8 => var_core_value_sigD0A8.value === var_core_value_sig32F8) ? var_core_value_sig32F8 : ((var_core_value_sig5B67 = var_core_value_sig4805[0]) == null ? undefined : var_core_value_sig5B67.value) ?? "",
+    items: var_core_value_sig4805
+  };
+}
+const y = {
+    id: "bases-exchange-client.operation.import-base",
+    type: r.CommandType["OPERATION"],
+    handler: async var_core_value_sigE67E => {
+      let var_core_value_sig2902 = var_core_value_sigE67E.get(g);
+      return (0, t.isCurrentUnitLoadedFromServer)(var_core_value_sigE67E, r.UniverInstanceType["UNIVER_BASE"]) ? await var_core_value_sig2902.importBaseToUnitId() : await var_core_value_sig2902.importBaseToSnapshot(), true;
+    }
+  },
+  b = {
+    id: "bases-exchange-client.operation.export-base-by-format",
+    type: r.CommandType["OPERATION"],
+    handler: async (var_core_value_sig9989, var_core_value_sig698E) => {
+      if (!var_core_value_sig698E) return false;
+      let var_core_value_sig2809 = var_core_value_sig9989.get(g);
+      return (0, t.isCurrentUnitLoadedFromServer)(var_core_value_sig9989, r.UniverInstanceType["UNIVER_BASE"]) ? await var_core_value_sig2809.exportBaseByUnitId(var_core_value_sig698E.format, var_core_value_sig698E.tableId) : await var_core_value_sig2809.exportBaseBySnapshot(var_core_value_sig698E.format, var_core_value_sig698E.tableId), true;
+    }
+  },
+  x = {
+    id: "bases-exchange-client.operation.export-base",
+    type: r.CommandType["OPERATION"],
+    handler: var_core_value_sig2DAB => {
+      let var_core_value_sig877E = var_core_value_sig2DAB.get(r.IUniverInstanceService).getCurrentUnitOfType(r.UniverInstanceType["UNIVER_BASE"]);
+      if (!var_core_value_sig877E) return false;
+      let var_core_value_sig20C8 = v(var_core_value_sig877E, var_core_value_sig2DAB.get(e.IBaseUIStateService).getState().activeTableId),
+        var_core_value_sigE9A7 = var_core_value_sig2DAB.get(i.IDialogService),
+        var_core_value_sigBECE = var_core_value_sig2DAB.get(r.ICommandService),
+        var_core_value_sig1B22 = var_core_value_sig2DAB.get(r.LocaleService),
+        var_core_value_sig7F72 = null,
+        var_core_value_sig7B2A = () => {
+          var_core_value_sig7F72 == null || var_core_value_sig7F72.dispose(), var_core_value_sig7F72 = null;
+        };
+      return var_core_value_sig7F72 = var_core_value_sigE9A7.open({
+        id: "bases-exchange-client.dialog.export-format",
+        title: {
+          title: var_core_value_sig1B22.t("bases-exchange-client.download")
+        },
+        width: 420,
+        draggable: false,
+        mask: true,
+        maskClosable: false,
+        children: {
+          label: {
+            name: t.EXPORT_FORMAT_DIALOG,
+            props: {
+              formats: [t.ExchangeFormat["XLSX"], t.ExchangeFormat["CSV"], t.ExchangeFormat["TSV"]],
+              ...var_core_value_sig20C8,
+              onCancel: var_core_value_sig7B2A,
+              onConfirm: async (var_core_value_sigF4B9, var_core_value_sig5CEE) => {
+                await var_core_value_sigBECE.executeCommand(b.id, {
+                  format: var_core_value_sigF4B9,
+                  tableId: var_core_value_sig5CEE
+                }), var_core_value_sig7B2A();
+              }
+            }
+          }
+        },
+        onClose: var_core_value_sig7B2A
+      }), true;
+    }
+  };
+function S() {
+  var var_core_value_sig06CD;
+  let var_core_value_sigA5F1 = (0, i.useDependency)(r.ICommandService),
+    var_core_value_sig97A2 = (0, i.useDependency)(r.IConfigService),
+    var_core_value_sig07E9 = (0, i.useDependency)(r.LocaleService),
+    var_core_value_sig4F59 = var_core_value_sig07E9.t("bases-exchange-client.file");
+  return (0, c.jsx)(o.Tooltip, {
+    title: var_core_value_sig4F59,
+    placement: "top",
+    children: (0, c.jsx)(o.DropdownMenu, {
+      align: "end",
+      sideOffset: 8,
+      items: [...((var_core_value_sig06CD = var_core_value_sig97A2.getConfig("menu")) != null && (var_core_value_sig06CD = var_core_value_sig06CD[y.id]) != null && var_core_value_sig06CD.hidden ? [] : [{
+        type: "item",
+        children: (0, c.jsxs)("span", {
+          className: "univer-flex\x20univer-items-center\x20univer-gap-2",
+          children: [(0, c.jsx)(s.FolderIcon, {}), var_core_value_sig07E9.t("bases-exchange-client.upload")]
+        }),
+        onSelect: () => var_core_value_sigA5F1.executeCommand(y.id)
+      }]), {
+        type: "item",
+        children: (0, c.jsxs)("span", {
+          className: "univer-flex univer-items-center univer-gap-2",
+          children: [(0, c.jsx)(s.ExportIcon, {}), var_core_value_sig07E9.t("bases-exchange-client.download")]
+        }),
+        onSelect: () => var_core_value_sigA5F1.executeCommand(x.id)
+      }],
+      children: (0, c.jsxs)(o.Button, {
+        type: "button",
+        variant: "text",
+        className: "univer-h-8 univer-gap-1 univer-px-2",
+        "aria-label": var_core_value_sig4F59,
+        children: [(0, c.jsx)(s.DirectExportIcon, {}), (0, c.jsx)(s.MoreDownIcon, {
+          className: "univer-size-3"
+        })]
+      })
+    })
+  });
+}
+let C = class extends r.Disposable {
+  constructor(var_core_value_sigE92A, var_core_value_sig362B, var_core_value_sig5CA5) {
+    super(), this._commandService = var_core_value_sigE92A, [y, x, b].forEach(var_core_value_sigBC46 => {
+      this.disposeWithMe(this._commandService["registerCommand"](var_core_value_sigBC46));
+    }), this.disposeWithMe(var_core_value_sig5CA5.registerComponent(e.BASE_TOOLBAR_EXTRA_ACTIONS, () => (0, i.connectInjector)(S, var_core_value_sig362B)));
+  }
+};
+C = p([f(0, r.ICommandService), f(1, (0, r.Inject)(r.Injector)), f(2, i.IUIPartsService)], C);
+function w(var_core_value_sigF564) {
+  "@babel/helpers - typeof";
+
+  return w = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigE90F) {
+    return typeof var_core_value_sigE90F;
+  } : function (var_core_value_sigEFD4) {
+    return var_core_value_sigEFD4 && typeof Symbol == "function" && var_core_value_sigEFD4.constructor === Symbol && var_core_value_sigEFD4 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigEFD4;
+  }, w(var_core_value_sigF564);
+}
+function T(var_core_value_sig8CFA, var_core_value_sig2E11) {
+  if (w(var_core_value_sig8CFA) != "object" || !var_core_value_sig8CFA) return var_core_value_sig8CFA;
+  var var_core_value_sig5B69 = var_core_value_sig8CFA[Symbol.toPrimitive];
+  if (var_core_value_sig5B69 !== undefined) {
+    var var_core_value_sigB098 = var_core_value_sig5B69.call(var_core_value_sig8CFA, var_core_value_sig2E11 || "default");
+    if (w(var_core_value_sigB098) != "object") return var_core_value_sigB098;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig2E11 === "string" ? String : Number)(var_core_value_sig8CFA);
+}
+function E(var_core_value_sigCE71) {
+  var var_core_value_sig21D8 = T(var_core_value_sigCE71, "string");
+  return w(var_core_value_sig21D8) == "symbol" ? var_core_value_sig21D8 : var_core_value_sig21D8 + "";
+}
+function D(var_core_value_sig2B65, var_core_value_sigD7EA, var_core_value_sigB33B) {
+  return (var_core_value_sigD7EA = E(var_core_value_sigD7EA)) in var_core_value_sig2B65 ? Object.defineProperty(var_core_value_sig2B65, var_core_value_sigD7EA, {
+    value: var_core_value_sigB33B,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sig2B65[var_core_value_sigD7EA] = var_core_value_sigB33B, var_core_value_sig2B65;
+}
+let O = class extends r.Plugin {
+  constructor(var_core_value_sig861B = d, var_core_value_sig5237, var_core_value_sigBB00) {
+    super(), this._config = var_core_value_sig861B, this._injector = var_core_value_sig5237, this._configService = var_core_value_sigBB00;
+    let {
+      menu: var_core_value_sig7E54,
+      ...var_core_value_sig9A8D
+    } = (0, r.merge)({}, d, this._config);
+    var_core_value_sig7E54 && this._configService["setConfig"]("menu", var_core_value_sig7E54, {
+      merge: true
+    }), this._configService["setConfig"]("bases-exchange-client.config", var_core_value_sig9A8D);
+  }
+  onStarting() {
+    [[m, {
+      useClass: h
+    }], [g, {
+      useClass: _
+    }], [C]].forEach(var_core_value_sig3D7D => this._injector["add"](var_core_value_sig3D7D));
+  }
+  onReady() {
+    this._injector["get"](C);
+  }
+};
+D(O, "pluginName", "BASES_EXCHANGE_CLIENT_PLUGIN"), D(O, "packageName", l), D(O, "version", u), D(O, "type", r.UniverInstanceType["UNIVER_BASE"]), O = p([(0, r.DependentOn)(n.UniverLicensePlugin, e.UniverBasesUIPlugin, t.UniverExchangeClientPlugin), f(1, (0, r.Inject)(r.Injector)), f(2, r.IConfigService)], O), exports.IBaseExchangeService = m, Object.defineProperty(exports, "UniverBasesExchangeClientPlugin", {
+  enumerable: true,
+  get: function () {
+    return O;
+  }
+});

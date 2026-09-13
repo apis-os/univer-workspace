@@ -1,7 +1,160 @@
-import{CreateBaseViewCommand,DeleteBaseViewCommand,RenameBaseViewCommand,getBaseDashboardPermissionObjectId,getBaseTablePermissionObjectId,getBaseViewPermissionObjectId}from"@univerjs-pro/bases";
-import{BaseDashboardAPIContextService,BaseDashboardWidgetType,CalculateBasePivotCommand,CreateBaseDashboardCommand,DeleteBaseDashboardCommand,RemoveBaseDashboardWidgetCommand,UpdateBaseDashboardCommand,UpdateBasePivotViewCommand,UpsertBaseDashboardWidgetCommand,createBasePivotTable,createDefaultBasePivotViewConfig}from"@univerjs-pro/bases-dashboard";
-import{FBase,FBaseObjectPermission}from"@univerjs-pro/bases/facade";
-import{BASE_RECORD_ID_FIELD_ID,BaseViewType,Tools,UniverInstanceType,generateRandomId}from"@univerjs/core";
-var w=class{constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D467,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D468){this._unitId=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466,this._dashboardId=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D467,this._context=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D468;}getId(){return this._dashboardId;}getPermission(){return new FBaseObjectPermission(this._unitId,getBaseDashboardPermissionObjectId(this._dashboardId),[],this._context["commandService"],this._context["permissionService"]);}getSnapshot(){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612=this._context["resourceService"].getDashboard(this._unitId,this._dashboardId);if(!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612)throw Error("Dashboard not found: "+this._dashboardId);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612;}getName(){return this.getSnapshot().name;}getWidgets(){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614=this.getSnapshot();return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.widgetOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46=>var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46]?[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46]]:[]);}getWidgetById(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616){return this.getSnapshot().widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616]??null;}setName(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618){return this._context["commandService"].syncExecuteCommand(UpdateBaseDashboardCommand.id,{unitId:this._unitId,dashboard:{...this.getSnapshot(),name:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618}});}upsertWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4621){return this._context["commandService"].syncExecuteCommand(UpsertBaseDashboardWidgetCommand.id,{unitId:this._unitId,dashboardId:this._dashboardId,widget:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620),index:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4621});}addPivotChart(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4625,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626){let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB={id:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.id??"pivot-chart-"+generateRandomId(8),type:BaseDashboardWidgetType.PivotChart,tableId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624,pivotViewId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4625,layout:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.layout),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.title===undefined?null:{title:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.title}),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.chart===undefined?null:{chart:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.chart)})};return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.index);}addTableFilter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631){let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2={id:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.id??"table-filter-"+generateRandomId(8),type:BaseDashboardWidgetType.TableFilter,tableId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630,filter:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.filter??null),layout:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.layout),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.title===undefined?null:{title:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.title})};return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.index);}addText(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634){let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4={id:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.id??"text-"+generateRandomId(8),type:BaseDashboardWidgetType.Text,document:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.document),layout:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.layout),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.title===undefined?null:{title:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.title}),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.appearance===undefined?null:{appearance:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.appearance)})};return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.index);}addImage(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636){let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6={id:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.id??"image-"+generateRandomId(8),type:BaseDashboardWidgetType.Image,source:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.source,sourceType:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.sourceType,displayMode:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.displayMode??"cover",layout:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.layout),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.title===undefined?null:{title:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.title}),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.alt===undefined?null:{alt:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.alt})};return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.index);}addFormulaShape(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639){let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8={id:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.id??"formula-shape-"+generateRandomId(8),type:BaseDashboardWidgetType.FormulaShape,tableId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638,shapeType:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.shapeType,shapeData:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.shapeData),layout:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.layout),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.title===undefined?null:{title:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.title}),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.description===undefined?null:{description:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.description}),...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.appearance===undefined?null:{appearance:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.appearance)})};return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.index);}moveWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644=this.getWidgetById(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642);return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644?this._context["commandService"].syncExecuteCommand(UpsertBaseDashboardWidgetCommand.id,{unitId:this._unitId,dashboardId:this._dashboardId,widget:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644,index:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643}):false;}removeWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648){return this._context["commandService"].syncExecuteCommand(RemoveBaseDashboardWidgetCommand.id,{unitId:this._unitId,dashboardId:this._dashboardId,widgetId:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648});}delete(){return this._context["commandService"].syncExecuteCommand(DeleteBaseDashboardCommand.id,{unitId:this._unitId,dashboardId:this._dashboardId});}_addWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4651){if(!this._context["commandService"].syncExecuteCommand(UpsertBaseDashboardWidgetCommand.id,{unitId:this._unitId,dashboardId:this._dashboardId,widget:Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650),index:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4651}))throw Error("Failed to add Dashboard "+var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650.type+' widget "'+var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650.id+'". Verify that the Dashboard and referenced Base tables or Pivot Views exist.');return Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650);}};
-
+import { CreateBaseViewCommand, DeleteBaseViewCommand, RenameBaseViewCommand, getBaseDashboardPermissionObjectId, getBaseTablePermissionObjectId, getBaseViewPermissionObjectId } from "@univerjs-pro/bases";
+import { BaseDashboardAPIContextService, BaseDashboardWidgetType, CalculateBasePivotCommand, CreateBaseDashboardCommand, DeleteBaseDashboardCommand, RemoveBaseDashboardWidgetCommand, UpdateBaseDashboardCommand, UpdateBasePivotViewCommand, UpsertBaseDashboardWidgetCommand, createBasePivotTable, createDefaultBasePivotViewConfig } from "@univerjs-pro/bases-dashboard";
+import { FBase, FBaseObjectPermission } from "@univerjs-pro/bases/facade";
+import { BASE_RECORD_ID_FIELD_ID, BaseViewType, Tools, UniverInstanceType, generateRandomId } from "@univerjs/core";
+var w = class {
+  constructor(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D467, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D468) {
+    this._unitId = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D466, this._dashboardId = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D467, this._context = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D468;
+  }
+  getId() {
+    return this._dashboardId;
+  }
+  getPermission() {
+    return new FBaseObjectPermission(this._unitId, getBaseDashboardPermissionObjectId(this._dashboardId), [], this._context["commandService"], this._context["permissionService"]);
+  }
+  getSnapshot() {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612 = this._context["resourceService"].getDashboard(this._unitId, this._dashboardId);
+    if (!var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612) throw Error("Dashboard not found: " + this._dashboardId);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4612;
+  }
+  getName() {
+    return this.getSnapshot().name;
+  }
+  getWidgets() {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614 = this.getSnapshot();
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.widgetOrder["flatMap"](var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46 => var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46] ? [var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4614.widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D46]] : []);
+  }
+  getWidgetById(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616) {
+    return this.getSnapshot().widgets[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4616] ?? null;
+  }
+  setName(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618) {
+    return this._context["commandService"].syncExecuteCommand(UpdateBaseDashboardCommand.id, {
+      unitId: this._unitId,
+      dashboard: {
+        ...this.getSnapshot(),
+        name: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4618
+      }
+    });
+  }
+  upsertWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4621) {
+    return this._context["commandService"].syncExecuteCommand(UpsertBaseDashboardWidgetCommand.id, {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widget: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4620),
+      index: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4621
+    });
+  }
+  addPivotChart(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4625, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626) {
+    let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB = {
+      id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.id ?? "pivot-chart-" + generateRandomId(8),
+      type: BaseDashboardWidgetType.PivotChart,
+      tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4624,
+      pivotViewId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4625,
+      layout: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.layout),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.title === undefined ? null : {
+        title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.title
+      }),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.chart === undefined ? null : {
+        chart: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.chart)
+      })
+    };
+    return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4626.index);
+  }
+  addTableFilter(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631) {
+    let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2 = {
+      id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.id ?? "table-filter-" + generateRandomId(8),
+      type: BaseDashboardWidgetType.TableFilter,
+      tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4630,
+      filter: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.filter ?? null),
+      layout: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.layout),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.title === undefined ? null : {
+        title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.title
+      })
+    };
+    return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB2, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4631.index);
+  }
+  addText(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634) {
+    let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4 = {
+      id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.id ?? "text-" + generateRandomId(8),
+      type: BaseDashboardWidgetType.Text,
+      document: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.document),
+      layout: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.layout),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.title === undefined ? null : {
+        title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.title
+      }),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.appearance === undefined ? null : {
+        appearance: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.appearance)
+      })
+    };
+    return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB4, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4634.index);
+  }
+  addImage(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636) {
+    let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6 = {
+      id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.id ?? "image-" + generateRandomId(8),
+      type: BaseDashboardWidgetType.Image,
+      source: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.source,
+      sourceType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.sourceType,
+      displayMode: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.displayMode ?? "cover",
+      layout: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.layout),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.title === undefined ? null : {
+        title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.title
+      }),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.alt === undefined ? null : {
+        alt: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.alt
+      })
+    };
+    return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB6, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4636.index);
+  }
+  addFormulaShape(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639) {
+    let var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8 = {
+      id: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.id ?? "formula-shape-" + generateRandomId(8),
+      type: BaseDashboardWidgetType.FormulaShape,
+      tableId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4638,
+      shapeType: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.shapeType,
+      shapeData: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.shapeData),
+      layout: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.layout),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.title === undefined ? null : {
+        title: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.title
+      }),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.description === undefined ? null : {
+        description: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.description
+      }),
+      ...(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.appearance === undefined ? null : {
+        appearance: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.appearance)
+      })
+    };
+    return this._addWidget(var_L0_db_endo_targetObj_pure_O1_zalloc_nothrow_sigA5DB8, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4639.index);
+  }
+  moveWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643) {
+    let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644 = this.getWidgetById(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4642);
+    return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644 ? this._context["commandService"].syncExecuteCommand(UpsertBaseDashboardWidgetCommand.id, {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widget: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4644,
+      index: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4643
+    }) : false;
+  }
+  removeWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648) {
+    return this._context["commandService"].syncExecuteCommand(RemoveBaseDashboardWidgetCommand.id, {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widgetId: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4648
+    });
+  }
+  delete() {
+    return this._context["commandService"].syncExecuteCommand(DeleteBaseDashboardCommand.id, {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId
+    });
+  }
+  _addWidget(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4651) {
+    if (!this._context["commandService"].syncExecuteCommand(UpsertBaseDashboardWidgetCommand.id, {
+      unitId: this._unitId,
+      dashboardId: this._dashboardId,
+      widget: Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650),
+      index: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4651
+    })) throw Error("Failed to add Dashboard " + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650.type + ' widget "' + var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650.id + '". Verify that the Dashboard and referenced Base tables or Pivot Views exist.');
+    return Tools.deepClone(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D4650);
+  }
+};
 export { w as FBaseDashboard };

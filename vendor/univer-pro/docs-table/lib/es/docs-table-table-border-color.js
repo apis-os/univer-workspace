@@ -1,8 +1,20 @@
-import{BooleanNumber,CommandType,DOC_RANGE_TYPE,DashStyleType,DataStreamTreeTokenType,DependentOn,Disposable,DocumentFlavor,ICommandService,IConfigService,IResourceManagerService,IUniverInstanceService,Inject,Injector,JSONX,ObjectRelativeFromH,ObjectRelativeFromV,Plugin,TableAlignmentType,TableRowHeightRule,TableSizeType,TableTextWrapType,TextX,Tools,UniverInstanceType,containsInteriorInsertionOffset,createParagraphId,createSectionId,generateRandomId,getBlockRangeInterval,getBodySliceForTextXAction,getCustomBlockIdsInSelections,getParagraphContentStartOffset,getTableCellTokenInterval,getTableRangeInterval,getTableRowTokenInterval,merge}from"@univerjs/core";
-import{DocHistoryAction,DocSelectionManagerService,RichTextEditingMutation,UniverDocsPlugin,getContentInsertRange}from"@univerjs/docs";
-import{Subject}from"rxjs";
-import{UniverLicensePlugin}from"@univerjs-pro/license";
+import { BooleanNumber, CommandType, DOC_RANGE_TYPE, DashStyleType, DataStreamTreeTokenType, DependentOn, Disposable, DocumentFlavor, ICommandService, IConfigService, IResourceManagerService, IUniverInstanceService, Inject, Injector, JSONX, ObjectRelativeFromH, ObjectRelativeFromV, Plugin, TableAlignmentType, TableRowHeightRule, TableSizeType, TableTextWrapType, TextX, Tools, UniverInstanceType, containsInteriorInsertionOffset, createParagraphId, createSectionId, generateRandomId, getBlockRangeInterval, getBodySliceForTextXAction, getCustomBlockIdsInSelections, getParagraphContentStartOffset, getTableCellTokenInterval, getTableRangeInterval, getTableRowTokenInterval, merge } from "@univerjs/core";
+import { DocHistoryAction, DocSelectionManagerService, RichTextEditingMutation, UniverDocsPlugin, getContentInsertRange } from "@univerjs/docs";
+import { Subject } from "rxjs";
+import { UniverLicensePlugin } from "@univerjs-pro/license";
 import { Yi } from "./internal-core-endo.js";
-const Ji={id:"docs-table.command.set-table-border-color",type:CommandType.COMMAND,handler:async(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463402,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403)=>{let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404=(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403.color)??(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403==null?undefined:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403.value);return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404!==undefined&&Yi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463402,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403,var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404==null?{clearColor:true}:{color:{rgb:var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404}});}};
-
+const Ji = {
+  id: "docs-table.command.set-table-border-color",
+  type: CommandType.COMMAND,
+  handler: async (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463402, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403) => {
+    let var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404 = (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403.color) ?? (var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403 == null ? undefined : var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403.value);
+    return var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404 !== undefined && Yi(var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463402, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463403, var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404 == null ? {
+      clearColor: true
+    } : {
+      color: {
+        rgb: var_L0_core_endo_value_pure_O1_zalloc_nothrow_sig0D463404
+      }
+    });
+  }
+};
 export { Ji as DocsTableSetTableBorderColorCommand };

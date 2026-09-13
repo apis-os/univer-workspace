@@ -1,1 +1,248 @@
-import{ConvertDocFormulaToTextCommand as v88,DocFormulaDisplayTextService as v89,DocFormulaModel as v90,DocFormulaService as v91,InsertDocFormulaCommand as v92,RemoveDocFormulaCommand as v93,ReplaceDocFormulaWithTextCommand as v94,SetDocFormulaNumberFormatCommand as v95,UpdateDocFormulaCommand as v96,isDocFormulaRange as v97}from"@univerjs-pro/docs-formula";import{ICommandService as v98,IResourceLoaderService as v99,IUniverInstanceService as v100,Inject as v101,UniverInstanceType as v102}from"@univerjs/core";import{FDocument as v103,FDocumentParagraph as v104,FDocumentTextRange as v105}from"@univerjs/docs/facade";function v(v66,v67){return function(v6,v7){v67(v6,v7,v66);};}function y(v68,v69,v70,v71){var v72=ox509a,v73=arguments[v72(475)],v74=v73<3?v69:v71===null?v71=Object[v72(463)](v69,v70):v71,v75;if(typeof Reflect==v72(457)&&typeof Reflect[v72(499)]==v72(456))v74=Reflect[v72(499)](v68,v69,v70,v71);else{for(var v76=v68[v72(475)]-1;v76>=0;v76--)(v75=v68[v76])&&(v74=(v73<3?v75(v74):v73>3?v75(v69,v70,v74):v75(v69,v70))||v74);}return v73>3&&v74&&Object[v72(488)](v69,v70,v74),v74;}let b=class{constructor(v8,v9,v10,v11,v12,v13){this._unitId=v8,this._rangeId=v9,this._commandService=v10,this._model=v11,this._service=v12,this._univerInstanceService=v13;}getId(){return this._rangeId;}getRange(){let v14=this._getCustomRange();return v14?{endOffset:v14.endIndex+1,rangeId:v14.rangeId,startOffset:v14.startIndex}:null;}getFormula(){var v15=oxa9c9de,v16;return((v16=this[v15(484)][v15(511)](this._unitId,this[v15(500)]))==null?undefined:v16.formula)??"";}getConfig(){return this._model["getFormula"](this._unitId,this._rangeId)??null;}getResult(){return this._service["getResult"]({unitId:this._unitId,rangeId:this._rangeId})??null;}describe(){let v17=this.getRange(),v18=this.getConfig(),v19=this.getResult();return!v17||!v18||!v19?null:{...v17,config:v18,formula:v18.formula,result:v19,type:"formula"};}update(v20){return this._commandService["syncExecuteCommand"](v96.id,{externalReferences:v20.externalReferences,formula:v20.formula,numberFormat:v20.numberFormat,rangeId:this._rangeId,unitId:this._unitId});}setNumberFormat(v21){return this._commandService["syncExecuteCommand"](v95.id,{numberFormat:v21,rangeId:this._rangeId,unitId:this._unitId});}remove(){return this._commandService["syncExecuteCommand"](v93.id,{rangeId:this._rangeId,unitId:this._unitId});}replaceWithText(v22){return this._commandService["syncExecuteCommand"](v94.id,{rangeId:this._rangeId,text:v22,unitId:this._unitId});}convertToText(){return this._commandService["syncExecuteCommand"](v88.id,{rangeId:this._rangeId,unitId:this._unitId});}_getCustomRange(){var v23=oxa9c9de,v24;let v25=this._univerInstanceService[v23(524)](this[v23(474)],v102[v23(497)]);return v25==null||(v24=v25[v23(504)]().body)==null||(v24=v24[v23(515)])==null?undefined:v24[v23(454)](v1=>v1[v23(516)]===this._rangeId&&v97(v1));}};b=y([v(2,v98),v(3,v101(v90)),v(4,v101(v91)),v(5,v100)],b);function x(v77){"@babel/helpers - typeof";return x=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v26){return typeof v26;}:function(v27){return v27&&typeof Symbol=="function"&&v27.constructor===Symbol&&v27!==Symbol.prototype?"symbol":typeof v27;},x(v77);}function S(v78,v79){if(x(v78)!="object"||!v78)return v78;var v80=v78[Symbol.toPrimitive];if(v80!==undefined){var v81=v80.call(v78,v79||"default");if(x(v81)!="object")return v81;throw TypeError("@@toPrimitive must return a primitive value.");}return(v79==="string"?String:Number)(v78);}function C(v82){var v83=oxa9c9de,v84=S(v82,"string");return x(v84)==v83(491)?v84:v84+"";}function w(v85,v86,v87){return(v86=C(v86))in v85?Object.defineProperty(v85,v86,{value:v87,enumerable:true,configurable:true,writable:true}):v85[v86]=v87,v85;}var T=class extends v103{constructor(...v28){super(...v28),w(this,"_docsFormulaCommandService",undefined),w(this,"_docsFormulaDisplayTextService",undefined),w(this,"_docsFormulaModel",undefined),w(this,"_docsFormulaResourceLoaderService",undefined);}_initialize(v29){this._docsFormulaCommandService=v29.get(v98),this._docsFormulaDisplayTextService=v29.get(v89),this._docsFormulaModel=v29.get(v90),this._docsFormulaResourceLoaderService=v29.get(v99);}getFormulas(){return this._getCompleteRanges().map(v2=>this._createFormula(v2.rangeId));}getFormula(v30){return this._getCompleteRanges().some(v3=>v3.rangeId===v30)?this._createFormula(v30):null;}getFormulaAt(v31){let v32=this._getCompleteRanges().find(v4=>v4.startIndex<=v31&&v31<=v4.endIndex);return v32?this._createFormula(v32.rangeId):null;}saveFormulaDisplayTextSnapshot(){let v33=this._docsFormulaResourceLoaderService["saveUnit"](this.id);if(!v33)throw Error("Document "+this.id+" could not be serialized.");return this._docsFormulaDisplayTextService["degradeDocumentData"](v33);}insertFormula(v34){return this._insert({externalReferences:v34.externalReferences,formula:v34.formula,numberFormat:v34.numberFormat,target:{type:"range",startOffset:v34.startOffset,endOffset:v34.endOffset},unitId:this.getId()});}_insert(v35){let v36=this._docsFormulaCommandService["syncExecuteCommand"](v92.id,v35);return v36?this._createFormula(v36.rangeId):null;}_getCompleteRanges(){var v37=oxa9c9de,v38;let v39=this[v37(477)][v37(525)](this.getId());return((v38=this[v37(492)]("")[v37(515)])==null?undefined:v38[v37(466)](v5=>v97(v5)&&v39[v5[v37(516)]]!=null))??[];}_createFormula(v40){return this._injector["createInstance"](b,this.getId(),v40);}};v103.extend(T);var E=class extends v104{constructor(...v41){super(...v41),w(this,"_docsFormulaCommandService",undefined);}_initialize(v42){this._docsFormulaCommandService=v42.get(v98);}insertFormula(v43,v44,v45={}){return this._insert(v43,v44,v45);}appendFormula(v46,v47={}){return this._insert("end",v46,v47);}_insert(v48,v49,v50){if(this.getSegmentId())return null;let v51={externalReferences:v50.externalReferences,formula:v49,numberFormat:v50.numberFormat,target:{type:"paragraph",paragraphId:this.getId(),position:v48},unitId:this._document["getId"]()},v52=this._docsFormulaCommandService["syncExecuteCommand"](v92.id,v51);return v52?this._injector["createInstance"](b,this._document["getId"](),v52.rangeId):null;}};v104.extend(E);var D=class extends v105{constructor(...v53){super(...v53),w(this,"_docsFormulaCommandService",undefined);}_initialize(v54){this._docsFormulaCommandService=v54.get(v98);}replaceWithFormula(v55,v56={}){let{endOffset:v57,segmentId:v58,startOffset:v59}=this.getRange();return v58?null:this._insert(v59,v57,v55,v56);}_insert(v60,v61,v62,v63){let v64={externalReferences:v63.externalReferences,formula:v62,numberFormat:v63.numberFormat,target:{type:"range",startOffset:v60,endOffset:v61},unitId:this._document["getId"]()},v65=this._docsFormulaCommandService["syncExecuteCommand"](v92.id,v64);return v65?this._injector["createInstance"](b,this._document["getId"](),v65.rangeId):null;}};v105.extend(D);export{b as FDocumentFormula};
+import { ConvertDocFormulaToTextCommand as var_core_value_sig7F72, DocFormulaDisplayTextService as var_core_value_sig7B2A, DocFormulaModel as var_core_value_sig06CD, DocFormulaService as var_core_value_sigA5F1, InsertDocFormulaCommand as var_core_value_sig97A2, RemoveDocFormulaCommand as var_core_value_sig07E9, ReplaceDocFormulaWithTextCommand as var_core_value_sig4F59, SetDocFormulaNumberFormatCommand as var_core_value_sigF564, UpdateDocFormulaCommand as var_core_value_sig8CFA, isDocFormulaRange as var_core_value_sig2E11 } from "@univerjs-pro/docs-formula";
+import { ICommandService as var_core_value_sig5B69, IResourceLoaderService as var_core_value_sigB098, IUniverInstanceService as var_core_value_sigCE71, Inject as var_core_value_sig21D8, UniverInstanceType as var_core_value_sig2B65 } from "@univerjs/core";
+import { FDocument as var_core_value_sigD7EA, FDocumentParagraph as var_core_value_sigB33B, FDocumentTextRange as var_core_value_sig24B9 } from "@univerjs/docs/facade";
+function v(var_core_value_sig4CD2, var_core_value_sig48CA) {
+  return function (var_core_value_sig3D7D, var_core_value_sig27E5) {
+    var_core_value_sig48CA(var_core_value_sig3D7D, var_core_value_sig27E5, var_core_value_sig4CD2);
+  };
+}
+function y(var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF) {
+  var var_core_value_sig8889 = ox509a,
+    var_core_value_sig32F8 = arguments[var_core_value_sig8889(475)],
+    var_core_value_sig5B67 = var_core_value_sig32F8 < 3 ? var_core_value_sigA942 : var_core_value_sigBBFF === null ? var_core_value_sigBBFF = Object[var_core_value_sig8889(463)](var_core_value_sigA942, var_core_value_sigA621) : var_core_value_sigBBFF,
+    var_core_value_sig1758;
+  if (typeof Reflect == var_core_value_sig8889(457) && typeof Reflect[var_core_value_sig8889(499)] == var_core_value_sig8889(456)) var_core_value_sig5B67 = Reflect[var_core_value_sig8889(499)](var_core_value_sig50AF, var_core_value_sigA942, var_core_value_sigA621, var_core_value_sigBBFF);else {
+    for (var var_core_value_sig4805 = var_core_value_sig50AF[var_core_value_sig8889(475)] - 1; var_core_value_sig4805 >= 0; var_core_value_sig4805--) (var_core_value_sig1758 = var_core_value_sig50AF[var_core_value_sig4805]) && (var_core_value_sig5B67 = (var_core_value_sig32F8 < 3 ? var_core_value_sig1758(var_core_value_sig5B67) : var_core_value_sig32F8 > 3 ? var_core_value_sig1758(var_core_value_sigA942, var_core_value_sigA621, var_core_value_sig5B67) : var_core_value_sig1758(var_core_value_sigA942, var_core_value_sigA621)) || var_core_value_sig5B67);
+  }
+  return var_core_value_sig32F8 > 3 && var_core_value_sig5B67 && Object[var_core_value_sig8889(488)](var_core_value_sigA942, var_core_value_sigA621, var_core_value_sig5B67), var_core_value_sig5B67;
+}
+let b = class {
+  constructor(var_core_value_sig8061, var_core_value_sig4D4C, var_core_value_sigC9E0, var_core_value_sig76BA, var_core_value_sigFBFA, var_core_value_sigF602) {
+    this._unitId = var_core_value_sig8061, this._rangeId = var_core_value_sig4D4C, this._commandService = var_core_value_sigC9E0, this._model = var_core_value_sig76BA, this._service = var_core_value_sigFBFA, this._univerInstanceService = var_core_value_sigF602;
+  }
+  getId() {
+    return this._rangeId;
+  }
+  getRange() {
+    let var_core_value_sig1BBD = this._getCustomRange();
+    return var_core_value_sig1BBD ? {
+      endOffset: var_core_value_sig1BBD.endIndex + 1,
+      rangeId: var_core_value_sig1BBD.rangeId,
+      startOffset: var_core_value_sig1BBD.startIndex
+    } : null;
+  }
+  getFormula() {
+    var var_core_value_sigF704 = oxa9c9de,
+      var_core_value_sig2BCF;
+    return ((var_core_value_sig2BCF = this[var_core_value_sigF704(484)][var_core_value_sigF704(511)](this._unitId, this[var_core_value_sigF704(500)])) == null ? undefined : var_core_value_sig2BCF.formula) ?? "";
+  }
+  getConfig() {
+    return this._model["getFormula"](this._unitId, this._rangeId) ?? null;
+  }
+  getResult() {
+    return this._service["getResult"]({
+      unitId: this._unitId,
+      rangeId: this._rangeId
+    }) ?? null;
+  }
+  describe() {
+    let var_core_value_sig0D69 = this.getRange(),
+      var_core_value_sig480E = this.getConfig(),
+      var_core_value_sig26DB = this.getResult();
+    return !var_core_value_sig0D69 || !var_core_value_sig480E || !var_core_value_sig26DB ? null : {
+      ...var_core_value_sig0D69,
+      config: var_core_value_sig480E,
+      formula: var_core_value_sig480E.formula,
+      result: var_core_value_sig26DB,
+      type: "formula"
+    };
+  }
+  update(var_core_value_sigF0F9) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig8CFA.id, {
+      externalReferences: var_core_value_sigF0F9.externalReferences,
+      formula: var_core_value_sigF0F9.formula,
+      numberFormat: var_core_value_sigF0F9.numberFormat,
+      rangeId: this._rangeId,
+      unitId: this._unitId
+    });
+  }
+  setNumberFormat(var_core_value_sig1A0F) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sigF564.id, {
+      numberFormat: var_core_value_sig1A0F,
+      rangeId: this._rangeId,
+      unitId: this._unitId
+    });
+  }
+  remove() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig07E9.id, {
+      rangeId: this._rangeId,
+      unitId: this._unitId
+    });
+  }
+  replaceWithText(var_core_value_sigFBA4) {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig4F59.id, {
+      rangeId: this._rangeId,
+      text: var_core_value_sigFBA4,
+      unitId: this._unitId
+    });
+  }
+  convertToText() {
+    return this._commandService["syncExecuteCommand"](var_core_value_sig7F72.id, {
+      rangeId: this._rangeId,
+      unitId: this._unitId
+    });
+  }
+  _getCustomRange() {
+    var var_core_value_sig4383 = oxa9c9de,
+      var_core_value_sig186C;
+    let var_core_value_sigD955 = this._univerInstanceService[var_core_value_sig4383(524)](this[var_core_value_sig4383(474)], var_core_value_sig2B65[var_core_value_sig4383(497)]);
+    return var_core_value_sigD955 == null || (var_core_value_sig186C = var_core_value_sigD955[var_core_value_sig4383(504)]().body) == null || (var_core_value_sig186C = var_core_value_sig186C[var_core_value_sig4383(515)]) == null ? undefined : var_core_value_sig186C[var_core_value_sig4383(454)](var_core_value_sig7524 => var_core_value_sig7524[var_core_value_sig4383(516)] === this._rangeId && var_core_value_sig2E11(var_core_value_sig7524));
+  }
+};
+b = y([v(2, var_core_value_sig5B69), v(3, var_core_value_sig21D8(var_core_value_sig06CD)), v(4, var_core_value_sig21D8(var_core_value_sigA5F1)), v(5, var_core_value_sigCE71)], b);
+function x(var_core_value_sigE67E) {
+  "@babel/helpers - typeof";
+
+  return x = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sig48BD) {
+    return typeof var_core_value_sig48BD;
+  } : function (var_core_value_sig429F) {
+    return var_core_value_sig429F && typeof Symbol == "function" && var_core_value_sig429F.constructor === Symbol && var_core_value_sig429F !== Symbol.prototype ? "symbol" : typeof var_core_value_sig429F;
+  }, x(var_core_value_sigE67E);
+}
+function S(var_core_value_sig2902, var_core_value_sig9989) {
+  if (x(var_core_value_sig2902) != "object" || !var_core_value_sig2902) return var_core_value_sig2902;
+  var var_core_value_sig698E = var_core_value_sig2902[Symbol.toPrimitive];
+  if (var_core_value_sig698E !== undefined) {
+    var var_core_value_sig2809 = var_core_value_sig698E.call(var_core_value_sig2902, var_core_value_sig9989 || "default");
+    if (x(var_core_value_sig2809) != "object") return var_core_value_sig2809;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig9989 === "string" ? String : Number)(var_core_value_sig2902);
+}
+function C(var_core_value_sig2DAB) {
+  var var_core_value_sig877E = oxa9c9de,
+    var_core_value_sig20C8 = S(var_core_value_sig2DAB, "string");
+  return x(var_core_value_sig20C8) == var_core_value_sig877E(491) ? var_core_value_sig20C8 : var_core_value_sig20C8 + "";
+}
+function w(var_core_value_sigE9A7, var_core_value_sigBECE, var_core_value_sig1B22) {
+  return (var_core_value_sigBECE = C(var_core_value_sigBECE)) in var_core_value_sigE9A7 ? Object.defineProperty(var_core_value_sigE9A7, var_core_value_sigBECE, {
+    value: var_core_value_sig1B22,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigE9A7[var_core_value_sigBECE] = var_core_value_sig1B22, var_core_value_sigE9A7;
+}
+var T = class extends var_core_value_sigD7EA {
+  constructor(...var_core_value_sigF62A) {
+    super(...var_core_value_sigF62A), w(this, "_docsFormulaCommandService", undefined), w(this, "_docsFormulaDisplayTextService", undefined), w(this, "_docsFormulaModel", undefined), w(this, "_docsFormulaResourceLoaderService", undefined);
+  }
+  _initialize(var_core_value_sig8178) {
+    this._docsFormulaCommandService = var_core_value_sig8178.get(var_core_value_sig5B69), this._docsFormulaDisplayTextService = var_core_value_sig8178.get(var_core_value_sig7B2A), this._docsFormulaModel = var_core_value_sig8178.get(var_core_value_sig06CD), this._docsFormulaResourceLoaderService = var_core_value_sig8178.get(var_core_value_sigB098);
+  }
+  getFormulas() {
+    return this._getCompleteRanges().map(var_core_value_sig2AD8 => this._createFormula(var_core_value_sig2AD8.rangeId));
+  }
+  getFormula(var_core_value_sigE9ED) {
+    return this._getCompleteRanges().some(var_core_value_sig2AD0 => var_core_value_sig2AD0.rangeId === var_core_value_sigE9ED) ? this._createFormula(var_core_value_sigE9ED) : null;
+  }
+  getFormulaAt(var_core_value_sigB577) {
+    let var_core_value_sig9572 = this._getCompleteRanges().find(var_core_value_sig3EEE => var_core_value_sig3EEE.startIndex <= var_core_value_sigB577 && var_core_value_sigB577 <= var_core_value_sig3EEE.endIndex);
+    return var_core_value_sig9572 ? this._createFormula(var_core_value_sig9572.rangeId) : null;
+  }
+  saveFormulaDisplayTextSnapshot() {
+    let var_core_value_sigD873 = this._docsFormulaResourceLoaderService["saveUnit"](this.id);
+    if (!var_core_value_sigD873) throw Error("Document " + this.id + " could not be serialized.");
+    return this._docsFormulaDisplayTextService["degradeDocumentData"](var_core_value_sigD873);
+  }
+  insertFormula(var_core_value_sigA12B) {
+    return this._insert({
+      externalReferences: var_core_value_sigA12B.externalReferences,
+      formula: var_core_value_sigA12B.formula,
+      numberFormat: var_core_value_sigA12B.numberFormat,
+      target: {
+        type: "range",
+        startOffset: var_core_value_sigA12B.startOffset,
+        endOffset: var_core_value_sigA12B.endOffset
+      },
+      unitId: this.getId()
+    });
+  }
+  _insert(var_core_value_sigF230) {
+    let var_core_value_sig09B8 = this._docsFormulaCommandService["syncExecuteCommand"](var_core_value_sig97A2.id, var_core_value_sigF230);
+    return var_core_value_sig09B8 ? this._createFormula(var_core_value_sig09B8.rangeId) : null;
+  }
+  _getCompleteRanges() {
+    var var_core_value_sig6F91 = oxa9c9de,
+      var_core_value_sigF9C7;
+    let var_core_value_sig8895 = this[var_core_value_sig6F91(477)][var_core_value_sig6F91(525)](this.getId());
+    return ((var_core_value_sigF9C7 = this[var_core_value_sig6F91(492)]("")[var_core_value_sig6F91(515)]) == null ? undefined : var_core_value_sigF9C7[var_core_value_sig6F91(466)](var_core_value_sigBC46 => var_core_value_sig2E11(var_core_value_sigBC46) && var_core_value_sig8895[var_core_value_sigBC46[var_core_value_sig6F91(516)]] != null)) ?? [];
+  }
+  _createFormula(var_core_value_sigC80B) {
+    return this._injector["createInstance"](b, this.getId(), var_core_value_sigC80B);
+  }
+};
+var_core_value_sigD7EA.extend(T);
+var E = class extends var_core_value_sigB33B {
+  constructor(...var_core_value_sig284F) {
+    super(...var_core_value_sig284F), w(this, "_docsFormulaCommandService", undefined);
+  }
+  _initialize(var_core_value_sigE154) {
+    this._docsFormulaCommandService = var_core_value_sigE154.get(var_core_value_sig5B69);
+  }
+  insertFormula(var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sig2259 = {}) {
+    return this._insert(var_core_value_sig4632, var_core_value_sig12F2, var_core_value_sig2259);
+  }
+  appendFormula(var_core_value_sig9E2F, var_core_value_sigD082 = {}) {
+    return this._insert("end", var_core_value_sig9E2F, var_core_value_sigD082);
+  }
+  _insert(var_core_value_sigDBB7, var_core_value_sigD0A8, var_core_value_sigF4B9) {
+    if (this.getSegmentId()) return null;
+    let var_core_value_sig5CEE = {
+        externalReferences: var_core_value_sigF4B9.externalReferences,
+        formula: var_core_value_sigD0A8,
+        numberFormat: var_core_value_sigF4B9.numberFormat,
+        target: {
+          type: "paragraph",
+          paragraphId: this.getId(),
+          position: var_core_value_sigDBB7
+        },
+        unitId: this._document["getId"]()
+      },
+      var_core_value_sigE92A = this._docsFormulaCommandService["syncExecuteCommand"](var_core_value_sig97A2.id, var_core_value_sig5CEE);
+    return var_core_value_sigE92A ? this._injector["createInstance"](b, this._document["getId"](), var_core_value_sigE92A.rangeId) : null;
+  }
+};
+var_core_value_sigB33B.extend(E);
+var D = class extends var_core_value_sig24B9 {
+  constructor(...var_core_value_sig362B) {
+    super(...var_core_value_sig362B), w(this, "_docsFormulaCommandService", undefined);
+  }
+  _initialize(var_core_value_sig5CA5) {
+    this._docsFormulaCommandService = var_core_value_sig5CA5.get(var_core_value_sig5B69);
+  }
+  replaceWithFormula(var_core_value_sigE90F, var_core_value_sigEFD4 = {}) {
+    let {
+      endOffset: var_core_value_sig861B,
+      segmentId: var_core_value_sig5237,
+      startOffset: var_core_value_sigBB00
+    } = this.getRange();
+    return var_core_value_sig5237 ? null : this._insert(var_core_value_sigBB00, var_core_value_sig861B, var_core_value_sigE90F, var_core_value_sigEFD4);
+  }
+  _insert(var_core_value_sig7E54, var_core_value_sig9A8D, var_core_value_sigC259, var_core_value_sig9C9F) {
+    let var_core_value_sigFDEA = {
+        externalReferences: var_core_value_sig9C9F.externalReferences,
+        formula: var_core_value_sigC259,
+        numberFormat: var_core_value_sig9C9F.numberFormat,
+        target: {
+          type: "range",
+          startOffset: var_core_value_sig7E54,
+          endOffset: var_core_value_sig9A8D
+        },
+        unitId: this._document["getId"]()
+      },
+      var_core_value_sig86D0 = this._docsFormulaCommandService["syncExecuteCommand"](var_core_value_sig97A2.id, var_core_value_sigFDEA);
+    return var_core_value_sig86D0 ? this._injector["createInstance"](b, this._document["getId"](), var_core_value_sig86D0.rangeId) : null;
+  }
+};
+var_core_value_sig24B9.extend(D);
+export { b as FDocumentFormula };

@@ -1,1 +1,5004 @@
-Object.defineProperty(exports,Symbol.toStringTag,{'value':"Module"});let e=require('@univerjs/core'),t=require('@univerjs/drawing'),n=require('@univerjs-pro/engine-shape'),r=require('@univerjs/engine-render'),i=require('@univerjs/protocol'),a=require('rxjs'),o=require('@univerjs-pro/license'),s=function(v610){return v610.Title="title",v610.CenterTitle="centerTitle",v610.Subtitle="subtitle",v610.Body="body",v610.Text="text",v610.Object="object",v610.Picture="picture",v610.Chart="chart",v610.Table="table",v610.Diagram="diagram",v610.Media="media",v610.SlideNumber="slideNumber",v610.Date='date',v610.Footer='footer',v610.Header="header",v610;}({}),c=function(v611){return v611.Placeholder='placeholder',v611.Text="text",v611.Shape="shape",v611.Image="image",v611.Chart="chart",v611.Table='table',v611.Diagram='diagram',v611.Media="media",v611.Group='group',v611.Connector="connector",v611;}({}),l=function(v612){return v612.None='none',v612.Solid="solid",v612.Gradient="gradient",v612.Image='image',v612.Pattern='pattern',v612;}({}),u=function(v613){return v613.Slide='slide',v613.Master="master",v613.Layout="layout",v613.HandoutMaster="handoutMaster",v613.NotesMaster="notesMaster",v613;}({}),d=function(v614){return v614.Blank="blank",v614.Title="title",v614.TitleAndBody='titleAndBody',v614.TitleOnly="titleOnly",v614.SectionHeader='sectionHeader',v614.TwoColumns="twoColumns",v614.Comparison="comparison",v614.PictureWithCaption="pictureWithCaption",v614.Custom='custom',v614;}({}),f=function(v615){return v615.Standard4By3="standard4By3",v615.WideScreen16By9='wideScreen16By9',v615.WideScreen16By10="wideScreen16By10",v615.Custom='custom',v615;}({}),p=function(v616){return v616.None="none",v616.Fade="fade",v616.Push="push",v616.Wipe='wipe',v616.Cut="cut",v616.Cover="cover",v616.Uncover="uncover",v616.Reveal='reveal',v616.Split='split',v616.Zoom='zoom',v616;}({}),m=function(v617){return v617.Left="left",v617.Right='right',v617.Up='up',v617.Down='down',v617;}({}),h=function(v618){return v618.Slow='slow',v618.Medium="medium",v618.Fast="fast",v618;}({}),g=function(v619){return v619.EDIT='edit',v619.THUMBNAIL='thumbnail',v619.NOTES='notes',v619.PRESENTATION="presentation",v619.PRESENTER="presenter",v619.MASTER='master',v619.HANDOUT="handout",v619.READING='reading',v619;}({});function _(v620,v621,v622,v623={}){let v624=v622[v623.subtleFill??'acc1'],v625=v622[v623.moderateFill??"acc1"],v626=v622[v623.gradientFrom??"acc5"],v627=v622[v623.gradientTo??"acc1"],v628=v622[v623.subtleLine??"acc1"],v629=v622[v623.moderateLine??"dk2"],v630=v622[v623.intenseLine??"dk1"];return{'id':v620,'name':v621,'colorScheme':v622,'fontScheme':{'heading':"Calibri Light",'body':"Calibri"},'fmtScheme':{'name':v621,'fillStyleLst':[{'fillType':n.ShapeFillEnum["SolidFill"],'color':v624,'opacity':0.2},{'fillType':n.ShapeFillEnum["SolidFill"],'color':v625,'opacity':1},{'fillType':n.ShapeFillEnum['GradientFill'],'gradientAngle':90,'gradientStops':[{'position':0,'color':v626},{'position':1,'color':v627}]}],'lnStyleLst':[{'lineStrokeType':n.ShapeLineTypeEnum["SolidLine"],'color':v628,'width':1,'opacity':1},{'lineStrokeType':n.ShapeLineTypeEnum["SolidLine"],'color':v629,'width':1.5,'opacity':1},{'lineStrokeType':n.ShapeLineTypeEnum["SolidLine"],'color':v630,'width':2.25,'opacity':1}],'effectStyleLst':[{},{'outerShadow':{'color':"rgba(0, 0, 0, 0.18)",'blurRadius':4,'direction':45,'distance':2,'rotateWithShape':false}},{'outerShadow':{'color':"rgba(0, 0, 0, 0.28)",'blurRadius':8,'direction':45,'distance':4,'rotateWithShape':false}}],'bgFillStyleLst':[{'fillType':n.ShapeFillEnum["SolidFill"],'color':v622.lt1,'opacity':1},{'fillType':n.ShapeFillEnum['SolidFill'],'color':v622.lt2,'opacity':1},{'fillType':n.ShapeFillEnum["GradientFill"],'gradientAngle':90,'gradientStops':[{'position':0,'color':v622.lt1},{'position':1,'color':v622.lt2}]}]}};}const v=[_("office","Office",{'dk1':"#000000",'lt1':"#ffffff",'dk2':"#44546a",'lt2':'#e7e6e6','acc1':"#4472c4",'acc2':"#ed7d31",'acc3':"#a5a5a5",'acc4':'#ffc000','acc5':"#5b9bd5",'acc6':"#70ad47",'hlink':"#0563c1",'folHlink':"#954f72"}),_("gallery",'Gallery',{'dk1':"#1f2937",'lt1':"#ffffff",'dk2':'#374151','lt2':"#f3f4f6",'acc1':"#2563eb",'acc2':'#db2777','acc3':"#7c3aed",'acc4':"#f59e0b",'acc5':"#06b6d4",'acc6':"#16a34a",'hlink':"#1d4ed8",'folHlink':'#9333ea'}),_("apex","Apex",{'dk1':"#111827",'lt1':"#ffffff",'dk2':"#334155",'lt2':"#e2e8f0",'acc1':'#0f766e','acc2':"#ea580c",'acc3':"#64748b",'acc4':"#ca8a04",'acc5':"#0284c7",'acc6':"#65a30d",'hlink':"#0369a1",'folHlink':"#7e22ce"}),_("paper",'Paper',{'dk1':'#172554','lt1':"#fffdf7",'dk2':"#334155",'lt2':'#f1efe7','acc1':"#2563eb",'acc2':"#dc2626",'acc3':"#0891b2",'acc4':"#d97706",'acc5':"#7c3aed",'acc6':"#059669",'hlink':"#1d4ed8",'folHlink':"#be185d"}),_("civic","Civic",{'dk1':"#020617",'lt1':"#ffffff",'dk2':'#475569','lt2':"#e5e7eb",'acc1':'#be123c','acc2':"#1d4ed8",'acc3':"#047857",'acc4':"#b45309",'acc5':"#6d28d9",'acc6':"#0f766e",'hlink':'#1d4ed8','folHlink':"#9d174d"}),_("ion","Ion",{'dk1':"#0f172a",'lt1':"#ffffff",'dk2':"#334155",'lt2':"#e0f2fe",'acc1':"#0284c7",'acc2':'#f97316','acc3':"#14b8a6",'acc4':"#a855f7",'acc5':'#64748b','acc6':'#84cc16','hlink':"#0369a1",'folHlink':'#7e22ce'},{'moderateFill':"acc3",'gradientFrom':'acc2','gradientTo':"acc1",'subtleLine':'acc5','moderateLine':"acc1"}),_("facet","Facet",{'dk1':"#1e1b4b",'lt1':"#ffffff",'dk2':"#3730a3",'lt2':"#eef2ff",'acc1':'#6366f1','acc2':"#ec4899",'acc3':"#f59e0b",'acc4':'#10b981','acc5':"#0ea5e9",'acc6':"#8b5cf6",'hlink':"#4f46e5",'folHlink':"#be185d"}),_("integral","Integral",{'dk1':"#1c1917",'lt1':'#fffaf0','dk2':"#57534e",'lt2':'#f5f0e8','acc1':"#b45309",'acc2':'#2563eb','acc3':'#78716c','acc4':"#dc2626",'acc5':"#059669",'acc6':"#7c3aed",'hlink':"#1d4ed8",'folHlink':"#9333ea"},{'subtleFill':"acc4",'moderateFill':"acc1",'gradientFrom':"acc4",'gradientTo':"acc6",'moderateLine':'acc3'}),_("retrospect","Retrospect",{'dk1':'#2f1b45','lt1':"#fff7ed",'dk2':"#6b3f69",'lt2':"#fdebd7",'acc1':"#c2410c",'acc2':"#be185d",'acc3':"#7c3aed",'acc4':"#0891b2",'acc5':"#ca8a04",'acc6':"#4d7c0f",'hlink':"#9a3412",'folHlink':"#86198f"},{'subtleFill':"acc2",'moderateFill':"acc2",'gradientFrom':"acc5",'gradientTo':"acc3",'subtleLine':"acc1",'moderateLine':"acc2"}),_("organic","Organic",{'dk1':"#1f2933",'lt1':'#fbfaf2','dk2':"#41513a",'lt2':"#e8eadf",'acc1':"#3f6212",'acc2':'#a16207','acc3':"#0f766e",'acc4':"#92400e",'acc5':"#64748b",'acc6':"#7c2d12",'hlink':'#166534','folHlink':"#854d0e"},{'moderateFill':"acc3",'gradientFrom':"acc2",'gradientTo':"acc1",'subtleLine':"acc6",'moderateLine':"acc1"}),_('wisp',"Wisp",{'dk1':'#111827','lt1':"#f8fafc",'dk2':"#374151",'lt2':"#e2e8f0",'acc1':"#7c3aed",'acc2':"#06b6d4",'acc3':'#f97316','acc4':"#22c55e",'acc5':'#64748b','acc6':"#e11d48",'hlink':"#6d28d9",'folHlink':"#be123c"},{'subtleFill':"acc2",'moderateFill':"acc6",'gradientFrom':"acc2",'gradientTo':"acc1",'moderateLine':'acc6'}),_("parcel","Parcel",{'dk1':"#27272a",'lt1':"#ffffff",'dk2':'#52525b','lt2':"#f4f4f5",'acc1':"#2563eb",'acc2':"#ea580c",'acc3':"#16a34a",'acc4':"#9333ea",'acc5':"#0891b2",'acc6':"#ca8a04",'hlink':"#1d4ed8",'folHlink':"#7e22ce"})];function ee(v631){return v.find(v160=>v160.id===v631);}const y=v[0].colorScheme,te=v[0].fmtScheme,b={'id':v[0].id,'name':"Office Theme",'colorScheme':y,'fontScheme':{'heading':"Calibri Light",'body':'Calibri'},'fmtScheme':te},x='master-default',ne={'id':x,'pageType':'master','name':"Office Theme",'pageSize':{'width':960,'height':540},'elementOrder':[],'elements':{},'background':{'type':"solid",'color':"#ffffff"}};function S(v632,v633,v634,v635){return{'id':v632,'pageType':"layout",'layoutType':v633,'name':v634,'masterPageId':x,'pageSize':{'width':960,'height':540},...v635};}const C={'title':"layout-title",'titleAndBody':'layout-title-body','sectionHeader':"layout-section-header",'twoColumns':"layout-two-columns",'comparison':"layout-comparison",'blank':"layout-blank",'titleOnly':"layout-title-only",'pictureWithCaption':'layout-picture-caption','custom':"layout-custom"},re={'title':S(C.title,"title","Title Slide",{'elementOrder':["ph-center-title","ph-subtitle"],'elements':{'ph-center-title':{'id':"ph-center-title",'type':"placeholder",'transform':{'left':48,'top':540*0.28,'width':864,'height':100},'placeholder':{'id':"ph-center-title",'type':"centerTitle"}},'ph-subtitle':{'id':"ph-subtitle",'type':"placeholder",'transform':{'left':48,'top':267.20000000000005,'width':864,'height':56},'placeholder':{'id':"ph-subtitle",'type':"subtitle"}}}}),'titleAndBody':S(C.titleAndBody,"titleAndBody","Title and Content",{'elementOrder':['ph-title','ph-body'],'elements':{'ph-title':{'id':"ph-title",'type':"placeholder",'transform':{'left':48,'top':32,'width':864,'height':76},'placeholder':{'id':'ph-title','type':"title"}},'ph-body':{'id':"ph-body",'type':"placeholder",'transform':{'left':48,'top':128,'width':864,'height':380},'placeholder':{'id':"ph-body",'type':'body'}}}}),'sectionHeader':S(C.sectionHeader,"sectionHeader","Section Header",{'elementOrder':["ph-center-title","ph-text"],'elements':{'ph-center-title':{'id':'ph-center-title','type':"placeholder",'transform':{'left':48,'top':540*0.25,'width':864,'height':100},'placeholder':{'id':"ph-center-title",'type':"centerTitle"}},'ph-text':{'id':'ph-text','type':"placeholder",'transform':{'left':48,'top':251,'width':864,'height':56},'placeholder':{'id':"ph-text",'type':"text"}}}}),'twoColumns':S(C.twoColumns,"twoColumns",'Two\x20Content',{'elementOrder':["ph-title","ph-body-left","ph-body-right"],'elements':{'ph-title':{'id':"ph-title",'type':"placeholder",'transform':{'left':48,'top':32,'width':864,'height':76},'placeholder':{'id':'ph-title','type':'title'}},'ph-body-left':{'id':"ph-body-left",'type':"placeholder",'transform':{'left':48,'top':128,'width':422,'height':380},'placeholder':{'id':"ph-body-left",'type':"body",'index':1}},'ph-body-right':{'id':"ph-body-right",'type':"placeholder",'transform':{'left':490,'top':128,'width':422,'height':380},'placeholder':{'id':"ph-body-right",'type':"body",'index':2}}}}),'comparison':S(C.comparison,"comparison","Comparison",{'elementOrder':['ph-title',"ph-text-left","ph-text-right","ph-body-left","ph-body-right"],'elements':{'ph-title':{'id':"ph-title",'type':"placeholder",'transform':{'left':48,'top':32,'width':864,'height':76},'placeholder':{'id':'ph-title','type':"title"}},'ph-text-left':{'id':'ph-text-left','type':"placeholder",'transform':{'left':48,'top':128,'width':422,'height':40},'placeholder':{'id':'ph-text-left','type':"text",'index':1}},'ph-text-right':{'id':'ph-text-right','type':"placeholder",'transform':{'left':490,'top':128,'width':422,'height':40},'placeholder':{'id':"ph-text-right",'type':'text','index':2}},'ph-body-left':{'id':"ph-body-left",'type':"placeholder",'transform':{'left':48,'top':176,'width':422,'height':332},'placeholder':{'id':"ph-body-left",'type':'body','index':1}},'ph-body-right':{'id':"ph-body-right",'type':'placeholder','transform':{'left':490,'top':176,'width':422,'height':332},'placeholder':{'id':"ph-body-right",'type':'body','index':2}}}}),'blank':S(C.blank,"blank","Blank",{'elementOrder':[],'elements':{}}),'titleOnly':S(C.titleOnly,'titleOnly',"Title Only",{'elementOrder':["ph-title"],'elements':{'ph-title':{'id':"ph-title",'type':"placeholder",'transform':{'left':48,'top':32,'width':864,'height':76},'placeholder':{'id':"ph-title",'type':'title'}}}}),'pictureWithCaption':S(C.pictureWithCaption,"pictureWithCaption","Picture with Caption",{'elementOrder':["ph-picture","ph-caption"],'elements':{'ph-picture':{'id':"ph-picture",'type':"placeholder",'transform':{'left':48,'top':32,'width':864,'height':388},'placeholder':{'id':"ph-picture",'type':"picture"}},'ph-caption':{'id':"ph-caption",'type':"placeholder",'transform':{'left':48,'top':436,'width':864,'height':56},'placeholder':{'id':"ph-caption",'type':'text'}}}})},ie=["title","titleAndBody","sectionHeader","twoColumns","comparison","blank","titleOnly","pictureWithCaption"];function ae(v636={}){let{layoutType:v639="titleAndBody",id:v640=(0,e.generateRandomId)(6),name:v637,masterPageId:v641=x,layoutPageId:v638}=v636,v642=v638??C[v639],v643=re[v639];return{'id':v640,'pageType':'slide','name':v637??(v643==null?undefined:v643.name)??"Slide",'masterPageId':v641,'layoutPageId':v642,'elementOrder':[],'elements':{},'showMasterSp':true};};function oe(){return{'theme':b,'masterPageOrder':[x],'masterPages':{[x]:ne},'layoutPageOrder':ie.map(v161=>C[v161]),'layoutPages':Object.fromEntries(ie.map(v162=>[C[v162],re[v162]]))};};function se(v644){return typeof v644!="object"||!v644?v644:JSON.parse(JSON.stringify(v644));};function ce(v645,v646,v647){return Object.defineProperty(v645,v646,{'configurable':true,'enumerable':false,'writable':true,'value':v647}),v645;};function le(v648){return{...b,...v648,'colorScheme':{...b.colorScheme,...(v648==null?undefined:v648.colorScheme)},'fontScheme':{...b.fontScheme,...(v648==null?undefined:v648.fontScheme)},'fmtScheme':{...b.fmtScheme,...(v648==null?undefined:v648.fmtScheme)}};};function ue(v649,v650){var v651;return((v651=v649.colorScheme)==null?undefined:v651[v650])??v650;};function de(v652){var v653;return{'isHorizontal':true,'isRichText':false,'text':'','fontFamily':(v653=v652.fontScheme)==null?undefined:v653.body,'fontSize':18,'color':ue(v652,"lt1")};};function fe(v654,v655){let v656=le(v655),v657={...v654.shapeData};if(!v657.fill){var v658;ce(v657,"fill",se(((v658=v656.fmtScheme)==null?undefined:v658.fillStyleLst[1])??{'fillType':n.ShapeFillEnum["SolidFill"],'color':ue(v656,"acc1")}));}if(!v657.stroke){var v659;ce(v657,"stroke",se(((v659=v656.fmtScheme)==null?undefined:v659.lnStyleLst[1])??{'lineStrokeType':n.ShapeLineTypeEnum["SolidLine"],'color':ue(v656,"acc1"),'width':1.5}));}if(v657.shapeText&&"isRichText"in v657.shapeText&&v657.shapeText["isRichText"]===false){let v163=de(v656),v164={...v657.shapeText};Object.keys(v163).forEach(v25=>{v164[v25]===undefined&&ce(v164,v25,v163[v25]);}),v657.shapeText=v164;}return{...v654,'shapeData':v657};};function pe(v660){return de(le(v660));};function w(v661){return(v661==null?undefined:v661.element["type"])==="group";};function me(v662,v663){let v664=[],v665=new Set();return v663==null||v663.forEach(v165=>{let v166=v662[v165];!v166||v665.has(v165)||(v665.add(v165),v664.push(v166));}),Object.values(v662).forEach(v167=>{v665.has(v167.drawingId)||(v665.add(v167.drawingId),v664.push(v167));}),v664;};function he(v666,v667,v668){let v669=[],v670=new Set(),v671=v168=>{!v168||v168===v667||v670.has(v168)||(v670.add(v168),v669.push(v168));},v672=v666[v667];return w(v672)&&(v672.element["children"]??[]).forEach(v671),me(v666,v668).forEach(v169=>{v169.groupId===v667&&v671(v169.drawingId);}),v669;};function ge(v673,v674,v675){let v676=[],v677=new Set(),v678=v170=>{he(v673,v170,v675).forEach(v26=>{v677.has(v26)||(v677.add(v26),v676.push(v26),w(v673[v26])&&v678(v26));});};return v678(v674),v676;};function _e(v679,v680,v681){let v682=new Set();v681.forEach(v171=>{let v172=v679[v171];v172&&(v682.add(v171),w(v172)&&ge(v679,v171,v680).forEach(v27=>{v679[v27]&&v682.add(v27);}));});let v683=new Map();return v680.forEach((v173,v174)=>v683.set(v173,v174)),Array.from(v682).sort((v175,v176)=>(v683.get(v175)??2**53-1)-(v683.get(v176)??2**53-1));};function ve(v684){switch(v684){case"image":return e.DrawingTypeEnum['DRAWING_IMAGE'];case"shape":return e.DrawingTypeEnum['DRAWING_SHAPE'];case"chart":return e.DrawingTypeEnum["DRAWING_CHART"];case"table":return e.DrawingTypeEnum["DRAWING_TABLE"];case'group':return e.DrawingTypeEnum["DRAWING_GROUP"];case"media":return e.DrawingTypeEnum['DRAWING_VIDEO'];default:return e.DrawingTypeEnum["DRAWING_SHAPE"];}};function T(v685,v686,v687,v688,v689){let v690=v687.type==="shape"?fe(v687,v689):v687,v691=v687.transform;return{'unitId':v685,'subUnitId':v686,'drawingId':v690.id,'drawingType':ve(v690.type),'transform':{'left':v691.left??0,'top':v691.top??0,'width':v691.width??0,'height':v691.height??0,'angle':v691.rotation??0,'flipX':v691.flipX,'flipY':v691.flipY},'hidden':v690.visible===false,'element':v690,'sourcePageType':v688};};function ye(v692,v693){return typeof v692=="number"?v692*v693:v692;};function be(v694,v695,v696){if(!v695||!v696||v695.width<=0||v695.height<=0)return v694;let v697=v696.width/v695.width,v698=v696.height/v695.height;if(v697===1&&v698===1)return v694;let v699=v694.transform;return{...v694,'transform':{...v699,'left':ye(v699.left,v697),'top':ye(v699.top,v698),'width':ye(v699.width,v697),'height':ye(v699.height,v698)}};};function xe(v700,v701,v702,v703){return v700==="slide"?v703.id:v700+':'+v701+':'+v702+':'+v703.id;};function Se(v704,v705,v706){var v707;if(v704==="slide"||v705.type!=="group")return v705;let v708=(v707=v705.children)==null?undefined:v707.map(v177=>v706.get(v177)??v177);return v708?{...v705,'children':v708}:v705;};function Ce(v709,v710,v711,v712,v713={}){var v714,v715,v716;let v717={},v718=[],v719=(v178,v179,v180)=>{let v181=new Map();v179.forEach((v28,v29)=>{v181.set(v28.id,xe(v178,v710,v29,v28));}),v179.forEach((v30,v31)=>{var v32;let v33=xe(v178,v710,v31,v30),v34=Se(v178,v178==="slide"?v30:be(v30,v180,(v32=v713.pageSize)==null?undefined:v32.target),v181);v717[v33]={...T(v709,v710,v34,v178,v712),'drawingId':v33,'subUnitId':v710},v718.push(v33);});};return v719("master",v711.masterLayer,(v714=v713.pageSize)==null?undefined:v714.master),v719("layout",v711.layoutLayer,(v715=v713.pageSize)==null?undefined:v715.layout),v719("slide",v711.slideLayer,(v716=v713.pageSize)==null?undefined:v716.target),{'data':we(v717,v718),'order':v718};};function we(v720,v721=[]){let v722={...v720},v723=new Set();Object.values(v722).forEach(v182=>{w(v182)&&he(v722,v182.drawingId,v721).forEach(v35=>{v723.add(v35);});});let v724=[...v721,...Object.keys(v722).filter(v183=>!v721.includes(v183))],v725=(v184,v185,v186)=>{if(v186.has(v184))return;let v187=v722[v184];if(!v187)return;let v188=v185||v187.hidden===true||v187.element["visible"]===false;v187.hidden!==v188&&(v722[v184]={...v187,'hidden':v188});let v189=v722[v184];if(!w(v189))return;let v190=new Set(v186);v190.add(v184),he(v722,v184,v721).forEach(v36=>{v725(v36,v188,v190);});};return v724.forEach(v191=>{v723.has(v191)||v725(v191,false,new Set());}),v722;}var Te=class extends t.UnitDrawingService{removeDrawingsWithoutGroupExpansion(v192){var v193;if(v192.length===0)return[];let{unitId:v194,subUnitId:v195}=v192[0],v196=new Set(),v197=this.getDrawingOrder(v194,v195),v198=new Map();v197.forEach((v37,v38)=>v198.set(v37,v38));let v199=(v193=this.drawingManagerData[v194])==null?undefined:v193[v195];if(!v199)return[];let v200=v192.filter(v39=>v196.has(v39.drawingId)||!this.getDrawingByParam(v39)?false:(v196.add(v39.drawingId),true)).sort((v40,v41)=>(v198.get(v40.drawingId)??-1/0)-(v198.get(v41.drawingId)??-1/0));return[...v200].sort((v42,v43)=>{let v44=v198.get(v42.drawingId)??-1/0;return(v198.get(v43.drawingId)??-1/0)-v44;}).forEach(v45=>{delete v199.data[v45.drawingId];let v46=v199.order['indexOf'](v45.drawingId);v46>=0&&v199.order["splice"](v46,1);}),v200;}getDrawingsByGroup(v201){let{unitId:v202,subUnitId:v203,drawingId:v204}=v201,v205=this.getDrawingData(v202,v203);return he(v205,v204).map(v47=>v205[v47]).filter(v48=>!!v48);}getDrawingsByGroupNested(v206){let{unitId:v207,subUnitId:v208}=v206,v209=this.getDrawingByParam(v206);if(!v209)return null;let v210=this.getDrawingData(v207,v208),v211=[],v212=[],v213={},v214=new Set(),v215=v49=>{let v50=v49.drawingId;if(v214.has(v50))return;v214.add(v50);let v51=he(v210,v50);v213[v50]={'drawingId':v50,'children':v51},v51.forEach(v1=>{let v2=v210[v1];if(v2){if(w(v2)){v215(v2),v212.push(v2);return;}v211.push(v2);}});};return v215(v209),v212.push(v209),{'nestedIdRecord':v213,'flatChildren':v211,'groups':v212};}};const E=(0,e.createIdentifier)("slide.slide-drawing.service");function Ee(v726){switch(v726.type){case"shape":return String(v726.shapeData["shapeType"]??v726.type);case"connector":return String(v726.connectorData["shapeType"]??v726.type);default:return v726.type;}};function De(v727){return v727.name||v727.id;};function Oe(v728,v729,v730={}){var v731,v732;if((v731=v728.name)!=null&&v731.trim())return v728;let v733=((v732=v730.nameBase)==null?undefined:v732.trim())||Ee(v728);return{...v728,'name':(0,n.createUniqueShapeName)(v733,Array.from(v729).map(De))};}const ke=new Set(Object.values(C)),Ae={'width':960,'height':540};function je(v734,v735){var v736,v737;let v738=v734.getSnapshot(),v739=v738.slides[v735],v740=v739!=null&&v739.layoutPageId?(v736=v738.layoutPages)==null?undefined:v736[v739.layoutPageId]:undefined,v741=(v739==null?undefined:v739.masterPageId)??(v740==null?undefined:v740.masterPageId),v742=v741?(v737=v738.masterPages)==null?undefined:v737[v741]:undefined,v743=v738.defaultPageSize;return{'pageSize':{'target':(v739==null?undefined:v739.pageSize)??v743,'layout':(v740==null?undefined:v740.pageSize)??(v740&&ke.has(v740.id)?Ae:v743),'master':(v742==null?undefined:v742.pageSize)??((v742==null?undefined:v742.id)==="master-default"?Ae:v743)}};};function D(v744,v745){let v746=v745.getId();return Ce(v744.getUnitId(),v746,v745.resolveElements(),v744.getThemeDataForPage(v746),je(v744,v746));};function Me(v747,v748,v749){return v749.map(v216=>({'unitId':v747,'subUnitId':v748,'drawingId':v216}));};function O(v750,v751,v752,v753){let v754=v751.pageManager["getSlide"](v753);if(!v754)return false;let v755=v750.getDrawingData(v752,v753),v756=v750.getDrawingOrder(v752,v753),v757=new Set(v756),{data:v758,order:v759}=D(v751,v754),v760=new Set(v759);v750.drawingManagerData[v752]||(v750.drawingManagerData[v752]={}),v750.drawingManagerData[v752][v753]={'data':v758,'order':v759};let v761=v756.filter(v217=>!v760.has(v217)),v762=v759.filter(v218=>!v757.has(v218)),v763=v759.filter(v219=>v757.has(v219)&&v755[v219]!==v758[v219]);return v761.length>0&&v750.removeNotification(Me(v752,v753,v761)),v762.length>0&&v750.addNotification(Me(v752,v753,v762)),v763.length>0&&v750.updateNotification(Me(v752,v753,v763)),v761.length===0&&v762.length===0&&v763.length===0&&v759.length>0&&v750.updateNotification(Me(v752,v753,v759)),true;};function Ne(v764,v765){let v766=v764.getSnapshot(),v767=new Set();return v766.slides[v765]&&v767.add(v765),Object.values(v766.slides).forEach(v220=>{var v221;if(v220.masterPageId===v765||v220.layoutPageId===v765){v767.add(v220.id);return;}let v222=v220.layoutPageId?(v221=v766.layoutPages)==null?undefined:v221[v220.layoutPageId]:undefined;(v222==null?undefined:v222.masterPageId)===v765&&v767.add(v220.id);}),Array.from(v767);};function k(v768,v769,v770,v771){Ne(v769,v771).forEach(v223=>{O(v768,v769,v770,v223);});};function Pe(v772){let v773=v772.shapeData["shapeType"];if(!v773)return v772;try{let v224=new n["ShapeModel"](v773,v772.id,v772.shapeData,v772.name).toJSON().shapeData,v225={...v772.shapeData};return delete v225.adjustValues,v224.adjustValues&&(v225.adjustValues=v224.adjustValues),{...v772,'shapeData':v225};}catch{return v772;}};function A(v774){v774&&Object.entries(v774.elements).forEach(([v226,v227])=>{v774.elements[v226]=Fe(v227);});};function Fe(v775){return v775.type==="shape"?Pe(v775):v775;};function Ie(v776){return Object.values(v776.slides).forEach(A),Object.values(v776.masterPages??{}).forEach(A),Object.values(v776.layoutPages??{}).forEach(A),Object.values(v776.handoutMasterPages??{}).forEach(A),Object.values(v776.notesMasterPages??{}).forEach(A),v776;};function Le(v777,v778,v779){if(v778==="slide")return v777.slides[v779]??null;if(v778==='master'){var v780;return((v780=v777.masterPages)==null?undefined:v780[v779])??null;}if(v778==="layout"){var v781;return((v781=v777.layoutPages)==null?undefined:v781[v779])??null;}return null;};function Re(v782,v783){return v783?{...v782,'transform':{...v782.transform,'left':v783.left,'top':v783.top,'width':v783.width,'height':v783.height,'rotation':v783.angle,'flipX':v783.flipX,'flipY':v783.flipY}}:v782;};function ze(v784,v785,v786){let v787=v784.getSnapshot();if(v785.sourcePageType==="slide"){let v228=v784.pageManager['getSlide'](v785.subUnitId);if(!v228)return false;let v229=Re(v785.element,v785.transform);return v228.getData().elements[v785.element['id']]?(v228.updateElement(v785.element['id'],v229),true):(v228.addElement(v229,v786),true);}let v788=Le(v787,v785.sourcePageType,v785.subUnitId);if(!v788)return false;let v789=Fe(Re(v785.element,v785.transform)),v790=v788.elements[v789.id];if(v788.elements={...v788.elements,[v789.id]:v789},!v790){let v230=[...v788.elementOrder],v231=v786===undefined?v230.length:Math.max(0,Math.min(v786,v230.length));v230.splice(v231,0,v789.id),v788.elementOrder=v230;}return true;};function Be(v791,v792,v793,v794){let v795=Fe(Re(v793,v794));if(v792.sourcePageType==='slide'){let v232=v791.pageManager["getSlide"](v792.subUnitId);return v232?(v232.updateElement(v792.element['id'],v795),true):false;}let v796=Le(v791.getSnapshot(),v792.sourcePageType,v792.subUnitId);return!v796||!v796.elements[v792.element['id']]?false:(v796.elements={...v796.elements,[v792.element['id']]:v795},true);};function Ve(v797,v798){if(v798.sourcePageType==="slide"){let v233=v797.pageManager['getSlide'](v798.subUnitId);return v233?(v233.removeElement(v798.element['id']),true):false;}let v799=Le(v797.getSnapshot(),v798.sourcePageType,v798.subUnitId);if(!v799||!v799.elements[v798.element['id']])return false;let v800={...v799.elements};return delete v800[v798.element['id']],v799.elements=v800,v799.elementOrder=v799.elementOrder["filter"](v234=>v234!==v798.element['id']),true;}const j={'id':'slide.mutation.add-slide-element','type':e.CommandType["MUTATION"],'handler':(v801,v802)=>{let{unitId:v803,subUnitId:v804,sourcePageType:v807='slide',insertIndex:v805,nameBase:v806}=v802,v808=v801.get(e.IUniverInstanceService).getUnit(v803,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v808)return false;let v809=v801.get(E),v810=v808.pageManager["getSlide"](v804),v811=T(v803,v804,Oe(v802.element,Object.values((v810==null?undefined:v810.getData().elements)??{}),{'nameBase':v806}),v807);if(ze(v808,v811,v805),v807==='slide'&&O(v809,v808,v803,v804))return true;if(v807==="master"||v807==="layout")return k(v809,v808,v803,v804),true;let v812=v809.getBatchAddOp([v811]);v809.applyJson1(v803,v804,v812.redo);let v813=(v812==null?undefined:v812.objects)??[];return v813.length>0?(v809.addNotification(v813),true):false;}},He="suppressedPlaceholderKeys";function Ue(v814){return Array.isArray(v814)?v814.filter(v235=>typeof v235=='string'):[];};function We(v815){switch(v815){case"centerTitle":return"title";case"subtitle":return"body";default:return v815;}};function Ge(v816){return v816.type,v816.placeholder;};function Ke(v817){let v818=Ge(v817);if(!v818)return false;switch(v818.type){case"header":case"footer":case'date':case"slideNumber":return false;default:return true;}};function M(v819){let v820=Ge(v819);if(v820!=null&&v820.type)return We(v820.type)+'::'+(v820.index??"__default__");};function qe(v821){let v822=v821.custom,v823=[...Ue(v822==null?undefined:v822.pptxAbsentPlaceholderKeys),...Ue(v822==null?undefined:v822[He])];return new Set(v823);};function Je(v824,v825){if(!Ke(v824))return false;let v826=M(v824);return!!v826&&v825.has(v826);};function Ye(v827,v828,v829){let v830={...(v827??{})},v831=new Set(Ue(v830[He]));return v829?v831.add(v828):v831.delete(v828),v831.size>0?v830[He]=Array.from(v831):delete v830[He],Object.keys(v830).length>0?v830:undefined;}const N={'id':"slide.mutation.remove-slide-element",'type':e.CommandType["MUTATION"],'handler':(v832,v833)=>{let{unitId:v834,subUnitId:v835,drawingId:v836}=v833,v837=v832.get(E),v838=v832.get(e.IUniverInstanceService).getUnit(v834,e.UniverInstanceType['UNIVER_SLIDE']);if(!v838)return false;let v839=v838.pageManager["getSlide"](v835),v840=v839==null?undefined:v839.getData().elements[v836],v841=v837.getDrawingByParam({'unitId':v834,'subUnitId':v835,'drawingId':v836})??(v840?T(v834,v835,v840,"slide"):null);if(!v841)return false;let v842=M(v841.element);if(v841.sourcePageType!=='slide'&&v842&&Ke(v841.element))return v839?(v839.updatePageData({'custom':Ye(v839.getData().custom,v842,true)}),O(v837,v838,v834,v835)):false;let v843=v837.getDrawingData(v834,v835),v844=_e(v843,v837.getDrawingOrder(v834,v835),[v836]).map(v236=>v843[v236]).filter(v237=>!!v237);if(v844.length===0&&v844.push(v841),v844.forEach(v238=>{Ve(v838,v238);}),v841.sourcePageType==="slide"&&O(v837,v838,v834,v835))return true;if(v841.sourcePageType==="master"||v841.sourcePageType==="layout")return k(v837,v838,v834,v835),true;let v845=v837.getBatchRemoveOp([{'unitId':v834,'subUnitId':v835,'drawingId':v836}]);return v837.applyJson1(v834,v835,v845.redo),v837.removeNotification(v845.objects??[]),true;}};function P(v846,v847={}){let{unitId:v848,subUnitId:v849}=v847,v850=v848?v846.getUnit(v848,e.UniverInstanceType['UNIVER_SLIDE']):v846.getCurrentUnitOfType(e.UniverInstanceType["UNIVER_SLIDE"]);if(!v850)return null;let v851=v850.pageManager,v852=v849?v851.getSlide(v849):v851.getActiveSlide();return v852?{'presentation':v850,'slide':v852,'unitId':v850.getUnitId(),'subUnitId':v852.getId()}:null;}const Xe={'id':"slide.command.add-element",'type':e.CommandType["COMMAND"],'handler':(v853,v854)=>{if(!v854)return false;let v855=P(v853.get(e.IUniverInstanceService),v854);if(!v855)return false;let v856=v853.get(e.ICommandService),v857=v853.get(e.IUndoRedoService),v858=v853.get(E),{unitId:v859,subUnitId:v860}=v855,{sourcePageType:v864="slide",insertIndex:v861,focus:v862,nameBase:v863}=v854,v865=v855.presentation["pageManager"].getSlide(v860),v866=Oe(v854.element,Object.values((v865==null?undefined:v865.getData().elements)??{}),{'nameBase':v863}),v867={'unitId':v859,'subUnitId':v860,'element':v866,'nameBase':v863,'sourcePageType':v864,'insertIndex':v861},v868={'unitId':v859,'subUnitId':v860,'drawingId':v866.id,'elementType':v866.type};return v856.syncExecuteCommand(j.id,v867)?(v862&&v858.focusDrawing([{'unitId':v859,'subUnitId':v860,'drawingId':v866.id}]),v857.pushUndoRedo({'unitID':v859,'undoMutations':[{'id':N.id,'params':v868}],'redoMutations':[{'id':j.id,'params':v867}]}),true):false;}},F={'id':"slide.mutation.add-slide-page",'type':e.CommandType["MUTATION"],'handler':(v869,v870)=>{let{unitId:v871,slide:v872,insertIndex:v873,setActive:v874}=v870,v875=v869.get(e.IUniverInstanceService),v876=v869.get(E),v877=v875.getUnit(v871,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v877)return false;let{data:v878,order:v879}=D(v877,v877.pageManager["createSlide"](v872,v873));if(v876.drawingManagerData[v871]||(v876.drawingManagerData[v871]={}),v876.drawingManagerData[v871][v872.id]={'data':v878,'order':v879},v879.length>0){let v239=v879.map(v52=>({'unitId':v871,'subUnitId':v872.id,'drawingId':v52}));v876.addNotification(v239);}return v874&&v877.pageManager['setActiveSlide'](v872.id),true;}},I={'id':'slide.mutation.remove-slide-page','type':e.CommandType['MUTATION'],'handler':(v880,v881)=>{var v882;let{unitId:v883,subUnitId:v884,nextActiveSlideId:v885}=v881,v886=v880.get(e.IUniverInstanceService),v887=v880.get(E),v888=v886.getUnit(v883,e.UniverInstanceType["UNIVER_SLIDE"]);return v888?(v888.pageManager["deleteSlide"](v884),(v882=v887.drawingManagerData[v883])!=null&&v882[v884]&&(v887.setDrawingData(v883,v884,{}),v887.setDrawingOrder(v883,v884,[])),v885&&v888.pageManager['setActiveSlide'](v885),true):false;}},Ze={'id':"slide.command.add-page",'type':e.CommandType['COMMAND'],'handler':(v889,v890)=>{if(!v890)return false;let{unitId:v891,slide:v892,insertIndex:v893,setActive:v894=true}=v890,v895=v889.get(e.IUniverInstanceService).getUnit(v891,e.UniverInstanceType['UNIVER_SLIDE']);if(!v895)return false;let v896=v895.pageManager["resolveSlidePageReferences"](v892,v893);if(!v896)return false;let v897=v889.get(e.ICommandService),v898=v889.get(e.IUndoRedoService),v899={'unitId':v891,'slide':v896,'insertIndex':v893,'setActive':v894},v900={'unitId':v891,'subUnitId':v896.id};return v897.syncExecuteCommand(F.id,v899)?(v898.pushUndoRedo({'unitID':v891,'undoMutations':[{'id':I.id,'params':v900}],'redoMutations':[{'id':F.id,'params':v899}]}),true):false;}};function Qe(v901,v902){let v903=(v902%360+360)%360;if(v903>=315||v903<45||v903>=135&&v903<225)return v901;let v904=v901.left+v901.width/2,v905=v901.top+v901.height/2;return{'left':v904-v901.height/2,'top':v905-v901.width/2,'width':v901.height,'height':v901.width};};function $e(v906){let v907=v906.transform,v908=v906.element['transform'],v909={'left':(v907==null?undefined:v907.left)??v908.left??0,'top':(v907==null?undefined:v907.top)??v908.top??0,'width':(v907==null?undefined:v907.width)??v908.width??0,'height':(v907==null?undefined:v907.height)??v908.height??0},v910=v906.element["type"];return v910!=="shape"&&v910!=="group"?v909:Qe(v909,(v907==null?undefined:v907.angle)??v908.rotation??0);};function et(v911){var v912;return((v912=v911[0])==null?undefined:v912.sourcePageType)??'slide';};function tt(v913){let v914=v913.groupBaseBound;if(v914)return v914;let v915=v913.element["custom"];return v915==null?undefined:v915.groupBaseBound;};function nt(v916,v917,v918,v919,v920,v921){let v922=v921.flatMap(v240=>{let v241=v920[v240];if(!v241||v241.element["type"]!=="group")return[];let v242=v241.transform||{'width':0,'height':0},v243=tt(v241),v244=v242.width&&v242.width>0?v242.width:(v243==null?undefined:v243.width)??0,v245=v242.height&&v242.height>0?v242.height:(v243==null?undefined:v243.height)??0;return v241.element["children"].map(v53=>v920[v53]).filter(v54=>!!v54).map(v55=>{let v56=(0,r.transformObjectOutOfGroup)(v55.transform||{'left':0,'top':0},v242,v244,v245,v243),v57=v55.element["transform"],v58={...v55.element,'transform':{...v57,'left':v56.left,'top':v56.top,'width':v56.width,'height':v56.height,'rotation':v56.angle,'flipX':v56.flipX,'flipY':v56.flipY}};return{...v55,'element':v58,'transform':{...(v55.transform||{'left':0,'top':0}),...v56},'groupId':undefined};});});if(!v922.length)return true;for(let v246 of v922)if(!Be(v916,v246,v246.element,v246.transform))return false;let v923=v917.getBatchUpdateOp(v922);return v917.applyJson1(v918,v919,v923.redo),v917.updateNotification(v923.objects),true;}const rt={'id':'slide.mutation.set-group','type':e.CommandType["MUTATION"],'handler':(v924,v925)=>{var v926;let{unitId:v927,subUnitId:v928}=v925,v929=Array.from(new Set(v925.drawingIds));if(v929.length<2)return false;let v930=v924.get(E),v931=v924.get(e.IUniverInstanceService).getUnit(v927,e.UniverInstanceType['UNIVER_SLIDE']);if(!v931)return false;let v932=v930.getDrawingData(v927,v928),v933=v929.map(v247=>v932[v247]).filter(v248=>!!v248);if(v933.length<2)return false;let v934=new Set(["shape","image",'group']);if(!v933.every(v249=>v934.has(v249.element["type"])))return false;let v935=et(v933),v936=v925.groupId??(0,e.generateRandomId)(6),v937=v933.reduce((v250,v251)=>{let v252=$e(v251);return v250.left=Math.min(v250.left,v252.left),v250.top=Math.min(v250.top,v252.top),v250.right=Math.max(v250.right,v252.left+v252.width),v250.bottom=Math.max(v250.bottom,v252.top+v252.height),v250;},{'left':1/0,'top':1/0,'right':-1/0,'bottom':-1/0});if(!Number.isFinite(v937.left)||!Number.isFinite(v937.top)||!Number.isFinite(v937.right)||!Number.isFinite(v937.bottom))return false;let v938={'left':v937.left,'top':v937.top,'width':Math.max(1,v937.right-v937.left),'height':Math.max(1,v937.bottom-v937.top)},v939=T(v927,v928,Oe({'id':v936,'type':'group','transform':{'left':v938.left,'top':v938.top,'width':v938.width,'height':v938.height,'rotation':0,'flipX':false,'flipY':false},'children':v929,'custom':{'groupBaseBound':v938,'groupBaseBoundIsLocal':true}},Object.values(((v926=v931.pageManager["getSlide"](v928))==null?undefined:v926.getData().elements)??{})),v935);if(!ze(v931,v939))return false;let v940=v930.getBatchAddOp([v939]);v930.applyJson1(v927,v928,v940.redo),v930.addNotification(v940.objects??[]);let v941=v930.getDrawingOrder(v927,v928),v942=new Set(v929),v943=[],v944=false;v941.forEach(v253=>{if(v253!==v936){if(v942.has(v253)){v944||=(v943.push(v936),true);return;}v943.push(v253);}}),v944||v943.push(v936),v943.includes(v936)||v943.push(v936);let v945=v931.pageManager["getSlide"](v928);return v945&&v945.setElementOrder(v943),v930.setDrawingOrder(v927,v928,v943),v930.orderNotification({'unitId':v927,'subUnitId':v928,'drawingIds':v943}),v930.focusDrawing([{'unitId':v927,'subUnitId':v928,'drawingId':v936}]),true;}},it={'id':"slide.mutation.cancel-group",'type':e.CommandType["MUTATION"],'handler':(v946,v947)=>{var v948;let{unitId:v949,subUnitId:v950,drawingIds:v951}=v947;if(!v951.length)return false;let v952=v946.get(E),v953=v946.get(e.IUniverInstanceService).getUnit(v949,e.UniverInstanceType['UNIVER_SLIDE']);if(!v953)return false;let v954=v952.getDrawingData(v949,v950),v955=v951.filter(v254=>{var v255;return((v255=v954[v254])==null?undefined:v255.element["type"])==="group";});if(!v955.length)return false;let v956=v952.getDrawingOrder(v949,v950),v957=new Set(v955),v958=[],v959=new Set(),v960=v256=>{v959.has(v256)||(v959.add(v256),v958.push(v256));};if(!nt(v953,v952,v949,v950,v954,v955))return false;v956.forEach(v257=>{let v258=v954[v257];if(!v258||v258.element["type"]!=="group"||!v957.has(v257)){v960(v257);return;}v258.element["children"].forEach(v59=>{v954[v59]&&v960(v59);});}),v955.map(v259=>v954[v259]).filter(v260=>!!v260).forEach(v261=>{Ve(v953,v261);});let v961=v955.map(v262=>({'unitId':v949,'subUnitId':v950,'drawingId':v262})),v962=(v948=v952.removeDrawingsWithoutGroupExpansion)==null?undefined:v948.bind(v952);if(v962)v962(v961);else{let v263=v952.getBatchRemoveOp(v961);v952.applyJson1(v949,v950,v263.redo);}v952.removeNotification(v961);let v963=v953.pageManager["getSlide"](v950);return v963&&v963.setElementOrder(v958),v952.setDrawingOrder(v949,v950,v958),v952.orderNotification({'unitId':v949,'subUnitId':v950,'drawingIds':v958}),v952.focusDrawing([]),true;}},at={'id':"slide.command.convert-smart-art-to-shapes",'type':e.CommandType['COMMAND'],'handler':(v964,v965)=>{if(!v965)return false;let v966=P(v964.get(e.IUniverInstanceService),v965);if(!v966)return false;let v967=v964.get(E),v968=v967.getDrawingByParam({'unitId':v966.unitId,'subUnitId':v966.subUnitId,'drawingId':v965.drawingId});if(!v968||v968.sourcePageType!=="slide"||v968.element["type"]!=="shape")return false;let v969=v968.element,v970=v969.shapeData;if(!(0,n.isSmartArtShapeData)(v970))return false;let v971=(0,n.convertSmartArtToShapes)(v970.smartArt),v972=v965.childIds??v971.map(()=>(0,e.generateRandomId)(6)),v973=v965.groupId??(v971.length>1?(0,e.generateRandomId)(6):undefined);if(v972.length===0||v971.length!==v972.length||new Set(v972).size!==v972.length)return false;let v974=v969.transform,v975=v971.map((v264,v265)=>{var v266;return{'id':v972[v265],'type':'shape','name':(v266=v970.smartArt["presentationShapes"][v264.id])==null?undefined:v266.name,'transform':st(v974,v264.transform),'shapeData':v264.shapeData};}),v976=v967.getDrawingOrder(v966.unitId,v966.subUnitId),v977=Math.max(0,v976.indexOf(v965.drawingId)),{redoMutations:v978,undoMutations:v979}=ot({'unitId':v966.unitId,'subUnitId':v966.subUnitId,'sourceDrawingId':v965.drawingId,'sourceElement':v968.element,'childElements':v975,'childIds':v972,'groupId':v973,'insertIndex':v977});return(0,e.sequenceExecute)(v978,v964.get(e.ICommandService)).result?(v964.get(e.IUndoRedoService).pushUndoRedo({'unitID':v966.unitId,'undoMutations':v979,'redoMutations':v978}),true):false;}};function ot(v980){let v981=v980.childElements["map"]((v267,v268)=>({'id':j.id,'params':{'unitId':v980.unitId,'subUnitId':v980.subUnitId,'element':v267,'sourcePageType':"slide",'insertIndex':v980.insertIndex+v268}}));return v980.groupId&&v980.childElements["length"]>1&&v981.push({'id':rt.id,'params':{'unitId':v980.unitId,'subUnitId':v980.subUnitId,'drawingIds':v980.childIds,'groupId':v980.groupId}}),v981.push({'id':N.id,'params':{'unitId':v980.unitId,'subUnitId':v980.subUnitId,'drawingId':v980.sourceDrawingId,'elementType':v980.sourceElement["type"]}}),{'redoMutations':v981,'undoMutations':[{'id':N.id,'params':{'unitId':v980.unitId,'subUnitId':v980.subUnitId,'drawingId':v980.groupId??v980.childIds[0],'elementType':v980.groupId?"group":v980.childElements[0].type}},{'id':j.id,'params':{'unitId':v980.unitId,'subUnitId':v980.subUnitId,'element':v980.sourceElement,'sourcePageType':"slide",'insertIndex':v980.insertIndex}}]};};function st(v982,v983){let v984=v982.width??0,v985=v982.height??0,v986=v983.width,v987=v983.height,v988=v983.left+v986/2,v989=v983.top+v987/2;v982.flipX&&(v988=v984-v988),v982.flipY&&(v989=v985-v989);let v990=v982.rotation??0,v991=v990*Math.PI/180,v992=v988-v984/2,v993=v989-v985/2,v994=v992*Math.cos(v991)-v993*Math.sin(v991),v995=v992*Math.sin(v991)+v993*Math.cos(v991),v996=(v982.flipX===v982.flipY?1:-1)*(v983.rotation??0);return{'left':(v982.left??0)+v984/2+v994-v986/2,'top':(v982.top??0)+v985/2+v995-v987/2,'width':v986,'height':v987,'rotation':v990+v996,'flipX':!!v982.flipX!=!!v983.flipX,'flipY':!!v982.flipY!=!!v983.flipY};}const ct={'id':"slide.command.create-slide-by-layout",'type':e.CommandType["COMMAND"],'handler':(v997,v998)=>{if(!v998)return false;let{unitId:v999,layoutType:v1000,insertIndex:v1001}=v998,v1002=v997.get(e.IUniverInstanceService),v1003=v997.get(e.ICommandService),v1004=v997.get(e.IUndoRedoService),v1005=v1002.getUnit(v999,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1005)return false;v1005.pageManager['ensureDefaultLayers']();let v1006=v1001;if(v1006===undefined){var v1007;let v269=(v1007=v1005.pageManager["getActiveSlide"]())==null?undefined:v1007.getId();if(v269){let v60=v1005.pageManager['getSlides']().map(v3=>v3.getId()).indexOf(v269);v60!==-1&&(v1006=v60+1);}}let v1008=ae({'layoutType':v1000}),v1009={'unitId':v999,'slide':v1008,'insertIndex':v1006,'setActive':true},v1010={'unitId':v999,'subUnitId':v1008.id};return v1003.syncExecuteCommand(F.id,v1009)?(v1004.pushUndoRedo({'unitID':v999,'undoMutations':[{'id':I.id,'params':v1010}],'redoMutations':[{'id':F.id,'params':v1009}]}),true):false;}},L={'id':"slide.mutation.move-slide-page",'type':e.CommandType['MUTATION'],'handler':(v1011,v1012)=>{let{unitId:v1013,subUnitId:v1014,toIndex:v1015}=v1012,v1016=v1011.get(e.IUniverInstanceService).getUnit(v1013,e.UniverInstanceType["UNIVER_SLIDE"]);return v1016?(v1016.pageManager['moveSlide'](v1014,v1015),true):false;}},lt={'id':"slide.command.move-page",'type':e.CommandType['COMMAND'],'handler':(v1017,v1018)=>{if(!v1018)return false;let v1019=P(v1017.get(e.IUniverInstanceService),v1018);if(!v1019)return false;let v1020=v1017.get(e.ICommandService),v1021=v1017.get(e.IUndoRedoService),{presentation:v1022,unitId:v1023,subUnitId:v1024}=v1019,{toIndex:v1025}=v1018,v1026=v1022.getSnapshot().slideOrder['indexOf'](v1024);if(v1026===-1||v1026===v1025)return false;let v1027={'unitId':v1023,'subUnitId':v1024,'toIndex':v1025},v1028={'unitId':v1023,'subUnitId':v1024,'toIndex':v1026};return v1020.syncExecuteCommand(L.id,v1027)?(v1021.pushUndoRedo({'unitID':v1023,'undoMutations':[{'id':L.id,'params':v1028}],'redoMutations':[{'id':L.id,'params':v1027}]}),true):false;}},ut={'id':'slide.mutation.set-slide-placeholder-suppression','type':e.CommandType["MUTATION"],'handler':(v1029,v1030)=>{let{unitId:v1031,subUnitId:v1032,placeholderKey:v1033,suppressed:v1034}=v1030,v1035=v1029.get(E),v1036=v1029.get(e.IUniverInstanceService).getUnit(v1031,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1036)return false;let v1037=v1036.pageManager["getSlide"](v1032);return v1037?(v1037.updatePageData({'custom':Ye(v1037.getData().custom,v1033,v1034)}),O(v1035,v1036,v1031,v1032)):false;}};function dt(v1038){if(!(v1038.sourcePageType==="slide"||!Ke(v1038.element)))return M(v1038.element);};function ft(v1039,v1040,v1041,v1042){return v1039.getDrawingByParam({'unitId':v1040,'subUnitId':v1041,'drawingId':v1042});};function pt(v1043,v1044){let v1045=v1043.getDrawingData(v1044.unitId,v1044.subUnitId),v1046=v1043.getDrawingOrder(v1044.unitId,v1044.subUnitId),v1047=new Set();return v1044.drawingIds['forEach'](v270=>{ge(v1045,v270,v1046).forEach(v61=>v1047.add(v61));}),v1044.drawingIds["filter"](v271=>!v1047.has(v271)).map(v272=>ft(v1043,v1044.unitId,v1044.subUnitId,v272)).filter(v273=>!!v273);};function mt(v1048,v1049){let v1050=v1048.getDrawingData(v1049.unitId,v1049.subUnitId),v1051=v1048.getDrawingOrder(v1049.unitId,v1049.subUnitId),v1052=_e(v1050,v1051,v1049.drawingIds),v1053=v1052.length>0?v1052:v1049.drawingIds,v1054=v1052.length>v1049.drawingIds["length"],v1055=new Map();return v1051.forEach((v274,v275)=>v1055.set(v274,v275)),v1053.map(v276=>{let v277=v1050[v276]??ft(v1048,v1049.unitId,v1049.subUnitId,v276);return v277?{'drawing':v277,'insertIndex':v1054?v1055.get(v276):undefined}:null;}).filter(v278=>!!v278);}const ht={'id':'slide.command.remove-element','type':e.CommandType["COMMAND"],'handler':(v1056,v1057)=>{if(!v1057||v1057.drawingIds["length"]===0)return false;let v1058=P(v1056.get(e.IUniverInstanceService),v1057);if(!v1058)return false;let v1059=v1056.get(e.ICommandService),v1060=v1056.get(e.IUndoRedoService),v1061=v1056.get(E),{unitId:v1062,subUnitId:v1063}=v1058,v1064={...v1057,'unitId':v1062,'subUnitId':v1063},v1065=pt(v1061,v1064),v1066=mt(v1061,v1064);if(!v1065.length||!v1066.length)return false;let v1067=[],v1068=[];return v1065.forEach(v279=>{let v280=dt(v279);if(v280){let v62={'unitId':v1062,'subUnitId':v1063,'placeholderKey':v280,'suppressed':true};v1067.push({'id':ut.id,'params':v62});}else{let v63={'unitId':v1062,'subUnitId':v1063,'drawingId':v279.drawingId,'elementType':v279.element['type']};v1067.push({'id':N.id,'params':v63});}}),v1066.forEach(({drawing:v281,insertIndex:v282})=>{let v283=dt(v281);if(v283){let v64={'unitId':v1062,'subUnitId':v1063,'placeholderKey':v283,'suppressed':false};v1068.push({'id':ut.id,'params':v64});}else{let v65={'unitId':v1062,'subUnitId':v1063,'element':v281.element,'sourcePageType':v281.sourcePageType,...(v282===undefined?{}:{'insertIndex':v282})};v1068.push({'id':j.id,'params':v65});}}),(0,e.sequenceExecute)(v1067,v1059).result?(v1060.pushUndoRedo({'unitID':v1062,'undoMutations':v1068,'redoMutations':v1067}),true):false;}},gt={'id':'slide.command.remove-page','type':e.CommandType["COMMAND"],'handler':(v1069,v1070)=>{if(!v1070)return false;let v1071=P(v1069.get(e.IUniverInstanceService),v1070);if(!v1071)return false;let v1072=v1069.get(e.ICommandService),v1073=v1069.get(e.IUndoRedoService),{presentation:v1074,slide:v1075,unitId:v1076,subUnitId:v1077}=v1071,v1078=v1074.getSnapshot().slideOrder,v1079=v1078.indexOf(v1077),v1080=v1074.pageManager['getActiveSlide'](),v1081=v1080==null?undefined:v1080.getId(),v1082=v1081===v1077,v1083={'unitId':v1076,'subUnitId':v1077,'nextActiveSlideId':v1082?v1078[v1079+1]??v1078[v1079-1]:v1081},v1084={'unitId':v1076,'slide':v1075.getData(),'insertIndex':v1079,'setActive':v1082};return v1072.syncExecuteCommand(I.id,v1083)?(v1073.pushUndoRedo({'unitID':v1076,'undoMutations':[{'id':F.id,'params':v1084}],'redoMutations':[{'id':I.id,'params':v1083}]}),true):false;}};function _t(v1085,v1086){let v1087=new Set(v1085),v1088=new Set(),v1089=[];for(let v284 of[...v1086,...v1085])v1087.has(v284)&&!v1088.has(v284)&&(v1088.add(v284),v1089.push(v284));return v1089;}const R={'id':"slide.mutation.set-element-order",'type':e.CommandType["MUTATION"],'handler':(v1090,v1091)=>{let{unitId:v1092,subUnitId:v1093,drawingIds:v1094}=v1091,v1095=v1090.get(e.IUniverInstanceService),v1096=v1090.get(E),v1097=v1095.getUnit(v1092,e.UniverInstanceType['UNIVER_SLIDE']),v1098=v1097==null?undefined:v1097.pageManager['getSlide'](v1093);if(!v1098||!v1097)return false;let v1099=_t(v1098.getData().elementOrder,v1094);v1098.setElementOrder(v1099);let v1100=D(v1097,v1098);return v1096.setDrawingData(v1092,v1093,v1100.data),v1096.setDrawingOrder(v1092,v1093,v1100.order),v1096.orderNotification({'unitId':v1092,'subUnitId':v1093,'drawingIds':v1100.order}),true;}},vt={'id':"slide.command.reorder-elements",'type':e.CommandType['COMMAND'],'handler':(v1101,v1102)=>{if(!v1102||v1102.drawingIds['length']===0)return false;let v1103=P(v1101.get(e.IUniverInstanceService),v1102);if(!v1103)return false;let{slide:v1104,unitId:v1105,subUnitId:v1106}=v1103,v1107=_t(v1104.getData().elementOrder,v1102.drawingIds),v1108=v1101.get(e.ICommandService),v1109=v1101.get(e.IUndoRedoService),v1110=[...v1104.getData().elementOrder],v1111={'unitId':v1105,'subUnitId':v1106,'drawingIds':v1107},v1112={'unitId':v1105,'subUnitId':v1106,'drawingIds':[...v1110]};return v1108.syncExecuteCommand(R.id,v1111)?(v1109.pushUndoRedo({'unitID':v1105,'undoMutations':[{'id':R.id,'params':v1112}],'redoMutations':[{'id':R.id,'params':v1111}]}),true):false;}},z={'id':"slide.mutation.set-active-slide",'type':e.CommandType['MUTATION'],'handler':(v1113,v1114)=>{if(!v1114)return false;let v1115=v1113.get(e.IUniverInstanceService).getUnit(v1114.unitId,e.UniverInstanceType["UNIVER_SLIDE"]);return v1115?(v1115.pageManager["setActiveSlide"](v1114.subUnitId),true):false;}},yt={'id':"slide.command.set-active-slide",'type':e.CommandType["COMMAND"],'handler':(v1116,v1117)=>{var v1118;if(!v1117)return false;let v1119=P(v1116.get(e.IUniverInstanceService),v1117);if(!v1119)return false;let{presentation:v1120,unitId:v1121,subUnitId:v1122}=v1119,v1123=(v1118=v1120.pageManager["getActiveSlide"]())==null?undefined:v1118.getId();if(!v1123)return false;let v1124=v1116.get(e.ICommandService),v1125=v1116.get(e.IUndoRedoService),v1126={'unitId':v1121,'subUnitId':v1122},v1127={'unitId':v1121,'subUnitId':v1123};return v1124.syncExecuteCommand(z.id,v1126)?(v1125.pushUndoRedo({'unitID':v1121,'undoMutations':[{'id':z.id,'params':v1127}],'redoMutations':[{'id':z.id,'params':v1126}]}),true):false;}};let bt=function(v1128){return v1128.Cover='cover',v1128.Contain="contain",v1128.Stretch="stretch",v1128.Repeat="repeat",v1128;}({}),xt=function(v1129){return v1129.AllMasters='allMasters',v1129.ActiveMaster='activeMaster',v1129;}({});function St(v1130){return{...(v1130.custom&&typeof v1130.custom=="object"?v1130.custom:{}),'fit':v1130.fit??'stretch'};};function B(v1131){let v1132=v1131.custom&&typeof v1131.custom=="object"?v1131.custom:undefined;return v1131.role==="backgroundGraphic"&&v1131.managedBy==="presentationBackground"||(v1132==null?undefined:v1132.role)==="backgroundGraphic"&&(v1132==null?undefined:v1132.managedBy)==="presentationBackground";};function Ct(v1133,v1134,v1135){return{'id':v1133.id??"presentation-bg-"+(v1135+1),'type':"image",'role':'backgroundGraphic','managedBy':"presentationBackground",'transform':v1133.transform??{'left':0,'top':0,'width':v1134.width,'height':v1134.height},'source':v1133.source,'imageSourceType':v1133.imageSourceType,'crop':v1133.crop,'custom':St(v1133)};};function wt(v1136,v1137,v1138){let v1139=v1138.map((v285,v286)=>Ct(v285,v1137,v286)),v1140={};for(let v287 of v1136.elementOrder){let v66=v1136.elements[v287];!v66||B(v66)||(v1140[v287]=v66);}for(let v288 of v1139)v1140[v288.id]=v288;return{...v1136,'elementOrder':[...v1139.map(v289=>v289.id),...v1136.elementOrder["filter"](v290=>{let v291=v1136.elements[v290];return v291&&!B(v291);})],'elements':v1140};};function Tt(v1141){return v1141.elementOrder['map'](v292=>v1141.elements[v292]).filter(v293=>!!v293&&v293.type==="image"&&B(v293)).map(v294=>({'id':v294.id,'source':v294.source,'imageSourceType':v294.imageSourceType,'fit':v294.custom&&typeof v294.custom=="object"&&typeof v294.custom["fit"]=="string"?v294.custom["fit"]:"stretch",'transform':v294.transform,'crop':v294.crop,'custom':v294.custom}));};function Et(v1142,v1143="allMasters",v1144){var v1145;if(v1144!=null&&v1144.length)return v1144.filter(v295=>{var v296;return!!((v296=v1142.masterPages)!=null&&v296[v295]);});if(v1143==='activeMaster'){var v1146,v1147;let v297=v1142.activeSlideId??v1142.slideOrder[0],v298=v297?v1142.slides[v297]:undefined,v299=v298!=null&&v298.layoutPageId?(v1146=v1142.layoutPages)==null?undefined:v1146[v298.layoutPageId]:undefined,v300=(v299==null?undefined:v299.masterPageId)??(v298==null?undefined:v298.masterPageId);return v300&&(v1147=v1142.masterPages)!=null&&v1147[v300]?[v300]:[];}let v1148=((v1145=v1142.masterPageOrder)==null?undefined:v1145.filter(v301=>{var v302;return!!((v302=v1142.masterPages)!=null&&v302[v301]);}))??[];return v1148.length>0?v1148:Object.keys(v1142.masterPages??{});}const Dt={'id':"slide.mutation.ensure-slide-master-page",'type':e.CommandType['MUTATION'],'handler':(v1149,v1150)=>{if(!v1150)return false;let v1151=v1149.get(e.IUniverInstanceService).getUnit(v1150.unitId,e.UniverInstanceType['UNIVER_SLIDE']);if(!v1151)return false;let v1152=v1151.getSnapshot();v1152.masterPages||={},v1152.masterPageOrder||=[];let v1153=v1150.masterPage['id'];return v1152.masterPages[v1153]||(v1152.masterPages[v1153]=v1150.masterPage),v1152.masterPageOrder["includes"](v1153)||v1152.masterPageOrder['push'](v1153),Object.values(v1152.layoutPages??{}).forEach(v303=>{var v304;(!v303.masterPageId||!((v304=v1152.masterPages)!=null&&v304[v303.masterPageId]))&&(v303.masterPageId=v1153);}),Object.values(v1152.slides).forEach(v305=>{var v306;(!v305.masterPageId||!((v306=v1152.masterPages)!=null&&v306[v305.masterPageId]))&&(v305.masterPageId=v1153);}),true;}},Ot={'id':"slide.mutation.set-presentation-background-graphics",'type':e.CommandType["MUTATION"],'handler':(v1154,v1155)=>{let{unitId:v1156,masterPageId:v1157,graphics:v1158}=v1155,v1159=v1154.get(e.IUniverInstanceService).getUnit(v1156,e.UniverInstanceType['UNIVER_SLIDE']);if(!v1159)return false;let v1160=v1159.getSnapshot(),v1161=v1160.masterPages;return!v1161||!v1161[v1157]?false:(v1161[v1157]=wt(v1161[v1157],v1161[v1157].pageSize??v1160.defaultPageSize,v1158),k(v1154.get(E),v1159,v1156,v1157),true);}},kt={'id':"slide.command.set-presentation-background-graphics",'type':e.CommandType['COMMAND'],'handler':(v1162,v1163)=>{var v1164;if(!v1163)return false;let{unitId:v1165,target:v1166,masterPageIds:v1167,graphics:v1168}=v1163,v1169=v1162.get(e.IUniverInstanceService).getUnit(v1165,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1169)return false;let v1170=v1162.get(e.ICommandService),v1171=v1162.get(e.IUndoRedoService),v1172=v1169.getSnapshot(),v1173=[],v1174=[],v1175=Et(v1172,v1166,v1167);if(v1175.length===0&&!((v1164=v1172.masterPages)!=null&&v1164["master-default"])){let v307={'unitId':v1165,'masterPage':ne};v1173.push({'id':Dt.id,'params':v307}),v1175=[x];}return v1175.length===0?false:(v1175.forEach(v308=>{var v309;let v310=(v309=v1172.masterPages)==null?undefined:v309[v308],v311=v310?Tt(v310):[],v312={'unitId':v1165,'masterPageId':v308,'graphics':v1168},v313={'unitId':v1165,'masterPageId':v308,'graphics':v311};v1173.push({'id':Ot.id,'params':v312}),v1174.push({'id':Ot.id,'params':v313});}),(0,e.sequenceExecute)(v1173,v1170).result?(v1171.pushUndoRedo({'unitID':v1165,'undoMutations':v1174,'redoMutations':v1173}),true):false);}},At={'id':'slide.mutation.set-name','type':e.CommandType['MUTATION'],'handler':(v1176,v1177)=>{let v1178=v1176.get(e.IUniverInstanceService).getUnit(v1177.unitId,e.UniverInstanceType["UNIVER_SLIDE"]);return v1178?(v1178.setName(v1177.name),true):false;}},jt={'id':'slide.command.set-name','type':e.CommandType['COMMAND'],'handler':(v1179,v1180)=>{if(!v1180)return false;let v1181=P(v1179.get(e.IUniverInstanceService),v1180);if(!v1181)return false;let v1182=v1179.get(e.ICommandService),v1183=v1179.get(e.IUndoRedoService),{presentation:v1184,unitId:v1185}=v1181,{name:v1186}=v1180,v1187=v1184.getSnapshot().name,v1188={'unitId':v1185,'name':v1186},v1189={'unitId':v1185,'name':v1187};return v1182.syncExecuteCommand(At.id,v1188)?(v1183.pushUndoRedo({'unitID':v1185,'redoMutations':[{'id':At.id,'params':v1188}],'undoMutations':[{'id':At.id,'params':v1189}]}),true):false;}},Mt={'standard4By3':{'width':720,'height':540},'wideScreen16By9':{'width':960,'height':540},'wideScreen16By10':{'width':864,'height':540}};function Nt(v1190){return typeof v1190=="number"&&Number.isFinite(v1190)&&v1190>0;};function Pt(v1191){if(v1191!=="custom")return Mt[v1191];};function Ft(v1192){let v1193=Pt(v1192);return v1193?v1193.width/v1193.height:undefined;};function It(v1194){let v1195=v1194.width/v1194.height;for(let v314 of["standard4By3",'wideScreen16By9',"wideScreen16By10"]){let v67=Ft(v314);if(v67!==undefined&&Math.abs(v1195-v67)<0.000001)return v314;}return'custom';};function Lt(v1196,v1197){if(!v1197||v1197==="custom")return;let v1198=Ft(v1197);if(v1198!==undefined){if(Nt(v1196.width)&&v1196.height===undefined)return{'width':v1196.width,'height':Math.round(v1196.width/v1198)};if(Nt(v1196.height)&&v1196.width===undefined)return{'width':Math.round(v1196.height*v1198),'height':v1196.height};}};function Rt(v1199){let v1200=v1199==null?undefined:v1199.preset;if(v1199!==undefined&&(v1199.width!==undefined||v1199.height!==undefined)){if(!Nt(v1199==null?undefined:v1199.width)||!Nt(v1199==null?undefined:v1199.height)){let v68=v1199?Lt(v1199,v1200):undefined;return v68?{...v68,'preset':v1200}:undefined;}let v315={'width':v1199.width,'height':v1199.height};return{...v315,'preset':It(v315)};}if(!v1200)return;let v1201=Pt(v1200);if(v1201)return{...v1201,'preset':v1200};}const V={'id':"slide.mutation.set-slide-page-size",'type':e.CommandType["MUTATION"],'handler':(v1202,v1203)=>{let{unitId:v1204,pageId:v1205,pageSize:v1206}=v1203,v1207=v1202.get(e.IUniverInstanceService).getUnit(v1204,e.UniverInstanceType['UNIVER_SLIDE']);if(!v1207)return false;if(v1205===undefined){if(v1206===undefined)return false;v1207.getSnapshot().defaultPageSize={...v1206};let v316=v1202.get(E);return v1207.getSnapshot().slideOrder["forEach"](v69=>{O(v316,v1207,v1204,v69);}),true;}let v1208=v1207.pageManager["getPage"](v1205);return v1208?(v1206===undefined?delete v1208.pageSize:v1208.pageSize={...v1206},k(v1202.get(E),v1207,v1204,v1205),true):false;}},zt={'id':"slide.command.set-slide-page-size",'type':e.CommandType["COMMAND"],'handler':(v1209,v1210)=>{var v1211;if(!v1210)return false;let{unitId:v1212,pageId:v1213,pageSize:v1214}=v1210,v1215=v1214!==undefined;if(!v1215&&v1213===undefined)return false;let v1216=v1215?Rt(v1214):undefined;if(v1215&&!v1216)return false;let v1217=v1209.get(e.IUniverInstanceService).getUnit(v1212,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1217)return false;let v1218=v1209.get(e.ICommandService),v1219=v1209.get(e.IUndoRedoService),v1220=v1213?(v1211=v1217.pageManager['getPage'](v1213))==null?undefined:v1211.pageSize:v1217.getSnapshot().defaultPageSize,v1221={'unitId':v1212,'pageId':v1213,'pageSize':v1216},v1222={'unitId':v1212,'pageId':v1213,'pageSize':v1220};return v1218.syncExecuteCommand(V.id,v1221)?(v1219.pushUndoRedo({'unitID':v1212,'undoMutations':[{'id':V.id,'params':v1222}],'redoMutations':[{'id':V.id,'params':v1221}]}),true):false;}};function H(v1223){'@babel/helpers - typeof';return H=typeof Symbol=="function"&&typeof Symbol.iterator=='symbol'?function(v317){return typeof v317;}:function(v318){return v318&&typeof Symbol=='function'&&v318.constructor===Symbol&&v318!==Symbol.prototype?"symbol":typeof v318;},H(v1223);};function Bt(v1224,v1225){if(H(v1224)!='object'||!v1224)return v1224;var v1226=v1224[Symbol.toPrimitive];if(v1226!==undefined){var v1227=v1226.call(v1224,v1225||'default');if(H(v1227)!="object")return v1227;throw TypeError("@@toPrimitive must return a primitive value.");}return(v1225==="string"?String:Number)(v1224);};function Vt(v1228){var v1229=Bt(v1228,'string');return H(v1229)=='symbol'?v1229:v1229+'';};function U(v1230,v1231,v1232){return(v1231=Vt(v1231))in v1230?Object.defineProperty(v1230,v1231,{'value':v1232,'enumerable':true,'configurable':true,'writable':true}):v1230[v1231]=v1232,v1230;}var Ht=class{constructor(v319,v320){this.unitId=v319,this.objectId=v320,U(this,"type",i.UnitObject["SlideElement"]),U(this,"subType",i.UnitAction['Edit']),U(this,"status",e.PermissionStatus['INIT']),U(this,'id',undefined),U(this,"value",true),this.id=this.type+'.'+this.subType+'_'+v319+'_'+v320;}},Ut=class{constructor(v321,v322){this.unitId=v321,this.objectId=v322,U(this,'type',i.UnitObject['SlideMaster']),U(this,"subType",i.UnitAction["Edit"]),U(this,"status",e.PermissionStatus['INIT']),U(this,'id',undefined),U(this,"value",true),this.id=this.type+'.'+this.subType+'_'+v321+'_'+v322;}},Wt=class{constructor(v323,v324){this.unitId=v323,this.objectId=v324,U(this,'type',i.UnitObject['SlidePage']),U(this,"subType",i.UnitAction["Edit"]),U(this,"status",e.PermissionStatus["INIT"]),U(this,'id',undefined),U(this,"value",true),this.id=this.type+'.'+this.subType+'_'+v323+'_'+v324;}},Gt=class{constructor(v325){this.unitId=v325,U(this,"type",i.UnitObject['Slide']),U(this,'subType',i.UnitAction["Comment"]),U(this,"status",e.PermissionStatus["INIT"]),U(this,'id',undefined),U(this,"value",true),this.id=this.type+'.'+this.subType+'_'+v325;}},Kt=class{constructor(v326){this.unitId=v326,U(this,"type",i.UnitObject['Slide']),U(this,"subType",i.UnitAction["Copy"]),U(this,"status",e.PermissionStatus["INIT"]),U(this,'id',undefined),U(this,"value",true),this.id=this.type+'.'+this.subType+'_'+v326;}},qt=class{constructor(v327){this.unitId=v327,U(this,'type',i.UnitObject["Slide"]),U(this,"subType",i.UnitAction["Edit"]),U(this,"status",e.PermissionStatus['INIT']),U(this,'id',undefined),U(this,"value",true),this.id=this.type+'.'+this.subType+'_'+v327;}},Jt=class{constructor(v328){this.unitId=v328,U(this,"type",i.UnitObject["Slide"]),U(this,"subType",i.UnitAction["Export"]),U(this,'status',e.PermissionStatus["INIT"]),U(this,'id',undefined),U(this,"value",true),this.id=this.type+'.'+this.subType+'_'+v328;}},Yt=class{constructor(v329){this.unitId=v329,U(this,"type",i.UnitObject["Slide"]),U(this,'subType',i.UnitAction["Print"]),U(this,"status",e.PermissionStatus["INIT"]),U(this,'id',undefined),U(this,'value',true),this.id=this.type+'.'+this.subType+'_'+v329;}};const Xt=[i.UnitAction["Edit"],i.UnitAction['Copy'],i.UnitAction["Print"],i.UnitAction["Export"],i.UnitAction["Comment"]],Zt=new Set([i.UnitObject["Slide"],i.UnitObject["SlidePage"],i.UnitObject["SlideElement"],i.UnitObject["SlideMaster"]]),Qt="page/",$t="element/",W="master-view";function en(v1233){return''+Qt+encodeURIComponent(v1233);};function tn(v1234,v1235,v1236){return''+$t+encodeURIComponent(v1234)+'/'+encodeURIComponent(v1235)+'/'+encodeURIComponent(v1236);};function nn(v1237,v1238,v1239){return[v1237==="slide"?en(v1238):W,tn(v1237,v1238,v1239)];};function rn(v1240,v1241,v1242){if(v1241===v1240)switch(v1242){case i.UnitAction['Edit']:return new qt(v1240);case i.UnitAction['Copy']:return new Kt(v1240);case i.UnitAction["Print"]:return new Yt(v1240);case i.UnitAction["Export"]:return new Jt(v1240);case i.UnitAction["Comment"]:return new Gt(v1240);default:throw Error("Unsupported Slide permission action: "+v1242);}if(v1242!==i.UnitAction["Edit"])throw Error("Slide object permissions only support Edit: "+v1241);if(v1241.startsWith(Qt))return new Wt(v1240,v1241);if(v1241.startsWith($t))return new Ht(v1240,v1241);if(v1241==="master-view")return new Ut(v1240,v1241);throw Error("Unsupported Slide permission object: "+v1241);};function an(v1243,v1244,v1245,v1246){var v1247;return((v1247=v1243.getPermissionPoint(rn(v1244,v1245,v1246).id))==null?undefined:v1247.value)??true;};function on(v1248,v1249,v1250,v1251,v1252){let v1253=rn(v1249,v1250,v1251);v1248.getPermissionPoint(v1253.id)||v1248.addPermissionPoint(v1253),v1248.updatePermissionPoint(v1253.id,v1252);};function sn(v1254,v1255){v1254.getAllPermissionPoint().forEach((v330,v331)=>{v330.subscribe(v70=>{Zt.has(v70.type)&&"unitId"in v70&&v70.unitId===v1255&&v1254.deletePermissionPoint(v331);}).unsubscribe();});};function cn(v1256,v1257,v1258){return an(v1256,v1257,v1257,i.UnitAction['Edit'])&&Array.from(v1258).every(v332=>an(v1256,v1257,v332,i.UnitAction["Edit"]));}const ln={'type':e.CommandType["COMMAND"],'id':"slide.command.set-permission",'handler'(v1259,v1260){return!v1260||!Xt.includes(v1260.action)||v1260.objectId!==v1260.unitId&&v1260.action!==i.UnitAction['Edit']?false:(on(v1259.get(e.IPermissionService),v1260.unitId,v1260.objectId,v1260.action,v1260.value),true);}},un={'id':"slide.mutation.set-slide-speaker-notes",'type':e.CommandType['MUTATION'],'handler':(v1261,v1262)=>{let{unitId:v1263,subUnitId:v1264,speakerNotes:v1265}=v1262,v1266=v1261.get(e.IUniverInstanceService).getUnit(v1263,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1266)return false;let v1267=v1266.pageManager['getSlide'](v1264);return v1267?(v1267.updatePageData({...v1267.getData(),'speakerNotes':v1265}),true):false;}},dn={'id':"slide.command.set-slide-speaker-notes",'type':e.CommandType["COMMAND"],'handler':(v1268,v1269)=>{if(!v1269)return false;let v1270=P(v1268.get(e.IUniverInstanceService),v1269);if(!v1270)return false;let{slide:v1271,unitId:v1272,subUnitId:v1273}=v1270,{speakerNotes:v1274}=v1269,v1275=v1271.getData().speakerNotes;if(v1275===v1274)return true;let v1276=v1268.get(e.ICommandService),v1277=v1268.get(e.IUndoRedoService),v1278={'unitId':v1272,'subUnitId':v1273,'speakerNotes':v1274},v1279={'unitId':v1272,'subUnitId':v1273,'speakerNotes':v1275};return v1276.syncExecuteCommand(un.id,v1278)?(v1277.pushUndoRedo({'unitID':v1272,'undoMutations':[{'id':un.id,'params':v1279}],'redoMutations':[{'id':un.id,'params':v1278}]}),true):false;}};function fn(v1280){return Array.isArray(v1280)?v1280.map(v333=>fn(v333)):!v1280||typeof v1280!="object"?v1280:Object.keys(v1280).sort().reduce((v334,v335)=>{let v336=v1280[v335];return v336!==undefined&&(v334[v335]=fn(v336)),v334;},{});};function pn(v1281){return JSON.stringify(fn(v1281));};function mn(v1282){return v1282==='push'||v1282==='wipe'||v1282==="cover"||v1282==="uncover"||v1282==='reveal'||v1282==="split";};function hn(v1283){if(!v1283||v1283.type==="none")return;let v1284={...v1283,'duration':v1283.duration??700};return mn(v1284.type)||delete v1284.direction,v1284;};function gn(v1285,v1286){let v1287=hn(v1286);if(!v1287)return;let v1288=v1285.transitionRecords??{},v1289=pn(v1287),v1290=Object.keys(v1288).find(v337=>pn(hn(v1288[v337]))===v1289);if(v1290)return v1290;let v1291="transition_"+(0,e.generateRandomId)(6);return v1285.transitionRecords={...v1288,[v1291]:v1287},v1291;};function _n(v1292,v1293){var v1294,v1295;let v1296=(v1294=v1292.slideTransitionRefs)==null?undefined:v1294[v1293];if(v1296)return hn((v1295=v1292.transitionRecords)==null?undefined:v1295[v1296]);};function vn(v1297){let v1298=v1297.transitionRecords;if(!v1298)return;let v1299=new Set(Object.values(v1297.slideTransitionRefs??{})),v1300=Object.keys(v1298).reduce((v338,v339)=>(v1299.has(v339)&&(v338[v339]=v1298[v339]),v338),{});v1297.transitionRecords=Object.keys(v1300).length?v1300:undefined;};function yn(v1301,v1302){v1301.transitionRecords=v1302.transitionRecords&&Object.keys(v1302.transitionRecords).length?v1302.transitionRecords:undefined,v1301.slideTransitionRefs=v1302.slideTransitionRefs&&Object.keys(v1302.slideTransitionRefs).length?v1302.slideTransitionRefs:undefined;}const bn={'id':"slide.mutation.set-slide-transition",'type':e.CommandType['MUTATION'],'handler':(v1303,v1304)=>{if(!v1304)return false;let v1305=v1303.get(e.IUniverInstanceService).getUnit(v1304.unitId,e.UniverInstanceType["UNIVER_SLIDE"]);return v1305?(yn(v1305.getSnapshot(),v1304),v1305.timingSystem["loadFromDocument"](v1305.getSnapshot()),true):false;}},xn={'id':"slide.command.set-slide-transition",'type':e.CommandType['COMMAND'],'handler':(v1306,v1307)=>{if(!v1307)return false;let{unitId:v1308,subUnitIds:v1309,applyToAll:v1310,transition:v1311}=v1307,v1312=v1306.get(e.IUniverInstanceService).getUnit(v1308,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1312)return false;let v1313=Sn(v1312.getSnapshot(),v1309,v1310,v1311);if(!v1313)return false;let v1314=v1306.get(e.ICommandService),v1315=v1306.get(e.IUndoRedoService),v1316=Cn(v1312.getSnapshot()),v1317={'unitId':v1308,...v1313},v1318={'unitId':v1308,...v1316};return v1314.syncExecuteCommand(bn.id,v1317)?(v1315.pushUndoRedo({'unitID':v1308,'redoMutations':[{'id':bn.id,'params':v1317}],'undoMutations':[{'id':bn.id,'params':v1318}]}),true):false;}};function Sn(v1319,v1320,v1321,v1322){let v1323=(v1321?v1319.slideOrder["filter"](v340=>!!v1319.slides[v340]):v1320)??[];if(!v1323.length)return null;let v1324={...v1319,'transitionRecords':v1319.transitionRecords?{...v1319.transitionRecords}:undefined,'slideTransitionRefs':v1319.slideTransitionRefs?{...v1319.slideTransitionRefs}:undefined},v1325=hn(v1322);if(!v1325){if(v1321)return v1324.slideTransitionRefs=undefined,vn(v1324),Cn(v1324);let v341={...(v1324.slideTransitionRefs??{})};return v1323.forEach(v71=>delete v341[v71]),v1324.slideTransitionRefs=Object.keys(v341).length?v341:undefined,vn(v1324),Cn(v1324);}let v1326=gn(v1324,v1325);if(!v1326)return null;if(v1321)return v1324.slideTransitionRefs=v1323.reduce((v342,v343)=>(v342[v343]=v1326,v342),{}),vn(v1324),Cn(v1324);let v1327={...(v1324.slideTransitionRefs??{})};return v1323.forEach(v344=>{v1327[v344]=v1326;}),v1324.slideTransitionRefs=v1327,vn(v1324),Cn(v1324);};function Cn(v1328){return{'transitionRecords':v1328.transitionRecords?{...v1328.transitionRecords}:undefined,'slideTransitionRefs':v1328.slideTransitionRefs?{...v1328.slideTransitionRefs}:undefined};}let wn=function(v1329){return v1329[v1329.INSERT=0]="INSERT",v1329[v1329.REMOVE=1]="REMOVE",v1329[v1329.UPDATE=2]="UPDATE",v1329;}({});const Tn={'id':"slide.mutation.set-drawing-apply",'type':e.CommandType["MUTATION"],'handler':(v1330,v1331)=>{let v1332=v1330.get(E),v1333=v1330.get(e.IUniverInstanceService),{op:v1334,unitId:v1335,subUnitId:v1336,type:v1337,objects:v1338}=v1331,v1339=v1333.getUnit(v1335,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1339)return false;let v1340=v1338??[],v1341=new Map();switch(v1337===1&&v1340.forEach(v72=>{let v73=v1332.getDrawingByParam({'unitId':v1335,'subUnitId':v1336,'drawingId':v72.drawingId});v73&&v1341.set(v72.drawingId,v73);}),v1332.applyJson1(v1335,v1336,v1334),v1337){case 0:v1340.forEach(v74=>{let v75=v1332.getDrawingByParam({'unitId':v1335,'subUnitId':v1336,'drawingId':v74.drawingId});v75&&ze(v1339,v75);}),v1332.addNotification(v1338);break;case 1:v1341.forEach(v76=>{Ve(v1339,v76);}),v1332.removeNotification(v1338);break;case 2:v1340.forEach(v77=>{let v78=v1332.getDrawingByParam({'unitId':v1335,'subUnitId':v1336,'drawingId':v77.drawingId});v78&&Be(v1339,v78,v78.element,v78.transform);}),v1332.updateNotification(v1338);break;}return true;}},G={'id':"slide.mutation.update-slide-element",'type':e.CommandType['MUTATION'],'handler':(v1342,v1343)=>{var v1344,v1345;let{unitId:v1346,subUnitId:v1347,drawingId:v1348,element:v1349,transform:v1350,isRealtimePreview:v1351,formulaLastValueGuard:v1352}=v1343,v1353=v1342.get(e.IUniverInstanceService).getUnit(v1346,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1353)return false;let v1354=v1342.get(E),v1355=v1354.getDrawingByParam({'unitId':v1346,'subUnitId':v1347,'drawingId':v1348});if(!v1355)return false;let v1356=v1355.element,v1357=v1356.type==="connector"?(v1344=v1356.connectorData)==null||(v1344=v1344.formulaBinding)==null?undefined:v1344.formula:v1356.type==="shape"?(v1345=v1356.shapeData)==null||(v1345=v1345.formulaBinding)==null?undefined:v1345.formula:undefined;if(!(0,n.canApplyShapeFormulaLastValue)(v1342,{'hostType':e.UniverInstanceType["UNIVER_SLIDE"],'unitId':v1346,'subUnitId':v1347,'shapeId':v1348},v1357,v1352))return true;let v1358={...v1355,'element':v1349,'transform':v1350},v1359=En(v1355.element,v1349);if(v1351||(Be(v1353,v1355,v1349,v1350),v1355.sourcePageType==='slide'&&!v1359&&O(v1354,v1353,v1346,v1347)))return true;if(v1355.sourcePageType==="master"||v1355.sourcePageType==="layout")return k(v1354,v1353,v1346,v1347),true;let v1360=v1354.getBatchUpdateOp([v1358]);return v1354.applyJson1(v1346,v1347,v1360.redo),v1354.updateNotification(v1360.objects??[]),true;}};function En(v1361,v1362){let{transform:v1363,...v1364}=v1361,{transform:v1365,...v1366}=v1362;return(0,e.shallowEqual)(v1364,v1366);}const Dn={'id':"slide.command.update-drawing",'type':e.CommandType["COMMAND"],'handler':(v1367,v1368)=>{if(!v1368||v1368.patches["length"]===0)return false;let v1369=v1367.get(e.ICommandService),v1370=v1367.get(e.IUndoRedoService),v1371=v1367.get(E),{patches:v1372}=v1368,v1373=new Map(),v1374=[],v1375=[];for(let v345 of v1372){let{unitId:v79,subUnitId:v80,drawingId:v81,element:v82,transform:v83}=v345,v84=v1371.getDrawingByParam({'unitId':v79,'subUnitId':v80,'drawingId':v81});if(!v84)continue;let v85=v82??v84.element,v86=kn(v84,v82,v83);if(An(v84.element,v85)&&Mn(v84.transform,v86))continue;let v87={...v84,'element':v85,'transform':v86},v88=v79+'\x00'+v80,v89=v1373.get(v88)??{'drawings':[],'subUnitId':v80,'unitId':v79};v89.drawings["push"](v87),v1373.set(v88,v89),v1374.push({'id':G.id,'params':{'drawingId':v81,'element':v85,'subUnitId':v80,'transform':v86,'unitId':v79}}),v1375.push({'id':G.id,'params':{'drawingId':v81,'element':v84.element,'subUnitId':v80,'transform':v84.transform,'unitId':v79}});}let{redoMutations:v1376,undoMutations:v1377}=v1369.hasCommand(Tn.id)?On(v1371,v1373):{'redoMutations':v1374,'undoMutations':v1375};return v1376.length&&(0,e.sequenceExecute)(v1376,v1369).result?(v1370.pushUndoRedo({'unitID':v1372[0].unitId,'undoMutations':v1377,'redoMutations':v1376}),true):false;}};function On(v1378,v1379){let v1380=[],v1381=[];for(let v346 of v1379.values()){let{objects:v90,redo:v91,undo:v92}=v1378.getBatchUpdateOp(v346.drawings);!Array.isArray(v90)||v90.length===0||(v1380.push({'id':Tn.id,'params':{'objects':v90,'op':v91,'subUnitId':v346.subUnitId,'type':2,'unitId':v346.unitId}}),v1381.push({'id':Tn.id,'params':{'objects':v90,'op':v92,'subUnitId':v346.subUnitId,'type':2,'unitId':v346.unitId}}));}return{'redoMutations':v1380,'undoMutations':v1381};};function kn(v1382,v1383,v1384){if(v1384)return v1384;if(v1383!=null&&v1383.transform){let v347=v1383.transform,v348=v1382.transform??{'left':0,'top':0,'width':0,'height':0,'angle':0,'flipX':false,'flipY':false};return{'left':v347.left??v348.left??0,'top':v347.top??v348.top??0,'width':v347.width??v348.width??0,'height':v347.height??v348.height??0,'angle':v347.rotation??v348.angle??0,'flipX':v347.flipX,'flipY':v347.flipY};}return v1382.transform;};function An(v1385,v1386){return JSON.stringify(jn(v1385))===JSON.stringify(jn(v1386));};function jn(v1387){let v1388=JSON.parse(JSON.stringify(v1387)),v1389=v1388.transform;return v1389&&(v1389.left=v1389.left??0,v1389.top=v1389.top??0,v1389.width=v1389.width??0,v1389.height=v1389.height??0,v1389.rotation=v1389.rotation??0,v1389.flipX=v1389.flipX??false,v1389.flipY=v1389.flipY??false),v1388;};function Mn(v1390,v1391){return JSON.stringify(Nn(v1390))===JSON.stringify(Nn(v1391));};function Nn(v1392){return{'left':(v1392==null?undefined:v1392.left)??0,'top':(v1392==null?undefined:v1392.top)??0,'width':(v1392==null?undefined:v1392.width)??0,'height':(v1392==null?undefined:v1392.height)??0,'angle':(v1392==null?undefined:v1392.angle)??0,'flipX':(v1392==null?undefined:v1392.flipX)??false,'flipY':(v1392==null?undefined:v1392.flipY)??false};};function Pn(v1393,v1394,v1395,v1396){let v1397=Ne(v1394,v1396);v1397.length!==0&&v1393.updateNotification(v1397.map(v349=>({'unitId':v1395,'subUnitId':v349,'drawingId':'__slide_page_background__'})));}const Fn={'id':"slide.mutation.update-slide-page-background",'type':e.CommandType["MUTATION"],'handler':(v1398,v1399)=>{var v1400,v1401,v1402,v1403;let{unitId:v1404,pageId:v1405,background:v1406,showMasterSp:v1407}=v1399,v1408=v1398.get(e.IUniverInstanceService).getUnit(v1404,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1408)return false;let v1409=v1408.pageManager["getPage"](v1405);if(!v1409)return false;let v1410=v1398.get(E),v1411=v1408.getSnapshot(),v1412=v1407===undefined?{...v1409,'background':v1406}:{...v1409,'background':v1406,'showMasterSp':v1407},v1413=v1408.pageManager["getSlide"](v1405);return v1413?(v1413.updatePageData(v1412),k(v1410,v1408,v1404,v1405),Pn(v1410,v1408,v1404,v1405),true):(v1400=v1411.masterPages)!=null&&v1400[v1405]?(v1411.masterPages[v1405]=v1412,k(v1410,v1408,v1404,v1405),Pn(v1410,v1408,v1404,v1405),true):(v1401=v1411.layoutPages)!=null&&v1401[v1405]?(v1411.layoutPages[v1405]=v1412,k(v1410,v1408,v1404,v1405),Pn(v1410,v1408,v1404,v1405),true):(v1402=v1411.handoutMasterPages)!=null&&v1402[v1405]?(v1411.handoutMasterPages[v1405]=v1412,Pn(v1410,v1408,v1404,v1405),true):(v1403=v1411.notesMasterPages)!=null&&v1403[v1405]?(v1411.notesMasterPages[v1405]=v1412,Pn(v1410,v1408,v1404,v1405),true):false;}},In={'id':'slide.command.update-slide-page-background','type':e.CommandType["COMMAND"],'handler':(v1414,v1415)=>{if(!v1415||v1415.patches["length"]===0)return false;let{patches:v1416,ensureMasterPage:v1417}=v1415,v1418=v1416[0].unitId,v1419=v1414.get(e.IUniverInstanceService).getUnit(v1418,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v1419)return false;let v1420=v1414.get(e.ICommandService),v1421=v1414.get(e.IUndoRedoService),v1422=[],v1423=[];if(v1417&&!v1419.pageManager["getMasterPage"](v1417.id)){let v350={'unitId':v1418,'masterPage':v1417};v1422.push({'id':Dt.id,'params':v350});}for(let v351 of v1416){let{pageId:v93,background:v94,showMasterSp:v95}=v351,v96=v1419.pageManager["getPage"](v93),v97=v96==null?undefined:v96.background,v98=v96==null?undefined:v96.showMasterSp,v99={'unitId':v1418,'pageId':v93,'background':v94,'showMasterSp':v95},v100={'unitId':v1418,'pageId':v93,'background':v97,'showMasterSp':v98};v1422.push({'id':Fn.id,'params':v99}),v1423.push({'id':Fn.id,'params':v100});}return(0,e.sequenceExecute)(v1422,v1420).result?(v1421.pushUndoRedo({'unitID':v1418,'undoMutations':v1423,'redoMutations':v1422}),true):false;}},Ln={'id':"slide.command.update-smart-art",'type':e.CommandType["COMMAND"],'handler':(v1424,v1425)=>{if(!(v1425!=null&&v1425.operations["length"]))return false;let v1426=v1424.get(E).getDrawingByParam(v1425);if(!v1426||v1426.sourcePageType!=="slide"||v1426.element['type']!=="shape"||!(0,n.isSmartArtShapeData)(v1426.element['shapeData']))return false;let v1427=v1426.element['shapeData'].smartArt;try{for(let v101 of v1425.operations)v1427=(0,n.applySmartArtOperation)(v1427,v101);}catch{return false;}let v1428={...v1426.element,'shapeData':{...v1426.element["shapeData"],'smartArt':v1427}},v1429={'unitId':v1425.unitId,'subUnitId':v1425.subUnitId,'drawingId':v1425.drawingId,'element':v1428,'transform':v1426.transform},v1430={'unitId':v1425.unitId,'subUnitId':v1425.subUnitId,'drawingId':v1425.drawingId,'element':v1426.element,'transform':v1426.transform},v1431=[{'id':G.id,'params':v1429}],v1432=[{'id':G.id,'params':v1430}];return(0,e.sequenceExecute)(v1431,v1424.get(e.ICommandService)).result?(v1424.get(e.IUndoRedoService).pushUndoRedo({'unitID':v1425.unitId,'undoMutations':v1432,'redoMutations':v1431}),true):false;}},Rn={'id':"slide.mutation.insert-drawing-object",'type':e.CommandType["MUTATION"],'handler':(v1433,v1434)=>{var v1435;let{unitId:v1436,subUnitId:v1437,drawings:v1438,insertIndex:v1439}=v1434;if(!(v1438!=null&&v1438.length))return false;let v1440=v1433.get(E),v1441=v1433.get(e.IUniverInstanceService).getUnit(v1436,e.UniverInstanceType['UNIVER_SLIDE']);if(!v1441)return false;let v1442=Object.values(((v1435=v1441.pageManager["getSlide"](v1437))==null?undefined:v1435.getData().elements)??{}),v1443=[];if(v1438.forEach((v352,v353)=>{let v354=Oe(v352.element,v1442),v355={...v352,'element':v354};v1442=[...v1442,v354],v1443.push(v355),ze(v1441,v355,v1439===undefined?undefined:v1439+v353);}),v1443.every(v356=>v356.sourcePageType==="slide"&&v356.unitId===v1436&&v356.subUnitId===v1437)&&O(v1440,v1441,v1436,v1437))return true;let v1444=v1440.getBatchAddOp(v1443);v1440.applyJson1(v1436,v1437,v1444.redo);let v1445=(v1444==null?undefined:v1444.objects)??[];return v1445.length>0&&v1440.addNotification(v1445),true;}},zn={'id':"slide.operation.set-zoom-ratio",'type':e.CommandType["OPERATION"],'handler':(v1446,v1447)=>{if(!v1447)return false;let v1448=v1446.get(e.IUniverInstanceService).getUnit(v1447.unitId,e.UniverInstanceType['UNIVER_SLIDE']);return v1448?(v1448.setZoomRatio(v1447.zoomRatio),true):false;}};function K(v1449,v1450){return function(v357,v358){v1450(v357,v358,v1449);};};function q(v1451,v1452,v1453,v1454){var v1455=arguments.length,v1456=v1455<3?v1452:v1454===null?v1454=Object.getOwnPropertyDescriptor(v1452,v1453):v1454,v1457;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v1456=Reflect.decorate(v1451,v1452,v1453,v1454);else{for(var v1458=v1451.length-1;v1458>=0;v1458--)(v1457=v1451[v1458])&&(v1456=(v1455<3?v1457(v1456):v1455>3?v1457(v1452,v1453,v1456):v1457(v1452,v1453))||v1456);}return v1455>3&&v1456&&Object.defineProperty(v1452,v1453,v1456),v1456;}const Bn="SLIDE_FONT_PLUGIN";let Vn=class extends e.Disposable{constructor(v359){super(),U(this,"_resources",new Map()),this.disposeWithMe(v359.registerPluginResource({'pluginName':Bn,'businesses':[e.UniverInstanceType["UNIVER_SLIDE"]],'toJson':v102=>JSON.stringify(this._resources['get'](v102)??{'fonts':[],'version':1}),'parseJson':v103=>JSON.parse(v103),'onLoad':(v104,v105)=>this._resources["set"](v104,v105),'onUnLoad':v106=>this._resources["delete"](v106)}));}};Vn=q([K(0,e.IResourceManagerService)],Vn);const J={'shapeWidth':220,'shapeHeight':120,'textBoxWidth':260,'textBoxHeight':88,'minPositionOffset':24,'fallbackImageWidth':320,'fallbackImageHeight':180,'minImageEdge':80,'imageFitRatio':0.56};function Hn(v1459=true){return v1459?{'width':J.textBoxWidth,'height':J.textBoxHeight}:{'width':J.textBoxHeight,'height':J.textBoxWidth};}const Un={'isTextBox':true,'fill':{'fillType':n.ShapeFillEnum["SolidFill"],'color':'#FFFFFF'},'stroke':{'lineStrokeType':n.ShapeLineTypeEnum['SolidLine'],'width':1,'color':"#bcbcbc"},'shapeText':{'isHorizontal':true,'text':'','autoFitType':n.ShapeTextAutoFitType['SpAutoFit'],'textWrap':n.ShapeTextWrapType["None"],'dataModel':{'doc':{'id':'slide-text-box-default-document','body':{'dataStream':'\x0d\x0a','textRuns':[{'st':0,'ed':1,'ts':{'fs':16,'cl':{'rgb':"#111827"}}}],'paragraphs':[{'startIndex':0,'paragraphStyle':{'horizontalAlign':e.HorizontalAlign['LEFT']}}]},'documentStyle':{'marginBottom':0,'marginLeft':0,'marginRight':0,'marginTop':0,'textStyle':{'fs':16,'cl':{'rgb':"#111827"}},'renderConfig':{'horizontalAlign':e.HorizontalAlign["LEFT"],'verticalAlign':e.VerticalAlign["TOP"]}}},'ha':e.HorizontalAlign['LEFT'],'va':e.VerticalAlign['TOP']}}},Wn={'picture':["image"],'chart':["chart"]},Gn={'picture':"image",'chart':"chart"},Kn={'image':"AddImageIcon",'chart':'ChartIcon','table':"TableIcon",'diagram':"RelationshipIcon",'media':"RecordIcon"};function qn(v1460){return(Wn[v1460]??[]).map(v360=>({'key':v360,'labelKey':'slides.placeholder.icon.'+v360}));};function Jn(v1461){var v1462;let v1463=Gn[v1461.type];if(!v1463)return[];let v1464=((v1462=v1461.icons)!=null&&v1462.length?v1461.icons:qn(v1461.type)).find(v361=>v361.enabled!==false&&v361.key===v1463);return v1464?[v1464]:[];}const Yn={'title':"slides.slide.placeholder.text.title",'centerTitle':"slides.slide.placeholder.text.title",'subtitle':"slides.slide.placeholder.text.subtitle",'body':'slides.slide.placeholder.text.body','text':"slides.slide.placeholder.text.text",'header':"slides.slide.placeholder.text.header",'footer':"slides.slide.placeholder.text.footer",'date':"slides.slide.placeholder.text.date",'slideNumber':"slides.slide.placeholder.text.slideNumber"};function Xn(v1465){return Yn[v1465];}const Zn='UNIVER_EMBED_SLIDES_FLOATING',Qn="UNIVER_EMBED_SLIDES_PAGE";function $n(v1466){return{'version':1,'embedId':v1466.embedId,'hostAnchorId':v1466.hostAnchorId,'childUnitId':v1466.childUnitId,'childType':v1466.childType};};function er(v1467){return{'id':v1467.hostAnchorId,'pageType':"slide",'name':v1467.name??v1467.embedId,'showMasterSp':false,'elementOrder':[],'elements':{},'custom':{[Qn]:$n(v1467)}};};function tr(v1468){return{'id':v1468.hostAnchorId,'type':"text",'name':v1468.embedId,'text':'','transform':{'left':v1468.left??96,'top':v1468.top??72,'width':v1468.width??560,'height':v1468.height??315},'custom':{[Zn]:$n(v1468)}};};function nr(v1469){var v1470;let v1471=(v1470=v1469.custom)==null?undefined:v1470[Qn];return ir(v1471)?v1471:undefined;};function rr(v1472){var v1473;let v1474=(v1473=v1472.custom)==null?undefined:v1473[Zn];return ir(v1474)?v1474:undefined;};function ir(v1475){if(!v1475||typeof v1475!="object")return false;let v1476=v1475;return v1476.version===1&&typeof v1476.embedId=="string"&&typeof v1476.hostAnchorId=="string";}var ar="@univerjs-pro/slides",or='1.0.0-insiders.20260907-70fc579';function sr(v1477=(0,e.generateRandomId)(6),v1478=e.LocaleType['EN_US'],v1479="Untitled Presentation"){let v1480=ae({'layoutType':"titleAndBody",'name':'Slide\x201'});return{'id':v1477,'name':v1479,'appVersion':or,'locale':v1478,'defaultPageSize':{'width':960,'height':540},'slideOrder':[v1480.id],'slides':{[v1480.id]:v1480},'activeSlideId':v1480.id,...oe()};}var cr=class extends e.Disposable{constructor(v362={}){super(),U(this,"_data$",undefined),U(this,"data$",undefined),this._data$=new a["BehaviorSubject"](v362),this.data$=this._data$["asObservable"]();}getData(){return this._data$["getValue"]();}update(v363){this._data$['next']({...this._data$["getValue"](),...v363});}resolveColor(v364){var v365;return((v365=this._data$['getValue']().colorScheme)==null?undefined:v365[v364])??v364;}getHeadingFont(){var v366;return(v366=this._data$["getValue"]().fontScheme)==null?undefined:v366.heading;}getBodyFont(){var v367;return(v367=this._data$["getValue"]().fontScheme)==null?undefined:v367.body;}getFillStyle(v368){var v369;return(v369=this._data$["getValue"]().fmtScheme)==null?undefined:v369.fillStyleLst[v368-1];}getLineStyle(v370){var v371;return(v371=this._data$["getValue"]().fmtScheme)==null?undefined:v371.lnStyleLst[v370-1];}getEffectStyle(v372){var v373;return(v373=this._data$["getValue"]().fmtScheme)==null?undefined:v373.effectStyleLst[v372-1];}getBgFillStyle(v374){var v375;return(v375=this._data$["getValue"]().fmtScheme)==null?undefined:v375.bgFillStyleLst[v374-1];}},lr=class extends e.Disposable{constructor(...v376){super(...v376),U(this,"_transitions",new Map()),U(this,'_sequences',new Map()),U(this,"_changed$",new a["Subject"]()),U(this,"changed$",this._changed$["asObservable"]());}getTransition(v377){return this._transitions["get"](v377);}setTransition(v378,v379){this._transitions['set'](v378,v379),this._changed$['next'](v378);}removeTransition(v380){this._transitions['delete'](v380),this._changed$["next"](v380);}getSequences(v381){return this._sequences['get'](v381)??[];}setSequences(v382,v383){this._sequences["set"](v382,v383),this._changed$["next"](v382);}loadFromSlide(v384,v385,v386){v385?this._transitions["set"](v384,v385):this._transitions['delete'](v384),this._sequences["set"](v384,v386??[]);}loadFromDocument(v387){this._transitions['clear'](),this._sequences["clear"]();for(let v107 of v387.slideOrder){let v4=v387.slides[v107];if(!v4)continue;let v5=_n(v387,v107);v5&&this._transitions['set'](v107,v5),this._sequences["set"](v107,v4.animations??[]);}}unloadSlide(v388){this._transitions["delete"](v388),this._sequences["delete"](v388);}dispose(){this._changed$["complete"](),super.dispose();}};function ur(v1481){switch(v1481){case"header":return'header';case"footer":return"footer";case'date':return"dateTime";case"slideNumber":return"slideNumber";default:return;}};function dr(v1482,v1483){return v1483?{...v1482,...Object.fromEntries(Object.entries(v1483).filter(([,v389])=>v389!==undefined))}:v1482;};function fr(v1484,v1485,v1486){let v1487={};for(let v390 of["header","footer","dateTime","slideNumber"]){var v1488,v1489,v1490;let v108=[v1486==null||(v1488=v1486.headerFooter)==null?undefined:v1488[v390],v1485==null||(v1489=v1485.headerFooter)==null?undefined:v1489[v390],(v1490=v1484.headerFooter)==null?undefined:v1490[v390]].reduce((v6,v7)=>dr(v6,v7),undefined);v108&&(v1487[v390]=v108);}return v1487;};function pr(v1491,v1492){var v1493;let v1494=(v1493=v1492.getSlideIndex)==null?undefined:v1493.call(v1492,v1491.id);return v1494!==undefined&&v1494>=0?String(v1494+1):undefined;};function mr(v1495,v1496,v1497,v1498){return v1495===undefined||v1495<=v1496?v1495:v1495>=v1497?v1495+v1498-(v1497-v1496):v1496+v1498;};function hr(v1499,v1500){var v1501,v1502,v1503;if(v1499.type!=="shape")return v1499;let v1504=v1499.shapeData['shapeText'];if(!v1504)return v1499;let v1505=(v1501=v1504.dataModel)==null||(v1501=v1501.doc)==null?undefined:v1501.body,v1506=(v1505==null?undefined:v1505.dataStream)??'',v1507=v1504.text??'',v1508=["‹#›","<#>",'#'].find(v391=>v1506.includes(v391)||v1507.includes(v391));if(!v1508)return v1499;let v1509=v1506.indexOf(v1508),v1510=v1509+v1508.length;return{...v1499,'shapeData':{...v1499.shapeData,'shapeText':{...v1504,'text':v1507.replace(v1508,v1500),'dataModel':v1504.dataModel&&{...v1504.dataModel,'doc':v1504.dataModel["doc"]&&{...v1504.dataModel["doc"],'body':v1505&&v1509>=0?{...v1505,'dataStream':v1506.replace(v1508,v1500),'textRuns':(v1502=v1505.textRuns)==null?undefined:v1502.map(v392=>({...v392,'st':mr(v392.st,v1509,v1510,v1500.length),'ed':mr(v392.ed,v1509,v1510,v1500.length)})),'paragraphs':(v1503=v1505.paragraphs)==null?undefined:v1503.map(v393=>({...v393,'startIndex':mr(v393.startIndex,v1509,v1510,v1500.length)}))}:v1505}}}}};};function gr(v1511,v1512,v1513){let v1514=Ge(v1511);if(!v1514)return v1511;let v1515=ur(v1514.type);if(!v1515)return v1511;let v1516=v1512[v1515];if((v1516==null?undefined:v1516.enabled)!==true)return null;let v1517=v1511.type==="placeholder"?v1511.text:undefined,v1518=v1514.type==="slideNumber"?v1513??v1516.text??v1517??'':v1516.text??v1517??'';return v1518.trim()?v1511.type==="placeholder"?{...v1511,'text':v1518}:v1514.type==="slideNumber"&&v1513?hr(v1511,v1513):v1511:null;};function _r(v1519){let v1520=new Set();for(let v394 of Object.values(v1519)){let v109=M(v394);v109&&v1520.add(v109);}return v1520;};function vr(v1521,v1522){if(v1521){if(v1521.background)return v1521.background;if(v1521.pageType==="slide"&&"layoutPageId"in v1521&&v1521.layoutPageId){let v110=vr(v1522.getLayoutPage(v1521.layoutPageId),v1522);if(v110)return v110;}if((v1521.pageType==="slide"||v1521.pageType==="layout")&&"masterPageId"in v1521&&v1521.masterPageId)return vr(v1522.getMasterPage(v1521.masterPageId),v1522);}};function yr(v1523){return v1523.showMasterSp??true;};function br(v1524){return B(v1524)||!Ge(v1524);}var xr=class extends e.Disposable{constructor(v395,v396,v397){super(),this._data=v395,this._ctx=v396,this._syncFn=v397;}getId(){return this._data['id'];}getData(){return this._data;}updatePageData(v398){this._applyDataUpdate({...this._data,...v398});}resolveBackground(){return vr(this._data,this._ctx);}addElement(v399,v400){let v401=[...this._data["elementOrder"]],v402=v400===undefined?v401.length:Math.max(0,Math.min(v400,v401.length));v401.splice(v402,0,v399.id);let v403={...this._data,'elementOrder':v401,'elements':{...this._data["elements"],[v399.id]:v399}};this._applyDataUpdate(v403);}removeElement(v404){if(!(v404 in this._data["elements"]))return;let v405={...this._data["elements"]};delete v405[v404],this._applyDataUpdate({...this._data,'elementOrder':this._data["elementOrder"].filter(v111=>v111!==v404),'elements':v405});}updateElement(v406,v407){let v408=this._data["elements"][v406];if(!v408)return;let v409={...v408,...v407};this._applyDataUpdate({...this._data,'elements':{...this._data['elements'],[v406]:v409}});}setElementOrder(v410){if(!v410.length)return;let v411=new Set(this._data["elementOrder"]),v412=v410.filter(v112=>v411.has(v112)),v413=this._data["elementOrder"].filter(v113=>!v412.includes(v113));this._applyDataUpdate({...this._data,'elementOrder':[...v412,...v413]});}resolveElements(){let v414=this._data["masterPageId"]?this._ctx["getMasterPage"](this._data["masterPageId"]):undefined,v415=this._data["layoutPageId"]?this._ctx['getLayoutPage'](this._data['layoutPageId']):undefined,v416=v415?_r(v415.elements):new Set(),v417=_r(this._data["elements"]),v418=qe(this._data),v419=yr(this._data),v420=!v415||yr(v415),v421=v419&&v420,v422=v419,v423=fr(this._data,v415,v414),v424=pr(this._data,this._ctx),v425=[],v426=[],v427=[];if(v414)for(let v114 of v414.elementOrder){let v8=v414.elements[v114];if(!v8||Je(v8,v418))continue;let v9=gr(v8,v423,v424);if(!v9||!v419&&br(v8)||!v421&&B(v8))continue;let v10=M(v8);v10&&(v416.has(v10)||v417.has(v10))||v425.push(v9);}if(v415)for(let v115 of v415.elementOrder){let v11=v415.elements[v115];if(!v11||Je(v11,v418))continue;let v12=gr(v11,v423,v424);if(!v12||!v419&&br(v11)||!v422&&B(v11))continue;let v13=M(v11);v13&&v417.has(v13)||v426.push(v12);}for(let v116 of this._data["elementOrder"]){let v14=this._data['elements'][v116];v14&&v427.push(v14);}return{'masterLayer':v425,'layoutLayer':v426,'slideLayer':v427,'all':[...v425,...v426,...v427]};}_applyDataUpdate(v428){this._data=v428,this._syncFn(v428);}},Sr=class extends e.Disposable{constructor(v429){super(),this._snapshot=v429,U(this,'_pages',new Map()),U(this,"_activeSlideId$",undefined),U(this,"_slideOrder$",undefined),U(this,"activeSlideId$",undefined),U(this,"slideOrder$",undefined);for(let v117 of v429.slideOrder)this._initPage(v117);this._activeSlideId$=new a["BehaviorSubject"](v429.activeSlideId??v429.slideOrder[0]),this._slideOrder$=new a.BehaviorSubject([...v429.slideOrder]),this.activeSlideId$=this._activeSlideId$["asObservable"](),this.slideOrder$=this._slideOrder$["asObservable"]();}getPage(v430){var v431,v432,v433,v434;return this._snapshot["slides"][v430]??((v431=this._snapshot["masterPages"])==null?undefined:v431[v430])??((v432=this._snapshot["layoutPages"])==null?undefined:v432[v430])??((v433=this._snapshot["handoutMasterPages"])==null?undefined:v433[v430])??((v434=this._snapshot['notesMasterPages'])==null?undefined:v434[v430]);}getMasterPage(v435){var v436;return(v436=this._snapshot["masterPages"])==null?undefined:v436[v435];}getLayoutPage(v437){var v438;return(v438=this._snapshot['layoutPages'])==null?undefined:v438[v437];}getSlideIndex(v439){let v440=this._slideOrder$['getValue']().indexOf(v439);return v440>=0?v440:undefined;}getSlide(v441){return this._pages["get"](v441);}getSlides(){return this._slideOrder$["getValue"]().map(v118=>this._pages["get"](v118)).filter(v119=>v119!==undefined);}getActiveSlide(){let v442=this._activeSlideId$["getValue"]();return v442?this._pages["get"](v442):undefined;}resolveSlidePageReferences(v443,v444){let v445=this._slideOrder$["getValue"](),v446=v444??v445.length,v447=v445[Math.min(Math.max(v446-1,0),v445.length-1)],v448=v447?this._snapshot['slides'][v447]:undefined,v449=v443.layoutPageId?[v443.layoutPageId]:[v448==null?undefined:v448.layoutPageId,...(this._snapshot["layoutPageOrder"]??[])];for(let v120 of v449){var v450,v451;if(!v120)continue;let v15=(v450=this._snapshot["layoutPages"])==null?undefined:v450[v120],v16=v15==null?undefined:v15.masterPageId;if(!(!v16||!((v451=this._snapshot["masterPages"])!=null&&v451[v16])||v443.masterPageId&&v443.masterPageId!==v16))return{...v443,'layoutPageId':v120,'masterPageId':v16};}return null;}setActiveSlide(v452){this._pages["has"](v452)&&this._activeSlideId$['getValue']()!==v452&&(this._snapshot['activeSlideId']=v452,this._activeSlideId$['next'](v452));}createSlide(v453={},v454){let v455=v453.id??(0,e.generateRandomId)(6),v456=this._slideOrder$["getValue"](),v457={'id':v455,'pageType':"slide",'name':v453.name??"Slide "+(v456.length+1),'elementOrder':v453.elementOrder??[],'elements':v453.elements??{},'showMasterSp':v453.showMasterSp??true,...v453};this._snapshot["slides"][v455]=v457;let v458=[...v456],v459=v454===undefined?v458.length:v454;v458.splice(v459,0,v455),this._snapshot["slideOrder"]=v458;let v460=this._initPage(v455);return this._slideOrder$['next'](v458),this._activeSlideId$["getValue"]()||this._activeSlideId$['next'](v455),v460;}deleteSlide(v461){var v462;if(!this._pages["has"](v461))return;(v462=this._pages['get'](v461))==null||v462.dispose(),this._pages["delete"](v461),delete this._snapshot["slides"][v461];let v463=this._slideOrder$['getValue']().filter(v121=>v121!==v461);if(this._snapshot["slideOrder"]=v463,this._slideOrder$["next"](v463),this._activeSlideId$["getValue"]()===v461){let v122=Math.max(0,v463.indexOf(v461)-1);this._activeSlideId$['next'](v463[v122]);}}moveSlide(v464,v465){let v466=[...this._slideOrder$['getValue']()],v467=v466.indexOf(v464);v467!==-1&&v467!==v465&&(v466.splice(v467,1),v466.splice(v465,0,v464),this._snapshot["slideOrder"]=v466,this._slideOrder$["next"](v466));}duplicateSlide(v468){let v469=this._snapshot['slides'][v468];if(!v469)return;let v470=this._slideOrder$['getValue']().indexOf(v468)+1;return this.createSlide({...v469,'id':(0,e.generateRandomId)(6),'name':v469.name+" (copy)",'elements':{...v469.elements},'elementOrder':[...v469.elementOrder]},v470);}ensureDefaultLayers(){let v471=oe();this._snapshot["masterPages"]||(this._snapshot["masterPages"]={}),this._snapshot["masterPageOrder"]||(this._snapshot["masterPageOrder"]=[]);for(let v123 of v471.masterPageOrder??[])this._snapshot["masterPages"][v123]||(this._snapshot['masterPages'][v123]=v471.masterPages[v123],this._snapshot["masterPageOrder"].push(v123));this._snapshot['layoutPages']||(this._snapshot['layoutPages']={}),this._snapshot["layoutPageOrder"]||(this._snapshot["layoutPageOrder"]=[]);for(let v124 of v471.layoutPageOrder??[])this._snapshot["layoutPages"][v124]||(this._snapshot["layoutPages"][v124]=v471.layoutPages[v124],this._snapshot["layoutPageOrder"].push(v124));this._snapshot["theme"]||(this._snapshot['theme']=v471.theme);}_initPage(v472){let v473=this._snapshot['slides'][v472];if(!v473)throw Error("[SlidePageManager] No slide data found for id \""+v472+'\x22');let v474=new xr(v473,this,v125=>{this._snapshot["slides"][v472]=v125;});return this._pages['set'](v472,v474),v474;}dispose(){this._pages["forEach"](v126=>v126.dispose()),this._pages["clear"](),super.dispose();}},Cr=class extends e.UnitModel{constructor(v475){super(),U(this,"type",e.UniverInstanceType["UNIVER_SLIDE"]),U(this,'_snapshot',undefined),U(this,'_name$',undefined),U(this,"name$",undefined),U(this,"_zoomRatio$",undefined),U(this,"zoomRatio$",undefined),U(this,'pageManager',undefined),U(this,'theme',undefined),U(this,"timingSystem",undefined);let v476=sr();this._snapshot=e.Tools['isEmptyObject'](v475)?v476:e.Tools["commonExtend"](v476,v475),(this._snapshot['id']===undefined||this._snapshot['id']===null||this._snapshot['id']==='')&&(this._snapshot['id']=(0,e.generateRandomId)(6)),this._snapshot["activeSlideId"]&&!this._snapshot["slides"][this._snapshot['activeSlideId']]&&(this._snapshot["activeSlideId"]=this._snapshot["slideOrder"][0]),Ie(this._snapshot),this._name$=new a["BehaviorSubject"](this._snapshot['name']),this.name$=this._name$["asObservable"](),this._zoomRatio$=new a.BehaviorSubject(this._snapshot['zoomRatio']??1),this.zoomRatio$=this._zoomRatio$["asObservable"](),this.pageManager=new Sr(this._snapshot),this.disposeWithMe(this.pageManager),this.theme=new cr(this._snapshot['theme']??b),this.disposeWithMe(this.theme),this.timingSystem=new lr(),this.disposeWithMe(this.timingSystem),this.timingSystem["loadFromDocument"](this._snapshot);}getUnitId(){return this._snapshot['id'];}setName(v477){this._snapshot['name']=v477,this._name$["next"](v477);}getZoomRatio(){return this._zoomRatio$["getValue"]();}setZoomRatio(v478){this._snapshot["zoomRatio"]=v478,this._zoomRatio$["next"](v478);}getSnapshot(){return this._snapshot;}getThemeData(v479){var v480;return(v479?(v480=this._snapshot['themes'])==null?undefined:v480[v479]:undefined)??this.theme['getData']();}getThemeDataForPage(v481){return this.getThemeData(this._resolveThemeIdForPage(v481));}getRev(){return this._snapshot["rev"]??1;}incrementRev(){this._snapshot['rev']=(this._snapshot["rev"]??1)+1;}setRev(v482){this._snapshot["rev"]=v482;}_resolveThemeIdForPage(v483){if(v483)return this._resolveThemeIdFromPage(this.pageManager['getPage'](v483));}_resolveThemeIdFromPage(v484){if(v484){if(v484.themeId)return v484.themeId;if(v484.pageType==="layout"){var v485;return(v485=this._snapshot["masterPages"])==null||(v485=v485[v484.masterPageId??''])==null?undefined:v485.themeId;}if(v484.pageType==="slide"){var v486,v487;let v17=v484.layoutPageId?(v486=this._snapshot["layoutPages"])==null?undefined:v486[v484.layoutPageId]:undefined;return this._resolveThemeIdFromPage(v17)??((v487=this._snapshot["masterPages"])==null||(v487=v487[v484.masterPageId??(v17==null?undefined:v17.masterPageId)??''])==null?undefined:v487.themeId);}}}};let wr=class{constructor(v488,v489,v490){this._commandService=v488,this._drawingService=v489,this._instanceService=v490,U(this,"hostType",e.UniverInstanceType["UNIVER_SLIDE"]);}get shapeChanged$(){return(0,a.merge)(this._drawingService["add$"],this._drawingService['update$'],this._drawingService["remove$"]).pipe((0,a.mergeMap)(v127=>[...new Set(v127.map(({unitId:v18})=>v18))]),(0,a.map)(v128=>({'unitId':v128})));}getShape(v491){let v492=this._getDrawing(v491);if(!v492)return null;let v493=v492.element,v494=v493.type==="connector"?v493.connectorData:v493.shapeData,v495=v493.transform;return{...v491,'shapeType':v494.shapeType??n.ShapeTypeEnum["Rect"],'shapeData':e.Tools["deepClone"](v494),'name':v493.name,'description':v493.description,'visible':v493.visible!==false,'selectable':v493.selectable!==false,'transform':{'left':v495.left??0,'top':v495.top??0,'width':v495.width??J.shapeWidth,'height':v495.height??J.shapeHeight,'rotation':v495.rotation??0,'flipX':v495.flipX??false,'flipY':v495.flipY??false}};}listShapes(v496){let v497=this._drawingService["getDrawingData"](v496.unitId,v496.subUnitId)??{};return Object.values(v497).map(v129=>this.getShape({...v496,'shapeId':v129.drawingId})).filter(v130=>!!v130);}listShapesInUnit(v498){let v499=this._instanceService["getUnit"](v498,e.UniverInstanceType['UNIVER_SLIDE']);return(v499==null?undefined:v499.getSnapshot().slideOrder["flatMap"](v131=>this.listShapes({'hostType':this.hostType,'unitId':v498,'subUnitId':v131})))??[];}createShape(v500,v501){let v502=(0,e.generateRandomId)(6),v503=Tr(v501.transform),v504={...e.Tools["deepClone"](v501.shapeData??(0,n.createDefaultInsertedShapeData)(v501.shapeType)),'shapeType':v501.shapeType},v505=(0,n.isConnectorShape)(v501.shapeType)?{'id':v502,'type':"connector",'transform':v503,'connectorData':v504,'name':v501.name,'description':v501.description,'visible':v501.visible??true,'selectable':v501.selectable??true}:{'id':v502,'type':"shape",'transform':v503,'shapeData':v504,'name':v501.name,'description':v501.description,'visible':v501.visible??true,'selectable':v501.selectable??true};return this._commandService['syncExecuteCommand'](Xe.id,{'unitId':v500.unitId,'subUnitId':v500.subUnitId,'element':v505})?{...v500,'shapeId':v502,'shapeType':v501.shapeType,'shapeData':v504,'name':v501.name,'description':v501.description,'visible':v501.visible??true,'selectable':v501.selectable??true,'transform':v503}:null;}updateShape(v506,v507){var v508;if(v507.smartArtOperations)return this._commandService["syncExecuteCommand"](Ln.id,{'unitId':v506.unitId,'subUnitId':v506.subUnitId,'drawingId':v506.shapeId,'operations':v507.smartArtOperations});let v509=this._getDrawing(v506);if(!v509)return false;let v510=v509.element,v511=v510.type==="connector"?v510.connectorData:v510.shapeData,v512={...(v507.shapeData??v511),'shapeType':v507.shapeType??((v508=v507.shapeData)==null?undefined:v508.shapeType)??v511.shapeType},v513=v510.type==="connector"?{...v510,'transform':{...v510.transform,...v507.transform},'connectorData':v512,'name':"name"in v507?v507.name:v510.name,'description':"description"in v507?v507.description:v510.description,'visible':v507.visible??v510.visible,'selectable':v507.selectable??v510.selectable}:{...v510,'transform':{...v510.transform,...v507.transform},'shapeData':v512,'name':"name"in v507?v507.name:v510.name,'description':"description"in v507?v507.description:v510.description,'visible':v507.visible??v510.visible,'selectable':v507.selectable??v510.selectable};return this._commandService['syncExecuteCommand'](Dn.id,{'patches':[{'unitId':v506.unitId,'subUnitId':v506.subUnitId,'drawingId':v506.shapeId,'element':v513}]});}convertSmartArtToShapes(v514){let v515=this.getShape(v514);if(!v515||v515.shapeType!==n.ShapeTypeEnum["SmartArt"]||!("smartArt"in v515.shapeData))return null;let v516=v515.shapeData["smartArt"].presentationShapeOrder["map"](()=>(0,e.generateRandomId)(6));if(v516.length===0)return null;let v517=v516.length>1?(0,e.generateRandomId)(6):undefined;return this._commandService["syncExecuteCommand"](at.id,{'unitId':v514.unitId,'subUnitId':v514.subUnitId,'drawingId':v514.shapeId,'childIds':v516,'groupId':v517})?v516.map(v132=>this.getShape({...v514,'shapeId':v132})).filter(v133=>!!v133):null;}createFormulaLastValueMutation(v518,v519,v520){let v521=this._getDrawing(v518);if(!v521)return null;let v522=v521.element;if(v522.type!=='connector'&&v522.type!=="shape")return null;let v523=v522.type==='connector'?v522.connectorData:v522.shapeData,v524=v523.formulaBinding;if(!v524)return null;let v525={...v523,'formulaBinding':{...v524,'lastValue':e.Tools["deepClone"](v520)}},v526=v522.type==="connector"?{...v522,'connectorData':v525}:{...v522,'shapeData':v525};return{'id':G.id,'params':{'unitId':v518.unitId,'subUnitId':v518.subUnitId,'drawingId':v518.shapeId,'element':v526,'transform':v521.transform,'formulaLastValueGuard':v519}};}removeShape(v527){return this._commandService["syncExecuteCommand"](ht.id,{'unitId':v527.unitId,'subUnitId':v527.subUnitId,'drawingIds':[v527.shapeId]});}bringToFront(v528){return this._arrange(v528,e.ArrangeTypeEnum["front"]);}bringForward(v529){return this._arrange(v529,e.ArrangeTypeEnum["forward"]);}sendBackward(v530){return this._arrange(v530,e.ArrangeTypeEnum["backward"]);}sendToBack(v531){return this._arrange(v531,e.ArrangeTypeEnum["back"]);}setZOrder(v532,v533){return this._reorder(v532,this._getDrawingOrder(v532),v533);}_getDrawing(v534){let v535=this._drawingService["getDrawingByParam"]({'unitId':v534.unitId,'subUnitId':v534.subUnitId,'drawingId':v534.shapeId});return(v535==null?undefined:v535.sourcePageType)==='slide'&&(v535.element['type']==="shape"||v535.element["type"]==="connector")?v535:null;}_getDrawingOrder(v536){let v537=this._drawingService["getDrawingData"](v536.unitId,v536.subUnitId)??{};return this._drawingService['getDrawingOrder'](v536.unitId,v536.subUnitId).filter(v134=>{var v135;return((v135=v537[v134])==null?undefined:v135.sourcePageType)==="slide";});}_arrange(v538,v539){let v540=this._getDrawingOrder(v538),v541=v540.indexOf(v538.shapeId);return v541<0?false:this._reorder(v538,v540,(0,e.getDrawingOrderIndex)(v541,v540.length,v539));}_reorder(v542,v543,v544){let v545=v543.indexOf(v542.shapeId);return v545<0?false:(v543.splice(v545,1),v543.splice((0,e.normalizeDrawingOrderIndex)(v544,v543.length+1),0,v542.shapeId),this._commandService["syncExecuteCommand"](vt.id,{'unitId':v542.unitId,'subUnitId':v542.subUnitId,'drawingIds':v543}));}};wr=q([K(0,e.ICommandService),K(1,E),K(2,e.IUniverInstanceService)],wr);function Tr(v1525){return{'left':(v1525==null?undefined:v1525.left)??0,'top':(v1525==null?undefined:v1525.top)??0,'width':(v1525==null?undefined:v1525.width)??J.shapeWidth,'height':(v1525==null?undefined:v1525.height)??J.shapeHeight,'rotation':(v1525==null?undefined:v1525.rotation)??0,'flipX':(v1525==null?undefined:v1525.flipX)??false,'flipY':(v1525==null?undefined:v1525.flipY)??false};}const Er={};let Dr=class extends e.Disposable{constructor(v546,v547){super(),this._instanceSrv=v546,this._slideDrawingService=v547,this._initUnitListener();}_initUnitListener(){this._instanceSrv["getAllUnitsForType"](e.UniverInstanceType['UNIVER_SLIDE']).forEach(v136=>this._loadUnit(v136)),this.disposeWithMe(this._instanceSrv['getTypeOfUnitAdded$'](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(v137=>this._loadUnit(v137.unit))),this.disposeWithMe(this._instanceSrv["getTypeOfUnitDisposed$"](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(v138=>{this._slideDrawingService["removeDrawingDataForUnit"](v138.getUnitId());}));}_loadUnit(v548){let v549=v548.getUnitId(),v550={},v551=v548.pageManager["getSlides"]();for(let v139 of v551){let v19=v139.getId(),{data:v20,order:v21}=D(v548,v139);v21.length>0&&(v550[v19]={'data':v20,'order':v21});}this._slideDrawingService["registerDrawingData"](v549,v550),this._slideDrawingService['initializeNotification'](v549);}};Dr=q([K(0,e.IUniverInstanceService),K(1,E)],Dr);const Or=new Set([ln.id,yt.id,z.id]);let kr=class extends e.Disposable{constructor(v552,v553,v554){super(),this._commandService=v552,this._permissionService=v553,this._univerInstanceService=v554,this._univerInstanceService['getAllUnitsForType'](e.UniverInstanceType['UNIVER_SLIDE']).forEach(v140=>this._registerUnitPermissionPoints(v140.getUnitId())),this.disposeWithMe(this._univerInstanceService["getTypeOfUnitAdded$"](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(({unit:v141})=>this._registerUnitPermissionPoints(v141.getUnitId()))),this.disposeWithMe(this._commandService["beforeCommandExecuted"]((v142,v143)=>this._check(v142,v143))),this.disposeWithMe(this._univerInstanceService["getTypeOfUnitDisposed$"](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(v144=>sn(this._permissionService,v144.getUnitId())));}_registerUnitPermissionPoints(v555){Xt.forEach(v145=>{let v146=rn(v555,v555,v145);this._permissionService["getPermissionPoint"](v146.id)||this._permissionService["addPermissionPoint"](v146);});}_check(v556,v557){var v558;if(v557!=null&&v557.fromCollab||v557!=null&&v557.fromChangeset)return;let v559=Y(v556.params)?v556.params:undefined;if(v556.id==='slide.mutation.update-slide-element'&&v559!=null&&v559.formulaLastValueGuard)return;let v560=jr(v556.id,v559),v561=Ar(v557),v562=(v559?X(v559,"unitId"):undefined)??v561??(v560?(v558=this._univerInstanceService['getCurrentUnitOfType'](e.UniverInstanceType["UNIVER_SLIDE"]))==null?undefined:v558.getUnitId():undefined);if(!v562||this._univerInstanceService["getUnitType"](v562)!==e.UniverInstanceType['UNIVER_SLIDE'])return;if(v560){if(!an(this._permissionService,v562,v562,v560))throw new e.CustomCommandExecutionError("Presentation "+i.UnitAction[v560]+'\x20permission\x20denied.');if(v556.id==="slide.operation.cut-selection"&&!an(this._permissionService,v562,v562,i.UnitAction["Edit"]))throw new e.CustomCommandExecutionError("Presentation Edit permission denied.");return;}if(Or.has(v556.id)||!v556.id["startsWith"]('slide.command.')&&!v556.id["startsWith"]("slide.mutation."))return;let v563=this._univerInstanceService["getUnit"](v562,e.UniverInstanceType["UNIVER_SLIDE"]);if(!v563||!cn(this._permissionService,v562,Mr(v563,v559??{},v556.id)))throw new e.CustomCommandExecutionError("Presentation edit permission denied.");}};kr=q([K(0,e.ICommandService),K(1,e.IPermissionService),K(2,e.IUniverInstanceService)],kr);function Ar(v1526){return typeof(v1526==null?undefined:v1526.unitId)=="string"?v1526.unitId:undefined;};function jr(v1527,v1528){if(v1527==='slide.operation.copy-selection'||v1527==="slide.operation.cut-selection"||v1527==="slide.operation.slide-table-copy-table")return i.UnitAction["Copy"];if(v1527==="slide-table.operation.keyboard"){if((v1528==null?undefined:v1528.action)==="copy-cells")return i.UnitAction["Copy"];if((v1528==null?undefined:v1528.action)==="edit-cell"||(v1528==null?undefined:v1528.action)==="clear-cells"||(v1528==null?undefined:v1528.action)==="paste-cells")return i.UnitAction['Edit'];}if(v1527==="slide.operation.print")return i.UnitAction["Print"];if(v1527==="slides-exchange-client.operation.export-slide")return i.UnitAction["Export"];if(v1527.startsWith("thread-comment.command.")||v1527.startsWith("thread-comment.mutation.")||v1527==="slide.operation.start-comment-placement"||v1527==="slide.operation.add-element-comment")return i.UnitAction["Comment"];};function Mr(v1529,v1530,v1531){let v1532=new Set(),v1533=v1529.getSnapshot(),v1534=new Set([X(v1530,'subUnitId'),X(v1530,'pageId')].filter(v564=>!!v564));Lr(v1530,'masterPageIds').forEach(v565=>v1534.add(v565));let v1535=X(v1530,"masterPageId");v1535&&v1534.add(v1535),v1530.applyToAll===true&&v1533.slideOrder['forEach'](v566=>v1534.add(v566));let v1536=Y(v1530.slideTransitionRefs)?v1530.slideTransitionRefs:{};Object.keys(v1536).forEach(v567=>v1534.add(v567));let v1537=Rr(v1530.sourcePageType)?v1530.sourcePageType:undefined;for(let v568 of v1534){let v147=v1537??Fr(v1529,v568);v147==="master"||v147==="layout"?v1532.add(W):v147==="slide"&&v1532.add(en(v568));}let v1538=new Set();["drawingId","elementId","replaceElementId"].forEach(v569=>{let v570=X(v1530,v569);v570&&v1538.add(v570);}),Lr(v1530,"drawingIds").forEach(v571=>v1538.add(v571)),Y(v1530.element)&&typeof v1530.element['id']=="string"&&v1538.add(v1530.element['id']),(Array.isArray(v1530.objects)?v1530.objects:[]).forEach(v572=>{let v573=Y(v572)?X(v572,"drawingId"):undefined;v573&&v1538.add(v573);});let v1539=X(v1530,"subUnitId")??X(v1530,"pageId");if(v1539){let v574=v1537??Fr(v1529,v1539)??"slide";if(v1531==="slide.command.remove-page"||v1531==="slide.mutation.remove-slide-page"){let v148=v1529.getSnapshot().slides[v1539];Object.keys((v148==null?undefined:v148.elements)??{}).forEach(v22=>v1538.add(v22));}Pr(v1529,v1539,v574,v1538,v1532);}else v1538.size&&Nr(v1529,v575=>v1538.has(v575.id),v1532);let v1540=new Set(["chartId",'tableId',"smartArtId"].map(v576=>X(v1530,v576)).filter(v577=>!!v577));v1540.size&&Nr(v1529,v578=>v1540.has(String(v578.chartId??''))||v1540.has(String(v578.tableId??''))||v1540.has(String(v578.smartArtId??'')),v1532);let v1541=Y(v1530.slide)?v1530.slide:undefined,v1542=v1541?X(v1541,'id'):undefined;if(v1541&&v1542){let v579=Rr(v1541.pageType)?v1541.pageType:"slide";v1532.add(v579==="slide"?en(v1542):W);let v580=Y(v1541.elements)?v1541.elements:{};Object.keys(v580).forEach(v149=>{v1532.add(tn(v579,v1542,v149));});}return[...v1532];};function Nr(v1543,v1544,v1545){let v1546=v1543.getSnapshot(),v1547=(v581,v582)=>{Object.entries(v581??{}).forEach(([v150,v151])=>{let v152=new Set();Object.values(v151.elements??{}).forEach(v23=>{!Ir(v23)||!v1544(v23)||v152.add(v23.id);}),Pr(v1543,v150,v582,v152,v1545);});};v1547(v1546.slides,'slide'),v1547(v1546.masterPages,'master'),v1547(v1546.layoutPages,"layout");};function Pr(v1548,v1549,v1550,v1551,v1552){var v1553,v1554;if(!v1551.size)return;let v1555=v1548.getSnapshot(),v1556=v1550==="slide"?v1555.slides[v1549]:v1550==="master"?(v1553=v1555.masterPages)==null?undefined:v1553[v1549]:(v1554=v1555.layoutPages)==null?undefined:v1554[v1549],v1557=(v1556==null?undefined:v1556.elements)??{},v1558=new Map();Object.values(v1557).forEach(v583=>{Y(v583)&&typeof v583.id=="string"&&Array.isArray(v583.children)&&v1558.set(v583.id,v583.children['filter'](v153=>typeof v153=="string"));});let v1559=new Set(v1551),v1560=v584=>{v1558.forEach((v154,v155)=>{!v154.includes(v584)||v1559.has(v155)||(v1559.add(v155),v1560(v155));});},v1561=v585=>{(v1558.get(v585)??[]).forEach(v156=>{v1559.has(v156)||(v1559.add(v156),v1561(v156));});};v1551.forEach(v586=>{v1560(v586),v1561(v586);}),v1552.add(v1550==="slide"?en(v1549):W),v1559.forEach(v587=>v1552.add(tn(v1550,v1549,v587)));};function Fr(v1562,v1563){var v1564,v1565;let v1566=v1562.getSnapshot();if(v1566.slides[v1563])return"slide";if((v1564=v1566.masterPages)!=null&&v1564[v1563])return"master";if((v1565=v1566.layoutPages)!=null&&v1565[v1563])return'layout';};function Y(v1567){return typeof v1567=="object"&&!!v1567&&!Array.isArray(v1567);};function Ir(v1568){return Y(v1568)&&typeof v1568.id=="string";};function X(v1569,v1570){let v1571=v1569[v1570];return typeof v1571=="string"?v1571:undefined;};function Lr(v1572,v1573){let v1574=v1572[v1573];return Array.isArray(v1574)?v1574.filter(v588=>typeof v588=="string"):[];};function Rr(v1575){return Object.values(u).some(v589=>v589===v1575);}let zr=class extends e.Disposable{constructor(v590,v591){super(),this._shapeHostAdapterRegistry=v590,this.disposeWithMe(this._shapeHostAdapterRegistry["register"](v591));}};zr=q([K(0,(0,e.Inject)(n.IShapeHostAdapterRegistry)),K(1,(0,e.Inject)(wr))],zr);let Z=class extends e.Plugin{constructor(v592=Er,v593,v594,v595,v596){super(),this._config=v592,this._injector=v593,this._commandService=v594,this._configService=v595,this._univerInstanceService=v596;let{...v597}=(0,e.merge)({},Er,this._config);this._configService["setConfig"]("slides.config",v597);}onStarting(){this._univerInstanceService["registerCtorForType"](e.UniverInstanceType['UNIVER_SLIDE'],Cr),[[E,{'useClass':Te}],[Dr],[Vn],[wr],[zr],[kr]].forEach(v157=>this._injector['add'](v157)),[j,Rn,N,z,G,Tn,rt,it,R,At,V,ut,un,bn,Ot,F,Dt,I,L,Fn,Xe,ht,yt,kt,jt,ln,zt,dn,xn,Dn,Ln,In,vt,Ze,gt,lt,ct,at,zn].forEach(v158=>this.disposeWithMe(this._commandService['registerCommand'](v158))),this._injector['get'](zr),this._injector["get"](Dr),this._injector["get"](Vn),this._injector['get'](kr);}};U(Z,"pluginName","UNIVER_SLIDES_PLUGIN"),U(Z,'packageName',ar),U(Z,"version",or),U(Z,"type",e.UniverInstanceType["UNIVER_SLIDE"]),Z=q([(0,e.DependentOn)(o.UniverLicensePlugin,n.UniverShapePlugin),K(1,(0,e.Inject)(e.Injector)),K(2,e.ICommandService),K(3,e.IConfigService),K(4,e.IUniverInstanceService)],Z);const Br={'dk1':"#000000",'dk2':"#44546a",'lt1':"#ffffff",'lt2':"#e7e6e6",'acc1':'#4472c4','acc2':"#ed7d31",'acc3':"#a5a5a5",'acc4':"#ffc000",'acc5':"#5b9bd5",'acc6':"#70ad47"};function Q(v1576,v1577){var v1578;return(v1576==null||(v1578=v1576.colorScheme)==null?undefined:v1578[v1577])??Br[v1577];};function Vr(v1579){if(!(!v1579||typeof v1579!="object")){if("color"in v1579&&typeof v1579.color=='string')return v1579.color;if("gradientStops"in v1579&&Array.isArray(v1579.gradientStops)){let v159=v1579.gradientStops["find"](v24=>!!(v24&&typeof v24=="object"&&"color"in v24&&typeof v24.color=="string"));return v159==null?undefined:v159.color;}}};function Hr(v1580){if(!(!v1580||typeof v1580!="object"))return"color"in v1580&&typeof v1580.color=="string"?v1580.color:undefined;};function Ur(v1581){var v1582,v1583;let v1584=Q(v1581,'acc1'),v1585=Q(v1581,"acc2"),v1586=Q(v1581,"acc3"),v1587=Q(v1581,"acc4"),v1588=Q(v1581,"acc5"),v1589=Q(v1581,"acc6"),v1590=Q(v1581,'dk1'),v1591=Vr(v1581==null||(v1582=v1581.fmtScheme)==null?undefined:v1582.fillStyleLst[1])??v1584,v1592=Hr(v1581==null||(v1583=v1581.fmtScheme)==null?undefined:v1583.lnStyleLst[1])??Q(v1581,"dk2");return{'background':Q(v1581,"lt1"),'text':v1590,'muted':Q(v1581,"lt2"),'accent1':v1584,'accent2':v1585,'accent3':v1586,'accent4':v1587,'accent5':v1588,'accent6':v1589,'accents':[v1584,v1585,v1586,v1587,v1588,v1589],'defaultStyleColors':[v1591,v1592,v1590]};}const Wr="slidePlaceholderContent";function Gr(v1593){let v1594=v1593.custom;if(!v1594||typeof v1594!="object")return null;let v1595=v1594[Wr];if(!v1595||typeof v1595!='object')return null;let v1596=v1595;return v1596.kind!=="image"||typeof v1596.source!="string"||v1596.source["length"]===0?null:{'kind':"image",'source':v1596.source,'imageSourceType':v1596.imageSourceType};};function Kr(v1597,v1598){let v1599=v1597.custom&&typeof v1597.custom=="object"?{...v1597.custom}:{};return v1599[Wr]=v1598,{...v1597,'custom':v1599};}const qr="slide-text-document",Jr={'width':1/0,'height':1/0};function Yr(v1600){let v1601=v1600.body,v1602=v1601==null?undefined:v1601.dataStream;if(!v1601||v1602===undefined)return v1600;let v1603=v1602.replace(/\n/g,(v598,v599)=>v1602[v599-1]==='\x0d'?v598:'\x0d'),v1604=v1603.endsWith('\x0d\x0a')?v1603:v1603.endsWith('\x0d')?v1603+'\x0a':v1603+'\x0d\x0a';return v1604===v1602?v1600:{...v1600,'body':{...v1601,'dataStream':v1604}};};function $(v1605,v1606={}){let v1607=ti(v1605).split('\x0a'),v1608=v1607.join('\x0d')+'\x0d\x0a',v1609=Math.max(0,v1608.length-2),v1610=0,v1611=v1606.bullet,v1612=(v1611==null?undefined:v1611.listId)??(v1606.id??qr)+"-list",v1613=new Set(),v1614=v1607.map(v600=>{let v601={'startIndex':v1610+v600.length,'paragraphId':(0,e.createParagraphId)(v1613),...(v1611?{'bullet':{'listId':v1612,'listType':v1611.listType,'nestingLevel':v1611.nestingLevel??0}}:{}),...(v1606.horizontalAlign===undefined?{}:{'paragraphStyle':{'horizontalAlign':v1606.horizontalAlign,...(v1606.textStyle?{'textStyle':v1606.textStyle}:{})}})};return v1610+=v600.length+1,v601;}),v1615=v1606.horizontalAlign===undefined&&v1606.verticalAlign===undefined?undefined:{'horizontalAlign':v1606.horizontalAlign,'verticalAlign':v1606.verticalAlign};return{'id':v1606.id??qr,'body':{'dataStream':v1608,'textRuns':v1606.textStyle?[{'st':0,'ed':Math.max(1,v1609),'ts':v1606.textStyle}]:[],'paragraphs':v1614},'documentStyle':{'marginBottom':0,'marginLeft':0,'marginRight':0,'marginTop':0,'pageSize':{...Jr},...(v1606.textStyle?{'textStyle':v1606.textStyle}:{}),...(v1615?{'renderConfig':v1615}:{})}};};function Xr(v1616){var v1617;let v1618=((v1617=v1616.body)==null?undefined:v1617.dataStream)??'';return(v1618.endsWith('\x0d\x0a')?v1618.slice(0,-2):v1618).replace(/\r/g,'\x0a');};function Zr(v1619,v1620={}){if(v1619.type==='text')return ei(v1619.textData)??$(v1619.text??'',{'id':v1619.id,'textStyle':ri(v1619.textStyle)});if(v1619.type==="shape"){var v1621;let v602=(0,n.normalizeShapeTextData)(v1619.shapeData["shapeText"]);if(v602!=null&&(v1621=v602.dataModel)!=null&&v1621.doc)return e.Tools["deepClone"](v602.dataModel["doc"]);let v603=pe(v1620.themeData);return $(v603.text??'',{'id':v1619.id,'textStyle':ri(v603),'horizontalAlign':e.HorizontalAlign["CENTER"],'verticalAlign':e.VerticalAlign["MIDDLE"]});}if(v1619.type==="placeholder"){var v1622;let v604=v1619.placeholder["textConfig"];return ei((v1620.placeholderLevel?v604==null||(v1622=v604.textDataByLevel)==null?undefined:v1622[v1620.placeholderLevel]:undefined)??(v604==null?undefined:v604.textData))??$(v1619.text??'',{'id':v1619.id});}return null;};function Qr(v1623,v1624){let v1625=e.Tools["deepClone"](v1624),v1626=Xr(v1625);if(v1623.type==="text")return{...v1623,'text':v1626,'textData':v1625};if(v1623.type==="shape"){let v605=(0,n.applyDocumentToShapeText)((0,n.normalizeShapeTextData)(v1623.shapeData['shapeText'])??undefined,v1625);return{...v1623,'shapeData':{...v1623.shapeData,'shapeText':v605}};}if(v1623.type==="placeholder"){let v606=v1623;return{...v606,'text':v1626,'placeholder':{...v606.placeholder,'textConfig':{...v606.placeholder["textConfig"],'textData':v1625}}};}return null;};function $r(v1627,v1628,v1629){return Qr(v1627,$(v1628,ni(v1627,v1629)));};function ei(v1630){return v1630?e.Tools["deepClone"](v1630):null;};function ti(v1631){return v1631.replace(/\r\n/g,'\x0a').replace(/\r/g,'\x0a');};function ni(v1632,v1633={}){if(v1632.type==='text'){var v1634,v1635;return{'id':v1633.id??((v1634=v1632.textData)==null?undefined:v1634.id)??v1632.id,'textStyle':v1633.textStyle??((v1635=v1632.textData)==null||(v1635=v1635.documentStyle)==null?undefined:v1635.textStyle)??ri(v1632.textStyle),'horizontalAlign':v1633.horizontalAlign,'verticalAlign':v1633.verticalAlign,...(v1633.bullet?{'bullet':v1633.bullet}:{})};}if(v1632.type==="shape"){var v1636,v1637,v1638,v1639,v1640;let v607=(0,n.normalizeShapeTextData)(v1632.shapeData["shapeText"]),v608=v607==null||(v1636=v607.dataModel)==null?undefined:v1636.doc;return{'id':v1633.id??(v608==null?undefined:v608.id)??v1632.id,'textStyle':v1633.textStyle??(v608==null||(v1637=v608.documentStyle)==null?undefined:v1637.textStyle)??(v608==null||(v1638=v608.body)==null||(v1638=v1638.textRuns)==null||(v1638=v1638[0])==null?undefined:v1638.ts),'horizontalAlign':v1633.horizontalAlign??(v607==null||(v1639=v607.dataModel)==null?undefined:v1639.ha),'verticalAlign':v1633.verticalAlign??(v607==null||(v1640=v607.dataModel)==null?undefined:v1640.va),...(v1633.bullet?{'bullet':v1633.bullet}:{})};}if(v1632.type==="placeholder"){var v1641,v1642,v1643,v1644;let v609=(v1641=v1632.placeholder["textConfig"])==null?undefined:v1641.textData;return{'id':v1633.id??(v609==null?undefined:v609.id)??v1632.id,'textStyle':v1633.textStyle??(v609==null||(v1642=v609.documentStyle)==null?undefined:v1642.textStyle),'horizontalAlign':v1633.horizontalAlign??(v609==null||(v1643=v609.documentStyle)==null||(v1643=v1643.renderConfig)==null?undefined:v1643.horizontalAlign),'verticalAlign':v1633.verticalAlign??(v609==null||(v1644=v609.documentStyle)==null||(v1644=v1644.renderConfig)==null?undefined:v1644.verticalAlign),...(v1633.bullet?{'bullet':v1633.bullet}:{})};}return v1633;};function ri(v1645){if(v1645)return{...(v1645.fontFamily?{'ff':v1645.fontFamily}:{}),...(v1645.fontSize===undefined?{}:{'fs':v1645.fontSize}),...(v1645.color?{'cl':{'rgb':v1645.color}}:{}),...(v1645.bold===undefined?{}:{'bl':v1645.bold?e.BooleanNumber['TRUE']:e.BooleanNumber["FALSE"]}),...(v1645.italic===undefined?{}:{'it':v1645.italic?e.BooleanNumber['TRUE']:e.BooleanNumber["FALSE"]}),...(v1645.underline===undefined?{}:{'ul':{'s':v1645.underline?e.BooleanNumber["TRUE"]:e.BooleanNumber["FALSE"]}})};}exports.AddSlideElementCommand=Xe,exports.AddSlideElementMutation=j,exports.AddSlidePageCommand=Ze,exports.AddSlidePageMutation=F,exports.CancelSlideGroupMutation=it,exports.ConvertSlideSmartArtToShapesCommand=at,exports.CreateSlideByLayoutCommand=ct,exports.DEFAULT_LAYOUT_ORDER=ie,exports.DEFAULT_MASTER_PAGE=ne,exports.DEFAULT_MASTER_PAGE_ID=x,exports.DEFAULT_SLIDE_PAGE_HEIGHT=540,exports.DEFAULT_SLIDE_PAGE_WIDTH=960,exports.DEFAULT_SLIDE_THEME=b,exports.EMBED_SLIDES_FLOATING_CUSTOM_KEY=Zn,exports.EnsureSlideMasterPageMutation=Dt,exports.ISlideDrawingService=E,exports.InsertDrawingObjectMutation=Rn,exports.LAYOUT_PAGE_IDS=C,exports.MoveSlidePageCommand=lt,exports.MoveSlidePageMutation=L,exports.PageElementTypeEnum=c,exports.PageTypeEnum=u,exports.PlaceholderTypeEnum=s,exports.RemoveSlideElementCommand=ht,exports.RemoveSlideElementMutation=N,exports.RemoveSlidePageCommand=gt,exports.RemoveSlidePageMutation=I,exports.ReorderSlideElementsCommand=vt,exports.SLIDE_FONT_PLUGIN_NAME=Bn,exports.SLIDE_INSERT_DEFAULT_SIZE=J,exports.SLIDE_MASTER_VIEW_PERMISSION_OBJECT_ID=W,exports.SLIDE_PLACEHOLDER_ICON_COMPONENT_NAME_BY_KEY=Kn,exports.SLIDE_TEXT_BOX_DEFAULT_STYLE=Un,exports.SLIDE_THEME_PRESETS=v,exports.SLIDE_UNIT_PERMISSION_ACTIONS=Xt,exports.SetActiveSlideCommand=yt,exports.SetPresentationBackgroundGraphicsCommand=kt,exports.SetSlideDrawingApplyMutation=Tn,exports.SetSlideElementOrderMutation=R,exports.SetSlideGroupMutation=rt,exports.SetSlideNameCommand=jt,exports.SetSlidePageSizeCommand=zt,exports.SetSlidePageSizeMutation=V,exports.SetSlidePermissionCommand=ln,exports.SetSlideSpeakerNotesCommand=dn,exports.SetSlideSpeakerNotesMutation=un,exports.SetSlideTransitionCommand=xn,exports.SetSlideZoomRatioOperation=zn,exports.SlideBackgroundTypeEnum=l,exports.SlideDrawingApplyType=wn,Object.defineProperty(exports,"SlideFontResourceController",{'enumerable':true,'get':function(){return Vn;}}),exports.SlideModel=Cr,exports.SlidePage=xr,exports.SlidePageLayoutTypeEnum=d,exports.SlidePageSizePresetEnum=f,exports.SlidePresentationBackgroundGraphicFitEnum=bt,exports.SlidePresentationBackgroundGraphicsTargetEnum=xt,exports.SlideSceneTypeEnum=g,exports.SlideTransitionDirectionEnum=m,exports.SlideTransitionSpeedEnum=h,exports.SlideTransitionTypeEnum=p,Object.defineProperty(exports,"UniverSlidesPlugin",{'enumerable':true,'get':function(){return Z;}}),exports.UpdateSlideDrawingCommand=Dn,exports.UpdateSlideElementMutation=G,exports.UpdateSlidePageBackgroundCommand=In,exports.UpdateSlidePageBackgroundMutation=Fn,exports.UpdateSlideSmartArtCommand=Ln,exports.applySlideElementPlainText=$r,exports.applySlideElementTextDocument=Qr,exports.buildDefaultSlideDocumentLayers=oe,exports.buildResolvedSlideDrawingMap=D,exports.canEditSlideTargets=cn,exports.createEmbedSlidesCustomData=$n,exports.createEmbedSlidesFloatingElement=tr,exports.createEmbedSlidesPage=er,exports.createSlideByLayout=ae,exports.getEmbedSlidesFloatingCustomData=rr,exports.getEmbedSlidesPageCustomData=nr,exports.getEmptySnapshot=sr,exports.getSlidesEmptySnapshot=sr,exports.getPlaceholderImageContent=Gr,exports.getPresentationBackgroundGraphics=Tt,exports.getSlideCommandTarget=P,exports.getSlideElementDisplayName=De,exports.getSlideElementEditPermissionObjectIds=nn,exports.getSlideElementPermissionObjectId=tn,exports.getSlidePagePermissionObjectId=en,exports.getSlidePermissionValue=an,exports.getSlideThemePreset=ee,exports.isPresentationBackgroundGraphic=B,exports.normalizeSlideDocumentDataStream=Yr,exports.plainTextToSlideDocumentData=$,exports.resolveDefaultPlaceholderTextKey=Xn,exports.resolvePlaceholderActionIcons=Jn,exports.resolvePresentationBackgroundTargetMasterIds=Et,exports.resolveSlideElementTextDocument=Zr,exports.resolveSlideLayerPageSizeOptions=je,exports.resolveSlideTextBoxDefaultSize=Hn,exports.resolveSlideThemePreviewColors=Ur,exports.resolveSlideTransition=_n,exports.resolveThemeDefaultShapeText=pe,exports.resolvedSlideLayersToDrawingMap=Ce,exports.setPlaceholderImageContent=Kr,exports.setSlidePermissionValue=on,exports.slideDocumentDataToPlainText=Xr,exports.slideElementToDrawing=T;
+Object.defineProperty(exports, Symbol.toStringTag, {
+  'value': "Module"
+});
+let e = require('@univerjs/core'),
+  t = require('@univerjs/drawing'),
+  n = require('@univerjs-pro/engine-shape'),
+  r = require('@univerjs/engine-render'),
+  i = require('@univerjs/protocol'),
+  a = require('rxjs'),
+  o = require('@univerjs-pro/license'),
+  s = function (var_core_value_sigF455) {
+    return var_core_value_sigF455.Title = "title", var_core_value_sigF455.CenterTitle = "centerTitle", var_core_value_sigF455.Subtitle = "subtitle", var_core_value_sigF455.Body = "body", var_core_value_sigF455.Text = "text", var_core_value_sigF455.Object = "object", var_core_value_sigF455.Picture = "picture", var_core_value_sigF455.Chart = "chart", var_core_value_sigF455.Table = "table", var_core_value_sigF455.Diagram = "diagram", var_core_value_sigF455.Media = "media", var_core_value_sigF455.SlideNumber = "slideNumber", var_core_value_sigF455.Date = 'date', var_core_value_sigF455.Footer = 'footer', var_core_value_sigF455.Header = "header", var_core_value_sigF455;
+  }({}),
+  c = function (var_core_value_sig6E78) {
+    return var_core_value_sig6E78.Placeholder = 'placeholder', var_core_value_sig6E78.Text = "text", var_core_value_sig6E78.Shape = "shape", var_core_value_sig6E78.Image = "image", var_core_value_sig6E78.Chart = "chart", var_core_value_sig6E78.Table = 'table', var_core_value_sig6E78.Diagram = 'diagram', var_core_value_sig6E78.Media = "media", var_core_value_sig6E78.Group = 'group', var_core_value_sig6E78.Connector = "connector", var_core_value_sig6E78;
+  }({}),
+  l = function (var_core_value_sigB3EE) {
+    return var_core_value_sigB3EE.None = 'none', var_core_value_sigB3EE.Solid = "solid", var_core_value_sigB3EE.Gradient = "gradient", var_core_value_sigB3EE.Image = 'image', var_core_value_sigB3EE.Pattern = 'pattern', var_core_value_sigB3EE;
+  }({}),
+  u = function (var_core_value_sigC50A) {
+    return var_core_value_sigC50A.Slide = 'slide', var_core_value_sigC50A.Master = "master", var_core_value_sigC50A.Layout = "layout", var_core_value_sigC50A.HandoutMaster = "handoutMaster", var_core_value_sigC50A.NotesMaster = "notesMaster", var_core_value_sigC50A;
+  }({}),
+  d = function (var_core_value_sig11D0) {
+    return var_core_value_sig11D0.Blank = "blank", var_core_value_sig11D0.Title = "title", var_core_value_sig11D0.TitleAndBody = 'titleAndBody', var_core_value_sig11D0.TitleOnly = "titleOnly", var_core_value_sig11D0.SectionHeader = 'sectionHeader', var_core_value_sig11D0.TwoColumns = "twoColumns", var_core_value_sig11D0.Comparison = "comparison", var_core_value_sig11D0.PictureWithCaption = "pictureWithCaption", var_core_value_sig11D0.Custom = 'custom', var_core_value_sig11D0;
+  }({}),
+  f = function (var_core_value_sigB8ED) {
+    return var_core_value_sigB8ED.Standard4By3 = "standard4By3", var_core_value_sigB8ED.WideScreen16By9 = 'wideScreen16By9', var_core_value_sigB8ED.WideScreen16By10 = "wideScreen16By10", var_core_value_sigB8ED.Custom = 'custom', var_core_value_sigB8ED;
+  }({}),
+  p = function (var_core_value_sig8EAE) {
+    return var_core_value_sig8EAE.None = "none", var_core_value_sig8EAE.Fade = "fade", var_core_value_sig8EAE.Push = "push", var_core_value_sig8EAE.Wipe = 'wipe', var_core_value_sig8EAE.Cut = "cut", var_core_value_sig8EAE.Cover = "cover", var_core_value_sig8EAE.Uncover = "uncover", var_core_value_sig8EAE.Reveal = 'reveal', var_core_value_sig8EAE.Split = 'split', var_core_value_sig8EAE.Zoom = 'zoom', var_core_value_sig8EAE;
+  }({}),
+  m = function (var_core_value_sig1CDD) {
+    return var_core_value_sig1CDD.Left = "left", var_core_value_sig1CDD.Right = 'right', var_core_value_sig1CDD.Up = 'up', var_core_value_sig1CDD.Down = 'down', var_core_value_sig1CDD;
+  }({}),
+  h = function (var_core_value_sig0DB1) {
+    return var_core_value_sig0DB1.Slow = 'slow', var_core_value_sig0DB1.Medium = "medium", var_core_value_sig0DB1.Fast = "fast", var_core_value_sig0DB1;
+  }({}),
+  g = function (var_core_value_sig68A2) {
+    return var_core_value_sig68A2.EDIT = 'edit', var_core_value_sig68A2.THUMBNAIL = 'thumbnail', var_core_value_sig68A2.NOTES = 'notes', var_core_value_sig68A2.PRESENTATION = "presentation", var_core_value_sig68A2.PRESENTER = "presenter", var_core_value_sig68A2.MASTER = 'master', var_core_value_sig68A2.HANDOUT = "handout", var_core_value_sig68A2.READING = 'reading', var_core_value_sig68A2;
+  }({});
+function _(var_core_value_sigCC17, var_core_value_sig32AE, var_core_value_sigC753, var_core_value_sigFFD1 = {}) {
+  let var_core_value_sig81AE = var_core_value_sigC753[var_core_value_sigFFD1.subtleFill ?? 'acc1'],
+    var_core_value_sigF79F = var_core_value_sigC753[var_core_value_sigFFD1.moderateFill ?? "acc1"],
+    var_core_value_sig0E54 = var_core_value_sigC753[var_core_value_sigFFD1.gradientFrom ?? "acc5"],
+    var_core_value_sig3B17 = var_core_value_sigC753[var_core_value_sigFFD1.gradientTo ?? "acc1"],
+    var_core_value_sig6C4A = var_core_value_sigC753[var_core_value_sigFFD1.subtleLine ?? "acc1"],
+    var_core_value_sig73D9 = var_core_value_sigC753[var_core_value_sigFFD1.moderateLine ?? "dk2"],
+    var_core_value_sigEAF8 = var_core_value_sigC753[var_core_value_sigFFD1.intenseLine ?? "dk1"];
+  return {
+    'id': var_core_value_sigCC17,
+    'name': var_core_value_sig32AE,
+    'colorScheme': var_core_value_sigC753,
+    'fontScheme': {
+      'heading': "Calibri Light",
+      'body': "Calibri"
+    },
+    'fmtScheme': {
+      'name': var_core_value_sig32AE,
+      'fillStyleLst': [{
+        'fillType': n.ShapeFillEnum["SolidFill"],
+        'color': var_core_value_sig81AE,
+        'opacity': 0.2
+      }, {
+        'fillType': n.ShapeFillEnum["SolidFill"],
+        'color': var_core_value_sigF79F,
+        'opacity': 1
+      }, {
+        'fillType': n.ShapeFillEnum['GradientFill'],
+        'gradientAngle': 90,
+        'gradientStops': [{
+          'position': 0,
+          'color': var_core_value_sig0E54
+        }, {
+          'position': 1,
+          'color': var_core_value_sig3B17
+        }]
+      }],
+      'lnStyleLst': [{
+        'lineStrokeType': n.ShapeLineTypeEnum["SolidLine"],
+        'color': var_core_value_sig6C4A,
+        'width': 1,
+        'opacity': 1
+      }, {
+        'lineStrokeType': n.ShapeLineTypeEnum["SolidLine"],
+        'color': var_core_value_sig73D9,
+        'width': 1.5,
+        'opacity': 1
+      }, {
+        'lineStrokeType': n.ShapeLineTypeEnum["SolidLine"],
+        'color': var_core_value_sigEAF8,
+        'width': 2.25,
+        'opacity': 1
+      }],
+      'effectStyleLst': [{}, {
+        'outerShadow': {
+          'color': "rgba(0, 0, 0, 0.18)",
+          'blurRadius': 4,
+          'direction': 45,
+          'distance': 2,
+          'rotateWithShape': false
+        }
+      }, {
+        'outerShadow': {
+          'color': "rgba(0, 0, 0, 0.28)",
+          'blurRadius': 8,
+          'direction': 45,
+          'distance': 4,
+          'rotateWithShape': false
+        }
+      }],
+      'bgFillStyleLst': [{
+        'fillType': n.ShapeFillEnum["SolidFill"],
+        'color': var_core_value_sigC753.lt1,
+        'opacity': 1
+      }, {
+        'fillType': n.ShapeFillEnum['SolidFill'],
+        'color': var_core_value_sigC753.lt2,
+        'opacity': 1
+      }, {
+        'fillType': n.ShapeFillEnum["GradientFill"],
+        'gradientAngle': 90,
+        'gradientStops': [{
+          'position': 0,
+          'color': var_core_value_sigC753.lt1
+        }, {
+          'position': 1,
+          'color': var_core_value_sigC753.lt2
+        }]
+      }]
+    }
+  };
+}
+const v = [_("office", "Office", {
+  'dk1': "#000000",
+  'lt1': "#ffffff",
+  'dk2': "#44546a",
+  'lt2': '#e7e6e6',
+  'acc1': "#4472c4",
+  'acc2': "#ed7d31",
+  'acc3': "#a5a5a5",
+  'acc4': '#ffc000',
+  'acc5': "#5b9bd5",
+  'acc6': "#70ad47",
+  'hlink': "#0563c1",
+  'folHlink': "#954f72"
+}), _("gallery", 'Gallery', {
+  'dk1': "#1f2937",
+  'lt1': "#ffffff",
+  'dk2': '#374151',
+  'lt2': "#f3f4f6",
+  'acc1': "#2563eb",
+  'acc2': '#db2777',
+  'acc3': "#7c3aed",
+  'acc4': "#f59e0b",
+  'acc5': "#06b6d4",
+  'acc6': "#16a34a",
+  'hlink': "#1d4ed8",
+  'folHlink': '#9333ea'
+}), _("apex", "Apex", {
+  'dk1': "#111827",
+  'lt1': "#ffffff",
+  'dk2': "#334155",
+  'lt2': "#e2e8f0",
+  'acc1': '#0f766e',
+  'acc2': "#ea580c",
+  'acc3': "#64748b",
+  'acc4': "#ca8a04",
+  'acc5': "#0284c7",
+  'acc6': "#65a30d",
+  'hlink': "#0369a1",
+  'folHlink': "#7e22ce"
+}), _("paper", 'Paper', {
+  'dk1': '#172554',
+  'lt1': "#fffdf7",
+  'dk2': "#334155",
+  'lt2': '#f1efe7',
+  'acc1': "#2563eb",
+  'acc2': "#dc2626",
+  'acc3': "#0891b2",
+  'acc4': "#d97706",
+  'acc5': "#7c3aed",
+  'acc6': "#059669",
+  'hlink': "#1d4ed8",
+  'folHlink': "#be185d"
+}), _("civic", "Civic", {
+  'dk1': "#020617",
+  'lt1': "#ffffff",
+  'dk2': '#475569',
+  'lt2': "#e5e7eb",
+  'acc1': '#be123c',
+  'acc2': "#1d4ed8",
+  'acc3': "#047857",
+  'acc4': "#b45309",
+  'acc5': "#6d28d9",
+  'acc6': "#0f766e",
+  'hlink': '#1d4ed8',
+  'folHlink': "#9d174d"
+}), _("ion", "Ion", {
+  'dk1': "#0f172a",
+  'lt1': "#ffffff",
+  'dk2': "#334155",
+  'lt2': "#e0f2fe",
+  'acc1': "#0284c7",
+  'acc2': '#f97316',
+  'acc3': "#14b8a6",
+  'acc4': "#a855f7",
+  'acc5': '#64748b',
+  'acc6': '#84cc16',
+  'hlink': "#0369a1",
+  'folHlink': '#7e22ce'
+}, {
+  'moderateFill': "acc3",
+  'gradientFrom': 'acc2',
+  'gradientTo': "acc1",
+  'subtleLine': 'acc5',
+  'moderateLine': "acc1"
+}), _("facet", "Facet", {
+  'dk1': "#1e1b4b",
+  'lt1': "#ffffff",
+  'dk2': "#3730a3",
+  'lt2': "#eef2ff",
+  'acc1': '#6366f1',
+  'acc2': "#ec4899",
+  'acc3': "#f59e0b",
+  'acc4': '#10b981',
+  'acc5': "#0ea5e9",
+  'acc6': "#8b5cf6",
+  'hlink': "#4f46e5",
+  'folHlink': "#be185d"
+}), _("integral", "Integral", {
+  'dk1': "#1c1917",
+  'lt1': '#fffaf0',
+  'dk2': "#57534e",
+  'lt2': '#f5f0e8',
+  'acc1': "#b45309",
+  'acc2': '#2563eb',
+  'acc3': '#78716c',
+  'acc4': "#dc2626",
+  'acc5': "#059669",
+  'acc6': "#7c3aed",
+  'hlink': "#1d4ed8",
+  'folHlink': "#9333ea"
+}, {
+  'subtleFill': "acc4",
+  'moderateFill': "acc1",
+  'gradientFrom': "acc4",
+  'gradientTo': "acc6",
+  'moderateLine': 'acc3'
+}), _("retrospect", "Retrospect", {
+  'dk1': '#2f1b45',
+  'lt1': "#fff7ed",
+  'dk2': "#6b3f69",
+  'lt2': "#fdebd7",
+  'acc1': "#c2410c",
+  'acc2': "#be185d",
+  'acc3': "#7c3aed",
+  'acc4': "#0891b2",
+  'acc5': "#ca8a04",
+  'acc6': "#4d7c0f",
+  'hlink': "#9a3412",
+  'folHlink': "#86198f"
+}, {
+  'subtleFill': "acc2",
+  'moderateFill': "acc2",
+  'gradientFrom': "acc5",
+  'gradientTo': "acc3",
+  'subtleLine': "acc1",
+  'moderateLine': "acc2"
+}), _("organic", "Organic", {
+  'dk1': "#1f2933",
+  'lt1': '#fbfaf2',
+  'dk2': "#41513a",
+  'lt2': "#e8eadf",
+  'acc1': "#3f6212",
+  'acc2': '#a16207',
+  'acc3': "#0f766e",
+  'acc4': "#92400e",
+  'acc5': "#64748b",
+  'acc6': "#7c2d12",
+  'hlink': '#166534',
+  'folHlink': "#854d0e"
+}, {
+  'moderateFill': "acc3",
+  'gradientFrom': "acc2",
+  'gradientTo': "acc1",
+  'subtleLine': "acc6",
+  'moderateLine': "acc1"
+}), _('wisp', "Wisp", {
+  'dk1': '#111827',
+  'lt1': "#f8fafc",
+  'dk2': "#374151",
+  'lt2': "#e2e8f0",
+  'acc1': "#7c3aed",
+  'acc2': "#06b6d4",
+  'acc3': '#f97316',
+  'acc4': "#22c55e",
+  'acc5': '#64748b',
+  'acc6': "#e11d48",
+  'hlink': "#6d28d9",
+  'folHlink': "#be123c"
+}, {
+  'subtleFill': "acc2",
+  'moderateFill': "acc6",
+  'gradientFrom': "acc2",
+  'gradientTo': "acc1",
+  'moderateLine': 'acc6'
+}), _("parcel", "Parcel", {
+  'dk1': "#27272a",
+  'lt1': "#ffffff",
+  'dk2': '#52525b',
+  'lt2': "#f4f4f5",
+  'acc1': "#2563eb",
+  'acc2': "#ea580c",
+  'acc3': "#16a34a",
+  'acc4': "#9333ea",
+  'acc5': "#0891b2",
+  'acc6': "#ca8a04",
+  'hlink': "#1d4ed8",
+  'folHlink': "#7e22ce"
+})];
+function ee(var_core_value_sig0455) {
+  return v.find(var_core_value_sig0B45 => var_core_value_sig0B45.id === var_core_value_sig0455);
+}
+const y = v[0].colorScheme,
+  te = v[0].fmtScheme,
+  b = {
+    'id': v[0].id,
+    'name': "Office Theme",
+    'colorScheme': y,
+    'fontScheme': {
+      'heading': "Calibri Light",
+      'body': 'Calibri'
+    },
+    'fmtScheme': te
+  },
+  x = 'master-default',
+  ne = {
+    'id': x,
+    'pageType': 'master',
+    'name': "Office Theme",
+    'pageSize': {
+      'width': 960,
+      'height': 540
+    },
+    'elementOrder': [],
+    'elements': {},
+    'background': {
+      'type': "solid",
+      'color': "#ffffff"
+    }
+  };
+function S(var_core_value_sig737C, var_core_value_sig5AF5, var_core_value_sig9DE4, var_core_value_sig77FA) {
+  return {
+    'id': var_core_value_sig737C,
+    'pageType': "layout",
+    'layoutType': var_core_value_sig5AF5,
+    'name': var_core_value_sig9DE4,
+    'masterPageId': x,
+    'pageSize': {
+      'width': 960,
+      'height': 540
+    },
+    ...var_core_value_sig77FA
+  };
+}
+const C = {
+    'title': "layout-title",
+    'titleAndBody': 'layout-title-body',
+    'sectionHeader': "layout-section-header",
+    'twoColumns': "layout-two-columns",
+    'comparison': "layout-comparison",
+    'blank': "layout-blank",
+    'titleOnly': "layout-title-only",
+    'pictureWithCaption': 'layout-picture-caption',
+    'custom': "layout-custom"
+  },
+  re = {
+    'title': S(C.title, "title", "Title Slide", {
+      'elementOrder': ["ph-center-title", "ph-subtitle"],
+      'elements': {
+        'ph-center-title': {
+          'id': "ph-center-title",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 540 * 0.28,
+            'width': 864,
+            'height': 100
+          },
+          'placeholder': {
+            'id': "ph-center-title",
+            'type': "centerTitle"
+          }
+        },
+        'ph-subtitle': {
+          'id': "ph-subtitle",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 267.20000000000005,
+            'width': 864,
+            'height': 56
+          },
+          'placeholder': {
+            'id': "ph-subtitle",
+            'type': "subtitle"
+          }
+        }
+      }
+    }),
+    'titleAndBody': S(C.titleAndBody, "titleAndBody", "Title and Content", {
+      'elementOrder': ['ph-title', 'ph-body'],
+      'elements': {
+        'ph-title': {
+          'id': "ph-title",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 32,
+            'width': 864,
+            'height': 76
+          },
+          'placeholder': {
+            'id': 'ph-title',
+            'type': "title"
+          }
+        },
+        'ph-body': {
+          'id': "ph-body",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 128,
+            'width': 864,
+            'height': 380
+          },
+          'placeholder': {
+            'id': "ph-body",
+            'type': 'body'
+          }
+        }
+      }
+    }),
+    'sectionHeader': S(C.sectionHeader, "sectionHeader", "Section Header", {
+      'elementOrder': ["ph-center-title", "ph-text"],
+      'elements': {
+        'ph-center-title': {
+          'id': 'ph-center-title',
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 540 * 0.25,
+            'width': 864,
+            'height': 100
+          },
+          'placeholder': {
+            'id': "ph-center-title",
+            'type': "centerTitle"
+          }
+        },
+        'ph-text': {
+          'id': 'ph-text',
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 251,
+            'width': 864,
+            'height': 56
+          },
+          'placeholder': {
+            'id': "ph-text",
+            'type': "text"
+          }
+        }
+      }
+    }),
+    'twoColumns': S(C.twoColumns, "twoColumns", 'Two\x20Content', {
+      'elementOrder': ["ph-title", "ph-body-left", "ph-body-right"],
+      'elements': {
+        'ph-title': {
+          'id': "ph-title",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 32,
+            'width': 864,
+            'height': 76
+          },
+          'placeholder': {
+            'id': 'ph-title',
+            'type': 'title'
+          }
+        },
+        'ph-body-left': {
+          'id': "ph-body-left",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 128,
+            'width': 422,
+            'height': 380
+          },
+          'placeholder': {
+            'id': "ph-body-left",
+            'type': "body",
+            'index': 1
+          }
+        },
+        'ph-body-right': {
+          'id': "ph-body-right",
+          'type': "placeholder",
+          'transform': {
+            'left': 490,
+            'top': 128,
+            'width': 422,
+            'height': 380
+          },
+          'placeholder': {
+            'id': "ph-body-right",
+            'type': "body",
+            'index': 2
+          }
+        }
+      }
+    }),
+    'comparison': S(C.comparison, "comparison", "Comparison", {
+      'elementOrder': ['ph-title', "ph-text-left", "ph-text-right", "ph-body-left", "ph-body-right"],
+      'elements': {
+        'ph-title': {
+          'id': "ph-title",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 32,
+            'width': 864,
+            'height': 76
+          },
+          'placeholder': {
+            'id': 'ph-title',
+            'type': "title"
+          }
+        },
+        'ph-text-left': {
+          'id': 'ph-text-left',
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 128,
+            'width': 422,
+            'height': 40
+          },
+          'placeholder': {
+            'id': 'ph-text-left',
+            'type': "text",
+            'index': 1
+          }
+        },
+        'ph-text-right': {
+          'id': 'ph-text-right',
+          'type': "placeholder",
+          'transform': {
+            'left': 490,
+            'top': 128,
+            'width': 422,
+            'height': 40
+          },
+          'placeholder': {
+            'id': "ph-text-right",
+            'type': 'text',
+            'index': 2
+          }
+        },
+        'ph-body-left': {
+          'id': "ph-body-left",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 176,
+            'width': 422,
+            'height': 332
+          },
+          'placeholder': {
+            'id': "ph-body-left",
+            'type': 'body',
+            'index': 1
+          }
+        },
+        'ph-body-right': {
+          'id': "ph-body-right",
+          'type': 'placeholder',
+          'transform': {
+            'left': 490,
+            'top': 176,
+            'width': 422,
+            'height': 332
+          },
+          'placeholder': {
+            'id': "ph-body-right",
+            'type': 'body',
+            'index': 2
+          }
+        }
+      }
+    }),
+    'blank': S(C.blank, "blank", "Blank", {
+      'elementOrder': [],
+      'elements': {}
+    }),
+    'titleOnly': S(C.titleOnly, 'titleOnly', "Title Only", {
+      'elementOrder': ["ph-title"],
+      'elements': {
+        'ph-title': {
+          'id': "ph-title",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 32,
+            'width': 864,
+            'height': 76
+          },
+          'placeholder': {
+            'id': "ph-title",
+            'type': 'title'
+          }
+        }
+      }
+    }),
+    'pictureWithCaption': S(C.pictureWithCaption, "pictureWithCaption", "Picture with Caption", {
+      'elementOrder': ["ph-picture", "ph-caption"],
+      'elements': {
+        'ph-picture': {
+          'id': "ph-picture",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 32,
+            'width': 864,
+            'height': 388
+          },
+          'placeholder': {
+            'id': "ph-picture",
+            'type': "picture"
+          }
+        },
+        'ph-caption': {
+          'id': "ph-caption",
+          'type': "placeholder",
+          'transform': {
+            'left': 48,
+            'top': 436,
+            'width': 864,
+            'height': 56
+          },
+          'placeholder': {
+            'id': "ph-caption",
+            'type': 'text'
+          }
+        }
+      }
+    })
+  },
+  ie = ["title", "titleAndBody", "sectionHeader", "twoColumns", "comparison", "blank", "titleOnly", "pictureWithCaption"];
+function ae(var_core_value_sigA4A7 = {}) {
+  let {
+      layoutType: var_core_value_sig90F5 = "titleAndBody",
+      id: var_core_value_sigD2BA = (0, e.generateRandomId)(6),
+      name: var_core_value_sigA4DF,
+      masterPageId: var_core_value_sigCD3A = x,
+      layoutPageId: var_core_value_sigCC9D
+    } = var_core_value_sigA4A7,
+    var_core_value_sig519D = var_core_value_sigCC9D ?? C[var_core_value_sig90F5],
+    var_core_value_sigC7E7 = re[var_core_value_sig90F5];
+  return {
+    'id': var_core_value_sigD2BA,
+    'pageType': 'slide',
+    'name': var_core_value_sigA4DF ?? (var_core_value_sigC7E7 == null ? undefined : var_core_value_sigC7E7.name) ?? "Slide",
+    'masterPageId': var_core_value_sigCD3A,
+    'layoutPageId': var_core_value_sig519D,
+    'elementOrder': [],
+    'elements': {},
+    'showMasterSp': true
+  };
+}
+;
+function oe() {
+  return {
+    'theme': b,
+    'masterPageOrder': [x],
+    'masterPages': {
+      [x]: ne
+    },
+    'layoutPageOrder': ie.map(var_core_value_sig36F8 => C[var_core_value_sig36F8]),
+    'layoutPages': Object.fromEntries(ie.map(var_core_value_sig03E1 => [C[var_core_value_sig03E1], re[var_core_value_sig03E1]]))
+  };
+}
+;
+function se(var_core_value_sig6E1C) {
+  return typeof var_core_value_sig6E1C != "object" || !var_core_value_sig6E1C ? var_core_value_sig6E1C : JSON.parse(JSON.stringify(var_core_value_sig6E1C));
+}
+;
+function ce(var_core_value_sigFABC, var_core_value_sig413D, var_core_value_sig5BCE) {
+  return Object.defineProperty(var_core_value_sigFABC, var_core_value_sig413D, {
+    'configurable': true,
+    'enumerable': false,
+    'writable': true,
+    'value': var_core_value_sig5BCE
+  }), var_core_value_sigFABC;
+}
+;
+function le(var_core_value_sig8EF0) {
+  return {
+    ...b,
+    ...var_core_value_sig8EF0,
+    'colorScheme': {
+      ...b.colorScheme,
+      ...(var_core_value_sig8EF0 == null ? undefined : var_core_value_sig8EF0.colorScheme)
+    },
+    'fontScheme': {
+      ...b.fontScheme,
+      ...(var_core_value_sig8EF0 == null ? undefined : var_core_value_sig8EF0.fontScheme)
+    },
+    'fmtScheme': {
+      ...b.fmtScheme,
+      ...(var_core_value_sig8EF0 == null ? undefined : var_core_value_sig8EF0.fmtScheme)
+    }
+  };
+}
+;
+function ue(var_core_value_sig78AC, var_core_value_sig4CEF) {
+  var var_core_value_sigD57D;
+  return ((var_core_value_sigD57D = var_core_value_sig78AC.colorScheme) == null ? undefined : var_core_value_sigD57D[var_core_value_sig4CEF]) ?? var_core_value_sig4CEF;
+}
+;
+function de(var_core_value_sig2CC7) {
+  var var_core_value_sig4784;
+  return {
+    'isHorizontal': true,
+    'isRichText': false,
+    'text': '',
+    'fontFamily': (var_core_value_sig4784 = var_core_value_sig2CC7.fontScheme) == null ? undefined : var_core_value_sig4784.body,
+    'fontSize': 18,
+    'color': ue(var_core_value_sig2CC7, "lt1")
+  };
+}
+;
+function fe(var_core_value_sigC39E, var_core_value_sig16C7) {
+  let var_core_value_sig7481 = le(var_core_value_sig16C7),
+    var_core_value_sig08A3 = {
+      ...var_core_value_sigC39E.shapeData
+    };
+  if (!var_core_value_sig08A3.fill) {
+    var var_core_value_sig77D8;
+    ce(var_core_value_sig08A3, "fill", se(((var_core_value_sig77D8 = var_core_value_sig7481.fmtScheme) == null ? undefined : var_core_value_sig77D8.fillStyleLst[1]) ?? {
+      'fillType': n.ShapeFillEnum["SolidFill"],
+      'color': ue(var_core_value_sig7481, "acc1")
+    }));
+  }
+  if (!var_core_value_sig08A3.stroke) {
+    var var_core_value_sig78A3;
+    ce(var_core_value_sig08A3, "stroke", se(((var_core_value_sig78A3 = var_core_value_sig7481.fmtScheme) == null ? undefined : var_core_value_sig78A3.lnStyleLst[1]) ?? {
+      'lineStrokeType': n.ShapeLineTypeEnum["SolidLine"],
+      'color': ue(var_core_value_sig7481, "acc1"),
+      'width': 1.5
+    }));
+  }
+  if (var_core_value_sig08A3.shapeText && "isRichText" in var_core_value_sig08A3.shapeText && var_core_value_sig08A3.shapeText["isRichText"] === false) {
+    let var_core_value_sigBB57 = de(var_core_value_sig7481),
+      var_core_value_sig7C4A = {
+        ...var_core_value_sig08A3.shapeText
+      };
+    Object.keys(var_core_value_sigBB57).forEach(var_core_value_sigD955 => {
+      var_core_value_sig7C4A[var_core_value_sigD955] === undefined && ce(var_core_value_sig7C4A, var_core_value_sigD955, var_core_value_sigBB57[var_core_value_sigD955]);
+    }), var_core_value_sig08A3.shapeText = var_core_value_sig7C4A;
+  }
+  return {
+    ...var_core_value_sigC39E,
+    'shapeData': var_core_value_sig08A3
+  };
+}
+;
+function pe(var_core_value_sig649B) {
+  return de(le(var_core_value_sig649B));
+}
+;
+function w(var_core_value_sig6256) {
+  return (var_core_value_sig6256 == null ? undefined : var_core_value_sig6256.element["type"]) === "group";
+}
+;
+function me(var_core_value_sigE7A6, var_core_value_sigB505) {
+  let var_core_value_sig7428 = [],
+    var_core_value_sig1DCE = new Set();
+  return var_core_value_sigB505 == null || var_core_value_sigB505.forEach(var_core_value_sigE799 => {
+    let var_core_value_sigB601 = var_core_value_sigE7A6[var_core_value_sigE799];
+    !var_core_value_sigB601 || var_core_value_sig1DCE.has(var_core_value_sigE799) || (var_core_value_sig1DCE.add(var_core_value_sigE799), var_core_value_sig7428.push(var_core_value_sigB601));
+  }), Object.values(var_core_value_sigE7A6).forEach(var_core_value_sig8B71 => {
+    var_core_value_sig1DCE.has(var_core_value_sig8B71.drawingId) || (var_core_value_sig1DCE.add(var_core_value_sig8B71.drawingId), var_core_value_sig7428.push(var_core_value_sig8B71));
+  }), var_core_value_sig7428;
+}
+;
+function he(var_core_value_sig0567, var_core_value_sigA7F3, var_core_value_sigEACD) {
+  let var_core_value_sig901E = [],
+    var_core_value_sigF7BB = new Set(),
+    var_core_value_sigFA38 = var_core_value_sigAEFB => {
+      !var_core_value_sigAEFB || var_core_value_sigAEFB === var_core_value_sigA7F3 || var_core_value_sigF7BB.has(var_core_value_sigAEFB) || (var_core_value_sigF7BB.add(var_core_value_sigAEFB), var_core_value_sig901E.push(var_core_value_sigAEFB));
+    },
+    var_core_value_sig102B = var_core_value_sig0567[var_core_value_sigA7F3];
+  return w(var_core_value_sig102B) && (var_core_value_sig102B.element["children"] ?? []).forEach(var_core_value_sigFA38), me(var_core_value_sig0567, var_core_value_sigEACD).forEach(var_core_value_sig826B => {
+    var_core_value_sig826B.groupId === var_core_value_sigA7F3 && var_core_value_sigFA38(var_core_value_sig826B.drawingId);
+  }), var_core_value_sig901E;
+}
+;
+function ge(var_core_value_sigA7DB, var_core_value_sig5EEE, var_core_value_sig65B4) {
+  let var_core_value_sigF98E = [],
+    var_core_value_sigA470 = new Set(),
+    var_core_value_sig19A1 = var_core_value_sigCF89 => {
+      he(var_core_value_sigA7DB, var_core_value_sigCF89, var_core_value_sig65B4).forEach(var_core_value_sig48BD => {
+        var_core_value_sigA470.has(var_core_value_sig48BD) || (var_core_value_sigA470.add(var_core_value_sig48BD), var_core_value_sigF98E.push(var_core_value_sig48BD), w(var_core_value_sigA7DB[var_core_value_sig48BD]) && var_core_value_sig19A1(var_core_value_sig48BD));
+      });
+    };
+  return var_core_value_sig19A1(var_core_value_sig5EEE), var_core_value_sigF98E;
+}
+;
+function _e(var_core_value_sig81F7, var_core_value_sigBE51, var_core_value_sigAAD1) {
+  let var_core_value_sigBC1A = new Set();
+  var_core_value_sigAAD1.forEach(var_core_value_sig00CB => {
+    let var_core_value_sig77EE = var_core_value_sig81F7[var_core_value_sig00CB];
+    var_core_value_sig77EE && (var_core_value_sigBC1A.add(var_core_value_sig00CB), w(var_core_value_sig77EE) && ge(var_core_value_sig81F7, var_core_value_sig00CB, var_core_value_sigBE51).forEach(var_core_value_sig429F => {
+      var_core_value_sig81F7[var_core_value_sig429F] && var_core_value_sigBC1A.add(var_core_value_sig429F);
+    }));
+  });
+  let var_core_value_sig3F3A = new Map();
+  return var_core_value_sigBE51.forEach((var_core_value_sig9F76, var_core_value_sigB008) => var_core_value_sig3F3A.set(var_core_value_sig9F76, var_core_value_sigB008)), Array.from(var_core_value_sigBC1A).sort((var_core_value_sig8721, var_core_value_sig08BA) => (var_core_value_sig3F3A.get(var_core_value_sig8721) ?? 2 ** 53 - 1) - (var_core_value_sig3F3A.get(var_core_value_sig08BA) ?? 2 ** 53 - 1));
+}
+;
+function ve(var_core_value_sigA984) {
+  switch (var_core_value_sigA984) {
+    case "image":
+      return e.DrawingTypeEnum['DRAWING_IMAGE'];
+    case "shape":
+      return e.DrawingTypeEnum['DRAWING_SHAPE'];
+    case "chart":
+      return e.DrawingTypeEnum["DRAWING_CHART"];
+    case "table":
+      return e.DrawingTypeEnum["DRAWING_TABLE"];
+    case 'group':
+      return e.DrawingTypeEnum["DRAWING_GROUP"];
+    case "media":
+      return e.DrawingTypeEnum['DRAWING_VIDEO'];
+    default:
+      return e.DrawingTypeEnum["DRAWING_SHAPE"];
+  }
+}
+;
+function T(var_core_value_sigA504, var_core_value_sig05FF, var_core_value_sigFBF0, var_core_value_sig2F95, var_core_value_sigF0E1) {
+  let var_core_value_sig2D8D = var_core_value_sigFBF0.type === "shape" ? fe(var_core_value_sigFBF0, var_core_value_sigF0E1) : var_core_value_sigFBF0,
+    var_core_value_sigE5A6 = var_core_value_sigFBF0.transform;
+  return {
+    'unitId': var_core_value_sigA504,
+    'subUnitId': var_core_value_sig05FF,
+    'drawingId': var_core_value_sig2D8D.id,
+    'drawingType': ve(var_core_value_sig2D8D.type),
+    'transform': {
+      'left': var_core_value_sigE5A6.left ?? 0,
+      'top': var_core_value_sigE5A6.top ?? 0,
+      'width': var_core_value_sigE5A6.width ?? 0,
+      'height': var_core_value_sigE5A6.height ?? 0,
+      'angle': var_core_value_sigE5A6.rotation ?? 0,
+      'flipX': var_core_value_sigE5A6.flipX,
+      'flipY': var_core_value_sigE5A6.flipY
+    },
+    'hidden': var_core_value_sig2D8D.visible === false,
+    'element': var_core_value_sig2D8D,
+    'sourcePageType': var_core_value_sig2F95
+  };
+}
+;
+function ye(var_core_value_sigF449, var_core_value_sig38C5) {
+  return typeof var_core_value_sigF449 == "number" ? var_core_value_sigF449 * var_core_value_sig38C5 : var_core_value_sigF449;
+}
+;
+function be(var_core_value_sigC87D, var_core_value_sigCCDC, var_core_value_sigC310) {
+  if (!var_core_value_sigCCDC || !var_core_value_sigC310 || var_core_value_sigCCDC.width <= 0 || var_core_value_sigCCDC.height <= 0) return var_core_value_sigC87D;
+  let var_core_value_sigA4E8 = var_core_value_sigC310.width / var_core_value_sigCCDC.width,
+    var_core_value_sigDC07 = var_core_value_sigC310.height / var_core_value_sigCCDC.height;
+  if (var_core_value_sigA4E8 === 1 && var_core_value_sigDC07 === 1) return var_core_value_sigC87D;
+  let var_core_value_sig3474 = var_core_value_sigC87D.transform;
+  return {
+    ...var_core_value_sigC87D,
+    'transform': {
+      ...var_core_value_sig3474,
+      'left': ye(var_core_value_sig3474.left, var_core_value_sigA4E8),
+      'top': ye(var_core_value_sig3474.top, var_core_value_sigDC07),
+      'width': ye(var_core_value_sig3474.width, var_core_value_sigA4E8),
+      'height': ye(var_core_value_sig3474.height, var_core_value_sigDC07)
+    }
+  };
+}
+;
+function xe(var_core_value_sig4E80, var_core_value_sigD23B, var_core_value_sig2B2A, var_core_value_sig0B5C) {
+  return var_core_value_sig4E80 === "slide" ? var_core_value_sig0B5C.id : var_core_value_sig4E80 + ':' + var_core_value_sigD23B + ':' + var_core_value_sig2B2A + ':' + var_core_value_sig0B5C.id;
+}
+;
+function Se(var_core_value_sig7D42, var_core_value_sig8FDE, var_core_value_sig78E6) {
+  var var_core_value_sig541F;
+  if (var_core_value_sig7D42 === "slide" || var_core_value_sig8FDE.type !== "group") return var_core_value_sig8FDE;
+  let var_core_value_sig417B = (var_core_value_sig541F = var_core_value_sig8FDE.children) == null ? undefined : var_core_value_sig541F.map(var_core_value_sigDBB5 => var_core_value_sig78E6.get(var_core_value_sigDBB5) ?? var_core_value_sigDBB5);
+  return var_core_value_sig417B ? {
+    ...var_core_value_sig8FDE,
+    'children': var_core_value_sig417B
+  } : var_core_value_sig8FDE;
+}
+;
+function Ce(var_core_value_sigAA90, var_core_value_sigE92D, var_core_value_sig9940, var_core_value_sig682D, var_core_value_sig1435 = {}) {
+  var var_core_value_sig4082, var_core_value_sigC049, var_core_value_sigE5C3;
+  let var_core_value_sigCCAA = {},
+    var_core_value_sigF32D = [],
+    var_core_value_sig9427 = (var_core_value_sigCFAC, var_core_value_sig237B, var_core_value_sigFEAB) => {
+      let var_core_value_sigE347 = new Map();
+      var_core_value_sig237B.forEach((var_core_value_sigF62A, var_core_value_sig8178) => {
+        var_core_value_sigE347.set(var_core_value_sigF62A.id, xe(var_core_value_sigCFAC, var_core_value_sigE92D, var_core_value_sig8178, var_core_value_sigF62A));
+      }), var_core_value_sig237B.forEach((var_core_value_sigE9ED, var_core_value_sigB577) => {
+        var var_core_value_sig9572;
+        let var_core_value_sigD873 = xe(var_core_value_sigCFAC, var_core_value_sigE92D, var_core_value_sigB577, var_core_value_sigE9ED),
+          var_core_value_sigA12B = Se(var_core_value_sigCFAC, var_core_value_sigCFAC === "slide" ? var_core_value_sigE9ED : be(var_core_value_sigE9ED, var_core_value_sigFEAB, (var_core_value_sig9572 = var_core_value_sig1435.pageSize) == null ? undefined : var_core_value_sig9572.target), var_core_value_sigE347);
+        var_core_value_sigCCAA[var_core_value_sigD873] = {
+          ...T(var_core_value_sigAA90, var_core_value_sigE92D, var_core_value_sigA12B, var_core_value_sigCFAC, var_core_value_sig682D),
+          'drawingId': var_core_value_sigD873,
+          'subUnitId': var_core_value_sigE92D
+        }, var_core_value_sigF32D.push(var_core_value_sigD873);
+      });
+    };
+  return var_core_value_sig9427("master", var_core_value_sig9940.masterLayer, (var_core_value_sig4082 = var_core_value_sig1435.pageSize) == null ? undefined : var_core_value_sig4082.master), var_core_value_sig9427("layout", var_core_value_sig9940.layoutLayer, (var_core_value_sigC049 = var_core_value_sig1435.pageSize) == null ? undefined : var_core_value_sigC049.layout), var_core_value_sig9427("slide", var_core_value_sig9940.slideLayer, (var_core_value_sigE5C3 = var_core_value_sig1435.pageSize) == null ? undefined : var_core_value_sigE5C3.target), {
+    'data': we(var_core_value_sigCCAA, var_core_value_sigF32D),
+    'order': var_core_value_sigF32D
+  };
+}
+;
+function we(var_core_value_sig21F4, var_core_value_sigA345 = []) {
+  let var_core_value_sigA468 = {
+      ...var_core_value_sig21F4
+    },
+    var_core_value_sig1561 = new Set();
+  Object.values(var_core_value_sigA468).forEach(var_core_value_sig3C5B => {
+    w(var_core_value_sig3C5B) && he(var_core_value_sigA468, var_core_value_sig3C5B.drawingId, var_core_value_sigA345).forEach(var_core_value_sigF230 => {
+      var_core_value_sig1561.add(var_core_value_sigF230);
+    });
+  });
+  let var_core_value_sigDF14 = [...var_core_value_sigA345, ...Object.keys(var_core_value_sigA468).filter(var_core_value_sig200B => !var_core_value_sigA345.includes(var_core_value_sig200B))],
+    var_core_value_sig842F = (var_core_value_sig3863, var_core_value_sigC97C, var_core_value_sigC4B1) => {
+      if (var_core_value_sigC4B1.has(var_core_value_sig3863)) return;
+      let var_core_value_sig1BD9 = var_core_value_sigA468[var_core_value_sig3863];
+      if (!var_core_value_sig1BD9) return;
+      let var_core_value_sigE43E = var_core_value_sigC97C || var_core_value_sig1BD9.hidden === true || var_core_value_sig1BD9.element["visible"] === false;
+      var_core_value_sig1BD9.hidden !== var_core_value_sigE43E && (var_core_value_sigA468[var_core_value_sig3863] = {
+        ...var_core_value_sig1BD9,
+        'hidden': var_core_value_sigE43E
+      });
+      let var_core_value_sigA937 = var_core_value_sigA468[var_core_value_sig3863];
+      if (!w(var_core_value_sigA937)) return;
+      let var_core_value_sigCAD5 = new Set(var_core_value_sigC4B1);
+      var_core_value_sigCAD5.add(var_core_value_sig3863), he(var_core_value_sigA468, var_core_value_sig3863, var_core_value_sigA345).forEach(var_core_value_sig09B8 => {
+        var_core_value_sig842F(var_core_value_sig09B8, var_core_value_sigE43E, var_core_value_sigCAD5);
+      });
+    };
+  return var_core_value_sigDF14.forEach(var_core_value_sigE503 => {
+    var_core_value_sig1561.has(var_core_value_sigE503) || var_core_value_sig842F(var_core_value_sigE503, false, new Set());
+  }), var_core_value_sigA468;
+}
+var Te = class extends t.UnitDrawingService {
+  removeDrawingsWithoutGroupExpansion(var_core_value_sig48DD) {
+    var var_core_value_sig5E6A;
+    if (var_core_value_sig48DD.length === 0) return [];
+    let {
+        unitId: var_core_value_sigB7FC,
+        subUnitId: var_core_value_sig9CD9
+      } = var_core_value_sig48DD[0],
+      var_core_value_sigFD0C = new Set(),
+      var_core_value_sig849B = this.getDrawingOrder(var_core_value_sigB7FC, var_core_value_sig9CD9),
+      var_core_value_sig5F1A = new Map();
+    var_core_value_sig849B.forEach((var_core_value_sig6F91, var_core_value_sigF9C7) => var_core_value_sig5F1A.set(var_core_value_sig6F91, var_core_value_sigF9C7));
+    let var_core_value_sigB455 = (var_core_value_sig5E6A = this.drawingManagerData[var_core_value_sigB7FC]) == null ? undefined : var_core_value_sig5E6A[var_core_value_sig9CD9];
+    if (!var_core_value_sigB455) return [];
+    let var_core_value_sig5241 = var_core_value_sig48DD.filter(var_core_value_sig8895 => var_core_value_sigFD0C.has(var_core_value_sig8895.drawingId) || !this.getDrawingByParam(var_core_value_sig8895) ? false : (var_core_value_sigFD0C.add(var_core_value_sig8895.drawingId), true)).sort((var_core_value_sigC80B, var_core_value_sig284F) => (var_core_value_sig5F1A.get(var_core_value_sigC80B.drawingId) ?? -1 / 0) - (var_core_value_sig5F1A.get(var_core_value_sig284F.drawingId) ?? -1 / 0));
+    return [...var_core_value_sig5241].sort((var_core_value_sigE154, var_core_value_sig4632) => {
+      let var_core_value_sig12F2 = var_core_value_sig5F1A.get(var_core_value_sigE154.drawingId) ?? -1 / 0;
+      return (var_core_value_sig5F1A.get(var_core_value_sig4632.drawingId) ?? -1 / 0) - var_core_value_sig12F2;
+    }).forEach(var_core_value_sig2259 => {
+      delete var_core_value_sigB455.data[var_core_value_sig2259.drawingId];
+      let var_core_value_sig9E2F = var_core_value_sigB455.order['indexOf'](var_core_value_sig2259.drawingId);
+      var_core_value_sig9E2F >= 0 && var_core_value_sigB455.order["splice"](var_core_value_sig9E2F, 1);
+    }), var_core_value_sig5241;
+  }
+  getDrawingsByGroup(var_core_value_sigC6E5) {
+    let {
+        unitId: var_core_value_sigCEFB,
+        subUnitId: var_core_value_sig1537,
+        drawingId: var_core_value_sigE4C6
+      } = var_core_value_sigC6E5,
+      var_core_value_sig4313 = this.getDrawingData(var_core_value_sigCEFB, var_core_value_sig1537);
+    return he(var_core_value_sig4313, var_core_value_sigE4C6).map(var_core_value_sigD082 => var_core_value_sig4313[var_core_value_sigD082]).filter(var_core_value_sigDBB7 => !!var_core_value_sigDBB7);
+  }
+  getDrawingsByGroupNested(var_core_value_sigFC87) {
+    let {
+        unitId: var_core_value_sig156F,
+        subUnitId: var_core_value_sigDD51
+      } = var_core_value_sigFC87,
+      var_core_value_sigF057 = this.getDrawingByParam(var_core_value_sigFC87);
+    if (!var_core_value_sigF057) return null;
+    let var_core_value_sig72F6 = this.getDrawingData(var_core_value_sig156F, var_core_value_sigDD51),
+      var_core_value_sig9FBA = [],
+      var_core_value_sigFE01 = [],
+      var_core_value_sigA2CE = {},
+      var_core_value_sig1975 = new Set(),
+      var_core_value_sig6EA1 = var_core_value_sigD0A8 => {
+        let var_core_value_sigF4B9 = var_core_value_sigD0A8.drawingId;
+        if (var_core_value_sig1975.has(var_core_value_sigF4B9)) return;
+        var_core_value_sig1975.add(var_core_value_sigF4B9);
+        let var_core_value_sig5CEE = he(var_core_value_sig72F6, var_core_value_sigF4B9);
+        var_core_value_sigA2CE[var_core_value_sigF4B9] = {
+          'drawingId': var_core_value_sigF4B9,
+          'children': var_core_value_sig5CEE
+        }, var_core_value_sig5CEE.forEach(var_core_value_sig7524 => {
+          let var_core_value_sig2AD8 = var_core_value_sig72F6[var_core_value_sig7524];
+          if (var_core_value_sig2AD8) {
+            if (w(var_core_value_sig2AD8)) {
+              var_core_value_sig6EA1(var_core_value_sig2AD8), var_core_value_sigFE01.push(var_core_value_sig2AD8);
+              return;
+            }
+            var_core_value_sig9FBA.push(var_core_value_sig2AD8);
+          }
+        });
+      };
+    return var_core_value_sig6EA1(var_core_value_sigF057), var_core_value_sigFE01.push(var_core_value_sigF057), {
+      'nestedIdRecord': var_core_value_sigA2CE,
+      'flatChildren': var_core_value_sig9FBA,
+      'groups': var_core_value_sigFE01
+    };
+  }
+};
+const E = (0, e.createIdentifier)("slide.slide-drawing.service");
+function Ee(var_core_value_sigC4C0) {
+  switch (var_core_value_sigC4C0.type) {
+    case "shape":
+      return String(var_core_value_sigC4C0.shapeData["shapeType"] ?? var_core_value_sigC4C0.type);
+    case "connector":
+      return String(var_core_value_sigC4C0.connectorData["shapeType"] ?? var_core_value_sigC4C0.type);
+    default:
+      return var_core_value_sigC4C0.type;
+  }
+}
+;
+function De(var_core_value_sig214A) {
+  return var_core_value_sig214A.name || var_core_value_sig214A.id;
+}
+;
+function Oe(var_core_value_sigCCC3, var_core_value_sig986E, var_core_value_sig537C = {}) {
+  var var_core_value_sigBBBC, var_core_value_sig5440;
+  if ((var_core_value_sigBBBC = var_core_value_sigCCC3.name) != null && var_core_value_sigBBBC.trim()) return var_core_value_sigCCC3;
+  let var_core_value_sigE28B = ((var_core_value_sig5440 = var_core_value_sig537C.nameBase) == null ? undefined : var_core_value_sig5440.trim()) || Ee(var_core_value_sigCCC3);
+  return {
+    ...var_core_value_sigCCC3,
+    'name': (0, n.createUniqueShapeName)(var_core_value_sigE28B, Array.from(var_core_value_sig986E).map(De))
+  };
+}
+const ke = new Set(Object.values(C)),
+  Ae = {
+    'width': 960,
+    'height': 540
+  };
+function je(var_core_value_sig0FD9, var_core_value_sig5649) {
+  var var_core_value_sigAF82, var_core_value_sig21A2;
+  let var_core_value_sig5C1D = var_core_value_sig0FD9.getSnapshot(),
+    var_core_value_sig4CBA = var_core_value_sig5C1D.slides[var_core_value_sig5649],
+    var_core_value_sig8E65 = var_core_value_sig4CBA != null && var_core_value_sig4CBA.layoutPageId ? (var_core_value_sigAF82 = var_core_value_sig5C1D.layoutPages) == null ? undefined : var_core_value_sigAF82[var_core_value_sig4CBA.layoutPageId] : undefined,
+    var_core_value_sig772C = (var_core_value_sig4CBA == null ? undefined : var_core_value_sig4CBA.masterPageId) ?? (var_core_value_sig8E65 == null ? undefined : var_core_value_sig8E65.masterPageId),
+    var_core_value_sigF309 = var_core_value_sig772C ? (var_core_value_sig21A2 = var_core_value_sig5C1D.masterPages) == null ? undefined : var_core_value_sig21A2[var_core_value_sig772C] : undefined,
+    var_core_value_sig44F9 = var_core_value_sig5C1D.defaultPageSize;
+  return {
+    'pageSize': {
+      'target': (var_core_value_sig4CBA == null ? undefined : var_core_value_sig4CBA.pageSize) ?? var_core_value_sig44F9,
+      'layout': (var_core_value_sig8E65 == null ? undefined : var_core_value_sig8E65.pageSize) ?? (var_core_value_sig8E65 && ke.has(var_core_value_sig8E65.id) ? Ae : var_core_value_sig44F9),
+      'master': (var_core_value_sigF309 == null ? undefined : var_core_value_sigF309.pageSize) ?? ((var_core_value_sigF309 == null ? undefined : var_core_value_sigF309.id) === "master-default" ? Ae : var_core_value_sig44F9)
+    }
+  };
+}
+;
+function D(var_core_value_sigE532, var_core_value_sigF381) {
+  let var_core_value_sigCB92 = var_core_value_sigF381.getId();
+  return Ce(var_core_value_sigE532.getUnitId(), var_core_value_sigCB92, var_core_value_sigF381.resolveElements(), var_core_value_sigE532.getThemeDataForPage(var_core_value_sigCB92), je(var_core_value_sigE532, var_core_value_sigCB92));
+}
+;
+function Me(var_core_value_sigC844, var_core_value_sig2ED4, var_core_value_sig0477) {
+  return var_core_value_sig0477.map(var_core_value_sig029F => ({
+    'unitId': var_core_value_sigC844,
+    'subUnitId': var_core_value_sig2ED4,
+    'drawingId': var_core_value_sig029F
+  }));
+}
+;
+function O(var_core_value_sig6FDF, var_core_value_sig27C4, var_core_value_sig3E1A, var_core_value_sig7FB0) {
+  let var_core_value_sig5215 = var_core_value_sig27C4.pageManager["getSlide"](var_core_value_sig7FB0);
+  if (!var_core_value_sig5215) return false;
+  let var_core_value_sig5204 = var_core_value_sig6FDF.getDrawingData(var_core_value_sig3E1A, var_core_value_sig7FB0),
+    var_core_value_sig5E11 = var_core_value_sig6FDF.getDrawingOrder(var_core_value_sig3E1A, var_core_value_sig7FB0),
+    var_core_value_sig4D58 = new Set(var_core_value_sig5E11),
+    {
+      data: var_core_value_sig2DBD,
+      order: var_core_value_sig424E
+    } = D(var_core_value_sig27C4, var_core_value_sig5215),
+    var_core_value_sigF481 = new Set(var_core_value_sig424E);
+  var_core_value_sig6FDF.drawingManagerData[var_core_value_sig3E1A] || (var_core_value_sig6FDF.drawingManagerData[var_core_value_sig3E1A] = {}), var_core_value_sig6FDF.drawingManagerData[var_core_value_sig3E1A][var_core_value_sig7FB0] = {
+    'data': var_core_value_sig2DBD,
+    'order': var_core_value_sig424E
+  };
+  let var_core_value_sigD7F2 = var_core_value_sig5E11.filter(var_core_value_sig3767 => !var_core_value_sigF481.has(var_core_value_sig3767)),
+    var_core_value_sig7CF3 = var_core_value_sig424E.filter(var_core_value_sig670B => !var_core_value_sig4D58.has(var_core_value_sig670B)),
+    var_core_value_sig9DC6 = var_core_value_sig424E.filter(var_core_value_sig6912 => var_core_value_sig4D58.has(var_core_value_sig6912) && var_core_value_sig5204[var_core_value_sig6912] !== var_core_value_sig2DBD[var_core_value_sig6912]);
+  return var_core_value_sigD7F2.length > 0 && var_core_value_sig6FDF.removeNotification(Me(var_core_value_sig3E1A, var_core_value_sig7FB0, var_core_value_sigD7F2)), var_core_value_sig7CF3.length > 0 && var_core_value_sig6FDF.addNotification(Me(var_core_value_sig3E1A, var_core_value_sig7FB0, var_core_value_sig7CF3)), var_core_value_sig9DC6.length > 0 && var_core_value_sig6FDF.updateNotification(Me(var_core_value_sig3E1A, var_core_value_sig7FB0, var_core_value_sig9DC6)), var_core_value_sigD7F2.length === 0 && var_core_value_sig7CF3.length === 0 && var_core_value_sig9DC6.length === 0 && var_core_value_sig424E.length > 0 && var_core_value_sig6FDF.updateNotification(Me(var_core_value_sig3E1A, var_core_value_sig7FB0, var_core_value_sig424E)), true;
+}
+;
+function Ne(var_core_value_sig6643, var_core_value_sig4124) {
+  let var_core_value_sigBF1C = var_core_value_sig6643.getSnapshot(),
+    var_core_value_sigEEEF = new Set();
+  return var_core_value_sigBF1C.slides[var_core_value_sig4124] && var_core_value_sigEEEF.add(var_core_value_sig4124), Object.values(var_core_value_sigBF1C.slides).forEach(var_core_value_sigE235 => {
+    var var_core_value_sig7664;
+    if (var_core_value_sigE235.masterPageId === var_core_value_sig4124 || var_core_value_sigE235.layoutPageId === var_core_value_sig4124) {
+      var_core_value_sigEEEF.add(var_core_value_sigE235.id);
+      return;
+    }
+    let var_core_value_sig2281 = var_core_value_sigE235.layoutPageId ? (var_core_value_sig7664 = var_core_value_sigBF1C.layoutPages) == null ? undefined : var_core_value_sig7664[var_core_value_sigE235.layoutPageId] : undefined;
+    (var_core_value_sig2281 == null ? undefined : var_core_value_sig2281.masterPageId) === var_core_value_sig4124 && var_core_value_sigEEEF.add(var_core_value_sigE235.id);
+  }), Array.from(var_core_value_sigEEEF);
+}
+;
+function k(var_core_value_sig9A01, var_core_value_sig674F, var_core_value_sigC8F6, var_core_value_sig8A26) {
+  Ne(var_core_value_sig674F, var_core_value_sig8A26).forEach(var_core_value_sig5E86 => {
+    O(var_core_value_sig9A01, var_core_value_sig674F, var_core_value_sigC8F6, var_core_value_sig5E86);
+  });
+}
+;
+function Pe(var_core_value_sigD073) {
+  let var_core_value_sigF631 = var_core_value_sigD073.shapeData["shapeType"];
+  if (!var_core_value_sigF631) return var_core_value_sigD073;
+  try {
+    let var_core_value_sig6998 = new n["ShapeModel"](var_core_value_sigF631, var_core_value_sigD073.id, var_core_value_sigD073.shapeData, var_core_value_sigD073.name).toJSON().shapeData,
+      var_core_value_sigF639 = {
+        ...var_core_value_sigD073.shapeData
+      };
+    return delete var_core_value_sigF639.adjustValues, var_core_value_sig6998.adjustValues && (var_core_value_sigF639.adjustValues = var_core_value_sig6998.adjustValues), {
+      ...var_core_value_sigD073,
+      'shapeData': var_core_value_sigF639
+    };
+  } catch {
+    return var_core_value_sigD073;
+  }
+}
+;
+function A(var_core_value_sig2278) {
+  var_core_value_sig2278 && Object.entries(var_core_value_sig2278.elements).forEach(([var_core_value_sigEAE5, var_core_value_sigE94C]) => {
+    var_core_value_sig2278.elements[var_core_value_sigEAE5] = Fe(var_core_value_sigE94C);
+  });
+}
+;
+function Fe(var_core_value_sig7053) {
+  return var_core_value_sig7053.type === "shape" ? Pe(var_core_value_sig7053) : var_core_value_sig7053;
+}
+;
+function Ie(var_core_value_sig52F1) {
+  return Object.values(var_core_value_sig52F1.slides).forEach(A), Object.values(var_core_value_sig52F1.masterPages ?? {}).forEach(A), Object.values(var_core_value_sig52F1.layoutPages ?? {}).forEach(A), Object.values(var_core_value_sig52F1.handoutMasterPages ?? {}).forEach(A), Object.values(var_core_value_sig52F1.notesMasterPages ?? {}).forEach(A), var_core_value_sig52F1;
+}
+;
+function Le(var_core_value_sig1E74, var_core_value_sig1E84, var_core_value_sig133B) {
+  if (var_core_value_sig1E84 === "slide") return var_core_value_sig1E74.slides[var_core_value_sig133B] ?? null;
+  if (var_core_value_sig1E84 === 'master') {
+    var var_core_value_sig69B8;
+    return ((var_core_value_sig69B8 = var_core_value_sig1E74.masterPages) == null ? undefined : var_core_value_sig69B8[var_core_value_sig133B]) ?? null;
+  }
+  if (var_core_value_sig1E84 === "layout") {
+    var var_core_value_sig983D;
+    return ((var_core_value_sig983D = var_core_value_sig1E74.layoutPages) == null ? undefined : var_core_value_sig983D[var_core_value_sig133B]) ?? null;
+  }
+  return null;
+}
+;
+function Re(var_core_value_sig9A03, var_core_value_sig3363) {
+  return var_core_value_sig3363 ? {
+    ...var_core_value_sig9A03,
+    'transform': {
+      ...var_core_value_sig9A03.transform,
+      'left': var_core_value_sig3363.left,
+      'top': var_core_value_sig3363.top,
+      'width': var_core_value_sig3363.width,
+      'height': var_core_value_sig3363.height,
+      'rotation': var_core_value_sig3363.angle,
+      'flipX': var_core_value_sig3363.flipX,
+      'flipY': var_core_value_sig3363.flipY
+    }
+  } : var_core_value_sig9A03;
+}
+;
+function ze(var_core_value_sigF64A, var_core_value_sig25EC, var_core_value_sigA790) {
+  let var_core_value_sig9A5E = var_core_value_sigF64A.getSnapshot();
+  if (var_core_value_sig25EC.sourcePageType === "slide") {
+    let var_core_value_sig6D47 = var_core_value_sigF64A.pageManager['getSlide'](var_core_value_sig25EC.subUnitId);
+    if (!var_core_value_sig6D47) return false;
+    let var_core_value_sigCB82 = Re(var_core_value_sig25EC.element, var_core_value_sig25EC.transform);
+    return var_core_value_sig6D47.getData().elements[var_core_value_sig25EC.element['id']] ? (var_core_value_sig6D47.updateElement(var_core_value_sig25EC.element['id'], var_core_value_sigCB82), true) : (var_core_value_sig6D47.addElement(var_core_value_sigCB82, var_core_value_sigA790), true);
+  }
+  let var_core_value_sig01B9 = Le(var_core_value_sig9A5E, var_core_value_sig25EC.sourcePageType, var_core_value_sig25EC.subUnitId);
+  if (!var_core_value_sig01B9) return false;
+  let var_core_value_sigD6A9 = Fe(Re(var_core_value_sig25EC.element, var_core_value_sig25EC.transform)),
+    var_core_value_sig0FCF = var_core_value_sig01B9.elements[var_core_value_sigD6A9.id];
+  if (var_core_value_sig01B9.elements = {
+    ...var_core_value_sig01B9.elements,
+    [var_core_value_sigD6A9.id]: var_core_value_sigD6A9
+  }, !var_core_value_sig0FCF) {
+    let var_core_value_sigCF4E = [...var_core_value_sig01B9.elementOrder],
+      var_core_value_sig6CAD = var_core_value_sigA790 === undefined ? var_core_value_sigCF4E.length : Math.max(0, Math.min(var_core_value_sigA790, var_core_value_sigCF4E.length));
+    var_core_value_sigCF4E.splice(var_core_value_sig6CAD, 0, var_core_value_sigD6A9.id), var_core_value_sig01B9.elementOrder = var_core_value_sigCF4E;
+  }
+  return true;
+}
+;
+function Be(var_core_value_sigCF96, var_core_value_sigC4E9, var_core_value_sigF612, var_core_value_sigAA6C) {
+  let var_core_value_sig8BFA = Fe(Re(var_core_value_sigF612, var_core_value_sigAA6C));
+  if (var_core_value_sigC4E9.sourcePageType === 'slide') {
+    let var_core_value_sig8CF5 = var_core_value_sigCF96.pageManager["getSlide"](var_core_value_sigC4E9.subUnitId);
+    return var_core_value_sig8CF5 ? (var_core_value_sig8CF5.updateElement(var_core_value_sigC4E9.element['id'], var_core_value_sig8BFA), true) : false;
+  }
+  let var_core_value_sig236B = Le(var_core_value_sigCF96.getSnapshot(), var_core_value_sigC4E9.sourcePageType, var_core_value_sigC4E9.subUnitId);
+  return !var_core_value_sig236B || !var_core_value_sig236B.elements[var_core_value_sigC4E9.element['id']] ? false : (var_core_value_sig236B.elements = {
+    ...var_core_value_sig236B.elements,
+    [var_core_value_sigC4E9.element['id']]: var_core_value_sig8BFA
+  }, true);
+}
+;
+function Ve(var_core_value_sig1951, var_core_value_sigFEA0) {
+  if (var_core_value_sigFEA0.sourcePageType === "slide") {
+    let var_core_value_sigDDD7 = var_core_value_sig1951.pageManager['getSlide'](var_core_value_sigFEA0.subUnitId);
+    return var_core_value_sigDDD7 ? (var_core_value_sigDDD7.removeElement(var_core_value_sigFEA0.element['id']), true) : false;
+  }
+  let var_core_value_sig931A = Le(var_core_value_sig1951.getSnapshot(), var_core_value_sigFEA0.sourcePageType, var_core_value_sigFEA0.subUnitId);
+  if (!var_core_value_sig931A || !var_core_value_sig931A.elements[var_core_value_sigFEA0.element['id']]) return false;
+  let var_core_value_sigEE7D = {
+    ...var_core_value_sig931A.elements
+  };
+  return delete var_core_value_sigEE7D[var_core_value_sigFEA0.element['id']], var_core_value_sig931A.elements = var_core_value_sigEE7D, var_core_value_sig931A.elementOrder = var_core_value_sig931A.elementOrder["filter"](var_core_value_sigB2CE => var_core_value_sigB2CE !== var_core_value_sigFEA0.element['id']), true;
+}
+const j = {
+    'id': 'slide.mutation.add-slide-element',
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig3585, var_core_value_sig31A8) => {
+      let {
+          unitId: var_core_value_sigA4DA,
+          subUnitId: var_core_value_sig6FC0,
+          sourcePageType: var_core_value_sig4FAE = 'slide',
+          insertIndex: var_core_value_sig6217,
+          nameBase: var_core_value_sigB805
+        } = var_core_value_sig31A8,
+        var_core_value_sig1FCC = var_core_value_sig3585.get(e.IUniverInstanceService).getUnit(var_core_value_sigA4DA, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig1FCC) return false;
+      let var_core_value_sigB7F9 = var_core_value_sig3585.get(E),
+        var_core_value_sigB1A2 = var_core_value_sig1FCC.pageManager["getSlide"](var_core_value_sig6FC0),
+        var_core_value_sig526D = T(var_core_value_sigA4DA, var_core_value_sig6FC0, Oe(var_core_value_sig31A8.element, Object.values((var_core_value_sigB1A2 == null ? undefined : var_core_value_sigB1A2.getData().elements) ?? {}), {
+          'nameBase': var_core_value_sigB805
+        }), var_core_value_sig4FAE);
+      if (ze(var_core_value_sig1FCC, var_core_value_sig526D, var_core_value_sig6217), var_core_value_sig4FAE === 'slide' && O(var_core_value_sigB7F9, var_core_value_sig1FCC, var_core_value_sigA4DA, var_core_value_sig6FC0)) return true;
+      if (var_core_value_sig4FAE === "master" || var_core_value_sig4FAE === "layout") return k(var_core_value_sigB7F9, var_core_value_sig1FCC, var_core_value_sigA4DA, var_core_value_sig6FC0), true;
+      let var_core_value_sigBDB5 = var_core_value_sigB7F9.getBatchAddOp([var_core_value_sig526D]);
+      var_core_value_sigB7F9.applyJson1(var_core_value_sigA4DA, var_core_value_sig6FC0, var_core_value_sigBDB5.redo);
+      let var_core_value_sig59CE = (var_core_value_sigBDB5 == null ? undefined : var_core_value_sigBDB5.objects) ?? [];
+      return var_core_value_sig59CE.length > 0 ? (var_core_value_sigB7F9.addNotification(var_core_value_sig59CE), true) : false;
+    }
+  },
+  He = "suppressedPlaceholderKeys";
+function Ue(var_core_value_sig3AD7) {
+  return Array.isArray(var_core_value_sig3AD7) ? var_core_value_sig3AD7.filter(var_core_value_sig443C => typeof var_core_value_sig443C == 'string') : [];
+}
+;
+function We(var_core_value_sig04E4) {
+  switch (var_core_value_sig04E4) {
+    case "centerTitle":
+      return "title";
+    case "subtitle":
+      return "body";
+    default:
+      return var_core_value_sig04E4;
+  }
+}
+;
+function Ge(var_core_value_sigD8F0) {
+  return var_core_value_sigD8F0.type, var_core_value_sigD8F0.placeholder;
+}
+;
+function Ke(var_core_value_sig1475) {
+  let var_core_value_sig08B7 = Ge(var_core_value_sig1475);
+  if (!var_core_value_sig08B7) return false;
+  switch (var_core_value_sig08B7.type) {
+    case "header":
+    case "footer":
+    case 'date':
+    case "slideNumber":
+      return false;
+    default:
+      return true;
+  }
+}
+;
+function M(var_core_value_sig2008) {
+  let var_core_value_sig496B = Ge(var_core_value_sig2008);
+  if (var_core_value_sig496B != null && var_core_value_sig496B.type) return We(var_core_value_sig496B.type) + '::' + (var_core_value_sig496B.index ?? "__default__");
+}
+;
+function qe(var_core_value_sig7161) {
+  let var_core_value_sig2AB8 = var_core_value_sig7161.custom,
+    var_core_value_sig3FCF = [...Ue(var_core_value_sig2AB8 == null ? undefined : var_core_value_sig2AB8.pptxAbsentPlaceholderKeys), ...Ue(var_core_value_sig2AB8 == null ? undefined : var_core_value_sig2AB8[He])];
+  return new Set(var_core_value_sig3FCF);
+}
+;
+function Je(var_core_value_sig675A, var_core_value_sig837F) {
+  if (!Ke(var_core_value_sig675A)) return false;
+  let var_core_value_sig9D6E = M(var_core_value_sig675A);
+  return !!var_core_value_sig9D6E && var_core_value_sig837F.has(var_core_value_sig9D6E);
+}
+;
+function Ye(var_core_value_sigB205, var_core_value_sigBF78, var_core_value_sig8AF3) {
+  let var_core_value_sigA0CC = {
+      ...(var_core_value_sigB205 ?? {})
+    },
+    var_core_value_sigB3A1 = new Set(Ue(var_core_value_sigA0CC[He]));
+  return var_core_value_sig8AF3 ? var_core_value_sigB3A1.add(var_core_value_sigBF78) : var_core_value_sigB3A1.delete(var_core_value_sigBF78), var_core_value_sigB3A1.size > 0 ? var_core_value_sigA0CC[He] = Array.from(var_core_value_sigB3A1) : delete var_core_value_sigA0CC[He], Object.keys(var_core_value_sigA0CC).length > 0 ? var_core_value_sigA0CC : undefined;
+}
+const N = {
+  'id': "slide.mutation.remove-slide-element",
+  'type': e.CommandType["MUTATION"],
+  'handler': (var_core_value_sig1FB9, var_core_value_sig53A9) => {
+    let {
+        unitId: var_core_value_sigDACD,
+        subUnitId: var_core_value_sig691E,
+        drawingId: var_core_value_sigD6D6
+      } = var_core_value_sig53A9,
+      var_core_value_sig0347 = var_core_value_sig1FB9.get(E),
+      var_core_value_sig52A3 = var_core_value_sig1FB9.get(e.IUniverInstanceService).getUnit(var_core_value_sigDACD, e.UniverInstanceType['UNIVER_SLIDE']);
+    if (!var_core_value_sig52A3) return false;
+    let var_core_value_sigAD91 = var_core_value_sig52A3.pageManager["getSlide"](var_core_value_sig691E),
+      var_core_value_sigF64E = var_core_value_sigAD91 == null ? undefined : var_core_value_sigAD91.getData().elements[var_core_value_sigD6D6],
+      var_core_value_sig9B3D = var_core_value_sig0347.getDrawingByParam({
+        'unitId': var_core_value_sigDACD,
+        'subUnitId': var_core_value_sig691E,
+        'drawingId': var_core_value_sigD6D6
+      }) ?? (var_core_value_sigF64E ? T(var_core_value_sigDACD, var_core_value_sig691E, var_core_value_sigF64E, "slide") : null);
+    if (!var_core_value_sig9B3D) return false;
+    let var_core_value_sigB217 = M(var_core_value_sig9B3D.element);
+    if (var_core_value_sig9B3D.sourcePageType !== 'slide' && var_core_value_sigB217 && Ke(var_core_value_sig9B3D.element)) return var_core_value_sigAD91 ? (var_core_value_sigAD91.updatePageData({
+      'custom': Ye(var_core_value_sigAD91.getData().custom, var_core_value_sigB217, true)
+    }), O(var_core_value_sig0347, var_core_value_sig52A3, var_core_value_sigDACD, var_core_value_sig691E)) : false;
+    let var_core_value_sig1FE6 = var_core_value_sig0347.getDrawingData(var_core_value_sigDACD, var_core_value_sig691E),
+      var_core_value_sig2471 = _e(var_core_value_sig1FE6, var_core_value_sig0347.getDrawingOrder(var_core_value_sigDACD, var_core_value_sig691E), [var_core_value_sigD6D6]).map(var_core_value_sig39B1 => var_core_value_sig1FE6[var_core_value_sig39B1]).filter(var_core_value_sig210D => !!var_core_value_sig210D);
+    if (var_core_value_sig2471.length === 0 && var_core_value_sig2471.push(var_core_value_sig9B3D), var_core_value_sig2471.forEach(var_core_value_sigB4B4 => {
+      Ve(var_core_value_sig52A3, var_core_value_sigB4B4);
+    }), var_core_value_sig9B3D.sourcePageType === "slide" && O(var_core_value_sig0347, var_core_value_sig52A3, var_core_value_sigDACD, var_core_value_sig691E)) return true;
+    if (var_core_value_sig9B3D.sourcePageType === "master" || var_core_value_sig9B3D.sourcePageType === "layout") return k(var_core_value_sig0347, var_core_value_sig52A3, var_core_value_sigDACD, var_core_value_sig691E), true;
+    let var_core_value_sigD1FC = var_core_value_sig0347.getBatchRemoveOp([{
+      'unitId': var_core_value_sigDACD,
+      'subUnitId': var_core_value_sig691E,
+      'drawingId': var_core_value_sigD6D6
+    }]);
+    return var_core_value_sig0347.applyJson1(var_core_value_sigDACD, var_core_value_sig691E, var_core_value_sigD1FC.redo), var_core_value_sig0347.removeNotification(var_core_value_sigD1FC.objects ?? []), true;
+  }
+};
+function P(var_core_value_sigE2F9, var_core_value_sigD689 = {}) {
+  let {
+      unitId: var_core_value_sig7AE3,
+      subUnitId: var_core_value_sig1EB3
+    } = var_core_value_sigD689,
+    var_core_value_sigE120 = var_core_value_sig7AE3 ? var_core_value_sigE2F9.getUnit(var_core_value_sig7AE3, e.UniverInstanceType['UNIVER_SLIDE']) : var_core_value_sigE2F9.getCurrentUnitOfType(e.UniverInstanceType["UNIVER_SLIDE"]);
+  if (!var_core_value_sigE120) return null;
+  let var_core_value_sigD6E7 = var_core_value_sigE120.pageManager,
+    var_core_value_sig3669 = var_core_value_sig1EB3 ? var_core_value_sigD6E7.getSlide(var_core_value_sig1EB3) : var_core_value_sigD6E7.getActiveSlide();
+  return var_core_value_sig3669 ? {
+    'presentation': var_core_value_sigE120,
+    'slide': var_core_value_sig3669,
+    'unitId': var_core_value_sigE120.getUnitId(),
+    'subUnitId': var_core_value_sig3669.getId()
+  } : null;
+}
+const Xe = {
+    'id': "slide.command.add-element",
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sig5CBC, var_core_value_sig20BE) => {
+      if (!var_core_value_sig20BE) return false;
+      let var_core_value_sig6BD0 = P(var_core_value_sig5CBC.get(e.IUniverInstanceService), var_core_value_sig20BE);
+      if (!var_core_value_sig6BD0) return false;
+      let var_core_value_sig8C15 = var_core_value_sig5CBC.get(e.ICommandService),
+        var_core_value_sig6DF7 = var_core_value_sig5CBC.get(e.IUndoRedoService),
+        var_core_value_sigB411 = var_core_value_sig5CBC.get(E),
+        {
+          unitId: var_core_value_sigA81B,
+          subUnitId: var_core_value_sigFE8D
+        } = var_core_value_sig6BD0,
+        {
+          sourcePageType: var_core_value_sig84C8 = "slide",
+          insertIndex: var_core_value_sig8595,
+          focus: var_core_value_sigF8DE,
+          nameBase: var_core_value_sigFE76
+        } = var_core_value_sig20BE,
+        var_core_value_sig80C0 = var_core_value_sig6BD0.presentation["pageManager"].getSlide(var_core_value_sigFE8D),
+        var_core_value_sig22B4 = Oe(var_core_value_sig20BE.element, Object.values((var_core_value_sig80C0 == null ? undefined : var_core_value_sig80C0.getData().elements) ?? {}), {
+          'nameBase': var_core_value_sigFE76
+        }),
+        var_core_value_sigBB37 = {
+          'unitId': var_core_value_sigA81B,
+          'subUnitId': var_core_value_sigFE8D,
+          'element': var_core_value_sig22B4,
+          'nameBase': var_core_value_sigFE76,
+          'sourcePageType': var_core_value_sig84C8,
+          'insertIndex': var_core_value_sig8595
+        },
+        var_core_value_sig0C51 = {
+          'unitId': var_core_value_sigA81B,
+          'subUnitId': var_core_value_sigFE8D,
+          'drawingId': var_core_value_sig22B4.id,
+          'elementType': var_core_value_sig22B4.type
+        };
+      return var_core_value_sig8C15.syncExecuteCommand(j.id, var_core_value_sigBB37) ? (var_core_value_sigF8DE && var_core_value_sigB411.focusDrawing([{
+        'unitId': var_core_value_sigA81B,
+        'subUnitId': var_core_value_sigFE8D,
+        'drawingId': var_core_value_sig22B4.id
+      }]), var_core_value_sig6DF7.pushUndoRedo({
+        'unitID': var_core_value_sigA81B,
+        'undoMutations': [{
+          'id': N.id,
+          'params': var_core_value_sig0C51
+        }],
+        'redoMutations': [{
+          'id': j.id,
+          'params': var_core_value_sigBB37
+        }]
+      }), true) : false;
+    }
+  },
+  F = {
+    'id': "slide.mutation.add-slide-page",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sigADA4, var_core_value_sig0E48) => {
+      let {
+          unitId: var_core_value_sig495B,
+          slide: var_core_value_sig310C,
+          insertIndex: var_core_value_sig759E,
+          setActive: var_core_value_sig6C80
+        } = var_core_value_sig0E48,
+        var_core_value_sig6B99 = var_core_value_sigADA4.get(e.IUniverInstanceService),
+        var_core_value_sig6ADC = var_core_value_sigADA4.get(E),
+        var_core_value_sig41AD = var_core_value_sig6B99.getUnit(var_core_value_sig495B, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig41AD) return false;
+      let {
+        data: var_core_value_sigDBC2,
+        order: var_core_value_sig7739
+      } = D(var_core_value_sig41AD, var_core_value_sig41AD.pageManager["createSlide"](var_core_value_sig310C, var_core_value_sig759E));
+      if (var_core_value_sig6ADC.drawingManagerData[var_core_value_sig495B] || (var_core_value_sig6ADC.drawingManagerData[var_core_value_sig495B] = {}), var_core_value_sig6ADC.drawingManagerData[var_core_value_sig495B][var_core_value_sig310C.id] = {
+        'data': var_core_value_sigDBC2,
+        'order': var_core_value_sig7739
+      }, var_core_value_sig7739.length > 0) {
+        let var_core_value_sigD407 = var_core_value_sig7739.map(var_core_value_sigE92A => ({
+          'unitId': var_core_value_sig495B,
+          'subUnitId': var_core_value_sig310C.id,
+          'drawingId': var_core_value_sigE92A
+        }));
+        var_core_value_sig6ADC.addNotification(var_core_value_sigD407);
+      }
+      return var_core_value_sig6C80 && var_core_value_sig41AD.pageManager['setActiveSlide'](var_core_value_sig310C.id), true;
+    }
+  },
+  I = {
+    'id': 'slide.mutation.remove-slide-page',
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sig4040, var_core_value_sig1AAA) => {
+      var var_core_value_sig58DB;
+      let {
+          unitId: var_core_value_sig4840,
+          subUnitId: var_core_value_sigB76D,
+          nextActiveSlideId: var_core_value_sig1015
+        } = var_core_value_sig1AAA,
+        var_core_value_sig6223 = var_core_value_sig4040.get(e.IUniverInstanceService),
+        var_core_value_sigC6B6 = var_core_value_sig4040.get(E),
+        var_core_value_sig498A = var_core_value_sig6223.getUnit(var_core_value_sig4840, e.UniverInstanceType["UNIVER_SLIDE"]);
+      return var_core_value_sig498A ? (var_core_value_sig498A.pageManager["deleteSlide"](var_core_value_sigB76D), (var_core_value_sig58DB = var_core_value_sigC6B6.drawingManagerData[var_core_value_sig4840]) != null && var_core_value_sig58DB[var_core_value_sigB76D] && (var_core_value_sigC6B6.setDrawingData(var_core_value_sig4840, var_core_value_sigB76D, {}), var_core_value_sigC6B6.setDrawingOrder(var_core_value_sig4840, var_core_value_sigB76D, [])), var_core_value_sig1015 && var_core_value_sig498A.pageManager['setActiveSlide'](var_core_value_sig1015), true) : false;
+    }
+  },
+  Ze = {
+    'id': "slide.command.add-page",
+    'type': e.CommandType['COMMAND'],
+    'handler': (var_core_value_sigEF45, var_core_value_sig36FE) => {
+      if (!var_core_value_sig36FE) return false;
+      let {
+          unitId: var_core_value_sig3AF5,
+          slide: var_core_value_sig14E6,
+          insertIndex: var_core_value_sig8690,
+          setActive: var_core_value_sigDF29 = true
+        } = var_core_value_sig36FE,
+        var_core_value_sigC0F8 = var_core_value_sigEF45.get(e.IUniverInstanceService).getUnit(var_core_value_sig3AF5, e.UniverInstanceType['UNIVER_SLIDE']);
+      if (!var_core_value_sigC0F8) return false;
+      let var_core_value_sig3C75 = var_core_value_sigC0F8.pageManager["resolveSlidePageReferences"](var_core_value_sig14E6, var_core_value_sig8690);
+      if (!var_core_value_sig3C75) return false;
+      let var_core_value_sig992D = var_core_value_sigEF45.get(e.ICommandService),
+        var_core_value_sigE4E4 = var_core_value_sigEF45.get(e.IUndoRedoService),
+        var_core_value_sigA4B0 = {
+          'unitId': var_core_value_sig3AF5,
+          'slide': var_core_value_sig3C75,
+          'insertIndex': var_core_value_sig8690,
+          'setActive': var_core_value_sigDF29
+        },
+        var_core_value_sig5F50 = {
+          'unitId': var_core_value_sig3AF5,
+          'subUnitId': var_core_value_sig3C75.id
+        };
+      return var_core_value_sig992D.syncExecuteCommand(F.id, var_core_value_sigA4B0) ? (var_core_value_sigE4E4.pushUndoRedo({
+        'unitID': var_core_value_sig3AF5,
+        'undoMutations': [{
+          'id': I.id,
+          'params': var_core_value_sig5F50
+        }],
+        'redoMutations': [{
+          'id': F.id,
+          'params': var_core_value_sigA4B0
+        }]
+      }), true) : false;
+    }
+  };
+function Qe(var_core_value_sig4494, var_core_value_sigFFAF) {
+  let var_core_value_sig478B = (var_core_value_sigFFAF % 360 + 360) % 360;
+  if (var_core_value_sig478B >= 315 || var_core_value_sig478B < 45 || var_core_value_sig478B >= 135 && var_core_value_sig478B < 225) return var_core_value_sig4494;
+  let var_core_value_sig1E21 = var_core_value_sig4494.left + var_core_value_sig4494.width / 2,
+    var_core_value_sig9DBF = var_core_value_sig4494.top + var_core_value_sig4494.height / 2;
+  return {
+    'left': var_core_value_sig1E21 - var_core_value_sig4494.height / 2,
+    'top': var_core_value_sig9DBF - var_core_value_sig4494.width / 2,
+    'width': var_core_value_sig4494.height,
+    'height': var_core_value_sig4494.width
+  };
+}
+;
+function $e(var_core_value_sig36CC) {
+  let var_core_value_sigA568 = var_core_value_sig36CC.transform,
+    var_core_value_sigD22D = var_core_value_sig36CC.element['transform'],
+    var_core_value_sig85D5 = {
+      'left': (var_core_value_sigA568 == null ? undefined : var_core_value_sigA568.left) ?? var_core_value_sigD22D.left ?? 0,
+      'top': (var_core_value_sigA568 == null ? undefined : var_core_value_sigA568.top) ?? var_core_value_sigD22D.top ?? 0,
+      'width': (var_core_value_sigA568 == null ? undefined : var_core_value_sigA568.width) ?? var_core_value_sigD22D.width ?? 0,
+      'height': (var_core_value_sigA568 == null ? undefined : var_core_value_sigA568.height) ?? var_core_value_sigD22D.height ?? 0
+    },
+    var_core_value_sig5D2E = var_core_value_sig36CC.element["type"];
+  return var_core_value_sig5D2E !== "shape" && var_core_value_sig5D2E !== "group" ? var_core_value_sig85D5 : Qe(var_core_value_sig85D5, (var_core_value_sigA568 == null ? undefined : var_core_value_sigA568.angle) ?? var_core_value_sigD22D.rotation ?? 0);
+}
+;
+function et(var_core_value_sig7221) {
+  var var_core_value_sig0A5A;
+  return ((var_core_value_sig0A5A = var_core_value_sig7221[0]) == null ? undefined : var_core_value_sig0A5A.sourcePageType) ?? 'slide';
+}
+;
+function tt(var_core_value_sigE6D6) {
+  let var_core_value_sig8507 = var_core_value_sigE6D6.groupBaseBound;
+  if (var_core_value_sig8507) return var_core_value_sig8507;
+  let var_core_value_sig8A7F = var_core_value_sigE6D6.element["custom"];
+  return var_core_value_sig8A7F == null ? undefined : var_core_value_sig8A7F.groupBaseBound;
+}
+;
+function nt(var_core_value_sig9E81, var_core_value_sig8295, var_core_value_sigA975, var_core_value_sig1263, var_core_value_sig457C, var_core_value_sigA4E6) {
+  let var_core_value_sig934F = var_core_value_sigA4E6.flatMap(var_core_value_sig63F3 => {
+    let var_core_value_sig6A71 = var_core_value_sig457C[var_core_value_sig63F3];
+    if (!var_core_value_sig6A71 || var_core_value_sig6A71.element["type"] !== "group") return [];
+    let var_core_value_sig3BF6 = var_core_value_sig6A71.transform || {
+        'width': 0,
+        'height': 0
+      },
+      var_core_value_sig38CE = tt(var_core_value_sig6A71),
+      var_core_value_sig62B7 = var_core_value_sig3BF6.width && var_core_value_sig3BF6.width > 0 ? var_core_value_sig3BF6.width : (var_core_value_sig38CE == null ? undefined : var_core_value_sig38CE.width) ?? 0,
+      var_core_value_sig37A8 = var_core_value_sig3BF6.height && var_core_value_sig3BF6.height > 0 ? var_core_value_sig3BF6.height : (var_core_value_sig38CE == null ? undefined : var_core_value_sig38CE.height) ?? 0;
+    return var_core_value_sig6A71.element["children"].map(var_core_value_sig362B => var_core_value_sig457C[var_core_value_sig362B]).filter(var_core_value_sig5CA5 => !!var_core_value_sig5CA5).map(var_core_value_sigE90F => {
+      let var_core_value_sigEFD4 = (0, r.transformObjectOutOfGroup)(var_core_value_sigE90F.transform || {
+          'left': 0,
+          'top': 0
+        }, var_core_value_sig3BF6, var_core_value_sig62B7, var_core_value_sig37A8, var_core_value_sig38CE),
+        var_core_value_sig861B = var_core_value_sigE90F.element["transform"],
+        var_core_value_sig5237 = {
+          ...var_core_value_sigE90F.element,
+          'transform': {
+            ...var_core_value_sig861B,
+            'left': var_core_value_sigEFD4.left,
+            'top': var_core_value_sigEFD4.top,
+            'width': var_core_value_sigEFD4.width,
+            'height': var_core_value_sigEFD4.height,
+            'rotation': var_core_value_sigEFD4.angle,
+            'flipX': var_core_value_sigEFD4.flipX,
+            'flipY': var_core_value_sigEFD4.flipY
+          }
+        };
+      return {
+        ...var_core_value_sigE90F,
+        'element': var_core_value_sig5237,
+        'transform': {
+          ...(var_core_value_sigE90F.transform || {
+            'left': 0,
+            'top': 0
+          }),
+          ...var_core_value_sigEFD4
+        },
+        'groupId': undefined
+      };
+    });
+  });
+  if (!var_core_value_sig934F.length) return true;
+  for (let var_core_value_sigA90D of var_core_value_sig934F) if (!Be(var_core_value_sig9E81, var_core_value_sigA90D, var_core_value_sigA90D.element, var_core_value_sigA90D.transform)) return false;
+  let var_core_value_sig74A7 = var_core_value_sig8295.getBatchUpdateOp(var_core_value_sig934F);
+  return var_core_value_sig8295.applyJson1(var_core_value_sigA975, var_core_value_sig1263, var_core_value_sig74A7.redo), var_core_value_sig8295.updateNotification(var_core_value_sig74A7.objects), true;
+}
+const rt = {
+    'id': 'slide.mutation.set-group',
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig3685, var_core_value_sigC621) => {
+      var var_core_value_sig86D7;
+      let {
+          unitId: var_core_value_sig431B,
+          subUnitId: var_core_value_sig5C7C
+        } = var_core_value_sigC621,
+        var_core_value_sig87E2 = Array.from(new Set(var_core_value_sigC621.drawingIds));
+      if (var_core_value_sig87E2.length < 2) return false;
+      let var_core_value_sig2E04 = var_core_value_sig3685.get(E),
+        var_core_value_sig2EDD = var_core_value_sig3685.get(e.IUniverInstanceService).getUnit(var_core_value_sig431B, e.UniverInstanceType['UNIVER_SLIDE']);
+      if (!var_core_value_sig2EDD) return false;
+      let var_core_value_sig27D2 = var_core_value_sig2E04.getDrawingData(var_core_value_sig431B, var_core_value_sig5C7C),
+        var_core_value_sig355D = var_core_value_sig87E2.map(var_core_value_sig7A3C => var_core_value_sig27D2[var_core_value_sig7A3C]).filter(var_core_value_sig0511 => !!var_core_value_sig0511);
+      if (var_core_value_sig355D.length < 2) return false;
+      let var_core_value_sig8B21 = new Set(["shape", "image", 'group']);
+      if (!var_core_value_sig355D.every(var_core_value_sig1F44 => var_core_value_sig8B21.has(var_core_value_sig1F44.element["type"]))) return false;
+      let var_core_value_sigEB36 = et(var_core_value_sig355D),
+        var_core_value_sig5C27 = var_core_value_sigC621.groupId ?? (0, e.generateRandomId)(6),
+        var_core_value_sigD494 = var_core_value_sig355D.reduce((var_core_value_sigCB04, var_core_value_sig947E) => {
+          let var_core_value_sig4545 = $e(var_core_value_sig947E);
+          return var_core_value_sigCB04.left = Math.min(var_core_value_sigCB04.left, var_core_value_sig4545.left), var_core_value_sigCB04.top = Math.min(var_core_value_sigCB04.top, var_core_value_sig4545.top), var_core_value_sigCB04.right = Math.max(var_core_value_sigCB04.right, var_core_value_sig4545.left + var_core_value_sig4545.width), var_core_value_sigCB04.bottom = Math.max(var_core_value_sigCB04.bottom, var_core_value_sig4545.top + var_core_value_sig4545.height), var_core_value_sigCB04;
+        }, {
+          'left': 1 / 0,
+          'top': 1 / 0,
+          'right': -1 / 0,
+          'bottom': -1 / 0
+        });
+      if (!Number.isFinite(var_core_value_sigD494.left) || !Number.isFinite(var_core_value_sigD494.top) || !Number.isFinite(var_core_value_sigD494.right) || !Number.isFinite(var_core_value_sigD494.bottom)) return false;
+      let var_core_value_sigBF6D = {
+          'left': var_core_value_sigD494.left,
+          'top': var_core_value_sigD494.top,
+          'width': Math.max(1, var_core_value_sigD494.right - var_core_value_sigD494.left),
+          'height': Math.max(1, var_core_value_sigD494.bottom - var_core_value_sigD494.top)
+        },
+        var_core_value_sigD051 = T(var_core_value_sig431B, var_core_value_sig5C7C, Oe({
+          'id': var_core_value_sig5C27,
+          'type': 'group',
+          'transform': {
+            'left': var_core_value_sigBF6D.left,
+            'top': var_core_value_sigBF6D.top,
+            'width': var_core_value_sigBF6D.width,
+            'height': var_core_value_sigBF6D.height,
+            'rotation': 0,
+            'flipX': false,
+            'flipY': false
+          },
+          'children': var_core_value_sig87E2,
+          'custom': {
+            'groupBaseBound': var_core_value_sigBF6D,
+            'groupBaseBoundIsLocal': true
+          }
+        }, Object.values(((var_core_value_sig86D7 = var_core_value_sig2EDD.pageManager["getSlide"](var_core_value_sig5C7C)) == null ? undefined : var_core_value_sig86D7.getData().elements) ?? {})), var_core_value_sigEB36);
+      if (!ze(var_core_value_sig2EDD, var_core_value_sigD051)) return false;
+      let var_core_value_sig16D9 = var_core_value_sig2E04.getBatchAddOp([var_core_value_sigD051]);
+      var_core_value_sig2E04.applyJson1(var_core_value_sig431B, var_core_value_sig5C7C, var_core_value_sig16D9.redo), var_core_value_sig2E04.addNotification(var_core_value_sig16D9.objects ?? []);
+      let var_core_value_sigF378 = var_core_value_sig2E04.getDrawingOrder(var_core_value_sig431B, var_core_value_sig5C7C),
+        var_core_value_sig5F6C = new Set(var_core_value_sig87E2),
+        var_core_value_sig7E85 = [],
+        var_core_value_sigF204 = false;
+      var_core_value_sigF378.forEach(var_core_value_sigF39A => {
+        if (var_core_value_sigF39A !== var_core_value_sig5C27) {
+          if (var_core_value_sig5F6C.has(var_core_value_sigF39A)) {
+            var_core_value_sigF204 ||= (var_core_value_sig7E85.push(var_core_value_sig5C27), true);
+            return;
+          }
+          var_core_value_sig7E85.push(var_core_value_sigF39A);
+        }
+      }), var_core_value_sigF204 || var_core_value_sig7E85.push(var_core_value_sig5C27), var_core_value_sig7E85.includes(var_core_value_sig5C27) || var_core_value_sig7E85.push(var_core_value_sig5C27);
+      let var_core_value_sig7A15 = var_core_value_sig2EDD.pageManager["getSlide"](var_core_value_sig5C7C);
+      return var_core_value_sig7A15 && var_core_value_sig7A15.setElementOrder(var_core_value_sig7E85), var_core_value_sig2E04.setDrawingOrder(var_core_value_sig431B, var_core_value_sig5C7C, var_core_value_sig7E85), var_core_value_sig2E04.orderNotification({
+        'unitId': var_core_value_sig431B,
+        'subUnitId': var_core_value_sig5C7C,
+        'drawingIds': var_core_value_sig7E85
+      }), var_core_value_sig2E04.focusDrawing([{
+        'unitId': var_core_value_sig431B,
+        'subUnitId': var_core_value_sig5C7C,
+        'drawingId': var_core_value_sig5C27
+      }]), true;
+    }
+  },
+  it = {
+    'id': "slide.mutation.cancel-group",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sigEEA6, var_core_value_sigEAE1) => {
+      var var_core_value_sigC69F;
+      let {
+        unitId: var_core_value_sig0442,
+        subUnitId: var_core_value_sig697A,
+        drawingIds: var_core_value_sigDB65
+      } = var_core_value_sigEAE1;
+      if (!var_core_value_sigDB65.length) return false;
+      let var_core_value_sig045E = var_core_value_sigEEA6.get(E),
+        var_core_value_sig4524 = var_core_value_sigEEA6.get(e.IUniverInstanceService).getUnit(var_core_value_sig0442, e.UniverInstanceType['UNIVER_SLIDE']);
+      if (!var_core_value_sig4524) return false;
+      let var_core_value_sig64D5 = var_core_value_sig045E.getDrawingData(var_core_value_sig0442, var_core_value_sig697A),
+        var_core_value_sig9678 = var_core_value_sigDB65.filter(var_core_value_sigF79C => {
+          var var_core_value_sig2E54;
+          return ((var_core_value_sig2E54 = var_core_value_sig64D5[var_core_value_sigF79C]) == null ? undefined : var_core_value_sig2E54.element["type"]) === "group";
+        });
+      if (!var_core_value_sig9678.length) return false;
+      let var_core_value_sig5E74 = var_core_value_sig045E.getDrawingOrder(var_core_value_sig0442, var_core_value_sig697A),
+        var_core_value_sig75FC = new Set(var_core_value_sig9678),
+        var_core_value_sig639A = [],
+        var_core_value_sig567C = new Set(),
+        var_core_value_sig825F = var_core_value_sig7658 => {
+          var_core_value_sig567C.has(var_core_value_sig7658) || (var_core_value_sig567C.add(var_core_value_sig7658), var_core_value_sig639A.push(var_core_value_sig7658));
+        };
+      if (!nt(var_core_value_sig4524, var_core_value_sig045E, var_core_value_sig0442, var_core_value_sig697A, var_core_value_sig64D5, var_core_value_sig9678)) return false;
+      var_core_value_sig5E74.forEach(var_core_value_sigDCF5 => {
+        let var_core_value_sigC786 = var_core_value_sig64D5[var_core_value_sigDCF5];
+        if (!var_core_value_sigC786 || var_core_value_sigC786.element["type"] !== "group" || !var_core_value_sig75FC.has(var_core_value_sigDCF5)) {
+          var_core_value_sig825F(var_core_value_sigDCF5);
+          return;
+        }
+        var_core_value_sigC786.element["children"].forEach(var_core_value_sigBB00 => {
+          var_core_value_sig64D5[var_core_value_sigBB00] && var_core_value_sig825F(var_core_value_sigBB00);
+        });
+      }), var_core_value_sig9678.map(var_core_value_sigC0D9 => var_core_value_sig64D5[var_core_value_sigC0D9]).filter(var_core_value_sigF051 => !!var_core_value_sigF051).forEach(var_core_value_sig5825 => {
+        Ve(var_core_value_sig4524, var_core_value_sig5825);
+      });
+      let var_core_value_sig546D = var_core_value_sig9678.map(var_core_value_sig4EB7 => ({
+          'unitId': var_core_value_sig0442,
+          'subUnitId': var_core_value_sig697A,
+          'drawingId': var_core_value_sig4EB7
+        })),
+        var_core_value_sig8078 = (var_core_value_sigC69F = var_core_value_sig045E.removeDrawingsWithoutGroupExpansion) == null ? undefined : var_core_value_sigC69F.bind(var_core_value_sig045E);
+      if (var_core_value_sig8078) var_core_value_sig8078(var_core_value_sig546D);else {
+        let var_core_value_sig73AF = var_core_value_sig045E.getBatchRemoveOp(var_core_value_sig546D);
+        var_core_value_sig045E.applyJson1(var_core_value_sig0442, var_core_value_sig697A, var_core_value_sig73AF.redo);
+      }
+      var_core_value_sig045E.removeNotification(var_core_value_sig546D);
+      let var_core_value_sigDCED = var_core_value_sig4524.pageManager["getSlide"](var_core_value_sig697A);
+      return var_core_value_sigDCED && var_core_value_sigDCED.setElementOrder(var_core_value_sig639A), var_core_value_sig045E.setDrawingOrder(var_core_value_sig0442, var_core_value_sig697A, var_core_value_sig639A), var_core_value_sig045E.orderNotification({
+        'unitId': var_core_value_sig0442,
+        'subUnitId': var_core_value_sig697A,
+        'drawingIds': var_core_value_sig639A
+      }), var_core_value_sig045E.focusDrawing([]), true;
+    }
+  },
+  at = {
+    'id': "slide.command.convert-smart-art-to-shapes",
+    'type': e.CommandType['COMMAND'],
+    'handler': (var_core_value_sig2829, var_core_value_sig6EE2) => {
+      if (!var_core_value_sig6EE2) return false;
+      let var_core_value_sig4CCC = P(var_core_value_sig2829.get(e.IUniverInstanceService), var_core_value_sig6EE2);
+      if (!var_core_value_sig4CCC) return false;
+      let var_core_value_sig6E47 = var_core_value_sig2829.get(E),
+        var_core_value_sigB64D = var_core_value_sig6E47.getDrawingByParam({
+          'unitId': var_core_value_sig4CCC.unitId,
+          'subUnitId': var_core_value_sig4CCC.subUnitId,
+          'drawingId': var_core_value_sig6EE2.drawingId
+        });
+      if (!var_core_value_sigB64D || var_core_value_sigB64D.sourcePageType !== "slide" || var_core_value_sigB64D.element["type"] !== "shape") return false;
+      let var_core_value_sig2407 = var_core_value_sigB64D.element,
+        var_core_value_sigE4D0 = var_core_value_sig2407.shapeData;
+      if (!(0, n.isSmartArtShapeData)(var_core_value_sigE4D0)) return false;
+      let var_core_value_sigD5F1 = (0, n.convertSmartArtToShapes)(var_core_value_sigE4D0.smartArt),
+        var_core_value_sigBC19 = var_core_value_sig6EE2.childIds ?? var_core_value_sigD5F1.map(() => (0, e.generateRandomId)(6)),
+        var_core_value_sig4F3C = var_core_value_sig6EE2.groupId ?? (var_core_value_sigD5F1.length > 1 ? (0, e.generateRandomId)(6) : undefined);
+      if (var_core_value_sigBC19.length === 0 || var_core_value_sigD5F1.length !== var_core_value_sigBC19.length || new Set(var_core_value_sigBC19).size !== var_core_value_sigBC19.length) return false;
+      let var_core_value_sig8D44 = var_core_value_sig2407.transform,
+        var_core_value_sig1660 = var_core_value_sigD5F1.map((var_core_value_sig548A, var_core_value_sigE026) => {
+          var var_core_value_sig339E;
+          return {
+            'id': var_core_value_sigBC19[var_core_value_sigE026],
+            'type': 'shape',
+            'name': (var_core_value_sig339E = var_core_value_sigE4D0.smartArt["presentationShapes"][var_core_value_sig548A.id]) == null ? undefined : var_core_value_sig339E.name,
+            'transform': st(var_core_value_sig8D44, var_core_value_sig548A.transform),
+            'shapeData': var_core_value_sig548A.shapeData
+          };
+        }),
+        var_core_value_sigEE7B = var_core_value_sig6E47.getDrawingOrder(var_core_value_sig4CCC.unitId, var_core_value_sig4CCC.subUnitId),
+        var_core_value_sig44DF = Math.max(0, var_core_value_sigEE7B.indexOf(var_core_value_sig6EE2.drawingId)),
+        {
+          redoMutations: var_core_value_sig7E48,
+          undoMutations: var_core_value_sig7B9E
+        } = ot({
+          'unitId': var_core_value_sig4CCC.unitId,
+          'subUnitId': var_core_value_sig4CCC.subUnitId,
+          'sourceDrawingId': var_core_value_sig6EE2.drawingId,
+          'sourceElement': var_core_value_sigB64D.element,
+          'childElements': var_core_value_sig1660,
+          'childIds': var_core_value_sigBC19,
+          'groupId': var_core_value_sig4F3C,
+          'insertIndex': var_core_value_sig44DF
+        });
+      return (0, e.sequenceExecute)(var_core_value_sig7E48, var_core_value_sig2829.get(e.ICommandService)).result ? (var_core_value_sig2829.get(e.IUndoRedoService).pushUndoRedo({
+        'unitID': var_core_value_sig4CCC.unitId,
+        'undoMutations': var_core_value_sig7B9E,
+        'redoMutations': var_core_value_sig7E48
+      }), true) : false;
+    }
+  };
+function ot(var_core_value_sig5C3B) {
+  let var_core_value_sig4002 = var_core_value_sig5C3B.childElements["map"]((var_core_value_sig7550, var_core_value_sig2983) => ({
+    'id': j.id,
+    'params': {
+      'unitId': var_core_value_sig5C3B.unitId,
+      'subUnitId': var_core_value_sig5C3B.subUnitId,
+      'element': var_core_value_sig7550,
+      'sourcePageType': "slide",
+      'insertIndex': var_core_value_sig5C3B.insertIndex + var_core_value_sig2983
+    }
+  }));
+  return var_core_value_sig5C3B.groupId && var_core_value_sig5C3B.childElements["length"] > 1 && var_core_value_sig4002.push({
+    'id': rt.id,
+    'params': {
+      'unitId': var_core_value_sig5C3B.unitId,
+      'subUnitId': var_core_value_sig5C3B.subUnitId,
+      'drawingIds': var_core_value_sig5C3B.childIds,
+      'groupId': var_core_value_sig5C3B.groupId
+    }
+  }), var_core_value_sig4002.push({
+    'id': N.id,
+    'params': {
+      'unitId': var_core_value_sig5C3B.unitId,
+      'subUnitId': var_core_value_sig5C3B.subUnitId,
+      'drawingId': var_core_value_sig5C3B.sourceDrawingId,
+      'elementType': var_core_value_sig5C3B.sourceElement["type"]
+    }
+  }), {
+    'redoMutations': var_core_value_sig4002,
+    'undoMutations': [{
+      'id': N.id,
+      'params': {
+        'unitId': var_core_value_sig5C3B.unitId,
+        'subUnitId': var_core_value_sig5C3B.subUnitId,
+        'drawingId': var_core_value_sig5C3B.groupId ?? var_core_value_sig5C3B.childIds[0],
+        'elementType': var_core_value_sig5C3B.groupId ? "group" : var_core_value_sig5C3B.childElements[0].type
+      }
+    }, {
+      'id': j.id,
+      'params': {
+        'unitId': var_core_value_sig5C3B.unitId,
+        'subUnitId': var_core_value_sig5C3B.subUnitId,
+        'element': var_core_value_sig5C3B.sourceElement,
+        'sourcePageType': "slide",
+        'insertIndex': var_core_value_sig5C3B.insertIndex
+      }
+    }]
+  };
+}
+;
+function st(var_core_value_sig4153, var_core_value_sig2825) {
+  let var_core_value_sig5FD0 = var_core_value_sig4153.width ?? 0,
+    var_core_value_sigA7E3 = var_core_value_sig4153.height ?? 0,
+    var_core_value_sigA784 = var_core_value_sig2825.width,
+    var_core_value_sig4406 = var_core_value_sig2825.height,
+    var_core_value_sig6806 = var_core_value_sig2825.left + var_core_value_sigA784 / 2,
+    var_core_value_sigD4AA = var_core_value_sig2825.top + var_core_value_sig4406 / 2;
+  var_core_value_sig4153.flipX && (var_core_value_sig6806 = var_core_value_sig5FD0 - var_core_value_sig6806), var_core_value_sig4153.flipY && (var_core_value_sigD4AA = var_core_value_sigA7E3 - var_core_value_sigD4AA);
+  let var_core_value_sigDC41 = var_core_value_sig4153.rotation ?? 0,
+    var_core_value_sigFB47 = var_core_value_sigDC41 * Math.PI / 180,
+    var_core_value_sig9B3D1 = var_core_value_sig6806 - var_core_value_sig5FD0 / 2,
+    var_core_value_sigC1CF = var_core_value_sigD4AA - var_core_value_sigA7E3 / 2,
+    var_core_value_sigEE12 = var_core_value_sig9B3D1 * Math.cos(var_core_value_sigFB47) - var_core_value_sigC1CF * Math.sin(var_core_value_sigFB47),
+    var_core_value_sigD70C = var_core_value_sig9B3D1 * Math.sin(var_core_value_sigFB47) + var_core_value_sigC1CF * Math.cos(var_core_value_sigFB47),
+    var_core_value_sigF047 = (var_core_value_sig4153.flipX === var_core_value_sig4153.flipY ? 1 : -1) * (var_core_value_sig2825.rotation ?? 0);
+  return {
+    'left': (var_core_value_sig4153.left ?? 0) + var_core_value_sig5FD0 / 2 + var_core_value_sigEE12 - var_core_value_sigA784 / 2,
+    'top': (var_core_value_sig4153.top ?? 0) + var_core_value_sigA7E3 / 2 + var_core_value_sigD70C - var_core_value_sig4406 / 2,
+    'width': var_core_value_sigA784,
+    'height': var_core_value_sig4406,
+    'rotation': var_core_value_sigDC41 + var_core_value_sigF047,
+    'flipX': !!var_core_value_sig4153.flipX != !!var_core_value_sig2825.flipX,
+    'flipY': !!var_core_value_sig4153.flipY != !!var_core_value_sig2825.flipY
+  };
+}
+const ct = {
+    'id': "slide.command.create-slide-by-layout",
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sigC2F9, var_core_value_sig1F51) => {
+      if (!var_core_value_sig1F51) return false;
+      let {
+          unitId: var_core_value_sig29F5,
+          layoutType: var_core_value_sig5A51,
+          insertIndex: var_core_value_sigF1D1
+        } = var_core_value_sig1F51,
+        var_core_value_sig370E = var_core_value_sigC2F9.get(e.IUniverInstanceService),
+        var_core_value_sigDE14 = var_core_value_sigC2F9.get(e.ICommandService),
+        var_core_value_sig02CB = var_core_value_sigC2F9.get(e.IUndoRedoService),
+        var_core_value_sig6CBB = var_core_value_sig370E.getUnit(var_core_value_sig29F5, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig6CBB) return false;
+      var_core_value_sig6CBB.pageManager['ensureDefaultLayers']();
+      let var_core_value_sig68DA = var_core_value_sigF1D1;
+      if (var_core_value_sig68DA === undefined) {
+        var var_core_value_sig64D8;
+        let var_core_value_sigE1B0 = (var_core_value_sig64D8 = var_core_value_sig6CBB.pageManager["getActiveSlide"]()) == null ? undefined : var_core_value_sig64D8.getId();
+        if (var_core_value_sigE1B0) {
+          let var_core_value_sig7E54 = var_core_value_sig6CBB.pageManager['getSlides']().map(var_core_value_sig2AD0 => var_core_value_sig2AD0.getId()).indexOf(var_core_value_sigE1B0);
+          var_core_value_sig7E54 !== -1 && (var_core_value_sig68DA = var_core_value_sig7E54 + 1);
+        }
+      }
+      let var_core_value_sigD755 = ae({
+          'layoutType': var_core_value_sig5A51
+        }),
+        var_core_value_sigF897 = {
+          'unitId': var_core_value_sig29F5,
+          'slide': var_core_value_sigD755,
+          'insertIndex': var_core_value_sig68DA,
+          'setActive': true
+        },
+        var_core_value_sigA578 = {
+          'unitId': var_core_value_sig29F5,
+          'subUnitId': var_core_value_sigD755.id
+        };
+      return var_core_value_sigDE14.syncExecuteCommand(F.id, var_core_value_sigF897) ? (var_core_value_sig02CB.pushUndoRedo({
+        'unitID': var_core_value_sig29F5,
+        'undoMutations': [{
+          'id': I.id,
+          'params': var_core_value_sigA578
+        }],
+        'redoMutations': [{
+          'id': F.id,
+          'params': var_core_value_sigF897
+        }]
+      }), true) : false;
+    }
+  },
+  L = {
+    'id': "slide.mutation.move-slide-page",
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sig0260, var_core_value_sig034D) => {
+      let {
+          unitId: var_core_value_sig89EC,
+          subUnitId: var_core_value_sig9975,
+          toIndex: var_core_value_sigD6D9
+        } = var_core_value_sig034D,
+        var_core_value_sig2637 = var_core_value_sig0260.get(e.IUniverInstanceService).getUnit(var_core_value_sig89EC, e.UniverInstanceType["UNIVER_SLIDE"]);
+      return var_core_value_sig2637 ? (var_core_value_sig2637.pageManager['moveSlide'](var_core_value_sig9975, var_core_value_sigD6D9), true) : false;
+    }
+  },
+  lt = {
+    'id': "slide.command.move-page",
+    'type': e.CommandType['COMMAND'],
+    'handler': (var_core_value_sigAF1D, var_core_value_sigC92D) => {
+      if (!var_core_value_sigC92D) return false;
+      let var_core_value_sigEA3D = P(var_core_value_sigAF1D.get(e.IUniverInstanceService), var_core_value_sigC92D);
+      if (!var_core_value_sigEA3D) return false;
+      let var_core_value_sig2841 = var_core_value_sigAF1D.get(e.ICommandService),
+        var_core_value_sig9FE1 = var_core_value_sigAF1D.get(e.IUndoRedoService),
+        {
+          presentation: var_core_value_sig9DAA,
+          unitId: var_core_value_sig1F8A,
+          subUnitId: var_core_value_sigEBB4
+        } = var_core_value_sigEA3D,
+        {
+          toIndex: var_core_value_sig2B74
+        } = var_core_value_sigC92D,
+        var_core_value_sig0483 = var_core_value_sig9DAA.getSnapshot().slideOrder['indexOf'](var_core_value_sigEBB4);
+      if (var_core_value_sig0483 === -1 || var_core_value_sig0483 === var_core_value_sig2B74) return false;
+      let var_core_value_sig4A48 = {
+          'unitId': var_core_value_sig1F8A,
+          'subUnitId': var_core_value_sigEBB4,
+          'toIndex': var_core_value_sig2B74
+        },
+        var_core_value_sigD170 = {
+          'unitId': var_core_value_sig1F8A,
+          'subUnitId': var_core_value_sigEBB4,
+          'toIndex': var_core_value_sig0483
+        };
+      return var_core_value_sig2841.syncExecuteCommand(L.id, var_core_value_sig4A48) ? (var_core_value_sig9FE1.pushUndoRedo({
+        'unitID': var_core_value_sig1F8A,
+        'undoMutations': [{
+          'id': L.id,
+          'params': var_core_value_sigD170
+        }],
+        'redoMutations': [{
+          'id': L.id,
+          'params': var_core_value_sig4A48
+        }]
+      }), true) : false;
+    }
+  },
+  ut = {
+    'id': 'slide.mutation.set-slide-placeholder-suppression',
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig90E5, var_core_value_sig7000) => {
+      let {
+          unitId: var_core_value_sigD7C5,
+          subUnitId: var_core_value_sig3633,
+          placeholderKey: var_core_value_sig1DF5,
+          suppressed: var_core_value_sig90A3
+        } = var_core_value_sig7000,
+        var_core_value_sig28BE = var_core_value_sig90E5.get(E),
+        var_core_value_sig0224 = var_core_value_sig90E5.get(e.IUniverInstanceService).getUnit(var_core_value_sigD7C5, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig0224) return false;
+      let var_core_value_sig854B = var_core_value_sig0224.pageManager["getSlide"](var_core_value_sig3633);
+      return var_core_value_sig854B ? (var_core_value_sig854B.updatePageData({
+        'custom': Ye(var_core_value_sig854B.getData().custom, var_core_value_sig1DF5, var_core_value_sig90A3)
+      }), O(var_core_value_sig28BE, var_core_value_sig0224, var_core_value_sigD7C5, var_core_value_sig3633)) : false;
+    }
+  };
+function dt(var_core_value_sig1FF6) {
+  if (!(var_core_value_sig1FF6.sourcePageType === "slide" || !Ke(var_core_value_sig1FF6.element))) return M(var_core_value_sig1FF6.element);
+}
+;
+function ft(var_core_value_sig4B27, var_core_value_sig3A41, var_core_value_sig269A, var_core_value_sigBF53) {
+  return var_core_value_sig4B27.getDrawingByParam({
+    'unitId': var_core_value_sig3A41,
+    'subUnitId': var_core_value_sig269A,
+    'drawingId': var_core_value_sigBF53
+  });
+}
+;
+function pt(var_core_value_sigD9BB, var_core_value_sigF549) {
+  let var_core_value_sigC125 = var_core_value_sigD9BB.getDrawingData(var_core_value_sigF549.unitId, var_core_value_sigF549.subUnitId),
+    var_core_value_sigB63D = var_core_value_sigD9BB.getDrawingOrder(var_core_value_sigF549.unitId, var_core_value_sigF549.subUnitId),
+    var_core_value_sig8255 = new Set();
+  return var_core_value_sigF549.drawingIds['forEach'](var_core_value_sigD4FF => {
+    ge(var_core_value_sigC125, var_core_value_sigD4FF, var_core_value_sigB63D).forEach(var_core_value_sig9A8D => var_core_value_sig8255.add(var_core_value_sig9A8D));
+  }), var_core_value_sigF549.drawingIds["filter"](var_core_value_sig1E5B => !var_core_value_sig8255.has(var_core_value_sig1E5B)).map(var_core_value_sigB680 => ft(var_core_value_sigD9BB, var_core_value_sigF549.unitId, var_core_value_sigF549.subUnitId, var_core_value_sigB680)).filter(var_core_value_sig1F64 => !!var_core_value_sig1F64);
+}
+;
+function mt(var_core_value_sigBFC7, var_core_value_sig933F) {
+  let var_core_value_sig29DE = var_core_value_sigBFC7.getDrawingData(var_core_value_sig933F.unitId, var_core_value_sig933F.subUnitId),
+    var_core_value_sig4AFB = var_core_value_sigBFC7.getDrawingOrder(var_core_value_sig933F.unitId, var_core_value_sig933F.subUnitId),
+    var_core_value_sigC7EA = _e(var_core_value_sig29DE, var_core_value_sig4AFB, var_core_value_sig933F.drawingIds),
+    var_core_value_sigDAB9 = var_core_value_sigC7EA.length > 0 ? var_core_value_sigC7EA : var_core_value_sig933F.drawingIds,
+    var_core_value_sig9CF7 = var_core_value_sigC7EA.length > var_core_value_sig933F.drawingIds["length"],
+    var_core_value_sigCCE5 = new Map();
+  return var_core_value_sig4AFB.forEach((var_core_value_sigDD1C, var_core_value_sig2C39) => var_core_value_sigCCE5.set(var_core_value_sigDD1C, var_core_value_sig2C39)), var_core_value_sigDAB9.map(var_core_value_sigB7D1 => {
+    let var_core_value_sig64F0 = var_core_value_sig29DE[var_core_value_sigB7D1] ?? ft(var_core_value_sigBFC7, var_core_value_sig933F.unitId, var_core_value_sig933F.subUnitId, var_core_value_sigB7D1);
+    return var_core_value_sig64F0 ? {
+      'drawing': var_core_value_sig64F0,
+      'insertIndex': var_core_value_sig9CF7 ? var_core_value_sigCCE5.get(var_core_value_sigB7D1) : undefined
+    } : null;
+  }).filter(var_core_value_sig85B1 => !!var_core_value_sig85B1);
+}
+const ht = {
+    'id': 'slide.command.remove-element',
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sig5933, var_core_value_sig884B) => {
+      if (!var_core_value_sig884B || var_core_value_sig884B.drawingIds["length"] === 0) return false;
+      let var_core_value_sig4E30 = P(var_core_value_sig5933.get(e.IUniverInstanceService), var_core_value_sig884B);
+      if (!var_core_value_sig4E30) return false;
+      let var_core_value_sig9730 = var_core_value_sig5933.get(e.ICommandService),
+        var_core_value_sig8E4A = var_core_value_sig5933.get(e.IUndoRedoService),
+        var_core_value_sig300B = var_core_value_sig5933.get(E),
+        {
+          unitId: var_core_value_sig8457,
+          subUnitId: var_core_value_sigB30D
+        } = var_core_value_sig4E30,
+        var_core_value_sigDB33 = {
+          ...var_core_value_sig884B,
+          'unitId': var_core_value_sig8457,
+          'subUnitId': var_core_value_sigB30D
+        },
+        var_core_value_sig6C8C = pt(var_core_value_sig300B, var_core_value_sigDB33),
+        var_core_value_sig7A5E = mt(var_core_value_sig300B, var_core_value_sigDB33);
+      if (!var_core_value_sig6C8C.length || !var_core_value_sig7A5E.length) return false;
+      let var_core_value_sig838E = [],
+        var_core_value_sig9A5B = [];
+      return var_core_value_sig6C8C.forEach(var_core_value_sig3141 => {
+        let var_core_value_sig2162 = dt(var_core_value_sig3141);
+        if (var_core_value_sig2162) {
+          let var_core_value_sigC259 = {
+            'unitId': var_core_value_sig8457,
+            'subUnitId': var_core_value_sigB30D,
+            'placeholderKey': var_core_value_sig2162,
+            'suppressed': true
+          };
+          var_core_value_sig838E.push({
+            'id': ut.id,
+            'params': var_core_value_sigC259
+          });
+        } else {
+          let var_core_value_sig9C9F = {
+            'unitId': var_core_value_sig8457,
+            'subUnitId': var_core_value_sigB30D,
+            'drawingId': var_core_value_sig3141.drawingId,
+            'elementType': var_core_value_sig3141.element['type']
+          };
+          var_core_value_sig838E.push({
+            'id': N.id,
+            'params': var_core_value_sig9C9F
+          });
+        }
+      }), var_core_value_sig7A5E.forEach(({
+        drawing: var_core_value_sig2EAD,
+        insertIndex: var_core_value_sig6774
+      }) => {
+        let var_core_value_sig340D = dt(var_core_value_sig2EAD);
+        if (var_core_value_sig340D) {
+          let var_core_value_sigFDEA = {
+            'unitId': var_core_value_sig8457,
+            'subUnitId': var_core_value_sigB30D,
+            'placeholderKey': var_core_value_sig340D,
+            'suppressed': false
+          };
+          var_core_value_sig9A5B.push({
+            'id': ut.id,
+            'params': var_core_value_sigFDEA
+          });
+        } else {
+          let var_core_value_sig86D0 = {
+            'unitId': var_core_value_sig8457,
+            'subUnitId': var_core_value_sigB30D,
+            'element': var_core_value_sig2EAD.element,
+            'sourcePageType': var_core_value_sig2EAD.sourcePageType,
+            ...(var_core_value_sig6774 === undefined ? {} : {
+              'insertIndex': var_core_value_sig6774
+            })
+          };
+          var_core_value_sig9A5B.push({
+            'id': j.id,
+            'params': var_core_value_sig86D0
+          });
+        }
+      }), (0, e.sequenceExecute)(var_core_value_sig838E, var_core_value_sig9730).result ? (var_core_value_sig8E4A.pushUndoRedo({
+        'unitID': var_core_value_sig8457,
+        'undoMutations': var_core_value_sig9A5B,
+        'redoMutations': var_core_value_sig838E
+      }), true) : false;
+    }
+  },
+  gt = {
+    'id': 'slide.command.remove-page',
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sigC860, var_core_value_sigE64C) => {
+      if (!var_core_value_sigE64C) return false;
+      let var_core_value_sigF39B = P(var_core_value_sigC860.get(e.IUniverInstanceService), var_core_value_sigE64C);
+      if (!var_core_value_sigF39B) return false;
+      let var_core_value_sig9B88 = var_core_value_sigC860.get(e.ICommandService),
+        var_core_value_sig992A = var_core_value_sigC860.get(e.IUndoRedoService),
+        {
+          presentation: var_core_value_sig6281,
+          slide: var_core_value_sig9B01,
+          unitId: var_core_value_sigA724,
+          subUnitId: var_core_value_sig385E
+        } = var_core_value_sigF39B,
+        var_core_value_sig10D3 = var_core_value_sig6281.getSnapshot().slideOrder,
+        var_core_value_sig41F2 = var_core_value_sig10D3.indexOf(var_core_value_sig385E),
+        var_core_value_sig32DD = var_core_value_sig6281.pageManager['getActiveSlide'](),
+        var_core_value_sig7A88 = var_core_value_sig32DD == null ? undefined : var_core_value_sig32DD.getId(),
+        var_core_value_sig6CFC = var_core_value_sig7A88 === var_core_value_sig385E,
+        var_core_value_sig3EC0 = {
+          'unitId': var_core_value_sigA724,
+          'subUnitId': var_core_value_sig385E,
+          'nextActiveSlideId': var_core_value_sig6CFC ? var_core_value_sig10D3[var_core_value_sig41F2 + 1] ?? var_core_value_sig10D3[var_core_value_sig41F2 - 1] : var_core_value_sig7A88
+        },
+        var_core_value_sigEA69 = {
+          'unitId': var_core_value_sigA724,
+          'slide': var_core_value_sig9B01.getData(),
+          'insertIndex': var_core_value_sig41F2,
+          'setActive': var_core_value_sig6CFC
+        };
+      return var_core_value_sig9B88.syncExecuteCommand(I.id, var_core_value_sig3EC0) ? (var_core_value_sig992A.pushUndoRedo({
+        'unitID': var_core_value_sigA724,
+        'undoMutations': [{
+          'id': F.id,
+          'params': var_core_value_sigEA69
+        }],
+        'redoMutations': [{
+          'id': I.id,
+          'params': var_core_value_sig3EC0
+        }]
+      }), true) : false;
+    }
+  };
+function _t(var_core_value_sigF42A, var_core_value_sig898E) {
+  let var_core_value_sigC481 = new Set(var_core_value_sigF42A),
+    var_core_value_sig27B7 = new Set(),
+    var_core_value_sig2DAD = [];
+  for (let var_core_value_sig82D4 of [...var_core_value_sig898E, ...var_core_value_sigF42A]) var_core_value_sigC481.has(var_core_value_sig82D4) && !var_core_value_sig27B7.has(var_core_value_sig82D4) && (var_core_value_sig27B7.add(var_core_value_sig82D4), var_core_value_sig2DAD.push(var_core_value_sig82D4));
+  return var_core_value_sig2DAD;
+}
+const R = {
+    'id': "slide.mutation.set-element-order",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig00DE, var_core_value_sigEF7C) => {
+      let {
+          unitId: var_core_value_sig07E7,
+          subUnitId: var_core_value_sig6005,
+          drawingIds: var_core_value_sig25A4
+        } = var_core_value_sigEF7C,
+        var_core_value_sigB591 = var_core_value_sig00DE.get(e.IUniverInstanceService),
+        var_core_value_sigB272 = var_core_value_sig00DE.get(E),
+        var_core_value_sig6F52 = var_core_value_sigB591.getUnit(var_core_value_sig07E7, e.UniverInstanceType['UNIVER_SLIDE']),
+        var_core_value_sig09C4 = var_core_value_sig6F52 == null ? undefined : var_core_value_sig6F52.pageManager['getSlide'](var_core_value_sig6005);
+      if (!var_core_value_sig09C4 || !var_core_value_sig6F52) return false;
+      let var_core_value_sig8E3E = _t(var_core_value_sig09C4.getData().elementOrder, var_core_value_sig25A4);
+      var_core_value_sig09C4.setElementOrder(var_core_value_sig8E3E);
+      let var_core_value_sigC3D3 = D(var_core_value_sig6F52, var_core_value_sig09C4);
+      return var_core_value_sigB272.setDrawingData(var_core_value_sig07E7, var_core_value_sig6005, var_core_value_sigC3D3.data), var_core_value_sigB272.setDrawingOrder(var_core_value_sig07E7, var_core_value_sig6005, var_core_value_sigC3D3.order), var_core_value_sigB272.orderNotification({
+        'unitId': var_core_value_sig07E7,
+        'subUnitId': var_core_value_sig6005,
+        'drawingIds': var_core_value_sigC3D3.order
+      }), true;
+    }
+  },
+  vt = {
+    'id': "slide.command.reorder-elements",
+    'type': e.CommandType['COMMAND'],
+    'handler': (var_core_value_sig1451, var_core_value_sigAD57) => {
+      if (!var_core_value_sigAD57 || var_core_value_sigAD57.drawingIds['length'] === 0) return false;
+      let var_core_value_sig58A8 = P(var_core_value_sig1451.get(e.IUniverInstanceService), var_core_value_sigAD57);
+      if (!var_core_value_sig58A8) return false;
+      let {
+          slide: var_core_value_sigEC1A,
+          unitId: var_core_value_sigBDED,
+          subUnitId: var_core_value_sig4BFF
+        } = var_core_value_sig58A8,
+        var_core_value_sig40E7 = _t(var_core_value_sigEC1A.getData().elementOrder, var_core_value_sigAD57.drawingIds),
+        var_core_value_sigEDBA = var_core_value_sig1451.get(e.ICommandService),
+        var_core_value_sigE863 = var_core_value_sig1451.get(e.IUndoRedoService),
+        var_core_value_sig04B4 = [...var_core_value_sigEC1A.getData().elementOrder],
+        var_core_value_sig1C07 = {
+          'unitId': var_core_value_sigBDED,
+          'subUnitId': var_core_value_sig4BFF,
+          'drawingIds': var_core_value_sig40E7
+        },
+        var_core_value_sig93D6 = {
+          'unitId': var_core_value_sigBDED,
+          'subUnitId': var_core_value_sig4BFF,
+          'drawingIds': [...var_core_value_sig04B4]
+        };
+      return var_core_value_sigEDBA.syncExecuteCommand(R.id, var_core_value_sig1C07) ? (var_core_value_sigE863.pushUndoRedo({
+        'unitID': var_core_value_sigBDED,
+        'undoMutations': [{
+          'id': R.id,
+          'params': var_core_value_sig93D6
+        }],
+        'redoMutations': [{
+          'id': R.id,
+          'params': var_core_value_sig1C07
+        }]
+      }), true) : false;
+    }
+  },
+  z = {
+    'id': "slide.mutation.set-active-slide",
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sigDD05, var_core_value_sig3932) => {
+      if (!var_core_value_sig3932) return false;
+      let var_core_value_sig48B2 = var_core_value_sigDD05.get(e.IUniverInstanceService).getUnit(var_core_value_sig3932.unitId, e.UniverInstanceType["UNIVER_SLIDE"]);
+      return var_core_value_sig48B2 ? (var_core_value_sig48B2.pageManager["setActiveSlide"](var_core_value_sig3932.subUnitId), true) : false;
+    }
+  },
+  yt = {
+    'id': "slide.command.set-active-slide",
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sig57DF, var_core_value_sigC985) => {
+      var var_core_value_sig8DA6;
+      if (!var_core_value_sigC985) return false;
+      let var_core_value_sigCA69 = P(var_core_value_sig57DF.get(e.IUniverInstanceService), var_core_value_sigC985);
+      if (!var_core_value_sigCA69) return false;
+      let {
+          presentation: var_core_value_sigB77C,
+          unitId: var_core_value_sig9AFF,
+          subUnitId: var_core_value_sig3545
+        } = var_core_value_sigCA69,
+        var_core_value_sig5EE4 = (var_core_value_sig8DA6 = var_core_value_sigB77C.pageManager["getActiveSlide"]()) == null ? undefined : var_core_value_sig8DA6.getId();
+      if (!var_core_value_sig5EE4) return false;
+      let var_core_value_sig7EAB = var_core_value_sig57DF.get(e.ICommandService),
+        var_core_value_sig56B9 = var_core_value_sig57DF.get(e.IUndoRedoService),
+        var_core_value_sig90CF = {
+          'unitId': var_core_value_sig9AFF,
+          'subUnitId': var_core_value_sig3545
+        },
+        var_core_value_sigA386 = {
+          'unitId': var_core_value_sig9AFF,
+          'subUnitId': var_core_value_sig5EE4
+        };
+      return var_core_value_sig7EAB.syncExecuteCommand(z.id, var_core_value_sig90CF) ? (var_core_value_sig56B9.pushUndoRedo({
+        'unitID': var_core_value_sig9AFF,
+        'undoMutations': [{
+          'id': z.id,
+          'params': var_core_value_sigA386
+        }],
+        'redoMutations': [{
+          'id': z.id,
+          'params': var_core_value_sig90CF
+        }]
+      }), true) : false;
+    }
+  };
+let bt = function (var_core_value_sigCD6E) {
+    return var_core_value_sigCD6E.Cover = 'cover', var_core_value_sigCD6E.Contain = "contain", var_core_value_sigCD6E.Stretch = "stretch", var_core_value_sigCD6E.Repeat = "repeat", var_core_value_sigCD6E;
+  }({}),
+  xt = function (var_core_value_sigFD9D) {
+    return var_core_value_sigFD9D.AllMasters = 'allMasters', var_core_value_sigFD9D.ActiveMaster = 'activeMaster', var_core_value_sigFD9D;
+  }({});
+function St(var_core_value_sigA2A4) {
+  return {
+    ...(var_core_value_sigA2A4.custom && typeof var_core_value_sigA2A4.custom == "object" ? var_core_value_sigA2A4.custom : {}),
+    'fit': var_core_value_sigA2A4.fit ?? 'stretch'
+  };
+}
+;
+function B(var_core_value_sigA1AC) {
+  let var_core_value_sig6180 = var_core_value_sigA1AC.custom && typeof var_core_value_sigA1AC.custom == "object" ? var_core_value_sigA1AC.custom : undefined;
+  return var_core_value_sigA1AC.role === "backgroundGraphic" && var_core_value_sigA1AC.managedBy === "presentationBackground" || (var_core_value_sig6180 == null ? undefined : var_core_value_sig6180.role) === "backgroundGraphic" && (var_core_value_sig6180 == null ? undefined : var_core_value_sig6180.managedBy) === "presentationBackground";
+}
+;
+function Ct(var_core_value_sigB93D, var_core_value_sigB17C, var_core_value_sig69B6) {
+  return {
+    'id': var_core_value_sigB93D.id ?? "presentation-bg-" + (var_core_value_sig69B6 + 1),
+    'type': "image",
+    'role': 'backgroundGraphic',
+    'managedBy': "presentationBackground",
+    'transform': var_core_value_sigB93D.transform ?? {
+      'left': 0,
+      'top': 0,
+      'width': var_core_value_sigB17C.width,
+      'height': var_core_value_sigB17C.height
+    },
+    'source': var_core_value_sigB93D.source,
+    'imageSourceType': var_core_value_sigB93D.imageSourceType,
+    'crop': var_core_value_sigB93D.crop,
+    'custom': St(var_core_value_sigB93D)
+  };
+}
+;
+function wt(var_core_value_sig708D, var_core_value_sig1ED2, var_core_value_sig94C1) {
+  let var_core_value_sigABAC = var_core_value_sig94C1.map((var_core_value_sigBDE4, var_core_value_sig7DF1) => Ct(var_core_value_sigBDE4, var_core_value_sig1ED2, var_core_value_sig7DF1)),
+    var_core_value_sigFAE6 = {};
+  for (let var_core_value_sigDC86 of var_core_value_sig708D.elementOrder) {
+    let var_core_value_sig4CD2 = var_core_value_sig708D.elements[var_core_value_sigDC86];
+    !var_core_value_sig4CD2 || B(var_core_value_sig4CD2) || (var_core_value_sigFAE6[var_core_value_sigDC86] = var_core_value_sig4CD2);
+  }
+  for (let var_core_value_sig0B0C of var_core_value_sigABAC) var_core_value_sigFAE6[var_core_value_sig0B0C.id] = var_core_value_sig0B0C;
+  return {
+    ...var_core_value_sig708D,
+    'elementOrder': [...var_core_value_sigABAC.map(var_core_value_sigA39E => var_core_value_sigA39E.id), ...var_core_value_sig708D.elementOrder["filter"](var_core_value_sigBBEE => {
+      let var_core_value_sig011D = var_core_value_sig708D.elements[var_core_value_sigBBEE];
+      return var_core_value_sig011D && !B(var_core_value_sig011D);
+    })],
+    'elements': var_core_value_sigFAE6
+  };
+}
+;
+function Tt(var_core_value_sig06AC) {
+  return var_core_value_sig06AC.elementOrder['map'](var_core_value_sig6167 => var_core_value_sig06AC.elements[var_core_value_sig6167]).filter(var_core_value_sig65A1 => !!var_core_value_sig65A1 && var_core_value_sig65A1.type === "image" && B(var_core_value_sig65A1)).map(var_core_value_sig7F19 => ({
+    'id': var_core_value_sig7F19.id,
+    'source': var_core_value_sig7F19.source,
+    'imageSourceType': var_core_value_sig7F19.imageSourceType,
+    'fit': var_core_value_sig7F19.custom && typeof var_core_value_sig7F19.custom == "object" && typeof var_core_value_sig7F19.custom["fit"] == "string" ? var_core_value_sig7F19.custom["fit"] : "stretch",
+    'transform': var_core_value_sig7F19.transform,
+    'crop': var_core_value_sig7F19.crop,
+    'custom': var_core_value_sig7F19.custom
+  }));
+}
+;
+function Et(var_core_value_sig57E2, var_core_value_sig01FC = "allMasters", var_core_value_sig10FC) {
+  var var_core_value_sig5374;
+  if (var_core_value_sig10FC != null && var_core_value_sig10FC.length) return var_core_value_sig10FC.filter(var_core_value_sig7827 => {
+    var var_core_value_sig652C;
+    return !!((var_core_value_sig652C = var_core_value_sig57E2.masterPages) != null && var_core_value_sig652C[var_core_value_sig7827]);
+  });
+  if (var_core_value_sig01FC === 'activeMaster') {
+    var var_core_value_sigB66D, var_core_value_sigD0F0;
+    let var_core_value_sig7E32 = var_core_value_sig57E2.activeSlideId ?? var_core_value_sig57E2.slideOrder[0],
+      var_core_value_sig4C07 = var_core_value_sig7E32 ? var_core_value_sig57E2.slides[var_core_value_sig7E32] : undefined,
+      var_core_value_sig79AB = var_core_value_sig4C07 != null && var_core_value_sig4C07.layoutPageId ? (var_core_value_sigB66D = var_core_value_sig57E2.layoutPages) == null ? undefined : var_core_value_sigB66D[var_core_value_sig4C07.layoutPageId] : undefined,
+      var_core_value_sig8E74 = (var_core_value_sig79AB == null ? undefined : var_core_value_sig79AB.masterPageId) ?? (var_core_value_sig4C07 == null ? undefined : var_core_value_sig4C07.masterPageId);
+    return var_core_value_sig8E74 && (var_core_value_sigD0F0 = var_core_value_sig57E2.masterPages) != null && var_core_value_sigD0F0[var_core_value_sig8E74] ? [var_core_value_sig8E74] : [];
+  }
+  let var_core_value_sig8E31 = ((var_core_value_sig5374 = var_core_value_sig57E2.masterPageOrder) == null ? undefined : var_core_value_sig5374.filter(var_core_value_sig104C => {
+    var var_core_value_sig841D;
+    return !!((var_core_value_sig841D = var_core_value_sig57E2.masterPages) != null && var_core_value_sig841D[var_core_value_sig104C]);
+  })) ?? [];
+  return var_core_value_sig8E31.length > 0 ? var_core_value_sig8E31 : Object.keys(var_core_value_sig57E2.masterPages ?? {});
+}
+const Dt = {
+    'id': "slide.mutation.ensure-slide-master-page",
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sig8339, var_core_value_sigA01E) => {
+      if (!var_core_value_sigA01E) return false;
+      let var_core_value_sigA41E = var_core_value_sig8339.get(e.IUniverInstanceService).getUnit(var_core_value_sigA01E.unitId, e.UniverInstanceType['UNIVER_SLIDE']);
+      if (!var_core_value_sigA41E) return false;
+      let var_core_value_sig939C = var_core_value_sigA41E.getSnapshot();
+      var_core_value_sig939C.masterPages ||= {}, var_core_value_sig939C.masterPageOrder ||= [];
+      let var_core_value_sigA49E = var_core_value_sigA01E.masterPage['id'];
+      return var_core_value_sig939C.masterPages[var_core_value_sigA49E] || (var_core_value_sig939C.masterPages[var_core_value_sigA49E] = var_core_value_sigA01E.masterPage), var_core_value_sig939C.masterPageOrder["includes"](var_core_value_sigA49E) || var_core_value_sig939C.masterPageOrder['push'](var_core_value_sigA49E), Object.values(var_core_value_sig939C.layoutPages ?? {}).forEach(var_core_value_sig90CB => {
+        var var_core_value_sigBDF5;
+        (!var_core_value_sig90CB.masterPageId || !((var_core_value_sigBDF5 = var_core_value_sig939C.masterPages) != null && var_core_value_sigBDF5[var_core_value_sig90CB.masterPageId])) && (var_core_value_sig90CB.masterPageId = var_core_value_sigA49E);
+      }), Object.values(var_core_value_sig939C.slides).forEach(var_core_value_sigACC6 => {
+        var var_core_value_sig1614;
+        (!var_core_value_sigACC6.masterPageId || !((var_core_value_sig1614 = var_core_value_sig939C.masterPages) != null && var_core_value_sig1614[var_core_value_sigACC6.masterPageId])) && (var_core_value_sigACC6.masterPageId = var_core_value_sigA49E);
+      }), true;
+    }
+  },
+  Ot = {
+    'id': "slide.mutation.set-presentation-background-graphics",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig6DEB, var_core_value_sig2F0D) => {
+      let {
+          unitId: var_core_value_sig5141,
+          masterPageId: var_core_value_sigA9E0,
+          graphics: var_core_value_sig751D
+        } = var_core_value_sig2F0D,
+        var_core_value_sig2E9A = var_core_value_sig6DEB.get(e.IUniverInstanceService).getUnit(var_core_value_sig5141, e.UniverInstanceType['UNIVER_SLIDE']);
+      if (!var_core_value_sig2E9A) return false;
+      let var_core_value_sigE105 = var_core_value_sig2E9A.getSnapshot(),
+        var_core_value_sig0BD6 = var_core_value_sigE105.masterPages;
+      return !var_core_value_sig0BD6 || !var_core_value_sig0BD6[var_core_value_sigA9E0] ? false : (var_core_value_sig0BD6[var_core_value_sigA9E0] = wt(var_core_value_sig0BD6[var_core_value_sigA9E0], var_core_value_sig0BD6[var_core_value_sigA9E0].pageSize ?? var_core_value_sigE105.defaultPageSize, var_core_value_sig751D), k(var_core_value_sig6DEB.get(E), var_core_value_sig2E9A, var_core_value_sig5141, var_core_value_sigA9E0), true);
+    }
+  },
+  kt = {
+    'id': "slide.command.set-presentation-background-graphics",
+    'type': e.CommandType['COMMAND'],
+    'handler': (var_core_value_sig3070, var_core_value_sigC66D) => {
+      var var_core_value_sig8EC5;
+      if (!var_core_value_sigC66D) return false;
+      let {
+          unitId: var_core_value_sig1056,
+          target: var_core_value_sig6EE5,
+          masterPageIds: var_core_value_sig9DD9,
+          graphics: var_core_value_sig09AC
+        } = var_core_value_sigC66D,
+        var_core_value_sig1613 = var_core_value_sig3070.get(e.IUniverInstanceService).getUnit(var_core_value_sig1056, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig1613) return false;
+      let var_core_value_sigADC6 = var_core_value_sig3070.get(e.ICommandService),
+        var_core_value_sig4620 = var_core_value_sig3070.get(e.IUndoRedoService),
+        var_core_value_sig07FB = var_core_value_sig1613.getSnapshot(),
+        var_core_value_sig617E = [],
+        var_core_value_sigC85E = [],
+        var_core_value_sig8293 = Et(var_core_value_sig07FB, var_core_value_sig6EE5, var_core_value_sig9DD9);
+      if (var_core_value_sig8293.length === 0 && !((var_core_value_sig8EC5 = var_core_value_sig07FB.masterPages) != null && var_core_value_sig8EC5["master-default"])) {
+        let var_core_value_sig85C3 = {
+          'unitId': var_core_value_sig1056,
+          'masterPage': ne
+        };
+        var_core_value_sig617E.push({
+          'id': Dt.id,
+          'params': var_core_value_sig85C3
+        }), var_core_value_sig8293 = [x];
+      }
+      return var_core_value_sig8293.length === 0 ? false : (var_core_value_sig8293.forEach(var_core_value_sigB996 => {
+        var var_core_value_sig4BBA;
+        let var_core_value_sig6201 = (var_core_value_sig4BBA = var_core_value_sig07FB.masterPages) == null ? undefined : var_core_value_sig4BBA[var_core_value_sigB996],
+          var_core_value_sig5151 = var_core_value_sig6201 ? Tt(var_core_value_sig6201) : [],
+          var_core_value_sigB542 = {
+            'unitId': var_core_value_sig1056,
+            'masterPageId': var_core_value_sigB996,
+            'graphics': var_core_value_sig09AC
+          },
+          var_core_value_sigBB6C = {
+            'unitId': var_core_value_sig1056,
+            'masterPageId': var_core_value_sigB996,
+            'graphics': var_core_value_sig5151
+          };
+        var_core_value_sig617E.push({
+          'id': Ot.id,
+          'params': var_core_value_sigB542
+        }), var_core_value_sigC85E.push({
+          'id': Ot.id,
+          'params': var_core_value_sigBB6C
+        });
+      }), (0, e.sequenceExecute)(var_core_value_sig617E, var_core_value_sigADC6).result ? (var_core_value_sig4620.pushUndoRedo({
+        'unitID': var_core_value_sig1056,
+        'undoMutations': var_core_value_sigC85E,
+        'redoMutations': var_core_value_sig617E
+      }), true) : false);
+    }
+  },
+  At = {
+    'id': 'slide.mutation.set-name',
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sig050D, var_core_value_sig37AE) => {
+      let var_core_value_sig5B51 = var_core_value_sig050D.get(e.IUniverInstanceService).getUnit(var_core_value_sig37AE.unitId, e.UniverInstanceType["UNIVER_SLIDE"]);
+      return var_core_value_sig5B51 ? (var_core_value_sig5B51.setName(var_core_value_sig37AE.name), true) : false;
+    }
+  },
+  jt = {
+    'id': 'slide.command.set-name',
+    'type': e.CommandType['COMMAND'],
+    'handler': (var_core_value_sig64FF, var_core_value_sig86F4) => {
+      if (!var_core_value_sig86F4) return false;
+      let var_core_value_sig9E0F = P(var_core_value_sig64FF.get(e.IUniverInstanceService), var_core_value_sig86F4);
+      if (!var_core_value_sig9E0F) return false;
+      let var_core_value_sig3A42 = var_core_value_sig64FF.get(e.ICommandService),
+        var_core_value_sig8802 = var_core_value_sig64FF.get(e.IUndoRedoService),
+        {
+          presentation: var_core_value_sig95D5,
+          unitId: var_core_value_sigE027
+        } = var_core_value_sig9E0F,
+        {
+          name: var_core_value_sigE537
+        } = var_core_value_sig86F4,
+        var_core_value_sig5D84 = var_core_value_sig95D5.getSnapshot().name,
+        var_core_value_sigD120 = {
+          'unitId': var_core_value_sigE027,
+          'name': var_core_value_sigE537
+        },
+        var_core_value_sigAA05 = {
+          'unitId': var_core_value_sigE027,
+          'name': var_core_value_sig5D84
+        };
+      return var_core_value_sig3A42.syncExecuteCommand(At.id, var_core_value_sigD120) ? (var_core_value_sig8802.pushUndoRedo({
+        'unitID': var_core_value_sigE027,
+        'redoMutations': [{
+          'id': At.id,
+          'params': var_core_value_sigD120
+        }],
+        'undoMutations': [{
+          'id': At.id,
+          'params': var_core_value_sigAA05
+        }]
+      }), true) : false;
+    }
+  },
+  Mt = {
+    'standard4By3': {
+      'width': 720,
+      'height': 540
+    },
+    'wideScreen16By9': {
+      'width': 960,
+      'height': 540
+    },
+    'wideScreen16By10': {
+      'width': 864,
+      'height': 540
+    }
+  };
+function Nt(var_core_value_sigC04C) {
+  return typeof var_core_value_sigC04C == "number" && Number.isFinite(var_core_value_sigC04C) && var_core_value_sigC04C > 0;
+}
+;
+function Pt(var_core_value_sig2069) {
+  if (var_core_value_sig2069 !== "custom") return Mt[var_core_value_sig2069];
+}
+;
+function Ft(var_core_value_sig5176) {
+  let var_core_value_sig71A1 = Pt(var_core_value_sig5176);
+  return var_core_value_sig71A1 ? var_core_value_sig71A1.width / var_core_value_sig71A1.height : undefined;
+}
+;
+function It(var_core_value_sig72AD) {
+  let var_core_value_sig9ABE = var_core_value_sig72AD.width / var_core_value_sig72AD.height;
+  for (let var_core_value_sigE2BF of ["standard4By3", 'wideScreen16By9', "wideScreen16By10"]) {
+    let var_core_value_sig48CA = Ft(var_core_value_sigE2BF);
+    if (var_core_value_sig48CA !== undefined && Math.abs(var_core_value_sig9ABE - var_core_value_sig48CA) < 0.000001) return var_core_value_sigE2BF;
+  }
+  return 'custom';
+}
+;
+function Lt(var_core_value_sig8EF01, var_core_value_sig234B) {
+  if (!var_core_value_sig234B || var_core_value_sig234B === "custom") return;
+  let var_core_value_sig8169 = Ft(var_core_value_sig234B);
+  if (var_core_value_sig8169 !== undefined) {
+    if (Nt(var_core_value_sig8EF01.width) && var_core_value_sig8EF01.height === undefined) return {
+      'width': var_core_value_sig8EF01.width,
+      'height': Math.round(var_core_value_sig8EF01.width / var_core_value_sig8169)
+    };
+    if (Nt(var_core_value_sig8EF01.height) && var_core_value_sig8EF01.width === undefined) return {
+      'width': Math.round(var_core_value_sig8EF01.height * var_core_value_sig8169),
+      'height': var_core_value_sig8EF01.height
+    };
+  }
+}
+;
+function Rt(var_core_value_sigC5FB) {
+  let var_core_value_sig5453 = var_core_value_sigC5FB == null ? undefined : var_core_value_sigC5FB.preset;
+  if (var_core_value_sigC5FB !== undefined && (var_core_value_sigC5FB.width !== undefined || var_core_value_sigC5FB.height !== undefined)) {
+    if (!Nt(var_core_value_sigC5FB == null ? undefined : var_core_value_sigC5FB.width) || !Nt(var_core_value_sigC5FB == null ? undefined : var_core_value_sigC5FB.height)) {
+      let var_core_value_sig50AF = var_core_value_sigC5FB ? Lt(var_core_value_sigC5FB, var_core_value_sig5453) : undefined;
+      return var_core_value_sig50AF ? {
+        ...var_core_value_sig50AF,
+        'preset': var_core_value_sig5453
+      } : undefined;
+    }
+    let var_core_value_sigB8C7 = {
+      'width': var_core_value_sigC5FB.width,
+      'height': var_core_value_sigC5FB.height
+    };
+    return {
+      ...var_core_value_sigB8C7,
+      'preset': It(var_core_value_sigB8C7)
+    };
+  }
+  if (!var_core_value_sig5453) return;
+  let var_core_value_sig8725 = Pt(var_core_value_sig5453);
+  if (var_core_value_sig8725) return {
+    ...var_core_value_sig8725,
+    'preset': var_core_value_sig5453
+  };
+}
+const V = {
+    'id': "slide.mutation.set-slide-page-size",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig513B, var_core_value_sig5501) => {
+      let {
+          unitId: var_core_value_sig7784,
+          pageId: var_core_value_sigB706,
+          pageSize: var_core_value_sig5FD01
+        } = var_core_value_sig5501,
+        var_core_value_sig77E3 = var_core_value_sig513B.get(e.IUniverInstanceService).getUnit(var_core_value_sig7784, e.UniverInstanceType['UNIVER_SLIDE']);
+      if (!var_core_value_sig77E3) return false;
+      if (var_core_value_sigB706 === undefined) {
+        if (var_core_value_sig5FD01 === undefined) return false;
+        var_core_value_sig77E3.getSnapshot().defaultPageSize = {
+          ...var_core_value_sig5FD01
+        };
+        let var_core_value_sigA56E = var_core_value_sig513B.get(E);
+        return var_core_value_sig77E3.getSnapshot().slideOrder["forEach"](var_core_value_sigA942 => {
+          O(var_core_value_sigA56E, var_core_value_sig77E3, var_core_value_sig7784, var_core_value_sigA942);
+        }), true;
+      }
+      let var_core_value_sigB071 = var_core_value_sig77E3.pageManager["getPage"](var_core_value_sigB706);
+      return var_core_value_sigB071 ? (var_core_value_sig5FD01 === undefined ? delete var_core_value_sigB071.pageSize : var_core_value_sigB071.pageSize = {
+        ...var_core_value_sig5FD01
+      }, k(var_core_value_sig513B.get(E), var_core_value_sig77E3, var_core_value_sig7784, var_core_value_sigB706), true) : false;
+    }
+  },
+  zt = {
+    'id': "slide.command.set-slide-page-size",
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sig15FE, var_core_value_sigCF47) => {
+      var var_core_value_sigB0F9;
+      if (!var_core_value_sigCF47) return false;
+      let {
+          unitId: var_core_value_sigAF12,
+          pageId: var_core_value_sigC60C,
+          pageSize: var_core_value_sig1C3C
+        } = var_core_value_sigCF47,
+        var_core_value_sig71CF = var_core_value_sig1C3C !== undefined;
+      if (!var_core_value_sig71CF && var_core_value_sigC60C === undefined) return false;
+      let var_core_value_sigC341 = var_core_value_sig71CF ? Rt(var_core_value_sig1C3C) : undefined;
+      if (var_core_value_sig71CF && !var_core_value_sigC341) return false;
+      let var_core_value_sigBA47 = var_core_value_sig15FE.get(e.IUniverInstanceService).getUnit(var_core_value_sigAF12, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sigBA47) return false;
+      let var_core_value_sig3DF7 = var_core_value_sig15FE.get(e.ICommandService),
+        var_core_value_sigD49F = var_core_value_sig15FE.get(e.IUndoRedoService),
+        var_core_value_sigCECC = var_core_value_sigC60C ? (var_core_value_sigB0F9 = var_core_value_sigBA47.pageManager['getPage'](var_core_value_sigC60C)) == null ? undefined : var_core_value_sigB0F9.pageSize : var_core_value_sigBA47.getSnapshot().defaultPageSize,
+        var_core_value_sig0F47 = {
+          'unitId': var_core_value_sigAF12,
+          'pageId': var_core_value_sigC60C,
+          'pageSize': var_core_value_sigC341
+        },
+        var_core_value_sig6B29 = {
+          'unitId': var_core_value_sigAF12,
+          'pageId': var_core_value_sigC60C,
+          'pageSize': var_core_value_sigCECC
+        };
+      return var_core_value_sig3DF7.syncExecuteCommand(V.id, var_core_value_sig0F47) ? (var_core_value_sigD49F.pushUndoRedo({
+        'unitID': var_core_value_sigAF12,
+        'undoMutations': [{
+          'id': V.id,
+          'params': var_core_value_sig6B29
+        }],
+        'redoMutations': [{
+          'id': V.id,
+          'params': var_core_value_sig0F47
+        }]
+      }), true) : false;
+    }
+  };
+function H(var_core_value_sig28E2) {
+  '@babel/helpers - typeof';
+
+  return H = typeof Symbol == "function" && typeof Symbol.iterator == 'symbol' ? function (var_core_value_sig1998) {
+    return typeof var_core_value_sig1998;
+  } : function (var_core_value_sigFF19) {
+    return var_core_value_sigFF19 && typeof Symbol == 'function' && var_core_value_sigFF19.constructor === Symbol && var_core_value_sigFF19 !== Symbol.prototype ? "symbol" : typeof var_core_value_sigFF19;
+  }, H(var_core_value_sig28E2);
+}
+;
+function Bt(var_core_value_sig1578, var_core_value_sig52ED) {
+  if (H(var_core_value_sig1578) != 'object' || !var_core_value_sig1578) return var_core_value_sig1578;
+  var var_core_value_sig135F = var_core_value_sig1578[Symbol.toPrimitive];
+  if (var_core_value_sig135F !== undefined) {
+    var var_core_value_sig416D = var_core_value_sig135F.call(var_core_value_sig1578, var_core_value_sig52ED || 'default');
+    if (H(var_core_value_sig416D) != "object") return var_core_value_sig416D;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig52ED === "string" ? String : Number)(var_core_value_sig1578);
+}
+;
+function Vt(var_core_value_sigAD5D) {
+  var var_core_value_sig1B8A = Bt(var_core_value_sigAD5D, 'string');
+  return H(var_core_value_sig1B8A) == 'symbol' ? var_core_value_sig1B8A : var_core_value_sig1B8A + '';
+}
+;
+function U(var_core_value_sigFB18, var_core_value_sig703C, var_core_value_sig96CF) {
+  return (var_core_value_sig703C = Vt(var_core_value_sig703C)) in var_core_value_sigFB18 ? Object.defineProperty(var_core_value_sigFB18, var_core_value_sig703C, {
+    'value': var_core_value_sig96CF,
+    'enumerable': true,
+    'configurable': true,
+    'writable': true
+  }) : var_core_value_sigFB18[var_core_value_sig703C] = var_core_value_sig96CF, var_core_value_sigFB18;
+}
+var Ht = class {
+    constructor(var_core_value_sig43B8, var_core_value_sigD98F) {
+      this.unitId = var_core_value_sig43B8, this.objectId = var_core_value_sigD98F, U(this, "type", i.UnitObject["SlideElement"]), U(this, "subType", i.UnitAction['Edit']), U(this, "status", e.PermissionStatus['INIT']), U(this, 'id', undefined), U(this, "value", true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sig43B8 + '_' + var_core_value_sigD98F;
+    }
+  },
+  Ut = class {
+    constructor(var_core_value_sig66C0, var_core_value_sig9D15) {
+      this.unitId = var_core_value_sig66C0, this.objectId = var_core_value_sig9D15, U(this, 'type', i.UnitObject['SlideMaster']), U(this, "subType", i.UnitAction["Edit"]), U(this, "status", e.PermissionStatus['INIT']), U(this, 'id', undefined), U(this, "value", true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sig66C0 + '_' + var_core_value_sig9D15;
+    }
+  },
+  Wt = class {
+    constructor(var_core_value_sigB785, var_core_value_sig130F) {
+      this.unitId = var_core_value_sigB785, this.objectId = var_core_value_sig130F, U(this, 'type', i.UnitObject['SlidePage']), U(this, "subType", i.UnitAction["Edit"]), U(this, "status", e.PermissionStatus["INIT"]), U(this, 'id', undefined), U(this, "value", true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sigB785 + '_' + var_core_value_sig130F;
+    }
+  },
+  Gt = class {
+    constructor(var_core_value_sigC0E3) {
+      this.unitId = var_core_value_sigC0E3, U(this, "type", i.UnitObject['Slide']), U(this, 'subType', i.UnitAction["Comment"]), U(this, "status", e.PermissionStatus["INIT"]), U(this, 'id', undefined), U(this, "value", true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sigC0E3;
+    }
+  },
+  Kt = class {
+    constructor(var_core_value_sig52F7) {
+      this.unitId = var_core_value_sig52F7, U(this, "type", i.UnitObject['Slide']), U(this, "subType", i.UnitAction["Copy"]), U(this, "status", e.PermissionStatus["INIT"]), U(this, 'id', undefined), U(this, "value", true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sig52F7;
+    }
+  },
+  qt = class {
+    constructor(var_core_value_sig866F) {
+      this.unitId = var_core_value_sig866F, U(this, 'type', i.UnitObject["Slide"]), U(this, "subType", i.UnitAction["Edit"]), U(this, "status", e.PermissionStatus['INIT']), U(this, 'id', undefined), U(this, "value", true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sig866F;
+    }
+  },
+  Jt = class {
+    constructor(var_core_value_sigDE3D) {
+      this.unitId = var_core_value_sigDE3D, U(this, "type", i.UnitObject["Slide"]), U(this, "subType", i.UnitAction["Export"]), U(this, 'status', e.PermissionStatus["INIT"]), U(this, 'id', undefined), U(this, "value", true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sigDE3D;
+    }
+  },
+  Yt = class {
+    constructor(var_core_value_sigF175) {
+      this.unitId = var_core_value_sigF175, U(this, "type", i.UnitObject["Slide"]), U(this, 'subType', i.UnitAction["Print"]), U(this, "status", e.PermissionStatus["INIT"]), U(this, 'id', undefined), U(this, 'value', true), this.id = this.type + '.' + this.subType + '_' + var_core_value_sigF175;
+    }
+  };
+const Xt = [i.UnitAction["Edit"], i.UnitAction['Copy'], i.UnitAction["Print"], i.UnitAction["Export"], i.UnitAction["Comment"]],
+  Zt = new Set([i.UnitObject["Slide"], i.UnitObject["SlidePage"], i.UnitObject["SlideElement"], i.UnitObject["SlideMaster"]]),
+  Qt = "page/",
+  $t = "element/",
+  W = "master-view";
+function en(var_core_value_sig49F1) {
+  return '' + Qt + encodeURIComponent(var_core_value_sig49F1);
+}
+;
+function tn(var_core_value_sig2F7B, var_core_value_sigB0DF, var_core_value_sig2E44) {
+  return '' + $t + encodeURIComponent(var_core_value_sig2F7B) + '/' + encodeURIComponent(var_core_value_sigB0DF) + '/' + encodeURIComponent(var_core_value_sig2E44);
+}
+;
+function nn(var_core_value_sig8560, var_core_value_sig138D, var_core_value_sig1E26) {
+  return [var_core_value_sig8560 === "slide" ? en(var_core_value_sig138D) : W, tn(var_core_value_sig8560, var_core_value_sig138D, var_core_value_sig1E26)];
+}
+;
+function rn(var_core_value_sig5C6C, var_core_value_sigBE85, var_core_value_sig56DE) {
+  if (var_core_value_sigBE85 === var_core_value_sig5C6C) switch (var_core_value_sig56DE) {
+    case i.UnitAction['Edit']:
+      return new qt(var_core_value_sig5C6C);
+    case i.UnitAction['Copy']:
+      return new Kt(var_core_value_sig5C6C);
+    case i.UnitAction["Print"]:
+      return new Yt(var_core_value_sig5C6C);
+    case i.UnitAction["Export"]:
+      return new Jt(var_core_value_sig5C6C);
+    case i.UnitAction["Comment"]:
+      return new Gt(var_core_value_sig5C6C);
+    default:
+      throw Error("Unsupported Slide permission action: " + var_core_value_sig56DE);
+  }
+  if (var_core_value_sig56DE !== i.UnitAction["Edit"]) throw Error("Slide object permissions only support Edit: " + var_core_value_sigBE85);
+  if (var_core_value_sigBE85.startsWith(Qt)) return new Wt(var_core_value_sig5C6C, var_core_value_sigBE85);
+  if (var_core_value_sigBE85.startsWith($t)) return new Ht(var_core_value_sig5C6C, var_core_value_sigBE85);
+  if (var_core_value_sigBE85 === "master-view") return new Ut(var_core_value_sig5C6C, var_core_value_sigBE85);
+  throw Error("Unsupported Slide permission object: " + var_core_value_sigBE85);
+}
+;
+function an(var_core_value_sig0278, var_core_value_sig08A6, var_core_value_sig04E1, var_core_value_sigC504) {
+  var var_core_value_sig0515;
+  return ((var_core_value_sig0515 = var_core_value_sig0278.getPermissionPoint(rn(var_core_value_sig08A6, var_core_value_sig04E1, var_core_value_sigC504).id)) == null ? undefined : var_core_value_sig0515.value) ?? true;
+}
+;
+function on(var_core_value_sig9F34, var_core_value_sig0247, var_core_value_sig6030, var_core_value_sig0137, var_core_value_sig14F3) {
+  let var_core_value_sig34E8 = rn(var_core_value_sig0247, var_core_value_sig6030, var_core_value_sig0137);
+  var_core_value_sig9F34.getPermissionPoint(var_core_value_sig34E8.id) || var_core_value_sig9F34.addPermissionPoint(var_core_value_sig34E8), var_core_value_sig9F34.updatePermissionPoint(var_core_value_sig34E8.id, var_core_value_sig14F3);
+}
+;
+function sn(var_core_value_sigCFE7, var_core_value_sigECBC) {
+  var_core_value_sigCFE7.getAllPermissionPoint().forEach((var_core_value_sig6A18, var_core_value_sig4E3D) => {
+    var_core_value_sig6A18.subscribe(var_core_value_sigA621 => {
+      Zt.has(var_core_value_sigA621.type) && "unitId" in var_core_value_sigA621 && var_core_value_sigA621.unitId === var_core_value_sigECBC && var_core_value_sigCFE7.deletePermissionPoint(var_core_value_sig4E3D);
+    }).unsubscribe();
+  });
+}
+;
+function cn(var_core_value_sig65D2, var_core_value_sig4306, var_core_value_sigFCD3) {
+  return an(var_core_value_sig65D2, var_core_value_sig4306, var_core_value_sig4306, i.UnitAction['Edit']) && Array.from(var_core_value_sigFCD3).every(var_core_value_sig49B0 => an(var_core_value_sig65D2, var_core_value_sig4306, var_core_value_sig49B0, i.UnitAction["Edit"]));
+}
+const ln = {
+    'type': e.CommandType["COMMAND"],
+    'id': "slide.command.set-permission",
+    'handler'(var_core_value_sig147A, var_core_value_sig829F) {
+      return !var_core_value_sig829F || !Xt.includes(var_core_value_sig829F.action) || var_core_value_sig829F.objectId !== var_core_value_sig829F.unitId && var_core_value_sig829F.action !== i.UnitAction['Edit'] ? false : (on(var_core_value_sig147A.get(e.IPermissionService), var_core_value_sig829F.unitId, var_core_value_sig829F.objectId, var_core_value_sig829F.action, var_core_value_sig829F.value), true);
+    }
+  },
+  un = {
+    'id': "slide.mutation.set-slide-speaker-notes",
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sig534C, var_core_value_sigABB7) => {
+      let {
+          unitId: var_core_value_sig9071,
+          subUnitId: var_core_value_sig01A9,
+          speakerNotes: var_core_value_sig9477
+        } = var_core_value_sigABB7,
+        var_core_value_sig917C = var_core_value_sig534C.get(e.IUniverInstanceService).getUnit(var_core_value_sig9071, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig917C) return false;
+      let var_core_value_sig27E2 = var_core_value_sig917C.pageManager['getSlide'](var_core_value_sig01A9);
+      return var_core_value_sig27E2 ? (var_core_value_sig27E2.updatePageData({
+        ...var_core_value_sig27E2.getData(),
+        'speakerNotes': var_core_value_sig9477
+      }), true) : false;
+    }
+  },
+  dn = {
+    'id': "slide.command.set-slide-speaker-notes",
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sig10D7, var_core_value_sig5A1A) => {
+      if (!var_core_value_sig5A1A) return false;
+      let var_core_value_sig77D2 = P(var_core_value_sig10D7.get(e.IUniverInstanceService), var_core_value_sig5A1A);
+      if (!var_core_value_sig77D2) return false;
+      let {
+          slide: var_core_value_sig625E,
+          unitId: var_core_value_sig6F04,
+          subUnitId: var_core_value_sig48DA
+        } = var_core_value_sig77D2,
+        {
+          speakerNotes: var_core_value_sigD327
+        } = var_core_value_sig5A1A,
+        var_core_value_sig6694 = var_core_value_sig625E.getData().speakerNotes;
+      if (var_core_value_sig6694 === var_core_value_sigD327) return true;
+      let var_core_value_sig2A21 = var_core_value_sig10D7.get(e.ICommandService),
+        var_core_value_sig0836 = var_core_value_sig10D7.get(e.IUndoRedoService),
+        var_core_value_sigD95C = {
+          'unitId': var_core_value_sig6F04,
+          'subUnitId': var_core_value_sig48DA,
+          'speakerNotes': var_core_value_sigD327
+        },
+        var_core_value_sig692E = {
+          'unitId': var_core_value_sig6F04,
+          'subUnitId': var_core_value_sig48DA,
+          'speakerNotes': var_core_value_sig6694
+        };
+      return var_core_value_sig2A21.syncExecuteCommand(un.id, var_core_value_sigD95C) ? (var_core_value_sig0836.pushUndoRedo({
+        'unitID': var_core_value_sig6F04,
+        'undoMutations': [{
+          'id': un.id,
+          'params': var_core_value_sig692E
+        }],
+        'redoMutations': [{
+          'id': un.id,
+          'params': var_core_value_sigD95C
+        }]
+      }), true) : false;
+    }
+  };
+function fn(var_core_value_sig3FAF) {
+  return Array.isArray(var_core_value_sig3FAF) ? var_core_value_sig3FAF.map(var_core_value_sig2547 => fn(var_core_value_sig2547)) : !var_core_value_sig3FAF || typeof var_core_value_sig3FAF != "object" ? var_core_value_sig3FAF : Object.keys(var_core_value_sig3FAF).sort().reduce((var_core_value_sigBCA9, var_core_value_sig4CDF) => {
+    let var_core_value_sig3F79 = var_core_value_sig3FAF[var_core_value_sig4CDF];
+    return var_core_value_sig3F79 !== undefined && (var_core_value_sigBCA9[var_core_value_sig4CDF] = fn(var_core_value_sig3F79)), var_core_value_sigBCA9;
+  }, {});
+}
+;
+function pn(var_core_value_sig378B) {
+  return JSON.stringify(fn(var_core_value_sig378B));
+}
+;
+function mn(var_core_value_sigDE50) {
+  return var_core_value_sigDE50 === 'push' || var_core_value_sigDE50 === 'wipe' || var_core_value_sigDE50 === "cover" || var_core_value_sigDE50 === "uncover" || var_core_value_sigDE50 === 'reveal' || var_core_value_sigDE50 === "split";
+}
+;
+function hn(var_core_value_sig3094) {
+  if (!var_core_value_sig3094 || var_core_value_sig3094.type === "none") return;
+  let var_core_value_sig86CC = {
+    ...var_core_value_sig3094,
+    'duration': var_core_value_sig3094.duration ?? 700
+  };
+  return mn(var_core_value_sig86CC.type) || delete var_core_value_sig86CC.direction, var_core_value_sig86CC;
+}
+;
+function gn(var_core_value_sig7868, var_core_value_sig9921) {
+  let var_core_value_sig59BF = hn(var_core_value_sig9921);
+  if (!var_core_value_sig59BF) return;
+  let var_core_value_sigF001 = var_core_value_sig7868.transitionRecords ?? {},
+    var_core_value_sigE511 = pn(var_core_value_sig59BF),
+    var_core_value_sig1C81 = Object.keys(var_core_value_sigF001).find(var_core_value_sig880E => pn(hn(var_core_value_sigF001[var_core_value_sig880E])) === var_core_value_sigE511);
+  if (var_core_value_sig1C81) return var_core_value_sig1C81;
+  let var_core_value_sig2C6A = "transition_" + (0, e.generateRandomId)(6);
+  return var_core_value_sig7868.transitionRecords = {
+    ...var_core_value_sigF001,
+    [var_core_value_sig2C6A]: var_core_value_sig59BF
+  }, var_core_value_sig2C6A;
+}
+;
+function _n(var_core_value_sig7207, var_core_value_sig297F) {
+  var var_core_value_sigA95A, var_core_value_sig94D6;
+  let var_core_value_sigC22E = (var_core_value_sigA95A = var_core_value_sig7207.slideTransitionRefs) == null ? undefined : var_core_value_sigA95A[var_core_value_sig297F];
+  if (var_core_value_sigC22E) return hn((var_core_value_sig94D6 = var_core_value_sig7207.transitionRecords) == null ? undefined : var_core_value_sig94D6[var_core_value_sigC22E]);
+}
+;
+function vn(var_core_value_sig2321) {
+  let var_core_value_sigFF33 = var_core_value_sig2321.transitionRecords;
+  if (!var_core_value_sigFF33) return;
+  let var_core_value_sig16E0 = new Set(Object.values(var_core_value_sig2321.slideTransitionRefs ?? {})),
+    var_core_value_sig213C = Object.keys(var_core_value_sigFF33).reduce((var_core_value_sigC9ED, var_core_value_sigB57B) => (var_core_value_sig16E0.has(var_core_value_sigB57B) && (var_core_value_sigC9ED[var_core_value_sigB57B] = var_core_value_sigFF33[var_core_value_sigB57B]), var_core_value_sigC9ED), {});
+  var_core_value_sig2321.transitionRecords = Object.keys(var_core_value_sig213C).length ? var_core_value_sig213C : undefined;
+}
+;
+function yn(var_core_value_sig31F8, var_core_value_sig6905) {
+  var_core_value_sig31F8.transitionRecords = var_core_value_sig6905.transitionRecords && Object.keys(var_core_value_sig6905.transitionRecords).length ? var_core_value_sig6905.transitionRecords : undefined, var_core_value_sig31F8.slideTransitionRefs = var_core_value_sig6905.slideTransitionRefs && Object.keys(var_core_value_sig6905.slideTransitionRefs).length ? var_core_value_sig6905.slideTransitionRefs : undefined;
+}
+const bn = {
+    'id': "slide.mutation.set-slide-transition",
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sigC3C0, var_core_value_sig1F39) => {
+      if (!var_core_value_sig1F39) return false;
+      let var_core_value_sig9256 = var_core_value_sigC3C0.get(e.IUniverInstanceService).getUnit(var_core_value_sig1F39.unitId, e.UniverInstanceType["UNIVER_SLIDE"]);
+      return var_core_value_sig9256 ? (yn(var_core_value_sig9256.getSnapshot(), var_core_value_sig1F39), var_core_value_sig9256.timingSystem["loadFromDocument"](var_core_value_sig9256.getSnapshot()), true) : false;
+    }
+  },
+  xn = {
+    'id': "slide.command.set-slide-transition",
+    'type': e.CommandType['COMMAND'],
+    'handler': (var_core_value_sig98A0, var_core_value_sig3EBD) => {
+      if (!var_core_value_sig3EBD) return false;
+      let {
+          unitId: var_core_value_sig1AC3,
+          subUnitIds: var_core_value_sig66B8,
+          applyToAll: var_core_value_sig4C7F,
+          transition: var_core_value_sig2543
+        } = var_core_value_sig3EBD,
+        var_core_value_sigB230 = var_core_value_sig98A0.get(e.IUniverInstanceService).getUnit(var_core_value_sig1AC3, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sigB230) return false;
+      let var_core_value_sig407E = Sn(var_core_value_sigB230.getSnapshot(), var_core_value_sig66B8, var_core_value_sig4C7F, var_core_value_sig2543);
+      if (!var_core_value_sig407E) return false;
+      let var_core_value_sig88CB = var_core_value_sig98A0.get(e.ICommandService),
+        var_core_value_sigD615 = var_core_value_sig98A0.get(e.IUndoRedoService),
+        var_core_value_sigB708 = Cn(var_core_value_sigB230.getSnapshot()),
+        var_core_value_sig60EF = {
+          'unitId': var_core_value_sig1AC3,
+          ...var_core_value_sig407E
+        },
+        var_core_value_sigA6FB = {
+          'unitId': var_core_value_sig1AC3,
+          ...var_core_value_sigB708
+        };
+      return var_core_value_sig88CB.syncExecuteCommand(bn.id, var_core_value_sig60EF) ? (var_core_value_sigD615.pushUndoRedo({
+        'unitID': var_core_value_sig1AC3,
+        'redoMutations': [{
+          'id': bn.id,
+          'params': var_core_value_sig60EF
+        }],
+        'undoMutations': [{
+          'id': bn.id,
+          'params': var_core_value_sigA6FB
+        }]
+      }), true) : false;
+    }
+  };
+function Sn(var_core_value_sigD6EA, var_core_value_sigA2D3, var_core_value_sig727A, var_core_value_sig6AF1) {
+  let var_core_value_sig3F6A = (var_core_value_sig727A ? var_core_value_sigD6EA.slideOrder["filter"](var_core_value_sig780B => !!var_core_value_sigD6EA.slides[var_core_value_sig780B]) : var_core_value_sigA2D3) ?? [];
+  if (!var_core_value_sig3F6A.length) return null;
+  let var_core_value_sig23B4 = {
+      ...var_core_value_sigD6EA,
+      'transitionRecords': var_core_value_sigD6EA.transitionRecords ? {
+        ...var_core_value_sigD6EA.transitionRecords
+      } : undefined,
+      'slideTransitionRefs': var_core_value_sigD6EA.slideTransitionRefs ? {
+        ...var_core_value_sigD6EA.slideTransitionRefs
+      } : undefined
+    },
+    var_core_value_sig350C = hn(var_core_value_sig6AF1);
+  if (!var_core_value_sig350C) {
+    if (var_core_value_sig727A) return var_core_value_sig23B4.slideTransitionRefs = undefined, vn(var_core_value_sig23B4), Cn(var_core_value_sig23B4);
+    let var_core_value_sig7D1B = {
+      ...(var_core_value_sig23B4.slideTransitionRefs ?? {})
+    };
+    return var_core_value_sig3F6A.forEach(var_core_value_sigBBFF => delete var_core_value_sig7D1B[var_core_value_sigBBFF]), var_core_value_sig23B4.slideTransitionRefs = Object.keys(var_core_value_sig7D1B).length ? var_core_value_sig7D1B : undefined, vn(var_core_value_sig23B4), Cn(var_core_value_sig23B4);
+  }
+  let var_core_value_sig2335 = gn(var_core_value_sig23B4, var_core_value_sig350C);
+  if (!var_core_value_sig2335) return null;
+  if (var_core_value_sig727A) return var_core_value_sig23B4.slideTransitionRefs = var_core_value_sig3F6A.reduce((var_core_value_sig7BE0, var_core_value_sig7D40) => (var_core_value_sig7BE0[var_core_value_sig7D40] = var_core_value_sig2335, var_core_value_sig7BE0), {}), vn(var_core_value_sig23B4), Cn(var_core_value_sig23B4);
+  let var_core_value_sig6233 = {
+    ...(var_core_value_sig23B4.slideTransitionRefs ?? {})
+  };
+  return var_core_value_sig3F6A.forEach(var_core_value_sig6C7E => {
+    var_core_value_sig6233[var_core_value_sig6C7E] = var_core_value_sig2335;
+  }), var_core_value_sig23B4.slideTransitionRefs = var_core_value_sig6233, vn(var_core_value_sig23B4), Cn(var_core_value_sig23B4);
+}
+;
+function Cn(var_core_value_sig4230) {
+  return {
+    'transitionRecords': var_core_value_sig4230.transitionRecords ? {
+      ...var_core_value_sig4230.transitionRecords
+    } : undefined,
+    'slideTransitionRefs': var_core_value_sig4230.slideTransitionRefs ? {
+      ...var_core_value_sig4230.slideTransitionRefs
+    } : undefined
+  };
+}
+let wn = function (var_core_value_sig6136) {
+  return var_core_value_sig6136[var_core_value_sig6136.INSERT = 0] = "INSERT", var_core_value_sig6136[var_core_value_sig6136.REMOVE = 1] = "REMOVE", var_core_value_sig6136[var_core_value_sig6136.UPDATE = 2] = "UPDATE", var_core_value_sig6136;
+}({});
+const Tn = {
+    'id': "slide.mutation.set-drawing-apply",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sigD25E, var_core_value_sigE1BC) => {
+      let var_core_value_sigCF44 = var_core_value_sigD25E.get(E),
+        var_core_value_sig3C97 = var_core_value_sigD25E.get(e.IUniverInstanceService),
+        {
+          op: var_core_value_sigA920,
+          unitId: var_core_value_sigAD56,
+          subUnitId: var_core_value_sig0454,
+          type: var_core_value_sigEE1A,
+          objects: var_core_value_sig4107
+        } = var_core_value_sigE1BC,
+        var_core_value_sigF35C = var_core_value_sig3C97.getUnit(var_core_value_sigAD56, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sigF35C) return false;
+      let var_core_value_sigEF8D = var_core_value_sig4107 ?? [],
+        var_core_value_sigE025 = new Map();
+      switch (var_core_value_sigEE1A === 1 && var_core_value_sigEF8D.forEach(var_core_value_sig8889 => {
+        let var_core_value_sig32F8 = var_core_value_sigCF44.getDrawingByParam({
+          'unitId': var_core_value_sigAD56,
+          'subUnitId': var_core_value_sig0454,
+          'drawingId': var_core_value_sig8889.drawingId
+        });
+        var_core_value_sig32F8 && var_core_value_sigE025.set(var_core_value_sig8889.drawingId, var_core_value_sig32F8);
+      }), var_core_value_sigCF44.applyJson1(var_core_value_sigAD56, var_core_value_sig0454, var_core_value_sigA920), var_core_value_sigEE1A) {
+        case 0:
+          var_core_value_sigEF8D.forEach(var_core_value_sig5B67 => {
+            let var_core_value_sig1758 = var_core_value_sigCF44.getDrawingByParam({
+              'unitId': var_core_value_sigAD56,
+              'subUnitId': var_core_value_sig0454,
+              'drawingId': var_core_value_sig5B67.drawingId
+            });
+            var_core_value_sig1758 && ze(var_core_value_sigF35C, var_core_value_sig1758);
+          }), var_core_value_sigCF44.addNotification(var_core_value_sig4107);
+          break;
+        case 1:
+          var_core_value_sigE025.forEach(var_core_value_sig4805 => {
+            Ve(var_core_value_sigF35C, var_core_value_sig4805);
+          }), var_core_value_sigCF44.removeNotification(var_core_value_sig4107);
+          break;
+        case 2:
+          var_core_value_sigEF8D.forEach(var_core_value_sigE67E => {
+            let var_core_value_sig2902 = var_core_value_sigCF44.getDrawingByParam({
+              'unitId': var_core_value_sigAD56,
+              'subUnitId': var_core_value_sig0454,
+              'drawingId': var_core_value_sigE67E.drawingId
+            });
+            var_core_value_sig2902 && Be(var_core_value_sigF35C, var_core_value_sig2902, var_core_value_sig2902.element, var_core_value_sig2902.transform);
+          }), var_core_value_sigCF44.updateNotification(var_core_value_sig4107);
+          break;
+      }
+      return true;
+    }
+  },
+  G = {
+    'id': "slide.mutation.update-slide-element",
+    'type': e.CommandType['MUTATION'],
+    'handler': (var_core_value_sigD549, var_core_value_sigC79E) => {
+      var var_core_value_sig9221, var_core_value_sig0351;
+      let {
+          unitId: var_core_value_sig4686,
+          subUnitId: var_core_value_sig8E1C,
+          drawingId: var_core_value_sigD719,
+          element: var_core_value_sig323C,
+          transform: var_core_value_sig015D,
+          isRealtimePreview: var_core_value_sigBF8B,
+          formulaLastValueGuard: var_core_value_sigF7CE
+        } = var_core_value_sigC79E,
+        var_core_value_sig7CF1 = var_core_value_sigD549.get(e.IUniverInstanceService).getUnit(var_core_value_sig4686, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig7CF1) return false;
+      let var_core_value_sigA552 = var_core_value_sigD549.get(E),
+        var_core_value_sigAE32 = var_core_value_sigA552.getDrawingByParam({
+          'unitId': var_core_value_sig4686,
+          'subUnitId': var_core_value_sig8E1C,
+          'drawingId': var_core_value_sigD719
+        });
+      if (!var_core_value_sigAE32) return false;
+      let var_core_value_sig9B4D = var_core_value_sigAE32.element,
+        var_core_value_sig2704 = var_core_value_sig9B4D.type === "connector" ? (var_core_value_sig9221 = var_core_value_sig9B4D.connectorData) == null || (var_core_value_sig9221 = var_core_value_sig9221.formulaBinding) == null ? undefined : var_core_value_sig9221.formula : var_core_value_sig9B4D.type === "shape" ? (var_core_value_sig0351 = var_core_value_sig9B4D.shapeData) == null || (var_core_value_sig0351 = var_core_value_sig0351.formulaBinding) == null ? undefined : var_core_value_sig0351.formula : undefined;
+      if (!(0, n.canApplyShapeFormulaLastValue)(var_core_value_sigD549, {
+        'hostType': e.UniverInstanceType["UNIVER_SLIDE"],
+        'unitId': var_core_value_sig4686,
+        'subUnitId': var_core_value_sig8E1C,
+        'shapeId': var_core_value_sigD719
+      }, var_core_value_sig2704, var_core_value_sigF7CE)) return true;
+      let var_core_value_sigD0CC = {
+          ...var_core_value_sigAE32,
+          'element': var_core_value_sig323C,
+          'transform': var_core_value_sig015D
+        },
+        var_core_value_sigF347 = En(var_core_value_sigAE32.element, var_core_value_sig323C);
+      if (var_core_value_sigBF8B || (Be(var_core_value_sig7CF1, var_core_value_sigAE32, var_core_value_sig323C, var_core_value_sig015D), var_core_value_sigAE32.sourcePageType === 'slide' && !var_core_value_sigF347 && O(var_core_value_sigA552, var_core_value_sig7CF1, var_core_value_sig4686, var_core_value_sig8E1C))) return true;
+      if (var_core_value_sigAE32.sourcePageType === "master" || var_core_value_sigAE32.sourcePageType === "layout") return k(var_core_value_sigA552, var_core_value_sig7CF1, var_core_value_sig4686, var_core_value_sig8E1C), true;
+      let var_core_value_sig80C6 = var_core_value_sigA552.getBatchUpdateOp([var_core_value_sigD0CC]);
+      return var_core_value_sigA552.applyJson1(var_core_value_sig4686, var_core_value_sig8E1C, var_core_value_sig80C6.redo), var_core_value_sigA552.updateNotification(var_core_value_sig80C6.objects ?? []), true;
+    }
+  };
+function En(var_core_value_sigEBFB, var_core_value_sigF3BF) {
+  let {
+      transform: var_core_value_sigAE58,
+      ...var_core_value_sig8E13
+    } = var_core_value_sigEBFB,
+    {
+      transform: var_core_value_sig3AAF,
+      ...var_core_value_sig134E
+    } = var_core_value_sigF3BF;
+  return (0, e.shallowEqual)(var_core_value_sig8E13, var_core_value_sig134E);
+}
+const Dn = {
+  'id': "slide.command.update-drawing",
+  'type': e.CommandType["COMMAND"],
+  'handler': (var_core_value_sigA3C0, var_core_value_sig723F) => {
+    if (!var_core_value_sig723F || var_core_value_sig723F.patches["length"] === 0) return false;
+    let var_core_value_sigD044 = var_core_value_sigA3C0.get(e.ICommandService),
+      var_core_value_sig9797 = var_core_value_sigA3C0.get(e.IUndoRedoService),
+      var_core_value_sig8533 = var_core_value_sigA3C0.get(E),
+      {
+        patches: var_core_value_sig57C5
+      } = var_core_value_sig723F,
+      var_core_value_sig0DE9 = new Map(),
+      var_core_value_sigB00D = [],
+      var_core_value_sig57C8 = [];
+    for (let var_core_value_sig68BE of var_core_value_sig57C5) {
+      let {
+          unitId: var_core_value_sig9989,
+          subUnitId: var_core_value_sig698E,
+          drawingId: var_core_value_sig2809,
+          element: var_core_value_sig2DAB,
+          transform: var_core_value_sig877E
+        } = var_core_value_sig68BE,
+        var_core_value_sig20C8 = var_core_value_sig8533.getDrawingByParam({
+          'unitId': var_core_value_sig9989,
+          'subUnitId': var_core_value_sig698E,
+          'drawingId': var_core_value_sig2809
+        });
+      if (!var_core_value_sig20C8) continue;
+      let var_core_value_sigE9A7 = var_core_value_sig2DAB ?? var_core_value_sig20C8.element,
+        var_core_value_sigBECE = kn(var_core_value_sig20C8, var_core_value_sig2DAB, var_core_value_sig877E);
+      if (An(var_core_value_sig20C8.element, var_core_value_sigE9A7) && Mn(var_core_value_sig20C8.transform, var_core_value_sigBECE)) continue;
+      let var_core_value_sig1B22 = {
+          ...var_core_value_sig20C8,
+          'element': var_core_value_sigE9A7,
+          'transform': var_core_value_sigBECE
+        },
+        var_core_value_sig7F72 = var_core_value_sig9989 + '\x00' + var_core_value_sig698E,
+        var_core_value_sig7B2A = var_core_value_sig0DE9.get(var_core_value_sig7F72) ?? {
+          'drawings': [],
+          'subUnitId': var_core_value_sig698E,
+          'unitId': var_core_value_sig9989
+        };
+      var_core_value_sig7B2A.drawings["push"](var_core_value_sig1B22), var_core_value_sig0DE9.set(var_core_value_sig7F72, var_core_value_sig7B2A), var_core_value_sigB00D.push({
+        'id': G.id,
+        'params': {
+          'drawingId': var_core_value_sig2809,
+          'element': var_core_value_sigE9A7,
+          'subUnitId': var_core_value_sig698E,
+          'transform': var_core_value_sigBECE,
+          'unitId': var_core_value_sig9989
+        }
+      }), var_core_value_sig57C8.push({
+        'id': G.id,
+        'params': {
+          'drawingId': var_core_value_sig2809,
+          'element': var_core_value_sig20C8.element,
+          'subUnitId': var_core_value_sig698E,
+          'transform': var_core_value_sig20C8.transform,
+          'unitId': var_core_value_sig9989
+        }
+      });
+    }
+    let {
+      redoMutations: var_core_value_sigC27D,
+      undoMutations: var_core_value_sig7B95
+    } = var_core_value_sigD044.hasCommand(Tn.id) ? On(var_core_value_sig8533, var_core_value_sig0DE9) : {
+      'redoMutations': var_core_value_sigB00D,
+      'undoMutations': var_core_value_sig57C8
+    };
+    return var_core_value_sigC27D.length && (0, e.sequenceExecute)(var_core_value_sigC27D, var_core_value_sigD044).result ? (var_core_value_sig9797.pushUndoRedo({
+      'unitID': var_core_value_sig57C5[0].unitId,
+      'undoMutations': var_core_value_sig7B95,
+      'redoMutations': var_core_value_sigC27D
+    }), true) : false;
+  }
+};
+function On(var_core_value_sig7D59, var_core_value_sig5863) {
+  let var_core_value_sig5BE7 = [],
+    var_core_value_sigC74A = [];
+  for (let var_core_value_sig04C6 of var_core_value_sig5863.values()) {
+    let {
+      objects: var_core_value_sig06CD,
+      redo: var_core_value_sigA5F1,
+      undo: var_core_value_sig97A2
+    } = var_core_value_sig7D59.getBatchUpdateOp(var_core_value_sig04C6.drawings);
+    !Array.isArray(var_core_value_sig06CD) || var_core_value_sig06CD.length === 0 || (var_core_value_sig5BE7.push({
+      'id': Tn.id,
+      'params': {
+        'objects': var_core_value_sig06CD,
+        'op': var_core_value_sigA5F1,
+        'subUnitId': var_core_value_sig04C6.subUnitId,
+        'type': 2,
+        'unitId': var_core_value_sig04C6.unitId
+      }
+    }), var_core_value_sigC74A.push({
+      'id': Tn.id,
+      'params': {
+        'objects': var_core_value_sig06CD,
+        'op': var_core_value_sig97A2,
+        'subUnitId': var_core_value_sig04C6.subUnitId,
+        'type': 2,
+        'unitId': var_core_value_sig04C6.unitId
+      }
+    }));
+  }
+  return {
+    'redoMutations': var_core_value_sig5BE7,
+    'undoMutations': var_core_value_sigC74A
+  };
+}
+;
+function kn(var_core_value_sig8F6A, var_core_value_sig46EA, var_core_value_sig626C) {
+  if (var_core_value_sig626C) return var_core_value_sig626C;
+  if (var_core_value_sig46EA != null && var_core_value_sig46EA.transform) {
+    let var_core_value_sigCA05 = var_core_value_sig46EA.transform,
+      var_core_value_sig2F2B = var_core_value_sig8F6A.transform ?? {
+        'left': 0,
+        'top': 0,
+        'width': 0,
+        'height': 0,
+        'angle': 0,
+        'flipX': false,
+        'flipY': false
+      };
+    return {
+      'left': var_core_value_sigCA05.left ?? var_core_value_sig2F2B.left ?? 0,
+      'top': var_core_value_sigCA05.top ?? var_core_value_sig2F2B.top ?? 0,
+      'width': var_core_value_sigCA05.width ?? var_core_value_sig2F2B.width ?? 0,
+      'height': var_core_value_sigCA05.height ?? var_core_value_sig2F2B.height ?? 0,
+      'angle': var_core_value_sigCA05.rotation ?? var_core_value_sig2F2B.angle ?? 0,
+      'flipX': var_core_value_sigCA05.flipX,
+      'flipY': var_core_value_sigCA05.flipY
+    };
+  }
+  return var_core_value_sig8F6A.transform;
+}
+;
+function An(var_core_value_sig9077, var_core_value_sigC76C) {
+  return JSON.stringify(jn(var_core_value_sig9077)) === JSON.stringify(jn(var_core_value_sigC76C));
+}
+;
+function jn(var_core_value_sigB23A) {
+  let var_core_value_sigBA66 = JSON.parse(JSON.stringify(var_core_value_sigB23A)),
+    var_core_value_sig3DF0 = var_core_value_sigBA66.transform;
+  return var_core_value_sig3DF0 && (var_core_value_sig3DF0.left = var_core_value_sig3DF0.left ?? 0, var_core_value_sig3DF0.top = var_core_value_sig3DF0.top ?? 0, var_core_value_sig3DF0.width = var_core_value_sig3DF0.width ?? 0, var_core_value_sig3DF0.height = var_core_value_sig3DF0.height ?? 0, var_core_value_sig3DF0.rotation = var_core_value_sig3DF0.rotation ?? 0, var_core_value_sig3DF0.flipX = var_core_value_sig3DF0.flipX ?? false, var_core_value_sig3DF0.flipY = var_core_value_sig3DF0.flipY ?? false), var_core_value_sigBA66;
+}
+;
+function Mn(var_core_value_sig0512, var_core_value_sig4B2B) {
+  return JSON.stringify(Nn(var_core_value_sig0512)) === JSON.stringify(Nn(var_core_value_sig4B2B));
+}
+;
+function Nn(var_core_value_sigDF88) {
+  return {
+    'left': (var_core_value_sigDF88 == null ? undefined : var_core_value_sigDF88.left) ?? 0,
+    'top': (var_core_value_sigDF88 == null ? undefined : var_core_value_sigDF88.top) ?? 0,
+    'width': (var_core_value_sigDF88 == null ? undefined : var_core_value_sigDF88.width) ?? 0,
+    'height': (var_core_value_sigDF88 == null ? undefined : var_core_value_sigDF88.height) ?? 0,
+    'angle': (var_core_value_sigDF88 == null ? undefined : var_core_value_sigDF88.angle) ?? 0,
+    'flipX': (var_core_value_sigDF88 == null ? undefined : var_core_value_sigDF88.flipX) ?? false,
+    'flipY': (var_core_value_sigDF88 == null ? undefined : var_core_value_sigDF88.flipY) ?? false
+  };
+}
+;
+function Pn(var_core_value_sigDB93, var_core_value_sig67CF, var_core_value_sigCA96, var_core_value_sig6C5E) {
+  let var_core_value_sig4997 = Ne(var_core_value_sig67CF, var_core_value_sig6C5E);
+  var_core_value_sig4997.length !== 0 && var_core_value_sigDB93.updateNotification(var_core_value_sig4997.map(var_core_value_sig70AF => ({
+    'unitId': var_core_value_sigCA96,
+    'subUnitId': var_core_value_sig70AF,
+    'drawingId': '__slide_page_background__'
+  })));
+}
+const Fn = {
+    'id': "slide.mutation.update-slide-page-background",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig7290, var_core_value_sigE835) => {
+      var var_core_value_sig4644, var_core_value_sig9DED, var_core_value_sig7DE6, var_core_value_sig120E;
+      let {
+          unitId: var_core_value_sigD79B,
+          pageId: var_core_value_sig92A3,
+          background: var_core_value_sig8911,
+          showMasterSp: var_core_value_sig8D1B
+        } = var_core_value_sigE835,
+        var_core_value_sigA915 = var_core_value_sig7290.get(e.IUniverInstanceService).getUnit(var_core_value_sigD79B, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sigA915) return false;
+      let var_core_value_sigE1F7 = var_core_value_sigA915.pageManager["getPage"](var_core_value_sig92A3);
+      if (!var_core_value_sigE1F7) return false;
+      let var_core_value_sig4BE7 = var_core_value_sig7290.get(E),
+        var_core_value_sigF9FF = var_core_value_sigA915.getSnapshot(),
+        var_core_value_sigE0E3 = var_core_value_sig8D1B === undefined ? {
+          ...var_core_value_sigE1F7,
+          'background': var_core_value_sig8911
+        } : {
+          ...var_core_value_sigE1F7,
+          'background': var_core_value_sig8911,
+          'showMasterSp': var_core_value_sig8D1B
+        },
+        var_core_value_sig3AB3 = var_core_value_sigA915.pageManager["getSlide"](var_core_value_sig92A3);
+      return var_core_value_sig3AB3 ? (var_core_value_sig3AB3.updatePageData(var_core_value_sigE0E3), k(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), Pn(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), true) : (var_core_value_sig4644 = var_core_value_sigF9FF.masterPages) != null && var_core_value_sig4644[var_core_value_sig92A3] ? (var_core_value_sigF9FF.masterPages[var_core_value_sig92A3] = var_core_value_sigE0E3, k(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), Pn(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), true) : (var_core_value_sig9DED = var_core_value_sigF9FF.layoutPages) != null && var_core_value_sig9DED[var_core_value_sig92A3] ? (var_core_value_sigF9FF.layoutPages[var_core_value_sig92A3] = var_core_value_sigE0E3, k(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), Pn(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), true) : (var_core_value_sig7DE6 = var_core_value_sigF9FF.handoutMasterPages) != null && var_core_value_sig7DE6[var_core_value_sig92A3] ? (var_core_value_sigF9FF.handoutMasterPages[var_core_value_sig92A3] = var_core_value_sigE0E3, Pn(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), true) : (var_core_value_sig120E = var_core_value_sigF9FF.notesMasterPages) != null && var_core_value_sig120E[var_core_value_sig92A3] ? (var_core_value_sigF9FF.notesMasterPages[var_core_value_sig92A3] = var_core_value_sigE0E3, Pn(var_core_value_sig4BE7, var_core_value_sigA915, var_core_value_sigD79B, var_core_value_sig92A3), true) : false;
+    }
+  },
+  In = {
+    'id': 'slide.command.update-slide-page-background',
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sig816E, var_core_value_sigE6F3) => {
+      if (!var_core_value_sigE6F3 || var_core_value_sigE6F3.patches["length"] === 0) return false;
+      let {
+          patches: var_core_value_sig3EE1,
+          ensureMasterPage: var_core_value_sig9673
+        } = var_core_value_sigE6F3,
+        var_core_value_sig4917 = var_core_value_sig3EE1[0].unitId,
+        var_core_value_sig3BE6 = var_core_value_sig816E.get(e.IUniverInstanceService).getUnit(var_core_value_sig4917, e.UniverInstanceType["UNIVER_SLIDE"]);
+      if (!var_core_value_sig3BE6) return false;
+      let var_core_value_sigA1C9 = var_core_value_sig816E.get(e.ICommandService),
+        var_core_value_sig77D6 = var_core_value_sig816E.get(e.IUndoRedoService),
+        var_core_value_sigE3CE = [],
+        var_core_value_sig219B = [];
+      if (var_core_value_sig9673 && !var_core_value_sig3BE6.pageManager["getMasterPage"](var_core_value_sig9673.id)) {
+        let var_core_value_sigD04E = {
+          'unitId': var_core_value_sig4917,
+          'masterPage': var_core_value_sig9673
+        };
+        var_core_value_sigE3CE.push({
+          'id': Dt.id,
+          'params': var_core_value_sigD04E
+        });
+      }
+      for (let var_core_value_sigB99B of var_core_value_sig3EE1) {
+        let {
+            pageId: var_core_value_sig07E9,
+            background: var_core_value_sig4F59,
+            showMasterSp: var_core_value_sigF564
+          } = var_core_value_sigB99B,
+          var_core_value_sig8CFA = var_core_value_sig3BE6.pageManager["getPage"](var_core_value_sig07E9),
+          var_core_value_sig2E11 = var_core_value_sig8CFA == null ? undefined : var_core_value_sig8CFA.background,
+          var_core_value_sig5B69 = var_core_value_sig8CFA == null ? undefined : var_core_value_sig8CFA.showMasterSp,
+          var_core_value_sigB098 = {
+            'unitId': var_core_value_sig4917,
+            'pageId': var_core_value_sig07E9,
+            'background': var_core_value_sig4F59,
+            'showMasterSp': var_core_value_sigF564
+          },
+          var_core_value_sigCE71 = {
+            'unitId': var_core_value_sig4917,
+            'pageId': var_core_value_sig07E9,
+            'background': var_core_value_sig2E11,
+            'showMasterSp': var_core_value_sig5B69
+          };
+        var_core_value_sigE3CE.push({
+          'id': Fn.id,
+          'params': var_core_value_sigB098
+        }), var_core_value_sig219B.push({
+          'id': Fn.id,
+          'params': var_core_value_sigCE71
+        });
+      }
+      return (0, e.sequenceExecute)(var_core_value_sigE3CE, var_core_value_sigA1C9).result ? (var_core_value_sig77D6.pushUndoRedo({
+        'unitID': var_core_value_sig4917,
+        'undoMutations': var_core_value_sig219B,
+        'redoMutations': var_core_value_sigE3CE
+      }), true) : false;
+    }
+  },
+  Ln = {
+    'id': "slide.command.update-smart-art",
+    'type': e.CommandType["COMMAND"],
+    'handler': (var_core_value_sig4493, var_core_value_sig8B9C) => {
+      if (!(var_core_value_sig8B9C != null && var_core_value_sig8B9C.operations["length"])) return false;
+      let var_core_value_sigA35B = var_core_value_sig4493.get(E).getDrawingByParam(var_core_value_sig8B9C);
+      if (!var_core_value_sigA35B || var_core_value_sigA35B.sourcePageType !== "slide" || var_core_value_sigA35B.element['type'] !== "shape" || !(0, n.isSmartArtShapeData)(var_core_value_sigA35B.element['shapeData'])) return false;
+      let var_core_value_sig82DD = var_core_value_sigA35B.element['shapeData'].smartArt;
+      try {
+        for (let var_core_value_sig21D8 of var_core_value_sig8B9C.operations) var_core_value_sig82DD = (0, n.applySmartArtOperation)(var_core_value_sig82DD, var_core_value_sig21D8);
+      } catch {
+        return false;
+      }
+      let var_core_value_sigAAC7 = {
+          ...var_core_value_sigA35B.element,
+          'shapeData': {
+            ...var_core_value_sigA35B.element["shapeData"],
+            'smartArt': var_core_value_sig82DD
+          }
+        },
+        var_core_value_sig1999 = {
+          'unitId': var_core_value_sig8B9C.unitId,
+          'subUnitId': var_core_value_sig8B9C.subUnitId,
+          'drawingId': var_core_value_sig8B9C.drawingId,
+          'element': var_core_value_sigAAC7,
+          'transform': var_core_value_sigA35B.transform
+        },
+        var_core_value_sigFB45 = {
+          'unitId': var_core_value_sig8B9C.unitId,
+          'subUnitId': var_core_value_sig8B9C.subUnitId,
+          'drawingId': var_core_value_sig8B9C.drawingId,
+          'element': var_core_value_sigA35B.element,
+          'transform': var_core_value_sigA35B.transform
+        },
+        var_core_value_sigB86C = [{
+          'id': G.id,
+          'params': var_core_value_sig1999
+        }],
+        var_core_value_sigD892 = [{
+          'id': G.id,
+          'params': var_core_value_sigFB45
+        }];
+      return (0, e.sequenceExecute)(var_core_value_sigB86C, var_core_value_sig4493.get(e.ICommandService)).result ? (var_core_value_sig4493.get(e.IUndoRedoService).pushUndoRedo({
+        'unitID': var_core_value_sig8B9C.unitId,
+        'undoMutations': var_core_value_sigD892,
+        'redoMutations': var_core_value_sigB86C
+      }), true) : false;
+    }
+  },
+  Rn = {
+    'id': "slide.mutation.insert-drawing-object",
+    'type': e.CommandType["MUTATION"],
+    'handler': (var_core_value_sig6086, var_core_value_sigAED2) => {
+      var var_core_value_sig3516;
+      let {
+        unitId: var_core_value_sigCDCD,
+        subUnitId: var_core_value_sig206A,
+        drawings: var_core_value_sig1EFE,
+        insertIndex: var_core_value_sig9904
+      } = var_core_value_sigAED2;
+      if (!(var_core_value_sig1EFE != null && var_core_value_sig1EFE.length)) return false;
+      let var_core_value_sig39C7 = var_core_value_sig6086.get(E),
+        var_core_value_sigA022 = var_core_value_sig6086.get(e.IUniverInstanceService).getUnit(var_core_value_sigCDCD, e.UniverInstanceType['UNIVER_SLIDE']);
+      if (!var_core_value_sigA022) return false;
+      let var_core_value_sig913A = Object.values(((var_core_value_sig3516 = var_core_value_sigA022.pageManager["getSlide"](var_core_value_sig206A)) == null ? undefined : var_core_value_sig3516.getData().elements) ?? {}),
+        var_core_value_sig991D = [];
+      if (var_core_value_sig1EFE.forEach((var_core_value_sig5A75, var_core_value_sig7BAF) => {
+        let var_core_value_sig8F69 = Oe(var_core_value_sig5A75.element, var_core_value_sig913A),
+          var_core_value_sig6884 = {
+            ...var_core_value_sig5A75,
+            'element': var_core_value_sig8F69
+          };
+        var_core_value_sig913A = [...var_core_value_sig913A, var_core_value_sig8F69], var_core_value_sig991D.push(var_core_value_sig6884), ze(var_core_value_sigA022, var_core_value_sig6884, var_core_value_sig9904 === undefined ? undefined : var_core_value_sig9904 + var_core_value_sig7BAF);
+      }), var_core_value_sig991D.every(var_core_value_sig066E => var_core_value_sig066E.sourcePageType === "slide" && var_core_value_sig066E.unitId === var_core_value_sigCDCD && var_core_value_sig066E.subUnitId === var_core_value_sig206A) && O(var_core_value_sig39C7, var_core_value_sigA022, var_core_value_sigCDCD, var_core_value_sig206A)) return true;
+      let var_core_value_sig3E9C = var_core_value_sig39C7.getBatchAddOp(var_core_value_sig991D);
+      var_core_value_sig39C7.applyJson1(var_core_value_sigCDCD, var_core_value_sig206A, var_core_value_sig3E9C.redo);
+      let var_core_value_sig7835 = (var_core_value_sig3E9C == null ? undefined : var_core_value_sig3E9C.objects) ?? [];
+      return var_core_value_sig7835.length > 0 && var_core_value_sig39C7.addNotification(var_core_value_sig7835), true;
+    }
+  },
+  zn = {
+    'id': "slide.operation.set-zoom-ratio",
+    'type': e.CommandType["OPERATION"],
+    'handler': (var_core_value_sig1257, var_core_value_sig97E2) => {
+      if (!var_core_value_sig97E2) return false;
+      let var_core_value_sigBFA3 = var_core_value_sig1257.get(e.IUniverInstanceService).getUnit(var_core_value_sig97E2.unitId, e.UniverInstanceType['UNIVER_SLIDE']);
+      return var_core_value_sigBFA3 ? (var_core_value_sigBFA3.setZoomRatio(var_core_value_sig97E2.zoomRatio), true) : false;
+    }
+  };
+function K(var_core_value_sig6663, var_core_value_sigB250) {
+  return function (var_core_value_sig9B0D, var_core_value_sig3D2C) {
+    var_core_value_sigB250(var_core_value_sig9B0D, var_core_value_sig3D2C, var_core_value_sig6663);
+  };
+}
+;
+function q(var_core_value_sig4EAB, var_core_value_sig2FD0, var_core_value_sig035C, var_core_value_sigA7F0) {
+  var var_core_value_sig6AE2 = arguments.length,
+    var_core_value_sigFD17 = var_core_value_sig6AE2 < 3 ? var_core_value_sig2FD0 : var_core_value_sigA7F0 === null ? var_core_value_sigA7F0 = Object.getOwnPropertyDescriptor(var_core_value_sig2FD0, var_core_value_sig035C) : var_core_value_sigA7F0,
+    var_core_value_sigA5E0;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sigFD17 = Reflect.decorate(var_core_value_sig4EAB, var_core_value_sig2FD0, var_core_value_sig035C, var_core_value_sigA7F0);else {
+    for (var var_core_value_sigC38F = var_core_value_sig4EAB.length - 1; var_core_value_sigC38F >= 0; var_core_value_sigC38F--) (var_core_value_sigA5E0 = var_core_value_sig4EAB[var_core_value_sigC38F]) && (var_core_value_sigFD17 = (var_core_value_sig6AE2 < 3 ? var_core_value_sigA5E0(var_core_value_sigFD17) : var_core_value_sig6AE2 > 3 ? var_core_value_sigA5E0(var_core_value_sig2FD0, var_core_value_sig035C, var_core_value_sigFD17) : var_core_value_sigA5E0(var_core_value_sig2FD0, var_core_value_sig035C)) || var_core_value_sigFD17);
+  }
+  return var_core_value_sig6AE2 > 3 && var_core_value_sigFD17 && Object.defineProperty(var_core_value_sig2FD0, var_core_value_sig035C, var_core_value_sigFD17), var_core_value_sigFD17;
+}
+const Bn = "SLIDE_FONT_PLUGIN";
+let Vn = class extends e.Disposable {
+  constructor(var_core_value_sigC56D) {
+    super(), U(this, "_resources", new Map()), this.disposeWithMe(var_core_value_sigC56D.registerPluginResource({
+      'pluginName': Bn,
+      'businesses': [e.UniverInstanceType["UNIVER_SLIDE"]],
+      'toJson': var_core_value_sig2B65 => JSON.stringify(this._resources['get'](var_core_value_sig2B65) ?? {
+        'fonts': [],
+        'version': 1
+      }),
+      'parseJson': var_core_value_sigD7EA => JSON.parse(var_core_value_sigD7EA),
+      'onLoad': (var_core_value_sigB33B, var_core_value_sig24B9) => this._resources["set"](var_core_value_sigB33B, var_core_value_sig24B9),
+      'onUnLoad': var_core_value_sigE627 => this._resources["delete"](var_core_value_sigE627)
+    }));
+  }
+};
+Vn = q([K(0, e.IResourceManagerService)], Vn);
+const J = {
+  'shapeWidth': 220,
+  'shapeHeight': 120,
+  'textBoxWidth': 260,
+  'textBoxHeight': 88,
+  'minPositionOffset': 24,
+  'fallbackImageWidth': 320,
+  'fallbackImageHeight': 180,
+  'minImageEdge': 80,
+  'imageFitRatio': 0.56
+};
+function Hn(var_core_value_sigFAFE = true) {
+  return var_core_value_sigFAFE ? {
+    'width': J.textBoxWidth,
+    'height': J.textBoxHeight
+  } : {
+    'width': J.textBoxHeight,
+    'height': J.textBoxWidth
+  };
+}
+const Un = {
+    'isTextBox': true,
+    'fill': {
+      'fillType': n.ShapeFillEnum["SolidFill"],
+      'color': '#FFFFFF'
+    },
+    'stroke': {
+      'lineStrokeType': n.ShapeLineTypeEnum['SolidLine'],
+      'width': 1,
+      'color': "#bcbcbc"
+    },
+    'shapeText': {
+      'isHorizontal': true,
+      'text': '',
+      'autoFitType': n.ShapeTextAutoFitType['SpAutoFit'],
+      'textWrap': n.ShapeTextWrapType["None"],
+      'dataModel': {
+        'doc': {
+          'id': 'slide-text-box-default-document',
+          'body': {
+            'dataStream': '\x0d\x0a',
+            'textRuns': [{
+              'st': 0,
+              'ed': 1,
+              'ts': {
+                'fs': 16,
+                'cl': {
+                  'rgb': "#111827"
+                }
+              }
+            }],
+            'paragraphs': [{
+              'startIndex': 0,
+              'paragraphStyle': {
+                'horizontalAlign': e.HorizontalAlign['LEFT']
+              }
+            }]
+          },
+          'documentStyle': {
+            'marginBottom': 0,
+            'marginLeft': 0,
+            'marginRight': 0,
+            'marginTop': 0,
+            'textStyle': {
+              'fs': 16,
+              'cl': {
+                'rgb': "#111827"
+              }
+            },
+            'renderConfig': {
+              'horizontalAlign': e.HorizontalAlign["LEFT"],
+              'verticalAlign': e.VerticalAlign["TOP"]
+            }
+          }
+        },
+        'ha': e.HorizontalAlign['LEFT'],
+        'va': e.VerticalAlign['TOP']
+      }
+    }
+  },
+  Wn = {
+    'picture': ["image"],
+    'chart': ["chart"]
+  },
+  Gn = {
+    'picture': "image",
+    'chart': "chart"
+  },
+  Kn = {
+    'image': "AddImageIcon",
+    'chart': 'ChartIcon',
+    'table': "TableIcon",
+    'diagram': "RelationshipIcon",
+    'media': "RecordIcon"
+  };
+function qn(var_core_value_sig2B86) {
+  return (Wn[var_core_value_sig2B86] ?? []).map(var_core_value_sig3A17 => ({
+    'key': var_core_value_sig3A17,
+    'labelKey': 'slides.placeholder.icon.' + var_core_value_sig3A17
+  }));
+}
+;
+function Jn(var_core_value_sig8873) {
+  var var_core_value_sigB9C5;
+  let var_core_value_sig511D = Gn[var_core_value_sig8873.type];
+  if (!var_core_value_sig511D) return [];
+  let var_core_value_sig1610 = ((var_core_value_sigB9C5 = var_core_value_sig8873.icons) != null && var_core_value_sigB9C5.length ? var_core_value_sig8873.icons : qn(var_core_value_sig8873.type)).find(var_core_value_sig938F => var_core_value_sig938F.enabled !== false && var_core_value_sig938F.key === var_core_value_sig511D);
+  return var_core_value_sig1610 ? [var_core_value_sig1610] : [];
+}
+const Yn = {
+  'title': "slides.slide.placeholder.text.title",
+  'centerTitle': "slides.slide.placeholder.text.title",
+  'subtitle': "slides.slide.placeholder.text.subtitle",
+  'body': 'slides.slide.placeholder.text.body',
+  'text': "slides.slide.placeholder.text.text",
+  'header': "slides.slide.placeholder.text.header",
+  'footer': "slides.slide.placeholder.text.footer",
+  'date': "slides.slide.placeholder.text.date",
+  'slideNumber': "slides.slide.placeholder.text.slideNumber"
+};
+function Xn(var_core_value_sig23AB) {
+  return Yn[var_core_value_sig23AB];
+}
+const Zn = 'UNIVER_EMBED_SLIDES_FLOATING',
+  Qn = "UNIVER_EMBED_SLIDES_PAGE";
+function $n(var_core_value_sigA15D) {
+  return {
+    'version': 1,
+    'embedId': var_core_value_sigA15D.embedId,
+    'hostAnchorId': var_core_value_sigA15D.hostAnchorId,
+    'childUnitId': var_core_value_sigA15D.childUnitId,
+    'childType': var_core_value_sigA15D.childType
+  };
+}
+;
+function er(var_core_value_sig7E90) {
+  return {
+    'id': var_core_value_sig7E90.hostAnchorId,
+    'pageType': "slide",
+    'name': var_core_value_sig7E90.name ?? var_core_value_sig7E90.embedId,
+    'showMasterSp': false,
+    'elementOrder': [],
+    'elements': {},
+    'custom': {
+      [Qn]: $n(var_core_value_sig7E90)
+    }
+  };
+}
+;
+function tr(var_core_value_sig03F7) {
+  return {
+    'id': var_core_value_sig03F7.hostAnchorId,
+    'type': "text",
+    'name': var_core_value_sig03F7.embedId,
+    'text': '',
+    'transform': {
+      'left': var_core_value_sig03F7.left ?? 96,
+      'top': var_core_value_sig03F7.top ?? 72,
+      'width': var_core_value_sig03F7.width ?? 560,
+      'height': var_core_value_sig03F7.height ?? 315
+    },
+    'custom': {
+      [Zn]: $n(var_core_value_sig03F7)
+    }
+  };
+}
+;
+function nr(var_core_value_sig756F) {
+  var var_core_value_sig0DB11;
+  let var_core_value_sig4950 = (var_core_value_sig0DB11 = var_core_value_sig756F.custom) == null ? undefined : var_core_value_sig0DB11[Qn];
+  return ir(var_core_value_sig4950) ? var_core_value_sig4950 : undefined;
+}
+;
+function rr(var_core_value_sig4424) {
+  var var_core_value_sig57E8;
+  let var_core_value_sig76B6 = (var_core_value_sig57E8 = var_core_value_sig4424.custom) == null ? undefined : var_core_value_sig57E8[Zn];
+  return ir(var_core_value_sig76B6) ? var_core_value_sig76B6 : undefined;
+}
+;
+function ir(var_core_value_sig89BC) {
+  if (!var_core_value_sig89BC || typeof var_core_value_sig89BC != "object") return false;
+  let var_core_value_sig2191 = var_core_value_sig89BC;
+  return var_core_value_sig2191.version === 1 && typeof var_core_value_sig2191.embedId == "string" && typeof var_core_value_sig2191.hostAnchorId == "string";
+}
+var ar = "@univerjs-pro/slides",
+  or = '1.0.0-insiders.20260907-70fc579';
+function sr(var_core_value_sig3B2E = (0, e.generateRandomId)(6), var_core_value_sig5A9A = e.LocaleType['EN_US'], var_core_value_sigB524 = "Untitled Presentation") {
+  let var_core_value_sig8CFB = ae({
+    'layoutType': "titleAndBody",
+    'name': 'Slide\x201'
+  });
+  return {
+    'id': var_core_value_sig3B2E,
+    'name': var_core_value_sigB524,
+    'appVersion': or,
+    'locale': var_core_value_sig5A9A,
+    'defaultPageSize': {
+      'width': 960,
+      'height': 540
+    },
+    'slideOrder': [var_core_value_sig8CFB.id],
+    'slides': {
+      [var_core_value_sig8CFB.id]: var_core_value_sig8CFB
+    },
+    'activeSlideId': var_core_value_sig8CFB.id,
+    ...oe()
+  };
+}
+var cr = class extends e.Disposable {
+    constructor(var_core_value_sigD948 = {}) {
+      super(), U(this, "_data$", undefined), U(this, "data$", undefined), this._data$ = new a["BehaviorSubject"](var_core_value_sigD948), this.data$ = this._data$["asObservable"]();
+    }
+    getData() {
+      return this._data$["getValue"]();
+    }
+    update(var_core_value_sigBE5E) {
+      this._data$['next']({
+        ...this._data$["getValue"](),
+        ...var_core_value_sigBE5E
+      });
+    }
+    resolveColor(var_core_value_sig0281) {
+      var var_core_value_sigED71;
+      return ((var_core_value_sigED71 = this._data$['getValue']().colorScheme) == null ? undefined : var_core_value_sigED71[var_core_value_sig0281]) ?? var_core_value_sig0281;
+    }
+    getHeadingFont() {
+      var var_core_value_sig281C;
+      return (var_core_value_sig281C = this._data$["getValue"]().fontScheme) == null ? undefined : var_core_value_sig281C.heading;
+    }
+    getBodyFont() {
+      var var_core_value_sig3C92;
+      return (var_core_value_sig3C92 = this._data$["getValue"]().fontScheme) == null ? undefined : var_core_value_sig3C92.body;
+    }
+    getFillStyle(var_core_value_sigB16B) {
+      var var_core_value_sig585D;
+      return (var_core_value_sig585D = this._data$["getValue"]().fmtScheme) == null ? undefined : var_core_value_sig585D.fillStyleLst[var_core_value_sigB16B - 1];
+    }
+    getLineStyle(var_core_value_sigE722) {
+      var var_core_value_sig062A;
+      return (var_core_value_sig062A = this._data$["getValue"]().fmtScheme) == null ? undefined : var_core_value_sig062A.lnStyleLst[var_core_value_sigE722 - 1];
+    }
+    getEffectStyle(var_core_value_sig050A) {
+      var var_core_value_sig8B32;
+      return (var_core_value_sig8B32 = this._data$["getValue"]().fmtScheme) == null ? undefined : var_core_value_sig8B32.effectStyleLst[var_core_value_sig050A - 1];
+    }
+    getBgFillStyle(var_core_value_sig870F) {
+      var var_core_value_sigB683;
+      return (var_core_value_sigB683 = this._data$["getValue"]().fmtScheme) == null ? undefined : var_core_value_sigB683.bgFillStyleLst[var_core_value_sig870F - 1];
+    }
+  },
+  lr = class extends e.Disposable {
+    constructor(...var_core_value_sig26EC) {
+      super(...var_core_value_sig26EC), U(this, "_transitions", new Map()), U(this, '_sequences', new Map()), U(this, "_changed$", new a["Subject"]()), U(this, "changed$", this._changed$["asObservable"]());
+    }
+    getTransition(var_core_value_sigEEDB) {
+      return this._transitions["get"](var_core_value_sigEEDB);
+    }
+    setTransition(var_core_value_sig36E7, var_core_value_sig6A78) {
+      this._transitions['set'](var_core_value_sig36E7, var_core_value_sig6A78), this._changed$['next'](var_core_value_sig36E7);
+    }
+    removeTransition(var_core_value_sigF7EF) {
+      this._transitions['delete'](var_core_value_sigF7EF), this._changed$["next"](var_core_value_sigF7EF);
+    }
+    getSequences(var_core_value_sig27F9) {
+      return this._sequences['get'](var_core_value_sig27F9) ?? [];
+    }
+    setSequences(var_core_value_sig393E, var_core_value_sigB609) {
+      this._sequences["set"](var_core_value_sig393E, var_core_value_sigB609), this._changed$["next"](var_core_value_sig393E);
+    }
+    loadFromSlide(var_core_value_sig390D, var_core_value_sigC928, var_core_value_sig39B7) {
+      var_core_value_sigC928 ? this._transitions["set"](var_core_value_sig390D, var_core_value_sigC928) : this._transitions['delete'](var_core_value_sig390D), this._sequences["set"](var_core_value_sig390D, var_core_value_sig39B7 ?? []);
+    }
+    loadFromDocument(var_core_value_sig18E0) {
+      this._transitions['clear'](), this._sequences["clear"]();
+      for (let var_core_value_sigEF3E of var_core_value_sig18E0.slideOrder) {
+        let var_core_value_sig3EEE = var_core_value_sig18E0.slides[var_core_value_sigEF3E];
+        if (!var_core_value_sig3EEE) continue;
+        let var_core_value_sigBC46 = _n(var_core_value_sig18E0, var_core_value_sigEF3E);
+        var_core_value_sigBC46 && this._transitions['set'](var_core_value_sigEF3E, var_core_value_sigBC46), this._sequences["set"](var_core_value_sigEF3E, var_core_value_sig3EEE.animations ?? []);
+      }
+    }
+    unloadSlide(var_core_value_sigE161) {
+      this._transitions["delete"](var_core_value_sigE161), this._sequences["delete"](var_core_value_sigE161);
+    }
+    dispose() {
+      this._changed$["complete"](), super.dispose();
+    }
+  };
+function ur(var_core_value_sigB52C) {
+  switch (var_core_value_sigB52C) {
+    case "header":
+      return 'header';
+    case "footer":
+      return "footer";
+    case 'date':
+      return "dateTime";
+    case "slideNumber":
+      return "slideNumber";
+    default:
+      return;
+  }
+}
+;
+function dr(var_core_value_sigA4B8, var_core_value_sigFF9C) {
+  return var_core_value_sigFF9C ? {
+    ...var_core_value_sigA4B8,
+    ...Object.fromEntries(Object.entries(var_core_value_sigFF9C).filter(([, var_core_value_sigBDEE]) => var_core_value_sigBDEE !== undefined))
+  } : var_core_value_sigA4B8;
+}
+;
+function fr(var_core_value_sig278D, var_core_value_sigC0FE, var_core_value_sigDD22) {
+  let var_core_value_sig2D35 = {};
+  for (let var_core_value_sig1F40 of ["header", "footer", "dateTime", "slideNumber"]) {
+    var var_core_value_sig7A4B, var_core_value_sigE50A, var_core_value_sigC8AC;
+    let var_core_value_sig273D = [var_core_value_sigDD22 == null || (var_core_value_sig7A4B = var_core_value_sigDD22.headerFooter) == null ? undefined : var_core_value_sig7A4B[var_core_value_sig1F40], var_core_value_sigC0FE == null || (var_core_value_sigE50A = var_core_value_sigC0FE.headerFooter) == null ? undefined : var_core_value_sigE50A[var_core_value_sig1F40], (var_core_value_sigC8AC = var_core_value_sig278D.headerFooter) == null ? undefined : var_core_value_sigC8AC[var_core_value_sig1F40]].reduce((var_core_value_sig3D7D, var_core_value_sig27E5) => dr(var_core_value_sig3D7D, var_core_value_sig27E5), undefined);
+    var_core_value_sig273D && (var_core_value_sig2D35[var_core_value_sig1F40] = var_core_value_sig273D);
+  }
+  return var_core_value_sig2D35;
+}
+;
+function pr(var_core_value_sig8E63, var_core_value_sig300D) {
+  var var_core_value_sig520B;
+  let var_core_value_sigFE26 = (var_core_value_sig520B = var_core_value_sig300D.getSlideIndex) == null ? undefined : var_core_value_sig520B.call(var_core_value_sig300D, var_core_value_sig8E63.id);
+  return var_core_value_sigFE26 !== undefined && var_core_value_sigFE26 >= 0 ? String(var_core_value_sigFE26 + 1) : undefined;
+}
+;
+function mr(var_core_value_sig1019, var_core_value_sig32AB, var_core_value_sig72BE, var_core_value_sig3E4A) {
+  return var_core_value_sig1019 === undefined || var_core_value_sig1019 <= var_core_value_sig32AB ? var_core_value_sig1019 : var_core_value_sig1019 >= var_core_value_sig72BE ? var_core_value_sig1019 + var_core_value_sig3E4A - (var_core_value_sig72BE - var_core_value_sig32AB) : var_core_value_sig32AB + var_core_value_sig3E4A;
+}
+;
+function hr(var_core_value_sig3171, var_core_value_sigEBC4) {
+  var var_core_value_sig788B, var_core_value_sig9A80, var_core_value_sig7C69;
+  if (var_core_value_sig3171.type !== "shape") return var_core_value_sig3171;
+  let var_core_value_sig01EF = var_core_value_sig3171.shapeData['shapeText'];
+  if (!var_core_value_sig01EF) return var_core_value_sig3171;
+  let var_core_value_sig3603 = (var_core_value_sig788B = var_core_value_sig01EF.dataModel) == null || (var_core_value_sig788B = var_core_value_sig788B.doc) == null ? undefined : var_core_value_sig788B.body,
+    var_core_value_sigC163 = (var_core_value_sig3603 == null ? undefined : var_core_value_sig3603.dataStream) ?? '',
+    var_core_value_sigF5F3 = var_core_value_sig01EF.text ?? '',
+    var_core_value_sig5E69 = ["‹#›", "<#>", '#'].find(var_core_value_sig3FC7 => var_core_value_sigC163.includes(var_core_value_sig3FC7) || var_core_value_sigF5F3.includes(var_core_value_sig3FC7));
+  if (!var_core_value_sig5E69) return var_core_value_sig3171;
+  let var_core_value_sig7B39 = var_core_value_sigC163.indexOf(var_core_value_sig5E69),
+    var_core_value_sigDCAB = var_core_value_sig7B39 + var_core_value_sig5E69.length;
+  return {
+    ...var_core_value_sig3171,
+    'shapeData': {
+      ...var_core_value_sig3171.shapeData,
+      'shapeText': {
+        ...var_core_value_sig01EF,
+        'text': var_core_value_sigF5F3.replace(var_core_value_sig5E69, var_core_value_sigEBC4),
+        'dataModel': var_core_value_sig01EF.dataModel && {
+          ...var_core_value_sig01EF.dataModel,
+          'doc': var_core_value_sig01EF.dataModel["doc"] && {
+            ...var_core_value_sig01EF.dataModel["doc"],
+            'body': var_core_value_sig3603 && var_core_value_sig7B39 >= 0 ? {
+              ...var_core_value_sig3603,
+              'dataStream': var_core_value_sigC163.replace(var_core_value_sig5E69, var_core_value_sigEBC4),
+              'textRuns': (var_core_value_sig9A80 = var_core_value_sig3603.textRuns) == null ? undefined : var_core_value_sig9A80.map(var_core_value_sig1E1B => ({
+                ...var_core_value_sig1E1B,
+                'st': mr(var_core_value_sig1E1B.st, var_core_value_sig7B39, var_core_value_sigDCAB, var_core_value_sigEBC4.length),
+                'ed': mr(var_core_value_sig1E1B.ed, var_core_value_sig7B39, var_core_value_sigDCAB, var_core_value_sigEBC4.length)
+              })),
+              'paragraphs': (var_core_value_sig7C69 = var_core_value_sig3603.paragraphs) == null ? undefined : var_core_value_sig7C69.map(var_core_value_sig3B10 => ({
+                ...var_core_value_sig3B10,
+                'startIndex': mr(var_core_value_sig3B10.startIndex, var_core_value_sig7B39, var_core_value_sigDCAB, var_core_value_sigEBC4.length)
+              }))
+            } : var_core_value_sig3603
+          }
+        }
+      }
+    }
+  };
+}
+;
+function gr(var_core_value_sigF569, var_core_value_sig2A9F, var_core_value_sigB14A) {
+  let var_core_value_sig4401 = Ge(var_core_value_sigF569);
+  if (!var_core_value_sig4401) return var_core_value_sigF569;
+  let var_core_value_sig4D6A = ur(var_core_value_sig4401.type);
+  if (!var_core_value_sig4D6A) return var_core_value_sigF569;
+  let var_core_value_sigEF80 = var_core_value_sig2A9F[var_core_value_sig4D6A];
+  if ((var_core_value_sigEF80 == null ? undefined : var_core_value_sigEF80.enabled) !== true) return null;
+  let var_core_value_sig526D1 = var_core_value_sigF569.type === "placeholder" ? var_core_value_sigF569.text : undefined,
+    var_core_value_sigD78B = var_core_value_sig4401.type === "slideNumber" ? var_core_value_sigB14A ?? var_core_value_sigEF80.text ?? var_core_value_sig526D1 ?? '' : var_core_value_sigEF80.text ?? var_core_value_sig526D1 ?? '';
+  return var_core_value_sigD78B.trim() ? var_core_value_sigF569.type === "placeholder" ? {
+    ...var_core_value_sigF569,
+    'text': var_core_value_sigD78B
+  } : var_core_value_sig4401.type === "slideNumber" && var_core_value_sigB14A ? hr(var_core_value_sigF569, var_core_value_sigB14A) : var_core_value_sigF569 : null;
+}
+;
+function _r(var_core_value_sigCB8C) {
+  let var_core_value_sigD217 = new Set();
+  for (let var_core_value_sig89E6 of Object.values(var_core_value_sigCB8C)) {
+    let var_core_value_sig9A0D = M(var_core_value_sig89E6);
+    var_core_value_sig9A0D && var_core_value_sigD217.add(var_core_value_sig9A0D);
+  }
+  return var_core_value_sigD217;
+}
+;
+function vr(var_core_value_sigEB0F, var_core_value_sigDC44) {
+  if (var_core_value_sigEB0F) {
+    if (var_core_value_sigEB0F.background) return var_core_value_sigEB0F.background;
+    if (var_core_value_sigEB0F.pageType === "slide" && "layoutPageId" in var_core_value_sigEB0F && var_core_value_sigEB0F.layoutPageId) {
+      let var_core_value_sigA319 = vr(var_core_value_sigDC44.getLayoutPage(var_core_value_sigEB0F.layoutPageId), var_core_value_sigDC44);
+      if (var_core_value_sigA319) return var_core_value_sigA319;
+    }
+    if ((var_core_value_sigEB0F.pageType === "slide" || var_core_value_sigEB0F.pageType === "layout") && "masterPageId" in var_core_value_sigEB0F && var_core_value_sigEB0F.masterPageId) return vr(var_core_value_sigDC44.getMasterPage(var_core_value_sigEB0F.masterPageId), var_core_value_sigDC44);
+  }
+}
+;
+function yr(var_core_value_sigDEFC) {
+  return var_core_value_sigDEFC.showMasterSp ?? true;
+}
+;
+function br(var_core_value_sigE842) {
+  return B(var_core_value_sigE842) || !Ge(var_core_value_sigE842);
+}
+var xr = class extends e.Disposable {
+    constructor(var_core_value_sig4743, var_core_value_sigEB6A, var_core_value_sig3D46) {
+      super(), this._data = var_core_value_sig4743, this._ctx = var_core_value_sigEB6A, this._syncFn = var_core_value_sig3D46;
+    }
+    getId() {
+      return this._data['id'];
+    }
+    getData() {
+      return this._data;
+    }
+    updatePageData(var_core_value_sigCC93) {
+      this._applyDataUpdate({
+        ...this._data,
+        ...var_core_value_sigCC93
+      });
+    }
+    resolveBackground() {
+      return vr(this._data, this._ctx);
+    }
+    addElement(var_core_value_sig5964, var_core_value_sig808B) {
+      let var_core_value_sig2A26 = [...this._data["elementOrder"]],
+        var_core_value_sig1179 = var_core_value_sig808B === undefined ? var_core_value_sig2A26.length : Math.max(0, Math.min(var_core_value_sig808B, var_core_value_sig2A26.length));
+      var_core_value_sig2A26.splice(var_core_value_sig1179, 0, var_core_value_sig5964.id);
+      let var_core_value_sigEA92 = {
+        ...this._data,
+        'elementOrder': var_core_value_sig2A26,
+        'elements': {
+          ...this._data["elements"],
+          [var_core_value_sig5964.id]: var_core_value_sig5964
+        }
+      };
+      this._applyDataUpdate(var_core_value_sigEA92);
+    }
+    removeElement(var_core_value_sig8FD9) {
+      if (!(var_core_value_sig8FD9 in this._data["elements"])) return;
+      let var_core_value_sig1AE5 = {
+        ...this._data["elements"]
+      };
+      delete var_core_value_sig1AE5[var_core_value_sig8FD9], this._applyDataUpdate({
+        ...this._data,
+        'elementOrder': this._data["elementOrder"].filter(var_core_value_sig2D58 => var_core_value_sig2D58 !== var_core_value_sig8FD9),
+        'elements': var_core_value_sig1AE5
+      });
+    }
+    updateElement(var_core_value_sig7100, var_core_value_sigA19A) {
+      let var_core_value_sigD3F5 = this._data["elements"][var_core_value_sig7100];
+      if (!var_core_value_sigD3F5) return;
+      let var_core_value_sig3082 = {
+        ...var_core_value_sigD3F5,
+        ...var_core_value_sigA19A
+      };
+      this._applyDataUpdate({
+        ...this._data,
+        'elements': {
+          ...this._data['elements'],
+          [var_core_value_sig7100]: var_core_value_sig3082
+        }
+      });
+    }
+    setElementOrder(var_core_value_sigF5D1) {
+      if (!var_core_value_sigF5D1.length) return;
+      let var_core_value_sig8775 = new Set(this._data["elementOrder"]),
+        var_core_value_sig481B = var_core_value_sigF5D1.filter(var_core_value_sig223F => var_core_value_sig8775.has(var_core_value_sig223F)),
+        var_core_value_sig13D7 = this._data["elementOrder"].filter(var_core_value_sigD749 => !var_core_value_sig481B.includes(var_core_value_sigD749));
+      this._applyDataUpdate({
+        ...this._data,
+        'elementOrder': [...var_core_value_sig481B, ...var_core_value_sig13D7]
+      });
+    }
+    resolveElements() {
+      let var_core_value_sig90C0 = this._data["masterPageId"] ? this._ctx["getMasterPage"](this._data["masterPageId"]) : undefined,
+        var_core_value_sigF1B2 = this._data["layoutPageId"] ? this._ctx['getLayoutPage'](this._data['layoutPageId']) : undefined,
+        var_core_value_sigC2BB = var_core_value_sigF1B2 ? _r(var_core_value_sigF1B2.elements) : new Set(),
+        var_core_value_sigD9DB = _r(this._data["elements"]),
+        var_core_value_sigA363 = qe(this._data),
+        var_core_value_sigFBA5 = yr(this._data),
+        var_core_value_sigAC47 = !var_core_value_sigF1B2 || yr(var_core_value_sigF1B2),
+        var_core_value_sigA06F = var_core_value_sigFBA5 && var_core_value_sigAC47,
+        var_core_value_sig770E = var_core_value_sigFBA5,
+        var_core_value_sig4654 = fr(this._data, var_core_value_sigF1B2, var_core_value_sig90C0),
+        var_core_value_sigB26B = pr(this._data, this._ctx),
+        var_core_value_sig019B = [],
+        var_core_value_sigC6BC = [],
+        var_core_value_sig8EC2 = [];
+      if (var_core_value_sig90C0) for (let var_core_value_sigCFFA of var_core_value_sig90C0.elementOrder) {
+        let var_core_value_sig8061 = var_core_value_sig90C0.elements[var_core_value_sigCFFA];
+        if (!var_core_value_sig8061 || Je(var_core_value_sig8061, var_core_value_sigA363)) continue;
+        let var_core_value_sig4D4C = gr(var_core_value_sig8061, var_core_value_sig4654, var_core_value_sigB26B);
+        if (!var_core_value_sig4D4C || !var_core_value_sigFBA5 && br(var_core_value_sig8061) || !var_core_value_sigA06F && B(var_core_value_sig8061)) continue;
+        let var_core_value_sigC9E0 = M(var_core_value_sig8061);
+        var_core_value_sigC9E0 && (var_core_value_sigC2BB.has(var_core_value_sigC9E0) || var_core_value_sigD9DB.has(var_core_value_sigC9E0)) || var_core_value_sig019B.push(var_core_value_sig4D4C);
+      }
+      if (var_core_value_sigF1B2) for (let var_core_value_sig58C1 of var_core_value_sigF1B2.elementOrder) {
+        let var_core_value_sig76BA = var_core_value_sigF1B2.elements[var_core_value_sig58C1];
+        if (!var_core_value_sig76BA || Je(var_core_value_sig76BA, var_core_value_sigA363)) continue;
+        let var_core_value_sigFBFA = gr(var_core_value_sig76BA, var_core_value_sig4654, var_core_value_sigB26B);
+        if (!var_core_value_sigFBFA || !var_core_value_sigFBA5 && br(var_core_value_sig76BA) || !var_core_value_sig770E && B(var_core_value_sig76BA)) continue;
+        let var_core_value_sigF602 = M(var_core_value_sig76BA);
+        var_core_value_sigF602 && var_core_value_sigD9DB.has(var_core_value_sigF602) || var_core_value_sigC6BC.push(var_core_value_sigFBFA);
+      }
+      for (let var_core_value_sig5090 of this._data["elementOrder"]) {
+        let var_core_value_sig1BBD = this._data['elements'][var_core_value_sig5090];
+        var_core_value_sig1BBD && var_core_value_sig8EC2.push(var_core_value_sig1BBD);
+      }
+      return {
+        'masterLayer': var_core_value_sig019B,
+        'layoutLayer': var_core_value_sigC6BC,
+        'slideLayer': var_core_value_sig8EC2,
+        'all': [...var_core_value_sig019B, ...var_core_value_sigC6BC, ...var_core_value_sig8EC2]
+      };
+    }
+    _applyDataUpdate(var_core_value_sigA8C3) {
+      this._data = var_core_value_sigA8C3, this._syncFn(var_core_value_sigA8C3);
+    }
+  },
+  Sr = class extends e.Disposable {
+    constructor(var_core_value_sig5276) {
+      super(), this._snapshot = var_core_value_sig5276, U(this, '_pages', new Map()), U(this, "_activeSlideId$", undefined), U(this, "_slideOrder$", undefined), U(this, "activeSlideId$", undefined), U(this, "slideOrder$", undefined);
+      for (let var_core_value_sigC368 of var_core_value_sig5276.slideOrder) this._initPage(var_core_value_sigC368);
+      this._activeSlideId$ = new a["BehaviorSubject"](var_core_value_sig5276.activeSlideId ?? var_core_value_sig5276.slideOrder[0]), this._slideOrder$ = new a.BehaviorSubject([...var_core_value_sig5276.slideOrder]), this.activeSlideId$ = this._activeSlideId$["asObservable"](), this.slideOrder$ = this._slideOrder$["asObservable"]();
+    }
+    getPage(var_core_value_sig031B) {
+      var var_core_value_sig9DC0, var_core_value_sig95F0, var_core_value_sig9CCB, var_core_value_sigE718;
+      return this._snapshot["slides"][var_core_value_sig031B] ?? ((var_core_value_sig9DC0 = this._snapshot["masterPages"]) == null ? undefined : var_core_value_sig9DC0[var_core_value_sig031B]) ?? ((var_core_value_sig95F0 = this._snapshot["layoutPages"]) == null ? undefined : var_core_value_sig95F0[var_core_value_sig031B]) ?? ((var_core_value_sig9CCB = this._snapshot["handoutMasterPages"]) == null ? undefined : var_core_value_sig9CCB[var_core_value_sig031B]) ?? ((var_core_value_sigE718 = this._snapshot['notesMasterPages']) == null ? undefined : var_core_value_sigE718[var_core_value_sig031B]);
+    }
+    getMasterPage(var_core_value_sigAEC8) {
+      var var_core_value_sigB977;
+      return (var_core_value_sigB977 = this._snapshot["masterPages"]) == null ? undefined : var_core_value_sigB977[var_core_value_sigAEC8];
+    }
+    getLayoutPage(var_core_value_sig2949) {
+      var var_core_value_sig308A;
+      return (var_core_value_sig308A = this._snapshot['layoutPages']) == null ? undefined : var_core_value_sig308A[var_core_value_sig2949];
+    }
+    getSlideIndex(var_core_value_sig528D) {
+      let var_core_value_sigA309 = this._slideOrder$['getValue']().indexOf(var_core_value_sig528D);
+      return var_core_value_sigA309 >= 0 ? var_core_value_sigA309 : undefined;
+    }
+    getSlide(var_core_value_sig9E20) {
+      return this._pages["get"](var_core_value_sig9E20);
+    }
+    getSlides() {
+      return this._slideOrder$["getValue"]().map(var_core_value_sigAD561 => this._pages["get"](var_core_value_sigAD561)).filter(var_core_value_sigDB4A => var_core_value_sigDB4A !== undefined);
+    }
+    getActiveSlide() {
+      let var_core_value_sig26BB = this._activeSlideId$["getValue"]();
+      return var_core_value_sig26BB ? this._pages["get"](var_core_value_sig26BB) : undefined;
+    }
+    resolveSlidePageReferences(var_core_value_sig19B4, var_core_value_sig218A) {
+      let var_core_value_sig14CB = this._slideOrder$["getValue"](),
+        var_core_value_sigFDEE = var_core_value_sig218A ?? var_core_value_sig14CB.length,
+        var_core_value_sigA676 = var_core_value_sig14CB[Math.min(Math.max(var_core_value_sigFDEE - 1, 0), var_core_value_sig14CB.length - 1)],
+        var_core_value_sigC27E = var_core_value_sigA676 ? this._snapshot['slides'][var_core_value_sigA676] : undefined,
+        var_core_value_sigA70D = var_core_value_sig19B4.layoutPageId ? [var_core_value_sig19B4.layoutPageId] : [var_core_value_sigC27E == null ? undefined : var_core_value_sigC27E.layoutPageId, ...(this._snapshot["layoutPageOrder"] ?? [])];
+      for (let var_core_value_sig6418 of var_core_value_sigA70D) {
+        var var_core_value_sigCE10, var_core_value_sigA3861;
+        if (!var_core_value_sig6418) continue;
+        let var_core_value_sigF704 = (var_core_value_sigCE10 = this._snapshot["layoutPages"]) == null ? undefined : var_core_value_sigCE10[var_core_value_sig6418],
+          var_core_value_sig2BCF = var_core_value_sigF704 == null ? undefined : var_core_value_sigF704.masterPageId;
+        if (!(!var_core_value_sig2BCF || !((var_core_value_sigA3861 = this._snapshot["masterPages"]) != null && var_core_value_sigA3861[var_core_value_sig2BCF]) || var_core_value_sig19B4.masterPageId && var_core_value_sig19B4.masterPageId !== var_core_value_sig2BCF)) return {
+          ...var_core_value_sig19B4,
+          'layoutPageId': var_core_value_sig6418,
+          'masterPageId': var_core_value_sig2BCF
+        };
+      }
+      return null;
+    }
+    setActiveSlide(var_core_value_sigCD82) {
+      this._pages["has"](var_core_value_sigCD82) && this._activeSlideId$['getValue']() !== var_core_value_sigCD82 && (this._snapshot['activeSlideId'] = var_core_value_sigCD82, this._activeSlideId$['next'](var_core_value_sigCD82));
+    }
+    createSlide(var_core_value_sig44DD = {}, var_core_value_sig96FA) {
+      let var_core_value_sigAB68 = var_core_value_sig44DD.id ?? (0, e.generateRandomId)(6),
+        var_core_value_sig040A = this._slideOrder$["getValue"](),
+        var_core_value_sig2AE0 = {
+          'id': var_core_value_sigAB68,
+          'pageType': "slide",
+          'name': var_core_value_sig44DD.name ?? "Slide " + (var_core_value_sig040A.length + 1),
+          'elementOrder': var_core_value_sig44DD.elementOrder ?? [],
+          'elements': var_core_value_sig44DD.elements ?? {},
+          'showMasterSp': var_core_value_sig44DD.showMasterSp ?? true,
+          ...var_core_value_sig44DD
+        };
+      this._snapshot["slides"][var_core_value_sigAB68] = var_core_value_sig2AE0;
+      let var_core_value_sigC349 = [...var_core_value_sig040A],
+        var_core_value_sig9D96 = var_core_value_sig96FA === undefined ? var_core_value_sigC349.length : var_core_value_sig96FA;
+      var_core_value_sigC349.splice(var_core_value_sig9D96, 0, var_core_value_sigAB68), this._snapshot["slideOrder"] = var_core_value_sigC349;
+      let var_core_value_sig2776 = this._initPage(var_core_value_sigAB68);
+      return this._slideOrder$['next'](var_core_value_sigC349), this._activeSlideId$["getValue"]() || this._activeSlideId$['next'](var_core_value_sigAB68), var_core_value_sig2776;
+    }
+    deleteSlide(var_core_value_sig6FB2) {
+      var var_core_value_sigEB43;
+      if (!this._pages["has"](var_core_value_sig6FB2)) return;
+      (var_core_value_sigEB43 = this._pages['get'](var_core_value_sig6FB2)) == null || var_core_value_sigEB43.dispose(), this._pages["delete"](var_core_value_sig6FB2), delete this._snapshot["slides"][var_core_value_sig6FB2];
+      let var_core_value_sig4186 = this._slideOrder$['getValue']().filter(var_core_value_sig1896 => var_core_value_sig1896 !== var_core_value_sig6FB2);
+      if (this._snapshot["slideOrder"] = var_core_value_sig4186, this._slideOrder$["next"](var_core_value_sig4186), this._activeSlideId$["getValue"]() === var_core_value_sig6FB2) {
+        let var_core_value_sig0285 = Math.max(0, var_core_value_sig4186.indexOf(var_core_value_sig6FB2) - 1);
+        this._activeSlideId$['next'](var_core_value_sig4186[var_core_value_sig0285]);
+      }
+    }
+    moveSlide(var_core_value_sigF963, var_core_value_sigB608) {
+      let var_core_value_sigF866 = [...this._slideOrder$['getValue']()],
+        var_core_value_sig5EFB = var_core_value_sigF866.indexOf(var_core_value_sigF963);
+      var_core_value_sig5EFB !== -1 && var_core_value_sig5EFB !== var_core_value_sigB608 && (var_core_value_sigF866.splice(var_core_value_sig5EFB, 1), var_core_value_sigF866.splice(var_core_value_sigB608, 0, var_core_value_sigF963), this._snapshot["slideOrder"] = var_core_value_sigF866, this._slideOrder$["next"](var_core_value_sigF866));
+    }
+    duplicateSlide(var_core_value_sig3A85) {
+      let var_core_value_sig2682 = this._snapshot['slides'][var_core_value_sig3A85];
+      if (!var_core_value_sig2682) return;
+      let var_core_value_sig4BB5 = this._slideOrder$['getValue']().indexOf(var_core_value_sig3A85) + 1;
+      return this.createSlide({
+        ...var_core_value_sig2682,
+        'id': (0, e.generateRandomId)(6),
+        'name': var_core_value_sig2682.name + " (copy)",
+        'elements': {
+          ...var_core_value_sig2682.elements
+        },
+        'elementOrder': [...var_core_value_sig2682.elementOrder]
+      }, var_core_value_sig4BB5);
+    }
+    ensureDefaultLayers() {
+      let var_core_value_sig6709 = oe();
+      this._snapshot["masterPages"] || (this._snapshot["masterPages"] = {}), this._snapshot["masterPageOrder"] || (this._snapshot["masterPageOrder"] = []);
+      for (let var_core_value_sig777D of var_core_value_sig6709.masterPageOrder ?? []) this._snapshot["masterPages"][var_core_value_sig777D] || (this._snapshot['masterPages'][var_core_value_sig777D] = var_core_value_sig6709.masterPages[var_core_value_sig777D], this._snapshot["masterPageOrder"].push(var_core_value_sig777D));
+      this._snapshot['layoutPages'] || (this._snapshot['layoutPages'] = {}), this._snapshot["layoutPageOrder"] || (this._snapshot["layoutPageOrder"] = []);
+      for (let var_core_value_sig3F4C of var_core_value_sig6709.layoutPageOrder ?? []) this._snapshot["layoutPages"][var_core_value_sig3F4C] || (this._snapshot["layoutPages"][var_core_value_sig3F4C] = var_core_value_sig6709.layoutPages[var_core_value_sig3F4C], this._snapshot["layoutPageOrder"].push(var_core_value_sig3F4C));
+      this._snapshot["theme"] || (this._snapshot['theme'] = var_core_value_sig6709.theme);
+    }
+    _initPage(var_core_value_sig52CA) {
+      let var_core_value_sigC030 = this._snapshot['slides'][var_core_value_sig52CA];
+      if (!var_core_value_sigC030) throw Error("[SlidePageManager] No slide data found for id \"" + var_core_value_sig52CA + '\x22');
+      let var_core_value_sig88F6 = new xr(var_core_value_sigC030, this, var_core_value_sigD65A => {
+        this._snapshot["slides"][var_core_value_sig52CA] = var_core_value_sigD65A;
+      });
+      return this._pages['set'](var_core_value_sig52CA, var_core_value_sig88F6), var_core_value_sig88F6;
+    }
+    dispose() {
+      this._pages["forEach"](var_core_value_sig5A13 => var_core_value_sig5A13.dispose()), this._pages["clear"](), super.dispose();
+    }
+  },
+  Cr = class extends e.UnitModel {
+    constructor(var_core_value_sig37DB) {
+      super(), U(this, "type", e.UniverInstanceType["UNIVER_SLIDE"]), U(this, '_snapshot', undefined), U(this, '_name$', undefined), U(this, "name$", undefined), U(this, "_zoomRatio$", undefined), U(this, "zoomRatio$", undefined), U(this, 'pageManager', undefined), U(this, 'theme', undefined), U(this, "timingSystem", undefined);
+      let var_core_value_sig5542 = sr();
+      this._snapshot = e.Tools['isEmptyObject'](var_core_value_sig37DB) ? var_core_value_sig5542 : e.Tools["commonExtend"](var_core_value_sig5542, var_core_value_sig37DB), (this._snapshot['id'] === undefined || this._snapshot['id'] === null || this._snapshot['id'] === '') && (this._snapshot['id'] = (0, e.generateRandomId)(6)), this._snapshot["activeSlideId"] && !this._snapshot["slides"][this._snapshot['activeSlideId']] && (this._snapshot["activeSlideId"] = this._snapshot["slideOrder"][0]), Ie(this._snapshot), this._name$ = new a["BehaviorSubject"](this._snapshot['name']), this.name$ = this._name$["asObservable"](), this._zoomRatio$ = new a.BehaviorSubject(this._snapshot['zoomRatio'] ?? 1), this.zoomRatio$ = this._zoomRatio$["asObservable"](), this.pageManager = new Sr(this._snapshot), this.disposeWithMe(this.pageManager), this.theme = new cr(this._snapshot['theme'] ?? b), this.disposeWithMe(this.theme), this.timingSystem = new lr(), this.disposeWithMe(this.timingSystem), this.timingSystem["loadFromDocument"](this._snapshot);
+    }
+    getUnitId() {
+      return this._snapshot['id'];
+    }
+    setName(var_core_value_sigE0A9) {
+      this._snapshot['name'] = var_core_value_sigE0A9, this._name$["next"](var_core_value_sigE0A9);
+    }
+    getZoomRatio() {
+      return this._zoomRatio$["getValue"]();
+    }
+    setZoomRatio(var_core_value_sigA73E) {
+      this._snapshot["zoomRatio"] = var_core_value_sigA73E, this._zoomRatio$["next"](var_core_value_sigA73E);
+    }
+    getSnapshot() {
+      return this._snapshot;
+    }
+    getThemeData(var_core_value_sig7620) {
+      var var_core_value_sigB9FC;
+      return (var_core_value_sig7620 ? (var_core_value_sigB9FC = this._snapshot['themes']) == null ? undefined : var_core_value_sigB9FC[var_core_value_sig7620] : undefined) ?? this.theme['getData']();
+    }
+    getThemeDataForPage(var_core_value_sig5055) {
+      return this.getThemeData(this._resolveThemeIdForPage(var_core_value_sig5055));
+    }
+    getRev() {
+      return this._snapshot["rev"] ?? 1;
+    }
+    incrementRev() {
+      this._snapshot['rev'] = (this._snapshot["rev"] ?? 1) + 1;
+    }
+    setRev(var_core_value_sig3801) {
+      this._snapshot["rev"] = var_core_value_sig3801;
+    }
+    _resolveThemeIdForPage(var_core_value_sig45F0) {
+      if (var_core_value_sig45F0) return this._resolveThemeIdFromPage(this.pageManager['getPage'](var_core_value_sig45F0));
+    }
+    _resolveThemeIdFromPage(var_core_value_sigBC91) {
+      if (var_core_value_sigBC91) {
+        if (var_core_value_sigBC91.themeId) return var_core_value_sigBC91.themeId;
+        if (var_core_value_sigBC91.pageType === "layout") {
+          var var_core_value_sigCB88;
+          return (var_core_value_sigCB88 = this._snapshot["masterPages"]) == null || (var_core_value_sigCB88 = var_core_value_sigCB88[var_core_value_sigBC91.masterPageId ?? '']) == null ? undefined : var_core_value_sigCB88.themeId;
+        }
+        if (var_core_value_sigBC91.pageType === "slide") {
+          var var_core_value_sig8D65, var_core_value_sig8122;
+          let var_core_value_sig0D69 = var_core_value_sigBC91.layoutPageId ? (var_core_value_sig8D65 = this._snapshot["layoutPages"]) == null ? undefined : var_core_value_sig8D65[var_core_value_sigBC91.layoutPageId] : undefined;
+          return this._resolveThemeIdFromPage(var_core_value_sig0D69) ?? ((var_core_value_sig8122 = this._snapshot["masterPages"]) == null || (var_core_value_sig8122 = var_core_value_sig8122[var_core_value_sigBC91.masterPageId ?? (var_core_value_sig0D69 == null ? undefined : var_core_value_sig0D69.masterPageId) ?? '']) == null ? undefined : var_core_value_sig8122.themeId);
+        }
+      }
+    }
+  };
+let wr = class {
+  constructor(var_core_value_sigEDC6, var_core_value_sig611A, var_core_value_sig6BD9) {
+    this._commandService = var_core_value_sigEDC6, this._drawingService = var_core_value_sig611A, this._instanceService = var_core_value_sig6BD9, U(this, "hostType", e.UniverInstanceType["UNIVER_SLIDE"]);
+  }
+  get shapeChanged$() {
+    return (0, a.merge)(this._drawingService["add$"], this._drawingService['update$'], this._drawingService["remove$"]).pipe((0, a.mergeMap)(var_core_value_sigF593 => [...new Set(var_core_value_sigF593.map(({
+      unitId: var_core_value_sig480E
+    }) => var_core_value_sig480E))]), (0, a.map)(var_core_value_sig3607 => ({
+      'unitId': var_core_value_sig3607
+    })));
+  }
+  getShape(var_core_value_sig7E56) {
+    let var_core_value_sig4161 = this._getDrawing(var_core_value_sig7E56);
+    if (!var_core_value_sig4161) return null;
+    let var_core_value_sig7580 = var_core_value_sig4161.element,
+      var_core_value_sig1F18 = var_core_value_sig7580.type === "connector" ? var_core_value_sig7580.connectorData : var_core_value_sig7580.shapeData,
+      var_core_value_sigD5A0 = var_core_value_sig7580.transform;
+    return {
+      ...var_core_value_sig7E56,
+      'shapeType': var_core_value_sig1F18.shapeType ?? n.ShapeTypeEnum["Rect"],
+      'shapeData': e.Tools["deepClone"](var_core_value_sig1F18),
+      'name': var_core_value_sig7580.name,
+      'description': var_core_value_sig7580.description,
+      'visible': var_core_value_sig7580.visible !== false,
+      'selectable': var_core_value_sig7580.selectable !== false,
+      'transform': {
+        'left': var_core_value_sigD5A0.left ?? 0,
+        'top': var_core_value_sigD5A0.top ?? 0,
+        'width': var_core_value_sigD5A0.width ?? J.shapeWidth,
+        'height': var_core_value_sigD5A0.height ?? J.shapeHeight,
+        'rotation': var_core_value_sigD5A0.rotation ?? 0,
+        'flipX': var_core_value_sigD5A0.flipX ?? false,
+        'flipY': var_core_value_sigD5A0.flipY ?? false
+      }
+    };
+  }
+  listShapes(var_core_value_sig81B2) {
+    let var_core_value_sigA0A5 = this._drawingService["getDrawingData"](var_core_value_sig81B2.unitId, var_core_value_sig81B2.subUnitId) ?? {};
+    return Object.values(var_core_value_sigA0A5).map(var_core_value_sigB512 => this.getShape({
+      ...var_core_value_sig81B2,
+      'shapeId': var_core_value_sigB512.drawingId
+    })).filter(var_core_value_sigF2E6 => !!var_core_value_sigF2E6);
+  }
+  listShapesInUnit(var_core_value_sig10AA) {
+    let var_core_value_sigE6D0 = this._instanceService["getUnit"](var_core_value_sig10AA, e.UniverInstanceType['UNIVER_SLIDE']);
+    return (var_core_value_sigE6D0 == null ? undefined : var_core_value_sigE6D0.getSnapshot().slideOrder["flatMap"](var_core_value_sig34C8 => this.listShapes({
+      'hostType': this.hostType,
+      'unitId': var_core_value_sig10AA,
+      'subUnitId': var_core_value_sig34C8
+    }))) ?? [];
+  }
+  createShape(var_core_value_sig8E91, var_core_value_sig00BE) {
+    let var_core_value_sig7BB5 = (0, e.generateRandomId)(6),
+      var_core_value_sig6AAD = Tr(var_core_value_sig00BE.transform),
+      var_core_value_sig1157 = {
+        ...e.Tools["deepClone"](var_core_value_sig00BE.shapeData ?? (0, n.createDefaultInsertedShapeData)(var_core_value_sig00BE.shapeType)),
+        'shapeType': var_core_value_sig00BE.shapeType
+      },
+      var_core_value_sigA694 = (0, n.isConnectorShape)(var_core_value_sig00BE.shapeType) ? {
+        'id': var_core_value_sig7BB5,
+        'type': "connector",
+        'transform': var_core_value_sig6AAD,
+        'connectorData': var_core_value_sig1157,
+        'name': var_core_value_sig00BE.name,
+        'description': var_core_value_sig00BE.description,
+        'visible': var_core_value_sig00BE.visible ?? true,
+        'selectable': var_core_value_sig00BE.selectable ?? true
+      } : {
+        'id': var_core_value_sig7BB5,
+        'type': "shape",
+        'transform': var_core_value_sig6AAD,
+        'shapeData': var_core_value_sig1157,
+        'name': var_core_value_sig00BE.name,
+        'description': var_core_value_sig00BE.description,
+        'visible': var_core_value_sig00BE.visible ?? true,
+        'selectable': var_core_value_sig00BE.selectable ?? true
+      };
+    return this._commandService['syncExecuteCommand'](Xe.id, {
+      'unitId': var_core_value_sig8E91.unitId,
+      'subUnitId': var_core_value_sig8E91.subUnitId,
+      'element': var_core_value_sigA694
+    }) ? {
+      ...var_core_value_sig8E91,
+      'shapeId': var_core_value_sig7BB5,
+      'shapeType': var_core_value_sig00BE.shapeType,
+      'shapeData': var_core_value_sig1157,
+      'name': var_core_value_sig00BE.name,
+      'description': var_core_value_sig00BE.description,
+      'visible': var_core_value_sig00BE.visible ?? true,
+      'selectable': var_core_value_sig00BE.selectable ?? true,
+      'transform': var_core_value_sig6AAD
+    } : null;
+  }
+  updateShape(var_core_value_sig18E01, var_core_value_sig0428) {
+    var var_core_value_sigBE07;
+    if (var_core_value_sig0428.smartArtOperations) return this._commandService["syncExecuteCommand"](Ln.id, {
+      'unitId': var_core_value_sig18E01.unitId,
+      'subUnitId': var_core_value_sig18E01.subUnitId,
+      'drawingId': var_core_value_sig18E01.shapeId,
+      'operations': var_core_value_sig0428.smartArtOperations
+    });
+    let var_core_value_sig555F = this._getDrawing(var_core_value_sig18E01);
+    if (!var_core_value_sig555F) return false;
+    let var_core_value_sig3D6F = var_core_value_sig555F.element,
+      var_core_value_sig336C = var_core_value_sig3D6F.type === "connector" ? var_core_value_sig3D6F.connectorData : var_core_value_sig3D6F.shapeData,
+      var_core_value_sig6E68 = {
+        ...(var_core_value_sig0428.shapeData ?? var_core_value_sig336C),
+        'shapeType': var_core_value_sig0428.shapeType ?? ((var_core_value_sigBE07 = var_core_value_sig0428.shapeData) == null ? undefined : var_core_value_sigBE07.shapeType) ?? var_core_value_sig336C.shapeType
+      },
+      var_core_value_sig8DFE = var_core_value_sig3D6F.type === "connector" ? {
+        ...var_core_value_sig3D6F,
+        'transform': {
+          ...var_core_value_sig3D6F.transform,
+          ...var_core_value_sig0428.transform
+        },
+        'connectorData': var_core_value_sig6E68,
+        'name': "name" in var_core_value_sig0428 ? var_core_value_sig0428.name : var_core_value_sig3D6F.name,
+        'description': "description" in var_core_value_sig0428 ? var_core_value_sig0428.description : var_core_value_sig3D6F.description,
+        'visible': var_core_value_sig0428.visible ?? var_core_value_sig3D6F.visible,
+        'selectable': var_core_value_sig0428.selectable ?? var_core_value_sig3D6F.selectable
+      } : {
+        ...var_core_value_sig3D6F,
+        'transform': {
+          ...var_core_value_sig3D6F.transform,
+          ...var_core_value_sig0428.transform
+        },
+        'shapeData': var_core_value_sig6E68,
+        'name': "name" in var_core_value_sig0428 ? var_core_value_sig0428.name : var_core_value_sig3D6F.name,
+        'description': "description" in var_core_value_sig0428 ? var_core_value_sig0428.description : var_core_value_sig3D6F.description,
+        'visible': var_core_value_sig0428.visible ?? var_core_value_sig3D6F.visible,
+        'selectable': var_core_value_sig0428.selectable ?? var_core_value_sig3D6F.selectable
+      };
+    return this._commandService['syncExecuteCommand'](Dn.id, {
+      'patches': [{
+        'unitId': var_core_value_sig18E01.unitId,
+        'subUnitId': var_core_value_sig18E01.subUnitId,
+        'drawingId': var_core_value_sig18E01.shapeId,
+        'element': var_core_value_sig8DFE
+      }]
+    });
+  }
+  convertSmartArtToShapes(var_core_value_sig48EA) {
+    let var_core_value_sig5E16 = this.getShape(var_core_value_sig48EA);
+    if (!var_core_value_sig5E16 || var_core_value_sig5E16.shapeType !== n.ShapeTypeEnum["SmartArt"] || !("smartArt" in var_core_value_sig5E16.shapeData)) return null;
+    let var_core_value_sig09F3 = var_core_value_sig5E16.shapeData["smartArt"].presentationShapeOrder["map"](() => (0, e.generateRandomId)(6));
+    if (var_core_value_sig09F3.length === 0) return null;
+    let var_core_value_sig4592 = var_core_value_sig09F3.length > 1 ? (0, e.generateRandomId)(6) : undefined;
+    return this._commandService["syncExecuteCommand"](at.id, {
+      'unitId': var_core_value_sig48EA.unitId,
+      'subUnitId': var_core_value_sig48EA.subUnitId,
+      'drawingId': var_core_value_sig48EA.shapeId,
+      'childIds': var_core_value_sig09F3,
+      'groupId': var_core_value_sig4592
+    }) ? var_core_value_sig09F3.map(var_core_value_sigB744 => this.getShape({
+      ...var_core_value_sig48EA,
+      'shapeId': var_core_value_sigB744
+    })).filter(var_core_value_sigEAE2 => !!var_core_value_sigEAE2) : null;
+  }
+  createFormulaLastValueMutation(var_core_value_sigC5C4, var_core_value_sig1617, var_core_value_sig4169) {
+    let var_core_value_sig6D19 = this._getDrawing(var_core_value_sigC5C4);
+    if (!var_core_value_sig6D19) return null;
+    let var_core_value_sig279C = var_core_value_sig6D19.element;
+    if (var_core_value_sig279C.type !== 'connector' && var_core_value_sig279C.type !== "shape") return null;
+    let var_core_value_sigAC51 = var_core_value_sig279C.type === 'connector' ? var_core_value_sig279C.connectorData : var_core_value_sig279C.shapeData,
+      var_core_value_sig8986 = var_core_value_sigAC51.formulaBinding;
+    if (!var_core_value_sig8986) return null;
+    let var_core_value_sigCAF7 = {
+        ...var_core_value_sigAC51,
+        'formulaBinding': {
+          ...var_core_value_sig8986,
+          'lastValue': e.Tools["deepClone"](var_core_value_sig4169)
+        }
+      },
+      var_core_value_sigED1C = var_core_value_sig279C.type === "connector" ? {
+        ...var_core_value_sig279C,
+        'connectorData': var_core_value_sigCAF7
+      } : {
+        ...var_core_value_sig279C,
+        'shapeData': var_core_value_sigCAF7
+      };
+    return {
+      'id': G.id,
+      'params': {
+        'unitId': var_core_value_sigC5C4.unitId,
+        'subUnitId': var_core_value_sigC5C4.subUnitId,
+        'drawingId': var_core_value_sigC5C4.shapeId,
+        'element': var_core_value_sigED1C,
+        'transform': var_core_value_sig6D19.transform,
+        'formulaLastValueGuard': var_core_value_sig1617
+      }
+    };
+  }
+  removeShape(var_core_value_sig726E) {
+    return this._commandService["syncExecuteCommand"](ht.id, {
+      'unitId': var_core_value_sig726E.unitId,
+      'subUnitId': var_core_value_sig726E.subUnitId,
+      'drawingIds': [var_core_value_sig726E.shapeId]
+    });
+  }
+  bringToFront(var_core_value_sig2CD3) {
+    return this._arrange(var_core_value_sig2CD3, e.ArrangeTypeEnum["front"]);
+  }
+  bringForward(var_core_value_sig038E) {
+    return this._arrange(var_core_value_sig038E, e.ArrangeTypeEnum["forward"]);
+  }
+  sendBackward(var_core_value_sigAA1E) {
+    return this._arrange(var_core_value_sigAA1E, e.ArrangeTypeEnum["backward"]);
+  }
+  sendToBack(var_core_value_sigC9F5) {
+    return this._arrange(var_core_value_sigC9F5, e.ArrangeTypeEnum["back"]);
+  }
+  setZOrder(var_core_value_sig7EEA, var_core_value_sig59CE1) {
+    return this._reorder(var_core_value_sig7EEA, this._getDrawingOrder(var_core_value_sig7EEA), var_core_value_sig59CE1);
+  }
+  _getDrawing(var_core_value_sig33C8) {
+    let var_core_value_sig957F = this._drawingService["getDrawingByParam"]({
+      'unitId': var_core_value_sig33C8.unitId,
+      'subUnitId': var_core_value_sig33C8.subUnitId,
+      'drawingId': var_core_value_sig33C8.shapeId
+    });
+    return (var_core_value_sig957F == null ? undefined : var_core_value_sig957F.sourcePageType) === 'slide' && (var_core_value_sig957F.element['type'] === "shape" || var_core_value_sig957F.element["type"] === "connector") ? var_core_value_sig957F : null;
+  }
+  _getDrawingOrder(var_core_value_sig803B) {
+    let var_core_value_sig5830 = this._drawingService["getDrawingData"](var_core_value_sig803B.unitId, var_core_value_sig803B.subUnitId) ?? {};
+    return this._drawingService['getDrawingOrder'](var_core_value_sig803B.unitId, var_core_value_sig803B.subUnitId).filter(var_core_value_sigE68A => {
+      var var_core_value_sig3E68;
+      return ((var_core_value_sig3E68 = var_core_value_sig5830[var_core_value_sigE68A]) == null ? undefined : var_core_value_sig3E68.sourcePageType) === "slide";
+    });
+  }
+  _arrange(var_core_value_sig4A7C, var_core_value_sigF975) {
+    let var_core_value_sigCDAF = this._getDrawingOrder(var_core_value_sig4A7C),
+      var_core_value_sigA298 = var_core_value_sigCDAF.indexOf(var_core_value_sig4A7C.shapeId);
+    return var_core_value_sigA298 < 0 ? false : this._reorder(var_core_value_sig4A7C, var_core_value_sigCDAF, (0, e.getDrawingOrderIndex)(var_core_value_sigA298, var_core_value_sigCDAF.length, var_core_value_sigF975));
+  }
+  _reorder(var_core_value_sig0B40, var_core_value_sig330B, var_core_value_sig3625) {
+    let var_core_value_sig0B4E = var_core_value_sig330B.indexOf(var_core_value_sig0B40.shapeId);
+    return var_core_value_sig0B4E < 0 ? false : (var_core_value_sig330B.splice(var_core_value_sig0B4E, 1), var_core_value_sig330B.splice((0, e.normalizeDrawingOrderIndex)(var_core_value_sig3625, var_core_value_sig330B.length + 1), 0, var_core_value_sig0B40.shapeId), this._commandService["syncExecuteCommand"](vt.id, {
+      'unitId': var_core_value_sig0B40.unitId,
+      'subUnitId': var_core_value_sig0B40.subUnitId,
+      'drawingIds': var_core_value_sig330B
+    }));
+  }
+};
+wr = q([K(0, e.ICommandService), K(1, E), K(2, e.IUniverInstanceService)], wr);
+function Tr(var_core_value_sigA77A) {
+  return {
+    'left': (var_core_value_sigA77A == null ? undefined : var_core_value_sigA77A.left) ?? 0,
+    'top': (var_core_value_sigA77A == null ? undefined : var_core_value_sigA77A.top) ?? 0,
+    'width': (var_core_value_sigA77A == null ? undefined : var_core_value_sigA77A.width) ?? J.shapeWidth,
+    'height': (var_core_value_sigA77A == null ? undefined : var_core_value_sigA77A.height) ?? J.shapeHeight,
+    'rotation': (var_core_value_sigA77A == null ? undefined : var_core_value_sigA77A.rotation) ?? 0,
+    'flipX': (var_core_value_sigA77A == null ? undefined : var_core_value_sigA77A.flipX) ?? false,
+    'flipY': (var_core_value_sigA77A == null ? undefined : var_core_value_sigA77A.flipY) ?? false
+  };
+}
+const Er = {};
+let Dr = class extends e.Disposable {
+  constructor(var_core_value_sig0E9F, var_core_value_sigE5BA) {
+    super(), this._instanceSrv = var_core_value_sig0E9F, this._slideDrawingService = var_core_value_sigE5BA, this._initUnitListener();
+  }
+  _initUnitListener() {
+    this._instanceSrv["getAllUnitsForType"](e.UniverInstanceType['UNIVER_SLIDE']).forEach(var_core_value_sigF4C5 => this._loadUnit(var_core_value_sigF4C5)), this.disposeWithMe(this._instanceSrv['getTypeOfUnitAdded$'](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(var_core_value_sig5410 => this._loadUnit(var_core_value_sig5410.unit))), this.disposeWithMe(this._instanceSrv["getTypeOfUnitDisposed$"](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(var_core_value_sig492F => {
+      this._slideDrawingService["removeDrawingDataForUnit"](var_core_value_sig492F.getUnitId());
+    }));
+  }
+  _loadUnit(var_core_value_sig4A83) {
+    let var_core_value_sig58AA = var_core_value_sig4A83.getUnitId(),
+      var_core_value_sig84C4 = {},
+      var_core_value_sigB6F7 = var_core_value_sig4A83.pageManager["getSlides"]();
+    for (let var_core_value_sig8EA0 of var_core_value_sigB6F7) {
+      let var_core_value_sig26DB = var_core_value_sig8EA0.getId(),
+        {
+          data: var_core_value_sigF0F9,
+          order: var_core_value_sig1A0F
+        } = D(var_core_value_sig4A83, var_core_value_sig8EA0);
+      var_core_value_sig1A0F.length > 0 && (var_core_value_sig84C4[var_core_value_sig26DB] = {
+        'data': var_core_value_sigF0F9,
+        'order': var_core_value_sig1A0F
+      });
+    }
+    this._slideDrawingService["registerDrawingData"](var_core_value_sig58AA, var_core_value_sig84C4), this._slideDrawingService['initializeNotification'](var_core_value_sig58AA);
+  }
+};
+Dr = q([K(0, e.IUniverInstanceService), K(1, E)], Dr);
+const Or = new Set([ln.id, yt.id, z.id]);
+let kr = class extends e.Disposable {
+  constructor(var_core_value_sigB495, var_core_value_sig70D0, var_core_value_sig2A8A) {
+    super(), this._commandService = var_core_value_sigB495, this._permissionService = var_core_value_sig70D0, this._univerInstanceService = var_core_value_sig2A8A, this._univerInstanceService['getAllUnitsForType'](e.UniverInstanceType['UNIVER_SLIDE']).forEach(var_core_value_sigA6F6 => this._registerUnitPermissionPoints(var_core_value_sigA6F6.getUnitId())), this.disposeWithMe(this._univerInstanceService["getTypeOfUnitAdded$"](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(({
+      unit: var_core_value_sigCDDA
+    }) => this._registerUnitPermissionPoints(var_core_value_sigCDDA.getUnitId()))), this.disposeWithMe(this._commandService["beforeCommandExecuted"]((var_core_value_sigE243, var_core_value_sig74A8) => this._check(var_core_value_sigE243, var_core_value_sig74A8))), this.disposeWithMe(this._univerInstanceService["getTypeOfUnitDisposed$"](e.UniverInstanceType["UNIVER_SLIDE"]).subscribe(var_core_value_sig21B2 => sn(this._permissionService, var_core_value_sig21B2.getUnitId())));
+  }
+  _registerUnitPermissionPoints(var_core_value_sig3782) {
+    Xt.forEach(var_core_value_sigDE08 => {
+      let var_core_value_sigACCB = rn(var_core_value_sig3782, var_core_value_sig3782, var_core_value_sigDE08);
+      this._permissionService["getPermissionPoint"](var_core_value_sigACCB.id) || this._permissionService["addPermissionPoint"](var_core_value_sigACCB);
+    });
+  }
+  _check(var_core_value_sigD22E, var_core_value_sig3455) {
+    var var_core_value_sig5CEF;
+    if (var_core_value_sig3455 != null && var_core_value_sig3455.fromCollab || var_core_value_sig3455 != null && var_core_value_sig3455.fromChangeset) return;
+    let var_core_value_sig43D5 = Y(var_core_value_sigD22E.params) ? var_core_value_sigD22E.params : undefined;
+    if (var_core_value_sigD22E.id === 'slide.mutation.update-slide-element' && var_core_value_sig43D5 != null && var_core_value_sig43D5.formulaLastValueGuard) return;
+    let var_core_value_sig1395 = jr(var_core_value_sigD22E.id, var_core_value_sig43D5),
+      var_core_value_sig9FA0 = Ar(var_core_value_sig3455),
+      var_core_value_sig055E = (var_core_value_sig43D5 ? X(var_core_value_sig43D5, "unitId") : undefined) ?? var_core_value_sig9FA0 ?? (var_core_value_sig1395 ? (var_core_value_sig5CEF = this._univerInstanceService['getCurrentUnitOfType'](e.UniverInstanceType["UNIVER_SLIDE"])) == null ? undefined : var_core_value_sig5CEF.getUnitId() : undefined);
+    if (!var_core_value_sig055E || this._univerInstanceService["getUnitType"](var_core_value_sig055E) !== e.UniverInstanceType['UNIVER_SLIDE']) return;
+    if (var_core_value_sig1395) {
+      if (!an(this._permissionService, var_core_value_sig055E, var_core_value_sig055E, var_core_value_sig1395)) throw new e.CustomCommandExecutionError("Presentation " + i.UnitAction[var_core_value_sig1395] + '\x20permission\x20denied.');
+      if (var_core_value_sigD22E.id === "slide.operation.cut-selection" && !an(this._permissionService, var_core_value_sig055E, var_core_value_sig055E, i.UnitAction["Edit"])) throw new e.CustomCommandExecutionError("Presentation Edit permission denied.");
+      return;
+    }
+    if (Or.has(var_core_value_sigD22E.id) || !var_core_value_sigD22E.id["startsWith"]('slide.command.') && !var_core_value_sigD22E.id["startsWith"]("slide.mutation.")) return;
+    let var_core_value_sig7C77 = this._univerInstanceService["getUnit"](var_core_value_sig055E, e.UniverInstanceType["UNIVER_SLIDE"]);
+    if (!var_core_value_sig7C77 || !cn(this._permissionService, var_core_value_sig055E, Mr(var_core_value_sig7C77, var_core_value_sig43D5 ?? {}, var_core_value_sigD22E.id))) throw new e.CustomCommandExecutionError("Presentation edit permission denied.");
+  }
+};
+kr = q([K(0, e.ICommandService), K(1, e.IPermissionService), K(2, e.IUniverInstanceService)], kr);
+function Ar(var_core_value_sig0701) {
+  return typeof (var_core_value_sig0701 == null ? undefined : var_core_value_sig0701.unitId) == "string" ? var_core_value_sig0701.unitId : undefined;
+}
+;
+function jr(var_core_value_sig5DCA, var_core_value_sigF1AB) {
+  if (var_core_value_sig5DCA === 'slide.operation.copy-selection' || var_core_value_sig5DCA === "slide.operation.cut-selection" || var_core_value_sig5DCA === "slide.operation.slide-table-copy-table") return i.UnitAction["Copy"];
+  if (var_core_value_sig5DCA === "slide-table.operation.keyboard") {
+    if ((var_core_value_sigF1AB == null ? undefined : var_core_value_sigF1AB.action) === "copy-cells") return i.UnitAction["Copy"];
+    if ((var_core_value_sigF1AB == null ? undefined : var_core_value_sigF1AB.action) === "edit-cell" || (var_core_value_sigF1AB == null ? undefined : var_core_value_sigF1AB.action) === "clear-cells" || (var_core_value_sigF1AB == null ? undefined : var_core_value_sigF1AB.action) === "paste-cells") return i.UnitAction['Edit'];
+  }
+  if (var_core_value_sig5DCA === "slide.operation.print") return i.UnitAction["Print"];
+  if (var_core_value_sig5DCA === "slides-exchange-client.operation.export-slide") return i.UnitAction["Export"];
+  if (var_core_value_sig5DCA.startsWith("thread-comment.command.") || var_core_value_sig5DCA.startsWith("thread-comment.mutation.") || var_core_value_sig5DCA === "slide.operation.start-comment-placement" || var_core_value_sig5DCA === "slide.operation.add-element-comment") return i.UnitAction["Comment"];
+}
+;
+function Mr(var_core_value_sig902F, var_core_value_sig6BD7, var_core_value_sig63E0) {
+  let var_core_value_sig1B87 = new Set(),
+    var_core_value_sig580B = var_core_value_sig902F.getSnapshot(),
+    var_core_value_sig4836 = new Set([X(var_core_value_sig6BD7, 'subUnitId'), X(var_core_value_sig6BD7, 'pageId')].filter(var_core_value_sig9578 => !!var_core_value_sig9578));
+  Lr(var_core_value_sig6BD7, 'masterPageIds').forEach(var_core_value_sigA2D31 => var_core_value_sig4836.add(var_core_value_sigA2D31));
+  let var_core_value_sig4C06 = X(var_core_value_sig6BD7, "masterPageId");
+  var_core_value_sig4C06 && var_core_value_sig4836.add(var_core_value_sig4C06), var_core_value_sig6BD7.applyToAll === true && var_core_value_sig580B.slideOrder['forEach'](var_core_value_sigC218 => var_core_value_sig4836.add(var_core_value_sigC218));
+  let var_core_value_sig4D56 = Y(var_core_value_sig6BD7.slideTransitionRefs) ? var_core_value_sig6BD7.slideTransitionRefs : {};
+  Object.keys(var_core_value_sig4D56).forEach(var_core_value_sigADEC => var_core_value_sig4836.add(var_core_value_sigADEC));
+  let var_core_value_sig7C26 = Rr(var_core_value_sig6BD7.sourcePageType) ? var_core_value_sig6BD7.sourcePageType : undefined;
+  for (let var_core_value_sig3D8E of var_core_value_sig4836) {
+    let var_core_value_sig7F33 = var_core_value_sig7C26 ?? Fr(var_core_value_sig902F, var_core_value_sig3D8E);
+    var_core_value_sig7F33 === "master" || var_core_value_sig7F33 === "layout" ? var_core_value_sig1B87.add(W) : var_core_value_sig7F33 === "slide" && var_core_value_sig1B87.add(en(var_core_value_sig3D8E));
+  }
+  let var_core_value_sigBC59 = new Set();
+  ["drawingId", "elementId", "replaceElementId"].forEach(var_core_value_sig37E5 => {
+    let var_core_value_sigF079 = X(var_core_value_sig6BD7, var_core_value_sig37E5);
+    var_core_value_sigF079 && var_core_value_sigBC59.add(var_core_value_sigF079);
+  }), Lr(var_core_value_sig6BD7, "drawingIds").forEach(var_core_value_sigFCA0 => var_core_value_sigBC59.add(var_core_value_sigFCA0)), Y(var_core_value_sig6BD7.element) && typeof var_core_value_sig6BD7.element['id'] == "string" && var_core_value_sigBC59.add(var_core_value_sig6BD7.element['id']), (Array.isArray(var_core_value_sig6BD7.objects) ? var_core_value_sig6BD7.objects : []).forEach(var_core_value_sigC84D => {
+    let var_core_value_sigF2BC = Y(var_core_value_sigC84D) ? X(var_core_value_sigC84D, "drawingId") : undefined;
+    var_core_value_sigF2BC && var_core_value_sigBC59.add(var_core_value_sigF2BC);
+  });
+  let var_core_value_sig544E = X(var_core_value_sig6BD7, "subUnitId") ?? X(var_core_value_sig6BD7, "pageId");
+  if (var_core_value_sig544E) {
+    let var_core_value_sigD37B = var_core_value_sig7C26 ?? Fr(var_core_value_sig902F, var_core_value_sig544E) ?? "slide";
+    if (var_core_value_sig63E0 === "slide.command.remove-page" || var_core_value_sig63E0 === "slide.mutation.remove-slide-page") {
+      let var_core_value_sig0C53 = var_core_value_sig902F.getSnapshot().slides[var_core_value_sig544E];
+      Object.keys((var_core_value_sig0C53 == null ? undefined : var_core_value_sig0C53.elements) ?? {}).forEach(var_core_value_sigFBA4 => var_core_value_sigBC59.add(var_core_value_sigFBA4));
+    }
+    Pr(var_core_value_sig902F, var_core_value_sig544E, var_core_value_sigD37B, var_core_value_sigBC59, var_core_value_sig1B87);
+  } else var_core_value_sigBC59.size && Nr(var_core_value_sig902F, var_core_value_sigFA28 => var_core_value_sigBC59.has(var_core_value_sigFA28.id), var_core_value_sig1B87);
+  let var_core_value_sigCE8A = new Set(["chartId", 'tableId', "smartArtId"].map(var_core_value_sig93BE => X(var_core_value_sig6BD7, var_core_value_sig93BE)).filter(var_core_value_sigABEC => !!var_core_value_sigABEC));
+  var_core_value_sigCE8A.size && Nr(var_core_value_sig902F, var_core_value_sig2712 => var_core_value_sigCE8A.has(String(var_core_value_sig2712.chartId ?? '')) || var_core_value_sigCE8A.has(String(var_core_value_sig2712.tableId ?? '')) || var_core_value_sigCE8A.has(String(var_core_value_sig2712.smartArtId ?? '')), var_core_value_sig1B87);
+  let var_core_value_sig0718 = Y(var_core_value_sig6BD7.slide) ? var_core_value_sig6BD7.slide : undefined,
+    var_core_value_sig1B221 = var_core_value_sig0718 ? X(var_core_value_sig0718, 'id') : undefined;
+  if (var_core_value_sig0718 && var_core_value_sig1B221) {
+    let var_core_value_sig0B9E = Rr(var_core_value_sig0718.pageType) ? var_core_value_sig0718.pageType : "slide";
+    var_core_value_sig1B87.add(var_core_value_sig0B9E === "slide" ? en(var_core_value_sig1B221) : W);
+    let var_core_value_sigC545 = Y(var_core_value_sig0718.elements) ? var_core_value_sig0718.elements : {};
+    Object.keys(var_core_value_sigC545).forEach(var_core_value_sigEA04 => {
+      var_core_value_sig1B87.add(tn(var_core_value_sig0B9E, var_core_value_sig1B221, var_core_value_sigEA04));
+    });
+  }
+  return [...var_core_value_sig1B87];
+}
+;
+function Nr(var_core_value_sig8854, var_core_value_sig5275, var_core_value_sig4F9D) {
+  let var_core_value_sig278E = var_core_value_sig8854.getSnapshot(),
+    var_core_value_sig2921 = (var_core_value_sig12A7, var_core_value_sig6F4E) => {
+      Object.entries(var_core_value_sig12A7 ?? {}).forEach(([var_core_value_sig7A62, var_core_value_sig8109]) => {
+        let var_core_value_sig7565 = new Set();
+        Object.values(var_core_value_sig8109.elements ?? {}).forEach(var_core_value_sig4383 => {
+          !Ir(var_core_value_sig4383) || !var_core_value_sig5275(var_core_value_sig4383) || var_core_value_sig7565.add(var_core_value_sig4383.id);
+        }), Pr(var_core_value_sig8854, var_core_value_sig7A62, var_core_value_sig6F4E, var_core_value_sig7565, var_core_value_sig4F9D);
+      });
+    };
+  var_core_value_sig2921(var_core_value_sig278E.slides, 'slide'), var_core_value_sig2921(var_core_value_sig278E.masterPages, 'master'), var_core_value_sig2921(var_core_value_sig278E.layoutPages, "layout");
+}
+;
+function Pr(var_core_value_sig3959, var_core_value_sig926F, var_core_value_sig9414, var_core_value_sig32E7, var_core_value_sigD8C3) {
+  var var_core_value_sig3A44, var_core_value_sig0642;
+  if (!var_core_value_sig32E7.size) return;
+  let var_core_value_sig786E = var_core_value_sig3959.getSnapshot(),
+    var_core_value_sigFC47 = var_core_value_sig9414 === "slide" ? var_core_value_sig786E.slides[var_core_value_sig926F] : var_core_value_sig9414 === "master" ? (var_core_value_sig3A44 = var_core_value_sig786E.masterPages) == null ? undefined : var_core_value_sig3A44[var_core_value_sig926F] : (var_core_value_sig0642 = var_core_value_sig786E.layoutPages) == null ? undefined : var_core_value_sig0642[var_core_value_sig926F],
+    var_core_value_sig48E2 = (var_core_value_sigFC47 == null ? undefined : var_core_value_sigFC47.elements) ?? {},
+    var_core_value_sig2FCA = new Map();
+  Object.values(var_core_value_sig48E2).forEach(var_core_value_sigA021 => {
+    Y(var_core_value_sigA021) && typeof var_core_value_sigA021.id == "string" && Array.isArray(var_core_value_sigA021.children) && var_core_value_sig2FCA.set(var_core_value_sigA021.id, var_core_value_sigA021.children['filter'](var_core_value_sigD4FB => typeof var_core_value_sigD4FB == "string"));
+  });
+  let var_core_value_sig04F2 = new Set(var_core_value_sig32E7),
+    var_core_value_sig2CFC = var_core_value_sig49D9 => {
+      var_core_value_sig2FCA.forEach((var_core_value_sig3E71, var_core_value_sig01B3) => {
+        !var_core_value_sig3E71.includes(var_core_value_sig49D9) || var_core_value_sig04F2.has(var_core_value_sig01B3) || (var_core_value_sig04F2.add(var_core_value_sig01B3), var_core_value_sig2CFC(var_core_value_sig01B3));
+      });
+    },
+    var_core_value_sig5CEB = var_core_value_sig320C => {
+      (var_core_value_sig2FCA.get(var_core_value_sig320C) ?? []).forEach(var_core_value_sig7442 => {
+        var_core_value_sig04F2.has(var_core_value_sig7442) || (var_core_value_sig04F2.add(var_core_value_sig7442), var_core_value_sig5CEB(var_core_value_sig7442));
+      });
+    };
+  var_core_value_sig32E7.forEach(var_core_value_sigE7F0 => {
+    var_core_value_sig2CFC(var_core_value_sigE7F0), var_core_value_sig5CEB(var_core_value_sigE7F0);
+  }), var_core_value_sigD8C3.add(var_core_value_sig9414 === "slide" ? en(var_core_value_sig926F) : W), var_core_value_sig04F2.forEach(var_core_value_sigE837 => var_core_value_sigD8C3.add(tn(var_core_value_sig9414, var_core_value_sig926F, var_core_value_sigE837)));
+}
+;
+function Fr(var_core_value_sig4935, var_core_value_sig1832) {
+  var var_core_value_sig79D7, var_core_value_sig5E01;
+  let var_core_value_sigBBE4 = var_core_value_sig4935.getSnapshot();
+  if (var_core_value_sigBBE4.slides[var_core_value_sig1832]) return "slide";
+  if ((var_core_value_sig79D7 = var_core_value_sigBBE4.masterPages) != null && var_core_value_sig79D7[var_core_value_sig1832]) return "master";
+  if ((var_core_value_sig5E01 = var_core_value_sigBBE4.layoutPages) != null && var_core_value_sig5E01[var_core_value_sig1832]) return 'layout';
+}
+;
+function Y(var_core_value_sig96B3) {
+  return typeof var_core_value_sig96B3 == "object" && !!var_core_value_sig96B3 && !Array.isArray(var_core_value_sig96B3);
+}
+;
+function Ir(var_core_value_sig9CF2) {
+  return Y(var_core_value_sig9CF2) && typeof var_core_value_sig9CF2.id == "string";
+}
+;
+function X(var_core_value_sig666D, var_core_value_sigBD53) {
+  let var_core_value_sigD11F = var_core_value_sig666D[var_core_value_sigBD53];
+  return typeof var_core_value_sigD11F == "string" ? var_core_value_sigD11F : undefined;
+}
+;
+function Lr(var_core_value_sig62231, var_core_value_sig7653) {
+  let var_core_value_sigF65B = var_core_value_sig62231[var_core_value_sig7653];
+  return Array.isArray(var_core_value_sigF65B) ? var_core_value_sigF65B.filter(var_core_value_sig34F4 => typeof var_core_value_sig34F4 == "string") : [];
+}
+;
+function Rr(var_core_value_sig4A94) {
+  return Object.values(u).some(var_core_value_sigA45D => var_core_value_sigA45D === var_core_value_sig4A94);
+}
+let zr = class extends e.Disposable {
+  constructor(var_core_value_sig1BC7, var_core_value_sig4956) {
+    super(), this._shapeHostAdapterRegistry = var_core_value_sig1BC7, this.disposeWithMe(this._shapeHostAdapterRegistry["register"](var_core_value_sig4956));
+  }
+};
+zr = q([K(0, (0, e.Inject)(n.IShapeHostAdapterRegistry)), K(1, (0, e.Inject)(wr))], zr);
+let Z = class extends e.Plugin {
+  constructor(var_core_value_sigCC9E = Er, var_core_value_sig444C, var_core_value_sigE42E, var_core_value_sigF039, var_core_value_sigA321) {
+    super(), this._config = var_core_value_sigCC9E, this._injector = var_core_value_sig444C, this._commandService = var_core_value_sigE42E, this._configService = var_core_value_sigF039, this._univerInstanceService = var_core_value_sigA321;
+    let {
+      ...var_core_value_sigBF4C
+    } = (0, e.merge)({}, Er, this._config);
+    this._configService["setConfig"]("slides.config", var_core_value_sigBF4C);
+  }
+  onStarting() {
+    this._univerInstanceService["registerCtorForType"](e.UniverInstanceType['UNIVER_SLIDE'], Cr), [[E, {
+      'useClass': Te
+    }], [Dr], [Vn], [wr], [zr], [kr]].forEach(var_core_value_sigDF87 => this._injector['add'](var_core_value_sigDF87)), [j, Rn, N, z, G, Tn, rt, it, R, At, V, ut, un, bn, Ot, F, Dt, I, L, Fn, Xe, ht, yt, kt, jt, ln, zt, dn, xn, Dn, Ln, In, vt, Ze, gt, lt, ct, at, zn].forEach(var_core_value_sig9EE0 => this.disposeWithMe(this._commandService['registerCommand'](var_core_value_sig9EE0))), this._injector['get'](zr), this._injector["get"](Dr), this._injector["get"](Vn), this._injector['get'](kr);
+  }
+};
+U(Z, "pluginName", "UNIVER_SLIDES_PLUGIN"), U(Z, 'packageName', ar), U(Z, "version", or), U(Z, "type", e.UniverInstanceType["UNIVER_SLIDE"]), Z = q([(0, e.DependentOn)(o.UniverLicensePlugin, n.UniverShapePlugin), K(1, (0, e.Inject)(e.Injector)), K(2, e.ICommandService), K(3, e.IConfigService), K(4, e.IUniverInstanceService)], Z);
+const Br = {
+  'dk1': "#000000",
+  'dk2': "#44546a",
+  'lt1': "#ffffff",
+  'lt2': "#e7e6e6",
+  'acc1': '#4472c4',
+  'acc2': "#ed7d31",
+  'acc3': "#a5a5a5",
+  'acc4': "#ffc000",
+  'acc5': "#5b9bd5",
+  'acc6': "#70ad47"
+};
+function Q(var_core_value_sigEB59, var_core_value_sigD9B0) {
+  var var_core_value_sigB7D6;
+  return (var_core_value_sigEB59 == null || (var_core_value_sigB7D6 = var_core_value_sigEB59.colorScheme) == null ? undefined : var_core_value_sigB7D6[var_core_value_sigD9B0]) ?? Br[var_core_value_sigD9B0];
+}
+;
+function Vr(var_core_value_sigCF1F) {
+  if (!(!var_core_value_sigCF1F || typeof var_core_value_sigCF1F != "object")) {
+    if ("color" in var_core_value_sigCF1F && typeof var_core_value_sigCF1F.color == 'string') return var_core_value_sigCF1F.color;
+    if ("gradientStops" in var_core_value_sigCF1F && Array.isArray(var_core_value_sigCF1F.gradientStops)) {
+      let var_core_value_sigF0511 = var_core_value_sigCF1F.gradientStops["find"](var_core_value_sig186C => !!(var_core_value_sig186C && typeof var_core_value_sig186C == "object" && "color" in var_core_value_sig186C && typeof var_core_value_sig186C.color == "string"));
+      return var_core_value_sigF0511 == null ? undefined : var_core_value_sigF0511.color;
+    }
+  }
+}
+;
+function Hr(var_core_value_sig4DD1) {
+  if (!(!var_core_value_sig4DD1 || typeof var_core_value_sig4DD1 != "object")) return "color" in var_core_value_sig4DD1 && typeof var_core_value_sig4DD1.color == "string" ? var_core_value_sig4DD1.color : undefined;
+}
+;
+function Ur(var_core_value_sig1293) {
+  var var_core_value_sigC999, var_core_value_sig9D8F;
+  let var_core_value_sig8270 = Q(var_core_value_sig1293, 'acc1'),
+    var_core_value_sig95D9 = Q(var_core_value_sig1293, "acc2"),
+    var_core_value_sig0E92 = Q(var_core_value_sig1293, "acc3"),
+    var_core_value_sig45CD = Q(var_core_value_sig1293, "acc4"),
+    var_core_value_sigAD84 = Q(var_core_value_sig1293, "acc5"),
+    var_core_value_sigD513 = Q(var_core_value_sig1293, "acc6"),
+    var_core_value_sig36BD = Q(var_core_value_sig1293, 'dk1'),
+    var_core_value_sig0413 = Vr(var_core_value_sig1293 == null || (var_core_value_sigC999 = var_core_value_sig1293.fmtScheme) == null ? undefined : var_core_value_sigC999.fillStyleLst[1]) ?? var_core_value_sig8270,
+    var_core_value_sig15B6 = Hr(var_core_value_sig1293 == null || (var_core_value_sig9D8F = var_core_value_sig1293.fmtScheme) == null ? undefined : var_core_value_sig9D8F.lnStyleLst[1]) ?? Q(var_core_value_sig1293, "dk2");
+  return {
+    'background': Q(var_core_value_sig1293, "lt1"),
+    'text': var_core_value_sig36BD,
+    'muted': Q(var_core_value_sig1293, "lt2"),
+    'accent1': var_core_value_sig8270,
+    'accent2': var_core_value_sig95D9,
+    'accent3': var_core_value_sig0E92,
+    'accent4': var_core_value_sig45CD,
+    'accent5': var_core_value_sigAD84,
+    'accent6': var_core_value_sigD513,
+    'accents': [var_core_value_sig8270, var_core_value_sig95D9, var_core_value_sig0E92, var_core_value_sig45CD, var_core_value_sigAD84, var_core_value_sigD513],
+    'defaultStyleColors': [var_core_value_sig0413, var_core_value_sig15B6, var_core_value_sig36BD]
+  };
+}
+const Wr = "slidePlaceholderContent";
+function Gr(var_core_value_sigFEBF) {
+  let var_core_value_sigBBA2 = var_core_value_sigFEBF.custom;
+  if (!var_core_value_sigBBA2 || typeof var_core_value_sigBBA2 != "object") return null;
+  let var_core_value_sigC9A1 = var_core_value_sigBBA2[Wr];
+  if (!var_core_value_sigC9A1 || typeof var_core_value_sigC9A1 != 'object') return null;
+  let var_core_value_sigE469 = var_core_value_sigC9A1;
+  return var_core_value_sigE469.kind !== "image" || typeof var_core_value_sigE469.source != "string" || var_core_value_sigE469.source["length"] === 0 ? null : {
+    'kind': "image",
+    'source': var_core_value_sigE469.source,
+    'imageSourceType': var_core_value_sigE469.imageSourceType
+  };
+}
+;
+function Kr(var_core_value_sigA499, var_core_value_sig4CC3) {
+  let var_core_value_sig70B3 = var_core_value_sigA499.custom && typeof var_core_value_sigA499.custom == "object" ? {
+    ...var_core_value_sigA499.custom
+  } : {};
+  return var_core_value_sig70B3[Wr] = var_core_value_sig4CC3, {
+    ...var_core_value_sigA499,
+    'custom': var_core_value_sig70B3
+  };
+}
+const qr = "slide-text-document",
+  Jr = {
+    'width': 1 / 0,
+    'height': 1 / 0
+  };
+function Yr(var_core_value_sig422B) {
+  let var_core_value_sig1038 = var_core_value_sig422B.body,
+    var_core_value_sigC3E6 = var_core_value_sig1038 == null ? undefined : var_core_value_sig1038.dataStream;
+  if (!var_core_value_sig1038 || var_core_value_sigC3E6 === undefined) return var_core_value_sig422B;
+  let var_core_value_sig3710 = var_core_value_sigC3E6.replace(/\n/g, (var_core_value_sig3457, var_core_value_sig4A08) => var_core_value_sigC3E6[var_core_value_sig4A08 - 1] === '\x0d' ? var_core_value_sig3457 : '\x0d'),
+    var_core_value_sig9726 = var_core_value_sig3710.endsWith('\x0d\x0a') ? var_core_value_sig3710 : var_core_value_sig3710.endsWith('\x0d') ? var_core_value_sig3710 + '\x0a' : var_core_value_sig3710 + '\x0d\x0a';
+  return var_core_value_sig9726 === var_core_value_sigC3E6 ? var_core_value_sig422B : {
+    ...var_core_value_sig422B,
+    'body': {
+      ...var_core_value_sig1038,
+      'dataStream': var_core_value_sig9726
+    }
+  };
+}
+;
+function $(var_core_value_sigFC9B, var_core_value_sig943E = {}) {
+  let var_core_value_sigEF36 = ti(var_core_value_sigFC9B).split('\x0a'),
+    var_core_value_sigD4B1 = var_core_value_sigEF36.join('\x0d') + '\x0d\x0a',
+    var_core_value_sigE5D8 = Math.max(0, var_core_value_sigD4B1.length - 2),
+    var_core_value_sig74AF = 0,
+    var_core_value_sigBABA = var_core_value_sig943E.bullet,
+    var_core_value_sigA723 = (var_core_value_sigBABA == null ? undefined : var_core_value_sigBABA.listId) ?? (var_core_value_sig943E.id ?? qr) + "-list",
+    var_core_value_sig991C = new Set(),
+    var_core_value_sigF909 = var_core_value_sigEF36.map(var_core_value_sig1BC4 => {
+      let var_core_value_sig9EAB = {
+        'startIndex': var_core_value_sig74AF + var_core_value_sig1BC4.length,
+        'paragraphId': (0, e.createParagraphId)(var_core_value_sig991C),
+        ...(var_core_value_sigBABA ? {
+          'bullet': {
+            'listId': var_core_value_sigA723,
+            'listType': var_core_value_sigBABA.listType,
+            'nestingLevel': var_core_value_sigBABA.nestingLevel ?? 0
+          }
+        } : {}),
+        ...(var_core_value_sig943E.horizontalAlign === undefined ? {} : {
+          'paragraphStyle': {
+            'horizontalAlign': var_core_value_sig943E.horizontalAlign,
+            ...(var_core_value_sig943E.textStyle ? {
+              'textStyle': var_core_value_sig943E.textStyle
+            } : {})
+          }
+        })
+      };
+      return var_core_value_sig74AF += var_core_value_sig1BC4.length + 1, var_core_value_sig9EAB;
+    }),
+    var_core_value_sigDD0E = var_core_value_sig943E.horizontalAlign === undefined && var_core_value_sig943E.verticalAlign === undefined ? undefined : {
+      'horizontalAlign': var_core_value_sig943E.horizontalAlign,
+      'verticalAlign': var_core_value_sig943E.verticalAlign
+    };
+  return {
+    'id': var_core_value_sig943E.id ?? qr,
+    'body': {
+      'dataStream': var_core_value_sigD4B1,
+      'textRuns': var_core_value_sig943E.textStyle ? [{
+        'st': 0,
+        'ed': Math.max(1, var_core_value_sigE5D8),
+        'ts': var_core_value_sig943E.textStyle
+      }] : [],
+      'paragraphs': var_core_value_sigF909
+    },
+    'documentStyle': {
+      'marginBottom': 0,
+      'marginLeft': 0,
+      'marginRight': 0,
+      'marginTop': 0,
+      'pageSize': {
+        ...Jr
+      },
+      ...(var_core_value_sig943E.textStyle ? {
+        'textStyle': var_core_value_sig943E.textStyle
+      } : {}),
+      ...(var_core_value_sigDD0E ? {
+        'renderConfig': var_core_value_sigDD0E
+      } : {})
+    }
+  };
+}
+;
+function Xr(var_core_value_sigF2A0) {
+  var var_core_value_sig116F;
+  let var_core_value_sigA64C = ((var_core_value_sig116F = var_core_value_sigF2A0.body) == null ? undefined : var_core_value_sig116F.dataStream) ?? '';
+  return (var_core_value_sigA64C.endsWith('\x0d\x0a') ? var_core_value_sigA64C.slice(0, -2) : var_core_value_sigA64C).replace(/\r/g, '\x0a');
+}
+;
+function Zr(var_core_value_sigAF94, var_core_value_sig1E9F = {}) {
+  if (var_core_value_sigAF94.type === 'text') return ei(var_core_value_sigAF94.textData) ?? $(var_core_value_sigAF94.text ?? '', {
+    'id': var_core_value_sigAF94.id,
+    'textStyle': ri(var_core_value_sigAF94.textStyle)
+  });
+  if (var_core_value_sigAF94.type === "shape") {
+    var var_core_value_sig3CC6;
+    let var_core_value_sigA5C3 = (0, n.normalizeShapeTextData)(var_core_value_sigAF94.shapeData["shapeText"]);
+    if (var_core_value_sigA5C3 != null && (var_core_value_sig3CC6 = var_core_value_sigA5C3.dataModel) != null && var_core_value_sig3CC6.doc) return e.Tools["deepClone"](var_core_value_sigA5C3.dataModel["doc"]);
+    let var_core_value_sig3A1E = pe(var_core_value_sig1E9F.themeData);
+    return $(var_core_value_sig3A1E.text ?? '', {
+      'id': var_core_value_sigAF94.id,
+      'textStyle': ri(var_core_value_sig3A1E),
+      'horizontalAlign': e.HorizontalAlign["CENTER"],
+      'verticalAlign': e.VerticalAlign["MIDDLE"]
+    });
+  }
+  if (var_core_value_sigAF94.type === "placeholder") {
+    var var_core_value_sig041B;
+    let var_core_value_sigDC92 = var_core_value_sigAF94.placeholder["textConfig"];
+    return ei((var_core_value_sig1E9F.placeholderLevel ? var_core_value_sigDC92 == null || (var_core_value_sig041B = var_core_value_sigDC92.textDataByLevel) == null ? undefined : var_core_value_sig041B[var_core_value_sig1E9F.placeholderLevel] : undefined) ?? (var_core_value_sigDC92 == null ? undefined : var_core_value_sigDC92.textData)) ?? $(var_core_value_sigAF94.text ?? '', {
+      'id': var_core_value_sigAF94.id
+    });
+  }
+  return null;
+}
+;
+function Qr(var_core_value_sig3610, var_core_value_sig62F3) {
+  let var_core_value_sig8063 = e.Tools["deepClone"](var_core_value_sig62F3),
+    var_core_value_sig555A = Xr(var_core_value_sig8063);
+  if (var_core_value_sig3610.type === "text") return {
+    ...var_core_value_sig3610,
+    'text': var_core_value_sig555A,
+    'textData': var_core_value_sig8063
+  };
+  if (var_core_value_sig3610.type === "shape") {
+    let var_core_value_sig3515 = (0, n.applyDocumentToShapeText)((0, n.normalizeShapeTextData)(var_core_value_sig3610.shapeData['shapeText']) ?? undefined, var_core_value_sig8063);
+    return {
+      ...var_core_value_sig3610,
+      'shapeData': {
+        ...var_core_value_sig3610.shapeData,
+        'shapeText': var_core_value_sig3515
+      }
+    };
+  }
+  if (var_core_value_sig3610.type === "placeholder") {
+    let var_core_value_sigC2A0 = var_core_value_sig3610;
+    return {
+      ...var_core_value_sigC2A0,
+      'text': var_core_value_sig555A,
+      'placeholder': {
+        ...var_core_value_sigC2A0.placeholder,
+        'textConfig': {
+          ...var_core_value_sigC2A0.placeholder["textConfig"],
+          'textData': var_core_value_sig8063
+        }
+      }
+    };
+  }
+  return null;
+}
+;
+function $r(var_core_value_sigF562, var_core_value_sig5913, var_core_value_sigA1AF) {
+  return Qr(var_core_value_sigF562, $(var_core_value_sig5913, ni(var_core_value_sigF562, var_core_value_sigA1AF)));
+}
+;
+function ei(var_core_value_sig6324) {
+  return var_core_value_sig6324 ? e.Tools["deepClone"](var_core_value_sig6324) : null;
+}
+;
+function ti(var_core_value_sig7EE4) {
+  return var_core_value_sig7EE4.replace(/\r\n/g, '\x0a').replace(/\r/g, '\x0a');
+}
+;
+function ni(var_core_value_sigE3D7, var_core_value_sig54C6 = {}) {
+  if (var_core_value_sigE3D7.type === 'text') {
+    var var_core_value_sigE843, var_core_value_sig2EB2;
+    return {
+      'id': var_core_value_sig54C6.id ?? ((var_core_value_sigE843 = var_core_value_sigE3D7.textData) == null ? undefined : var_core_value_sigE843.id) ?? var_core_value_sigE3D7.id,
+      'textStyle': var_core_value_sig54C6.textStyle ?? ((var_core_value_sig2EB2 = var_core_value_sigE3D7.textData) == null || (var_core_value_sig2EB2 = var_core_value_sig2EB2.documentStyle) == null ? undefined : var_core_value_sig2EB2.textStyle) ?? ri(var_core_value_sigE3D7.textStyle),
+      'horizontalAlign': var_core_value_sig54C6.horizontalAlign,
+      'verticalAlign': var_core_value_sig54C6.verticalAlign,
+      ...(var_core_value_sig54C6.bullet ? {
+        'bullet': var_core_value_sig54C6.bullet
+      } : {})
+    };
+  }
+  if (var_core_value_sigE3D7.type === "shape") {
+    var var_core_value_sig683A, var_core_value_sig109B, var_core_value_sig6DD0, var_core_value_sigB5D3, var_core_value_sig6085;
+    let var_core_value_sig7C65 = (0, n.normalizeShapeTextData)(var_core_value_sigE3D7.shapeData["shapeText"]),
+      var_core_value_sig7F05 = var_core_value_sig7C65 == null || (var_core_value_sig683A = var_core_value_sig7C65.dataModel) == null ? undefined : var_core_value_sig683A.doc;
+    return {
+      'id': var_core_value_sig54C6.id ?? (var_core_value_sig7F05 == null ? undefined : var_core_value_sig7F05.id) ?? var_core_value_sigE3D7.id,
+      'textStyle': var_core_value_sig54C6.textStyle ?? (var_core_value_sig7F05 == null || (var_core_value_sig109B = var_core_value_sig7F05.documentStyle) == null ? undefined : var_core_value_sig109B.textStyle) ?? (var_core_value_sig7F05 == null || (var_core_value_sig6DD0 = var_core_value_sig7F05.body) == null || (var_core_value_sig6DD0 = var_core_value_sig6DD0.textRuns) == null || (var_core_value_sig6DD0 = var_core_value_sig6DD0[0]) == null ? undefined : var_core_value_sig6DD0.ts),
+      'horizontalAlign': var_core_value_sig54C6.horizontalAlign ?? (var_core_value_sig7C65 == null || (var_core_value_sigB5D3 = var_core_value_sig7C65.dataModel) == null ? undefined : var_core_value_sigB5D3.ha),
+      'verticalAlign': var_core_value_sig54C6.verticalAlign ?? (var_core_value_sig7C65 == null || (var_core_value_sig6085 = var_core_value_sig7C65.dataModel) == null ? undefined : var_core_value_sig6085.va),
+      ...(var_core_value_sig54C6.bullet ? {
+        'bullet': var_core_value_sig54C6.bullet
+      } : {})
+    };
+  }
+  if (var_core_value_sigE3D7.type === "placeholder") {
+    var var_core_value_sig2507, var_core_value_sig5870, var_core_value_sig827F, var_core_value_sig2452;
+    let var_core_value_sig41F3 = (var_core_value_sig2507 = var_core_value_sigE3D7.placeholder["textConfig"]) == null ? undefined : var_core_value_sig2507.textData;
+    return {
+      'id': var_core_value_sig54C6.id ?? (var_core_value_sig41F3 == null ? undefined : var_core_value_sig41F3.id) ?? var_core_value_sigE3D7.id,
+      'textStyle': var_core_value_sig54C6.textStyle ?? (var_core_value_sig41F3 == null || (var_core_value_sig5870 = var_core_value_sig41F3.documentStyle) == null ? undefined : var_core_value_sig5870.textStyle),
+      'horizontalAlign': var_core_value_sig54C6.horizontalAlign ?? (var_core_value_sig41F3 == null || (var_core_value_sig827F = var_core_value_sig41F3.documentStyle) == null || (var_core_value_sig827F = var_core_value_sig827F.renderConfig) == null ? undefined : var_core_value_sig827F.horizontalAlign),
+      'verticalAlign': var_core_value_sig54C6.verticalAlign ?? (var_core_value_sig41F3 == null || (var_core_value_sig2452 = var_core_value_sig41F3.documentStyle) == null || (var_core_value_sig2452 = var_core_value_sig2452.renderConfig) == null ? undefined : var_core_value_sig2452.verticalAlign),
+      ...(var_core_value_sig54C6.bullet ? {
+        'bullet': var_core_value_sig54C6.bullet
+      } : {})
+    };
+  }
+  return var_core_value_sig54C6;
+}
+;
+function ri(var_core_value_sig50D0) {
+  if (var_core_value_sig50D0) return {
+    ...(var_core_value_sig50D0.fontFamily ? {
+      'ff': var_core_value_sig50D0.fontFamily
+    } : {}),
+    ...(var_core_value_sig50D0.fontSize === undefined ? {} : {
+      'fs': var_core_value_sig50D0.fontSize
+    }),
+    ...(var_core_value_sig50D0.color ? {
+      'cl': {
+        'rgb': var_core_value_sig50D0.color
+      }
+    } : {}),
+    ...(var_core_value_sig50D0.bold === undefined ? {} : {
+      'bl': var_core_value_sig50D0.bold ? e.BooleanNumber['TRUE'] : e.BooleanNumber["FALSE"]
+    }),
+    ...(var_core_value_sig50D0.italic === undefined ? {} : {
+      'it': var_core_value_sig50D0.italic ? e.BooleanNumber['TRUE'] : e.BooleanNumber["FALSE"]
+    }),
+    ...(var_core_value_sig50D0.underline === undefined ? {} : {
+      'ul': {
+        's': var_core_value_sig50D0.underline ? e.BooleanNumber["TRUE"] : e.BooleanNumber["FALSE"]
+      }
+    })
+  };
+}
+exports.AddSlideElementCommand = Xe, exports.AddSlideElementMutation = j, exports.AddSlidePageCommand = Ze, exports.AddSlidePageMutation = F, exports.CancelSlideGroupMutation = it, exports.ConvertSlideSmartArtToShapesCommand = at, exports.CreateSlideByLayoutCommand = ct, exports.DEFAULT_LAYOUT_ORDER = ie, exports.DEFAULT_MASTER_PAGE = ne, exports.DEFAULT_MASTER_PAGE_ID = x, exports.DEFAULT_SLIDE_PAGE_HEIGHT = 540, exports.DEFAULT_SLIDE_PAGE_WIDTH = 960, exports.DEFAULT_SLIDE_THEME = b, exports.EMBED_SLIDES_FLOATING_CUSTOM_KEY = Zn, exports.EnsureSlideMasterPageMutation = Dt, exports.ISlideDrawingService = E, exports.InsertDrawingObjectMutation = Rn, exports.LAYOUT_PAGE_IDS = C, exports.MoveSlidePageCommand = lt, exports.MoveSlidePageMutation = L, exports.PageElementTypeEnum = c, exports.PageTypeEnum = u, exports.PlaceholderTypeEnum = s, exports.RemoveSlideElementCommand = ht, exports.RemoveSlideElementMutation = N, exports.RemoveSlidePageCommand = gt, exports.RemoveSlidePageMutation = I, exports.ReorderSlideElementsCommand = vt, exports.SLIDE_FONT_PLUGIN_NAME = Bn, exports.SLIDE_INSERT_DEFAULT_SIZE = J, exports.SLIDE_MASTER_VIEW_PERMISSION_OBJECT_ID = W, exports.SLIDE_PLACEHOLDER_ICON_COMPONENT_NAME_BY_KEY = Kn, exports.SLIDE_TEXT_BOX_DEFAULT_STYLE = Un, exports.SLIDE_THEME_PRESETS = v, exports.SLIDE_UNIT_PERMISSION_ACTIONS = Xt, exports.SetActiveSlideCommand = yt, exports.SetPresentationBackgroundGraphicsCommand = kt, exports.SetSlideDrawingApplyMutation = Tn, exports.SetSlideElementOrderMutation = R, exports.SetSlideGroupMutation = rt, exports.SetSlideNameCommand = jt, exports.SetSlidePageSizeCommand = zt, exports.SetSlidePageSizeMutation = V, exports.SetSlidePermissionCommand = ln, exports.SetSlideSpeakerNotesCommand = dn, exports.SetSlideSpeakerNotesMutation = un, exports.SetSlideTransitionCommand = xn, exports.SetSlideZoomRatioOperation = zn, exports.SlideBackgroundTypeEnum = l, exports.SlideDrawingApplyType = wn, Object.defineProperty(exports, "SlideFontResourceController", {
+  'enumerable': true,
+  'get': function () {
+    return Vn;
+  }
+}), exports.SlideModel = Cr, exports.SlidePage = xr, exports.SlidePageLayoutTypeEnum = d, exports.SlidePageSizePresetEnum = f, exports.SlidePresentationBackgroundGraphicFitEnum = bt, exports.SlidePresentationBackgroundGraphicsTargetEnum = xt, exports.SlideSceneTypeEnum = g, exports.SlideTransitionDirectionEnum = m, exports.SlideTransitionSpeedEnum = h, exports.SlideTransitionTypeEnum = p, Object.defineProperty(exports, "UniverSlidesPlugin", {
+  'enumerable': true,
+  'get': function () {
+    return Z;
+  }
+}), exports.UpdateSlideDrawingCommand = Dn, exports.UpdateSlideElementMutation = G, exports.UpdateSlidePageBackgroundCommand = In, exports.UpdateSlidePageBackgroundMutation = Fn, exports.UpdateSlideSmartArtCommand = Ln, exports.applySlideElementPlainText = $r, exports.applySlideElementTextDocument = Qr, exports.buildDefaultSlideDocumentLayers = oe, exports.buildResolvedSlideDrawingMap = D, exports.canEditSlideTargets = cn, exports.createEmbedSlidesCustomData = $n, exports.createEmbedSlidesFloatingElement = tr, exports.createEmbedSlidesPage = er, exports.createSlideByLayout = ae, exports.getEmbedSlidesFloatingCustomData = rr, exports.getEmbedSlidesPageCustomData = nr, exports.getEmptySnapshot = sr, exports.getSlidesEmptySnapshot = sr, exports.getPlaceholderImageContent = Gr, exports.getPresentationBackgroundGraphics = Tt, exports.getSlideCommandTarget = P, exports.getSlideElementDisplayName = De, exports.getSlideElementEditPermissionObjectIds = nn, exports.getSlideElementPermissionObjectId = tn, exports.getSlidePagePermissionObjectId = en, exports.getSlidePermissionValue = an, exports.getSlideThemePreset = ee, exports.isPresentationBackgroundGraphic = B, exports.normalizeSlideDocumentDataStream = Yr, exports.plainTextToSlideDocumentData = $, exports.resolveDefaultPlaceholderTextKey = Xn, exports.resolvePlaceholderActionIcons = Jn, exports.resolvePresentationBackgroundTargetMasterIds = Et, exports.resolveSlideElementTextDocument = Zr, exports.resolveSlideLayerPageSizeOptions = je, exports.resolveSlideTextBoxDefaultSize = Hn, exports.resolveSlideThemePreviewColors = Ur, exports.resolveSlideTransition = _n, exports.resolveThemeDefaultShapeText = pe, exports.resolvedSlideLayersToDrawingMap = Ce, exports.setPlaceholderImageContent = Kr, exports.setSlidePermissionValue = on, exports.slideDocumentDataToPlainText = Xr, exports.slideElementToDrawing = T;

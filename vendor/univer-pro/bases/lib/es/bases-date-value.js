@@ -1,13 +1,25 @@
-import{BASE_RECORD_ID_FIELD_ID,BaseConditionalColorOperator,BaseConditionalColorTarget,BaseConditionalDateMode,BaseDataModel,BaseFieldType,BaseFilterConjunction,BaseHierarchyInvalidReason,BaseRecordLinkRole,BaseSortDirection,BaseViewType,CellValueType,ColorKit,CommandType,CustomCommandExecutionError,DateSystem,DependentOn,Disposable,ICommandService,IConfigService,IPermissionService,IUndoRedoService,IUniverInstanceService,Inject,Injector,JSON1,JSONX,ObjectMatrix,Optional,PermissionStatus,Plugin,Tools,UniverInstanceType,allocateBaseFormulaTableName,assertBaseTableRecordIdentity,createBaseFormulaTableNameMap,createBaseRecordIdField,createIdentifier,dateKit,excelDateTimeSerial,excelSerialToDateTime,generateRandomId,getBaseFormulaTableName,isBaseRecordIdFieldName,isValidBaseRecordId,merge,nameCharacterCheck,numfmt,regexp,sequenceExecute,toDisposable,touchDependencies}from'@univerjs/core';
-import{FormulaCalculationTriggerService,IActiveDirtyManagerService,RemoveSuperTableMutation,SetFormulaCalculationResultMutation,SetSuperTableMutation,SetTriggerFormulaCalculationStartMutation,UniverProFormulaEnginePlugin,refactorFormulaUnitQualifier}from'@univerjs-pro/engine-formula';
-import{UnitAction,UnitObject}from'@univerjs/protocol';
-import{UniverLicensePlugin}from'@univerjs-pro/license';
-import{DataSyncPrimaryController}from'@univerjs/rpc';
-import{FormulaCalculationSessionService,FormulaResultApplicationType}from'@univerjs/engine-formula';
+import { BASE_RECORD_ID_FIELD_ID, BaseConditionalColorOperator, BaseConditionalColorTarget, BaseConditionalDateMode, BaseDataModel, BaseFieldType, BaseFilterConjunction, BaseHierarchyInvalidReason, BaseRecordLinkRole, BaseSortDirection, BaseViewType, CellValueType, ColorKit, CommandType, CustomCommandExecutionError, DateSystem, DependentOn, Disposable, ICommandService, IConfigService, IPermissionService, IUndoRedoService, IUniverInstanceService, Inject, Injector, JSON1, JSONX, ObjectMatrix, Optional, PermissionStatus, Plugin, Tools, UniverInstanceType, allocateBaseFormulaTableName, assertBaseTableRecordIdentity, createBaseFormulaTableNameMap, createBaseRecordIdField, createIdentifier, dateKit, excelDateTimeSerial, excelSerialToDateTime, generateRandomId, getBaseFormulaTableName, isBaseRecordIdFieldName, isValidBaseRecordId, merge, nameCharacterCheck, numfmt, regexp, sequenceExecute, toDisposable, touchDependencies } from '@univerjs/core';
+import { FormulaCalculationTriggerService, IActiveDirtyManagerService, RemoveSuperTableMutation, SetFormulaCalculationResultMutation, SetSuperTableMutation, SetTriggerFormulaCalculationStartMutation, UniverProFormulaEnginePlugin, refactorFormulaUnitQualifier } from '@univerjs-pro/engine-formula';
+import { UnitAction, UnitObject } from '@univerjs/protocol';
+import { UniverLicensePlugin } from '@univerjs-pro/license';
+import { DataSyncPrimaryController } from '@univerjs/rpc';
+import { FormulaCalculationSessionService, FormulaResultApplicationType } from '@univerjs/engine-formula';
 import { cn } from "./bases-date-serial-to-date-ms.js";
 import { ln } from "./bases-date-field-config.js";
 import { an, nn } from "./internal-db-endo.js";
-function dn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463514,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463515={}){let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516=cn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463514);if(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516==null||!Number.isFinite(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516))return'';let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463517=ln(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463515);return dateKit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516).format(fn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463517));}
-function fn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463522){let{pattern:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463523,includeTime:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463524,hourCycle:var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463525}=var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463522,var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463526=an[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463523]??an[nn];return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463524?var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463526+'\x20'+(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463525==='h12'?"h:mm a":'HH:mm'):var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463526;}
-
+function dn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463514, var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463515 = {}) {
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516 = cn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463514);
+  if (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516 == null || !Number.isFinite(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516)) return '';
+  let var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463517 = ln(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463515);
+  return dateKit(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463516).format(fn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463517));
+}
+function fn(var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463522) {
+  let {
+      pattern: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463523,
+      includeTime: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463524,
+      hourCycle: var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463525
+    } = var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463522,
+    var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463526 = an[var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463523] ?? an[nn];
+  return var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463524 ? var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463526 + '\x20' + (var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463525 === 'h12' ? "h:mm a" : 'HH:mm') : var_L0_db_endo_value_pure_O1_zalloc_nothrow_sig0D463526;
+}
 export { dn as formatBaseDateValue };

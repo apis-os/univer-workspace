@@ -1,1 +1,5179 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs/ui"),t=require("@univerjs-pro/sheets-pivot"),n=require("@univerjs/core"),r=require("@univerjs/sheets"),i=require("@univerjs/design"),a=require("@univerjs/engine-formula"),o=require("@univerjs/sheets-formula-ui"),s=require("react"),c=require("rxjs"),l=require("@univerjs-pro/engine-pivot"),u=require("react/jsx-runtime"),d=require("@univerjs/sheets-ui"),f=require("@univerjs-pro/license"),p=require("@univerjs/engine-render"),m=require("@univerjs/icons"),h=require("@univerjs/docs"),g=require("@univerjs/docs-ui");const _="UNIVER_SHEET_PIVOT_PANEL",v="UNIVER_SHEET_PIVOT_PANEL_ID",y="UNIVER_SHEET_PIVOT_FILTER_PANEL",b="UNIVER_SHEET_PIVOT_FILTER_PANEL_ID",x="UNIVER_SHEET_PIVOT_FIELD_SETTING",S="UNIVER_SHEET_PIVOT_FIELD_SETTING_ID",C="UNIVER_SHEET_PIVOT_FIELD_NUMFMT",w="UNIVER_SHEET_PIVOT_FIELD_NUMFMT_ID",T="UNIVER_SHEET_PIVOT_SHOW_DATA_AS_DIALOG",E="UNIVER_SHEET_PIVOT_VALUE_FILTER_DIALOG";function D(v798,v799,v800){let v801=v800.fieldIds,{fieldsConfig:v802}=v799,{rowFields:v803,columnFields:v804,valueFields:v805,filterFields:v806,hiddenFields:v807,dimension:v808,measure:v809,valueIndex:v810,valuePosition:v811}=v802,v812=new Set();[...v803,...v804,...v805,...v806,...v807].forEach(v353=>{let v354=v808[v353]||v809[v353];v354&&v812.add(v354.dataFieldId);});let v813=v801.map(v355=>{let v356=v800.fields[v355];return{checked:v812.has(v355),dataFieldId:v356.id,id:v356.id,name:v356.name,type:v356.fieldDataType,pivotTableId:v798};}),v814=v803.flatMap(v357=>{let v358=v808[v357];return v358?[{dataFieldId:v358.dataFieldId,tableFieldId:v358.id,displayName:v358.displayName}]:[];}),v815=v804.flatMap(v359=>{let v360=v808[v359];return v360?[{dataFieldId:v360.dataFieldId,tableFieldId:v360.id,displayName:v360.displayName}]:[];}),v816=v805.flatMap(v361=>{let v362=v809[v361];return v362?[{dataFieldId:v362.dataFieldId,tableFieldId:v362.id,displayName:v362.displayName,format:v362.format,subTotalType:v362.subtotal}]:[];}),v817=v806.flatMap(v363=>{let v364=v808[v363];return v364?[{dataFieldId:v364.dataFieldId,tableFieldId:v364.id,displayName:v364.displayName}]:[];});return v816.length>1&&(v811===l.PivotTableValuePositionEnum["Row"]?v814:v815).splice(v810,0,{dataFieldId:"",tableFieldId:"PivotMultipleValueId",displayName:"ΣValue"}),{sourceList:v813,sourceRange:v799.sourceRangeInfo,rowFields:v814,columnFields:v815,valueFields:v816,filterFields:v817,positionInfo:v799.targetCellInfo};}const O={type:n.CommandType["OPERATION"],id:"sheet.operation.open-pivot-table-panel",async handler(v818,v819){let v820=v819==null?undefined:v819.pivotTableId;if(!v820)return false;let v821=v818.get(e.ISidebarService),v822=v818.get(n.IUniverInstanceService),v823=v818.get(n.LocaleService),v824=v818.get(t.SheetsPivotTableConfigModel),v825=(0,r.getSheetCommandTarget)(v822);if(!v825)return false;let{unitId:v826,subUnitId:v827}=v825,v828=v824.getPivotTableConfig(v826,v827,v820),v829=v824.getCollection(v826,v820);if(!v828||!v829)return false;let v830=D(v820,v828,v829),v831={header:{title:v823.t("sheets-pivot-ui.title")},id:v,children:{label:_,panelInfo:v830,version:Math.random(),setVersion:()=>Math.random(),pivotTableId:v820,unitId:v826,subUnitId:v827},width:346};return v821.open(v831),true;}};function k(v832){"@babel/helpers - typeof";return k=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v365){return typeof v365;}:function(v366){return v366&&typeof Symbol=="function"&&v366.constructor===Symbol&&v366!==Symbol.prototype?"symbol":typeof v366;},k(v832);}function A(v833,v834){if(k(v833)!="object"||!v833)return v833;var v835=v833[Symbol.toPrimitive];if(v835!==undefined){var v836=v835.call(v833,v834||"default");if(k(v836)!="object")return v836;throw TypeError("@@toPrimitive must return a primitive value.");}return(v834==="string"?String:Number)(v833);}function j(v837){var v838=A(v837,"string");return k(v838)=="symbol"?v838:v838+"";}function M(v839,v840,v841){return(v840=j(v840))in v839?Object.defineProperty(v839,v840,{value:v841,enumerable:true,configurable:true,writable:true}):v839[v840]=v841,v839;}function N(v842,v843){return function(v367,v368){v843(v367,v368,v842);};}function P(v844,v845,v846,v847){var v848=arguments.length,v849=v848<3?v845:v847===null?v847=Object.getOwnPropertyDescriptor(v845,v846):v847,v850;if(typeof Reflect=="object"&&typeof Reflect.decorate=="function")v849=Reflect.decorate(v844,v845,v846,v847);else{for(var v851=v844.length-1;v851>=0;v851--)(v850=v844[v851])&&(v849=(v848<3?v850(v849):v848>3?v850(v845,v846,v849):v850(v845,v846))||v849);}return v848>3&&v849&&Object.defineProperty(v845,v846,v849),v849;}let F=class extends n.Disposable{constructor(v369,v370,v371,v372,v373,v374,v375,v376){super(),this._sheetsSelectionsService=v369,this._univerInstanceService=v370,this._sheetsPivotTableAdaptorModel=v371,this._commandService=v372,this._sidebarService=v373,this._dialogService=v374,this._injector=v375,this._permissionService=v376,M(this,"_pivotTableId",undefined),M(this,"_pivotTablePanelVisible$",new c.Subject()),M(this,"pivotTablePanelVisible$",this._pivotTablePanelVisible$["asObservable"]()),M(this,"_isRangeSelectorFocus",false),M(this,"_isRangeSelector2Focus",false),this._initPanelOpen(),this._initSheetChange();}setIsRangeSelectorFocus(v377){this._isRangeSelectorFocus=v377;}setIsRangeSelector2Focus(v378){this._isRangeSelector2Focus=v378;}_setPivotTableId(v379){this._pivotTableId=v379;}_closePivotPanel(){this._isRangeSelectorFocus||this._isRangeSelector2Focus||(this._setPivotTableId(undefined),this._sidebarService["close"](v));}_initPanelOpen(){let v380=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]);if(v380){let v153=v380.activeSheet$;this.disposeWithMe((0,c.merge)(v153,this._sheetsSelectionsService["selectionMoveEnd$"]).subscribe(()=>{let v83=this._sheetsSelectionsService["getCurrentSelections"]();if(!v83)return;let v84=v83[v83.length-1];if(!v84)return;let v85=v84.primary;if(!v85)return;let v86=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),v87=v86==null?undefined:v86.getActiveSheet();if(!v86||!v87)return;let v88=v86.getUnitId(),v89=v87.getSheetId(),v90=this._sheetsPivotTableAdaptorModel["getPivotTableIdByCell"](v88,v89,v85.startRow,v85.startColumn);if(v90){var v91,v92;let v45=(0,t.unionPivotViewRange)((v91=this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](v88,v89,v90))==null?undefined:v91.rangesInfo),v46=(0,r.checkRangesEditablePermission)(this._injector,v88,v89,v45),v47=(v92=this._permissionService["getPermissionPoint"](new r["WorksheetPivotTablePermission"](v88,v89).id))==null?undefined:v92.value;if(!v46||!v47)return;this._setPivotTableId(v90),this._pivotTablePanelVisible$["next"](true),this._commandService["executeCommand"](O.id,{pivotTableId:v90});}else this._closePivotPanel();})),this.disposeWithMe(this._commandService["onCommandExecuted"](v93=>{v93.id===t.RemovePivotTableMutation["id"]&&v93.params["pivotTableId"]===this._pivotTableId&&this._sidebarService["close"](v);}));}}_initSheetChange(){let v381=this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]);v381&&this.disposeWithMe(v381.sheetDisposed$["subscribe"](()=>{this._sidebarService["close"]();})),this.disposeWithMe(this._sidebarService["sidebarOptions$"].subscribe(v154=>{if(v154.id==="UNIVER_SHEET_PIVOT_PANEL_ID"){let v94=!!v154.visible;this._pivotTablePanelVisible$["next"](v94),v94||this._dialogService["close"](S);}})),this.disposeWithMe(this._dialogService["getDialogs$"]().subscribe(v155=>{let v156=v155.find(v95=>v95.id===G.componentKey);v156&&v156.open===false&&this._dialogService["close"](G.componentKey);}));}};F=P([N(0,(0,n.Inject)(r.SheetsSelectionsService)),N(1,(0,n.Inject)(n.IUniverInstanceService)),N(2,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(3,(0,n.Inject)(n.ICommandService)),N(4,(0,n.Inject)(e.ISidebarService)),N(5,(0,n.Inject)(e.IDialogService)),N(6,(0,n.Inject)(n.Injector)),N(7,(0,n.Inject)(n.IPermissionService))],F);const I={type:n.CommandType["OPERATION"],id:"sheet.operation.open-pivot-table-filter-panel",async handler(v852,v853){if(!v853)return false;let{row:v854,col:v855,unitId:v856,subUnitId:v857,tableFieldId:v858,pivotTableId:v859}=v853,v860=v852.get(t.SheetsPivotTableAdaptorModel),v861=v859||v860.getPivotTableIdByCell(v856,v857,v854,v855);if(!v861)return false;let v862=v852.get(t.SheetsPivotRPCService),v863=v860.getPivotItemRenderInfoCache(v856,v857,v861);if(!(v863!=null&&v863.rangesInfo))return false;let v864=v860.getPivotTableCellData(v856,v857,v854,v855),v865=(await v862.getPivotDisplayConfig({unitId:v856,subUnitId:v857,pivotTableId:v861,params:{type:t.PivotDisplayDataType["Filter"],filter:{row:v854,col:v855,tableFieldId:v858,cellData:v864,pivotItemRenderInfoCache:v863}}})).result["filter"];if(!v865)return false;let v866=v852.get(e.IDialogService),v867={id:b,draggable:true,mask:false,maskClosable:false,width:336,dialogStyles:{header:{padding:"16px 16px 0",height:0},body:{padding:"0 16px 16px"}},closable:false,children:{label:y,unitId:v856,subUnitId:v857,key:v854+"-"+v855+"-"+(v858||""),filterItemInfo:v865},onClose:()=>{v866.close(b);}};return v866.open(v867),true;}},L={type:n.CommandType["OPERATION"],id:"sheet.operation.open-pivot-table-field-setting-panel",handler(v868,v869){if(!v869)return false;let v870=v868.get(n.LocaleService),{tableFieldId:v871,pivotTableId:v872,unitId:v873,subUnitId:v874,tableFieldInfo:v875,dataFieldInfo:v876}=v869,v877=v868.get(e.IDialogService),v878={id:S,title:{title:v870.t("sheets-pivot-ui.fieldSettings")},draggable:true,mask:false,maskClosable:false,width:400,children:{label:x,tableFieldId:v871,pivotTableId:v872,tableFieldInfo:v875,dataFieldInfo:v876,unitId:v873,subUnitId:v874,version:Math.random(),key:"field-setting-"+(v871||""),closeFn:()=>{v877.close(S);}},onClose:()=>{v877.close(S);}};return v877.open(v878),true;}},R=[{label:"1930-08-05",suffix:"yyyy-MM-dd"},{label:"1930/08/05",suffix:"yyyy/MM/dd"},{label:"1930年08月05日",suffix:'yyyy"年"MM"月"dd"日"'},{label:"08-05",suffix:"MM-dd"},{label:"8月5日",suffix:'M"月"d"日"'},{label:"13:30:30",suffix:"h:mm:ss"},{label:"13:30",suffix:"h:mm"},{label:"下午01:30",suffix:"A/P\x20hh:mm"},{label:"下午1:30",suffix:"A/P h:mm"},{label:"下午1:30:30",suffix:"A/P h:mm:ss"},{label:"08-05 下午 01:30",suffix:"MM-dd A/P hh:mm"}],z=[{label:"(1,235)",suffix:"#,##0_);(#,##0)"},{label:"(1,235) ",suffix:"#,##0_);[Red](#,##0)",color:"red"},{label:"1,234.56",suffix:"#,##0.00_);#,##0.00"},{label:"1,234.56",suffix:"#,##0.00_);[Red]#,##0.00",color:"red"},{label:"-1,234.56",suffix:"#,##0.00_);-#,##0.00"},{label:"-1,234.56",suffix:"#,##0.00_);[Red]-#,##0.00",color:"red"}],B=[{label:v879=>v879+"1,235",suffix:v880=>"\x22"+v880+"\x22#,##0.00_);\x22"+v880+'"#,##0.00'},{label:v881=>v881+"1,235",suffix:v882=>"\x22"+v882+'"#,##0.00_);[Red]"'+v882+'"#,##0.00',color:"red"},{label:v883=>"("+v883+"1,235)",suffix:v884=>"\x22"+v884+"\x22#,##0.00_);(\x22"+v884+'"#,##0.00)'},{label:v885=>"("+v885+"1,235)",suffix:v886=>"\x22"+v886+'"#,##0.00_);[Red]("'+v886+'"#,##0.00)',color:"red"},{label:v887=>"-"+v887+"1,235",suffix:v888=>"\x22"+v888+"\x22#,##0.00_);-\x22"+v888+"\x22#,##0.00"},{label:v889=>"-"+v889+"1,235",suffix:v890=>"\x22"+v890+'"#,##0.00_);[Red]-"'+v890+'"#,##0.00',color:"red"}],V="PivotMultipleValueId";function ee(v891,v892){let v893=(0,t.isolateTextForBidiContext)(v892,v891);return v891.includes("{0}")?v891.replace("{0}",v893):""+v891+v893;}const te=v894=>{switch(v894){case"filter":return l.PivotTableFiledAreaEnum["Filter"];case"row":return l.PivotTableFiledAreaEnum["Row"];case"column":return l.PivotTableFiledAreaEnum["Column"];case"value":return l.PivotTableFiledAreaEnum["Value"];default:return l.PivotTableFiledAreaEnum["Row"];}};function ne(v895,v896){switch(v896.rangeType||n.RANGE_TYPE["NORMAL"]){case n.RANGE_TYPE["NORMAL"]:return{startRow:v896.startRow,startColumn:v896.startColumn,endRow:v896.endRow,endColumn:v896.endColumn};case n.RANGE_TYPE["ROW"]:return{startRow:v896.startRow,startColumn:0,endRow:v896.endRow,endColumn:v895.getColumnCount()-1};case n.RANGE_TYPE["COLUMN"]:return{startRow:0,startColumn:v896.startColumn,endRow:v895.getRowCount()-1,endColumn:v896.endColumn};case n.RANGE_TYPE["ALL"]:return{startRow:0,startColumn:0,endRow:v895.getRowCount()-1,endColumn:v895.getColumnCount()-1};}}function re(v897,v898){if(!v898||!v897||v898.endRow-v898.startRow<=0)return 1;let{startRow:v899,startColumn:v900,endRow:v901,endColumn:v902}=ne(v897,v898),v903=v897.getCellMatrix(),v904=false;for(let v382=v899;v382<=v901;v382++){for(let v96=v900;v96<=v902;v96++)if(v903.getValue(v382,v96)!=null){v904=true;break;}if(v904)break;}return v904?2:0;}async function ie(v905,v906,v907){let{commandService:v908,pivotTableInfo:v909,pivotTableId:v910,unitId:v911,subUnitId:v912}=v905,v913=[],{rowFields:v914,columnFields:v915,filterFields:v916,valueFields:v917}=v909,v918=[...v914,...v915,...v916,...v917];v906==="PivotMultipleValueId"&&v917.forEach(v383=>{v913.push(v383.tableFieldId);}),v907==="source"&&v918.forEach(v384=>{v384.dataFieldId===v906&&v913.push(v384.tableFieldId);}),v907!=="source"&&v918.find(v385=>v385.tableFieldId===v906)&&v913.push(v906),await v908.executeCommand(t.RemovePivotFieldCommand["id"],{pivotTableId:v910,fieldIds:v913,unitId:v911,subUnitId:v912});}async function ae(v919,v920,v921,v922,v923){let v924={unitId:v922,subUnitId:v923,token:v920,dataRangeInfo:v921};await v919.executeCommand(t.UpdatePivotTableSourceRangeCommand["id"],v924);}const oe=(v925,v926)=>{let{rowFields:v927,columnFields:v928,filterFields:v929}=v925,v930=[...v927,...v928,...v929],v931=[];return v930.forEach(v386=>{v386.dataFieldId===v926&&v931.push(v386.tableFieldId);}),v931;};async function se(v932,v933,v934,v935,v936){if(v934==="source"&&v935==="source")return;let v937=v933===V,{commandService:v938,pivotTableInfo:v939,pivotTableId:v940,unitId:v941,subUnitId:v942}=v932;if(v934==="source"&&v935!=="source"){let{sourceList:v387}=v939,v388=v387.find(v157=>v157.id===v933);if(v388){let v158=oe(v939,v933);if(v935!=="value"&&v158.length>0){let v97=v158[0];await v938.executeCommand(t.MovePivotFieldCommand["id"],{pivotTableId:v940,fieldId:v97,area:te(v935),index:v936,unitId:v941,subUnitId:v942});}else await v938.executeCommand(t.AddPivotFieldCommand["id"],{pivotTableId:v940,dataFieldId:v388.dataFieldId,fieldArea:te(v935),index:v936,unitId:v941,subUnitId:v942});}}if(v934!=="source"&&v935==="source"){let{rowFields:v389,columnFields:v390,filterFields:v391,valueFields:v392}=v939,v393=[...v389,...v390,...v391,...v392],v394=[];v937?v392.forEach(v159=>{v394.push(v159.tableFieldId);}):v393.find(v160=>v160.tableFieldId===v933)&&v394.push(v933),await H(v932,v394);return;}v934!=="source"&&v935!=="source"&&(await le(v932,v933,v934,v935,v936));}async function H(v943,v944){let{commandService:v945,pivotTableId:v946,unitId:v947,subUnitId:v948}=v943;await v945.executeCommand(t.RemovePivotFieldCommand["id"],{pivotTableId:v946,fieldIds:v944,unitId:v947,subUnitId:v948});}async function ce(v949,v950,v951){let{commandService:v952,pivotTableId:v953,unitId:v954,subUnitId:v955}=v949;await v952.executeCommand(t.UpdatePivotValuePositionCommand["id"],{pivotTableId:v953,position:v950,index:v951,unitId:v954,subUnitId:v955});}async function le(v956,v957,v958,v959,v960){let v961=v957===V,{commandService:v962,pivotTableInfo:v963,pivotTableId:v964,unitId:v965,subUnitId:v966}=v956;if(v961){let v395=te(v959);(v395===l.PivotTableFiledAreaEnum["Row"]||v395===l.PivotTableFiledAreaEnum["Column"])&&(await v962.executeCommand(t.UpdatePivotValuePositionCommand["id"],{pivotTableId:v964,position:v395===l.PivotTableFiledAreaEnum["Row"]?l.PivotTableValuePositionEnum["Row"]:l.PivotTableValuePositionEnum["Column"],index:v960,unitId:v965,subUnitId:v966}));return;}let{rowFields:v967,columnFields:v968,filterFields:v969,valueFields:v970}=v963,v971=[...v967,...v968,...v969,...v970].find(v396=>v396.tableFieldId===v957);if(v971){let v397=[...v967,...v968,...v969];if(v958==="value"&&v959!=="value"&&v397.find(v161=>v161.dataFieldId===v971.dataFieldId)){await H(v956,[v957]);return;}await v962.executeCommand(t.MovePivotFieldCommand["id"],{pivotTableId:v964,fieldId:v957,area:te(v959),index:v960,unitId:v965,subUnitId:v966});}}function ue(v972,v973,v974,v975,v976){v972.executeCommand(I.id,{row:-1,col:-1,unitId:v973,subUnitId:v974,tableFieldId:v976,pivotTableId:v975});}function de(v977,v978,v979,v980,v981,v982){let{sourceList:v983,rowFields:v984,columnFields:v985,valueFields:v986,filterFields:v987}=v982,v988=[...v984,...v985,...v986,...v987].find(v398=>v398.tableFieldId===v979),v989=v983.find(v399=>v399.id===(v988==null?undefined:v988.dataFieldId));if(v988&&v989){let v400={tableFieldId:v979,pivotTableId:v978,unitId:v980,subUnitId:v981,tableFieldInfo:v988,dataFieldInfo:v989};v977.executeCommand(L.id,v400);}}const fe=[{type:l.PivotSubtotalTypeEnum["average"],textKey:"sheets-pivot-ui.subtotal.average"},{type:l.PivotSubtotalTypeEnum["count"],textKey:"sheets-pivot-ui.subtotal.count"},{type:l.PivotSubtotalTypeEnum["countNums"],textKey:"sheets-pivot-ui.subtotal.countNums"},{type:l.PivotSubtotalTypeEnum["max"],textKey:"sheets-pivot-ui.subtotal.max"},{type:l.PivotSubtotalTypeEnum["min"],textKey:"sheets-pivot-ui.subtotal.min"},{type:l.PivotSubtotalTypeEnum["product"],textKey:"sheets-pivot-ui.subtotal.product"},{type:l.PivotSubtotalTypeEnum["stdDev"],textKey:"sheets-pivot-ui.subtotal.stdDev"},{type:l.PivotSubtotalTypeEnum["stdDevp"],textKey:"sheets-pivot-ui.subtotal.stdDevp"},{type:l.PivotSubtotalTypeEnum["sum"],textKey:"sheets-pivot-ui.subtotal.sum"},{type:l.PivotSubtotalTypeEnum["var"],textKey:"sheets-pivot-ui.subtotal.var"},{type:l.PivotSubtotalTypeEnum["varp"],textKey:"sheets-pivot-ui.subtotal.varp"}],U=(v990,v991=0)=>v990?n.numfmt["getFormatInfo"](v990).maxDecimals??v991:v991,pe=v992=>Array(Math.min(Math.max(0,Number(v992)),30)).fill(0).join(""),W=(v993,v994)=>v993.split(";").map(v401=>/\.0?/["test"](v401)?v401.replace(/\.0*/g,""+(v994>0?".":"")+pe(Number(v994||0))):/0[^0]?/["test"](v401)?v401.replace(/0[^0]+|0$/,"0"+(v994>0?".":"")+pe(Number(v994||0))):v401).join(";"),me=v995=>n.currencySymbols["find"](v402=>v995.includes(v402)),he=v996=>!v996,ge=v997=>!!me(v997)&&v997.startsWith("_("),_e=v998=>!!me(v998)&&!v998.startsWith("_("),ve=()=>R.map(v403=>({label:v403.label,value:v403.suffix})),ye=v999=>{let v1000=n.numfmt["getFormatInfo"](v999);return ve().map(v404=>v404.value).includes(v999)||["date","datetime","time"].includes(v1000.type);},be=()=>z.map(v405=>({label:v405.label,value:v405.suffix,color:v405.color})),xe=v1001=>be().some(v406=>(0,n.isPatternEqualWithoutDecimal)(v406.value,v1001)),Se=(v1002,v1003)=>{switch(v1003){case l.PivotTableFiledAreaEnum["Row"]:return v1002.rowFields["length"];case l.PivotTableFiledAreaEnum["Column"]:return v1002.columnFields["length"];case l.PivotTableFiledAreaEnum["Filter"]:return v1002.filterFields["length"];case l.PivotTableFiledAreaEnum["Value"]:return v1002.valueFields["length"];default:return 0;}},Ce=(v1004,v1005,v1006)=>{for(let v407 of["sheets-pivot-ui.averageName","sheets-pivot-ui.countName","sheets-pivot-ui.countNumsName","sheets-pivot-ui.maxName","sheets-pivot-ui.minName","sheets-pivot-ui.productName","sheets-pivot-ui.stdDevName","sheets-pivot-ui.stdDevpName","sheets-pivot-ui.sumName","sheets-pivot-ui.varName","sheets-pivot-ui.varpName"]){let v162=v1006[v407];if(v162+(0,t.isolateTextForBidiContext)(v1004,v162)===v1005||v162+v1004===v1005)return true;}return false;},we=(v1007,v1008,v1009)=>{let v1010="";switch(v1009){case l.PivotSubtotalTypeEnum["average"]:v1010=v1008["sheets-pivot-ui.averageName"];break;case l.PivotSubtotalTypeEnum["count"]:v1010=v1008["sheets-pivot-ui.countName"];break;case l.PivotSubtotalTypeEnum["countNums"]:v1010=v1008["sheets-pivot-ui.countNumsName"];break;case l.PivotSubtotalTypeEnum["max"]:v1010=v1008["sheets-pivot-ui.maxName"];break;case l.PivotSubtotalTypeEnum["min"]:v1010=v1008["sheets-pivot-ui.minName"];break;case l.PivotSubtotalTypeEnum["product"]:v1010=v1008["sheets-pivot-ui.productName"];break;case l.PivotSubtotalTypeEnum["stdDev"]:v1010=v1008["sheets-pivot-ui.stdDevName"];break;case l.PivotSubtotalTypeEnum["stdDevp"]:v1010=v1008["sheets-pivot-ui.stdDevpName"];break;case l.PivotSubtotalTypeEnum["sum"]:v1010=v1008["sheets-pivot-ui.sumName"];break;case l.PivotSubtotalTypeEnum["var"]:v1010=v1008["sheets-pivot-ui.varName"];break;case l.PivotSubtotalTypeEnum["varp"]:v1010=v1008["sheets-pivot-ui.varpName"];break;default:return v1007;}return v1010+(0,t.isolateTextForBidiContext)(v1007,v1010);};function Te(v1011,v1012){if(!v1011)return"NotFilter";if((0,l.isManualPivotFilter)(v1011)){var v1013;return v1011.isAll||((v1013=v1012.items)==null?undefined:v1013.length)===v1011.list["length"]?"NotFilter":"HasFilter";}return"NotFilter";}const Ee=v1014=>{let[v1015,v1016]=(0,s.useState)(false),v1017=(0,e.useDependency)(F);return(0,s.useEffect)(()=>{v1017.setIsRangeSelector2Focus(v1015);},[v1015,v1017]),(0,u.jsx)(o.RangeSelector,{...v1014,onFocusChange:v408=>{var v409;(v409=v1014.onFocusChange)==null||v409.call(v1014,v408),v1016(v408);}});},De=(v1018,v1019,v1020,v1021,v1022,v1023)=>(0,u.jsx)(Ee,{unitId:v1018,subUnitId:v1019,initialValue:v1021,onChange:(v410,v411)=>v1020(v411),maxRangeCount:1,supportAcrossSheet:true,keepSheetReference:true}),Oe=(v1024,v1025)=>{switch(v1024){case 1:return v1025.t("sheets-pivot-ui.msg.invalidSize");case 0:return v1025.t("sheets-pivot-ui.msg.emptySourceRange");default:return"";}};function G(v1026){let{unitId:v1027,sourceRange:v1028,positionRange:v1029,sourceSheetName:v1030,positionSheetName:v1031,onConfirm:v1032,onCancel:v1033}=v1026,v1034=(0,e.useDependency)(n.LocaleService),v1035=(0,e.useDependency)(n.IUniverInstanceService),v1036=v1034.getDirection(),v1037=v1035.getUnit(v1027),v1038=(0,s.useMemo)(()=>v1037.getActiveSheet().getSheetId(),[v1037]),[v1039,v1040]=(0,s.useState)(v1028),[v1041,v1042]=(0,s.useState)(v1029),[v1043,v1044]=(0,s.useState)(v1030),[v1045,v1046]=(0,s.useState)(v1031),v1047=(0,s.useRef)(undefined),[v1048,v1049]=(0,s.useState)(),[v1050,v1051]=(0,s.useState)(t.PositionType["New"]),[v1052,v1053]=(0,s.useState)(true),[v1054,v1055]=(0,s.useState)(true),[v1056,v1057]=(0,s.useState)(undefined);(0,s.useEffect)(()=>{let v412=re(v1037.getSheetBySheetName(v1043),v1039);v1055(v412===2),v1057(Oe(v412,v1034));},[v1039,v1043,v1037,v1034]);let v1058=v413=>{if((0,a.serializeRangeWithSheet)(v1043,v1039)===v413)return;let v414=v413.split(",").filter(v163=>!!v163).map(a.deserializeRangeWithSheet);if(Array.isArray(v414)&&v414.length>0){let{range:v164,sheetName:v165}=v414[0];v1040(v164),v1044(v165);}v414[0]||v1057(v1034.t("sheets-pivot-ui.msg.emptySourceRange"));},v1059=De(v1027,v1038,v415=>{if(v1041&&(0,a.serializeRangeWithSheet)(v1045,v1041)===v415)return;let v416=v415.split(",").filter(v166=>!!v166).map(a.deserializeRangeWithSheet);if(v416.length===0){v1042(null);return;}let v417=v416[0];v1042(v417.range),v1046(v417.sheetName||v1030),v417.sheetName===v1030&&n.Rectangle["intersects"](v417.range,v1039)?v1053(false):v1053(true);},v1041?(0,a.serializeRangeWithSheet)(v1045,v1041):"",false,v1048),v1060=()=>!!(v1039&&v1041&&v1043&&v1045&&v1050===t.PositionType["Existing"]&&v1052&&v1054)||!!(v1039&&v1043&&v1050===t.PositionType["New"]&&v1054);return(0,s.useEffect)(()=>{v1049(v1047.current);},[]),(0,u.jsxs)("div",{ref:v1047,dir:v1036,children:[(0,u.jsx)("div",{className:"univer-mb-2 univer-h-5 univer-text-sm univer-font-medium",children:v1034.t("sheets-pivot-ui.dialog.source.sourceData")}),De(v1027,v1038,v1058,(0,a.serializeRangeWithSheet)(v1043,v1039),true,v1048),v1056&&(0,u.jsx)("div",{className:"univer-mt-2 univer-h-5 univer-text-xs univer-text-red-400",children:v1056}),(0,u.jsx)("div",{className:"univer-mb-2 univer-mt-5 univer-h-5 univer-text-sm univer-font-medium",children:v1034.t("sheets-pivot-ui.dialog.source.position")}),(0,u.jsxs)(i.RadioGroup,{value:v1050,onChange:v418=>v1051(v418),className:"univer-flex univer-flex-col univer-gap-2",children:[(0,u.jsx)(i.Radio,{value:t.PositionType["New"],children:v1034.t("sheets-pivot-ui.dialog.source.newSheet")}),(0,u.jsx)(i.Radio,{value:t.PositionType["Existing"],children:v1034.t("sheets-pivot-ui.dialog.source.existingSheet")})]}),v1050===t.PositionType["Existing"]&&(0,u.jsxs)(u.Fragment,{children:[v1059,!v1052&&(0,u.jsx)("span",{className:"univer-h-5 univer-text-sm univer-text-red-400",children:v1034.t("sheets-pivot-ui.dialog.source.intersect")})]}),(0,u.jsx)("footer",{className:"univer-mt-5",children:(0,u.jsxs)(i.ActionRow,{className:"univer-flex univer-justify-end univer-gap-2",children:[(0,u.jsx)(i.Button,{onClick:()=>v1033(),children:v1034.t("sheets-pivot-ui.dialog.cancel")}),(0,u.jsx)(i.Button,{variant:"primary",onClick:()=>{v1060()&&(v1050===t.PositionType["Existing"]?v1032({sourceRange:v1039,sourceSheetName:v1043,positionRange:v1041,positionSheetName:v1045,positionType:v1050}):v1032({sourceRange:v1039,sourceSheetName:v1043,positionType:v1050}));},children:v1034.t("sheets-pivot-ui.dialog.ok")})]})})]});}G.componentKey="univer.sheet.pivot-table-range-selector";const K={type:n.CommandType["OPERATION"],id:"sheet.operation.open-pivot-table-range-selector-panel",async handler(v1061){var v1062;let v1063=v1061.get(n.IUniverInstanceService),v1064=v1061.get(n.ICommandService),v1065=(0,r.getSheetCommandTarget)(v1063),v1066=v1061.get(n.LocaleService);if(!v1065)return false;let{unitId:v1067,subUnitId:v1068,worksheet:v1069,workbook:v1070}=v1065,v1071=v1061.get(r.SheetsSelectionsService).getCurrentLastSelection(),v1072=(v1071==null?undefined:v1071.range)??{startRow:0,endRow:0,startColumn:0,endColumn:0,rangeType:n.RANGE_TYPE["NORMAL"]},v1073=await ke(v1061,v1067,v1068,(0,r.isSingleCellSelection)(v1071)?(0,r.expandToContinuousRange)(v1072,{up:true,left:true,right:true,down:true},v1069):v1072,v1069.getName());if(!v1073)return false;let v1074;if(v1073.positionType===t.PositionType["New"])v1074={row:0,col:0,unitId:v1067,subUnitId:(0,n.generateRandomId)(),sheetName:v1070.generateNewSheetName(""+v1066.t("sheets-pivot-ui.sheet"))};else{var v1075;v1074={row:v1073.positionRange["startRow"],col:v1073.positionRange["startColumn"],unitId:v1067,subUnitId:(v1075=v1070.getSheets().find(v167=>v167.getName()===v1073.positionSheetName))==null?undefined:v1075.getSheetId(),sheetName:v1073.positionSheetName};}return v1064.executeCommand(t.AddPivotTableCommand["id"],{pivotTableConfig:{targetCellInfo:v1074,sourceRangeInfo:{range:v1073.sourceRange,unitId:v1067,sheetName:v1073.sourceSheetName,subUnitId:(v1062=v1070.getSheets().find(v419=>v419.getName()===v1073.sourceSheetName))==null?undefined:v1062.getSheetId()}},positionType:v1073.positionType}),true;}};async function ke(v1076,v1077,v1078,v1079,v1080){let v1081=v1076.get(e.IDialogService),v1082=v1076.get(n.LocaleService);return new Promise(v420=>{let v421,v422={unitId:v1077,subUnitId:v1078,sourceRange:v1079,positionRange:null,sourceSheetName:v1080,positionSheetName:v1080,onConfirm:v168=>{v420(v168),v421==null||v421.dispose();},onCancel:()=>{v420(null),v421==null||v421.dispose();}};v421=v1081.open({id:G.componentKey,title:{title:v1082.t("sheets-pivot-ui.dialog.source.insertPivotTable")},draggable:true,mask:false,maskClosable:false,children:{label:{name:G.componentKey,props:v422}},width:400,onClose:()=>{v421.dispose();}});});}const Ae={type:n.CommandType["OPERATION"],id:"sheet.operation.set-pivot-date-group",async handler(v1083,v1084){if(!v1084)return false;let v1085=q(v1083);return v1085?v1083.get(n.ICommandService).executeCommand(t.SetPivotDateGroupCommand["id"],{unitId:v1085.unitId,subUnitId:v1085.subUnitId,pivotTableId:v1085.pivotTableId,tableFieldId:v1085.tableFieldId,dateType:v1084.dateType}):false;}};function q(v1086){let v1087=(0,r.getSheetCommandTarget)(v1086.get(n.IUniverInstanceService));if(!v1087)return;let v1088=v1086.get(r.SheetsSelectionsService).getCurrentLastSelection(),v1089=v1088==null?undefined:v1088.primary;if(!v1089)return;let{unitId:v1090,subUnitId:v1091}=v1087,v1092=v1089.startRow,v1093=v1089.startColumn,v1094=v1086.get(t.SheetsPivotTableAdaptorModel).getPivotTableIdByCell(v1090,v1091,v1092,v1093);if(!v1094)return;let v1095=je(v1086,v1090,v1091,v1094,v1092,v1093);if(!v1095)return;let v1096=v1086.get(t.SheetsPivotTableConfigModel),v1097=v1096.getPivotTableConfig(v1090,v1091,v1094),v1098=v1096.getCollection(v1090,v1094),v1099=(0,t.getPivotDateGroupContext)(v1097==null?undefined:v1097.fieldsConfig,v1098,v1095);if(v1099)return{unitId:v1090,subUnitId:v1091,pivotTableId:v1094,tableFieldId:v1095,row:v1092,col:v1093,dateGroupContext:v1099};}function je(v1100,v1101,v1102,v1103,v1104,v1105){let v1106=v1100.get(t.SheetsPivotTableAdaptorModel).getPivotItemRenderInfoCache(v1101,v1102,v1103);if(!v1106)return;let v1107=(0,t.resolvePivotSheetCell)(v1104,v1105,v1100.get(t.SheetsPivotTableAdaptorModel).getPivotTableCellData(v1101,v1102,v1104,v1105),v1106);return v1107==null?undefined:v1107.tableFieldId;}const Me=[{type:l.PivotShowAsTypeEnum["normal"],localeKey:"sheets-pivot-ui.showValuesAs.normal",requiresParameters:false,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["percentOfGrandTotal"],localeKey:"sheets-pivot-ui.showValuesAs.percentOfGrandTotal",requiresParameters:false,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["percentOfRowTotal"],localeKey:"sheets-pivot-ui.showValuesAs.percentOfRowTotal",requiresParameters:false,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["percentOfColumnTotal"],localeKey:"sheets-pivot-ui.showValuesAs.percentOfColumnTotal",requiresParameters:false,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["percentOfParentRowTotal"],localeKey:"sheets-pivot-ui.showValuesAs.percentOfParentRowTotal",requiresParameters:false,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["percentOfParentColumnTotal"],localeKey:"sheets-pivot-ui.showValuesAs.percentOfParentColumnTotal",requiresParameters:false,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["index"],localeKey:"sheets-pivot-ui.showValuesAs.index",requiresParameters:false,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["percentOfParent"],localeKey:"sheets-pivot-ui.showValuesAs.percentOfParent",requiresParameters:true,baseItemMode:"none",parentFieldOnly:true},{type:l.PivotShowAsTypeEnum["percentOf"],localeKey:"sheets-pivot-ui.showValuesAs.percentOf",requiresParameters:true,baseItemMode:"item"},{type:l.PivotShowAsTypeEnum["differenceFrom"],localeKey:"sheets-pivot-ui.showValuesAs.differenceFrom",requiresParameters:true,baseItemMode:"item-or-relative"},{type:l.PivotShowAsTypeEnum["percentDifferenceFrom"],localeKey:"sheets-pivot-ui.showValuesAs.percentDifferenceFrom",requiresParameters:true,baseItemMode:"item-or-relative"},{type:l.PivotShowAsTypeEnum["runningTotal"],localeKey:"sheets-pivot-ui.showValuesAs.runningTotal",requiresParameters:true,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["percentRunningTotal"],localeKey:"sheets-pivot-ui.showValuesAs.percentRunningTotal",requiresParameters:true,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["rankAscending"],localeKey:"sheets-pivot-ui.showValuesAs.rankAscending",requiresParameters:true,baseItemMode:"none"},{type:l.PivotShowAsTypeEnum["rankDescending"],localeKey:"sheets-pivot-ui.showValuesAs.rankDescending",requiresParameters:true,baseItemMode:"none"}],Ne={type:n.CommandType["OPERATION"],id:"sheet.operation.set-pivot-show-data-as",async handler(v1108,v1109){let v1110=v1109&&Me.find(v423=>v423.type===v1109.type);if(!v1110)return false;let v1111=Pe(v1108);if(!v1111)return false;if(!v1110.requiresParameters)return v1108.get(n.ICommandService).executeCommand(t.UpdatePivotFieldSettingCommand["id"],{unitId:v1111.unitId,subUnitId:v1111.subUnitId,pivotTableId:v1111.pivotTableId,tableFieldId:v1111.tableFieldId,showDataAs:{type:v1110.type,baseFieldId:"",baseItem:""},tableFieldInfo:v1111.tableFieldInfo,dataFieldInfo:v1111.dataFieldInfo});let v1112=Fe(v1108,v1111);if(!v1112)return false;let v1113=J(v1112.config,v1112.collection,v1110);if(v1113.length===0)return false;let v1114={};if(v1110.baseItemMode!=="none"){try{v1114=await Ie(v1108,v1112.config,v1111.pivotTableId,v1113);}catch{return false;}if(!v1113.some(v169=>v1114[v169]&&(v1110.baseItemMode==="item-or-relative"||v1114[v169].items["length"]>0)))return false;}let v1115=v1108.get(e.IDialogService),v1116=v1108.get(n.LocaleService),v1117=null,v1118=false,v1119=false,v1120=()=>{v1118||(v1118=true,v1117==null||v1117.dispose(),v1117=null);};try{v1117=v1115.open({id:"UNIVER_SHEET_PIVOT_SHOW_DATA_AS_DIALOG_ID",title:{title:v1116.t("sheets-pivot-ui.showValuesAs.dialogTitle")},draggable:true,mask:true,maskClosable:false,width:400,children:{label:{name:T,props:{unitId:v1111.unitId,subUnitId:v1111.subUnitId,pivotTableId:v1111.pivotTableId,tableFieldId:v1111.tableFieldId,type:v1110.type,baseItems:v1114,onCancel:v1120,onConfirm:async v170=>{if(!v1119){v1119=true;try{let v48=Fe(v1108,v1111);if(!v48||!Le(v48.config,v48.collection,v1110,v170))return;if(v1110.baseItemMode!=="none"&&v170.baseItemType===undefined){var v171;if(!((v171=(await Ie(v1108,v48.config,v48.context["pivotTableId"],[v170.baseFieldId]))[v170.baseFieldId])!=null&&v171.items["includes"](v170.baseItem)))return;}await v1108.get(n.ICommandService).executeCommand(t.UpdatePivotFieldSettingCommand["id"],{unitId:v48.context["unitId"],subUnitId:v48.context["subUnitId"],pivotTableId:v48.context["pivotTableId"],tableFieldId:v48.context["tableFieldId"],showDataAs:v170,tableFieldInfo:v48.context["tableFieldInfo"],dataFieldInfo:v48.context["dataFieldInfo"]});}catch{}finally{v1120();}}}}}},onClose:v1120});}catch{return v1120(),false;}return true;}};function J(v1121,v1122,v1123){let{rowFields:v1124,columnFields:v1125,dimension:v1126}=v1121.fieldsConfig;return(v1123.parentFieldOnly?[...v1124.slice(0,-1),...v1125.slice(0,-1)]:[...v1124,...v1125]).filter(v424=>{let v425=v1126[v424];return!!(v425&&(v1122.fields[v425.dataFieldId]||v1122.customFields["find"](v172=>v172.id===v425.dataFieldId)));});}function Pe(v1127){var v1128,v1129;let v1130=(0,r.getSheetCommandTarget)(v1127.get(n.IUniverInstanceService)),v1131=(v1128=v1127.get(r.SheetsSelectionsService).getCurrentLastSelection())==null?undefined:v1128.primary;if(!v1130||!v1131)return;let{unitId:v1132,subUnitId:v1133}=v1130,v1134=v1131.startRow,v1135=v1131.startColumn,v1136=v1127.get(t.SheetsPivotTableAdaptorModel),v1137=v1136.getPivotTableIdByCell(v1132,v1133,v1134,v1135);if(!v1137)return;let v1138=v1127.get(t.SheetsPivotTableConfigModel).getPivotTableConfig(v1132,v1133,v1137),v1139=v1136.getPivotItemRenderInfoCache(v1132,v1133,v1137),v1140=v1136.getPivotTableCellData(v1132,v1133,v1134,v1135);if(!v1138||!v1139)return;let v1141=(0,t.resolvePivotSheetCell)(v1134,v1135,v1140,v1139);if(!v1141)return;let v1142=(0,t.resolvePivotValueFieldId)(v1141,v1138.fieldsConfig["valueFields"]);if(v1142)return(v1129=Fe(v1127,{unitId:v1132,subUnitId:v1133,pivotTableId:v1137,tableFieldId:v1142}))==null?undefined:v1129.context;}function Fe(v1143,v1144){let{unitId:v1145,subUnitId:v1146,pivotTableId:v1147,tableFieldId:v1148}=v1144,v1149=v1143.get(t.SheetsPivotTableConfigModel),v1150=v1149.getPivotTableConfig(v1145,v1146,v1147),v1151=v1149.getCollection(v1145,v1147),v1152=v1150==null?undefined:v1150.fieldsConfig["measure"][v1148];if(!v1150||!v1151||!v1152||!v1150.fieldsConfig["valueFields"].includes(v1152.id))return;let v1153=v1151.fields[v1152.dataFieldId]??v1151.customFields["find"](v426=>v426.id===v1152.dataFieldId);if(!v1153)return;let v1154={...v1152.showDataAs};return{config:v1150,collection:v1151,context:{unitId:v1145,subUnitId:v1146,pivotTableId:v1147,tableFieldId:v1152.id,currentShowDataAs:v1154,tableFieldInfo:{tableFieldId:v1152.id,displayName:v1152.displayName,dataFieldId:v1152.dataFieldId,format:v1152.format,subTotalType:v1152.subtotal,showDataAs:{...v1154}},dataFieldInfo:{id:v1153.id,dataFieldId:v1153.id,name:v1153.name,type:v1153.fieldDataType,checked:true,pivotTableId:v1147}}};}async function Ie(v1155,v1156,v1157,v1158){let{unitId:v1159,subUnitId:v1160}=v1156.targetCellInfo,v1161=v1156.targetCellInfo,v1162=v1155.get(t.SheetsPivotTableAdaptorModel).getPivotItemRenderInfoCache(v1159,v1160,v1157);if(!v1162)throw Error("[sheets-pivot-ui]: Pivot render cache is unavailable");return(await Promise.all(v1158.map(async v427=>{try{return[v427,(await v1155.get(t.SheetsPivotRPCService).getPivotDisplayConfig({unitId:v1159,subUnitId:v1160,pivotTableId:v1157,params:{type:t.PivotDisplayDataType["Filter"],filter:{row:v1161.row,col:v1161.col,tableFieldId:v427,pivotItemRenderInfoCache:v1162}}})).result["filter"]];}catch{return[v427,undefined];}}))).reduce((v428,[v429,v430])=>(v430&&(v428[v429]={items:v430.items,itemTypes:v430.itemTypes,format:v430.format}),v428),{});}function Le(v1163,v1164,v1165,v1166){return v1166.type!==v1165.type||!J(v1163,v1164,v1165).includes(v1166.baseFieldId)?false:v1165.baseItemMode==="none"?v1166.baseItem===""&&v1166.baseItemType===undefined:v1166.baseItemType===undefined?v1166.baseItem!=="":v1165.baseItemMode==="item-or-relative"&&v1166.baseItem===""&&(v1166.baseItemType===l.PivotShowAsBaseItemTypeEnum["previous"]||v1166.baseItemType===l.PivotShowAsBaseItemTypeEnum["next"]);}function Re(v1167){return{...v1167,expected:Array.isArray(v1167.expected)?v1167.expected["concat"]():v1167.expected};}function ze(v1168,v1169){let v1170=v1168.get(t.SheetsPivotTableConfigModel).getPivotTableConfig(v1169.unitId,v1169.subUnitId,v1169.pivotTableId);if(!(!v1170||!v1170.fieldsConfig["dimension"][v1169.targetFieldId]||!(v1170.fieldsConfig["rowFields"].includes(v1169.targetFieldId)||v1170.fieldsConfig["columnFields"].includes(v1169.targetFieldId))))return v1170;}function Be(v1171){var v1172,v1173;let v1174=(0,r.getSheetCommandTarget)(v1171.get(n.IUniverInstanceService)),v1175=(v1172=v1171.get(r.SheetsSelectionsService).getCurrentLastSelection())==null?undefined:v1172.primary;if(!v1174||!v1175)return;let{unitId:v1176,subUnitId:v1177}=v1174,v1178=v1175.startRow,v1179=v1175.startColumn,v1180=v1171.get(t.SheetsPivotTableAdaptorModel),v1181=v1180.getPivotTableIdByCell(v1176,v1177,v1178,v1179);if(!v1181)return;let v1182=v1171.get(t.SheetsPivotTableConfigModel).getPivotTableConfig(v1176,v1177,v1181),v1183=v1180.getPivotItemRenderInfoCache(v1176,v1177,v1181);if(!v1182||!v1183)return;let v1184=(0,t.resolvePivotSheetCell)(v1178,v1179,v1180.getPivotTableCellData(v1176,v1177,v1178,v1179),v1183),v1185=v1184&&(0,t.resolvePivotValueFilterTarget)(v1184,v1182.fieldsConfig);if(!v1185)return;let v1186=v1182.fieldsConfig["dimension"][v1185.targetFieldId],v1187=v1182.fieldsConfig["valueFields"].flatMap(v431=>{let v432=v1182.fieldsConfig["measure"][v431];return v432?[{id:v432.id,label:v432.displayName}]:[];});if(!v1186||v1187.length===0)return;let v1188=(v1173=v1182.fieldsConfig["valueFilter"])==null||(v1173=v1173.find(v433=>v433.fieldId===v1185.targetFieldId))==null?undefined:v1173.filterInfo;return{unitId:v1176,subUnitId:v1177,pivotTableId:v1181,targetFieldId:v1185.targetFieldId,targetFieldName:v1186.displayName,valueFields:v1187,defaultValueFieldId:v1185.defaultValueFieldId,...(v1188?{currentFilter:Re(v1188)}:{})};}const Ve={type:n.CommandType["OPERATION"],id:"sheet.operation.set-pivot-value-filter",async handler(v1189){let v1190=Be(v1189);if(!v1190)return false;let v1191=v1189.get(e.IDialogService),v1192=v1189.get(n.LocaleService),v1193=null,v1194=false,v1195=false,v1196=()=>{v1194||(v1194=true,v1193==null||v1193.dispose(),v1193=null);},v1197=async v434=>{if(!v1195){v1195=true;try{let v98=ze(v1189,v1190);if(!v98||v434&&(!v98.fieldsConfig["measure"][v434.valueFieldId]||!v98.fieldsConfig["valueFields"].includes(v434.valueFieldId)||!(0,l.isValueFilterOperator)(v434.operator)))return;await v1189.get(n.ICommandService).executeCommand(t.SetPivotValueFilterCommand["id"],{unitId:v1190.unitId,subUnitId:v1190.subUnitId,pivotTableId:v1190.pivotTableId,fieldId:v1190.targetFieldId,valueFilterInfo:v434?{...v434,type:l.PivotFilterTypeEnum["ValueFilter"],expected:Array.isArray(v434.expected)?v434.expected["concat"]():v434.expected}:undefined});}catch{}finally{v1196();}}};try{v1193=v1191.open({id:"UNIVER_SHEET_PIVOT_VALUE_FILTER_DIALOG_ID",title:{title:v1192.t("sheets-pivot-ui.valueFilter.dialogTitle")},draggable:true,mask:true,maskClosable:false,width:420,children:{label:{name:E,props:{targetFieldId:v1190.targetFieldId,targetFieldName:v1190.targetFieldName,valueFields:v1190.valueFields,defaultValueFieldId:v1190.defaultValueFieldId,currentFilter:v1190.currentFilter,onConfirm:v173=>v1197(v173),onClear:()=>v1197(undefined),onCancel:v1196}}},onClose:v1196});}catch{return v1196(),false;}return true;}},He="sheet.pivot.context-menu.date-group",Ue="sheet.pivot.context-menu.show-data-as",We="sheet.pivot.context-menu.value-filter",Ge={year:"sheets-pivot-ui.dateGroup.year","year-quarter":"sheets-pivot-ui.dateGroup.yearQuarter",quarter:"sheets-pivot-ui.dateGroup.quarter","year-month":"sheets-pivot-ui.dateGroup.yearMonth",month:"sheets-pivot-ui.dateGroup.month","month-date":"sheets-pivot-ui.dateGroup.monthDate","year-month-date":"sheets-pivot-ui.dateGroup.yearMonthDate",date:"sheets-pivot-ui.dateGroup.date",hour:"sheets-pivot-ui.dateGroup.hour",minute:"sheets-pivot-ui.dateGroup.minute","hour-minute":"sheets-pivot-ui.dateGroup.hourMinute"};function Ke(v1198){return{id:K.id,type:e.MenuItemType["BUTTON"],icon:"PivotTableIcon",hidden$:(0,e.getMenuHiddenObservable)(v1198,n.UniverInstanceType["UNIVER_SHEET"]),disabled$:(0,d.getObservableWithExclusiveRange$)(v1198,(0,d.getCurrentRangeDisable$)(v1198,{workbookTypes:[r.WorkbookEditablePermission],worksheetTypes:[r.WorksheetViewPermission,r.WorksheetPivotTablePermission],rangeTypes:[r.RangeProtectionPermissionViewPoint]})),tooltip:"sheets-pivot-ui.title",title:"sheets-pivot-ui.title"};}function qe(v1199){return{id:He,type:e.MenuItemType["SUBITEMS"],title:"sheets-pivot-ui.dateGroup.title",hidden$:Xe(v1199)};}function Je(v1200){return v435=>({id:Ye(v1200),commandId:Ae.id,type:e.MenuItemType["BUTTON"],title:Ge[v1200],params:{dateType:v1200},disabled$:Ze(v435,v1200),activated$:Qe(v435,v1200)});}function Ye(v1201){return"sheet.pivot.context-menu.date-group."+v1201;}function Xe(v1202){return $e(v1202).pipe((0,c.map)(()=>!q(v1202)));}function Ze(v1203,v1204){return $e(v1203).pipe((0,c.map)(()=>{let v436=q(v1203);return!v436||(0,t.isPivotDateGroupTypeDisabled)(v436.dateGroupContext,v1204);}));}function Qe(v1205,v1206){return $e(v1205).pipe((0,c.map)(()=>{let v437=q(v1205);return(v437==null?undefined:v437.dateGroupContext["currentDateType"])===v1206;}));}function $e(v1207){return v1207.get(r.SheetsSelectionsService).selectionMoveEnd$["pipe"]((0,c.startWith)(null));}const et=t.PIVOT_DATE_GROUP_TYPES["map"](v1208=>({dateType:v1208,id:Ye(v1208),menuItemFactory:Je(v1208)}));function tt(v1209){return{id:Ue,type:e.MenuItemType["SUBITEMS"],title:"sheets-pivot-ui.showValuesAs.title",hidden$:it(v1209).pipe((0,c.map)(()=>!Pe(v1209)))};}function nt(v1210){return v438=>({id:rt(v1210.type),commandId:Ne.id,type:e.MenuItemType["BUTTON"],title:v1210.localeKey,params:{type:v1210.type},activated$:it(v438).pipe((0,c.map)(()=>{let v174=Pe(v438);return!!(v174&&(v174.currentShowDataAs["type"]??l.PivotShowAsTypeEnum["normal"])===v1210.type);}))});}function rt(v1211){return"sheet.pivot.context-menu.show-data-as."+v1211;}function it(v1212){return v1212.get(r.SheetsSelectionsService).selectionMoveEnd$["pipe"]((0,c.startWith)(null));}const at=Me.map(v1213=>({rule:v1213,id:rt(v1213.type),menuItemFactory:nt(v1213)}));function ot(v1214){return{id:We,commandId:Ve.id,type:e.MenuItemType["BUTTON"],title:"sheets-pivot-ui.valueFilter.title",hidden$:v1214.get(r.SheetsSelectionsService).selectionMoveEnd$["pipe"]((0,c.startWith)(null),(0,c.map)(()=>!Be(v1214)))};}const st=et.reduce((v1215,v1216,v1217)=>(v1215[v1216.id]={order:v1217+1,menuItemFactory:v1216.menuItemFactory},v1215),{}),ct=at.reduce((v1218,v1219,v1220)=>(v1218[v1219.id]={order:v1220+1,menuItemFactory:v1219.menuItemFactory},v1218),{}),lt={[e.RibbonDataGroup["ORGANIZATION"]]:{[K.id]:{order:1,gridLayout:{row:2,column:1},menuItemFactory:Ke}},[e.ContextMenuPosition["MAIN_AREA"]]:{[e.ContextMenuGroup["DATA"]]:{[K.id]:{order:1,menuItemFactory:Ke},[He]:{order:2,menuItemFactory:qe,...st},[Ue]:{order:3,menuItemFactory:tt,...ct},[We]:{order:4,menuItemFactory:ot}}},[e.ContextMenuPosition["COL_HEADER"]]:{[e.ContextMenuGroup["DATA"]]:{[K.id]:{order:1,menuItemFactory:Ke},[He]:{order:2,menuItemFactory:qe,...st}}}};var ut="@univerjs-pro/sheets-pivot-ui",dt="1.0.0-insiders.20260907-70fc579";const ft={};function pt(v1221){let{filterItemInfo:v1222,unitId:v1223,subUnitId:v1224}=v1221,{format:v1225,filterInfo:v1226,sortInfo:v1227}=v1222,v1228=(0,e.useDependency)(n.ICommandService),v1229=(0,e.useDependency)(n.LocaleService),v1230=(0,e.useDependency)(e.IDialogService),v1231=(0,e.useDependency)(n.IUniverInstanceService),v1232=(0,e.useObservable)(v1229.direction$,v1229.getDirection()),[v1233,v1234]=(0,s.useState)(false),[v1235,v1236]=(0,s.useState)(()=>v1222?(v1226==null?undefined:v1226.list)??v1222.items:[]),[v1237,v1238]=(0,s.useState)(v1235.length===(v1222==null?undefined:v1222.items["length"])),[v1239,v1240]=(0,s.useState)(()=>{if(v1222)return v1227==null?undefined:v1227.type;}),v1241=()=>{v1230.close(b);};if((0,s.useEffect)(()=>{v1235.length?v1234(false):v1234(true),v1235.length===v1222.items["length"]?v1238(true):v1238(false);},[v1235,v1222.items["length"]]),(0,s.useEffect)(()=>{let v439=v1231.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]);if(!v439)return;let v440=v439.activeSheet$["subscribe"](v175=>{v175&&v175.getSheetId()!==v1224&&v1241();});return()=>v440==null?undefined:v440.unsubscribe();},[v1224]),!v1222)return;let v1242=()=>{v1236(v1237?[]:v1222.items),v1238(!v1237);},v1243=v441=>{v1235.find(v176=>v176===v441)?v1236(v1235.filter(v177=>v177!==v441)):v1236([...v1235,v441]);},v1244=()=>{let{tableFieldId:v442,pivotTableId:v443}=v1222;!v442||!v443||(v1228.executeCommand(t.SetPivotFilterCommand["id"],{unitId:v1223,subUnitId:v1224,pivotTableId:v443,tableFieldId:v442,items:v1235,isAll:v1237}),v1241());},v1245=()=>{v1241();},v1246=()=>{let{tableFieldId:v444,pivotTableId:v445}=v1222;!v444||!v445||(v1236(v1222.items),v1238(true),v1228.executeCommand(t.SetPivotFilterCommand["id"],{unitId:v1223,subUnitId:v1224,pivotTableId:v445,tableFieldId:v444,items:v1222.items,isAll:true}),v1241());},v1247=v446=>{let{tableFieldId:v447,pivotTableId:v448}=v1222;!v447||!v448||(v1228.executeCommand(t.SetPivotSortCommand["id"],{unitId:v1223,subUnitId:v1224,pivotTableId:v448,tableFieldId:v447,info:{type:v446}}),v1240(v446),v1241());},v1248=Te(v1226,{items:v1222.items});return(0,u.jsxs)("div",{dir:v1232,children:[(0,u.jsxs)("div",{className:"univer-flex",children:[(0,u.jsxs)("div",{className:(0,i.clsx)("univer-flex\x20univer-h-8\x20univer-w-[140px]\x20univer-flex-1\x20univer-cursor-pointer\x20univer-items-center\x20univer-justify-center\x20univer-rounded-l-md\x20univer-text-center\x20univer-text-sm\x20hover:univer-bg-gray-100\x20rtl:univer-rounded-l-none\x20rtl:univer-rounded-r-md\x20dark:hover:!univer-bg-gray-700",i.borderClassName,{"univer-bg-gray-100\x20dark:!univer-bg-gray-700":v1239===l.PivotDataFieldSortOperatorEnum["ascending"]}),onClick:()=>v1247(l.PivotDataFieldSortOperatorEnum["ascending"]),children:[(0,u.jsx)(m.AscendingIcon,{}),v1229.t("sheets-pivot-ui.dialog.filter.ascending")]}),(0,u.jsxs)("div",{className:(0,i.clsx)("univer-flex univer-h-8 univer-w-[140px] univer-flex-1 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-r-md univer-text-center univer-text-sm hover:univer-bg-gray-100 rtl:univer-rounded-l-md rtl:univer-rounded-r-none dark:hover:!univer-bg-gray-700",i.borderClassName,{"univer-bg-gray-100\x20dark:!univer-bg-gray-700":v1239===l.PivotDataFieldSortOperatorEnum["descending"]}),onClick:()=>v1247(l.PivotDataFieldSortOperatorEnum["descending"]),children:[(0,u.jsx)(m.DescendingIcon,{}),v1229.t("sheets-pivot-ui.dialog.filter.descending")]})]}),(0,u.jsx)("div",{className:(0,i.clsx)("univer-mx-0 univer-mb-4 univer-mt-3 univer-h-[300px] univer-rounded-lg univer-p-2",i.borderClassName),children:(0,u.jsxs)("div",{className:(0,i.clsx)("univer-h-full univer-overflow-y-auto",i.scrollbarClassName),children:[(0,u.jsx)("div",{className:"univer-mb-1 univer-box-border univer-h-7 univer-py-[5px] univer-pl-[22px] univer-pr-1 univer-text-sm rtl:univer-pl-1 rtl:univer-pr-[22px]",children:(0,u.jsx)(i.Checkbox,{checked:v1237,onChange:v1242,indeterminate:v1235.length>0&&v1235.length<v1222.items["length"],children:v1229.t("sheets-pivot-ui.dialog.filter.selectAll")})}),v1222.items["map"]((v449,v450)=>{var v451;let v452=v449,v453=(v451=v1222.itemTypes)==null?undefined:v451[v450];return v453===l.PivotDataFieldDataTypeEnum["blank"]?v452=v1229.t("sheets-pivot-ui.dialog.filter.blank"):v453===l.PivotDataFieldDataTypeEnum["date"]&&(v452=v1225?n.numfmt["format"](v1225,Number(v452)):v452),(0,u.jsx)("div",{className:"univer-mb-1\x20univer-box-border\x20univer-h-7\x20univer-py-1\x20univer-pl-[22px]\x20univer-pr-1\x20univer-text-sm\x20rtl:univer-pl-1\x20rtl:univer-pr-[22px]",children:(0,u.jsx)(i.Checkbox,{checked:!!v1235.find(v178=>v178===v449),onChange:()=>v1243(v449),contentClassName:"univer-max-w-[200px] univer-truncate",children:v452})},v449);})]})}),(0,u.jsxs)(i.ActionRow,{className:"univer-flex univer-items-center univer-justify-between",children:[(0,u.jsx)("div",{className:"univer-cursor-pointer univer-text-xs univer-text-primary-600",children:(0,u.jsx)(i.Button,{variant:"link",disabled:v1248==="NotFilter",onClick:v1246,children:v1229.t("sheets-pivot-ui.dialog.filter.clearFilter")})}),(0,u.jsxs)(i.ActionRow,{className:"univer-flex univer-flex-1 univer-items-center univer-gap-3",children:[(0,u.jsx)(i.Button,{onClick:v1245,children:v1229.t("sheets-pivot-ui.dialog.filter.cancel")}),(0,u.jsx)(i.Button,{variant:"primary",disabled:v1233,onClick:v1244,children:v1229.t("sheets-pivot-ui.dialog.filter.confirm")})]})]})]});}const mt=({handlePatternChange:v1249})=>{let v1250=(0,e.useDependency)(n.LocaleService);return(0,s.useEffect)(()=>{v1249("");},[]),(0,u.jsx)("div",{className:"univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",children:v1250.t("sheets-pivot-ui.dialog.numfmt.generalDesc")});},ht=({originPattern:v1251,handlePatternChange:v1252})=>{let v1253=(0,e.useDependency)(n.LocaleService),v1254=n.currencySymbols["map"](v454=>({label:v454,value:v454})),[v1255,v1256]=(0,s.useState)(()=>U(v1251||"",2)),[v1257,v1258]=(0,s.useState)(()=>me(v1251??"")||v1254[0].value);return(0,s.useEffect)(()=>{v1252(W('_("'+v1257+"\x22*\x20#,##0"+(v1255>0?".0":"")+"_)",v1255));},[]),(0,u.jsxs)("div",{className:"univer-mt-5",children:[(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-justify-between",children:[(0,u.jsxs)("div",{className:"univer-w-[136px]",children:[(0,u.jsx)("div",{className:"univer-mb-2 univer-text-sm univer-font-medium",children:v1253.t("sheets-pivot-ui.dialog.numfmt.decimalPlaces")}),(0,u.jsx)(i.InputNumber,{className:"univer-box-border univer-h-8",value:v1255,max:20,min:0,onChange:v455=>{let v456=v455??0;v1256(v456),v1252(W('_("'+v1257+"\x22*\x20#,##0"+(v456>0?".0":"")+"_)",v456));}})]}),(0,u.jsxs)("div",{className:"univer-w-[136px]",children:[(0,u.jsx)("div",{className:"univer-mb-2\x20univer-text-sm\x20univer-font-medium",children:v1253.t("sheets-pivot-ui.dialog.numfmt.currencyTypes")}),(0,u.jsx)(i.Select,{options:v1254,value:v1257,onChange:v457=>{v1258(v457),v1252(W('_("'+v457+'"* #,##0'+(v1255>0?".0":"")+"_)",v1255));}})]})]}),(0,u.jsx)("div",{className:"univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",children:v1253.t("sheets-pivot-ui.dialog.numfmt.accountingDesc")})]});},gt=({originPattern:v1259,handlePatternChange:v1260})=>{let v1261=(0,e.useDependency)(n.LocaleService),v1262=n.currencySymbols["map"](v458=>({label:v458,value:v458})),[v1263,v1264]=(0,s.useState)(()=>U(v1259||"",2)),[v1265,v1266]=(0,s.useState)(()=>me(v1259??"")||v1262[0].value),v1267=B.map(v459=>({label:v459.label(v1265),value:v459.suffix(v1265),color:v459.color})),[v1268,v1269]=(0,s.useState)(()=>{var v460;return((v460=v1267.find(v179=>(0,n.isPatternEqualWithoutDecimal)(v179.value,v1259??"")))==null?undefined:v460.value)||v1267[0].value;});return(0,s.useEffect)(()=>{v1260(W(v1268,v1263));},[]),(0,u.jsxs)("div",{className:"univer-mt-5",children:[(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-justify-between",children:[(0,u.jsxs)("div",{className:"univer-w-[136px]",children:[(0,u.jsx)("div",{className:"univer-mb-2 univer-text-sm univer-font-medium",children:v1261.t("sheets-pivot-ui.dialog.numfmt.decimalPlaces")}),(0,u.jsx)(i.InputNumber,{className:"univer-box-border univer-h-8",value:v1263,max:20,min:0,onChange:v461=>{v461&&(v1264(v461),v1260(W(v1268,v461)));}})]}),(0,u.jsxs)("div",{className:"univer-w-[136px]",children:[(0,u.jsx)("div",{className:"univer-mb-2\x20univer-text-sm\x20univer-font-medium",children:v1261.t("sheets-pivot-ui.dialog.numfmt.currencyTypes")}),(0,u.jsx)(i.Select,{options:v1262,value:v1265,onChange:v462=>{v1266(v462);let v463=B.map(v180=>({label:v180.label(v462),value:v180.suffix(v462),color:v180.color}));v1269(v463[0].value),v1260(W(v463[0].value,v1263));}})]})]}),(0,u.jsxs)("div",{className:"univer-mt-4",children:[(0,u.jsx)("div",{className:"univer-mb-2 univer-text-sm univer-font-medium",children:v1261.t("sheets-pivot-ui.dialog.numfmt.negativeNumberTypes")}),(0,u.jsx)(i.SelectList,{className:"univer-rounded-lg univer-p-2",options:v1267,value:v1268,onChange:v464=>{v1269(v464),v1260(W(v464,v1263));}}),(0,u.jsx)("div",{className:"univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",children:v1261.t("sheets-pivot-ui.dialog.numfmt.currencyDesc")})]})]});},_t=({originPattern:v1270,handlePatternChange:v1271})=>{let v1272=(0,e.useDependency)(n.LocaleService),v1273=R.map(v465=>({label:v465.label,value:v465.suffix})),[v1274,v1275]=(0,s.useState)(()=>{if(v1270){let v181=v1273.find(v99=>v99.value===v1270);if(v181)return v181.value;}return v1273[0].value;});return(0,s.useEffect)(()=>{v1271(v1274);},[]),(0,u.jsx)("div",{className:"univer-mt-5",children:(0,u.jsxs)("div",{className:"univer-mt-5",children:[(0,u.jsx)("div",{className:"univer-mb-2\x20univer-text-sm\x20univer-font-medium",children:v1272.t("sheets-pivot-ui.dialog.numfmt.dateTypes")}),(0,u.jsx)("div",{children:(0,u.jsx)(i.SelectList,{className:"univer-rounded-lg univer-p-2",options:v1273,value:v1274,onChange:v466=>{v1275(v466),v1271(v466);}})}),(0,u.jsx)("div",{className:"univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",children:v1272.t("sheets-pivot-ui.dialog.numfmt.dateDesc")})]})});},vt=({originPattern:v1276,handlePatternChange:v1277})=>{let v1278=(0,e.useDependency)(n.LocaleService),[v1279,v1280]=(0,s.useState)(()=>U(v1276||"",0)),v1281=z.map(v467=>({label:v467.label,value:v467.suffix,color:v467.color})),[v1282,v1283]=(0,s.useState)(()=>{let v468=v1281.find(v182=>(0,n.isPatternEqualWithoutDecimal)(v182.value,v1276||""));return(v468==null?undefined:v468.value)||v1281[0].value;});return(0,s.useEffect)(()=>{v1277(W(v1282,Number(v1279||0)));},[]),(0,u.jsxs)("div",{className:"univer-mt-5",children:[(0,u.jsx)("div",{className:"univer-flex\x20univer-items-center\x20univer-justify-between",children:(0,u.jsxs)("div",{className:"univer-w-[136px]",children:[(0,u.jsx)("div",{className:"univer-mb-2 univer-text-sm univer-font-medium",children:v1278.t("sheets-pivot-ui.dialog.numfmt.decimalPlaces")}),(0,u.jsx)(i.InputNumber,{className:"univer-box-border\x20univer-h-8",value:v1279,max:20,min:0,onChange:v469=>{v469&&(v1280(v469),v1277(W(v1282,Number(v469))));}})]})}),(0,u.jsxs)("div",{className:"univer-mt-4",children:[(0,u.jsx)("div",{className:"univer-mb-2\x20univer-text-sm\x20univer-font-medium",children:v1278.t("sheets-pivot-ui.dialog.numfmt.negativeNumberTypes")}),(0,u.jsx)(i.SelectList,{className:"univer-rounded-lg univer-p-2",options:v1281,value:v1282,onChange:v470=>{v1280(U(v470,0)),v1283(v470),v1277(v470);}}),(0,u.jsx)("div",{className:"univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",children:v1278.t("sheets-pivot-ui.dialog.numfmt.thousandthPercentileDesc")})]})]});},yt=({unitId:v1284,subUnitId:v1285,pivotTableId:v1286,tableFieldId:v1287,originPattern:v1288,tableFieldInfo:v1289,dataFieldInfo:v1290})=>{let v1291=(0,e.useDependency)(n.LocaleService),v1292=(0,e.useDependency)(e.IDialogService),v1293=v1291.getDirection(),v1294=(0,s.useMemo)(()=>[{label:"sheets-pivot-ui.dialog.numfmt.general",component:mt,key:"sheet.numfmt.general"},{label:"sheets-pivot-ui.dialog.numfmt.accounting",component:ht,key:"sheet.numfmt.accounting"},{label:"sheets-pivot-ui.dialog.numfmt.currency",component:gt,key:"sheet.numfmt.currency"},{label:"sheets-pivot-ui.dialog.numfmt.date",component:_t,key:"sheet.numfmt.date"},{label:"sheets-pivot-ui.dialog.numfmt.thousandthPercentile",component:vt,key:"sheet.numfmt.thousandthPercentile"}].map(v183=>({...v183,label:v1291.t(v183.label)})),[v1291]),v1295=v1294.map(v471=>({label:v471.label,value:v471.key})),[v1296,v1297]=(0,s.useState)(()=>[he,ge,_e,ye,xe].reduce((v184,v185,v186)=>v184||(v185(v1288??"")?v1294[v186].key:""),"")||v1294[0].key),[v1298,v1299]=(0,s.useState)(v1288),v1300=v472=>v1299(v472),v1301=v473=>{v1297(v473);},v1302=v474=>({id:S,title:{title:v1291.t("sheets-pivot-ui.fieldSettings")},draggable:true,mask:false,maskClosable:false,width:400,children:{label:x,tableFieldId:v1287,pivotTableId:v1286,unitId:v1284,subUnitId:v1285,tableFieldInfo:v1289,dataFieldInfo:v1290,key:"field-setting-"+(v1287||""),closeFn:()=>{v1292.close(S);},format:v474?v1298:""},onClose:()=>{v1292.close(S);}}),v1303=()=>{v1292.close(w);let v475=v1302(false);v1292.open(v475);};return(0,u.jsxs)("div",{dir:v1293,children:[(0,u.jsx)("div",{className:"univer-flex",children:(0,u.jsxs)("div",{className:"univer-mb-5 univer-flex univer-h-6 univer-cursor-pointer univer-items-center univer-text-base univer-font-medium univer-leading-6",onClick:v1303,children:[(0,u.jsx)(m.ArrowLeftIcon,{}),v1291.t("sheets-pivot-ui.dialog.numfmt.fieldSetting")]})}),(0,u.jsx)("div",{className:"univer-mb-2 univer-h-5 univer-text-sm univer-font-medium univer-leading-5",children:v1291.t("sheets-pivot-ui.dialog.numfmt.formatTypes")}),(0,u.jsx)("div",{children:(0,u.jsx)(i.Select,{className:"univer-w-full",value:v1296,options:v1295,onChange:v476=>v1301(v476)})}),(0,u.jsxs)("div",{children:[v1296==="sheet.numfmt.general"&&(0,u.jsx)(mt,{originPattern:v1288,handlePatternChange:v1300}),v1296==="sheet.numfmt.accounting"&&(0,u.jsx)(ht,{originPattern:v1288,handlePatternChange:v1300}),v1296==="sheet.numfmt.currency"&&(0,u.jsx)(gt,{originPattern:v1288,handlePatternChange:v1300}),v1296==="sheet.numfmt.date"&&(0,u.jsx)(_t,{originPattern:v1288,handlePatternChange:v1300}),v1296==="sheet.numfmt.thousandthPercentile"&&(0,u.jsx)(vt,{originPattern:v1288,handlePatternChange:v1300})]}),(0,u.jsxs)(i.ActionRow,{className:"univer-mt-2 univer-flex univer-justify-end",children:[(0,u.jsx)(i.Button,{onClick:v1303,children:v1291.t("sheets-pivot-ui.dialog.numfmt.cancel")}),(0,u.jsx)(i.Button,{className:"univer-ml-3 rtl:univer-ml-0 rtl:univer-mr-3",variant:"primary",onClick:()=>{v1292.close(w);let v477=v1302(true);v1292.open(v477);},children:v1291.t("sheets-pivot-ui.dialog.numfmt.confirm")})]})]});},bt=[{label:"sheets-pivot-ui.config.pageDownThenOver",value:"false"},{label:"sheets-pivot-ui.config.pageOverThenDown",value:"true"}],xt=[{label:"sheets-pivot-ui.config.layoutTabular",value:String(l.PivotLayoutTypeEnum["tabular"])},{label:"sheets-pivot-ui.config.layoutCompact",value:String(l.PivotLayoutTypeEnum["compact"])},{label:"sheets-pivot-ui.config.layoutOutline",value:String(l.PivotLayoutTypeEnum["outline"])}],St=[{label:"sheets-pivot-ui.config.rowSubtotalTop",value:String(l.PivotSubtotalPositionEnum["top"])},{label:"sheets-pivot-ui.config.rowSubtotalBottom",value:String(l.PivotSubtotalPositionEnum["bottom"])}];function Ct(v1304){let{unitId:v1305,subUnitId:v1306,pivotTableId:v1307}=v1304,v1308=(0,e.useDependency)(n.ICommandService),v1309=(0,e.useDependency)(n.ILogService),v1310=(0,e.useDependency)(n.LocaleService),v1311=(0,e.useDependency)(t.SheetsPivotTableConfigModel),[v1312,v1313]=(0,s.useState)(()=>{var v478,v479;let v480=v1311.getPivotTableConfig(v1305,v1306,v1307),v481=(v480==null||(v478=v480.fieldsConfig)==null?undefined:v478.options)??{};return{showRowSubtotal:v481.showRowSubtotal??true,showRowGrandTotal:v481.showRowGrandTotal??true,showColSubtotal:v481.showColSubtotal??true,showColGrandTotal:v481.showColGrandTotal??true,pageWrap:v481.pageWrap??1,pageOverThenDown:v481.pageOverThenDown??false,repeatRowLabels:v481.repeatRowLabels??false,repeatColLabels:v481.repeatColLabels??false,layout:(v480==null||(v479=v480.fieldsConfig)==null?undefined:v479.layout)??l.PivotLayoutTypeEnum["tabular"],rowSubtotalPosition:v481.rowSubtotalPosition??l.PivotSubtotalPositionEnum["top"]};}),v1314=v482=>{let v483={unitId:v1305,subUnitId:v1306,pivotTableId:v1307,options:v482};v1308.executeCommand(t.SetPivotOptionCommand["id"],v483).catch(v187=>v1309.error("[PivotConfigPanel]",v187)),v1313(v188=>({...v188,...v482}));},v1315=v484=>{let v485={unitId:v1305,subUnitId:v1306,pivotTableId:v1307,layout:v484};v1308.executeCommand(t.SetPivotLayoutCommand["id"],v485).catch(v189=>v1309.error("[PivotConfigPanel]",v189)),v1313(v190=>({...v190,layout:v484}));};return(0,u.jsxs)("div",{className:"univer-flex univer-flex-col univer-gap-4 univer-p-4",children:[(0,u.jsxs)("section",{children:[(0,u.jsx)("div",{className:"univer-mb-2 univer-text-sm univer-font-medium univer-text-gray-600",children:v1310.t("sheets-pivot-ui.config.displaySection")}),(0,u.jsxs)("div",{className:"univer-flex\x20univer-flex-col\x20univer-gap-2",children:[(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-justify-between univer-gap-2",children:[(0,u.jsx)("span",{className:"univer-text-sm univer-text-gray-600",children:v1310.t("sheets-pivot-ui.config.layout")}),(0,u.jsx)(i.Select,{className:"univer-w-36",value:String(v1312.layout),options:xt.map(v486=>({...v486,label:v1310.t(v486.label)})),onChange:v487=>v1315(Number(v487))})]}),(0,u.jsxs)("label",{className:"univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",children:[(0,u.jsx)(i.Checkbox,{checked:v1312.repeatRowLabels,disabled:v1312.layout===l.PivotLayoutTypeEnum["compact"],onChange:v488=>v1314({repeatRowLabels:!!v488})}),v1310.t("sheets-pivot-ui.config.repeatRowLabels")]}),(0,u.jsxs)("label",{className:"univer-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-gap-2\x20univer-text-sm\x20univer-text-gray-600",children:[(0,u.jsx)(i.Checkbox,{checked:v1312.repeatColLabels,onChange:v489=>v1314({repeatColLabels:!!v489})}),v1310.t("sheets-pivot-ui.config.repeatColLabels")]})]})]}),(0,u.jsxs)("section",{children:[(0,u.jsx)("div",{className:(0,i.clsx)("univer-mb-2 univer-text-sm univer-font-medium univer-text-gray-600"),children:v1310.t("sheets-pivot-ui.config.totalsSection")}),(0,u.jsxs)("div",{className:"univer-flex univer-flex-col univer-gap-2",children:[(0,u.jsxs)("label",{className:"univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",children:[(0,u.jsx)(i.Checkbox,{checked:v1312.showRowSubtotal,onChange:v490=>v1314({showRowSubtotal:!!v490})}),v1310.t("sheets-pivot-ui.config.showRowSubtotal")]}),v1312.layout===l.PivotLayoutTypeEnum["outline"]&&(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-justify-between univer-gap-2",children:[(0,u.jsx)("span",{className:"univer-text-sm univer-text-gray-600",children:v1310.t("sheets-pivot-ui.config.rowSubtotalPosition")}),(0,u.jsx)(i.Select,{className:"univer-w-36",value:String(v1312.rowSubtotalPosition),options:St.map(v491=>({...v491,label:v1310.t(v491.label)})),onChange:v492=>v1314({rowSubtotalPosition:Number(v492)})})]}),(0,u.jsxs)("label",{className:"univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",children:[(0,u.jsx)(i.Checkbox,{checked:v1312.showRowGrandTotal,onChange:v493=>v1314({showRowGrandTotal:!!v493})}),v1310.t("sheets-pivot-ui.config.showRowGrandTotal")]}),(0,u.jsxs)("label",{className:"univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",children:[(0,u.jsx)(i.Checkbox,{checked:v1312.showColSubtotal,onChange:v494=>v1314({showColSubtotal:!!v494})}),v1310.t("sheets-pivot-ui.config.showColSubtotal")]}),(0,u.jsxs)("label",{className:"univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",children:[(0,u.jsx)(i.Checkbox,{checked:v1312.showColGrandTotal,onChange:v495=>v1314({showColGrandTotal:!!v495})}),v1310.t("sheets-pivot-ui.config.showColGrandTotal")]})]})]}),(0,u.jsxs)("section",{children:[(0,u.jsx)("div",{className:"univer-mb-2\x20univer-text-sm\x20univer-font-medium\x20univer-text-gray-600",children:v1310.t("sheets-pivot-ui.config.pageSection")}),(0,u.jsxs)("div",{className:"univer-flex univer-flex-col univer-gap-3",children:[(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-justify-between univer-gap-2",children:[(0,u.jsx)("span",{className:"univer-text-sm\x20univer-text-gray-600",children:v1310.t("sheets-pivot-ui.config.pageWrap")}),(0,u.jsx)(i.InputNumber,{className:"univer-w-24",value:v1312.pageWrap,min:1,max:20,onChange:v496=>{let v497=Number(v496);Number.isFinite(v497)&&v497>=1&&v1314({pageWrap:v497});}})]}),(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-justify-between univer-gap-2",children:[(0,u.jsx)("span",{className:"univer-text-sm univer-text-gray-600",children:v1310.t("sheets-pivot-ui.config.pageDirection")}),(0,u.jsx)(i.Select,{className:"univer-w-36",value:String(v1312.pageOverThenDown),options:bt.map(v498=>({...v498,label:v1310.t(v498.label)})),onChange:v499=>v1314({pageOverThenDown:v499==="true"})})]})]})]})]});}const wt=(0,s.createContext)(null),Tt=(0,s.createContext)(null);function Et(v1316,v1317){return v1316===v1317?true:!v1316||!v1317?false:v1316.droppableId===v1317.droppableId&&v1316.index===v1317.index;}function Dt(v1318){if(!(v1318 instanceof Element))return null;let v1319=v1318.closest("[data-univer-dnd-droppable-id]");return v1319 instanceof HTMLElement?v1319:null;}function Ot(v1320,v1321,v1322,v1323){let v1324=Array.from(v1320.querySelectorAll('[data-univer-dnd-item="true"]')).filter(v500=>{let v501=v500.dataset["univerDndId"];return v501?v501!==v1322.draggableId||v1322.source["droppableId"]!==v1323:false;});if(!v1324.length)return 0;for(let v502=0;v502<v1324.length-1;v502++){let v191=v1324[v502].getBoundingClientRect();if(v1321<v191.top+v191.height/2)return v502;}let v1325=v1324.length-1,v1326=v1324[v1325].getBoundingClientRect();return v1321<v1326.top+v1326.height*0.35?v1325:v1324.length;}function kt(){let v1327=(0,s.useContext)(wt);if(!v1327)throw Error("Draggable/Droppable must be used inside DragDropContext");return v1327;}function At(v1328){let{children:v1329,onDragEnd:v1330,onDragStart:v1331,onDragUpdate:v1332}=v1328,[v1333,v1334]=(0,s.useState)(null),v1335=(0,s.useRef)(null),v1336=(0,s.useCallback)((v503,v504)=>{let v505={draggableId:v503,source:v504,destination:null};v1335.current=v505,v1334(v505),v1331==null||v1331({draggableId:v503,source:v504}),v1332==null||v1332({draggableId:v503,source:v504,destination:null});},[v1331,v1332]),v1337=(0,s.useCallback)(v506=>{let v507=v1335.current;if(!v507||Et(v507.destination,v506))return;let v508={...v507,destination:v506};v1335.current=v508,v1334(v508),v1332==null||v1332({draggableId:v508.draggableId,source:v508.source,destination:v508.destination});},[v1332]),v1338=(0,s.useCallback)(async(v509,v510)=>{let v511=v1335.current;v511&&(v1335.current=null,v1334(null),await(v1330==null?undefined:v1330({draggableId:v511.draggableId,source:v511.source,destination:v510===undefined?v511.destination:v510,reason:v509})));},[v1330]);(0,s.useEffect)(()=>{if(!v1333)return;let v512=v192=>{let v193=Dt(v192.target);(!v193||v193.dataset["univerDndDropDisabled"]==="true")&&v1337(null);};return window.addEventListener("dragover",v512,true),()=>{window.removeEventListener("dragover",v512,true);};},[v1333,v1337]);let v1339=(0,s.useMemo)(()=>({activeDrag:v1333,startDrag:v1336,updateDestination:v1337,endDrag:v1338}),[v1333,v1336,v1337,v1338]);return(0,u.jsx)(wt.Provider,{value:v1339,children:v1329});}function jt(v1340){var v1341;let{children:v1342,droppableId:v1343,isDropDisabled:v1344=false}=v1340,{activeDrag:v1345,updateDestination:v1346,endDrag:v1347}=kt(),v1348=(0,s.useRef)(null),v1349={innerRef:(0,s.useCallback)(v513=>{v1348.current=v513;},[]),droppableProps:{onDragOver:(0,s.useCallback)(v514=>{if(!v1345||v1344||!v1348.current)return;v514.preventDefault();let v515=Ot(v1348.current,v514.clientY,v1345,v1343);v1346({droppableId:v1343,index:v515});},[v1345,v1344,v1343,v1346]),onDrop:(0,s.useCallback)(v516=>{var v517;if(!v1345||v1344||!v1348.current)return;v516.preventDefault();let v518=(((v517=v1345.destination)==null?undefined:v517.droppableId)===v1343?v1345.destination:null)??{droppableId:v1343,index:Ot(v1348.current,v516.clientY,v1345,v1343)};return v1347("DROP",v518);},[v1345,v1347,v1344,v1343]),"data-univer-dnd-droppable-id":v1343,"data-univer-dnd-drop-disabled":String(v1344)},placeholder:null},v1350={isDraggingOver:!!(v1345&&((v1341=v1345.destination)==null?undefined:v1341.droppableId)===v1343)};return(0,u.jsx)(Tt.Provider,{value:v1343,children:v1342(v1349,v1350)});}function Mt(v1351){var v1352;let{children:v1353,draggableId:v1354,index:v1355,isDragDisabled:v1356=false}=v1351,{activeDrag:v1357,startDrag:v1358,updateDestination:v1359,endDrag:v1360}=kt(),v1361=(0,s.useContext)(Tt),v1362=(0,s.useRef)(null),v1363=(0,s.useRef)(null),v1364=(0,s.useRef)(false),v1365=(0,s.useRef)(null),v1366=(0,s.useRef)(null),v1367=(0,s.useRef)(false),v1368=(0,s.useRef)(null),v1369=(0,s.useRef)(null),v1370=(0,s.useRef)(null),v1371=(0,s.useCallback)(v519=>{v1362.current=v519;},[]),v1372=(v1357==null?undefined:v1357.draggableId)===v1354,v1373=(0,s.useCallback)(()=>{v1366.current&&=(window.clearTimeout(v1366.current),null);},[]),v1374=(0,s.useCallback)(()=>{v1373(),v1370.current=null,v1365.current&&=(v1365.current(),null),v1368.current&&=(v1368.current["remove"](),null),v1369.current=null,v1364.current=false;},[v1373]);(0,s.useEffect)(()=>v1374,[v1374]);let v1375=(0,s.useCallback)((v520,v521)=>{if(v1368.current)return;let v522=v1362.current;if(!v522)return;let v523=v522.getBoundingClientRect(),v524=v520>0?Math.max(0,v520-v523.left):12,v525=v521>0?Math.max(0,v521-v523.top):12,v526=v522.cloneNode(true);if(!(v526 instanceof HTMLDivElement))return;let v527=v526;v527.style["position"]="fixed",v527.style["left"]="0px",v527.style["top"]="0px",v527.style["width"]=v523.width+"px",v527.style["height"]=v523.height+"px",v527.style["pointerEvents"]="none",v527.style["opacity"]="0.9",v527.style["zIndex"]="2147483647",v527.style["boxSizing"]="border-box",v527.style["transform"]="translate("+Math.max(0,v520-v524)+"px, "+Math.max(0,v521-v525)+"px)",document.body["appendChild"](v527),v1368.current=v527,v1369.current={x:v524,y:v525};},[]),v1376=(0,s.useCallback)((v528,v529)=>{let v530=v1368.current,v531=v1369.current;!v530||!v531||(v530.style["transform"]="translate("+Math.max(0,v528-v531.x)+"px, "+Math.max(0,v529-v531.y)+"px)");},[]),v1377=(0,s.useCallback)((v532,v533)=>{let v534=Dt(document.elementFromPoint(v532,v533));if(!v534||v534.dataset["univerDndDropDisabled"]==="true")return null;let v535=v534.dataset["univerDndDroppableId"];return v535?{droppableId:v535,index:Ot(v534,v533,{draggableId:v1354,source:{droppableId:v1361??"",index:v1355},destination:null},v535)}:null;},[v1354,v1361,v1355]),v1378=(0,s.useCallback)((v536,v537,v538,v539)=>{if(v1364.current||v1367.current||v1356||!v1361)return;v1364.current=true,v1373(),v1367.current=false;try{var v540;(v540=v1362.current)==null||v540.setPointerCapture(v537);}catch{}v1375(v538,v539),v1358(v1354,{droppableId:v1361,index:v1355});let v541=v1377(v538,v539);v1359(v541);try{v536.preventDefault();}catch{}},[v1373,v1354,v1361,v1355,v1356,v1375,v1377,v1358,v1359]),v1379=(0,s.useCallback)(v542=>{if(v1356||!v1361||v542.pointerType==="mouse"&&v542.button!==0)return;v1367.current=false;let v543=v542.pointerId;v1370.current={pointerId:v543,pointerType:v542.pointerType,startX:v542.clientX,startY:v542.clientY},v1373(),v542.pointerType!=="mouse"&&(v1366.current=window.setTimeout(()=>{let v194=v1370.current;!v194||v194.pointerId!==v543||v1378(v542.nativeEvent,v194.pointerId,v194.startX,v194.startY);},150));let v544=v195=>{let v196=v1370.current;if(!v196||v195.pointerId!==v196.pointerId)return;if(!v1364.current){if(v1367.current){v1374();return;}if(v196.pointerType==="mouse"){let v49=v195.clientX-v196.startX,v50=v195.clientY-v196.startY;v49*v49+v50*v50>=16&&v1378(v195,v196.pointerId,v195.clientX,v195.clientY);}return;}v1376(v195.clientX,v195.clientY);let v197=v1377(v195.clientX,v195.clientY);v1359(v197);try{v195.preventDefault();}catch{}},v545=v198=>{let v199=v1370.current;if(!v199||v198.pointerId!==v199.pointerId)return;let v200=v1364.current?v1377(v198.clientX,v198.clientY):null,v201=v1364.current?v1360(v200?"DROP":"CANCEL",v200):Promise.resolve();return v1374(),v201;};window.addEventListener("pointermove",v544,{capture:true,passive:false}),window.addEventListener("pointerup",v545,{capture:true}),window.addEventListener("pointercancel",v545,{capture:true}),v1365.current=()=>{window.removeEventListener("pointermove",v544,true),window.removeEventListener("pointerup",v545,true),window.removeEventListener("pointercancel",v545,true);};},[v1374,v1373,v1361,v1360,v1356,v1377,v1378,v1359,v1376]),v1380=(0,s.useCallback)(v546=>{let v547=v546.dataTransfer;if(!v547||typeof v547.setDragImage!="function")return;let v548=v546.currentTarget,v549=v548.cloneNode(true);if(!(v549 instanceof HTMLDivElement))return;let v550=v549;v550.style["position"]="fixed",v550.style["left"]="-9999px",v550.style["top"]="-9999px",v550.style["width"]=v548.getBoundingClientRect().width+"px",v550.style["pointerEvents"]="none",v550.style["opacity"]="0.95",v550.style["zIndex"]="2147483647",document.body["appendChild"](v550);let v551=v548.getBoundingClientRect(),v552=v546.clientX>0?Math.max(0,v546.clientX-v551.left):12,v553=v546.clientY>0?Math.max(0,v546.clientY-v551.top):12;v547.setDragImage(v550,v552,v553),v1363.current&&v1363.current!==v550&&v1363.current["remove"](),v1363.current=v550;},[]),v1381=(0,s.useCallback)(v554=>{if(v1364.current){v554.preventDefault();return;}if(v1356||!v1361){v554.preventDefault();return;}v1367.current=true,v1373(),v1370.current=null,v1365.current&&=(v1365.current(),null);let v555=v554.dataTransfer;if(v555){try{v555.effectAllowed="move";}catch{}try{v555.setData("text/plain",v1354);}catch{}}try{v1380(v554);}catch{}v1358(v1354,{droppableId:v1361,index:v1355});},[v1380,v1373,v1354,v1361,v1355,v1356,v1358]),v1382=(0,s.useCallback)(()=>(v1363.current&&=(v1363.current["remove"](),null),v1360("CANCEL",null)),[v1360]);return v1353({innerRef:v1371,draggableProps:{draggable:!v1356,onDragStart:v1381,onDragEnd:v1382,style:v1372?{opacity:1}:undefined,"data-univer-dnd-item":"true","data-univer-dnd-id":v1354,"data-univer-dnd-index":String(v1355)},dragHandleProps:{onPointerDown:v1379}},{isDragging:v1372,draggingOver:v1357==null||(v1352=v1357.destination)==null?undefined:v1352.droppableId});}function Nt(v1383,v1384){switch(v1383){case"filter":return v1384.t("sheets-pivot-ui.filter");case"row":return v1384.t("sheets-pivot-ui.row");case"column":return v1384.t("sheets-pivot-ui.column");case"value":return v1384.t("sheets-pivot-ui.value");}}function Pt(v1385){switch(v1385){case"filter":return(0,u.jsx)(m.FilterIcon,{className:"univer-flex univer-flex-row univer-gap-4"});case"row":return(0,u.jsx)(m.ColumnIcon,{className:"univer-flex univer-flex-row univer-gap-4"});case"column":return(0,u.jsx)(m.RowIcon,{className:"univer-flex univer-flex-row univer-gap-4"});case"value":return(0,u.jsx)(m.FunctionIcon,{className:"univer-flex univer-flex-row univer-gap-4"});}}function Ft(v1386){switch(v1386){case"filter":return(0,u.jsxs)("svg",{xmlns:"http://www.w3.org/2000/svg",width:"32",height:"32",viewBox:"0 0 32 32",fill:"none",children:[(0,u.jsx)("path",{d:"M4.99957\x201.875C2.84556\x201.875\x201.67491\x204.3932\x203.06336\x206.04001L11.5946\x2016.1587V26.4187C11.5946\x2027.4582\x2012.2298\x2028.3922\x2013.1966\x2028.7741L16.1601\x2029.9449C17.8221\x2030.6015\x2019.6232\x2029.3766\x2019.6232\x2027.5895V16.1587L28.1544\x206.04C29.5428\x204.3932\x2028.3722\x201.875\x2026.2182\x201.875H4.99957Z",fill:"#ECECEC"}),(0,u.jsx)("rect",{x:"21.9404",y:"17.8544",width:"7.59766",height:"2.2793",rx:"1.13965",fill:"#274FEE"}),(0,u.jsx)("rect",{x:"21.9404",y:"21.9067",width:"7.59766",height:"2.2793",rx:"1.13965",fill:"#274FEE"}),(0,u.jsx)("rect",{x:"21.9404",y:"25.959",width:"7.59766",height:"2.2793",rx:"1.13965",fill:"#274FEE"})]});case"row":return(0,u.jsxs)("svg",{xmlns:"http://www.w3.org/2000/svg",width:"32",height:"32",viewBox:"0 0 32 32",fill:"none",children:[(0,u.jsx)("path",{d:"M2 12.3661C2 12.0347 2.26863 11.7661 2.6 11.7661H9.24705C9.57842 11.7661 9.84705 12.0347 9.84705 12.3661V29.278C9.84705 29.6093 9.57842 29.878 9.24705 29.878H4C2.89543 29.878 2 28.9825 2 27.878V12.3661Z",fill:"#D8D8D8"}),(0,u.jsx)("path",{d:"M2 4.0863C2 2.98173 2.89543 2.0863 4 2.0863H9.24705C9.57842 2.0863 9.84705 2.35493 9.84705 2.6863V8.73981C9.84705 9.07118 9.57842 9.33981 9.24705 9.33981H2.6C2.26863 9.33981 2 9.07118 2 8.73981V4.0863Z",fill:"#D8D8D8"}),(0,u.jsx)("path",{d:"M12.2983 12.4011C12.2982 12.0697 12.5669 11.8009 12.8983 11.8009L29.3931 11.8009C29.7243 11.8009 29.9929 12.0694 29.9931 12.4007L29.9993 27.9129C29.9997 29.0178 29.1042 29.9137 27.9993 29.9137H12.9051C12.5738 29.9137 12.3053 29.6452 12.3051 29.314L12.2983 12.4011Z",fill:"#ECECEC"}),(0,u.jsx)("path",{d:"M12.2517 2.6863C12.2517 2.35493 12.5203 2.0863 12.8517 2.0863H27.9582C29.0628 2.0863 29.9582 2.98173 29.9582 4.0863V8.73627C29.9582 9.06764 29.6896 9.33627 29.3582 9.33627H12.8517C12.5203 9.33627 12.2517 9.06764 12.2517 8.73627L12.2517 2.6863Z",fill:"#274FEE"})]});case"column":return(0,u.jsxs)("svg",{xmlns:"http://www.w3.org/2000/svg",width:"32",height:"32",viewBox:"0 0 32 32",fill:"none",children:[(0,u.jsx)("path",{d:"M2 12.3661C2 12.0347 2.26863 11.7661 2.6 11.7661H9.24705C9.57842 11.7661 9.84705 12.0347 9.84705 12.3661V29.278C9.84705 29.6093 9.57842 29.878 9.24705 29.878H4C2.89543 29.878 2 28.9825 2 27.878V12.3661Z",fill:"#274FEE"}),(0,u.jsx)("path",{d:"M2\x204.0863C2\x202.98173\x202.89543\x202.0863\x204\x202.0863H9.24705C9.57842\x202.0863\x209.84705\x202.35493\x209.84705\x202.6863V8.73981C9.84705\x209.07118\x209.57842\x209.33981\x209.24705\x209.33981H2.6C2.26863\x209.33981\x202\x209.07118\x202\x208.73981V4.0863Z",fill:"#D8D8D8"}),(0,u.jsx)("path",{d:"M12.2637 2.6863C12.2637 2.35493 12.5323 2.0863 12.8637 2.0863H27.9702C29.0748 2.0863 29.9702 2.98173 29.9702 4.0863V8.73627C29.9702 9.06764 29.7016 9.33627 29.3702 9.33627H12.8637C12.5323 9.33627 12.2637 9.06764 12.2637 8.73627L12.2637 2.6863Z",fill:"#D8D8D8"}),(0,u.jsx)("path",{d:"M12.2982 12.4011C12.2981 12.0697 12.5667 11.8009 12.8982 11.8009L29.3929 11.8009C29.7242 11.8009 29.9928 12.0694 29.9929 12.4007L29.9992 27.9129C29.9996 29.0178 29.104 29.9137 27.9992 29.9137H12.905C12.5737 29.9137 12.3051 29.6452 12.305 29.314L12.2982 12.4011Z",fill:"#ECECEC"})]});case"value":return(0,u.jsxs)("svg",{xmlns:"http://www.w3.org/2000/svg",width:"32",height:"32",viewBox:"0\x200\x2032\x2032",fill:"none",children:[(0,u.jsx)("path",{d:"M2 12.3661C2 12.0347 2.26863 11.7661 2.6 11.7661H9.24705C9.57842 11.7661 9.84705 12.0347 9.84705 12.3661V29.278C9.84705 29.6093 9.57842 29.878 9.24705 29.878H4C2.89543 29.878 2 28.9825 2 27.878V12.3661Z",fill:"#D8D8D8"}),(0,u.jsx)("path",{d:"M2 4.0863C2 2.98173 2.89543 2.0863 4 2.0863H9.24705C9.57842 2.0863 9.84705 2.35493 9.84705 2.6863V8.73981C9.84705 9.07118 9.57842 9.33981 9.24705 9.33981H2.6C2.26863 9.33981 2 9.07118 2 8.73981V4.0863Z",fill:"#D8D8D8"}),(0,u.jsx)("path",{d:"M12.2637 2.6863C12.2637 2.35493 12.5323 2.0863 12.8637 2.0863H27.9702C29.0748 2.0863 29.9702 2.98173 29.9702 4.0863V8.73627C29.9702 9.06764 29.7016 9.33627 29.3702 9.33627H12.8637C12.5323 9.33627 12.2637 9.06764 12.2637 8.73627L12.2637 2.6863Z",fill:"#D8D8D8"}),(0,u.jsx)("path",{d:"M12.2982 12.4011C12.2981 12.0697 12.5667 11.8009 12.8982 11.8009L29.3929 11.8009C29.7242 11.8009 29.9928 12.0694 29.9929 12.4007L29.9992 27.9129C29.9996 29.0178 29.104 29.9137 27.9992 29.9137H12.905C12.5737 29.9137 12.3051 29.6452 12.305 29.314L12.2982 12.4011Z",fill:"#274FEE"})]});}}function It(v1387,v1388){switch(v1387){case"filter":return v1388.t("sheets-pivot-ui.filterDesc");case"row":return v1388.t("sheets-pivot-ui.rowDesc");case"column":return v1388.t("sheets-pivot-ui.columnDesc");case"value":return v1388.t("sheets-pivot-ui.valueDesc");}}function Lt(v1389){let v1390=(0,e.useDependency)(n.LocaleService),{areaType:v1391}=v1389,v1392=It(v1391,v1390);return(0,u.jsxs)("div",{className:"univer-flex univer-h-[140px] univer-flex-col univer-items-center univer-justify-center univer-gap-1 univer-self-stretch univer-px-2",children:[(0,u.jsx)("div",{className:"univer-size-8",children:Ft(v1391)}),(0,u.jsx)("div",{className:"univer-text-center univer-text-xs univer-leading-4 univer-text-gray-600 dark:!univer-text-gray-200",children:v1392})]});}function Y(v1393){let{areaType:v1394,items:v1395,positionInfo:v1396,pivotTableId:v1397,pivotTableInfo:v1398}=v1393,v1399=(0,e.useDependency)(n.LocaleService);return(0,u.jsxs)("div",{className:"univer-min-h-[200px]\x20univer-flex-1\x20univer-p-1",children:[(0,u.jsxs)("div",{className:"univer-mb-2\x20univer-mt-0\x20univer-flex\x20univer-w-full\x20univer-text-sm\x20univer-leading-4\x20univer-text-gray-900",children:[Pt(v1394),(0,u.jsx)("span",{className:"univer-inline-block univer-align-top",children:Nt(v1394,v1399)})]}),(0,u.jsx)(jt,{droppableId:""+v1394,isCombineEnabled:false,isDropDisabled:false,ignoreContainerClipping:false,direction:"vertical",children:(v556,v557)=>(0,u.jsx)("div",{className:(0,i.clsx)("univer-box-border\x20univer-h-[161px]\x20univer-w-full\x20univer-flex-col\x20univer-items-center\x20univer-justify-center\x20univer-overflow-x-hidden\x20univer-rounded-lg\x20univer-bg-gray-50\x20univer-py-2\x20dark:!univer-bg-gray-900",i.borderClassName,{"univer-border-primary-600":v557.isDraggingOver}),children:(0,u.jsx)("div",{className:(0,i.clsx)("univer-h-full\x20univer-overflow-y-auto",i.scrollbarClassName),children:(0,u.jsxs)("div",{ref:v556.innerRef,className:"univer-box-border\x20univer-h-full\x20univer-px-2",...v556.droppableProps,children:[v1395.length>0&&v1395.map((v202,v203)=>(0,u.jsx)("div",{children:(0,u.jsx)(Mt,{isDragDisabled:false,draggableId:v202.tableFieldId,index:v203,children:(v100,v101)=>(0,u.jsx)(u.Fragment,{children:(0,u.jsx)("div",{ref:v100.innerRef,...v100.draggableProps,...v100.dragHandleProps,style:v100.draggableProps["style"],className:(0,i.clsx)("univer-flex\x20univer-items-center\x20univer-gap-1\x20univer-self-stretch\x20univer-border\x20univer-border-transparent\x20univer-p-0.5\x20univer-leading-4\x20hover:univer-bg-gray-100\x20dark:hover:!univer-bg-gray-700",v101.draggingOver&&"univer-border-primary-600"),children:(0,u.jsx)(Rt,{pivotTableId:v1397,positionInfo:v1396,item:v202,areaType:v1394,pivotTableInfo:v1398})})})},v202.tableFieldId)},v202.tableFieldId)),v1395.length===0&&(0,u.jsx)(Lt,{areaType:v1394})]})})})})]});}function Rt(v1400){let{areaType:v1401,item:v1402,positionInfo:v1403,pivotTableId:v1404,pivotTableInfo:v1405}=v1400,{unitId:v1406,subUnitId:v1407}=v1403,v1408=v1402.tableFieldId===V,v1409=(0,e.useDependency)(n.ICommandService),v1410=(0,e.useDependency)(n.LocaleService),v1411=()=>{if(v1408){let v204=(v1405.valueFields||[]).map(v102=>v102.tableFieldId);H({pivotTableId:v1404,unitId:v1406,subUnitId:v1407,commandService:v1409},v204);}else H({pivotTableId:v1404,unitId:v1406,subUnitId:v1407,commandService:v1409},[v1402.tableFieldId]);},v1412=()=>{!v1406||!v1407||ue(v1409,v1406,v1407,v1404,v1402.tableFieldId);},v1413=()=>{!v1406||!v1407||de(v1409,v1404,v1402.tableFieldId,v1406,v1407,v1405);},v1414=v558=>{let v559=v558==="column"?l.PivotTableValuePositionEnum["Row"]:l.PivotTableValuePositionEnum["Column"],v560=v558==="column"?v1405.rowFields["length"]:v1405.columnFields["length"];ce({pivotTableId:v1404,unitId:v1406,subUnitId:v1407,commandService:v1409},v559,v560);},v1415=(0,u.jsxs)("div",{className:"univer-inline-flex univer-flex-col univer-rounded-lg univer-border univer-border-gray-200 univer-bg-gray-0 univer-p-2 univer-shadow-lg",children:[(0,u.jsx)("div",{className:"univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 dark:!univer-text-gray-0",onClick:()=>{v1411();},children:v1410.t("sheets-pivot-ui.removeField")}),v1401!=="value"&&!v1408&&(0,u.jsx)("div",{className:"univer-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-self-stretch\x20univer-px-2\x20univer-py-1.5\x20univer-text-sm\x20univer-leading-5\x20univer-text-gray-900\x20dark:!univer-text-gray-0",onClick:()=>{v1412();},children:v1410.t("sheets-pivot-ui.filterField")}),v1408&&(0,u.jsx)("div",{className:"univer-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-self-stretch\x20univer-px-2\x20univer-py-1.5\x20univer-text-sm\x20univer-leading-5\x20univer-text-gray-900\x20dark:!univer-text-gray-0",onClick:()=>{v1414(v1401);},children:v1401==="column"?v1410.t("sheets-pivot-ui.moveToRow"):v1410.t("sheets-pivot-ui.moveToColumn")}),v1401==="value"&&(0,u.jsx)("div",{className:"univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 dark:!univer-text-gray-0",onClick:()=>{v1413();},children:v1410.t("sheets-pivot-ui.fieldSettings")})]}),v1416=(0,u.jsx)("bdi",{dir:"auto",children:v1408?v1410.t("sheets-pivot-ui.multipleValue"):v1402.displayName});return(0,u.jsxs)(u.Fragment,{children:[(0,u.jsx)(m.GripVerticalIcon,{}),(0,u.jsx)("div",{className:"univer-max-w-[66px] univer-flex-1 univer-shrink-0 univer-truncate univer-text-xs univer-leading-4 univer-text-gray-800 dark:!univer-text-gray-100",children:(0,u.jsx)(i.Tooltip,{title:v1416,children:v1416})}),(0,u.jsx)("div",{className:"univer-cursor-pointer",children:(0,u.jsx)(i.Dropdown,{align:"end",overlay:v1415,children:(0,u.jsx)("span",{children:(0,u.jsx)(m.MoreHorizontalIcon,{})})})})]});}function zt(v1417){var v1418;let v1419=(0,e.useDependency)(n.IUniverInstanceService),v1420=(0,e.useDependency)(n.LocaleService),v1421=(0,e.useDependency)(n.ICommandService),v1422=(0,e.useDependency)(F),{sourceRangeInfo:v1423,refreshHandler:v1424,pivotTableId:v1425,positionInfo:v1426}=v1417,{unitId:v1427,range:v1428,subUnitId:v1429}=v1423,v1430=v1419.getUnit(v1427),v1431=(v1430==null||(v1418=v1430.getSheetBySheetId(v1429))==null?undefined:v1418.getName())??"",[v1432,v1433]=(0,s.useState)(undefined),v1434=(0,s.useRef)(v1432);v1434.current=v1432;let[v1435,v1436]=(0,s.useState)(v1428),[v1437,v1438]=(0,s.useState)(v1431),[v1439,v1440]=(0,s.useState)(false);(0,s.useEffect)(()=>{v1422.setIsRangeSelectorFocus(v1439);},[v1439,v1422]),(0,s.useEffect)(()=>{v1436(v1423.range),v1438(v1431);},[v1423,v1431]);let v1441=(0,s.useMemo)(()=>(0,n.debounce)(async v205=>{let v206=v205.split(",").filter(v103=>!!v103).map(a.deserializeRangeWithSheet);if(!v206[0])return;let v207=v206[0];if(!v1430||v1434.current)return;let v208=v207.sheetName||v1423.sheetName;v1436(v207.range),v1438(v208);let v209={unitId:v1427,subUnitId:v1430.getSheetBySheetName(v208).getSheetId(),range:{...v207.range},sheetName:v208};await ae(v1421,v1425,v209,v1426.unitId,v1426.subUnitId),v1424();},300,{leading:false,maxWait:1000,trailing:true}),[]);return(0,u.jsxs)("div",{className:"univer-mb-4",children:[(0,u.jsxs)("div",{className:"univer-mb-2 univer-flex univer-h-5 univer-justify-between univer-text-sm univer-leading-5",children:[(0,u.jsx)("span",{className:"univer-text-justify univer-text-gray-900 dark:!univer-text-gray-0",children:v1420.t("sheets-pivot-ui.sourceRangeLabel")}),(0,u.jsx)("span",{className:"univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",children:v1420.t("sheets-pivot-ui.sourceRangePlaceholder")})]}),(0,u.jsxs)("div",{className:"univer-relative",children:[(0,u.jsx)(o.RangeSelector,{unitId:v1427,subUnitId:v1429,initialValue:(0,a.serializeRangeWithSheet)(v1437,v1435),onChange:(v561,v562)=>{(0,a.serializeRangeWithSheet)(v1437,v1435)!==v562&&v1441(v562);},keepSheetReference:true,supportAcrossSheet:true,onVerify:(v563,v564)=>{let v565=v564.split(",").filter(v210=>!!v210);if(!v565[0]){v1433(v1420.t("sheets-pivot-ui.msg.emptySourceRange"));return;}if(!v563){v1433(v1420.t("sheets-pivot-ui.msg.invalidSize"));return;}let v566=(0,a.deserializeRangeWithSheet)(v565[0]),v567=v566.sheetName||v1423.sheetName;if(v1430)switch(re(v1430.getSheetBySheetName(v567),v566.range)){case 2:v1433(undefined);break;case 0:v1433(v1420.t("sheets-pivot-ui.msg.emptySourceRange"));break;case 1:v1433(v1420.t("sheets-pivot-ui.msg.invalidSize"));break;}},maxRangeCount:1,onFocusChange:v568=>{v1440(v568);},onRangeSelectorDialogVisibleChange:v569=>{v1440(!!v569);}}),v1432?(0,u.jsx)("div",{className:"univer-my-1\x20univer-text-xs\x20univer-text-red-500",children:v1432}):null]})]});}function Bt(v1442){let{type:v1443}=v1442;switch(v1443){case l.PivotDataFieldDataTypeEnum["text"]:return(0,u.jsx)(m.TextIcon,{className:"univer-mx-1.5 univer-my-0 univer-h-4 univer-text-xs univer-text-gray-200 dark:!univer-text-gray-600"});case l.PivotDataFieldDataTypeEnum["number"]:return(0,u.jsx)(m.NumberIcon,{className:"univer-mx-1.5\x20univer-my-0\x20univer-h-4\x20univer-text-xs\x20univer-text-gray-200\x20dark:!univer-text-gray-600"});case l.PivotDataFieldDataTypeEnum["date"]:return(0,u.jsx)(m.CalendarIcon,{className:"univer-mx-1.5 univer-my-0 univer-h-4 univer-text-xs univer-text-gray-200 dark:!univer-text-gray-600"});}}function Vt(v1444){let{name:v1445,dataFieldId:v1446,checked:v1447,type:v1448,refreshHandler:v1449,pivotTableId:v1450,draggingId:v1451,pivotTableInfo:v1452,unitId:v1453,subUnitId:v1454}=v1444,[v1455,v1456]=(0,s.useState)(false),v1457=(0,e.useDependency)(n.ICommandService),v1458=(0,e.useDependency)(n.LocaleService);if(!v1452)return null;let{rowFields:v1459,columnFields:v1460,filterFields:v1461,valueFields:v1462}=v1452,v1463=[...v1459,...v1460,...v1461,...v1462],v1464=async v570=>{let v571=!!v570,v572=false;if(v571){let v211={pivotTableId:v1450,dataFieldId:v1446,fieldArea:v1448===l.PivotDataFieldDataTypeEnum["number"]?l.PivotTableFiledAreaEnum["Value"]:l.PivotTableFiledAreaEnum["Row"],unitId:v1453,subUnitId:v1454,index:v1448===l.PivotDataFieldDataTypeEnum["number"]?v1462.length:v1459.length};v572=await v1457.executeCommand(t.AddPivotFieldCommand["id"],v211);}else{let v212=[];v1463.forEach(v104=>{v104.dataFieldId===v1446&&v212.push(v104.tableFieldId);}),v572=await v1457.executeCommand(t.RemovePivotFieldCommand["id"],{pivotTableId:v1450,fieldIds:v212,unitId:v1453,subUnitId:v1454});}v572&&v1449();},v1465=async v573=>{let v574=false,v575="";if([...v1459,...v1460,...v1461].forEach(v213=>{v213.dataFieldId===v1446&&(v574=true,v575=v213.tableFieldId);}),v574&&v573!==l.PivotTableFiledAreaEnum["Value"]){if(v1450){let v105=Se(v1452,v573),v106={pivotTableId:v1450,area:v573,index:v105,fieldId:v575,unitId:v1453,subUnitId:v1454};(await v1457.executeCommand(t.MovePivotFieldCommand["id"],v106))&&v1449();}}else{if(v1450){let v107={pivotTableId:v1450,dataFieldId:v1446,fieldArea:v573,unitId:v1453,subUnitId:v1454,index:Se(v1452,v573)};(await v1457.executeCommand(t.AddPivotFieldCommand["id"],v107))&&v1449();}}};return(0,u.jsxs)("div",{className:(0,i.clsx)("univer-group univer-relative univer-box-border univer-flex univer-h-8 univer-w-full univer-flex-row univer-items-center univer-rounded-md univer-px-1 univer-py-2 univer-leading-4 univer-transition-all hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700",{"univer-flex\x20univer-bg-gray-100\x20dark:!univer-bg-gray-700":v1451===v1446}),id:"source-"+v1446,onContextMenu:v576=>{v576.preventDefault(),v1456(true);},children:[(0,u.jsx)("span",{className:"univer-mr-2 univer-w-4 rtl:univer-ml-2 rtl:univer-mr-0",children:(0,u.jsx)(m.GripVerticalIcon,{})}),(0,u.jsx)(i.Checkbox,{className:"univer-w-[14px] univer-text-sm univer-text-gray-200",checked:v1447,onChange:v1464}),(0,u.jsxs)("div",{className:"univer-flex\x20univer-min-w-0\x20univer-flex-1\x20univer-items-center\x20univer-text-xs\x20univer-leading-4\x20univer-text-gray-900\x20dark:!univer-text-gray-0",children:[(0,u.jsx)(Bt,{type:v1448}),(0,u.jsx)("span",{className:"univer-truncate",children:v1445})]}),(0,u.jsx)(i.Dropdown,{align:"end",side:"bottom",open:v1455,onOpenChange:v1456,overlay:(0,u.jsxs)("div",{children:[(0,u.jsx)("div",{className:"univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",onClick:()=>{v1456(false),v1465(l.PivotTableFiledAreaEnum["Row"]);},children:v1458.t("sheets-pivot-ui.addToRow")}),(0,u.jsx)("div",{className:"univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",onClick:()=>{v1456(false),v1465(l.PivotTableFiledAreaEnum["Column"]);},children:v1458.t("sheets-pivot-ui.addToColumn")}),(0,u.jsx)("div",{className:"univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",onClick:()=>{v1456(false),v1465(l.PivotTableFiledAreaEnum["Value"]);},children:v1458.t("sheets-pivot-ui.addToValue")}),(0,u.jsx)("div",{className:"univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",onClick:()=>{v1456(false),v1465(l.PivotTableFiledAreaEnum["Filter"]);},children:v1458.t("sheets-pivot-ui.addToFilter")})]}),children:(0,u.jsx)("div",{className:(0,i.clsx)("univer-ml-1 univer-flex univer-size-5 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-md univer-transition-opacity hover:univer-bg-gray-200 rtl:univer-ml-0 rtl:univer-mr-1 dark:hover:!univer-bg-gray-700",{"univer-opacity-100":v1455,"univer-opacity-0\x20group-hover:univer-opacity-100":!v1455}),onMouseDown:v577=>v577.stopPropagation(),onClick:v578=>v578.stopPropagation(),children:(0,u.jsx)(m.MoreDownIcon,{className:"univer-text-gray-400 dark:!univer-text-gray-500"})})})]},v1446);}function Ht(v1466){let{sourceList:v1467,refreshHandler:v1468,pivotTableId:v1469,pivotTableInfo:v1470,unitId:v1471,draggingId:v1472,subUnitId:v1473}=v1466,v1474=(0,e.useDependency)(n.LocaleService),[v1475,v1476]=(0,s.useState)(""),v1477=v1475.trim().toLocaleLowerCase(),v1478=v1477?v1467.filter(v579=>v579.name["toLocaleLowerCase"]().includes(v1477)):v1467;return(0,u.jsxs)("div",{className:"univer-mb-4 univer-flex univer-min-h-0 univer-flex-1 univer-flex-col",children:[(0,u.jsx)("p",{className:"univer-mb-1 univer-mt-0 univer-text-sm univer-font-medium univer-leading-5 univer-text-gray-900 dark:!univer-text-gray-0",children:v1474.t("sheets-pivot-ui.sourceFieldTile")}),(0,u.jsx)("p",{className:"univer-mb-2 univer-mt-0 univer-text-xs univer-leading-4 univer-text-gray-600 dark:!univer-text-gray-200",children:v1474.t("sheets-pivot-ui.sourceFieldDescription")}),(0,u.jsx)(i.Input,{allowClear:true,className:"univer-mb-2",placeholder:v1474.t("sheets-pivot-ui.searchFieldPlaceholder"),slot:(0,u.jsx)(m.SearchIcon,{}),value:v1475,onChange:v1476}),(0,u.jsx)("div",{className:(0,i.clsx)("univer-box-border univer-min-h-0 univer-flex-1 univer-rounded-lg univer-bg-gray-0 univer-p-2 dark:!univer-bg-gray-900",i.borderClassName),children:(0,u.jsx)("div",{className:(0,i.clsx)("univer-relative\x20univer-h-full\x20univer-overflow-y-auto",i.scrollbarClassName),"data-testid":"pivot-source-field-viewport",children:(0,u.jsx)(jt,{droppableId:"source",direction:"vertical",isCombineEnabled:false,ignoreContainerClipping:false,isDropDisabled:true,children:v580=>(0,u.jsxs)("div",{ref:v580.innerRef,className:"univer-box-border univer-h-full univer-px-2",...v580.droppableProps,children:[v1478.map((v214,v215)=>(0,u.jsx)("div",{className:"univer-relative univer-flex univer-h-8 univer-w-full univer-items-center univer-gap-1 univer-self-stretch univer-border univer-border-transparent univer-p-0.5 univer-leading-4 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700",children:(0,u.jsx)(Mt,{draggableId:v214.id,isDragDisabled:false,index:v215,children:({innerRef:v108,draggableProps:v109,dragHandleProps:v110})=>(0,u.jsx)("div",{ref:v108,...v109,...v110,className:"univer-h-8 univer-w-full",style:v109.style,children:(0,u.jsx)(Vt,{draggingId:v1472,unitId:v1471,subUnitId:v1473,...v214,refreshHandler:v1468,pivotTableId:v1469,pivotTableInfo:v1470})})},v214.id)},v214.id)),v1478.length===0&&(0,u.jsx)("div",{className:"univer-py-4\x20univer-text-center\x20univer-text-xs\x20univer-text-gray-500",children:v1474.t("sheets-pivot-ui.noMatchingFields")})]})})})})]});}function Ut(v1479){let{pivotTableId:v1480,version:v1481,unitId:v1482,subUnitId:v1483,panelInfo:v1484}=v1479,v1485=(0,e.useDependency)(t.SheetsPivotTableConfigModel),v1486=(0,e.useObservable)(v1485.configVersion$),v1487=(0,e.useDependency)(t.SheetsPivotRPCService),v1488=(0,e.useObservable)((0,e.useDependency)(F).pivotTablePanelVisible$,true),v1489=(0,e.useDependency)(n.ICommandService),v1490=(0,e.useDependency)(n.ILogService),[v1491,v1492]=(0,s.useState)(v1484),[v1493,v1494]=(0,s.useState)(null),v1495=(0,s.useCallback)(async()=>{if(!v1485.getPivotTableConfig(v1482,v1483,v1480))return;let v581=await v1487.getPivotDisplayConfig({unitId:v1482,subUnitId:v1483,pivotTableId:v1480,params:{type:t.PivotDisplayDataType["Panel"],panel:{pivotTableId:v1480}}});v581.result["panel"]&&v1492(v581.result["panel"]);},[v1480,v1487,v1485,v1483,v1482]);(0,s.useEffect)(()=>{v1495().catch(v216=>v1490.error("[PivotPanel]",v216));},[v1490,v1486,v1480,v1495,v1481]);let v1496=async v582=>{let{source:v583,destination:v584,draggableId:v585}=v582;v1494(null);let v586={pivotTableInfo:v1491,pivotTableId:v1480,commandService:v1489,unitId:v1482,subUnitId:v1483},v587=v583.droppableId;if(v584&&v584.droppableId){let v217=v584.droppableId;await se(v586,v585,v587,v217,v584.index),await v1495();}v584===null&&(await ie(v586,v585,v587),await v1495());},v1497=v588=>{v1494({draggingId:v588.draggableId});},v1498=v589=>{let{draggableId:v590,destination:v591,source:v592}=v589;v1494({draggingId:v590,destination:v591,source:v592});};if(!v1488||!v1491)return null;let{sourceList:v1499,rowFields:v1500,columnFields:v1501,filterFields:v1502,valueFields:v1503,sourceRange:v1504,positionInfo:v1505}=v1491;return(0,u.jsxs)("div",{className:(0,i.clsx)("univer-mt-4\x20univer-flex\x20univer-h-[calc(100%-16px)]\x20univer-min-h-0\x20univer-w-full\x20univer-flex-col\x20univer-overflow-y-auto\x20univer-overflow-x-hidden",i.scrollbarClassName),children:[(0,u.jsx)(zt,{sourceRangeInfo:v1504,pivotTableId:v1480,refreshHandler:v1495,positionInfo:v1505}),(0,u.jsxs)(At,{onDragEnd:v1496,onDragStart:v1497,onDragUpdate:v1498,children:[(0,u.jsx)(Ht,{draggingId:(v1493==null?undefined:v1493.draggingId)??"",sourceList:v1499,refreshHandler:v1495,pivotTableId:v1480,pivotTableInfo:v1491,unitId:v1482,subUnitId:v1483}),(0,u.jsx)(Wt,{rowFields:v1500,columnFields:v1501,filterFields:v1502,valueFields:v1503,refreshHandler:v1495,positionInfo:v1505,pivotTableId:v1480,pivotTableInfo:v1491})]})]});}function Wt(v1506){let{rowFields:v1507,columnFields:v1508,filterFields:v1509,valueFields:v1510,refreshHandler:v1511,pivotTableInfo:v1512,positionInfo:v1513,pivotTableId:v1514}=v1506;return(0,u.jsxs)("div",{className:"univer-shrink-0","data-testid":"pivot-field-areas",children:[(0,u.jsxs)("div",{className:"univer-flex univer-flex-row univer-gap-4",children:[(0,u.jsx)(Y,{areaType:"filter",items:v1509,positionInfo:v1513,pivotTableId:v1514,pivotTableInfo:v1512,refreshHandler:v1511}),(0,u.jsx)(Y,{areaType:"column",items:v1508,positionInfo:v1513,pivotTableId:v1514,pivotTableInfo:v1512,refreshHandler:v1511})]}),(0,u.jsxs)("div",{className:"univer-flex univer-flex-row univer-gap-4",children:[(0,u.jsx)(Y,{areaType:"row",items:v1507,positionInfo:v1513,pivotTableId:v1514,pivotTableInfo:v1512,refreshHandler:v1511}),(0,u.jsx)(Y,{areaType:"value",items:v1510,positionInfo:v1513,pivotTableId:v1514,pivotTableInfo:v1512,refreshHandler:v1511})]})]});}function Gt(v1515){let{className:v1516,unitId:v1517,subUnitId:v1518,pivotTableId:v1519}=v1515,[v1520,v1521]=(0,s.useState)(0),v1522=(0,e.useDependency)(n.LocaleService),v1523=v1522.getDirection();return(0,u.jsxs)("div",{className:(0,i.clsx)("univer-flex univer-size-full univer-min-h-0 univer-flex-col",v1516),dir:v1523,children:[(0,u.jsxs)("div",{className:"univer-flex univer-shrink-0 univer-items-center univer-border-b univer-border-gray-200",children:[(0,u.jsxs)("div",{className:(0,i.clsx)("univer-mr-5 univer-cursor-default univer-py-4 univer-text-center univer-text-sm univer-font-semibold rtl:univer-ml-5 rtl:univer-mr-0",v1520===0?"univer-text-primary-600":"univer-text-gray-500"),onClick:()=>v1521(0),children:[v1522.t("sheets-pivot-ui.fieldPanel"),(0,u.jsx)("div",{className:(0,i.clsx)("univer-mx-auto\x20univer-mt-2\x20univer-h-1\x20univer-w-1/2\x20univer-rounded-md",{"univer-bg-primary-600":v1520===0,"univer-bg-transparent":v1520!==0})})]}),(0,u.jsxs)("div",{className:(0,i.clsx)("univer-mr-5 univer-cursor-default univer-py-4 univer-text-center univer-text-sm univer-font-semibold rtl:univer-ml-5 rtl:univer-mr-0",{"univer-text-primary-600":v1520===1,"univer-text-gray-500":v1520!==1}),onClick:()=>v1521(1),children:[v1522.t("sheets-pivot-ui.configPanel"),(0,u.jsx)("div",{className:(0,i.clsx)("univer-mx-auto univer-mt-2 univer-h-1 univer-w-1/2 univer-rounded-md univer-bg-primary-600",{"univer-bg-primary-600":v1520===1,"univer-bg-transparent":v1520!==1})})]})]}),(0,u.jsx)("div",{className:(0,i.clsx)("univer-min-h-0\x20univer-flex-1",v1520===0?"univer-overflow-hidden":"univer-overflow-auto"),children:v1520===0?(0,u.jsx)(Ut,{...v1515}):(0,u.jsx)(Ct,{unitId:v1517,subUnitId:v1518,pivotTableId:v1519})})]});}function Kt(v1524){let{unitId:v1525,subUnitId:v1526,pivotTableId:v1527,tableFieldId:v1528,type:v1529}=v1524,v1530=JSON.stringify([v1525,v1526,v1527,v1528,v1529]);return(0,u.jsx)(qt,{...v1524},v1530);}function qt({unitId:v1531,subUnitId:v1532,pivotTableId:v1533,tableFieldId:v1534,type:v1535,baseItems:v1536,onConfirm:v1537,onCancel:v1538}){var v1539;let v1540=(0,e.useDependency)(t.SheetsPivotTableConfigModel),v1541=(0,e.useDependency)(n.LocaleService),v1542=(0,e.useObservable)(v1541.direction$,v1541.getDirection()),v1543=Me.find(v593=>v593.type===v1535),v1544=v1540.getPivotTableConfig(v1531,v1532,v1533),v1545=v1544==null||(v1539=v1544.fieldsConfig["measure"][v1534])==null?undefined:v1539.showDataAs,v1546=()=>{var v594;if((v1545==null?undefined:v1545.type)!==v1535||!v1545.baseFieldId)return"";if(v1545.baseItemType===l.PivotShowAsBaseItemTypeEnum["previous"])return"relative:previous";if(v1545.baseItemType===l.PivotShowAsBaseItemTypeEnum["next"])return"relative:next";let v595=((v594=v1536[v1545.baseFieldId])==null?undefined:v594.items["indexOf"](v1545.baseItem))??-1;return v595<0?"":"item:"+v595;},[v1547,v1548]=(0,s.useState)((v1545==null?undefined:v1545.type)===v1535?v1545.baseFieldId:""),[v1549,v1550]=(0,s.useState)(v1546),v1551=(0,s.useRef)(false),[v1552,v1553]=(0,s.useState)(false),v1554=v1540.getPivotTableConfig(v1531,v1532,v1533),v1555=v1540.getCollection(v1531,v1533),v1556=v1554==null?undefined:v1554.fieldsConfig["measure"][v1534],v1557=!!(v1556&&v1555&&(v1555.fields[v1556.dataFieldId]||v1555.customFields["find"](v596=>v596.id===v1556.dataFieldId))),v1558=(v1554&&v1555&&v1543?J(v1554,v1555,v1543):[]).filter(v597=>{let v598=v1536[v597];return(v1543==null?undefined:v1543.baseItemMode)==="none"||!!(v598&&((v1543==null?undefined:v1543.baseItemMode)==="item-or-relative"||v598.items["length"]>0));}),v1559=v1558.map(v599=>({label:v1554.fieldsConfig["dimension"][v599].displayName,value:v599})),v1560=v1554==null?undefined:v1554.fieldsConfig["dimension"][v1547],v1561=v1560&&v1555&&(v1555.fields[v1560.dataFieldId]??v1555.customFields["find"](v600=>v600.id===v1560.dataFieldId)),v1562=v1536[v1547],v1563=(v1562==null?undefined:v1562.items["map"]((v601,v602)=>{let v603=v1562.itemTypes[v602],v604=v601;return v603===l.PivotDataFieldDataTypeEnum["blank"]?v604=v1541.t("sheets-pivot-ui.dialog.filter.blank"):v603===l.PivotDataFieldDataTypeEnum["other"]?v604=v1541.t("sheets-pivot-ui.showValuesAs.other"):(v603===l.PivotDataFieldDataTypeEnum["date"]||v603===l.PivotDataFieldDataTypeEnum["number"])&&v1562.format&&(v604=n.numfmt["format"](v1562.format,Number(v601))),{label:v604,value:"item:"+v602,itemKey:v601};}))??[];(v1543==null?undefined:v1543.baseItemMode)==="item-or-relative"&&v1563.push({label:v1541.t("sheets-pivot-ui.showValuesAs.previous"),value:"relative:previous",itemKey:"",itemType:l.PivotShowAsBaseItemTypeEnum["previous"]},{label:v1541.t("sheets-pivot-ui.showValuesAs.next"),value:"relative:next",itemKey:"",itemType:l.PivotShowAsBaseItemTypeEnum["next"]});let v1564=v1563.find(v605=>v605.value===v1549),v1565=!!(v1543!=null&&v1543.baseItemMode&&v1543.baseItemMode!=="none"),v1566=!!(v1543&&v1554&&v1555&&v1557&&v1554.fieldsConfig["valueFields"].includes(v1534)&&v1558.includes(v1547)&&v1561&&(!v1565||v1564));return(0,u.jsxs)("div",{dir:v1542,children:[(0,u.jsxs)("div",{className:"univer-mb-4",children:[(0,u.jsx)("div",{className:"univer-mb-2\x20univer-text-sm\x20univer-font-medium",children:v1541.t("sheets-pivot-ui.showValuesAs.baseField")}),(0,u.jsx)(i.Select,{className:"univer-w-full",value:v1547,options:v1559,onChange:v606=>{v1548(v606),v1550("");}})]}),v1565&&(0,u.jsxs)("div",{className:"univer-mb-4",children:[(0,u.jsx)("div",{className:"univer-mb-2 univer-text-sm univer-font-medium",children:v1541.t("sheets-pivot-ui.showValuesAs.baseItem")}),(0,u.jsx)(i.Select,{className:"univer-w-full",value:v1549,options:v1563,disabled:!v1547,onChange:v1550})]}),(0,u.jsxs)("div",{className:"univer-flex univer-justify-end univer-gap-3",children:[(0,u.jsx)(i.Button,{onClick:v1538,children:v1541.t("sheets-pivot-ui.showValuesAs.cancel")}),(0,u.jsx)(i.Button,{variant:"primary",disabled:!v1566||v1552,onClick:async()=>{let v607=v1540.getPivotTableConfig(v1531,v1532,v1533),v608=v1540.getCollection(v1531,v1533),v609=v607==null?undefined:v607.fieldsConfig["measure"][v1534];if(!v1543||!v607||!v608||!v609||v1551.current||!v607.fieldsConfig["valueFields"].includes(v1534)||!(v608.fields[v609.dataFieldId]||v608.customFields["find"](v218=>v218.id===v609.dataFieldId))||!J(v607,v608,v1543).includes(v1547)||v1565&&!v1564)return;let v610={type:v1535,baseFieldId:v1547,baseItem:(v1564==null?undefined:v1564.itemKey)??""};(v1564==null?undefined:v1564.itemType)!==undefined&&(v610.baseItemType=v1564.itemType),v1551.current=true,v1553(true);try{await v1537(v610);}catch{}finally{v1551.current=false,v1553(false);}},children:v1541.t("sheets-pivot-ui.showValuesAs.ok")})]})]});}const Jt=[{id:"equal",localeKey:"sheets-pivot-ui.valueFilter.equal",operator:l.ST_PivotFilterOperatorEnum["valueEqual"]},{id:"notEqual",localeKey:"sheets-pivot-ui.valueFilter.notEqual",operator:l.ST_PivotFilterOperatorEnum["valueNotEqual"]},{id:"greaterThan",localeKey:"sheets-pivot-ui.valueFilter.greaterThan",operator:l.ST_PivotFilterOperatorEnum["valueGreaterThan"]},{id:"greaterThanOrEqual",localeKey:"sheets-pivot-ui.valueFilter.greaterThanOrEqual",operator:l.ST_PivotFilterOperatorEnum["valueGreaterThanOrEqual"]},{id:"lessThan",localeKey:"sheets-pivot-ui.valueFilter.lessThan",operator:l.ST_PivotFilterOperatorEnum["valueLessThan"]},{id:"lessThanOrEqual",localeKey:"sheets-pivot-ui.valueFilter.lessThanOrEqual",operator:l.ST_PivotFilterOperatorEnum["valueLessThanOrEqual"]},{id:"between",localeKey:"sheets-pivot-ui.valueFilter.between",operator:l.ST_PivotFilterOperatorEnum["valueBetween"],isBetween:true},{id:"notBetween",localeKey:"sheets-pivot-ui.valueFilter.notBetween",operator:l.ST_PivotFilterOperatorEnum["valueNotBetween"],isBetween:true},{id:"topCount",localeKey:"sheets-pivot-ui.valueFilter.topCount",operator:l.ST_PivotFilterOperatorEnum["count"],isCount:true},{id:"bottomCount",localeKey:"sheets-pivot-ui.valueFilter.bottomCount",operator:l.ST_PivotFilterOperatorEnum["count"],isBottom:true,isCount:true},{id:"topPercent",localeKey:"sheets-pivot-ui.valueFilter.topPercent",operator:l.ST_PivotFilterOperatorEnum["percent"],isPercent:true},{id:"bottomPercent",localeKey:"sheets-pivot-ui.valueFilter.bottomPercent",operator:l.ST_PivotFilterOperatorEnum["percent"],isBottom:true,isPercent:true}];function Yt(v1567){var v1568;return(v1567==null?undefined:v1567.operator)===l.ST_PivotFilterOperatorEnum["count"]?v1567.isBottom?"bottomCount":"topCount":(v1567==null?undefined:v1567.operator)===l.ST_PivotFilterOperatorEnum["percent"]?v1567.isBottom?"bottomPercent":"topPercent":((v1568=Jt.find(v611=>v611.operator===(v1567==null?undefined:v1567.operator)))==null?undefined:v1568.id)??"greaterThan";}function Xt({targetFieldId:v1569,targetFieldName:v1570,valueFields:v1571,defaultValueFieldId:v1572,currentFilter:v1573,onConfirm:v1574,onClear:v1575,onCancel:v1576}){let v1577=(0,e.useDependency)(n.LocaleService),v1578=(0,e.useObservable)(v1577.direction$,v1577.getDirection()),v1579=v1573==null?undefined:v1573.expected,[v1580,v1581]=(0,s.useState)(()=>{let v612=v1573==null?undefined:v1573.valueFieldId;return v612&&v1571.some(v219=>v219.id===v612)?v612:v1572&&v1571.some(v220=>v220.id===v1572)?v1572:v1571.length===1?v1571[0].id:"";}),[v1582,v1583]=(0,s.useState)(()=>Yt(v1573)),[v1584,v1585]=(0,s.useState)(()=>Number(Array.isArray(v1579)?v1579[0]:v1579??0)),[v1586,v1587]=(0,s.useState)(()=>Array.isArray(v1579)?Number(v1579[1]):0),v1588=(0,s.useRef)(false),[v1589,v1590]=(0,s.useState)(false),v1591=Jt.find(v613=>v613.id===v1582),v1592=v1584!==""&&Number.isFinite(v1584),v1593=!v1591.isBetween||v1586!==""&&Number.isFinite(v1586),v1594=!v1591.isCount||Number.isInteger(v1584)&&Number(v1584)>=1,v1595=!v1591.isPercent||Number(v1584)>=0&&Number(v1584)<=100,v1596=!!(v1571.some(v614=>v614.id===v1580)&&v1592&&v1593&&v1594&&v1595),v1597=async v615=>{if(!v1588.current){v1588.current=true,v1590(true);try{await v615();}catch{}finally{v1588.current=false,v1590(false);}}};return(0,u.jsxs)("div",{className:"univer-flex univer-flex-col univer-gap-4","data-target-field-id":v1569,dir:v1578,children:[(0,u.jsx)("div",{className:"univer-text-sm univer-font-medium",children:(0,u.jsx)("bdi",{dir:"auto",children:v1570})}),(0,u.jsxs)("label",{className:"univer-flex univer-flex-col univer-gap-2 univer-text-sm",children:[v1577.t("sheets-pivot-ui.valueFilter.valueField"),(0,u.jsxs)("select",{className:"univer-h-8 univer-rounded univer-border univer-border-gray-200 univer-bg-white univer-px-2 dark:!univer-border-gray-500 dark:!univer-bg-gray-700","data-testid":"pivot-value-filter-value-field",value:v1580,onChange:v616=>v1581(v616.target["value"]),children:[(0,u.jsx)("option",{value:"",children:v1577.t("sheets-pivot-ui.valueFilter.selectValueField")}),v1571.map(v617=>(0,u.jsx)("option",{value:v617.id,children:v617.label},v617.id))]})]}),(0,u.jsxs)("label",{className:"univer-flex univer-flex-col univer-gap-2 univer-text-sm",children:[v1577.t("sheets-pivot-ui.valueFilter.condition"),(0,u.jsx)("select",{className:"univer-h-8 univer-rounded univer-border univer-border-gray-200 univer-bg-white univer-px-2 dark:!univer-border-gray-500 dark:!univer-bg-gray-700","data-testid":"pivot-value-filter-rule",value:v1582,onChange:v618=>v1583(v618.target["value"]),children:Jt.map(v619=>(0,u.jsx)("option",{value:v619.id,children:v1577.t(v619.localeKey)},v619.id))})]}),(0,u.jsxs)("div",{className:"univer-flex univer-gap-2",children:[(0,u.jsx)("input",{"aria-label":v1577.t("sheets-pivot-ui.valueFilter.condition"),className:"univer-h-8 univer-min-w-0 univer-flex-1 univer-rounded univer-border univer-border-gray-200 univer-px-2 dark:!univer-border-gray-500","data-testid":"pivot-value-filter-expected",type:"number",min:v1591.isCount?1:v1591.isPercent?0:undefined,max:v1591.isPercent?100:undefined,step:v1591.isCount?1:undefined,value:v1584,onChange:v620=>v1585(v620.target["value"]===""?"":Number(v620.target["value"]))}),v1591.isBetween&&(0,u.jsx)("input",{"aria-label":v1577.t("sheets-pivot-ui.valueFilter.condition"),className:"univer-h-8 univer-min-w-0 univer-flex-1 univer-rounded univer-border univer-border-gray-200 univer-px-2 dark:!univer-border-gray-500","data-testid":"pivot-value-filter-expected",type:"number",value:v1586,onChange:v621=>v1587(v621.target["value"]===""?"":Number(v621.target["value"]))})]}),(0,u.jsxs)("div",{className:"univer-flex univer-justify-between univer-gap-3",children:[(0,u.jsx)(i.Button,{"data-testid":"pivot-value-filter-clear",disabled:v1589,onClick:()=>v1597(v1575),children:v1577.t("sheets-pivot-ui.valueFilter.clear")}),(0,u.jsxs)("div",{className:"univer-flex\x20univer-gap-3",children:[(0,u.jsx)(i.Button,{disabled:v1589,onClick:v1576,children:v1577.t("sheets-pivot-ui.valueFilter.cancel")}),(0,u.jsx)(i.Button,{"data-testid":"pivot-value-filter-confirm",variant:"primary",disabled:!v1596||v1589,onClick:()=>v1597(async()=>{if(!v1596)return;let v221={operator:v1591.operator,expected:v1591.isBetween?[Number(v1584),Number(v1586)]:Number(v1584),valueFieldId:v1580};v1591.isBottom&&(v221.isBottom=true),await v1574(v221);}),children:v1577.t("sheets-pivot-ui.valueFilter.ok")})]})]})]});}function Zt(v1598){let{pivotTableId:v1599,tableFieldId:v1600,closeFn:v1601,unitId:v1602,subUnitId:v1603,format:v1604,tableFieldInfo:v1605,dataFieldInfo:v1606,version:v1607}=v1598,[v1608,v1609]=(0,s.useState)(v1605.displayName),[v1610,v1611]=(0,s.useState)(v1605.subTotalType),v1612=(0,e.useDependency)(n.LocaleService),v1613=(0,e.useDependency)(n.ICommandService),v1614=(0,e.useDependency)(e.IDialogService),v1615={...(0,e.useDependency)(t.SheetsPivotTableConfigModel).getTextInfo()};for(let v622 of["sheets-pivot-ui.averageName","sheets-pivot-ui.countName","sheets-pivot-ui.countNumsName","sheets-pivot-ui.maxName","sheets-pivot-ui.minName","sheets-pivot-ui.productName","sheets-pivot-ui.stdDevName","sheets-pivot-ui.stdDevpName","sheets-pivot-ui.sumName","sheets-pivot-ui.varName","sheets-pivot-ui.varpName"])v1615[v622]=v1612.t(v622);if((0,s.useEffect)(()=>{v1609(v1605.displayName),v1611(v1605.subTotalType);},[v1607]),!v1605||!v1606)return;let v1616=v1606.name,v1617=v1612.getDirection(),v1618=v1604??v1605.format,v1619=fe.map(v623=>({value:""+v623.type,type:v623.type,label:v1612.t(v623.textKey)})),v1620=v624=>{let v625=v624;if(Array.isArray(v624)&&(v625=v624[0]),v625!==undefined){let v222=Number(v625);v1611(v222),Ce(v1616,v1608,v1615)&&v1609(we(v1616,v1615,v222));}};return(0,u.jsxs)("div",{dir:v1617,children:[(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-justify-between univer-self-stretch univer-leading-5",children:[(0,u.jsx)("span",{className:"univer-text-sm univer-font-medium univer-leading-5 univer-text-gray-900",children:v1612.t("sheets-pivot-ui.dialog.fieldName")}),(0,u.jsx)("span",{className:"univer-text-xs univer-leading-4 univer-text-gray-600",children:ee(v1612.t("sheets-pivot-ui.dialog.sourceName"),v1616)})]}),(0,u.jsx)("div",{children:(0,u.jsx)(i.Input,{className:"univer-mb-5 univer-mt-2 univer-box-border univer-h-8 univer-w-full univer-rounded-md univer-py-1.5 univer-text-sm univer-leading-5",value:v1608,onChange:v626=>v1609(v626)})}),(0,u.jsx)("label",{className:"univer-mb-2\x20univer-text-sm\x20univer-font-medium\x20univer-text-gray-900\x20dark:!univer-text-gray-0",children:v1612.t("sheets-pivot-ui.dialog.summarizeBy")}),(0,u.jsx)("div",{className:(0,i.clsx)("univer-h-40\x20univer-flex-1\x20univer-overflow-y-auto\x20univer-rounded-lg",i.borderClassName,i.scrollbarClassName),children:v1619.map(v627=>(0,u.jsxs)("div",{className:"univer-flex univer-items-center univer-gap-1.5 univer-self-stretch univer-rounded-md univer-px-2 univer-py-1.5 univer-text-sm univer-capitalize univer-leading-5",onClick:()=>v1620(v627.value),children:[(0,u.jsx)("span",{className:"univer-w-4 univer-text-base univer-text-primary-600",children:(0,u.jsx)(m.CheckMarkIcon,{className:(0,i.clsx)({"univer-hidden":v1610!==v627.type})})}),(0,u.jsx)("span",{children:v627.label})]},v627.type))}),(0,u.jsx)("footer",{className:"univer-mt-5",children:(0,u.jsxs)(i.ActionRow,{className:"univer-flex\x20univer-items-center\x20univer-justify-between\x20univer-self-stretch",children:[(0,u.jsx)(i.Button,{className:"univer-flex univer-h-8 univer-cursor-pointer univer-items-center univer-justify-center univer-gap-1.5 univer-rounded univer-border-none univer-bg-gray-0 univer-px-3 univer-text-primary-600",onClick:()=>{let v628={id:S,draggable:true,mask:false,maskClosable:false,width:400,children:{label:C,unitId:v1602,subUnitId:v1603,pivotTableId:v1599,tableFieldId:v1600,originPattern:v1618,tableFieldInfo:v1605,dataFieldInfo:v1606},dialogStyles:{header:{padding:"20px 24px 0",height:0},body:{padding:"0 24px 20px"}},closable:false,onClose:()=>{v1614.close(S);}};v1614.open(v628);},children:v1612.t("sheets-pivot-ui.dialog.format")}),(0,u.jsxs)(i.ActionRow,{className:"univer-flex univer-flex-1 univer-gap-2 univer-text-sm rtl:univer-flex-row-reverse",children:[(0,u.jsx)(i.Button,{onClick:()=>{v1601&&v1601();},children:v1612.t("sheets-pivot-ui.dialog.cancel")}),(0,u.jsx)(i.Button,{variant:"primary",disabled:v1608==="",onClick:()=>{let v629=v1605.displayName,v630=v1605.subTotalType,v631=v1605.format,v632=v629===v1608?undefined:v1608,v633=v630===v1610?undefined:v1610,v634=v631===v1618?undefined:v1618;if(v629!==v1608||v630!==v1610||v631!==v634){let v223={displayName:v632,subtotalType:v633,format:v634,tableFieldId:v1600,pivotTableId:v1599,unitId:v1602,subUnitId:v1603,tableFieldInfo:v1605,dataFieldInfo:v1606};v1613.executeCommand(t.UpdatePivotFieldSettingCommand["id"],v223);}v1601&&v1601();},children:v1612.t("sheets-pivot-ui.dialog.ok")})]})]})})]});}let X=class extends n.Disposable{constructor(v635,v636){super(),this._componentManager=v635,this._iconManager=v636,this._registerComponents(),this._registerIcons();}_registerComponents(){[[G.componentKey,G],[_,Gt],[y,pt],[x,Zt],[C,yt],[T,Kt],[E,Xt]].forEach(([v224,v225])=>{this.disposeWithMe(this._componentManager["register"](v224,v225));});}_registerIcons(){this.disposeWithMe(this._iconManager["register"]({PivotTableIcon:m.PivotTableIcon}));}};X=P([N(0,(0,n.Inject)(e.ComponentManager)),N(1,(0,n.Inject)(e.IconManager))],X);let Z=class extends n.Disposable{constructor(v637,v638,v639,v640,v641,v642,v643){var v644;super(),this._localeService=v637,this._sheetInterceptorService=v638,this._injector=v639,this._confirmService=v640,this._sheetsPivotTableService=v641,this._configService=v642,this._sheetPermissionCheckController=v643,M(this,"_defaultOverride",false),this._initUIInterceptListener(),this._defaultOverride=((v644=this._configService["getConfig"](t.SHEETS_PIVOT_PLUGIN_CONFIG_KEY))==null?undefined:v644.defaultOverride)??false;}_getPivotAppliedRanges(v645,v646,v647){return(0,t.getPivotAppliedRanges)(v645,v646,v647,this._localeService["getDirection"]());}_initUIInterceptListener(){this._sheetsPivotTableService["asyncInterceptor"].interceptAsync(this._sheetsPivotTableService["asyncInterceptor"].getInterceptPoints().PIVOT_PERFORM_CHECK,{handler:async(v226,v227)=>{let{cellInfo:v228,view:v229,isEmpty:v230}=v227,{unitId:v231,subUnitId:v232}=v228,v233=this._getPivotAppliedRanges(v228,v229,v230);if(!(0,r.checkRangesEditablePermission)(this._injector,v231,v232,v233)){let v111=this._localeService["t"]("sheets-pivot-ui.msg.permissionError");this._sheetPermissionCheckController["blockExecuteWithoutPermission"](v111);}let v234=this._sheetInterceptorService["generateMutationsByRanges"]({unitId:v231,subUnitId:v232,ranges:v233}),v235=(0,t.generateSetRangeValueMutations)(this._injector,v231,v232,v233);if(v234.redos["length"]||v235.shouldClear){if(this._defaultOverride)return Promise.resolve(true);{let v51=await this._confirmService["confirm"]({id:"sheet-pivot.confirm.add-sheet-pivot",title:{title:this._localeService["t"]("sheets-pivot-ui.perform.tips")},children:{title:this._localeService["t"]("sheets-pivot-ui.perform.info")},cancelText:this._localeService["t"]("sheets-pivot-ui.perform.cancel"),confirmText:this._localeService["t"]("sheets-pivot-ui.perform.confirm")});return Promise.resolve(v51);}}return Promise.resolve(true);}});}};Z=P([N(0,(0,n.Inject)(n.LocaleService)),N(1,(0,n.Inject)(r.SheetInterceptorService)),N(2,(0,n.Inject)(n.Injector)),N(3,(0,n.Inject)(n.IConfirmService)),N(4,(0,n.Inject)(t.SheetsPivotTableService)),N(5,(0,n.Inject)(n.IConfigService)),N(6,(0,n.Inject)(r.SheetPermissionCheckController))],Z);let Qt=class extends n.Disposable{constructor(v648,v649,v650){super(),this._univerInstanceService=v648,this._sheetsPivotTableAdaptorModel=v649,this._sheetClipboardService=v650,this._initialize();}_initialize(){let v651=this,v652,v653;this.disposeWithMe(this._sheetClipboardService["addClipboardHook"]({id:t.SHEET_PIVOT_TABLE_PLUGIN,onBeforeCopy(v236,v237){let v238=v651._univerInstanceService["getUnit"](v236,n.UniverInstanceType["UNIVER_SHEET"]);v238&&(v652=v651._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](v236,v237),v653=v238.getStyles());},onAfterCopy(){v652=null,v653=null;},getCellValueBySpecialMatrix(v239,v240){if(!v652)return;let v241=v652==null?undefined:v652.getValue(v239,v240);if(v241){var v242;return{...v241,s:v653==null?undefined:v653.get(v241.s),displayV:((v242=v241.v)==null?undefined:v242.toString())||""};}}}));}};Qt=P([N(0,(0,n.Inject)(n.IUniverInstanceService)),N(1,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(2,d.ISheetClipboardService)],Qt);const $t=[r.InsertRowCommand["id"],r.RemoveColCommand["id"],r.RemoveRowCommand["id"],r.InsertColCommand["id"]];let en=class extends n.Disposable{constructor(v654,v655,v656,v657,v658,v659,v660,v661,v662){var v663;super(),this._injector=v654,this._univerInstanceService=v655,this._sheetsPivotTableAdaptorModel=v656,this._sheetInterceptorService=v657,this._confirmService=v658,this._localeService=v659,this._sheetsPivotTableConfigModel=v660,this._messageService=v661,this._configService=v662,M(this,"_defaultOverride",false),this._initMoveRangeConfirmCheck(),this._initRowColOperationCheck(),this._defaultOverride=((v663=this._configService["getConfig"](t.SHEETS_PIVOT_PLUGIN_CONFIG_KEY))==null?undefined:v663.defaultOverride)??false;}_initMoveRangeConfirmCheck(){this.disposeWithMe(this._sheetInterceptorService["interceptBeforeCommand"]({performCheck:async v243=>{if(v243.id===r.MoveRangeCommand["id"]){let v112=(0,r.getSheetCommandTarget)(this._univerInstanceService);if(!v112)return Promise.resolve(false);let{unitId:v113,subUnitId:v114}=v112,{fromRange:v115,toRange:v116}=v243.params,v117=this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](v113,v114);if(!(v117!=null&&v117.size))return Promise.resolve(true);for(let[v52,v53]of v117){let{targetCellInfo:v24}=v53,{row:v25,col:v26}=v24,v27=v25-v115.startRow,v28=v26-v115.startColumn,v29={row:v116.startRow+v27,col:v116.startColumn+v28},v30=v29.row-v24.row,v31=v29.col-v24.col,v32=this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](v113,v114,v52),v33=v32==null?undefined:v32.rangesInfo;if(!v33)return Promise.resolve(true);let v34=[];Object.keys(v33).forEach(v10=>{v33[v10].forEach(v5=>{let v6={...v5};v6.startRow=v5.startRow+v30,v6.endRow=v5.endRow+v30,v6.startColumn=v5.startColumn+v31,v6.endColumn=v5.endColumn+v31,v34.push(v6);});});let v35=this._sheetInterceptorService["generateMutationsByRanges"]({unitId:v113,subUnitId:v114,ranges:v34}),v36=(0,t.generateSetRangeValueMutations)(this._injector,v113,v114,v34);if(v35.redos["length"]||v36.shouldClear){if(this._defaultOverride)return Promise.resolve(true);{let v7=await this._confirmService["confirm"]({id:"sheet-pivot.confirm.add-sheet-pivot",title:{title:this._localeService["t"]("sheets-pivot-ui.perform.tips")},children:{title:this._localeService["t"]("sheets-pivot-ui.perform.info")},cancelText:this._localeService["t"]("sheets-pivot-ui.perform.cancel"),confirmText:this._localeService["t"]("sheets-pivot-ui.perform.confirm")});return Promise.resolve(v7);}}}}return Promise.resolve(true);}}));}_initRowColOperationCheck(){this.disposeWithMe(this._sheetInterceptorService["interceptBeforeCommand"]({performCheck:async v244=>{if($t.includes(v244.id)){let v118=v244.params,{range:v119}=v118,v120=(0,r.getSheetCommandTarget)(this._univerInstanceService),v121=v118.unitId||(v120==null?undefined:v120.unitId),v122=v118.subUnitId||(v120==null?undefined:v120.subUnitId);if(!v121||!v122)return Promise.resolve(true);let v123=this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](v121,v122);if(v123!=null&&v123.size)for(let[v54,v55]of v123){let v37=this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](v121,v122,v54);if(v37!=null&&v37.rangesInfo){for(let v8 of Object.keys(v37.rangesInfo))if(v37.rangesInfo[v8].some(v2=>n.Rectangle["intersects"](v2,v119)))return this._messageService["show"]({type:i.MessageType["Error"],content:this._localeService["t"]("sheets-pivot-ui.perform.rowColError")}),Promise.resolve(false);}}}return Promise.resolve(true);}}));}};en=P([N(0,(0,n.Inject)(n.Injector)),N(1,(0,n.Inject)(n.IUniverInstanceService)),N(2,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(3,(0,n.Inject)(r.SheetInterceptorService)),N(4,(0,n.Inject)(n.IConfirmService)),N(5,(0,n.Inject)(n.LocaleService)),N(6,(0,n.Inject)(t.SheetsPivotTableConfigModel)),N(7,(0,n.Inject)(e.IMessageService)),N(8,(0,n.Inject)(n.IConfigService))],en);const tn=[h.InsertTextCommand["id"],g.IMEInputCommand["id"],d.SetCellEditVisibleOperation["id"]];let nn=class extends n.Disposable{constructor(v664,v665,v666,v667,v668,v669){super(),this._sheetsSelectionsService=v664,this._univerInstanceService=v665,this._sheetsPivotTableAdaptorModel=v666,this._commandService=v667,this._sheetsPivotTableConfigModel=v668,this._localeService=v669,this._initEditListener();}_initEditListener(){this.disposeWithMe(this._commandService["beforeCommandExecuted"](v245=>{if(tn.includes(v245.id)){var v246;let v124=(v246=this._sheetsSelectionsService["getCurrentLastSelection"]())==null?undefined:v246.primary;if(!v124)return;let{actualRow:v125,actualColumn:v126}=v124,v127=(0,n.cellToRange)(v125,v126),v128=(0,r.getSheetCommandTarget)(this._univerInstanceService,v245.params);if(!v128)return;let{unitId:v129,subUnitId:v130}=v128,v131=this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](v129,v130);if(v131!=null&&v131.size)for(let[v56]of v131){let v38=this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](v129,v130,v56);if(v38!=null&&v38.rangesInfo){for(let v9 of Object.keys(v38.rangesInfo))if(v38.rangesInfo[v9].some(v3=>n.Rectangle["intersects"](v3,v127)))throw new n["CustomCommandExecutionError"](this._localeService["t"]("sheets-pivot-ui.msg.editCellError"));}}}}));}};nn=P([N(0,(0,n.Inject)(r.SheetsSelectionsService)),N(1,(0,n.Inject)(n.IUniverInstanceService)),N(2,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(3,(0,n.Inject)(n.ICommandService)),N(4,(0,n.Inject)(t.SheetsPivotTableConfigModel)),N(5,(0,n.Inject)(n.LocaleService))],nn);let rn=class extends n.Disposable{constructor(v670){super(),this._menuManagerService=v670,this._initMenu();}_initMenu(){this._menuManagerService["mergeMenu"](lt);}};rn=P([N(0,e.IMenuManagerService)],rn);let an=class extends n.Disposable{constructor(v671,v672,v673,v674){super(),this._sheetsPivotTableAdaptorModel=v671,this._formatPainterService=v672,this._messageService=v673,this._localeService=v674,this._initFormatPainterListener();}_initFormatPainterListener(){let v675=this._sheetsPivotTableAdaptorModel,v676=this._messageService,v677=this._localeService;this._formatPainterService["addHook"]({id:"pivot-format-painter-hook",onBeforeApply(v247){let{redoMutationsInfo:v248}=v247;for(let v132 of v248)if(v132.id===r.AddWorksheetMergeMutation["id"]){let{unitId:v57,subUnitId:v58,ranges:v59}=v132.params;for(let v39 of v59)if(v675.getIntersectsPivotTable(v57,v58,v39).length>0)return v676.show({type:i.MessageType["Error"],content:v677.t("sheets-pivot-ui.msg.mergeCellError")}),false;}return true;}});}};an=P([N(0,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(1,(0,n.Inject)(d.IFormatPainterService)),N(2,(0,n.Inject)(e.IMessageService)),N(3,(0,n.Inject)(n.LocaleService))],an);let on=class extends n.Disposable{constructor(v678,v679,v680){super(),this._sheetPrintInterceptorService=v678,this._sheetsPivotTableAdaptorModel=v679,this._sheetsPivotTableConfigModel=v680,this._initPrintArea();}_initPrintArea(){this.disposeWithMe(this._sheetPrintInterceptorService["interceptor"].intercept(this._sheetPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_RANGE,{handler:(v249,v250,v251)=>{let{unitId:v252,subUnitId:v253}=v250,v254=(v249==null?undefined:v249.startRow)??1/0,v255=(v249==null?undefined:v249.endRow)??-1/0,v256=(v249==null?undefined:v249.startColumn)??1/0,v257=(v249==null?undefined:v249.endColumn)??-1/0,v258=this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](v252,v253);if(!v258)return v251(v249);for(let[v133,v134]of v258){var v259;let v60=(v259=this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](v252,v253,v133))==null?undefined:v259.rangesInfo;v60&&Object.values(v60).forEach(v40=>{v40.forEach(v11=>{let{startRow:v12,endRow:v13,startColumn:v14,endColumn:v15}=v11;v254=Math.min(v12,v254),v255=Math.max(v13,v255),v256=Math.min(v14,v256),v257=Math.max(v15,v257);});});}let v260={startRow:v254,endRow:v255,startColumn:v256,endColumn:v257};return(0,n.isValidRange)(v260)?v251(v260):v251(v249);}}));}};on=P([N(0,(0,n.Inject)(d.SheetPrintInterceptorService)),N(1,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(2,(0,n.Inject)(t.SheetsPivotTableConfigModel))],on),new Path2D("M3.30363 3C2.79117 3 2.51457 3.60097 2.84788 3.99024L6.8 8.60593V12.5662C6.8 12.7184 6.8864 12.8575 7.02289 12.9249L8.76717 13.7863C8.96655 13.8847 9.2 13.7396 9.2 13.5173V8.60593L13.1521 3.99024C13.4854 3.60097 13.2088 3 12.6964 3H3.30363Z");var Q=class{static drawNoSetting(v681,v682,v683,v684){v681.save(),p.Rect["drawWith"](v681,{radius:2,width:16,height:16,fill:v684}),v681.lineCap="square",v681.strokeStyle=v683,v681.scale(v682/16,v682/16),v681.beginPath(),v681.lineWidth=1,v681.lineCap="round",v681.moveTo(3,4),v681.lineTo(13,4),v681.moveTo(4.5,8),v681.lineTo(11.5,8),v681.moveTo(6,12),v681.lineTo(10,12),v681.stroke(),v681.restore();}static drawExpand(v685,v686,v687,v688,v689){let v690=(v689-v686)/2;v685.save(),v685.fillStyle=v688,v685.strokeStyle=v687,v685.beginPath(),v685.moveTo(6,v690),v685.lineTo(4+v686-2,v690),v685.arcTo(4+v686,v690,4+v686,v690+2,2),v685.lineTo(4+v686,v690+v686-2),v685.arcTo(4+v686,v690+v686,4+v686-2,v690+v686,2),v685.lineTo(6,v690+v686),v685.arcTo(4,v690+v686,4,v690+v686-2,2),v685.lineTo(4,v690+2),v685.arcTo(4,v690,6,v690,2),v685.closePath(),v685.stroke(),v685.fill(),v685.beginPath(),v685.moveTo(4+v686/2,v690+2),v685.lineTo(4+v686/2,v690+v686-2),v685.moveTo(6,v690+v686/2),v685.lineTo(4+v686-2,v690+v686/2),v685.stroke(),v685.restore();}static drawCollapse(v691,v692,v693,v694,v695){let v696=(v695-v692)/2;v691.save(),v691.fillStyle=v694,v691.strokeStyle=v693,v691.beginPath(),v691.moveTo(6,v696),v691.lineTo(4+v692-2,v696),v691.arcTo(4+v692,v696,4+v692,v696+2,2),v691.lineTo(4+v692,v696+v692-2),v691.arcTo(4+v692,v696+v692,4+v692-2,v696+v692,2),v691.lineTo(6,v696+v692),v691.arcTo(4,v696+v692,4,v696+v692-2,2),v691.lineTo(4,v696+2),v691.arcTo(4,v696,6,v696,2),v691.closePath(),v691.fill(),v691.stroke(),v691.beginPath(),v691.moveTo(6,v696+v692/2),v691.lineTo(4+v692-2,v696+v692/2),v691.stroke(),v691.restore();}static drawIconByPath(v697,v698,v699,v700){v697.save(),v697.strokeStyle=v699,v697.fillStyle=v700,p.Rect["drawWith"](v697,{radius:2,width:16,height:16,fill:v700}),v698.forEach(v261=>{let v262=new Path2D(v261);v697.fillStyle=v699,v697.fill(v262,"evenodd");}),v697.restore();}};const sn=["M3.30363 3C2.79117 3 2.51457 3.60097 2.84788 3.99024L6.8 8.60593V12.5662C6.8 12.7184 6.8864 12.8575 7.02289 12.9249L8.76717 13.7863C8.96655 13.8847 9.2 13.7396 9.2 13.5173V8.60593L13.1521 3.99024C13.4854 3.60097 13.2088 3 12.6964 3H3.30363Z"],cn=["M12.4008 13.1831C12.6907 13.1831 12.9258 12.9481 12.9258 12.6581V4.60873L14.013 5.69597C14.218 5.901 14.5505 5.901 14.7555 5.69597C14.9605 5.49094 14.9605 5.15853 14.7555 4.95351L12.7721 2.97017C12.5671 2.76515 12.2347 2.76515 12.0297 2.97017L10.0463 4.95351C9.84132 5.15853 9.84132 5.49094 10.0463 5.69597C10.2514 5.901 10.5838 5.901 10.7888 5.69597L11.8758 4.60901V12.6581C11.8758 12.9481 12.1108 13.1831 12.4008 13.1831Z","M1.28069 4.85447C0.842195 4.33439 1.21191 3.5391 1.89218 3.5391H8.59333C9.2736 3.5391 9.64331 4.33439 9.20482 4.85447L6.51052 8.0501V11.6601C6.51052 12.2245 5.94174 12.6114 5.41683 12.404L4.48092 12.0343C4.1756 11.9136 3.97498 11.6187 3.97498 11.2904V8.0501L1.28069 4.85447Z"],ln=["M12.4008 2.81641C12.6907 2.81641 12.9258 3.05146 12.9258 3.34141V11.3908L14.013 10.3036C14.218 10.0986 14.5505 10.0986 14.7555 10.3036C14.9605 10.5086 14.9605 10.841 14.7555 11.046L12.7721 13.0294C12.5671 13.2344 12.2347 13.2344 12.0297 13.0294L10.0463 11.046C9.84132 10.841 9.84132 10.5086 10.0463 10.3036C10.2514 10.0986 10.5838 10.0986 10.7888 10.3036L11.8758 11.3905V3.34141C11.8758 3.05146 12.1108 2.81641 12.4008 2.81641Z","M1.28069\x204.85444C0.842195\x204.33435\x201.21191\x203.53906\x201.89218\x203.53906H8.59333C9.2736\x203.53906\x209.64331\x204.33435\x209.20482\x204.85443L6.51052\x208.05006V11.6601C6.51052\x2012.2245\x205.94174\x2012.6113\x205.41683\x2012.404L4.48092\x2012.0342C4.1756\x2011.9136\x203.97498\x2011.6186\x203.97498\x2011.2903V8.05006L1.28069\x204.85444Z"],un=["M11.9003\x2013.7046C11.9003\x2013.9969\x2011.6633\x2014.2339\x2011.371\x2014.2339C11.0787\x2014.2339\x2010.8417\x2013.9969\x2010.8417\x2013.7046V3.57272L9.74577\x204.66862C9.53906\x204.87534\x209.20391\x204.87534\x208.9972\x204.66862C8.79048\x204.46191\x208.79048\x204.12676\x208.9972\x203.92005L10.9969\x201.92039C11.2036\x201.71368\x2011.5387\x201.71368\x2011.7454\x201.92039L13.7451\x203.92005C13.9518\x204.12676\x2013.9518\x204.46191\x2013.7451\x204.66862C13.5384\x204.87534\x2013.2032\x204.87534\x2012.9965\x204.66862L11.9003\x203.57243V13.7046Z","M2.69779\x2010.0113C2.40546\x2010.0113\x202.16847\x209.77429\x202.16847\x209.48196C2.16847\x209.18962\x202.40546\x208.95264\x202.69779\x208.95264H6.67804C6.89213\x208.95264\x207.08514\x209.0816\x207.16707\x209.2794C7.249\x209.47719\x207.20371\x209.70486\x207.05233\x209.85624L3.97569\x2012.9329H6.67804C6.97038\x2012.9329\x207.20736\x2013.1699\x207.20736\x2013.4622C7.20736\x2013.7545\x206.97038\x2013.9915\x206.67804\x2013.9915H2.69779C2.4837\x2013.9915\x202.29069\x2013.8626\x202.20876\x2013.6648C2.12684\x2013.467\x202.17212\x2013.2393\x202.32351\x2013.0879L5.40015\x2010.0113H2.69779Z","M5.51638\x202.58693C5.23363\x201.81542\x204.14248\x201.81543\x203.85973\x202.58693L2.13245\x207.29995C2.03185\x207.57443\x202.17281\x207.87849\x202.4473\x207.97909C2.72178\x208.07969\x203.02584\x207.93872\x203.12644\x207.66424L3.64346\x206.25351L3.64504\x206.25351H5.73266L6.24968\x207.66424C6.35027\x207.93872\x206.65433\x208.07969\x206.92882\x207.97909C7.2033\x207.87849\x207.34426\x207.57443\x207.24367\x207.29995L5.51638\x202.58693ZM5.34467\x205.19487L4.68806\x203.40325L4.03144\x205.19487H5.34467Z"],dn=["M11.9003\x202.29495C11.9003\x202.00261\x2011.6633\x201.76562\x2011.371\x201.76562C11.0787\x201.76562\x2010.8417\x202.00261\x2010.8417\x202.29495V12.4268L9.74577\x2011.3309C9.53906\x2011.1242\x209.20391\x2011.1242\x208.9972\x2011.3309C8.79048\x2011.5376\x208.79048\x2011.8727\x208.9972\x2012.0795L10.9969\x2014.0791C11.2036\x2014.2858\x2011.5387\x2014.2858\x2011.7454\x2014.0791L13.7451\x2012.0795C13.9518\x2011.8727\x2013.9518\x2011.5376\x2013.7451\x2011.3309C13.5384\x2011.1242\x2013.2032\x2011.1242\x2012.9965\x2011.3309L11.9003\x2012.4271V2.29495Z","M2.69792 10.0113C2.40558 10.0113 2.16859 9.77429 2.16859 9.48196C2.16859 9.18962 2.40558 8.95264 2.69792 8.95264H6.67816C6.89225 8.95264 7.08526 9.0816 7.16719 9.2794C7.24912 9.47719 7.20384 9.70486 7.05245 9.85624L3.97581 12.9329H6.67816C6.9705 12.9329 7.20749 13.1699 7.20749 13.4622C7.20749 13.7545 6.9705 13.9915 6.67816 13.9915H2.69792C2.48383 13.9915 2.29082 13.8626 2.20889 13.6648C2.12696 13.467 2.17224 13.2393 2.32363 13.0879L5.40027 10.0113H2.69792Z","M5.5165 2.58693C5.23375 1.81542 4.1426 1.81543 3.85985 2.58693L2.13257 7.29995C2.03197 7.57443 2.17294 7.8785 2.44742 7.97909C2.7219 8.07969 3.02596 7.93872 3.12656 7.66424L3.64358 6.25351L3.64516 6.25351H5.73278L6.2498 7.66424C6.35039 7.93872 6.65446 8.07969 6.92894 7.97909C7.20342 7.8785 7.34438 7.57443 7.24379 7.29995L5.5165 2.58693ZM5.34479 5.19487L4.68818 3.40325L4.03156 5.19487H5.34479Z"],fn=new Set([l.PivotCellStyleTypeEnum["FilterAll"],l.PivotCellStyleTypeEnum["FilterPartial"],l.PivotCellStyleTypeEnum["FilterSingle"],l.PivotCellStyleTypeEnum["FilterNoneSortNone"],l.PivotCellStyleTypeEnum["FilteredSortAsc"],l.PivotCellStyleTypeEnum["FilteredSortDesc"],l.PivotCellStyleTypeEnum["FilteredSortNone"],l.PivotCellStyleTypeEnum["FilterNoneSortAsc"],l.PivotCellStyleTypeEnum["FilterNoneSortDesc"]]),pn=new Set([l.PivotCellStyleTypeEnum["Expand"],l.PivotCellStyleTypeEnum["Collapse"]]);let mn=class extends p.Shape{constructor(v701,v702,v703,v704){super(v701,v702),this._commandService=v703,this._themeService=v704,M(this,"_cellWidth",0),M(this,"_cellHeight",0),M(this,"_hovered",false),M(this,"_pivotParams",undefined),this.setShapeProps(v702),this.onPointerDown$["subscribeEvent"](v263=>this.onPointerDown(v263)),this.onPointerEnter$["subscribeEvent"](()=>this.onPointerEnter()),this.onPointerLeave$["subscribeEvent"](()=>this.onPointerLeave());}setShapeProps(v705){v705.cellHeight!==undefined&&(this._cellHeight=v705.cellHeight),v705.cellWidth!==undefined&&(this._cellWidth=v705.cellWidth),v705.pivotParams!==undefined&&(this._pivotParams=v705.pivotParams),this.transformByState({width:v705.width,height:v705.height});}onPointerDown(v706){if(v706.button===2)return;let{col:v707,row:v708,unitId:v709,subUnitId:v710,buttonType:v711}=this._pivotParams;fn.has(v711)?setTimeout(()=>{this._commandService["executeCommand"](I.id,{row:v708,col:v707,unitId:v709,subUnitId:v710});},200):this._commandService["executeCommand"](t.SetPivotCollapseCommand["id"],{row:v708,col:v707,unitId:v709,subUnitId:v710,collapse:v711===l.PivotCellStyleTypeEnum["Expand"]});}onPointerEnter(){this._hovered=true,this.setCursor(p.CURSOR_TYPE["POINTER"]),this.makeDirty(true);}onPointerLeave(){this._hovered=false,this.setCursor(p.CURSOR_TYPE["DEFAULT"]),this.makeDirty(true);}_draw(v712){var v713,v714;if(!((v713=this._pivotParams)!=null&&v713.buttonType))return;let v715=this._themeService["getColorFromTheme"]("primary.600"),v716=this._themeService["getColorFromTheme"]("gray.50");v712.save();let v717=new Path2D();v717.rect(0,0,this._cellWidth,this._cellHeight),v712.clip(v717),((v714=this._pivotParams)==null?undefined:v714.buttonType)===l.PivotCellStyleTypeEnum["Collapse"]?Q.drawExpand(v712,12,v715,v716,this._cellHeight):this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["Expand"]?Q.drawCollapse(v712,12,v715,v716,this._cellHeight):this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilterAll"]||this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilterNoneSortNone"]?Q.drawNoSetting(v712,16,v715,v716):this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilterPartial"]||this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilterSingle"]||this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilteredSortNone"]?Q.drawIconByPath(v712,sn,v715,v716):this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilterNoneSortAsc"]?Q.drawIconByPath(v712,un,v715,v716):this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilterNoneSortDesc"]?Q.drawIconByPath(v712,dn,v715,v716):this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilteredSortAsc"]?Q.drawIconByPath(v712,cn,v715,v716):this._pivotParams["buttonType"]===l.PivotCellStyleTypeEnum["FilteredSortDesc"]&&Q.drawIconByPath(v712,ln,v715,v716),v712.restore();}};mn=P([N(2,n.ICommandService),N(3,(0,n.Inject)(n.ThemeService))],mn);function hn(v1621,v1622,v1623){let{startX:v1624,startY:v1625,endX:v1626,endY:v1627}=v1623;return{left:(v1622==="filter"?v1621!=="rtl":v1621==="rtl")?v1626-16-1:v1624+1,top:v1622==="filter"?v1627-16-1:v1625+1};}let gn=class extends n.Disposable{constructor(v718,v719,v720,v721,v722,v723,v724,v725,v726){super(),this._context=v718,this._injector=v719,this._sheetsPivotTableAdaptorModel=v720,this._sheetSkeletonManagerService=v721,this._sheetsPivotTableConfigModel=v722,this._commandService=v723,this._sheetPermissionCheckController=v724,this._permissionService=v725,this._localeService=v726,M(this,"_pivotButtonShapesArr",[]),this._initButtonRender(),this._initSkeleton(),this._initListener();}_initButtonRender(){this.disposeWithMe((0,c.merge)(this._sheetsPivotTableAdaptorModel["viewUpdate$"].pipe((0,c.auditTime)(0)),this._sheetSkeletonManagerService["currentSkeleton$"],this._sheetsPivotTableConfigModel["pivotConfigChange$"],this._permissionService["permissionPointUpdate$"].pipe((0,c.auditTime)(100))).subscribe(()=>{if(!this._context["unit"])return;let v264=this._context["unitId"],v265=this._context["unit"].getActiveSheet().getSheetId(),{scene:v266}=this._context,v267=this._localeService["getDirection"](),v268=this._sheetSkeletonManagerService["getCurrentSkeleton"]();if(!v268)return;let v269=this._pivotButtonShapesArr;v269.forEach(v135=>v135.dispose()),v269.splice(0,v269.length),this._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](v264,v265).forValue((v136,v137,v138)=>{if(v138!=null&&v138.pbt){let v61="sheets-pivot-button-"+v136+"-"+v137+"-"+v264+"-"+v265,{startX:v62,startY:v63,endX:v64,endY:v65}=(0,d.getCoordByCell)(v136,v137,v266,v268),v66=v64-v62,v67=v65-v63;if(v67<16/2||v66<16/2||this._sheetPermissionCheckController["permissionCheckWithRanges"]({workbookTypes:[r.WorkbookEditablePermission],worksheetTypes:[r.WorksheetViewPermission,r.WorksheetEditPermission,r.WorksheetPivotTablePermission],rangeTypes:[r.RangeProtectionPermissionViewPoint,r.RangeProtectionPermissionEditPoint]},[{startRow:v136,endRow:v136,startColumn:v137,endColumn:v137}],v264,v265)===false)return;let v68;if(fn.has(v138.pbt)){let{left:v41,top:v42}=hn(v267,"filter",{startX:v62,startY:v63,endX:v64,endY:v65});v68={left:v41,top:v42,height:16,width:16,zIndex:5000,cellWidth:v66,cellHeight:v67,pivotParams:{col:v137,row:v136,unitId:v264,subUnitId:v265,buttonType:v138.pbt}};}else{if(pn.has(v138.pbt)){let{left:v16,top:v17}=hn(v267,"collapse",{startX:v62,startY:v63,endX:v64,endY:v65});v68={left:v16,top:v17,height:16,width:16,zIndex:5000,cellWidth:v66,cellHeight:v67,pivotParams:{col:v137,row:v136,unitId:v264,subUnitId:v265,buttonType:v138.pbt}};}else return;}let v69=this._injector["createInstance"](mn,v61,v68);v269.push(v69);}}),v269.length&&v266.addObjects(v269),v266.makeDirty();}));}_initSkeleton(){var v727;this.disposeWithMe(this._sheetsPivotTableAdaptorModel["markDirty$"].subscribe(({unitId:v270,subUnitId:v271})=>{if(v270===this._context["unitId"]&&(this._sheetSkeletonManagerService["makeDirty"]({sheetId:v271}),this._context["unit"].getActiveSheet().getSheetId()===v271)){var v272;this._sheetSkeletonManagerService["reCalculate"](),(v272=this._context["mainComponent"])==null||v272.makeDirty();}}));let v728=this._context["unitId"];this._context["unit"].getSheets().forEach(v273=>{var v274;let v275=v273.getSheetId();(v274=this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](v728,v275))!=null&&v274.size&&this._sheetSkeletonManagerService["makeDirty"]({sheetId:v275});}),this._sheetSkeletonManagerService["reCalculate"](),(v727=this._context["mainComponent"])==null||v727.makeDirty();}_initListener(){let v729=new n["DisposableCollection"](),{spreadsheet:v730}=(0,d.getSheetObject)(this._context["unit"],this._context);v729.add(v730.onDblclick$["subscribeEvent"](v276=>{if(v276.button===2)return;let v277=this._sheetSkeletonManagerService["getCurrentSkeleton"]();if(v277==null)return;let v278=this._context["scene"],{row:v279,column:v280}=(0,d.getCoordByOffset)(v276.offsetX,v276.offsetY,v278,v277);this._commandService["executeCommand"](t.PivotDrillDownCommand["id"],{row:v279,col:v280});}));}};gn=P([N(1,(0,n.Inject)(n.Injector)),N(2,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(3,(0,n.Inject)(d.SheetSkeletonManagerService)),N(4,(0,n.Inject)(t.SheetsPivotTableConfigModel)),N(5,(0,n.Inject)(n.ICommandService)),N(6,(0,n.Inject)(r.SheetPermissionCheckController)),N(7,(0,n.Inject)(n.IPermissionService)),N(8,(0,n.Inject)(n.LocaleService))],gn);var _n=class e extends p.Shape{constructor(v731){super("SHEET_PIVOT_MOVE_KEY"),M(this,"_moveType",undefined),this._moveType=v731;}_draw(v732){this.width!==0&&this.height!==0&&e.drawWith(v732,this);}static drawWith(v733,v734){let v735=v734._moveType;if(v733.save(),v733.strokeStyle="#8bc34a",v733.lineWidth=2,v735==="row"){let v281=v734.width;if(!v281)return;v733.beginPath(),v733.moveTo(0,0),v733.lineTo(0+v281,0),v733.moveTo(0,0-20/2),v733.lineTo(0,10),v733.moveTo(0+v281,0-20/2),v733.lineTo(0+v281,10);}else{let v282=v734.height;if(!v282)return;v733.moveTo(0,0),v733.lineTo(0,0+v282),v733.moveTo(0-20/2,0),v733.lineTo(10,0),v733.moveTo(0-20/2,0+v282),v733.lineTo(10,0+v282);}v733.stroke(),v733.restore();}};let vn=class extends n.Disposable{constructor(v736,v737,v738,v739,v740,v741){super(),this._context=v736,this._sheetsPivotTableAdaptorModel=v737,this._sheetSkeletonManagerService=v738,this._commandService=v739,this._selectionRenderService=v740,this._sheetsSelectionsService=v741,M(this,"_pivotSelectionMoveShape",undefined),M(this,"_scenePointerMoveSubscribe",undefined),M(this,"_scenePointerUpSubscribe",undefined),M(this,"_selectionControl",undefined),M(this,"_moveStartRange",undefined),M(this,"_moveStartCellIndex",undefined),M(this,"_moveRowOrCol","row"),M(this,"_targetRange",undefined),M(this,"_movePivotId",undefined),this._initControl();}_controlMoving(v742,v743){let v744=this._context["scene"],v745=v744.getScrollXYInfoByViewport(p.Vector2["FromArray"]([v742,v743])),{scaleX:v746,scaleY:v747}=v744.getAncestorScale(),v748=this._sheetSkeletonManagerService["getCurrentSkeleton"]();if(!v748||!this._moveStartRange||!this._moveStartCellIndex)return;let{row:v749,column:v750}=v748.getCellIndexByOffset(v742,v743,v746,v747,v745);if(this._moveRowOrCol==="row"){var v751;let v283=0,v284=0,v285=this._moveStartRange["endColumn"]-this._moveStartRange["startColumn"]+1;if(this._moveStartCellIndex["column"]===this._moveStartRange["startColumn"])v283=v750,v284=v750+v285-1;else{if(this._moveStartCellIndex["column"]===this._moveStartRange["endColumn"])v284=v750,v283=v750-v285+1;else{let v70=this._moveStartCellIndex["column"]-this._moveStartRange["startColumn"];v283=v750-v70,v284=v750-v70+v285-1;}}let v286=v748.getCellWithCoordByIndex(v749,v283),v287=v748.getCellWithCoordByIndex(v749,v284),{startX:v288,endY:v289}=v286,{endX:v290}=v287;this._targetRange={startRow:v749,endRow:v749,startColumn:v283,endColumn:v284},(v751=this._pivotSelectionMoveShape)==null||v751.transformByState({left:v288,top:v289,width:v290-v288,height:20});}else{var v752;let v291=0,v292=0,v293=this._moveStartRange["endRow"]-this._moveStartRange["startRow"]+1;if(this._moveStartCellIndex["row"]===this._moveStartRange["startRow"])v291=v749,v292=v749+v293-1;else{if(this._moveStartCellIndex["row"]===this._moveStartRange["endRow"])v292=v749,v291=v749-v293+1;else{let v71=this._moveStartCellIndex["row"]-this._moveStartRange["startRow"];v291=v749-v71,v292=v749-v71+v293-1;}}let v294=v748.getCellWithCoordByIndex(v291,v750),v295=v748.getCellWithCoordByIndex(v292,v750),{startX:v296,startY:v297}=v294,{endY:v298}=v295;this._targetRange={startColumn:v750,endColumn:v750,startRow:v291,endRow:v292},(v752=this._pivotSelectionMoveShape)==null||v752.transformByState({left:v296,top:v297,width:20,height:v298-v297});}}_controlPointerDownHandler(v753){var v754,v755,v756;(v754=this._selectionControl)==null||v754.setControlExtensionDisable(false),this._context["scene"].setCursor(p.CURSOR_TYPE["DEFAULT"]);let v757=this._sheetsSelectionsService["getCurrentSelections"]();if(!v757.length||v757.length>1)return;let v758=v757[0].range,v759=this._context["unit"],v760=v759.getActiveSheet(),v761=v759.getUnitId(),v762=v760.getSheetId(),v763=this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](v761,v762);if(!(v763!=null&&v763.size))return;let v764=Array.from(v763).find(([v299,v300])=>{let{rangesInfo:v301}=v300;if(!v301)return false;let{rowRanges:v302,colRanges:v303}=v301,v304=v302[0],v305=v303[0],v306=false;return v304&&(v306=n.Rectangle["realContain"](v304,v758),this._moveRowOrCol="row"),!v306&&v305&&(v306=n.Rectangle["realContain"](v305,v758),this._moveRowOrCol="col"),v306;});if(!v764)return;this._movePivotId=v764[0],this._pivotSelectionMoveShape||(this._pivotSelectionMoveShape=new _n(this._moveRowOrCol),this._context["scene"].addObject(this._pivotSelectionMoveShape));let v765=this._context["scene"],v766=this._sheetSkeletonManagerService["getCurrentSkeleton"]();if(!v766)return;let{offsetX:v767,offsetY:v768}=v753,v769=v765.getCoordRelativeToViewport(p.Vector2["FromArray"]([v767,v768])),{x:v770,y:v771}=v769,v772=v765.getScrollXYInfoByViewport(v769),{scaleX:v773,scaleY:v774}=v765.getAncestorScale(),{row:v775,column:v776}=v766.getCellIndexByOffset(v770,v771,v773,v774,v772),v777=(v755=this._selectionControl)==null?undefined:v755.model["getRange"]();if(this._moveStartRange=v777,!v777)return;let v778=0;v778=v775<v777.startRow?v777.startRow:v775>v777.endRow?v777.endRow:v775;let v779=0;v779=v776<v777.startColumn?v777.startColumn:v776>v777.endColumn?v777.endColumn:v776,this._moveStartCellIndex={row:v778,column:v779},(v756=this._selectionControl)==null||v756.setControlExtensionDisable(true),this._scenePointerMoveSubscribe=v765.onPointerMove$["subscribeEvent"](v307=>{let{offsetX:v308,offsetY:v309}=v307,{x:v310,y:v311}=v765.getCoordRelativeToViewport(p.Vector2["FromArray"]([v308,v309]));this._controlMoving(v310,v311),v765.setCursor(p.CURSOR_TYPE["MOVE"]);}),this._scenePointerUpSubscribe=v765.onPointerUp$["subscribeEvent"](v312=>{var v313,v314,v315;(v313=this._scenePointerMoveSubscribe)==null||v313.unsubscribe(),this._scenePointerMoveSubscribe=null,(v314=this._selectionControl)==null||v314.setControlExtensionDisable(false),this._selectionControl=null,v765.setCursor(p.CURSOR_TYPE["DEFAULT"]),v765.removeObject(this._pivotSelectionMoveShape),this._pivotSelectionMoveShape=null,this._updatePivotSort(),(v315=this._scenePointerUpSubscribe)==null||v315.unsubscribe(),this._scenePointerUpSubscribe=null;});}_updatePivotSort(){if(!this._moveStartRange||!this._targetRange||!this._movePivotId)return;let v780=this._context["unit"].getUnitId(),v781=this._context["unit"].getActiveSheet().getSheetId();if(this._moveRowOrCol==="row"){var v782;let v316=(v782=this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](v780,v781))==null?undefined:v782.get(this._movePivotId);if(!v316)return;let v317=this._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](v780,v781);if(!v317)return;let v318=[],v319="",{headerMap:v320,rangesInfo:v321}=v316;for(let v139=this._moveStartRange["startColumn"];v139<=this._moveStartRange["endColumn"];v139++){var v783;let v72=v320==null||(v783=v320.rowHeaderMap)==null?undefined:v783[v139];if(!v72)continue;v319=v72.tableFieldId;let v73=v321==null?undefined:v321.rowRanges,v74=v73==null?undefined:v73[0];if(!v74)continue;let v75={...v74,startColumn:v139,endColumn:v139};for(let v43=v75.startRow;v43<=v75.endRow;v43++){let v18=v317.getValue(v43,v139);if(!v18)continue;let{v:v19,pbt:v20}=v18;v19&&v20!==l.PivotCellStyleTypeEnum["Subtotal"]&&v20!==l.PivotCellStyleTypeEnum["GrandTotal"]&&(typeof v19=="string"?v318[v43]=v19:typeof v19=="number"&&(v318[v43]=v19.toString()));}break;}if(!v319)return;let v322=this._moveStartRange["startRow"],v323=this._moveStartRange["endRow"]-this._moveStartRange["startRow"]+1,v324=this._targetRange["startRow"];if(v322<v324){let v140=v318.splice(v322,v323);v318.splice(v324-v323,0,...v140);}else{let v141=v318.splice(v322,v323);v318.splice(v324,0,...v141);}let v325=v318.filter(v142=>v142!==undefined);this._commandService["executeCommand"](t.SetPivotSortCommand["id"],{unitId:v780,subUnitId:v781,pivotTableId:this._movePivotId,tableFieldId:v319,info:{type:l.PivotDataFieldSortOperatorEnum["custom"],customOrder:v325}});}else{var v784;let v326=(v784=this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](v780,v781))==null?undefined:v784.get(this._movePivotId);if(!v326)return;let v327=this._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](v780,v781);if(!v327)return;let v328=[],v329="",{headerMap:v330,rangesInfo:v331}=v326;for(let v143=this._moveStartRange["startRow"];v143<=this._moveStartRange["endRow"];v143++){var v785;let v76=v330==null||(v785=v330.colHeaderMap)==null?undefined:v785[v143];if(!v76)continue;v329=v76.tableFieldId;let v77=v331==null?undefined:v331.colRanges,v78=v77==null?undefined:v77[0];if(!v78)continue;let v79={...v78,startRow:v143,endRow:v143};for(let v44=v79.startColumn;v44<=v79.endColumn;v44++){let v21=v327.getValue(v143,v44);if(!v21)continue;let{v:v22,pbt:v23}=v21;if(v22&&v23!==l.PivotCellStyleTypeEnum["Subtotal"]&&v23!==l.PivotCellStyleTypeEnum["GrandTotal"]){if(typeof v22=="string"){let v4=v326.projection?(0,t.mapPivotSheetColumn)(v326.projection,v44):v44;v328[v4]=v22;}else{if(typeof v22=="number"){let v1=v326.projection?(0,t.mapPivotSheetColumn)(v326.projection,v44):v44;v328[v1]=v22.toString();}}}}break;}if(!v329)return;let v332=v326.projection?(0,t.mapPivotSheetRange)(v326.projection,this._moveStartRange):this._moveStartRange,v333=v326.projection?(0,t.mapPivotSheetRange)(v326.projection,this._targetRange):this._targetRange,v334=v332.startColumn,v335=this._moveStartRange["endColumn"]-this._moveStartRange["startColumn"]+1,v336=v333.startColumn;if(v334<v336){let v144=v328.splice(v334,v335);v328.splice(v336-v335,0,...v144);}else{let v145=v328.splice(v334,v335);v328.splice(v336,0,...v145);}let v337=v328.filter(v146=>v146!==undefined);this._commandService["executeCommand"](t.SetPivotSortCommand["id"],{unitId:v780,subUnitId:v781,pivotTableId:this._movePivotId,tableFieldId:v329,info:{type:l.PivotDataFieldSortOperatorEnum["custom"],customOrder:v337}});}}_initControl(){this.disposeWithMe(this._sheetsSelectionsService["selectionMoveEnd$"].subscribe(()=>{let v338=this._selectionRenderService["getSelectionControls"]();if(this._selectionControl=v338[v338.length-1],this._selectionControl&&this._selectionControl["setControlExtensionDisable"](false),!this._selectionControl)return;let{leftControl:v339,rightControl:v340,topControl:v341,bottomControl:v342}=this._selectionControl;[v339,v340,v341,v342].forEach(v147=>{v147.onPointerDown$["subscribeEvent"](this._controlPointerDownHandler["bind"](this));});}));}dispose(){var v786,v787;(v786=this._scenePointerMoveSubscribe)==null||v786.unsubscribe(),this._scenePointerMoveSubscribe=null,(v787=this._scenePointerUpSubscribe)==null||v787.unsubscribe(),this._scenePointerUpSubscribe=null,this._selectionControl=null,this._moveStartRange=null,this._moveStartCellIndex=null,this._targetRange=null,super.dispose();}};vn=P([N(1,(0,n.Inject)(t.SheetsPivotTableAdaptorModel)),N(2,(0,n.Inject)(d.SheetSkeletonManagerService)),N(3,(0,n.Inject)(n.ICommandService)),N(4,d.ISheetSelectionRenderService),N(5,(0,n.Inject)(r.SheetsSelectionsService))],vn);let yn=class extends n.Disposable{constructor(v788,v789,v790){super(),this._mergeCellController=v788,this._univerInstanceService=v789,this._sheetsPivotTableConfigModel=v790,this._initMenuInterceptor();}_initMenuInterceptor(){this.disposeWithMe(this._mergeCellController["interceptor"].intercept(this._mergeCellController["interceptor"].getInterceptPoints().MERGE_CELL_INTERCEPTOR_CHECK,{handler:(v343,v344)=>{let v345=(0,r.getSheetCommandTarget)(this._univerInstanceService);if(!v345)return v343;let{unitId:v346,subUnitId:v347}=v345,v348=this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](v346,v347),v349=[];return v348&&v348.forEach((v148,v149)=>{var v150;let v151=(v150=this._sheetsPivotTableConfigModel["getPivotTableRangeInfo"](v346,v347,v149))==null?undefined:v150.rangeInfo;v151&&Object.keys(v151).forEach(v80=>{let v81=v151[v80];Array.isArray(v81)&&v349.push(...v81);});}),v349.length&&v344.some(v152=>v349.some(v82=>n.Rectangle["intersects"](v82,v152)))?true:v343;}}));}};yn=P([N(0,(0,n.Inject)(r.MergeCellController)),N(1,(0,n.Inject)(n.IUniverInstanceService)),N(2,(0,n.Inject)(t.SheetsPivotTableConfigModel))],yn);let $=class extends n.Plugin{constructor(v791=ft,v792,v793,v794,v795){super(),this._config=v791,this._injector=v792,this._commandService=v793,this._renderManagerService=v794,this._configService=v795;let{menu:v796,...v797}=(0,n.merge)({},ft,this._config);v796&&this._configService["setConfig"]("menu",v796,{merge:true}),this._configService["setConfig"]("sheets-pivot-ui.config",v797),this._initRegisterCommand();}onStarting(){this._injector["add"]([X]),this._injector["get"](X),[[rn],[yn],[en],[F],[on],[nn],[an],[Z],[Qt]].forEach(v350=>this._injector["add"](v350)),this._injector["get"](Z);}onReady(){this._registerRenderModules(),this._injector["get"](rn);}onRendered(){this._injector["get"](en),this._injector["get"](F),this._injector["get"](on),this._injector["get"](nn),this._injector["get"](an),this._injector["get"](Qt);}onSteady(){this._injector["get"](yn);}_registerRenderModules(){[[gn],[vn]].forEach(v351=>{this.disposeWithMe(this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_SHEET"],v351));});}_initRegisterCommand(){[O,K,I,L,Ae,Ne,Ve].forEach(v352=>this._commandService["registerCommand"](v352));}};M($,"pluginName",t.SHEET_PIVOT_TABLE_PLUGIN+"_UI_PLUGIN"),M($,"packageName",ut),M($,"version",dt),M($,"type",n.UniverInstanceType["UNIVER_SHEET"]),$=P([(0,n.DependentOn)(f.UniverLicensePlugin,p.UniverRenderEnginePlugin,r.UniverSheetsPlugin,t.UniverSheetsPivotTablePlugin,d.UniverSheetsUIPlugin),N(1,(0,n.Inject)(n.Injector)),N(2,(0,n.Inject)(n.ICommandService)),N(3,p.IRenderManagerService),N(4,n.IConfigService)],$),exports.SheetsPivotTableUIMenuSchema=lt,Object.defineProperty(exports,"UniverSheetsPivotTableUIPlugin",{enumerable:true,get:function(){return $;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs/ui"),
+  t = require("@univerjs-pro/sheets-pivot"),
+  n = require("@univerjs/core"),
+  r = require("@univerjs/sheets"),
+  i = require("@univerjs/design"),
+  a = require("@univerjs/engine-formula"),
+  o = require("@univerjs/sheets-formula-ui"),
+  s = require("react"),
+  c = require("rxjs"),
+  l = require("@univerjs-pro/engine-pivot"),
+  u = require("react/jsx-runtime"),
+  d = require("@univerjs/sheets-ui"),
+  f = require("@univerjs-pro/license"),
+  p = require("@univerjs/engine-render"),
+  m = require("@univerjs/icons"),
+  h = require("@univerjs/docs"),
+  g = require("@univerjs/docs-ui");
+const _ = "UNIVER_SHEET_PIVOT_PANEL",
+  v = "UNIVER_SHEET_PIVOT_PANEL_ID",
+  y = "UNIVER_SHEET_PIVOT_FILTER_PANEL",
+  b = "UNIVER_SHEET_PIVOT_FILTER_PANEL_ID",
+  x = "UNIVER_SHEET_PIVOT_FIELD_SETTING",
+  S = "UNIVER_SHEET_PIVOT_FIELD_SETTING_ID",
+  C = "UNIVER_SHEET_PIVOT_FIELD_NUMFMT",
+  w = "UNIVER_SHEET_PIVOT_FIELD_NUMFMT_ID",
+  T = "UNIVER_SHEET_PIVOT_SHOW_DATA_AS_DIALOG",
+  E = "UNIVER_SHEET_PIVOT_VALUE_FILTER_DIALOG";
+function D(var_core_value_sigFEA0, var_core_value_sig931A, var_core_value_sigEE7D) {
+  let var_core_value_sig3585 = var_core_value_sigEE7D.fieldIds,
+    {
+      fieldsConfig: var_core_value_sig31A8
+    } = var_core_value_sig931A,
+    {
+      rowFields: var_core_value_sigA4DA,
+      columnFields: var_core_value_sig6FC0,
+      valueFields: var_core_value_sig6217,
+      filterFields: var_core_value_sigB805,
+      hiddenFields: var_core_value_sig4FAE,
+      dimension: var_core_value_sig1FCC,
+      measure: var_core_value_sigB7F9,
+      valueIndex: var_core_value_sigB1A2,
+      valuePosition: var_core_value_sig526D
+    } = var_core_value_sig31A8,
+    var_core_value_sigBDB5 = new Set();
+  [...var_core_value_sigA4DA, ...var_core_value_sig6FC0, ...var_core_value_sig6217, ...var_core_value_sigB805, ...var_core_value_sig4FAE].forEach(var_core_value_sig7BAF => {
+    let var_core_value_sig8F69 = var_core_value_sig1FCC[var_core_value_sig7BAF] || var_core_value_sigB7F9[var_core_value_sig7BAF];
+    var_core_value_sig8F69 && var_core_value_sigBDB5.add(var_core_value_sig8F69.dataFieldId);
+  });
+  let var_core_value_sig59CE = var_core_value_sig3585.map(var_core_value_sig6884 => {
+      let var_core_value_sig066E = var_core_value_sigEE7D.fields[var_core_value_sig6884];
+      return {
+        checked: var_core_value_sigBDB5.has(var_core_value_sig6884),
+        dataFieldId: var_core_value_sig066E.id,
+        id: var_core_value_sig066E.id,
+        name: var_core_value_sig066E.name,
+        type: var_core_value_sig066E.fieldDataType,
+        pivotTableId: var_core_value_sigFEA0
+      };
+    }),
+    var_core_value_sig3AD7 = var_core_value_sigA4DA.flatMap(var_core_value_sig9B0D => {
+      let var_core_value_sig3D2C = var_core_value_sig1FCC[var_core_value_sig9B0D];
+      return var_core_value_sig3D2C ? [{
+        dataFieldId: var_core_value_sig3D2C.dataFieldId,
+        tableFieldId: var_core_value_sig3D2C.id,
+        displayName: var_core_value_sig3D2C.displayName
+      }] : [];
+    }),
+    var_core_value_sig04E4 = var_core_value_sig6FC0.flatMap(var_core_value_sigC56D => {
+      let var_core_value_sig3A17 = var_core_value_sig1FCC[var_core_value_sigC56D];
+      return var_core_value_sig3A17 ? [{
+        dataFieldId: var_core_value_sig3A17.dataFieldId,
+        tableFieldId: var_core_value_sig3A17.id,
+        displayName: var_core_value_sig3A17.displayName
+      }] : [];
+    }),
+    var_core_value_sigD8F0 = var_core_value_sig6217.flatMap(var_core_value_sig938F => {
+      let var_core_value_sigD948 = var_core_value_sigB7F9[var_core_value_sig938F];
+      return var_core_value_sigD948 ? [{
+        dataFieldId: var_core_value_sigD948.dataFieldId,
+        tableFieldId: var_core_value_sigD948.id,
+        displayName: var_core_value_sigD948.displayName,
+        format: var_core_value_sigD948.format,
+        subTotalType: var_core_value_sigD948.subtotal
+      }] : [];
+    }),
+    var_core_value_sig1475 = var_core_value_sigB805.flatMap(var_core_value_sigBE5E => {
+      let var_core_value_sig0281 = var_core_value_sig1FCC[var_core_value_sigBE5E];
+      return var_core_value_sig0281 ? [{
+        dataFieldId: var_core_value_sig0281.dataFieldId,
+        tableFieldId: var_core_value_sig0281.id,
+        displayName: var_core_value_sig0281.displayName
+      }] : [];
+    });
+  return var_core_value_sigD8F0.length > 1 && (var_core_value_sig526D === l.PivotTableValuePositionEnum["Row"] ? var_core_value_sig3AD7 : var_core_value_sig04E4).splice(var_core_value_sigB1A2, 0, {
+    dataFieldId: "",
+    tableFieldId: "PivotMultipleValueId",
+    displayName: "ΣValue"
+  }), {
+    sourceList: var_core_value_sig59CE,
+    sourceRange: var_core_value_sig931A.sourceRangeInfo,
+    rowFields: var_core_value_sig3AD7,
+    columnFields: var_core_value_sig04E4,
+    valueFields: var_core_value_sigD8F0,
+    filterFields: var_core_value_sig1475,
+    positionInfo: var_core_value_sig931A.targetCellInfo
+  };
+}
+const O = {
+  type: n.CommandType["OPERATION"],
+  id: "sheet.operation.open-pivot-table-panel",
+  async handler(var_core_value_sig08B7, var_core_value_sig2008) {
+    let var_core_value_sig496B = var_core_value_sig2008 == null ? undefined : var_core_value_sig2008.pivotTableId;
+    if (!var_core_value_sig496B) return false;
+    let var_core_value_sig7161 = var_core_value_sig08B7.get(e.ISidebarService),
+      var_core_value_sig2AB8 = var_core_value_sig08B7.get(n.IUniverInstanceService),
+      var_core_value_sig3FCF = var_core_value_sig08B7.get(n.LocaleService),
+      var_core_value_sig675A = var_core_value_sig08B7.get(t.SheetsPivotTableConfigModel),
+      var_core_value_sig837F = (0, r.getSheetCommandTarget)(var_core_value_sig2AB8);
+    if (!var_core_value_sig837F) return false;
+    let {
+        unitId: var_core_value_sig9D6E,
+        subUnitId: var_core_value_sigB205
+      } = var_core_value_sig837F,
+      var_core_value_sigBF78 = var_core_value_sig675A.getPivotTableConfig(var_core_value_sig9D6E, var_core_value_sigB205, var_core_value_sig496B),
+      var_core_value_sig8AF3 = var_core_value_sig675A.getCollection(var_core_value_sig9D6E, var_core_value_sig496B);
+    if (!var_core_value_sigBF78 || !var_core_value_sig8AF3) return false;
+    let var_core_value_sigA0CC = D(var_core_value_sig496B, var_core_value_sigBF78, var_core_value_sig8AF3),
+      var_core_value_sigB3A1 = {
+        header: {
+          title: var_core_value_sig3FCF.t("sheets-pivot-ui.title")
+        },
+        id: v,
+        children: {
+          label: _,
+          panelInfo: var_core_value_sigA0CC,
+          version: Math.random(),
+          setVersion: () => Math.random(),
+          pivotTableId: var_core_value_sig496B,
+          unitId: var_core_value_sig9D6E,
+          subUnitId: var_core_value_sigB205
+        },
+        width: 346
+      };
+    return var_core_value_sig7161.open(var_core_value_sigB3A1), true;
+  }
+};
+function k(var_core_value_sig1FB9) {
+  "@babel/helpers - typeof";
+
+  return k = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigED71) {
+    return typeof var_core_value_sigED71;
+  } : function (var_core_value_sig281C) {
+    return var_core_value_sig281C && typeof Symbol == "function" && var_core_value_sig281C.constructor === Symbol && var_core_value_sig281C !== Symbol.prototype ? "symbol" : typeof var_core_value_sig281C;
+  }, k(var_core_value_sig1FB9);
+}
+function A(var_core_value_sig53A9, var_core_value_sigDACD) {
+  if (k(var_core_value_sig53A9) != "object" || !var_core_value_sig53A9) return var_core_value_sig53A9;
+  var var_core_value_sig691E = var_core_value_sig53A9[Symbol.toPrimitive];
+  if (var_core_value_sig691E !== undefined) {
+    var var_core_value_sigD6D6 = var_core_value_sig691E.call(var_core_value_sig53A9, var_core_value_sigDACD || "default");
+    if (k(var_core_value_sigD6D6) != "object") return var_core_value_sigD6D6;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sigDACD === "string" ? String : Number)(var_core_value_sig53A9);
+}
+function j(var_core_value_sig0347) {
+  var var_core_value_sig52A3 = A(var_core_value_sig0347, "string");
+  return k(var_core_value_sig52A3) == "symbol" ? var_core_value_sig52A3 : var_core_value_sig52A3 + "";
+}
+function M(var_core_value_sigAD91, var_core_value_sigF64E, var_core_value_sig9B3D) {
+  return (var_core_value_sigF64E = j(var_core_value_sigF64E)) in var_core_value_sigAD91 ? Object.defineProperty(var_core_value_sigAD91, var_core_value_sigF64E, {
+    value: var_core_value_sig9B3D,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigAD91[var_core_value_sigF64E] = var_core_value_sig9B3D, var_core_value_sigAD91;
+}
+function N(var_core_value_sigB217, var_core_value_sig1FE6) {
+  return function (var_core_value_sig3C92, var_core_value_sigB16B) {
+    var_core_value_sig1FE6(var_core_value_sig3C92, var_core_value_sigB16B, var_core_value_sigB217);
+  };
+}
+function P(var_core_value_sig2471, var_core_value_sigD1FC, var_core_value_sigE2F9, var_core_value_sigD689) {
+  var var_core_value_sig7AE3 = arguments.length,
+    var_core_value_sig1EB3 = var_core_value_sig7AE3 < 3 ? var_core_value_sigD1FC : var_core_value_sigD689 === null ? var_core_value_sigD689 = Object.getOwnPropertyDescriptor(var_core_value_sigD1FC, var_core_value_sigE2F9) : var_core_value_sigD689,
+    var_core_value_sigE120;
+  if (typeof Reflect == "object" && typeof Reflect.decorate == "function") var_core_value_sig1EB3 = Reflect.decorate(var_core_value_sig2471, var_core_value_sigD1FC, var_core_value_sigE2F9, var_core_value_sigD689);else {
+    for (var var_core_value_sigD6E7 = var_core_value_sig2471.length - 1; var_core_value_sigD6E7 >= 0; var_core_value_sigD6E7--) (var_core_value_sigE120 = var_core_value_sig2471[var_core_value_sigD6E7]) && (var_core_value_sig1EB3 = (var_core_value_sig7AE3 < 3 ? var_core_value_sigE120(var_core_value_sig1EB3) : var_core_value_sig7AE3 > 3 ? var_core_value_sigE120(var_core_value_sigD1FC, var_core_value_sigE2F9, var_core_value_sig1EB3) : var_core_value_sigE120(var_core_value_sigD1FC, var_core_value_sigE2F9)) || var_core_value_sig1EB3);
+  }
+  return var_core_value_sig7AE3 > 3 && var_core_value_sig1EB3 && Object.defineProperty(var_core_value_sigD1FC, var_core_value_sigE2F9, var_core_value_sig1EB3), var_core_value_sig1EB3;
+}
+let F = class extends n.Disposable {
+  constructor(var_core_value_sig585D, var_core_value_sigE722, var_core_value_sig062A, var_core_value_sig050A, var_core_value_sig8B32, var_core_value_sig870F, var_core_value_sigB683, var_core_value_sig26EC) {
+    super(), this._sheetsSelectionsService = var_core_value_sig585D, this._univerInstanceService = var_core_value_sigE722, this._sheetsPivotTableAdaptorModel = var_core_value_sig062A, this._commandService = var_core_value_sig050A, this._sidebarService = var_core_value_sig8B32, this._dialogService = var_core_value_sig870F, this._injector = var_core_value_sigB683, this._permissionService = var_core_value_sig26EC, M(this, "_pivotTableId", undefined), M(this, "_pivotTablePanelVisible$", new c.Subject()), M(this, "pivotTablePanelVisible$", this._pivotTablePanelVisible$["asObservable"]()), M(this, "_isRangeSelectorFocus", false), M(this, "_isRangeSelector2Focus", false), this._initPanelOpen(), this._initSheetChange();
+  }
+  setIsRangeSelectorFocus(var_core_value_sigEEDB) {
+    this._isRangeSelectorFocus = var_core_value_sigEEDB;
+  }
+  setIsRangeSelector2Focus(var_core_value_sig36E7) {
+    this._isRangeSelector2Focus = var_core_value_sig36E7;
+  }
+  _setPivotTableId(var_core_value_sig6A78) {
+    this._pivotTableId = var_core_value_sig6A78;
+  }
+  _closePivotPanel() {
+    this._isRangeSelectorFocus || this._isRangeSelector2Focus || (this._setPivotTableId(undefined), this._sidebarService["close"](v));
+  }
+  _initPanelOpen() {
+    let var_core_value_sigF7EF = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]);
+    if (var_core_value_sigF7EF) {
+      let var_core_value_sigD4FB = var_core_value_sigF7EF.activeSheet$;
+      this.disposeWithMe((0, c.merge)(var_core_value_sigD4FB, this._sheetsSelectionsService["selectionMoveEnd$"]).subscribe(() => {
+        let var_core_value_sig877E = this._sheetsSelectionsService["getCurrentSelections"]();
+        if (!var_core_value_sig877E) return;
+        let var_core_value_sig20C8 = var_core_value_sig877E[var_core_value_sig877E.length - 1];
+        if (!var_core_value_sig20C8) return;
+        let var_core_value_sigE9A7 = var_core_value_sig20C8.primary;
+        if (!var_core_value_sigE9A7) return;
+        let var_core_value_sigBECE = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]),
+          var_core_value_sig1B22 = var_core_value_sigBECE == null ? undefined : var_core_value_sigBECE.getActiveSheet();
+        if (!var_core_value_sigBECE || !var_core_value_sig1B22) return;
+        let var_core_value_sig7F72 = var_core_value_sigBECE.getUnitId(),
+          var_core_value_sig7B2A = var_core_value_sig1B22.getSheetId(),
+          var_core_value_sig06CD = this._sheetsPivotTableAdaptorModel["getPivotTableIdByCell"](var_core_value_sig7F72, var_core_value_sig7B2A, var_core_value_sigE9A7.startRow, var_core_value_sigE9A7.startColumn);
+        if (var_core_value_sig06CD) {
+          var var_core_value_sigA5F1, var_core_value_sig97A2;
+          let var_core_value_sig2259 = (0, t.unionPivotViewRange)((var_core_value_sigA5F1 = this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](var_core_value_sig7F72, var_core_value_sig7B2A, var_core_value_sig06CD)) == null ? undefined : var_core_value_sigA5F1.rangesInfo),
+            var_core_value_sig9E2F = (0, r.checkRangesEditablePermission)(this._injector, var_core_value_sig7F72, var_core_value_sig7B2A, var_core_value_sig2259),
+            var_core_value_sigD082 = (var_core_value_sig97A2 = this._permissionService["getPermissionPoint"](new r["WorksheetPivotTablePermission"](var_core_value_sig7F72, var_core_value_sig7B2A).id)) == null ? undefined : var_core_value_sig97A2.value;
+          if (!var_core_value_sig9E2F || !var_core_value_sigD082) return;
+          this._setPivotTableId(var_core_value_sig06CD), this._pivotTablePanelVisible$["next"](true), this._commandService["executeCommand"](O.id, {
+            pivotTableId: var_core_value_sig06CD
+          });
+        } else this._closePivotPanel();
+      })), this.disposeWithMe(this._commandService["onCommandExecuted"](var_core_value_sig07E9 => {
+        var_core_value_sig07E9.id === t.RemovePivotTableMutation["id"] && var_core_value_sig07E9.params["pivotTableId"] === this._pivotTableId && this._sidebarService["close"](v);
+      }));
+    }
+  }
+  _initSheetChange() {
+    let var_core_value_sig27F9 = this._univerInstanceService["getCurrentUnitOfType"](n.UniverInstanceType["UNIVER_SHEET"]);
+    var_core_value_sig27F9 && this.disposeWithMe(var_core_value_sig27F9.sheetDisposed$["subscribe"](() => {
+      this._sidebarService["close"]();
+    })), this.disposeWithMe(this._sidebarService["sidebarOptions$"].subscribe(var_core_value_sig3E71 => {
+      if (var_core_value_sig3E71.id === "UNIVER_SHEET_PIVOT_PANEL_ID") {
+        let var_core_value_sig4F59 = !!var_core_value_sig3E71.visible;
+        this._pivotTablePanelVisible$["next"](var_core_value_sig4F59), var_core_value_sig4F59 || this._dialogService["close"](S);
+      }
+    })), this.disposeWithMe(this._dialogService["getDialogs$"]().subscribe(var_core_value_sig01B3 => {
+      let var_core_value_sig7442 = var_core_value_sig01B3.find(var_core_value_sigF564 => var_core_value_sigF564.id === G.componentKey);
+      var_core_value_sig7442 && var_core_value_sig7442.open === false && this._dialogService["close"](G.componentKey);
+    }));
+  }
+};
+F = P([N(0, (0, n.Inject)(r.SheetsSelectionsService)), N(1, (0, n.Inject)(n.IUniverInstanceService)), N(2, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(3, (0, n.Inject)(n.ICommandService)), N(4, (0, n.Inject)(e.ISidebarService)), N(5, (0, n.Inject)(e.IDialogService)), N(6, (0, n.Inject)(n.Injector)), N(7, (0, n.Inject)(n.IPermissionService))], F);
+const I = {
+    type: n.CommandType["OPERATION"],
+    id: "sheet.operation.open-pivot-table-filter-panel",
+    async handler(var_core_value_sig3669, var_core_value_sig5CBC) {
+      if (!var_core_value_sig5CBC) return false;
+      let {
+          row: var_core_value_sig20BE,
+          col: var_core_value_sig6BD0,
+          unitId: var_core_value_sig8C15,
+          subUnitId: var_core_value_sig6DF7,
+          tableFieldId: var_core_value_sigB411,
+          pivotTableId: var_core_value_sigA81B
+        } = var_core_value_sig5CBC,
+        var_core_value_sigFE8D = var_core_value_sig3669.get(t.SheetsPivotTableAdaptorModel),
+        var_core_value_sig8595 = var_core_value_sigA81B || var_core_value_sigFE8D.getPivotTableIdByCell(var_core_value_sig8C15, var_core_value_sig6DF7, var_core_value_sig20BE, var_core_value_sig6BD0);
+      if (!var_core_value_sig8595) return false;
+      let var_core_value_sigF8DE = var_core_value_sig3669.get(t.SheetsPivotRPCService),
+        var_core_value_sigFE76 = var_core_value_sigFE8D.getPivotItemRenderInfoCache(var_core_value_sig8C15, var_core_value_sig6DF7, var_core_value_sig8595);
+      if (!(var_core_value_sigFE76 != null && var_core_value_sigFE76.rangesInfo)) return false;
+      let var_core_value_sig84C8 = var_core_value_sigFE8D.getPivotTableCellData(var_core_value_sig8C15, var_core_value_sig6DF7, var_core_value_sig20BE, var_core_value_sig6BD0),
+        var_core_value_sig80C0 = (await var_core_value_sigF8DE.getPivotDisplayConfig({
+          unitId: var_core_value_sig8C15,
+          subUnitId: var_core_value_sig6DF7,
+          pivotTableId: var_core_value_sig8595,
+          params: {
+            type: t.PivotDisplayDataType["Filter"],
+            filter: {
+              row: var_core_value_sig20BE,
+              col: var_core_value_sig6BD0,
+              tableFieldId: var_core_value_sigB411,
+              cellData: var_core_value_sig84C8,
+              pivotItemRenderInfoCache: var_core_value_sigFE76
+            }
+          }
+        })).result["filter"];
+      if (!var_core_value_sig80C0) return false;
+      let var_core_value_sig22B4 = var_core_value_sig3669.get(e.IDialogService),
+        var_core_value_sigBB37 = {
+          id: b,
+          draggable: true,
+          mask: false,
+          maskClosable: false,
+          width: 336,
+          dialogStyles: {
+            header: {
+              padding: "16px 16px 0",
+              height: 0
+            },
+            body: {
+              padding: "0 16px 16px"
+            }
+          },
+          closable: false,
+          children: {
+            label: y,
+            unitId: var_core_value_sig8C15,
+            subUnitId: var_core_value_sig6DF7,
+            key: var_core_value_sig20BE + "-" + var_core_value_sig6BD0 + "-" + (var_core_value_sigB411 || ""),
+            filterItemInfo: var_core_value_sig80C0
+          },
+          onClose: () => {
+            var_core_value_sig22B4.close(b);
+          }
+        };
+      return var_core_value_sig22B4.open(var_core_value_sigBB37), true;
+    }
+  },
+  L = {
+    type: n.CommandType["OPERATION"],
+    id: "sheet.operation.open-pivot-table-field-setting-panel",
+    handler(var_core_value_sig0C51, var_core_value_sigADA4) {
+      if (!var_core_value_sigADA4) return false;
+      let var_core_value_sig0E48 = var_core_value_sig0C51.get(n.LocaleService),
+        {
+          tableFieldId: var_core_value_sig495B,
+          pivotTableId: var_core_value_sig310C,
+          unitId: var_core_value_sig759E,
+          subUnitId: var_core_value_sig6C80,
+          tableFieldInfo: var_core_value_sig6B99,
+          dataFieldInfo: var_core_value_sig6ADC
+        } = var_core_value_sigADA4,
+        var_core_value_sig41AD = var_core_value_sig0C51.get(e.IDialogService),
+        var_core_value_sigDBC2 = {
+          id: S,
+          title: {
+            title: var_core_value_sig0E48.t("sheets-pivot-ui.fieldSettings")
+          },
+          draggable: true,
+          mask: false,
+          maskClosable: false,
+          width: 400,
+          children: {
+            label: x,
+            tableFieldId: var_core_value_sig495B,
+            pivotTableId: var_core_value_sig310C,
+            tableFieldInfo: var_core_value_sig6B99,
+            dataFieldInfo: var_core_value_sig6ADC,
+            unitId: var_core_value_sig759E,
+            subUnitId: var_core_value_sig6C80,
+            version: Math.random(),
+            key: "field-setting-" + (var_core_value_sig495B || ""),
+            closeFn: () => {
+              var_core_value_sig41AD.close(S);
+            }
+          },
+          onClose: () => {
+            var_core_value_sig41AD.close(S);
+          }
+        };
+      return var_core_value_sig41AD.open(var_core_value_sigDBC2), true;
+    }
+  },
+  R = [{
+    label: "1930-08-05",
+    suffix: "yyyy-MM-dd"
+  }, {
+    label: "1930/08/05",
+    suffix: "yyyy/MM/dd"
+  }, {
+    label: "1930年08月05日",
+    suffix: 'yyyy"年"MM"月"dd"日"'
+  }, {
+    label: "08-05",
+    suffix: "MM-dd"
+  }, {
+    label: "8月5日",
+    suffix: 'M"月"d"日"'
+  }, {
+    label: "13:30:30",
+    suffix: "h:mm:ss"
+  }, {
+    label: "13:30",
+    suffix: "h:mm"
+  }, {
+    label: "下午01:30",
+    suffix: "A/P\x20hh:mm"
+  }, {
+    label: "下午1:30",
+    suffix: "A/P h:mm"
+  }, {
+    label: "下午1:30:30",
+    suffix: "A/P h:mm:ss"
+  }, {
+    label: "08-05 下午 01:30",
+    suffix: "MM-dd A/P hh:mm"
+  }],
+  z = [{
+    label: "(1,235)",
+    suffix: "#,##0_);(#,##0)"
+  }, {
+    label: "(1,235) ",
+    suffix: "#,##0_);[Red](#,##0)",
+    color: "red"
+  }, {
+    label: "1,234.56",
+    suffix: "#,##0.00_);#,##0.00"
+  }, {
+    label: "1,234.56",
+    suffix: "#,##0.00_);[Red]#,##0.00",
+    color: "red"
+  }, {
+    label: "-1,234.56",
+    suffix: "#,##0.00_);-#,##0.00"
+  }, {
+    label: "-1,234.56",
+    suffix: "#,##0.00_);[Red]-#,##0.00",
+    color: "red"
+  }],
+  B = [{
+    label: var_core_value_sig7739 => var_core_value_sig7739 + "1,235",
+    suffix: var_core_value_sig4040 => "\x22" + var_core_value_sig4040 + "\x22#,##0.00_);\x22" + var_core_value_sig4040 + '"#,##0.00'
+  }, {
+    label: var_core_value_sig1AAA => var_core_value_sig1AAA + "1,235",
+    suffix: var_core_value_sig58DB => "\x22" + var_core_value_sig58DB + '"#,##0.00_);[Red]"' + var_core_value_sig58DB + '"#,##0.00',
+    color: "red"
+  }, {
+    label: var_core_value_sig4840 => "(" + var_core_value_sig4840 + "1,235)",
+    suffix: var_core_value_sigB76D => "\x22" + var_core_value_sigB76D + "\x22#,##0.00_);(\x22" + var_core_value_sigB76D + '"#,##0.00)'
+  }, {
+    label: var_core_value_sig1015 => "(" + var_core_value_sig1015 + "1,235)",
+    suffix: var_core_value_sig6223 => "\x22" + var_core_value_sig6223 + '"#,##0.00_);[Red]("' + var_core_value_sig6223 + '"#,##0.00)',
+    color: "red"
+  }, {
+    label: var_core_value_sigC6B6 => "-" + var_core_value_sigC6B6 + "1,235",
+    suffix: var_core_value_sig498A => "\x22" + var_core_value_sig498A + "\x22#,##0.00_);-\x22" + var_core_value_sig498A + "\x22#,##0.00"
+  }, {
+    label: var_core_value_sigEF45 => "-" + var_core_value_sigEF45 + "1,235",
+    suffix: var_core_value_sig36FE => "\x22" + var_core_value_sig36FE + '"#,##0.00_);[Red]-"' + var_core_value_sig36FE + '"#,##0.00',
+    color: "red"
+  }],
+  V = "PivotMultipleValueId";
+function ee(var_core_value_sig3AF5, var_core_value_sig14E6) {
+  let var_core_value_sig8690 = (0, t.isolateTextForBidiContext)(var_core_value_sig14E6, var_core_value_sig3AF5);
+  return var_core_value_sig3AF5.includes("{0}") ? var_core_value_sig3AF5.replace("{0}", var_core_value_sig8690) : "" + var_core_value_sig3AF5 + var_core_value_sig8690;
+}
+const te = var_core_value_sigDF29 => {
+  switch (var_core_value_sigDF29) {
+    case "filter":
+      return l.PivotTableFiledAreaEnum["Filter"];
+    case "row":
+      return l.PivotTableFiledAreaEnum["Row"];
+    case "column":
+      return l.PivotTableFiledAreaEnum["Column"];
+    case "value":
+      return l.PivotTableFiledAreaEnum["Value"];
+    default:
+      return l.PivotTableFiledAreaEnum["Row"];
+  }
+};
+function ne(var_core_value_sigC0F8, var_core_value_sig3C75) {
+  switch (var_core_value_sig3C75.rangeType || n.RANGE_TYPE["NORMAL"]) {
+    case n.RANGE_TYPE["NORMAL"]:
+      return {
+        startRow: var_core_value_sig3C75.startRow,
+        startColumn: var_core_value_sig3C75.startColumn,
+        endRow: var_core_value_sig3C75.endRow,
+        endColumn: var_core_value_sig3C75.endColumn
+      };
+    case n.RANGE_TYPE["ROW"]:
+      return {
+        startRow: var_core_value_sig3C75.startRow,
+        startColumn: 0,
+        endRow: var_core_value_sig3C75.endRow,
+        endColumn: var_core_value_sigC0F8.getColumnCount() - 1
+      };
+    case n.RANGE_TYPE["COLUMN"]:
+      return {
+        startRow: 0,
+        startColumn: var_core_value_sig3C75.startColumn,
+        endRow: var_core_value_sigC0F8.getRowCount() - 1,
+        endColumn: var_core_value_sig3C75.endColumn
+      };
+    case n.RANGE_TYPE["ALL"]:
+      return {
+        startRow: 0,
+        startColumn: 0,
+        endRow: var_core_value_sigC0F8.getRowCount() - 1,
+        endColumn: var_core_value_sigC0F8.getColumnCount() - 1
+      };
+  }
+}
+function re(var_core_value_sig992D, var_core_value_sigE4E4) {
+  if (!var_core_value_sigE4E4 || !var_core_value_sig992D || var_core_value_sigE4E4.endRow - var_core_value_sigE4E4.startRow <= 0) return 1;
+  let {
+      startRow: var_core_value_sigA4B0,
+      startColumn: var_core_value_sig5F50,
+      endRow: var_core_value_sig4494,
+      endColumn: var_core_value_sigFFAF
+    } = ne(var_core_value_sig992D, var_core_value_sigE4E4),
+    var_core_value_sig478B = var_core_value_sig992D.getCellMatrix(),
+    var_core_value_sig1E21 = false;
+  for (let var_core_value_sig393E = var_core_value_sigA4B0; var_core_value_sig393E <= var_core_value_sig4494; var_core_value_sig393E++) {
+    for (let var_core_value_sig8CFA = var_core_value_sig5F50; var_core_value_sig8CFA <= var_core_value_sigFFAF; var_core_value_sig8CFA++) if (var_core_value_sig478B.getValue(var_core_value_sig393E, var_core_value_sig8CFA) != null) {
+      var_core_value_sig1E21 = true;
+      break;
+    }
+    if (var_core_value_sig1E21) break;
+  }
+  return var_core_value_sig1E21 ? 2 : 0;
+}
+async function ie(var_core_value_sig9DBF, var_core_value_sig36CC, var_core_value_sigA568) {
+  let {
+      commandService: var_core_value_sigD22D,
+      pivotTableInfo: var_core_value_sig85D5,
+      pivotTableId: var_core_value_sig5D2E,
+      unitId: var_core_value_sig7221,
+      subUnitId: var_core_value_sig0A5A
+    } = var_core_value_sig9DBF,
+    var_core_value_sigE6D6 = [],
+    {
+      rowFields: var_core_value_sig8507,
+      columnFields: var_core_value_sig8A7F,
+      filterFields: var_core_value_sig9E81,
+      valueFields: var_core_value_sig8295
+    } = var_core_value_sig85D5,
+    var_core_value_sigA975 = [...var_core_value_sig8507, ...var_core_value_sig8A7F, ...var_core_value_sig9E81, ...var_core_value_sig8295];
+  var_core_value_sig36CC === "PivotMultipleValueId" && var_core_value_sig8295.forEach(var_core_value_sigB609 => {
+    var_core_value_sigE6D6.push(var_core_value_sigB609.tableFieldId);
+  }), var_core_value_sigA568 === "source" && var_core_value_sigA975.forEach(var_core_value_sig390D => {
+    var_core_value_sig390D.dataFieldId === var_core_value_sig36CC && var_core_value_sigE6D6.push(var_core_value_sig390D.tableFieldId);
+  }), var_core_value_sigA568 !== "source" && var_core_value_sigA975.find(var_core_value_sigC928 => var_core_value_sigC928.tableFieldId === var_core_value_sig36CC) && var_core_value_sigE6D6.push(var_core_value_sig36CC), await var_core_value_sigD22D.executeCommand(t.RemovePivotFieldCommand["id"], {
+    pivotTableId: var_core_value_sig5D2E,
+    fieldIds: var_core_value_sigE6D6,
+    unitId: var_core_value_sig7221,
+    subUnitId: var_core_value_sig0A5A
+  });
+}
+async function ae(var_core_value_sig1263, var_core_value_sig457C, var_core_value_sigA4E6, var_core_value_sig934F, var_core_value_sig74A7) {
+  let var_core_value_sig3685 = {
+    unitId: var_core_value_sig934F,
+    subUnitId: var_core_value_sig74A7,
+    token: var_core_value_sig457C,
+    dataRangeInfo: var_core_value_sigA4E6
+  };
+  await var_core_value_sig1263.executeCommand(t.UpdatePivotTableSourceRangeCommand["id"], var_core_value_sig3685);
+}
+const oe = (var_core_value_sigC621, var_core_value_sig86D7) => {
+  let {
+      rowFields: var_core_value_sig431B,
+      columnFields: var_core_value_sig5C7C,
+      filterFields: var_core_value_sig87E2
+    } = var_core_value_sigC621,
+    var_core_value_sig2E04 = [...var_core_value_sig431B, ...var_core_value_sig5C7C, ...var_core_value_sig87E2],
+    var_core_value_sig2EDD = [];
+  return var_core_value_sig2E04.forEach(var_core_value_sig39B7 => {
+    var_core_value_sig39B7.dataFieldId === var_core_value_sig86D7 && var_core_value_sig2EDD.push(var_core_value_sig39B7.tableFieldId);
+  }), var_core_value_sig2EDD;
+};
+async function se(var_core_value_sig27D2, var_core_value_sig355D, var_core_value_sig8B21, var_core_value_sigEB36, var_core_value_sig5C27) {
+  if (var_core_value_sig8B21 === "source" && var_core_value_sigEB36 === "source") return;
+  let var_core_value_sigD494 = var_core_value_sig355D === V,
+    {
+      commandService: var_core_value_sigBF6D,
+      pivotTableInfo: var_core_value_sigD051,
+      pivotTableId: var_core_value_sig16D9,
+      unitId: var_core_value_sigF378,
+      subUnitId: var_core_value_sig5F6C
+    } = var_core_value_sig27D2;
+  if (var_core_value_sig8B21 === "source" && var_core_value_sigEB36 !== "source") {
+    let {
+        sourceList: var_core_value_sig18E0
+      } = var_core_value_sigD051,
+      var_core_value_sigE161 = var_core_value_sig18E0.find(var_core_value_sigDF87 => var_core_value_sigDF87.id === var_core_value_sig355D);
+    if (var_core_value_sigE161) {
+      let var_core_value_sig9EE0 = oe(var_core_value_sigD051, var_core_value_sig355D);
+      if (var_core_value_sigEB36 !== "value" && var_core_value_sig9EE0.length > 0) {
+        let var_core_value_sig2E11 = var_core_value_sig9EE0[0];
+        await var_core_value_sigBF6D.executeCommand(t.MovePivotFieldCommand["id"], {
+          pivotTableId: var_core_value_sig16D9,
+          fieldId: var_core_value_sig2E11,
+          area: te(var_core_value_sigEB36),
+          index: var_core_value_sig5C27,
+          unitId: var_core_value_sigF378,
+          subUnitId: var_core_value_sig5F6C
+        });
+      } else await var_core_value_sigBF6D.executeCommand(t.AddPivotFieldCommand["id"], {
+        pivotTableId: var_core_value_sig16D9,
+        dataFieldId: var_core_value_sigE161.dataFieldId,
+        fieldArea: te(var_core_value_sigEB36),
+        index: var_core_value_sig5C27,
+        unitId: var_core_value_sigF378,
+        subUnitId: var_core_value_sig5F6C
+      });
+    }
+  }
+  if (var_core_value_sig8B21 !== "source" && var_core_value_sigEB36 === "source") {
+    let {
+        rowFields: var_core_value_sigBDEE,
+        columnFields: var_core_value_sig1F40,
+        filterFields: var_core_value_sig3FC7,
+        valueFields: var_core_value_sig1E1B
+      } = var_core_value_sigD051,
+      var_core_value_sig3B10 = [...var_core_value_sigBDEE, ...var_core_value_sig1F40, ...var_core_value_sig3FC7, ...var_core_value_sig1E1B],
+      var_core_value_sig89E6 = [];
+    var_core_value_sigD494 ? var_core_value_sig1E1B.forEach(var_core_value_sigF051 => {
+      var_core_value_sig89E6.push(var_core_value_sigF051.tableFieldId);
+    }) : var_core_value_sig3B10.find(var_core_value_sig0B45 => var_core_value_sig0B45.tableFieldId === var_core_value_sig355D) && var_core_value_sig89E6.push(var_core_value_sig355D), await H(var_core_value_sig27D2, var_core_value_sig89E6);
+    return;
+  }
+  var_core_value_sig8B21 !== "source" && var_core_value_sigEB36 !== "source" && (await le(var_core_value_sig27D2, var_core_value_sig355D, var_core_value_sig8B21, var_core_value_sigEB36, var_core_value_sig5C27));
+}
+async function H(var_core_value_sig7E85, var_core_value_sigF204) {
+  let {
+    commandService: var_core_value_sig7A15,
+    pivotTableId: var_core_value_sigEEA6,
+    unitId: var_core_value_sigEAE1,
+    subUnitId: var_core_value_sigC69F
+  } = var_core_value_sig7E85;
+  await var_core_value_sig7A15.executeCommand(t.RemovePivotFieldCommand["id"], {
+    pivotTableId: var_core_value_sigEEA6,
+    fieldIds: var_core_value_sigF204,
+    unitId: var_core_value_sigEAE1,
+    subUnitId: var_core_value_sigC69F
+  });
+}
+async function ce(var_core_value_sig0442, var_core_value_sig697A, var_core_value_sigDB65) {
+  let {
+    commandService: var_core_value_sig045E,
+    pivotTableId: var_core_value_sig4524,
+    unitId: var_core_value_sig64D5,
+    subUnitId: var_core_value_sig9678
+  } = var_core_value_sig0442;
+  await var_core_value_sig045E.executeCommand(t.UpdatePivotValuePositionCommand["id"], {
+    pivotTableId: var_core_value_sig4524,
+    position: var_core_value_sig697A,
+    index: var_core_value_sigDB65,
+    unitId: var_core_value_sig64D5,
+    subUnitId: var_core_value_sig9678
+  });
+}
+async function le(var_core_value_sig5E74, var_core_value_sig75FC, var_core_value_sig639A, var_core_value_sig567C, var_core_value_sig825F) {
+  let var_core_value_sig546D = var_core_value_sig75FC === V,
+    {
+      commandService: var_core_value_sig8078,
+      pivotTableInfo: var_core_value_sigDCED,
+      pivotTableId: var_core_value_sig2829,
+      unitId: var_core_value_sig6EE2,
+      subUnitId: var_core_value_sig4CCC
+    } = var_core_value_sig5E74;
+  if (var_core_value_sig546D) {
+    let var_core_value_sig4743 = te(var_core_value_sig567C);
+    (var_core_value_sig4743 === l.PivotTableFiledAreaEnum["Row"] || var_core_value_sig4743 === l.PivotTableFiledAreaEnum["Column"]) && (await var_core_value_sig8078.executeCommand(t.UpdatePivotValuePositionCommand["id"], {
+      pivotTableId: var_core_value_sig2829,
+      position: var_core_value_sig4743 === l.PivotTableFiledAreaEnum["Row"] ? l.PivotTableValuePositionEnum["Row"] : l.PivotTableValuePositionEnum["Column"],
+      index: var_core_value_sig825F,
+      unitId: var_core_value_sig6EE2,
+      subUnitId: var_core_value_sig4CCC
+    }));
+    return;
+  }
+  let {
+      rowFields: var_core_value_sig6E47,
+      columnFields: var_core_value_sigB64D,
+      filterFields: var_core_value_sig2407,
+      valueFields: var_core_value_sigE4D0
+    } = var_core_value_sigDCED,
+    var_core_value_sigD5F1 = [...var_core_value_sig6E47, ...var_core_value_sigB64D, ...var_core_value_sig2407, ...var_core_value_sigE4D0].find(var_core_value_sigEB6A => var_core_value_sigEB6A.tableFieldId === var_core_value_sig75FC);
+  if (var_core_value_sigD5F1) {
+    let var_core_value_sig3D46 = [...var_core_value_sig6E47, ...var_core_value_sigB64D, ...var_core_value_sig2407];
+    if (var_core_value_sig639A === "value" && var_core_value_sig567C !== "value" && var_core_value_sig3D46.find(var_core_value_sig36F8 => var_core_value_sig36F8.dataFieldId === var_core_value_sigD5F1.dataFieldId)) {
+      await H(var_core_value_sig5E74, [var_core_value_sig75FC]);
+      return;
+    }
+    await var_core_value_sig8078.executeCommand(t.MovePivotFieldCommand["id"], {
+      pivotTableId: var_core_value_sig2829,
+      fieldId: var_core_value_sig75FC,
+      area: te(var_core_value_sig567C),
+      index: var_core_value_sig825F,
+      unitId: var_core_value_sig6EE2,
+      subUnitId: var_core_value_sig4CCC
+    });
+  }
+}
+function ue(var_core_value_sigBC19, var_core_value_sig4F3C, var_core_value_sig8D44, var_core_value_sig1660, var_core_value_sigEE7B) {
+  var_core_value_sigBC19.executeCommand(I.id, {
+    row: -1,
+    col: -1,
+    unitId: var_core_value_sig4F3C,
+    subUnitId: var_core_value_sig8D44,
+    tableFieldId: var_core_value_sigEE7B,
+    pivotTableId: var_core_value_sig1660
+  });
+}
+function de(var_core_value_sig44DF, var_core_value_sig7E48, var_core_value_sig7B9E, var_core_value_sig5C3B, var_core_value_sig4002, var_core_value_sig4153) {
+  let {
+      sourceList: var_core_value_sig2825,
+      rowFields: var_core_value_sig5FD0,
+      columnFields: var_core_value_sigA7E3,
+      valueFields: var_core_value_sigA784,
+      filterFields: var_core_value_sig4406
+    } = var_core_value_sig4153,
+    var_core_value_sig6806 = [...var_core_value_sig5FD0, ...var_core_value_sigA7E3, ...var_core_value_sigA784, ...var_core_value_sig4406].find(var_core_value_sigCC93 => var_core_value_sigCC93.tableFieldId === var_core_value_sig7B9E),
+    var_core_value_sigD4AA = var_core_value_sig2825.find(var_core_value_sig5964 => var_core_value_sig5964.id === (var_core_value_sig6806 == null ? undefined : var_core_value_sig6806.dataFieldId));
+  if (var_core_value_sig6806 && var_core_value_sigD4AA) {
+    let var_core_value_sig808B = {
+      tableFieldId: var_core_value_sig7B9E,
+      pivotTableId: var_core_value_sig7E48,
+      unitId: var_core_value_sig5C3B,
+      subUnitId: var_core_value_sig4002,
+      tableFieldInfo: var_core_value_sig6806,
+      dataFieldInfo: var_core_value_sigD4AA
+    };
+    var_core_value_sig44DF.executeCommand(L.id, var_core_value_sig808B);
+  }
+}
+const fe = [{
+    type: l.PivotSubtotalTypeEnum["average"],
+    textKey: "sheets-pivot-ui.subtotal.average"
+  }, {
+    type: l.PivotSubtotalTypeEnum["count"],
+    textKey: "sheets-pivot-ui.subtotal.count"
+  }, {
+    type: l.PivotSubtotalTypeEnum["countNums"],
+    textKey: "sheets-pivot-ui.subtotal.countNums"
+  }, {
+    type: l.PivotSubtotalTypeEnum["max"],
+    textKey: "sheets-pivot-ui.subtotal.max"
+  }, {
+    type: l.PivotSubtotalTypeEnum["min"],
+    textKey: "sheets-pivot-ui.subtotal.min"
+  }, {
+    type: l.PivotSubtotalTypeEnum["product"],
+    textKey: "sheets-pivot-ui.subtotal.product"
+  }, {
+    type: l.PivotSubtotalTypeEnum["stdDev"],
+    textKey: "sheets-pivot-ui.subtotal.stdDev"
+  }, {
+    type: l.PivotSubtotalTypeEnum["stdDevp"],
+    textKey: "sheets-pivot-ui.subtotal.stdDevp"
+  }, {
+    type: l.PivotSubtotalTypeEnum["sum"],
+    textKey: "sheets-pivot-ui.subtotal.sum"
+  }, {
+    type: l.PivotSubtotalTypeEnum["var"],
+    textKey: "sheets-pivot-ui.subtotal.var"
+  }, {
+    type: l.PivotSubtotalTypeEnum["varp"],
+    textKey: "sheets-pivot-ui.subtotal.varp"
+  }],
+  U = (var_core_value_sigDC41, var_core_value_sigFB47 = 0) => var_core_value_sigDC41 ? n.numfmt["getFormatInfo"](var_core_value_sigDC41).maxDecimals ?? var_core_value_sigFB47 : var_core_value_sigFB47,
+  pe = var_core_value_sig9B3D1 => Array(Math.min(Math.max(0, Number(var_core_value_sig9B3D1)), 30)).fill(0).join(""),
+  W = (var_core_value_sigC1CF, var_core_value_sigEE12) => var_core_value_sigC1CF.split(";").map(var_core_value_sig2A26 => /\.0?/["test"](var_core_value_sig2A26) ? var_core_value_sig2A26.replace(/\.0*/g, "" + (var_core_value_sigEE12 > 0 ? "." : "") + pe(Number(var_core_value_sigEE12 || 0))) : /0[^0]?/["test"](var_core_value_sig2A26) ? var_core_value_sig2A26.replace(/0[^0]+|0$/, "0" + (var_core_value_sigEE12 > 0 ? "." : "") + pe(Number(var_core_value_sigEE12 || 0))) : var_core_value_sig2A26).join(";"),
+  me = var_core_value_sigD70C => n.currencySymbols["find"](var_core_value_sig1179 => var_core_value_sigD70C.includes(var_core_value_sig1179)),
+  he = var_core_value_sigF047 => !var_core_value_sigF047,
+  ge = var_core_value_sigC2F9 => !!me(var_core_value_sigC2F9) && var_core_value_sigC2F9.startsWith("_("),
+  _e = var_core_value_sig1F51 => !!me(var_core_value_sig1F51) && !var_core_value_sig1F51.startsWith("_("),
+  ve = () => R.map(var_core_value_sigEA92 => ({
+    label: var_core_value_sigEA92.label,
+    value: var_core_value_sigEA92.suffix
+  })),
+  ye = var_core_value_sig29F5 => {
+    let var_core_value_sig5A51 = n.numfmt["getFormatInfo"](var_core_value_sig29F5);
+    return ve().map(var_core_value_sig8FD9 => var_core_value_sig8FD9.value).includes(var_core_value_sig29F5) || ["date", "datetime", "time"].includes(var_core_value_sig5A51.type);
+  },
+  be = () => z.map(var_core_value_sig1AE5 => ({
+    label: var_core_value_sig1AE5.label,
+    value: var_core_value_sig1AE5.suffix,
+    color: var_core_value_sig1AE5.color
+  })),
+  xe = var_core_value_sigF1D1 => be().some(var_core_value_sig7100 => (0, n.isPatternEqualWithoutDecimal)(var_core_value_sig7100.value, var_core_value_sigF1D1)),
+  Se = (var_core_value_sig370E, var_core_value_sigDE14) => {
+    switch (var_core_value_sigDE14) {
+      case l.PivotTableFiledAreaEnum["Row"]:
+        return var_core_value_sig370E.rowFields["length"];
+      case l.PivotTableFiledAreaEnum["Column"]:
+        return var_core_value_sig370E.columnFields["length"];
+      case l.PivotTableFiledAreaEnum["Filter"]:
+        return var_core_value_sig370E.filterFields["length"];
+      case l.PivotTableFiledAreaEnum["Value"]:
+        return var_core_value_sig370E.valueFields["length"];
+      default:
+        return 0;
+    }
+  },
+  Ce = (var_core_value_sig02CB, var_core_value_sig6CBB, var_core_value_sig68DA) => {
+    for (let var_core_value_sigA19A of ["sheets-pivot-ui.averageName", "sheets-pivot-ui.countName", "sheets-pivot-ui.countNumsName", "sheets-pivot-ui.maxName", "sheets-pivot-ui.minName", "sheets-pivot-ui.productName", "sheets-pivot-ui.stdDevName", "sheets-pivot-ui.stdDevpName", "sheets-pivot-ui.sumName", "sheets-pivot-ui.varName", "sheets-pivot-ui.varpName"]) {
+      let var_core_value_sig03E1 = var_core_value_sig68DA[var_core_value_sigA19A];
+      if (var_core_value_sig03E1 + (0, t.isolateTextForBidiContext)(var_core_value_sig02CB, var_core_value_sig03E1) === var_core_value_sig6CBB || var_core_value_sig03E1 + var_core_value_sig02CB === var_core_value_sig6CBB) return true;
+    }
+    return false;
+  },
+  we = (var_core_value_sig64D8, var_core_value_sigD755, var_core_value_sigF897) => {
+    let var_core_value_sigA578 = "";
+    switch (var_core_value_sigF897) {
+      case l.PivotSubtotalTypeEnum["average"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.averageName"];
+        break;
+      case l.PivotSubtotalTypeEnum["count"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.countName"];
+        break;
+      case l.PivotSubtotalTypeEnum["countNums"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.countNumsName"];
+        break;
+      case l.PivotSubtotalTypeEnum["max"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.maxName"];
+        break;
+      case l.PivotSubtotalTypeEnum["min"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.minName"];
+        break;
+      case l.PivotSubtotalTypeEnum["product"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.productName"];
+        break;
+      case l.PivotSubtotalTypeEnum["stdDev"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.stdDevName"];
+        break;
+      case l.PivotSubtotalTypeEnum["stdDevp"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.stdDevpName"];
+        break;
+      case l.PivotSubtotalTypeEnum["sum"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.sumName"];
+        break;
+      case l.PivotSubtotalTypeEnum["var"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.varName"];
+        break;
+      case l.PivotSubtotalTypeEnum["varp"]:
+        var_core_value_sigA578 = var_core_value_sigD755["sheets-pivot-ui.varpName"];
+        break;
+      default:
+        return var_core_value_sig64D8;
+    }
+    return var_core_value_sigA578 + (0, t.isolateTextForBidiContext)(var_core_value_sig64D8, var_core_value_sigA578);
+  };
+function Te(var_core_value_sig0260, var_core_value_sig034D) {
+  if (!var_core_value_sig0260) return "NotFilter";
+  if ((0, l.isManualPivotFilter)(var_core_value_sig0260)) {
+    var var_core_value_sig89EC;
+    return var_core_value_sig0260.isAll || ((var_core_value_sig89EC = var_core_value_sig034D.items) == null ? undefined : var_core_value_sig89EC.length) === var_core_value_sig0260.list["length"] ? "NotFilter" : "HasFilter";
+  }
+  return "NotFilter";
+}
+const Ee = var_core_value_sig9975 => {
+    let [var_core_value_sigD6D9, var_core_value_sig2637] = (0, s.useState)(false),
+      var_core_value_sigAF1D = (0, e.useDependency)(F);
+    return (0, s.useEffect)(() => {
+      var_core_value_sigAF1D.setIsRangeSelector2Focus(var_core_value_sigD6D9);
+    }, [var_core_value_sigD6D9, var_core_value_sigAF1D]), (0, u.jsx)(o.RangeSelector, {
+      ...var_core_value_sig9975,
+      onFocusChange: var_core_value_sigD3F5 => {
+        var var_core_value_sig3082;
+        (var_core_value_sig3082 = var_core_value_sig9975.onFocusChange) == null || var_core_value_sig3082.call(var_core_value_sig9975, var_core_value_sigD3F5), var_core_value_sig2637(var_core_value_sigD3F5);
+      }
+    });
+  },
+  De = (var_core_value_sigC92D, var_core_value_sigEA3D, var_core_value_sig2841, var_core_value_sig9FE1, var_core_value_sig9DAA, var_core_value_sig1F8A) => (0, u.jsx)(Ee, {
+    unitId: var_core_value_sigC92D,
+    subUnitId: var_core_value_sigEA3D,
+    initialValue: var_core_value_sig9FE1,
+    onChange: (var_core_value_sigF5D1, var_core_value_sig8775) => var_core_value_sig2841(var_core_value_sig8775),
+    maxRangeCount: 1,
+    supportAcrossSheet: true,
+    keepSheetReference: true
+  }),
+  Oe = (var_core_value_sigEBB4, var_core_value_sig2B74) => {
+    switch (var_core_value_sigEBB4) {
+      case 1:
+        return var_core_value_sig2B74.t("sheets-pivot-ui.msg.invalidSize");
+      case 0:
+        return var_core_value_sig2B74.t("sheets-pivot-ui.msg.emptySourceRange");
+      default:
+        return "";
+    }
+  };
+function G(var_core_value_sig0483) {
+  let {
+      unitId: var_core_value_sig4A48,
+      sourceRange: var_core_value_sigD170,
+      positionRange: var_core_value_sig90E5,
+      sourceSheetName: var_core_value_sig7000,
+      positionSheetName: var_core_value_sigD7C5,
+      onConfirm: var_core_value_sig3633,
+      onCancel: var_core_value_sig1DF5
+    } = var_core_value_sig0483,
+    var_core_value_sig90A3 = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sig28BE = (0, e.useDependency)(n.IUniverInstanceService),
+    var_core_value_sig0224 = var_core_value_sig90A3.getDirection(),
+    var_core_value_sig854B = var_core_value_sig28BE.getUnit(var_core_value_sig4A48),
+    var_core_value_sig1FF6 = (0, s.useMemo)(() => var_core_value_sig854B.getActiveSheet().getSheetId(), [var_core_value_sig854B]),
+    [var_core_value_sig4B27, var_core_value_sig3A41] = (0, s.useState)(var_core_value_sigD170),
+    [var_core_value_sig269A, var_core_value_sigBF53] = (0, s.useState)(var_core_value_sig90E5),
+    [var_core_value_sigD9BB, var_core_value_sigF549] = (0, s.useState)(var_core_value_sig7000),
+    [var_core_value_sigC125, var_core_value_sigB63D] = (0, s.useState)(var_core_value_sigD7C5),
+    var_core_value_sig8255 = (0, s.useRef)(undefined),
+    [var_core_value_sigBFC7, var_core_value_sig933F] = (0, s.useState)(),
+    [var_core_value_sig29DE, var_core_value_sig4AFB] = (0, s.useState)(t.PositionType["New"]),
+    [var_core_value_sigC7EA, var_core_value_sigDAB9] = (0, s.useState)(true),
+    [var_core_value_sig9CF7, var_core_value_sigCCE5] = (0, s.useState)(true),
+    [var_core_value_sig5933, var_core_value_sig884B] = (0, s.useState)(undefined);
+  (0, s.useEffect)(() => {
+    let var_core_value_sig481B = re(var_core_value_sig854B.getSheetBySheetName(var_core_value_sigD9BB), var_core_value_sig4B27);
+    var_core_value_sigCCE5(var_core_value_sig481B === 2), var_core_value_sig884B(Oe(var_core_value_sig481B, var_core_value_sig90A3));
+  }, [var_core_value_sig4B27, var_core_value_sigD9BB, var_core_value_sig854B, var_core_value_sig90A3]);
+  let var_core_value_sig4E30 = var_core_value_sig13D7 => {
+      if ((0, a.serializeRangeWithSheet)(var_core_value_sigD9BB, var_core_value_sig4B27) === var_core_value_sig13D7) return;
+      let var_core_value_sig90C0 = var_core_value_sig13D7.split(",").filter(var_core_value_sigBB57 => !!var_core_value_sigBB57).map(a.deserializeRangeWithSheet);
+      if (Array.isArray(var_core_value_sig90C0) && var_core_value_sig90C0.length > 0) {
+        let {
+          range: var_core_value_sig7C4A,
+          sheetName: var_core_value_sigE799
+        } = var_core_value_sig90C0[0];
+        var_core_value_sig3A41(var_core_value_sig7C4A), var_core_value_sigF549(var_core_value_sigE799);
+      }
+      var_core_value_sig90C0[0] || var_core_value_sig884B(var_core_value_sig90A3.t("sheets-pivot-ui.msg.emptySourceRange"));
+    },
+    var_core_value_sig9730 = De(var_core_value_sig4A48, var_core_value_sig1FF6, var_core_value_sigF1B2 => {
+      if (var_core_value_sig269A && (0, a.serializeRangeWithSheet)(var_core_value_sigC125, var_core_value_sig269A) === var_core_value_sigF1B2) return;
+      let var_core_value_sigC2BB = var_core_value_sigF1B2.split(",").filter(var_core_value_sigB601 => !!var_core_value_sigB601).map(a.deserializeRangeWithSheet);
+      if (var_core_value_sigC2BB.length === 0) {
+        var_core_value_sigBF53(null);
+        return;
+      }
+      let var_core_value_sigD9DB = var_core_value_sigC2BB[0];
+      var_core_value_sigBF53(var_core_value_sigD9DB.range), var_core_value_sigB63D(var_core_value_sigD9DB.sheetName || var_core_value_sig7000), var_core_value_sigD9DB.sheetName === var_core_value_sig7000 && n.Rectangle["intersects"](var_core_value_sigD9DB.range, var_core_value_sig4B27) ? var_core_value_sigDAB9(false) : var_core_value_sigDAB9(true);
+    }, var_core_value_sig269A ? (0, a.serializeRangeWithSheet)(var_core_value_sigC125, var_core_value_sig269A) : "", false, var_core_value_sigBFC7),
+    var_core_value_sig8E4A = () => !!(var_core_value_sig4B27 && var_core_value_sig269A && var_core_value_sigD9BB && var_core_value_sigC125 && var_core_value_sig29DE === t.PositionType["Existing"] && var_core_value_sigC7EA && var_core_value_sig9CF7) || !!(var_core_value_sig4B27 && var_core_value_sigD9BB && var_core_value_sig29DE === t.PositionType["New"] && var_core_value_sig9CF7);
+  return (0, s.useEffect)(() => {
+    var_core_value_sig933F(var_core_value_sig8255.current);
+  }, []), (0, u.jsxs)("div", {
+    ref: var_core_value_sig8255,
+    dir: var_core_value_sig0224,
+    children: [(0, u.jsx)("div", {
+      className: "univer-mb-2 univer-h-5 univer-text-sm univer-font-medium",
+      children: var_core_value_sig90A3.t("sheets-pivot-ui.dialog.source.sourceData")
+    }), De(var_core_value_sig4A48, var_core_value_sig1FF6, var_core_value_sig4E30, (0, a.serializeRangeWithSheet)(var_core_value_sigD9BB, var_core_value_sig4B27), true, var_core_value_sigBFC7), var_core_value_sig5933 && (0, u.jsx)("div", {
+      className: "univer-mt-2 univer-h-5 univer-text-xs univer-text-red-400",
+      children: var_core_value_sig5933
+    }), (0, u.jsx)("div", {
+      className: "univer-mb-2 univer-mt-5 univer-h-5 univer-text-sm univer-font-medium",
+      children: var_core_value_sig90A3.t("sheets-pivot-ui.dialog.source.position")
+    }), (0, u.jsxs)(i.RadioGroup, {
+      value: var_core_value_sig29DE,
+      onChange: var_core_value_sigA363 => var_core_value_sig4AFB(var_core_value_sigA363),
+      className: "univer-flex univer-flex-col univer-gap-2",
+      children: [(0, u.jsx)(i.Radio, {
+        value: t.PositionType["New"],
+        children: var_core_value_sig90A3.t("sheets-pivot-ui.dialog.source.newSheet")
+      }), (0, u.jsx)(i.Radio, {
+        value: t.PositionType["Existing"],
+        children: var_core_value_sig90A3.t("sheets-pivot-ui.dialog.source.existingSheet")
+      })]
+    }), var_core_value_sig29DE === t.PositionType["Existing"] && (0, u.jsxs)(u.Fragment, {
+      children: [var_core_value_sig9730, !var_core_value_sigC7EA && (0, u.jsx)("span", {
+        className: "univer-h-5 univer-text-sm univer-text-red-400",
+        children: var_core_value_sig90A3.t("sheets-pivot-ui.dialog.source.intersect")
+      })]
+    }), (0, u.jsx)("footer", {
+      className: "univer-mt-5",
+      children: (0, u.jsxs)(i.ActionRow, {
+        className: "univer-flex univer-justify-end univer-gap-2",
+        children: [(0, u.jsx)(i.Button, {
+          onClick: () => var_core_value_sig1DF5(),
+          children: var_core_value_sig90A3.t("sheets-pivot-ui.dialog.cancel")
+        }), (0, u.jsx)(i.Button, {
+          variant: "primary",
+          onClick: () => {
+            var_core_value_sig8E4A() && (var_core_value_sig29DE === t.PositionType["Existing"] ? var_core_value_sig3633({
+              sourceRange: var_core_value_sig4B27,
+              sourceSheetName: var_core_value_sigD9BB,
+              positionRange: var_core_value_sig269A,
+              positionSheetName: var_core_value_sigC125,
+              positionType: var_core_value_sig29DE
+            }) : var_core_value_sig3633({
+              sourceRange: var_core_value_sig4B27,
+              sourceSheetName: var_core_value_sigD9BB,
+              positionType: var_core_value_sig29DE
+            }));
+          },
+          children: var_core_value_sig90A3.t("sheets-pivot-ui.dialog.ok")
+        })]
+      })
+    })]
+  });
+}
+G.componentKey = "univer.sheet.pivot-table-range-selector";
+const K = {
+  type: n.CommandType["OPERATION"],
+  id: "sheet.operation.open-pivot-table-range-selector-panel",
+  async handler(var_core_value_sig300B) {
+    var var_core_value_sig8457;
+    let var_core_value_sigB30D = var_core_value_sig300B.get(n.IUniverInstanceService),
+      var_core_value_sigDB33 = var_core_value_sig300B.get(n.ICommandService),
+      var_core_value_sig6C8C = (0, r.getSheetCommandTarget)(var_core_value_sigB30D),
+      var_core_value_sig7A5E = var_core_value_sig300B.get(n.LocaleService);
+    if (!var_core_value_sig6C8C) return false;
+    let {
+        unitId: var_core_value_sig838E,
+        subUnitId: var_core_value_sig9A5B,
+        worksheet: var_core_value_sigC860,
+        workbook: var_core_value_sigE64C
+      } = var_core_value_sig6C8C,
+      var_core_value_sigF39B = var_core_value_sig300B.get(r.SheetsSelectionsService).getCurrentLastSelection(),
+      var_core_value_sig9B88 = (var_core_value_sigF39B == null ? undefined : var_core_value_sigF39B.range) ?? {
+        startRow: 0,
+        endRow: 0,
+        startColumn: 0,
+        endColumn: 0,
+        rangeType: n.RANGE_TYPE["NORMAL"]
+      },
+      var_core_value_sig992A = await ke(var_core_value_sig300B, var_core_value_sig838E, var_core_value_sig9A5B, (0, r.isSingleCellSelection)(var_core_value_sigF39B) ? (0, r.expandToContinuousRange)(var_core_value_sig9B88, {
+        up: true,
+        left: true,
+        right: true,
+        down: true
+      }, var_core_value_sigC860) : var_core_value_sig9B88, var_core_value_sigC860.getName());
+    if (!var_core_value_sig992A) return false;
+    let var_core_value_sig6281;
+    if (var_core_value_sig992A.positionType === t.PositionType["New"]) var_core_value_sig6281 = {
+      row: 0,
+      col: 0,
+      unitId: var_core_value_sig838E,
+      subUnitId: (0, n.generateRandomId)(),
+      sheetName: var_core_value_sigE64C.generateNewSheetName("" + var_core_value_sig7A5E.t("sheets-pivot-ui.sheet"))
+    };else {
+      var var_core_value_sig9B01;
+      var_core_value_sig6281 = {
+        row: var_core_value_sig992A.positionRange["startRow"],
+        col: var_core_value_sig992A.positionRange["startColumn"],
+        unitId: var_core_value_sig838E,
+        subUnitId: (var_core_value_sig9B01 = var_core_value_sigE64C.getSheets().find(var_core_value_sig8B71 => var_core_value_sig8B71.getName() === var_core_value_sig992A.positionSheetName)) == null ? undefined : var_core_value_sig9B01.getSheetId(),
+        sheetName: var_core_value_sig992A.positionSheetName
+      };
+    }
+    return var_core_value_sigDB33.executeCommand(t.AddPivotTableCommand["id"], {
+      pivotTableConfig: {
+        targetCellInfo: var_core_value_sig6281,
+        sourceRangeInfo: {
+          range: var_core_value_sig992A.sourceRange,
+          unitId: var_core_value_sig838E,
+          sheetName: var_core_value_sig992A.sourceSheetName,
+          subUnitId: (var_core_value_sig8457 = var_core_value_sigE64C.getSheets().find(var_core_value_sigFBA5 => var_core_value_sigFBA5.getName() === var_core_value_sig992A.sourceSheetName)) == null ? undefined : var_core_value_sig8457.getSheetId()
+        }
+      },
+      positionType: var_core_value_sig992A.positionType
+    }), true;
+  }
+};
+async function ke(var_core_value_sigA724, var_core_value_sig385E, var_core_value_sig10D3, var_core_value_sig41F2, var_core_value_sig32DD) {
+  let var_core_value_sig7A88 = var_core_value_sigA724.get(e.IDialogService),
+    var_core_value_sig6CFC = var_core_value_sigA724.get(n.LocaleService);
+  return new Promise(var_core_value_sigAC47 => {
+    let var_core_value_sigA06F,
+      var_core_value_sig770E = {
+        unitId: var_core_value_sig385E,
+        subUnitId: var_core_value_sig10D3,
+        sourceRange: var_core_value_sig41F2,
+        positionRange: null,
+        sourceSheetName: var_core_value_sig32DD,
+        positionSheetName: var_core_value_sig32DD,
+        onConfirm: var_core_value_sigAEFB => {
+          var_core_value_sigAC47(var_core_value_sigAEFB), var_core_value_sigA06F == null || var_core_value_sigA06F.dispose();
+        },
+        onCancel: () => {
+          var_core_value_sigAC47(null), var_core_value_sigA06F == null || var_core_value_sigA06F.dispose();
+        }
+      };
+    var_core_value_sigA06F = var_core_value_sig7A88.open({
+      id: G.componentKey,
+      title: {
+        title: var_core_value_sig6CFC.t("sheets-pivot-ui.dialog.source.insertPivotTable")
+      },
+      draggable: true,
+      mask: false,
+      maskClosable: false,
+      children: {
+        label: {
+          name: G.componentKey,
+          props: var_core_value_sig770E
+        }
+      },
+      width: 400,
+      onClose: () => {
+        var_core_value_sigA06F.dispose();
+      }
+    });
+  });
+}
+const Ae = {
+  type: n.CommandType["OPERATION"],
+  id: "sheet.operation.set-pivot-date-group",
+  async handler(var_core_value_sig3EC0, var_core_value_sigEA69) {
+    if (!var_core_value_sigEA69) return false;
+    let var_core_value_sigF42A = q(var_core_value_sig3EC0);
+    return var_core_value_sigF42A ? var_core_value_sig3EC0.get(n.ICommandService).executeCommand(t.SetPivotDateGroupCommand["id"], {
+      unitId: var_core_value_sigF42A.unitId,
+      subUnitId: var_core_value_sigF42A.subUnitId,
+      pivotTableId: var_core_value_sigF42A.pivotTableId,
+      tableFieldId: var_core_value_sigF42A.tableFieldId,
+      dateType: var_core_value_sigEA69.dateType
+    }) : false;
+  }
+};
+function q(var_core_value_sig898E) {
+  let var_core_value_sigC481 = (0, r.getSheetCommandTarget)(var_core_value_sig898E.get(n.IUniverInstanceService));
+  if (!var_core_value_sigC481) return;
+  let var_core_value_sig27B7 = var_core_value_sig898E.get(r.SheetsSelectionsService).getCurrentLastSelection(),
+    var_core_value_sig2DAD = var_core_value_sig27B7 == null ? undefined : var_core_value_sig27B7.primary;
+  if (!var_core_value_sig2DAD) return;
+  let {
+      unitId: var_core_value_sig00DE,
+      subUnitId: var_core_value_sigEF7C
+    } = var_core_value_sigC481,
+    var_core_value_sig07E7 = var_core_value_sig2DAD.startRow,
+    var_core_value_sig6005 = var_core_value_sig2DAD.startColumn,
+    var_core_value_sig25A4 = var_core_value_sig898E.get(t.SheetsPivotTableAdaptorModel).getPivotTableIdByCell(var_core_value_sig00DE, var_core_value_sigEF7C, var_core_value_sig07E7, var_core_value_sig6005);
+  if (!var_core_value_sig25A4) return;
+  let var_core_value_sigB591 = je(var_core_value_sig898E, var_core_value_sig00DE, var_core_value_sigEF7C, var_core_value_sig25A4, var_core_value_sig07E7, var_core_value_sig6005);
+  if (!var_core_value_sigB591) return;
+  let var_core_value_sigB272 = var_core_value_sig898E.get(t.SheetsPivotTableConfigModel),
+    var_core_value_sig6F52 = var_core_value_sigB272.getPivotTableConfig(var_core_value_sig00DE, var_core_value_sigEF7C, var_core_value_sig25A4),
+    var_core_value_sig09C4 = var_core_value_sigB272.getCollection(var_core_value_sig00DE, var_core_value_sig25A4),
+    var_core_value_sig8E3E = (0, t.getPivotDateGroupContext)(var_core_value_sig6F52 == null ? undefined : var_core_value_sig6F52.fieldsConfig, var_core_value_sig09C4, var_core_value_sigB591);
+  if (var_core_value_sig8E3E) return {
+    unitId: var_core_value_sig00DE,
+    subUnitId: var_core_value_sigEF7C,
+    pivotTableId: var_core_value_sig25A4,
+    tableFieldId: var_core_value_sigB591,
+    row: var_core_value_sig07E7,
+    col: var_core_value_sig6005,
+    dateGroupContext: var_core_value_sig8E3E
+  };
+}
+function je(var_core_value_sigC3D3, var_core_value_sig1451, var_core_value_sigAD57, var_core_value_sig58A8, var_core_value_sigEC1A, var_core_value_sigBDED) {
+  let var_core_value_sig4BFF = var_core_value_sigC3D3.get(t.SheetsPivotTableAdaptorModel).getPivotItemRenderInfoCache(var_core_value_sig1451, var_core_value_sigAD57, var_core_value_sig58A8);
+  if (!var_core_value_sig4BFF) return;
+  let var_core_value_sig40E7 = (0, t.resolvePivotSheetCell)(var_core_value_sigEC1A, var_core_value_sigBDED, var_core_value_sigC3D3.get(t.SheetsPivotTableAdaptorModel).getPivotTableCellData(var_core_value_sig1451, var_core_value_sigAD57, var_core_value_sigEC1A, var_core_value_sigBDED), var_core_value_sig4BFF);
+  return var_core_value_sig40E7 == null ? undefined : var_core_value_sig40E7.tableFieldId;
+}
+const Me = [{
+    type: l.PivotShowAsTypeEnum["normal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.normal",
+    requiresParameters: false,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentOfGrandTotal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentOfGrandTotal",
+    requiresParameters: false,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentOfRowTotal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentOfRowTotal",
+    requiresParameters: false,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentOfColumnTotal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentOfColumnTotal",
+    requiresParameters: false,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentOfParentRowTotal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentOfParentRowTotal",
+    requiresParameters: false,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentOfParentColumnTotal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentOfParentColumnTotal",
+    requiresParameters: false,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["index"],
+    localeKey: "sheets-pivot-ui.showValuesAs.index",
+    requiresParameters: false,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentOfParent"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentOfParent",
+    requiresParameters: true,
+    baseItemMode: "none",
+    parentFieldOnly: true
+  }, {
+    type: l.PivotShowAsTypeEnum["percentOf"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentOf",
+    requiresParameters: true,
+    baseItemMode: "item"
+  }, {
+    type: l.PivotShowAsTypeEnum["differenceFrom"],
+    localeKey: "sheets-pivot-ui.showValuesAs.differenceFrom",
+    requiresParameters: true,
+    baseItemMode: "item-or-relative"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentDifferenceFrom"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentDifferenceFrom",
+    requiresParameters: true,
+    baseItemMode: "item-or-relative"
+  }, {
+    type: l.PivotShowAsTypeEnum["runningTotal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.runningTotal",
+    requiresParameters: true,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["percentRunningTotal"],
+    localeKey: "sheets-pivot-ui.showValuesAs.percentRunningTotal",
+    requiresParameters: true,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["rankAscending"],
+    localeKey: "sheets-pivot-ui.showValuesAs.rankAscending",
+    requiresParameters: true,
+    baseItemMode: "none"
+  }, {
+    type: l.PivotShowAsTypeEnum["rankDescending"],
+    localeKey: "sheets-pivot-ui.showValuesAs.rankDescending",
+    requiresParameters: true,
+    baseItemMode: "none"
+  }],
+  Ne = {
+    type: n.CommandType["OPERATION"],
+    id: "sheet.operation.set-pivot-show-data-as",
+    async handler(var_core_value_sigEDBA, var_core_value_sigE863) {
+      let var_core_value_sig04B4 = var_core_value_sigE863 && Me.find(var_core_value_sig4654 => var_core_value_sig4654.type === var_core_value_sigE863.type);
+      if (!var_core_value_sig04B4) return false;
+      let var_core_value_sig1C07 = Pe(var_core_value_sigEDBA);
+      if (!var_core_value_sig1C07) return false;
+      if (!var_core_value_sig04B4.requiresParameters) return var_core_value_sigEDBA.get(n.ICommandService).executeCommand(t.UpdatePivotFieldSettingCommand["id"], {
+        unitId: var_core_value_sig1C07.unitId,
+        subUnitId: var_core_value_sig1C07.subUnitId,
+        pivotTableId: var_core_value_sig1C07.pivotTableId,
+        tableFieldId: var_core_value_sig1C07.tableFieldId,
+        showDataAs: {
+          type: var_core_value_sig04B4.type,
+          baseFieldId: "",
+          baseItem: ""
+        },
+        tableFieldInfo: var_core_value_sig1C07.tableFieldInfo,
+        dataFieldInfo: var_core_value_sig1C07.dataFieldInfo
+      });
+      let var_core_value_sig93D6 = Fe(var_core_value_sigEDBA, var_core_value_sig1C07);
+      if (!var_core_value_sig93D6) return false;
+      let var_core_value_sigDD05 = J(var_core_value_sig93D6.config, var_core_value_sig93D6.collection, var_core_value_sig04B4);
+      if (var_core_value_sigDD05.length === 0) return false;
+      let var_core_value_sig3932 = {};
+      if (var_core_value_sig04B4.baseItemMode !== "none") {
+        try {
+          var_core_value_sig3932 = await Ie(var_core_value_sigEDBA, var_core_value_sig93D6.config, var_core_value_sig1C07.pivotTableId, var_core_value_sigDD05);
+        } catch {
+          return false;
+        }
+        if (!var_core_value_sigDD05.some(var_core_value_sig826B => var_core_value_sig3932[var_core_value_sig826B] && (var_core_value_sig04B4.baseItemMode === "item-or-relative" || var_core_value_sig3932[var_core_value_sig826B].items["length"] > 0))) return false;
+      }
+      let var_core_value_sig48B2 = var_core_value_sigEDBA.get(e.IDialogService),
+        var_core_value_sig57DF = var_core_value_sigEDBA.get(n.LocaleService),
+        var_core_value_sigC985 = null,
+        var_core_value_sig8DA6 = false,
+        var_core_value_sigCA69 = false,
+        var_core_value_sigB77C = () => {
+          var_core_value_sig8DA6 || (var_core_value_sig8DA6 = true, var_core_value_sigC985 == null || var_core_value_sigC985.dispose(), var_core_value_sigC985 = null);
+        };
+      try {
+        var_core_value_sigC985 = var_core_value_sig48B2.open({
+          id: "UNIVER_SHEET_PIVOT_SHOW_DATA_AS_DIALOG_ID",
+          title: {
+            title: var_core_value_sig57DF.t("sheets-pivot-ui.showValuesAs.dialogTitle")
+          },
+          draggable: true,
+          mask: true,
+          maskClosable: false,
+          width: 400,
+          children: {
+            label: {
+              name: T,
+              props: {
+                unitId: var_core_value_sig1C07.unitId,
+                subUnitId: var_core_value_sig1C07.subUnitId,
+                pivotTableId: var_core_value_sig1C07.pivotTableId,
+                tableFieldId: var_core_value_sig1C07.tableFieldId,
+                type: var_core_value_sig04B4.type,
+                baseItems: var_core_value_sig3932,
+                onCancel: var_core_value_sigB77C,
+                onConfirm: async var_core_value_sigCF89 => {
+                  if (!var_core_value_sigCA69) {
+                    var_core_value_sigCA69 = true;
+                    try {
+                      let var_core_value_sigDBB7 = Fe(var_core_value_sigEDBA, var_core_value_sig1C07);
+                      if (!var_core_value_sigDBB7 || !Le(var_core_value_sigDBB7.config, var_core_value_sigDBB7.collection, var_core_value_sig04B4, var_core_value_sigCF89)) return;
+                      if (var_core_value_sig04B4.baseItemMode !== "none" && var_core_value_sigCF89.baseItemType === undefined) {
+                        var var_core_value_sig00CB;
+                        if (!((var_core_value_sig00CB = (await Ie(var_core_value_sigEDBA, var_core_value_sigDBB7.config, var_core_value_sigDBB7.context["pivotTableId"], [var_core_value_sigCF89.baseFieldId]))[var_core_value_sigCF89.baseFieldId]) != null && var_core_value_sig00CB.items["includes"](var_core_value_sigCF89.baseItem))) return;
+                      }
+                      await var_core_value_sigEDBA.get(n.ICommandService).executeCommand(t.UpdatePivotFieldSettingCommand["id"], {
+                        unitId: var_core_value_sigDBB7.context["unitId"],
+                        subUnitId: var_core_value_sigDBB7.context["subUnitId"],
+                        pivotTableId: var_core_value_sigDBB7.context["pivotTableId"],
+                        tableFieldId: var_core_value_sigDBB7.context["tableFieldId"],
+                        showDataAs: var_core_value_sigCF89,
+                        tableFieldInfo: var_core_value_sigDBB7.context["tableFieldInfo"],
+                        dataFieldInfo: var_core_value_sigDBB7.context["dataFieldInfo"]
+                      });
+                    } catch {} finally {
+                      var_core_value_sigB77C();
+                    }
+                  }
+                }
+              }
+            }
+          },
+          onClose: var_core_value_sigB77C
+        });
+      } catch {
+        return var_core_value_sigB77C(), false;
+      }
+      return true;
+    }
+  };
+function J(var_core_value_sig9AFF, var_core_value_sig3545, var_core_value_sig5EE4) {
+  let {
+    rowFields: var_core_value_sig7EAB,
+    columnFields: var_core_value_sig56B9,
+    dimension: var_core_value_sig90CF
+  } = var_core_value_sig9AFF.fieldsConfig;
+  return (var_core_value_sig5EE4.parentFieldOnly ? [...var_core_value_sig7EAB.slice(0, -1), ...var_core_value_sig56B9.slice(0, -1)] : [...var_core_value_sig7EAB, ...var_core_value_sig56B9]).filter(var_core_value_sigB26B => {
+    let var_core_value_sig019B = var_core_value_sig90CF[var_core_value_sigB26B];
+    return !!(var_core_value_sig019B && (var_core_value_sig3545.fields[var_core_value_sig019B.dataFieldId] || var_core_value_sig3545.customFields["find"](var_core_value_sig77EE => var_core_value_sig77EE.id === var_core_value_sig019B.dataFieldId)));
+  });
+}
+function Pe(var_core_value_sigA386) {
+  var var_core_value_sigCD6E, var_core_value_sigFD9D;
+  let var_core_value_sigA2A4 = (0, r.getSheetCommandTarget)(var_core_value_sigA386.get(n.IUniverInstanceService)),
+    var_core_value_sigA1AC = (var_core_value_sigCD6E = var_core_value_sigA386.get(r.SheetsSelectionsService).getCurrentLastSelection()) == null ? undefined : var_core_value_sigCD6E.primary;
+  if (!var_core_value_sigA2A4 || !var_core_value_sigA1AC) return;
+  let {
+      unitId: var_core_value_sig6180,
+      subUnitId: var_core_value_sigB93D
+    } = var_core_value_sigA2A4,
+    var_core_value_sigB17C = var_core_value_sigA1AC.startRow,
+    var_core_value_sig69B6 = var_core_value_sigA1AC.startColumn,
+    var_core_value_sig708D = var_core_value_sigA386.get(t.SheetsPivotTableAdaptorModel),
+    var_core_value_sig1ED2 = var_core_value_sig708D.getPivotTableIdByCell(var_core_value_sig6180, var_core_value_sigB93D, var_core_value_sigB17C, var_core_value_sig69B6);
+  if (!var_core_value_sig1ED2) return;
+  let var_core_value_sig94C1 = var_core_value_sigA386.get(t.SheetsPivotTableConfigModel).getPivotTableConfig(var_core_value_sig6180, var_core_value_sigB93D, var_core_value_sig1ED2),
+    var_core_value_sigABAC = var_core_value_sig708D.getPivotItemRenderInfoCache(var_core_value_sig6180, var_core_value_sigB93D, var_core_value_sig1ED2),
+    var_core_value_sigFAE6 = var_core_value_sig708D.getPivotTableCellData(var_core_value_sig6180, var_core_value_sigB93D, var_core_value_sigB17C, var_core_value_sig69B6);
+  if (!var_core_value_sig94C1 || !var_core_value_sigABAC) return;
+  let var_core_value_sig06AC = (0, t.resolvePivotSheetCell)(var_core_value_sigB17C, var_core_value_sig69B6, var_core_value_sigFAE6, var_core_value_sigABAC);
+  if (!var_core_value_sig06AC) return;
+  let var_core_value_sig57E2 = (0, t.resolvePivotValueFieldId)(var_core_value_sig06AC, var_core_value_sig94C1.fieldsConfig["valueFields"]);
+  if (var_core_value_sig57E2) return (var_core_value_sigFD9D = Fe(var_core_value_sigA386, {
+    unitId: var_core_value_sig6180,
+    subUnitId: var_core_value_sigB93D,
+    pivotTableId: var_core_value_sig1ED2,
+    tableFieldId: var_core_value_sig57E2
+  })) == null ? undefined : var_core_value_sigFD9D.context;
+}
+function Fe(var_core_value_sig01FC, var_core_value_sig10FC) {
+  let {
+      unitId: var_core_value_sig5374,
+      subUnitId: var_core_value_sigB66D,
+      pivotTableId: var_core_value_sigD0F0,
+      tableFieldId: var_core_value_sig8E31
+    } = var_core_value_sig10FC,
+    var_core_value_sig8339 = var_core_value_sig01FC.get(t.SheetsPivotTableConfigModel),
+    var_core_value_sigA01E = var_core_value_sig8339.getPivotTableConfig(var_core_value_sig5374, var_core_value_sigB66D, var_core_value_sigD0F0),
+    var_core_value_sigA41E = var_core_value_sig8339.getCollection(var_core_value_sig5374, var_core_value_sigD0F0),
+    var_core_value_sig939C = var_core_value_sigA01E == null ? undefined : var_core_value_sigA01E.fieldsConfig["measure"][var_core_value_sig8E31];
+  if (!var_core_value_sigA01E || !var_core_value_sigA41E || !var_core_value_sig939C || !var_core_value_sigA01E.fieldsConfig["valueFields"].includes(var_core_value_sig939C.id)) return;
+  let var_core_value_sigA49E = var_core_value_sigA41E.fields[var_core_value_sig939C.dataFieldId] ?? var_core_value_sigA41E.customFields["find"](var_core_value_sigC6BC => var_core_value_sigC6BC.id === var_core_value_sig939C.dataFieldId);
+  if (!var_core_value_sigA49E) return;
+  let var_core_value_sig6DEB = {
+    ...var_core_value_sig939C.showDataAs
+  };
+  return {
+    config: var_core_value_sigA01E,
+    collection: var_core_value_sigA41E,
+    context: {
+      unitId: var_core_value_sig5374,
+      subUnitId: var_core_value_sigB66D,
+      pivotTableId: var_core_value_sigD0F0,
+      tableFieldId: var_core_value_sig939C.id,
+      currentShowDataAs: var_core_value_sig6DEB,
+      tableFieldInfo: {
+        tableFieldId: var_core_value_sig939C.id,
+        displayName: var_core_value_sig939C.displayName,
+        dataFieldId: var_core_value_sig939C.dataFieldId,
+        format: var_core_value_sig939C.format,
+        subTotalType: var_core_value_sig939C.subtotal,
+        showDataAs: {
+          ...var_core_value_sig6DEB
+        }
+      },
+      dataFieldInfo: {
+        id: var_core_value_sigA49E.id,
+        dataFieldId: var_core_value_sigA49E.id,
+        name: var_core_value_sigA49E.name,
+        type: var_core_value_sigA49E.fieldDataType,
+        checked: true,
+        pivotTableId: var_core_value_sigD0F0
+      }
+    }
+  };
+}
+async function Ie(var_core_value_sig2F0D, var_core_value_sig5141, var_core_value_sigA9E0, var_core_value_sig751D) {
+  let {
+      unitId: var_core_value_sig2E9A,
+      subUnitId: var_core_value_sigE105
+    } = var_core_value_sig5141.targetCellInfo,
+    var_core_value_sig0BD6 = var_core_value_sig5141.targetCellInfo,
+    var_core_value_sig3070 = var_core_value_sig2F0D.get(t.SheetsPivotTableAdaptorModel).getPivotItemRenderInfoCache(var_core_value_sig2E9A, var_core_value_sigE105, var_core_value_sigA9E0);
+  if (!var_core_value_sig3070) throw Error("[sheets-pivot-ui]: Pivot render cache is unavailable");
+  return (await Promise.all(var_core_value_sig751D.map(async var_core_value_sig8EC2 => {
+    try {
+      return [var_core_value_sig8EC2, (await var_core_value_sig2F0D.get(t.SheetsPivotRPCService).getPivotDisplayConfig({
+        unitId: var_core_value_sig2E9A,
+        subUnitId: var_core_value_sigE105,
+        pivotTableId: var_core_value_sigA9E0,
+        params: {
+          type: t.PivotDisplayDataType["Filter"],
+          filter: {
+            row: var_core_value_sig0BD6.row,
+            col: var_core_value_sig0BD6.col,
+            tableFieldId: var_core_value_sig8EC2,
+            pivotItemRenderInfoCache: var_core_value_sig3070
+          }
+        }
+      })).result["filter"]];
+    } catch {
+      return [var_core_value_sig8EC2, undefined];
+    }
+  }))).reduce((var_core_value_sigA8C3, [var_core_value_sig5276, var_core_value_sig031B]) => (var_core_value_sig031B && (var_core_value_sigA8C3[var_core_value_sig5276] = {
+    items: var_core_value_sig031B.items,
+    itemTypes: var_core_value_sig031B.itemTypes,
+    format: var_core_value_sig031B.format
+  }), var_core_value_sigA8C3), {});
+}
+function Le(var_core_value_sigC66D, var_core_value_sig8EC5, var_core_value_sig1056, var_core_value_sig6EE5) {
+  return var_core_value_sig6EE5.type !== var_core_value_sig1056.type || !J(var_core_value_sigC66D, var_core_value_sig8EC5, var_core_value_sig1056).includes(var_core_value_sig6EE5.baseFieldId) ? false : var_core_value_sig1056.baseItemMode === "none" ? var_core_value_sig6EE5.baseItem === "" && var_core_value_sig6EE5.baseItemType === undefined : var_core_value_sig6EE5.baseItemType === undefined ? var_core_value_sig6EE5.baseItem !== "" : var_core_value_sig1056.baseItemMode === "item-or-relative" && var_core_value_sig6EE5.baseItem === "" && (var_core_value_sig6EE5.baseItemType === l.PivotShowAsBaseItemTypeEnum["previous"] || var_core_value_sig6EE5.baseItemType === l.PivotShowAsBaseItemTypeEnum["next"]);
+}
+function Re(var_core_value_sig9DD9) {
+  return {
+    ...var_core_value_sig9DD9,
+    expected: Array.isArray(var_core_value_sig9DD9.expected) ? var_core_value_sig9DD9.expected["concat"]() : var_core_value_sig9DD9.expected
+  };
+}
+function ze(var_core_value_sig09AC, var_core_value_sig1613) {
+  let var_core_value_sigADC6 = var_core_value_sig09AC.get(t.SheetsPivotTableConfigModel).getPivotTableConfig(var_core_value_sig1613.unitId, var_core_value_sig1613.subUnitId, var_core_value_sig1613.pivotTableId);
+  if (!(!var_core_value_sigADC6 || !var_core_value_sigADC6.fieldsConfig["dimension"][var_core_value_sig1613.targetFieldId] || !(var_core_value_sigADC6.fieldsConfig["rowFields"].includes(var_core_value_sig1613.targetFieldId) || var_core_value_sigADC6.fieldsConfig["columnFields"].includes(var_core_value_sig1613.targetFieldId)))) return var_core_value_sigADC6;
+}
+function Be(var_core_value_sig4620) {
+  var var_core_value_sig07FB, var_core_value_sig617E;
+  let var_core_value_sigC85E = (0, r.getSheetCommandTarget)(var_core_value_sig4620.get(n.IUniverInstanceService)),
+    var_core_value_sig8293 = (var_core_value_sig07FB = var_core_value_sig4620.get(r.SheetsSelectionsService).getCurrentLastSelection()) == null ? undefined : var_core_value_sig07FB.primary;
+  if (!var_core_value_sigC85E || !var_core_value_sig8293) return;
+  let {
+      unitId: var_core_value_sig050D,
+      subUnitId: var_core_value_sig37AE
+    } = var_core_value_sigC85E,
+    var_core_value_sig5B51 = var_core_value_sig8293.startRow,
+    var_core_value_sig64FF = var_core_value_sig8293.startColumn,
+    var_core_value_sig86F4 = var_core_value_sig4620.get(t.SheetsPivotTableAdaptorModel),
+    var_core_value_sig9E0F = var_core_value_sig86F4.getPivotTableIdByCell(var_core_value_sig050D, var_core_value_sig37AE, var_core_value_sig5B51, var_core_value_sig64FF);
+  if (!var_core_value_sig9E0F) return;
+  let var_core_value_sig3A42 = var_core_value_sig4620.get(t.SheetsPivotTableConfigModel).getPivotTableConfig(var_core_value_sig050D, var_core_value_sig37AE, var_core_value_sig9E0F),
+    var_core_value_sig8802 = var_core_value_sig86F4.getPivotItemRenderInfoCache(var_core_value_sig050D, var_core_value_sig37AE, var_core_value_sig9E0F);
+  if (!var_core_value_sig3A42 || !var_core_value_sig8802) return;
+  let var_core_value_sig95D5 = (0, t.resolvePivotSheetCell)(var_core_value_sig5B51, var_core_value_sig64FF, var_core_value_sig86F4.getPivotTableCellData(var_core_value_sig050D, var_core_value_sig37AE, var_core_value_sig5B51, var_core_value_sig64FF), var_core_value_sig8802),
+    var_core_value_sigE027 = var_core_value_sig95D5 && (0, t.resolvePivotValueFilterTarget)(var_core_value_sig95D5, var_core_value_sig3A42.fieldsConfig);
+  if (!var_core_value_sigE027) return;
+  let var_core_value_sigE537 = var_core_value_sig3A42.fieldsConfig["dimension"][var_core_value_sigE027.targetFieldId],
+    var_core_value_sig5D84 = var_core_value_sig3A42.fieldsConfig["valueFields"].flatMap(var_core_value_sig9DC0 => {
+      let var_core_value_sig95F0 = var_core_value_sig3A42.fieldsConfig["measure"][var_core_value_sig9DC0];
+      return var_core_value_sig95F0 ? [{
+        id: var_core_value_sig95F0.id,
+        label: var_core_value_sig95F0.displayName
+      }] : [];
+    });
+  if (!var_core_value_sigE537 || var_core_value_sig5D84.length === 0) return;
+  let var_core_value_sigD120 = (var_core_value_sig617E = var_core_value_sig3A42.fieldsConfig["valueFilter"]) == null || (var_core_value_sig617E = var_core_value_sig617E.find(var_core_value_sig9CCB => var_core_value_sig9CCB.fieldId === var_core_value_sigE027.targetFieldId)) == null ? undefined : var_core_value_sig617E.filterInfo;
+  return {
+    unitId: var_core_value_sig050D,
+    subUnitId: var_core_value_sig37AE,
+    pivotTableId: var_core_value_sig9E0F,
+    targetFieldId: var_core_value_sigE027.targetFieldId,
+    targetFieldName: var_core_value_sigE537.displayName,
+    valueFields: var_core_value_sig5D84,
+    defaultValueFieldId: var_core_value_sigE027.defaultValueFieldId,
+    ...(var_core_value_sigD120 ? {
+      currentFilter: Re(var_core_value_sigD120)
+    } : {})
+  };
+}
+const Ve = {
+    type: n.CommandType["OPERATION"],
+    id: "sheet.operation.set-pivot-value-filter",
+    async handler(var_core_value_sigAA05) {
+      let var_core_value_sigC04C = Be(var_core_value_sigAA05);
+      if (!var_core_value_sigC04C) return false;
+      let var_core_value_sig2069 = var_core_value_sigAA05.get(e.IDialogService),
+        var_core_value_sig5176 = var_core_value_sigAA05.get(n.LocaleService),
+        var_core_value_sig71A1 = null,
+        var_core_value_sig72AD = false,
+        var_core_value_sig9ABE = false,
+        var_core_value_sig8EF0 = () => {
+          var_core_value_sig72AD || (var_core_value_sig72AD = true, var_core_value_sig71A1 == null || var_core_value_sig71A1.dispose(), var_core_value_sig71A1 = null);
+        },
+        var_core_value_sig234B = async var_core_value_sigE718 => {
+          if (!var_core_value_sig9ABE) {
+            var_core_value_sig9ABE = true;
+            try {
+              let var_core_value_sig5B69 = ze(var_core_value_sigAA05, var_core_value_sigC04C);
+              if (!var_core_value_sig5B69 || var_core_value_sigE718 && (!var_core_value_sig5B69.fieldsConfig["measure"][var_core_value_sigE718.valueFieldId] || !var_core_value_sig5B69.fieldsConfig["valueFields"].includes(var_core_value_sigE718.valueFieldId) || !(0, l.isValueFilterOperator)(var_core_value_sigE718.operator))) return;
+              await var_core_value_sigAA05.get(n.ICommandService).executeCommand(t.SetPivotValueFilterCommand["id"], {
+                unitId: var_core_value_sigC04C.unitId,
+                subUnitId: var_core_value_sigC04C.subUnitId,
+                pivotTableId: var_core_value_sigC04C.pivotTableId,
+                fieldId: var_core_value_sigC04C.targetFieldId,
+                valueFilterInfo: var_core_value_sigE718 ? {
+                  ...var_core_value_sigE718,
+                  type: l.PivotFilterTypeEnum["ValueFilter"],
+                  expected: Array.isArray(var_core_value_sigE718.expected) ? var_core_value_sigE718.expected["concat"]() : var_core_value_sigE718.expected
+                } : undefined
+              });
+            } catch {} finally {
+              var_core_value_sig8EF0();
+            }
+          }
+        };
+      try {
+        var_core_value_sig71A1 = var_core_value_sig2069.open({
+          id: "UNIVER_SHEET_PIVOT_VALUE_FILTER_DIALOG_ID",
+          title: {
+            title: var_core_value_sig5176.t("sheets-pivot-ui.valueFilter.dialogTitle")
+          },
+          draggable: true,
+          mask: true,
+          maskClosable: false,
+          width: 420,
+          children: {
+            label: {
+              name: E,
+              props: {
+                targetFieldId: var_core_value_sigC04C.targetFieldId,
+                targetFieldName: var_core_value_sigC04C.targetFieldName,
+                valueFields: var_core_value_sigC04C.valueFields,
+                defaultValueFieldId: var_core_value_sigC04C.defaultValueFieldId,
+                currentFilter: var_core_value_sigC04C.currentFilter,
+                onConfirm: var_core_value_sig9F76 => var_core_value_sig234B(var_core_value_sig9F76),
+                onClear: () => var_core_value_sig234B(undefined),
+                onCancel: var_core_value_sig8EF0
+              }
+            }
+          },
+          onClose: var_core_value_sig8EF0
+        });
+      } catch {
+        return var_core_value_sig8EF0(), false;
+      }
+      return true;
+    }
+  },
+  He = "sheet.pivot.context-menu.date-group",
+  Ue = "sheet.pivot.context-menu.show-data-as",
+  We = "sheet.pivot.context-menu.value-filter",
+  Ge = {
+    year: "sheets-pivot-ui.dateGroup.year",
+    "year-quarter": "sheets-pivot-ui.dateGroup.yearQuarter",
+    quarter: "sheets-pivot-ui.dateGroup.quarter",
+    "year-month": "sheets-pivot-ui.dateGroup.yearMonth",
+    month: "sheets-pivot-ui.dateGroup.month",
+    "month-date": "sheets-pivot-ui.dateGroup.monthDate",
+    "year-month-date": "sheets-pivot-ui.dateGroup.yearMonthDate",
+    date: "sheets-pivot-ui.dateGroup.date",
+    hour: "sheets-pivot-ui.dateGroup.hour",
+    minute: "sheets-pivot-ui.dateGroup.minute",
+    "hour-minute": "sheets-pivot-ui.dateGroup.hourMinute"
+  };
+function Ke(var_core_value_sig8169) {
+  return {
+    id: K.id,
+    type: e.MenuItemType["BUTTON"],
+    icon: "PivotTableIcon",
+    hidden$: (0, e.getMenuHiddenObservable)(var_core_value_sig8169, n.UniverInstanceType["UNIVER_SHEET"]),
+    disabled$: (0, d.getObservableWithExclusiveRange$)(var_core_value_sig8169, (0, d.getCurrentRangeDisable$)(var_core_value_sig8169, {
+      workbookTypes: [r.WorkbookEditablePermission],
+      worksheetTypes: [r.WorksheetViewPermission, r.WorksheetPivotTablePermission],
+      rangeTypes: [r.RangeProtectionPermissionViewPoint]
+    })),
+    tooltip: "sheets-pivot-ui.title",
+    title: "sheets-pivot-ui.title"
+  };
+}
+function qe(var_core_value_sigC5FB) {
+  return {
+    id: He,
+    type: e.MenuItemType["SUBITEMS"],
+    title: "sheets-pivot-ui.dateGroup.title",
+    hidden$: Xe(var_core_value_sigC5FB)
+  };
+}
+function Je(var_core_value_sig5453) {
+  return var_core_value_sigAEC8 => ({
+    id: Ye(var_core_value_sig5453),
+    commandId: Ae.id,
+    type: e.MenuItemType["BUTTON"],
+    title: Ge[var_core_value_sig5453],
+    params: {
+      dateType: var_core_value_sig5453
+    },
+    disabled$: Ze(var_core_value_sigAEC8, var_core_value_sig5453),
+    activated$: Qe(var_core_value_sigAEC8, var_core_value_sig5453)
+  });
+}
+function Ye(var_core_value_sig8725) {
+  return "sheet.pivot.context-menu.date-group." + var_core_value_sig8725;
+}
+function Xe(var_core_value_sig513B) {
+  return $e(var_core_value_sig513B).pipe((0, c.map)(() => !q(var_core_value_sig513B)));
+}
+function Ze(var_core_value_sig5501, var_core_value_sig7784) {
+  return $e(var_core_value_sig5501).pipe((0, c.map)(() => {
+    let var_core_value_sigB977 = q(var_core_value_sig5501);
+    return !var_core_value_sigB977 || (0, t.isPivotDateGroupTypeDisabled)(var_core_value_sigB977.dateGroupContext, var_core_value_sig7784);
+  }));
+}
+function Qe(var_core_value_sigB706, var_core_value_sig5FD01) {
+  return $e(var_core_value_sigB706).pipe((0, c.map)(() => {
+    let var_core_value_sig2949 = q(var_core_value_sigB706);
+    return (var_core_value_sig2949 == null ? undefined : var_core_value_sig2949.dateGroupContext["currentDateType"]) === var_core_value_sig5FD01;
+  }));
+}
+function $e(var_core_value_sig77E3) {
+  return var_core_value_sig77E3.get(r.SheetsSelectionsService).selectionMoveEnd$["pipe"]((0, c.startWith)(null));
+}
+const et = t.PIVOT_DATE_GROUP_TYPES["map"](var_core_value_sigB071 => ({
+  dateType: var_core_value_sigB071,
+  id: Ye(var_core_value_sigB071),
+  menuItemFactory: Je(var_core_value_sigB071)
+}));
+function tt(var_core_value_sig15FE) {
+  return {
+    id: Ue,
+    type: e.MenuItemType["SUBITEMS"],
+    title: "sheets-pivot-ui.showValuesAs.title",
+    hidden$: it(var_core_value_sig15FE).pipe((0, c.map)(() => !Pe(var_core_value_sig15FE)))
+  };
+}
+function nt(var_core_value_sigCF47) {
+  return var_core_value_sig308A => ({
+    id: rt(var_core_value_sigCF47.type),
+    commandId: Ne.id,
+    type: e.MenuItemType["BUTTON"],
+    title: var_core_value_sigCF47.localeKey,
+    params: {
+      type: var_core_value_sigCF47.type
+    },
+    activated$: it(var_core_value_sig308A).pipe((0, c.map)(() => {
+      let var_core_value_sigB008 = Pe(var_core_value_sig308A);
+      return !!(var_core_value_sigB008 && (var_core_value_sigB008.currentShowDataAs["type"] ?? l.PivotShowAsTypeEnum["normal"]) === var_core_value_sigCF47.type);
+    }))
+  });
+}
+function rt(var_core_value_sigB0F9) {
+  return "sheet.pivot.context-menu.show-data-as." + var_core_value_sigB0F9;
+}
+function it(var_core_value_sigAF12) {
+  return var_core_value_sigAF12.get(r.SheetsSelectionsService).selectionMoveEnd$["pipe"]((0, c.startWith)(null));
+}
+const at = Me.map(var_core_value_sigC60C => ({
+  rule: var_core_value_sigC60C,
+  id: rt(var_core_value_sigC60C.type),
+  menuItemFactory: nt(var_core_value_sigC60C)
+}));
+function ot(var_core_value_sig1C3C) {
+  return {
+    id: We,
+    commandId: Ve.id,
+    type: e.MenuItemType["BUTTON"],
+    title: "sheets-pivot-ui.valueFilter.title",
+    hidden$: var_core_value_sig1C3C.get(r.SheetsSelectionsService).selectionMoveEnd$["pipe"]((0, c.startWith)(null), (0, c.map)(() => !Be(var_core_value_sig1C3C)))
+  };
+}
+const st = et.reduce((var_core_value_sig71CF, var_core_value_sigC341, var_core_value_sigBA47) => (var_core_value_sig71CF[var_core_value_sigC341.id] = {
+    order: var_core_value_sigBA47 + 1,
+    menuItemFactory: var_core_value_sigC341.menuItemFactory
+  }, var_core_value_sig71CF), {}),
+  ct = at.reduce((var_core_value_sig3DF7, var_core_value_sigD49F, var_core_value_sigCECC) => (var_core_value_sig3DF7[var_core_value_sigD49F.id] = {
+    order: var_core_value_sigCECC + 1,
+    menuItemFactory: var_core_value_sigD49F.menuItemFactory
+  }, var_core_value_sig3DF7), {}),
+  lt = {
+    [e.RibbonDataGroup["ORGANIZATION"]]: {
+      [K.id]: {
+        order: 1,
+        gridLayout: {
+          row: 2,
+          column: 1
+        },
+        menuItemFactory: Ke
+      }
+    },
+    [e.ContextMenuPosition["MAIN_AREA"]]: {
+      [e.ContextMenuGroup["DATA"]]: {
+        [K.id]: {
+          order: 1,
+          menuItemFactory: Ke
+        },
+        [He]: {
+          order: 2,
+          menuItemFactory: qe,
+          ...st
+        },
+        [Ue]: {
+          order: 3,
+          menuItemFactory: tt,
+          ...ct
+        },
+        [We]: {
+          order: 4,
+          menuItemFactory: ot
+        }
+      }
+    },
+    [e.ContextMenuPosition["COL_HEADER"]]: {
+      [e.ContextMenuGroup["DATA"]]: {
+        [K.id]: {
+          order: 1,
+          menuItemFactory: Ke
+        },
+        [He]: {
+          order: 2,
+          menuItemFactory: qe,
+          ...st
+        }
+      }
+    }
+  };
+var ut = "@univerjs-pro/sheets-pivot-ui",
+  dt = "1.0.0-insiders.20260907-70fc579";
+const ft = {};
+function pt(var_core_value_sig0F47) {
+  let {
+      filterItemInfo: var_core_value_sig6B29,
+      unitId: var_core_value_sig28E2,
+      subUnitId: var_core_value_sig1578
+    } = var_core_value_sig0F47,
+    {
+      format: var_core_value_sig52ED,
+      filterInfo: var_core_value_sig135F,
+      sortInfo: var_core_value_sig416D
+    } = var_core_value_sig6B29,
+    var_core_value_sigAD5D = (0, e.useDependency)(n.ICommandService),
+    var_core_value_sig1B8A = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sigFB18 = (0, e.useDependency)(e.IDialogService),
+    var_core_value_sig703C = (0, e.useDependency)(n.IUniverInstanceService),
+    var_core_value_sig96CF = (0, e.useObservable)(var_core_value_sig1B8A.direction$, var_core_value_sig1B8A.getDirection()),
+    [var_core_value_sig49F1, var_core_value_sig2F7B] = (0, s.useState)(false),
+    [var_core_value_sigB0DF, var_core_value_sig2E44] = (0, s.useState)(() => var_core_value_sig6B29 ? (var_core_value_sig135F == null ? undefined : var_core_value_sig135F.list) ?? var_core_value_sig6B29.items : []),
+    [var_core_value_sig8560, var_core_value_sig138D] = (0, s.useState)(var_core_value_sigB0DF.length === (var_core_value_sig6B29 == null ? undefined : var_core_value_sig6B29.items["length"])),
+    [var_core_value_sig1E26, var_core_value_sig5C6C] = (0, s.useState)(() => {
+      if (var_core_value_sig6B29) return var_core_value_sig416D == null ? undefined : var_core_value_sig416D.type;
+    }),
+    var_core_value_sigBE85 = () => {
+      var_core_value_sigFB18.close(b);
+    };
+  if ((0, s.useEffect)(() => {
+    var_core_value_sigB0DF.length ? var_core_value_sig2F7B(false) : var_core_value_sig2F7B(true), var_core_value_sigB0DF.length === var_core_value_sig6B29.items["length"] ? var_core_value_sig138D(true) : var_core_value_sig138D(false);
+  }, [var_core_value_sigB0DF, var_core_value_sig6B29.items["length"]]), (0, s.useEffect)(() => {
+    let var_core_value_sig528D = var_core_value_sig703C.getCurrentUnitOfType(n.UniverInstanceType["UNIVER_SHEET"]);
+    if (!var_core_value_sig528D) return;
+    let var_core_value_sigA309 = var_core_value_sig528D.activeSheet$["subscribe"](var_core_value_sig8721 => {
+      var_core_value_sig8721 && var_core_value_sig8721.getSheetId() !== var_core_value_sig1578 && var_core_value_sigBE85();
+    });
+    return () => var_core_value_sigA309 == null ? undefined : var_core_value_sigA309.unsubscribe();
+  }, [var_core_value_sig1578]), !var_core_value_sig6B29) return;
+  let var_core_value_sig56DE = () => {
+      var_core_value_sig2E44(var_core_value_sig8560 ? [] : var_core_value_sig6B29.items), var_core_value_sig138D(!var_core_value_sig8560);
+    },
+    var_core_value_sig0278 = var_core_value_sig9E20 => {
+      var_core_value_sigB0DF.find(var_core_value_sig08BA => var_core_value_sig08BA === var_core_value_sig9E20) ? var_core_value_sig2E44(var_core_value_sigB0DF.filter(var_core_value_sigDBB5 => var_core_value_sigDBB5 !== var_core_value_sig9E20)) : var_core_value_sig2E44([...var_core_value_sigB0DF, var_core_value_sig9E20]);
+    },
+    var_core_value_sig08A6 = () => {
+      let {
+        tableFieldId: var_core_value_sig26BB,
+        pivotTableId: var_core_value_sig19B4
+      } = var_core_value_sig6B29;
+      !var_core_value_sig26BB || !var_core_value_sig19B4 || (var_core_value_sigAD5D.executeCommand(t.SetPivotFilterCommand["id"], {
+        unitId: var_core_value_sig28E2,
+        subUnitId: var_core_value_sig1578,
+        pivotTableId: var_core_value_sig19B4,
+        tableFieldId: var_core_value_sig26BB,
+        items: var_core_value_sigB0DF,
+        isAll: var_core_value_sig8560
+      }), var_core_value_sigBE85());
+    },
+    var_core_value_sig04E1 = () => {
+      var_core_value_sigBE85();
+    },
+    var_core_value_sigC504 = () => {
+      let {
+        tableFieldId: var_core_value_sig218A,
+        pivotTableId: var_core_value_sig14CB
+      } = var_core_value_sig6B29;
+      !var_core_value_sig218A || !var_core_value_sig14CB || (var_core_value_sig2E44(var_core_value_sig6B29.items), var_core_value_sig138D(true), var_core_value_sigAD5D.executeCommand(t.SetPivotFilterCommand["id"], {
+        unitId: var_core_value_sig28E2,
+        subUnitId: var_core_value_sig1578,
+        pivotTableId: var_core_value_sig14CB,
+        tableFieldId: var_core_value_sig218A,
+        items: var_core_value_sig6B29.items,
+        isAll: true
+      }), var_core_value_sigBE85());
+    },
+    var_core_value_sig0515 = var_core_value_sigFDEE => {
+      let {
+        tableFieldId: var_core_value_sigA676,
+        pivotTableId: var_core_value_sigC27E
+      } = var_core_value_sig6B29;
+      !var_core_value_sigA676 || !var_core_value_sigC27E || (var_core_value_sigAD5D.executeCommand(t.SetPivotSortCommand["id"], {
+        unitId: var_core_value_sig28E2,
+        subUnitId: var_core_value_sig1578,
+        pivotTableId: var_core_value_sigC27E,
+        tableFieldId: var_core_value_sigA676,
+        info: {
+          type: var_core_value_sigFDEE
+        }
+      }), var_core_value_sig5C6C(var_core_value_sigFDEE), var_core_value_sigBE85());
+    },
+    var_core_value_sig9F34 = Te(var_core_value_sig135F, {
+      items: var_core_value_sig6B29.items
+    });
+  return (0, u.jsxs)("div", {
+    dir: var_core_value_sig96CF,
+    children: [(0, u.jsxs)("div", {
+      className: "univer-flex",
+      children: [(0, u.jsxs)("div", {
+        className: (0, i.clsx)("univer-flex\x20univer-h-8\x20univer-w-[140px]\x20univer-flex-1\x20univer-cursor-pointer\x20univer-items-center\x20univer-justify-center\x20univer-rounded-l-md\x20univer-text-center\x20univer-text-sm\x20hover:univer-bg-gray-100\x20rtl:univer-rounded-l-none\x20rtl:univer-rounded-r-md\x20dark:hover:!univer-bg-gray-700", i.borderClassName, {
+          "univer-bg-gray-100\x20dark:!univer-bg-gray-700": var_core_value_sig1E26 === l.PivotDataFieldSortOperatorEnum["ascending"]
+        }),
+        onClick: () => var_core_value_sig0515(l.PivotDataFieldSortOperatorEnum["ascending"]),
+        children: [(0, u.jsx)(m.AscendingIcon, {}), var_core_value_sig1B8A.t("sheets-pivot-ui.dialog.filter.ascending")]
+      }), (0, u.jsxs)("div", {
+        className: (0, i.clsx)("univer-flex univer-h-8 univer-w-[140px] univer-flex-1 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-r-md univer-text-center univer-text-sm hover:univer-bg-gray-100 rtl:univer-rounded-l-md rtl:univer-rounded-r-none dark:hover:!univer-bg-gray-700", i.borderClassName, {
+          "univer-bg-gray-100\x20dark:!univer-bg-gray-700": var_core_value_sig1E26 === l.PivotDataFieldSortOperatorEnum["descending"]
+        }),
+        onClick: () => var_core_value_sig0515(l.PivotDataFieldSortOperatorEnum["descending"]),
+        children: [(0, u.jsx)(m.DescendingIcon, {}), var_core_value_sig1B8A.t("sheets-pivot-ui.dialog.filter.descending")]
+      })]
+    }), (0, u.jsx)("div", {
+      className: (0, i.clsx)("univer-mx-0 univer-mb-4 univer-mt-3 univer-h-[300px] univer-rounded-lg univer-p-2", i.borderClassName),
+      children: (0, u.jsxs)("div", {
+        className: (0, i.clsx)("univer-h-full univer-overflow-y-auto", i.scrollbarClassName),
+        children: [(0, u.jsx)("div", {
+          className: "univer-mb-1 univer-box-border univer-h-7 univer-py-[5px] univer-pl-[22px] univer-pr-1 univer-text-sm rtl:univer-pl-1 rtl:univer-pr-[22px]",
+          children: (0, u.jsx)(i.Checkbox, {
+            checked: var_core_value_sig8560,
+            onChange: var_core_value_sig56DE,
+            indeterminate: var_core_value_sigB0DF.length > 0 && var_core_value_sigB0DF.length < var_core_value_sig6B29.items["length"],
+            children: var_core_value_sig1B8A.t("sheets-pivot-ui.dialog.filter.selectAll")
+          })
+        }), var_core_value_sig6B29.items["map"]((var_core_value_sigA70D, var_core_value_sigCE10) => {
+          var var_core_value_sigA3861;
+          let var_core_value_sigCD82 = var_core_value_sigA70D,
+            var_core_value_sig44DD = (var_core_value_sigA3861 = var_core_value_sig6B29.itemTypes) == null ? undefined : var_core_value_sigA3861[var_core_value_sigCE10];
+          return var_core_value_sig44DD === l.PivotDataFieldDataTypeEnum["blank"] ? var_core_value_sigCD82 = var_core_value_sig1B8A.t("sheets-pivot-ui.dialog.filter.blank") : var_core_value_sig44DD === l.PivotDataFieldDataTypeEnum["date"] && (var_core_value_sigCD82 = var_core_value_sig52ED ? n.numfmt["format"](var_core_value_sig52ED, Number(var_core_value_sigCD82)) : var_core_value_sigCD82), (0, u.jsx)("div", {
+            className: "univer-mb-1\x20univer-box-border\x20univer-h-7\x20univer-py-1\x20univer-pl-[22px]\x20univer-pr-1\x20univer-text-sm\x20rtl:univer-pl-1\x20rtl:univer-pr-[22px]",
+            children: (0, u.jsx)(i.Checkbox, {
+              checked: !!var_core_value_sigB0DF.find(var_core_value_sigCFAC => var_core_value_sigCFAC === var_core_value_sigA70D),
+              onChange: () => var_core_value_sig0278(var_core_value_sigA70D),
+              contentClassName: "univer-max-w-[200px] univer-truncate",
+              children: var_core_value_sigCD82
+            })
+          }, var_core_value_sigA70D);
+        })]
+      })
+    }), (0, u.jsxs)(i.ActionRow, {
+      className: "univer-flex univer-items-center univer-justify-between",
+      children: [(0, u.jsx)("div", {
+        className: "univer-cursor-pointer univer-text-xs univer-text-primary-600",
+        children: (0, u.jsx)(i.Button, {
+          variant: "link",
+          disabled: var_core_value_sig9F34 === "NotFilter",
+          onClick: var_core_value_sigC504,
+          children: var_core_value_sig1B8A.t("sheets-pivot-ui.dialog.filter.clearFilter")
+        })
+      }), (0, u.jsxs)(i.ActionRow, {
+        className: "univer-flex univer-flex-1 univer-items-center univer-gap-3",
+        children: [(0, u.jsx)(i.Button, {
+          onClick: var_core_value_sig04E1,
+          children: var_core_value_sig1B8A.t("sheets-pivot-ui.dialog.filter.cancel")
+        }), (0, u.jsx)(i.Button, {
+          variant: "primary",
+          disabled: var_core_value_sig49F1,
+          onClick: var_core_value_sig08A6,
+          children: var_core_value_sig1B8A.t("sheets-pivot-ui.dialog.filter.confirm")
+        })]
+      })]
+    })]
+  });
+}
+const mt = ({
+    handlePatternChange: var_core_value_sig0247
+  }) => {
+    let var_core_value_sig6030 = (0, e.useDependency)(n.LocaleService);
+    return (0, s.useEffect)(() => {
+      var_core_value_sig0247("");
+    }, []), (0, u.jsx)("div", {
+      className: "univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",
+      children: var_core_value_sig6030.t("sheets-pivot-ui.dialog.numfmt.generalDesc")
+    });
+  },
+  ht = ({
+    originPattern: var_core_value_sig0137,
+    handlePatternChange: var_core_value_sig14F3
+  }) => {
+    let var_core_value_sig34E8 = (0, e.useDependency)(n.LocaleService),
+      var_core_value_sigCFE7 = n.currencySymbols["map"](var_core_value_sig96FA => ({
+        label: var_core_value_sig96FA,
+        value: var_core_value_sig96FA
+      })),
+      [var_core_value_sigECBC, var_core_value_sig65D2] = (0, s.useState)(() => U(var_core_value_sig0137 || "", 2)),
+      [var_core_value_sig4306, var_core_value_sigFCD3] = (0, s.useState)(() => me(var_core_value_sig0137 ?? "") || var_core_value_sigCFE7[0].value);
+    return (0, s.useEffect)(() => {
+      var_core_value_sig14F3(W('_("' + var_core_value_sig4306 + "\x22*\x20#,##0" + (var_core_value_sigECBC > 0 ? ".0" : "") + "_)", var_core_value_sigECBC));
+    }, []), (0, u.jsxs)("div", {
+      className: "univer-mt-5",
+      children: [(0, u.jsxs)("div", {
+        className: "univer-flex univer-items-center univer-justify-between",
+        children: [(0, u.jsxs)("div", {
+          className: "univer-w-[136px]",
+          children: [(0, u.jsx)("div", {
+            className: "univer-mb-2 univer-text-sm univer-font-medium",
+            children: var_core_value_sig34E8.t("sheets-pivot-ui.dialog.numfmt.decimalPlaces")
+          }), (0, u.jsx)(i.InputNumber, {
+            className: "univer-box-border univer-h-8",
+            value: var_core_value_sigECBC,
+            max: 20,
+            min: 0,
+            onChange: var_core_value_sigAB68 => {
+              let var_core_value_sig040A = var_core_value_sigAB68 ?? 0;
+              var_core_value_sig65D2(var_core_value_sig040A), var_core_value_sig14F3(W('_("' + var_core_value_sig4306 + "\x22*\x20#,##0" + (var_core_value_sig040A > 0 ? ".0" : "") + "_)", var_core_value_sig040A));
+            }
+          })]
+        }), (0, u.jsxs)("div", {
+          className: "univer-w-[136px]",
+          children: [(0, u.jsx)("div", {
+            className: "univer-mb-2\x20univer-text-sm\x20univer-font-medium",
+            children: var_core_value_sig34E8.t("sheets-pivot-ui.dialog.numfmt.currencyTypes")
+          }), (0, u.jsx)(i.Select, {
+            options: var_core_value_sigCFE7,
+            value: var_core_value_sig4306,
+            onChange: var_core_value_sig2AE0 => {
+              var_core_value_sigFCD3(var_core_value_sig2AE0), var_core_value_sig14F3(W('_("' + var_core_value_sig2AE0 + '"* #,##0' + (var_core_value_sigECBC > 0 ? ".0" : "") + "_)", var_core_value_sigECBC));
+            }
+          })]
+        })]
+      }), (0, u.jsx)("div", {
+        className: "univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",
+        children: var_core_value_sig34E8.t("sheets-pivot-ui.dialog.numfmt.accountingDesc")
+      })]
+    });
+  },
+  gt = ({
+    originPattern: var_core_value_sig147A,
+    handlePatternChange: var_core_value_sig829F
+  }) => {
+    let var_core_value_sig534C = (0, e.useDependency)(n.LocaleService),
+      var_core_value_sigABB7 = n.currencySymbols["map"](var_core_value_sigC349 => ({
+        label: var_core_value_sigC349,
+        value: var_core_value_sigC349
+      })),
+      [var_core_value_sig9071, var_core_value_sig01A9] = (0, s.useState)(() => U(var_core_value_sig147A || "", 2)),
+      [var_core_value_sig9477, var_core_value_sig917C] = (0, s.useState)(() => me(var_core_value_sig147A ?? "") || var_core_value_sigABB7[0].value),
+      var_core_value_sig27E2 = B.map(var_core_value_sig9D96 => ({
+        label: var_core_value_sig9D96.label(var_core_value_sig9477),
+        value: var_core_value_sig9D96.suffix(var_core_value_sig9477),
+        color: var_core_value_sig9D96.color
+      })),
+      [var_core_value_sig10D7, var_core_value_sig5A1A] = (0, s.useState)(() => {
+        var var_core_value_sig2776;
+        return ((var_core_value_sig2776 = var_core_value_sig27E2.find(var_core_value_sig237B => (0, n.isPatternEqualWithoutDecimal)(var_core_value_sig237B.value, var_core_value_sig147A ?? ""))) == null ? undefined : var_core_value_sig2776.value) || var_core_value_sig27E2[0].value;
+      });
+    return (0, s.useEffect)(() => {
+      var_core_value_sig829F(W(var_core_value_sig10D7, var_core_value_sig9071));
+    }, []), (0, u.jsxs)("div", {
+      className: "univer-mt-5",
+      children: [(0, u.jsxs)("div", {
+        className: "univer-flex univer-items-center univer-justify-between",
+        children: [(0, u.jsxs)("div", {
+          className: "univer-w-[136px]",
+          children: [(0, u.jsx)("div", {
+            className: "univer-mb-2 univer-text-sm univer-font-medium",
+            children: var_core_value_sig534C.t("sheets-pivot-ui.dialog.numfmt.decimalPlaces")
+          }), (0, u.jsx)(i.InputNumber, {
+            className: "univer-box-border univer-h-8",
+            value: var_core_value_sig9071,
+            max: 20,
+            min: 0,
+            onChange: var_core_value_sig6FB2 => {
+              var_core_value_sig6FB2 && (var_core_value_sig01A9(var_core_value_sig6FB2), var_core_value_sig829F(W(var_core_value_sig10D7, var_core_value_sig6FB2)));
+            }
+          })]
+        }), (0, u.jsxs)("div", {
+          className: "univer-w-[136px]",
+          children: [(0, u.jsx)("div", {
+            className: "univer-mb-2\x20univer-text-sm\x20univer-font-medium",
+            children: var_core_value_sig534C.t("sheets-pivot-ui.dialog.numfmt.currencyTypes")
+          }), (0, u.jsx)(i.Select, {
+            options: var_core_value_sigABB7,
+            value: var_core_value_sig9477,
+            onChange: var_core_value_sigEB43 => {
+              var_core_value_sig917C(var_core_value_sigEB43);
+              let var_core_value_sig4186 = B.map(var_core_value_sigFEAB => ({
+                label: var_core_value_sigFEAB.label(var_core_value_sigEB43),
+                value: var_core_value_sigFEAB.suffix(var_core_value_sigEB43),
+                color: var_core_value_sigFEAB.color
+              }));
+              var_core_value_sig5A1A(var_core_value_sig4186[0].value), var_core_value_sig829F(W(var_core_value_sig4186[0].value, var_core_value_sig9071));
+            }
+          })]
+        })]
+      }), (0, u.jsxs)("div", {
+        className: "univer-mt-4",
+        children: [(0, u.jsx)("div", {
+          className: "univer-mb-2 univer-text-sm univer-font-medium",
+          children: var_core_value_sig534C.t("sheets-pivot-ui.dialog.numfmt.negativeNumberTypes")
+        }), (0, u.jsx)(i.SelectList, {
+          className: "univer-rounded-lg univer-p-2",
+          options: var_core_value_sig27E2,
+          value: var_core_value_sig10D7,
+          onChange: var_core_value_sigF963 => {
+            var_core_value_sig5A1A(var_core_value_sigF963), var_core_value_sig829F(W(var_core_value_sigF963, var_core_value_sig9071));
+          }
+        }), (0, u.jsx)("div", {
+          className: "univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",
+          children: var_core_value_sig534C.t("sheets-pivot-ui.dialog.numfmt.currencyDesc")
+        })]
+      })]
+    });
+  },
+  _t = ({
+    originPattern: var_core_value_sig77D2,
+    handlePatternChange: var_core_value_sig625E
+  }) => {
+    let var_core_value_sig6F04 = (0, e.useDependency)(n.LocaleService),
+      var_core_value_sig48DA = R.map(var_core_value_sigB608 => ({
+        label: var_core_value_sigB608.label,
+        value: var_core_value_sigB608.suffix
+      })),
+      [var_core_value_sigD327, var_core_value_sig6694] = (0, s.useState)(() => {
+        if (var_core_value_sig77D2) {
+          let var_core_value_sigE347 = var_core_value_sig48DA.find(var_core_value_sigB098 => var_core_value_sigB098.value === var_core_value_sig77D2);
+          if (var_core_value_sigE347) return var_core_value_sigE347.value;
+        }
+        return var_core_value_sig48DA[0].value;
+      });
+    return (0, s.useEffect)(() => {
+      var_core_value_sig625E(var_core_value_sigD327);
+    }, []), (0, u.jsx)("div", {
+      className: "univer-mt-5",
+      children: (0, u.jsxs)("div", {
+        className: "univer-mt-5",
+        children: [(0, u.jsx)("div", {
+          className: "univer-mb-2\x20univer-text-sm\x20univer-font-medium",
+          children: var_core_value_sig6F04.t("sheets-pivot-ui.dialog.numfmt.dateTypes")
+        }), (0, u.jsx)("div", {
+          children: (0, u.jsx)(i.SelectList, {
+            className: "univer-rounded-lg univer-p-2",
+            options: var_core_value_sig48DA,
+            value: var_core_value_sigD327,
+            onChange: var_core_value_sigF866 => {
+              var_core_value_sig6694(var_core_value_sigF866), var_core_value_sig625E(var_core_value_sigF866);
+            }
+          })
+        }), (0, u.jsx)("div", {
+          className: "univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",
+          children: var_core_value_sig6F04.t("sheets-pivot-ui.dialog.numfmt.dateDesc")
+        })]
+      })
+    });
+  },
+  vt = ({
+    originPattern: var_core_value_sig2A21,
+    handlePatternChange: var_core_value_sig0836
+  }) => {
+    let var_core_value_sigD95C = (0, e.useDependency)(n.LocaleService),
+      [var_core_value_sig692E, var_core_value_sig3FAF] = (0, s.useState)(() => U(var_core_value_sig2A21 || "", 0)),
+      var_core_value_sig378B = z.map(var_core_value_sig5EFB => ({
+        label: var_core_value_sig5EFB.label,
+        value: var_core_value_sig5EFB.suffix,
+        color: var_core_value_sig5EFB.color
+      })),
+      [var_core_value_sigDE50, var_core_value_sig3094] = (0, s.useState)(() => {
+        let var_core_value_sig3A85 = var_core_value_sig378B.find(var_core_value_sig3C5B => (0, n.isPatternEqualWithoutDecimal)(var_core_value_sig3C5B.value, var_core_value_sig2A21 || ""));
+        return (var_core_value_sig3A85 == null ? undefined : var_core_value_sig3A85.value) || var_core_value_sig378B[0].value;
+      });
+    return (0, s.useEffect)(() => {
+      var_core_value_sig0836(W(var_core_value_sigDE50, Number(var_core_value_sig692E || 0)));
+    }, []), (0, u.jsxs)("div", {
+      className: "univer-mt-5",
+      children: [(0, u.jsx)("div", {
+        className: "univer-flex\x20univer-items-center\x20univer-justify-between",
+        children: (0, u.jsxs)("div", {
+          className: "univer-w-[136px]",
+          children: [(0, u.jsx)("div", {
+            className: "univer-mb-2 univer-text-sm univer-font-medium",
+            children: var_core_value_sigD95C.t("sheets-pivot-ui.dialog.numfmt.decimalPlaces")
+          }), (0, u.jsx)(i.InputNumber, {
+            className: "univer-box-border\x20univer-h-8",
+            value: var_core_value_sig692E,
+            max: 20,
+            min: 0,
+            onChange: var_core_value_sig2682 => {
+              var_core_value_sig2682 && (var_core_value_sig3FAF(var_core_value_sig2682), var_core_value_sig0836(W(var_core_value_sigDE50, Number(var_core_value_sig2682))));
+            }
+          })]
+        })
+      }), (0, u.jsxs)("div", {
+        className: "univer-mt-4",
+        children: [(0, u.jsx)("div", {
+          className: "univer-mb-2\x20univer-text-sm\x20univer-font-medium",
+          children: var_core_value_sigD95C.t("sheets-pivot-ui.dialog.numfmt.negativeNumberTypes")
+        }), (0, u.jsx)(i.SelectList, {
+          className: "univer-rounded-lg univer-p-2",
+          options: var_core_value_sig378B,
+          value: var_core_value_sigDE50,
+          onChange: var_core_value_sig4BB5 => {
+            var_core_value_sig3FAF(U(var_core_value_sig4BB5, 0)), var_core_value_sig3094(var_core_value_sig4BB5), var_core_value_sig0836(var_core_value_sig4BB5);
+          }
+        }), (0, u.jsx)("div", {
+          className: "univer-mt-1.5 univer-text-sm univer-leading-5 univer-text-gray-600 dark:!univer-text-gray-200",
+          children: var_core_value_sigD95C.t("sheets-pivot-ui.dialog.numfmt.thousandthPercentileDesc")
+        })]
+      })]
+    });
+  },
+  yt = ({
+    unitId: var_core_value_sig86CC,
+    subUnitId: var_core_value_sig7868,
+    pivotTableId: var_core_value_sig9921,
+    tableFieldId: var_core_value_sig59BF,
+    originPattern: var_core_value_sigF001,
+    tableFieldInfo: var_core_value_sigE511,
+    dataFieldInfo: var_core_value_sig1C81
+  }) => {
+    let var_core_value_sig2C6A = (0, e.useDependency)(n.LocaleService),
+      var_core_value_sig7207 = (0, e.useDependency)(e.IDialogService),
+      var_core_value_sig297F = var_core_value_sig2C6A.getDirection(),
+      var_core_value_sigA95A = (0, s.useMemo)(() => [{
+        label: "sheets-pivot-ui.dialog.numfmt.general",
+        component: mt,
+        key: "sheet.numfmt.general"
+      }, {
+        label: "sheets-pivot-ui.dialog.numfmt.accounting",
+        component: ht,
+        key: "sheet.numfmt.accounting"
+      }, {
+        label: "sheets-pivot-ui.dialog.numfmt.currency",
+        component: gt,
+        key: "sheet.numfmt.currency"
+      }, {
+        label: "sheets-pivot-ui.dialog.numfmt.date",
+        component: _t,
+        key: "sheet.numfmt.date"
+      }, {
+        label: "sheets-pivot-ui.dialog.numfmt.thousandthPercentile",
+        component: vt,
+        key: "sheet.numfmt.thousandthPercentile"
+      }].map(var_core_value_sig200B => ({
+        ...var_core_value_sig200B,
+        label: var_core_value_sig2C6A.t(var_core_value_sig200B.label)
+      })), [var_core_value_sig2C6A]),
+      var_core_value_sig94D6 = var_core_value_sigA95A.map(var_core_value_sig6709 => ({
+        label: var_core_value_sig6709.label,
+        value: var_core_value_sig6709.key
+      })),
+      [var_core_value_sigC22E, var_core_value_sig2321] = (0, s.useState)(() => [he, ge, _e, ye, xe].reduce((var_core_value_sig3863, var_core_value_sigC97C, var_core_value_sigC4B1) => var_core_value_sig3863 || (var_core_value_sigC97C(var_core_value_sigF001 ?? "") ? var_core_value_sigA95A[var_core_value_sigC4B1].key : ""), "") || var_core_value_sigA95A[0].key),
+      [var_core_value_sigFF33, var_core_value_sig16E0] = (0, s.useState)(var_core_value_sigF001),
+      var_core_value_sig213C = var_core_value_sig52CA => var_core_value_sig16E0(var_core_value_sig52CA),
+      var_core_value_sig31F8 = var_core_value_sigC030 => {
+        var_core_value_sig2321(var_core_value_sigC030);
+      },
+      var_core_value_sig6905 = var_core_value_sig88F6 => ({
+        id: S,
+        title: {
+          title: var_core_value_sig2C6A.t("sheets-pivot-ui.fieldSettings")
+        },
+        draggable: true,
+        mask: false,
+        maskClosable: false,
+        width: 400,
+        children: {
+          label: x,
+          tableFieldId: var_core_value_sig59BF,
+          pivotTableId: var_core_value_sig9921,
+          unitId: var_core_value_sig86CC,
+          subUnitId: var_core_value_sig7868,
+          tableFieldInfo: var_core_value_sigE511,
+          dataFieldInfo: var_core_value_sig1C81,
+          key: "field-setting-" + (var_core_value_sig59BF || ""),
+          closeFn: () => {
+            var_core_value_sig7207.close(S);
+          },
+          format: var_core_value_sig88F6 ? var_core_value_sigFF33 : ""
+        },
+        onClose: () => {
+          var_core_value_sig7207.close(S);
+        }
+      }),
+      var_core_value_sigC3C0 = () => {
+        var_core_value_sig7207.close(w);
+        let var_core_value_sig37DB = var_core_value_sig6905(false);
+        var_core_value_sig7207.open(var_core_value_sig37DB);
+      };
+    return (0, u.jsxs)("div", {
+      dir: var_core_value_sig297F,
+      children: [(0, u.jsx)("div", {
+        className: "univer-flex",
+        children: (0, u.jsxs)("div", {
+          className: "univer-mb-5 univer-flex univer-h-6 univer-cursor-pointer univer-items-center univer-text-base univer-font-medium univer-leading-6",
+          onClick: var_core_value_sigC3C0,
+          children: [(0, u.jsx)(m.ArrowLeftIcon, {}), var_core_value_sig2C6A.t("sheets-pivot-ui.dialog.numfmt.fieldSetting")]
+        })
+      }), (0, u.jsx)("div", {
+        className: "univer-mb-2 univer-h-5 univer-text-sm univer-font-medium univer-leading-5",
+        children: var_core_value_sig2C6A.t("sheets-pivot-ui.dialog.numfmt.formatTypes")
+      }), (0, u.jsx)("div", {
+        children: (0, u.jsx)(i.Select, {
+          className: "univer-w-full",
+          value: var_core_value_sigC22E,
+          options: var_core_value_sig94D6,
+          onChange: var_core_value_sig5542 => var_core_value_sig31F8(var_core_value_sig5542)
+        })
+      }), (0, u.jsxs)("div", {
+        children: [var_core_value_sigC22E === "sheet.numfmt.general" && (0, u.jsx)(mt, {
+          originPattern: var_core_value_sigF001,
+          handlePatternChange: var_core_value_sig213C
+        }), var_core_value_sigC22E === "sheet.numfmt.accounting" && (0, u.jsx)(ht, {
+          originPattern: var_core_value_sigF001,
+          handlePatternChange: var_core_value_sig213C
+        }), var_core_value_sigC22E === "sheet.numfmt.currency" && (0, u.jsx)(gt, {
+          originPattern: var_core_value_sigF001,
+          handlePatternChange: var_core_value_sig213C
+        }), var_core_value_sigC22E === "sheet.numfmt.date" && (0, u.jsx)(_t, {
+          originPattern: var_core_value_sigF001,
+          handlePatternChange: var_core_value_sig213C
+        }), var_core_value_sigC22E === "sheet.numfmt.thousandthPercentile" && (0, u.jsx)(vt, {
+          originPattern: var_core_value_sigF001,
+          handlePatternChange: var_core_value_sig213C
+        })]
+      }), (0, u.jsxs)(i.ActionRow, {
+        className: "univer-mt-2 univer-flex univer-justify-end",
+        children: [(0, u.jsx)(i.Button, {
+          onClick: var_core_value_sigC3C0,
+          children: var_core_value_sig2C6A.t("sheets-pivot-ui.dialog.numfmt.cancel")
+        }), (0, u.jsx)(i.Button, {
+          className: "univer-ml-3 rtl:univer-ml-0 rtl:univer-mr-3",
+          variant: "primary",
+          onClick: () => {
+            var_core_value_sig7207.close(w);
+            let var_core_value_sigE0A9 = var_core_value_sig6905(true);
+            var_core_value_sig7207.open(var_core_value_sigE0A9);
+          },
+          children: var_core_value_sig2C6A.t("sheets-pivot-ui.dialog.numfmt.confirm")
+        })]
+      })]
+    });
+  },
+  bt = [{
+    label: "sheets-pivot-ui.config.pageDownThenOver",
+    value: "false"
+  }, {
+    label: "sheets-pivot-ui.config.pageOverThenDown",
+    value: "true"
+  }],
+  xt = [{
+    label: "sheets-pivot-ui.config.layoutTabular",
+    value: String(l.PivotLayoutTypeEnum["tabular"])
+  }, {
+    label: "sheets-pivot-ui.config.layoutCompact",
+    value: String(l.PivotLayoutTypeEnum["compact"])
+  }, {
+    label: "sheets-pivot-ui.config.layoutOutline",
+    value: String(l.PivotLayoutTypeEnum["outline"])
+  }],
+  St = [{
+    label: "sheets-pivot-ui.config.rowSubtotalTop",
+    value: String(l.PivotSubtotalPositionEnum["top"])
+  }, {
+    label: "sheets-pivot-ui.config.rowSubtotalBottom",
+    value: String(l.PivotSubtotalPositionEnum["bottom"])
+  }];
+function Ct(var_core_value_sig1F39) {
+  let {
+      unitId: var_core_value_sig9256,
+      subUnitId: var_core_value_sig98A0,
+      pivotTableId: var_core_value_sig3EBD
+    } = var_core_value_sig1F39,
+    var_core_value_sig1AC3 = (0, e.useDependency)(n.ICommandService),
+    var_core_value_sig66B8 = (0, e.useDependency)(n.ILogService),
+    var_core_value_sig4C7F = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sig2543 = (0, e.useDependency)(t.SheetsPivotTableConfigModel),
+    [var_core_value_sigB230, var_core_value_sig407E] = (0, s.useState)(() => {
+      var var_core_value_sigA73E, var_core_value_sig7620;
+      let var_core_value_sigB9FC = var_core_value_sig2543.getPivotTableConfig(var_core_value_sig9256, var_core_value_sig98A0, var_core_value_sig3EBD),
+        var_core_value_sig5055 = (var_core_value_sigB9FC == null || (var_core_value_sigA73E = var_core_value_sigB9FC.fieldsConfig) == null ? undefined : var_core_value_sigA73E.options) ?? {};
+      return {
+        showRowSubtotal: var_core_value_sig5055.showRowSubtotal ?? true,
+        showRowGrandTotal: var_core_value_sig5055.showRowGrandTotal ?? true,
+        showColSubtotal: var_core_value_sig5055.showColSubtotal ?? true,
+        showColGrandTotal: var_core_value_sig5055.showColGrandTotal ?? true,
+        pageWrap: var_core_value_sig5055.pageWrap ?? 1,
+        pageOverThenDown: var_core_value_sig5055.pageOverThenDown ?? false,
+        repeatRowLabels: var_core_value_sig5055.repeatRowLabels ?? false,
+        repeatColLabels: var_core_value_sig5055.repeatColLabels ?? false,
+        layout: (var_core_value_sigB9FC == null || (var_core_value_sig7620 = var_core_value_sigB9FC.fieldsConfig) == null ? undefined : var_core_value_sig7620.layout) ?? l.PivotLayoutTypeEnum["tabular"],
+        rowSubtotalPosition: var_core_value_sig5055.rowSubtotalPosition ?? l.PivotSubtotalPositionEnum["top"]
+      };
+    }),
+    var_core_value_sig88CB = var_core_value_sig3801 => {
+      let var_core_value_sig45F0 = {
+        unitId: var_core_value_sig9256,
+        subUnitId: var_core_value_sig98A0,
+        pivotTableId: var_core_value_sig3EBD,
+        options: var_core_value_sig3801
+      };
+      var_core_value_sig1AC3.executeCommand(t.SetPivotOptionCommand["id"], var_core_value_sig45F0).catch(var_core_value_sig1BD9 => var_core_value_sig66B8.error("[PivotConfigPanel]", var_core_value_sig1BD9)), var_core_value_sig407E(var_core_value_sigE43E => ({
+        ...var_core_value_sigE43E,
+        ...var_core_value_sig3801
+      }));
+    },
+    var_core_value_sigD615 = var_core_value_sigBC91 => {
+      let var_core_value_sigCB88 = {
+        unitId: var_core_value_sig9256,
+        subUnitId: var_core_value_sig98A0,
+        pivotTableId: var_core_value_sig3EBD,
+        layout: var_core_value_sigBC91
+      };
+      var_core_value_sig1AC3.executeCommand(t.SetPivotLayoutCommand["id"], var_core_value_sigCB88).catch(var_core_value_sigA937 => var_core_value_sig66B8.error("[PivotConfigPanel]", var_core_value_sigA937)), var_core_value_sig407E(var_core_value_sigCAD5 => ({
+        ...var_core_value_sigCAD5,
+        layout: var_core_value_sigBC91
+      }));
+    };
+  return (0, u.jsxs)("div", {
+    className: "univer-flex univer-flex-col univer-gap-4 univer-p-4",
+    children: [(0, u.jsxs)("section", {
+      children: [(0, u.jsx)("div", {
+        className: "univer-mb-2 univer-text-sm univer-font-medium univer-text-gray-600",
+        children: var_core_value_sig4C7F.t("sheets-pivot-ui.config.displaySection")
+      }), (0, u.jsxs)("div", {
+        className: "univer-flex\x20univer-flex-col\x20univer-gap-2",
+        children: [(0, u.jsxs)("div", {
+          className: "univer-flex univer-items-center univer-justify-between univer-gap-2",
+          children: [(0, u.jsx)("span", {
+            className: "univer-text-sm univer-text-gray-600",
+            children: var_core_value_sig4C7F.t("sheets-pivot-ui.config.layout")
+          }), (0, u.jsx)(i.Select, {
+            className: "univer-w-36",
+            value: String(var_core_value_sigB230.layout),
+            options: xt.map(var_core_value_sig8D65 => ({
+              ...var_core_value_sig8D65,
+              label: var_core_value_sig4C7F.t(var_core_value_sig8D65.label)
+            })),
+            onChange: var_core_value_sig8122 => var_core_value_sigD615(Number(var_core_value_sig8122))
+          })]
+        }), (0, u.jsxs)("label", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",
+          children: [(0, u.jsx)(i.Checkbox, {
+            checked: var_core_value_sigB230.repeatRowLabels,
+            disabled: var_core_value_sigB230.layout === l.PivotLayoutTypeEnum["compact"],
+            onChange: var_core_value_sigEDC6 => var_core_value_sig88CB({
+              repeatRowLabels: !!var_core_value_sigEDC6
+            })
+          }), var_core_value_sig4C7F.t("sheets-pivot-ui.config.repeatRowLabels")]
+        }), (0, u.jsxs)("label", {
+          className: "univer-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-gap-2\x20univer-text-sm\x20univer-text-gray-600",
+          children: [(0, u.jsx)(i.Checkbox, {
+            checked: var_core_value_sigB230.repeatColLabels,
+            onChange: var_core_value_sig611A => var_core_value_sig88CB({
+              repeatColLabels: !!var_core_value_sig611A
+            })
+          }), var_core_value_sig4C7F.t("sheets-pivot-ui.config.repeatColLabels")]
+        })]
+      })]
+    }), (0, u.jsxs)("section", {
+      children: [(0, u.jsx)("div", {
+        className: (0, i.clsx)("univer-mb-2 univer-text-sm univer-font-medium univer-text-gray-600"),
+        children: var_core_value_sig4C7F.t("sheets-pivot-ui.config.totalsSection")
+      }), (0, u.jsxs)("div", {
+        className: "univer-flex univer-flex-col univer-gap-2",
+        children: [(0, u.jsxs)("label", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",
+          children: [(0, u.jsx)(i.Checkbox, {
+            checked: var_core_value_sigB230.showRowSubtotal,
+            onChange: var_core_value_sig6BD9 => var_core_value_sig88CB({
+              showRowSubtotal: !!var_core_value_sig6BD9
+            })
+          }), var_core_value_sig4C7F.t("sheets-pivot-ui.config.showRowSubtotal")]
+        }), var_core_value_sigB230.layout === l.PivotLayoutTypeEnum["outline"] && (0, u.jsxs)("div", {
+          className: "univer-flex univer-items-center univer-justify-between univer-gap-2",
+          children: [(0, u.jsx)("span", {
+            className: "univer-text-sm univer-text-gray-600",
+            children: var_core_value_sig4C7F.t("sheets-pivot-ui.config.rowSubtotalPosition")
+          }), (0, u.jsx)(i.Select, {
+            className: "univer-w-36",
+            value: String(var_core_value_sigB230.rowSubtotalPosition),
+            options: St.map(var_core_value_sig7E56 => ({
+              ...var_core_value_sig7E56,
+              label: var_core_value_sig4C7F.t(var_core_value_sig7E56.label)
+            })),
+            onChange: var_core_value_sig4161 => var_core_value_sig88CB({
+              rowSubtotalPosition: Number(var_core_value_sig4161)
+            })
+          })]
+        }), (0, u.jsxs)("label", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",
+          children: [(0, u.jsx)(i.Checkbox, {
+            checked: var_core_value_sigB230.showRowGrandTotal,
+            onChange: var_core_value_sig7580 => var_core_value_sig88CB({
+              showRowGrandTotal: !!var_core_value_sig7580
+            })
+          }), var_core_value_sig4C7F.t("sheets-pivot-ui.config.showRowGrandTotal")]
+        }), (0, u.jsxs)("label", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",
+          children: [(0, u.jsx)(i.Checkbox, {
+            checked: var_core_value_sigB230.showColSubtotal,
+            onChange: var_core_value_sig1F18 => var_core_value_sig88CB({
+              showColSubtotal: !!var_core_value_sig1F18
+            })
+          }), var_core_value_sig4C7F.t("sheets-pivot-ui.config.showColSubtotal")]
+        }), (0, u.jsxs)("label", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-gap-2 univer-text-sm univer-text-gray-600",
+          children: [(0, u.jsx)(i.Checkbox, {
+            checked: var_core_value_sigB230.showColGrandTotal,
+            onChange: var_core_value_sigD5A0 => var_core_value_sig88CB({
+              showColGrandTotal: !!var_core_value_sigD5A0
+            })
+          }), var_core_value_sig4C7F.t("sheets-pivot-ui.config.showColGrandTotal")]
+        })]
+      })]
+    }), (0, u.jsxs)("section", {
+      children: [(0, u.jsx)("div", {
+        className: "univer-mb-2\x20univer-text-sm\x20univer-font-medium\x20univer-text-gray-600",
+        children: var_core_value_sig4C7F.t("sheets-pivot-ui.config.pageSection")
+      }), (0, u.jsxs)("div", {
+        className: "univer-flex univer-flex-col univer-gap-3",
+        children: [(0, u.jsxs)("div", {
+          className: "univer-flex univer-items-center univer-justify-between univer-gap-2",
+          children: [(0, u.jsx)("span", {
+            className: "univer-text-sm\x20univer-text-gray-600",
+            children: var_core_value_sig4C7F.t("sheets-pivot-ui.config.pageWrap")
+          }), (0, u.jsx)(i.InputNumber, {
+            className: "univer-w-24",
+            value: var_core_value_sigB230.pageWrap,
+            min: 1,
+            max: 20,
+            onChange: var_core_value_sig81B2 => {
+              let var_core_value_sigA0A5 = Number(var_core_value_sig81B2);
+              Number.isFinite(var_core_value_sigA0A5) && var_core_value_sigA0A5 >= 1 && var_core_value_sig88CB({
+                pageWrap: var_core_value_sigA0A5
+              });
+            }
+          })]
+        }), (0, u.jsxs)("div", {
+          className: "univer-flex univer-items-center univer-justify-between univer-gap-2",
+          children: [(0, u.jsx)("span", {
+            className: "univer-text-sm univer-text-gray-600",
+            children: var_core_value_sig4C7F.t("sheets-pivot-ui.config.pageDirection")
+          }), (0, u.jsx)(i.Select, {
+            className: "univer-w-36",
+            value: String(var_core_value_sigB230.pageOverThenDown),
+            options: bt.map(var_core_value_sig10AA => ({
+              ...var_core_value_sig10AA,
+              label: var_core_value_sig4C7F.t(var_core_value_sig10AA.label)
+            })),
+            onChange: var_core_value_sigE6D0 => var_core_value_sig88CB({
+              pageOverThenDown: var_core_value_sigE6D0 === "true"
+            })
+          })]
+        })]
+      })]
+    })]
+  });
+}
+const wt = (0, s.createContext)(null),
+  Tt = (0, s.createContext)(null);
+function Et(var_core_value_sigB708, var_core_value_sig60EF) {
+  return var_core_value_sigB708 === var_core_value_sig60EF ? true : !var_core_value_sigB708 || !var_core_value_sig60EF ? false : var_core_value_sigB708.droppableId === var_core_value_sig60EF.droppableId && var_core_value_sigB708.index === var_core_value_sig60EF.index;
+}
+function Dt(var_core_value_sigA6FB) {
+  if (!(var_core_value_sigA6FB instanceof Element)) return null;
+  let var_core_value_sigD6EA = var_core_value_sigA6FB.closest("[data-univer-dnd-droppable-id]");
+  return var_core_value_sigD6EA instanceof HTMLElement ? var_core_value_sigD6EA : null;
+}
+function Ot(var_core_value_sigA2D3, var_core_value_sig727A, var_core_value_sig6AF1, var_core_value_sig3F6A) {
+  let var_core_value_sig23B4 = Array.from(var_core_value_sigA2D3.querySelectorAll('[data-univer-dnd-item="true"]')).filter(var_core_value_sig8E91 => {
+    let var_core_value_sig00BE = var_core_value_sig8E91.dataset["univerDndId"];
+    return var_core_value_sig00BE ? var_core_value_sig00BE !== var_core_value_sig6AF1.draggableId || var_core_value_sig6AF1.source["droppableId"] !== var_core_value_sig3F6A : false;
+  });
+  if (!var_core_value_sig23B4.length) return 0;
+  for (let var_core_value_sig7BB5 = 0; var_core_value_sig7BB5 < var_core_value_sig23B4.length - 1; var_core_value_sig7BB5++) {
+    let var_core_value_sigE503 = var_core_value_sig23B4[var_core_value_sig7BB5].getBoundingClientRect();
+    if (var_core_value_sig727A < var_core_value_sigE503.top + var_core_value_sigE503.height / 2) return var_core_value_sig7BB5;
+  }
+  let var_core_value_sig350C = var_core_value_sig23B4.length - 1,
+    var_core_value_sig2335 = var_core_value_sig23B4[var_core_value_sig350C].getBoundingClientRect();
+  return var_core_value_sig727A < var_core_value_sig2335.top + var_core_value_sig2335.height * 0.35 ? var_core_value_sig350C : var_core_value_sig23B4.length;
+}
+function kt() {
+  let var_core_value_sig6233 = (0, s.useContext)(wt);
+  if (!var_core_value_sig6233) throw Error("Draggable/Droppable must be used inside DragDropContext");
+  return var_core_value_sig6233;
+}
+function At(var_core_value_sig4230) {
+  let {
+      children: var_core_value_sig6136,
+      onDragEnd: var_core_value_sigD25E,
+      onDragStart: var_core_value_sigE1BC,
+      onDragUpdate: var_core_value_sigCF44
+    } = var_core_value_sig4230,
+    [var_core_value_sig3C97, var_core_value_sigA920] = (0, s.useState)(null),
+    var_core_value_sigAD56 = (0, s.useRef)(null),
+    var_core_value_sig0454 = (0, s.useCallback)((var_core_value_sig6AAD, var_core_value_sig1157) => {
+      let var_core_value_sigA694 = {
+        draggableId: var_core_value_sig6AAD,
+        source: var_core_value_sig1157,
+        destination: null
+      };
+      var_core_value_sigAD56.current = var_core_value_sigA694, var_core_value_sigA920(var_core_value_sigA694), var_core_value_sigE1BC == null || var_core_value_sigE1BC({
+        draggableId: var_core_value_sig6AAD,
+        source: var_core_value_sig1157
+      }), var_core_value_sigCF44 == null || var_core_value_sigCF44({
+        draggableId: var_core_value_sig6AAD,
+        source: var_core_value_sig1157,
+        destination: null
+      });
+    }, [var_core_value_sigE1BC, var_core_value_sigCF44]),
+    var_core_value_sigEE1A = (0, s.useCallback)(var_core_value_sig18E01 => {
+      let var_core_value_sig0428 = var_core_value_sigAD56.current;
+      if (!var_core_value_sig0428 || Et(var_core_value_sig0428.destination, var_core_value_sig18E01)) return;
+      let var_core_value_sigBE07 = {
+        ...var_core_value_sig0428,
+        destination: var_core_value_sig18E01
+      };
+      var_core_value_sigAD56.current = var_core_value_sigBE07, var_core_value_sigA920(var_core_value_sigBE07), var_core_value_sigCF44 == null || var_core_value_sigCF44({
+        draggableId: var_core_value_sigBE07.draggableId,
+        source: var_core_value_sigBE07.source,
+        destination: var_core_value_sigBE07.destination
+      });
+    }, [var_core_value_sigCF44]),
+    var_core_value_sig4107 = (0, s.useCallback)(async (var_core_value_sig555F, var_core_value_sig3D6F) => {
+      let var_core_value_sig336C = var_core_value_sigAD56.current;
+      var_core_value_sig336C && (var_core_value_sigAD56.current = null, var_core_value_sigA920(null), await (var_core_value_sigD25E == null ? undefined : var_core_value_sigD25E({
+        draggableId: var_core_value_sig336C.draggableId,
+        source: var_core_value_sig336C.source,
+        destination: var_core_value_sig3D6F === undefined ? var_core_value_sig336C.destination : var_core_value_sig3D6F,
+        reason: var_core_value_sig555F
+      })));
+    }, [var_core_value_sigD25E]);
+  (0, s.useEffect)(() => {
+    if (!var_core_value_sig3C97) return;
+    let var_core_value_sig6E68 = var_core_value_sig48DD => {
+      let var_core_value_sig5E6A = Dt(var_core_value_sig48DD.target);
+      (!var_core_value_sig5E6A || var_core_value_sig5E6A.dataset["univerDndDropDisabled"] === "true") && var_core_value_sigEE1A(null);
+    };
+    return window.addEventListener("dragover", var_core_value_sig6E68, true), () => {
+      window.removeEventListener("dragover", var_core_value_sig6E68, true);
+    };
+  }, [var_core_value_sig3C97, var_core_value_sigEE1A]);
+  let var_core_value_sigF35C = (0, s.useMemo)(() => ({
+    activeDrag: var_core_value_sig3C97,
+    startDrag: var_core_value_sig0454,
+    updateDestination: var_core_value_sigEE1A,
+    endDrag: var_core_value_sig4107
+  }), [var_core_value_sig3C97, var_core_value_sig0454, var_core_value_sigEE1A, var_core_value_sig4107]);
+  return (0, u.jsx)(wt.Provider, {
+    value: var_core_value_sigF35C,
+    children: var_core_value_sig6136
+  });
+}
+function jt(var_core_value_sigEF8D) {
+  var var_core_value_sigE025;
+  let {
+      children: var_core_value_sigD549,
+      droppableId: var_core_value_sigC79E,
+      isDropDisabled: var_core_value_sig9221 = false
+    } = var_core_value_sigEF8D,
+    {
+      activeDrag: var_core_value_sig0351,
+      updateDestination: var_core_value_sig4686,
+      endDrag: var_core_value_sig8E1C
+    } = kt(),
+    var_core_value_sigD719 = (0, s.useRef)(null),
+    var_core_value_sig323C = {
+      innerRef: (0, s.useCallback)(var_core_value_sig8DFE => {
+        var_core_value_sigD719.current = var_core_value_sig8DFE;
+      }, []),
+      droppableProps: {
+        onDragOver: (0, s.useCallback)(var_core_value_sig48EA => {
+          if (!var_core_value_sig0351 || var_core_value_sig9221 || !var_core_value_sigD719.current) return;
+          var_core_value_sig48EA.preventDefault();
+          let var_core_value_sig5E16 = Ot(var_core_value_sigD719.current, var_core_value_sig48EA.clientY, var_core_value_sig0351, var_core_value_sigC79E);
+          var_core_value_sig4686({
+            droppableId: var_core_value_sigC79E,
+            index: var_core_value_sig5E16
+          });
+        }, [var_core_value_sig0351, var_core_value_sig9221, var_core_value_sigC79E, var_core_value_sig4686]),
+        onDrop: (0, s.useCallback)(var_core_value_sig09F3 => {
+          var var_core_value_sig4592;
+          if (!var_core_value_sig0351 || var_core_value_sig9221 || !var_core_value_sigD719.current) return;
+          var_core_value_sig09F3.preventDefault();
+          let var_core_value_sigC5C4 = (((var_core_value_sig4592 = var_core_value_sig0351.destination) == null ? undefined : var_core_value_sig4592.droppableId) === var_core_value_sigC79E ? var_core_value_sig0351.destination : null) ?? {
+            droppableId: var_core_value_sigC79E,
+            index: Ot(var_core_value_sigD719.current, var_core_value_sig09F3.clientY, var_core_value_sig0351, var_core_value_sigC79E)
+          };
+          return var_core_value_sig8E1C("DROP", var_core_value_sigC5C4);
+        }, [var_core_value_sig0351, var_core_value_sig8E1C, var_core_value_sig9221, var_core_value_sigC79E]),
+        "data-univer-dnd-droppable-id": var_core_value_sigC79E,
+        "data-univer-dnd-drop-disabled": String(var_core_value_sig9221)
+      },
+      placeholder: null
+    },
+    var_core_value_sig015D = {
+      isDraggingOver: !!(var_core_value_sig0351 && ((var_core_value_sigE025 = var_core_value_sig0351.destination) == null ? undefined : var_core_value_sigE025.droppableId) === var_core_value_sigC79E)
+    };
+  return (0, u.jsx)(Tt.Provider, {
+    value: var_core_value_sigC79E,
+    children: var_core_value_sigD549(var_core_value_sig323C, var_core_value_sig015D)
+  });
+}
+function Mt(var_core_value_sigBF8B) {
+  var var_core_value_sigF7CE;
+  let {
+      children: var_core_value_sig7CF1,
+      draggableId: var_core_value_sigA552,
+      index: var_core_value_sigAE32,
+      isDragDisabled: var_core_value_sig9B4D = false
+    } = var_core_value_sigBF8B,
+    {
+      activeDrag: var_core_value_sig2704,
+      startDrag: var_core_value_sigD0CC,
+      updateDestination: var_core_value_sigF347,
+      endDrag: var_core_value_sig80C6
+    } = kt(),
+    var_core_value_sigEBFB = (0, s.useContext)(Tt),
+    var_core_value_sigF3BF = (0, s.useRef)(null),
+    var_core_value_sigAE58 = (0, s.useRef)(null),
+    var_core_value_sig8E13 = (0, s.useRef)(false),
+    var_core_value_sig3AAF = (0, s.useRef)(null),
+    var_core_value_sig134E = (0, s.useRef)(null),
+    var_core_value_sigA3C0 = (0, s.useRef)(false),
+    var_core_value_sig723F = (0, s.useRef)(null),
+    var_core_value_sigD044 = (0, s.useRef)(null),
+    var_core_value_sig9797 = (0, s.useRef)(null),
+    var_core_value_sig8533 = (0, s.useCallback)(var_core_value_sig1617 => {
+      var_core_value_sigF3BF.current = var_core_value_sig1617;
+    }, []),
+    var_core_value_sig57C5 = (var_core_value_sig2704 == null ? undefined : var_core_value_sig2704.draggableId) === var_core_value_sigA552,
+    var_core_value_sig0DE9 = (0, s.useCallback)(() => {
+      var_core_value_sig134E.current &&= (window.clearTimeout(var_core_value_sig134E.current), null);
+    }, []),
+    var_core_value_sigB00D = (0, s.useCallback)(() => {
+      var_core_value_sig0DE9(), var_core_value_sig9797.current = null, var_core_value_sig3AAF.current &&= (var_core_value_sig3AAF.current(), null), var_core_value_sig723F.current &&= (var_core_value_sig723F.current["remove"](), null), var_core_value_sigD044.current = null, var_core_value_sig8E13.current = false;
+    }, [var_core_value_sig0DE9]);
+  (0, s.useEffect)(() => var_core_value_sigB00D, [var_core_value_sigB00D]);
+  let var_core_value_sig57C8 = (0, s.useCallback)((var_core_value_sig4169, var_core_value_sig6D19) => {
+      if (var_core_value_sig723F.current) return;
+      let var_core_value_sig279C = var_core_value_sigF3BF.current;
+      if (!var_core_value_sig279C) return;
+      let var_core_value_sigAC51 = var_core_value_sig279C.getBoundingClientRect(),
+        var_core_value_sig8986 = var_core_value_sig4169 > 0 ? Math.max(0, var_core_value_sig4169 - var_core_value_sigAC51.left) : 12,
+        var_core_value_sigCAF7 = var_core_value_sig6D19 > 0 ? Math.max(0, var_core_value_sig6D19 - var_core_value_sigAC51.top) : 12,
+        var_core_value_sigED1C = var_core_value_sig279C.cloneNode(true);
+      if (!(var_core_value_sigED1C instanceof HTMLDivElement)) return;
+      let var_core_value_sig726E = var_core_value_sigED1C;
+      var_core_value_sig726E.style["position"] = "fixed", var_core_value_sig726E.style["left"] = "0px", var_core_value_sig726E.style["top"] = "0px", var_core_value_sig726E.style["width"] = var_core_value_sigAC51.width + "px", var_core_value_sig726E.style["height"] = var_core_value_sigAC51.height + "px", var_core_value_sig726E.style["pointerEvents"] = "none", var_core_value_sig726E.style["opacity"] = "0.9", var_core_value_sig726E.style["zIndex"] = "2147483647", var_core_value_sig726E.style["boxSizing"] = "border-box", var_core_value_sig726E.style["transform"] = "translate(" + Math.max(0, var_core_value_sig4169 - var_core_value_sig8986) + "px, " + Math.max(0, var_core_value_sig6D19 - var_core_value_sigCAF7) + "px)", document.body["appendChild"](var_core_value_sig726E), var_core_value_sig723F.current = var_core_value_sig726E, var_core_value_sigD044.current = {
+        x: var_core_value_sig8986,
+        y: var_core_value_sigCAF7
+      };
+    }, []),
+    var_core_value_sigC27D = (0, s.useCallback)((var_core_value_sig2CD3, var_core_value_sig038E) => {
+      let var_core_value_sigAA1E = var_core_value_sig723F.current,
+        var_core_value_sigC9F5 = var_core_value_sigD044.current;
+      !var_core_value_sigAA1E || !var_core_value_sigC9F5 || (var_core_value_sigAA1E.style["transform"] = "translate(" + Math.max(0, var_core_value_sig2CD3 - var_core_value_sigC9F5.x) + "px, " + Math.max(0, var_core_value_sig038E - var_core_value_sigC9F5.y) + "px)");
+    }, []),
+    var_core_value_sig7B95 = (0, s.useCallback)((var_core_value_sig7EEA, var_core_value_sig59CE1) => {
+      let var_core_value_sig33C8 = Dt(document.elementFromPoint(var_core_value_sig7EEA, var_core_value_sig59CE1));
+      if (!var_core_value_sig33C8 || var_core_value_sig33C8.dataset["univerDndDropDisabled"] === "true") return null;
+      let var_core_value_sig957F = var_core_value_sig33C8.dataset["univerDndDroppableId"];
+      return var_core_value_sig957F ? {
+        droppableId: var_core_value_sig957F,
+        index: Ot(var_core_value_sig33C8, var_core_value_sig59CE1, {
+          draggableId: var_core_value_sigA552,
+          source: {
+            droppableId: var_core_value_sigEBFB ?? "",
+            index: var_core_value_sigAE32
+          },
+          destination: null
+        }, var_core_value_sig957F)
+      } : null;
+    }, [var_core_value_sigA552, var_core_value_sigEBFB, var_core_value_sigAE32]),
+    var_core_value_sig7D59 = (0, s.useCallback)((var_core_value_sig803B, var_core_value_sig5830, var_core_value_sig4A7C, var_core_value_sigF975) => {
+      if (var_core_value_sig8E13.current || var_core_value_sigA3C0.current || var_core_value_sig9B4D || !var_core_value_sigEBFB) return;
+      var_core_value_sig8E13.current = true, var_core_value_sig0DE9(), var_core_value_sigA3C0.current = false;
+      try {
+        var var_core_value_sigCDAF;
+        (var_core_value_sigCDAF = var_core_value_sigF3BF.current) == null || var_core_value_sigCDAF.setPointerCapture(var_core_value_sig5830);
+      } catch {}
+      var_core_value_sig57C8(var_core_value_sig4A7C, var_core_value_sigF975), var_core_value_sigD0CC(var_core_value_sigA552, {
+        droppableId: var_core_value_sigEBFB,
+        index: var_core_value_sigAE32
+      });
+      let var_core_value_sigA298 = var_core_value_sig7B95(var_core_value_sig4A7C, var_core_value_sigF975);
+      var_core_value_sigF347(var_core_value_sigA298);
+      try {
+        var_core_value_sig803B.preventDefault();
+      } catch {}
+    }, [var_core_value_sig0DE9, var_core_value_sigA552, var_core_value_sigEBFB, var_core_value_sigAE32, var_core_value_sig9B4D, var_core_value_sig57C8, var_core_value_sig7B95, var_core_value_sigD0CC, var_core_value_sigF347]),
+    var_core_value_sig5863 = (0, s.useCallback)(var_core_value_sig0B40 => {
+      if (var_core_value_sig9B4D || !var_core_value_sigEBFB || var_core_value_sig0B40.pointerType === "mouse" && var_core_value_sig0B40.button !== 0) return;
+      var_core_value_sigA3C0.current = false;
+      let var_core_value_sig330B = var_core_value_sig0B40.pointerId;
+      var_core_value_sig9797.current = {
+        pointerId: var_core_value_sig330B,
+        pointerType: var_core_value_sig0B40.pointerType,
+        startX: var_core_value_sig0B40.clientX,
+        startY: var_core_value_sig0B40.clientY
+      }, var_core_value_sig0DE9(), var_core_value_sig0B40.pointerType !== "mouse" && (var_core_value_sig134E.current = window.setTimeout(() => {
+        let var_core_value_sigB7FC = var_core_value_sig9797.current;
+        !var_core_value_sigB7FC || var_core_value_sigB7FC.pointerId !== var_core_value_sig330B || var_core_value_sig7D59(var_core_value_sig0B40.nativeEvent, var_core_value_sigB7FC.pointerId, var_core_value_sigB7FC.startX, var_core_value_sigB7FC.startY);
+      }, 150));
+      let var_core_value_sig3625 = var_core_value_sig9CD9 => {
+          let var_core_value_sigFD0C = var_core_value_sig9797.current;
+          if (!var_core_value_sigFD0C || var_core_value_sig9CD9.pointerId !== var_core_value_sigFD0C.pointerId) return;
+          if (!var_core_value_sig8E13.current) {
+            if (var_core_value_sigA3C0.current) {
+              var_core_value_sigB00D();
+              return;
+            }
+            if (var_core_value_sigFD0C.pointerType === "mouse") {
+              let var_core_value_sigD0A8 = var_core_value_sig9CD9.clientX - var_core_value_sigFD0C.startX,
+                var_core_value_sigF4B9 = var_core_value_sig9CD9.clientY - var_core_value_sigFD0C.startY;
+              var_core_value_sigD0A8 * var_core_value_sigD0A8 + var_core_value_sigF4B9 * var_core_value_sigF4B9 >= 16 && var_core_value_sig7D59(var_core_value_sig9CD9, var_core_value_sigFD0C.pointerId, var_core_value_sig9CD9.clientX, var_core_value_sig9CD9.clientY);
+            }
+            return;
+          }
+          var_core_value_sigC27D(var_core_value_sig9CD9.clientX, var_core_value_sig9CD9.clientY);
+          let var_core_value_sig849B = var_core_value_sig7B95(var_core_value_sig9CD9.clientX, var_core_value_sig9CD9.clientY);
+          var_core_value_sigF347(var_core_value_sig849B);
+          try {
+            var_core_value_sig9CD9.preventDefault();
+          } catch {}
+        },
+        var_core_value_sig0B4E = var_core_value_sig5F1A => {
+          let var_core_value_sigB455 = var_core_value_sig9797.current;
+          if (!var_core_value_sigB455 || var_core_value_sig5F1A.pointerId !== var_core_value_sigB455.pointerId) return;
+          let var_core_value_sig5241 = var_core_value_sig8E13.current ? var_core_value_sig7B95(var_core_value_sig5F1A.clientX, var_core_value_sig5F1A.clientY) : null,
+            var_core_value_sigC6E5 = var_core_value_sig8E13.current ? var_core_value_sig80C6(var_core_value_sig5241 ? "DROP" : "CANCEL", var_core_value_sig5241) : Promise.resolve();
+          return var_core_value_sigB00D(), var_core_value_sigC6E5;
+        };
+      window.addEventListener("pointermove", var_core_value_sig3625, {
+        capture: true,
+        passive: false
+      }), window.addEventListener("pointerup", var_core_value_sig0B4E, {
+        capture: true
+      }), window.addEventListener("pointercancel", var_core_value_sig0B4E, {
+        capture: true
+      }), var_core_value_sig3AAF.current = () => {
+        window.removeEventListener("pointermove", var_core_value_sig3625, true), window.removeEventListener("pointerup", var_core_value_sig0B4E, true), window.removeEventListener("pointercancel", var_core_value_sig0B4E, true);
+      };
+    }, [var_core_value_sigB00D, var_core_value_sig0DE9, var_core_value_sigEBFB, var_core_value_sig80C6, var_core_value_sig9B4D, var_core_value_sig7B95, var_core_value_sig7D59, var_core_value_sigF347, var_core_value_sigC27D]),
+    var_core_value_sig5BE7 = (0, s.useCallback)(var_core_value_sig0E9F => {
+      let var_core_value_sigE5BA = var_core_value_sig0E9F.dataTransfer;
+      if (!var_core_value_sigE5BA || typeof var_core_value_sigE5BA.setDragImage != "function") return;
+      let var_core_value_sig4A83 = var_core_value_sig0E9F.currentTarget,
+        var_core_value_sig58AA = var_core_value_sig4A83.cloneNode(true);
+      if (!(var_core_value_sig58AA instanceof HTMLDivElement)) return;
+      let var_core_value_sig84C4 = var_core_value_sig58AA;
+      var_core_value_sig84C4.style["position"] = "fixed", var_core_value_sig84C4.style["left"] = "-9999px", var_core_value_sig84C4.style["top"] = "-9999px", var_core_value_sig84C4.style["width"] = var_core_value_sig4A83.getBoundingClientRect().width + "px", var_core_value_sig84C4.style["pointerEvents"] = "none", var_core_value_sig84C4.style["opacity"] = "0.95", var_core_value_sig84C4.style["zIndex"] = "2147483647", document.body["appendChild"](var_core_value_sig84C4);
+      let var_core_value_sigB6F7 = var_core_value_sig4A83.getBoundingClientRect(),
+        var_core_value_sigB495 = var_core_value_sig0E9F.clientX > 0 ? Math.max(0, var_core_value_sig0E9F.clientX - var_core_value_sigB6F7.left) : 12,
+        var_core_value_sig70D0 = var_core_value_sig0E9F.clientY > 0 ? Math.max(0, var_core_value_sig0E9F.clientY - var_core_value_sigB6F7.top) : 12;
+      var_core_value_sigE5BA.setDragImage(var_core_value_sig84C4, var_core_value_sigB495, var_core_value_sig70D0), var_core_value_sigAE58.current && var_core_value_sigAE58.current !== var_core_value_sig84C4 && var_core_value_sigAE58.current["remove"](), var_core_value_sigAE58.current = var_core_value_sig84C4;
+    }, []),
+    var_core_value_sigC74A = (0, s.useCallback)(var_core_value_sig2A8A => {
+      if (var_core_value_sig8E13.current) {
+        var_core_value_sig2A8A.preventDefault();
+        return;
+      }
+      if (var_core_value_sig9B4D || !var_core_value_sigEBFB) {
+        var_core_value_sig2A8A.preventDefault();
+        return;
+      }
+      var_core_value_sigA3C0.current = true, var_core_value_sig0DE9(), var_core_value_sig9797.current = null, var_core_value_sig3AAF.current &&= (var_core_value_sig3AAF.current(), null);
+      let var_core_value_sig3782 = var_core_value_sig2A8A.dataTransfer;
+      if (var_core_value_sig3782) {
+        try {
+          var_core_value_sig3782.effectAllowed = "move";
+        } catch {}
+        try {
+          var_core_value_sig3782.setData("text/plain", var_core_value_sigA552);
+        } catch {}
+      }
+      try {
+        var_core_value_sig5BE7(var_core_value_sig2A8A);
+      } catch {}
+      var_core_value_sigD0CC(var_core_value_sigA552, {
+        droppableId: var_core_value_sigEBFB,
+        index: var_core_value_sigAE32
+      });
+    }, [var_core_value_sig5BE7, var_core_value_sig0DE9, var_core_value_sigA552, var_core_value_sigEBFB, var_core_value_sigAE32, var_core_value_sig9B4D, var_core_value_sigD0CC]),
+    var_core_value_sig8F6A = (0, s.useCallback)(() => (var_core_value_sigAE58.current &&= (var_core_value_sigAE58.current["remove"](), null), var_core_value_sig80C6("CANCEL", null)), [var_core_value_sig80C6]);
+  return var_core_value_sig7CF1({
+    innerRef: var_core_value_sig8533,
+    draggableProps: {
+      draggable: !var_core_value_sig9B4D,
+      onDragStart: var_core_value_sigC74A,
+      onDragEnd: var_core_value_sig8F6A,
+      style: var_core_value_sig57C5 ? {
+        opacity: 1
+      } : undefined,
+      "data-univer-dnd-item": "true",
+      "data-univer-dnd-id": var_core_value_sigA552,
+      "data-univer-dnd-index": String(var_core_value_sigAE32)
+    },
+    dragHandleProps: {
+      onPointerDown: var_core_value_sig5863
+    }
+  }, {
+    isDragging: var_core_value_sig57C5,
+    draggingOver: var_core_value_sig2704 == null || (var_core_value_sigF7CE = var_core_value_sig2704.destination) == null ? undefined : var_core_value_sigF7CE.droppableId
+  });
+}
+function Nt(var_core_value_sig46EA, var_core_value_sig626C) {
+  switch (var_core_value_sig46EA) {
+    case "filter":
+      return var_core_value_sig626C.t("sheets-pivot-ui.filter");
+    case "row":
+      return var_core_value_sig626C.t("sheets-pivot-ui.row");
+    case "column":
+      return var_core_value_sig626C.t("sheets-pivot-ui.column");
+    case "value":
+      return var_core_value_sig626C.t("sheets-pivot-ui.value");
+  }
+}
+function Pt(var_core_value_sig9077) {
+  switch (var_core_value_sig9077) {
+    case "filter":
+      return (0, u.jsx)(m.FilterIcon, {
+        className: "univer-flex univer-flex-row univer-gap-4"
+      });
+    case "row":
+      return (0, u.jsx)(m.ColumnIcon, {
+        className: "univer-flex univer-flex-row univer-gap-4"
+      });
+    case "column":
+      return (0, u.jsx)(m.RowIcon, {
+        className: "univer-flex univer-flex-row univer-gap-4"
+      });
+    case "value":
+      return (0, u.jsx)(m.FunctionIcon, {
+        className: "univer-flex univer-flex-row univer-gap-4"
+      });
+  }
+}
+function Ft(var_core_value_sigC76C) {
+  switch (var_core_value_sigC76C) {
+    case "filter":
+      return (0, u.jsxs)("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        width: "32",
+        height: "32",
+        viewBox: "0 0 32 32",
+        fill: "none",
+        children: [(0, u.jsx)("path", {
+          d: "M4.99957\x201.875C2.84556\x201.875\x201.67491\x204.3932\x203.06336\x206.04001L11.5946\x2016.1587V26.4187C11.5946\x2027.4582\x2012.2298\x2028.3922\x2013.1966\x2028.7741L16.1601\x2029.9449C17.8221\x2030.6015\x2019.6232\x2029.3766\x2019.6232\x2027.5895V16.1587L28.1544\x206.04C29.5428\x204.3932\x2028.3722\x201.875\x2026.2182\x201.875H4.99957Z",
+          fill: "#ECECEC"
+        }), (0, u.jsx)("rect", {
+          x: "21.9404",
+          y: "17.8544",
+          width: "7.59766",
+          height: "2.2793",
+          rx: "1.13965",
+          fill: "#274FEE"
+        }), (0, u.jsx)("rect", {
+          x: "21.9404",
+          y: "21.9067",
+          width: "7.59766",
+          height: "2.2793",
+          rx: "1.13965",
+          fill: "#274FEE"
+        }), (0, u.jsx)("rect", {
+          x: "21.9404",
+          y: "25.959",
+          width: "7.59766",
+          height: "2.2793",
+          rx: "1.13965",
+          fill: "#274FEE"
+        })]
+      });
+    case "row":
+      return (0, u.jsxs)("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        width: "32",
+        height: "32",
+        viewBox: "0 0 32 32",
+        fill: "none",
+        children: [(0, u.jsx)("path", {
+          d: "M2 12.3661C2 12.0347 2.26863 11.7661 2.6 11.7661H9.24705C9.57842 11.7661 9.84705 12.0347 9.84705 12.3661V29.278C9.84705 29.6093 9.57842 29.878 9.24705 29.878H4C2.89543 29.878 2 28.9825 2 27.878V12.3661Z",
+          fill: "#D8D8D8"
+        }), (0, u.jsx)("path", {
+          d: "M2 4.0863C2 2.98173 2.89543 2.0863 4 2.0863H9.24705C9.57842 2.0863 9.84705 2.35493 9.84705 2.6863V8.73981C9.84705 9.07118 9.57842 9.33981 9.24705 9.33981H2.6C2.26863 9.33981 2 9.07118 2 8.73981V4.0863Z",
+          fill: "#D8D8D8"
+        }), (0, u.jsx)("path", {
+          d: "M12.2983 12.4011C12.2982 12.0697 12.5669 11.8009 12.8983 11.8009L29.3931 11.8009C29.7243 11.8009 29.9929 12.0694 29.9931 12.4007L29.9993 27.9129C29.9997 29.0178 29.1042 29.9137 27.9993 29.9137H12.9051C12.5738 29.9137 12.3053 29.6452 12.3051 29.314L12.2983 12.4011Z",
+          fill: "#ECECEC"
+        }), (0, u.jsx)("path", {
+          d: "M12.2517 2.6863C12.2517 2.35493 12.5203 2.0863 12.8517 2.0863H27.9582C29.0628 2.0863 29.9582 2.98173 29.9582 4.0863V8.73627C29.9582 9.06764 29.6896 9.33627 29.3582 9.33627H12.8517C12.5203 9.33627 12.2517 9.06764 12.2517 8.73627L12.2517 2.6863Z",
+          fill: "#274FEE"
+        })]
+      });
+    case "column":
+      return (0, u.jsxs)("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        width: "32",
+        height: "32",
+        viewBox: "0 0 32 32",
+        fill: "none",
+        children: [(0, u.jsx)("path", {
+          d: "M2 12.3661C2 12.0347 2.26863 11.7661 2.6 11.7661H9.24705C9.57842 11.7661 9.84705 12.0347 9.84705 12.3661V29.278C9.84705 29.6093 9.57842 29.878 9.24705 29.878H4C2.89543 29.878 2 28.9825 2 27.878V12.3661Z",
+          fill: "#274FEE"
+        }), (0, u.jsx)("path", {
+          d: "M2\x204.0863C2\x202.98173\x202.89543\x202.0863\x204\x202.0863H9.24705C9.57842\x202.0863\x209.84705\x202.35493\x209.84705\x202.6863V8.73981C9.84705\x209.07118\x209.57842\x209.33981\x209.24705\x209.33981H2.6C2.26863\x209.33981\x202\x209.07118\x202\x208.73981V4.0863Z",
+          fill: "#D8D8D8"
+        }), (0, u.jsx)("path", {
+          d: "M12.2637 2.6863C12.2637 2.35493 12.5323 2.0863 12.8637 2.0863H27.9702C29.0748 2.0863 29.9702 2.98173 29.9702 4.0863V8.73627C29.9702 9.06764 29.7016 9.33627 29.3702 9.33627H12.8637C12.5323 9.33627 12.2637 9.06764 12.2637 8.73627L12.2637 2.6863Z",
+          fill: "#D8D8D8"
+        }), (0, u.jsx)("path", {
+          d: "M12.2982 12.4011C12.2981 12.0697 12.5667 11.8009 12.8982 11.8009L29.3929 11.8009C29.7242 11.8009 29.9928 12.0694 29.9929 12.4007L29.9992 27.9129C29.9996 29.0178 29.104 29.9137 27.9992 29.9137H12.905C12.5737 29.9137 12.3051 29.6452 12.305 29.314L12.2982 12.4011Z",
+          fill: "#ECECEC"
+        })]
+      });
+    case "value":
+      return (0, u.jsxs)("svg", {
+        xmlns: "http://www.w3.org/2000/svg",
+        width: "32",
+        height: "32",
+        viewBox: "0\x200\x2032\x2032",
+        fill: "none",
+        children: [(0, u.jsx)("path", {
+          d: "M2 12.3661C2 12.0347 2.26863 11.7661 2.6 11.7661H9.24705C9.57842 11.7661 9.84705 12.0347 9.84705 12.3661V29.278C9.84705 29.6093 9.57842 29.878 9.24705 29.878H4C2.89543 29.878 2 28.9825 2 27.878V12.3661Z",
+          fill: "#D8D8D8"
+        }), (0, u.jsx)("path", {
+          d: "M2 4.0863C2 2.98173 2.89543 2.0863 4 2.0863H9.24705C9.57842 2.0863 9.84705 2.35493 9.84705 2.6863V8.73981C9.84705 9.07118 9.57842 9.33981 9.24705 9.33981H2.6C2.26863 9.33981 2 9.07118 2 8.73981V4.0863Z",
+          fill: "#D8D8D8"
+        }), (0, u.jsx)("path", {
+          d: "M12.2637 2.6863C12.2637 2.35493 12.5323 2.0863 12.8637 2.0863H27.9702C29.0748 2.0863 29.9702 2.98173 29.9702 4.0863V8.73627C29.9702 9.06764 29.7016 9.33627 29.3702 9.33627H12.8637C12.5323 9.33627 12.2637 9.06764 12.2637 8.73627L12.2637 2.6863Z",
+          fill: "#D8D8D8"
+        }), (0, u.jsx)("path", {
+          d: "M12.2982 12.4011C12.2981 12.0697 12.5667 11.8009 12.8982 11.8009L29.3929 11.8009C29.7242 11.8009 29.9928 12.0694 29.9929 12.4007L29.9992 27.9129C29.9996 29.0178 29.104 29.9137 27.9992 29.9137H12.905C12.5737 29.9137 12.3051 29.6452 12.305 29.314L12.2982 12.4011Z",
+          fill: "#274FEE"
+        })]
+      });
+  }
+}
+function It(var_core_value_sigB23A, var_core_value_sigBA66) {
+  switch (var_core_value_sigB23A) {
+    case "filter":
+      return var_core_value_sigBA66.t("sheets-pivot-ui.filterDesc");
+    case "row":
+      return var_core_value_sigBA66.t("sheets-pivot-ui.rowDesc");
+    case "column":
+      return var_core_value_sigBA66.t("sheets-pivot-ui.columnDesc");
+    case "value":
+      return var_core_value_sigBA66.t("sheets-pivot-ui.valueDesc");
+  }
+}
+function Lt(var_core_value_sig3DF0) {
+  let var_core_value_sig0512 = (0, e.useDependency)(n.LocaleService),
+    {
+      areaType: var_core_value_sig4B2B
+    } = var_core_value_sig3DF0,
+    var_core_value_sigDF88 = It(var_core_value_sig4B2B, var_core_value_sig0512);
+  return (0, u.jsxs)("div", {
+    className: "univer-flex univer-h-[140px] univer-flex-col univer-items-center univer-justify-center univer-gap-1 univer-self-stretch univer-px-2",
+    children: [(0, u.jsx)("div", {
+      className: "univer-size-8",
+      children: Ft(var_core_value_sig4B2B)
+    }), (0, u.jsx)("div", {
+      className: "univer-text-center univer-text-xs univer-leading-4 univer-text-gray-600 dark:!univer-text-gray-200",
+      children: var_core_value_sigDF88
+    })]
+  });
+}
+function Y(var_core_value_sigDB93) {
+  let {
+      areaType: var_core_value_sig67CF,
+      items: var_core_value_sigCA96,
+      positionInfo: var_core_value_sig6C5E,
+      pivotTableId: var_core_value_sig4997,
+      pivotTableInfo: var_core_value_sig7290
+    } = var_core_value_sigDB93,
+    var_core_value_sigE835 = (0, e.useDependency)(n.LocaleService);
+  return (0, u.jsxs)("div", {
+    className: "univer-min-h-[200px]\x20univer-flex-1\x20univer-p-1",
+    children: [(0, u.jsxs)("div", {
+      className: "univer-mb-2\x20univer-mt-0\x20univer-flex\x20univer-w-full\x20univer-text-sm\x20univer-leading-4\x20univer-text-gray-900",
+      children: [Pt(var_core_value_sig67CF), (0, u.jsx)("span", {
+        className: "univer-inline-block univer-align-top",
+        children: Nt(var_core_value_sig67CF, var_core_value_sigE835)
+      })]
+    }), (0, u.jsx)(jt, {
+      droppableId: "" + var_core_value_sig67CF,
+      isCombineEnabled: false,
+      isDropDisabled: false,
+      ignoreContainerClipping: false,
+      direction: "vertical",
+      children: (var_core_value_sigD22E, var_core_value_sig3455) => (0, u.jsx)("div", {
+        className: (0, i.clsx)("univer-box-border\x20univer-h-[161px]\x20univer-w-full\x20univer-flex-col\x20univer-items-center\x20univer-justify-center\x20univer-overflow-x-hidden\x20univer-rounded-lg\x20univer-bg-gray-50\x20univer-py-2\x20dark:!univer-bg-gray-900", i.borderClassName, {
+          "univer-border-primary-600": var_core_value_sig3455.isDraggingOver
+        }),
+        children: (0, u.jsx)("div", {
+          className: (0, i.clsx)("univer-h-full\x20univer-overflow-y-auto", i.scrollbarClassName),
+          children: (0, u.jsxs)("div", {
+            ref: var_core_value_sigD22E.innerRef,
+            className: "univer-box-border\x20univer-h-full\x20univer-px-2",
+            ...var_core_value_sigD22E.droppableProps,
+            children: [var_core_value_sigCA96.length > 0 && var_core_value_sigCA96.map((var_core_value_sigCEFB, var_core_value_sig1537) => (0, u.jsx)("div", {
+              children: (0, u.jsx)(Mt, {
+                isDragDisabled: false,
+                draggableId: var_core_value_sigCEFB.tableFieldId,
+                index: var_core_value_sig1537,
+                children: (var_core_value_sigCE71, var_core_value_sig21D8) => (0, u.jsx)(u.Fragment, {
+                  children: (0, u.jsx)("div", {
+                    ref: var_core_value_sigCE71.innerRef,
+                    ...var_core_value_sigCE71.draggableProps,
+                    ...var_core_value_sigCE71.dragHandleProps,
+                    style: var_core_value_sigCE71.draggableProps["style"],
+                    className: (0, i.clsx)("univer-flex\x20univer-items-center\x20univer-gap-1\x20univer-self-stretch\x20univer-border\x20univer-border-transparent\x20univer-p-0.5\x20univer-leading-4\x20hover:univer-bg-gray-100\x20dark:hover:!univer-bg-gray-700", var_core_value_sig21D8.draggingOver && "univer-border-primary-600"),
+                    children: (0, u.jsx)(Rt, {
+                      pivotTableId: var_core_value_sig4997,
+                      positionInfo: var_core_value_sig6C5E,
+                      item: var_core_value_sigCEFB,
+                      areaType: var_core_value_sig67CF,
+                      pivotTableInfo: var_core_value_sig7290
+                    })
+                  })
+                })
+              }, var_core_value_sigCEFB.tableFieldId)
+            }, var_core_value_sigCEFB.tableFieldId)), var_core_value_sigCA96.length === 0 && (0, u.jsx)(Lt, {
+              areaType: var_core_value_sig67CF
+            })]
+          })
+        })
+      })
+    })]
+  });
+}
+function Rt(var_core_value_sig4644) {
+  let {
+      areaType: var_core_value_sig9DED,
+      item: var_core_value_sig7DE6,
+      positionInfo: var_core_value_sig120E,
+      pivotTableId: var_core_value_sigD79B,
+      pivotTableInfo: var_core_value_sig92A3
+    } = var_core_value_sig4644,
+    {
+      unitId: var_core_value_sig8911,
+      subUnitId: var_core_value_sig8D1B
+    } = var_core_value_sig120E,
+    var_core_value_sigA915 = var_core_value_sig7DE6.tableFieldId === V,
+    var_core_value_sigE1F7 = (0, e.useDependency)(n.ICommandService),
+    var_core_value_sig4BE7 = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sigF9FF = () => {
+      if (var_core_value_sigA915) {
+        let var_core_value_sigE4C6 = (var_core_value_sig92A3.valueFields || []).map(var_core_value_sig2B65 => var_core_value_sig2B65.tableFieldId);
+        H({
+          pivotTableId: var_core_value_sigD79B,
+          unitId: var_core_value_sig8911,
+          subUnitId: var_core_value_sig8D1B,
+          commandService: var_core_value_sigE1F7
+        }, var_core_value_sigE4C6);
+      } else H({
+        pivotTableId: var_core_value_sigD79B,
+        unitId: var_core_value_sig8911,
+        subUnitId: var_core_value_sig8D1B,
+        commandService: var_core_value_sigE1F7
+      }, [var_core_value_sig7DE6.tableFieldId]);
+    },
+    var_core_value_sigE0E3 = () => {
+      !var_core_value_sig8911 || !var_core_value_sig8D1B || ue(var_core_value_sigE1F7, var_core_value_sig8911, var_core_value_sig8D1B, var_core_value_sigD79B, var_core_value_sig7DE6.tableFieldId);
+    },
+    var_core_value_sig3AB3 = () => {
+      !var_core_value_sig8911 || !var_core_value_sig8D1B || de(var_core_value_sigE1F7, var_core_value_sigD79B, var_core_value_sig7DE6.tableFieldId, var_core_value_sig8911, var_core_value_sig8D1B, var_core_value_sig92A3);
+    },
+    var_core_value_sig816E = var_core_value_sig5CEF => {
+      let var_core_value_sig43D5 = var_core_value_sig5CEF === "column" ? l.PivotTableValuePositionEnum["Row"] : l.PivotTableValuePositionEnum["Column"],
+        var_core_value_sig1395 = var_core_value_sig5CEF === "column" ? var_core_value_sig92A3.rowFields["length"] : var_core_value_sig92A3.columnFields["length"];
+      ce({
+        pivotTableId: var_core_value_sigD79B,
+        unitId: var_core_value_sig8911,
+        subUnitId: var_core_value_sig8D1B,
+        commandService: var_core_value_sigE1F7
+      }, var_core_value_sig43D5, var_core_value_sig1395);
+    },
+    var_core_value_sigE6F3 = (0, u.jsxs)("div", {
+      className: "univer-inline-flex univer-flex-col univer-rounded-lg univer-border univer-border-gray-200 univer-bg-gray-0 univer-p-2 univer-shadow-lg",
+      children: [(0, u.jsx)("div", {
+        className: "univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 dark:!univer-text-gray-0",
+        onClick: () => {
+          var_core_value_sigF9FF();
+        },
+        children: var_core_value_sig4BE7.t("sheets-pivot-ui.removeField")
+      }), var_core_value_sig9DED !== "value" && !var_core_value_sigA915 && (0, u.jsx)("div", {
+        className: "univer-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-self-stretch\x20univer-px-2\x20univer-py-1.5\x20univer-text-sm\x20univer-leading-5\x20univer-text-gray-900\x20dark:!univer-text-gray-0",
+        onClick: () => {
+          var_core_value_sigE0E3();
+        },
+        children: var_core_value_sig4BE7.t("sheets-pivot-ui.filterField")
+      }), var_core_value_sigA915 && (0, u.jsx)("div", {
+        className: "univer-flex\x20univer-cursor-pointer\x20univer-items-center\x20univer-self-stretch\x20univer-px-2\x20univer-py-1.5\x20univer-text-sm\x20univer-leading-5\x20univer-text-gray-900\x20dark:!univer-text-gray-0",
+        onClick: () => {
+          var_core_value_sig816E(var_core_value_sig9DED);
+        },
+        children: var_core_value_sig9DED === "column" ? var_core_value_sig4BE7.t("sheets-pivot-ui.moveToRow") : var_core_value_sig4BE7.t("sheets-pivot-ui.moveToColumn")
+      }), var_core_value_sig9DED === "value" && (0, u.jsx)("div", {
+        className: "univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 dark:!univer-text-gray-0",
+        onClick: () => {
+          var_core_value_sig3AB3();
+        },
+        children: var_core_value_sig4BE7.t("sheets-pivot-ui.fieldSettings")
+      })]
+    }),
+    var_core_value_sig3EE1 = (0, u.jsx)("bdi", {
+      dir: "auto",
+      children: var_core_value_sigA915 ? var_core_value_sig4BE7.t("sheets-pivot-ui.multipleValue") : var_core_value_sig7DE6.displayName
+    });
+  return (0, u.jsxs)(u.Fragment, {
+    children: [(0, u.jsx)(m.GripVerticalIcon, {}), (0, u.jsx)("div", {
+      className: "univer-max-w-[66px] univer-flex-1 univer-shrink-0 univer-truncate univer-text-xs univer-leading-4 univer-text-gray-800 dark:!univer-text-gray-100",
+      children: (0, u.jsx)(i.Tooltip, {
+        title: var_core_value_sig3EE1,
+        children: var_core_value_sig3EE1
+      })
+    }), (0, u.jsx)("div", {
+      className: "univer-cursor-pointer",
+      children: (0, u.jsx)(i.Dropdown, {
+        align: "end",
+        overlay: var_core_value_sigE6F3,
+        children: (0, u.jsx)("span", {
+          children: (0, u.jsx)(m.MoreHorizontalIcon, {})
+        })
+      })
+    })]
+  });
+}
+function zt(var_core_value_sig9673) {
+  var var_core_value_sig4917;
+  let var_core_value_sig3BE6 = (0, e.useDependency)(n.IUniverInstanceService),
+    var_core_value_sigA1C9 = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sig77D6 = (0, e.useDependency)(n.ICommandService),
+    var_core_value_sigE3CE = (0, e.useDependency)(F),
+    {
+      sourceRangeInfo: var_core_value_sig219B,
+      refreshHandler: var_core_value_sig4493,
+      pivotTableId: var_core_value_sig8B9C,
+      positionInfo: var_core_value_sigA35B
+    } = var_core_value_sig9673,
+    {
+      unitId: var_core_value_sig82DD,
+      range: var_core_value_sigAAC7,
+      subUnitId: var_core_value_sig1999
+    } = var_core_value_sig219B,
+    var_core_value_sigFB45 = var_core_value_sig3BE6.getUnit(var_core_value_sig82DD),
+    var_core_value_sigB86C = (var_core_value_sigFB45 == null || (var_core_value_sig4917 = var_core_value_sigFB45.getSheetBySheetId(var_core_value_sig1999)) == null ? undefined : var_core_value_sig4917.getName()) ?? "",
+    [var_core_value_sigD892, var_core_value_sig6086] = (0, s.useState)(undefined),
+    var_core_value_sigAED2 = (0, s.useRef)(var_core_value_sigD892);
+  var_core_value_sigAED2.current = var_core_value_sigD892;
+  let [var_core_value_sig3516, var_core_value_sigCDCD] = (0, s.useState)(var_core_value_sigAAC7),
+    [var_core_value_sig206A, var_core_value_sig1EFE] = (0, s.useState)(var_core_value_sigB86C),
+    [var_core_value_sig9904, var_core_value_sig39C7] = (0, s.useState)(false);
+  (0, s.useEffect)(() => {
+    var_core_value_sigE3CE.setIsRangeSelectorFocus(var_core_value_sig9904);
+  }, [var_core_value_sig9904, var_core_value_sigE3CE]), (0, s.useEffect)(() => {
+    var_core_value_sigCDCD(var_core_value_sig219B.range), var_core_value_sig1EFE(var_core_value_sigB86C);
+  }, [var_core_value_sig219B, var_core_value_sigB86C]);
+  let var_core_value_sigA022 = (0, s.useMemo)(() => (0, n.debounce)(async var_core_value_sig4313 => {
+    let var_core_value_sigFC87 = var_core_value_sig4313.split(",").filter(var_core_value_sigD7EA => !!var_core_value_sigD7EA).map(a.deserializeRangeWithSheet);
+    if (!var_core_value_sigFC87[0]) return;
+    let var_core_value_sig156F = var_core_value_sigFC87[0];
+    if (!var_core_value_sigFB45 || var_core_value_sigAED2.current) return;
+    let var_core_value_sigDD51 = var_core_value_sig156F.sheetName || var_core_value_sig219B.sheetName;
+    var_core_value_sigCDCD(var_core_value_sig156F.range), var_core_value_sig1EFE(var_core_value_sigDD51);
+    let var_core_value_sigF057 = {
+      unitId: var_core_value_sig82DD,
+      subUnitId: var_core_value_sigFB45.getSheetBySheetName(var_core_value_sigDD51).getSheetId(),
+      range: {
+        ...var_core_value_sig156F.range
+      },
+      sheetName: var_core_value_sigDD51
+    };
+    await ae(var_core_value_sig77D6, var_core_value_sig8B9C, var_core_value_sigF057, var_core_value_sigA35B.unitId, var_core_value_sigA35B.subUnitId), var_core_value_sig4493();
+  }, 300, {
+    leading: false,
+    maxWait: 1000,
+    trailing: true
+  }), []);
+  return (0, u.jsxs)("div", {
+    className: "univer-mb-4",
+    children: [(0, u.jsxs)("div", {
+      className: "univer-mb-2 univer-flex univer-h-5 univer-justify-between univer-text-sm univer-leading-5",
+      children: [(0, u.jsx)("span", {
+        className: "univer-text-justify univer-text-gray-900 dark:!univer-text-gray-0",
+        children: var_core_value_sigA1C9.t("sheets-pivot-ui.sourceRangeLabel")
+      }), (0, u.jsx)("span", {
+        className: "univer-text-xs univer-text-gray-600 dark:!univer-text-gray-200",
+        children: var_core_value_sigA1C9.t("sheets-pivot-ui.sourceRangePlaceholder")
+      })]
+    }), (0, u.jsxs)("div", {
+      className: "univer-relative",
+      children: [(0, u.jsx)(o.RangeSelector, {
+        unitId: var_core_value_sig82DD,
+        subUnitId: var_core_value_sig1999,
+        initialValue: (0, a.serializeRangeWithSheet)(var_core_value_sig206A, var_core_value_sig3516),
+        onChange: (var_core_value_sig9FA0, var_core_value_sig055E) => {
+          (0, a.serializeRangeWithSheet)(var_core_value_sig206A, var_core_value_sig3516) !== var_core_value_sig055E && var_core_value_sigA022(var_core_value_sig055E);
+        },
+        keepSheetReference: true,
+        supportAcrossSheet: true,
+        onVerify: (var_core_value_sig7C77, var_core_value_sig9578) => {
+          let var_core_value_sigA2D31 = var_core_value_sig9578.split(",").filter(var_core_value_sig72F6 => !!var_core_value_sig72F6);
+          if (!var_core_value_sigA2D31[0]) {
+            var_core_value_sig6086(var_core_value_sigA1C9.t("sheets-pivot-ui.msg.emptySourceRange"));
+            return;
+          }
+          if (!var_core_value_sig7C77) {
+            var_core_value_sig6086(var_core_value_sigA1C9.t("sheets-pivot-ui.msg.invalidSize"));
+            return;
+          }
+          let var_core_value_sigC218 = (0, a.deserializeRangeWithSheet)(var_core_value_sigA2D31[0]),
+            var_core_value_sigADEC = var_core_value_sigC218.sheetName || var_core_value_sig219B.sheetName;
+          if (var_core_value_sigFB45) switch (re(var_core_value_sigFB45.getSheetBySheetName(var_core_value_sigADEC), var_core_value_sigC218.range)) {
+            case 2:
+              var_core_value_sig6086(undefined);
+              break;
+            case 0:
+              var_core_value_sig6086(var_core_value_sigA1C9.t("sheets-pivot-ui.msg.emptySourceRange"));
+              break;
+            case 1:
+              var_core_value_sig6086(var_core_value_sigA1C9.t("sheets-pivot-ui.msg.invalidSize"));
+              break;
+          }
+        },
+        maxRangeCount: 1,
+        onFocusChange: var_core_value_sig3D8E => {
+          var_core_value_sig39C7(var_core_value_sig3D8E);
+        },
+        onRangeSelectorDialogVisibleChange: var_core_value_sig37E5 => {
+          var_core_value_sig39C7(!!var_core_value_sig37E5);
+        }
+      }), var_core_value_sigD892 ? (0, u.jsx)("div", {
+        className: "univer-my-1\x20univer-text-xs\x20univer-text-red-500",
+        children: var_core_value_sigD892
+      }) : null]
+    })]
+  });
+}
+function Bt(var_core_value_sig913A) {
+  let {
+    type: var_core_value_sig991D
+  } = var_core_value_sig913A;
+  switch (var_core_value_sig991D) {
+    case l.PivotDataFieldDataTypeEnum["text"]:
+      return (0, u.jsx)(m.TextIcon, {
+        className: "univer-mx-1.5 univer-my-0 univer-h-4 univer-text-xs univer-text-gray-200 dark:!univer-text-gray-600"
+      });
+    case l.PivotDataFieldDataTypeEnum["number"]:
+      return (0, u.jsx)(m.NumberIcon, {
+        className: "univer-mx-1.5\x20univer-my-0\x20univer-h-4\x20univer-text-xs\x20univer-text-gray-200\x20dark:!univer-text-gray-600"
+      });
+    case l.PivotDataFieldDataTypeEnum["date"]:
+      return (0, u.jsx)(m.CalendarIcon, {
+        className: "univer-mx-1.5 univer-my-0 univer-h-4 univer-text-xs univer-text-gray-200 dark:!univer-text-gray-600"
+      });
+  }
+}
+function Vt(var_core_value_sig3E9C) {
+  let {
+      name: var_core_value_sig7835,
+      dataFieldId: var_core_value_sig1257,
+      checked: var_core_value_sig97E2,
+      type: var_core_value_sigBFA3,
+      refreshHandler: var_core_value_sig6663,
+      pivotTableId: var_core_value_sigB250,
+      draggingId: var_core_value_sig4EAB,
+      pivotTableInfo: var_core_value_sig2FD0,
+      unitId: var_core_value_sig035C,
+      subUnitId: var_core_value_sigA7F0
+    } = var_core_value_sig3E9C,
+    [var_core_value_sig6AE2, var_core_value_sigFD17] = (0, s.useState)(false),
+    var_core_value_sigA5E0 = (0, e.useDependency)(n.ICommandService),
+    var_core_value_sigC38F = (0, e.useDependency)(n.LocaleService);
+  if (!var_core_value_sig2FD0) return null;
+  let {
+      rowFields: var_core_value_sigFAFE,
+      columnFields: var_core_value_sig2B86,
+      filterFields: var_core_value_sig8873,
+      valueFields: var_core_value_sigB9C5
+    } = var_core_value_sig2FD0,
+    var_core_value_sig511D = [...var_core_value_sigFAFE, ...var_core_value_sig2B86, ...var_core_value_sig8873, ...var_core_value_sigB9C5],
+    var_core_value_sig1610 = async var_core_value_sigF079 => {
+      let var_core_value_sigFCA0 = !!var_core_value_sigF079,
+        var_core_value_sigC84D = false;
+      if (var_core_value_sigFCA0) {
+        let var_core_value_sig9FBA = {
+          pivotTableId: var_core_value_sigB250,
+          dataFieldId: var_core_value_sig1257,
+          fieldArea: var_core_value_sigBFA3 === l.PivotDataFieldDataTypeEnum["number"] ? l.PivotTableFiledAreaEnum["Value"] : l.PivotTableFiledAreaEnum["Row"],
+          unitId: var_core_value_sig035C,
+          subUnitId: var_core_value_sigA7F0,
+          index: var_core_value_sigBFA3 === l.PivotDataFieldDataTypeEnum["number"] ? var_core_value_sigB9C5.length : var_core_value_sigFAFE.length
+        };
+        var_core_value_sigC84D = await var_core_value_sigA5E0.executeCommand(t.AddPivotFieldCommand["id"], var_core_value_sig9FBA);
+      } else {
+        let var_core_value_sigFE01 = [];
+        var_core_value_sig511D.forEach(var_core_value_sigB33B => {
+          var_core_value_sigB33B.dataFieldId === var_core_value_sig1257 && var_core_value_sigFE01.push(var_core_value_sigB33B.tableFieldId);
+        }), var_core_value_sigC84D = await var_core_value_sigA5E0.executeCommand(t.RemovePivotFieldCommand["id"], {
+          pivotTableId: var_core_value_sigB250,
+          fieldIds: var_core_value_sigFE01,
+          unitId: var_core_value_sig035C,
+          subUnitId: var_core_value_sigA7F0
+        });
+      }
+      var_core_value_sigC84D && var_core_value_sig6663();
+    },
+    var_core_value_sig23AB = async var_core_value_sigF2BC => {
+      let var_core_value_sigD37B = false,
+        var_core_value_sigFA28 = "";
+      if ([...var_core_value_sigFAFE, ...var_core_value_sig2B86, ...var_core_value_sig8873].forEach(var_core_value_sigA2CE => {
+        var_core_value_sigA2CE.dataFieldId === var_core_value_sig1257 && (var_core_value_sigD37B = true, var_core_value_sigFA28 = var_core_value_sigA2CE.tableFieldId);
+      }), var_core_value_sigD37B && var_core_value_sigF2BC !== l.PivotTableFiledAreaEnum["Value"]) {
+        if (var_core_value_sigB250) {
+          let var_core_value_sig24B9 = Se(var_core_value_sig2FD0, var_core_value_sigF2BC),
+            var_core_value_sigE627 = {
+              pivotTableId: var_core_value_sigB250,
+              area: var_core_value_sigF2BC,
+              index: var_core_value_sig24B9,
+              fieldId: var_core_value_sigFA28,
+              unitId: var_core_value_sig035C,
+              subUnitId: var_core_value_sigA7F0
+            };
+          (await var_core_value_sigA5E0.executeCommand(t.MovePivotFieldCommand["id"], var_core_value_sigE627)) && var_core_value_sig6663();
+        }
+      } else {
+        if (var_core_value_sigB250) {
+          let var_core_value_sigEF3E = {
+            pivotTableId: var_core_value_sigB250,
+            dataFieldId: var_core_value_sig1257,
+            fieldArea: var_core_value_sigF2BC,
+            unitId: var_core_value_sig035C,
+            subUnitId: var_core_value_sigA7F0,
+            index: Se(var_core_value_sig2FD0, var_core_value_sigF2BC)
+          };
+          (await var_core_value_sigA5E0.executeCommand(t.AddPivotFieldCommand["id"], var_core_value_sigEF3E)) && var_core_value_sig6663();
+        }
+      }
+    };
+  return (0, u.jsxs)("div", {
+    className: (0, i.clsx)("univer-group univer-relative univer-box-border univer-flex univer-h-8 univer-w-full univer-flex-row univer-items-center univer-rounded-md univer-px-1 univer-py-2 univer-leading-4 univer-transition-all hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700", {
+      "univer-flex\x20univer-bg-gray-100\x20dark:!univer-bg-gray-700": var_core_value_sig4EAB === var_core_value_sig1257
+    }),
+    id: "source-" + var_core_value_sig1257,
+    onContextMenu: var_core_value_sig93BE => {
+      var_core_value_sig93BE.preventDefault(), var_core_value_sigFD17(true);
+    },
+    children: [(0, u.jsx)("span", {
+      className: "univer-mr-2 univer-w-4 rtl:univer-ml-2 rtl:univer-mr-0",
+      children: (0, u.jsx)(m.GripVerticalIcon, {})
+    }), (0, u.jsx)(i.Checkbox, {
+      className: "univer-w-[14px] univer-text-sm univer-text-gray-200",
+      checked: var_core_value_sig97E2,
+      onChange: var_core_value_sig1610
+    }), (0, u.jsxs)("div", {
+      className: "univer-flex\x20univer-min-w-0\x20univer-flex-1\x20univer-items-center\x20univer-text-xs\x20univer-leading-4\x20univer-text-gray-900\x20dark:!univer-text-gray-0",
+      children: [(0, u.jsx)(Bt, {
+        type: var_core_value_sigBFA3
+      }), (0, u.jsx)("span", {
+        className: "univer-truncate",
+        children: var_core_value_sig7835
+      })]
+    }), (0, u.jsx)(i.Dropdown, {
+      align: "end",
+      side: "bottom",
+      open: var_core_value_sig6AE2,
+      onOpenChange: var_core_value_sigFD17,
+      overlay: (0, u.jsxs)("div", {
+        children: [(0, u.jsx)("div", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",
+          onClick: () => {
+            var_core_value_sigFD17(false), var_core_value_sig23AB(l.PivotTableFiledAreaEnum["Row"]);
+          },
+          children: var_core_value_sigC38F.t("sheets-pivot-ui.addToRow")
+        }), (0, u.jsx)("div", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",
+          onClick: () => {
+            var_core_value_sigFD17(false), var_core_value_sig23AB(l.PivotTableFiledAreaEnum["Column"]);
+          },
+          children: var_core_value_sigC38F.t("sheets-pivot-ui.addToColumn")
+        }), (0, u.jsx)("div", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",
+          onClick: () => {
+            var_core_value_sigFD17(false), var_core_value_sig23AB(l.PivotTableFiledAreaEnum["Value"]);
+          },
+          children: var_core_value_sigC38F.t("sheets-pivot-ui.addToValue")
+        }), (0, u.jsx)("div", {
+          className: "univer-flex univer-cursor-pointer univer-items-center univer-self-stretch univer-px-2 univer-py-1.5 univer-text-sm univer-leading-5 univer-text-gray-900 hover:univer-bg-gray-100 dark:!univer-text-gray-0 dark:hover:!univer-bg-gray-700",
+          onClick: () => {
+            var_core_value_sigFD17(false), var_core_value_sig23AB(l.PivotTableFiledAreaEnum["Filter"]);
+          },
+          children: var_core_value_sigC38F.t("sheets-pivot-ui.addToFilter")
+        })]
+      }),
+      children: (0, u.jsx)("div", {
+        className: (0, i.clsx)("univer-ml-1 univer-flex univer-size-5 univer-cursor-pointer univer-items-center univer-justify-center univer-rounded-md univer-transition-opacity hover:univer-bg-gray-200 rtl:univer-ml-0 rtl:univer-mr-1 dark:hover:!univer-bg-gray-700", {
+          "univer-opacity-100": var_core_value_sig6AE2,
+          "univer-opacity-0\x20group-hover:univer-opacity-100": !var_core_value_sig6AE2
+        }),
+        onMouseDown: var_core_value_sigABEC => var_core_value_sigABEC.stopPropagation(),
+        onClick: var_core_value_sig2712 => var_core_value_sig2712.stopPropagation(),
+        children: (0, u.jsx)(m.MoreDownIcon, {
+          className: "univer-text-gray-400 dark:!univer-text-gray-500"
+        })
+      })
+    })]
+  }, var_core_value_sig1257);
+}
+function Ht(var_core_value_sigA15D) {
+  let {
+      sourceList: var_core_value_sig7E90,
+      refreshHandler: var_core_value_sig03F7,
+      pivotTableId: var_core_value_sig756F,
+      pivotTableInfo: var_core_value_sig0DB1,
+      unitId: var_core_value_sig4950,
+      draggingId: var_core_value_sig4424,
+      subUnitId: var_core_value_sig57E8
+    } = var_core_value_sigA15D,
+    var_core_value_sig76B6 = (0, e.useDependency)(n.LocaleService),
+    [var_core_value_sig89BC, var_core_value_sig2191] = (0, s.useState)(""),
+    var_core_value_sig3B2E = var_core_value_sig89BC.trim().toLocaleLowerCase(),
+    var_core_value_sig5A9A = var_core_value_sig3B2E ? var_core_value_sig7E90.filter(var_core_value_sig0B9E => var_core_value_sig0B9E.name["toLocaleLowerCase"]().includes(var_core_value_sig3B2E)) : var_core_value_sig7E90;
+  return (0, u.jsxs)("div", {
+    className: "univer-mb-4 univer-flex univer-min-h-0 univer-flex-1 univer-flex-col",
+    children: [(0, u.jsx)("p", {
+      className: "univer-mb-1 univer-mt-0 univer-text-sm univer-font-medium univer-leading-5 univer-text-gray-900 dark:!univer-text-gray-0",
+      children: var_core_value_sig76B6.t("sheets-pivot-ui.sourceFieldTile")
+    }), (0, u.jsx)("p", {
+      className: "univer-mb-2 univer-mt-0 univer-text-xs univer-leading-4 univer-text-gray-600 dark:!univer-text-gray-200",
+      children: var_core_value_sig76B6.t("sheets-pivot-ui.sourceFieldDescription")
+    }), (0, u.jsx)(i.Input, {
+      allowClear: true,
+      className: "univer-mb-2",
+      placeholder: var_core_value_sig76B6.t("sheets-pivot-ui.searchFieldPlaceholder"),
+      slot: (0, u.jsx)(m.SearchIcon, {}),
+      value: var_core_value_sig89BC,
+      onChange: var_core_value_sig2191
+    }), (0, u.jsx)("div", {
+      className: (0, i.clsx)("univer-box-border univer-min-h-0 univer-flex-1 univer-rounded-lg univer-bg-gray-0 univer-p-2 dark:!univer-bg-gray-900", i.borderClassName),
+      children: (0, u.jsx)("div", {
+        className: (0, i.clsx)("univer-relative\x20univer-h-full\x20univer-overflow-y-auto", i.scrollbarClassName),
+        "data-testid": "pivot-source-field-viewport",
+        children: (0, u.jsx)(jt, {
+          droppableId: "source",
+          direction: "vertical",
+          isCombineEnabled: false,
+          ignoreContainerClipping: false,
+          isDropDisabled: true,
+          children: var_core_value_sigC545 => (0, u.jsxs)("div", {
+            ref: var_core_value_sigC545.innerRef,
+            className: "univer-box-border univer-h-full univer-px-2",
+            ...var_core_value_sigC545.droppableProps,
+            children: [var_core_value_sig5A9A.map((var_core_value_sig1975, var_core_value_sig6EA1) => (0, u.jsx)("div", {
+              className: "univer-relative univer-flex univer-h-8 univer-w-full univer-items-center univer-gap-1 univer-self-stretch univer-border univer-border-transparent univer-p-0.5 univer-leading-4 hover:univer-bg-gray-100 dark:hover:!univer-bg-gray-700",
+              children: (0, u.jsx)(Mt, {
+                draggableId: var_core_value_sig1975.id,
+                isDragDisabled: false,
+                index: var_core_value_sig6EA1,
+                children: ({
+                  innerRef: var_core_value_sig273D,
+                  draggableProps: var_core_value_sig9A0D,
+                  dragHandleProps: var_core_value_sigA319
+                }) => (0, u.jsx)("div", {
+                  ref: var_core_value_sig273D,
+                  ...var_core_value_sig9A0D,
+                  ...var_core_value_sigA319,
+                  className: "univer-h-8 univer-w-full",
+                  style: var_core_value_sig9A0D.style,
+                  children: (0, u.jsx)(Vt, {
+                    draggingId: var_core_value_sig4424,
+                    unitId: var_core_value_sig4950,
+                    subUnitId: var_core_value_sig57E8,
+                    ...var_core_value_sig1975,
+                    refreshHandler: var_core_value_sig03F7,
+                    pivotTableId: var_core_value_sig756F,
+                    pivotTableInfo: var_core_value_sig0DB1
+                  })
+                })
+              }, var_core_value_sig1975.id)
+            }, var_core_value_sig1975.id)), var_core_value_sig5A9A.length === 0 && (0, u.jsx)("div", {
+              className: "univer-py-4\x20univer-text-center\x20univer-text-xs\x20univer-text-gray-500",
+              children: var_core_value_sig76B6.t("sheets-pivot-ui.noMatchingFields")
+            })]
+          })
+        })
+      })
+    })]
+  });
+}
+function Ut(var_core_value_sigB524) {
+  let {
+      pivotTableId: var_core_value_sig8CFB,
+      version: var_core_value_sigB52C,
+      unitId: var_core_value_sigA4B8,
+      subUnitId: var_core_value_sigFF9C,
+      panelInfo: var_core_value_sig278D
+    } = var_core_value_sigB524,
+    var_core_value_sigC0FE = (0, e.useDependency)(t.SheetsPivotTableConfigModel),
+    var_core_value_sigDD22 = (0, e.useObservable)(var_core_value_sigC0FE.configVersion$),
+    var_core_value_sig2D35 = (0, e.useDependency)(t.SheetsPivotRPCService),
+    var_core_value_sig7A4B = (0, e.useObservable)((0, e.useDependency)(F).pivotTablePanelVisible$, true),
+    var_core_value_sigE50A = (0, e.useDependency)(n.ICommandService),
+    var_core_value_sigC8AC = (0, e.useDependency)(n.ILogService),
+    [var_core_value_sig8E63, var_core_value_sig300D] = (0, s.useState)(var_core_value_sig278D),
+    [var_core_value_sig520B, var_core_value_sigFE26] = (0, s.useState)(null),
+    var_core_value_sig1019 = (0, s.useCallback)(async () => {
+      if (!var_core_value_sigC0FE.getPivotTableConfig(var_core_value_sigA4B8, var_core_value_sigFF9C, var_core_value_sig8CFB)) return;
+      let var_core_value_sig12A7 = await var_core_value_sig2D35.getPivotDisplayConfig({
+        unitId: var_core_value_sigA4B8,
+        subUnitId: var_core_value_sigFF9C,
+        pivotTableId: var_core_value_sig8CFB,
+        params: {
+          type: t.PivotDisplayDataType["Panel"],
+          panel: {
+            pivotTableId: var_core_value_sig8CFB
+          }
+        }
+      });
+      var_core_value_sig12A7.result["panel"] && var_core_value_sig300D(var_core_value_sig12A7.result["panel"]);
+    }, [var_core_value_sig8CFB, var_core_value_sig2D35, var_core_value_sigC0FE, var_core_value_sigFF9C, var_core_value_sigA4B8]);
+  (0, s.useEffect)(() => {
+    var_core_value_sig1019().catch(var_core_value_sig029F => var_core_value_sigC8AC.error("[PivotPanel]", var_core_value_sig029F));
+  }, [var_core_value_sigC8AC, var_core_value_sigDD22, var_core_value_sig8CFB, var_core_value_sig1019, var_core_value_sigB52C]);
+  let var_core_value_sig32AB = async var_core_value_sig6F4E => {
+      let {
+        source: var_core_value_sigA021,
+        destination: var_core_value_sig49D9,
+        draggableId: var_core_value_sig320C
+      } = var_core_value_sig6F4E;
+      var_core_value_sigFE26(null);
+      let var_core_value_sigE7F0 = {
+          pivotTableInfo: var_core_value_sig8E63,
+          pivotTableId: var_core_value_sig8CFB,
+          commandService: var_core_value_sigE50A,
+          unitId: var_core_value_sigA4B8,
+          subUnitId: var_core_value_sigFF9C
+        },
+        var_core_value_sigE837 = var_core_value_sigA021.droppableId;
+      if (var_core_value_sig49D9 && var_core_value_sig49D9.droppableId) {
+        let var_core_value_sig3767 = var_core_value_sig49D9.droppableId;
+        await se(var_core_value_sigE7F0, var_core_value_sig320C, var_core_value_sigE837, var_core_value_sig3767, var_core_value_sig49D9.index), await var_core_value_sig1019();
+      }
+      var_core_value_sig49D9 === null && (await ie(var_core_value_sigE7F0, var_core_value_sig320C, var_core_value_sigE837), await var_core_value_sig1019());
+    },
+    var_core_value_sig72BE = var_core_value_sig34F4 => {
+      var_core_value_sigFE26({
+        draggingId: var_core_value_sig34F4.draggableId
+      });
+    },
+    var_core_value_sig3E4A = var_core_value_sigA45D => {
+      let {
+        draggableId: var_core_value_sig1BC7,
+        destination: var_core_value_sig4956,
+        source: var_core_value_sigCC9E
+      } = var_core_value_sigA45D;
+      var_core_value_sigFE26({
+        draggingId: var_core_value_sig1BC7,
+        destination: var_core_value_sig4956,
+        source: var_core_value_sigCC9E
+      });
+    };
+  if (!var_core_value_sig7A4B || !var_core_value_sig8E63) return null;
+  let {
+    sourceList: var_core_value_sig3171,
+    rowFields: var_core_value_sigEBC4,
+    columnFields: var_core_value_sig788B,
+    filterFields: var_core_value_sig9A80,
+    valueFields: var_core_value_sig7C69,
+    sourceRange: var_core_value_sig01EF,
+    positionInfo: var_core_value_sig3603
+  } = var_core_value_sig8E63;
+  return (0, u.jsxs)("div", {
+    className: (0, i.clsx)("univer-mt-4\x20univer-flex\x20univer-h-[calc(100%-16px)]\x20univer-min-h-0\x20univer-w-full\x20univer-flex-col\x20univer-overflow-y-auto\x20univer-overflow-x-hidden", i.scrollbarClassName),
+    children: [(0, u.jsx)(zt, {
+      sourceRangeInfo: var_core_value_sig01EF,
+      pivotTableId: var_core_value_sig8CFB,
+      refreshHandler: var_core_value_sig1019,
+      positionInfo: var_core_value_sig3603
+    }), (0, u.jsxs)(At, {
+      onDragEnd: var_core_value_sig32AB,
+      onDragStart: var_core_value_sig72BE,
+      onDragUpdate: var_core_value_sig3E4A,
+      children: [(0, u.jsx)(Ht, {
+        draggingId: (var_core_value_sig520B == null ? undefined : var_core_value_sig520B.draggingId) ?? "",
+        sourceList: var_core_value_sig3171,
+        refreshHandler: var_core_value_sig1019,
+        pivotTableId: var_core_value_sig8CFB,
+        pivotTableInfo: var_core_value_sig8E63,
+        unitId: var_core_value_sigA4B8,
+        subUnitId: var_core_value_sigFF9C
+      }), (0, u.jsx)(Wt, {
+        rowFields: var_core_value_sigEBC4,
+        columnFields: var_core_value_sig788B,
+        filterFields: var_core_value_sig9A80,
+        valueFields: var_core_value_sig7C69,
+        refreshHandler: var_core_value_sig1019,
+        positionInfo: var_core_value_sig3603,
+        pivotTableId: var_core_value_sig8CFB,
+        pivotTableInfo: var_core_value_sig8E63
+      })]
+    })]
+  });
+}
+function Wt(var_core_value_sigC163) {
+  let {
+    rowFields: var_core_value_sigF5F3,
+    columnFields: var_core_value_sig5E69,
+    filterFields: var_core_value_sig7B39,
+    valueFields: var_core_value_sigDCAB,
+    refreshHandler: var_core_value_sigF569,
+    pivotTableInfo: var_core_value_sig2A9F,
+    positionInfo: var_core_value_sigB14A,
+    pivotTableId: var_core_value_sig4401
+  } = var_core_value_sigC163;
+  return (0, u.jsxs)("div", {
+    className: "univer-shrink-0",
+    "data-testid": "pivot-field-areas",
+    children: [(0, u.jsxs)("div", {
+      className: "univer-flex univer-flex-row univer-gap-4",
+      children: [(0, u.jsx)(Y, {
+        areaType: "filter",
+        items: var_core_value_sig7B39,
+        positionInfo: var_core_value_sigB14A,
+        pivotTableId: var_core_value_sig4401,
+        pivotTableInfo: var_core_value_sig2A9F,
+        refreshHandler: var_core_value_sigF569
+      }), (0, u.jsx)(Y, {
+        areaType: "column",
+        items: var_core_value_sig5E69,
+        positionInfo: var_core_value_sigB14A,
+        pivotTableId: var_core_value_sig4401,
+        pivotTableInfo: var_core_value_sig2A9F,
+        refreshHandler: var_core_value_sigF569
+      })]
+    }), (0, u.jsxs)("div", {
+      className: "univer-flex univer-flex-row univer-gap-4",
+      children: [(0, u.jsx)(Y, {
+        areaType: "row",
+        items: var_core_value_sigF5F3,
+        positionInfo: var_core_value_sigB14A,
+        pivotTableId: var_core_value_sig4401,
+        pivotTableInfo: var_core_value_sig2A9F,
+        refreshHandler: var_core_value_sigF569
+      }), (0, u.jsx)(Y, {
+        areaType: "value",
+        items: var_core_value_sigDCAB,
+        positionInfo: var_core_value_sigB14A,
+        pivotTableId: var_core_value_sig4401,
+        pivotTableInfo: var_core_value_sig2A9F,
+        refreshHandler: var_core_value_sigF569
+      })]
+    })]
+  });
+}
+function Gt(var_core_value_sig4D6A) {
+  let {
+      className: var_core_value_sigEF80,
+      unitId: var_core_value_sig526D1,
+      subUnitId: var_core_value_sigD78B,
+      pivotTableId: var_core_value_sigCB8C
+    } = var_core_value_sig4D6A,
+    [var_core_value_sigD217, var_core_value_sigEB0F] = (0, s.useState)(0),
+    var_core_value_sigDC44 = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sigDEFC = var_core_value_sigDC44.getDirection();
+  return (0, u.jsxs)("div", {
+    className: (0, i.clsx)("univer-flex univer-size-full univer-min-h-0 univer-flex-col", var_core_value_sigEF80),
+    dir: var_core_value_sigDEFC,
+    children: [(0, u.jsxs)("div", {
+      className: "univer-flex univer-shrink-0 univer-items-center univer-border-b univer-border-gray-200",
+      children: [(0, u.jsxs)("div", {
+        className: (0, i.clsx)("univer-mr-5 univer-cursor-default univer-py-4 univer-text-center univer-text-sm univer-font-semibold rtl:univer-ml-5 rtl:univer-mr-0", var_core_value_sigD217 === 0 ? "univer-text-primary-600" : "univer-text-gray-500"),
+        onClick: () => var_core_value_sigEB0F(0),
+        children: [var_core_value_sigDC44.t("sheets-pivot-ui.fieldPanel"), (0, u.jsx)("div", {
+          className: (0, i.clsx)("univer-mx-auto\x20univer-mt-2\x20univer-h-1\x20univer-w-1/2\x20univer-rounded-md", {
+            "univer-bg-primary-600": var_core_value_sigD217 === 0,
+            "univer-bg-transparent": var_core_value_sigD217 !== 0
+          })
+        })]
+      }), (0, u.jsxs)("div", {
+        className: (0, i.clsx)("univer-mr-5 univer-cursor-default univer-py-4 univer-text-center univer-text-sm univer-font-semibold rtl:univer-ml-5 rtl:univer-mr-0", {
+          "univer-text-primary-600": var_core_value_sigD217 === 1,
+          "univer-text-gray-500": var_core_value_sigD217 !== 1
+        }),
+        onClick: () => var_core_value_sigEB0F(1),
+        children: [var_core_value_sigDC44.t("sheets-pivot-ui.configPanel"), (0, u.jsx)("div", {
+          className: (0, i.clsx)("univer-mx-auto univer-mt-2 univer-h-1 univer-w-1/2 univer-rounded-md univer-bg-primary-600", {
+            "univer-bg-primary-600": var_core_value_sigD217 === 1,
+            "univer-bg-transparent": var_core_value_sigD217 !== 1
+          })
+        })]
+      })]
+    }), (0, u.jsx)("div", {
+      className: (0, i.clsx)("univer-min-h-0\x20univer-flex-1", var_core_value_sigD217 === 0 ? "univer-overflow-hidden" : "univer-overflow-auto"),
+      children: var_core_value_sigD217 === 0 ? (0, u.jsx)(Ut, {
+        ...var_core_value_sig4D6A
+      }) : (0, u.jsx)(Ct, {
+        unitId: var_core_value_sig526D1,
+        subUnitId: var_core_value_sigD78B,
+        pivotTableId: var_core_value_sigCB8C
+      })
+    })]
+  });
+}
+function Kt(var_core_value_sigE842) {
+  let {
+      unitId: var_core_value_sigA77A,
+      subUnitId: var_core_value_sig0701,
+      pivotTableId: var_core_value_sig5DCA,
+      tableFieldId: var_core_value_sigF1AB,
+      type: var_core_value_sig902F
+    } = var_core_value_sigE842,
+    var_core_value_sig6BD7 = JSON.stringify([var_core_value_sigA77A, var_core_value_sig0701, var_core_value_sig5DCA, var_core_value_sigF1AB, var_core_value_sig902F]);
+  return (0, u.jsx)(qt, {
+    ...var_core_value_sigE842
+  }, var_core_value_sig6BD7);
+}
+function qt({
+  unitId: var_core_value_sig63E0,
+  subUnitId: var_core_value_sig1B87,
+  pivotTableId: var_core_value_sig580B,
+  tableFieldId: var_core_value_sig4836,
+  type: var_core_value_sig4C06,
+  baseItems: var_core_value_sig4D56,
+  onConfirm: var_core_value_sig7C26,
+  onCancel: var_core_value_sigBC59
+}) {
+  var var_core_value_sig544E;
+  let var_core_value_sigCE8A = (0, e.useDependency)(t.SheetsPivotTableConfigModel),
+    var_core_value_sig0718 = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sig1B221 = (0, e.useObservable)(var_core_value_sig0718.direction$, var_core_value_sig0718.getDirection()),
+    var_core_value_sig8854 = Me.find(var_core_value_sig444C => var_core_value_sig444C.type === var_core_value_sig4C06),
+    var_core_value_sig5275 = var_core_value_sigCE8A.getPivotTableConfig(var_core_value_sig63E0, var_core_value_sig1B87, var_core_value_sig580B),
+    var_core_value_sig4F9D = var_core_value_sig5275 == null || (var_core_value_sig544E = var_core_value_sig5275.fieldsConfig["measure"][var_core_value_sig4836]) == null ? undefined : var_core_value_sig544E.showDataAs,
+    var_core_value_sig278E = () => {
+      var var_core_value_sigE42E;
+      if ((var_core_value_sig4F9D == null ? undefined : var_core_value_sig4F9D.type) !== var_core_value_sig4C06 || !var_core_value_sig4F9D.baseFieldId) return "";
+      if (var_core_value_sig4F9D.baseItemType === l.PivotShowAsBaseItemTypeEnum["previous"]) return "relative:previous";
+      if (var_core_value_sig4F9D.baseItemType === l.PivotShowAsBaseItemTypeEnum["next"]) return "relative:next";
+      let var_core_value_sigF039 = ((var_core_value_sigE42E = var_core_value_sig4D56[var_core_value_sig4F9D.baseFieldId]) == null ? undefined : var_core_value_sigE42E.items["indexOf"](var_core_value_sig4F9D.baseItem)) ?? -1;
+      return var_core_value_sigF039 < 0 ? "" : "item:" + var_core_value_sigF039;
+    },
+    [var_core_value_sig2921, var_core_value_sig3959] = (0, s.useState)((var_core_value_sig4F9D == null ? undefined : var_core_value_sig4F9D.type) === var_core_value_sig4C06 ? var_core_value_sig4F9D.baseFieldId : ""),
+    [var_core_value_sig926F, var_core_value_sig9414] = (0, s.useState)(var_core_value_sig278E),
+    var_core_value_sig32E7 = (0, s.useRef)(false),
+    [var_core_value_sigD8C3, var_core_value_sig3A44] = (0, s.useState)(false),
+    var_core_value_sig0642 = var_core_value_sigCE8A.getPivotTableConfig(var_core_value_sig63E0, var_core_value_sig1B87, var_core_value_sig580B),
+    var_core_value_sig786E = var_core_value_sigCE8A.getCollection(var_core_value_sig63E0, var_core_value_sig580B),
+    var_core_value_sigFC47 = var_core_value_sig0642 == null ? undefined : var_core_value_sig0642.fieldsConfig["measure"][var_core_value_sig4836],
+    var_core_value_sig48E2 = !!(var_core_value_sigFC47 && var_core_value_sig786E && (var_core_value_sig786E.fields[var_core_value_sigFC47.dataFieldId] || var_core_value_sig786E.customFields["find"](var_core_value_sigA321 => var_core_value_sigA321.id === var_core_value_sigFC47.dataFieldId))),
+    var_core_value_sig2FCA = (var_core_value_sig0642 && var_core_value_sig786E && var_core_value_sig8854 ? J(var_core_value_sig0642, var_core_value_sig786E, var_core_value_sig8854) : []).filter(var_core_value_sigBF4C => {
+      let var_core_value_sig3457 = var_core_value_sig4D56[var_core_value_sigBF4C];
+      return (var_core_value_sig8854 == null ? undefined : var_core_value_sig8854.baseItemMode) === "none" || !!(var_core_value_sig3457 && ((var_core_value_sig8854 == null ? undefined : var_core_value_sig8854.baseItemMode) === "item-or-relative" || var_core_value_sig3457.items["length"] > 0));
+    }),
+    var_core_value_sig04F2 = var_core_value_sig2FCA.map(var_core_value_sig4A08 => ({
+      label: var_core_value_sig0642.fieldsConfig["dimension"][var_core_value_sig4A08].displayName,
+      value: var_core_value_sig4A08
+    })),
+    var_core_value_sig2CFC = var_core_value_sig0642 == null ? undefined : var_core_value_sig0642.fieldsConfig["dimension"][var_core_value_sig2921],
+    var_core_value_sig5CEB = var_core_value_sig2CFC && var_core_value_sig786E && (var_core_value_sig786E.fields[var_core_value_sig2CFC.dataFieldId] ?? var_core_value_sig786E.customFields["find"](var_core_value_sig1BC4 => var_core_value_sig1BC4.id === var_core_value_sig2CFC.dataFieldId)),
+    var_core_value_sig4935 = var_core_value_sig4D56[var_core_value_sig2921],
+    var_core_value_sig1832 = (var_core_value_sig4935 == null ? undefined : var_core_value_sig4935.items["map"]((var_core_value_sig9EAB, var_core_value_sigA5C3) => {
+      let var_core_value_sig3A1E = var_core_value_sig4935.itemTypes[var_core_value_sigA5C3],
+        var_core_value_sigDC92 = var_core_value_sig9EAB;
+      return var_core_value_sig3A1E === l.PivotDataFieldDataTypeEnum["blank"] ? var_core_value_sigDC92 = var_core_value_sig0718.t("sheets-pivot-ui.dialog.filter.blank") : var_core_value_sig3A1E === l.PivotDataFieldDataTypeEnum["other"] ? var_core_value_sigDC92 = var_core_value_sig0718.t("sheets-pivot-ui.showValuesAs.other") : (var_core_value_sig3A1E === l.PivotDataFieldDataTypeEnum["date"] || var_core_value_sig3A1E === l.PivotDataFieldDataTypeEnum["number"]) && var_core_value_sig4935.format && (var_core_value_sigDC92 = n.numfmt["format"](var_core_value_sig4935.format, Number(var_core_value_sig9EAB))), {
+        label: var_core_value_sigDC92,
+        value: "item:" + var_core_value_sigA5C3,
+        itemKey: var_core_value_sig9EAB
+      };
+    })) ?? [];
+  (var_core_value_sig8854 == null ? undefined : var_core_value_sig8854.baseItemMode) === "item-or-relative" && var_core_value_sig1832.push({
+    label: var_core_value_sig0718.t("sheets-pivot-ui.showValuesAs.previous"),
+    value: "relative:previous",
+    itemKey: "",
+    itemType: l.PivotShowAsBaseItemTypeEnum["previous"]
+  }, {
+    label: var_core_value_sig0718.t("sheets-pivot-ui.showValuesAs.next"),
+    value: "relative:next",
+    itemKey: "",
+    itemType: l.PivotShowAsBaseItemTypeEnum["next"]
+  });
+  let var_core_value_sig79D7 = var_core_value_sig1832.find(var_core_value_sig3515 => var_core_value_sig3515.value === var_core_value_sig926F),
+    var_core_value_sig5E01 = !!(var_core_value_sig8854 != null && var_core_value_sig8854.baseItemMode && var_core_value_sig8854.baseItemMode !== "none"),
+    var_core_value_sigBBE4 = !!(var_core_value_sig8854 && var_core_value_sig0642 && var_core_value_sig786E && var_core_value_sig48E2 && var_core_value_sig0642.fieldsConfig["valueFields"].includes(var_core_value_sig4836) && var_core_value_sig2FCA.includes(var_core_value_sig2921) && var_core_value_sig5CEB && (!var_core_value_sig5E01 || var_core_value_sig79D7));
+  return (0, u.jsxs)("div", {
+    dir: var_core_value_sig1B221,
+    children: [(0, u.jsxs)("div", {
+      className: "univer-mb-4",
+      children: [(0, u.jsx)("div", {
+        className: "univer-mb-2\x20univer-text-sm\x20univer-font-medium",
+        children: var_core_value_sig0718.t("sheets-pivot-ui.showValuesAs.baseField")
+      }), (0, u.jsx)(i.Select, {
+        className: "univer-w-full",
+        value: var_core_value_sig2921,
+        options: var_core_value_sig04F2,
+        onChange: var_core_value_sigC2A0 => {
+          var_core_value_sig3959(var_core_value_sigC2A0), var_core_value_sig9414("");
+        }
+      })]
+    }), var_core_value_sig5E01 && (0, u.jsxs)("div", {
+      className: "univer-mb-4",
+      children: [(0, u.jsx)("div", {
+        className: "univer-mb-2 univer-text-sm univer-font-medium",
+        children: var_core_value_sig0718.t("sheets-pivot-ui.showValuesAs.baseItem")
+      }), (0, u.jsx)(i.Select, {
+        className: "univer-w-full",
+        value: var_core_value_sig926F,
+        options: var_core_value_sig1832,
+        disabled: !var_core_value_sig2921,
+        onChange: var_core_value_sig9414
+      })]
+    }), (0, u.jsxs)("div", {
+      className: "univer-flex univer-justify-end univer-gap-3",
+      children: [(0, u.jsx)(i.Button, {
+        onClick: var_core_value_sigBC59,
+        children: var_core_value_sig0718.t("sheets-pivot-ui.showValuesAs.cancel")
+      }), (0, u.jsx)(i.Button, {
+        variant: "primary",
+        disabled: !var_core_value_sigBBE4 || var_core_value_sigD8C3,
+        onClick: async () => {
+          let var_core_value_sig7C65 = var_core_value_sigCE8A.getPivotTableConfig(var_core_value_sig63E0, var_core_value_sig1B87, var_core_value_sig580B),
+            var_core_value_sig7F05 = var_core_value_sigCE8A.getCollection(var_core_value_sig63E0, var_core_value_sig580B),
+            var_core_value_sig41F3 = var_core_value_sig7C65 == null ? undefined : var_core_value_sig7C65.fieldsConfig["measure"][var_core_value_sig4836];
+          if (!var_core_value_sig8854 || !var_core_value_sig7C65 || !var_core_value_sig7F05 || !var_core_value_sig41F3 || var_core_value_sig32E7.current || !var_core_value_sig7C65.fieldsConfig["valueFields"].includes(var_core_value_sig4836) || !(var_core_value_sig7F05.fields[var_core_value_sig41F3.dataFieldId] || var_core_value_sig7F05.customFields["find"](var_core_value_sig670B => var_core_value_sig670B.id === var_core_value_sig41F3.dataFieldId)) || !J(var_core_value_sig7C65, var_core_value_sig7F05, var_core_value_sig8854).includes(var_core_value_sig2921) || var_core_value_sig5E01 && !var_core_value_sig79D7) return;
+          let var_core_value_sigF455 = {
+            type: var_core_value_sig4C06,
+            baseFieldId: var_core_value_sig2921,
+            baseItem: (var_core_value_sig79D7 == null ? undefined : var_core_value_sig79D7.itemKey) ?? ""
+          };
+          (var_core_value_sig79D7 == null ? undefined : var_core_value_sig79D7.itemType) !== undefined && (var_core_value_sigF455.baseItemType = var_core_value_sig79D7.itemType), var_core_value_sig32E7.current = true, var_core_value_sig3A44(true);
+          try {
+            await var_core_value_sig7C26(var_core_value_sigF455);
+          } catch {} finally {
+            var_core_value_sig32E7.current = false, var_core_value_sig3A44(false);
+          }
+        },
+        children: var_core_value_sig0718.t("sheets-pivot-ui.showValuesAs.ok")
+      })]
+    })]
+  });
+}
+const Jt = [{
+  id: "equal",
+  localeKey: "sheets-pivot-ui.valueFilter.equal",
+  operator: l.ST_PivotFilterOperatorEnum["valueEqual"]
+}, {
+  id: "notEqual",
+  localeKey: "sheets-pivot-ui.valueFilter.notEqual",
+  operator: l.ST_PivotFilterOperatorEnum["valueNotEqual"]
+}, {
+  id: "greaterThan",
+  localeKey: "sheets-pivot-ui.valueFilter.greaterThan",
+  operator: l.ST_PivotFilterOperatorEnum["valueGreaterThan"]
+}, {
+  id: "greaterThanOrEqual",
+  localeKey: "sheets-pivot-ui.valueFilter.greaterThanOrEqual",
+  operator: l.ST_PivotFilterOperatorEnum["valueGreaterThanOrEqual"]
+}, {
+  id: "lessThan",
+  localeKey: "sheets-pivot-ui.valueFilter.lessThan",
+  operator: l.ST_PivotFilterOperatorEnum["valueLessThan"]
+}, {
+  id: "lessThanOrEqual",
+  localeKey: "sheets-pivot-ui.valueFilter.lessThanOrEqual",
+  operator: l.ST_PivotFilterOperatorEnum["valueLessThanOrEqual"]
+}, {
+  id: "between",
+  localeKey: "sheets-pivot-ui.valueFilter.between",
+  operator: l.ST_PivotFilterOperatorEnum["valueBetween"],
+  isBetween: true
+}, {
+  id: "notBetween",
+  localeKey: "sheets-pivot-ui.valueFilter.notBetween",
+  operator: l.ST_PivotFilterOperatorEnum["valueNotBetween"],
+  isBetween: true
+}, {
+  id: "topCount",
+  localeKey: "sheets-pivot-ui.valueFilter.topCount",
+  operator: l.ST_PivotFilterOperatorEnum["count"],
+  isCount: true
+}, {
+  id: "bottomCount",
+  localeKey: "sheets-pivot-ui.valueFilter.bottomCount",
+  operator: l.ST_PivotFilterOperatorEnum["count"],
+  isBottom: true,
+  isCount: true
+}, {
+  id: "topPercent",
+  localeKey: "sheets-pivot-ui.valueFilter.topPercent",
+  operator: l.ST_PivotFilterOperatorEnum["percent"],
+  isPercent: true
+}, {
+  id: "bottomPercent",
+  localeKey: "sheets-pivot-ui.valueFilter.bottomPercent",
+  operator: l.ST_PivotFilterOperatorEnum["percent"],
+  isBottom: true,
+  isPercent: true
+}];
+function Yt(var_core_value_sig96B3) {
+  var var_core_value_sig9CF2;
+  return (var_core_value_sig96B3 == null ? undefined : var_core_value_sig96B3.operator) === l.ST_PivotFilterOperatorEnum["count"] ? var_core_value_sig96B3.isBottom ? "bottomCount" : "topCount" : (var_core_value_sig96B3 == null ? undefined : var_core_value_sig96B3.operator) === l.ST_PivotFilterOperatorEnum["percent"] ? var_core_value_sig96B3.isBottom ? "bottomPercent" : "topPercent" : ((var_core_value_sig9CF2 = Jt.find(var_core_value_sig6E78 => var_core_value_sig6E78.operator === (var_core_value_sig96B3 == null ? undefined : var_core_value_sig96B3.operator))) == null ? undefined : var_core_value_sig9CF2.id) ?? "greaterThan";
+}
+function Xt({
+  targetFieldId: var_core_value_sig666D,
+  targetFieldName: var_core_value_sigBD53,
+  valueFields: var_core_value_sigD11F,
+  defaultValueFieldId: var_core_value_sig62231,
+  currentFilter: var_core_value_sig7653,
+  onConfirm: var_core_value_sigF65B,
+  onClear: var_core_value_sig4A94,
+  onCancel: var_core_value_sigEB59
+}) {
+  let var_core_value_sigD9B0 = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sigB7D6 = (0, e.useObservable)(var_core_value_sigD9B0.direction$, var_core_value_sigD9B0.getDirection()),
+    var_core_value_sigCF1F = var_core_value_sig7653 == null ? undefined : var_core_value_sig7653.expected,
+    [var_core_value_sig4DD1, var_core_value_sig1293] = (0, s.useState)(() => {
+      let var_core_value_sigB3EE = var_core_value_sig7653 == null ? undefined : var_core_value_sig7653.valueFieldId;
+      return var_core_value_sigB3EE && var_core_value_sigD11F.some(var_core_value_sig6912 => var_core_value_sig6912.id === var_core_value_sigB3EE) ? var_core_value_sigB3EE : var_core_value_sig62231 && var_core_value_sigD11F.some(var_core_value_sigE235 => var_core_value_sigE235.id === var_core_value_sig62231) ? var_core_value_sig62231 : var_core_value_sigD11F.length === 1 ? var_core_value_sigD11F[0].id : "";
+    }),
+    [var_core_value_sigC999, var_core_value_sig9D8F] = (0, s.useState)(() => Yt(var_core_value_sig7653)),
+    [var_core_value_sig8270, var_core_value_sig95D9] = (0, s.useState)(() => Number(Array.isArray(var_core_value_sigCF1F) ? var_core_value_sigCF1F[0] : var_core_value_sigCF1F ?? 0)),
+    [var_core_value_sig0E92, var_core_value_sig45CD] = (0, s.useState)(() => Array.isArray(var_core_value_sigCF1F) ? Number(var_core_value_sigCF1F[1]) : 0),
+    var_core_value_sigAD84 = (0, s.useRef)(false),
+    [var_core_value_sigD513, var_core_value_sig36BD] = (0, s.useState)(false),
+    var_core_value_sig0413 = Jt.find(var_core_value_sigC50A => var_core_value_sigC50A.id === var_core_value_sigC999),
+    var_core_value_sig15B6 = var_core_value_sig8270 !== "" && Number.isFinite(var_core_value_sig8270),
+    var_core_value_sigFEBF = !var_core_value_sig0413.isBetween || var_core_value_sig0E92 !== "" && Number.isFinite(var_core_value_sig0E92),
+    var_core_value_sigBBA2 = !var_core_value_sig0413.isCount || Number.isInteger(var_core_value_sig8270) && Number(var_core_value_sig8270) >= 1,
+    var_core_value_sigC9A1 = !var_core_value_sig0413.isPercent || Number(var_core_value_sig8270) >= 0 && Number(var_core_value_sig8270) <= 100,
+    var_core_value_sigE469 = !!(var_core_value_sigD11F.some(var_core_value_sig11D0 => var_core_value_sig11D0.id === var_core_value_sig4DD1) && var_core_value_sig15B6 && var_core_value_sigFEBF && var_core_value_sigBBA2 && var_core_value_sigC9A1),
+    var_core_value_sigA499 = async var_core_value_sigB8ED => {
+      if (!var_core_value_sigAD84.current) {
+        var_core_value_sigAD84.current = true, var_core_value_sig36BD(true);
+        try {
+          await var_core_value_sigB8ED();
+        } catch {} finally {
+          var_core_value_sigAD84.current = false, var_core_value_sig36BD(false);
+        }
+      }
+    };
+  return (0, u.jsxs)("div", {
+    className: "univer-flex univer-flex-col univer-gap-4",
+    "data-target-field-id": var_core_value_sig666D,
+    dir: var_core_value_sigB7D6,
+    children: [(0, u.jsx)("div", {
+      className: "univer-text-sm univer-font-medium",
+      children: (0, u.jsx)("bdi", {
+        dir: "auto",
+        children: var_core_value_sigBD53
+      })
+    }), (0, u.jsxs)("label", {
+      className: "univer-flex univer-flex-col univer-gap-2 univer-text-sm",
+      children: [var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.valueField"), (0, u.jsxs)("select", {
+        className: "univer-h-8 univer-rounded univer-border univer-border-gray-200 univer-bg-white univer-px-2 dark:!univer-border-gray-500 dark:!univer-bg-gray-700",
+        "data-testid": "pivot-value-filter-value-field",
+        value: var_core_value_sig4DD1,
+        onChange: var_core_value_sig8EAE => var_core_value_sig1293(var_core_value_sig8EAE.target["value"]),
+        children: [(0, u.jsx)("option", {
+          value: "",
+          children: var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.selectValueField")
+        }), var_core_value_sigD11F.map(var_core_value_sig1CDD => (0, u.jsx)("option", {
+          value: var_core_value_sig1CDD.id,
+          children: var_core_value_sig1CDD.label
+        }, var_core_value_sig1CDD.id))]
+      })]
+    }), (0, u.jsxs)("label", {
+      className: "univer-flex univer-flex-col univer-gap-2 univer-text-sm",
+      children: [var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.condition"), (0, u.jsx)("select", {
+        className: "univer-h-8 univer-rounded univer-border univer-border-gray-200 univer-bg-white univer-px-2 dark:!univer-border-gray-500 dark:!univer-bg-gray-700",
+        "data-testid": "pivot-value-filter-rule",
+        value: var_core_value_sigC999,
+        onChange: var_core_value_sig0DB11 => var_core_value_sig9D8F(var_core_value_sig0DB11.target["value"]),
+        children: Jt.map(var_core_value_sig68A2 => (0, u.jsx)("option", {
+          value: var_core_value_sig68A2.id,
+          children: var_core_value_sigD9B0.t(var_core_value_sig68A2.localeKey)
+        }, var_core_value_sig68A2.id))
+      })]
+    }), (0, u.jsxs)("div", {
+      className: "univer-flex univer-gap-2",
+      children: [(0, u.jsx)("input", {
+        "aria-label": var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.condition"),
+        className: "univer-h-8 univer-min-w-0 univer-flex-1 univer-rounded univer-border univer-border-gray-200 univer-px-2 dark:!univer-border-gray-500",
+        "data-testid": "pivot-value-filter-expected",
+        type: "number",
+        min: var_core_value_sig0413.isCount ? 1 : var_core_value_sig0413.isPercent ? 0 : undefined,
+        max: var_core_value_sig0413.isPercent ? 100 : undefined,
+        step: var_core_value_sig0413.isCount ? 1 : undefined,
+        value: var_core_value_sig8270,
+        onChange: var_core_value_sigCC17 => var_core_value_sig95D9(var_core_value_sigCC17.target["value"] === "" ? "" : Number(var_core_value_sigCC17.target["value"]))
+      }), var_core_value_sig0413.isBetween && (0, u.jsx)("input", {
+        "aria-label": var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.condition"),
+        className: "univer-h-8 univer-min-w-0 univer-flex-1 univer-rounded univer-border univer-border-gray-200 univer-px-2 dark:!univer-border-gray-500",
+        "data-testid": "pivot-value-filter-expected",
+        type: "number",
+        value: var_core_value_sig0E92,
+        onChange: var_core_value_sig32AE => var_core_value_sig45CD(var_core_value_sig32AE.target["value"] === "" ? "" : Number(var_core_value_sig32AE.target["value"]))
+      })]
+    }), (0, u.jsxs)("div", {
+      className: "univer-flex univer-justify-between univer-gap-3",
+      children: [(0, u.jsx)(i.Button, {
+        "data-testid": "pivot-value-filter-clear",
+        disabled: var_core_value_sigD513,
+        onClick: () => var_core_value_sigA499(var_core_value_sig4A94),
+        children: var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.clear")
+      }), (0, u.jsxs)("div", {
+        className: "univer-flex\x20univer-gap-3",
+        children: [(0, u.jsx)(i.Button, {
+          disabled: var_core_value_sigD513,
+          onClick: var_core_value_sigEB59,
+          children: var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.cancel")
+        }), (0, u.jsx)(i.Button, {
+          "data-testid": "pivot-value-filter-confirm",
+          variant: "primary",
+          disabled: !var_core_value_sigE469 || var_core_value_sigD513,
+          onClick: () => var_core_value_sigA499(async () => {
+            if (!var_core_value_sigE469) return;
+            let var_core_value_sig7664 = {
+              operator: var_core_value_sig0413.operator,
+              expected: var_core_value_sig0413.isBetween ? [Number(var_core_value_sig8270), Number(var_core_value_sig0E92)] : Number(var_core_value_sig8270),
+              valueFieldId: var_core_value_sig4DD1
+            };
+            var_core_value_sig0413.isBottom && (var_core_value_sig7664.isBottom = true), await var_core_value_sigF65B(var_core_value_sig7664);
+          }),
+          children: var_core_value_sigD9B0.t("sheets-pivot-ui.valueFilter.ok")
+        })]
+      })]
+    })]
+  });
+}
+function Zt(var_core_value_sig4CC3) {
+  let {
+      pivotTableId: var_core_value_sig70B3,
+      tableFieldId: var_core_value_sig422B,
+      closeFn: var_core_value_sig1038,
+      unitId: var_core_value_sigC3E6,
+      subUnitId: var_core_value_sig3710,
+      format: var_core_value_sig9726,
+      tableFieldInfo: var_core_value_sigFC9B,
+      dataFieldInfo: var_core_value_sig943E,
+      version: var_core_value_sigEF36
+    } = var_core_value_sig4CC3,
+    [var_core_value_sigD4B1, var_core_value_sigE5D8] = (0, s.useState)(var_core_value_sigFC9B.displayName),
+    [var_core_value_sig74AF, var_core_value_sigBABA] = (0, s.useState)(var_core_value_sigFC9B.subTotalType),
+    var_core_value_sigA723 = (0, e.useDependency)(n.LocaleService),
+    var_core_value_sig991C = (0, e.useDependency)(n.ICommandService),
+    var_core_value_sigF909 = (0, e.useDependency)(e.IDialogService),
+    var_core_value_sigDD0E = {
+      ...(0, e.useDependency)(t.SheetsPivotTableConfigModel).getTextInfo()
+    };
+  for (let var_core_value_sigC753 of ["sheets-pivot-ui.averageName", "sheets-pivot-ui.countName", "sheets-pivot-ui.countNumsName", "sheets-pivot-ui.maxName", "sheets-pivot-ui.minName", "sheets-pivot-ui.productName", "sheets-pivot-ui.stdDevName", "sheets-pivot-ui.stdDevpName", "sheets-pivot-ui.sumName", "sheets-pivot-ui.varName", "sheets-pivot-ui.varpName"]) var_core_value_sigDD0E[var_core_value_sigC753] = var_core_value_sigA723.t(var_core_value_sigC753);
+  if ((0, s.useEffect)(() => {
+    var_core_value_sigE5D8(var_core_value_sigFC9B.displayName), var_core_value_sigBABA(var_core_value_sigFC9B.subTotalType);
+  }, [var_core_value_sigEF36]), !var_core_value_sigFC9B || !var_core_value_sig943E) return;
+  let var_core_value_sigF2A0 = var_core_value_sig943E.name,
+    var_core_value_sig116F = var_core_value_sigA723.getDirection(),
+    var_core_value_sigA64C = var_core_value_sig9726 ?? var_core_value_sigFC9B.format,
+    var_core_value_sigAF94 = fe.map(var_core_value_sigFFD1 => ({
+      value: "" + var_core_value_sigFFD1.type,
+      type: var_core_value_sigFFD1.type,
+      label: var_core_value_sigA723.t(var_core_value_sigFFD1.textKey)
+    })),
+    var_core_value_sig1E9F = var_core_value_sig81AE => {
+      let var_core_value_sigF79F = var_core_value_sig81AE;
+      if (Array.isArray(var_core_value_sig81AE) && (var_core_value_sigF79F = var_core_value_sig81AE[0]), var_core_value_sigF79F !== undefined) {
+        let var_core_value_sig2281 = Number(var_core_value_sigF79F);
+        var_core_value_sigBABA(var_core_value_sig2281), Ce(var_core_value_sigF2A0, var_core_value_sigD4B1, var_core_value_sigDD0E) && var_core_value_sigE5D8(we(var_core_value_sigF2A0, var_core_value_sigDD0E, var_core_value_sig2281));
+      }
+    };
+  return (0, u.jsxs)("div", {
+    dir: var_core_value_sig116F,
+    children: [(0, u.jsxs)("div", {
+      className: "univer-flex univer-items-center univer-justify-between univer-self-stretch univer-leading-5",
+      children: [(0, u.jsx)("span", {
+        className: "univer-text-sm univer-font-medium univer-leading-5 univer-text-gray-900",
+        children: var_core_value_sigA723.t("sheets-pivot-ui.dialog.fieldName")
+      }), (0, u.jsx)("span", {
+        className: "univer-text-xs univer-leading-4 univer-text-gray-600",
+        children: ee(var_core_value_sigA723.t("sheets-pivot-ui.dialog.sourceName"), var_core_value_sigF2A0)
+      })]
+    }), (0, u.jsx)("div", {
+      children: (0, u.jsx)(i.Input, {
+        className: "univer-mb-5 univer-mt-2 univer-box-border univer-h-8 univer-w-full univer-rounded-md univer-py-1.5 univer-text-sm univer-leading-5",
+        value: var_core_value_sigD4B1,
+        onChange: var_core_value_sig0E54 => var_core_value_sigE5D8(var_core_value_sig0E54)
+      })
+    }), (0, u.jsx)("label", {
+      className: "univer-mb-2\x20univer-text-sm\x20univer-font-medium\x20univer-text-gray-900\x20dark:!univer-text-gray-0",
+      children: var_core_value_sigA723.t("sheets-pivot-ui.dialog.summarizeBy")
+    }), (0, u.jsx)("div", {
+      className: (0, i.clsx)("univer-h-40\x20univer-flex-1\x20univer-overflow-y-auto\x20univer-rounded-lg", i.borderClassName, i.scrollbarClassName),
+      children: var_core_value_sigAF94.map(var_core_value_sig3B17 => (0, u.jsxs)("div", {
+        className: "univer-flex univer-items-center univer-gap-1.5 univer-self-stretch univer-rounded-md univer-px-2 univer-py-1.5 univer-text-sm univer-capitalize univer-leading-5",
+        onClick: () => var_core_value_sig1E9F(var_core_value_sig3B17.value),
+        children: [(0, u.jsx)("span", {
+          className: "univer-w-4 univer-text-base univer-text-primary-600",
+          children: (0, u.jsx)(m.CheckMarkIcon, {
+            className: (0, i.clsx)({
+              "univer-hidden": var_core_value_sig74AF !== var_core_value_sig3B17.type
+            })
+          })
+        }), (0, u.jsx)("span", {
+          children: var_core_value_sig3B17.label
+        })]
+      }, var_core_value_sig3B17.type))
+    }), (0, u.jsx)("footer", {
+      className: "univer-mt-5",
+      children: (0, u.jsxs)(i.ActionRow, {
+        className: "univer-flex\x20univer-items-center\x20univer-justify-between\x20univer-self-stretch",
+        children: [(0, u.jsx)(i.Button, {
+          className: "univer-flex univer-h-8 univer-cursor-pointer univer-items-center univer-justify-center univer-gap-1.5 univer-rounded univer-border-none univer-bg-gray-0 univer-px-3 univer-text-primary-600",
+          onClick: () => {
+            let var_core_value_sig6C4A = {
+              id: S,
+              draggable: true,
+              mask: false,
+              maskClosable: false,
+              width: 400,
+              children: {
+                label: C,
+                unitId: var_core_value_sigC3E6,
+                subUnitId: var_core_value_sig3710,
+                pivotTableId: var_core_value_sig70B3,
+                tableFieldId: var_core_value_sig422B,
+                originPattern: var_core_value_sigA64C,
+                tableFieldInfo: var_core_value_sigFC9B,
+                dataFieldInfo: var_core_value_sig943E
+              },
+              dialogStyles: {
+                header: {
+                  padding: "20px 24px 0",
+                  height: 0
+                },
+                body: {
+                  padding: "0 24px 20px"
+                }
+              },
+              closable: false,
+              onClose: () => {
+                var_core_value_sigF909.close(S);
+              }
+            };
+            var_core_value_sigF909.open(var_core_value_sig6C4A);
+          },
+          children: var_core_value_sigA723.t("sheets-pivot-ui.dialog.format")
+        }), (0, u.jsxs)(i.ActionRow, {
+          className: "univer-flex univer-flex-1 univer-gap-2 univer-text-sm rtl:univer-flex-row-reverse",
+          children: [(0, u.jsx)(i.Button, {
+            onClick: () => {
+              var_core_value_sig1038 && var_core_value_sig1038();
+            },
+            children: var_core_value_sigA723.t("sheets-pivot-ui.dialog.cancel")
+          }), (0, u.jsx)(i.Button, {
+            variant: "primary",
+            disabled: var_core_value_sigD4B1 === "",
+            onClick: () => {
+              let var_core_value_sig73D9 = var_core_value_sigFC9B.displayName,
+                var_core_value_sigEAF8 = var_core_value_sigFC9B.subTotalType,
+                var_core_value_sig0455 = var_core_value_sigFC9B.format,
+                var_core_value_sig737C = var_core_value_sig73D9 === var_core_value_sigD4B1 ? undefined : var_core_value_sigD4B1,
+                var_core_value_sig5AF5 = var_core_value_sigEAF8 === var_core_value_sig74AF ? undefined : var_core_value_sig74AF,
+                var_core_value_sig9DE4 = var_core_value_sig0455 === var_core_value_sigA64C ? undefined : var_core_value_sigA64C;
+              if (var_core_value_sig73D9 !== var_core_value_sigD4B1 || var_core_value_sigEAF8 !== var_core_value_sig74AF || var_core_value_sig0455 !== var_core_value_sig9DE4) {
+                let var_core_value_sig5E86 = {
+                  displayName: var_core_value_sig737C,
+                  subtotalType: var_core_value_sig5AF5,
+                  format: var_core_value_sig9DE4,
+                  tableFieldId: var_core_value_sig422B,
+                  pivotTableId: var_core_value_sig70B3,
+                  unitId: var_core_value_sigC3E6,
+                  subUnitId: var_core_value_sig3710,
+                  tableFieldInfo: var_core_value_sigFC9B,
+                  dataFieldInfo: var_core_value_sig943E
+                };
+                var_core_value_sig991C.executeCommand(t.UpdatePivotFieldSettingCommand["id"], var_core_value_sig5E86);
+              }
+              var_core_value_sig1038 && var_core_value_sig1038();
+            },
+            children: var_core_value_sigA723.t("sheets-pivot-ui.dialog.ok")
+          })]
+        })]
+      })
+    })]
+  });
+}
+let X = class extends n.Disposable {
+  constructor(var_core_value_sig77FA, var_core_value_sigA4A7) {
+    super(), this._componentManager = var_core_value_sig77FA, this._iconManager = var_core_value_sigA4A7, this._registerComponents(), this._registerIcons();
+  }
+  _registerComponents() {
+    [[G.componentKey, G], [_, Gt], [y, pt], [x, Zt], [C, yt], [T, Kt], [E, Xt]].forEach(([var_core_value_sig6998, var_core_value_sigF639]) => {
+      this.disposeWithMe(this._componentManager["register"](var_core_value_sig6998, var_core_value_sigF639));
+    });
+  }
+  _registerIcons() {
+    this.disposeWithMe(this._iconManager["register"]({
+      PivotTableIcon: m.PivotTableIcon
+    }));
+  }
+};
+X = P([N(0, (0, n.Inject)(e.ComponentManager)), N(1, (0, n.Inject)(e.IconManager))], X);
+let Z = class extends n.Disposable {
+  constructor(var_core_value_sigA4DF, var_core_value_sigCC9D, var_core_value_sig90F5, var_core_value_sigD2BA, var_core_value_sigCD3A, var_core_value_sig519D, var_core_value_sigC7E7) {
+    var var_core_value_sig6E1C;
+    super(), this._localeService = var_core_value_sigA4DF, this._sheetInterceptorService = var_core_value_sigCC9D, this._injector = var_core_value_sig90F5, this._confirmService = var_core_value_sigD2BA, this._sheetsPivotTableService = var_core_value_sigCD3A, this._configService = var_core_value_sig519D, this._sheetPermissionCheckController = var_core_value_sigC7E7, M(this, "_defaultOverride", false), this._initUIInterceptListener(), this._defaultOverride = ((var_core_value_sig6E1C = this._configService["getConfig"](t.SHEETS_PIVOT_PLUGIN_CONFIG_KEY)) == null ? undefined : var_core_value_sig6E1C.defaultOverride) ?? false;
+  }
+  _getPivotAppliedRanges(var_core_value_sigFABC, var_core_value_sig413D, var_core_value_sig5BCE) {
+    return (0, t.getPivotAppliedRanges)(var_core_value_sigFABC, var_core_value_sig413D, var_core_value_sig5BCE, this._localeService["getDirection"]());
+  }
+  _initUIInterceptListener() {
+    this._sheetsPivotTableService["asyncInterceptor"].interceptAsync(this._sheetsPivotTableService["asyncInterceptor"].getInterceptPoints().PIVOT_PERFORM_CHECK, {
+      handler: async (var_core_value_sigEAE5, var_core_value_sigE94C) => {
+        let {
+            cellInfo: var_core_value_sig6D47,
+            view: var_core_value_sigCB82,
+            isEmpty: var_core_value_sigCF4E
+          } = var_core_value_sigE94C,
+          {
+            unitId: var_core_value_sig6CAD,
+            subUnitId: var_core_value_sig8CF5
+          } = var_core_value_sig6D47,
+          var_core_value_sigDDD7 = this._getPivotAppliedRanges(var_core_value_sig6D47, var_core_value_sigCB82, var_core_value_sigCF4E);
+        if (!(0, r.checkRangesEditablePermission)(this._injector, var_core_value_sig6CAD, var_core_value_sig8CF5, var_core_value_sigDDD7)) {
+          let var_core_value_sig2D58 = this._localeService["t"]("sheets-pivot-ui.msg.permissionError");
+          this._sheetPermissionCheckController["blockExecuteWithoutPermission"](var_core_value_sig2D58);
+        }
+        let var_core_value_sigB2CE = this._sheetInterceptorService["generateMutationsByRanges"]({
+            unitId: var_core_value_sig6CAD,
+            subUnitId: var_core_value_sig8CF5,
+            ranges: var_core_value_sigDDD7
+          }),
+          var_core_value_sig443C = (0, t.generateSetRangeValueMutations)(this._injector, var_core_value_sig6CAD, var_core_value_sig8CF5, var_core_value_sigDDD7);
+        if (var_core_value_sigB2CE.redos["length"] || var_core_value_sig443C.shouldClear) {
+          if (this._defaultOverride) return Promise.resolve(true);
+          {
+            let var_core_value_sig5CEE = await this._confirmService["confirm"]({
+              id: "sheet-pivot.confirm.add-sheet-pivot",
+              title: {
+                title: this._localeService["t"]("sheets-pivot-ui.perform.tips")
+              },
+              children: {
+                title: this._localeService["t"]("sheets-pivot-ui.perform.info")
+              },
+              cancelText: this._localeService["t"]("sheets-pivot-ui.perform.cancel"),
+              confirmText: this._localeService["t"]("sheets-pivot-ui.perform.confirm")
+            });
+            return Promise.resolve(var_core_value_sig5CEE);
+          }
+        }
+        return Promise.resolve(true);
+      }
+    });
+  }
+};
+Z = P([N(0, (0, n.Inject)(n.LocaleService)), N(1, (0, n.Inject)(r.SheetInterceptorService)), N(2, (0, n.Inject)(n.Injector)), N(3, (0, n.Inject)(n.IConfirmService)), N(4, (0, n.Inject)(t.SheetsPivotTableService)), N(5, (0, n.Inject)(n.IConfigService)), N(6, (0, n.Inject)(r.SheetPermissionCheckController))], Z);
+let Qt = class extends n.Disposable {
+  constructor(var_core_value_sig8EF01, var_core_value_sig78AC, var_core_value_sig4CEF) {
+    super(), this._univerInstanceService = var_core_value_sig8EF01, this._sheetsPivotTableAdaptorModel = var_core_value_sig78AC, this._sheetClipboardService = var_core_value_sig4CEF, this._initialize();
+  }
+  _initialize() {
+    let var_core_value_sigD57D = this,
+      var_core_value_sig2CC7,
+      var_core_value_sig4784;
+    this.disposeWithMe(this._sheetClipboardService["addClipboardHook"]({
+      id: t.SHEET_PIVOT_TABLE_PLUGIN,
+      onBeforeCopy(var_core_value_sig39B1, var_core_value_sig210D) {
+        let var_core_value_sigB4B4 = var_core_value_sigD57D._univerInstanceService["getUnit"](var_core_value_sig39B1, n.UniverInstanceType["UNIVER_SHEET"]);
+        var_core_value_sigB4B4 && (var_core_value_sig2CC7 = var_core_value_sigD57D._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](var_core_value_sig39B1, var_core_value_sig210D), var_core_value_sig4784 = var_core_value_sigB4B4.getStyles());
+      },
+      onAfterCopy() {
+        var_core_value_sig2CC7 = null, var_core_value_sig4784 = null;
+      },
+      getCellValueBySpecialMatrix(var_core_value_sigD407, var_core_value_sig63F3) {
+        if (!var_core_value_sig2CC7) return;
+        let var_core_value_sig6A71 = var_core_value_sig2CC7 == null ? undefined : var_core_value_sig2CC7.getValue(var_core_value_sigD407, var_core_value_sig63F3);
+        if (var_core_value_sig6A71) {
+          var var_core_value_sig3BF6;
+          return {
+            ...var_core_value_sig6A71,
+            s: var_core_value_sig4784 == null ? undefined : var_core_value_sig4784.get(var_core_value_sig6A71.s),
+            displayV: ((var_core_value_sig3BF6 = var_core_value_sig6A71.v) == null ? undefined : var_core_value_sig3BF6.toString()) || ""
+          };
+        }
+      }
+    }));
+  }
+};
+Qt = P([N(0, (0, n.Inject)(n.IUniverInstanceService)), N(1, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(2, d.ISheetClipboardService)], Qt);
+const $t = [r.InsertRowCommand["id"], r.RemoveColCommand["id"], r.RemoveRowCommand["id"], r.InsertColCommand["id"]];
+let en = class extends n.Disposable {
+  constructor(var_core_value_sigC39E, var_core_value_sig16C7, var_core_value_sig7481, var_core_value_sig08A3, var_core_value_sig77D8, var_core_value_sig78A3, var_core_value_sig649B, var_core_value_sig6256, var_core_value_sigE7A6) {
+    var var_core_value_sigB505;
+    super(), this._injector = var_core_value_sigC39E, this._univerInstanceService = var_core_value_sig16C7, this._sheetsPivotTableAdaptorModel = var_core_value_sig7481, this._sheetInterceptorService = var_core_value_sig08A3, this._confirmService = var_core_value_sig77D8, this._localeService = var_core_value_sig78A3, this._sheetsPivotTableConfigModel = var_core_value_sig649B, this._messageService = var_core_value_sig6256, this._configService = var_core_value_sigE7A6, M(this, "_defaultOverride", false), this._initMoveRangeConfirmCheck(), this._initRowColOperationCheck(), this._defaultOverride = ((var_core_value_sigB505 = this._configService["getConfig"](t.SHEETS_PIVOT_PLUGIN_CONFIG_KEY)) == null ? undefined : var_core_value_sigB505.defaultOverride) ?? false;
+  }
+  _initMoveRangeConfirmCheck() {
+    this.disposeWithMe(this._sheetInterceptorService["interceptBeforeCommand"]({
+      performCheck: async var_core_value_sig38CE => {
+        if (var_core_value_sig38CE.id === r.MoveRangeCommand["id"]) {
+          let var_core_value_sig223F = (0, r.getSheetCommandTarget)(this._univerInstanceService);
+          if (!var_core_value_sig223F) return Promise.resolve(false);
+          let {
+              unitId: var_core_value_sigD749,
+              subUnitId: var_core_value_sigCFFA
+            } = var_core_value_sig223F,
+            {
+              fromRange: var_core_value_sig58C1,
+              toRange: var_core_value_sig5090
+            } = var_core_value_sig38CE.params,
+            var_core_value_sigC368 = this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](var_core_value_sigD749, var_core_value_sigCFFA);
+          if (!(var_core_value_sigC368 != null && var_core_value_sigC368.size)) return Promise.resolve(true);
+          for (let [var_core_value_sigE92A, var_core_value_sig362B] of var_core_value_sigC368) {
+            let {
+                targetCellInfo: var_core_value_sig186C
+              } = var_core_value_sig362B,
+              {
+                row: var_core_value_sigD955,
+                col: var_core_value_sig48BD
+              } = var_core_value_sig186C,
+              var_core_value_sig429F = var_core_value_sigD955 - var_core_value_sig58C1.startRow,
+              var_core_value_sigF62A = var_core_value_sig48BD - var_core_value_sig58C1.startColumn,
+              var_core_value_sig8178 = {
+                row: var_core_value_sig5090.startRow + var_core_value_sig429F,
+                col: var_core_value_sig5090.startColumn + var_core_value_sigF62A
+              },
+              var_core_value_sigE9ED = var_core_value_sig8178.row - var_core_value_sig186C.row,
+              var_core_value_sigB577 = var_core_value_sig8178.col - var_core_value_sig186C.col,
+              var_core_value_sig9572 = this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sigE92A),
+              var_core_value_sigD873 = var_core_value_sig9572 == null ? undefined : var_core_value_sig9572.rangesInfo;
+            if (!var_core_value_sigD873) return Promise.resolve(true);
+            let var_core_value_sigA12B = [];
+            Object.keys(var_core_value_sigD873).forEach(var_core_value_sigC9E0 => {
+              var_core_value_sigD873[var_core_value_sigC9E0].forEach(var_core_value_sigBC46 => {
+                let var_core_value_sig3D7D = {
+                  ...var_core_value_sigBC46
+                };
+                var_core_value_sig3D7D.startRow = var_core_value_sigBC46.startRow + var_core_value_sigE9ED, var_core_value_sig3D7D.endRow = var_core_value_sigBC46.endRow + var_core_value_sigE9ED, var_core_value_sig3D7D.startColumn = var_core_value_sigBC46.startColumn + var_core_value_sigB577, var_core_value_sig3D7D.endColumn = var_core_value_sigBC46.endColumn + var_core_value_sigB577, var_core_value_sigA12B.push(var_core_value_sig3D7D);
+              });
+            });
+            let var_core_value_sigF230 = this._sheetInterceptorService["generateMutationsByRanges"]({
+                unitId: var_core_value_sigD749,
+                subUnitId: var_core_value_sigCFFA,
+                ranges: var_core_value_sigA12B
+              }),
+              var_core_value_sig09B8 = (0, t.generateSetRangeValueMutations)(this._injector, var_core_value_sigD749, var_core_value_sigCFFA, var_core_value_sigA12B);
+            if (var_core_value_sigF230.redos["length"] || var_core_value_sig09B8.shouldClear) {
+              if (this._defaultOverride) return Promise.resolve(true);
+              {
+                let var_core_value_sig27E5 = await this._confirmService["confirm"]({
+                  id: "sheet-pivot.confirm.add-sheet-pivot",
+                  title: {
+                    title: this._localeService["t"]("sheets-pivot-ui.perform.tips")
+                  },
+                  children: {
+                    title: this._localeService["t"]("sheets-pivot-ui.perform.info")
+                  },
+                  cancelText: this._localeService["t"]("sheets-pivot-ui.perform.cancel"),
+                  confirmText: this._localeService["t"]("sheets-pivot-ui.perform.confirm")
+                });
+                return Promise.resolve(var_core_value_sig27E5);
+              }
+            }
+          }
+        }
+        return Promise.resolve(true);
+      }
+    }));
+  }
+  _initRowColOperationCheck() {
+    this.disposeWithMe(this._sheetInterceptorService["interceptBeforeCommand"]({
+      performCheck: async var_core_value_sig62B7 => {
+        if ($t.includes(var_core_value_sig62B7.id)) {
+          let var_core_value_sigAD561 = var_core_value_sig62B7.params,
+            {
+              range: var_core_value_sigDB4A
+            } = var_core_value_sigAD561,
+            var_core_value_sig6418 = (0, r.getSheetCommandTarget)(this._univerInstanceService),
+            var_core_value_sig1896 = var_core_value_sigAD561.unitId || (var_core_value_sig6418 == null ? undefined : var_core_value_sig6418.unitId),
+            var_core_value_sig0285 = var_core_value_sigAD561.subUnitId || (var_core_value_sig6418 == null ? undefined : var_core_value_sig6418.subUnitId);
+          if (!var_core_value_sig1896 || !var_core_value_sig0285) return Promise.resolve(true);
+          let var_core_value_sig777D = this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](var_core_value_sig1896, var_core_value_sig0285);
+          if (var_core_value_sig777D != null && var_core_value_sig777D.size) for (let [var_core_value_sig5CA5, var_core_value_sigE90F] of var_core_value_sig777D) {
+            let var_core_value_sig6F91 = this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](var_core_value_sig1896, var_core_value_sig0285, var_core_value_sig5CA5);
+            if (var_core_value_sig6F91 != null && var_core_value_sig6F91.rangesInfo) {
+              for (let var_core_value_sig8061 of Object.keys(var_core_value_sig6F91.rangesInfo)) if (var_core_value_sig6F91.rangesInfo[var_core_value_sig8061].some(var_core_value_sig2AD8 => n.Rectangle["intersects"](var_core_value_sig2AD8, var_core_value_sigDB4A))) return this._messageService["show"]({
+                type: i.MessageType["Error"],
+                content: this._localeService["t"]("sheets-pivot-ui.perform.rowColError")
+              }), Promise.resolve(false);
+            }
+          }
+        }
+        return Promise.resolve(true);
+      }
+    }));
+  }
+};
+en = P([N(0, (0, n.Inject)(n.Injector)), N(1, (0, n.Inject)(n.IUniverInstanceService)), N(2, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(3, (0, n.Inject)(r.SheetInterceptorService)), N(4, (0, n.Inject)(n.IConfirmService)), N(5, (0, n.Inject)(n.LocaleService)), N(6, (0, n.Inject)(t.SheetsPivotTableConfigModel)), N(7, (0, n.Inject)(e.IMessageService)), N(8, (0, n.Inject)(n.IConfigService))], en);
+const tn = [h.InsertTextCommand["id"], g.IMEInputCommand["id"], d.SetCellEditVisibleOperation["id"]];
+let nn = class extends n.Disposable {
+  constructor(var_core_value_sig7428, var_core_value_sig1DCE, var_core_value_sig0567, var_core_value_sigA7F3, var_core_value_sigEACD, var_core_value_sig901E) {
+    super(), this._sheetsSelectionsService = var_core_value_sig7428, this._univerInstanceService = var_core_value_sig1DCE, this._sheetsPivotTableAdaptorModel = var_core_value_sig0567, this._commandService = var_core_value_sigA7F3, this._sheetsPivotTableConfigModel = var_core_value_sigEACD, this._localeService = var_core_value_sig901E, this._initEditListener();
+  }
+  _initEditListener() {
+    this.disposeWithMe(this._commandService["beforeCommandExecuted"](var_core_value_sig37A8 => {
+      if (tn.includes(var_core_value_sig37A8.id)) {
+        var var_core_value_sigA90D;
+        let var_core_value_sig3F4C = (var_core_value_sigA90D = this._sheetsSelectionsService["getCurrentLastSelection"]()) == null ? undefined : var_core_value_sigA90D.primary;
+        if (!var_core_value_sig3F4C) return;
+        let {
+            actualRow: var_core_value_sigD65A,
+            actualColumn: var_core_value_sig5A13
+          } = var_core_value_sig3F4C,
+          var_core_value_sigF593 = (0, n.cellToRange)(var_core_value_sigD65A, var_core_value_sig5A13),
+          var_core_value_sig3607 = (0, r.getSheetCommandTarget)(this._univerInstanceService, var_core_value_sig37A8.params);
+        if (!var_core_value_sig3607) return;
+        let {
+            unitId: var_core_value_sigB512,
+            subUnitId: var_core_value_sigF2E6
+          } = var_core_value_sig3607,
+          var_core_value_sig34C8 = this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](var_core_value_sigB512, var_core_value_sigF2E6);
+        if (var_core_value_sig34C8 != null && var_core_value_sig34C8.size) for (let [var_core_value_sigEFD4] of var_core_value_sig34C8) {
+          let var_core_value_sigF9C7 = this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](var_core_value_sigB512, var_core_value_sigF2E6, var_core_value_sigEFD4);
+          if (var_core_value_sigF9C7 != null && var_core_value_sigF9C7.rangesInfo) {
+            for (let var_core_value_sig4D4C of Object.keys(var_core_value_sigF9C7.rangesInfo)) if (var_core_value_sigF9C7.rangesInfo[var_core_value_sig4D4C].some(var_core_value_sig2AD0 => n.Rectangle["intersects"](var_core_value_sig2AD0, var_core_value_sigF593))) throw new n["CustomCommandExecutionError"](this._localeService["t"]("sheets-pivot-ui.msg.editCellError"));
+          }
+        }
+      }
+    }));
+  }
+};
+nn = P([N(0, (0, n.Inject)(r.SheetsSelectionsService)), N(1, (0, n.Inject)(n.IUniverInstanceService)), N(2, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(3, (0, n.Inject)(n.ICommandService)), N(4, (0, n.Inject)(t.SheetsPivotTableConfigModel)), N(5, (0, n.Inject)(n.LocaleService))], nn);
+let rn = class extends n.Disposable {
+  constructor(var_core_value_sigF7BB) {
+    super(), this._menuManagerService = var_core_value_sigF7BB, this._initMenu();
+  }
+  _initMenu() {
+    this._menuManagerService["mergeMenu"](lt);
+  }
+};
+rn = P([N(0, e.IMenuManagerService)], rn);
+let an = class extends n.Disposable {
+  constructor(var_core_value_sigFA38, var_core_value_sig102B, var_core_value_sigA7DB, var_core_value_sig5EEE) {
+    super(), this._sheetsPivotTableAdaptorModel = var_core_value_sigFA38, this._formatPainterService = var_core_value_sig102B, this._messageService = var_core_value_sigA7DB, this._localeService = var_core_value_sig5EEE, this._initFormatPainterListener();
+  }
+  _initFormatPainterListener() {
+    let var_core_value_sig65B4 = this._sheetsPivotTableAdaptorModel,
+      var_core_value_sigF98E = this._messageService,
+      var_core_value_sigA470 = this._localeService;
+    this._formatPainterService["addHook"]({
+      id: "pivot-format-painter-hook",
+      onBeforeApply(var_core_value_sig7A3C) {
+        let {
+          redoMutationsInfo: var_core_value_sig0511
+        } = var_core_value_sig7A3C;
+        for (let var_core_value_sigB744 of var_core_value_sig0511) if (var_core_value_sigB744.id === r.AddWorksheetMergeMutation["id"]) {
+          let {
+            unitId: var_core_value_sig861B,
+            subUnitId: var_core_value_sig5237,
+            ranges: var_core_value_sigBB00
+          } = var_core_value_sigB744.params;
+          for (let var_core_value_sig8895 of var_core_value_sigBB00) if (var_core_value_sig65B4.getIntersectsPivotTable(var_core_value_sig861B, var_core_value_sig5237, var_core_value_sig8895).length > 0) return var_core_value_sigF98E.show({
+            type: i.MessageType["Error"],
+            content: var_core_value_sigA470.t("sheets-pivot-ui.msg.mergeCellError")
+          }), false;
+        }
+        return true;
+      }
+    });
+  }
+};
+an = P([N(0, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(1, (0, n.Inject)(d.IFormatPainterService)), N(2, (0, n.Inject)(e.IMessageService)), N(3, (0, n.Inject)(n.LocaleService))], an);
+let on = class extends n.Disposable {
+  constructor(var_core_value_sig19A1, var_core_value_sig81F7, var_core_value_sigBE51) {
+    super(), this._sheetPrintInterceptorService = var_core_value_sig19A1, this._sheetsPivotTableAdaptorModel = var_core_value_sig81F7, this._sheetsPivotTableConfigModel = var_core_value_sigBE51, this._initPrintArea();
+  }
+  _initPrintArea() {
+    this.disposeWithMe(this._sheetPrintInterceptorService["interceptor"].intercept(this._sheetPrintInterceptorService["interceptor"].getInterceptPoints().PRINTING_RANGE, {
+      handler: (var_core_value_sig1F44, var_core_value_sigCB04, var_core_value_sig947E) => {
+        let {
+            unitId: var_core_value_sig4545,
+            subUnitId: var_core_value_sigF39A
+          } = var_core_value_sigCB04,
+          var_core_value_sigF79C = (var_core_value_sig1F44 == null ? undefined : var_core_value_sig1F44.startRow) ?? 1 / 0,
+          var_core_value_sig2E54 = (var_core_value_sig1F44 == null ? undefined : var_core_value_sig1F44.endRow) ?? -1 / 0,
+          var_core_value_sig7658 = (var_core_value_sig1F44 == null ? undefined : var_core_value_sig1F44.startColumn) ?? 1 / 0,
+          var_core_value_sigDCF5 = (var_core_value_sig1F44 == null ? undefined : var_core_value_sig1F44.endColumn) ?? -1 / 0,
+          var_core_value_sigC786 = this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](var_core_value_sig4545, var_core_value_sigF39A);
+        if (!var_core_value_sigC786) return var_core_value_sig947E(var_core_value_sig1F44);
+        for (let [var_core_value_sigEAE2, var_core_value_sigE68A] of var_core_value_sigC786) {
+          var var_core_value_sigC0D9;
+          let var_core_value_sig7E54 = (var_core_value_sigC0D9 = this._sheetsPivotTableAdaptorModel["getPivotItemRenderInfoCache"](var_core_value_sig4545, var_core_value_sigF39A, var_core_value_sigEAE2)) == null ? undefined : var_core_value_sigC0D9.rangesInfo;
+          var_core_value_sig7E54 && Object.values(var_core_value_sig7E54).forEach(var_core_value_sigC80B => {
+            var_core_value_sigC80B.forEach(var_core_value_sig76BA => {
+              let {
+                startRow: var_core_value_sigFBFA,
+                endRow: var_core_value_sigF602,
+                startColumn: var_core_value_sig1BBD,
+                endColumn: var_core_value_sigF704
+              } = var_core_value_sig76BA;
+              var_core_value_sigF79C = Math.min(var_core_value_sigFBFA, var_core_value_sigF79C), var_core_value_sig2E54 = Math.max(var_core_value_sigF602, var_core_value_sig2E54), var_core_value_sig7658 = Math.min(var_core_value_sig1BBD, var_core_value_sig7658), var_core_value_sigDCF5 = Math.max(var_core_value_sigF704, var_core_value_sigDCF5);
+            });
+          });
+        }
+        let var_core_value_sigF0511 = {
+          startRow: var_core_value_sigF79C,
+          endRow: var_core_value_sig2E54,
+          startColumn: var_core_value_sig7658,
+          endColumn: var_core_value_sigDCF5
+        };
+        return (0, n.isValidRange)(var_core_value_sigF0511) ? var_core_value_sig947E(var_core_value_sigF0511) : var_core_value_sig947E(var_core_value_sig1F44);
+      }
+    }));
+  }
+};
+on = P([N(0, (0, n.Inject)(d.SheetPrintInterceptorService)), N(1, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(2, (0, n.Inject)(t.SheetsPivotTableConfigModel))], on), new Path2D("M3.30363 3C2.79117 3 2.51457 3.60097 2.84788 3.99024L6.8 8.60593V12.5662C6.8 12.7184 6.8864 12.8575 7.02289 12.9249L8.76717 13.7863C8.96655 13.8847 9.2 13.7396 9.2 13.5173V8.60593L13.1521 3.99024C13.4854 3.60097 13.2088 3 12.6964 3H3.30363Z");
+var Q = class {
+  static drawNoSetting(var_core_value_sigAAD1, var_core_value_sigBC1A, var_core_value_sig3F3A, var_core_value_sigA984) {
+    var_core_value_sigAAD1.save(), p.Rect["drawWith"](var_core_value_sigAAD1, {
+      radius: 2,
+      width: 16,
+      height: 16,
+      fill: var_core_value_sigA984
+    }), var_core_value_sigAAD1.lineCap = "square", var_core_value_sigAAD1.strokeStyle = var_core_value_sig3F3A, var_core_value_sigAAD1.scale(var_core_value_sigBC1A / 16, var_core_value_sigBC1A / 16), var_core_value_sigAAD1.beginPath(), var_core_value_sigAAD1.lineWidth = 1, var_core_value_sigAAD1.lineCap = "round", var_core_value_sigAAD1.moveTo(3, 4), var_core_value_sigAAD1.lineTo(13, 4), var_core_value_sigAAD1.moveTo(4.5, 8), var_core_value_sigAAD1.lineTo(11.5, 8), var_core_value_sigAAD1.moveTo(6, 12), var_core_value_sigAAD1.lineTo(10, 12), var_core_value_sigAAD1.stroke(), var_core_value_sigAAD1.restore();
+  }
+  static drawExpand(var_core_value_sigA504, var_core_value_sig05FF, var_core_value_sigFBF0, var_core_value_sig2F95, var_core_value_sigF0E1) {
+    let var_core_value_sig2D8D = (var_core_value_sigF0E1 - var_core_value_sig05FF) / 2;
+    var_core_value_sigA504.save(), var_core_value_sigA504.fillStyle = var_core_value_sig2F95, var_core_value_sigA504.strokeStyle = var_core_value_sigFBF0, var_core_value_sigA504.beginPath(), var_core_value_sigA504.moveTo(6, var_core_value_sig2D8D), var_core_value_sigA504.lineTo(4 + var_core_value_sig05FF - 2, var_core_value_sig2D8D), var_core_value_sigA504.arcTo(4 + var_core_value_sig05FF, var_core_value_sig2D8D, 4 + var_core_value_sig05FF, var_core_value_sig2D8D + 2, 2), var_core_value_sigA504.lineTo(4 + var_core_value_sig05FF, var_core_value_sig2D8D + var_core_value_sig05FF - 2), var_core_value_sigA504.arcTo(4 + var_core_value_sig05FF, var_core_value_sig2D8D + var_core_value_sig05FF, 4 + var_core_value_sig05FF - 2, var_core_value_sig2D8D + var_core_value_sig05FF, 2), var_core_value_sigA504.lineTo(6, var_core_value_sig2D8D + var_core_value_sig05FF), var_core_value_sigA504.arcTo(4, var_core_value_sig2D8D + var_core_value_sig05FF, 4, var_core_value_sig2D8D + var_core_value_sig05FF - 2, 2), var_core_value_sigA504.lineTo(4, var_core_value_sig2D8D + 2), var_core_value_sigA504.arcTo(4, var_core_value_sig2D8D, 6, var_core_value_sig2D8D, 2), var_core_value_sigA504.closePath(), var_core_value_sigA504.stroke(), var_core_value_sigA504.fill(), var_core_value_sigA504.beginPath(), var_core_value_sigA504.moveTo(4 + var_core_value_sig05FF / 2, var_core_value_sig2D8D + 2), var_core_value_sigA504.lineTo(4 + var_core_value_sig05FF / 2, var_core_value_sig2D8D + var_core_value_sig05FF - 2), var_core_value_sigA504.moveTo(6, var_core_value_sig2D8D + var_core_value_sig05FF / 2), var_core_value_sigA504.lineTo(4 + var_core_value_sig05FF - 2, var_core_value_sig2D8D + var_core_value_sig05FF / 2), var_core_value_sigA504.stroke(), var_core_value_sigA504.restore();
+  }
+  static drawCollapse(var_core_value_sigE5A6, var_core_value_sigF449, var_core_value_sig38C5, var_core_value_sigC87D, var_core_value_sigCCDC) {
+    let var_core_value_sigC310 = (var_core_value_sigCCDC - var_core_value_sigF449) / 2;
+    var_core_value_sigE5A6.save(), var_core_value_sigE5A6.fillStyle = var_core_value_sigC87D, var_core_value_sigE5A6.strokeStyle = var_core_value_sig38C5, var_core_value_sigE5A6.beginPath(), var_core_value_sigE5A6.moveTo(6, var_core_value_sigC310), var_core_value_sigE5A6.lineTo(4 + var_core_value_sigF449 - 2, var_core_value_sigC310), var_core_value_sigE5A6.arcTo(4 + var_core_value_sigF449, var_core_value_sigC310, 4 + var_core_value_sigF449, var_core_value_sigC310 + 2, 2), var_core_value_sigE5A6.lineTo(4 + var_core_value_sigF449, var_core_value_sigC310 + var_core_value_sigF449 - 2), var_core_value_sigE5A6.arcTo(4 + var_core_value_sigF449, var_core_value_sigC310 + var_core_value_sigF449, 4 + var_core_value_sigF449 - 2, var_core_value_sigC310 + var_core_value_sigF449, 2), var_core_value_sigE5A6.lineTo(6, var_core_value_sigC310 + var_core_value_sigF449), var_core_value_sigE5A6.arcTo(4, var_core_value_sigC310 + var_core_value_sigF449, 4, var_core_value_sigC310 + var_core_value_sigF449 - 2, 2), var_core_value_sigE5A6.lineTo(4, var_core_value_sigC310 + 2), var_core_value_sigE5A6.arcTo(4, var_core_value_sigC310, 6, var_core_value_sigC310, 2), var_core_value_sigE5A6.closePath(), var_core_value_sigE5A6.fill(), var_core_value_sigE5A6.stroke(), var_core_value_sigE5A6.beginPath(), var_core_value_sigE5A6.moveTo(6, var_core_value_sigC310 + var_core_value_sigF449 / 2), var_core_value_sigE5A6.lineTo(4 + var_core_value_sigF449 - 2, var_core_value_sigC310 + var_core_value_sigF449 / 2), var_core_value_sigE5A6.stroke(), var_core_value_sigE5A6.restore();
+  }
+  static drawIconByPath(var_core_value_sigA4E8, var_core_value_sigDC07, var_core_value_sig3474, var_core_value_sig4E80) {
+    var_core_value_sigA4E8.save(), var_core_value_sigA4E8.strokeStyle = var_core_value_sig3474, var_core_value_sigA4E8.fillStyle = var_core_value_sig4E80, p.Rect["drawWith"](var_core_value_sigA4E8, {
+      radius: 2,
+      width: 16,
+      height: 16,
+      fill: var_core_value_sig4E80
+    }), var_core_value_sigDC07.forEach(var_core_value_sig5825 => {
+      let var_core_value_sig4EB7 = new Path2D(var_core_value_sig5825);
+      var_core_value_sigA4E8.fillStyle = var_core_value_sig3474, var_core_value_sigA4E8.fill(var_core_value_sig4EB7, "evenodd");
+    }), var_core_value_sigA4E8.restore();
+  }
+};
+const sn = ["M3.30363 3C2.79117 3 2.51457 3.60097 2.84788 3.99024L6.8 8.60593V12.5662C6.8 12.7184 6.8864 12.8575 7.02289 12.9249L8.76717 13.7863C8.96655 13.8847 9.2 13.7396 9.2 13.5173V8.60593L13.1521 3.99024C13.4854 3.60097 13.2088 3 12.6964 3H3.30363Z"],
+  cn = ["M12.4008 13.1831C12.6907 13.1831 12.9258 12.9481 12.9258 12.6581V4.60873L14.013 5.69597C14.218 5.901 14.5505 5.901 14.7555 5.69597C14.9605 5.49094 14.9605 5.15853 14.7555 4.95351L12.7721 2.97017C12.5671 2.76515 12.2347 2.76515 12.0297 2.97017L10.0463 4.95351C9.84132 5.15853 9.84132 5.49094 10.0463 5.69597C10.2514 5.901 10.5838 5.901 10.7888 5.69597L11.8758 4.60901V12.6581C11.8758 12.9481 12.1108 13.1831 12.4008 13.1831Z", "M1.28069 4.85447C0.842195 4.33439 1.21191 3.5391 1.89218 3.5391H8.59333C9.2736 3.5391 9.64331 4.33439 9.20482 4.85447L6.51052 8.0501V11.6601C6.51052 12.2245 5.94174 12.6114 5.41683 12.404L4.48092 12.0343C4.1756 11.9136 3.97498 11.6187 3.97498 11.2904V8.0501L1.28069 4.85447Z"],
+  ln = ["M12.4008 2.81641C12.6907 2.81641 12.9258 3.05146 12.9258 3.34141V11.3908L14.013 10.3036C14.218 10.0986 14.5505 10.0986 14.7555 10.3036C14.9605 10.5086 14.9605 10.841 14.7555 11.046L12.7721 13.0294C12.5671 13.2344 12.2347 13.2344 12.0297 13.0294L10.0463 11.046C9.84132 10.841 9.84132 10.5086 10.0463 10.3036C10.2514 10.0986 10.5838 10.0986 10.7888 10.3036L11.8758 11.3905V3.34141C11.8758 3.05146 12.1108 2.81641 12.4008 2.81641Z", "M1.28069\x204.85444C0.842195\x204.33435\x201.21191\x203.53906\x201.89218\x203.53906H8.59333C9.2736\x203.53906\x209.64331\x204.33435\x209.20482\x204.85443L6.51052\x208.05006V11.6601C6.51052\x2012.2245\x205.94174\x2012.6113\x205.41683\x2012.404L4.48092\x2012.0342C4.1756\x2011.9136\x203.97498\x2011.6186\x203.97498\x2011.2903V8.05006L1.28069\x204.85444Z"],
+  un = ["M11.9003\x2013.7046C11.9003\x2013.9969\x2011.6633\x2014.2339\x2011.371\x2014.2339C11.0787\x2014.2339\x2010.8417\x2013.9969\x2010.8417\x2013.7046V3.57272L9.74577\x204.66862C9.53906\x204.87534\x209.20391\x204.87534\x208.9972\x204.66862C8.79048\x204.46191\x208.79048\x204.12676\x208.9972\x203.92005L10.9969\x201.92039C11.2036\x201.71368\x2011.5387\x201.71368\x2011.7454\x201.92039L13.7451\x203.92005C13.9518\x204.12676\x2013.9518\x204.46191\x2013.7451\x204.66862C13.5384\x204.87534\x2013.2032\x204.87534\x2012.9965\x204.66862L11.9003\x203.57243V13.7046Z", "M2.69779\x2010.0113C2.40546\x2010.0113\x202.16847\x209.77429\x202.16847\x209.48196C2.16847\x209.18962\x202.40546\x208.95264\x202.69779\x208.95264H6.67804C6.89213\x208.95264\x207.08514\x209.0816\x207.16707\x209.2794C7.249\x209.47719\x207.20371\x209.70486\x207.05233\x209.85624L3.97569\x2012.9329H6.67804C6.97038\x2012.9329\x207.20736\x2013.1699\x207.20736\x2013.4622C7.20736\x2013.7545\x206.97038\x2013.9915\x206.67804\x2013.9915H2.69779C2.4837\x2013.9915\x202.29069\x2013.8626\x202.20876\x2013.6648C2.12684\x2013.467\x202.17212\x2013.2393\x202.32351\x2013.0879L5.40015\x2010.0113H2.69779Z", "M5.51638\x202.58693C5.23363\x201.81542\x204.14248\x201.81543\x203.85973\x202.58693L2.13245\x207.29995C2.03185\x207.57443\x202.17281\x207.87849\x202.4473\x207.97909C2.72178\x208.07969\x203.02584\x207.93872\x203.12644\x207.66424L3.64346\x206.25351L3.64504\x206.25351H5.73266L6.24968\x207.66424C6.35027\x207.93872\x206.65433\x208.07969\x206.92882\x207.97909C7.2033\x207.87849\x207.34426\x207.57443\x207.24367\x207.29995L5.51638\x202.58693ZM5.34467\x205.19487L4.68806\x203.40325L4.03144\x205.19487H5.34467Z"],
+  dn = ["M11.9003\x202.29495C11.9003\x202.00261\x2011.6633\x201.76562\x2011.371\x201.76562C11.0787\x201.76562\x2010.8417\x202.00261\x2010.8417\x202.29495V12.4268L9.74577\x2011.3309C9.53906\x2011.1242\x209.20391\x2011.1242\x208.9972\x2011.3309C8.79048\x2011.5376\x208.79048\x2011.8727\x208.9972\x2012.0795L10.9969\x2014.0791C11.2036\x2014.2858\x2011.5387\x2014.2858\x2011.7454\x2014.0791L13.7451\x2012.0795C13.9518\x2011.8727\x2013.9518\x2011.5376\x2013.7451\x2011.3309C13.5384\x2011.1242\x2013.2032\x2011.1242\x2012.9965\x2011.3309L11.9003\x2012.4271V2.29495Z", "M2.69792 10.0113C2.40558 10.0113 2.16859 9.77429 2.16859 9.48196C2.16859 9.18962 2.40558 8.95264 2.69792 8.95264H6.67816C6.89225 8.95264 7.08526 9.0816 7.16719 9.2794C7.24912 9.47719 7.20384 9.70486 7.05245 9.85624L3.97581 12.9329H6.67816C6.9705 12.9329 7.20749 13.1699 7.20749 13.4622C7.20749 13.7545 6.9705 13.9915 6.67816 13.9915H2.69792C2.48383 13.9915 2.29082 13.8626 2.20889 13.6648C2.12696 13.467 2.17224 13.2393 2.32363 13.0879L5.40027 10.0113H2.69792Z", "M5.5165 2.58693C5.23375 1.81542 4.1426 1.81543 3.85985 2.58693L2.13257 7.29995C2.03197 7.57443 2.17294 7.8785 2.44742 7.97909C2.7219 8.07969 3.02596 7.93872 3.12656 7.66424L3.64358 6.25351L3.64516 6.25351H5.73278L6.2498 7.66424C6.35039 7.93872 6.65446 8.07969 6.92894 7.97909C7.20342 7.8785 7.34438 7.57443 7.24379 7.29995L5.5165 2.58693ZM5.34479 5.19487L4.68818 3.40325L4.03156 5.19487H5.34479Z"],
+  fn = new Set([l.PivotCellStyleTypeEnum["FilterAll"], l.PivotCellStyleTypeEnum["FilterPartial"], l.PivotCellStyleTypeEnum["FilterSingle"], l.PivotCellStyleTypeEnum["FilterNoneSortNone"], l.PivotCellStyleTypeEnum["FilteredSortAsc"], l.PivotCellStyleTypeEnum["FilteredSortDesc"], l.PivotCellStyleTypeEnum["FilteredSortNone"], l.PivotCellStyleTypeEnum["FilterNoneSortAsc"], l.PivotCellStyleTypeEnum["FilterNoneSortDesc"]]),
+  pn = new Set([l.PivotCellStyleTypeEnum["Expand"], l.PivotCellStyleTypeEnum["Collapse"]]);
+let mn = class extends p.Shape {
+  constructor(var_core_value_sigD23B, var_core_value_sig2B2A, var_core_value_sig0B5C, var_core_value_sig7D42) {
+    super(var_core_value_sigD23B, var_core_value_sig2B2A), this._commandService = var_core_value_sig0B5C, this._themeService = var_core_value_sig7D42, M(this, "_cellWidth", 0), M(this, "_cellHeight", 0), M(this, "_hovered", false), M(this, "_pivotParams", undefined), this.setShapeProps(var_core_value_sig2B2A), this.onPointerDown$["subscribeEvent"](var_core_value_sig73AF => this.onPointerDown(var_core_value_sig73AF)), this.onPointerEnter$["subscribeEvent"](() => this.onPointerEnter()), this.onPointerLeave$["subscribeEvent"](() => this.onPointerLeave());
+  }
+  setShapeProps(var_core_value_sig8FDE) {
+    var_core_value_sig8FDE.cellHeight !== undefined && (this._cellHeight = var_core_value_sig8FDE.cellHeight), var_core_value_sig8FDE.cellWidth !== undefined && (this._cellWidth = var_core_value_sig8FDE.cellWidth), var_core_value_sig8FDE.pivotParams !== undefined && (this._pivotParams = var_core_value_sig8FDE.pivotParams), this.transformByState({
+      width: var_core_value_sig8FDE.width,
+      height: var_core_value_sig8FDE.height
+    });
+  }
+  onPointerDown(var_core_value_sig78E6) {
+    if (var_core_value_sig78E6.button === 2) return;
+    let {
+      col: var_core_value_sig541F,
+      row: var_core_value_sig417B,
+      unitId: var_core_value_sigAA90,
+      subUnitId: var_core_value_sigE92D,
+      buttonType: var_core_value_sig9940
+    } = this._pivotParams;
+    fn.has(var_core_value_sig9940) ? setTimeout(() => {
+      this._commandService["executeCommand"](I.id, {
+        row: var_core_value_sig417B,
+        col: var_core_value_sig541F,
+        unitId: var_core_value_sigAA90,
+        subUnitId: var_core_value_sigE92D
+      });
+    }, 200) : this._commandService["executeCommand"](t.SetPivotCollapseCommand["id"], {
+      row: var_core_value_sig417B,
+      col: var_core_value_sig541F,
+      unitId: var_core_value_sigAA90,
+      subUnitId: var_core_value_sigE92D,
+      collapse: var_core_value_sig9940 === l.PivotCellStyleTypeEnum["Expand"]
+    });
+  }
+  onPointerEnter() {
+    this._hovered = true, this.setCursor(p.CURSOR_TYPE["POINTER"]), this.makeDirty(true);
+  }
+  onPointerLeave() {
+    this._hovered = false, this.setCursor(p.CURSOR_TYPE["DEFAULT"]), this.makeDirty(true);
+  }
+  _draw(var_core_value_sig682D) {
+    var var_core_value_sig1435, var_core_value_sig4082;
+    if (!((var_core_value_sig1435 = this._pivotParams) != null && var_core_value_sig1435.buttonType)) return;
+    let var_core_value_sigC049 = this._themeService["getColorFromTheme"]("primary.600"),
+      var_core_value_sigE5C3 = this._themeService["getColorFromTheme"]("gray.50");
+    var_core_value_sig682D.save();
+    let var_core_value_sigCCAA = new Path2D();
+    var_core_value_sigCCAA.rect(0, 0, this._cellWidth, this._cellHeight), var_core_value_sig682D.clip(var_core_value_sigCCAA), ((var_core_value_sig4082 = this._pivotParams) == null ? undefined : var_core_value_sig4082.buttonType) === l.PivotCellStyleTypeEnum["Collapse"] ? Q.drawExpand(var_core_value_sig682D, 12, var_core_value_sigC049, var_core_value_sigE5C3, this._cellHeight) : this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["Expand"] ? Q.drawCollapse(var_core_value_sig682D, 12, var_core_value_sigC049, var_core_value_sigE5C3, this._cellHeight) : this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilterAll"] || this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilterNoneSortNone"] ? Q.drawNoSetting(var_core_value_sig682D, 16, var_core_value_sigC049, var_core_value_sigE5C3) : this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilterPartial"] || this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilterSingle"] || this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilteredSortNone"] ? Q.drawIconByPath(var_core_value_sig682D, sn, var_core_value_sigC049, var_core_value_sigE5C3) : this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilterNoneSortAsc"] ? Q.drawIconByPath(var_core_value_sig682D, un, var_core_value_sigC049, var_core_value_sigE5C3) : this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilterNoneSortDesc"] ? Q.drawIconByPath(var_core_value_sig682D, dn, var_core_value_sigC049, var_core_value_sigE5C3) : this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilteredSortAsc"] ? Q.drawIconByPath(var_core_value_sig682D, cn, var_core_value_sigC049, var_core_value_sigE5C3) : this._pivotParams["buttonType"] === l.PivotCellStyleTypeEnum["FilteredSortDesc"] && Q.drawIconByPath(var_core_value_sig682D, ln, var_core_value_sigC049, var_core_value_sigE5C3), var_core_value_sig682D.restore();
+  }
+};
+mn = P([N(2, n.ICommandService), N(3, (0, n.Inject)(n.ThemeService))], mn);
+function hn(var_core_value_sig3CC6, var_core_value_sig041B, var_core_value_sig3610) {
+  let {
+    startX: var_core_value_sig62F3,
+    startY: var_core_value_sig8063,
+    endX: var_core_value_sig555A,
+    endY: var_core_value_sigF562
+  } = var_core_value_sig3610;
+  return {
+    left: (var_core_value_sig041B === "filter" ? var_core_value_sig3CC6 !== "rtl" : var_core_value_sig3CC6 === "rtl") ? var_core_value_sig555A - 16 - 1 : var_core_value_sig62F3 + 1,
+    top: var_core_value_sig041B === "filter" ? var_core_value_sigF562 - 16 - 1 : var_core_value_sig8063 + 1
+  };
+}
+let gn = class extends n.Disposable {
+  constructor(var_core_value_sigF32D, var_core_value_sig9427, var_core_value_sig21F4, var_core_value_sigA345, var_core_value_sigA468, var_core_value_sig1561, var_core_value_sigDF14, var_core_value_sig842F, var_core_value_sigC4C0) {
+    super(), this._context = var_core_value_sigF32D, this._injector = var_core_value_sig9427, this._sheetsPivotTableAdaptorModel = var_core_value_sig21F4, this._sheetSkeletonManagerService = var_core_value_sigA345, this._sheetsPivotTableConfigModel = var_core_value_sigA468, this._commandService = var_core_value_sig1561, this._sheetPermissionCheckController = var_core_value_sigDF14, this._permissionService = var_core_value_sig842F, this._localeService = var_core_value_sigC4C0, M(this, "_pivotButtonShapesArr", []), this._initButtonRender(), this._initSkeleton(), this._initListener();
+  }
+  _initButtonRender() {
+    this.disposeWithMe((0, c.merge)(this._sheetsPivotTableAdaptorModel["viewUpdate$"].pipe((0, c.auditTime)(0)), this._sheetSkeletonManagerService["currentSkeleton$"], this._sheetsPivotTableConfigModel["pivotConfigChange$"], this._permissionService["permissionPointUpdate$"].pipe((0, c.auditTime)(100))).subscribe(() => {
+      if (!this._context["unit"]) return;
+      let var_core_value_sig548A = this._context["unitId"],
+        var_core_value_sigE026 = this._context["unit"].getActiveSheet().getSheetId(),
+        {
+          scene: var_core_value_sig339E
+        } = this._context,
+        var_core_value_sig7550 = this._localeService["getDirection"](),
+        var_core_value_sig2983 = this._sheetSkeletonManagerService["getCurrentSkeleton"]();
+      if (!var_core_value_sig2983) return;
+      let var_core_value_sigE1B0 = this._pivotButtonShapesArr;
+      var_core_value_sigE1B0.forEach(var_core_value_sig3E68 => var_core_value_sig3E68.dispose()), var_core_value_sigE1B0.splice(0, var_core_value_sigE1B0.length), this._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](var_core_value_sig548A, var_core_value_sigE026).forValue((var_core_value_sigF4C5, var_core_value_sig5410, var_core_value_sig492F) => {
+        if (var_core_value_sig492F != null && var_core_value_sig492F.pbt) {
+          let var_core_value_sig9A8D = "sheets-pivot-button-" + var_core_value_sigF4C5 + "-" + var_core_value_sig5410 + "-" + var_core_value_sig548A + "-" + var_core_value_sigE026,
+            {
+              startX: var_core_value_sigC259,
+              startY: var_core_value_sig9C9F,
+              endX: var_core_value_sigFDEA,
+              endY: var_core_value_sig86D0
+            } = (0, d.getCoordByCell)(var_core_value_sigF4C5, var_core_value_sig5410, var_core_value_sig339E, var_core_value_sig2983),
+            var_core_value_sig4CD2 = var_core_value_sigFDEA - var_core_value_sigC259,
+            var_core_value_sig48CA = var_core_value_sig86D0 - var_core_value_sig9C9F;
+          if (var_core_value_sig48CA < 16 / 2 || var_core_value_sig4CD2 < 16 / 2 || this._sheetPermissionCheckController["permissionCheckWithRanges"]({
+            workbookTypes: [r.WorkbookEditablePermission],
+            worksheetTypes: [r.WorksheetViewPermission, r.WorksheetEditPermission, r.WorksheetPivotTablePermission],
+            rangeTypes: [r.RangeProtectionPermissionViewPoint, r.RangeProtectionPermissionEditPoint]
+          }, [{
+            startRow: var_core_value_sigF4C5,
+            endRow: var_core_value_sigF4C5,
+            startColumn: var_core_value_sig5410,
+            endColumn: var_core_value_sig5410
+          }], var_core_value_sig548A, var_core_value_sigE026) === false) return;
+          let var_core_value_sig50AF;
+          if (fn.has(var_core_value_sig492F.pbt)) {
+            let {
+              left: var_core_value_sig284F,
+              top: var_core_value_sigE154
+            } = hn(var_core_value_sig7550, "filter", {
+              startX: var_core_value_sigC259,
+              startY: var_core_value_sig9C9F,
+              endX: var_core_value_sigFDEA,
+              endY: var_core_value_sig86D0
+            });
+            var_core_value_sig50AF = {
+              left: var_core_value_sig284F,
+              top: var_core_value_sigE154,
+              height: 16,
+              width: 16,
+              zIndex: 5000,
+              cellWidth: var_core_value_sig4CD2,
+              cellHeight: var_core_value_sig48CA,
+              pivotParams: {
+                col: var_core_value_sig5410,
+                row: var_core_value_sigF4C5,
+                unitId: var_core_value_sig548A,
+                subUnitId: var_core_value_sigE026,
+                buttonType: var_core_value_sig492F.pbt
+              }
+            };
+          } else {
+            if (pn.has(var_core_value_sig492F.pbt)) {
+              let {
+                left: var_core_value_sig2BCF,
+                top: var_core_value_sig0D69
+              } = hn(var_core_value_sig7550, "collapse", {
+                startX: var_core_value_sigC259,
+                startY: var_core_value_sig9C9F,
+                endX: var_core_value_sigFDEA,
+                endY: var_core_value_sig86D0
+              });
+              var_core_value_sig50AF = {
+                left: var_core_value_sig2BCF,
+                top: var_core_value_sig0D69,
+                height: 16,
+                width: 16,
+                zIndex: 5000,
+                cellWidth: var_core_value_sig4CD2,
+                cellHeight: var_core_value_sig48CA,
+                pivotParams: {
+                  col: var_core_value_sig5410,
+                  row: var_core_value_sigF4C5,
+                  unitId: var_core_value_sig548A,
+                  subUnitId: var_core_value_sigE026,
+                  buttonType: var_core_value_sig492F.pbt
+                }
+              };
+            } else return;
+          }
+          let var_core_value_sigA942 = this._injector["createInstance"](mn, var_core_value_sig9A8D, var_core_value_sig50AF);
+          var_core_value_sigE1B0.push(var_core_value_sigA942);
+        }
+      }), var_core_value_sigE1B0.length && var_core_value_sig339E.addObjects(var_core_value_sigE1B0), var_core_value_sig339E.makeDirty();
+    }));
+  }
+  _initSkeleton() {
+    var var_core_value_sig214A;
+    this.disposeWithMe(this._sheetsPivotTableAdaptorModel["markDirty$"].subscribe(({
+      unitId: var_core_value_sigD4FF,
+      subUnitId: var_core_value_sig1E5B
+    }) => {
+      if (var_core_value_sigD4FF === this._context["unitId"] && (this._sheetSkeletonManagerService["makeDirty"]({
+        sheetId: var_core_value_sig1E5B
+      }), this._context["unit"].getActiveSheet().getSheetId() === var_core_value_sig1E5B)) {
+        var var_core_value_sigB680;
+        this._sheetSkeletonManagerService["reCalculate"](), (var_core_value_sigB680 = this._context["mainComponent"]) == null || var_core_value_sigB680.makeDirty();
+      }
+    }));
+    let var_core_value_sigCCC3 = this._context["unitId"];
+    this._context["unit"].getSheets().forEach(var_core_value_sig1F64 => {
+      var var_core_value_sigDD1C;
+      let var_core_value_sig2C39 = var_core_value_sig1F64.getSheetId();
+      (var_core_value_sigDD1C = this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](var_core_value_sigCCC3, var_core_value_sig2C39)) != null && var_core_value_sigDD1C.size && this._sheetSkeletonManagerService["makeDirty"]({
+        sheetId: var_core_value_sig2C39
+      });
+    }), this._sheetSkeletonManagerService["reCalculate"](), (var_core_value_sig214A = this._context["mainComponent"]) == null || var_core_value_sig214A.makeDirty();
+  }
+  _initListener() {
+    let var_core_value_sig986E = new n["DisposableCollection"](),
+      {
+        spreadsheet: var_core_value_sig537C
+      } = (0, d.getSheetObject)(this._context["unit"], this._context);
+    var_core_value_sig986E.add(var_core_value_sig537C.onDblclick$["subscribeEvent"](var_core_value_sigB7D1 => {
+      if (var_core_value_sigB7D1.button === 2) return;
+      let var_core_value_sig64F0 = this._sheetSkeletonManagerService["getCurrentSkeleton"]();
+      if (var_core_value_sig64F0 == null) return;
+      let var_core_value_sig85B1 = this._context["scene"],
+        {
+          row: var_core_value_sig3141,
+          column: var_core_value_sig2162
+        } = (0, d.getCoordByOffset)(var_core_value_sigB7D1.offsetX, var_core_value_sigB7D1.offsetY, var_core_value_sig85B1, var_core_value_sig64F0);
+      this._commandService["executeCommand"](t.PivotDrillDownCommand["id"], {
+        row: var_core_value_sig3141,
+        col: var_core_value_sig2162
+      });
+    }));
+  }
+};
+gn = P([N(1, (0, n.Inject)(n.Injector)), N(2, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(3, (0, n.Inject)(d.SheetSkeletonManagerService)), N(4, (0, n.Inject)(t.SheetsPivotTableConfigModel)), N(5, (0, n.Inject)(n.ICommandService)), N(6, (0, n.Inject)(r.SheetPermissionCheckController)), N(7, (0, n.Inject)(n.IPermissionService)), N(8, (0, n.Inject)(n.LocaleService))], gn);
+var _n = class e extends p.Shape {
+  constructor(var_core_value_sigBBBC) {
+    super("SHEET_PIVOT_MOVE_KEY"), M(this, "_moveType", undefined), this._moveType = var_core_value_sigBBBC;
+  }
+  _draw(var_core_value_sig5440) {
+    this.width !== 0 && this.height !== 0 && e.drawWith(var_core_value_sig5440, this);
+  }
+  static drawWith(var_core_value_sigE28B, var_core_value_sig0FD9) {
+    let var_core_value_sig5649 = var_core_value_sig0FD9._moveType;
+    if (var_core_value_sigE28B.save(), var_core_value_sigE28B.strokeStyle = "#8bc34a", var_core_value_sigE28B.lineWidth = 2, var_core_value_sig5649 === "row") {
+      let var_core_value_sig2EAD = var_core_value_sig0FD9.width;
+      if (!var_core_value_sig2EAD) return;
+      var_core_value_sigE28B.beginPath(), var_core_value_sigE28B.moveTo(0, 0), var_core_value_sigE28B.lineTo(0 + var_core_value_sig2EAD, 0), var_core_value_sigE28B.moveTo(0, 0 - 20 / 2), var_core_value_sigE28B.lineTo(0, 10), var_core_value_sigE28B.moveTo(0 + var_core_value_sig2EAD, 0 - 20 / 2), var_core_value_sigE28B.lineTo(0 + var_core_value_sig2EAD, 10);
+    } else {
+      let var_core_value_sig6774 = var_core_value_sig0FD9.height;
+      if (!var_core_value_sig6774) return;
+      var_core_value_sigE28B.moveTo(0, 0), var_core_value_sigE28B.lineTo(0, 0 + var_core_value_sig6774), var_core_value_sigE28B.moveTo(0 - 20 / 2, 0), var_core_value_sigE28B.lineTo(10, 0), var_core_value_sigE28B.moveTo(0 - 20 / 2, 0 + var_core_value_sig6774), var_core_value_sigE28B.lineTo(10, 0 + var_core_value_sig6774);
+    }
+    var_core_value_sigE28B.stroke(), var_core_value_sigE28B.restore();
+  }
+};
+let vn = class extends n.Disposable {
+  constructor(var_core_value_sigAF82, var_core_value_sig21A2, var_core_value_sig5C1D, var_core_value_sig4CBA, var_core_value_sig8E65, var_core_value_sig772C) {
+    super(), this._context = var_core_value_sigAF82, this._sheetsPivotTableAdaptorModel = var_core_value_sig21A2, this._sheetSkeletonManagerService = var_core_value_sig5C1D, this._commandService = var_core_value_sig4CBA, this._selectionRenderService = var_core_value_sig8E65, this._sheetsSelectionsService = var_core_value_sig772C, M(this, "_pivotSelectionMoveShape", undefined), M(this, "_scenePointerMoveSubscribe", undefined), M(this, "_scenePointerUpSubscribe", undefined), M(this, "_selectionControl", undefined), M(this, "_moveStartRange", undefined), M(this, "_moveStartCellIndex", undefined), M(this, "_moveRowOrCol", "row"), M(this, "_targetRange", undefined), M(this, "_movePivotId", undefined), this._initControl();
+  }
+  _controlMoving(var_core_value_sigF309, var_core_value_sig44F9) {
+    let var_core_value_sigE532 = this._context["scene"],
+      var_core_value_sigF381 = var_core_value_sigE532.getScrollXYInfoByViewport(p.Vector2["FromArray"]([var_core_value_sigF309, var_core_value_sig44F9])),
+      {
+        scaleX: var_core_value_sigCB92,
+        scaleY: var_core_value_sigC844
+      } = var_core_value_sigE532.getAncestorScale(),
+      var_core_value_sig2ED4 = this._sheetSkeletonManagerService["getCurrentSkeleton"]();
+    if (!var_core_value_sig2ED4 || !this._moveStartRange || !this._moveStartCellIndex) return;
+    let {
+      row: var_core_value_sig0477,
+      column: var_core_value_sig6FDF
+    } = var_core_value_sig2ED4.getCellIndexByOffset(var_core_value_sigF309, var_core_value_sig44F9, var_core_value_sigCB92, var_core_value_sigC844, var_core_value_sigF381);
+    if (this._moveRowOrCol === "row") {
+      var var_core_value_sig27C4;
+      let var_core_value_sig340D = 0,
+        var_core_value_sig82D4 = 0,
+        var_core_value_sigBDE4 = this._moveStartRange["endColumn"] - this._moveStartRange["startColumn"] + 1;
+      if (this._moveStartCellIndex["column"] === this._moveStartRange["startColumn"]) var_core_value_sig340D = var_core_value_sig6FDF, var_core_value_sig82D4 = var_core_value_sig6FDF + var_core_value_sigBDE4 - 1;else {
+        if (this._moveStartCellIndex["column"] === this._moveStartRange["endColumn"]) var_core_value_sig82D4 = var_core_value_sig6FDF, var_core_value_sig340D = var_core_value_sig6FDF - var_core_value_sigBDE4 + 1;else {
+          let var_core_value_sigA621 = this._moveStartCellIndex["column"] - this._moveStartRange["startColumn"];
+          var_core_value_sig340D = var_core_value_sig6FDF - var_core_value_sigA621, var_core_value_sig82D4 = var_core_value_sig6FDF - var_core_value_sigA621 + var_core_value_sigBDE4 - 1;
+        }
+      }
+      let var_core_value_sig7DF1 = var_core_value_sig2ED4.getCellWithCoordByIndex(var_core_value_sig0477, var_core_value_sig340D),
+        var_core_value_sigDC86 = var_core_value_sig2ED4.getCellWithCoordByIndex(var_core_value_sig0477, var_core_value_sig82D4),
+        {
+          startX: var_core_value_sig0B0C,
+          endY: var_core_value_sigA39E
+        } = var_core_value_sig7DF1,
+        {
+          endX: var_core_value_sigBBEE
+        } = var_core_value_sigDC86;
+      this._targetRange = {
+        startRow: var_core_value_sig0477,
+        endRow: var_core_value_sig0477,
+        startColumn: var_core_value_sig340D,
+        endColumn: var_core_value_sig82D4
+      }, (var_core_value_sig27C4 = this._pivotSelectionMoveShape) == null || var_core_value_sig27C4.transformByState({
+        left: var_core_value_sig0B0C,
+        top: var_core_value_sigA39E,
+        width: var_core_value_sigBBEE - var_core_value_sig0B0C,
+        height: 20
+      });
+    } else {
+      var var_core_value_sig3E1A;
+      let var_core_value_sig011D = 0,
+        var_core_value_sig6167 = 0,
+        var_core_value_sig65A1 = this._moveStartRange["endRow"] - this._moveStartRange["startRow"] + 1;
+      if (this._moveStartCellIndex["row"] === this._moveStartRange["startRow"]) var_core_value_sig011D = var_core_value_sig0477, var_core_value_sig6167 = var_core_value_sig0477 + var_core_value_sig65A1 - 1;else {
+        if (this._moveStartCellIndex["row"] === this._moveStartRange["endRow"]) var_core_value_sig6167 = var_core_value_sig0477, var_core_value_sig011D = var_core_value_sig0477 - var_core_value_sig65A1 + 1;else {
+          let var_core_value_sigBBFF = this._moveStartCellIndex["row"] - this._moveStartRange["startRow"];
+          var_core_value_sig011D = var_core_value_sig0477 - var_core_value_sigBBFF, var_core_value_sig6167 = var_core_value_sig0477 - var_core_value_sigBBFF + var_core_value_sig65A1 - 1;
+        }
+      }
+      let var_core_value_sig7F19 = var_core_value_sig2ED4.getCellWithCoordByIndex(var_core_value_sig011D, var_core_value_sig6FDF),
+        var_core_value_sig7827 = var_core_value_sig2ED4.getCellWithCoordByIndex(var_core_value_sig6167, var_core_value_sig6FDF),
+        {
+          startX: var_core_value_sig652C,
+          startY: var_core_value_sig7E32
+        } = var_core_value_sig7F19,
+        {
+          endY: var_core_value_sig4C07
+        } = var_core_value_sig7827;
+      this._targetRange = {
+        startColumn: var_core_value_sig6FDF,
+        endColumn: var_core_value_sig6FDF,
+        startRow: var_core_value_sig011D,
+        endRow: var_core_value_sig6167
+      }, (var_core_value_sig3E1A = this._pivotSelectionMoveShape) == null || var_core_value_sig3E1A.transformByState({
+        left: var_core_value_sig652C,
+        top: var_core_value_sig7E32,
+        width: 20,
+        height: var_core_value_sig4C07 - var_core_value_sig7E32
+      });
+    }
+  }
+  _controlPointerDownHandler(var_core_value_sig7FB0) {
+    var var_core_value_sig5215, var_core_value_sig5204, var_core_value_sig5E11;
+    (var_core_value_sig5215 = this._selectionControl) == null || var_core_value_sig5215.setControlExtensionDisable(false), this._context["scene"].setCursor(p.CURSOR_TYPE["DEFAULT"]);
+    let var_core_value_sig4D58 = this._sheetsSelectionsService["getCurrentSelections"]();
+    if (!var_core_value_sig4D58.length || var_core_value_sig4D58.length > 1) return;
+    let var_core_value_sig2DBD = var_core_value_sig4D58[0].range,
+      var_core_value_sig424E = this._context["unit"],
+      var_core_value_sigF481 = var_core_value_sig424E.getActiveSheet(),
+      var_core_value_sigD7F2 = var_core_value_sig424E.getUnitId(),
+      var_core_value_sig7CF3 = var_core_value_sigF481.getSheetId(),
+      var_core_value_sig9DC6 = this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](var_core_value_sigD7F2, var_core_value_sig7CF3);
+    if (!(var_core_value_sig9DC6 != null && var_core_value_sig9DC6.size)) return;
+    let var_core_value_sig6643 = Array.from(var_core_value_sig9DC6).find(([var_core_value_sig79AB, var_core_value_sig8E74]) => {
+      let {
+        rangesInfo: var_core_value_sig104C
+      } = var_core_value_sig8E74;
+      if (!var_core_value_sig104C) return false;
+      let {
+          rowRanges: var_core_value_sig841D,
+          colRanges: var_core_value_sig90CB
+        } = var_core_value_sig104C,
+        var_core_value_sigBDF5 = var_core_value_sig841D[0],
+        var_core_value_sigACC6 = var_core_value_sig90CB[0],
+        var_core_value_sig1614 = false;
+      return var_core_value_sigBDF5 && (var_core_value_sig1614 = n.Rectangle["realContain"](var_core_value_sigBDF5, var_core_value_sig2DBD), this._moveRowOrCol = "row"), !var_core_value_sig1614 && var_core_value_sigACC6 && (var_core_value_sig1614 = n.Rectangle["realContain"](var_core_value_sigACC6, var_core_value_sig2DBD), this._moveRowOrCol = "col"), var_core_value_sig1614;
+    });
+    if (!var_core_value_sig6643) return;
+    this._movePivotId = var_core_value_sig6643[0], this._pivotSelectionMoveShape || (this._pivotSelectionMoveShape = new _n(this._moveRowOrCol), this._context["scene"].addObject(this._pivotSelectionMoveShape));
+    let var_core_value_sig4124 = this._context["scene"],
+      var_core_value_sigBF1C = this._sheetSkeletonManagerService["getCurrentSkeleton"]();
+    if (!var_core_value_sigBF1C) return;
+    let {
+        offsetX: var_core_value_sigEEEF,
+        offsetY: var_core_value_sig9A01
+      } = var_core_value_sig7FB0,
+      var_core_value_sig674F = var_core_value_sig4124.getCoordRelativeToViewport(p.Vector2["FromArray"]([var_core_value_sigEEEF, var_core_value_sig9A01])),
+      {
+        x: var_core_value_sigC8F6,
+        y: var_core_value_sig8A26
+      } = var_core_value_sig674F,
+      var_core_value_sigD073 = var_core_value_sig4124.getScrollXYInfoByViewport(var_core_value_sig674F),
+      {
+        scaleX: var_core_value_sigF631,
+        scaleY: var_core_value_sig2278
+      } = var_core_value_sig4124.getAncestorScale(),
+      {
+        row: var_core_value_sig7053,
+        column: var_core_value_sig52F1
+      } = var_core_value_sigBF1C.getCellIndexByOffset(var_core_value_sigC8F6, var_core_value_sig8A26, var_core_value_sigF631, var_core_value_sig2278, var_core_value_sigD073),
+      var_core_value_sig1E74 = (var_core_value_sig5204 = this._selectionControl) == null ? undefined : var_core_value_sig5204.model["getRange"]();
+    if (this._moveStartRange = var_core_value_sig1E74, !var_core_value_sig1E74) return;
+    let var_core_value_sig1E84 = 0;
+    var_core_value_sig1E84 = var_core_value_sig7053 < var_core_value_sig1E74.startRow ? var_core_value_sig1E74.startRow : var_core_value_sig7053 > var_core_value_sig1E74.endRow ? var_core_value_sig1E74.endRow : var_core_value_sig7053;
+    let var_core_value_sig133B = 0;
+    var_core_value_sig133B = var_core_value_sig52F1 < var_core_value_sig1E74.startColumn ? var_core_value_sig1E74.startColumn : var_core_value_sig52F1 > var_core_value_sig1E74.endColumn ? var_core_value_sig1E74.endColumn : var_core_value_sig52F1, this._moveStartCellIndex = {
+      row: var_core_value_sig1E84,
+      column: var_core_value_sig133B
+    }, (var_core_value_sig5E11 = this._selectionControl) == null || var_core_value_sig5E11.setControlExtensionDisable(true), this._scenePointerMoveSubscribe = var_core_value_sig4124.onPointerMove$["subscribeEvent"](var_core_value_sig85C3 => {
+      let {
+          offsetX: var_core_value_sigB996,
+          offsetY: var_core_value_sig4BBA
+        } = var_core_value_sig85C3,
+        {
+          x: var_core_value_sig6201,
+          y: var_core_value_sig5151
+        } = var_core_value_sig4124.getCoordRelativeToViewport(p.Vector2["FromArray"]([var_core_value_sigB996, var_core_value_sig4BBA]));
+      this._controlMoving(var_core_value_sig6201, var_core_value_sig5151), var_core_value_sig4124.setCursor(p.CURSOR_TYPE["MOVE"]);
+    }), this._scenePointerUpSubscribe = var_core_value_sig4124.onPointerUp$["subscribeEvent"](var_core_value_sigB542 => {
+      var var_core_value_sigBB6C, var_core_value_sigE2BF, var_core_value_sigB8C7;
+      (var_core_value_sigBB6C = this._scenePointerMoveSubscribe) == null || var_core_value_sigBB6C.unsubscribe(), this._scenePointerMoveSubscribe = null, (var_core_value_sigE2BF = this._selectionControl) == null || var_core_value_sigE2BF.setControlExtensionDisable(false), this._selectionControl = null, var_core_value_sig4124.setCursor(p.CURSOR_TYPE["DEFAULT"]), var_core_value_sig4124.removeObject(this._pivotSelectionMoveShape), this._pivotSelectionMoveShape = null, this._updatePivotSort(), (var_core_value_sigB8C7 = this._scenePointerUpSubscribe) == null || var_core_value_sigB8C7.unsubscribe(), this._scenePointerUpSubscribe = null;
+    });
+  }
+  _updatePivotSort() {
+    if (!this._moveStartRange || !this._targetRange || !this._movePivotId) return;
+    let var_core_value_sig69B8 = this._context["unit"].getUnitId(),
+      var_core_value_sig983D = this._context["unit"].getActiveSheet().getSheetId();
+    if (this._moveRowOrCol === "row") {
+      var var_core_value_sig9A03;
+      let var_core_value_sigA56E = (var_core_value_sig9A03 = this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](var_core_value_sig69B8, var_core_value_sig983D)) == null ? undefined : var_core_value_sig9A03.get(this._movePivotId);
+      if (!var_core_value_sigA56E) return;
+      let var_core_value_sig1998 = this._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](var_core_value_sig69B8, var_core_value_sig983D);
+      if (!var_core_value_sig1998) return;
+      let var_core_value_sigFF19 = [],
+        var_core_value_sig43B8 = "",
+        {
+          headerMap: var_core_value_sigD98F,
+          rangesInfo: var_core_value_sig66C0
+        } = var_core_value_sigA56E;
+      for (let var_core_value_sig8EA0 = this._moveStartRange["startColumn"]; var_core_value_sig8EA0 <= this._moveStartRange["endColumn"]; var_core_value_sig8EA0++) {
+        var var_core_value_sig3363;
+        let var_core_value_sig8889 = var_core_value_sigD98F == null || (var_core_value_sig3363 = var_core_value_sigD98F.rowHeaderMap) == null ? undefined : var_core_value_sig3363[var_core_value_sig8EA0];
+        if (!var_core_value_sig8889) continue;
+        var_core_value_sig43B8 = var_core_value_sig8889.tableFieldId;
+        let var_core_value_sig32F8 = var_core_value_sig66C0 == null ? undefined : var_core_value_sig66C0.rowRanges,
+          var_core_value_sig5B67 = var_core_value_sig32F8 == null ? undefined : var_core_value_sig32F8[0];
+        if (!var_core_value_sig5B67) continue;
+        let var_core_value_sig1758 = {
+          ...var_core_value_sig5B67,
+          startColumn: var_core_value_sig8EA0,
+          endColumn: var_core_value_sig8EA0
+        };
+        for (let var_core_value_sig4632 = var_core_value_sig1758.startRow; var_core_value_sig4632 <= var_core_value_sig1758.endRow; var_core_value_sig4632++) {
+          let var_core_value_sig480E = var_core_value_sig1998.getValue(var_core_value_sig4632, var_core_value_sig8EA0);
+          if (!var_core_value_sig480E) continue;
+          let {
+            v: var_core_value_sig26DB,
+            pbt: var_core_value_sigF0F9
+          } = var_core_value_sig480E;
+          var_core_value_sig26DB && var_core_value_sigF0F9 !== l.PivotCellStyleTypeEnum["Subtotal"] && var_core_value_sigF0F9 !== l.PivotCellStyleTypeEnum["GrandTotal"] && (typeof var_core_value_sig26DB == "string" ? var_core_value_sigFF19[var_core_value_sig4632] = var_core_value_sig26DB : typeof var_core_value_sig26DB == "number" && (var_core_value_sigFF19[var_core_value_sig4632] = var_core_value_sig26DB.toString()));
+        }
+        break;
+      }
+      if (!var_core_value_sig43B8) return;
+      let var_core_value_sig9D15 = this._moveStartRange["startRow"],
+        var_core_value_sigB785 = this._moveStartRange["endRow"] - this._moveStartRange["startRow"] + 1,
+        var_core_value_sig130F = this._targetRange["startRow"];
+      if (var_core_value_sig9D15 < var_core_value_sig130F) {
+        let var_core_value_sigA6F6 = var_core_value_sigFF19.splice(var_core_value_sig9D15, var_core_value_sigB785);
+        var_core_value_sigFF19.splice(var_core_value_sig130F - var_core_value_sigB785, 0, ...var_core_value_sigA6F6);
+      } else {
+        let var_core_value_sigCDDA = var_core_value_sigFF19.splice(var_core_value_sig9D15, var_core_value_sigB785);
+        var_core_value_sigFF19.splice(var_core_value_sig130F, 0, ...var_core_value_sigCDDA);
+      }
+      let var_core_value_sigC0E3 = var_core_value_sigFF19.filter(var_core_value_sigE243 => var_core_value_sigE243 !== undefined);
+      this._commandService["executeCommand"](t.SetPivotSortCommand["id"], {
+        unitId: var_core_value_sig69B8,
+        subUnitId: var_core_value_sig983D,
+        pivotTableId: this._movePivotId,
+        tableFieldId: var_core_value_sig43B8,
+        info: {
+          type: l.PivotDataFieldSortOperatorEnum["custom"],
+          customOrder: var_core_value_sigC0E3
+        }
+      });
+    } else {
+      var var_core_value_sigF64A;
+      let var_core_value_sig52F7 = (var_core_value_sigF64A = this._sheetsPivotTableAdaptorModel["getSubUnitPivotRenderCache"](var_core_value_sig69B8, var_core_value_sig983D)) == null ? undefined : var_core_value_sigF64A.get(this._movePivotId);
+      if (!var_core_value_sig52F7) return;
+      let var_core_value_sig866F = this._sheetsPivotTableAdaptorModel["getSubUnitPivotMatrix"](var_core_value_sig69B8, var_core_value_sig983D);
+      if (!var_core_value_sig866F) return;
+      let var_core_value_sigDE3D = [],
+        var_core_value_sigF175 = "",
+        {
+          headerMap: var_core_value_sig6A18,
+          rangesInfo: var_core_value_sig4E3D
+        } = var_core_value_sig52F7;
+      for (let var_core_value_sig74A8 = this._moveStartRange["startRow"]; var_core_value_sig74A8 <= this._moveStartRange["endRow"]; var_core_value_sig74A8++) {
+        var var_core_value_sig25EC;
+        let var_core_value_sig4805 = var_core_value_sig6A18 == null || (var_core_value_sig25EC = var_core_value_sig6A18.colHeaderMap) == null ? undefined : var_core_value_sig25EC[var_core_value_sig74A8];
+        if (!var_core_value_sig4805) continue;
+        var_core_value_sigF175 = var_core_value_sig4805.tableFieldId;
+        let var_core_value_sigE67E = var_core_value_sig4E3D == null ? undefined : var_core_value_sig4E3D.colRanges,
+          var_core_value_sig2902 = var_core_value_sigE67E == null ? undefined : var_core_value_sigE67E[0];
+        if (!var_core_value_sig2902) continue;
+        let var_core_value_sig9989 = {
+          ...var_core_value_sig2902,
+          startRow: var_core_value_sig74A8,
+          endRow: var_core_value_sig74A8
+        };
+        for (let var_core_value_sig12F2 = var_core_value_sig9989.startColumn; var_core_value_sig12F2 <= var_core_value_sig9989.endColumn; var_core_value_sig12F2++) {
+          let var_core_value_sig1A0F = var_core_value_sig866F.getValue(var_core_value_sig74A8, var_core_value_sig12F2);
+          if (!var_core_value_sig1A0F) continue;
+          let {
+            v: var_core_value_sigFBA4,
+            pbt: var_core_value_sig4383
+          } = var_core_value_sig1A0F;
+          if (var_core_value_sigFBA4 && var_core_value_sig4383 !== l.PivotCellStyleTypeEnum["Subtotal"] && var_core_value_sig4383 !== l.PivotCellStyleTypeEnum["GrandTotal"]) {
+            if (typeof var_core_value_sigFBA4 == "string") {
+              let var_core_value_sig3EEE = var_core_value_sig52F7.projection ? (0, t.mapPivotSheetColumn)(var_core_value_sig52F7.projection, var_core_value_sig12F2) : var_core_value_sig12F2;
+              var_core_value_sigDE3D[var_core_value_sig3EEE] = var_core_value_sigFBA4;
+            } else {
+              if (typeof var_core_value_sigFBA4 == "number") {
+                let var_core_value_sig7524 = var_core_value_sig52F7.projection ? (0, t.mapPivotSheetColumn)(var_core_value_sig52F7.projection, var_core_value_sig12F2) : var_core_value_sig12F2;
+                var_core_value_sigDE3D[var_core_value_sig7524] = var_core_value_sigFBA4.toString();
+              }
+            }
+          }
+        }
+        break;
+      }
+      if (!var_core_value_sigF175) return;
+      let var_core_value_sig49B0 = var_core_value_sig52F7.projection ? (0, t.mapPivotSheetRange)(var_core_value_sig52F7.projection, this._moveStartRange) : this._moveStartRange,
+        var_core_value_sig2547 = var_core_value_sig52F7.projection ? (0, t.mapPivotSheetRange)(var_core_value_sig52F7.projection, this._targetRange) : this._targetRange,
+        var_core_value_sigBCA9 = var_core_value_sig49B0.startColumn,
+        var_core_value_sig4CDF = this._moveStartRange["endColumn"] - this._moveStartRange["startColumn"] + 1,
+        var_core_value_sig3F79 = var_core_value_sig2547.startColumn;
+      if (var_core_value_sigBCA9 < var_core_value_sig3F79) {
+        let var_core_value_sig21B2 = var_core_value_sigDE3D.splice(var_core_value_sigBCA9, var_core_value_sig4CDF);
+        var_core_value_sigDE3D.splice(var_core_value_sig3F79 - var_core_value_sig4CDF, 0, ...var_core_value_sig21B2);
+      } else {
+        let var_core_value_sigDE08 = var_core_value_sigDE3D.splice(var_core_value_sigBCA9, var_core_value_sig4CDF);
+        var_core_value_sigDE3D.splice(var_core_value_sig3F79, 0, ...var_core_value_sigDE08);
+      }
+      let var_core_value_sig880E = var_core_value_sigDE3D.filter(var_core_value_sigACCB => var_core_value_sigACCB !== undefined);
+      this._commandService["executeCommand"](t.SetPivotSortCommand["id"], {
+        unitId: var_core_value_sig69B8,
+        subUnitId: var_core_value_sig983D,
+        pivotTableId: this._movePivotId,
+        tableFieldId: var_core_value_sigF175,
+        info: {
+          type: l.PivotDataFieldSortOperatorEnum["custom"],
+          customOrder: var_core_value_sig880E
+        }
+      });
+    }
+  }
+  _initControl() {
+    this.disposeWithMe(this._sheetsSelectionsService["selectionMoveEnd$"].subscribe(() => {
+      let var_core_value_sigC9ED = this._selectionRenderService["getSelectionControls"]();
+      if (this._selectionControl = var_core_value_sigC9ED[var_core_value_sigC9ED.length - 1], this._selectionControl && this._selectionControl["setControlExtensionDisable"](false), !this._selectionControl) return;
+      let {
+        leftControl: var_core_value_sigB57B,
+        rightControl: var_core_value_sig780B,
+        topControl: var_core_value_sig7D1B,
+        bottomControl: var_core_value_sig7BE0
+      } = this._selectionControl;
+      [var_core_value_sigB57B, var_core_value_sig780B, var_core_value_sig7D1B, var_core_value_sig7BE0].forEach(var_core_value_sig7F33 => {
+        var_core_value_sig7F33.onPointerDown$["subscribeEvent"](this._controlPointerDownHandler["bind"](this));
+      });
+    }));
+  }
+  dispose() {
+    var var_core_value_sigA790, var_core_value_sig9A5E;
+    (var_core_value_sigA790 = this._scenePointerMoveSubscribe) == null || var_core_value_sigA790.unsubscribe(), this._scenePointerMoveSubscribe = null, (var_core_value_sig9A5E = this._scenePointerUpSubscribe) == null || var_core_value_sig9A5E.unsubscribe(), this._scenePointerUpSubscribe = null, this._selectionControl = null, this._moveStartRange = null, this._moveStartCellIndex = null, this._targetRange = null, super.dispose();
+  }
+};
+vn = P([N(1, (0, n.Inject)(t.SheetsPivotTableAdaptorModel)), N(2, (0, n.Inject)(d.SheetSkeletonManagerService)), N(3, (0, n.Inject)(n.ICommandService)), N(4, d.ISheetSelectionRenderService), N(5, (0, n.Inject)(r.SheetsSelectionsService))], vn);
+let yn = class extends n.Disposable {
+  constructor(var_core_value_sig01B9, var_core_value_sigD6A9, var_core_value_sig0FCF) {
+    super(), this._mergeCellController = var_core_value_sig01B9, this._univerInstanceService = var_core_value_sigD6A9, this._sheetsPivotTableConfigModel = var_core_value_sig0FCF, this._initMenuInterceptor();
+  }
+  _initMenuInterceptor() {
+    this.disposeWithMe(this._mergeCellController["interceptor"].intercept(this._mergeCellController["interceptor"].getInterceptPoints().MERGE_CELL_INTERCEPTOR_CHECK, {
+      handler: (var_core_value_sig7D40, var_core_value_sig6C7E) => {
+        let var_core_value_sig68BE = (0, r.getSheetCommandTarget)(this._univerInstanceService);
+        if (!var_core_value_sig68BE) return var_core_value_sig7D40;
+        let {
+            unitId: var_core_value_sig04C6,
+            subUnitId: var_core_value_sigCA05
+          } = var_core_value_sig68BE,
+          var_core_value_sig2F2B = this._sheetsPivotTableConfigModel["getSubUnitPivotConfigs"](var_core_value_sig04C6, var_core_value_sigCA05),
+          var_core_value_sig70AF = [];
+        return var_core_value_sig2F2B && var_core_value_sig2F2B.forEach((var_core_value_sig0C53, var_core_value_sigEA04) => {
+          var var_core_value_sig7A62;
+          let var_core_value_sig8109 = (var_core_value_sig7A62 = this._sheetsPivotTableConfigModel["getPivotTableRangeInfo"](var_core_value_sig04C6, var_core_value_sigCA05, var_core_value_sigEA04)) == null ? undefined : var_core_value_sig7A62.rangeInfo;
+          var_core_value_sig8109 && Object.keys(var_core_value_sig8109).forEach(var_core_value_sig698E => {
+            let var_core_value_sig2809 = var_core_value_sig8109[var_core_value_sig698E];
+            Array.isArray(var_core_value_sig2809) && var_core_value_sig70AF.push(...var_core_value_sig2809);
+          });
+        }), var_core_value_sig70AF.length && var_core_value_sig6C7E.some(var_core_value_sig7565 => var_core_value_sig70AF.some(var_core_value_sig2DAB => n.Rectangle["intersects"](var_core_value_sig2DAB, var_core_value_sig7565))) ? true : var_core_value_sig7D40;
+      }
+    }));
+  }
+};
+yn = P([N(0, (0, n.Inject)(r.MergeCellController)), N(1, (0, n.Inject)(n.IUniverInstanceService)), N(2, (0, n.Inject)(t.SheetsPivotTableConfigModel))], yn);
+let $ = class extends n.Plugin {
+  constructor(var_core_value_sigCF96 = ft, var_core_value_sigC4E9, var_core_value_sigF612, var_core_value_sigAA6C, var_core_value_sig8BFA) {
+    super(), this._config = var_core_value_sigCF96, this._injector = var_core_value_sigC4E9, this._commandService = var_core_value_sigF612, this._renderManagerService = var_core_value_sigAA6C, this._configService = var_core_value_sig8BFA;
+    let {
+      menu: var_core_value_sig236B,
+      ...var_core_value_sig1951
+    } = (0, n.merge)({}, ft, this._config);
+    var_core_value_sig236B && this._configService["setConfig"]("menu", var_core_value_sig236B, {
+      merge: true
+    }), this._configService["setConfig"]("sheets-pivot-ui.config", var_core_value_sig1951), this._initRegisterCommand();
+  }
+  onStarting() {
+    this._injector["add"]([X]), this._injector["get"](X), [[rn], [yn], [en], [F], [on], [nn], [an], [Z], [Qt]].forEach(var_core_value_sigD04E => this._injector["add"](var_core_value_sigD04E)), this._injector["get"](Z);
+  }
+  onReady() {
+    this._registerRenderModules(), this._injector["get"](rn);
+  }
+  onRendered() {
+    this._injector["get"](en), this._injector["get"](F), this._injector["get"](on), this._injector["get"](nn), this._injector["get"](an), this._injector["get"](Qt);
+  }
+  onSteady() {
+    this._injector["get"](yn);
+  }
+  _registerRenderModules() {
+    [[gn], [vn]].forEach(var_core_value_sigB99B => {
+      this.disposeWithMe(this._renderManagerService["registerRenderModule"](n.UniverInstanceType["UNIVER_SHEET"], var_core_value_sigB99B));
+    });
+  }
+  _initRegisterCommand() {
+    [O, K, I, L, Ae, Ne, Ve].forEach(var_core_value_sig5A75 => this._commandService["registerCommand"](var_core_value_sig5A75));
+  }
+};
+M($, "pluginName", t.SHEET_PIVOT_TABLE_PLUGIN + "_UI_PLUGIN"), M($, "packageName", ut), M($, "version", dt), M($, "type", n.UniverInstanceType["UNIVER_SHEET"]), $ = P([(0, n.DependentOn)(f.UniverLicensePlugin, p.UniverRenderEnginePlugin, r.UniverSheetsPlugin, t.UniverSheetsPivotTablePlugin, d.UniverSheetsUIPlugin), N(1, (0, n.Inject)(n.Injector)), N(2, (0, n.Inject)(n.ICommandService)), N(3, p.IRenderManagerService), N(4, n.IConfigService)], $), exports.SheetsPivotTableUIMenuSchema = lt, Object.defineProperty(exports, "UniverSheetsPivotTableUIPlugin", {
+  enumerable: true,
+  get: function () {
+    return $;
+  }
+});

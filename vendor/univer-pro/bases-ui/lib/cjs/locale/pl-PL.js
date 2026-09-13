@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Wysoka",
       rowHeightExtraTall: "Bardzo wysoka",
       conditionalColoring: "Kolorowanie\x20warunkowe",
-      conditionalColoringHelp:
-        "Kliknij „Nowy warunek”, aby zastosować kolory na podstawie zdefiniowanych warunków. Warunki znajdujące się wyżej mają wyższy priorytet.",
+      conditionalColoringHelp: "Kliknij „Nowy warunek”, aby zastosować kolory na podstawie zdefiniowanych warunków. Warunki znajdujące się wyżej mają wyższy priorytet.",
       conditionalColoringSmart: "Zastosuj inteligentny kolor do wszystkich",
       conditionalColor: "Kolor",
       conditionalCustomColor: "Niestandardowy",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "sprawdzony",
       conditionalUnchecked: "niepowstrzymany",
       statusDoneTitle: "Stan: Gotowy",
-      statusDoneDescription:
-        "Zastosuj\x20miękki\x20zielony\x20znacznik\x20do\x20pasujących\x20rekordów.",
+      statusDoneDescription: "Zastosuj\x20miękki\x20zielony\x20znacznik\x20do\x20pasujących\x20rekordów.",
       statusBlockedTitle: "Stan jest zablokowany",
-      statusBlockedDescription:
-        "Zastosuj znacznik ostrzegawczy do zablokowanych rekordów.",
+      statusBlockedDescription: "Zastosuj znacznik ostrzegawczy do zablokowanych rekordów.",
       addField: "Dodaj pole",
       undo: "Cofnij",
-      redo: "Ponów",
+      redo: "Ponów"
     },
     recordDetail: {
       untitledRecord: "Rekord bez tytułu",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Dodaj więcej rekordów po przesłaniu",
       panelSize: "Rozmiar panelu",
       fullScreen: "Pełny ekran",
-      exitFullScreen: "Wyjdź z pełnego ekranu",
+      exitFullScreen: "Wyjdź z pełnego ekranu"
     },
     recordLink: {
       searchRecords: "Szukaj rekordów",
@@ -74,27 +71,22 @@ const n = {
       selectedCount: "Wybrano: {0}",
       missingRecord: "Usunięty rekord",
       openRecord: "Otwórz powiązany rekord",
-      back: "Wstecz",
+      back: "Wstecz"
     },
     hierarchy: {
-      invalidField:
-        "Wybierz pole łącza do rekordu z jedną wartością, które wskazuje tę tabelę.",
-      missingRecord:
-        "Rekord\x20lub\x20element\x20nadrzędny\x20już\x20nie\x20istnieje.\x20Odśwież\x20i\x20spróbuj\x20ponownie.",
+      invalidField: "Wybierz pole łącza do rekordu z jedną wartością, które wskazuje tę tabelę.",
+      missingRecord: "Rekord\x20lub\x20element\x20nadrzędny\x20już\x20nie\x20istnieje.\x20Odśwież\x20i\x20spróbuj\x20ponownie.",
       selfParent: "Rekord nie może być własnym elementem nadrzędnym.",
       cycle: "To przeniesienie utworzyłoby cykl elementów nadrzędnych.",
-      maxDepth:
-        "To przeniesienie przekroczyłoby maksymalny limit pięciu poziomów hierarchii.",
-      sortedView:
-        "Usuń sortowanie widoku przed ręczną zmianą kolejności rekordów.",
-      operationFailed:
-        "Nie\x20udało\x20się\x20zastosować\x20zmiany\x20hierarchii.\x20Odśwież\x20i\x20spróbuj\x20ponownie.",
+      maxDepth: "To przeniesienie przekroczyłoby maksymalny limit pięciu poziomów hierarchii.",
+      sortedView: "Usuń sortowanie widoku przed ręczną zmianą kolejności rekordów.",
+      operationFailed: "Nie\x20udało\x20się\x20zastosować\x20zmiany\x20hierarchii.\x20Odśwież\x20i\x20spróbuj\x20ponownie.",
       parent: "Element nadrzędny",
       parentFieldName: "Elementy nadrzędne",
       children: "Podelementy",
       viewChildren: "Wyświetl podelementy",
       root: "Rekord główny",
-      setParent: "Ustaw element nadrzędny",
+      setParent: "Ustaw element nadrzędny"
     },
     collaboration: {
       localStatus: "Tryb lokalny",
@@ -104,19 +96,18 @@ const n = {
       syncingStatus: "Synchronizowanie",
       syncingTooltip: "Trwa synchronizacja zmian.",
       offlineStatus: "Nieaktywny",
-      offlineTooltip:
-        "Połączenie utracone. Kliknij, aby połączyć się ponownie.",
+      offlineTooltip: "Połączenie utracone. Kliknij, aby połączyć się ponownie.",
       conflictStatus: "Konflikt",
       conflictTooltip: "Konflikt związany ze współpracą wymaga uwagi.",
       notCollabStatus: "Brak\x20współpracy",
-      notCollabTooltip: "Ta baza nie jest w trybie współpracy.",
+      notCollabTooltip: "Ta baza nie jest w trybie współpracy."
     },
     virtualRecord: {
       regrouped: "Rekord zostanie ponownie zgrupowany",
       resorted: "Rekord zostanie ponownie posortowany",
       moved: "Rekord zostanie przeniesiony w tym widoku",
       filteredOut: "Rekord jest ukryty w tym widoku",
-      "delete d": "Rekord został usunięty",
+      "delete d": "Rekord został usunięty"
     },
     gridContext: {
       insert: "Wstaw",
@@ -126,7 +117,7 @@ const n = {
       addSubRecord: "Dodaj rekord podrzędny",
       clearContent: "Wyczyść treść",
       deleteRecord: "Usuń\x20rekord",
-      deleteRecords: "Usuń rekordy",
+      deleteRecords: "Usuń rekordy"
     },
     common: {
       apply: "Zastosuj",
@@ -141,7 +132,7 @@ const n = {
       searchClose: "Zamknij\x20wyszukiwanie",
       value: "Wartość",
       newCondition: "Nowy warunek",
-      newBadge: "Nowy",
+      newBadge: "Nowy"
     },
     footerStat: {
       none: "Brak",
@@ -160,17 +151,16 @@ const n = {
       sum: "Suma {0}",
       average: "Średnia {0}",
       min: "Min. {0}",
-      max: "Maks.\x20{0}",
+      max: "Maks.\x20{0}"
     },
     confirmDelete: {
       tableTitle: "Usunąć tę tabelę?",
       tableDescription: "Ta tabela i jej rekordy zostaną usunięte.",
-      tableReferenced:
-        "Nie\x20można\x20usunąć\x20tej\x20tabeli,\x20ponieważ\x20odwołują\x20się\x20do\x20niej\x20następujące\x20pola:\x20{0}.",
+      tableReferenced: "Nie\x20można\x20usunąć\x20tej\x20tabeli,\x20ponieważ\x20odwołują\x20się\x20do\x20niej\x20następujące\x20pola:\x20{0}.",
       viewTitle: "Usunąć ten widok?",
       viewDescription: "Ten widok zostanie usunięty.",
       fieldTitle: "Usunąć to pole?",
-      fieldDescription: "To\x20pole\x20zostanie\x20usunięte\x20z\x20tabeli.",
+      fieldDescription: "To\x20pole\x20zostanie\x20usunięte\x20z\x20tabeli."
     },
     duplicateTable: {
       title: "Duplikuj tabelę",
@@ -179,28 +169,26 @@ const n = {
       configurationsOnly: "Tylko\x20konfiguracje",
       configurationsAndRecords: "Konfiguracje\x20i\x20rekordy",
       action: "Duplikuj",
-      copyName: "{0} kopia",
+      copyName: "{0} kopia"
     },
     tableNameValidation: {
       required: "Wprowadź nazwę tabeli.",
       tooLong: "Użyj maksymalnie 31 znaków.",
-      apostrophe:
-        "Nazwa\x20tabeli\x20nie\x20może\x20zaczynać\x20się\x20ani\x20kończyć\x20apostrofem.",
+      apostrophe: "Nazwa\x20tabeli\x20nie\x20może\x20zaczynać\x20się\x20ani\x20kończyć\x20apostrofem.",
       invalidCharacters: "Nazwa tabeli nie może zawierać : \\ / ? * [ ].",
       duplicate: "Tabela o tej nazwie już istnieje.",
-      invalid: "Wprowadź prawidłową nazwę tabeli.",
+      invalid: "Wprowadź prawidłową nazwę tabeli."
     },
     clipboard: {
       recordsCopied: "Skopiowano\x20rekordy:\x20{0}",
-      attachmentsUploading: "Przesyłanie załączników: {0}...",
+      attachmentsUploading: "Przesyłanie załączników: {0}..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Tabela docelowa",
       recordLinkDisplayField: "Pole wyświetlane",
       recordLinkPickerFields: "Pola pomocnicze selektora",
       recordLinkAllowMultiple: "Zezwalaj na łączenie wielu rekordów",
-      recordLinkDescription:
-        "Przechowuje stabilne identyfikatory rekordów. Powiązane wartości można odczytać standardowymi formułami Excel, np. XLOOKUP i TEXTSPLIT.",
+      recordLinkDescription: "Przechowuje stabilne identyfikatory rekordów. Powiązane wartości można odczytać standardowymi formułami Excel, np. XLOOKUP i TEXTSPLIT.",
       fieldTitle: "Tytuł\x20pola",
       fieldTitlePlaceholder: "Wprowadź\x20tytuł\x20pola",
       fieldType: "Typ pola",
@@ -209,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Zaawansowane",
       defaultValue: "Wartość domyślna",
       newField: "Nowe pole",
-      defaultSettingsReady:
-        "Ten typ pola jest gotowy z ustawieniami domyślnymi.",
+      defaultSettingsReady: "Ten typ pola jest gotowy z ustawieniami domyślnymi.",
       numberFormat: "Format\x20liczby",
       currencyFormat: "Format waluty",
       dateFormat: "Format\x20daty",
@@ -257,16 +244,11 @@ const n = {
       createKanbanWithField: "Utwórz\x20Kanban\x20za\x20pomocą\x20{0}",
       deleteField: "Usuń pole",
       referenceOptionsHelp: "Dane referencyjne z innych tabel jako opcje",
-      allowMultipleMembers:
-        "Zezwalaj na dodawanie wielu członków w jednym rekordzie",
-      allowMultipleGroups:
-        "Zezwalaj na dodawanie wielu grup w jednym rekordzie",
-      defaultProviderMock:
-        "Wartość domyślna została rozwiązana na podstawie {0}makiety {1} elementu{2}.",
-      defaultProviderExternal:
-        "Wartość\x20domyślna\x20jest\x20ustalana\x20przez\x20zewnętrznego\x20dostawcę\x20Univer\x20{0}.",
-      linkPlaceholder:
-        "Wprowadź adres URL (np. univer.ai lub https://univer.ai/skills).",
+      allowMultipleMembers: "Zezwalaj na dodawanie wielu członków w jednym rekordzie",
+      allowMultipleGroups: "Zezwalaj na dodawanie wielu grup w jednym rekordzie",
+      defaultProviderMock: "Wartość domyślna została rozwiązana na podstawie {0}makiety {1} elementu{2}.",
+      defaultProviderExternal: "Wartość\x20domyślna\x20jest\x20ustalana\x20przez\x20zewnętrznego\x20dostawcę\x20Univer\x20{0}.",
+      linkPlaceholder: "Wprowadź adres URL (np. univer.ai lub https://univer.ai/skills).",
       phonePlaceholder: "Wpisz numer telefonu",
       currencySymbol: "Symbol\x20waluty",
       thousandsSeparator: "Separator\x20tysięcy",
@@ -299,10 +281,8 @@ const n = {
       noFormulaConfigured: "Nie skonfigurowano formuły",
       editFormula: "Edytuj formułę",
       closeFormulaEditor: "Zamknij edytor formuł",
-      formulaHint:
-        "Użyj pól bieżącego wiersza, takich jak [@[Kwota]]. Odniesienia A1:B10 i pojedyncze komórki są niedozwolone.",
-      formulaReferenceError:
-        "Odwołania i zakresy A1 nie są obsługiwane w formułach podstawowych.",
+      formulaHint: "Użyj pól bieżącego wiersza, takich jak [@[Kwota]]. Odniesienia A1:B10 i pojedyncze komórki są niedozwolone.",
+      formulaReferenceError: "Odwołania i zakresy A1 nie są obsługiwane w formułach podstawowych.",
       formulaTables: "Stoły",
       formulaFields: "Pola",
       formulaFunctions: "Funkcje",
@@ -315,8 +295,7 @@ const n = {
       currentTableName: "Bieżąca tabela",
       currentTableField: "Bieżące pole tabeli",
       fieldFromTable: "Pole\x20z\x20{0}",
-      referenceCurrentField:
-        "Odwołaj\x20się\x20do\x20pola\x20„{0}”\x20w\x20bieżącej\x20tabeli\x20Base.\x20Dla\x20aparatu\x20formuł\x20zostanie\x20ono\x20zapisane\x20jako\x20[[#This\x20Row],[{1}]].",
+      referenceCurrentField: "Odwołaj\x20się\x20do\x20pola\x20„{0}”\x20w\x20bieżącej\x20tabeli\x20Base.\x20Dla\x20aparatu\x20formuł\x20zostanie\x20ono\x20zapisane\x20jako\x20[[#This\x20Row],[{1}]].",
       referenceTableField: "Odwołaj się do pola „{0}” z tabeli „{1}”.",
       fieldNameColumn: "Nazwa",
       fieldTypeColumn: "Typ",
@@ -332,8 +311,7 @@ const n = {
       formulaFormatPercent: "Procent",
       formulaFormatDateTime: "Data\x20/\x20godzina",
       addDescriptionPlaceholder: "Dodaj opis",
-      numberingDescription:
-        "Automatycznie\x20przypisuje\x20unikalny\x20rosnący\x20indeks\x20zaczynając\x20od\x201\x20podczas\x20tworzenia\x20rekordu.\x20Wygenerowanych\x20wartości\x20nie\x20można\x20edytować.",
+      numberingDescription: "Automatycznie\x20przypisuje\x20unikalny\x20rosnący\x20indeks\x20zaczynając\x20od\x201\x20podczas\x20tworzenia\x20rekordu.\x20Wygenerowanych\x20wartości\x20nie\x20można\x20edytować.",
       optionColor: "Kolor\x20opcji",
       separatorLocal: "Lokalny",
       separatorCommaPeriod: "Przecinek, kropka",
@@ -358,7 +336,7 @@ const n = {
       ratingIconLightning: "Błyskawica",
       ratingIconMedal: "Medal",
       increment: "przyrost",
-      decrement: "ubytek",
+      decrement: "ubytek"
     },
     cellEditor: {
       done: "Zrobione",
@@ -374,8 +352,7 @@ const n = {
       deleteAttachment: "Usuń załącznik {0}",
       deleteAttachmentConfirmTitle: "Usunąć ten załącznik?",
       deleteAttachmentsConfirmTitle: "Usunąć\x20{0}\x20załączników?",
-      deleteAttachmentConfirmDescription:
-        "Wybrane załączniki zostaną usunięte z tego rekordu.",
+      deleteAttachmentConfirmDescription: "Wybrane załączniki zostaną usunięte z tego rekordu.",
       failedToAttachFile: "Nie\x20udało\x20się\x20załączyć\x20pliku",
       file: "PLIK",
       invalidEmail: "Nieprawidłowy adres e-mail",
@@ -386,7 +363,7 @@ const n = {
       selectOptions: "Wybierz\x20opcje",
       previousMonth: "Poprzedni miesiąc",
       nextMonth: "Przyszły miesiąc",
-      time: "Czas",
+      time: "Czas"
     },
     recordDetailField: {
       previousRecord: "Poprzedni rekord",
@@ -399,7 +376,7 @@ const n = {
       empty: "Puste",
       unassigned: "Nieprzypisany",
       editField: "Edytuj\x20{0}",
-      noVisibleFields: "Brak widocznych pól",
+      noVisibleFields: "Brak widocznych pól"
     },
     fieldMenu: {
       createSharedBaseField: "Utwórz wspólne pole podstawowe",
@@ -430,8 +407,8 @@ const n = {
         createdBy: "Pole\x20autora\x20systemu",
         updatedBy: "Pole modyfikatora systemu",
         createdAt: "Czas\x20stworzony\x20przez\x20system",
-        updatedAt: "Czas\x20aktualizacji\x20systemu",
-      },
+        updatedAt: "Czas\x20aktualizacji\x20systemu"
+      }
     },
     fieldTypes: {
       text: "Tekst",
@@ -455,7 +432,7 @@ const n = {
       createdBy: "Stworzony przez",
       updatedBy: "Zmodyfikowany\x20przez",
       createdAt: "Data utworzenia",
-      updatedAt: "Data ostatniej modyfikacji",
+      updatedAt: "Data ostatniej modyfikacji"
     },
     viewMenus: {
       customizeKanban: "Dostosuj\x20Kanbana",
@@ -493,24 +470,20 @@ const n = {
       addCondition: "Dodaj warunek",
       calculateWorkingDaysOnly: "Oblicz tylko dni robocze",
       customWorkingDays: "Niestandardowe dni robocze",
-      customWorkingDaysHelp:
-        "Dostosuj\x20dni\x20robocze\x20i\x20dni\x20wolne\x20dla\x20tego\x20widoku\x20Gantta.\x20Jeżeli\x20nie\x20jest\x20ustawiony,\x20gdy\x20włączone\x20jest\x20obliczanie\x20dni\x20roboczych,\x20używane\x20są\x20dni\x20od\x20poniedziałku\x20do\x20piątku.",
+      customWorkingDaysHelp: "Dostosuj\x20dni\x20robocze\x20i\x20dni\x20wolne\x20dla\x20tego\x20widoku\x20Gantta.\x20Jeżeli\x20nie\x20jest\x20ustawiony,\x20gdy\x20włączone\x20jest\x20obliczanie\x20dni\x20roboczych,\x20używane\x20są\x20dni\x20od\x20poniedziałku\x20do\x20piątku.",
       notSet: "Nie ustawiono",
       settings: "Ustawienia",
       setWorkingDays: "Ustaw dni robocze",
-      setWorkingDaysDescription:
-        "Dostosuj dni robocze i dni wolne i zastosuj je do aktualnej bazy",
+      setWorkingDaysDescription: "Dostosuj dni robocze i dni wolne i zastosuj je do aktualnej bazy",
       closeWorkingDaysSettings: "Zamknij ustawienia dni roboczych",
       addWorkingDays: "Dodaj dni robocze",
       holidayName: "Nazwa wakacji",
       dayOff: "Dzień wolny od pracy",
       working: "Pracujący",
       add: "Dodać",
-      removeWorkingDayException:
-        "Usuń\x20wyjątek\x20dotyczący\x20dnia\x20roboczego",
+      removeWorkingDayException: "Usuń\x20wyjątek\x20dotyczący\x20dnia\x20roboczego",
       legalWorkingDays: "Legalne dni pracy",
-      legalWorkingDaysHelp:
-        "Legalne dni robocze będą dostępne po podłączeniu zewnętrznego API kalendarza.",
+      legalWorkingDaysHelp: "Legalne dni robocze będą dostępne po podłączeniu zewnętrznego API kalendarza.",
       mon: "pon",
       tue: "wt",
       wed: "śr.",
@@ -527,8 +500,7 @@ const n = {
       groupByFieldFallback: "Grupuj według pól",
       kanbanGroup: "Grupa Kanbana",
       required: "Wymagany",
-      kanbanGroupHelp:
-        "Widoki\x20Kanban\x20zawsze\x20wykorzystują\x20jedno\x20pole\x20grupy.",
+      kanbanGroupHelp: "Widoki\x20Kanban\x20zawsze\x20wykorzystują\x20jedno\x20pole\x20grupy."
     },
     operators: {
       is: "Jest",
@@ -540,7 +512,7 @@ const n = {
       greaterThan: "większy niż",
       lessThan: "mniej niż",
       before: "jest wcześniej",
-      after: "jest po",
+      after: "jest po"
     },
     viewSettings: {
       title: "Ustawienia widoku",
@@ -563,16 +535,14 @@ const n = {
       gridView: "Siatka",
       gridViewDescription: "Wiersze i pola do szczegółowej edycji.",
       kanbanView: "Kanban",
-      kanbanViewDescription:
-        "Karty\x20pogrupowane\x20według\x20pola\x20wyboru.",
+      kanbanViewDescription: "Karty\x20pogrupowane\x20według\x20pola\x20wyboru.",
       calendarView: "Kalendarz",
       calendarViewDescription: "Zapisy ułożone według daty.",
       ganttView: "Gantta",
-      ganttViewDescription:
-        "Oś\x20czasu\x20z\x20datami\x20rozpoczęcia\x20i\x20zakończenia.",
+      ganttViewDescription: "Oś\x20czasu\x20z\x20datami\x20rozpoczęcia\x20i\x20zakończenia.",
       galleryView: "Galeria",
       galleryViewDescription: "Karty wizualne do przeglądania zapisów.",
-      copySuffix: "Kopia",
+      copySuffix: "Kopia"
     },
     tableSidebar: {
       searchTables: "Przeszukaj tabele",
@@ -585,9 +555,12 @@ const n = {
       renameTable: "Zmień\x20nazwę\x20tabeli",
       duplicateTable: "Duplikat tabeli",
       deleteTable: "Usuń tabelę",
-      defaultTableName: "Tabela\x20{0}",
+      defaultTableName: "Tabela\x20{0}"
     },
-    footer: { record: "nagrywać", records: "dokumentacja" },
+    footer: {
+      record: "nagrywać",
+      records: "dokumentacja"
+    },
     canvas: {
       addRecord: "Dodaj rekord",
       attachmentDropLabel: "Dodaj\x20pliki\x20do\x20tego\x20rekordu",
@@ -600,12 +573,12 @@ const n = {
       quarter: "Kwartał",
       today: "Dzisiaj",
       week: "Tydzień",
-      year: "Rok",
+      year: "Rok"
     },
     empty: {
       value: "Puste",
       noRecords: "Brak\x20rekordów",
-      invalidView: "Ten widok należy skonfigurować",
+      invalidView: "Ten widok należy skonfigurować"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -623,19 +596,17 @@ const n = {
         engineering: "Inżynieria",
         financial: "Budżetowy",
         lookup: "Wyszukiwanie i odniesienie",
-        web: "Sieć",
+        web: "Sieć"
       },
       generic: {
         engineAbstract: "Funkcja\x20silnika\x20formuł\x20{0}",
-        engineDescription:
-          "{0} jest udostępniany przez silnik formuł Univer. Base obsługuje odniesienia do pól, takie jak TableName[[#This Row],[Field]] i OtherTable[Pole], ale nie obsługuje komórek A1, zakresów A1:B10 ani wyników rozproszonej tablicy w polach formuły Base.",
+        engineDescription: "{0} jest udostępniany przez silnik formuł Univer. Base obsługuje odniesienia do pól, takie jak TableName[[#This Row],[Field]] i OtherTable[Pole], ale nie obsługuje komórek A1, zakresów A1:B10 ani wyników rozproszonej tablicy w polach formuły Base.",
         argument: {
           name: "argument",
-          detail:
-            "Wartość, odwołanie do pola, odwołanie do pola tabeli lub wyrażenie obsługiwane przez aparat formuł Univer.",
-        },
-      },
-    },
-  },
+          detail: "Wartość, odwołanie do pola, odwołanie do pola tabeli lub wyrażenie obsługiwane przez aparat formuł Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;

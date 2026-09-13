@@ -1,1 +1,251 @@
-Object.defineProperty(exports,Symbol.toStringTag,{value:"Module"});let e=require("@univerjs-pro/boards"),t=require("@univerjs-pro/edit-history"),n=require("@univerjs-pro/license"),r=require("@univerjs/core"),i=require("@univerjs/protocol");var a="@univerjs-pro/boards-history",o="1.0.0-insiders.20260907-70fc579";const s={};function c(v52,v53){return function(v16,v17){v53(v16,v17,v52);};}function l(v54,v55,v56,v57){var v58=ox3716e4,v59=arguments.length,v60=v59<3?v55:v57===null?v57=Object[v58(468)](v55,v56):v57,v61;if(typeof Reflect==v58(473)&&typeof Reflect[v58(471)]=="function")v60=Reflect[v58(471)](v54,v55,v56,v57);else{for(var v62=v54.length-1;v62>=0;v62--)(v61=v54[v62])&&(v60=(v59<3?v61(v60):v59>3?v61(v55,v56,v60):v61(v55,v56))||v60);}return v59>3&&v60&&Object[v58(442)](v55,v56,v60),v60;}let u=class extends r.Disposable{constructor(v18,v19,v20){super(),this._authzIoService=v19,this._univerInstanceService=v20,this.disposeWithMe(v18.register({type:r.UniverInstanceType["UNIVER_BOARD"],canView:v1=>this._hasPermission(v1,i.UnitAction["ViewHistory"]),canRevert:v2=>!!this._getBoard(v2)&&this._hasPermission(v2,i.UnitAction["RecoverHistory"]),captureLocation:v3=>{var v4=ox5a261a,v5;return{pageId:(v5=this[v4(403)](v3))==null?undefined:v5[v4(460)]()};},restoreLocation:()=>undefined}));}_getBoard(v21){return this._univerInstanceService["getUnit"](v21,r.UniverInstanceType["UNIVER_BOARD"])??null;}async _hasPermission(v22,v23){return(await this._authzIoService["allowed"]({unitID:v22,objectID:v22,objectType:i.UnitObject["Board"],actions:[v23]})).some(v6=>v6.action===v23&&v6.allowed);}};u=l([c(0,(0,r.Inject)(t.HistoryUnitAdapterRegistryService)),c(1,r.IAuthzIoService),c(2,r.IUniverInstanceService)],u);function d(v63){return v63.flatMap((v24,v25)=>p(v24.mutation["params"]).map((v7,v8)=>({id:v24.revision+":"+v25+":"+v8,kind:f(v24.mutation["id"]),label:v7.elementId?"board:element":"board:page",memberId:v24.memberId,pageId:v7.pageId,elementId:v7.elementId})));}function f(v64){return v64===e.AddBoardElementMutation["id"]?"insert":v64===e.RemoveBoardElementMutation["id"]||v64===e.RemoveBoardElementOnlyMutation["id"]?"delete":"update";}function p(v65){if(!v(v65))return[];let v66=m(v65,"subUnitId")??m(v65,"pageId");if(!v66)return[];let v67=[m(v65,"elementId"),h(v65,"element"),..._(v65,"elementIds"),...g(v65,"elements")].filter(v26=>!!v26),v68=[...new Set(v67)];return v68.length?v68.map(v27=>({pageId:v66,elementId:v27})):[{pageId:v66}];}function m(v69,v70){return typeof v69[v70]=="string"?v69[v70]:undefined;}function h(v71,v72){if(v(v71[v72]))return m(v71[v72],"id")??m(v71[v72],"elementId");}function g(v73,v74){return Array.isArray(v73[v74])?v73[v74].flatMap(v28=>v(v28)?[m(v28,"id")??m(v28,"elementId")].filter(v9=>!!v9):[]):[];}function _(v75,v76){return Array.isArray(v75[v76])?v75[v76].filter(v29=>typeof v29=="string"):[];}function v(v77){return typeof v77=="object"&&!!v77;}let y=class{constructor(v30){this._mutationService=v30;}async compare(v31,v32){return d(await this._mutationService["load"](v31,v32));}};y=l([c(0,(0,r.Inject)(t.HistoryMutationService))],y);function b(v78){"@babel/helpers - typeof";return b=typeof Symbol=="function"&&typeof Symbol.iterator=="symbol"?function(v33){return typeof v33;}:function(v34){return v34&&typeof Symbol=="function"&&v34.constructor===Symbol&&v34!==Symbol.prototype?"symbol":typeof v34;},b(v78);}function x(v79,v80){if(b(v79)!="object"||!v79)return v79;var v81=v79[Symbol.toPrimitive];if(v81!==undefined){var v82=v81.call(v79,v80||"default");if(b(v82)!="object")return v82;throw TypeError("@@toPrimitive must return a primitive value.");}return(v80==="string"?String:Number)(v79);}function S(v83){var v84=ox3716e4,v85=x(v83,v84(386));return b(v85)==v84(443)?v85:v85+"";}function C(v86,v87,v88){return(v87=S(v87))in v86?Object.defineProperty(v86,v87,{value:v88,enumerable:true,configurable:true,writable:true}):v86[v87]=v88,v86;}const w=[t.UnitComparisonEntityType["UNIT"],t.UnitComparisonEntityType["BOARD_PAGE"],t.UnitComparisonEntityType["BOARD_ELEMENT"],t.UnitComparisonEntityType["BOARD_THEME"],t.UnitComparisonEntityType["BOARD_CHART"],t.UnitComparisonEntityType["BOARD_CHART_DATA"],t.UnitComparisonEntityType["BOARD_TABLE"]],T=(0,t.withoutComparisonKeys)("pages","pageOrder","slides","slideOrder","elements","resources","theme","rev","activePageId","activeSlideId","zoomRatio");var E=class{constructor(){C(this,"type",r.UniverInstanceType["UNIVER_BOARD"]);}compare(v35){let v36=(0,t.asRecord)(v35.leftData),v37=(0,t.asRecord)(v35.rightData),v38=D(v36),v39=D(v37),v40=v38.pages,v41=v39.pages,v42=new Set([...Object.keys(v40??{}),...Object.keys(v41??{})]),v43=(0,t.withoutComparisonKeys)("elements","elementOrder"),v44=(0,t.recordComparisonEntries)(v40,v38.order,v43),v45=(0,t.recordComparisonEntries)(v41,v39.order,v43),v46=[...O(t.UnitComparisonEntityType["UNIT"],T(v36),T(v37)),...(0,t.buildSemanticComparisonItems)({entityType:t.UnitComparisonEntityType["BOARD_PAGE"],left:v44,right:v45}),...[...v42].flatMap(v10=>{var v11=ox2d491d,v12,v13,v14,v15;return(0,t.buildSemanticComparisonItems)({entityType:t[v11(362)][v11(472)],parentStableId:v10,left:(0,t.recordComparisonEntries)((v12=(0,t[v11(376)])(v40==null?undefined:v40[v10]))==null?undefined:v12[v11(400)],(v13=(0,t.asRecord)(v40==null?undefined:v40[v10]))==null?undefined:v13.elementOrder),right:(0,t[v11(475)])((v14=(0,t[v11(376)])(v41==null?undefined:v41[v10]))==null?undefined:v14[v11(400)],(v15=(0,t[v11(376)])(v41==null?undefined:v41[v10]))==null?undefined:v15[v11(474)])});}),...(0,t.buildSemanticComparisonItems)({entityType:t.UnitComparisonEntityType["BOARD_ELEMENT"],left:(0,t.recordComparisonEntries)(v36==null?undefined:v36.elements,undefined),right:(0,t.recordComparisonEntries)(v37==null?undefined:v37.elements,undefined)}),...O(t.UnitComparisonEntityType["BOARD_THEME"],v36==null?undefined:v36.theme,v37==null?undefined:v37.theme),...k(t.UnitComparisonEntityType["BOARD_CHART"],v35,"BOARD_CHART_PLUGIN","charts"),...k(t.UnitComparisonEntityType["BOARD_CHART_DATA"],v35,"BOARD_CHART_PLUGIN","dataSources"),...k(t.UnitComparisonEntityType["BOARD_TABLE"],v35,"BOARD_TABLE_PLUGIN","tables")],v47=(0,t.buildScopedUnitComparison)({entityType:t.UnitComparisonEntityType["BOARD_PAGE"],items:v46,left:v44,right:v45,references:{left:(0,t.recordComparisonEntries)(v40,v38.order),right:(0,t.recordComparisonEntries)(v41,v39.order)}});return{items:v47.items,supportedEntityTypes:w,scopes:v47.scopes,productContext:{type:r.UniverInstanceType["UNIVER_BOARD"]}};}};function D(v89){let v90=(0,t.asRecord)(v89==null?undefined:v89.slides),v91=v89==null?undefined:v89.slideOrder;return Array.isArray(v91)&&v91.length>0||v90!==undefined&&Object.keys(v90).length>0?{pages:v90,order:v91}:{pages:(0,t.asRecord)(v89==null?undefined:v89.pages),order:v89==null?undefined:v89.pageOrder};}function O(v92,v93,v94){return(0,t.buildSemanticComparisonItems)({entityType:v92,left:v93===undefined?[]:[{stableId:"root",position:0,value:v93}],right:v94===undefined?[]:[{stableId:"root",position:0,value:v94}]});}function k(v95,v96,v97,v98){return(0,t.buildSemanticComparisonItems)({entityType:v95,left:(0,t.resourceComparisonEntries)(v96.leftData,v97,v98),right:(0,t.resourceComparisonEntries)(v96.rightData,v97,v98)});}let A=class extends r.Plugin{constructor(v48=s,v49,v50){super(),this._config=v48,this._injector=v49,this._configService=v50;let{...v51}=(0,r.merge)({},s,this._config);this._configService["setConfig"]("boards-history.config",v51);}onStarting(){(0,r.registerDependencies)(this._injector,[[y],[u],[E]]),this.disposeWithMe(this._injector["get"](t.UnitComparisonAdapterRegistryService).register(this._injector["get"](E))),this._injector["get"](u);}};C(A,"pluginName","UNIVER_BOARDS_HISTORY_PLUGIN"),C(A,"packageName",a),C(A,"version",o),C(A,"type",r.UniverInstanceType["UNIVER_BOARD"]),A=l([(0,r.DependentOn)(n.UniverLicensePlugin,t.UniverEditHistoryPlugin,e.UniverBoardsPlugin),c(1,(0,r.Inject)(r.Injector)),c(2,r.IConfigService)],A),Object.defineProperty(exports,"BoardsHistoryDiffService",{enumerable:true,get:function(){return y;}}),exports.BoardsUnitComparisonAdapter=E,Object.defineProperty(exports,"UniverBoardsHistoryPlugin",{enumerable:true,get:function(){return A;}});
+Object.defineProperty(exports, Symbol.toStringTag, {
+  value: "Module"
+});
+let e = require("@univerjs-pro/boards"),
+  t = require("@univerjs-pro/edit-history"),
+  n = require("@univerjs-pro/license"),
+  r = require("@univerjs/core"),
+  i = require("@univerjs/protocol");
+var a = "@univerjs-pro/boards-history",
+  o = "1.0.0-insiders.20260907-70fc579";
+const s = {};
+function c(var_core_value_sigE92A, var_core_value_sig362B) {
+  return function (var_core_value_sig2BCF, var_core_value_sig0D69) {
+    var_core_value_sig362B(var_core_value_sig2BCF, var_core_value_sig0D69, var_core_value_sigE92A);
+  };
+}
+function l(var_core_value_sig5CA5, var_core_value_sigE90F, var_core_value_sigEFD4, var_core_value_sig861B) {
+  var var_core_value_sig5237 = ox3716e4,
+    var_core_value_sigBB00 = arguments.length,
+    var_core_value_sig7E54 = var_core_value_sigBB00 < 3 ? var_core_value_sigE90F : var_core_value_sig861B === null ? var_core_value_sig861B = Object[var_core_value_sig5237(468)](var_core_value_sigE90F, var_core_value_sigEFD4) : var_core_value_sig861B,
+    var_core_value_sig9A8D;
+  if (typeof Reflect == var_core_value_sig5237(473) && typeof Reflect[var_core_value_sig5237(471)] == "function") var_core_value_sig7E54 = Reflect[var_core_value_sig5237(471)](var_core_value_sig5CA5, var_core_value_sigE90F, var_core_value_sigEFD4, var_core_value_sig861B);else {
+    for (var var_core_value_sigC259 = var_core_value_sig5CA5.length - 1; var_core_value_sigC259 >= 0; var_core_value_sigC259--) (var_core_value_sig9A8D = var_core_value_sig5CA5[var_core_value_sigC259]) && (var_core_value_sig7E54 = (var_core_value_sigBB00 < 3 ? var_core_value_sig9A8D(var_core_value_sig7E54) : var_core_value_sigBB00 > 3 ? var_core_value_sig9A8D(var_core_value_sigE90F, var_core_value_sigEFD4, var_core_value_sig7E54) : var_core_value_sig9A8D(var_core_value_sigE90F, var_core_value_sigEFD4)) || var_core_value_sig7E54);
+  }
+  return var_core_value_sigBB00 > 3 && var_core_value_sig7E54 && Object[var_core_value_sig5237(442)](var_core_value_sigE90F, var_core_value_sigEFD4, var_core_value_sig7E54), var_core_value_sig7E54;
+}
+let u = class extends r.Disposable {
+  constructor(var_core_value_sig480E, var_core_value_sig26DB, var_core_value_sigF0F9) {
+    super(), this._authzIoService = var_core_value_sig26DB, this._univerInstanceService = var_core_value_sigF0F9, this.disposeWithMe(var_core_value_sig480E.register({
+      type: r.UniverInstanceType["UNIVER_BOARD"],
+      canView: var_core_value_sig7524 => this._hasPermission(var_core_value_sig7524, i.UnitAction["ViewHistory"]),
+      canRevert: var_core_value_sig2AD8 => !!this._getBoard(var_core_value_sig2AD8) && this._hasPermission(var_core_value_sig2AD8, i.UnitAction["RecoverHistory"]),
+      captureLocation: var_core_value_sig2AD0 => {
+        var var_core_value_sig3EEE = ox5a261a,
+          var_core_value_sigBC46;
+        return {
+          pageId: (var_core_value_sigBC46 = this[var_core_value_sig3EEE(403)](var_core_value_sig2AD0)) == null ? undefined : var_core_value_sigBC46[var_core_value_sig3EEE(460)]()
+        };
+      },
+      restoreLocation: () => undefined
+    }));
+  }
+  _getBoard(var_core_value_sig1A0F) {
+    return this._univerInstanceService["getUnit"](var_core_value_sig1A0F, r.UniverInstanceType["UNIVER_BOARD"]) ?? null;
+  }
+  async _hasPermission(var_core_value_sigFBA4, var_core_value_sig4383) {
+    return (await this._authzIoService["allowed"]({
+      unitID: var_core_value_sigFBA4,
+      objectID: var_core_value_sigFBA4,
+      objectType: i.UnitObject["Board"],
+      actions: [var_core_value_sig4383]
+    })).some(var_core_value_sig3D7D => var_core_value_sig3D7D.action === var_core_value_sig4383 && var_core_value_sig3D7D.allowed);
+  }
+};
+u = l([c(0, (0, r.Inject)(t.HistoryUnitAdapterRegistryService)), c(1, r.IAuthzIoService), c(2, r.IUniverInstanceService)], u);
+function d(var_core_value_sig9C9F) {
+  return var_core_value_sig9C9F.flatMap((var_core_value_sig186C, var_core_value_sigD955) => p(var_core_value_sig186C.mutation["params"]).map((var_core_value_sig27E5, var_core_value_sig8061) => ({
+    id: var_core_value_sig186C.revision + ":" + var_core_value_sigD955 + ":" + var_core_value_sig8061,
+    kind: f(var_core_value_sig186C.mutation["id"]),
+    label: var_core_value_sig27E5.elementId ? "board:element" : "board:page",
+    memberId: var_core_value_sig186C.memberId,
+    pageId: var_core_value_sig27E5.pageId,
+    elementId: var_core_value_sig27E5.elementId
+  })));
+}
+function f(var_core_value_sigFDEA) {
+  return var_core_value_sigFDEA === e.AddBoardElementMutation["id"] ? "insert" : var_core_value_sigFDEA === e.RemoveBoardElementMutation["id"] || var_core_value_sigFDEA === e.RemoveBoardElementOnlyMutation["id"] ? "delete" : "update";
+}
+function p(var_core_value_sig86D0) {
+  if (!v(var_core_value_sig86D0)) return [];
+  let var_core_value_sig4CD2 = m(var_core_value_sig86D0, "subUnitId") ?? m(var_core_value_sig86D0, "pageId");
+  if (!var_core_value_sig4CD2) return [];
+  let var_core_value_sig48CA = [m(var_core_value_sig86D0, "elementId"), h(var_core_value_sig86D0, "element"), ..._(var_core_value_sig86D0, "elementIds"), ...g(var_core_value_sig86D0, "elements")].filter(var_core_value_sig48BD => !!var_core_value_sig48BD),
+    var_core_value_sig50AF = [...new Set(var_core_value_sig48CA)];
+  return var_core_value_sig50AF.length ? var_core_value_sig50AF.map(var_core_value_sig429F => ({
+    pageId: var_core_value_sig4CD2,
+    elementId: var_core_value_sig429F
+  })) : [{
+    pageId: var_core_value_sig4CD2
+  }];
+}
+function m(var_core_value_sigA942, var_core_value_sigA621) {
+  return typeof var_core_value_sigA942[var_core_value_sigA621] == "string" ? var_core_value_sigA942[var_core_value_sigA621] : undefined;
+}
+function h(var_core_value_sigBBFF, var_core_value_sig8889) {
+  if (v(var_core_value_sigBBFF[var_core_value_sig8889])) return m(var_core_value_sigBBFF[var_core_value_sig8889], "id") ?? m(var_core_value_sigBBFF[var_core_value_sig8889], "elementId");
+}
+function g(var_core_value_sig32F8, var_core_value_sig5B67) {
+  return Array.isArray(var_core_value_sig32F8[var_core_value_sig5B67]) ? var_core_value_sig32F8[var_core_value_sig5B67].flatMap(var_core_value_sigF62A => v(var_core_value_sigF62A) ? [m(var_core_value_sigF62A, "id") ?? m(var_core_value_sigF62A, "elementId")].filter(var_core_value_sig4D4C => !!var_core_value_sig4D4C) : []) : [];
+}
+function _(var_core_value_sig1758, var_core_value_sig4805) {
+  return Array.isArray(var_core_value_sig1758[var_core_value_sig4805]) ? var_core_value_sig1758[var_core_value_sig4805].filter(var_core_value_sig8178 => typeof var_core_value_sig8178 == "string") : [];
+}
+function v(var_core_value_sigE67E) {
+  return typeof var_core_value_sigE67E == "object" && !!var_core_value_sigE67E;
+}
+let y = class {
+  constructor(var_core_value_sigE9ED) {
+    this._mutationService = var_core_value_sigE9ED;
+  }
+  async compare(var_core_value_sigB577, var_core_value_sig9572) {
+    return d(await this._mutationService["load"](var_core_value_sigB577, var_core_value_sig9572));
+  }
+};
+y = l([c(0, (0, r.Inject)(t.HistoryMutationService))], y);
+function b(var_core_value_sig2902) {
+  "@babel/helpers - typeof";
+
+  return b = typeof Symbol == "function" && typeof Symbol.iterator == "symbol" ? function (var_core_value_sigD873) {
+    return typeof var_core_value_sigD873;
+  } : function (var_core_value_sigA12B) {
+    return var_core_value_sigA12B && typeof Symbol == "function" && var_core_value_sigA12B.constructor === Symbol && var_core_value_sigA12B !== Symbol.prototype ? "symbol" : typeof var_core_value_sigA12B;
+  }, b(var_core_value_sig2902);
+}
+function x(var_core_value_sig9989, var_core_value_sig698E) {
+  if (b(var_core_value_sig9989) != "object" || !var_core_value_sig9989) return var_core_value_sig9989;
+  var var_core_value_sig2809 = var_core_value_sig9989[Symbol.toPrimitive];
+  if (var_core_value_sig2809 !== undefined) {
+    var var_core_value_sig2DAB = var_core_value_sig2809.call(var_core_value_sig9989, var_core_value_sig698E || "default");
+    if (b(var_core_value_sig2DAB) != "object") return var_core_value_sig2DAB;
+    throw TypeError("@@toPrimitive must return a primitive value.");
+  }
+  return (var_core_value_sig698E === "string" ? String : Number)(var_core_value_sig9989);
+}
+function S(var_core_value_sig877E) {
+  var var_core_value_sig20C8 = ox3716e4,
+    var_core_value_sigE9A7 = x(var_core_value_sig877E, var_core_value_sig20C8(386));
+  return b(var_core_value_sigE9A7) == var_core_value_sig20C8(443) ? var_core_value_sigE9A7 : var_core_value_sigE9A7 + "";
+}
+function C(var_core_value_sigBECE, var_core_value_sig1B22, var_core_value_sig7F72) {
+  return (var_core_value_sig1B22 = S(var_core_value_sig1B22)) in var_core_value_sigBECE ? Object.defineProperty(var_core_value_sigBECE, var_core_value_sig1B22, {
+    value: var_core_value_sig7F72,
+    enumerable: true,
+    configurable: true,
+    writable: true
+  }) : var_core_value_sigBECE[var_core_value_sig1B22] = var_core_value_sig7F72, var_core_value_sigBECE;
+}
+const w = [t.UnitComparisonEntityType["UNIT"], t.UnitComparisonEntityType["BOARD_PAGE"], t.UnitComparisonEntityType["BOARD_ELEMENT"], t.UnitComparisonEntityType["BOARD_THEME"], t.UnitComparisonEntityType["BOARD_CHART"], t.UnitComparisonEntityType["BOARD_CHART_DATA"], t.UnitComparisonEntityType["BOARD_TABLE"]],
+  T = (0, t.withoutComparisonKeys)("pages", "pageOrder", "slides", "slideOrder", "elements", "resources", "theme", "rev", "activePageId", "activeSlideId", "zoomRatio");
+var E = class {
+  constructor() {
+    C(this, "type", r.UniverInstanceType["UNIVER_BOARD"]);
+  }
+  compare(var_core_value_sigF230) {
+    let var_core_value_sig09B8 = (0, t.asRecord)(var_core_value_sigF230.leftData),
+      var_core_value_sig6F91 = (0, t.asRecord)(var_core_value_sigF230.rightData),
+      var_core_value_sigF9C7 = D(var_core_value_sig09B8),
+      var_core_value_sig8895 = D(var_core_value_sig6F91),
+      var_core_value_sigC80B = var_core_value_sigF9C7.pages,
+      var_core_value_sig284F = var_core_value_sig8895.pages,
+      var_core_value_sigE154 = new Set([...Object.keys(var_core_value_sigC80B ?? {}), ...Object.keys(var_core_value_sig284F ?? {})]),
+      var_core_value_sig4632 = (0, t.withoutComparisonKeys)("elements", "elementOrder"),
+      var_core_value_sig12F2 = (0, t.recordComparisonEntries)(var_core_value_sigC80B, var_core_value_sigF9C7.order, var_core_value_sig4632),
+      var_core_value_sig2259 = (0, t.recordComparisonEntries)(var_core_value_sig284F, var_core_value_sig8895.order, var_core_value_sig4632),
+      var_core_value_sig9E2F = [...O(t.UnitComparisonEntityType["UNIT"], T(var_core_value_sig09B8), T(var_core_value_sig6F91)), ...(0, t.buildSemanticComparisonItems)({
+        entityType: t.UnitComparisonEntityType["BOARD_PAGE"],
+        left: var_core_value_sig12F2,
+        right: var_core_value_sig2259
+      }), ...[...var_core_value_sigE154].flatMap(var_core_value_sigC9E0 => {
+        var var_core_value_sig76BA = ox2d491d,
+          var_core_value_sigFBFA,
+          var_core_value_sigF602,
+          var_core_value_sig1BBD,
+          var_core_value_sigF704;
+        return (0, t.buildSemanticComparisonItems)({
+          entityType: t[var_core_value_sig76BA(362)][var_core_value_sig76BA(472)],
+          parentStableId: var_core_value_sigC9E0,
+          left: (0, t.recordComparisonEntries)((var_core_value_sigFBFA = (0, t[var_core_value_sig76BA(376)])(var_core_value_sigC80B == null ? undefined : var_core_value_sigC80B[var_core_value_sigC9E0])) == null ? undefined : var_core_value_sigFBFA[var_core_value_sig76BA(400)], (var_core_value_sigF602 = (0, t.asRecord)(var_core_value_sigC80B == null ? undefined : var_core_value_sigC80B[var_core_value_sigC9E0])) == null ? undefined : var_core_value_sigF602.elementOrder),
+          right: (0, t[var_core_value_sig76BA(475)])((var_core_value_sig1BBD = (0, t[var_core_value_sig76BA(376)])(var_core_value_sig284F == null ? undefined : var_core_value_sig284F[var_core_value_sigC9E0])) == null ? undefined : var_core_value_sig1BBD[var_core_value_sig76BA(400)], (var_core_value_sigF704 = (0, t[var_core_value_sig76BA(376)])(var_core_value_sig284F == null ? undefined : var_core_value_sig284F[var_core_value_sigC9E0])) == null ? undefined : var_core_value_sigF704[var_core_value_sig76BA(474)])
+        });
+      }), ...(0, t.buildSemanticComparisonItems)({
+        entityType: t.UnitComparisonEntityType["BOARD_ELEMENT"],
+        left: (0, t.recordComparisonEntries)(var_core_value_sig09B8 == null ? undefined : var_core_value_sig09B8.elements, undefined),
+        right: (0, t.recordComparisonEntries)(var_core_value_sig6F91 == null ? undefined : var_core_value_sig6F91.elements, undefined)
+      }), ...O(t.UnitComparisonEntityType["BOARD_THEME"], var_core_value_sig09B8 == null ? undefined : var_core_value_sig09B8.theme, var_core_value_sig6F91 == null ? undefined : var_core_value_sig6F91.theme), ...k(t.UnitComparisonEntityType["BOARD_CHART"], var_core_value_sigF230, "BOARD_CHART_PLUGIN", "charts"), ...k(t.UnitComparisonEntityType["BOARD_CHART_DATA"], var_core_value_sigF230, "BOARD_CHART_PLUGIN", "dataSources"), ...k(t.UnitComparisonEntityType["BOARD_TABLE"], var_core_value_sigF230, "BOARD_TABLE_PLUGIN", "tables")],
+      var_core_value_sigD082 = (0, t.buildScopedUnitComparison)({
+        entityType: t.UnitComparisonEntityType["BOARD_PAGE"],
+        items: var_core_value_sig9E2F,
+        left: var_core_value_sig12F2,
+        right: var_core_value_sig2259,
+        references: {
+          left: (0, t.recordComparisonEntries)(var_core_value_sigC80B, var_core_value_sigF9C7.order),
+          right: (0, t.recordComparisonEntries)(var_core_value_sig284F, var_core_value_sig8895.order)
+        }
+      });
+    return {
+      items: var_core_value_sigD082.items,
+      supportedEntityTypes: w,
+      scopes: var_core_value_sigD082.scopes,
+      productContext: {
+        type: r.UniverInstanceType["UNIVER_BOARD"]
+      }
+    };
+  }
+};
+function D(var_core_value_sig7B2A) {
+  let var_core_value_sig06CD = (0, t.asRecord)(var_core_value_sig7B2A == null ? undefined : var_core_value_sig7B2A.slides),
+    var_core_value_sigA5F1 = var_core_value_sig7B2A == null ? undefined : var_core_value_sig7B2A.slideOrder;
+  return Array.isArray(var_core_value_sigA5F1) && var_core_value_sigA5F1.length > 0 || var_core_value_sig06CD !== undefined && Object.keys(var_core_value_sig06CD).length > 0 ? {
+    pages: var_core_value_sig06CD,
+    order: var_core_value_sigA5F1
+  } : {
+    pages: (0, t.asRecord)(var_core_value_sig7B2A == null ? undefined : var_core_value_sig7B2A.pages),
+    order: var_core_value_sig7B2A == null ? undefined : var_core_value_sig7B2A.pageOrder
+  };
+}
+function O(var_core_value_sig97A2, var_core_value_sig07E9, var_core_value_sig4F59) {
+  return (0, t.buildSemanticComparisonItems)({
+    entityType: var_core_value_sig97A2,
+    left: var_core_value_sig07E9 === undefined ? [] : [{
+      stableId: "root",
+      position: 0,
+      value: var_core_value_sig07E9
+    }],
+    right: var_core_value_sig4F59 === undefined ? [] : [{
+      stableId: "root",
+      position: 0,
+      value: var_core_value_sig4F59
+    }]
+  });
+}
+function k(var_core_value_sigF564, var_core_value_sig8CFA, var_core_value_sig2E11, var_core_value_sig5B69) {
+  return (0, t.buildSemanticComparisonItems)({
+    entityType: var_core_value_sigF564,
+    left: (0, t.resourceComparisonEntries)(var_core_value_sig8CFA.leftData, var_core_value_sig2E11, var_core_value_sig5B69),
+    right: (0, t.resourceComparisonEntries)(var_core_value_sig8CFA.rightData, var_core_value_sig2E11, var_core_value_sig5B69)
+  });
+}
+let A = class extends r.Plugin {
+  constructor(var_core_value_sigDBB7 = s, var_core_value_sigD0A8, var_core_value_sigF4B9) {
+    super(), this._config = var_core_value_sigDBB7, this._injector = var_core_value_sigD0A8, this._configService = var_core_value_sigF4B9;
+    let {
+      ...var_core_value_sig5CEE
+    } = (0, r.merge)({}, s, this._config);
+    this._configService["setConfig"]("boards-history.config", var_core_value_sig5CEE);
+  }
+  onStarting() {
+    (0, r.registerDependencies)(this._injector, [[y], [u], [E]]), this.disposeWithMe(this._injector["get"](t.UnitComparisonAdapterRegistryService).register(this._injector["get"](E))), this._injector["get"](u);
+  }
+};
+C(A, "pluginName", "UNIVER_BOARDS_HISTORY_PLUGIN"), C(A, "packageName", a), C(A, "version", o), C(A, "type", r.UniverInstanceType["UNIVER_BOARD"]), A = l([(0, r.DependentOn)(n.UniverLicensePlugin, t.UniverEditHistoryPlugin, e.UniverBoardsPlugin), c(1, (0, r.Inject)(r.Injector)), c(2, r.IConfigService)], A), Object.defineProperty(exports, "BoardsHistoryDiffService", {
+  enumerable: true,
+  get: function () {
+    return y;
+  }
+}), exports.BoardsUnitComparisonAdapter = E, Object.defineProperty(exports, "UniverBoardsHistoryPlugin", {
+  enumerable: true,
+  get: function () {
+    return A;
+  }
+});

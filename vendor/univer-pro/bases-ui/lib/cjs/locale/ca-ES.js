@@ -20,8 +20,7 @@ const n = {
       rowHeightTall: "Alt",
       rowHeightExtraTall: "Molt alt",
       conditionalColoring: "Coloració\x20condicional",
-      conditionalColoringHelp:
-        'Feu clic a "Condició nova" per aplicar colors segons les condicions definides. Tingueu en compte que les condicions superiors tenen prioritat.',
+      conditionalColoringHelp: 'Feu clic a "Condició nova" per aplicar colors segons les condicions definides. Tingueu en compte que les condicions superiors tenen prioritat.',
       conditionalColoringSmart: "Aplica color intel·ligent a tot",
       conditionalColor: "Color",
       conditionalCustomColor: "Personalitzat",
@@ -44,14 +43,12 @@ const n = {
       conditionalChecked: "marcat",
       conditionalUnchecked: "desmarcat",
       statusDoneTitle: "L'estat està fet",
-      statusDoneDescription:
-        "Apliqueu un marcador verd suau als registres coincidents.",
+      statusDoneDescription: "Apliqueu un marcador verd suau als registres coincidents.",
       statusBlockedTitle: "L\x27estat\x20està\x20bloquejat",
-      statusBlockedDescription:
-        "Apliqueu un marcador d'advertència als registres bloquejats.",
+      statusBlockedDescription: "Apliqueu un marcador d'advertència als registres bloquejats.",
       addField: "Afegeix\x20camp",
       undo: "Desfés",
-      redo: "Refés",
+      redo: "Refés"
     },
     recordDetail: {
       untitledRecord: "Registre sense títol",
@@ -66,7 +63,7 @@ const n = {
       addMoreAfterSubmission: "Afegeix més registres després de l'enviament",
       panelSize: "Mida del tauler",
       fullScreen: "Pantalla completa",
-      exitFullScreen: "Surt de pantalla completa",
+      exitFullScreen: "Surt de pantalla completa"
     },
     recordLink: {
       searchRecords: "Cerca registres",
@@ -74,53 +71,43 @@ const n = {
       selectedCount: "{0} seleccionats",
       missingRecord: "Registre suprimit",
       openRecord: "Obre el registre enllaçat",
-      back: "Enrere",
+      back: "Enrere"
     },
     hierarchy: {
-      invalidField:
-        "Selecciona un camp d'enllaç de registre d'un sol valor que apunti a aquesta taula.",
-      missingRecord:
-        "El registre o el pare ja no existeix. Actualitza i torna-ho a provar.",
-      selfParent:
-        "Un\x20registre\x20no\x20pot\x20ser\x20el\x20seu\x20propi\x20pare.",
+      invalidField: "Selecciona un camp d'enllaç de registre d'un sol valor que apunti a aquesta taula.",
+      missingRecord: "El registre o el pare ja no existeix. Actualitza i torna-ho a provar.",
+      selfParent: "Un\x20registre\x20no\x20pot\x20ser\x20el\x20seu\x20propi\x20pare.",
       cycle: "Aquest moviment crearia un cicle de pares.",
-      maxDepth:
-        "Aquest\x20moviment\x20superaria\x20el\x20màxim\x20de\x20cinc\x20nivells\x20jeràrquics.",
-      sortedView:
-        "Esborra l'ordenació de la vista abans de reordenar els registres manualment.",
-      operationFailed:
-        "No s'ha pogut aplicar el canvi de jerarquia. Actualitza i torna-ho a provar.",
+      maxDepth: "Aquest\x20moviment\x20superaria\x20el\x20màxim\x20de\x20cinc\x20nivells\x20jeràrquics.",
+      sortedView: "Esborra l'ordenació de la vista abans de reordenar els registres manualment.",
+      operationFailed: "No s'ha pogut aplicar el canvi de jerarquia. Actualitza i torna-ho a provar.",
       parent: "Pare",
       parentFieldName: "Elements pare",
       children: "Subelements",
       viewChildren: "Mostra els subelements",
       root: "Registre arrel",
-      setParent: "Defineix el pare",
+      setParent: "Defineix el pare"
     },
     collaboration: {
       localStatus: "Mode local",
-      localTooltip:
-        "La\x20col·laboració\x20està\x20desactivada\x20per\x20a\x20aquesta\x20base.",
+      localTooltip: "La\x20col·laboració\x20està\x20desactivada\x20per\x20a\x20aquesta\x20base.",
       syncedStatus: "Sincronitzat",
       syncedTooltip: "Tots\x20els\x20canvis\x20estan\x20sincronitzats.",
       syncingStatus: "Sincronització",
       syncingTooltip: "S'estan sincronitzant els canvis.",
       offlineStatus: "Fora de línia",
-      offlineTooltip:
-        "Connexió\x20perduda.\x20Feu\x20clic\x20per\x20tornar\x20a\x20connectar.",
+      offlineTooltip: "Connexió\x20perduda.\x20Feu\x20clic\x20per\x20tornar\x20a\x20connectar.",
       conflictStatus: "Conflicte",
-      conflictTooltip:
-        "Un\x20conflicte\x20de\x20col·laboració\x20necessita\x20atenció.",
+      conflictTooltip: "Un\x20conflicte\x20de\x20col·laboració\x20necessita\x20atenció.",
       notCollabStatus: "No col·laboratiu",
-      notCollabTooltip:
-        "Aquesta\x20base\x20no\x20està\x20en\x20mode\x20de\x20col·laboració.",
+      notCollabTooltip: "Aquesta\x20base\x20no\x20està\x20en\x20mode\x20de\x20col·laboració."
     },
     virtualRecord: {
       regrouped: "El\x20registre\x20es\x20reagruparà",
       resorted: "El registre es reordenarà",
       moved: "El registre es mourà en aquesta vista",
       filteredOut: "El registre està ocult en aquesta vista",
-      "delete d": "El registre s’ha suprimit",
+      "delete d": "El registre s’ha suprimit"
     },
     gridContext: {
       insert: "Insereix",
@@ -130,7 +117,7 @@ const n = {
       addSubRecord: "Afegeix un subregistre",
       clearContent: "Esborra el contingut",
       deleteRecord: "Suprimeix el registre",
-      deleteRecords: "Suprimeix registres",
+      deleteRecords: "Suprimeix registres"
     },
     common: {
       apply: "Aplica",
@@ -145,7 +132,7 @@ const n = {
       searchClose: "Tanca la cerca",
       value: "Valor",
       newCondition: "Condició\x20nova",
-      newBadge: "Nou",
+      newBadge: "Nou"
     },
     footerStat: {
       none: "Cap",
@@ -164,18 +151,16 @@ const n = {
       sum: "Suma {0}",
       average: "Mitjana\x20{0}",
       min: "Min {0}",
-      max: "{0} màxim",
+      max: "{0} màxim"
     },
     confirmDelete: {
       tableTitle: "Voleu suprimir aquesta taula?",
-      tableDescription:
-        "Aquesta\x20taula\x20i\x20els\x20seus\x20registres\x20se\x20suprimiran.",
-      tableReferenced:
-        "Aquesta taula no es pot suprimir perquè hi fan referència els camps següents: {0}.",
+      tableDescription: "Aquesta\x20taula\x20i\x20els\x20seus\x20registres\x20se\x20suprimiran.",
+      tableReferenced: "Aquesta taula no es pot suprimir perquè hi fan referència els camps següents: {0}.",
       viewTitle: "Voleu suprimir aquesta vista?",
       viewDescription: "Aquesta vista se suprimirà.",
       fieldTitle: "Voleu suprimir aquest camp?",
-      fieldDescription: "Aquest camp se suprimirà de la taula.",
+      fieldDescription: "Aquest camp se suprimirà de la taula."
     },
     duplicateTable: {
       title: "Duplica\x20la\x20taula",
@@ -184,29 +169,26 @@ const n = {
       configurationsOnly: "Només configuracions",
       configurationsAndRecords: "Configuracions i registres",
       action: "Duplica",
-      copyName: "{0} còpia",
+      copyName: "{0} còpia"
     },
     tableNameValidation: {
       required: "Introduïu un nom de taula.",
       tooLong: "Utilitzeu 31 caràcters o menys.",
-      apostrophe:
-        "El nom de la taula no pot començar ni acabar amb un apòstrof.",
-      invalidCharacters:
-        "El\x20nom\x20de\x20la\x20taula\x20no\x20pot\x20contenir\x20:\x20\x5c\x20/\x20?\x20*\x20[\x20].",
+      apostrophe: "El nom de la taula no pot començar ni acabar amb un apòstrof.",
+      invalidCharacters: "El\x20nom\x20de\x20la\x20taula\x20no\x20pot\x20contenir\x20:\x20\x5c\x20/\x20?\x20*\x20[\x20].",
       duplicate: "Ja existeix una taula amb aquest nom.",
-      invalid: "Introduïu\x20un\x20nom\x20de\x20taula\x20vàlid.",
+      invalid: "Introduïu\x20un\x20nom\x20de\x20taula\x20vàlid."
     },
     clipboard: {
       recordsCopied: "S'han copiat {0} registres",
-      attachmentsUploading: "S'estan pujant {0} fitxers adjunts...",
+      attachmentsUploading: "S'estan pujant {0} fitxers adjunts..."
     },
     fieldConfig: {
       recordLinkTargetTable: "Taula de destinació",
       recordLinkDisplayField: "Camp de visualització",
       recordLinkPickerFields: "Camps auxiliars del selector",
       recordLinkAllowMultiple: "Permet\x20enllaçar\x20diversos\x20registres",
-      recordLinkDescription:
-        "Emmagatzema ID de registre estables. Utilitzeu fórmules estàndard d’Excel com XLOOKUP i TEXTSPLIT per llegir valors enllaçats.",
+      recordLinkDescription: "Emmagatzema ID de registre estables. Utilitzeu fórmules estàndard d’Excel com XLOOKUP i TEXTSPLIT per llegir valors enllaçats.",
       fieldTitle: "Títol del camp",
       fieldTitlePlaceholder: "Introduïu un títol de camp",
       fieldType: "Tipus\x20de\x20camp",
@@ -215,8 +197,7 @@ const n = {
       fieldTypeSectionAdvanced: "Avançat",
       defaultValue: "Valor\x20per\x20defecte",
       newField: "Camp nou",
-      defaultSettingsReady:
-        "Aquest tipus de camp està llest amb la configuració predeterminada.",
+      defaultSettingsReady: "Aquest tipus de camp està llest amb la configuració predeterminada.",
       numberFormat: "Format numèric",
       currencyFormat: "Format de moneda",
       dateFormat: "Format de data",
@@ -236,8 +217,7 @@ const n = {
       numberingType: "Tipus de numeració",
       autoIncrement: "Increment\x20automàtic",
       custom: "Personalitzat",
-      customizeNumbering:
-        "Personalitza\x20el\x20format\x20i\x20les\x20regles\x20de\x20número/text",
+      customizeNumbering: "Personalitza\x20el\x20format\x20i\x20les\x20regles\x20de\x20número/text",
       preview: "Vista prèvia",
       incremental: "Incremental",
       digits: "dígits",
@@ -263,18 +243,12 @@ const n = {
       filterByField: "Filtra per {0}",
       createKanbanWithField: "Crea un Kanban amb {0}",
       deleteField: "Suprimeix el camp",
-      referenceOptionsHelp:
-        "Fes referència a dades d'altres taules com a opcions",
-      allowMultipleMembers:
-        "Permet\x20afegir\x20diversos\x20membres\x20en\x20un\x20registre",
-      allowMultipleGroups:
-        "Permet\x20afegir\x20diversos\x20grups\x20en\x20un\x20registre",
-      defaultProviderMock:
-        "El valor per defecte es resol a partir de {0} element{2} de prova de {1}.",
-      defaultProviderExternal:
-        "El valor per defecte es resol des del proveïdor extern de {0} d'Univer.",
-      linkPlaceholder:
-        "Introduïu un URL (p. ex. univer.ai o https://univer.ai/skills).",
+      referenceOptionsHelp: "Fes referència a dades d'altres taules com a opcions",
+      allowMultipleMembers: "Permet\x20afegir\x20diversos\x20membres\x20en\x20un\x20registre",
+      allowMultipleGroups: "Permet\x20afegir\x20diversos\x20grups\x20en\x20un\x20registre",
+      defaultProviderMock: "El valor per defecte es resol a partir de {0} element{2} de prova de {1}.",
+      defaultProviderExternal: "El valor per defecte es resol des del proveïdor extern de {0} d'Univer.",
+      linkPlaceholder: "Introduïu un URL (p. ex. univer.ai o https://univer.ai/skills).",
       phonePlaceholder: "Introduïu\x20un\x20número\x20de\x20telèfon",
       currencySymbol: "Símbol de moneda",
       thousandsSeparator: "Separador de milers",
@@ -307,10 +281,8 @@ const n = {
       noFormulaConfigured: "No hi ha cap fórmula configurada",
       editFormula: "Edita la fórmula",
       closeFormulaEditor: "Tanca l'editor de fórmules",
-      formulaHint:
-        "Utilitzeu camps de la fila actual com [@[Amount]]. No es permeten A1:B10 ni referències a cel·les individuals.",
-      formulaReferenceError:
-        "Les\x20referències\x20A1\x20i\x20els\x20intervals\x20no\x20són\x20compatibles\x20amb\x20les\x20fórmules\x20de\x20Base.",
+      formulaHint: "Utilitzeu camps de la fila actual com [@[Amount]]. No es permeten A1:B10 ni referències a cel·les individuals.",
+      formulaReferenceError: "Les\x20referències\x20A1\x20i\x20els\x20intervals\x20no\x20són\x20compatibles\x20amb\x20les\x20fórmules\x20de\x20Base.",
       formulaTables: "Taules",
       formulaFields: "Camps",
       formulaFunctions: "Funcions",
@@ -323,8 +295,7 @@ const n = {
       currentTableName: "Taula actual",
       currentTableField: "Camp\x20de\x20la\x20taula\x20actual",
       fieldFromTable: "Camp de {0}",
-      referenceCurrentField:
-        'Fes referència al camp "{0}" de la taula Base actual. Es desarà com a [[#This Row],[{1}]] per al motor de fórmules.',
+      referenceCurrentField: 'Fes referència al camp "{0}" de la taula Base actual. Es desarà com a [[#This Row],[{1}]] per al motor de fórmules.',
       referenceTableField: 'Fes referència al camp "{0}" de la taula "{1}".',
       fieldNameColumn: "Nom",
       fieldTypeColumn: "Tipus",
@@ -340,8 +311,7 @@ const n = {
       formulaFormatPercent: "Percentatge",
       formulaFormatDateTime: "Data / Hora",
       addDescriptionPlaceholder: "Afegeix una descripció",
-      numberingDescription:
-        "Assigna automàticament un índex creixent únic que comença per 1 quan es crea un registre. Els valors generats no es poden editar.",
+      numberingDescription: "Assigna automàticament un índex creixent únic que comença per 1 quan es crea un registre. Els valors generats no es poden editar.",
       optionColor: "Color de l'opció",
       separatorLocal: "Local",
       separatorCommaPeriod: "Coma,\x20punt",
@@ -366,7 +336,7 @@ const n = {
       ratingIconLightning: "Llamp",
       ratingIconMedal: "Medalla",
       increment: "incrementa",
-      decrement: "disminueix",
+      decrement: "disminueix"
     },
     cellEditor: {
       done: "Fet",
@@ -382,8 +352,7 @@ const n = {
       deleteAttachment: "Suprimeix el fitxer adjunt {0}",
       deleteAttachmentConfirmTitle: "Vols suprimir aquest fitxer adjunt?",
       deleteAttachmentsConfirmTitle: "Vols suprimir {0} fitxers adjunts?",
-      deleteAttachmentConfirmDescription:
-        "Els\x20fitxers\x20adjunts\x20seleccionats\x20s\x27eliminaran\x20d\x27aquest\x20registre.",
+      deleteAttachmentConfirmDescription: "Els\x20fitxers\x20adjunts\x20seleccionats\x20s\x27eliminaran\x20d\x27aquest\x20registre.",
       failedToAttachFile: "No\x20s\x27ha\x20pogut\x20adjuntar\x20el\x20fitxer",
       file: "FITXER",
       invalidEmail: "Adreça electrònica no vàlida",
@@ -394,7 +363,7 @@ const n = {
       selectOptions: "Selecciona opcions",
       previousMonth: "Mes anterior",
       nextMonth: "Mes\x20següent",
-      time: "Hora",
+      time: "Hora"
     },
     recordDetailField: {
       previousRecord: "Registre anterior",
@@ -407,7 +376,7 @@ const n = {
       empty: "Buit",
       unassigned: "Sense assignar",
       editField: "Edita {0}",
-      noVisibleFields: "No\x20hi\x20ha\x20camps\x20visibles",
+      noVisibleFields: "No\x20hi\x20ha\x20camps\x20visibles"
     },
     fieldMenu: {
       createSharedBaseField: "Creeu un camp base compartit",
@@ -438,8 +407,8 @@ const n = {
         createdBy: "Camp de l'autor del sistema",
         updatedBy: "Camp\x20modificador\x20del\x20sistema",
         createdAt: "Temps\x20de\x20creació\x20del\x20sistema",
-        updatedAt: "Hora actualitzada del sistema",
-      },
+        updatedAt: "Hora actualitzada del sistema"
+      }
     },
     fieldTypes: {
       text: "Text",
@@ -463,15 +432,14 @@ const n = {
       createdBy: "Creat per",
       updatedBy: "Modificat per",
       createdAt: "Data de creació",
-      updatedAt: "Data\x20de\x20l\x27última\x20modificació",
+      updatedAt: "Data\x20de\x20l\x27última\x20modificació"
     },
     viewMenus: {
       customizeKanban: "Personalitza Kanban",
       customizeCard: "Personalitza la targeta",
       eventSettings: "Configuració de l'esdeveniment",
       calendarViewSettings: "Configuració de la vista de calendari",
-      calendarViewSettingsTitle:
-        "Configuració\x20de\x20la\x20vista\x20de\x20calendari",
+      calendarViewSettingsTitle: "Configuració\x20de\x20la\x20vista\x20de\x20calendari",
       ganttViewSettings: "Configuració de la vista Gantt",
       fieldsCount: "{0} camps",
       cover: "Cobrir",
@@ -502,13 +470,11 @@ const n = {
       addCondition: "Afegeix\x20una\x20condició",
       calculateWorkingDaysOnly: "Calcula només dies laborables",
       customWorkingDays: "Dies laborables personalitzats",
-      customWorkingDaysHelp:
-        "Personalitzeu els dies laborables i festius per a aquesta vista Gantt. Si no es defineix, s'utilitza de dilluns a divendres quan el càlcul de dies laborables està activat.",
+      customWorkingDaysHelp: "Personalitzeu els dies laborables i festius per a aquesta vista Gantt. Si no es defineix, s'utilitza de dilluns a divendres quan el càlcul de dies laborables està activat.",
       notSet: "No configurat",
       settings: "Configuració",
       setWorkingDays: "Defineix dies laborables",
-      setWorkingDaysDescription:
-        "Personalitza dies laborables i festius, i aplica'ls a la base actual",
+      setWorkingDaysDescription: "Personalitza dies laborables i festius, i aplica'ls a la base actual",
       closeWorkingDaysSettings: "Tanca la configuració de dies laborables",
       addWorkingDays: "Afegeix dies laborables",
       holidayName: "Nom\x20del\x20festiu",
@@ -517,8 +483,7 @@ const n = {
       add: "Afegeix",
       removeWorkingDayException: "Elimina l'excepció de dia laborable",
       legalWorkingDays: "Dies laborables legals",
-      legalWorkingDaysHelp:
-        "Els\x20dies\x20laborables\x20legals\x20estaran\x20disponibles\x20quan\x20es\x20connecti\x20una\x20API\x20de\x20calendari\x20externa.",
+      legalWorkingDaysHelp: "Els\x20dies\x20laborables\x20legals\x20estaran\x20disponibles\x20quan\x20es\x20connecti\x20una\x20API\x20de\x20calendari\x20externa.",
       mon: "Dl",
       tue: "Dt",
       wed: "Dc",
@@ -535,7 +500,7 @@ const n = {
       groupByFieldFallback: "Agrupa per camp",
       kanbanGroup: "Grup Kanban",
       required: "Obligatori",
-      kanbanGroupHelp: "Les vistes Kanban sempre utilitzen un camp de grup.",
+      kanbanGroupHelp: "Les vistes Kanban sempre utilitzen un camp de grup."
     },
     operators: {
       is: "és",
@@ -547,7 +512,7 @@ const n = {
       greaterThan: "més gran que",
       lessThan: "més\x20petit\x20que",
       before: "és abans de",
-      after: "és després de",
+      after: "és després de"
     },
     viewSettings: {
       title: "Configuració de la vista",
@@ -568,8 +533,7 @@ const n = {
       newGanttView: "Nova vista Gantt",
       newGalleryView: "Nova vista de galeria",
       gridView: "Graella",
-      gridViewDescription:
-        "Files\x20i\x20camps\x20per\x20a\x20edició\x20detallada.",
+      gridViewDescription: "Files\x20i\x20camps\x20per\x20a\x20edició\x20detallada.",
       kanbanView: "Kanban",
       kanbanViewDescription: "Targetes agrupades per un camp de selecció.",
       calendarView: "Calendari",
@@ -578,7 +542,7 @@ const n = {
       ganttViewDescription: "Línia de temps amb dates d'inici i fi.",
       galleryView: "Galeria",
       galleryViewDescription: "Targetes visuals per explorar registres.",
-      copySuffix: "Copia",
+      copySuffix: "Copia"
     },
     tableSidebar: {
       searchTables: "Cerca taules",
@@ -586,15 +550,17 @@ const n = {
       newTable: "Nou",
       collapse: "Replega",
       expand: "Expandeix",
-      resizeTableSidebar:
-        "Redimensiona\x20la\x20barra\x20lateral\x20de\x20taules",
+      resizeTableSidebar: "Redimensiona\x20la\x20barra\x20lateral\x20de\x20taules",
       configureTable: "Configura\x20{0}",
       renameTable: "Canvia\x20el\x20nom\x20de\x20la\x20taula",
       duplicateTable: "Duplica la taula",
       deleteTable: "Suprimeix\x20la\x20taula",
-      defaultTableName: "Taula {0}",
+      defaultTableName: "Taula {0}"
     },
-    footer: { record: "registre", records: "registres" },
+    footer: {
+      record: "registre",
+      records: "registres"
+    },
     canvas: {
       addRecord: "Afegeix registre",
       attachmentDropLabel: "Afegeix\x20fitxers\x20a\x20aquest\x20registre",
@@ -607,12 +573,12 @@ const n = {
       quarter: "Trimestre",
       today: "Avui",
       week: "Setmana",
-      year: "Any",
+      year: "Any"
     },
     empty: {
       value: "Buit",
       noRecords: "No hi ha registres",
-      invalidView: "Aquesta\x20vista\x20s\x27ha\x20de\x20configurar",
+      invalidView: "Aquesta\x20vista\x20s\x27ha\x20de\x20configurar"
     },
     formula: {
       functionList: t.default["engine-formula"].functionList,
@@ -630,19 +596,17 @@ const n = {
         engineering: "Enginyeria",
         financial: "Financer",
         lookup: "Cerca i referència",
-        web: "Web",
+        web: "Web"
       },
       generic: {
         engineAbstract: "Funció del motor de fórmules {0}",
-        engineDescription:
-          "{0}\x20és\x20proporcionada\x20pel\x20motor\x20de\x20fórmules\x20d\x27Univer.\x20Base\x20admet\x20referències\x20de\x20camp\x20com\x20TableName[[#This\x20Row],[Field]]\x20i\x20OtherTable[Field],\x20però\x20no\x20admet\x20cel·les\x20A1,\x20intervals\x20A1:B10\x20ni\x20sortida\x20de\x20matriu\x20desbordada\x20als\x20camps\x20de\x20fórmula\x20de\x20Base.",
+        engineDescription: "{0}\x20és\x20proporcionada\x20pel\x20motor\x20de\x20fórmules\x20d\x27Univer.\x20Base\x20admet\x20referències\x20de\x20camp\x20com\x20TableName[[#This\x20Row],[Field]]\x20i\x20OtherTable[Field],\x20però\x20no\x20admet\x20cel·les\x20A1,\x20intervals\x20A1:B10\x20ni\x20sortida\x20de\x20matriu\x20desbordada\x20als\x20camps\x20de\x20fórmula\x20de\x20Base.",
         argument: {
           name: "argument",
-          detail:
-            "Un\x20valor,\x20una\x20referència\x20de\x20camp,\x20una\x20referència\x20de\x20camp\x20de\x20taula\x20o\x20una\x20expressió\x20compatible\x20amb\x20el\x20motor\x20de\x20fórmules\x20d\x27Univer.",
-        },
-      },
-    },
-  },
+          detail: "Un\x20valor,\x20una\x20referència\x20de\x20camp,\x20una\x20referència\x20de\x20camp\x20de\x20taula\x20o\x20una\x20expressió\x20compatible\x20amb\x20el\x20motor\x20de\x20fórmules\x20d\x27Univer."
+        }
+      }
+    }
+  }
 };
 module.exports = n;
